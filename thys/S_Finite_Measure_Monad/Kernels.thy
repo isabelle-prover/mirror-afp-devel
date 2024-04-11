@@ -92,6 +92,34 @@ proof -
     by(auto intro!: s_finite_measure_prodI[where Mij = Mij] simp: assms(3) Mij top.not_eq_extremum)
 qed
 
+lemma s_finite_measure_finite_sumI:
+  assumes "finite I" "\<And>i. i \<in> I \<Longrightarrow> s_finite_measure (Mi i)" "\<And>i. i \<in> I \<Longrightarrow> sets (Mi i) = sets M"
+    and "\<And>A. A \<in> sets M \<Longrightarrow> M A = (\<Sum>i\<in>I. Mi i A)"
+  shows "s_finite_measure M"
+proof -
+  let ?Mi = "\<lambda>n. if n < card I then Mi (from_nat_into I n) else null_measure M"
+  show ?thesis
+  proof(rule s_finite_measure_s_finite_sumI[of ?Mi])
+    show "\<And>i. s_finite_measure (?Mi i)"
+      by (metis  (full_types) assms(2) bot_nat_0.extremum_strict card.empty emeasure_null_measure ennreal_top_neq_zero finite_measure.s_finite_measure_finite_measure finite_measureI from_nat_into infinity_ennreal_def)
+  next
+    show "\<And>i. sets (?Mi i) = sets M"
+      by (metis (full_types) assms(3) card_gt_0_iff dual_order.strict_trans2 from_nat_into less_zeroE linorder_le_less_linear sets_null_measure)
+  next
+    fix A
+    assume "A \<in> sets M"
+    then have "M A = (\<Sum>i\<in>I. Mi i A)"
+      by fact
+    also have "... = (\<Sum>n<card I. Mi (from_nat_into I n) A)"
+      by(rule sum.card_from_nat_into[symmetric])
+    also have "... = (\<Sum>n<card I. ?Mi n A)"
+      by simp
+    also have "... =  (\<Sum>n. ?Mi n A)"
+      by(rule suminf_finite[symmetric]) auto
+    finally show "M A = (\<Sum>n. ?Mi n A)" .
+  qed
+qed
+
 lemma countable_space_s_finite_measure:
   assumes "countable (space M)" "sets M = Pow (space M)"
   shows "s_finite_measure M"

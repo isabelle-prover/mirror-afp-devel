@@ -356,18 +356,18 @@ qed
 lemma ini_morphism[qbs]:
   assumes "j \<in> I"
   shows "(\<lambda>x. (j,x)) \<in> X j \<rightarrow>\<^sub>Q (\<amalg>\<^sub>Q i\<in>I. X i)"
-  by(fastforce intro!: qbs_morphismI exI[where x="\<lambda>r. j"] simp: coprod_qbs_Mx_def comp_def assms coprod_qbs_Mx)
+  by(fastforce intro!: qbs_morphismI exI[where x="\<lambda>r. j"] simp: coPiQ_Mx_def comp_def assms coPiQ_Mx)
 
-lemma coprod_qbs_canonical1:
+lemma coPiQ_canonical1:
   assumes "countable I"
       and "\<And>i. i \<in> I \<Longrightarrow> f i \<in> X i \<rightarrow>\<^sub>Q Y"
     shows "(\<lambda>(i,x). f i x) \<in> (\<amalg>\<^sub>Q i \<in>I. X i) \<rightarrow>\<^sub>Q Y"
 proof(rule qbs_morphismI)
   fix \<alpha>
-  assume "\<alpha> \<in> qbs_Mx (coprod_qbs I X)"
+  assume "\<alpha> \<in> qbs_Mx (coPiQ I X)"
   then obtain \<beta> g where ha:
    "\<And>i. i \<in> range g \<Longrightarrow> \<beta> i \<in> qbs_Mx (X i)" "\<alpha> = (\<lambda>r. (g r, \<beta> (g r) r))" and hg[measurable]:"g \<in> borel \<rightarrow>\<^sub>M count_space I"
-    by(fastforce simp: coprod_qbs_Mx_def coprod_qbs_Mx)
+    by(fastforce simp: coPiQ_Mx_def coPiQ_Mx)
   define f' where "f' \<equiv> (\<lambda>i r. f i (\<beta> i r))"
   have "range g \<subseteq> I"
     using measurable_space[OF hg] by auto
@@ -381,11 +381,11 @@ proof(rule qbs_morphismI)
   finally show "(\<lambda>(i, x). f i x) \<circ> \<alpha> \<in> qbs_Mx Y " .
 qed
 
-lemma coprod_qbs_canonical1':
+lemma coPiQ_canonical1':
   assumes "countable I"
       and "\<And>i. i \<in> I \<Longrightarrow> (\<lambda>x. f (i,x)) \<in> X i \<rightarrow>\<^sub>Q Y"
     shows  "f \<in> (\<amalg>\<^sub>Q i \<in>I. X i) \<rightarrow>\<^sub>Q Y"
-  using coprod_qbs_canonical1[where f="curry f"] assms by(auto simp: curry_def)
+  using coPiQ_canonical1[where f="curry f"] assms by(auto simp: curry_def)
 
 lemma None_qbs[qbs]: "None \<in> qbs_space (option_qbs X)"
   by(simp add: option_qbs_space)

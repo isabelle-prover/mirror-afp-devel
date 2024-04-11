@@ -16,6 +16,8 @@ subsubsection \<open> The Functor $R$ \<close>
 definition measure_to_qbs :: "'a measure \<Rightarrow> 'a quasi_borel" where
 "measure_to_qbs X \<equiv> Abs_quasi_borel (space X, borel \<rightarrow>\<^sub>M X)"
 
+declare [[coercion measure_to_qbs]]
+
 lemma
   shows qbs_space_R: "qbs_space (measure_to_qbs X) = space X" (is ?goal1)
     and qbs_Mx_R: "qbs_Mx (measure_to_qbs X) = borel \<rightarrow>\<^sub>M X" (is ?goal2)
@@ -30,6 +32,9 @@ text \<open> The following lemma says that @{term measure_to_qbs} is a functor f
 lemma r_preserves_morphisms:
    "X \<rightarrow>\<^sub>M Y \<subseteq> (measure_to_qbs X) \<rightarrow>\<^sub>Q (measure_to_qbs Y)"
   by(auto intro!: qbs_morphismI simp: qbs_Mx_R)
+
+lemma measurable_imp_qbs_morphism: "f \<in> M \<rightarrow>\<^sub>M N \<Longrightarrow> f \<in> M \<rightarrow>\<^sub>Q N"
+  using r_preserves_morphisms by blast
 
 subsubsection \<open> The Functor $L$ \<close>
 definition sigma_Mx :: "'a quasi_borel \<Rightarrow> 'a set set" where
@@ -223,11 +228,11 @@ proof safe
   qed (insert qbs_morphism_space[OF h], auto simp: space_L)
 qed
 
+lemma qbs_morphism_imp_measurable: "f \<in> X \<rightarrow>\<^sub>Q Y \<Longrightarrow> f \<in> qbs_to_measure X \<rightarrow>\<^sub>M qbs_to_measure Y"
+  using l_preserves_morphisms by blast
 
 abbreviation qbs_borel ("borel\<^sub>Q")  where "borel\<^sub>Q \<equiv> measure_to_qbs borel"
 abbreviation qbs_count_space ("count'_space\<^sub>Q") where "qbs_count_space I \<equiv> measure_to_qbs (count_space I)"
-
-declare [[coercion measure_to_qbs]]
 
 lemma
   shows qbs_space_qbs_borel[simp]: "qbs_space borel\<^sub>Q = UNIV"
@@ -309,7 +314,6 @@ proof
     by(auto intro!: exI[where x=U] simp: sigma_Mx_def sets_L)
 qed
 
-
 lemma qbs_Mx_are_measurable[simp,measurable]:
   assumes "\<alpha> \<in> qbs_Mx X"
   shows "\<alpha> \<in> borel \<rightarrow>\<^sub>M qbs_to_measure X"
@@ -364,6 +368,49 @@ corollary sets_lr_polish_borel[simp, measurable_cong]: "sets (qbs_to_measure qbs
 
 corollary sets_lr_count_space[simp, measurable_cong]: "sets (qbs_to_measure (qbs_count_space (UNIV :: (_ :: countable) set))) = sets (count_space UNIV)"
   by(rule standard_borel.lr_sets_ident) (auto intro!:  standard_borel_ne.standard_borel)
+
+lemma map_qbs_embed_measure1:
+  assumes "inj_on f (space M)"
+  shows "map_qbs f (measure_to_qbs M) = measure_to_qbs (embed_measure M f)"
+proof(safe intro!: qbs_eqI)
+  fix \<alpha>
+  show "\<alpha> \<in> qbs_Mx (map_qbs f (measure_to_qbs M)) \<Longrightarrow> \<alpha> \<in> qbs_Mx (measure_to_qbs (embed_measure M f))"
+    using measurable_embed_measure2'[OF assms] by(auto intro!: qbs_eqI simp: map_qbs_Mx qbs_Mx_R)
+next
+  fix \<alpha>
+  assume "\<alpha> \<in> qbs_Mx (measure_to_qbs (embed_measure M f))"
+  hence h[measurable]:"\<alpha> \<in> borel \<rightarrow>\<^sub>M embed_measure M f"
+    by(simp add: qbs_Mx_R)
+  have [measurable]:"the_inv_into (space M) f \<in> embed_measure M f \<rightarrow>\<^sub>M M"
+    by (simp add: assms in_sets_embed_measure measurable_def sets.sets_into_space space_embed_measure the_inv_into_into the_inv_into_vimage)
+  show "\<alpha> \<in> qbs_Mx (map_qbs f (measure_to_qbs M))"
+    using measurable_space[OF h] f_the_inv_into_f[OF assms] by(auto intro!: exI[where x="the_inv_into (space M) f \<circ> \<alpha>"] simp: map_qbs_Mx qbs_Mx_R space_embed_measure)
+qed
+
+lemma map_qbs_embed_measure2:
+  assumes "inj_on f (qbs_space X)"
+  shows "sets (qbs_to_measure (map_qbs f X)) = sets (embed_measure (qbs_to_measure X) f)"
+proof safe
+  fix A
+  assume "A \<in> sets (qbs_to_measure (map_qbs f X))"
+  then obtain U where "A = U \<inter> f ` qbs_space X" "\<And>\<alpha>. \<alpha> \<in> qbs_Mx X \<Longrightarrow> (f \<circ> \<alpha>) -` U \<in> sets borel"
+    by(auto simp: sets_L sigma_Mx_def map_qbs_space map_qbs_Mx)
+  thus "A \<in> sets (embed_measure (qbs_to_measure X) f)"
+    by(auto simp: sets_L sets_embed_measure'[of _ "qbs_to_measure X",simplified space_L,OF assms] sigma_Mx_def qbs_Mx_to_X vimage_def intro!: exI[where x="f -` U \<inter> qbs_space X"])
+next
+  fix A
+  assume A:"A \<in> sets (embed_measure (qbs_to_measure X) f)"
+  then obtain B U where "A = f ` B" "B = U \<inter> qbs_space X" "\<And>\<alpha>. \<alpha> \<in> qbs_Mx X \<Longrightarrow> \<alpha> -` U \<in> sets borel"
+    by(auto simp: sets_L sigma_Mx_def sets_embed_measure'[of _ "qbs_to_measure X",simplified space_L,OF assms])
+  thus "A \<in> sets (qbs_to_measure (map_qbs f X))"
+    using measurable_sets_borel[OF measurable_comp[OF qbs_Mx_are_measurable measurable_embed_measure2'[of _ "qbs_to_measure X",simplified space_L,OF assms]]] A
+    by(auto simp: sets_L sigma_Mx_def map_qbs_space map_qbs_Mx intro!: exI[where x="f ` (U \<inter> qbs_space X)"])
+qed
+
+lemma(in standard_borel) map_qbs_embed_measure2':
+  assumes "inj_on f (space M)"
+  shows "sets (qbs_to_measure (map_qbs f (measure_to_qbs M))) = sets (embed_measure M f)"
+  by(auto intro!: standard_borel.lr_sets_ident[OF standard_borel_embed_measure] assms simp: map_qbs_embed_measure1[OF assms])
 
 subsubsection \<open> The Adjunction \<close>
 lemma lr_adjunction_correspondence :
@@ -920,21 +967,20 @@ qed
 lemma list_nil_qbs[qbs]: "[] \<in> qbs_space (list_qbs X)"
   by(simp add: list_qbs_space)
 
-lemma list_cons_qbs_morphism: "list_cons \<in> X \<rightarrow>\<^sub>Q (list_of X) \<Rightarrow>\<^sub>Q (list_of X)"
+lemma list_cons_qbs_morphism: "list_cons \<in> X \<rightarrow>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Rightarrow>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
 proof(intro curry_preserves_morphisms pair_qbs_morphismI)
   fix \<alpha> \<beta>
   assume h:"\<alpha> \<in> qbs_Mx X"
-           "\<beta> \<in> qbs_Mx (list_of X)"
+           "\<beta> \<in> qbs_Mx (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   then obtain \<gamma> f where hf:
    "\<beta> = (\<lambda>r. (f r, \<gamma> (f r) r))" "f \<in> borel \<rightarrow>\<^sub>M count_space UNIV" "\<And>i. i \<in> range f \<Longrightarrow> \<gamma> i \<in> qbs_Mx (\<Pi>\<^sub>Q j\<in>{..<i}. X)"
-    by(auto simp: coprod_qbs_Mx_def list_of_def coprod_qbs_Mx)
+    by(auto simp: coPiQ_Mx_def coPiQ_Mx)
   define f' \<beta>'
     where "f' \<equiv> (\<lambda>r. Suc (f r))" "\<beta>' \<equiv> (\<lambda>i r n. if n = 0 then \<alpha> r else \<gamma> (i - 1) r (n - 1))"
   then have "(\<lambda>r. list_cons (fst (\<alpha> r, \<beta> r)) (snd (\<alpha> r, \<beta> r))) = (\<lambda>r. (f' r, \<beta>' (f' r) r))"
     by(auto simp: comp_def hf(1) ext list_cons_def)
-  also have "... \<in> qbs_Mx (list_of X)"
-    unfolding list_of_def
-  proof(rule coprod_qbs_MxI)
+  also have "... \<in> qbs_Mx (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+  proof(rule coPiQ_MxI)
     show "f' \<in> borel \<rightarrow>\<^sub>M count_space UNIV"
       using hf by(simp add: f'_\<beta>'_def(1))
   next
@@ -969,23 +1015,23 @@ proof(intro curry_preserves_morphisms pair_qbs_morphismI)
         by(simp add: f'_\<beta>'_def(2))
     qed
   qed
-  finally show "(\<lambda>r. list_cons (fst (\<alpha> r, \<beta> r)) (snd (\<alpha> r, \<beta> r))) \<in> qbs_Mx (list_of X)" .
+  finally show "(\<lambda>r. list_cons (fst (\<alpha> r, \<beta> r)) (snd (\<alpha> r, \<beta> r))) \<in> qbs_Mx (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)" .
 qed
 
 corollary cons_qbs_morphism[qbs]: "Cons \<in> X \<rightarrow>\<^sub>Q (list_qbs X) \<Rightarrow>\<^sub>Q list_qbs X"
 proof(rule arg_swap_morphism)
   show "(\<lambda>x y. y # x) \<in> list_qbs X \<rightarrow>\<^sub>Q X \<Rightarrow>\<^sub>Q list_qbs X"
-  proof(rule qbs_morphism_cong'[where f="(\<lambda>l x. x # (to_list l)) \<circ> from_list"])
+  proof(rule qbs_morphism_cong')
     show " (\<lambda>l x. x # to_list l) \<circ> from_list \<in> list_qbs X \<rightarrow>\<^sub>Q X \<Rightarrow>\<^sub>Q list_qbs X"
-    proof(rule qbs_morphism_comp[where Y="list_of X"])
-      show " (\<lambda>l x. x # to_list l) \<in> list_of X \<rightarrow>\<^sub>Q X \<Rightarrow>\<^sub>Q list_qbs X"
+    proof(rule qbs_morphism_comp)
+      show " (\<lambda>l x. x # to_list l) \<in> (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<rightarrow>\<^sub>Q X \<Rightarrow>\<^sub>Q list_qbs X"
       proof(rule curry_preserves_morphisms)
-        show "(\<lambda>lx. snd lx # to_list (fst lx)) \<in> list_of X \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q list_qbs X"
-        proof(rule qbs_morphism_cong'[where f="to_list \<circ> (\<lambda>(l,x). from_list (x # to_list l))"])
-          show "to_list \<circ> (\<lambda>(l, x). from_list (x # to_list l)) \<in> list_of X \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q list_qbs X"
-          proof(rule qbs_morphism_comp[where Y="list_of X"])
-            show "(\<lambda>(l, x). from_list (x # to_list l)) \<in> list_of X \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q list_of X"
-              by(rule qbs_morphism_cong'[where f="(\<lambda>(l,x). list_cons x l)",OF _ uncurry_preserves_morphisms[of "\<lambda>(l,x). list_cons x l",simplified,OF arg_swap_morphism[OF list_cons_qbs_morphism]]]) (auto simp: pair_qbs_space to_list_from_list_ident)
+        show "(\<lambda>lx. snd lx # to_list (fst lx)) \<in> (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q list_qbs X"
+        proof(rule qbs_morphism_cong')
+          show "to_list \<circ> (\<lambda>(l, x). from_list (x # to_list l)) \<in> (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q list_qbs X"
+          proof(rule qbs_morphism_comp)
+            show "(\<lambda>(l, x). from_list (x # to_list l)) \<in>(\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+              by(rule qbs_morphism_cong'[OF _ uncurry_preserves_morphisms[of "\<lambda>(l,x). list_cons x l",simplified,OF arg_swap_morphism[OF list_cons_qbs_morphism]]]) (auto simp: pair_qbs_space to_list_from_list_ident)
           qed(simp add: list_qbs_def map_qbs_morphism_f)
         qed(auto simp: pair_qbs_space to_list_from_list_ident to_list_simp2)
       qed
@@ -994,9 +1040,8 @@ proof(rule arg_swap_morphism)
 qed
 
 lemma rec_list_morphism':
- "rec_list' \<in> qbs_space (Y \<Rightarrow>\<^sub>Q (X \<Rightarrow>\<^sub>Q list_of X \<Rightarrow>\<^sub>Q Y \<Rightarrow>\<^sub>Q Y) \<Rightarrow>\<^sub>Q list_of X \<Rightarrow>\<^sub>Q Y)"
-  unfolding list_of_def
-proof(intro curry_preserves_morphisms[OF arg_swap_morphism] coprod_qbs_canonical1')
+ "rec_list' \<in> qbs_space (Y \<Rightarrow>\<^sub>Q (X \<Rightarrow>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Rightarrow>\<^sub>Q Y \<Rightarrow>\<^sub>Q Y) \<Rightarrow>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Rightarrow>\<^sub>Q Y)"
+proof(intro curry_preserves_morphisms[OF arg_swap_morphism] coPiQ_canonical1')
   fix n
   show "(\<lambda>x y. rec_list' (fst y) (snd y) (n, x)) \<in> (\<Pi>\<^sub>Q i\<in>{..<n}. X) \<rightarrow>\<^sub>Q exp_qbs (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (\<amalg>\<^sub>Q n\<in>UNIV. \<Pi>\<^sub>Q i\<in>{..<n}. X) (exp_qbs Y Y))) Y"
   proof(induction n)
@@ -1031,49 +1076,49 @@ proof(intro curry_preserves_morphisms[OF arg_swap_morphism] coprod_qbs_canonical
         using h by(auto simp: PiQ_Mx)
       have 1:"\<alpha>' \<in> qbs_Mx (\<Pi>\<^sub>Q i\<in>{..<n}. X)"
         using h by(fastforce simp: PiQ_Mx list_tail_def \<alpha>'_def)
-      hence 2: "\<And>r. (n, \<alpha>' r) \<in> qbs_space (list_of X)"
-        using qbs_Mx_to_X[of \<alpha>'] by (fastforce simp: PiQ_space coprod_qbs_space list_of_def)
-      have 3: "\<And>r. (Suc n, \<alpha> r) \<in> qbs_space (list_of X)"
-        using qbs_Mx_to_X[of \<alpha>] h by (fastforce simp: PiQ_space coprod_qbs_space list_of_def)
+      hence 2: "\<And>r. (n, \<alpha>' r) \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+        using qbs_Mx_to_X[of \<alpha>'] by (fastforce simp: PiQ_space coPiQ_space)
+      have 3: "\<And>r. (Suc n, \<alpha> r) \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+        using qbs_Mx_to_X[of \<alpha>] h by (fastforce simp: PiQ_space coPiQ_space)
       have 4: "\<And>r. (n, \<alpha>' r) = list_tail (Suc n, \<alpha> r)"
         by(simp add: list_tail_def \<alpha>'_def)
       have 5: "\<And>r. (Suc n, \<alpha> r) = list_cons (a r) (n, \<alpha>' r)"
         unfolding a_def by(simp add: list_simp5[OF 3,simplified 4[symmetric],simplified list_head_def list_cons_def list_nil_def] list_cons_def) auto
-      have 6: "(\<lambda>r. (n, \<alpha>' r)) \<in> qbs_Mx (list_of X)"
-        using 1 by(auto intro!: coprod_qbs_MxI simp: PiQ_space coprod_qbs_space list_of_def)
+      have 6: "(\<lambda>r. (n, \<alpha>' r)) \<in> qbs_Mx (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+        using 1 by(auto intro!: coPiQ_MxI simp: PiQ_space coPiQ_space)
 
       have "(\<lambda>x y. rec_list' (fst y) (snd y) (Suc n, x)) \<circ> \<alpha> = (\<lambda>r y. rec_list' (fst y) (snd y) (Suc n, \<alpha> r))"
         by auto
       also have "... = (\<lambda>r y. snd y (a r) (n, \<alpha>' r) (rec_list' (fst y) (snd y) (n, \<alpha>' r)))"
         by(simp only: 5 rec_list'_simp2[OF 2])
-      also have "... \<in> qbs_Mx (exp_qbs (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y))) Y)"
+      also have "... \<in> qbs_Mx (exp_qbs (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) (exp_qbs Y Y))) Y)"
       proof -
         have "(\<lambda>(r,y). snd y (a r) (n, \<alpha>' r) (rec_list' (fst y) (snd y) (n, \<alpha>' r))) = (\<lambda>(y,x1,x2,x3). y x1 x2 x3) \<circ> (\<lambda>(r,y). (snd y, a r, (n, \<alpha>' r), rec_list' (fst y) (snd y) (n, \<alpha>' r)))"
           by auto
-        also have "... \<in> qbs_borel \<Otimes>\<^sub>Q (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y))) \<rightarrow>\<^sub>Q Y"
-        proof(rule qbs_morphism_comp[where Y="exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<Otimes>\<^sub>Q X \<Otimes>\<^sub>Q list_of X \<Otimes>\<^sub>Q Y"])
-          show "(\<lambda>(r, y). (snd y, a r, (n, \<alpha>' r), rec_list' (fst y) (snd y) (n, \<alpha>' r))) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<Otimes>\<^sub>Q X \<Otimes>\<^sub>Q list_of X \<Otimes>\<^sub>Q Y"
+        also have "... \<in> qbs_borel \<Otimes>\<^sub>Q (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) (exp_qbs Y Y))) \<rightarrow>\<^sub>Q Y"
+        proof(rule qbs_morphism_comp[where Y="exp_qbs X (exp_qbs (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) (exp_qbs Y Y)) \<Otimes>\<^sub>Q X \<Otimes>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Otimes>\<^sub>Q Y"])
+          show "(\<lambda>(r, y). (snd y, a r, (n, \<alpha>' r), rec_list' (fst y) (snd y) (n, \<alpha>' r))) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y)) \<Otimes>\<^sub>Q X \<Otimes>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Otimes>\<^sub>Q Y"
             unfolding split_beta'
           proof(safe intro!: qbs_morphism_Pair)
-            show "(\<lambda>x. a (fst x)) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q X"
+            show "(\<lambda>x. a (fst x)) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q X"
               using ha qbs_Mx_is_morphisms[of X] ha by auto
           next
-            show "(\<lambda>x. (n, \<alpha>' (fst x))) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q list_of X"
+            show "(\<lambda>x. (n, \<alpha>' (fst x))) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
               using 6 by(simp add: qbs_Mx_is_morphisms) (use fst_qbs_morphism qbs_morphism_compose in blast)
           next
-            show "(\<lambda>x. rec_list' (fst (snd x)) (snd (snd x)) (n, \<alpha>' (fst x))) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q Y"
-              using qbs_morphism_Mx[OF ih 1, simplified comp_def]  uncurry_preserves_morphisms[of "(\<lambda>(x,y). rec_list' (fst y) (snd y) (n, \<alpha>' x))" qbs_borel "Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y))" Y] qbs_Mx_is_morphisms[of "exp_qbs (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y))) Y"]
-              by(fastforce simp: split_beta' list_of_def)
+            show "(\<lambda>x. rec_list' (fst (snd x)) (snd (snd x)) (n, \<alpha>' (fst x))) \<in> qbs_borel \<Otimes>\<^sub>Q Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y)) \<rightarrow>\<^sub>Q Y"
+              using qbs_morphism_Mx[OF ih 1, simplified comp_def]  uncurry_preserves_morphisms[of "(\<lambda>(x,y). rec_list' (fst y) (snd y) (n, \<alpha>' x))" qbs_borel "Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y))" Y] qbs_Mx_is_morphisms[of "exp_qbs (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y))) Y"]
+              by(fastforce simp: split_beta')
           qed qbs
         next
-          show "(\<lambda>(y, x1, x2, x3). y x1 x2 x3) \<in> exp_qbs X (exp_qbs (list_of X) (exp_qbs Y Y)) \<Otimes>\<^sub>Q X \<Otimes>\<^sub>Q list_of X \<Otimes>\<^sub>Q Y \<rightarrow>\<^sub>Q Y"
+          show "(\<lambda>(y, x1, x2, x3). y x1 x2 x3) \<in> exp_qbs X (exp_qbs ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)) (exp_qbs Y Y)) \<Otimes>\<^sub>Q X \<Otimes>\<^sub>Q (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Otimes>\<^sub>Q Y \<rightarrow>\<^sub>Q Y"
             by simp
         qed
         finally show ?thesis
           by(simp add: exp_qbs_Mx')
       qed
       finally show "(\<lambda>x y. rec_list' (fst y) (snd y) (Suc n, x)) \<circ> \<alpha> \<in> qbs_Mx (exp_qbs (Y \<Otimes>\<^sub>Q exp_qbs X (exp_qbs (\<amalg>\<^sub>Q n\<in>UNIV. \<Pi>\<^sub>Q i\<in>{..<n}. X) (exp_qbs Y Y))) Y)"
-        by(simp add: list_of_def)
+        by blast
     qed
   qed
 qed simp
@@ -1081,8 +1126,8 @@ qed simp
 lemma rec_list_morphism[qbs]: "rec_list \<in> qbs_space (Y \<Rightarrow>\<^sub>Q (X \<Rightarrow>\<^sub>Q list_qbs X \<Rightarrow>\<^sub>Q Y \<Rightarrow>\<^sub>Q Y) \<Rightarrow>\<^sub>Q list_qbs X \<Rightarrow>\<^sub>Q Y)"
 proof(rule curry_preserves_morphisms[OF arg_swap_morphism])
   show "(\<lambda>l yf. rec_list (fst yf) (snd yf) l) \<in> list_qbs X \<rightarrow>\<^sub>Q Y \<Otimes>\<^sub>Q (X \<Rightarrow>\<^sub>Q list_qbs X \<Rightarrow>\<^sub>Q Y \<Rightarrow>\<^sub>Q Y) \<Rightarrow>\<^sub>Q Y"
-  proof(rule qbs_morphism_cong'[where f="(\<lambda>l' (y,f). rec_list y f (to_list l')) \<circ> from_list",OF _ qbs_morphism_comp[where Y="list_of X"]])
-    show "(\<lambda>l' (y,f). rec_list y f (to_list l')) \<in> list_of X \<rightarrow>\<^sub>Q Y \<Otimes>\<^sub>Q (X \<Rightarrow>\<^sub>Q list_qbs X \<Rightarrow>\<^sub>Q Y \<Rightarrow>\<^sub>Q Y) \<Rightarrow>\<^sub>Q Y"
+  proof(rule qbs_morphism_cong'[where f="(\<lambda>l' (y,f). rec_list y f (to_list l')) \<circ> from_list",OF _ qbs_morphism_comp[where Y="(\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"]])
+    show "(\<lambda>l' (y,f). rec_list y f (to_list l')) \<in> (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<rightarrow>\<^sub>Q Y \<Otimes>\<^sub>Q (X \<Rightarrow>\<^sub>Q list_qbs X \<Rightarrow>\<^sub>Q Y \<Rightarrow>\<^sub>Q Y) \<Rightarrow>\<^sub>Q Y"
       apply(rule arg_swap_morphism,simp only: split_beta' list_qbs_def)
       apply(rule uncurry_preserves_morphisms)
       apply(rule arg_swap_morphism)

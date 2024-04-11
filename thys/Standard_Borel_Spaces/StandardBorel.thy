@@ -191,6 +191,17 @@ lemma(in standard_borel_ne) measurable_isomorphic_standard_ne:
   shows "standard_borel_ne N"
   using measurable_ismorphic_empty2[OF _ assms] by(auto simp: measurable_isomorphic_standard[OF assms] standard_borel_ne_def standard_borel_ne_axioms_def space_ne)
 
+lemma(in standard_borel) standard_borel_embed_measure:
+  assumes"inj_on f (space M)"
+  shows "standard_borel (embed_measure M f)"
+  using measurable_embed_measure2'[OF assms]
+  by(auto intro!: measurable_isomorphic_standard exI[where x=f] simp: measurable_isomorphic_def measurable_isomorphic_map_def assms in_sets_embed_measure measurable_def sets.sets_into_space space_embed_measure the_inv_into_into the_inv_into_vimage bij_betw_def)
+
+corollary(in standard_borel_ne) standard_borel_ne_embed_measure:
+  assumes"inj_on f (space M)"
+  shows "standard_borel_ne (embed_measure M f)"
+  by (simp add: assms space_embed_measure space_ne standard_borel_embed_measure standard_borel_ne_axioms_def standard_borel_ne_def)
+
 lemma ereal_standard_ne: "standard_borel_ne (borel :: ereal measure)"
 proof -
   interpret s: standard_borel_ne "restrict_space borel {0..1::real}"

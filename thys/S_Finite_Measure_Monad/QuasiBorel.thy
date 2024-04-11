@@ -360,10 +360,8 @@ definition copair_qbs_Mx :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> (rea
      (\<exists> \<alpha>1\<in> qbs_Mx X. \<exists> \<alpha>2\<in> qbs_Mx Y.
           g = (\<lambda>r::real. (if (r \<in> S) then Inl (\<alpha>1 r) else Inr (\<alpha>2 r)))))}"
 
-
 definition copair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a + 'b) quasi_borel" (infixr "\<Oplus>\<^sub>Q" 65) where
 "copair_qbs X Y \<equiv> Abs_quasi_borel (qbs_space X <+> qbs_space Y, copair_qbs_Mx X Y)"
-
 
 text \<open> The following is an equivalent definition of @{term copair_qbs_Mx}. \<close>
 definition copair_qbs_Mx2 :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> (real => 'a + 'b) set" where
@@ -845,20 +843,20 @@ lemma PiQ_empty_Mx: "qbs_Mx (PiQ {} X) = {\<lambda>r i. undefined}"
   by(auto simp: PiQ_Mx) meson
 
 subsubsection \<open> Coproduct Spaces \<close>
-definition coprod_qbs_Mx :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> (real \<Rightarrow> 'a \<times> 'b) set" where
-"coprod_qbs_Mx I X \<equiv> { \<lambda>r. (f r, \<alpha> (f r) r) |f \<alpha>. f \<in> borel \<rightarrow>\<^sub>M count_space I \<and> (\<forall>i\<in>range f. \<alpha> i \<in> qbs_Mx (X i))}"
+definition coPiQ_Mx :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> (real \<Rightarrow> 'a \<times> 'b) set" where
+"coPiQ_Mx I X \<equiv> { \<lambda>r. (f r, \<alpha> (f r) r) |f \<alpha>. f \<in> borel \<rightarrow>\<^sub>M count_space I \<and> (\<forall>i\<in>range f. \<alpha> i \<in> qbs_Mx (X i))}"
 
-definition coprod_qbs_Mx' :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> (real \<Rightarrow> 'a \<times> 'b) set" where
-"coprod_qbs_Mx' I X \<equiv> { \<lambda>r. (f r, \<alpha> (f r) r) |f \<alpha>. f \<in> borel \<rightarrow>\<^sub>M count_space I \<and> (\<forall>i. (i \<in> range f \<or> qbs_space (X i) \<noteq> {}) \<longrightarrow> \<alpha> i \<in> qbs_Mx (X i))}"
+definition coPiQ_Mx' :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> (real \<Rightarrow> 'a \<times> 'b) set" where
+"coPiQ_Mx' I X \<equiv> { \<lambda>r. (f r, \<alpha> (f r) r) |f \<alpha>. f \<in> borel \<rightarrow>\<^sub>M count_space I \<and> (\<forall>i. (i \<in> range f \<or> qbs_space (X i) \<noteq> {}) \<longrightarrow> \<alpha> i \<in> qbs_Mx (X i))}"
 
-lemma coproduct_qbs_Mx_eq:
- "coprod_qbs_Mx I X = coprod_qbs_Mx' I X"
+lemma coPiQ_Mx_eq:
+ "coPiQ_Mx I X = coPiQ_Mx' I X"
 proof safe
   fix \<alpha>
-  assume "\<alpha>  \<in> coprod_qbs_Mx I X"
+  assume "\<alpha>  \<in> coPiQ_Mx I X"
   then obtain f \<beta> where hfb:
     "f \<in> borel \<rightarrow>\<^sub>M count_space I" "\<And>i. i \<in> range f \<Longrightarrow> \<beta> i \<in> qbs_Mx (X i)" "\<alpha> = (\<lambda>r. (f r, \<beta> (f r) r))"
-    unfolding coprod_qbs_Mx_def by blast
+    unfolding coPiQ_Mx_def by blast
   define \<beta>' where "\<beta>' \<equiv> (\<lambda>i. if i \<in> range f then \<beta> i
                               else if qbs_space (X i) \<noteq> {} then (SOME \<gamma>. \<gamma> \<in> qbs_Mx (X i))
                               else \<beta> i)"
@@ -873,60 +871,60 @@ proof safe
     thus "\<beta>' i \<in> qbs_Mx (X i)"
       by(cases "i \<in> range f") (auto simp: \<beta>'_def hfb(2) hne intro!: someI2[where a="\<lambda>r. x"])
   qed
-  show "\<alpha> \<in> coprod_qbs_Mx' I X"
-    using hfb(1,2) 1 2 \<beta>'_def by(auto simp: coprod_qbs_Mx'_def intro!: exI[where x=f] exI[where x=\<beta>'])
+  show "\<alpha> \<in> coPiQ_Mx' I X"
+    using hfb(1,2) 1 2 \<beta>'_def by(auto simp: coPiQ_Mx'_def intro!: exI[where x=f] exI[where x=\<beta>'])
 next
   fix \<alpha>
-  assume "\<alpha> \<in> coprod_qbs_Mx' I X"
+  assume "\<alpha> \<in> coPiQ_Mx' I X"
   then obtain f \<beta> where hfb:
     "f \<in> borel \<rightarrow>\<^sub>M count_space I"  "\<And>i. qbs_space (X i) \<noteq> {} \<Longrightarrow> \<beta> i \<in> qbs_Mx (X i)"
     "\<And>i. i \<in> range f \<Longrightarrow> \<beta> i \<in> qbs_Mx (X i)"  "\<alpha> = (\<lambda>r. (f r, \<beta> (f r) r))"
-    unfolding coprod_qbs_Mx'_def by blast
-  show "\<alpha> \<in> coprod_qbs_Mx I X"
-    by(auto simp: hfb(4) coprod_qbs_Mx_def intro!: hfb(1) hfb(3))
+    unfolding coPiQ_Mx'_def by blast
+  show "\<alpha> \<in> coPiQ_Mx I X"
+    by(auto simp: hfb(4) coPiQ_Mx_def intro!: hfb(1) hfb(3))
 qed
 
-definition coprod_qbs :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> ('a \<times> 'b) quasi_borel" where
-"coprod_qbs I X \<equiv> Abs_quasi_borel (SIGMA i:I. qbs_space (X i), coprod_qbs_Mx I X)"
+definition coPiQ :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> ('a \<times> 'b) quasi_borel" where
+"coPiQ I X \<equiv> Abs_quasi_borel (SIGMA i:I. qbs_space (X i), coPiQ_Mx I X)"
 
 syntax
- "_coprod_qbs" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" ("(3\<amalg>\<^sub>Q _\<in>_./ _)"  10)
+ "_coPiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" ("(3\<amalg>\<^sub>Q _\<in>_./ _)"  10)
 translations
- "\<amalg>\<^sub>Q x\<in>I. X" \<rightleftharpoons> "CONST coprod_qbs I (\<lambda>x. X)"
+ "\<amalg>\<^sub>Q x\<in>I. X" \<rightleftharpoons> "CONST coPiQ I (\<lambda>x. X)"
 
 lemma
-  shows coprod_qbs_space: "qbs_space (coprod_qbs I X) = (SIGMA i:I. qbs_space (X i))" (is ?goal1)
-    and coprod_qbs_Mx: "qbs_Mx (coprod_qbs I X) = coprod_qbs_Mx I X" (is ?goal2)
+  shows coPiQ_space: "qbs_space (coPiQ I X) = (SIGMA i:I. qbs_space (X i))" (is ?goal1)
+    and coPiQ_Mx: "qbs_Mx (coPiQ I X) = coPiQ_Mx I X" (is ?goal2)
 proof -
-  have "coprod_qbs_Mx I X \<subseteq> UNIV \<rightarrow> (SIGMA i:I. qbs_space (X i))"
-    by(fastforce simp: coprod_qbs_Mx_def dest: measurable_space qbs_Mx_to_X)
-  moreover have "qbs_closed1 (coprod_qbs_Mx I X)"
+  have "coPiQ_Mx I X \<subseteq> UNIV \<rightarrow> (SIGMA i:I. qbs_space (X i))"
+    by(fastforce simp: coPiQ_Mx_def dest: measurable_space qbs_Mx_to_X)
+  moreover have "qbs_closed1 (coPiQ_Mx I X)"
   proof(rule qbs_closed1I)
     fix \<alpha> and f :: "real \<Rightarrow> real"
-    assume "\<alpha> \<in> coprod_qbs_Mx I X"
+    assume "\<alpha> \<in> coPiQ_Mx I X"
        and 1[measurable]: "f \<in> borel \<rightarrow>\<^sub>M borel"
     then obtain \<beta> g where ha:
       "\<And>i. i \<in> range g \<Longrightarrow> \<beta> i \<in> qbs_Mx (X i)" "\<alpha> = (\<lambda>r. (g r, \<beta> (g r) r))" and [measurable]:"g \<in> borel \<rightarrow>\<^sub>M count_space I"
-      by(fastforce simp: coprod_qbs_Mx_def)
+      by(fastforce simp: coPiQ_Mx_def)
     then have "\<And>i. i \<in> range g \<Longrightarrow> \<beta> i \<circ> f \<in> qbs_Mx (X i)"
       by simp
-    thus "\<alpha> \<circ> f \<in> coprod_qbs_Mx I X"
-      unfolding coprod_qbs_Mx_def by (auto intro!: exI[where x="g \<circ> f"] exI[where x="\<lambda>i. \<beta> i \<circ> f"] simp: ha(2))
+    thus "\<alpha> \<circ> f \<in> coPiQ_Mx I X"
+      unfolding coPiQ_Mx_def by (auto intro!: exI[where x="g \<circ> f"] exI[where x="\<lambda>i. \<beta> i \<circ> f"] simp: ha(2))
   qed
-  moreover have "qbs_closed2 (SIGMA i:I. qbs_space (X i)) (coprod_qbs_Mx I X)"
+  moreover have "qbs_closed2 (SIGMA i:I. qbs_space (X i)) (coPiQ_Mx I X)"
   proof(safe intro!: qbs_closed2I)
     fix i x
     assume "i \<in> I" "x \<in> qbs_space (X i)"
-    then show "(\<lambda>r. (i,x)) \<in> coprod_qbs_Mx I X"
-      by(auto simp: coprod_qbs_Mx_def intro!: exI[where x="\<lambda>r. i"])
+    then show "(\<lambda>r. (i,x)) \<in> coPiQ_Mx I X"
+      by(auto simp: coPiQ_Mx_def intro!: exI[where x="\<lambda>r. i"])
   qed
-  moreover have "qbs_closed3 (coprod_qbs_Mx I X)"
+  moreover have "qbs_closed3 (coPiQ_Mx I X)"
   proof(rule qbs_closed3I)
     fix P :: "real \<Rightarrow> nat" and Fi
     assume h[measurable]:"P \<in> borel \<rightarrow>\<^sub>M count_space UNIV"
-             "\<And>i :: nat. Fi i \<in> coprod_qbs_Mx I X"
+             "\<And>i :: nat. Fi i \<in> coPiQ_Mx I X"
     then have "\<forall>i. \<exists>fi \<alpha>i. Fi i = (\<lambda>r. (fi r, \<alpha>i (fi r) r)) \<and> fi \<in> borel \<rightarrow>\<^sub>M count_space I \<and> (\<forall>j. (j \<in> range fi \<or> qbs_space (X j) \<noteq> {}) \<longrightarrow> \<alpha>i j \<in> qbs_Mx (X j))"
-      by(auto simp: coproduct_qbs_Mx_eq coprod_qbs_Mx'_def)
+      by(auto simp: coPiQ_Mx_eq coPiQ_Mx'_def)
     then obtain fi where
    "\<forall>i. \<exists>\<alpha>i. Fi i = (\<lambda>r. (fi i r, \<alpha>i (fi i r) r)) \<and> fi i \<in> borel \<rightarrow>\<^sub>M count_space I \<and> (\<forall>j. (j \<in> range (fi i) \<or> qbs_space (X j) \<noteq> {}) \<longrightarrow> \<alpha>i j \<in> qbs_Mx (X j))"
       by(fastforce intro!: choice)
@@ -957,32 +955,32 @@ proof -
       then show "\<alpha>' i \<in> qbs_Mx (X i)"
         by(auto simp: \<alpha>'_def h(1) intro!: qbs_closed3_dest[of P "\<lambda>j. \<alpha>i j i"])
     qed
-    ultimately show "(\<lambda>r. Fi (P r) r) \<in> coprod_qbs_Mx I X"
-      by(auto simp: 1 coprod_qbs_Mx_def intro!: exI[where x=f'])
+    ultimately show "(\<lambda>r. Fi (P r) r) \<in> coPiQ_Mx I X"
+      by(auto simp: 1 coPiQ_Mx_def intro!: exI[where x=f'])
   qed
-  ultimately have "Rep_quasi_borel (coprod_qbs I X) = (SIGMA i:I. qbs_space (X i), coprod_qbs_Mx I X)"
-    unfolding coprod_qbs_def by(fastforce intro!: Abs_quasi_borel_inverse)
+  ultimately have "Rep_quasi_borel (coPiQ I X) = (SIGMA i:I. qbs_space (X i), coPiQ_Mx I X)"
+    unfolding coPiQ_def by(fastforce intro!: Abs_quasi_borel_inverse)
   thus ?goal1 ?goal2
     by(simp_all add: qbs_space_def qbs_Mx_def)
 qed
 
-lemma coprod_qbs_MxI:
+lemma coPiQ_MxI:
   assumes "f \<in> borel \<rightarrow>\<^sub>M count_space I"
       and "\<And>i. i \<in> range f \<Longrightarrow> \<alpha> i \<in> qbs_Mx (X i)"
-    shows "(\<lambda>r. (f r, \<alpha> (f r) r)) \<in> qbs_Mx (coprod_qbs I X)"
-  using assms unfolding coprod_qbs_Mx_def coprod_qbs_Mx by blast
+    shows "(\<lambda>r. (f r, \<alpha> (f r) r)) \<in> qbs_Mx (coPiQ I X)"
+  using assms unfolding coPiQ_Mx_def coPiQ_Mx by blast
 
-lemma coprod_qbs_eqI:
+lemma coPiQ_eqI:
   assumes "\<And>i. i \<in> I \<Longrightarrow> X i = Y i"
-  shows "coprod_qbs I X = coprod_qbs I Y"
-  using assms by(auto intro!: qbs_eqI simp: coprod_qbs_Mx coprod_qbs_Mx_def) (metis UNIV_I measurable_space space_borel space_count_space)+
+  shows "coPiQ I X = coPiQ I Y"
+  using assms by(auto intro!: qbs_eqI simp: coPiQ_Mx coPiQ_Mx_def) (metis UNIV_I measurable_space space_borel space_count_space)+
 
 subsubsection \<open> List Spaces \<close>
 text \<open> We define the quasi-Borel spaces on list using the following isomorphism.
        \begin{align*}
          List(X) \cong \coprod_{n\in \mathbb{N}} \prod_{0\leq i < n} X
        \end{align*}\<close>
-definition "list_of X \<equiv> \<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X"
+(*definition "list_of X \<equiv> " *)
 definition list_nil :: "nat \<times> (nat \<Rightarrow> 'a)" where
 "list_nil \<equiv> (0, \<lambda>n. undefined)"
 definition list_cons :: "['a, nat \<times> (nat \<Rightarrow> 'a)] \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" where
@@ -999,9 +997,38 @@ fun to_list' ::  "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list
 definition to_list :: "nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list" where
 "to_list \<equiv> case_prod to_list'"
 
+lemma inj_on_to_list: "inj_on (to_list :: nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list) (SIGMA n:UNIV. PiE {..<n} A)"
+proof(safe intro!: inj_onI)
+  fix n m and x y :: "nat \<Rightarrow> 'a"
+  assume h:"to_list (n, x) = to_list (m, y)"
+  have 1:"\<And>a. length (to_list (n, a)) = n" for n
+    by(induction n) (auto simp: to_list_def)
+  show n:"n = m"
+    using 1 arg_cong[OF h,of length] by metis
+  show "x \<in> PiE {..<n} A \<Longrightarrow> y \<in> PiE {..<m} A \<Longrightarrow> x = y"
+    using h unfolding n
+  proof(induction m arbitrary: x y A)
+    case ih:(Suc m)
+    then have "to_list (m, (\<lambda>n. x (Suc n))) = to_list (m, (\<lambda>n. y (Suc n)))"
+      by(auto simp: to_list_def)
+    hence 1:"(\<lambda>n. x (Suc n)) = (\<lambda>n. y (Suc n))"
+      using ih(2-4) by(intro ih(1)[of _ "\<lambda>n. A (Suc n)"]) auto
+    show ?case
+    proof
+      fix n
+      show "x n = y n"
+      proof(cases n)
+        assume "n = 0"
+        then show "x n = y n"
+          using ih(4) by(auto simp: to_list_def)
+      qed(use fun_cong[OF 1] in auto)
+    qed
+  qed(auto simp: to_list_def)
+qed
+
 text \<open> Definition \<close>
 definition list_qbs :: "'a quasi_borel \<Rightarrow> 'a list quasi_borel" where
-"list_qbs X \<equiv> map_qbs to_list (list_of X)"
+"list_qbs X \<equiv> map_qbs to_list (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
 
 definition list_head :: "nat \<times> (nat \<Rightarrow> 'a) \<Rightarrow> 'a" where
 "list_head l = snd l 0"
@@ -1043,16 +1070,16 @@ lemma
   by(simp_all add: list_head_def list_cons_def list_tail_def)
 
 lemma list_decomp1:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   shows "l = list_nil \<or>
-         (\<exists>a l'. a \<in> qbs_space X \<and> l' \<in> qbs_space (list_of X) \<and> l = list_cons a l')"
+         (\<exists>a l'. a \<in> qbs_space X \<and> l' \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<and> l = list_cons a l')"
 proof(cases l)
   case hl:(Pair n f)
   show ?thesis
   proof(cases n)
     case 0
     then show ?thesis
-      using assms hl by (simp add: list_of_def list_nil_def coprod_qbs_space PiQ_space)
+      using assms hl by (simp add:  list_nil_def coPiQ_space PiQ_space)
   next
     case hn:(Suc n')
     define f' where "f' \<equiv> \<lambda>m. f (Suc m)"
@@ -1067,31 +1094,31 @@ proof(cases l)
           using assms hl by(cases m; fastforce simp: f'_def) 
       qed
     qed simp
-    moreover have "(n', f') \<in> qbs_space (list_of X)"
+    moreover have "(n', f') \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
     proof -
       have "\<And>x. x \<in> {..<n'} \<Longrightarrow> f' x \<in> qbs_space X"
-        using assms hl hn by(fastforce simp: f'_def list_of_def coprod_qbs_space PiQ_space)
+        using assms hl hn by(fastforce simp: f'_def coPiQ_space PiQ_space)
       moreover {
         fix x
         assume 1:"x \<notin> {..<n'}"
-        hence " f' x = undefined"
-          using hl assms hn by(auto simp: f'_def list_of_def coprod_qbs_space PiQ_space)
+        hence "f' x = undefined"
+          using hl assms hn by(auto simp: f'_def coPiQ_space PiQ_space)
       }
       ultimately show ?thesis
-        by(auto simp add: list_of_def coprod_qbs_space PiQ_space)
+        by(auto simp add: coPiQ_space PiQ_space)
     qed
     ultimately show ?thesis
-      using hl assms by(auto intro!: exI[where x="f 0"] exI[where x="(n',\<lambda>m. if m = 0 then undefined else f (Suc m))"] simp: list_cons_def list_of_def coprod_qbs_space PiQ_space)
+      using hl assms by(auto intro!: exI[where x="f 0"] exI[where x="(n',\<lambda>m. if m = 0 then undefined else f (Suc m))"] simp: list_cons_def coPiQ_space PiQ_space)
   qed
 qed
 
 lemma list_simp5:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
       and "l \<noteq> list_nil"
     shows "l = list_cons (list_head l) (list_tail l)"
 proof -
   obtain a l' where hl:
-  "a \<in> qbs_space X" "l' \<in> qbs_space (list_of X)" "l = list_cons a l'"
+  "a \<in> qbs_space X" "l' \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)" "l = list_cons a l'"
     using list_decomp1[OF assms(1)] assms(2) by blast
   hence "list_head l = a" "list_tail l = l'"
     by(simp_all add: list_simp3 list_simp4)
@@ -1100,26 +1127,26 @@ proof -
 qed
 
 lemma list_simp6:
- "list_nil \<in> qbs_space (list_of X)"
-  by (simp add: list_nil_def list_of_def coprod_qbs_space PiQ_space)
+ "list_nil \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+  by (simp add: list_nil_def coPiQ_space PiQ_space)
 
 lemma list_simp7:
   assumes "a \<in> qbs_space X"
-      and "l \<in> qbs_space (list_of X)"
-    shows "list_cons a l \<in> qbs_space (list_of X)"
-  using assms by(fastforce simp: PiE_def extensional_def list_cons_def list_of_def coprod_qbs_space PiQ_space)
+      and "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+    shows "list_cons a l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+  using assms by(fastforce simp: PiE_def extensional_def list_cons_def coPiQ_space PiQ_space)
 
 lemma list_destruct_rule:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
           "P list_nil"
-      and "\<And>a l'. a \<in> qbs_space X \<Longrightarrow> l' \<in> qbs_space (list_of X) \<Longrightarrow> P (list_cons a l')"
+      and "\<And>a l'. a \<in> qbs_space X \<Longrightarrow> l' \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Longrightarrow> P (list_cons a l')"
     shows "P l"
   by(rule disjE[OF list_decomp1[OF assms(1)]]) (use assms in auto)
 
 lemma list_induct_rule:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
           "P list_nil"
-      and "\<And>a l'. a \<in> qbs_space X \<Longrightarrow> l' \<in> qbs_space (list_of X) \<Longrightarrow> P l' \<Longrightarrow> P (list_cons a l')"
+      and "\<And>a l'. a \<in> qbs_space X \<Longrightarrow> l' \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X) \<Longrightarrow> P l' \<Longrightarrow> P (list_cons a l')"
     shows "P l"
 proof(cases l)
   case hl:(Pair n f)
@@ -1128,15 +1155,15 @@ proof(cases l)
   proof(induction n arbitrary: f l)
     case 0
     then show ?case
-      using assms(2) by (simp add: list_of_def coprod_qbs_space PiQ_space list_nil_def)
+      using assms(2) by (simp add: coPiQ_space PiQ_space list_nil_def)
   next
     case ih:(Suc n)
     then obtain a l' where hl:
-    "a \<in> qbs_space X" "l' \<in> qbs_space (list_of X)" "l = list_cons a l'"
+    "a \<in> qbs_space X" "l' \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)" "l = list_cons a l'"
       using list_decomp1 by(simp add: list_nil_def) blast
     have "P l'"
       using ih hl(3)
-      by(auto intro!: ih(1)[OF _ hl(2),of "snd l'"] simp: list_of_def coprod_qbs_space PiQ_space list_cons_def)
+      by(auto intro!: ih(1)[OF _ hl(2),of "snd l'"] simp: coPiQ_space PiQ_space list_cons_def)
     from assms(3)[OF hl(1,2) this]
     show ?case
       by(simp add: hl(3))
@@ -1147,12 +1174,12 @@ lemma to_list_simp1: "to_list list_nil = []"
   by(simp add: to_list_def list_nil_def)
 
 lemma to_list_simp2:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   shows "to_list (list_cons a l) = a # to_list l"
-  using assms by(auto simp:PiE_def to_list_def list_cons_def list_of_def coprod_qbs_space PiQ_space)
+  using assms by(auto simp:PiE_def to_list_def list_cons_def coPiQ_space PiQ_space)
 
 lemma to_list_set:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   shows "set (to_list l) \<subseteq> qbs_space X"
   by(rule list_induct_rule[OF assms]) (auto simp: to_list_simp1 to_list_simp2)
 
@@ -1161,10 +1188,10 @@ lemma from_list_length: "fst (from_list l) = length l"
 
 lemma from_list_in_list_of:
   assumes "set l \<subseteq> qbs_space X"
-  shows "from_list l \<in> qbs_space (list_of X)"
-  using assms by(induction l) (auto simp: PiE_def extensional_def Pi_def list_of_def coprod_qbs_space PiQ_space list_nil_def list_cons_def)
+  shows "from_list l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
+  using assms by(induction l) (auto simp: PiE_def extensional_def Pi_def coPiQ_space PiQ_space list_nil_def list_cons_def)
 
-lemma from_list_in_list_of': "from_list l \<in> qbs_space (list_of (Abs_quasi_borel (UNIV,UNIV)))"
+lemma from_list_in_list_of': "from_list l \<in> qbs_space ((\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. Abs_quasi_borel (UNIV,UNIV)))"
 proof -
   have "set l \<subseteq> qbs_space (Abs_quasi_borel (UNIV,UNIV))"
     by(simp add: qbs_space_def Abs_quasi_borel_inverse[of "(UNIV,UNIV)",simplified is_quasi_borel_def qbs_closed1_def qbs_closed2_def qbs_closed3_def,simplified])
@@ -1174,7 +1201,7 @@ qed
 
 lemma list_cons_in_list_of:
   assumes "set (a#l) \<subseteq> qbs_space X"
-  shows "list_cons a (from_list l) \<in> qbs_space (list_of X)"
+  shows "list_cons a (from_list l) \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   using from_list_in_list_of[OF assms] by simp
 
 lemma from_list_to_list_ident:
@@ -1182,11 +1209,11 @@ lemma from_list_to_list_ident:
   by(induction l) (simp add: to_list_def list_nil_def,simp add: to_list_simp2[OF from_list_in_list_of'])
 
 lemma to_list_from_list_ident:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   shows "from_list (to_list l) = l"
 proof(rule list_induct_rule[OF assms])
   fix a l'
-  assume h: "l' \<in> qbs_space (list_of X)"
+  assume h: "l' \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
      and ih:"from_list (to_list l') = l'"
   show "from_list (to_list (list_cons a l')) = list_cons a l'"
     by(auto simp add: to_list_simp2[OF h] ih[simplified])
@@ -1200,12 +1227,12 @@ lemma rec_list'_simp1:
   by(simp add: rec_list'_def to_list_simp1)
 
 lemma rec_list'_simp2:
-  assumes "l \<in> qbs_space (list_of X)"
+  assumes "l \<in> qbs_space (\<amalg>\<^sub>Q n\<in>(UNIV :: nat set).\<Pi>\<^sub>Q i\<in>{..<n}. X)"
   shows "rec_list' t f (list_cons x l) = f x l (rec_list' t f l)"
   by(simp add: rec_list'_def to_list_simp2[OF assms] to_list_from_list_ident[OF assms,simplified])
 
-lemma list_qbs_space: "qbs_space (list_qbs X) = {l. set l \<subseteq> qbs_space X}"
-  using to_list_set by(auto simp: list_qbs_def map_qbs_space image_def from_list_to_list_ident from_list_in_list_of intro!: bexI[where x="from_list _"])
+lemma list_qbs_space: "qbs_space (list_qbs X) = lists (qbs_space X)"
+  using to_list_set by(auto simp: list_qbs_def map_qbs_space image_def from_list_to_list_ident from_list_in_list_of subset_iff intro!: bexI[where x="from_list _"])
 
 subsubsection \<open> Option Spaces \<close>
 text \<open> The option spaces is defined using the following isomorphism.

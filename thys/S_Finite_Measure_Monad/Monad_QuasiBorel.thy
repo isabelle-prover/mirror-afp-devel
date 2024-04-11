@@ -2261,6 +2261,18 @@ proof -
   finally show ?thesis .
 qed
 
+lemma qbs_l_bind_qbsP:
+  assumes [qbs]: "s \<in> qbs_space (monadP_qbs X)" "f \<in> X \<rightarrow>\<^sub>Q monadP_qbs Y"
+  shows "qbs_l (s \<bind> f) = qbs_l s \<bind> qbs_l \<circ> f"
+proof -
+  have "qbs_l (s \<bind> f) = qbs_l s \<bind>\<^sub>k qbs_l \<circ> f"
+    by(auto intro!: qbs_l_bind_qbs[where X=X and Y=Y] qbs_space_monadPM qbs_morphism_monadPD)
+  also have "... = qbs_l s \<bind> qbs_l \<circ> f"
+    using qbs_l_measurable_prob qbs_morphism_imp_measurable[OF assms(2)]
+    by(auto intro!: bind_kernel_bind[where N="qbs_to_measure Y"] measurable_prob_algebraD simp: measurable_qbs_l'[OF qbs_space_monadPM[OF assms(1)]])
+  finally show ?thesis .
+qed
+
 lemma qbs_integrable_return[simp, intro]:
   assumes "x \<in> qbs_space X" "f \<in> X \<rightarrow>\<^sub>Q qbs_borel"
   shows "qbs_integrable (return_qbs X x) f"
@@ -2578,7 +2590,6 @@ proof -
   show ?thesis
     by(simp add: qbs_nn_integral_const_prob[OF in_space_monadP] qbs_nn_integral_Fubini_snd[OF in_space_monadM assms(1),symmetric] hp(1))
 qed
-
 
 context
 begin
