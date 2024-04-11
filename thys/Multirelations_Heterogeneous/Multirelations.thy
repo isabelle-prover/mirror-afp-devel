@@ -6012,8 +6012,103 @@ proof -
     by (smt abox_test adia_test assms sup_commute test_galois_1 test_implication_closed test_shunting)
 qed
 
-lemma "(s_id \<union> p_id) * R = R \<union> p_id"
+lemma s_p_id_sp:
+  "(s_id \<union> p_id) * R = R \<union> p_id"
   by (simp add: s_prod_distr)
+
+subsection \<open>Propositional Hoare logic\<close>
+
+abbreviation hoare :: "('a,'a) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> bool" ("_\<lbrace>_\<rbrace>_" [50,60,50] 95)
+  where "p\<lbrace>R\<rbrace>q \<equiv> p \<subseteq> |R]q"
+
+abbreviation if_then_else :: "('a,'a) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel"
+  where "if_then_else p R S \<equiv> p * R \<union> \<wrong> p * S"
+
+abbreviation while_do :: "('a,'a) mrel \<Rightarrow> ('a,'a) mrel \<Rightarrow> ('a,'a) mrel"
+  where "while_do p R \<equiv> (p * R)\<^sup>* * \<wrong> p"
+
+lemma hoare_skip:
+  assumes "test p"
+    shows "p\<lbrace>1\<rbrace>p"
+  by (simp add: assms sp_unit_abox)
+
+lemma hoare_cons:
+  assumes "test s"
+      and "r \<subseteq> p"
+      and "q \<subseteq> s"
+      and "p\<lbrace>R\<rbrace>q"
+    shows "r\<lbrace>R\<rbrace>s"
+  by (meson abox_right_isotone assms order_trans)
+
+lemma hoare_seq:
+  assumes "test q"
+      and "test r"
+      and "p\<lbrace>R\<rbrace>q"
+      and "q\<lbrace>S\<rbrace>r"
+    shows "p\<lbrace>R*S\<rbrace>r"
+proof -
+  have "p \<subseteq> |R]q"
+    by (simp add: assms(3))
+  also have "... \<subseteq> |R]|S]r"
+    by (simp add: abox_right_isotone abox_test assms(1,2,4))
+  also have "... \<subseteq> |R*S]r"
+    by (simp add: abox_sp_3 assms(2))
+  finally show ?thesis
+    by simp
+qed
+
+lemma hoare_if:
+  assumes "test p"
+      and "test q"
+      and "test r"
+      and "(p*q)\<lbrace>R\<rbrace>r"
+      and "((\<wrong> p)*q)\<lbrace>S\<rbrace>r"
+  shows "q\<lbrace>if_then_else p R S\<rbrace>r"
+  by (smt (verit, ccfv_threshold) abox_left_dist_ou abox_test_sp assms inf.absorb_iff2 inf_le2 sp_oi_subdist test_galois_1 test_sp_idempotent)
+
+lemma hoare_while:
+  assumes "test p"
+      and "test q"
+      and "(p*q)\<lbrace>R\<rbrace>q"
+    shows "q\<lbrace>while_do p R\<rbrace>(q*(\<wrong> p))"
+proof -
+  have "q \<subseteq> p \<rightarrow> |R]q"
+    by (meson assms test_galois_1)
+  also have "... = |p]|R]q"
+    by (simp add: abox_test assms(1,2) test_abox)
+  also have "... \<subseteq> |p*R]q"
+    by (simp add: abox_sp_3 assms(2))
+  finally have "q \<subseteq> |(p*R)\<^sup>*]q"
+    by (meson abox_star_induct assms(2))
+  also have "... \<subseteq> |(p*R)\<^sup>*](q \<union> p)"
+    by (simp add: abox_right_isotone assms(1,2))
+  also have "... = |(p*R)\<^sup>*](\<wrong>p \<rightarrow> (q*(\<wrong> p)))"
+    by (smt (verit, best) Un_assoc Un_upper1 assms(1,2) inf_commute sup.commute sup.order_iff test_double_complement test_galois_1 test_s_prod_is_meet)
+  also have "... = |(p*R)\<^sup>*]|\<wrong>p](q*(\<wrong> p))"
+    by (simp add: assms(2) test_abox test_shunting)
+  also have "... \<subseteq> |while_do p R](q*(\<wrong> p))"
+    by (simp add: abox_sp_3 assms(2) test_galois_1)
+  finally show ?thesis
+    by simp
+qed
+
+lemma hoare_par:
+  assumes "test q"
+      and "p\<lbrace>R\<rbrace>q"
+      and "p\<lbrace>S\<rbrace>q"
+    shows "p\<lbrace>R \<union>\<union> S\<rbrace>q"
+proof -
+  have 1: "p \<subseteq> |R\<rangle>1 \<rightarrow> |S]q"
+    by (simp add: assms(3) le_supI2)
+  have "p \<subseteq> |S\<rangle>1 \<rightarrow> |R]q"
+    by (simp add: assms(2) le_supI2)
+  hence "p \<subseteq> ( |R\<rangle>1 \<rightarrow> |S]q) \<inter> ( |S\<rangle>1 \<rightarrow> |R]q)"
+    using 1 by simp
+  also have "... = |R \<union>\<union> S]q"
+    by (smt (verit) abox_dist_iu_3 abox_test assms(1) inf.orderE test_implication_closed test_oi_closed test_s_prod_is_meet)
+  finally show ?thesis
+    by simp
+qed
 
 section \<open>Counterexamples\<close>
 
