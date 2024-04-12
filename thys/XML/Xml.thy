@@ -574,19 +574,19 @@ proof
 qed simp
 
 
-definition "comment_error = Code.abort (STR ''comment not terminated'') (\<lambda> _. '''')" 
-definition "comment_error_hyphen = Code.abort (STR ''double hyphen within comment'') (\<lambda> _. '''')" 
+definition "comment_error (x :: unit) = Code.abort (STR ''comment not terminated'') (\<lambda> _. Nil :: string)" 
+definition "comment_error_hyphen (x :: unit) = Code.abort (STR ''double hyphen within comment'') (\<lambda> _. Nil :: string)" 
 
 fun rc_aux where "rc_aux False (c # cs) =
     (if c = CHR ''<'' \<and> take 3 cs = ''!--'' then rc_aux True (drop 3 cs)
     else c # rc_aux False cs)" |
   "rc_aux True (c # cs) =
     (if c = CHR ''-'' \<and> take 1 cs = ''-'' then 
-       if take 2 cs = ''-'' then comment_error else if take 2 cs = ''->'' then rc_aux False (drop 2 cs)
-       else comment_error_hyphen
+       if take 2 cs = ''-'' then comment_error () else if take 2 cs = ''->'' then rc_aux False (drop 2 cs)
+       else comment_error_hyphen ()
     else rc_aux True cs)" |
   "rc_aux False [] = []" |
-  "rc_aux True [] = comment_error"
+  "rc_aux True [] = comment_error ()"
 
 definition "remove_comments xs = rc_aux False xs" 
 
@@ -623,11 +623,11 @@ lemma rc_open_close_simp[code]:
   "rc_open_4 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_close_1 cs else if ic = 60 then c # CHR ''!'' # CHR ''-'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # CHR ''-'' # c # rc_open_1 cs)" 
   "rc_open_4 [] = ''<!-''" 
   "rc_close_1 (c # cs) = (if integer_of_char c = 45 then rc_close_2 cs else rc_close_1 cs)"
-  "rc_close_1 [] = comment_error" 
+  "rc_close_1 [] = comment_error ()" 
   "rc_close_2 (c # cs) = (if integer_of_char c = 45 then rc_close_3 cs else rc_close_1 cs)"
-  "rc_close_2 [] = comment_error" 
-  "rc_close_3 (c # cs) = (if integer_of_char c = 62 then rc_open_1 cs else comment_error_hyphen)"
-  "rc_close_3 [] = comment_error" 
+  "rc_close_2 [] = comment_error ()" 
+  "rc_close_3 (c # cs) = (if integer_of_char c = 62 then rc_open_1 cs else comment_error_hyphen ())"
+  "rc_close_3 [] = comment_error ()" 
   unfolding 
     rc_open_1_def 
     rc_open_2_def
