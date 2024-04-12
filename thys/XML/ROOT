@@ -7,5 +7,6 @@ session XML = "HOL-Library" +
     Show
   theories
     Xmlt
+    Example_Application
   document_files
     "root.tex"
