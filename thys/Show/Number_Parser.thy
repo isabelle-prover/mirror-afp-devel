@@ -113,21 +113,20 @@ definition int_of_string :: "string \<Rightarrow> String.literal + int"
     if safe_head s = Some (CHR ''-'') then sbind (nat_of_string (tl s)) (\<lambda> n. Inr (- int n))
     else sbind (nat_of_string s) (\<lambda> n. Inr (int n))"
 
-definition digit_chars where "digit_chars = 
-  {CHR ''1'', CHR ''2'', CHR ''3'', CHR ''4'', CHR ''5'', CHR ''6'',
-   CHR ''7'', CHR ''8'', CHR ''9'', CHR ''0''}" 
+definition digits :: "char set" where
+  "digits = set (''0123456789'')" 
 
-lemma range_string_of_digit: "set (string_of_digit x) \<subseteq> digit_chars" 
-  unfolding digit_chars_def string_of_digit_def by auto
+lemma set_string_of_digit: "set (string_of_digit x) \<subseteq> digits" 
+  unfolding digits_def string_of_digit_def by auto
 
-lemma range_showsp_nat: "set (showsp_nat p n s) \<subseteq> digit_chars \<union> set s" 
+lemma range_showsp_nat: "set (showsp_nat p n s) \<subseteq> digits \<union> set s" 
 proof (induct p n arbitrary: s rule: showsp_nat.induct)
   case (1 p n s)
-  then show ?case using range_string_of_digit[of n] range_string_of_digit[of "n mod 10"]
+  then show ?case using set_string_of_digit[of n] set_string_of_digit[of "n mod 10"]
     by (auto simp: showsp_nat.simps[of p n] shows_string_def) fastforce
 qed
 
-lemma range_show_nat: "set (show (n :: nat)) \<subseteq> digit_chars" 
+lemma set_show_nat: "set (show (n :: nat)) \<subseteq> digits" 
   using range_showsp_nat[of 0 n Nil] unfolding shows_prec_nat_def by auto
 
 lemma int_of_string_show[simp]: "int_of_string (show x) = Inr x" 
@@ -143,8 +142,8 @@ proof -
     thus ?thesis unfolding int_of_string_def sbind_def by simp
   next
     case False
-    from range_show_nat have "set (show (nat x)) \<subseteq> digit_chars" .
-    hence "CHR ''-'' \<notin> set (show (nat x))" unfolding digit_chars_def by auto
+    from set_show_nat have "set (show (nat x)) \<subseteq> digits" .
+    hence "CHR ''-'' \<notin> set (show (nat x))" unfolding digits_def by auto
     hence "safe_head (show (nat x)) \<noteq> Some CHR ''-''" 
       by (cases "show (nat x)", auto) 
     thus ?thesis using False
