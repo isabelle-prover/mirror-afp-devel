@@ -31,6 +31,7 @@ thiemann = "thiemann_email"
 2015-04-10 = """
 Moved development for old-style datatypes into subdirectory
 \"Old_Datatype\".<br>"""
+2024-04-12 = "Added show-class based on string literals, added parsers for nat and int, added injectivity proofs.<br>"
 
 [extra]
 
