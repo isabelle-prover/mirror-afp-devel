@@ -1321,6 +1321,75 @@ proof -
     by(auto intro!: measurable_isomorphic_trans[OF measurable_isomorphic_sym[OF uncountable_isomorphic_to_Hilbert_cube[OF assms]] r.uncountable_isomorphic_to_Hilbert_cube] simp: uncountable_UNIV_real)
 qed
 
+lemma(in standard_borel) isomorphic_subset_real:
+  assumes "A \<in> sets (borel :: real measure)" "uncountable A"
+  obtains B where "B \<in> sets borel" "B \<subseteq> A" "M measurable_isomorphic restrict_space borel B"
+proof(cases "countable (space M)")
+  assume count:"countable (space M)"
+  have "\<exists>B\<subseteq>A. space M \<approx> B"
+  proof(cases "finite (space M)")
+    assume fin:"finite (space M)"
+    then obtain B where B:"card B = card (space M)" "finite B" "B \<subseteq> A"
+      by (meson assms(2) countable_finite infinite_arbitrarily_large)
+    thus ?thesis
+      using fin by(auto intro!: exI[where x=B] simp:eqpoll_iff_card)
+  next
+    assume inf:"infinite (space M)"
+    obtain B where B: "B \<subseteq> A" "countable B" "infinite B"
+      using assms(2) countable_finite infinite_countable_subset' that by auto
+    thus ?thesis
+      using bij_betw_from_nat_into[OF count inf] bij_betw_from_nat_into[OF B(2,3)]
+      by (meson eqpoll_def eqpoll_sym eqpoll_trans)
+  qed
+  then obtain B where B:"B \<subseteq> A" "space M \<approx> B" "countable B"
+    by (metis countable_eqpoll eqpoll_sym count)
+  then obtain f where f:"bij_betw f (space M) B"
+    using eqpoll_def by blast
+  have 1:"C \<in> sets borel" if C:"C \<subseteq> B" for C
+  proof -
+    have "C = (\<Union>c\<in>C. {c})"
+      by auto
+    also have "... \<in> sets borel"
+      using B C by(intro sets.countable_UN') (auto simp: countable_subset)
+    finally show ?thesis .
+  qed
+  have 2:"sets M = sets (count_space (space M))"
+    by (simp add: countable_discrete_space count)
+  have 3:"sets (restrict_space borel B) = sets (count_space B)"
+    using 1 by(auto simp: sets_restrict_space)
+  have [simp]:"measurable M (restrict_space borel B) = measurable (count_space (space M)) (count_space B)"
+    "measurable (restrict_space borel B) M = measurable (count_space B) (count_space (space M))"
+    using 2 3 by(auto intro!: measurable_cong_sets)
+  have "M measurable_isomorphic restrict_space borel B"
+    using bij_betw_the_inv_into[OF f] f by(auto simp: measurable_isomorphic_def measurable_isomorphic_map_def space_restrict_space intro!: exI[where x=f] dest: bij_betwE)
+  with 1 B that show ?thesis
+    by blast
+next
+  assume "uncountable (space M)"
+  then have "M measurable_isomorphic (borel :: real measure)"
+    using uncountable_isomorphic_to_real by blast
+  moreover have "restrict_space borel A measurable_isomorphic (borel :: real measure)"
+    by(auto intro!: standard_borel.uncountable_isomorphic_to_real standard_borel.standard_borel_restrict_space[OF standard_borel_ne.standard_borel] simp: assms space_restrict_space)
+  ultimately have "M measurable_isomorphic restrict_space borel A"
+    using measurable_isomorphic_sym measurable_isomorphic_trans by blast
+  with assms(1) that show ?thesis
+    by blast
+qed
+
+lemma(in standard_borel) countable_isomorphic_to_subset_real:
+  assumes "countable (space M)"
+  obtains A :: "real set"
+  where "countable A" "A \<in> sets borel" "M measurable_isomorphic restrict_space borel A"
+proof -
+  obtain A :: "real set" where A:"A \<in> sets borel" "M measurable_isomorphic restrict_space borel A"
+    using isomorphic_subset_real[of UNIV] uncountable_UNIV_real by auto
+  moreover have "countable A"
+    using measurable_isomorphic_cardinality_eq[OF A(2)] assms(1)
+    by(simp add: space_restrict_space countable_eqpoll[OF _ eqpoll_sym])
+  ultimately show ?thesis
+    using that by blast
+qed
+
 theorem Borel_isomorphism_theorem:
   assumes "standard_borel M" "standard_borel N"
   shows "space M \<approx> space N \<longleftrightarrow> M measurable_isomorphic N"
@@ -1432,29 +1501,6 @@ next
   show ?thesis
     unfolding 1
     by(rule someI2[of "measurable_isomorphic_map M (borel :: real measure)" f,OF f],simp add: measurable_isomorphic_map_def)
-qed
-
-lemma countable_isomorphic_to_subset_real:
-  assumes "countable (space M)"
-  obtains A :: "real set"
-  where "countable A" "A \<in> sets borel" "M measurable_isomorphic (restrict_space borel A)"
-proof(cases "space M = {}")
-  case True
-  then show ?thesis
-    by (meson countable_empty measurable_isomorphic_empty sets.empty_sets space_restrict_space2 that)
-next
-  case nin:False
-  define A where "A \<equiv> to_real ` (space M)"
-  have "countable A" "A \<in> sets borel" "M measurable_isomorphic (restrict_space borel A)"
-  proof -
-    show "countable A" "A \<in> sets borel"
-      using assms(1) standard_borel.countable_sets[of borel A] standard_borel_ne_borel by(auto simp: A_def standard_borel_ne_def)
-    show "M measurable_isomorphic restrict_space borel A"
-      using from_real_to_real A_def \<open>A \<in> sets borel\<close>
-      by(auto intro!: measurable_isomorphic_byWitness[OF measurable_restrict_space2[OF _ to_real_measurable] _ measurable_restrict_space1[OF from_real_measurable'[OF nin]]])
-  qed
-  with that show ?thesis
-    by auto
 qed
 
 lemma to_real_from_real:
