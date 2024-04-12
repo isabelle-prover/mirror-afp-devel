@@ -1,7 +1,10 @@
 section \<open>Language and Semantics\<close>
 
-text \<open>In this file, we formalize the programming language from section III, and the extended states
-and semantics from section IV of the paper~\cite{HyperHoareLogic}. We also prove the useful properties described by Lemma 1.\<close>
+text \<open>In this file, we formalize concepts from section 3:
+- Program states and programming language (definition 1)
+- Big-step semantics (figure 2)
+- Extended states (definition 2)
+- Extended semantics (definition 4) and some useful properties (lemma 1)\<close>
 
 theory Language
   imports Main
@@ -13,20 +16,18 @@ text \<open>Definition 1\<close>
 
 type_synonym ('var, 'val) pstate = "'var \<Rightarrow> 'val"
 
-text \<open>Definition 2\<close>
-
 type_synonym ('var, 'val) bexp = "('var, 'val) pstate \<Rightarrow> bool"
 type_synonym ('var, 'val) exp = "('var, 'val) pstate \<Rightarrow> 'val"
 
 
 datatype ('var, 'val) stmt = 
   Assign 'var "('var, 'val) exp"
-  | Seq "('var, 'val) stmt" "('var, 'val) stmt"
-  | If "('var, 'val) stmt" "('var, 'val) stmt"
+  | Seq "('var, 'val) stmt" "('var, 'val) stmt"  (infixl ";;" 60)
+  | If "('var, 'val) stmt" "('var, 'val) stmt"                    \<comment>\<open>Non-deterministic choice\<close>
   | Skip
-  | Havoc 'var
+  | Havoc 'var                                                    \<comment>\<open>Non-deterministic assignment\<close>
   | Assume "('var, 'val) bexp"
-  | While "('var, 'val) stmt"
+  | While "('var, 'val) stmt"                                     \<comment>\<open>Non-deterministic loop\<close>
 
 subsection Semantics
 
@@ -54,12 +55,12 @@ inductive_cases single_sem_Assign_elim[elim!]: "\<langle>Assign x e, \<sigma>\<r
 inductive_cases single_sem_Havoc_elim[elim!]: "\<langle>Havoc x, \<sigma>\<rangle> \<rightarrow> \<sigma>'"
 
 
-section \<open>Extended States and Extended Semantics\<close>
+subsection \<open>Extended States and Extended Semantics\<close>
 
-text \<open>Definition 3\<close>
+text \<open>Definition 2: Extended states\<close>
 type_synonym ('lvar, 'lval, 'pvar, 'pval) state = "('lvar \<Rightarrow> 'lval) \<times> ('pvar, 'pval) pstate"
 
-text \<open>Definition 5\<close>
+text \<open>Definition 4: Extended semantics\<close>
 definition sem :: "('pvar, 'pval) stmt \<Rightarrow> ('lvar, 'lval, 'pvar, 'pval) state set \<Rightarrow> ('lvar, 'lval, 'pvar, 'pval) state set" where
   "sem C S = { (l, \<sigma>') |\<sigma>' \<sigma> l. (l, \<sigma>) \<in> S \<and> \<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>' }"
 
@@ -76,7 +77,7 @@ next
     by (metis (mono_tags, lifting) CollectI prod.collapse sem_def)
 qed
 
-text \<open>Useful properties\<close>
+text \<open>Lemma 1: Useful properties of the extended semantics\<close>
 
 lemma sem_seq:
   "sem (Seq C1 C2) S = sem C2 (sem C1 S)" (is "?A = ?B")
@@ -337,5 +338,19 @@ proof
     by (simp add: SUP_least Sup_upper sem_monotonic)
 qed
 
+fun written_vars where
+  "written_vars (Assign x _) = {x}"
+| "written_vars (Havoc x) = {x}"
+| "written_vars (C1;; C2) = written_vars C1 \<union> written_vars C2"
+| "written_vars (If C1 C2) = written_vars C1 \<union> written_vars C2"
+| "written_vars (While C) = written_vars C"
+| "written_vars _ = {}"
+
+lemma written_vars_not_modified:
+  assumes "single_sem C \<phi> \<phi>'"
+    and "x \<notin> written_vars C"
+    shows "\<phi> x = \<phi>' x"
+  using assms
+  by (induct rule: single_sem.induct) auto
 
 end

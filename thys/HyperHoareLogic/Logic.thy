@@ -1,18 +1,26 @@
 section \<open>Hyper Hoare Logic\<close>
 
-text \<open>In this file, we define concepts from the logic (section IV): hyper-assertions, hyper-triples,
-and the syntactic rules. We also prove soundness (theorem 1), completeness (theorem 2), the ability
-to disprove hyper-triples in the logic (theorem 4), and the synchronized if rule from appendix C.\<close>
+text \<open>This file contains technical results from sections 3 and 5:
+- Hyper-assertions (definition 3)
+- Hyper-triples (definition 5)
+- Core rules of Hyper Hoare Logic (figure 2)
+- Soundness of the core rules (theorem 1)
+- Completeness of the core rules (theorem 2)
+- Ability to disprove hyper-triples (theorem 5)\<close>
 
 theory Logic
   imports Language
 begin
 
-text \<open>Definition 4\<close>
+text \<open>Definition 3\<close>
 type_synonym 'a hyperassertion = "('a set \<Rightarrow> bool)"
 
 definition entails where
   "entails A B \<longleftrightarrow> (\<forall>S. A S \<longrightarrow> B S)"
+
+lemma entails_refl:
+  "entails A A"
+  by (simp add: entails_def)
 
 lemma entailsI:
   assumes "\<And>S. A S \<Longrightarrow> B S"
@@ -98,6 +106,15 @@ lemma closed_by_union_under:
 definition conj where
   "conj P Q S \<longleftrightarrow> P S \<and> Q S"
 
+lemma entail_conj:
+  assumes "entails A B"
+  shows "entails A (conj A B)"
+  by (metis (full_types) assms conj_def entails_def)
+
+lemma entail_conj_weaken:
+  "entails (conj A B) A"
+  by (simp add: conj_def entails_def)
+
 definition disj where
   "disj P Q S \<longleftrightarrow> P S \<or> Q S"
 
@@ -123,14 +140,18 @@ lemma under_inter:
   "entails (conj (under_approx P) (under_approx Q)) (under_approx (P \<inter> Q))"
   by (simp add: conj_def entails_def le_infI1 under_approx_def)
 
-
-text \<open>Notation 1\<close>
+text \<open>Definition 6: Operator \<open>\<otimes>\<close>\<close>
 definition join :: "'a hyperassertion \<Rightarrow> 'a hyperassertion \<Rightarrow> 'a hyperassertion" where
   "join A B S \<longleftrightarrow> (\<exists>SA SB. A SA \<and> B SB \<and> S = SA \<union> SB)"
 
 definition general_join :: "('b \<Rightarrow> 'a hyperassertion) \<Rightarrow> 'a hyperassertion" where
   "general_join f S \<longleftrightarrow> (\<exists>F. S = (\<Union>x. F x) \<and> (\<forall>x. f x (F x)))"
 
+lemma general_joinI:
+  assumes "S = (\<Union>x. F x)"
+      and "\<And>x. f x (F x)"
+    shows "general_join f S"
+  using assms(1) assms(2) general_join_def by blast
 
 lemma join_closed_by_union:
   assumes "closed_by_union Q"
@@ -154,7 +175,7 @@ proof (rule entailsI)
 qed
 
 
-text \<open>Notation 2\<close>
+text \<open>Definition 7: Operator \<open>\<Otimes>\<close> (for \<open>x \<in> X\<close>)\<close>
 definition natural_partition where
   "natural_partition I S \<longleftrightarrow> (\<exists>F. S = (\<Union>n. F n) \<and> (\<forall>n. I n (F n)))"
 
@@ -172,7 +193,7 @@ lemma natural_partitionE:
 
 subsection \<open>Rules of the Logic\<close>
 
-text \<open>Rules from figure 3\<close>
+text \<open>Core rules from figure 2\<close>
 
 inductive syntactic_HHT ::
  "(('lvar, 'lval, 'pvar, 'pval) state hyperassertion) \<Rightarrow> ('pvar, 'pval) stmt \<Rightarrow> (('lvar, 'lval, 'pvar, 'pval) state hyperassertion) \<Rightarrow> bool"
@@ -190,7 +211,7 @@ inductive syntactic_HHT ::
 
 subsection \<open>Soundness\<close>
 
-text \<open>Definition 6: Hyper-Triples\<close>
+text \<open>Definition 5: Hyper-Triples\<close>
 definition hyper_hoare_triple ("\<Turnstile> {_} _ {_}" [51,0,0] 81) where
   "\<Turnstile> {P} C {Q} \<longleftrightarrow> (\<forall>S. P S \<longrightarrow> Q (sem C S))"
 
@@ -318,6 +339,22 @@ next
     by (simp add: Suc.hyps Suc.prems(1))
 qed (auto)
 
+lemma indexed_invariant_then_power_bounded:
+  assumes "\<And>m. m < n \<Longrightarrow> hyper_hoare_triple (I m) C (I (Suc m))"
+      and "I 0 S"
+  shows "I n (iterate_sem n C S)"
+  using assms
+proof (induct n arbitrary: S)
+next
+  case (Suc n)
+  then have "I n (iterate_sem n C S)"
+    using less_Suc_eq by presburger
+  then have "I (Suc n) (sem C (iterate_sem n C S))"
+    using Suc.prems(1) hyper_hoare_tripleE by blast
+  then show ?case
+    by (simp add: Suc.hyps Suc.prems(1))
+qed (auto)
+
 lemma while_rule:
   assumes "\<And>n. hyper_hoare_triple (I n) C (I (Suc n))"
   shows "hyper_hoare_triple (I 0) (While C) (natural_partition I)"
@@ -332,144 +369,10 @@ proof (rule hyper_hoare_tripleI)
   qed
 qed
 
-
-text \<open>Additional rules\<close>
-
-lemma empty_pre:
-  "hyper_hoare_triple (\<lambda>_. False) C QQ"
-  by (simp add: hyper_hoare_triple_def)
-
-lemma full_post:
-  "hyper_hoare_triple P C (\<lambda>_. True)"
-  by (simp add: hyper_hoare_triple_def)
-
-
-lemma rule_join:
-  assumes "\<Turnstile> {P} C {Q}"
-      and "hyper_hoare_triple P' C Q'"
-    shows "hyper_hoare_triple (join P P') C (join Q Q')"
-proof (rule hyper_hoare_tripleI)
-  fix S assume asm0: "join P P' S"
-  then obtain S1 S2 where "S = S1 \<union> S2" "P S1" "P' S2"
-    by (metis join_def)
-  then have "sem C S = sem C S1 \<union> sem C S2"
-    using sem_union by auto
-  then show "join Q Q' (sem C S)"
-    by (metis \<open>P S1\<close> \<open>P' S2\<close> assms(1) assms(2) hyper_hoare_tripleE join_def)
-qed
-
-lemma rule_general_join:
-  assumes "\<And>x. \<Turnstile> {P x} C {Q x}"
-  shows "hyper_hoare_triple (general_join P) C (general_join Q)"
-proof (rule hyper_hoare_tripleI)
-  fix S assume "general_join P S"
-  then obtain F where asm0: "S = (\<Union>x. F x)" "\<And>x. P x (F x)"
-    by (meson general_join_def)
-  have "sem C S = (\<Union>x. sem C (F x))"
-    by (simp add: asm0(1) sem_split_general)
-  moreover have "\<And>x. Q x (sem C (F x))"
-    using asm0(2) assms hyper_hoare_tripleE by blast
-  ultimately show "general_join Q (sem C S)"
-    by (metis general_join_def)
-qed
-
-lemma rule_conj:
-  assumes "\<Turnstile> {P} C {Q}"
-      and "hyper_hoare_triple P' C Q'"
-    shows "hyper_hoare_triple (conj P P') C (conj Q Q')"
-proof (rule hyper_hoare_tripleI)
-  fix S assume "Logic.conj P P' S"
-  then show "Logic.conj Q Q' (sem C S)"
-    by (metis assms(1) assms(2) conj_def hyper_hoare_tripleE)
-qed
-
-text \<open>Generalization\<close>
-
-lemma rule_forall:
-  assumes "\<And>x. \<Turnstile> {P x} C {Q x}"
-  shows "hyper_hoare_triple (forall P) C (forall Q)"
-  by (metis assms forall_def hyper_hoare_triple_def)
-
-lemma rule_disj:
-  assumes "\<Turnstile> {P} C {Q}"
-      and "\<Turnstile> {P'} C {Q'}"
-    shows "hyper_hoare_triple (disj P P') C (disj Q Q')"
-  by (metis assms(1) assms(2) disj_def hyper_hoare_triple_def)
-
-text \<open>Generalization\<close>
-
 lemma rule_exists:
   assumes "\<And>x. \<Turnstile> {P x} C {Q x}"
   shows "\<Turnstile> {exists P} C {exists Q}"
   by (metis assms exists_def hyper_hoare_triple_def)
-
-corollary variant_if_rule:
-  assumes "hyper_hoare_triple P C1 Q"
-      and "hyper_hoare_triple P C2 Q"
-      and "closed_by_union Q"
-    shows "hyper_hoare_triple P (If C1 C2) Q"
-  by (metis assms(1) assms(2) assms(3) if_rule join_closed_by_union)
-
-
-text \<open>Simplifying the rule\<close>
-
-definition stable_by_infinite_union :: "'a hyperassertion \<Rightarrow> bool" where
-  "stable_by_infinite_union I \<longleftrightarrow> (\<forall>F. (\<forall>S \<in> F. I S) \<longrightarrow> I (\<Union>S \<in> F. S))"
-
-lemma stable_by_infinite_unionE:
-  assumes "stable_by_infinite_union I"
-      and "\<And>S. S \<in> F \<Longrightarrow> I S"
-    shows "I (\<Union>S \<in> F. S)"
-  using assms(1) assms(2) stable_by_infinite_union_def by blast
-
-lemma stable_by_union_and_constant_then_I:
-  assumes "\<And>n. I n = I'"
-      and "stable_by_infinite_union I'"
-    shows "natural_partition I = I'"
-proof (rule ext)
-  fix S show "natural_partition I S = I' S"
-  proof
-    show "I' S \<Longrightarrow> natural_partition I S"
-    proof -
-      assume "I' S"
-      show "natural_partition I S"
-      proof (rule natural_partitionI)
-        show "S = \<Union> (range (\<lambda>n. S))"
-          by simp
-        fix n show "I n S"
-          by (simp add: \<open>I' S\<close> assms(1))
-      qed
-    qed
-    assume asm0: "natural_partition I S"
-    then obtain F where "S = (\<Union>n. F n)" "\<And>n. I n (F n)"
-      using natural_partitionE by blast
-    let ?F = "{F n |n. True}"
-    have "I' (\<Union>S\<in>?F. S)"
-      using assms(2)
-    proof (rule stable_by_infinite_unionE[of I'])
-      fix S assume "S \<in> {F n |n. True}"
-      then show "I' S"
-        using \<open>\<And>n. I n (F n)\<close> assms(1) by force
-    qed
-    moreover have "(\<Union>S\<in>?F. S) = S"
-      using \<open>S = (\<Union>n. F n)\<close> by auto
-    ultimately show "I' S" by blast
-  qed
-qed
-
-corollary simpler_rule_while:
-  assumes "hyper_hoare_triple I C I"
-    and "stable_by_infinite_union I"
-  shows "hyper_hoare_triple I (While C) I"
-proof -
-  let ?I = "\<lambda>n. I"
-  have "hyper_hoare_triple (?I 0) (While C) (natural_partition ?I)"
-    using while_rule[of ?I C]
-    by (simp add: assms(1) assms(2) stable_by_union_and_constant_then_I)
-  then show ?thesis
-    by (simp add: assms(2) stable_by_union_and_constant_then_I)
-qed
-
 
 text \<open>Theorem 1\<close>
 
@@ -778,11 +681,13 @@ next
 qed
 
 
+
+
 subsection \<open>Disproving Hyper-Triples\<close>
 
 definition sat where "sat P \<longleftrightarrow> (\<exists>S. P S)"
 
-text \<open>Theorem 4\<close>
+text \<open>Theorem 5\<close>
 
 theorem disproving_triple:
   "\<not> \<Turnstile> {P} C {Q} \<longleftrightarrow> (\<exists>P'. sat P' \<and> entails P' P \<and> \<Turnstile> {P'} C {\<lambda>S. \<not> Q S})" (is "?A \<longleftrightarrow> ?B")
@@ -947,72 +852,6 @@ proof
       by (metis (mono_tags, lifting) \<open>\<langle>C, snd x\<rangle> \<rightarrow> snd yy\<close> \<open>x \<in> S\<close> \<open>y = modify_lvar_to r v yy\<close> fst_conv
           image_eqI in_sem modify_lvar_to_def snd_conv)
   qed
-qed
-
-text \<open>Proposition 15 (appendix C).\<close>
-
-theorem if_sync_rule:
-  assumes "\<Turnstile> {P} C1 {P1}"
-      and "\<Turnstile> {P} C2 {P2}"
-      and "\<Turnstile> {combine from_nat x P1 P2} C {combine from_nat x R1 R2}"
-      and "\<Turnstile> {R1} C1' {Q1}"
-      and "\<Turnstile> {R2} C2' {Q2}"
-
-      and "not_free_var_hyper x P1"
-      and "not_free_var_hyper x P2"
-      and "injective (from_nat :: nat \<Rightarrow> 'a)"
-
-      and "not_free_var_hyper x R1"
-      and "not_free_var_hyper x R2"
-
-    shows "\<Turnstile> {P} If (Seq C1 (Seq C C1')) (Seq C2 (Seq C C2')) {join Q1 Q2}"
-proof (rule hyper_hoare_tripleI)
-  fix S assume asm0: "P S"
-  have r0: "sem (stmt.If (Seq C1 (Seq C C1')) (Seq C2 (Seq C C2'))) S
-  = sem C1' (sem C (sem C1 S)) \<union> sem C2' (sem C (sem C2 S))"
-    by (simp add: sem_if sem_seq)
-  moreover have "P1 (sem C1 S) \<and> P2 (sem C2 S)"
-    using asm0 assms(1) assms(2) hyper_hoare_tripleE by blast
-
-  let ?S1 = "(modify_lvar_to x (from_nat 1)) ` (sem C1 S)"
-  let ?S2 = "(modify_lvar_to x (from_nat 2)) ` (sem C2 S)"
-  let ?f1 = "Set.filter (\<lambda>\<phi>. fst \<phi> x = from_nat 1)"
-  let ?f2 = "Set.filter (\<lambda>\<phi>. fst \<phi> x = from_nat 2)"
-
-  have r: "from_nat 1 \<noteq> from_nat 2"
-    by (metis Suc_1 assms(8) injective_def n_not_Suc_n)
-
-  have "P1 ?S1 \<and> P2 ?S2"
-    by (meson \<open>P1 (sem C1 S) \<and> P2 (sem C2 S)\<close> assms(6) assms(7) not_free_var_hyper_def)
-  moreover have rr1: "Set.filter (\<lambda>\<phi>. fst \<phi> x = from_nat 1) (?S1 \<union> ?S2) = ?S1"
-    using injective_then_ok[of "from_nat 1" "from_nat 2" ?S1 x]
-    by (metis (no_types, lifting) assms(8) injective_def num.simps(4) one_eq_numeral_iff)
-  moreover have rr2: "Set.filter (\<lambda>\<phi>. fst \<phi> x = from_nat 2) (?S1 \<union> ?S2) = ?S2"
-    using injective_then_ok[of "from_nat 2" "from_nat 1" ?S2 x]
-    by (metis (no_types, lifting) assms(8) injective_def one_eq_numeral_iff sup_commute verit_eq_simplify(10))
-  ultimately have "combine from_nat x P1 P2 (?S1 \<union> ?S2)"
-    by (metis combineI)
-  then have "combine from_nat x R1 R2 (sem C (?S1 \<union> ?S2))"
-    using assms(3) hyper_hoare_tripleE by blast
-  moreover have "?f1 (sem C (?S1 \<union> ?S2)) = sem C ?S1"
-    using recover_after_sem[of "from_nat 1" "from_nat 2" ?S1 x ?S2] r rr1 rr2
-      member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 1"] member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 2"]
-    by metis
-  then have "R1 (sem C ?S1)"
-    by (metis (mono_tags) calculation combine_def)
-  then have "R1 (sem C (sem C1 S))"
-    by (metis assms(9) not_free_var_hyper_def sem_of_modify_lvar)
-  moreover have "?f2 (sem C (?S1 \<union> ?S2)) = sem C ?S2"
-    using recover_after_sem[of "from_nat 2" "from_nat 1" ?S2 x ?S1] r rr1 rr2 sup_commute[of ]
-      member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 1" "?S1 \<union> ?S2"] member_filter[of _ "\<lambda>\<phi>. fst \<phi> x = from_nat 2" "?S1 \<union> ?S2"]
-    by metis
-  then have "R2 (sem C ?S2)"
-    by (metis (mono_tags) calculation(1) combine_def)
-  then have "R2 (sem C (sem C2 S))"
-    by (metis assms(10) not_free_var_hyper_def sem_of_modify_lvar)
-
-  then show "join Q1 Q2 (sem (stmt.If (Seq C1 (Seq C C1')) (Seq C2 (Seq C C2'))) S)"
-    by (metis (full_types) r0 assms(4) assms(5) calculation(2) hyper_hoare_tripleE join_def)
 qed
 
 end

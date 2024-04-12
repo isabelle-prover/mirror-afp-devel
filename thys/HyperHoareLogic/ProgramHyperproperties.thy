@@ -1,6 +1,6 @@
 section \<open>Expressivity of Hyper Hoare Logic\<close>
 
-text \<open>In this file, we define program hyperproperties (definition 7), and prove theorem 3.\<close>
+text \<open>In this file, we define program hyperproperties (definition 8), and prove theorems 3 and 4.\<close>
 
 subsection \<open>Program Hyperproperties\<close>
 
@@ -8,14 +8,16 @@ theory ProgramHyperproperties
   imports Logic
 begin
 
-text \<open>Definition 7\<close>
+text \<open>Definition 8\<close>
 
 type_synonym 'a hyperproperty = "('a \<times> 'a) set \<Rightarrow> bool"
+type_synonym ('pvar, 'pval) program_hyperproperty = "('pvar, 'pval) pstate hyperproperty"
+
 
 definition set_of_traces where
   "set_of_traces C = { (\<sigma>, \<sigma>') |\<sigma> \<sigma>'. \<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>' }"
 
-definition hypersat where
+definition hypersat :: "('pvar, 'pval) stmt \<Rightarrow> ('pvar, 'pval) program_hyperproperty \<Rightarrow> bool" where
   "hypersat C H \<longleftrightarrow> H (set_of_traces C)"
 
 definition copy_p_state where
@@ -310,7 +312,7 @@ definition semify where
 definition hyperprop_hht where
   "hyperprop_hht P Q \<Sigma> \<longleftrightarrow> (\<forall>S. P S \<longrightarrow> Q (semify \<Sigma> S))"
 
-text \<open>Footnote 4\<close>
+text \<open>Theorem 4\<close>
 theorem any_hht_hyperprop:
   "\<Turnstile> {P} C {Q} \<longleftrightarrow> hypersat C (hyperprop_hht P Q)" (is "?A \<longleftrightarrow> ?B")
 proof

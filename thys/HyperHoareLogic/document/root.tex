@@ -43,17 +43,16 @@ Department of Computer Science\\ETH Zurich, Switzerland}
 
 \begin{abstract}
 	Hoare logics~\cite{FloydLogic, HoareLogic} are proof systems that allow one to formally establish properties of computer programs.
-	Traditional Hoare logics prove properties of individual program executions (so-called trace properties, such as functional correctness).
+	Traditional Hoare logics prove properties of individual program executions (such as functional correctness).
 	On the one hand, Hoare logic has been generalized to prove properties of multiple executions of a program (so-called hyperproperties~\cite{hyperproperties}, such as determinism or non-interference).
 	These program logics prove the absence of (bad combinations of) executions.
 	On the other hand, program logics similar to Hoare logic have been proposed to disprove program properties (e.g., Incorrectness Logic~\cite{IncorrectnessLogic}), by proving the existence of (bad combinations of) executions.
 	All of these logics have in common that they specify program properties using assertions over a fixed number of states, for instance, a single pre- and post-state for functional properties or pairs of pre- and post-states for non-interference.
 
-	In this entry, we formalize Hyper Hoare Logic~\cite{HyperHoareLogic}, a generalization of Hoare logic that lifts assertions to properties of arbitrary sets of states.
-	The resulting logic is simple yet expressive: its judgments can express arbitrary trace- and hyperproperties over the terminating executions of a program.
-	By allowing assertions to reason about sets of states, Hyper Hoare Logic can reason about both the absence and the existence of (combinations of) executions, and, thereby, supports both proving and disproving program (hyper-)properties within the same logic.
-	In fact, we prove that Hyper Hoare Logic subsumes the properties handled by numerous existing correctness and incorrectness logics, and can express hyperproperties that no existing Hoare logic can.
-	We also prove that Hyper Hoare Logic is sound and complete.
+	In this entry, we formalize Hyper Hoare Logic~\cite{HyperHoareLogic,HyperHoareLogicPLDI}, a generalization of Hoare logic that lifts assertions to properties of arbitrary sets of states.
+	The resulting logic is simple yet expressive: its judgments can express arbitrary program hyperproperties, a particular class of hyperproperties over the set of terminating executions of a program (including properties of individual program executions).
+	By allowing assertions to reason about sets of states, Hyper Hoare Logic can reason about both the absence and the existence of (combinations of) executions, and, thereby, supports both proving and disproving program (hyper-)properties within the same logic, including hyperproperties that no existing Hoare logic can express.
+	We prove that Hyper Hoare Logic is sound and complete, and demonstrate that it captures important proof principles naturally.
 \end{abstract}
 
 \clearpage
@@ -67,7 +66,10 @@ Department of Computer Science\\ETH Zurich, Switzerland}
 \input{session}
 
 % optional bibliography
-\bibliographystyle{plain}
+\bibliographystyle{plainurl}
+%\citestyle{alphabetic}
+%\bibliographystyle{acm}
+%\bibliographystyle{plain}
 \bibliography{root}
 
 \end{document}

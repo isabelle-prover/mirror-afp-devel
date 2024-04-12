@@ -1,5 +1,5 @@
-text \<open>In this file, we prove most results of section V: hyper-triples subsume many other triples,
-as well as example 4.\<close>
+text \<open>In this file, we prove most results of Appendix C:
+  hyper-triples subsume many other triples, as well as example 3.\<close>
 
 theory Expressivity
   imports ProgramHyperproperties
@@ -8,7 +8,7 @@ begin
 
 subsection \<open>Hoare Logic (HL)~\cite{HoareLogic}\<close>
 
-text \<open>Definition 8\<close>
+paragraph \<open>Definition 16\<close>
 definition HL where
   "HL P C Q \<longleftrightarrow> (\<forall>\<sigma> \<sigma>' l. (l, \<sigma>) \<in> P \<and> (\<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>') \<longrightarrow> (l, \<sigma>') \<in> Q)"
 
@@ -44,7 +44,7 @@ next
   qed
 qed
 
-text \<open>Proposition 1\<close>
+paragraph \<open>Proposition 1\<close>
 theorem HL_expresses_hyperproperties:
   "\<exists>H. (\<forall>C. hypersat C H \<longleftrightarrow> HL P C Q) \<and> k_hypersafety 1 H"
 proof -
@@ -67,7 +67,7 @@ proof -
     by blast
 qed
 
-text \<open>Proposition 2\<close>
+paragraph \<open>Proposition 2\<close>
 theorem encoding_HL:
   "HL P C Q \<longleftrightarrow> (hyper_hoare_triple (over_approx P) C (over_approx Q))" (is "?A \<longleftrightarrow> ?B")
 proof (rule iffI)
@@ -111,7 +111,6 @@ lemma entailment_order_hoare:
 
 subsection \<open>Cartesian Hoare Logic (CHL)~\cite{CHL16}\<close>
 
-text \<open>Notation 3\<close>
 definition k_sem where
   "k_sem C states states' \<longleftrightarrow> (\<forall>i. (fst (states i) = fst (states' i) \<and> single_sem C (snd (states i)) (snd (states' i))))"
 
@@ -125,7 +124,7 @@ lemma k_semE:
   shows "fst (states i) = fst (states' i) \<and> single_sem C (snd (states i)) (snd (states' i))"
   using assms k_sem_def by fastforce
 
-text \<open>Definition 9\<close>
+paragraph \<open>Definition 17\<close>
 definition CHL where
   "CHL P C Q \<longleftrightarrow> (\<forall>states. states \<in> P \<longrightarrow> (\<forall>states'. k_sem C states states' \<longrightarrow> states' \<in> Q))"
 
@@ -163,7 +162,7 @@ lemma equal_change_lvar:
   using assms by fastforce
 
 
-text \<open>Proposition 3\<close>
+paragraph \<open>Proposition 3\<close>
 theorem encoding_CHL:
   assumes "not_free_var_of P x"
       and "not_free_var_of Q x"
@@ -289,7 +288,7 @@ lemma CHL_hyperpropE:
     shows "(\<lambda>i. (l i, snd (p i))) \<in> Q"
   using assms(1) assms(2) assms(3) CHL_hyperprop_def by blast
 
-text \<open>Proposition 10\<close>
+paragraph \<open>Proposition 3\<close>
 theorem CHL_hyperproperty:
   "hypersat C (CHL_hyperprop P Q) \<longleftrightarrow> CHL P C Q" (is "?A \<longleftrightarrow> ?B")
 proof
@@ -380,7 +379,7 @@ qed
 
 subsection \<open>Incorrectness Logic~\cite{IncorrectnessLogic} or Reverse Hoare Logic~\cite{ReverseHL} (IL))\<close>
 
-text \<open>Definition 11\<close>
+paragraph \<open>Definition 18\<close>
 
 definition IL where
   "IL P C Q \<longleftrightarrow> Q \<subseteq> sem C P"
@@ -398,7 +397,7 @@ lemma IL_hyperpropI:
   shows "IL_hyperprop P Q S"
   by (simp add: assms IL_hyperprop_def)
 
-text \<open>Proposition 11\<close>
+paragraph \<open>Proposition 5\<close>
 lemma IL_expresses_hyperproperties:
   "IL P C Q \<longleftrightarrow> IL_hyperprop P Q (set_of_traces C)" (is "?A \<longleftrightarrow> ?B")
 proof
@@ -432,7 +431,7 @@ lemma IL_consequence:
     shows "\<exists>\<sigma>. (l, \<sigma>) \<in> P \<and> single_sem C \<sigma> \<sigma>'"
   using assms(1) assms(2) equiv_def_incorrectness by blast
 
-text \<open>Proposition 4\<close>
+paragraph \<open>Proposition 6\<close>
 theorem encoding_IL:
   "IL P C Q \<longleftrightarrow> (hyper_hoare_triple (under_approx P) C (under_approx Q))" (is "?A \<longleftrightarrow> ?B")
 proof (rule iffI)
@@ -534,9 +533,11 @@ proof (rule hyperlivenessI)
 qed
 
 
-subsection \<open>Relational Incorrectness Logic~\cite{InsecurityLogic} (RIL)\<close>
+subsection \<open>k-Incorrectness Logic~\cite{InsecurityLogic} (k-IL)\<close>
 
-text \<open>Definition 11\<close>
+text \<open>RIL is the old name of k-IL.\<close>
+
+paragraph \<open>Definition 19\<close>
 definition RIL where
   "RIL P C Q \<longleftrightarrow> (\<forall>states' \<in> Q. \<exists>states \<in> P. k_sem C states states')"
 
@@ -575,7 +576,7 @@ proof (rule ext)
     by auto
 qed
 
-text \<open>Proposition 12\<close>
+paragraph \<open>Proposition 17\<close>
 theorem RIL_expresses_hyperproperties:
   "hypersat C (RIL_hyperprop P Q) \<longleftrightarrow> RIL P C Q" (is "?A \<longleftrightarrow> ?B")
 proof
@@ -914,7 +915,7 @@ next
 qed
 
 
-text \<open>Proposition 5\<close>
+paragraph \<open>Proposition 8\<close>
 
 theorem encoding_RIL:
   fixes x :: "'lvar"
@@ -940,7 +941,7 @@ subsection \<open>Forward Underapproximation (FU)\<close>
 
 text \<open>As employed by Outcome Logic~\cite{OutcomeLogic}\<close>
 
-text \<open>Definition 12\<close>
+paragraph \<open>Definition 20\<close>
 definition FU where
   "FU P C Q \<longleftrightarrow> (\<forall>l. \<forall>\<sigma>. (l, \<sigma>) \<in> P \<longrightarrow> (\<exists>\<sigma>'. single_sem C \<sigma> \<sigma>' \<and> (l, \<sigma>') \<in> Q))"
 
@@ -952,7 +953,7 @@ lemma FUI:
 definition encode_FU where
   "encode_FU P S \<longleftrightarrow> P \<inter> S \<noteq> {}"
 
-text \<open>Proposition 6\<close>
+paragraph \<open>Proposition 9\<close>
 theorem encoding_FU:
   "FU P C Q \<longleftrightarrow> \<Turnstile> {encode_FU P} C {encode_FU Q}" (is "?A \<longleftrightarrow> ?B")
 proof
@@ -1034,7 +1035,7 @@ proof (rule hyperlivenessI)
 qed
 
 
-text \<open>No relationship between incorrectness and forward underapproximation\<close>
+paragraph \<open>No relationship between incorrectness and forward underapproximation\<close>
 
 lemma incorrectness_does_not_imply_FU:
   assumes "injective from_nat"
@@ -1103,9 +1104,11 @@ proof -
 qed
 
 
-subsection \<open>Relational Forward Underapproximate logic\<close>
+subsection \<open>k-Forward Underapproximate logic\<close>
 
-text \<open>Definition 13\<close>
+text \<open>RFU is the old name of k-FU.\<close>
+
+paragraph \<open>Definition 21\<close>
 definition RFU where
   "RFU P C Q \<longleftrightarrow> (\<forall>states \<in> P. \<exists>states' \<in> Q. k_sem C states states')"
 
@@ -1123,7 +1126,7 @@ lemma RFUE:
 definition encode_RFU where
   "encode_RFU from_nat x P S \<longleftrightarrow> (\<exists>states \<in> P. (\<forall>i. states i \<in> S \<and> fst (states i) x = from_nat i))"
 
-text \<open>Proposition 7\<close>
+paragraph \<open>Proposition 11\<close>
 theorem encode_RFU:
   assumes "not_free_var_of P x"
       and "not_free_var_of Q x"
@@ -1217,7 +1220,7 @@ lemma RFU_hyperpropE:
     shows "\<exists>states'. (\<lambda>i. (l i, states' i)) \<in> Q \<and> (\<forall>i. (states i, states' i) \<in> S)"
   using assms(1) assms(2) RFU_hyperprop_def by blast
 
-text \<open>Proposition 13\<close>
+paragraph \<open>Proposition 10\<close>
 theorem RFU_captures_hyperproperties:
   "hypersat C (RFU_hyperprop P Q) \<longleftrightarrow> RFU P C Q" (is "?A \<longleftrightarrow> ?B")
 proof
@@ -1287,9 +1290,11 @@ proof (rule hyperlivenessI)
 qed
 
 
-subsection \<open>Relational Universal Existential (RUE)~\cite{RHLE}\<close>
+subsection \<open>k-Universal Existential (RUE)~\cite{RHLE}\<close>
 
-text \<open>Definition 14\<close>
+text \<open>RUE is the old name of k-UE.\<close>
+
+paragraph \<open>Definition 22\<close>
 
 definition RUE where
   "RUE P C Q \<longleftrightarrow> (\<forall>(\<sigma>1, \<sigma>2) \<in> P. \<forall>\<sigma>1'. k_sem C \<sigma>1 \<sigma>1' \<longrightarrow> (\<exists>\<sigma>2'. k_sem C \<sigma>2 \<sigma>2' \<and> (\<sigma>1', \<sigma>2') \<in> Q))"
@@ -1306,7 +1311,7 @@ lemma RUE_E:
     shows "\<exists>\<sigma>2'. k_sem C \<sigma>2 \<sigma>2' \<and> (\<sigma>1', \<sigma>2') \<in> Q"
   using RUE_def assms(1) assms(2) assms(3) by blast
 
-text \<open>Hyperproperty\<close>
+paragraph \<open>Hyperproperty\<close>
 
 definition hyperprop_RUE where
   "hyperprop_RUE P Q S \<longleftrightarrow> (\<forall>l1 l2 \<sigma>1 \<sigma>2 \<sigma>1'. (\<lambda>i. (l1 i, \<sigma>1 i), \<lambda>k. (l2 k, \<sigma>2 k)) \<in> P \<and>
@@ -1327,7 +1332,7 @@ lemma hyperprop_RUE_E:
   using assms(1) assms(2) assms(3) hyperprop_RUE_def by blast
 
 
-text \<open>Proposition 14\<close>
+paragraph \<open>Proposition 12\<close>
 theorem RUE_express_hyperproperties:
   "RUE P C Q \<longleftrightarrow> hypersat C (hyperprop_RUE P Q)" (is "?A \<longleftrightarrow> ?B")
 proof
@@ -1479,7 +1484,7 @@ lemma not_in_free_vars_doubleE:
   by (meson assms not_in_free_vars_double_def)
 
 
-text \<open>Proposition 8\<close>
+paragraph \<open>Proposition 13\<close>
 
 theorem encoding_RUE:
   assumes "injective fn \<and> injective fn1 \<and> injective fn2"
@@ -1756,7 +1761,13 @@ lemma not_free_in_sem_equiv:
   by (meson assms(1) assms(2) in_set_of_traces not_free_var_stmtE_1)
       
 
-text \<open>Example 4\<close>
+paragraph \<open>Example 3\<close>
+
+lemma rewrite_if_commute:
+  assumes "\<Turnstile> { P } If C1 C2 {Q}"
+  shows "\<Turnstile> { P } If C2 C1 {Q}"
+  by (metis assms hyper_hoare_triple_def sem_if sup_commute)
+
 theorem encoding_refinement:
   fixes P :: "(('lvar \<Rightarrow> 'lval) \<times> ('pvar \<Rightarrow> 'pval)) set \<Rightarrow> bool"
   assumes "(a :: 'pval) \<noteq> b"
@@ -1867,5 +1878,66 @@ next
   then show ?A
     by (simp add: refinement_def)
 qed
+
+paragraph \<open>Necessary Preconditions\<close>
+
+definition NC where
+  "NC P C Q \<longleftrightarrow> (\<forall>\<sigma> \<sigma>' l. (l, \<sigma>') \<in> Q \<and> (\<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>') \<longrightarrow> (l, \<sigma>) \<in> P)"
+
+lemma NC_I:
+  assumes "\<And>\<sigma> \<sigma>' l. (l, \<sigma>') \<in> Q \<and> (\<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>') \<Longrightarrow> (l, \<sigma>) \<in> P"
+  shows "NC P C Q"
+  by (simp add: NC_def assms)
+
+definition backwards_sem where
+  "backwards_sem C S'  = { (l, \<sigma>) |l \<sigma> \<sigma>'. (l, \<sigma>') \<in> S' \<and> \<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>'}"
+
+lemma equiv_def_NC:
+  "NC P C Q \<longleftrightarrow> backwards_sem C Q \<subseteq> P" (is "?A \<longleftrightarrow> ?B")
+proof
+  assume ?A
+  then show ?B
+    using CollectD NC_def backwards_sem_def[of C Q] subsetI[of "backwards_sem C Q" P] by fastforce
+next
+  assume ?B
+  then show ?A 
+    using NC_def backwards_sem_def by fastforce
+qed
+
+lemma equiv_def_FU:
+  "FU P C Q \<longleftrightarrow> P \<subseteq> backwards_sem C Q" (is "?A \<longleftrightarrow> ?B")
+proof
+  show "?A \<Longrightarrow> ?B"
+    using FU_def[of P C Q] backwards_sem_def[of C Q]
+    by fastforce
+  show "?B \<Longrightarrow> ?A"
+    using FU_def[of P C Q] backwards_sem_def[of C Q] by auto
+qed
+
+lemma encoding_NC_in_HL_1:
+  "NC P C Q \<longleftrightarrow> \<Turnstile> { (\<lambda>S. S = -P) } C { (\<lambda>S. S \<inter> Q = {} ) }" (is "?A \<longleftrightarrow> ?B")
+proof
+  assume ?A
+  show ?B
+  proof (rule hyper_hoare_tripleI)
+    fix S assume asm0: "S = - P"
+    then show "sem C S \<inter> Q = {}"
+      by (metis (no_types, lifting) ComplD NC_def \<open>NC P C Q\<close> disjoint_iff in_sem prod.collapse)
+  qed
+next
+  assume ?B
+  show ?A
+  proof (rule NC_I)
+    fix \<sigma> \<sigma>' l
+    assume asm0: "(l, \<sigma>') \<in> Q \<and> \<langle>C, \<sigma>\<rangle> \<rightarrow> \<sigma>'"
+    then have "(l, \<sigma>') \<notin> sem C (-P)"
+      using \<open>\<Turnstile> {(\<lambda>S. S = - P)} C {\<lambda>S. S \<inter> Q = {}}\<close> hyper_hoare_tripleE by fastforce
+    then have "(l, \<sigma>) \<notin> -P"
+      by (meson asm0 single_step_then_in_sem)
+    then show "(l, \<sigma>) \<in> P"
+      by simp
+  qed
+qed
+
 
 end
