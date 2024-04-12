@@ -23,13 +23,18 @@ email = "sternagel_email"
 [authors.thiemann]
 email = "thiemann_email"
 
+[authors.yamada]
+email = "yamada_email"
+
 [contributors]
 
 [notify]
 sternagel = "sternagel_email"
 thiemann = "thiemann_email"
+yamada = "yamada_email"
 
 [history]
+2024-04-12 = "Switched to new XML-transformers, developed by Akihisa Yamada.<br>"
 
 [extra]
 

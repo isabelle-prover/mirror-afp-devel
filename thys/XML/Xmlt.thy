@@ -1,713 +1,578 @@
-(* Title:     Xml
-   Author:    Christian Sternagel
-   Author:    René Thiemann
+(*
+Author:  Akihisa Yamada <ayamada@trs.cm.is.nagoya-u.ac.jp> 
+Author:  Christian Sternagel <c.sternagel@gmail.com> (
+Author:  René Thiemann <rene.thiemann@uibk.ac.at> 
 *)
-
-section \<open>XML Transformers for Extracting Data from XML Nodes\<close>
-
 theory Xmlt
-imports
-  Xml
-  Certification_Monads.Strict_Sum
-  HOL.Rat
+  imports
+    "HOL-Library.Extended_Nat"
+    Show.Number_Parser
+    Certification_Monads.Strict_Sum
+    Show.Shows_Literal
+    Xml
 begin
 
-type_synonym
-  tag = string
+text \<open>String literals in parser, for nicer generated code\<close>
+type_synonym ltag = String.literal 
 
-text \<open>The type of transformers on xml nodes.\<close>
-type_synonym
-  'a xmlt = "xml \<Rightarrow> string +\<^sub>\<bottom> 'a"
-
-definition map :: "(xml \<Rightarrow> ('e +\<^sub>\<bottom> 'a)) \<Rightarrow> xml list \<Rightarrow> 'e +\<^sub>\<bottom> 'a list"
-where
-  [code_unfold]: "map = map_sum_bot"
-
-lemma map_mono [partial_function_mono]:
-  fixes C :: "xml \<Rightarrow> ('b \<Rightarrow> ('e +\<^sub>\<bottom> 'c)) \<Rightarrow> 'e +\<^sub>\<bottom> 'd"
-  assumes C: "\<And>y. y \<in> set B \<Longrightarrow> mono_sum_bot (C y)"
-  shows "mono_sum_bot (\<lambda>f. map (\<lambda>y. C y f) B)" 
-  unfolding map_def by (auto intro: partial_function_mono C)
-
-hide_const (open) map
-
-fun "text" :: "tag \<Rightarrow> string xmlt"
-where
-  "text tag (XML n atts [XML_text t]) = 
-    (if n = tag \<and> atts = [] then return t
-    else error (concat
-      [''could not extract text for '', tag,'' from '', ''\<newline>'', show (XML n atts [XML_text t])]))"
-| "text tag xml = error (concat [''could not extract text for '', tag,'' from '', ''\<newline>'', show xml])"
-hide_const (open) "text"
-
-definition bool_of_string :: "string \<Rightarrow> string +\<^sub>\<bottom> bool"
-where
-  "bool_of_string s =
-    (if s = ''true'' then return True
-    else if s = ''false'' then return False
-    else error (''cannot convert '' @ s @ '' into Boolean''))"
-
-fun bool :: "tag \<Rightarrow> bool xmlt"
-where
-  "bool tag node = Xmlt.text tag node \<bind> bool_of_string"
-hide_const (open) bool
-
-definition fail :: "tag \<Rightarrow> 'a xmlt"
-where
-  "fail tag xml =
-    error (concat
-      [''could not transform the following xml element (expected '', tag, '')'', ''\<newline>'', show xml])"
-hide_const (open) fail
-
-definition guard :: "(xml \<Rightarrow> bool) \<Rightarrow> 'a xmlt \<Rightarrow> 'a xmlt \<Rightarrow> 'a xmlt"
-where
-  "guard p p1 p2 x = (if p x then p1 x else p2 x)"
-hide_const (open) guard
-
-lemma guard_mono [partial_function_mono]:
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-    and p2: "\<And>y. mono_sum_bot (p2 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.guard p (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) x)" 
-  by (cases x) (auto intro!: partial_function_mono p1 p2 simp: Xmlt.guard_def)
-
-fun leaf :: "tag \<Rightarrow> 'a \<Rightarrow> 'a xmlt"
-where
-  "leaf tag x (XML name atts cs) = 
-    (if name = tag \<and> atts = [] \<and> cs = [] then return x 
-    else Xmlt.fail tag (XML name atts cs))" |
-  "leaf tag x xml = Xmlt.fail tag xml"
-hide_const (open) leaf
-
-fun list1element :: "'a list \<Rightarrow> 'a option"
-where
-  "list1element [x] = Some x" |
-  "list1element _ = None"
-
-fun singleton :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b xmlt"
-where
-  "singleton tag p1 f xml =
-    (case xml of
-      XML name atts cs \<Rightarrow>
-      (if name = tag \<and> atts = [] then
-        (case list1element cs of 
-          Some (cs1) \<Rightarrow> p1 cs1 \<bind> return \<circ> f
-        | None \<Rightarrow> Xmlt.fail tag xml)
-      else Xmlt.fail tag xml)
-    | _ \<Rightarrow> Xmlt.fail tag xml)"
-hide_const (open) singleton
-
-lemma singleton_mono [partial_function_mono]:
-  assumes p: "\<And>y. mono_sum_bot (p1 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.singleton t (\<lambda>y. p1 y g) f x)" 
-    by (cases x, cases "list1element (Xml.children x)") (auto intro!: partial_function_mono p)
-
-fun list2elements :: "'a list \<Rightarrow> ('a \<times> 'a) option"
-where
-  "list2elements [x, y] = Some (x, y)" |
-  "list2elements _ = None"
-
-fun pair :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'c xmlt"
-where
-  "pair tag p1 p2 f xml =
-    (case xml of
-      XML name atts cs \<Rightarrow>
-      (if name = tag \<and> atts = [] then
-        (case list2elements cs of 
-          Some (cs1, cs2) \<Rightarrow>
-          do {
-            a \<leftarrow> p1 cs1;
-            b \<leftarrow> p2 cs2;
-            return (f a b)
-          }
-        | None \<Rightarrow> Xmlt.fail tag xml)
-      else Xmlt.fail tag xml)
-    | _ \<Rightarrow> Xmlt.fail tag xml)"
-hide_const (open) pair
-
-lemma pair_mono [partial_function_mono]:
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. mono_sum_bot (p2 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.pair t (\<lambda>y. p1 y g) (\<lambda> y. p2 y g) f x)"
-  using assms
-  by (cases x, cases "list2elements (Xml.children x)") (auto intro!: partial_function_mono)
-
-fun list3elements :: "'a list \<Rightarrow> ('a \<times> 'a \<times> 'a) option"
-where
-  "list3elements [x, y, z] = Some (x, y, z)" |
-  "list3elements _ = None"
-
-fun triple :: "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd) \<Rightarrow> 'd xmlt"
-where
-  "triple tag p1 p2 p3 f xml = (case xml of XML name atts cs \<Rightarrow>
-    (if name = tag \<and> atts = [] then
-      (case list3elements cs of 
-        Some (cs1, cs2, cs3) \<Rightarrow>
-        do {
-          a \<leftarrow> p1 cs1;
-          b \<leftarrow> p2 cs2;
-          c \<leftarrow> p3 cs3;
-          return (f a b c)
-        }
-      | None \<Rightarrow> Xmlt.fail tag xml)
-    else Xmlt.fail tag xml)
-  | _ \<Rightarrow> Xmlt.fail tag xml)"
-
-lemma triple_mono [partial_function_mono]:
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. mono_sum_bot (p2 y)"
-    and "\<And>y. mono_sum_bot (p3 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.triple t (\<lambda>y. p1 y g) (\<lambda> y. p2 y g) (\<lambda> y. p3 y g) f x)"
-  using assms
-  by (cases x, cases "list3elements (Xml.children x)", auto intro!: partial_function_mono)
-
-fun list4elements :: "'a list \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a) option"
-where
-  "list4elements [x, y, z, u] = Some (x, y, z, u)" |
-  "list4elements _ = None"
-
-fun
-  tuple4 ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> 'd xmlt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e) \<Rightarrow> 'e xmlt"
-where
-  "tuple4 tag p1 p2 p3 p4 f xml =
-    (case xml of
-      XML name atts cs \<Rightarrow>
-        (if name = tag \<and> atts = [] then
-          (case list4elements cs of 
-            Some (cs1, cs2, cs3, cs4) \<Rightarrow>
-            do {
-              a \<leftarrow> p1 cs1;
-              b \<leftarrow> p2 cs2;
-              c \<leftarrow> p3 cs3;
-              d \<leftarrow> p4 cs4;
-              return (f a b c d)
-            }
-          | None \<Rightarrow> Xmlt.fail tag xml)
-        else Xmlt.fail tag xml)
-   | _ \<Rightarrow> Xmlt.fail tag xml)"
-
-lemma tuple4_mono [partial_function_mono]:
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. mono_sum_bot (p2 y)"
-    and "\<And>y. mono_sum_bot (p3 y)"
-    and"\<And>y. mono_sum_bot (p4 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.tuple4 t (\<lambda>y. p1 y g) (\<lambda> y. p2 y g) (\<lambda> y. p3 y g) (\<lambda> y. p4 y g) f x)"
-  using assms
-  by (cases x, cases "list4elements (Xml.children x)") (auto intro!: partial_function_mono)
-
-fun list5elements :: "'a list \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) option"
-where
-  "list5elements [x, y, z, u, v] = Some (x, y, z, u, v)" |
-  "list5elements _ = None"
-
-fun
-  tuple5 ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> 'd xmlt \<Rightarrow> 'e xmlt \<Rightarrow>
-      ('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> 'f) \<Rightarrow> 'f xmlt"
-where
-  "tuple5 tag p1 p2 p3 p4 p5 f xml =
-    (case xml of
-      XML name atts cs \<Rightarrow>
-        (if name = tag \<and> atts = [] then
-          (case list5elements cs of 
-            Some (cs1,cs2,cs3,cs4,cs5) \<Rightarrow>
-            do {
-              a \<leftarrow> p1 cs1;
-              b \<leftarrow> p2 cs2;
-              c \<leftarrow> p3 cs3;
-              d \<leftarrow> p4 cs4;
-              e \<leftarrow> p5 cs5;
-              return (f a b c d e)
-            }
-          | None \<Rightarrow> Xmlt.fail tag xml)
-        else Xmlt.fail tag xml)
-    | _ \<Rightarrow> Xmlt.fail tag xml)"
-
-lemma tuple5_mono [partial_function_mono]:
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. mono_sum_bot (p2 y)"
-    and "\<And>y. mono_sum_bot (p3 y)"
-    and "\<And>y. mono_sum_bot (p4 y)"
-    and "\<And>y. mono_sum_bot (p5 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.tuple5 t (\<lambda>y. p1 y g) (\<lambda> y. p2 y g) (\<lambda> y. p3 y g) (\<lambda> y. p4 y g) (\<lambda> y. p5 y g) f x)"
-  using assms
-  by (cases x, cases "list5elements (Xml.children x)") (auto intro!: partial_function_mono)
-
-fun list6elements :: "'a list \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) option"
-where
-  "list6elements [x, y, z, u, v, w] = Some (x, y, z, u, v, w)" |
-  "list6elements _ = None"
-
-fun
-  tuple6 ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> 'd xmlt \<Rightarrow> 'e xmlt \<Rightarrow> 'f xmlt \<Rightarrow>
-      ('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e \<Rightarrow> 'f \<Rightarrow> 'g) \<Rightarrow> 'g xmlt"
-where
-  "tuple6 tag p1 p2 p3 p4 p5 p6 f xml =
-    (case xml of
-      XML name atts cs  \<Rightarrow>
-        (if name = tag \<and> atts = [] then
-          (case list6elements cs of 
-            Some (cs1,cs2,cs3,cs4,cs5,cs6) \<Rightarrow>
-            do {
-              a \<leftarrow> p1 cs1;
-              b \<leftarrow> p2 cs2;
-              c \<leftarrow> p3 cs3;
-              d \<leftarrow> p4 cs4;
-              e \<leftarrow> p5 cs5;
-              ff \<leftarrow> p6 cs6;
-              return (f a b c d e ff)
-            }
-          | None \<Rightarrow> Xmlt.fail tag xml)
-        else Xmlt.fail tag xml)
-    | _ \<Rightarrow> Xmlt.fail tag xml)"
-
-lemma tuple6_mono [partial_function_mono]:
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. mono_sum_bot (p2 y)"
-    and "\<And>y. mono_sum_bot (p3 y)"
-    and "\<And>y. mono_sum_bot (p4 y)"
-    and "\<And>y. mono_sum_bot (p5 y)"
-    and "\<And>y. mono_sum_bot (p6 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.tuple6 t (\<lambda>y. p1 y g) (\<lambda> y. p2 y g) (\<lambda> y. p3 y g) (\<lambda> y. p4 y g) (\<lambda> y. p5 y g) (\<lambda> y. p6 y g) f x)"
-  using assms
-  by (cases x, cases "list6elements (Xml.children x)") (auto intro!: partial_function_mono)
-
-fun optional :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> ('a option \<Rightarrow> 'b) \<Rightarrow> 'b xmlt"
-where
-  "optional tag p1 f (XML name atts cs) =
-    (let l = length cs in
-    (if name = tag \<and> atts = [] \<and> l \<ge> 0 \<and> l \<le> 1 then do {
-      if l = 1 then do {
-        x1 \<leftarrow> p1 (cs ! 0);
-        return (f (Some x1))
-      } else return (f None)
-    } else Xmlt.fail tag (XML name atts cs)))" |
-  "optional tag p1 f xml = Xmlt.fail tag xml"
-
-lemma optional_mono [partial_function_mono]:
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.optional t (\<lambda>y. p1 y g) f x)" 
-  using assms by (cases x) (auto intro!: partial_function_mono)
-
-fun xml1to2elements :: "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> ('a \<Rightarrow> 'b option \<Rightarrow> 'c) \<Rightarrow> 'c xmlt"
-where
-  "xml1to2elements tag p1 p2 f (XML name atts cs) = (
-     let l = length cs in
-     (if name = tag \<and> atts = [] \<and> l \<ge> 1 \<and> l \<le> 2
-       then do {
-         x1 \<leftarrow> p1 (cs ! 0);
-         (if l = 2
-           then do {
-             x2 \<leftarrow> p2 (cs ! 1);
-             return (f x1 (Some x2))
-           } else return (f x1 None))
-       } else Xmlt.fail tag (XML name atts cs)))" |
-  "xml1to2elements tag p1 p2 f xml = Xmlt.fail tag xml"
-
-lemma xml1to2elements_mono[partial_function_mono]:
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-              "\<And>y. mono_sum_bot (p2 y)"
-  shows "mono_sum_bot (\<lambda>g. xml1to2elements t (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) f x)" 
-  by (cases x, auto intro!: partial_function_mono p1)
-
+datatype 'a xml_error = TagMismatch "ltag list" | Fatal 'a
 text \<open>
-  Apply the first transformer to the first child-node, then check the second child-node,
-  which is must be a Boolean. If the Boolean is true, then apply the second transformer
-  to the last child-node.
+  @{term "TagMismatch tags"} represents tag mismatch, expecting one of @{term tags} but
+  something else is encountered.
 \<close>
-fun xml2nd_choice :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> tag \<Rightarrow> 'b xmlt \<Rightarrow> ('a \<Rightarrow> 'b option \<Rightarrow> 'c) \<Rightarrow> 'c xmlt"
-where
-  "xml2nd_choice tag p1 cn p2 f (XML name atts cs) = (
-    let l = length cs in
-    (if name = tag \<and> atts = [] \<and> l \<ge> 2 then do {
-      x1 \<leftarrow> p1 (cs ! 0);
-      b \<leftarrow> Xmlt.bool cn (cs ! 1);
-      (if b then do {
-        x2 \<leftarrow> p2 (cs ! (l - 1));
-        return (f x1 (Some x2))
-      } else return (f x1 None))
-    } else Xmlt.fail tag (XML name atts cs)))" |
-  "xml2nd_choice tag p1 cn p2 f xml = Xmlt.fail tag xml"
 
-lemma xml2nd_choice_mono [partial_function_mono]:
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-              "\<And>y. mono_sum_bot (p2 y)"
-  shows "mono_sum_bot (\<lambda>g. xml2nd_choice t (\<lambda>y. p1 y g) h (\<lambda>y. p2 y g) f x)" 
-  by (cases x, auto intro!: partial_function_mono p1)
+lemma xml_error_mono [partial_function_mono]:
+  assumes p1: "\<And>tags. mono_option (p1 tags)"
+    and p2: "\<And>x. mono_option (p2 x)"
+    and f: "mono_option f"
+  shows "mono_option (\<lambda>g. case s of TagMismatch tags \<Rightarrow> p1 tags g | Fatal x \<Rightarrow> p2 x g)"
+  using assms by (cases s, auto intro!:partial_function_mono)
 
-fun
-  xml2to3elements ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c option \<Rightarrow> 'd) \<Rightarrow> 'd xmlt"
-where
-  "xml2to3elements tag p1 p2 p3 f (XML name atts cs) = (
-     let l = length cs in
-     (if name = tag \<and> atts = [] \<and> l \<ge> 2 \<and> l \<le> 3 then do {
-       x1 \<leftarrow> p1 (cs ! 0);
-       x2 \<leftarrow> p2 (cs ! 1);
-       (if l = 3 then do {
-         x3 \<leftarrow> p3 (cs ! 2);
-         return (f x1 x2 (Some x3))
-       } else return (f x1 x2 None))
-     } else Xmlt.fail tag (XML name atts cs)))" |
-  "xml2to3elements tag p1 p2 p3 f xml = Xmlt.fail tag xml"
+text \<open>A state is a tuple of
+  the XML or list of XMLs to be parsed,
+  the attributes,
+  a flag indicating if mismatch is allowed,
+  a list of tags that have been mismatched,
+  the current position.
+\<close>
+type_synonym 'a xmlt = "xml \<times> (string \<times> string) list \<times> bool \<times> ltag list \<times> ltag list \<Rightarrow> String.literal xml_error +\<^sub>\<bottom> 'a"
+type_synonym 'a xmlst = "xml list \<times> (string \<times> string) list \<times> bool \<times> ltag list \<times> ltag list \<Rightarrow> String.literal xml_error +\<^sub>\<bottom> 'a"
 
-lemma xml2to3elements_mono [partial_function_mono]:
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-              "\<And>y. mono_sum_bot (p2 y)"
-              "\<And>y. mono_sum_bot (p3 y)"
-  shows "mono_sum_bot (\<lambda>g. xml2to3elements t (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) (\<lambda>y. p3 y g) f x)" 
-  by (cases x, auto intro!: partial_function_mono p1)
+lemma xml_state_cases:
+  assumes "\<And>p nam atts xmls. x = (XML nam atts xmls, p) \<Longrightarrow> thesis"
+    and "\<And>p txt. x = (XML_text txt, p) \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (cases x; cases "fst x", auto)
 
-fun
-  xml3to4elements ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> 'd xmlt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c option \<Rightarrow> 'd \<Rightarrow> 'e) \<Rightarrow>
-      'e xmlt"
-where
-  "xml3to4elements tag p1 p2 p3 p4 f (XML name atts cs) = (
-     let l = length cs in
-     (if name = tag \<and> atts = [] \<and> l \<ge> 3 \<and> l \<le> 4 then do {
-       x1 \<leftarrow> p1 (cs ! 0);
-       x2 \<leftarrow> p2 (cs ! 1);
-       (if l = 4 then do {
-         x3 \<leftarrow> p3 (cs ! 2);
-         x4 \<leftarrow> p4 (cs ! 3);
-         return (f x1 x2 (Some x3) x4)
-       } else do {
-         x4 \<leftarrow> p4 (cs ! 2);
-         return (f x1 x2 None x4)
-       } )
-     } else Xmlt.fail tag (XML name atts cs)))" |
-  "xml3to4elements tag p1 p2 p3 p4 f xml = Xmlt.fail tag xml"
+lemma xmls_state_cases:
+  assumes "\<And>p. x = ([],p) \<Longrightarrow> thesis"
+    and "\<And>xml xmls p. x = (xml # xmls, p) \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (cases x; cases "fst x", auto)
 
-lemma xml3to4elements_mono [partial_function_mono]:
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-              "\<And>y. mono_sum_bot (p2 y)"
-              "\<And>y. mono_sum_bot (p3 y)"
-              "\<And>y. mono_sum_bot (p4 y)"
-  shows "mono_sum_bot (\<lambda>g. xml3to4elements t (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) (\<lambda>y. p3 y g) (\<lambda>y. p4 y g) f x)" 
-  by (cases x, auto intro!: partial_function_mono p1)
-
-fun many :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> 'b xmlt"
-where
-  "many tag p f (XML name atts cs) =
-    (if name = tag \<and> atts = [] then (Xmlt.map p cs \<bind> (return \<circ> f))
-    else Xmlt.fail tag (XML name atts cs))" |
-  "many tag p f xml = Xmlt.fail tag xml"
-hide_const (open) many
-
-lemma many_mono [partial_function_mono]:
-  fixes p1 :: "xml \<Rightarrow> ('b \<Rightarrow> (string +\<^sub>\<bottom> 'c)) \<Rightarrow> string +\<^sub>\<bottom> 'd"
-  assumes "\<And>y. y \<in> set (Xml.children x) \<Longrightarrow> mono_sum_bot (p1 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.many t (\<lambda>y. p1 y g) f x)" 
-  using assms by (cases x) (auto intro!: partial_function_mono)
-
-fun many1_gen :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b xmlt) \<Rightarrow> ('a \<Rightarrow> 'b list \<Rightarrow> 'c) \<Rightarrow> 'c xmlt"
-where
-  "many1_gen tag p1 p2 f (XML name atts cs) =
-    (if name = tag \<and> atts = [] \<and> cs \<noteq> [] then
-      (case cs of h # t \<Rightarrow> do {
-        x \<leftarrow> p1 h;
-        xs \<leftarrow> Xmlt.map (p2 x) t;
-        return (f x xs)
-      })
-    else Xmlt.fail tag (XML name atts cs))" |
-  "many1_gen tag p1 p2 f xml = Xmlt.fail tag xml"
-
-(* TODO 
-lemma Xmlt.many1_gen_mono[partial_function_mono]:
-  fixes p1 :: "xml \<Rightarrow> ('b \<Rightarrow> 'c sum_bot) \<Rightarrow> 'd sum_bot"
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-              "\<And>y. mono_sum_bot (p2 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.many1_gen t (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) f x)" 
-  by (cases x, auto intro!: partial_function_mono p1)
-*)
-
-definition many1 :: "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> ('a \<Rightarrow> 'b list \<Rightarrow> 'c) \<Rightarrow> 'c xmlt"
-where
-  "many1 tag p1 p2 = Xmlt.many1_gen tag p1 (\<lambda>_. p2)"
-hide_const (open) many1
-
-lemma many1_mono [partial_function_mono]:
-  fixes p1 :: "xml \<Rightarrow> ('b \<Rightarrow> (string +\<^sub>\<bottom> 'c)) \<Rightarrow> string +\<^sub>\<bottom> 'd"
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. y \<in> set (tl (Xml.children x)) \<Longrightarrow> mono_sum_bot (p2 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.many1 t (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) f x)" 
-  unfolding Xmlt.many1_def using assms
-  by (cases x, cases "Xml.children x") (auto intro!: partial_function_mono)
-
-fun length_ge_2 :: "'a list \<Rightarrow> bool"
-where 
-  "length_ge_2 (_ # _ # _) = True" |
-  "length_ge_2 _ = False"
-
-fun many2 :: "tag \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c list \<Rightarrow> 'd) \<Rightarrow> 'd xmlt"
-where
-  "many2 tag p1 p2 p3 f (XML name atts cs) =
-    (if name = tag \<and> atts = [] \<and> length_ge_2 cs then
-      (case cs of cs0 # cs1 # t \<Rightarrow> do {
-        x \<leftarrow> p1 cs0;
-        y \<leftarrow> p2 cs1;
-        xs \<leftarrow> Xmlt.map p3 t;
-        return (f x y xs)
-      })
-    else Xmlt.fail tag (XML name atts cs))" |
-  "many2 tag p1 p2 p3 f xml = Xmlt.fail tag xml"
-
-lemma many2_mono [partial_function_mono]:
-  fixes p1 :: "xml \<Rightarrow> ('b \<Rightarrow> (string +\<^sub>\<bottom> 'c)) \<Rightarrow> string +\<^sub>\<bottom> 'd"
-  assumes "\<And>y. mono_sum_bot (p1 y)"
-    and "\<And>y. mono_sum_bot (p2 y)"
-    and "\<And>y. mono_sum_bot (p3 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.many2 t (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) (\<lambda>y. p3 y g) f x)"
-  using assms
-  by (cases x, cases "Xml.children x", (auto intro!: partial_function_mono)[1], cases "tl (Xml.children x)", auto intro!: partial_function_mono)
-
-fun
-  xml1or2many_elements ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> ('a \<Rightarrow> 'b option \<Rightarrow> 'c list \<Rightarrow> 'd) \<Rightarrow> 'd xmlt"
-where
-  "xml1or2many_elements tag p1 p2 p3 f (XML name atts cs) =
-    (if name = tag \<and> atts = [] \<and> cs \<noteq> [] then
-      (case cs of
-        cs0 # tt \<Rightarrow>
-        do { 
-          x \<leftarrow> p1 cs0;
-          (case tt of
-            cs1 # t \<Rightarrow>
-            do {
-              try do {
-                y \<leftarrow> p2 cs1;
-                xs \<leftarrow> Xmlt.map p3 t;
-                return (f x (Some y) xs)
-              } catch (\<lambda> _. do {
-                xs \<leftarrow> Xmlt.map p3 tt;
-                return (f x None xs)
-              })
-            }
-          | [] \<Rightarrow> return (f x None []))}) 
-     else Xmlt.fail tag (XML name atts cs))" |
-  "xml1or2many_elements tag p1 p2 p3 f  xml = Xmlt.fail tag xml"
-
-fun
-  xml1many2elements_gen ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b xmlt) \<Rightarrow> 'c xmlt \<Rightarrow> 'd xmlt \<Rightarrow>
-      ('a \<Rightarrow> 'b list \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e) \<Rightarrow> 'e xmlt"
-where
-  "xml1many2elements_gen tag p1 p2 p3 p4 f (XML name atts cs) = (
-     let ds = List.rev cs; l = length cs in
-     (if name = tag \<and> atts = [] \<and> l \<ge> 3 then do {
-       x \<leftarrow> p1 (cs ! 0);
-       xs \<leftarrow> Xmlt.map (p2 x) (tl (take (l - 2) cs));
-       y \<leftarrow> p3 (ds ! 1);
-       z \<leftarrow> p4 (ds ! 0);
-       return (f x xs y z)
-     } else Xmlt.fail tag (XML name atts cs)))" |
-  "xml1many2elements_gen tag p1 p2 p3 p4 f xml = Xmlt.fail tag xml"
-
-lemma xml1many2elements_gen_mono [partial_function_mono]:
-  fixes p1 :: "xml \<Rightarrow> ('b \<Rightarrow> (string +\<^sub>\<bottom> 'c)) \<Rightarrow> string +\<^sub>\<bottom> 'd"
-  assumes p1: "\<And>y. mono_sum_bot (p1 y)"
-              "\<And>y. mono_sum_bot (p3 y)"
-              "\<And>y. mono_sum_bot (p4 y)"
-  shows "mono_sum_bot (\<lambda>g. xml1many2elements_gen t (\<lambda>y. p1 y g) p2 (\<lambda>y. p3 y g) (\<lambda>y. p4 y g) f x)" 
-  by (cases x, auto intro!: partial_function_mono p1)
-
-fun
-  xml1many2elements ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> 'd xmlt \<Rightarrow> ('a \<Rightarrow> 'b list \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e) \<Rightarrow>
-      'e xmlt"
-where
-  "xml1many2elements tag p1 p2 = xml1many2elements_gen tag p1 (\<lambda>_. p2)"
-
-fun
-  xml_many2elements ::
-    "string \<Rightarrow> 'a xmlt \<Rightarrow> 'b xmlt \<Rightarrow> 'c xmlt \<Rightarrow> ('a list \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd) \<Rightarrow> 'd xmlt"
-where
-  "xml_many2elements tag p1 p2 p3 f (XML name atts cs) = (
-     let ds = List.rev cs in
-     (if name = tag \<and> atts = [] \<and> length_ge_2 cs then do {
-       xs \<leftarrow> Xmlt.map p1 (List.rev (tl (tl ds)));
-       y \<leftarrow> p2 (ds ! 1);
-       z \<leftarrow> p3 (ds ! 0);
-       return (f xs y z)
-     } else Xmlt.fail tag (XML name atts cs)))" |
-  "xml_many2elements tag p1 p2 p3 f xml = Xmlt.fail tag xml"
-
-definition options :: "(string \<times> 'a xmlt) list \<Rightarrow> 'a xmlt"
-where
-  "options ps x =
-    (case map_of ps (Xml.tag x) of 
-      None \<Rightarrow> error (concat
-        [''expected one of: '', concat (map (\<lambda>p. fst p @ '' '') ps), ''\<newline>'', ''but found'', ''\<newline>'', show x])
-    | Some p \<Rightarrow> p x)"
-hide_const (open) options
-
-lemma options_mono_gen [partial_function_mono]:
-  assumes p: "\<And> k p. (k, p) \<in> set ps \<Longrightarrow> mono_sum_bot (p x)"
-  shows "mono_sum_bot (\<lambda> g. Xmlt.options (map (\<lambda> (k, p). (k, (\<lambda> y. p y g))) ps) x)"
-proof -
-  {
-    fix g
-    have "(map (\<lambda>p. fst p @ '' '') (map (\<lambda>(k, p). (k, \<lambda>y. p y g)) ps)) = 
-      map (\<lambda>p. fst p @ '' '') ps"
-      by (induct ps) (auto)
-  } note id = this
-  {
-    fix z
-    have "mono_sum_bot
-      (\<lambda>g. case map_of (map (\<lambda>(k, p). (k, \<lambda>y. p y g)) ps) (Xml.tag x) of
-        None \<Rightarrow> z
-      | Some p \<Rightarrow> p x)"
-      using p
-    proof (induct ps)
-      case Nil
-      show ?case by (auto intro: partial_function_mono)
-    next
-      case (Cons kp ps)
-      obtain k p where kp: "kp = (k,p)" by force
-      note Cons = Cons[unfolded kp]
-      from Cons(2) have monop: "mono_sum_bot (p x)" and mono: "\<And> k p. (k,p) \<in> set ps \<Longrightarrow> mono_sum_bot (p x)" by auto
-      show ?case 
-      proof (cases "Xml.tag x = k")
-        case True
-        thus ?thesis unfolding kp using monop by auto
-      next
-        case False
-        thus ?thesis using Cons(1) mono unfolding kp by auto
-      qed
-    qed
-  } note main = this
-  show ?thesis unfolding Xmlt.options_def 
-    unfolding id
-    by (rule main)
+lemma xmls_state_induct:
+  fixes x :: "xml list \<times> _"
+  assumes "\<And>a b c d. P ([],a,b,c,d)"
+    and "\<And>xml xmls a b c d. (\<And>a b c d. P (xmls,a,b,c,d)) \<Longrightarrow> P (xml # xmls, a, b, c, d)"
+  shows "P x"
+proof (induct x)
+  case (fields xmls a b c d)
+  with assms show ?case by (induct xmls arbitrary:a b c d, auto)
 qed
 
-(* instantiate this lemma to have the monotonicity lemmas for lists of variable lengths which
-   are then applicable, e.g., for lists of length 3 it would be
+definition xml_error
+  where "xml_error str x \<equiv> case x of (xmls,_,_,_,pos) \<Rightarrow>
+  let next = case xmls of
+      XML tag _ _ # _ \<Rightarrow> STR ''<'' + String.implode tag + STR ''>''
+    | XML_text str # _ \<Rightarrow> STR ''text element \"'' + String.implode str + STR ''\"''
+    | [] \<Rightarrow> STR ''tag close''
+  in
+  Left (Fatal (STR ''parse error on '' + next + STR '' at '' + default_showsl_list showsl_lit pos (STR '''') + STR '':\<newline>'' + str))"
 
-mono_sum_bot (p1 x) \<Longrightarrow> mono_sum_bot (p2 x) \<Longrightarrow> mono_sum_bot (p3 x) 
-\<Longrightarrow> mono_sum_bot (\<lambda>g. Xmlt.options [(k1, \<lambda>y. p1 y g), (k2, \<lambda>y. p2 y g), (k3, \<lambda>y. p3 y g)] x)
+definition xml_return :: "'a \<Rightarrow> 'a xmlst"
+  where "xml_return v x \<equiv> case x
+  of ([],_) \<Rightarrow> Right v
+  | _ \<Rightarrow> xml_error (STR ''expecting tag close'') x"
 
-*)
-local_setup \<open>fn lthy => 
-  let
-    val N = 30 (* we require monotonicity lemmas for xml-options for lists up to length N *) 
-    val thy = Proof_Context.theory_of lthy
-    val options = @{term "Xmlt.options :: (string \<times> (xml \<Rightarrow> (string +\<^sub>\<bottom> 'd))) list \<Rightarrow> xml \<Rightarrow> string +\<^sub>\<bottom> 'd"}
-    val mono_sum_bot = @{term "mono_sum_bot :: (('a \<Rightarrow> ('b +\<^sub>\<bottom> 'c)) \<Rightarrow> string +\<^sub>\<bottom> 'd) \<Rightarrow> bool"}
-    val ktyp = @{typ string}
-    val x = @{term "x :: xml"}
-    val y = @{term "y :: xml"}
-    val g = @{term "g :: 'a \<Rightarrow> 'b +\<^sub>\<bottom> 'c"}
-    val ptyp = @{typ "xml \<Rightarrow> ('a \<Rightarrow> ('b +\<^sub>\<bottom> 'c)) \<Rightarrow> string +\<^sub>\<bottom> 'd"}
-    fun k i = Free ("k" ^ string_of_int i,ktyp)
-    fun p i = Free ("p" ^ string_of_int i,ptyp)
-    fun prem i = HOLogic.mk_Trueprop (mono_sum_bot $ (p i $ x))
-    fun prems n = 1 upto n |> map prem
-    fun pair i = HOLogic.mk_prod (k i, lambda y (p i $ y $ g))
-    fun pair2 i = HOLogic.mk_prod (k i, p i)
-    fun list n = 1 upto n |> map pair |> HOLogic.mk_list @{typ "(string \<times> (xml \<Rightarrow> string +\<^sub>\<bottom> 'd))"}
-    fun list2 n = 1 upto n |> map pair2 |> HOLogic.mk_list (HOLogic.mk_prodT (ktyp,ptyp))
-    fun concl n = HOLogic.mk_Trueprop (mono_sum_bot $ lambda g (options $ (list n) $ x))
-    fun xs n = x :: (1 upto n |> map (fn i => [p i, k i]) |> List.concat)
-       |> map (fst o dest_Free)
-    fun tac n pc =
-      let
-        val {prems = prems, context = ctxt} = pc
-        val mono_thm = Thm.instantiate' 
-            (map (SOME o Thm.ctyp_of ctxt) [@{typ 'a},@{typ 'b},@{typ 'c},@{typ 'd}]) 
-            (map (SOME o Thm.cterm_of ctxt) [list2 n,x]) @{thm Xmlt.options_mono_gen}
-      in 
-        Method.insert_tac ctxt (mono_thm :: prems) 1 THEN force_tac ctxt 1
-      end
-    fun thm n = Goal.prove lthy (xs n) (prems n) (concl n) (tac n)
-    val thms = map thm (0 upto N)
-  in Local_Theory.note ((@{binding "options_mono_thms"}, []), thms) lthy |> snd end
+definition "mismatch tag x \<equiv> case x of
+  (xmls,atts,flag,cands,_) \<Rightarrow>
+    if flag then Left (TagMismatch (tag#cands))
+    else xml_error (STR ''expecting '' + default_showsl_list showsl_lit (tag#cands) (STR '''')) x"
+
+abbreviation xml_any :: "xml xmlt"
+  where
+    "xml_any x \<equiv> Right (fst x)"
+
+text \<open>Conditional parsing depending on tag match.\<close>
+
+definition bind2 :: "'a +\<^sub>\<bottom>'b \<Rightarrow> ('a \<Rightarrow> 'c +\<^sub>\<bottom> 'd) \<Rightarrow> ('b \<Rightarrow> 'c +\<^sub>\<bottom> 'd) \<Rightarrow> 'c +\<^sub>\<bottom> 'd" where
+  "bind2 x f g = (case x of 
+      Bottom \<Rightarrow> Bottom
+    | Left a \<Rightarrow> f a
+    | Right b \<Rightarrow> g b)" 
+
+lemma bind2_cong[fundef_cong]: "x = y \<Longrightarrow> (\<And> a. y = Left a \<Longrightarrow> f1 a = f2 a) \<Longrightarrow> 
+  (\<And> b. y = Right b \<Longrightarrow> g1 b = g2 b) \<Longrightarrow> bind2 x f1 g1 = bind2 y f2 g2" 
+  by (cases x, auto simp: bind2_def)
+
+lemma bind2_code[code]:
+  "bind2 (sumbot a) f g = (case a of Inl a \<Rightarrow> f a | Inr b \<Rightarrow> g b)"
+  by (cases a) (auto simp: bind2_def)
+
+definition xml_or (infixr "XMLor" 51)
+  where
+    "xml_or p1 p2 x \<equiv> case x of (x1,atts,flag,cands,rest) \<Rightarrow> (
+  bind2 (p1 (x1,atts,True,cands,rest))
+    (\<lambda> err1. case err1
+    of TagMismatch cands1 \<Rightarrow> p2 (x1,atts,flag,cands1,rest)
+    | err1 \<Rightarrow> Left err1)
+    Right)" 
+
+definition xml_do :: "ltag \<Rightarrow> 'a xmlst \<Rightarrow> 'a xmlt" where
+  "xml_do tag p x \<equiv>
+  case x of (XML nam atts xmls, _, flag, cands, pos) \<Rightarrow>
+    if nam = String.explode tag then p (xmls,atts,False,[],tag#pos) \<comment> \<open>inner tag mismatch is not allowed\<close>
+    else mismatch tag ([fst x], snd x)
+   | _ \<Rightarrow> mismatch tag ([fst x], snd x)"
+
+text \<open>parses the first child\<close>
+definition xml_take :: "'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b xmlst) \<Rightarrow> 'b xmlst"
+  where "xml_take p1 p2 x \<equiv>
+  case x of ([],rest) \<Rightarrow> (
+    \<comment> \<open>Only for accumulating expected tags.\<close>
+    bind2 (p1 (XML [] [] [], rest)) Left (\<lambda> a. Left (Fatal (STR ''unexpected'')))
+  )
+  | (x#xs,atts,flag,cands,rest) \<Rightarrow> (
+      bind2 (p1 (x,atts,flag,cands,rest)) Left
+        (\<lambda> a. p2 a (xs,atts,False,[],rest))) \<comment> \<open>If one child is parsed, then later mismatch is not allowed\<close>"
+
+definition xml_take_text :: "(string \<Rightarrow> 'a xmlst) \<Rightarrow> 'a xmlst" where
+  "xml_take_text p xs \<equiv>
+   case xs of (XML_text text # xmls, s) \<Rightarrow> p text (xmls,s)
+   | _ \<Rightarrow> xml_error (STR ''expecting a text'') xs"
+
+definition xml_take_int :: "(int \<Rightarrow> 'a xmlst) \<Rightarrow> 'a xmlst" where
+  "xml_take_int p xs \<equiv>
+  case xs of (XML_text text # xmls, s) \<Rightarrow>
+    (case int_of_string text of Inl x \<Rightarrow> xml_error x xs | Inr n \<Rightarrow> p n (xmls,s))
+  | _ \<Rightarrow> xml_error (STR ''expecting an integer'') xs"
+
+definition xml_take_nat :: "(nat \<Rightarrow> 'a xmlst) \<Rightarrow> 'a xmlst" where
+  "xml_take_nat p xs \<equiv>
+  case xs of (XML_text text # xmls, s) \<Rightarrow>
+    (case nat_of_string text of Inl x \<Rightarrow> xml_error x xs | Inr n \<Rightarrow> p n (xmls,s))
+  | _ \<Rightarrow> xml_error (STR ''expecting a number'') xs"
+
+definition xml_leaf where
+  "xml_leaf tag ret \<equiv> xml_do tag (xml_return ret)"
+
+definition xml_text :: "ltag \<Rightarrow> string xmlt" where
+  "xml_text tag \<equiv> xml_do tag (xml_take_text xml_return)"
+
+definition xml_int :: "ltag \<Rightarrow> int xmlt" where
+  "xml_int tag \<equiv> xml_do tag (xml_take_int xml_return)"
+
+definition xml_nat :: "ltag \<Rightarrow> nat xmlt" where
+  "xml_nat tag \<equiv> xml_do tag (xml_take_nat xml_return)"
+
+definition bool_of_string :: "string \<Rightarrow> String.literal + bool"
+  where
+    "bool_of_string s \<equiv>
+    if s = ''true'' then Inr True
+    else if s = ''false'' then Inr False
+    else Inl (STR ''cannot convert \"'' + String.implode s + STR ''\" into Boolean'')"
+
+definition xml_bool :: "ltag \<Rightarrow> bool xmlt"
+  where
+    "xml_bool tag x \<equiv>
+    bind2 (xml_text tag x) Left
+     (\<lambda> str. ( case bool_of_string str of Inr b \<Rightarrow> Right b
+        | Inl err \<Rightarrow> xml_error err ([fst x], snd x)
+      ))"
+
+
+definition xml_change :: "'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b xmlst) \<Rightarrow> 'b xmlt" where
+  "xml_change p f x \<equiv>
+    bind2 (p x) Left (\<lambda> a. case x of (_,rest) \<Rightarrow> f a ([],rest))"
+
+
+text \<open>
+  Parses the first child, if tag matches.
 \<close>
+definition xml_take_optional :: "'a xmlt \<Rightarrow> ('a option \<Rightarrow> 'b xmlst) \<Rightarrow> 'b xmlst"
+  where "xml_take_optional p1 p2 xs \<equiv>
+  case xs of ([],_) \<Rightarrow> p2 None xs
+  | (xml # xmls, atts, allow, cands, rest) \<Rightarrow> 
+    bind2 (p1 (xml, atts, True, cands, rest))
+      (\<lambda> e. case e of 
+              TagMismatch cands1 \<Rightarrow> p2 None (xml#xmls, atts, allow, cands1, rest) \<comment> \<open>TagMismatch is allowed\<close>
+            | _ \<Rightarrow> Left e)
+      (\<lambda> a. p2 (Some a) (xmls, atts, False, [], rest))" 
 
-declare Xmlt.options_mono_thms [partial_function_mono]
+definition xml_take_default :: "'a \<Rightarrow> 'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b xmlst) \<Rightarrow> 'b xmlst"
+  where "xml_take_default a p1 p2 xs \<equiv>
+  case xs of ([],_) \<Rightarrow> p2 a xs
+  | (xml # xmls, atts, allow, cands, rest) \<Rightarrow> (
+    bind2 (p1 (xml, atts, True, cands, rest)) 
+      (\<lambda> e. case e of 
+              TagMismatch cands1 \<Rightarrow> p2 a (xml#xmls, atts, allow, cands1, rest)  \<comment> \<open>TagMismatch is allowed\<close>
+            | _ \<Rightarrow> Left e) 
+      (\<lambda>a. p2 a (xmls, atts, False, [], rest)))"
 
-fun choice :: "string \<Rightarrow> 'a xmlt list \<Rightarrow> 'a xmlt"
-where
-  "choice e [] x = error (concat [''error in parsing choice for '', e, ''\<newline>'', show x])" |
-  "choice e (p # ps) x = (try p x catch (\<lambda>_. choice e ps x))"
-hide_const (open) choice
+text \<open>Take first children, as many as tag matches.\<close>
 
-lemma choice_mono_2 [partial_function_mono]:
-  assumes p: "mono_sum_bot (p1 x)"
-             "mono_sum_bot (p2 x)"
-  shows "mono_sum_bot (\<lambda> g. Xmlt.choice e [(\<lambda> y. p1 y g), (\<lambda> y. p2 y g)] x)"
-  using p by (auto intro!: partial_function_mono) 
+fun xml_take_many_sub :: "'a list \<Rightarrow> nat \<Rightarrow> enat \<Rightarrow> 'a xmlt \<Rightarrow> ('a list \<Rightarrow> 'b xmlst) \<Rightarrow> 'b xmlst" where
+  "xml_take_many_sub acc minOccurs maxOccurs p1 p2 ([], atts, allow, rest) = (
+    if minOccurs = 0 then p2 (rev acc) ([], atts, allow, rest)
+    else \<comment> \<open>only for nice error log\<close>
+      bind2 (p1 (XML [] [] [], atts, False, rest)) Left (\<lambda> _. Left (Fatal (STR ''unexpected'')))
+  )"
+| "xml_take_many_sub acc minOccurs maxOccurs p1 p2 (xml # xmls, atts, allow, cands, rest) = (
+      if maxOccurs = 0 then p2 (rev acc) (xml # xmls, atts, allow, cands, rest)
+      else
+        bind2 (p1 (xml, atts, minOccurs = 0, cands, rest))
+          (\<lambda> e. case e of 
+                  TagMismatch tags \<Rightarrow> p2 (rev acc) (xml # xmls, atts, allow, cands, rest)
+                | _ \<Rightarrow> Left e)
+          (\<lambda> a. xml_take_many_sub (a # acc) (minOccurs-1) (maxOccurs-1) p1 p2 (xmls, atts, False, [], rest))
+  )"
 
-lemma choice_mono_3 [partial_function_mono]:
-  assumes p: "mono_sum_bot (p1 x)"
-             "mono_sum_bot (p2 x)"
-             "mono_sum_bot (p3 x)"
-  shows "mono_sum_bot (\<lambda> g. Xmlt.choice e [(\<lambda> y. p1 y g), (\<lambda> y. p2 y g), (\<lambda> y. p3 y g)] x)"
-  using p by (auto intro!: partial_function_mono) 
+abbreviation xml_take_many where "xml_take_many \<equiv> xml_take_many_sub []"
 
-fun change :: "'a xmlt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b xmlt"
-where
-  "change p f x = p x \<bind> return \<circ> f"
-hide_const (open) change
+fun pick_up where
+  "pick_up rest key [] = None"
+| "pick_up rest key ((l,r)#s) = (if key = l then Some (r,rest@s) else pick_up ((l,r)#rest) key s)"
 
-lemma change_mono [partial_function_mono]:
-  assumes p: "\<And>y. mono_sum_bot (p1 y)"
-  shows "mono_sum_bot (\<lambda>g. Xmlt.change (\<lambda>y. p1 y g) f x)" 
-  by (cases x, insert p, auto intro!: partial_function_mono)
+definition xml_take_attribute :: "ltag \<Rightarrow> (string \<Rightarrow> 'a xmlst) \<Rightarrow> 'a xmlst"
+  where "xml_take_attribute att p xs \<equiv>
+  case xs of (xmls,atts,allow,cands,pos) \<Rightarrow> (
+    case pick_up [] (String.explode att) atts of
+      None \<Rightarrow> xml_error (STR ''attribute \"'' + att + STR ''\" not found'') xs
+    | Some(v,rest) \<Rightarrow> p v (xmls,rest,allow,cands,pos)
+  )"
 
-fun int_of_digit :: "char \<Rightarrow> string +\<^sub>\<bottom> int"
-where
-  "int_of_digit x =
-    (if x = CHR ''0'' then return 0
-    else if x = CHR ''1'' then return 1
-    else if x = CHR ''2'' then return 2
-    else if x = CHR ''3'' then return 3
-    else if x = CHR ''4'' then return 4
-    else if x = CHR ''5'' then return 5
-    else if x = CHR ''6'' then return 6
-    else if x = CHR ''7'' then return 7
-    else if x = CHR ''8'' then return 8
-    else if x = CHR ''9'' then return 9
-    else error (x # '' is not a digit''))"
+definition xml_take_attribute_optional :: "ltag \<Rightarrow> (string option \<Rightarrow> 'a xmlst) \<Rightarrow> 'a xmlst"
+  where "xml_take_attribute_optional att p xs \<equiv>
+  case xs of (xmls,atts,info) \<Rightarrow> (
+    case pick_up [] (String.explode att) atts of
+      None \<Rightarrow> p None xs
+    | Some(v,rest) \<Rightarrow> p (Some v) (xmls,rest,info)
+  )"
 
-fun int_of_string_aux :: "int \<Rightarrow> string \<Rightarrow> string +\<^sub>\<bottom> int"
-where
-  "int_of_string_aux n [] = return n" |
-  "int_of_string_aux n (d # s) = (int_of_digit d \<bind> (\<lambda>m. int_of_string_aux (10 * n + m) s))"
+definition xml_take_attribute_default :: "string \<Rightarrow> ltag \<Rightarrow> (string \<Rightarrow> 'a xmlst) \<Rightarrow> 'a xmlst"
+  where "xml_take_attribute_default def att p xs \<equiv>
+  case xs of (xmls,atts,info) \<Rightarrow> (
+    case pick_up [] (String.explode att) atts of
+      None \<Rightarrow> p def xs
+    | Some(v,rest) \<Rightarrow> p v (xmls,rest,info)
+  )"
 
-definition int_of_string :: "string \<Rightarrow> string +\<^sub>\<bottom> int"
-where
-  "int_of_string s =
-    (if s = [] then error ''cannot convert empty string into number'' 
-    else if take 1 s = ''-'' then int_of_string_aux 0 (tl s) \<bind> (\<lambda> i. return (0 - i))
-    else int_of_string_aux 0 s)"
+nonterminal xml_binds and xml_bind
+syntax
+  "_xml_block" :: "xml_binds \<Rightarrow> 'a" ("XMLdo {//(2  _)//}" [12] 1000)
+  "_xml_take"  :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>/ _)" 13)
+  "_xml_take_text"  :: "pttrn \<Rightarrow> xml_bind" ("(2_ \<leftarrow>text)" 13)
+  "_xml_take_int"  :: "pttrn \<Rightarrow> xml_bind" ("(2_ \<leftarrow>int)" 13)
+  "_xml_take_nat"  :: "pttrn \<Rightarrow> xml_bind" ("(2_ \<leftarrow>nat)" 13)
+  "_xml_take_att"  :: "pttrn \<Rightarrow> ltag \<Rightarrow> xml_bind" ("(2_ \<leftarrow>att/ _)" 13)
+  "_xml_take_att_optional" :: "pttrn \<Rightarrow> ltag \<Rightarrow> xml_bind" ("(2_ \<leftarrow>att?/ _)" 13)
+  "_xml_take_att_default" :: "pttrn \<Rightarrow> ltag \<Rightarrow> string \<Rightarrow> xml_bind" ("(2_ \<leftarrow>att[(_)]/ _)" 13)
+  "_xml_take_optional" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>?/ _)" 13)
+  "_xml_take_default" :: "pttrn \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>[(_)]/ _)" 13)
+  "_xml_take_all" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>*/ _)" 13)
+  "_xml_take_many" :: "pttrn \<Rightarrow> nat \<Rightarrow> enat \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>^{(_)..(_)}/ _)" 13)
+  "_xml_let" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2let _ =/ _)" [1000, 13] 13)
+  "_xml_final" :: "'a xmlst \<Rightarrow> xml_binds" ("_")
+  "_xml_cons" :: "xml_bind \<Rightarrow> xml_binds \<Rightarrow> xml_binds" ("_;//_" [13, 12] 12)
+  "_xml_do" :: "ltag \<Rightarrow> xml_binds \<Rightarrow> 'a" ("XMLdo (_) {//(2 _)//}" [1000,12] 1000)
 
-hide_const int_of_string_aux
+syntax (ASCII)
+  "_xml_take" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ <-/ _)" 13)
 
-fun int :: "tag \<Rightarrow> int xmlt"
-where
-  "int tag x = (Xmlt.text tag x \<bind> int_of_string)"
-hide_const (open) int
+translations
+  "_xml_block (_xml_cons (_xml_take p x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_text p) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_text (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_int p) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_int (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_nat p) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_nat (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_att p x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_attribute x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_att_optional p x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_attribute_optional x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_att_default p d x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_attribute_default d x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_optional p x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_optional x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_default p d x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_default d x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_all p x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_many 0 \<infinity> x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_take_many p minOccurs maxOccurs x) (_xml_final e))"
+  \<rightleftharpoons> "_xml_block (_xml_final (CONST xml_take_many minOccurs maxOccurs x (\<lambda>p. e)))"
+  "_xml_block (_xml_cons (_xml_let p t) bs)"
+  \<rightleftharpoons> "let p = t in _xml_block bs"
+  "_xml_block (_xml_cons b (_xml_cons c cs))"
+  \<rightleftharpoons> "_xml_block (_xml_cons b (_xml_final (_xml_block (_xml_cons c cs))))"
+  "_xml_cons (_xml_let p t) (_xml_final s)"
+  \<rightleftharpoons> "_xml_final (let p = t in s)"
+  "_xml_block (_xml_final e)" \<rightharpoonup> "e"
+  "_xml_do t e" \<rightleftharpoons> "CONST xml_do t (_xml_block e)"
 
-fun nat :: "tag \<Rightarrow> nat xmlt"
-where
-  "nat tag x = do {
-    txt \<leftarrow> Xmlt.text tag x;
-    i \<leftarrow> int_of_string txt;
-    return (Int.nat i)
-  }"
-hide_const (open) nat
+fun xml_error_to_string where
+  "xml_error_to_string (Fatal e) = String.explode (STR ''Fatal: '' + e)" 
+| "xml_error_to_string (TagMismatch e) = String.explode (STR ''tag mismatch: '' + default_showsl_list showsl_lit e (STR ''''))" 
 
-definition rat :: "rat xmlt"
-where
-  "rat = Xmlt.options [
-    (''integer'', Xmlt.change (Xmlt.int ''integer'') of_int),
-    (''rational'',
-      Xmlt.pair ''rational'' (Xmlt.int ''numerator'') (Xmlt.int ''denominator'')
-        (\<lambda> x y. of_int x / of_int y))]"
-hide_const (open) rat
+definition parse_xml :: "'a xmlt \<Rightarrow> xml \<Rightarrow> string +\<^sub>\<bottom> 'a"
+  where "parse_xml p xml \<equiv>
+    bind2 (xml_take p xml_return ([xml],[],False,[],[])) 
+      (Left o xml_error_to_string) Right"
+
+(*BEGIN: special chars*)
+subsection \<open>Handling of special characters in text\<close>
+
+definition "special_map = map_of [
+  (''quot'', ''\"''), (''#34'', ''\"''), \<comment> \<open>double quotation mark\<close>
+  (''amp'', ''&''), (''#38'', ''&''), \<comment> \<open>ampersand\<close>
+  (''apos'', [CHR 0x27]), (''#39'', [CHR 0x27]), \<comment> \<open>single quotes\<close>
+  (''lt'', ''<''), (''#60'', ''<''), \<comment> \<open>less-than sign\<close>
+  (''gt'', ''>''), (''#62'', ''>'') \<comment> \<open>greater-than sign\<close>
+]"
+
+fun extract_special
+  where
+    "extract_special acc [] = None"
+  | "extract_special acc (x # xs) =
+    (if x = CHR '';'' then map_option (\<lambda>s. (s, xs)) (special_map (rev acc))
+    else extract_special (x#acc) xs)"
+
+lemma extract_special_length [termination_simp]:
+  assumes "extract_special acc xs = Some (y, ys)"
+  shows "length ys < length xs"
+  using assms by (induct acc xs rule: extract_special.induct) (auto split: if_splits)
+
+fun normalize_special
+  where
+    "normalize_special [] = []"
+  | "normalize_special (x # xs) =
+      (if x = CHR ''&'' then
+        (case extract_special [] xs of
+          None \<Rightarrow> ''&'' @ normalize_special xs
+        | Some (spec, ys) \<Rightarrow> spec @ normalize_special ys)
+      else x # normalize_special xs)"
+
+fun map_xml_text :: "(string \<Rightarrow> string) \<Rightarrow> xml \<Rightarrow> xml"
+  where
+    "map_xml_text f (XML t as cs) = XML t as (map (map_xml_text f) cs)"
+  | "map_xml_text f (XML_text txt) = XML_text (f txt)"
+    (*END: special chars*)
+
+definition parse_xml_string :: "'a xmlt \<Rightarrow> string \<Rightarrow> string +\<^sub>\<bottom> 'a"
+  where
+    "parse_xml_string p str \<equiv> case doc_of_string str of
+    Inl err \<Rightarrow> Left err
+  | Inr (XMLDOC header xml) \<Rightarrow> parse_xml p (map_xml_text normalize_special xml)"
+
+
+subsection \<open>For Terminating Parsers\<close>
+
+(*TODO: replace the default size of xml *)
+primrec size_xml
+  where "size_xml (XML_text str) = size str"
+  |   "size_xml (XML tag atts xmls) = 1 + size tag + (\<Sum>xml \<leftarrow> xmls. size_xml xml)"
+
+abbreviation "size_xml_state \<equiv> size_xml \<circ> fst"
+abbreviation "size_xmls_state x \<equiv> (\<Sum>xml \<leftarrow> fst x. size_xml xml)"
+
+lemma size_xml_nth [dest]: "i < length xmls \<Longrightarrow> size_xml (xmls!i) \<le> sum_list (map size_xml xmls)"
+  using elem_le_sum_list[of _ "map Xmlt.size_xml _", unfolded length_map] by auto
+
+lemma xml_or_cong[fundef_cong]:
+  assumes "\<And>info. p (fst x, info) = p' (fst x, info)"
+    and "\<And>info. q (fst x, info) = q' (fst x, info)"
+    and "x = x'"
+  shows "(p XMLor q) x = (p' XMLor q') x'"
+  using assms
+  by (cases x, auto simp: xml_or_def intro!: Option.bind_cong split:sum.split xml_error.split)
+
+lemma xml_do_cong[fundef_cong]:
+  fixes p :: "'a xmlst"
+  assumes "\<And>tag' atts xmls info. fst x = XML tag' atts xmls \<Longrightarrow> String.explode tag = tag' \<Longrightarrow> p (xmls,atts,info) = p' (xmls,atts,info)"
+    and "x = x'"
+  shows "xml_do tag p x = xml_do tag p' x'"
+  using assms by (cases x, auto simp: xml_do_def split: xml.split)
+
+lemma xml_take_cong[fundef_cong]:
+  fixes p :: "'a xmlt" and q :: "'a \<Rightarrow> 'b xmlst"
+  assumes "\<And>a as info. fst x = a#as \<Longrightarrow> p (a, info) = p' (a, info)"
+    and "\<And>a as ret info info'. x' = (a#as,info) \<Longrightarrow> q ret (as, info') = q' ret (as, info')"
+    and "\<And>info. p (XML [] [] [], info) = p' (XML [] [] [], info)"
+    and "x = x'"
+  shows "xml_take p q x = xml_take p' q' x'"
+  using assms by (cases x, auto simp: xml_take_def intro!: Option.bind_cong split: list.split sum.split)
+
+lemma xml_take_many_cong[fundef_cong]:
+  fixes p :: "'a xmlt" and q :: "'a list \<Rightarrow> 'b xmlst"
+  assumes p: "\<And>n info. n < length (fst x) \<Longrightarrow> p (fst x' ! n, info) = p' (fst x' ! n, info)"
+    and err: "\<And>info. p (XML [] [] [], info) = p' (XML [] [] [], info)"
+    and q: "\<And>ret n info. q ret (drop n (fst x'), info) = q' ret (drop n (fst x'), info)"
+    and xx': "x = x'"
+  shows "xml_take_many_sub ret minOccurs maxOccurs p q x = xml_take_many_sub ret minOccurs maxOccurs p' q' x'"
+proof-
+  obtain as b where x: "x = (as,b)" by (cases x, auto)
+  show ?thesis
+  proof (insert p q, fold xx', unfold x, induct as arbitrary: b minOccurs maxOccurs ret)
+    case Nil
+    with err show ?case by (cases b, auto intro!: Option.bind_cong)
+  next
+    case (Cons a as)
+    from Cons(2,3)[where n=0] Cons(2,3)[where n="Suc n" for n]
+    show ?case by (cases b, auto intro!: bind2_cong Cons(1) split: sum.split xml_error.split)
+  qed
+qed
+
+lemma xml_take_optional_cong[fundef_cong]:
+  fixes p :: "'a xmlt" and q :: "'a option \<Rightarrow> 'b xmlst"
+  assumes "\<And>a as info. fst x = a # as \<Longrightarrow> p (a, info) = p' (a, info)"
+    and "\<And>a as ret info. fst x = a # as \<Longrightarrow> q (Some ret) (as, info) = q' (Some ret) (as, info)"
+    and "\<And>info. q None (fst x', info) = q' None (fst x', info)"
+    and xx': "x = x'"
+  shows "xml_take_optional p q x = xml_take_optional p' q' x'"
+  using assms by (cases x', auto simp: xml_take_optional_def split: list.split sum.split xml_error.split intro!: bind2_cong)
+
+lemma xml_take_default_cong[fundef_cong]:
+  fixes p :: "'a xmlt" and q :: "'a \<Rightarrow> 'b xmlst"
+  assumes "\<And>a as info. fst x = a # as \<Longrightarrow> p (a, info) = p' (a, info)"
+    and "\<And>a as ret info. fst x = a # as \<Longrightarrow> q ret (as, info) = q' ret (as, info)"
+    and "\<And>info. q d (fst x', info) = q' d (fst x', info)"
+    and xx': "x = x'"
+  shows "xml_take_default d p q x = xml_take_default d p' q' x'"
+  using assms by (cases x', auto simp: xml_take_default_def split: list.split sum.split xml_error.split intro!: bind2_cong)
+
+
+lemma xml_change_cong[fundef_cong]:
+  assumes "x = x'"
+    and "p x' = p' x'"
+    and "\<And>ret y. p x = Right ret \<Longrightarrow> q ret y = q' ret y"
+  shows "xml_change p q x = xml_change p' q' x'"
+  using assms by (cases x', auto simp: xml_change_def split: option.split sum.split intro!: bind2_cong)
+
+
+lemma if_cong_applied[fundef_cong]:
+  "b = c \<Longrightarrow>
+   (c \<Longrightarrow> x z = u w) \<Longrightarrow>
+   (\<not> c \<Longrightarrow> y z = v w) \<Longrightarrow>
+   z = w \<Longrightarrow>
+   (if b then x else y) z = (if c then u else v) w"
+  by auto
+
+lemma option_case_cong[fundef_cong]:
+  "option = option' \<Longrightarrow>
+    (option' = None \<Longrightarrow> f1 z = g1 w) \<Longrightarrow>
+    (\<And>x2. option' = Some x2 \<Longrightarrow> f2 x2 z = g2 x2 w) \<Longrightarrow>
+    z = w \<Longrightarrow>
+    (case option of None \<Rightarrow> f1 | Some x2 \<Rightarrow> f2 x2) z = (case option' of None \<Rightarrow> g1 | Some x2 \<Rightarrow> g2 x2) w"
+  by (cases option, auto)
+
+lemma sum_case_cong[fundef_cong]:
+  "s = ss \<Longrightarrow>
+  (\<And>x1. ss = Inl x1 \<Longrightarrow> f1 x1 z = g1 x1 w) \<Longrightarrow>
+  (\<And>x2. ss = Inr x2 \<Longrightarrow> f2 x2 z = g2 x2 w) \<Longrightarrow>
+  z = w \<Longrightarrow>
+  (case s of Inl x1 \<Rightarrow> f1 x1 | Inr x2 \<Rightarrow> f2 x2) z = (case ss of Inl x1 \<Rightarrow> g1 x1 | Inr x2 \<Rightarrow> g2 x2) w"
+  by (cases s, auto)
+
+lemma prod_case_cong[fundef_cong]: "p = pp \<Longrightarrow>
+  (\<And>x1 x2. pp = (x1, x2) \<Longrightarrow> f x1 x2 z = g x1 x2 w) \<Longrightarrow>
+  (case p of (x1, x2) \<Rightarrow> f x1 x2) z = (case pp of (x1, x2) \<Rightarrow> g x1 x2) w"
+  by (auto split: prod.split)
+
+text \<open>Mononicity rules of combinators for partial-function command.\<close>
+
+lemma bind2_mono [partial_function_mono]:
+  assumes p0: "mono_sum_bot p0" 
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>y. mono_sum_bot (p2 y)" 
+  shows "mono_sum_bot (\<lambda>g. bind2 (p0 g) (\<lambda>y. p1 y g) (\<lambda>y. p2 y g))"
+proof (rule monotoneI)
+  fix f g :: "'a \<Rightarrow> 'b +\<^sub>\<bottom> 'c" 
+  assume fg: "fun_ord sum_bot_ord f g" 
+  with p0 have "sum_bot_ord (p0 f) (p0 g)" by (rule monotoneD[of _ _ _ f g])
+  then have "sum_bot_ord 
+    (bind2 (p0 f) (\<lambda> y. p1 y f) (\<lambda> y. p2 y f))
+    (bind2 (p0 g) (\<lambda> y. p1 y f) (\<lambda> y. p2 y f))" 
+    unfolding flat_ord_def bind2_def by auto
+  also from p1 have "\<And> y'. sum_bot_ord (p1 y' f) (p1 y' g)" 
+    by (rule monotoneD) (rule fg)
+  then have "sum_bot_ord 
+    (bind2 (p0 g) (\<lambda> y. p1 y f) (\<lambda> y. p2 y f))
+    (bind2 (p0 g) (\<lambda> y. p1 y g) (\<lambda> y. p2 y f))"
+    unfolding flat_ord_def by (cases "p0 g") (auto simp: bind2_def)
+  also (sum_bot.leq_trans)
+  from p2 have "\<And> y'. sum_bot_ord (p2 y' f) (p2 y' g)" 
+    by (rule monotoneD) (rule fg)
+  then have "sum_bot_ord 
+    (bind2 (p0 g) (\<lambda> y. p1 y g) (\<lambda> y. p2 y f))
+    (bind2 (p0 g) (\<lambda> y. p1 y g) (\<lambda> y. p2 y g))"
+    unfolding flat_ord_def by (cases "p0 g") (auto simp: bind2_def)
+  finally (sum_bot.leq_trans)
+  show "sum_bot_ord (bind2 (p0 f) (\<lambda>y. p1 y f) (\<lambda>y. p2 y f))
+            (bind2 (p0 g) (\<lambda>ya. p1 ya g) (\<lambda>ya. p2 ya g))" .
+qed
+
+lemma xml_or_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>y. mono_sum_bot (p2 y)" 
+  shows "mono_sum_bot (\<lambda>g. xml_or (\<lambda>y. p1 y g) (\<lambda>y. p2 y g) x)"
+  using p1 unfolding xml_or_def
+  by (cases x, auto simp: xml_or_def intro!: partial_function_mono,
+      intro monotoneI, auto split: xml_error.splits simp: sum_bot.leq_refl dest: monotoneD[OF p2])
+
+lemma xml_do_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  shows "mono_sum_bot (\<lambda>g. xml_do t (\<lambda>y. p1 y g) x)" 
+  by (cases x, cases "fst x") (auto simp: xml_do_def intro!: partial_function_mono p1)
+
+lemma xml_take_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>x z. mono_sum_bot (\<lambda> y. p2 z x y)"  
+  shows "mono_sum_bot (\<lambda>g. xml_take (\<lambda>y. p1 y g) (\<lambda> x y. p2 x y g) x)"
+proof (cases x)
+  case (fields a b c d e)
+  show ?thesis unfolding xml_take_def fields split
+    by (cases a, auto intro!: partial_function_mono p2 p1)
+qed
+
+lemma xml_take_default_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>x z. mono_sum_bot (\<lambda> y. p2 z x y)"  
+  shows "mono_sum_bot (\<lambda>g. xml_take_default a (\<lambda>y. p1 y g) (\<lambda> x y. p2 x y g) x)"
+proof (cases x)
+  case (fields a b c d e)
+  show ?thesis unfolding xml_take_default_def fields split
+    by (cases a, auto intro!: partial_function_mono p2 p1, intro monotoneI,
+        auto split: xml_error.splits simp: sum_bot.leq_refl dest: monotoneD[OF p2])
+qed
+
+lemma xml_take_optional_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>x z. mono_sum_bot (\<lambda> y. p2 z x y)"  
+  shows "mono_sum_bot (\<lambda>g. xml_take_optional (\<lambda>y. p1 y g) (\<lambda> x y. p2 x y g) x)" 
+proof (cases x)
+  case (fields a b c d e)
+  show ?thesis unfolding xml_take_optional_def fields split
+    by (cases a, auto intro!: partial_function_mono p2 p1, intro monotoneI,
+        auto split: xml_error.splits simp: sum_bot.leq_refl dest: monotoneD[OF p2])
+qed
+
+lemma xml_change_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>x z. mono_sum_bot (\<lambda> y. p2 z x y)"  
+  shows "mono_sum_bot (\<lambda>g. xml_change (\<lambda>y. p1 y g) (\<lambda> x y. p2 x y g) x)" 
+  unfolding xml_change_def by (intro partial_function_mono p1, cases x, auto intro: p2)
+
+lemma xml_take_many_sub_mono [partial_function_mono]:
+  assumes p1: "\<And>y. mono_sum_bot (p1 y)" 
+  assumes p2: "\<And>x z. mono_sum_bot (\<lambda> y. p2 z x y)"  
+  shows "mono_sum_bot (\<lambda>g. xml_take_many_sub a b c (\<lambda>y. p1 y g) (\<lambda> x y. p2 x y g) x)" 
+proof -
+  obtain xs atts allow cands rest where x: "x = (xs, atts, allow, cands, rest)" by (cases x)
+  show ?thesis unfolding x 
+  proof (induct xs arbitrary: a b c atts allow rest cands)
+    case Nil
+    show ?case by (auto intro!: partial_function_mono p1 p2)
+  next
+    case (Cons x xs)
+    show ?case unfolding xml_take_many_sub.simps
+      by (auto intro!: partial_function_mono p2 p1 Cons, intro monotoneI,
+          auto split: xml_error.splits simp: sum_bot.leq_refl dest: monotoneD[OF p2])
+  qed
+qed
+
+partial_function (sum_bot) xml_foldl :: "('a \<Rightarrow> 'b xmlt) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a xmlst" where
+  [code]: "xml_foldl p f a xs = (case xs of ([],_) \<Rightarrow> Right a
+     | _ \<Rightarrow> xml_take (p a) (\<lambda> b. xml_foldl p f (f a b)) xs)" 
 
 end
-
