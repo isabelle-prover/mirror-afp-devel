@@ -59,13 +59,13 @@ object AFP_Check_Roots {
             if timeout == 0 || timeout % 300 != 0
           } yield session_name),
       Check[String]("chapter", "The following entries are not in the AFP chapter:",
-        (structure, sessions, _) => sessions.filterNot(structure(_).chapter == "AFP")),
+        (structure, sessions, _) => sessions.filterNot(structure(_).chapter == AFP.chapter)),
       Check[(String, List[String])]("groups", "The following sessions have wrong groups:",
         (structure, sessions, _) =>
           for {
             session_name <- sessions
             info = structure(session_name)
-            if !info.groups.toSet.subsetOf(Sessions.afp_groups) || !info.groups.contains("AFP")
+            if !info.groups.toSet.subsetOf(Sessions.afp_groups)
           } yield (session_name, info.groups),
         t => t._1 + ": {" + t._2.mkString(", ") + "}"),
       Check[String]("presence",
@@ -82,7 +82,7 @@ object AFP_Check_Roots {
         (_, _, check_dirs) =>
           for {
             dir <- check_dirs
-            root_entries = Sessions.parse_roots(dir + Path.basic("ROOTS")).toSet
+            root_entries = Sessions.parse_roots(dir + Sessions.ROOTS).toSet
             file_entries = dir_entries(dir).toSet
             extra <- root_entries.union(file_entries) -- root_entries.intersect(file_entries)
           } yield extra),
@@ -119,7 +119,7 @@ object AFP_Check_Roots {
         "The following entries contain unused document files:",
         (structure, _, check_dirs) => {
           check_dirs.flatMap(dir => dir_entries(dir).map(dir + Path.basic(_))).flatMap { dir =>
-            val sessions = root_sessions(dir + Path.basic("ROOT"))
+            val sessions = root_sessions(dir + Sessions.ROOT)
 
             val session_document_files =
               sessions.flatMap { session_name =>

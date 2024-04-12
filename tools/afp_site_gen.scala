@@ -341,7 +341,7 @@ object AFP_Site_Gen {
         for {
           session <- entry_sessions(entry)
           dep_session <- sessions_structure.imports_graph.imm_preds(session.name)
-          if sessions_structure(dep_session).groups.contains("AFP")
+          if sessions_structure(dep_session).is_afp
           dep <- session_entry.get(dep_session)
           if dep != entry
         } yield dep.name
@@ -366,7 +366,7 @@ object AFP_Site_Gen {
 
     for {
       (session_name, (info, _)) <- sessions_structure.imports_graph.iterator
-      if !info.groups.contains("AFP")
+      if !info.is_afp
     } write_session_json(session_name, JSON.Object("rss" -> false))
 
 
