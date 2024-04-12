@@ -36,6 +36,7 @@ thiemann = "thiemann_email"
 yamada = "yamada_email1"
 
 [history]
+2024-04-12 = "changed definition of square-free-factorization.<br>"
 
 [extra]
 

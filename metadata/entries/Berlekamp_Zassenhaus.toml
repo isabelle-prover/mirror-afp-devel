@@ -43,6 +43,7 @@ email = "yamada_email"
 thiemann = "thiemann_email"
 
 [history]
+2024-04-12 = "Added interface to simplify usage of generated code.<br>"
 
 [extra]
 
