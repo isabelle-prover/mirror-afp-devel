@@ -13,11 +13,20 @@ import java.io.File as JFile
 object AFP_Check_Roots {
   val exclude = List("etc")
 
-  def dir_entries(path: Path): List[String] =
-    File.read_dir(path).filter(name => (path + Path.basic(name)).is_dir).filterNot(exclude.contains)
+  private def entries(dir: Path): List[String] =
+    for {
+      name <- File.read_dir(dir)
+      if (dir + Path.basic(name)).is_dir
+      if !exclude.contains(name)
+    } yield name
 
-  def root_sessions(root_file: Path): List[String] =
-    Sessions.parse_root(root_file).collect { case e: Sessions.Session_Entry => e.name }
+  private def entry_dirs(dir: Path): List[Path] =
+    for (entry <- entries(dir)) yield dir + Path.basic(entry)
+
+  private def rel_path(entry_dir: Path, path: Path): Path =
+    File.relative_path(entry_dir.absolute, path.absolute).get
+
+  private def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
 
 
   /* checks */
@@ -47,6 +56,7 @@ object AFP_Check_Roots {
       }
   }
 
+
   val known_checks: List[Check[_]] =
     List(
       Check[String]("timeout",
@@ -73,7 +83,7 @@ object AFP_Check_Roots {
         (structure, sessions, check_dirs) =>
           for {
             dir <- check_dirs
-            entry_name <- dir_entries(dir)
+            entry_name <- entries(dir)
             entry_info = structure(entry_name)
             if !sessions.contains(entry_name) || entry_info.dir.base.implode != entry_name
           } yield entry_name),
@@ -83,7 +93,7 @@ object AFP_Check_Roots {
           for {
             dir <- check_dirs
             root_entries = Sessions.parse_roots(dir + Sessions.ROOTS).toSet
-            file_entries = dir_entries(dir).toSet
+            file_entries = entries(dir).toSet
             extra <- root_entries.union(file_entries) -- root_entries.intersect(file_entries)
           } yield extra),
       Check[(String, List[Path])]("unused_thys",
@@ -92,17 +102,10 @@ object AFP_Check_Roots {
           val selection = Sessions.Selection(sessions = sessions)
           val deps = structure.selection_deps(selection = selection)
 
-          def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
-
-          def rel_path(entry_dir: Path, path: Path): Path =
-            File.relative_path(entry_dir.absolute, path.absolute).get
-
           for {
-            dir <- check_dirs
-            entry <- dir_entries(dir)
+            entry_dir <- check_dirs.flatMap(entry_dirs)
+            sessions = Sessions.parse_root_entries(entry_dir + Sessions.ROOT).map(_.name)
 
-            entry_dir = dir + Path.basic(entry)
-            sessions = root_sessions(entry_dir + Sessions.ROOT)
             theory_nodes = sessions.flatMap(deps.apply(_).proper_session_theories)
             thy_files = theory_nodes.map(node => rel_path(entry_dir, node.path))
 
@@ -117,37 +120,36 @@ object AFP_Check_Roots {
         t => t._1 + ": {" + t._2.mkString(", ") + "}"),
       Check[(String, List[Path])]("unused_document_files",
         "The following entries contain unused document files:",
-        (structure, _, check_dirs) => {
-          check_dirs.flatMap(dir => dir_entries(dir).map(dir + Path.basic(_))).flatMap { dir =>
-            val sessions = root_sessions(dir + Sessions.ROOT)
+        (structure, _, check_dirs) =>
+          for {
+            entry_dir <- check_dirs.flatMap(entry_dirs)
+            sessions = Sessions.parse_root_entries(entry_dir + Sessions.ROOT).map(_.name)
 
-            val session_document_files =
+            session_document_files =
               sessions.flatMap { session_name =>
                 val info = structure(session_name)
                 info.document_files.map { case (dir, file) => (info.dir + dir, file) }
               }
 
-            def rel_path(path: Path): Path = File.relative_path(dir.absolute, path.absolute).get
+            document_files =
+              session_document_files.map { case (dir, path) => rel_path(entry_dir, dir + path) }
 
-            val document_files =
-              session_document_files.map { case (dir, path) => rel_path(dir + path) }
-
-            val physical_files =
+            physical_files =
               for {
                 document_dir <- session_document_files.map(_._1.file).distinct
                 document_file <- File.find_files(document_dir, _.isFile, include_dirs = true)
-              } yield rel_path(Path.explode(document_file.getAbsolutePath))
+              } yield rel_path(entry_dir, Path.explode(document_file.getAbsolutePath))
 
-            val unused = physical_files.toSet -- document_files.toSet
-            if (unused.nonEmpty) Some(dir.base.implode -> unused.toList) else None
-          }
-        },
+            unused = physical_files.toSet -- document_files.toSet
+
+            if unused.nonEmpty
+          } yield entry_dir.base.implode -> unused.toList,
         t => t._1 + ": {" + t._2.mkString(", ") + "}",
         is_error = false),
       Check[String]("document_presence",
         "The following entries do not contain a document root.tex",
         (structure, _, check_dirs) =>
-          check_dirs.flatMap(dir_entries).filterNot(
+          check_dirs.flatMap(entries).filterNot(
             structure(_).document_files.map(_._2).contains(Path.basic("root.tex")))),
       Check[(String, List[String])]("thy_name_clashes",
         "The following would cause name conflicts:",
@@ -168,8 +170,7 @@ object AFP_Check_Roots {
     ).sortBy(_.name)
 
   def the_check(name: String): Check[_] =
-    known_checks.find(check => check.name == name) getOrElse
-      error("Unkown check " + quote(name))
+    known_checks.find(check => check.name == name).getOrElse(error("Unknown check " + quote(name)))
 
 
   /* check */
