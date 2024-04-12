@@ -8,7 +8,7 @@ section \<open>Show Based on String Literals\<close>
 theory Shows_Literal
   imports
     Main
-    Show.Show_Real
+    Show_Real
 begin
 
 text \<open>In this theory we provide an alternative to the @{class show}-class, where
