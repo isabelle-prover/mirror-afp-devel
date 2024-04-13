@@ -12,7 +12,7 @@ theory Number_Parser
 begin
 
 text \<open>We define here the bind-operations for option and sum-type. We do not 
-  import these operations from Certification_Monads.Strict-Sum and Parser-Monad,
+  import these operations from Certification-Monads.Strict-Sum and Parser-Monad,
   since these imports would yield a cyclic dependency of 
   the two AFP entries Show and Certification-Monads.\<close>
 
