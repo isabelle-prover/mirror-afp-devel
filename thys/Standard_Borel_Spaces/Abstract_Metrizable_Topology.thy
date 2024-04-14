@@ -97,6 +97,397 @@ proof -
     by (metis Metric_space.compact_space_imp_separable assms(1) assms(2) compact_imp_locally_compact_space locally_compact_imp_completely_metrizable_space polish_space_def)
 qed
 
+subsection \<open> Extended Reals and Non-Negative Extended Reals \<close>
+lemma polish_space_ereal:"polish_space (euclidean :: ereal topology)"
+proof(rule homeomorphic_polish_space_aux)
+  show "polish_space (subtopology euclideanreal {-1..1})"
+    by (auto intro!: polish_space_closedin)
+next
+  define f :: "real \<Rightarrow> ereal"
+    where "f \<equiv> (\<lambda>r. if r = - 1 then - \<infinity> else if r = 1 then \<infinity> else if r \<le> 0 then ereal (1 - (1 / (1 + r))) else ereal ((1 / (1 - r)) - 1))"
+  define g :: "ereal \<Rightarrow> real"
+    where "g \<equiv> (\<lambda>r. if r \<le> 0 then real_of_ereal (inverse (1 - r)) - 1 else 1 - real_of_ereal (inverse (1 + r)))"
+  show "top_of_set {-1..1::real} homeomorphic_space (euclidean :: ereal topology)"
+    unfolding homeomorphic_space_def homeomorphic_maps_def continuous_map_iff_continuous
+  proof(safe intro!: exI[where x=f] exI[where x=g])
+    show "continuous_on {- 1..1} f"
+      unfolding continuous_on_eq_continuous_within
+    proof safe
+      fix x :: real
+      assume "x \<in> {- 1..1}"
+      then consider "x = -1" | "-1 < x" "x < 0" | "x = 0" | "0 < x" "x < 1" | "x = 1"
+        by fastforce
+      then show "continuous (at x within {- 1..1}) f"
+      proof cases
+        show "- 1 < x \<Longrightarrow> x < 0 \<Longrightarrow> ?thesis"
+          by(simp add: at_within_Icc_at, intro isCont_cong[where f="\<lambda>r. ereal (1 - (1 / (1 + r)))" and g=f,THEN iffD1,OF _ continuous_on_interior[of "{-1<..<0}"]]) (auto simp: at_within_Icc_at eventually_nhds f_def intro!: exI[where x="{-1<..<0}"] continuous_on_divide continuous_on_ereal continuous_on_diff continuous_on_add)
+      next
+        have *:"isCont (\<lambda>r. if r \<le> 0 then ereal (1 - (1 / (1 + r))) else ereal ((1 / (1 - r)) - 1)) 0"
+          by(rule isCont_If_ge) (auto simp add: continuous_within intro!: continuous_on_Icc_at_leftD[where a="- (1 / 2)" and b=0 and f="\<lambda>r::real. 1 - (1 / (1 + r))",simplified] continuous_on_Icc_at_rightD[where a=0 and b="1 / 2" and f="\<lambda>r::real. (1 / (1 - r)) - 1",simplified] continuous_on_diff continuous_on_divide continuous_on_add)
+        show ?thesis if x:"x = 0"
+          unfolding x at_within_Icc_at[of "- 1 :: real" 0 1,simplified]
+          by(rule isCont_cong[THEN iffD1,OF _ *]) (auto simp: eventually_nhds f_def intro!: exI[where x="{-1 / 2<..<1/2}"])
+      next
+        show "0 < x \<Longrightarrow> x < 1 \<Longrightarrow> ?thesis"
+          by(simp add: at_within_Icc_at, intro isCont_cong[where f="\<lambda>r. ereal ((1 / (1 - r)) - 1)" and g=f,THEN iffD1,OF _ continuous_on_interior[of "{0<..<1}"]]) (auto simp: at_within_Icc_at eventually_nhds f_def intro!: exI[where x="{0<..<1}"] continuous_on_divide continuous_on_ereal continuous_on_diff continuous_on_add)
+      next
+        show ?thesis if x:"x = -1"
+          unfolding x at_within_Icc_at_right[where a="- 1 :: real" and b=1,simplified] continuous_within ereal_tendsto_simps(2)[symmetric]
+        proof(subst tendsto_cong)
+          show "\<forall>\<^sub>F r in at_right (ereal (- 1)). (f \<circ> real_of_ereal) r = 1 - (1 / (1 + r))"
+            unfolding eventually_at_right[of "ereal (- 1)" 0,simplified]
+          proof(safe intro!: exI[where x="ereal (- 1 / 2)"])
+            fix y
+            assume "ereal (- 1) < y" "y < ereal (- 1 / 2)"
+            then obtain y' where y':"y = ereal y'" "- 1 < y'" "y' < - 1 / 2"
+              by (metis ereal_real' less_ereal.simps(1) not_inftyI)
+            show "(f \<circ> real_of_ereal) y = 1 - 1 / (1 + y)"
+              using y'(2,3) by(auto simp add: y'(1) f_def one_ereal_def)
+          qed simp
+        next
+          have "((\<lambda>r. 1 - 1 / (1 + r)) \<longlongrightarrow> - \<infinity>) (at_right (ereal (- 1)))"
+            unfolding tendsto_MInfty
+          proof safe
+            fix r :: real
+            consider "r \<ge> 1" | "r < 1"
+              by argo
+            then show "\<forall>\<^sub>F x in at_right (ereal (- 1)). 1 - 1 / (1 + x) < ereal r"
+            proof cases
+              case [arith]:1
+              show ?thesis
+                unfolding eventually_at_right[of "ereal (- 1)" 0,simplified]
+              proof(safe intro!: exI[where x=0])
+                fix y
+                assume "ereal (- 1) < y" "y < 0"
+                then obtain y' where y':"y = ereal y'" "- 1 < y'" "y' < 0"
+                  using not_inftyI by force
+                then have *:"1 - 1 / (1 + y) < 1"
+                  by (simp add: one_ereal_def)
+                show "1 - 1 / (1 + y) < ereal r"
+                  by(rule order.strict_trans2[OF *]) (use 1 in auto)
+              qed simp
+            next
+              case 2
+              show ?thesis
+                unfolding eventually_at_right[of "ereal (- 1)" 0,simplified]
+              proof(safe intro!: exI[where x="ereal (1 / (1 - r) - 1)"])
+                fix y
+                assume " ereal (- 1) < y" "y < ereal (1 / (1 - r) - 1)"
+                then obtain y' where y':"y = ereal y'" "- 1 < y'" "y' < 1 / (1 - r) - 1"
+                  by (metis ereal_less_eq(3) ereal_real' linorder_not_le not_inftyI)
+                have "1 - 1 / (1 + y) = ereal (1 - 1 / (1 + y'))"
+                  by (metis ereal_divide ereal_minus(1) one_ereal_def order_less_irrefl plus_ereal.simps(1) real_0_less_add_iff y'(1) y'(2))
+                also have "... < ereal r"
+                proof -
+                  have "1 + y' < 1 / (1 - r)"
+                    using y' by simp
+                  hence "1 - r < 1 / (1 + y')"
+                    using y' 2 by (simp add: less_divide_eq mult.commute)
+                  thus ?thesis
+                    by simp
+                qed
+                finally show "1 - 1 / (1 + y) < ereal r" .
+              qed(use 2 in auto)
+            qed
+          qed
+          thus "((\<lambda>r. 1 - 1 / (1 + r)) \<longlongrightarrow> f (- 1)) (at_right (ereal (- 1)))"
+            by(simp add: f_def)
+        qed
+      next
+        show ?thesis if x:"x = 1"
+          unfolding x at_within_Icc_at_left[where a="- 1 :: real" and b=1,simplified] continuous_within ereal_tendsto_simps(1)[symmetric]
+        proof(subst tendsto_cong)
+          show "\<forall>\<^sub>F r in at_left (ereal 1). (f \<circ> real_of_ereal) r = (1 / (1 - r)) - 1"
+            unfolding eventually_at_left[of 0 "ereal 1",simplified]
+          proof(safe intro!: exI[where x="ereal (1 / 2)"])
+            fix y
+            assume "ereal (1 / 2) < y" "y < ereal 1"
+            then obtain y' where y':"y = ereal y'" "1 / 2 < y'" "y' < 1"
+              using ereal_less_ereal_Ex by force
+            show "(f \<circ> real_of_ereal) y = 1 / (1 - y) - 1"
+              using y'(2,3) by(auto simp add: y'(1) f_def one_ereal_def)
+          qed simp
+        next
+          have "((\<lambda>r. (1 / (1 - r)) - 1) \<longlongrightarrow> \<infinity>) (at_left (ereal 1))"
+            unfolding tendsto_PInfty
+          proof safe
+            fix r :: real
+            consider "r \<le> - 1" | "- 1 < r"
+              by argo
+            then show "\<forall>\<^sub>F x in at_left (ereal 1). (1 / (1 - x)) - 1 > ereal r"
+            proof cases
+              case [arith]:1
+              show ?thesis
+                unfolding eventually_at_left[of 0 "ereal 1",simplified]
+              proof(safe intro!: exI[where x=0])
+                fix y
+                assume "0 < y" "y < ereal 1"
+                then obtain y' where y':"y = ereal y'" "0 < y'" "y' < 1"
+                  using not_inftyI by force
+                then have *:"(1 / (1 - y)) - 1 > ereal (- 1)"
+                  by (simp add: one_ereal_def)
+                show "ereal r < 1 / (1 - y) - 1"
+                  by(rule order.strict_trans1[OF _ *]) (use 1 in auto)
+              qed simp
+            next
+              case 2
+              show ?thesis
+                unfolding eventually_at_left[of 0 "ereal 1",simplified]
+              proof(safe intro!: exI[where x="ereal (1 - 1 / (1 + r))"])
+                fix y
+                assume "ereal (1 - 1 / (1 + r)) < y" "y < ereal 1"
+                then obtain y' where y':"y = ereal y'" "1 - 1 / (1 + r) < y'" "y' < 1"
+                  by (metis ereal_less_eq(3) ereal_real' linorder_not_le not_inftyI)
+                have "ereal r < ereal (1 / (1 - y') - 1)"
+                proof -
+                  have "1 - y' < 1 / (r + 1)"
+                    using y'(2) by argo
+                  hence "r + 1 < 1 / (1 - y')"
+                    using y' 2 by (simp add: less_divide_eq mult.commute)
+                  thus ?thesis
+                    by simp
+                qed
+                also have "... = 1 / (1 - y) - 1"
+                  by (metis diff_gt_0_iff_gt ereal_divide ereal_minus(1) less_numeral_extra(3) one_ereal_def y'(1) y'(3))
+                finally show "ereal r < 1 / (1 - y) - 1" .
+              qed(use 2 in auto)
+            qed
+          qed
+          thus " ((\<lambda>r. 1 / (1 - r) - 1) \<longlongrightarrow> f 1) (at_left (ereal 1))"
+            by(simp add: f_def)
+        qed
+      qed
+    qed
+  next
+    show "continuous_map euclidean (top_of_set {- 1..1}) g"
+    proof(safe intro!: continuous_map_into_subtopology)
+      show "continuous_map euclidean euclideanreal g"
+        unfolding Abstract_Topology.continuous_map_iff_continuous2 continuous_on_eq_continuous_within
+      proof safe
+        fix x :: ereal
+        consider "x = - \<infinity>" | "- \<infinity> < x" "x < 0" | "x = 0" | "0 < x" "x < \<infinity>" | "x = \<infinity>"
+          by fastforce
+        then show "isCont g x"
+        proof cases
+          assume x:"- \<infinity> < x" "x < 0"
+          then obtain x' where x':"x = ereal x'" "x' < 0"
+            by (metis ereal_infty_less(2) ereal_less_ereal_Ex zero_ereal_def)
+          show ?thesis
+          proof(subst isCont_cong)
+            have [simp]:"isCont ((-) 1) x"
+            proof -
+              have *:"isCont (\<lambda>x. ereal (real_of_ereal 1 - real_of_ereal x)) x"
+                using x' by(auto simp add: continuous_at_iff_ereal[symmetric,simplified comp_def] intro!: continuous_diff continuous_at_of_ereal)
+              have **: "ereal (x' - 1) < x \<Longrightarrow> x < 0 \<Longrightarrow> ereal (1 - real_of_ereal x) = ereal 1 - x" for x
+                by (metis ereal_minus(1) less_ereal.simps(2) less_ereal.simps(3) real_of_ereal.elims)
+              show ?thesis
+                apply(rule isCont_cong[THEN iffD1,OF _ *])
+                using x'(2) ** by(auto simp: eventually_nhds x'(1) one_ereal_def intro!: exI[where x="{x-1<..<0}"])
+            qed
+            have *:"abs (1 - x) \<noteq> \<infinity>" " 1 - x \<noteq> 0"
+              using x'(2) by(auto simp add: x'(1) one_ereal_def)
+            show "isCont (\<lambda>r. real_of_ereal (inverse (1 - r)) - 1) x"
+              using x * by(auto intro!: continuous_diff continuous_divide isCont_o2[OF _ continuous_at_of_ereal])
+          next
+            show "\<forall>\<^sub>F x in nhds x. g x = real_of_ereal (inverse (1 - x)) - 1"
+              using x(2) by(auto simp: eventually_nhds x'(1) g_def one_ereal_def intro!: exI[where x="{x-1<..<0}"])
+          qed
+        next
+          assume x:"\<infinity> > x" "x > 0"
+          then obtain x' where x':"x = ereal x'" "x' > 0"
+            by (metis ereal_less(2) less_ereal.elims(2) less_ereal.simps(2))
+          show ?thesis
+          proof(subst isCont_cong)
+            have [simp]: "isCont ((+) 1) x"
+            proof -
+              have *:"isCont (\<lambda>x. ereal (real_of_ereal 1 + real_of_ereal x)) x"
+                using x' by(auto simp add: continuous_at_iff_ereal[symmetric,simplified comp_def] intro!: continuous_add continuous_at_of_ereal)
+              have **: " 0 < x \<Longrightarrow> x < ereal (x' + 1) \<Longrightarrow> ereal (1 + real_of_ereal x) = ereal 1 + x" for x
+                using ereal_less_ereal_Ex by auto
+              show ?thesis
+                apply(rule isCont_cong[THEN iffD1,OF _ *])
+                using x'(2) ** by(auto simp: eventually_nhds x'(1) one_ereal_def intro!: exI[where x="{0<..<x + 1}"])
+            qed
+            have "real_of_ereal (1 + x) \<noteq> 0"
+              using x' by auto
+            thus "isCont (\<lambda>r. 1 - real_of_ereal (inverse (1 + r))) x"
+              using x by(auto intro!: continuous_diff continuous_divide isCont_o2[OF _ continuous_at_of_ereal])
+          next
+            show "\<forall>\<^sub>F x in nhds x. g x = 1 - real_of_ereal (inverse (1 + x))"
+              using x(2) by(auto simp: eventually_nhds x'(1) g_def one_ereal_def intro!: exI[where x="{0<..<x+1}"])
+          qed
+        next
+          show "isCont g x" if x:"x = - \<infinity>"
+            unfolding x
+          proof(safe intro!: continuous_at_sequentiallyI)
+            fix u :: "nat \<Rightarrow> ereal"
+            assume u:"u \<longlonglongrightarrow> - \<infinity>"
+            show "(\<lambda>n. g (u n)) \<longlonglongrightarrow> g (- \<infinity>)"
+              unfolding LIMSEQ_def
+            proof safe
+              fix r :: real
+              assume r[arith]: "r > 0"
+              obtain no where no: "\<And>n. n \<ge> no \<Longrightarrow> u n < ereal (min (1 - 1 / r) 0)"
+                using u unfolding tendsto_MInfty eventually_sequentially by blast
+              show "\<exists>no. \<forall>n\<ge>no. dist (g (u n)) (g (- \<infinity>)) < r"
+              proof(safe intro!: exI[where x=no])
+                fix n
+                assume n:"n \<ge> no"
+                have r0:"1 - min (ereal (1 - 1 / r)) (ereal 0) > 0"
+                  by (simp add: ereal_diff_gr0 min.strict_coboundedI2)
+                have u1:"1 - u n > 0"
+                  by (metis ereal_0_less_1 ereal_diff_gr0 ereal_min linorder_not_le min.strict_coboundedI2 n no order_le_less_trans order_less_not_sym zero_ereal_def)
+                have "real_of_ereal (inverse (1 - u n)) < r"
+                proof -
+                  have "real_of_ereal (inverse (1 - u n)) < real_of_ereal (inverse (1 -  ereal (min (1 - 1 / r) 0)))"
+                  proof(safe intro!: ereal_less_real_iff[THEN iffD2])
+                    have "ereal (real_of_ereal (inverse (1 - u n))) = inverse (1 - u n)"
+                      by(rule ereal_real') (use no[OF n] u1 in auto)
+                    also have "... < inverse (1 - ereal (min (1 - 1 / r) 0))"
+                      apply(rule ereal_inverse_antimono_strict)
+                      using no[OF n] apply(simp add: ereal_diff_positive min.coboundedI2)
+                      by (metis (no_types, lifting) no[OF n] ereal_add_uminus_conv_diff ereal_eq_minus_iff ereal_less_minus_iff ereal_minus_less_minus ereal_times(1) ereal_times(3))
+                    finally show "ereal (real_of_ereal (inverse (1 - u n))) < inverse (1 - ereal (min (1 - 1 / r) 0))" .
+                  qed(use r0 in auto)
+                  also have "... \<le> r"
+                    by(cases "r \<ge> 1") (auto simp add: real_of_ereal_minus)
+                  finally show "real_of_ereal (inverse (1 - u n)) < r" .
+                qed
+                thus "dist (g (u n)) (g (- \<infinity>)) < r"
+                  using u1 no[OF n] by(auto simp: g_def zero_ereal_def dist_real_def)
+              qed
+            qed
+          qed
+        next
+          show "isCont g x" if x:"x = \<infinity>"
+            unfolding x
+          proof(safe intro!: continuous_at_sequentiallyI)
+            fix u :: "nat \<Rightarrow> ereal"
+            assume u:"u \<longlonglongrightarrow> \<infinity>"
+            show "(\<lambda>n. g (u n)) \<longlonglongrightarrow> g \<infinity>"
+              unfolding LIMSEQ_def
+            proof safe
+              fix r :: real
+              assume r[arith]: "r > 0"
+              obtain no where no: "\<And>n. n \<ge> no \<Longrightarrow> u n > ereal (max (1 / r - 1) 0)"
+                using u unfolding tendsto_PInfty eventually_sequentially by blast 
+              show "\<exists>no. \<forall>n\<ge>no. dist (g (u n)) (g \<infinity>) < r"
+              proof(safe intro!: exI[where x=no])
+                fix n
+                assume n:"n \<ge> no"
+                have u0: "1 + u n > 0"
+                  using no[OF n] by simp (metis add_nonneg_pos zero_ereal_def zero_less_one_ereal)
+                have "\<bar>- real_of_ereal (inverse (1 + u n))\<bar> < r"
+                proof -
+                  have "\<bar>- real_of_ereal (inverse (1 + u n))\<bar> < \<bar>- (inverse (1 + max (1 / r - 1) 0))\<bar>"
+                    unfolding abs_real_of_ereal abs_minus
+                  proof(safe intro!: real_less_ereal_iff[THEN iffD2])
+                    have "\<bar>inverse (1 + u n)\<bar> < inverse (1 + ereal (max (1 / r - 1) 0))"
+                      using no[OF n] u0 by (simp add: ereal_add_strict_mono ereal_inverse_antimono_strict inverse_ereal_ge0I le_max_iff_disj order_less_imp_le u0)
+                    also have "... = ereal \<bar>inverse (1 + max (1 / r - 1) 0)\<bar>"
+                      by(auto simp: abs_ereal.simps(1)[symmetric] ereal_max[symmetric] simp del: abs_ereal.simps(1) ereal_max)
+                    finally show "\<bar>inverse (1 + u n)\<bar> < ereal \<bar>inverse (1 + max (1 / r - 1) 0)\<bar>" .
+                  qed auto
+                  also have "... = inverse (1 + max (1 / r - 1) 0)"
+                    by auto
+                  also have "... \<le> r"
+                    by(cases "r \<le> 1") auto
+                  finally show ?thesis .
+                qed
+                thus "dist (g (u n)) (g \<infinity>) < r"
+                  using no[OF n] by(auto simp: g_def dist_real_def zero_ereal_def)
+              qed
+            qed
+          qed
+        next
+          show "isCont g x" if x:"x = 0"
+            unfolding x g_def
+          proof(safe intro!: isCont_If_ge)
+            have "((\<lambda>x. real_of_ereal (1 - x)) \<longlongrightarrow> 1) (at_left 0)"
+            proof(subst tendsto_cong)
+              show "((\<lambda>x. 1 - real_of_ereal x) \<longlongrightarrow> 1) (at_left 0)"
+                by(auto intro!: tendsto_diff[where a=1 and b=0,simplified] simp: zero_ereal_def)
+            next
+              show "\<forall>\<^sub>F x in at_left 0. real_of_ereal (1 - x) = 1 - real_of_ereal x"
+                by(auto simp: eventually_at_left[where y="- 1" and x="0::ereal",simplified] real_of_ereal_minus ereal_uminus_eq_reorder  intro!: exI[where x="-1"])
+            qed
+            thus "continuous (at_left 0) (\<lambda>x. real_of_ereal (inverse (1 - x)) - 1)"
+              unfolding continuous_within
+              by (auto intro!: tendsto_diff[where a = 1 and b=1,simplified] tendsto_divide[where a=1 and b=1,simplified])
+          next
+            have "((\<lambda>x. real_of_ereal (1 + x)) \<longlongrightarrow> 1) (at_right 0)"
+            proof(subst tendsto_cong)
+              show "((\<lambda>x. 1 + real_of_ereal x) \<longlongrightarrow> 1) (at_right 0)"
+                by(auto intro!: tendsto_add[where a=1 and b=0,simplified] simp: zero_ereal_def)
+            next
+              show "\<forall>\<^sub>F x in at_right 0. real_of_ereal (1 + x) = 1 + real_of_ereal x"
+                by(auto simp: eventually_at_right[where y=1 and x="0::ereal",simplified] real_of_ereal_add ereal_uminus_eq_reorder  intro!: exI[where x=1])
+            qed
+            thus "((\<lambda>x. 1 - real_of_ereal (inverse (1 + x))) \<longlongrightarrow> real_of_ereal (inverse (1 - 0)) - 1) (at_right 0)"
+              by (auto intro!: tendsto_diff[where a = 1 and b=1,simplified] tendsto_divide[where a=1 and b=1,simplified])
+          qed
+        qed
+      qed
+    next
+      fix x :: ereal
+      consider "x = - \<infinity>" | "- \<infinity> < x" "x \<le> 0" | "0 < x" "x < \<infinity>" | "x = \<infinity>"
+        by fastforce
+      then show "g x \<in> {- 1..1}"
+      proof cases
+        assume "- \<infinity> < x" "x \<le> 0"
+        then obtain x' where "x = ereal x'" "x' \<le> 0"
+          by (metis dual_order.refl ereal_less_ereal_Ex order_less_le zero_ereal_def)
+        then show ?thesis
+          by(auto simp: g_def real_of_ereal_minus intro!: pos_divide_le_eq[THEN iffD2])
+      next
+        assume "0 < x" "x < \<infinity>"
+        then obtain x' where "x = ereal x'" "x' > 0"
+          by (metis ereal_less(2) less_ereal.elims(2) order_less_le)
+        then show ?thesis
+          by(auto simp: g_def real_of_ereal_add inverse_eq_divide intro!: pos_divide_le_eq[THEN iffD2])
+      qed(auto simp: g_def)
+    qed
+  next
+    fix x :: ereal
+    consider "x = - \<infinity>" | "- \<infinity> < x" "x \<le> 0" | "0 < x" "x < \<infinity>" | "x = \<infinity>"
+      by fastforce
+    then show "f (g x) = x"
+    proof cases
+      assume "- \<infinity> < x" "x \<le> 0"
+      then obtain x' where x':"x = ereal x'" "x' \<le> 0"
+        by (metis dual_order.refl ereal_less_ereal_Ex order_less_le zero_ereal_def)
+      then have [arith]:"1 / (1 - x') - 1 \<le> 0"
+        by simp
+      show ?thesis
+        using x' by(auto simp: g_def real_of_ereal_minus f_def)
+    next
+      assume "0 < x" "x < \<infinity>"
+      then obtain x' where x':"x = ereal x'" "x' > 0"
+        by (metis ereal_less(2) less_ereal.elims(2) order_less_le)
+      hence [arith]: "1 - 1 / (x' + 1) \<ge> 0"
+        by simp
+      show ?thesis
+        using x' by(simp add: g_def inverse_eq_divide f_def)
+    qed(auto simp: f_def g_def)
+  next
+    fix x :: real
+    assume "x \<in> topspace (top_of_set {- 1..1})"
+    then consider "x = - 1" | "- 1 < x" "x \<le> 0" | "0 < x" "x < 1" | "x = 1"
+      by fastforce
+    then show "g (f x) = x"
+      by cases (auto simp: f_def g_def real_of_ereal_minus real_of_ereal_add)
+  qed
+qed
+
+corollary polish_space_ennreal:"polish_space (euclidean :: ennreal topology)"
+proof(rule homeomorphic_polish_space_aux)
+  show "polish_space (top_of_set {0::ereal..})"
+    using polish_space_closedin polish_space_ereal by fastforce
+next
+  show "top_of_set {0::ereal..} homeomorphic_space (euclidean :: ennreal topology)"
+    by(auto intro!: exI[where x=e2ennreal] exI[where x=enn2ereal] simp: homeomorphic_space_def homeomorphic_maps_def enn2ereal_e2ennreal continuous_on_e2ennreal continuous_map_in_subtopology continuous_on_enn2ereal image_subset_iff)
+qed
+
 subsection \<open>Continuous Embddings\<close>
 abbreviation Hilbert_cube_topology :: "(nat \<Rightarrow> real) topology" where
 "Hilbert_cube_topology \<equiv> (product_topology (\<lambda>n. top_of_set {0..1}) UNIV)"

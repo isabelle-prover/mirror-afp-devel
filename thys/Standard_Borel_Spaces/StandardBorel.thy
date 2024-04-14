@@ -202,85 +202,10 @@ corollary(in standard_borel_ne) standard_borel_ne_embed_measure:
   shows "standard_borel_ne (embed_measure M f)"
   by (simp add: assms space_embed_measure space_ne standard_borel_embed_measure standard_borel_ne_axioms_def standard_borel_ne_def)
 
-lemma ereal_standard_ne: "standard_borel_ne (borel :: ereal measure)"
-proof -
-  interpret s: standard_borel_ne "restrict_space borel {0..1::real}"
-    by auto
-  define f :: "real \<Rightarrow> ereal"
-    where "f \<equiv> (\<lambda>r. if r = 0 then bot else if r = 1 then top else tan (pi * r - (pi / 2)))"
-  define g :: "ereal \<Rightarrow> real"
-    where "g \<equiv> (\<lambda>r. if r = top then 1 else if r = bot then 0 else arctan (real_of_ereal r) / pi + 1 / 2)"
-  show ?thesis
-  proof(rule s.measurable_isomorphic_standard_ne[OF measurable_isomorphic_byWitness[where f=f and g = g]])
-    show "f \<in> borel_measurable (restrict_space borel {0..1})"
-    proof -
-      have 1:"{0..1} \<inter> {r. r \<noteq> 0} \<inter> {x. x \<noteq> 1} = {0<..<1::real}" by auto
-      have 2:"(\<lambda>x. ereal (tan (pi * x - pi / 2))) \<in> borel_measurable (restrict_space borel ({0..1} \<inter> {r. r \<noteq> 0} \<inter> {x. x \<noteq> 1}))"
-        unfolding 1
-      proof(safe intro!: borel_measurable_continuous_on_restrict continuous_on_ereal Transcendental.continuous_on_tan)
-        show "continuous_on {0<..<1} (\<lambda>x::real. pi * x - pi / 2)"
-          by(auto intro!: continuous_at_imp_continuous_on)
-      next
-        fix x :: real
-        assume h:"cos (pi * x - pi / 2) = 0" "x \<in> {0<..<1}"
-        hence "- (pi / 2) < pi * x - pi / 2" "pi * x - pi / 2 < pi / 2"
-          by simp_all
-        from cos_gt_zero_pi[OF this] h(1)
-        show False by simp
-      qed
-      have "{r:: real. r = 0 \<and> 0 \<le> r \<and> r \<le> 1} \<in> sets (restrict_space borel {0..1})" "{x::real. x = 1 \<and> 0 \<le> x \<and> x \<le> 1 \<and> x \<noteq> 0} \<in> sets (restrict_space borel ({0..1} \<inter> {r. r \<noteq> 0}))"
-        by(auto simp: sets_restrict_space)
-      with 2 show ?thesis
-        by(auto intro!: measurable_If_restrict_space_iff[THEN iffD2] simp: restrict_restrict_space f_def)
-    qed
-  next
-    show "g \<in> borel \<rightarrow>\<^sub>M restrict_space borel {0..1}"
-      unfolding g_def measurable_restrict_space2_iff
-    proof safe
-      fix x :: ereal
-      have "-1 / 2 < arctan (real_of_ereal x) / pi" "arctan (real_of_ereal x) / pi < 1 / 2"
-        using arctan_lbound[of "real_of_ereal x"] arctan_ubound[of "real_of_ereal x"]
-        by (simp_all add: mult_imp_less_div_pos)
-      hence "0 \<le> arctan (real_of_ereal x) / pi + 1 / 2" "arctan (real_of_ereal x) / pi + 1 / 2 \<le> 1"
-        by linarith+
-      thus "(if x = \<top> then 1 else if x = \<bottom> then 0 else arctan (real_of_ereal x) / pi + 1 / 2) \<in> {0..1}"
-        by auto
-    qed measurable
-  next
-    fix r ::real
-    assume "r \<in> space (restrict_space borel {0..1})"
-    then consider "r = 0" | "r = 1" | "0 < r" "r < 1" by auto linarith
-    then show " g (f r) = r"
-    proof cases
-      case 3
-      then have 1:"- (pi / 2) < pi * r - pi / 2" "pi * r - pi / 2 < pi / 2"
-        by simp_all
-      have "arctan (tan (pi * r - pi / 2)) / pi + 1 / 2 = r"
-        by(simp add: arctan_tan[OF 1] diff_divide_distrib)
-      thus ?thesis
-        by(auto simp: f_def g_def top_ereal_def bot_ereal_def)
-    qed(auto simp: g_def f_def top_ereal_def bot_ereal_def)
-  next
-    fix y :: ereal
-    consider "y = top" | "y = bot" | "y \<noteq> bot" "y \<noteq> top" by auto
-    then show "f (g y) = y"
-    proof cases
-      case 3
-      hence [simp]: "\<bar>y\<bar> \<noteq> \<infinity>" by(auto simp: top_ereal_def bot_ereal_def)
-      have "-1 / 2 < arctan (real_of_ereal y) / pi" "arctan (real_of_ereal y) / pi < 1 / 2"
-        using arctan_lbound[of "real_of_ereal y"] arctan_ubound[of "real_of_ereal y"]
-        by (simp_all add: mult_imp_less_div_pos)
-      hence "arctan (real_of_ereal y) / pi + 1 / 2 < 1" "arctan (real_of_ereal y) / pi + 1 / 2 > 0"
-        by linarith+
-      thus ?thesis
-        using arctan_lbound[of "real_of_ereal y"] arctan_ubound[of "real_of_ereal y"]
-        by(auto simp: f_def g_def distrib_left tan_arctan ereal_real')
-    qed(auto simp: f_def g_def)
-  qed
-qed
-
-corollary ennreal_stanndard_ne: "standard_borel_ne (borel :: ennreal measure)"
-  by(auto intro!: standard_borel_ne.measurable_isomorphic_standard_ne[OF standard_borel_ne.standard_borel_ne_restrict_space[OF ereal_standard_ne,of "{0..}",simplified]] measurable_isomorphic_byWitness[where f=e2ennreal and g=enn2ereal] measurable_restrict_space1 measurable_restrict_space2 enn2ereal_e2ennreal)
+lemma
+  shows standard_ne_ereal: "standard_borel_ne (borel :: ereal measure)"
+    and standard_ne_ennreal: "standard_borel_ne (borel :: ennreal measure)"
+  using polish_space_ereal polish_space_ennreal by(auto simp: standard_borel_ne_def standard_borel_ne_axioms_def standard_borel_def borel_of_euclidean)
 
 text \<open> Cantor space $\mathscr{C}$ \<close>
 definition Cantor_space :: "(nat \<Rightarrow> real) measure" where
