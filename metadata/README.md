@@ -3,6 +3,11 @@ Metadata format
 
 We're using the [TOML](https://toml.io/en/v1.0.0) format for metadata files. The data model is
 defined in Isabelle/Scala, so larger changes can also be done in a programmatic way.
+You can also use the web-based user interface to edit the metadata,
+which can be started locally with `isabelle afp_edit_metadata`
+(though some fields can not be edited this way, such as the history) --
+on a save, the tool will overwrite the metadata in your repository clone.
+
 
 `entries/<name>.toml`
 ---------------------

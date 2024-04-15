@@ -16,12 +16,11 @@ object AFP_Release {
     user: String,
     host: String,
     releases_dir: Path,
-    base_dir: Path,
     options: Options
   ): Unit = {
     val Release_Tar = """afp-(.+)-(\d{4}-\d{2}-\d{2})\.tar\.gz""".r
 
-    val afp = AFP_Structure(base_dir)
+    val afp = AFP_Structure()
 
     val isabelle_releases =
       split_lines(File.read(afp.metadata_dir + Path.basic("release-dates")))
@@ -45,11 +44,11 @@ object AFP_Release {
     }
   }
 
-  def afp_release(date: LocalDate, isabelle: Metadata.Isabelle.Version, base_dir: Path): Unit = {
+  def afp_release(date: LocalDate, isabelle: Metadata.Isabelle.Version): Unit = {
     def add_release(entry: Metadata.Entry): Metadata.Entry =
       entry.copy(releases = entry.releases :+ Metadata.Release(entry.name, date, isabelle))
 
-    val afp = AFP_Structure(base_dir)
+    val afp = AFP_Structure()
 
     val releases = afp.load_entries().values.toList.map(add_release).flatMap(_.releases)
 
@@ -87,20 +86,18 @@ Usage: isabelle afp_release [OPTIONS]
 
       getopts(args)
 
-      val base_dir = Path.explode("$AFP_BASE")
-
       if (import_releases) {
         val Remote = """([^@]+)@([^:]+):(.*)""".r
         releases match {
           case Remote(user, host, dir) =>
             afp_import_releases(user = user, host = host, releases_dir = Path.explode(dir),
-              base_dir = base_dir, options = options)
+              options = options)
           case _ => error("Invalid remote: " + quote(releases))
         }
       }
       else {
         if (isabelle.isEmpty) getopts.usage()
-        afp_release(date, isabelle, base_dir)
+        afp_release(date, isabelle)
       }
     })
 }

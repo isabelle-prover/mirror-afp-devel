@@ -8,7 +8,7 @@ package afp
 import isabelle.*
 
 
-class AFP_Structure private(val base_dir: Path, options: Options) {
+class AFP_Structure private(options: Options, val base_dir: Path) {
   /* files */
 
   val metadata_dir = base_dir + Path.basic("metadata")
@@ -130,6 +130,6 @@ class AFP_Structure private(val base_dir: Path, options: Options) {
 }
 
 object AFP_Structure {
-  def apply(base_dir: Path = AFP.BASE, options: Options = Options.init0()): AFP_Structure =
-    new AFP_Structure(base_dir.absolute, options)
+  def apply(options: Options = Options.init0(), base_dir: Path = AFP.BASE): AFP_Structure =
+    new AFP_Structure(options, base_dir.absolute)
 }

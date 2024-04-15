@@ -639,7 +639,7 @@ object AFP_Submit {
         val dir = up(id)
         dir.file.mkdirs()
 
-        val structure = AFP_Structure(dir)
+        val structure = AFP_Structure(base_dir = dir)
         structure.save_authors(metadata.authors.values.toList.sortBy(_.id))
         metadata.entries.foreach(structure.save_entry)
 
@@ -668,12 +668,12 @@ object AFP_Submit {
             val id = ID(date)
             val day = date.rep.toLocalDate
             read_status(id).map(
-              Model.Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
+              Model.Overview(id, day, AFP_Structure(base_dir = up(id)).entries_unchecked.head, _))
           })
 
       def get(id: ID, state: State): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
-          val structure = AFP_Structure(up(id))
+          val structure = AFP_Structure(base_dir = up(id))
           val authors = structure.load_authors
           val entries = structure.entries_unchecked.map(
             structure.load_entry(_, authors, state.topics, state.licenses, state.releases))
@@ -1308,8 +1308,8 @@ object AFP_Submit {
           affils = Val.ok(affils),
           notifies = Val.ok(notifies),
           related = related,
-          related_kind = Model.Related.from_string(params(RELATED + KIND)),
-          related_input = Val.ok(params(RELATED + INPUT)))
+          related_kind = Model.Related.from_string(params(key + RELATED + KIND)),
+          related_input = Val.ok(params(key + RELATED + INPUT)))
 
       for {
         (new_author_ids, all_authors) <-
@@ -1675,10 +1675,9 @@ object AFP_Submit {
       var devel = false
       var verbose = false
       var port = 8080
-      var dir: Option[Path] = None
 
       val getopts = Getopts("""
-Usage: isabelle afp_submit [OPTIONS]
+Usage: isabelle afp_submit [OPTIONS] DIR
 
   Options are:
       -a PATH      backend path (if endpoint is not server root)
@@ -1686,33 +1685,63 @@ Usage: isabelle afp_submit [OPTIONS]
       -d           devel mode (serves frontend and skips automatic AFP repository updates)
       -p PORT      server port. Default: """ + port + """
       -v           verbose
-      -D DIR       submission directory
 
-  Start afp submission server. Server is in "edit" mode
-  unless directory to store submissions in is specified.
+  Start afp submission server for specified submission directory.
 """,
         "a:" -> (arg => backend_path = Path.explode(arg)),
         "b:" -> (arg => frontend = arg),
         "d" -> (_ => devel = true),
         "p:" -> (arg => port = Value.Int.parse(arg)),
-        "v" -> (_ => verbose = true),
-        "D:" -> (arg => dir = Some(Path.explode(arg))))
+        "v" -> (_ => verbose = true))
 
-      getopts(args)
+      val dir =
+        getopts(args) match {
+          case dir :: Nil => Path.explode(dir)
+          case _ => getopts.usage()
+        }
 
       val afp = AFP_Structure()
 
       val progress = new Console_Progress(verbose = verbose)
 
-      val (handler, mode) = dir match {
-        case Some(dir) => (Handler.Adapter(dir, afp), Mode.SUBMISSION)
-        case None => (Handler.Edit(afp), Mode.EDIT)
-      }
+      val handler = Handler.Adapter(dir, afp)
 
       val paths = Web_App.Paths(Url(frontend + ":" + port), backend_path, serve_frontend = devel,
         landing = Page.SUBMISSIONS)
-      val server = new Server(paths = paths, afp = afp, mode = mode,
+      val server = new Server(paths = paths, afp = afp, mode = Mode.SUBMISSION,
         handler = handler, devel = devel, verbose = verbose, progress = progress, port = port)
+
+      server.run()
+    })
+
+  val isabelle_tool1 = Isabelle_Tool("afp_edit_metadata", "edit AFP metadata",
+    Scala_Project.here,
+    { args =>
+      var verbose = false
+      var port = 8080
+
+      val getopts = Getopts("""
+Usage: isabelle afp_submit [OPTIONS]
+
+  Options are:
+      -p PORT      server port. Default: """ + port + """
+      -v           verbose
+
+  Start afp server to edit metadata.
+""",
+        "p:" -> (arg => port = Value.Int.parse(arg)),
+        "v" -> (_ => verbose = true))
+
+      val afp = AFP_Structure()
+
+      val progress = new Console_Progress(verbose = verbose)
+
+      val handler = Handler.Edit(afp)
+
+      val paths = Web_App.Paths(Url("http://localhost:" + port), Path.current,
+        serve_frontend = true, landing = Page.SUBMISSIONS)
+      val server = new Server(paths = paths, afp = afp, mode = Mode.EDIT,
+        handler = handler, devel = true, verbose = verbose, progress = progress, port = port)
 
       server.run()
     })
