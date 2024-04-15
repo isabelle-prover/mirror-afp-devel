@@ -17,6 +17,9 @@ datatype (funs_term : 'f, vars_term : 'v) "term" =
 where
   "args (Var _) = []"
 
+lemmas is_VarI = term.disc(1)
+lemmas is_FunI = term.disc(2)
+
 abbreviation "is_Fun t \<equiv> \<not> is_Var t"
 
 lemma is_VarE [elim]:

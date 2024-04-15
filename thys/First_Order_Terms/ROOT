@@ -5,6 +5,8 @@ session First_Order_Terms = "Abstract-Rewriting" +
   options [timeout = 300]
   sessions
     "HOL-Library"
+    Polynomial_Factorization
+    Show
     Fresh_Identifiers
   theories
     Transitive_Closure_More
@@ -19,6 +21,9 @@ session First_Order_Terms = "Abstract-Rewriting" +
     Unification_String
     Subsumption
     Subterm_and_Context
+  theories 
+    Position
+    Term_More
   document_files
     "root.tex"
     "root.bib"

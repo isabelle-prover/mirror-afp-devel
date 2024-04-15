@@ -380,6 +380,12 @@ fun ctxt_apply_term :: "('f, 'v) ctxt \<Rightarrow> ('f, 'v) term \<Rightarrow> 
 lemma ctxt_eq [simp]:
   "(C\<langle>s\<rangle> = C\<langle>t\<rangle>) = (s = t)" by (induct C) auto
 
+lemma size_ctxt: "size t \<le> size (C\<langle>t\<rangle>)"
+  by (induct C) simp_all
+
+lemma size_ne_ctxt: "C \<noteq> \<box> \<Longrightarrow> size t < size (C\<langle>t\<rangle>)"
+  by (induct C) force+
+
 fun ctxt_compose :: "('f, 'v) ctxt \<Rightarrow> ('f, 'v) ctxt \<Rightarrow> ('f, 'v) ctxt" (infixl "\<circ>\<^sub>c" 75)
   where
     "\<box> \<circ>\<^sub>c D = D" |
@@ -564,6 +570,10 @@ fun funas_term :: "('f, 'v) term \<Rightarrow> 'f sig"
   where
     "funas_term (Var _) = {}" |
     "funas_term (Fun f ts) = {(f, length ts)} \<union> \<Union>(set (map funas_term ts))"
+
+lemma finite_funas_term:
+  "finite (funas_term t)"
+  by (induct t) auto
 
 
 lemma supt_imp_funas_term_subset:
