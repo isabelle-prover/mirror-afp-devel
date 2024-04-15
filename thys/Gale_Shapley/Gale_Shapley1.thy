@@ -7,7 +7,7 @@ Author: Tobias Nipkow
 section "Part 1: Refinement down to lists"
 
 theory Gale_Shapley1
-imports Main
+imports
   "HOL-Hoare.Hoare_Logic"
   "List-Index.List_Index"
   "HOL-Library.While_Combinator"
@@ -308,30 +308,30 @@ apply (auto simp add: pref_match'_def pref_match_def imp_ex prefers_def match_de
   apply (smt (verit) P_set atLeast0LessThan order.strict_trans index_first lessThan_iff linorder_neqE_nat nth_index)
   by (smt (verit, best) P_set atLeast0LessThan card_atLeastLessThan card_distinct diff_zero in_mono index_nth_id lessThan_iff less_trans nth_mem)
 
-definition opti\<^sub>a where
-"opti\<^sub>a A = (\<nexists>A'. matching A' {<n} \<and> stable A' {<n} \<and>
+definition optiA where
+"optiA A = (\<nexists>A'. matching A' {<n} \<and> stable A' {<n} \<and>
                 (\<exists>a<n. P ! a \<turnstile> match A' a < match A a))"
 
-definition pessi\<^sub>b where
-"pessi\<^sub>b A = (\<nexists>A'. matching A' {<n} \<and> stable A' {<n} \<and>
+definition pessiB where
+"pessiB A = (\<nexists>A'. matching A' {<n} \<and> stable A' {<n} \<and>
                  (\<exists>a<n. \<exists>a'<n. match A a = match A' a' \<and> Q ! match A a \<turnstile> a < a'))"
 
-lemma opti\<^sub>a_pessi\<^sub>b: assumes "opti\<^sub>a A" shows "pessi\<^sub>b A"
-unfolding pessi\<^sub>b_def
+lemma optiA_pessiB: assumes "optiA A" shows "pessiB A"
+unfolding pessiB_def
 proof (safe, goal_cases)
   case (1 A' a a')
   have "\<not> P!a \<turnstile>  match A a <  match A' a" using 1
     by (metis atLeast0LessThan lessThan_iff stable_def)
-  with 1 \<open>opti\<^sub>a A\<close> show ?case using P_set match_less_n opti\<^sub>a_def prefers_def unfolding matching_def
+  with 1 \<open>optiA A\<close> show ?case using P_set match_less_n optiA_def prefers_def unfolding matching_def
     by (metis (no_types) atLeast0LessThan inj_on_contraD lessThan_iff less_not_refl linorder_neqE_nat nth_index)
 qed
 
-lemma opti\<^sub>a_inv:
+lemma optiA_inv:
 assumes A: "wf A" and a: "a < n" and a': "a' < n" and same_match: "match A a' = match A a"
-and pref: "Q ! match A a' \<turnstile> a' < a" and "opti\<^sub>a A"
-shows "opti\<^sub>a (A[a := A ! a + 1])"
-proof (unfold opti\<^sub>a_def matching_def, rule notI, elim exE conjE)
-  note opti\<^sub>a = \<open>opti\<^sub>a A\<close>[unfolded opti\<^sub>a_def matching_def]
+and pref: "Q ! match A a' \<turnstile> a' < a" and "optiA A"
+shows "optiA (A[a := A ! a + 1])"
+proof (unfold optiA_def matching_def, rule notI, elim exE conjE)
+  note optiA = \<open>optiA A\<close>[unfolded optiA_def matching_def]
   let ?A = "A[a := A ! a + 1]"
   fix A' a''
   assume "a'' < n" and A': "length A' = n" "set A' \<subseteq> {<n}" "stable A' {<n}" "inj_on (match A') {<n}"
@@ -346,16 +346,16 @@ proof (unfold opti\<^sub>a_def matching_def, rule notI, elim exE conjE)
               not_less_eq not_less_less_Suc_eq)
     thus False
     proof
-      assume "P ! a \<turnstile> match A' a < match A a " thus False using opti\<^sub>a A' \<open>a < n\<close> by(fastforce) 
+      assume "P ! a \<turnstile> match A' a < match A a " thus False using optiA A' \<open>a < n\<close> by(fastforce) 
     next
       assume "match A' a = match A a"
       have "a \<noteq> a'" using pref a' by(auto simp: prefers_def)
-      hence "P ! a' \<turnstile> match A' a < match A' a' \<and> Q ! match A' a \<turnstile> a' < a" using opti\<^sub>a pref A' same_match \<open>match A' a = match A a\<close> a a'
+      hence "P ! a' \<turnstile> match A' a < match A' a' \<and> Q ! match A' a \<turnstile> a' < a" using optiA pref A' same_match \<open>match A' a = match A a\<close> a a'
         by (metis P_set atLeast0LessThan match_less_n inj_onD lessThan_iff linorder_neqE_nat nth_index prefers_def)
       thus False using a a' \<open>a \<noteq> a'\<close> A'(3) by (metis stable_def atLeastLessThan_iff zero_le)
     qed
   next
-    assume "a'' \<noteq> a" thus False using opti\<^sub>a A' pref_a'' \<open>a'' < n\<close> by(metis match_def nth_list_update_neq)
+    assume "a'' \<noteq> a" thus False using optiA A' pref_a'' \<open>a'' < n\<close> by(metis match_def nth_list_update_neq)
   qed
 qed
 
@@ -368,7 +368,7 @@ by (metis atLeast0LessThan match_less_n inj_onD lessThan_iff prefers_asym)
 subsection \<open>Algorithm 1\<close>
 
 definition invAM where
-[simp]: "invAM A M = (matching A M \<and> M \<subseteq> {<n} \<and> pref_match A M \<and> opti\<^sub>a A)"
+[simp]: "invAM A M = (matching A M \<and> M \<subseteq> {<n} \<and> pref_match A M \<and> optiA A)"
 
 lemma invAM_match:
   "\<lbrakk> invAM A M;  a < n \<and> a \<notin> M;  match A a \<notin> match A ` M \<rbrakk> \<Longrightarrow> invAM A (M \<union> {a})"
@@ -380,7 +380,7 @@ assumes a: "a < n \<and> a \<notin> M" and a': "a' \<in> M \<and> match A a' = m
 shows "invAM (A[a' := A!a'+1]) (M - {a'} \<union> {a})"
 proof -
   have A: "wf A" and M : "M \<subseteq> {<n}" and inj: "inj_on (match A) M" and pref_match: "pref_match A M"
-  and "opti\<^sub>a A" by(insert \<open>invAM A M\<close>) (auto)
+  and "optiA A" by(insert \<open>invAM A M\<close>) (auto)
   have "M \<noteq> {<n}" "a' < n" "a \<noteq> a'" using a' a M by auto
   have pref_match': "pref_match' A M" using pref_match pref_match'_iff[OF A] by blast
   let ?A = "A[a' := A!a'+1]" let ?M = "M - {a'} \<union> {a}"
@@ -396,7 +396,7 @@ proof -
     apply(simp add: pref_match'_def match_upd_neq neq_a' Ball_def Bex_def image_iff imp_ex nth_list_update less_Suc_eq
             flip: match_def)
     by (metis prefers_trans)
-  moreover have "opti\<^sub>a ?A" using opti\<^sub>a_inv[OF A \<open>a' < n\<close> _ _ _ \<open>opti\<^sub>a A\<close>] a a'[THEN conjunct2] pref by auto
+  moreover have "optiA ?A" using optiA_inv[OF A \<open>a' < n\<close> _ _ _ \<open>optiA A\<close>] a a'[THEN conjunct2] pref by auto
   ultimately show ?thesis using a a' M pref_match'_iff by auto
 qed
 
@@ -416,7 +416,7 @@ assumes a: "a < n \<and> a \<notin> M" and a': "a' \<in> M \<and> match A a' = m
 shows "invAM (A[a := A!a + 1]) M"
 proof -
   have A: "wf A" and M : "M \<subseteq> {<n}" and inj: "inj_on (match A) M" and pref_match: "pref_match A M"
-  and opti\<^sub>a: "opti\<^sub>a A" and "a' < n"
+  and optiA: "optiA A" and "a' < n"
     by(insert \<open>invAM A M\<close> a') (auto)
   hence pref': "Q ! match A a' \<turnstile> a' < a"
     using pref a a' Q_set unfolding prefers_def
@@ -434,7 +434,7 @@ proof -
   moreover have "pref_match' ?A M" using a pref_match' pref' A a' neq_a
     by(auto simp: match_upd_neq pref_match'_def Ball_def Bex_def image_iff nth_list_update imp_ex less_Suc_eq
             simp flip: match_def)
-  moreover have  "opti\<^sub>a ?A" using opti\<^sub>a_inv[OF A conjunct1[OF a] \<open>a' < n\<close> conjunct2[OF a'] pref' opti\<^sub>a] .
+  moreover have  "optiA ?A" using optiA_inv[OF A conjunct1[OF a] \<open>a' < n\<close> conjunct2[OF a'] pref' optiA] .
   ultimately show ?thesis using M by (simp add: pref_match'_iff)
 qed
 
@@ -454,15 +454,15 @@ lemma Gale_Shapley1: "VARS M A a a' b
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp: stable_def opti\<^sub>a_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
+   by(auto simp: stable_def optiA_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
 next
   case 3 thus ?case using pref_match_stable by auto
 next
   case (2 v M A a)
-  hence invAM: "invAM A M" and m: "matching A M" and M: "M \<subseteq> {<n}" "M \<noteq> {<n}" and "opti\<^sub>a A"
+  hence invAM: "invAM A M" and m: "matching A M" and M: "M \<subseteq> {<n}" "M \<noteq> {<n}" and "optiA A"
     and v: "var A M = v" by auto
   note Ainj = conj12[OF m[unfolded matching_def]]
   note pref_match1 = preferred_subset_match_if_invAM[OF invAM]
@@ -541,10 +541,10 @@ lemma Gale_Shapley2: "VARS A a a' as b
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp: stable_def opti\<^sub>a_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
+   by(auto simp: stable_def optiA_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
 next
   case 3 thus ?case using pref_match_stable by auto
 next
@@ -640,10 +640,10 @@ lemma Gale_Shapley3: "VARS A B a a' as b
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-    by(auto simp: stable_def opti\<^sub>a_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
+    by(auto simp: stable_def optiA_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
 next
   case 3 thus ?case using pref_match_stable by auto
 next
@@ -745,10 +745,10 @@ lemma Gale_Shapley4_unused: "VARS A B M a a' as b
        FI
   FI 
  OD
- [wf A \<and> inj_on (match A) {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [wf A \<and> inj_on (match A) {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp: stable_def opti\<^sub>a_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
+   by(auto simp: stable_def optiA_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
 next
   case 3 thus ?case using pref_match_stable by auto
 next
@@ -860,10 +860,10 @@ lemma Gale_Shapley4:
   OD;
   B := B(match A a := Some a); ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def)[]
+   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def)[]
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -990,10 +990,10 @@ lemma Gale_Shapley4_var2:
   OD;
   B := B(match A a := Some a); ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def)[]
+   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def)[]
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -1080,10 +1080,10 @@ lemma Gale_Shapley4_1: "VARS A B a a' ai b
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-    by(auto simp: stable_def opti\<^sub>a_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
+    by(auto simp: stable_def optiA_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def)
 next
   case 3 thus ?case using pref_match_stable
     using atLeast0_lessThan_Suc by force
@@ -1201,10 +1201,10 @@ lemma Gale_Shapley5:
   OD;
   B[match A a] := a; N[match A a] := True; ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -1293,10 +1293,10 @@ lemma Gale_Shapley5_var2:
   OD;
   B[match A a] := a; N[match A a] := True; ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -1463,10 +1463,10 @@ lemma Gale_Shapley5_1: "VARS A B N a a' ai b
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 3 thus ?case using pref_match_stable
     using atLeast0_lessThan_Suc by force
@@ -1567,10 +1567,10 @@ shows
   OD;
   B[b] := a; N[b] := True; ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -1667,10 +1667,10 @@ shows
   OD;
   B[b] := a; N[b] := True; ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -1791,10 +1791,10 @@ shows
   OD;
   B[b] := a; N[b] := True; ai := ai+1
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -1856,10 +1856,10 @@ shows "VARS A B N a a' ai b r
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc by force
 next
@@ -1891,10 +1891,10 @@ shows "VARS A B N a a' ai b r
        FI
   FI 
  OD
- [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+ [matching A {<n} \<and> stable A {<n} \<and> optiA A]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc by force
 next
@@ -2051,12 +2051,12 @@ next
 qed
 
 lemma gs: assumes "R = map ranking Q"
-shows "gs n P R = (A,BNai) \<longrightarrow> matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A"
+shows "gs n P R = (A,BNai) \<longrightarrow> matching A {<n} \<and> stable A {<n} \<and> optiA A"
 unfolding gs_def
 proof(rule while_rule2[where P = "\<lambda>(A,B,N,ai). invar1 A B N ai"
   and r = "measure(\<lambda>(A,B,N,ai). n - ai)"], goal_cases)
   case 1 show ?case
-   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case (2 s)
   obtain A B N ai where s: "s =  (A, B, N, ai)"
@@ -2074,12 +2074,12 @@ qed
 
 
 lemma gs1: assumes "R = map ranking Q"
-shows "gs1 n P R = (A,BNaia) \<longrightarrow> matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A"
+shows "gs1 n P R = (A,BNaia) \<longrightarrow> matching A {<n} \<and> stable A {<n} \<and> optiA A"
 unfolding gs1_def
 proof(rule while_rule2[where P = "\<lambda>(A,B,N,ai,a). invar2' A B N ai a"
   and r = "measure (%(A, B, N, ai, a). Pref.var P A ({<ai+1} - {a}))"], goal_cases)
   case 1 show ?case
-    by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+    by(auto simp: stable_def pref_match_def P_set card_distinct match_def index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case (2 s)
   obtain A B N ai a where s: "s =  (A, B, N, ai, a)"
@@ -2115,7 +2115,7 @@ definition
 
 theorem gs: "\<lbrakk> Pref P Q; n = length P \<rbrakk> \<Longrightarrow>
  \<exists>A. Gale_Shapley P Q = Some(A) \<and> Pref.matching P A {<n} \<and>
-   Pref.stable P Q A {<n} \<and> Pref.opti\<^sub>a P Q A"
+   Pref.stable P Q A {<n} \<and> Pref.optiA P Q A"
 unfolding Gale_Shapley_def using Pref.gs
 by (metis fst_conv surj_pair)
 
@@ -2126,7 +2126,7 @@ definition
 
 theorem gs1: "\<lbrakk> Pref P Q; n = length P \<rbrakk> \<Longrightarrow>
  \<exists>A. Gale_Shapley1 P Q = Some(A) \<and> Pref.matching P A {<n} \<and>
-   Pref.stable P Q A {<n} \<and> Pref.opti\<^sub>a P Q A"
+   Pref.stable P Q A {<n} \<and> Pref.optiA P Q A"
 unfolding Gale_Shapley1_def using Pref.gs1
 by (metis fst_conv surj_pair)
 
