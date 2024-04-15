@@ -868,7 +868,7 @@ object AFP_Submit {
           par(fieldlabel(key + DATE, "Date") ::
             hidden(key + DATE, entry.date.toString) ::
             text(entry.date.toString)),
-          par(List(fieldlabel(Params.Key.empty, "Topics"),
+          par(List(fieldlabel(key + TOPIC, "Topics"),
             list(Params.indexed(key + TOPIC, entry.topics, render_topic)))),
           par(fieldlabel(key + LICENSE, "License") ::
             hidden(key + LICENSE, entry.license.id) ::
@@ -876,11 +876,11 @@ object AFP_Submit {
           par(List(fieldlabel(key + ABSTRACT, "Abstract"),
             hidden(key + ABSTRACT, entry.`abstract`),
             class_("mathjax_process")(span(List(input_raw(entry.`abstract`)))))),
-          par(List(fieldlabel(Params.Key.empty, "Authors"),
+          par(List(fieldlabel(key + AUTHOR, "Authors"),
             list(Params.indexed(key + AUTHOR, entry.authors, render_affil)))),
-          par(List(fieldlabel(Params.Key.empty, "Contact"),
+          par(List(fieldlabel(key + NOTIFY, "Contact"),
             list(Params.indexed(key + NOTIFY, entry.notifies, render_affil)))),
-          par(List(fieldlabel(Params.Key.empty, "Related Publications"),
+          par(List(fieldlabel(key + RELATED, "Related Publications"),
             list(Params.indexed(key + RELATED, entry.related, render_related))))))
 
       def render_new_author(key: Params.Key, author: Author): XML.Elem =
@@ -966,7 +966,7 @@ object AFP_Submit {
               entry.topic_input.map(_.id),
               state.topics.values.toList.map(topic => option(topic.id, topic.id))) ::
             action_button(paths.api_route(API.SUBMISSION_ENTRY_TOPICS_ADD), "add", key) ::
-            render_error(Params.Key.empty, entry.topics)) ::
+            render_error(key + TOPIC, entry.topics)) ::
           par(List(
             fieldlabel(key + LICENSE, "License"),
             radio(key + LICENSE,
@@ -1007,7 +1007,7 @@ object AFP_Submit {
               "1. They are used to send you updates about the state of your submission. " +
               "2. They are the maintainers of the entry once it is accepted. " +
               "Typically this will be one or more of the authors.") ::
-            render_error(Params.Key.empty, entry.notifies)) ::
+            render_error(key + NOTIFY, entry.notifies)) ::
           fieldset(legend("Related Publications") ::
             Params.indexed(key + RELATED, entry.related, render_related) :::
             selection(key + RELATED + KIND,
@@ -1049,25 +1049,25 @@ object AFP_Submit {
 
       List(submit_form(paths.api_route(API.SUBMISSION),
         Params.indexed(ENTRY, model.entries.v, render_entry) :::
-        render_error(Params.Key.empty, model.entries) :::
+        render_error(ENTRY, model.entries) :::
         render_if(mode == Mode.SUBMISSION,
           par(List(
-            explanation(Params.Key.empty,
+            explanation(ENTRY,
               "You can submit multiple entries at once. " +
               "Put the corresponding folders in the archive " +
               "and use the button below to add more input fields for metadata. "),
             api_button(paths.api_route(API.SUBMISSION_ENTRIES_ADD), "additional entry")))) ::: break :::
         fieldset(legend("New Authors") ::
-          explanation(Params.Key.empty, "If you are new to the AFP, add yourself here.") ::
+          explanation(AUTHOR, "If you are new to the AFP, add yourself here.") ::
           Params.indexed(AUTHOR, model.new_authors.v, render_new_author) :::
           fieldlabel(AUTHOR + NAME, "Name") ::
           textfield(AUTHOR + NAME, "Gerwin Klein", model.new_author_input) ::
           fieldlabel(AUTHOR + ORCID, "ORCID id (optional)") ::
           textfield(AUTHOR + ORCID, "0000-0002-1825-0097", model.new_author_orcid) ::
           api_button(paths.api_route(API.SUBMISSION_AUTHORS_ADD), "add") ::
-          render_error(Params.Key.empty, model.new_authors)) ::
+          render_error(AUTHOR, model.new_authors)) ::
         fieldset(legend("New email or homepage") ::
-          explanation(Params.Key.empty,
+          explanation(AFFILIATION,
             "Add new email or homepages here. " +
             "If you would like to update an existing, " +
             "submit with the old one and write to the editors.") ::
@@ -1081,7 +1081,7 @@ object AFP_Submit {
           textfield(AFFILIATION + ADDRESS, "https://proofcraft.org",
             model.new_affils_input) ::
           api_button(paths.api_route(API.SUBMISSION_AFFILIATIONS_ADD), "add") ::
-          render_error(Params.Key.empty, model.new_affils)) :: break :::
+          render_error(AFFILIATION, model.new_affils)) :: break :::
         fieldset(List(legend(upload),
           api_button(paths.api_route(API.SUBMISSION_UPLOAD), preview))) :: Nil))
     }
