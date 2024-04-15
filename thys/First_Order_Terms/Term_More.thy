@@ -22,7 +22,50 @@ theory Term_More
     Polynomial_Factorization.Missing_List
 begin
 
-subsection \<open>General Folds on Terms\<close>
+text \<open>@{text "showl"}-Instance for Terms\<close>
+
+fun showsl_term' :: "('f \<Rightarrow> showsl) \<Rightarrow> ('v \<Rightarrow> showsl) \<Rightarrow> ('f, 'v) term \<Rightarrow> showsl"
+where
+  "showsl_term' fun var (Var x) = var x" |
+  "showsl_term' fun var (Fun f ts) =
+    fun f \<circ> showsl_list_gen id (STR '''') (STR ''('') (STR '', '') (STR '')'') (map (showsl_term' fun var) ts)"
+
+abbreviation showsl_nat_var :: "nat \<Rightarrow> showsl"
+  where
+    "showsl_nat_var i \<equiv> showsl_lit (STR ''x'') \<circ> showsl i"
+
+abbreviation showsl_nat_term :: "('f::showl, nat) term \<Rightarrow> showsl"
+  where
+    "showsl_nat_term \<equiv> showsl_term' showsl showsl_nat_var"
+
+instantiation "term" :: (showl,showl)showl
+begin
+definition "showsl (t :: ('a,'b)term) = showsl_term' showsl showsl t"
+definition "showsl_list (xs :: ('a,'b)term list) = default_showsl_list showsl xs"
+instance ..
+end
+
+
+text \<open>@{class "showl"}-Instance for Contexts\<close>
+
+fun showsl_ctxt' :: "('f \<Rightarrow> showsl) \<Rightarrow> ('v \<Rightarrow> showsl) \<Rightarrow> ('f, 'v) ctxt \<Rightarrow> showsl" where
+  "showsl_ctxt' fun var (Hole) = showsl_lit (STR ''[]'')"
+| "showsl_ctxt' fun var (More f ss1 D ss2) = (
+    fun f \<circ> showsl (STR ''('') \<circ>
+    showsl_list_gen (showsl_term' fun var) (STR '''') (STR '''') (STR '', '') (STR '', '') ss1 \<circ>
+    showsl_ctxt' fun var D \<circ>
+    showsl_list_gen (showsl_term' fun var) (STR '')'') (STR '', '') (STR '', '') (STR '')'') ss2
+  )"
+
+instantiation ctxt :: (showl,showl)showl
+begin
+definition "showsl (t :: ('a,'b)ctxt) = showsl_ctxt' showsl showsl t"
+definition "showsl_list (xs :: ('a,'b)ctxt list) = default_showsl_list showsl xs"
+instance ..
+end
+
+
+text \<open>General Folds on Terms\<close>
 
 context
 begin

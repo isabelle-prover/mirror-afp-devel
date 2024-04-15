@@ -12,7 +12,6 @@ text \<open>Positions are just list of natural numbers, and here we define
 theory Position
   imports
     "HOL-Library.Infinite_Set"
-    Show.Show_Instances
     Show.Shows_Literal
 begin
 
@@ -233,13 +232,8 @@ next
   qed
 qed
 
-definition shows_pos :: "pos \<Rightarrow> shows"
-  where
-    "shows_pos p = shows_list_gen shows ''[]'' ''['' '','' '']'' p"
-
-definition showsl_pos :: "pos \<Rightarrow> showsl"
-  where
-    "showsl_pos p = showsl_list_gen showsl (STR ''[]'') (STR ''['') (STR '','') (STR '']'') p"
+definition showsl_pos :: "pos \<Rightarrow> showsl" where
+  "showsl_pos = showsl_list_gen (\<lambda> i. showsl (Suc i)) (STR ''empty'') (STR '''') (STR ''.'') (STR '''')" 
 
 fun proper_prefix_list :: "pos \<Rightarrow> pos list"
   where
