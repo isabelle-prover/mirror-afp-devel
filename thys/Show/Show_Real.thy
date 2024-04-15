@@ -12,6 +12,7 @@ theory Show_Real
 imports 
   HOL.Real
   Show
+  Shows_Literal
 begin
 
 consts show_real :: "real \<Rightarrow> string"
@@ -34,4 +35,12 @@ local_setup \<open>
 \<close>
 
 derive "show" real
+
+instantiation real :: showl
+begin
+definition "showsl (x :: real) = showsl_lit (String.implode (show_real x))" 
+definition "showsl_list (xs :: real list) = default_showsl_list showsl xs"
+instance ..
+end
+
 end

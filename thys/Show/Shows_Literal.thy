@@ -8,7 +8,7 @@ section \<open>Show Based on String Literals\<close>
 theory Shows_Literal
   imports
     Main
-    Show_Real
+    Show_Instances
 begin
 
 text \<open>In this theory we provide an alternative to the @{class show}-class, where
@@ -116,13 +116,6 @@ definition "showsl_rat x =
     (case quotient_of x of (d, n) \<Rightarrow>
       if n = 1 then showsl d else showsl d o showsl_lit (STR ''/'') o showsl n)"
 definition "showsl_list (xs :: rat list) = default_showsl_list showsl xs"
-instance ..
-end
-
-instantiation real :: showl
-begin
-definition "showsl (x :: real) = showsl_lit (String.implode (show_real x))" 
-definition "showsl_list (xs :: real list) = default_showsl_list showsl xs"
 instance ..
 end
 
