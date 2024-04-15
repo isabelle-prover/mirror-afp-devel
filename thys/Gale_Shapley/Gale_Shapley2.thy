@@ -57,10 +57,10 @@ shows
   OD;
   B := B[b ::= a]; N := N[b ::= True]; ai := ai+1
  OD
- [matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)]"
+ [matching (list A) {<n} \<and> stable (list A) {<n} \<and> optiA (list A)]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case  (* outer invar holds initially *)
-   by(auto simp:  pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp:  pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 2 (* outer invar and b implies inner invar *)
   thus ?case by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
@@ -106,10 +106,10 @@ shows "VARS A B N a a' ai b r
        FI
   FI
  OD
- [matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)]"
+ [matching (list A) {<n} \<and> stable (list A) {<n} \<and> optiA (list A)]"
 proof (vcg_tc, goal_cases)
   case 1 thus ?case
-   by(auto simp:  pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp:  pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc[of n] by force
 next
@@ -264,12 +264,12 @@ next
 qed
 
 lemma gs: assumes "R = rank_array Q"
-shows "gs n (pref_array P) R = (A,B,N,ai) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
+shows "gs n (pref_array P) R = (A,B,N,ai) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> optiA (list A)"
 unfolding gs_def
 proof(rule while_rule2[where P = "\<lambda>(A,B,N,ai). invar1 (list A) (list B) (list N) ai"
   and r = "measure(\<lambda>(A,B,N,ai). n - ai)"], goal_cases)
   case 1 show ?case
-   by(auto simp: pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case (2 s)
   obtain A B N ai where s: "s =  (A, B, N, ai)"
@@ -308,12 +308,12 @@ qed
 
 
 lemma gs1: assumes "R = rank_array Q"
-shows "gs1 n (pref_array P) R = (A,B,N,ai,a) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
+shows "gs1 n (pref_array P) R = (A,B,N,ai,a) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> optiA (list A)"
 unfolding gs1_def
 proof(rule while_rule2[where P = "\<lambda>(A,B,N,ai,a). invar2' (list A) (list B) (list N) ai a"
   and r = "measure(\<lambda>(A,B,N,ai,a). Pref.var P (list A) ({<ai+1} - {a}))"], goal_cases)
   case 1 show ?case
-   by(auto simp: pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+   by(auto simp: pref_match_def P_set card_distinct match_def list_array index_nth_id prefers_def optiA_def \<alpha>_def cong: conj_cong)
 next
   case (2 s)
   obtain A B N ai a where s: "s =  (A, B, N, ai, a)"
@@ -348,13 +348,13 @@ end
 
 theorem gs: "\<lbrakk> Pref P Q; n = length P \<rbrakk> \<Longrightarrow>
  \<exists>A. Gale_Shapley P Q = Some A
-   \<and> Pref.matching P (list A) {<n} \<and> Pref.stable P Q (list A) {<n} \<and> Pref.opti\<^sub>a P Q (list A)"
+   \<and> Pref.matching P (list A) {<n} \<and> Pref.stable P Q (list A) {<n} \<and> Pref.optiA P Q (list A)"
 unfolding Gale_Shapley_def using Pref.gs
 by (metis fst_conv surj_pair)
 
 theorem gs1: "\<lbrakk> Pref P Q; n = length P \<rbrakk> \<Longrightarrow>
  \<exists>A. Gale_Shapley1 P Q = Some A
-   \<and> Pref.matching P (list A) {<n} \<and> Pref.stable P Q (list A) {<n} \<and> Pref.opti\<^sub>a P Q (list A)"
+   \<and> Pref.matching P (list A) {<n} \<and> Pref.stable P Q (list A) {<n} \<and> Pref.optiA P Q (list A)"
 unfolding Gale_Shapley1_def using Pref.gs1
 by (metis fst_conv surj_pair)
 
