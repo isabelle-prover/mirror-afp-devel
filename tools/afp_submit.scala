@@ -545,12 +545,7 @@ object AFP_Submit {
         archive: Bytes,
         ext: String
       ): (ID, State) = {
-        val entry =
-          metadata.entries match {
-            case e :: Nil => e
-            case _ => isabelle.error("Must be a single entry")
-          }
-
+        val entry = Library.the_single(metadata.entries)
         val old = state.entries(entry.name)
         val updated =
           old.copy(title = entry.title, authors = entry.authors, topics = entry.topics,
@@ -831,8 +826,7 @@ object AFP_Submit {
     def frontend_link(path: Path, params: Properties.T, body: XML.Body): XML.Elem =
       link(paths.frontend_url(path, params).toString, body) + ("target" -> "_parent")
 
-    def fieldlabel(for_elem: Params.Key, txt: String): XML.Elem =
-      label(for_elem, " " + txt + ": ")
+    def fieldlabel(for_elem: Params.Key, txt: String): XML.Elem = label(for_elem, " " + txt + ": ")
 
     def explanation(for_elem: Params.Key, txt: String): XML.Elem =
       par(List(emph(List(label(for_elem, txt)))))
@@ -1387,7 +1381,6 @@ object AFP_Submit {
 
     def parse_id(props: Properties.T): Option[String] = Properties.get(props, ID.print)
 
-
     def action(params: Params.Data): Params.Key = Params.Key.explode(params(ACTION))
     def message(params: Params.Data): String = params(MESSAGE)
     def archive_file(params: Params.Data): Bytes = params.file(ARCHIVE).getOrElse(Bytes.empty)
@@ -1707,7 +1700,7 @@ Usage: isabelle afp_submit [OPTIONS] DIR
       val handler = Handler.Adapter(dir, afp)
 
       val paths = Web_App.Paths(Url(frontend + ":" + port), backend_path, serve_frontend = devel,
-        landing = Page.SUBMISSIONS)
+        landing = Page.SUBMIT)
       val server = new Server(paths = paths, afp = afp, mode = Mode.SUBMISSION,
         handler = handler, devel = devel, verbose = verbose, progress = progress, port = port)
 
@@ -1721,7 +1714,7 @@ Usage: isabelle afp_submit [OPTIONS] DIR
       var port = 8080
 
       val getopts = Getopts("""
-Usage: isabelle afp_submit [OPTIONS]
+Usage: isabelle afp_edit_metadata [OPTIONS]
 
   Options are:
       -p PORT      server port. Default: """ + port + """
@@ -1740,8 +1733,8 @@ Usage: isabelle afp_submit [OPTIONS]
 
       val paths = Web_App.Paths(Url("http://localhost:" + port), Path.current,
         serve_frontend = true, landing = Page.SUBMISSIONS)
-      val server = new Server(paths = paths, afp = afp, mode = Mode.EDIT,
-        handler = handler, devel = true, verbose = verbose, progress = progress, port = port)
+      val server = new Server(paths = paths, afp = afp, mode = Mode.EDIT, handler = handler,
+        devel = true, verbose = verbose, progress = progress, port = port)
 
       server.run()
     })
