@@ -1308,8 +1308,8 @@ object AFP_Submit {
           affils = Val.ok(affils),
           notifies = Val.ok(notifies),
           related = related,
-          related_kind = Model.Related.from_string(params(RELATED + KIND)),
-          related_input = Val.ok(params(RELATED + INPUT)))
+          related_kind = Model.Related.from_string(params(key + RELATED + KIND)),
+          related_input = Val.ok(params(key + RELATED + INPUT)))
 
       for {
         (new_author_ids, all_authors) <-
