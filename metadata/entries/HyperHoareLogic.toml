@@ -27,7 +27,6 @@ dardinier = "dardinier_email"
 
 [related]
 dois = [
-  "10.48550/arXiv.2301.10037",
-  "10.1145/3656437"
+  "10.48550/arXiv.2301.10037"
 ]
 pubs = []
