@@ -639,7 +639,7 @@ object AFP_Submit {
         val dir = up(id)
         dir.file.mkdirs()
 
-        val structure = AFP_Structure(dir)
+        val structure = AFP_Structure(base_dir = dir)
         structure.save_authors(metadata.authors.values.toList.sortBy(_.id))
         metadata.entries.foreach(structure.save_entry)
 
@@ -668,12 +668,12 @@ object AFP_Submit {
             val id = ID(date)
             val day = date.rep.toLocalDate
             read_status(id).map(
-              Model.Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
+              Model.Overview(id, day, AFP_Structure(base_dir = up(id)).entries_unchecked.head, _))
           })
 
       def get(id: ID, state: State): Option[Model.Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
-          val structure = AFP_Structure(up(id))
+          val structure = AFP_Structure(base_dir = up(id))
           val authors = structure.load_authors
           val entries = structure.entries_unchecked.map(
             structure.load_entry(_, authors, state.topics, state.licenses, state.releases))

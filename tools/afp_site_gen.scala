@@ -441,7 +441,6 @@ object AFP_Site_Gen {
   Usage: isabelle afp_site_gen [OPTIONS]
 
     Options are:
-      -B DIR       afp base dir (default """" + base_dir.implode + """")
       -D FILE      build status file for devel version
       -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
       -O DIR       output dir for build (default """ + out_dir.implode + """)
@@ -453,7 +452,6 @@ object AFP_Site_Gen {
     Providing a status file will build the development version of the archive.
     Site will be built from generated source if output dir is specified.
   """,
-        "B:" -> (arg => base_dir = Path.explode(arg)),
         "D:" -> (arg => status_file = Some(Path.explode(arg))),
         "H:" -> (arg => hugo_dir = Path.explode(arg)),
         "O:" -> (arg => out_dir = Path.explode(arg)),
@@ -468,7 +466,7 @@ object AFP_Site_Gen {
 
       if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
 
-      val afp = AFP_Structure(base_dir)
+      val afp = AFP_Structure()
       val layout = Hugo.Layout(hugo_dir)
       val progress = new Console_Progress()
 
