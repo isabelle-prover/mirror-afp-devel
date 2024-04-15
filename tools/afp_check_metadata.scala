@@ -163,7 +163,7 @@ object AFP_Check_Metadata {
     Scala_Project.here,
   { args =>
 
-    var slow = false
+    var fast = false
     var reformat = false
     var format_all = false
     var strict = false
@@ -174,7 +174,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
 
   Options are:
     -a    check formatting of all metadata
-    -s    activate slow checks
+    -f    fast checks only
     -v    verbose
     -R    reformat metadata files
     -S    strict mode (fail on warnings)
@@ -182,7 +182,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
   Check AFP metadata files for consistency.
 """,
       "a" -> (_ => format_all = true),
-      "s" -> (_ => slow = true),
+      "f" -> (_ => fast = true),
       "v" -> (_ => verbose = true),
       "R" -> (_ => reformat = true),
       "S" -> (_ => strict = true))
@@ -193,6 +193,6 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     val afp = AFP_Structure()
 
     afp_check_metadata(afp, strict = strict, reformat = reformat, format_all = format_all,
-      slow = slow, verbose = verbose, progress = progress)
+      slow = !fast, verbose = verbose, progress = progress)
   })
 }
