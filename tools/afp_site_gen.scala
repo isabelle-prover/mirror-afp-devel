@@ -431,8 +431,8 @@ object AFP_Site_Gen {
     { args =>
       var base_dir = Path.explode("$AFP_BASE")
       var status_file: Option[Path] = None
-      var hugo_dir = base_dir + Path.make(List("web", "hugo"))
-      var out_dir: Path = base_dir + Path.make(List("web", "out"))
+      var hugo_dir = base_dir + Path.explode("out/hugo")
+      var out_dir: Path = base_dir + Path.explode("web")
       var build_only = false
       var devel_mode = false
       var fresh = false
