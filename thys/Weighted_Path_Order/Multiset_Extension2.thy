@@ -112,6 +112,16 @@ lemma ns_mul_ext_local_mono:
   using rel ns_mul_ext_mono[OF sub] mult2_alt_local[of ys xs True "ns\<inverse>" "s\<inverse>"]
   by (auto simp: ns_mul_ext_def converse_Int ac_simps converse_Times)
 
+lemma s_mul_ext_ord_s [mono]:
+  assumes "\<And>s t. ord s t \<longrightarrow> ord' s t"
+  shows "(s, t) \<in> s_mul_ext ns {(s,t). ord s t} \<longrightarrow> (s, t) \<in> s_mul_ext ns {(s,t). ord' s t}"
+  using assms s_mul_ext_mono by (metis (mono_tags) case_prod_conv mem_Collect_eq old.prod.exhaust subset_eq) 
+
+lemma ns_mul_ext_ord_s [mono]:
+  assumes "\<And>s t. ord s t \<longrightarrow> ord' s t"
+  shows "(s, t) \<in> ns_mul_ext ns {(s,t). ord s t} \<longrightarrow> (s, t) \<in> ns_mul_ext ns {(s,t). ord' s t}"
+  using assms ns_mul_ext_mono by (metis (mono_tags) case_prod_conv mem_Collect_eq old.prod.exhaust subset_eq) 
+
 
 text\<open>The empty multiset is the minimal element for these orders\<close>
 

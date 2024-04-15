@@ -992,4 +992,28 @@ proof (induct x\<equiv>P xs ys rule: lex_ext_unbounded.induct)
   qed
 qed (simp add: lex_ext_unbounded.simps)+
 
+lemma lex_ext_local_mono [mono]:
+  assumes "\<And>s t. s \<in> set ts \<Longrightarrow> t \<in> set ss \<Longrightarrow> ord s t \<Longrightarrow> ord' s t"
+  shows "fst (lex_ext (\<lambda> x y. (ord x y, (x, y) \<in> ns_rel)) (length ts) ts ss) \<longrightarrow> 
+          fst (lex_ext (\<lambda> x y. (ord' x y, (x, y) \<in> ns_rel)) (length ts) ts ss)"
+proof
+  assume ass: "fst (lex_ext (\<lambda>x y. (ord x y, (x, y) \<in> ns_rel)) (length ts) ts ss)"
+  from assms have mono: "(\<And>i. i < length ts \<Longrightarrow> i < length ss \<Longrightarrow> ord (ts ! i) (ss ! i) \<Longrightarrow> ord' (ts ! i) (ss ! i))"
+    using nth_mem by blast
+  let ?P = "(\<lambda> x y. (ord x y, (x, y) \<in> ns_rel))" 
+  let ?P' = "(\<lambda> x y. (ord' x y, (x, y) \<in> ns_rel))" 
+  from ass have lex: "fst (lex_ext_unbounded ?P ts ss)" unfolding lex_ext_def Let_def if_distrib
+    by (auto split: if_splits)
+  have "fst (lex_ext_unbounded ?P' ts ss)" 
+    by (rule lex_ext_unbounded_mono[THEN conjunct1, rule_format, OF _ _ lex], insert mono, auto)
+  thus "fst (lex_ext (\<lambda>x y. (ord' x y, (x, y) \<in> ns_rel)) (length ts) ts ss)"
+    using ass unfolding lex_ext_def by (auto simp: Let_def)
+qed
+
+lemma lex_ext_mono [mono]:
+  assumes "\<And>s t. ord s t \<longrightarrow> ord' s t"
+  shows "fst (lex_ext (\<lambda> x y. (ord x y, (x, y) \<in> ns)) (length ts) ts ss) \<longrightarrow> 
+          fst (lex_ext (\<lambda> x y. (ord' x y, (x, y) \<in> ns)) (length ts) ts ss)"
+  using assms lex_ext_local_mono[of ts ss ord ord' ns] by blast
+
 end
