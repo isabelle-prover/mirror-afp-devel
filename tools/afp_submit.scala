@@ -1725,6 +1725,8 @@ Usage: isabelle afp_edit_metadata [OPTIONS]
         "p:" -> (arg => port = Value.Int.parse(arg)),
         "v" -> (_ => verbose = true))
 
+      if (getopts(args).nonEmpty) getopts.usage()
+
       val afp = AFP_Structure()
 
       val progress = new Console_Progress(verbose = verbose)
