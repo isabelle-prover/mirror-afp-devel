@@ -12,6 +12,7 @@ text \<open>Positions are just list of natural numbers, and here we define
 theory Position
   imports
     "HOL-Library.Infinite_Set"
+    "HOL-Library.Sublist"
     Show.Shows_Literal
 begin
 
@@ -22,6 +23,14 @@ definition less_eq_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix "\<l
 
 definition less_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix "<\<^sub>p" 50) where
   "p <\<^sub>p q \<longleftrightarrow> p \<le>\<^sub>p q \<and> p \<noteq> q"
+
+lemma less_eq_pos_eq_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "less_eq_pos = Sublist.prefix"
+  unfolding less_eq_pos_def Sublist.prefix_def by metis
+
+lemma less_pos_eq_strict_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "less_pos = Sublist.strict_prefix"
+  unfolding less_pos_def less_eq_pos_def Sublist.strict_prefix_def Sublist.prefix_def by metis
 
 interpretation order_pos: order less_eq_pos less_pos
   by (standard) (auto simp: less_eq_pos_def less_pos_def)
@@ -151,6 +160,26 @@ fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infixr "\<bottom
   | "_ \<bottom> [] \<longleftrightarrow> False"
   | "i # p \<bottom> j # q \<longleftrightarrow> i \<noteq> j \<or> p \<bottom> q"
 
+lemma parallel_pos_eq_parallel: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "parallel_pos = Sublist.parallel"
+proof (intro ext)
+  fix xs ys
+  show "xs \<bottom> ys \<longleftrightarrow> xs \<parallel> ys"
+  proof (induction xs ys rule: parallel_pos.induct)
+    case (1 uu)
+    thus ?case
+      by simp
+  next
+    case (2 v va)
+    thus ?case
+      by simp
+  next
+    case (3 i p j q)
+    thus ?case
+      by fastforce
+  qed
+qed
+
 lemma parallel_pos: "p \<bottom> q = (\<not> p \<le>\<^sub>p q \<and> \<not> q \<le>\<^sub>p p)"
   by (induct p q rule: parallel_pos.induct) auto
 
@@ -262,6 +291,24 @@ qed simp
 definition prefix_list :: "pos \<Rightarrow> pos list"
   where
     "prefix_list p = p # proper_prefix_list p"
+
+lemma proper_prefix_list_append_self_eq_prefixes: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "proper_prefix_list xs @ [xs] = Sublist.prefixes xs"
+proof (induction xs)
+  case Nil
+  show ?case
+    by simp
+next
+  case (Cons a xs)
+  thus ?case
+    by (metis (no_types, lifting) append_Cons list.simps(8) list.simps(9) map_append
+        prefixes.simps(2) proper_prefix_list.simps(2))
+qed
+
+lemma rotate1_prefix_list_eq_prefixes: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rotate1 (prefix_list xs) = Sublist.prefixes xs"
+  unfolding prefix_list_def rotate1.simps
+  using proper_prefix_list_append_self_eq_prefixes .
 
 lemma prefix_list [simp]: "set (prefix_list p) = { q. q \<le>\<^sub>p p}"
   by (auto simp: prefix_list_def)
