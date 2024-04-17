@@ -3,21 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/Broadcast_Psi.html</loc>
-    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+    <loc>/dependencies/coinductive/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ConcurrentHOL.html</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/gammie/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/optics/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Broadcast_Psi.html</loc>
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/pohjola/</loc>
@@ -27,9 +42,6 @@
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/raabjerg/</loc>
-    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/weber/</loc>
@@ -46,9 +58,6 @@
   </url><url>
     <loc>/entries/Uncertainty_Principle.html</loc>
     <lastmod>2024-03-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/coinductive/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Continued_Fractions.html</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
@@ -1967,9 +1976,6 @@
     <loc>/entries/Saturation_Framework_Extensions.html</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/gammie/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/holcf-prelude/</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -2526,9 +2532,6 @@
     <lastmod>2019-02-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nemouchi/</loc>
-    <lastmod>2019-02-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/optics/</loc>
     <lastmod>2019-02-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/ribeiro/</loc>
@@ -5179,6 +5182,8 @@
     <loc>/sessions/concurrent_revisions/</loc>
   </url><url>
     <loc>/sessions/concurrentgc/</loc>
+  </url><url>
+    <loc>/sessions/concurrenthol/</loc>
   </url><url>
     <loc>/sessions/concurrentimp/</loc>
   </url><url>

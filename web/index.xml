@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 27 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Broadcast Psi-calculi</title>
           <link>/entries/Broadcast_Psi.html</link>
@@ -6619,6 +6626,13 @@
           <link>/sessions/concurrentgc/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/concurrentgc/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/sessions/concurrenthol/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/concurrenthol/</guid>
           <description></description>
         </item>
         <item>

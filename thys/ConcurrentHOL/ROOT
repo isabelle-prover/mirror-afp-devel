@@ -1,0 +1,53 @@
+chapter AFP
+
+session ConcurrentHOL = "Coinductive" +
+  options [timeout = 600]
+  sessions
+    "Optics"
+  directories
+    "tools"
+    "ex"
+    "CImperativeHOL"
+    "CImperativeHOL/ex"
+  theories [document = false]
+    "tools/Strengthen"
+    HOL_Basis
+  theories
+    "Aczel_Sequences"
+    "Lifted_Predicates"
+    "More_Lattices"
+    "Closures"
+    "Galois"
+    "Heyting"
+    "Safety_Logic"
+    "Constructions"
+    "Next_Imp"
+    "Stability"
+    "Refinement"
+    "Programs"
+    "Combinators"
+    "Local_State"
+    "TLS"
+    "ConcurrentHOL"
+
+    "ex/Atomic"
+    "ex/Exceptions"
+    "ex/WickersonDoddsParkinson"
+    "ex/Assume_Guarantee"
+    "ex/Inhabitation"
+    "ex/FindP"
+    "ex/BFS"
+    "ex/Safety_Closure"
+
+    "CImperativeHOL/Ix"
+    "CImperativeHOL/Heap"
+    "CImperativeHOL/CImperativeHOL"
+    "CImperativeHOL/TSO"
+    "CImperativeHOL/TSO_Code_Gen"
+
+    "CImperativeHOL/ex/TSO_litmus"
+    "CImperativeHOL/ex/Floyd_Warshall"
+
+  document_files
+    root.bib
+    root.tex

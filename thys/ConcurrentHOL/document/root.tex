@@ -1,0 +1,160 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[a4paper,margin=1cm,footskip=.5cm]{geometry}
+
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{stmaryrd} % \bigsqcap
+
+\usepackage{mathpartir}
+
+\usepackage[english]{babel}
+
+% Bibliography
+\usepackage[authoryear,longnamesfirst,sort]{natbib}
+\bibpunct();A{},
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+\renewcommand{\ttdefault}{cmtt} % CM rather than courier for \tt
+
+% for uniform font size
+\renewcommand{\isastyle}{\isastyleminor}
+
+% Abstract various things that might change.
+\newcommand{\ccode}[1]{\texttt{#1}}
+\newcommand{\isabelletype}[1]{\emph{#1}}
+\newcommand{\isabelleterm}[1]{\emph{#1}}
+
+\begin{document}
+
+\title{Concurrent HOL}
+\author{Peter Gammie}
+\maketitle
+
+\begin{abstract}
+  This is a simple framework for expressing linear-time properties. It
+  supports the usual programming constructs (including interleaving
+  parallel composition), equational and inequational reasoning about
+  these, compositional assume/guarantee specifications and refinement,
+  and the mixing of specifications and programs, all shallowly
+  embedded in Isabelle/HOL.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+This is a simple framework for expressing linear-time properties. It
+supports the usual programming constructs (including interleaving
+parallel composition), equational and inequational reasoning about
+these, compositional assume/guarantee specifications and refinement,
+and the mixing of specifications and programs, all shallowly embedded
+in Isabelle/HOL. The closest extent works to ours are by
+\citet{XuHe:1991,XuHe:1994} and
+\citet{Dingel:1996,Dingel:2000,Dingel:2002}. It is heavily influenced
+by \citet{Lamport:1994}.
+
+
+\subsection{Road map \label{sec:road_map}}
+
+Rather than begin with \emph{a priori} ``laws of programming'' we take
+finite and infinite sequences as models of system executions
+(\S\ref{sec:tls}). Also, as transforming realistic concurrent systems
+while preserving total correctness is too difficult to be usable, we
+adopt Lamport's approach to separating liveness and safety properties
+\citep{AbadiLamport:1991} and do most of our work on safety
+properties.
+
+The safety model consists of a series of closures
+(\S\ref{sec:closures}) over the powerset lattice of finite, non-empty,
+terminated ``Aczel'' sequences (\S\ref{sec:aczel_sequences}), where
+each transition is ascribed to an agent. The termination marker
+supports sequential composition. The model of system executions is
+built similarly.
+
+\paragraph{The \emph{spec} lattice.} Firstly and fundamentally we
+close under prefixes (\S\ref{sec:closures-downwards}), which captures
+precisely the safety properties (i.e., we identify a safety property
+with the set of sequences that satisfies it). We also close under
+stuttering ala Lamport (\S\ref{sec:safety_logic-stuttering}) to
+support refinement and the ``laws of programming''
+(\S\ref{sec:programs-laws}). All properties we consider therefore need
+to be stuttering invariant which is a mild constraint. We call the set
+of sets closed in this way the \emph{spec} lattice
+(\S\ref{sec:safety_logic-logic}); we can interpret its points as
+propositions as it is a Heyting algebra. Its chief novelty is that it
+supports a logical presentation of assume/guarantee reasoning due to
+Abadi and Plotkin (\S\ref{sec:abadi_plotkin-parallel}) where parallel
+composition (\S\ref{sec:constructions-parallel_composition}) is simple
+(infinitary) conjunction ala \citet{Lamport:1994}.
+
+This lattice is satisfactory as a logic but deficient as a programming
+language; see \citet{Zwiers:1989} for an extended discussion on this
+point, and a solution for synchronous message passing. In brief,
+parallel composition-as-conjunction and the monad laws
+(\S\ref{sec:safety_logic-monad_laws}) fail to meet expectations. We
+therefore look for a stronger closure condition.
+
+\paragraph{The \emph{prog} lattice.} We take the view that a
+concurrent process is a parallel composition of sequential processes
+where the parallel composition itself yields a sequential
+process. Abadi and Plotkin's constrains-at-most (\S\ref{sec:cam})
+closure adds interference to the ends of traces -- sufficient to
+support their circular composition principle
+(\S\ref{sec:abadi_plotkin}) -- but not their beginnings. Our
+interference closure (\S\ref{sec:interference_closure}) makes this
+symmetric, ensuring that parallel composition conforms to
+expectations: the monad laws hold as do many of the ``laws of
+programming'' (\S\ref{sec:programs-laws}). We define the \emph{prog}
+type (\S\ref{sec:programs-prog}) to be the interference-closed
+specifications. We reason about programs in \emph{prog} using
+propositions in \emph{spec} via a pair of morphisms that form a Galois
+connection (\S\ref{sec:programs-morphisms}).
+
+\paragraph{Refinement.} Abadi and Plotkin's approach does not support
+refinement in our setting. We therefore adopt a ``next step''
+implication (\S\ref{sec:abadi_merz}) and develop a logical account of
+compositional program refinement (\S\ref{sec:refinement}). Refinement
+here is trace inclusion (i.e., the preservation of all safety
+properties).
+
+\paragraph{Relational assume/guarantee.} The definition of relational
+assume/guarantee in this setting is pleasantly intuitive
+(\S\ref{sec:refinement-ag}). Its key strength is that program phrases
+can be abstracted to relational assume/guarantee quadruples that can
+then be used as program phrases (\S\ref{sec:programs-ag}). This
+generalises Morgan's specification statement to a concurrent setting.
+
+\paragraph{State spaces.} As is traditional with shallow embeddings in
+HOL, we defer state space and value considerations using
+polymorphism. We develop a mechanism that partially encapsulates local
+state (\S\ref{sec:local_state}).
+
+\paragraph{Miscellany.} Along the way we assemble some facts about
+Heyting algebras (\S\ref{sec:heyting_algebras}), and sometimes
+construct our closures (\S\ref{sec:closures}) from Galois connections
+(\S\ref{sec:galois}). We explore the impact of using safety properties
+and this mix of finite and infinite sequences on TLA
+(\S\ref{sec:tls}).
+
+\input{session} % generated text of all theories
+
+\bibliographystyle{plainnat}
+\bibliography{root}
+\addcontentsline{toc}{section}{References}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
