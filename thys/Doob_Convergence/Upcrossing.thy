@@ -6,7 +6,7 @@ section \<open>Doob's Upcrossing Inequality and Martingale Convergence Theorems\
 text \<open>In this section we formalize upcrossings and downcrossings. Following this, we prove Doob's upcrossing inequality and first martingale convergence theorem.\<close>
 
 theory Upcrossing
-  imports Stopping_Time
+  imports Martingales.Martingale Stopping_Time
 begin
 
 (* TODO: This can be added to the library under HOL-Analysis.Borel_Space *)

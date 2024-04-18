@@ -7,14 +7,14 @@ text \<open>In this section we formalize stopping times and hitting times. A sto
       A hitting time, also known as first passage time or first hitting time, is a specific type of stopping time that represents the first time a stochastic process reaches a particular state or crosses a certain threshold.\<close>
 
 theory Stopping_Time
-imports Martingales_Updates
+imports Martingales.Stochastic_Process
 begin                      
 
 subsection \<open>Stopping Time\<close>
 
 text \<open>The formalization of stopping times here is simply a rewrite of the document \<open>HOL-Probability.Stopping_Time\<close> \<^cite>\<open>"hoelzl2011measuretheory"\<close>.
       We have adapted the document to use the locales defined in our formalization of filtered measure spaces \<^cite>\<open>keskin2023formalization\<close> \<^cite>\<open>"Martingales-AFP"\<close>.
-      This way we can omit the partial formalization of filtrations in the original document. Furthermore, we can include the initial time index \<^term>\<open>t\<^sub>0\<close> that we introduced as well.\<close>
+      This way, we can omit the partial formalization of filtrations in the original document. Furthermore, we can include the initial time index \<^term>\<open>t\<^sub>0\<close> that we introduced as well.\<close>
 
 context linearly_filtered_measure
 begin
