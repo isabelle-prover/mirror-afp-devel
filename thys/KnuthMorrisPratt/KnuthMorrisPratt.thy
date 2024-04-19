@@ -2,7 +2,10 @@ section \<open>Knuth-Morris-Pratt fast string search algorithm\<close>
 
 text \<open>Development based on Filliâtre's verification using Why3\<close>
 
-theory KnuthMorrisPratt imports "Collections.Diff_Array"
+text \<open>many thanks to Christian Zimmerer for expressing the algorithms
+in the form of while loops\<close>
+
+theory KnuthMorrisPratt imports "Collections.Diff_Array" "HOL-Library.While_Combinator"
 
 begin
 
@@ -271,97 +274,115 @@ lemma buildtab_invariant:
 
 subsubsection \<open>The build-table loop and its correctness\<close>
 
-partial_function (tailrec) buildtab :: "'a array \<Rightarrow> nat array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat array" where
-  "buildtab p nxt i j =
-     (if Suc i < \<parallel>p\<parallel>
-      then let (nxt',i',j') = buildtab_step p nxt i j in buildtab p nxt' i' j'
-      else nxt)"
-declare buildtab.simps[code]
+definition buildtab:: "'a array \<Rightarrow> nat array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat array option" where
+  "buildtab p nxt i j \<equiv>
+  map_option fst (while_option (\<lambda>(_, i', _). Suc i' < \<parallel>p\<parallel>)
+                               (\<lambda>(nxt', i', j'). buildtab_step p nxt' i' j')
+                               (nxt, i, j))"
 
-definition "rel_buildtab m = inv_image (lex_prod (measure (\<lambda>i. m-i)) (measure id)) snd"
-
-lemma wf_rel_buildtab: "wf (rel_buildtab m)"
-  unfolding rel_buildtab_def
-  by (auto intro: wf_same_fst)
+lemma buildtab_halts:
+  assumes "buildtab_invariant p nxt i j"
+    shows "\<exists>y. buildtab p nxt i j = Some y"
+proof -
+  have "\<exists>y. (\<lambda>p nxt i j. while_option (\<lambda>(_, i', _). Suc i' < \<parallel>p\<parallel>)
+                               (\<lambda>(nxt', i', j'). buildtab_step p nxt' i' j')
+                               (nxt, i, j)) p nxt i j = Some y"
+  proof (rule measure_while_option_Some[of "\<lambda>(nxt, i, j). buildtab_invariant p nxt i j" _ _
+    "(\<lambda>p (nxt, i, j). 2 * \<parallel>p\<parallel> - 2 * i + j) p"],
+    clarify, rule conjI, goal_cases)
+    case (2 nxt i j)
+    then show ?case by (auto simp: buildtab_step_def buildtab_invariant_def matches_def is_next_def)
+  qed (fastforce simp: assms buildtab_invariant)+
+  then show ?thesis unfolding buildtab_def by blast
+qed
 
 lemma buildtab_correct:
   assumes k: "0<k \<and> k < \<parallel>p\<parallel>" and ini: "buildtab_invariant p nxt i j"
-  shows "is_next p k (buildtab p nxt i j !! k)"
-  using ini
-proof (induction "(nxt,i,j)" arbitrary: nxt i j rule: wf_induct_rule[OF wf_rel_buildtab [of "\<parallel>p\<parallel>"]])
-  case (1 nxt i j)
-  show ?case
-  proof (cases "Suc i < \<parallel>p\<parallel>")
-    case True
-    then obtain nxt' i' j' 
-        where eq: "(nxt', i', j') = buildtab_step p nxt i j" and invar': "buildtab_invariant p nxt' i' j'"
-      using "1.prems" buildtab_invariant by (metis surj_pair)
-    then have "j>0 \<Longrightarrow> nxt'!!j < j"
-      using "1.prems"
-      by (auto simp: buildtab_invariant_def is_next_def buildtab_step_def split: if_split_asm)
-    then have decreasing: "((nxt', i', j'), nxt, i, j) \<in> rel_buildtab \<parallel>p\<parallel>"
-      using eq True by (auto simp: rel_buildtab_def buildtab_step_def split: if_split_asm)
-    show ?thesis
-      using "1.hyps" [OF decreasing invar'] "1.prems" eq True
-        by(auto simp add: buildtab.simps[of p nxt] split: prod.splits)
-  next
-    case False
-    with 1 k show ?thesis
-      by (auto simp: buildtab_invariant_def buildtab.simps)
-  qed
+  shows "is_next p k (the (buildtab p nxt i j) !! k)"
+proof -
+  obtain nxt' i' j' where \<dagger>:
+    "while_option (\<lambda>(_, i', _). Suc i' < \<parallel>p\<parallel>) (\<lambda>(nxt', i', j'). buildtab_step p nxt' i' j') (nxt, i, j) = Some (nxt', i', j')"
+    using buildtab_halts[OF ini] unfolding buildtab_def by fast
+  from while_option_rule[OF _ \<dagger>, of "\<lambda>(nxt, i, j). buildtab_invariant p nxt i j"]
+    have "buildtab_invariant p nxt' i' j'" using buildtab_invariant ini by fastforce
+  with while_option_stop[OF \<dagger>] \<dagger> show ?thesis
+    using assms k by (auto simp: is_next_def matches_def buildtab_invariant_def buildtab_def)
 qed
 
 text \<open>Before building the table, check for the degenerate case\<close>
 definition table :: "'a array \<Rightarrow> nat array" where
- "table p = (if \<parallel>p\<parallel> > 1 then buildtab p (array 0 \<parallel>p\<parallel>) 1 0 
+ "table p = (if \<parallel>p\<parallel> > 1 then the (buildtab p (array 0 \<parallel>p\<parallel>) 1 0)
             else array 0 \<parallel>p\<parallel>)"
 declare table_def[code]
 
 lemma is_next_table:
   assumes "0 < j \<and> j < \<parallel>p\<parallel>"
   shows "is_next p j (table p !!j)"
-  using buildtab_correct[of _ p] buildtab_invariant_init[of p] assms by (simp add: table_def)
+  using buildtab_correct[of _ p] buildtab_invariant_init[of p] assms by (simp cong: table_def)
 
 
 subsubsection \<open>Linearity of @{term buildtab}\<close>
 
-partial_function (tailrec) T_buildtab :: "'a array \<Rightarrow> nat array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
-  "T_buildtab p nxt i j t =
-     (if Suc i < \<parallel>p\<parallel>
-      then let (nxt',i',j') = buildtab_step p nxt i j in T_buildtab p nxt' i' j' (Suc t)
-      else t)"
+definition T_buildtab :: "'a array \<Rightarrow> nat array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat option" where
+  "T_buildtab p nxt i j t \<equiv> map_option (\<lambda>(_, _, _, r). r)
+    (while_option (\<lambda>(_, i, _, _). Suc i < \<parallel>p\<parallel>)
+                  (\<lambda>(nxt, i, j, t). let (nxt', i', j') = buildtab_step p nxt i j in (nxt', i', j', Suc t))
+                  (nxt, i, j, t))"
+
+lemma T_buildtab_halts:
+  assumes "buildtab_invariant p nxt i j"
+    shows "\<exists>y. T_buildtab p nxt i j t = Some y"
+proof -
+  have "\<exists>y. (while_option (\<lambda>(_, i, _, _). Suc i < \<parallel>p\<parallel>)
+                  (\<lambda>(nxt, i, j, t). let (nxt', i', j') = buildtab_step p nxt i j in (nxt', i', j', Suc t))
+                  (nxt, i, j, t)) = Some y"
+  proof (intro measure_while_option_Some[of "\<lambda>(nxt, i, j, t). buildtab_invariant p nxt i j" _ _
+    "(\<lambda>p (nxt, i, j, t). 2 * \<parallel>p\<parallel> - 2 * i + j) p"], clarify, rule conjI, goal_cases)
+    case (2 nxt i j t)
+    then show ?case by (auto simp: buildtab_step_def buildtab_invariant_def is_next_def)
+  qed (fastforce simp: assms buildtab_invariant split: prod.splits)+
+  then show ?thesis unfolding T_buildtab_def by blast
+qed
 
 lemma T_buildtab_correct:
   assumes ini: "buildtab_invariant p nxt i j"
-  shows "T_buildtab p nxt i j t \<le> 2*\<parallel>p\<parallel> - 2*i + j + t"
-  using ini
-proof (induction "(nxt,i,j)" arbitrary: nxt i j t rule: wf_induct_rule[OF wf_rel_buildtab [of "\<parallel>p\<parallel>"]])
-  case 1
-  have *: "Suc (T_buildtab p nxt' i' j' t) \<le> 2*\<parallel>p\<parallel> - 2*i + j + t"
-    if eq: "buildtab_step p nxt i j = (nxt', i', j')" and "Suc i < \<parallel>p\<parallel>"
-    for nxt' i' j' t
-  proof -
-    have invar': "buildtab_invariant p nxt' i' j'"
-      using "1.prems" buildtab_invariant that by fastforce
-    then have nextj: "j>0 \<Longrightarrow> nxt'!!j < j"
-      using eq "1.prems"
-      by (auto simp: buildtab_invariant_def is_next_def buildtab_step_def split: if_split_asm)
-    then have decreasing: "((nxt', i', j'), nxt, i, j) \<in> rel_buildtab \<parallel>p\<parallel>"
-      using that by (auto simp: rel_buildtab_def same_fst_def buildtab_step_def split: if_split_asm)
-    then have "T_buildtab p nxt' i' j' t \<le> 2 * \<parallel>p\<parallel> - 2 * i' + j' + t"
-      using "1.hyps" invar' by blast
-    then show ?thesis
-      using "1.prems" that nextj
-      by (force simp: T_buildtab.simps [of p nxt' i' j'] buildtab_step_def split: if_split_asm)
-  qed             
-  show ?case
-    using * [where t = "Suc t"] by (auto simp add: T_buildtab.simps split: prod.split)
+  shows "the (T_buildtab p nxt i j t) \<le> 2*\<parallel>p\<parallel> - 2*i + j + t"
+proof -
+  let ?b = "(\<lambda>(nxt', i', j', t'). Suc i' < \<parallel>p\<parallel>)"
+  let ?c = "(\<lambda>(nxt, i, j, t). let (nxt', i', j') = buildtab_step p nxt i j in (nxt', i', j', Suc t))"
+  let ?s = "(nxt, i, j, t)"
+  let ?P1 = "\<lambda>(nxt', i', j', t'). buildtab_invariant p nxt' i' j'
+    \<and> (if Suc i' < \<parallel>p\<parallel> then Suc t' else t') \<le> 2 * \<parallel>p\<parallel> - (2 * i' - j') + t'"
+  let ?P2 = "\<lambda>(nxt', i', j', t'). buildtab_invariant p nxt' i' j'
+    \<and> 2 * \<parallel>p\<parallel> - 2 * i' + j' + t' \<le> 2 * \<parallel>p\<parallel> - 2 * i + j + t"
+
+  obtain nxt' i' j' t' where \<dagger>: "(while_option ?b ?c ?s) = Some (nxt', i', j', t')"
+    using T_buildtab_halts[OF ini] unfolding T_buildtab_def by fast
+  have 1: "(\<And>s. ?P1 s \<Longrightarrow> ?b s \<Longrightarrow> ?P1 (?c s))" proof (clarify, intro conjI, goal_cases)
+    case (2 nxt\<^sub>1 i\<^sub>1 j\<^sub>1 t\<^sub>1 nxt\<^sub>2 i\<^sub>2 j\<^sub>2 t\<^sub>2)
+    then show ?case
+      by (auto simp: buildtab_step_def split: if_split_asm)
+    qed (insert buildtab_invariant, fastforce split: prod.splits)
+  have P1: "?P1 ?s" using ini by auto
+  from while_option_rule[OF 1 \<dagger> P1]
+    have invar1: "buildtab_invariant p nxt' i' j'" and
+         invar2: "t' \<le> 2 * \<parallel>p\<parallel> - (2 * i' - j') + t'" by blast (simp add: while_option_stop[OF \<dagger>])
+  have "?P2 (nxt', i', j', t')" proof (rule while_option_rule[OF _ \<dagger>], clarify, intro conjI, goal_cases)
+      case (1 nxt\<^sub>1 i\<^sub>1 j\<^sub>1 t\<^sub>1 nxt\<^sub>2 i\<^sub>2 j\<^sub>2 t\<^sub>2)
+      with buildtab_invariant[OF 1(3)] show invar: ?case by (auto split: prod.splits)
+    next
+      case (2 nxt\<^sub>1 i\<^sub>1 j\<^sub>1 t\<^sub>1 nxt\<^sub>2 i\<^sub>2 j\<^sub>2 t\<^sub>2)
+      with 2(4) show ?case
+        by (auto 0 2 simp: buildtab_step_def buildtab_invariant_def is_next_def split: if_split_asm)
+    qed (use ini in simp)
+  with invar1 invar2 \<dagger> have "t' \<le> 2 * \<parallel>p\<parallel> - 2 * i + j + t" by simp
+  with \<dagger> show ?thesis by (simp add: T_buildtab_def)
 qed
 
 lemma T_buildtab_linear:
-  assumes "2 \<le> \<parallel>p\<parallel>" 
-  shows "T_buildtab p (array 0 \<parallel>p\<parallel>) 1 0 0 \<le> 2*(\<parallel>p\<parallel> - 1)"
-  using assms T_buildtab_correct [OF buildtab_invariant_init, of p 0] by auto
+  assumes "2 \<le> \<parallel>p\<parallel>"
+  shows "the (T_buildtab p (array 0 \<parallel>p\<parallel>) 1 0 0) \<le> 2*(\<parallel>p\<parallel> - 1)"
+  using assms T_buildtab_correct [OF buildtab_invariant_init, of p 0] by linarith
 
 subsection \<open>The actual string search algorithm\<close>
 
@@ -420,63 +441,45 @@ next
 qed
 
 text \<open>The first three arguments are precomputed so that they are not part of the inner loop.\<close>
-partial_function (tailrec) search :: "nat \<Rightarrow> nat \<Rightarrow> nat array \<Rightarrow> 'a array \<Rightarrow> 'a array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat * nat" where
-  "search m n nxt p a i j =
-     (if j < m \<and> i < n then let (i',j') = KMP_step p nxt a i j in search m n nxt p a i' j'
-      else (i,j))"
-declare search.simps[code]
+definition search :: "nat \<Rightarrow> nat \<Rightarrow> nat array \<Rightarrow> 'a array \<Rightarrow> 'a array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (nat * nat) option" where
+  "search m n nxt p a i j = while_option (\<lambda>(i, j). j < m \<and> i < n) (\<lambda>(i,j). KMP_step p nxt a i j) (i,j)"
 
-definition "rel_KMP n = lex_prod (measure (\<lambda>i. n-i)) (measure id)"
+lemma search_halts:
+  assumes "KMP_invariant p a i j"
+    shows "\<exists>y. search \<parallel>p\<parallel> \<parallel>a\<parallel> (table p) p a i j = Some y"
+      unfolding search_def
+proof ((intro measure_while_option_Some[of "\<lambda>(i,j). KMP_invariant p a i j" _ _
+  "\<lambda>(i, j). 2 * \<parallel>a\<parallel> - 2 * i + j"], rule conjI; clarify), goal_cases)
+  case (2 i j)
+    moreover obtain i' j' where \<dagger>: "(i', j') = KMP_step p (table p) a i j" by (metis surj_pair)
+    moreover have "KMP_invariant p a i' j'" using \<dagger> KMP_invariant[OF 2(1) 2(2) 2(3)] by auto
+    ultimately have "2 * \<parallel>a\<parallel> - 2 * i' + j' < 2 * \<parallel>a\<parallel> - 2 * i + j"
+        using is_next_table[of j p]
+      by (auto simp: KMP_invariant_def KMP_step_def matches_def is_next_def split: if_split_asm)
+  then show ?case using \<dagger> by (auto split: prod.splits)
+qed (use KMP_invariant assms in fastforce)+
 
-lemma wf_rel_KMP: "wf (rel_KMP n)"
-  unfolding rel_KMP_def by (auto intro: wf_same_fst)
 
 text \<open>Also expresses the absence of a match, when @{term "r = \<parallel>a\<parallel>"}\<close>
 definition first_occur :: "'a array \<Rightarrow> 'a array \<Rightarrow> nat \<Rightarrow> bool"
   where "first_occur p a r = ((r < \<parallel>a\<parallel> \<longrightarrow> matches a r p 0 \<parallel>p\<parallel>) \<and> (\<forall>k<r. \<not> matches a k p 0 \<parallel>p\<parallel>))"
 
 lemma KMP_correct:
-  assumes ini: "KMP_invariant p a i j"  
-  defines [simp]: "nxt \<equiv> table p" 
-  shows "let (i',j') = search \<parallel>p\<parallel> \<parallel>a\<parallel> nxt p a i j in first_occur p a (if j' = \<parallel>p\<parallel> then i' - \<parallel>p\<parallel> else i')"
-  using ini
-proof (induction "(i,j)" arbitrary: i j rule: wf_induct_rule[OF wf_rel_KMP [of "\<parallel>a\<parallel>"]])
-  case (1 i j)
-  then have ij: "j \<le> \<parallel>p\<parallel>" "j \<le> i"  "i \<le> \<parallel>a\<parallel>" 
-    and match: "matches a (i - j) p 0 j" 
-    and nomatch: "(\<forall>k<i - j. \<not> matches a k p 0 \<parallel>p\<parallel>)"
-    by (auto simp: KMP_invariant_def)
-  show ?case
-  proof (cases "j < \<parallel>p\<parallel> \<and> i < \<parallel>a\<parallel>")
-    case True
-    have "first_occur p a (if j'' = \<parallel>p\<parallel> then i'' - \<parallel>p\<parallel> else i'')"
-      if eq: "KMP_step p (table p) a i j = (i', j')" and eq': "search \<parallel>p\<parallel> \<parallel>a\<parallel> nxt p a i' j' = (i'',j'')"
-      for i' j' i'' j''
-    proof -
-      have decreasing: "((i',j'), i, j) \<in> rel_KMP \<parallel>a\<parallel>"
-        using that is_next_table [of j] True
-        by (auto simp: rel_KMP_def KMP_step_def is_next_def split: if_split_asm)
-      show ?thesis
-        using "1.hyps" [OF decreasing] "1.prems" KMP_invariant that True by fastforce
-    qed
-    with True show ?thesis
-      by (smt (verit, best) case_prodI2 nxt_def prod.case_distrib search.simps)
-  next
-    case False
-    have "False" if "matches a k p 0 \<parallel>p\<parallel>" "j < \<parallel>p\<parallel>" "i = \<parallel>a\<parallel>" for k
-    proof -
-      have "\<parallel>p\<parallel>+k \<le> i"
-        using that by (simp add: matches_def)
-      with that nomatch show False by auto
-    qed
-    with False ij show ?thesis
-      apply (simp add: first_occur_def split: prod.split)
-      by (metis le_less_Suc_eq match nomatch not_less_eq prod.inject search.simps)
-  qed
+  assumes ini: "KMP_invariant p a i j"
+  defines [simp]: "nxt \<equiv> table p"
+  shows "let (i',j') = the (search \<parallel>p\<parallel> \<parallel>a\<parallel> nxt p a i j) in first_occur p a (if j' = \<parallel>p\<parallel> then i' - \<parallel>p\<parallel> else i')"
+proof -
+  obtain i' j' where \<dagger>: "while_option (\<lambda>(i, j). j < \<parallel>p\<parallel> \<and> i < \<parallel>a\<parallel>) (\<lambda>(i,j). KMP_step p nxt a i j) (i,j) = Some (i', j')"
+    using search_halts[OF ini] by (auto simp: search_def)
+  have "KMP_invariant p a i' j'"
+    using while_option_rule[OF _ \<dagger>, of "\<lambda>(i', j'). KMP_invariant p a i' j'"] ini KMP_invariant by fastforce
+  with \<dagger> while_option_stop[OF \<dagger>] show ?thesis
+    by (auto simp: search_def KMP_invariant_def first_occur_def matches_def)
 qed
 
+
 definition KMP_search :: "'a array \<Rightarrow> 'a array \<Rightarrow> nat \<times> nat" where
-  "KMP_search p a = search \<parallel>p\<parallel> \<parallel>a\<parallel> (table p) p a 0 0"
+  "KMP_search p a = the (search \<parallel>p\<parallel> \<parallel>a\<parallel> (table p) p a 0 0)"
 declare KMP_search_def[code]
 
 lemma KMP_search:
@@ -524,5 +527,150 @@ value "KMP_search lousy_string bad_string"
 
 lemma "\<forall>k < \<parallel>lousy_string\<parallel>. \<not> matches lousy_string k bad_pattern 0 1001"
   by eval
+
+subsection \<open>Alternative approach, by declaring tail-recursive functions\<close>
+
+text \<open>Declaring a partial recursive function with the tailrec option
+relaxes the need for a termination proof, because a tail-recursive recursion
+equation can never cause inconsistency.\<close>
+
+subsubsection \<open>The build-table loop and its correctness\<close>
+
+partial_function (tailrec) buildtab' :: "'a array \<Rightarrow> nat array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat array" where
+  "buildtab' p nxt i j =
+     (if Suc i < \<parallel>p\<parallel>
+      then let (nxt',i',j') = buildtab_step p nxt i j in buildtab' p nxt' i' j'
+      else nxt)"
+declare buildtab'.simps[code]
+
+text \<open>Nevertheless, termination must eventually be shown:
+ to use induction to reason about executions. We do so by defining
+a well founded relation. Termination proofs are by well-founded induction.\<close>
+
+definition "rel_buildtab m = inv_image (lex_prod (measure (\<lambda>i. m-i)) (measure id)) snd"
+
+lemma wf_rel_buildtab: "wf (rel_buildtab m)"
+  unfolding rel_buildtab_def
+  by (auto intro: wf_same_fst)
+
+lemma buildtab_correct':
+  assumes k: "0<k \<and> k < \<parallel>p\<parallel>" and ini: "buildtab_invariant p nxt i j"
+  shows "is_next p k (buildtab' p nxt i j !! k)"
+  using ini
+proof (induction "(nxt,i,j)" arbitrary: nxt i j rule: wf_induct_rule[OF wf_rel_buildtab [of "\<parallel>p\<parallel>"]])
+  case (1 nxt i j)
+  show ?case
+  proof (cases "Suc i < \<parallel>p\<parallel>")
+    case True
+    then obtain nxt' i' j' 
+        where eq: "(nxt', i', j') = buildtab_step p nxt i j" and invar': "buildtab_invariant p nxt' i' j'"
+      using "1.prems" buildtab_invariant by (metis surj_pair)
+    then have "j>0 \<Longrightarrow> nxt'!!j < j"
+      using "1.prems"
+      by (auto simp: buildtab_invariant_def is_next_def buildtab_step_def split: if_split_asm)
+    then have decreasing: "((nxt', i', j'), nxt, i, j) \<in> rel_buildtab \<parallel>p\<parallel>"
+      using eq True by (auto simp: rel_buildtab_def buildtab_step_def split: if_split_asm)
+    show ?thesis
+      using "1.hyps" [OF decreasing invar'] "1.prems" eq True
+        by(auto simp add: buildtab'.simps[of p nxt] split: prod.splits)
+  next
+    case False
+    with 1 k show ?thesis
+      by (auto simp: buildtab_invariant_def buildtab'.simps)
+  qed
+qed
+
+subsubsection \<open>Linearity of @{term buildtab}\<close>
+
+partial_function (tailrec) T_buildtab' :: "'a array \<Rightarrow> nat array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "T_buildtab' p nxt i j t =
+     (if Suc i < \<parallel>p\<parallel>
+      then let (nxt',i',j') = buildtab_step p nxt i j in T_buildtab' p nxt' i' j' (Suc t)
+      else t)"
+
+lemma T_buildtab_correct':
+  assumes ini: "buildtab_invariant p nxt i j"
+  shows "T_buildtab' p nxt i j t \<le> 2*\<parallel>p\<parallel> - 2*i + j + t"
+  using ini
+proof (induction "(nxt,i,j)" arbitrary: nxt i j t rule: wf_induct_rule[OF wf_rel_buildtab [of "\<parallel>p\<parallel>"]])
+  case 1
+  have *: "Suc (T_buildtab' p nxt' i' j' t) \<le> 2*\<parallel>p\<parallel> - 2*i + j + t"
+    if eq: "buildtab_step p nxt i j = (nxt', i', j')" and "Suc i < \<parallel>p\<parallel>"
+    for nxt' i' j' t
+  proof -
+    have invar': "buildtab_invariant p nxt' i' j'"
+      using "1.prems" buildtab_invariant that by fastforce
+    then have nextj: "j>0 \<Longrightarrow> nxt'!!j < j"
+      using eq "1.prems"
+      by (auto simp: buildtab_invariant_def is_next_def buildtab_step_def split: if_split_asm)
+    then have decreasing: "((nxt', i', j'), nxt, i, j) \<in> rel_buildtab \<parallel>p\<parallel>"
+      using that by (auto simp: rel_buildtab_def same_fst_def buildtab_step_def split: if_split_asm)
+    then have "T_buildtab' p nxt' i' j' t \<le> 2 * \<parallel>p\<parallel> - 2 * i' + j' + t"
+      using "1.hyps" invar' by blast
+    then show ?thesis
+      using "1.prems" that nextj
+      by (force simp: T_buildtab'.simps [of p nxt' i' j'] buildtab_step_def split: if_split_asm)
+  qed             
+  show ?case
+    using * [where t = "Suc t"] by (auto simp add: T_buildtab'.simps split: prod.split)
+qed
+
+lemma T_buildtab_linear':
+  assumes "2 \<le> \<parallel>p\<parallel>" 
+  shows "T_buildtab' p (array 0 \<parallel>p\<parallel>) 1 0 0 \<le> 2*(\<parallel>p\<parallel> - 1)"
+  using assms T_buildtab_correct' [OF buildtab_invariant_init, of p 0] by auto
+
+subsection \<open>The actual string search algorithm\<close>
+
+partial_function (tailrec) search' :: "nat \<Rightarrow> nat \<Rightarrow> nat array \<Rightarrow> 'a array \<Rightarrow> 'a array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat * nat" where
+  "search' m n nxt p a i j =
+     (if j < m \<and> i < n then let (i',j') = KMP_step p nxt a i j in search' m n nxt p a i' j'
+      else (i,j))"
+declare search'.simps[code]
+
+definition "rel_KMP n = lex_prod (measure (\<lambda>i. n-i)) (measure id)"
+
+lemma wf_rel_KMP: "wf (rel_KMP n)"
+  unfolding rel_KMP_def by (auto intro: wf_same_fst)
+
+lemma KMP_correct':
+  assumes ini: "KMP_invariant p a i j"  
+  defines [simp]: "nxt \<equiv> table p" 
+  shows "let (i',j') = search' \<parallel>p\<parallel> \<parallel>a\<parallel> nxt p a i j in first_occur p a (if j' = \<parallel>p\<parallel> then i' - \<parallel>p\<parallel> else i')"
+  using ini
+proof (induction "(i,j)" arbitrary: i j rule: wf_induct_rule[OF wf_rel_KMP [of "\<parallel>a\<parallel>"]])
+  case (1 i j)
+  then have ij: "j \<le> \<parallel>p\<parallel>" "j \<le> i"  "i \<le> \<parallel>a\<parallel>" 
+    and match: "matches a (i - j) p 0 j" 
+    and nomatch: "(\<forall>k<i - j. \<not> matches a k p 0 \<parallel>p\<parallel>)"
+    by (auto simp: KMP_invariant_def)
+  show ?case
+  proof (cases "j < \<parallel>p\<parallel> \<and> i < \<parallel>a\<parallel>")
+    case True
+    have "first_occur p a (if j'' = \<parallel>p\<parallel> then i'' - \<parallel>p\<parallel> else i'')"
+      if eq: "KMP_step p (table p) a i j = (i', j')" and eq': "search' \<parallel>p\<parallel> \<parallel>a\<parallel> nxt p a i' j' = (i'',j'')"
+      for i' j' i'' j''
+    proof -
+      have decreasing: "((i',j'), i, j) \<in> rel_KMP \<parallel>a\<parallel>"
+        using that is_next_table [of j] True
+        by (auto simp: rel_KMP_def KMP_step_def is_next_def split: if_split_asm)
+      show ?thesis
+        using "1.hyps" [OF decreasing] "1.prems" KMP_invariant that True by fastforce
+    qed
+    with True show ?thesis
+      by (smt (verit, best) case_prodI2 nxt_def prod.case_distrib search'.simps)
+  next
+    case False
+    have "False" if "matches a k p 0 \<parallel>p\<parallel>" "j < \<parallel>p\<parallel>" "i = \<parallel>a\<parallel>" for k
+    proof -
+      have "\<parallel>p\<parallel>+k \<le> i"
+        using that by (simp add: matches_def)
+      with that nomatch show False by auto
+    qed
+    with False ij show ?thesis
+      apply (simp add: first_occur_def split: prod.split)
+      by (metis le_less_Suc_eq match nomatch not_less_eq prod.inject search'.simps)
+  qed
+qed
 
 end
