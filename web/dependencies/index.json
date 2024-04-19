@@ -1145,6 +1145,14 @@
   "name": "Propositional_Proof_Systems"
  },
  {
+<<<<<<< working copy
+=======
+  "id": 228,
+  "link": "/dependencies/psi_calculi/",
+  "name": "Psi_Calculi"
+ },
+ {
+>>>>>>> merge rev
   "id": 229,
   "link": "/dependencies/qhlprover/",
   "name": "QHLProver"
@@ -1206,15 +1214,26 @@
  },
  {
   "id": 241,
+<<<<<<< working copy
+=======
+  "link": "/dependencies/regular-sets/",
+  "name": "Regular-Sets"
+ },
+ {
+  "id": 242,
+>>>>>>> merge rev
   "link": "/dependencies/regular_tree_relations/",
   "name": "Regular_Tree_Relations"
  },
  {
+<<<<<<< working copy
   "id": 242,
   "link": "/dependencies/regular-sets/",
   "name": "Regular-Sets"
  },
  {
+=======
+>>>>>>> merge rev
   "id": 243,
   "link": "/dependencies/relation_algebra/",
   "name": "Relation_Algebra"
@@ -1451,15 +1470,26 @@
  },
  {
   "id": 290,
+<<<<<<< working copy
+=======
+  "link": "/dependencies/transitive-closure/",
+  "name": "Transitive-Closure"
+ },
+ {
+  "id": 291,
+>>>>>>> merge rev
   "link": "/dependencies/transitive_models/",
   "name": "Transitive_Models"
  },
  {
+<<<<<<< working copy
   "id": 291,
   "link": "/dependencies/transitive-closure/",
   "name": "Transitive-Closure"
  },
  {
+=======
+>>>>>>> merge rev
   "id": 292,
   "link": "/dependencies/triangle/",
   "name": "Triangle"

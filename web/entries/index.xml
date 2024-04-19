@@ -11,8 +11,36 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 20 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Checker.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Checker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Broadcast Psi-calculi</title>
+          <link>/entries/Broadcast_Psi.html</link>
+          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Broadcast_Psi.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Uncertainty Principle</title>
+          <link>/entries/Uncertainty_Principle.html</link>
+          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Uncertainty_Principle.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Continued Fractions</title>
           <link>/entries/Continued_Fractions.html</link>

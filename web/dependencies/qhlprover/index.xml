@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 03 Mar 2021 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 26 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/qhlprover/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Uncertainty Principle</title>
+          <link>/entries/Uncertainty_Principle.html</link>
+          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Uncertainty_Principle.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Quantum projective measurements and the CHSH inequality</title>
           <link>/entries/Projective_Measurements.html</link>

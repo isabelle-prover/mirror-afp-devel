@@ -1,0 +1,26 @@
+title = "ConcurrentHOL"
+date = 2024-04-16
+topics = [
+  "Computer science/Concurrency",
+]
+abstract = "This is a simple framework for expressing linear-time properties. It supports the usual programming constructs (including interleaving parallel composition), equational and inequational reasoning about these, compositional assume/guarantee specifications and refinement, and the mixing of specifications and programs, all shallowly embedded in Isabelle/HOL."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+email = "gammie_email"
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

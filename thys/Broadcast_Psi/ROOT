@@ -1,0 +1,11 @@
+chapter AFP
+
+session Broadcast_Psi (AFP) = "HOL-Nominal" +
+  options [timeout = 1800]
+  sessions
+    "Psi_Calculi"
+  theories
+    Broadcast_Thms
+  document_files
+    "root.bib"
+    "root.tex"

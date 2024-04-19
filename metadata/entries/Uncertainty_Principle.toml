@@ -1,0 +1,28 @@
+title = "Uncertainty Principle"
+date = 2024-03-26
+topics = [
+  "Mathematics/Physics/Quantum information",
+]
+abstract = "This is a formal proof of the uncertainty principle known from quantum  mechanics. It is based upon work on complex vector spaces contained in the QHLProver session. The formalization follows the proof outlined in the book \"Quantum computation and quantum information\" by Nielsen and Chuang."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.treml]
+email = "treml_email"
+
+[contributors]
+
+[notify]
+treml = "treml_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1017/CBO9780511976667",
+]
+pubs = []

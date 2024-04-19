@@ -13,6 +13,13 @@
     
       <atom:link href="/topics/computer-science/concurrency/process-calculi/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Broadcast Psi-calculi</title>
+          <link>/entries/Broadcast_Psi.html</link>
+          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Broadcast_Psi.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Operational Semantics formally proven in HOL-CSP</title>
           <link>/entries/HOL-CSP_OpSem.html</link>
           <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
