@@ -7,7 +7,7 @@ theory Frequency_Moment_k
     Lp.Lp
     Median_Method.Median
     Probability_Ext
-    Product_PMF_Ext
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
 begin
 
 text \<open>This section contains a formalization of the algorithm for the $k$-th frequency moment.

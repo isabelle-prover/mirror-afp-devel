@@ -19,6 +19,7 @@ session Finite_Fields = "HOL-Algebra" +
     Rabin_Irreducibility_Test
     Rabin_Irreducibility_Test_Code
     Finite_Fields_More_Bijections
+    Finite_Fields_More_PMF
     Finite_Fields_Indexed_Algebra_Code
     Finite_Fields_Mod_Ring_Code
     Finite_Fields_Poly_Factor_Ring_Code

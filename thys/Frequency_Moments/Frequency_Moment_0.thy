@@ -9,7 +9,7 @@ theory Frequency_Moment_0
     Frequency_Moments
     Landau_Ext
     Probability_Ext
-    Product_PMF_Ext
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
     Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
 begin
 

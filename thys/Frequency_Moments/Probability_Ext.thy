@@ -10,33 +10,8 @@ theory Probability_Ext
     Frequency_Moments_Preliminary_Results
 begin
 
-text \<open>The following aliases are here to prevent possible merge-conflicts. The lemmas have been
-moved to @{theory Concentration_Inequalities.Bienaymes_Identity} and/or
-@{theory Concentration_Inequalities.Concentration_Inequalities_Preliminary}.\<close>
-
-lemmas make_ext = forall_Pi_to_PiE
-lemmas PiE_reindex = PiE_reindex
-
 context prob_space
 begin
-
-lemmas indep_sets_reindex = indep_sets_reindex
-lemmas indep_vars_cong_AE = indep_vars_cong_AE
-lemmas indep_vars_reindex = indep_vars_reindex
-lemmas variance_divide = variance_divide
-lemmas covariance_def = covariance_def
-lemmas real_prod_integrable = cauchy_schwartz(1)
-lemmas covariance_eq = covariance_eq
-lemmas covar_integrable = covar_integrable
-lemmas sum_square_int = sum_square_int
-lemmas var_sum_1 = bienaymes_identity
-lemmas covar_self_eq = covar_self_eq
-lemmas covar_indep_eq_zero = covar_indep_eq_zero
-lemmas var_sum_2 = bienaymes_identity_2
-lemmas var_sum_pairwise_indep = bienaymes_identity_pairwise_indep
-lemmas indep_var_from_indep_vars = indep_var_from_indep_vars
-lemmas var_sum_pairwise_indep_2 = bienaymes_identity_pairwise_indep_2
-lemmas var_sum_all_indep = bienaymes_identity_full_indep
 
 lemma pmf_mono:
   assumes "M = measure_pmf p"
