@@ -14,6 +14,13 @@
       <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Checker.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Checker.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>ConcurrentHOL</title>
           <link>/entries/ConcurrentHOL.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
@@ -9118,6 +9125,13 @@
           <link>/sessions/mfodl_monitor_optimized/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/mfodl_monitor_optimized/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MFOTL_Checker</title>
+          <link>/sessions/mfotl_checker/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mfotl_checker/</guid>
           <description></description>
         </item>
         <item>

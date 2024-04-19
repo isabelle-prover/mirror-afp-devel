@@ -5,6 +5,9 @@
     <loc>/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/MFOTL_Checker.html</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -26,10 +29,31 @@
     <loc>/authors/gammie/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/herasimau/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/lima/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/mfotl_monitor/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/munive/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/optics/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/raszyk/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/traytel/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Broadcast_Psi.html</loc>
@@ -99,9 +123,6 @@
     <lastmod>2024-03-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CondNormReasHOL.html</loc>
-    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-03-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/parent/</loc>
@@ -375,9 +396,6 @@
     <lastmod>2023-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/srba/</loc>
-    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/traytel/</loc>
     <lastmod>2023-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Eudoxus_Reals.html</loc>
@@ -966,9 +984,6 @@
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Safe_Range_RC.html</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/raszyk/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/epistemic_logic/</loc>
@@ -2087,9 +2102,6 @@
     <loc>/entries/Matrices_for_ODEs.html</loc>
     <lastmod>2020-04-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/munive/</loc>
-    <lastmod>2020-04-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/ADS_Functor.html</loc>
     <lastmod>2020-04-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -2118,9 +2130,6 @@
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lambda_free_rpos/</loc>
-    <lastmod>2020-04-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/mfotl_monitor/</loc>
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Automated_Stateful_Protocol_Verification.html</loc>
@@ -6172,6 +6181,8 @@
     <loc>/sessions/mfmc_countable/</loc>
   </url><url>
     <loc>/sessions/mfodl_monitor_optimized/</loc>
+  </url><url>
+    <loc>/sessions/mfotl_checker/</loc>
   </url><url>
     <loc>/sessions/mfotl_monitor/</loc>
   </url><url>
