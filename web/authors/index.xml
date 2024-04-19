@@ -11,8 +11,85 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 20 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>gammie</title>
+          <link>/authors/gammie/</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/gammie/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>herasimau</title>
+          <link>/authors/herasimau/</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/herasimau/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lima</title>
+          <link>/authors/lima/</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/lima/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>munive</title>
+          <link>/authors/munive/</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/munive/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raszyk</title>
+          <link>/authors/raszyk/</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/raszyk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>traytel</title>
+          <link>/authors/traytel/</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/traytel/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ito</title>
+          <link>/authors/ito/</link>
+          <pubDate>Sun, 07 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/ito/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>pohjola</title>
+          <link>/authors/pohjola/</link>
+          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/pohjola/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>raabjerg</title>
+          <link>/authors/raabjerg/</link>
+          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/raabjerg/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>weber</title>
+          <link>/authors/weber/</link>
+          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/weber/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>treml</title>
+          <link>/authors/treml/</link>
+          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/treml/</guid>
+          <description></description>
+        </item>
         <item>
           <title>eberl</title>
           <link>/authors/eberl/</link>
@@ -60,13 +137,6 @@
           <link>/authors/chenj/</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/authors/chenj/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>weber</title>
-          <link>/authors/weber/</link>
-          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/weber/</guid>
           <description></description>
         </item>
         <item>
@@ -256,13 +326,6 @@
           <link>/authors/srba/</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
           <guid>/authors/srba/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>traytel</title>
-          <link>/authors/traytel/</link>
-          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/traytel/</guid>
           <description></description>
         </item>
         <item>
@@ -588,13 +651,6 @@
           <description></description>
         </item>
         <item>
-          <title>pohjola</title>
-          <link>/authors/pohjola/</link>
-          <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/pohjola/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>tanaka</title>
           <link>/authors/tanaka/</link>
           <pubDate>Fri, 20 Jan 2023 00:00:00 +0000</pubDate>
@@ -753,13 +809,6 @@
           <link>/authors/stoeckl/</link>
           <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
           <guid>/authors/stoeckl/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>raszyk</title>
-          <link>/authors/raszyk/</link>
-          <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/authors/raszyk/</guid>
           <description></description>
         </item>
         <item>
@@ -963,13 +1012,6 @@
           <link>/authors/jacobsen/</link>
           <pubDate>Mon, 31 Jan 2022 00:00:00 +0000</pubDate>
           <guid>/authors/jacobsen/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>ito</title>
-          <link>/authors/ito/</link>
-          <pubDate>Sun, 23 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/authors/ito/</guid>
           <description></description>
         </item>
         <item>
@@ -1435,13 +1477,6 @@
           <description></description>
         </item>
         <item>
-          <title>gammie</title>
-          <link>/authors/gammie/</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/authors/gammie/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>fiedler</title>
           <link>/authors/fiedler/</link>
           <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
@@ -1488,13 +1523,6 @@
           <link>/authors/kammueller/</link>
           <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
           <guid>/authors/kammueller/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>munive</title>
-          <link>/authors/munive/</link>
-          <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/authors/munive/</guid>
           <description></description>
         </item>
         <item>

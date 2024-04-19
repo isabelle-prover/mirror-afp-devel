@@ -13,12 +13,6 @@
     
       <atom:link href="/topics/computer-science/concurrency/index.xml" rel="self" type="application/rss+xml" />
         <item>
-<<<<<<< working copy
-          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
-          <link>/entries/Coupledsim_Contrasim.html</link>
-          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/Coupledsim_Contrasim.html</guid>
-=======
           <title>ConcurrentHOL</title>
           <link>/entries/ConcurrentHOL.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
@@ -26,25 +20,17 @@
           <description></description>
         </item>
         <item>
-          <title>Broadcast Psi-calculi</title>
-          <link>/entries/Broadcast_Psi.html</link>
-          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Broadcast_Psi.html</guid>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
           <description></description>
         </item>
         <item>
-          <title>Operational Semantics formally proven in HOL-CSP</title>
-          <link>/entries/HOL-CSP_OpSem.html</link>
-          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HOL-CSP_OpSem.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>HOL-CSPM - Architectural operators for HOL-CSP</title>
-          <link>/entries/HOL-CSPM.html</link>
-          <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/entries/HOL-CSPM.html</guid>
->>>>>>> merge rev
+          <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
+          <link>/entries/Coupledsim_Contrasim.html</link>
+          <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>
+          <guid>/entries/Coupledsim_Contrasim.html</guid>
           <description></description>
         </item>
         <item>

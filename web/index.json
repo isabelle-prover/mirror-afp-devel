@@ -46,6 +46,25 @@
   "used_by": 0
  },
  {
+  "abstract": "Actuarial Mathematics is a theory in applied mathematics.This is mainly used for determining the prices of insurance products and evaluating the liability of a company associating with insurance contracts.It is related to calculus, probability theory and financial theory, etc. In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL.It includes the theory of interest, survival model, and life table.The theory of interest deals with interest rates, present value factors, an annuity certain, etc.The survival model is a probabilistic model that represents the human mortality.The life table is based on the survival model and used for practical calculations. I have already formalized the basic part of Actuarial Mathematics in Coq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner.In contrast, Isabelle formalization is based on the probability theory and the survival model is developed as generally as possible.Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web. This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know. (Updated April 7th, 2024.) ",
+  "authors": [
+   "Yosuke Ito"
+  ],
+  "date": "2024-04-07",
+  "id": 2,
+  "link": "/entries/Actuarial_Mathematics.html",
+  "permalink": "/entries/Actuarial_Mathematics.html",
+  "shortname": "Actuarial_Mathematics",
+  "title": "Actuarial Mathematics",
+  "topic_links": [
+   "mathematics/games-and-economics"
+  ],
+  "topics": [
+   "Mathematics/Games and economics"
+  ],
+  "used_by": 0
+ },
+ {
   "abstract": "We provide an Isabelle/HOL-Nominal formalisation of the definitions, theorems and proofs in the paper Broadcast Psi-calculi with an Application to Wireless Protocols by Borgström et al., which extends the Psi-calculi framework with primitives for broadcast communication in order to model wireless protocols.",
   "authors": [
    "Palle Raabjerg",
@@ -53,7 +72,7 @@
    "Tjark Weber"
   ],
   "date": "2024-03-27",
-  "id": 2,
+  "id": 3,
   "link": "/entries/Broadcast_Psi.html",
   "permalink": "/entries/Broadcast_Psi.html",
   "shortname": "Broadcast_Psi",
@@ -72,7 +91,7 @@
    "Alexander Treml"
   ],
   "date": "2024-03-26",
-  "id": 3,
+  "id": 4,
   "link": "/entries/Uncertainty_Principle.html",
   "permalink": "/entries/Uncertainty_Principle.html",
   "shortname": "Uncertainty_Principle",
@@ -91,7 +110,7 @@
    "Manuel Eberl"
   ],
   "date": "2024-03-20",
-  "id": 4,
+  "id": 5,
   "link": "/entries/Continued_Fractions.html",
   "permalink": "/entries/Continued_Fractions.html",
   "shortname": "Continued_Fractions",
@@ -110,7 +129,7 @@
    "Manuel Eberl"
   ],
   "date": "2024-03-20",
-  "id": 5,
+  "id": 6,
   "link": "/entries/Kummer_Congruence.html",
   "permalink": "/entries/Kummer_Congruence.html",
   "shortname": "Kummer_Congruence",
@@ -130,7 +149,7 @@
    "Jiong Yang"
   ],
   "date": "2024-03-15",
-  "id": 6,
+  "id": 7,
   "link": "/entries/Approximate_Model_Counting.html",
   "permalink": "/entries/Approximate_Model_Counting.html",
   "shortname": "Approximate_Model_Counting",
@@ -152,7 +171,7 @@
    "Christoph Benzmüller"
   ],
   "date": "2024-03-09",
-  "id": 7,
+  "id": 8,
   "link": "/entries/CondNormReasHOL.html",
   "permalink": "/entries/CondNormReasHOL.html",
   "shortname": "CondNormReasHOL",
@@ -174,7 +193,7 @@
    "Tjark Weber"
   ],
   "date": "2024-03-06",
-  "id": 8,
+  "id": 9,
   "link": "/entries/QBF_Solver_Verification.html",
   "permalink": "/entries/QBF_Solver_Verification.html",
   "shortname": "QBF_Solver_Verification",
@@ -195,7 +214,7 @@
    "Jamie Chen"
   ],
   "date": "2024-03-06",
-  "id": 9,
+  "id": 10,
   "link": "/entries/Wieferich_Kempner.html",
   "permalink": "/entries/Wieferich_Kempner.html",
   "shortname": "Wieferich_Kempner",
@@ -215,7 +234,7 @@
    "Emin Karayel"
   ],
   "date": "2024-02-19",
-  "id": 10,
+  "id": 11,
   "link": "/entries/Karatsuba.html",
   "permalink": "/entries/Karatsuba.html",
   "shortname": "Karatsuba",
@@ -236,7 +255,7 @@
    "Ata Keskin"
   ],
   "date": "2024-02-15",
-  "id": 11,
+  "id": 12,
   "link": "/entries/Doob_Convergence.html",
   "permalink": "/entries/Doob_Convergence.html",
   "shortname": "Doob_Convergence",
@@ -255,7 +274,7 @@
    "Pasquale Noce"
   ],
   "date": "2024-02-12",
-  "id": 12,
+  "id": 13,
   "link": "/entries/IMP_Noninterference.html",
   "permalink": "/entries/IMP_Noninterference.html",
   "shortname": "IMP_Noninterference",
@@ -280,7 +299,7 @@
    "Jonathan Bootle"
   ],
   "date": "2024-02-02",
-  "id": 13,
+  "id": 14,
   "link": "/entries/Sumcheck_Protocol.html",
   "permalink": "/entries/Sumcheck_Protocol.html",
   "shortname": "Sumcheck_Protocol",
@@ -303,7 +322,7 @@
    "Tobias Nipkow"
   ],
   "date": "2024-01-26",
-  "id": 14,
+  "id": 15,
   "link": "/entries/Region_Quadtrees.html",
   "permalink": "/entries/Region_Quadtrees.html",
   "shortname": "Region_Quadtrees",
@@ -323,7 +342,7 @@
    "Tanguy Massacrier"
   ],
   "date": "2024-01-24",
-  "id": 15,
+  "id": 16,
   "link": "/entries/CubicalCategories.html",
   "permalink": "/entries/CubicalCategories.html",
   "shortname": "CubicalCategories",
@@ -343,7 +362,7 @@
    "Georg Struth"
   ],
   "date": "2024-01-24",
-  "id": 16,
+  "id": 17,
   "link": "/entries/OmegaCatoidsQuantales.html",
   "permalink": "/entries/OmegaCatoidsQuantales.html",
   "shortname": "OmegaCatoidsQuantales",
@@ -364,7 +383,7 @@
    "Sebastián Buss"
   ],
   "date": "2024-01-22",
-  "id": 17,
+  "id": 18,
   "link": "/entries/Isabelle_hoops.html",
   "permalink": "/entries/Isabelle_hoops.html",
   "shortname": "Isabelle_hoops",
@@ -384,7 +403,7 @@
    "Lars Hupel"
   ],
   "date": "2024-01-22",
-  "id": 18,
+  "id": 19,
   "link": "/entries/Go.html",
   "permalink": "/entries/Go.html",
   "shortname": "Go",
@@ -404,7 +423,7 @@
    "Amy Stell"
   ],
   "date": "2024-01-21",
-  "id": 19,
+  "id": 20,
   "link": "/entries/Interval_Analysis.html",
   "permalink": "/entries/Interval_Analysis.html",
   "shortname": "Interval_Analysis",
@@ -426,7 +445,7 @@
    "Burkhart Wolff"
   ],
   "date": "2023-12-24",
-  "id": 20,
+  "id": 21,
   "link": "/entries/HOL-CSP_OpSem.html",
   "permalink": "/entries/HOL-CSP_OpSem.html",
   "shortname": "HOL-CSP_OpSem",
@@ -447,7 +466,7 @@
    "Katharina Kreuzer"
   ],
   "date": "2023-12-18",
-  "id": 21,
+  "id": 22,
   "link": "/entries/CRYSTALS-Kyber_Security.html",
   "permalink": "/entries/CRYSTALS-Kyber_Security.html",
   "shortname": "CRYSTALS-Kyber_Security",
@@ -468,7 +487,7 @@
    "Burkhart Wolff"
   ],
   "date": "2023-12-05",
-  "id": 22,
+  "id": 23,
   "link": "/entries/HOL-CSPM.html",
   "permalink": "/entries/HOL-CSPM.html",
   "shortname": "HOL-CSPM",
@@ -489,7 +508,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2023-11-27",
-  "id": 23,
+  "id": 24,
   "link": "/entries/KnuthMorrisPratt.html",
   "permalink": "/entries/KnuthMorrisPratt.html",
   "shortname": "KnuthMorrisPratt",
@@ -508,7 +527,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-11-24",
-  "id": 24,
+  "id": 25,
   "link": "/entries/Lambert_Series.html",
   "permalink": "/entries/Lambert_Series.html",
   "shortname": "Lambert_Series",
@@ -527,7 +546,7 @@
    "Ata Keskin"
   ],
   "date": "2023-11-21",
-  "id": 25,
+  "id": 26,
   "link": "/entries/Martingales.html",
   "permalink": "/entries/Martingales.html",
   "shortname": "Martingales",
@@ -546,7 +565,7 @@
    "Anders Schlichtkrull"
   ],
   "date": "2023-11-20",
-  "id": 26,
+  "id": 27,
   "link": "/entries/Q0_Soundness.html",
   "permalink": "/entries/Q0_Soundness.html",
   "shortname": "Q0_Soundness",
@@ -565,7 +584,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-11-15",
-  "id": 27,
+  "id": 28,
   "link": "/entries/Cardinality_Continuum.html",
   "permalink": "/entries/Cardinality_Continuum.html",
   "shortname": "Cardinality_Continuum",
@@ -584,7 +603,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-11-15",
-  "id": 28,
+  "id": 29,
   "link": "/entries/Polylog.html",
   "permalink": "/entries/Polylog.html",
   "shortname": "Polylog",
@@ -603,7 +622,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-11-14",
-  "id": 29,
+  "id": 30,
   "link": "/entries/Polynomial_Crit_Geometry.html",
   "permalink": "/entries/Polynomial_Crit_Geometry.html",
   "shortname": "Polynomial_Crit_Geometry",
@@ -622,7 +641,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-11-13",
-  "id": 30,
+  "id": 31,
   "link": "/entries/Chebyshev_Polynomials.html",
   "permalink": "/entries/Chebyshev_Polynomials.html",
   "shortname": "Chebyshev_Polynomials",
@@ -642,7 +661,7 @@
    "Yong Kiam Tan"
   ],
   "date": "2023-11-13",
-  "id": 31,
+  "id": 32,
   "link": "/entries/Concentration_Inequalities.html",
   "permalink": "/entries/Concentration_Inequalities.html",
   "shortname": "Concentration_Inequalities",
@@ -661,7 +680,7 @@
    "Cárolos Laméris"
   ],
   "date": "2023-11-10",
-  "id": 32,
+  "id": 33,
   "link": "/entries/Nominal_Myhill_Nerode.html",
   "permalink": "/entries/Nominal_Myhill_Nerode.html",
   "shortname": "Nominal_Myhill_Nerode",
@@ -681,7 +700,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-11-06",
-  "id": 33,
+  "id": 34,
   "link": "/entries/Elimination_Of_Repeated_Factors.html",
   "permalink": "/entries/Elimination_Of_Repeated_Factors.html",
   "shortname": "Elimination_Of_Repeated_Factors",
@@ -701,7 +720,7 @@
    "Katharina Kreuzer"
   ],
   "date": "2023-11-06",
-  "id": 34,
+  "id": 35,
   "link": "/entries/Perfect_Fields.html",
   "permalink": "/entries/Perfect_Fields.html",
   "shortname": "Perfect_Fields",
@@ -720,7 +739,7 @@
    "Javier Díaz"
   ],
   "date": "2023-11-04",
-  "id": 35,
+  "id": 36,
   "link": "/entries/Q0_Metatheory.html",
   "permalink": "/entries/Q0_Metatheory.html",
   "shortname": "Q0_Metatheory",
@@ -739,7 +758,7 @@
    "Michikazu Hirata"
   ],
   "date": "2023-11-02",
-  "id": 36,
+  "id": 37,
   "link": "/entries/Disintegration.html",
   "permalink": "/entries/Disintegration.html",
   "shortname": "Disintegration",
@@ -763,7 +782,7 @@
    "Dmitriy Traytel"
   ],
   "date": "2023-10-31",
-  "id": 37,
+  "id": 38,
   "link": "/entries/Labeled_Transition_Systems.html",
   "permalink": "/entries/Labeled_Transition_Systems.html",
   "shortname": "Labeled_Transition_Systems",
@@ -787,7 +806,7 @@
    "Dmitriy Traytel"
   ],
   "date": "2023-10-31",
-  "id": 38,
+  "id": 39,
   "link": "/entries/Pushdown_Systems.html",
   "permalink": "/entries/Pushdown_Systems.html",
   "shortname": "Pushdown_Systems",
@@ -808,7 +827,7 @@
    "Ata Keskin"
   ],
   "date": "2023-10-29",
-  "id": 39,
+  "id": 40,
   "link": "/entries/Eudoxus_Reals.html",
   "permalink": "/entries/Eudoxus_Reals.html",
   "shortname": "Eudoxus_Reals",
@@ -827,7 +846,7 @@
    "Kevin Kappelmann"
   ],
   "date": "2023-10-11",
-  "id": 40,
+  "id": 41,
   "link": "/entries/Transport.html",
   "permalink": "/entries/Transport.html",
   "shortname": "Transport",
@@ -853,7 +872,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2023-09-23",
-  "id": 41,
+  "id": 42,
   "link": "/entries/Hypergraph_Colourings.html",
   "permalink": "/entries/Hypergraph_Colourings.html",
   "shortname": "Hypergraph_Colourings",
@@ -874,7 +893,7 @@
    "Walter Guttmann"
   ],
   "date": "2023-09-22",
-  "id": 42,
+  "id": 43,
   "link": "/entries/Relational_Cardinality.html",
   "permalink": "/entries/Relational_Cardinality.html",
   "shortname": "Relational_Cardinality",
@@ -893,7 +912,7 @@
    "Chelsea Edmonds"
   ],
   "date": "2023-09-20",
-  "id": 43,
+  "id": 44,
   "link": "/entries/Lovasz_Local.html",
   "permalink": "/entries/Lovasz_Local.html",
   "shortname": "Lovasz_Local",
@@ -914,7 +933,7 @@
    "Chelsea Edmonds"
   ],
   "date": "2023-09-20",
-  "id": 44,
+  "id": 45,
   "link": "/entries/Hypergraph_Basics.html",
   "permalink": "/entries/Hypergraph_Basics.html",
   "shortname": "Hypergraph_Basics",
@@ -933,7 +952,7 @@
    "Kevin Kappelmann"
   ],
   "date": "2023-09-19",
-  "id": 45,
+  "id": 46,
   "link": "/entries/ML_Unification.html",
   "permalink": "/entries/ML_Unification.html",
   "shortname": "ML_Unification",
@@ -952,7 +971,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2023-09-16",
-  "id": 46,
+  "id": 47,
   "link": "/entries/Euler_Polyhedron_Formula.html",
   "permalink": "/entries/Euler_Polyhedron_Formula.html",
   "shortname": "Euler_Polyhedron_Formula",
@@ -971,7 +990,7 @@
    "Robert Sachtleben"
   ],
   "date": "2023-09-01",
-  "id": 47,
+  "id": 48,
   "link": "/entries/IO_Language_Conformance.html",
   "permalink": "/entries/IO_Language_Conformance.html",
   "shortname": "IO_Language_Conformance",
@@ -991,7 +1010,7 @@
    "Luisa Montanari"
   ],
   "date": "2023-08-18",
-  "id": 48,
+  "id": 49,
   "link": "/entries/Coupledsim_Contrasim.html",
   "permalink": "/entries/Coupledsim_Contrasim.html",
   "shortname": "Coupledsim_Contrasim",
@@ -1014,7 +1033,7 @@
    "Mathias Schack Rabing"
   ],
   "date": "2023-08-16",
-  "id": 49,
+  "id": 50,
   "link": "/entries/Ceva.html",
   "permalink": "/entries/Ceva.html",
   "shortname": "Ceva",
@@ -1033,7 +1052,7 @@
    "Georg Struth"
   ],
   "date": "2023-08-14",
-  "id": 50,
+  "id": 51,
   "link": "/entries/Catoids.html",
   "permalink": "/entries/Catoids.html",
   "shortname": "Catoids",
@@ -1054,7 +1073,7 @@
    "Lars Hupel"
   ],
   "date": "2023-08-14",
-  "id": 51,
+  "id": 52,
   "link": "/entries/Fixed_Length_Vector.html",
   "permalink": "/entries/Fixed_Length_Vector.html",
   "shortname": "Fixed_Length_Vector",
@@ -1075,7 +1094,7 @@
    "Angeliki Koutsoukou-Argyraki"
   ],
   "date": "2023-08-10",
-  "id": 52,
+  "id": 53,
   "link": "/entries/Polygonal_Number_Theorem.html",
   "permalink": "/entries/Polygonal_Number_Theorem.html",
   "shortname": "Polygonal_Number_Theorem",
@@ -1097,7 +1116,7 @@
    "Yasuhiko Minamide"
   ],
   "date": "2023-08-08",
-  "id": 53,
+  "id": 54,
   "link": "/entries/S_Finite_Measure_Monad.html",
   "permalink": "/entries/S_Finite_Measure_Monad.html",
   "shortname": "S_Finite_Measure_Monad",
@@ -1120,7 +1139,7 @@
    "Michikazu Hirata"
   ],
   "date": "2023-08-08",
-  "id": 54,
+  "id": 55,
   "link": "/entries/Standard_Borel_Spaces.html",
   "permalink": "/entries/Standard_Borel_Spaces.html",
   "shortname": "Standard_Borel_Spaces",
@@ -1142,7 +1161,7 @@
    "Cameron Calk"
   ],
   "date": "2023-07-25",
-  "id": 55,
+  "id": 56,
   "link": "/entries/Quantales_Converse.html",
   "permalink": "/entries/Quantales_Converse.html",
   "shortname": "Quantales_Converse",
@@ -1165,7 +1184,7 @@
    "Martin Rau"
   ],
   "date": "2023-07-16",
-  "id": 56,
+  "id": 57,
   "link": "/entries/Earley_Parser.html",
   "permalink": "/entries/Earley_Parser.html",
   "shortname": "Earley_Parser",
@@ -1184,7 +1203,7 @@
    "Maximilian Spitz"
   ],
   "date": "2023-07-11",
-  "id": 57,
+  "id": 58,
   "link": "/entries/Gray_Codes.html",
   "permalink": "/entries/Gray_Codes.html",
   "shortname": "Gray_Codes",
@@ -1206,7 +1225,7 @@
    "Manuel Eberl"
   ],
   "date": "2023-06-19",
-  "id": 58,
+  "id": 59,
   "link": "/entries/Executable_Randomized_Algorithms.html",
   "permalink": "/entries/Executable_Randomized_Algorithms.html",
   "shortname": "Executable_Randomized_Algorithms",
@@ -1226,7 +1245,7 @@
    "Søren Debois"
   ],
   "date": "2023-06-16",
-  "id": 59,
+  "id": 60,
   "link": "/entries/DCR-ExecutionEquivalence.html",
   "permalink": "/entries/DCR-ExecutionEquivalence.html",
   "shortname": "DCR-ExecutionEquivalence",
@@ -1245,7 +1264,7 @@
    "Christian Dalvit"
   ],
   "date": "2023-06-12",
-  "id": 60,
+  "id": 61,
   "link": "/entries/Zeckendorf.html",
   "permalink": "/entries/Zeckendorf.html",
   "shortname": "Zeckendorf",
@@ -1264,7 +1283,7 @@
    "A Whitley"
   ],
   "date": "2023-06-06",
-  "id": 61,
+  "id": 62,
   "link": "/entries/Crypto_Standards.html",
   "permalink": "/entries/Crypto_Standards.html",
   "shortname": "Crypto_Standards",
@@ -1284,7 +1303,7 @@
    "Elias Wenninger"
   ],
   "date": "2023-06-01",
-  "id": 62,
+  "id": 63,
   "link": "/entries/Efficient_Weighted_Path_Order.html",
   "permalink": "/entries/Efficient_Weighted_Path_Order.html",
   "shortname": "Efficient_Weighted_Path_Order",
@@ -1306,7 +1325,7 @@
    "Jérémy Dubut"
   ],
   "date": "2023-05-24",
-  "id": 63,
+  "id": 64,
   "link": "/entries/Directed_Sets.html",
   "permalink": "/entries/Directed_Sets.html",
   "shortname": "Directed_Sets",
@@ -1326,7 +1345,7 @@
    "Georg Struth"
   ],
   "date": "2023-05-22",
-  "id": 64,
+  "id": 65,
   "link": "/entries/Multirelations_Heterogeneous.html",
   "permalink": "/entries/Multirelations_Heterogeneous.html",
   "shortname": "Multirelations_Heterogeneous",
@@ -1345,7 +1364,7 @@
    "Nils Cremer"
   ],
   "date": "2023-05-09",
-  "id": 65,
+  "id": 66,
   "link": "/entries/Tree_Enumeration.html",
   "permalink": "/entries/Tree_Enumeration.html",
   "shortname": "Tree_Enumeration",
@@ -1368,7 +1387,7 @@
    "Lukas Stevens"
   ],
   "date": "2023-05-05",
-  "id": 66,
+  "id": 67,
   "link": "/entries/MLSS_Decision_Proc.html",
   "permalink": "/entries/MLSS_Decision_Proc.html",
   "shortname": "MLSS_Decision_Proc",
@@ -1392,7 +1411,7 @@
    "Loïc Chevalier"
   ],
   "date": "2023-05-03",
-  "id": 67,
+  "id": 68,
   "link": "/entries/Three_Squares.html",
   "permalink": "/entries/Three_Squares.html",
   "shortname": "Three_Squares",
@@ -1411,7 +1430,7 @@
    "Mike Stannett"
   ],
   "date": "2023-04-29",
-  "id": 68,
+  "id": 69,
   "link": "/entries/MHComputation.html",
   "permalink": "/entries/MHComputation.html",
   "shortname": "MHComputation",
@@ -1435,7 +1454,7 @@
    "Yong Kiam Tan"
   ],
   "date": "2023-04-27",
-  "id": 69,
+  "id": 70,
   "link": "/entries/Schwartz_Zippel.html",
   "permalink": "/entries/Schwartz_Zippel.html",
   "shortname": "Schwartz_Zippel",
@@ -1456,7 +1475,7 @@
    "Martin Desharnais"
   ],
   "date": "2023-04-20",
-  "id": 70,
+  "id": 71,
   "link": "/entries/Simple_Clause_Learning.html",
   "permalink": "/entries/Simple_Clause_Learning.html",
   "shortname": "Simple_Clause_Learning",
@@ -1477,7 +1496,7 @@
    "Coraline Mori"
   ],
   "date": "2023-04-18",
-  "id": 71,
+  "id": 72,
   "link": "/entries/TsirelsonBound.html",
   "permalink": "/entries/TsirelsonBound.html",
   "shortname": "TsirelsonBound",
@@ -1498,7 +1517,7 @@
    "Emin Karayel"
   ],
   "date": "2023-04-03",
-  "id": 72,
+  "id": 73,
   "link": "/entries/Distributed_Distinct_Elements.html",
   "permalink": "/entries/Distributed_Distinct_Elements.html",
   "shortname": "Distributed_Distinct_Elements",
@@ -1516,12 +1535,12 @@
   "used_by": 0
  },
  {
-  "abstract": "Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of individual program executions (so-called trace properties, such as functional correctness). On the one hand, Hoare logic has been generalized to prove properties of multiple executions of a program (so-called hyperproperties, such as determinism or non-interference). These program logics prove the absence of (bad combinations of) executions. On the other hand, program logics similar to Hoare logic have been proposed to disprove program properties (e.g., Incorrectness Logic [8]), by proving the existence of (bad combinations of) executions. All of these logics have in common that they specify program properties using assertions over a fixed number of states, for instance, a single pre- and post-state for functional properties or pairs of pre- and post-states for non-interference.  In this entry, we formalize Hyper Hoare Logic, a generalization of Hoare logic that lifts assertions to properties of arbitrary sets of states. The resulting logic is simple yet expressive: its judgments can express arbitrary trace- and hyperproperties over the terminating executions of a program. By allowing assertions to reason about sets of states, Hyper Hoare Logic can reason about both the absence and the existence of (combinations of) executions, and, thereby, supports both proving and disproving program (hyper-)properties within the same logic. In fact, we prove that Hyper Hoare Logic subsumes the properties handled by numerous existing correctness and incorrectness logics, and can express hyperproperties that no existing Hoare logic can. We also prove that Hyper Hoare Logic is sound and complete.",
+  "abstract": "Hoare logics are proof systems that allow one to formally establish properties of computer programs. Traditional Hoare logics prove properties of individual program executions (such as functional correctness). On the one hand, Hoare logic has been generalized to prove properties of multiple executions of a program (so-called hyperproperties, such as determinism or non-interference). These program logics prove the absence of (bad combinations of) executions. On the other hand, program logics similar to Hoare logic have been proposed to disprove program properties (e.g., Incorrectness Logic), by proving the existence of (bad combinations of) executions. All of these logics have in common that they specify program properties using assertions over a fixed number of states, for instance, a single pre- and post-state for functional properties or pairs of pre- and post-states for non-interference.  In this entry, we formalize Hyper Hoare Logic, a generalization of Hoare logic that lifts assertions to properties of arbitrary sets of states. The resulting logic is simple yet expressive: its judgments can express arbitrary program hyperproperties, a particular class of hyperproperties over the set of terminating executions of a program (including properties of individual program executions). By allowing assertions to reason about sets of states, Hyper Hoare Logic can reason about both the absence and the existence of (combinations of) executions, and, thereby, supports both proving and disproving program (hyper-)properties within the same logic, including hyperproperties that no existing Hoare logic can express. We prove that Hyper Hoare Logic is sound and complete, and demonstrate that it captures important proof principles naturally.",
   "authors": [
    "Thibault Dardinier"
   ],
   "date": "2023-04-03",
-  "id": 73,
+  "id": 74,
   "link": "/entries/HyperHoareLogic.html",
   "permalink": "/entries/HyperHoareLogic.html",
   "shortname": "HyperHoareLogic",
@@ -1540,7 +1559,7 @@
    "Charles Staats"
   ],
   "date": "2023-04-03",
-  "id": 74,
+  "id": 75,
   "link": "/entries/DigitsInBase.html",
   "permalink": "/entries/DigitsInBase.html",
   "shortname": "DigitsInBase",
@@ -1559,7 +1578,7 @@
    "Thibault Dardinier"
   ],
   "date": "2023-03-15",
-  "id": 75,
+  "id": 76,
   "link": "/entries/CommCSL.html",
   "permalink": "/entries/CommCSL.html",
   "shortname": "CommCSL",
@@ -1587,7 +1606,7 @@
    "Gergely Szekely"
   ],
   "date": "2023-03-05",
-  "id": 76,
+  "id": 77,
   "link": "/entries/No_FTL_observers_Gen_Rel.html",
   "permalink": "/entries/No_FTL_observers_Gen_Rel.html",
   "shortname": "No_FTL_observers_Gen_Rel",
@@ -1606,7 +1625,7 @@
    "Emin Karayel"
   ],
   "date": "2023-03-03",
-  "id": 77,
+  "id": 78,
   "link": "/entries/Expander_Graphs.html",
   "permalink": "/entries/Expander_Graphs.html",
   "shortname": "Expander_Graphs",
@@ -1629,7 +1648,7 @@
    "Andrei Popescu"
   ],
   "date": "2023-02-28",
-  "id": 78,
+  "id": 79,
   "link": "/entries/Rensets.html",
   "permalink": "/entries/Rensets.html",
   "shortname": "Rensets",
@@ -1648,7 +1667,7 @@
    "Matthew Doty"
   ],
   "date": "2023-02-20",
-  "id": 79,
+  "id": 80,
   "link": "/entries/Probability_Inequality_Completeness.html",
   "permalink": "/entries/Probability_Inequality_Completeness.html",
   "shortname": "Probability_Inequality_Completeness",
@@ -1671,7 +1690,7 @@
    "Rodrigo Raya"
   ],
   "date": "2023-02-16",
-  "id": 80,
+  "id": 81,
   "link": "/entries/Edwards_Elliptic_Curves_Group.html",
   "permalink": "/entries/Edwards_Elliptic_Curves_Group.html",
   "shortname": "Edwards_Elliptic_Curves_Group",
@@ -1690,7 +1709,7 @@
    "Katharina Kreuzer"
   ],
   "date": "2023-02-02",
-  "id": 81,
+  "id": 82,
   "link": "/entries/CVP_Hardness.html",
   "permalink": "/entries/CVP_Hardness.html",
   "shortname": "CVP_Hardness",
@@ -1711,7 +1730,7 @@
    "Shuwei Hu"
   ],
   "date": "2023-01-27",
-  "id": 82,
+  "id": 83,
   "link": "/entries/ABY3_Protocols.html",
   "permalink": "/entries/ABY3_Protocols.html",
   "shortname": "ABY3_Protocols",
@@ -1732,7 +1751,7 @@
    "Sophie Tourret"
   ],
   "date": "2023-01-25",
-  "id": 83,
+  "id": 84,
   "link": "/entries/Given_Clause_Loops.html",
   "permalink": "/entries/Given_Clause_Loops.html",
   "shortname": "Given_Clause_Loops",
@@ -1751,7 +1770,7 @@
    "Matthew Doty"
   ],
   "date": "2023-01-22",
-  "id": 84,
+  "id": 85,
   "link": "/entries/Suppes_Theorem.html",
   "permalink": "/entries/Suppes_Theorem.html",
   "shortname": "Suppes_Theorem",
@@ -1774,7 +1793,7 @@
    "Miki Tanaka"
   ],
   "date": "2023-01-20",
-  "id": 85,
+  "id": 86,
   "link": "/entries/HoareForDivergence.html",
   "permalink": "/entries/HoareForDivergence.html",
   "shortname": "HoareForDivergence",
@@ -1794,7 +1813,7 @@
    "Adrián Doña Mateo"
   ],
   "date": "2023-01-14",
-  "id": 86,
+  "id": 87,
   "link": "/entries/StrictOmegaCategories.html",
   "permalink": "/entries/StrictOmegaCategories.html",
   "shortname": "StrictOmegaCategories",
@@ -1813,7 +1832,7 @@
    "Asta Halkjær From"
   ],
   "date": "2023-01-09",
-  "id": 87,
+  "id": 88,
   "link": "/entries/Synthetic_Completeness.html",
   "permalink": "/entries/Synthetic_Completeness.html",
   "shortname": "Synthetic_Completeness",
@@ -1834,7 +1853,7 @@
    "Frank J. Balbach"
   ],
   "date": "2023-01-08",
-  "id": 88,
+  "id": 89,
   "link": "/entries/Cook_Levin.html",
   "permalink": "/entries/Cook_Levin.html",
   "shortname": "Cook_Levin",
@@ -1856,7 +1875,7 @@
    "Martin Raška"
   ],
   "date": "2023-01-03",
-  "id": 89,
+  "id": 90,
   "link": "/entries/Binary_Code_Imprimitive.html",
   "permalink": "/entries/Binary_Code_Imprimitive.html",
   "shortname": "Binary_Code_Imprimitive",
@@ -1876,7 +1895,7 @@
    "Štěpán Starosta"
   ],
   "date": "2023-01-03",
-  "id": 90,
+  "id": 91,
   "link": "/entries/Two_Generated_Word_Monoids_Intersection.html",
   "permalink": "/entries/Two_Generated_Word_Monoids_Intersection.html",
   "shortname": "Two_Generated_Word_Monoids_Intersection",
@@ -1897,7 +1916,7 @@
    "André Platzer"
   ],
   "date": "2022-12-15",
-  "id": 91,
+  "id": 92,
   "link": "/entries/Quantifier_Elimination_Hybrid.html",
   "permalink": "/entries/Quantifier_Elimination_Hybrid.html",
   "shortname": "Quantifier_Elimination_Hybrid",
@@ -1916,7 +1935,7 @@
    "Matthew Doty"
   ],
   "date": "2022-12-15",
-  "id": 92,
+  "id": 93,
   "link": "/entries/Propositional_Logic_Class.html",
   "permalink": "/entries/Propositional_Logic_Class.html",
   "shortname": "Propositional_Logic_Class",
@@ -1937,7 +1956,7 @@
    "Matthew Doty"
   ],
   "date": "2022-12-06",
-  "id": 93,
+  "id": 94,
   "link": "/entries/Birkhoff_Finite_Distributive_Lattices.html",
   "permalink": "/entries/Birkhoff_Finite_Distributive_Lattices.html",
   "shortname": "Birkhoff_Finite_Distributive_Lattices",
@@ -1959,7 +1978,7 @@
    "Geoff Sutcliffe"
   ],
   "date": "2022-12-05",
-  "id": 94,
+  "id": 95,
   "link": "/entries/Boolos_Curious_Inference_Automated.html",
   "permalink": "/entries/Boolos_Curious_Inference_Automated.html",
   "shortname": "Boolos_Curious_Inference_Automated",
@@ -1991,7 +2010,7 @@
    "René Thiemann"
   ],
   "date": "2022-11-30",
-  "id": 95,
+  "id": 96,
   "link": "/entries/Multitape_To_Singletape_TM.html",
   "permalink": "/entries/Multitape_To_Singletape_TM.html",
   "shortname": "Multitape_To_Singletape_TM",
@@ -2012,7 +2031,7 @@
    "Daniel Kirchner"
   ],
   "date": "2022-11-28",
-  "id": 96,
+  "id": 97,
   "link": "/entries/AOT.html",
   "permalink": "/entries/AOT.html",
   "shortname": "AOT",
@@ -2033,7 +2052,7 @@
    "Seung Hoon Park"
   ],
   "date": "2022-11-25",
-  "id": 97,
+  "id": 98,
   "link": "/entries/CHERI-C_Memory_Model.html",
   "permalink": "/entries/CHERI-C_Memory_Model.html",
   "shortname": "CHERI-C_Memory_Model",
@@ -2052,7 +2071,7 @@
    "Ata Keskin"
   ],
   "date": "2022-11-24",
-  "id": 98,
+  "id": 99,
   "link": "/entries/Sauer_Shelah_Lemma.html",
   "permalink": "/entries/Sauer_Shelah_Lemma.html",
   "shortname": "Sauer_Shelah_Lemma",
@@ -2072,7 +2091,7 @@
    "Angeliki Koutsoukou-Argyraki"
   ],
   "date": "2022-11-21",
-  "id": 99,
+  "id": 100,
   "link": "/entries/Kneser_Cauchy_Davenport.html",
   "permalink": "/entries/Kneser_Cauchy_Davenport.html",
   "shortname": "Kneser_Cauchy_Davenport",
@@ -2091,7 +2110,7 @@
    "Nils Lauermann"
   ],
   "date": "2022-11-14",
-  "id": 100,
+  "id": 101,
   "link": "/entries/Turans_Graph_Theorem.html",
   "permalink": "/entries/Turans_Graph_Theorem.html",
   "shortname": "Turans_Graph_Theorem",
@@ -2111,7 +2130,7 @@
    "Emin Karayel"
   ],
   "date": "2022-11-11",
-  "id": 101,
+  "id": 102,
   "link": "/entries/Combinatorial_Enumeration_Algorithms.html",
   "permalink": "/entries/Combinatorial_Enumeration_Algorithms.html",
   "shortname": "Combinatorial_Enumeration_Algorithms",
@@ -2134,7 +2153,7 @@
    "Chelsea Edmonds"
   ],
   "date": "2022-11-11",
-  "id": 102,
+  "id": 103,
   "link": "/entries/Balog_Szemeredi_Gowers.html",
   "permalink": "/entries/Balog_Szemeredi_Gowers.html",
   "shortname": "Balog_Szemeredi_Gowers",
@@ -2159,7 +2178,7 @@
    "Patrick Lederer"
   ],
   "date": "2022-11-10",
-  "id": 103,
+  "id": 104,
   "link": "/entries/PAPP_Impossibility.html",
   "permalink": "/entries/PAPP_Impossibility.html",
   "shortname": "PAPP_Impossibility",
@@ -2179,7 +2198,7 @@
    "Bernhard Stöckl"
   ],
   "date": "2022-10-04",
-  "id": 104,
+  "id": 105,
   "link": "/entries/Query_Optimization.html",
   "permalink": "/entries/Query_Optimization.html",
   "shortname": "Query_Optimization",
@@ -2198,7 +2217,7 @@
    "Nils Cremer"
   ],
   "date": "2022-09-29",
-  "id": 105,
+  "id": 106,
   "link": "/entries/Maximum_Segment_Sum.html",
   "permalink": "/entries/Maximum_Segment_Sum.html",
   "shortname": "Maximum_Segment_Sum",
@@ -2217,7 +2236,7 @@
    "Chelsea Edmonds"
   ],
   "date": "2022-09-29",
-  "id": 106,
+  "id": 107,
   "link": "/entries/Undirected_Graph_Theory.html",
   "permalink": "/entries/Undirected_Graph_Theory.html",
   "shortname": "Undirected_Graph_Theory",
@@ -2237,7 +2256,7 @@
    "Dmitriy Traytel"
   ],
   "date": "2022-09-28",
-  "id": 107,
+  "id": 108,
   "link": "/entries/Safe_Range_RC.html",
   "permalink": "/entries/Safe_Range_RC.html",
   "shortname": "Safe_Range_RC",
@@ -2258,7 +2277,7 @@
    "Laura P. Gamboa Guzman"
   ],
   "date": "2022-09-23",
-  "id": 108,
+  "id": 109,
   "link": "/entries/Stalnaker_Logic.html",
   "permalink": "/entries/Stalnaker_Logic.html",
   "shortname": "Stalnaker_Logic",
@@ -2277,7 +2296,7 @@
    "Aaron Crighton"
   ],
   "date": "2022-09-22",
-  "id": 109,
+  "id": 110,
   "link": "/entries/Padic_Field.html",
   "permalink": "/entries/Padic_Field.html",
   "shortname": "Padic_Field",
@@ -2298,7 +2317,7 @@
    "Matthew Doty"
   ],
   "date": "2022-09-18",
-  "id": 110,
+  "id": 111,
   "link": "/entries/Risk_Free_Lending.html",
   "permalink": "/entries/Risk_Free_Lending.html",
   "shortname": "Risk_Free_Lending",
@@ -2318,7 +2337,7 @@
    "Jørgen Villadsen"
   ],
   "date": "2022-09-13",
-  "id": 111,
+  "id": 112,
   "link": "/entries/Implicational_Logic.html",
   "permalink": "/entries/Implicational_Logic.html",
   "shortname": "Implicational_Logic",
@@ -2339,7 +2358,7 @@
    "Katharina Kreuzer"
   ],
   "date": "2022-09-08",
-  "id": 112,
+  "id": 113,
   "link": "/entries/CRYSTALS-Kyber.html",
   "permalink": "/entries/CRYSTALS-Kyber.html",
   "shortname": "CRYSTALS-Kyber",
@@ -2358,7 +2377,7 @@
    "Thibault Dardinier"
   ],
   "date": "2022-09-05",
-  "id": 113,
+  "id": 114,
   "link": "/entries/Separation_Logic_Unbounded.html",
   "permalink": "/entries/Separation_Logic_Unbounded.html",
   "shortname": "Separation_Logic_Unbounded",
@@ -2378,7 +2397,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-09-02",
-  "id": 114,
+  "id": 115,
   "link": "/entries/Khovanskii_Theorem.html",
   "permalink": "/entries/Khovanskii_Theorem.html",
   "shortname": "Khovanskii_Theorem",
@@ -2399,7 +2418,7 @@
    "Katharina Kreuzer"
   ],
   "date": "2022-09-02",
-  "id": 115,
+  "id": 116,
   "link": "/entries/Hales_Jewett.html",
   "permalink": "/entries/Hales_Jewett.html",
   "shortname": "Hales_Jewett",
@@ -2419,7 +2438,7 @@
    "Katharina Kreuzer"
   ],
   "date": "2022-08-18",
-  "id": 116,
+  "id": 117,
   "link": "/entries/Number_Theoretic_Transform.html",
   "permalink": "/entries/Number_Theoretic_Transform.html",
   "shortname": "Number_Theoretic_Transform",
@@ -2439,7 +2458,7 @@
    "Vincent Trélat"
   ],
   "date": "2022-08-17",
-  "id": 117,
+  "id": 118,
   "link": "/entries/SCC_Bloemen_Sequential.html",
   "permalink": "/entries/SCC_Bloemen_Sequential.html",
   "shortname": "SCC_Bloemen_Sequential",
@@ -2458,7 +2477,7 @@
    "Maksym Bortin"
   ],
   "date": "2022-08-15",
-  "id": 118,
+  "id": 119,
   "link": "/entries/Involutions2Squares.html",
   "permalink": "/entries/Involutions2Squares.html",
   "shortname": "Involutions2Squares",
@@ -2477,7 +2496,7 @@
    "Robert Sachtleben"
   ],
   "date": "2022-08-09",
-  "id": 119,
+  "id": 120,
   "link": "/entries/FSM_Tests.html",
   "permalink": "/entries/FSM_Tests.html",
   "shortname": "FSM_Tests",
@@ -2498,7 +2517,7 @@
    "Achim D. Brucker"
   ],
   "date": "2022-07-29",
-  "id": 120,
+  "id": 121,
   "link": "/entries/Nano_JSON.html",
   "permalink": "/entries/Nano_JSON.html",
   "shortname": "Nano_JSON",
@@ -2520,7 +2539,7 @@
    "Achim D. Brucker"
   ],
   "date": "2022-07-18",
-  "id": 121,
+  "id": 122,
   "link": "/entries/Solidity.html",
   "permalink": "/entries/Solidity.html",
   "shortname": "Solidity",
@@ -2541,7 +2560,7 @@
    "Mnacho Echenim"
   ],
   "date": "2022-07-18",
-  "id": 122,
+  "id": 123,
   "link": "/entries/Commuting_Hermitian.html",
   "permalink": "/entries/Commuting_Hermitian.html",
   "shortname": "Commuting_Hermitian",
@@ -2560,7 +2579,7 @@
    "Manuel Eberl"
   ],
   "date": "2022-07-11",
-  "id": 123,
+  "id": 124,
   "link": "/entries/Weighted_Arithmetic_Geometric_Mean.html",
   "permalink": "/entries/Weighted_Arithmetic_Geometric_Mean.html",
   "shortname": "Weighted_Arithmetic_Geometric_Mean",
@@ -2579,7 +2598,7 @@
    "Pasquale Noce"
   ],
   "date": "2022-07-10",
-  "id": 124,
+  "id": 125,
   "link": "/entries/IMP_Compiler_Reuse.html",
   "permalink": "/entries/IMP_Compiler_Reuse.html",
   "shortname": "IMP_Compiler_Reuse",
@@ -2599,7 +2618,7 @@
    "Tobias Nipkow"
   ],
   "date": "2022-06-23",
-  "id": 125,
+  "id": 126,
   "link": "/entries/Real_Time_Deque.html",
   "permalink": "/entries/Real_Time_Deque.html",
   "shortname": "Real_Time_Deque",
@@ -2618,7 +2637,7 @@
    "Jeffrey Ketland"
   ],
   "date": "2022-06-20",
-  "id": 126,
+  "id": 127,
   "link": "/entries/Boolos_Curious_Inference.html",
   "permalink": "/entries/Boolos_Curious_Inference.html",
   "shortname": "Boolos_Curious_Inference",
@@ -2637,7 +2656,7 @@
    "Emin Karayel"
   ],
   "date": "2022-06-08",
-  "id": 127,
+  "id": 128,
   "link": "/entries/Finite_Fields.html",
   "permalink": "/entries/Finite_Fields.html",
   "shortname": "Finite_Fields",
@@ -2657,7 +2676,7 @@
    "Christoph Sprenger"
   ],
   "date": "2022-06-08",
-  "id": 128,
+  "id": 129,
   "link": "/entries/IsaNet.html",
   "permalink": "/entries/IsaNet.html",
   "shortname": "IsaNet",
@@ -2683,7 +2702,7 @@
    "Dierk Schleicher"
   ],
   "date": "2022-06-06",
-  "id": 129,
+  "id": 130,
   "link": "/entries/DPRM_Theorem.html",
   "permalink": "/entries/DPRM_Theorem.html",
   "shortname": "DPRM_Theorem",
@@ -2704,7 +2723,7 @@
    "Alexander Lochmann"
   ],
   "date": "2022-06-02",
-  "id": 130,
+  "id": 131,
   "link": "/entries/Rewrite_Properties_Reduction.html",
   "permalink": "/entries/Rewrite_Properties_Reduction.html",
   "shortname": "Rewrite_Properties_Reduction",
@@ -2723,7 +2742,7 @@
    "Thibault Dardinier"
   ],
   "date": "2022-05-30",
-  "id": 131,
+  "id": 132,
   "link": "/entries/Combinable_Wands.html",
   "permalink": "/entries/Combinable_Wands.html",
   "shortname": "Combinable_Wands",
@@ -2743,7 +2762,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-05-26",
-  "id": 132,
+  "id": 133,
   "link": "/entries/Pluennecke_Ruzsa_Inequality.html",
   "permalink": "/entries/Pluennecke_Ruzsa_Inequality.html",
   "shortname": "Pluennecke_Ruzsa_Inequality",
@@ -2762,7 +2781,7 @@
    "Thibault Dardinier"
   ],
   "date": "2022-05-18",
-  "id": 133,
+  "id": 134,
   "link": "/entries/Package_logic.html",
   "permalink": "/entries/Package_logic.html",
   "shortname": "Package_logic",
@@ -2781,7 +2800,7 @@
    "René Thiemann"
   ],
   "date": "2022-05-08",
-  "id": 134,
+  "id": 135,
   "link": "/entries/Clique_and_Monotone_Circuits.html",
   "permalink": "/entries/Clique_and_Monotone_Circuits.html",
   "shortname": "Clique_and_Monotone_Circuits",
@@ -2801,7 +2820,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-04-21",
-  "id": 135,
+  "id": 136,
   "link": "/entries/Fishers_Inequality.html",
   "permalink": "/entries/Fishers_Inequality.html",
   "shortname": "Fishers_Inequality",
@@ -2825,7 +2844,7 @@
    "Benedikt Stock"
   ],
   "date": "2022-04-20",
-  "id": 136,
+  "id": 137,
   "link": "/entries/Digit_Expansions.html",
   "permalink": "/entries/Digit_Expansions.html",
   "shortname": "Digit_Expansions",
@@ -2845,7 +2864,7 @@
    "Lukas Schmidinger"
   ],
   "date": "2022-04-20",
-  "id": 137,
+  "id": 138,
   "link": "/entries/Multiset_Ordering_NPC.html",
   "permalink": "/entries/Multiset_Ordering_NPC.html",
   "shortname": "Multiset_Ordering_NPC",
@@ -2864,7 +2883,7 @@
    "Manuel Eberl"
   ],
   "date": "2022-04-10",
-  "id": 138,
+  "id": 139,
   "link": "/entries/Sophomores_Dream.html",
   "permalink": "/entries/Sophomores_Dream.html",
   "shortname": "Sophomores_Dream",
@@ -2883,7 +2902,7 @@
    "Emin Karayel"
   ],
   "date": "2022-04-08",
-  "id": 139,
+  "id": 140,
   "link": "/entries/Prefix_Free_Code_Combinators.html",
   "permalink": "/entries/Prefix_Free_Code_Combinators.html",
   "shortname": "Prefix_Free_Code_Combinators",
@@ -2904,7 +2923,7 @@
    "Emin Karayel"
   ],
   "date": "2022-04-08",
-  "id": 140,
+  "id": 141,
   "link": "/entries/Frequency_Moments.html",
   "permalink": "/entries/Frequency_Moments.html",
   "shortname": "Frequency_Moments",
@@ -2926,7 +2945,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-03-24",
-  "id": 141,
+  "id": 142,
   "link": "/entries/Dedekind_Real.html",
   "permalink": "/entries/Dedekind_Real.html",
   "shortname": "Dedekind_Real",
@@ -2945,7 +2964,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-03-23",
-  "id": 142,
+  "id": 143,
   "link": "/entries/Ackermanns_not_PR.html",
   "permalink": "/entries/Ackermanns_not_PR.html",
   "shortname": "Ackermanns_not_PR",
@@ -2964,7 +2983,7 @@
    "Asta Halkjær From"
   ],
   "date": "2022-03-22",
-  "id": 143,
+  "id": 144,
   "link": "/entries/FOL_Seq_Calc3.html",
   "permalink": "/entries/FOL_Seq_Calc3.html",
   "shortname": "FOL_Seq_Calc3",
@@ -2987,7 +3006,7 @@
    "Manuel Eberl"
   ],
   "date": "2022-03-15",
-  "id": 144,
+  "id": 145,
   "link": "/entries/Cotangent_PFD_Formula.html",
   "permalink": "/entries/Cotangent_PFD_Formula.html",
   "shortname": "Cotangent_PFD_Formula",
@@ -3009,7 +3028,7 @@
    "Matías Steinberg"
   ],
   "date": "2022-03-06",
-  "id": 145,
+  "id": 146,
   "link": "/entries/Independence_CH.html",
   "permalink": "/entries/Independence_CH.html",
   "shortname": "Independence_CH",
@@ -3031,7 +3050,7 @@
    "Matías Steinberg"
   ],
   "date": "2022-03-03",
-  "id": 146,
+  "id": 147,
   "link": "/entries/Transitive_Models.html",
   "permalink": "/entries/Transitive_Models.html",
   "shortname": "Transitive_Models",
@@ -3050,7 +3069,7 @@
    "Eugene W. Stark"
   ],
   "date": "2022-02-28",
-  "id": 147,
+  "id": 148,
   "link": "/entries/ResiduatedTransitionSystem.html",
   "permalink": "/entries/ResiduatedTransitionSystem.html",
   "shortname": "ResiduatedTransitionSystem",
@@ -3073,7 +3092,7 @@
    "Emin Karayel"
   ],
   "date": "2022-02-20",
-  "id": 148,
+  "id": 149,
   "link": "/entries/Universal_Hash_Families.html",
   "permalink": "/entries/Universal_Hash_Families.html",
   "shortname": "Universal_Hash_Families",
@@ -3092,7 +3111,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-02-18",
-  "id": 149,
+  "id": 150,
   "link": "/entries/Wetzels_Problem.html",
   "permalink": "/entries/Wetzels_Problem.html",
   "shortname": "Wetzels_Problem",
@@ -3113,7 +3132,7 @@
    "Martin Raszyk"
   ],
   "date": "2022-02-15",
-  "id": 150,
+  "id": 151,
   "link": "/entries/Eval_FO.html",
   "permalink": "/entries/Eval_FO.html",
   "shortname": "Eval_FO",
@@ -3134,7 +3153,7 @@
    "Martin Raszyk"
   ],
   "date": "2022-02-13",
-  "id": 151,
+  "id": 152,
   "link": "/entries/VYDRA_MDL.html",
   "permalink": "/entries/VYDRA_MDL.html",
   "shortname": "VYDRA_MDL",
@@ -3153,7 +3172,7 @@
    "Emin Karayel"
   ],
   "date": "2022-02-04",
-  "id": 152,
+  "id": 153,
   "link": "/entries/Equivalence_Relation_Enumeration.html",
   "permalink": "/entries/Equivalence_Relation_Enumeration.html",
   "shortname": "Equivalence_Relation_Enumeration",
@@ -3174,7 +3193,7 @@
    "René Thiemann"
   ],
   "date": "2022-02-03",
-  "id": 153,
+  "id": 154,
   "link": "/entries/LP_Duality.html",
   "permalink": "/entries/LP_Duality.html",
   "shortname": "LP_Duality",
@@ -3195,7 +3214,7 @@
    "Tetsuya Sato"
   ],
   "date": "2022-02-03",
-  "id": 154,
+  "id": 155,
   "link": "/entries/Quasi_Borel_Spaces.html",
   "permalink": "/entries/Quasi_Borel_Spaces.html",
   "shortname": "Quasi_Borel_Spaces",
@@ -3217,7 +3236,7 @@
    "Bertram Felgenhauer"
   ],
   "date": "2022-02-02",
-  "id": 155,
+  "id": 156,
   "link": "/entries/FO_Theory_Rewriting.html",
   "permalink": "/entries/FO_Theory_Rewriting.html",
   "shortname": "FO_Theory_Rewriting",
@@ -3241,7 +3260,7 @@
    "Frederik Krogsdal Jacobsen"
   ],
   "date": "2022-01-31",
-  "id": 156,
+  "id": 157,
   "link": "/entries/FOL_Seq_Calc2.html",
   "permalink": "/entries/FOL_Seq_Calc2.html",
   "shortname": "FOL_Seq_Calc2",
@@ -3264,7 +3283,7 @@
    "Lawrence C. Paulson"
   ],
   "date": "2022-01-31",
-  "id": 157,
+  "id": 158,
   "link": "/entries/Youngs_Inequality.html",
   "permalink": "/entries/Youngs_Inequality.html",
   "shortname": "Youngs_Inequality",
@@ -3283,7 +3302,7 @@
    "Emin Karayel"
   ],
   "date": "2022-01-29",
-  "id": 158,
+  "id": 159,
   "link": "/entries/Interpolation_Polynomials_HOL_Algebra.html",
   "permalink": "/entries/Interpolation_Polynomials_HOL_Algebra.html",
   "shortname": "Interpolation_Polynomials_HOL_Algebra",
@@ -3302,7 +3321,7 @@
    "Emin Karayel"
   ],
   "date": "2022-01-25",
-  "id": 159,
+  "id": 160,
   "link": "/entries/Median_Method.html",
   "permalink": "/entries/Median_Method.html",
   "shortname": "Median_Method",
@@ -3314,25 +3333,6 @@
    "Computer science/Algorithms/Randomized"
   ],
   "used_by": 1
- },
- {
-  "abstract": "Actuarial Mathematics is a theory in applied mathematics, which is mainly used for determining the prices of insurance products and evaluating the liability of a company associating with insurance contracts. It is related to calculus, probability theory and financial theory, etc.  In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL. It includes the theory of interest, survival model, and life table. The theory of interest deals with interest rates, present value factors, an annuity certain, etc. The survival model is a probabilistic model that represents the human mortality. The life table is based on the survival model and used for practical calculations.  I have already formalized the basic part of Actuarial Mathematics in Coq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner. In contrast, Isabelle formalization is based on the probability theory and the survival model is developed as generally as possible. Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web.  This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know.  (Updated July 8th, 2023.) ",
-  "authors": [
-   "Yosuke Ito"
-  ],
-  "date": "2022-01-23",
-  "id": 160,
-  "link": "/entries/Actuarial_Mathematics.html",
-  "permalink": "/entries/Actuarial_Mathematics.html",
-  "shortname": "Actuarial_Mathematics",
-  "title": "Actuarial Mathematics",
-  "topic_links": [
-   "mathematics/games-and-economics"
-  ],
-  "topics": [
-   "Mathematics/Games and economics"
-  ],
-  "used_by": 0
  },
  {
   "abstract": "An elementary proof is formalised: that \u003cem\u003eexp r\u003c/em\u003e is irrational for every nonzero rational number \u003cem\u003er\u003c/em\u003e. The mathematical development comes from the well-known volume \u003cem\u003eProofs from THE BOOK\u003c/em\u003e, by Aigner and Ziegler, who credit the idea to Hermite. The development illustrates a number of basic Isabelle techniques: the manipulation of summations, the calculation of quite complicated derivatives and the estimation of integrals. We also see how to import another AFP entry (Stirling's formula). As for the theorem itself, note that a much stronger and more general result (the Hermite--Lindemann--Weierstraß transcendence theorem) is already available in the AFP.",
@@ -10861,7 +10861,7 @@
   "used_by": 1
  },
  {
-  "abstract": "\u003cp\u003eIn this work, we define the Catalan numbers \u003cem\u003eC\u003csub\u003en\u003c/sub\u003e\u003c/em\u003e and prove several equivalent definitions (including some closed-form formulae). We also show one of their applications (counting the number of binary trees of size \u003cem\u003en\u003c/em\u003e), prove the asymptotic growth approximation \u003cem\u003eC\u003csub\u003en\u003c/sub\u003e \u0026sim; 4\u003csup\u003en\u003c/sup\u003e / (\u0026radic;\u003cspan style=\"text-decoration: overline\"\u003e\u0026pi;\u003c/span\u003e \u0026middot; n\u003csup\u003e1.5\u003c/sup\u003e)\u003c/em\u003e, and provide reasonably efficient executable code to compute them.\u003c/p\u003e  \u003cp\u003eThe derivation of the closed-form formulae uses algebraic manipulations of the ordinary generating function of the Catalan numbers, and the asymptotic approximation is then done using generalised binomial coefficients and the Gamma function. Thanks to these highly non-elementary mathematical tools, the proofs are very short and simple.\u003c/p\u003e",
+  "abstract": "\u003cp\u003eIn this work, we define the Catalan numbers $C_n$ and prove several equivalent definitions (including some closed-form formulae). We also show one of their applications (counting the number of binary trees of size $n$), prove the asymptotic growth approximation $C_n \\sim \\frac{4^n}{\\sqrt{\\pi}\\, n^{3/2}}$, and provide reasonably efficient executable code to compute them.\u003c/p\u003e  \u003cp\u003eThe derivation of the closed-form formulae uses algebraic manipulations of the ordinary generating function of the Catalan numbers, and the asymptotic approximation is then done using generalised binomial coefficients and the Gamma function.\u003c/p\u003e",
   "authors": [
    "Manuel Eberl"
   ],
@@ -11424,7 +11424,7 @@
   "topics": [
    "Mathematics/Algebra"
   ],
-  "used_by": 13
+  "used_by": 14
  },
  {
   "abstract": "We formalized three algorithms for polynomial interpolation over arbitrary fields: Lagrange's explicit expression, the recursive algorithm of Neville and Aitken, and the Newton interpolation in combination with an efficient implementation of divided differences.  Variants of these algorithms for integer polynomials are also available, where sometimes the interpolation can fail; e.g., there is no linear integer polynomial \u003ci\u003ep\u003c/i\u003e such that \u003ci\u003ep(0) = 0\u003c/i\u003e and \u003ci\u003ep(2) = 1\u003c/i\u003e. Moreover, for the Newton interpolation for integer polynomials, we proved that all intermediate results that are computed during the algorithm must be integers.  This admits an early failure detection in the implementation.  Finally, we proved the uniqueness of polynomial interpolation. \u003cp\u003e The development also contains improved code equations to speed up the division of integers in target languages.",
@@ -12544,7 +12544,8 @@
   "abstract": "This entry provides an XML library for Isabelle/HOL. This includes parsing and pretty printing of XML trees as well as combinators for transforming XML trees into arbitrary user-defined data. The main contribution of this entry is an interface (fit for code generation) that allows for communication between verified programs formalized in Isabelle/HOL and the outside world via XML. This library was developed as part of the IsaFoR/CeTA project to which we refer for examples of its usage.",
   "authors": [
    "Christian Sternagel",
-   "René Thiemann"
+   "René Thiemann",
+   "Akihisa Yamada"
   ],
   "date": "2014-10-03",
   "id": 612,
@@ -12773,7 +12774,7 @@
   "topics": [
    "Computer science/Functional programming"
   ],
-  "used_by": 16
+  "used_by": 17
  },
  {
   "abstract": "\u003cp\u003eIntransitive noninterference has been a widely studied topic in the last few decades. Several well-established methodologies apply interactive theorem proving to formulate a noninterference theorem over abstract academic models. In joint work with several industrial and academic partners throughout Europe, we are helping in the certification process of PikeOS, an industrial separation kernel developed at SYSGO. In this process, established theories could not be applied. We present a new generic model of separation kernels and a new theory of intransitive noninterference. The model is rich in detail, making it suitable for formal verification of realistic and industrial systems such as PikeOS. Using a refinement-based theorem proving approach, we ensure that proofs remain manageable.\u003c/p\u003e \u003cp\u003e This document corresponds to the deliverable D31.1 of the EURO-MILS Project \u003ca href=\"http://www.euromils.eu\"\u003ehttp://www.euromils.eu\u003c/a\u003e.\u003c/p\u003e",

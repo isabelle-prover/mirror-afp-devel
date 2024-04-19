@@ -11,82 +11,9 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 26 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 07 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/topics/mathematics/index.xml" rel="self" type="application/rss+xml" />
         <item>
-<<<<<<< working copy
-=======
-          <title>Uncertainty Principle</title>
-          <link>/entries/Uncertainty_Principle.html</link>
-          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Uncertainty_Principle.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Continued Fractions</title>
-          <link>/entries/Continued_Fractions.html</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Continued_Fractions.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Kummer&#39;s congruence</title>
-          <link>/entries/Kummer_Congruence.html</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Kummer_Congruence.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Wieferich–Kempner Theorem</title>
-          <link>/entries/Wieferich_Kempner.html</link>
-          <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Wieferich_Kempner.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Doob&#39;s Upcrossing Inequality and Martingale Convergence Theorem</title>
-          <link>/entries/Doob_Convergence.html</link>
-          <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Doob_Convergence.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cubical Categories</title>
-          <link>/entries/CubicalCategories.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/CubicalCategories.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Higher Globular Catoids and Quantales</title>
-          <link>/entries/OmegaCatoidsQuantales.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/OmegaCatoidsQuantales.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Higher Globular Catoids and Quantales</title>
-          <link>/entries/OmegaCatoidsQuantales.html</link>
-          <pubDate>Wed, 24 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/OmegaCatoidsQuantales.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Decomposition of totally ordered hoops</title>
-          <link>/entries/Isabelle_hoops.html</link>
-          <pubDate>Mon, 22 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Isabelle_hoops.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>(Extended) Interval Analysis</title>
-          <link>/entries/Interval_Analysis.html</link>
-          <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Interval_Analysis.html</guid>
-          <description></description>
-        </item>
-        <item>
->>>>>>> merge rev
           <title>(Extended) Interval Analysis</title>
           <link>/entries/Interval_Analysis.html</link>
           <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
