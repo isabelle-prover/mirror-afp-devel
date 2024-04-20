@@ -11,7 +11,6 @@ session Universal_Hash_Families = "HOL-Probability" +
     Universal_Hash_Families
     Universal_Hash_Families_More_Independent_Families
     Carter_Wegman_Hash_Family
-    Universal_Hash_Families_More_Finite_Fields
     Universal_Hash_Families_More_Product_PMF
     Pseudorandom_Objects
     Pseudorandom_Objects_Hash_Families
