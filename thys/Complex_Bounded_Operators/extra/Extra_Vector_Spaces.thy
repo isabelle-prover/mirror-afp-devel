@@ -129,33 +129,24 @@ lemma not_singleton_real_normed_is_perfect_space[simp]: \<open>class.perfect_spa
   by (metis UNIV_not_singleton clopen closed_singleton empty_not_insert)
 
 lemma infsum_bounded_linear:
-  assumes \<open>bounded_linear f\<close>
-  assumes \<open>g summable_on S\<close>
-  shows \<open>infsum (f \<circ> g) S = f (infsum g S)\<close>
-  apply (rule infsum_comm_additive)
-  using assms blinfun_apply_induct blinfun.additive_right
-  by (auto simp: linear_continuous_within)
-
-lemma has_sum_bounded_linear: 
-  assumes \<open>bounded_linear f\<close>
-  assumes \<open>(g has_sum x) S\<close>
-  shows \<open>((f o g) has_sum (f x)) S\<close>
-  apply (rule has_sum_comm_additive)
-  using assms blinfun_apply_induct blinfun.additive_right apply auto
-  using isCont_def linear_continuous_at by fastforce
+  assumes \<open>bounded_linear h\<close>
+  assumes \<open>f summable_on A\<close>
+  shows \<open>infsum (\<lambda>x. h (f x)) A = h (infsum f A)\<close>
+  by (auto intro!: infsum_bounded_linear_strong assms summable_on_bounded_linear[where h=h])
 
 lemma abs_summable_on_bounded_linear:
-  assumes \<open>bounded_linear f\<close>
-  assumes \<open>g abs_summable_on S\<close>
-  shows \<open>(f o g) abs_summable_on S\<close>
+  fixes h f A
+  assumes \<open>bounded_linear h\<close>
+  assumes \<open>f abs_summable_on A\<close>
+  shows \<open>(h o f) abs_summable_on A\<close>
 proof -
-  have bound: \<open>norm (f (g x)) \<le> onorm f * norm (g x)\<close> for x
+  have bound: \<open>norm (h (f x)) \<le> onorm h * norm (f x)\<close> for x
     apply (rule onorm)
     by (simp add: assms(1))
 
-  from assms(2) have \<open>(\<lambda>x. onorm f *\<^sub>R g x) abs_summable_on S\<close>
+  from assms(2) have \<open>(\<lambda>x. onorm h *\<^sub>R f x) abs_summable_on A\<close>
     by (auto intro!: summable_on_cmult_right)
-  then have \<open>(\<lambda>x. f (g x)) abs_summable_on S\<close>
+  then have \<open>(\<lambda>x. h (f x)) abs_summable_on A\<close>
     apply (rule abs_summable_on_comparison_test)
     using bound by (auto simp: assms(1) onorm_pos_le)
   then show ?thesis

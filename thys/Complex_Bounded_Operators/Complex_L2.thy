@@ -932,7 +932,7 @@ proof-
     have \<open>(ket i \<bullet>\<^sub>C ket i) \<in> \<real>\<close>
       by (simp add: cinner_real)      
     thus ?thesis 
-      by (metis cinner_ge_zero complex_of_real_cmod) 
+      by (metis \<open>norm (ket i) = 1\<close> cnorm_eq norm_one of_real_1 one_cinner_one)
   qed
   ultimately show ?thesis by simp
 qed
@@ -1263,7 +1263,7 @@ proof -
   have \<open>Rep_ell2 (A *\<^sub>V \<phi>) y = Rep_ell2 (A *\<^sub>V (\<Sum>\<^sub>\<infinity>x. Rep_ell2 \<phi> x *\<^sub>C ket x)) y\<close>
     by (simp flip: ell2_decompose_infsum)
   also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>x. Rep_ell2 (A *\<^sub>V (Rep_ell2 \<phi> x *\<^sub>C ket x)) y)\<close>
-    apply (subst infsum_bounded_linear[symmetric, where f=\<open>\<lambda>z. Rep_ell2 (A *\<^sub>V z) y\<close>])
+    apply (subst infsum_bounded_linear[symmetric, where h=\<open>\<lambda>z. Rep_ell2 (A *\<^sub>V z) y\<close>])
     using 1 2 by (auto simp: o_def)
   also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>x. Rep_ell2 \<phi> x * Rep_ell2 (A *\<^sub>V ket x) y)\<close>
     by (simp add: cblinfun.scaleC_right scaleC_ell2.rep_eq)
@@ -1300,10 +1300,9 @@ lift_definition inverse_ell2 :: "'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a x
 instance..
 end
 
-instantiation ell2 :: ("{enum,CARD_1}") one_dim begin
+instance ell2 :: ("{enum,CARD_1}") one_dim
 text \<open>Note: enum is not needed logically, but without it this instantiation
             clashes with \<open>instantiation ell2 :: (enum) onb_enum\<close>\<close>
-instance
 proof intro_classes
   show "canonical_basis = [1::'a ell2]"
     unfolding canonical_basis_ell2_def
@@ -1317,7 +1316,6 @@ proof intro_classes
   show "inverse (c *\<^sub>C 1) = inverse c *\<^sub>C (1::'a ell2)" for c :: complex
     apply transfer by auto
 qed
-end
 
 subsection \<open>Explicit bounded operators\<close>
 

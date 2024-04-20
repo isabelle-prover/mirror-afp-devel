@@ -338,7 +338,8 @@ proof
     by (metis antisym cinner_eq_zero_iff cinner_ge_zero fst_zero le_add_same_cancel2 snd_zero verit_sum_simplify)
   show "norm x = sqrt (cmod (cinner x x))"
     unfolding norm_prod_def cinner_prod_def
-    by (metis (no_types, lifting) Re_complex_of_real add_nonneg_nonneg cinner_ge_zero complex_of_real_cmod plus_complex.simps(1) power2_norm_eq_cinner')
+    apply (simp add: norm_prod_def cinner_prod_def)
+    by (metis (no_types, lifting) Complex_Inner_Product.cinner_prod_def Re_complex_of_real \<open>0 \<le> x \<bullet>\<^sub>C x\<close> cmod_Re of_real_add of_real_power power2_norm_eq_cinner)
 qed
 
 end
@@ -346,7 +347,7 @@ end
 lemma sgn_cinner[simp]: \<open>sgn \<psi> \<bullet>\<^sub>C \<psi> = norm \<psi>\<close>
   apply (cases \<open>\<psi> = 0\<close>)
    apply (auto simp: sgn_div_norm)
-  by (smt (verit, ccfv_SIG) cinner_scaleR_left cinner_scaleR_right cnorm_eq cnorm_eq_1 complex_of_real_cmod complex_of_real_nn_iff left_inverse mult.right_neutral mult_scaleR_right norm_eq_zero norm_not_less_zero norm_one of_real_def of_real_eq_iff)
+  by (metis (no_types, lifting) cdot_square_norm cinner_ge_zero cmod_Re divide_inverse mult.commute norm_eq_sqrt_cinner norm_ge_zero of_real_inverse of_real_mult power2_norm_eq_cinner' real_div_sqrt)
 
 instance prod :: (chilbert_space, chilbert_space) chilbert_space..
 
@@ -751,8 +752,7 @@ proof -
     moreover have \<open>(a \<bullet>\<^sub>C a) \<ge> 0\<close>
       using cinner_ge_zero by blast
     ultimately have w1: \<open>(a \<bullet>\<^sub>C a) = 1\<close>
-      by (metis \<open>0 \<le> (a \<bullet>\<^sub>C a)\<close> \<open>cmod (a \<bullet>\<^sub>C a) = 1\<close> complex_of_real_cmod of_real_1)
-
+      using \<open>\<parallel>a\<parallel> = 1\<close> cnorm_eq_1 by blast
     have \<open>r t * (a \<bullet>\<^sub>C t) = 0\<close> if \<open>t \<in> T-{a}\<close> for t
       by (metis DiffD1 DiffD2 \<open>a \<in> T\<close> a3 is_ortho_set_def mult_eq_0_iff singletonI that)
     hence s1: \<open>(\<Sum> t\<in>T-{a}. r t * (a \<bullet>\<^sub>C t)) = 0\<close>
