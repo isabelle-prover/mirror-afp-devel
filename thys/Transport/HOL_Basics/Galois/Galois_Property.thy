@@ -21,7 +21,7 @@ lemma galois_propI [intro]:
 lemma galois_propI':
   assumes "\<And>x y. in_dom (\<le>\<^bsub>L\<^esub>) x \<Longrightarrow> in_codom (\<le>\<^bsub>R\<^esub>) y \<Longrightarrow> x \<le>\<^bsub>L\<^esub> r y \<longleftrightarrow> l x \<le>\<^bsub>R\<^esub> y"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
-  using assms by blast
+  using assms by (blast elim: galois_rel.left_GaloisE)
 
 lemma galois_propE [elim]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"

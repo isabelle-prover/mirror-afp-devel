@@ -129,7 +129,7 @@ qed
 lemma mono_wrt_rel_Refl_Rel_Refl_Rel_if_mono_wrt_rel [intro]:
   assumes "(R \<Rrightarrow>\<^sub>m S) f"
   shows "(R\<^sup>\<oplus> \<Rrightarrow>\<^sub>m S\<^sup>\<oplus>) f"
-  using assms by (intro dep_mono_wrt_relI) blast
+  using assms by (intro mono_wrt_relI) blast
 
 context galois
 begin
@@ -156,7 +156,8 @@ interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^e
   rewrites "((\<ge>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<ge>\<^bsub>L\<^esub>)) \<equiv> ((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>))"
   and "\<And>R. (R\<inverse>)\<^sup>\<oplus> \<equiv> (R\<^sup>\<oplus>)\<inverse>"
   and "\<And>R S f g. (R\<inverse> \<^sub>h\<unlhd> S\<inverse>) f g \<equiv> (S \<unlhd>\<^sub>h R) g f"
-  by (simp_all add: galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right)
+  by (simp_all add: galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right
+    mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma half_galois_prop_right_Refl_Rel_right_leftI:
   assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
@@ -217,7 +218,7 @@ interpretation inv : galois "(\<ge>\<^bsub>L\<^esub>)" "(\<ge>\<^bsub>R\<^esub>)
   and "\<And>R. in_field R\<inverse> \<equiv> in_field R"
   and "\<And>(P :: 'c \<Rightarrow> bool) (R :: 'd \<Rightarrow> 'c \<Rightarrow> bool).
     (inflationary_on P R\<inverse> :: ('c \<Rightarrow> 'd) \<Rightarrow> bool) \<equiv> deflationary_on P R"
-  by simp_all
+  by (simp_all add: mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma deflationary_on_in_field_Refl_Rel_leftI:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"

@@ -22,5 +22,6 @@ lemma le_predE:
   obtains "Q x"
   using assms by blast
 
+declare le_boolD[dest] and le_boolI[intro]
 
 end

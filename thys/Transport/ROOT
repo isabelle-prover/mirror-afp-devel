@@ -11,7 +11,9 @@ session Transport = "HOL" +
     "ML_Unification"
   directories
     "HOL_Basics"
+    "HOL_Basics/Adhoc_Overloading"
     "HOL_Basics/Binary_Relations"
+    "HOL_Basics/Binary_Relations/Functions"
     "HOL_Basics/Binary_Relations/Order"
     "HOL_Basics/Binary_Relations/Properties"
     "HOL_Basics/Functions"

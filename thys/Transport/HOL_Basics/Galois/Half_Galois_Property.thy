@@ -197,7 +197,8 @@ interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^e
   and "\<And>R. in_codom R\<inverse> \<equiv> in_dom R"
   by (simp_all add: flip_unit_eq_counit flip_counit_eq_unit
     galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right
-    galois_prop.half_galois_prop_right_rel_inv_iff_half_galois_prop_left)
+    galois_prop.half_galois_prop_right_rel_inv_iff_half_galois_prop_left
+    mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 corollary counit_rel_if_right_rel_if_mono_wrt_relI:
   assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"

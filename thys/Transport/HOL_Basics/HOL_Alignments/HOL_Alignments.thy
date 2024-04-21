@@ -5,6 +5,7 @@ theory HOL_Alignments
     HOL_Alignment_Binary_Relations
     HOL_Alignment_Functions
     HOL_Alignment_Orders
+    HOL_Alignment_Predicates
 begin
 
 paragraph \<open>Summary\<close>

@@ -61,7 +61,7 @@ lemma max_max_list_removeAll_eq_maxlist:
   (simp_all, (metis max.left_idem removeAll_id max.left_commute)+)
 
 lemma max_list_parametric [trp_in_dom]: "(LSL \<Rrightarrow> (=)) max_list max_list"
-proof (intro Dep_Fun_Rel_relI)
+proof (intro Fun_Rel_relI)
   fix xs xs' :: "nat list" assume "LSL xs xs'"
   then have "finite (set xs)" "set xs = set xs'" unfolding LSL_def by auto
   then show "max_list xs = max_list xs'"
@@ -120,7 +120,7 @@ text \<open>Transporting higher-order functions.\<close>
 
 lemma map_parametric [trp_in_dom]:
   "(((=) \<Rrightarrow> (=)) \<Rrightarrow> LSL \<Rrightarrow> LSL) map map"
-  unfolding LSL_def by (intro Dep_Fun_Rel_relI) simp
+  unfolding LSL_def by (intro Fun_Rel_relI) simp
 
 lemma [trp_uhint]: "P \<equiv> (=) \<Longrightarrow> P \<equiv> (=) \<Rrightarrow> (=)" by simp
 lemma [trp_uhint]: "P \<equiv> \<top> \<Longrightarrow> (=\<^bsub>P :: 'a \<Rightarrow> bool\<^esub>) \<equiv> ((=) :: 'a \<Rightarrow> _)" by simp
@@ -136,7 +136,7 @@ lemma "(((=) \<Rrightarrow> (=)) \<Rrightarrow> LS \<Rrightarrow> LS) map map_se
 
 lemma filter_parametric [trp_in_dom]:
   "(((=) \<Rrightarrow> (\<longleftrightarrow>)) \<Rrightarrow> LSL \<Rrightarrow> LSL) filter filter"
-  unfolding LSL_def by (intro Dep_Fun_Rel_relI) simp
+  unfolding LSL_def by (intro Fun_Rel_relI) simp
 
 trp_term filter_set :: "('a :: linorder \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a set"
   where x = "filter :: ('a :: linorder \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -146,7 +146,7 @@ lemma "(((=) \<Rrightarrow> (=)) \<Rrightarrow> LS \<Rrightarrow> LS) filter fil
 
 lemma append_parametric [trp_in_dom]:
   "(LSL \<Rrightarrow> LSL \<Rrightarrow> LSL) append append"
-  unfolding LSL_def by (intro Dep_Fun_Rel_relI) simp
+  unfolding LSL_def by (intro Fun_Rel_relI) simp
 
 trp_term append_set :: "('a :: linorder) set \<Rightarrow> 'a set \<Rightarrow> 'a set"
   where x = "append :: ('a :: linorder) list \<Rightarrow> 'a list \<Rightarrow> 'a list"

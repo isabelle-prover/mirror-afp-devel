@@ -71,11 +71,11 @@ lemma left_right_rel_left_self_if_reflexive_on_in_field_right_if_mono_left:
   using assms by blast
 
 lemma mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field:
-  assumes "([in_field (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m P) l"
+  assumes "(in_field (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m P) l"
   and "(\<le>\<^bsub>L\<^esub>) \<le> (=)"
   and "reflexive_on P (\<le>\<^bsub>R\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  using assms by (intro dep_mono_wrt_relI) auto
+  using assms by (intro mono_wrt_relI) auto
 
 end
 

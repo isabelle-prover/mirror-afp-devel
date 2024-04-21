@@ -3,6 +3,7 @@ section \<open>Orders\<close>
 theory Orders
   imports
     Equivalence_Relations
+    Linear_Orders
     Order_Functions
     Order_Functors
     Partial_Equivalence_Relations

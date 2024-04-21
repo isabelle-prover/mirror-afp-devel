@@ -15,7 +15,7 @@ Requires \<^emph>\<open>only\<close> the HOL axioms, nothing else.
 Includes:
 \<^enum> Basic concepts on binary relations, relativised properties,
   and restricted equalities e.g. @{term "left_total_on"} and @{term "eq_restrict"}.
-\<^enum> Basic concepts on functions, relativised properties, and generalised relators,
+\<^enum> Basic concepts on functions, relativised properties, and relators,
   e.g. @{term "injective_on"} and @{term "dep_mono_wrt_pred"}.
 \<^enum> Basic concepts on orders and relativised order-theoretic properties,
   e.g. @{term "partial_equivalence_rel_on"}.

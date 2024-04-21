@@ -1,5 +1,5 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsection \<open>Alignment With Definitions from HOL.Main\<close>
+subsection \<open>Alignment With Binary Relation Definitions from HOL.Main\<close>
 theory HOL_Alignment_Binary_Relations
   imports
     Main
@@ -335,52 +335,51 @@ lemma Transfer_bi_unique_eq_bi_unique [HOL_bin_rel_alignment]:
 
 paragraph \<open>Functions\<close>
 
-lemma relcompp_eq_rel_comp [HOL_bin_rel_alignment]: "relcompp = rel_comp"
-  by (intro ext) auto
-
-lemma conversep_eq_rel_inv [HOL_bin_rel_alignment]: "conversep = rel_inv"
-  by (intro ext) auto
-
 lemma Domainp_eq_in_dom [HOL_bin_rel_alignment]: "Domainp = in_dom"
   by (intro ext) auto
 
 lemma Rangep_eq_in_codom [HOL_bin_rel_alignment]: "Rangep = in_codom"
    by (intro ext) auto
 
+lemma relcompp_eq_rel_comp [HOL_bin_rel_alignment]: "relcompp = rel_comp"
+  by (intro ext) auto
+
+lemma conversep_eq_rel_inv [HOL_bin_rel_alignment]: "conversep = rel_inv"
+  by (intro ext) auto
+
 lemma eq_onp_eq_eq_restrict [HOL_bin_rel_alignment]: "eq_onp = rel_restrict_left (=)"
   unfolding eq_onp_def by (intro ext) auto
 
-overloading
-  rel_restrict_left_set \<equiv> "rel_restrict_left :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
-  rel_restrict_right_set \<equiv> "rel_restrict_right :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
-begin
-  definition "rel_restrict_left_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<restriction>\<^bsub>mem_of S\<^esub>"
-  definition "rel_restrict_right_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'b set) \<equiv> R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
-end
+definition "rel_restrict_left_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<restriction>\<^bsub>mem_of S\<^esub>"
+adhoc_overloading rel_restrict_left rel_restrict_left_set
+
+definition "rel_restrict_right_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'b set) \<equiv> R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
+adhoc_overloading rel_restrict_right rel_restrict_right_set
 
 lemma rel_restrict_left_set_eq_restrict_left_pred [simp]:
-  "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) = R\<restriction>\<^bsub>mem_of S\<^esub>"
+  "R\<restriction>\<^bsub>S\<^esub> = R\<restriction>\<^bsub>mem_of S\<^esub>"
   unfolding rel_restrict_left_set_def by simp
 
 lemma rel_restrict_left_set_eq_restrict_left_pred_uhint [uhint]:
-  assumes "P \<equiv> mem_of S"
-  shows "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) = R\<restriction>\<^bsub>P\<^esub>"
+  assumes "R \<equiv> R'"
+  and "P \<equiv> mem_of S"
+  shows "R\<restriction>\<^bsub>S\<^esub> \<equiv> R'\<restriction>\<^bsub>P\<^esub>"
   using assms by simp
 
-lemma restrict_left_set_iff_restrict_left_pred [iff]: "(R\<restriction>\<^bsub>S :: 'a set\<^esub> :: 'a \<Rightarrow> _) x y \<longleftrightarrow> R\<restriction>\<^bsub>mem_of S\<^esub> x y"
+lemma restrict_left_set_iff_restrict_left_pred [iff]: "R\<restriction>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<restriction>\<^bsub>mem_of S\<^esub> x y"
   by simp
 
 lemma rel_restrict_right_set_eq_restrict_right_pred [simp]:
-  "(R\<upharpoonleft>\<^bsub>S :: 'b set\<^esub> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) = R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
+  "R\<upharpoonleft>\<^bsub>S\<^esub> = R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
   unfolding rel_restrict_right_set_def by simp
 
 lemma rel_restrict_right_set_eq_restrict_right_pred_uhint [uhint]:
-  assumes "P \<equiv> mem_of S"
-  shows "(R\<upharpoonleft>\<^bsub>S :: 'b set\<^esub> :: 'a \<Rightarrow> 'b \<Rightarrow> bool) = R\<upharpoonleft>\<^bsub>P\<^esub>"
+  assumes "R \<equiv> R'"
+  and "P \<equiv> mem_of S"
+  shows "R\<upharpoonleft>\<^bsub>S\<^esub> \<equiv> R'\<upharpoonleft>\<^bsub>P\<^esub>"
   using assms by simp
 
-lemma restrict_right_set_iff_restrict_right_pred [iff]:
-  "(R\<upharpoonleft>\<^bsub>S :: 'b set\<^esub> :: _ \<Rightarrow> 'b \<Rightarrow> _) x y \<longleftrightarrow> R\<upharpoonleft>\<^bsub>mem_of S\<^esub> x y"
+lemma restrict_right_set_iff_restrict_right_pred [iff]: "R\<upharpoonleft>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<upharpoonleft>\<^bsub>mem_of S\<^esub> x y"
   by simp
 
 end

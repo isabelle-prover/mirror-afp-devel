@@ -271,7 +271,7 @@ lemma Frel_rel_comp_le_Frel_comp:
       drule rev_subsetD,
       assumption+)+
     apply (subst Fmap_comp_eq_Fmap_Fmap[symmetric])
-    apply (fold ext[of fst "fst \<circ> _", OF fst_fstOp[unfolded Fun_comp_eq_comp]])
+    apply (fold ext[of fst, OF fst_fstOp[unfolded Fun_comp_eq_comp]])
     apply hypsubst
     apply (rule refl)
     apply (subst Fmap_comp_eq_Fmap_Fmap[symmetric])
@@ -287,7 +287,7 @@ lemma Frel_rel_comp_le_Frel_comp:
     apply (unfold fst_sndOp_eq_snd_fstOp)
     apply (rule refl)
     apply (subst Fmap_comp_eq_Fmap_Fmap[symmetric])
-    apply (fold ext[of snd "snd \<circ> _", OF snd_sndOp[unfolded Fun_comp_eq_comp]])
+    apply (fold ext[of snd, OF snd_sndOp[unfolded Fun_comp_eq_comp]])
     apply hypsubst
     apply (rule refl)
   done
@@ -390,7 +390,7 @@ lemma FpredE:
 
 lemma Fpred_eq_ball: "Fpred P1 P2 P3 =
   (\<lambda>x. Ball (Fset1 x) P1 \<and> Ball (Fset2 x) P2 \<and> Ball (Fset3 x) P3)"
-  by (intro ext iffI conjI ballI FpredI; elim FpredE conjE bspec)
+  by (intro ext iffI conjI Set.ballI FpredI; elim FpredE conjE bspec)
 
 lemma Fpred_Fmap_eq:
   "Fpred P1 P2 P3 (Fmap f1 f2 f3 x) = Fpred (P1 \<circ> f1) (P2 \<circ> f2) (P3 \<circ> f3) x"
@@ -649,7 +649,7 @@ lemma mono_wrt_rel_leftI:
   and "((\<le>\<^bsub>L3\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R3\<^esub>)) l3"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
   apply (unfold left_rel_eq_Frel right_rel_eq_Frel left_eq_Fmap)
-  apply (rule dep_mono_wrt_relI)
+  apply (rule mono_wrt_relI)
   apply (unfold Frel_Fmap_eqs)
   apply (fold rel_map_eq)
   apply (rule le_relD[OF Frel_mono])

@@ -11,9 +11,9 @@ begin
 lemma galois_propI:
   assumes galois1: "((\<le>\<^bsub>L1\<^esub>) \<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and galois2: "((\<le>\<^bsub>L2\<^esub>) \<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and mono_l1: "([in_dom (\<le>\<^bsub>L1\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
-  and mono_r2: "([in_codom (\<le>\<^bsub>R2\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
-  and agree: "([in_dom (\<le>\<^bsub>L1\<^esub>)] \<Rrightarrow> [in_codom (\<le>\<^bsub>R2\<^esub>)] \<Rrightarrow> (\<longleftrightarrow>))
+  and mono_l1: "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_r2: "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
+  and agree: "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rrightarrow> in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow> (\<longleftrightarrow>))
     (rel_bimap l1 r2 (\<le>\<^bsub>R1\<^esub>)) (rel_bimap l1 r2 (\<le>\<^bsub>L2\<^esub>))"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
 proof (rule galois_prop.galois_propI')
@@ -40,8 +40,8 @@ begin
 corollary galois_propI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "((\<le>\<^bsub>R1\<^esub>) \<unlhd> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "([in_dom (\<le>\<^bsub>L1\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>R1\<^esub>)) l1"
-  and "([in_codom (\<le>\<^bsub>R2\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
+  and "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>R1\<^esub>)) l1"
+  and "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (rule galois_propI) auto
 

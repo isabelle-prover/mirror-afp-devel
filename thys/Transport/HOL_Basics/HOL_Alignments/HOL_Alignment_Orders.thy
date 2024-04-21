@@ -1,5 +1,5 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsection \<open>Alignment With Definitions from HOL\<close>
+subsection \<open>Alignment With Order Definitions from HOL\<close>
 theory HOL_Alignment_Orders
   imports
     "HOL-Library.Preorder"
@@ -25,12 +25,12 @@ begin
 end
 
 lemma bi_related_set_eq_bi_related_pred [simp]:
-  "(bi_related (S :: 'a rel) :: 'a \<Rightarrow> 'a \<Rightarrow> bool) = bi_related (rel S)"
+  "((\<equiv>\<^bsub>S :: 'a rel\<^esub>) :: 'a \<Rightarrow> 'a \<Rightarrow> bool) = (\<equiv>\<^bsub>rel S\<^esub>)"
   unfolding bi_related_set_def by simp
 
 lemma bi_related_set_eq_bi_related_pred_uhint [uhint]:
   assumes "R \<equiv> rel S"
-  shows "bi_related (S :: 'a rel) :: 'a \<Rightarrow> 'a \<Rightarrow> bool \<equiv> bi_related R"
+  shows "(\<equiv>\<^bsub>S :: 'a rel\<^esub>) :: 'a \<Rightarrow> 'a \<Rightarrow> bool \<equiv> (\<equiv>\<^bsub>R\<^esub>)"
   using assms by simp
 
 lemma bi_related_set_iff_bi_related_pred [iff]: "(x :: 'a) \<equiv>\<^bsub>(S :: 'a rel)\<^esub> (y :: 'a) \<longleftrightarrow> x \<equiv>\<^bsub>rel S\<^esub> y"

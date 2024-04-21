@@ -2,10 +2,8 @@
 subsubsection \<open>Injective\<close>
 theory Binary_Relations_Injective
   imports
-    Reverse_Implies
     Functions_Monotone
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
+    Reverse_Implies
 begin
 
 consts rel_injective_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -13,7 +11,7 @@ consts rel_injective_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   rel_injective_on_pred \<equiv> "rel_injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "rel_injective_on_pred P R \<equiv> \<forall>x x' y. P x \<and> P x' \<and> R x y \<and> R x' y \<longrightarrow> x = x'"
+  definition "rel_injective_on_pred P R \<equiv> \<forall>x x' : P. \<forall> y. R x y \<and> R x' y \<longrightarrow> x = x'"
 end
 
 lemma rel_injective_onI [intro]:
@@ -30,7 +28,7 @@ lemma rel_injective_onD:
 
 lemma antimono_rel_injective_on:
   "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>)) (rel_injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
-  by (intro dep_mono_wrt_relI) (auto dest: rel_injective_onD intro!: rel_injective_onI)
+  by (intro mono_wrt_relI) (auto dest: rel_injective_onD intro!: rel_injective_onI)
 
 
 consts rel_injective_at :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -54,13 +52,13 @@ lemma rel_injective_atD:
   using assms unfolding rel_injective_at_pred_def by blast
 
 lemma rel_injective_on_if_Fun_Rel_imp_if_rel_injective_at:
-  assumes "rel_injective_at Q R"
+  assumes "rel_injective_at (Q :: 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)"
   and "(R \<Rrightarrow> (\<longrightarrow>)) P Q"
   shows "rel_injective_on P R"
   using assms by (intro rel_injective_onI) (auto dest: rel_injective_atD)
 
 lemma rel_injective_at_if_Fun_Rel_rev_imp_if_rel_injective_on:
-  assumes "rel_injective_on P R"
+  assumes "rel_injective_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)"
   and "(R \<Rrightarrow> (\<longleftarrow>)) P Q"
   shows "rel_injective_at Q R"
   using assms by (intro rel_injective_atI) (auto dest: rel_injective_onD)

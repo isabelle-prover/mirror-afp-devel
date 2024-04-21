@@ -102,7 +102,7 @@ lemma closure_operatorE [elim]:
   using assms unfolding closure_operator_def by blast
 
 lemma mono_wrt_rel_if_closure_operator:
-  assumes "closure_operator R f"
+  assumes "closure_operator (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) f"
   shows "(R \<Rrightarrow>\<^sub>m R) f"
   using assms by (elim closure_operatorE)
 

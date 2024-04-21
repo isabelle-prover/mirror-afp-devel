@@ -3,7 +3,7 @@ subsubsection \<open>Inverse\<close>
 theory Functions_Inverse
   imports
     Functions_Injective
-    Functions_Monotone
+    Binary_Relations_Function_Evaluation
 begin
 
 consts inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
@@ -11,7 +11,7 @@ consts inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
 overloading
   inverse_on_pred \<equiv> "inverse_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
 begin
-  definition "inverse_on_pred P f g \<equiv> \<forall>x. P x \<longrightarrow> g (f x) = x"
+  definition "inverse_on_pred P f g \<equiv> \<forall>x : P. g (f x) = x"
 end
 
 lemma inverse_onI [intro]:
@@ -42,7 +42,7 @@ lemma inverse_on_compI:
   and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a" and f' :: "'b \<Rightarrow> 'c" and g' :: "'c \<Rightarrow> 'b"
   assumes "inverse_on P f g"
   and "inverse_on P' f' g'"
-  and "([P] \<Rrightarrow>\<^sub>m P') f"
+  and "(P \<Rrightarrow>\<^sub>m P') f"
   shows "inverse_on P (f' \<circ> f) (g \<circ> g')"
   using assms by (intro inverse_onI) (auto dest!: inverse_onD)
 
@@ -79,15 +79,21 @@ lemma inverse_on_if_inverse:
   shows "inverse_on P f g"
   using assms by (intro inverse_onI) (blast dest: inverseD)
 
-lemma inverse_THE_eq_if_injective:
+lemma right_unique_eq_app_if_injective:
   assumes "injective f"
-  shows "inverse f (\<lambda>z. THE y. z = f y)"
-  using assms injectiveD by fastforce
+  shows "right_unique (\<lambda>y x. y = f x)"
+  using assms by (auto dest: injectiveD)
 
-lemma injective_inverseE:
+lemma inverse_eval_eq_app_if_injective:
+  assumes "injective f"
+  shows "inverse f (eval (\<lambda>y x. y = f x))"
+  by (urule inverseI eval_eq_if_right_unique_onI right_unique_eq_app_if_injective)+
+  (use assms in simp_all)
+
+lemma inverse_if_injectiveE:
   assumes "injective (f :: 'a \<Rightarrow> 'b)"
   obtains g :: "'b \<Rightarrow> 'a" where "inverse f g"
-  using assms inverse_THE_eq_if_injective by blast
+  using assms inverse_eval_eq_app_if_injective by blast
 
 
 end

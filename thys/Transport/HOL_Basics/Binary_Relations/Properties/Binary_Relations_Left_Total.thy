@@ -3,8 +3,6 @@ subsubsection \<open>Left Total\<close>
 theory Binary_Relations_Left_Total
   imports
     Functions_Monotone
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
 begin
 
 consts left_total_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -12,7 +10,7 @@ consts left_total_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   left_total_on_pred \<equiv> "left_total_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "left_total_on_pred P R \<equiv> \<forall>x. P x \<longrightarrow> in_dom R x"
+  definition "left_total_on_pred P R \<equiv> \<forall>x : P. in_dom R x"
 end
 
 lemma left_total_onI [intro]:
@@ -26,7 +24,7 @@ lemma left_total_onE [elim]:
   obtains y where "R x y"
   using assms unfolding left_total_on_pred_def by blast
 
-lemma in_dom_if_left_total_on:
+lemma le_in_dom_if_left_total_on:
   assumes "left_total_on P R"
   shows "P \<le> in_dom R"
   using assms by force
@@ -38,23 +36,18 @@ lemma left_total_on_if_le_in_dom:
 
 lemma mono_left_total_on:
   "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (left_total_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
-  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI) fastforce
+  by fastforce
 
 lemma le_in_dom_iff_left_total_on: "P \<le> in_dom R \<longleftrightarrow> left_total_on P R"
-  using in_dom_if_left_total_on left_total_on_if_le_in_dom by auto
+  using le_in_dom_if_left_total_on left_total_on_if_le_in_dom by auto
 
-lemma left_total_on_inf_restrict_leftI:
-  fixes P P' :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  assumes "left_total_on P R"
-  shows "left_total_on (P \<sqinter> P') R\<restriction>\<^bsub>P'\<^esub>"
-  using assms by (intro left_total_onI) auto
+lemma mono_left_total_on_top_left_total_on_inf_rel_restrict_left:
+  "((R : left_total_on P) \<Rrightarrow>\<^sub>m (P' : \<top>) \<Rrightarrow>\<^sub>m left_total_on (P \<sqinter> P')) rel_restrict_left"
+  by fast
 
-lemma left_total_on_compI:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  assumes "left_total_on P R"
-  and "left_total_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) S"
-  shows "left_total_on P (R \<circ>\<circ> S)"
-  using assms by (intro left_total_onI) force
+lemma mono_left_total_on_comp:
+  "((R : left_total_on P) \<Rrightarrow>\<^sub>m left_total_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) \<Rrightarrow>\<^sub>m left_total_on P) (\<circ>\<circ>)"
+  by fast
 
 consts left_total :: "'a \<Rightarrow> bool"
 

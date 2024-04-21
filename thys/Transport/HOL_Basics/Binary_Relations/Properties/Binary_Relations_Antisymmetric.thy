@@ -3,9 +3,6 @@ subsubsection \<open>Antisymmetric\<close>
 theory Binary_Relations_Antisymmetric
   imports
     Binary_Relation_Functions
-    HOL_Syntax_Bundles_Lattices
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
 begin
 
 consts antisymmetric_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -13,7 +10,7 @@ consts antisymmetric_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   antisymmetric_on_pred \<equiv> "antisymmetric_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "antisymmetric_on_pred P R \<equiv> \<forall>x y. P x \<and> P y \<and> R x y \<and> R y x \<longrightarrow> x = y"
+  definition "antisymmetric_on_pred P R \<equiv> \<forall>x y : P. R x y \<and> R y x \<longrightarrow> x = y"
 end
 
 lemma antisymmetric_onI [intro]:

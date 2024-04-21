@@ -3,8 +3,6 @@ subsubsection \<open>Symmetric\<close>
 theory Binary_Relations_Symmetric
   imports
     Functions_Monotone
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
 begin
 
 consts symmetric_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -12,7 +10,7 @@ consts symmetric_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   symmetric_on_pred \<equiv> "symmetric_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "symmetric_on_pred P R \<equiv> \<forall>x y. P x \<and> P y \<and> R x y \<longrightarrow> R y x"
+  definition "symmetric_on_pred P R \<equiv> \<forall>x y : P. R x y \<longrightarrow> R y x"
 end
 
 lemma symmetric_onI [intro]:

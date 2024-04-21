@@ -37,8 +37,7 @@ interpretation of : order_functors S T f g for S T f g .
 
 lemma rel_inv_order_equivalence_eq_order_equivalence [simp]:
   "((\<le>\<^bsub>R\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>))"
-  by (intro ext)
-  (auto intro!: of.order_equivalenceI simp: of.flip_unit_eq_counit)
+  by (intro ext) (auto intro!: of.order_equivalenceI simp: of.flip_unit_eq_counit)
 
 corollary order_equivalence_right_left_iff_order_equivalence_left_right:
   "((\<le>\<^bsub>R\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>L\<^esub>)) r l \<longleftrightarrow> ((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
@@ -54,7 +53,7 @@ of @{locale order_functors}.\<close>
 
 lemma order_equivalence_rel_inv_eq_order_equivalence [simp]:
   "((\<ge>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>))"
-  by (intro ext) (auto intro!: of.order_equivalenceI)
+  by (intro ext) (auto 0 4 intro!: of.order_equivalenceI)
 
 lemma in_codom_left_eq_in_dom_left_if_order_equivalence:
   assumes "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"

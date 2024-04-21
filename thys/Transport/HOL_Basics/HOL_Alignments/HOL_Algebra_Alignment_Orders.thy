@@ -1,5 +1,5 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsection \<open>Alignment With Definitions from HOL-Algebra\<close>
+subsection \<open>Alignment With Order Definitions from HOL-Algebra\<close>
 theory HOL_Algebra_Alignment_Orders
   imports
     "HOL-Algebra.Order"

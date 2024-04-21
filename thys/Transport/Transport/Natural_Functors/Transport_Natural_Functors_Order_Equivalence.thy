@@ -123,11 +123,11 @@ lemma deflationary_on_in_field_FrelI:
   shows "deflationary_on (in_field R) R f"
   apply (unfold R_def f_def)
   apply (subst deflationary_on_eq_inflationary_on_rel_inv)
-  apply (subst in_field_rel_inv_eq[symmetric])
+  apply (subst in_field_rel_inv_eq_in_field[symmetric])
   apply (unfold Frel_rel_inv_eq_rel_inv_Frel[symmetric])
   apply (rule inflationary_on_in_field_FrelI;
     subst deflationary_on_eq_inflationary_on_rel_inv[symmetric],
-    subst in_field_rel_inv_eq,
+    subst in_field_rel_inv_eq_in_field,
     rule assms)
   done
 

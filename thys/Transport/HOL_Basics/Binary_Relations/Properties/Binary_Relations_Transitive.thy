@@ -3,8 +3,6 @@ subsubsection \<open>Transitive\<close>
 theory Binary_Relations_Transitive
   imports
     Functions_Monotone
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
 begin
 
 consts transitive_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -12,7 +10,7 @@ consts transitive_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   transitive_on_pred \<equiv> "transitive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "transitive_on_pred P R \<equiv> \<forall>x y z. P x \<and> P y \<and> P z \<and> R x y \<and> R y z \<longrightarrow> R x z"
+  definition "transitive_on_pred P R \<equiv> \<forall>x y z : P. R x y \<and> R y z \<longrightarrow> R x z"
 end
 
 lemma transitive_onI [intro]:

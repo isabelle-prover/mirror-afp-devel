@@ -21,7 +21,7 @@ lemma Galois_right_if_left_Galois_if_half_galois_prop_left:
   assumes "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   and "x \<^bsub>L\<^esub>\<lessapprox> y"
   shows "x \<lessapprox>\<^bsub>R\<^esub> y"
-  using assms by blast
+  using assms by fast
 
 corollary Galois_right_iff_left_Galois_if_galois_prop [iff]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"

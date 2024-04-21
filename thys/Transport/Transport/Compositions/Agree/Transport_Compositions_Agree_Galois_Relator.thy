@@ -9,7 +9,7 @@ context transport_comp_agree
 begin
 
 lemma left_Galois_le_comp_left_GaloisI:
-  assumes in_codom_mono_r2: "([in_codom (\<le>\<^bsub>R2\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
+  assumes in_codom_mono_r2: "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
   and r2_L2_self_if_in_codom: "\<And>z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> r2 z \<le>\<^bsub>L2\<^esub> r2 z"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) \<le> ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
 proof (rule le_relI)

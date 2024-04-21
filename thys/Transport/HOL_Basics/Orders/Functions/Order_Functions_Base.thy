@@ -20,7 +20,7 @@ begin
 end
 
 (*Note: we are not using (\<equiv>\<index>) as infix here because it would produce an ambiguous
-grammar whenever using a of the form "definition c \<equiv> t"*)
+grammar whenever using an expression of the form "definition c \<equiv> t"*)
 bundle bi_related_syntax begin
 syntax
   "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) \<equiv>\<^bsub>(_)\<^esub> (_)" [51,51,51] 50)
@@ -133,7 +133,7 @@ overloading
   inflationary_on_pred \<equiv> "inflationary_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
 begin
   text \<open>Often also called "extensive".\<close>
-  definition "inflationary_on_pred P (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) \<equiv> \<forall>x. P x \<longrightarrow> R x (f x)"
+  definition "inflationary_on_pred P (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) \<equiv> \<forall>x : P. R x (f x)"
 end
 
 lemma inflationary_onI [intro]:
@@ -158,7 +158,7 @@ lemma inflationary_on_if_le_rel_if_inflationary_on:
 
 lemma mono_inflationary_on_rel:
   "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (inflationary_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool)"
-  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI) auto
+  by (intro mono_wrt_relI Fun_Rel_relI) auto
 
 context
   fixes P P' :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b"
@@ -265,7 +265,7 @@ corollary deflationary_on_rel_inv_eq_inflationary_on [simp]:
   unfolding deflationary_on_eq_inflationary_on_rel_inv by simp
 
 lemma deflationary_on_eq_dep_mono_wrt_pred_rel_inv:
-  "(deflationary_on P R :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) = ([x \<Colon> P] \<Rrightarrow>\<^sub>m R\<inverse> x)"
+  "(deflationary_on P R :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) = ((x : P) \<Rrightarrow>\<^sub>m R\<inverse> x)"
   by blast
 
 lemma deflationary_on_if_le_rel_if_deflationary_on:
@@ -412,7 +412,7 @@ lemma in_codom_eq_in_dom_if_rel_equivalence_on_in_field:
 
 lemma reflexive_on_if_transitive_on_if_mon_wrt_pred_if_rel_equivalence_on:
   assumes "rel_equivalence_on P R f"
-  and "([P] \<Rrightarrow>\<^sub>m P) f"
+  and "(P \<Rrightarrow>\<^sub>m P) f"
   and "transitive_on P R"
   shows "reflexive_on P R"
   using assms by (blast dest: transitive_onD)

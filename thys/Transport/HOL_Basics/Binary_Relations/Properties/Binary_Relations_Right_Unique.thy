@@ -1,7 +1,9 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 subsubsection \<open>Right Unique\<close>
 theory Binary_Relations_Right_Unique
-  imports Binary_Relations_Injective
+  imports
+    Binary_Relations_Injective
+    Binary_Relations_Extend
 begin
 
 consts right_unique_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -9,7 +11,7 @@ consts right_unique_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   right_unique_on_pred \<equiv> "right_unique_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "right_unique_on_pred P R \<equiv> \<forall>x y y'. P x \<and> R x y \<and> R x y' \<longrightarrow> y = y'"
+  definition "right_unique_on_pred P R \<equiv> \<forall>x : P. \<forall> y y'. R x y \<and> R x y' \<longrightarrow> y = y'"
 end
 
 lemma right_unique_onI [intro]:
@@ -26,14 +28,32 @@ lemma right_unique_onD:
 
 lemma antimono_right_unique_on:
   "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>)) (right_unique_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
-  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI) (fastforce dest: right_unique_onD)
+  by (fastforce dest: right_unique_onD)
 
-lemma right_unique_on_compI:
-  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" and S :: "'b \<Rightarrow> 'c \<Rightarrow> bool"
-  assumes "right_unique_on P R"
-  and "right_unique_on (in_codom (R\<restriction>\<^bsub>P\<^esub>) \<sqinter> in_dom S) S"
-  shows "right_unique_on P (R \<circ>\<circ> S)"
-  using assms by (blast dest: right_unique_onD)
+lemma mono_right_unique_on_top_right_unique_on_inf_rel_restrict_left:
+  "((R : right_unique_on P) \<Rrightarrow>\<^sub>m (P' : \<top>) \<Rrightarrow>\<^sub>m right_unique_on (P \<sqinter> P')) rel_restrict_left"
+  by (fast dest: right_unique_onD)
+
+lemma mono_right_unique_on_comp:
+  "((R : right_unique_on P) \<Rrightarrow>\<^sub>m right_unique_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) \<Rrightarrow>\<^sub>m right_unique_on P) (\<circ>\<circ>)"
+  by (fast dest: right_unique_onD)
+
+context
+  fixes P :: "'a \<Rightarrow> bool" and \<R> :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+
+lemma right_unique_on_glue_if_right_unique_on_sup:
+  assumes "\<And>R R'. \<R> R \<Longrightarrow> \<R> R' \<Longrightarrow> right_unique_on P (R \<squnion> R')"
+  shows "right_unique_on P (glue \<R>)"
+  using assms by (fastforce dest: right_unique_onD)
+
+lemma right_unique_on_if_right_unique_on_glue:
+  assumes "right_unique_on P (glue \<R>)"
+  and "\<R> R"
+  shows "right_unique_on P R"
+  using assms by (intro right_unique_onI) (auto dest: right_unique_onD)
+
+end
 
 consts right_unique_at :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
@@ -73,13 +93,13 @@ lemma rel_injective_at_rel_inv_iff_right_unique_on [iff]:
   by (blast dest: right_unique_onD rel_injective_atD)
 
 lemma right_unique_on_if_Fun_Rel_imp_if_right_unique_at:
-  assumes "right_unique_at Q R"
+  assumes "right_unique_at (Q :: 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)"
   and "(R \<Rrightarrow> (\<longrightarrow>)) P Q"
   shows "right_unique_on P R"
   using assms by (intro right_unique_onI) (auto dest: right_unique_atD)
 
 lemma right_unique_at_if_Fun_Rel_rev_imp_if_right_unique_on:
-  assumes "right_unique_on P R"
+  assumes "right_unique_on (P :: 'a \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)"
   and "(R \<Rrightarrow> (\<longleftarrow>)) P Q"
   shows "right_unique_at Q R"
   using assms by (intro right_unique_atI) (auto dest: right_unique_onD)

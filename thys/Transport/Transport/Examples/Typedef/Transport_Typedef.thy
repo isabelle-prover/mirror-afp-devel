@@ -5,6 +5,7 @@ theory Transport_Typedef
     Transport_Typedef_Base
     Transport_Prototype
     Transport_Syntax
+    HOL_Alignment_Functions
 begin
 
 context
@@ -47,7 +48,7 @@ trp_term pint_one :: "pint" where x = "1 :: int"
 
 lemma add_parametric [trp_in_dom]:
   "(typedef_pint.L \<Rrightarrow> typedef_pint.L \<Rrightarrow> typedef_pint.L) (+) (+)"
-  by (intro Dep_Fun_Rel_relI) fastforce
+  by (intro Fun_Rel_relI) fastforce
 
 trp_term pint_add :: "pint \<Rightarrow> pint \<Rightarrow> pint"
   where x = "(+) :: int \<Rightarrow> _"
@@ -85,7 +86,7 @@ lemma empty_parametric' [trp_related_intro]: "(rel_set R) {} {}"
 
 lemma insert_parametric' [trp_related_intro]:
   "(R \<Rrightarrow> rel_set R \<Rrightarrow> rel_set R) insert insert"
-  by (intro Dep_Fun_Rel_relI rel_setI) (auto dest: rel_setD1 rel_setD2)
+  by (intro Fun_Rel_relI rel_setI) (auto dest: rel_setD1 rel_setD2)
 
 context
   assumes [trp_uhint]:
@@ -105,19 +106,16 @@ end
 
 lemma image_parametric [trp_in_dom]:
   "(((=) \<Rrightarrow> (=)) \<Rrightarrow> typedef_fset.L \<Rrightarrow> typedef_fset.L) image image"
-  by (intro Dep_Fun_Rel_relI) auto
+  by (intro Fun_Rel_relI) auto
 
 trp_term fimage :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fset \<Rightarrow> 'b fset" where x = image
   by trp_prover
 
 (*experiments with compositions*)
 
-lemma rel_fun_eq_Fun_Rel_rel: "rel_fun = Fun_Rel_rel"
-  by (intro ext iffI Dep_Fun_Rel_relI) (auto elim: rel_funE)
-
 lemma image_parametric' [trp_related_intro]:
   "((R \<Rrightarrow> S) \<Rrightarrow> rel_set R \<Rrightarrow> rel_set S) image image"
-  using transfer_raw[simplified rel_fun_eq_Fun_Rel_rel Transfer.Rel_def]
+  using transfer_raw[simplified HOL_fun_alignment Transfer.Rel_def]
   by simp
 
 lemma Galois_id_hint [trp_uhint]:

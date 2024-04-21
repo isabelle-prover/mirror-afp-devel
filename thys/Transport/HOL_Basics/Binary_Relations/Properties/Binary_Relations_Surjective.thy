@@ -11,7 +11,7 @@ consts rel_surjective_at :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   rel_surjective_at_pred \<equiv> "rel_surjective_at :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "rel_surjective_at_pred P R \<equiv> \<forall>y. P y \<longrightarrow> in_codom R y"
+  definition "rel_surjective_at_pred P R \<equiv> \<forall>y : P. in_codom R y"
 end
 
 lemma rel_surjective_atI [intro]:
@@ -41,7 +41,7 @@ lemma left_total_on_rel_inv_iff_rel_surjective_at [iff]:
 
 lemma mono_rel_surjective_at:
   "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (rel_surjective_at :: ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
-  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI) fastforce
+  by fastforce
 
 lemma rel_surjective_at_iff_le_codom:
   "rel_surjective_at (P :: 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<longleftrightarrow> P \<le> in_codom R"

@@ -10,5 +10,4 @@ text \<open>We define the concept of (partial) Galois connections, Galois equiva
 and the Galois relator. For details refer to \<^cite>\<open>"transport"\<close>.\<close>
 
 
-
 end

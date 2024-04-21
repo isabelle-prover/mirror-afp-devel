@@ -51,7 +51,7 @@ lemma reflexive_on_rel_inv_iff_reflexive_on [iff]:
 
 lemma mono_reflexive_on:
   "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (reflexive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool)"
-  by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI) fastforce
+  by fastforce
 
 lemma reflexive_on_if_le_pred_if_reflexive_on:
   fixes P' :: "'a \<Rightarrow> bool"
@@ -120,5 +120,6 @@ lemma reflexive_eq: "reflexive (=)"
 
 lemma reflexive_top: "reflexive (\<top> :: 'a \<Rightarrow> 'a \<Rightarrow> bool)"
   by (rule reflexiveI) auto
+
 
 end

@@ -1,5 +1,5 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsection \<open>Alignment With Definitions from HOL.Main\<close>
+subsection \<open>Alignment With Function Definitions from HOL.Main\<close>
 theory HOL_Alignment_Functions
   imports
     HOL_Alignment_Binary_Relations
@@ -15,22 +15,18 @@ paragraph \<open>Functions\<close>
 
 subparagraph \<open>Bijection\<close>
 
-overloading
-  bijection_on_set \<equiv> "bijection_on :: 'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool"
-begin
-  definition "bijection_on_set (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool \<equiv>
-    bijection_on (mem_of S) (mem_of S')"
-end
+definition "bijection_on_set (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool \<equiv>
+  bijection_on (mem_of S) (mem_of S')"
+adhoc_overloading bijection_on bijection_on_set
 
 lemma bijection_on_set_eq_bijection_on_pred [simp]:
-  "(bijection_on (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> _) =
-    bijection_on (mem_of S) (mem_of S')"
+  "bijection_on (S :: 'a set) (S' :: 'b set) = bijection_on (mem_of S) (mem_of S')"
   unfolding bijection_on_set_def by simp
 
 lemma bijection_on_set_eq_bijection_on_pred_uhint [uhint]:
   assumes "P \<equiv> mem_of S"
   and "Q \<equiv> mem_of S'"
-  shows "bijection_on (S :: 'a set) (S' :: 'b set) :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> _ \<equiv> bijection_on P Q"
+  shows "bijection_on S S' \<equiv> bijection_on P Q"
   using assms by simp
 
 lemma bijection_on_set_iff_bijection_on_pred [iff]:
@@ -172,9 +168,8 @@ lemma map_fun_eq_fun_map [HOL_fun_alignment]: "map_fun = fun_map"
 
 paragraph \<open>Relators\<close>
 
-lemma rel_fun_eq_Fun_Rel_rel [HOL_fun_alignment]: "rel_fun = Fun_Rel_rel"
+lemma rel_fun_eq_Fun_Rel_rel [HOL_fun_alignment]: "BNF_Def.rel_fun = Fun_Rel"
   by (intro ext) (auto dest: rel_funD)
-
 
 
 end

@@ -5,6 +5,7 @@ theory Binary_Relation_Properties
     Binary_Relations_Antisymmetric
     Binary_Relations_Bi_Total
     Binary_Relations_Bi_Unique
+    Binary_Relations_Connected
     Binary_Relations_Injective
     Binary_Relations_Irreflexive
     Binary_Relations_Left_Total

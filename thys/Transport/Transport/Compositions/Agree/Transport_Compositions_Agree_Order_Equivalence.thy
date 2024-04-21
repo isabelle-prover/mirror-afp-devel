@@ -12,7 +12,7 @@ subsubsection \<open>Unit\<close>
 paragraph \<open>Inflationary\<close>
 
 lemma inflationary_on_unitI:
-  assumes mono_l1: "([P] \<Rrightarrow>\<^sub>m P') l1"
+  assumes mono_l1: "(P \<Rrightarrow>\<^sub>m P') l1"
   and mono_r1: "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
   and inflationary_unit1: "inflationary_on P (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and trans_L1: "transitive (\<le>\<^bsub>L1\<^esub>)"
@@ -52,7 +52,7 @@ interpretation inv :
     (inflationary_on P R\<inverse> :: ('i \<Rightarrow> 'j) \<Rightarrow> bool) \<equiv> deflationary_on P R"
   and "\<And>(R :: 'i \<Rightarrow> 'i \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
   and "\<And>R. in_field R\<inverse> \<equiv> in_field R"
-  by simp_all
+  by (simp_all add: mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma deflationary_on_in_field_unitI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) l1"
@@ -110,7 +110,7 @@ lemma order_equivalenceI:
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>o (\<le>\<^bsub>R\<^esub>)) l r"
   using assms by (intro order_equivalenceI rel_equivalence_on_in_field_unitI
     flip.rel_equivalence_on_in_field_unitI
-    mono_wrt_rel_leftI flip.mono_wrt_rel_leftI dep_mono_wrt_relI)
+    mono_wrt_rel_leftI flip.mono_wrt_rel_leftI mono_wrt_relI)
   (auto elim!: g1.order_equivalenceE g2.order_equivalenceE)
 
 end

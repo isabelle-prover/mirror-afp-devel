@@ -22,7 +22,7 @@ lemma mono_wrt_rel_leftI:
   and ge_R2_l2_le2: "\<And>x1' x2' y. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) y \<Longrightarrow>
     (\<ge>\<^bsub>R2 x1' x2'\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub> y) \<le> (\<ge>\<^bsub>R2 x1' x2'\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub> y)"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-proof (intro dep_mono_wrt_relI flip.left_relI)
+proof (intro mono_wrt_relI flip.left_relI)
   fix f1 f2 x1' x2' assume [iff]: "x1' \<le>\<^bsub>R1\<^esub> x2'"
   with mono_r1 have "r1 x1' \<le>\<^bsub>L1\<^esub> r1 x2'" (is "?x1 \<le>\<^bsub>L1\<^esub> ?x2") by blast
   moreover assume "f1 \<le>\<^bsub>L\<^esub> f2"
@@ -37,8 +37,7 @@ proof (intro dep_mono_wrt_relI flip.left_relI)
 qed
 
 lemma mono_wrt_rel_left_in_dom_mono_left_assm:
-  assumes "([in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>))
-    (l2\<^bsub>x1' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
+  assumes "(in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x1' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
   and "transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "x1' \<le>\<^bsub>R1\<^esub> x2'"
   and "in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) y"
@@ -46,8 +45,7 @@ lemma mono_wrt_rel_left_in_dom_mono_left_assm:
   using assms by blast
 
 lemma mono_wrt_rel_left_in_codom_mono_left_assm:
-  assumes "([in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>))
-    (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
+  assumes "(in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
   and "transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "x1' \<le>\<^bsub>R1\<^esub> x2'"
   and "in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) y"
@@ -60,9 +58,9 @@ lemma mono_wrt_rel_left_if_transitiveI:
     ((\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1') x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1') x2'\<^esub>) \<le> (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow>
-    ([in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x1' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
+    (in_dom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x1' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow>
-    ([in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
+    (in_codom (\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 x1' x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>) (l2\<^bsub>x2' (r1 x2')\<^esub>)"
   and "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow> transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
   using assms by (intro mono_wrt_rel_leftI
@@ -75,7 +73,7 @@ lemma mono_wrt_rel_left2_if_mono_wrt_rel_left2_if_left_GaloisI:
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>)"
   shows "\<And>x1' x2'. x1' \<le>\<^bsub>R1\<^esub> x2' \<Longrightarrow>
     ((\<le>\<^bsub>L2 (r1 x1') (r1 x2')\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1') x2'\<^esub>)) (l2\<^bsub>x2' (r1 x1')\<^esub>)"
-  using assms by (intro dep_mono_wrt_relI) fastforce
+  using assms by (intro mono_wrt_relI) fastforce
 
 interpretation flip_inv :
   transport_Dep_Fun_Rel "(\<ge>\<^bsub>R1\<^esub>)" "(\<ge>\<^bsub>L1\<^esub>)" r1 l1 "flip2 R2" "flip2 L2" r2 l2
@@ -91,11 +89,12 @@ interpretation flip_inv :
   and "\<And>x1' x2' y1 y2.
     flip_inv.dfro2.right_infix y1 x1' x2' \<le> flip_inv.dfro2.right_infix y2 x1' x2' \<equiv>
       (\<ge>\<^bsub>L2 x2' x1'\<^esub>) y1 \<le> (\<ge>\<^bsub>L2 x2' x1'\<^esub>) y2"
-  and "\<And>P x1 x2. ([P] \<Rrightarrow> flip2 L2 x1 x2) \<equiv> ([P] \<Rrightarrow> (\<ge>\<^bsub>L2 x2 x1\<^esub>))"
-  and "\<And>P R. ([P] \<Rrightarrow> R\<inverse>) \<equiv> ([P] \<Rrightarrow> R)\<inverse>"
+  and "\<And>(P :: 'f \<Rightarrow> bool) x1 x2. (P \<Rrightarrow> flip2 L2 x1 x2) \<equiv> (P \<Rrightarrow> (\<ge>\<^bsub>L2 x2 x1\<^esub>))"
+  and "\<And>(P :: 'f \<Rightarrow> bool) (R :: 'g \<Rightarrow> 'g \<Rightarrow> bool). (P \<Rrightarrow> R\<inverse>) \<equiv> (P \<Rrightarrow> R)\<inverse>"
   and "\<And>x1 x2. transitive (flip2 L2 x1 x2) \<equiv> transitive (\<le>\<^bsub>L2 x2 x1\<^esub>)"
   by (simp_all add: flip_inv_left_eq_ge_right flip_inv_right_eq_ge_left
-    t1.flip_counit_eq_unit del: rel_inv_iff_rel)
+    t1.flip_counit_eq_unit mono_wrt_rel_eq_dep_mono_wrt_rel Fun_Rel_pred_eq_Dep_Fun_Rel_pred
+    del: rel_inv_iff_rel)
 
 lemma mono_wrt_rel_rightI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) l1"
@@ -112,10 +111,8 @@ lemma mono_wrt_rel_right_if_transitiveI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) l1"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> ((\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2 x1 (\<eta>\<^sub>1 x2)\<^esub>)) (r2\<^bsub>x1 (l1 x2)\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> (\<le>\<^bsub>L2 x1 (\<eta>\<^sub>1 x2)\<^esub>) \<le> (\<le>\<^bsub>L2 x1 x2\<^esub>)"
-  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow>
-    ([in_codom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x2)\<^esub>) (r2\<^bsub>x2 (l1 x2)\<^esub>)"
-  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow>
-    ([in_dom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>)] \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x1)\<^esub>) (r2\<^bsub>x1 (l1 x2)\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> (in_codom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x2)\<^esub>) (r2\<^bsub>x2 (l1 x2)\<^esub>)"
+  and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> (in_dom (\<le>\<^bsub>R2 (l1 x1) (l1 x2)\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 x2\<^esub>)) (r2\<^bsub>x1 (l1 x1)\<^esub>) (r2\<^bsub>x1 (l1 x2)\<^esub>)"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L1\<^esub> x2 \<Longrightarrow> transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
   shows "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
   using assms by (intro flip_inv.mono_wrt_rel_left_if_transitiveI

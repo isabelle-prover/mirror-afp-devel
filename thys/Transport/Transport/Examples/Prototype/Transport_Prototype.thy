@@ -88,7 +88,8 @@ qed
 
 end
 
-lemmas related_Fun_Rel_combI = Dep_Fun_Rel_relD[where ?S="\<lambda>_ _. S" for S, rotated]
+lemmas related_Fun_Rel_combI = Fun_Rel_relD[rotated]
+
 lemma related_Fun_Rel_lambdaI:
   assumes "\<And>x y. R x y \<Longrightarrow> S (f x) (g y)"
   and "T = (R \<Rrightarrow> S)"
@@ -139,7 +140,8 @@ declare [[trp_uhint where hint_preprocessor = \<open>Unification_Hints_Base.obj_
 declare [[trp_ucombine add = \<open>Transport_Unification_Combine.eunif_data
   (Transport_Unification_Hints.try_hints
   |> Unification_Combinator.norm_unifier
-    (#norm_term Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
+    (Unification_Util.inst_norm_term'
+      Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> K)
   (Transport_Unification_Combine.default_metadata Transport_Unification_Hints.binding)\<close>]]
 
@@ -156,9 +158,7 @@ declare
   (* transport_Dep_Fun_Rel.partial_equivalence_rel_equivalenceI[per_intro] *)
   (* transport.rel_if_partial_equivalence_rel_equivalence_if_iff_if_partial_equivalence_rel_equivalenceI[rotated, per_intro]
   transport_Dep_Fun_Rel_no_dep_fun.partial_equivalence_rel_equivalenceI
-    [ML_Krattr \<open>Conversion_Util.move_prems_to_front_conv [1] |> Conversion_Util.thm_conv\<close>,
-    ML_Krattr \<open>Conversion_Util.move_prems_to_front_conv [2,3] |> Conversion_Util.thm_conv\<close>,
-    per_intro] *)
+    [ML_Krattr \<open>Drule.rearrange_prems [1] #> Drule.rearrange_prems [2,3]\<close>, per_intro] *)
   transport_Fun_Rel.partial_equivalence_rel_equivalenceI[rotated, per_intro]
   transport_eq_id.partial_equivalence_rel_equivalenceI[per_intro]
   transport_eq_restrict_id.partial_equivalence_rel_equivalence[per_intro]

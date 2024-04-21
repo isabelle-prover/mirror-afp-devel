@@ -301,14 +301,14 @@ arise in various places.\<close>
 lemma mono_in_dom_left_rel_left1_if_in_dom_rel_comp_le:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "in_dom ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> in_dom (\<le>\<^bsub>L2\<^esub>)"
-  shows "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
-  using assms by (intro dep_mono_wrt_predI) blast
+  shows "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  using assms by (intro mono_wrt_predI) blast
 
 lemma mono_in_codom_left_rel_left1_if_in_codom_rel_comp_le:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "in_codom ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> in_codom (\<le>\<^bsub>L2\<^esub>)"
-  shows "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
-  using assms by (intro dep_mono_wrt_predI) blast
+  shows "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  using assms by (intro mono_wrt_predI) blast
 
 
 subsubsection \<open>Simplification of Compatibility Conditions\<close>
@@ -346,7 +346,7 @@ proof (intro le_relI)
   with rel_comp_le have "(R \<circ>\<circ> R \<circ>\<circ> S) x y" by blast
   with trans_R show "(R \<circ>\<circ> S) x y" by blast
 qed
-
+thm mono_rel_comp
 lemma rel_comp_comp_le_rel_comp_if_rel_comp_le_if_transitive:
   assumes trans_R: "transitive R"
   and R_S_le: "(R \<circ>\<circ> S) \<le> (S \<circ>\<circ> R)"
@@ -354,9 +354,9 @@ lemma rel_comp_comp_le_rel_comp_if_rel_comp_le_if_transitive:
 proof -
   from trans_R have R_R_le: "(R \<circ>\<circ> R) \<le> R" by (intro rel_comp_le_self_if_transitive)
   have "(R \<circ>\<circ> S \<circ>\<circ> R) \<le> (S \<circ>\<circ> R \<circ>\<circ> R)"
-    using monoD[OF mono_rel_comp1 R_S_le] by blast
-  also have "... \<le> (S \<circ>\<circ> R)"
-    using monoD[OF mono_rel_comp2 R_R_le] by (auto simp flip: rel_comp_assoc)
+    using mono_rel_comp R_S_le by blast
+  also have "... = S \<circ>\<circ> (R \<circ>\<circ> R)" by (simp flip: rel_comp_assoc)
+  also have "... \<le> (S \<circ>\<circ> R)" using mono_rel_comp R_R_le by blast
   finally show ?thesis .
 qed
 
@@ -367,8 +367,8 @@ lemma rel_comp_comp_le_rel_comp_if_rel_comp_le_if_transitive':
 proof -
   from trans_R have R_R_le: "(R \<circ>\<circ> R) \<le> R" by (intro rel_comp_le_self_if_transitive)
   have "(R \<circ>\<circ> S \<circ>\<circ> R) \<le> (R \<circ>\<circ> R \<circ>\<circ> S)"
-    using monoD[OF mono_rel_comp2 S_R_le] by (auto simp flip: rel_comp_assoc)
-  also have "... \<le> (R \<circ>\<circ> S)" using monoD[OF mono_rel_comp1 R_R_le] by blast
+    using mono_rel_comp S_R_le by (auto simp flip: rel_comp_assoc)
+  also have "... \<le> (R \<circ>\<circ> S)" using mono_rel_comp R_R_le by blast
   finally show ?thesis .
 qed
 
@@ -587,3 +587,4 @@ end
 
 
 end
+

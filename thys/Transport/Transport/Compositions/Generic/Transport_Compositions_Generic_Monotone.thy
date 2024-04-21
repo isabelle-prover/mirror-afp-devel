@@ -15,7 +15,7 @@ lemma mono_wrt_rel_leftI:
   and "((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))"
   and "in_codom ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> in_codom (\<le>\<^bsub>L2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-proof (rule dep_mono_wrt_relI)
+proof (rule mono_wrt_relI)
   fix x x' assume "x \<le>\<^bsub>L\<^esub> x'"
   then show "l x \<le>\<^bsub>R\<^esub> l x'"
   proof (rule right_rel_if_left_relI)
@@ -37,7 +37,7 @@ lemma mono_wrt_rel_leftI':
   and "((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>))"
   and "in_dom ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> in_dom (\<le>\<^bsub>L2\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-proof (rule dep_mono_wrt_relI)
+proof (rule mono_wrt_relI)
   fix x x' assume "x \<le>\<^bsub>L\<^esub> x'"
   then show "l x \<le>\<^bsub>R\<^esub> l x'"
   proof (rule right_rel_if_left_relI')

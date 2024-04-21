@@ -2,10 +2,9 @@
 subsubsection \<open>Injective\<close>
 theory Functions_Injective
   imports
+    Bounded_Quantifiers
     Functions_Base
     HOL_Syntax_Bundles_Lattices
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
 begin
 
 consts injective_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -13,7 +12,7 @@ consts injective_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   injective_on_pred \<equiv> "injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
 begin
-  definition "injective_on_pred P f \<equiv> \<forall>x x'. P x \<and> P x' \<and> f x = f x' \<longrightarrow> x = x'"
+  definition "injective_on_pred P f \<equiv> \<forall>x x' : P. f x = f x' \<longrightarrow> x = x'"
 end
 
 lemma injective_onI [intro]:

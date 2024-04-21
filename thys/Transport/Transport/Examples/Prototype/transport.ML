@@ -21,7 +21,7 @@ val _ = Theory.setup Transport_Defs.setup
 
 (* simplifying definitions *)
 
-val simp_rhs = Simplifier.rewrite #> Conversion_Util.rhs_conv #> Conversion_Util.thm_conv
+val simp_rhs = Simplifier.rewrite #> Conversion_Util.rhs_conv #> Conversion_Util.apply_thm_conv
 
 (*simplifies the generated definition of a transported term*)
 fun simp_transported_def ctxt simps y_def =
@@ -193,7 +193,7 @@ fun note_facts (binding, mixfix) ctxt related_thm y binding_thms_attribs =
           (*fold definition of transported term*)
           Local_Defs.fold ctxt [y_def] thm
           (*simplify other transport definitions in theorem*)
-          |> (Simplifier.rewrite ctxt |> Conversion_Util.thm_conv)
+          |> (Simplifier.rewrite ctxt |> Conversion_Util.apply_thm_conv)
         val thm_attribs = ([folded_thm], attribs)
       in (binding, [thm_attribs]) end
     val facts = map prepare_fact ([

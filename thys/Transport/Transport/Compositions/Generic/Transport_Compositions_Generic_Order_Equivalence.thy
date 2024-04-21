@@ -24,7 +24,7 @@ lemma inflationary_on_in_dom_unitI:
   and refl_R1: "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and inflationary_unit2: "inflationary_on (in_dom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and refl_L2: "reflexive_on (in_dom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_dom_l1: "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_dom_l1: "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
   and in_codom_rel_comp_le: "in_codom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_codom ((\<le>\<^bsub>R1\<^esub>))"
   shows "inflationary_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
 proof (rule inflationary_onI)
@@ -44,7 +44,7 @@ proof (rule inflationary_onI)
       with in_codom_rel_comp_le \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close> \<open>l1 x \<le>\<^bsub>L2\<^esub> r2 (l x)\<close>
         have "in_codom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))" by blast
       with \<open>((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1\<close> show "in_codom (\<le>\<^bsub>L1\<^esub>) (\<eta> x)"
-        by (auto intro: in_codom_if_rel_if_dep_mono_wrt_rel)
+        by (auto intro: in_codom_if_rel_if_dep_mono_wrt_rel simp: mono_wrt_rel_eq_dep_mono_wrt_rel)
       from \<open>in_codom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))\<close> inflationary_counit1
         show "r2 (l x) \<le>\<^bsub>R1\<^esub> l1 (\<eta> x)" by auto
     qed
@@ -58,7 +58,7 @@ lemma inflationary_on_in_codom_unitI:
   and refl_R1: "reflexive_on (in_codom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and inflationary_unit2: "inflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and refl_L2: "reflexive_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_codom_l1: "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_codom_l1: "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   and in_codom_rel_comp_le: "in_codom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_codom ((\<le>\<^bsub>R1\<^esub>))"
   shows "inflationary_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
 proof (rule inflationary_onI)
@@ -76,7 +76,7 @@ proof (rule inflationary_onI)
       moreover note in_codom_rel_comp_le \<open>l1 x \<le>\<^bsub>L2\<^esub> r2 (l x)\<close>
       ultimately have "in_codom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))" by blast
       with \<open>((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1\<close> show "in_codom (\<le>\<^bsub>L1\<^esub>) (\<eta> x)"
-        by (auto intro: in_codom_if_rel_if_dep_mono_wrt_rel)
+        by (auto intro: in_codom_if_rel_if_dep_mono_wrt_rel simp: mono_wrt_rel_eq_dep_mono_wrt_rel)
       from \<open>in_codom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))\<close> inflationary_counit1
         show "r2 (l x) \<le>\<^bsub>R1\<^esub> l1 (\<eta> x)" by auto
     qed
@@ -91,8 +91,8 @@ corollary inflationary_on_in_field_unitI:
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "inflationary_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and "reflexive_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
-  and "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   and "in_codom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_codom ((\<le>\<^bsub>R1\<^esub>))"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
 proof -
@@ -116,7 +116,7 @@ lemma deflationary_on_in_dom_unitI:
   and in_dom_R1_le_in_codom_R1: "in_dom (\<le>\<^bsub>R1\<^esub>) \<le> in_codom (\<le>\<^bsub>R1\<^esub>)"
   and deflationary_L2: "deflationary_on (in_dom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and refl_L2: "reflexive_on (in_dom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_dom_l1: "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_dom_l1: "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
   and in_dom_rel_comp_le: "in_dom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_dom ((\<le>\<^bsub>R1\<^esub>))"
   shows "deflationary_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
 proof (rule deflationary_onI)
@@ -134,7 +134,7 @@ proof (rule deflationary_onI)
       with in_dom_rel_comp_le \<open>r2 (l x) \<le>\<^bsub>L2\<^esub> l1 x\<close> \<open>l1 x \<le>\<^bsub>R1\<^esub> l1 x\<close>
         have "in_dom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))" by blast
       with \<open>((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1\<close> have "in_dom (\<le>\<^bsub>L1\<^esub>) (\<eta> x)"
-        by (auto intro: in_dom_if_rel_if_dep_mono_wrt_rel)
+        by (auto intro: in_dom_if_rel_if_dep_mono_wrt_rel simp: mono_wrt_rel_eq_dep_mono_wrt_rel)
       with refl_L1 show "\<eta> x \<le>\<^bsub>L1\<^esub> r1 (r2 (l x))"
         by (auto intro: in_field_if_in_codom)
       from \<open>in_dom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))\<close> in_dom_R1_le_in_codom_R1
@@ -149,7 +149,7 @@ lemma deflationary_on_in_codom_unitI:
   and in_dom_R1_le_in_codom_R1: "in_dom (\<le>\<^bsub>R1\<^esub>) \<le> in_codom (\<le>\<^bsub>R1\<^esub>)"
   and deflationary_L2: "deflationary_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and refl_L2: "reflexive_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_codom_l1: "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_codom_l1: "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   and in_dom_rel_comp_le: "in_dom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_dom ((\<le>\<^bsub>R1\<^esub>))"
   shows "deflationary_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
 proof (rule deflationary_onI)
@@ -168,7 +168,7 @@ proof (rule deflationary_onI)
         have "in_dom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))" by blast
       with in_dom_R1_le_in_codom_R1 show "in_codom (\<le>\<^bsub>R1\<^esub>) (r2 (l x))" by blast
       with \<open>((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1\<close> have "in_codom (\<le>\<^bsub>L1\<^esub>) (\<eta> x)"
-        by (auto intro: in_codom_if_rel_if_dep_mono_wrt_rel)
+        by (auto intro: in_codom_if_rel_if_dep_mono_wrt_rel simp: mono_wrt_rel_eq_dep_mono_wrt_rel)
       with refl_L1 show "\<eta> x \<le>\<^bsub>L1\<^esub> r1 (r2 (l x))" by auto
     qed
   qed
@@ -180,8 +180,8 @@ corollary deflationary_on_in_field_unitI:
   and "in_dom (\<le>\<^bsub>R1\<^esub>) \<le> in_codom (\<le>\<^bsub>R1\<^esub>)"
   and "deflationary_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and "reflexive_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
-  and "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   and "in_dom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_dom ((\<le>\<^bsub>R1\<^esub>))"
   shows "deflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
 proof -
@@ -208,8 +208,8 @@ corollary rel_equivalence_on_in_field_unitI:
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
   and "reflexive_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
-  and "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   and "in_dom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_dom ((\<le>\<^bsub>R1\<^esub>))"
   and "in_codom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_codom ((\<le>\<^bsub>R1\<^esub>))"
   shows "rel_equivalence_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
@@ -272,8 +272,8 @@ proof (rule order_equivalenceI)
     "in_dom ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>)) \<le> in_dom ((\<le>\<^bsub>R1\<^esub>))"
     by (auto intro: in_dom_right1_left2_right1_le_if_right1_left2_right1_le
       flip.in_dom_right1_left2_right1_le_if_right1_left2_right1_le)
-  moreover then have "([in_dom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
-    and "([in_codom (\<le>\<^bsub>L\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  moreover then have "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+    and "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
     using \<open>((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1\<close> middle_compatible
     by (auto intro: mono_in_dom_left_rel_left1_if_in_dom_rel_comp_le
       mono_in_codom_left_rel_left1_if_in_codom_rel_comp_le)
@@ -282,8 +282,8 @@ proof (rule order_equivalenceI)
     (auto intro: inflationary_on_if_le_pred_if_inflationary_on
       intro!: in_field_if_in_codom)
   note in_dom_rel_comp_les
-  moreover then have "([in_dom (\<le>\<^bsub>R\<^esub>)] \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>R1\<^esub>)) r2"
-    and "([in_codom (\<le>\<^bsub>R\<^esub>)] \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
+  moreover then have "(in_dom (\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>R1\<^esub>)) r2"
+    and "(in_codom (\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
     using \<open>((\<le>\<^bsub>R2\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L2\<^esub>)) r2 l2\<close> middle_compatible
     by (auto intro!: flip.mono_in_dom_left_rel_left1_if_in_dom_rel_comp_le
       flip.mono_in_codom_left_rel_left1_if_in_codom_rel_comp_le)
