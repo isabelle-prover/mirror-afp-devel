@@ -16,7 +16,7 @@ lemma right_unique_on_sup_eq_extend_if_not_in_dom_if_right_unique_on:
   shows "right_unique_on (A \<squnion> (=) x) (extend x y R)"
   using assms by (intro right_unique_onI) (auto dest: right_unique_onD elim!: extendE)
 
-lemma rel_dep_fun_extend_if_rel_dep_funI:
+lemma rel_dep_fun_extend_if_if_rel_dep_funI:
   assumes "((x : A) \<rightarrow> B x) R"
   and "\<not>(in_dom R x)"
   shows "((x' : A \<squnion> ((=) x)) \<rightarrow> (if x' = x then (=) y else B x')) (extend x y R)"
@@ -24,11 +24,26 @@ lemma rel_dep_fun_extend_if_rel_dep_funI:
     right_unique_on_sup_eq_extend_if_not_in_dom_if_right_unique_on dep_mono_wrt_predI)
   auto
 
-lemma crel_dep_fun_extend_if_crel_dep_funI:
+lemma rel_dep_fun_extend_if_rel_dep_funI:
+  assumes "((x : A) \<rightarrow> B x) R"
+  and "\<not>(in_dom R x)"
+  and "B x y"
+  shows "((x' : A \<squnion> ((=) x)) \<rightarrow> B x') (extend x y R)"
+  by (urule rel_dep_fun_covariant_codom, urule rel_dep_fun_extend_if_if_rel_dep_funI)
+  (use assms in \<open>force split: if_split_asm\<close>)+
+
+lemma crel_dep_fun_extend_if_if_crel_dep_funI:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
   and "\<not>(in_dom R x)"
   shows "((x' : A \<squnion> ((=) x)) \<rightarrow>\<^sub>c (if x' = x then (=) y else B x')) (extend x y R)"
-  using assms by (intro crel_dep_funI rel_dep_fun_extend_if_rel_dep_funI) force+
+  using assms by (intro crel_dep_funI rel_dep_fun_extend_if_if_rel_dep_funI) fastforce+
+
+lemma crel_dep_fun_extend_if_rel_dep_funI:
+  assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
+  and "\<not>(in_dom R x)"
+  and "B x y"
+  shows "((x' : A \<squnion> ((=) x)) \<rightarrow>\<^sub>c B x') (extend x y R)"
+  using assms by (intro crel_dep_funI rel_dep_fun_extend_if_rel_dep_funI) fastforce+
 
 context
   fixes \<R> :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" and A :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" and D
