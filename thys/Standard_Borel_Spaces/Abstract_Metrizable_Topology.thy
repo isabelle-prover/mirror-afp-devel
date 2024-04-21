@@ -8,100 +8,100 @@ theory Abstract_Metrizable_Topology
 begin
 
 subsection \<open> Polish Spaces \<close>
-definition "polish_space X \<equiv> completely_metrizable_space X \<and> separable_space X"
+definition "Polish_space X \<equiv> completely_metrizable_space X \<and> separable_space X"
 
-lemma(in Metric_space) polish_space_mtopology:
+lemma(in Metric_space) Polish_space_mtopology:
   assumes mcomplete "separable_space mtopology"
-  shows "polish_space mtopology"
-  by (simp add: assms completely_metrizable_space_mtopology polish_space_def)
+  shows "Polish_space mtopology"
+  by (simp add: assms completely_metrizable_space_mtopology Polish_space_def)
 
 lemma
-  assumes "polish_space X"
-  shows polish_space_imp_completely_metrizable_space: "completely_metrizable_space X"
-    and polish_space_imp_metrizable_space: "metrizable_space X"
-    and polish_space_imp_second_countable: "second_countable X"
-    and polish_space_imp_separable_space: "separable_space X"
-  using assms by(auto simp: completely_metrizable_imp_metrizable_space polish_space_def  metrizable_space_separable_iff_second_countable)
+  assumes "Polish_space X"
+  shows Polish_space_imp_completely_metrizable_space: "completely_metrizable_space X"
+    and Polish_space_imp_metrizable_space: "metrizable_space X"
+    and Polish_space_imp_second_countable: "second_countable X"
+    and Polish_space_imp_separable_space: "separable_space X"
+  using assms by(auto simp: completely_metrizable_imp_metrizable_space Polish_space_def  metrizable_space_separable_iff_second_countable)
 
-lemma polish_space_closedin:
-  assumes "polish_space X" "closedin X A"
-  shows "polish_space (subtopology X A)"
-  using assms by(auto simp: completely_metrizable_imp_metrizable_space polish_space_def completely_metrizable_space_closedin second_countable_subtopology metrizable_space_separable_iff_second_countable)
+lemma Polish_space_closedin:
+  assumes "Polish_space X" "closedin X A"
+  shows "Polish_space (subtopology X A)"
+  using assms by(auto simp: completely_metrizable_imp_metrizable_space Polish_space_def completely_metrizable_space_closedin second_countable_subtopology metrizable_space_separable_iff_second_countable)
 
-lemma polish_space_gdelta_in:
-  assumes "polish_space X" "gdelta_in X A"
-  shows "polish_space (subtopology X A)"
-  using assms by(auto simp: completely_metrizable_imp_metrizable_space polish_space_def completely_metrizable_space_gdelta_in second_countable_subtopology metrizable_space_separable_iff_second_countable)
+lemma Polish_space_gdelta_in:
+  assumes "Polish_space X" "gdelta_in X A"
+  shows "Polish_space (subtopology X A)"
+  using assms by(auto simp: completely_metrizable_imp_metrizable_space Polish_space_def completely_metrizable_space_gdelta_in second_countable_subtopology metrizable_space_separable_iff_second_countable)
 
-corollary polish_space_openin:
-  assumes "polish_space X" "openin X A"
-  shows "polish_space (subtopology X A)"
-  by (simp add: open_imp_gdelta_in assms polish_space_gdelta_in)
+corollary Polish_space_openin:
+  assumes "Polish_space X" "openin X A"
+  shows "Polish_space (subtopology X A)"
+  by (simp add: open_imp_gdelta_in assms Polish_space_gdelta_in)
 
-lemma homeomorphic_polish_space_aux:
-  assumes "polish_space X" "X homeomorphic_space Y"
-  shows "polish_space Y"
-  using assms by(simp add: homeomorphic_completely_metrizable_space_aux homeomorphic_separable_space polish_space_def)
+lemma homeomorphic_Polish_space_aux:
+  assumes "Polish_space X" "X homeomorphic_space Y"
+  shows "Polish_space Y"
+  using assms by(simp add: homeomorphic_completely_metrizable_space_aux homeomorphic_separable_space Polish_space_def)
 
-corollary homeomorphic_polish_space:
+corollary homeomorphic_Polish_space:
   assumes "X homeomorphic_space Y"
-  shows "polish_space X \<longleftrightarrow> polish_space Y"
-  by (meson assms homeomorphic_polish_space_aux homeomorphic_space_sym)
+  shows "Polish_space X \<longleftrightarrow> Polish_space Y"
+  by (meson assms homeomorphic_Polish_space_aux homeomorphic_space_sym)
 
-lemma polish_space_euclidean[simp]: "polish_space (euclidean :: ('a :: polish_space) topology)"
-  by (simp add: completely_metrizable_space_euclidean polish_space_def second_countable_imp_separable_space)
+lemma Polish_space_euclidean[simp]: "Polish_space (euclidean :: ('a :: polish_space) topology)"
+  by (simp add: completely_metrizable_space_euclidean Polish_space_def second_countable_imp_separable_space)
 
-lemma polish_space_countable[simp]:
-  "polish_space (euclidean :: 'a :: {countable,discrete_topology} topology)"
+lemma Polish_space_countable[simp]:
+  "Polish_space (euclidean :: 'a :: {countable,discrete_topology} topology)"
 proof -
   interpret discrete_metric "UNIV :: 'a set" .
   have [simp]:"euclidean = disc.mtopology"
     by (metis discrete_topology_class.open_discrete discrete_topology_unique istopology_open mtopology_discrete_metric topology_inverse' topspace_euclidean)
   show ?thesis
-    by(auto simp: polish_space_def intro!: disc.completely_metrizable_space_mtopology mcomplete_discrete_metric countable_space_separable_space)
+    by(auto simp: Polish_space_def intro!: disc.completely_metrizable_space_mtopology mcomplete_discrete_metric countable_space_separable_space)
 qed
 
-lemma polish_space_discrete_topology: "polish_space (discrete_topology I) \<longleftrightarrow> countable I"
-  by (simp add: completely_metrizable_space_discrete_topology polish_space_def separable_space_discrete_topology)
+lemma Polish_space_discrete_topology: "Polish_space (discrete_topology I) \<longleftrightarrow> countable I"
+  by (simp add: completely_metrizable_space_discrete_topology Polish_space_def separable_space_discrete_topology)
 
-lemma polish_space_prod:
-  assumes "polish_space X" and "polish_space Y"
-  shows "polish_space (prod_topology X Y)"
-  using assms by (simp add: completely_metrizable_space_prod_topology polish_space_def separable_space_prod) 
+lemma Polish_space_prod:
+  assumes "Polish_space X" and "Polish_space Y"
+  shows "Polish_space (prod_topology X Y)"
+  using assms by (simp add: completely_metrizable_space_prod_topology Polish_space_def separable_space_prod) 
 
-lemma polish_space_product:
-  assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> polish_space (S i)"
-  shows "polish_space (product_topology S I)"
-  using assms by(auto simp: separable_countable_product polish_space_def completely_metrizable_space_product_topology)
+lemma Polish_space_product:
+  assumes "countable I" and "\<And>i. i \<in> I \<Longrightarrow> Polish_space (S i)"
+  shows "Polish_space (product_topology S I)"
+  using assms by(auto simp: separable_countable_product Polish_space_def completely_metrizable_space_product_topology)
 
-lemma(in Product_metric) polish_spaceI:
+lemma(in Product_metric) Polish_spaceI:
   assumes "\<And>i. i \<in> I \<Longrightarrow> separable_space (Metric_space.mtopology (Mi i) (di i))"
       and "\<And>i. i \<in> I \<Longrightarrow> Metric_space.mcomplete (Mi i) (di i)"
-  shows "polish_space Product_metric.mtopology"
-  using assms I by(auto simp: polish_space_def Product_metric_mtopology_eq[symmetric] completely_metrizable_space_product_topology intro!: separable_countable_product Metric_space.completely_metrizable_space_mtopology Md_metric)
+  shows "Polish_space Product_metric.mtopology"
+  using assms I by(auto simp: Polish_space_def Product_metric_mtopology_eq[symmetric] completely_metrizable_space_product_topology intro!: separable_countable_product Metric_space.completely_metrizable_space_mtopology Md_metric)
 
-lemma(in Sum_metric) polish_spaceI:
+lemma(in Sum_metric) Polish_spaceI:
   assumes "countable I"
       and "\<And>i. i \<in> I \<Longrightarrow> separable_space (Metric_space.mtopology (Mi i) (di i))"
       and "\<And>i. i \<in> I \<Longrightarrow> Metric_space.mcomplete (Mi i) (di i)"
-    shows "polish_space Sum_metric.mtopology"
-  by(auto simp: polish_space_def intro!: separable_Mi_separable_M assms mcomplete_Mi_mcomplete_M Sum_metric.completely_metrizable_space_mtopology)
+    shows "Polish_space Sum_metric.mtopology"
+  by(auto simp: Polish_space_def intro!: separable_Mi_separable_M assms mcomplete_Mi_mcomplete_M Sum_metric.completely_metrizable_space_mtopology)
 
-lemma compact_metrizable_imp_polish_space:
+lemma compact_metrizable_imp_Polish_space:
   assumes "metrizable_space X" "compact_space X"
-  shows "polish_space X"
+  shows "Polish_space X"
 proof -
   obtain d where "Metric_space (topspace X) d" "Metric_space.mtopology (topspace X) d = X"
     by (metis assms(1) Metric_space.topspace_mtopology metrizable_space_def)
   thus ?thesis
-    by (metis Metric_space.compact_space_imp_separable assms(1) assms(2) compact_imp_locally_compact_space locally_compact_imp_completely_metrizable_space polish_space_def)
+    by (metis Metric_space.compact_space_imp_separable assms(1) assms(2) compact_imp_locally_compact_space locally_compact_imp_completely_metrizable_space Polish_space_def)
 qed
 
 subsection \<open> Extended Reals and Non-Negative Extended Reals \<close>
-lemma polish_space_ereal:"polish_space (euclidean :: ereal topology)"
-proof(rule homeomorphic_polish_space_aux)
-  show "polish_space (subtopology euclideanreal {-1..1})"
-    by (auto intro!: polish_space_closedin)
+lemma Polish_space_ereal:"Polish_space (euclidean :: ereal topology)"
+proof(rule homeomorphic_Polish_space_aux)
+  show "Polish_space (subtopology euclideanreal {-1..1})"
+    by (auto intro!: Polish_space_closedin)
 next
   define f :: "real \<Rightarrow> ereal"
     where "f \<equiv> (\<lambda>r. if r = - 1 then - \<infinity> else if r = 1 then \<infinity> else if r \<le> 0 then ereal (1 - (1 / (1 + r))) else ereal ((1 / (1 - r)) - 1))"
@@ -479,10 +479,10 @@ next
   qed
 qed
 
-corollary polish_space_ennreal:"polish_space (euclidean :: ennreal topology)"
-proof(rule homeomorphic_polish_space_aux)
-  show "polish_space (top_of_set {0::ereal..})"
-    using polish_space_closedin polish_space_ereal by fastforce
+corollary Polish_space_ennreal:"Polish_space (euclidean :: ennreal topology)"
+proof(rule homeomorphic_Polish_space_aux)
+  show "Polish_space (top_of_set {0::ereal..})"
+    using Polish_space_closedin Polish_space_ereal by fastforce
 next
   show "top_of_set {0::ereal..} homeomorphic_space (euclidean :: ennreal topology)"
     by(auto intro!: exI[where x=e2ennreal] exI[where x=enn2ereal] simp: homeomorphic_space_def homeomorphic_maps_def enn2ereal_e2ennreal continuous_on_e2ennreal continuous_map_in_subtopology continuous_on_enn2ereal image_subset_iff)
@@ -495,8 +495,8 @@ abbreviation Hilbert_cube_topology :: "(nat \<Rightarrow> real) topology" where
 lemma topspace_Hilbert_cube: "topspace Hilbert_cube_topology = (\<Pi>\<^sub>E x\<in>UNIV. {0..1})"
   by simp
 
-lemma polish_space_Hilbert_cube: "polish_space Hilbert_cube_topology"
-  by(auto intro!: polish_space_closedin polish_space_product)
+lemma Polish_space_Hilbert_cube: "Polish_space Hilbert_cube_topology"
+  by(auto intro!: Polish_space_closedin Polish_space_product)
 
 abbreviation Cantor_space_topology :: "(nat \<Rightarrow> real) topology" where
 "Cantor_space_topology \<equiv> (product_topology (\<lambda>n. top_of_set {0,1}) UNIV)"
@@ -505,8 +505,8 @@ lemma topspace_Cantor_space:
  "topspace Cantor_space_topology = (\<Pi>\<^sub>E x\<in>UNIV. {0,1})"
   by simp
 
-lemma polish_space_Cantor_space: "polish_space Cantor_space_topology"
-  by(auto intro!: polish_space_closedin polish_space_product)
+lemma Polish_space_Cantor_space: "Polish_space Cantor_space_topology"
+  by(auto intro!: Polish_space_closedin Polish_space_product)
 
 corollary completely_metrizable_space_homeo_image_gdelta_in:
   assumes "completely_metrizable_space X" "completely_metrizable_space Y" "B \<subseteq> topspace Y" "X homeomorphic_space subtopology Y B"
@@ -589,8 +589,8 @@ proof -
         by(simp add: Submetric_def Submetric_axioms_def Met_TC.Metric_space_axioms)
       have m01_eq: "m01.sub.mtopology = top_of_set {0..1}"
         using m01.mtopology_submetric by auto
-      have m01_polish: "polish_space m01.sub.mtopology"
-        by(auto simp: m01_eq intro!: polish_space_closedin)
+      have m01_Polish: "Polish_space m01.sub.mtopology"
+        by(auto simp: m01_eq intro!: Polish_space_closedin)
       interpret m01': Metric_space "{0..1::real}" "\<lambda>x y. if 0 \<le> x \<and> x \<le> 1 \<and> 0 \<le> y \<and> y \<le> 1 then dist x y else 0"
         by(auto intro!: Metric_space_eq[OF m01.sub.Metric_space_axioms]) metric
       have m01'_eq: "m01'.mtopology = top_of_set {0..1}"
@@ -669,37 +669,37 @@ proof -
 qed
 
 corollary embedding_into_Hilbert_cube_gdelta_in:
-  assumes "polish_space X"
+  assumes "Polish_space X"
   shows "\<exists>A. gdelta_in Hilbert_cube_topology A \<and> X homeomorphic_space (subtopology Hilbert_cube_topology A)"
 proof -
   obtain A where h:"A \<subseteq> topspace Hilbert_cube_topology" "X homeomorphic_space subtopology Hilbert_cube_topology A"
-    using embedding_into_Hilbert_cube polish_space_imp_metrizable_space polish_space_imp_separable_space assms by blast
-  with completely_metrizable_space_homeo_image_gdelta_in[OF polish_space_imp_completely_metrizable_space[OF assms] polish_space_imp_completely_metrizable_space[OF polish_space_Hilbert_cube] h(1,2)]
+    using embedding_into_Hilbert_cube Polish_space_imp_metrizable_space Polish_space_imp_separable_space assms by blast
+  with completely_metrizable_space_homeo_image_gdelta_in[OF Polish_space_imp_completely_metrizable_space[OF assms] Polish_space_imp_completely_metrizable_space[OF Polish_space_Hilbert_cube] h(1,2)]
   show ?thesis
     by blast
 qed
 
 subsubsection \<open> Embedding from Cantor Space \<close>
 lemma embedding_from_Cantor_space:
-  assumes "polish_space X" "uncountable (topspace X)"
+  assumes "Polish_space X" "uncountable (topspace X)"
   shows "\<exists>A. gdelta_in X A \<and> Cantor_space_topology homeomorphic_space (subtopology X A)"
 proof -
   obtain U P where up: "countable U" "openin X U" "perfect_set X P""U \<union> P = topspace X" "U \<inter> P = {}" "\<And>a. a \<noteq> {} \<Longrightarrow> openin (subtopology X P) a \<Longrightarrow> uncountable a"
-    using Cantor_Bendixon[OF polish_space_imp_second_countable[OF assms(1)]] by auto
+    using Cantor_Bendixon[OF Polish_space_imp_second_countable[OF assms(1)]] by auto
   have P: "closedin X P" "P \<subseteq> topspace X" "uncountable P"
     using countable_Un_iff[of U P] up(1) assms up(4)
     by(simp_all add: perfect_setD[OF up(3)])
-  then have pp: "polish_space (subtopology X P)"
-    by (simp add: assms(1) polish_space_closedin)
+  then have pp: "Polish_space (subtopology X P)"
+    by (simp add: assms(1) Polish_space_closedin)
   have Ptop: "topspace (subtopology X P) = P"
     using P(2) by auto
   obtain U where U: "countable U" "dense_in (subtopology X P) U"
-    using polish_space_def pp separable_space_def2 by auto
+    using Polish_space_def pp separable_space_def2 by auto
   with uncountable_infinite[OF P(3)] P(2)
   have "infinite U"
-    by (metis Metric_space.t1_space_mtopology Ptop assms(1) completely_metrizable_space_def dense_in_infinite polish_space_def t1_space_subtopology)
+    by (metis Metric_space.t1_space_mtopology Ptop assms(1) completely_metrizable_space_def dense_in_infinite Polish_space_def t1_space_subtopology)
   obtain d where "Metric_space P d" and d:"Metric_space.mtopology P d = subtopology X P" and mdc: "Metric_space.mcomplete P d"
-    by (metis Metric_space.topspace_mtopology Ptop completely_metrizable_space_def polish_space_def pp)
+    by (metis Metric_space.topspace_mtopology Ptop completely_metrizable_space_def Polish_space_def pp)
   interpret md: Metric_space P d by fact
   define xn where "xn \<equiv> from_nat_into U"
   have xn: "bij_betw xn UNIV U" "\<And>n m. n \<noteq> m \<Longrightarrow> xn n \<noteq> xn m" "\<And>n. xn n \<in> U" "\<And>n. xn n \<in> P" "md.mdense (range xn)"
@@ -1146,20 +1146,20 @@ proof -
   qed
   show ?thesis
     using homeomorphic_map_imp_homeomorphic_space[OF bijective_open_imp_homeomorphic_map[OF 1 2 3 4]] 0
-    by (metis (no_types, lifting) assms(1) bdmd_sub completely_metrizable_space_homeo_image_gdelta_in mpd_top polish_space_Cantor_space polish_space_def)
+    by (metis (no_types, lifting) assms(1) bdmd_sub completely_metrizable_space_homeo_image_gdelta_in mpd_top Polish_space_Cantor_space Polish_space_def)
 qed
 
 
 
 subsection \<open>Borel Spaces generated from Polish Spaces\<close>
 lemma closedin_clopen_topology:
-  assumes "polish_space X" "closedin X a"
-  shows "\<exists>X'. polish_space X' \<and> (\<forall>u. openin X u \<longrightarrow> openin X' u) \<and> topspace X = topspace X' \<and> sets (borel_of X) = sets (borel_of X') \<and> openin X' a \<and> closedin X' a"
+  assumes "Polish_space X" "closedin X a"
+  shows "\<exists>X'. Polish_space X' \<and> (\<forall>u. openin X u \<longrightarrow> openin X' u) \<and> topspace X = topspace X' \<and> sets (borel_of X) = sets (borel_of X') \<and> openin X' a \<and> closedin X' a"
 proof -
-  have p1:"polish_space (subtopology X a)"
-    by (simp add: assms polish_space_closedin)
+  have p1:"Polish_space (subtopology X a)"
+    by (simp add: assms Polish_space_closedin)
   then obtain da' where da': "Metric_space a da'" "subtopology X a = Metric_space.mtopology a da'" "Metric_space.mcomplete a da'"
-    by (metis Metric_space.topspace_mtopology assms(2) closedin_subset completely_metrizable_space_def polish_space_imp_completely_metrizable_space topspace_subtopology_subset)
+    by (metis Metric_space.topspace_mtopology assms(2) closedin_subset completely_metrizable_space_def Polish_space_imp_completely_metrizable_space topspace_subtopology_subset)
   define da where "da = Metric_space.capped_dist da' (1/2)"
   have da: "subtopology X a = Metric_space.mtopology a da" "Metric_space.mcomplete a da"
     using da' by(auto simp: da_def Metric_space.mtopology_capped_metric Metric_space.mcomplete_capped_metric)
@@ -1167,10 +1167,10 @@ proof -
     using da' by(simp add: Metric_space.capped_dist da_def)
   have da_bounded: "\<And>x y. da x y < 1"
     using da' by(auto simp: da_def Metric_space.capped_dist_def)
-  have p2:"polish_space (subtopology X (topspace X - a))"
-    by (meson assms(1) assms(2) closedin_def polish_space_openin)
+  have p2:"Polish_space (subtopology X (topspace X - a))"
+    by (meson assms(1) assms(2) closedin_def Polish_space_openin)
   then obtain db' where db': "Metric_space (topspace X - a) db'" "subtopology X (topspace X - a) = Metric_space.mtopology (topspace X - a) db'" "Metric_space.mcomplete (topspace X - a) db'"
-    by (metis Diff_subset Metric_space.topspace_mtopology completely_metrizable_space_def polish_space_imp_completely_metrizable_space topspace_subtopology_subset)
+    by (metis Diff_subset Metric_space.topspace_mtopology completely_metrizable_space_def Polish_space_imp_completely_metrizable_space topspace_subtopology_subset)
   define db where "db = Metric_space.capped_dist db' (1/2)"
   have db: "subtopology X (topspace X - a) = Metric_space.mtopology (topspace X - a) db" "Metric_space.mcomplete (topspace X - a) db"
     using db' by(auto simp: db_def Metric_space.mtopology_capped_metric Metric_space.mcomplete_capped_metric)
@@ -1232,17 +1232,17 @@ proof -
     by (metis 0 2 assms(2) closedin_def p.Sum_metric.topspace_mtopology)
   have 5: "topspace X = topspace p.Sum_metric.mtopology"
     by(simp only: p.Sum_metric.topspace_mtopology) (simp only: 0)
-  have 6: "polish_space p.Sum_metric.mtopology"
-    by(rule p.polish_spaceI,insert da(2) db(2)  p1 p2) (auto simp: da(1) db(1) polish_space_def)
+  have 6: "Polish_space p.Sum_metric.mtopology"
+    by(rule p.Polish_spaceI,insert da(2) db(2)  p1 p2) (auto simp: da(1) db(1) Polish_space_def)
   show ?thesis
     by(rule exI[where x=p.Sum_metric.mtopology]) (insert 5 2 6, simp only: 1 3 4 ,auto)
 qed
 
-lemma polish_space_union_polish:
+lemma Polish_space_union_Polish:
   fixes X :: "nat \<Rightarrow> 'a topology"
-  assumes "\<And>n. polish_space (X n)" "\<And>n. topspace (X n) = Xt" "\<And>x y. x \<in> Xt \<Longrightarrow> y \<in> Xt \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<exists>Ox Oy. (\<forall>n. openin (X n) Ox) \<and> (\<forall>n. openin (X n) Oy) \<and> x \<in> Ox \<and> y \<in> Oy \<and> disjnt Ox Oy"
+  assumes "\<And>n. Polish_space (X n)" "\<And>n. topspace (X n) = Xt" "\<And>x y. x \<in> Xt \<Longrightarrow> y \<in> Xt \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<exists>Ox Oy. (\<forall>n. openin (X n) Ox) \<and> (\<forall>n. openin (X n) Oy) \<and> x \<in> Ox \<and> y \<in> Oy \<and> disjnt Ox Oy"
   defines "Xun \<equiv> topology_generated_by (\<Union>n. {u. openin (X n) u})"
-  shows "polish_space Xun"
+  shows "Polish_space Xun"
 proof -
   have topsXun:"topspace Xun = Xt"
     using assms(2) by(auto simp: Xun_def dest:openin_subset)
@@ -1281,7 +1281,7 @@ proof -
     using homeomorphic_map_imp_homeomorphic_space[OF bijective_open_imp_homeomorphic_map[OF 1 4 3 2]]
     by(simp add: homeomorphic_space_sym[of Xun])
   show ?thesis
-  proof(safe intro!: homeomorphic_polish_space_aux[OF polish_space_closedin[OF polish_space_product] 5] assms)
+  proof(safe intro!: homeomorphic_Polish_space_aux[OF Polish_space_closedin[OF Polish_space_product] 5] assms)
     show "closedin (product_topology X UNIV) (f ` topspace Xun)"
     proof -
       have 1: "openin (product_topology X UNIV) ((UNIV \<rightarrow>\<^sub>E Xt) - f ` Xt)"
@@ -1325,8 +1325,8 @@ proof -
 qed
 
 lemma sets_clopen_topology:
-  assumes "polish_space X" "a \<in> sets (borel_of X)"
-  shows "\<exists>X'. polish_space X' \<and> (\<forall>u. openin X u \<longrightarrow> openin X' u) \<and> topspace X = topspace X' \<and> sets (borel_of X) = sets (borel_of X') \<and> openin X' a \<and> closedin X' a"
+  assumes "Polish_space X" "a \<in> sets (borel_of X)"
+  shows "\<exists>X'. Polish_space X' \<and> (\<forall>u. openin X u \<longrightarrow> openin X' u) \<and> topspace X = topspace X' \<and> sets (borel_of X) = sets (borel_of X') \<and> openin X' a \<and> closedin X' a"
 proof -
   have "a \<in> sigma_sets (topspace X) {U. closedin X U}"
     using assms by(simp add: sets_borel_of_closed)
@@ -1341,23 +1341,23 @@ proof -
       by auto
   next
     case (Compl a)
-    then obtain X' where S':"polish_space X'" "(\<forall>u. openin X u \<longrightarrow> openin X' u)" "topspace X = topspace X'" "sets (borel_of X) = sets (borel_of X')" "openin X' a" "closedin X' a"
+    then obtain X' where S':"Polish_space X'" "(\<forall>u. openin X u \<longrightarrow> openin X' u)" "topspace X = topspace X'" "sets (borel_of X) = sets (borel_of X')" "openin X' a" "closedin X' a"
       by auto
     from closedin_clopen_topology[OF S'(1) S'(6)] S'
     show ?case by auto
   next
     case ih:(Union a)
     then obtain Si where Si:
-    "\<And>i. polish_space (Si i)" "\<And>u i. openin X u \<Longrightarrow> openin (Si i) u" "\<And>i::nat. topspace X = topspace (Si i)" "\<And>i. sets (borel_of X) = sets (borel_of (Si i))" "\<And>i. openin (Si i) (a i)" "\<And>i. closedin (Si i) (a i)"
+    "\<And>i. Polish_space (Si i)" "\<And>u i. openin X u \<Longrightarrow> openin (Si i) u" "\<And>i::nat. topspace X = topspace (Si i)" "\<And>i. sets (borel_of X) = sets (borel_of (Si i))" "\<And>i. openin (Si i) (a i)" "\<And>i. closedin (Si i) (a i)"
       by metis
     define Sun where "Sun \<equiv> topology_generated_by (\<Union>n. {u. openin (Si n) u})"
-    have Sun1: "polish_space Sun"
+    have Sun1: "Polish_space Sun"
       unfolding Sun_def 
-    proof(safe intro!: polish_space_union_polish[where Xt="topspace X"])
+    proof(safe intro!: Polish_space_union_Polish[where Xt="topspace X"])
       fix x y
       assume xy:"x \<in> topspace X" "y \<in> topspace X" "x \<noteq> y"
       then obtain Ox Oy where Oxy: "x \<in> Ox" "y \<in> Oy" "openin X Ox" "openin X Oy" "disjnt Ox Oy"
-        using metrizable_imp_Hausdorff_space[OF polish_space_imp_metrizable_space[OF assms(1)]]
+        using metrizable_imp_Hausdorff_space[OF Polish_space_imp_metrizable_space[OF assms(1)]]
         by(simp only: Hausdorff_space_def) metis
       show "\<exists>Ox Oy. (\<forall>x. openin (Si x) Ox) \<and> (\<forall>x. openin (Si x) Oy) \<and> x \<in> Ox \<and> y \<in> Oy \<and> disjnt Ox Oy"
         by(rule exI[where x=Ox],insert Si(2) Oxy, auto intro!: exI[where x=Oy])
@@ -1375,7 +1375,7 @@ proof -
           by(simp add: sigma_sets_le_sets_iff[of "borel_of X" "\<Union>n. {u. openin (Si n) u}",simplified space_borel_of]) (use Si(4) sets_borel_of in fastforce)
       qed
       also have "... = ?rhs"
-        using borel_of_second_countable'[OF polish_space_imp_second_countable[OF Sun1],of "\<Union>n. {u. openin (Si n) u}"]
+        using borel_of_second_countable'[OF Polish_space_imp_second_countable[OF Sun1],of "\<Union>n. {u. openin (Si n) u}"]
         by (simp add: Sun_def Suntop subbase_in_def subset_Pow_Union)
       finally show ?thesis .
     qed

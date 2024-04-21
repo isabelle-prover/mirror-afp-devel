@@ -10,17 +10,17 @@ begin
 
 locale standard_borel =
   fixes M :: "'a measure"
-  assumes polish_space: "\<exists>S. polish_space S \<and> sets M = sets (borel_of S)"
+  assumes Polish_space: "\<exists>S. Polish_space S \<and> sets M = sets (borel_of S)"
 begin
 
 lemma singleton_sets:
   assumes "x \<in> space M"
   shows "{x} \<in> sets M"
 proof -
-  obtain S where s:"polish_space S" "sets M = sets (borel_of S)"
-    using polish_space by blast
+  obtain S where s:"Polish_space S" "sets M = sets (borel_of S)"
+    using Polish_space by blast
   have "closedin S {x}"
-    using assms by(simp add: sets_eq_imp_space_eq[OF s(2)] closedin_Hausdorff_sing_eq[OF metrizable_imp_Hausdorff_space[OF polish_space_imp_metrizable_space[OF s(1)]]] space_borel_of)
+    using assms by(simp add: sets_eq_imp_space_eq[OF s(2)] closedin_Hausdorff_sing_eq[OF metrizable_imp_Hausdorff_space[OF Polish_space_imp_metrizable_space[OF s(1)]]] space_borel_of)
   thus ?thesis
     using borel_of_closed s by simp
 qed
@@ -35,12 +35,12 @@ lemma standard_borel_restrict_space:
   assumes "A \<in> sets M"
   shows "standard_borel (restrict_space M A)"
 proof -
-  obtain S where s:"polish_space S" "sets M = sets (borel_of S)"
-    using polish_space by blast
-  obtain S' where S':"polish_space S'" "sets M = sets (borel_of S')" "openin S' A"
+  obtain S where s:"Polish_space S" "sets M = sets (borel_of S)"
+    using Polish_space by blast
+  obtain S' where S':"Polish_space S'" "sets M = sets (borel_of S')" "openin S' A"
     using sets_clopen_topology[OF s(1),simplified s(2)[symmetric],OF assms] by auto
   show ?thesis
-    using polish_space_openin[OF S'(1,3)] S'(2)
+    using Polish_space_openin[OF S'(1,3)] S'(2)
     by(auto simp: standard_borel_def borel_of_subtopology sets_restrict_space intro!: exI[where x="subtopology S' A"] )
 qed
 
@@ -75,13 +75,13 @@ lemma pair_standard_borel:
   shows "standard_borel (M \<Otimes>\<^sub>M N)"
 proof -
   obtain S S' where hs:
-   "polish_space S" "sets M = sets (borel_of S)" "polish_space S'" "sets N = sets (borel_of S')"
+   "Polish_space S" "sets M = sets (borel_of S)" "Polish_space S'" "sets N = sets (borel_of S')"
     using assms by(auto simp: standard_borel_def)
   have "sets (M \<Otimes>\<^sub>M N) = sets (borel_of (prod_topology S S'))"
-    unfolding borel_of_prod[OF polish_space_imp_second_countable[OF hs(1)] polish_space_imp_second_countable[OF hs(3)],symmetric]
+    unfolding borel_of_prod[OF Polish_space_imp_second_countable[OF hs(1)] Polish_space_imp_second_countable[OF hs(3)],symmetric]
     using sets_pair_measure_cong[OF hs(2,4)] .
   thus ?thesis
-    unfolding standard_borel_def by(auto intro!: exI[where x="prod_topology S S'"] simp: polish_space_prod[OF hs(1,3)])
+    unfolding standard_borel_def by(auto intro!: exI[where x="prod_topology S S'"] simp: Polish_space_prod[OF hs(1,3)])
 qed
 
 lemma pair_standard_borel_ne:
@@ -95,16 +95,16 @@ lemma product_standard_borel:
     shows "standard_borel (\<Pi>\<^sub>M i\<in>I. M i)"
 proof -
   obtain S where hs:
-   "\<And>i. i \<in> I \<Longrightarrow> polish_space (S i)" "\<And>i. i \<in> I \<Longrightarrow> sets (M i) = sets (borel_of (S i))"
+   "\<And>i. i \<in> I \<Longrightarrow> Polish_space (S i)" "\<And>i. i \<in> I \<Longrightarrow> sets (M i) = sets (borel_of (S i))"
     using assms(2) by(auto simp: standard_borel_def) metis
   have "sets (\<Pi>\<^sub>M i\<in>I. M i) = sets (\<Pi>\<^sub>M i\<in>I. borel_of (S i))"
     using hs(2) by(auto intro!: sets_PiM_cong)
   also have "... = sets (borel_of (product_topology S I))"
-    using assms(1) polish_space_imp_second_countable[OF hs(1)] by(auto intro!: sets_PiM_equal_borel_of)
+    using assms(1) Polish_space_imp_second_countable[OF hs(1)] by(auto intro!: sets_PiM_equal_borel_of)
   finally have 1:"sets (\<Pi>\<^sub>M i\<in>I. M i) = sets (borel_of (product_topology S I))".
   show ?thesis
     unfolding standard_borel_def
-    using assms(1) hs(1) by(auto intro!: exI[where x="product_topology S I"] polish_space_product simp: 1)
+    using assms(1) hs(1) by(auto intro!: exI[where x="product_topology S I"] Polish_space_product simp: 1)
 qed
 
 lemma product_standard_borel_ne:
@@ -115,25 +115,25 @@ lemma product_standard_borel_ne:
 
 lemma closed_set_standard_borel[simp]:
   fixes U :: "'a :: topological_space set"
-  assumes "polish_space (euclidean :: 'a topology)" "closed U"
+  assumes "Polish_space (euclidean :: 'a topology)" "closed U"
   shows "standard_borel (restrict_space borel U)"
-  by(auto simp: standard_borel_def borel_of_euclidean borel_of_subtopology assms intro!: exI[where x="subtopology euclidean U"] polish_space_closedin)
+  by(auto simp: standard_borel_def borel_of_euclidean borel_of_subtopology assms intro!: exI[where x="subtopology euclidean U"] Polish_space_closedin)
 
 lemma closed_set_standard_borel_ne[simp]:
   fixes U :: "'a :: topological_space set"
-  assumes "polish_space (euclidean :: 'a topology)" "closed U" "U \<noteq> {}"
+  assumes "Polish_space (euclidean :: 'a topology)" "closed U" "U \<noteq> {}"
   shows "standard_borel_ne (restrict_space borel U)"
   using assms by(simp add: standard_borel_ne_def standard_borel_ne_axioms_def)
 
 lemma open_set_standard_borel[simp]:
   fixes U :: "'a :: topological_space set"
-  assumes "polish_space (euclidean :: 'a topology)" "open U"
+  assumes "Polish_space (euclidean :: 'a topology)" "open U"
   shows "standard_borel (restrict_space borel U)"
-  by(auto simp: standard_borel_def borel_of_euclidean borel_of_subtopology assms intro!: exI[where x="subtopology euclidean U"] polish_space_openin)
+  by(auto simp: standard_borel_def borel_of_euclidean borel_of_subtopology assms intro!: exI[where x="subtopology euclidean U"] Polish_space_openin)
 
 lemma open_set_standard_borel_ne[simp]:
   fixes U :: "'a :: topological_space set"
-  assumes "polish_space (euclidean :: 'a topology)" "open U" "U \<noteq> {}"
+  assumes "Polish_space (euclidean :: 'a topology)" "open U" "U \<noteq> {}"
   shows "standard_borel_ne (restrict_space borel U)"
   using assms by(simp add: standard_borel_ne_def standard_borel_ne_axioms_def)
 
@@ -145,7 +145,7 @@ lemma standard_borel_ne_borel[simp]: "standard_borel_ne (borel :: ('a :: polish_
 lemma count_space_standard'[simp]:
   assumes "countable I"
   shows "standard_borel (count_space I)"
-  by(rule standard_borel_sets[OF _ sets_borel_of_discrete_topology]) (auto simp add: assms polish_space_discrete_topology standard_borel_def intro!: exI[where x="discrete_topology I"])
+  by(rule standard_borel_sets[OF _ sets_borel_of_discrete_topology]) (auto simp add: assms Polish_space_discrete_topology standard_borel_def intro!: exI[where x="discrete_topology I"])
 
 lemma count_space_standard_ne[simp]: "standard_borel_ne (count_space (UNIV :: (_ :: countable) set))"
   by (simp add: standard_borel_ne_def standard_borel_ne_axioms_def)
@@ -177,13 +177,13 @@ lemma(in standard_borel) measurable_isomorphic_standard:
   assumes "M measurable_isomorphic N"
   shows "standard_borel N"
 proof -
-  obtain S where S:"polish_space S" "sets M = sets (borel_of S)"
-    using polish_space by auto
+  obtain S where S:"Polish_space S" "sets M = sets (borel_of S)"
+    using Polish_space by auto
   from measurable_isomorphic_borels[OF S(2) assms]
   obtain S' where S': "S homeomorphic_space S' \<and> sets N = sets (borel_of S')"
     by auto
   thus ?thesis
-    by(auto simp: standard_borel_def homeomorphic_polish_space_aux[OF S(1)] intro!:exI[where x=S'])
+    by(auto simp: standard_borel_def homeomorphic_Polish_space_aux[OF S(1)] intro!:exI[where x=S'])
 qed
 
 lemma(in standard_borel_ne) measurable_isomorphic_standard_ne:
@@ -205,7 +205,7 @@ corollary(in standard_borel_ne) standard_borel_ne_embed_measure:
 lemma
   shows standard_ne_ereal: "standard_borel_ne (borel :: ereal measure)"
     and standard_ne_ennreal: "standard_borel_ne (borel :: ennreal measure)"
-  using polish_space_ereal polish_space_ennreal by(auto simp: standard_borel_ne_def standard_borel_ne_axioms_def standard_borel_def borel_of_euclidean)
+  using Polish_space_ereal Polish_space_ennreal by(auto simp: standard_borel_ne_def standard_borel_ne_axioms_def standard_borel_def borel_of_euclidean)
 
 text \<open> Cantor space $\mathscr{C}$ \<close>
 definition Cantor_space :: "(nat \<Rightarrow> real) measure" where
@@ -326,7 +326,7 @@ proof -
         have "?lhs =  sets (\<Pi>\<^sub>M i\<in> UNIV. borel_of (subtopology euclidean {0,1}))"
           by (simp add: Cantor_space_def borel_of_euclidean borel_of_subtopology)
         thus ?thesis
-          by(auto intro!: sets_PiM_equal_borel_of second_countable_subtopology polish_space_imp_second_countable[of "euclideanreal"])
+          by(auto intro!: sets_PiM_equal_borel_of second_countable_subtopology Polish_space_imp_second_countable[of "euclideanreal"])
       qed
       have s:"space Cantor_space = topspace (product_topology (\<lambda>_. subtopology euclidean {0,1}) UNIV)"
         by(simp add: space_Cantor_space)
@@ -1201,8 +1201,8 @@ subsection \<open> Final Results \<close>
 lemma(in standard_borel) embedding_into_Hilbert_cube:
  "\<exists>A \<in> sets Hilbert_cube. M measurable_isomorphic (restrict_space Hilbert_cube A)"
 proof -
-  obtain S where S:"polish_space S" "sets (borel_of S) = sets M"
-    using polish_space by blast
+  obtain S where S:"Polish_space S" "sets (borel_of S) = sets M"
+    using Polish_space by blast
   obtain A where A:"gdelta_in Hilbert_cube_topology A" "S homeomorphic_space subtopology Hilbert_cube_topology A"
     using embedding_into_Hilbert_cube_gdelta_in[OF S(1)] by blast
   show ?thesis
@@ -1214,8 +1214,8 @@ lemma(in standard_borel) embedding_from_Cantor_space:
   assumes "uncountable (space M)"
   shows "\<exists>A \<in> sets M. Cantor_space measurable_isomorphic (restrict_space M A)"
 proof -
-  obtain S where S:"polish_space S" "sets (borel_of S) = sets M"
-    using polish_space by blast
+  obtain S where S:"Polish_space S" "sets (borel_of S) = sets M"
+    using Polish_space by blast
   then obtain A where A:"gdelta_in S A" "Cantor_space_topology homeomorphic_space subtopology S A"
     using embedding_from_Cantor_space[of S] assms sets_eq_imp_space_eq[OF S(2)]
     by(auto simp: space_borel_of)
