@@ -40,7 +40,8 @@ ML\<open>
       Higher_Order_Pattern_Unification.e_unify Unification_Util.unify_types unif_theory unif_theory
       |> Type_Unification.e_unify Unification_Util.unify_types)
     (Reification_Unification_Hints.try_hints
-      |> Unification_Combinator.norm_unifier (#norm_term Higher_Order_Pattern_Unification.norms_unify))
+      |> Unification_Combinator.norm_unifier
+        (Unification_Util.inst_norm_term' Higher_Order_Pattern_Unification.norms_unify))
 \<close>
 local_setup \<open>Reification_Unification_Hints.setup_attribute NONE\<close>
 

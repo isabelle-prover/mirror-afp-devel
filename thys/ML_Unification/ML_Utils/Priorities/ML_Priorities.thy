@@ -1,4 +1,5 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
+section \<open>Priorities\<close>
 theory ML_Priorities
   imports ML_Parsing_Utils
 begin

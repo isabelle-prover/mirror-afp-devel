@@ -41,7 +41,7 @@ val norms_match = Util.eta_short_norms_match
 i.e. when matching p \<equiv>? t, t may contain variables.*)
 fun e_match match_types match_theory binders ctxt pt env =
   let
-    val norm_pt = apfst o (#norm_term norms_match)
+    val norm_pt = apfst o Util.inst_norm_term' norms_match
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
       Util.rigid_rigid Norm.norm_term_types_match match_types ctxt p n env |> seq_try
       handle Unification_Base.UNIF => Seq.empty (*types do not match*)
@@ -144,7 +144,7 @@ val norms_unify = Util.eta_short_norms_unif
 
 fun e_unify unify_types unify_theory binders ctxt st env =
   let
-    val norm_st = apply2 o (#norm_term norms_unify)
+    val norm_st = apply2 o Util.inst_norm_term' norms_unify
     fun rigid_rigid ctxt t n env = (*we do not have to normalise types in rigid-rigid cases*)
       Util.rigid_rigid (K I) unify_types ctxt t n env |> seq_try
       handle Unification_Base.UNIF => Seq.empty (*types do not unify*)

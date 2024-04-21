@@ -40,25 +40,19 @@ fun find_indices p =
 fun try_bool f = try f #> (Option.getOpt o rpair false)
 
 (*lists*)
-fun insert _ x [] = [x]
-  | insert ord x (y :: ys) = case ord (x, y) of
-      LESS => x :: y :: ys
-    | EQUAL => x :: y :: ys
-    | GREATER => y :: insert ord x ys
-
 fun fold_rev_index f =
   let fun fold_aux _ [] y = y
         | fold_aux i (x :: xs) y = f (i, x) (fold_aux (i + 1) xs y)
   in fold_aux 0 end
 
 (* sequences *)
-fun seq_try exn sq = case Seq.pull sq of
-    NONE => raise exn
-  | SOME v => Seq.make (fn () => SOME v)
-
 fun seq_is_empty sq = case Seq.pull sq of
     NONE => (true, Seq.empty)
   | SOME v => (false, Seq.make (fn () => SOME v))
+
+fun seq_try exn sq = case seq_is_empty sq of
+    (true, _) => raise exn
+  | (false, sq) => sq
 
 fun seq_merge ord (xq, yq) =
   Seq.make (fn () => (case Seq.pull xq of

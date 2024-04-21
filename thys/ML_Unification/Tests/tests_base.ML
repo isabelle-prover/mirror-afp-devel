@@ -80,7 +80,9 @@ fun add_hints thms ctxt = fold add_hint thms (Context.Proof ctxt) |> Context.pro
 
 structure Gen = SpecCheck_Generator
 structure UUtil = Unification_Util
+structure CUtil = Conversion_Util
 structure Norm = Envir_Normalisation
+structure TNorm = Term_Normalisation
 
 fun term_num_args_gen nv ni weights num_args_gen h i =
   Gen.zip (Gen.aterm' (Gen.nonneg nv) (Gen.nonneg ni) weights) (num_args_gen h i)
@@ -139,14 +141,18 @@ fun terms_unify ctxt unif tp =
 fun terms_unify_thms_correct norm_terms norm_thm ctxt unif tp =
   terms_unify ctxt unif tp andalso thms_correct norm_terms norm_thm ctxt unif tp
 
+val beta_eta_short_norm_term_unif = UUtil.inst_norm_term Norm.norm_term_unif TNorm.beta_eta_short
+val inst_norm_beta_eta_short_unif = UUtil.inst_norm_thm
+  (#inst_unif_thm UUtil.beta_eta_short_norms_unif) (#conv UUtil.beta_eta_short_norms_unif)
+val beta_eta_short_norm_term_match = UUtil.inst_norm_term Norm.norm_term_match TNorm.beta_eta_short
+val inst_norm_beta_eta_short_match = UUtil.inst_norm_thm
+  (#inst_unif_thm UUtil.beta_eta_short_norms_match) (#conv UUtil.beta_eta_short_norms_match)
+
 val terms_unify_thms_correct_unif = terms_unify_thms_correct
-  (apply2 o Norm.beta_eta_short_norm_term_unif)
-  (Norm.beta_eta_short_norm_thm Norm.norm_type_unif Norm.beta_eta_short_norm_term_unif)
+  (apply2 o beta_eta_short_norm_term_unif) inst_norm_beta_eta_short_unif
 
 val terms_unify_thms_correct_match = terms_unify_thms_correct
-  (apfst o Norm.beta_norm_term_match)
-  (*types are already normalised by matcher*)
-  (Norm.beta_eta_short_norm_thm (K I) Norm.beta_norm_term_match)
+  (apfst o beta_eta_short_norm_term_match) inst_norm_beta_eta_short_match
 
 fun check gen name prop ctxt =
   SpecCheck.check_shrink (show_termpair ctxt) shrink_termpair
@@ -156,14 +162,10 @@ fun check_thm norm_terms norm_thm gen name unif ctxt = check gen ("Theorem corre
   (SpecCheck_Property.==> (terms_unify ctxt unif, thms_correct norm_terms norm_thm ctxt unif))
   ctxt
 
-fun check_thm_unif norm_terms = check_thm
-  (apply2 o Norm.beta_eta_short_norm_term_unif)
-  (Norm.beta_eta_short_norm_thm Norm.norm_type_unif Norm.beta_eta_short_norm_term_unif)
-  norm_terms
+fun check_thm_unif norm_terms = check_thm (apply2 o beta_eta_short_norm_term_unif)
+  inst_norm_beta_eta_short_unif norm_terms
 
-fun check_thm_match norm_terms = check_thm
-  (apfst o Norm.beta_norm_term_match)
-  (Norm.beta_eta_short_norm_thm (K I) Norm.beta_norm_term_match)
+fun check_thm_match norm_terms = check_thm (apfst o beta_eta_short_norm_term_match) inst_norm_beta_eta_short_match
   norm_terms
 
 fun check_list tests name prop ctxt =
@@ -180,13 +182,9 @@ fun check_unit_tests_hints norm_terms norm_thm tests should_succeed hints name u
   end
 
 fun check_unit_tests_hints_unif norm_terms = check_unit_tests_hints
-  (apply2 o Norm.beta_eta_short_norm_term_unif)
-  (Norm.beta_eta_short_norm_thm Norm.norm_type_unif Norm.beta_eta_short_norm_term_unif)
-  norm_terms
+  (apply2 o beta_eta_short_norm_term_unif) inst_norm_beta_eta_short_unif norm_terms
 
 fun check_unit_tests_hints_match norm_terms = check_unit_tests_hints
-  (apfst o Norm.beta_norm_term_match)
-  (Norm.beta_eta_short_norm_thm (K I) (K I))
-  norm_terms
+  (apfst o beta_eta_short_norm_term_match) inst_norm_beta_eta_short_match norm_terms
 
 end

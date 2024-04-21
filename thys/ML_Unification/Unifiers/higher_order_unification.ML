@@ -21,6 +21,8 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Higher_Order_Unifi
 
 structure Util = Unification_Util
 
+val norms = Unification_Util.beta_eta_short_norms_unif
+
 val unify =
   let fun unif binders ctxt tp env =
     let
@@ -31,7 +33,7 @@ val unify =
       val init_goal = Logic.mk_equals #> Thm.cterm_of ctxt #> Goal.init
       fun create_env_thmq env =
         (*replace binders and apply the computed unifier*)
-        apply2 (Envir_Normalisation.beta_eta_short_norm_term_unif env o Binders.replace_binders binders) tp
+        apply2 (Binders.replace_binders binders #> (#inst_term norms env #> #norm_term norms)) tp
         (*create a goal such that we can create a theorem including the flex-flex pairs*)
         |> init_goal
         (*kind of a hack: resolving against the equality theorem will add the
@@ -46,8 +48,6 @@ val unify =
       |> Seq.maps (create_env_thmq o fst)
     end
   in Type_Unification.e_unify Util.unify_types unif end
-
-val norms = Unification_Util.beta_eta_short_norms_unif
 
 end
 

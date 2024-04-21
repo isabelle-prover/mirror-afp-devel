@@ -49,7 +49,7 @@ val cdest_hint = Thm.cprop_of #> TUtil.strip_cimp #>> map Thm.dest_equals ##> Th
 val cdest_hint_concl = Thm.cconcl_of #> Thm.dest_equals
 
 (*only flips the conclusion since unification calls for the premises should be symmetric*)
-val symmetric_hint = Conv.concl_conv ~1 CUtil.symmetric_conv |> CUtil.thm_conv
+val symmetric_hint = Conv.concl_conv ~1 CUtil.symmetric_conv |> CUtil.apply_thm_conv
 val pretty_hint = Thm.pretty_thm
 
 type hint_preprocessor = Proof.context -> thm -> unif_hint
@@ -58,7 +58,7 @@ fun obj_logic_hint_preprocessor eq_eq_meta_eq default_conv ctxt =
     fun eq_conv ct = (if can Thm.dest_equals ct then Conv.all_conv
       else Conv.rewr_conv eq_eq_meta_eq else_conv default_conv) ct
     val forall_eq_conv = Conversion_Util.repeat_forall_conv (K o K eq_conv)
-  in Conversion_Util.imp_conv (forall_eq_conv ctxt) eq_conv |> Conversion_Util.thm_conv end
+  in Conversion_Util.imp_conv (forall_eq_conv ctxt) eq_conv |> Conversion_Util.apply_thm_conv end
 
 (*Tries to apply a hint to solve E-unification of (t1 \<equiv>? t2).
 Vars in hint are lifted wrt. the passed binders.
@@ -114,16 +114,18 @@ fun try_hint match norms hint unify binders ctxt (t1, t2)
         fun inst_discharge ((env_res, prem_thms), concl_thmp) =
           let
             (*instantiate the theorems*)
-            val lifted_hint_inst = #norm_thm norms ctxt env_res lifted_hint
-            val norm_term = #norm_term norms env_res
-            val mk_norm_cbinders = map (Thm.cterm_of ctxt o norm_term o snd)
-            val norm_unif_thm = #norm_unif_thm norms ctxt env_res
-            fun forall_intr binders = fold Thm.forall_intr (mk_norm_cbinders binders) o norm_unif_thm
+            val conv = #conv norms
+            val lifted_hint_inst = Unification_Util.inst_norm_thm (#inst_thm norms) conv ctxt
+              env_res lifted_hint
+            val inst_term = #inst_term norms env_res
+            val mk_inst_cbinders = map (Thm.cterm_of ctxt o inst_term o snd)
+            val norm_unif_thm = Unification_Util.inst_norm_thm (#inst_unif_thm norms) conv ctxt env_res
+            fun forall_intr binders = fold Thm.forall_intr (mk_inst_cbinders binders) o norm_unif_thm
             val prem_thms_inst = map (uncurry forall_intr) prem_thms |> rev
             val (concl_thmL, concl_thmR) = apply2 norm_unif_thm concl_thmp
             (*discharge the hint premises*)
             val thm_res = Drule.implies_elim_list lifted_hint_inst prem_thms_inst
-              |> Drule.forall_elim_list (mk_norm_cbinders rev_binders)
+              |> Drule.forall_elim_list (mk_inst_cbinders rev_binders)
               |> GUtil.flip Thm.transitive concl_thmR
               |> Thm.transitive (Unification_Base.symmetric concl_thmL)
           in (env_res, thm_res) end

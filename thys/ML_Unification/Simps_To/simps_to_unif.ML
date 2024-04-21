@@ -43,10 +43,13 @@ fun SIMPS_TO_UNIF_env_thmsq simp_tac norms unif ctxt (tp as (lhs, rhs)) env =
     fun eq_tac i state =
       let
         val tp = Thm.cprem_of state i |> Thm.dest_equals |> apply2 Thm.term_of
-        fun norm_resolve (env, eq_thm) = #norm_unif_thm norms ctxt env eq_thm
-          |> Thm.implies_elim (#norm_thm norms ctxt env state)
+        val conv = #conv norms
+        fun norm_implies_elim (env, eq_thm) =
+          Unification_Util.inst_norm_thm (#inst_unif_thm norms) conv ctxt env eq_thm
+          |> Thm.implies_elim (Unification_Util.inst_norm_subgoal (#inst_thm norms) conv i ctxt env
+            state)
           |> pair env
-      in unif ctxt tp env |> Seq.map norm_resolve end
+      in unif ctxt tp env |> Seq.map norm_implies_elim end
   in
     (@{log Logger.TRACE} ctxt (fn _ => Pretty.block [
         Pretty.str "Creating ",

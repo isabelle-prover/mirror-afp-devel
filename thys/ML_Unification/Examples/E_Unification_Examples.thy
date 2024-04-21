@@ -44,7 +44,7 @@ lemma "6 \<in> even"
 
 lemma "(220 + (80 - 2 * 2)) \<in> even"
   apply (urule step)
-  apply (urule step)+
+  apply (urule (rr) step)
   apply (urule zero)
   done
 

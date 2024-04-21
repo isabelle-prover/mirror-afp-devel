@@ -54,7 +54,12 @@ fun SIMPS_TO_unify preprocess_rule ctxt =
 fun SIMPS_TO_UNIF_env_thm_tac norms unif ctxt env tSIMPS_TO_UNIF state =
   let
     val tp = Simps_To_Unif.dest_SIMPS_TO_UNIF tSIMPS_TO_UNIF
-    fun norm_resolve (env, thm) = #norm_thm norms ctxt env state |> Thm.elim_implies thm |> pair env
+    val conv = #conv norms
+    fun norm_resolve (env, thm) =
+      Tactic_Util.HEADGOAL (Unification_Util.inst_norm_subgoal (#inst_unif_thm norms) conv)
+        ctxt env state
+      |> Thm.elim_implies (Conversion_Util.apply_thm_conv conv thm)
+      |> pair env
   in
     Simps_To_Unif.SIMPS_TO_UNIF_env_thmsq (safe_simp_tac ctxt) norms unif ctxt tp env
     |> Seq.map norm_resolve

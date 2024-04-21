@@ -39,6 +39,14 @@ sig
   val eta_short_norms_unif : Unification_Base.normalisers
   val beta_eta_short_norms_unif : Unification_Base.normalisers
 
+  val inst_norm_term : Envir_Normalisation.term_normaliser -> Term_Normalisation.term_normaliser ->
+    Envir_Normalisation.term_normaliser
+  val inst_norm_term' : Unification_Base.normalisers -> Envir_Normalisation.term_normaliser
+  val inst_norm_thm : Envir_Normalisation.thm_normaliser -> conv ->
+    Envir_Normalisation.thm_normaliser
+  val inst_norm_subgoal : Envir_Normalisation.thm_normaliser -> conv -> int ->
+    Envir_Normalisation.thm_normaliser
+
   (* shared standard cases for unifiers *)
   val smash_tpairs_if_occurs : Proof.context -> term -> Envir.env * thm -> (Envir.env * thm) Seq.seq
   val abstract_abstract : Envir_Normalisation.term_type_normaliser -> Unification_Base.unifier ->
@@ -71,50 +79,22 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Util"
 
 structure Norm = Envir_Normalisation
 structure UBase = Unification_Base
+structure Show = SpecCheck_Show_Term
 
 (* pretty-printing *)
-local
-val pretty_term = Syntax.pretty_term
-val pretty_type = Syntax.pretty_typ
+val pretty_term = Show.term
+val pretty_type = Show.typ
 
-fun pretty_env_aux show_entry =
-  Vartab.dest
-  #> map show_entry
-  #> Pretty.list "[" "]"
+fun pretty_commas show = Pretty.block o Pretty.commas o map show
+val pretty_types = pretty_commas o pretty_type
+val pretty_terms = pretty_commas o pretty_term
 
-fun pretty_env_entry show (s, t) = Pretty.block [show s, Pretty.str " := ", show t]
-
-val pretty_record =
-  map (fn (key, entry) => Pretty.block [Pretty.str key, Pretty.str "=", entry])
-  #> Pretty.enum "," "{" "}"
-in
-
-fun pretty_types ctxt = Pretty.block o Pretty.commas o map (pretty_type ctxt)
-fun pretty_terms ctxt = Pretty.block o Pretty.commas o map (pretty_term ctxt)
-
-fun pretty_tyenv ctxt =
-  let
-    val show_entry = pretty_env_entry (pretty_type ctxt)
-    fun get_typs (v, (s, T)) = (TVar (v, s), T)
-  in pretty_env_aux (show_entry o get_typs) end
-
-fun pretty_tenv ctxt =
-  let
-    val show_entry = pretty_env_entry (pretty_term ctxt)
-    fun get_trms (v, (T, t)) = (Var (v, T), t)
-  in pretty_env_aux (show_entry o get_trms) end
-
-fun pretty_env ctxt (Envir.Envir {maxidx, tyenv, tenv}) =
-  pretty_record [
-    ("maxidx", Pretty.str (string_of_int maxidx)),
-    ("tyenv", pretty_tyenv ctxt tyenv),
-    ("tenv", pretty_tenv ctxt tenv)
-  ]
-
-end
+val pretty_tyenv = Show.tyenv
+val pretty_tenv = Show.tenv
+val pretty_env = Show.env
 
 fun pretty_unif_problem ctxt (t1, t2) =
-  Pretty.block [pretty_terms ctxt [t1], Pretty.str " \<equiv>\<^sup>? " , pretty_terms ctxt [t2]]
+  Pretty.block [pretty_term ctxt t1, Pretty.str " \<equiv>\<^sup>? " , pretty_term ctxt t2]
 
 fun pretty_unif_result ctxt (env, thm) = Pretty.block [
     Pretty.str "Environment: ",
@@ -170,27 +150,41 @@ fun unify_types ctxt (T, U) (env as Envir.Envir {maxidx, tenv, tyenv}) =
 
 (* normalisers *)
 val eta_short_norms_match = {
-  (*Precondition: the matcher must already normalise the types in its theorem!*)
-  norm_unif_thm = Norm.eta_short_norm_thm (K I) Norm.eta_short_norm_term_match,
-  norm_thm = Norm.eta_short_norm_thm_match,
-  norm_term = Norm.eta_short_norm_term_match
+  (*Precondition: the matcher must already instantiate its theorem!*)
+  inst_unif_thm = K o K I,
+  inst_term = Norm.norm_term_match,
+  inst_thm = Norm.norm_thm_match,
+  norm_term = Term_Normalisation.eta_short,
+  conv = Conversion_Util.eta_short_conv
 }
 val beta_eta_short_norms_match = {
   (*Precondition: the matcher must already normalise the types in its theorem!*)
-  norm_unif_thm = Norm.beta_eta_short_norm_thm (K I) Norm.beta_eta_short_norm_term_match,
-  norm_thm = Norm.beta_eta_short_norm_thm_match,
-  norm_term = Norm.beta_eta_short_norm_term_match
+  inst_unif_thm = (#inst_unif_thm eta_short_norms_match),
+  inst_term = (#inst_term eta_short_norms_match),
+  inst_thm = (#inst_thm eta_short_norms_match),
+  norm_term = Term_Normalisation.beta_eta_short,
+  conv = Conversion_Util.beta_eta_short_conv
 }
+
 val eta_short_norms_unif = {
-  norm_unif_thm = Norm.eta_short_norm_thm_unif,
-  norm_thm = Norm.eta_short_norm_thm_unif,
-  norm_term = Norm.eta_short_norm_term_unif
+  inst_unif_thm = Norm.norm_thm_unif,
+  inst_term = Norm.norm_term_unif,
+  inst_thm = Norm.norm_thm_unif,
+  norm_term = Term_Normalisation.eta_short,
+  conv = Conversion_Util.eta_short_conv
 }
 val beta_eta_short_norms_unif = {
-  norm_unif_thm = Norm.beta_eta_short_norm_thm_unif,
-  norm_thm = Norm.beta_eta_short_norm_thm_unif,
-  norm_term = Norm.beta_eta_short_norm_term_unif
+  inst_unif_thm = (#inst_unif_thm eta_short_norms_unif),
+  inst_term = (#inst_term eta_short_norms_unif),
+  inst_thm = (#inst_thm eta_short_norms_unif),
+  norm_term = Term_Normalisation.beta_eta_short,
+  conv = Conversion_Util.beta_eta_short_conv
 }
+
+fun inst_norm_term inst_term norm_term = norm_term oo inst_term
+fun inst_norm_term' norms = inst_norm_term (#inst_term norms) (#norm_term norms)
+fun inst_norm_thm inst_thm conv = Conversion_Util.apply_thm_conv conv ooo inst_thm
+fun inst_norm_subgoal inst_thm conv i = Conversion_Util.apply_subgoal_conv conv i ooo inst_thm
 
 (* shared standard cases for unifiers *)
 fun smash_tpairs_if_occurs ctxt t (env, thm) =
@@ -218,7 +212,7 @@ fun smash_tpairs_if_occurs ctxt t (env, thm) =
           in Thm.flexflex_rule (SOME ctxt) normed_thm |> Seq.map (pair new_env) end)
           handle Vartab.DUP _ => (@{log Logger.INFO} ctxt
             (fn _ => Pretty.block [
-                Pretty.str "Failed to merge environment for smashed tpairs and environment created by flexflex_rule: ",
+                Pretty.str"Failed to merge environment for smashed tpairs and environment created by flexflex_rule: ",
                 pretty_unif_result ctxt (env, thm)
               ]|> Pretty.string_of);
             Seq.empty))
@@ -258,9 +252,9 @@ fun bound_bound binders ctxt (i, j) =
 
 fun comb_comb norm_thm_types unify ctxt (f, x) (g, y) env =
   let
-    val unif' = unify ctxt
-    val env_thmq = unif' (f, g) env
-      |> Seq.maps (fn (env, thm_fg) => unif' (x, y) env |> Seq.map (apsnd (pair thm_fg)))
+    val unif = unify ctxt
+    val env_thmq = unif (f, g) env
+      |> Seq.maps (fn (env, thm_fg) => unif (x, y) env |> Seq.map (apsnd (pair thm_fg)))
     fun combine (env, thmp) =
       (*normalise types for the combination theorem to succeed*)
       apply2 (norm_thm_types ctxt env) thmp
@@ -278,9 +272,9 @@ fun args_args norm_thm_types unify ctxt (ss, ts) env_thmhq =
     fun combine thmh (env_res, arg_thms) =
       let
         (*normalise types for the combination theorem to succeed*)
-        val norm_thm_types' = norm_thm_types ctxt env_res
-        fun norm_combine thm_arg thm = norm_thm_types' thm_arg |> UBase.combination thm
-      in (env_res, fold_rev norm_combine arg_thms (norm_thm_types' thmh)) end
+        val norm_thm_types = norm_thm_types ctxt env_res
+        fun norm_combine thm_arg thm = norm_thm_types thm_arg |> UBase.combination thm
+      in (env_res, fold_rev norm_combine arg_thms (norm_thm_types thmh)) end
   in Seq.maps (fn (env, thmh) => unif_args env |> Seq.map (combine thmh)) env_thmhq end)
   handle ListPair.UnequalLengths => Seq.empty
 

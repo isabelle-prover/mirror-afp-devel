@@ -9,11 +9,8 @@ sig
 
   val pretty_THM : Proof.context -> string * int * thm list -> Pretty.T
 
-  (*fails if the equality theorem contains a tpair or implicit Assumption mentioning the bound variables*)
+  (*fails if the theorem contains a tpair or implicit Assumption mentioning the bound variable*)
   val abstract_rule : Proof.context -> string -> cterm -> thm -> thm option
-  (*"match_implies_elim prem thm" matches the first premise of thm against prem and then removes
-    the premise; without lifting*)
-  val match_implies_elim : thm -> thm -> thm
   val protect : thm -> thm
 end
 
@@ -36,12 +33,7 @@ fun abstract_rule ctxt n ct thm = SOME (Thm.abstract_rule n ct thm)
   handle THM data => (@{log Logger.DEBUG} ctxt (fn _ => pretty_THM ctxt data |> Pretty.string_of);
     NONE)
 
-fun match_implies_elim prem thm =
-  Thm.instantiate (Thm.first_order_match (Thm.cprem_of thm 1, Thm.cprop_of prem)) thm
-  |> (fn thm => Thm.implies_elim thm prem)
-
-fun protect thm = Drule.protectI
-  |> Thm.instantiate (TVars.empty, Vars.make [((("A", 0), propT), Thm.cprop_of thm)])
+fun protect thm = Thm.instantiate' [] [SOME (Thm.cprop_of thm)] Drule.protectI
   |> Thm.elim_implies thm
 
 end

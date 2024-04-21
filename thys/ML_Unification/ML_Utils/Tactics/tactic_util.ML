@@ -54,7 +54,7 @@ sig
   val no_lift_eresolve_tac : thm -> int -> Proof.context -> int -> tactic
 
   (*rewrite subgoal according to the given equality theorem "lhs \<equiv> subgoal"*)
-  val rewrite_subgoal_tac : thm -> Proof.context -> int -> tactic
+  val rewrite_subgoal_tac : thm -> int -> tactic
 
   (*creates equality theorem for a subgoal from an equality theorem for the subgoal's conclusion;
     fails if the equality theorem contains a tpair or implicit Assumption mentioning one of the bound variables*)
@@ -63,7 +63,7 @@ sig
 
   (*rewrite a subgoal given an equality theorem and environment for the subgoal's conclusion*)
   val rewrite_subgoal_unif_concl : Envir_Normalisation.term_normaliser ->
-    Envir_Normalisation.thm_normaliser -> Envir_Normalisation.thm_normaliser ->
+    (int -> Envir_Normalisation.thm_normaliser) -> Envir_Normalisation.thm_normaliser ->
     term Binders.binders -> (Envir.env * thm) -> Proof.context -> int -> tactic
 
   (*protect premises starting from (and excluding) the given index in the specified subgoal*)
@@ -156,12 +156,7 @@ fun no_lift_biresolve_tac eres brule nsubgoals ctxt =
 val no_lift_resolve_tac = no_lift_biresolve_tac false
 val no_lift_eresolve_tac = no_lift_biresolve_tac true
 
-fun rewrite_subgoal_tac eq_thm =
-  let
-    val (lhs, rhs) = Thm.dest_equals (Thm.cconcl_of eq_thm)
-    val eq_elim = Thm.instantiate' [] [SOME lhs, SOME rhs] Drule.equal_elim_rule1
-    val thm = Thm.implies_elim eq_elim eq_thm
-  in no_lift_resolve_tac thm 1 end
+fun rewrite_subgoal_tac eq_thm = CONVERSION (K (Thm.symmetric eq_thm))
 
 fun eq_subgoal_from_eq_concl cbinders cprems eq_thm ctxt =
   let
@@ -178,30 +173,29 @@ fun eq_subgoal_from_eq_concl cbinders cprems eq_thm ctxt =
     |> fold (Option.mapPartial o all_abstract) cbinders
   end
 
-fun rewrite_subgoal_unif_concl norm_binders norm_state norm_eq_thm binders (env_eq_thm as (env, _))
+fun rewrite_subgoal_unif_concl inst_binders norm_state norm_eq_thm binders (env_eq_thm as (env, _))
   ctxt i =
   let
     (*updates binders with their normalised type*)
-    fun updated_binders env = Binders.norm_binders (norm_binders env) binders
-    val binders = updated_binders env
-    fun smash_tpairs_if_occurs (_, bvar) =
-      Seq.maps (Unification_Util.smash_tpairs_if_occurs ctxt bvar)
+    fun normed_binders env = Binders.norm_binders (inst_binders env) binders
+    val binders = normed_binders env
+    val smash_tpairs_if_occurs = Seq.maps o Unification_Util.smash_tpairs_if_occurs ctxt
     fun rewrite_tac env eq_thm prems =
       let
-        val binders = updated_binders env
+        val binders = normed_binders env
         val cterm_of = Thm.cterm_of ctxt
         val cprems = map (cterm_of o Binders.replace_binders binders) prems
       in
         eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems (norm_eq_thm ctxt env eq_thm)
           ctxt
-        |> Option.map (fn eq_thm => rewrite_subgoal_tac eq_thm ctxt)
+        |> Option.map rewrite_subgoal_tac
         |> the_default (K no_tac)
       end
   in
     (*smash tpairs in case some binder occurs*)
-    fold smash_tpairs_if_occurs binders (Seq.single env_eq_thm)
+    fold (smash_tpairs_if_occurs o snd) binders (Seq.single env_eq_thm)
     |> Seq.lifts (fn (env, eq_thm) =>
-      PRIMITIVE (norm_state ctxt env)
+      PRIMITIVE (norm_state i ctxt env)
       THEN SUBGOAL_STRIPPED (fst o snd) (rewrite_tac env eq_thm) i)
   end
 
@@ -230,7 +224,7 @@ fun protect_tac n ctxt =
           @{thm Pure.prop_def}
           |> Thm.instantiate' [] [SOME cconcl_protected]
           |> (fn eq_thm => eq_subgoal_from_eq_concl cbinders cprems_unprotected eq_thm ctxt)
-          |> Option.map (fn protected_eq_thm => rewrite_subgoal_tac protected_eq_thm ctxt i)
+          |> Option.map (fn protected_eq_thm => rewrite_subgoal_tac protected_eq_thm i)
           |> the_default no_tac
         end
     end
@@ -244,16 +238,12 @@ fun protected_tac n tac ctxt =
   THEN_ALL_NEW (unprotect_tac ctxt)
 
 fun focus_prems_tac is tac ctxt =
-  CONVERSION (Conversion_Util.move_prems_to_front_conv is)
+  K (PRIMITIVE (Drule.rearrange_prems is))
   THEN' protect_tac (length is) ctxt
   THEN' FOCUS_PREMS' (fn {context=ctxt, params=params, prems=prems,
-    asms=asms, concl=concl, schematics=schematics} =>
-    let val concl = Term_Util.unprotect concl
-    in
-      unprotect_tac ctxt
-      THEN' tac {context=ctxt, params=params, prems=prems, asms=asms, concl=concl,
-        schematics=schematics}
-    end
+    asms=asms, schematics=schematics, concl=concl} => unprotect_tac ctxt
+      THEN' tac {context=ctxt, params=params, prems=prems, asms=asms, schematics=schematics,
+        concl=Term_Util.unprotect concl}
   ) ctxt
 
 fun focus_delete_prems_tac is tac ctxt =

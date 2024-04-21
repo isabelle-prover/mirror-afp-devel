@@ -12,6 +12,7 @@ text \<open>Tests for @{ML_structure "First_Order_Unification"}.\<close>
 ML\<open>
   structure Prop = SpecCheck_Property
   structure UC = Unification_Combinator
+  structure UU = Unification_Util
   open Unification_Tests_Base
   structure Unif = First_Order_Unification
   structure Norm = Envir_Normalisation
@@ -19,16 +20,16 @@ ML\<open>
   val match_hints =
     let fun match binders =
       UC.add_fallback_matcher
-      (Unif.e_match Unification_Util.match_types)
+      (Unif.e_match UU.match_types)
       ((fn binders =>
         (Hints.map_retrieval (Hints.mk_retrieval Hints.TI.generalisations |> K)
         #> Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
-          |> Type_Unification.e_match Unification_Util.match_types |> K)
-        #> Hints.UH.map_normalisers (Unification_Util.beta_eta_short_norms_match |> K)
+          |> Type_Unification.e_match UU.match_types |> K)
+        #> Hints.UH.map_normalisers (UU.beta_eta_short_norms_match |> K)
         #> Hints.UH.map_prems_unifier (match |> UC.norm_matcher Norm.beta_norm_term_match |> K))
         |> Context.proof_map
         #> Test_Unification_Hints.try_hints binders)
-        |> UC.norm_matcher (#norm_term Unif.norms_match))
+        |> UC.norm_matcher (UU.inst_norm_term' Unif.norms_match))
       binders
     in match [] end
 
@@ -36,15 +37,15 @@ ML\<open>
   val unify_hints =
     let fun unif binders =
       UC.add_fallback_unifier
-      (Unif.e_unify Unification_Util.unify_types)
+      (Unif.e_unify UU.unify_types)
       ((fn binders =>
         (Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
-          |> Type_Unification.e_match Unification_Util.match_types |> K)
-        #> Hints.UH.map_normalisers (Unification_Util.beta_eta_short_norms_unif |> K)
+          |> Type_Unification.e_match UU.match_types |> K)
+        #> Hints.UH.map_normalisers (UU.beta_eta_short_norms_unif |> K)
         #> Hints.UH.map_prems_unifier (unif |> UC.norm_unifier Norm.beta_norm_term_unif |> K))
         |> Context.proof_map
         #> Test_Unification_Hints.try_hints binders)
-        |> UC.norm_unifier (#norm_term Unif.norms_unify))
+        |> UC.norm_unifier (UU.inst_norm_term' Unif.norms_unify))
       binders
     in unif [] end
 \<close>

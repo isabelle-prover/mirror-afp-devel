@@ -82,11 +82,14 @@ fun unify_resolve_tac norms unify rule ctxt =
       val conclp = (*only unify the conclusion of the rule and the goal*)
         apply2 Logic.strip_assums_concl (Thm.prop_of lifted_rule, Thm.term_of cgoal)
       val env_thmq = unify binders ctxt conclp (Envir.empty (Thm.maxidx_of lifted_rule))
-      val norm_thm = #norm_thm norms
+      val conv = #conv norms
+      val inst_thm = #inst_thm norms
       fun rewrite_tac (env, unif_thm) =
-        Tactic_Util.rewrite_subgoal_unif_concl (#norm_term norms) norm_thm (#norm_unif_thm norms)
+        Tactic_Util.rewrite_subgoal_unif_concl (#inst_term norms)
+          (Util.inst_norm_subgoal inst_thm conv) (Util.inst_norm_thm (#inst_unif_thm norms) conv)
           binders (env, unif_thm) ctxt
-        THEN' Tactic_Util.no_lift_resolve_tac (norm_thm ctxt env lifted_rule) nprems_rule ctxt
+        THEN' (fn i => Tactic_Util.no_lift_resolve_tac
+          (Util.inst_norm_thm inst_thm conv ctxt env lifted_rule) nprems_rule ctxt i)
     in Seq.maps (fn res => rewrite_tac res i state) env_thmq end
   in Tactic_Util.CSUBGOAL_DATA I tac end
 

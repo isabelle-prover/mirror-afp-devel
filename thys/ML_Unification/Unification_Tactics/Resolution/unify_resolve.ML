@@ -13,7 +13,7 @@ Unification-resolution tactics with arguments from context.
 
 @{parse_entries (sig) PARSE_UNIFY_RESOLVE_CHAINED_MODES [insert, resolve, fact]}
 
-@{parse_entries (sig) PARSE_UNIFY_RESOLVE_RESOLVE_MODES [r, e, d, f]}
+@{parse_entries (sig) PARSE_UNIFY_RESOLVE_RESOLVE_MODES [r, rr, e, re, d, rd, f, rf]}
 
 signature UNIFY_RESOLVE_ARGS =
 sig
@@ -78,7 +78,7 @@ val parse_mode = PM.parse_key
 type chained_mode = PCM.key
 val parse_chained_mode = PCM.parse_key
 
-@{parse_entries (struct) PRM [r, e, d, f]}
+@{parse_entries (struct) PRM [r, rr, e, re, d, rd, f, rf]}
 type resolve_mode = PRM.key
 val parse_resolve_mode = PRM.parse_key
 
@@ -92,7 +92,14 @@ fun unify_resolve_tac args chained_facts ctxt i =
     val norms = PA.get_normalisers args
     val unify = PA.get_unifier args
     val mode = PA.get_mode args
-    val resolve_fn = (case (PA.get_resolve_mode args, mode) of
+    fun rmode_repeat rmode = case rmode of
+        PRM.rr _ => (PRM.key PRM.r, true)
+      | PRM.re _ => (PRM.key PRM.e, true)
+      | PRM.rd _ => (PRM.key PRM.d, true)
+      | PRM.rf _ => (PRM.key PRM.f, true)
+      | _ => (rmode, false)
+    val (rmode, repeat) = rmode_repeat (PA.get_resolve_mode args)
+    val resolve_fn = (case (rmode, mode) of
         (PRM.r _, PM.any _) => URB.unify_resolve_any_tac
       | (PRM.r _, PM.every _) => URB.unify_resolve_every_tac
         (*note: for e-resolution, we use the passed unifier to unify the conclusion
@@ -104,6 +111,7 @@ fun unify_resolve_tac args chained_facts ctxt i =
       | (PRM.f _, PM.any _) => URB.unify_fresolve_any_tac
       | (PRM.f _, PM.every _) => URB.unify_fresolve_every_tac)
         norms unify
+      |> repeat ? (fn resolve_fn => CHANGED_PROP oo REPEAT_ALL_NEW oo resolve_fn)
     val rules = PA.get_rules args
   in case PA.get_chained args of
       PCM.insert _ => (*insert chained facts*)

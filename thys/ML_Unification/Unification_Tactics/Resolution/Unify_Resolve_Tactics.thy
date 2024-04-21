@@ -49,6 +49,15 @@ lemma
   (* apply (drule h) *)
   oops
 
+lemma
+  assumes h1: "\<And>x. PROP A x \<Longrightarrow> PROP D x"
+  and h2: "\<And>x. PROP D x \<Longrightarrow> PROP E x"
+  shows "\<And>x. PROP A x \<Longrightarrow> PROP B x \<Longrightarrow> PROP C x"
+  \<comment>\<open>use (rr,re,rd,rf) to use repetition; in particular: \<open>(urule (rr)) \<simeq> intro\<close>\<close>
+  apply (urule (rd) h1 h2)
+  oops
+
+
 text\<open>You can specify how chained facts should be used. By default, @{method urule} works like
 @{method rule}: it uses chained facts to resolve against the premises of the passed rules.\<close>
 

@@ -6,6 +6,7 @@ theory ML_Unification_Base
     ML_Binders
     ML_Normalisations
     ML_Theorem_Utils
+    SpecCheck.SpecCheck_Show
 begin
 
 paragraph \<open>Summary\<close>

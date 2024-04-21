@@ -52,13 +52,15 @@ ML\<open>
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Var_Higher_Order_Pattern_Unification.e_unify Unification_Combinator.fail_unify
   |> Unification_Combinator.norm_unifier
-    (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
+    (Unification_Util.inst_norm_term'
+      Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> K)
   (Standard_Unification_Combine.metadata \<^binding>\<open>var_hop_unif\<close> Prio.HIGH)\<close>]]
 
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Simplifier_Unification.simp_unify_progress Envir.aeconv Simplifier_Unification.simp_unify
-    (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
+    (Unification_Util.inst_norm_term'
+      Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
     Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
     Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
   |> Type_Unification.e_unify Unification_Util.unify_types

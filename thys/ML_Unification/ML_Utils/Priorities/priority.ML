@@ -1,3 +1,6 @@
+(*  Title:      ML_Utils/priority.ML
+    Author:     Kevin Kappelmann
+*)
 signature PRIO = sig
   type prio = int
 

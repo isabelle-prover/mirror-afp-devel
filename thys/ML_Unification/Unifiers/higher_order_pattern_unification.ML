@@ -102,7 +102,7 @@ val norms_match = Util.beta_eta_short_norms_match
 
 fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt env =
   let
-    val norm_pt = apfst o (#norm_term norms_match)
+    val norm_pt = apfst o Util.inst_norm_term' norms_match
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
       Util.rigid_rigid Norm.norm_term_types_match match_types ctxt p n env |> seq_try
       handle Unification_Base.UNIF => Seq.empty (*types do not match*)
@@ -461,8 +461,7 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
       Pretty.block [
         Pretty.str "Higher-order pattern unifying ",
         Util.pretty_unif_problem ctxt (apply2 (Norm.norm_term_unif env) st)
-      ]
-      |> Pretty.string_of);
+      ] |> Pretty.string_of);
     unif binders ctxt st env)
     handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
   end

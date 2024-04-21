@@ -48,7 +48,8 @@ lhs' or rhs' \<^emph>\<open>without using hints\<close>. For otherwise, any hint
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Standard_Unification_Hints_Rec.try_hints
   |> Unification_Combinator.norm_unifier
-    (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
+    (Unification_Util.inst_norm_term'
+      Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> K)
   (Standard_Unification_Combine.metadata Standard_Unification_Hints_Rec.binding Prio.LOW)\<close>]]
 
@@ -88,7 +89,8 @@ unification hints in this case. See also @{dir "../Examples"}.\<close>
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Standard_Unification_Hints.try_hints
   |> Unification_Combinator.norm_unifier
-    (#norm_term Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
+    (Unification_Util.inst_norm_term'
+      Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> K)
   (Standard_Unification_Combine.metadata Standard_Unification_Hints.binding (Prio.LOW + 1))\<close>]]
 

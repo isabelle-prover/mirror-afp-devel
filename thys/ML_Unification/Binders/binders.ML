@@ -49,9 +49,7 @@ fun nth_binder_data binders = snd o nth binders
 fun replace_binders binders t = let val bvars = map snd binders
   in subst_bounds (bvars, t) end
 
-fun replace_frees binders =
-  let val subst = General_Util.fold_rev_index (fn (i, (_, free)) => cons (free, Bound i)) binders []
-  in subst_free subst end
+val replace_frees = fold_rev (curry abstract_over o snd)
 
 fun norm_binders norm =
   map (fn ((n, _), t) => let val t' = norm t in ((n, snd (dest_Free t')), t') end)

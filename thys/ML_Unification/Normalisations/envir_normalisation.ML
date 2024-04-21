@@ -19,19 +19,15 @@ sig
   val norm_term_types_match : term_type_normaliser
   (*without beta-normalisation*)
   val norm_term_match : term_normaliser
-  val eta_short_norm_term_match : term_normaliser
   (*with beta-normalisation*)
   val beta_norm_term_match : term_normaliser
-  val beta_eta_short_norm_term_match : term_normaliser
 
   (** unification **)
   val norm_term_types_unif : term_type_normaliser
   (*without beta-normalisation*)
   val norm_term_unif : term_normaliser
-  val eta_short_norm_term_unif : term_normaliser
   (*with beta-normalisation*)
   val beta_norm_term_unif : term_normaliser
-  val beta_eta_short_norm_term_unif : term_normaliser
 
   (* theorems *)
   type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
@@ -43,13 +39,6 @@ sig
   val norm_thm : type_normaliser -> term_normaliser -> thm_normaliser
   val norm_thm_match : thm_normaliser
   val norm_thm_unif : thm_normaliser
-  val eta_short_norm_thm : type_normaliser -> term_normaliser -> thm_normaliser
-  val eta_short_norm_thm_match : thm_normaliser
-  val eta_short_norm_thm_unif : thm_normaliser
-  (*with beta-normalisation and eta-contraction*)
-  val beta_eta_short_norm_thm : type_normaliser -> term_normaliser -> thm_normaliser
-  val beta_eta_short_norm_thm_match : thm_normaliser
-  val beta_eta_short_norm_thm_unif : thm_normaliser
 
 end
 
@@ -124,10 +113,6 @@ fun norm_term_match_same beta_norm (envir as Envir.Envir {tenv, tyenv, ...}) =
 
 fun norm_term_match env = Same.commit (norm_term_match_same false env)
 fun beta_norm_term_match env = Same.commit (norm_term_match_same true env)
-fun eta_short_norm_term_match env = norm_term_match env
-  #> Term_Normalisation.eta_short
-fun beta_eta_short_norm_term_match env = beta_norm_term_match env
-  #> Term_Normalisation.eta_short
 
 (** unification **)
 val norm_term_types_unif = norm_term_types norm_type_unif
@@ -173,10 +158,6 @@ fun norm_term_unif_same beta_norm (envir as Envir.Envir {tenv, tyenv, ...}) =
 
 fun norm_term_unif env = Same.commit (norm_term_unif_same false env)
 fun beta_norm_term_unif env = Same.commit (norm_term_unif_same true env)
-fun eta_short_norm_term_unif env = norm_term_unif env
-  #> Term_Normalisation.eta_short
-fun beta_eta_short_norm_term_unif env = beta_norm_term_unif env
-  #> Term_Normalisation.eta_short
 
 type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
 type thm_type_normaliser = thm_normaliser
@@ -226,19 +207,5 @@ fun norm_thm norm_types norm_terms ctxt (env as Envir.Envir {tyenv,...}) thm =
 
 val norm_thm_match = norm_thm norm_type_match norm_term_match
 val norm_thm_unif = norm_thm norm_type_unif norm_term_unif
-
-fun eta_short_norm_thm norm_types norm_terms ctxt env =
-  norm_thm norm_types norm_terms ctxt env
-  #> Conv.fconv_rule Thm.eta_conversion
-
-val eta_short_norm_thm_match = eta_short_norm_thm norm_type_match norm_term_match
-val eta_short_norm_thm_unif = eta_short_norm_thm norm_type_unif norm_term_unif
-
-fun beta_eta_short_norm_thm norm_types norm_terms ctxt env =
-  norm_thm norm_types norm_terms ctxt env
-  #> Conv.fconv_rule Drule.beta_eta_conversion
-
-val beta_eta_short_norm_thm_match = beta_eta_short_norm_thm norm_type_match norm_term_match
-val beta_eta_short_norm_thm_unif = beta_eta_short_norm_thm norm_type_unif norm_term_unif
 
 end
