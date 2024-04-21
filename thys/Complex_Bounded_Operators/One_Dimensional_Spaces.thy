@@ -220,6 +220,9 @@ proof (subst one_dim_scaleC_1 [symmetric])
     by (metis norm_of_complex of_complex_def)    
 qed
 
+lemma norm_one_dim_iso[simp]: \<open>norm (one_dim_iso x) = norm x\<close>
+  by (metis norm_of_complex of_complex_one_dim_iso one_dim_norm)
+
 lemma one_dim_onorm:
   fixes f :: "'a::one_dim \<Rightarrow> 'b::complex_normed_vector"
   assumes "clinear f"

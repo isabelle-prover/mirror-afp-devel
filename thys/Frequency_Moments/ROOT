@@ -21,7 +21,7 @@ session Frequency_Moments = "HOL-Probability" +
     Landau_Ext
     K_Smallest
     Probability_Ext
-    Product_PMF_Ext
+    Tutorial_Pseudorandom_Objects
   document_files
     "root.tex"
     "root.bib"

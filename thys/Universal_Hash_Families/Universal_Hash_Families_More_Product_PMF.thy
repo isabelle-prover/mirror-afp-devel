@@ -2,7 +2,6 @@ section \<open>Indexed Products of Probability Mass Functions\<close>
 
 theory Universal_Hash_Families_More_Product_PMF
   imports
-    "HOL-Probability.Product_PMF"
     Concentration_Inequalities.Concentration_Inequalities_Preliminary
     Finite_Fields.Finite_Fields_More_Bijections
     Universal_Hash_Families_More_Independent_Families

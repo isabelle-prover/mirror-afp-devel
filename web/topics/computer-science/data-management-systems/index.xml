@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/data-management-systems/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Checker.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Checker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Checker.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Checker.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Verification of Query Optimization Algorithms</title>
           <link>/entries/Query_Optimization.html</link>
           <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>

@@ -1,0 +1,41 @@
+title = "A Verified Proof Checker for Metric First-Order Temporal Logic"
+date = 2024-04-16
+topics = [
+  "Computer science/Data management systems",
+  "Computer science/Algorithms",
+  "Logic/General logic/Temporal logic",
+]
+abstract = "Metric first-order temporal logic (MFOTL) is an expressive formalism for specifying temporal and data-dependent constraints on streams of time-stamped, data-carrying events. Recently, we have developed a monitoring algorithm that not only outputs the satisfaction or violation of MFOTL formulas but also explains its verdicts in the form of proof trees. These explanations serve as certificates, and in this entry we verify the correctness of a certificate checker. The checker is used to certify the output of our new, unverified monitoring tool WhyMon. The formalization contains another unverified, executable implementation of an explanation-producing monitoring algorithm used to exemplify our checker."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.herasimau]
+
+[authors.munive]
+email = "munive_email1"
+
+[authors.lima]
+
+[authors.raszyk]
+email = "raszyk_email1"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+traytel = "traytel_email2"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-57246-3_16",
+  "10.1007/978-3-031-30820-8_28",
+]
+pubs = []

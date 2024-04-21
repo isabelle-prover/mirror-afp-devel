@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/concurrency/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Coupled Similarity and Contrasimilarity, and How to Compute Them</title>
           <link>/entries/Coupledsim_Contrasim.html</link>
           <pubDate>Fri, 18 Aug 2023 00:00:00 +0000</pubDate>

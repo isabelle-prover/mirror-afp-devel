@@ -11,8 +11,43 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 20 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Checker.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Checker.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Actuarial Mathematics</title>
+          <link>/entries/Actuarial_Mathematics.html</link>
+          <pubDate>Sun, 07 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Actuarial_Mathematics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Broadcast Psi-calculi</title>
+          <link>/entries/Broadcast_Psi.html</link>
+          <pubDate>Wed, 27 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Broadcast_Psi.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Uncertainty Principle</title>
+          <link>/entries/Uncertainty_Principle.html</link>
+          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Uncertainty_Principle.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Continued Fractions</title>
           <link>/entries/Continued_Fractions.html</link>
@@ -1103,13 +1138,6 @@
           <link>/entries/Median_Method.html</link>
           <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
           <guid>/entries/Median_Method.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Actuarial Mathematics</title>
-          <link>/entries/Actuarial_Mathematics.html</link>
-          <pubDate>Sun, 23 Jan 2022 00:00:00 +0000</pubDate>
-          <guid>/entries/Actuarial_Mathematics.html</guid>
           <description></description>
         </item>
         <item>
@@ -6132,6 +6160,13 @@
           <description></description>
         </item>
         <item>
+          <title>Broadcast_Psi</title>
+          <link>/sessions/broadcast_psi/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/broadcast_psi/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>BTree</title>
           <link>/sessions/btree/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6598,6 +6633,13 @@
           <link>/sessions/concurrentgc/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/concurrentgc/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/sessions/concurrenthol/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/concurrenthol/</guid>
           <description></description>
         </item>
         <item>
@@ -9086,6 +9128,13 @@
           <description></description>
         </item>
         <item>
+          <title>MFOTL_Checker</title>
+          <link>/sessions/mfotl_checker/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mfotl_checker/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>MFOTL_Monitor</title>
           <link>/sessions/mfotl_monitor/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11246,6 +11295,13 @@
           <link>/sessions/types_to_sets_extension/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/types_to_sets_extension/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Uncertainty_Principle</title>
+          <link>/sessions/uncertainty_principle/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/uncertainty_principle/</guid>
           <description></description>
         </item>
         <item>

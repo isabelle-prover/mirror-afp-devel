@@ -3,12 +3,11 @@ section \<open>Frequency Moment $2$\<close>
 theory Frequency_Moment_2
   imports
     Universal_Hash_Families.Carter_Wegman_Hash_Family
-    Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
     Equivalence_Relation_Enumeration.Equivalence_Relation_Enumeration
     Landau_Ext
     Median_Method.Median
     Probability_Ext
-    Product_PMF_Ext
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
     Frequency_Moments
 begin
 
@@ -21,7 +20,7 @@ The only difference is that the algorithm is adapted to work with prime field of
 greatly reduces the implementation complexity.\<close>
 
 fun f2_hash where
-  "f2_hash p h k = (if even (ring.hash (mod_ring p) k h) then int p - 1 else - int p - 1)"
+  "f2_hash p h k = (if even (ring.hash (ring_of (mod_ring p)) k h) then int p - 1 else - int p - 1)"
 
 type_synonym f2_state = "nat \<times> nat \<times> nat \<times> (nat \<times> nat \<Rightarrow> nat list) \<times> (nat \<times> nat \<Rightarrow> int)"
 
@@ -31,7 +30,7 @@ fun f2_init :: "rat \<Rightarrow> rat \<Rightarrow> nat \<Rightarrow> f2_state p
       let s\<^sub>1 = nat \<lceil>6 / \<delta>\<^sup>2\<rceil>;
       let s\<^sub>2 = nat \<lceil>-(18 * ln (real_of_rat \<epsilon>))\<rceil>;
       let p = prime_above (max n 3);
-      h \<leftarrow> prod_pmf ({..<s\<^sub>1} \<times> {..<s\<^sub>2}) (\<lambda>_. pmf_of_set (bounded_degree_polynomials (mod_ring p) 4));
+      h \<leftarrow> prod_pmf ({..<s\<^sub>1}\<times>{..<s\<^sub>2}) (\<lambda>_. pmf_of_set (bounded_degree_polynomials (ring_of (mod_ring p)) 4));
       return_pmf (s\<^sub>1, s\<^sub>2, p, h, (\<lambda>_ \<in> {..<s\<^sub>1} \<times> {..<s\<^sub>2}. (0 :: int)))
     }"
 
@@ -108,7 +107,7 @@ lemma p_gt_1: "p > 1" using p_ge_3 by simp
 lemma p_ge_n: "p \<ge> n" unfolding p_def
   by (meson max.boundedE prime_above_lower_bound )
 
-interpretation carter_wegman_hash_family "mod_ring p" 4
+interpretation carter_wegman_hash_family "ring_of (mod_ring p)" 4
   using carter_wegman_hash_familyI[OF mod_ring_is_field mod_ring_finite]
   using p_prime by auto
 
@@ -176,7 +175,8 @@ proof -
   finally have card_even: "card ({k. even k} \<inter> {..<p}) = t+1" by simp
   hence "card ({k. even k} \<inter> {..<p}) * 2 = (p+1)" by (simp add:t_def)
   hence prob_even: "prob {\<omega>. hash k \<omega> \<in> Collect even} = (real p + 1)/(2*real p)"
-    using assms by (subst prob_range, auto simp:frac_eq_eq p_gt_0 mod_ring_def)
+    using assms
+    by (subst prob_range, auto simp:frac_eq_eq p_gt_0 mod_ring_def ring_of_def lessThan_def)
 
   have "p = card {..<p}" by simp
   also have "... = card (({k. odd k} \<inter> {..<p}) \<union> ({k. even k} \<inter> {..<p}))"
@@ -190,7 +190,8 @@ proof -
   hence "card ({k. odd k} \<inter> {..<p}) * 2 = (p-1)"
     by (simp add:t_def)
   hence prob_odd: "prob {\<omega>. hash k \<omega> \<in> Collect odd} = (real p - 1)/(2*real p)"
-    using assms by (subst prob_range, auto simp add: frac_eq_eq mod_ring_def)
+    using assms
+    by (subst prob_range, auto simp add: frac_eq_eq mod_ring_def ring_of_def lessThan_def)
 
   have "expectation (\<lambda>x. real_of_int (f2_hash p x k) ^ m) =
     expectation (\<lambda>\<omega>. indicator {\<omega>. even (hash k \<omega>)} \<omega> * (real p - 1)^m +
@@ -256,8 +257,8 @@ proof -
     assume "length x \<le> 4"
     hence card_x: "card (set x) \<le> 4" using card_length dual_order.trans by blast
 
-    have "set x \<subseteq> carrier (mod_ring p) "
-      using x_sub_p by (simp add:mod_ring_def)
+    have "set x \<subseteq> carrier (ring_of (mod_ring p))"
+      using x_sub_p by (simp add:mod_ring_def ring_of_def lessThan_def)
 
     hence h_indep: "indep_vars (\<lambda>_. borel) (\<lambda>i \<omega>. h \<omega> i ^ count_list x i) (set x)"
       using k_wise_indep_vars_subset[OF k_wise_indep] card_x as_range h_def
@@ -506,7 +507,7 @@ proof -
 
   have a: "bit_count (encode_f2_state (s\<^sub>1, s\<^sub>2, p, y, \<lambda>i\<in>{..<s\<^sub>1} \<times> {..<s\<^sub>2}.
       sum_list (map (f2_hash p (y i)) as))) \<le> ereal (f2_space_usage (n, length as, \<epsilon>, \<delta>))"
-    if a:"y\<in>{..<s\<^sub>1} \<times> {..<s\<^sub>2} \<rightarrow>\<^sub>E bounded_degree_polynomials (mod_ring p) 4" for y
+    if a:"y\<in>{..<s\<^sub>1} \<times> {..<s\<^sub>2} \<rightarrow>\<^sub>E bounded_degree_polynomials (ring_of (mod_ring p)) 4" for y
   proof -
     have "y \<in> extensional ({..<s\<^sub>1} \<times> {..<s\<^sub>2})" using a PiE_iff by blast
     hence y_ext: "y \<in> extensional (set (List.product [0..<s\<^sub>1] [0..<s\<^sub>2]))"
@@ -515,7 +516,7 @@ proof -
     have h_bit_count_aux: "bit_count (P\<^sub>e p 4 (y x)) \<le> ereal (4 + 4 * log 2 (8 + 2 * real n))"
       if b:"x \<in>  set (List.product [0..<s\<^sub>1] [0..<s\<^sub>2])" for x
     proof -
-      have "y x \<in> bounded_degree_polynomials (mod_ring p) 4"
+      have "y x \<in> bounded_degree_polynomials (ring_of (mod_ring p)) 4"
         using b a by force
       hence "bit_count (P\<^sub>e p 4 (y x)) \<le> ereal (real 4 * (log 2 (real p) + 1))"
         by (rule bounded_degree_polynomial_bit_count[OF p_gt_1] )
@@ -578,7 +579,7 @@ proof -
       by simp
   qed
 
-  have "set_pmf \<Omega> = {..<s\<^sub>1} \<times> {..<s\<^sub>2} \<rightarrow>\<^sub>E bounded_degree_polynomials (mod_ring p) 4"
+  have "set_pmf \<Omega> = {..<s\<^sub>1} \<times> {..<s\<^sub>2} \<rightarrow>\<^sub>E bounded_degree_polynomials (ring_of (mod_ring p)) 4"
     by (simp add: \<Omega>_def set_prod_pmf) (simp add: space_def)
   thus ?thesis
     by (simp  add:mean_rv_alg_sketch AE_measure_pmf_iff del:f2_space_usage.simps, metis a)

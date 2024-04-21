@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 25 Aug 2020 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/gammie/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/entries/ConcurrentHOL.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ConcurrentHOL.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Putting the `K&#39; into Bird&#39;s derivation of Knuth-Morris-Pratt string matching</title>
           <link>/entries/BirdKMP.html</link>

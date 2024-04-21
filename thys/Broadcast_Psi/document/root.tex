@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Broadcast Psi-calculi}
+\author{Palle Raabjerg \and Johannes {\AA}man Pohjola \and Tjark Weber}
+\maketitle
+
+\begin{abstract}
+  We provide an Isabelle/HOL-Nominal formalisation of the definitions,
+  theorems and proofs in the paper \emph{Broadcast Psi-calculi with an
+  Application to Wireless Protocols} by Borgstr\"om et al., which
+  extends the Psi-calculi framework with primitives for broadcast
+  communication in order to model wireless protocols.
+\end{abstract}
+
+%\tableofcontents
+
+\section{Introduction}
+
+We provide an Isabelle/HOL-Nominal formalisation of the definitions,
+theorems and proofs in the paper \emph{Broadcast Psi-calculi with an
+Application to Wireless
+Protocols}~\cite{DBLP:conf/sefm/BorgstromHJRVPP11,DBLP:journals/sosym/BorgstromHJRVPP15},
+which extends the Psi-calculi
+framework~\cite{DBLP:journals/corr/abs-1101-3262,DBLP:journals/jar/BengtsonPW16,DBLP:journals/afp/Bengtson12}
+with primitives for broadcast communication in order to model wireless
+protocols.
+
+The file \texttt{Broadcast\_Thms.thy} contains a collection of the
+relevant definitions and theorems, with comments relating them
+directly to the paper.
+
+% include generated text of all theories
+\section{Formalisation}
+
+\input{session}
+
+\bibliographystyle{plain}
+\bibliography{root}
+
+\end{document}

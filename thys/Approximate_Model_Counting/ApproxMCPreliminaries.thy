@@ -5,6 +5,7 @@ text \<open> This section proves some simplified/specialized forms of lemmas
 
 theory ApproxMCPreliminaries imports
   Frequency_Moments.Probability_Ext
+  Concentration_Inequalities.Bienaymes_Identity
   Concentration_Inequalities.Paley_Zygmund_Inequality
 begin
 
@@ -213,7 +214,7 @@ proof -
   then have "... = (\<Sum>i\<in>S.
        measure_pmf.variance p
         (\<lambda>x. (indicat_real {w. H w x = \<alpha>} i)))"
-    apply (subst measure_pmf.var_sum_pairwise_indep)
+    apply (subst measure_pmf.bienaymes_identity_pairwise_indep)
     using S prob_space_measure_pmf
     by (auto intro!: prob_space.two_universal_indep_var[OF _ ind] simp add: p integrable_measure_pmf_finite)
 

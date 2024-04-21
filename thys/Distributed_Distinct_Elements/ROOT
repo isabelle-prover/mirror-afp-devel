@@ -8,7 +8,6 @@ session Distributed_Distinct_Elements = "Expander_Graphs" +
     Frequency_Moments
   theories
     Distributed_Distinct_Elements_Preliminary
-    Pseudorandom_Combinators
     Distributed_Distinct_Elements_Balls_and_Bins
     Distributed_Distinct_Elements_Tail_Bounds
     Distributed_Distinct_Elements_Inner_Algorithm

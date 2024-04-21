@@ -929,8 +929,7 @@ lemma comp_Im_same: "x \<le> y \<Longrightarrow> Im x = Im y"
 lemma Re_strict_mono: "x < y \<Longrightarrow> Re x < Re y"
   unfolding less_complex_def by simp
 
-lemma complex_of_real_cmod: assumes "x \<ge> 0" shows "complex_of_real (cmod x) = x"
-  by (metis Reals_cases abs_of_nonneg assms comp_Im_same complex_is_Real_iff complex_of_real_nn_iff norm_of_real zero_complex.simps(2))
-
+lemma complex_of_real_cmod: \<open>complex_of_real (cmod x) = abs x\<close>
+  by (simp add: abs_complex_def)
 
 end

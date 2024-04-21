@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>lima on Archive of Formal Proofs
+    </title>
+    <link>/authors/lima/</link>
+    <description>
+        Recent content in lima 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/lima/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
+          <link>/entries/MFOTL_Checker.html</link>
+          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/MFOTL_Checker.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

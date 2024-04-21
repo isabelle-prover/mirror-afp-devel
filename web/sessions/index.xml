@@ -468,6 +468,13 @@
           <description></description>
         </item>
         <item>
+          <title>Broadcast_Psi</title>
+          <link>/sessions/broadcast_psi/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/broadcast_psi/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>BTree</title>
           <link>/sessions/btree/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -934,6 +941,13 @@
           <link>/sessions/concurrentgc/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/concurrentgc/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ConcurrentHOL</title>
+          <link>/sessions/concurrenthol/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/concurrenthol/</guid>
           <description></description>
         </item>
         <item>
@@ -3422,6 +3436,13 @@
           <description></description>
         </item>
         <item>
+          <title>MFOTL_Checker</title>
+          <link>/sessions/mfotl_checker/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mfotl_checker/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>MFOTL_Monitor</title>
           <link>/sessions/mfotl_monitor/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5582,6 +5603,13 @@
           <link>/sessions/types_to_sets_extension/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/types_to_sets_extension/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Uncertainty_Principle</title>
+          <link>/sessions/uncertainty_principle/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/uncertainty_principle/</guid>
           <description></description>
         </item>
         <item>

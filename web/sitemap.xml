@@ -3,30 +3,99 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/MFOTL_Checker.html</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/coinductive/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/Continued_Fractions.html</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ConcurrentHOL.html</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/gammie/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/herasimau/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/lima/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/mfotl_monitor/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/munive/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/optics/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raszyk/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/traytel/</loc>
+    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Actuarial_Mathematics.html</loc>
+    <lastmod>2024-04-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/ito/</loc>
+    <lastmod>2024-04-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-04-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Broadcast_Psi.html</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/pohjola/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/psi_calculi/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raabjerg/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/weber/</loc>
+    <lastmod>2024-03-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/qhlprover/</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/treml/</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Uncertainty_Principle.html</loc>
+    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Continued_Fractions.html</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Kummer_Congruence.html</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/pell/</loc>
@@ -35,16 +104,10 @@
     <loc>/dependencies/polynomial_factorization/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Approximate_Model_Counting.html</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/concentration_inequalities/</loc>
@@ -68,9 +131,6 @@
     <loc>/entries/CondNormReasHOL.html</loc>
     <lastmod>2024-03-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/parent/</loc>
     <lastmod>2024-03-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -84,9 +144,6 @@
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/QBF_Solver_Verification.html</loc>
-    <lastmod>2024-03-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/weber/</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Wieferich_Kempner.html</loc>
@@ -342,9 +399,6 @@
     <lastmod>2023-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/srba/</loc>
-    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/traytel/</loc>
     <lastmod>2023-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Eudoxus_Reals.html</loc>
@@ -761,9 +815,6 @@
     <loc>/authors/myreen/</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/pohjola/</loc>
-    <lastmod>2023-01-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/tanaka/</loc>
     <lastmod>2023-01-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -939,9 +990,6 @@
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Safe_Range_RC.html</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/raszyk/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/epistemic_logic/</loc>
@@ -1270,12 +1318,6 @@
   </url><url>
     <loc>/entries/Median_Method.html</loc>
     <lastmod>2022-01-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/Actuarial_Mathematics.html</loc>
-    <lastmod>2022-01-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/ito/</loc>
-    <lastmod>2022-01-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Irrationals_From_THEBOOK.html</loc>
     <lastmod>2022-01-08T00:00:00+00:00</lastmod>
@@ -1739,9 +1781,6 @@
     <loc>/dependencies/power_sum_polynomials/</loc>
     <lastmod>2021-03-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/qhlprover/</loc>
-    <lastmod>2021-03-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Projective_Measurements.html</loc>
     <lastmod>2021-03-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -1955,9 +1994,6 @@
     <loc>/entries/Saturation_Framework_Extensions.html</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/gammie/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/holcf-prelude/</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -2069,9 +2105,6 @@
     <loc>/entries/Matrices_for_ODEs.html</loc>
     <lastmod>2020-04-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/munive/</loc>
-    <lastmod>2020-04-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/ADS_Functor.html</loc>
     <lastmod>2020-04-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -2100,9 +2133,6 @@
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lambda_free_rpos/</loc>
-    <lastmod>2020-04-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/mfotl_monitor/</loc>
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Automated_Stateful_Protocol_Verification.html</loc>
@@ -2514,9 +2544,6 @@
     <lastmod>2019-02-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nemouchi/</loc>
-    <lastmod>2019-02-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/optics/</loc>
     <lastmod>2019-02-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/ribeiro/</loc>
@@ -4960,6 +4987,8 @@
   </url><url>
     <loc>/sessions/bounded_deducibility_security/</loc>
   </url><url>
+    <loc>/sessions/broadcast_psi/</loc>
+  </url><url>
     <loc>/sessions/btree/</loc>
   </url><url>
     <loc>/sessions/buchi_complementation/</loc>
@@ -5165,6 +5194,8 @@
     <loc>/sessions/concurrent_revisions/</loc>
   </url><url>
     <loc>/sessions/concurrentgc/</loc>
+  </url><url>
+    <loc>/sessions/concurrenthol/</loc>
   </url><url>
     <loc>/sessions/concurrentimp/</loc>
   </url><url>
@@ -6154,6 +6185,8 @@
   </url><url>
     <loc>/sessions/mfodl_monitor_optimized/</loc>
   </url><url>
+    <loc>/sessions/mfotl_checker/</loc>
+  </url><url>
     <loc>/sessions/mfotl_monitor/</loc>
   </url><url>
     <loc>/sessions/mhcomputation/</loc>
@@ -6806,6 +6839,8 @@
     <loc>/sessions/types_tableaus_and_goedels_god/</loc>
   </url><url>
     <loc>/sessions/types_to_sets_extension/</loc>
+  </url><url>
+    <loc>/sessions/uncertainty_principle/</loc>
   </url><url>
     <loc>/sessions/undirected_graph_theory/</loc>
   </url><url>

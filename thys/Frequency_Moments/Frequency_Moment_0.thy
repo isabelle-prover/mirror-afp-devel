@@ -9,8 +9,7 @@ theory Frequency_Moment_0
     Frequency_Moments
     Landau_Ext
     Probability_Ext
-    Product_PMF_Ext
-    Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields
+    Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
 begin
 
 text \<open>This section contains a formalization of a new algorithm for the zero-th frequency moment
@@ -23,7 +22,7 @@ Appendix~\ref{sec:f0_proof}.\<close>
 
 type_synonym f0_state = "nat \<times> nat \<times> nat \<times> nat \<times> (nat \<Rightarrow> nat list) \<times> (nat \<Rightarrow> float set)"
 
-definition hash where "hash p = ring.hash (mod_ring p)"
+definition hash where "hash p = ring.hash (ring_of (mod_ring p))"
 
 fun f0_init :: "rat \<Rightarrow> rat \<Rightarrow> nat \<Rightarrow> f0_state pmf" where
   "f0_init \<delta> \<epsilon> n =
@@ -32,7 +31,7 @@ fun f0_init :: "rat \<Rightarrow> rat \<Rightarrow> nat \<Rightarrow> f0_state p
       let t = nat \<lceil>80 / (real_of_rat \<delta>)\<^sup>2\<rceil>;
       let p = prime_above (max n 19);
       let r = nat (4 * \<lceil>log 2 (1 / real_of_rat \<delta>)\<rceil> + 23);
-      h \<leftarrow> prod_pmf {..<s} (\<lambda>_. pmf_of_set (bounded_degree_polynomials (mod_ring p) 2));
+      h \<leftarrow> prod_pmf {..<s} (\<lambda>_. pmf_of_set (bounded_degree_polynomials (ring_of (mod_ring p)) 2));
       return_pmf (s, t, p, r, h, (\<lambda>_ \<in> {0..<s}. {}))
     }"
 
@@ -161,8 +160,8 @@ proof -
     by (simp, subst a[symmetric], intro powr_less_mono, auto)
 qed
 
-interpretation carter_wegman_hash_family "mod_ring p" 2
-  rewrites "ring.hash (mod_ring p) = Frequency_Moment_0.hash p"
+interpretation carter_wegman_hash_family "ring_of (mod_ring p)" 2
+  rewrites "ring.hash (ring_of (mod_ring p)) = Frequency_Moment_0.hash p"
   using carter_wegman_hash_familyI[OF mod_ring_is_field mod_ring_finite]
   using hash_def p_prime by auto
 
@@ -236,10 +235,10 @@ qed
 private lemma prob_degree_lt_1:
    "prob {\<omega>. degree \<omega> < 1} \<le> 1/real p"
 proof -
-  have "space \<inter> {\<omega>. length \<omega> \<le> Suc 0} = bounded_degree_polynomials (mod_ring p) 1"
+  have "space \<inter> {\<omega>. length \<omega> \<le> Suc 0} = bounded_degree_polynomials (ring_of (mod_ring p)) 1"
     by (auto simp:set_eq_iff bounded_degree_polynomials_def space_def)
-  moreover have "field_size = p" by (simp add:mod_ring_def)
-  hence "real (card (bounded_degree_polynomials (mod_ring p) (Suc 0))) / real (card space) = 1 / real p"
+  moreover have "field_size = p" by (simp add:ring_of_def mod_ring_def)
+  hence "real (card (bounded_degree_polynomials (ring_of (mod_ring p)) 1))/card space = 1 / real p"
     by (simp add:space_def bounded_degree_polynomials_card power2_eq_square)
   ultimately show ?thesis
     by (simp add:M_def measure_pmf_of_set)
@@ -323,7 +322,7 @@ proof -
     also have "... \<le> (\<Sum> i\<in> {(u,v) \<in> {..<p} \<times> {..<p}. u \<noteq> v \<and>
       truncate_down r u \<le> c \<and> truncate_down r u = truncate_down r v}. 1/(real p)\<^sup>2)"
       using assms as_subset_p b_assms
-      by (intro sum_mono, subst hash_prob)  (auto simp add: mod_ring_def power2_eq_square)
+      by (intro sum_mono, subst hash_prob) (auto simp: ring_of_def mod_ring_def power2_eq_square)
 
     also have "... = 1/(real p)\<^sup>2 *
       card {(u,v) \<in> {0..<p} \<times> {0..<p}. u \<noteq> v \<and> truncate_down r u \<le> c \<and> truncate_down r u = truncate_down r v}"
@@ -443,7 +442,7 @@ proof -
     also have "... = prob {\<omega>. hash x \<omega> \<in> {k. int k < a}}"
       by (simp add:M_def)
     also have "... = card ({k. int k < a} \<inter> {..<p}) / real p"
-      by (subst prob_range, simp_all add: x_le_p mod_ring_def)
+      by (subst prob_range) (simp_all add: x_le_p ring_of_def mod_ring_def lessThan_def)
     also have "... = card {..<nat a} / real p"
       using assms by (intro arg_cong2[where f="(/)"] arg_cong[where f="real"] arg_cong[where f="card"])
        (auto simp add:set_eq_iff)

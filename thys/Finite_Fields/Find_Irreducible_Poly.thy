@@ -2,6 +2,7 @@ section \<open>Algorithms for finding irreducible polynomials\<close>
 
 theory Find_Irreducible_Poly
   imports
+    Finite_Fields_More_PMF
     Finite_Fields_Poly_Factor_Ring_Code
     Rabin_Irreducibility_Test_Code
     Probabilistic_While.While_SPMF
@@ -10,6 +11,8 @@ theory Find_Irreducible_Poly
     "HOL-Library.Log_Nat"
 begin
 
+hide_const (open) Divisibility.prime
+hide_const (open) Finite_Fields_Factorization_Ext.multiplicity
 hide_const (open) Numeral_Type.mod_ring
 hide_const (open) Polynomial.degree
 hide_const (open) Polynomial.order
@@ -58,33 +61,6 @@ proof -
     unfolding 2 by (intro bij_betw_trans[OF lift_bij_betw[OF select_bij]]) (simp add:fo)
   thus ?thesis
     unfolding 1 by (intro bij_betw_trans[OF nth_digit_bij])
-qed
-
-lemma measure_bind_pmf:
-  "measure (bind_pmf m f) s = (\<integral>x. measure (f x) s \<partial>m)" (is "?L = ?R")
-proof -
-  have "ennreal ?L = emeasure (bind_pmf m f) s"
-    unfolding measure_pmf.emeasure_eq_measure by simp
-  also have "... = (\<integral>\<^sup>+x. emeasure (f x) s \<partial>m)"
-    unfolding emeasure_bind_pmf by simp
-  also have "... = (\<integral>\<^sup>+x. measure (f x) s \<partial>m)"
-    unfolding measure_pmf.emeasure_eq_measure by simp
-  also have "... = ennreal ?R"
-    by (intro nn_integral_eq_integral measure_pmf.integrable_const_bound[where B="1"] AE_pmfI) auto
-  finally have "ennreal ?L = ennreal ?R" by simp
-  thus ?thesis
-    by (intro iffD1[OF ennreal_inj]) simp_all
-qed
-
-lemma powr_mono_rev:
-  fixes x :: real
-  assumes "a \<le> b" and  "x > 0" "x \<le> 1"
-  shows "x powr b \<le> x powr a"
-proof -
-  have "x powr b = (1/x) powr (-b)" using assms by (simp add: powr_divide powr_minus_divide)
-  also have "... \<le> (1/x) powr (-a)" using assms by (intro powr_mono) auto
-  also have "... = x powr a" using assms by (simp add: powr_divide powr_minus_divide)
-  finally show ?thesis by simp
 qed
 
 abbreviation tick_spmf :: "('a \<times> nat) spmf \<Rightarrow> ('a \<times> nat) spmf"

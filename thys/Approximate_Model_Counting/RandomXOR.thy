@@ -12,7 +12,7 @@ text \<open>The goal of this section is to prove that,
 
 theory RandomXOR imports
   ApproxMCPreliminaries
-  Frequency_Moments.Product_PMF_Ext
+  Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF
   Monad_Normalisation.Monad_Normalisation
 begin
 

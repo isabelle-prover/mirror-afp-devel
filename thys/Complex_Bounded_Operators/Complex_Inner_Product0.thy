@@ -259,7 +259,7 @@ lemma cnorm_eq: "norm x = norm y \<longleftrightarrow> cinner x x = cinner y y"
   by (metis norm_eq_sqrt_cinner power2_norm_eq_cinner)
 
 lemma cnorm_eq_1: "norm x = 1 \<longleftrightarrow> cinner x x = 1"
-  by (metis cinner_ge_zero complex_of_real_cmod norm_eq_sqrt_cinner norm_one of_real_1 real_sqrt_eq_iff real_sqrt_one)
+  by (metis cinner_ge_zero cmod_Re norm_eq_sqrt_cinner norm_one of_real_1 of_real_power power2_norm_eq_cinner power2_norm_eq_cinner' real_sqrt_eq_iff real_sqrt_one)
 
 lemma cinner_divide_left:
   fixes a :: "'a :: {complex_inner,complex_div_algebra}"

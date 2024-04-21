@@ -4,7 +4,7 @@ chapter AFP
 (* There must be one session with the (short) name of the entry.
    This session generates the web document and HTML files.
 
-   It is strongly encouraged to have precisely one session, but it
+   It is strongly encouraged to have precisely one session, but 
    if needed, further sessions are permitted.
 
    Every theory must be included in at least one of the sessions.

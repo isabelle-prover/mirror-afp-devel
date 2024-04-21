@@ -1295,9 +1295,7 @@ proof (cases "f = 0")
       if "onorm r \<le> onorm (\<lambda>x. r x * complex_of_real (norm f)) * cmod (1 / complex_of_real (norm f))"
         and "f \<noteq> 0"
       using that
-      by (metis complex_of_real_cmod complex_of_real_nn_iff field_class.field_divide_inverse
-          inverse_eq_divide nice_ordered_field_class.zero_le_divide_1_iff norm_ge_zero of_real_1
-          of_real_divide of_real_eq_iff)
+      by (smt (verit) divide_inverse mult_1 norm_divide norm_ge_zero norm_of_real of_real_1 of_real_eq_iff of_real_mult)
     hence "onorm r \<le> onorm (\<lambda>x. r x * norm f) * inverse (norm f)"
       using \<open>f \<noteq> 0\<close> onorm_scaleC_left_lemma[OF x1, of "inverse (norm f)"]
       by (simp add: inverse_eq_divide)
@@ -1309,8 +1307,7 @@ proof (cases "f = 0")
         by (rule Operator_Norm.onorm_pos_le)
       show "cmod (r x * complex_of_real (norm f)) \<le> onorm (\<lambda>x. r x *\<^sub>C f) * norm x"
         for x :: 'b
-        by (smt \<open>bounded_linear (\<lambda>x. r x *\<^sub>C f)\<close> complex_of_real_cmod complex_of_real_nn_iff
-            complex_scaleC_def norm_ge_zero norm_scaleC of_real_eq_iff onorm)
+        by (smt (verit) \<open>bounded_linear (\<lambda>x. r x *\<^sub>C f)\<close> norm_ge_zero norm_mult norm_of_real norm_scaleC onorm)
     qed
     finally show "onorm r * norm f \<le> onorm (\<lambda>x. r x *\<^sub>C f)"
       using \<open>f \<noteq> 0\<close>

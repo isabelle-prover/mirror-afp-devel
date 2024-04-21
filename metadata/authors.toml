@@ -2661,6 +2661,13 @@ host = [
 
 [henrio.homepages]
 
+[herasimau]
+name = "Andrei Herasimau"
+
+[herasimau.emails]
+
+[herasimau.homepages]
+
 [herzberg]
 name = "Michael Herzberg"
 
@@ -3849,6 +3856,14 @@ name = "Japheth Lim"
 [lim.emails]
 
 [lim.homepages]
+
+[lima]
+name = "Leonardo Lima"
+orcid = "0000-0003-1701-0435"
+
+[lima.emails]
+
+[lima.homepages]
 
 [lindenberg]
 name = "Christina Lindenberg"
@@ -5345,6 +5360,24 @@ host = [
 ]
 
 [qiu.homepages]
+
+[raabjerg]
+name = "Palle Raabjerg"
+
+[raabjerg.emails]
+
+[raabjerg.emails.raabjerg_email]
+user = [
+  "palle",
+  "raabjerg",
+]
+host = [
+  "ub",
+  "uu",
+  "se",
+]
+
+[raabjerg.homepages]
 
 [rabe]
 name = "Markus N. Rabe"
@@ -6988,6 +7021,23 @@ host = [
 ]
 
 [trelat.homepages]
+
+[treml]
+name = "Alexander Treml"
+
+[treml.emails]
+
+[treml.emails.treml_email]
+user = [
+  "alexander",
+  "treml",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[treml.homepages]
 
 [tuerk]
 name = "Thomas Tuerk"

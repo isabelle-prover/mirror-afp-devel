@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Uncertainty_Principle" = QHLProver +
+
+  options [timeout = 600]
+
+  theories
+    Uncertainty_Principle
+
+  document_files
+    "root.bib"
+    "root.tex"

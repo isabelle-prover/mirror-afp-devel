@@ -19,6 +19,11 @@ lemma (in prob_space) k_wise_indep_vars_compose:
   using indep_vars_compose2[where N="N" and X="X" and Y="Y" and M'="M'"] assms
   by (simp add: k_wise_indep_vars_def subsetD)
 
+lemma (in prob_space) k_wise_indep_vars_triv:
+  assumes "indep_vars N T I"
+  shows "k_wise_indep_vars k N T I"
+  using assms indep_vars_subset unfolding k_wise_indep_vars_def by auto
+
 text \<open>The following two lemmas are of independent interest, they help infer independence of events
 and random variables on distributions. (Candidates for
 @{theory "HOL-Probability.Independent_Family"}).\<close>

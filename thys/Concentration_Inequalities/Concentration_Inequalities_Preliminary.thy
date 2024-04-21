@@ -205,6 +205,24 @@ lemma bounded_sum:
   shows "bounded ((\<lambda>x. (\<Sum>i \<in> I. f i x)) ` T)"
   using assms by (induction I) (auto intro:bounded_plus_comp bounded_const)
 
+lemma bounded_pow:
+  fixes f :: "'a \<Rightarrow> real"
+  assumes "bounded ((\<lambda>x. f x) ` T)"
+  shows "bounded ((\<lambda>x. (f x)^n) ` T)"
+proof -
+  obtain m where "norm (f x) \<le> m" if "x \<in> T" for x
+    using assms unfolding bounded_iff by auto
+  hence "norm ((f x)^n) \<le> m^n" if "x \<in> T" for x
+    using that unfolding norm_power by (intro power_mono) auto
+  thus ?thesis by (intro boundedI[where B="m^n"]) auto
+qed
+
+lemma bounded_sum_list:
+  fixes f :: "'i \<Rightarrow> 'a \<Rightarrow> real"
+  assumes "\<And>y. y \<in> set ys \<Longrightarrow> bounded (f y ` T)"
+  shows "bounded ((\<lambda>x. (\<Sum>y \<leftarrow> ys. f y x)) ` T)"
+  using assms by (induction ys) (auto intro:bounded_plus_comp bounded_const)
+
 lemma (in finite_measure) bounded_int:
   fixes f :: "'i \<Rightarrow> 'a \<Rightarrow> real"
   assumes "bounded ((\<lambda> x. f (fst x) (snd x)) ` (T \<times> space M))"
@@ -230,7 +248,7 @@ qed
 
 lemmas bounded_intros =
   bounded_minus_comp bounded_plus_comp bounded_mult_comp bounded_sum finite_measure.bounded_int
-  bounded_const bounded_exp
+  bounded_const bounded_exp bounded_pow bounded_sum_list
 
 lemma (in prob_space) integrable_bounded:
   fixes f :: "_ \<Rightarrow> ('b :: {banach,second_countable_topology})"
@@ -242,6 +260,16 @@ proof -
     using assms(1) unfolding bounded_iff by auto
   thus ?thesis
     by (intro integrable_const_bound[where B="m"] AE_I2 assms(2))
+qed
+
+lemma integrable_bounded_pmf:
+  fixes f :: "_ \<Rightarrow> ('b :: {banach,second_countable_topology})"
+  assumes "bounded (f ` set_pmf M)"
+  shows "integrable (measure_pmf M) f"
+proof -
+  obtain m where "norm (f x) \<le> m" if "x \<in> set_pmf M" for x
+    using assms(1) unfolding bounded_iff by auto
+  thus ?thesis by (intro measure_pmf.integrable_const_bound[where B="m"] AE_pmfI) auto
 qed
 
 end

@@ -15,13 +15,6 @@ begin
 
 unbundle intro_cong_syntax
 
-text \<open>The following aliases are here to prevent possible merge-conflicts. The lemmas have been moved
-to @{theory "Universal_Hash_Families.Universal_Hash_Families_More_Product_PMF"}.\<close>
-
-lemmas measure_pmf_cong = measure_pmf_cong
-lemmas pmf_mono = pmf_mono
-lemmas pmf_add = pmf_add
-
 lemma pmf_rev_mono:
   assumes "\<And>x. x \<in> set_pmf p \<Longrightarrow> x \<notin> Q \<Longrightarrow> x \<notin> P"
   shows "measure p P \<le> measure p Q"
@@ -322,5 +315,8 @@ lemma bigo_inv:
   using assms eventually_inv unfolding bigo_def by auto
 
 unbundle no_intro_cong_syntax
+
+section \<open>Blind\<close>
+text \<open>Blind section added to preserve section numbers\<close>
 
 end
