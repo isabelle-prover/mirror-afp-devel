@@ -7738,3 +7738,19 @@ name = "Naijun Zhan"
 [zhann.emails]
 
 [zhann.homepages]
+
+[zimmerer]
+name = "Christian Zimmerer"
+
+[zimmerer.emails]
+
+[zimmerer.emails.zimmerer_email]
+user = [
+  "chzi",
+]
+host = [
+  "pm",
+  "me",
+]
+
+[zimmerer.homepages]

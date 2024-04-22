@@ -17,6 +17,9 @@ email = "paulson_email"
 
 [contributors]
 
+[contributors.zimmerer]
+email = "zimmerer_email"
+
 [notify]
 paulson = "paulson_email"
 
