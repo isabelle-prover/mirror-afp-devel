@@ -51,8 +51,7 @@ context
   defines "L \<equiv> (\<sqsubseteq>\<^bsub>\<X>\<^esub>)\<restriction>\<^bsub>carrier \<X>\<^esub>\<upharpoonleft>\<^bsub>carrier \<X>\<^esub>" and "R \<equiv> (\<sqsubseteq>\<^bsub>\<Y>\<^esub>)\<restriction>\<^bsub>carrier \<Y>\<^esub>\<upharpoonleft>\<^bsub>carrier \<Y>\<^esub>"
     and "l \<equiv> \<pi>\<^sup>*" and "r \<equiv> \<pi>\<^sub>*"
   notes defs[simp] = L_def R_def l_def r_def and rel_restrict_right_eq[simp]
-    and rel_restrict_leftI[intro!] rel_restrict_leftE[elim!]
-      in_codom_rel_restrict_leftE[elim!]
+    and rel_restrict_leftI[intro!] rel_restrict_leftE[elim!] in_codomE[elim!]
 begin
 
 interpretation galois R L r l .
