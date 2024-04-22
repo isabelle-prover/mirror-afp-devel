@@ -316,6 +316,19 @@ corollary rel_restrict_left_eq_self_if_in_dom_le [simp]:
 
 lemma ex_rel_restrict_left_iff_in_codom_on [iff]: "(\<exists>x. R\<restriction>\<^bsub>P\<^esub> x y) \<longleftrightarrow> (in_codom_on P R y)" by blast
 
+lemma in_dom_rel_restrict_leftI [intro]:
+  assumes "R x y"
+  and "P x"
+  shows "in_dom R\<restriction>\<^bsub>P\<^esub> x"
+  using assms by blast
+
+lemma in_codom_rel_restrict_leftI [intro]:
+  assumes "R x y"
+  and "P x"
+  shows "in_codom R\<restriction>\<^bsub>P\<^esub> y"
+  using assms by blast
+
+
 lemma rel_restrict_rightI [intro]:
   assumes "R x y"
   and "P y"
@@ -386,28 +399,6 @@ lemma rel_restrict_left_right_eq_restrict_right_left:
   shows "R\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub> = R\<upharpoonleft>\<^bsub>Q\<^esub>\<restriction>\<^bsub>P\<^esub>"
   unfolding rel_restrict_right_eq
   by (fact rel_inv_rel_restrict_left_inv_rel_restrict_left_eq)
-
-lemma in_dom_rel_restrict_leftI [intro]:
-  assumes "R x y"
-  and "P x"
-  shows "in_dom R\<restriction>\<^bsub>P\<^esub> x"
-  using assms by blast
-
-lemma in_dom_rel_restrict_leftE [elim]:
-  assumes "in_dom R\<restriction>\<^bsub>P\<^esub> x"
-  obtains y where "P x" "R x y"
-  using assms by blast
-
-lemma in_codom_rel_restrict_leftI [intro]:
-  assumes "R x y"
-  and "P x"
-  shows "in_codom R\<restriction>\<^bsub>P\<^esub> y"
-  using assms by blast
-
-lemma in_codom_rel_restrict_leftE [elim]:
-  assumes "in_codom R\<restriction>\<^bsub>P\<^esub> y"
-  obtains x where "P x" "R x y"
-  using assms by blast
 
 
 subsubsection \<open>Mappers\<close>
