@@ -221,7 +221,7 @@ We will explain in detail why we must include bitmasks on layer 4 ports to obtai
 
 text\<open>One @{type of_match_field} is not enough to classify a packet. 
 To match packets, we thus use entire sets of match fields.
-As Guha \emph{et al.}~\<^cite>\<open>"guha2013machine"\<close> noted\footnote{See also: \<^cite>\<open>\<open>\<section>2.3\<close> in "michaelis2016middlebox"\<close>}, executing a set of given @{type of_match_field}s on a packet requires careful consideration.
+As Guha \emph{et al.}~\<^cite>\<open>"guha2013machine"\<close> noted\footnote{See also: \<^cite>\<open>\<open>\S2.3\<close> in "michaelis2016middlebox"\<close>}, executing a set of given @{type of_match_field}s on a packet requires careful consideration.
 For example, it is not meaningful to use @{term IPv4Dst} if the given packet is not actually an IP packet, i.e.
 @{term IPv4Dst} has the prerequisite of @{term "EtherType 0x0800"} being among the match fields.
 Guha \emph{et al.} decided to use the fact that the preconditions can be arranged on a directed acyclic graph (or rather: an acyclic forest).
