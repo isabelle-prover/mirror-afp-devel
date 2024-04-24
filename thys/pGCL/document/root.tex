@@ -1,5 +1,3 @@
-\RequirePackage{luatex85}
-
 \documentclass[11pt,a4paper]{book}
 \usepackage[T1]{fontenc}
 \usepackage{isabelle,isabellesym}
@@ -9,8 +7,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[only,bigsqcap]{stmaryrd}
-\usepackage[all]{xy}
-\usepackage[pdftex,colorlinks=true,linkcolor=blue]{hyperref}
+\input{xy}\xyoption{all}
+\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 
 % urls in roman style, theory text in math-similar italics
 \urlstyle{rm}
