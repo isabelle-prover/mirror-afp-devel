@@ -9,17 +9,7 @@ interpretation set_theory "\<lambda>x y. x \<in> elts y" "\<lambda>x::V. \<lambd
     apply blast
     done
   subgoal for x P a
-    apply (rule iffI)
-    subgoal
-      using mem_Collect_eq set_of_elts ZFC_in_HOL.set_def subsetI small_iff smaller_than_small 
-      apply smt
-      done
-    subgoal
-      using elts_0 elts_of_set empty_iff f_inv_into_f mem_Collect_eq set_of_elts small_def 
-        small_elts subset_eq subset_iff_less_eq_V zero_V_def
-      apply (smt ZFC_in_HOL.set_def down subsetI)
-      done
-    done
+    by (rule iffI) (metis (no_types, lifting) down_raw f_inv_into_f mem_Collect_eq subsetI)+
   subgoal for x a
     apply blast
     done
