@@ -25,7 +25,7 @@ val target = File.tmp_path (Path.basic ("export" ^ serial_string ()))
 val ghc = getenv "ISABELLE_GHC";
 
 val cmd =
-  "cd " ^ Path.implode target ^ " && " ^
+  "cd " ^ File.bash_path target ^ " && " ^
     Bash.string ghc ^ " Main.hs && " ^
     "(  echo 'Cyber Cat 42' | ./Main )";
 
@@ -58,7 +58,7 @@ val file = target + Path.basic "main.ML"
 
 val cmd =
   "echo 'Super Goat 2000' | " ^
-    "\"${POLYML_EXE?}\" --use " ^ Path.implode file ^
+    "\"${POLYML_EXE?}\" --use " ^ File.bash_path file ^
     " --eval 'HelloWorld.main ()'";
 
 Isabelle_System.make_directory target;
