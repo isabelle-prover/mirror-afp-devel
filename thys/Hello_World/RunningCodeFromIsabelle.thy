@@ -58,7 +58,7 @@ val file = target + Path.basic "main.ML"
 
 val cmd =
   "echo 'Super Goat 2000' | " ^
-    "\"${POLYML_EXE?}\" --use " ^ File.bash_path file ^
+    "\"${POLYML_EXE?}\" --use " ^ File.bash_platform_path file ^
     " --eval 'HelloWorld.main ()'";
 
 Isabelle_System.make_directory target;
