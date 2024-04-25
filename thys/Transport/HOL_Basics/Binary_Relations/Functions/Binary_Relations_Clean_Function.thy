@@ -39,7 +39,7 @@ lemma crel_fun_eq_crel_dep_fun:
 
 lemma crel_fun_eq_crel_dep_fun_uhint [uhint]:
   assumes "(A :: 'a \<Rightarrow> bool) \<equiv> A'"
-  and "B' \<equiv> (\<lambda>(_ :: 'a). (B :: 'b \<Rightarrow> bool))"
+  and "\<And>x. B \<equiv> B' x"
   shows "(A \<rightarrow>\<^sub>c B) \<equiv> ((x : A') \<rightarrow>\<^sub>c B' x)"
   using assms by (simp add: crel_fun_eq_crel_dep_fun)
 

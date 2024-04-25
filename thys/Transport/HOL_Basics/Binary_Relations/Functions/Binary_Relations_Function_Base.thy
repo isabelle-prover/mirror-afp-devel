@@ -1,12 +1,12 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-subsection \<open>Functions as Binary Relations\<close>
+section \<open>Functions as Binary Relations\<close>
 theory Binary_Relations_Function_Base
   imports
     Binary_Relations_Function_Evaluation
     Binary_Relations_Left_Total
 begin
 
-text \<open>Function relations may contain further elements outside their specification.\<close>
+text \<open>Relational functions may contain further elements outside their specification.\<close>
 
 consts rel_dep_fun :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'd \<Rightarrow> bool"
 consts rel_fun :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
@@ -32,6 +32,10 @@ definition "rel_dep_fun_pred (A :: 'a \<Rightarrow> bool) (B :: 'a \<Rightarrow>
   left_total_on A R \<and> right_unique_on A R \<and> ((x : A) \<Rrightarrow>\<^sub>m B x) (eval R)"
 adhoc_overloading rel_dep_fun rel_dep_fun_pred
 
+definition "rel_dep_fun_pred' (A :: 'a \<Rightarrow> bool) (B :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) \<equiv> True"
+adhoc_overloading rel_dep_fun rel_dep_fun_pred'
+
+
 definition "rel_fun_pred (A :: 'a \<Rightarrow> bool) (B :: 'b \<Rightarrow> bool) :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<equiv>
   rel_dep_fun_pred A (\<lambda>(_ :: 'a). B)"
 adhoc_overloading rel_fun rel_fun_pred
@@ -42,7 +46,7 @@ lemma rel_fun_eq_rel_dep_fun:
 
 lemma rel_fun_eq_rel_dep_fun_uhint [uhint]:
   assumes "(A :: 'a \<Rightarrow> bool) \<equiv> A'"
-  and "B' \<equiv> (\<lambda>(_ :: 'a). (B :: 'b \<Rightarrow> bool))"
+  and "\<And>x. B :: 'b \<Rightarrow> bool \<equiv> B' x"
   shows "(A \<rightarrow> B) \<equiv> ((x : A') \<rightarrow> B' x)"
   using assms by (simp add: rel_fun_eq_rel_dep_fun)
 
