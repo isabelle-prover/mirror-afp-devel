@@ -8,6 +8,9 @@ sig
   val apply_thm_conv : conv -> thm -> thm
   val apply_subgoal_conv : conv -> int -> thm -> thm
 
+  val move_prem_to_front_conv : int -> conv
+  val move_prems_to_front_conv : int list -> conv
+
   val binop_conv : conv -> conv -> conv
   val lhs_conv : conv -> conv
   val rhs_conv : conv -> conv
@@ -23,6 +26,15 @@ struct
 
 val apply_thm_conv = Conv.fconv_rule
 val apply_subgoal_conv = Conv.gconv_rule
+
+fun move_prem_to_front_conv 1 = Conv.all_conv
+  | move_prem_to_front_conv i = Conv.implies_concl_conv (move_prem_to_front_conv (i - 1))
+    then_conv Conv.rewr_conv Drule.swap_prems_eq
+
+val move_prems_to_front_conv = sort (rev_order o int_ord)
+  #> map_index (op +)
+  #> map move_prem_to_front_conv
+  #> Conv.every_conv
 
 fun binop_conv conv_lhs conv_rhs = Conv.combination_conv (Conv.arg_conv conv_lhs) conv_rhs
 

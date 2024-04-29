@@ -238,7 +238,7 @@ fun protected_tac n tac ctxt =
   THEN_ALL_NEW (unprotect_tac ctxt)
 
 fun focus_prems_tac is tac ctxt =
-  K (PRIMITIVE (Drule.rearrange_prems is))
+  CONVERSION (Conversion_Util.move_prems_to_front_conv is)
   THEN' protect_tac (length is) ctxt
   THEN' FOCUS_PREMS' (fn {context=ctxt, params=params, prems=prems,
     asms=asms, schematics=schematics, concl=concl} => unprotect_tac ctxt
