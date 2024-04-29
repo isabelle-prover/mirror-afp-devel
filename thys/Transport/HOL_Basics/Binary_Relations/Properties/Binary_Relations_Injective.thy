@@ -11,7 +11,7 @@ consts rel_injective_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   rel_injective_on_pred \<equiv> "rel_injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "rel_injective_on_pred P R \<equiv> \<forall>x x' : P. \<forall> y. R x y \<and> R x' y \<longrightarrow> x = x'"
+  definition "rel_injective_on_pred P R \<equiv> \<forall>x x' : P. \<forall>y. R x y \<and> R x' y \<longrightarrow> x = x'"
 end
 
 lemma rel_injective_onI [intro]:
@@ -27,7 +27,7 @@ lemma rel_injective_onD:
   using assms unfolding rel_injective_on_pred_def by blast
 
 lemma antimono_rel_injective_on:
-  "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>)) (rel_injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
+  "((\<le>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<ge>)) (rel_injective_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
   by (intro mono_wrt_relI) (auto dest: rel_injective_onD intro!: rel_injective_onI)
 
 

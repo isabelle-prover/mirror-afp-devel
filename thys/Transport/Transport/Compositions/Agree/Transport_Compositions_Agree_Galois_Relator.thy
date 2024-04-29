@@ -9,7 +9,7 @@ context transport_comp_agree
 begin
 
 lemma left_Galois_le_comp_left_GaloisI:
-  assumes in_codom_mono_r2: "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
+  assumes in_codom_mono_r2: "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rightarrow> in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
   and r2_L2_self_if_in_codom: "\<And>z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> r2 z \<le>\<^bsub>L2\<^esub> r2 z"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) \<le> ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
 proof (rule le_relI)
@@ -22,7 +22,7 @@ proof (rule le_relI)
 qed
 
 lemma comp_left_Galois_le_left_GaloisI:
-  assumes mono_r1: "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes mono_r1: "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and trans_L1: "transitive (\<le>\<^bsub>L1\<^esub>)"
   and R1_r2_if_in_codom: "\<And>y z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> y \<le>\<^bsub>L2\<^esub> r2 z \<Longrightarrow> y \<le>\<^bsub>R1\<^esub> r2 z"
   shows "((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>)) \<le> (\<^bsub>L\<^esub>\<lessapprox>)"
@@ -36,7 +36,7 @@ proof (rule le_relI)
 qed
 
 corollary left_Galois_eq_comp_left_GaloisI:
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
   and "\<And>z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> r2 z \<le>\<^bsub>L2\<^esub> r2 z"
   and "\<And>y z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> y \<le>\<^bsub>L2\<^esub> r2 z \<Longrightarrow> y \<le>\<^bsub>R1\<^esub> r2 z"
@@ -47,18 +47,18 @@ corollary left_Galois_eq_comp_left_GaloisI:
   fastforce
 
 corollary left_Galois_eq_comp_left_GaloisI':
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
   and "reflexive_on (in_codom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>)"
   and "\<And>y z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> y \<le>\<^bsub>L2\<^esub> r2 z \<Longrightarrow> y \<le>\<^bsub>R1\<^esub> r2 z"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
   using assms by (intro left_Galois_eq_comp_left_GaloisI) (auto 5 0)
 
 corollary left_Galois_eq_comp_left_GaloisI'':
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) r2"
+  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) r2"
   and "reflexive_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
   and "\<And>y z. in_codom (\<le>\<^bsub>R2\<^esub>) z \<Longrightarrow> y \<le>\<^bsub>L2\<^esub> r2 z \<Longrightarrow> y \<le>\<^bsub>R1\<^esub> r2 z"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
@@ -70,18 +70,18 @@ context transport_comp_same
 begin
 
 lemma left_Galois_eq_comp_left_GaloisI:
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) r2"
+  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) r2"
   and "reflexive_on (in_codom (\<le>\<^bsub>R2\<^esub>)) (\<le>\<^bsub>R2\<^esub>)"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
   using assms by (intro left_Galois_eq_comp_left_GaloisI') auto
 
 lemma left_Galois_eq_comp_left_GaloisI':
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_codom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
-  and "((\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) r2"
+  and "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) r2"
   shows "(\<^bsub>L\<^esub>\<lessapprox>) = ((\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<^bsub>L2\<^esub>\<lessapprox>))"
   using assms by (intro left_Galois_eq_comp_left_GaloisI'') auto
 

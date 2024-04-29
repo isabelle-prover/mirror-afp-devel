@@ -15,8 +15,8 @@ locale transport_bijection =
   and R :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
   and l :: "'a \<Rightarrow> 'b"
   and r :: "'b \<Rightarrow> 'a"
-  assumes mono_wrt_rel_left: "(L \<Rrightarrow>\<^sub>m R) l"
-  and mono_wrt_rel_right: "(R \<Rrightarrow>\<^sub>m L) r"
+  assumes mono_wrt_rel_left: "(L \<Rightarrow> R) l"
+  and mono_wrt_rel_right: "(R \<Rightarrow> L) r"
   and inverse_left_right: "inverse_on (in_field L) l r"
   and inverse_right_left: "inverse_on (in_field R) r l"
 begin

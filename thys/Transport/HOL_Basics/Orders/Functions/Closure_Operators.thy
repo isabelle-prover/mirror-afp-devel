@@ -85,11 +85,11 @@ overloading
   closure_operator \<equiv> "closure_operator :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool"
 begin
 definition "closure_operator (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) :: ('a \<Rightarrow> 'a) \<Rightarrow> bool \<equiv>
-  (R \<Rrightarrow>\<^sub>m R) \<sqinter> inflationary_on (in_field R) R \<sqinter> idempotent_on (in_field R) R"
+  (R \<Rightarrow> R) \<sqinter> inflationary_on (in_field R) R \<sqinter> idempotent_on (in_field R) R"
 end
 
 lemma closure_operatorI [intro]:
-  assumes "(R \<Rrightarrow>\<^sub>m R) f"
+  assumes "(R \<Rightarrow> R) f"
   and "inflationary_on (in_field R) R f"
   and "idempotent_on (in_field R) R f"
   shows "closure_operator R f"
@@ -97,13 +97,13 @@ lemma closure_operatorI [intro]:
 
 lemma closure_operatorE [elim]:
   assumes "closure_operator R f"
-  obtains "(R \<Rrightarrow>\<^sub>m R) f" "inflationary_on (in_field R) R f"
+  obtains "(R \<Rightarrow> R) f" "inflationary_on (in_field R) R f"
     "idempotent_on (in_field R) R f"
   using assms unfolding closure_operator_def by blast
 
 lemma mono_wrt_rel_if_closure_operator:
   assumes "closure_operator (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) f"
-  shows "(R \<Rrightarrow>\<^sub>m R) f"
+  shows "(R \<Rightarrow> R) f"
   using assms by (elim closure_operatorE)
 
 context

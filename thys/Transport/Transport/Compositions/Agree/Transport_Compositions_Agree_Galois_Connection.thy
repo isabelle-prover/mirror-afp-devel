@@ -18,10 +18,10 @@ lemma galois_connectionI:
   and "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rrightarrow> in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow> (\<longleftrightarrow>)) (rel_bimap l1 r2 (\<le>\<^bsub>R1\<^esub>)) (rel_bimap l1 r2 (\<le>\<^bsub>L2\<^esub>))"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
 proof -
-  from galois mono_L1_L2_l1 have "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  from galois mono_L1_L2_l1 have "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rightarrow> in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
     by (intro mono_wrt_predI) (blast elim!: in_domE g1.galois_connectionE)
   moreover from galois mono_R2_R1_r2
-    have "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
+    have "(in_codom (\<le>\<^bsub>R2\<^esub>) \<Rightarrow> in_codom (\<le>\<^bsub>R1\<^esub>)) r2"
     by (intro mono_wrt_predI) (blast elim!: in_codomE g2.galois_connectionE)
   ultimately show ?thesis using assms
     by (intro galois_connectionI galois_propI mono_wrt_rel_leftI
@@ -31,7 +31,7 @@ qed
 
 lemma galois_connectionI':
   assumes "((\<le>\<^bsub>L1\<^esub>) \<stileturn> (\<le>\<^bsub>R1\<^esub>)) l1 r1" "((\<le>\<^bsub>L2\<^esub>) \<stileturn> (\<le>\<^bsub>R2\<^esub>)) l2 r2"
-  and "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) l1" "((\<le>\<^bsub>R2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) r2"
+  and "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) l1" "((\<le>\<^bsub>R2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) r2"
   and "(in_dom (\<le>\<^bsub>L1\<^esub>) \<Rrightarrow> in_codom (\<le>\<^bsub>R2\<^esub>) \<Rrightarrow> (\<longleftrightarrow>))
     (rel_bimap l1 r2 (\<le>\<^bsub>R1\<^esub>)) (rel_bimap l1 r2 (\<le>\<^bsub>L2\<^esub>))"
   shows "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"

@@ -40,9 +40,9 @@ lemma partial_equivalence_rel_on_rel_if_if_partial_equivalence_rel_onI [intro]:
   auto
 
 lemma rel_if_dep_mono_wrt_rel_if_iff_if_dep_mono_wrt_relI:
-  assumes "B \<Longrightarrow> B' \<Longrightarrow> ((x y \<Colon> R) \<Rrightarrow>\<^sub>m S x y) f"
+  assumes "B \<Longrightarrow> B' \<Longrightarrow> ((x y \<Colon> R) \<Rightarrow> S x y) f"
   and "B \<longleftrightarrow> B'"
-  shows "((x y \<Colon> rel_if B R) \<Rrightarrow>\<^sub>m (rel_if B' (S x y))) f"
+  shows "((x y \<Colon> rel_if B R) \<Rightarrow> (rel_if B' (S x y))) f"
   using assms by (intro dep_mono_wrt_relI) auto
 
 corollary reflexive_rel_if_if_reflexiveI [intro]:
@@ -193,8 +193,8 @@ notation tdfr.counit ("\<epsilon>")
 theorem partial_equivalence_rel_equivalenceI:
   assumes per_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and per_equiv2: "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) l2 r2"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rrightarrow>\<^sub>m (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
   shows "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>)) l r"
 proof -
   have per2I: "((\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) l2 r2"
@@ -206,12 +206,12 @@ proof -
       by fast
     with per_equiv2 show ?thesis by blast
   qed
-  have "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rrightarrow>\<^sub>m (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
+  have "((x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>)) \<Rightarrow> (x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
     in_field (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>) \<Rrightarrow> (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>)) (\<lambda>_ _. l2)"
     by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Dep_Fun_Rel_predI rel_if_if_impI)
     (auto 10 0 dest!: per2I)
   moreover have
-    "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rrightarrow>\<^sub>m (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
+    "((x1 x2 \<Colon> (\<le>\<^bsub>L1\<^esub>)) \<Rightarrow> (x1' x2' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x2 \<^bsub>L1\<^esub>\<lessapprox> x1') \<Rrightarrow>
     in_field (\<le>\<^bsub>R2 (l1 x1) x2'\<^esub>) \<Rrightarrow> (\<le>\<^bsub>L2 x1 (r1 x2')\<^esub>)) (\<lambda>_ _. r2)"
     by (intro dep_mono_wrt_relI Dep_Fun_Rel_relI Dep_Fun_Rel_predI rel_if_if_impI)
     (auto 10 0 dest!: per2I)

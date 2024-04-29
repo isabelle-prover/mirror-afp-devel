@@ -106,19 +106,19 @@ lemma Refl_Rel_app_leftI:
   assumes "R (f x) y"
   and "in_field S\<^sup>\<oplus> x"
   and "in_field R\<^sup>\<oplus> y"
-  and "(S \<Rrightarrow>\<^sub>m R) f"
+  and "(S \<Rightarrow> R) f"
   shows "R\<^sup>\<oplus> (f x) y"
 proof (rule Refl_RelI)
   from \<open>in_field R\<^sup>\<oplus> y\<close> show "R y y" by blast
   from \<open>in_field S\<^sup>\<oplus> x\<close> have "S x x" by blast
-  with \<open>(S \<Rrightarrow>\<^sub>m R) f\<close> show "R (f x) (f x)" by blast
+  with \<open>(S \<Rightarrow> R) f\<close> show "R (f x) (f x)" by blast
 qed fact
 
 corollary Refl_Rel_app_rightI:
   assumes "R x (f y)"
   and "in_field S\<^sup>\<oplus> y"
   and "in_field R\<^sup>\<oplus> x"
-  and "(S \<Rrightarrow>\<^sub>m R) f"
+  and "(S \<Rightarrow> R) f"
   shows "R\<^sup>\<oplus> x (f y)"
 proof -
   from assms have "(R\<inverse>)\<^sup>\<oplus> (f y) x" by (intro Refl_Rel_app_leftI[where ?S="S\<inverse>"])
@@ -127,8 +127,8 @@ proof -
 qed
 
 lemma mono_wrt_rel_Refl_Rel_Refl_Rel_if_mono_wrt_rel [intro]:
-  assumes "(R \<Rrightarrow>\<^sub>m S) f"
-  shows "(R\<^sup>\<oplus> \<Rrightarrow>\<^sub>m S\<^sup>\<oplus>) f"
+  assumes "(R \<Rightarrow> S) f"
+  shows "(R\<^sup>\<oplus> \<Rightarrow> S\<^sup>\<oplus>) f"
   using assms by (intro mono_wrt_relI) blast
 
 context galois
@@ -137,7 +137,7 @@ begin
 interpretation gR : galois "(\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>" "(\<le>\<^bsub>R\<^esub>)\<^sup>\<oplus>" l r .
 
 lemma Galois_Refl_RelI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> x"
   and "in_field (\<le>\<^bsub>R\<^esub>)\<^sup>\<oplus> y"
   and "in_codom (\<le>\<^bsub>R\<^esub>) y \<Longrightarrow> x \<^bsub>L\<^esub>\<lessapprox> y"
@@ -146,21 +146,21 @@ lemma Galois_Refl_RelI:
   auto
 
 lemma half_galois_prop_left_Refl_Rel_left_rightI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   shows "((\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)\<^sup>\<oplus>) l r"
   using assms by (intro gR.half_galois_prop_leftI Refl_RelI)
   (auto elim!: in_codomE gR.left_GaloisE Refl_RelE)
 
 interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^esub>)" r l
-  rewrites "((\<ge>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<ge>\<^bsub>L\<^esub>)) \<equiv> ((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>))"
+  rewrites "((\<ge>\<^bsub>R\<^esub>) \<Rightarrow> (\<ge>\<^bsub>L\<^esub>)) \<equiv> ((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>))"
   and "\<And>R. (R\<inverse>)\<^sup>\<oplus> \<equiv> (R\<^sup>\<oplus>)\<inverse>"
   and "\<And>R S f g. (R\<inverse> \<^sub>h\<unlhd> S\<inverse>) f g \<equiv> (S \<unlhd>\<^sub>h R) g f"
   by (simp_all add: galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right
     mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma half_galois_prop_right_Refl_Rel_right_leftI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   shows "((\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)\<^sup>\<oplus>) l r"
   using assms by (fact flip_inv.half_galois_prop_left_Refl_Rel_left_rightI)
@@ -194,24 +194,24 @@ context order_functors
 begin
 
 lemma inflationary_on_in_field_Refl_Rel_left:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  and "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "inflationary_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms
   by (intro inflationary_onI Refl_RelI) (auto 0 3 elim!: in_fieldE Refl_RelE)
 
 lemma inflationary_on_in_field_Refl_Rel_left':
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  and "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "inflationary_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms
   by (intro inflationary_onI Refl_RelI) (auto 0 3 elim!: in_fieldE Refl_RelE)
 
 interpretation inv : galois "(\<ge>\<^bsub>L\<^esub>)" "(\<ge>\<^bsub>R\<^esub>)" l r
-  rewrites "((\<ge>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<ge>\<^bsub>R\<^esub>)) \<equiv> ((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>))"
-  and "((\<ge>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<ge>\<^bsub>L\<^esub>)) \<equiv> ((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>))"
+  rewrites "((\<ge>\<^bsub>L\<^esub>) \<Rightarrow> (\<ge>\<^bsub>R\<^esub>)) \<equiv> ((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>))"
+  and "((\<ge>\<^bsub>R\<^esub>) \<Rightarrow> (\<ge>\<^bsub>L\<^esub>)) \<equiv> ((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>))"
   and "\<And>R. (R\<inverse>)\<^sup>\<oplus> \<equiv> (R\<^sup>\<oplus>)\<inverse>"
   and "\<And>R. in_dom R\<inverse> \<equiv> in_codom R"
   and "\<And>R. in_codom R\<inverse> \<equiv> in_dom R"
@@ -221,22 +221,22 @@ interpretation inv : galois "(\<ge>\<^bsub>L\<^esub>)" "(\<ge>\<^bsub>R\<^esub>)
   by (simp_all add: mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma deflationary_on_in_field_Refl_Rel_leftI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  and "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "deflationary_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "deflationary_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms by (fact inv.inflationary_on_in_field_Refl_Rel_left')
 
 lemma deflationary_on_in_field_Refl_RelI_left':
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  and "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "deflationary_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "deflationary_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms by (fact inv.inflationary_on_in_field_Refl_Rel_left)
 
 lemma rel_equivalence_on_in_field_Refl_Rel_leftI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  and "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "rel_equivalence_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "rel_equivalence_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms by (intro rel_equivalence_onI
@@ -245,8 +245,8 @@ lemma rel_equivalence_on_in_field_Refl_Rel_leftI:
   auto
 
 lemma rel_equivalence_on_in_field_Refl_Rel_leftI':
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
-  and "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "rel_equivalence_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "rel_equivalence_on (in_field (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus>) (\<le>\<^bsub>L\<^esub>)\<^sup>\<oplus> \<eta>"
   using assms by (intro rel_equivalence_onI

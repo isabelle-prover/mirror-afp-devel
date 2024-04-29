@@ -9,8 +9,8 @@ begin
 consts bijection_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
 
 definition "bijection_on_pred (P :: 'a \<Rightarrow> bool) (Q :: 'b \<Rightarrow> bool) f g \<equiv>
-  (P \<Rrightarrow>\<^sub>m Q) f \<and>
-  (Q \<Rrightarrow>\<^sub>m P) g \<and>
+  (P \<Rightarrow> Q) f \<and>
+  (Q \<Rightarrow> P) g \<and>
   inverse_on P f g \<and>
   inverse_on Q g f"
 adhoc_overloading bijection_on bijection_on_pred
@@ -20,8 +20,8 @@ context
 begin
 
 lemma bijection_onI [intro]:
-  assumes "(P \<Rrightarrow>\<^sub>m Q) f"
-  and "(Q \<Rrightarrow>\<^sub>m P) g"
+  assumes "(P \<Rightarrow> Q) f"
+  and "(Q \<Rightarrow> P) g"
   and "inverse_on P f g"
   and "inverse_on Q g f"
   shows "bijection_on P Q f g"
@@ -29,18 +29,18 @@ lemma bijection_onI [intro]:
 
 lemma bijection_onE [elim]:
   assumes "bijection_on P Q f g"
-  obtains "(P \<Rrightarrow>\<^sub>m Q) f" "(Q \<Rrightarrow>\<^sub>m P) g"
+  obtains "(P \<Rightarrow> Q) f" "(Q \<Rightarrow> P) g"
     "inverse_on P f g" "inverse_on Q g f"
   using assms unfolding bijection_on_pred_def by blast
 
 lemma mono_wrt_pred_if_bijection_on_left:
   assumes "bijection_on P Q f g"
-  shows "(P \<Rrightarrow>\<^sub>m Q) f"
+  shows "(P \<Rightarrow> Q) f"
   using assms by (elim bijection_onE)
 
 lemma mono_wrt_pred_if_bijection_on_right:
   assumes "bijection_on P Q f g"
-  shows "(Q \<Rrightarrow>\<^sub>m P) g"
+  shows "(Q \<Rightarrow> P) g"
   using assms by (elim bijection_onE)
 
 lemma bijection_on_pred_right:

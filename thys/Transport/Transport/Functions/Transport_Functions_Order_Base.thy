@@ -121,7 +121,7 @@ qed
 corollary partial_equivalence_relI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
   and sym_L: "symmetric (\<le>\<^bsub>L\<^esub>)"
-  and mono_R: "((x1 x2 \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L\<^esub>) | x1 \<le>\<^bsub>L\<^esub> x3) \<Rrightarrow> (\<le>)) R"
+  and mono_R: "((x1 x2 \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L\<^esub>) | x1 \<le>\<^bsub>L\<^esub> x3) \<Rrightarrow> (\<le>)) R"
   and "\<And>x1 x2. x1 \<le>\<^bsub>L\<^esub> x2 \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>R x1 x2\<^esub>)"
   shows "partial_equivalence_rel DFR"
 proof -
@@ -154,7 +154,7 @@ lemmas partial_equivalence_rel_leftI = dfro1.partial_equivalence_relI
 subparagraph \<open>Introduction Rules for Assumptions\<close>
 
 lemma transitive_left2_if_transitive_left2_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) l1"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
   and "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and L2_eq: "(\<le>\<^bsub>L2 x1 x2\<^esub>) = (\<le>\<^bsub>L2 x1 (\<eta>\<^sub>1 x2)\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> transitive (\<le>\<^bsub>L2 x (r1 x')\<^esub>)"
@@ -163,7 +163,7 @@ lemma transitive_left2_if_transitive_left2_if_left_GaloisI:
   by (subst L2_eq) (auto intro!: assms t1.left_Galois_left_if_left_relI)
 
 lemma symmetric_left2_if_symmetric_left2_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) l1"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
   and "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and L2_eq: "(\<le>\<^bsub>L2 x1 x2\<^esub>) = (\<le>\<^bsub>L2 x1 (\<eta>\<^sub>1 x2)\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> symmetric (\<le>\<^bsub>L2 x (r1 x')\<^esub>)"
@@ -172,7 +172,7 @@ lemma symmetric_left2_if_symmetric_left2_if_left_GaloisI:
   by (subst L2_eq) (auto intro!: assms t1.left_Galois_left_if_left_relI)
 
 lemma partial_equivalence_rel_left2_if_partial_equivalence_rel_left2_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) l1"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
   and "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and L2_eq: "(\<le>\<^bsub>L2 x1 x2\<^esub>) = (\<le>\<^bsub>L2 x1 (\<eta>\<^sub>1 x2)\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>L2 x (r1 x')\<^esub>)"
@@ -189,7 +189,7 @@ interpretation flip_inv :
   rewrites "flip_inv.t1.unit \<equiv> \<epsilon>\<^sub>1"
   and "\<And>R x y. (flip2 R x y) \<equiv> (R y x)\<inverse>"
   and "\<And>R S. R\<inverse> = S\<inverse> \<equiv> R = S"
-  and "\<And>R S. (R\<inverse> \<Rrightarrow>\<^sub>m S\<inverse>) \<equiv> (R \<Rrightarrow>\<^sub>m S)"
+  and "\<And>R S. (R\<inverse> \<Rightarrow> S\<inverse>) \<equiv> (R \<Rightarrow> S)"
   and "\<And>x x'. x' \<^bsub>R1\<^esub>\<greaterapprox> x \<equiv> x \<^bsub>L1\<^esub>\<lessapprox> x'"
   and "((\<ge>\<^bsub>R1\<^esub>) \<unlhd>\<^sub>h (\<ge>\<^bsub>L1\<^esub>)) r1 l1 \<equiv> True"
   and "\<And>(R :: 'z \<Rightarrow> 'z \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
@@ -204,7 +204,7 @@ interpretation flip_inv :
     simp del: rel_inv_iff_rel)
 
 lemma transitive_right2_if_transitive_right2_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "(\<le>\<^bsub>R2 x1 x2\<^esub>) = (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1) x2\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> transitive (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)"
   and "x1 \<le>\<^bsub>R1\<^esub> x2"
@@ -215,7 +215,7 @@ lemma transitive_right2_if_transitive_right2_if_left_GaloisI:
   auto
 
 lemma symmetric_right2_if_symmetric_right2_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "(\<le>\<^bsub>R2 x1 x2\<^esub>) = (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1) x2\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> symmetric (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)"
   and "x1 \<le>\<^bsub>R1\<^esub> x2"
@@ -226,7 +226,7 @@ lemma symmetric_right2_if_symmetric_right2_if_left_GaloisI:
   auto
 
 lemma partial_equivalence_rel_right2_if_partial_equivalence_rel_right2_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "(\<le>\<^bsub>R2 x1 x2\<^esub>) = (\<le>\<^bsub>R2 (\<epsilon>\<^sub>1 x1) x2\<^esub>)"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> partial_equivalence_rel (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)"
   and "x1 \<le>\<^bsub>R1\<^esub> x2"
@@ -240,7 +240,7 @@ end
 
 lemma transitive_left2_if_preorder_equivalenceI:
   assumes pre_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
   and "x1 \<le>\<^bsub>L1\<^esub> x2"
   shows "transitive (\<le>\<^bsub>L2 x1 x2\<^esub>)"
@@ -256,7 +256,7 @@ qed
 
 lemma symmetric_left2_if_partial_equivalence_rel_equivalenceI:
   assumes PER_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
   and "x1 \<le>\<^bsub>L1\<^esub> x2"
   shows "symmetric (\<le>\<^bsub>L2 x1 x2\<^esub>)"
@@ -272,7 +272,7 @@ qed
 
 lemma partial_equivalence_rel_left2_if_partial_equivalence_rel_equivalenceI:
   assumes PER_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
   and "x1 \<le>\<^bsub>L1\<^esub> x2"
   shows "partial_equivalence_rel (\<le>\<^bsub>L2 x1 x2\<^esub>)"
@@ -293,7 +293,7 @@ interpretation flip : transport_Dep_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2
 
 lemma transitive_right2_if_preorder_equivalenceI:
   assumes pre_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rrightarrow>\<^sub>m (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
+  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>pre\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
   and "x1' \<le>\<^bsub>R1\<^esub> x2'"
   shows "transitive (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
@@ -309,7 +309,7 @@ qed
 
 lemma symmetric_right2_if_partial_equivalence_rel_equivalenceI:
   assumes PER_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rrightarrow>\<^sub>m (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
+  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
   and "x1' \<le>\<^bsub>R1\<^esub> x2'"
   shows "symmetric (\<le>\<^bsub>R2 x1' x2'\<^esub>)"
@@ -325,7 +325,7 @@ qed
 
 lemma partial_equivalence_rel_right2_if_partial_equivalence_rel_equivalenceI:
   assumes PER_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rrightarrow>\<^sub>m (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
+  and "((x1' x2' \<Colon> (\<ge>\<^bsub>R1\<^esub>)) \<Rightarrow> (x3' x4' \<Colon> (\<le>\<^bsub>R1\<^esub>) | x1' \<le>\<^bsub>R1\<^esub> x3') \<Rrightarrow> (\<le>)) R2"
   and "\<And>x x'. x \<^bsub>L1\<^esub>\<lessapprox> x' \<Longrightarrow> ((\<le>\<^bsub>L2 x (r1 x')\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)) (l2\<^bsub>x' x\<^esub>) (r2\<^bsub>x x'\<^esub>)"
   and "x1' \<le>\<^bsub>R1\<^esub> x2'"
   shows "partial_equivalence_rel (\<le>\<^bsub>R2 x1' x2'\<^esub>)"

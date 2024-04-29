@@ -50,7 +50,7 @@ lemma reflexive_on_rel_inv_iff_reflexive_on [iff]:
   by blast
 
 lemma mono_reflexive_on:
-  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (reflexive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool)"
+  "((\<ge>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<le>)) (reflexive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool)"
   by fastforce
 
 lemma reflexive_on_if_le_pred_if_reflexive_on:

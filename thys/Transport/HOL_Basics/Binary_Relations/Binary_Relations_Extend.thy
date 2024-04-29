@@ -54,7 +54,7 @@ lemma mono_extend: "mono (extend x y :: ('a \<Rightarrow> 'b \<Rightarrow> bool)
   by (intro monoI) force
 
 lemma dep_mono_dep_bin_rel_extend:
-  "((x : A) \<Rrightarrow>\<^sub>m B x \<Rrightarrow>\<^sub>m ({\<Sum>}x : A'. B' x) \<Rrightarrow>\<^sub>m ({\<Sum>}x : A \<squnion> A'. (B \<squnion> B') x)) extend"
+  "((x : A) \<Rightarrow> B x \<Rightarrow> ({\<Sum>}x : A'. B' x) \<Rightarrow> ({\<Sum>}x : A \<squnion> A'. (B \<squnion> B') x)) extend"
   by fastforce
 
 consts glue :: "'a \<Rightarrow> 'b"

@@ -12,8 +12,8 @@ subsubsection \<open>Unit\<close>
 paragraph \<open>Inflationary\<close>
 
 lemma inflationary_on_unitI:
-  assumes mono_l1: "(P \<Rrightarrow>\<^sub>m P') l1"
-  and mono_r1: "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes mono_l1: "(P \<Rightarrow> P') l1"
+  and mono_r1: "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and inflationary_unit1: "inflationary_on P (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and trans_L1: "transitive (\<le>\<^bsub>L1\<^esub>)"
   and inflationary_unit2: "inflationary_on P' (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
@@ -30,8 +30,8 @@ proof (rule inflationary_onI)
 qed
 
 corollary inflationary_on_in_field_unitI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) l1"
-  and "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "inflationary_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
   and "inflationary_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
@@ -47,7 +47,7 @@ begin
 
 interpretation inv :
   transport_comp_agree "(\<ge>\<^bsub>L1\<^esub>)" "(\<ge>\<^bsub>R1\<^esub>)" l1 r1 "(\<ge>\<^bsub>L2\<^esub>)" "(\<ge>\<^bsub>R2\<^esub>)" l2 r2
-  rewrites "\<And>R S. (R\<inverse> \<Rrightarrow>\<^sub>m S\<inverse>) \<equiv> (R \<Rrightarrow>\<^sub>m S)"
+  rewrites "\<And>R S. (R\<inverse> \<Rightarrow> S\<inverse>) \<equiv> (R \<Rightarrow> S)"
   and "\<And>(P :: 'i \<Rightarrow> bool) (R :: 'j \<Rightarrow> 'i \<Rightarrow> bool).
     (inflationary_on P R\<inverse> :: ('i \<Rightarrow> 'j) \<Rightarrow> bool) \<equiv> deflationary_on P R"
   and "\<And>(R :: 'i \<Rightarrow> 'i \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
@@ -55,8 +55,8 @@ interpretation inv :
   by (simp_all add: mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma deflationary_on_in_field_unitI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) l1"
-  and "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "deflationary_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
   and "deflationary_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"
@@ -71,8 +71,8 @@ end
 text \<open>Relational Equivalence\<close>
 
 corollary rel_equivalence_on_in_field_unitI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L2\<^esub>)) l1"
-  and "((\<le>\<^bsub>R1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L1\<^esub>)) r1"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "((\<le>\<^bsub>R1\<^esub>) \<Rightarrow> (\<le>\<^bsub>L1\<^esub>)) r1"
   and "rel_equivalence_on (in_field (\<le>\<^bsub>L1\<^esub>)) (\<le>\<^bsub>L1\<^esub>) \<eta>\<^sub>1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
   and "rel_equivalence_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>) \<eta>\<^sub>2"

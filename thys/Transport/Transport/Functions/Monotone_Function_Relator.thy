@@ -81,7 +81,7 @@ qed
 
 lemma Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_mono_if_reflexive_onI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L\<^esub>) | x1 \<le>\<^bsub>L\<^esub> x3) \<Rrightarrow> (\<le>)) R"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L\<^esub>) | x1 \<le>\<^bsub>L\<^esub> x3) \<Rrightarrow> (\<le>)) R"
   shows "((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>)\<^sup>\<oplus>) = ((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>))"
   using assms
   by (intro Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_le_if_reflexive_onI)

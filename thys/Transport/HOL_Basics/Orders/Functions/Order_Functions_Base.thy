@@ -157,7 +157,7 @@ lemma inflationary_on_if_le_rel_if_inflationary_on:
   using assms by blast
 
 lemma mono_inflationary_on_rel:
-  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (inflationary_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool)"
+  "((\<ge>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<le>)) (inflationary_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool)"
   by (intro mono_wrt_relI Fun_Rel_relI) auto
 
 context
@@ -265,7 +265,7 @@ corollary deflationary_on_rel_inv_eq_inflationary_on [simp]:
   unfolding deflationary_on_eq_inflationary_on_rel_inv by simp
 
 lemma deflationary_on_eq_dep_mono_wrt_pred_rel_inv:
-  "(deflationary_on P R :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) = ((x : P) \<Rrightarrow>\<^sub>m R\<inverse> x)"
+  "(deflationary_on P R :: ('a \<Rightarrow> 'b) \<Rightarrow> bool) = ((x : P) \<Rightarrow> R\<inverse> x)"
   by blast
 
 lemma deflationary_on_if_le_rel_if_deflationary_on:
@@ -275,7 +275,7 @@ lemma deflationary_on_if_le_rel_if_deflationary_on:
   using assms by auto
 
 lemma mono_deflationary_on:
-  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (deflationary_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool)"
+  "((\<ge>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<le>)) (deflationary_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool)"
   by blast
 
 (*FIXME: should be automatically derivable from above monotonicity lemma*)
@@ -390,7 +390,7 @@ lemma rel_equivalence_on_rel_inv_eq_rel_equivalence_on [simp]:
   by (intro ext) fastforce
 
 lemma mono_rel_equivalence_on:
-  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (rel_equivalence_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool)"
+  "((\<ge>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<le>)) (rel_equivalence_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool)"
   by blast
 
 (*FIXME: should be automatically derivable from above monotonicity lemma*)
@@ -412,7 +412,7 @@ lemma in_codom_eq_in_dom_if_rel_equivalence_on_in_field:
 
 lemma reflexive_on_if_transitive_on_if_mon_wrt_pred_if_rel_equivalence_on:
   assumes "rel_equivalence_on P R f"
-  and "(P \<Rrightarrow>\<^sub>m P) f"
+  and "(P \<Rightarrow> P) f"
   and "transitive_on P R"
   shows "reflexive_on P R"
   using assms by (blast dest: transitive_onD)

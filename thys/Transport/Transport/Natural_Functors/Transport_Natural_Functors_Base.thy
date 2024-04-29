@@ -644,10 +644,10 @@ lemma flip_inv_left_eq_ge_right: "flip_inv.L \<equiv> (\<ge>\<^bsub>R\<^esub>)"
   unfolding flip.flip_inv_right_eq_ge_left .
 
 lemma mono_wrt_rel_leftI:
-  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R1\<^esub>)) l1"
-  and "((\<le>\<^bsub>L2\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R2\<^esub>)) l2"
-  and "((\<le>\<^bsub>L3\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R3\<^esub>)) l3"
-  shows "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> (\<le>\<^bsub>R1\<^esub>)) l1"
+  and "((\<le>\<^bsub>L2\<^esub>) \<Rightarrow> (\<le>\<^bsub>R2\<^esub>)) l2"
+  and "((\<le>\<^bsub>L3\<^esub>) \<Rightarrow> (\<le>\<^bsub>R3\<^esub>)) l3"
+  shows "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   apply (unfold left_rel_eq_Frel right_rel_eq_Frel left_eq_Fmap)
   apply (rule mono_wrt_relI)
   apply (unfold Frel_Fmap_eqs)

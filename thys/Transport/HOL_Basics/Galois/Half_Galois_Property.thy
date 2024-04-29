@@ -131,21 +131,21 @@ begin
 interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^esub>)" r l .
 
 lemma rel_unit_if_left_rel_if_mono_wrt_relI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "x \<lessapprox>\<^bsub>R\<^esub> l x' \<Longrightarrow> x \<le>\<^bsub>L\<^esub> \<eta> x'"
   and "x \<le>\<^bsub>L\<^esub> x'"
   shows "x \<le>\<^bsub>L\<^esub> \<eta> x'"
   using assms by blast
 
 corollary rel_unit_if_left_rel_if_half_galois_prop_right_if_mono_wrt_rel:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "x \<le>\<^bsub>L\<^esub> x'"
   shows "x \<le>\<^bsub>L\<^esub> \<eta> x'"
   using assms by (fastforce intro: rel_unit_if_left_rel_if_mono_wrt_relI)
 
 corollary rel_unit_if_reflexive_on_if_half_galois_prop_right_if_mono_wrt_rel:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
   and "P x"
@@ -154,7 +154,7 @@ corollary rel_unit_if_reflexive_on_if_half_galois_prop_right_if_mono_wrt_rel:
 
 corollary inflationary_on_unit_if_reflexive_on_if_half_galois_prop_rightI:
   fixes P :: "'a \<Rightarrow> bool"
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
   shows "inflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
@@ -164,7 +164,7 @@ corollary inflationary_on_unit_if_reflexive_on_if_half_galois_prop_rightI:
 interpretation flip : galois_prop R L r l .
 
 lemma right_rel_if_Galois_left_right_if_deflationary_onI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "((\<le>\<^bsub>R\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>L\<^esub>)) r l"
   and "deflationary_on P (\<le>\<^bsub>R\<^esub>) \<epsilon>"
   and "transitive (\<le>\<^bsub>R\<^esub>)"
@@ -174,7 +174,7 @@ lemma right_rel_if_Galois_left_right_if_deflationary_onI:
   using assms by force
 
 lemma half_galois_prop_left_left_right_if_transitive_if_deflationary_on_if_mono_wrt_rel:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "deflationary_on (in_codom (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>) \<epsilon>"
   and "transitive (\<le>\<^bsub>R\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
@@ -184,7 +184,7 @@ end
 
 interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^esub>)" r l
   rewrites "flip_inv.unit \<equiv> \<epsilon>" and "flip_inv.counit \<equiv> \<eta>"
-  and "\<And>R S. (R\<inverse> \<Rrightarrow>\<^sub>m S\<inverse>) \<equiv> (R \<Rrightarrow>\<^sub>m S)"
+  and "\<And>R S. (R\<inverse> \<Rightarrow> S\<inverse>) \<equiv> (R \<Rightarrow> S)"
   and "\<And>R S f g. (R\<inverse> \<unlhd>\<^sub>h S\<inverse>) f g \<equiv> (S \<^sub>h\<unlhd> R) g f"
   and "((\<ge>\<^bsub>R\<^esub>) \<^sub>h\<unlhd> (\<ge>\<^bsub>L\<^esub>)) r l \<equiv> ((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "\<And>R. R\<inverse>\<inverse> \<equiv> R"
@@ -201,7 +201,7 @@ interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^e
     mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 corollary counit_rel_if_right_rel_if_mono_wrt_relI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "r y \<^bsub>L\<^esub>\<lessapprox> y' \<Longrightarrow> \<epsilon> y \<le>\<^bsub>R\<^esub> y'"
   and "y \<le>\<^bsub>R\<^esub> y'"
   shows "\<epsilon> y \<le>\<^bsub>R\<^esub> y'"
@@ -210,7 +210,7 @@ corollary counit_rel_if_right_rel_if_mono_wrt_relI:
     [simplified rel_inv_iff_rel])
 
 corollary counit_rel_if_right_rel_if_half_galois_prop_left_if_mono_wrt_rel:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   and "y \<le>\<^bsub>R\<^esub> y'"
   shows "\<epsilon> y \<le>\<^bsub>R\<^esub> y'"
@@ -219,7 +219,7 @@ corollary counit_rel_if_right_rel_if_half_galois_prop_left_if_mono_wrt_rel:
     [simplified rel_inv_iff_rel])
 
 corollary counit_rel_if_reflexive_on_if_half_galois_prop_left_if_mono_wrt_rel:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   and "reflexive_on P (\<le>\<^bsub>R\<^esub>)"
   and "P y"
@@ -230,7 +230,7 @@ corollary counit_rel_if_reflexive_on_if_half_galois_prop_left_if_mono_wrt_rel:
 
 corollary deflationary_on_counit_if_reflexive_on_if_half_galois_prop_leftI:
   fixes P :: "'b \<Rightarrow> bool"
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
   and "reflexive_on P (\<le>\<^bsub>R\<^esub>)"
   shows "deflationary_on P (\<le>\<^bsub>R\<^esub>) \<epsilon>"
@@ -238,7 +238,7 @@ corollary deflationary_on_counit_if_reflexive_on_if_half_galois_prop_leftI:
   by (fact flip_inv.inflationary_on_unit_if_reflexive_on_if_half_galois_prop_rightI)
 
 corollary left_rel_if_left_right_Galois_if_inflationary_onI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>R\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L\<^esub>)) r l"
   and "inflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
   and "transitive (\<le>\<^bsub>L\<^esub>)"
@@ -249,7 +249,7 @@ corollary left_rel_if_left_right_Galois_if_inflationary_onI:
     [simplified rel_inv_iff_rel])
 
 corollary half_galois_prop_right_left_right_if_transitive_if_inflationary_on_if_mono_wrt_rel:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "inflationary_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   and "transitive (\<le>\<^bsub>L\<^esub>)"
   shows "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"

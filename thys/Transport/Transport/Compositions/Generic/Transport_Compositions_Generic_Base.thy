@@ -138,7 +138,7 @@ lemma left_rel_le_left_rel1I:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "((\<le>\<^bsub>R1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L1\<^esub>)) r1 l1"
   and trans_L1: "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and mono_l1: "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
+  and mono_l1: "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
   shows "(\<le>\<^bsub>L\<^esub>) \<le> (\<le>\<^bsub>L1\<^esub>)"
 proof (rule le_relI)
   fix x x' assume "x \<le>\<^bsub>L\<^esub> x'"
@@ -151,7 +151,7 @@ qed
 
 lemma left_rel1_le_left_relI:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
-  and mono_l1: "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
+  and mono_l1: "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
   shows "(\<le>\<^bsub>L1\<^esub>) \<le> (\<le>\<^bsub>L\<^esub>)"
 proof (rule le_relI)
   fix x x' assume "x \<le>\<^bsub>L1\<^esub> x'"
@@ -167,8 +167,8 @@ corollary left_rel_eq_left_rel1I:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "((\<le>\<^bsub>R1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L1\<^esub>)) r1 l1"
   and "transitive (\<le>\<^bsub>L1\<^esub>)"
-  and "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
-  and "((\<le>\<^bsub>L1\<^esub>) \<Rrightarrow>\<^sub>m ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
+  and "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
+  and "((\<le>\<^bsub>L1\<^esub>) \<Rightarrow> ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))) l1"
   shows "(\<le>\<^bsub>L\<^esub>) = (\<le>\<^bsub>L1\<^esub>)"
   using assms by (intro antisym left_rel_le_left_rel1I left_rel1_le_left_relI)
 
@@ -301,13 +301,13 @@ arise in various places.\<close>
 lemma mono_in_dom_left_rel_left1_if_in_dom_rel_comp_le:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "in_dom ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> in_dom (\<le>\<^bsub>L2\<^esub>)"
-  shows "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  shows "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
   using assms by (intro mono_wrt_predI) blast
 
 lemma mono_in_codom_left_rel_left1_if_in_codom_rel_comp_le:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1"
   and "in_codom ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> in_codom (\<le>\<^bsub>L2\<^esub>)"
-  shows "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  shows "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   using assms by (intro mono_wrt_predI) blast
 
 

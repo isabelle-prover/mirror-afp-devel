@@ -17,7 +17,7 @@ lemma reflexive_on_in_dom_leftI:
   and in_dom_L1_le: "in_dom (\<le>\<^bsub>L1\<^esub>) \<le> in_codom (\<le>\<^bsub>L1\<^esub>)"
   and refl_R1: "reflexive_on (in_dom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and refl_L2: "reflexive_on (in_dom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_dom_l1: "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_dom_l1: "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
   shows "reflexive_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
 proof (rule reflexive_onI)
   fix x assume "in_dom (\<le>\<^bsub>L\<^esub>) x"
@@ -48,7 +48,7 @@ lemma reflexive_on_in_codom_leftI:
   and in_codom_L1_le: "in_codom (\<le>\<^bsub>L1\<^esub>) \<le> in_dom (\<le>\<^bsub>L1\<^esub>)"
   and refl_R1: "reflexive_on (in_codom (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and refl_L2: "reflexive_on (in_codom (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_codom_l1: "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_codom_l1: "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   shows "reflexive_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
 proof (rule reflexive_onI)
   fix x assume "in_codom (\<le>\<^bsub>L\<^esub>) x"
@@ -75,7 +75,7 @@ corollary reflexive_on_in_field_leftI:
   and "in_codom (\<le>\<^bsub>L1\<^esub>) = in_dom (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and "(in_field (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_field (\<le>\<^bsub>L2\<^esub>)) l1"
+  and "(in_field (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_field (\<le>\<^bsub>L2\<^esub>)) l1"
   shows "reflexive_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
 proof -
   from assms have "reflexive_on (in_dom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
@@ -154,14 +154,14 @@ lemma preorder_on_in_field_leftI:
   and "in_codom (\<le>\<^bsub>L1\<^esub>) = in_dom (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "preorder_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_codom_l1: "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_codom_l1: "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
   and R1_L2_R1_le: "((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> ((\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>))"
   shows "preorder_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
 proof -
-  have "(in_field (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_field (\<le>\<^bsub>L2\<^esub>)) l1"
+  have "(in_field (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_field (\<le>\<^bsub>L2\<^esub>)) l1"
   proof -
     from \<open>((\<le>\<^bsub>L1\<^esub>) \<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1\<close> R1_L2_R1_le
-      have "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+      have "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
       by (intro mono_in_dom_left_rel_left1_if_in_dom_rel_comp_le
         in_dom_right1_left2_right1_le_if_right1_left2_right1_le)
       auto
@@ -176,14 +176,14 @@ lemma preorder_on_in_field_leftI':
   and "in_codom (\<le>\<^bsub>L1\<^esub>) = in_dom (\<le>\<^bsub>L1\<^esub>)"
   and "reflexive_on (in_field (\<le>\<^bsub>R1\<^esub>)) (\<le>\<^bsub>R1\<^esub>)"
   and "preorder_on (in_field (\<le>\<^bsub>L2\<^esub>)) (\<le>\<^bsub>L2\<^esub>)"
-  and mono_in_dom_l1: "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
+  and mono_in_dom_l1: "(in_dom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_dom (\<le>\<^bsub>L2\<^esub>)) l1"
   and R1_L2_R1_le: "((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<le>\<^bsub>R1\<^esub>)) \<le> ((\<le>\<^bsub>R1\<^esub>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>))"
   shows "preorder_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
 proof -
-  have "(in_field (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_field (\<le>\<^bsub>L2\<^esub>)) l1"
+  have "(in_field (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_field (\<le>\<^bsub>L2\<^esub>)) l1"
   proof -
     from \<open>((\<le>\<^bsub>L1\<^esub>) \<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1\<close> R1_L2_R1_le
-      have "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
+      have "(in_codom (\<le>\<^bsub>L\<^esub>) \<Rightarrow> in_codom (\<le>\<^bsub>L2\<^esub>)) l1"
       by (intro mono_in_codom_left_rel_left1_if_in_codom_rel_comp_le
         in_codom_right1_left2_right1_le_if_right1_left2_right1_le)
       auto

@@ -27,15 +27,15 @@ lemma right_unique_onD:
   using assms unfolding right_unique_on_pred_def by blast
 
 lemma antimono_right_unique_on:
-  "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>)) (right_unique_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
+  "((\<le>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<ge>)) (right_unique_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
   by (fastforce dest: right_unique_onD)
 
 lemma mono_right_unique_on_top_right_unique_on_inf_rel_restrict_left:
-  "((R : right_unique_on P) \<Rrightarrow>\<^sub>m (P' : \<top>) \<Rrightarrow>\<^sub>m right_unique_on (P \<sqinter> P')) rel_restrict_left"
+  "((R : right_unique_on P) \<Rightarrow> (P' : \<top>) \<Rightarrow> right_unique_on (P \<sqinter> P')) rel_restrict_left"
   by (fast dest: right_unique_onD)
 
 lemma mono_right_unique_on_comp:
-  "((R : right_unique_on P) \<Rrightarrow>\<^sub>m right_unique_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) \<Rrightarrow>\<^sub>m right_unique_on P) (\<circ>\<circ>)"
+  "((R : right_unique_on P) \<Rightarrow> right_unique_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) \<Rightarrow> right_unique_on P) (\<circ>\<circ>)"
   by (fast dest: right_unique_onD)
 
 context

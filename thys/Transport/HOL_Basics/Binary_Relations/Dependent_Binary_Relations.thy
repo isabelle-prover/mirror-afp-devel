@@ -101,10 +101,10 @@ lemma dep_bin_rel_covariant_codom:
   shows "({\<Sum>}x : A. B' x) R"
   using assms by (intro dep_bin_relI) auto
 
-lemma mono_dep_bin_rel: "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>) \<Rrightarrow> (\<le>)) dep_bin_rel"
+lemma mono_dep_bin_rel: "((\<le>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<ge>) \<Rrightarrow> (\<le>)) dep_bin_rel"
   by (intro mono_wrt_relI Fun_Rel_relI dep_bin_relI) force
 
-lemma mono_bin_rel: "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>) \<Rrightarrow> (\<le>)) ({\<times>})"
+lemma mono_bin_rel: "((\<le>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<ge>) \<Rrightarrow> (\<le>)) ({\<times>})"
   by (intro mono_wrt_relI Fun_Rel_relI) auto
 
 lemma in_dom_le_if_dep_bin_rel:
@@ -129,21 +129,21 @@ lemma dep_bin_rel_bottom_codom_iff_eq_bottom [iff]: "({\<Sum>}x : A. \<bottom>) 
   by fastforce
 
 lemma mono_bin_rel_dep_bin_rel_bin_rel_rel_comp:
-  "(A {\<times>} B \<Rrightarrow>\<^sub>m ({\<Sum>}x : B. C x) \<Rrightarrow>\<^sub>m A {\<times>} in_codom_on B C) (\<circ>\<circ>)"
+  "(A {\<times>} B \<Rightarrow> ({\<Sum>}x : B. C x) \<Rightarrow> A {\<times>} in_codom_on B C) (\<circ>\<circ>)"
   by fastforce
 
-lemma mono_dep_bin_rel_bin_rel_rel_inv: "(({\<Sum>}x : A. B x) \<Rrightarrow>\<^sub>m in_codom_on A B {\<times>} A) rel_inv"
+lemma mono_dep_bin_rel_bin_rel_rel_inv: "(({\<Sum>}x : A. B x) \<Rightarrow> in_codom_on A B {\<times>} A) rel_inv"
   by force
 
-lemma mono_bin_rel_rel_inv: "(A {\<times>} B \<Rrightarrow>\<^sub>m B {\<times>} A) rel_inv"
+lemma mono_bin_rel_rel_inv: "(A {\<times>} B \<Rightarrow> B {\<times>} A) rel_inv"
   by auto
 
 lemma mono_dep_bin_rel_top_dep_bin_rel_inf_rel_restrict_left:
-  "(({\<Sum>}x : A. B x) \<Rrightarrow>\<^sub>m (P : \<top>) \<Rrightarrow>\<^sub>m ({\<Sum>}x : A \<sqinter> P. B x)) rel_restrict_left"
+  "(({\<Sum>}x : A. B x) \<Rightarrow> (P : \<top>) \<Rightarrow> ({\<Sum>}x : A \<sqinter> P. B x)) rel_restrict_left"
   by fast
 
 lemma mono_dep_bin_rel_top_dep_bin_rel_inf_rel_restrict_right:
-  "(({\<Sum>}x : A. B x) \<Rrightarrow>\<^sub>m (P : \<top>) \<Rrightarrow>\<^sub>m ({\<Sum>}x : A. (B x) \<sqinter> P)) rel_restrict_right"
+  "(({\<Sum>}x : A. B x) \<Rightarrow> (P : \<top>) \<Rightarrow> ({\<Sum>}x : A. B x \<sqinter> P)) rel_restrict_right"
   by fast
 
 lemma le_if_rel_agree_on_if_dep_bin_relI:

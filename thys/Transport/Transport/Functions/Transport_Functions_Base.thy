@@ -210,7 +210,7 @@ lemma left_rel2_unit_eqs_left_rel2I:
   using assms by (auto intro!: antisym)
 
 lemma left2_eq_if_bi_related_if_monoI:
-  assumes mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rrightarrow>\<^sub>m (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  assumes mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
   and "x1 \<le>\<^bsub>L1\<^esub> x2"
   and "x1 \<equiv>\<^bsub>L1\<^esub> x3"
   and "x2 \<equiv>\<^bsub>L1\<^esub> x4"

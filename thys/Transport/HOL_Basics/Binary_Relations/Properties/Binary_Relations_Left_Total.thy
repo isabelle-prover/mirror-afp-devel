@@ -35,18 +35,18 @@ lemma left_total_on_if_le_in_dom:
   using assms by fastforce
 
 lemma mono_left_total_on:
-  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (left_total_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
+  "((\<ge>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<le>)) (left_total_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
   by fastforce
 
 lemma le_in_dom_iff_left_total_on: "P \<le> in_dom R \<longleftrightarrow> left_total_on P R"
   using le_in_dom_if_left_total_on left_total_on_if_le_in_dom by auto
 
 lemma mono_left_total_on_top_left_total_on_inf_rel_restrict_left:
-  "((R : left_total_on P) \<Rrightarrow>\<^sub>m (P' : \<top>) \<Rrightarrow>\<^sub>m left_total_on (P \<sqinter> P')) rel_restrict_left"
+  "((R : left_total_on P) \<Rightarrow> (P' : \<top>) \<Rightarrow> left_total_on (P \<sqinter> P')) rel_restrict_left"
   by fast
 
 lemma mono_left_total_on_comp:
-  "((R : left_total_on P) \<Rrightarrow>\<^sub>m left_total_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) \<Rrightarrow>\<^sub>m left_total_on P) (\<circ>\<circ>)"
+  "((R : left_total_on P) \<Rightarrow> left_total_on (in_codom (R\<restriction>\<^bsub>P\<^esub>)) \<Rightarrow> left_total_on P) (\<circ>\<circ>)"
   by fast
 
 consts left_total :: "'a \<Rightarrow> bool"

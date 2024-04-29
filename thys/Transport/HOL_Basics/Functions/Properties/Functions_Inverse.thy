@@ -40,9 +40,9 @@ qed
 lemma inverse_on_compI:
   fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool"
   and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a" and f' :: "'b \<Rightarrow> 'c" and g' :: "'c \<Rightarrow> 'b"
-  assumes "inverse_on P f g"
+  assumes "(P \<Rightarrow> P') f"
+  and "inverse_on P f g"
   and "inverse_on P' f' g'"
-  and "(P \<Rrightarrow>\<^sub>m P') f"
   shows "inverse_on P (f' \<circ> f) (g \<circ> g')"
   using assms by (intro inverse_onI) (auto dest!: inverse_onD)
 

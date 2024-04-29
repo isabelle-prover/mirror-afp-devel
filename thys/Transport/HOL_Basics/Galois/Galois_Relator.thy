@@ -59,7 +59,7 @@ begin
 interpretation flip : galois R L r l .
 
 lemma left_Galois_left_if_left_relI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "x \<le>\<^bsub>L\<^esub> x'"
   shows "x \<^bsub>L\<^esub>\<lessapprox> l x'"
@@ -67,7 +67,7 @@ lemma left_Galois_left_if_left_relI:
   by (intro left_Galois_if_Galois_right_if_half_galois_prop_right) (auto 5 0)
 
 corollary left_Galois_left_if_reflexive_on_if_half_galois_prop_rightI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>)) l r"
   and "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
   and "P x"
@@ -75,7 +75,7 @@ corollary left_Galois_left_if_reflexive_on_if_half_galois_prop_rightI:
   using assms by (intro left_Galois_left_if_left_relI) auto
 
 lemma left_Galois_left_if_in_codom_if_inflationary_onI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "inflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
   and "in_codom (\<le>\<^bsub>L\<^esub>) x"
   and "P x"
@@ -83,34 +83,34 @@ lemma left_Galois_left_if_in_codom_if_inflationary_onI:
   using assms by (intro left_GaloisI) (auto elim!: in_codomE)
 
 lemma left_Galois_left_if_in_codom_if_inflationary_on_in_codomI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "inflationary_on (in_codom (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   and "in_codom (\<le>\<^bsub>L\<^esub>) x"
   shows "x \<^bsub>L\<^esub>\<lessapprox> l x"
   using assms by (auto intro!: left_Galois_left_if_in_codom_if_inflationary_onI)
 
 lemma left_Galois_left_if_left_rel_if_inflationary_on_in_fieldI:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   and "inflationary_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta>"
   and "x \<le>\<^bsub>L\<^esub> x"
   shows "x \<^bsub>L\<^esub>\<lessapprox> l x"
   using assms by (auto intro!: left_Galois_left_if_in_codom_if_inflationary_onI)
 
 lemma right_left_Galois_if_right_relI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "y \<le>\<^bsub>R\<^esub> y'"
   shows "r y \<^bsub>L\<^esub>\<lessapprox> y'"
   using assms by (intro left_GaloisI) auto
 
 corollary right_left_Galois_if_reflexive_onI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "reflexive_on P (\<le>\<^bsub>R\<^esub>)"
   and "P y"
   shows "r y \<^bsub>L\<^esub>\<lessapprox> y"
   using assms by (intro right_left_Galois_if_right_relI) auto
 
 lemma left_Galois_if_right_rel_if_left_GaloisI:
-  assumes "((\<le>\<^bsub>R\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>L\<^esub>)) r"
+  assumes "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
   and "transitive (\<le>\<^bsub>L\<^esub>)"
   and "x \<^bsub>L\<^esub>\<lessapprox> y"
   and "y \<le>\<^bsub>R\<^esub> z"
@@ -133,7 +133,7 @@ lemma left_rel_if_right_Galois_if_left_GaloisI:
   using assms by auto
 
 lemma Dep_Fun_Rel_left_Galois_right_Galois_if_mono_wrt_rel [intro]:
-  assumes "((\<le>\<^bsub>L\<^esub>) \<Rrightarrow>\<^sub>m (\<le>\<^bsub>R\<^esub>)) l"
+  assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
   shows "((\<^bsub>L\<^esub>\<lessapprox>) \<Rrightarrow> (\<^bsub>R\<^esub>\<lessapprox>)) l r"
   using assms by blast
 

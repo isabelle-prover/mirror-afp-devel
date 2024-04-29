@@ -39,7 +39,7 @@ lemma rel_agree_onD:
   using assms by (blast elim: rel_agree_onE dest: fun_cong)
 
 lemma antimono_rel_agree_on:
-  "((\<le>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<ge>)) (rel_agree_on :: ('a \<Rightarrow> bool) \<Rightarrow> (('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> bool)"
+  "((\<le>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<ge>)) (rel_agree_on :: ('a \<Rightarrow> bool) \<Rightarrow> (('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) \<Rightarrow> bool)"
   by (intro mono_wrt_relI Fun_Rel_relI) (fastforce dest: rel_agree_onD)
 
 lemma le_if_in_dom_le_if_rel_agree_onI:

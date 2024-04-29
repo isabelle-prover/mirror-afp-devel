@@ -22,10 +22,10 @@ begin
 
 interpretation galois L R l r .
 
-lemma mono_wrt_rel_lower [HOL_Algebra_galois_alignment]: "(L \<Rrightarrow>\<^sub>m R) l"
+lemma mono_wrt_rel_lower [HOL_Algebra_galois_alignment]: "(L \<Rightarrow> R) l"
   using lower_closed upper_closed by (fastforce intro: use_iso2[OF lower_iso])
 
-lemma mono_wrt_rel_upper [HOL_Algebra_galois_alignment]: "(R \<Rrightarrow>\<^sub>m L) r"
+lemma mono_wrt_rel_upper [HOL_Algebra_galois_alignment]: "(R \<Rightarrow> L) r"
   using lower_closed upper_closed by (fastforce intro: use_iso2[OF upper_iso])
 
 lemma half_galois_prop_left [HOL_Algebra_galois_alignment]: "(L \<^sub>h\<unlhd> R) l r"
@@ -51,8 +51,7 @@ context
   defines "L \<equiv> (\<sqsubseteq>\<^bsub>\<X>\<^esub>)\<restriction>\<^bsub>carrier \<X>\<^esub>\<upharpoonleft>\<^bsub>carrier \<X>\<^esub>" and "R \<equiv> (\<sqsubseteq>\<^bsub>\<Y>\<^esub>)\<restriction>\<^bsub>carrier \<Y>\<^esub>\<upharpoonleft>\<^bsub>carrier \<Y>\<^esub>"
     and "l \<equiv> \<pi>\<^sup>*" and "r \<equiv> \<pi>\<^sub>*"
   notes defs[simp] = L_def R_def l_def r_def and rel_restrict_right_eq[simp]
-    and rel_restrict_leftI[intro!] rel_restrict_leftE[elim!]
-      in_codom_rel_restrict_leftE[elim!]
+    and rel_restrict_leftI[intro!] rel_restrict_leftE[elim!] in_codomE[elim!]
 begin
 
 interpretation galois R L r l .

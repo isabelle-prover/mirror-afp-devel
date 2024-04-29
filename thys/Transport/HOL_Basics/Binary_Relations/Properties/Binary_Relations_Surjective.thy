@@ -40,7 +40,7 @@ lemma left_total_on_rel_inv_iff_rel_surjective_at [iff]:
   by fast
 
 lemma mono_rel_surjective_at:
-  "((\<ge>) \<Rrightarrow>\<^sub>m (\<le>) \<Rrightarrow> (\<le>)) (rel_surjective_at :: ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
+  "((\<ge>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<le>)) (rel_surjective_at :: ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool)"
   by fastforce
 
 lemma rel_surjective_at_iff_le_codom:
