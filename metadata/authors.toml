@@ -519,6 +519,24 @@ name = "Julian Biendarra"
 
 [biendarra.homepages]
 
+[binder]
+name = "Sage Binder"
+orcid = "0009-0004-4776-2018"
+
+[binder.emails]
+
+[binder.emails.binder_email]
+user = [
+  "sage-binder",
+]
+host = [
+  "uiowa",
+  "edu",
+]
+
+[binder.homepages]
+binder_homepage = "https://homepage.cs.uiowa.edu/~sbinder1/"
+
 [bisping]
 name = "Benjamin Bisping"
 orcid = "0000-0002-0637-0171"

@@ -3,12 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/MFOTL_Checker.html</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/binder/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Picks_Theorem.html</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/poincare_bendixson/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/MFOTL_Checker.html</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/coinductive/</loc>
@@ -18,12 +42,6 @@
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ConcurrentHOL.html</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/gammie/</loc>
@@ -50,9 +68,6 @@
     <loc>/authors/raszyk/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/traytel/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -70,9 +85,6 @@
   </url><url>
     <loc>/authors/weber/</loc>
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/qhlprover/</loc>
     <lastmod>2024-03-26T00:00:00+00:00</lastmod>
@@ -861,9 +873,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Propositional_Logic_Class.html</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/cordwell/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/datatype_order_generator/</loc>
@@ -6351,6 +6360,8 @@
     <loc>/sessions/pi_calculus/</loc>
   </url><url>
     <loc>/sessions/pi_transcendental/</loc>
+  </url><url>
+    <loc>/sessions/picks_theorem/</loc>
   </url><url>
     <loc>/sessions/planarity_certificates/</loc>
   </url><url>

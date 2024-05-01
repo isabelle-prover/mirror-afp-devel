@@ -1,0 +1,33 @@
+title = "Pick's Theorem"
+date = 2024-04-26
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = "We formalize Pick's theorem for finding the area of a simple polygon whose vertices are integral lattice points. We are inspired by John Harrison's formalization of Pick's theorem in HOL Light, but tailor our proof approach to avoid a primary challenge point in his formalization, which is proving that any polygon with more than three vertices can be split (in its interior) by a line between some two vertices. Our formalization involves augmenting the existing geometry libraries in various foundational ways (e.g., by adding the definition of a polygon and formalizing some key properties thereof)."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.binder]
+homepage = "binder_homepage"
+
+[authors.cordwell]
+homepage = "cordwell_homepage"
+
+[contributors]
+
+[notify]
+binder = "binder_email"
+cordwell = "cordwell_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.2307/2323771",
+  "10.1017/S0960129511000089",
+]
+pubs = []
