@@ -1,0 +1,43 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{eufrak}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Pick's Theorem}
+\author{Sage Binder and Katherine Kosaian}
+\maketitle
+
+\begin{abstract}
+    We formalize Pick's theorem for finding the area of a simple
+    polygon whose vertices are integral lattice points \cite{grunbaum1993pick}.
+    We are inspired by John Harrison's formalization of
+    Pick's theorem in HOL Light \cite{DBLP:journals/mscs/Harrison11}, but tailor our proof approach
+    to avoid a primary challenge point in his formalization,
+    which is proving that any polygon with more than three
+    vertices can be split (in its interior) by a line between
+    some two vertices.
+    Our formalization involves augmenting the existing geometry
+    libraries in various foundational ways
+    (e.g., by adding the definition of a polygon and
+    formalizing some key properties thereof). 
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
