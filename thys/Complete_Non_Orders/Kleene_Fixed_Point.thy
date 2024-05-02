@@ -93,7 +93,7 @@ proof
     using Fn_chain by auto
   with bot have nq: "f^n \<bottom> \<sqsubseteq> f q" for n by (induct n, auto simp: extreme_bound_iff)
   then show "q \<sqsubseteq> f q" using f q by blast
-  have "f (f^n \<bottom>) \<in> Fn" for n by (auto intro!: exI[of _ "Suc n"])
+  have "f (f^n \<bottom>) \<in> Fn" for n by (auto intro!: range_eqI[of _ _ "Suc n"])
   then have "f ` Fn \<subseteq> Fn" by auto
   from extreme_bound_subset[OF this fq q]
   show "f q \<sqsubseteq> q".
