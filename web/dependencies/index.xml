@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Poincare_Bendixson</title>
+          <link>/dependencies/poincare_bendixson/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/poincare_bendixson/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Coinductive</title>
           <link>/dependencies/coinductive/</link>
