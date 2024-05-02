@@ -95,6 +95,18 @@
     <loc>/entries/Uncertainty_Principle.html</loc>
     <lastmod>2024-03-26T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Derandomization_Conditional_Expectations.html</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/distributed_distinct_elements/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/undirected_graph_theory/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Continued_Fractions.html</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -162,9 +174,6 @@
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Karatsuba.html</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/karayel/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/root_balanced_tree/</loc>
@@ -465,9 +474,6 @@
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Hypergraph_Basics.html</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/speccheck/</loc>
@@ -5316,6 +5322,8 @@
     <loc>/sessions/dependent_sifum_type_systems/</loc>
   </url><url>
     <loc>/sessions/depth-first-search/</loc>
+  </url><url>
+    <loc>/sessions/derandomization_conditional_expectations/</loc>
   </url><url>
     <loc>/sessions/derangements/</loc>
   </url><url>
