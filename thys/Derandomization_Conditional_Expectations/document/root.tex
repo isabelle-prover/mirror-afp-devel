@@ -1,0 +1,41 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[top=1in, bottom=1in, left=0.8in, right=0.8in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Derandomization with Conditional Expectations}
+\author{Emin Karayel}
+\maketitle
+
+\abstract{The \emph{Method of Conditional Expectations}~\cite{vadhan2012} (sometimes also called ``Method of Conditional Probabilities'') is one of the prominent
+derandomization techniques. Given a randomized algorithm, it allows the construction of a 
+deterministic algorithm with a result that matches the average-case quality of the randomized
+algorithm.
+
+Using this technique, this entry starts with a simple example, an algorithm that obtains
+a cut that crosses at least half of the edges. This is a well-known approximate solution to the 
+Max-Cut problem. It is followed by a more complex and interesting result: an algorithm
+that returns an independent set matching (or exceeding) the Caro-Wei bound~\cite{murphy1991}: $\frac{n}{d+1}$ 
+where $n$ is the vertex count and $d$ is the average degree of the graph.
+
+Both algorithms are efficient and deterministic, and follow from the derandomization of a probabilistic existence proof.}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+\pagebreak
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
