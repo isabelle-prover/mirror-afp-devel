@@ -354,14 +354,24 @@ object AFP_Submit {
 
     case class Metadata(authors: Authors, entries: List[Entry]) {
       def new_authors(state: State): List[Author] =
-        entries.flatMap(_.authors).map(_.author).filterNot(state.authors.contains).toSet.map(authors).toList
+        (for {
+          entry <- entries
+          affil <- entry.authors ++ entry.notifies
+          author = affil.author
+          if state.authors.contains(author)
+        } yield authors(author)).distinct
 
       def new_affils(state: State): List[Affiliation] =
-        entries.flatMap(entry => entry.authors ++ entry.notifies).toSet.filter {
-          case _: Unaffiliated => false
-          case e: Email => !state.authors.get(e.author).exists(_.emails.contains(e))
-          case h: Homepage => !state.authors.get(h.author).exists(_.homepages.contains(h))
-        }.toList
+        (for {
+          entry <- entries
+          affil <- entry.authors ++ entry.notifies
+          author = affil.author
+          if (affil match {
+            case _: Unaffiliated => false
+            case e: Email => !state.authors.get(author).exists(_.emails.contains(e))
+            case h: Homepage => !state.authors.get(author).exists(_.homepages.contains(h))
+          })
+        } yield affil).distinct
     }
 
     case object Invalid extends T
@@ -934,8 +944,7 @@ object AFP_Submit {
         par(
           hidden(key + ID, email.author) ::
             text(author_string(updated_authors(email.author))) :::
-            selection(
-              key + AFFILIATION,
+            selection(key + AFFILIATION,
               Some(affil_id(email)),
               author.emails.map(affil => option(affil_id(affil), affil_string(affil)))) ::
             action_button(paths.api_route(API.SUBMISSION_ENTRY_NOTIFIES_REMOVE), "x", key) :: Nil)
