@@ -21,6 +21,13 @@
           <description></description>
         </item>
         <item>
+          <title>AutoCorres2</title>
+          <link>/entries/AutoCorres2.html</link>
+          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/AutoCorres2.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
           <link>/entries/MFOTL_Checker.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
@@ -5947,6 +5954,27 @@
           <link>/sessions/auto2_imperative_hol/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/auto2_imperative_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2</title>
+          <link>/sessions/autocorres2/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2_Main</title>
+          <link>/sessions/autocorres2_main/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2_main/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2_Test</title>
+          <link>/sessions/autocorres2_test/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2_test/</guid>
           <description></description>
         </item>
         <item>

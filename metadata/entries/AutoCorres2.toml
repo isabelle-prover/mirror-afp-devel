@@ -1,0 +1,55 @@
+title = "AutoCorres2"
+date = 2024-04-17
+topics = [
+  "Computer science/Programming languages/Logics",
+  "Computer science/Semantics and reasoning",
+  "Tools",
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = """
+AutoCorres2 is a tool to facilitate the verification of C programs within Isabelle.
+It is a fork of <a href=\"https://trustworthy.systems/projects/OLD/autocorres\">AutoCorres</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brecknell]
+
+[authors.greenaway]
+
+[authors.hoelzl]
+email = "hoelzl_email"
+
+[authors.immler]
+email = "immler_email"
+
+[authors.klein]
+email = "klein_email"
+
+[authors.kolanski]
+email = "kolanski_email"
+
+[authors.lim]
+
+[authors.norrish]
+
+[authors.schirmer]
+email = "schirmer_email1"
+
+[authors.sewell]
+
+[authors.tuch]
+
+[authors.wimmer]
+
+[contributors]
+
+[notify]
+schirmer = "schirmer_email1"
+
+[history]
+
+[extra]
+
+[related]

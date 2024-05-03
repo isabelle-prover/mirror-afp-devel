@@ -21,6 +21,20 @@
           <description></description>
         </item>
         <item>
+          <title>Simpl</title>
+          <link>/dependencies/simpl/</link>
+          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/simpl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Word_Lib</title>
+          <link>/dependencies/word_lib/</link>
+          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/word_lib/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Coinductive</title>
           <link>/dependencies/coinductive/</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
@@ -67,6 +81,13 @@
           <link>/dependencies/undirected_graph_theory/</link>
           <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/undirected_graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal_Hash_Families</title>
+          <link>/dependencies/universal_hash_families/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/universal_hash_families/</guid>
           <description></description>
         </item>
         <item>
@@ -574,13 +595,6 @@
           <description></description>
         </item>
         <item>
-          <title>Universal_Hash_Families</title>
-          <link>/dependencies/universal_hash_families/</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/universal_hash_families/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Weighted_Arithmetic_Geometric_Mean</title>
           <link>/dependencies/weighted_arithmetic_geometric_mean/</link>
           <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
@@ -662,13 +676,6 @@
           <link>/dependencies/separation_algebra/</link>
           <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/separation_algebra/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Word_Lib</title>
-          <link>/dependencies/word_lib/</link>
-          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/word_lib/</guid>
           <description></description>
         </item>
         <item>
@@ -1971,13 +1978,6 @@
           <link>/dependencies/case_labeling/</link>
           <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
           <guid>/dependencies/case_labeling/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Simpl</title>
-          <link>/dependencies/simpl/</link>
-          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/simpl/</guid>
           <description></description>
         </item>
         <item>

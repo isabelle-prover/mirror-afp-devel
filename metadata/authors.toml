@@ -856,6 +856,13 @@ name = "Felix Brandt"
 [brandt.homepages]
 brandt_homepage = "http://dss.in.tum.de/staff/brandt.html"
 
+[brecknell]
+name = "Matthew Brecknell"
+
+[brecknell.emails]
+
+[brecknell.homepages]
+
 [breitner]
 name = "Joachim Breitner"
 
@@ -2315,6 +2322,13 @@ host = [
 ]
 
 [grechuk.homepages]
+
+[greenaway]
+name = "David Greenaway"
+
+[greenaway.emails]
+
+[greenaway.homepages]
 
 [grewe]
 name = "Sylvia Grewe"
@@ -4905,6 +4919,13 @@ host = [
 
 [nordhoff.homepages]
 
+[norrish]
+name = "Michael Norrish"
+
+[norrish.emails]
+
+[norrish.homepages]
+
 [noschinski]
 name = "Lars Noschinski"
 
@@ -5917,6 +5938,15 @@ user = [
 host = [
   "web",
   "de",
+]
+
+[schirmer.emails.schirmer_email1]
+user = [
+  "nschirmer",
+]
+host = [
+  "apple",
+  "com",
 ]
 
 [schirmer.homepages]
@@ -7056,6 +7086,13 @@ host = [
 ]
 
 [treml.homepages]
+
+[tuch]
+name = "Harvey Tuch"
+
+[tuch.emails]
+
+[tuch.homepages]
 
 [tuerk]
 name = "Thomas Tuerk"
