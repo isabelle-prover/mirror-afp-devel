@@ -21,6 +21,34 @@
           <description></description>
         </item>
         <item>
+          <title>Factor_Algebraic_Polynomial</title>
+          <link>/dependencies/factor_algebraic_polynomial/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/factor_algebraic_polynomial/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth_Bendix_Order</title>
+          <link>/dependencies/knuth_bendix_order/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/knuth_bendix_order/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomials</title>
+          <link>/dependencies/polynomials/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Simpl</title>
           <link>/dependencies/simpl/</link>
           <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
@@ -165,13 +193,6 @@
           <link>/dependencies/martingales/</link>
           <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/martingales/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polynomials</title>
-          <link>/dependencies/polynomials/</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomials/</guid>
           <description></description>
         </item>
         <item>
@@ -511,13 +532,6 @@
           <description></description>
         </item>
         <item>
-          <title>Factor_Algebraic_Polynomial</title>
-          <link>/dependencies/factor_algebraic_polynomial/</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/factor_algebraic_polynomial/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Jordan_Normal_Form</title>
           <link>/dependencies/jordan_normal_form/</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
@@ -529,13 +543,6 @@
           <link>/dependencies/skip_lists/</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/skip_lists/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
           <description></description>
         </item>
         <item>
@@ -942,13 +949,6 @@
           <link>/dependencies/mdp-rewards/</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/mdp-rewards/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Knuth_Bendix_Order</title>
-          <link>/dependencies/knuth_bendix_order/</link>
-          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/knuth_bendix_order/</guid>
           <description></description>
         </item>
         <item>

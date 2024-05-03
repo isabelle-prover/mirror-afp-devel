@@ -4472,6 +4472,14 @@ host = [
 [michaelis.homepages]
 michaelis_homepage = "http://liftm.de/"
 
+[middeldorp]
+name = "Aart Middeldorp"
+
+[middeldorp.emails]
+
+[middeldorp.homepages]
+middeldorp_homepage = "http://cl-informatik.uibk.ac.at/~ami/"
+
 [milehins]
 name = "Mihails Milehins"
 
@@ -4530,6 +4538,13 @@ host = [
 ]
 
 [mitsch.homepages]
+
+[mitterwallner]
+name = "Fabian Mitterwallner"
+
+[mitterwallner.emails]
+
+[mitterwallner.homepages]
 
 [moedersheim]
 name = "Sebastian Mödersheim"

@@ -32,6 +32,33 @@
     <loc>/topics/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/factor_algebraic_polynomial/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/knuth_bendix_order/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/middeldorp/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/mitterwallner/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/polynomials/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/thiemann/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Orient_Rewrite_Rule_Undecidable.html</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/AutoCorres2.html</loc>
     <lastmod>2024-04-17T00:00:00+00:00</lastmod>
   </url><url>
@@ -99,9 +126,6 @@
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lima/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/mfotl_monitor/</loc>
@@ -258,9 +282,6 @@
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/garvia/</loc>
-    <lastmod>2024-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomials/</loc>
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sprenger/</loc>
@@ -650,9 +671,6 @@
     <loc>/entries/Efficient_Weighted_Path_Order.html</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/thiemann/</loc>
-    <lastmod>2023-06-01T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/weighted_path_order/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
@@ -716,9 +734,6 @@
     <loc>/entries/MHComputation.html</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/factor_algebraic_polynomial/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/jordan_normal_form/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -735,9 +750,6 @@
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/desharnais/</loc>
-    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/functional_ordered_resolution_prover/</loc>
@@ -1420,9 +1432,6 @@
   </url><url>
     <loc>/entries/MDP-Algorithms.html</loc>
     <lastmod>2021-12-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/knuth_bendix_order/</loc>
-    <lastmod>2021-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Regular_Tree_Relations.html</loc>
     <lastmod>2021-12-15T00:00:00+00:00</lastmod>
@@ -6350,6 +6359,8 @@
     <loc>/sessions/ordinals_and_cardinals/</loc>
   </url><url>
     <loc>/sessions/ordinary_differential_equations/</loc>
+  </url><url>
+    <loc>/sessions/orient_rewrite_rule_undecidable/</loc>
   </url><url>
     <loc>/sessions/pac_checker/</loc>
   </url><url>

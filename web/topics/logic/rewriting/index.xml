@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/logic/rewriting/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Undecidability Results on Orienting Single Rewrite Rules</title>
+          <link>/entries/Orient_Rewrite_Rule_Undecidable.html</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Orient_Rewrite_Rule_Undecidable.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undecidability Results on Orienting Single Rewrite Rules</title>
+          <link>/entries/Orient_Rewrite_Rule_Undecidable.html</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Orient_Rewrite_Rule_Undecidable.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Verified Efficient Implementation of the Weighted Path Order</title>
           <link>/entries/Efficient_Weighted_Path_Order.html</link>
           <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
