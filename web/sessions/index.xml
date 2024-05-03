@@ -244,6 +244,27 @@
           <description></description>
         </item>
         <item>
+          <title>AutoCorres2</title>
+          <link>/sessions/autocorres2/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2_Main</title>
+          <link>/sessions/autocorres2_main/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2_main/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2_Test</title>
+          <link>/sessions/autocorres2_test/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2_test/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>AutoFocus-Stream</title>
           <link>/sessions/autofocus-stream/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

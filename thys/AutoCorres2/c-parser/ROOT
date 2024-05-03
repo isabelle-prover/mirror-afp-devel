@@ -1,0 +1,33 @@
+(*
+ * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
+ * Copyright (c) 2022 Apple Inc. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+chapter "C-Parser"
+(*
+session "Simpl-VCG" in Simpl = Word_Lib +
+  sessions
+    "HOL-Statespace"
+  theories
+    "Simpl"
+*)
+session CParser = "Simpl" +
+  sessions
+    "HOL-Library"
+    "Lib"
+  directories
+    "umm_heap"
+    "umm_heap/ARM"
+    "umm_heap/ARM64"
+    "umm_heap/ARM_HYP"
+    "umm_heap/RISCV64"
+    "umm_heap/X64"
+  theories
+    "CTranslation"
+    "CTranslationInfrastructure"
+
+session CParserTest in testfiles = "CParser" +
+  theories
+    "CParserTest"

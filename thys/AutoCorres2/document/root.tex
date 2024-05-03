@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{alltt} % for StrictC documentation by M. Norrish
+
+\usepackage{listings}
+\lstset{%
+    language=C,
+    basicstyle=\small\sffamily,
+    columns=fullflexible,
+    showstringspaces=false,
+    xleftmargin=24pt,
+    xrightmargin=24pt
+    }
+
+\usepackage{tocloft}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand{\isamarkuppart}[1]{\part{#1}}
+\newcommand{\isactrlinferUNDERSCOREinstantiate}{\isakeywordcontrol{infer{\isacharunderscore}instantiate}}
+\newcommand{\isactrlmorphUNDERSCOREinferUNDERSCOREinstantiate}{\isakeywordcontrol{morph{\isacharunderscore}infer{\isacharunderscore}instantiate}}
+
+\makeatletter
+\newcommand{\chapterauthor}[1]{%
+  {\parindent0pt\vspace*{-25pt}%
+  \linespread{1.1}\large\scshape#1%
+  \par\nobreak\vspace*{35pt}}
+  \@afterheading%
+}
+\makeatother
+
+\begin{document}
+
+\title{AutoCorres2}
+\author{
+ Matthew Brecknell \and
+ David Greenaway \and
+ Johannes Hölzl \and
+ Fabian Immler \and 
+ Gerwin Klein \and
+ Rafal Kolanski \and
+ Japheth Lim \and
+ Michael Norrish \and
+ Norbert Schirmer \and
+ Thomas Sewell \and
+ Harvey Tuch \and
+ Simon Wimmer
+}
+\maketitle
+
+\begin{abstract}
+  AutoCorres2 is a tool to facilitate the verification of C programs within Isabelle~\cite{LNCS2283}.
+  It is a fork of \href{https://trustworthy.systems/projects/OLD/autocorres/}{AutoCorres}.
+\end{abstract}
+
+\setlength\cftsubsecnumwidth{4em}
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+\input{ctranslation_body}
+
+\bibliographystyle{abbrv}
+\bibliography{root, ctranslation}
+
+\end{document}
