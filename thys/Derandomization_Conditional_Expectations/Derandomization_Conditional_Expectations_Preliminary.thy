@@ -3,12 +3,9 @@ section \<open>Some Preliminary Results\<close>
 theory Derandomization_Conditional_Expectations_Preliminary
   imports
     "HOL-Combinatorics.Multiset_Permutations"
-    Distributed_Distinct_Elements.Pseudorandom_Combinators
+    Universal_Hash_Families.Pseudorandom_Objects
     Undirected_Graph_Theory.Undirected_Graphs_Root
 begin
-
-hide_const (open) Congruence.partition
-hide_fact (open) SN_Orders.of_nat_mono
 
 subsection \<open>On Probability Theory\<close> 
 
