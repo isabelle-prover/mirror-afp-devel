@@ -1,0 +1,102 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+
+\usepackage{authblk}
+
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Undecidability Results on Orienting Single Rewrite Rules\footnote{This research was supported by the Austrian Science Fund (FWF) project I~5943.}}
+\author{Ren\'e Thiemann}
+\author{Fabian Mitterwallner}
+\author{Aart Middeldorp}
+\affil{University of Innsbruck}
+\maketitle
+
+\begin{abstract}
+We formalize several undecidability results on termination 
+for \emph{one-rule} term 
+rewrite systems by means of simple reductions from Hilbert's 10th problem.
+To be more precise, for a class $C$ of reduction orders, 
+we consider the question for a given rewrite 
+rule $\ell \to r$, whether there is some
+reduction order ${\succ} \in C$ such that $\ell \succ r$. We include undecidability results for each of the following classes $C$:
+\begin{itemize}
+\item the class of \emph{linear} polynomial interpretations over
+  the natural numbers, 
+\item the class of linear polynomial interpretations over
+  the natural numbers in the \emph{weakly monotone} setting, 
+\item the class of Knuth--Bendix orders with \emph{subterm coefficients},
+\item the class of \emph{non-linear} polynomial interpretations over the natural numbers, and
+\item the class of non-linear polynomial interpretations over the \emph{rational} and \emph{real} numbers.
+\end{itemize}
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+The main part of this paper is about 
+one of the earliest termination
+methods for term rewrite systems: using a
+polynomial interpretation over the natural numbers, which goes back to
+Lankford~\cite{L79}.
+
+In a recent paper~\cite{MMT24} it was shown that this and other related
+techniques are undecidable, even for one-rule rewrite systems. This
+AFP entry formally proves the results in \cite{MMT24}. These are all
+based on reduction from a variant of Hilbert's 10th problem, 
+which was shown to be undecidable by Matiyasevich~\cite{M70}.
+
+
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
