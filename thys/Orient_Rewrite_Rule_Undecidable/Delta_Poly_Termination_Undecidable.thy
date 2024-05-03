@@ -272,11 +272,12 @@ lemma degree_mono': assumes "\<And> x. x \<ge> c \<Longrightarrow> (bnd :: 'a) \
 text \<open>Lemma 6.6\<close>
 lemma subst_same_var_monotone_imp_same_degree: 
   assumes mono: "monotone_poly (vars p) (p :: 'a mpoly)" 
-    and dq: "degree q = d" 
-    and d0: "d \<noteq> 0" 
+    and d0: "degree q \<noteq> 0" 
     and qp: "poly_to_mpoly x q = substitute (\<lambda>i. PVar x) p" 
-  shows "total_degree p = d" 
+  shows "total_degree p = degree q" 
 proof -
+  obtain d where dq: "degree q = d" by blast
+  with d0 have d0: "d \<noteq> 0" by auto
   let ?mc = "(\<lambda> m. mmonom m (mcoeff p m))" 
   let ?cfs = "{m . mcoeff p m \<noteq> 0}" 
   let ?lc = "lead_coeff" 
@@ -402,7 +403,7 @@ proof -
   also have "\<dots> \<le> d" by (simp add: dq)
   finally have deg_pbp: "M \<le> d" .
   with dM have "M = d" by auto
-  thus ?thesis unfolding M_def .
+  thus ?thesis unfolding M_def dq .
 qed
 
 lemma monotone_poly_partial_insertion: 
@@ -1546,7 +1547,7 @@ proof -
     finally have r: "eval (r 1) = poly_to_mpoly 1 gu" by (auto simp: y2_def)
     from deg_inequality[of 1, unfolded upoly_def l r poly_to_mpoly_inverse] dh dg
     have "degree gu = 1" by auto
-    from subst_same_var_monotone_imp_same_degree[OF mono_g this _ poly_g]
+    with subst_same_var_monotone_imp_same_degree[OF mono_g _ poly_g]
     have "total_degree g = 1" by auto
   } 
   hence dg: "total_degree g = 1" by auto
@@ -1560,7 +1561,7 @@ proof -
     finally have r: "eval (r 2) = poly_to_mpoly 2 fu" by (auto simp: y3_def)
     from deg_inequality[of 2, unfolded upoly_def l r poly_to_mpoly_inverse] df dh
     have "degree fu = 1" by auto
-    from subst_same_var_monotone_imp_same_degree[OF mono_f this _ poly_f]
+    with subst_same_var_monotone_imp_same_degree[OF mono_f _ poly_f]
     have "total_degree f = 1" by auto
   } 
   hence df: "total_degree f = 1" by auto
@@ -1576,11 +1577,11 @@ proof -
       "vars (poly_to_mpoly 0 g) = {..<1}"
       by auto
     hence mono: "monotone_poly (vars (I gs)) (I gs)" unfolding I by auto
-    have "total_degree (I gs) = 1" 
-    proof (rule subst_same_var_monotone_imp_same_degree[OF mono dg, of 0], force)
+    have "total_degree (I gs) = 1" unfolding dg[symmetric] 
+    proof (rule subst_same_var_monotone_imp_same_degree[OF mono, of _ 0])
       show "poly_to_mpoly 0 g = substitute (\<lambda>i. PVar 0) (I gs)" unfolding I
         by (intro mpoly_extI, auto simp: insertion_substitute)
-    qed
+    qed (insert dg, auto)
     hence "total_degree (I gs) \<le> 1" by auto
     from monotone_linear_poly_to_coeffs[OF this valid[folded I]] 
     obtain c a where I': "I gs = Const c + Const a * PVar 0" and pos: "0 \<le> c" "1 \<le> a" 
@@ -1818,7 +1819,7 @@ proof -
     finally have r: "eval (r 4) = poly_to_mpoly 4 au" by (auto simp: y5_def)
     from deg_inequality[of 4, unfolded upoly_def l r poly_to_mpoly_inverse] 
     have "degree au \<le> degree q" by auto
-    with subst_same_var_monotone_imp_same_degree[OF mono_a refl _ poly_a] da 
+    with subst_same_var_monotone_imp_same_degree[OF mono_a _ poly_a] da 
     have "total_degree a \<le> degree q" by auto
   } 
   hence d_aq: "total_degree a \<le> degree q" by auto
@@ -1835,7 +1836,7 @@ proof -
     finally have l: "eval (l 5) = poly_to_mpoly 5 au'" by (auto simp: y6_def)
     from deg_inequality[of 5, unfolded upoly_def l r poly_to_mpoly_inverse] 
     have "degree q \<le> degree au'" by auto
-    with subst_same_var_monotone_imp_same_degree[OF mono_a refl _ poly_a'] da'
+    with subst_same_var_monotone_imp_same_degree[OF mono_a _ poly_a'] da'
     have "degree q \<le> total_degree a" by auto
   } 
 
