@@ -698,23 +698,22 @@ text \<open>Lemma 5.3\<close>
 
 lemma subst_same_var_weakly_monotone_imp_same_degree: 
   assumes wm: "weakly_monotone_poly (vars p) (p :: int mpoly)" 
-    and dq: "degree q = d" 
-    and d0: "d \<noteq> 0" 
     and qp: "poly_to_mpoly x q = substitute (\<lambda>i. PVar x) p" 
-  shows "total_degree p = d" 
-proof -
+  shows "total_degree p = degree q" 
+proof (cases "total_degree p = 0")
+  case False
+  from False have p0: "p \<noteq> 0" by auto
+  obtain d where dq: "degree q = d" by blast
   let ?mc = "(\<lambda> m. mmonom m (mcoeff p m))" 
   let ?cfs = "{m . mcoeff p m \<noteq> 0}" 
   let ?lc = "lead_coeff" 
   note fin = finite_coeff_support[of p]
-  from poly_to_mpoly_substitute_same[OF qp] d0[folded dq] have p0: "p \<noteq> 0"
-    by (metis degree_0 insertion_zero poly_all_0_iff_0)
   define M where "M = total_degree p" 
   from degree_monom_eq_total_degree[OF p0]
   obtain mM where mM: "mcoeff p mM \<noteq> 0" "degree_monom mM = M" unfolding M_def by blast
   from degree_substitute_same_var[of x p, folded M_def qp]
   have dM: "d \<le> M" unfolding dq degree_poly_to_mpoly .
-  with d0 have M1: "M \<ge> 1" by auto
+  from False M_def have M1: "M \<ge> 1" by auto
   define p1 where "p1 = sum ?mc (?cfs \<inter> {m. degree_monom m = M})" 
   define p2 where "p2 = sum ?mc (?cfs \<inter> {m. degree_monom m < M})" 
   have "p = sum ?mc ?cfs" 
@@ -817,7 +816,13 @@ proof -
   also have "\<dots> \<le> d" by (simp add: dq)
   finally have deg_pbp: "M \<le> d" .
   with dM have "M = d" by auto
-  thus ?thesis unfolding M_def .
+  thus ?thesis unfolding M_def dq .
+next
+  case True
+  then obtain c where p: "p = Const c" using degree_0_imp_Const by blast
+  with qp have "poly_to_mpoly x q = p" by auto
+  thus ?thesis
+    by (metis True degree_Const degree_poly_to_mpoly p)
 qed
 
 lemma monotone_poly_partial_insertion: 
@@ -1247,8 +1252,8 @@ proof -
   have dfyy: "degree fyy = 1" by auto
 
   note lemma_5_3 = subst_same_var_weakly_monotone_imp_same_degree[OF monotone_imp_weakly_monotone]
-  from lemma_5_3[OF monof dfyy _ pfyy] have df: "total_degree f = 1" by auto
-  from lemma_5_3[OF monoa dayy _ payy] have da: "total_degree a = 1" by auto
+  from lemma_5_3[OF monof] dfyy pfyy have df: "total_degree f = 1" by auto
+  from lemma_5_3[OF monoa] dayy payy have da: "total_degree a = 1" by auto
 
   let ?argsL = "[q_t (h_t (Var y4)),
     h_t (Var y5),
@@ -1286,12 +1291,12 @@ proof -
           thus False
           proof cases
             case V
-            have "total_degree (I g) = 1"
-            proof (rule lemma_5_3[OF *(2)[folded *(3)] dv[OF V(1)]])
+            have "total_degree (I g) = 1" unfolding dv[OF V(1), symmetric]
+            proof (rule lemma_5_3[OF *(2)[folded *(3)]])
               show "poly_to_mpoly 0 (v i) = substitute (\<lambda>i. PVar 0) (I g)" 
                 unfolding V Iv[OF V(1)] 
                 by (intro mpoly_extI, auto simp: insertion_substitute)
-            qed force
+            qed
             with not show False by auto
           next
             case z
