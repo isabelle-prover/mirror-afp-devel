@@ -1,0 +1,74 @@
+AutoCorres 1.7 (30 October 2020)
+--------------
+
+	* Isabelle2020 edition of both AutoCorres and the C parser.
+
+	* Slight updates to wp: use "wp (once)" instead of "wp_once"
+
+AutoCorres 1.6.1 (3 October 2019)
+----------------
+	* Correct license for a C parser file. No code changes.
+
+AutoCorres 1.6 (5 September 2019)
+--------------
+
+	* Isabelle2019 edition of both AutoCorres and the C parser.
+
+	* Word abstraction has been extended to C bitwise operators.
+
+AutoCorres 1.5 (10 September 2018)
+--------------
+
+	* Isabelle2018 edition of both AutoCorres and the C parser.
+
+AutoCorres 1.4 (2 March 2018)
+--------------
+
+        * Isabelle2017 edition of both AutoCorres and the C parser.
+
+AutoCorres 1.3 (3 April 2017)
+--------------
+
+        * Isabelle2016-1 edition of both AutoCorres and the C parser.
+
+        * Support for multiple two architectures: ARM (32-bit) and X64 (64-bit).
+          When starting an Isabelle session with AutoCorres, the architecture
+          must be selected using L4V_ARCH environment variable.
+
+AutoCorres 1.2 (31 March 2016)
+--------------
+
+        * Isabelle2016 edition of both AutoCorres and the C parser.
+
+        * Incompatibility: when using the “scope” option to select functions
+          to translate, calls to the un-translated functions are no longer
+          translated to “fail”. Instead, they call the C parser functions directly
+          through a wrapper. This makes it possible to do proofs on “scope”-limited
+          AutoCorres specs.
+
+        * Several minor bug fixes and improvements.
+
+AutoCorres 1.1 (9 Oct 2015)
+--------------
+
+        * Isabelle2015 edition of both AutoCorres and the C parser.
+
+        * New options for changing how AutoCorres names functions and globals.
+
+        * Incompatibility: names of global variables have changed.
+          Names have changed from “lifted_globals.foo_'” to
+          “lifted_globals.foo_''”. Recover the old behaviour by setting
+          lifted_globals_field_suffix="_'".
+
+        * Minor incompatibility: intermediate function names have changed.
+          They are now “l1_foo'”, “l2_foo'”... instead of “l1_foo”, “l2_foo”.
+
+        * Renamed “ccorres” predicate to “ac_corres” for clarity.
+
+
+AutoCorres 1.0 (16 Dec 2014)
+--------------
+
+        * New option “no_opt” to turn off simplifier stages. (Experimental)
+
+        * New options for tracing some of AutoCorres's internal translations.

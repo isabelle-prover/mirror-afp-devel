@@ -1,0 +1,109 @@
+(*
+ * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
+ * Copyright (c) 2022 Apple Inc. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+theory list_reverse
+imports "AutoCorres2.CTranslation" "MachineWords"
+begin
+
+declare hrs_simps [simp add]
+declare exists_left [simp add]
+declare sep_conj_ac [simp add]
+
+primrec
+  list :: "machine_word list \<Rightarrow> machine_word ptr \<Rightarrow> heap_state \<Rightarrow> bool"
+where
+  "list [] i = (\<lambda>s. i=NULL \<and> \<box> s)"
+| "list (x#xs) i = (\<lambda>s. i=Ptr x \<and> x\<noteq>0 \<and> (\<exists>j. ((i \<mapsto> j) \<and>\<^sup>* list xs (Ptr j)) s))"
+
+lemma list_empty [simp]:
+  shows "list xs NULL = (\<lambda>s. xs = [] \<and> \<box> s)"
+  by (cases xs) (auto dest!: sep_conj_mapD)
+
+declare sep_conj_com [simp del]
+declare sep_conj_left_com [simp del]
+
+install_C_file "list_reverse.c" [memsafe]
+
+context reverse_impl
+begin
+thm reverse_body_def
+end
+
+context reverse_spec
+begin
+thm reverse_spec
+end
+
+context list_reverse_simpl 
+begin
+interpretation  reverse_spec
+apply unfold_locales
+apply (hoare_rule HoarePartial.ProcNoRec1)
+apply (hoare_rule anno = "reverse_invs_body zs" in HoarePartial.annotateI)
+ prefer 2
+ apply (simp add: whileAnno_def reverse_invs_body_def)
+apply(subst reverse_invs_body_def)
+apply(unfold sep_app_def)
+apply vcg
+  apply (fold lift_def)
+  apply(force simp: sep_conj_com)
+ apply clarsimp
+ apply(case_tac xs)
+  apply clarsimp
+ apply clarsimp
+ apply sep_exists_tac
+ apply clarsimp
+ apply sep_point_tac
+ apply rule
+  apply(erule sep_map'_g)
+ apply rule
+  apply(erule sep_map'_ptr_safe)
+ apply(rule_tac x="lista" in exI)
+ apply (simp add: ucast_id)
+ apply sep_exists_tac
+ apply(rule_tac x=j in exI)
+ apply simp
+ apply(rule sep_heap_update_global)
+ apply(erule sep_conj_impl)
+  apply simp
+ apply(sep_select_tac "list lista _")
+ apply(erule sep_conj_impl)
+  apply(subgoal_tac "lift a (Ptr aa) = ja")
+   apply simp
+  apply(erule_tac d=b in sep_map'_lift)
+ apply simp
+apply(simp add: sep_conj_com)
+  done
+
+thm reverse_spec
+
+declare hrs_simps [simp del]
+
+lemma  mem_safe_reverse_invs_body:
+  "mem_safe (reverse_invs_body \<alpha>) \<Gamma>"
+apply(unfold reverse_invs_body_def ccatchreturn_def creturn_def)
+apply(subst mem_safe_restrict)
+apply(rule intra_mem_safe)
+apply(auto simp: whileAnno_def intra_sc)
+done
+
+declare hrs_simps [simp add]
+
+lemma  sep_frame_reverse_invs_body:
+  "\<lbrakk> \<forall>\<sigma>. \<Gamma> \<turnstile> \<lbrace>\<sigma>. (P (f \<acute>(\<lambda>x. x)))\<^bsup>sep\<^esup> \<rbrace> reverse_invs_body \<alpha> \<lbrace> (Q (g \<sigma> \<acute>(\<lambda>x. x)))\<^bsup>sep\<^esup> \<rbrace>;
+      htd_ind f; htd_ind g; \<forall>s. htd_ind (g s) \<rbrakk> \<Longrightarrow>
+      \<forall>\<sigma>. \<Gamma> \<turnstile> \<lbrace>\<sigma>. (P (f \<acute>(\<lambda>x. x)) \<and>\<^sup>* R (h \<acute>(\<lambda>x. x)))\<^bsup>sep\<^esup> \<rbrace> reverse_invs_body \<alpha>
+              \<lbrace> (Q (g \<sigma> \<acute>(\<lambda>x. x)) \<and>\<^sup>* R (h \<sigma>))\<^bsup>sep\<^esup> \<rbrace>"
+apply(simp only: sep_app_def)
+apply(rule sep_frame)
+    apply simp+
+apply(rule mem_safe_reverse_invs_body)
+done
+
+end
+
+end
