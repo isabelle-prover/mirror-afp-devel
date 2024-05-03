@@ -34,7 +34,7 @@ homepage = "divason_homepage"
 homepage = "kuncar_homepage"
 
 [authors.thiemann]
-email = "thiemann_email"
+homepage = "thiemann_homepage"
 
 [authors.yamada]
 email = "yamada_email"
