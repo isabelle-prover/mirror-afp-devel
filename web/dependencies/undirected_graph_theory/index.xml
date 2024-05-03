@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 20 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 24 Mar 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/undirected_graph_theory/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Derandomization with Conditional Expectations</title>
+          <link>/entries/Derandomization_Conditional_Expectations.html</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Hypergraphs</title>
           <link>/entries/Hypergraph_Basics.html</link>

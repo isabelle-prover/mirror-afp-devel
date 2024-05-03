@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Labeled Transition Systems - Archive of Formal Proofs</title>
-    <meta name="description" content="Labeled transition systems are ubiquitous in computer science. They are used e.g. for automata and for program graphs in program analysis. We formalize...">
+    <title>Derandomization with Conditional Expectations - Archive of Formal Proofs</title>
+    <meta name="description" content="The Method of Conditional Expectations (sometimes also called &#34;Method of Conditional Probabilities&#34;) is one of the prominent derandomization techniques....">
 
-  <meta property="og:title" content="Labeled Transition Systems" />
+  <meta property="og:title" content="Derandomization with Conditional Expectations" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Labeled_Transition_Systems.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-10-31T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-10-31T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Derandomization_Conditional_Expectations.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-03-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-03-24T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Labeled Transition Systems"/>
+<meta name="twitter:title" content="Derandomization with Conditional Expectations"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -123,15 +123,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>L</span>abeled <span class='first'>T</span>ransition <span class='first'>S</span>ystems
+    <span class='first'>D</span>erandomization with <span class='first'>C</span>onditional <span class='first'>E</span>xpectations
     
   </h1>
   <div>
       <p>
-        <a href="../authors/schlichtkrull">Anders Schlichtkrull</a> <a href="https://people.compute.dtu.dk/andschl/">🌐</a>, <a href="../authors/schou">Morten Konggaard Schou</a>, <a href="../authors/srba">Jiří Srba</a> <a href="https://homes.cs.aau.dk/~srba/">🌐</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
+        <a href="../authors/karayel">Emin Karayel</a> <a class="obfuscated" data="eyJob3N0IjpbImVtaW5rYXJheWVsIiwiZGUiXSwidXNlciI6WyJtZSJdfQ==">📧</a>
 
       </p>
-      <p class="date">October 31, 2023</p>
+      <p class="date">March 24, 2024</p>
   </div>
 </header>
       <div>
@@ -139,10 +139,18 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">Labeled transition systems are ubiquitous in computer science. They are used e.g. for automata and for program graphs in program analysis. We formalize labeled transition systems with and without epsilon transitions. The main difference between formalizations of labeled transition systems is in their choice of how to represent the transition system. In the present formalization the set of nodes is a type, and a labeled transition system is represented as a locale fixing a set  of transitions where each transition is a triple of respectively a start node, a label and an end node. Wimmer [Wim20] provides an overview of formalizations of graphs and transition systems.
-<p>
+    <div class="abstract mathjax_process">The <a href="http://dx.doi.org/10.1561/0400000010"><i>Method of Conditional Expectations</i></a> (sometimes also called "Method of Conditional Probabilities") is one of the prominent
+derandomization techniques. Given a randomized algorithm, it allows the construction of a 
+deterministic algorithm with a result that matches the average-case quality of the randomized
+algorithm.
 
-[Wim20] Simon Wimmer. Archive of graph formalizations. 2020. <a href="https://github.com/wimmers/archive-of-graph-formalizations">https://github.com/wimmers/archive-of-graph-formalizations</a>.</div>
+Using this technique, this entry starts with a simple example, an algorithm that obtains
+a cut that crosses at least half of the edges. This is a well-known approximate solution to the 
+Max-Cut problem. It is followed by a more complex and interesting result: an algorithm
+that returns an independent set matching (or exceeding) the <a href="http://dx.doi.org/10.1016/0012-365X(91)90357-8">Caro-Wei bound</a>: $\frac{n}{d+1}$ 
+where $n$ is the vertex count and $d$ is the average degree of the graph.
+
+Both algorithms are efficient and deterministic, and follow from the derandomization of a probabilistic existence proof.</div>
 
     <h3>License</h3>
     <div>
@@ -150,32 +158,22 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li>
-          <li><a href="../topics/computer-science">Computer science</a></li>
+          <li><a href="../topics/computer-science/algorithms/randomized">Computer science/Algorithms/Randomized</a></li>
+          <li><a href="../topics/computer-science/algorithms/graph">Computer science/Algorithms/Graph</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Derandomization_Conditional_Expectations</h3>
       <ul>
-        <li>Schlichtkrull, A., Schou, M. K., Srba, J., &amp; Traytel, D. (2022). <i>Differential Testing of Pushdown Reachability with a Formally Verified Oracle</i>. TU Wien. <a href="https://doi.org/10.34727/2022/ISBN.978-3-85448-053-2_44">https://doi.org/10.34727/2022/ISBN.978-3-85448-053-2_44</a>
-        </li>
-      </ul>
-      <h3>Session Labeled_Transition_Systems</h3>
-      <ul>
-          <li><a href="../sessions/labeled_transition_systems/#LTS">LTS</a></li>
+          <li><a href="../sessions/derandomization_conditional_expectations/#Derandomization_Conditional_Expectations_Preliminary">Derandomization_Conditional_Expectations_Preliminary</a></li>
+          <li><a href="../sessions/derandomization_conditional_expectations/#Derandomization_Conditional_Expectations_Cut">Derandomization_Conditional_Expectations_Cut</a></li>
+          <li><a href="../sessions/derandomization_conditional_expectations/#Derandomization_Conditional_Expectations_Independent_Set">Derandomization_Conditional_Expectations_Independent_Set</a></li>
       </ul>
 
     <div class="flex-wrap">
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
-              <li><a href="../entries/Deriving.html">Deriving class instances for datatypes</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>Used by</h3>
-        <ul class="horizontal-list">
-            <li>
-              <a href="../entries/Pushdown_Systems.html">Pushdown Systems</a>
-            </li>
+              <li><a href="../entries/Distributed_Distinct_Elements.html">Distributed Distinct Elements</a></li>
+              <li><a href="../entries/Undirected_Graph_Theory.html">Undirected Graph Theory</a></li>
         </ul>
       </div>
       </div>
@@ -186,9 +184,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Labeled_Transition_Systems/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Labeled_Transition_Systems/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Labeled_Transition_Systems/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Derandomization_Conditional_Expectations/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Derandomization_Conditional_Expectations/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Derandomization_Conditional_Expectations/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -197,14 +195,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Labeled_Transition_Systems-AFP</p>
-        <pre id="copy-text">@article{Labeled_Transition_Systems-AFP,
-  author  = {Anders Schlichtkrull and Morten Konggaard Schou and Jiří Srba and Dmitriy Traytel},
-  title   = {Labeled Transition Systems},
+        <p style="display:none;" id="bibtex-filename">Derandomization_Conditional_Expectations-AFP</p>
+        <pre id="copy-text">@article{Derandomization_Conditional_Expectations-AFP,
+  author  = {Emin Karayel},
+  title   = {Derandomization with Conditional Expectations},
   journal = {Archive of Formal Proofs},
-  month   = {October},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Labeled_Transition_Systems.html},
+  month   = {March},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Derandomization_Conditional_Expectations.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -218,7 +216,7 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Labeled_Transition_Systems-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Derandomization_Conditional_Expectations-current.tar.gz"
          download>Download latest</a>
     </div>
   </div>

@@ -1,0 +1,39 @@
+title = "Derandomization with Conditional Expectations"
+date = 2024-03-24
+topics = [
+  "Computer science/Algorithms/Randomized",
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+The <a href=\"http://dx.doi.org/10.1561/0400000010\"><i>Method of Conditional Expectations</i></a> (sometimes also called \"Method of Conditional Probabilities\") is one of the prominent
+derandomization techniques. Given a randomized algorithm, it allows the construction of a 
+deterministic algorithm with a result that matches the average-case quality of the randomized
+algorithm.
+
+Using this technique, this entry starts with a simple example, an algorithm that obtains
+a cut that crosses at least half of the edges. This is a well-known approximate solution to the 
+Max-Cut problem. It is followed by a more complex and interesting result: an algorithm
+that returns an independent set matching (or exceeding) the <a href=\"http://dx.doi.org/10.1016/0012-365X(91)90357-8\">Caro-Wei bound</a>: $\\frac{n}{d+1}$ 
+where $n$ is the vertex count and $d$ is the average degree of the graph.
+
+Both algorithms are efficient and deterministic, and follow from the derandomization of a probabilistic existence proof."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+email = "karayel_email"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

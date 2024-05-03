@@ -56,6 +56,20 @@
           <description></description>
         </item>
         <item>
+          <title>Distributed_Distinct_Elements</title>
+          <link>/dependencies/distributed_distinct_elements/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/distributed_distinct_elements/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undirected_Graph_Theory</title>
+          <link>/dependencies/undirected_graph_theory/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/undirected_graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Pell</title>
           <link>/dependencies/pell/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
@@ -361,13 +375,6 @@
           <link>/dependencies/fishers_inequality/</link>
           <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/fishers_inequality/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Undirected_Graph_Theory</title>
-          <link>/dependencies/undirected_graph_theory/</link>
-          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/undirected_graph_theory/</guid>
           <description></description>
         </item>
         <item>
