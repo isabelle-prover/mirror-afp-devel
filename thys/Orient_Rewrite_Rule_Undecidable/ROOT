@@ -1,0 +1,23 @@
+chapter AFP
+
+session Orient_Rewrite_Rule_Undecidable = Polynomials +
+  description "Undecidability Results on Orienting Single Rewrite Rules"
+  options [timeout = 600]
+  sessions
+    First_Order_Terms
+    Knuth_Bendix_Order
+    Factor_Algebraic_Polynomial
+  theories 
+    Preliminaries_on_Polynomials_1
+    Preliminaries_on_Polynomials_2
+  theories
+    Polynomial_Interpretation
+  theories
+    Hilbert10_to_Inequality
+    Linear_Poly_Termination_Undecidable
+    KBO_Subterm_Coefficients_Undecidable
+    Poly_Termination_Undecidable
+    Delta_Poly_Termination_Undecidable
+  document_files
+    "root.bib"
+    "root.tex"
