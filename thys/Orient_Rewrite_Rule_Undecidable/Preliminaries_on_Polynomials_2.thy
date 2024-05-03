@@ -880,6 +880,40 @@ proof -
   from mc c_def this show ?thesis by blast
 qed
 
+lemma degree_monom_0_iff: "degree_monom m = 0 \<longleftrightarrow> m = 0" 
+  unfolding degree_monom_def
+  by transfer auto
+
+lemma degree_0_imp_Const: fixes p :: "'a :: comm_ring_1 mpoly" 
+  assumes d0: "total_degree p = 0"
+  shows "\<exists> c. p = Const c" 
+proof -
+  {
+    fix m 
+    assume "mcoeff p m \<noteq> 0" 
+    from degree_monon_le_total_degree[OF this, unfolded d0]
+    have "m = 0" by (auto simp: degree_monom_0_iff)
+  }
+  hence "{m . mcoeff p m \<noteq> 0} = {} \<or> {m . mcoeff p m \<noteq> 0} = {0}" by auto
+  thus ?thesis
+  proof
+    assume id: "{m . mcoeff p m \<noteq> 0} = {}" 
+    have "p = sum (\<lambda> m. mmonom m (mcoeff p m)) {m . mcoeff p m \<noteq> 0}" 
+      by (rule mpoly_as_sum)
+    also have "\<dots> = 0" unfolding id by simp
+    also have "\<dots> = Const 0" by simp
+    finally show ?thesis by blast
+  next
+    assume id: "{m. mcoeff p m \<noteq> 0} = {0}" 
+    have "p = sum (\<lambda> m. mmonom m (mcoeff p m)) {m . mcoeff p m \<noteq> 0}" 
+      by (rule mpoly_as_sum)
+    also have "\<dots> = mmonom 0 (mcoeff p 0)" unfolding id by simp
+    also have "\<dots> = Const (mcoeff p 0)"
+      using mpoly_monom_0_eq_Const by blast
+    finally show ?thesis by blast
+  qed
+qed
+
 lemma binary_degree_2_poly: fixes p :: "'a :: {ring_char_0,idom} mpoly" 
   assumes td: "total_degree p \<le> 2" 
   and vars: "vars p = {x,y}"
