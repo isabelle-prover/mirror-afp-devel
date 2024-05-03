@@ -40,7 +40,7 @@ syntax
   "_range" :: "'a \<Rightarrow> idts \<Rightarrow> 'a set" ("(1{_ /|./ _})")
   "_image" :: "'a \<Rightarrow> pttrn \<Rightarrow> 'a set \<Rightarrow> 'a set"  ("(1{_ /|./ (_/ \<in> _)})")
 translations
-  "{e |. p}" \<rightleftharpoons> "{e | p. CONST True}"
+  "{e |. p}" \<rightleftharpoons> "CONST range (\<lambda>p. e)"
   "{e |. p \<in> A}" \<rightleftharpoons> "CONST image (\<lambda>p. e) A"
 
 lemma image_constant:
