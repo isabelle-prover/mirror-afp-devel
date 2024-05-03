@@ -20,6 +20,7 @@ AutoCorres2 is a fork of AutoCorres:
 * Johannes Hölz
 * Fabian Immler
 * Norbert Schirmer
+* Salomon Sickert-Zehnter
 * Simon Wimmer
  
 Here is a list of authors and contributors to the original AutoCorres project:

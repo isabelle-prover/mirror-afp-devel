@@ -17,7 +17,7 @@ note = ""
 email = "joosten_email"
 
 [authors.thiemann]
-email = "thiemann_email"
+homepage = "thiemann_homepage"
 
 [authors.yamada]
 email = "yamada_email"

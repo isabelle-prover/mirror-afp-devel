@@ -22,7 +22,7 @@ homepage = "lochbihler_homepage"
 [contributors]
 
 [contributors.thiemann]
-email = "thiemann_email"
+homepage = "thiemann_homepage"
 
 [notify]
 lochbihler = "lochbihler_email1"
