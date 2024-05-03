@@ -3,12 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/MFOTL_Checker.html</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/binder/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Picks_Theorem.html</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/poincare_bendixson/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/MFOTL_Checker.html</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/coinductive/</loc>
@@ -18,12 +42,6 @@
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ConcurrentHOL.html</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/gammie/</loc>
@@ -50,9 +68,6 @@
     <loc>/authors/raszyk/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/traytel/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -60,9 +75,6 @@
     <lastmod>2024-04-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/ito/</loc>
-    <lastmod>2024-04-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-04-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Broadcast_Psi.html</loc>
@@ -88,6 +100,21 @@
   </url><url>
     <loc>/entries/Uncertainty_Principle.html</loc>
     <lastmod>2024-03-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Derandomization_Conditional_Expectations.html</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/distributed_distinct_elements/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/undirected_graph_theory/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/universal_hash_families/</loc>
+    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Continued_Fractions.html</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
@@ -156,9 +183,6 @@
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Karatsuba.html</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/karayel/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/root_balanced_tree/</loc>
@@ -458,9 +482,6 @@
     <loc>/entries/Hypergraph_Basics.html</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/undirected_graph_theory/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/speccheck/</loc>
     <lastmod>2023-09-19T00:00:00+00:00</lastmod>
   </url><url>
@@ -749,9 +770,6 @@
     <loc>/dependencies/perron_frobenius/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/universal_hash_families/</loc>
-    <lastmod>2023-03-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/weighted_arithmetic_geometric_mean/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -867,9 +885,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Propositional_Logic_Class.html</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/cordwell/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/datatype_order_generator/</loc>
@@ -5311,6 +5326,8 @@
   </url><url>
     <loc>/sessions/depth-first-search/</loc>
   </url><url>
+    <loc>/sessions/derandomization_conditional_expectations/</loc>
+  </url><url>
     <loc>/sessions/derangements/</loc>
   </url><url>
     <loc>/sessions/deriving/</loc>
@@ -6350,6 +6367,8 @@
     <loc>/sessions/pi_calculus/</loc>
   </url><url>
     <loc>/sessions/pi_transcendental/</loc>
+  </url><url>
+    <loc>/sessions/picks_theorem/</loc>
   </url><url>
     <loc>/sessions/planarity_certificates/</loc>
   </url><url>

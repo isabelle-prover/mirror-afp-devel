@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Pick&#39;s Theorem</title>
+          <link>/entries/Picks_Theorem.html</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Picks_Theorem.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
           <link>/entries/MFOTL_Checker.html</link>
@@ -46,6 +53,13 @@
           <link>/entries/Uncertainty_Principle.html</link>
           <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Uncertainty_Principle.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Derandomization with Conditional Expectations</title>
+          <link>/entries/Derandomization_Conditional_Expectations.html</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Derandomization_Conditional_Expectations.html</guid>
           <description></description>
         </item>
         <item>
@@ -6979,6 +6993,13 @@
           <description></description>
         </item>
         <item>
+          <title>Derandomization_Conditional_Expectations</title>
+          <link>/sessions/derandomization_conditional_expectations/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/derandomization_conditional_expectations/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Derangements</title>
           <link>/sessions/derangements/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9699,6 +9720,13 @@
           <link>/sessions/pi_transcendental/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/pi_transcendental/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Picks_Theorem</title>
+          <link>/sessions/picks_theorem/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/picks_theorem/</guid>
           <description></description>
         </item>
         <item>

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Poincare_Bendixson</title>
+          <link>/dependencies/poincare_bendixson/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/poincare_bendixson/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Coinductive</title>
           <link>/dependencies/coinductive/</link>
@@ -46,6 +53,27 @@
           <link>/dependencies/qhlprover/</link>
           <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/qhlprover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Distributed_Distinct_Elements</title>
+          <link>/dependencies/distributed_distinct_elements/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/distributed_distinct_elements/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undirected_Graph_Theory</title>
+          <link>/dependencies/undirected_graph_theory/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/undirected_graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal_Hash_Families</title>
+          <link>/dependencies/universal_hash_families/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/universal_hash_families/</guid>
           <description></description>
         </item>
         <item>
@@ -357,13 +385,6 @@
           <description></description>
         </item>
         <item>
-          <title>Undirected_Graph_Theory</title>
-          <link>/dependencies/undirected_graph_theory/</link>
-          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/undirected_graph_theory/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>SpecCheck</title>
           <link>/dependencies/speccheck/</link>
           <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
@@ -557,13 +578,6 @@
           <link>/dependencies/perron_frobenius/</link>
           <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/perron_frobenius/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal_Hash_Families</title>
-          <link>/dependencies/universal_hash_families/</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/universal_hash_families/</guid>
           <description></description>
         </item>
         <item>
