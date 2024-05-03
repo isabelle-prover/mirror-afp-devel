@@ -7053,6 +7053,16 @@ host = [
   "net",
 ]
 
+[trelat.emails.trelat_email1]
+user = [
+  "vincent",
+  "trelat",
+]
+host = [
+  "inria",
+  "fr",
+]
+
 [trelat.homepages]
 
 [treml]

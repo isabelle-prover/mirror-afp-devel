@@ -21,6 +21,13 @@
           <description></description>
         </item>
         <item>
+          <title>Substitutions for Lambda-Free Higher-Order Terms</title>
+          <link>/entries/Substitutions_Lambda_Free.html</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Substitutions_Lambda_Free.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Undecidability Results on Orienting Single Rewrite Rules</title>
           <link>/entries/Orient_Rewrite_Rule_Undecidable.html</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
@@ -11043,6 +11050,13 @@
           <link>/sessions/subset_boolean_algebras/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/subset_boolean_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Substitutions_Lambda_Free</title>
+          <link>/sessions/substitutions_lambda_free/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/substitutions_lambda_free/</guid>
           <description></description>
         </item>
         <item>

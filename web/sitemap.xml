@@ -41,6 +41,9 @@
     <loc>/dependencies/knuth_bendix_order/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/lambda_free_rpos/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/logic/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -53,10 +56,19 @@
     <loc>/dependencies/polynomials/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Substitutions_Lambda_Free.html</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/thiemann/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/trelat/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Orient_Rewrite_Rule_Undecidable.html</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/well_quasi_orders/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MFOTL_Checker.html</loc>
@@ -1076,9 +1088,6 @@
     <loc>/authors/merz/</loc>
     <lastmod>2022-08-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/trelat/</loc>
-    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/bortin/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -2021,9 +2030,6 @@
     <loc>/entries/BirdKMP.html</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/well_quasi_orders/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Amicable_Numbers.html</loc>
     <lastmod>2020-08-04T00:00:00+00:00</lastmod>
   </url><url>
@@ -2151,9 +2157,6 @@
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ieee_floating_point/</loc>
-    <lastmod>2020-04-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/lambda_free_rpos/</loc>
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Automated_Stateful_Protocol_Verification.html</loc>
@@ -6776,6 +6779,8 @@
     <loc>/sessions/subresultants/</loc>
   </url><url>
     <loc>/sessions/subset_boolean_algebras/</loc>
+  </url><url>
+    <loc>/sessions/substitutions_lambda_free/</loc>
   </url><url>
     <loc>/sessions/sugar/</loc>
   </url><url>
