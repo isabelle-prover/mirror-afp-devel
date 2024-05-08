@@ -552,7 +552,8 @@ proof -
         hence **: "i - dg \<le> j \<Longrightarrow> dg - (j + dg - i) = i - j" using ij by linarith
         have "int dg - int j + int (i - dg) < 0 \<longrightarrow> \<not> j \<le> i" by auto
         thus "coeff_int g (int dg - int j + int (i - dg)) = (if i - dg \<le> j \<and> j \<le> i then coeff g (i - j) else 0)"
-          using ij i by (simp add: coeff_int_def * **, intro impI  coeff_eq_0[of g, unfolded dg], linarith)
+          using ij i 
+          by (simp add: coeff_int_def * ** coeff_eq_0[of g, unfolded dg] nat_diff_distrib')
       qed
     qed
     finally show ?case .

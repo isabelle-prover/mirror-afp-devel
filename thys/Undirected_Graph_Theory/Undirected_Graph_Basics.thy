@@ -67,28 +67,6 @@ lemma last_in_list_tl_set:
 lemma length_list_decomp_lt: "ys \<noteq> [] \<Longrightarrow> length (xs @zs) < length (xs@ys@zs)"
   using length_append by simp 
 
-lemma obtains_Max:
-  assumes "finite A" and "A \<noteq> {}"
-  obtains x where "x \<in> A" and "Max A = x"
-  using assms Max_in by blast
-
-lemma obtains_MAX:
-  assumes "finite A" and "A \<noteq> {}"
-  obtains x where "x \<in> A" and "Max (f ` A) = f x"
-  using obtains_Max
-  by (metis (mono_tags, opaque_lifting) assms(1) assms(2) empty_is_image finite_imageI image_iff) 
-
-lemma obtains_Min:
-  assumes "finite A" and "A \<noteq> {}"
-  obtains x where "x \<in> A" and "Min A = x"
-  using assms Min_in by blast
-
-lemma obtains_MIN:
-  assumes "finite A" and "A \<noteq> {}"
-  obtains x where "x \<in> A" and "Min (f ` A) = f x"
-  using obtains_Min assms empty_is_image finite_imageI image_iff
-  by (metis (mono_tags, opaque_lifting)) 
-
 subsection \<open> Initial Set up \<close>
 text \<open>For convenience and readability, some functions and type synonyms are defined outside locale context \<close>
 
@@ -216,14 +194,15 @@ lemma finite_all_edges_loops: "finite S \<Longrightarrow> finite (all_edges_loop
 
 lemma card_all_edges_loops: 
   assumes "finite S"
-  shows "card (all_edges_loops S) = (card S) choose 2 + card S"
+  shows "card (all_edges_loops S) = (card S choose 2) + card S"
 proof -
   have "card (all_edges_loops S) = card (all_edges S \<union> {{v} | v. v \<in> S})" 
     by (simp add: all_edges_loops_def)
   also have "... = card (all_edges S) + card {{v} | v. v \<in> S}"
     using loops_disjoint assms card_Un_disjoint[of "all_edges S" "{{v} | v. v \<in> S}"] 
       all_edges_loops_ss finite_all_edges_loops finite_subset by fastforce 
-  also have "... = (card S) choose 2 + card {{v} | v. v \<in> S}" by(simp add: card_all_edges assms)
+  also have "... = (card S choose 2) + card {{v} | v. v \<in> S}"
+    by(simp add: card_all_edges assms)
   finally show ?thesis using assms card_singletons by auto
 qed
 

@@ -46,7 +46,7 @@ declare bind_def[simp]
 syntax "_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST bind E (\<lambda>P. F)"
 
-no_notation "binomial" (infixl "choose" 65)
+no_notation "binomial" (infix "choose" 64)
 
 definition choose :: "'a set \<Rightarrow> 'a M" where
   "choose S \<mu> \<equiv> {(a,\<mu>1). a \<in> S \<and> \<mu>1=\<mu>}"

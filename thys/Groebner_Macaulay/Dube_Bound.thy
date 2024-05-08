@@ -772,7 +772,7 @@ qed
 lemma Hilbert_fun_X:
   assumes "d \<le> z"
   shows "Hilbert_fun (P[X]::(_ \<Rightarrow>\<^sub>0 'a) set) z =
-            ((z - d) + (n - 1)) choose (n - 1) + Hilbert_fun P z + Hilbert_fun N z"
+            ((z - d) + (n - 1) choose n - 1) + Hilbert_fun P z + Hilbert_fun N z"
 proof -
   define ss where "ss = [ideal {f} \<inter> P[X], P, N]"
   have "homogeneous_set A \<and> phull.subspace A" if "A \<in> set ss" for A
@@ -816,7 +816,7 @@ proof -
       assume "1 < count_list ss p"
       with decomp_Polys have "p = {0}" unfolding ss_def[symmetric] using phull.subspace_0
         by (rule direct_decomp_repeated_eq_zero) (rule 2)
-      thus ?thesis by simp
+      thus ?thesis by simp                                   
     qed simp
   qed
   also have "\<dots> = sum_list (map (\<lambda>p. Hilbert_fun p z) ss)"
@@ -842,7 +842,7 @@ proof (rule poly_fun_eqI_ge)
   hence "d \<le> ?z" using \<open>aa 0 \<le> nat z\<close> by (rule le_trans)
   hence int_zd: "int (?z - d) = z - int d" using int_z by linarith
   from \<open>d \<le> ?z\<close> have "Hilbert_fun (P[X]::(_ \<Rightarrow>\<^sub>0 'a) set) ?z =
-                      ((?z - d) + (n - 1)) choose (n - 1) + Hilbert_fun P ?z + Hilbert_fun N ?z"
+                      ((?z - d) + (n - 1) choose n - 1) + Hilbert_fun P ?z + Hilbert_fun N ?z"
     by (rule Hilbert_fun_X)
   also have "int \<dots> = (z - d + (n - 1)) gchoose (n - 1) + Hilbert_poly aa z + Hilbert_poly bb z"
     using X_not_empty valid_ps hom_ps cn_ps std_ps ext_ps \<open>aa 0 \<le> nat z\<close>
@@ -939,9 +939,11 @@ lemma dube_eq_3:
 proof -
   from assms have 1: "int (n - Suc j) = int n - j - 1" and 2: "int (n - j) = int n - j" by simp_all
   from assms have "int n - int j - 1 = int (n - j - 1)" by simp
-  hence eq1: "int n - int j - 1 gchoose (n - Suc j) = 1" by simp
+  hence eq1: "int n - int j - 1 gchoose (n - Suc j) = 1"
+    by (simp del: of_nat_diff)
   from assms have "int n - int j = int (n - j)" by simp
-  hence eq2: "int n - int j gchoose (n - j) = 1" by simp
+  hence eq2: "int n - int j gchoose (n - j) = 1"
+    using gbinomial_int_n_n by presburger
   have eq3: "int n - d - j - 1 gchoose (n - Suc j) = (- 1)^(n - Suc j) * (int d - 1 gchoose (n - Suc j))"
     by (simp add: gbinomial_int_negated_upper[of "int n - d - j - 1"] 1)
   have eq4: "int n - d - j gchoose (n - j) = (- 1)^(n - j) * (int d - 1 gchoose (n - j))"
@@ -985,7 +987,7 @@ proof (rule ccontr)
   hence "d \<le> z" using \<open>aa 1 \<le> z\<close> by (rule le_trans)
   hence eq: "int (z - d) = int z - int d" by simp
   from \<open>d \<le> z\<close> have "Hilbert_fun (P[X]::(_ \<Rightarrow>\<^sub>0 'a) set) z =
-                        ((z - d) + (n - 1)) choose (n - 1) + Hilbert_fun P z + Hilbert_fun N z"
+                        ((z - d) + (n - 1) choose n - 1) + Hilbert_fun P z + Hilbert_fun N z"
     by (rule Hilbert_fun_X)
   also have "int \<dots> = ((int z - d + (n - 1)) gchoose (n - 1) + Hilbert_poly aa z + Hilbert_poly bb z) +
                         (int (card (?S (set ps))) + int (card (?S (set qs))))"

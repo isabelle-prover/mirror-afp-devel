@@ -386,9 +386,9 @@ proof -
   let ?R = "(\<Sum>i=1..N. ((bernoulli (2*i) / fact (2*i)) *\<^sub>R pochhammer s (2*i - 1) * of_real a powr (-s - (2*i-1))))"
   let ?S = "EM_remainder (Suc (2 * N)) (\<lambda>x. - (pochhammer s (Suc (2*N)) *
               of_real (x + a) powr (- 1 - 2 * of_nat N - s))) 0"
-  from \<zeta>.euler_maclaurin_strong_nat'[OF le_refl, simplified]
   have "of_real a powr -s = a powr (1 - s) / (1 - s) + \<zeta> s + a powr -s / 2 + (-?R) - ?S"
-    unfolding sum_negf [symmetric] by (simp add: scaleR_conv_of_real pre_zeta_aux_def mult_ac)
+    using \<zeta>.euler_maclaurin_strong_nat'[OF le_refl]
+    by (simp add: scaleR_conv_of_real pre_zeta_aux_def algebra_simps flip: sum_negf)
   thus ?thesis unfolding pre_zeta_aux_def 
     (* TODO: Field_as_Ring causes some problems with field_simps vs. div_mult_self *)
     by (simp add: field_simps del: div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1)

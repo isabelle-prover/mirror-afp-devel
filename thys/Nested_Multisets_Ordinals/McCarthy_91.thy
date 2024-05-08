@@ -56,7 +56,7 @@ proof -
       assume z_gt_100: "z > 100"
 
       have "map (\<lambda>i. (f ^^ nat i) (z - 10)) [0..int n - 2] =
-        map (\<lambda>i. (f ^^ nat i) z) [1..int n - 1]"
+            map (\<lambda>i. (f ^^ nat i) z) [1..int n - 1]"
         using n_ne_0
       proof (induct n rule: less_induct)
         case (less n)
@@ -77,9 +77,11 @@ proof -
             using n_ge_2 by (induct n) (auto simp: upto_rec2)
           have f_repeat: "(f ^^ (n - 2)) (z - 10) = (f ^^ (n - 1)) z"
             using z_gt_100 n_ge_2 by (induct n, simp) (rename_tac m; case_tac m; simp add: f_def)+
-
-          show ?thesis
-            using n_ge_2 by (auto intro!: ih simp: split_l split_r f_repeat nat_diff_distrib')
+          have "map (\<lambda>i. (f ^^ nat i) (z - 10)) [0..int (n-1) - 2] =
+                map (\<lambda>i. (f ^^ nat i) z) [1..int (n-1) - 1]"
+            using n_ge_2 by (intro ih) auto
+          then show ?thesis
+            by (auto simp: split_l split_r f_repeat nat_diff_distrib')
         qed
       qed
       hence image_mset_eq: "{#(f ^^ nat i) (z - 10). i \<in># mset [0..int n - 2]#} =
@@ -126,9 +128,8 @@ proof -
             by simp
           ultimately have f_repeat: "(f ^^ n) (z + 11) = (f ^^ (n - 1)) z"
             by (simp add: funpow_Suc_right del: funpow.simps)
-          with n_ge_2 show ?thesis
-            by (auto intro: ih [of "nat (int n - 1)"]
-              simp: less.hyps split_l split_r nat_add_distrib nat_diff_distrib)
+          with n_ge_2 ih [of "nat (int n - 1)"] show ?thesis
+            by (force simp: less.hyps split_l split_r nat_add_distrib nat_diff_distrib)
         qed
       qed
 
@@ -167,7 +168,6 @@ proof -
           using n_ne_0 by (auto simp: image_mset_eq \<tau>_def upto_rec1[of 0 "int n - 1"])
       next
         case z_lt_90: False
-
         have "{#z + 11, f (z + 11)#} + ?etc1 = {#z + 11, 91#} + ?etc2"
           using z_lt_90
           by (auto intro!: arg_cong2[of _ _ _ _ add_mset] simp: map_eq f_def mset_map[symmetric]

@@ -172,7 +172,7 @@ next
       hence bound: "((order \<G>)*x*c - x*c) > 0"
         using assms x_neq_0 prime_gt_1_nat prime_order by auto 
       then have "\<^bold>g [^] ((order \<G>)*x*c- x*c) = \<^bold>g [^] int ((order \<G>)*x*c - x*c)"
-        by (simp add: int_pow_int) 
+        by (metis int_pow_int) 
       also have "... = \<^bold>g [^] int ((order \<G>)*x*c) \<otimes> inv (\<^bold>g [^] (x*c))" 
         by (metis bound generator_closed int_ops(6) int_pow_int of_nat_eq_0_iff of_nat_less_0_iff of_nat_less_iff int_pow_diff)
       also have "... = \<^bold>g [^] ((order \<G>)*x*c) \<otimes> inv (\<^bold>g [^] (x*c))"

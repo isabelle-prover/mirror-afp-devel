@@ -352,10 +352,7 @@ proof -
   proof -
     have "\<And>k::nat. k < n*m \<Longrightarrow> (1+i)^n * ($v.^((k+1::nat)/m) / m) = (1+i).^((n*m - Suc k)/m) / m"
       unfolding v_pres_def
-      apply (subst powr_realpow[THEN sym], simp add: v_futr_pos)
-      apply (subst inverse_powr, simp add: v_futr_pos)
-      apply (subst times_divide_eq_right, subst powr_add[THEN sym], simp add: that)
-      by (subst of_nat_diff, simp add: Suc_le_eq, simp add: diff_divide_distrib that)
+      by (simp add: v_futr_pos inverse_powr diff_divide_eq_iff that flip: powr_realpow powr_add)
     thus ?thesis by (meson lessThan_iff sum.cong)
   qed
   also have "\<dots> = (\<Sum>k<n*m. (1+i).^(k/m) / m)"
@@ -742,8 +739,7 @@ lemma Ima''m_calc: "$(I^{m}a'')^{m}_n = (1 - (n*m+1)*$v^n + n*m*$v.^(n+1/m)) / (
   using that v_pos
   apply (subst Ila''m_Ilam, simp)
   apply (subst Imam_calc; simp)
-  apply (rule disjI2)+
-  by (subst i_v, subst powr_powr, subst powr_add[THEN sym], simp)
+  by (simp add: powr_divide v_pres_def)
 
 lemma Ils''m_Ilsm: "$(I^{l}s'')^{m}_n = (1+i).^(1/m) * $(I^{l}s)^{m}_n"
   if "l \<noteq> 0" "m \<noteq> 0" for l m n :: nat

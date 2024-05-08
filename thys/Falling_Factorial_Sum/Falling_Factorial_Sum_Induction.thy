@@ -36,7 +36,7 @@ next
     by (auto intro!: sum.cong simp add: Suc_diff_le ffact_Suc_rev_nat) algebra
   also have "\<dots> = (\<Sum>k = 0..n. (n choose k) * ?t k) + (\<Sum>k = 0..n. (n choose k) * ?u k)"
     by (simp add: sum.distrib add_mult_distrib2 mult.commute mult.left_commute)
-  also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. (n choose k + (n choose Suc k)) * ?u k)"
+  also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. ((n choose k) + (n choose Suc k)) * ?u k)"
   proof -
     have "\<dots> = (?t 0 + (\<Sum>k = 0..n. (n choose Suc k) * ?u k)) + (\<Sum>k = 0..n. (n choose k) * ?u k)"
     proof -
@@ -53,7 +53,7 @@ next
       from this show ?thesis
         by (simp add: sum.atLeast_Suc_atMost[of _ _ "\<lambda>k. (n choose k) * ?t k"])
     qed
-    also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. (n choose k + (n choose Suc k)) * ?u k)"
+    also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. ((n choose k) + (n choose Suc k)) * ?u k)"
       by (simp add: distrib_right sum.distrib)
     finally show ?thesis .
   qed
@@ -108,7 +108,7 @@ next
   qed
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (n choose k) * ?t k) + (\<Sum>k = 0..n. of_nat (n choose k) * ?u k)"
     by (simp add: sum.distrib distrib_left mult.commute mult.left_commute)
-  also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. of_nat (n choose k + (n choose Suc k)) * ?u k)"
+  also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. of_nat ((n choose k) + (n choose Suc k)) * ?u k)"
   proof -
     have "\<dots> = (?t 0 + (\<Sum>k = 0..n. of_nat (n choose Suc k) * ?u k)) + (\<Sum>k = 0..n. of_nat (n choose k) * ?u k)"
     proof -
@@ -125,7 +125,7 @@ next
       from this show ?thesis
         by (simp add: sum.atLeast_Suc_atMost[of _ _ "\<lambda>k. of_nat (n choose k) * ?t k"])
     qed
-    also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. of_nat (n choose k + (n choose Suc k)) * ?u k)"
+    also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. of_nat ((n choose k) + (n choose Suc k)) * ?u k)"
       by (simp add: distrib_right sum.distrib)
     finally show ?thesis .
   qed

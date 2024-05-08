@@ -374,7 +374,8 @@ empty_subsetI even_plus_one_iff insert_commute insert_mono nat_arith.add1 numera
   hence size1:"b*(1-2/m)>0" using bpos by simp
   have "N-r>0" using b_r assms by auto
   hence size2:"2*(N-r)/m>0" using assms(1) by simp
-  have apos:"a\<ge>1" using size1 size2 a_def3 by simp
+  have apos:"a\<ge>1" using size1 size2 a_def3
+    by linarith
 
   have "odd (b+2*(N-b-r) div m)" using m_div_num b_r b2odd bproperties
     by (metis div_mult_swap zdvd_reduce)
@@ -635,7 +636,7 @@ empty_subsetI even_plus_one_iff insert_commute insert_mono nat_arith.add1 numera
   have size1:"b*(1-2/3)>0" using bpos by simp
   have "N-r>0" using b_r assms by auto
   hence size2:"2*(N-r)/3>0" using assms(1) by simp
-  have apos:"a\<ge>1" using size1 size2 a_def3 by simp
+  have apos:"a\<ge>1" using size1 size2 a_def3 by linarith
 
   have "odd (b+2*(N-b-r) div 3)" using m_div_num b_r b2odd bproperties by (simp add: bodd mult_2)
   hence aodd:"odd a" using a_def by simp

@@ -161,17 +161,8 @@ qed
 lemma last_upper_uniform_subdivision:
   assumes "0 < n"
   shows "upper ( last (uniform_subdivision A n)) = upper A"
-proof -
-  have "upper ( last (uniform_subdivision A n)) = lower A + (upper A - lower A) * of_nat n / of_nat n"
-    using assms
-    apply (auto simp add: uniform_subdivision_def mk_interval' last_map Let_def)[1] 
-    using One_nat_def Suc_pred' add.commute le_add_diff_inverse lower_le_upper 
-      nonzero_mult_div_cancel_right of_nat_0_less_iff of_nat_Suc order_less_irrefl apply metis
-    by ( simp add: divide_right_mono mult_left_mono) 
-    also have "... = upper A"
-    using assms by simp
-  finally show ?thesis .
-qed
+  using assms
+  by (simp add: uniform_subdivision_def mk_interval' last_map Let_def field_simps)
 
 lemma uniform_subdivisions_width_single:
   fixes A ::"'a::linordered_field interval"
