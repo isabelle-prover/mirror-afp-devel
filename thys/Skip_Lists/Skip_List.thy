@@ -304,7 +304,7 @@ proof -
   show "set_integrable lborel {0::real..1} (\<lambda>x. (1 - x ^ n) / (1 - x))"
   proof -
     have "AE x\<in>{0::real..1} in lborel. (1 - x ^ n) / (1 - x) = sum ((^) x) {..<n}"
-      by (auto intro!: eventually_mono[OF AE_lborel_singleton[of 1]] simp add: sum_gp_strict)
+      by (smt (verit, best) AE_lborel_singleton eventually_mono sum_gp_strict)
     with harm_integral_x_raised_n show ?thesis
       by (subst set_integrable_cong_AE) auto
   qed

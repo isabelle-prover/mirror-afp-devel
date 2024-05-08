@@ -46,8 +46,8 @@ text \<open>A region is separate from another if they do not overlap.\<close>
 
 lemma region_addresses_iff: "a' \<in> region_addresses a si \<longleftrightarrow> unat (a' - a) < si"
   apply (auto simp add: region_addresses_def unsigned_of_nat)
-   apply (metis diff_Suc_less le_less_trans less_imp_Suc_add take_bit_nat_less_eq_self zero_less_Suc)
-  by (metis Suc_diff_Suc add.commute diff_add_cancel diff_diff_cancel diff_less less_imp_Suc_add order_less_imp_le word_unat.Rep_inverse zero_less_Suc)
+  apply (metis (no_types, opaque_lifting) Suc_leI bot_nat_0.extremum diff_less gr0_conv_Suc le_unat_uoi nat_le_linear of_nat_Suc of_nat_diff order_le_less_trans)
+  by (metis Suc_diff_Suc add.commute diff_Suc_less diff_add_cancel diff_diff_cancel dual_order.strict_trans order_less_imp_le unat_0 unat_gt_0 word_unat.Rep_inverse)
 
 lemma notin_region_addresses:
   assumes "x \<notin> region_addresses a si"
@@ -109,7 +109,8 @@ proof-
   show ?thesis
     apply (rule nth_equalityI)
     using 1
-    by (auto simp add: length_read_bytes nth_read_bytes override_on_def region_addresses_def)
+    by (auto simp: length_read_bytes nth_read_bytes override_on_def region_addresses_def
+          simp flip: of_nat_diff)
 qed
 
 lemmas read_bytes_override_on = read_bytes_override_on_enclosed[where offset=0 and offset'=0,simplified]
@@ -129,7 +130,8 @@ proof-
   show ?thesis
     apply (rule nth_equalityI)
     using assms 1
-    by (auto simp add: override_on_def length_read_bytes nth_read_bytes region_addresses_def)
+    by (auto simp: override_on_def length_read_bytes nth_read_bytes region_addresses_def
+        simp flip: of_nat_diff)
 qed
 
 
@@ -138,7 +140,8 @@ assumes "separate a si a' si'"
   shows "read_bytes (override_on m m' (region_addresses a si)) a' si' = read_bytes m a' si'"
   apply (rule nth_equalityI)
   using assms
-  by (auto simp add: length_read_bytes nth_read_bytes override_on_def separate_def region_addresses_def)
+  by (auto simp: length_read_bytes nth_read_bytes override_on_def separate_def region_addresses_def
+      simp flip: of_nat_diff)
 
 
 text\<open>Bytes are are written to memory one-by-one, then read by @{const read_bytes} producing a list of bytes.

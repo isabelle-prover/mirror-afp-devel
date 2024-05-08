@@ -454,13 +454,12 @@ proof -
     using uniform by simp
   moreover have "\<And> e . e \<in># E \<Longrightarrow> size {# f \<in># (E - {#e#}) . f \<inter> e \<noteq> {}#} \<le> d"
     using max_intersecting_edges d_def by simp   
-  moreover have "exp(1)*(d+1) < (2 powi ( k - 1))"
-    unfolding d_def using exp_ineq_k9 assms(1) by simp
+  moreover have "exp(1) * (d+1) < (2 powi ( k - 1))"
+    by (metis assms d_def exp_ineq_k9 power_int_of_nat)
   moreover have "k > 0" using assms by auto
   ultimately show ?thesis using erdos_propertyB_LLL[of k d] assms
     using int_ops(1) int_ops(2) int_ops(6) less_eq_real_def nat_less_as_int by auto 
 qed
-
 
 end
 

@@ -195,7 +195,7 @@ next
     with a \<open>finite A\<close> card_sumset_le show ?thesis
       by (simp add: order_trans[OF card_Un_le])
   qed
-  also have "\<dots> \<le> (card A) choose 2 + card A"
+  also have "\<dots> \<le> (card A choose 2) + card A"
     using Suc a by (metis add_le_mono1 insert_Diff_single insert_absorb insert_subset n)
   also have "\<dots> \<le> Suc (card A) choose 2"
     by (simp add: numeral_2_eq_2)

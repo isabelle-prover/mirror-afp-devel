@@ -39,7 +39,8 @@ proof(rule inj_onI)
       by(simp add: int_pow_diff)
     also have "\<^bold>g [^] int m = \<^bold>g [^] int n" by(simp add: le.prems int_pow_int)
     also have "\<dots> \<otimes> inv (\<^bold>g [^] (int n)) = \<one>" by simp
-    finally have "\<^bold>g [^] ?d = \<one>" using le.hyps by(simp add: of_nat_diff[symmetric] int_pow_int)
+    finally have "\<^bold>g [^] ?d = \<one>" 
+      using le.prems(3) pow_eq_div2 by force
     { assume "n < m"
       have "carrier G \<subseteq> (\<lambda>n. \<^bold>g [^] n) ` {..<?d}"
       proof
@@ -94,7 +95,7 @@ qed
 
 lemma bij_betw_generator_carrier:
   "bij_betw (\<lambda>n :: nat. \<^bold>g [^] n) {..<order G} (carrier G)"
-by(simp add: bij_betw_def inj_on_generator carrier_conv_generator)
+  by (simp add: carrier_conv_generator inj_on_generator inj_on_imp_bij_betw)
 
 lemma order_gt_0: "order G > 0"
   using order_gt_0_iff_finite by(simp add: finite_carrier)
@@ -102,6 +103,6 @@ lemma order_gt_0: "order G > 0"
 end
 
 lemma (in monoid) order_in_range_Suc: "order G \<in> range Suc \<longleftrightarrow> finite (carrier G)"
-by(cases "order G")(auto simp add: order_def carrier_not_empty intro: card_ge_0_finite)
+  by(cases "order G")(auto simp add: order_def carrier_not_empty intro: card_ge_0_finite)
 
 end

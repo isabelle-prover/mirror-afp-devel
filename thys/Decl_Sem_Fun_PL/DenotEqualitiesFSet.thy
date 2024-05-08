@@ -17,13 +17,6 @@ theorem eval_ifnz[simp]: assumes e1: "E(e1) = E(ENat n)" and nz: "n \<noteq> 0"
 
 theorem eval_app_lam: assumes vv: "is_val v"
   shows "E(EApp (ELam x e) v) = E (subst x v e)"
-  apply (rule ext) apply (rule equalityI) apply (rule subsetI) 
-   apply (subgoal_tac "EApp (ELam x e) v \<longrightarrow> subst x v e") prefer 2 apply (rule beta)
-  using vv apply assumption apply (rule subject_reduction) apply assumption apply assumption
-  apply (rule subsetI) 
-  apply (subgoal_tac "EApp (ELam x e) v \<longrightarrow> subst x v e") prefer 2 apply (rule beta)
-  using vv apply assumption apply (rule reverse_step_pres_denot) apply assumption
-  apply assumption
-  done
-  
+  using beta reduce_pres_denot vv by auto
+
 end

@@ -532,8 +532,8 @@ proof -
       by (subst filterlim_sequentially_Suc [symmetric], intro tendsto_intros) 
          (insert euler_mascheroni_LIMSEQ, simp_all)
     also have "?this \<longleftrightarrow> (\<lambda>x. s * (harm (x - 1) - ln (of_nat (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 0"
-      by (intro filterlim_cong refl eventually_mono[OF eventually_gt_at_top[of "1::nat"]]) 
-         (auto simp: Ln_of_nat of_real_harm)
+      by (intro filterlim_cong refl eventually_mono[OF eventually_gt_at_top[of "1::nat"]])
+         (auto simp: of_real_harm simp del: of_nat_diff)
     finally show "(\<lambda>x. s * (harm (x - 1) - ln (of_nat (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 0"  .
   next
     have "((\<lambda>x. ln (1 + (s + 1) / of_real x)) \<longlongrightarrow> ln (1 + 0)) at_top" (is ?P)
@@ -951,10 +951,10 @@ proof -
     using assms by (simp add: power_diff field_simps)
   also have "F1 x1 - F1 l + F3 r - F3 x2 =
                c/(n-1) * (2/b^(n-1) - 1/(a-l)^(n-1) - 1/(r-a)^(n-1))"
-    using assms by (simp add: x1_def x2_def F1_def F3_def field_simps)
+    using assms by (simp add: x1_def x2_def F1_def F3_def field_simps del: of_nat_diff)
   also have "\<dots> + 2 * c / b ^ (n - 1) =
              2*c*(1 + 1/(n-1))/b^(n-1) - c/(n-1) * (1/(a-l)^(n-1) + 1/(r-a)^(n-1))"
-    using assms by (simp add: field_simps)
+    using assms by (simp add: field_simps del: of_nat_diff)
   also have "1 + 1 / (n - 1) = n / (n - 1)"
     using assms by (simp add: field_simps)
   finally show ?thesis .

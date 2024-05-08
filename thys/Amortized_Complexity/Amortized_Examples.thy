@@ -128,7 +128,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case by(auto split: prod.splits)
 next
-  case 3 thus ?case by (auto split: op.split) linarith
+  case 3 thus ?case by (auto split: op.split) 
 qed
 
 end (* Dyn_Tab1 *)

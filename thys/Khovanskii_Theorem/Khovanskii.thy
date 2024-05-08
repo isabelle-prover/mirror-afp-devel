@@ -464,7 +464,8 @@ next
   proof -
     have "(\<Sum>x\<le>k-1. p (k-x)) = (\<Sum>j\<le>n. a j * ((\<Sum>x\<le>k. real x ^ j) - 0^j))"
       using that
-      by (simp add: p_eq sum.swap flip: sum_distrib_left sum_diff_split[where f="\<lambda>i. real i ^ _"])
+      by (simp add: p_eq sum.swap 
+          flip: sum_distrib_left of_nat_diff sum_diff_split[where f="\<lambda>i. real i ^ _"])
     also have "\<dots> = q k"
       by (simp add: sum_of_powers add.commute q_def)
     finally show ?thesis .

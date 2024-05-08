@@ -179,24 +179,12 @@ proof -
 
   have fl: "(f(i := x) \<longlongrightarrow> l j) (at_left j)" if "j \<in> I" "a < j" "j \<le> b" for j x
     using l(1)
-    apply (rule tendsto_within_subset_eventuallyI)
-        apply (auto simp: eventually_at_filter that)
-    apply (cases "j \<noteq> i")
-    subgoal premises prems
-      using t1_space_nhds[OF prems]
-      by eventually_elim auto
-    subgoal by simp
-    done
+    by (rule tendsto_within_subset_eventuallyI)
+       (auto simp: eventually_at_filter frequently_def t1_space_nhds that)
   have fr: "(f(i := x) \<longlongrightarrow> u j) (at_right j)" if "j \<in> I" "a \<le> j" "j < b" for j x
     using u(1)
-    apply (rule tendsto_within_subset_eventuallyI)
-        apply (auto simp: eventually_at_filter that)
-    apply (cases "j \<noteq> i")
-    subgoal premises prems
-      using t1_space_nhds[OF prems]
-      by eventually_elim auto
-    subgoal by simp
-    done
+    by (rule tendsto_within_subset_eventuallyI)
+       (auto simp: eventually_at_filter frequently_def t1_space_nhds that)
   from cf have tendsto: "(f \<longlongrightarrow> f x) (at x within {a..b} - insert i I)"
     if "x \<in> {a .. b} - insert i I" for x using that
     by (auto simp: continuous_on_def)

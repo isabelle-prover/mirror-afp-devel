@@ -498,7 +498,7 @@ proof -
         by (subst Bochner_Integration.integral_diff) (auto intro: pmf_bounded_integrable) 
       also have "\<dots> \<le> r (s, p (length h) s) + measure_pmf.expectation (K (s, p (length h) s)) (\<nu>N_eval (mk_markovian_det p) (h@[(s,p (length h) s)]))"
         using Suc(1)[of "h@[_]"] Suc *
-        by (auto simp: algebra_simps intro!: integral_mono pmf_bounded_integrable bounded_minus_comp)
+        by (intro add_mono integral_mono pmf_bounded_integrable bounded_minus_comp) (auto simp: algebra_simps)
       also have "\<dots> = \<nu>N_eval (mk_markovian_det p) h s"
         using Suc
         by (auto simp: mk_markovian_det_def \<nu>N_eval.simps)        

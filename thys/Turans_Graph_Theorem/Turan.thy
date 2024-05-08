@@ -656,41 +656,7 @@ lemma turan_sum_eq :
   fixes n p :: nat
   assumes "p \<ge> 2" and "p \<le> n"
   shows "(p-1) * (p-2) / 2 + (1 - 1 / (p-1)) * (n - p + 1) ^ 2 / 2 + (p - 2) * (n - p + 1) = (1 - 1 / (p-1)) * n^2 / 2"
-proof -
-  have "a * (a-1) / 2 + (1 - 1 / a) * (n - a) ^ 2 / 2 + (a - 1) * (n - a)  = (1 - 1 / a) * n^2 / 2"
-    if a1: "a \<ge> 1" and a2: "n \<ge> a"
-    for a :: nat
-  proof -
-    have "a\<^sup>2 + (n - a)\<^sup>2 + a * (n - a) * 2 = n\<^sup>2"
-      using a2
-      apply (simp flip: Groups.ab_semigroup_mult_class.mult.commute [of 2 "a * (n - a)"])
-      apply (simp add: Semiring_Normalization.comm_semiring_1_class.semiring_normalization_rules(18) [of 2 a "(n - a)"])
-      by (simp flip: Power.comm_semiring_1_class.power2_sum [of a "n-a"])
-    then have "((a - 1) / a) * (a ^ 2 + (n - a) ^ 2 + a * (n - a) * 2) = ((a - 1) / a) * n^2"
-      by presburger
-    then have "(((a - 1) / a) * a ^ 2 + ((a - 1) / a) * (n - a) ^ 2 + ((a - 1) / a) * a * (n - a) * 2) = ..."
-      using Rings.semiring_class.distrib_left [of "(a - 1) / a" "a\<^sup>2 + (n - a)\<^sup>2" "a * (n - a) * 2"]
-      using Rings.semiring_class.distrib_left [of "(a - 1) / a" "a\<^sup>2" "(n - a)\<^sup>2"]
-      by auto
-    moreover have "((a - 1) / a) * a ^ 2 = a * (a-1)"
-      by (simp add: power2_eq_square)
-    ultimately have "a * (a-1) + ((a - 1) / a) * (n - a) ^ 2 + (a - 1) * (n - a) * 2  = ((a - 1) / a) * n^2"
-      using a1 a2
-      by auto
-    moreover have "1 - 1 / a = (a - 1) / a"
-      by (smt (verit, del_insts) One_nat_def Suc_pred diff_divide_distrib diff_is_0_eq of_nat_1 of_nat_diff of_nat_le_0_iff of_nat_le_iff of_nat_less_iff right_inverse_eq that)
-    ultimately have "a * (a-1) + (1 - 1 / a) * (n - a) ^ 2 + (a - 1) * (n - a) * 2  = (1 - 1 / a) * n^2"
-      by simp
-    then show ?thesis
-      by simp
-  qed
-  moreover have "p - 1 \<ge> 1"
-    using \<open>p \<ge> 2\<close> by auto
-  moreover have "n \<ge> p - 1"
-    using assms(2) by auto
-  ultimately show ?thesis
-    by (smt (verit) assms Nat.add_diff_assoc2 Nat.diff_diff_right diff_diff_left le_eq_less_or_eq less_Suc_eq_le linorder_not_less nat_1_add_1 plus_1_eq_Suc)
-qed
+  using assms by (simp add: field_simps eval_nat_numeral)
 
 text \<open>The next fact proves that the upper bound of edges is monotonically increasing with the size of the biggest clique.\<close>
 
@@ -698,8 +664,7 @@ lemma turan_mono :
   fixes n p q :: nat
   assumes "0 < q" and "q < p" and "p \<le> n"
   shows "(1 - 1 / q) * n^2 / 2 \<le> (1 - 1 / (p-1)) * n^2 / 2"
-  using assms
-  by (simp add: Extended_Nonnegative_Real.divide_right_mono_ennreal Real.inverse_of_nat_le)
+  using assms by (simp add: frac_le)
 
 section \<open>Tur\'{a}n's Graph Theorem\<close>
 

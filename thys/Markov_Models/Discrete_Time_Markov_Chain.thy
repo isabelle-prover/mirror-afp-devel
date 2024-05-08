@@ -390,9 +390,8 @@ proof -
   also have "\<dots> = (\<integral>\<^sup>+d. (\<integral>\<^sup>+\<omega>. f (d s ## walk (d s) \<omega>) * indicator {t. t \<in> K s} (d s) \<partial>D) \<partial>\<Pi>\<^sub>M i\<in>UNIV. K i)"
     apply (rule nn_integral_cong_AE)
     apply (subst walk.ctr)
-    apply (simp cong del: if_weak_cong)
-    apply (intro UNIV_I AE_component)
-    apply (auto simp: AE_measure_pmf_iff)
+    apply (simp add: frequently_def cong del: if_weak_cong)
+    apply (auto simp: AE_measure_pmf_iff intro: AE_component)
     done
   also have "\<dots> = (\<integral>\<^sup>+d. \<integral>\<^sup>+\<omega>. f (d s ## \<omega>) * indicator (K s) (d s) \<partial>T (d s) \<partial>\<Pi>\<^sub>M i\<in>UNIV. K i)"
     by (subst T) (simp_all split: split_indicator)

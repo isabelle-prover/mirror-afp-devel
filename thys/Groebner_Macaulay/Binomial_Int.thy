@@ -6,22 +6,6 @@ theory Binomial_Int
   imports Complex_Main
 begin
 
-lemma upper_le_binomial:
-  assumes "0 < k" and "k < n"
-  shows "n \<le> n choose k"
-proof -
-  from assms have "1 \<le> n" by simp
-  define k' where "k' = (if n div 2 \<le> k then k else n - k)"
-  from assms have 1: "k' \<le> n - 1" and 2: "n div 2 \<le> k'" by (auto simp: k'_def)
-  from assms(2) have "k \<le> n" by simp
-  have "n choose k = n choose k'" by (simp add: k'_def binomial_symmetric[OF \<open>k \<le> n\<close>])
-  have "n = n choose 1" by (simp only: choose_one)
-  also from \<open>1 \<le> n\<close> have "\<dots> = n choose (n - 1)" by (rule binomial_symmetric)
-  also from 1 2 have "\<dots> \<le> n choose k'" by (rule binomial_antimono) simp
-  also have "\<dots> = n choose k" by (simp add: k'_def binomial_symmetric[OF \<open>k \<le> n\<close>])
-  finally show ?thesis .
-qed
-
 text \<open>Restore original sort constraints:\<close>
 setup \<open>Sign.add_const_constraint (@{const_name gbinomial}, SOME @{typ "'a::{semidom_divide,semiring_char_0} \<Rightarrow> nat \<Rightarrow> 'a"})\<close>
 
@@ -297,7 +281,7 @@ proof -
     next
       case k: (Suc k0)
       note *
-      also have "m + l choose k \<le> m + l choose k + (m + l choose k0)" by simp
+      also have "m + l choose k \<le> (m + l choose k) + (m + l choose k0)" by simp
       also have "\<dots> = m + Suc l choose k" by (simp add: k)
       finally show ?thesis .
     qed
@@ -317,9 +301,9 @@ proof -
     show ?case by simp
   next
     case (Suc n)
-    have "m choose Suc k0 + (Suc n choose Suc k0) = m choose Suc k0 + (n choose Suc k0) + (n choose k0)"
+    have "(m choose Suc k0) + (Suc n choose Suc k0) = (m choose Suc k0) + (n choose Suc k0) + (n choose k0)"
       by (simp only: binomial_Suc_Suc)
-    also from Suc have "\<dots> \<le> (m + n) choose Suc k0 + ((m + n) choose k0)"
+    also from Suc have "\<dots> \<le> (m+n choose Suc k0) + ((m+n) choose k0)"
     proof (rule add_mono)
       have "n \<le> m + n" by simp
       thus "n choose k0 \<le> m + n choose k0" by (rule binomial_mono)
@@ -329,7 +313,7 @@ proof -
   qed
 qed
 
-lemma binomial_ineq_1: "2 * ((n + i) choose k) \<le> n choose k + ((n + 2 * i) choose k)"
+lemma binomial_ineq_1: "2 * ((n + i) choose k) \<le> (n choose k) + ((n + 2 * i) choose k)"
 proof (cases k)
   case 0
   thus ?thesis by simp
@@ -343,14 +327,16 @@ next
     case (Suc i)
     have "2 * (n + Suc i choose Suc k0) = 2 * (n + i choose k0) + 2 * (n + i choose Suc k0)"
       by simp
-    also have "\<dots> \<le> (n + 2 * i choose k0 + (Suc (n + 2 * i) choose k0)) + (n choose Suc k0 + (n + 2 * i choose Suc k0))"
+    also have "\<dots> \<le> ((n + 2 * i choose k0) + (Suc (n + 2 * i) choose k0)) + ((n choose Suc k0) + (n + 2 * i choose Suc k0))"
     proof (rule add_mono)
-      have "n + i choose k0 \<le> n + 2 * i choose k0" by (rule binomial_mono) simp
-      moreover have "n + 2 * i choose k0 \<le> Suc (n + 2 * i) choose k0" by (rule binomial_mono) simp
-      ultimately show "2 * (n + i choose k0) \<le> n + 2 * i choose k0 + (Suc (n + 2 * i) choose k0)"
+      have "n + i choose k0 \<le> n + 2 * i choose k0" 
+        by (rule binomial_mono) simp
+      moreover have "n + 2 * i choose k0 \<le> Suc (n + 2 * i) choose k0" 
+        by (rule binomial_mono) simp
+      ultimately show "2 * (n + i choose k0) \<le> (n + 2 * i choose k0) + (Suc (n + 2 * i) choose k0)"
         by simp
     qed (fact Suc)
-    also have "\<dots> = n choose Suc k0 + (n + 2 * Suc i choose Suc k0)" by simp
+    also have "\<dots> = (n choose Suc k0) + (n + 2 * Suc i choose Suc k0)" by simp
     finally show ?case .
   qed
 qed
@@ -379,9 +365,9 @@ lemma gbinomial_int_plus_le:
   assumes "0 < k" and "0 \<le> x" and "0 \<le> (y::int)"
   shows "(x gchoose k) + (y gchoose k) \<le> (x + y) gchoose k"
 proof -
-  from assms(1) have "nat x choose k + (nat y choose k) \<le> nat x + nat y choose k"
+  from assms(1) have "(nat x choose k) + (nat y choose k) \<le> nat x + nat y choose k"
     by (rule binomial_plus_le)
-  hence "int (nat x choose k + (nat y choose k)) \<le> int (nat x + nat y choose k)"
+  hence "int ((nat x choose k) + (nat y choose k)) \<le> int (nat x + nat y choose k)"
     by (simp only: zle_int)
   hence "int (nat x) gchoose k + (int (nat y) gchoose k) \<le> int (nat x) + int (nat y) gchoose k"
     by (simp only: int_plus int_binomial)
@@ -393,7 +379,7 @@ lemma binomial_int_ineq_1:
   shows "2 * (x + y gchoose k) \<le> x gchoose k + ((x + 2 * y) gchoose k)"
 proof -
   from binomial_ineq_1[of "nat x" "nat y" k]
-  have "int (2 * (nat x + nat y choose k)) \<le> int (nat x choose k + (nat x + 2 * nat y choose k))"
+  have "int (2 * (nat x + nat y choose k)) \<le> int ((nat x choose k) + (nat x + 2 * nat y choose k))"
     by (simp only: zle_int)
   hence "2 * (int (nat x) + int (nat y) gchoose k) \<le> int (nat x) gchoose k + (int (nat x) + 2 * int (nat y) gchoose k)"
     by (simp only: int_binomial int_plus int_ops(7)) simp

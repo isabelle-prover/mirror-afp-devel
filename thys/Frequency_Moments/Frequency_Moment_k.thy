@@ -445,17 +445,16 @@ proof (cases "k \<ge> 2")
 
   have "length as = abs (sum (\<lambda>x. real (count_list as x)) (set as))"
     by (subst of_nat_sum[symmetric], simp add: sum_count_set)
-  also have "... \<le> card (set as) powr ((k-Suc 0)/k) *
-    (sum (\<lambda>x. \<bar>real (count_list as x)\<bar> powr k) (set as)) powr (1/k)"
+  also have "... \<le> card (set as) powr ((real k - 1)/k) *
+                (sum (\<lambda>x. \<bar>real (count_list as x)\<bar> powr k) (set as)) powr (1/k)"
     using assms True
     by (intro Holder_inequality_sum[where p="k/(k-1)" and q="k" and f="\<lambda>_.1", simplified])
      (auto simp add:algebra_simps add_divide_distrib[symmetric])
-  also have "... = (card (set as)) powr ((k-1) / real k) * of_rat (F k as) powr (1/ k)"
+  also have "... = (card (set as)) powr ((real k - 1) / real k) * of_rat (F k as) powr (1/ k)"
     using real_count_list_pos
     by (simp add:F_def of_rat_sum of_rat_power powr_realpow)
   also have "... = (card (set as)) powr (1 - 1 / real k) * of_rat (F k as) powr (1/ k)"
-    using k_ge_1
-    by (subst of_nat_diff[OF k_ge_1], subst diff_divide_distrib, simp)
+    using k_ge_1 assms True by (simp add: divide_simps)
   also have "... \<le> n powr (1 - 1 / real k) * of_rat (F k as) powr (1/ k)"
     using k_ge_1 g
     by (intro mult_right_mono powr_mono2, auto)

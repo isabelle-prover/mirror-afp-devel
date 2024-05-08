@@ -247,10 +247,11 @@ qed
 definition p :: "nat \<Rightarrow> real poly" where
   "p s = (\<Prod>i = 0..<s. [: - of_nat i / of_nat (s - i), 1 / of_nat (s - i) :])" 
 
-lemma p_binom: assumes sk: "s \<le> k" 
+lemma p_binom: 
+  assumes "s \<le> k" 
   shows "of_nat (k choose s) = poly (p s) (of_nat k)" 
-  unfolding binomial_altdef_of_nat[OF assms] p_def poly_prod
-  by (rule prod.cong[OF refl], insert sk, auto simp: field_simps)
+  using assms
+  by (auto simp: divide_simps binomial_altdef_of_nat p_def poly_prod intro: prod.cong)
 
 lemma p_binom_complex: assumes sk: "s \<le> k" 
   shows "of_nat (k choose s) = complex_of_real (poly (p s) (of_nat k))" 

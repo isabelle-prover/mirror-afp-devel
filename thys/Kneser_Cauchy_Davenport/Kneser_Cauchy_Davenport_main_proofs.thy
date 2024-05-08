@@ -825,8 +825,9 @@ theorem Cauchy_Davenport:
 
 proof(cases "Z_p.stabilizer p (Z_p.sumset p A B) = {0}")
   case True
-  moreover have "Z_p.sumset p A {0} = A" and "Z_p.sumset p B {0} = B" using assms Z_p.sumset_D(1) by auto
-  ultimately show ?thesis using Z_p.Kneser[of "A" "p" "B"] assms by fastforce
+  moreover have "Z_p.sumset p A {0} = A" and "Z_p.sumset p B {0} = B" 
+    using assms Z_p.sumset_D(1) by auto
+  ultimately show ?thesis using Z_p.Kneser[of "A" "p" "B"] assms by simp
 next
   case hne: False
   let ?H = "Z_p.stabilizer p (Z_p.sumset p A B)"

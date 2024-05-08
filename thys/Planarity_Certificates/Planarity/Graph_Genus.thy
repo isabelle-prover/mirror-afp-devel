@@ -14,8 +14,7 @@ proof -
   have "int ((a - b) mod c) = (int a - int b mod int c) mod int c"
     using assms by (simp add: zmod_int of_nat_diff mod_simps)
   also have "\<dots> = int ((a - b mod c) mod c)"
-    using assms b_mod
-    by (simp add: zmod_int [symmetric] of_nat_diff [symmetric])
+    using assms b_mod by (simp add: zmod_int)
   finally show ?thesis by simp
 qed
 

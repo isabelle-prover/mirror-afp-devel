@@ -1755,7 +1755,8 @@ proof -
     have ii: "(\<lambda>n. real n) \<longlonglongrightarrow> \<infinity>" by (rule id_nat_ereal_tendsto_PInf)
     have iii: "(\<lambda>n. ereal(real(R n))/n * real n) \<longlonglongrightarrow> \<infinity>" using tendsto_mult_ereal_PInf[OF i D2 ii] by simp
     have "\<And>n. n > 0 \<Longrightarrow> ereal(real(R n))/n * real n = R n" by auto
-    then have "eventually (\<lambda>n. ereal(real(R n))/n * real n = R n) sequentially" using eventually_at_top_dense by auto
+    then have "eventually (\<lambda>n. ereal(real(R n))/n * real n = R n) sequentially" 
+      using eventually_at_top_dense by blast
     then have "(\<lambda>n. real(R n)) \<longlonglongrightarrow> \<infinity>" using iii by (simp add: filterlim_cong)
     then have "(\<lambda>n. birkhoff_sum f (R n) x / (R n)) \<longlonglongrightarrow> real_cond_exp M Invariants f x" using limit_along_weak_subseq B by auto
     then have l: "(\<lambda>n. (birkhoff_sum f (R n) x / (R n)) * ((R n)/n)) \<longlonglongrightarrow> real_cond_exp M Invariants f x * real_cond_exp MA A.Invariants phiA x"

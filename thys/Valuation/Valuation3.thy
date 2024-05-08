@@ -1793,7 +1793,7 @@ apply (frule_tac a = k in rHom_mem[of "pj (Vr K v) (vp K v)" "Vr K v"
 done
 
 lemma Suc_diff_int:"0 < n \<Longrightarrow> int (n - Suc 0) = int n - 1" 
-by (cut_tac of_nat_Suc[of "n - Suc 0"], simp)
+  by (cut_tac of_nat_Suc[of "n - Suc 0"], simp)
 
 lemma (in Corps) ecf_mem:"\<lbrakk>valuation K v; t \<in> carrier K; v t = 1; 
       x \<in> carrier K; x \<noteq> \<zero> \<rbrakk> \<Longrightarrow>  ecf\<^bsub>K v t x\<^esub> n \<in> carrier K"
@@ -1827,13 +1827,9 @@ apply (simp add:Kxa_def, erule bexE,
      assumption+,
    frule npowf_mem[of  "t" "-tna (v x) - int n"], assumption+)
   apply simp
-  apply (thin_tac "x \<plusminus> -\<^sub>a psum\<^bsub> K x v t\<^esub> (n - Suc 0) =
-          (t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + (1 + int (n - Suc 0)))\<^esup>) \<cdot>\<^sub>r k")
-apply(simp add:Ring.ring_tOp_commute[of "K" "t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + (1 + int (n - Suc 0)))\<^esup>"])
+apply(simp add:Ring.ring_tOp_commute[of "K" "t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + (int n))\<^esup>"])
  apply (simp add:Ring.ring_tOp_assoc, simp add:npowf_exp_add[THEN sym])
- apply (thin_tac "t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + (1 + int (n - Suc 0)))\<^esup> \<in> carrier K",
-        thin_tac "t\<^bsub>K\<^esub>\<^bsup>(- tna (v x) - int n)\<^esup> \<in> carrier K")
- apply (simp add:Suc_diff_int[of "n"])
+
  apply (simp add:npowf_def, simp add:Ring.ring_r_one)
 apply (rule Vr_mem_f_mem, assumption+)
  apply (rule Ring.csrp_fn_mem, assumption+)
@@ -3012,12 +3008,7 @@ done
 lemma (in Corps) PCauchy_Plimit:"\<lbrakk>valuation K v; Complete\<^bsub>v\<^esub> K;
       PolynRg R (Vr K v) X; PCauchy\<^bsub>R X K v\<^esub> F\<rbrakk> \<Longrightarrow>
         \<exists>p\<in>carrier R. Plimit\<^bsub>R X K v\<^esub> F p"
-apply (simp add:pol_Cauchy_seq_def)
-apply ((erule conjE)+, erule exE)
-apply (frule_tac d = d in P_limitTr[of  "v" "R" "X"], assumption+)
-apply (drule_tac a = F in forall_spec, simp)
-apply assumption
-done
+  by (metis P_limitTr pol_Cauchy_seq_def)
 
 lemma (in Corps) P_limit_mult:"\<lbrakk>valuation K v; PolynRg R (Vr K v) X; 
   \<forall>n. F n \<in> carrier R; \<forall>n. G n \<in> carrier R; p1 \<in> carrier R; p2 \<in> carrier R; 
@@ -3294,10 +3285,7 @@ apply (subst PolynRg.erH_mult[of R "Vr K v" X S "Vr K v /\<^sub>r (Vr K v \<diam
 done
 
 lemma aadd_plus_le_plus:"\<lbrakk> a \<le> (a'::ant); b \<le> b'\<rbrakk> \<Longrightarrow> a + b \<le> a' + b'"
-apply (frule aadd_le_mono[of "a" "a'" "b"])
-apply (frule aadd_le_mono[of "b" "b'" "a'"])
-apply (simp add:aadd_commute[of _ "a'"])
-done
+  by (metis aadd_commute aadd_le_mono ale_trans)
 
 lemma (in Corps) Hfst_PCauchy:"\<lbrakk>valuation K v; Complete\<^bsub>v\<^esub> K; 
   PolynRg R (Vr K v) X; PolynRg S (Vr K v /\<^sub>r (Vr K v \<diamondsuit>\<^sub>p t)) Y; g0 \<in> carrier R;

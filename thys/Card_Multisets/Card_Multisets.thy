@@ -176,7 +176,7 @@ next
     using finite_sets \<open>x \<notin> A\<close> by (subst card_Un_disjoint) auto
   also have "\<dots> = card ?S\<^sub>1 + card ?S\<^sub>2"
     using inj by (auto intro: card_image)
-  also have "\<dots> = card A + Suc k - 1 choose Suc k + (card (insert x A) + k - 1 choose k)"
+  also have "\<dots> = (card A + Suc k - 1 choose Suc k) + (card (insert x A) + k - 1 choose k)"
     using hyps1 hyps2 by simp
   also have "\<dots> = card (insert x A) + Suc k - 1 choose Suc k"
     using \<open>x \<notin> A\<close> \<open>finite A\<close> by simp

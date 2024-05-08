@@ -141,10 +141,9 @@ next
               hence "r + i - jj = Suc (r + i - Suc jj)" by simp 
               hence prod: "a * a ^ (r + i - Suc jj) = a ^ (r + i - jj)" by simp
               from ijj have id: "Suc jj - i = Suc (jj - i)" by simp
-              have binom: "Suc r choose (Suc jj - i) = 
-                r choose (Suc jj - i) + (r choose (jj - i))"
-                unfolding id
-                by (subst binomial_Suc_Suc, simp)
+              have binom: "(Suc r choose (Suc jj - i)) = 
+                (r choose (Suc jj - i)) + (r choose (jj - i))"
+                unfolding id by (subst binomial_Suc_Suc, simp)
               show ?thesis unfolding prod binom  
                 by (simp add: field_simps)
             qed

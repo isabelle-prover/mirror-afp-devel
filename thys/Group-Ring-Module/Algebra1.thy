@@ -3516,11 +3516,7 @@ lemma an_npn:"an (n + m) = an n + an m"
 by (unfold an_def, simp add:a_zpz)
 
 lemma an_ndn:"n \<le> m \<Longrightarrow> an (m - n) = an m - an n"
-apply (cut_tac an_npn[of "m - n" n], simp)
-apply (unfold an_def)
- apply (simp add:a_zpz[of "int (m - n)" "int n"])
- apply (subst a_zdz[of "int (m - n) + int n" "int n"], simp)
-done
+  by (simp add: a_zdz an_def)
 
 section "Amin, amax"
 

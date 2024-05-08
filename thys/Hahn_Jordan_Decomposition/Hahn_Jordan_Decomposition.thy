@@ -2160,17 +2160,11 @@ lemma jordan_decomposition_unique :
   shows "m1 A = n1 A" "m2 A = n2 A"
 proof -
   have "\<exists> M1 M2. hahn_space_decomp M1 M2" using hahn_decomposition by simp
-  from this obtain M1 M2 where "hahn_space_decomp M1 M2" by auto 
-  note mprop = this
-  have "m1 A = \<mu> (A \<inter> M1)" using assms jordan_decomp_pos_meas mprop by simp
-  also have "... = n1 A" using assms jordan_decomp_pos_meas[of n1] mprop 
-    by simp
-  finally show "m1 A = n1 A" .
-  have "m2 A = -\<mu> (A \<inter> M2)" using assms jordan_decomp_neg_meas mprop by simp
-  also have "... = n2 A" using assms jordan_decomp_neg_meas[of n1] mprop 
-    by simp
-  finally show "m2 A = n2 A" .
+  with jordan_decomp_neg_meas jordan_decomp_pos_meas 
+  show "m1 A = n1 A" "m2 A = n2 A" by (metis assms)+
 qed
+
 end
+
 end
 
