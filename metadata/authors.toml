@@ -6267,6 +6267,23 @@ name = "Dániel Somogyi"
 
 [somogyi.homepages]
 
+[song]
+name = "Shuhao Song"
+orcid = "0009-0003-8167-3994"
+
+[song.emails]
+
+[song.emails.song_email]
+user = [
+  "znssong_meow",
+]
+host = [
+  "sina",
+  "com",
+]
+
+[song.homepages]
+
 [spasic]
 name = "Mirko Spasić"
 
@@ -7607,6 +7624,24 @@ host = [
 ]
 
 [yang.homepages]
+
+[yao]
+name = "Bowen Yao"
+orcid = "0000-0002-6218-0874"
+
+[yao.emails]
+
+[yao.emails.yao_email]
+user = [
+  "byao",
+]
+host = [
+  "buct",
+  "edu",
+  "cn",
+]
+
+[yao.homepages]
 
 [ye]
 name = "Lina Ye"
