@@ -3,10 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/PNT_with_Remainder.html</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/prime_number_theorem/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/song/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/yao/</loc>
+    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/binder/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
@@ -14,22 +38,10 @@
     <loc>/authors/cordwell/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Picks_Theorem.html</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/poincare_bendixson/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
@@ -39,6 +51,9 @@
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/knuth_bendix_order/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lambda_free_rpos/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
@@ -53,10 +68,19 @@
     <loc>/dependencies/polynomials/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Substitutions_Lambda_Free.html</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/thiemann/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/trelat/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Orient_Rewrite_Rule_Undecidable.html</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/well_quasi_orders/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/AutoCorres2.html</loc>
@@ -1127,9 +1151,6 @@
     <loc>/authors/merz/</loc>
     <lastmod>2022-08-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/trelat/</loc>
-    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/bortin/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -2069,9 +2090,6 @@
     <loc>/entries/BirdKMP.html</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/well_quasi_orders/</loc>
-    <lastmod>2020-08-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Amicable_Numbers.html</loc>
     <lastmod>2020-08-04T00:00:00+00:00</lastmod>
   </url><url>
@@ -2195,9 +2213,6 @@
     <loc>/dependencies/ieee_floating_point/</loc>
     <lastmod>2020-04-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/lambda_free_rpos/</loc>
-    <lastmod>2020-04-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Automated_Stateful_Protocol_Verification.html</loc>
     <lastmod>2020-04-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -2286,9 +2301,6 @@
     <lastmod>2020-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/e_transcendental/</loc>
-    <lastmod>2019-12-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/prime_number_theorem/</loc>
     <lastmod>2019-12-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Zeta_3_Irrational.html</loc>
@@ -6288,10 +6300,6 @@
   </url><url>
     <loc>/sessions/nano_json/</loc>
   </url><url>
-    <loc>/sessions/naproche/</loc>
-  </url><url>
-    <loc>/sessions/naproche-test/</loc>
-  </url><url>
     <loc>/sessions/nash_williams/</loc>
   </url><url>
     <loc>/sessions/nat-interval-logic/</loc>
@@ -6411,6 +6419,8 @@
     <loc>/sessions/plm/</loc>
   </url><url>
     <loc>/sessions/pluennecke_ruzsa_inequality/</loc>
+  </url><url>
+    <loc>/sessions/pnt_with_remainder/</loc>
   </url><url>
     <loc>/sessions/poincare_bendixson/</loc>
   </url><url>
@@ -6800,6 +6810,8 @@
     <loc>/sessions/subresultants/</loc>
   </url><url>
     <loc>/sessions/subset_boolean_algebras/</loc>
+  </url><url>
+    <loc>/sessions/substitutions_lambda_free/</loc>
   </url><url>
     <loc>/sessions/sugar/</loc>
   </url><url>

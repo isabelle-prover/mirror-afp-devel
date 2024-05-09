@@ -1,0 +1,35 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{geometry}
+\geometry{margin=15mm}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym, graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{pdfsetup}
+\isabellestyle{literalunderscore}
+\newcommand\isasympowr{\raisebox{-0.45em}{\scalebox{1}[1.7]{\ttfamily\^{}}}}
+\newcommand\isasymnorm{{\rm\ttfamily|\kern-0.4em|}}
+\newcommand\isasymZprime{$'$}
+\begin{document}
+
+\title{Prime Number Theorem with Remainder Term}
+\author{Shuhao Song and Bowen Yao}
+\maketitle
+
+\begin{abstract}
+We have formalized the proof of the Prime Number Theorem with remainder term. This is the first formalized version of PNT with an explicit error term.
+
+There are many useful results in this AFP entry.
+
+First, the main result, prime number theorem with remainder:
+\[\pi(x) = \operatorname{Li}(x) + O\left(x \exp\left( -\sqrt{\log x}/3653 \right)\right)\]
+Second, the zero-free region of the Riemann zeta function:
+\[\zeta(\beta + i\gamma) \neq 0 \text{ when } \beta \ge 1 - \frac{1}{952320}\left(\log (|\gamma| + 2)\right)^{-1}\]
+Moreover, we proved a revised version of Perron's formula, together with the zero-free region we can prove the main result.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\end{document}

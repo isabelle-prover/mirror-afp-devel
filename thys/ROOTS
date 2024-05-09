@@ -556,6 +556,7 @@ Pi_Calculus
 Pi_Transcendental
 Planarity_Certificates
 Pluennecke_Ruzsa_Inequality
+PNT_with_Remainder
 Poincare_Bendixson
 Poincare_Disc
 Polygonal_Number_Theorem
@@ -731,6 +732,7 @@ Sturm_Tarski
 Stuttering_Equivalence
 Subresultants
 Subset_Boolean_Algebras
+Substitutions_Lambda_Free
 Sumcheck_Protocol
 SumSquares
 Sunflowers

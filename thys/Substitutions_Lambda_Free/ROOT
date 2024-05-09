@@ -1,0 +1,11 @@
+chapter AFP
+
+session Substitutions_Lambda_Free = Lambda_Free_RPOs +
+options [timeout = 600]
+  sessions
+    Well_Quasi_Orders
+  theories
+    Substitutions_Lambda_Free
+  document_files
+    "root.tex"
+    "root.bib"

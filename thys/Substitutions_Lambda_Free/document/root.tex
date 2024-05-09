@@ -1,0 +1,88 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amsthm, mathpartir}
+\usepackage{isabelle,isabellesym}
+\usepackage{xcolor}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+% \renewcommand\isacartoucheopen{\isatext{}}%
+% \renewcommand\isacartoucheclose{\isatext{}}%
+
+\newtheorem*{remark}{Remark}
+
+\definecolor{isacommandcolor}{RGB}{0, 102, 153}
+\definecolor{isakeywordcolor}{RGB}{0, 153, 102}
+\renewcommand{\isakeyword}[2][isakeywordcolor]{%
+  \begingroup%
+  \color{#1}%
+  \emph{\normalfont\bfseries\def\isachardot{.}\def\isacharunderscore{\isacharunderscorekeyword}%
+  \def\isacharbraceleft{\{}\def\isacharbraceright{\}}#2}%
+  \endgroup%
+}
+\renewcommand{\isacommand}[1]{\isakeyword[isacommandcolor]{#1}}
+
+\title{Substitutions for $\lambda$-free higher-order terms}
+\author{Vincent Trélat}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  \looseness=-1
+  This theory provides a formalization of substitutions on $\lambda$-free higher-order terms,
+  establishing a structured framework with the expected algebraic properties.
+  It introduces a type construction for the rigorous definition and manipulation of substitutions.
+  The main theorem of this theory proves the existence of fixed-point substitutions under acyclicity,
+  a theorem that is too often regarded as trivial in the literature~\cite{BarbosaFR17,TourretFOB20}.
+\end{abstract}
+
+\tableofcontents
+\pagebreak
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

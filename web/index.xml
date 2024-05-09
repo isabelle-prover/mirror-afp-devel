@@ -11,13 +11,27 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Prime Number Theorem with Remainder Term</title>
+          <link>/entries/PNT_with_Remainder.html</link>
+          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/PNT_with_Remainder.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Pick&#39;s Theorem</title>
           <link>/entries/Picks_Theorem.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Picks_Theorem.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Substitutions for Lambda-Free Higher-Order Terms</title>
+          <link>/entries/Substitutions_Lambda_Free.html</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Substitutions_Lambda_Free.html</guid>
           <description></description>
         </item>
         <item>
@@ -9793,6 +9807,13 @@
           <description></description>
         </item>
         <item>
+          <title>PNT_with_Remainder</title>
+          <link>/sessions/pnt_with_remainder/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pnt_with_remainder/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Poincare_Bendixson</title>
           <link>/sessions/poincare_bendixson/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11071,6 +11092,13 @@
           <link>/sessions/subset_boolean_algebras/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/subset_boolean_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Substitutions_Lambda_Free</title>
+          <link>/sessions/substitutions_lambda_free/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/substitutions_lambda_free/</guid>
           <description></description>
         </item>
         <item>

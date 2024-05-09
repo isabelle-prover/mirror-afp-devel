@@ -1,0 +1,45 @@
+title = "Prime Number Theorem with Remainder Term"
+date = 2024-05-05
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+We have formalized the proof of the Prime Number Theorem with remainder term. This is the first formalized version of PNT with an explicit error term.
+
+There are many useful results in this AFP entry.
+
+First, the main result, prime number theorem with remainder:
+\\[\\pi(x) = \\operatorname{Li}(x) + O\\left(x \\exp\\left( -\\sqrt{\\log x}/3653 \\right)\\right)\\]
+
+Second, the zero-free region of the Riemann zeta function:
+\\[\\zeta(\\beta + i\\gamma) \\neq 0 \\text{ when } \\beta \\ge 1 - \\frac{1}{952320}\\left(\\log (|\\gamma| + 2)\\right)^{-1}\\]
+
+Moreover, we proved a revised version of Perron's formula, together with the zero-free region we can prove the main result."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.song]
+email = "song_email"
+
+[authors.yao]
+email = "yao_email"
+
+[contributors]
+
+[notify]
+yao = "yao_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "The Theory of the Riemann Zeta-Function, E. C. Titchmarsh, D. R. Heath-Brown",
+  "The Theory of Functions, E. C. Titchmarsh",
+  "Perron's Formula and the Prime Number Theorem for Automorphic L-Functions, Jianya Liu, Y. Ye",
+  "The distribution of prime numbers, A. E. Ingham",
+]
