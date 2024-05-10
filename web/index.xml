@@ -21,6 +21,13 @@
           <description></description>
         </item>
         <item>
+          <title>LL(1) Parser Generator</title>
+          <link>/entries/LL1_Parser.html</link>
+          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LL1_Parser.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Pick&#39;s Theorem</title>
           <link>/entries/Picks_Theorem.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
@@ -8880,6 +8887,13 @@
           <link>/sessions/list_update/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/list_update/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LL1_Parser</title>
+          <link>/sessions/ll1_parser/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/ll1_parser/</guid>
           <description></description>
         </item>
         <item>

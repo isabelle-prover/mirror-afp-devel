@@ -6950,6 +6950,24 @@ host = [
 
 [thomson.homepages]
 
+[tilscher]
+name = "Sarah Tilscher"
+orcid = "0009-0009-9644-7475"
+
+[tilscher.emails]
+
+[tilscher.emails.tilscher_email]
+user = [
+  "sarah",
+  "tilscher",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[tilscher.homepages]
+
 [tiu]
 name = "Alwen Tiu"
 
