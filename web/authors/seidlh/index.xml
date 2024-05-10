@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>tilscher on Archive of Formal Proofs
+    <title>seidlh on Archive of Formal Proofs
     </title>
-    <link>/authors/tilscher/</link>
+    <link>/authors/seidlh/</link>
     <description>
-        Recent content in tilscher 
+        Recent content in seidlh 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 09 May 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/tilscher/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/seidlh/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Partial Correctness of the Top-Down Solver</title>
           <link>/entries/Top_Down_Solver.html</link>
           <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Top_Down_Solver.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>LL(1) Parser Generator</title>
-          <link>/entries/LL1_Parser.html</link>
-          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/LL1_Parser.html</guid>
           <description></description>
         </item>
   </channel>

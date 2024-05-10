@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 09 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Partial Correctness of the Top-Down Solver</title>
+          <link>/entries/Top_Down_Solver.html</link>
+          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Top_Down_Solver.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Prime Number Theorem with Remainder Term</title>
           <link>/entries/PNT_with_Remainder.html</link>
@@ -11218,6 +11225,13 @@
           <link>/sessions/tla/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/tla/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Top_Down_Solver</title>
+          <link>/sessions/top_down_solver/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/top_down_solver/</guid>
           <description></description>
         </item>
         <item>
