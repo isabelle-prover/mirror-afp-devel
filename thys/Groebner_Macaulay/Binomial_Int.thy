@@ -9,9 +9,6 @@ begin
 text \<open>Restore original sort constraints:\<close>
 setup \<open>Sign.add_const_constraint (@{const_name gbinomial}, SOME @{typ "'a::{semidom_divide,semiring_char_0} \<Rightarrow> nat \<Rightarrow> 'a"})\<close>
 
-lemma gbinomial_0_left: "0 gchoose k = (if k = 0 then 1 else 0)"
-  by (cases k) simp_all
-
 lemma gbinomial_eq_0_int:
   assumes "n < k"
   shows "(int n) gchoose k = 0"
@@ -369,48 +366,48 @@ proof -
     by (rule binomial_plus_le)
   hence "int ((nat x choose k) + (nat y choose k)) \<le> int (nat x + nat y choose k)"
     by (simp only: zle_int)
-  hence "int (nat x) gchoose k + (int (nat y) gchoose k) \<le> int (nat x) + int (nat y) gchoose k"
+  hence "(int (nat x) gchoose k) + (int (nat y) gchoose k) \<le> int (nat x) + int (nat y) gchoose k"
     by (simp only: int_plus int_binomial)
   with assms(2, 3) show ?thesis by simp
 qed
 
 lemma binomial_int_ineq_1:
   assumes "0 \<le> x" and "0 \<le> (y::int)"
-  shows "2 * (x + y gchoose k) \<le> x gchoose k + ((x + 2 * y) gchoose k)"
+  shows "2 * (x + y gchoose k) \<le> (x gchoose k) + ((x + 2 * y) gchoose k)"
 proof -
   from binomial_ineq_1[of "nat x" "nat y" k]
   have "int (2 * (nat x + nat y choose k)) \<le> int ((nat x choose k) + (nat x + 2 * nat y choose k))"
     by (simp only: zle_int)
-  hence "2 * (int (nat x) + int (nat y) gchoose k) \<le> int (nat x) gchoose k + (int (nat x) + 2 * int (nat y) gchoose k)"
+  hence "2 * (int (nat x) + int (nat y) gchoose k) \<le> (int (nat x) gchoose k) + (int (nat x) + 2 * int (nat y) gchoose k)"
     by (simp only: int_binomial int_plus int_ops(7)) simp
   with assms show ?thesis by simp
 qed
 
 corollary binomial_int_ineq_2:
   assumes "0 \<le> y" and "y \<le> (x::int)"
-  shows "2 * (x gchoose k) \<le> x - y gchoose k + (x + y gchoose k)"
+  shows "2 * (x gchoose k) \<le> (x - y gchoose k) + (x + y gchoose k)"
 proof -
   from assms(2) have "0 \<le> x - y" by simp
-  hence "2 * ((x - y) + y gchoose k) \<le> x - y gchoose k + ((x - y + 2 * y) gchoose k)"
+  hence "2 * ((x - y) + y gchoose k) \<le> (x - y gchoose k) + ((x - y + 2 * y) gchoose k)"
     using assms(1) by (rule binomial_int_ineq_1)
   thus ?thesis by smt
 qed
 
 corollary binomial_int_ineq_3:
   assumes "0 \<le> y" and "y \<le> 2 * (x::int)"
-  shows "2 * (x gchoose k) \<le> y gchoose k + (2 * x - y gchoose k)"
+  shows "2 * (x gchoose k) \<le> (y gchoose k) + (2 * x - y gchoose k)"
 proof (cases "y \<le> x")
   case True
   hence "0 \<le> x - y" by simp
   moreover from assms(1) have "x - y \<le> x" by simp
-  ultimately have "2 * (x gchoose k) \<le> x - (x - y) gchoose k + (x + (x - y) gchoose k)"
+  ultimately have "2 * (x gchoose k) \<le> (x - (x - y) gchoose k) + (x + (x - y) gchoose k)"
     by (rule binomial_int_ineq_2)
   thus ?thesis by simp
 next
   case False
   hence "0 \<le> y - x" by simp
   moreover from assms(2) have "y - x \<le> x" by simp
-  ultimately have "2 * (x gchoose k) \<le> x - (y - x) gchoose k + (x + (y - x) gchoose k)"
+  ultimately have "2 * (x gchoose k) \<le> (x - (y - x) gchoose k) + (x + (y - x) gchoose k)"
     by (rule binomial_int_ineq_2)
   thus ?thesis by simp
 qed
@@ -464,7 +461,7 @@ proof (rule ext)
   fix x::int
   from assms have eq: "Suc (k - Suc 0) = k" by simp
   have "x + n gchoose k = (x + n - 1) + 1 gchoose (Suc (k - 1))" by (simp add: eq)
-  also have "\<dots> = (x + n - 1) gchoose (k - 1) + ((x + n - 1) gchoose (Suc (k - 1)))"
+  also have "\<dots> = (x + n - 1 gchoose k - 1) + ((x + n - 1) gchoose (Suc (k - 1)))"
     by (fact gbinomial_int_Suc_Suc)
   finally show "bw_diff (\<lambda>x. x + n gchoose k) x = x + n - 1 gchoose (k - 1)"
     by (simp add: eq bw_diff_def algebra_simps)

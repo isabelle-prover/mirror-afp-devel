@@ -844,7 +844,7 @@ proof (rule poly_fun_eqI_ge)
   from \<open>d \<le> ?z\<close> have "Hilbert_fun (P[X]::(_ \<Rightarrow>\<^sub>0 'a) set) ?z =
                       ((?z - d) + (n - 1) choose n - 1) + Hilbert_fun P ?z + Hilbert_fun N ?z"
     by (rule Hilbert_fun_X)
-  also have "int \<dots> = (z - d + (n - 1)) gchoose (n - 1) + Hilbert_poly aa z + Hilbert_poly bb z"
+  also have "int \<dots> = (z - d + (n - 1) gchoose n - 1) + Hilbert_poly aa z + Hilbert_poly bb z"
     using X_not_empty valid_ps hom_ps cn_ps std_ps ext_ps \<open>aa 0 \<le> nat z\<close>
           valid_qs hom_qs cn_qs std_qs ext_qs \<open>bb 0 \<le> nat z\<close> \<open>0 \<le> z\<close>
     by (simp add: Hilbert_fun_eq_Hilbert_poly int_z aa_def bb_def int_binomial int_zd)
@@ -948,7 +948,7 @@ proof -
     by (simp add: gbinomial_int_negated_upper[of "int n - d - j - 1"] 1)
   have eq4: "int n - d - j gchoose (n - j) = (- 1)^(n - j) * (int d - 1 gchoose (n - j))"
     by (simp add: gbinomial_int_negated_upper[of "int n - d - j"] 2)
-  have eq5: "(\<Sum>i = Suc j..n. int i - aa i - j - 1 gchoose (i - j) + (int i - bb i - j - 1 gchoose (i - j))) =
+  have eq5: "(\<Sum>i = Suc j..n. (int i - aa i - j - 1 gchoose i - j) + (int i - bb i - j - 1 gchoose (i - j))) =
         (\<Sum>i=Suc j..n. (- 1)^(i - j) * ((int (aa i) gchoose (i - j)) + (int (bb i) gchoose (i - j))))"
     using refl
   proof (rule sum.cong)
@@ -956,7 +956,7 @@ proof -
     assume "i \<in> {Suc j..n}"
     hence "j \<le> i" by simp
     hence 3: "int (i - j) = int i - j" by simp
-    show "int i - aa i - j - 1 gchoose (i - j) + (int i - bb i - j - 1 gchoose (i - j)) =
+    show "(int i - aa i - j - 1 gchoose i - j) + (int i - bb i - j - 1 gchoose (i - j)) =
           (- 1)^(i - j) * ((int (aa i) gchoose (i - j)) + (int (bb i) gchoose (i - j)))"
       by (simp add: gbinomial_int_negated_upper[of "int i - aa i - j - 1"]
             gbinomial_int_negated_upper[of "int i - bb i - j - 1"] 3 distrib_left)
@@ -989,15 +989,15 @@ proof (rule ccontr)
   from \<open>d \<le> z\<close> have "Hilbert_fun (P[X]::(_ \<Rightarrow>\<^sub>0 'a) set) z =
                         ((z - d) + (n - 1) choose n - 1) + Hilbert_fun P z + Hilbert_fun N z"
     by (rule Hilbert_fun_X)
-  also have "int \<dots> = ((int z - d + (n - 1)) gchoose (n - 1) + Hilbert_poly aa z + Hilbert_poly bb z) +
+  also have "int \<dots> = ((int z - d + (n - 1) gchoose n - 1) + Hilbert_poly aa z + Hilbert_poly bb z) +
                         (int (card (?S (set ps))) + int (card (?S (set qs))))"
     using X_not_empty valid_ps hom_ps cn_ps std_ps ext_ps \<open>aa 1 \<le> z\<close>
           valid_qs hom_qs cn_qs std_qs ext_qs \<open>bb 1 \<le> z\<close>
     by (simp add: Hilbert_fun_eq_Hilbert_poly_plus_card aa_def bb_def int_binomial eq)
-  finally have "((int z - d + n - 1) gchoose (n - 1) + Hilbert_poly aa z + Hilbert_poly bb z) +
+  finally have "((int z - d + n - 1 gchoose n - 1) + Hilbert_poly aa z + Hilbert_poly bb z) +
                   (int (card (?S (set ps))) + int (card (?S (set qs)))) = int z + n - 1 gchoose (n - 1)"
     using fin_X X_not_empty by (simp add: Hilbert_fun_Polys int_binomial algebra_simps)
-  also have "\<dots> = (int z - d + n - 1) gchoose (n - 1) + Hilbert_poly aa z + Hilbert_poly bb z"
+  also have "\<dots> = (int z - d + n - 1 gchoose n - 1) + Hilbert_poly aa z + Hilbert_poly bb z"
     by (fact dube_eq_0[THEN fun_cong])
   finally have "int (card (?S (set ps))) + int (card (?S (set qs))) = 0" by simp
   hence "card (?S (set ps)) = 0" and "card (?S (set qs)) = 0" by simp_all
@@ -1103,7 +1103,7 @@ proof -
     by simp_all
   have "int (cc (n - 1)) = int (cc (Suc ?j))" by (simp only: 1)
   also from \<open>?j < n - 1\<close> have "\<dots> = 2 + 2 * (- 1) ^ (n - ?j) * (int d - 1 gchoose (n - Suc ?j)) +
-         (\<Sum>i = ?j+2..n-1. (- 1) ^ (i - ?j) * (int (aa i) gchoose (i - ?j) + (int (bb i) gchoose (i - ?j))))"
+         (\<Sum>i = ?j+2..n-1. (- 1) ^ (i - ?j) * ((int (aa i) gchoose (i - ?j)) + (int (bb i) gchoose (i - ?j))))"
     by (rule cc_Suc)
   also have "\<dots> = int (2 * d)" by (simp add: 1 2 3 4)
   finally show ?thesis by (simp only: int_int_eq)
@@ -1123,17 +1123,17 @@ proof -
     by simp_all
   have "int (cc (n - 2)) = int (cc (Suc ?j))" by (simp only: 1)
   also from \<open>?j < n - 1\<close> have "\<dots> = 2 + 2 * (- 1) ^ (n - ?j) * (int d - 1 gchoose (n - Suc ?j)) +
-         (\<Sum>i = ?j+2..n-1. (- 1) ^ (i - ?j) * (int (aa i) gchoose (i - ?j) + (int (bb i) gchoose (i - ?j))))"
+         (\<Sum>i = ?j+2..n-1. (- 1) ^ (i - ?j) * ((int (aa i) gchoose (i - ?j)) + (int (bb i) gchoose (i - ?j))))"
     by (rule cc_Suc)
   also have "\<dots> = (2 - 2 * (int d - 1 gchoose 2)) + ((int (aa (n - 1)) gchoose 2) + (int (bb (n - 1)) gchoose 2))"
     by (simp add: 1 2 3 4)
   also have "\<dots> \<le> (2 - 2 * (int d - 1 gchoose 2)) + (2 * int d gchoose 2)"
   proof (rule add_left_mono)
-    have "int (aa (n - 1)) gchoose 2 + (int (bb (n - 1)) gchoose 2) \<le> int (aa (n - 1)) + int (bb (n - 1)) gchoose 2"
+    have "(int (aa (n - 1)) gchoose 2) + (int (bb (n - 1)) gchoose 2) \<le> int (aa (n - 1)) + int (bb (n - 1)) gchoose 2"
       by (rule gbinomial_int_plus_le) simp_all
     also have "\<dots> = int (2 * d) gchoose 2"  by (simp flip: cc_n_minus_1)
     also have "\<dots> = 2 * int d gchoose 2"  by (simp add: int_ops(7))
-    finally show "int (aa (n - 1)) gchoose 2 + (int (bb (n - 1)) gchoose 2) \<le> 2 * int d gchoose 2" .
+    finally show "(int (aa (n - 1)) gchoose 2) + (int (bb (n - 1)) gchoose 2) \<le> 2 * int d gchoose 2" .
   qed
   also have "\<dots> = 2 - fact 2 * (int d - 1 gchoose 2) + (2 * int d gchoose 2)" by (simp only: fact_2)
   also have "\<dots> = 2 - (int d - 1) * (int d - 2) + (2 * int d gchoose 2)"
@@ -1152,9 +1152,9 @@ proof -
   let ?f = "\<lambda>i j. (int (aa i) gchoose (i - j)) + (int (bb i) gchoose (i - j))"
   let ?S = "\<lambda>x y. (\<Sum>i=j+x..n-y. (- 1)^(i - j) * ?f i j)"
   let ?S3 = "\<lambda>x y. (\<Sum>i=j+x..n-y. (int (cc i) gchoose (i - j)))"
-  have ie1: "int (aa i) gchoose k + (int (bb i) gchoose k) \<le> int (cc i) gchoose k" if "0 < k" for i k
+  have ie1: "(int (aa i) gchoose k) + (int (bb i) gchoose k) \<le> int (cc i) gchoose k" if "0 < k" for i k
   proof -
-    from that have "int (aa i) gchoose k + (int (bb i) gchoose k) \<le> int (aa i) + int (bb i) gchoose k"
+    from that have "(int (aa i) gchoose k) + (int (bb i) gchoose k) \<le> int (aa i) + int (bb i) gchoose k"
       by (rule gbinomial_int_plus_le) simp_all
     also have "\<dots> = int (cc i) gchoose k" by simp
     finally show ?thesis .
@@ -1171,7 +1171,7 @@ proof -
       and 4: "n - j = 4" and 5: "n - Suc 0 = Suc (Suc (Suc j))" and 6: "n - 2 = Suc (Suc j)"
       by (simp_all add: True)
     from \<open>j < n - 1\<close> have "int (cc (Suc j)) = 2 + 2 * (- 1) ^ (n - j) * (int d - 1 gchoose (n - Suc j)) +
-           (\<Sum>i = j+2..n-1. (- 1) ^ (i - j) * (int (aa i) gchoose (i - j) + (int (bb i) gchoose (i - j))))"
+           (\<Sum>i = j+2..n-1. (- 1) ^ (i - j) * ((int (aa i) gchoose (i - j)) + (int (bb i) gchoose (i - j))))"
       by (rule cc_Suc)
     also have "\<dots> = (2 + ((int (aa (n - 2)) gchoose 2) + (int (bb (n - 2)) gchoose 2))) +
                     (2 * (int d - 1 gchoose 3) - ((int (aa (n - 1)) gchoose 3) + (int (bb (n - 1)) gchoose 3)))"
@@ -1182,10 +1182,10 @@ proof -
       hence ie2: "int (aa (n - 1)) \<le> 2 * int d" by simp
       from \<open>0 \<le> int d - 1\<close> have "int d - 1 gchoose 3 \<le> int d gchoose 3" by (rule gbinomial_int_mono) simp
       hence "2 * (int d - 1 gchoose 3) \<le> 2 * (int d gchoose 3)" by simp
-      also from _ ie2 have "\<dots> \<le> int (aa (n - 1)) gchoose 3 + (2 * int d - int (aa (n - 1)) gchoose 3)"
+      also from _ ie2 have "\<dots> \<le> (int (aa (n - 1)) gchoose 3) + (2 * int d - int (aa (n - 1)) gchoose 3)"
         by (rule binomial_int_ineq_3) simp
-      also have "\<dots> = int (aa (n - 1)) gchoose 3 + (int (bb (n - 1)) gchoose 3)" by (simp flip: eq1)
-      finally show "2 * (int d - 1 gchoose 3) - (int (aa (n - 1)) gchoose 3 + (int (bb (n - 1)) gchoose 3)) \<le> 0"
+      also have "\<dots> = (int (aa (n - 1)) gchoose 3) + (int (bb (n - 1)) gchoose 3)" by (simp flip: eq1)
+      finally show "2 * (int d - 1 gchoose 3) - ((int (aa (n - 1)) gchoose 3) + (int (bb (n - 1)) gchoose 3)) \<le> 0"
         by simp
     qed
     also have "\<dots> = 2 + ((int (aa (n - 2)) gchoose 2) + (int (bb (n - 2)) gchoose 2))" by simp
@@ -1271,7 +1271,7 @@ proof -
     qed
     also have "\<dots> = ((int (aa (j + 2)) gchoose 2) + (int (bb (j + 2)) gchoose 2)) + (2 + ?S3 4 1)"
       using \<open>0 < n - 1\<close> \<open>j + 4 \<le> n - 1\<close> by (simp only: sum_tail_nat) (simp flip: numeral_2_eq_2)
-    also from ie1 have "\<dots> \<le> int (cc (j + 2)) gchoose 2 + (2 + ?S3 4 1)"
+    also from ie1 have "\<dots> \<le> (int (cc (j + 2)) gchoose 2) + (2 + ?S3 4 1)"
       by (rule add_right_mono) simp
     also have "\<dots> = 2 + (int (cc (j + 2)) gchoose 2) + ?S3 4 1" by (simp only: ac_simps)
     finally show ?thesis .
