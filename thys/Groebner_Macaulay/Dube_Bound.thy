@@ -1161,7 +1161,7 @@ proof -
   qed
   from d_gr_0 have "0 \<le> int d - 1" by simp
   from assms have "0 < n - Suc j" by simp
-  have f_nonneg: "0 \<le> ?f i j" for i by (simp add: gbinomial_int_nonneg)
+  have f_nonneg: "0 \<le> ?f i j" for i by (simp add: gbinomial_nneg)
 
   show ?thesis
   proof (cases "n = j + 4")
@@ -1222,7 +1222,7 @@ proof -
               2 * (int d - 1 gchoose (n - Suc j)) - ((int (aa (n - 1)) gchoose (n - Suc j)) +
                                                      (int (bb (n - 1)) gchoose (n - Suc j)))"
           by simp
-        also have "\<dots> \<le> 2 * (int d - 1 gchoose (n - Suc j))" by (rule rl) (simp add: gbinomial_int_nonneg)
+        also have "\<dots> \<le> 2 * (int d - 1 gchoose (n - Suc j))" by (rule rl) (simp add: gbinomial_nneg)
         also have "\<dots> = (int d - 1 gchoose (n - Suc j)) + (int d - 1 gchoose (n - Suc j))" by simp
         also have "\<dots> \<le> (int d - 1) + (int d - 1) gchoose (n - Suc j)"
           using \<open>0 < n - Suc j\<close> \<open>0 \<le> int d - 1\<close> \<open>0 \<le> int d - 1\<close> by (rule gbinomial_int_plus_le)
@@ -1240,7 +1240,7 @@ proof -
                 2 * (int d - 1 gchoose (n - Suc j))"
           by simp
         also have "\<dots> \<le> (int (aa (n - 1)) gchoose (n - Suc j)) + (int (bb (n - 1)) gchoose (n - Suc j))"
-          by (rule rl) (simp add: gbinomial_int_nonneg d_gr_0)
+          by (rule rl) (simp add: gbinomial_nneg d_gr_0)
         also from \<open>0 < n - Suc j\<close> have "\<dots> \<le> int (cc (n - 1)) gchoose (n - Suc j)" by (rule ie1)
         finally show ?thesis .
       qed
