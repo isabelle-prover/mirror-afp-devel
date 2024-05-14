@@ -321,7 +321,7 @@ proof (subst mult.assoc,
     thus ?thesis
       by (auto simp add: field_simps
                intro!: landau_o.big.ev_eq_trans2)
-         (auto intro: eventually_at_top_linorderI [of 1])
+         (auto simp: frequently_def intro: eventually_at_top_linorderI [of 1])
   qed
   finally show "(\<lambda>t. r\<^sub>2 t / (t * (ln t)\<^sup>2))
     \<in> O(\<lambda>x. exp (- (c * (ln x powr m * ln (ln x) powr n))))"
