@@ -3,16 +3,49 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-05-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/akra_bazzi/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-05-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-05-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-05-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/karatsuba/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/number_theoretic_transform/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/root_balanced_tree/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/schulz/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Schoenhage_Strassen.html</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/universal_hash_families/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/word_lib/</loc>
+    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Top_Down_Solver.html</loc>
     <lastmod>2024-05-09T00:00:00+00:00</lastmod>
@@ -25,15 +58,6 @@
   </url><url>
     <loc>/authors/tilscher/</loc>
     <lastmod>2024-05-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-05-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/PNT_with_Remainder.html</loc>
     <lastmod>2024-05-05T00:00:00+00:00</lastmod>
@@ -236,19 +260,10 @@
     <loc>/entries/Wieferich_Kempner.html</loc>
     <lastmod>2024-03-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/akra_bazzi/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/expander_graphs/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Karatsuba.html</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/root_balanced_tree/</loc>
-    <lastmod>2024-02-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/schulz/</loc>
     <lastmod>2024-02-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Doob_Convergence.html</loc>
@@ -983,9 +998,6 @@
     <loc>/dependencies/separation_algebra/</loc>
     <lastmod>2022-11-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/word_lib/</loc>
-    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Sauer_Shelah_Lemma.html</loc>
     <lastmod>2022-11-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -1089,9 +1101,6 @@
     <lastmod>2022-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CRYSTALS-Kyber.html</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/number_theoretic_transform/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Separation_Logic_Unbounded.html</loc>
@@ -1266,9 +1275,6 @@
     <lastmod>2022-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/prefix_free_code_combinators/</loc>
-    <lastmod>2022-04-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/universal_hash_families/</loc>
     <lastmod>2022-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Dedekind_Real.html</loc>
@@ -6652,6 +6658,8 @@
     <loc>/sessions/sc_dom_components/</loc>
   </url><url>
     <loc>/sessions/scc_bloemen_sequential/</loc>
+  </url><url>
+    <loc>/sessions/schoenhage_strassen/</loc>
   </url><url>
     <loc>/sessions/schutz_spacetime/</loc>
   </url><url>
