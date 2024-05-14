@@ -1299,16 +1299,15 @@ name = "Katherine Kosaian"
 
 [cordwell.emails.cordwell_email]
 user = [
-  "kcordwel",
+  "kkosaian",
 ]
 host = [
-  "cs",
-  "cmu",
+  "iastate",
   "edu",
 ]
 
 [cordwell.homepages]
-cordwell_homepage = "https://www.cs.cmu.edu/~kcordwel/"
+cordwell_homepage = "https://sites.google.com/view/katherinekosaian"
 
 [cousin]
 name = "Marie Cousin"
