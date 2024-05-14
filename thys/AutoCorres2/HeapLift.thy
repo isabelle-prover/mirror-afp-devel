@@ -2609,7 +2609,7 @@ lemma array_count_index:
           = of_nat (j * size_of TYPE('a)))"
   apply (rule subst[where t = "i = j" and s = "i * size_of TYPE('a) = j * size_of TYPE('a)"])
    apply clarsimp
-  apply (subgoal_tac "\<And> i. i < CARD('b) \<Longrightarrow> i * size_of TYPE('a) < 2 ^ LENGTH(32)")
+  apply (subgoal_tac "\<And> i. i < CARD('b) \<Longrightarrow> i * size_of TYPE('a) < 2 ^ LENGTH(addr_bitsize)")
    apply (rule of_nat_inj[symmetric]; force)  
   apply (rule subst[where t = "len_of TYPE(addr_bitsize)" and s = addr_bitsize], force)
   apply (rule less_trans)

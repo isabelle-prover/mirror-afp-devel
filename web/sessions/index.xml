@@ -4073,6 +4073,13 @@
           <description></description>
         </item>
         <item>
+          <title>PNT_with_Remainder</title>
+          <link>/sessions/pnt_with_remainder/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pnt_with_remainder/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Poincare_Bendixson</title>
           <link>/sessions/poincare_bendixson/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5351,6 +5358,13 @@
           <link>/sessions/subset_boolean_algebras/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/subset_boolean_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Substitutions_Lambda_Free</title>
+          <link>/sessions/substitutions_lambda_free/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/substitutions_lambda_free/</guid>
           <description></description>
         </item>
         <item>

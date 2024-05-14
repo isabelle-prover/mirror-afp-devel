@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>song</title>
+          <link>/authors/song/</link>
+          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/song/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yao</title>
+          <link>/authors/yao/</link>
+          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/yao/</guid>
+          <description></description>
+        </item>
         <item>
           <title>binder</title>
           <link>/authors/binder/</link>
@@ -46,6 +60,13 @@
           <link>/authors/thiemann/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/authors/thiemann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>trelat</title>
+          <link>/authors/trelat/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/trelat/</guid>
           <description></description>
         </item>
         <item>
@@ -963,13 +984,6 @@
           <link>/authors/merz/</link>
           <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
           <guid>/authors/merz/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>trelat</title>
-          <link>/authors/trelat/</link>
-          <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
-          <guid>/authors/trelat/</guid>
           <description></description>
         </item>
         <item>

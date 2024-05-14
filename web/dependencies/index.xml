@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Prime_Number_Theorem</title>
+          <link>/dependencies/prime_number_theorem/</link>
+          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_number_theorem/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Poincare_Bendixson</title>
           <link>/dependencies/poincare_bendixson/</link>
@@ -42,10 +49,24 @@
           <description></description>
         </item>
         <item>
+          <title>Lambda_Free_RPOs</title>
+          <link>/dependencies/lambda_free_rpos/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lambda_free_rpos/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Polynomials</title>
           <link>/dependencies/polynomials/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Well_Quasi_Orders</title>
+          <link>/dependencies/well_quasi_orders/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/well_quasi_orders/</guid>
           <description></description>
         </item>
         <item>
@@ -1323,13 +1344,6 @@
           <description></description>
         </item>
         <item>
-          <title>Well_Quasi_Orders</title>
-          <link>/dependencies/well_quasi_orders/</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/well_quasi_orders/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Pratt_Certificate</title>
           <link>/dependencies/pratt_certificate/</link>
           <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
@@ -1407,13 +1421,6 @@
           <description></description>
         </item>
         <item>
-          <title>Lambda_Free_RPOs</title>
-          <link>/dependencies/lambda_free_rpos/</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/lambda_free_rpos/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Stateful_Protocol_Composition_and_Typing</title>
           <link>/dependencies/stateful_protocol_composition_and_typing/</link>
           <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
@@ -1446,13 +1453,6 @@
           <link>/dependencies/e_transcendental/</link>
           <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
           <guid>/dependencies/e_transcendental/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Prime_Number_Theorem</title>
-          <link>/dependencies/prime_number_theorem/</link>
-          <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/dependencies/prime_number_theorem/</guid>
           <description></description>
         </item>
         <item>
