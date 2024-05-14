@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schönhage-Strassen Multiplication - Archive of Formal Proofs</title>
+    <meta name="description" content="We give a verified implementation of the Schönhage-Strassen Multiplication on Integers based on the original paper by Schönhage and Strassen and verify its...">
+
+  <meta property="og:title" content="Schönhage-Strassen Multiplication" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Schoenhage_Strassen.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-05-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-05-10T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Schönhage-Strassen Multiplication"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span>chönhage-<span class='first'>S</span>trassen <span class='first'>M</span>ultiplication
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/schulz">Jakob Schulz</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsiamFrb2IiLCJzY2h1bHoiXX0=">📧</a>
+
+      </p>
+      <p class="date">May 10, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">We give a verified implementation of the Schönhage-Strassen Multiplication on Integers based on the original paper by Schönhage and Strassen and verify its asymptotic complexity of $\mathcal{O}\left(n \log n \log \log n\right)$ bit operations.
+
+Integers are represented as LSBF (least significant bit first) boolean lists. The running time is verified using the Time Monad defined in Root-Balanced Trees by Nipkow. For verifying correctness, we adapt the formalization of Number Theoretic Transforms (NTTs) by Ammer and Kreuzer to the context of rings that need not be fields.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li>
+          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>https://mediatum.ub.tum.de/1717658
+        </li>
+      </ul>
+      <h3>Session Schoenhage_Strassen</h3>
+      <ul>
+          <li><a href="../sessions/schoenhage_strassen/#Schoenhage_Strassen_Preliminaries">Schoenhage_Strassen_Preliminaries</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Schoenhage_Strassen_Runtime_Preliminaries">Schoenhage_Strassen_Runtime_Preliminaries</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Schoenhage_Strassen_Ring_Lemmas">Schoenhage_Strassen_Ring_Lemmas</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#NTT_Rings">NTT_Rings</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#FNTT_Rings">FNTT_Rings</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Z_mod_power_of_2">Z_mod_power_of_2</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Z_mod_power_of_2_TM">Z_mod_power_of_2_TM</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Z_mod_Fermat">Z_mod_Fermat</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Z_mod_Fermat_TM">Z_mod_Fermat_TM</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Schoenhage_Strassen">Schoenhage_Strassen</a></li>
+          <li><a href="../sessions/schoenhage_strassen/#Schoenhage_Strassen_TM">Schoenhage_Strassen_TM</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Akra_Bazzi.html">The Akra-Bazzi theorem and the Master theorem</a></li>
+              <li><a href="../entries/Karatsuba.html">Karatsuba Multiplication on Integers</a></li>
+              <li><a href="../entries/Number_Theoretic_Transform.html">Number Theoretic Transform</a></li>
+              <li><a href="../entries/Root_Balanced_Tree.html">Root-Balanced Tree</a></li>
+              <li><a href="../entries/Universal_Hash_Families.html">Universal Hash Families</a></li>
+              <li><a href="../entries/Word_Lib.html">Finite Machine Word Library</a></li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Schoenhage_Strassen/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Schoenhage_Strassen/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Schoenhage_Strassen/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Schoenhage_Strassen-AFP</p>
+        <pre id="copy-text">@article{Schoenhage_Strassen-AFP,
+  author  = {Jakob Schulz},
+  title   = {Schönhage-Strassen Multiplication},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Schoenhage_Strassen.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Schoenhage_Strassen-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>
