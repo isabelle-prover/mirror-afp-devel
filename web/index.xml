@@ -42,6 +42,13 @@
           <description></description>
         </item>
         <item>
+          <title>Isabelle/DOF</title>
+          <link>/entries/Isabelle_DOF.html</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_DOF.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Pick&#39;s Theorem</title>
           <link>/entries/Picks_Theorem.html</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
@@ -8460,6 +8467,13 @@
           <link>/sessions/isabelle_c/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/isabelle_c/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle_DOF</title>
+          <link>/sessions/isabelle_dof/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/isabelle_dof/</guid>
           <description></description>
         </item>
         <item>

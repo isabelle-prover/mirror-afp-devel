@@ -83,13 +83,31 @@
     <loc>/authors/binder/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/brucker/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/cordwell/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/functional-automata/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Isabelle_DOF.html</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/meric/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Picks_Theorem.html</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/poincare_bendixson/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/regular-sets/</loc>
+    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wolff/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
@@ -338,9 +356,6 @@
     <loc>/entries/Interval_Analysis.html</loc>
     <lastmod>2024-01-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/brucker/</loc>
-    <lastmod>2024-01-21T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/stell/</loc>
     <lastmod>2024-01-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -351,9 +366,6 @@
     <lastmod>2023-12-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/HOL-CSP_OpSem.html</loc>
-    <lastmod>2023-12-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/wolff/</loc>
     <lastmod>2023-12-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/crypthol/</loc>
@@ -3212,9 +3224,6 @@
     <loc>/entries/Comparison_Sort_Lower_Bound.html</loc>
     <lastmod>2017-03-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/regular-sets/</loc>
-    <lastmod>2017-03-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Quick_Sort_Cost.html</loc>
     <lastmod>2017-03-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -5960,6 +5969,8 @@
     <loc>/sessions/irrationals_from_thebook/</loc>
   </url><url>
     <loc>/sessions/isabelle_c/</loc>
+  </url><url>
+    <loc>/sessions/isabelle_dof/</loc>
   </url><url>
     <loc>/sessions/isabelle_hoops/</loc>
   </url><url>

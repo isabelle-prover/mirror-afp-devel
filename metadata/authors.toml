@@ -4361,6 +4361,24 @@ host = [
 
 [meis.homepages]
 
+[meric]
+name = "Nicolas Méric"
+orcid = "0000-0002-0756-7072"
+
+[meric.emails]
+
+[meric.emails.meric_email]
+user = [
+  "nicolas",
+  "meric",
+]
+host = [
+  "universite-paris-saclay",
+  "fr",
+]
+
+[meric.homepages]
+
 [merz]
 name = "Stephan Merz"
 

@@ -1,0 +1,56 @@
+title = "Isabelle/DOF"
+date = 2024-04-26
+topics = [
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+Isabelle/DOF provides an implementation of a document ontology framework on top
+of Isabelle/HOL. The framework allows both for <em>defining</em> ontologies and
+<em>enforcing</em> them during document development and document evolution.
+Isabelle/DOF targets use-cases such as mathematical texts referring to a theory
+development or technical reports requiring a particular structure. The
+documentation generation features are sufficiently powerful to typeset the most
+common cases without using LaTeX.
+
+Isabelle/DOF is integrated into Isabelle's IDE, which allows for smooth ontology
+development as well as immediate ontological conformance-checks during the
+editing of a document. Its checking facilities leverage the collaborative
+development of documents required to be consistent with an underlying
+ontological structure.
+
+This entry provides a user-manual with in-depth presentation of the
+design concepts of Isabelle/DOF's Ontology Definition Language (ODL) and
+describe comprehensively its major commands. Many examples show typical
+best-practice applications of the system."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+homepage = "brucker_homepage"
+
+[authors.meric]
+email = "meric_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email2"
+meric = "meric_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-319-96812-4_3",
+  "10.1007/978-3-030-30446-1_15",
+  "10.1007/978-3-030-34968-4_4",
+]
+pubs = []
