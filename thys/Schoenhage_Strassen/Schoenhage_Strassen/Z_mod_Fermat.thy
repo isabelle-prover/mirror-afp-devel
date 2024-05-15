@@ -261,7 +261,8 @@ lemma inv_pow_mod_carrier_length:
 lemma
   assumes "m > 0"
   shows "\<exists>i j. (a::nat) = j + i * m \<and> j < m"
-  using mod_div_mult_eq[of a m, symmetric] pos_mod_bound[of m a] assms by blast
+  using mod_div_mult_eq[of a m, symmetric] pos_mod_bound[of m a] assms mod_less_divisor 
+  by blast
 
 corollary two_powers: "(2::nat) ^ a mod n = (2::nat) ^ (a mod (2 ^ (k + 1))) mod n"
 proof -
@@ -729,8 +730,8 @@ proof (intro verit_and_neg(3))
     unfolding assms(1) by (simp add: add_nat_correct to_nat_take to_nat_drop)
   also have "... < (2 ^ e - 1) + (2 ^ (e + 1)) div 2 ^ e"
     apply (intro add_le_less_mono)
-    subgoal using pos_mod_bound[of "2 ^ e" "Nat_LSBF.to_nat xs", OF two_pow_pos]
-      by linarith
+    subgoal using pos_mod_bound[of "2 ^ e" "Nat_LSBF.to_nat xs"] two_pow_pos 
+      by (metis Suc_mask_eq_exp mask_eq_exp_minus_1 mod_Suc_le_divisor)
     subgoal using to_nat_length_upper_bound[of xs] assms div_le_mono
       by (metis add_diff_cancel_left' le_add1 less_mult_imp_div_less power_add power_commutes power_diff power_one_right to_nat_length_bound zero_neq_numeral)
     done

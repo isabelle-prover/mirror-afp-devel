@@ -28,9 +28,9 @@ proof -
     using assms by simp
   also have "... = (int m - int (m - i) mod int n) mod int n"
     unfolding zmod_int
-    using \<open>n \<le> m\<close> int_ops(6)[of m "(m - i) mod n"] pos_mod_bound[OF \<open>n > 0\<close>]
+    using \<open>n \<le> m\<close> int_ops(6)[of m "(m - i) mod n"] pos_mod_bound[of n] \<open>n > 0\<close>
     by (intro arg_cong2[where f = "(mod)"] refl)
-       (metis nat_int_comparison(2) order.asym order.strict_trans1 zmod_int)
+      (metis diff_diff_cancel less_imp_diff_less mod_le_divisor mod_less mod_self nat_int_comparison(2) of_nat_less_0_iff of_nat_mod)
   also have "... = int i mod int n"
     using assms(1) \<open>i < n\<close> by (simp add: mod_diff_right_eq)
   also have "... = int i" using \<open>i < n\<close> by simp

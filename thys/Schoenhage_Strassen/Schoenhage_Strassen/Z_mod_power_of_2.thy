@@ -3,7 +3,11 @@ section "The Schoenhage-Strassen Algorithm"
 subsection "Representing $\\mathbb{Z}_{2 ^ n}$"
 
 theory Z_mod_power_of_2
-  imports "Karatsuba.Nat_LSBF_TM" "Universal_Hash_Families.Universal_Hash_Families_More_Finite_Fields" "Karatsuba.Abstract_Representations_2" "HOL-Number_Theory.Number_Theory"
+  imports 
+    "Karatsuba.Nat_LSBF_TM" 
+    "Finite_Fields.Ring_Characteristic" 
+    "Karatsuba.Abstract_Representations_2" 
+    "HOL-Number_Theory.Number_Theory"
 begin
 
 context cring begin

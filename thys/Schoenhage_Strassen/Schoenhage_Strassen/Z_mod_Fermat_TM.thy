@@ -510,8 +510,7 @@ next
   qed
   have "e - 1 > 0" using e_ge_2 by linarith
   have x'_upper: "x' < e - 1"
-    using x'_def pos_mod_bound[OF \<open>e - 1 > 0\<close>] less_eq_Suc_le
-    by simp
+    using x'_def pos_mod_bound[of \<open>e - 1\<close>] \<open>e - 1 > 0\<close> less_eq_Suc_le mod_less_divisor by blast
   have x_upper: "x \<le> 2 * e"
   proof (cases "x' \<le> 2")
     case True
