@@ -1,0 +1,177 @@
+%% Copyright (C) 2018 The University of Sheffield
+%%               2018 The University of Paris-Saclay
+%%               2019 The University of Exeter
+%%
+%% License:
+%%   This program can be redistributed and/or modified under the terms
+%%   of the LaTeX Project Public License Distributed from CTAN
+%%   archives in directory macros/latex/base/lppl.txt; either
+%%   version 1.3c of the License, or (at your option) any later version.
+%%   OR
+%%   The 2-clause BSD-style license.
+%%
+%%   SPDX-License-Identifier: LPPL-1.3c+ OR BSD-2-Clause
+
+\NeedsTeXFormat{LaTeX2e}\relax
+\ProvidesPackage{DOF-core}
+  [00/00/0000 Document-Type Support Framework for Isabelle.]
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,USenglish]{babel}
+
+\RequirePackage{keycommand}
+\RequirePackage{environ}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{xspace}
+\RequirePackage{etoolbox}
+\RequirePackage{fp}
+\usepackage{amsmath}
+\usepackage{DOF-amssymb}
+
+\usepackage{isabelle}
+\usepackage{isabellesym}
+
+\isabellestyle{it}
+
+
+
+
+\RequirePackage{dof-config}
+\newcommand{\isabelleversion}{\dof@isabelleversion\xspace}
+\newcommand{\dofversion}{\dof@version\xspace}
+\newcommand{\isadofversion}{\dofversion/\isabelleversion}
+\newcommand{\isadoflatestversion}{\doflatestversion/\isabellelatestversion}
+\newcommand{\isadofdir}{Isabelle_DOF-\dof@version_\dof@isabelleversion}
+\newcommand{\isadofdirn}{Isabelle\_DOF-\dof@version\_\dof@isabelleversion}
+\newcommand{\isadofarchive}{\isadofdir.tar.xz}
+\newcommand{\isadofarchiven}{\isadofdirn.tar.xz}
+\newcommand{\isadofarchiveurl}{\dof@artifacturl/\isadofarchive}
+
+\newcommand{\isadof}{Isabelle/DOF\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: newcommand wrapper
+\newcommand\newisadof[1]{\expandafter\newkeycommand\csname isaDofDOT#1\endcsname}%
+\newcommand\renewisadof[1]{\expandafter\renewkeycommand\csname isaDofDOT#1\endcsname}%
+\newcommand\provideisadof[1]{\expandafter\providekeycommand\csname isaDofDOT#1\endcsname}%
+% end: newcommand wrapper
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: generic dispatcher
+\newkeycommand+[\|]\isaDof[env={UNKNOWN},label=,type={dummyT},args={}][1]{%
+  \ifcsname isaDofDOT\commandkey{type}\endcsname%
+      \csname isaDofDOT\commandkey{type}\endcsname%
+              [label=\commandkey{label},\commandkey{args}]{#1}%
+  \else%
+  \ifcsname isaDofDOT\commandkey{env}DOT\commandkey{type}\endcsname%
+      \csname isaDofDOT\commandkey{env}DOT\commandkey{type}\endcsname%
+              [label=\commandkey{label},\commandkey{args}]{#1}%
+  \else%
+      \message{Isabelle/DOF: Using default LaTeX representation for concept %
+        "\commandkey{env}.\commandkey{type}".}%
+      \ifcsname isaDofDOT\commandkey{env}\endcsname%
+         \csname isaDofDOT\commandkey{env}\endcsname%
+                [label=\commandkey{label}]{#1}%
+      \else%
+      \errmessage{Isabelle/DOF: No LaTeX representation for concept %
+        "\commandkey{env}.\commandkey{type}" defined and no default %
+        definition for "\commandkey{env}" available either.}%
+      \fi%
+  \fi%
+\fi%
+}
+% end: generic dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: text*-dispatcher
+\NewEnviron{isamarkuptext*}[1][]{\isaDof[env={text},#1]{\BODY}}
+% end: text*-dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: chapter*-dispatcher
+\NewEnviron{isamarkupchapter*}[1][]{\isaDof[env={IsaUNDERSCORECOLDOTchapter},#1]{\BODY}}
+% end: chapter*-dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: section*-dispatcher
+\NewEnviron{isamarkupsection*}[1][]{\isaDof[env={IsaUNDERSCORECOLDOTsection},#1]{\BODY}}
+% end: section*-dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: subsection*-dispatcher
+\NewEnviron{isamarkupsubsection*}[1][]{\isaDof[env={IsaUNDERSCORECOLDOTsubsection},#1]{\BODY}}
+% end: subsection*-dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: subsubsection*-dispatcher
+\NewEnviron{isamarkupsubsubsection*}[1][]{\isaDof[env={IsaUNDERSCORECOLDOTsubsubsection},#1]{\BODY}}
+% end: subsubsection*-dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: paragraph*-dispatcher
+\NewEnviron{isamarkupparagraph*}[1][]{\isaDof[env={IsaUNDERSCORECOLDOTparagraph},#1]{\BODY}}
+% end: paragraph*-dispatcher
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: text default implementation
+\newisadof{text}[label=,type=][1]{%
+  \begin{isamarkuptext}\label{\commandkey{label}}%
+    #1
+  \end{isamarkuptext}%
+}
+% end: text default implementation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: chapter/section default implementations
+\newisadof{IsaUNDERSCORECOLDOTchapter}[label=,type=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTlevel=, IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTreferentiable=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTvariants=][1]{%
+  \isamarkupfalse\isamarkupchapter{#1}\label{\commandkey{label}}\isamarkuptrue%
+}
+\newisadof{IsaUNDERSCORECOLDOTsection}[label=,type=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTlevel=, IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTreferentiable=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTvariants=][1]{%
+  \isamarkupfalse\isamarkupsection{#1}\label{\commandkey{label}}\isamarkuptrue%
+}
+\newisadof{IsaUNDERSCORECOLDOTsubsection}[label=,type=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTlevel=, IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTreferentiable=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTvariants=][1]{%
+  \isamarkupfalse\isamarkupsubsection{#1}\label{\commandkey{label}}\isamarkuptrue%
+}
+\newisadof{IsaUNDERSCORECOLDOTsubsubsection}[label=,type=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTlevel=, IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTreferentiable=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTvariants=][1]{%
+  \isamarkupfalse\isamarkupsubsubsection{#1}\label{\commandkey{label}}\isamarkuptrue%
+}
+\newisadof{IsaUNDERSCORECOLDOTparagraph}[label=,type=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTlevel=, IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTreferentiable=,IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTvariants=][1]{%
+  \isamarkupfalse\isamarkupparagraph{#1}\label{\commandkey{label}}\isamarkuptrue%
+}
+% end: chapter/section default implementations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% begin: label and ref
+\newkeycommand\isaDof@label[label=,type=][1]{\label{#1}}
+\newcommand{\isaDofDOTlabel}{\isaDof@label}
+\newkeycommand\isaDof@ref[label=,type=][1]{\autoref{#1}}
+\newcommand{\isaDofDOTref}{\isaDof@ref}
+\newkeycommand\isaDof@macro[label=,type=][1]{MMM \label{#1}}        %% place_holder
+\newcommand{\isaDofDOTmacroDef}{\iisaDof@macro}
+\newkeycommand\isaDof@macroExp[label=,type=][1]{MMM \autoref{#1}}   %% place_holder
+\newcommand{\isaDofDOTmacroExp}{\isaDof@macroExp}
+% end: label and ref
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\title{No Title Given}
+\input{ontologies}
+\IfFileExists{preamble.tex}{\input{preamble.tex}}{}%
+
+% notation
+\newcommand{\isactrltermUNDERSCORE}{\isakeywordcontrol{term{\isacharunderscore}}}
+\newcommand{\isactrlvalueUNDERSCORE}{\isakeywordcontrol{value{\isacharunderscore}}}
+\newcommand{\isasymdoublequote}{\texttt{\upshape"}}
+\newcommand{\isasymquote}{\texttt{\upshape'}}
