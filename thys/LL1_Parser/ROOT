@@ -1,0 +1,15 @@
+chapter AFP
+session LL1_Parser (AFP) = HOL +
+  description "
+    Verification of an LL1-Parser Generator.
+  "
+  options [timeout = 600]
+  sessions
+    Show
+  theories
+    LL1_Parser
+    Parser_Example
+    Json_Parser
+  document_files
+    "root.tex"
+    "root.bib"

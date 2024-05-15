@@ -1,0 +1,31 @@
+title = "LL(1) Parser Generator"
+date = 2024-05-02
+topics = [
+  "Computer science/Algorithms",
+  "Computer science/Programming languages/Compiling",
+]
+abstract = "In this formalization, we implement an LL(1) parser generator that first pre-computes the NULLABLE set, FIRST map and FOLLOW map, to then build a lookahead table. We prove correctness, soundness and error-free termination for LL(1) grammars. We provide the JSON grammar and show how to parse a tokenized JSON string using a parser created with the verified parser generator. The proof structure is significantly based on <a href=\"https://doi.org/10.4230/LIPIcs.ITP.2019.24\">Vermillion</a>, an LL(1) parser generator verified in Coq."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.tilscher]
+email = "tilscher_email"
+
+[authors.wimmer]
+email = "wimmer_email"
+
+[contributors]
+
+[notify]
+tilscher = "tilscher_email"
+wimmer = "wimmer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

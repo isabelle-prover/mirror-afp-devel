@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Partial Correctness of the Top-Down Solver - Archive of Formal Proofs</title>
+    <meta name="description" content="The top-down solver (TD) is a local and generic fixpoint algorithm used for abstract interpretation. Being local means it only evaluates
+equations required...">
+
+  <meta property="og:title" content="Partial Correctness of the Top-Down Solver" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Top_Down_Solver.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-05-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-05-09T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Partial Correctness of the Top-Down Solver"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>P</span>artial <span class='first'>C</span>orrectness of the <span class='first'>T</span>op-<span class='first'>D</span>own <span class='first'>S</span>olver
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/stade">Yannick Stade</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsieWFubmljayIsInN0YWRlIl19">📧</a>, <a href="../authors/tilscher">Sarah Tilscher</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsic2FyYWgiLCJ0aWxzY2hlciJdfQ==">📧</a> and <a href="../authors/seidlh">Helmut Seidl</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsiaGVsbXV0Iiwic2VpZGwiXX0=">📧</a>
+
+      </p>
+      <p class="date">May 9, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">The top-down solver (TD) is a local and generic fixpoint algorithm used for abstract interpretation. Being local means it only evaluates
+equations required for the computation of the value of some initially queried unknown, while being generic means that it is applicable for arbitrary equation systems where right-hand sides are considered as black-box functions. To avoid unnecessary evaluations of right-hand sides, the TD collects stable unknowns that need not be re-evaluated. This optimization requires the additional tracking of dependencies between unknowns and a non-local destabilization mechanism to assure the re-evaluation of previously stable unknowns that were affected by a changed value.
+Due to the recursive evaluation strategy and the non-local destabilization mechanism of the TD, its correctness is non-obvious. To provide a formal proof of its partial correctness, we employ the insight that the TD can be considered an optimized version of a considerably simpler recursive fixpoint algorithm. Following this insight, we first prove the partial correctness of the simpler recursive fixpoint algorithm, the plain TD. Then, we transfer the statement of partial correctness to the TD by establishing the equivalence of both algorithms concerning both their termination behavior and their computed result.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li>
+      </ul>
+      <h3>Session Top_Down_Solver</h3>
+      <ul>
+          <li><a href="../sessions/top_down_solver/#Basics">Basics</a></li>
+          <li><a href="../sessions/top_down_solver/#TD_plain">TD_plain</a></li>
+          <li><a href="../sessions/top_down_solver/#TD_equiv">TD_equiv</a></li>
+          <li><a href="../sessions/top_down_solver/#Example">Example</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Top_Down_Solver/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Top_Down_Solver/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Top_Down_Solver/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Top_Down_Solver-AFP</p>
+        <pre id="copy-text">@article{Top_Down_Solver-AFP,
+  author  = {Yannick Stade and Sarah Tilscher and Helmut Seidl},
+  title   = {Partial Correctness of the Top-Down Solver},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Top_Down_Solver.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Top_Down_Solver-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,63 @@
+%% Copyright (c) 2019-2022 University of Exeter
+%%               2018-2022 University of Paris-Saclay
+%%               2018-2019 The University of Sheffield
+%%
+%% License:
+%%   This program can be redistributed and/or modified under the terms
+%%   of the LaTeX Project Public License Distributed from CTAN
+%%   archives in directory macros/latex/base/lppl.txt; either
+%%   version 1.3c of the License, or (at your option) any later version.
+%%   OR
+%%   The 2-clause BSD-style license.
+%%
+%%   SPDX-License-Identifier: LPPL-1.3c+ OR BSD-2-Clause
+
+%% Warning: Do Not Edit!
+%% =====================
+%% This is the root file for the Isabelle/DOF using the scrreprt class.
+%%
+%% All customization and/or additional packages should be added to the file
+%% preamble.tex.
+
+\RequirePackage{ifvtex}
+\documentclass[fontsize=11pt,paper=a4,open=right,twoside,abstract=true]{scrreprt}
+\title{No Title Given}
+
+\usepackage{DOF-core}
+
+\usepackage{textcomp}
+\bibliographystyle{abbrvnat}
+\RequirePackage{subcaption}
+
+
+\usepackage[numbers, sort&compress, sectionbib]{natbib}
+
+\usepackage{hyperref}
+\setcounter{tocdepth}{2} 
+\hypersetup{%
+   bookmarksdepth=3
+  ,pdfpagelabels
+  ,pageanchor=true
+  ,bookmarksnumbered
+  ,plainpages=false
+} % more detailed digital TOC (aka bookmarks)
+\sloppy
+\raggedbottom
+\allowdisplaybreaks[4]
+
+\begin{document}
+\renewcommand{\chapterautorefname}{Chapter}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+\maketitle
+\tableofcontents
+\IfFileExists{dof_session.tex}{\input{dof_session}}{\input{session}}
+% optional bibliography
+\IfFileExists{root.bib}{{\bibliography{root}}}{}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
