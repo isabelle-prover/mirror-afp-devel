@@ -78,7 +78,7 @@ since @{term 0} cannot be unified with @{term "length []"}.
 However, the simplifier can rewrite @{term "length []"} to @{term 0} and the hint can then be applied.\<close>
 
 (*uncomment to see the trace*)
-declare [[ML_map_context \<open>Logger.set_log_levels Logger.root Logger.TRACE\<close>]]
+(* declare [[ML_map_context \<open>Logger.set_log_levels Logger.root Logger.TRACE\<close>]] *)
 
 schematic_goal "n - ?m = length []"
   by (ufact refl)
@@ -98,7 +98,7 @@ schematic_goal "n - ?m = length []"
   supply [[ucombine del = \<open>(Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)\<close>]]
   (*doesn't work*)
   \<comment> \<open>by (ufact refl)\<close>
-  supply sub_self_eq_zero[rec_uhint]
+  supply sub_self_eq_zero[uhint del, rec_uhint]
   by (ufact refl)
 
 text \<open>Solution 2: make the recursion explicit in the hint.\<close>
@@ -145,6 +145,10 @@ lemma
   shows "A \<Longrightarrow> (B \<Longrightarrow> C) \<Longrightarrow> D"
   using assms by ufact
 
+lemma
+  assumes "A \<longrightarrow> ((B \<longrightarrow> C) \<longrightarrow> D) \<longrightarrow> E"
+  shows "A \<Longrightarrow> ((B \<Longrightarrow> C) \<Longrightarrow> D) \<Longrightarrow> E"
+  using assms by ufact
 
 subsection \<open>Better Control Over Meta Variable Instantiations\<close>
 

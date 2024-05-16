@@ -29,8 +29,8 @@ ML\<open>
         prems_unifier = SOME (Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
         normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
-          TI.norm_term TI.unifiables),
+        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
+          TI.unifiables TI.norm_term),
         hint_preprocessor = SOME (K I)
       }\<close>}
 \<close>
@@ -41,9 +41,10 @@ text\<open>Standard unification hints using
 when looking for hints are accessible via @{attribute rec_uhint}.
 
 \<^emph>\<open>Note:\<close> when we retrieve a potential unification hint with conclusion \<open>lhs \<equiv> rhs\<close> for a goal
-\<open>lhs' \<equiv> rhs'\<close>, we only consider those hints whose lhs potentially higher-order unifies with
+\<open>lhs' \<equiv> rhs'\<close>, we consider those hints whose lhs or rhs potentially higher-order unifies with
 lhs' or rhs' \<^emph>\<open>without using hints\<close>. For otherwise, any hint \<open>lhs \<equiv> rhs\<close> applied to a goal
-\<open>rhs \<equiv> lhs\<close> leads to an immediate loop.\<close>
+\<open>rhs \<equiv> lhs\<close> leads to an immediate loop. The retrieval can be further restricted and modified by
+via the retrieval setting of @{attribute rec_uhint}.\<close>
 
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Standard_Unification_Hints_Rec.try_hints
@@ -64,8 +65,8 @@ ML\<open>
         prems_unifier = SOME (Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
         normalisers = SOME Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
-          TI.norm_term TI.unifiables),
+        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
+          TI.unifiables TI.norm_term),
         hint_preprocessor = SOME (K I)
       }\<close>}
 \<close>

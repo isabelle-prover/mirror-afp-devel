@@ -16,9 +16,7 @@ in @{theory ML_Unification.ML_Unification_Hints}.\<close>
 
 subsection \<open>Setup\<close>
 
-text \<open>One-time setup to obtain a unifier with unification hints for the purpose of reification.
-We could also simply use the standard unification hints @{attribute uhint} and
-@{attribute rec_uhint}, but having separate instances is a cleaner approach.\<close>
+text \<open>One-time setup to obtain a unifier with unification hints for the purpose of reification.\<close>
 
 ML\<open>
   @{functor_instance struct_name = Reification_Unification_Hints
@@ -27,11 +25,12 @@ ML\<open>
     and more_args = \<open>
       structure TI = Discrimination_Tree
       val init_args = {
-        concl_unifier = NONE,
-        prems_unifier = NONE,
+        concl_unifier = NONE, (*will be set later*)
+        prems_unifier = NONE, (*will be set later*)
         normalisers = SOME Higher_Order_Pattern_Unification.norms_unify,
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
-          TI.norm_term TI.unifiables),
+        (*only retrieve hints based on hints' left-hand side*)
+        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym
+          (Term_Index_Unification_Hints_Args.retrieve_left TI.unifiables) TI.norm_term),
         hint_preprocessor = SOME (Standard_Unification_Hints.get_hint_preprocessor
           (Context.the_generic_context ()))
       }\<close>}
@@ -107,10 +106,14 @@ end
 
 paragraph \<open>Reification with matching without recursion for conclusion\<close>
 
+
 text \<open>We disallow the hint unifier to recursively look for hints while unifying the conclusion;
 instead, we only allow the hint unifier to match the hint's conclusion against the disagreement terms.\<close>
 declare [[reify_uhint where concl_unifier =
-  \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>]]
+  \<open>Higher_Order_Pattern_Unification.match |> Type_Unification.e_match Unification_Util.match_types\<close>
+and retrieval = \<open>Term_Index_Unification_Hints_Args.mk_retrieval_sym
+  (Term_Index_Unification_Hints_Args.retrieve_left Reification_Unification_Hints.TI.unifiables)
+  Reification_Unification_Hints.TI.norm_term\<close>]]
 
 text \<open>However, this also means that we now have to write our hints such that the hint's
 conclusion can successfully be matched against the disagreement terms. In particular,

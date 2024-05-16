@@ -49,7 +49,18 @@ fun nth_binder_data binders = snd o nth binders
 fun replace_binders binders t = let val bvars = map snd binders
   in subst_bounds (bvars, t) end
 
-val replace_frees = fold_rev (curry abstract_over o snd)
+(*generalised from term.ML*)
+fun abstract_over lev v body =
+  let fun term lev tm =
+    if v aconv tm then Bound lev
+    else (case tm of
+        Abs (a, T, t) => Abs (a, T, term (lev + 1) t)
+      | t $ u => (term lev t $ Same.commit (term lev) u
+          handle Same.SAME => t $ term lev u)
+      | _ => raise Same.SAME)
+  in Same.commit (term lev) body end
+
+val replace_frees = General_Util.fold_rev_index (fn (i, (_, t)) => abstract_over i t)
 
 fun norm_binders norm =
   map (fn ((n, _), t) => let val t' = norm t in ((n, snd (dest_Free t')), t') end)
