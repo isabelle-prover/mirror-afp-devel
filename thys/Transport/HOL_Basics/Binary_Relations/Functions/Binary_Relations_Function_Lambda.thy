@@ -60,12 +60,14 @@ lemma crel_dep_mono_wrt_pred_rel_lambda: "((x : A) \<rightarrow>\<^sub>c ((=) (f
 
 text \<open>Compare the following with @{thm mono_rel_dep_mono_wrt_pred_dep_mono_wrt_pred_eval}.\<close>
 
-lemma mono_wrt_pred_mono_crel_dep_mono_wrt_pred_rel_lambda:
+lemma mono_dep_mono_wrt_pred_crel_dep_mono_wrt_pred_rel_lambda:
   "(((x : A) \<Rightarrow> B x) \<Rightarrow> (x : A) \<rightarrow>\<^sub>c B x) (rel_lambda A)"
   by (intro mono_wrt_predI crel_dep_mono_wrt_predI') auto
 
-lemma rel_lambda_eval_eq [simp]: "A x \<Longrightarrow> (\<lambda>x : A. f x)`x = f x"
-  by (rule eval_eq_if_right_unique_onI) auto
+lemma rel_lambda_eval_eq [simp]:
+  assumes "A x"
+  shows "(\<lambda>x : A. f x)`x = f x"
+  using assms by (intro eval_eq_if_right_unique_onI) auto
 
 lemma app_eq_if_rel_lambda_eqI:
   assumes "(\<lambda>x : A. f x) = (\<lambda>x : A. g x)"

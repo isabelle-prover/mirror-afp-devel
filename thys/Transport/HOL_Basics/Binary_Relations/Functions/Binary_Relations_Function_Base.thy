@@ -164,21 +164,21 @@ lemma rel_mono_wrt_pred_in_codom_on_if_rel_dep_mono_wrt_pred:
   shows "(A \<rightarrow> in_codom_on A B) R"
   using assms by fastforce
 
-lemma comp_eq_eval_restrict_left_le_if_rel_dep_mono_wrt_pred:
+lemma eq_comp_eval_restrict_left_le_if_rel_dep_mono_wrt_pred:
   assumes "((x : A) \<rightarrow> B x) R"
   shows "((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub> \<le> R\<restriction>\<^bsub>A\<^esub>"
   using assms by (intro le_relI) (force intro: rel_eval_if_rel_dep_mono_wrt_predI)
 
-lemma restrict_left_le_comp_eq_eval_restrict_left_if_rel_dep_mono_wrt_pred:
+lemma restrict_left_le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred:
   assumes "((x : A) \<rightarrow> B x) R"
   shows "R\<restriction>\<^bsub>A\<^esub> \<le> ((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub>"
   using assms by (intro le_relI) force
 
-corollary restrict_left_eq_comp_eq_eval_if_rel_dep_mono_wrt_pred:
+corollary restrict_left_eq_eq_comp_eval_if_rel_dep_mono_wrt_pred:
   assumes "((x : A) \<rightarrow> B x) R"
   shows "R\<restriction>\<^bsub>A\<^esub> = ((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub>"
-  using assms comp_eq_eval_restrict_left_le_if_rel_dep_mono_wrt_pred
-    restrict_left_le_comp_eq_eval_restrict_left_if_rel_dep_mono_wrt_pred
+  using assms eq_comp_eval_restrict_left_le_if_rel_dep_mono_wrt_pred
+    restrict_left_le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred
   by (intro antisym) auto
 
 lemma eval_eq_if_rel_dep_mono_wrt_predI:

@@ -159,10 +159,18 @@ lemma rel_inv_Dep_Fun_Rel_rel_eq [simp]:
   shows "((x y \<Colon> R) \<Rrightarrow> S x y)\<inverse> = ((y x \<Colon> R\<inverse>) \<Rrightarrow> (S x y)\<inverse>)"
   by (intro ext) auto
 
+lemma rel_inv_rel_inv_Dep_Fun_Rel_rel_iff_Dep_Fun_Rel_rel [iff]:
+  "((x y \<Colon> R\<inverse>) \<Rrightarrow> (S x y)\<inverse>) f g \<longleftrightarrow> ((x y \<Colon> R) \<Rrightarrow> (S y x)) g f"
+  by (simp flip: rel_inv_Dep_Fun_Rel_rel_eq)
+
 lemma rel_inv_Dep_Fun_Rel_pred_eq [simp]:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
   shows "((x : P) \<Rrightarrow> R x)\<inverse> = ((x : P) \<Rrightarrow> (R x)\<inverse>)"
   by (intro ext) auto
+
+lemma rel_inv_Dep_Fun_Rel_pred_iff_Dep_Fun_Rel_pred [iff]:
+  "((x : P) \<Rrightarrow> (R x)\<inverse>) f g \<longleftrightarrow> ((x : P) \<Rrightarrow> (R x)) g f"
+  by (simp flip: rel_inv_Dep_Fun_Rel_pred_eq)
 
 lemma Dep_Fun_Rel_pred_eq_Dep_Fun_Rel_rel:
   fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"

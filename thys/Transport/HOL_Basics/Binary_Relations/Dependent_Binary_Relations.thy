@@ -35,7 +35,7 @@ lemma bin_rel_pred_eq_dep_bin_rel_pred: "A {\<times>} B = {\<Sum>}_ : A. B"
 
 lemma bin_rel_pred_eq_dep_bin_rel_pred_uhint [uhint]:
   assumes "A \<equiv> A'"
-  and "B' \<equiv> (\<lambda>_. B)"
+  and "\<And>x. B \<equiv> B' x"
   shows "A {\<times>} B \<equiv> {\<Sum>}x : A'. B' x"
   using assms by (simp add: bin_rel_pred_eq_dep_bin_rel_pred)
 

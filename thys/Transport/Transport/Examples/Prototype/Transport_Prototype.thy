@@ -129,8 +129,8 @@ ML\<open>
         prems_unifier = SOME (Transport_Mixed_Unification.first_higherp_decomp_comb_higher_unify
           |> Unification_Combinator.norm_unifier Envir_Normalisation.beta_norm_term_unif),
         normalisers = SOME Transport_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify,
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
-          TI.norm_term TI.unifiables),
+        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
+          TI.unifiables TI.norm_term),
         hint_preprocessor = SOME (K I)
       }\<close>}
 \<close>

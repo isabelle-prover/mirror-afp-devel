@@ -5,45 +5,50 @@ theory Binary_Relations_Function_Extend
     Binary_Relations_Clean_Function
 begin
 
-lemma left_total_on_sup_eq_extend_if_left_total_on:
+lemma left_total_on_eq_sup_extend_if_left_total_on:
   assumes "left_total_on A R"
-  shows "left_total_on (A \<squnion> (=) x) (extend x y R)"
+  shows "left_total_on ((=) x \<squnion> A) (extend x y R)"
   using assms by fastforce
 
-lemma right_unique_on_sup_eq_extend_if_not_in_dom_if_right_unique_on:
+lemma right_unique_on_eq_sup_extend_if_not_in_dom_if_right_unique_on:
   assumes "right_unique_on A R"
   and "\<not>(in_dom R x)"
-  shows "right_unique_on (A \<squnion> (=) x) (extend x y R)"
+  shows "right_unique_on ((=) x \<squnion> A) (extend x y R)"
   using assms by (intro right_unique_onI) (auto dest: right_unique_onD elim!: extendE)
 
-lemma rel_dep_mono_wrt_pred_extend_if_if_rel_dep_mono_wrt_predI:
+lemma rel_dep_mono_wrt_eq_sup_if_extend_if_rel_dep_mono_wrt_predI:
   assumes "((x : A) \<rightarrow> B x) R"
   and "\<not>(in_dom R x)"
-  shows "((x' : A \<squnion> ((=) x)) \<rightarrow> (if x' = x then (=) y else B x')) (extend x y R)"
-  using assms by (intro rel_dep_mono_wrt_predI left_total_on_sup_eq_extend_if_left_total_on
-    right_unique_on_sup_eq_extend_if_not_in_dom_if_right_unique_on dep_mono_wrt_predI)
+  shows "((x' : (=) x \<squnion> A) \<rightarrow> (if x' = x then (=) y else B x')) (extend x y R)"
+  using assms by (intro rel_dep_mono_wrt_predI left_total_on_eq_sup_extend_if_left_total_on
+    right_unique_on_eq_sup_extend_if_not_in_dom_if_right_unique_on dep_mono_wrt_predI)
   auto
 
-lemma rel_dep_mono_wrt_pred_extend_if_rel_dep_mono_wrt_predI:
+lemma rel_dep_mono_wrt_eq_sup_extend_if_rel_dep_mono_wrt_predI:
   assumes "((x : A) \<rightarrow> B x) R"
   and "\<not>(in_dom R x)"
   and "B x y"
-  shows "((x' : A \<squnion> ((=) x)) \<rightarrow> B x') (extend x y R)"
-  by (urule rel_dep_mono_wrt_pred_covariant_codom, urule rel_dep_mono_wrt_pred_extend_if_if_rel_dep_mono_wrt_predI)
+  shows "((x' : (=) x \<squnion> A) \<rightarrow> B x') (extend x y R)"
+  by (urule rel_dep_mono_wrt_pred_covariant_codom,
+    urule rel_dep_mono_wrt_eq_sup_if_extend_if_rel_dep_mono_wrt_predI)
   (use assms in \<open>force split: if_split_asm\<close>)+
 
-lemma crel_dep_mono_wrt_pred_extend_if_if_crel_dep_mono_wrt_predI:
+lemma crel_dep_mono_wrt_eq_sup_if_extend_if_crel_dep_mono_wrt_predI:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
   and "\<not>(in_dom R x)"
-  shows "((x' : A \<squnion> ((=) x)) \<rightarrow>\<^sub>c (if x' = x then (=) y else B x')) (extend x y R)"
-  using assms by (intro crel_dep_mono_wrt_predI rel_dep_mono_wrt_pred_extend_if_if_rel_dep_mono_wrt_predI) fastforce+
+  shows "((x' : (=) x \<squnion> A) \<rightarrow>\<^sub>c (if x' = x then (=) y else B x')) (extend x y R)"
+  using assms by (intro crel_dep_mono_wrt_predI
+    rel_dep_mono_wrt_eq_sup_if_extend_if_rel_dep_mono_wrt_predI)
+  fastforce+
 
-lemma crel_dep_mono_wrt_pred_extend_if_rel_dep_mono_wrt_predI:
+lemma crel_dep_mono_wrt_eq_sup_extend_if_rel_dep_mono_wrt_predI:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
   and "\<not>(in_dom R x)"
   and "B x y"
-  shows "((x' : A \<squnion> ((=) x)) \<rightarrow>\<^sub>c B x') (extend x y R)"
-  using assms by (intro crel_dep_mono_wrt_predI rel_dep_mono_wrt_pred_extend_if_rel_dep_mono_wrt_predI) fastforce+
+  shows "((x' : (=) x \<squnion> A) \<rightarrow>\<^sub>c B x') (extend x y R)"
+  using assms
+  by (intro crel_dep_mono_wrt_predI rel_dep_mono_wrt_eq_sup_extend_if_rel_dep_mono_wrt_predI)
+  fastforce+
 
 context
   fixes \<R> :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" and A :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" and D
@@ -71,7 +76,9 @@ lemma crel_dep_mono_wrt_pred_glue_if_right_unique_if_crel_dep_mono_wrt_pred:
   assumes "\<And>R. \<R> R \<Longrightarrow> ((x : A R) \<rightarrow>\<^sub>c B x) R"
   and "right_unique_on D (glue \<R>)"
   shows "((x : D) \<rightarrow>\<^sub>c B x) (glue \<R>)"
-  using assms by (intro crel_dep_mono_wrt_predI rel_dep_mono_wrt_pred_glue_if_right_unique_if_rel_dep_mono_wrt_pred) fastforce+
+  using assms
+  by (intro crel_dep_mono_wrt_predI rel_dep_mono_wrt_pred_glue_if_right_unique_if_rel_dep_mono_wrt_pred)
+  fastforce+
 
 end
 

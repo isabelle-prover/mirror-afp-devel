@@ -46,7 +46,7 @@ corollary rel_eval_if_in_dom_if_right_unique_on_eq:
   shows "R x (R`x)"
   using assms by (rule rel_if_eval_eq_if_in_dom_if_right_unique_on_eq) simp
 
-lemma eval_app_eq_eq [simp]: "(\<lambda>x. (=) (f x))`x = f x"
+lemma eq_app_eval_eq_eq [simp]: "(\<lambda>x. (=) (f x))`x = f x"
   by (auto intro: eval_eq_if_right_unique_onI)
 
 lemma extend_eval_eq_if_not_in_dom [simp]:
@@ -83,12 +83,12 @@ lemma extend_eval_eq_if_neq [simp]:
   shows "x \<noteq> y \<Longrightarrow> (extend y z R)`x = R`x"
   unfolding extend_rel_def eval_rel_def by auto
 
-lemma sup_eval_eq_if_not_in_dom_left [simp]:
+lemma sup_eval_eq_left_eval_if_not_in_dom [simp]:
   fixes R S :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   shows "\<not>(in_dom S x) \<Longrightarrow> (R \<squnion> S)`x = R`x"
   unfolding eval_rel_def by (cases "\<exists>y. S x y") auto
 
-lemma sup_eval_eq_if_not_in_dom_right [simp]:
+lemma sup_eval_eq_right_eval_if_not_in_dom [simp]:
   fixes R S :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   shows "\<not>(in_dom R x) \<Longrightarrow> (R \<squnion> S)`x = S`x"
   unfolding eval_rel_def by (cases "\<exists>y. R x y") auto

@@ -40,7 +40,7 @@ lemma crel_mono_wrt_pred_eq_crel_dep_mono_wrt_pred:
 
 lemma crel_mono_wrt_pred_eq_crel_dep_mono_wrt_pred_uhint [uhint]:
   assumes "(A :: 'a \<Rightarrow> bool) \<equiv> A'"
-  and "B' \<equiv> (\<lambda>(_ :: 'a). (B :: 'b \<Rightarrow> bool))"
+  and "\<And>x. B \<equiv> B' x"
   shows "(A \<rightarrow>\<^sub>c B) \<equiv> ((x : A') \<rightarrow>\<^sub>c B' x)"
   using assms by (simp add: crel_mono_wrt_pred_eq_crel_dep_mono_wrt_pred)
 
@@ -165,23 +165,23 @@ lemma crel_dep_mono_wrt_pred_covariant_codom:
   shows "((x : A) \<rightarrow>\<^sub>c B' x) R"
   using assms by (force intro: rel_dep_mono_wrt_pred_covariant_codom)
 
-lemma comp_eq_eval_restrict_left_le_if_crel_dep_mono_wrt_pred:
+lemma eq_comp_eval_restrict_left_le_if_crel_dep_mono_wrt_pred:
   assumes [uhint]: "((x : A) \<rightarrow>\<^sub>c B x) R"
   shows "((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub> \<le> R"
   supply rel_restrict_left_eq_self_if_crel_dep_mono_wrt_pred[uhint]
-  by (urule comp_eq_eval_restrict_left_le_if_rel_dep_mono_wrt_pred) (use assms in auto)
+  by (urule eq_comp_eval_restrict_left_le_if_rel_dep_mono_wrt_pred) (use assms in auto)
 
-lemma le_comp_eq_eval_restrict_left_if_rel_dep_mono_wrt_pred:
+lemma le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred:
   assumes [uhint]: "((x : A) \<rightarrow>\<^sub>c B x) R"
   shows "R \<le> ((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub>"
   supply rel_restrict_left_eq_self_if_crel_dep_mono_wrt_pred[uhint]
-  by (urule restrict_left_le_comp_eq_eval_restrict_left_if_rel_dep_mono_wrt_pred) (use assms in auto)
+  by (urule restrict_left_le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred) (use assms in auto)
 
-corollary restrict_left_eq_comp_eq_eval_if_crel_dep_mono_wrt_pred:
+corollary restrict_left_eq_eq_comp_eval_if_crel_dep_mono_wrt_pred:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
   shows "R = ((=) \<circ> eval R)\<restriction>\<^bsub>A\<^esub>"
-  using assms comp_eq_eval_restrict_left_le_if_crel_dep_mono_wrt_pred
-    le_comp_eq_eval_restrict_left_if_rel_dep_mono_wrt_pred
+  using assms eq_comp_eval_restrict_left_le_if_crel_dep_mono_wrt_pred
+    le_eq_comp_eval_restrict_left_if_rel_dep_mono_wrt_pred
   by (intro antisym) auto
 
 lemma eval_eq_if_crel_dep_mono_wrt_pred_if_rel_dep_mono_wrt_predI:
