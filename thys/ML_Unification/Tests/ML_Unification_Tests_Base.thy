@@ -23,8 +23,8 @@ ML\<open>
         normalisers = SOME Unification_Util.beta_eta_short_norms_unif,
         prems_unifier = SOME (Higher_Order_Pattern_Unification.unify
           |> Type_Unification.e_unify Unification_Util.unify_types),
-        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_sym_retrieval
-          TI.norm_term TI.generalisations),
+        retrieval = SOME (Term_Index_Unification_Hints_Args.mk_retrieval_sym_pair
+          TI.generalisations TI.norm_term),
         hint_preprocessor = SOME (K I)
       }\<close>}
 \<close>

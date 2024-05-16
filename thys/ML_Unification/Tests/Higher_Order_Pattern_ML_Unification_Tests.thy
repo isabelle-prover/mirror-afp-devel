@@ -24,7 +24,8 @@ ML\<open>
       (fn match_theory => Unif.e_match UU.match_types match_theory match_theory
         |> norm_match_types)
       ((fn binders =>
-        (Hints.map_retrieval (Hints.mk_retrieval Hints.TI.generalisations |> K)
+        (Hints.map_retrieval (Term_Index_Unification_Hints_Args.mk_retrieval_pair
+          Hints.TI.generalisations Hints.TI.norm_term |> K)
         #> Hints.UH.map_concl_unifier (match |> K)
         #> Hints.UH.map_normalisers (Unif.norms_match |> K)
         #> Hints.UH.map_prems_unifier (match |> K))

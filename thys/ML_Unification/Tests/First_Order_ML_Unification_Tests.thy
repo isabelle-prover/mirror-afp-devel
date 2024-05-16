@@ -22,7 +22,8 @@ ML\<open>
       UC.add_fallback_matcher
       (Unif.e_match UU.match_types)
       ((fn binders =>
-        (Hints.map_retrieval (Hints.mk_retrieval Hints.TI.generalisations |> K)
+        (Hints.map_retrieval (Term_Index_Unification_Hints_Args.mk_retrieval_pair
+          Hints.TI.generalisations Hints.TI.norm_term |> K)
         #> Hints.UH.map_concl_unifier (Higher_Order_Pattern_Unification.match
           |> Type_Unification.e_match UU.match_types |> K)
         #> Hints.UH.map_normalisers (UU.beta_eta_short_norms_match |> K)

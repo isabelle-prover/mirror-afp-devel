@@ -295,8 +295,8 @@ fun unit_tests_hints_try_symmetric ctxt r =
   let
     open Unification_Tests_Base
     val ctxt' = Proof_Context.set_mode Proof_Context.mode_schematic ctxt
-      |> Context.proof_map (Hints.map_retrieval
-        (Hints.mk_retrieval Hints.TI.generalisations |> K))
+      |> Context.proof_map (Hints.map_retrieval (Term_Index_Unification_Hints_Args.mk_retrieval_pair
+        Hints.TI.generalisations Hints.TI.norm_term |> K))
     val hints = map (Skip_Proof.make_thm (Proof_Context.theory_of ctxt') o Syntax.read_term ctxt') [
         "?x \<equiv> ?z \<Longrightarrow> ?y \<equiv> (0 :: nat) \<Longrightarrow> ?x + ?y \<equiv> ?z"
       ]
@@ -316,6 +316,8 @@ fun unit_tests_hints_try_symmetric ctxt r =
 fun unit_tests_multiple_successful_hints ctxt r =
   let
     val ctxt' = Proof_Context.set_mode Proof_Context.mode_schematic ctxt
+      |> Context.proof_map (Hints.map_retrieval (Term_Index_Unification_Hints_Args.mk_retrieval_left
+        Hints.TI.generalisations Hints.TI.norm_term |> K))
     val hints = map (Skip_Proof.make_thm (Proof_Context.theory_of ctxt') o Syntax.read_term ctxt') [
         "?x \<equiv> ?z \<Longrightarrow> ?y \<equiv> (0 :: nat) \<Longrightarrow> ?x + ?y \<equiv> ?z",
         "?x \<equiv> (?z + 0) \<Longrightarrow> ?y \<equiv> (0 :: nat) \<Longrightarrow> ?x + ?y \<equiv> ?z"
