@@ -316,6 +316,19 @@ corollary rel_restrict_left_eq_self_if_in_dom_le [simp]:
 
 lemma ex_rel_restrict_left_iff_in_codom_on [iff]: "(\<exists>x. R\<restriction>\<^bsub>P\<^esub> x y) \<longleftrightarrow> (in_codom_on P R y)" by blast
 
+lemma in_dom_rel_restrict_leftI [intro]:
+  assumes "R x y"
+  and "P x"
+  shows "in_dom R\<restriction>\<^bsub>P\<^esub> x"
+  using assms by blast
+
+lemma in_codom_rel_restrict_leftI [intro]:
+  assumes "R x y"
+  and "P x"
+  shows "in_codom R\<restriction>\<^bsub>P\<^esub> y"
+  using assms by blast
+
+
 lemma rel_restrict_rightI [intro]:
   assumes "R x y"
   and "P y"

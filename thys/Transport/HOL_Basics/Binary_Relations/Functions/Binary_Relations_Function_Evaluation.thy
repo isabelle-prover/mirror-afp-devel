@@ -11,8 +11,16 @@ consts eval :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 definition "eval_rel R x \<equiv> THE y. R x y"
 adhoc_overloading eval eval_rel
 
-bundle eval_syntax begin notation eval ("(_`_)" [999, 1000] 999) end
-bundle no_eval_syntax begin no_notation eval ("(_`_)" [999, 1000] 999) end
+bundle eval_syntax
+begin
+notation eval ("'(`')")
+notation eval ("(_`_)" [999, 1000] 999)
+end
+bundle no_eval_syntax
+begin
+no_notation eval ("'(`')")
+no_notation eval ("(_`_)" [999, 1000] 999)
+end
 unbundle eval_syntax
 
 lemma eval_eq_if_right_unique_onI:
@@ -76,7 +84,7 @@ lemma glue_eval_eq_evalI:
   using assms by (intro glue_eval_eqI[of P \<R> R])
   (auto intro: rel_if_eval_eq_if_in_dom_if_right_unique_on_eq[of x] dest: right_unique_onD)
 
-text \<open>Note: the following rests on the definition of extend and eval:\<close>
+text \<open>Note: the following rest on the definition of extend and eval:\<close>
 
 lemma extend_eval_eq_if_neq [simp]:
   fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
