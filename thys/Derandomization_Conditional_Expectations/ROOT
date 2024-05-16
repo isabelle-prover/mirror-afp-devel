@@ -1,0 +1,14 @@
+chapter AFP
+
+session Derandomization_Conditional_Expectations = Distributed_Distinct_Elements +
+  options [timeout = 1200]
+  sessions
+    Universal_Hash_Families
+    Undirected_Graph_Theory
+  theories
+    Derandomization_Conditional_Expectations_Preliminary
+    Derandomization_Conditional_Expectations_Cut
+    Derandomization_Conditional_Expectations_Independent_Set
+  document_files
+    "root.tex"
+    "root.bib"

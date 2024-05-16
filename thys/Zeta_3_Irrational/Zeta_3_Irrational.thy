@@ -1184,7 +1184,8 @@ proof -
       by (intro mult_dvd_mono dvd_power_same dvd_Lcm) auto
     also have "\<dots> = d"
       by (simp add: d_def power_numeral_reduce)
-    finally show "int k ^ 2 * int (i - j) dvd int d" by simp
+    finally show "(int k)\<^sup>2 * (int i - int j) dvd int d"
+      using ijk by force
   qed(auto simp: d_def J_def intro!: Nat.gr0I)
   then obtain B2' where "B2 = real_of_int B2' / real_of_int d" ..
 

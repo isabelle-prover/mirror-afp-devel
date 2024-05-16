@@ -519,6 +519,24 @@ name = "Julian Biendarra"
 
 [biendarra.homepages]
 
+[binder]
+name = "Sage Binder"
+orcid = "0009-0004-4776-2018"
+
+[binder.emails]
+
+[binder.emails.binder_email]
+user = [
+  "sage-binder",
+]
+host = [
+  "uiowa",
+  "edu",
+]
+
+[binder.homepages]
+binder_homepage = "https://homepage.cs.uiowa.edu/~sbinder1/"
+
 [bisping]
 name = "Benjamin Bisping"
 orcid = "0000-0002-0637-0171"
@@ -837,6 +855,13 @@ name = "Felix Brandt"
 
 [brandt.homepages]
 brandt_homepage = "http://dss.in.tum.de/staff/brandt.html"
+
+[brecknell]
+name = "Matthew Brecknell"
+
+[brecknell.emails]
+
+[brecknell.homepages]
 
 [breitner]
 name = "Joachim Breitner"
@@ -1274,16 +1299,15 @@ name = "Katherine Kosaian"
 
 [cordwell.emails.cordwell_email]
 user = [
-  "kcordwel",
+  "kkosaian",
 ]
 host = [
-  "cs",
-  "cmu",
+  "iastate",
   "edu",
 ]
 
 [cordwell.homepages]
-cordwell_homepage = "https://www.cs.cmu.edu/~kcordwel/"
+cordwell_homepage = "https://sites.google.com/view/katherinekosaian"
 
 [cousin]
 name = "Marie Cousin"
@@ -2297,6 +2321,13 @@ host = [
 ]
 
 [grechuk.homepages]
+
+[greenaway]
+name = "David Greenaway"
+
+[greenaway.emails]
+
+[greenaway.homepages]
 
 [grewe]
 name = "Sylvia Grewe"
@@ -4440,6 +4471,14 @@ host = [
 [michaelis.homepages]
 michaelis_homepage = "http://liftm.de/"
 
+[middeldorp]
+name = "Aart Middeldorp"
+
+[middeldorp.emails]
+
+[middeldorp.homepages]
+middeldorp_homepage = "http://cl-informatik.uibk.ac.at/~ami/"
+
 [milehins]
 name = "Mihails Milehins"
 
@@ -4498,6 +4537,13 @@ host = [
 ]
 
 [mitsch.homepages]
+
+[mitterwallner]
+name = "Fabian Mitterwallner"
+
+[mitterwallner.emails]
+
+[mitterwallner.homepages]
 
 [moedersheim]
 name = "Sebastian Mödersheim"
@@ -4886,6 +4932,13 @@ host = [
 ]
 
 [nordhoff.homepages]
+
+[norrish]
+name = "Michael Norrish"
+
+[norrish.emails]
+
+[norrish.homepages]
 
 [noschinski]
 name = "Lars Noschinski"
@@ -5901,6 +5954,15 @@ host = [
   "de",
 ]
 
+[schirmer.emails.schirmer_email1]
+user = [
+  "nschirmer",
+]
+host = [
+  "apple",
+  "com",
+]
+
 [schirmer.homepages]
 
 [schleicher]
@@ -6233,6 +6295,23 @@ name = "Dániel Somogyi"
 [somogyi.emails]
 
 [somogyi.homepages]
+
+[song]
+name = "Shuhao Song"
+orcid = "0009-0003-8167-3994"
+
+[song.emails]
+
+[song.emails.song_email]
+user = [
+  "znssong_meow",
+]
+host = [
+  "sina",
+  "com",
+]
+
+[song.homepages]
 
 [spasic]
 name = "Mirko Spasić"
@@ -7020,6 +7099,16 @@ host = [
   "net",
 ]
 
+[trelat.emails.trelat_email1]
+user = [
+  "vincent",
+  "trelat",
+]
+host = [
+  "inria",
+  "fr",
+]
+
 [trelat.homepages]
 
 [treml]
@@ -7038,6 +7127,13 @@ host = [
 ]
 
 [treml.homepages]
+
+[tuch]
+name = "Harvey Tuch"
+
+[tuch.emails]
+
+[tuch.homepages]
 
 [tuerk]
 name = "Thomas Tuerk"
@@ -7564,6 +7660,24 @@ host = [
 ]
 
 [yang.homepages]
+
+[yao]
+name = "Bowen Yao"
+orcid = "0000-0002-6218-0874"
+
+[yao.emails]
+
+[yao.emails.yao_email]
+user = [
+  "byao",
+]
+host = [
+  "buct",
+  "edu",
+  "cn",
+]
+
+[yao.homepages]
 
 [ye]
 name = "Lina Ye"

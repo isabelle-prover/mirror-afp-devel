@@ -244,6 +244,27 @@
           <description></description>
         </item>
         <item>
+          <title>AutoCorres2</title>
+          <link>/sessions/autocorres2/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2_Main</title>
+          <link>/sessions/autocorres2_main/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2_main/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>AutoCorres2_Test</title>
+          <link>/sessions/autocorres2_test/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/autocorres2_test/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>AutoFocus-Stream</title>
           <link>/sessions/autofocus-stream/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1284,6 +1305,13 @@
           <link>/sessions/depth-first-search/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/depth-first-search/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Derandomization_Conditional_Expectations</title>
+          <link>/sessions/derandomization_conditional_expectations/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/derandomization_conditional_expectations/</guid>
           <description></description>
         </item>
         <item>
@@ -3863,6 +3891,13 @@
           <description></description>
         </item>
         <item>
+          <title>Orient_Rewrite_Rule_Undecidable</title>
+          <link>/sessions/orient_rewrite_rule_undecidable/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/orient_rewrite_rule_undecidable/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>PAC_Checker</title>
           <link>/sessions/pac_checker/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4010,6 +4045,13 @@
           <description></description>
         </item>
         <item>
+          <title>Picks_Theorem</title>
+          <link>/sessions/picks_theorem/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/picks_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Planarity_Certificates</title>
           <link>/sessions/planarity_certificates/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4028,6 +4070,13 @@
           <link>/sessions/pluennecke_ruzsa_inequality/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/pluennecke_ruzsa_inequality/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>PNT_with_Remainder</title>
+          <link>/sessions/pnt_with_remainder/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pnt_with_remainder/</guid>
           <description></description>
         </item>
         <item>
@@ -5309,6 +5358,13 @@
           <link>/sessions/subset_boolean_algebras/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/subset_boolean_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Substitutions_Lambda_Free</title>
+          <link>/sessions/substitutions_lambda_free/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/substitutions_lambda_free/</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,47 @@
+title = "Undecidability Results on Orienting Single Rewrite Rules"
+date = 2024-04-25
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+We formalize several undecidability results on termination 
+for <em>one-rule</em> term 
+rewrite systems by means of simple reductions from Hilbert's 10th problem.
+To be more precise, for a class \\(C\\) of reduction orders, 
+we consider the question for a given rewrite 
+rule \\(\\ell \\to r\\), whether there is some
+reduction order \\({\\succ} \\in C\\) such that \\(\\ell \\succ r\\). We include undecidability results for each of the following classes \\(C\\):
+<ul>
+<li> the class of <em>linear</em> polynomial interpretations over
+  the natural numbers,</li>
+<li> the class of linear polynomial interpretations over
+  the natural numbers in the <em>weakly monotone</em> setting, </li>
+<li> the class of Knuth&ndash;Bendix orders with <em>subterm coefficients</em>,</li>
+<li> the class of <em>non-linear</em> polynomial interpretations over the natural numbers, and</li>
+<li> the class of non-linear polynomial interpretations over the <em>rational</em> and <em>real</em> numbers.
+</ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[authors.mitterwallner]
+
+[authors.middeldorp]
+homepage = "middeldorp_homepage"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1332,7 +1332,8 @@ proof -
   from sth assms have sth1: "U^2+T^2\<ge>b*U*T" using UT1 by linarith
   from sth1 of_nat_diff have sth2: "int (U^2+T^2-b*U*T) = int (U^2+T^2) - int (b*U*T)" by blast
   from UT1 UT2 have UT3: "int (U^2+T^2)-int (b*U*T)=u^2+t^2-b*u*t" by simp
-  from sth2 UT3 assms have sth4: "int (U^2+T^2-b*U*T) = 1" by auto
+  from sth2 UT3 assms have sth4: "int (U^2+T^2-b*U*T) = 1"
+    by linarith
   from sth4 have sth5: "U^2+T^2-b*U*T=1" by simp
   from sth5 have sth6: "U^2+T^2=1+b*U*T" by simp
   show ?thesis using sth6 U_def T_def by simp

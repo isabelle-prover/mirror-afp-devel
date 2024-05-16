@@ -1688,7 +1688,7 @@ proof -
   {
     fix n::nat
     have "(\<integral>x. w n x / n \<partial>M) = (\<integral>x. real_cond_exp M Invariants (u n) x / n \<partial>M)"
-      apply (rule integral_cong_AE) using w(2) by auto
+      using w(2) by (intro integral_cong_AE)  (auto simp: eventually_mono)
     also have "... = (\<integral>x. real_cond_exp M Invariants (u n) x \<partial>M) / n"
       by (rule integral_divide_zero)
     also have "... = (\<integral>x. u n x \<partial>M) / n"
@@ -1706,10 +1706,10 @@ proof -
   have "subcocycle_avg u = subcocycle_avg w"
     using \<open>subcocycle_avg_ereal u = subcocycle_avg_ereal w\<close> unfolding subcocycle_avg_def by simp
 
-  have *: "AE x in M. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" for N
+  have "AE x in M. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" for N
     by (cases "N = 0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
-  have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
-    by (subst AE_all_countable, intro allI, simp add: *)
+  then have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
+    by (simp add: AE_all_countable)
   moreover have "AE x in M. subcocycle_lim_ereal u x = ereal(subcocycle_lim u x)"
     by (rule subcocycle_lim_real_ereal[OF assms])
   moreover have "AE x in M. (\<lambda>N. u N x / N) \<longlonglongrightarrow> subcocycle_lim u x"
@@ -1883,10 +1883,10 @@ proof -
 
   moreover have "AE x in M. liminf (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<ge> subcocycle_lim_ereal u x"
   proof -
-    have *: "AE x in M. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" for N
+    have "AE x in M. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" for N
       by (cases "N = 0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
-    have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
-      by (subst AE_all_countable, intro allI, simp add: *)
+    then have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
+      by (simp add: AE_all_countable)
     moreover have "AE x in M. \<forall>n. real_cond_exp M Invariants (\<lambda>x. u n x / n) x = real_cond_exp M Invariants (u n) x / n"
       apply (subst AE_all_countable, intro allI) using real_cond_exp_cdiv by auto
     moreover
@@ -2080,9 +2080,9 @@ proof -
   have *: "AE x in M. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x
                   = real_cond_exp M I.Invariants (u n) x" for n
     using I.Invariants_of_foTn int unfolding o_def by simp
-  have "AE x in M. \<forall>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x
+  then have "AE x in M. \<forall>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x
                   = real_cond_exp M I.Invariants (u n) x"
-    apply (subst AE_all_countable) using * by simp
+    by (simp add: AE_all_countable)
   moreover have "AE x in M. (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
     using kingman_theorem_AE_nonergodic_invariant_ereal[OF \<open>subcocycle u\<close>] by simp
   moreover have "AE x in M. (\<lambda>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x / n)

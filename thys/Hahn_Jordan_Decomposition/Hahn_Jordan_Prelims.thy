@@ -239,12 +239,8 @@ next
   hence "2 \<le> x i" by simp
   hence "0 < x i * (x i - 1)" by simp
   hence "0 \<le> (2 * (x i - 1) - x i)/(x i * (x i - 1))" using \<open>2 \<le> x i\<close> by simp
-  also have "... = (real (2 * (x i - 1)) - real (x i))/(x i * (x i - 1))"
-    using of_nat_diff by auto 
-  also have "... = (2 * (x i - 1))/(x i * (x i - 1)) - x i/(x i * (x i - 1))" 
-    using diff_divide_distrib[of "2 * (x i - 1)" "x i" "x i * (x i - 1)"] by simp
-  also have "... = 2/x i - x i/(x i * (x i - 1))"  using \<open>2 \<le> x i\<close> by auto 
-  also have "... = 2/x i - 1/(x i - 1)" by simp
+  also have "... =  2/x i - 1/(x i - 1)"
+    using False by (simp add: divide_simps)
   finally have "0 \<le> 2/x i - 1/(x i - 1)" .
   thus ?thesis by simp
 qed

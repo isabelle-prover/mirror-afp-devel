@@ -1904,19 +1904,12 @@ text "Approximation of the Term for Free exchanges"
                 yes, if ?l=0 then k=k'<?l impossible, perhaps I can insert that
                   somehow ? 
               *)
-      also have E9: "\<dots> = (1/2) *   (   real(k-k') + (k')*(3/2)    )"
-      proof - 
-        have "((1::real)/2)^l' * 2^l'  = ((1::real)/2 * 2)^l' " by(rule power_mult_distrib[symmetric])
-        also have "...   = 1" by auto
-        finally have "(((1::real)/2)^(Suc l'))* 2^l'=(1/2)" by auto
-        then show ?thesis by auto
-      qed      
-      also have E10: "\<dots> \<le> (1/2) * (  (3/2)*(k-k') + (k')*(3/2)  )" by auto (* and one inequality *)
-      also have "\<dots> = (1/2) * (  (3/2)*(k-k'+(k'))  )" by auto
-      also have "\<dots> = (1/2) * (  (3/2)*(k)  )" by auto
-      also have E11: "\<dots> = (3/4)*(k )" by auto
+    also have E9: "\<dots> = (1/2) *   (   real(k-k') + (k')*(3/2)    )"
+      by (simp add: field_simps)
+      also have "\<dots> \<le> (3/4)*(k )" by auto
       finally show "E(map_pmf (\<lambda>x. (if q \<in> set init then (if (fst (snd x))!(index init q) then real( k-k' ) else (\<Sum>j<k'. (if (fst (snd x))!index init (xs'!j) then 2::real else 1))) else 0 )) D)
-          \<le> 3/4 * k " using True by simp    
+          \<le> 3/4 * k "
+        using True by simp    
  
     qed (* free_absch *)
  

@@ -335,9 +335,13 @@ proof(cases "v < n")
     from I c have n: "0 < n" and v: "n < v" by auto
     from I c v n have x_pos: "x > 0" by(auto simp add: x_def max_def)
     
-    have **: "-1 < log 2 (real n / real (v - n))" by(rule less_le_trans[where y=0])(use I c in \<open>auto\<close>)
-    then have "x \<le> log 2 (real n) + 1" using v n
-      by(auto simp add: x_def log_divide[symmetric] max_def field_simps intro: order_trans[OF of_int_ceiling_le_add_one])
+    have "log 2 (real n / (real v - real n)) \<le> log 2 (real n) + 1"
+      by (smt (verit, best) log_divide log_less_zero_cancel_iff n nat_less_real_le of_nat_0_less_iff v)
+    moreover have **: "-1 < log 2 (real n / real (v - n))" 
+      by(rule less_le_trans[where y=0])(use I c in \<open>auto\<close>)
+    ultimately have "x \<le> log 2 (real n) + 1" using v n 
+      apply (simp add: x_def max_def field_simps flip: log_divide)
+      by (smt (verit, best) ceiling_correct log_divide log_less_zero_cancel_iff nat_less_real_le of_nat_0_less_iff)
     hence "2 powr x \<le> 2 powr \<dots>" by(rule powr_mono) simp
     hence "p \<le> 1 / 2 ^ x" unfolding powr_add using n
       by(subst (asm) powr_realpow, simp)(subst (asm) powr_log_cancel; simp_all add: p_def field_simps)

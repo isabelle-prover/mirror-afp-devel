@@ -1,0 +1,22 @@
+chapter AFP
+
+session Picks_Theorem = "HOL-Analysis" +
+	options [timeout = 1500]
+	sessions
+	  Poincare_Bendixson
+
+  theories
+    Pick
+    Polygon_Splitting
+    Polygon_Jordan_Curve
+    Polygon_Lemmas
+    Polygon_Convex_Lemmas
+    Integral_Matrix  
+    Elementary_Triangle_Area
+    Triangle_Lemmas
+    Unit_Geometry
+    Linepath_Collinearity
+  
+  document_files
+    "root.bib"
+    "root.tex"

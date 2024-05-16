@@ -139,10 +139,10 @@ next
       hence *: "((order \<G>)*w *c - w*c) > 0" using assms w_gt_0 
         using gr0I mult_less_cancel2 n_less_m_mult_n numeral_nat(7) prime_gt_1_nat prime_order zero_less_diff by presburger
       then have " \<^bold>g [^] ((order \<G>)*w*c - w*c) =  \<^bold>g [^] int ((order \<G>)*w*c - w*c)"
-        by (simp add: int_pow_int) 
+        by (metis int_pow_int) 
       also have "... = \<^bold>g [^] int ((order \<G>)*w*c) \<otimes> inv (\<^bold>g [^] (w*c))" 
-        using int_pow_diff[of "\<^bold>g" "order \<G> * w * c" "w * c"] * generator_closed int_ops(6) int_pow_neg int_pow_neg_int by presburger
-
+        using int_pow_diff[of "\<^bold>g" "order \<G> * w * c" "w * c"] * generator_closed 
+          int_ops(6) int_pow_neg int_pow_neg_int by presburger
       also have "... = \<^bold>g [^] ((order \<G>)*w*c) \<otimes> inv (\<^bold>g [^] (w*c))"
         by (metis int_pow_int) 
       also have "... = \<^bold>g [^] ((order \<G>)*w*c) \<otimes> inv ((\<^bold>g [^] w) [^] c)"

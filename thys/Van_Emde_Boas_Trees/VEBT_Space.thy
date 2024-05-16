@@ -197,30 +197,27 @@ then show ?case
   using Node.IH(2) by force
 qed simp
 
-lemma space_2_pow_bound:  assumes "invar_vebt t n " shows "real (space' t) \<le> 12 * (2^n -1)" 
-proof-
-  have "space' t \<le> 6 * cnt t" 
-    using space_cnt[of t] assms by simp
-  moreover have "6 * cnt t \<le> 12 * (2^n -1)" 
-    using cnt_bound'[of t n]  assms by simp
-  ultimately show ?thesis by linarith
-qed
+lemma space_2_pow_bound:  assumes "invar_vebt t n " shows "real (space' t) \<le> 12 * (2^n -1)"
+  by (smt (verit, best) assms cnt_bound' space_cnt) 
 
-lemma space'_bound: assumes "invar_vebt t n" "u = 2^n"
+lemma space'_bound: 
+  assumes "invar_vebt t n" "u = 2^n"
   shows "space' t \<le> 12 * u"
-  using  space_2_pow_bound[of t n] 
 proof -
-have "real u - 1 = real (u - 1)"
-by (simp add: assms(2) of_nat_diff)
-then show ?thesis
-  using \<open>invar_vebt t n \<Longrightarrow> real (space' t) \<le> 12 * (2 ^ n - 1)\<close> assms(1) assms(2) by auto
+  have "real (space' t) \<le> real (12 * u)"
+    using assms using  space_2_pow_bound[of t n] by fastforce
+  then have "space' t \<le> 12 * 2 ^ n"
+    using assms of_nat_le_iff by blast
+  then show ?thesis
+    using assms by auto 
 qed
 
 text \<open>Main Theorem\<close>
 
-theorem space_bound: assumes "invar_vebt t n" "u = 2^n"
+theorem space_bound: 
+  assumes "invar_vebt t n" "u = 2^n"
   shows "space t \<le> 12 * u"
-  by (metis assms(1) assms(2) dual_order.trans less_imp_le_nat space'_bound space_space')
+  by (metis assms dual_order.trans less_imp_le_nat space'_bound space_space')
 
 subsection \<open>Complexity of Generation Time \<close>
 text \<open>Space complexity is closely related to tree generation time complexity\<close>
@@ -446,10 +443,11 @@ fun cnt':: "VEBT \<Rightarrow> nat" where
 "cnt' (Node info deg treeList summary) = 1 + cnt' summary + foldr (\<lambda> a b. a+b) (map cnt' treeList) 0"
 
 lemma cnt_cnt_eq:"cnt t = cnt' t"
-  apply(induction t)
-  apply auto
-  apply (smt (z3) VEBT_internal.real_nat_list map_eq_conv of_nat_0)
-  done
+proof(induction t)
+  case (Node x1 x2 x3 t)
+  then show ?case 
+    by simp (smt (verit, best) map_eq_conv of_nat_0 real_nat_list)
+qed auto
 
 end
 end

@@ -1,0 +1,28 @@
+title = "Substitutions for Lambda-Free Higher-Order Terms"
+date = 2024-04-25
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+This theory provides a formalization of substitutions on \\(\\lambda\\)-free higher-order terms, establishing a structured framework with the expected algebraic properties. It introduces a type construction for the rigorous definition and manipulation of substitutions.
+The main theorem of this theory proves the existence of fixed-point substitutions under acyclicity, a theorem that is too often regarded as trivial in the literature."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.trelat]
+email = "trelat_email1"
+
+[contributors]
+
+[notify]
+trelat = "trelat_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

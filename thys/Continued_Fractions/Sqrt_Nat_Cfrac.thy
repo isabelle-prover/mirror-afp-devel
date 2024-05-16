@@ -190,8 +190,8 @@ proof -
   also have "?B = real_of_int (D - int p ^ 2 + 2 * X * p * q - int X ^ 2 * q ^ 2)"
     by (auto simp: algebra_simps power2_eq_square)
   also have "q dvd (D - p ^ 2)" using assms(1) by (auto simp: red_assoc_def)
-  with \<open>p\<^sup>2 \<le> D\<close> have "int q dvd (int D - int p ^ 2)" 
-    unfolding of_nat_power [symmetric] by (subst of_nat_diff [symmetric]) auto
+  with \<open>p\<^sup>2 \<le> D\<close> have "int q dvd (int D - int p ^ 2)"
+    by (metis of_nat_diff of_nat_dvd_iff of_nat_power) 
   hence "D - int p ^ 2 + 2 * X * p * q - int X ^ 2 * q ^ 2 = q * ((D - (X * q - int p)\<^sup>2) div q)"
     by (auto simp: power2_eq_square algebra_simps)
   also have "?A / \<dots> = (sqrt D + (X * q - int p)) / ((D - (X * q - int p)\<^sup>2) div q)"

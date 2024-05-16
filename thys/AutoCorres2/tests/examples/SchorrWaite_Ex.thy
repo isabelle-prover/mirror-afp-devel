@@ -1,0 +1,1019 @@
+(* SPDX-License-Identifier: BSD-3-Clause *)
+(*
+ * Copyright (C) 2003 Farhad Mehta (TUM)
+ * Copyright (C) 2013--2014 Japheth Lim (NICTA)
+ * Copyright (C) 2013--2014 David Greenaway (NICTA)
+ * Copyright (c) 2022 Apple Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of the University of Cambridge or the Technische
+ * Universitaet Muenchen nor the names of their contributors may be used
+ * to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *)
+
+(*
+ * This file contains a proof of a C implementation of the Schorr-Waite
+ * graph marking algorithm.
+ *
+ * The original proof was carried out by Farhad Mehta, and is
+ * distributed as part of Isabelle 2013-2.
+ *
+ * The proof minimally modified to hook up to the output of AutoCorres
+ * by Japheth Lim and David Greenaway. Japheth Lim additionally modified
+ * the proof to show fault-avoidence and termination.
+ *)
+theory SchorrWaite_Ex imports
+  "HOL-Library.Product_Lexorder"
+  "AutoCorres2_Main.AutoCorres_Main"
+begin
+
+declare fun_upd_apply[simp del]
+
+install_C_file "schorr_waite.c"
+
+
+autocorres [heap_abs_syntax] "schorr_waite.c"
+
+abbreviation Cbool where "Cbool b \<equiv> if b then 1 else 0"
+
+declare fun_upd_apply [simp]
+
+(*** Base List definitions ***)
+
+section "The heap"
+
+subsection "Paths in the heap"
+
+primrec Path :: "('p ptr \<Rightarrow> 'p ptr) \<Rightarrow> 'p ptr \<Rightarrow> 'p ptr list \<Rightarrow> 'p ptr \<Rightarrow> bool" where
+  "Path s x [] y = (x = y)"
+| "Path s x (a#as) y = (x \<noteq> NULL \<and> x = a \<and> Path s (s x) as y)"
+
+lemma Path_NULL[iff]: "Path h NULL xs y = (xs = [] \<and> y = NULL)"
+  by (cases xs; fastforce)
+
+lemma Path_neq_NULL[simp]:
+  "a \<noteq> NULL \<Longrightarrow> Path h a as z = (as = [] \<and> z = a \<or> (\<exists>bs. as = a#bs \<and> Path h (h a) bs z))"
+  by (cases as; fastforce)
+
+lemma Path_append[simp]: "\<And>x. Path f x (as@bs) z = (\<exists>y. Path f x as y \<and> Path f y bs z)"
+  by (induct as; simp)
+
+lemma Path_upd[simp]:
+  "\<And>x. u \<notin> set as \<Longrightarrow> Path (f(u := v)) x as y = Path f x as y"
+  by (induct as; simp add: eq_sym_conv)
+
+lemma Path_snoc:
+  "a \<noteq> NULL \<Longrightarrow> Path (f(a := q)) p as a \<Longrightarrow> Path (f(a := q)) p (as @ [a]) q"
+  by simp
+
+
+subsection "Lists on the heap"
+
+subsubsection "Relational abstraction"
+
+definition List :: "('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> 'a ptr \<Rightarrow> 'a ptr list \<Rightarrow> bool" where
+  "List h x as = Path h x as NULL"
+
+lemma List_Nil[simp]: "List h x [] = (x = NULL)"
+  by (simp add: List_def)
+
+lemma List_Cons[simp]: "List h x (a#as) = (x \<noteq> NULL \<and> x = a \<and> List h (h x) as)"
+  by (simp add: List_def)
+
+lemma List_NULL[simp]: "List h NULL as = (as = [])"
+  by (case_tac as; simp)
+
+lemma List_Ref[simp]: "a \<noteq> NULL \<Longrightarrow> List h a as = (\<exists>bs. as = a#bs \<and> List h (h a) bs)"
+  by (case_tac as) auto
+
+theorem notin_List_update[simp]:
+  "\<And>x. a \<notin> set as \<Longrightarrow> List (h(a := y)) x as = List h x as"
+  by (induct as; clarsimp)
+
+lemma List_unique: "\<And>x bs. List h x as \<Longrightarrow> List h x bs \<Longrightarrow> as = bs"
+  by (induct as; clarsimp)
+
+lemma List_unique1: "List h p as \<Longrightarrow> \<exists>!as. List h p as"
+  by (blast intro: List_unique)
+
+lemma List_app: "\<And>x. List h x (as@bs) = (\<exists>y. Path h x as y \<and> List h y bs)"
+  by (induct as; clarsimp)
+
+lemma List_hd_not_in_tl[simp]: "List h (h a) as \<Longrightarrow> a \<notin> set as"
+  apply (clarsimp simp: in_set_conv_decomp)
+  apply (frule List_app[THEN iffD1])
+  apply (fastforce dest: List_unique)
+  done
+
+lemma List_distinct[simp]: "\<And>x. List h x as \<Longrightarrow> distinct as"
+  by (induct as; fastforce dest:List_hd_not_in_tl)
+
+lemma Path_is_List:
+  "\<lbrakk> Path h b Ps a; a \<notin> set Ps; a \<noteq> NULL \<rbrakk> \<Longrightarrow> List (h(a := NULL)) b (Ps @ [a])"
+  by (induct Ps arbitrary: b) auto
+
+lemma List_eq_select [elim]: "\<lbrakk> List s p xs; \<forall>x \<in> set xs. s x = t x \<rbrakk> \<Longrightarrow> List t p xs"
+  by (induct xs arbitrary: p) auto
+
+(*** Main Proof ***)
+
+section \<open>Machinery for the Schorr-Waite proof\<close>
+
+definition \<comment> \<open>Relations induced by a mapping\<close>
+  rel :: "('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> ('a ptr \<times> 'a ptr) set" where
+  "rel m = {(x,y). m x = y \<and> y \<noteq> NULL}"
+
+definition
+  relS :: "('a ptr \<Rightarrow> 'a ptr) set \<Rightarrow> ('a ptr \<times> 'a ptr) set" where
+  "relS M = (\<Union> m \<in> M. rel m)"
+
+definition
+  addrs :: "'a ptr set \<Rightarrow> 'a ptr set" where
+  "addrs P = {a \<in> P. a \<noteq> NULL}"
+
+definition
+  reachable :: "('a ptr \<times> 'a ptr) set \<Rightarrow> 'a ptr set \<Rightarrow> 'a ptr set" where
+  "reachable r P = (r\<^sup>* `` addrs P)"
+
+lemmas rel_defs = relS_def rel_def
+
+text \<open>Rewrite rules for relations induced by a mapping\<close>
+
+lemma self_reachable: "b \<in> B \<Longrightarrow> b \<in> R\<^sup>* `` B"
+  by blast
+
+lemma oneStep_reachable: "b \<in> R``B \<Longrightarrow> b \<in> R\<^sup>* `` B"
+  by blast
+
+lemma still_reachable:
+  "\<lbrakk>B\<subseteq>Ra\<^sup>*``A; \<forall> (x,y) \<in> Rb-Ra. y\<in> (Ra\<^sup>*``A)\<rbrakk> \<Longrightarrow> Rb\<^sup>* `` B \<subseteq> Ra\<^sup>* `` A "
+  apply (clarsimp simp only: Image_iff)
+  apply (erule rtrancl_induct, blast)
+  apply (fastforce intro: rtrancl_into_rtrancl)
+  done
+
+lemma still_reachable_eq:
+  "\<lbrakk> A\<subseteq>Rb\<^sup>*``B; B\<subseteq>Ra\<^sup>*``A; \<forall> (x,y) \<in> Ra-Rb. y \<in>(Rb\<^sup>*``B); \<forall> (x,y) \<in> Rb-Ra. y\<in> (Ra\<^sup>*``A)\<rbrakk> \<Longrightarrow>
+   Ra\<^sup>*``A =  Rb\<^sup>*``B "
+  by (rule equalityI; erule (1) still_reachable)
+
+lemma reachable_null: "reachable mS {NULL} = {}"
+  by (simp add: reachable_def addrs_def)
+
+lemma reachable_empty: "reachable mS {} = {}"
+  by (simp add: reachable_def addrs_def)
+
+lemma reachable_union: "(reachable mS aS \<union> reachable mS bS) = reachable mS (aS \<union> bS)"
+  by (simp add: reachable_def rel_defs addrs_def) blast
+
+lemma reachable_null': "reachable mS {x, NULL} = reachable mS {x}"
+  using reachable_null reachable_union
+  by (metis insert_is_Un reachable_empty)
+
+
+lemma reachable_union_sym: "reachable r (insert a aS) = (r\<^sup>* `` addrs {a}) \<union> reachable r aS"
+  by (simp add: reachable_def rel_defs addrs_def) blast
+
+lemma rel_upd1: "(a,b) \<notin> rel (r(q:=t)) \<Longrightarrow> (a,b) \<in> rel r \<Longrightarrow> a=q"
+  by (rule classical) (simp add: rel_defs)
+
+lemma rel_upd2: "(a,b)  \<notin> rel r \<Longrightarrow> (a,b) \<in> rel (r(q:=t)) \<Longrightarrow> a=q"
+  by (rule classical) (simp add:rel_defs)
+
+definition \<comment> \<open>Restriction of a relation\<close>
+  restr :: "('a ptr \<times> 'a ptr) set \<Rightarrow> ('a ptr \<Rightarrow> bool) \<Rightarrow> ('a ptr \<times> 'a ptr) set"
+           ("(_/ | _)" [50, 51] 50)
+  where
+  "restr r m = {(x,y). (x,y) \<in> r \<and> \<not> m x}"
+
+no_notation disj (infixr "|" 30) \<comment> \<open>Avoid syntax conflict with restr\<close>
+
+text \<open>Rewrite rules for the restriction of a relation\<close>
+
+lemma restr_identity[simp]:
+  "(\<forall>x. \<not> m x) \<Longrightarrow> (R|m) = R"
+  by (auto simp add:restr_def)
+
+lemma restr_rtrancl[simp]: " \<lbrakk>m l\<rbrakk> \<Longrightarrow> (R | m)\<^sup>* `` {l} = {l}"
+  by (auto simp add:restr_def elim:converse_rtranclE)
+
+lemma [simp]: " \<lbrakk>m l\<rbrakk> \<Longrightarrow> (l,x) \<in> (R | m)\<^sup>* = (l=x)"
+  by (auto simp add:restr_def elim:converse_rtranclE)
+
+lemma restr_upd: "((rel (r (q := t)))|(m(q := True))) = ((rel (r))|(m(q := True))) "
+  by (auto simp:restr_def rel_def)
+
+lemma restr_un: "((r \<union> s)|m) = (r|m) \<union> (s|m)"
+  by (auto simp add:restr_def)
+
+lemma rel_upd3: "(a, b) \<notin> (r|(m(q := t))) \<Longrightarrow> (a,b) \<in> (r|m) \<Longrightarrow> a = q "
+  by (rule classical) (simp add:restr_def)
+
+definition
+  \<comment> \<open>A short form for the stack mapping function for List\<close>
+  S :: "('a ptr \<Rightarrow> bool) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr)"
+  where "S c l r = (\<lambda>x. if c x then r x else l x)"
+
+text \<open>Rewrite rules for Lists using S as their mapping\<close>
+
+lemma [rule_format,simp]:
+  "\<forall>p. a \<notin> set stack \<longrightarrow> List (S c l r) p stack = List (S (c(a:=x)) (l(a:=y)) (r(a:=z))) p stack"
+  by (induct_tac stack; simp add: S_def)
+
+lemma [rule_format,simp]:
+  "\<forall>p. a \<notin> set stack \<longrightarrow> List (S c l (r(a:=z))) p stack = List (S c l r) p stack"
+  by (induct_tac stack; simp add: S_def)
+
+lemma [rule_format,simp]:
+  "\<forall>p. a \<notin> set stack \<longrightarrow> List (S c (l(a:=z)) r) p stack = List (S c l r) p stack"
+  by (induct_tac stack; simp add: S_def)
+
+lemma [rule_format,simp]:
+  "\<forall>p. a \<notin> set stack \<longrightarrow> List (S (c(a:=z)) l r) p stack = List (S c l r) p stack"
+  by (induct_tac stack; simp add: S_def)
+
+
+primrec
+  \<comment> \<open>Recursive definition of what is means for a the graph/stack structure to be reconstructible\<close>
+  stkOk :: "('a ptr \<Rightarrow> bool) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> ('a ptr \<Rightarrow> 'a ptr) \<Rightarrow> 'a ptr \<Rightarrow>'a ptr list \<Rightarrow>  bool"
+  where
+    stkOk_nil:  "stkOk c l r iL iR t [] = True"
+  | stkOk_cons:
+    "stkOk c l r iL iR t (p#stk) = (stkOk c l r iL iR p stk \<and>
+      iL p = (if c p then l p else t) \<and>
+      iR p = (if c p then t else r p) \<and>
+      p \<noteq> NULL)"
+
+text \<open>Rewrite rules for stkOk\<close>
+
+lemma stkOk_cx[simp]:
+  "\<And>t. \<lbrakk> x \<notin> set xs; x \<noteq> t \<rbrakk> \<Longrightarrow> stkOk (c(x := f)) l r iL iR t xs = stkOk c l r iL iR t xs"
+  by (induct xs) (auto simp:eq_sym_conv)
+
+lemma stkOk_lx[simp]:
+  "\<And>t. \<lbrakk> x \<notin> set xs; x\<noteq>t \<rbrakk> \<Longrightarrow> stkOk c (l(x := g)) r iL iR t xs = stkOk c l r iL iR t xs"
+  by (induct xs) (auto simp:eq_sym_conv)
+
+lemma stkOk_r[simp]:
+  "\<And>t. \<lbrakk> x \<notin> set xs; x\<noteq>t \<rbrakk> \<Longrightarrow> stkOk c l (r(x := g)) iL iR t xs = stkOk c l r iL iR t xs"
+  by (induct xs) (auto simp:eq_sym_conv)
+
+lemma stkOk_r_rewrite [simp]:
+  "\<And>x. x \<notin> set xs \<Longrightarrow> stkOk c l (r(x := g)) iL iR x xs = stkOk c l r iL iR x xs"
+  by (induct xs) (auto simp:eq_sym_conv)
+
+lemma stkOk_l[simp]:
+  "\<And>x. x \<notin> set xs \<Longrightarrow> stkOk c (l(x := g)) r iL iR x xs = stkOk c l r iL iR x xs"
+  by (induct xs) (auto simp:eq_sym_conv)
+
+lemma stkOk_c[simp]:
+  "\<And>x. x \<notin> set xs \<Longrightarrow> stkOk (c(x := g)) l r iL iR x xs = stkOk c l r iL iR x xs"
+  by (induct xs) (auto simp:eq_sym_conv)
+
+lemma stkOk_eq_select[elim]:
+  "\<lbrakk> stkOk s a b c d p xs; \<forall>x \<in> set xs. s x = t x \<rbrakk> \<Longrightarrow> stkOk t a b c d p xs"
+  by (induct xs arbitrary: p) auto
+
+definition measure :: "('a \<Rightarrow> ('n :: wellorder)) \<Rightarrow> ('a \<times> 'a) set"
+  where
+    "measure r \<equiv> {(s', s). r s' < r s}"
+
+lemma in_measure[simp, code_unfold]: "((x,y) : measure f) = (f x < f y)"
+  by (simp add:measure_def)
+
+lemma wf_measure [iff]: "wf (measure f)"
+  by (metis SchorrWaite_Ex.in_measure measure_induct_rule wf_def)
+
+
+abbreviation schorr_waite'_inv where
+  "schorr_waite'_inv s s0 R p t cond stack \<equiv>
+       \<comment> \<open>i1\<close> List (S (\<lambda>x. s[x]\<rightarrow>c \<noteq> 0) (\<lambda>x. s[x]\<rightarrow>l) (\<lambda>x. s[x]\<rightarrow>r)) p stack \<and>
+       \<comment> \<open>i2\<close> (\<forall>x \<in> set stack. s[x]\<rightarrow>m \<noteq> 0) \<and>
+       \<comment> \<open>i3\<close> R = reachable (relS {\<lambda>x. s[x]\<rightarrow>l, \<lambda>x. s[x]\<rightarrow>r}) {t, p} \<and>
+       \<comment> \<open>i4\<close> (\<forall>x. x \<in> R \<and> s[x]\<rightarrow>m = 0 \<longrightarrow>
+                     x \<in> reachable (restr (relS {\<lambda>x. s[x]\<rightarrow>l, \<lambda>x. s[x]\<rightarrow>r}) (\<lambda>x. s[x]\<rightarrow>m \<noteq> 0))
+                                   ({t} \<union> set (map (\<lambda>x. s[x]\<rightarrow>r) stack))) \<and>
+       \<comment> \<open>i5\<close> (\<forall>x. s[x]\<rightarrow>m \<noteq> 0 \<longrightarrow> x \<in> R) \<and>
+       \<comment> \<open>i6\<close> (\<forall>x. x \<notin> set stack \<longrightarrow> s[x]\<rightarrow>r = s0[x]\<rightarrow>r \<and> s[x]\<rightarrow>l = s0[x]\<rightarrow>l) \<and>
+       \<comment> \<open>i7\<close> (stkOk (\<lambda>x. s[x]\<rightarrow>c \<noteq> 0) (\<lambda>x. s[x]\<rightarrow>l) (\<lambda>x. s[x]\<rightarrow>r) (\<lambda>x. s0[x]\<rightarrow>l) (\<lambda>x. s0[x]\<rightarrow>r) t stack) \<and>
+       \<comment> \<open>i8\<close> (\<forall>x. x \<in> R \<longrightarrow> ptr_valid (heap_typing s) x) \<and>
+       \<comment> \<open>i9\<close> cond = Cbool (p = NULL \<longrightarrow> (t \<noteq> NULL \<and> s[t]\<rightarrow>m = 0))"
+
+abbreviation schorr_waite'_measure where
+  "schorr_waite'_measure s s0 R p t cond \<equiv>
+       let stack = (THE stack. schorr_waite'_inv s s0 R p t cond stack)
+       in (card {x \<in> R. s[x]\<rightarrow>m = 0}, card {x \<in> set stack. s[x]\<rightarrow>c = 0}, length stack)"
+
+(* Helper for the termination proof. *)
+lemma the_equality': "\<And>P a. \<lbrakk>P a; \<And>x. \<lbrakk> P a; P x \<rbrakk> \<Longrightarrow> x = a\<rbrakk> \<Longrightarrow> (THE x. P x) = a"
+  by blast
+
+(* Variant using the same order as in former nondet-monad setting *)
+lemma runs_to_whileLoop_res':
+  assumes B[runs_to_vcg]: "\<And>a s. I a s \<Longrightarrow> C a s \<Longrightarrow>
+    B a  \<bullet> s \<lbrace>\<lambda>r t. (\<forall>b. r = Result b \<longrightarrow> I b t \<and> ((b, t), (a, s)) \<in> R)\<rbrace>"
+  assumes R: "wf R"
+  assumes *: "I a s"
+  assumes P_Result: "\<And>a s. I a s \<Longrightarrow> \<not> C a s \<Longrightarrow> P (Result a) s"
+  shows "(whileLoop C B a::('a, 's) res_monad) \<bullet> s \<lbrace>P\<rbrace>"
+  apply (rule runs_to_whileLoop [OF R, where I = "\<lambda>Exception _ \<Rightarrow> (\<lambda>_. False) | Result v \<Rightarrow> I v"])
+  subgoal using * by auto
+  subgoal using P_Result by auto
+  subgoal by auto
+  subgoal by runs_to_vcg
+  done
+
+lemmas runs_to_whileLoop3 =  runs_to_whileLoop_res' [split_tuple C and B arity: 3]
+
+
+(*** Main Proof ***)
+
+declare fun_upd_apply[simp del] fun_upd_other[simp]
+
+section\<open>The Schorr-Waite algorithm\<close>
+
+text \<open>
+The following Isar proof might look weird at first sight. It follows the structure of the
+former \<open>wp\<close> method, which was replaced by @{method runs_to_vcg}. One decisive difference between
+both verification condition generators is: 
+\<^item> \<open>wp\<close> introduces (nested) \<open>if ... then ... else ...\<close> for \<^const>\<open>condition\<close>
+\<^item> @{method runs_to_vcg} introduces separate subgoals instead.
+
+So the structured Isar part of the proof resembles the subgoals introduced by \<open>wp\<close>. We just prove
+them as before replacing @{command show} with @{command have} and afterwards use these results
+to solve the new subgoals that are introduced by @{method runs_to_vcg}.
+\<close>
+
+
+theorem (in ts_definition_schorr_waite) SchorrWaiteAlgorithm:
+  assumes Pre: "R = reachable (relS {\<lambda>x. s0[x]\<rightarrow>l, \<lambda>x. s0[x]\<rightarrow>r}) {root_ptr} \<and> (\<forall>x. s0[x]\<rightarrow>m = 0) \<and> (\<forall>x\<in>R. ptr_valid (heap_typing s0) x)"
+    (is "?Pre root_ptr s0")
+  shows "
+  schorr_waite' root_ptr \<bullet> s0
+ \<lbrace>\<lambda>r s. \<forall>x. (x \<in> R) = (s[x]\<rightarrow>m \<noteq> 0) \<and> s[x]\<rightarrow>l = s0[x]\<rightarrow>l \<and> s[x]\<rightarrow>r = s0[x]\<rightarrow>r\<rbrace>"
+proof -
+  {
+  let "_ \<bullet> s0 \<lbrace> ?Post \<rbrace>" = ?thesis
+  fix p :: "node_C ptr" and t :: "node_C ptr" and
+    s :: "lifted_globals" and cond :: "int"
+  let "?cond p t s" = "p = NULL \<longrightarrow> t \<noteq> NULL \<and> s[t]\<rightarrow>m = 0"
+  let "?inv p t cond s" = "\<exists>stack. schorr_waite'_inv s s0 R p t cond stack"
+  let "?measure p t cond s" = "schorr_waite'_measure s s0 R p t cond"
+
+  let "\<exists>stack. ?Inv p t cond s stack" = "?inv p t cond s"
+
+  {
+
+    assume "?Pre root_ptr s0"
+    then have "\<forall>x. ?inv NULL root_ptr (Cbool (root_ptr \<noteq> NULL \<and> s0[root_ptr]\<rightarrow>m = 0)) s0 \<and>
+              (root_ptr \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing s0) root_ptr)"
+      by (auto simp: reachable_def addrs_def )
+  } note goal1 = this
+(*
+  {
+
+    fix x s p t cond
+    assume a: "?inv p t cond s" and b: "\<not> cond \<noteq> 0"
+    then obtain stack where inv: "?Inv p t cond s stack" by blast
+    from a b have pNull: "p = NULL" and tDisj: "t=NULL \<or> (t\<noteq>NULL \<and> s[t]\<rightarrow>m \<noteq> 0)" by auto
+    let "?I1 \<and> _ \<and> _ \<and> ?I4 \<and> ?I5 \<and> ?I6 \<and> _ \<and> _ \<and> _"  =  "?Inv p t cond s stack"
+    from inv have i1: "?I1" and i4: "?I4" and i5: "?I5" and i6: "?I6" by simp+
+    from pNull i1 have stackEmpty: "stack = []" by simp
+    from tDisj i4 have RisMarked[rule_format]: "\<forall>x. x \<in> R \<longrightarrow> s[x]\<rightarrow>m \<noteq> 0" using inv by(auto simp: reachable_def addrs_def stackEmpty)
+    from i5 i6 have "(x \<in> R) = (s[x]\<rightarrow>m \<noteq> 0) \<and> s[x]\<rightarrow>l = s0[x]\<rightarrow>l \<and> s[x]\<rightarrow>r = s0[x]\<rightarrow>r" by(auto simp: stackEmpty fun_eq_iff RisMarked)
+  } note goal2 = this
+*)
+
+    {
+      fix s p t cond stack_tl
+      assume stackInv: "?Inv p t cond s (p # stack_tl)"
+        and whileB: "cond \<noteq> 0" (is "?whileB")
+        and ifB1: "t = NULL \<or> s[t]\<rightarrow>m \<noteq> 0" (is "?ifB1") and ifB2: "s[p]\<rightarrow>c \<noteq> 0" (is "?ifB2")
+      let "?I1 \<and> ?I2 \<and> ?I3 \<and> ?I4 \<and> ?I5 \<and> ?I6 \<and> ?I7 \<and> ?I8 \<and> ?I9" = "?Inv p t cond s (p # stack_tl)"
+      from stackInv have i1: "?I1" and i2: "?I2" and i3: "?I3" and i4: "?I4"
+        and i5: "?I5" and i6: "?I6" and i7: "?I7" and i8: "?I8"
+        and cond: "?I9" by simp+
+      have stackDist: "distinct (p # stack_tl)" using i1 by (rule List_distinct)
+      from whileB and ifB1 and cond have pNotNULL [iff]: "p \<noteq> NULL" by simp
+      with i2 have m_p: "s[p]\<rightarrow>m \<noteq> 0" by auto
+      from stackDist have p_notin_stack_tl: "p \<notin> set stack_tl" by simp
+      let "?pop_s" = "s[p\<rightarrow>r := t]"
+      have "?Inv (s[p]\<rightarrow>r) p (Cbool (?cond (s[p]\<rightarrow>r) p ?pop_s)) ?pop_s stack_tl"
+        (is "?poI1\<and> ?poI2\<and> ?poI3\<and> ?poI4\<and> ?poI5\<and> ?poI6\<and> ?poI7\<and> ?poI8\<and> ?poI9")
+      proof -
+        \<comment> \<open>List property is maintained:\<close>
+        from i1 p_notin_stack_tl ifB2
+        have poI1: "List (S (\<lambda>x. ?pop_s[x]\<rightarrow>c \<noteq> 0) (\<lambda>x. ?pop_s[x]\<rightarrow>l) (\<lambda>x. ?pop_s[x]\<rightarrow>r)) (s[p]\<rightarrow>r) stack_tl"
+          by(simp, simp add: S_def)
+
+        moreover
+          \<comment> \<open>Everything on the stack is marked:\<close>
+        from i2 have poI2: "\<forall> x \<in> set stack_tl. s[x]\<rightarrow>m \<noteq> 0" by simp
+        moreover
+
+\<comment> \<open>Everything is still reachable:\<close>
+        let "(R = reachable ?Ra ?A)" = "?I3"
+        let "?Rb" = "relS {\<lambda>x. ?pop_s[x]\<rightarrow>l, \<lambda>x. ?pop_s[x]\<rightarrow>r}"
+        let "?B" = "{p, s[p]\<rightarrow>r}"
+          \<comment> \<open>Our goal is @{text"R = reachable ?Rb ?B"}.\<close>
+        have "?Ra\<^sup>* `` addrs ?A = ?Rb\<^sup>* `` addrs ?B" (is "?L = ?R")
+        proof
+          show "?L \<subseteq> ?R"
+          proof (rule still_reachable)
+            show "addrs ?A \<subseteq> ?Rb\<^sup>* `` addrs ?B"
+              by(fastforce simp:addrs_def relS_def rel_def
+                         intro:oneStep_reachable Image_iff[THEN iffD2])
+            show "\<forall>(x,y) \<in> ?Ra-?Rb. y \<in> (?Rb\<^sup>* `` addrs ?B)"
+              by (clarsimp simp:relS_def)
+                 (fastforce simp add:rel_def Image_iff addrs_def dest:rel_upd1)
+          qed
+          show "?R \<subseteq> ?L"
+          proof (rule still_reachable)
+            show "addrs ?B \<subseteq> ?Ra\<^sup>* `` addrs ?A"
+              by (fastforce simp: addrs_def rel_defs
+                          intro: oneStep_reachable Image_iff[THEN iffD2])
+          next
+            show "\<forall>(x, y)\<in>?Rb-?Ra. y\<in>(?Ra\<^sup>*``addrs ?A)"
+              by (clarsimp simp:relS_def)
+                   (fastforce simp add:rel_def Image_iff addrs_def dest:rel_upd2)
+          qed
+        qed
+        with i3 have poI3: "R = reachable ?Rb ?B"  by (simp add:reachable_def)
+        moreover
+
+\<comment> \<open>If it is reachable and not marked, it is still reachable using...\<close>
+        let "\<forall>x. x \<in> R \<and> s[x]\<rightarrow>m = 0 \<longrightarrow> x \<in> reachable ?Ra ?A"  =  ?I4
+        let "?Rb" = "restr (relS {\<lambda>x. ?pop_s[x]\<rightarrow>l, \<lambda>x. ?pop_s[x]\<rightarrow>r}) (\<lambda>x. ?pop_s[x]\<rightarrow>m \<noteq> 0)"
+        let "?B" = "{p} \<union> set (map (\<lambda>x. ?pop_s[x]\<rightarrow>r) stack_tl)"
+          \<comment> \<open>Our goal is @{text"\<forall>x. x \<in> R \<and> \<not> m x \<longrightarrow> x \<in> reachable ?Rb ?B"}.\<close>
+        let ?T = "{t, s[p]\<rightarrow>r}"
+
+        have "?Ra\<^sup>* `` addrs ?A \<subseteq> ?Rb\<^sup>* `` (addrs ?B \<union> addrs ?T)"
+        proof (rule still_reachable)
+          have rewrite: "\<forall>x\<in>set stack_tl. ?pop_s[x]\<rightarrow>r = s[x]\<rightarrow>r"
+            by (auto simp add:p_notin_stack_tl intro:fun_upd_other)
+          show "addrs ?A \<subseteq> ?Rb\<^sup>* `` (addrs ?B \<union> addrs ?T)"
+            by (fastforce cong:map_cong simp:addrs_def rewrite fun_upd_apply intro:self_reachable)
+          show "\<forall>(x, y)\<in>?Ra-?Rb. y\<in>(?Rb\<^sup>*``(addrs ?B \<union> addrs ?T))"
+            by (clarsimp simp:restr_def relS_def)
+                (fastforce simp add:rel_def Image_iff addrs_def dest:rel_upd1)
+        qed
+            \<comment> \<open>We now bring a term from the right to the left of the subset relation.\<close>
+        hence subset: "?Ra\<^sup>* `` addrs ?A - ?Rb\<^sup>* `` addrs ?T \<subseteq> ?Rb\<^sup>* `` addrs ?B"
+          by blast
+        have poI4: "\<forall>x. x \<in> R \<and> ?pop_s[x]\<rightarrow>m = 0 \<longrightarrow> x \<in> reachable ?Rb ?B"
+        proof (rule allI, rule impI)
+          fix x
+          assume a: "x \<in> R \<and> ?pop_s[x]\<rightarrow>m = 0"
+            \<comment> \<open>First, a disjunction on @{term "s[p]\<rightarrow>r"} used later in the proof\<close>
+          have pDisj:"s[p]\<rightarrow>r = NULL \<or> (s[p]\<rightarrow>r \<noteq> NULL \<and> s[(s[p]\<rightarrow>r)]\<rightarrow>m \<noteq> 0)" using poI1 poI2
+            by (case_tac stack_tl, auto simp: List_def)
+              \<comment> \<open>@{term x} belongs to the left hand side of @{thm[source] subset}:\<close>
+          have incl: "x \<in> ?Ra\<^sup>*``addrs ?A" using  a i4 by (simp only:reachable_def, clarsimp)
+          have excl: "x \<notin> ?Rb\<^sup>*`` addrs ?T" using pDisj ifB1 a by (auto simp add:addrs_def)
+          \<comment> \<open>And therefore also belongs to the right hand side of @{thm[source]subset},\<close>
+          \<comment> \<open>which corresponds to our goal.\<close>
+          from incl excl subset  show "x \<in> reachable ?Rb ?B" by (auto simp add:reachable_def)
+        qed
+        moreover
+
+\<comment> \<open>If it is marked, then it is reachable\<close>
+        from i5 have poI5: "\<forall>x. ?pop_s[x]\<rightarrow>m \<noteq> 0 \<longrightarrow> x \<in> R" by simp
+        moreover
+
+\<comment> \<open>If it is not on the stack, then its @{term l} and @{term r} fields are unchanged\<close>
+        from i7 i6 ifB2
+        have poI6: "\<forall>x. x \<notin> set stack_tl \<longrightarrow> ?pop_s[x]\<rightarrow>r = s0[x]\<rightarrow>r \<and> ?pop_s[x]\<rightarrow>l = s0[x]\<rightarrow>l"
+          by(auto simp: fun_upd_apply)
+
+        moreover
+
+\<comment> \<open>If it is on the stack, then its @{term l} and @{term r} fields can be reconstructed\<close>
+        from p_notin_stack_tl i7 have poI7: "stkOk (\<lambda>x. ?pop_s[x]\<rightarrow>c \<noteq> 0) (\<lambda>x. ?pop_s[x]\<rightarrow>l) (\<lambda>x. ?pop_s[x]\<rightarrow>r) (\<lambda>x. s0[x]\<rightarrow>l) (\<lambda>x. s0[x]\<rightarrow>r) p stack_tl"
+          by clarsimp
+        moreover
+
+        from i8 have poI8: "\<forall>x. x \<in> R \<longrightarrow> ptr_valid (heap_typing ?pop_s) x"
+          by simp
+
+        ultimately show "?thesis" by simp
+      qed
+    }
+    note popStack = this
+
+\<comment> \<open>Proofs of the Swing and Push arm follow.\<close>
+\<comment> \<open>Since they are in principle simmilar to the Pop arm proof,\<close>
+\<comment> \<open>we show fewer comments and use frequent pattern matching.\<close>
+    {
+      \<comment> \<open>Swing arm\<close>
+      fix s p t cond stack
+      assume stackInv: "?Inv p t cond s stack"
+        and whileB: "cond \<noteq> 0" (is "?whileB")
+        and ifB1: "t = NULL \<or> s[t]\<rightarrow>m \<noteq> 0" (is "?ifB1") and nifB2: "\<not> s[p]\<rightarrow>c \<noteq> 0" (is "\<not> ?ifB2")
+      let "?I1 \<and> ?I2 \<and> ?I3 \<and> ?I4 \<and> ?I5 \<and> ?I6 \<and> ?I7 \<and> ?I8 \<and> ?I9" = "?Inv p t cond s stack"
+      from stackInv have i1: "?I1" and i2: "?I2" and i3: "?I3" and i4: "?I4"
+        and i5: "?I5" and i6: "?I6" and i7: "?I7" and i8: "?I8"
+        and cond: "?I9" by simp+
+      have stackDist: "distinct (stack)" using i1 by (rule List_distinct)
+      from whileB and ifB1 and cond have pNotNULL [iff]: "p \<noteq> NULL" by simp
+      with i1 obtain stack_tl where stack_eq: "stack = p # stack_tl"
+        by (case_tac stack) (auto simp: List_def)
+      with i2 have m_p: "s[p]\<rightarrow>m \<noteq> 0" by auto
+      from stack_eq stackDist have p_notin_stack_tl: "p \<notin> set stack_tl" by simp
+
+      let "?sw_s"  = "((s[p\<rightarrow>r := s[p]\<rightarrow>l])[p\<rightarrow>l := t])[p\<rightarrow>c := 1]"
+      have "?Inv p (s[p]\<rightarrow>r) (Cbool (?cond p (s[p]\<rightarrow>r) ?sw_s)) ?sw_s stack"
+        (is "?swI1\<and>?swI2\<and>?swI3\<and>?swI4\<and>?swI5\<and>?swI6\<and>?swI7\<and>?swI8\<and>?swI9")
+      proof -
+
+\<comment> \<open>List property is maintained:\<close>
+        from i1 p_notin_stack_tl nifB2
+        have swI1: "?swI1"
+          by (simp add: stack_eq, auto simp: S_def fun_upd_apply)
+        moreover
+
+\<comment> \<open>Everything on the stack is marked:\<close>
+        from i2
+        have swI2: "?swI2" by simp
+        moreover
+
+\<comment> \<open>Everything is still reachable:\<close>
+        let "R = reachable ?Ra ?A" = "?I3"
+        let "R = reachable ?Rb ?B" = "?swI3"
+        have "?Ra\<^sup>* `` addrs ?A = ?Rb\<^sup>* `` addrs ?B"
+        proof (rule still_reachable_eq)
+          show "addrs ?A \<subseteq> ?Rb\<^sup>* `` addrs ?B"
+            by(fastforce simp:addrs_def rel_defs intro:oneStep_reachable Image_iff[THEN iffD2])
+        next
+          show "addrs ?B \<subseteq> ?Ra\<^sup>* `` addrs ?A"
+            by(fastforce simp:addrs_def rel_defs intro:oneStep_reachable Image_iff[THEN iffD2])
+        next
+          show "\<forall>(x, y)\<in>?Ra-?Rb. y\<in>(?Rb\<^sup>*``addrs ?B)"
+            by (clarsimp simp:relS_def) (fastforce simp add:rel_def Image_iff addrs_def fun_upd_apply dest:rel_upd1)
+        next
+          show "\<forall>(x, y)\<in>?Rb-?Ra. y\<in>(?Ra\<^sup>*``addrs ?A)"
+            by (clarsimp simp:relS_def) (fastforce simp add:rel_def Image_iff addrs_def fun_upd_apply dest:rel_upd2)
+        qed
+        with i3
+        have swI3: "?swI3" by (simp add:reachable_def)
+        moreover
+
+\<comment> \<open>If it is reachable and not marked, it is still reachable using...\<close>
+        let "\<forall>x. x \<in> R \<and> s[x]\<rightarrow>m = 0 \<longrightarrow> x \<in> reachable ?Ra ?A" = ?I4
+        let "\<forall>x. x \<in> R \<and> _[x]\<rightarrow>m = 0 \<longrightarrow> x \<in> reachable ?Rb ?B" = ?swI4
+        let ?T = "{t}"
+        have "?Ra\<^sup>*``addrs ?A \<subseteq> ?Rb\<^sup>*``(addrs ?B \<union> addrs ?T)"
+        proof (rule still_reachable)
+          have rewrite: "(\<forall>x\<in>set stack_tl. ?sw_s[x]\<rightarrow>r = s[x]\<rightarrow>r)"
+            by (auto simp add:p_notin_stack_tl intro:fun_upd_other)
+          show "addrs ?A \<subseteq> ?Rb\<^sup>* `` (addrs ?B \<union> addrs ?T)"
+            by (fastforce cong:map_cong simp:stack_eq addrs_def rewrite fun_upd_apply intro:self_reachable)
+        next
+          show "\<forall>(x, y)\<in>?Ra-?Rb. y\<in>(?Rb\<^sup>*``(addrs ?B \<union> addrs ?T))"
+            by (clarsimp simp:relS_def restr_def) (fastforce simp add:rel_def Image_iff addrs_def fun_upd_apply dest:rel_upd1)
+        qed
+        then have subset: "?Ra\<^sup>*``addrs ?A - ?Rb\<^sup>*``addrs ?T \<subseteq> ?Rb\<^sup>*``addrs ?B"
+          by blast
+        have ?swI4
+        proof (rule allI, rule impI)
+          fix x
+          assume a: "x \<in> R \<and> ?sw_s[x]\<rightarrow>m = 0"
+          with i4 stack_eq  have inc: "x \<in> ?Ra\<^sup>*``addrs ?A"
+            by (simp only:reachable_def, clarsimp)
+          with ifB1 a
+          have exc: "x \<notin> ?Rb\<^sup>*`` addrs ?T"
+            by (auto simp add:addrs_def)
+          from inc exc subset  show "x \<in> reachable ?Rb ?B"
+            by (auto simp add:reachable_def)
+        qed
+        moreover
+
+\<comment> \<open>If it is marked, then it is reachable\<close>
+        from i5
+        have "?swI5" by simp
+        moreover
+
+\<comment> \<open>If it is not on the stack, then its @{term l} and @{term r} fields are unchanged\<close>
+        from i6 stack_eq
+        have "?swI6"
+          by clarsimp
+        moreover
+
+\<comment> \<open>If it is on the stack, then its @{term l} and @{term r} fields can be reconstructed\<close>
+        from stackDist i7 nifB2
+        have "?swI7"
+          by (simp add: stack_eq) (auto simp: fun_upd_apply)
+        moreover
+
+        from i8
+        have "?swI8"
+          by simp
+        ultimately show ?thesis by simp
+      qed
+    }
+    note swStack = this
+
+    {
+      \<comment> \<open>Push arm\<close>
+      fix s p t cond stack
+      assume stackInv: "?Inv p t cond s stack"
+        and whileB: "cond \<noteq> 0" (is "?whileB")
+        and nifB1: "\<not> (t = NULL \<or> s[t]\<rightarrow>m \<noteq> 0)" (is "\<not> ?ifB1")
+      let "?I1 \<and> ?I2 \<and> ?I3 \<and> ?I4 \<and> ?I5 \<and> ?I6 \<and> ?I7 \<and> ?I8 \<and> ?I9" = "?Inv p t cond s stack"
+      from stackInv have i1: "?I1" and i2: "?I2" and i3: "?I3" and i4: "?I4"
+        and i5: "?I5" and i6: "?I6" and i7: "?I7" and i8: "?I8"
+        and cond: "?I9" by simp+
+      have stackDist: "distinct (stack)" using i1 by (rule List_distinct)
+      from whileB and nifB1 and cond have tNotNULL [iff]: "t \<noteq> NULL" by simp
+      with i1 obtain new_stack where new_stack_eq: "new_stack = t # stack" by clarsimp
+      from tNotNULL nifB1 cond have n_m_t: "s[t]\<rightarrow>m = 0" by clarsimp
+      with i2 have t_notin_stack: "t \<notin> set stack" by blast
+
+      let "?pu_s"  = "((s[t\<rightarrow>l := p])[t\<rightarrow>m := 1])[t\<rightarrow>c := 0]"
+      have "?Inv t (s[t]\<rightarrow>l) (Cbool (?cond t (s[t]\<rightarrow>l) ?pu_s)) ?pu_s new_stack"
+        (is "?puI1\<and>?puI2\<and>?puI3\<and>?puI4\<and>?puI5\<and>?puI6\<and>?puI7\<and>?puI8\<and>?puI9")
+      proof -
+        \<comment> \<open>List property is maintained:\<close>
+        from i1 t_notin_stack new_stack_eq
+        have puI1: "?puI1"
+          by (simp add: new_stack_eq) (auto simp:S_def fun_upd_apply)
+        moreover
+
+\<comment> \<open>Everything on the stack is marked:\<close>
+        from i2
+        have puI2: "?puI2"
+          by (simp add:new_stack_eq fun_upd_apply)
+        moreover
+
+\<comment> \<open>Everything is still reachable:\<close>
+        let "R = reachable ?Ra ?A" = "?I3"
+        let "R = reachable ?Rb ?B" = "?puI3"
+        have "?Ra\<^sup>* `` addrs ?A = ?Rb\<^sup>* `` addrs ?B"
+        proof (rule still_reachable_eq)
+          show "addrs ?A \<subseteq> ?Rb\<^sup>* `` addrs ?B"
+            by(fastforce simp:addrs_def rel_defs intro:oneStep_reachable Image_iff[THEN iffD2])
+        next
+          show "addrs ?B \<subseteq> ?Ra\<^sup>* `` addrs ?A"
+            by(fastforce simp:addrs_def rel_defs intro:oneStep_reachable Image_iff[THEN iffD2])
+        next
+          show "\<forall>(x, y)\<in>?Ra-?Rb. y\<in>(?Rb\<^sup>*``addrs ?B)"
+            by (clarsimp simp:relS_def) (fastforce simp add:rel_def Image_iff addrs_def dest:rel_upd1)
+        next
+          show "\<forall>(x, y)\<in>?Rb-?Ra. y\<in>(?Ra\<^sup>*``addrs ?A)"
+            by (clarsimp simp:relS_def) (fastforce simp add:rel_def Image_iff addrs_def fun_upd_apply dest:rel_upd2)
+        qed
+        with i3
+        have puI3: "?puI3" by (simp add:reachable_def addrs_def)
+        moreover
+
+\<comment> \<open>If it is reachable and not marked, it is still reachable using...\<close>
+        let "\<forall>x. x \<in> R \<and> s[x]\<rightarrow>m = 0 \<longrightarrow> x \<in> reachable ?Ra ?A" = ?I4
+        let "\<forall>x. x \<in> R \<and> _[x]\<rightarrow>m = 0 \<longrightarrow> x \<in> reachable ?Rb ?B" = ?puI4
+        let ?T = "{t}"
+        have "?Ra\<^sup>*``addrs ?A \<subseteq> ?Rb\<^sup>*``(addrs ?B \<union> addrs ?T)"
+        proof (rule still_reachable)
+          show "addrs ?A \<subseteq> ?Rb\<^sup>* `` (addrs ?B \<union> addrs ?T)"
+            by (fastforce simp:new_stack_eq addrs_def intro:self_reachable)
+        next
+          show "\<forall>(x, y)\<in>?Ra-?Rb. y\<in>(?Rb\<^sup>*``(addrs ?B \<union> addrs ?T))"
+            by (clarsimp simp:relS_def new_stack_eq restr_un restr_upd)
+               (auto simp add:rel_def Image_iff restr_def addrs_def fun_upd_apply dest:rel_upd3)
+        qed
+        then have subset: "?Ra\<^sup>*``addrs ?A - ?Rb\<^sup>*``addrs ?T \<subseteq> ?Rb\<^sup>*``addrs ?B"
+          by blast
+        have ?puI4
+        proof (rule allI, rule impI)
+          fix x
+          assume a: "x \<in> R \<and> ?pu_s[x]\<rightarrow>m = 0"
+          have xDisj: "x = t \<or> x \<noteq> t" by simp
+          with i4 a have inc: "x \<in> ?Ra\<^sup>*``addrs ?A"
+            by (fastforce simp: addrs_def reachable_def intro:self_reachable)
+          have exc: "x \<notin> ?Rb\<^sup>*`` addrs ?T"
+            using xDisj a n_m_t
+            by (clarsimp simp add:addrs_def)
+          from inc exc subset  show "x \<in> reachable ?Rb ?B"
+            by (auto simp add:reachable_def)
+        qed
+        moreover
+
+\<comment> \<open>If it is marked, then it is reachable\<close>
+        from i5
+        have "?puI5"
+          by (auto simp:addrs_def i3 reachable_def fun_upd_apply intro:self_reachable)
+        moreover
+
+\<comment> \<open>If it is not on the stack, then its @{term l} and @{term r} fields are unchanged\<close>
+        from i6
+        have "?puI6"
+          by (simp add:new_stack_eq)
+        moreover
+
+\<comment> \<open>If it is on the stack, then its @{term l} and @{term r} fields can be reconstructed\<close>
+        from stackDist i6 t_notin_stack i7
+        have "?puI7" by (simp add: new_stack_eq) (auto simp: fun_upd_apply)
+        moreover
+
+        from i8
+        have "?puI8"
+          by simp
+
+        ultimately show ?thesis by auto
+      qed
+        (* replace new_stack because it has been locally obtained *)
+      hence "?Inv t (s[t]\<rightarrow>l) (Cbool (?cond t (s[t]\<rightarrow>l) ?pu_s)) ?pu_s (t # stack)"
+        by (fastforce simp: new_stack_eq)
+    }
+    note puStack = this
+
+    txt \<open>Loop invariant and correctness\<close>
+    {
+      fix s p t cond
+      assume loopInv: "?inv p t cond s \<and> cond \<noteq> 0" (is "_ \<and> ?whileB")
+      then have exStack: "?inv p t cond s" and whileB: "?whileB" by simp+
+      from loopInv obtain stack where stackInv: "?Inv p t cond s stack" by blast
+
+      from stackInv have stackDist: "distinct (stack)" by auto
+      from stackInv have tValid: "t \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing s) t"
+        and pValid: "p \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing s) p"
+        by (auto simp: reachable_def addrs_def)
+
+      let "?pop_s" = "s[p\<rightarrow>r := t]"
+      let "?sw_s"  = "((s[p\<rightarrow>r := s[p]\<rightarrow>l])[p\<rightarrow>l := t])[p\<rightarrow>c := 1]"
+      let "?pu_s"  = "((s[t\<rightarrow>l := p])[t\<rightarrow>m := 1])[t\<rightarrow>c := 0]"
+
+      have "(if t = NULL \<or> s[t]\<rightarrow>m \<noteq> 0
+             then (if s[p]\<rightarrow>c \<noteq> 0
+                   then ?inv (s[p]\<rightarrow>r) p (Cbool (?cond (s[p]\<rightarrow>r) p ?pop_s)) ?pop_s \<and>
+                        (s[p]\<rightarrow>r = NULL \<longrightarrow> p \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?pop_s) p)
+                   else ?inv p (s[p]\<rightarrow>r) (Cbool (?cond p (s[p]\<rightarrow>r) ?sw_s)) ?sw_s \<and>
+                        (p = NULL \<longrightarrow> s[p]\<rightarrow>r \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?sw_s) (s[p]\<rightarrow>r))) \<and>
+                  ptr_valid (heap_typing s) p
+             else (?inv t (s[t]\<rightarrow>l) (Cbool (?cond t (s[t]\<rightarrow>l) ?pu_s)) ?pu_s \<and>
+                   (t = NULL \<longrightarrow> s[t]\<rightarrow>l \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?pu_s) (s[t]\<rightarrow>l))) \<and>
+                  ptr_valid (heap_typing s) t) \<and>
+            (t \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing s) t)"
+        (is "(if ?ifB1 then (if ?ifB2 then ?popInv else ?swInv) \<and> _ else ?puInv) \<and> _")
+      proof -
+        {
+          have "t \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing s) t"
+            using stackInv whileB by (auto simp: reachable_def addrs_def)
+        }
+        note tValid = this
+
+        moreover
+        {
+          assume ifB1: "?ifB1" and ifB2: "?ifB2"
+          then obtain stack_tl where stack_eq: "stack = p # stack_tl"
+            using stackInv whileB by (case_tac stack) (auto simp: List_def)
+          have pNotNULL: "p \<noteq> NULL" using whileB ifB1 stackInv by simp
+          have pValid: "ptr_valid (heap_typing ?pop_s) p"
+            using pNotNULL stackInv by (auto simp: reachable_def addrs_def)
+
+          have "?popInv"
+            using popStack[OF stackInv[unfolded stack_eq] whileB ifB1 ifB2] pValid
+            by blast
+        }
+
+        moreover
+        {
+          assume ifB1: "?ifB1" and nifB2: "\<not> ?ifB2"
+          have pNotNULL: "p \<noteq> NULL" using whileB ifB1 stackInv by simp
+          have prValid: "s[p]\<rightarrow>r \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?sw_s) (s[p]\<rightarrow>r)"
+          proof -
+            have "s[p]\<rightarrow>r \<noteq> NULL \<longrightarrow> s[p]\<rightarrow>r \<in> R"
+              using stackInv by (auto simp: pNotNULL reachable_def rel_defs addrs_def)
+            then show ?thesis using stackInv by auto
+          qed
+
+          have "?swInv"
+            using swStack[OF stackInv whileB ifB1 nifB2] prValid by blast
+        }
+
+        moreover
+        {
+          assume nifB1: "\<not> ?ifB1"
+          have tNotNULL: "t \<noteq> NULL" using whileB nifB1 stackInv by simp
+          have tlValid: "s[t]\<rightarrow>l \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?pu_s) (s[t]\<rightarrow>l)"
+          proof -
+            have "s[t]\<rightarrow>l \<noteq> NULL \<longrightarrow> s[t]\<rightarrow>l \<in> R"
+              using stackInv tNotNULL by (auto simp: reachable_def rel_defs addrs_def)
+            then show ?thesis using stackInv by auto
+          qed
+
+          have "?puInv"
+            using puStack[OF stackInv whileB nifB1] tValid tNotNULL tlValid by blast
+        }
+
+        moreover
+        {
+          assume "?ifB1"
+          then have "ptr_valid (heap_typing s) p"
+            using whileB stackInv by (auto simp: reachable_def addrs_def)
+        }
+
+        ultimately show "?thesis" by presburger
+      qed
+    } note loop_correct = this
+
+    txt \<open>Loop termination\<close>
+    {
+      fix p t cond m1 m2 m3 s
+      assume loopInv: "?inv p t cond s \<and> cond \<noteq> 0
+                          \<and> schorr_waite'_measure s s0 R p t cond = (m1, m2, m3)"
+        (is "_ \<and> _ \<and> ?prevMeasure")
+      then have exStack: "\<exists>stack. ?Inv p t cond s stack"
+        and whileB: "cond \<noteq> 0" (is "?whileB")
+        and measure: "?prevMeasure" by blast+
+
+      from exStack obtain stack where stackInv: "?Inv p t cond s stack" by blast
+      from stackInv have stackDist: "distinct stack" by auto
+      have theStack: "\<And>p t cond s stack. ?Inv p t cond s stack \<Longrightarrow>
+                         (THE stack. ?Inv p t cond s stack) = stack"
+        by (auto simp: the_equality List_unique)
+
+      have measure': "(m1, m2, m3) = (card {x \<in> R. s[x]\<rightarrow>m = 0}, card {x \<in> set stack. s[x]\<rightarrow>c = 0}, length stack)"
+        using theStack[OF stackInv] measure by auto
+
+      let "?pop_s" = "s[p\<rightarrow>r := t]"
+      let "?sw_s"  = "((s[p\<rightarrow>r := s[p]\<rightarrow>l])[p\<rightarrow>l := t])[p\<rightarrow>c := 1]"
+      let "?pu_s"  = "((s[t\<rightarrow>l := p])[t\<rightarrow>m := 1])[t\<rightarrow>c := 0]"
+
+      let "?decreasing p t s" = "schorr_waite'_measure s s0 R p t
+                                     (Cbool (?cond p t s) :: int)
+                              < (m1, m2, m3)"
+
+      have weird_mp: "\<And>a b. (a \<and> (a \<longrightarrow> b)) = (a \<and> b)" by blast
+
+      have "(t \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing s) t) \<longrightarrow>
+            (if t = NULL \<or> s[t]\<rightarrow>m \<noteq> 0
+             then ptr_valid (heap_typing s) p \<longrightarrow>
+                  (if s[p]\<rightarrow>c \<noteq> 0
+                   then (s[p]\<rightarrow>r = NULL \<longrightarrow> p \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?pop_s) p) \<longrightarrow>
+                          ?decreasing (s[p]\<rightarrow>r) p ?pop_s
+                   else (p = NULL \<longrightarrow> s[p]\<rightarrow>r \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?sw_s) (s[p]\<rightarrow>r)) \<longrightarrow>
+                          ?decreasing p (s[p]\<rightarrow>r) ?sw_s)
+             else ptr_valid (heap_typing s) t \<longrightarrow>
+                   (t = NULL \<longrightarrow> s[t]\<rightarrow>l \<noteq> NULL \<longrightarrow> ptr_valid (heap_typing ?pu_s) (s[t]\<rightarrow>l)) \<longrightarrow>
+                    ?decreasing t (s[t]\<rightarrow>l) ?pu_s)"
+        (is "_ \<longrightarrow> (if ?ifB1
+                      then _ \<longrightarrow> (if ?ifB2 then _ \<longrightarrow> ?popMeasure else ?swMeasure)
+                      else _ \<longrightarrow> ?puMeasure)")
+      proof -
+        {
+          assume ifB1: "?ifB1" and ifB2: "?ifB2"
+          then have pNotNULL: "p \<noteq> NULL" using stackInv whileB by simp
+          from stackInv pNotNULL obtain stack_tl where stack_eq: "stack = p # stack_tl"
+            by (case_tac stack, auto simp: List_def)
+          have stack_tlDist: "distinct stack_tl" using stackDist stack_eq by simp
+          have conv: "\<And>P xs. distinct xs \<Longrightarrow> card {x \<in> set xs. P x} = length [x\<leftarrow>xs. P x]"
+            by (subst set_filter[symmetric])
+               (metis distinct_card distinct_filter)
+
+          have stackC_mono: "card {x \<in> set stack_tl. s[x]\<rightarrow>c = 0} \<le> card {x \<in> set stack. s[x]\<rightarrow>c = 0}"
+            by (simp add: conv[OF stackDist] conv[OF stack_tlDist])
+               (simp add: stack_eq)
+          have "?popMeasure"
+            using theStack[OF popStack[OF stackInv[unfolded stack_eq] whileB ifB1 ifB2]] stackC_mono
+            by (simp add: pNotNULL stack_eq prod_less_def measure')
+        }
+
+        moreover
+        {
+          assume ifB1: "?ifB1" and nifB2: "\<not> ?ifB2"
+          then have pNotNULL: "p \<noteq> NULL" using stackInv whileB by simp
+          from stackInv pNotNULL obtain stack_tl where stack_eq: "stack = p # stack_tl"
+            by (case_tac stack, auto simp: List_def)
+          from stack_eq stackDist have p_notin_stack_tl: "p \<notin> set stack_tl" by simp
+
+          have notin_filter: "\<And>xs a P. a \<notin> set xs \<Longrightarrow> filter P xs = filter (\<lambda>x. x \<noteq> a \<and> P x) xs"
+          proof -
+            fix xs a P
+            show "a \<notin> set xs \<Longrightarrow> ?thesis xs a P" by (induct xs) auto
+          qed
+          have decrease: "card {x \<in> set stack. ?sw_s[x]\<rightarrow>c = 0} < card {x \<in> set stack. s[x]\<rightarrow>c = 0}"
+          proof -
+            have conv: "\<And>P. card {x \<in> set stack. P x} = length [x\<leftarrow>stack. P x]"
+              by (subst set_filter[symmetric])
+                 (metis stackDist distinct_card distinct_filter)
+
+            show ?thesis
+              unfolding conv
+              by (simp add: stack_eq nifB2 weird_mp fun_upd_apply
+                          notin_filter[OF p_notin_stack_tl, symmetric])
+          qed
+
+          hence "?swMeasure"
+            using theStack[OF swStack[OF stackInv[unfolded stack_eq] whileB ifB1 nifB2]]
+            by (simp add: stack_eq[symmetric] prod_less_def measure')
+        }
+
+        moreover
+        {
+          assume nifB1: "\<not>?ifB1"
+          from nifB1 whileB stackInv have tNotNULL: "t \<noteq> NULL" by clarsimp
+          from stackInv obtain new_stack where new_stack_eq: "new_stack = t # stack" by clarsimp
+          from tNotNULL nifB1 stackInv have n_m_t: "s[t]\<rightarrow>m = 0" by clarsimp
+          with stackInv have t_notin_stack: "t \<notin> set stack" by blast
+          let "?puI1\<and>?puI2\<and>?puI3\<and>?puI4\<and>?puI5\<and>?puI6\<and>?puI7\<and>?puI8\<and>?puI9" =
+              "?Inv t (s[t]\<rightarrow>l) t_cond ?pu_s new_stack"
+
+          have set_filter_remove: "\<And>s a P. a \<in> s \<Longrightarrow> {x. x \<noteq> a \<and> x \<in> s \<and> P x} = {x\<in>s. P x} - {a}"
+            by blast
+
+          have decrease: "card {x \<in> R. ?pu_s[x]\<rightarrow>m = 0} < card {x \<in> R. s[x]\<rightarrow>m = 0}"
+          proof -
+            have new_stackDist: "distinct new_stack"
+              by (simp add: new_stack_eq t_notin_stack stackDist)
+            have t_reachable: "t \<in> R" using stackInv tNotNULL
+              by (auto simp: reachable_def addrs_def)
+
+            have new_m: "{x \<in> R. ?pu_s[x]\<rightarrow>m = 0} = {x \<in> R. s[x]\<rightarrow>m = 0} - {t}"
+              by (auto simp: set_filter_remove fun_upd_apply)
+
+            show ?thesis
+              by (subst new_m card.remove[of "{x\<in>R. s[x]\<rightarrow>m = 0}" t])+
+                 (auto simp: t_reachable n_m_t)
+          qed
+
+          have "?puMeasure"
+            using theStack[OF puStack[OF stackInv whileB nifB1]] decrease
+            by (simp add: measure' prod_less_def)
+        } 
+        ultimately show ?thesis by presburger
+      qed
+      
+    } note loop_termination = this
+
+    note goal1 loop_correct loop_termination
+  }
+  note goals = this
+  show ?thesis
+    unfolding schorr_waite'_def
+    supply if_split [split del] (* FIXME: otherwise prepare state_only_simp of runs_to_vcg splits postcondition! *)
+    supply runs_to_whileLoop3 
+      [where I = "\<lambda>(p, cond, t) s. \<exists>stack. schorr_waite'_inv s s0 R p t cond stack"
+              and R = "measure' (\<lambda>((p, cond, t), s). schorr_waite'_measure s s0 R p t cond)", runs_to_vcg]
+    apply (runs_to_vcg (trace) (nosplit) (no_unsafe_hyp_subst))
+                     (*   apply (simp_all (no_asm_use) only: split_tupled_all split_conv upd_fun_def) *)
+    subgoal using goals(1)[OF Pre] 
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  goals(3) [of s p t cond] 
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]  
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond] goals(3) [of s p t cond]
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond]
+      by force
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond] 
+      by auto
+    subgoal for v t1 p cond t s stack using goals(2) [of s p t cond] goals(3) [of s p t cond]  
+      by auto
+    subgoal using Pre
+      by (simp add: reachable_null' )
+     subgoal using Pre  
+       by auto
+     subgoal using Pre  
+       by auto
+     subgoal using Pre  
+       by auto
+     subgoal for p cond t s stack x
+       by (smt (verit, del_insts) CollectD ImageE ImageI addrs_def 
+           reachable_def restr_rtrancl singletonD)
+     done
+ qed
+
+end

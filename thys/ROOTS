@@ -33,6 +33,7 @@ ArrowImpossibilityGS
 Attack_Trees
 Auto2_HOL
 Auto2_Imperative_HOL
+AutoCorres2
 AutoFocus-Stream
 Automated_Stateful_Protocol_Verification
 Automatic_Refinement
@@ -163,6 +164,7 @@ Crypto_Standards
 CubicalCategories
 Cubic_Quartic_Equations
 DCR-ExecutionEquivalence
+Derandomization_Conditional_Expectations
 DFS_Framework
 DOM_Components
 DPRM_Theorem
@@ -527,6 +529,7 @@ Ordinal
 Ordinal_Partitions
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
+Orient_Rewrite_Rule_Undecidable
 PAC_Checker
 PAL
 PAPP_Impossibility
@@ -548,10 +551,12 @@ Perfect_Fields
 Perfect-Number-Thm
 Perron_Frobenius
 Physical_Quantities
+Picks_Theorem
 Pi_Calculus
 Pi_Transcendental
 Planarity_Certificates
 Pluennecke_Ruzsa_Inequality
+PNT_with_Remainder
 Poincare_Bendixson
 Poincare_Disc
 Polygonal_Number_Theorem
@@ -727,6 +732,7 @@ Sturm_Tarski
 Stuttering_Equivalence
 Subresultants
 Subset_Boolean_Algebras
+Substitutions_Lambda_Free
 Sumcheck_Protocol
 SumSquares
 Sunflowers

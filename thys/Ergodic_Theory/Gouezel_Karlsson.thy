@@ -1723,7 +1723,7 @@ proof -
     using AEv by auto
 
   interpret Gouezel_Karlsson_Kingman M T w
-    apply standard using a b c by auto
+  proof qed (use a b c in auto)
   have "AE x in M. \<exists>delta::nat\<Rightarrow>real. (\<forall>l. delta l > 0) \<and> (delta \<longlonglongrightarrow> 0) \<and>
           (infinite {n. \<forall>l \<in> {1..n}. w n x - w (n-l) ((T^^l) x) > - delta l * l})"
     using infinite_AE by auto
@@ -1743,8 +1743,7 @@ proof -
       finally show ?thesis by simp
     qed
     have "w n x - w (n-l) ((T^^l) x) = u n x - u (n-l) ((T^^l) x) - l * subcocycle_lim u x" if "l \<in> {1..n}" for n l
-      unfolding w_def using *[of n] **[of "n-l" l] that apply (auto simp add: algebra_simps)
-      by (metis comm_semiring_class.distrib diff_add_inverse nat_le_iff_add of_nat_add)
+      unfolding w_def using *[of n] **[of "n-l" l] that by (auto simp add: algebra_simps)
     then have "\<exists>delta::nat\<Rightarrow>real. (\<forall>l. delta l > 0) \<and> (delta \<longlonglongrightarrow> 0) \<and>
           (infinite {n. \<forall>l \<in> {1..n}. u n x - u (n-l) ((T^^l) x) - l * subcocycle_lim u x > - delta l * l})"
       using H(1) by auto

@@ -774,9 +774,20 @@ lemma map_vars_term_id [simp]:
   "map_vars_term id t = t"
   by (induct t) (auto intro: map_idI)
 
-lemma apply_subst_map_vars_term:
-  "map_vars_term m t \<cdot> \<sigma> = t \<cdot> (\<sigma> \<circ> m)"
-  by (induct t) (auto)
+lemma eval_map_vars: "I\<lbrakk>map_vars_term f t\<rbrakk>\<alpha> = I\<lbrakk>t\<rbrakk>(\<alpha>\<circ>f)"
+  by (simp add: eval_map_term o_def)
 
+lemma apply_subst_map_vars_term:
+  "map_vars_term m t \<cdot> \<sigma> = t \<cdot> (\<sigma> \<circ> m)" using eval_map_vars.
+
+lemmas eval_o = eval_map_vars[symmetric]
+
+lemma eval_eq_map_vars:
+  assumes 1: "t = map_vars_term f s" and 2: "\<And>x. x \<in> vars_term s \<Longrightarrow> \<alpha> x = \<beta> (f x)"
+  shows "I\<lbrakk>s\<rbrakk>\<alpha> = I\<lbrakk>t\<rbrakk>\<beta>"
+  by (unfold 1, insert 2, unfold eval_map_vars, rule eval_same_vars, auto)
+
+lemma ground_term_subst: "vars_term t = {} \<Longrightarrow> t\<cdot>\<theta> = t"
+  by (induct t, auto simp: list_eq_iff_nth_eq)
 
 end

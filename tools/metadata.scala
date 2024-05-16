@@ -441,4 +441,23 @@ object Metadata {
         statistics_ignore = entry.boolean.get("statistics_ignore").map(_.rep).getOrElse(false),
         related = to_related(entry.table("related")))
   }
+
+
+  /* RDF export */
+
+  object RDF {
+    def from_entry(entry: Entry, authors: Authors): Properties.T = {
+      def from_affiliations(affiliations: List[Affiliation], prop: String): Properties.T =
+        (for (affiliation <- affiliations) yield prop -> authors(affiliation.author).name).distinct
+      val date = Date(entry.date.atStartOfDay(Date.timezone_berlin))
+
+      isabelle.RDF.meta_data(
+        (Markup.META_TITLE -> entry.title) ::
+        from_affiliations(entry.authors, Markup.META_CREATOR) :::
+        (Markup.META_DATE -> isabelle.RDF.date_format(date)) ::
+        from_affiliations(entry.contributors, Markup.META_CONTRIBUTOR) :::
+        (Markup.META_LICENSE -> entry.license.name) ::
+        (Markup.META_DESCRIPTION -> entry.`abstract`) :: Nil)
+    }
+  }
 }

@@ -1669,7 +1669,8 @@ proof (intro eq_matI)
       using True jlt by auto
     then have "(int \<Lambda> \<cdot>\<^sub>m J\<^sub>m \<v> + int (\<r> - \<Lambda>) \<cdot>\<^sub>m 1\<^sub>m \<v>) $$ (i, j) = \<r>" 
       using reg_index_lt_rep by (simp add: nat_diff_split)
-    then show ?thesis using lhs split rhs True transpose_N_mult_diag ilt jlt by simp
+    then show ?thesis
+      using True jlt transpose_N_mult_diag by auto
   next
     case False
     then have "(1\<^sub>m \<v>) $$ (i, j) = 0" using ilt jlt by simp

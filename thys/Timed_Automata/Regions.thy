@@ -1376,32 +1376,34 @@ proof -
         case (Const c)
         from Const I' have "v x + t = c" unfolding cval_add_def by auto
         with x A(1) \<open>v \<in> R\<close> \<open>t \<ge> 0\<close> have *: "v x = c - nat t" "t \<le> c" by fastforce+
-        with \<open>t \<ge> 0\<close> I(1) have "I x = Const (c - nat t)"
-        proof (cases "I x", auto)
+        have "I x = Const (c - nat t)"
+        proof (cases "I x")
           case (Greater c')
-          from RR(2) Const \<open>x \<in> X\<close> have "c \<le> k x" by fastforce
-          with Greater * \<open>t \<ge> 0\<close> have *: "v x \<le> k x" by auto
+          with RR(2) Const \<open>x \<in> X\<close> have "c \<le> k x" by fastforce
+          with * \<open>t \<ge> 0\<close> have *: "v x \<le> k x" by auto
           from Greater A(2) \<open>x \<in> X\<close> have "c' = k x" by fastforce
           moreover from I(1) Greater have "v x > c'" by auto
-          ultimately show False using \<open>c \<le> k x\<close> * by auto
-        qed
+          ultimately show ?thesis
+            using \<open>c \<le> k x\<close> * by auto
+        qed (use I in \<open>auto simp: *\<close>)
         with I \<open>t \<ge> 0\<close> *(2) have "v' x + t = c" by auto
         with Const show ?thesis unfolding cval_add_def by auto
       next
         case (Intv c)
         with I' have "c < v x + t" "v x + t < c + 1" unfolding cval_add_def by auto
-        with x A(1) \<open>v \<in> R\<close> \<open>t \<ge> 0\<close> have
-          *: "c - nat t < v x" "v x < c - nat t + 1" "t \<le> c"
-        by fastforce+
-        with I have "I x = Intv (c - nat t)"
-        proof (cases "I x", auto)
+        with x A(1) \<open>v \<in> R\<close> \<open>t \<ge> 0\<close>
+        have *: "c - nat t < v x" "v x < c - nat t + 1" "t \<le> c"
+          by fastforce+
+        have "I x = Intv (c - nat t)"
+        proof (cases "I x")
           case (Greater c')
-          from RR(2) Intv \<open>x \<in> X\<close> have "c < k x" by fastforce
-          with Greater * have *: "v x \<le> k x" by auto
+          with RR(2) Intv \<open>x \<in> X\<close> have "c \<le> k x" by fastforce
+          with * have *: "v x \<le> k x" using Intv RR(2) x by fastforce
           from Greater A(2) \<open>x \<in> X\<close> have "c' = k x" by fastforce
           moreover from I(1) Greater have "v x > c'" by auto
-          ultimately show False using \<open>c < k x\<close> * by auto
-        qed
+          ultimately show ?thesis
+            using \<open>c \<le> k x\<close> * by auto
+        qed (use I * in \<open>auto simp del: of_nat_diff\<close>)
         with I \<open>t \<le> c\<close> have "c < v' x + nat t" "v' x + t < c + 1" by auto
         with Intv \<open>t \<ge> 0\<close> show ?thesis unfolding cval_add_def by auto
       next

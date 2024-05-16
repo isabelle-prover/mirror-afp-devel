@@ -1,0 +1,23 @@
+(*
+ * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *)
+
+theory globsall_addressed
+  imports "CParser.CTranslation"
+begin
+
+  declare [[globals_all_addressed=true]]
+  install_C_file "globsall_addressed.c"
+
+context globsall_addressed
+begin
+  thm deref_body_def
+  thm f_body_def
+
+  thm f_modifies
+
+end
+
+end

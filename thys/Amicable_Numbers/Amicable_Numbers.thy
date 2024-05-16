@@ -892,11 +892,11 @@ proof-
     have "prime (2::nat)" by simp
     have s: "Esigma (2^k) =((2::nat)^(k+1)-1)/(2-1)"
       using  \<open>prime (2::nat)\<close> assms Esigma_prime_sum  by auto
-    have ss: "Esigma (2^k) =(2^(k+1)-1)" using s by simp
+    have ss: "Esigma (2^k) =(2^(k+1)-1)" 
+      by (smt (verit, best) s divide_numeral_1 of_nat_eq_iff)
     have J: "(k+1+k-l+k)= 3*k +1-l" using assms by linarith
     have JJ: "(2^(k-l))*(2^k) = (2::nat)^(2*k-l)"
-      apply (simp add: algebra_simps)
-      by (metis Nat.add_diff_assoc assms(1) less_imp_le_nat mult_2_right power_add)
+      by (metis Nat.add_diff_assoc2 assms(1) less_le_not_le mult_2 power_add)
     have "Esigma((2^k)*p*q)= (Esigma(2^k))*(Esigma p)*(Esigma q)" using A5 by simp
     also have "\<dots> = (2^(k+1)-1)*(p+1)*(q+1)" using assms ss aa bb by metis
    also have "\<dots> = (2^(k+1)-1)*((2^(k-l))*f)*((2^k)*f)" using assms by simp
@@ -914,7 +914,6 @@ proof-
   have YY:" Esigma((2^k)*p*q)= (2^(3*k+1-l))*f^2-(2^(2*k-l))*f^2" .
 
     have auxicalc: "(2^(2*k-l))*(f^2)=(2^(2*k-l))*f +(2^(2*k))*f"
-
     proof-
       have i: "(2^(2*k-l))*f = (2^(2*k-l))*(2^l+1)"
         using assms \<open>f = 2^l+1\<close> by simp
@@ -925,9 +924,8 @@ proof-
        have iv: "( 2^(2*k-l))*f*f =(((2^(2*k))+(2^(2*k-l))))*f"
         using iii assms by simp
        have v:  "(2^(2*k-l))*f *f =((2^(2*k)))*f+((2^(2*k-l)))*f"
-        using iv assms comm_monoid_mult_axioms  power2_eq_square semiring_normalization_rules(18)
-          semiring_normalization_rules by (simp add: add_mult_distrib assms) (*slow*)
-      show ?thesis using v by (simp add: power2_eq_square semiring_normalization_rules(18))
+         by (simp add: distrib_right iv)
+      show ?thesis using v by (simp add: power2_eq_square)
     qed
 
     have W1: "2^k*p*q + 2^k*r = 2^k *(p*q +r) "

@@ -372,8 +372,11 @@ proof -
   \<comment> \<open>(3) Calculation 2: Have Pr (of Ae for any e) \le Sum over e (Pr (A e)) < 1 \<close>
   have "(\<Sum>e \<in> set_mset E. P.prob (A e)) < 1"
   proof -
-    have "int k - 1 = int (k - 1)" using assms by linarith 
-    then have "card (set_mset E) < 2 powi (int k - 1)" using card_size_set_mset[of E] assms by simp
+    have "2 powi (int k - 1) = real (2 ^ (k - 1))"
+      by (simp add: \<open>k > 0\<close> power_int_def)
+    then
+    have "card (set_mset E) < 2 powi (int k - 1)" 
+      using card_size_set_mset[of E] assms by linarith
     then have "(\<Sum>e \<in> (set_mset E). P.prob (A e)) < 2 powi (int k - 1) * 2 powi (1 - int k)"
       unfolding A_def using P.prob_monochromatic_edge uniform assms(1) by simp
     moreover have "((2 :: real) powi ((int k) - 1)) * (2 powi (1 - (int k))) = 1" 

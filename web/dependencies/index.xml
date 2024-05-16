@@ -11,8 +11,78 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 16 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Prime_Number_Theorem</title>
+          <link>/dependencies/prime_number_theorem/</link>
+          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_number_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Poincare_Bendixson</title>
+          <link>/dependencies/poincare_bendixson/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/poincare_bendixson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Factor_Algebraic_Polynomial</title>
+          <link>/dependencies/factor_algebraic_polynomial/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/factor_algebraic_polynomial/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth_Bendix_Order</title>
+          <link>/dependencies/knuth_bendix_order/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/knuth_bendix_order/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambda_Free_RPOs</title>
+          <link>/dependencies/lambda_free_rpos/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lambda_free_rpos/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomials</title>
+          <link>/dependencies/polynomials/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Well_Quasi_Orders</title>
+          <link>/dependencies/well_quasi_orders/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/well_quasi_orders/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Simpl</title>
+          <link>/dependencies/simpl/</link>
+          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/simpl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Word_Lib</title>
+          <link>/dependencies/word_lib/</link>
+          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/word_lib/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Coinductive</title>
           <link>/dependencies/coinductive/</link>
@@ -46,6 +116,27 @@
           <link>/dependencies/qhlprover/</link>
           <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/qhlprover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Distributed_Distinct_Elements</title>
+          <link>/dependencies/distributed_distinct_elements/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/distributed_distinct_elements/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undirected_Graph_Theory</title>
+          <link>/dependencies/undirected_graph_theory/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/undirected_graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal_Hash_Families</title>
+          <link>/dependencies/universal_hash_families/</link>
+          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/universal_hash_families/</guid>
           <description></description>
         </item>
         <item>
@@ -123,13 +214,6 @@
           <link>/dependencies/martingales/</link>
           <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/martingales/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polynomials</title>
-          <link>/dependencies/polynomials/</link>
-          <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomials/</guid>
           <description></description>
         </item>
         <item>
@@ -357,13 +441,6 @@
           <description></description>
         </item>
         <item>
-          <title>Undirected_Graph_Theory</title>
-          <link>/dependencies/undirected_graph_theory/</link>
-          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/undirected_graph_theory/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>SpecCheck</title>
           <link>/dependencies/speccheck/</link>
           <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
@@ -476,13 +553,6 @@
           <description></description>
         </item>
         <item>
-          <title>Factor_Algebraic_Polynomial</title>
-          <link>/dependencies/factor_algebraic_polynomial/</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/factor_algebraic_polynomial/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Jordan_Normal_Form</title>
           <link>/dependencies/jordan_normal_form/</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
@@ -494,13 +564,6 @@
           <link>/dependencies/skip_lists/</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/skip_lists/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
           <description></description>
         </item>
         <item>
@@ -557,13 +620,6 @@
           <link>/dependencies/perron_frobenius/</link>
           <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/perron_frobenius/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal_Hash_Families</title>
-          <link>/dependencies/universal_hash_families/</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/universal_hash_families/</guid>
           <description></description>
         </item>
         <item>
@@ -648,13 +704,6 @@
           <link>/dependencies/separation_algebra/</link>
           <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/separation_algebra/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Word_Lib</title>
-          <link>/dependencies/word_lib/</link>
-          <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/word_lib/</guid>
           <description></description>
         </item>
         <item>
@@ -921,13 +970,6 @@
           <link>/dependencies/mdp-rewards/</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/mdp-rewards/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Knuth_Bendix_Order</title>
-          <link>/dependencies/knuth_bendix_order/</link>
-          <pubDate>Wed, 15 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/knuth_bendix_order/</guid>
           <description></description>
         </item>
         <item>
@@ -1302,13 +1344,6 @@
           <description></description>
         </item>
         <item>
-          <title>Well_Quasi_Orders</title>
-          <link>/dependencies/well_quasi_orders/</link>
-          <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/well_quasi_orders/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Pratt_Certificate</title>
           <link>/dependencies/pratt_certificate/</link>
           <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
@@ -1386,13 +1421,6 @@
           <description></description>
         </item>
         <item>
-          <title>Lambda_Free_RPOs</title>
-          <link>/dependencies/lambda_free_rpos/</link>
-          <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/lambda_free_rpos/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Stateful_Protocol_Composition_and_Typing</title>
           <link>/dependencies/stateful_protocol_composition_and_typing/</link>
           <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
@@ -1425,13 +1453,6 @@
           <link>/dependencies/e_transcendental/</link>
           <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
           <guid>/dependencies/e_transcendental/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Prime_Number_Theorem</title>
-          <link>/dependencies/prime_number_theorem/</link>
-          <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/dependencies/prime_number_theorem/</guid>
           <description></description>
         </item>
         <item>
@@ -1957,13 +1978,6 @@
           <link>/dependencies/case_labeling/</link>
           <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
           <guid>/dependencies/case_labeling/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Simpl</title>
-          <link>/dependencies/simpl/</link>
-          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/simpl/</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,116 @@
+(*
+ * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
+ * Copyright (c) 2022 Apple Inc. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ *)
+
+chapter AFP
+
+session AutoCorres2 = Simpl +
+  options [timeout = 2400]
+  sessions
+    "Word_Lib"
+    "HOL-Library"
+    "HOL-Eisbach"
+    "HOL-ex"
+  directories
+    "lib"
+    "lib/subgoal_focus"
+    "lib/ml-helpers"
+    "lib/Monad_WP"
+    "lib/clib"
+    "c-parser"
+    "c-parser/umm_heap"
+    "c-parser/umm_heap/ARM"
+    "c-parser/umm_heap/ARM64"
+    "c-parser/umm_heap/ARM_HYP"
+    "c-parser/umm_heap/RISCV64"
+    "c-parser/umm_heap/X64"
+
+    "doc"
+    "doc/quickstart"
+  theories
+    (* some libraries appear explicitly here (although they are subsequently imported) to
+       tune the presentation sequence of the theories in the generated pdf document *)
+    (* Library *)
+    More_Lib
+    "MkTermAntiquote"
+    "MkTermAntiquote_Tests"
+    "TermPatternAntiquote"
+    "TermPatternAntiquote_Tests"
+
+    "Match_Cterm"
+
+    ML_Record_Antiquotation
+
+    "ML_Fun_Cache"
+    "Tuple_Tools"
+    "Subgoal_Methods"
+    "Synthesize"
+    Rule_By_Method
+
+    Option_Scanner
+    Misc_Antiquotation    
+    Runs_To_VCG
+    Eisbach_Methods
+    "Option_MonadND"
+    "Reader_Monad"
+    "Apply_Trace_Cmd"
+
+    Tagging
+
+    "Mutual_CCPO_Recursion"
+
+    (* C-Parser *)
+    "CTranslation"
+    LemmaBucket_C
+    TypHeapLib
+
+    (* AutoCorres *)
+    "AutoCorres"
+
+    (* Documentation *)
+    "Chapter1_MinMax"
+    "Chapter2_HoareHeap"
+    "Chapter3_HoareHeap"
+
+    "AutoCorres_Documentation"
+    "CTranslationInfrastructure"
+
+  document_files
+    "root.bib"
+    "root.tex"
+
+  document_files (in "doc/quickstart/sources")
+    "minmax.c"
+    "mult_by_add.c"
+    "swap.c"
+
+  document_files (in "c-parser/doc")
+    "ctranslation_body.tex"
+    "ctranslation.bib"
+
+session AutoCorres2_Main in main = Simpl +
+  options [timeout = 2400]
+  sessions
+    AutoCorres2 \<comment> \<open>not the parent session to avoid importing the doc / example theories\<close>
+  theories
+    AutoCorres_Main
+    AutoCorres_Nondet_Syntax
+
+session AutoCorres2_Test in tests = AutoCorres2_Main +  
+  options [timeout = 6000]
+  sessions
+    "HOL-Number_Theory"
+  directories
+    "examples"
+    "parse-tests"
+    "proof-tests"
+    "c-parser"
+    "c-parser/includes"
+  theories
+    "CParserTest"
+    "AutoCorresTest"
+

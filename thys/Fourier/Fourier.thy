@@ -634,7 +634,7 @@ proof -
     have null_a: "{a} \<in> null_sets (lebesgue_on {a..b})"
       using \<open>a < b\<close> by (simp add: null_sets_restrict_space)
     have "LINT x|lebesgue_on {a..b}. ?g x = 0"
-      by (force intro: integral_eq_zero_AE AE_I' [OF null_a])
+      by (intro integral_eq_zero_AE AE_I' [OF null_a]) auto
     then have "l2norm {a..b} ?\<phi> < sqrt (e^2)"
       unfolding l2norm_def l2product_def power2_eq_square [symmetric]
       apply (intro real_sqrt_less_mono)
@@ -2680,7 +2680,7 @@ proof -
             have 0: "{0} \<in> null_sets (lebesgue_on {0..\<xi>})"
               using \<open>0 < \<xi>\<close> by (simp add: null_sets_restrict_space)
             then show "AE x in lebesgue_on {0..\<xi>}. Fejer_kernel n x * h x = Fejer_kernel n x * (if x = 0 then 0 else h x)"
-              by (auto intro: AE_I' [OF 0])
+              by (intro AE_I' [OF 0]) auto
           qed
           show ?thesis
             unfolding eq

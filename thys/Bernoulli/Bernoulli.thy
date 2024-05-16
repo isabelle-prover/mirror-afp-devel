@@ -159,8 +159,9 @@ proof -
           (\<Sum>k\<le>n. of_nat (Suc n - k) * x ^ (n - k) * (of_nat (Suc n choose k) * 
             of_real (bernoulli k)))) (at x)" (is "(_ has_field_derivative ?D) _")
     unfolding bernpoly_def by (rule DERIV_cong) (fast intro!: derivative_intros, simp)
-  also have "?D = of_nat (n + 1) * bernpoly n x" unfolding bernpoly_def
-    by (subst sum_distrib_left, intro sum.cong refl, subst of_nat_binomial_Suc) simp_all
+  also have "?D = of_nat (n + 1) * bernpoly n x" 
+    unfolding bernpoly_def sum_distrib_left
+    by (force simp: of_nat_binomial_Suc nat_le_iff_add intro: sum.cong)
   ultimately show ?thesis by (auto simp del: of_nat_Suc One_nat_def)
 qed
   
@@ -189,7 +190,7 @@ proof (cases n)
 qed simp_all
   
 lemma binomial_unroll:
-  "n > 0 \<Longrightarrow> (n choose k) = (if k = 0 then 1 else (n - 1) choose (k - 1) + ((n - 1) choose k))"
+  "n > 0 \<Longrightarrow> (n choose k) = (if k = 0 then 1 else ((n - 1) choose (k - 1)) + ((n - 1) choose k))"
   by (auto simp add: gr0_conv_Suc)
 
 lemma sum_unroll:
@@ -298,15 +299,15 @@ qed (insert assms, simp_all)
 subsection \<open>Instances for Square And Cubic Numbers\<close>
 
 theorem sum_of_squares: "real (\<Sum>k\<le>n::nat. k ^ 2) = real (2 * n ^ 3 + 3 * n ^ 2 + n) / 6"
-  by (simp only: of_nat_sum of_nat_power sum_of_powers)
-     (simp add: bernoulli_unroll_all field_simps power2_eq_square power_numeral_reduce)
+  unfolding of_nat_sum of_nat_power sum_of_powers
+  by (simp add: bernoulli_unroll_all field_simps power2_eq_square power_numeral_reduce)
 
 corollary sum_of_squares_nat: "(\<Sum>k\<le>n::nat. k ^ 2) = (2 * n ^ 3 + 3 * n ^ 2 + n) div 6"
   by (rule sum_of_powers_nat_aux[OF sum_of_squares]) simp_all
 
 theorem sum_of_cubes: "real (\<Sum>k\<le>n::nat. k ^ 3) = real (n ^ 2 + n) ^ 2 / 4"
-  by (simp only: of_nat_sum of_nat_power sum_of_powers)
-     (simp add: bernoulli_unroll_all field_simps power2_eq_square power_numeral_reduce)
+  unfolding of_nat_sum of_nat_power sum_of_powers
+  by (simp add: bernoulli_unroll_all field_simps power2_eq_square power_numeral_reduce)
                        
 corollary sum_of_cubes_nat: "(\<Sum>k\<le>n::nat. k ^ 3) = (n ^ 2 + n) ^ 2 div 4"
   by (rule sum_of_powers_nat_aux[OF sum_of_cubes]) simp_all

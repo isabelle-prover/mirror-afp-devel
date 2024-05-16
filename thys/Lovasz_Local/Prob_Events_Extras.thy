@@ -198,7 +198,8 @@ proof -
   have lt: "card d \<le> card A"
     by (simp add: card_mono assms(1) assms(3)) 
   then have scard: "card {f \<in> ?C . \<forall> v \<in> d . f v = b} = (card B) powi ((card A) - card d)"
-    using assms(1) card_PiE_filter_range_set_const[of b B d A] assms(3) assms(2) by fastforce 
+    using assms card_PiE_filter_range_set_const[of b B d A] assms
+    by (simp flip: of_nat_diff)
   have Ccard: "card ?C = (card B) powi (card A)" using card_funcsetE assms(2) assms(1) by auto
   have bgt: "card B \<noteq> 0" using assms(5) assms(4) by auto
   have "card {f \<in> ?C . \<forall> v \<in> d . f v = b}/ (card ?C) = 
@@ -206,11 +207,8 @@ proof -
     using Ccard scard by simp
   also have "... = (card B) powi (int (card A - card d) - int (card A))" 
     using bgt by (simp add: power_int_diff)
-  also have "... = (card B) powi (int (card A) - int (card d) - int (card A))" 
-    using int_ops lt by simp
-  also have "... = (card B) powi -(card d)" using assms(1) by (simp add: of_nat_diff)
   also have "... = inverse ((card B) powi (card d))" 
-    using power_int_minus[of "card B" "(int (card d))"] by simp
+    using power_int_minus[of "card B" "(int (card d))"] by (simp add: lt)
   finally show ?thesis by (simp add: inverse_eq_divide)  
 qed  
 

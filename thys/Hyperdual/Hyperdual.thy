@@ -289,7 +289,7 @@ next
          Eps12 x * Base x ^ n =
          2 * Eps1 x * Eps2 x * of_nat n * Base x ^ (n - Suc 0) +
          Eps12 x * of_nat (n + 1) * Base x ^ n + Eps1 x * Eps2 x * of_nat n * of_nat (n - Suc 0) * Base x ^ (n - Suc 0)"
-        by (simp add: field_simps power_eq_if)
+        by (simp add: field_simps power_eq_if le_Suc_eq)
       also have "... = Eps12 x * of_nat (n + 1) * Base x ^ n + of_nat (n - 1 + 2) * Eps1 x * Eps2 x * of_nat n * Base x ^ (n - Suc 0)"
         by (simp add: distrib_left mult.commute)
       finally show ?thesis
