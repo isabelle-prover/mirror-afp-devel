@@ -1,0 +1,32 @@
+title = "Schönhage-Strassen Multiplication"
+date = 2024-05-10
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Mathematics/Algebra",
+]
+abstract = """
+We give a verified implementation of the Schönhage-Strassen Multiplication on Integers based on the original paper by Schönhage and Strassen and verify its asymptotic complexity of $\\mathcal{O}\\left(n \\log n \\log \\log n\\right)$ bit operations.
+
+Integers are represented as LSBF (least significant bit first) boolean lists. The running time is verified using the Time Monad defined in Root-Balanced Trees by Nipkow. For verifying correctness, we adapt the formalization of Number Theoretic Transforms (NTTs) by Ammer and Kreuzer to the context of rings that need not be fields."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schulz]
+email = "schulz_email"
+
+[contributors]
+
+[notify]
+schulz = "schulz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "https://mediatum.ub.tum.de/1717658",
+]

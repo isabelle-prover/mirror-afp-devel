@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Karatsuba on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/karatsuba/</link>
+    <description>
+        Recent content in Karatsuba 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/karatsuba/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Schönhage-Strassen Multiplication</title>
+          <link>/entries/Schoenhage_Strassen.html</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Schoenhage_Strassen.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

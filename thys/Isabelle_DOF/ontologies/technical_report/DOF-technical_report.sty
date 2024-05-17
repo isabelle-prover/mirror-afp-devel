@@ -1,0 +1,53 @@
+%% Copyright (C) 2018 The University of Sheffield
+%%               2018 The University of Paris-Saclay
+%%
+%% License:
+%%   This program can be redistributed and/or modified under the terms
+%%   of the LaTeX Project Public License Distributed from CTAN
+%%   archives in directory macros/latex/base/lppl.txt; either
+%%   version 1.3c of the License, or (at your option) any later version.
+%%   OR
+%%   The 2-clause BSD-style license.
+%%
+%%   SPDX-License-Identifier: LPPL-1.3c+ OR BSD-2-Clause
+
+\NeedsTeXFormat{LaTeX2e}\relax
+\ProvidesPackage{DOF-technical_report}
+  [00/00/0000 Document-Type Support Framework for Isabelle (LNCS).]
+
+\RequirePackage[force]{DOF-scholarly_paper}
+\RequirePackage{ifthen}
+
+\@ifclassloaded{scrreprt}%
+  {%
+      \newcommand{\institute}[1]{}%
+      \newcommand{\inst}[1]{}%
+      \newcommand{\orcidID}[1]{}%
+      \newcommand{\email}[1]{}%
+  }{%
+    {\PackageError{DOF-technical_report}{Technical Report only supports scrreprt as document class.}{}\stop}%
+  }
+
+% Code-Setups : or RequirePackage ?
+% \usepackage{xcolor}
+% \usepackage{lstisadof-manual}
+
+\newisadof{text.technical_report.SML}%
+[  label=,type=%
+ , IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTlevel=%
+ , IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTreferentiable=%
+ , IsaUNDERSCORECOLDOTtextUNDERSCOREelementDOTvariants=%
+ , scholarlyUNDERSCOREpaperDOTtextUNDERSCOREsectionDOTmainUNDERSCOREauthor=%
+ , scholarlyUNDERSCOREpaperDOTtextUNDERSCOREsectionDOTfixmeUNDERSCORElist=%
+ , scholarlyUNDERSCOREpaperDOTtechnicalDOTdefinitionUNDERSCORElist=%
+ , scholarlyUNDERSCOREpaperDOTtechnicalDOTstatus=%
+ , scholarlyUNDERSCOREpaperDOTtechnicalDOTformalUNDERSCOREresults=%
+ , technicalUNDERSCOREreportDOTcodeDOTchecked=%
+ , technicalUNDERSCOREreportDOTcodeDOTcaption=%
+]
+[1]
+{%
+\begin{sml}%
+#1
+\end{sml}%
+}

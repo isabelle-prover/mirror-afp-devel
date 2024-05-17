@@ -373,6 +373,7 @@ Irrationals_From_THEBOOK
 IsaGeoCoq
 IsaNet
 Isabelle_C
+Isabelle_DOF
 Isabelle_hoops
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
@@ -440,6 +441,7 @@ List-Infinite
 List_Interleaving
 List_Inversions
 List_Update
+LL1_Parser
 LocalLexing
 Localization_Ring
 Locally-Nameless-Sigma
@@ -685,6 +687,7 @@ SequentInvertibility
 Shadow_DOM
 Shadow_SC_DOM
 Shivers-CFA
+Schoenhage_Strassen
 ShortestPath
 Show
 Sigma_Commit_Crypto
@@ -752,6 +755,7 @@ Taylor_Models
 Three_Circles
 Three_Squares
 Timed_Automata
+Top_Down_Solver
 Topological_Semantics
 Topology
 TortoiseHare
