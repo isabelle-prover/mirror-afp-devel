@@ -1880,7 +1880,7 @@ fun check_invariants thy binding =
 fun create_and_check_docitem is_monitor {is_inline=is_inline} {define=define} binding cid_pos doc_attrs thy =
   let
     val oid = Binding.name_of binding
-    val (((name, args_cid), typ), pos') = check_classref is_monitor cid_pos thy
+    val (((name, args_cid), typ:typ), pos') = check_classref is_monitor cid_pos thy
     val cid_pos' = (name, pos')
     val cid_long = fst cid_pos'
     val default_cid = args_cid = DOF_core.default_cid
@@ -1905,13 +1905,13 @@ fun create_and_check_docitem is_monitor {is_inline=is_inline} {define=define} bi
                             val defaults_init = create_default_object thy binding cid_long typ
                             fun conv (na, _(*ty*), parsed_term) =(Binding.name_of na, Binding.pos_of na, "=", parsed_term);
                             val S = map conv (DOF_core.get_attribute_defaults cid_long thy);
-                            val (defaults, _(*ty*), _) = calc_update_term {mk_elaboration=false}
+                            val (defaults, _) = calc_update_term {mk_elaboration=false}
                                                                       thy (name, typ) S defaults_init;
-                            val (value_term', _(*ty*), _) = calc_update_term {mk_elaboration=true}
+                            val (value_term', _) = calc_update_term {mk_elaboration=true}
                                                                       thy (name, typ) assns' defaults
                           in if Config.get_global thy DOF_core.object_value_debug
                              then let
-                                    val (input_term, _(*ty*), _) = calc_update_term {mk_elaboration=false}
+                                    val (input_term, _) = calc_update_term {mk_elaboration=false}
                                                                         thy (name, typ)  assns' defaults
                                   in (input_term, value_term') end
                              else (\<^term>\<open>()\<close>, value_term') end
@@ -2262,7 +2262,7 @@ fun meta_args_2_latex thy sem_attrs transform_attr
         fun ltx_of_markup ctxt s = let
   	                            val term = (Syntax.check_term ctxt o Syntax.parse_term ctxt) s
                                 val str_of_term = ltx_of_term  ctxt true term 
-                                    handle _ => "Exception in ltx_of_term"
+                                  (*  handle _ => "Exception in ltx_of_term" *)
                               in
                                 str_of_term
                               end 
