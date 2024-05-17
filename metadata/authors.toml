@@ -6179,6 +6179,24 @@ host = [
 
 [seidler.homepages]
 
+[seidlh]
+name = "Helmut Seidl"
+orcid = "0000-0002-2135-1593"
+
+[seidlh.emails]
+
+[seidlh.emails.seidlh_email]
+user = [
+  "helmut",
+  "seidl",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[seidlh.homepages]
+
 [sewell]
 name = "Thomas Sewell"
 
@@ -6435,6 +6453,24 @@ host = [
 ]
 
 [staats.homepages]
+
+[stade]
+name = "Yannick Stade"
+orcid = "0000-0001-5785-2528"
+
+[stade.emails]
+
+[stade.emails.stade_email]
+user = [
+  "yannick",
+  "stade",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[stade.homepages]
 
 [stannett]
 name = "Mike Stannett"
@@ -6978,6 +7014,24 @@ host = [
 ]
 
 [thomson.homepages]
+
+[tilscher]
+name = "Sarah Tilscher"
+orcid = "0009-0009-9644-7475"
+
+[tilscher.emails]
+
+[tilscher.emails.tilscher_email]
+user = [
+  "sarah",
+  "tilscher",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[tilscher.homepages]
 
 [tiu]
 name = "Alwen Tiu"

@@ -11,8 +11,36 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>schulz</title>
+          <link>/authors/schulz/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/schulz/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>seidlh</title>
+          <link>/authors/seidlh/</link>
+          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/seidlh/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stade</title>
+          <link>/authors/stade/</link>
+          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/stade/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tilscher</title>
+          <link>/authors/tilscher/</link>
+          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/tilscher/</guid>
+          <description></description>
+        </item>
         <item>
           <title>song</title>
           <link>/authors/song/</link>
@@ -25,6 +53,13 @@
           <link>/authors/yao/</link>
           <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
           <guid>/authors/yao/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wimmer</title>
+          <link>/authors/wimmer/</link>
+          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/wimmer/</guid>
           <description></description>
         </item>
         <item>
@@ -151,13 +186,6 @@
           <link>/authors/tuch/</link>
           <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/authors/tuch/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>wimmer</title>
-          <link>/authors/wimmer/</link>
-          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/wimmer/</guid>
           <description></description>
         </item>
         <item>
@@ -291,13 +319,6 @@
           <link>/authors/chenj/</link>
           <pubDate>Wed, 06 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/authors/chenj/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>schulz</title>
-          <link>/authors/schulz/</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/schulz/</guid>
           <description></description>
         </item>
         <item>
