@@ -70,10 +70,24 @@
           <description></description>
         </item>
         <item>
+          <title>Functional-Automata</title>
+          <link>/dependencies/functional-automata/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/functional-automata/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Poincare_Bendixson</title>
           <link>/dependencies/poincare_bendixson/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/poincare_bendixson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular-Sets</title>
+          <link>/dependencies/regular-sets/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular-sets/</guid>
           <description></description>
         </item>
         <item>
@@ -1810,13 +1824,6 @@
           <link>/dependencies/quick_sort_cost/</link>
           <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
           <guid>/dependencies/quick_sort_cost/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Regular-Sets</title>
-          <link>/dependencies/regular-sets/</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/dependencies/regular-sets/</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,75 @@
+%% Copyright (c) 2019-2022 University of Exeter
+%%               2018-2022 University of Paris-Saclay
+%%               2018-2019 The University of Sheffield
+%%
+%% License:
+%%   This program can be redistributed and/or modified under the terms
+%%   of the LaTeX Project Public License Distributed from CTAN
+%%   archives in directory macros/latex/base/lppl.txt; either
+%%   version 1.3c of the License, or (at your option) any later version.
+%%   OR
+%%   The 2-clause BSD-style license.
+%%
+%%   SPDX-License-Identifier: LPPL-1.3c+ OR BSD-2-Clause
+
+%% Warning: Do Not Edit!
+%% =====================
+%% This is the root file for the Isabelle/DOF using the lncs class.
+%%
+%% All customization and/or additional packages should be added to the file
+%% preamble.tex.
+
+\RequirePackage{ifvtex}
+\documentclass{llncs}
+\usepackage{DOF-core}
+\bibliographystyle{splncs04}
+\title{No Title Given}
+\usepackage{hyperref}
+\setcounter{tocdepth}{3} 
+\hypersetup{%
+   bookmarksdepth=3
+  ,pdfpagelabels
+  ,pageanchor=true
+  ,bookmarksnumbered
+  ,plainpages=false
+} % more detailed digital TOC (aka bookmarks)
+\sloppy
+\allowdisplaybreaks[4]
+
+\usepackage{subcaption}
+\usepackage[size=footnotesize]{caption}
+
+\renewcommand{\topfraction}{0.9}      % max fraction of floats at top
+\renewcommand{\bottomfraction}{0.8}   % max fraction of floats at bottom
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}     % 2 may work better
+\setcounter{dbltopnumber}{2}    % for 2-column pages
+\renewcommand{\dbltopfraction}{0.9}   % fit big float above 2-col. text
+\renewcommand{\textfraction}{0.07}    % allow minimal text w. figs
+\renewcommand{\floatpagefraction}{0.7}        % require fuller float pages
+\renewcommand{\dblfloatpagefraction}{0.7}     % require fuller float pages
+
+\begin{document}
+\selectlanguage{USenglish}%
+\renewcommand{\bibname}{References}%
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\abstractname}{Abstract.}
+\renewcommand{\subsubsectionautorefname}{Sect.}
+\renewcommand{\subsectionautorefname}{Sect.}
+\renewcommand{\sectionautorefname}{Sect.}
+\renewcommand{\figureautorefname}{Fig.}
+\newcommand{\lstnumberautorefname}{Line}
+
+
+
+  \maketitle
+\IfFileExists{dof_session.tex}{\input{dof_session}}{\input{session}}
+% optional bibliography
+\IfFileExists{root.bib}{{\small\bibliography{root}}}{}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

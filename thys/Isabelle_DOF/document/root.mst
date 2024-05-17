@@ -1,0 +1,5 @@
+heading_prefix "{\\large\\textbf{"
+heading_suffix "}\\hfil}\\nopagebreak\n"
+headings_flag  1
+symhead_positive "Symbols"
+

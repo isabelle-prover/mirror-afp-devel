@@ -1,0 +1,59 @@
+chapter AFP
+
+session "Isabelle_DOF" (AFP) = "Functional-Automata" + 
+  options [document_build = dof, timeout = 300]
+  sessions
+    "Regular-Sets"
+  directories 
+    "thys"
+    "thys/manual"
+    "ontologies"
+    "ontologies/scholarly_paper"
+    "ontologies/technical_report"
+  theories [document = false]
+    "ontologies/ontologies"
+    "ontologies/technical_report/technical_report"
+    "ontologies/scholarly_paper/scholarly_paper"
+    "thys/RegExpInterface"
+    "thys/Isa_DOF"
+    "thys/Isa_COL"
+  theories [document = true]
+    "thys/manual/M_00_Frontmatter"
+    "thys/manual/M_01_Introduction"
+    "thys/manual/M_02_Background"
+    "thys/manual/M_03_GuidedTour"
+    "thys/manual/M_04_Document_Ontology"
+    "thys/manual/M_05_Proofs_Ontologies"
+    "thys/manual/M_06_RefMan"
+    "thys/manual/M_07_Implementation"
+    "thys/manual/Isabelle_DOF_Manual"
+  document_files
+    "root.bib"
+    "dof_session.tex"
+    "root.mst"
+    "preamble.tex"
+    "lstisadof-manual.sty" 
+    "figures/cicm2018-combined.png"
+    "figures/document-hierarchy.pdf"
+    "figures/Dogfood-figures.png"
+    "figures/Dogfood-II-bgnd1.png"
+    "figures/Dogfood-III-bgnd-text_section.png"
+    "figures/Dogfood-IV-jumpInDocCLass.png"
+    "figures/Dogfood-V-attribute.png"
+    "figures/Dogfood-VI-linkappl.png"
+    "figures/isabelle-architecture.pdf"
+    "figures/Isabelle_DOF-logo.pdf"
+    "figures/header_CSP_pdf.png"
+    "figures/header_CSP_source.png"
+    "figures/definition-use-CSP-pdf.png"
+    "figures/definition-use-CSP.png"
+    "figures/MyCommentedIsabelle.png"
+    "figures/doc-mod-generic.pdf"
+    "figures/doc-mod-isar.pdf"
+    "figures/doc-mod-onto-docinst.pdf"
+    "figures/doc-mod-DOF.pdf"
+    "figures/doc-mod-term-aq.pdf"
+    "figures/ThisPaperWithPreviewer.png"
+  export_classpath
+
+

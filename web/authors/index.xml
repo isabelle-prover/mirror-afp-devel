@@ -70,10 +70,31 @@
           <description></description>
         </item>
         <item>
+          <title>brucker</title>
+          <link>/authors/brucker/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/brucker/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>cordwell</title>
           <link>/authors/cordwell/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/authors/cordwell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>meric</title>
+          <link>/authors/meric/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/meric/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wolff</title>
+          <link>/authors/wolff/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/wolff/</guid>
           <description></description>
         </item>
         <item>
@@ -406,13 +427,6 @@
           <description></description>
         </item>
         <item>
-          <title>brucker</title>
-          <link>/authors/brucker/</link>
-          <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/brucker/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>stell</title>
           <link>/authors/stell/</link>
           <pubDate>Sun, 21 Jan 2024 00:00:00 +0000</pubDate>
@@ -424,13 +438,6 @@
           <link>/authors/ballenghien/</link>
           <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
           <guid>/authors/ballenghien/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>wolff</title>
-          <link>/authors/wolff/</link>
-          <pubDate>Sun, 24 Dec 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/wolff/</guid>
           <description></description>
         </item>
         <item>
