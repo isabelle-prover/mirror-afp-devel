@@ -128,7 +128,7 @@ next
   moreover have "... \<in> {0..<n}"
   proof -
     have "int (Nat_LSBF.to_nat xs) - int (Nat_LSBF.to_nat ys) \<le> int (Nat_LSBF.to_nat xs)" by simp
-    also have "... \<le> n - 1" using \<open>Nat_LSBF.to_nat xs \<le> n - 1\<close> n_positive by simp
+    also have "... \<le> n - 1" using \<open>Nat_LSBF.to_nat xs \<le> n - 1\<close> n_positive by linarith
     also have "... < n" by simp
     finally have "int (Nat_LSBF.to_nat xs) - int (Nat_LSBF.to_nat ys) < n" by simp
     moreover have "int (Nat_LSBF.to_nat xs) - int (Nat_LSBF.to_nat ys) \<ge> 0" using \<open>\<not> Nat_LSBF.to_nat xs \<le> Nat_LSBF.to_nat ys\<close> by simp
