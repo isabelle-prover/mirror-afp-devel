@@ -118,7 +118,7 @@ text\<open>
       A.~D. Brucker, I.~Ait-Sadoune, N. Méric, and B.~Wolff. Using Deep Ontologies in Formal 
       Software Engineering. In \<^emph>\<open>International Conference on Rigorous State-Based Methods (ABZ 2023)\<close>, 
       To appear in Lecture Notes in Computer Science. Springer-Verlag,
-      Heidelberg, 2023. \href{https://doi.org/???} {10.1007/????????}.
+      Heidelberg, 2023. \href{10.1007/978-3-031-33163-3_2} {10.1007/978-3-031-33163-3\_2}.
     \end{quote}
     A \<^BibTeX>-entry is available at: 
     \<^url>\<open>https://www.lri.fr/~wolff/bibtex/wolff.html\<close>. 
@@ -127,7 +127,7 @@ text\<open>
       A.~D. Brucker, I.~Ait-Sadoune, P.~Crisafulli, and B.~Wolff. Using the {Isabelle} ontology 
       framework: Linking the formal with the informal. In \<^emph>\<open>Conference on Intelligent Computer 
       Mathematics (CICM)\<close>, number 11006 in Lecture Notes in Computer Science. Springer-Verlag,
-      Heidelberg, 2018. \href{https://doi.org/10.1007/978-3-319-96812-4\_3}
+      Heidelberg, 2018. \href{https://doi.org/10.1007/978-3-319-96812-4_3}
       {10.1007/978-3-319-96812-4\_3}.
     \end{quote}
     A \<^BibTeX>-entry is available at: 

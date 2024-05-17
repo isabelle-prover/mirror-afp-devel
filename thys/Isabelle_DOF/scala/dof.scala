@@ -56,7 +56,7 @@ object DOF {
   val generic_doi = "10.5281/zenodo.3370482"
 
   // Isabelle/DOF source repository
-  val url = "https://git.logicalhacking.com/Isabelle_DOF/Isabelle_DOF/src/branch/Isabelle_dev"
+  val url = "https://git.logicalhacking.com/Isabelle_DOF/Isabelle_DOF/"
 
   // Isabelle/DOF release artifacts
   val artifact_dir = "releases/Isabelle_DOF/Isabelle_DOF"
