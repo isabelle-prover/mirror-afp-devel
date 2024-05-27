@@ -1,0 +1,113 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+% \usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+\usepackage{graphicx}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+% for uniform font size
+\renewcommand{\isastyle}{\isastyleminor}
+
+\usepackage[noabbrev,capitalise,nameinlink]{cleveref}
+
+%%% DEFINITIONS %%%
+\usepackage{xspace}
+\newcommand{\eq}{\mathcal T}
+\newcommand{\vars}{\mathcal U}
+\newcommand{\var}[1]{\mathrm{#1}}
+\newcommand{\pvar}[1]{\mathtt{#1}}
+\newcommand{\dom}{\mathbb D}
+\newcommand{\set}[1]{\left\lbrace #1 \right\rbrace}
+\newcommand{\Td}{Top-Down Solver\xspace}
+\newcommand{\td}{TD\xspace}
+\newcommand{\ie}{i.\,e.\xspace}
+\newcommand{\eg}{e.\,g.\xspace}
+%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{Partial Correctness of the Top-Down Solver}
+\author{Yannick Stade\thanks{The first two authors contributed equally to this research and are ordered alphabetically.}, Sarah Tilscher\textsuperscript{\thefootnote}, Helmut Seidl}
+\maketitle
+
+\begin{abstract}
+  The top-down solver (\td) is a local and generic fixpoint algorithm used for abstract interpretation.
+  Being local means it only evaluates equations required for the computation of the value of some initially queried unknown, while being generic means that it is applicable for arbitrary equation systems where right-hand sides are considered as black-box functions.
+  To avoid unnecessary evaluations of right-hand sides, the \td collects stable unknowns that need not be re-evaluated.
+  This optimization requires the additional tracking of dependencies between unknowns and a non-local destabilization mechanism to assure the re-evaluation of previously stable unknowns that were affected by a changed value.
+
+  Due to the recursive evaluation strategy and the non-local destabilization mechanism of the \td, its correctness is non-obvious.
+  To provide a formal proof of its partial correctness, we employ the insight that the \td can be considered an optimized version of a considerably simpler recursive fixpoint algorithm.
+  Following this insight, we first prove the partial correctness of the simpler recursive fixpoint algorithm, the plain \td.
+  Then, we transfer the statement of partial correctness to the \td by establishing the equivalence of both algorithms concerning both their termination behavior and their computed result.
+\end{abstract}
+
+\newpage
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\newpage
+\section{Introduction}
+Static analysis of programs based on abstract interpretation requires efficient and reliable fixpoint engines~\cite{cousotAbstractInterpretationUnified1977}.
+In this work, we focus on the top-down solver~(\td)~\cite{tilscherTopDownSolverExercise2023}---a generic fixpoint algorithm that can handle arbitrary equation systems, even those with infinitely many equations.
+The latter is achieved by a property called local: When the \td is invoked to compute the value of some unknown, it recursively descends only into those unknowns on which the initially queried unknown depends.
+In order to avoid redundant re-evaluations of equations, the \td maintains a set of stable unknowns whose re-evaluation can be replaced by a simple lookup.
+Removing unknowns from the set of stable unknowns when they are possibly affected by changes to other unknowns, requires information about dependencies between unknowns.
+These dependencies need not be provided beforehand but are detected through self-observation on the fly.
+This makes the \td suitable also for equation systems where dependencies change dynamically during the solver's computation.
+
+By removing the collecting of stable unknowns and dependency tracking, we obtain a stripped version of the \td, which we call the plain \td.
+The plain \td is capable of solving the same equation systems as the original \td and also shares the same termination behavior, but also re-evaluates those unknowns that have already been evaluated and whose value could just be looked up.
+In the first part of this work, we show the partial correctness of the plain \td.
+We use a mutual induction following its computation trace to establish invariants describing a valid solver state.
+From this, the partial correctness of the solver's result can be derived.
+The proof is described in \cref{sec:td_plain}.
+
+We then recover the original \td from the plain \td and prove the equivalence between the two, \ie, that they share the same termination behavior and return the same result whenever they terminate.
+This way, the partial correctness statement from the plain \td is shown to carry over to the original \td.
+The essential part of this proof is twofold:
+First, we extend the invariants to describe the additional data structures for collecting stable unknowns and the dependencies between unknowns.
+Second, we show that the destabilization of an unknown preserves those invariants.
+The corresponding proofs are outlined in \cref{sec:td}.
+
+We conclude this work with an example in \cref{sec:example} showing the application of the \td to a simple equation system derived from a program for the analysis of must-be initialized variables.
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

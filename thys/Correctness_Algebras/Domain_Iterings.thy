@@ -224,7 +224,7 @@ lemma d0_circ_left_unfold:
 lemma d_circ_import:
   "d(y) * x \<le> x * d(y) \<Longrightarrow> d(y) * x\<^sup>\<circ> = d(y) * (d(y) * x)\<^sup>\<circ>"
   apply (rule order.antisym)
-  apply (simp add: circ_import d_idempotent d_plus_one le_iff_sup)
+  apply (simp add: circ_import d_mult_idempotent d_plus_one le_iff_sup)
   using circ_isotone d_mult_below mult_right_isotone by auto
 
 end
@@ -331,7 +331,7 @@ lemma d_omega_export:
 
 lemma d_omega_import:
   "d(y) * x \<le> x * d(y) \<Longrightarrow> d(y) * x\<^sup>\<omega> = d(y) * (d(y) * x)\<^sup>\<omega>"
-  using d_idempotent omega_import order.refl by auto
+  using d_mult_idempotent omega_import order.refl by auto
 
 lemma star_d_omega_top:
   "x\<^sup>\<star> * d(x\<^sup>\<omega>) * top = x\<^sup>\<star> * bot \<squnion> d(x\<^sup>\<omega>) * top"

@@ -861,7 +861,9 @@ proof -
     by (metis comp_inf_vector_1 conv_dist_comp conv_involutive conv_top inf.absorb1 top_right_mult_increasing)
 qed
 
-text \<open>Lemmas \<open>arc_eq_1\<close> and \<open>arc_eq_2\<close> were contributed by Nicolas Robinson-O'Brien.\<close>
+text \<open>
+Lemmas \<open>arc_eq_1\<close> and \<open>arc_eq_2\<close> were contributed by Nicolas Robinson-O'Brien.
+\<close>
 
 lemma arc_eq_1:
   assumes "arc x"
@@ -959,7 +961,9 @@ next
     using conv_dist_comp power_Suc2 by force
 qed
 
-text \<open>A relation is a permutation if and only if it has a left inverse and a right inverse.\<close>
+text \<open>
+A relation is a permutation if and only if it has a left inverse and a right inverse.
+\<close>
 
 lemma invertible_total:
   assumes "\<exists>z . 1 \<le> x * z"
@@ -1044,6 +1048,61 @@ lemma invertible_bijective:
       and "\<exists>z . x * z = 1"
     shows "bijective x"
   using assms invertible_injective invertible_surjective by blast
+
+text \<open>
+We define domain explicitly and show a few properties.
+\<close>
+
+abbreviation domain :: "'a \<Rightarrow> 'a"
+  where "domain x \<equiv> x * top \<sqinter> 1"
+
+lemma domain_var:
+  "domain x = x * x\<^sup>T \<sqinter> 1"
+  by (smt (verit, del_insts) dedekind_eq inf.sup_monoid.add_commute inf_top_right mult.monoid_axioms symmetric_top_closed total_one_closed monoid.right_neutral)
+
+lemma domain_comp:
+  "domain x * x = x"
+  using domain_var inf.sup_monoid.add_commute by auto
+
+lemma domain_mult_inf:
+  "domain x * domain y = domain x \<sqinter> domain y"
+  using coreflexive_comp_inf by force
+
+lemma domain_mult_commutative:
+  "domain x * domain y = domain y * domain x"
+  using coreflexive_commutative by force
+
+lemma domain_mult_idempotent:
+  "domain x * domain x = domain x"
+  by (simp add: coreflexive_idempotent)
+
+lemma domain_export:
+  "domain (domain x * y) = domain x * domain y"
+  by (simp add: inf_commute inf_left_commute inf_vector_comp)
+
+lemma domain_local:
+  "domain (x * domain y) = domain (x * y)"
+  by (simp add: comp_associative vector_export_comp)
+
+lemma domain_dist_sup:
+  "domain (x \<squnion> y) = domain x \<squnion> domain y"
+  by (simp add: inf_sup_distrib2 mult_right_dist_sup)
+
+lemma domain_idempotent:
+  "domain (domain x) = domain x"
+  by (simp add: vector_export_comp)
+
+lemma domain_bot:
+  "domain bot = bot"
+  by simp
+
+lemma domain_one:
+  "domain 1 = 1"
+  by simp
+
+lemma domain_top:
+  "domain top = 1"
+  by simp
 
 end
 
@@ -1934,6 +1993,96 @@ lemma schroeder_6:
   "x * y \<le> z \<longleftrightarrow> -z\<^sup>T * x \<le> -y\<^sup>T"
   by (simp add: conv_complement schroeder_5_p)
 
+text \<open>
+We define and study the univalent part and the multivalent part of a relation.
+\<close>
+
+abbreviation univalent_part :: "'a \<Rightarrow> 'a" ("up")
+  where "up x \<equiv> x \<sqinter> -(x * -1)"
+
+abbreviation multivalent_part :: "'a \<Rightarrow> 'a" ("mp")
+  where "mp x \<equiv> x \<sqinter> x * -1"
+
+lemma up_mp_disjoint:
+ "up x \<sqinter> mp x = bot"
+  using comp_inf.univalent_comp_left_dist_inf by auto
+
+lemma up_mp_partition:
+  "up x \<squnion> mp x = x"
+  by simp
+
+lemma mp_conv_up_bot:
+  "(mp x)\<^sup>T * up x = bot"
+proof -
+  have "(mp x)\<^sup>T * up x \<le> x\<^sup>T * -(x * -1)"
+    by (simp add: conv_dist_inf mult_isotone)
+  also have "... \<le> 1"
+    by (metis conv_complement_sub_leq pp_one)
+  finally have 1: "(mp x)\<^sup>T * up x \<le> 1"
+    .
+  have "(mp x)\<^sup>T * up x \<le> (x * -1)\<^sup>T * -(x * -1)"
+    by (simp add: conv_isotone mult_isotone)
+  also have "... \<le> -1"
+    by (simp add: schroeder_3)
+  finally have "(mp x)\<^sup>T * up x \<le> -1"
+    .
+  thus ?thesis
+    using 1 by (metis le_iff_inf pseudo_complement)
+qed
+
+lemma up_conv_up:
+  "x\<^sup>T * up x = (up x)\<^sup>T * up x"
+proof -
+  have "x\<^sup>T * up x = (up x)\<^sup>T * up x \<squnion> (mp x)\<^sup>T * up x"
+    by (metis conv_dist_sup mult_right_dist_sup up_mp_partition)
+  thus ?thesis
+    by (simp add: mp_conv_up_bot)
+qed
+
+lemma up_univalent:
+  "univalent (up x)"
+  by (metis inf_compl_bot_right schroeder_1 shunting_1 up_conv_up)
+
+lemma up_mp_bot:
+  "up (mp x) = bot"
+  by (metis dedekind_2 equivalence_one_closed inf.sup_monoid.add_commute shunting_1 symmetric_complement_closed)
+
+lemma mp_up_bot:
+  "mp (up x) = bot"
+  by (metis comp_right_one comp_univalent_below_complement double_compl shunting_1 up_univalent)
+
+lemma up_idempotent:
+  "up (up x) = up x"
+  by (metis comp_right_one comp_univalent_below_complement inf.absorb1 regular_one_closed up_univalent)
+
+lemma mp_idempotent:
+  "mp (mp x) = mp x"
+  using inf.absorb1 shunting_1 up_mp_bot by blast
+
+lemma mp_conv_mp:
+  "x\<^sup>T * mp x = (mp x)\<^sup>T * mp x"
+  by (smt (verit, ccfv_threshold) conv_dist_comp conv_dist_sup conv_involutive inf.absorb1 mult_right_dist_sup shunting_1 mp_conv_up_bot up_mp_bot up_mp_partition)
+
+lemma up_mp_top:
+  "-(x * top) \<squnion> up x * top \<squnion> mp x * top = top"
+  using semiring.combine_common_factor sup_monoid.add_commute by auto
+
+lemma domain_mp:
+  "domain (mp x) = x * -1 * x\<^sup>T \<sqinter> 1"
+  by (smt (verit, del_insts) comp_right_one conv_dist_comp conv_dist_inf conv_involutive dedekind_eq equivalence_one_closed inf.sup_monoid.add_commute inf_top.left_neutral)
+
+lemma domain_mp_bot:
+  "domain (mp x) * x \<sqinter> -(x * -1) = bot"
+  by (metis conv_complement_sub_inf conv_involutive inf.sup_monoid.add_assoc p_bot vector_export_comp_unit mp_conv_up_bot)
+
+lemma domain_mp_mp:
+  "domain (mp x) * x = mp x"
+  by (smt (verit, ccfv_threshold) conv_complement_sub_inf conv_involutive inf.absorb1 inf.absorb_iff2 inf_sup_distrib1 p_bot shunting_1 top_right_mult_increasing vector_export_comp_unit mp_conv_up_bot up_mp_bot up_mp_partition)
+
+lemma mp_var:
+  "mp x = x \<sqinter> (x * -1 * x\<^sup>T \<sqinter> 1) * top"
+  by (metis domain_mp domain_mp_mp inf.sup_monoid.add_commute inf_top_right vector_export_comp_unit)
+
 end
 
 text \<open>
@@ -2058,7 +2207,9 @@ lemma point_in_vector_or_complement_2:
   shows "x \<le> y"
   using assms point_in_vector_or_pseudo_complement p_antitone_iff by fastforce
 
-text \<open>The next three lemmas \<open>arc_in_arc_or_complement\<close>, \<open>arc_in_sup_arc\<close> and \<open>different_arc_in_sup_arc\<close> were contributed by Nicolas Robinson-O'Brien.\<close>
+text \<open>
+The next three lemmas \<open>arc_in_arc_or_complement\<close>, \<open>arc_in_sup_arc\<close> and \<open>different_arc_in_sup_arc\<close> were contributed by Nicolas Robinson-O'Brien.
+\<close>
 
 lemma arc_in_arc_or_complement:
   assumes "arc x"

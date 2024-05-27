@@ -1,0 +1,33 @@
+chapter AFP
+
+session Schoenhage_Strassen = "HOL-Analysis" +
+  options [timeout=1200]
+  sessions
+    "HOL-Algebra"
+    "Akra_Bazzi"
+    "HOL-Eisbach"
+    "HOL-Number_Theory"
+    "Word_Lib"
+    "Universal_Hash_Families"
+    "Number_Theoretic_Transform"
+    "Root_Balanced_Tree"
+    "Karatsuba"
+  directories
+    "NTT_Rings"
+    "Preliminaries"
+    "Schoenhage_Strassen"
+  theories
+    "Preliminaries/Schoenhage_Strassen_Preliminaries"
+    "Preliminaries/Schoenhage_Strassen_Runtime_Preliminaries"
+    "Preliminaries/Schoenhage_Strassen_Ring_Lemmas"
+    "NTT_Rings/NTT_Rings"
+    "NTT_Rings/FNTT_Rings"
+    "Schoenhage_Strassen/Z_mod_power_of_2"
+    "Schoenhage_Strassen/Z_mod_power_of_2_TM"
+    "Schoenhage_Strassen/Z_mod_Fermat"
+    "Schoenhage_Strassen/Z_mod_Fermat_TM"
+    "Schoenhage_Strassen/Schoenhage_Strassen"
+    "Schoenhage_Strassen/Schoenhage_Strassen_TM"
+  document_files
+    "root.tex"
+    "root.bib"

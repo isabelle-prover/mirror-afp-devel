@@ -35,17 +35,17 @@ lemma d_zero:
 
 text \<open>Theorem 44.3\<close>
 
-lemma d_involutive:
+lemma d_idempotent:
   "d(d(x)) = d(x)"
   by (metis d_mult_d mult_left_one)
 
 lemma d_fixpoint:
   "(\<exists>y . x = d(y)) \<longleftrightarrow> x = d(x)"
-  using d_involutive by auto
+  using d_idempotent by auto
 
 lemma d_type:
   "\<forall>P . (\<forall>x . x = d(x) \<longrightarrow> P(x)) \<longleftrightarrow> (\<forall>x . P(d(x)))"
-  by (metis d_involutive)
+  by (metis d_idempotent)
 
 text \<open>Theorem 44.4\<close>
 
@@ -77,16 +77,16 @@ lemma d_plus_left_upper_bound:
   "d(x) \<le> d(x \<squnion> y)"
   by (simp add: d_isotone)
 
-lemma d_idempotent:
+lemma d_mult_idempotent:
   "d(x) * d(x) = d(x)"
-  by (smt (verit, ccfv_threshold) d_involutive d_mult_sub d_Z d_dist_sup d_export d_restrict le_iff_sup sup_bot_left sup_commute)
+  by (smt (verit, ccfv_threshold) d_idempotent d_mult_sub d_Z d_dist_sup d_export d_restrict le_iff_sup sup_bot_left sup_commute)
 
 text \<open>Theorem 44.12\<close>
 
 lemma d_least_left_preserver:
   "x \<le> d(y) * x \<squnion> Z \<longleftrightarrow> d(x) \<le> d(y)"
   apply (rule iffI)
-  apply (smt (z3) comm_monoid.comm_neutral d_involutive d_mult_sub d_plus_left_upper_bound d_Z d_dist_sup order_trans sup_absorb2 sup_bot.comm_monoid_axioms)
+  apply (smt (z3) comm_monoid.comm_neutral d_idempotent d_mult_sub d_plus_left_upper_bound d_Z d_dist_sup order_trans sup_absorb2 sup_bot.comm_monoid_axioms)
   by (smt (verit, del_insts) d_restrict mult_right_dist_sup sup.cobounded1 sup.orderE sup_assoc sup_commute)
 
 text \<open>Theorem 44.9\<close>
@@ -97,7 +97,7 @@ lemma d_weak_locality:
 
 lemma d_sup_closed:
   "d(d(x) \<squnion> d(y)) = d(x) \<squnion> d(y)"
-  by (simp add: d_involutive d_dist_sup)
+  by (simp add: d_idempotent d_dist_sup)
 
 lemma d_mult_closed:
   "d(d(x) * d(y)) = d(x) * d(y)"
@@ -105,11 +105,11 @@ lemma d_mult_closed:
 
 lemma d_mult_left_lower_bound:
   "d(x) * d(y) \<le> d(x)"
-  by (metis d_export d_involutive d_mult_sub)
+  by (metis d_export d_idempotent d_mult_sub)
 
 lemma d_mult_left_absorb_sup:
   "d(x) * (d(x) \<squnion> d(y)) = d(x)"
-  by (smt d_sup_closed d_export d_idempotent d_involutive d_mult_sub order.eq_iff mult_left_sub_dist_sup_left)
+  by (smt d_sup_closed d_export d_mult_idempotent d_idempotent d_mult_sub order.eq_iff mult_left_sub_dist_sup_left)
 
 lemma d_sup_left_absorb_mult:
   "d(x) \<squnion> d(x) * d(y) = d(x)"
@@ -121,11 +121,11 @@ lemma d_commutative:
 
 lemma d_mult_greatest_lower_bound:
   "d(x) \<le> d(y) * d(z) \<longleftrightarrow> d(x) \<le> d(y) \<and> d(x) \<le> d(z)"
-  by (metis d_commutative d_idempotent d_mult_left_lower_bound mult_isotone order_trans)
+  by (metis d_commutative d_mult_idempotent d_mult_left_lower_bound mult_isotone order_trans)
 
 lemma d_sup_left_dist_mult:
   "d(x) \<squnion> d(y) * d(z) = (d(x) \<squnion> d(y)) * (d(x) \<squnion> d(z))"
-  by (metis sup_assoc d_commutative d_dist_sup d_idempotent d_mult_left_absorb_sup mult_right_dist_sup)
+  by (metis sup_assoc d_commutative d_dist_sup d_mult_idempotent d_mult_left_absorb_sup mult_right_dist_sup)
 
 lemma d_order:
   "d(x) \<le> d(y) \<longleftrightarrow> d(x) = d(x) * d(y)"
@@ -164,7 +164,7 @@ lemma kat_4_equiv:
   apply (rule iffI)
   apply (simp add: kat_4)
   apply (rule order.antisym)
-  apply (metis d_idempotent mult_assoc mult_right_isotone)
+  apply (metis d_mult_idempotent mult_assoc mult_right_isotone)
   by (metis d_below_one mult_right_isotone mult_1_right)
 
 lemma kat_4_equiv_opp:
@@ -172,14 +172,14 @@ lemma kat_4_equiv_opp:
   apply (rule iffI)
   using d_below_one mult_right_isotone apply fastforce
   apply (rule order.antisym)
-  apply (metis d_idempotent mult_assoc mult_left_isotone)
+  apply (metis d_mult_idempotent mult_assoc mult_left_isotone)
   by (metis d_below_one mult_left_isotone mult_left_one)
 
 text \<open>Theorem 44.10\<close>
 
 lemma d_restrict_iff_1:
   "d(x) * y \<le> z \<longleftrightarrow> d(x) * y \<le> d(x) * z"
-  by (smt (verit, del_insts) d_below_one d_idempotent mult_assoc mult_left_isotone mult_left_one mult_right_isotone order_trans)
+  by (smt (verit, del_insts) d_below_one d_mult_idempotent mult_assoc mult_left_isotone mult_left_one mult_right_isotone order_trans)
 
 (* independence of axioms, checked in relative_domain_semiring without the respective axiom: *)
 proposition d_restrict : "x \<le> d(x) * x \<squnion> Z" (* nitpick [expect=genuine,card=2] *) oops
@@ -227,7 +227,7 @@ instance
   apply (simp add: less_eq_dImage.rep_eq)
   using less_eq_dImage.rep_eq apply simp
   apply (simp add: Rep_dImage_inject less_eq_dImage.rep_eq)
-  apply (metis (mono_tags) d_involutive d_mult_sub inf_dImage.rep_eq less_eq_dImage.rep_eq simp_dImage)
+  apply (metis (mono_tags) d_idempotent d_mult_sub inf_dImage.rep_eq less_eq_dImage.rep_eq simp_dImage)
   apply (metis (mono_tags) d_mult_greatest_lower_bound inf_dImage.rep_eq less_eq_dImage.rep_eq order_refl simp_dImage)
   apply (metis (mono_tags) d_mult_greatest_lower_bound inf_dImage.rep_eq less_eq_dImage.rep_eq simp_dImage)
   apply (simp add: less_eq_dImage.rep_eq sup_dImage.rep_eq)

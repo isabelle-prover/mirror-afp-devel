@@ -11,8 +11,50 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Akra_Bazzi</title>
+          <link>/dependencies/akra_bazzi/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/akra_bazzi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Karatsuba</title>
+          <link>/dependencies/karatsuba/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/karatsuba/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Number_Theoretic_Transform</title>
+          <link>/dependencies/number_theoretic_transform/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/number_theoretic_transform/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Root_Balanced_Tree</title>
+          <link>/dependencies/root_balanced_tree/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/root_balanced_tree/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal_Hash_Families</title>
+          <link>/dependencies/universal_hash_families/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/universal_hash_families/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Word_Lib</title>
+          <link>/dependencies/word_lib/</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/word_lib/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Prime_Number_Theorem</title>
           <link>/dependencies/prime_number_theorem/</link>
@@ -21,10 +63,31 @@
           <description></description>
         </item>
         <item>
+          <title>Show</title>
+          <link>/dependencies/show/</link>
+          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/show/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Functional-Automata</title>
+          <link>/dependencies/functional-automata/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/functional-automata/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Poincare_Bendixson</title>
           <link>/dependencies/poincare_bendixson/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/poincare_bendixson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular-Sets</title>
+          <link>/dependencies/regular-sets/</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular-sets/</guid>
           <description></description>
         </item>
         <item>
@@ -77,13 +140,6 @@
           <description></description>
         </item>
         <item>
-          <title>Word_Lib</title>
-          <link>/dependencies/word_lib/</link>
-          <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/word_lib/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Coinductive</title>
           <link>/dependencies/coinductive/</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
@@ -130,13 +186,6 @@
           <link>/dependencies/undirected_graph_theory/</link>
           <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/undirected_graph_theory/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Universal_Hash_Families</title>
-          <link>/dependencies/universal_hash_families/</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/universal_hash_families/</guid>
           <description></description>
         </item>
         <item>
@@ -189,24 +238,10 @@
           <description></description>
         </item>
         <item>
-          <title>Akra_Bazzi</title>
-          <link>/dependencies/akra_bazzi/</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/akra_bazzi/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Expander_Graphs</title>
           <link>/dependencies/expander_graphs/</link>
           <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/expander_graphs/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Root_Balanced_Tree</title>
-          <link>/dependencies/root_balanced_tree/</link>
-          <pubDate>Mon, 19 Feb 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/root_balanced_tree/</guid>
           <description></description>
         </item>
         <item>
@@ -770,13 +805,6 @@
           <description></description>
         </item>
         <item>
-          <title>Number_Theoretic_Transform</title>
-          <link>/dependencies/number_theoretic_transform/</link>
-          <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/number_theoretic_transform/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Bernoulli</title>
           <link>/dependencies/bernoulli/</link>
           <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
@@ -1131,13 +1159,6 @@
           <link>/dependencies/nominal2/</link>
           <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/nominal2/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Show</title>
-          <link>/dependencies/show/</link>
-          <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/show/</guid>
           <description></description>
         </item>
         <item>
@@ -1803,13 +1824,6 @@
           <link>/dependencies/quick_sort_cost/</link>
           <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
           <guid>/dependencies/quick_sort_cost/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Regular-Sets</title>
-          <link>/dependencies/regular-sets/</link>
-          <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
-          <guid>/dependencies/regular-sets/</guid>
           <description></description>
         </item>
         <item>

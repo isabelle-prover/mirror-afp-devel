@@ -274,7 +274,7 @@ lemma aL_circ_equal:
 
 lemma aL_zero:
   "aL = bot"
-  by (smt aL_circ_equal aL_one_circ d_export d_idempotent diamond_d_bot diamond_def mult_assoc mult_1_right star_one)
+  by (smt aL_circ_equal aL_one_circ d_export d_mult_idempotent diamond_d_bot diamond_def mult_assoc mult_1_right star_one)
 
 subclass hoare_calculus_sound
   apply unfold_locales

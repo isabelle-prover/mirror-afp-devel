@@ -11,13 +11,41 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 05 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Schönhage-Strassen Multiplication</title>
+          <link>/entries/Schoenhage_Strassen.html</link>
+          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Schoenhage_Strassen.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Partial Correctness of the Top-Down Solver</title>
+          <link>/entries/Top_Down_Solver.html</link>
+          <pubDate>Thu, 09 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Top_Down_Solver.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Prime Number Theorem with Remainder Term</title>
           <link>/entries/PNT_with_Remainder.html</link>
           <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
           <guid>/entries/PNT_with_Remainder.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LL(1) Parser Generator</title>
+          <link>/entries/LL1_Parser.html</link>
+          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LL1_Parser.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Isabelle/DOF</title>
+          <link>/entries/Isabelle_DOF.html</link>
+          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Isabelle_DOF.html</guid>
           <description></description>
         </item>
         <item>

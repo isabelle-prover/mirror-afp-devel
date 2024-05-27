@@ -1,0 +1,15 @@
+chapter AFP
+session Top_Down_Solver (AFP) = HOL +
+  description
+    "Partial Correctness of the Top-Down Solver"
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    TD_plain
+    TD_equiv
+    Example
+  document_files
+    "root.tex"
+    "root.bib"
+    "cfg.pdf"

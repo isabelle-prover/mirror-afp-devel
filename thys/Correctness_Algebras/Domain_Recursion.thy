@@ -29,7 +29,7 @@ proof -
   finally have 2: "d(d(L) * y * bot) * top \<le> d(x * bot) * top"
     .
   have "d(L) * z = d(L) * (d(L) * z)"
-    by (simp add: d_idempotent ils.il_inf_associative)
+    by (simp add: d_mult_idempotent ils.il_inf_associative)
   also have "... \<le> d(L) * y \<squnion> d(d(L) * y * bot) * top"
     by (metis assms(2) apx_def d_export mult_assoc mult_left_dist_sup mult_right_isotone)
   also have "... \<le> x \<squnion> d(x * bot) * top"
@@ -167,7 +167,7 @@ lemma nu_below_mu_nu_nu_below_mu_nu_2:
     shows "nu_below_mu_nu_2 f"
 proof -
   have "d(L) * \<nu> f = d(L) * (d(L) * \<nu> f)"
-    by (simp add: d_idempotent ils.il_inf_associative)
+    by (simp add: d_mult_idempotent ils.il_inf_associative)
   also have "... \<le> d(L) * (\<mu> f \<squnion> (\<nu> f \<sqinter> L) \<squnion> d(\<nu> f * bot) * top)"
     using assms mult_isotone nu_below_mu_nu_def by blast
   also have "... = d(L) * (\<mu> f \<squnion> (\<nu> f \<sqinter> L)) \<squnion> d(L) * d(\<nu> f * bot) * top"

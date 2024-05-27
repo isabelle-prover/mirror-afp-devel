@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+% for uniform font size
+\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{LL(1) Parser Generator}
+\author{Sarah Tilscher and Simon Wimmer}
+\maketitle
+
+\begin{abstract}
+In this formalization, we implement an LL($1$) parser generator that first pre-computes the NULLABLE set, FIRST map and FOLLOW map, to then build a lookahead table.
+We prove correctness, soundness and error-free termination for LL($1$) grammars.
+We provide the JSON grammar and show how to parse a tokenized JSON string using a parser created with the verified parser generator.
+The proof structure is significantly based on Vermillion~\cite{lasser_et_al:LIPIcs:2019:11079}, an LL($1$) parser generator verified in Coq.
+\end{abstract}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+An LL Parser is a top-down parser, i.e., it constructs the parse tree starting at the root
+by selecting rules for the expansion of non-terminals. The selection between alternative rules is in
+general not deterministic as there may be multiple rules applicable for some non-terminal. For a
+more substantiated decision, an LL($k$) parser can inspect the first $k$ symbols of the remaining input.
+Grammars for which a lookahead of length $k$ is sufficient to deterministically choose the correct
+rule for expansion are called LL($k$) grammars. In this work, we focus on LL($1$) parsers, i.e., parsers
+that only spy on the single next symbol of the remaining input~\cite{DBLP:books/daglib/0031526}.
+
+In the first few theories we provide fixpoint algorithms to successively compute the NULLABLE set, FIRST and FOLLOW map for a grammar,
+and prove their termination and the soundness and completeness of the result.
+With these pre-computed attributes, a parse table recording which alternative rule needs to be chosen for which lookahead can be generated for LL($k$) grammars.
+In case the input grammar is not LL($k$), an ambiguous lookahead will be detected, and the parse table generation will return an error.
+For the case that a parse table is generated successfully, we prove its soundness and completeness.
+As a last step, a function for parsing a tokenized input with the help of the generated parse table is provided.
+It either returns a parse tree as a result, rejects the input if it is not within the language described by the grammar, or returns an error.
+The soundness and completeness of the parser follow from the correctness theorems about the parse table.
+Additionally, the parser is shown to terminate without error for any successfully generated parse table.
+
+For demonstration, we generate two parsers --- one for a mini programming language and one for JSON strings --- and use them to parse small tokenized strings.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -45,17 +45,17 @@ lemma d_restrict_equals:
   "x = d(x) * x"
   by (metis sup_commute d_plus_one d_restrict mult_left_one mult_right_dist_sup)
 
-lemma d_involutive:
+lemma d_idempotent:
   "d(d(x)) = d(x)"
   by (metis d_mult_d mult_left_one)
 
 lemma d_fixpoint:
   "(\<exists>y . x = d(y)) \<longleftrightarrow> x = d(x)"
-  using d_involutive by auto
+  using d_idempotent by auto
 
 lemma d_type:
   "\<forall>P . (\<forall>x . x = d(x) \<longrightarrow> P(x)) \<longleftrightarrow> (\<forall>x . P(d(x)))"
-  by (metis d_involutive)
+  by (metis d_idempotent)
 
 lemma d_mult_sub:
   "d(x * y) \<le> d(x)"
@@ -88,10 +88,10 @@ lemma d_plus_left_upper_bound:
 lemma d_export:
   "d(d(x) * y) = d(x) * d(y)"
   apply (rule order.antisym)
-  apply (metis d_below_one d_involutive d_mult_sub d_restrict_equals d_isotone d_mult_d mult_isotone mult_left_one)
+  apply (metis d_below_one d_idempotent d_mult_sub d_restrict_equals d_isotone d_mult_d mult_isotone mult_left_one)
   by (metis d_below_one d_sub_one coreflexive_mult_closed d_mult_d)
 
-lemma d_idempotent:
+lemma d_mult_idempotent:
   "d(x) * d(x) = d(x)"
   by (metis d_export d_restrict_equals)
 
@@ -101,7 +101,7 @@ lemma d_commutative:
 
 lemma d_least_left_preserver:
   "x \<le> d(y) * x \<longleftrightarrow> d(x) \<le> d(y)"
-  by (metis d_below_one d_involutive d_mult_sub d_restrict_equals order.eq_iff mult_left_isotone mult_left_one)
+  by (metis d_below_one d_idempotent d_mult_sub d_restrict_equals order.eq_iff mult_left_isotone mult_left_one)
 
 lemma d_weak_locality:
   "x * y = bot \<longleftrightarrow> x * d(y) = bot"
@@ -109,7 +109,7 @@ lemma d_weak_locality:
 
 lemma d_sup_closed:
   "d(d(x) \<squnion> d(y)) = d(x) \<squnion> d(y)"
-  by (simp add: d_involutive d_dist_sup)
+  by (simp add: d_idempotent d_dist_sup)
 
 lemma d_mult_closed:
   "d(d(x) * d(y)) = d(x) * d(y)"
@@ -117,15 +117,15 @@ lemma d_mult_closed:
 
 lemma d_mult_left_lower_bound:
   "d(x) * d(y) \<le> d(x)"
-  by (metis d_export d_involutive d_mult_sub)
+  by (metis d_export d_idempotent d_mult_sub)
 
 lemma d_mult_greatest_lower_bound:
   "d(x) \<le> d(y) * d(z) \<longleftrightarrow> d(x) \<le> d(y) \<and> d(x) \<le> d(z)"
-  by (metis d_commutative d_idempotent d_mult_left_lower_bound mult_isotone order_trans)
+  by (metis d_commutative d_mult_idempotent d_mult_left_lower_bound mult_isotone order_trans)
 
 lemma d_mult_left_absorb_sup:
   "d(x) * (d(x) \<squnion> d(y)) = d(x)"
-  by (metis sup_commute d_idempotent d_plus_one mult_left_dist_sup mult_1_right)
+  by (metis sup_commute d_mult_idempotent d_plus_one mult_left_dist_sup mult_1_right)
 
 lemma d_sup_left_absorb_mult:
   "d(x) \<squnion> d(x) * d(y) = d(x)"
@@ -133,7 +133,7 @@ lemma d_sup_left_absorb_mult:
 
 lemma d_sup_left_dist_mult:
   "d(x) \<squnion> d(y) * d(z) = (d(x) \<squnion> d(y)) * (d(x) \<squnion> d(z))"
-  by (smt sup_assoc d_commutative d_idempotent d_mult_left_absorb_sup mult_left_dist_sup mult_right_dist_sup)
+  by (smt sup_assoc d_commutative d_mult_idempotent d_mult_left_absorb_sup mult_left_dist_sup mult_right_dist_sup)
 
 lemma d_order:
   "d(x) \<le> d(y) \<longleftrightarrow> d(x) = d(x) * d(y)"
@@ -145,7 +145,7 @@ lemma d_mult_below:
 
 lemma d_preserves_equation:
   "d(y) * x \<le> x * d(y) \<longleftrightarrow> d(y) * x = d(y) * x * d(y)"
-  by (simp add: d_below_one d_idempotent test_preserves_equation)
+  by (simp add: d_below_one d_mult_idempotent test_preserves_equation)
 
 end
 
@@ -339,7 +339,7 @@ lemma kat_4_equiv:
   apply (rule iffI)
   apply (simp add: kat_4)
   apply (rule order.antisym)
-  apply (metis d_idempotent le_iff_sup mult_assoc mult_left_dist_sup)
+  apply (metis d_mult_idempotent le_iff_sup mult_assoc mult_left_dist_sup)
   by (metis d_plus_one le_iff_sup mult_left_dist_sup mult_1_right)
 
 lemma kat_3_equiv_opp:
