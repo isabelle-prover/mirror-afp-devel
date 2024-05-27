@@ -36,7 +36,7 @@ sig
   val default_config : logger_config
   val set_config_output : logger_output -> logger_config -> logger_config
   val set_config_log_level : log_level -> logger_config -> logger_config
-  (*set message filter: only log messages with positive results*)
+  (*set message filter on text to be logged: only log messages with positive results*)
   val set_config_msg_filter : msg_filter -> logger_config -> logger_config
   (*set whether to print the logger's name when logging*)
   val set_config_show_logger : bool -> logger_config -> logger_config
@@ -152,7 +152,7 @@ fun log_config binding {log_level, output, msg_filter, show_logger} level messag
           Pretty.block [Pretty.str "Logger: ", pretty_binding binding],
           Pretty.str msg
         ] |> Pretty.block |> Pretty.string_of)
-    in if msg_filter msg then output level msg else () end
+    in if msg_filter (YXML.content_of msg) then output level msg else () end
 
 structure BT = Binding_Tree
 
