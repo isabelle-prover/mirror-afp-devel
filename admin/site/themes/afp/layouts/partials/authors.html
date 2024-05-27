@@ -20,12 +20,16 @@
     {{- end }}
   {{- end }}
 
-  {{- $author := printf "[%s](%s%s)%s"
-    (index (index $site.Site.Data.authors .) "name")
-    ("/authors/" | relLangURL)
-    (. | urlize)
-    $affils
-  }}
+  {{- if gt (len (index $site.Site.Taxonomies.authors $author)) 0 -}}
+    {{- $author = printf "[%s](%s%s)%s"
+      (index (index $site.Site.Data.authors .) "name")
+      ("/authors/" | relLangURL)
+      (. | urlize)
+      $affils
+    -}}
+  {{- else -}}
+    {{- $author = printf "%s%s" (index (index $site.Site.Data.authors .) "name") $affils -}}
+  {{- end }}
   {{- $Scratch.Add "authors" (slice $author) }}
 
 {{- end }}
