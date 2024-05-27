@@ -29,7 +29,7 @@ lemma diamond_x_und:
 
 lemma diamond_d_closed:
   "|x>y = d( |x>y)"
-  by (simp add: d_involutive diamond_def)
+  by (simp add: d_idempotent diamond_def)
 
 text \<open>Theorem 46.11\<close>
 
@@ -63,7 +63,7 @@ text \<open>Theorem 46.12\<close>
 
 lemma diamond_d_1:
   "|d(x)>1 = d(x)"
-  by (simp add: diamond_x_1 d_involutive)
+  by (simp add: diamond_x_1 d_idempotent)
 
 lemma diamond_d_d:
   "|d(x)>d(y) = d(x) * d(y)"
@@ -73,7 +73,7 @@ text \<open>Theorem 46.12\<close>
 
 lemma diamond_d_d_same:
   "|d(x)>d(x) = d(x)"
-  by (simp add: diamond_d_d d_idempotent)
+  by (simp add: diamond_d_d d_mult_idempotent)
 
 text \<open>Theorem 46.2\<close>
 
@@ -163,19 +163,19 @@ lemma diamond_demodalisation_3:
   "|x>y \<le> d(z) \<longleftrightarrow> x * d(y) \<le> d(z) * x \<squnion> Z"
   apply (rule iffI)
   apply (smt (verit) sup_commute sup_right_isotone d_below_one d_restrict diamond_def diamond_x_und mult_left_isotone mult_right_isotone mult_1_right order_trans)
-  by (smt sup_commute sup_bot_left d_Z d_commutative d_dist_sup d_involutive d_mult_sub d_plus_left_upper_bound diamond_d_y diamond_def diamond_x_und le_iff_sup order_trans)
+  by (smt sup_commute sup_bot_left d_Z d_commutative d_dist_sup d_idempotent d_mult_sub d_plus_left_upper_bound diamond_d_y diamond_def diamond_x_und le_iff_sup order_trans)
 
 text \<open>Theorem 46.6\<close>
 
 lemma diamond_d_export_2:
   "|d(x) * y>z = d(x) * |d(x) * y>z"
-  by (metis diamond_d_export diamond_left_mult d_idempotent)
+  by (metis diamond_d_export diamond_left_mult d_mult_idempotent)
 
 text \<open>Theorem 46.7\<close>
 
 lemma diamond_d_promote:
   "|x * d(y)>z = |x * d(y)>(d(y) * z)"
-  by (metis d_idempotent diamond_def mult_assoc)
+  by (metis d_mult_idempotent diamond_def mult_assoc)
 
 text \<open>Theorem 46.8\<close>
 
@@ -571,7 +571,7 @@ lemma diamond_diff_var:
 
 lemma diamond_diff:
   "|x>y * a( |x>z) \<le> |x>(d(y) * a(z))"
-  by (metis d_a_shunting d_involutive diamond_def diamond_diff_var diamond_x_und)
+  by (metis d_a_shunting d_idempotent diamond_def diamond_diff_var diamond_x_und)
 
 end
 
