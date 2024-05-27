@@ -1,6 +1,6 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 subsection \<open>Clean Functions\<close>
-theory Binary_Relations_Clean_Function
+theory Binary_Relations_Clean_Functions
   imports
     Binary_Relations_Function_Base
 begin
@@ -14,14 +14,14 @@ consts crel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 bundle crel_mono_wrt_syntax
 begin
 syntax
-  "_crel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("(_) \<rightarrow>\<^sub>c (_)" [41, 40] 40)
-  "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow>\<^sub>c (_)" [41, 41, 40] 40)
+  "_crel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("(_) \<rightarrow>\<^sub>c (_)" [51, 50] 50)
+  "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow>\<^sub>c (_)" [51, 50, 50] 50)
 end
 bundle no_crel_mono_wrt_syntax
 begin
 no_syntax
-  "_crel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("(_) \<rightarrow>\<^sub>c (_)" [41, 40] 40)
-  "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow>\<^sub>c (_)" [41, 41, 40] 40)
+  "_crel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("(_) \<rightarrow>\<^sub>c (_)" [51, 50] 50)
+  "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow>\<^sub>c (_)" [51, 50, 50] 50)
 end
 unbundle crel_mono_wrt_syntax
 translations
@@ -86,10 +86,10 @@ proof
 qed (use assms in auto)
 
 lemma crel_dep_mono_wrt_pred_cong [cong]:
-  assumes "\<And>x. A x \<longleftrightarrow> A' x"
-  and "\<And>x y. A' x \<Longrightarrow> B x y \<longleftrightarrow> B' x y"
+  assumes "A = A'"
+  and "\<And>x y. A' x \<Longrightarrow> B x = B' x"
   shows "((x : A) \<rightarrow>\<^sub>c B x) = ((x : A') \<rightarrow>\<^sub>c B' x)"
-  using assms by (intro ext) (auto intro!: crel_dep_mono_wrt_predI elim!: crel_dep_mono_wrt_predE)
+  using assms by (intro ext) (auto elim!: crel_dep_mono_wrt_predE)
 
 lemma in_dom_eq_if_crel_dep_mono_wrt_pred [simp]:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"
@@ -241,8 +241,8 @@ lemma mono_rel_dep_mono_wrt_pred_ge_crel_dep_mono_wrt_pred_rel_restrict_left:
   "(((x : A) \<rightarrow> B x) \<Rightarrow> (A' : (\<ge>) A) \<Rightarrow> (x : A') \<rightarrow>\<^sub>c B x) rel_restrict_left"
 proof (intro mono_wrt_predI dep_mono_wrt_predI crel_dep_mono_wrt_predI)
   fix A A' :: "'a \<Rightarrow> bool" and B and R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" assume "((x : A) \<rightarrow> B x) R"
-  with mono_rel_dep_mono_wrt_pred_top_rel_dep_mono_wrt_pred_inf_rel_restrict_left have "((x : A \<sqinter> A') \<rightarrow> B x) R\<restriction>\<^bsub>A'\<^esub>"
-    by force
+  with mono_rel_dep_mono_wrt_pred_top_rel_dep_mono_wrt_pred_inf_rel_restrict_left
+    have "((x : A \<sqinter> A') \<rightarrow> B x) R\<restriction>\<^bsub>A'\<^esub>" by force
   moreover assume "A' \<le> A"
   ultimately show "((x : A') \<rightarrow> B x) R\<restriction>\<^bsub>A'\<^esub>" by (simp only: inf_absorb2)
 qed auto

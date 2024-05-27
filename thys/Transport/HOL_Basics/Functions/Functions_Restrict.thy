@@ -35,7 +35,7 @@ lemma fun_restrict_eq_if: "f\<restriction>\<^bsub>P\<^esub> x = (if P x then f x
   by auto
 
 lemma fun_restrict_cong [cong]:
-  assumes "\<And>x. P x \<longleftrightarrow> P' x"
+  assumes "P = P'"
   and "\<And>x. P' x \<Longrightarrow> f x = g x"
   shows "f\<restriction>\<^bsub>P\<^esub> = g\<restriction>\<^bsub>P'\<^esub>"
   using assms by (intro ext) (auto simp: fun_restrict_eq_if)

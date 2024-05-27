@@ -2,7 +2,7 @@
 subsection \<open>Extending Functions\<close>
 theory Binary_Relations_Function_Extend
   imports
-    Binary_Relations_Clean_Function
+    Binary_Relations_Clean_Functions
 begin
 
 lemma left_total_on_eq_sup_extend_if_left_total_on:

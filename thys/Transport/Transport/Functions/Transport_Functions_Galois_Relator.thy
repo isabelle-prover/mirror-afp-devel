@@ -400,11 +400,11 @@ proof -
     ((x x' \<Colon> (\<^bsub>L1\<^esub>\<lessapprox>)) \<Rrightarrow> (S x x')\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R2 (l1 x) x'\<^esub>)\<^esub>)
       \<restriction>\<^bsub>in_dom (\<le>\<^bsub>L\<^esub>)\<^esub>\<upharpoonleft>\<^bsub>in_codom (\<le>\<^bsub>R\<^esub>)\<^esub>"
     by (subst rel_restrict_left_right_eq_restrict_right_left,
-      subst restrict_left_Dep_Fun_Rel_rel_restrict_left_eq)
+      subst Dep_Fun_Rel_restrict_left_restrict_left_eq)
     auto
   also have "... = ?rhs"
     using assms by (subst rel_restrict_left_right_eq_restrict_right_left,
-      subst restrict_right_Dep_Fun_Rel_rel_restrict_right_eq)
+      subst Dep_Fun_Rel_restrict_right_restrict_right_eq)
     (auto elim!: in_codomE t1.left_GaloisE
       simp only: rel_restrict_left_right_eq_restrict_right_left)
   finally show ?thesis .

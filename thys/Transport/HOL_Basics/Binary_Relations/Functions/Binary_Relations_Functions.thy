@@ -1,7 +1,7 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
-theory Binary_Relations_Function
+theory Binary_Relations_Functions
   imports
-    Binary_Relations_Clean_Function
+    Binary_Relations_Clean_Functions
     Binary_Relations_Function_Base
     Binary_Relations_Function_Composition
     Binary_Relations_Function_Evaluation

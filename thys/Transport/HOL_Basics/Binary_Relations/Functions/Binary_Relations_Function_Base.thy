@@ -63,11 +63,10 @@ lemma rel_dep_mono_wrt_predE [elim]:
   using assms unfolding rel_dep_mono_wrt_pred_def by auto
 
 lemma rel_dep_mono_wrt_pred_cong [cong]:
-  assumes "\<And>x. A x \<longleftrightarrow> A' x"
-  and "\<And>x y. A' x \<Longrightarrow> B x y \<longleftrightarrow> B' x y"
+  assumes "A = A'"
+  and "\<And>x y. A' x \<Longrightarrow> B x = B' x"
   shows "((x : A) \<rightarrow> B x) = ((x : A') \<rightarrow> B' x)"
-  using assms by (intro ext) (auto intro!: rel_dep_mono_wrt_predI left_total_onI
-    dep_mono_wrt_predI intro: right_unique_onD elim!: rel_dep_mono_wrt_predE)
+  using assms by fastforce
 
 lemma rel_mono_wrt_predI [intro]:
   assumes "left_total_on A R"
@@ -206,7 +205,7 @@ proof (rule rel_agree_onI)
 qed
 
 lemma mono_rel_dep_mono_wrt_pred_top_rel_dep_mono_wrt_pred_inf_rel_restrict_left:
-  "(((x : A) \<rightarrow> B x) \<Rightarrow> (A' : \<top>) \<Rightarrow> (x : A \<sqinter> A') \<rightarrow> B x) rel_restrict_left"
+  "(((x : A) \<rightarrow> B x) \<Rightarrow> (A' : \<top>) \<Rightarrow> ((x : A \<sqinter> A') \<rightarrow> B x)) rel_restrict_left"
   by (intro mono_wrt_predI dep_mono_wrt_predI rel_dep_mono_wrt_predI
     (*TODO: should be solved by some type-checking automation*)
     mono_right_unique_on_top_right_unique_on_inf_rel_restrict_left

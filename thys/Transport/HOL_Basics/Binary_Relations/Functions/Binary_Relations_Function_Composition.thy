@@ -2,7 +2,7 @@
 subsection \<open>Composing Functions\<close>
 theory Binary_Relations_Function_Composition
   imports
-    Binary_Relations_Clean_Function
+    Binary_Relations_Clean_Functions
     Restricted_Equality
 begin
 
@@ -23,6 +23,11 @@ proof (intro crel_dep_mono_wrt_predI' dep_bin_relI
   from assms show "left_total_on (in_codom R\<restriction>\<^bsub>A\<^esub>) R'" by force
   from assms show "right_unique_on (in_codom R\<restriction>\<^bsub>A\<^esub>) R'" by (fast dest: right_unique_onD)
 qed (use assms in \<open>auto elim: rel_dep_mono_wrt_pred_relE crel_dep_mono_wrt_pred_relE\<close>)
+
+corollary mono_crel_mono_rel_mono_crel_mono_rel_comp: "((A \<rightarrow>\<^sub>c B) \<Rightarrow> (B \<rightarrow> C) \<Rightarrow> A \<rightarrow>\<^sub>c C) (\<circ>\<circ>)"
+  using crel_dep_mono_wrt_pred_eval_rel_comp_if_rel_dep_mono_wrt_pred_if_crel_dep_mono_wrt_pred
+  by (intro mono_wrt_predI) (auto simp: rel_mono_wrt_pred_eq_rel_dep_mono_wrt_pred
+    crel_mono_wrt_pred_eq_crel_dep_mono_wrt_pred)
 
 lemma rel_comp_eval_eq_if_rel_dep_mono_wrt_pred_if_crel_dep_mono_wrt_predI [simp]:
   assumes "((x : A) \<rightarrow>\<^sub>c B x) R"

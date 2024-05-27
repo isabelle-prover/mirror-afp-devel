@@ -5,18 +5,18 @@ theory Dependent_Binary_Relations
     Binary_Relations_Agree
 begin
 
-consts dep_bin_rel :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'd \<Rightarrow> bool"
-consts bin_rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
+consts dep_bin_rel :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'd"
+consts bin_rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 bundle bin_rel_syntax
 begin
-syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool\<close> ("{\<Sum>}_ : _./ _" [41, 41, 40] 51)
-notation bin_rel (infixl "{\<times>}" 51)
+syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> ("{\<Sum>}_ : _./ _" [51, 50, 50] 51)
+notation bin_rel (infixr "{\<times>}" 51)
 end
 bundle no_bin_rel_syntax
 begin
-no_syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool\<close> ("{\<Sum>}_ : _./ _" [41, 41, 40] 51)
-no_notation bin_rel (infixl "{\<times>}" 51)
+no_syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> ("{\<Sum>}_ : _./ _" [51, 50, 50] 51)
+no_notation bin_rel (infixr "{\<times>}" 51)
 end
 unbundle bin_rel_syntax
 translations
@@ -128,9 +128,12 @@ lemma dep_bin_rel_bottom_dom_iff_eq_bottom [iff]: "({\<Sum>}x : \<bottom>. B x) 
 lemma dep_bin_rel_bottom_codom_iff_eq_bottom [iff]: "({\<Sum>}x : A. \<bottom>) R \<longleftrightarrow> R = \<bottom>"
   by fastforce
 
-lemma mono_bin_rel_dep_bin_rel_bin_rel_rel_comp:
+lemma mono_bin_rel_dep_bin_rel_bin_rel_in_codom_on_rel_comp:
   "(A {\<times>} B \<Rightarrow> ({\<Sum>}x : B. C x) \<Rightarrow> A {\<times>} in_codom_on B C) (\<circ>\<circ>)"
   by fastforce
+
+lemma mono_bin_rel_bin_rel_bin_rel_rel_comp: "(A {\<times>} B \<Rightarrow> B {\<times>} C \<Rightarrow> A {\<times>} C) (\<circ>\<circ>)"
+  by fast
 
 lemma mono_dep_bin_rel_bin_rel_rel_inv: "(({\<Sum>}x : A. B x) \<Rightarrow> in_codom_on A B {\<times>} A) rel_inv"
   by force

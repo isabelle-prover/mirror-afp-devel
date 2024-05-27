@@ -1,7 +1,7 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 theory LBinary_Relations
   imports
-    Binary_Relations_Function
+    Binary_Relations_Functions
     Binary_Relations_Order
     Binary_Relation_Properties
     Binary_Relation_Functions

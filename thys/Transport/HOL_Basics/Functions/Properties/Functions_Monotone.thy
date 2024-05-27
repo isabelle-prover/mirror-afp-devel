@@ -20,25 +20,25 @@ consts mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 bundle dep_mono_wrt_syntax begin
 syntax
-  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(_) \<Rightarrow> (_)" [41, 40] 40)
+  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr "\<Rightarrow>" 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)" [41, 41, 41, 40] 40)
+    ("'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)" [51, 51, 50, 50] 50)
   "_dep_mono_wrt_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)" [41, 41, 41, 40, 40] 40)
-  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("'(_/ :/ _') \<Rightarrow> (_)" [41, 41, 40] 40)
+    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)" [51, 51, 50, 50, 50] 50)
+  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("'(_/ :/ _') \<Rightarrow> (_)" [51, 50, 50] 50)
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [41, 41, 40, 40] 40)
+    ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [51, 50, 50, 50] 50)
 end
 bundle no_dep_mono_wrt_syntax begin
 no_syntax
-  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(_) \<Rightarrow> (_)" [41, 40] 40)
+  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr "\<Rightarrow>" 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)" [41, 41, 41, 40] 40)
+    ("'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)" [51, 51, 50, 50] 50)
   "_dep_mono_wrt_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)" [41, 41, 41, 40, 40] 40)
-  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("'(_/ :/ _') \<Rightarrow> (_)" [41, 41, 40] 40)
+    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)" [51, 51, 50, 50, 50] 50)
+  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("'(_/ :/ _') \<Rightarrow> (_)" [51, 50, 50] 50)
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [41, 41, 40, 40] 40)
+    ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [51, 50, 50, 50] 50)
 end
 unbundle dep_mono_wrt_syntax
 translations
@@ -86,7 +86,7 @@ lemma mono_wrt_pred_eq_dep_mono_wrt_pred:
 
 lemma mono_wrt_pred_eq_dep_mono_wrt_pred_uhint [uhint]:
   assumes "P \<equiv> P'"
-  and "Q' \<equiv> (\<lambda>(_ :: 'a). Q)"
+  and "\<And>x. Q \<equiv> Q' x"
   shows "((P :: 'a \<Rightarrow> bool) \<Rightarrow> (Q :: 'b \<Rightarrow> bool)) = (((x : P') \<Rightarrow> Q' x) :: ('a \<Rightarrow> 'b) \<Rightarrow> bool)"
   using assms by (simp add: mono_wrt_pred_eq_dep_mono_wrt_pred)
 
@@ -109,6 +109,12 @@ lemma dep_mono_wrt_relD [dest]:
   and "R x y"
   shows "S x y (f x) (f y)"
   using assms unfolding dep_mono_wrt_rel_def by blast
+
+lemma dep_mono_wrt_rel_cong [cong]:
+  assumes "R = R'"
+  and "\<And>x y. R' x y \<Longrightarrow> S x y = S' x y"
+  shows "((x y \<Colon> R) \<Rightarrow> S x y) = ((x y \<Colon> R') \<Rightarrow> S' x y)"
+  using assms by force
 
 lemma mono_wrt_relI [intro]:
   assumes "\<And>x y. R x y \<Longrightarrow> S (f x) (f y)"
@@ -141,6 +147,18 @@ lemma dep_mono_wrt_predD [dest]:
   and "P x"
   shows "Q x (f x)"
   using assms unfolding dep_mono_wrt_pred_def by blast
+
+lemma dep_mono_wrt_pred_cong [cong]:
+  assumes "P = P'"
+  and "\<And>x. P' x \<Longrightarrow> Q x = Q' x"
+  shows "((x : P) \<Rightarrow> Q x) = ((x : P') \<Rightarrow> Q' x)"
+  using assms by force
+
+lemma dep_mono_wrt_pred_codom_iff_cong:
+  assumes "P = P'"
+  and "\<And>x. P' x \<Longrightarrow> Q x (f x) \<longleftrightarrow> Q' x (f' x)"
+  shows "((x : P) \<Rightarrow> Q x) f \<longleftrightarrow> ((x : P') \<Rightarrow> Q' x) f'"
+  using assms by force
 
 lemma mono_wrt_predI [intro]:
   assumes "\<And>x. P x \<Longrightarrow> Q (f x)"
@@ -259,6 +277,17 @@ corollary mono_wrt_pred_iff_le_pred_map: "(P \<Rightarrow> Q) f \<longleftrighta
 
 end
 
+lemma dep_mono_comp_iff_dep_mono_if_all_app_eq:
+  assumes "\<And>x. A x \<Longrightarrow> f (m x) = g x"
+  shows "((x : (A :: _ \<Rightarrow> bool)) \<Rightarrow> B x) (f \<circ> m) \<longleftrightarrow> ((x : A) \<Rightarrow> B x) g"
+  using assms by fastforce
+
+lemma dep_mono_pred_map_comp_iff_dep_mono_if_all_app_eq:
+  assumes "\<And>x y. A x \<Longrightarrow> B x y \<Longrightarrow> f x (m y) = g x y"
+  shows "((x : A) \<Rightarrow> pred_map (\<lambda>f. f \<circ> m) ((y : B x) \<Rightarrow> C x y)) f
+    \<longleftrightarrow> ((x : A) \<Rightarrow> (y : (B x :: _ \<Rightarrow> bool)) \<Rightarrow> C x y) g"
+  using assms by (simp cong: dep_mono_wrt_pred_codom_iff_cong)
+
 definition "mono :: (('a :: ord) \<Rightarrow> ('b :: ord)) \<Rightarrow> bool
   \<equiv> (((\<le>) :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ((\<le>) :: 'b \<Rightarrow> 'b \<Rightarrow> bool))"
 
@@ -361,7 +390,7 @@ lemma dep_mono_wrt_pred_if_le_left_if_dep_mono_wrt_pred:
   shows "((x : P') \<Rightarrow> Q x) f"
   using assms by blast
 
-lemma mono_Dep_Fun_Rel_rel_right: "mono (\<lambda>(S :: 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool).  ((x y \<Colon> R) \<Rrightarrow> S x y))"
+lemma mono_Dep_Fun_Rel_rel_right: "mono (\<lambda>(S :: 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool). ((x y \<Colon> R) \<Rrightarrow> S x y))"
   by (intro monoI) blast
 
 lemma mono_Dep_Fun_Rel_pred_right: "mono (\<lambda>(Q :: 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool). ((x : P) \<Rrightarrow> Q x))"
@@ -454,6 +483,21 @@ lemma mono_wrt_pred_self_id:
   fixes P :: "'a \<Rightarrow> bool"
   shows "(P \<Rightarrow> P) (id :: 'a \<Rightarrow> 'a)"
   by auto
+
+lemma mono_dep_mono_wrt_dep_mono_wrt_comp:
+  "(((x : (B :: 'b \<Rightarrow> bool)) \<Rightarrow> C x) \<Rightarrow> (f : A \<Rightarrow> B) \<Rightarrow> (x : A) \<Rightarrow> C (f x)) (\<circ>)"
+  by force
+
+lemma mono_wrt_dep_mono_wrt_dep_fun_map:
+  fixes A :: "'a \<Rightarrow> bool"
+  shows "((f : A \<Rightarrow> B) \<Rightarrow> ((x : A) \<Rightarrow> (y : B) \<Rightarrow> (z : C (f x)) \<Rightarrow> D x y z) \<Rightarrow>
+    (h : (x : B) \<Rightarrow> C x) \<Rightarrow> (x : A) \<Rightarrow> D x (f x) (h (f x))) dep_fun_map"
+  by fastforce
+
+lemma mono_wrt_dep_mono_wrt_fun_map:
+  fixes A :: "'a \<Rightarrow> bool"
+  shows "((f : A \<Rightarrow> B) \<Rightarrow> ((x : C) \<Rightarrow> D x) \<Rightarrow> (h : B \<Rightarrow> C) \<Rightarrow> (x : A) \<Rightarrow> D (h (f x))) fun_map"
+  by fastforce
 
 lemma mono_in_dom: "mono in_dom" by (intro monoI) fast
 lemma mono_in_codom: "mono in_codom" by (intro monoI) fast

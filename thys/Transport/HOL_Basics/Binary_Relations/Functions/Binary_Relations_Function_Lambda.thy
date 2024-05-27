@@ -1,7 +1,7 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 subsection \<open>Lambda Abstractions\<close>
 theory Binary_Relations_Function_Lambda
-  imports Binary_Relations_Clean_Function
+  imports Binary_Relations_Clean_Functions
 begin
 
 consts rel_lambda :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'd"
@@ -12,15 +12,16 @@ adhoc_overloading rel_lambda rel_lambda_pred
 bundle rel_lambda_syntax
 begin
 syntax
-  "_rel_lambda"  :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
+  "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
 end
 bundle no_rel_lambda_syntax
 begin
 no_syntax
-  "_rel_lambda"  :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
+  "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
 end
 unbundle rel_lambda_syntax
 translations
+  "\<lambda>x xs : A. f" \<rightharpoonup> "CONST rel_lambda A (\<lambda>x. (\<lambda>xs : A. f))"
   "\<lambda>x : A. f" \<rightleftharpoons> "CONST rel_lambda A (\<lambda>x. f)"
 
 lemma rel_lambdaI [intro]:
@@ -61,8 +62,8 @@ lemma crel_dep_mono_wrt_pred_rel_lambda: "((x : A) \<rightarrow>\<^sub>c ((=) (f
 text \<open>Compare the following with @{thm mono_rel_dep_mono_wrt_pred_dep_mono_wrt_pred_eval}.\<close>
 
 lemma mono_dep_mono_wrt_pred_crel_dep_mono_wrt_pred_rel_lambda:
-  "(((x : A) \<Rightarrow> B x) \<Rightarrow> (x : A) \<rightarrow>\<^sub>c B x) (rel_lambda A)"
-  by (intro mono_wrt_predI crel_dep_mono_wrt_predI') auto
+  "((A : \<top>) \<Rightarrow> ((x : A) \<Rightarrow> B x) \<Rightarrow> (x : A) \<rightarrow>\<^sub>c B x) rel_lambda"
+  by (urule (rr) dep_mono_wrt_predI crel_dep_mono_wrt_predI') auto
 
 lemma rel_lambda_eval_eq [simp]:
   assumes "A x"
