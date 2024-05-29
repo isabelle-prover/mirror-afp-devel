@@ -358,7 +358,7 @@ object AFP_Submit {
           entry <- entries
           affil <- entry.authors ++ entry.notifies
           author = affil.author
-          if state.authors.contains(author)
+          if !state.authors.contains(author)
         } yield authors(author)).distinct
 
       def new_affils(state: State): List[Affiliation] =
