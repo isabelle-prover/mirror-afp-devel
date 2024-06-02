@@ -1295,11 +1295,23 @@ proof (cases N \<beta> S\<^sub>1 S\<^sub>2 rule: resolve.cases)
   have "L \<cdot>l \<mu>\<^sub>L \<in># add_mset LL CC \<cdot> \<mu>\<^sub>L"
   proof (cases "L = LL \<or> L = LL'")
     case True
+
     moreover have "LL \<cdot>l \<mu>\<^sub>L = LL' \<cdot>l \<mu>\<^sub>L"
-      using imgu_\<mu>\<^sub>L[unfolded is_imgu_def, THEN conjunct1, unfolded is_unifiers_def, simplified]
-      using \<open>LL \<cdot>l \<gamma>\<^sub>C = LL' \<cdot>l \<gamma>\<^sub>C\<close>
-      by (metis (no_types, opaque_lifting) atm_of_subst_lit finite.emptyI finite.insertI insertCI
-          is_unifier_alt literal.expand subst_lit_is_neg)
+    proof -
+      have "is_unifier \<mu>\<^sub>L {atm_of LL, atm_of LL'}"
+        using imgu_\<mu>\<^sub>L[unfolded is_imgu_def, THEN conjunct1, unfolded is_unifiers_def, simplified] .
+
+      hence "atm_of LL \<cdot>a \<mu>\<^sub>L = atm_of LL' \<cdot>a \<mu>\<^sub>L"
+        unfolding is_unifier_alt[of "{atm_of LL, atm_of LL'}", simplified] ..
+
+      hence "atm_of (LL \<cdot>l \<mu>\<^sub>L) = atm_of (LL' \<cdot>l \<mu>\<^sub>L)"
+        unfolding atm_of_subst_lit[symmetric] .
+
+      thus ?thesis
+        using \<open>LL \<cdot>l \<gamma>\<^sub>C = LL' \<cdot>l \<gamma>\<^sub>C\<close>
+        by (metis (no_types, opaque_lifting) literal.expand subst_lit_is_neg)
+    qed
+
     ultimately have "L \<cdot>l \<mu>\<^sub>L = LL \<cdot>l \<mu>\<^sub>L"
       by presburger
     thus ?thesis
@@ -2058,8 +2070,7 @@ proof -
   qed
 
   ultimately have "\<not> trail_defined_lit (state_trail Sn) (L \<cdot>l \<gamma>)"
-    by (metis trail_defined_lit_def trail_false_lit_def trail_false_lit_if_trail_false_suffix
-        uminus_of_uminus_id)
+    using trail_defined_lit_if_trail_defined_suffix by metis
 
   moreover have "trail_false_cls (state_trail Sn) (Cn \<cdot> \<gamma>n)"
     using \<open>ground_false_closures Sn\<close> conflict_Sn by (auto simp add: ground_false_closures_def)

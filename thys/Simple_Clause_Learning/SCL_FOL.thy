@@ -1074,31 +1074,32 @@ definition is_decision_lit
   :: "('f, 'v) term literal \<times> ('f, 'v) closure_with_lit option \<Rightarrow> bool" where
   "is_decision_lit Ln \<longleftrightarrow> snd Ln = None"
 
-definition trail_interp :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term interp" where
+definition trail_interp :: "_ list \<Rightarrow> _ interp" where
   "trail_interp \<Gamma> = \<Union>((\<lambda>L. case L of Pos A \<Rightarrow> {A} | Neg A \<Rightarrow> {}) ` fst ` set \<Gamma>)"
 
-lemma "trail_interp \<Gamma> = (\<Union>Ln \<in> set \<Gamma>. case fst Ln of Pos t \<Rightarrow> {t} | Neg t \<Rightarrow> {})"
+lemma trail_interp_eq_Union:
+  "trail_interp \<Gamma> = (\<Union>Ln \<in> set \<Gamma>. case fst Ln of Pos t \<Rightarrow> {t} | Neg t \<Rightarrow> {})"
   unfolding trail_interp_def by simp
 
-definition trail_true_lit :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term literal \<Rightarrow> bool" where
+definition trail_true_lit :: "(_ literal \<times> _ option) list \<Rightarrow> _ literal \<Rightarrow> bool" where
   "trail_true_lit \<Gamma> L \<longleftrightarrow> L \<in> fst ` set \<Gamma>"
 
-definition trail_false_lit :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term literal \<Rightarrow> bool" where
+definition trail_false_lit :: "(_ literal \<times> _ option) list \<Rightarrow> _ literal \<Rightarrow> bool" where
   "trail_false_lit \<Gamma> L \<longleftrightarrow> - L \<in> fst ` set \<Gamma>"
 
-definition trail_true_cls :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term clause \<Rightarrow> bool" where
+definition trail_true_cls :: "(_ literal \<times> _ option) list \<Rightarrow> _ clause \<Rightarrow> bool" where
   "trail_true_cls \<Gamma> C \<longleftrightarrow> (\<exists>L \<in># C. trail_true_lit \<Gamma> L)"
 
-definition trail_false_cls :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term clause \<Rightarrow> bool" where
+definition trail_false_cls :: "(_ literal \<times> _ option) list \<Rightarrow> _ clause \<Rightarrow> bool" where
   "trail_false_cls \<Gamma> C \<longleftrightarrow> (\<forall>L \<in># C. trail_false_lit \<Gamma> L)"
 
 definition trail_true_clss :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term clause set \<Rightarrow> bool" where
   "trail_true_clss \<Gamma> N \<longleftrightarrow> (\<forall>C \<in> N. trail_true_cls \<Gamma> C)"
 
-definition trail_defined_lit :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term literal \<Rightarrow> bool" where
+definition trail_defined_lit :: "(_ literal \<times> _ option) list \<Rightarrow> _ literal \<Rightarrow> bool" where
   "trail_defined_lit \<Gamma> L \<longleftrightarrow> (L \<in> fst ` set \<Gamma> \<or> - L \<in> fst ` set \<Gamma>)"
 
-definition trail_defined_cls :: "('f, 'v) trail \<Rightarrow> ('f, 'v) term clause \<Rightarrow> bool" where
+definition trail_defined_cls :: "(_ literal \<times> _ option) list \<Rightarrow> _ clause \<Rightarrow> bool" where
   "trail_defined_cls \<Gamma> C \<longleftrightarrow> (\<forall>L \<in># C. trail_defined_lit \<Gamma> L)"
 
 lemma trail_defined_lit_iff_true_or_false:
@@ -1135,6 +1136,14 @@ lemma not_trail_false_Nil[simp]:
 
 lemma not_trail_defined_lit_Nil[simp]: "\<not> trail_defined_lit [] L"
   by (simp add: trail_defined_lit_iff_true_or_false)
+
+lemma trail_defined_lit_if_trail_defined_suffix:
+  "suffix \<Gamma>' \<Gamma> \<Longrightarrow> trail_defined_lit \<Gamma>' K \<Longrightarrow> trail_defined_lit \<Gamma> K"
+  by (meson image_mono set_mono_suffix subsetD trail_defined_lit_def)
+
+lemma trail_defined_cls_if_trail_defined_suffix:
+  "suffix \<Gamma>' \<Gamma> \<Longrightarrow> trail_defined_cls \<Gamma>' C \<Longrightarrow> trail_defined_cls \<Gamma> C"
+  using trail_defined_cls_def trail_defined_lit_if_trail_defined_suffix by metis
 
 lemma trail_false_lit_if_trail_false_suffix:
   "suffix \<Gamma>' \<Gamma> \<Longrightarrow> trail_false_lit \<Gamma>' K \<Longrightarrow> trail_false_lit \<Gamma> K"
@@ -1188,6 +1197,7 @@ lemma ball_trail_decide_is_ground_lit:
   by (simp add: decide_lit_def)
 
 lemma trail_false_cls_subst_mgu_before_grounding:
+  fixes \<Gamma> :: "('f, 'v) trail"
   assumes tr_false_cls: "trail_false_cls \<Gamma> ((D + {#L, L'#}) \<cdot> \<sigma>)" and
     imgu_\<mu>: "is_imgu \<mu> {{atm_of L, atm_of L'}}" and
     unif_\<sigma>: "is_unifiers \<sigma> {{atm_of L, atm_of L'}}"
@@ -1359,7 +1369,8 @@ proof (rule iffI)
 next
   show "\<not> trail_interp \<Gamma> \<TTurnstile> C \<Longrightarrow> trail_false_cls \<Gamma> C"
     using assms(1) assms(2) trail_defined_cls_def trail_interp_cls_if_trail_true
-      trail_true_or_false_cls_if_defined by blast
+      trail_true_or_false_cls_if_defined
+    by blast
 qed
 
 inductive trail_closures_false where

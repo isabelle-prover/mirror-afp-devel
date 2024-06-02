@@ -355,9 +355,13 @@ proof -
               unfolding S_def[unfolded u_def C_def] S'_def
               apply simp
               using is_shortest_backtrack_shortest_backtrack[of "add_mset L C'", simplified]
-              by (metis C_def \<Gamma>_def \<Gamma>_false_C_\<gamma>\<^sub>C \<open>S = (\<Gamma>, U, Some (add_mset L C', \<gamma>\<^sub>C))\<close>
+              using \<Gamma>_def \<Gamma>_false_C_\<gamma>\<^sub>C
+              by (metis (no_types, lifting) C_def \<open>S = (\<Gamma>, U, Some (add_mset L C', \<gamma>\<^sub>C))\<close>
                   \<open>ground_closures S\<close> ex_conflict_def ground_closures_def is_shortest_backtrack_def
-                  state_proj_simp(3) suffix_Cons)
+                  state_conflict_simp suffix_Cons)
+              (* by (metis C_def \<Gamma>_def \<Gamma>_false_C_\<gamma>\<^sub>C \<open>S = (\<Gamma>, U, Some (add_mset L C', \<gamma>\<^sub>C))\<close>
+                  \<open>ground_closures S\<close> ex_conflict_def ground_closures_def is_shortest_backtrack_def
+                  state_proj_simp(3) suffix_Cons) *)
             ultimately show False
               using no_new_backtrack by metis
           next
