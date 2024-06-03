@@ -1,0 +1,31 @@
+title = "Sorted Terms"
+date = 2024-05-27
+topics = [
+  "Logic/Rewriting",
+  "Mathematics/Algebra",
+]
+abstract = "This entry provides a basic library for many-sorted terms and algebras. We view sorted sets just as partial maps from elements to sorts, and define sorted set of terms reusing the data type from the existing library of (unsorted) first order terms. All the existing functionality, such as substitutions and contexts, can be reused without any modifications. We provide predicates stating what substitutions or contexts are considered sorted, and prove facts that they preserve sorts as expected."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.yamada]
+email = "yamada_email2"
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+yamada = "yamada_email2"
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

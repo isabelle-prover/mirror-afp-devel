@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>thiemann</title>
+          <link>/authors/thiemann/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/thiemann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yamada</title>
+          <link>/authors/yamada/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/yamada/</guid>
+          <description></description>
+        </item>
         <item>
           <title>schulz</title>
           <link>/authors/schulz/</link>
@@ -109,13 +123,6 @@
           <link>/authors/mitterwallner/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/authors/mitterwallner/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>thiemann</title>
-          <link>/authors/thiemann/</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/thiemann/</guid>
           <description></description>
         </item>
         <item>
@@ -634,13 +641,6 @@
           <link>/authors/dubut/</link>
           <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
           <guid>/authors/dubut/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>yamada</title>
-          <link>/authors/yamada/</link>
-          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/yamada/</guid>
           <description></description>
         </item>
         <item>

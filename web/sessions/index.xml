@@ -3996,6 +3996,13 @@
           <description></description>
         </item>
         <item>
+          <title>Pattern_Completeness</title>
+          <link>/sessions/pattern_completeness/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pattern_completeness/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>PCF</title>
           <link>/sessions/pcf/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5176,6 +5183,13 @@
           <link>/sessions/sort_encodings/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/sort_encodings/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sorted_Terms</title>
+          <link>/sessions/sorted_terms/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/sorted_terms/</guid>
           <description></description>
         </item>
         <item>

@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Sorted Terms</title>
+          <link>/entries/Sorted_Terms.html</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sorted_Terms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Verifying a Decision Procedure for Pattern Completeness</title>
+          <link>/entries/Pattern_Completeness.html</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Pattern_Completeness.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Schönhage-Strassen Multiplication</title>
           <link>/entries/Schoenhage_Strassen.html</link>

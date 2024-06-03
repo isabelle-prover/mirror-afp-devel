@@ -1,0 +1,40 @@
+title = "Verifying a Decision Procedure for Pattern Completeness"
+date = 2024-05-27
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+Pattern completeness is the property that the left-hand sides of a functional
+program or term rewrite system cover all cases w.r.t. pattern matching. We
+verify a recent (abstract) decision procedure for pattern completeness that
+covers the general case, i.e., in particular without the usual restriction of
+left-linearity. In two refinement steps, we further develop an executable
+version of that abstract algorithm. On our example suite, this verified
+implementation is faster than other implementations that are based on
+alternative (unverified) approaches, including the complement algorithm, tree
+automata encodings, and even the pattern completeness check of the GHC Haskell
+compiler."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[authors.yamada]
+email = "yamada_email2"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+yamada = "yamada_email2"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

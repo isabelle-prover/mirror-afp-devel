@@ -3,27 +3,60 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/akra_bazzi/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/certification_monads/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/complete_non_orders/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lp_duality/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Sorted_Terms.html</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/sorted_terms/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/thiemann/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Pattern_Completeness.html</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/yamada/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/karatsuba/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/number_theoretic_transform/</loc>
@@ -36,9 +69,6 @@
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/schulz/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/universal_hash_families/</loc>
@@ -113,16 +143,10 @@
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/knuth_bendix_order/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lambda_free_rpos/</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/middeldorp/</loc>
@@ -135,9 +159,6 @@
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Substitutions_Lambda_Free.html</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/thiemann/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/trelat/</loc>
@@ -743,16 +764,10 @@
     <loc>/authors/wenninger/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/complete_non_orders/</loc>
-    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/dubut/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Directed_Sets.html</loc>
-    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/yamada/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multirelations_Heterogeneous.html</loc>
@@ -1998,9 +2013,6 @@
     <lastmod>2020-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ai_planning_languages_semantics/</loc>
-    <lastmod>2020-10-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/certification_monads/</loc>
     <lastmod>2020-10-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/kurz/</loc>
@@ -6432,6 +6444,8 @@
   </url><url>
     <loc>/sessions/password_authentication_protocol/</loc>
   </url><url>
+    <loc>/sessions/pattern_completeness/</loc>
+  </url><url>
     <loc>/sessions/pcf/</loc>
   </url><url>
     <loc>/sessions/pell/</loc>
@@ -6788,6 +6802,8 @@
     <loc>/sessions/sophomores_dream/</loc>
   </url><url>
     <loc>/sessions/sort_encodings/</loc>
+  </url><url>
+    <loc>/sessions/sorted_terms/</loc>
   </url><url>
     <loc>/sessions/source_coding_theorem/</loc>
   </url><url>
