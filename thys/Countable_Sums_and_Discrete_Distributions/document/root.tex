@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+%\usepackage{url}
+%\usepackage{hyperref}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Countable Sums and Discrete (Sub)Distributions}
+\author{Gergely Buday \and Andrei Popescu}
+\maketitle
+
+\begin{abstract}
+	We provide elementary formalizations of countable sums over positive real numbers, and of  discrete probabilistic subdistributions and distributions. This is intended as a lightweight alternative to the corresponding concepts from the Isabelle distribution, which are defined using  their continuous counterparts (namely Lebesgue integral and general probability distributions) and therefore have significant dependencies.  
+\end{abstract} 
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% include generated text of all theories
+\input{session}
+
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}

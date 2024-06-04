@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Countable_Sums_and_Discrete_Distributions" = "HOL-Library" +
+options [timeout = 300]
+
+theories
+    "Infinite_Sums_of_Positive_Reals"
+    "Discrete_Subdistributions_and_Distributions"
+
+document_files
+    "root.tex"
