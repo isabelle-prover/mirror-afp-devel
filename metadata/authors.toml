@@ -1013,6 +1013,24 @@ host = [
 [brunner.homepages]
 brunner_homepage = "http://www21.in.tum.de/~brunnerj/"
 
+[buday]
+name = "Gergely Buday"
+
+[buday.emails]
+
+[buday.emails.buday_email]
+user = [
+  "g",
+  "buday",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[buday.homepages]
+
 [bulwahn]
 name = "Lukas Bulwahn"
 

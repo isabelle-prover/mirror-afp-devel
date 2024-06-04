@@ -1,0 +1,32 @@
+title = "Countable Sums and Discrete (Sub)Distributions"
+date = 2024-05-25
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+  "Mathematics/Probability theory",
+  "Mathematics/Algebra",
+]
+abstract = "We provide elementary formalizations of countable sums over positive real numbers, and of discrete probabilistic subdistributions and distributions. This is intended as a lightweight alternative to the corresponding concepts from the Isabelle distribution, which are defined using their continuous counterparts (namely Lebesgue integral and general probability distributions) and therefore have significant dependencies."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.buday]
+email = "buday_email"
+
+[authors.popescu]
+email = "popescu_email"
+
+[contributors]
+
+[notify]
+buday = "buday_email"
+popescu = "popescu_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

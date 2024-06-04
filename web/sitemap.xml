@@ -50,6 +50,15 @@
     <loc>/authors/yamada/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/buday/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Countable_Sums_and_Discrete_Distributions.html</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/popescu/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -910,9 +919,6 @@
   </url><url>
     <loc>/dependencies/weighted_arithmetic_geometric_mean/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/popescu/</loc>
-    <lastmod>2023-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Rensets.html</loc>
     <lastmod>2023-02-28T00:00:00+00:00</lastmod>
@@ -5337,6 +5343,8 @@
     <loc>/sessions/cotangent_pfd_formula/</loc>
   </url><url>
     <loc>/sessions/count_complex_roots/</loc>
+  </url><url>
+    <loc>/sessions/countable_sums_and_discrete_distributions/</loc>
   </url><url>
     <loc>/sessions/coupledsim_contrasim/</loc>
   </url><url>
