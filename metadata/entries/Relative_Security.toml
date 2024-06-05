@@ -4,7 +4,7 @@ topics = [
   "Computer science/Security",
 ]
 abstract = """
-This entry formalizes the notion of relative security presented in the CSF 2023 paper “Relative Security: Formally Modeling and (Dis)Proving Resilience Against Semantic Optimization Vulnerabilities” by Brijesh Dongol, Matt Griffin, Andrei Popescu and Jamie Wright.
+This entry formalizes the notion of relative security presented in the CSF 2024 paper “Relative Security: Formally Modeling and (Dis)Proving Resilience Against Semantic Optimization Vulnerabilities” by Brijesh Dongol, Matt Griffin, Andrei Popescu and Jamie Wright.
 
 It defines two versions of relative security: a finitary one (restricted to finite traces), and an infinitary one (working with both finite and infinite traces). It introduces unwinding methods for verifying relative security in both the finitary and infinitary versions, and proves their soundness. The proof of soudness in the infinitary case is a substantial application of Isabelle’s corecursion and coinduction infrastructure."""
 license = "bsd"
