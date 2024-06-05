@@ -38,6 +38,12 @@
     <loc>/dependencies/sorted_terms/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/stannett/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Stone_Cech.html</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/thiemann/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -841,9 +847,6 @@
   </url><url>
     <loc>/entries/Three_Squares.html</loc>
     <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/stannett/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MHComputation.html</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
@@ -6875,6 +6878,8 @@
     <loc>/sessions/stochastic_matrices/</loc>
   </url><url>
     <loc>/sessions/stone_algebras/</loc>
+  </url><url>
+    <loc>/sessions/stone_cech/</loc>
   </url><url>
     <loc>/sessions/stone_kleene_relation_algebras/</loc>
   </url><url>

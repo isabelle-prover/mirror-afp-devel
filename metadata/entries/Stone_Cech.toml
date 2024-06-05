@@ -1,0 +1,43 @@
+title = "The Stone-Cech Compactification"
+date = 2024-05-27
+topics = [
+  "Mathematics/Topology",
+]
+abstract = """
+Building on parts of HOL-Analysis, we provide mathematical components for work on the 
+  Stone-Cech compactification. The main concepts covered are: $C^*$-embedding, weak topologies 
+  and compactification, focusing in particular on the Stone-Cech compactification of an 
+  arbitrary Tychonov space $X$.
+
+  Using traditional topological proof strategies we define the evaluation and 
+  projection functions for product spaces, and show that product spaces carry the weak 
+  topology induced by their projections whenever those projections separate points both 
+  from each other and from closed sets.
+
+  In particular, we show that the evaluation map from an arbitrary Tychonov space $X$ into 
+  $\\beta{X}$ is a dense $C^*$-embedding, and then verify the Stone-Cech Extension Property: any 
+  continuous map from $X$ to a compact Hausdorff space $K$ extends uniquely to a continuous map 
+  from $\\beta{X}$ to $K$.
+
+  Many of the proofs given here derive from those of Willard (<i>General Topology</i>, 1970, 
+  Addison-Wesley) and Walker (<i>The Stone-Cech Compactification</i>, 1974, Springer-Verlag)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stannett]
+email = "stannett_email"
+
+[contributors]
+
+[notify]
+stannett = "stannett_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
