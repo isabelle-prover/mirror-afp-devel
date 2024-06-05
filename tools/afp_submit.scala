@@ -341,6 +341,7 @@ object AFP_Submit {
     }
 
     case class Overview(id: String, date: LocalDate, name: String, status: Status.Value) {
+      def save_status(handler: Handler): Unit = handler.set_status(id, status)
       def update_repo(repo: Mercurial.Repository): Boolean =
         if (status != Model.Status.Added) false
         else {
@@ -1594,6 +1595,7 @@ object AFP_Submit {
         num_entry <- view.parse_num_entry(view.action(params))
         entry <- model.submissions.unapply(num_entry)
       } yield synchronized {
+        entry.save_status(handler)
         if (!devel) {
           val updated = entry.update_repo(repo)
           if (updated) {
