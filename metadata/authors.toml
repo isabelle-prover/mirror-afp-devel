@@ -2381,6 +2381,24 @@ host = [
 
 [griebel.homepages]
 
+[griffin]
+name = "Matthew Griffin"
+
+[griffin.emails]
+
+[griffin.emails.griffin_email]
+user = [
+  "matthew",
+  "griffin",
+]
+host = [
+  "imperial",
+  "ac",
+  "uk",
+]
+
+[griffin.homepages]
+
 [grov]
 name = "Gudmund Grov"
 
@@ -7667,6 +7685,23 @@ host = [
 
 [wolff.homepages]
 wolff_homepage = "https://www.lri.fr/~wolff/"
+
+[wright]
+name = "Jamie Wright"
+
+[wright.emails]
+
+[wright.emails.wright_email]
+user = [
+  "jwright8",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[wright.homepages]
 
 [wu]
 name = "Chunhan Wu"

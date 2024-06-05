@@ -491,6 +491,7 @@ Monad_Normalisation
 MonoBoolTranAlgebra
 MonoidalCategory
 Monomorphic_Monad
+More_LazyLists
 MuchAdoAboutTwo
 Multi_Party_Computation
 Multirelations
@@ -646,6 +647,7 @@ Relational_Forests
 Relational_Method
 Relational_Minimum_Spanning_Trees
 Relational_Paths
+Relative_Security
 Rensets
 Rep_Fin_Groups
 ResiduatedTransitionSystem
@@ -678,6 +680,7 @@ Sauer_Shelah_Lemma
 Schutz_Spacetime
 Schwartz_Zippel
 Secondary_Sylow
+Secret_Directed_Unwinding
 Security_Protocol_Refinement
 Selection_Heap_Sort
 SenSocialChoice

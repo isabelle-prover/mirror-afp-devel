@@ -35,6 +35,27 @@
           <description></description>
         </item>
         <item>
+          <title>More Operations on Lazy Lists</title>
+          <link>/entries/More_LazyLists.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/More_LazyLists.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relative Security</title>
+          <link>/entries/Relative_Security.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Relative_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secret-Directed Unwinding</title>
+          <link>/entries/Secret_Directed_Unwinding.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Secret_Directed_Unwinding.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Schönhage-Strassen Multiplication</title>
           <link>/entries/Schoenhage_Strassen.html</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>

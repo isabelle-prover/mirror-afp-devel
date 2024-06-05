@@ -49,6 +49,27 @@
           <description></description>
         </item>
         <item>
+          <title>Coinductive</title>
+          <link>/dependencies/coinductive/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/coinductive/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>More_LazyLists</title>
+          <link>/dependencies/more_lazylists/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/more_lazylists/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relative_Security</title>
+          <link>/dependencies/relative_security/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/relative_security/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Akra_Bazzi</title>
           <link>/dependencies/akra_bazzi/</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
@@ -165,13 +186,6 @@
           <link>/dependencies/simpl/</link>
           <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/simpl/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Coinductive</title>
-          <link>/dependencies/coinductive/</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/coinductive/</guid>
           <description></description>
         </item>
         <item>

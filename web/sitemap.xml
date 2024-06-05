@@ -59,10 +59,37 @@
     <loc>/authors/popescu/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/akra_bazzi/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+    <loc>/dependencies/coinductive/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dongol/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/griffin/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/More_LazyLists.html</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/more_lazylists/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Relative_Security.html</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/relative_security/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Secret_Directed_Unwinding.html</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wright/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/karatsuba/</loc>
@@ -225,9 +252,6 @@
     <lastmod>2024-04-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MFOTL_Checker.html</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/coinductive/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ConcurrentHOL.html</loc>
@@ -3166,9 +3190,6 @@
   </url><url>
     <loc>/entries/Propositional_Proof_Systems.html</loc>
     <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dongol/</loc>
-    <lastmod>2017-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/hayes/</loc>
     <lastmod>2017-06-13T00:00:00+00:00</lastmod>
@@ -6334,6 +6355,8 @@
   </url><url>
     <loc>/sessions/monomorphic_monad/</loc>
   </url><url>
+    <loc>/sessions/more_lazylists/</loc>
+  </url><url>
     <loc>/sessions/mso_regex_equivalence/</loc>
   </url><url>
     <loc>/sessions/muchadoabouttwo/</loc>
@@ -6660,6 +6683,8 @@
   </url><url>
     <loc>/sessions/relational-incorrectness-logic/</loc>
   </url><url>
+    <loc>/sessions/relative_security/</loc>
+  </url><url>
     <loc>/sessions/rensets/</loc>
   </url><url>
     <loc>/sessions/rep_fin_groups/</loc>
@@ -6728,6 +6753,8 @@
     <priority>0.1</priority>
   </url><url>
     <loc>/sessions/secondary_sylow/</loc>
+  </url><url>
+    <loc>/sessions/secret_directed_unwinding/</loc>
   </url><url>
     <loc>/sessions/security_protocol_refinement/</loc>
   </url><url>
