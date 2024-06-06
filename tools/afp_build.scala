@@ -288,7 +288,7 @@ Last 50 lines from stderr (if available):
         CI_Build.Build_Config(
           include = List(afp.thys_dir), pre_hook = pre_hook,
           selection = Sessions.Selection(session_groups = List("slow")))
-      }, List(afp_component))
+      }, List(afp_component), CI_Build.Timed.nightly())
 
   val testboard =
     CI_Build.Job("testboard", "builds the AFP testboard", CI_Build.Profile.from_host, {
