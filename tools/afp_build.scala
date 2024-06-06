@@ -12,6 +12,8 @@ import java.time.format.DateTimeFormatter
 
 
 object AFP_Build {
+  val afp_component = Build_Manager.Component.AFP().name
+
   /* mailing */
 
 
@@ -160,7 +162,7 @@ Last 50 lines from stderr (if available):
         post_hook = post_hook, selection = Sessions.Selection(
           session_groups = List("AFP"),
           exclude_session_groups = List("slow")))
-    })
+    }, List(afp_component))
 
   val all =
     CI_Build.Job("all", "builds Isabelle + AFP (without slow)", CI_Build.Profile.from_host, {
@@ -252,8 +254,8 @@ Last 50 lines from stderr (if available):
         post_hook = post_hook, selection = Sessions.Selection(
           all_sessions = true,
           exclude_session_groups = List("slow")))
-    })
-  
+    }, List(afp_component))
+
   val mac =
     CI_Build.Job("mac", "builds the AFP (without some sessions) on Mac Os",
       CI_Build.Profile.from_host.copy(threads = 8, jobs = 1), {
@@ -271,8 +273,8 @@ Last 50 lines from stderr (if available):
               exclude_sessions = List("HOL-Proofs", "HOL-ODE-Numerics", "Linear_Programming",
                 "HOL-Nominal-Examples", "HOL-Analysis"),
               exclude_session_groups = List("slow")))
-      })
-  
+      }, List(afp_component))
+
   val slow =
     CI_Build.Job("slow", "builds the AFP slow sessions",
       CI_Build.Profile.from_host.copy(threads = 8, jobs = 1), {
@@ -286,7 +288,7 @@ Last 50 lines from stderr (if available):
         CI_Build.Build_Config(
           include = List(afp.thys_dir), pre_hook = pre_hook,
           selection = Sessions.Selection(session_groups = List("slow")))
-      })
+      }, List(afp_component))
 
   val testboard =
     CI_Build.Job("testboard", "builds the AFP testboard", CI_Build.Profile.from_host, {
@@ -322,7 +324,7 @@ Last 50 lines from stderr (if available):
           Sessions.Selection(
             all_sessions = true,
             exclude_session_groups = List("slow")))
-    })
+    }, List(afp_component))
 }
 
 class CI_Builds extends Isabelle_CI_Builds(
