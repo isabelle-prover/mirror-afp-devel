@@ -1,11 +1,10 @@
 chapter AFP
 
-session ML_Unification = "Pure" +
+session ML_Unification = HOL +
   description
     \<open>Various unification utilities for Isabelle/ML, e.g. E-unification, E-matching, and unification hints.\<close>
-  options [timeout = 500]
+  options [timeout = 300]
   sessions
-    HOL
     SpecCheck
   directories
     "Binders"
