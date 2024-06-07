@@ -126,7 +126,9 @@ class AFP_Structure private(options: Options, val base_dir: Path) {
   def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
     Sessions.parse_root_entries(thys_dir + Path.basic(name) + Sessions.ROOT)
 
-  def hg_id: String = Mercurial.repository(base_dir).id()
+  def hg_id: String =
+    if (Mercurial.Hg_Sync.ok(base_dir)) File.read(base_dir + Mercurial.Hg_Sync.PATH_ID)
+    else Mercurial.repository(base_dir).id()
 }
 
 object AFP_Structure {
