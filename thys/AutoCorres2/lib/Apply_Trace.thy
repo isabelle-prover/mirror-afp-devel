@@ -116,7 +116,7 @@ in SOME (fact_from_derivation ctxt local_name |> the) end handle Option =>
 fun thms_of (PBody {thms,...}) = thms
 
 fun proof_body_descend' f get_fact (ident, thm_node) deptab = let
-  val nm = Proofterm.thm_node_name thm_node
+  val nm = Thm_Name.short (Proofterm.thm_node_name thm_node)
   val body = Proofterm.thm_node_body thm_node
 in
   (if not (f nm) then

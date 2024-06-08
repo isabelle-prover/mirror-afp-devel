@@ -323,7 +323,7 @@ fun mk_thm_specs ctxt thm_specs_raw =
         (
           single 
           #> (ctxt |> Attrib.eval_thms)
-          #> (Thm.derivation_name #> binding_last |> map |> apdupl) 
+          #> (Thm.derivation_name #> Thm_Name.short #> binding_last |> map |> apdupl)
           |> apfst
           |> apsnd 
           |> map
