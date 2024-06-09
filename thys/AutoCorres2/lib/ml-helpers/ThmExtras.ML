@@ -98,7 +98,7 @@ fun pretty_fact only_names ctxt adjusted_name =
 (* Render the given fact. *)
 fun pretty_thm only_names ctxt thm =
   let
-    val name = Thm.get_name_hint thm
+    val name = Thm_Name.short (Thm.get_name_hint thm)
     val adjusted_name = adjust_thm_name ctxt (name, NONE) (Thm.prop_of thm)
   in pretty_fact only_names ctxt adjusted_name
   end

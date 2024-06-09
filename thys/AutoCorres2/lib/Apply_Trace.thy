@@ -134,7 +134,7 @@ fun used_facts' f get_fact thm =
 
 fun used_pbody_facts ctxt thm =
   let
-    val nm = Thm.get_name_hint thm;
+    val nm = Thm_Name.short (Thm.get_name_hint thm);
     val get_fact = most_local_fact_of ctxt;
   in
     used_facts' (fn nm' => nm' = "" orelse nm' = nm) get_fact thm

@@ -29,8 +29,8 @@ struct
 
 type trace_statistics =
   {
-    conditional_rules : (Time.time * int) Symtab.table,
-    rules : int Symtab.table,
+    conditional_rules : (Time.time * int) Thm_Name.Table.table,
+    rules : int Thm_Name.Table.table,
     steps : int,
     max_steps : int,
     depth : int,
@@ -46,8 +46,8 @@ val trace_data : Proof.context -> trace_statistics Synchronized.var option = Dat
 
 fun initial n : trace_statistics =
   {
-    conditional_rules = Symtab.empty,
-    rules = Symtab.empty,
+    conditional_rules = Thm_Name.Table.empty,
+    rules = Thm_Name.Table.empty,
     steps = 0,
     max_steps = n,
     depth = 0,
@@ -61,15 +61,15 @@ fun print ({conditional_rules, rules, steps, max_depth, ...} : trace_statistics)
     val _ = writeln ("=== SIMP STATISTICS (" ^
       string_of_int steps ^ " steps, " ^ string_of_int max_depth ^ " max depth) ===")
     val _ = writeln "Conditional Rules:"
-    val _ = conditional_rules |> Symtab.dest
+    val _ = conditional_rules |> Thm_Name.Table.dest
       |> sort (make_ord (fn ((_, (t1, _)), (_, (t2, _))) => Time.< (t2, t1)))
       |> app (fn (name, (t, c)) =>
-        writeln ("  " ^ name ^ ": " ^ Time.toString t ^ " / " ^ string_of_int c ^ " = " ^
+        writeln ("  " ^ Thm_Name.print name ^ ": " ^ Time.toString t ^ " / " ^ string_of_int c ^ " = " ^
           Real.toString (Time.toReal t / Real.fromInt c)))
     val _ = writeln "Rules:"
-    val _ = rules |> Symtab.dest
+    val _ = rules |> Thm_Name.Table.dest
       |> sort (make_ord (fn ((_, c1), (_, c2)) => c2 < c1))
-      |> app (fn (name, c) => writeln ("  " ^ name ^ ": " ^ string_of_int c))
+      |> app (fn (name, c) => writeln ("  " ^ Thm_Name.print name ^ ": " ^ string_of_int c))
     val _ = writeln ("======")
   in
     ()
@@ -84,9 +84,9 @@ fun trace_apply var {unconditional, rrule, thm, ...} ctxt cont =
       {
         conditional_rules = (if unconditional then conditional_rules else
           conditional_rules |>
-          Symtab.map_default (#name rrule, (Time.zeroTime, 0))
+          Thm_Name.Table.map_default (#name rrule, (Time.zeroTime, 0))
             (fn (t, c) => (Time.+ (t, #cpu time), c + 1))),
-        rules = rules |> Symtab.map_default (#name rrule, 0) (fn c => c + 1),
+        rules = rules |> Thm_Name.Table.map_default (#name rrule, 0) (fn c => c + 1),
         steps = steps + 1,
         max_steps = max_steps,
         depth = depth,
