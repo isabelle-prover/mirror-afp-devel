@@ -22,7 +22,7 @@ fun print_subgoal apply_line_opt (is_prems, is_for, is_sh) ctxt indent stmt =
     val fixes_s =
       if not is_for orelse null fixes then NONE
       else SOME ("for " ^ space_implode " "
-        (map (fn (v, _) => Proof_Context.print_name ctxt' v) fixes));
+        (map (fn (v, _) => Thy_Header.print_name' ctxt' v) fixes));
     val premises_s = if is_prems then SOME "premises prems" else NONE;
     val sh_s = if is_sh then SOME "sledgehammer" else NONE;
     val subgoal_s = map_filter I [SOME "subgoalT", kw_tag_spec_opt, premises_s, fixes_s]
@@ -56,13 +56,9 @@ fun subgoals_cmd (modes, method_ref) =
     val is_sh = member (op =) modes "sh"
     fun tidy_all ctxt = SIMPLE_METHOD (TRYALL (tidy_tags_tac false ctxt))
   in
-    Toplevel.keep_proof (
-      K ()
-    o tap (
-        subgoals (is_prems, is_for, is_sh) method_ref
-      o Proof.refine_singleton (Method.Basic tidy_all)
-      )
-    o Toplevel.proof_of)
+    Toplevel.keep_proof (fn state =>
+      subgoals (is_prems, is_for, is_sh) method_ref
+        (Proof.refine_singleton (Method.Basic tidy_all) (Toplevel.proof_of state)))
   end
 
 val _ =

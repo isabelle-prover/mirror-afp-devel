@@ -120,7 +120,7 @@ fun trivial_ud thy b cid' =
       in Global_Theory.add_thm ((b', cid'), attr) thy end
     val _ = 
       Proof_Display.print_theorem (Position.thread_data ()) (Proof_Context.init_global thy')
-        (Thm.derivation_name with_thm, [with_thm])
+        (Thm_Name.short (Thm.derivation_name with_thm), [with_thm])
   in (trivial with_thm, thy') end;
 
 fun nontrivial_ud thy defs (b, mixfix) cid T =
@@ -213,7 +213,7 @@ fun nontrivial_ud thy defs (b, mixfix) cid T =
 
     val _ =
       Proof_Display.print_theorem (Position.thread_data ()) (Proof_Context.init_global thy'')
-        (Thm.derivation_name with_def_thm, [with_def_thm])
+        (Thm_Name.short (Thm.derivation_name with_def_thm), [with_def_thm])
 
     val (with_thm, thy''') =
       let
@@ -226,7 +226,7 @@ fun nontrivial_ud thy defs (b, mixfix) cid T =
 
     val _ =
       Proof_Display.print_theorem (Position.thread_data ()) (Proof_Context.init_global thy''')
-        (Thm.derivation_name with_thm, [with_thm])
+        (Thm_Name.short (Thm.derivation_name with_thm), [with_thm])
 
   in (nontrivial (with_def_thm, with_thm), thy''') end;
 

@@ -243,7 +243,7 @@ fun resolve_ruleset_tac ctxt rs used_rules_ref n t =
                       (map snd (#3 (#rules rs)) @ #splits rs)) t end;
 
 fun pretty_rule ctxt rule =
-  Pretty.big_list (Thm.get_name_hint rule) [Thm.pretty_thm ctxt rule]
+  Pretty.big_list (Thm_Name.short (Thm.get_name_hint rule)) [Thm.pretty_thm ctxt rule]
            |> Pretty.string_of;
 
 fun trace_used_thms false _ _ = Seq.empty
@@ -257,8 +257,8 @@ val warn_unused = Attrib.setup_config_bool @{binding wp_warn_unused} (K false);
 fun warn_unused_thms ctxt thms extra_rules used_rules =
   if Config.get ctxt warn_unused
   then
-    let val used_thms = map (fn rule => Thm.get_name_hint rule) (!used_rules)
-        val unused_thms = map Thm.get_name_hint (!extra_rules @ thms) |> subtract (op =) used_thms
+    let val used_thms = map (fn rule => Thm_Name.short (Thm.get_name_hint rule)) (!used_rules)
+        val unused_thms = map (Thm_Name.short o Thm.get_name_hint) (!extra_rules @ thms) |> subtract (op =) used_thms
     in if not (null unused_thms)
        then "Unused theorems: " ^ commas_quote unused_thms |> warning
        else ()
@@ -271,7 +271,7 @@ fun warn_unsafe_thms unsafe_thms n ctxt t =
           filter (fn rule =>
             (is_some o SINGLE (
               resolve_ruleset_tac ctxt (get_rules ctxt [rule]) used_rules n)) t) unsafe_thms
-      val unsafe_thm_names = map (fn rule => Thm.get_name_hint rule) useful_unsafe_thms
+      val unsafe_thm_names = map (fn rule => Thm_Name.short (Thm.get_name_hint rule)) useful_unsafe_thms
   in if not (null unsafe_thm_names)
      then "Unsafe theorems that could be used: " ^ commas_quote unsafe_thm_names |> warning
      else () end;

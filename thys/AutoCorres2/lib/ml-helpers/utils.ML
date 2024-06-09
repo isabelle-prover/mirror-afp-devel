@@ -517,7 +517,7 @@ fun unflatten thm_name =
 fun guess_binding_of_thm ctxt thm =
   let
     val facts = Proof_Context.facts_of ctxt
-    val raw_name = Thm.derivation_name thm
+    val raw_name = Thm_Name.short (Thm.derivation_name thm)
     val pos = \<^try>\<open>(raw_name |> unflatten |> fst |> Facts.intern facts 
                 |> Name_Space.the_entry (Facts.space_of facts) |> #pos)
               catch _ =>  Position.make (Thread_Position.get ())\<close>

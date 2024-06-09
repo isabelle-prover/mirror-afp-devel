@@ -108,7 +108,7 @@ fun add_simproc pos named_thms (intervals: Facts.interval list) thm context =
     val named_thms = if fst (named_thms) = "" then "" else (check context named_thms )
     val _ = is_eq (Thm.concl_of thm) orelse error ("Code_Simproc.add_simproc: conclusion is not an equality")
     val _ = Thm.has_name_hint thm orelse error ("Code_Simproc.add_simproc: theorem has no name")
-    val name_hint = Thm.get_name_hint thm
+    val name_hint = Thm_Name.short (Thm.get_name_hint thm)
     val base_name = Long_Name.base_name name_hint
     val thm1 = safe_mk_meta_eq thm
     val nprems = Thm.nprems_of thm1
