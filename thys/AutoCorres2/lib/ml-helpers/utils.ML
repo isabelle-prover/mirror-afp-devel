@@ -503,26 +503,14 @@ fun string_of_thms ctxt thms = pretty_thms ctxt thms |> Pretty.string_of
 fun big_list_of_thms name ctxt thms = pretty_rules name ctxt thms |> Pretty.string_of
 
 
-fun unflatten thm_name = 
-  let 
-    val (xs, sfx) = thm_name |> space_explode "_" |> split_last
-    
-  in
-    case Library.read_int (Symbol.explode sfx)  of
-      (n, []) => (space_implode "_" xs, n)
-    | _ => (thm_name, 0)
-
-  end
-
 fun guess_binding_of_thm ctxt thm =
   let
-    val facts = Proof_Context.facts_of ctxt
-    val raw_name = Thm_Name.short (Thm.derivation_name thm)
-    val pos = \<^try>\<open>(raw_name |> unflatten |> fst |> Facts.intern facts 
-                |> Name_Space.the_entry (Facts.space_of facts) |> #pos)
-              catch _ =>  Position.make (Thread_Position.get ())\<close>
+    val name = #1 (Thm.derivation_name thm)
+    val facts_space = Facts.space_of (Proof_Context.facts_of_fact ctxt name)
+    val pos = \<^try>\<open>Name_Space.the_entry facts_space name |> #pos
+              catch _ => Position.thread_data ()\<close>
   in
-    Binding.make(raw_name, pos)
+    Binding.make (name, pos)
   end
 
 fun define_global def thy =
