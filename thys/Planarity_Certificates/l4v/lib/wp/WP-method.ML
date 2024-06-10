@@ -243,7 +243,8 @@ fun resolve_ruleset_tac ctxt rs used_rules_ref n t =
                       (map snd (#3 (#rules rs)) @ #splits rs)) t end;
 
 fun pretty_rule ctxt rule =
-  Pretty.big_list (Thm_Name.short (Thm.get_name_hint rule)) [Thm.pretty_thm ctxt rule];
+  Pretty.block [Proof_Context.pretty_thm_name ctxt (Thm.get_name_hint rule),
+    Pretty.fbrk, Thm.pretty_thm ctxt rule];
 
 fun trace_used_thms false _ _ = Seq.empty
   | trace_used_thms true used_rules ctxt =
@@ -256,11 +257,12 @@ val warn_unused = Attrib.setup_config_bool @{binding wp_warn_unused} (K false);
 fun warn_unused_thms ctxt thms extra_rules used_rules =
   if Config.get ctxt warn_unused
   then
-    let val used_thms = map (fn rule => Thm_Name.short (Thm.get_name_hint rule)) (!used_rules)
-        val unused_thms = map (Thm_Name.short o Thm.get_name_hint) (!extra_rules @ thms) |> subtract (op =) used_thms
-    in if not (null unused_thms)
-       then "Unused theorems: " ^ commas_quote unused_thms |> warning
-       else ()
+    let val used_thms = map Thm.get_name_hint (!used_rules)
+        val unused_thms = map Thm.get_name_hint (!extra_rules @ thms) |> subtract (op =) used_thms
+    in
+      if null unused_thms then ()
+      else warning ("Unused theorems: " ^
+        commas_quote (map (Proof_Context.print_thm_name ctxt) unused_thms))
     end
   else ()
 
@@ -270,10 +272,12 @@ fun warn_unsafe_thms unsafe_thms n ctxt t =
           filter (fn rule =>
             (is_some o SINGLE (
               resolve_ruleset_tac ctxt (get_rules ctxt [rule]) used_rules n)) t) unsafe_thms
-      val unsafe_thm_names = map (fn rule => Thm_Name.short (Thm.get_name_hint rule)) useful_unsafe_thms
-  in if not (null unsafe_thm_names)
-     then "Unsafe theorems that could be used: " ^ commas_quote unsafe_thm_names |> warning
-     else () end;
+      val unsafe_thm_names = map Thm.get_name_hint useful_unsafe_thms
+  in
+    if null unsafe_thm_names then ()
+    else warning ("Unsafe theorems that could be used: " ^
+      commas_quote (map (Proof_Context.print_thm_name ctxt) unsafe_thm_names))
+  end;
 
 fun apply_rules_tac_n trace ctxt extras extras_ref n =
 let
