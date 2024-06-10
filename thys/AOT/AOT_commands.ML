@@ -766,26 +766,22 @@ datatype query = Criterion of (bool*string Find_Theorems.criterion) list |
 
 fun pretty_theorems ctxt opt_lim rem_dups raw_spec =
 let
-  fun pretty_ref ctxt thmref =
+  fun pretty_name ctxt (name, i) =
     let
-      val (name, sel) =
-        (case thmref of
-          Facts.Named ((name, _), sel) => (name, sel)
-        | Facts.Fact _ => raise Fail "Illegal literal fact");
       val item = case
         AOT_get_item_number (Binding.name_of (Binding.qualified_name name))
         of SOME str => [Pretty.str ("("^str^")"), Pretty.str ":", Pretty.brk 1]
         | _ => []
     in
       item @ [Pretty.marks_str (#1 (Proof_Context.markup_extern_fact ctxt name), name),
-        Pretty.str (Facts.string_of_selection sel), Pretty.str ":", Pretty.brk 1]
+        Pretty.str (Thm_Name.print_suffix (name, i)), Pretty.str ":", Pretty.brk 1]
     end;
   fun tailToStr delim tail = (fold (fn field => fn str => str^delim^field) tail "")
   fun pretty_item (id, sub) = Pretty.str (
     "item: "^quote (Int.toString id^tailToStr "." sub)^
     " (name: "^quote ((the (AOT_name_of_item id))^tailToStr ":" sub)^")")
-  fun pretty_thm ctxt (thmref, thm) =
-    Pretty.block (pretty_ref ctxt thmref @ [Thm.pretty_thm ctxt thm])
+  fun pretty_thm ctxt (thm_name, thm) =
+    Pretty.block (pretty_name ctxt thm_name @ [Thm.pretty_thm ctxt thm])
   val (spec, prefix) = (case raw_spec of Item (item, tail) =>
       (case AOT_name_of_item item of SOME name =>
           let val fullName = name^tailToStr ":" tail
@@ -799,7 +795,7 @@ let
     (Options.default_int \<^system_option>\<open>find_theorems_limit\<close>) opt_lim;
   val theorems = filter (fn (_,thm) => AOT_Theorems.member ctxt thm) theorems
   val theorems = case prefix of SOME prefix =>
-    filter (fn (Facts.Named ((name, _), _), _) =>
+    filter (fn ((name, _), _) =>
       let val unqualified = (Binding.name_of (Binding.qualified_name name))
       in
       String.isPrefix prefix unqualified
