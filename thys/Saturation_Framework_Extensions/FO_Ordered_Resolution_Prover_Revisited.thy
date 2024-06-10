@@ -333,7 +333,7 @@ lemma trans_L_Prec: "l1 \<sqsubset>l l2 \<Longrightarrow> l2 \<sqsubset>l l3 \<L
   by (cases l1; cases l2; cases l3) auto
 
 lemma wf_L_Prec: "wfP (\<sqsubset>l)"
-  by (metis L_Prec.elims(2) L_Prec.simps(3) not_accp_down wfP_accp_iff)
+  by (metis L_Prec.elims(2) L_Prec.simps(3) not_accp_down wfp_iff_accp)
 
 interpretation FL: given_clause "{{#}}" F_Inf "{{#}}" UNIV "\<lambda>N. (\<TTurnstile>e)" G_Inf G.Red_I
   "\<lambda>N. G.Red_F" "\<lambda>N. \<G>_F" \<G>_I_opt "(\<doteq>)" "(\<prec>\<cdot>)" "(\<sqsubset>l)" Old

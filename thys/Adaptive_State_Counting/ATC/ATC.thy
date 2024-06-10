@@ -124,7 +124,7 @@ lemma subtest_relI' [intro]: "t = f y \<Longrightarrow> (t, Node x f) \<in> subt
   by (auto simp: subtest_rel_def ran_def)
 
 lemma wf_subtest_rel [simp, intro]: "wf subtest_rel" 
-  using accp_subtest unfolding subtest_rel_altdef accp_eq_acc wf_acc_iff
+  using accp_subtest unfolding subtest_rel_altdef accp_eq_acc wf_iff_acc
   by auto
 
 

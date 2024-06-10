@@ -47,7 +47,7 @@ lemma gseqp'_termination:
       by (rule ext)+ (auto simp: gseqp'_rel.simps elim: microstep.cases)
 
     from assms have "\<forall>x. x \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
-      unfolding wellformed_def by (simp add: wf_acc_iff)
+      unfolding wellformed_def by (simp add: wf_iff_acc)
     hence "p \<in> acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
 
     hence "(\<Gamma>, p) \<in> acc {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"

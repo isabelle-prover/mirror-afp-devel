@@ -51,7 +51,7 @@ lemma labels_termination:
     have labels_rel': "labels_rel = (\<lambda>gq gp. (gq, gp) \<in> {((\<Gamma>, q), (\<Gamma>', p)). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q})"
       by (rule ext)+ (auto simp: labels_rel.simps intro: microstep.intros elim: microstep.cases)
     from \<open>wellformed(\<Gamma>)\<close> have "\<forall>x. x \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
-      unfolding wellformed_def by (simp add: wf_acc_iff)
+      unfolding wellformed_def by (simp add: wf_iff_acc)
     hence "p \<in> Wellfounded.acc {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}" ..
     hence "(\<Gamma>, p) \<in> Wellfounded.acc {((\<Gamma>, q), \<Gamma>', p). \<Gamma> = \<Gamma>' \<and> p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
       by (rule acc_induct) (auto intro: accI)
