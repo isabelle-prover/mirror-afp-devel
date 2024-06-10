@@ -189,7 +189,7 @@ proof -
     dd_lt_d: "\<forall>D' \<in># DD. D' \<prec> D" and
     d_min: "\<forall>y. multp (\<prec>) y DD \<longrightarrow>
       y \<notin> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D'\<in>#DD. D' \<prec> D)}"
-    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfP_multp] mset_DD0_in]
+    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfp_multp] mset_DD0_in]
     by blast
 
   have "\<forall>Da \<in># DD. Da \<notin> Red_F N"

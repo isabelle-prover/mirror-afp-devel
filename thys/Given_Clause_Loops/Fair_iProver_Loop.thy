@@ -157,7 +157,7 @@ abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> 
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
-  using minimal_element_def wfP_multp wf_Prec_S wfp_on_UNIV by blast
+  using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
 
 definition Less1_state :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix "\<sqsubset>1" 50) where
   "St' \<sqsubset>1 St \<longleftrightarrow>
