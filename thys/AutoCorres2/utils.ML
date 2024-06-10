@@ -870,10 +870,6 @@ handle Pattern.MATCH => Seq.empty
 fun unfold_once_tac ctxt thm =
   CONVERSION (Conv.bottom_conv (K (Conv.try_conv (Conv.rewr_conv thm))) ctxt)
 
-(* Set a simpset as being hidden, so warnings are not printed from it. *)
-fun set_hidden_ctxt ctxt =
-  Context_Position.set_visible false ctxt
-
 (* Guess the name of a thm. *)
 fun guess_thm_name ctxt thm =
   Find_Theorems.all_facts_of ctxt
