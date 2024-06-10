@@ -131,7 +131,7 @@ proof -
     \<comment> \<open>We first need to obtain the well-foundedness theorem for @{const sum_list_rel} from the ML
         guts of the @{theory_text function} package.\<close>
     show "wfP sum_list_rel"
-      apply (rule accp_wfPI)
+      apply (rule accp_wfpI)
       apply (tactic \<open>resolve_tac @{context} [Function.get_info @{context} @{term sum_list} |> #totality |> the] 1\<close>)
       done
 
@@ -190,7 +190,7 @@ fun f where
 \<comment> \<open>We carry out this proof in the locale for simplicity; a real implementation would probably
     have to set up a local theory properly.\<close>
 lemma f_total: "wfP f_rel"
-apply (rule accp_wfPI)
+apply (rule accp_wfpI)
 apply (tactic \<open>resolve_tac @{context} [Function.get_info @{context} @{term f} |> #totality |> the] 1\<close>)
 done
 

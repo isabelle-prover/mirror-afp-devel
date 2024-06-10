@@ -39,7 +39,7 @@ using assms(2) by (auto intro: set_ofI dest: set_ofD)
 
 lemma wf_implies_dom: "wf (set_of R) \<Longrightarrow> All (Wellfounded.accp R)"
 apply (rule allI)
-apply (rule accp_wfPD)
+apply (rule accp_wfpD)
 apply (rule wf_set_of_implies_wfP) .
 
 lemma wfP_implies_dom: "wfP R \<Longrightarrow> All (Wellfounded.accp R)"
