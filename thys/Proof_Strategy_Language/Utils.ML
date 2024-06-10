@@ -378,12 +378,11 @@ signature FIND_THEOREMS2 =
 sig
   include FIND_THEOREMS;
   type context;
-  type ref;
-  type get_rules = context -> thm -> (ref * thm) list;
+  type get_rules = context -> thm -> (Thm_Name.T * thm) list;
   type get_rule_names = context -> thm -> string list;
   val get_criterion             : string -> string -> (bool * 'a criterion) list;
-  val name_to_rules             : context -> thm -> string -> string -> (ref * thm) list;
-  val names_to_rules            : context -> thm -> string -> string list -> (ref * thm) list
+  val name_to_rules             : context -> thm -> string -> string -> (Thm_Name.T * thm) list;
+  val names_to_rules            : context -> thm -> string -> string list -> (Thm_Name.T * thm) list
   val get_rule_names            : get_rules -> context -> thm -> xstring list;
   val get_simp_rules            : get_rules;
   val get_induct_rules          : get_rules;
@@ -410,8 +409,7 @@ struct
 open Find_Theorems;
 
 type context = Proof.context;
-type ref = Facts.ref;
-type get_rules = context -> thm -> (ref * thm) list;
+type get_rules = context -> thm -> (Thm_Name.T * thm) list;
 type get_rule_names = context -> thm -> string list;
 
 fun get_criterion kind_name name = [(true, Name name), (true, Name kind_name)];
@@ -424,10 +422,10 @@ fun names_to_rules ctxt goal kind_name names = names
   |> flat
   |> distinct (Thm.eq_thm o Utils.map_pair snd);
 
-fun get_rule_names (get_rules:context -> thm -> (ref * thm) list) ctxt goal =
+fun get_rule_names (get_rules:context -> thm -> (Thm_Name.T * thm) list) ctxt goal =
   let
     val related_rules          = get_rules ctxt goal;
-    val related_rule_names     = map (Facts.string_of_ref o fst) related_rules;
+    val related_rule_names     = map (Thm_Name.print o fst) related_rules;
     fun get_thm  thm_nm        = SOME (Proof_Context.get_thm  ctxt thm_nm) handle ERROR _ => NONE;
     fun get_thms thm_nm        = SOME (Proof_Context.get_thms ctxt
       (Utils.rm_parentheses_with_contents_in_the_end thm_nm)) handle ERROR _ => NONE;
@@ -447,7 +445,7 @@ fun get_simp_rules (ctxt:context) (goal:thm) =
     fun eq_test (thm1, (_, thm2)) = Thm.eq_thm (thm1, thm2);
     val unique_rules  = subtract eq_test simpset_thms related_rules;
   in
-    unique_rules : (Facts.ref * thm) list
+    unique_rules
   end;
 
 fun get_simp_rule_names ctxt goal = get_rule_names get_simp_rules ctxt goal : string list;
@@ -457,7 +455,7 @@ fun get_induct_rules (ctxt:context) (goal:thm) =
     val const_names  = Isabelle_Utils.get_const_names_in_1st_subg goal : string list;
     val induct_rules = names_to_rules ctxt goal ".induct" const_names;
   in
-    induct_rules : (Facts.ref * thm) list
+    induct_rules
   end;
 fun get_induct_rule_names ctxt goal = get_rule_names get_induct_rules ctxt goal : string list;
 
@@ -468,7 +466,7 @@ fun get_coinduction_rules (ctxt:context) (goal:thm) =
     val coinduct_rules1 = get_coinduct_rules ".coinduct";
     val coinduct_rules2 = get_coinduct_rules ".coinduct_strong";
   in
-    coinduct_rules1 @ coinduct_rules2: (Facts.ref * thm) list
+    coinduct_rules1 @ coinduct_rules2
   end;
 fun get_coinduction_rule_names ctxt goal = get_rule_names get_coinduction_rules ctxt goal : string list;
 
@@ -486,7 +484,7 @@ fun get_split_rules ctxt goal =
     val used_typ_names = Isabelle_Utils.get_typ_names_in_1st_subg goal;
     val related_rules  = names_to_rules ctxt goal "split" used_typ_names
   in
-    related_rules : (Facts.ref * thm) list
+    related_rules
   end;
 
 fun get_split_rule_names ctxt goal = get_rule_names get_split_rules ctxt goal;

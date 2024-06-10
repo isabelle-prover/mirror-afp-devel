@@ -427,7 +427,7 @@ end
 
 (* Exception rewrite conversion / simplification. *)
 fun except_rewrite_cache_ctxt ctxt thms =
-      put_simpset HOL_basic_ss (Utils.set_hidden_ctxt ctxt)
+      put_simpset HOL_basic_ss (Context_Position.set_visible false ctxt)
           addsimps thms
           addsimps (Utils.get_rules ctxt @{named_theorems L1except})
           addsimps (Utils.get_rules ctxt @{named_theorems L1opt})
