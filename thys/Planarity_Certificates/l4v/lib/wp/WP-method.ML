@@ -243,13 +243,12 @@ fun resolve_ruleset_tac ctxt rs used_rules_ref n t =
                       (map snd (#3 (#rules rs)) @ #splits rs)) t end;
 
 fun pretty_rule ctxt rule =
-  Pretty.big_list (Thm_Name.short (Thm.get_name_hint rule)) [Thm.pretty_thm ctxt rule]
-           |> Pretty.string_of;
+  Pretty.big_list (Thm_Name.short (Thm.get_name_hint rule)) [Thm.pretty_thm ctxt rule];
 
 fun trace_used_thms false _ _ = Seq.empty
   | trace_used_thms true used_rules ctxt =
       let val used_thms = !used_rules
-      in map (fn rule => tracing (pretty_rule ctxt rule)) used_thms
+      in map (fn rule => tracing (Pretty.string_of (pretty_rule ctxt rule))) used_thms
         |> Seq.of_list end;
 
 val warn_unused = Attrib.setup_config_bool @{binding wp_warn_unused} (K false);
