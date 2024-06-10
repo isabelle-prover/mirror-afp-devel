@@ -769,7 +769,7 @@ let
   fun pretty_name ctxt (name, i) =
     let
       val item = case
-        AOT_get_item_number (Binding.name_of (Binding.qualified_name name))
+        AOT_get_item_number (Long_Name.base_name name)
         of SOME str => [Pretty.str ("("^str^")"), Pretty.str ":", Pretty.brk 1]
         | _ => []
     in
@@ -796,7 +796,7 @@ let
   val theorems = filter (fn (_,thm) => AOT_Theorems.member ctxt thm) theorems
   val theorems = case prefix of SOME prefix =>
     filter (fn ((name, _), _) =>
-      let val unqualified = (Binding.name_of (Binding.qualified_name name))
+      let val unqualified = Long_Name.base_name name
       in
       String.isPrefix prefix unqualified
       andalso (String.size unqualified <= String.size prefix orelse
