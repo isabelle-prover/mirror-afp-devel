@@ -121,7 +121,7 @@ lemma Abadi_Merz_Prop_1_subseteq: \<comment>\<open> First half of \<^citet>\<ope
   shows "next_imp P Q \<subseteq> downwards.imp (downwards.imp Q P) Q" (is "?lhs \<subseteq> ?rhs")
 proof(rule subsetI)
   fix \<sigma> assume "\<sigma> \<in> ?lhs" with wf show "\<sigma> \<in> ?rhs"
-  proof(induct rule: wfP_induct_rule)
+  proof(induct rule: wfp_induct_rule)
     case (less \<sigma>)
     have "\<tau> \<in> Q" if "\<tau> \<le> \<sigma>" and YYY: "\<forall>\<sigma>'\<le>\<tau>. \<sigma>' \<in> Q \<longrightarrow> \<sigma>' \<in> P" for \<tau>
     proof -

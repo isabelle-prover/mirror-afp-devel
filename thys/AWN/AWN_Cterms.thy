@@ -131,7 +131,7 @@ where
   "wellformed \<Gamma> = wf {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q}"
 
 lemma wellformed_defP: "wellformed \<Gamma> = wfP (\<lambda>q p. p \<leadsto>\<^bsub>\<Gamma>\<^esub> q)"
-  unfolding wellformed_def wfP_def by simp
+  unfolding wellformed_def wfp_def by simp
 
 text \<open>
   The induction rule for @{term "wellformed \<Gamma>"} is stronger than @{thm seqp.induct} because
@@ -154,7 +154,7 @@ lemma wellformed_induct
       and CALL:    "\<And>pn.           \<lbrakk> wellformed \<Gamma>; P (\<Gamma> pn) \<rbrakk> \<Longrightarrow> P (call(pn))"
     shows "P a"
   using assms(1) unfolding wellformed_defP
-  proof (rule wfP_induct_rule, case_tac x, simp_all)
+  proof (rule wfp_induct_rule, case_tac x, simp_all)
     fix p1 p2
     assume "\<And>q. (p1 \<oplus> p2) \<leadsto>\<^bsub>\<Gamma>\<^esub> q \<Longrightarrow> P q"
     then obtain "P p1" and "P p2" by (auto intro!: microstep.intros)
@@ -239,7 +239,7 @@ theorem wf_no_direct_calls[intro]:
     fixes \<Gamma> :: "('s, 'm, 'p, 'l) seqp_env"
   assumes no_calls: "\<And>pn. \<forall>pn'. call(pn') \<notin> stermsl(\<Gamma>(pn))"
     shows "wellformed \<Gamma>"
-  unfolding wellformed_def wfP_def
+  unfolding wellformed_def wfp_def
   proof (rule wfI_pf)
     fix A
     assume ARA: "A \<subseteq> {(q, p). p \<leadsto>\<^bsub>\<Gamma>\<^esub> q} `` A"

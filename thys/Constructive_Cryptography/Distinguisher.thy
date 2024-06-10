@@ -63,7 +63,7 @@ proof(rule ccontr)
   let ?P = "\<lambda>xs. \<exists>x. set xs \<subseteq> outs_\<I> \<I> \<times> UNIV \<and> x \<in> outs_\<I> \<I> \<and> trace_callee run_resource (return_spmf res) xs x \<noteq> trace_callee run_resource (return_spmf res') xs x"
   assume "\<not> ?thesis"
   then have "Ex ?P" unfolding trace_callee_eq_def by auto
-  with wf_strict_prefix[unfolded wfP_eq_minimal, THEN spec, of "Collect ?P"]
+  with wf_strict_prefix[unfolded wfp_eq_minimal, THEN spec, of "Collect ?P"]
   obtain xs x where xs: "set xs \<subseteq> outs_\<I> \<I> \<times> UNIV"
     and x: "x \<in> outs_\<I> \<I>"
     and neq: "trace_callee run_resource (return_spmf res) xs x \<noteq> trace_callee run_resource (return_spmf res') xs x"

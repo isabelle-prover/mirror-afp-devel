@@ -750,7 +750,7 @@ proof (rule ccontr)
       using wfP_iff_no_infinite_down_chain_llist[of "\<lambda>x y. (x, y) \<in> RP_filtered_relation"]
         wf_RP_filtered_relation inff
       by (metis (no_types, lifting) inf_llist_lnth ldrop_enat_inf_llist lfinite_inf_llist
-        lfinite_lmap wfPUNIVI wf_induct_rule)
+        lfinite_lmap wfpUNIVI wf_induct_rule)
   next
     assume asm: "C \<in> Liminf_llist (lmap P_of_state (lmap state_of_wstate Sts))"
     from asm obtain i where i_p:
@@ -779,7 +779,7 @@ proof (rule ccontr)
     then show False
       using wfP_iff_no_infinite_down_chain_llist[of "\<lambda>x y. (x, y) \<in> RP_combined_relation"]
         wf_RP_combined_relation inff
-      by (smt inf_llist_lnth ldrop_enat_inf_llist lfinite_inf_llist lfinite_lmap wfPUNIVI
+      by (smt inf_llist_lnth ldrop_enat_inf_llist lfinite_inf_llist lfinite_lmap wfpUNIVI
           wf_induct_rule)
   qed
 qed

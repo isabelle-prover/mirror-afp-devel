@@ -3379,7 +3379,7 @@ lemma wf_dickson_less_p_aux:
   assumes "x \<in> Q" and "\<forall>y\<in>Q. y \<noteq> 0 \<longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less_v d m (lt y) u)"
   shows "\<exists>p\<in>Q. (\<forall>q\<in>Q. \<not> dickson_less_p d m q p)"
   using assms(2) assms(3)
-proof (induct u arbitrary: x Q rule: wfP_induct[OF wf_dickson_less_v, OF assms(1)])
+proof (induct u arbitrary: x Q rule: wfp_induct[OF wf_dickson_less_v, OF assms(1)])
   fix u::'t and x::"'t \<Rightarrow>\<^sub>0 'b" and Q::"('t \<Rightarrow>\<^sub>0 'b) set"
   assume hyp: "\<forall>u0. dickson_less_v d m u0 u \<longrightarrow> (\<forall>x0 Q0::('t \<Rightarrow>\<^sub>0 'b) set. x0 \<in> Q0 \<longrightarrow>
                             (\<forall>y\<in>Q0. y \<noteq> 0 \<longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less_v d m (lt y) u0)) \<longrightarrow>

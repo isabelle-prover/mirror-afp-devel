@@ -272,7 +272,7 @@ lemma wfp_on_induct [consumes 2, case_names less, induct pred: wfp_on]:
 
 lemma wfp_on_UNIV [simp]:
   "wfp_on P UNIV \<longleftrightarrow> wfP P"
-  unfolding wfp_on_iff_inductive_on inductive_on_def wfP_def wf_def by force
+  unfolding wfp_on_iff_inductive_on inductive_on_def wfp_def wf_def by force
 
 
 subsection \<open>Measures on Sets (Instead of Full Types)\<close>
@@ -307,7 +307,7 @@ qed
 
 lemma wfp_less:
   "wfp_on (<) (UNIV :: nat set)"
-  using wf_less by (auto simp: wfP_def)
+  using wf_less by (auto simp: wfp_def)
 
 lemma wfp_on_measure_on [iff]:
   "wfp_on (measure_on f A) A"

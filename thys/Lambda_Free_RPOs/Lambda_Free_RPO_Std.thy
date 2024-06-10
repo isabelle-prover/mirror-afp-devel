@@ -726,7 +726,7 @@ proof -
     qed
 
     have "wf {(s, t). ground s \<and> ground t \<and> sym (head t) >\<^sub>s sym (head s)}"
-      using gt_sym_wf unfolding wfP_def wf_iff_no_infinite_down_chain by fast
+      using gt_sym_wf unfolding wfp_def wf_iff_no_infinite_down_chain by fast
     moreover have "{(s, t). ground t \<and> gt_diff t s}
       \<subseteq> {(s, t). ground s \<and> ground t \<and> sym (head t) >\<^sub>s sym (head s)}"
     proof (clarsimp, intro conjI)
@@ -819,7 +819,7 @@ proof -
   hence "wfP (\<lambda>s t. ?subst t >\<^sub>t ?subst s)"
     by (simp add: ground_grounding_\<rho>)
   thus ?thesis
-    by (auto intro: wfP_subset gt_subst[OF wary_grounding_\<rho>])
+    by (auto intro: wfp_subset gt_subst[OF wary_grounding_\<rho>])
 qed
 
 end

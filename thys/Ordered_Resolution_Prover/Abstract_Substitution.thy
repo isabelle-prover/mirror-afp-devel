@@ -1285,10 +1285,10 @@ proof -
     ultimately have "\<And>i. strictly_generalizes_atm (tm_at (Suc i)) (tm_at i)"
       unfolding strictly_generalizes_atm_def by blast
     then have False
-      using wf_strictly_generalizes_atm[unfolded wfP_def wf_iff_no_infinite_down_chain] by blast
+      using wf_strictly_generalizes_atm[unfolded wfp_def wf_iff_no_infinite_down_chain] by blast
   }
   then show "wfP (strictly_generalizes :: 'a clause \<Rightarrow> _ \<Rightarrow> _)"
-    unfolding wfP_def by (blast intro: wf_iff_no_infinite_down_chain[THEN iffD2])
+    unfolding wfp_def by (blast intro: wf_iff_no_infinite_down_chain[THEN iffD2])
 qed
 
 lemma strictly_subsumes_has_minimum:
@@ -1332,11 +1332,11 @@ proof (rule ccontr)
   then show False
     using wf_strictly_generalizes
       wf_iff_no_infinite_down_chain[of "{(x, y). strictly_generalizes x y}"]
-    unfolding wfP_def by auto
+    unfolding wfp_def by auto
 qed
 
 lemma wf_strictly_subsumes: "wfP strictly_subsumes"
-  using strictly_subsumes_has_minimum by (metis equals0D wfP_eq_minimal)
+  using strictly_subsumes_has_minimum by (metis equals0D wfp_eq_minimal)
 
 end
 

@@ -23,7 +23,7 @@ definition inf_chain :: "(nat \<Rightarrow> 'a) \<Rightarrow> bool" where
   "inf_chain f \<longleftrightarrow> (\<forall>i. p (f i) (f (Suc i)))"
 
 lemma wfP_iff_no_inf_chain: "wfP (\<lambda>x y. p y x) \<longleftrightarrow> (\<nexists>f. inf_chain f)"
-  unfolding wfP_def wf_iff_no_infinite_down_chain inf_chain_def by simp
+  unfolding wfp_def wf_iff_no_infinite_down_chain inf_chain_def by simp
 
 lemma inf_chain_offset: "inf_chain f \<Longrightarrow> inf_chain (\<lambda>j. f (j + i))"
   unfolding inf_chain_def by simp

@@ -70,7 +70,7 @@ proof -
       case True
       hence "\<exists>z\<in> Q - {m}. \<forall>y. (y \<in> M) \<and> (z \<in> M) \<and> I y \<in> deps (Insert z)
              \<longrightarrow> y \<notin> Q - {m}"
-        by (metis depends_on.simps assms(1) wfP_eq_minimal)
+        by (metis depends_on.simps assms(1) wfp_eq_minimal)
       then show ?thesis using assms(2) DiffD2 by auto
     next
       case False
@@ -78,7 +78,7 @@ proof -
       thus ?thesis using assms(2) by blast
     qed
   qed
-  thus ?thesis by (simp add:wfP_eq_minimal, blast)
+  thus ?thesis by (simp add:wfp_eq_minimal, blast)
 qed
 
 lemma create_insert_p_s_ordered:

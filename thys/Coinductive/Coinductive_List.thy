@@ -2228,7 +2228,7 @@ lemma lstrict_prefix_lfinite1: "lstrict_prefix xs ys \<Longrightarrow> lfinite x
 by (metis lstrict_prefix_def not_lfinite_lprefix_conv_eq)
 
 lemma wfP_lstrict_prefix: "wfP lstrict_prefix"
-proof(unfold wfP_def)
+proof(unfold wfp_def)
   have "wf {(x :: enat, y). x < y}"
     unfolding wf_def by(blast intro: less_induct)
   hence "wf (inv_image {(x, y). x < y} llength)" by(rule wf_inv_image)
@@ -2239,7 +2239,7 @@ qed
 
 lemma llist_less_induct[case_names less]:
   "(\<And>xs. (\<And>ys. lstrict_prefix ys xs \<Longrightarrow> P ys) \<Longrightarrow> P xs) \<Longrightarrow> P xs"
-by(rule wfP_induct[OF wfP_lstrict_prefix]) blast
+by(rule wfp_induct[OF wfP_lstrict_prefix]) blast
 
 lemma ltake_enat_eq_imp_eq: "(\<And>n. ltake (enat n) xs = ltake (enat n) ys) \<Longrightarrow> xs = ys"
 by(coinduction arbitrary: xs ys)(auto simp add: zero_enat_def lnull_def neq_LNil_conv ltake_eq_LNil_iff eSuc_enat[symmetric] elim: allE[where x="Suc n" for n])

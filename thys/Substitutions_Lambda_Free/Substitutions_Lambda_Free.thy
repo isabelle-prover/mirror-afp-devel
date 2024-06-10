@@ -53,7 +53,7 @@ lemma inject_nat_in_fset_ninj:
 lemma wfPD: \<open>wfP P \<Longrightarrow> wfp_on P A\<close>
 \<comment>\<open>This destruction rule for @{term \<open>wfP\<close>} could be added to the theory
 @{theory Open_Induction.Restricted_Predicates}\<close>
-  by (simp add: wfP_eq_minimal wfp_on_iff_minimal)
+  by (simp add: wfp_eq_minimal wfp_on_iff_minimal)
 
 lemma set_decr_chain_empty:
   fixes u :: \<open>nat \<Rightarrow> 'a set\<close>

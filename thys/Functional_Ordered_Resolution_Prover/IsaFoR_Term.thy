@@ -195,7 +195,7 @@ next
     by auto
 next
   show "wfP (strictly_generalizes_atm :: ('f, 'v) term \<Rightarrow> _ \<Rightarrow> _)"
-    unfolding wfP_def
+    unfolding wfp_def
     by (rule wf_subset[OF wf_subsumes])
       (auto simp: strictly_generalizes_atm_def generalizes_atm_def term_subsumable.subsumes_def
         subsumeseq_term.simps)
@@ -726,7 +726,7 @@ proof -
   have "SN {(x, y). fst (kbo x y)}"
     using pr_strict_asymp by (fastforce simp: asympI irreflp_def intro!: KBO.S_SN scf_ok)
   then show ?thesis
-    unfolding SN_iff_wf wfP_def by (rule wf_subset) (auto simp: less_kbo_def)
+    unfolding SN_iff_wf wfp_def by (rule wf_subset) (auto simp: less_kbo_def)
 qed
 
 instantiation "term" :: (weighted, type) linorder begin
@@ -735,11 +735,11 @@ definition "leq_term = (SOME leq. {(s,t). less_kbo s t} \<subseteq> leq \<and> W
 
 lemma less_trm_extension: "{(s,t). less_kbo s t} \<subseteq> leq_term"
   unfolding leq_term_def
-  by (rule someI2_ex[OF total_well_order_extension[OF wfP_less_kbo[unfolded wfP_def]]]) auto
+  by (rule someI2_ex[OF total_well_order_extension[OF wfP_less_kbo[unfolded wfp_def]]]) auto
 
 lemma less_trm_well_order: "well_order leq_term"
   unfolding leq_term_def
-  by (rule someI2_ex[OF total_well_order_extension[OF wfP_less_kbo[unfolded wfP_def]]]) auto
+  by (rule someI2_ex[OF total_well_order_extension[OF wfP_less_kbo[unfolded wfp_def]]]) auto
 
 definition less_eq_term :: "('a :: weighted, 'b) term \<Rightarrow> _ \<Rightarrow> bool" where
   "less_eq_term = in_rel leq_term"

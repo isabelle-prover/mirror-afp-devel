@@ -113,7 +113,7 @@ next
     proof (atomize_elim, rule wf_infinite_down_chain_compatible[of R f S])
       show "wf R"
         unfolding R_def using wf_app[OF wf_prec_F[unfolded minimal_element_def, THEN conjunct2,
-              unfolded wfp_on_UNIV wfP_def]]
+              unfolded wfp_on_UNIV wfp_def]]
         by force
     next
       show "\<forall>i. (f (Suc i), f i) \<in> R \<union> S"
@@ -131,11 +131,11 @@ next
     have wf_s: "wf S"
       unfolding S_def
       by (rule wf_subset[OF wf_app[OF wf_prec_L[unfolded minimal_element_def, THEN conjunct2,
-                unfolded wfp_on_UNIV wfP_def], of snd]])
+                unfolded wfp_on_UNIV wfp_def], of snd]])
         fast
     show False
       using g_chain[unfolded S_def]
-        wf_s[unfolded S_def, folded wfP_def wfp_on_UNIV, unfolded wfp_on_def]
+        wf_s[unfolded S_def, folded wfp_def wfp_on_UNIV, unfolded wfp_on_def]
       by auto
   qed
 qed

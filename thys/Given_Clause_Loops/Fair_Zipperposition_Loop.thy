@@ -60,7 +60,7 @@ lemma trans_Prec_S: "trans {(x, y). x \<prec>S y}"
   using transp_Prec_S transp_trans by blast
 
 lemma irreflp_Prec_S: "irreflp (\<prec>S)"
-  using minimal_element.wf wfP_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
+  using minimal_element.wf wfp_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
 
 lemma irrefl_Prec_S: "irrefl {(x, y). x \<prec>S y}"
   by (metis CollectD case_prod_conv irrefl_def irreflp_Prec_S irreflp_def)
@@ -499,7 +499,7 @@ proof -
     mset_set (set_option (yy_of St)), size (t_llists (todo_of St)))"
 
   have wf_msetset: "wf ?msetset"
-    using wfP_Precprec_S wfP_def by auto
+    using wfP_Precprec_S wfp_def by auto
   have wf_natset: "wf ?natset"
     by (rule Wellfounded.wellorder_class.wf)
   have wf_lex_prod: "wf (?msetset <*lex*> ?msetset <*lex*> ?msetset <*lex*> ?natset)"
@@ -511,7 +511,7 @@ proof -
     unfolding Less_state_def by auto
 
   show ?thesis
-    unfolding wfP_def Less_state_alt_def using wf_app[of _ ?quad_of] wf_lex_prod by blast
+    unfolding wfp_def Less_state_alt_def using wf_app[of _ ?quad_of] wf_lex_prod by blast
 qed
 
 lemma non_compute_infer_ZLf_step_imp_Less_state:

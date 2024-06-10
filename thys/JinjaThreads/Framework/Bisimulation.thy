@@ -932,7 +932,7 @@ lemma \<tau>diverge_simulation1:
   shows "s2 -\<tau>2\<rightarrow> \<infinity>"
 proof -
   from assms have "s1 -\<tau>1\<rightarrow> \<infinity> \<and> s1 \<approx> s2" by blast
-  thus ?thesis using wfP_trancl[OF wf_\<mu>1]
+  thus ?thesis using wfp_tranclp[OF wf_\<mu>1]
   proof(coinduct rule: trsys2.\<tau>diverge_trancl_measure_coinduct)
     case (\<tau>diverge s2 s1)
     hence "s1 -\<tau>1\<rightarrow> \<infinity>" "s1 \<approx> s2" by simp_all
@@ -1100,7 +1100,7 @@ lemma delay_bisimulation:
   "delay_bisimulation_diverge trsys1 trsys2 bisim tlsim \<tau>move1 \<tau>move2"
 proof -
   interpret delay_bisimulation_measure trsys1 trsys2 bisim tlsim \<tau>move1 \<tau>move2 "\<lambda>s s'. False" "\<lambda>s s'. False"
-    by(blast intro: delay_bisimulation_measure wfP_empty)
+    by(blast intro: delay_bisimulation_measure wfp_empty)
   show ?thesis ..
 qed
 

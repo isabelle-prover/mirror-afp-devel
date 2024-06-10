@@ -51,7 +51,7 @@ proof (rule terminates_inI)
     show ?thesis
     proof (rule wfE_min)
       show "wf ?R"
-        using assms(1) wfP_def by blast
+        using assms(1) wfp_def by blast
       show "e (snd \<phi>) \<in> ?Q"
         using True asm0 iterate_sem.simps(1) by fastforce
       fix z assume asm1: "z \<in> ?Q" "(\<And>y. (y, z) \<in> {(x, y). lt x y} \<Longrightarrow> y \<notin> ?Q)"
@@ -615,7 +615,7 @@ proof (rule total_hyper_triple_altI)
     show False
     proof (rule wfE_min)
       show "wf ?R"
-        using assms(1) wfP_def by blast
+        using assms(1) wfp_def by blast
       show "e (snd \<phi>0) \<in> ?Q"
         using \<open>\<phi>0 \<in> assign_exp_to_lvar_set e t (iterate_sem 0 (Assume b ;; C) S)\<close> by blast
       fix z assume asm1: "z \<in> ?Q" "(\<And>y. (y, z) \<in> {(x, y). lt x y} \<Longrightarrow> y \<notin> ?Q)"
@@ -868,7 +868,7 @@ proof (rule hyper_hoare_tripleI)
     have main_res: "\<exists>n \<phi>'. \<phi>' \<in> iterate_sem n (if_then b C) S \<and> \<not> b (snd \<phi>') \<and> P \<phi>' (iterate_sem n (if_then b C) S)"
     proof (rule wfE_min)
       show "wf ?R"
-        using assms(1) wfP_def by blast
+        using assms(1) wfp_def by blast
       show "e (snd \<phi>) \<in> ?Q"
         using True \<open>P \<phi> S\<close> \<open>\<phi> \<in> S\<close> iterate_sem.simps(1) by fastforce
       fix z

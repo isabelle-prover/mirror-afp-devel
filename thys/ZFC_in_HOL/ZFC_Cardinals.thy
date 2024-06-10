@@ -784,7 +784,7 @@ lemma wf_VWO: "wf(VWO - Id)"
   using VWO well_order_on_def by blast
 
 lemma wf_Ord_less: "wf {(x, y). Ord y \<and> x < y}"
-  by (metis (no_types, lifting) Ord_mem_iff_lt eps_induct wfPUNIVI wfP_def)
+  by (metis (no_types, lifting) Ord_mem_iff_lt eps_induct wfpUNIVI wfp_def)
 
 lemma refl_VWO: "refl VWO"
   using VWO order_on_defs by fastforce

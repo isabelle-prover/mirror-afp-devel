@@ -539,13 +539,13 @@ lemmas converse_tranclp_induct2 =
   converse_tranclp_induct [of _ "(ax,ay)" "(bx,by)", split_rule,
                  consumes 1, case_names base step]
 
-lemma wfP_induct' [consumes 1, case_names wfP]:
+lemma wfp_induct' [consumes 1, case_names wfP]:
   "\<lbrakk>wfP r; \<And>x. (\<And>y. r y x \<Longrightarrow> P y) \<Longrightarrow> P x\<rbrakk> \<Longrightarrow> P a"
-by(blast intro: wfP_induct)
+by(blast intro: wfp_induct)
 
-lemma wfP_induct2 [consumes 1, case_names wfP]:
+lemma wfp_induct2 [consumes 1, case_names wfP]:
   "\<lbrakk>wfP r; \<And>x x'. (\<And>y y'. r (y, y') (x, x') \<Longrightarrow> P y y') \<Longrightarrow> P x x' \<rbrakk> \<Longrightarrow> P x x'"
-by(drule wfP_induct'[where P="\<lambda>(x, y). P x y"]) blast+
+by(drule wfp_induct'[where P="\<lambda>(x, y). P x y"]) blast+
 
 lemma wfP_minimalE:
   assumes "wfP r"
@@ -555,7 +555,7 @@ proof -
   let ?Q = "\<lambda>x'. P x' \<and> r^** x' x"
   from \<open>P x\<close> have "?Q x" by blast
   from \<open>wfP r\<close> have "\<And>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. r y z \<longrightarrow> y \<notin> Q)"
-    unfolding wfP_eq_minimal by blast
+    unfolding wfp_eq_minimal by blast
   from this[rule_format, of "Collect ?Q"] \<open>?Q x\<close>
   obtain z where "?Q z" and min: "\<And>y. r y z \<Longrightarrow> \<not> ?Q y" by auto
   from \<open>?Q z\<close> have "P z" "r^** z x" by auto

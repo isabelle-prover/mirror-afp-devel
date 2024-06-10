@@ -175,7 +175,7 @@ by(subst finite_converse[unfolded converse_unfold, symmetric]) simp
 
 lemma acyclicP_wf_subcls1:
   "acyclicP (subcls1 P) \<Longrightarrow> wfP ((subcls1 P)\<inverse>\<inverse>)"
-unfolding wfP_def
+unfolding wfp_def
 by(rule finite_acyclic_wf)(simp_all only: finite_conversep finite_subcls1 acyclicP_converse)
 
 lemma wf_subcls1:
@@ -197,9 +197,9 @@ proof -
   assume p: "PROP ?P"
   assume ?A thus ?thesis apply -
 apply(drule wf_subcls1)
-apply(drule wfP_trancl)
+apply(drule wfp_tranclp)
 apply(simp only: tranclp_converse)
-apply(erule_tac a = C in wfP_induct)
+apply(erule_tac a = C in wfp_induct)
 apply(rule p)
 apply(auto)
 done

@@ -608,7 +608,7 @@ proof -
   have "\<exists>z\<in>Q. \<forall>y. strict_prefix y z \<longrightarrow> y \<notin> Q" if "x \<in> Q" for x :: "'a list" and Q
     using that by (induct x rule: length_induct) (blast dest: prefix_length_less)
   then show ?thesis
-    unfolding wfP_def by (auto intro!: wfI_min)
+    unfolding wfp_def by (auto intro!: wfI_min)
 qed
 
 lemma set_subseq:

@@ -638,7 +638,7 @@ lemma wf_measure_\<sigma>: "wf (inv_image less_than \<sigma>)"
   by blast
 
 lemma WFP: "wfP (\<lhd>)"
-  by (auto simp: wfP_def pointwise_less_imp_\<sigma> intro: wf_subset [OF wf_measure_\<sigma>])
+  by (auto simp: wfp_def pointwise_less_imp_\<sigma> intro: wf_subset [OF wf_measure_\<sigma>])
 
 text\<open>The following is a direct corollary of the above lemma, i.e. a corollary of
  Lemma 2.7 in Gowers's notes.\<close>

@@ -59,7 +59,7 @@ proof -
   then have c_in: "C \<in> {C \<in> N. \<not> I \<Turnstile> {C}}"
     by blast
   show ?thesis
-    using wfP_eq_minimal[THEN iffD1, rule_format, OF wfP_less c_in] by blast
+    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfP_less c_in] by blast
 qed
 
 end
@@ -189,7 +189,7 @@ proof -
     dd_lt_d: "\<forall>D' \<in># DD. D' \<prec> D" and
     d_min: "\<forall>y. multp (\<prec>) y DD \<longrightarrow>
       y \<notin> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D'\<in>#DD. D' \<prec> D)}"
-    using wfP_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfP_multp] mset_DD0_in]
+    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfP_multp] mset_DD0_in]
     by blast
 
   have "\<forall>Da \<in># DD. Da \<notin> Red_F N"
@@ -233,7 +233,7 @@ proof -
       using finite_set_mset_mset_set[OF dda0_fin]
       by (metis insert_DiffM2 union_iff)
     moreover have "multp (\<prec>) DDa DD"
-      unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF wfP_imp_asymp[OF wfP_less] transp_less] multp\<^sub>D\<^sub>M_def
+      unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF wfp_imp_asymp[OF wfP_less] transp_less] multp\<^sub>D\<^sub>M_def
       using finite_set_mset_mset_set[OF dda0_fin]
       by (metis da_in_dd dda0_lt_da mset_subset_eq_single multi_self_add_other_not_self
           union_single_eq_member)

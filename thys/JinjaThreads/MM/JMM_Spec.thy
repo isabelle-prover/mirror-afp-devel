@@ -524,7 +524,7 @@ lemma torder_action_order:
 by(blast intro: torder_onI total_action_order porder_action_order)
 
 lemma wf_action_order: "wfP (action_order E)\<^sup>\<noteq>\<^sup>\<noteq>"
-unfolding wfP_eq_minimal
+unfolding wfp_eq_minimal
 proof(intro strip)
   fix Q and x :: JMM_action
   assume "x \<in> Q"

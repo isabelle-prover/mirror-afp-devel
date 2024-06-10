@@ -144,9 +144,9 @@ next
     inv_image {(x,y). x < y} witness_acyclic_events" 
     using well_order_consistent by auto
   ultimately have "wfP example.happened_immediately_before" 
-    using well_order_consistent wfP_def wf_subset by blast
+    using well_order_consistent wfp_def wf_subset by blast
   thus "acyclicP example.happened_immediately_before"
-    using wfP_acyclicP by blast
+    using wfp_acyclicP by blast
 next
   fix m s i j i'
   have "example.event_at (i, j) (Receive s m) \<Longrightarrow>

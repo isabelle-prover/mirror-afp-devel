@@ -278,7 +278,7 @@ definition
   "hmem_rel = trancl {(x,y). x \<^bold>\<in> y}"
 
 lemma wf_hmem_rel: "wf hmem_rel"
-  by (metis hmem_induct hmem_rel_def wfPUNIVI wfP_def wf_trancl)
+  by (metis hmem_induct hmem_rel_def wfpUNIVI wfp_def wf_trancl)
 
 lemma hmem_eclose_le: "y \<^bold>\<in> x \<Longrightarrow> eclose y \<le> eclose x"
   by (metis Transset_def Transset_eclose eclose_minimal hsubsetD le_eclose)

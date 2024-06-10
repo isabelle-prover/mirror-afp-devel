@@ -10,7 +10,7 @@ proof (induct P c Q rule: hoare.induct)
     apply (clarsimp simp only: hoare_sem_def)
     apply (rename_tac a b)
     apply (erule_tac P="P (a, b)" in rev_mp)
-    apply (erule wfP_induct)
+    apply (erule wfp_induct)
     apply clarsimp
     apply (simp (no_asm) add: terminates_While)
     apply (simp (no_asm) add: terminates_If terminates_Seq terminates_Skip)

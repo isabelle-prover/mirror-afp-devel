@@ -142,7 +142,7 @@ lemma wf_same_length_if_total: "wfP (\<lambda>xs ys. length ys = n \<and> length
 proof (induct n)
   case 0
   thus ?case
-    unfolding wfP_def wf_def using irrefl by auto
+    unfolding wfp_def wf_def using irrefl by auto
 next
   case (Suc n)
   note ih = this(1)
@@ -170,7 +170,7 @@ next
     let ?ff = "worst_chain ?gtsSn gt_hd"
 
     have wf_hd: "wf {(xs, ys). gt_hd ys xs}"
-      unfolding gt_hd_def by (rule wfP_app[OF gt_wf, of hd, unfolded wfP_def])
+      unfolding gt_hd_def by (rule wfP_app[OF gt_wf, of hd, unfolded wfp_def])
 
     have "inf_chain ?gtsSn ?ff"
       by (rule worst_chain_bad[OF wf_hd xs_bad])
@@ -266,7 +266,7 @@ proof -
     gt_sub_Ge': "{(x, y). gt y x} \<subseteq> Ge'" and
     Ge'_wo: "Well_order Ge'" and
     Ge'_fld: "Field Ge' = UNIV"
-    using total_well_order_extension[OF gt_wf[unfolded wfP_def]] by blast
+    using total_well_order_extension[OF gt_wf[unfolded wfp_def]] by blast
 
   define gt' where "\<And>y x. gt' y x \<longleftrightarrow> y \<noteq> x \<and> (x, y) \<in> Ge'"
 
@@ -288,7 +288,7 @@ proof -
   moreover have "\<And>y x. (x, y) \<in> Ge' \<and> x \<noteq> y \<longleftrightarrow> y \<noteq> x \<and> (x, y) \<in> Ge'"
     by auto
   ultimately have gt'_wf: "wfP (\<lambda>x y. gt' y x)"
-    unfolding wfP_def gt'_def by simp
+    unfolding wfp_def gt'_def by simp
 
   have gt'_total: "\<And>x y. gt' y x \<or> gt' x y \<or> y = x"
     using Ge'_wo unfolding gt'_def well_order_on_def linear_order_on_def total_on_def Ge'_fld
@@ -297,7 +297,7 @@ proof -
   have "wfP (\<lambda>xs ys. length ys \<le> n \<and> length xs \<le> n \<and> ext gt' ys xs)"
     using wf_bounded_if_total gt'_total gt'_irrefl gt'_trans gt'_wf by blast
   thus ?thesis
-    by (rule wfP_subset) (auto intro: mono[OF gt_imp_gt', THEN predicate2D])
+    by (rule wfp_subset) (auto intro: mono[OF gt_imp_gt', THEN predicate2D])
 qed
 
 end
@@ -650,7 +650,7 @@ proof -
 qed
 
 lemma len_lexext_wf: "wfP (\<lambda>x y. gt y x) \<Longrightarrow> wfP (\<lambda>xs ys. len_lexext gt ys xs)"
-  unfolding wfP_def len_lexext_iff_lenlex by (simp add: wf_lenlex)
+  unfolding wfp_def len_lexext_iff_lenlex by (simp add: wf_lenlex)
 
 lemma len_lexext_hd_or_tl: "len_lexext gt (y # ys) (x # xs) \<Longrightarrow> gt y x \<or> len_lexext gt ys xs"
   using lenext_hd_or_tl lexext_hd_or_tl by metis
@@ -1058,9 +1058,9 @@ lemma msetext_dersh_singleton: "msetext_dersh gt [y] [x] \<longleftrightarrow> g
 lemma msetext_dersh_wf:
   assumes wf_gt: "wfP (\<lambda>x y. gt y x)"
   shows "wfP (\<lambda>xs ys. msetext_dersh gt ys xs)"
-proof (rule wfP_subset, rule wfP_app[of "\<lambda>xs ys. (xs, ys) \<in> mult {(x, y). gt y x}" mset])
+proof (rule wfp_subset, rule wfP_app[of "\<lambda>xs ys. (xs, ys) \<in> mult {(x, y). gt y x}" mset])
   show "wfP (\<lambda>xs ys. (xs, ys) \<in> mult {(x, y). gt y x})"
-    using wf_gt unfolding wfP_def by (auto intro: wf_mult)
+    using wf_gt unfolding wfp_def by (auto intro: wf_mult)
 next
   show "(\<lambda>xs ys. msetext_dersh gt ys xs) \<le> (\<lambda>x y. (mset x, mset y) \<in> mult {(x, y). gt y x})"
     using msetext_dersh_imp_mult by blast
@@ -1302,7 +1302,7 @@ proof -
       cnt_yy: "count (mset ys) yy > count (mset xs) yy" and
       max_yy: "\<forall>y \<in> A. yy \<in> A \<longrightarrow> gt (f y) (f yy) \<longrightarrow> gt (f y) (f x) \<longrightarrow>
         count (mset xs) y \<ge> count (mset ys) y"
-      using wfP_eq_minimal[THEN iffD1, OF wf_gt_f, rule_format,
+      using wfp_eq_minimal[THEN iffD1, OF wf_gt_f, rule_format,
           of y "{y. gt (f y) (f x) \<and> count (mset xs) y < count (mset ys) y}", simplified]
         y_gt_x cnt_y
       by (metis compat_f not_less x_in_a y_in_a)
@@ -1386,7 +1386,7 @@ proof -
     obtain xx where
       cnt_xx: "count (mset zs) xx > count (mset ys) xx" and
       max_xx: "\<forall>y \<in> A. xx \<in> A \<longrightarrow> gt y xx \<longrightarrow> count (mset ys) y \<ge> count (mset zs) y"
-      using wfP_eq_minimal[THEN iffD1, OF wf_gt, rule_format,
+      using wfp_eq_minimal[THEN iffD1, OF wf_gt, rule_format,
           of x "{y. count (mset ys) y < count (mset zs) y}", simplified]
         cnt_x
       by force
@@ -1445,7 +1445,7 @@ proof -
         yy_gt_x: "gt yy x" and
         cnt_yy: "count (mset zs) yy > count (mset ys) yy" and
         max_yy: "\<forall>y \<in> A. yy \<in> A \<longrightarrow> gt y yy \<longrightarrow> gt y x \<longrightarrow> count (mset ys) y \<ge> count (mset zs) y"
-        using wfP_eq_minimal[THEN iffD1, OF wf_gt, rule_format,
+        using wfp_eq_minimal[THEN iffD1, OF wf_gt, rule_format,
             of y "{y. gt y x \<and> count (mset ys) y < count (mset zs) y}", simplified]
           y_gt_x cnt_y
         by force
@@ -1504,7 +1504,7 @@ proof -
         yy_gt_x: "gt yy x" and
         cnt_yy: "count (mset ys) yy > count (mset xs) yy" and
         max_yy: "\<forall>y \<in> A. yy \<in> A \<longrightarrow> gt y yy \<longrightarrow> gt y x \<longrightarrow> count (mset xs) y \<ge> count (mset ys) y"
-        using wfP_eq_minimal[THEN iffD1, OF wf_gt, rule_format,
+        using wfp_eq_minimal[THEN iffD1, OF wf_gt, rule_format,
             of y "{y. gt y x \<and> count (mset xs) y < count (mset ys) y}", simplified]
           y_gt_x cnt_y
         by force
@@ -1570,7 +1570,7 @@ lemma msetext_huet_singleton: "y \<noteq> x \<Longrightarrow> msetext_huet gt [y
   unfolding msetext_huet_def by simp
 
 lemma msetext_huet_wf: "wfP (\<lambda>x y. gt y x) \<Longrightarrow> wfP (\<lambda>xs ys. msetext_huet gt ys xs)"
-  by (erule wfP_subset[OF msetext_dersh_wf]) (auto intro: msetext_huet_imp_dersh)
+  by (erule wfp_subset[OF msetext_dersh_wf]) (auto intro: msetext_huet_imp_dersh)
 
 lemma msetext_huet_hd_or_tl:
   assumes
@@ -1923,7 +1923,7 @@ lemma cwiseext_singleton: "cwiseext gt [y] [x] \<longleftrightarrow> gt y x"
   unfolding cwiseext_def by auto
 
 lemma cwiseext_wf: "wfP (\<lambda>x y. gt y x) \<Longrightarrow> wfP (\<lambda>xs ys. cwiseext gt ys xs)"
-  by (auto intro: cwiseext_imp_len_lexext wfP_subset[OF len_lexext_wf])
+  by (auto intro: cwiseext_imp_len_lexext wfp_subset[OF len_lexext_wf])
 
 lemma cwiseext_hd_or_tl: "cwiseext gt (y # ys) (x # xs) \<Longrightarrow> gt y x \<or> cwiseext gt ys xs"
   unfolding cwiseext_def

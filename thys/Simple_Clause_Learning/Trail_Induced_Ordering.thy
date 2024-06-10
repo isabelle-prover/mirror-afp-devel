@@ -717,7 +717,7 @@ lemma wfP_trail_less:
     pairwise_distinct:
       "\<forall>i < length Ls. \<forall>j < length Ls. i \<noteq> j \<longrightarrow> Ls ! i \<noteq> Ls ! j \<and> Ls ! i \<noteq> - (Ls ! j)"
   shows "wfP (trail_less Ls)"
-  unfolding wfP_eq_minimal
+  unfolding wfp_eq_minimal
 proof (intro allI impI)
   fix M :: "'a set" and L :: 'a
   assume "L \<in> M"
@@ -858,7 +858,7 @@ lemma wfP_trail_less_ex:
       "\<forall>i < length Ls. \<forall>j < length Ls. i \<noteq> j \<longrightarrow> Ls ! i \<noteq> Ls ! j \<and> Ls ! i \<noteq> - (Ls ! j)" and
     wfP_lt: "wfP lt"
   shows "wfP (trail_less_ex lt Ls)"
-  unfolding wfP_eq_minimal
+  unfolding wfp_eq_minimal
 proof (intro allI impI)
   fix Q :: "'a set" and x :: 'a
   assume "x \<in> Q"
@@ -866,13 +866,13 @@ proof (intro allI impI)
   proof (cases "Q \<inter> (set Ls \<union> uminus ` set Ls) = {}")
     case True
     then show ?thesis
-      using wfP_lt[unfolded wfP_eq_minimal, rule_format, OF \<open>x \<in> Q\<close>]
+      using wfP_lt[unfolded wfp_eq_minimal, rule_format, OF \<open>x \<in> Q\<close>]
       by (metis (no_types, lifting) defined_conv disjoint_iff trail_less_ex_def uminus_uminus_id)
   next
     case False
     then show ?thesis
       using trail_subset_empty_or_ex_smallest[OF uminus_not_id uminus_uminus_id pairwise_distinct,
-        unfolded wfP_eq_minimal, of "Q \<inter> (set Ls \<union> uminus ` set Ls)", simplified]
+        unfolded wfp_eq_minimal, of "Q \<inter> (set Ls \<union> uminus ` set Ls)", simplified]
       by (metis (no_types, lifting) IntD1 IntD2 UnE defined_conv trail_less_ex_def uminus_uminus_id)
   qed
 qed

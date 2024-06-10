@@ -17,7 +17,7 @@ subsection \<open>@{const wfp_on}\<close>
 lemma wfp_on_imp_wfP:
   assumes "wfp_on r A"
   shows "wfP (\<lambda>x y. r x y \<and> x \<in> A \<and> y \<in> A)" (is "wfP ?r")
-proof (simp add: wfP_def wf_def, intro allI impI)
+proof (simp add: wfp_def wf_def, intro allI impI)
   fix P x
   assume "\<forall>x. (\<forall>y. r y x \<and> y \<in> A \<and> x \<in> A \<longrightarrow> P y) \<longrightarrow> P x"
   hence *: "\<And>x. (\<And>y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> r y x \<Longrightarrow> P y) \<Longrightarrow> P x" by blast
@@ -231,7 +231,7 @@ unfolding is_loc_confluent_def WCR_defs by (auto simp add: cs_join)
 
 lemma wf_converse:
   shows "(wfP r^--1) = (wf (relset\<inverse>))"
-unfolding wfP_def converse_def by simp
+unfolding wfp_def converse_def by simp
 
 lemma wf_SN:
   shows "(wfP r^--1) = (SN relset)"

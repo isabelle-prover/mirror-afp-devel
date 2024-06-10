@@ -128,7 +128,7 @@ proof -
   have "a_conditions {} (\<lambda>x. (case x of \<turnstile> \<Rightarrow> \<turnstile> | \<stileturn> \<Rightarrow> \<stileturn>))"
     by (simp add: a_conditions_def)
   hence "\<exists>f. a_conditions {} f" by blast
-  moreover have "wfP (depends_on {})" by (simp add: wfP_eq_minimal)
+  moreover have "wfP (depends_on {})" by (simp add: wfp_eq_minimal)
   ultimately show ?thesis by (simp add:consistent_def insert_messages_def)
 qed
 

@@ -225,7 +225,7 @@ next
     apply -
     apply rotate_tac
     apply (intro allI)
-    apply (erule wfP_induct)
+    apply (erule wfp_induct)
     apply (intro impI allI)
     apply (rename_tac xa)
     apply (case_tac "b xa")

@@ -316,7 +316,7 @@ next
                   in p_while2)
         apply clarsimp
         apply (erule div_at_iteration.cases; clarsimp)
-       apply (simp only: wf_to_wfP_def wfP_def)
+       apply (simp only: wf_to_wfP_def wfp_def)
        using wf_measure
        apply (metis (no_types, lifting) case_prodE mem_Collect_eq subsetI wf_subset)
       apply clarsimp

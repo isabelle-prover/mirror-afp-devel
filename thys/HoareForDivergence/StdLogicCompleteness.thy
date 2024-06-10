@@ -15,7 +15,7 @@ theorem Hoare_While:
   shows "hoare P (While x p) Q"
   apply (rule_tac P'=R and Q'="\<lambda>s. R s \<and> \<not>guard x s" in h_weaken; (simp add: h1 h2)?)
   apply (rule h_while[OF h3])
-  apply (clarsimp simp: wfP_def)
+  apply (clarsimp simp: wfp_def)
   using wf_measure[where f=m, simplified measure_def inv_image_def]
   by auto
 

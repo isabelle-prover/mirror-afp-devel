@@ -1834,7 +1834,7 @@ proof -
       unfolding inf_chain_def wt_diff_same_as_union[symmetric] by auto
 
     have "wf {(s, t). ground s \<and> ground t \<and> wt t =\<^sub>p wt s \<and> sym (head t) >\<^sub>s sym (head s)}"
-      using gt_sym_wf unfolding wfP_def wf_iff_no_infinite_down_chain by fast
+      using gt_sym_wf unfolding wfp_def wf_iff_no_infinite_down_chain by fast
     moreover have "{(s, t). ground t \<and> wt t =\<^sub>p wt s \<and> gt_diff t s}
       \<subseteq> {(s, t). ground s \<and> ground t \<and> wt t =\<^sub>p wt s \<and> sym (head t) >\<^sub>s sym (head s)}"
     proof (clarsimp, intro conjI)
@@ -1954,7 +1954,7 @@ proof -
       unfolding inf_chain_def by blast
     hence nwf_ext:
       "\<not> wfP (\<lambda>xs ys. length ys \<le> max_args \<and> length xs \<le> max_args \<and> extf f ?gtwu ys xs)"
-      unfolding inf_chain_def wfP_def wf_iff_no_infinite_down_chain using nargs_le_max_args by fast
+      unfolding inf_chain_def wfp_def wf_iff_no_infinite_down_chain using nargs_le_max_args by fast
 
     have gtwu_le_gtwg: "?gtwu \<le> (>\<^sub>t\<^sub>w\<^sub>g)"
       by (auto intro!: gr_u)
@@ -1989,7 +1989,7 @@ proof -
   hence "wfP (\<lambda>s t. ?subst t >\<^sub>t\<^sub>w ?subst s)"
     by (simp add: ground_grounding_\<rho>)
   thus ?thesis
-    by (auto intro: wfP_subset wary_subst_wary[OF wary_grounding_\<rho>] gt_subst[OF wary_grounding_\<rho>])
+    by (auto intro: wfp_subset wary_subst_wary[OF wary_grounding_\<rho>] gt_subst[OF wary_grounding_\<rho>])
 qed
 
 end

@@ -395,13 +395,13 @@ proof -
       show "wfp ?less"
       proof (intro wfp_lex_prodp)
         show "wfp ((<) :: bool \<Rightarrow> bool \<Rightarrow> bool)"
-          by (simp add: Wellfounded.wfPUNIVI)
+          by (simp add: Wellfounded.wfpUNIVI)
       next
         show "wfp (|\<subset>|)"
           by (rule wfP_pfsubset)
       next
         show "wfp (\<lambda>x y. (x, y) \<in> lenlex {(x :: _ :: wellorder, y). x < y})"
-          unfolding Wellfounded.wfP_wf_eq
+          unfolding Wellfounded.wfp_wf_eq
           using wf_lenlex
           using wf by blast
       next

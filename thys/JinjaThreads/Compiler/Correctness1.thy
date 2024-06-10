@@ -2233,7 +2233,7 @@ next
   hence "wf (inv_image (measure countInitBlock) (\<lambda>(((e', xs'), exs'), h'). e'))" ..
   also have "inv_image (measure countInitBlock) (\<lambda>(((e', xs'), exs'), h'). e') = {(s2', s2). ?\<mu>2 s2' s2}"
     by(simp add: inv_image_def split_beta)
-  finally show "wfP ?\<mu>2" by(simp add: wfP_def)
+  finally show "wfP ?\<mu>2" by(simp add: wfp_def)
 qed
 
 lemma delay_bisimulation_diverge_red0_Red1: 

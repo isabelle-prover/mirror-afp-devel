@@ -588,7 +588,7 @@ next
     by auto
 next
   show "wfP (strictly_generalizes_atm :: ('f, 'v) term \<Rightarrow> _ \<Rightarrow> _)"
-    unfolding wfP_def
+    unfolding wfp_def
     by (rule wf_subset[OF wf_subsumes])
       (auto simp: strictly_generalizes_atm_def generalizes_atm_def term_subsumable.subsumes_def
         subsumeseq_term.simps)

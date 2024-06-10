@@ -455,7 +455,7 @@ locale multithreaded_base_measure_wf = multithreaded_base_measure +
 begin
 
 lemma wf_m\<mu>t: "wfP (m\<mu>t m)"
-unfolding wfP_eq_minimal
+unfolding wfp_eq_minimal
 proof(intro strip)
   fix Q :: "('l,'t,'x) thread_info set" and ts
   assume "ts \<in> Q"
@@ -488,7 +488,7 @@ proof(intro strip)
         unfolding Q'_def by auto
       define Q'' where "Q'' = {(x, m)|x. \<exists>ln. ts'(t \<mapsto> (x, ln)) \<in> Q}"
       from \<open>ts'(t \<mapsto> (x', ln')) \<in> Q\<close> have "(x', m) \<in> Q''" unfolding Q''_def by blast
-      hence "\<exists>xm''\<in>Q''. \<forall>xm'''. \<mu> xm''' xm'' \<longrightarrow> xm''' \<notin> Q''" by(rule wf_\<mu>[unfolded wfP_eq_minimal, rule_format])
+      hence "\<exists>xm''\<in>Q''. \<forall>xm'''. \<mu> xm''' xm'' \<longrightarrow> xm''' \<notin> Q''" by(rule wf_\<mu>[unfolded wfp_eq_minimal, rule_format])
       then obtain xm'' where "xm'' \<in> Q''" and min': "\<And>xm'''. \<mu> xm''' xm'' \<Longrightarrow> xm''' \<notin> Q''" by blast
       from \<open>xm'' \<in> Q''\<close> obtain x'' ln'' where "xm'' = (x'', m)" "ts'(t \<mapsto> (x'', ln'')) \<in> Q" unfolding Q''_def by blast
       moreover {
@@ -542,10 +542,10 @@ qed
 lemma wf_m\<mu>: "wfP m\<mu>"
 proof -
   have "wf (inv_image (same_fst (\<lambda>m. True) (\<lambda>m. {(ts, ts'). m\<mu>t m ts ts'})) (\<lambda>s. (shr s, thr s)))"
-    by(rule wf_inv_image)(rule wf_same_fst, rule wf_m\<mu>t[unfolded wfP_def])
+    by(rule wf_inv_image)(rule wf_same_fst, rule wf_m\<mu>t[unfolded wfp_def])
   also have "inv_image (same_fst (\<lambda>m. True) (\<lambda>m. {(ts, ts'). m\<mu>t m ts ts'})) (\<lambda>s. (shr s, thr s)) = {(s, s'). m\<mu> s s'}"
     by(auto simp add: m\<mu>_def same_fst_def)
-  finally show ?thesis by(simp add: wfP_def)
+  finally show ?thesis by(simp add: wf_def)
 qed
 
 end

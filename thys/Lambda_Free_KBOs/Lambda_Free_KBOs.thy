@@ -43,7 +43,7 @@ definition coef_sym\<^sub>h :: "nat \<Rightarrow> nat \<Rightarrow> hmultiset" w
   "coef_sym\<^sub>h n i = 1"
 
 sublocale kbo_app: kbo_app gt_sym wt_sym \<epsilon> len_lexext
-  by unfold_locales (auto simp: gt_sym_def \<epsilon>_def wt_sym_def intro: wf_less[folded wfP_def])
+  by unfold_locales (auto simp: gt_sym_def \<epsilon>_def wt_sym_def intro: wf_less[folded wfp_def])
 
 sublocale kbo_basic: kbo_basic gt_sym wt_sym \<epsilon> "\<lambda>f. len_lexext" ground_head_var
   by unfold_locales (auto simp: ground_head_var_def gt_sym_def \<epsilon>_def wt_sym_def)

@@ -603,7 +603,7 @@ lemma infinite_chain_function_iff_infinite_chain_llist:
 lemma wfP_iff_no_infinite_down_chain_llist: "wfP r \<longleftrightarrow> (\<nexists>c. \<not> lfinite c \<and> chain r\<inverse>\<inverse> c)"
 proof -
   have "wfP r \<longleftrightarrow>  wf {(x, y). r x y}"
-    unfolding wfP_def by auto
+    unfolding wfp_def by auto
   also have "\<dots> \<longleftrightarrow> (\<nexists>f. \<forall>i. (f (Suc i), f i) \<in> {(x, y). r x y})"
     using wf_iff_no_infinite_down_chain by blast
   also have "\<dots> \<longleftrightarrow> (\<nexists>f. \<forall>i. r (f (Suc i)) (f i))"

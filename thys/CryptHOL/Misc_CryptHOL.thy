@@ -1384,7 +1384,7 @@ lemma wf_strict_prefix: "wfP strict_prefix"
 proof -
   from wf have "wf (inv_image {(x, y). x < y} length)" by(rule wf_inv_image)
   moreover have "{(x, y). strict_prefix x y} \<subseteq> inv_image {(x, y). x < y} length" by(auto intro: prefix_length_less)
-  ultimately show ?thesis unfolding wfP_def by(rule wf_subset)
+  ultimately show ?thesis unfolding wfp_def by(rule wf_subset)
 qed
 
 lemma strict_prefix_setD:

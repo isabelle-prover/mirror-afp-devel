@@ -133,7 +133,7 @@ lemma wfp_on_imp_af:
 
 lemma af_leq:
   "af UNIV ((\<le>) :: nat \<Rightarrow> nat \<Rightarrow> bool)"
-  using wf_less [folded wfP_def wfp_on_UNIV, THEN wfp_on_imp_af] by (simp add: not_less)
+  using wf_less [folded wfp_def wfp_on_UNIV, THEN wfp_on_imp_af] by (simp add: not_less)
 
 definition "NOTAF A P = (SOME x. x \<in> A \<and> \<not> af A (\<lambda>y z. P y z \<or> P x y))"
 

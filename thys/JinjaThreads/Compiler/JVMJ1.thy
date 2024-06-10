@@ -3115,18 +3115,18 @@ proof -
   hence "wf (inv_image {(m, m'). m < m'} ?f)" by(rule wf_inv_image)
   moreover have "{(pcxcp1, pcxcp2). sim21_size_aux n pcxcp1 pcxcp2} \<subseteq> inv_image {(m, m'). m < m'} ?f"
     by(auto elim!: sim21_size_aux.cases)
-  ultimately show ?thesis unfolding wfP_def by(rule wf_subset)
+  ultimately show ?thesis unfolding wfp_def by(rule wf_subset)
 qed
 
 lemma Collect_split_mem: "{(x, y). (x, y) \<in> Q} = Q" by simp
 
 lemma wfP_sim21_size: "wfP (sim21_size P)"
-unfolding wfP_def Collect_split_mem sim21_size_def [abs_def]
+unfolding wfp_def Collect_split_mem sim21_size_def [abs_def]
 apply(rule wf_inv_image)
 apply(rule wf_lex_prod)
  apply(rule wf_less_than)
 apply(rule wf_same_fst)
-apply(rule wfP_sim21_size_aux[unfolded wfP_def])
+apply(rule wfP_sim21_size_aux[unfolded wfp_def])
 done
 
 declare split_beta[simp]

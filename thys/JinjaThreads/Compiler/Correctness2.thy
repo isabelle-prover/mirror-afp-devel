@@ -193,16 +193,16 @@ next
   also have "inv_image {(x, y). x < y} (\<lambda>(((e, xs), exs), h). sim12_size e) =
     {(x, y). (\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e') x y}" by auto
   finally show "wfP (\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e')"
-    unfolding wfP_def .
+    unfolding wfp_def .
 next
   from wfP_sim21_size
-  have "wf {(xcpfrs, xcpfrs'). sim21_size (compP2 P) xcpfrs xcpfrs'}" by(unfold wfP_def)
+  have "wf {(xcpfrs, xcpfrs'). sim21_size (compP2 P) xcpfrs xcpfrs'}" by(unfold wfp_def)
   hence "wf (inv_image {(xcpfrs, xcpfrs'). sim21_size (compP2 P) xcpfrs xcpfrs'} fst)" by(rule wf_inv_image)
   also have "inv_image {(xcpfrs, xcpfrs'). sim21_size (compP2 P) xcpfrs xcpfrs'} fst =
     {((xcpfrs, h), (xcpfrs', h)). sim21_size (compP2 P) xcpfrs xcpfrs'}" by auto
   also have "\<dots> = {(x, y). (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs') x y}" by(auto)
   finally show "wfP (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs')"
-    unfolding wfP_def .
+    unfolding wfp_def .
 qed
 
 lemma Red1_execd_delay_bisim:

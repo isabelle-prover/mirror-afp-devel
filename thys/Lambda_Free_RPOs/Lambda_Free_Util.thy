@@ -138,7 +138,7 @@ lemma wf_app: "wf r \<Longrightarrow> wf {(x, y). (f x, f y) \<in> r}"
   unfolding wf_eq_minimal by (intro allI, drule spec[of _ "f ` Q" for Q]) fast
 
 lemma wfP_app: "wfP p \<Longrightarrow> wfP (\<lambda>x y. p (f x) (f y))"
-  unfolding wfP_def by (rule wf_app[of "{(x, y). p x y}" f, simplified])
+  unfolding wfp_def by (rule wf_app[of "{(x, y). p x y}" f, simplified])
 
 lemma wf_exists_minimal:
   assumes wf: "wf r" and Q: "Q x"
@@ -149,7 +149,7 @@ lemma wf_exists_minimal:
 lemma wfP_exists_minimal:
   assumes wf: "wfP p" and Q: "Q x"
   shows "\<exists>x. Q x \<and> (\<forall>y. p (f y) (f x) \<longrightarrow> \<not> Q y)"
-  by (rule wf_exists_minimal[of "{(x, y). p x y}" Q x, OF wf[unfolded wfP_def] Q, simplified])
+  by (rule wf_exists_minimal[of "{(x, y). p x y}" Q x, OF wf[unfolded wfp_def] Q, simplified])
 
 lemma finite_irrefl_trans_imp_wf: "finite r \<Longrightarrow> irrefl r \<Longrightarrow> trans r \<Longrightarrow> wf r"
   by (erule finite_acyclic_wf) (simp add: acyclic_irrefl)
@@ -157,7 +157,7 @@ lemma finite_irrefl_trans_imp_wf: "finite r \<Longrightarrow> irrefl r \<Longrig
 lemma finite_irreflp_transp_imp_wfp:
   "finite {(x, y). p x y} \<Longrightarrow> irreflp p \<Longrightarrow> transp p \<Longrightarrow> wfP p"
   using finite_irrefl_trans_imp_wf[of "{(x, y). p x y}"]
-  unfolding wfP_def transp_def irreflp_def trans_def irrefl_def mem_Collect_eq prod.case
+  unfolding wfp_def transp_def irreflp_def trans_def irrefl_def mem_Collect_eq prod.case
   by assumption
 
 lemma wf_infinite_down_chain_compatible:

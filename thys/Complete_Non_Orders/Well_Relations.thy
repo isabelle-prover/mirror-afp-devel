@@ -198,7 +198,7 @@ next
 qed
 
 lemma wfP_iff_well_founded_UNIV: "wfP r \<longleftrightarrow> well_founded UNIV r"
-  by (auto simp: wfP_def wf_def well_founded_def)
+  by (auto simp: wfp_def wf_def well_founded_def)
 
 lemma well_founded_empty[intro!]: "well_founded {} r"
   by (auto simp: well_founded_iff_ex_extremal)

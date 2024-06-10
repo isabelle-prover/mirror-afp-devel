@@ -273,7 +273,7 @@ proof -
     apply (simp add:consistent_def)
     by (metis Un_insert_right insert_insert_message sup_bot.right_neutral)
   thus ?thesis 
-    by (metis mem_Collect_eq wfP_eq_minimal)
+    by (metis mem_Collect_eq wfp_eq_minimal)
 qed
 
 lemma pred_succ_order:
@@ -437,7 +437,7 @@ proof -
         to_woot_character_keeps_i_lifted u)
   hence "\<exists>x. x \<in> H" using v H_def by auto
   ultimately obtain z where z_def: "z \<in> H" "\<And> y. depends_on H y z \<Longrightarrow> y \<notin> H"
-    by (metis wfP_eq_minimal)
+    by (metis wfp_eq_minimal)
   have a:"\<And>x. x \<in> deps (Insert z) \<Longrightarrow> \<not>(a pm < a \<lbrakk>x\<rbrakk> \<and> a \<lbrakk>x\<rbrakk> < a sm)"
   proof -
     fix x

@@ -538,7 +538,7 @@ next
   hence "wf (inv_image {(x :: nat, y). x < y} (length o snd o fst))" by(rule wf_inv_image)
   also have "inv_image {(x :: nat, y). x < y} (length o snd o fst) = {(x, y). (\<lambda>((e, es), h) ((e, es'), h). length es < length es') x y}" by auto
   finally show "wfP (\<lambda>((e, es), h) ((e, es'), h). length es < length es')"
-    unfolding wfP_def .
+    unfolding wfp_def .
 next
   fix s1 s2 s1'
   assume "bisim_red_red0 s1 s2" and "red_mthr.silent_move P t s1 s1'"

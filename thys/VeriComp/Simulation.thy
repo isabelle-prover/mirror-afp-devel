@@ -521,7 +521,7 @@ next
 next
   show "well_founded (lex_prodp order1\<^sup>+\<^sup>+ order2)"
     using assms[THEN backward_simulation.axioms(3)]
-    by (simp add: lex_prodp_well_founded well_founded.intro well_founded.wf wfP_trancl)
+    by (simp add: lex_prodp_well_founded well_founded.intro well_founded.wf wfp_tranclp)
 next
   show "backward_simulation_axioms step1 step3 final1 final3
     (lex_prodp order1\<^sup>+\<^sup>+ order2) (rel_comp match1 match2)"
@@ -598,7 +598,7 @@ proof intro_locales
 next
   show "well_founded (lexp order\<^sup>+\<^sup>+)"
     using backward_simulation.axioms(3)[OF assms] lex_list_well_founded
-    using well_founded.intro well_founded.wf wfP_trancl by blast
+    using well_founded.intro well_founded.wf wfp_tranclp by blast
 next
   show "backward_simulation_axioms step step final final (lexp order\<^sup>+\<^sup>+) (rel_comp_pow match)"
   proof unfold_locales

@@ -174,7 +174,7 @@ proof -
     "\<lambda>St. (mset_of_fstate St, mset_set (fset (new_of St)), mset_set (set_option (xx_of St)))"
 
   have wf_msetset: "wf ?msetset"
-    using wfP_Precprec_S wfP_def by auto
+    using wfP_Precprec_S wfp_def by auto
   have wf_lex_prod: "wf (?msetset <*lex*> ?msetset <*lex*> ?msetset)"
     by (rule wf_lex_prod[OF wf_msetset wf_lex_prod[OF wf_msetset wf_msetset]])
 
@@ -183,7 +183,7 @@ proof -
     unfolding Less1_state_def by simp
 
   show ?thesis
-    unfolding wfP_def Less1_state_alt_def using wf_app[of _ ?triple_of] wf_lex_prod by blast
+    unfolding wfp_def Less1_state_alt_def using wf_app[of _ ?triple_of] wf_lex_prod by blast
 qed
 
 definition Less2_state :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix "\<sqsubset>2" 50) where
@@ -199,9 +199,9 @@ proof -
   let ?pair_of = "\<lambda>St. (mset_set (set_option (yy_of St)), St)"
 
   have wf_msetset: "wf ?msetset"
-    using wfP_Precprec_S wfP_def by auto
+    using wfP_Precprec_S wfp_def by auto
   have wf_stateset: "wf ?stateset"
-    using wfP_Less1_state wfP_def by auto
+    using wfP_Less1_state wfp_def by auto
   have wf_lex_prod: "wf (?msetset <*lex*> ?stateset)"
     by (rule wf_lex_prod[OF wf_msetset wf_stateset])
 
@@ -210,7 +210,7 @@ proof -
     unfolding Less2_state_def by simp
 
   show ?thesis
-    unfolding wfP_def Less2_state_alt_def using wf_app[of _ ?pair_of] wf_lex_prod by blast
+    unfolding wfp_def Less2_state_alt_def using wf_app[of _ ?pair_of] wf_lex_prod by blast
 qed
 
 lemma fair_IL_Liminf_yy_empty:

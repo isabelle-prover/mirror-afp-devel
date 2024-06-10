@@ -358,11 +358,11 @@ by (clarsimp simp: trace.less_t_def trace.less_eq_take_def trace.take.take) (met
 
 lemma wfP_less:
   shows "wfP ((<) :: (_, _, _) trace.t relp)"
-unfolding wfP_def
+unfolding wfp_def
 proof(rule wf_subset[rotated])
   let ?r = "inv_image ({(None, Some v) |v. True} <*lex*> {(x, y). strict_prefix x y}) (\<lambda>\<sigma>. (trace.term \<sigma>, trace.rest \<sigma>))"
   show "wf ?r"
-    using wfP_def wfP_strict_prefix wf_def by fastforce
+    using wfp_def wfP_strict_prefix wf_def by fastforce
   show "{(x, y). x < y} \<subseteq> ?r"
     by (auto simp: trace.less_t_def trace.less_eq_take_def trace.take.all_iff split: option.splits)
 qed

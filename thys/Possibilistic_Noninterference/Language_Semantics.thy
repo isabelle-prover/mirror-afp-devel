@@ -447,7 +447,7 @@ proof-
   let ?K = "{((c',s'),(c,s)). noWhile c \<and> (c,s) \<rightarrow>c (c',s')}"
   have "?K \<le> inv_image {(m,n). m < n} (\<lambda>(c,s). numSt c)" by(auto simp add: numSt_transC)
   hence "wf ?K" using wf_less wf_subset[of _ ?K] by blast
-  thus ?thesis unfolding wfP_def
+  thus ?thesis unfolding wfp_def
   by (metis CollectD Collect_mem_eq Compl_eq Compl_iff double_complement)
 qed
 

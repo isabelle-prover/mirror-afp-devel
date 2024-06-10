@@ -10,14 +10,14 @@ locale well_founded =
     wf: "wfP (\<sqsubset>)"
 begin
 
-lemmas induct = wfP_induct_rule[OF wf]
+lemmas induct = wfp_induct_rule[OF wf]
 
 end
 
 subsection \<open>Unit\<close>
 
 lemma wfP_unit: "wfP (\<lambda>() (). False)"
-  by (simp add: Nitpick.case_unit_unfold wfP_eq_minimal)
+  by (simp add: Nitpick.case_unit_unfold wfp_eq_minimal)
 
 interpretation well_founded "\<lambda>() (). False"
   apply unfold_locales
@@ -43,7 +43,7 @@ lemma lex_prodp_wfP:
     "wfP r1" and
     "wfP r2"
   shows "wfP lex_prodp"
-proof (rule wfPUNIVI)
+proof (rule wfpUNIVI)
   show "\<And>P. \<forall>x. (\<forall>y. lex_prodp y x \<longrightarrow> P y) \<longrightarrow> P x \<Longrightarrow> (\<And>x. P x)"
   proof -
     fix P
@@ -54,9 +54,9 @@ proof (rule wfPUNIVI)
       apply (simp only: split_paired_all)
       apply (atomize (full))
       apply (rule allI)
-      apply (rule wfP_induct_rule[OF assms(1), of "\<lambda>y. \<forall>b. P (y, b)"])
+      apply (rule wfp_induct_rule[OF assms(1), of "\<lambda>y. \<forall>b. P (y, b)"])
       apply (rule allI)
-      apply (rule wfP_induct_rule[OF assms(2), of "\<lambda>b. P (x, b)" for x])
+      apply (rule wfp_induct_rule[OF assms(2), of "\<lambda>b. P (x, b)" for x])
       using hyps[unfolded lex_prodp_def, simplified]
       by blast
   qed
@@ -98,7 +98,7 @@ next
 qed
 
 lemma lex_list_wfP: "wfP order \<Longrightarrow> wfP (lexp order)"
-  by (simp add: lexp_lex wf_lex wfP_def)
+  by (simp add: lexp_lex wf_lex wfp_def)
 
 lemma lex_list_well_founded:
   assumes "well_founded order"

@@ -53,7 +53,7 @@ lemma trans_Prec_S: "trans {(x, y). x \<prec>S y}"
   using transp_Prec_S transp_trans by blast
 
 lemma irreflp_Prec_S: "irreflp (\<prec>S)"
-  using minimal_element.wf wfP_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
+  using minimal_element.wf wfp_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
 
 lemma irrefl_Prec_S: "irrefl {(x, y). x \<prec>S y}"
   by (metis CollectD case_prod_conv irrefl_def irreflp_Prec_S irreflp_def)

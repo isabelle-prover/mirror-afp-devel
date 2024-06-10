@@ -169,7 +169,7 @@ proof-
   ultimately
   have "wf {(x, y). cancels_to_1 y x}"
     by(rule wf_subset)
-  thus ?thesis by (simp add:wfP_def)
+  thus ?thesis by (simp add:wfp_def)
 qed
 
 text \<open>
@@ -484,7 +484,7 @@ proof-
   have "wfP cancels_to_1^--1"
     by (rule canceling_terminates)
   hence "\<forall>Q. (\<exists>x. x \<in> Q) \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. cancels_to_1 z y \<longrightarrow> y \<notin> Q)"
-    by (simp add:wfP_eq_minimal)
+    by (simp add:wfp_eq_minimal)
   hence "(\<exists>x. x \<in> ?Q) \<longrightarrow> (\<exists>z\<in>?Q. \<forall>y. cancels_to_1 z y \<longrightarrow> y \<notin> ?Q)"
     by (erule_tac x="?Q" in allE)
   then obtain l' where "l' \<in> ?Q" and minimal: "\<And>y. cancels_to_1 l' y \<Longrightarrow> y \<notin> ?Q"

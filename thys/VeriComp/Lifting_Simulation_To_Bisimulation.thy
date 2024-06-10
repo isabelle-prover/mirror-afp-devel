@@ -28,7 +28,7 @@ lemma finite_progress:
   shows "match i s1 s2 \<Longrightarrow> step1 s1 s1' \<Longrightarrow>
     \<exists>m s1'' n s2'' i'. (step1 ^^ m) s1' s1'' \<and> (step2 ^^ Suc n) s2 s2'' \<and> match i' s1'' s2''"
   using well_founded_order
-proof (induction i arbitrary: s1 s1' rule: wfP_induct_rule)
+proof (induction i arbitrary: s1 s1' rule: wfp_induct_rule)
   case (less i)
   show ?case
     using sim[unfolded simulation_def, rule_format, OF \<open>match i s1 s2\<close> \<open>step1 s1 s1'\<close>]

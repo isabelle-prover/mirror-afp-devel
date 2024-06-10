@@ -605,7 +605,7 @@ proof -
   { fix s t
     assume "X s t"
     with \<open>wfP \<mu>\<close> have "\<exists>s' t'. silent_move^++ s s' \<and> (X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>)"
-    proof(induct arbitrary: s rule: wfP_induct[consumes 1])
+    proof(induct arbitrary: s rule: wfp_induct[consumes 1])
       case (1 t)
       hence IH: "\<And>s' t'. \<lbrakk> \<mu> t' t; X s' t' \<rbrakk> \<Longrightarrow>
                  \<exists>s'' t''. silent_move^++ s' s'' \<and> (X s'' t'' \<or> s'' -\<tau>\<rightarrow> \<infinity>)" by blast
@@ -725,7 +725,7 @@ proof
   moreover define Q where "Q = {s'. silent_moves s s' \<and> s' -\<tau>\<rightarrow> \<infinity>}"
   hence "s \<in> Q" using \<open>s -\<tau>\<rightarrow> \<infinity>\<close> by(auto)
   ultimately have "\<exists>z\<in>Q. \<forall>y. silent_move_from s z y \<longrightarrow> y \<notin> Q"
-    unfolding wfP_eq_minimal flip_simps by blast
+    unfolding wfp_eq_minimal flip_simps by blast
   then obtain z where "z \<in> Q"
     and min: "\<And>y. silent_move_from s z y \<Longrightarrow> y \<notin> Q" by blast
   from \<open>z \<in> Q\<close> have "silent_moves s z" "z -\<tau>\<rightarrow> \<infinity>" unfolding Q_def by auto
@@ -740,7 +740,7 @@ qed
 lemma wfP_silent_move_from_unroll:
   assumes wfPs': "\<And>s'. s -\<tau>\<rightarrow> s' \<Longrightarrow> wfP (flip (silent_move_from s'))"
   shows "wfP (flip (silent_move_from s))"
-  unfolding wfP_eq_minimal flip_conv
+  unfolding wfp_eq_minimal flip_conv
 proof(intro allI impI)
   fix Q and x :: 's
   assume "x \<in> Q"
@@ -793,7 +793,7 @@ proof -
     using \<tau>diverge_neq_wfP_silent_move_from[of s] by simp
   moreover have "silent_moves S s" unfolding S_def ..
   ultimately show ?thesis
-  proof(induct rule: wfP_induct')
+  proof(induct rule: wfp_induct')
     case (wfP s)
     note IH = \<open>\<And>y. \<lbrakk>flip (silent_move_from S) y s; S -\<tau>\<rightarrow>* y \<rbrakk>
              \<Longrightarrow> \<exists>s'. y -\<tau>\<rightarrow>* s' \<and> (\<forall>s''. \<not> s' -\<tau>\<rightarrow> s'')\<close>

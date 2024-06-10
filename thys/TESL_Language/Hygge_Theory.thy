@@ -832,7 +832,7 @@ text \<open>
 \<close>
 theorem instant_computation_termination:
   \<open>wfP (\<lambda>(\<S>\<^sub>1::'a::linordered_field config) \<S>\<^sub>2. (\<S>\<^sub>1  \<hookrightarrow>\<^sub>e\<^sup>\<leftarrow>  \<S>\<^sub>2))\<close>
-proof (simp add: wfP_def)
+proof (simp add: wfp_def)
   show \<open>wf {((\<S>\<^sub>1::'a::linordered_field config), \<S>\<^sub>2). \<S>\<^sub>1 \<hookrightarrow>\<^sub>e\<^sup>\<leftarrow> \<S>\<^sub>2}\<close>
   proof (rule wf_subset)
     have \<open>measure \<mu>\<^sub>c\<^sub>o\<^sub>n\<^sub>f\<^sub>i\<^sub>g = {(\<S>\<^sub>2, (\<S>\<^sub>1::'a::linordered_field config)).

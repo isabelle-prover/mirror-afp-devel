@@ -119,7 +119,7 @@ by(pat_completeness, auto)
 termination
 proof(relation "same_fst (\<lambda>P. acyclicP (subcls1 P)) (\<lambda>P. {(C, C'). (subcls1 P)\<inverse>\<inverse> C C'})")
   show "wf (same_fst (\<lambda>P. acyclicP (subcls1 P)) (\<lambda>P. {(C, C'). (subcls1 P)\<inverse>\<inverse> C C'}))"
-    by(rule wf_same_fst)(rule acyclicP_wf_subcls1[unfolded wfP_def])
+    by(rule wf_same_fst)(rule acyclicP_wf_subcls1[unfolded wfp_def])
 qed(auto simp add: is_class_def intro: subcls1I)
 
 fun subtype_measure :: "'a prog \<Rightarrow> ty \<Rightarrow> nat" where

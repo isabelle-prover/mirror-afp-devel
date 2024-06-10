@@ -156,7 +156,7 @@ begin
         "Ind {a} (set b)" "set b \<subseteq> invisible"
         "b =\<^sub>F b\<^sub>1 @ b\<^sub>2" "b\<^sub>1 @- u =\<^sub>I v" "Ind (set b\<^sub>2) (sset u)"
     using wellfounded assms
-    proof (induct q arbitrary: thesis v rule: wfP_induct_rule)
+    proof (induct q arbitrary: thesis v rule: wfp_induct_rule)
       case (less q)
       show ?case
       proof (cases "ren a q")

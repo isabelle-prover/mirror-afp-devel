@@ -9,10 +9,10 @@ definition set_of :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a
 "set_of P = {(x, y). P x y}"
 
 lemma wfP_implies_wf_set_of: "wfP P \<Longrightarrow> wf (set_of P)"
-unfolding wfP_def set_of_def .
+unfolding wfp_def set_of_def .
 
 lemma wf_set_of_implies_wfP: "wf (set_of P) \<Longrightarrow> wfP P"
-unfolding wfP_def set_of_def .
+unfolding wfp_def set_of_def .
 
 lemma wf_simulate_simple:
   assumes "wf r"

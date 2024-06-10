@@ -63,7 +63,7 @@ lemma wfP_chain:
   shows "wfP r"
 proof -
   from assms wf_iff_no_infinite_down_chain[of "{(x, y). r x y}"] have "wf {(x, y). r x y}" by auto
-  thus "wfP r" unfolding wfP_def .
+  thus "wfP r" unfolding wfp_def .
 qed
 
 lemma transp_sequence:

@@ -336,13 +336,13 @@ lemmas merge_F [locale_witness] = merge_on_F[where A=UNIV and B=UNIV, simplified
 subsubsection \<open> Merging on the least fixpoint \<close>
 
 lemma wfP_subterm_T: "wfP (\<lambda>x y. x \<in> set3_F\<^sub>m (the_T\<^sub>m y))"
-  apply(rule wfPUNIVI)
+  apply(rule wfpUNIVI)
   subgoal premises IH[rule_format] for P x
     by(induct x)(auto intro: IH)
   done
 
 lemma irrefl_subterm_T: "x \<in> set3_F\<^sub>m y \<Longrightarrow> y \<noteq> the_T\<^sub>m x"
-  using wfP_subterm_T by (auto simp: wfP_def elim!: wf_irrefl)
+  using wfP_subterm_T by (auto simp: wfp_def elim!: wf_irrefl)
 
 context
   fixes rh :: "('a\<^sub>m, 'a\<^sub>h) hash"
@@ -354,7 +354,7 @@ function merge_T :: "('a\<^sub>m, 'a\<^sub>h) T\<^sub>m merge" where
   by pat_completeness auto
 termination
   apply(relation "{(x, y). x \<in> set3_F\<^sub>m (the_T\<^sub>m y)} <*lex*> {(x, y). x \<in> set3_F\<^sub>m (the_T\<^sub>m y)}")
-   apply(auto simp add: wfP_def[symmetric] wfP_subterm_T)
+   apply(auto simp add: wfp_def[symmetric] wfP_subterm_T)
   done
 
 lemma merge_on_T [locale_witness]:
