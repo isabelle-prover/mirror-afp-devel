@@ -1353,10 +1353,12 @@ object AFP_Submit {
         } yield Model.Overview(params(key + ID), date, params(key + NAME), status)
 
       val submissions =
-        fold(params.list(ENTRY), List.empty[Model.Overview]) {
-          case (key, overviews) => parse_overview(key).map(overviews :+ _)
+        fold(params.list(ENTRY), List.empty[(Int, Model.Overview)]) {
+          case (key, overviews) =>
+            parse_overview(key).map(overview =>
+              overviews :+ (key.get(ENTRY).get.num.get -> overview))
         }
-      submissions.map(Model.Submission_List.apply)
+      submissions.map(submissions => Model.Submission_List(submissions.sortBy(_._1).map(_._2)))
     }
 
     def parse_num_entry(action: Params.Key): Option[Int] =
