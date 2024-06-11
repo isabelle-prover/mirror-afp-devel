@@ -1205,20 +1205,20 @@ object AFP_Submit {
                 Model.Status.values.toList.map(v => option(v.toString, v.toString))),
               action_button(paths.api_route(API.SUBMISSION_STATUS), "update", key))))))
 
-      def list1(ls: List[XML.Elem]): XML.Elem = if (ls.isEmpty) par(Nil) else list(ls)
+      val indexed = Params.indexed(ENTRY, submission_list.submissions, (k, s) => (k, s))
 
-      val ls = Params.indexed(ENTRY, submission_list.submissions, (k, s) => (k, s))
+      val open = indexed.filter(_._2.status == Model.Status.Submitted)
+      val in_progress = indexed.filter(_._2.status == Model.Status.Review)
       val finished =
-        ls.filter(t => Set(Model.Status.Added, Model.Status.Rejected).contains(t._2.status))
+        indexed.filter(t => Set(Model.Status.Added, Model.Status.Rejected).contains(t._2.status))
+
+      def proper_list(ls: List[XML.Elem]): XML.Elem = if (ls.isEmpty) par(Nil) else list(ls)
 
       List(submit_form(paths.api_route(API.SUBMISSION_STATUS),
         render_if(mode == Mode.SUBMISSION,
-          text("Open") :::
-          list1(ls.filter(_._2.status == Model.Status.Submitted).map(render_overview)) ::
-          text("In Progress") :::
-          list1(ls.filter(_._2.status == Model.Status.Review).map(render_overview)) ::
-          text("Finished")) :::
-        list1(finished.map(render_overview)) :: Nil))
+          text("Open") ::: proper_list(open.map(render_overview.tupled)) ::
+          text("In Progress") ::: proper_list(in_progress.map(render_overview.tupled)) ::
+          text("Finished")) ::: proper_list(finished.map(render_overview.tupled)) :: Nil))
     }
 
     def render_created(created: Model.Created): XML.Body = {
