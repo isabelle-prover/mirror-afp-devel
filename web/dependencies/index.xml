@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 04 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Riesz_Representation</title>
+          <link>/dependencies/riesz_representation/</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/riesz_representation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Standard_Borel_Spaces</title>
+          <link>/dependencies/standard_borel_spaces/</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/standard_borel_spaces/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Certification_Monads</title>
           <link>/dependencies/certification_monads/</link>
@@ -424,13 +438,6 @@
           <link>/dependencies/s_finite_measure_monad/</link>
           <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/s_finite_measure_monad/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Standard_Borel_Spaces</title>
-          <link>/dependencies/standard_borel_spaces/</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/standard_borel_spaces/</guid>
           <description></description>
         </item>
         <item>

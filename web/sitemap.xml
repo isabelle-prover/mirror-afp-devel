@@ -3,21 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/hirata/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/riesz_representation/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/standard_borel_spaces/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Levy_Prokhorov_Metric.html</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Riesz_Representation.html</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/certification_monads/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/complete_non_orders/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/first_order_terms/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lp_duality/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Sorted_Terms.html</loc>
@@ -45,9 +63,6 @@
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/thiemann/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Pattern_Completeness.html</loc>
@@ -590,13 +605,7 @@
     <loc>/entries/Disintegration.html</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/hirata/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/s_finite_measure_monad/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/standard_borel_spaces/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/deriving/</loc>
@@ -6144,6 +6153,8 @@
   </url><url>
     <loc>/sessions/lem/</loc>
   </url><url>
+    <loc>/sessions/levy_prokhorov_metric/</loc>
+  </url><url>
     <loc>/sessions/lifting_definition_option/</loc>
   </url><url>
     <loc>/sessions/lifting_the_exponent/</loc>
@@ -6703,6 +6714,8 @@
     <loc>/sessions/rewriting_z/</loc>
   </url><url>
     <loc>/sessions/ribbon_proofs/</loc>
+  </url><url>
+    <loc>/sessions/riesz_representation/</loc>
   </url><url>
     <loc>/sessions/ripemd-160-spark/</loc>
   </url><url>

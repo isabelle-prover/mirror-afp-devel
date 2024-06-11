@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Standard Borel Spaces - Archive of Formal Proofs</title>
-    <meta name="description" content="This entry includes a formalization of standard Borel spaces and (a variant of) the Borel isomorphism theorem. A separable complete metrizable topological...">
+    <title>The Riesz Representation Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="We formalize the Riesz-Markov-Kakutani representation theorem following pp.37-47 of the book Real and Complex Analysis by Rudin. This entry also includes...">
 
-  <meta property="og:title" content="Standard Borel Spaces" />
+  <meta property="og:title" content="The Riesz Representation Theorem" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Standard_Borel_Spaces.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-08-08T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-08-08T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Riesz_Representation.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-06-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-06-04T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Standard Borel Spaces"/>
+<meta name="twitter:title" content="The Riesz Representation Theorem"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -123,7 +123,7 @@
       </div>
     </form>
   <h1>
-    <span class='first'>S</span>tandard <span class='first'>B</span>orel <span class='first'>S</span>paces
+    <span class='first'>T</span>he <span class='first'>R</span>iesz <span class='first'>R</span>epresentation <span class='first'>T</span>heorem
     
   </h1>
   <div>
@@ -131,7 +131,7 @@
         <a href="../authors/hirata">Michikazu Hirata</a> <a class="obfuscated" data="eyJob3N0IjpbIm0iLCJ0aXRlY2giLCJhYyIsImpwIl0sInVzZXIiOlsiaGlyYXRhIiwibSIsImFjIl19">📧</a>
 
       </p>
-      <p class="date">August 8, 2023</p>
+      <p class="date">June 4, 2024</p>
   </div>
 </header>
       <div>
@@ -139,52 +139,40 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">This entry includes a formalization of standard Borel spaces and (a variant of) the Borel isomorphism theorem. A separable complete metrizable topological space is called a polish space and a measurable space generated from a polish space is called a standard Borel space. We formalize the notion of standard Borel spaces by establishing set-based metric spaces, and then prove (a variant of) the Borel isomorphism theorem. The theorem states that a standard Borel spaces is either a countable discrete space or isomorphic to $\mathbb{R}$.</div>
+    <div class="abstract mathjax_process">We formalize the Riesz-Markov-Kakutani representation theorem following pp.37-47 of the book <i>Real and Complex Analysis</i> by Rudin.
+This entry also includes formalization of regular measures, tightness of measures, and Urysohn's lemma on locally compact Hausdorff spaces.
+Roughly speaking, the theorem states that
+if $\varphi$ is a positive linear functional from $C(X)$ (the space of continuous functions from $X$ to complex numbers which have compact supports) to complex numbers,
+then there exists a unique measure $\mu$ such that for all $f\in C(X)$, \[\varphi(f) = \int f \mathrm{d}\mu.\]</div>
 
     <h3>License</h3>
     <div>
         <a href="https://isa-afp.org/LICENSE">BSD License</a>
     </div>
-      <h3>History</h3>
-      <dl>
-        <dt>October 26, 2023</dt>
-        <dd>adjust theories to the set-based metric space library in Isabelle2023<br>
-</dd>
-      </dl>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li>
           <li><a href="../topics/mathematics/topology">Mathematics/Topology</a></li>
+          <li><a href="../topics/mathematics/measure-and-integration">Mathematics/Measure and integration</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Riesz_Representation</h3>
       <ul>
-        <li>Hirata, M., Minamide, Y., &amp; Sato, T. (2023). <i>Semantic Foundations of Higher-Order Probabilistic Programs in Isabelle/HOL</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2023.18
-        </li>
-      </ul>
-      <h3>Session Standard_Borel_Spaces</h3>
-      <ul>
-          <li><a href="../sessions/standard_borel_spaces/#Lemmas_StandardBorel">Lemmas_StandardBorel</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Set_Based_Metric_Space">Set_Based_Metric_Space</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Set_Based_Metric_Product">Set_Based_Metric_Product</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#Abstract_Metrizable_Topology">Abstract_Metrizable_Topology</a></li>
-          <li><a href="../sessions/standard_borel_spaces/#StandardBorel">StandardBorel</a></li>
+          <li><a href="../sessions/riesz_representation/#Urysohn_Locally_Compact_Hausdorff">Urysohn_Locally_Compact_Hausdorff</a></li>
+          <li><a href="../sessions/riesz_representation/#Regular_Measure">Regular_Measure</a></li>
+          <li><a href="../sessions/riesz_representation/#Riesz_Representation">Riesz_Representation</a></li>
       </ul>
 
     <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Standard_Borel_Spaces.html">Standard Borel Spaces</a></li>
+        </ul>
+      </div>
       <div>
         <h3>Used by</h3>
         <ul class="horizontal-list">
             <li>
               <a href="../entries/Levy_Prokhorov_Metric.html">The Lévy-Prokhorov Metric</a>
-            </li>
-            <li>
-              <a href="../entries/Riesz_Representation.html">The Riesz Representation Theorem</a>
-            </li>
-            <li>
-              <a href="../entries/Disintegration.html">Disintegration Theorem</a>
-            </li>
-            <li>
-              <a href="../entries/S_Finite_Measure_Monad.html">S-Finite Measure Monad on Quasi-Borel Spaces</a>
             </li>
         </ul>
       </div>
@@ -196,9 +184,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Standard_Borel_Spaces/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Standard_Borel_Spaces/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Standard_Borel_Spaces/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Riesz_Representation/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Riesz_Representation/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Riesz_Representation/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -207,14 +195,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Standard_Borel_Spaces-AFP</p>
-        <pre id="copy-text">@article{Standard_Borel_Spaces-AFP,
+        <p style="display:none;" id="bibtex-filename">Riesz_Representation-AFP</p>
+        <pre id="copy-text">@article{Riesz_Representation-AFP,
   author  = {Michikazu Hirata},
-  title   = {Standard Borel Spaces},
+  title   = {The Riesz Representation Theorem},
   journal = {Archive of Formal Proofs},
-  month   = {August},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Standard_Borel_Spaces.html},
+  month   = {June},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Riesz_Representation.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -228,23 +216,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Standard_Borel_Spaces-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Riesz_Representation-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Standard_Borel_Spaces-2024-05-26.tar.gz">
-                May 26, 2024
-              </a>
-              : Isabelle2024
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Standard_Borel_Spaces-2023-10-12.tar.gz">
-                Oct 12, 2023
-              </a>
-              : Isabelle2023
-            </li>
-        </ul>
     </div>
   </div>
         
