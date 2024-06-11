@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Riesz_Representation" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  sessions "Standard_Borel_Spaces"
+  theories
+    "Regular_Measure"
+    "Urysohn_Locally_Compact_Hausdorff"
+    "Riesz_Representation"
+  document_files
+    "root.tex"
+    "root.bib"

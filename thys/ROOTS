@@ -429,6 +429,7 @@ Laws_of_Large_Numbers
 Lazy-Lists-II
 Lazy_Case
 Lehmer
+Levy_Prokhorov_Metric
 Lifting_Definition_Option
 Lifting_the_Exponent
 LightweightJava
@@ -656,6 +657,7 @@ Resolution_FOL
 Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs
+Riesz_Representation
 Risk_Free_Lending
 Robbins-Conjecture
 Robinson_Arithmetic
