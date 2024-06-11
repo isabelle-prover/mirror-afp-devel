@@ -10,7 +10,7 @@ sig
     FoundName of ((string * int option) * thm)
     | UnknownName of (string * term)
   val adjust_found_thm : adjusted_name -> thm -> adjusted_name
-  val fact_ref_to_name : Facts.ref * thm -> adjusted_name
+  val adjusted_thm_name : Thm_Name.T * thm -> adjusted_name
   val adjust_thm_name : Proof.context -> string * int option -> term -> adjusted_name
   val pretty_adjusted_name : Proof.context -> adjusted_name -> Pretty.T
   val pretty_adjusted_fact : Proof.context -> adjusted_name -> Pretty.T
@@ -31,9 +31,8 @@ datatype adjusted_name =
 fun adjust_found_thm (FoundName (name, _)) thm = FoundName (name, thm)
   | adjust_found_thm adjusted_name _ = adjusted_name
 
-fun fact_ref_to_name ((Facts.Named ((nm,_), (SOME [Facts.Single i]))),thm) = FoundName ((nm,SOME i),thm)
-  | fact_ref_to_name ((Facts.Named ((nm,_), (NONE))),thm) = FoundName ((nm,NONE),thm)
-  | fact_ref_to_name (_,thm) = UnknownName ("",Thm.prop_of thm)
+fun adjusted_thm_name ((name, 0), thm) = FoundName ((name, NONE), thm)
+  | adjusted_thm_name ((name, i), thm) = FoundName ((name, SOME i), thm)
 
 (* Parse the index of a theorem name in the form "x_1". *)
 fun parse_thm_index name =

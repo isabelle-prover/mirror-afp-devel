@@ -214,7 +214,7 @@ end
 fun polish_arg (arg: conv->conv) ctxt (mt : Monad_Types.monad_type) do_polish pretty_bounds_conv thm =
 let
   (* Apply any polishing rules. *)
-  val ctxt = Utils.set_hidden_ctxt ctxt
+  val ctxt = Context_Position.set_visible false ctxt
   val simps = if do_polish then Utils.get_rules ctxt @{named_theorems polish} else []
   val congs = if do_polish then Utils.get_rules ctxt @{named_theorems polish_cong} else []
   (* Simplify using polish rules. *)

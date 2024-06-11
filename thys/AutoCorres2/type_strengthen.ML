@@ -530,7 +530,7 @@ let
          resolve_tac lthy' exp_thms 1,
          (REPEAT (
             FIRST [
-               CHANGED (asm_simp_tac (put_simpset HOL_ss (Utils.set_hidden_ctxt lthy') addsimps simps) 1),
+               CHANGED (asm_simp_tac (put_simpset HOL_ss (Context_Position.set_visible false lthy') addsimps simps) 1),
                Method.assm_tac lthy' 1]))
          ]
        )
