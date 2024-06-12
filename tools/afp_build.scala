@@ -1,41 +1,105 @@
-/* Author: Lars Hupel and Fabian Huch, TU Muenchen
+/* Author: Fabian Huch, TU Muenchen
 
-Unified AFP CI integration.
+CI jobs for AFP build.
  */
 package afp
 
 
 import isabelle.*
 
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
 
 object AFP_Build {
-  val afp_component = Build_Manager.Component.AFP().name
+  /* session status */
 
-  /* mailing */
+  object Status {
+    def merge(statuses: List[Status]): Status =
+      statuses.foldLeft(Ok: Status)(_ merge _)
+
+    def from_results(results: Build.Results, session: String): Status =
+      if (results.cancelled(session)) Skipped
+      else if (results(session).ok) Ok
+      else Failed
+  }
+
+  sealed abstract class Status(val str: String) {
+    def merge(that: Status): Status = (this, that) match {
+      case (Ok, s) => s
+      case (Failed, _) => Failed
+      case (Skipped, Failed) => Failed
+      case (Skipped, _) => Skipped
+    }
+  }
+
+  case object Ok extends Status("ok")
+  case object Skipped extends Status("skipped")
+  case object Failed extends Status("failed")
 
 
-  object Mailer {
-    def failed_subject(name: Metadata.Entry.Name): String = "Build of AFP entry " + name + " failed"
+  /* context */
 
-    def failed_text(session_name: String, entry: Metadata.Entry.Name, isabelle_id: String,
-      afp_id: String, result: Process_Result): String = """
-The build for the session
-  """ + session_name + """",
-belonging to the AFP entry
-  """ + entry + """
-failed.
+  class Context private(
+    options: Options,
+    val store: Store,
+    val mail_system: Option[CI_Build.Mail_System],
+    val afp: AFP_Structure,
+  ) {
+    lazy val entries = afp.load_entries()
+    lazy val entry_sessions: Map[Metadata.Entry.Name, List[String]] =
+      entries.values.map(entry => entry.name -> afp.entry_sessions(entry.name).map(_.name)).toMap
 
-You are receiving this mail because you are the maintainer of that AFP
-entry.
+    def session_entry(session_name: String): Option[Metadata.Entry.Name] = {
+      val entry = entry_sessions.find { case (_, sessions) => sessions.contains(session_name) }
+      entry.map { case (name, _) => name }
+    }
+
+    val isabelle_path = Path.explode("$ISABELLE_HOME")
+    val isabelle_id =
+      if (Mercurial.Hg_Sync.ok(isabelle_path)) File.read(isabelle_path + Mercurial.Hg_Sync.PATH_ID)
+      else Mercurial.self_repository().id()
+
+    def website_dir: Path = Path.explode(options.string("afp_ci_website_dir"))
+
+    def open_ssh(): SSH.System =
+      SSH.open_system(options,
+        options.string("afp_ci_website_ssh_host"),
+        options.int("afp_ci_website_ssh_port"),
+        options.string("afp_ci_website_ssh_user"))
+  }
+
+  object Context {
+    def apply(options: Options, afp: AFP_Structure = AFP_Structure()): Context =
+      new Context(options, Store(options), CI_Build.Mail_System.try_open(options), afp)
+  }
+
+
+  /** operations **/
+
+  def notify_failed(
+    context: Context,
+    url: Option[Url],
+    results: Build.Results,
+    progress: Progress
+  ): Unit =
+    for (mail_system <- context.mail_system if !results.ok) {
+      progress.echo(CI_Build.section("NOTIFICATIONS"))
+
+      for {
+        session <- results.sessions
+        result = results(session)
+        if !result.ok && !results.cancelled(session)
+        entry <- context.session_entry(session)
+      } {
+        val subject = "Build of AFP entry " + entry + " failed"
+        val content = """
+The build for the session """ + session + """ belonging to the AFP entry """ + entry + """ failed.
+
+You are receiving this mail because you are the maintainer of that AFP entry.
 
 The following information might help you with resolving the problem.
 
-Build log:    """ + Isabelle_System.getenv("BUILD_URL") + """
-Isabelle ID:  """ + isabelle_id + """
-AFP ID:       """ + afp_id + """
+""" + if_proper(url, "Build log: " + url.get + "\n") + """
+Isabelle ID:  """ + context.isabelle_id + """
+AFP ID:       """ + context.afp.hg_id + """
 Timeout?      """ + result.timeout + """
 Exit code:    """ + result.rc + """
 
@@ -46,268 +110,127 @@ Last 50 lines from stdout (if available):
 Last 50 lines from stderr (if available):
 
 """ + result.err_lines.takeRight(50).mkString("\n") + "\n"
-  }
 
-
-  /* metadata tooling */
-
-  class Metadata_Tools private(
-    val structure: AFP_Structure,
-    val server: Mail.Server,
-    val entries: Metadata.Entries
-  ) {
-    def maintainers(name: Metadata.Entry.Name): List[Metadata.Email] = {
-      entries.get(name) match {
-        case None => Nil
-        case Some(entry) => entry.notifies
-      }
-    }
-
-    val sessions: Map[Metadata.Entry.Name, List[String]] =
-      entries.values.map(entry =>
-        entry.name -> structure.entry_sessions(entry.name).map(_.name)).toMap
-
-    def session_entry(session_name: String): Option[Metadata.Entry.Name] = {
-      val entry = sessions.find { case (_, sessions) => sessions.contains(session_name) }
-      entry.map { case (name, _) => name }
-    }
-
-    def by_entry(sessions: List[String]): Map[Option[Metadata.Entry.Name], List[String]] =
-      sessions.groupBy(session_entry)
-
-    def notify(name: Metadata.Entry.Name, subject: String, text: String): Boolean = {
-      val recipients = entries.get(name).map(_.notifies).getOrElse(Nil)
-      if (recipients.nonEmpty) {
-        val from = Some(Mail.address("ci@isabelle.systems"))
-        val to = recipients.map(mail => Mail.address(mail.address))
-        val mail = Mail(subject, to, text, from, "Jenkins Admin")
-        server.send(mail)
-      }
-      recipients.nonEmpty
-    }
-  }
-
-  object Metadata_Tools {
-    def load(afp: AFP_Structure, options: Options): Metadata_Tools =
-      new Metadata_Tools(afp, CI_Build.mail_server(options), afp.load_entries())
-  }
-
-
-  /* utilities */
-
-  def status_as_json(
-    isabelle_id: String,
-    afp_id: String,
-    start_time: String,
-    status: Map[Option[String], CI_Build.Status]
-  ): JSON.T = {
-    val entries =
-      status.collect {
-        case (Some(entry), status) => JSON.Object("entry" -> entry, "status" -> status.str)
-      }
-
-    JSON.Object(
-      "build_data" -> JSON.Object(
-        "isabelle_id" -> isabelle_id,
-        "afp_id" -> afp_id,
-        "time" -> start_time,
-        "url" -> Isabelle_System.getenv("BUILD_URL"),
-        "job" -> Isabelle_System.getenv("JOB_NAME")),
-      "entries" -> entries)
-  }
-
-  def status_as_html(status: Map[Option[String], CI_Build.Status]): XML.Body = {
-    val entries =
-      status.toList.collect {
-        case (None, CI_Build.Failed) => HTML.item(HTML.text("Distribution"))
-        case (Some(entry), CI_Build.Failed) =>
-          HTML.item(List(
-            HTML.link("https://devel.isa-afp.org/entries/" + entry + ".html",
-              HTML.text(entry))))
-      }
-
-    if (entries.isEmpty) Nil
-    else HTML.text("Failed entries: ") ::: HTML.list(entries) :: Nil
-  }
-
-
-  /* ci build jobs */
-
-  val afp =
-    CI_Build.Job("afp",
-      "builds the AFP, without slow sessions",
-      CI_Build.Local("lxcisa1", 4, 10, numa_shuffling = false),
-      {
-        val afp = AFP_Structure()
-
-        val status_file = Path.explode("$ISABELLE_HOME/status.json").file
-
-        def pre_hook(options: Options): CI_Build.Result = {
-          println("AFP id " + afp.hg_id)
-          if (status_file.exists()) status_file.delete()
-          CI_Build.Result.ok
+        val recipients = context.entries.get(entry).map(_.notifies).getOrElse(Nil)
+        if (recipients.isEmpty) progress.echo("Entry " + entry + ": no maintainers specified")
+        else {
+          val to = recipients.map(mail => Mail.address(mail.address))
+          mail_system.server.send(Mail(subject, to, content, Some(mail_system.from), "AFP Build"))
         }
+      }
+    }
 
-        def post_hook(results: Build.Results, options: Options, start_time: Time): CI_Build.Result = {
-          CI_Build.print_section("COMPLETED")
-          CI_Build.Result.ok
-        }
+  def sitegen(
+    context: Context,
+    url: Option[Url],
+    start_date: Date,
+    results: Build.Results,
+    progress: Progress,
+  ): Unit = {
+    val entry_status =
+      for {
+        (entry, sessions) <- results.sessions.groupBy(context.session_entry).toList
+        entry <- entry
+        session_status = sessions.map(Status.from_results(results, _))
+      } yield JSON.Object("entry" -> entry, "status" -> Status.merge(session_status.toList).str)
 
-        CI_Build.Build_Config(
-          clean = false, include = List(afp.thys_dir), pre_hook = pre_hook,
-          post_hook = post_hook, selection = Sessions.Selection(
-            session_groups = List("AFP"),
-            exclude_session_groups = List("slow")))
-      },
-      List(afp_component))
+    val status_json =
+      JSON.Object(
+        "entries" -> entry_status,
+        "build_data" -> (JSON.Object(
+          "isabelle_id" -> context.isabelle_id,
+          "afp_id" -> context.afp.hg_id,
+          "time" -> Date.Format.default(start_date)) ++
+          url.map(url => "url" -> url.toString)))
+
+    progress.echo(CI_Build.section("SITEGEN"))
+
+    Isabelle_System.with_tmp_dir("hugo") { dir =>
+      val status_file = dir + Path.basic("status").json
+      File.write(status_file, JSON.Format(status_json))
+
+      val layout = Hugo.Layout(dir)
+      val output_dir = dir + Path.basic("output")
+
+      AFP_Site_Gen.afp_site_gen(layout, Some(status_file), context.afp, progress = progress)
+      AFP_Site_Gen.afp_build_site(output_dir, layout)
+
+      val release_dir = dir + Path.basic("release")
+      Isabelle_System.make_directory(release_dir)
+
+      progress.echo("Packing tars...")
+      for ((name, _) <- context.entries) {
+        val archive = release_dir + Path.basic("afp-" + name + "-current.tar.gz")
+        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(name),
+          dir = context.afp.thys_dir).check
+      }
+
+      using(context.open_ssh()) { ssh =>
+        val rsync_context = Rsync.Context(ssh = ssh)
+
+        val website_source = File.standard_path(output_dir)
+        Rsync.exec(rsync_context, clean = true, args = List("--", Url.direct_path(website_source),
+          rsync_context.target(context.website_dir))).check
+
+        val release_source = File.standard_path(release_dir)
+        Rsync.exec(rsync_context, args = List("--", Url.direct_path(release_source),
+          rsync_context.target(context.website_dir + Path.basic("release")))).check
+
+        val browser_info_source = File.standard_path(context.store.presentation_dir)
+        Rsync.exec(rsync_context, args = List("--", Url.direct_path(browser_info_source),
+          rsync_context.target(context.website_dir + Path.explode("browser_info/current")))).check
+      }
+    }
+  }
+
+
+  /** ci build jobs **/
+
+  /* all */
 
   val all =
     CI_Build.Job("all",
       "builds Isabelle + AFP (without slow)",
-      CI_Build.Local("hpcisabelle", 8, 8),
-      {
-        val afp = AFP_Structure()
-        val isabelle_home = Path.explode(Isabelle_System.getenv_strict("ISABELLE_HOME"))
-        val isabelle_id = CI_Build.hg_id(isabelle_home)
+      CI_Build.Cluster("cluster.schedule"),
+      afp = true,
+      selection = Sessions.Selection(
+        all_sessions = true, exclude_session_groups = List("very_slow")),
+      build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
+      hook = new CI_Build.Hook {
+        override def post(
+          options: Options,
+          start_date: Date,
+          url: Option[Url],
+          results: Build.Results,
+          progress: Progress
+        ): Unit = notify_failed(Context(options), url, results, progress)
+      })
 
-        val status_file = Path.explode("$ISABELLE_HOME/status.json").file
-        val report_file = Path.explode("$ISABELLE_HOME/report.html").file
 
+  /* nightly presentation */
 
-        def pre_hook(options: Options): CI_Build.Result = {
-          println("AFP id " + afp.hg_id)
-          if (status_file.exists()) status_file.delete()
-          if (report_file.exists()) report_file.delete()
-
-          File.write(report_file, "")
-
-          val server = CI_Build.mail_server(options)
-          if (!server.defined) {
-            println("Mail configuration not found.")
-            CI_Build.Result.error
-          }
-          else {
-            server.check()
-            CI_Build.Result.ok
-          }
+  val presentation =
+    CI_Build.Job("presentation",
+      "nightly build for all of Isabelle/AFP, including documents and afp site",
+      CI_Build.Cluster("cluster.schedule"),
+      afp = true,
+      selection = Sessions.Selection(all_sessions = true),
+      presentation = true,
+      build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
+      hook = new CI_Build.Hook {
+        override def post(
+          options: Options,
+          start_date: Date,
+          url: Option[Url],
+          results: Build.Results,
+          progress: Progress
+        ): Unit = {
+          val context = Context(options)
+          notify_failed(context, url, results, progress)
+          sitegen(context, url, start_date, results, progress)
         }
-
-        def post_hook(results: Build.Results, options: Options, start_time: Time): CI_Build.Result = {
-          val metadata = Metadata_Tools.load(afp, options)
-
-          val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
-            CI_Build.Status.merge(sessions.map(CI_Build.Status.from_results(results, _)))
-          }.toMap
-
-          CI_Build.print_section("REPORT")
-          println("Writing report file ...")
-          File.write(report_file,
-            HTML.output(status_as_html(status), hidden = false, structural = true))
-
-          CI_Build.print_section("SITEGEN")
-          println("Writing status file ...")
-          val formatted_time =
-            start_time.instant.atZone(ZoneId.systemDefault)
-              .format(DateTimeFormatter.RFC_1123_DATE_TIME)
-          File.write(status_file,
-            JSON.Format(status_as_json(isabelle_id, afp.hg_id, formatted_time, status)))
-          println("Running sitegen ...")
-
-          val script = afp.base_dir + Path.explode("admin/sitegen-devel")
-          val sitegen_cmd = Bash.strings(List(script.file.toString, status_file.toString))
-
-          val sitegen_res =
-            Isabelle_System.bash(sitegen_cmd, progress_stdout = println, progress_stderr = println)
-          if (!sitegen_res.ok) println("sitegen failed")
-
-          if (!results.ok) {
-            CI_Build.print_section("NOTIFICATIONS")
-            for (session_name <- results.sessions) {
-              val result = results(session_name)
-              if (!result.ok && !results.cancelled(session_name) && metadata.server.defined) {
-                metadata.session_entry(session_name).foreach { entry =>
-                  val subject = Mailer.failed_subject(entry)
-                  val text = Mailer.failed_text(session_name, entry, isabelle_id, afp.hg_id, result)
-                  val notified = metadata.notify(entry, subject, text)
-                  if (!notified) println("Entry " + entry + ": WARNING no maintainers specified")
-                }
-              }
-            }
-          }
-
-          CI_Build.print_section("COMPLETED")
-          CI_Build.Result(sitegen_res.rc)
-        }
-
-        CI_Build.Build_Config(
-          clean = false, include = List(afp.thys_dir), pre_hook = pre_hook,
-          post_hook = post_hook, selection = Sessions.Selection(
-            all_sessions = true,
-            exclude_session_groups = List("slow")))
       },
-      List(afp_component))
-
-  val slow =
-    CI_Build.Job("slow",
-      "builds the AFP slow sessions",
-      CI_Build.Local("nightly", 1, 8),
-      {
-        val afp = AFP_Structure()
-
-        def pre_hook(options: Options): CI_Build.Result = {
-          println("Build for AFP id " + afp.hg_id)
-          CI_Build.Result.ok
-        }
-
-        CI_Build.Build_Config(
-          include = List(afp.thys_dir), pre_hook = pre_hook,
-          selection = Sessions.Selection(session_groups = List("slow")))
-      },
-      List(afp_component), CI_Build.Timed.nightly())
-
-  val testboard =
-    CI_Build.Job("testboard",
-      "builds the AFP testboard",
-      CI_Build.Local("lxcisa1", 4, 10, numa_shuffling = false),
-      {
-        val afp = AFP_Structure()
-        val report_file = Path.explode("$ISABELLE_HOME/report.html").file
-
-        def pre_hook(options: Options): CI_Build.Result = {
-          println("AFP id " + afp.hg_id)
-          if (report_file.exists()) report_file.delete()
-
-          File.write(report_file, "")
-          CI_Build.Result.ok
-        }
-
-        def post_hook(results: Build.Results, options: Options, start_time: Time): CI_Build.Result = {
-          val metadata = Metadata_Tools.load(afp, options)
-
-          val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
-            CI_Build.Status.merge(sessions.map(CI_Build.Status.from_results(results, _)))
-          }.toMap
-
-          CI_Build.print_section("REPORT")
-          println("Writing report file ...")
-          File.write(report_file,
-            HTML.output(status_as_html(status), hidden = false, structural = true))
-          CI_Build.print_section("COMPLETED")
-          CI_Build.Result.ok
-        }
-
-        CI_Build.Build_Config(
-          clean = false, include = List(afp.thys_dir), pre_hook = pre_hook,
-          post_hook = post_hook, selection =
-            Sessions.Selection(
-              all_sessions = true,
-              exclude_session_groups = List("slow")))
-      },
-      List(afp_component))
+      trigger = CI_Build.Timed.nightly())
 }
 
-class CI_Builds extends Isabelle_CI_Builds(
-  AFP_Build.afp,
-  AFP_Build.all,
-  AFP_Build.slow,
-  AFP_Build.testboard)
+class CI_Jobs extends Isabelle_CI_Jobs(AFP_Build.all, AFP_Build.presentation)

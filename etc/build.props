@@ -19,4 +19,4 @@ resources = \
   tools/SmartStoplist.txt:SmartStoplist.txt
 services = \
   afp.Tools \
-  afp.CI_Builds
+  afp.CI_Jobs

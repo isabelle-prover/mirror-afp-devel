@@ -1,0 +1,8 @@
+section "AFP"
+
+option afp_ci_website_dir : string = "/var/www/afp-devel"
+  -- "directory for afp-devel website"
+
+option afp_ci_website_ssh_host : string = "ci.isabelle.systems" for connection
+option afp_ci_website_ssh_port : int = 0 for connection
+option afp_ci_website_ssh_user : string = "afpweb" for connection
