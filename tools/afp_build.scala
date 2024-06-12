@@ -136,7 +136,7 @@ Last 50 lines from stderr (if available):
   val afp =
     CI_Build.Job("afp",
       "builds the AFP, without slow sessions",
-      CI_Build.Cluster("cluster.default"),
+      CI_Build.Local("lxcisa1", 4, 10, numa_shuffling = false),
       {
         val afp = AFP_Structure()
 
@@ -164,7 +164,7 @@ Last 50 lines from stderr (if available):
   val all =
     CI_Build.Job("all",
       "builds Isabelle + AFP (without slow)",
-      CI_Build.Cluster("cluster.default"),
+      CI_Build.Local("hpcisabelle", 8, 8),
       {
         val afp = AFP_Structure()
         val isabelle_home = Path.explode(Isabelle_System.getenv_strict("ISABELLE_HOME"))
@@ -247,28 +247,6 @@ Last 50 lines from stderr (if available):
       },
       List(afp_component))
 
-  val mac =
-    CI_Build.Job("mac",
-      "builds the AFP (without some sessions) on Mac Os",
-      CI_Build.Cluster("cluster.mac"),
-      {
-        val afp = AFP_Structure()
-
-        def pre_hook(options: Options): CI_Build.Result = {
-          println("Build for AFP id " + afp.hg_id)
-          CI_Build.Result.ok
-        }
-
-        CI_Build.Build_Config(
-          include = List(afp.thys_dir), pre_hook = pre_hook, selection =
-            Sessions.Selection(
-              all_sessions = true,
-              exclude_sessions = List("HOL-Proofs", "HOL-ODE-Numerics", "Linear_Programming",
-                "HOL-Nominal-Examples", "HOL-Analysis"),
-              exclude_session_groups = List("slow")))
-      },
-      List(afp_component))
-
   val slow =
     CI_Build.Job("slow",
       "builds the AFP slow sessions",
@@ -290,7 +268,7 @@ Last 50 lines from stderr (if available):
   val testboard =
     CI_Build.Job("testboard",
       "builds the AFP testboard",
-      CI_Build.Cluster("cluster.default"),
+      CI_Build.Local("lxcisa1", 4, 10, numa_shuffling = false),
       {
         val afp = AFP_Structure()
         val report_file = Path.explode("$ISABELLE_HOME/report.html").file
@@ -332,5 +310,4 @@ class CI_Builds extends Isabelle_CI_Builds(
   AFP_Build.afp,
   AFP_Build.all,
   AFP_Build.slow,
-  AFP_Build.mac,
   AFP_Build.testboard)
