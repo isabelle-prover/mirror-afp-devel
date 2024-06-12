@@ -141,7 +141,6 @@ Last 50 lines from stderr (if available):
         val afp = AFP_Structure()
 
         val status_file = Path.explode("$ISABELLE_HOME/status.json").file
-        val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
 
         def pre_hook(options: Options): CI_Build.Result = {
           println("AFP id " + afp.hg_id)
@@ -150,12 +149,6 @@ Last 50 lines from stderr (if available):
         }
 
         def post_hook(results: Build.Results, options: Options, start_time: Time): CI_Build.Result = {
-          CI_Build.print_section("DEPENDENCIES")
-          println("Generating dependencies file ...")
-          val result = Isabelle_System.bash("isabelle afp_dependencies")
-          result.check
-          println("Writing dependencies file ...")
-          File.write(deps_file, result.out)
           CI_Build.print_section("COMPLETED")
           CI_Build.Result.ok
         }
@@ -179,7 +172,6 @@ Last 50 lines from stderr (if available):
 
         val status_file = Path.explode("$ISABELLE_HOME/status.json").file
         val report_file = Path.explode("$ISABELLE_HOME/report.html").file
-        val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
 
 
         def pre_hook(options: Options): CI_Build.Result = {
@@ -201,14 +193,6 @@ Last 50 lines from stderr (if available):
         }
 
         def post_hook(results: Build.Results, options: Options, start_time: Time): CI_Build.Result = {
-          CI_Build.print_section("DEPENDENCIES")
-          println("Generating dependencies file ...")
-          val result = Isabelle_System.bash("isabelle afp_dependencies")
-          result.check
-
-          println("Writing dependencies file ...")
-          File.write(deps_file, result.out)
-
           val metadata = Metadata_Tools.load(afp, options)
 
           val status = metadata.by_entry(results.sessions.toList).view.mapValues { sessions =>
@@ -230,8 +214,7 @@ Last 50 lines from stderr (if available):
           println("Running sitegen ...")
 
           val script = afp.base_dir + Path.explode("admin/sitegen-devel")
-          val sitegen_cmd =
-            Bash.strings(List(script.file.toString, status_file.toString, deps_file.toString))
+          val sitegen_cmd = Bash.strings(List(script.file.toString, status_file.toString))
 
           val sitegen_res =
             Isabelle_System.bash(sitegen_cmd, progress_stdout = println, progress_stderr = println)
