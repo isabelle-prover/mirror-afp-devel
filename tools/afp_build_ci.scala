@@ -8,7 +8,7 @@ package afp
 import isabelle.*
 
 
-object AFP_Build {
+object AFP_Build_CI {
   /* session status */
 
   object Status {
@@ -40,7 +40,7 @@ object AFP_Build {
   class Context private(
     options: Options,
     val store: Store,
-    val mail_system: Option[CI_Build.Mail_System],
+    val mail_system: Option[Build_CI.Mail_System],
     val afp: AFP_Structure,
   ) {
     lazy val entries = afp.load_entries()
@@ -68,7 +68,7 @@ object AFP_Build {
 
   object Context {
     def apply(options: Options, afp: AFP_Structure = AFP_Structure()): Context =
-      new Context(options, Store(options), CI_Build.Mail_System.try_open(options), afp)
+      new Context(options, Store(options), Build_CI.Mail_System.try_open(options), afp)
   }
 
 
@@ -81,7 +81,7 @@ object AFP_Build {
     progress: Progress
   ): Unit =
     for (mail_system <- context.mail_system if !results.ok) {
-      progress.echo(CI_Build.section("NOTIFICATIONS"))
+      progress.echo(Build_CI.section("NOTIFICATIONS"))
 
       for {
         session <- results.sessions
@@ -143,7 +143,7 @@ Last 50 lines from stderr (if available):
           "time" -> Date.Format.default(start_date)) ++
           url.map(url => "url" -> url.toString)))
 
-    progress.echo(CI_Build.section("SITEGEN"))
+    progress.echo(Build_CI.section("SITEGEN"))
 
     Isabelle_System.with_tmp_dir("hugo") { dir =>
       val status_file = dir + Path.basic("status").json
@@ -189,14 +189,14 @@ Last 50 lines from stderr (if available):
   /* all */
 
   val all =
-    CI_Build.Job("all",
+    Build_CI.Job("all",
       "builds Isabelle + AFP (without slow)",
-      CI_Build.Cluster("cluster.schedule"),
+      Build_CI.Cluster("cluster.schedule"),
       afp = true,
       selection = Sessions.Selection(
         all_sessions = true, exclude_session_groups = List("very_slow")),
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
-      hook = new CI_Build.Hook {
+      hook = new Build_CI.Hook {
         override def post(
           options: Options,
           start_date: Date,
@@ -210,14 +210,14 @@ Last 50 lines from stderr (if available):
   /* nightly presentation */
 
   val presentation =
-    CI_Build.Job("presentation",
+    Build_CI.Job("presentation",
       "nightly build for all of Isabelle/AFP, including documents and afp site",
-      CI_Build.Cluster("cluster.schedule"),
+      Build_CI.Cluster("cluster.schedule"),
       afp = true,
       selection = Sessions.Selection(all_sessions = true),
       presentation = true,
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
-      hook = new CI_Build.Hook {
+      hook = new Build_CI.Hook {
         override def post(
           options: Options,
           start_date: Date,
@@ -230,7 +230,7 @@ Last 50 lines from stderr (if available):
           sitegen(context, url, start_date, results, progress)
         }
       },
-      trigger = CI_Build.Timed.nightly())
+      trigger = Build_CI.Timed.nightly())
 }
 
-class CI_Jobs extends Isabelle_CI_Jobs(AFP_Build.all, AFP_Build.presentation)
+class CI_Jobs extends Isabelle_CI_Jobs(AFP_Build_CI.all, AFP_Build_CI.presentation)
