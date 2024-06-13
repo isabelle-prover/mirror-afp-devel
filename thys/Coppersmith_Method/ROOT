@@ -1,0 +1,17 @@
+chapter AFP
+
+session Coppersmith_Method = LLL_Factorization +
+   options [timeout = 600]
+
+  theories
+    More_LLL
+    Howgrave_Graham
+    Coppersmith_Algorithm
+    Coppersmith_Generic
+    Towards_Coppersmith
+    Coppersmith
+    Coppersmith_Examples
+
+  document_files
+    "root.bib"
+    "root.tex"
