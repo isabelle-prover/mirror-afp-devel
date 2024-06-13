@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 04 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>cordwell</title>
+          <link>/authors/cordwell/</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/cordwell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tan</title>
+          <link>/authors/tan/</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/tan/</guid>
+          <description></description>
+        </item>
         <item>
           <title>hirata</title>
           <link>/authors/hirata/</link>
@@ -137,13 +151,6 @@
           <link>/authors/brucker/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/authors/brucker/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>cordwell</title>
-          <link>/authors/cordwell/</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/cordwell/</guid>
           <description></description>
         </item>
         <item>
@@ -354,13 +361,6 @@
           <link>/authors/eberl/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/authors/eberl/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>tan</title>
-          <link>/authors/tan/</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/tan/</guid>
           <description></description>
         </item>
         <item>

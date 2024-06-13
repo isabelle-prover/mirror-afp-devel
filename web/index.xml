@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 04 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalizing Coppersmith&#39;s Method</title>
+          <link>/entries/Coppersmith_Method.html</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Coppersmith_Method.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>The Lévy-Prokhorov Metric</title>
           <link>/entries/Levy_Prokhorov_Metric.html</link>
@@ -6878,6 +6885,13 @@
           <link>/sessions/cook_levin/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/cook_levin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Coppersmith_Method</title>
+          <link>/sessions/coppersmith_method/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/coppersmith_method/</guid>
           <description></description>
         </item>
         <item>

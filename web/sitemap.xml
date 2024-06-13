@@ -3,16 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Coppersmith_Method.html</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lll_factorization/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tan/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/hirata/</loc>
     <lastmod>2024-06-04T00:00:00+00:00</lastmod>
@@ -30,9 +48,6 @@
     <lastmod>2024-06-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Riesz_Representation.html</loc>
-    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-06-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/certification_monads/</loc>
@@ -81,9 +96,6 @@
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/coinductive/</loc>
-    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/dongol/</loc>
@@ -171,9 +183,6 @@
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/brucker/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/cordwell/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/functional-automata/</loc>
@@ -372,9 +381,6 @@
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/monad_normalisation/</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/tan/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/yang/</loc>
@@ -5358,6 +5364,8 @@
     <loc>/sessions/continued_fractions/</loc>
   </url><url>
     <loc>/sessions/cook_levin/</loc>
+  </url><url>
+    <loc>/sessions/coppersmith_method/</loc>
   </url><url>
     <loc>/sessions/core_dom/</loc>
   </url><url>

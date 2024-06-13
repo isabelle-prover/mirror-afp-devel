@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 04 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>LLL_Factorization</title>
+          <link>/dependencies/lll_factorization/</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lll_factorization/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Riesz_Representation</title>
           <link>/dependencies/riesz_representation/</link>
