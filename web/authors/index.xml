@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 13 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>nipkow</title>
+          <link>/authors/nipkow/</link>
+          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/nipkow/</guid>
+          <description></description>
+        </item>
         <item>
           <title>cordwell</title>
           <link>/authors/cordwell/</link>
@@ -431,13 +438,6 @@
           <link>/authors/sprenger/</link>
           <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/authors/sprenger/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>nipkow</title>
-          <link>/authors/nipkow/</link>
-          <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/nipkow/</guid>
           <description></description>
         </item>
         <item>

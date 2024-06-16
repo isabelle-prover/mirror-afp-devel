@@ -1,0 +1,36 @@
+title = "Alpha-Beta Pruning"
+date = 2024-06-13
+topics = [
+  "Computer science/Algorithms",
+  "Mathematics/Games and economics",
+]
+abstract = """
+Alpha-beta pruning is an efficient search strategy for two-player game trees.
+It was invented in the late 1950s and is at the heart of most implementations
+of combinatorial game playing programs. These theories formalize and verify a number of
+variations of alpha-beta pruning, in particular fail-hard and fail-soft,
+and valuations into linear orders, distributive latices and domains with negative values.
+
+A detailed presentation of these theories can be found in the chapter <em>Alpha-Beta Pruning</em>
+in the (forthcoming) book
+<a href=\"https://functional-algorithms-verified.org/functional_data_structures_algorithms.pdf\">Functional Data Structures and Algorithms --- A Proof Assistant Approach</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
