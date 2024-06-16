@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\renewcommand{\isadigit}[1]{\ensuremath{#1}}
+
+% font size
+\renewcommand{\isastyle}{\isastyleminor}
+
+%See LaTeXsugar2
+\newlength{\funheadersep}
+\setlength{\funheadersep}{\smallskipamount}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+% no right margin in quote:
+\renewenvironment{quote}
+{\list{}{}%
+\item\relax}
+{\endlist}
+
+\newcommand{\eqnum}[1]{{\upshape\refstepcounter{equation}\hfill(\theequation\label{#1})}}
+
+\begin{document}
+
+\title{Alpha-Beta Pruning}
+\author{Tobias Nipkow\\Technical University of Munich}
+\maketitle
+
+\begin{abstract}
+Alpha-beta pruning is an efficient search strategy for two-player game trees.
+It was invented in the late 1950s and is at the heart of most implementations
+of combinatorial game playing programs. These theories formalize and verify a number of
+variations of alpha-beta pruning, in particular fail-hard and fail-soft,
+and valuations into linear orders, distributive latices and domains with negative values.
+
+A detailed presentation of these theories can be found in the chapter \emph{Alpha-Beta Pruning}
+in the (forthcoming) book
+\href{https://functional-algorithms-verified.org/functional_data_structures_algorithms.pdf}{Functional Data Structures and Algorithms --- A Proof Assistant Approach}.
+\end{abstract}
+
+{\renewcommand{\isanewline}{\\}
+\input{Alpha_Beta_Overview}
+}
+\bibliographystyle{abbrv}
+\bibliography{root}
+\newpage
+\tableofcontents
+\newpage
+\input{Alpha_Beta_Linear}
+\input{Alpha_Beta_Lattice}
+
+\end{document}
