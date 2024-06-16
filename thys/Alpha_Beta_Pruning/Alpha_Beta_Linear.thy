@@ -1785,13 +1785,9 @@ shows "a \<le> b \<Longrightarrow> lb_ub a b (maxmin t) (abir0' t a b)"
 and "a \<le> b \<Longrightarrow> lb_ub a b (max i (maxmin (Nd ts))) (abirs0' i ts a b)"
 and "a \<ge> b \<Longrightarrow> lb_ub b a (minmax t) (abir1' t a b)"
 and "a \<ge> b \<Longrightarrow> lb_ub b a (min i (minmax (Nd ts))) (abirs1' i ts a b)"
-apply(induction t a b and i ts a b and t a b and i ts a b rule: abir0'_abirs0'_abir1'_abirs1'.induct)
-apply(auto simp add: Let_def le_max_iff_disj  min_le_iff_disj)
-  apply (metis i0 max.bounded_iff max.order_iff maxmin.simps(2))
-  apply (metis i0 max.bounded_iff max.order_iff maxmin.simps(2))
-  apply (metis i1 max.bounded_iff max.order_iff minmax.simps(2) min.bounded_iff)
-  apply (metis i1 max.bounded_iff max.order_iff minmax.simps(2) min.bounded_iff)
-done
+  by(induction t a b and i ts a b and t a b and i ts a b rule: abir0'_abirs0'_abir1'_abirs1'.induct)
+    (auto simp add: Let_def le_max_iff_disj  min_le_iff_disj
+      intro: order_trans[OF i0] order_trans[OF _ i1])
 
 lemma abir0'_exact_less: "\<lbrakk> a<b; v = maxmin t; a \<le> v \<and> v \<le> b \<rbrakk> \<Longrightarrow> abir0' t a b = v"
 using fishburn_abir01'(1) by force
@@ -1852,15 +1848,13 @@ qed (auto)
 
 text \<open>Unused:\<close>
 lemma abirs0'_ge_i: "abirs0' i0 i1 i ts a b \<ge> i"
-apply(induction ts)
-by (auto simp: Let_def) (metis max.coboundedI2)
+by(induction ts) (auto simp: Let_def max.coboundedI2)
 
 lemma abirs0'_eq_i: "i \<ge> b \<Longrightarrow> abirs0' i0 i1 i ts a b = i"
 by(induction ts) (auto simp: Let_def)
 
 lemma abirs1'_le_i: "abirs1' i0 i1 i ts a b \<le> i"
-apply(induction ts)
-by (auto simp: Let_def) (metis min.coboundedI2)
+by(induction ts) (auto simp: Let_def min.coboundedI2)
 
 
 text \<open>Monotonicity wrt the init functions, below/above \<open>a\<close>:\<close>
@@ -3016,8 +3010,19 @@ fun abir' :: "_ \<Rightarrow> ('a::de_morgan_order)tree \<Rightarrow> 'a \<Right
 abbreviation "neg_all \<equiv> negate True o negate False"
 
 lemma neg_all_negate: "neg_all (negate f t) = negate (\<not>f) t"
-apply(induction t arbitrary: f)
-by auto (metis negate_negate)
+proof(induction t arbitrary: f)
+  case (Nd ts)
+  { fix t
+    assume "t \<in> set ts"
+    from Nd[OF this, of True] have "neg_all t = negate False (negate True t)"
+      by (metis comp_apply negate_negate)
+  }
+  with Nd[of _ False] show ?case
+    by (cases f) (auto simp: negate_negate)
+qed simp
+
+lemma neg_all_negate': "neg_all o negate f = negate (\<not>f)"
+  using neg_all_negate by fastforce
 
 lemma abir01'_negate:
 shows "\<forall>ts a. i1 ts a = - i0 (map neg_all ts) (-a) \<Longrightarrow>
@@ -3033,8 +3038,7 @@ proof(induction i0 i1 "negate f t" a b and i0 i1 i "map (negate f) ts" a b and i
   from Lf_eq_negateD this show ?case by fastforce
 next
   case (2 i0 i1 ts a b)
-  from Nd_eq_negateD[OF 2(2)] 2(1,3) show ?case apply auto
-    by (metis comp_apply neg_all_negate)
+  from Nd_eq_negateD[OF 2(2)] 2(1,3) show ?case by (auto simp: neg_all_negate')
 next
   case (3 a b)
   then show ?case by simp
@@ -3048,8 +3052,8 @@ next
   from Lf_eq_negateD this show ?case by fastforce
 next
   case (6 i0 i1 ts a b)
-  from Nd_eq_negateD[OF 6(2)] 6(1,3) show ?case apply auto
-    by (metis (mono_tags) comp_apply neg_all_negate)
+  from Nd_eq_negateD[OF 6(2)] obtain us where "t = Nd us" "ts = map (negate (\<not> f)) us" by blast
+  with 6(1)[of "Not f" us] 6(3) show ?case by (auto simp: neg_all_negate')
 next
   case (7 i0 i1 i a b)
   then show ?case by simp
