@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Levy_Prokhorov_Metric" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  sessions "Standard_Borel_Spaces"
+           "Riesz_Representation"
+  theories
+    "Lemmas_Levy_Prokhorov"
+    "Alaoglu_Theorem"
+    "General_Weak_Convergence"
+    "Levy_Prokhorov_Distance"
+    "Prokhorov_Theorem"
+    "Space_of_Finite_Measures"
+  document_files
+    "root.tex"
+    "root.bib"

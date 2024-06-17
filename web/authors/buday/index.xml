@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>buday on Archive of Formal Proofs
+    </title>
+    <link>/authors/buday/</link>
+    <description>
+        Recent content in buday 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Sat, 25 May 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/buday/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Countable Sums and Discrete (Sub)Distributions</title>
+          <link>/entries/Countable_Sums_and_Discrete_Distributions.html</link>
+          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Countable_Sums_and_Discrete_Distributions.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

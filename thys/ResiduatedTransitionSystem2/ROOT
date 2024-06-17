@@ -1,0 +1,13 @@
+chapter AFP
+
+session ResiduatedTransitionSystem2 (AFP) = ResiduatedTransitionSystem +
+  options [timeout = 1500, names_unique = false]
+  sessions
+    EnrichedCategoryBasics
+  theories
+    CategoryOfTransitions 
+    RTSCat_Interp 
+    RTSEnrichedCategory
+  document_files
+    "root.bib"
+    "root.tex"

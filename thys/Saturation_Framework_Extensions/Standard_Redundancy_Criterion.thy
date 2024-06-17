@@ -39,7 +39,7 @@ locale counterex_reducing_inference_system = inference_system Inf + consequence_
     I_of :: "'f set \<Rightarrow> 'f set" and
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
-    wfP_less: "wfP (\<prec>)" and
+    wfp_less: "wfp (\<prec>)" and
     Inf_counterex_reducing:
       "N \<inter> Bot = {} \<Longrightarrow> D \<in> N \<Longrightarrow> \<not> I_of N \<Turnstile> {D} \<Longrightarrow>
       (\<And>C. C \<in> N \<Longrightarrow> \<not> I_of N \<Turnstile> {C} \<Longrightarrow> D \<prec> C \<or> D = C) \<Longrightarrow>
@@ -59,7 +59,7 @@ proof -
   then have c_in: "C \<in> {C \<in> N. \<not> I \<Turnstile> {C}}"
     by blast
   show ?thesis
-    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfP_less c_in] by blast
+    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfp_less c_in] by blast
 qed
 
 end
@@ -158,7 +158,7 @@ locale finitary_standard_formula_redundancy =
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
     transp_less: "transp (\<prec>)" and
-    wfP_less: "wfP (\<prec>)"
+    wfp_less: "wfp (\<prec>)"
 begin
 
 definition Red_F :: "'f set \<Rightarrow> 'f set" where
@@ -189,7 +189,7 @@ proof -
     dd_lt_d: "\<forall>D' \<in># DD. D' \<prec> D" and
     d_min: "\<forall>y. multp (\<prec>) y DD \<longrightarrow>
       y \<notin> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D'\<in>#DD. D' \<prec> D)}"
-    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfP_multp] mset_DD0_in]
+    using wfp_eq_minimal[THEN iffD1, rule_format, OF wfp_less[THEN wfp_multp] mset_DD0_in]
     by blast
 
   have "\<forall>Da \<in># DD. Da \<notin> Red_F N"
@@ -233,7 +233,7 @@ proof -
       using finite_set_mset_mset_set[OF dda0_fin]
       by (metis insert_DiffM2 union_iff)
     moreover have "multp (\<prec>) DDa DD"
-      unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF wfp_imp_asymp[OF wfP_less] transp_less] multp\<^sub>D\<^sub>M_def
+      unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF wfp_imp_asymp[OF wfp_less] transp_less] multp\<^sub>D\<^sub>M_def
       using finite_set_mset_mset_set[OF dda0_fin]
       by (metis da_in_dd dda0_lt_da mset_subset_eq_single multi_self_add_other_not_self
           union_single_eq_member)
@@ -395,7 +395,7 @@ locale standard_formula_redundancy =
     less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
   assumes
     transp_less: "transp (\<prec>)" and
-    wfP_less: "wfP (\<prec>)"
+    wfp_less: "wfp (\<prec>)"
 begin
 
 definition Red_F :: "'f set \<Rightarrow> 'f set" where
@@ -407,7 +407,7 @@ Compactness of @{term "(\<Turnstile>)"} implies that @{const Red_F} is equivalen
 \<close>
 
 interpretation fin_std_red_F: finitary_standard_formula_redundancy Bot "(\<Turnstile>)" "(\<prec>)"
-  using transp_less asymp_on_less wfP_less by unfold_locales
+  using transp_less asymp_on_less wfp_less by unfold_locales
 
 lemma Red_F_conv: "Red_F = fin_std_red_F.Red_F"
 proof (intro ext)
@@ -482,7 +482,7 @@ Compactness of @{term "(\<Turnstile>)"} implies that @{const Red_I} is equivalen
 \<close>
 
 interpretation fin_std_red: calculus_with_finitary_standard_redundancy Inf Bot "(\<Turnstile>)"
-  using transp_less asymp_on_less wfP_less Inf_has_prem Inf_reductive by unfold_locales
+  using transp_less asymp_on_less wfp_less Inf_has_prem Inf_reductive by unfold_locales
 
 lemma redundant_infer_conv: "redundant_infer = fin_std_red.redundant_infer"
 proof (intro ext)

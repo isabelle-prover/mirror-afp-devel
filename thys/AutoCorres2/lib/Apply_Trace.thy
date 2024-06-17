@@ -231,7 +231,7 @@ let
       val q = Find_Theorems.read_query pos' raw_query;
       val results = Find_Theorems.find_theorems_cmd ctxt (SOME thm) (SOME 1000000000) false q
                     |> snd
-                    |> map ThmExtras.fact_ref_to_name;
+                    |> map ThmExtras.adjusted_thm_name;
 
       (* Only consider theorems from our query. *)
 

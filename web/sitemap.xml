@@ -3,27 +3,153 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/EnrichedCategoryBasics.html</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/enrichedcategorybasics/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/monoidalcategory/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ResiduatedTransitionSystem2.html</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/residuatedtransitionsystem/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stark/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Alpha_Beta_Pruning.html</loc>
+    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/nipkow/</loc>
+    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Coppersmith_Method.html</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lll_factorization/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tan/</loc>
+    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/hirata/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/riesz_representation/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/standard_borel_spaces/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Levy_Prokhorov_Metric.html</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Riesz_Representation.html</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/certification_monads/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/complete_non_orders/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lp_duality/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Sorted_Terms.html</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/sorted_terms/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stannett/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Stone_Cech.html</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/thiemann/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Pattern_Completeness.html</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/yamada/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/buday/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Countable_Sums_and_Discrete_Distributions.html</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/popescu/</loc>
+    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/coinductive/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dongol/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/griffin/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/More_LazyLists.html</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/more_lazylists/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Relative_Security.html</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/relative_security/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Secret_Directed_Unwinding.html</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wright/</loc>
+    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/karatsuba/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/number_theoretic_transform/</loc>
@@ -36,9 +162,6 @@
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/schulz/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/universal_hash_families/</loc>
@@ -86,9 +209,6 @@
     <loc>/authors/brucker/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cordwell/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/functional-automata/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -113,16 +233,10 @@
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/knuth_bendix_order/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lambda_free_rpos/</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/middeldorp/</loc>
@@ -135,9 +249,6 @@
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Substitutions_Lambda_Free.html</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/thiemann/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/trelat/</loc>
@@ -195,9 +306,6 @@
     <lastmod>2024-04-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MFOTL_Checker.html</loc>
-    <lastmod>2024-04-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/coinductive/</loc>
     <lastmod>2024-04-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ConcurrentHOL.html</loc>
@@ -299,9 +407,6 @@
     <loc>/dependencies/monad_normalisation/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/tan/</loc>
-    <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/yang/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -361,9 +466,6 @@
   </url><url>
     <loc>/entries/Sumcheck_Protocol.html</loc>
     <lastmod>2024-02-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/nipkow/</loc>
-    <lastmod>2024-01-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Region_Quadtrees.html</loc>
     <lastmod>2024-01-26T00:00:00+00:00</lastmod>
@@ -530,13 +632,7 @@
     <loc>/entries/Disintegration.html</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/hirata/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/s_finite_measure_monad/</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/standard_borel_spaces/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/deriving/</loc>
@@ -743,16 +839,10 @@
     <loc>/authors/wenninger/</loc>
     <lastmod>2023-06-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/complete_non_orders/</loc>
-    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/dubut/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Directed_Sets.html</loc>
-    <lastmod>2023-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/yamada/</loc>
     <lastmod>2023-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multirelations_Heterogeneous.html</loc>
@@ -793,9 +883,6 @@
   </url><url>
     <loc>/entries/Three_Squares.html</loc>
     <lastmod>2023-05-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/stannett/</loc>
-    <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MHComputation.html</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
@@ -895,9 +982,6 @@
   </url><url>
     <loc>/dependencies/weighted_arithmetic_geometric_mean/</loc>
     <lastmod>2023-03-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/popescu/</loc>
-    <lastmod>2023-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Rensets.html</loc>
     <lastmod>2023-02-28T00:00:00+00:00</lastmod>
@@ -1383,9 +1467,6 @@
     <lastmod>2022-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ResiduatedTransitionSystem.html</loc>
-    <lastmod>2022-02-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/stark/</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/finite_fields/</loc>
@@ -2000,9 +2081,6 @@
     <loc>/dependencies/ai_planning_languages_semantics/</loc>
     <lastmod>2020-10-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/certification_monads/</loc>
-    <lastmod>2020-10-29T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/kurz/</loc>
     <lastmod>2020-10-29T00:00:00+00:00</lastmod>
   </url><url>
@@ -2328,9 +2406,6 @@
     <lastmod>2020-01-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Bicategory.html</loc>
-    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/monoidalcategory/</loc>
     <lastmod>2020-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/e_transcendental/</loc>
@@ -3148,9 +3223,6 @@
   </url><url>
     <loc>/entries/Propositional_Proof_Systems.html</loc>
     <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dongol/</loc>
-    <lastmod>2017-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/hayes/</loc>
     <lastmod>2017-06-13T00:00:00+00:00</lastmod>
@@ -4974,6 +5046,8 @@
   </url><url>
     <loc>/sessions/allen_calculus/</loc>
   </url><url>
+    <loc>/sessions/alpha_beta_pruning/</loc>
+  </url><url>
     <loc>/sessions/amicable_numbers/</loc>
   </url><url>
     <loc>/sessions/amortized_complexity/</loc>
@@ -5308,6 +5382,8 @@
   </url><url>
     <loc>/sessions/cook_levin/</loc>
   </url><url>
+    <loc>/sessions/coppersmith_method/</loc>
+  </url><url>
     <loc>/sessions/core_dom/</loc>
   </url><url>
     <loc>/sessions/core_sc_dom/</loc>
@@ -5325,6 +5401,8 @@
     <loc>/sessions/cotangent_pfd_formula/</loc>
   </url><url>
     <loc>/sessions/count_complex_roots/</loc>
+  </url><url>
+    <loc>/sessions/countable_sums_and_discrete_distributions/</loc>
   </url><url>
     <loc>/sessions/coupledsim_contrasim/</loc>
   </url><url>
@@ -5477,6 +5555,8 @@
     <loc>/sessions/elliptic_curves_group_law/</loc>
   </url><url>
     <loc>/sessions/encodability_process_calculi/</loc>
+  </url><url>
+    <loc>/sessions/enrichedcategorybasics/</loc>
   </url><url>
     <loc>/submission/</loc>
   </url><url>
@@ -6100,6 +6180,8 @@
   </url><url>
     <loc>/sessions/lem/</loc>
   </url><url>
+    <loc>/sessions/levy_prokhorov_metric/</loc>
+  </url><url>
     <loc>/sessions/lifting_definition_option/</loc>
   </url><url>
     <loc>/sessions/lifting_the_exponent/</loc>
@@ -6314,6 +6396,8 @@
   </url><url>
     <loc>/sessions/monomorphic_monad/</loc>
   </url><url>
+    <loc>/sessions/more_lazylists/</loc>
+  </url><url>
     <loc>/sessions/mso_regex_equivalence/</loc>
   </url><url>
     <loc>/sessions/muchadoabouttwo/</loc>
@@ -6427,6 +6511,8 @@
     <loc>/sessions/partial_order_reduction/</loc>
   </url><url>
     <loc>/sessions/password_authentication_protocol/</loc>
+  </url><url>
+    <loc>/sessions/pattern_completeness/</loc>
   </url><url>
     <loc>/sessions/pcf/</loc>
   </url><url>
@@ -6634,6 +6720,8 @@
   </url><url>
     <loc>/sessions/relational-incorrectness-logic/</loc>
   </url><url>
+    <loc>/sessions/relative_security/</loc>
+  </url><url>
     <loc>/sessions/rensets/</loc>
   </url><url>
     <loc>/sessions/rep_fin_groups/</loc>
@@ -6642,6 +6730,8 @@
   </url><url>
     <loc>/sessions/residuatedtransitionsystem/</loc>
   </url><url>
+    <loc>/sessions/residuatedtransitionsystem2/</loc>
+  </url><url>
     <loc>/sessions/resolution_fol/</loc>
   </url><url>
     <loc>/sessions/rewrite_properties_reduction/</loc>
@@ -6649,6 +6739,8 @@
     <loc>/sessions/rewriting_z/</loc>
   </url><url>
     <loc>/sessions/ribbon_proofs/</loc>
+  </url><url>
+    <loc>/sessions/riesz_representation/</loc>
   </url><url>
     <loc>/sessions/ripemd-160-spark/</loc>
   </url><url>
@@ -6702,6 +6794,8 @@
     <priority>0.1</priority>
   </url><url>
     <loc>/sessions/secondary_sylow/</loc>
+  </url><url>
+    <loc>/sessions/secret_directed_unwinding/</loc>
   </url><url>
     <loc>/sessions/security_protocol_refinement/</loc>
   </url><url>
@@ -6785,6 +6879,8 @@
   </url><url>
     <loc>/sessions/sort_encodings/</loc>
   </url><url>
+    <loc>/sessions/sorted_terms/</loc>
+  </url><url>
     <loc>/sessions/source_coding_theorem/</loc>
   </url><url>
     <loc>/sessions/sparcv8/</loc>
@@ -6820,6 +6916,8 @@
     <loc>/sessions/stochastic_matrices/</loc>
   </url><url>
     <loc>/sessions/stone_algebras/</loc>
+  </url><url>
+    <loc>/sessions/stone_cech/</loc>
   </url><url>
     <loc>/sessions/stone_kleene_relation_algebras/</loc>
   </url><url>

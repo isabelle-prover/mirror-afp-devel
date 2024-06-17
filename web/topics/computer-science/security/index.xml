@@ -13,6 +13,34 @@
     
       <atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Relative Security</title>
+          <link>/entries/Relative_Security.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Relative_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relative Security</title>
+          <link>/entries/Relative_Security.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Relative_Security.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secret-Directed Unwinding</title>
+          <link>/entries/Secret_Directed_Unwinding.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Secret_Directed_Unwinding.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secret-Directed Unwinding</title>
+          <link>/entries/Secret_Directed_Unwinding.html</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Secret_Directed_Unwinding.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Information Flow Control via Stateful Intransitive Noninterference in Language IMP</title>
           <link>/entries/IMP_Noninterference.html</link>
           <pubDate>Mon, 12 Feb 2024 00:00:00 +0000</pubDate>

@@ -545,7 +545,7 @@ proof -
     by(rule wf_inv_image)(rule wf_same_fst, rule wf_m\<mu>t[unfolded wfp_def])
   also have "inv_image (same_fst (\<lambda>m. True) (\<lambda>m. {(ts, ts'). m\<mu>t m ts ts'})) (\<lambda>s. (shr s, thr s)) = {(s, s'). m\<mu> s s'}"
     by(auto simp add: m\<mu>_def same_fst_def)
-  finally show ?thesis by(simp add: wf_def)
+  finally show ?thesis by(simp add: wfp_def)
 qed
 
 end

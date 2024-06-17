@@ -870,29 +870,10 @@ handle Pattern.MATCH => Seq.empty
 fun unfold_once_tac ctxt thm =
   CONVERSION (Conv.bottom_conv (K (Conv.try_conv (Conv.rewr_conv thm))) ctxt)
 
-(* Set a simpset as being hidden, so warnings are not printed from it. *)
-fun set_hidden_ctxt ctxt =
-  Context_Position.set_visible false ctxt
-
-(*
- * Get all facts currently defined.
- *
- * Clagged from "Find_Theorems.all_facts_of".
- *)
-fun all_facts_of ctxt =
-  let
-    val local_facts = Proof_Context.facts_of ctxt;
-    val global_facts = Global_Theory.facts_of (Proof_Context.theory_of ctxt);
-  in
-    maps Facts.selections
-     (Facts.dest_static false [global_facts] local_facts @
-      Facts.dest_static false [] global_facts)
-  end;
-
 (* Guess the name of a thm. *)
 fun guess_thm_name ctxt thm =
-  List.find (fn x => Thm.eq_thm (thm, snd x)) (all_facts_of ctxt)
-  |> Option.map (fst #> Facts.string_of_ref)
+  Find_Theorems.all_facts_of ctxt
+  |> get_first (fn (a, thm') => if Thm.eq_thm (thm, thm') then SOME (Thm_Name.print a) else NONE);
 
 
 (* Expand type abbreviations. *)

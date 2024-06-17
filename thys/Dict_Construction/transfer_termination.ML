@@ -116,7 +116,7 @@ fun termination_tac ({R = new_R, ...}: Function.info) (old_info: Function.info) 
                 val wf_simulate =
                   Drule.infer_instantiate ctxt [(("g", 0), c)] @{thm wf_simulate_simple}
 
-                val old_wf = (@{thm wfP_implies_wf_set_of} OF [@{thm accp_wfPI} OF [totality]])
+                val old_wf = (@{thm wfP_implies_wf_set_of} OF [@{thm accp_wfpI} OF [totality]])
 
                 val inner_tac =
                   match_tac ctxt @{thms wf_implies_dom} THEN'

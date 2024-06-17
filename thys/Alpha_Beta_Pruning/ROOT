@@ -1,0 +1,12 @@
+chapter AFP
+
+session Alpha_Beta_Pruning = HOL +
+  options [timeout = 600,show_question_marks = false]
+  sessions
+    "Prog_Prove"
+    "HOL-Library"
+  theories
+    Alpha_Beta_Overview
+  document_files
+    "root.tex"
+    "root.bib"

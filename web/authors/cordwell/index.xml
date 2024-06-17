@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 26 Apr 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/cordwell/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalizing Coppersmith&#39;s Method</title>
+          <link>/entries/Coppersmith_Method.html</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Coppersmith_Method.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Pick&#39;s Theorem</title>
           <link>/entries/Picks_Theorem.html</link>

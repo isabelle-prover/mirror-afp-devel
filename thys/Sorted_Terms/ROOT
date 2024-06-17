@@ -1,0 +1,11 @@
+chapter AFP
+
+session Sorted_Terms = First_Order_Terms +
+  options [timeout = 600]
+  sessions
+    Complete_Non_Orders
+  theories
+    Sorted_Contexts
+  document_files
+    "root.tex"
+    "root.bib"

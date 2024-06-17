@@ -1,0 +1,102 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+
+\usepackage{authblk}
+
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Verifying a Decision Procedure for Pattern Completeness\footnote{This research was supported by the Austrian Science Fund (FWF) project I~5943.}}
+\author{Ren\'e Thiemann}
+\affil{University of Innsbruck, Austria}
+\author{Akihisa Yamada}
+\affil{National Institute of Advanced Industrial Science and Technology, Japan}
+\maketitle
+
+\begin{abstract}
+Pattern completeness is the property that the left-hand sides of a functional
+program or term rewrite system cover all cases w.r.t.\ pattern matching. 
+We verify a recent (abstract) decision procedure 
+for pattern completeness that covers the general case, i.e., in particular 
+without the usual restriction of left-linearity.
+In two refinement steps, we further develop an 
+executable version of that abstract algorithm.
+On our example suite, this verified implementation is faster 
+than other implementations that are based
+on alternative (unverified) approaches, including the complement algorithm, 
+tree automata
+encodings, and even the pattern completeness check of the GHC Haskell compiler.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+This AFP entry includes the formalization of a decision procedure \cite{FSCD2024} 
+for pattern completeness. It also contains 
+the setup for running the experiments of that paper, i.e., 
+it contains
+\begin{itemize}
+\item a generator for example term rewrite systems and Haskell programs of varying size,
+\item a connection to an implementation of the complement algorithm \cite{LazrekLT90}
+  within the ground confluence prover AGCP~\cite{AotoT2016}, and
+\item a tree automata encoder of pattern completeness that is linked 
+  with the tree automata library FORT-h~\cite{FORTh}.
+\end{itemize}
+
+Note that some further glue code is required to run the experiments, which is not
+included in this submission. Here, we just include the glue code that was defined
+within Isabelle theories.
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=~/Projekte/ay/Isabelle_Logic/thys/document/root.tex%:%

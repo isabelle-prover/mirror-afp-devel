@@ -23,7 +23,7 @@ lemma finite_progress:
   assumes
     matching_states_agree_on_stuck:
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> stuck_state step1 s1 \<longleftrightarrow> stuck_state step2 s2" and
-    well_founded_order: "wfP order" and
+    well_founded_order: "wfp order" and
     sim: "simulation step1 step2 match order"
   shows "match i s1 s2 \<Longrightarrow> step1 s1 s1' \<Longrightarrow>
     \<exists>m s1'' n s2'' i'. (step1 ^^ m) s1' s1'' \<and> (step2 ^^ Suc n) s2 s2'' \<and> match i' s1'' s2''"
@@ -91,7 +91,7 @@ theorem lift_strong_simulation_to_bisimulation:
   assumes
     matching_states_agree_on_stuck:
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> stuck_state step1 s1 \<longleftrightarrow> stuck_state step2 s2" and
-    well_founded_order: "wfP order" and
+    well_founded_order: "wfp order" and
     sim: "simulation step1 step2 match order"
   obtains
     MATCH :: "nat \<times> nat \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool" and
@@ -101,7 +101,7 @@ theorem lift_strong_simulation_to_bisimulation:
     "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow>
       (\<exists>i. stuck_state step1 s1 \<and> stuck_state step2 s2 \<and> match i s1 s2) \<or>
       (\<exists>i s1' s2'. step1\<^sup>+\<^sup>+ s1 s1' \<and> step2\<^sup>+\<^sup>+ s2 s2' \<and> match i s1' s2')" and
-    "wfP ORDER" and
+    "wfp ORDER" and
     "right_unique step1 \<Longrightarrow> simulation step1 step2 (\<lambda>i s1 s2. MATCH i s1 s2) ORDER" and
     "right_unique step2 \<Longrightarrow> simulation step2 step1 (\<lambda>i s2 s1. MATCH i s1 s2) ORDER"
 proof -
@@ -182,9 +182,9 @@ proof -
       thus ?thesis ..
     qed
   next
-    show "wfP ORDER"
+    show "wfp ORDER"
       unfolding ORDER_def
-      using lex_prodp_wfP wfP_less well_founded_order by metis
+      using lex_prodp_wfP wfp_on_less well_founded_order by metis
   next
     assume "right_unique step1"
     show "simulation step1 step2 MATCH ORDER"
@@ -396,7 +396,7 @@ corollary lift_strong_simulation_to_bisimulation':
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> final1 s1 \<longleftrightarrow> final2 s2" and
     matching_states_are_safe:
       "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> safe_state step1 final1 s1 \<and> safe_state step2 final2 s2" and
-    order_well_founded: "wfP order" and
+    order_well_founded: "wfp order" and
     sim: "simulation step1 step2 match order"
   obtains
     MATCH :: "nat \<times> nat \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool" and
@@ -406,7 +406,7 @@ corollary lift_strong_simulation_to_bisimulation':
     "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> final1 s1 \<longleftrightarrow> final2 s2" and
     "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> stuck_state step1 s1 \<longleftrightarrow> stuck_state step2 s2" and
     "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> safe_state step1 final1 s1 \<and> safe_state step2 final2 s2" and
-    "wfP ORDER" and
+    "wfp ORDER" and
     "simulation step1 step2 (\<lambda>i s1 s2. MATCH i s1 s2) ORDER" and
     "simulation step2 step1 (\<lambda>i s2 s1. MATCH i s1 s2) ORDER"
 proof -
@@ -423,7 +423,7 @@ proof -
     MATCH_spec: "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow>
       (\<exists>i. stuck_state step1 s1 \<and> stuck_state step2 s2 \<and> match i s1 s2) \<or>
       (\<exists>i s1' s2'. step1\<^sup>+\<^sup>+ s1 s1' \<and> step2\<^sup>+\<^sup>+ s2 s2' \<and> match i s1' s2')" and
-    "wfP ORDER" and
+    "wfp ORDER" and
     "simulation step1 step2 MATCH ORDER" and
     "simulation step2 step1 (\<lambda>i s2 s1. MATCH i s1 s2) ORDER"
     using \<open>right_unique step1\<close> \<open>right_unique step2\<close>
@@ -455,8 +455,8 @@ proof -
       using safe_state_before_tranclp_step_if_safe_state_after
       by (metis assms(1) assms(2) matching_states_are_safe)
   next
-    show "wfP ORDER"
-      using \<open>wfP ORDER\<close> .
+    show "wfp ORDER"
+      using \<open>wfp ORDER\<close> .
   next
     show "simulation step1 step2 (\<lambda>i s1 s2. MATCH i s1 s2) ORDER"
       using \<open>simulation step1 step2 (\<lambda>i s1 s2. MATCH i s1 s2) ORDER\<close> .

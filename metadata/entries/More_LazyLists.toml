@@ -1,0 +1,30 @@
+title = "More Operations on Lazy Lists"
+date = 2024-05-24
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = "We formalize some operations and reasoning infrastructure on lazy (coinductive) lists. The operations include: building a lazy list from a function on naturals and an extended natural indicating the intended domain, take-until and drop-until (which are variations of take-while and drop-while), splitting a lazy list into a lazy list of lists with cut points being those elements that satisfy a predicate, and filtermap. The reasoning infrastructure includes: a variation of the corecursion combinator, multi-step (list-based) coinduction for lazy-list equality, and a criterion for the filtermapped equality of two lazy lists."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.popescu]
+email = "popescu_email"
+
+[authors.wright]
+email = "wright_email"
+
+[contributors]
+
+[notify]
+popescu = "popescu_email"
+wright = "wright_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

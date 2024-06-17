@@ -139,6 +139,13 @@
           <description></description>
         </item>
         <item>
+          <title>Alpha_Beta_Pruning</title>
+          <link>/sessions/alpha_beta_pruning/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/alpha_beta_pruning/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Amicable_Numbers</title>
           <link>/sessions/amicable_numbers/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1056,6 +1063,13 @@
           <description></description>
         </item>
         <item>
+          <title>Coppersmith_Method</title>
+          <link>/sessions/coppersmith_method/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/coppersmith_method/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Core_DOM</title>
           <link>/sessions/core_dom/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1109,6 +1123,13 @@
           <link>/sessions/count_complex_roots/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/count_complex_roots/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Countable_Sums_and_Discrete_Distributions</title>
+          <link>/sessions/countable_sums_and_discrete_distributions/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/countable_sums_and_discrete_distributions/</guid>
           <description></description>
         </item>
         <item>
@@ -1571,6 +1592,13 @@
           <link>/sessions/encodability_process_calculi/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/encodability_process_calculi/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>EnrichedCategoryBasics</title>
+          <link>/sessions/enrichedcategorybasics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/enrichedcategorybasics/</guid>
           <description></description>
         </item>
         <item>
@@ -3086,6 +3114,13 @@
           <description></description>
         </item>
         <item>
+          <title>Levy_Prokhorov_Metric</title>
+          <link>/sessions/levy_prokhorov_metric/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/levy_prokhorov_metric/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Lifting_Definition_Option</title>
           <link>/sessions/lifting_definition_option/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3604,6 +3639,13 @@
           <description></description>
         </item>
         <item>
+          <title>More_LazyLists</title>
+          <link>/sessions/more_lazylists/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/more_lazylists/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>MSO_Regex_Equivalence</title>
           <link>/sessions/mso_regex_equivalence/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3993,6 +4035,13 @@
           <link>/sessions/password_authentication_protocol/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/password_authentication_protocol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pattern_Completeness</title>
+          <link>/sessions/pattern_completeness/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pattern_completeness/</guid>
           <description></description>
         </item>
         <item>
@@ -4689,6 +4738,13 @@
           <description></description>
         </item>
         <item>
+          <title>Relative_Security</title>
+          <link>/sessions/relative_security/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/relative_security/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Rensets</title>
           <link>/sessions/rensets/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4717,6 +4773,13 @@
           <description></description>
         </item>
         <item>
+          <title>ResiduatedTransitionSystem2</title>
+          <link>/sessions/residuatedtransitionsystem2/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/residuatedtransitionsystem2/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Resolution_FOL</title>
           <link>/sessions/resolution_fol/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4742,6 +4805,13 @@
           <link>/sessions/ribbon_proofs/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/ribbon_proofs/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Riesz_Representation</title>
+          <link>/sessions/riesz_representation/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/riesz_representation/</guid>
           <description></description>
         </item>
         <item>
@@ -4917,6 +4987,13 @@
           <link>/sessions/secondary_sylow/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/secondary_sylow/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secret_Directed_Unwinding</title>
+          <link>/sessions/secret_directed_unwinding/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/secret_directed_unwinding/</guid>
           <description></description>
         </item>
         <item>
@@ -5179,6 +5256,13 @@
           <description></description>
         </item>
         <item>
+          <title>Sorted_Terms</title>
+          <link>/sessions/sorted_terms/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/sorted_terms/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Source_Coding_Theorem</title>
           <link>/sessions/source_coding_theorem/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5295,6 +5379,13 @@
           <link>/sessions/stone_algebras/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/stone_algebras/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stone_Cech</title>
+          <link>/sessions/stone_cech/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/stone_cech/</guid>
           <description></description>
         </item>
         <item>

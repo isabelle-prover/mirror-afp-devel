@@ -341,6 +341,7 @@ object AFP_Submit {
     }
 
     case class Overview(id: String, date: LocalDate, name: String, status: Status.Value) {
+      def save_status(handler: Handler): Unit = handler.set_status(id, status)
       def update_repo(repo: Mercurial.Repository): Boolean =
         if (status != Model.Status.Added) false
         else {
@@ -1205,20 +1206,20 @@ object AFP_Submit {
                 Model.Status.values.toList.map(v => option(v.toString, v.toString))),
               action_button(paths.api_route(API.SUBMISSION_STATUS), "update", key))))))
 
-      def list1(ls: List[XML.Elem]): XML.Elem = if (ls.isEmpty) par(Nil) else list(ls)
+      val indexed = Params.indexed(ENTRY, submission_list.submissions, (k, s) => (k, s))
 
-      val ls = Params.indexed(ENTRY, submission_list.submissions, (k, s) => (k, s))
+      val open = indexed.filter(_._2.status == Model.Status.Submitted)
+      val in_progress = indexed.filter(_._2.status == Model.Status.Review)
       val finished =
-        ls.filter(t => Set(Model.Status.Added, Model.Status.Rejected).contains(t._2.status))
+        indexed.filter(t => Set(Model.Status.Added, Model.Status.Rejected).contains(t._2.status))
+
+      def proper_list(ls: List[XML.Elem]): XML.Elem = if (ls.isEmpty) par(Nil) else list(ls)
 
       List(submit_form(paths.api_route(API.SUBMISSION_STATUS),
         render_if(mode == Mode.SUBMISSION,
-          text("Open") :::
-          list1(ls.filter(_._2.status == Model.Status.Submitted).map(render_overview)) ::
-          text("In Progress") :::
-          list1(ls.filter(_._2.status == Model.Status.Review).map(render_overview)) ::
-          text("Finished")) :::
-        list1(finished.map(render_overview)) :: Nil))
+          text("Open") ::: proper_list(open.map(render_overview.tupled)) ::
+          text("In Progress") ::: proper_list(in_progress.map(render_overview.tupled)) ::
+          text("Finished")) ::: proper_list(finished.map(render_overview.tupled)) :: Nil))
     }
 
     def render_created(created: Model.Created): XML.Body = {
@@ -1361,10 +1362,12 @@ object AFP_Submit {
         } yield Model.Overview(params(key + ID), date, params(key + NAME), status)
 
       val submissions =
-        fold(params.list(ENTRY), List.empty[Model.Overview]) {
-          case (key, overviews) => parse_overview(key).map(overviews :+ _)
+        fold(params.list(ENTRY), List.empty[(Int, Model.Overview)]) {
+          case (key, overviews) =>
+            parse_overview(key).map(overview =>
+              overviews :+ (key.get(ENTRY).get.num.get -> overview))
         }
-      submissions.map(Model.Submission_List.apply)
+      submissions.map(submissions => Model.Submission_List(submissions.sortBy(_._1).map(_._2)))
     }
 
     def parse_num_entry(action: Params.Key): Option[Int] =
@@ -1603,6 +1606,7 @@ object AFP_Submit {
         num_entry <- view.parse_num_entry(view.action(params))
         entry <- model.submissions.unapply(num_entry)
       } yield synchronized {
+        entry.save_status(handler)
         if (!devel) {
           val updated = entry.update_repo(repo)
           if (updated) {
