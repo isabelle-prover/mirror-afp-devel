@@ -11,8 +11,99 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>stark</title>
+          <link>/authors/stark/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/stark/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>nipkow</title>
+          <link>/authors/nipkow/</link>
+          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/nipkow/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cordwell</title>
+          <link>/authors/cordwell/</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/cordwell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>tan</title>
+          <link>/authors/tan/</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/tan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>hirata</title>
+          <link>/authors/hirata/</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/hirata/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>stannett</title>
+          <link>/authors/stannett/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/stannett/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>thiemann</title>
+          <link>/authors/thiemann/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/thiemann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>yamada</title>
+          <link>/authors/yamada/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/yamada/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>buday</title>
+          <link>/authors/buday/</link>
+          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/buday/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>popescu</title>
+          <link>/authors/popescu/</link>
+          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/popescu/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>dongol</title>
+          <link>/authors/dongol/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/dongol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>griffin</title>
+          <link>/authors/griffin/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/griffin/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wright</title>
+          <link>/authors/wright/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/wright/</guid>
+          <description></description>
+        </item>
         <item>
           <title>schulz</title>
           <link>/authors/schulz/</link>
@@ -77,13 +168,6 @@
           <description></description>
         </item>
         <item>
-          <title>cordwell</title>
-          <link>/authors/cordwell/</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/cordwell/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>meric</title>
           <link>/authors/meric/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
@@ -109,13 +193,6 @@
           <link>/authors/mitterwallner/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/authors/mitterwallner/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>thiemann</title>
-          <link>/authors/thiemann/</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/thiemann/</guid>
           <description></description>
         </item>
         <item>
@@ -301,13 +378,6 @@
           <description></description>
         </item>
         <item>
-          <title>tan</title>
-          <link>/authors/tan/</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/tan/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>yang</title>
           <link>/authors/yang/</link>
           <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
@@ -375,13 +445,6 @@
           <link>/authors/sprenger/</link>
           <pubDate>Fri, 02 Feb 2024 00:00:00 +0000</pubDate>
           <guid>/authors/sprenger/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>nipkow</title>
-          <link>/authors/nipkow/</link>
-          <pubDate>Fri, 26 Jan 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/nipkow/</guid>
           <description></description>
         </item>
         <item>
@@ -480,13 +543,6 @@
           <link>/authors/diaz/</link>
           <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/authors/diaz/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>hirata</title>
-          <link>/authors/hirata/</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/hirata/</guid>
           <description></description>
         </item>
         <item>
@@ -637,13 +693,6 @@
           <description></description>
         </item>
         <item>
-          <title>yamada</title>
-          <link>/authors/yamada/</link>
-          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/yamada/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>cremer</title>
           <link>/authors/cremer/</link>
           <pubDate>Tue, 09 May 2023 00:00:00 +0000</pubDate>
@@ -669,13 +718,6 @@
           <link>/authors/danilkin/</link>
           <pubDate>Wed, 03 May 2023 00:00:00 +0000</pubDate>
           <guid>/authors/danilkin/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>stannett</title>
-          <link>/authors/stannett/</link>
-          <pubDate>Sat, 29 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/stannett/</guid>
           <description></description>
         </item>
         <item>
@@ -760,13 +802,6 @@
           <link>/authors/szekely/</link>
           <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
           <guid>/authors/szekely/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>popescu</title>
-          <link>/authors/popescu/</link>
-          <pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/popescu/</guid>
           <description></description>
         </item>
         <item>
@@ -1138,13 +1173,6 @@
           <link>/authors/terraf/</link>
           <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
           <guid>/authors/terraf/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>stark</title>
-          <link>/authors/stark/</link>
-          <pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate>
-          <guid>/authors/stark/</guid>
           <description></description>
         </item>
         <item>
@@ -2314,13 +2342,6 @@
           <link>/authors/rawson/</link>
           <pubDate>Sun, 09 Jul 2017 00:00:00 +0000</pubDate>
           <guid>/authors/rawson/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>dongol</title>
-          <link>/authors/dongol/</link>
-          <pubDate>Tue, 13 Jun 2017 00:00:00 +0000</pubDate>
-          <guid>/authors/dongol/</guid>
           <description></description>
         </item>
         <item>

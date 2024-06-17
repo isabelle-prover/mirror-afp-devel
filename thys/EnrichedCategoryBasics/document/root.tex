@@ -1,0 +1,124 @@
+\documentclass[11pt,notitlepage,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym,eufrak}
+\usepackage{amssymb,amsmath}
+\usepackage[english]{babel}
+
+% XYPic package, for drawing commutative diagrams.
+\input{xy}
+\xyoption{curve}
+\xyoption{arrow}
+\xyoption{matrix}
+\xyoption{2cell}
+\xyoption{line}
+\UseAllTwocells
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\labarrow[1]{{\stackrel{#1}{\longrightarrow}}}
+
+\begin{document}
+
+\title{Enriched Category Basics}
+\author{Eugene W. Stark\\[\medskipamount]
+        Department of Computer Science\\
+        Stony Brook University\\
+        Stony Brook, New York 11794 USA}
+\maketitle
+
+\begin{abstract}
+The notion of an enriched category generalizes the concept of category by replacing the hom-sets
+of an ordinary category by objects of an arbitrary monoidal category.
+In this article we give a formal definition of enriched categories and we give formal proofs
+of a relatively narrow selection of facts about them.
+One of the main results is a proof that a closed monoidal category can be regarded as a
+category ``enriched in itself''.
+The other main result is a proof of a version of the Yoneda Lemma for enriched categories.
+\end{abstract}
+
+\newpage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
+\tableofcontents
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Introduction}
+\chapter*{Introduction}
+
+The notion of an enriched category \cite{kelly-enriched-category}
+generalizes the concept of category by replacing the hom-sets of an ordinary category by
+objects of an arbitrary monoidal category ${\cal V}$.
+The choice, for each object $a$, of a distinguished element $id~a : a \rightarrow a$
+as an identity, is replaced by an arrow $Id~a : {\cal I} \rightarrow Hom~a~a$ of ${\cal V}$.
+The composition operation is similarly replaced by a family of arrows
+$Comp~a~b~c : Hom~B~C \otimes Hom~A~B \rightarrow Hom~A~C$ of ${\cal V}$.
+The identity and composition are required to satisfy unit and associativity laws which are
+expressed as commutative diagrams in ${\cal V}$.
+Of particular interest is the case in which ${\cal V}$ is symmetric monoidal and closed;
+in that case, as Kelly states (\cite{kelly-enriched-category}, Section 1.6):
+ ``The structure of ${\cal V}$-{\bf CAT} then becomes rich enough to permit of Yoneda-lemma
+arguments formally identical with those in {\bf CAT}.''
+
+The goal of this article is to formalize the basic definition of enriched category and
+some related notions, and to prove a relatively narrow selection of facts about these definitions.
+For reference and inspiration, we follow the early sections of the book by
+Kelly \cite{kelly-enriched-category}; however a comprehensive formalization of the material
+in that book is explicitly not our objective here.
+Rather, beyond the basic definitions we are primarily interested in the following two results:
+(1) that a closed monoidal category can be regarded as a category ``enriched in itself''; and
+(2) the Yoneda Lemma for enriched categories
+(specifically, the weak form considered in Section 1.9 of \cite{kelly-enriched-category}).
+We needed the basic definitions and result (1) for use in a separate article
+\cite{ResiduatedTransitionSystem2-AFP}.
+Although this material could have been included as part of that other article,
+as it is general material that does not depend on the specific application considered there,
+it seemed best to present it as a stand-alone development that would be more readily
+accessible for use by others.
+As far as result (2) is concerned, we originally formalized and proved it as part of our exploration
+leading up to \cite{ResiduatedTransitionSystem2-AFP}.
+Ultimately, we did not find result (2) to be necessary for the satisfactory development
+of that work, but as it is a result of general interest whose formalization did involve
+some struggle to achieve, it seems worthwhile to include it here.
+
+This article is organized as follows:
+In Chapter \ref{closed_monoidal_categories_chapter} we give formal definitions for the
+notions ``closed monoidal category'' and ``cartesian closed monoidal category'' and
+prove some facts about them.  This builds on the formal development of the theory of
+monoidal categories in our previous article \cite{MonoidalCategory-AFP}.
+The main goals of this section are to prove some general facts about exponentials that are
+used in \cite{ResiduatedTransitionSystem2-AFP}, and to do most of the preliminary work
+(the parts that do not specifically depend on the definition of enriched category)
+involved in showing that a closed monoidal category is ``enriched in itself''.
+In Chapter \ref{enriched_categories_chapter} we give definitions for ``enriched category''
+and the related notions ``enriched functor,'' ``enriched natural transformation,''
+and ``underlying category,'' and we complete the formal statement and proof of
+``self-enrichment.''
+We then continue with the definition of the opposite of an enriched category,
+give definitions for the notions of covariant and contravariant enriched hom functors,
+and prove corresponding covariant and contravariant versions of the Yoneda Lemma.
+
+\chapter{Closed Monoidal Categories}
+\label{closed_monoidal_categories_chapter}
+
+  \input{ClosedMonoidalCategory.tex}
+  \input{CartesianClosedMonoidalCategory.tex}
+
+\chapter{Enriched Categories}
+\label{enriched_categories_chapter}
+
+  \input{EnrichedCategory.tex}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

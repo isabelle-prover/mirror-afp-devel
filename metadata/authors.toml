@@ -1014,6 +1014,24 @@ host = [
 [brunner.homepages]
 brunner_homepage = "http://www21.in.tum.de/~brunnerj/"
 
+[buday]
+name = "Gergely Buday"
+
+[buday.emails]
+
+[buday.emails.buday_email]
+user = [
+  "g",
+  "buday",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[buday.homepages]
+
 [bulwahn]
 name = "Lukas Bulwahn"
 
@@ -2363,6 +2381,24 @@ host = [
 ]
 
 [griebel.homepages]
+
+[griffin]
+name = "Matthew Griffin"
+
+[griffin.emails]
+
+[griffin.emails.griffin_email]
+user = [
+  "matthew",
+  "griffin",
+]
+host = [
+  "imperial",
+  "ac",
+  "uk",
+]
+
+[griffin.homepages]
 
 [grov]
 name = "Gudmund Grov"
@@ -7650,6 +7686,23 @@ host = [
 
 [wolff.homepages]
 wolff_homepage = "https://www.lri.fr/~wolff/"
+
+[wright]
+name = "Jamie Wright"
+
+[wright.emails]
+
+[wright.emails.wright_email]
+user = [
+  "jwright8",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[wright.homepages]
 
 [wu]
 name = "Chunhan Wu"

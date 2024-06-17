@@ -1,0 +1,14 @@
+chapter AFP
+
+session Pattern_Completeness = First_Order_Terms +
+  options [timeout = 600]
+  sessions
+    LP_Duality
+    Certification_Monads
+    Sorted_Terms
+  theories     
+    Pattern_Completeness     
+    Test_Pat_Complete 
+  document_files
+    "root.tex"
+    "root.bib"

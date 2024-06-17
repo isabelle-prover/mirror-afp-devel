@@ -1,0 +1,9 @@
+chapter AFP
+
+session Stone_Cech = "HOL-Analysis" +
+  options [timeout = 600]   
+  theories
+    Stone_Cech
+  document_files
+    "root.tex"
+    "root.bib"

@@ -1,0 +1,17 @@
+chapter AFP
+
+session Relative_Security = More_LazyLists +
+  options [timeout = 900]
+  directories 
+    Preliminaries
+  theories [document = false] 
+    Trivia
+    Transition_System 
+  theories
+    Relative_Security_fin
+    Relative_Security
+    Unwinding_fin 
+    Unwinding   
+  document_files
+    "root.tex"
+    "root.bib"

@@ -11,8 +11,106 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 10 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>EnrichedCategoryBasics</title>
+          <link>/dependencies/enrichedcategorybasics/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/enrichedcategorybasics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MonoidalCategory</title>
+          <link>/dependencies/monoidalcategory/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monoidalcategory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ResiduatedTransitionSystem</title>
+          <link>/dependencies/residuatedtransitionsystem/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/residuatedtransitionsystem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LLL_Factorization</title>
+          <link>/dependencies/lll_factorization/</link>
+          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lll_factorization/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Riesz_Representation</title>
+          <link>/dependencies/riesz_representation/</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/riesz_representation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Standard_Borel_Spaces</title>
+          <link>/dependencies/standard_borel_spaces/</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/standard_borel_spaces/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Certification_Monads</title>
+          <link>/dependencies/certification_monads/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/certification_monads/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complete_Non_Orders</title>
+          <link>/dependencies/complete_non_orders/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/complete_non_orders/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LP_Duality</title>
+          <link>/dependencies/lp_duality/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lp_duality/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sorted_Terms</title>
+          <link>/dependencies/sorted_terms/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sorted_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Coinductive</title>
+          <link>/dependencies/coinductive/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/coinductive/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>More_LazyLists</title>
+          <link>/dependencies/more_lazylists/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/more_lazylists/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Relative_Security</title>
+          <link>/dependencies/relative_security/</link>
+          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/relative_security/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Akra_Bazzi</title>
           <link>/dependencies/akra_bazzi/</link>
@@ -98,13 +196,6 @@
           <description></description>
         </item>
         <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Knuth_Bendix_Order</title>
           <link>/dependencies/knuth_bendix_order/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
@@ -137,13 +228,6 @@
           <link>/dependencies/simpl/</link>
           <pubDate>Wed, 17 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/simpl/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Coinductive</title>
-          <link>/dependencies/coinductive/</link>
-          <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/coinductive/</guid>
           <description></description>
         </item>
         <item>
@@ -385,13 +469,6 @@
           <description></description>
         </item>
         <item>
-          <title>Standard_Borel_Spaces</title>
-          <link>/dependencies/standard_borel_spaces/</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/standard_borel_spaces/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Deriving</title>
           <link>/dependencies/deriving/</link>
           <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
@@ -543,13 +620,6 @@
           <link>/dependencies/weighted_path_order/</link>
           <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/weighted_path_order/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Complete_Non_Orders</title>
-          <link>/dependencies/complete_non_orders/</link>
-          <pubDate>Wed, 24 May 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/complete_non_orders/</guid>
           <description></description>
         </item>
         <item>
@@ -1274,13 +1344,6 @@
           <description></description>
         </item>
         <item>
-          <title>Certification_Monads</title>
-          <link>/dependencies/certification_monads/</link>
-          <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/certification_monads/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Propositional_Proof_Systems</title>
           <link>/dependencies/propositional_proof_systems/</link>
           <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
@@ -1460,13 +1523,6 @@
           <link>/dependencies/probabilistic_prime_tests/</link>
           <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/probabilistic_prime_tests/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>MonoidalCategory</title>
-          <link>/dependencies/monoidalcategory/</link>
-          <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/monoidalcategory/</guid>
           <description></description>
         </item>
         <item>

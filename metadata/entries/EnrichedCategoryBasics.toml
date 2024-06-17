@@ -1,0 +1,35 @@
+title = "Enriched Category Basics"
+date = 2024-06-16
+topics = [
+  "Mathematics/Category theory",
+]
+abstract = """
+The notion of an enriched category generalizes the concept of category by replacing the hom-sets
+of an ordinary category by objects of an arbitrary monoidal category.
+In this article we give a formal definition of enriched categories and we give formal proofs
+of a relatively narrow selection of facts about them.
+One of the main results is a proof that a closed monoidal category can be regarded as a
+category \"enriched in itself\".
+The other main result is a proof of a version of the Yoneda Lemma for enriched categories."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stark]
+email = "stark_email"
+
+[contributors]
+
+[notify]
+stark = "stark_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "http://www.tac.mta.ca/tac/reprints/articles/10/tr10.pdf",
+]

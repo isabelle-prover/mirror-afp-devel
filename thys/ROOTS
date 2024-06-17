@@ -20,6 +20,7 @@ Akra_Bazzi
 Algebraic_Numbers
 Algebraic_VCs
 Allen_Calculus
+Alpha_Beta_Pruning
 Amicable_Numbers
 Amortized_Complexity
 AnselmGod
@@ -78,6 +79,7 @@ CCS
 CHERI-C_Memory_Model
 CISC-Kernel
 Concentration_Inequalities
+Coppersmith_Method
 CRDT
 CRYSTALS-Kyber
 CRYSTALS-Kyber_Security
@@ -156,6 +158,7 @@ Core_DOM
 Core_SC_DOM
 Correctness_Algebras
 Cotangent_PFD_Formula
+Countable_Sums_and_Discrete_Distributions
 Count_Complex_Roots
 Coupledsim_Contrasim
 CryptHOL
@@ -214,6 +217,7 @@ Efficient_Weighted_Path_Order
 Elimination_Of_Repeated_Factors
 Elliptic_Curves_Group_Law
 Encodability_Process_Calculi
+EnrichedCategoryBasics
 Epistemic_Logic
 Equivalence_Relation_Enumeration
 Ergodic_Theory
@@ -428,6 +432,7 @@ Laws_of_Large_Numbers
 Lazy-Lists-II
 Lazy_Case
 Lehmer
+Levy_Prokhorov_Metric
 Lifting_Definition_Option
 Lifting_the_Exponent
 LightweightJava
@@ -490,6 +495,7 @@ Monad_Normalisation
 MonoBoolTranAlgebra
 MonoidalCategory
 Monomorphic_Monad
+More_LazyLists
 MuchAdoAboutTwo
 Multi_Party_Computation
 Multirelations
@@ -548,6 +554,7 @@ Parity_Game
 Partial_Function_MR
 Partial_Order_Reduction
 Password_Authentication_Protocol
+Pattern_Completeness
 Pell
 Perfect_Fields
 Perfect-Number-Thm
@@ -644,14 +651,17 @@ Relational_Forests
 Relational_Method
 Relational_Minimum_Spanning_Trees
 Relational_Paths
+Relative_Security
 Rensets
 Rep_Fin_Groups
 ResiduatedTransitionSystem
+ResiduatedTransitionSystem2
 Residuated_Lattices
 Resolution_FOL
 Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs
+Riesz_Representation
 Risk_Free_Lending
 Robbins-Conjecture
 Robinson_Arithmetic
@@ -676,6 +686,7 @@ Sauer_Shelah_Lemma
 Schutz_Spacetime
 Schwartz_Zippel
 Secondary_Sylow
+Secret_Directed_Unwinding
 Security_Protocol_Refinement
 Selection_Heap_Sort
 SenSocialChoice
@@ -707,6 +718,7 @@ Smooth_Manifolds
 Solidity
 Sophomores_Dream
 Sort_Encodings
+Sorted_Terms
 Source_Coding_Theorem
 SpecCheck
 Special_Function_Bounds
@@ -723,6 +735,7 @@ Stewart_Apollonius
 Stirling_Formula
 Stochastic_Matrices
 Stone_Algebras
+Stone_Cech
 Stone_Kleene_Relation_Algebras
 Stone_Relation_Algebras
 Store_Buffer_Reduction

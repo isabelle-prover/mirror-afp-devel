@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alpha-Beta Pruning - Archive of Formal Proofs</title>
+    <meta name="description" content="Alpha-beta pruning is an efficient search strategy for two-player game trees. It was invented in the late 1950s and is at the heart of most implementations...">
+
+  <meta property="og:title" content="Alpha-Beta Pruning" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Alpha_Beta_Pruning.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-06-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-06-13T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Alpha-Beta Pruning"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span>lpha-<span class='first'>B</span>eta <span class='first'>P</span>runing
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/nipkow">Tobias Nipkow</a> <a class="obfuscated" data="eyJob3N0IjpbImluIiwidHVtIiwiZGUiXSwidXNlciI6WyJuaXBrb3ciXX0=">📧</a>
+
+      </p>
+      <p class="date">June 13, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Alpha-beta pruning is an efficient search strategy for two-player game trees.
+It was invented in the late 1950s and is at the heart of most implementations
+of combinatorial game playing programs. These theories formalize and verify a number of
+variations of alpha-beta pruning, in particular fail-hard and fail-soft,
+and valuations into linear orders, distributive lattices and domains with negative values.
+
+A detailed presentation of these theories can be found in the chapter <em>Alpha-Beta Pruning</em>
+in the (forthcoming) book
+<a href="https://functional-algorithms-verified.org/functional_data_structures_algorithms.pdf">Functional Data Structures and Algorithms --- A Proof Assistant Approach</a>.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li>
+          <li><a href="../topics/mathematics/games-and-economics">Mathematics/Games and economics</a></li>
+      </ul>
+      <h3>Session Alpha_Beta_Pruning</h3>
+      <ul>
+          <li><a href="../sessions/alpha_beta_pruning/#Alpha_Beta_Linear">Alpha_Beta_Linear</a></li>
+          <li><a href="../sessions/alpha_beta_pruning/#Alpha_Beta_Lattice">Alpha_Beta_Lattice</a></li>
+          <li><a href="../sessions/alpha_beta_pruning/#LaTeXsugar2">LaTeXsugar2</a></li>
+          <li><a href="../sessions/alpha_beta_pruning/#Alpha_Beta_Overview">Alpha_Beta_Overview</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Alpha_Beta_Pruning/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Alpha_Beta_Pruning/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Alpha_Beta_Pruning/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Alpha_Beta_Pruning-AFP</p>
+        <pre id="copy-text">@article{Alpha_Beta_Pruning-AFP,
+  author  = {Tobias Nipkow},
+  title   = {Alpha-Beta Pruning},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Alpha_Beta_Pruning.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Alpha_Beta_Pruning-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

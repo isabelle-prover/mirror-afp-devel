@@ -73,13 +73,14 @@ Everything happens in the release branch `afp/release`.
     changes aren't pushed.
 11. to publish the changes to the web, run
 
-         ../admin/publish <name>
+         ../admin/publish <sessions...>
 
     This will check out the Isabelle202X (=release) version of the
-    archive from Heptapod, will run the session `name` to generate
-    HTML, produce a `.tar.gz` for the archive and for the entry, and
-    will update the web pages on the server. The script will ask before
-    it copies, so you can check locally if everything is as you want it.
+    archive from Heptapod, run the specified sessions (all sessions of the
+    new entry, space-separated) to generate HTML, produce a `.tar.gz` for the
+    archive and for the entry, and update the web pages on the server. The
+    script will ask before it copies, so you can check locally if everything is
+    as you want it.
 
 12. That's it. Changes should show up at <http://isa-afp.org>
 

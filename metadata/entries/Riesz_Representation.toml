@@ -1,0 +1,32 @@
+title = "The Riesz Representation Theorem"
+date = 2024-06-04
+topics = [
+  "Mathematics/Topology",
+  "Mathematics/Measure and integration",
+]
+abstract = """
+We formalize the Riesz-Markov-Kakutani representation theorem following pp.37-47 of the book <i>Real and Complex Analysis</i> by Rudin.
+This entry also includes formalization of regular measures, tightness of measures, and Urysohn's lemma on locally compact Hausdorff spaces.
+Roughly speaking, the theorem states that
+if $\\varphi$ is a positive linear functional from $C(X)$ (the space of continuous functions from $X$ to complex numbers which have compact supports) to complex numbers,
+then there exists a unique measure $\\mu$ such that for all $f\\in C(X)$, \\[\\varphi(f) = \\int f \\mathrm{d}\\mu.\\]"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hirata]
+email = "hirata_email"
+
+[contributors]
+
+[notify]
+hirata = "hirata_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

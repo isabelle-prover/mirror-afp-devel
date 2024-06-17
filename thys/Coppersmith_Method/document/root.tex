@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{eufrak}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Coppersmith's Method}
+\author{Katherine Kosaian and Yong Kiam Tan}
+\maketitle
+
+\begin{abstract}
+We formalize \textit{Coppersmith's method}, an algorithm for finding small (in magnitude) roots of univariate integer polynomials mod $M$.
+Coppersmith's method has important applications in cryptography and is used in various attacks on the RSA algorithm for public-key cryptography.
+We also formalize a related (more lightweight) result with slightly weaker bounds; we split out the generic mathematical results underlying both this lightweight result and Coppersmith's method into a dedicated locale, which could be used to prove other ``Coppersmith-like'' results.
+Our work builds on the existing formalization of the Lenstra–Lenstra–Lov\'asz (LLL) algorithm for lattice basis reduction \cite{LLL_Basis_Reduction-AFP}, and our formalization adds a determinant bound on the length of the short vector produced by the LLL algorithm.
+
+There are many resources on Coppersmith's method that we found useful in the course of our development.  Some that we recommend include Chapter 19 of a textbook by Galbraith \cite{DBLP:books/cu/Galbraith2012}, Section 17.3 of a textbook by Trappe and Washington \cite{10.5555/1211288}, and the following set of lecture notes \cite{lectureNotes}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

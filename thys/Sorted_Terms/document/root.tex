@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+
+\usepackage{authblk}
+
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Sorted Terms\footnote{This research was partly supported by the Austrian Science Fund (FWF) project I~5943.}}
+\author{Akihisa Yamada}
+\affil{National Institute of Advanced Industrial Science and Technology, Japan}
+\author{Ren\'e Thiemann}
+\affil{University of Innsbruck, Austria}
+\maketitle
+
+\begin{abstract}
+This entry provides a basic library for many-sorted terms and algebras.
+We view sorted sets just as partial maps from elements to sorts,
+and define sorted set of terms reusing the data type
+from the existing library of (unsorted) first order terms.
+All the existing functionality, such as substitutions and contexts,
+can be reused without any modifications.
+We provide predicates stating what substitutions or contexts are considered sorted,
+and prove facts that they preserve sorts as expected.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+This entry extends the First-Order Terms \cite{First_Order_Terms-AFP}
+entry with many-sorted terms.
+Instead of defining a new datatype for sorted terms,
+we just define sorted sets over the existing datatype of unsorted terms.
+We do not even introduce our type for sorted sets:
+we just view sorted sets as partial maps from elements to their sorts.
+
+Part of the entry is presented in \cite{FSCD2024}.
+
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=~/Projekte/ay/Isabelle_Logic/thys/document/root.tex%:%

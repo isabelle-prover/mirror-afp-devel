@@ -1,0 +1,34 @@
+title = "Formalizing Coppersmith's Method"
+date = 2024-06-10
+topics = [
+  "Computer science/Algorithms",
+  "Computer science/Security/Cryptography",
+]
+abstract = """
+We formalize <i>Coppersmith's method</i>, an algorithm for finding small (in magnitude) roots of univariate integer polynomials mod M. Coppersmith's method has important applications in cryptography and is used in various attacks on the RSA algorithm for public-key cryptography.
+We also formalize a related (more lightweight) result with slightly weaker bounds; we split out the generic mathematical results underlying both this lightweight result and Coppersmith's method into a dedicated locale, which could be used to prove other &quot;Coppersmith-like&quot; results.
+Our work builds on the existing formalization of the Lenstra–Lenstra–Lov&#225;sz (LLL) algorithm for lattice basis reduction, and our formalization adds a determinant bound on the length of the short vector produced by the LLL algorithm."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[authors.tan]
+email = "tan_email"
+
+[contributors]
+
+[notify]
+cordwell = "cordwell_email"
+tan = "tan_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1,0 +1,12 @@
+chapter AFP
+
+session "More_LazyLists" = Coinductive +
+options [timeout = 600]
+
+theories
+    List_Filtermap
+    LazyList_Operations
+    LazyList_Filtermap
+
+document_files
+    "root.tex"
