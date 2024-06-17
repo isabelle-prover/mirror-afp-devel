@@ -9,7 +9,7 @@ Alpha-beta pruning is an efficient search strategy for two-player game trees.
 It was invented in the late 1950s and is at the heart of most implementations
 of combinatorial game playing programs. These theories formalize and verify a number of
 variations of alpha-beta pruning, in particular fail-hard and fail-soft,
-and valuations into linear orders, distributive latices and domains with negative values.
+and valuations into linear orders, distributive lattices and domains with negative values.
 
 A detailed presentation of these theories can be found in the chapter <em>Alpha-Beta Pruning</em>
 in the (forthcoming) book
