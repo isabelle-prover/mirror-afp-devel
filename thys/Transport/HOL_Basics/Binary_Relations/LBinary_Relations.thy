@@ -4,6 +4,7 @@ theory LBinary_Relations
     Binary_Relations_Functions
     Binary_Relations_Order
     Binary_Relation_Properties
+    Wellfounded_Transitive_Recursion
     Binary_Relation_Functions
     Binary_Relations_Agree
     Binary_Relations_Extend

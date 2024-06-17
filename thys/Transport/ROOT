@@ -16,6 +16,7 @@ session Transport = "HOL" +
     "HOL_Basics/Binary_Relations/Functions"
     "HOL_Basics/Binary_Relations/Order"
     "HOL_Basics/Binary_Relations/Properties"
+    "HOL_Basics/Binary_Relations/Wellfounded_Recursion"
     "HOL_Basics/Functions"
     "HOL_Basics/Functions/Properties"
     "HOL_Basics/HOL_Alignments"

@@ -14,6 +14,7 @@ theory Binary_Relation_Properties
     Binary_Relations_Surjective
     Binary_Relations_Symmetric
     Binary_Relations_Transitive
+    Binary_Relations_Wellfounded
 begin
 
 
