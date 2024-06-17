@@ -1,0 +1,55 @@
+title = "Residuated Transition Systems II: Categorical Properties"
+date = 2024-06-16
+topics = [
+  "Mathematics/Category theory",
+  "Computer science/Concurrency",
+]
+abstract = """
+This article extends the formal development of the theory of residuated transition systems
+(RTS's), begun in the author's previous article, to include category-theoretic properties.
+There are two main themes: (1) RTS's <em>as</em> categories; and (2) RTS's <em>in</em> categories.
+Concerning the first theme, we show that every RTS determines a category via the
+\"composite completion\" construction given in the previous article,
+and we obtain a characterization of the \"categories of transitions\" that arise in this way.
+Concerning the second theme, we show that the \"small\" extensional RTS's having arrows
+that inhabit a type with suitable closure properties, form the objects of a cartesian closed
+category ${\\bf RTS}$ when equipped with simulations as morphisms.
+This category can in turn be regarded as contained in a larger, $2$-category-like structure
+which is a category under \"horizontal\" composition, and is an RTS under \"vertical\"
+residuation.  We call such structures <em>RTS-categories</em>.
+We explore in particular detail the RTS-category ${\\bf RTS}^\\dagger$ having RTS's as objects,
+simulations as $1$-cells, and transformations between simulations as $2$-cells.
+As a category, ${\\bf RTS}^\\dagger$ is also cartesian closed, and the category ${\\bf RTS}$
+occurs as the subcategory comprised of the arrows that are identities with respect to the
+residuation.
+To obtain these results various technical issues, related to the formalization within the
+relatively weak HOL, have to be addressed.
+We also consider RTS-categories from the point of view of enriched category theory
+and we show that RTS-categories are essentially the same thing as categories enriched in ${\\bf RTS}$
+and that the RTS-category ${\\bf RTS}^\\dagger$ is determined up to isomorphism by its
+cartesian closed subcategory ${\\bf RTS}$."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stark]
+email = "stark_email"
+
+[contributors]
+
+[notify]
+stark = "stark_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1016/0304-3975(89)90050-9",
+]
+pubs = [
+  "https://isa-afp.org/entries/ResiduatedTransitionSystem.html",
+  "http://www.tac.mta.ca/tac/reprints/articles/10/tr10.pdf",
+]

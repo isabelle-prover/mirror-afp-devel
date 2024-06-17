@@ -3,33 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/Alpha_Beta_Pruning.html</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/EnrichedCategoryBasics.html</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/enrichedcategorybasics/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/monoidalcategory/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ResiduatedTransitionSystem2.html</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/residuatedtransitionsystem/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stark/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Alpha_Beta_Pruning.html</loc>
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nipkow/</loc>
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/cordwell/</loc>
-    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Coppersmith_Method.html</loc>
@@ -1451,9 +1469,6 @@
     <loc>/entries/ResiduatedTransitionSystem.html</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/stark/</loc>
-    <lastmod>2022-02-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/finite_fields/</loc>
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -2391,9 +2406,6 @@
     <lastmod>2020-01-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Bicategory.html</loc>
-    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/monoidalcategory/</loc>
     <lastmod>2020-01-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/e_transcendental/</loc>
@@ -5544,6 +5556,8 @@
   </url><url>
     <loc>/sessions/encodability_process_calculi/</loc>
   </url><url>
+    <loc>/sessions/enrichedcategorybasics/</loc>
+  </url><url>
     <loc>/submission/</loc>
   </url><url>
     <loc>/sessions/epistemic_logic/</loc>
@@ -6719,6 +6733,8 @@
     <loc>/sessions/residuated_lattices/</loc>
   </url><url>
     <loc>/sessions/residuatedtransitionsystem/</loc>
+  </url><url>
+    <loc>/sessions/residuatedtransitionsystem2/</loc>
   </url><url>
     <loc>/sessions/resolution_fol/</loc>
   </url><url>

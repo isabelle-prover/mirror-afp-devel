@@ -1595,6 +1595,13 @@
           <description></description>
         </item>
         <item>
+          <title>EnrichedCategoryBasics</title>
+          <link>/sessions/enrichedcategorybasics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/enrichedcategorybasics/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Epistemic_Logic</title>
           <link>/sessions/epistemic_logic/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4763,6 +4770,13 @@
           <link>/sessions/residuatedtransitionsystem/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/residuatedtransitionsystem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ResiduatedTransitionSystem2</title>
+          <link>/sessions/residuatedtransitionsystem2/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/residuatedtransitionsystem2/</guid>
           <description></description>
         </item>
         <item>

@@ -11,8 +11,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 10 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>EnrichedCategoryBasics</title>
+          <link>/dependencies/enrichedcategorybasics/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/enrichedcategorybasics/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>MonoidalCategory</title>
+          <link>/dependencies/monoidalcategory/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/monoidalcategory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ResiduatedTransitionSystem</title>
+          <link>/dependencies/residuatedtransitionsystem/</link>
+          <pubDate>Sun, 16 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/residuatedtransitionsystem/</guid>
+          <description></description>
+        </item>
         <item>
           <title>LLL_Factorization</title>
           <link>/dependencies/lll_factorization/</link>
@@ -1502,13 +1523,6 @@
           <link>/dependencies/probabilistic_prime_tests/</link>
           <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/probabilistic_prime_tests/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>MonoidalCategory</title>
-          <link>/dependencies/monoidalcategory/</link>
-          <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/monoidalcategory/</guid>
           <description></description>
         </item>
         <item>
