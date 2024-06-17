@@ -1,6 +1,6 @@
 [
  {
-  "abstract": "Alpha-beta pruning is an efficient search strategy for two-player game trees. It was invented in the late 1950s and is at the heart of most implementations of combinatorial game playing programs. These theories formalize and verify a number of variations of alpha-beta pruning, in particular fail-hard and fail-soft, and valuations into linear orders, distributive latices and domains with negative values.  A detailed presentation of these theories can be found in the chapter \u003cem\u003eAlpha-Beta Pruning\u003c/em\u003e in the (forthcoming) book \u003ca href=\"https://functional-algorithms-verified.org/functional_data_structures_algorithms.pdf\"\u003eFunctional Data Structures and Algorithms --- A Proof Assistant Approach\u003c/a\u003e.",
+  "abstract": "Alpha-beta pruning is an efficient search strategy for two-player game trees. It was invented in the late 1950s and is at the heart of most implementations of combinatorial game playing programs. These theories formalize and verify a number of variations of alpha-beta pruning, in particular fail-hard and fail-soft, and valuations into linear orders, distributive lattices and domains with negative values.  A detailed presentation of these theories can be found in the chapter \u003cem\u003eAlpha-Beta Pruning\u003c/em\u003e in the (forthcoming) book \u003ca href=\"https://functional-algorithms-verified.org/functional_data_structures_algorithms.pdf\"\u003eFunctional Data Structures and Algorithms --- A Proof Assistant Approach\u003c/a\u003e.",
   "authors": [
    "Tobias Nipkow"
   ],
