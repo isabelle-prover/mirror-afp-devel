@@ -1,0 +1,250 @@
+\documentclass[11pt,notitlepage,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym,eufrak}
+\usepackage{amssymb,amsmath}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Residuated Transition Systems II:\\ Categorical Properties}
+\author{Eugene W. Stark\\[\medskipamount]
+        Department of Computer Science\\
+        Stony Brook University\\
+        Stony Brook, New York 11794 USA}
+\maketitle
+
+\begin{abstract}
+This article extends the formal development of the theory of residuated transition systems
+(RTS's), begun in the author's previous article, to include category-theoretic properties.
+There are two main themes: (1) RTS's {\em as} categories; and (2) RTS's {\em in} categories.
+Concerning the first theme, we show that every RTS determines a category via the
+``composite completion'' construction given in the previous article,
+and we obtain a characterization of the ``categories of transitions'' that arise in this way.
+Concerning the second theme, we show that the ``small'' extensional RTS's having arrows
+that inhabit a type with suitable closure properties, form the objects of a cartesian closed
+category {\bf RTS} when equipped with simulations as morphisms.
+This category can in turn be regarded as contained in a larger, $2$-category-like structure
+which is a category under ``horizontal'' composition, and is an RTS under ``vertical''
+residuation.  We call such structures {\em RTS-categories}.
+We explore in particular detail the RTS-category ${\bf RTS}^\dagger$ having RTS's as objects,
+simulations as $1$-cells, and transformations between simulations as $2$-cells.
+As a category, ${\bf RTS}^\dagger$ is also cartesian closed, and the category {\bf RTS}
+occurs as the subcategory comprised of the arrows that are identities with respect to the
+residuation.
+To obtain these results various technical issues, related to the formalization within the
+relatively weak HOL, have to be addressed.
+We also consider RTS-categories from the point of view of enriched category theory
+and we show that RTS-categories are essentially the same thing as categories enriched in {\bf RTS},
+and that the RTS-category ${\bf RTS}^\dagger$ is determined up to isomorphism by its
+cartesian closed subcategory {\bf RTS}.
+\end{abstract}
+
+\newpage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
+\tableofcontents
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Introduction}
+\chapter*{Introduction}
+
+This article continues the formal development of the theory of residuated transition systems
+(RTS's) which was begun in the previous article \cite{ResiduatedTransitionSystem-AFP}.
+A particular theme of the present article is the development of category-theoretic properties.
+These were intentionally omitted from the previous article in order to avoid dependence of
+the basic RTS theories on a development of category theory.
+The present article has two main themes: (1) considering RTS's as themselves being
+(or perhaps generating) categories; and (2) studying RTS's as objects within categories.
+With respect to the first theme, we recall from the previous article that every RTS determines
+an extensional RTS with composites -- its ``composite completion.''  As a structure consisting
+of a set of arrows equipped with a partial composition that is associative and satisfies
+left and right identity laws, an RTS with composites can obviously be regarded as a category.
+In view of the fact that the composition is derived from an underlying residuation operation,
+it is straightforward to show that such a category has unique ``bounded pushouts'';
+that is, a unique pushout exists for every span that is ``bounded'' in the sense that it
+can be completed to a commutative square.  In addition, in such a category, every arrow
+is an epimorphism and there are no nontrivial isomorphisms.
+We define a ``category of transitions'' to be a category with these properties, and we show
+that every such category is in fact an extensional RTS with composites, where consistency
+of a span of transitions coincides with boundedness and the residuation is obtained from
+pushouts.
+
+Concerning the second theme, we are interested a category {\bf RTS} whose objects are
+extensional RTS's and whose morphisms are simulations between such RTS's.
+Since the set of morphisms between two extensional RTS's $A$ and $B$ is itself an extensional
+RTS having as its morphisms the transformations between simulations, it is clear that
+{\bf RTS} has additional structure to be explored here beyond that of a simple category.
+As we expect the category {\bf RTS} (or closely related structures) to be the main focus
+of attention in applications of residuated transition systems (to programming language
+semantics, for example), our objective is to clarify this structure as much as possible and
+to set up technology for working formally with this category.
+There are some technical problems that arise with the formalization of this material in
+the context of Isabelle/HOL, though.  First of all, RTS's exist with arrows at arbitrary types,
+so it is impossible in HOL to directly formalize a category whose objects encompass
+``all'' RTS's.  Instead, we have to consider categories of RTS's whose arrows inhabit
+some particular type, though we may exploit polymorphism to prove general theorems that hold
+for any such category.  Secondly, the fact that the hom-sets of a category of extensional RTS's
+and simulations themselves admit the structure of an extensional RTS suggests that we ought
+to be looking at the category {\bf RTS} as a {\em closed} category;
+in fact cartesian closed, as it happens.  Here again, we face some limitations posed by our
+choice to carry out the formalization within Isabelle/HOL.  In particular, a cartesian
+closed category, having RTS's as objects and as homs the sets of all simulations between such,
+cannot be constructed in pure HOL, unless we restrict our attention to finite RTS's only.
+However, we can work around this limitation if we are willing to extend pure HOL with the
+assumption that there is a ``universe'' type that is ``large'' enough to be closed under the
+function space constructions that we need to perform in order to achieve cartesian closure.
+The Isabelle HOL library already has a well-developed theory of this kind; namely, the
+{\em ZFC\_in\_HOL} theory, which axiomatically extends HOL with a type $V$ and a notion of
+``smallness'', such that the small sets of type $V$ satisfy the axioms of ZFC.
+In our development, we presuppose the existence of a notion of smallness and suppose that
+the underlying arrow type of the category {\bf RTS} is closed under the construction of
+small function spaces, but we have avoided ``hard coding'' the particular type $V$ defined
+in {\em ZFC\_in\_HOL} into our development.  This independence from a particular
+choice of ``universe'' comes at a cost, however: in order to show that the category
+{\bf RTS} admits type-increasing constructions such as products and exponentials,
+we have to concern ourselves in each case with finding a suitable ``type-reducing map''
+to show that the RTS's constructed with arrows at the higher types are in fact isomorphic
+to RTS's that already exist at the original arrow type.  We note that these complications
+only arise in showing that {\bf RTS} admits various categorical constructions --- once this
+has been done we can work with these constructions in a simple way using the universal
+properties that characterize them.
+
+To summarize the above, one of our main results is the construction of a cartesian closed
+category {\bf RTS}, whose objects are in bijection with ``small'', extensional RTS's whose
+arrows inhabit a suitable ``universe'' type $\alpha$ and each of whose hom-sets ${\bf RTS}(A, B)$
+is in bijective correspondence with the set of all simulations between $A$ and $B$.
+We show that the particular type $V$ axiomatized in {\em ZFC\_in\_HOL} satisfies the requirements
+for the universe type $\alpha$, but our development does not otherwise depend on details of
+{\em ZFC\_in\_HOL} except for the notion of smallness defined therein.
+We prove theorems that allow us to pass back and forth between notions internal to {\bf RTS}
+and corresponding external notions expressed in terms of the concrete structure of
+RTS's and simulations.
+
+The fact that {\bf RTS} is cartesian closed is a consequence of the fact that the
+transformations between simulations from an extensional RTS $A$ to an extensional RTS $B$
+may themselves be regarded as the arrows of an exponential RTS $[A, B]$.
+The category {\bf RTS} may therefore be regarded as a category ``enriched in itself''
+\cite{kelly-enriched-category}.  However, it seems more natural to think of {\bf RTS}
+as something more like a $2$-category, where the $0$-cells correspond to RTS's,
+the $1$-cells correspond to simulations, and the $2$-cells correspond to transformations
+between simulations.  Unless we restrict ourselves {\em a priori} to RTS's with composites
+(something that we do not wish to do), the resulting structure will not actually be
+a $2$-category, because the homs will in general be RTS's that do not necessarily
+admit composition of transitions ({\em i.e.}~of transformations).
+So instead the kind of structure we obtain consists of a category under ``horizontal''
+composition, and an RTS under ``vertical'' residuation.
+We formalize such a structure, calling it an ``RTS-category''.
+We show that there is an RTS-category ${\bf RTS}^\dag$, whose $0$-cells (objects) are in
+bijection with the small, extensional RTS's with arrows at a universe type $\alpha$,
+whose $1$-cells (arrows) are in bijection with simulations between such RTS's,
+and whose $2$-cells are in bijection with transformations between such simulations.
+As a category, ${\bf RTS}^\dag$ is itself cartesian closed, and the subcategory defined
+by the $1$-cells (which coincide with the identities of the residuation) is the
+ordinary cartesian closed category ${\bf RTS}$.
+We prove results that allow us to pass back and forth between notions
+internal to ${\bf RTS}^\dag$ and the corresponding external notions.
+The construction of ${\bf RTS}^\dag$ and the proof of associated facts constitutes a second
+group of main results of this article.
+
+Finally, our third group of main results concerns the clarification of the relationship
+between the notion of RTS-category and that of a category enriched in {\bf RTS}.
+We show that from a category $E$ enriched in {\bf RTS} we
+can construct an RTS-category $C$ having as its set of $2$-cells the disjoint union of
+the sets of arrows of the RTS's underlying the hom-objects of $E$.  Conversely, given an
+RTS-category $C$ we can construct a corresponding category $E$ enriched in {\bf RTS}
+by taking as the ``hom-objects'' of $E$ the objects of {\bf RTS} corresponding to the
+``hom-RTS's'' of $C$.
+These correspondences are functorial and extend to an equivalence between a category
+of RTS-categories and a category of {\bf RTS}-enriched categories (for a suitable
+definition of morphism in each case).  So, RTS-categories and categories enriched in
+{\bf RTS} amount to the same thing, though the definition of RTS-categories is more elementary
+and will likely be easier to work with in applications.
+
+The remainder of this article is organized as follows:
+In Chapter \ref{preliminaries_chapter}, we have proved various facts we need about RTS's,
+simulations, and transformations, which are not part of the previous article
+\cite{ResiduatedTransitionSystem-AFP}.
+In Chapter \ref{rts_as_categories_chapter}, we present the results discussed above
+which pertain to the theme ``RTS's as Categories''.
+Chapter \ref{rts_constructions_chapter} defines various concrete constructions on RTS's,
+including product and exponential, and proves associated universal properties.
+In addition, this section defines the constraints on a type $\alpha$ required for it
+to serve as a ``universe'' and establishes related facts.
+Finally, in Chapter \ref{rts_in_categories_chapter}, we define the notion of
+RTS-category, construct the RTS-category ${\bf RTS}^\dag$ and prove facts about it,
+including cartesian closure, construct the subcategory {\bf RTS} and prove facts about
+it as well, and finally establish the equivalence of RTS-categories and categories
+enriched in {\bf RTS}.
+
+\chapter{Preliminaries}
+\label{preliminaries_chapter}
+
+This section develops some extensions to theories contained in the previous AFP
+articles \cite{ResiduatedTransitionSystem-AFP} and \cite{MonoidalCategory-AFP}.
+
+  \input{Preliminaries.tex}
+
+\chapter{RTS's as Categories}
+\label{rts_as_categories_chapter}
+
+As shown in the previous article \cite{ResiduatedTransitionSystem-AFP},
+every RTS extends to an extensional RTS that has a composite for each pair of composable
+transitions.  Such an RTS may be regarded as a category, and in this section
+we establish a characterization of the kind of categories that are obtained
+from RTS's in this way.
+
+  \input{CategoryWithBoundedPushouts.tex}
+  \input{CategoryOfTransitions.tex}
+
+\chapter{RTS Constructions}
+\label{rts_constructions_chapter}
+
+This section develops several constructions on residuated transition systems,
+including the construction of: an RTS with no transitions (at an arbitrary type),
+an RTS with exactly one transition (at any type having at least two elements),
+free and fibered (binary) products of RTS's, and an exponential RTS.
+These constructions will be used in a subsequent section to construct a cartesian closed
+category having residuated transition systems as objects and simulations as arrows.
+The natural definitions of the product and exponential constructions on RTS's yield results
+at higher types than those of their arguments, but for a cartesian closed category we need
+versions of these constructions that produce results at the same type as their arguments.
+Since it is not possible in the case of the exponential to carry out such a construction
+within HOL (except for finite types), we make use of the ``ZFC in HOL'' axiomatic extension
+to HOL to obtain a type having suitable closure properties.  The ZFC in HOL extension
+includes definitions of ``smallness'' for sets and types, and we show that each of the
+RTS constructions preserves smallness in a suitable sense.  We then show that the small
+results (at higher type) of applying the constructions to small arguments can be mapped back,
+via functions injective on arrows, to isomorphic copies that ``live'' at the original
+argument type.
+
+  \input{RTSConstructions.tex}
+
+\chapter{RTS's in Categories}
+\label{rts_in_categories_chapter}
+
+  \input{RTSCategory.tex}
+  \input{ConcreteRTSCategory.tex}
+  \input{RTSCatx.tex}
+  \input{RTSCat.tex}
+  \input{RTSCat_Interp.tex}
+
+\chapter{RTS-Enriched Categories}
+
+  \input{RTSEnrichedCategory.tex}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
