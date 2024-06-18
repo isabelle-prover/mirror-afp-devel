@@ -11,7 +11,7 @@ consts right_unique_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   right_unique_on_pred \<equiv> "right_unique_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "right_unique_on_pred P R \<equiv> \<forall>x : P. \<forall> y y'. R x y \<and> R x y' \<longrightarrow> y = y'"
+  definition "right_unique_on_pred P R \<equiv> \<forall>x : P. \<forall>y y'. R x y \<and> R x y' \<longrightarrow> y = y'"
 end
 
 lemma right_unique_onI [intro]:

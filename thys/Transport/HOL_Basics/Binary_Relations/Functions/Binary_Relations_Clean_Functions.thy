@@ -7,7 +7,7 @@ begin
 
 text \<open>Clean relational functions may not contain further elements outside their specification.\<close>
 
-(*TODO: could be generalised to HOL functions*)
+(*TODO: could be generalised to HOL functions (undefined outside domain)*)
 consts crel_dep_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 consts crel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 

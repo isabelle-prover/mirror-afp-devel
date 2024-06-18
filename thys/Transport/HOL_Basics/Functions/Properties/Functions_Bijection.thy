@@ -80,6 +80,13 @@ lemma bijection_on_right_left_eq_self':
 
 end
 
+lemma bijection_on_has_inverse_on_the_inverse_on_if_injective_on:
+  assumes "injective_on P f"
+  shows "bijection_on P (has_inverse_on P f) f (the_inverse_on P f)"
+  using assms by (intro bijection_onI inverse_on_has_inverse_on_the_inverse_on_if_injective_on
+    inverse_on_the_inverse_on_if_injective_on)
+  fastforce+
+
 context
   fixes P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
 begin

@@ -4,7 +4,51 @@ theory Functions_Inverse
   imports
     Functions_Injective
     Binary_Relations_Function_Evaluation
+    Bounded_Definite_Description
 begin
+
+consts the_inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
+
+definition "the_inverse_on_pred P f \<equiv> \<lambda>y. THE x : P. y = f x"
+adhoc_overloading the_inverse_on the_inverse_on_pred
+
+lemma the_inverse_on_eq_if_injective_onI:
+  assumes "injective_on P f"
+  and "y = f x"
+  and "P x"
+  shows "the_inverse_on P f y = x"
+  unfolding the_inverse_on_pred_def using assms by (intro bthe_eqI) (auto dest: injective_onD)
+
+lemma the_inverse_on_app_eq_if_injective_onI [simp]:
+  assumes "injective_on P f"
+  and "P x"
+  shows "the_inverse_on P f (f x) = x"
+  using assms by (intro the_inverse_on_eq_if_injective_onI) auto
+
+consts the_inverse :: "'a \<Rightarrow> 'b"
+
+definition "the_inverse_fun \<equiv> the_inverse_on (\<top> :: 'a \<Rightarrow> bool)"
+adhoc_overloading the_inverse the_inverse_fun
+
+lemma the_inverse_eq_the_inverse_on:
+  "the_inverse = the_inverse_on (\<top> :: 'a \<Rightarrow> bool)"
+  unfolding the_inverse_fun_def ..
+
+lemma the_inverse_eq_the_inverse_on_uhint [uhint]:
+  assumes "P \<equiv>  \<top> :: 'a \<Rightarrow> bool"
+  shows "the_inverse :: ('a \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a \<equiv> the_inverse_on P"
+  using assms by (simp add: the_inverse_eq_the_inverse_on)
+
+lemma the_inverse_eq_if_injectiveI:
+  assumes "injective f"
+  and "y = f x"
+  shows "the_inverse f y = x"
+  using assms by (urule the_inverse_on_eq_if_injective_onI) auto
+
+lemma the_inverse_app_eq_if_injectiveI [simp]:
+  assumes "injective f"
+  shows "the_inverse f (f x) = x"
+  using assms by (urule the_inverse_on_app_eq_if_injective_onI) auto
 
 consts inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
 
@@ -36,6 +80,17 @@ proof (rule injective_onI)
   also have "... = x'" using inv Px' by (intro inverse_onD)
   finally show "x = x'" .
 qed
+
+lemma inverse_on_the_inverse_on_if_injective_on:
+  fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b"
+  assumes "injective_on P f"
+  shows "inverse_on P f (the_inverse_on P f)"
+  using assms by (intro inverse_onI the_inverse_on_eq_if_injective_onI) auto
+
+lemma inverse_on_has_inverse_on_the_inverse_on_if_injective_on:
+  assumes "injective_on P f"
+  shows "inverse_on (has_inverse_on P f) (the_inverse_on P f) f"
+  using assms by (intro inverse_onI) auto
 
 lemma inverse_on_compI:
   fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool"
@@ -79,21 +134,19 @@ lemma inverse_on_if_inverse:
   shows "inverse_on P f g"
   using assms by (intro inverse_onI) (blast dest: inverseD)
 
-lemma right_unique_eq_app_if_injective:
+lemma injective_if_inverse:
+  assumes "inverse (f :: 'a \<Rightarrow> 'b) (g :: 'b \<Rightarrow> 'a)"
+  shows "injective f"
+  using assms by (urule injective_on_if_inverse_on)
+
+lemma inverse_the_inverse_if_injective:
   assumes "injective f"
-  shows "right_unique (\<lambda>y x. y = f x)"
-  using assms by (auto dest: injectiveD)
+  shows "inverse f (the_inverse f)"
+  using assms by (urule inverse_on_the_inverse_on_if_injective_on)
 
-lemma inverse_eval_eq_app_if_injective:
+lemma inverse_on_has_inverse_the_inverse_if_injective:
   assumes "injective f"
-  shows "inverse f (eval (\<lambda>y x. y = f x))"
-  by (urule inverseI eval_eq_if_right_unique_onI right_unique_eq_app_if_injective)+
-  (use assms in simp_all)
-
-lemma inverse_if_injectiveE:
-  assumes "injective (f :: 'a \<Rightarrow> 'b)"
-  obtains g :: "'b \<Rightarrow> 'a" where "inverse f g"
-  using assms inverse_eval_eq_app_if_injective by blast
-
+  shows "inverse_on (has_inverse f) (the_inverse f) f"
+  using assms by (urule inverse_on_has_inverse_on_the_inverse_on_if_injective_on)
 
 end

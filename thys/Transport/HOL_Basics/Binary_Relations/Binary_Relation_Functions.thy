@@ -287,6 +287,9 @@ lemma rel_restrict_left_cong:
   shows "R\<restriction>\<^bsub>P\<^esub> = R'\<restriction>\<^bsub>P'\<^esub>"
   using assms by (intro ext iffI) blast+
 
+lemma rel_restrict_left_restrict_left_eq_restrict_left [simp]: "R\<restriction>\<^bsub>P\<^esub>\<restriction>\<^bsub>P\<^esub> = R\<restriction>\<^bsub>P\<^esub>"
+  by blast
+
 lemma rel_restrict_left_top_eq [simp]: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<restriction>\<^bsub>\<top> :: 'a \<Rightarrow> bool\<^esub> = R"
   by (intro ext rel_restrict_leftI) auto
 
@@ -345,6 +348,9 @@ lemma rel_restrict_right_cong:
   and "\<And>x y. P' y \<Longrightarrow> R x y \<longleftrightarrow> R' x y"
   shows "R\<upharpoonleft>\<^bsub>P\<^esub> = R'\<upharpoonleft>\<^bsub>P'\<^esub>"
   using assms by (intro ext iffI) blast+
+
+lemma rel_restrict_right_restrict_right_eq_restrict_right [simp]: "R\<upharpoonleft>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>P\<^esub> = R\<upharpoonleft>\<^bsub>P\<^esub>"
+  by blast
 
 lemma rel_restrict_right_top_eq [simp]: "(R :: 'a \<Rightarrow> 'b \<Rightarrow> bool)\<upharpoonleft>\<^bsub>\<top> ::'b \<Rightarrow> bool\<^esub> = R"
   by (intro ext rel_restrict_rightI) auto
