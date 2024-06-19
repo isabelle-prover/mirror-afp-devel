@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{authblk}
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{A Preprocessor for Linear Diophantine Equalities and Inequalities}
+
+\author{Ren\'e Thiemann}
+\affil{University of Innsbruck, Austria}
+
+\maketitle
+
+\begin{abstract}
+We formalize a combination algorithm to preprocess a set of linear
+diophantine equations and inequalities. It consists of three techniques that are applied
+exhaustively.
+\begin{itemize}
+\item Pugh's technique of tightening linear inequalities \cite{DBLP:conf/sc/Pught91},
+\item Bromberger and Weidenbach's algorithm to detect implicit equalities \cite{DBLP:journals/fmsd/BrombergerW17} -- here we make use of an incremental implementation of the simplex algorithm \cite{DBLP:journals/afp/MaricST18}, and
+\item Griggio's diophantine equation solver \cite{DBLP:journals/jsat/Griggio12} to eliminate all detected equations.
+\end{itemize}
+
+In total, given some linear input constraints, the preprocessor will either detect unsatisfiability 
+in $\mathbb{Z}$, 
+or it returns equi-satisfiable inequalities, which moreover are all strictly satisfiable 
+in $\mathbb{Q}$.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=~/Projekte/Cubes/document/root.tex%:%
