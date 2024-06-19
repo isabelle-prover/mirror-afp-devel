@@ -1,0 +1,42 @@
+title = "A Preprocessor for Linear Diophantine Equalities and Inequalities"
+date = 2024-06-13
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+We formalize a combination algorithm to preprocess a set of linear
+diophantine equations and inequalities. It consists of three techniques that are applied
+exhaustively.
+<ul>
+<li>Pugh's technique of tightening linear inequalities,</li>
+<li>Bromberger and Weidenbach's algorithm to detect implicit equalities &ndash; here we make use of an incremental implementation of the simplex algorithm, and</li>
+<li>Griggio's diophantine equation solver to eliminate all detected equations.</li>
+</ul>
+
+In total, given some linear input constraints, the preprocessor will either detect unsatisfiability 
+in \\(\\mathbb{Z}\\), 
+or it returns equi-satisfiable inequalities, which moreover are all strictly satisfiable 
+in \\(\\mathbb{Q}\\)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s10703-017-0278-7",
+  "10.3233/sat190086",
+]
+pubs = []

@@ -1,0 +1,17 @@
+chapter AFP
+
+session Linear_Diophantine_Preprocessor = Farkas +
+  options [timeout = 600]
+  sessions
+    Deriving
+  theories
+    Linear_Polynomial_Impl
+  theories
+    Diophantine_Tightening
+  theories
+    Linear_Diophantine_Solver_Impl
+  theories
+    Dio_Preprocessing_Examples
+  document_files
+    "root.tex"
+    "root.bib"
