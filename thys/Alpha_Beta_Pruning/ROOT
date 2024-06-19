@@ -7,6 +7,7 @@ session Alpha_Beta_Pruning = HOL +
     "HOL-Library"
   theories
     Alpha_Beta_Overview
+    TicTacToe
   document_files
     "root.tex"
     "root.bib"
