@@ -28,6 +28,13 @@
           <description></description>
         </item>
         <item>
+          <title>A Preprocessor for Linear Diophantine Equalities and Inequalities</title>
+          <link>/entries/Linear_Diophantine_Preprocessor.html</link>
+          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Diophantine_Preprocessor.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Alpha-Beta Pruning</title>
           <link>/entries/Alpha_Beta_Pruning.html</link>
           <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
@@ -8992,6 +8999,13 @@
           <link>/sessions/lightweightjava/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/lightweightjava/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear_Diophantine_Preprocessor</title>
+          <link>/sessions/linear_diophantine_preprocessor/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/linear_diophantine_preprocessor/</guid>
           <description></description>
         </item>
         <item>

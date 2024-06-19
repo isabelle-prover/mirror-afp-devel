@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 13 Jun 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/thiemann/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Preprocessor for Linear Diophantine Equalities and Inequalities</title>
+          <link>/entries/Linear_Diophantine_Preprocessor.html</link>
+          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Linear_Diophantine_Preprocessor.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Sorted Terms</title>
           <link>/entries/Sorted_Terms.html</link>

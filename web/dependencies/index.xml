@@ -35,6 +35,20 @@
           <description></description>
         </item>
         <item>
+          <title>Deriving</title>
+          <link>/dependencies/deriving/</link>
+          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/deriving/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Farkas</title>
+          <link>/dependencies/farkas/</link>
+          <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/farkas/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>LLL_Factorization</title>
           <link>/dependencies/lll_factorization/</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
@@ -466,13 +480,6 @@
           <link>/dependencies/s_finite_measure_monad/</link>
           <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/s_finite_measure_monad/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Deriving</title>
-          <link>/dependencies/deriving/</link>
-          <pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/deriving/</guid>
           <description></description>
         </item>
         <item>
@@ -1558,13 +1565,6 @@
           <link>/dependencies/transition_systems_and_automata/</link>
           <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
           <guid>/dependencies/transition_systems_and_automata/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Farkas</title>
-          <link>/dependencies/farkas/</link>
-          <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
-          <guid>/dependencies/farkas/</guid>
           <description></description>
         </item>
         <item>

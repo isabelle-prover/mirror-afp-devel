@@ -41,10 +41,22 @@
     <loc>/topics/</loc>
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Linear_Diophantine_Preprocessor.html</loc>
+    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Alpha_Beta_Pruning.html</loc>
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/deriving/</loc>
+    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/farkas/</loc>
+    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/nipkow/</loc>
+    <lastmod>2024-06-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/thiemann/</loc>
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/cordwell/</loc>
@@ -99,9 +111,6 @@
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Stone_Cech.html</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/thiemann/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Pattern_Completeness.html</loc>
@@ -634,9 +643,6 @@
   </url><url>
     <loc>/dependencies/s_finite_measure_monad/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/deriving/</loc>
-    <lastmod>2023-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Labeled_Transition_Systems.html</loc>
     <lastmod>2023-10-31T00:00:00+00:00</lastmod>
@@ -2508,9 +2514,6 @@
     <lastmod>2019-08-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/C2KA_DistributedSystems.html</loc>
-    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/farkas/</loc>
     <lastmod>2019-08-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/jaskolka/</loc>
@@ -6187,6 +6190,8 @@
     <loc>/sessions/lifting_the_exponent/</loc>
   </url><url>
     <loc>/sessions/lightweightjava/</loc>
+  </url><url>
+    <loc>/sessions/linear_diophantine_preprocessor/</loc>
   </url><url>
     <loc>/sessions/linear_inequalities/</loc>
   </url><url>
