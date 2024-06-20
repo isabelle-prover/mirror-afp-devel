@@ -146,7 +146,8 @@ qed
 
 lemma dif_narry_formula: 
   "a\<ge>b \<longrightarrow> bin_narry a b (k + 1) = (if (a\<exclamdown>k < b\<exclamdown>k + bin_narry a b k) then 1 else 0)"
-proof -
+proof
+  assume \<open>b \<le> a\<close>
   {
     presume a1: "a mod (2 * 2 ^ k) < b mod (2 * 2 ^ k)"
     presume a2: "\<not> a div 2 ^ k mod 2 < Suc (b div 2 ^ k mod 2)"
@@ -191,15 +192,13 @@ proof -
       by simp
   }
 
-  ultimately show ?thesis
-    apply (auto simp add: nth_bit_def not_less bin_narry_def)
-    subgoal by (smt (verit) add_0_left add_less_cancel_left Divides.divmod_digit_0(2) le_less_trans mod_less_divisor
-        mod_mult2_eq mult_zero_right nat_neq_iff not_less not_mod2_eq_Suc_0_eq_0 
-        semiring_normalization_rules(7) zero_less_numeral zero_less_power)
-    subgoal by (smt (verit) One_nat_def add.left_neutral Divides.divmod_digit_0(1) le_less_trans less_imp_le
-          mod_less_divisor mod_mult2_eq mod_mult_self1_is_0 mult_zero_right not_less
-          not_mod2_eq_Suc_0_eq_0 not_one_le_zero semiring_normalization_rules(7) zero_less_numeral 
-          zero_less_power)
+  ultimately show \<open>bin_narry a b (k + 1) = (if (a\<exclamdown>k < b\<exclamdown>k + bin_narry a b k) then 1 else 0)\<close>
+    using \<open>b \<le> a\<close>
+    apply (simp only: bin_narry_def flip: nth_bit_def take_bit_eq_mod power_Suc)
+    apply (auto simp add: less_Suc_eq_le Suc_le_eq not_le not_less dest: not_le_imp_less)
+     apply (auto simp add: take_bit_Suc_from_most nth_bit_eq_of_bool_bit of_bool_def split: if_splits)
+    apply (rule ccontr)
+    using take_bit_nat_less_exp [of k a] apply simp
     done
 qed
  

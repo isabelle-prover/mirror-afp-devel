@@ -218,9 +218,9 @@ proof-
       then have "[?h =  q + x*b + a*b + q - (a * b + (q - r))] (mod q)" using  q_cong assms(1) 
       proof-
         have ge: "q + x*b + a*b + q  > (a * b + (q - r))" using assms by simp
-        then have "[ q + x*b + a*b + q - (a * b + (q - r)) mod q =  q + x*b + a*b + q - (a * b + (q - r))] (mod q)"
-          using Divides.mod_less_eq_dividend cong_diff_nat  cong_def le_trans less_not_refl2
-                  less_or_eq_imp_le q_gt_0 minus_mod by presburger
+        with minus_mod [of \<open>a * b + (q - r)\<close> \<open>q + x * b + a * b + q\<close>]
+        have "[q + x*b + a*b + q - (a * b + (q - r)) mod q = q + x*b + a*b + q - (a * b + (q - r))] (mod q)"
+          by simp
         then show ?thesis using mod cong_trans by blast  
       qed
       then have "[?h =  q + x*b + q - (q - r)] (mod q)" 
@@ -285,8 +285,9 @@ proof-
   have "(b - b mod q + (a - b)) mod q = (0 + (a - b)) mod q"
     using  cong_def mod_add_cong neq0_conv q_gt_0 
     by (simp add: minus_mod_eq_mult_div)
-  then show ?thesis
-    by (metis (no_types) Divides.mod_less_eq_dividend Nat.add_diff_assoc2 add_diff_inverse_nat assms(1) cong_def diff_is_0_eq' less_or_eq_imp_le mod_add_cong neq0_conv)
+  with \<open>a - b > 0\<close> show ?thesis
+    by (simp add: cong_def mod_add_left_eq [symmetric, of \<open>a - b mod q\<close> c q])
+      (simp add: mod_simps)
 qed
 
 lemma d2: 

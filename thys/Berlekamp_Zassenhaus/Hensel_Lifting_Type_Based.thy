@@ -124,7 +124,7 @@ qed
 
 lemma mod_mod_le:
   assumes ab: "(a::int) \<le> b" and a0: "0 < a" and c0: "c \<ge> 0" shows "(c mod a) mod b = c mod a"
-  by (meson Divides.pos_mod_bound Divides.pos_mod_sign a0 ab less_le_trans mod_pos_pos_trivial)
+  by (meson pos_mod_bound pos_mod_sign a0 ab less_le_trans mod_pos_pos_trivial)
 
 locale rebase_ge =
   fixes ty1 :: "'a :: nontriv itself" and ty2 :: "'b :: nontriv itself"
@@ -306,7 +306,8 @@ end
 
 
 
-lemma mod_mod_nat[simp]: "a mod b mod (b * c :: nat) = a mod b" by (simp add: Divides.mod_mult2_eq)
+lemma mod_mod_nat[simp]: "a mod b mod (b * c :: nat) = a mod b"
+  by (simp add: mod_mult2_eq)
 
 locale Knuth_ex_4_6_2_22_base =
   fixes ty_p :: "'p :: nontriv itself"

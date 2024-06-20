@@ -24,7 +24,7 @@ shows "digit_encode ds (digit_decode ds is) = is"
 
 lemma digit_decode_encode[simp]:
 shows "digit_decode ds (digit_encode ds a) = a mod (prod_list ds)"
-by (induction ds arbitrary:a; simp add: Divides.mod_mult2_eq add.commute)
+  by (induction ds arbitrary: a) (simp_all add: mod_mult2_eq)
 
 lemma digit_decode_encode_lt[simp]:
 assumes "a < prod_list ds"

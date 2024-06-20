@@ -184,14 +184,12 @@ lemma Howgrave_Graham_int_poly:
   shows "poly F x0 = 0"
 proof - 
   let ?rF = "int_poly_to_real_poly F"
-  obtain k where "poly F x0 = (k::int) * M"
-    using root_mod_M
-    by (metis Divides.zmod_eq_0D mult.commute)
-
+  from root_mod_M have \<open>M dvd poly F x0\<close>
+    by presburger
+  then obtain k where \<open>poly F x0 = int M * k\<close> ..
   then have "poly ?rF (real_of_int x0) = 0"
     apply (intro Howgrave_Graham[OF M_gt _ root_bound])
     using assms int_poly_to_real_poly_same_norm[of F X] by auto
-
   thus ?thesis by auto
 qed
 

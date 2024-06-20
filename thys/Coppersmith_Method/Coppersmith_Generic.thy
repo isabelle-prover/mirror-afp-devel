@@ -719,8 +719,7 @@ proof -
   proof - fix j
     assume j_lt: "j < dim_vec a"
     then obtain k1 k2::"int" where k1k2_prop: "a $ j = k1*X^j" "b $ j = k2*X^j"
-      using assms(2)[of j] assms(3)[of j] assms(1)
-      by (metis Divides.zmod_eq_0D Groups.mult_ac(2) semiring_1_class.of_nat_power) 
+      using assms(2)[of j] assms(3)[of j] assms(1) by (auto elim!: dvdE) blast
     have roi: "\<lfloor>real_of_int (a $ j) / real (X ^ j)\<rfloor> = k1"  "\<lfloor>real_of_int (b $ j) / real (X ^ j)\<rfloor> = k2"
       using assms(4) k1k2_prop(1) apply simp 
       using assms(4) k1k2_prop(2) by simp 
@@ -753,8 +752,9 @@ proof -
   have same_dim: "dim_vec ?newvec = dim_vec ?newvec_mult"
     by auto
 then have "(c i) * ?newvec $ j =  (?newvec_mult $ j)" if j_prop: "j < dim_vec v" for j
-  using div_by_X assms(1)
-  by (smt (verit, ccfv_threshold) Groups.mult_ac(3) dim_vec floor_divide_of_int_eq index_smult_vec(1) index_vec j_prop nonzero_mult_div_cancel_left of_int_of_nat_eq of_nat_0_less_iff semiring_1_class.of_nat_power zero_less_power Divides.zmod_eq_0D) 
+  using div_by_X [of j] \<open>0 < X\<close> that
+  by (simp only: floor_divide_of_int_eq flip: Power.of_nat_power of_int_of_nat_eq [where ?'a = real])
+    auto
 then have "smult (c i) (monom (?newvec $ j) j) =  monom (?newvec_mult $ j) j" if j_prop: "j < dim_vec v" for j
   by (simp add: smult_monom j_prop)
   then have "(\<Sum>j<dim_vec v. monom (?newvec_mult $ j) j) = (\<Sum>j<dim_vec v. smult (c i) (monom (?newvec $ j) j))"

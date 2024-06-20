@@ -85,7 +85,7 @@ lemma bitset_Suc:
 proof (rule set_eqI)
   fix x
   from assms show "(x \<in> bitset (n + 1)) = (x \<in> insert 0 (bitset n))"
-    unfolding bitset_def by (cases x) (auto simp add: Divides.div_mult2_eq)
+    unfolding bitset_def by (cases x) (auto simp add: div_mult2_eq)
 qed
 
 lemma bitset_2n1:

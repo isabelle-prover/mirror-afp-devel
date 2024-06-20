@@ -557,9 +557,9 @@ proof -
   then have poly_is_2: "poly (smult (int (M ^ (h - 1 - j))) (p ^ j * monom 1 i)) x0
     = int (M ^ (h - 1 - j))*poly (p ^ j * monom 1 i) x0"
     by simp
-  obtain k::"int" where "poly p x0 = k * M"
-    using p_zero_mod_M
-    by (metis mult.commute Divides.zmod_eq_0D)
+  from p_zero_mod_M have \<open>int M dvd poly p x0\<close>
+    by presburger
+  then obtain k where \<open>poly p x0 = int M * k\<close> ..
   then have "poly (p ^ j * monom 1 i) x0 = M^j*(k)^j*(poly (monom 1 i) x0)"
     using poly_is
     by (simp add: power_mult_distrib) 

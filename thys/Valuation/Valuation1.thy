@@ -977,11 +977,9 @@ apply (thin_tac "AMin {x. x \<in> v ` carrier K \<and> 0 < x} = v k",
        drule_tac a = "v (w \<cdot>\<^sub>r (k\<^bsub>K\<^esub>\<^bsup>(z div a)\<^esup>)\<^bsup>\<hyphen> K\<^esup>)" in forall_spec,
        simp add:image_def)
    apply (drule sym, simp)
-
-apply (frule_tac b = a and a = z in Divides.pos_mod_conj, erule conjE,
-       simp, simp,
-       frule_tac b = a and a = z in Divides.pos_mod_conj, erule conjE, simp)
-done
+  using not_zle pos_mod_bound apply blast
+  using pos_mod_sign zle_imp_zless_or_eq apply (metis Zero_ant_def aless)
+  done
 
 lemma (in Corps) val_principalTr1:"\<lbrakk> valuation K v\<rbrakk>  \<Longrightarrow>
             Lv K v \<in> v ` (carrier K - {\<zero>}) \<and>

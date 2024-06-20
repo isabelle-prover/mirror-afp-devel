@@ -808,7 +808,7 @@ next
           have "d \<noteq> 0"
             by (metis \<open>i0 < d\<close> gr_implies_not0)
           then have "(i0 + d * i1) div (d * prod_list ds) = 0"
-            by (simp add: Divides.div_mult2_eq \<open>i0 < d\<close> \<open>i1 < prod_list ds\<close>)
+            using \<open>i0 < d\<close> \<open>i1 < prod_list ds\<close> by (simp add: div_mult2_eq)
           then show "i0 + d * i1 < d * prod_list ds"
             by (metis (no_types) \<open>i0 < d\<close> \<open>i1 < prod_list ds\<close> div_eq_0_iff gr_implies_not0 no_zero_divisors)
         qed

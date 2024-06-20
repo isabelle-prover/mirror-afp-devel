@@ -8,6 +8,10 @@ text \<open>We define the n-th bit of a number in base 2 representation \<close>
 definition nth_bit :: "nat \<Rightarrow> nat \<Rightarrow> nat" (infix "\<exclamdown>" 100) where
   "nth_bit num k = (num div (2 ^ k)) mod 2"
 
+lemma nth_bit_eq_of_bool_bit:
+  \<open>nth_bit num k = of_bool (bit num k)\<close>
+  by (simp add: nth_bit_def bit_iff_odd mod_2_eq_odd)
+
 text \<open>as well as the n-th digit of a number in an arbitrary base \<close>
 definition nth_digit :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
   "nth_digit num k base = (num div (base ^ k)) mod base"

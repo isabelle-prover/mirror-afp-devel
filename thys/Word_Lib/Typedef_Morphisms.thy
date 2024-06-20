@@ -382,19 +382,30 @@ lemma Bit_in_uintsI: "of_bool c + 2 * w \<in> uints m" if "w \<in> uints (m - 1)
   by auto
 
 lemma bin_cat_in_uintsI:
-  \<open>concat_bit n b a \<in> uints m\<close> if \<open>a \<in> uints l\<close> \<open>m \<ge> l + n\<close>
+  \<open>concat_bit n b a \<in> uints m\<close> if \<open>a \<in> uints l\<close> \<open>l + n \<le> m\<close>
 proof -
-  from \<open>m \<ge> l + n\<close> obtain q where \<open>m = l + n + q\<close>
-    using le_Suc_ex by blast
-  then have \<open>(2::int) ^ m = 2 ^ n * 2 ^ (l + q)\<close>
-    by (simp add: ac_simps power_add)
-  moreover have \<open>a mod 2 ^ (l + q) = a\<close>
-    using \<open>a \<in> uints l\<close>
-    by (auto simp add: uints_def take_bit_eq_mod power_add Divides.mod_mult2_eq)
-  ultimately have \<open>concat_bit n b a = take_bit m (concat_bit n b a)\<close>
-    by (simp add: concat_bit_eq take_bit_eq_mod push_bit_eq_mult Divides.mod_mult2_eq)
-  then show ?thesis
-    by (simp add: uints_def)
+  from \<open>a \<in> uints l\<close> have \<open>0 \<le> a\<close> \<open>a < 2 ^ l\<close>
+    by (auto simp add: uints_def range_bintrunc)
+  define q where \<open>q = m - n\<close>
+  with \<open>l + n \<le> m\<close> have \<open>m = n + q\<close>
+    by simp
+  from \<open>q = m - n\<close> \<open>l + n \<le> m\<close> have \<open>l \<le> q\<close>
+    by simp
+  then have \<open>(2::int) ^ l \<le> 2 ^ q\<close>
+    by simp
+  with \<open>a < 2 ^ l\<close> have \<open>a < 2 ^ q\<close>
+    by linarith
+  have \<open>take_bit n b < 2 ^ n * 2 ^ q\<close>
+    using take_bit_int_less_exp [of n b]
+    by (rule order.strict_trans2) simp
+  then have \<open>take_bit n b < 2 ^ (n + q)\<close>
+    by (simp add: power_add)
+  moreover have \<open>push_bit n a < 2 ^ (n + q)\<close>
+    using \<open>a < 2 ^ q\<close> by (simp add: power_add push_bit_eq_mult)
+  ultimately have \<open>concat_bit n b a < 2 ^ (n + q)\<close>
+    by (simp add: concat_bit_def OR_upper)
+  with \<open>0 \<le> a\<close> show ?thesis
+    by (simp add: uints_def range_bintrunc \<open>m = n + q\<close>)
 qed
 
 end

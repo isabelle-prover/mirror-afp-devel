@@ -4096,11 +4096,14 @@ apply (subgoal_tac "x mod lev I = 0", simp)
  apply (subst mult.commute, assumption)
  apply (subgoal_tac "x mod lev I \<in> I")
    apply (thin_tac "x = lev I * (x div lev I) + x mod lev I")
- apply (frule_tac a = x in Divides.pos_mod_conj[of "lev I"])
- apply (rule contrapos_pp, simp+)
- apply (erule conjE)
- apply (frule_tac a = "x mod (lev I)" in forall_spec)
-  apply simp apply arith
+  subgoal for x
+    apply (rule order_antisym)
+     apply (rule ccontr)
+     apply (simp_all add: not_le)
+    apply (drule forall_spec [of _ _ \<open>x mod lev I\<close>])
+    apply simp_all
+    using pos_mod_bound [of \<open>lev I\<close> x] apply linarith
+    done
   apply (frule_tac r = "x div (lev I)" in
           Ring.ideal_ring_multiple1[of "Zr" "I" "lev I"], assumption+,
           simp add:Zr_def Zset_def)

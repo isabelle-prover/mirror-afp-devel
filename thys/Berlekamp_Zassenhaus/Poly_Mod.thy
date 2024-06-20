@@ -404,8 +404,14 @@ proof -
   qed
 qed
 
-lemma mod_ident_iff: "m > 0 \<Longrightarrow> (x :: int) mod m = x \<longleftrightarrow> x \<in> {0 ..< m}"
-  by (metis Divides.pos_mod_bound Divides.pos_mod_sign atLeastLessThan_iff mod_pos_pos_trivial)
+lemma mod_ident_iff:
+  \<open>(x :: int) mod m = x \<longleftrightarrow> x \<in> {0 ..< m}\<close>
+  if \<open>m > 0\<close>
+proof -
+  from that pos_mod_bound [of m x] pos_mod_sign [of m x] have \<open>0 \<le> x mod m\<close> \<open>x mod m < m\<close>
+    by simp_all
+  with that show ?thesis by auto
+qed
 
 declare prod_mset_prod_list[simp]
 

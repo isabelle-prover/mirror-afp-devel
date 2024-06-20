@@ -75,7 +75,7 @@ proof -
   also have "\<dots> = (t*t + n) div (2*t)"
     using floor_divide_of_nat_eq by blast
   also have "\<dots> = (t*t + n) div t div 2"
-    by (simp add: Divides.div_mult2_eq mult.commute)
+    by (simp add: div_mult2_eq ac_simps)
   also have "\<dots> = (t + n div t) div 2"
     by (simp add: \<open>0 < t\<close> power2_eq_square)
   finally show ?thesis by simp

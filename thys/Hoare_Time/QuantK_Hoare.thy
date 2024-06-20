@@ -152,7 +152,8 @@ next
     
     have i: "(C1;; C2, s) \<Rightarrow> p1+p2 \<Down> t2" using 1 and 2 by auto
     
-    from 10 20 have p: "k1 div gcd k1 k2 > 0" "k2 div gcd k1 k2 > 0" by (simp_all add: Divides.div_positive)
+    from 10 20 have p: "k1 div gcd k1 k2 > 0" "k2 div gcd k1 k2 > 0"
+      by (simp_all add: div_greater_zero_iff)
         
     have za: "?k = (k1 div gcd k1 k2) * k2" 
       apply(simp only: lcm_nat_def)

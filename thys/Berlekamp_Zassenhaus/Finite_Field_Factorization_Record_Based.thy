@@ -511,9 +511,10 @@ proof -
   from rel_funD[OF finite_field_factorization_i rel_f, unfolded rel_prod_conv assms(2) split berl]
   have rel[transfer_rule]: "R c' c''" "list_all2 poly_rel fs' fs''" by auto  
   from to_int[OF rel(1)] have cc': "c = to_int_mod_ring c''" unfolding c by simp
-  have c: "c \<in> {0 ..< p}" unfolding cc'
-    by (metis Divides.pos_mod_bound Divides.pos_mod_sign M_to_int_mod_ring atLeastLessThan_iff 
-      gr_implies_not_zero nat_le_0 nat_p not_le poly_mod.M_def zero_less_card_finite)
+  from m1 have \<open>M c \<in> {0 ..< p}\<close>
+    by (simp add: M_def cc')
+  then have c: \<open>c \<in> {0 ..< p}\<close>
+    by (simp add: M_to_int_mod_ring cc')
   {
     fix f
     assume "f \<in> set fs'" 

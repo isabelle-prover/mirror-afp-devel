@@ -1857,14 +1857,14 @@ declare bin_to_bl_def [simp]
 lemmas of_bl_reasoning = to_bl_use_of_bl of_bl_append
 
 lemma uint_of_bl_is_bl_to_bin_drop:
-  "length (dropWhile Not l) \<le> LENGTH('a) \<Longrightarrow> uint (of_bl l :: 'a::len word) = bl_to_bin l"
-  apply transfer
-  apply (simp add: take_bit_eq_mod)
-  apply (rule Divides.mod_less)
-   apply (rule bl_to_bin_ge0)
-  using bl_to_bin_lt2p_drop apply (rule order.strict_trans2)
-  apply simp
-  done
+  \<open>uint (of_bl l :: 'a::len word) = bl_to_bin l\<close> if \<open>length (dropWhile Not l) \<le> LENGTH('a)\<close>
+proof (transfer fixing: l)
+  from that have *: \<open>2 ^ length (dropWhile Not l) \<le> (2::int) ^ LENGTH('a)\<close>
+    by simp
+  then show \<open>take_bit LENGTH('a) (bl_to_bin l) = bl_to_bin l\<close>
+    using bl_to_bin_lt2p_drop [of l]
+    by (simp add: take_bit_int_eq_self_iff bl_to_bin_ge0 order_less_le_trans)
+qed
 
 corollary uint_of_bl_is_bl_to_bin:
   "length l\<le>LENGTH('a) \<Longrightarrow> uint ((of_bl::bool list\<Rightarrow> ('a :: len) word) l) = bl_to_bin l"
