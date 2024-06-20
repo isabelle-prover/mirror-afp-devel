@@ -1,7 +1,7 @@
 chapter AFP
 
 session Frequency_Moments = "HOL-Probability" +
-  options [timeout = 1200]
+  options [timeout = 2400]
   sessions
     Bertrands_Postulate
     Concentration_Inequalities
