@@ -212,8 +212,8 @@ fun file_command qualify_ref tag exts f files thy =
         val err_file = (Utils.sanitized_path thy tmp_dir (Path.ext "err" src_path))
         val dir = Path.dir out_file
         val _ = Isabelle_System.make_directory dir
-        val stdOut = TextIO.openOut (File.standard_path out_file)
-        val stdErr = TextIO.openOut (File.standard_path err_file)
+        val stdOut = TextIO.openOut (File.platform_path out_file)
+        val stdErr = TextIO.openOut (File.platform_path err_file)
 
         val _ = TextIO.setOutstream (TextIO.stdOut, TextIO.getOutstream stdOut)
         val _ = TextIO.setOutstream (TextIO.stdErr, TextIO.getOutstream stdErr)
@@ -221,7 +221,7 @@ fun file_command qualify_ref tag exts f files thy =
         val tmp_file = Utils.sanitized_path thy tmp_dir src_path
 
         val _ = File.write tmp_file (cat_lines lines)
-        val res = try f (File.standard_path tmp_file)
+        val res = try f (File.platform_path tmp_file)
 
 
         val _ = TextIO.setOutstream (TextIO.stdOut, orig_stdOut)
