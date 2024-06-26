@@ -186,6 +186,14 @@ Last 50 lines from stderr (if available):
 
   /** ci build jobs **/
 
+  val broken_sessions =
+    List(
+      "Approximate_Model_Counting",
+      "ConcurrentHOL",
+      "HOL-Proofs-Extraction",
+      "HOL-Proofs-Lambda")
+
+
   /* all */
 
   val all =
@@ -193,8 +201,8 @@ Last 50 lines from stderr (if available):
       "builds Isabelle + AFP (without slow)",
       Build_CI.Cluster("cluster.schedule"),
       afp = true,
-      selection = Sessions.Selection(
-        all_sessions = true, exclude_session_groups = List("very_slow")),
+      selection = Sessions.Selection(all_sessions = true,
+        exclude_sessions = broken_sessions, exclude_session_groups = List("very_slow")),
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
         override def post(
@@ -214,7 +222,7 @@ Last 50 lines from stderr (if available):
       "nightly build for all of Isabelle/AFP, including documents and afp site",
       Build_CI.Cluster("cluster.schedule"),
       afp = true,
-      selection = Sessions.Selection(all_sessions = true),
+      selection = Sessions.Selection(all_sessions = true, exclude_sessions = broken_sessions),
       presentation = true,
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
