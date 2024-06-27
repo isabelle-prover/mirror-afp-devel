@@ -238,6 +238,7 @@ Last 50 lines from stderr (if available):
           sitegen(context, url, start_date, results, progress)
         }
       },
+      other_settings = List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Xmx8G\""),
       trigger = Build_CI.Timed.nightly())
 }
 
