@@ -279,10 +279,7 @@ nth_Cons_0 numeral_2_eq_2 numeral_Bit0 plus_1_eq_Suc vec_of_list_Cons zero_less_
     proof -
       have "(\<Sum>i<4. (cmod (l ! i))\<^sup>2) = (cmod (l ! 0))\<^sup>2 + (cmod (l ! 1))\<^sup>2 + (cmod (l ! 2))\<^sup>2 + 
 (cmod (l ! 3))\<^sup>2"
-        using sum_insert
-        by (smt (verit) One_nat_def empty_iff finite.emptyI finite.insertI insertE lessThan_0 lessThan_Suc 
-numeral_2_eq_2 numeral_3_eq_3 numeral_plus_one one_plus_numeral_commute plus_1_eq_Suc semiring_norm(2) 
-semiring_norm(8) sum.empty) 
+        by (simp add: numeral_eq_Suc)
       also have "\<dots> = (cmod (u $$ (0,0) * v $$ (0,0)))\<^sup>2 + (cmod(u $$ (0,0) * v $$ (1,0)))\<^sup>2 + 
 (cmod(u $$ (1,0) * v $$ (0,0)))\<^sup>2 + (cmod(u $$ (1,0) * v $$ (1,0)))\<^sup>2"
         using d0 by simp

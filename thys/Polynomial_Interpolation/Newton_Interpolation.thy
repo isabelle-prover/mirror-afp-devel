@@ -581,10 +581,13 @@ proof (induct gs g x ys arbitrary: res rule: divided_differences_impl_int.induct
     by (auto split: option.splits)
   note IH = 1(1)[OF len rec]
   have id: "hd (map rat_of_int x_js) = rat_of_int (hd x_js)" using IH by (cases x_js, auto)
-  from some[simplified, unfolded rec divmod_int_def] have mod: "(hd x_js - xi_j1) mod (xj - xi) = 0"
+  from some[simplified, unfolded rec divmod_int_def] have dvd: "(xj - xi) dvd (hd x_js - xi_j1) "
     and res: "res = (hd x_js - xi_j1) div (xj - xi) # x_js" by (auto split: if_splits)
-  have "rat_of_int ((hd x_js - xi_j1) div (xj - xi)) = rat_of_int (hd x_js - xi_j1) / rat_of_int (xj - xi)"
-    using mod by force
+  from dvd obtain k where \<open>hd x_js - xi_j1 = (xj - xi) * k\<close> ..
+  then have \<open>hd x_js = (xj - xi) * k + xi_j1\<close>
+    by simp
+  then have "rat_of_int ((hd x_js - xi_j1) div (xj - xi)) = rat_of_int (hd x_js - xi_j1) / rat_of_int (xj - xi)"
+    by simp
   hence "(rat_of_int (hd x_js) - rat_of_int xi_j1) / (rat_of_int xj - rat_of_int xi) = 
     rat_of_int ((hd x_js - xi_j1) div (xj - xi))"
     by simp

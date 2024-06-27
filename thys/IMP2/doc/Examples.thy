@@ -470,14 +470,9 @@ defines \<open>
     }
   \<close>
   apply vcg_cs
-  subgoal
-    apply (subst (asm) ex_by_sq_aux[symmetric])
-     apply (smt Suc_1 nat_1 nat_2 nat_mod_distrib nat_one_as_int)
-    by (simp add: div_int_pos_iff int_div_less_self nat_div_distrib)
-   apply (simp add: algebra_simps semiring_normalization_rules nat_mult_distrib; fail)
-  apply (simp add: algebra_simps semiring_normalization_rules nat_mult_distrib; fail)
+   apply (auto simp flip: odd_iff_mod_2_eq_one
+    simp add: nat_add_distrib nat_mult_distrib power2_eq_square power_mult elim!: oddE evenE)
   done
-
 
 
 subsubsection \<open>Power-Tower of 2s\<close>
