@@ -185,12 +185,7 @@ Last 50 lines from stderr (if available):
 
   /** ci build jobs **/
 
-  val broken_sessions =
-    List(
-      "Approximate_Model_Counting",
-      "ConcurrentHOL",
-      "HOL-Proofs-Extraction",
-      "HOL-Proofs-Lambda")
+  val broken_sessions = List("ConcurrentHOL")
 
 
   /* all */
