@@ -123,7 +123,6 @@ Last 50 lines from stderr (if available):
   def sitegen(
     context: Context,
     url: Option[Url],
-    start_date: Date,
     results: Build.Results,
     progress: Progress,
   ): Unit = {
@@ -140,7 +139,7 @@ Last 50 lines from stderr (if available):
         "build_data" -> (JSON.Object(
           "isabelle_id" -> context.isabelle_id,
           "afp_id" -> context.afp.hg_id,
-          "time" -> Date.Format.default(start_date)) ++
+          "time" -> Date.Format.default(progress.start)) ++
           url.map(url => "url" -> url.toString)))
 
     progress.echo(Build_CI.section("SITEGEN"))
@@ -207,7 +206,6 @@ Last 50 lines from stderr (if available):
       hook = new Build_CI.Hook {
         override def post(
           options: Options,
-          start_date: Date,
           url: Option[Url],
           results: Build.Results,
           progress: Progress
@@ -228,14 +226,13 @@ Last 50 lines from stderr (if available):
       hook = new Build_CI.Hook {
         override def post(
           options: Options,
-          start_date: Date,
           url: Option[Url],
           results: Build.Results,
           progress: Progress
         ): Unit = {
           val context = Context(options)
           notify_failed(context, url, results, progress)
-          sitegen(context, url, start_date, results, progress)
+          sitegen(context, url, results, progress)
         }
       },
       other_settings = List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Xmx8G\""),
