@@ -401,11 +401,11 @@ proof-
   hence "[int x * (int z - int z') = int t * (int e mod order \<G> - int e' mod order \<G>) mod order \<G>] (mod order \<G>)"
     by (metis (no_types, lifting) cong_def mod_diff_eq mod_mod_trivial mod_mult_right_eq)
   hence *: "[int x * (int z - int z') = int t * (e mod order \<G> - e' mod order \<G>) mod order \<G>] (mod order \<G>)"
-    by (simp add: assms(1) int_ops(9) less_imp_le_nat of_nat_diff)
+    by (simp add: assms(1) int_ops(9) less_imp_le_nat)
   hence "[int x * (int z - int z') * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) 
                = int t * ((e mod order \<G> - e' mod order \<G>) mod order \<G> 
                   * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)))] (mod order \<G>)"
-    by (metis (no_types, lifting) cong_mod_right cong_scalar_right less_imp_diff_less mod_if more_arith_simps(11) or_gt_0 unique_euclidean_semiring_numeral_class.pos_mod_bound)
+    by (smt (verit, best) int_ops(9) mod_mult_left_eq mod_mult_right_eq more_arith_simps(11) unique_euclidean_semiring_class.cong_def)
   hence "[int x * (int z - int z') * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) 
                = int t * 1] (mod order \<G>)"
     by (meson Number_Theory_Aux.inverse * gcd cong_scalar_left cong_trans)

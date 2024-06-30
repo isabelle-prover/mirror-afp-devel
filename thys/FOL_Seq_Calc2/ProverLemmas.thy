@@ -100,12 +100,12 @@ lemma rule_index_mod:
   assumes \<open>rules !! n = r\<close>
   shows \<open>n mod length rulesList = rule_index r\<close>
 proof -
-  have *: \<open>rulesList ! (n mod length rulesList) = r\<close>
+  have \<open>n mod length rulesList < length rulesList\<close>
+    by (simp add: rulesList_def)
+  moreover have \<open>rulesList ! (n mod length rulesList) = r\<close>
     using assms cycle_nth unfolding rules_def rulesList_def by (metis list.distinct(1))
-  then show ?thesis
-    using distinct_rulesList * unique_rule_index
-    by (cases r) (metis length_greater_0_conv list.discI rulesList_def
-        unique_euclidean_semiring_numeral_class.pos_mod_bound)+
+  ultimately show ?thesis
+    by (rule unique_rule_index)
 qed
 
 text \<open>We need some lemmas about the modulo function to show that the rules repeat at the right rate.\<close>

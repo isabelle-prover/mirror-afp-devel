@@ -169,11 +169,17 @@ lemma dim_col_tensor_mat [simp]:
   using tensor_mat_def mat_of_cols_list_def mult.length_Tensor[of "1" "(*)"]
   by(simp add: \<open>\<And>M2 M1. Matrix_Tensor.mult 1 (*) \<Longrightarrow> length (mult.Tensor (*) M1 M2) = length M1 * length M2\<close> mult.intro)
 
+lemma mat_to_cols_list_nth_nth_eq_index_mat:
+  \<open>mat_to_cols_list A ! j ! i = A $$ (i, j)\<close> if \<open>i < dim_row A\<close> \<open>j < dim_col A\<close>
+  using that by (simp add: mat_to_cols_list_def)
+
 lemma index_tensor_mat [simp]:
   assumes a1:"dim_row A = rA" and a2:"dim_col A = cA" and a3:"dim_row B = rB" and a4:"dim_col B = cB"
     and a5:"i < rA * rB" and a6:"j < cA * cB" and a7:"cA > 0" and a8:"cB > 0"
   shows "(A \<Otimes> B) $$ (i,j) = A $$ (i div rB, j div cB) * B $$ (i mod rB, j mod cB)"
 proof -
+  from a5 have \<open>rB > 0\<close>
+    by (auto intro: gr0I)
   have "(A \<Otimes> B) $$ (i,j) = (mult.Tensor (*) (mat_to_cols_list A) (mat_to_cols_list B)) ! j ! i"
     using assms tensor_mat_def mat_of_cols_list_def dim_col_tensor_mat by simp
   moreover have f:"i < mult.row_length (mat_to_cols_list A) * mult.row_length (mat_to_cols_list B)"
@@ -191,11 +197,11 @@ proof -
     by(simp add: \<open>\<And>M2 M1. mult 1 (*) \<Longrightarrow> \<forall>i j. (i<mult.row_length M1 * mult.row_length M2 
     \<and> j<length M1 * length M2) \<and> mat (mult.row_length M1) (length M1) M1 \<and> mat (mult.row_length M2) (length M2) M2 \<longrightarrow> 
     mult.Tensor (*) M1 M2 ! j ! i = M1 ! (j div length M2) ! (i div mult.row_length M2) * M2 ! (j mod length M2) ! (i mod mult.row_length M2)\<close>  mult.intro)
-  thus ?thesis
-    using mat_to_cols_list_def
-    by (metis a2 a3 a4 a6 f index_mat_of_cols_list length_mat_to_cols_list less_mult_imp_div_less 
-less_nat_zero_code mat_to_cols_list_to_mat mult_0_right neq0_conv row_length_mat_to_cols_list 
-unique_euclidean_semiring_numeral_class.pos_mod_bound)
+  moreover have \<open>i div rB < rA\<close> \<open>j div cB < cA\<close> \<open>i mod rB < rB\<close>
+    using a5 a6 \<open>rB > 0\<close> by (simp_all add: less_mult_imp_div_less)
+  ultimately show ?thesis
+    using a1 a2 a3 a4 a8
+    by (simp add: mat_to_cols_list_nth_nth_eq_index_mat)
 qed
 
 text \<open>To go from @{term Matrix.row} to @{term Matrix_Legacy.row}\<close>

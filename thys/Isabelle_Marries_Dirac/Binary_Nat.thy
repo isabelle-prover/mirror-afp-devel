@@ -68,11 +68,10 @@ lemma bin_rep_aux_index:
   using assms
 proof(induction n arbitrary: m i rule: nat_induct_at_least)
   case base
-  assume "m < 2^1" and "i \<le> 1"
-  then show "bin_rep_aux 1 m ! i = m mod 2^(1-i) div 2^(1-1-i)" 
-    using bin_rep_aux.simps
-    by (metis One_nat_def base.prems(2) diff_is_0_eq' diff_zero div_by_1 le_Suc_eq le_numeral_extra(3) 
-nth_Cons' power_0 unique_euclidean_semiring_numeral_class.mod_less)
+  then have \<open>m < 2\<close> and \<open>i \<in> {0, 1}\<close>
+    by auto
+  then show ?case
+    by auto
 next
   case (Suc n)
   assume a0:"\<And>m i. m < 2^n \<Longrightarrow> m \<ge> 0 \<Longrightarrow> i \<le> n \<Longrightarrow> bin_rep_aux n m ! i = m mod 2 ^ (n-i) div 2^(n-1-i)"

@@ -3,7 +3,7 @@ imports Lib_Numbers_toString
         Word_Lib.Word_Lemmas
 begin
 
-context unique_euclidean_semiring_numeral
+context linordered_euclidean_semiring
 begin
 
 lemma exp_estimate [simp]:

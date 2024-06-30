@@ -381,7 +381,7 @@ proof-
             * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G> 
                =  int t * ((e mod order \<G> - e' mod order \<G>) mod order \<G> 
                   * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G>)] (mod order \<G>)"
-    by (metis (no_types, lifting) Groups.mult_ac(1) cong_mod_right less_imp_diff_less mod_less mod_mult_left_eq mod_mult_right_eq order_gt_0 unique_euclidean_semiring_numeral_class.pos_mod_bound)
+    by (metis (no_types, opaque_lifting) cong_mod_right mod_mult_eq mod_mult_left_eq more_arith_simps(11) zmod_int)
   hence "[(int (fst z) - int (fst z') + int x * (int (snd z) - int (snd z'))) 
             * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G> 
                =  int t * 1] (mod order \<G>)"
