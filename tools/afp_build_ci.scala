@@ -199,6 +199,10 @@ Last 50 lines from stderr (if available):
         exclude_sessions = broken_sessions, exclude_session_groups = List("very_slow")),
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
+        override def pre(options: Options, progress: Progress): Unit =
+          Build.build_process(options, build_cluster = true, remove_builds = true, force = true,
+            progress = progress)
+
         override def post(
           options: Options,
           url: Option[Url],
@@ -219,6 +223,10 @@ Last 50 lines from stderr (if available):
       presentation = true,
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
+        override def pre(options: Options, progress: Progress): Unit =
+          Build.build_process(options, build_cluster = true, remove_builds = true, force = true,
+            progress = progress)
+
         override def post(
           options: Options,
           url: Option[Url],
@@ -230,7 +238,7 @@ Last 50 lines from stderr (if available):
           sitegen(context, url, results, progress)
         }
       },
-      other_settings = List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Xmx8G\""),
+      other_settings = List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Xmx8G -Xss64M\""),
       trigger = Build_CI.Timed.nightly())
 }
 
