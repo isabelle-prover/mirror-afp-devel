@@ -194,7 +194,7 @@ Last 50 lines from stderr (if available):
 
   val all =
     Build_CI.Job("all",
-      "builds Isabelle + AFP (without slow)",
+      "builds Isabelle + AFP (without very slow)",
       Build_CI.Cluster("cluster.schedule"),
       Time.hms(4, 0, 0),
       afp = true,
@@ -202,10 +202,6 @@ Last 50 lines from stderr (if available):
         exclude_sessions = broken_sessions, exclude_session_groups = List("very_slow")),
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
-        override def pre(options: Options, progress: Progress): Unit =
-          Build.build_process(options, build_cluster = true, remove_builds = true, force = true,
-            progress = progress)
-
         override def post(
           options: Options,
           url: Option[Url],
