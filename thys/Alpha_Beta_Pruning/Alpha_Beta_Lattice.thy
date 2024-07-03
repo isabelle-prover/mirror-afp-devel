@@ -41,8 +41,20 @@ lemma sup_inf_assoc_iff:
   "(a::_::distrib_lattice) \<squnion> x \<sqinter> b = a \<squnion> y \<sqinter> b \<longleftrightarrow> (a \<squnion> x) \<sqinter> b = (a \<squnion> y) \<sqinter> b"
 by (metis (no_types, opaque_lifting) inf.left_idem inf_commute inf_sup_distrib1 sup.left_idem sup_inf_distrib1)
 
+text \<open>Generalization of Knuth and Moore's equivalence modulo:\<close>
+abbreviation
+  eq_mod :: "('a::lattice) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<simeq>/ _/ '(mod _,_'))" [51,51,0,0]) where
+ "eq_mod x y a b \<equiv> a \<squnion> x \<sqinter> b = a \<squnion> y \<sqinter> b"
+
+notation (latex output) eq_mod ("(_ \<simeq>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
+
 text \<open>\<open>ab\<close> is bounded by \<open>v\<close> mod \<open>a,b\<close>, or the other way around.\<close>
 abbreviation "bounded (a::_::lattice) b v ab \<equiv> b \<sqinter> v \<le> ab \<and> ab \<le> a \<squnion> v"
+
+abbreviation bounded2 :: "('a::lattice) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<sqsubseteq>/ _/ '(mod _,_'))" [51,51,0,0])
+where "bounded2 ab v a b \<equiv> bounded a b v ab"
+
+notation (latex output) bounded2 ("(_ \<sqsubseteq>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
 
 lemma bounded_bot_top:
 fixes v ab :: "'a::distrib_bounded_lattice"
@@ -161,13 +173,43 @@ next
     by (smt (verit) ab_infs_le_b inf.absorb_iff2 inf_assoc inf_commute inf_right_idem sup.absorb1 sup_inf_distrib1)
 qed auto
 
-(* TODO: get rid of parentheses in the first two cases: *)
+text \<open>A readable proof. Some steps still tricky.
+Complication: sometimes \<open>a \<squnion> x \<sqinter> b\<close> is better and sometimes \<open>(a \<squnion> x) \<sqinter> b\<close>.\<close>
 lemma eq_mod_ab_val:
-shows "(a \<squnion> ab_sup a b t) \<sqinter> b = (a \<squnion> supinf t) \<sqinter> b"
-and "(a \<squnion> ab_sups a b ts) \<sqinter> b = (a \<squnion> supinf (Nd ts)) \<sqinter> b"
+shows "a \<squnion> ab_sup a b t \<sqinter> b = a \<squnion> supinf t \<sqinter> b"
+and "a \<squnion> ab_sups a b ts \<sqinter> b = a \<squnion> supinf (Nd ts) \<sqinter> b"
 and "a \<squnion> ab_inf a b t \<sqinter> b = a \<squnion> infsup t \<sqinter> b"
 and "a \<squnion> ab_infs a b ts \<sqinter> b = a \<squnion> infsup (Nd ts) \<sqinter> b"
 proof(induction a b t and a b ts and a b t and a b ts rule: ab_sup_ab_sups_ab_inf_ab_infs.induct)
+  case (8 a b t ts)
+  let ?abt = "ab_sup a b t" let ?abts = "ab_infs a (b \<sqinter> ?abt) ts"
+  let ?vt = "supinf t" let ?vts = "infsup (Nd ts)"
+  show ?case
+  proof (cases "b \<sqinter> ?abt \<le> a")
+    case True
+    hence b: "a \<squnion> ?vt \<sqinter> b = a" using "8.IH"(1) True by (metis sup_absorb1 inf_commute)
+    have "a \<squnion> ab_infs a b (t#ts) \<sqinter> b = a \<squnion> b \<sqinter> ?abt \<sqinter> b" using True by (simp)
+    also have "\<dots> = a \<squnion> ?abt \<sqinter> b" by (simp add: inf_commute)
+    also have "\<dots> = a \<squnion> ?vt \<sqinter> b" by (simp add: "8.IH"(1))
+    also have "\<dots> = a \<squnion> (?vt \<squnion> ?vt \<sqinter> ?vts) \<sqinter> b" by (simp)
+    also have "\<dots> = a \<squnion> (?vt \<sqinter> b \<squnion> ?vt \<sqinter> ?vts \<sqinter> b)" by (metis inf_sup_distrib2)
+    also have "\<dots> = a \<squnion> ?vt \<sqinter> b \<squnion> ?vt \<sqinter> ?vts \<sqinter> b" by (metis sup_assoc)
+    also have "\<dots> = a \<squnion> ?vt \<sqinter> ?vts \<sqinter> b" by (metis b)
+    also have "\<dots> = a \<squnion> infsup (Nd (t # ts)) \<sqinter> b" by (simp)
+    finally show ?thesis .
+  next
+    case False
+    from "8.IH"(2)[OF refl False] ab_infs_le_b
+    have IH2': "a \<squnion> ?abts \<sqinter> b = a \<squnion> ?vts \<sqinter> ?abt \<sqinter> b"
+      by (metis (no_types, lifting) inf_absorb1 inf_assoc inf_commute inf_idem)
+    have "a \<squnion> ab_infs a b (t#ts) \<sqinter> b = a \<squnion> ?abts \<sqinter> b" using False by (simp)
+    also have "\<dots> = a \<squnion> ?abt \<sqinter> ?vts \<sqinter> b" using IH2' by (metis inf_commute)
+    also have "\<dots> = a \<squnion> ?vt \<sqinter> ?vts \<sqinter> b" using "8.IH"(1)
+      by (metis (no_types, lifting) inf_assoc inf_commute sup_inf_distrib1)
+    also have "\<dots> = a \<squnion> infsup (Nd (t # ts)) \<sqinter> b" by (simp)
+    finally show ?thesis .
+  qed
+next
   case (4 a b t ts)
   let ?abt = "ab_inf a b t" let ?abts = "ab_sups (a  \<squnion> ?abt) b ts"
   let ?vt = "infsup t" let ?vts = "supinf (Nd ts)"
@@ -182,12 +224,13 @@ proof(induction a b t and a b ts and a b t and a b ts rule: ab_sup_ab_sups_ab_in
     also have "\<dots> = (a \<squnion> ?vt \<squnion> ?vts) \<sqinter> (a \<squnion> ?vt) \<sqinter> b" by (simp add: inf.absorb2)
     also have "\<dots> = (a \<squnion> ?vt \<squnion> ?vts) \<sqinter> b" by (simp add: b inf_assoc)
     also have "\<dots> = (a \<squnion> supinf (Nd (t # ts))) \<sqinter> b" by (simp add: sup.assoc)
-    finally show ?thesis .
+    finally show ?thesis
+      using sup_inf_assoc_iff by blast
   next
     case False
     from "4.IH"(2)[OF refl False] ab_sups_ge_a
     have IH2': "(a \<squnion> ?abts) \<sqinter> b = (a \<squnion> ?abt \<squnion> ?vts) \<sqinter> b"
-      by (metis le_sup_iff sup_absorb2)
+      by (smt (verit, best) le_sup_iff sup_absorb2 sup_inf_assoc_iff)
     have "(a \<squnion> ab_sups a b (t#ts)) \<sqinter> b = (a \<squnion> ?abts) \<sqinter> b" using False by (simp)
     also have "\<dots> = (a \<squnion> ?abt \<squnion> ?vts) \<sqinter> b" using IH2' by blast
     also have "\<dots> = a \<sqinter> b \<squnion> ?abt \<sqinter> b \<squnion> ?vts \<sqinter> b" by (simp add: inf_sup_distrib2)
@@ -195,13 +238,9 @@ proof(induction a b t and a b ts and a b t and a b ts rule: ab_sup_ab_sups_ab_in
     also have "\<dots> = (a \<squnion> ?vt \<sqinter> b) \<sqinter> b \<squnion> ?vts \<sqinter> b" using "4.IH"(1) by simp 
     also have "\<dots> = (a \<squnion> ?vt \<squnion> ?vts) \<sqinter> b" by (simp add: inf_sup_distrib2)
     also have "\<dots> = (a \<squnion> supinf (Nd (t # ts))) \<sqinter> b" by (simp add: sup_assoc)
-    finally show ?thesis .
+    finally show ?thesis
+      using sup_inf_assoc_iff by blast
   qed
-next
-  case 8
-  thus ?case
-    apply(simp add: Let_def)
-    by (smt (verit, ccfv_SIG) "8.IH"(1) ab_infs_le_b inf.coboundedI2 inf_absorb1 inf_assoc inf_commute inf_right_idem sup_absorb1 sup_inf_assoc_iff)
 qed (simp_all)
 
 corollary ab_sup_bot_top: "ab_sup \<bottom> \<top> t = supinf t"
@@ -681,7 +720,7 @@ by (metis ab_sup_bot_top ab_sup_ab_negsup(1) negate_negate)
 text \<open>Correctness statements derived from non-negative versions:\<close>
 
 corollary eq_mod_ab_negsup_supinf_negate:
-  "(a \<squnion> ab_negsup a b t) \<sqinter> b = (a \<squnion> supinf (negate False t)) \<sqinter> b"
+  "a \<squnion> ab_negsup a b t \<sqinter> b = a \<squnion> supinf (negate False t) \<sqinter> b"
 by (metis eq_mod_ab_val(1) ab_sup_ab_negsup(1) negate_negate)
 
 corollary bounded_negsup_ab_negsup:

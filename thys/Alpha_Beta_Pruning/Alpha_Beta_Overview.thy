@@ -7,6 +7,7 @@ imports
   LaTeXsugar2
 begin
 (*>*)
+
 text\<open>
 \section{Introduction}
 
@@ -68,7 +69,8 @@ the value of the game tree:
 Knuth and Moore generalize this property for arbitrary \<open>a\<close> and \<open>b\<close>,
 using the following predicate:
 \begin{quote}
-@{abbrev [break,margin=40] "knuth a b x y"}
+@{prop "knuth2 x y a b"} \<open>\<equiv>\<close>\\
+@{prop [source] "((y \<le> a \<longrightarrow> x \<le> a) \<and>\<^latex>\<open>\\\<close> (a < y \<and> y < b \<longrightarrow> y = x) \<and>\<^latex>\<open>\\\<close> (b \<le> y \<longrightarrow> b \<le> x))"}
 \end{quote}
 It follows easily that @{prop "knuth \<bottom> \<top> x y"} implies \<open>x = y\<close>.
 (Also interesting to note is commutativity: @{thm knuth_comm}.)
@@ -92,9 +94,13 @@ Fishburn claims that fail-soft searches the same part of the tree as fail-hard
 but that sometimes fail-soft bounds the real value more tightly than fail-hard
 because fail-soft satisfies
 \begin{quote}
-@{thm fishburn_val_ab'(1)} \hfill \eqnum{fishburn_val_ab'}\\
-
-@{abbrev [break,margin=40] "fishburn a b v ab"}
+@{thm fishburn_val_ab'(1)} \hfill \eqnum{fishburn_val_ab'}
+\end{quote}
+where \<open>\<le>\<close> is a strengthened version of \<open>\<cong>\<close>:
+\begin{quote}
+@{prop "fishburn2 ab v a b"} \<open>\<equiv>\<close>\\
+@{prop [source] "((ab \<le> a \<longrightarrow> v \<le> ab) \<and>\<^latex>\<open>\\\<close> (a < ab \<and> ab < b \<longrightarrow> ab = v) \<and>\<^latex>\<open>\\\<close> (b \<le> ab \<longrightarrow> ab \<le> v))"}
+%{abbrev [break,margin=40] "fishburn a b v ab"}
 \end{quote}
 We can confirm both claims. However, what Fishburn misses is that fail-hard already satisfies
 @{const fishburn}:
@@ -117,7 +123,7 @@ The justification: Let \<open>ab\<close> be some search function that @{const fi
 If on a previous call @{prop "b \<le> ab a b t"}, then in a subsequent search of the same \<open>t\<close>
 with possibly different \<open>a'\<close> and \<open>b'\<close>, we can replace \<open>a'\<close> by @{term "(max a' (ab a b t))"}:
 \begin{quote}
-@{thm [break] ab_twice_lb}
+@{thm [break,margin=70] ab_twice_lb}
 \end{quote}
 There is a dual lemma for replacing \<open>b'\<close> by @{term "(min b' (ab a b t))"}.
 
@@ -176,29 +182,25 @@ And similarly fail-hard and fail-soft alpha-beta pruning:
 @{fun [margin=70] ab_sups'}
 \end{quote}
 It turns out that this version of alpha-beta pruning works for bounded distributive lattices.
-To prove this we can generalize @{prop "knuth a b x y"} as follows:
+To prove this we can generalize both \<open>\<cong>\<close> and \<open>\<le>\<close> by first rephrasing them (for linear orders)
 \begin{quote}
-@{prop "a \<squnion> x \<sqinter> b = a \<squnion> y \<sqinter> b"}
+@{thm knuth_iff_max_min}
+
+@{thm fishburn_iff_min_max}
+\end{quote}
+and then deriving from the right-hand sides new versions \<open>\<simeq>\<close> and \<open>\<sqsubseteq>\<close> appropriate for lattices:
+\begin{quote}
+@{prop "eq_mod x y a b"} \<open>\<equiv>\<close> @{prop [source] "a \<squnion> x \<sqinter> b = a \<squnion> y \<sqinter> b"}
+
+@{prop "bounded2 ab v a b"} \<open>\<equiv>\<close> @{prop [source] "b \<sqinter> v \<le> ab \<and> ab \<le> a \<squnion> v"}
 \end{quote}
 %Trivially {lemma "\<bottom> \<squnion> x \<sqinter> \<top> = \<bottom> \<squnion> y \<sqinter> \<top> \<Longrightarrow> x = (y::_::bounded_lattice)" by (simp)}.
 %Bird and Hughes do not cite Knuth and Moore
-For linear orders (but not for distributive lattices) this correctness criterion coincides
-with @{const knuth}:
-\begin{quote}
-@{thm mm_iff_knuth}
-\end{quote}
-It is also possible to generalize @{const fishburn}. Predicate @{const bounded} coincides with
-@{const fishburn} for linear orders (but not for distributive lattices):
-\begin{quote}
-@{thm fishburn_iff_min_max}
-\end{quote}
-This is even stronger:
+As for linear orders, \<open>\<sqsubseteq>\<close> implies \<open>\<simeq>\<close>, but not the other way around:
 \begin{quote}
 @{thm eq_mod_if_bounded}
 \end{quote}
-The opposite direction does not hold.
-
-Both fail-hard and fail-soft are correct w.r.t.\ @{const bounded}:
+Both fail-hard and fail-soft are correct w.r.t.\ \<open>\<sqsubseteq>\<close>:
 \begin{quote}
 @{thm bounded_val_ab(1)}\\
 @{thm bounded_val_ab'(1)}
@@ -226,7 +228,7 @@ Fail-soft alpha-beta pruning:
 @{fun ab_negsup'}\medskip\\
 @{fun ab_negsups'}
 \end{quote}
-Correctness w.r.t.\ @{const bounded}:
+Correctness:
 \begin{quote}
 @{thm bounded_negsup_ab_negsup}\\
 @{thm bounded_val_ab'_neg(1)}

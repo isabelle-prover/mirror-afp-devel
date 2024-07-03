@@ -292,10 +292,18 @@ abbreviation
  "knuth (a::_::linorder) b x y ==
   ((y \<le> a \<longrightarrow> x \<le> a) \<and> (a < y \<and> y < b \<longrightarrow> y = x) \<and> (b \<le> y \<longrightarrow> b \<le> x))"
 
+abbreviation knuth2 :: "('a::linorder) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<cong>/ _/ '(mod _,_'))" [51,51,0,0])
+where "knuth2 x y a b \<equiv> knuth a b x y"
+
+notation (latex output) knuth2 ("(_ \<cong>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
+
 lemma knuth_bot_top: "knuth \<bottom> \<top> x y \<Longrightarrow> x = (y::_::bounded_linorder)"
 by (metis bot.extremum_uniqueI linorder_le_less_linear top.extremum_uniqueI)
 
 text \<open>The equational version of @{const knuth}. First, automatically:\<close>
+
+lemma knuth_iff_max_min: "a < b \<Longrightarrow> knuth a b x y \<longleftrightarrow> max a (min x b) = max a (min y b)"
+by (smt (verit) linorder_not_le max.absorb4 max_min_distrib2 max_min_same(1) min.absorb_iff2)
 
 text \<open>Needs \<open>a < b\<close>: take everything = \<open>\<infinity>\<close>, x = 0\<close>
 lemma knuth_if_mm: "a < b \<Longrightarrow> mm a y b = mm a x b \<Longrightarrow> knuth a b x y"
@@ -370,6 +378,11 @@ text \<open>Specification of fail-soft: \<open>v\<close> is the actual value, \<
 abbreviation
  "fishburn (a::_::linorder) b v ab ==
   ((ab \<le> a \<longrightarrow> v \<le> ab) \<and> (a < ab \<and> ab < b \<longrightarrow> ab = v) \<and> (b \<le> ab \<longrightarrow> ab \<le> v))"
+
+abbreviation fishburn2 :: "('a::linorder) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<le>/ _/ '(mod _,_'))" [51,51,0,0])
+where "fishburn2 ab v a b \<equiv> fishburn a b v ab"
+
+notation (latex output) fishburn2 ("(_ \<le>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
 
 lemma fishburn_iff_min_max: "a < b \<Longrightarrow> fishburn a b v ab \<longleftrightarrow> min v b \<le> ab \<and> ab \<le> max v a"
 by (metis (full_types) le_max_iff_disj linorder_not_le min_le_iff_disj nle_le)
