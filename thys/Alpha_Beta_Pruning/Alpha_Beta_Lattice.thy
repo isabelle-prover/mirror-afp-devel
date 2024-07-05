@@ -714,8 +714,8 @@ proof(induction a b t and a b ts and a b t and a b ts rule: ab_sup_ab_sups_ab_in
     by(simp add: Let_def de_Morgan_sup de_Morgan_inf uminus_le_reorder)
 qed (simp_all add: Let_def)
 
-corollary ab_negsup_bot_top: "ab_negsup \<bottom> \<top> t = supinf (negate False t)"
-by (metis ab_sup_bot_top ab_sup_ab_negsup(1) negate_negate)
+corollary ab_negsup_bot_top: "ab_negsup \<bottom> \<top> t = negsup t"
+by (metis ab_sup_bot_top ab_sup_ab_negsup(1) negate_negate negsup_supinf_negate)
 
 text \<open>Correctness statements derived from non-negative versions:\<close>
 

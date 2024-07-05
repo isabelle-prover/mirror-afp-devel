@@ -135,8 +135,8 @@ part of this development.
 
 Traditionally the definition of both the evaluation and of alpha-beta pruning
 does not define a minimizer and maximizer separately. Instead it defines only one function
-and uses negation (on numbers!) to flip between the two players. This is evaluation and
-alpha-beta pruning:
+and uses negation (on numbers!) to flip between the two players. This is evaluation and the
+fail-hard and fail-soft variants of alpha-beta pruning:
 \begin{quote}
 @{fun negmax}
 \end{quote}
@@ -154,13 +154,12 @@ properties of ``\<open>-\<close>'' are required to make things work:
 @{thm de_morgan_min} \qquad @{thm neg_neg}
 \end{quote}
 We call such linear orders \emph{de Morgan orders}. We have proved correctness of alpha-beta pruning
-on de Morgan orders
+on de Morgan orders:
 \begin{quote}
 @{thm fishburn_negmax_ab_negmax(1)}\\
-@{thm fishburn_val_ab_neg(1)}\\
+@{thm fishburn_val_ab_neg'(1)}\\
 @{thm fishburn_ab'_ab_neg(1)}
 \end{quote}
-by relating everything back to ordinary linear orders.
 
 
 \section{Lattices}
