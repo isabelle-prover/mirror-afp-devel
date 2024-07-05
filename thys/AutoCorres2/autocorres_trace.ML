@@ -658,10 +658,4 @@ in
 val print_ac_trace = print_ac_trace' ""
 end
 
-fun writeFile filename string =
-  let val stream = TextIO.openOut filename
-      val _ = TextIO.output (stream, string)
-      val _ = TextIO.closeOut stream
-  in () end
-
 end
