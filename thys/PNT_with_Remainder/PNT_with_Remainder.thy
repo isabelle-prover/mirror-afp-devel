@@ -998,9 +998,9 @@ proof -
                simp add: le_ereal_less one_ereal_def)
     thus ?thesis using Hb by (rule eventually_mp)
   qed
-  moreover have "\<forall>\<^sub>F x in at_top. 2 \<le> H x" unfolding H_def using Hc by real_asymp
+  moreover have "\<forall>\<^sub>F x in at_top. 1 < H x" unfolding H_def using Hc by real_asymp
   moreover have "\<forall>\<^sub>F x in at_top. b x + 1 \<le> H x" unfolding b_def H_def using Hc by real_asymp
-  moreover have "\<forall>\<^sub>F x :: real in at_top. 2 \<le> x" by auto
+  moreover have "\<forall>\<^sub>F x :: real in at_top. 0 < x" by auto
   moreover have "\<forall>\<^sub>F x in at_top.
     (\<Sum>`n\<ge>1. \<parallel>fds_nth (fds mangoldt_complex) n\<parallel> / n nat_powr b x) \<le> B x"
     (is "eventually ?P ?F")
