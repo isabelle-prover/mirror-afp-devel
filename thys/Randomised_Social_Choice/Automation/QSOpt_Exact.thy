@@ -125,10 +125,9 @@ val print_linterm : T linterm -> string
 val print_constraint : T constraint -> string
 val print_program : T prog -> string
 
-val save_program : string -> T prog -> unit
+val save_program : Path.T -> T prog -> unit
 val solve_program : T prog -> T result
 val read_result : string -> T result
-val read_result_file : string -> T result
 
 end;
 
@@ -323,55 +322,29 @@ in
   val print_linterm = gen_print_linterm ops
   val print_constraint = gen_print_constraint ops
   val print_program = gen_print_program ops
-  end
+end
 
-  fun save_program filename prog =
-    let
-      val output = print_program prog
-      val f = TextIO.openOut filename
-      val _ = TextIO.output (f, output)
-      val _ = TextIO.closeOut f
-    in
-      ()
-    end
+fun save_program filename prog =
+  File.write filename (print_program prog)
 
-
-fun wrap s = "\""^s^"\"";
 
 val read_result = gen_read_result LP_Params.read
 
-fun read_result_file filename =
-  let
-    val f = TextIO.openIn filename
-    val s = TextIO.input f
-    val _ = TextIO.closeIn f
-  in
-    read_result s
-  end
-
 fun solve_program prog =
-    let
-    val name = string_of_int (Time.toMicroseconds (Time.now ()))
-    val lpname = File.standard_path (Isabelle_System.create_tmp_path name ".lp")
-    val resultname = File.standard_path (Isabelle_System.create_tmp_path name ".sol")
-    val _ = save_program lpname prog
-    val esolver_path = getenv "QSOPT_EXACT_PATH"
-    val esolver = if esolver_path = "" then "esolver" else esolver_path
-    val command =  wrap esolver ^ " -O " ^ wrap resultname ^ " " ^ wrap lpname
-    val res = Isabelle_System.bash_process (Bash.script command)
-    in
-      if not (Process_Result.ok res) then
-        raise Fail ("QSopt_exact returned with an error (return code " ^ 
-          Int.toString (Process_Result.rc res) ^ "):\n" ^ Process_Result.err res)
-      else
-        let
-            val result = read_result_file resultname
-            val _ = OS.FileSys.remove lpname
-            val _ = OS.FileSys.remove resultname
+  Isabelle_System.with_tmp_file "prog" "lp" (fn lpname =>
+    Isabelle_System.with_tmp_file "prog" "sol" (fn resultname =>
+      let
+        val _ = save_program lpname prog
+        val esolver_path = getenv "QSOPT_EXACT_PATH"
+        val esolver = if esolver_path = "" then "esolver" else esolver_path
+        val command =  Bash.string esolver ^ " -O " ^ File.bash_path resultname ^ " " ^ File.bash_path lpname
+        val res = Isabelle_System.bash_process (Bash.script command)
         in
-            result
-        end
-    end
+          if not (Process_Result.ok res) then
+            raise Fail ("QSopt_exact returned with an error (return code " ^ 
+              Int.toString (Process_Result.rc res) ^ "):\n" ^ Process_Result.err res)
+          else read_result (File.read resultname)
+        end))
 
 end
 

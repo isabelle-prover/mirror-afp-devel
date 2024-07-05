@@ -661,13 +661,8 @@ fun dimacs_gen st put ((n_vars, _), (n_clauses, clauses), _, _) =
   end
 
 fun write_dimacs sat dimacs_file =
-  let
-    val f = TextIO.openOut (Path.implode dimacs_file)
-    val _ = dimacs_gen () (fn _ => fn s => TextIO.output (f, s ^ "\n")) sat
-    val _ = TextIO.closeOut f
-  in
-    ()
-  end
+  dimacs_file |> File_Stream.open_output (fn out =>
+    dimacs_gen () (fn _ => fn s => File_Stream.output out (s ^ "\n")) sat)
 
 fun mk_dimacs sat =
   dimacs_gen [] (fn xs => fn s => s :: xs) sat
