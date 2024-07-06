@@ -5,7 +5,7 @@ session Word_Lib = HOL +
   sessions
     "HOL-Library"
     "HOL-Eisbach"
-  theories [document = false] \<comment> \<open>Attempt to just generated word-specific document material\<close>
+  theories [document = false] \<comment> \<open>Attempt to just generate word-specific document material\<close>
     Enumeration
     Even_More_List
     Legacy_Aliases
