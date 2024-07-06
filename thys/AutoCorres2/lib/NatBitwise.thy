@@ -12,16 +12,9 @@ imports
   More_Lib
 begin
 
-instantiation nat :: lsb
-begin
-
-definition
-  "lsb x = lsb (int x)"
-
-instance
-  by intro_classes (meson even_of_nat lsb_nat_def lsb_odd)
-
-end
+lemma lsb_nat_def:
+  \<open>lsb n = lsb (int n)\<close>
+  by (simp add: lsb_nat_def lsb_int_def bit_simps)
 
 instantiation nat :: msb
 begin

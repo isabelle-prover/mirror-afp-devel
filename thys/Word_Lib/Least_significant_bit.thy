@@ -18,6 +18,17 @@ class lsb = semiring_bits +
   fixes lsb :: \<open>'a \<Rightarrow> bool\<close>
   assumes lsb_odd: \<open>lsb = odd\<close>
 
+instantiation nat :: lsb
+begin
+
+definition lsb_nat :: \<open>nat \<Rightarrow> bool\<close>
+  where \<open>lsb n = bit n 0\<close> for n :: nat
+
+instance
+  by standard (simp add: fun_eq_iff lsb_nat_def bit_0)
+
+end
+
 instantiation int :: lsb
 begin
 
