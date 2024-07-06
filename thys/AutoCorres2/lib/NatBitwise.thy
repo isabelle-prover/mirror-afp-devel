@@ -26,6 +26,10 @@ instance ..
 
 end
 
+lemma not_msb_nat:
+  \<open>\<not> msb n\<close> for n :: nat
+  by (simp add: msb_nat_def msb_int_def)
+
 instantiation nat :: set_bit
 begin
 
