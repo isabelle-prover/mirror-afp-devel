@@ -295,8 +295,12 @@ structure LexGen: LEXGEN =
                               ArgCode := NONE;
                               StrDecl := false)
 
-   val LexOut = ref(TextIO.stdOut)
-   fun say x = TextIO.output(!LexOut, x)
+   val LexOut: BinIO.outstream option ref = ref NONE
+   fun close_LexOut () = (Option.app BinIO.closeOut (! LexOut); LexOut := NONE)
+   fun say s =
+    (case ! LexOut of
+      NONE => raise Fail "LexOut undefined"
+    | SOME out => File_Stream.output out s)
 
 (* Union: merge two sorted lists of integers *)
 
@@ -1324,7 +1328,7 @@ fun lexGen infile =
         LexBuf := make_ibuf(TextIO.openIn infile);
         NextTok := BOF;
         inquote := false;
-        LexOut := TextIO.openOut(outfile);
+        LexOut := SOME (BinIO.openOut outfile);
         StateNum := 2;
         LineNum := 1;
         StateTab := enter(create(String.<=))("INITIAL",1);
@@ -1333,13 +1337,13 @@ fun lexGen infile =
            val (user_code,rules,ends) =
                parse() handle x =>
                          (close_ibuf(!LexBuf);
-                   TextIO.closeOut(!LexOut);
+                   close_LexOut ();
                    OS.FileSys.remove outfile;
                    raise x)
            val (fins,trans,tctab,tcpairs) = makedfa(rules)
            val _ = if !UsesTrailingContext then
                       (close_ibuf(!LexBuf);
-                       TextIO.closeOut(!LexOut);
+                       close_LexOut ();
                        OS.FileSys.remove outfile;
                        prErr "lookahead is unimplemented")
                    else ()
@@ -1377,7 +1381,7 @@ fun lexGen infile =
           \\t\t yybegin := x\n\n";
           PrintLexer(ends);
           close_ibuf(!LexBuf);
-           TextIO.closeOut(!LexOut)
+          close_LexOut ()
          end)
     end
 end

@@ -107,6 +107,11 @@ We integrate mllex and mlyacc directly into Isabelle:
   @{command mllex}, @{command mlyacc}.
 \<close>
 
+SML_import \<open>
+  infix 1 |> val op |> = Basics.|>
+  structure Path = Path
+  structure File_Stream = File_Stream
+\<close>
 SML_file \<open>tools/mllex/mllex.ML\<close>
 SML_export \<open>structure LexGen = LexGen\<close>
 

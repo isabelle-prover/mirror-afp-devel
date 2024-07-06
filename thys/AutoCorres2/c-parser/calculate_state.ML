@@ -44,7 +44,7 @@ sig
       ((nm_info * typ * int ctype option * var_sort) list *
        (typ,term,thm list) Element.ctxt list * (typ * typ * typ list)) * theory
 
-  val gen_umm_types_file : Proof.context -> bool -> csenv -> string -> unit
+  val gen_umm_types_file : Proof.context -> bool -> csenv -> Path.T -> unit
 
   type mungedb = (MString.t * typ * int ctype option * var_sort) CNameTab.table
   val mk_mungedb : (nm_info * typ * int ctype option * var_sort) list ->
@@ -428,29 +428,27 @@ let
            Union active => if member (op =) active fldname then "" else " (* inactive *)"
          | _ => ""
       in
-        TextIO.output (strm, "\t" ^ fldname ^ ":" ^
+        File_Stream.output strm ("\t" ^ fldname ^ ":" ^
                              isa_to_string (translate_type fldty) ^ is_inactive ^ "\n")
       end
 
-    val _ = TextIO.output (strm, str_of_kind kind ^ " " ^ recname ^ "\n")
+    val _ = File_Stream.output strm (str_of_kind kind ^ " " ^ recname ^ "\n")
     val _ = app (do_one_fld kind) flds
   in
-    TextIO.output (strm, "\n")
+    File_Stream.output strm "\n"
   end
 
   fun unused_msg (recname, (kind, _, _, _)) =
     informStr ctxt (1, "omitting unused " ^ str_of_kind kind ^ " \"" ^ recname ^ "\"")
   
   val (sorted_structs, ommitted_structs) = get_sorted_structs prune cse |> apply2 flat
-  val outstrm = TextIO.openOut outfile
-  val _ = app (write_one outstrm) sorted_structs
-  val _ = TextIO.closeOut outstrm
+  val _ = outfile |> File_Stream.open_output (fn outstrm => app (write_one outstrm) sorted_structs)
   val _ = app unused_msg ommitted_structs
 in
   ()
 end
 
-val outfilenameN = "umm_types.txt"
+val outfilename = \<^path>\<open>umm_types.txt\<close>
 
 
     
@@ -563,7 +561,7 @@ fun mk_thy_types cse install prune (lthy:local_theory) = let
          SOME (n, single_variant_union_fields n kind flds, attrs, tag_def_thm, typtag_thm) | _ => NONE);
 
   (* Yuck, sorry *)
-  val () = gen_umm_types_file lthy prune cse outfilenameN
+  val () = gen_umm_types_file lthy prune cse outfilename
 
 
   val arrays = List.filter (fn (ty, sz) => sz <> 0 andalso Binaryset.member (get_usedtypes cse, ty))

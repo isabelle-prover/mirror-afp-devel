@@ -32,7 +32,7 @@ sig
   val timing: bool Config.T
   val cpp_path: string Config.T
 
-  val gen_umm_types_file : bool -> (theory -> Token.file list * theory) -> string -> theory -> theory
+  val gen_umm_types_file : bool -> (theory -> Token.file list * theory) -> Path.T -> theory -> theory
   val do_cpp : Proof.context -> {cpp_path: Path.T option, error_detail: int} ->
                {includes: string list, lines: string list, src_path: Path.T}
                -> string list
@@ -63,8 +63,8 @@ fun setup_feedback extra_output_filename = let
     val trace_extra = case extra_output_filename of
         NONE => K ()
       | SOME f => let
-        val out = TextIO.openOut f
-      in fn s => (TextIO.output (out, s); TextIO.flushOut out) end
+        val out = BinIO.openOut f
+      in fn s => (File_Stream.output out s; BinIO.flushOut out) end
     val add_extra = case extra_output_filename of
         NONE => (fn _ => fn f => f)
       | SOME _ => (fn pfx => fn f => fn msg as (s, _) => (trace_extra (pfx ^ s); f msg))
@@ -466,7 +466,7 @@ fun install_C_file0 (files, options) thy = let
       end
   val mifname = case Config.get lthy munge_info_fname of
                   "" => NONE
-                | s => SOME s
+                | s => SOME (Path.explode s)
 
   val ((ast, init_stmts), cse) =
       process_decls lthy {anon_vars=anon_vars,owners = owners,
