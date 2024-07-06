@@ -30,22 +30,13 @@ lemma not_msb_nat:
   \<open>\<not> msb n\<close> for n :: nat
   by (simp add: msb_nat_def msb_int_def)
 
-instantiation nat :: set_bit
-begin
-
-definition
-  "set_bit x y z = nat (set_bit (int x) y z)"
-
-instance
-  by intro_classes
-     (metis (mono_tags) set_bit_nat_def bin_nth_sc_gen bin_sc_pos
-                        bit_nat_iff exp_eq_0_imp_not_bit int_eq_iff)
-end
+lemma set_bit_nat_def:
+  \<open>set_bit x y z = nat (set_bit (int x) y z)\<close>
+  by (rule bit_eqI) (simp add: bit_simps bin_sc_pos)
 
 lemma nat_2p_eq_shiftl:
   "(2::nat)^x = 1 << x"
   by simp
-
 
 lemma shiftl_nat_def:
   "(x::nat) << y = nat (int x << y)"

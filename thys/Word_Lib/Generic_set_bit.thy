@@ -17,15 +17,33 @@ begin
 class set_bit = semiring_bits +
   fixes set_bit :: \<open>'a \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> 'a\<close>
   assumes bit_set_bit_iff_2n:
-    \<open>bit (set_bit a m b) n \<longleftrightarrow>
-      (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> 0\<close>
+  \<open>bit (set_bit a m b) n \<longleftrightarrow>
+    (if m = n then b else bit a n) \<and> 2 ^ n \<noteq> 0\<close>
+begin
 
-lemmas bit_set_bit_iff[bit_simps] = bit_set_bit_iff_2n[simplified fold_possible_bit simp_thms]
+lemma bit_set_bit_iff [bit_simps]:
+    \<open>bit (set_bit a m b) n \<longleftrightarrow>
+      (if m = n then b else bit a n) \<and> possible_bit TYPE('a) n\<close>
+  by (simp add: bit_set_bit_iff_2n fold_possible_bit) 
+
+end
 
 lemma set_bit_eq:
   \<open>set_bit a n b = (if b then Bit_Operations.set_bit else unset_bit) n a\<close>
-  for a :: \<open>'a::{ring_bit_operations, set_bit}\<close>
+  for a :: \<open>'a::{semiring_bit_operations, set_bit}\<close>
   by (rule bit_eqI) (simp add: bit_simps)
+
+instantiation nat :: set_bit
+begin
+
+definition set_bit_nat :: \<open>nat \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> nat\<close>
+  where \<open>set_bit m n b = (if b then Bit_Operations.set_bit else unset_bit) n m\<close> for m n :: nat
+
+instance
+  by standard (simp add: set_bit_nat_def bit_simps)
+
+end
+
 
 instantiation int :: set_bit
 begin
@@ -34,19 +52,7 @@ definition set_bit_int :: \<open>int \<Rightarrow> nat \<Rightarrow> bool \<Righ
   where \<open>set_bit_int i n b = (if b then Bit_Operations.set_bit else Bit_Operations.unset_bit) n i\<close>
 
 instance
-  by standard (simp_all add: set_bit_int_def bit_simps)
-
-end
-
-context
-  includes bit_operations_syntax
-begin
-
-lemma fixes i :: int
-  shows int_set_bit_True_conv_OR [code]: "Generic_set_bit.set_bit i n True = i OR push_bit n 1"
-  and int_set_bit_False_conv_NAND [code]: "Generic_set_bit.set_bit i n False = i AND NOT (push_bit n 1)"
-  and int_set_bit_conv_ops: "Generic_set_bit.set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
-  by (simp_all add: bit_eq_iff) (auto simp add: bit_simps)
+  by standard (simp add: set_bit_int_def bit_simps)
 
 end
 
@@ -66,6 +72,18 @@ lemma bit_set_bit_word_iff [bit_simps]:
   \<open>bit (set_bit w m b) n \<longleftrightarrow> (if m = n then n < LENGTH('a) \<and> b else bit w n)\<close>
   for w :: \<open>'a::len word\<close>
   by (auto simp add: bit_simps dest: bit_imp_le_length)
+
+context
+  includes bit_operations_syntax
+begin
+
+lemma fixes i :: int
+  shows int_set_bit_True_conv_OR [code]: "Generic_set_bit.set_bit i n True = i OR push_bit n 1"
+  and int_set_bit_False_conv_NAND [code]: "Generic_set_bit.set_bit i n False = i AND NOT (push_bit n 1)"
+  and int_set_bit_conv_ops: "Generic_set_bit.set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
+  by (simp_all add: bit_eq_iff) (auto simp add: bit_simps)
+
+end
 
 lemma test_bit_set_gen:
   "bit (set_bit w n x) m \<longleftrightarrow> (if m = n then n < size w \<and> x else bit w m)"
@@ -140,7 +158,8 @@ context
   includes integer.lifting
 begin
 
-lift_definition set_bit_integer :: \<open>integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer\<close> is set_bit .
+lift_definition set_bit_integer :: \<open>integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer\<close>
+  is set_bit .
 
 instance
   by (standard; transfer) (simp add: bit_simps)
