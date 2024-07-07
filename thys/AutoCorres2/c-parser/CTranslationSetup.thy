@@ -109,8 +109,8 @@ We integrate mllex and mlyacc directly into Isabelle:
 
 SML_import \<open>
   infix 1 |> val op |> = Basics.|>
-  structure Path = Path
   structure File_Stream = File_Stream
+  val make_path = Path.explode o ML_System.standard_path
 \<close>
 SML_file \<open>tools/mllex/mllex.ML\<close>
 SML_export \<open>structure LexGen = LexGen\<close>

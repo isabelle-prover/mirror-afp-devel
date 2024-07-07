@@ -823,8 +823,8 @@ precedences of the rule and the terminal are equal.
         val entries = ref 0 (* save number of action table entries here *)
 
     in
-      Path.explode (spec ^ ".sml") |> File_Stream.open_output (fn result =>
-        Path.explode (spec ^ ".sig") |> File_Stream.open_output (fn sigs =>
+      make_path (spec ^ ".sml") |> File_Stream.open_output (fn result =>
+        make_path (spec ^ ".sig") |> File_Stream.open_output (fn sigs =>
           let
             val pos = ref 0
             val pr = File_Stream.output result
@@ -892,7 +892,7 @@ precedences of the rule and the terminal are equal.
             MakeTable.Errs.printSummary (fn s => TextIO.output(TextIO.stdOut,s)) errs
         end));
         if verbose then
-         Path.explode (spec ^ ".desc") |> File_Stream.open_output (fn out =>
+         make_path (spec ^ ".desc") |> File_Stream.open_output (fn out =>
            let
              val say = File_Stream.output out
              val printRule =
