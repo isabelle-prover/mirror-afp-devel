@@ -857,7 +857,8 @@ proof
   from assms(3) have "(\<lambda>x. h x powr p) \<in> o[F](g)" unfolding dominates_def by simp
   also from assms(1) have "g \<in> \<Theta>[F](\<lambda>x. g x powr 1)"
     by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-  also from assms(2) have "(\<lambda>x. g x powr 1) \<in> o[F](f)" unfolding dominates_def by simp
+  also from assms(2) have "(\<lambda>x. g x powr 1) \<in> o[F](f)"
+    using dominates_def by blast
   finally show "(\<lambda>x. h x powr p) \<in> o[F](f)" .
 qed
 
@@ -890,7 +891,7 @@ lemma dominating_chain_imp_dominating_chain':
 proof (induction gs rule: landau_dominating_chain.induct)
   case (1 F f g gs)
   from 1 show ?case
-    by (auto intro!: landau_function_family_pair_trans_powr simp add: dominates_def)
+    by (auto intro!: landau_function_family_pair_trans_powr simp add: dominates_def simp flip: powr_one')
 next
   case (2 F f)
   then interpret F: landau_function_family F "powr_closure f"
@@ -899,7 +900,7 @@ next
   hence "o[F](\<lambda>x. f x powr 1) = o[F](\<lambda>x. f x)"
     by (intro landau_o.small.cong) (auto elim!: eventually_mono)
   with 2 have "landau_function_family_pair F (powr_closure f) {\<lambda>_. 1} (\<lambda>x. f x powr 1)"
-    by unfold_locales (auto intro: powr_closureI)
+    by unfold_locales (auto intro: powr_closureI simp flip: powr_one')
   thus ?case by (simp add: one_fun_def)
 next
   case 3

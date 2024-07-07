@@ -125,7 +125,7 @@ proof -
           using axb_pos assms apply (smt (verit) mult_less_cancel_left)
           apply (intro continuous_intros)
           by (intro derivative_eq_intros) auto
-        also have "\<dots> = ln ((a*x + b) / b)" using assms by (rewrite ln_div; simp)
+        also have "\<dots> = ln ((a*x + b) / b)" using assms by (simp add: ln_divide_pos)
         finally have "integral {0<..x} (\<lambda>t. a / (a*t + b)) = ln ((a*x + b) / b)" .
         thus ?thesis by simp
       qed

@@ -642,9 +642,10 @@ next
           also have "\<dots> = real n powr -real ?v * p n powr -real ?e"
             by (simp add: powr_minus_divide)
           also have "\<dots> = (real n powr -(?v / ?e)) powr ?e * (p n powr -1) powr ?e"
-            using v_e_nz by (simp add: powr_powr)
+            using v_e_nz 
+            by (metis mult_minus1 nonzero_eq_divide_eq powr_powr order.irrefl)
           also have "\<dots> = (real n powr -(?v / ?e) * p n powr -1) powr ?e"
-            by (simp add: powr_mult)
+            using powr_mult by presburger
           also have "\<dots> = (real n powr -(1 / (?e / ?v)) * p n powr -1) powr ?e"
             by simp
           also have "\<dots> \<le> (real n powr -(1 / max_density H) * p n powr -1) powr ?e"
@@ -714,9 +715,9 @@ next
                 also have "\<dots> = (n powr -(1 / max_density H)) powr (max_density H * k) * p n powr - (max_density H * k)"
                   using max_density_gr_zero[OF finite nonempty wellformed] by (simp add: powr_powr)
                 also have "\<dots> = (n powr -(1 / max_density H)) powr (max_density H * k) * (p n powr -1) powr (max_density H * k)"
-                  by (simp add: powr_powr)
+                  by (metis mult_minus1 powr_powr)
                 also have "\<dots> = (n powr -(1 / max_density H) * p n powr -1) powr (max_density H * k)"
-                  by (simp add: powr_mult)
+                  using powr_mult by presburger
                 also have "\<dots> = (n powr -(1 / max_density H) * (1 / p n powr 1)) powr (max_density H * k)"
                   by (simp add: powr_minus_divide[symmetric])
                 also have "\<dots> = (n powr -(1 / max_density H) / p n) powr (max_density H * k)"

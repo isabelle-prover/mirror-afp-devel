@@ -164,7 +164,7 @@ proof -
   have "?lhs = (\<integral>x. normal_density c d x * ln (normal_density c d x / normal_density a b x) \<partial>lborel)"
     by(unfold log_ln,rule lborel.KL_density_density) (use order.strict_implies_not_eq[OF normal_density_pos[of b a]] in auto)
   also have "... = (\<integral>x. normal_density c d x * ln (normal_density c d x) -  normal_density c d x * ln (normal_density a b x) \<partial>lborel)"
-    by(simp add: ln_div[OF normal_density_pos[OF assms(2)] normal_density_pos[OF assms(1)]] right_diff_distrib)
+    by (metis (no_types, opaque_lifting) assms ln_div normal_density_pos order.irrefl right_diff_distrib')
   also have "... = (\<integral>x. normal_density c d x * ln (exp (- (x - c)\<^sup>2 / (2 * d\<^sup>2)) / sqrt (2 * pi * d\<^sup>2)) -  normal_density c d x * ln (exp (- (x - a)\<^sup>2 / (2 * b\<^sup>2)) / sqrt (2 * pi * b\<^sup>2)) \<partial>lborel)"
     by(simp add: normal_density_def)
   also have "... = (\<integral>x. normal_density c d x * (- (x - c)\<^sup>2 / (2 * d\<^sup>2)  - ln (sqrt (2 * pi * d\<^sup>2))) - (normal_density c d x * (- (x - a)\<^sup>2 / (2 * b\<^sup>2) - ln (sqrt (2 * pi * b\<^sup>2)))) \<partial>lborel)"

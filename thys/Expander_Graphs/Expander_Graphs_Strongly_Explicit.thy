@@ -936,7 +936,7 @@ next
   have "see_standard_power x = nat \<lceil>ln x / ln 0.95\<rceil>"
     using x_range unfolding see_standard_power_def by simp
   also have "... = nat \<lceil>ln (x/0.95) / ln 0.95 + 1\<rceil>"
-    by (subst ln_div[OF x_range(1)]) (simp_all add:field_simps )
+    by (subst ln_divide_pos[OF x_range(1)]) (simp_all add:field_simps )
   also have "... = nat (\<lceil>ln (x/0.95) / ln 0.95\<rceil>+1)"
     by (intro arg_cong[where f="nat"]) simp
   also have "... = 1 + nat \<lceil>ln (x/0.95) / ln 0.95\<rceil>"

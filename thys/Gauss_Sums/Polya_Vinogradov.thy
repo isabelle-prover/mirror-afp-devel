@@ -590,8 +590,8 @@ proof -
       proof -
         have "real (n - 1) > 0" "1 + 1 / (real n - 1) > 0"  
           using n by (auto simp add: add_pos_nonneg)
-        show ?thesis 
-          by (subst ln_mult [OF \<open>real (n - 1) > 0\<close> \<open>1 + 1 / (real n - 1) > 0\<close>,symmetric],blast)          
+        then show ?thesis
+          by (simp add: ln_mult)          
       qed
       also have "\<dots> = real n * ln n"
         using n by (auto simp add: divide_simps)

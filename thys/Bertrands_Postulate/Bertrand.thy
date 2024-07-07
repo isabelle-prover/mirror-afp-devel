@@ -56,7 +56,7 @@ lemma prod_mset_pos: "(\<And>x :: 'a :: linordered_semidom. x \<in># A \<Longrig
 lemma ln_msetprod:
   assumes "\<And>x. x \<in>#I \<Longrightarrow> x > 0"
   shows "(\<Sum>p::nat\<in>#I. ln p) = ln (\<Prod>p\<in>#I. p)"
-  using assms by (induction I) (simp_all add: of_nat_prod_mset ln_mult prod_mset_pos)
+  using assms by (induction I) (simp_all add: of_nat_prod_mset ln_mult_pos prod_mset_pos)
 
 lemma ln_fact: "ln (fact n) = (\<Sum>d=1..n. ln d)"
   by (induction n) (simp_all add: ln_mult)

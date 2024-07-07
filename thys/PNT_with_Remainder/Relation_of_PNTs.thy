@@ -319,9 +319,7 @@ proof (subst mult.assoc,
     hence "(\<lambda>x. h x * (1 / (ln x)\<^sup>2)) \<in> O(\<lambda>x. h x * 1)"
       by (rule landau_o.big.mult_left)
     thus ?thesis
-      by (auto simp add: field_simps
-               intro!: landau_o.big.ev_eq_trans2)
-         (auto simp: frequently_def intro: eventually_at_top_linorderI [of 1])
+      by (auto simp add: field_simps intro!: landau_o.big.ev_eq_trans2)
   qed
   finally show "(\<lambda>t. r\<^sub>2 t / (t * (ln t)\<^sup>2))
     \<in> O(\<lambda>x. exp (- (c * (ln x powr m * ln (ln x) powr n))))"

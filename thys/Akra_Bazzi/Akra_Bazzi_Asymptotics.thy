@@ -139,7 +139,7 @@ proof -
         by (simp add: field_simps powr_diff powr_add powr_minus)
       also from elim(1) bep
         have "ln \<dots> = ln (b*x) * (1 + 1/ln (b*x) * ln (1 + hb / b * ln x powr (-1-e)))"
-        by (subst ln_mult) (simp_all add: add_pos_nonneg field_simps)
+        by (subst ln_mult_pos) (simp_all add: add_pos_nonneg field_simps)
       also from elim(1) bep have "\<dots> powr (-e/2) = ln (b*x) powr (-e/2) * f' x"
         by (subst powr_mult) (simp_all add: field_simps f'_def)
       also from elim have "\<dots> \<ge> ln (b*x) powr (-e/2) * (1 + g x)"

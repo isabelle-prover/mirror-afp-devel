@@ -145,16 +145,10 @@ proof-
       by fact
   next
     have "(x * sqrt (y\<^sup>2 - 1))\<^sup>2 = x\<^sup>2 * (y\<^sup>2 - 1)"
-      using assms
-      apply (subst power_mult_distrib)
-      apply (subst real_sqrt_pow2, simp_all)
-      done
+      by (simp add: \<open>y \<ge> 1\<close> power_mult_distrib)
     moreover
     have "(y * sqrt (x\<^sup>2 - 1))\<^sup>2 = y\<^sup>2 * (x\<^sup>2 - 1)"
-      using assms
-      apply (subst power_mult_distrib)
-      apply (subst real_sqrt_pow2, simp_all)
-      done
+      using assms by (simp add: power_mult_distrib)
     ultimately show "(x * sqrt (y\<^sup>2 - 1) + y * sqrt (x\<^sup>2 - 1))\<^sup>2 = (x * y + sqrt ((x\<^sup>2 - 1) * (y\<^sup>2 - 1)))\<^sup>2 - 1"
       using assms
       unfolding power2_sum
@@ -166,16 +160,11 @@ proof-
     using power2_eq_iff_nonneg[OF 2 real_sqrt_ge_zero[OF 1]]
     by simp
   thus ?thesis
-    using assms
-    apply (subst arcosh_real_def[OF assms(1)])
-    apply (subst arcosh_real_def[OF assms(2)])
-    apply (subst arcosh_real_def[OF **])
+    using assms **
+    apply (simp add: arcosh_real_def)
     apply (subst ln_mult[symmetric])
-    apply (smt one_le_power real_sqrt_ge_zero)
-    apply (smt one_le_power real_sqrt_ge_zero)
-    apply (simp add: real_sqrt_mult)
-    apply (simp add: field_simps)
-    done
+     apply (smt one_le_power real_sqrt_ge_zero)
+    by (smt (verit) distrib_right mult.commute real_sqrt_mult)
 qed
 
 lemma arcosh_double:

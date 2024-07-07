@@ -401,7 +401,8 @@ proof -
       have "w (m+n) = ln (u (m+n))" by (simp add: w_def)
       also have "... \<le> ln(u m * u n)"
         by (meson \<open>\<And>n. 0 < u n\<close> assms(2) zero_less_mult_iff ln_le_cancel_iff)
-      also have "... = ln(u m) + ln(u n)" by (simp add: \<open>\<And>n. 0 < u n\<close> ln_mult)
+      also have "... = ln(u m) + ln(u n)"
+        by (meson \<open>\<And>n. 0 < u n\<close> ln_mult_pos)
       also have "... = w m + w n" by (simp add: w_def)
       finally show "w (m+n) \<le> w m + w n".
     qed

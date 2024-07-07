@@ -280,7 +280,7 @@ proof -
   also have "\<dots> = ((1 + $i^{m}/m)^m).^-1"
     using i_nom_eff that by presburger
   also have "\<dots> = (1 + $i^{m}/m).^-m"
-    using powr_powr powr_realpow[THEN sym] v_futr_m_pos that by simp
+    using i_nom_eff i_nom_i powr_powr that by fastforce
   finally show ?thesis .
 qed
 

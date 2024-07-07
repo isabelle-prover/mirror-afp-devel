@@ -639,7 +639,7 @@ proof -
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * ((n powr - 1) / (n powr (\<epsilon> - 1))) \<le> n powr (\<epsilon> - 1) / (n powr (\<epsilon> - 1))"
         using \<open>1 \<le> n\<close> by (auto simp: field_simps)
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
-        by (simp add: powr_diff [symmetric] )
+        by (simp add: powr_diff powr_minus divide_simps)
       finally show "(6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" .
     qed
     then have "(\<forall>\<^sup>\<infinity> n. (6 * k) * ln n / real n \<le> p n)

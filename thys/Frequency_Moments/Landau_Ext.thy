@@ -96,8 +96,7 @@ proof -
     also have "... \<le> ln (c * abs (g x))"
       using c assms(1)  mult_pos_pos[OF a] by auto
     also have "... \<le> ln c + ln (abs (g x))"
-      using c assms(1)
-      by (simp add: ln_mult[OF a])
+      using c assms(1) by (simp add: a ln_mult_pos)
     also have "... \<le> (d-1)*ln a + ln (g x)"
       using assms(1) c
       by (intro add_mono iffD2[OF ln_le_cancel_iff], simp_all add:d_def)

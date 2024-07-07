@@ -1110,9 +1110,9 @@ proof -
     also have "... < 4 * (x powr (1/2)/4)"
       using x_ge_450 by (intro mult_strict_left_mono ln_less_self) auto
     also have "... = x powr (1/2)" by simp
-    finally have "2* exp 1/ 5 * ln x \<le> x powr (1/2)" by simp
+    finally have \<section>: "2 * exp 1/ 5 * ln x \<le> x powr (1/2)" by simp
     hence "ln(2* exp 1/ 5 * ln x) \<le> ln (x powr (1/2))"
-      using x_ge_450 ln_le_cancel_iff by simp
+      using x_ge_450 by (intro ln_mono; simp)
     hence 0:"ln(2* exp 1/ 5 * ln x) / ln x \<le> 1/2"
       using x_ge_450 by (subst (asm) ln_powr, auto)
     have "ln 8 \<le> 3 * x - 5 * x * (1/2)"

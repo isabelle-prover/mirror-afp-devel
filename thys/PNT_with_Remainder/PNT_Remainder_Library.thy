@@ -610,12 +610,7 @@ lemma powr_mono_lt_1_cancel:
   fixes x a b :: real
   assumes Hx: "0 < x \<and> x < 1"
   shows "(x powr a \<le> x powr b) = (b \<le> a)"
-proof -
-  have "(x powr a \<le> x powr b) = ((x powr -1) powr -a \<le> (x powr -1) powr -b)" by (simp add: powr_powr)
-  also have "\<dots> = (-a \<le> -b)" using Hx by (intro powr_le_cancel_iff) (auto simp add: powr_neg_one)
-  also have "\<dots> = (b \<le> a)" by auto
-  finally show ?thesis .
-qed
+  by (smt (verit, best) Hx powr_less_mono')
 
 abbreviation "mangoldt_real :: _ \<Rightarrow> real \<equiv> mangoldt"
 abbreviation "mangoldt_complex :: _ \<Rightarrow> complex \<equiv> mangoldt"

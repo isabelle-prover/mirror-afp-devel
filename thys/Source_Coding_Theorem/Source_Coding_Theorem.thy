@@ -378,7 +378,7 @@ lemma entropy_rw: "\<H>(X) = -(\<Sum>i \<in> L. fi i * log b (fi i))"
 subsubsection\<open>Technical lemmas about the logarithm\<close>
 lemma log_mult_ext3:
   "0 \<le> x \<Longrightarrow> 0 < y \<Longrightarrow> 0 < z \<Longrightarrow> x * log b (x*y*z) = x * log b (x*y) + x * log b z"
-    by(cases "x=0")(simp add: log_mult_eq abs_of_pos distrib_left less_eq_real_def)+
+  by (metis dual_order.irrefl log_mult ring_distribs(1) mult_eq_0_iff)
 
 lemma log_mult_ext2:
   "0 \<le> x \<Longrightarrow> 0 < y \<Longrightarrow> x * log b (x*y) = x * log b x + x * log b y"
@@ -435,8 +435,7 @@ proof -
     finally have "0 \<le> (\<Sum>i\<in>S. a i * - log b (e i / a i))"
       by (simp add: sum_c_one)
     thus "0 \<le> (\<Sum>i\<in>S. a i * log b (a i / e i))"
-      using b_gt_1 log_divide non_null
-      by simp
+      by (smt (verit, best) b_gt_1 log_divide non_null sum_mono)
 qed
 
 lemma KL_div_pos_emp:
@@ -573,7 +572,7 @@ proof -
       by (simp add: sum_distrib_right sum.distrib)
     also have "\<dots> = (\<Sum>i\<in>L. fi i * (log b (fi i * \<K> / (1 / b powr (cw_len i))))) - log b (\<K>)"
       using \<K>_pos
-      by (simp add: log_inverse_eq divide_inverse sum_one_L)
+      by (simp add: log_inverse divide_inverse sum_one_L)
     also have "\<dots> = (\<Sum> i \<in> L. fi i * log b (fi i / ?r i)) - log b (\<K>)"
       by (metis (mono_tags, opaque_lifting) divide_divide_eq_left divide_divide_eq_right)
     also have "\<dots> = KL_div L fi ?r - log b ( \<K>)"

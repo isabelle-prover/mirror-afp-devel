@@ -575,12 +575,11 @@ proof (cases "n \<in> region")
       have "ln (x / n) < ln (1 / (1 + 1 / H))"
         using xn xn' by (subst ln_less_cancel_iff) (blast, linarith)
       also have "\<dots> = - ln (1 + 1 / H)"
-        by (subst (1) inverse_eq_divide [symmetric])
-           (subst ln_inverse, intro add_pos_pos, use hH in auto)
+        by (simp add: divide_inverse ln_inverse)
       also have "\<dots> \<le> - 1 / (2 * H)"
       proof -
         have "- ln (1 + 1 / H) = ln (inverse (1 + 1 / H))"
-          using hH by (intro ln_inverse [symmetric]) (auto simp: field_simps)
+          by (simp add: ln_inverse)
         also have "\<dots> = ln (1 - 1 / (H + 1))"
           using hH by (auto simp: field_simps)
         also have "\<dots> \<le> - (1 / (H + 1))"
