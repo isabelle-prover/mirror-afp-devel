@@ -240,7 +240,7 @@ proof -
     proof -
       define n where "n = nat \<lfloor>x\<rfloor>"
       have "\<bar>R x - R (real n)\<bar> = ln (x / n)"
-        using x by (simp add: R_def A_def sum_upto_altdef n_def ln_div)
+        using x by (simp add: R_def A_def sum_upto_altdef n_def ln_divide_pos)
       also {
         have "x \<le> real n + 1"
           unfolding n_def by linarith

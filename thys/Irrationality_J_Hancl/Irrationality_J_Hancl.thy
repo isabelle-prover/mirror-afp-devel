@@ -43,7 +43,7 @@ lemma filterlim_realpow_sequentially_at_top:
 
 lemma filterlim_at_top_powr_real:
   fixes g::"'b \<Rightarrow> real"
-  assumes "filterlim f at_top F" "(g \<longlongrightarrow> g') F" "g'>1"
+  assumes "filterlim f at_top F" and g': "(g \<longlongrightarrow> g') F" "g'>1"
   shows "LIM x F. g x powr f x :> at_top"
 proof -
   have "LIM x F. ((g' + 1) / 2) powr f x :> at_top" 
@@ -55,20 +55,19 @@ proof -
     proof (eventually_elim)
       case (elim x)
       then show ?case
-      using \<open>g'>1\<close> by (auto simp:ln_powr divide_simps)        
+      using \<open>g'>1\<close> by (auto simp: divide_simps)        
     qed
     then show "\<forall>\<^sub>F x in F. Z \<le> ((g' + 1) / 2) powr f x"
     proof (eventually_elim)
       case (elim x)
       then show ?case
-        using \<open>1 < Z\<close> \<open>g'>1\<close> by auto
+        by (smt (verit, best) \<open>g'>1\<close> ln_le_cancel_iff divide_le_eq_1_pos powr_nonneg_iff)
     qed
   qed
   moreover have "\<forall>\<^sub>F x in F. ((g'+1)/2) powr f x \<le> g x powr f x" 
   proof -
     have "\<forall>\<^sub>F x in F. g x > (g'+1)/2"
-      apply (rule order_tendstoD[OF assms(2)])
-      using \<open>g'>1\<close> by auto
+      by (metis add.commute g' gt_half_sum one_add_one order_tendsto_iff)
     moreover have "\<forall>\<^sub>F x in F. f x>0"
       using assms(1) filterlim_at_top_dense by blast 
     ultimately show ?thesis

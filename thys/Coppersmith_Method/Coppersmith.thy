@@ -1121,10 +1121,7 @@ proof -
     apply (clarsimp simp add: field_simps)
     by (metis Num.of_nat_simps(3) Num.of_nat_simps(5) Suc_pred' dh_gt_0 numeral_nat(7))
   then have "root (d*h - 1) (d*h) \<le> sqrt 2"
-    using root_powr_inverse
-    using pos2 real_root_gt_0_iff  zero_less_diff
-    by (metis d_gt dh_gt_0 h_gt less_1_mult of_nat_0_less_iff)
-
+    using gteq h_gteq_helper2 root_powr_inverse by force
   then have "root (d*h - 1) (d*h)*(root 2 2) \<le> sqrt 2 *(root 2 2)"
     by simp
   then have "?cdh \<le> 2"
@@ -1134,10 +1131,9 @@ proof -
   then have "
     root (d*h - 1) (d*h)*(root 2 2)* X < M powr (1/d - eps)"
     using X_lt unfolding root_bound_def by simp
-  then have arith: "
-    (root (d*h - 1) (d*h)*(root 2 2)* X) ^ (d * h * (d*h - 1)) <
-    (M powr (1/d - eps))  ^ (d * h * (d*h - 1)) "
-    by (smt (verit, del_insts) d_gt dh_gt_0 h_gt less_1_mult linordered_semidom_class.power_strict_mono mult_nonneg_nonneg nat_0_less_mult_iff of_nat_0_le_iff real_root_ge_zero zero_less_diff)
+  then have arith: "(root (d*h - 1) (d*h)*(root 2 2)* X) ^ (d * h * (d*h - 1)) 
+                  < (M powr (1/d - eps))  ^ (d * h * (d*h - 1))"
+    by (smt (verit, del_insts) d_gt dh_gt_0 h_gt less_1_mult power_strict_mono mult_nonneg_nonneg nat_0_less_mult_iff of_nat_0_le_iff real_root_ge_zero zero_less_diff)
   have "2 ^ (d * h *  (d * h - 1) div 2) *
     X ^ ((d * h - 1) * d * h)  * (d * h) ^ (d * h)
     <  (M ^ ((h - 1)  *  (d * h)))"

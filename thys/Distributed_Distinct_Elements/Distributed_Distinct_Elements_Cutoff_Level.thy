@@ -240,7 +240,7 @@ proof -
     also have "... = log 2 (2^c*(1+3/2^c))"
       by (simp add:algebra_simps)
     also have "... = c + log 2 (1+3/2^c)"
-      by (subst log_mult) (auto intro:add_pos_nonneg)
+      by (subst log_mult_pos) (auto intro:add_pos_nonneg)
     also have "... \<le> c + log 2 (1+3/2^0)"
       by (intro add_mono log_mono divide_left_mono power_increasing add_pos_nonneg) auto
     also have "... = c + log 2 (2*2)"

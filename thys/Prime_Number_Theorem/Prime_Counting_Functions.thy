@@ -1090,7 +1090,7 @@ proof -
     by (rule tendsto_ln) auto
   also have "?this \<longleftrightarrow> ((\<lambda>x. ln (\<pi> x) - ln x + ln (ln x)) \<longlongrightarrow> 0) at_top"
     by (intro filterlim_cong eventually_mono[OF eventually_gt_at_top[of 2]])
-       (auto simp: ln_div field_simps ln_mult \<pi>_pos)
+       (auto simp: ln_divide_pos field_simps \<pi>_pos_iff ln_mult_pos)
   finally have "(\<lambda>x. ln (\<pi> x) - ln x + ln (ln x)) \<in> o(\<lambda>_. 1)"
     by (intro smalloI_tendsto) auto
   also have "(\<lambda>_::real. 1 :: real) \<in> o(\<lambda>x. ln x)"

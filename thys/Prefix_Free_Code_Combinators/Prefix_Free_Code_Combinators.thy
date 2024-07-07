@@ -866,7 +866,7 @@ proof -
       (\<bar>of_int m\<bar>+2)*(\<bar>of_int e\<bar>+1)"
       by (simp flip:of_int_abs) (metis (mono_tags, opaque_lifting) numeral_One
           of_int_add of_int_le_iff of_int_mult of_int_numeral)
-    then show ?thesis by (simp add:log_mult[symmetric])
+    then show ?thesis by (simp flip: log_mult_pos)
   qed
   have "bit_count (F\<^sub>e f) \<le>
     6 + 2 * (log 2 (\<bar>mantissa f\<bar> + 1) + log 2 (\<bar>exponent f\<bar> + 1))"

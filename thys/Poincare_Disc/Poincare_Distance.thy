@@ -612,7 +612,7 @@ proof (rule wlog_x_axis)
           by auto
         hence "\<bar>ln (Re ((1 - x) / (1 + x)))\<bar> = ln (Re ((1 + x) / (1 - x)))"
           using ln_div[of 1 "Re ((1 - x)/(1 + x))"] * \<open>is_real x\<close>
-          by (simp add: complex_is_Real_iff)
+          by (fastforce simp: complex_is_Real_iff)
         moreover
         have "ln ((1 + cmod x) / (1 - cmod x)) = ln ((1 + Re x) / (1 - Re x))"
           using \<open>Re x \<ge> 0\<close> \<open>is_real x\<close>

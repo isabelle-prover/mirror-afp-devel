@@ -731,7 +731,8 @@ proof -
   next
     case False
     hence "\<And>x. $l_x > 0" using l_0_equiv by force
-    thus ?thesis by (intro always_eventually, rewrite ln_div; simp)
+    thus ?thesis
+      by (simp add: ln_divide_pos)
   qed
   hence "deriv (\<lambda>x. ln ($l_x / $l_0)) x = deriv (\<lambda>x. ln ($l_x)) x"
     apply (rewrite deriv_cong_ev[of _ "\<lambda>x. ln ($l_x) - ln ($l_0)"], simp_all)

@@ -103,8 +103,8 @@ lemma log_prod: assumes "0 < a" "a \<noteq> 1" "\<And> x. x \<in> X \<Longrighta
 proof (induct X rule: infinite_finite_induct)
   case (insert x F)
   have "log a (prod f (insert x F)) = log a (f x * prod f F)" using insert by simp
-  also have "\<dots> = log a (f x) + log a (prod f F)" 
-    by (rule log_mult[OF _ prod_pos], insert assms insert, auto)
+  also have "\<dots> = log a (f x) + log a (prod f F)"
+    by (meson insert.prems insertCI log_mult_pos prod_pos)
   finally show ?case using insert by auto
 qed auto
 

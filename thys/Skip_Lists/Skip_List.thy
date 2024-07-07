@@ -363,10 +363,10 @@ proof -
                     and g'="(\<lambda>x. - 1 / (ln q * (1 - x)))" and a = 0 and b = 1]
   show "set_integrable lborel (einterval 0 \<infinity>) (\<lambda>x. (1 - (1 - q powr x) ^ n))"
     using assms 1 2 3 4
-    by (intro sub) (auto intro!: derivative_eq_intros mult_nonneg_nonpos2 tendsto_intros power_le_one)
+    by (intro sub) (auto intro!: sub derivative_eq_intros continuous_intros mult_nonneg_nonpos2 power_le_one)
   show "(LBINT x=0..\<infinity>. 1 - (1 - q powr x) ^ n) = - harm n / ln q"
     using assms 1 2 3 4
-    by (subst sub) (auto intro!: derivative_eq_intros mult_nonneg_nonpos2 tendsto_intros power_le_one)
+    by (subst sub) (auto intro!: derivative_eq_intros continuous_intros mult_nonneg_nonpos2 power_le_one)
 qed
 
 lemma one_minus_one_minus_q_x_n_nn_integral:

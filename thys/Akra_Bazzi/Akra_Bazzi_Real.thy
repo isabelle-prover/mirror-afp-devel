@@ -699,7 +699,7 @@ proof-
   also have "bs!i*x + s*hb*x*ln x powr -(1+e) = bs!i*x*(1 + s*hb*inverse (bs!i)*ln x powr -(1+e))"
     using b_pos by (simp_all add: field_simps)
   also have "... powr p = (bs!i*x) powr p * ?A"
-    using b_pos x x0_pos pos by (intro powr_mult) simp_all
+    using powr_mult by force
   also have "(bs!i*x) powr p * ?A * ?B' = (bs!i*x) powr p * (?A * ?B')" by simp
   also have "?A * ?B' \<le> 1 - ln x powr (-e/2)" using assms x
     using asymptotics2[OF x assms(2)] asymptotics2'[OF x assms(2)] by (simp add: s_def)
@@ -842,8 +842,8 @@ proof-
     also have "x powr (p + 1) = x powr (p + 1) * 1" by simp
     also have "(bs ! i * x + (hs ! i) x) powr (p + 1) =
                (bs ! i + (hs ! i) x / x) powr (p + 1) * x powr (p + 1)"
-      using x x1_pos step_pos[OF i x] x_pos i x0_le_x1
-      by (subst powr_mult[symmetric]) (simp add: field_simps, simp, simp add: algebra_simps)
+      using x x1_pos step_pos[OF i x] 
+      by (simp add: ring_class.ring_distribs flip: powr_mult)
     also have "... = x powr (p + 1) * (bs ! i + (hs ! i) x / x) powr (p + 1)" by simp
     also have "min ... (x powr (p + 1) * 1) = x powr (p + 1) * m'" unfolding m'_def using x_pos
       by (subst min.commute, intro min_mult_left[symmetric]) simp
@@ -1105,8 +1105,7 @@ proof-
     also have "(x powr (p + 1) * (bs ! i + (hs ! i) x / x) powr (p + 1)) =
                  (bs ! i + (hs ! i) x / x) powr (p + 1) * x powr (p + 1)" by simp
     also have "... = (bs ! i * x + (hs ! i) x) powr (p + 1)"
-      using x x1_pos step_pos[OF i x] x_pos i x0_le_x1 x_pos
-      by (subst powr_mult[symmetric]) (simp add: field_simps, simp, simp add: algebra_simps)
+      using x x1_pos by (simp add: ring_class.ring_distribs flip: powr_mult)
     also have "x powr (p + 1) * 1 = x powr (p + 1)" by simp
     also have "(x - ?x') * (c1 * g x / ?m) = integral (\<lambda>_. c1 * g x / ?m) ?x' x"
       using x'_le_x by (subst integral_const[OF c1_g_m_nonneg]) auto

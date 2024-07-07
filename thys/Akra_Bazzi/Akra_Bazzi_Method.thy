@@ -258,7 +258,7 @@ lemma propagate_CLAMP:
   "CLAMP' (\<lambda>x. CLAMP' (MASTER_BOUND a1 b1 c1) x / CLAMP' (MASTER_BOUND a2 b2 c2) x) = 
        CLAMP' (MASTER_BOUND (a1-a2) (b1-b2) (c1-c2))"
   "CLAMP' (\<lambda>x. inverse (MASTER_BOUND a1 b1 c1 x)) = CLAMP' (MASTER_BOUND (-a1) (-b1) (-c1))"
-by (insert ln_1_imp_less_3')
+by (insert ln_1_imp_less_3' ln_ln_nonneg')
    (rule ext, simp add: CLAMP_def CLAMP'_def MASTER_BOUND_def 
       powr_realpow powr_one[OF ln_ln_nonneg'] powr_realpow[OF ln_ln_pos] powr_add
       powr_diff powr_minus)+

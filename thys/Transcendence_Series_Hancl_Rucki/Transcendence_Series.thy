@@ -746,13 +746,12 @@ proof-
         using elim(3) by auto
       then have "2 powr (1/\<epsilon>) / (2 powr (1/\<epsilon>) - 1) < tt"
         unfolding tt_def 
-        apply (drule_tac powr_less_mono2[rotated 2,where a="1/ (1 + \<epsilon>)"])
-        using \<open>\<epsilon>>0\<close> apply (auto simp:powr_powr )
-        by (subst (asm) powr_one,auto simp add:field_simps)
-      then have " tt < (tt-1) * (2 powr (1/\<epsilon>))"
+        using powr_less_mono2[where a="1/ (1 + \<epsilon>)"] \<open>\<epsilon>>0\<close>
+        by (simp add: divide_inverse powr_less_inverse_iff)
+      then have \<section>: "tt < (tt-1) * (2 powr (1/\<epsilon>))"
         using \<open>\<epsilon>>0\<close> by (auto simp:divide_simps algebra_simps) 
-      then have "tt powr \<epsilon> < 2 * (tt - 1) powr \<epsilon>"
-        apply (drule_tac powr_less_mono2[rotated 2,where a="\<epsilon>"])
+      have "tt powr \<epsilon> < 2 * (tt - 1) powr \<epsilon>"
+        using powr_less_mono2[OF _ _ \<section>,where a="\<epsilon>"]
         using \<open>\<epsilon>>0\<close> \<open>tt>1\<close> by (auto simp:powr_powr powr_mult)
       then show ?thesis 
         using \<open>\<epsilon>>0\<close> \<open>tt>1\<close> by (auto simp:divide_simps)

@@ -158,8 +158,7 @@ proof -
         subgoal by simp
         done
       also have "... = c2 * (c1 powr p * norm (real x) powr p)"
-        apply (intro arg_cong[where f = "(*) c2"] powr_mult norm_ge_zero)
-        using \<open>c1 > 0\<close> by simp
+        by (intro arg_cong[where f = "(*) c2"] powr_mult norm_ge_zero)
       also have "... = c * norm (real x) powr p" unfolding c_def by simp
       also have "... \<le> cf + c * norm (real x) powr p" using \<open>cf \<ge> 0\<close> by simp
       finally show ?thesis .
