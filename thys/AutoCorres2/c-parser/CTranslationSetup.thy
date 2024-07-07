@@ -226,7 +226,7 @@ fun file_command qualify_ref tag exts f files thy =
         val tmp_file = Utils.sanitized_path thy tmp_dir src_path
 
         val _ = File.write tmp_file (cat_lines lines)
-        val res = try f (File.platform_path tmp_file)
+        val res = Exn.result f (File.platform_path tmp_file)
 
 
         val _ = TextIO.setOutstream (TextIO.stdOut, orig_stdOut)
@@ -237,14 +237,16 @@ fun file_command qualify_ref tag exts f files thy =
         val msg = if null lines then "" else ":\n" ^ (prefix_lines "  " (cat_lines lines))
       in 
         case res of
-           SOME () => 
+           Exn.Res () =>
             let 
               val result_files = map (fn ext => (Path.ext ext tmp_file, 
                       Path.ext ext full_src_path)) exts
               val _ = app (fn (src, dst) => copy_file qualify_ref src dst) result_files
               val _ = tracing (Markup.markup Markup.keyword1 tag ^ " " ^ quote filename ^ " succeeded" ^ msg)
             in () end 
-        |  NONE => error (Markup.markup Markup.keyword1 tag ^ " " ^ quote filename ^ " failed" ^ msg)
+        |  Exn.Exn exn =>
+            error (Markup.markup Markup.keyword1 tag ^ " " ^ quote filename ^ " failed" ^ msg ^
+              "\n" ^ Runtime.exn_message exn)
       end))
     
   in 
