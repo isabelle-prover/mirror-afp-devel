@@ -108,7 +108,7 @@ fun eg235' n =
     | 7 => [3,6]
     | 8 => [8]
 
-val sscs = dfs_trees (Int.compare, eg235')
-                     (dfs_finishes (Int.compare, eg235) [1,2,3,4,5,6,7,8])
+val sscs = dfs_trees (int_ord, eg235')
+                     (dfs_finishes (int_ord, eg235) [1,2,3,4,5,6,7,8])
 *)
 end; (* struct *)

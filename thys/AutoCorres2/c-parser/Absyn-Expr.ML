@@ -35,7 +35,7 @@ fun map_more_info f x =
     SOME (ty, info) => Unsynchronized.ref (SOME (ty, f info))
   | NONE => Unsynchronized.ref NONE
 
-fun var_info_ord (v1, v2) = option_ord (prod_ord (CType.ctype_ord Int.compare) more_info_ord) (!v1, !v2)
+fun var_info_ord (v1, v2) = option_ord (prod_ord (CType.ctype_ord int_ord) more_info_ord) (!v1, !v2)
 
 datatype expr_node =
          BinOp of binoptype * expr * expr
@@ -278,7 +278,7 @@ fun nli_ord (nli1, nli2) = let
   val {value = v1, suffix = s1, base = r1} = nli1
   val {value = v2, suffix = s2, base = r2} = nli2
 in
-  prod_ord (prod_ord IntInf.compare String.compare) (measure_ord radn)
+  prod_ord (prod_ord int_ord String.compare) (measure_ord radn)
                (((v1, s1), r1), ((v2, s2), r2))
 end
 
