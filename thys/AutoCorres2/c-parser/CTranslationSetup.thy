@@ -233,11 +233,8 @@ fun file_command qualify_ref tag exts f files thy =
         val _ = TextIO.setOutstream (TextIO.stdErr, orig_stdErr)
         val _ = TextIO.closeOut stdOut
         val _ = TextIO.closeOut stdErr
-        val out = File.read_lines out_file
-        val err = File.read_lines err_file
-         
-        val msg = Pretty.string_of (Pretty.strs (out @ err))
-
+        val lines = filter (fn s => s <> "") (File.read_lines out_file @ File.read_lines err_file)
+        val msg = if null lines then "" else ":\n" ^ (prefix_lines "  " (cat_lines lines))
       in 
         case res of
            SOME () => 
@@ -245,9 +242,9 @@ fun file_command qualify_ref tag exts f files thy =
               val result_files = map (fn ext => (Path.ext ext tmp_file, 
                       Path.ext ext full_src_path)) exts
               val _ = app (fn (src, dst) => copy_file qualify_ref src dst) result_files
-              val _ = tracing (quote (tag ^ " " ^ filename) ^ " succeeded:\n" ^ msg)
+              val _ = tracing (Markup.markup Markup.keyword1 tag ^ " " ^ quote filename ^ " succeeded" ^ msg)
             in () end 
-        |  NONE => (error (quote (tag ^ " " ^ filename) ^ " failed:\n" ^ msg); ())
+        |  NONE => error (Markup.markup Markup.keyword1 tag ^ " " ^ quote filename ^ " failed" ^ msg)
       end))
     
   in 
