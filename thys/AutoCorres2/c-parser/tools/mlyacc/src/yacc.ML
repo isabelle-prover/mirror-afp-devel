@@ -822,10 +822,12 @@ precedences of the rule and the terminal are equal.
 
         val entries = ref 0 (* save number of action table entries here *)
 
-    in  let val result = TextIO.openOut (spec ^ ".sml")
-             val sigs = TextIO.openOut (spec ^ ".sig")
+    in
+      make_path (spec ^ ".sml") |> File_Stream.open_output (fn result =>
+        make_path (spec ^ ".sig") |> File_Stream.open_output (fn sigs =>
+          let
             val pos = ref 0
-            val pr = fn s => TextIO.output(result,s)
+            val pr = File_Stream.output result
             val say = fn s => let val l = String.size s
                                    val newPos = (!pos) + l
                               in if newPos > lineLength
@@ -886,14 +888,13 @@ precedences of the rule and the terminal are equal.
             sayln "end";
             printTokenStruct(values,names);
             sayln "end";
-            printSigs(values,names,fn s => TextIO.output(sigs,s));
-            TextIO.closeOut sigs;
-            TextIO.closeOut result;
+            printSigs(values,names, File_Stream.output sigs);
             MakeTable.Errs.printSummary (fn s => TextIO.output(TextIO.stdOut,s)) errs
-        end;
+        end));
         if verbose then
-         let val f = TextIO.openOut (spec ^ ".desc")
-             val say = fn s=> TextIO.output(f,s)
+         make_path (spec ^ ".desc") |> File_Stream.open_output (fn out =>
+           let
+             val say = File_Stream.output out
              val printRule =
                 let val rules = Array.fromList grammarRules
                 in fn say =>
@@ -906,9 +907,8 @@ precedences of the rule and the terminal are equal.
          in Verbose.printVerbose
             {termToString=termToString,nontermToString=nontermToString,
              table=table, stateErrs=stateErrs,errs = errs,entries = !entries,
-             print=say, printCores=corePrint,printRule=printRule};
-            TextIO.closeOut f
-         end
+             print=say, printCores=corePrint,printRule=printRule}
+         end)
         else ()
     end
 

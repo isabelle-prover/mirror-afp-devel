@@ -13,7 +13,7 @@ sig
   type ecenv = Absyn.ecenv
   type s2s_config = {anon_vars : bool, owners : string list,
                      allow_underscore_idents : bool,
-                     munge_info_fname : string option}
+                     munge_info_fname : Path.T option}
 
   type 'a rcd_env = (string * (CType.rcd_kind * (string * 'a) list * Region.t * CType.attribute list)) list
   type senv = (int ctype * CType.attribute list) rcd_env
@@ -210,7 +210,7 @@ open Absyn NameGeneration
 
 type program = ext_decl list
 type s2s_config = {anon_vars : bool, owners : string list,
-                   allow_underscore_idents : bool, munge_info_fname : string option}
+                   allow_underscore_idents : bool, munge_info_fname : Path.T option}
 
 fun fname_str NONE = NameGeneration.initialisation_function
   | fname_str (SOME f) = f
@@ -421,7 +421,7 @@ datatype csenv (* CalculateSatate environment *) = Csenv of
                  read_globals : modify_var Binaryset.set Symtab.table,
                  fnspecs : fnspec list Symtab.table,
                  owners : string list,
-                 munge_info_fname : string option,
+                 munge_info_fname : Path.T option,
                  constant_global_fun_ptrs: (string * string list) list,
                  fun_ptr_params: ((string * ExprDatatype.var_info) list) option list Symtab.table, (* variables with which function pointer parameters are called*)
                  cliques : string list list,
@@ -3113,9 +3113,8 @@ fun render_mungedb (info: mungedb): string list =
 fun export_mungedb (c as Csenv cse) =
   case #munge_info_fname cse of
     NONE => ()
-  | SOME fname =>
+  | SOME fname => fname |> File_Stream.open_output (fn outstrm =>
     let
-      val outstrm = TextIO.openOut fname
       fun tab_foldthis vinfo acc =
         let
           val srcnm = srcname vinfo
@@ -3129,10 +3128,7 @@ fun export_mungedb (c as Csenv cse) =
       fun recurse tab = Symtab.fold foldthis tab []
       val data0 = recurse (get_vars c)
       val data = Library.sort String.compare data0
-    in
-      List.app (fn s => TextIO.output(outstrm, s ^ "\n")) data;
-      TextIO.closeOut outstrm
-    end
+    in List.app (fn s => File_Stream.output outstrm (s ^ "\n")) data end)
 
 fun is_reachable (callee_graph: string Binaryset.set Symtab.table) caller callee =
   let

@@ -5,16 +5,8 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *)
 
-(* provide an inputLine function à la old version of the Basis Library *)
 structure StrictCBasics =
 struct
-  fun inputLine istr = case TextIO.inputLine istr of
-                         NONE => ""
-                       | SOME s => s
-
-  (*
-  val inputLine = TextIO.inputLine
-  *)
 
 fun measure_ord f (x,y) = int_ord (f x, f y)
 fun inv_img_ord f c (x,y) = c (f x, f y)
