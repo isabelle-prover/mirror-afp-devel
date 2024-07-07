@@ -16,7 +16,7 @@ it at a very abstract level to exhibit the data dependencies.
 
 Source materials:
  \<^item> \<^url>\<open>https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm\<close>
- \<^item> \<^file>\<open>$AFP/Floyd_Warshall/Floyd_Warshall.thy\<close>
+ \<^item> \<^verbatim>\<open>$AFP/Floyd_Warshall/Floyd_Warshall.thy\<close>
   \<^item> a proof by refinement yielding a thorough correctness result including negative weights but not the absence of edges
  \<^item> \<^citet>\<open>\<open>\S6.2\<close> in "Dingel:2002"\<close>
   \<^item> Overly parallelised, which is not practically useful but does reveal the data dependencies
@@ -72,7 +72,7 @@ definition paths :: "'i \<times> 'i \<Rightarrow> 'i set \<Rightarrow> 'i list s
   "paths ij ks = {p. set p \<subseteq> ks \<and> fst ij \<notin> set p \<and> snd ij \<notin> set p \<and> distinct p}"
 
 \<comment>\<open> The minimum weight of a path from \<open>i\<close> to \<open>j\<close> using the nodes \<open>ks\<close>.
-    See \<^file>\<open>$AFP/Floyd_Warshall/Floyd_Warshall.thy\<close> for proof that these are minimal amongst all paths. \<close>
+    See \<^verbatim>\<open>$AFP/Floyd_Warshall/Floyd_Warshall.thy\<close> for proof that these are minimal amongst all paths. \<close>
 definition min_path_weight :: "'i matrix \<Rightarrow> 'i \<times> 'i \<Rightarrow> 'i set \<Rightarrow> nat" where
   "min_path_weight m ij ks = Min (path_weight m ij ` paths ij ks)"
 

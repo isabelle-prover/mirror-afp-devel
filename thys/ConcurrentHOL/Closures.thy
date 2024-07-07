@@ -598,7 +598,7 @@ text\<open>
 is path independent.''
 
 References:
- \<^item> \<^file>\<open>$AFP/Stable_Matching/Choice_Functions.thy\<close>
+ \<^item> \<^verbatim>\<open>$AFP/Stable_Matching/Choice_Functions.thy\<close>
 
 \<close>
 

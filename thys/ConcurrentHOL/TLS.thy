@@ -43,9 +43,9 @@ Observations:
 
 Source materials:
  \<^item> \<^file>\<open>$ISABELLE_HOME/src/HOL/Corec_Examples/LFilter.thy\<close>.
- \<^item> \<^file>\<open>$AFP/Coinductive/Coinductive_List.thy\<close>
- \<^item> \<^file>\<open>$AFP/Coinductive/TLList.thy\<close>
- \<^item> \<^file>\<open>$AFP/TLA/Sequence.thy\<close>.
+ \<^item> \<^verbatim>\<open>$AFP/Coinductive/Coinductive_List.thy\<close>
+ \<^item> \<^verbatim>\<open>$AFP/Coinductive/TLList.thy\<close>
+ \<^item> \<^verbatim>\<open>$AFP/TLA/Sequence.thy\<close>.
 
 \<close>
 
@@ -883,7 +883,7 @@ The following is a straightforward shallow embedding of the
 now-traditional anchored semantics of LTL \<^citet>\<open>"MannaPnueli:1988"\<close>.
 
 References:
- \<^item> \<^file>\<open>$AFP/TLA/Liveness.thy\<close>
+ \<^item> \<^verbatim>\<open>$AFP/TLA/Liveness.thy\<close>
  \<^item> \<^file>\<open>$ISABELLE_HOME/src/HOL/TLA/TLA.thy\<close>
  \<^item> \<^url>\<open>https://en.wikipedia.org/wiki/Linear_temporal_logic\<close>
  \<^item> \<^citet>\<open>"KroegerMerz:2008"\<close>

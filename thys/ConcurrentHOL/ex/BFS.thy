@@ -24,7 +24,7 @@ References:
  \<^item> queue ADT: \<^file>\<open>$ISABELLE_HOME/src/Doc/Codegen/Introduction.thy\<close>
  \<^item> BFS verification:
   \<^item> J. C. Filliâtre \<^url>\<open>http://toccata.lri.fr/gallery/vstte12_bfs.en.html\<close>
-  \<^item> \<^file>\<open>$AFP/Refine_Monadic/examples/Breadth_First_Search.thy\<close>
+  \<^item> \<^verbatim>\<open>$AFP/Refine_Monadic/examples/Breadth_First_Search.thy\<close>
   \<^item> our model is quite different
 
 \<close>
