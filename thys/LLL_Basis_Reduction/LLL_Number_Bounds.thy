@@ -1109,10 +1109,8 @@ proof -
   from number_bound have bnd: "of_int \<bar>number\<bar> \<le> real ?bnd" by linarith
   have "log 2 \<bar>number\<bar> \<le> log 2 ?bnd" 
     by (subst log_le_cancel_iff, insert number0 bnd, auto)
-  also have "\<dots> = log 2 (N^(2 * m) * 2^m) + log 2 m" 
-    by (subst log_mult[symmetric], insert i N, auto)
   also have "\<dots> = log 2 (N^(2 * m)) + log 2 (2^m) + log 2 m" 
-    by (subst log_mult[symmetric], insert i N, auto)
+    using i N by (simp add: log_mult)
   also have "log 2 (N^(2 * m)) = log 2 (N powr (2 * m))" 
     by (rule arg_cong[of _ _ "log 2"], subst powr_realpow, insert N, auto) 
   also have "\<dots> = (2 * m) * log 2 N" 

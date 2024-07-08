@@ -1029,7 +1029,7 @@ proof -
       using log_2_4 p_le_n p_gt_0
       by (simp add: Transcendental.log_mono aux_2)
     also have "... = ereal (10 + 4 * real r + 2 * log 2 (log 2 (8 * n + 160)))"
-      by (simp add:log_mult[symmetric])
+      by (simp flip: log_mult_pos)
     also have "... \<le> ereal (10 + 4 * real r + 2 * log 2 (log 2 ((n+13) powr 2)))"
       by (intro ereal_mono add_mono mult_left_mono Transcendental.log_mono of_nat_mono add_pos_nonneg)
        (auto simp add:power2_eq_square algebra_simps)

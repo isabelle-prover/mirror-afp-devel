@@ -1129,7 +1129,7 @@ proof -
   also have "... = 5 * x * (ln x + ln(5 / (2*exp 1*ln x))) / ln x"
     using assms(1) by (simp add:algebra_simps add_divide_distrib)
   also have "... = 5 * x * (ln (5 * x / (2 * exp 1 * ln x))) / ln x"
-    using assms(1) by (subst ln_mult[symmetric], auto)
+    using assms(1) by (simp add: ln_mult ln_div)
   also have "... = (5 * x / ln x) * ln ((5 * x / ln x) / (2 * exp 1))"
     by (simp add:algebra_simps)
   also have "... \<le> k * ln (k / (2*exp 1))"

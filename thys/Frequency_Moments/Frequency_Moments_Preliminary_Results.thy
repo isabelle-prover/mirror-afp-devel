@@ -378,7 +378,7 @@ proof -
   finally have d:"real_of_int (abs e + 1) \<le> (real_of_int r+ 1) * (2 + abs (log 2 (abs x)))" by simp
 
   have "log 2 (real_of_int (abs e + 1)) \<le> log 2 (real_of_int r + 1) + log 2 (2 + abs (log 2 (abs x)))"
-    using d by (simp add: log_mult[symmetric])
+    using d by (simp flip: log_mult_pos)
   also have "... \<le> r + log 2 (2 + abs (log 2 (abs x)))"
     using log_est by (intro add_mono, simp_all add:add.commute)
   finally have e: "log 2 (real_of_int (abs e + 1)) \<le> r + log 2 (2 + abs (log 2 (abs x)))" by simp

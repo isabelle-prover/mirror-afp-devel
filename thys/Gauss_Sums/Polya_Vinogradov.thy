@@ -137,7 +137,7 @@ next
     then show ?thesis by auto
   qed
   also have "\<dots> = ln ((2 * n + 1) * (1+2/(2*n+1)))"
-    by (rule ln_mult[symmetric],simp,simp add: field_simps)
+    by (auto simp add: ln_div divide_simps)
   also have "\<dots> = ln (2*(n+1)+1)"
   proof -
     have "(2 * n + 1) * (1+2/(2*n+1)) = 2*(n+1)+1"

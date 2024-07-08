@@ -42,56 +42,11 @@ theory Hyperbolic_Functions
   imports Complex_Main Complex_Geometry.More_Complex
 begin
 
-lemma cosh_arcosh [simp]:
-  fixes x :: real
-  assumes "x \<ge> 1"
-  shows "cosh (arcosh x) = x"
-proof-
-  from assms
-  have  **: "x + sqrt(x\<^sup>2 - 1) \<ge> 1"
-    by (smt one_le_power real_sqrt_ge_zero)
-  hence *: "x + sqrt(x\<^sup>2 - 1) \<noteq> 0"
-    by simp
-  moreover
-  have "sqrt (x\<^sup>2 - 1) + 1 / (x + sqrt (x\<^sup>2 - 1)) = x" (is "?lhs = x")
-  proof-
-    have "?lhs = (x*sqrt(x\<^sup>2 - 1) + x\<^sup>2) / (x + sqrt(x\<^sup>2 - 1))"
-      using * \<open>x \<ge> 1\<close>
-      by (subst add_divide_eq_iff, simp, simp add: field_simps)
-    also have "... = x * (sqrt(x\<^sup>2 - 1) + x) / (x + sqrt(x\<^sup>2 - 1))"
-      by (simp add: field_simps power2_eq_square)
-    finally
-    show ?thesis
-      using nonzero_mult_div_cancel_right[OF *, of x]
-      by (simp add: field_simps)
-  qed
-  thus ?thesis
-    using arcosh_real_def[OF assms(1)]
-    unfolding cosh_def 
-    using ln_div[of 1, symmetric] **
-    by auto
-qed
-
-
-lemma arcosh_ge_0 [simp]:
-  fixes x::real
-  assumes "x \<ge> 1"
-  shows "arcosh x \<ge> 0"
-  by (smt arcosh_def assms ln_ge_zero powr_ge_pzero)
-
-lemma arcosh_eq_0_iff:
-  fixes x::real
-  assumes "x \<ge> 1"
-  shows "arcosh x = 0 \<longleftrightarrow> x = 1"
-  using assms
-  using cosh_arcosh by fastforce
-
 lemma arcosh_eq_iff:
   fixes x y::real
   assumes "x \<ge> 1" "y \<ge> 1"
   shows "arcosh x = arcosh y \<longleftrightarrow> x = y"
-  using assms
-  using cosh_arcosh by fastforce
+  by (smt (verit, best) arcosh_less_iff_real arcosh_real_strict_mono assms)
 
 
 lemma cosh_gt_1 [simp]:
@@ -105,16 +60,14 @@ lemma cosh_eq_iff:
   fixes x y::real
   assumes "x \<ge> 0" "y \<ge> 0"
   shows "cosh x = cosh y \<longleftrightarrow> x = y"
-  by (simp add: assms(1) assms(2))
+  by (simp add: assms)
 
 
 lemma arcosh_mono:
   fixes x y::real
   assumes "x \<ge> 1" "y \<ge> 1"
   shows "arcosh x \<ge> arcosh y \<longleftrightarrow> x \<ge> y"
-  using assms
-  by (smt arcosh_ge_0 cosh_arcosh cosh_real_nonneg_less_iff)
-
+  using arcosh_less_iff_real assms linorder_not_le by blast
 
 lemma arcosh_add:
   fixes x y::real
@@ -162,8 +115,9 @@ proof-
   thus ?thesis
     using assms **
     apply (simp add: arcosh_real_def)
-    apply (subst ln_mult[symmetric])
+    apply (subst ln_mult_pos[symmetric])
      apply (smt one_le_power real_sqrt_ge_zero)
+    apply (smt (verit) one_le_power real_sqrt_ge_zero)
     by (smt (verit) distrib_right mult.commute real_sqrt_mult)
 qed
 

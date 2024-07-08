@@ -667,11 +667,7 @@ text\<open>@{term poincare_distance} is non-negative.\<close>
 lemma poincare_distance_ge0:
   assumes "u \<in> unit_disc" and "v \<in> unit_disc"
   shows "poincare_distance u v \<ge> 0"
-  using poincare_distance_formula'_ge_1
-  unfolding poincare_distance_formula[OF assms(1) assms(2)]
-  unfolding poincare_distance_formula_def
-  unfolding poincare_distance_formula'_def
-  by (rule arcosh_ge_0, simp_all add: assms)
+  using poincare_distance_formula'_ge_1 assms by (simp add: poincare_distance_formula)
 
 lemma cosh_dist:
   assumes "u \<in> unit_disc" and "v \<in> unit_disc"
@@ -687,13 +683,8 @@ lemma poincare_distance_eq_0_iff:
   apply auto
   using poincare_distance_formula'_ge_1[OF assms]
   using unit_disc_cmod_square_lt_1[OF assms(1)] unit_disc_cmod_square_lt_1[OF assms(2)]
-  unfolding poincare_distance_formula[OF assms(1) assms(2)]
-  unfolding poincare_distance_formula_def
-  unfolding poincare_distance_formula'_def
-  apply (subst (asm) arcosh_eq_0_iff)
-  apply assumption
-  apply (simp add: unit_disc_to_complex_inj)
-  done
+  apply (simp add: poincare_distance_formula)
+  by (simp add: unit_disc_to_complex_inj)
 
 text\<open>Conjugate preserve @{term poincare_distance_formula}.\<close>
 lemma conjugate_preserve_poincare_distance [simp]:
@@ -1541,8 +1532,7 @@ proof-
       fix w
       assume "w \<in> unit_disc"
       thus "?P' v u w"
-        using * **[rule_format, of "moebius_pt M w"]
-        by simp
+        by (metis "*" "**" unit_disc_fix_discI unit_disc_fix_preserve_poincare_distance)
     qed
   qed
   thus ?thesis
