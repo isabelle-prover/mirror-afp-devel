@@ -187,9 +187,6 @@ Last 50 lines from stderr (if available):
 
   /** ci build jobs **/
 
-  val broken_sessions = List("ConcurrentHOL")
-
-
   /* all */
 
   val all =
@@ -198,8 +195,8 @@ Last 50 lines from stderr (if available):
       Build_CI.Cluster("cluster.schedule"),
       Time.hms(4, 0, 0),
       afp = true,
-      selection = Sessions.Selection(all_sessions = true,
-        exclude_sessions = broken_sessions, exclude_session_groups = List("very_slow")),
+      selection =
+        Sessions.Selection(all_sessions = true, exclude_session_groups = List("very_slow")),
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
         override def post(
@@ -219,7 +216,7 @@ Last 50 lines from stderr (if available):
       Build_CI.Cluster("cluster.schedule"),
       Time.hms(8, 0, 0),
       afp = true,
-      selection = Sessions.Selection(all_sessions = true, exclude_sessions = broken_sessions),
+      selection = Sessions.Selection(all_sessions = true),
       presentation = true,
       build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
       hook = new Build_CI.Hook {
