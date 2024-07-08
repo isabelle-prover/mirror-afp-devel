@@ -76,7 +76,7 @@ val registers = [
   "xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15"
 ]
 
-fun is_register str = List.find (fn (str') => String.compare (Substring.string str,str') = EQUAL) registers <> NONE
+fun is_register str = List.find (fn (str') => string_ord (Substring.string str,str') = EQUAL) registers <> NONE
 
 fun overwrite_str "" s = s
 | overwrite_str s "" = s
@@ -174,7 +174,7 @@ fun parse_operand str' =
       parse_operand_address 16 (snd (Substring.splitAt (str,11)))
     else if Substring.isPrefix "[" str then (* happens in case of a LEA instruction *)
       parse_operand_address 0 str
-    else if List.find (fn (str') => String.compare (Substring.string str,str') = EQUAL) registers <> NONE then
+    else if List.find (fn (str') => string_ord (Substring.string str,str') = EQUAL) registers <> NONE then
       Reg (Substring.string str)
     else
       case intFromHexString str of

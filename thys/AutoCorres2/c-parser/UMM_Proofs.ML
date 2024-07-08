@@ -507,7 +507,7 @@ val umm_empty_state =
      fl_ti_thms = [],
      records_done = [],
      arrayeltypes_done = Binaryset.empty typ_ord,
-     structsize_done = Binaryset.empty String.compare,
+     structsize_done = Binaryset.empty string_ord,
      szclass_done = Binaryset.empty (prod_ord string_ord string_ord),
      packed_done = []};
 

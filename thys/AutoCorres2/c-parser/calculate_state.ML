@@ -309,7 +309,7 @@ struct
   type key = umm_decl
   fun ord (umm_array _, umm_struct _) = LESS
     | ord (umm_array _, umm_union _) = LESS
-    | ord (umm_array p1, umm_array p2) = prod_ord (ctype_ord Int.compare) int_ord (p1, p2)
+    | ord (umm_array p1, umm_array p2) = prod_ord (ctype_ord int_ord) int_ord (p1, p2)
     | ord (umm_union _, umm_array _) = GREATER
     | ord (umm_union _, umm_struct _) = LESS
     | ord (umm_union (u1, _, _, _, _), umm_union (u2, _, _, _, _)) = string_ord (u1, u2)
@@ -368,11 +368,11 @@ let
           val inverse_graph = flip_symtab inclusion_graph
           val inverse_graph_structural = flip_symtab inclusion_graph_structural
           open Topo_Sort
-          val sorted_structural = topo_sort {cmp = String.compare,
+          val sorted_structural = topo_sort {cmp = string_ord,
                                    graph = Symtab.lookup_list inclusion_graph_structural,
                                    converse = Symtab.lookup_list inverse_graph_structural}
                                   rcdnames |> flat
-          val sorted0 = topo_sort {cmp = String.compare,
+          val sorted0 = topo_sort {cmp = string_ord,
                                    graph = Symtab.lookup_list inclusion_graph,
                                    converse = Symtab.lookup_list inverse_graph}
                                   rcdnames

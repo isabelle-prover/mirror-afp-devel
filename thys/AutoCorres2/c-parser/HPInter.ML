@@ -388,7 +388,7 @@ let
                    | SOME s => Binaryset.listItems s
 
   val cliques = ProgramAnalysis.get_functions csenv
-    |> Topo_Sort.topo_sort {cmp = String.compare,
+    |> Topo_Sort.topo_sort {cmp = string_ord,
                             graph = lift callees,
                             converse = lift callers}
 

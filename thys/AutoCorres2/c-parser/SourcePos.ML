@@ -61,10 +61,10 @@ end
 
 fun compare (T {column = c, file = f, line = l},
              T {column = c', file = f', line = l'}) =
-   case String.compare (f, f') of
+   case string_ord (f, f') of
       EQUAL =>
-         (case Int.compare (l, l') of
-             EQUAL => Int.compare (c, c')
+         (case int_ord (l, l') of
+             EQUAL => int_ord (c, c')
            | r => r)
     | r => r
 

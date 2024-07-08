@@ -181,8 +181,7 @@ fun hammer_logtac (pstate:Proof.state) =
     val orig_string        = result <$> snd <$> snd <$> hd handle Empty =>
                              (if Utils.debug then tracing "Empty in orig_string/hammer_logtac" else (); 
                               NONE) : string option;
-    fun did_smt_timeout (out::timed::_) = (Utils.are_same ("out)", out)) andalso
-                                          (Utils.are_same ("timed", timed))
+    fun did_smt_timeout (out::timed::_) = "out)" = out andalso "timed" = timed
      |  did_smt_timeout _ = error "Something went wrong in Subtool.ML";
     val one_line_apply     = orig_string <$> space_explode " "
                             <$> drop 2                           (* drop "Try this:"*)

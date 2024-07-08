@@ -521,7 +521,7 @@ fun relativize_def is_external is_functional relationalising def_name thm_ref po
                      o Database.insert Database.rel2is (cls_pred, cls_pred)
     val (v,t) = relativ_tm_frm' is_functional relationalising cls_pred db' ctxt1 tm
     val t_vars = sort_strings (Term.add_free_names tm [])
-    val vs' = List.filter (#1 #> #1 #> #1 #> Ord_List.member String.compare t_vars) vars
+    val vs' = List.filter (#1 #> #1 #> #1 #> Ord_List.member string_ord t_vars) vars
     val vs = cls_pred :: map (Thm.term_of o #2) vs' @ lambdavars @ the_list v
     val at = List.foldr (uncurry lambda) t vs
     val abs_const = read_const lthy (if is_external then thm_ref else lname lthy thm_ref)

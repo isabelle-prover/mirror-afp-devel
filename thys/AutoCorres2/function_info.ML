@@ -611,10 +611,10 @@ fun calc_call_graph fn_infos = let
 
   val topo_sorted_functions =
         Topo_Sort.topo_sort {
-          cmp = String.compare,
+          cmp = string_ord,
           graph = Symtab.lookup fn_callees_lists #> the,
           converse = Symtab.lookup fn_callers_lists #> the
-        } (Symtab.keys fn_callees_lists |> sort String.compare ) (* fixme: sort with depth in call-graph instead of String.compare should lead to smarter ordering of parallel partitions later on *)
+        } (Symtab.keys fn_callees_lists |> sort_strings) (* FIXME: sort with depth in call-graph instead of string_ord should lead to smarter ordering of parallel partitions later on *)
         |> map Symset.make;
 
   fun is_recursive_singleton f =

@@ -81,20 +81,9 @@ val append =
 
 fun list (xs, reg) = List.foldl (fn (x, r) => append (reg x, r)) Bogus xs
 
-fun compare (r, r') =
-   case (left r, left r') of
-      (NONE, NONE) => EQUAL
-    | (NONE, _) => LESS
-    | (_, NONE) => GREATER
-    | (SOME p, SOME p') => SourcePos.compare (p, p')
-
-fun equals (r, r') = compare (r, r') = EQUAL
-
-fun r <= r' =
-   case compare (r, r') of
-      EQUAL => true
-    | GREATER => false
-    | LESS => true
+val compare = option_ord SourcePos.compare o apply2 left
+val equals = is_equal o compare
+val op <= = is_less_equal o compare
 
 structure Wrap =
    struct

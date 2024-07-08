@@ -610,7 +610,7 @@ fun emptycse ({anon_vars,owners,allow_underscore_idents = aui,munge_info_fname,.
          addressed_types = Absyn.CTypeTab.empty,
          defined_functions = Symtab.empty,
          embedded_fncalls = Binaryset.empty fncall_ord,
-         recursive_functions = Binaryset.empty String.compare,
+         recursive_functions = Binaryset.empty string_ord,
          modifies = Symtab.empty, modify_locs = MVar_Table.empty,
          fnspecs = Symtab.empty, read_globals = Symtab.empty,
          globinits = MSymTab.empty, owners = owners, munge_info_fname = munge_info_fname, 
@@ -793,7 +793,7 @@ end
 
 fun add_modification fname vi env = let
   val dflt = Binaryset.empty mvar_compare
-  val dflt_locs = Binaryset.empty String.compare
+  val dflt_locs = Binaryset.empty string_ord
   fun add e set = Binaryset.add(set,e)
 in
   (map_modifies (Symtab.map_default (fname, dflt) (add vi)) o
@@ -1201,7 +1201,7 @@ fun new_call ctxt (x as {caller, callee, args}) cse =
       in
         cse'
         |> map_caller_info
-            (Symtab.map_default (somefn, Binaryset.empty String.compare)
+            (Symtab.map_default (somefn, Binaryset.empty string_ord)
                                 (fn s => Binaryset.add(s,caller)))
         |> map_fun_ptr_params (add_fun_ptr_params somefn addressed_funs)
       end
@@ -2545,11 +2545,11 @@ fun gen_compute_callgraphs excludes ctxt env = let
            end
     fun foldthis (fname, called) (callgraph,converse) = let
       val called' = Binaryset.foldl (setfoldthis fname)
-                                    (Binaryset.empty String.compare)
+                                    (Binaryset.empty string_ord)
                                     called
       val cg' = Symtab.update (fname, called') callgraph
       fun setfold (callee, acc) =
-          Symtab.map_default (callee, Binaryset.empty String.compare)
+          Symtab.map_default (callee, Binaryset.empty string_ord)
                              (add fname)
                              acc
       val conv' = Binaryset.foldl setfold converse called'
@@ -2580,7 +2580,7 @@ fun has_addressable_variables cse fname =
 fun mvar_traverse ctxt env = let
   val fnames = get_functions env
   val defined_fns = Symtab.keys (get_defined_functions env)
-  val empty_sset = Binaryset.empty String.compare
+  val empty_sset = Binaryset.empty string_ord
   val empty_mvset = Binaryset.empty mvar_compare
   (* first set all modifies entries for defined functions to be the empty set
      (if they don't already have a value) *)
@@ -2615,7 +2615,7 @@ fun mvar_traverse ctxt env = let
                    | SOME s => Binaryset.listItems s
   val {callees,callers} = compute_callgraphs ctxt env
 
-  val sorted = Topo_Sort.topo_sort {cmp = String.compare,
+  val sorted = Topo_Sort.topo_sort {cmp = string_ord,
                                     graph = lift callees,
                                     converse = lift callers}
                                    fnames
@@ -2888,8 +2888,8 @@ val is_addressed = XMSymTab.defined o get_addressed
 
 fun get_final_callers cse fname =
   let
-    val emp =  Binaryset.empty String.compare
-    val init = Binaryset.singleton String.compare fname
+    val emp =  Binaryset.empty string_ord
+    val init = Binaryset.singleton string_ord fname
     val callers = #callers (get_final_callgraph cse)
     fun step f = the_default emp (Symtab.lookup callers f)
     val all = Binaryset.closure step init
@@ -3107,8 +3107,7 @@ fun render_mungedb_line {fun_name: string option, nm_info: nm_info} =
     end
 
 fun render_mungedb (info: mungedb): string list =
-    List.map render_mungedb_line info
-    |> Library.sort String.compare
+    sort_strings (List.map render_mungedb_line info)
 
 fun export_mungedb (c as Csenv cse) =
   case #munge_info_fname cse of
@@ -3127,7 +3126,7 @@ fun export_mungedb (c as Csenv cse) =
       fun foldthis (_, vinfos) acc = acc |> fold tab_foldthis vinfos
       fun recurse tab = Symtab.fold foldthis tab []
       val data0 = recurse (get_vars c)
-      val data = Library.sort String.compare data0
+      val data = sort_strings data0
     in List.app (fn s => File_Stream.output outstrm (s ^ "\n")) data end)
 
 fun is_reachable (callee_graph: string Binaryset.set Symtab.table) caller callee =
