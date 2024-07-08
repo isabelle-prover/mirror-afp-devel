@@ -3107,8 +3107,7 @@ fun render_mungedb_line {fun_name: string option, nm_info: nm_info} =
     end
 
 fun render_mungedb (info: mungedb): string list =
-    List.map render_mungedb_line info
-    |> Library.sort string_ord
+    sort_strings (List.map render_mungedb_line info)
 
 fun export_mungedb (c as Csenv cse) =
   case #munge_info_fname cse of
@@ -3127,7 +3126,7 @@ fun export_mungedb (c as Csenv cse) =
       fun foldthis (_, vinfos) acc = acc |> fold tab_foldthis vinfos
       fun recurse tab = Symtab.fold foldthis tab []
       val data0 = recurse (get_vars c)
-      val data = Library.sort string_ord data0
+      val data = sort_strings data0
     in List.app (fn s => File_Stream.output outstrm (s ^ "\n")) data end)
 
 fun is_reachable (callee_graph: string Binaryset.set Symtab.table) caller callee =

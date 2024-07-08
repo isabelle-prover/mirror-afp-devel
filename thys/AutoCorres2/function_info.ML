@@ -614,7 +614,7 @@ fun calc_call_graph fn_infos = let
           cmp = string_ord,
           graph = Symtab.lookup fn_callees_lists #> the,
           converse = Symtab.lookup fn_callers_lists #> the
-        } (Symtab.keys fn_callees_lists |> sort string_ord ) (* fixme: sort with depth in call-graph instead of string_ord should lead to smarter ordering of parallel partitions later on *)
+        } (Symtab.keys fn_callees_lists |> sort_strings) (* FIXME: sort with depth in call-graph instead of string_ord should lead to smarter ordering of parallel partitions later on *)
         |> map Symset.make;
 
   fun is_recursive_singleton f =
