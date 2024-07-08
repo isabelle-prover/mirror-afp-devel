@@ -26,7 +26,6 @@ sig
   val prefix_if_nonempty : string -> string list -> string list;
   val debug          : bool; (*flag for debugging.*)
   val try_with       : 'b -> ('a -> 'b) -> 'a -> 'b;
-  val are_same       : (string * string) -> bool;
 end;
 
 (*** Utils : Utility functions not specific to Isabelle/HOL. ***)
@@ -96,11 +95,6 @@ val debug = false;
 fun try_with  (fallback:'b) (f:'a -> 'b) (x:'a) = (case try f x of
   NONE => fallback
 | SOME y => y);
-
-fun to_bool EQUAL = true
- |  to_bool _     = false;
-
-fun are_same (x, y) = (to_bool o string_ord) (x, y);
 
 end;
 
