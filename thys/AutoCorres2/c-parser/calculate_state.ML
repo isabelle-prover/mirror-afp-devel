@@ -368,11 +368,11 @@ let
           val inverse_graph = flip_symtab inclusion_graph
           val inverse_graph_structural = flip_symtab inclusion_graph_structural
           open Topo_Sort
-          val sorted_structural = topo_sort {cmp = String.compare,
+          val sorted_structural = topo_sort {cmp = string_ord,
                                    graph = Symtab.lookup_list inclusion_graph_structural,
                                    converse = Symtab.lookup_list inverse_graph_structural}
                                   rcdnames |> flat
-          val sorted0 = topo_sort {cmp = String.compare,
+          val sorted0 = topo_sort {cmp = string_ord,
                                    graph = Symtab.lookup_list inclusion_graph,
                                    converse = Symtab.lookup_list inverse_graph}
                                   rcdnames

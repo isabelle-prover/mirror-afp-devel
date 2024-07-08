@@ -178,7 +178,7 @@ fun unopname opn =
       | Not => "!"
       | Addr => "&"
       | BitNegate => "~"
-val unop_ord = inv_img_ord unopname String.compare
+val unop_ord = inv_img_ord unopname string_ord
 
 fun binopname opn =
     case opn of
@@ -201,7 +201,7 @@ fun binopname opn =
     | LShift => "<<"
     | Modulus => "%"
 
-val binop_ord = inv_img_ord binopname String.compare
+val binop_ord = inv_img_ord binopname string_ord
 
 type var_info = (int ctype * more_info) option Unsynchronized.ref
 
@@ -278,7 +278,7 @@ fun nli_ord (nli1, nli2) = let
   val {value = v1, suffix = s1, base = r1} = nli1
   val {value = v2, suffix = s2, base = r2} = nli2
 in
-  prod_ord (prod_ord int_ord String.compare) (measure_ord radn)
+  prod_ord (prod_ord int_ord string_ord) (measure_ord radn)
                (((v1, s1), r1), ((v2, s2), r2))
 end
 
@@ -291,7 +291,7 @@ fun lc_ord (lc1, lc2) =
       | (STRING_LIT s1, STRING_LIT s2) => string_ord(s1, s2)
 
 fun vi_ord((s1,vi1 : var_info), (s2,vi2)) =
-    case String.compare(s1, s2) of
+    case string_ord(s1, s2) of
         EQUAL =>
         if vi1 = vi2 then EQUAL
         else option_ord (inv_img_ord #1 (ctype_ord int_ord))
@@ -300,7 +300,7 @@ fun vi_ord((s1,vi1 : var_info), (s2,vi2)) =
 
 (* ignores location information *)
 fun expr_ord (e1,e2) =
-    case String.compare (expr_string e1, expr_string e2) of
+    case string_ord (expr_string e1, expr_string e2) of
         EQUAL =>
         let
         in
@@ -342,7 +342,7 @@ and d_cmp p =
         (DesignE e1, DesignE e2) => expr_ord (e1, e2)
       | (DesignE _, _) => LESS
       | (_, DesignE _) => GREATER
-      | (DesignFld fld1, DesignFld fld2) => String.compare (fld1, fld2)
+      | (DesignFld fld1, DesignFld fld2) => string_ord (fld1, fld2)
 and i_cmp p =
     case p of
         (InitE e1, InitE e2) => expr_ord (e1,e2)

@@ -231,7 +231,7 @@ structure StaticFunString = SFun
       val ord_ty = @{typ "StringOrd.anotherBL"}w
       val ord_term =  @{term string_to_anbl}
 
-      val compare = String.compare
+      val compare = string_ord
       val ordsimps = HOL_basic_ss addsimps @{thms string_ord_simps}
  end);
 

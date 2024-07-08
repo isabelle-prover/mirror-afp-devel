@@ -329,7 +329,7 @@ fun get_callees ctxt cse slist = let
               | SOME set => recurse (Binaryset.add(acc, fnname))
                                     (Binaryset.listItems set @ rest)
 in
-  recurse (Binaryset.empty String.compare) slist
+  recurse (Binaryset.empty string_ord) slist
 end
 
 fun map_file_pos f ({src_path, lines, digest, pos}: Token.file) =

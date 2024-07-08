@@ -172,7 +172,7 @@ fun synthetic_def def_name thm_ref pos tc auto thy =
           (not (Term.is_Free t) orelse member (op =) ts (t |> Term.dest_Free |> #1))
       | relevant _ _ = false
     val t_vars = sort_strings (Term.add_free_names t [])
-    val vs = filter (Ord_List.member String.compare t_vars o #1 o #1 o #1) vars
+    val vs = filter (Ord_List.member string_ord t_vars o #1 o #1 o #1) vars
     val at = fold_rev (lambda o Thm.term_of o #2) vs t
     val hyps' = filter (relevant t_vars o Utils.dest_trueprop) hyps
     val def_attrs = @{attributes [fm_definitions]}
@@ -206,7 +206,7 @@ let
     val (vars, tm, ctxt1) = Utils.thm_concl_tm lthy (target ^ "_def")
     val (const, tm) = tm |> Utils.dest_eq_tms' o Utils.dest_trueprop |>> #1 o strip_comb
     val t_vars = sort_strings (Term.add_free_names tm [])
-    val vs = List.filter (#1 #> #1 #> #1 #> Ord_List.member String.compare t_vars) vars
+    val vs = List.filter (#1 #> #1 #> #1 #> Ord_List.member string_ord t_vars) vars
              |> List.filter ((curry op = @{typ "i"}) o #2 o #1)
              |> List.map (Utils.var_i o #1 o #1 o #1)
     fun first_lambdas (Abs (body as (_, ty, _))) =

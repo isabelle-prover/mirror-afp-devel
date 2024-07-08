@@ -159,7 +159,7 @@ fun all_IDattributes fspecs = let
   fun getGCCs (gcc_attribs attrs) acc = acc |> fold getID attrs
     | getGCCs _ acc  = acc
 in
-  (Binaryset.empty String.compare) |> fold getGCCs fspecs
+  (Binaryset.empty string_ord) |> fold getGCCs fspecs
 end
 
 fun get_owned_by gattrs =
@@ -185,7 +185,7 @@ fun collapse_mod_attribs sp = let
   local
     open Binaryset
   in
-  fun IL (NONE, slist) = SOME (addList(empty String.compare, slist))
+  fun IL (NONE, slist) = SOME (addList(empty string_ord, slist))
     | IL (SOME s, slist) = SOME (addList(s, slist))
   end
   fun recurse (acc as (mods, attribs, specs)) sp =

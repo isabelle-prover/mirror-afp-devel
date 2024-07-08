@@ -629,7 +629,7 @@ fun get_all_modifiers (state:Proof.state) =
     val dest_names    = FT2.get_dest_rule_names  context goal;
     fun to_bool EQUAL = true
      |  to_bool _     = false;
-    fun are_same (x, y) = (to_bool o String.compare) (x, y);
+    fun are_same (x, y) = (to_bool o string_ord) (x, y);
     val simps     = subtract are_same (split_names @ elim_names @ intro_names @ dest_names)
                     (FT2.get_fact_names_mesh state) |> map Simp;
     val splits    = map Split split_names;

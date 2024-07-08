@@ -87,7 +87,7 @@ fun gen_modify_goalstring csenv fname modstrings = let
       case XMSymTab.lookup (ProgramAnalysis.get_addressed csenv) (MString.mk vname, NONE) of
         NONE => Binaryset.add(vset, vname)
       | SOME _ => Binaryset.add(vset, NameGeneration.global_heap)
-  val vset = Binaryset.empty String.compare |> fold foldthis modstrings
+  val vset = Binaryset.empty string_ord |> fold foldthis modstrings
 in
     "\<forall>\<sigma>. \<Gamma> \<turnstile>\<^bsub>/UNIV\<^esub> {\<sigma>} Call "^
     fname ^ "_'proc " ^
@@ -368,7 +368,7 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
                     if globs_all_addressed then map (fn M _ => TheHeap | x => x) mvlist
                     else mvlist
                 val calls = case Symtab.lookup callees fname of
-                              NONE => Binaryset.empty String.compare
+                              NONE => Binaryset.empty string_ord
                             | SOME s => s
                 val i = Binaryset.intersection(calls, failedsofar)
               in
@@ -467,7 +467,7 @@ fun prove_all_modifies_goals_local prog_name csenv includeP tyargs cliques thy =
                         else acc
         | _ => raise Fail "SCC with empty list!"
 
-    val acc_init = (Binaryset.empty String.compare, Termtab.empty, thy)
+    val acc_init = (Binaryset.empty string_ord, Termtab.empty, thy)
     val (_, _, thy) = acc_init |> fold do_scc cliques
     val _ = Feedback.informStr ctxt (0, "Modifies proofs done")
   in

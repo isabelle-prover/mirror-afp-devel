@@ -100,7 +100,7 @@ fun try_with  (fallback:'b) (f:'a -> 'b) (x:'a) = (case try f x of
 fun to_bool EQUAL = true
  |  to_bool _     = false;
 
-fun are_same (x, y) = (to_bool o String.compare) (x, y);
+fun are_same (x, y) = (to_bool o string_ord) (x, y);
 
 end;
 
