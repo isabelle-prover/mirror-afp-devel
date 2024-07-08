@@ -1,6 +1,6 @@
 chapter AFP
 
-session Finite_Fields = "HOL-Algebra" +
+session Finite_Fields = "HOL-Probability" +
   options [timeout = 5400]
   sessions
     Digit_Expansions
