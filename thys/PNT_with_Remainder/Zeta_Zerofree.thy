@@ -809,7 +809,8 @@ proof -
     also have "\<dots> \<le> 8 * (5 / 2 + t)"
     proof -
       have "ln (12 + 2 * t) = ln (12 * (1 + t / 6))" by auto
-      also have "\<dots> = ln 12 + ln (1 + t / 6)" by (rule ln_mult) (use * in auto)
+      also have "\<dots> = ln 12 + ln (1 + t / 6)"
+        unfolding ln_mult using * by simp
       also have "\<dots> \<le> 5 / 2 + t / 6"
       proof (rule add_mono)
         have "(144 :: real) < (271 / 100) ^ 5"

@@ -126,8 +126,7 @@ proof (cases "\<mu> > 0")
   also have "... = \<gamma>*(ln \<gamma>+ln(1/(\<mu>+\<Lambda>\<^sub>a*(1-\<mu>))))+(1-\<gamma>)*(ln(1-\<gamma>)+ln(1/(1-(\<mu>+\<Lambda>\<^sub>a*(1-\<mu>)))))"
     by (simp add:algebra_simps)
   also have "... = \<gamma> * ln (\<gamma>*(1/(\<mu>+\<Lambda>\<^sub>a*(1-\<mu>))))+(1-\<gamma>)*ln((1-\<gamma>)*(1/(1-(\<mu>+\<Lambda>\<^sub>a*(1-\<mu>)))))"
-    using 2 4 assms(4) \<gamma>_gt_0
-    by (intro_cong "[\<sigma>\<^sub>2(+), \<sigma>\<^sub>2(*)]" more:ln_mult[symmetric] divide_pos_pos) auto
+    using 2 4 by (simp add: ln_mult ln_div)
   also have "... = KL_div \<gamma> (\<mu>+\<Lambda>\<^sub>a*(1-\<mu>))"
     unfolding KL_div_def by simp
   finally have 1: "\<gamma> * ln (1 / (\<mu> + \<Lambda>\<^sub>a)) - 2 * exp (- 1) \<le> KL_div \<gamma> (\<mu> + \<Lambda>\<^sub>a * (1 - \<mu>))"
@@ -269,8 +268,7 @@ proof -
   also have "... = \<gamma>*(ln \<gamma>+ln(1/(\<mu>+\<Lambda>*(1-\<mu>))))+(1-\<gamma>)*(ln(1-\<gamma>)+ln(1/(1-(\<mu>+\<Lambda>*(1-\<mu>)))))"
     by (simp add:algebra_simps)
   also have "... = \<gamma> * ln (\<gamma>*(1/(\<mu>+\<Lambda>*(1-\<mu>))))+(1-\<gamma>)*ln((1-\<gamma>)*(1/(1-(\<mu>+\<Lambda>*(1-\<mu>)))))"
-    using 2 1 assms(4) \<gamma>_gt_0 by (intro arg_cong2[where f="(+)"] iffD2[OF mult_cancel_left]
-        disjI_safe ln_mult[symmetric] divide_pos_pos) auto
+    using 2 1 assms(4)  by (simp add: ln_mult ln_div)
   also have "... = KL_div \<gamma> (\<mu>+\<Lambda>*(1-\<mu>))" unfolding KL_div_def by simp
   finally have 4: "\<gamma> * ln (1 / (\<mu> + \<Lambda>)) - 2 * exp (- 1) \<le> KL_div \<gamma> (\<mu> + \<Lambda> * (1 - \<mu>))"
     by simp

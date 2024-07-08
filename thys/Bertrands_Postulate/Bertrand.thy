@@ -356,7 +356,7 @@ next
       with that have "1 / (t - 1) \<ge> ln (1 + 1/(t - 1))"
         by (intro ln_add_one_self_le_self) simp_all
       also from t that have "ln (1 + 1/(t - 1)) = ln t- ln (t - 1)"
-        by (simp add: ln_div [symmetric] field_simps)
+        by (simp add: ln_div field_simps)
       finally have "ln t - ln (t - 1) \<le> 1 / (t - 1)" .
       with that t
       show "\<exists>y. ((\<lambda>x. x * (ln x - ln (x - 1))) has_field_derivative y) (at t) \<and> y \<le> 0"

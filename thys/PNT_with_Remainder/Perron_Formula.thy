@@ -86,7 +86,7 @@ proof -
         using * by (subst has_real_derivative_iff_has_vector_derivative [symmetric]) auto
     qed
     moreover have "ln (b + T) - ln (b + 0) = ln (1 + T / b)"
-      using Hb hT by (subst ln_div [symmetric]) (auto simp add: field_simps)
+      using Hb hT by (simp add: ln_div field_simps)
     ultimately show ?thesis by auto
   qed
   finally have "\<parallel>1 / (2 * pi * \<i>) * contour_integral path (\<lambda>s. f s * a powr s / s)\<parallel>
@@ -477,7 +477,8 @@ proof -
   proof -
     have "1 \<le> T / b" using hT Hb by auto
     hence "1 + T / b \<le> 2 * (T / b)" by auto
-    hence "ln (1 + T / b) \<le> ln 2 + ln (T / b)" by (subst ln_mult [symmetric]) auto
+    hence "ln (1 + T / b) \<le> ln 2 + ln (T / b)"
+      by (subst ln_mult_pos [symmetric]) auto
     thus ?thesis using ln_2_less_1 by auto
   qed
   have *: "\<parallel>F a\<parallel> \<le> a powr b * (2 + ln (T / b))"
