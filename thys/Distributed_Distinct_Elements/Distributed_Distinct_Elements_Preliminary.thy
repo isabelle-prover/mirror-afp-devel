@@ -15,11 +15,6 @@ begin
 
 unbundle intro_cong_syntax
 
-lemma mult_left_cong_nz:
-  assumes "a \<noteq> (0::'a::field) \<Longrightarrow> b = c"
-  shows "a * b = a * c"
-  using assms by auto
-
 lemma pmf_rev_mono:
   assumes "\<And>x. x \<in> set_pmf p \<Longrightarrow> x \<notin> Q \<Longrightarrow> x \<notin> P"
   shows "measure p P \<le> measure p Q"

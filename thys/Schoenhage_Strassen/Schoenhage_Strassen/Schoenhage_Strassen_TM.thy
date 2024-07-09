@@ -1994,7 +1994,7 @@ proof -
         using log_ge by simp_all
       also have "... = log 2 (3 * log 2 x) + 1" by simp
       also have "... = (log 2 3 + log 2 (log 2 x)) + 1"
-        apply (intro arg_cong2[where f = "(+)"] refl log_mult)
+        apply (intro arg_cong2[where f = "(+)"] refl log_mult_pos)
         using log_ge by simp_all
       also have "... = log 2 (log 2 x) + (1 + log 2 3)" by simp
       finally show ?thesis .
