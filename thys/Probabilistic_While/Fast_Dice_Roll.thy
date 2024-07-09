@@ -306,12 +306,12 @@ proof(cases "v < n")
       by(intro add_strict_left_mono) simp
     also have "\<dots> \<le> 2 ^ x * (v - n)" using I c by(intro mult_left_mono) auto
     finally show "c' < v'" using c' v' by simp
-    
+
     have "v' = 2 powr x * (v - n)" by(simp add: powr_realpow v')
     also have "\<dots> < 2 powr (log 2 (max 1 n) - log 2 (v - n) + 1) * (v - n)"
       using ** I c by(intro mult_strict_right_mono)(auto simp add: x_def log_divide)
     also have "\<dots> \<le> 2 * n" unfolding powr_add using I c
-      by(simp add: log_divide[symmetric] max_def)
+      by (simp add:powr_diff)
     finally show "v' < 2 * n" using c' by(simp del: of_nat_add)
     
     have "log 2 (n / (v - n)) \<le> x" using I c ** by(auto simp add: x_def log_divide max_def)
@@ -340,8 +340,8 @@ proof(cases "v < n")
     moreover have **: "-1 < log 2 (real n / real (v - n))" 
       by(rule less_le_trans[where y=0])(use I c in \<open>auto\<close>)
     ultimately have "x \<le> log 2 (real n) + 1" using v n 
-      apply (simp add: x_def max_def field_simps flip: log_divide)
-      by (smt (verit, best) ceiling_correct log_divide log_less_zero_cancel_iff nat_less_real_le of_nat_0_less_iff)
+      by (simp add: x_def max_def field_simps log_divide)
+       (smt (verit, best) ceiling_correct log_divide log_less_zero_cancel_iff nat_less_real_le of_nat_0_less_iff)
     hence "2 powr x \<le> 2 powr \<dots>" by(rule powr_mono) simp
     hence "p \<le> 1 / 2 ^ x" unfolding powr_add using n
       by(subst (asm) powr_realpow, simp)(subst (asm) powr_log_cancel; simp_all add: p_def field_simps)

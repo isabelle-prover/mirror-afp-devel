@@ -3210,8 +3210,7 @@ proof -
       without the logarithm.\<close>
       also have "... = deltaG(TYPE('a)) * (ln 512 + 2 * ln lambda + ln (1+C))"
         apply (subst ln2mult) using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> apply simp
-        apply (subst ln_mult[symmetric]) apply simp using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> apply simp
-        apply (subst ln_mult[symmetric]) using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+        using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by (simp add:ln_mult)
       also have "... = (deltaG(TYPE('a)) * 1) * ln 512 + 2 * (deltaG(TYPE('a)) * ln lambda) + (deltaG(TYPE('a)) * ln (1+C))"
         by (auto simp add: algebra_simps)
       text \<open>For each term, of the form $\delta \ln c$, we bound it by $(\delta^2 + (\ln c)^2)/2$, and

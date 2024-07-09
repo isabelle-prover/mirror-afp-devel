@@ -532,7 +532,7 @@ proof -
       by (metis \<open>l \<noteq> 0\<close> disc_lt_one less_divide_eq_1_pos less_le zero_le_disc)
   qed (use assms in auto)
   also have "\<dots> = log (1 / l) l + log (1/l) (dist v \<nu>\<^sub>b_opt) - c"
-    using assms disc_lt_one by (auto simp: less_le intro!: log_mult)
+    using assms disc_lt_one by (auto simp: less_le log_mult)
   also have "\<dots> = -(log (1 / l) (1/l)) + (log (1/l) (dist v \<nu>\<^sub>b_opt)) - c"
     using assms disc_lt_one
     by (subst log_inverse[symmetric]) (auto simp: less_le right_inverse_eq)
