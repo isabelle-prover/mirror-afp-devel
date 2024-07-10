@@ -2369,7 +2369,7 @@ section \<open>Bisimulation\<close>
 
 sublocale inca_ubx_bisimulation:
   bisimulation Sinca.step Subx.step "final Finca_get Inca.IReturn" "final Fubx_get Ubx.IReturn"
-  "\<lambda>_ _. False" "\<lambda>_. match"
+  "\<lambda>_ _. False" "\<lambda>_ _. False" "\<lambda>_. match"
   by unfold_locales
 
 end

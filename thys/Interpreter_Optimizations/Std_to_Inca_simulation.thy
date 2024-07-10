@@ -673,7 +673,7 @@ sublocale std_inca_bisimulation:
   bisimulation where
     step1 = Sstd.step and final1 = "final Fstd_get Std.IReturn" and
     step2 = Sinca.step and final2 = "final Finca_get Inca.IReturn" and
-    order = "\<lambda>_ _. False" and match = "\<lambda>_. match"
+    order\<^sub>f = "\<lambda>_ _. False" and order\<^sub>b = "\<lambda>_ _. False" and match = "\<lambda>_. match"
   by unfold_locales
 
 end
