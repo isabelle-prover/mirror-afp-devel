@@ -74,6 +74,46 @@ qed
 
 subsection \<open>Wellfounded Extra\<close>
 
+lemma wfp_on_antimono_stronger:
+  fixes
+    A :: "'a set" and B :: "'b set" and
+    f :: "'a \<Rightarrow> 'b" and
+    R :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and Q :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+  assumes
+    wf: "wfp_on B R" and
+    sub: "f ` A \<subseteq> B" and
+    mono: "\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> Q x y \<Longrightarrow> R (f x) (f y)"
+  shows "wfp_on A Q"
+  unfolding wfp_on_iff_ex_minimal
+proof (intro allI impI)
+  fix AA :: "'a set" assume "AA \<subseteq> A" and "AA \<noteq> {}"
+  have "f ` AA \<subseteq> B"
+    using \<open>AA \<subseteq> A\<close> sub by blast
+  moreover have "f ` AA \<noteq> {}"
+    using \<open>AA \<noteq> {}\<close> by blast
+  ultimately have "\<exists>z\<in>f ` AA. \<forall>y. R y z \<longrightarrow> y \<notin> f ` AA"
+    using wf wfp_on_iff_ex_minimal by blast
+  hence "\<exists>z\<in>AA. \<forall>y. R (f y) (f z) \<longrightarrow> y \<notin> AA"
+    by blast
+  thus "\<exists>z\<in>AA. \<forall>y. Q y z \<longrightarrow> y \<notin> AA"
+    using \<open>AA \<subseteq> A\<close> mono by blast
+qed
+
+lemma rtranclp_mono_stronger:
+  fixes f :: "'a \<Rightarrow> 'b" and R :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and Q :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+  assumes "Q\<^sup>*\<^sup>* x y" and "(\<And>x y. Q x y \<Longrightarrow> R (f x) (f y))"
+  shows "R\<^sup>*\<^sup>* (f x) (f y)"
+  using \<open>Q\<^sup>*\<^sup>* x y\<close>
+proof (induction y rule: rtranclp_induct)
+  case base
+  then show ?case
+    using assms by simp
+next
+  case (step y z)
+  then show ?case
+    using assms by fastforce
+qed
+
 
 subsection \<open>FSet Extra\<close>
 
@@ -851,26 +891,56 @@ next
     by auto
 qed
 
+corollary termination_projectable_strategy:
+  fixes
+    N :: "('f, 'v) Term.term clause fset" and
+    \<beta> :: "('f, 'v) Term.term" and
+    strategy and strategy_init and proj
+  assumes strategy_restricts_regular_scl:
+    "\<And>S S'. strategy\<^sup>*\<^sup>* strategy_init S \<Longrightarrow> strategy S S' \<Longrightarrow> regular_scl N \<beta> (proj S) (proj S')" and
+    initial_state: "proj strategy_init = initial_state"
+  shows "wfp_on {S. strategy\<^sup>*\<^sup>* strategy_init S} strategy\<inverse>\<inverse>"
+proof (rule wfp_on_antimono_stronger)
+  show "wfp_on {proj S | S. strategy\<^sup>*\<^sup>* strategy_init S} (regular_scl N \<beta>)\<inverse>\<inverse>"
+  proof (rule wfp_on_subset)
+    show "wfp_on {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
+      using termination_regular_scl by metis
+  next
+    show "{proj S | S. strategy\<^sup>*\<^sup>* strategy_init S} \<subseteq> {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S}"
+    proof (intro Collect_mono impI, elim exE conjE)
+      fix s S assume "s = proj S" and "strategy\<^sup>*\<^sup>* strategy_init S"
+      show "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state s"
+        unfolding \<open>s = proj S\<close>
+        using \<open>strategy\<^sup>*\<^sup>* strategy_init S\<close>
+      proof (induction S rule: rtranclp_induct)
+        case base
+        thus ?case
+          unfolding initial_state by simp
+      next
+        case (step y z)
+        thus ?case
+          using strategy_restricts_regular_scl
+          by (meson rtranclp.simps)
+      qed
+    qed
+  qed
+next
+  show "proj ` {S. strategy\<^sup>*\<^sup>* strategy_init S} \<subseteq> {proj S |S. strategy\<^sup>*\<^sup>* strategy_init S}"
+    by blast
+next
+  show "\<And>S' S. S \<in> {S. strategy\<^sup>*\<^sup>* strategy_init S} \<Longrightarrow> strategy\<inverse>\<inverse> S' S \<Longrightarrow>
+    (regular_scl N \<beta>)\<inverse>\<inverse> (proj S') (proj S)"
+    using strategy_restricts_regular_scl by simp
+qed
+
 corollary termination_strategy:
   fixes
     N :: "('f, 'v) Term.term clause fset" and
     \<beta> :: "('f, 'v) Term.term"
   assumes strategy_restricts_regular_scl: "\<And>S S'. strategy S S' \<Longrightarrow> regular_scl N \<beta> S S'"
   shows "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} strategy\<inverse>\<inverse>"
-proof (rule wfp_on_antimono_strong)
-  show "wfp_on {S. strategy\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
-  proof (rule wfp_on_subset)
-    show "wfp_on {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S} (regular_scl N \<beta>)\<inverse>\<inverse>"
-      using termination_regular_scl by metis
-  next
-    show "{S. strategy\<^sup>*\<^sup>* initial_state S} \<subseteq> {S. (regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S}"
-      using strategy_restricts_regular_scl
-      by (metis (no_types, opaque_lifting) Collect_mono mono_rtranclp)
-  qed
-next
-  show "\<And>S' S. strategy\<inverse>\<inverse> S' S \<Longrightarrow> (regular_scl N \<beta>)\<inverse>\<inverse> S' S"
-    using strategy_restricts_regular_scl by simp
-qed simp
+  using termination_projectable_strategy[of strategy initial_state N \<beta> "\<lambda>x. x"]
+  using assms by metis
 
 end
 
