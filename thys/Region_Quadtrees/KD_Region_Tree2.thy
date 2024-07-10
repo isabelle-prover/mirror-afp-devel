@@ -13,13 +13,6 @@ imports
   "HOL-Library.Tree" (* only for \<open>height\<close> *)
 begin                                         
 
-(* TODO: In Isabelle after 2023 - remove *)
-lemma nlists_Suc: "nlists (Suc n) A = (\<Union>a\<in>A. (#) a ` nlists n A)"
-  by(auto simp: set_eq_iff image_iff in_nlists_Suc_iff)
-
-lemma in_nlists_UNIV: "xs \<in> nlists k UNIV \<longleftrightarrow> length xs = k"
-unfolding nlists_def by(auto)
-
 datatype 'a kdt = Box 'a | Split "'a kdt" "'a kdt"
 
 (* For quickcheck: *)

@@ -4,10 +4,6 @@ theory Quad_Tree
 imports Quad_Base
 begin
 
-(* TODO: remove - is [simp] after Isabelle23 *)
-lemma diff_shunt: "({} = x - y) \<longleftrightarrow> (x \<le> y)"
-  by blast
-
 lemma mod_minus: "\<lbrakk> i < 2*m; \<not> i < m \<rbrakk> \<Longrightarrow> i mod m = i - (m::nat)"
   by (simp add: div_if modulo_nat_def)
 
@@ -506,36 +502,6 @@ qed auto
 
 
 subsection \<open>From Matrix to Quadtree\<close>
-
-
-subsubsection \<open>Matrix as function\<close>
-
-(* TODO mk exercise *)
-
-definition shift_mx where
-"shift_mx mx x y = (\<lambda>i j. mx (i+x) (j+y))"
-
-fun qt_of_fun :: "(nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a qtree" where
-"qt_of_fun mx (Suc n) = qf Qc (\<lambda>x y. qt_of_fun (shift_mx mx x y) n) 0 0 (2^n)" |
-"qt_of_fun mx 0 = L(mx 0 0)"
-
-lemma points_qt_of_fun: "points n (qt_of_fun mx n) = {(i,j) \<in> sq n. mx i j}"
-proof(induction n arbitrary: mx)
-  case 0
-  then show ?case by (auto)
-next
-  case (Suc n)
-  then show ?case by(auto simp add: shift_mx_def Suc_length_conv sq_Suc_Qsq Qsq_def Let_def)
-qed
-
-lemma compressed_qt_of_fun: "compressed (qt_of_fun mx n)"
-proof(induction n arbitrary: mx)
-  case 0
-  then show ?case by simp
-next
-  case (Suc n)
-  then show ?case by(simp add:compressed_Qc)
-qed
 
 
 subsubsection \<open>Matrix as list of lists\<close>

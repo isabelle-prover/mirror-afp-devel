@@ -6,14 +6,6 @@ imports
   "HOL-Library.Tree" (* only for \<open>height\<close> *)
 begin                                         
 
-(* TODO: In Isabelle after 2023 - remove *)
-lemma nlists_Suc: "nlists (Suc n) A = (\<Union>a\<in>A. (#) a ` nlists n A)"
-by(auto simp: set_eq_iff image_iff in_nlists_Suc_iff)
-lemma in_nlists_UNIV: "xs \<in> nlists k UNIV \<longleftrightarrow> length xs = k"
-unfolding nlists_def by(auto)
-lemma nlists_singleton: "nlists n {a} = {replicate n a}"
-unfolding nlists_def by(auto simp: replicate_length_same dest!: subset_singletonD)
-
 text \<open>Generalizes quadtrees. Instead of having \<open>2^n\<close> direct children of a node,
 the children are arranged in a binary tree where each \<open>Split\<close> splits along one dimension.\<close>
 

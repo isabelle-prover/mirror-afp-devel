@@ -10,12 +10,6 @@ theory KD_Region_Nested
 imports "HOL-Library.NList"
 begin
 
-(* TODO: In Isabelle after 2023 - remove *)
-lemma nlists_Suc: "nlists (Suc n) A = (\<Union>a\<in>A. (#) a ` nlists n A)"
-  by(auto simp: set_eq_iff image_iff in_nlists_Suc_iff)
-lemma nlists_singleton: "nlists n {a} = {replicate n a}"
-  unfolding nlists_def by(auto simp: replicate_length_same dest!: subset_singletonD)
-
 fun cube :: "nat \<Rightarrow> nat \<Rightarrow> nat list set" where
   "cube k n = nlists k {0..<2^n}"
 
