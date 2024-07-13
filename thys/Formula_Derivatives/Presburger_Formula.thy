@@ -79,7 +79,7 @@ lemma map_index'_Suc[simp]: "map_index' (Suc i) f xs = map_index' i (\<lambda>i.
 abbreviation (input) "zero n \<equiv> replicate n False"
 abbreviation (input) "SUC \<equiv> \<lambda>_::unit. Suc"
 definition "test_bit m n \<equiv> (m :: nat) div 2 ^ n mod 2 = 1"
-lemma test_bit_eq_iff: \<open>test_bit = bit\<close>
+lemma test_bit_eq_bit: \<open>test_bit = bit\<close>
   by (simp add: fun_eq_iff test_bit_def bit_iff_odd_drop_bit mod_2_eq_odd flip: drop_bit_eq_div)
 definition "downshift m \<equiv> (m :: nat) div 2"
 definition "upshift m \<equiv> (m :: nat) * 2"
@@ -87,9 +87,11 @@ lemma set_bit_def: "set_bit n m \<equiv> m + (if \<not> test_bit m n then 2 ^ n 
   apply (rule eq_reflection)
   apply (rule bit_eqI)
   apply (subst disjunctive_add)
-   apply (auto simp add: bit_simps test_bit_eq_iff)
+   apply (auto simp add: bit_simps test_bit_eq_bit)
   done
 definition "cut_bits n m \<equiv> (m :: nat) mod 2 ^ n"
+lemma cut_bits_eq_take_bit: \<open>cut_bits = take_bit\<close>
+  by (simp add: fun_eq_iff cut_bits_def take_bit_eq_mod)
 
 typedef interp = "{(n :: nat, xs :: nat list). \<forall>x \<in> set xs. len x \<le> n}"
   by (force intro: exI[of _ "[]"])
@@ -264,8 +266,9 @@ lemma [Presb_simps]:
   "len P \<le> n \<Longrightarrow> cut_bits n P = P"
   "len (upshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> Suc (Suc n))"
   "len (downshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> n)"
-  by (auto simp: extend_def set_bit_def cut_bits_def upshift_def downshift_def test_bit_def
-    len_le_iff len_eq0_iff div_add_self2 split: nat.split)
+  by (simp_all add: downshift_def upshift_def test_bit_eq_bit extend_def cut_bits_def
+    bit_simps mult.commute [of _ 2] len_le_iff len_eq0_iff split: nat.split)
+    (simp add: bit_iff_odd)
 
 lemma Suc0_div_pow2_eq: "Suc 0 div 2 ^ i = (if i = 0 then 1 else 0)"
   by (induct i) (auto simp: div_mult2_eq)
