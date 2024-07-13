@@ -57,12 +57,6 @@ lemma nat_of_integer_1 [simp]: "nat_of_integer 1 = 1"
 lemma dup_1 [simp]: "Code_Numeral.dup 1 = 2"
   by transfer simp
 
-lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is \<open>\<lambda>k . k div 2\<close> .
-
-lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is odd .
-
-lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer" is \<open>\<lambda>k b. of_bool b + 2 * k\<close> .
-
 end
 
 
@@ -320,48 +314,8 @@ code_printing
   (Haskell_Quickcheck) "(Data'_Bits.complement :: Prelude.Int -> Prelude.Int)" and
   (Scala) "_.unary'_~"
 
-code_printing constant bin_rest_integer \<rightharpoonup>
-  (SML) "IntInf.div ((_), 2)" and
-  (OCaml) "Z.shift'_right/ _/ 1" and
-  (Haskell) "(Data'_Bits.shiftrUnbounded _ 1 :: Integer)" and
-  (Haskell_Quickcheck) "(Data'_Bits.shiftrUnbounded _ 1 :: Prelude.Int)" and
-  (Scala) "_ >> 1"
-
-context
-  includes integer.lifting bit_operations_syntax
-begin
-
-lemma bitNOT_integer_code [code]:
-  fixes i :: integer shows
-  "NOT i = - i - 1"
-  by transfer (simp add: not_int_def)
-
-lemma bin_rest_integer_code [code nbe]:
-  "bin_rest_integer i = i div 2"
-  by transfer rule
-
-lemma bin_last_integer_code [code]:
-  "bin_last_integer i \<longleftrightarrow> i AND 1 \<noteq> 0"
-  by transfer (simp add: and_one_eq odd_iff_mod_2_eq_one)
-
-lemma bin_last_integer_nbe [code nbe]:
-  "bin_last_integer i \<longleftrightarrow> i mod 2 \<noteq> 0"
-  by transfer (simp add: odd_iff_mod_2_eq_one)
-
-lemma bitval_bin_last_integer [code_unfold]:
-  "of_bool (bin_last_integer i) = i AND 1"
-  by transfer (simp add: and_one_eq mod_2_eq_odd)
-
-end
-
 definition integer_test_bit :: "integer \<Rightarrow> integer \<Rightarrow> bool"
   where "integer_test_bit x n = (if n < 0 then undefined x n else bit x (nat_of_integer n))"
-
-declare [[code drop: \<open>bit :: integer \<Rightarrow> nat \<Rightarrow> bool\<close>]]
-
-lemma bit_integer_code [code]:
-  "bit x n \<longleftrightarrow> integer_test_bit x (integer_of_nat n)"
-  by (simp add: integer_test_bit_def)
 
 lemma integer_test_bit_code [code]:
   "integer_test_bit x (Code_Numeral.Neg n) = undefined x (Code_Numeral.Neg n)"
@@ -385,6 +339,10 @@ lemma integer_test_bit_code [code]:
    integer_test_bit (Code_Numeral.Neg (n + num.One)) (Code_Numeral.sub n' num.One)"
   by (simp_all add: integer_test_bit_def bit_integer_def bit_0 flip: bit_not_int_iff')
 
+lemma bit_integer_code [code]:
+  "bit x n \<longleftrightarrow> integer_test_bit x (integer_of_nat n)"
+  by (simp add: integer_test_bit_def)
+
 code_printing constant integer_test_bit \<rightharpoonup>
   (SML) "Integer'_Bit.test'_bit" and
   (OCaml) "Integer'_Bit.test'_bit" and
@@ -399,7 +357,11 @@ begin
 lemma lsb_integer_code [code]:
   fixes x :: integer shows
   "lsb x = bit x 0"
-by transfer(simp add: lsb_int_def)
+  by transfer(simp add: lsb_int_def)
+
+lemma msb_integer_code [code]:
+  "msb (x :: integer) \<longleftrightarrow> x < 0"
+  by transfer (simp add: msb_int_def)
 
 definition integer_set_bit :: "integer \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> integer"
 where [code del]: "integer_set_bit x n b = (if n < 0 then undefined x n b else set_bit x (nat_of_integer n) b)"
@@ -522,54 +484,58 @@ lemma integer_shiftr_code [code]:
   done
 
 context
-includes integer.lifting
-begin
-
-lemma Bit_integer_code [code]:
-  "Bit_integer i False = push_bit 1 i"
-  "Bit_integer i True = push_bit 1 i + 1"
-  by (transfer; simp)+
-
-lemma msb_integer_code [code]:
-  "msb (x :: integer) \<longleftrightarrow> x < 0"
-  by transfer (simp add: msb_int_def)
-
-end
-
-context
   includes integer.lifting bit_operations_syntax
 begin
+
+definition odd_integer :: \<open>integer \<Rightarrow> bool\<close>
+  where \<open>odd_integer = odd\<close>
+
+lemma odd_integer_code [code]:
+  \<open>odd_integer i \<longleftrightarrow> i AND 1 \<noteq> 0\<close>
+  by (simp add: odd_integer_def and_one_eq odd_iff_mod_2_eq_one)
+
+lemma odd_integer_code_nbe [code nbe]:
+  \<open>odd_integer i \<longleftrightarrow> i mod 2 \<noteq> 0\<close>
+  by (simp add: odd_integer_def  odd_iff_mod_2_eq_one)
+
+definition Bit_Cons_integer :: \<open>bool \<Rightarrow> integer \<Rightarrow> integer\<close>
+  where \<open>Bit_Cons_integer b k = of_bool b + 2 * k\<close>
+
+lemma bit_Bit_Cons_integer_iff:
+  \<open>bit (Bit_Cons_integer b k) n \<longleftrightarrow> (if n = 0 then b else bit k (n - 1))\<close>
+  by (simp add: Bit_Cons_integer_def bit_simps even_bit_succ_iff)
+
+lemma Bit_Cons_integer_code [code]:
+  "Bit_Cons_integer False i = push_bit 1 i"
+  "Bit_Cons_integer True i = push_bit 1 i + 1"
+  by (simp_all add: Bit_Cons_integer_def)
 
 lemma bitAND_integer_unfold [code]:
   "x AND y =
    (if x = 0 then 0
     else if x = - 1 then y
-    else Bit_integer (bin_rest_integer x AND bin_rest_integer y) (bin_last_integer x \<and> bin_last_integer y))"
-  by transfer
-    (auto simp add: algebra_simps
-      and_int_rec [of _ \<open>_ * 2\<close>] and_int_rec [of \<open>_ * 2\<close>] and_int_rec [of \<open>1 + _ * 2\<close>]
-      elim!: evenE oddE)
+    else Bit_Cons_integer (odd_integer x \<and> odd_integer y) (drop_bit 1 x AND drop_bit 1 y))"
+  apply (rule bit_eqI)
+  apply (simp add: bit_simps bit_Bit_Cons_integer_iff odd_integer_def bit_0)
+  done
 
 lemma bitOR_integer_unfold [code]:
   "x OR y =
    (if x = 0 then y
     else if x = - 1 then - 1
-    else Bit_integer (bin_rest_integer x OR bin_rest_integer y) (bin_last_integer x \<or> bin_last_integer y))"
-  by transfer
-    (auto simp add: algebra_simps
-      or_int_rec [of _ \<open>_ * 2\<close>] or_int_rec [of _ \<open>1 + _ * 2\<close>] or_int_rec [of \<open>1 + _ * 2\<close>]
-      elim!: evenE oddE)
+    else Bit_Cons_integer (odd_integer x \<or> odd_integer y) (drop_bit 1 x OR drop_bit 1 y))"
+  apply (rule bit_eqI)
+  apply (simp add: bit_simps bit_Bit_Cons_integer_iff odd_integer_def bit_0)
+  done
 
 lemma bitXOR_integer_unfold [code]:
   "x XOR y =
    (if x = 0 then y
     else if x = - 1 then NOT y
-    else Bit_integer (bin_rest_integer x XOR bin_rest_integer y)
-      (\<not> bin_last_integer x \<longleftrightarrow> bin_last_integer y))"
-  by transfer
-    (auto simp add: algebra_simps
-      xor_int_rec [of _ \<open>_ * 2\<close>] xor_int_rec [of \<open>_ * 2\<close>] xor_int_rec [of \<open>1 + _ * 2\<close>]
-      elim!: evenE oddE)
+    else Bit_Cons_integer (\<not> odd_integer x \<longleftrightarrow> odd_integer y) (drop_bit 1 x XOR drop_bit 1 y))"
+  apply (rule bit_eqI)
+  apply (auto simp add: bit_simps bit_Bit_Cons_integer_iff odd_integer_def bit_0)
+  done
 
 end
 

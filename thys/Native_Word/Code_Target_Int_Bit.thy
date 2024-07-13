@@ -54,10 +54,6 @@ lemma [code]:
   \<open>Code_Target_Int_Bit.even i \<longleftrightarrow> i AND 1 = 0\<close>
   by (simp add: Code_Target_Int_Bit.even_def even_iff_mod_2_eq_zero and_one_eq)
 
-lemma bin_rest_code:
-  "int_of_integer i div 2 = int_of_integer (bin_rest_integer i)"
-  by transfer simp
-
 end
 
 end
