@@ -134,6 +134,14 @@ lemma shiftr_eq_div:
 
 end
 
+lemmas shiftl_int_def = shiftl_eq_mult[of x for x::int]
+lemmas shiftr_int_def = shiftr_eq_div[of x for x::int]
+
+lemma int_shiftl_BIT: fixes x :: int
+  shows int_shiftl0: "x << 0 = x"
+  and int_shiftl_Suc: "x << Suc n = 2 * x << n"
+  by (auto simp add: shiftl_int_def)
+
 context ring_bit_operations
 begin
 

@@ -14,6 +14,8 @@ theory Reversed_Bit_Lists
     Typedef_Morphisms
     Least_significant_bit
     Most_significant_bit
+    Rsplit
+    Bits_Int
     Even_More_List
     "HOL-Library.Sublist"
     Aligned
@@ -336,8 +338,29 @@ primrec bl_to_bin_aux :: "bool list \<Rightarrow> int \<Rightarrow> int"
     Nil: "bl_to_bin_aux [] w = w"
   | Cons: "bl_to_bin_aux (b # bs) w = bl_to_bin_aux bs (of_bool b + 2 * w)"
 
+lemma bin_nth_of_bl_aux:
+  "bit (bl_to_bin_aux bl w) n =
+    (n < size bl \<and> rev bl ! n \<or> n \<ge> length bl \<and> bit w (n - size bl))"
+  apply (induction bl arbitrary: w)
+   apply simp_all
+  apply safe
+                      apply (simp_all add: not_le nth_append bit_double_iff even_bit_succ_iff split: if_splits)
+  done
+
+lemma bl_to_bin_aux_eq:
+  \<open>bl_to_bin_aux bs k = horner_sum of_bool 2 (rev bs) OR push_bit (length bs) k\<close>
+  by (rule bit_eqI) (simp add: bit_simps bin_nth_of_bl_aux)
+
 definition bl_to_bin :: "bool list \<Rightarrow> int"
   where "bl_to_bin bs = bl_to_bin_aux bs 0"
+
+lemma bin_nth_of_bl:
+  "bit (bl_to_bin bl) n = (n < length bl \<and> rev bl ! n)"
+  by (simp add: bl_to_bin_def bin_nth_of_bl_aux)
+
+lemma bl_to_bin_eq:
+  \<open>bl_to_bin bs = horner_sum of_bool 2 (rev bs)\<close>
+  by (simp add: bl_to_bin_def bl_to_bin_aux_eq) 
 
 primrec bin_to_bl_aux :: "nat \<Rightarrow> int \<Rightarrow> bool list \<Rightarrow> bool list"
   where
@@ -414,7 +437,8 @@ lemma bl_to_bin_inj: "bl_to_bin bs = bl_to_bin cs \<Longrightarrow> length bs = 
   apply simp
   done
 
-lemma bl_to_bin_False [simp]: "bl_to_bin (False # bl) = bl_to_bin bl"
+lemma bl_to_bin_False [simp]:
+  \<open>bl_to_bin (False # bl) = bl_to_bin bl\<close>
   by (auto simp: bl_to_bin_def)
 
 lemma bl_to_bin_Nil [simp]: "bl_to_bin [] = 0"
@@ -484,18 +508,6 @@ lemma bl_sbin_sign_aux: "hd (bin_to_bl_aux (Suc n) w bs) = (bin_sign (signed_tak
 
 lemma bl_sbin_sign: "hd (bin_to_bl (Suc n) w) = (bin_sign (signed_take_bit n w) = -1)"
   unfolding bin_to_bl_def by (rule bl_sbin_sign_aux)
-
-lemma bin_nth_of_bl_aux:
-  "bit (bl_to_bin_aux bl w) n =
-    (n < size bl \<and> rev bl ! n \<or> n \<ge> length bl \<and> bit w (n - size bl))"
-  apply (induction bl arbitrary: w)
-   apply simp_all
-  apply safe
-                      apply (simp_all add: not_le nth_append bit_double_iff even_bit_succ_iff split: if_splits)
-  done
-
-lemma bin_nth_of_bl: "bit (bl_to_bin bl) n = (n < length bl \<and> rev bl ! n)"
-  by (simp add: bl_to_bin_def bin_nth_of_bl_aux)
 
 lemma bin_nth_bl: "n < m \<Longrightarrow> bit w n = nth (rev (bin_to_bl m w)) n"
   by (metis bin_bl_bin bin_nth_of_bl nth_bintr size_bin_to_bl)
@@ -934,15 +946,6 @@ lemma bin_cat_foldl_lem:
   apply (simp add: bin_cat_assoc_sym)
   done
 
-lemma bin_rcat_bl: "bin_rcat n wl = bl_to_bin (concat (map (bin_to_bl n) wl))"
-  apply (unfold bin_rcat_eq_foldl)
-  apply (rule sym)
-  apply (induct wl)
-   apply (auto simp add: bl_to_bin_append)
-  apply (simp add: bl_to_bin_aux_alt sclem)
-  apply (simp add: bin_cat_foldl_lem [symmetric])
-  done
-
 lemma bin_last_bl_to_bin: "odd (bl_to_bin bs) \<longleftrightarrow> bs \<noteq> [] \<and> last bs"
 by(cases "bs = []")(auto simp add: bl_to_bin_def last_bin_last'[where w=0])
 
@@ -983,6 +986,46 @@ lemma bl_or_bin: "map2 (\<or>) (bin_to_bl n v) (bin_to_bl n w) = bin_to_bl n (v 
 
 lemma bl_xor_bin: "map2 (\<noteq>) (bin_to_bl n v) (bin_to_bl n w) = bin_to_bl n (v XOR w)"
   using bl_xor_aux_bin by (simp add: bin_to_bl_def)
+
+definition bin_rcat :: \<open>nat \<Rightarrow> int list \<Rightarrow> int\<close>
+  where \<open>bin_rcat n = horner_sum (take_bit n) (2 ^ n) \<circ> rev\<close>
+
+lemma bin_rcat_eq_foldl:
+  \<open>bin_rcat n = foldl (\<lambda>u v. (\<lambda>k n l. concat_bit n l k) u n v) 0\<close>
+proof
+  fix ks :: \<open>int list\<close>
+  show \<open>bin_rcat n ks = foldl (\<lambda>u v. (\<lambda>k n l. concat_bit n l k) u n v) 0 ks\<close>
+    by (induction ks rule: rev_induct)
+      (simp_all add: bin_rcat_def concat_bit_eq push_bit_eq_mult)
+qed
+
+lemma bin_rcat_bl:
+  \<open>bin_rcat n wl = bl_to_bin (concat (map (bin_to_bl n) wl))\<close>
+  apply (unfold bin_rcat_eq_foldl)
+  apply (rule sym)
+  apply (induct wl)
+   apply (auto simp add: bl_to_bin_append)
+  apply (simp add: bl_to_bin_aux_alt sclem)
+  apply (simp add: bin_cat_foldl_lem [symmetric])
+  done
+
+lemma bin_rsplit_rcat [rule_format]:
+  "n > 0 \<longrightarrow> bin_rsplit n (n * size ws, bin_rcat n ws) = map ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n) ws"
+  apply (unfold bin_rsplit_def bin_rcat_eq_foldl)
+  apply (rule_tac xs = ws in rev_induct)
+   apply clarsimp
+  apply clarsimp
+  apply (subst rsplit_aux_alts)
+  apply (simp add: drop_bit_bin_cat_eq take_bit_bin_cat_eq)
+  done
+
+lemma word_rcat_eq:
+  \<open>word_rcat ws = word_of_int (bin_rcat (LENGTH('a::len)) (map uint ws))\<close>
+  for ws :: \<open>'a::len word list\<close>
+  apply (simp add: word_rcat_def bin_rcat_def rev_map)
+  apply transfer
+  apply (simp add: horner_sum_foldr foldr_map comp_def)
+  done
 
 
 subsection \<open>Type \<^typ>\<open>'a word\<close>\<close>

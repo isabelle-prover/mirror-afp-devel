@@ -2504,16 +2504,91 @@ end
 
 lemmas word_div_less = div_word_less
 
-(* FIXME: move to Word distribution? *)
-lemma bin_nth_minus_Bit0[simp]:
-  "0 < n \<Longrightarrow> bit (numeral (num.Bit0 w) :: int) n = bit (numeral w :: int) (n - 1)"
-  by (cases n; simp)
-
-lemma bin_nth_minus_Bit1[simp]:
-  "0 < n \<Longrightarrow> bit (numeral (num.Bit1 w) :: int) n = bit (numeral w :: int) (n - 1)"
-  by (cases n; simp)
-
 lemma word_mod_by_0: "k mod (0::'a::len word) = k"
   by (simp add: word_arith_nat_mod)
+
+\<comment> \<open>the binary operations only\<close>  (* BH: why is this needed? *)
+lemmas word_log_binary_defs =
+  word_and_def word_or_def word_xor_def
+
+\<comment> \<open>limited hom result\<close>
+lemma word_cat_hom:
+  "LENGTH('a::len) \<le> LENGTH('b::len) + LENGTH('c::len) \<Longrightarrow>
+    (word_cat (word_of_int w :: 'b word) (b :: 'c word) :: 'a word) =
+    word_of_int ((\<lambda>k n l. concat_bit n l k) w (size b) (uint b))"
+  by (rule bit_eqI) (auto simp add: bit_simps size_word_def)
+
+lemma uint_shiftl:
+  "uint (push_bit i n) = take_bit (size n) (push_bit i (uint n))"
+  by (simp add: unsigned_push_bit_eq word_size)
+
+lemma sint_range':
+  \<open>- (2 ^ (LENGTH('a) - Suc 0)) \<le> sint x \<and> sint x < 2 ^ (LENGTH('a) - Suc 0)\<close>
+  for x :: \<open>'a::len word\<close>
+  by transfer simp_all
+
+lemma signed_arith_eq_checks_to_ord:
+  \<open>sint a + sint b = sint (a + b) \<longleftrightarrow> (a \<le>s a + b \<longleftrightarrow> 0 \<le>s b)\<close> (is ?P)
+  \<open>sint a - sint b = sint (a - b) \<longleftrightarrow> (0 \<le>s a - b \<longleftrightarrow> b \<le>s a)\<close> (is ?Q)
+  \<open>- sint a = sint (- a) \<longleftrightarrow> (0 \<le>s - a \<longleftrightarrow> a \<le>s 0)\<close> (is ?R)
+proof -
+  define n where \<open>n = LENGTH('a) - Suc 0\<close>
+  then have [simp]: \<open>LENGTH('a) = Suc n\<close>
+    by simp
+  define k l where \<open>k = sint a\<close> \<open>l = sint b\<close>
+  then have [simp]: \<open>sint a = k\<close> \<open>sint b = l\<close>
+    by simp_all
+  have self_eq_iff: \<open>k + l = signed_take_bit n (k + l) \<longleftrightarrow> - (2 ^ n) \<le> k + l \<and> k + l < 2 ^ n\<close>
+    using signed_take_bit_int_eq_self_iff [of n \<open>k + l\<close>]
+    by auto
+  from sint_range' [where x=a] sint_range' [where x=b]
+  have assms: \<open>- (2 ^ n) \<le> k\<close> \<open>k < 2 ^ n\<close> \<open>- (2 ^ n) \<le> l\<close> \<open>l < 2 ^ n\<close>
+    by simp_all
+  have aux: \<open>signed_take_bit n x = (if x < - (2 ^ n) then x + 2 * (2 ^ n)
+        else if x \<ge> 2 ^ n then x - 2 * (2 ^ n) else x)\<close>
+    if \<open>- 3 * (2 ^ n) \<le> x \<and> x < 3 * (2 ^ n)\<close> for x :: int
+    using that apply (simp add: signed_take_bit_eq_take_bit_shift)
+    apply (simp add: take_bit_eq_mod)
+    apply auto
+     apply (smt (verit) minus_mod_self2 mod_pos_pos_trivial)
+    apply (smt (verit) mod_add_self2 mod_pos_pos_trivial)
+    done
+  show ?P
+    using assms
+    by (simp add: sint_word_ariths word_sle_eq word_sless_alt aux)
+  show ?Q
+    using assms
+    by (simp add: sint_word_ariths word_sle_eq word_sless_alt aux)
+  show ?R
+    using assms
+    by (simp add: sint_word_ariths word_sle_eq word_sless_alt aux)
+qed
+
+lemma signed_mult_eq_checks_double_size:
+  assumes mult_le: "(2 ^ (LENGTH('a) - 1) + 1) ^ 2 \<le> (2 :: int) ^ (LENGTH('b) - 1)"
+           and le: "2 ^ (LENGTH('a) - 1) \<le> (2 :: int) ^ (LENGTH('b) - 1)"
+  shows "(sint (a :: 'a :: len word) * sint b = sint (a * b))
+       = (scast a * scast b = (scast (a * b) :: 'b :: len word))"
+proof -
+  have P: "signed_take_bit (size a - 1) (sint a * sint b) \<in> range (signed_take_bit (size a - 1))"
+    by simp
+
+  have abs: "!! x :: 'a word. abs (sint x) < 2 ^ (size a - 1) + 1"
+    apply (cut_tac x=x in sint_range')
+    apply (simp add: abs_le_iff word_size)
+    done
+  have abs_ab: "abs (sint a * sint b) < 2 ^ (LENGTH('b) - 1)"
+    using abs_mult_less[OF abs[where x=a] abs[where x=b]] mult_le
+    by (simp add: abs_mult power2_eq_square word_size)
+  define r s where \<open>r = LENGTH('a) - 1\<close> \<open>s = LENGTH('b) - 1\<close>
+  then have \<open>LENGTH('a) = Suc r\<close> \<open>LENGTH('b) = Suc s\<close>
+    \<open>size a = Suc r\<close> \<open>size b = Suc r\<close>
+    by (simp_all add: word_size)
+  then show ?thesis
+    using P abs_ab le
+    apply (transfer fixing: r s)
+    apply (auto simp add: signed_take_bit_int_eq_self simp flip: signed_take_bit_eq_iff_take_bit_eq)
+    done
+qed
 
 end

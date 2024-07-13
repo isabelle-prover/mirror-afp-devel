@@ -77,11 +77,168 @@ context
   includes bit_operations_syntax
 begin
 
+lemma int_set_bit_0 [simp]: fixes x :: int shows
+  "set_bit x 0 b = of_bool b + 2 * (x div 2)"
+  by (simp add: set_bit_eq)
+
+lemma int_set_bit_Suc: fixes x :: int shows
+  "set_bit x (Suc n) b = of_bool (odd x) + 2 * set_bit (x div 2) n b"
+  by (simp add: set_bit_eq set_bit_Suc unset_bit_Suc mod2_eq_if)
+
+lemma bin_last_set_bit:
+  "odd (set_bit x n b :: int) = (if n > 0 then odd x else b)"
+  by (cases n) (simp_all add: int_set_bit_Suc)
+
+lemma bin_rest_set_bit:
+  "(set_bit x n b :: int) div 2 = (if n > 0 then set_bit (x div 2) (n - 1) b else x div 2)"
+  by (cases n) (simp_all add: int_set_bit_Suc)
+
+lemma int_set_bit_numeral: fixes x :: int shows
+  "set_bit x (numeral w) b = of_bool (odd x) + 2 * set_bit (x div 2) (pred_numeral w) b"
+  by (simp add: numeral_eq_Suc int_set_bit_Suc)
+
+lemmas int_set_bit_numerals [simp] =
+  int_set_bit_numeral[where x="numeral w'"]
+  int_set_bit_numeral[where x="- numeral w'"]
+  int_set_bit_numeral[where x="Numeral1"]
+  int_set_bit_numeral[where x="1"]
+  int_set_bit_numeral[where x="0"]
+  int_set_bit_Suc[where x="numeral w'"]
+  int_set_bit_Suc[where x="- numeral w'"]
+  int_set_bit_Suc[where x="Numeral1"]
+  int_set_bit_Suc[where x="1"]
+  int_set_bit_Suc[where x="0"]
+  for w'
+
 lemma fixes i :: int
   shows int_set_bit_True_conv_OR [code]: "Generic_set_bit.set_bit i n True = i OR push_bit n 1"
   and int_set_bit_False_conv_NAND [code]: "Generic_set_bit.set_bit i n False = i AND NOT (push_bit n 1)"
   and int_set_bit_conv_ops: "Generic_set_bit.set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
   by (simp_all add: bit_eq_iff) (auto simp add: bit_simps)
+
+lemma msb_set_bit [simp]:
+  "msb (set_bit (x :: int) n b) \<longleftrightarrow> msb x"
+  by (simp add: msb_int_def set_bit_int_def)
+
+lemmas msb_bin_sc = msb_set_bit
+
+abbreviation (input) bin_sc :: \<open>nat \<Rightarrow> bool \<Rightarrow> int \<Rightarrow> int\<close>
+  where \<open>bin_sc n b i \<equiv> set_bit i n b\<close>
+
+lemma bin_sc_eq:
+  \<open>bin_sc n False = unset_bit n\<close>
+  \<open>bin_sc n True = Bit_Operations.set_bit n\<close>
+  by (simp_all add: set_bit_eq)
+
+lemma bin_sc_0 [simp]:
+  "bin_sc 0 b w = of_bool b + 2 * (\<lambda>k::int. k div 2) w"
+  by (simp add: set_bit_eq)
+
+lemma bin_sc_Suc [simp]:
+  "bin_sc (Suc n) b w = of_bool (odd w) + 2 * bin_sc n b (w div 2)"
+  by (simp add: set_bit_eq set_bit_Suc unset_bit_Suc mod2_eq_if)
+
+lemma bin_nth_sc [bit_simps]: "bit (bin_sc n b w) n \<longleftrightarrow> b"
+  by (simp add: bit_simps)
+
+lemma bin_sc_sc_same [simp]: "bin_sc n c (bin_sc n b w) = bin_sc n c w"
+  by (rule bit_eqI) (simp add: bit_simps)
+
+lemma bin_sc_sc_diff: "m \<noteq> n \<Longrightarrow> bin_sc m c (bin_sc n b w) = bin_sc n b (bin_sc m c w)"
+  by (rule bit_eqI) (simp add: bit_simps)
+
+lemma bin_nth_sc_gen: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (bin_sc n b w) m = (if m = n then b else (bit :: int \<Rightarrow> nat \<Rightarrow> bool) w m)"
+  by (simp add: bit_simps)
+
+lemma bin_sc_nth [simp]: "bin_sc n ((bit :: int \<Rightarrow> nat \<Rightarrow> bool) w n) w = w"
+  by (rule bit_eqI) (simp add: bin_nth_sc_gen)
+
+lemma bin_sc_bintr [simp]:
+  "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w)) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x w)"
+  apply (rule bit_eqI)
+  apply (cases x)
+   apply (auto simp add: bit_simps bin_sc_eq)
+  done
+
+lemma bin_clr_le: "bin_sc n False w \<le> w"
+  by (simp add: set_bit_int_def unset_bit_less_eq)
+
+lemma bin_set_ge: "bin_sc n True w \<ge> w"
+  by (simp add: set_bit_int_def set_bit_greater_eq)
+
+lemma bintr_bin_clr_le: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (bin_sc m False w) \<le> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
+  by (simp add: set_bit_int_def take_bit_unset_bit_eq unset_bit_less_eq)
+
+lemma bintr_bin_set_ge: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n (bin_sc m True w) \<ge> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
+  by (simp add: set_bit_int_def take_bit_set_bit_eq set_bit_greater_eq)
+
+lemma bin_sc_FP [simp]: "bin_sc n False 0 = 0"
+  by (induct n) auto
+
+lemma bin_sc_TM [simp]: "bin_sc n True (- 1) = - 1"
+  by (induct n) auto
+
+lemmas bin_sc_simps = bin_sc_0 bin_sc_Suc bin_sc_TM bin_sc_FP
+
+lemma bin_sc_minus: "0 < n \<Longrightarrow> bin_sc (Suc (n - 1)) b w = bin_sc n b w"
+  by auto
+
+lemmas bin_sc_Suc_minus =
+  trans [OF bin_sc_minus [symmetric] bin_sc_Suc]
+
+lemma bin_sc_numeral [simp]:
+  "bin_sc (numeral k) b w =
+    of_bool (odd w) + 2 * bin_sc (pred_numeral k) b (w div 2)"
+  by (simp add: numeral_eq_Suc)
+
+lemmas bin_sc_minus_simps =
+  bin_sc_simps (2,3,4) [THEN [2] trans, OF bin_sc_minus [THEN sym]]
+
+lemma bin_sc_pos:
+  "0 \<le> i \<Longrightarrow> 0 \<le> bin_sc n b i"
+  by (simp add: set_bit_eq)
+
+lemma bin_clr_conv_NAND:
+  "bin_sc n False i = i AND NOT (push_bit n 1)"
+  by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
+
+lemma bin_set_conv_OR:
+  "bin_sc n True i = i OR (push_bit n 1)"
+  by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
+
+lemma word_set_bit_def:
+  \<open>set_bit a n x = word_of_int (bin_sc n x (uint a))\<close>
+  apply (rule bit_word_eqI)
+  apply (cases x)
+   apply (simp_all add: bit_simps bin_sc_eq)
+  done
+
+lemma set_bit_word_of_int:
+  "set_bit (word_of_int x) n b = word_of_int (bin_sc n b x)"
+  by (rule word_eqI) (auto simp add: bit_simps)
+
+lemma word_set_numeral [simp]:
+  "set_bit (numeral bin::'a::len word) n b =
+    word_of_int (bin_sc n b (numeral bin))"
+  unfolding word_numeral_alt by (rule set_bit_word_of_int)
+
+lemma word_set_neg_numeral [simp]:
+  "set_bit (- numeral bin::'a::len word) n b =
+    word_of_int (bin_sc n b (- numeral bin))"
+  unfolding word_neg_numeral_alt by (rule set_bit_word_of_int)
+
+lemma word_set_bit_0 [simp]: "set_bit 0 n b = word_of_int (bin_sc n b 0)"
+  unfolding word_0_wi by (rule set_bit_word_of_int)
+
+lemma word_set_bit_1 [simp]: "set_bit 1 n b = word_of_int (bin_sc n b 1)"
+  unfolding word_1_wi by (rule set_bit_word_of_int)
+
+lemma setBit_no: "Bit_Operations.set_bit n (numeral bin) = word_of_int (bin_sc n True (numeral bin))"
+  by (rule bit_word_eqI) (simp add: bit_simps)
+
+lemma clearBit_no:
+  "unset_bit n (numeral bin) = word_of_int (bin_sc n False (numeral bin))"
+  by (rule bit_word_eqI) (simp add: bit_simps)
 
 end
 
@@ -149,7 +306,7 @@ lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
   done
 
 lemma one_bit_pow: "set_bit 0 n True = (2 :: 'a :: len word) ^ n"
-  by (simp add: one_bit_shiftl shiftl_def)
+  by (rule word_eqI) (simp add: bit_simps)
 
 instantiation integer :: set_bit
 begin
