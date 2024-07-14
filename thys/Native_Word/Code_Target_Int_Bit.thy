@@ -14,9 +14,7 @@ context
   includes bit_operations_syntax
 begin
 
-declare [[code drop:
-  "lsb :: int \<Rightarrow> _" int_of_integer_symbolic
-  ]]
+declare [[code drop: int_of_integer_symbolic]]
 
 lemma [code_unfold]:
   \<open>of_bool (odd i) = i AND 1\<close> for i :: int
@@ -29,10 +27,6 @@ lemma [code_unfold]:
 context
 includes integer.lifting
 begin
-
-lemma lsb_int_code [code]:
-  "lsb (int_of_integer x) = lsb x"
-  by transfer simp
 
 lemma set_bit_int_code [code]:
   "set_bit (int_of_integer x) n b = int_of_integer (set_bit x n b)"

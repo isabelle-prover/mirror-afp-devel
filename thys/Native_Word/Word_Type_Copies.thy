@@ -60,7 +60,7 @@ declaration \<open>
        \<^term>\<open>Bit_Operations.not\<close>, \<^term>\<open>Bit_Operations.and\<close>, \<^term>\<open>Bit_Operations.or\<close>, \<^term>\<open>Bit_Operations.xor\<close>, \<^term>\<open>mask\<close>,
        \<^term>\<open>push_bit\<close>, \<^term>\<open>drop_bit\<close>, \<^term>\<open>take_bit\<close>,
        \<^term>\<open>Bit_Operations.set_bit\<close>, \<^term>\<open>unset_bit\<close>, \<^term>\<open>flip_bit\<close>,
-       \<^term>\<open>msb\<close>, \<^term>\<open>lsb\<close>, \<^term>\<open>size\<close>, \<^term>\<open>Generic_set_bit.set_bit\<close>, \<^term>\<open>set_bits\<close>]
+       \<^term>\<open>msb\<close>, \<^term>\<open>size\<close>, \<^term>\<open>Generic_set_bit.set_bit\<close>, \<^term>\<open>set_bits\<close>]
   in
     K (Context.mapping I (fold Proof_Context.add_const_constraint cs))
   end
@@ -302,7 +302,6 @@ locale word_type_copy_misc = word_type_copy_more
   fixes size :: nat and set_bits_aux :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
     assumes size_eq_length: \<open>size = LENGTH('b::len)\<close>
     and msb_iff_word_of [code]: \<open>msb p \<longleftrightarrow> msb (word_of p)\<close>
-    and lsb_iff_word_of [code]: \<open>lsb p \<longleftrightarrow> lsb (word_of p)\<close>
     and size_eq_word_of: \<open>Nat.size (p :: 'a) = Nat.size (word_of p)\<close>
     and word_of_generic_set_bit [code]: \<open>word_of (Generic_set_bit.set_bit p n b) = Generic_set_bit.set_bit (word_of p) n b\<close>
     and word_of_set_bits: \<open>word_of (set_bits P) = set_bits P\<close>
@@ -321,10 +320,6 @@ lemma set_bits_aux_code [code]:
 
 lemma set_bits_code [code]: \<open>set_bits P = set_bits_aux P size 0\<close>
   by (simp add: fun_eq_iff eq_iff_word_of word_of_set_bits word_of_set_bits_aux word_of_0 size_eq_length set_bits_conv_set_bits_aux)
-
-lemma of_class_lsb:
-  \<open>OFCLASS('a, lsb_class)\<close>
-  by standard (simp add: fun_eq_iff lsb_iff_word_of even_iff_word_of lsb_odd)
 
 lemma of_class_set_bit:
   \<open>OFCLASS('a, set_bit_class)\<close>

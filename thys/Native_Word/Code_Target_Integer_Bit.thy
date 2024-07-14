@@ -9,7 +9,6 @@ theory Code_Target_Integer_Bit
     "HOL-Library.Word"
     "Code_Int_Integer_Conversion"
     "Word_Lib.Most_significant_bit"
-    "Word_Lib.Least_significant_bit"
     "Word_Lib.Generic_set_bit"
     "Word_Lib.Bit_Comprehension"
 begin
@@ -353,11 +352,6 @@ code_printing constant integer_test_bit \<rightharpoonup>
 context
   includes integer.lifting bit_operations_syntax
 begin
-
-lemma lsb_integer_code [code]:
-  fixes x :: integer shows
-  "lsb x = bit x 0"
-  by transfer(simp add: lsb_int_def)
 
 lemma msb_integer_code [code]:
   "msb (x :: integer) \<longleftrightarrow> x < 0"

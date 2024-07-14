@@ -115,13 +115,12 @@ global_interpretation uint32: word_type_copy_more Abs_uint32 Rep_uint32 signed_d
          Uint32.rep_eq integer_of_uint32.rep_eq integer_eq_iff)
   done
 
-instantiation uint32 :: "{size, msb, lsb, set_bit, bit_comprehension}"
+instantiation uint32 :: "{size, msb, set_bit, bit_comprehension}"
 begin
 
 lift_definition size_uint32 :: \<open>uint32 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is msb .
-lift_definition lsb_uint32 :: \<open>uint32 \<Rightarrow> bool\<close> is lsb .
 
 text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
@@ -146,7 +145,7 @@ global_interpretation uint32: word_type_copy_misc Abs_uint32 Rep_uint32 signed_d
   by (standard; transfer) simp_all
 
 instance using uint32.of_class_bit_comprehension
-  uint32.of_class_set_bit uint32.of_class_lsb
+  uint32.of_class_set_bit
   by simp_all standard
 
 end

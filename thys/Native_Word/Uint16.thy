@@ -131,13 +131,12 @@ global_interpretation uint16: word_type_copy_more Abs_uint16 Rep_uint16 signed_d
          Uint16.rep_eq integer_of_uint16.rep_eq integer_eq_iff)
   done
 
-instantiation uint16 :: "{size, msb, lsb, set_bit, bit_comprehension}"
+instantiation uint16 :: "{size, msb, set_bit, bit_comprehension}"
 begin
 
 lift_definition size_uint16 :: \<open>uint16 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is msb .
-lift_definition lsb_uint16 :: \<open>uint16 \<Rightarrow> bool\<close> is lsb .
 
 text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
@@ -162,7 +161,7 @@ global_interpretation uint16: word_type_copy_misc Abs_uint16 Rep_uint16 signed_d
   by (standard; transfer) simp_all
 
 instance using uint16.of_class_bit_comprehension
-  uint16.of_class_set_bit uint16.of_class_lsb
+  uint16.of_class_set_bit
   by simp_all standard
 
 end

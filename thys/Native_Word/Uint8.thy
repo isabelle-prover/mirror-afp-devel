@@ -122,13 +122,12 @@ global_interpretation uint8: word_type_copy_more Abs_uint8 Rep_uint8 signed_drop
          Uint8.rep_eq integer_of_uint8.rep_eq integer_eq_iff)
   done
 
-instantiation uint8 :: "{size, msb, lsb, set_bit, bit_comprehension}"
+instantiation uint8 :: "{size, msb, set_bit, bit_comprehension}"
 begin
 
 lift_definition size_uint8 :: \<open>uint8 \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint8 :: \<open>uint8 \<Rightarrow> bool\<close> is msb .
-lift_definition lsb_uint8 :: \<open>uint8 \<Rightarrow> bool\<close> is lsb .
 
 text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
@@ -153,7 +152,7 @@ global_interpretation uint8: word_type_copy_misc Abs_uint8 Rep_uint8 signed_drop
   by (standard; transfer) simp_all
 
 instance using uint8.of_class_bit_comprehension
-  uint8.of_class_set_bit uint8.of_class_lsb
+  uint8.of_class_set_bit
   by simp_all standard
 
 end

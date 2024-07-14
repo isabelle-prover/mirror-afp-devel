@@ -240,8 +240,7 @@ text \<open>
 
       \<^descr>[\<^theory>\<open>Word_Lib.Least_significant_bit\<close>]
 
-        The least significant bit as an alias:
-        @{thm [mode=iff] lsb_odd [where ?'a = int, no_vars]}
+        The least significant bit as abbreviation \<^abbrev>\<open>lsb\<close>.
 
       \<^descr>[\<^theory>\<open>Word_Lib.Most_significant_bit\<close>]
 
@@ -399,6 +398,8 @@ text \<open>
 
     \<^item> Bit comprehension syntax for \<^typ>\<open>int\<close> moved to separate theory
       \<^theory>\<open>Word_Lib.Bit_Comprehension_Int\<close>.
+
+    \<^item> Operation \<^abbrev>\<open>lsb\<close> turned into abbreviation or \<^text>\<open>bit _ 0\<close>.
 
   \<^descr>[Changes since AFP 2021] ~
 

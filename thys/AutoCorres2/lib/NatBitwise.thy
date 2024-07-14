@@ -14,7 +14,7 @@ begin
 
 lemma lsb_nat_def:
   \<open>lsb n = lsb (int n)\<close>
-  by (simp add: lsb_nat_def lsb_int_def bit_simps)
+  by (simp add: bit_simps)
 
 instantiation nat :: msb
 begin

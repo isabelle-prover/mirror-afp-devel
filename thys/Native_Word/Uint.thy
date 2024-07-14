@@ -163,13 +163,12 @@ global_interpretation uint: word_type_copy_more Abs_uint Rep_uint signed_drop_bi
          Uint.rep_eq integer_of_uint.rep_eq integer_eq_iff)
   done
 
-instantiation uint :: "{size, msb, lsb, set_bit, bit_comprehension}"
+instantiation uint :: "{size, msb, set_bit, bit_comprehension}"
 begin
 
 lift_definition size_uint :: \<open>uint \<Rightarrow> nat\<close> is size .
 
 lift_definition msb_uint :: \<open>uint \<Rightarrow> bool\<close> is msb .
-lift_definition lsb_uint :: \<open>uint \<Rightarrow> bool\<close> is lsb .
 
 text \<open>Workaround: avoid name space clash by spelling out \<^text>\<open>lift_definition\<close> explicitly.\<close>
 
@@ -194,7 +193,7 @@ global_interpretation uint: word_type_copy_misc Abs_uint Rep_uint signed_drop_bi
   by (standard; transfer) simp_all
 
 instance using uint.of_class_bit_comprehension
-  uint.of_class_set_bit uint.of_class_lsb
+  uint.of_class_set_bit
   by simp_all standard
 
 end
