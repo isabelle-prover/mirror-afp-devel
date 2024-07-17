@@ -2380,19 +2380,26 @@ proof -
     using U_def \<Gamma>_def trail_ord_def by presburger
 qed
 
-theorem dynamic_non_redundancy_strategy:
-  fixes \<Gamma>
-  assumes
-    run: "(strategy N \<beta>)\<^sup>*\<^sup>* initial_state S0" and
-    conflict: "conflict N \<beta> S0 S1" and
-    resolution: "(skip N \<beta> \<squnion> factorize N \<beta> \<squnion> resolve N \<beta>)\<^sup>+\<^sup>+ S1 Sn" and
-    backtrack: "backtrack N \<beta> Sn Sn'" and
-    strategy_imp_regular_scl: "\<And>S S'. strategy N \<beta> S S' \<Longrightarrow> regular_scl N \<beta> S S'" and
-    lit_less_preserves_term_order: "\<And>R L1 L2. lit_less R L1 L2 \<Longrightarrow> R\<^sup>=\<^sup>= (atm_of L1) (atm_of L2)"
+theorem dynamic_non_redundancy_projectable_strategy:
+  fixes
+    S1 :: "('f, 'v) state" and
+    lit_less :: "(('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool) \<Rightarrow>
+      ('f, 'v) term literal \<Rightarrow> ('f, 'v) term literal \<Rightarrow> bool" and
+    strategy and strategy_init and proj
   defines
     "\<Gamma> \<equiv> state_trail S1" and
-    "U \<equiv> state_learned S1" and
+    "U \<equiv> state_learned S1"
+  defines
     "trail_ord \<equiv> multp\<^sub>H\<^sub>O (lit_less (trail_term_less (map (atm_of o fst) \<Gamma>)))"
+  assumes
+    run: "strategy\<^sup>*\<^sup>* strategy_init S0" and
+    conflict: "conflict N \<beta> (proj S0) S1" and
+    resolution: "(skip N \<beta> \<squnion> factorize N \<beta> \<squnion> resolve N \<beta>)\<^sup>+\<^sup>+ S1 Sn" and
+    backtrack: "backtrack N \<beta> Sn Sn'" and
+    strategy_restricts_regular_scl:
+      "\<And>S S'. strategy\<^sup>*\<^sup>* strategy_init S \<Longrightarrow> strategy S S' \<Longrightarrow> regular_scl N \<beta> (proj S) (proj S')" and
+    initial_state: "proj strategy_init = initial_state" and
+    lit_less_preserves_term_order: "\<And>R L1 L2. lit_less R L1 L2 \<Longrightarrow> R\<^sup>=\<^sup>= (atm_of L1) (atm_of L2)"
   shows "(\<exists>C \<gamma>. state_conflict Sn = Some (C, \<gamma>) \<and>
       C \<cdot> \<gamma> \<notin> grounding_of_clss (fset N \<union> fset U) \<and>
       set_mset (C \<cdot> \<gamma>) \<notin> set_mset ` grounding_of_clss (fset N \<union> fset U) \<and>
@@ -2413,10 +2420,20 @@ proof -
       (fset N \<union> fset U) C)"
     unfolding U_def
   proof (rule dynamic_non_redundancy_regular_scl[THEN conjunct2])
-    from run show "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S0"
-      by (induction S0 rule: rtranclp_induct) (auto dest: strategy_imp_regular_scl)
+    show "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state (proj S0)"
+      using run
+    proof (induction S0 rule: rtranclp_induct)
+      case base
+      thus ?case
+        unfolding initial_state by simp
+    next
+      case (step y z)
+      thus ?case
+        using strategy_restricts_regular_scl
+        by (meson rtranclp.simps)
+    qed
   next
-    from assms show "conflict N \<beta> S0 S1"
+    from assms show "conflict N \<beta> (proj S0) S1"
       by simp
   next
     from assms show "(skip N \<beta> \<squnion> factorize N \<beta> \<squnion> resolve N \<beta>)\<^sup>+\<^sup>+ S1 Sn"
@@ -2431,6 +2448,28 @@ proof -
   thus ?thesis
     by (auto simp add: trail_ord_def \<Gamma>_def)
 qed
+
+corollary dynamic_non_redundancy_strategy:
+  fixes \<Gamma>
+  assumes
+    run: "strategy\<^sup>*\<^sup>* initial_state S0" and
+    conflict: "conflict N \<beta> S0 S1" and
+    resolution: "(skip N \<beta> \<squnion> factorize N \<beta> \<squnion> resolve N \<beta>)\<^sup>+\<^sup>+ S1 Sn" and
+    backtrack: "backtrack N \<beta> Sn Sn'" and
+    strategy_imp_regular_scl: "\<And>S S'. strategy S S' \<Longrightarrow> regular_scl N \<beta> S S'" and
+    lit_less_preserves_term_order: "\<And>R L1 L2. lit_less R L1 L2 \<Longrightarrow> R\<^sup>=\<^sup>= (atm_of L1) (atm_of L2)"
+  defines
+    "\<Gamma> \<equiv> state_trail S1" and
+    "U \<equiv> state_learned S1" and
+    "trail_ord \<equiv> multp\<^sub>H\<^sub>O (lit_less (trail_term_less (map (atm_of o fst) \<Gamma>)))"
+  shows "(\<exists>C \<gamma>. state_conflict Sn = Some (C, \<gamma>) \<and>
+      C \<cdot> \<gamma> \<notin> grounding_of_clss (fset N \<union> fset U) \<and>
+      set_mset (C \<cdot> \<gamma>) \<notin> set_mset ` grounding_of_clss (fset N \<union> fset U) \<and>
+      C \<notin> fset N \<union> fset U \<and>
+      \<not> (\<exists>D \<in> fset N \<union> fset U. \<exists>\<sigma>. D \<cdot> \<sigma> = C) \<and>
+      \<not> redundant trail_ord (fset N \<union> fset U) C)"
+  using dynamic_non_redundancy_projectable_strategy[of strategy initial_state _ _ _ "\<lambda>x. x"]
+  using assms by blast
 
 
 section \<open>Static Non-Redundancy\<close>
@@ -2479,7 +2518,7 @@ theorem static_non_subsumption_regular_scl:
     step: "backtrack N \<beta> S S'"
   defines
     "U \<equiv> state_learned S"
-  shows "\<exists>C \<gamma>. state_conflict S = Some (C, \<gamma>) \<and> \<not> (\<exists>D \<in> fset N \<union> fset U. subsumes D C)"
+  shows "\<exists>C \<gamma>. state_conflict S = Some (C, \<gamma>) \<and> \<not> (\<exists>D |\<in>| N |\<union>| U. subsumes D C)"
 proof -
   from before_regular_backtrack'[OF run step] obtain S0 S1 S2 S3 S4 where
     run_S0: "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S0" and
@@ -2539,26 +2578,50 @@ proof -
   show ?thesis
     unfolding U_def
     using conf not_sub[unfolded learned_S2]
-    by metis
+    by simp
+qed
+
+corollary static_non_subsumption_projectable_strategy:
+  fixes strategy and strategy_init and proj
+  assumes
+    run: "strategy\<^sup>*\<^sup>* strategy_init S" and
+    step: "backtrack N \<beta> (proj S) S'" and
+    strategy_restricts_regular_scl:
+      "\<And>S S'. strategy\<^sup>*\<^sup>* strategy_init S \<Longrightarrow> strategy S S' \<Longrightarrow> regular_scl N \<beta> (proj S) (proj S')" and
+    initial_state: "proj strategy_init = initial_state"
+  defines
+    "U \<equiv> state_learned (proj S)"
+  shows "\<exists>C \<gamma>. state_conflict (proj S) = Some (C, \<gamma>) \<and> \<not> (\<exists>D |\<in>| N |\<union>| U. subsumes D C)"
+  unfolding U_def
+proof (rule static_non_subsumption_regular_scl)
+  show "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state (proj S)"
+      using run
+    proof (induction S rule: rtranclp_induct)
+      case base
+      thus ?case
+        unfolding initial_state by simp
+    next
+      case (step y z)
+      thus ?case
+        using strategy_restricts_regular_scl
+        by (meson rtranclp.simps)
+    qed
+next
+  from step show "backtrack N \<beta> (proj S) S'"
+    by simp
 qed
 
 corollary static_non_subsumption_strategy:
   assumes
-    run: "(strategy N \<beta>)\<^sup>*\<^sup>* initial_state S" and
+    run: "strategy\<^sup>*\<^sup>* initial_state S" and
     step: "backtrack N \<beta> S S'" and
-    strategy_imp_regular_scl: "\<And>S S'. strategy N \<beta> S S' \<Longrightarrow> regular_scl N \<beta> S S'"
+    strategy_imp_regular_scl: "\<And>S S'. strategy S S' \<Longrightarrow> regular_scl N \<beta> S S'"
   defines
     "U \<equiv> state_learned S"
-  shows "\<exists>C \<gamma>. state_conflict S = Some (C, \<gamma>) \<and> \<not> (\<exists>D \<in> fset N \<union> fset U. subsumes D C)"
+  shows "\<exists>C \<gamma>. state_conflict S = Some (C, \<gamma>) \<and> \<not> (\<exists>D |\<in>| N |\<union>| U. subsumes D C)"
   unfolding U_def
-proof (rule static_non_subsumption_regular_scl)
-  from run show "(regular_scl N \<beta>)\<^sup>*\<^sup>* initial_state S"
-    by (induction S rule: rtranclp_induct)
-      (auto intro: rtranclp.rtrancl_into_rtrancl strategy_imp_regular_scl)
-next
-  from step show "backtrack N \<beta> S S'"
-    by simp
-qed
+  using static_non_subsumption_projectable_strategy[of strategy initial_state _ _ _ "\<lambda>x. x"]
+  using assms by blast
 
 end
 
