@@ -398,9 +398,8 @@ corollary ex_bisimulation_from_forward_simulation:
     "wfP lt" and
     fsim: "\<forall>i s1 s2 s1'. match i s1 s2 \<longrightarrow> step1 s1 s1' \<longrightarrow>
       (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> lt i' i)"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool)
-    (ORDER :: nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool).
-    bisimulation step1 step2 final1 final2 ORDER ORDER MATCH"
+  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool) ORDER\<^sub>f ORDER\<^sub>b.
+    bisimulation step1 step2 final1 final2 ORDER\<^sub>f ORDER\<^sub>b MATCH"
   using obtains_bisimulation_from_forward_simulation[OF assms] by metis
 
 lemma obtains_bisimulation_from_backward_simulation:
@@ -495,9 +494,8 @@ corollary ex_bisimulation_from_backward_simulation:
     "wfP lt" and
     bsim: "\<forall>i s1 s2 s2'. match i s1 s2 \<longrightarrow> step2 s2 s2' \<longrightarrow>
       (\<exists>i' s1'. step1\<^sup>+\<^sup>+ s1 s1' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1 s2' \<and> lt i' i)"
-  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool)
-    (ORDER :: nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool).
-    bisimulation step1 step2 final1 final2 ORDER ORDER MATCH"
+  shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool) ORDER\<^sub>f ORDER\<^sub>b.
+    bisimulation step1 step2 final1 final2 ORDER\<^sub>f ORDER\<^sub>b MATCH"
   using obtains_bisimulation_from_backward_simulation[OF assms] by metis
 
 
@@ -787,7 +785,7 @@ next
 qed
 
 
-subsubsection \<open>Composition of forward simulations\<close>
+subsubsection \<open>Composition of bisimulations\<close>
 
 lemma bisimulation_composition:
   fixes
