@@ -18,6 +18,7 @@ email = "desharnais_email1"
 desharnais = "desharnais_email1"
 
 [history]
+2024-07-18 = "Add lemmas lifting non-redundancy and termination to projectible strategies."
 
 [extra]
 
