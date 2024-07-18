@@ -205,7 +205,8 @@ Last 50 lines from stderr (if available):
           results: Build.Results,
           progress: Progress
         ): Unit = notify_failed(Context(options), url, results, progress)
-      })
+      },
+      other_settings = List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Xmx4G -Xss64M\""))
 
 
   /* nightly presentation */
