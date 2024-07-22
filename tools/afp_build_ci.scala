@@ -207,7 +207,7 @@ Last 50 lines from stderr (if available):
         ): Unit = notify_failed(Context(options), url, results, progress)
       },
       other_settings =
-        List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Djava.awt.headless=true -Xmx4G -Xss64M\""))
+        List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx4G -Xss64M\""))
 
 
   /* nightly presentation */
@@ -238,7 +238,7 @@ Last 50 lines from stderr (if available):
         }
       },
       other_settings =
-        List("ISABELLE_TOOL_JAVA_OPTIONS=\"-Djava.awt.headless=true -Xmx8G -Xss64M\""),
+        List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx8G -Xss64M\""),
       trigger = Build_CI.Timed.nightly())
 }
 
