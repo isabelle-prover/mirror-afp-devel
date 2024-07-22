@@ -3,7 +3,7 @@ subsubsection \<open>Injective\<close>
 theory Functions_Injective
   imports
     Bounded_Quantifiers
-    Functions_Base
+    Functions_Monotone
     HOL_Syntax_Bundles_Lattices
 begin
 
@@ -26,6 +26,13 @@ lemma injective_onD:
   and "f x = f x'"
   shows "x = x'"
   using assms unfolding injective_on_pred_def by blast
+
+lemma injective_on_comp_if_injective_onI:
+  assumes "injective_on (P :: 'a \<Rightarrow> bool) f" "injective_on Q g"
+  and "(P \<Rightarrow> Q) f"
+  shows "injective_on P (g \<circ> f)"
+  by (urule injective_onI) (use assms in \<open>auto dest: injective_onD\<close>)
+
 
 consts injective :: "'a \<Rightarrow> bool"
 
