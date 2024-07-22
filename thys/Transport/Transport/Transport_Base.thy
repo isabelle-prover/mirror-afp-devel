@@ -8,8 +8,7 @@ theory Transport_Base
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Basic setup for commonly used concepts in Transport, including a suitable
-locale.\<close>
+text \<open>Basic setup for commonly used concepts in Transport, including a suitable locale.\<close>
 
 locale transport = galois L R l r
   for L :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -208,8 +207,8 @@ corollary partial_equivalence_rel_equivalence_right_left_iff_partial_equivalence
   by (simp flip:
     rel_inv_partial_equivalence_rel_equivalence_eq_partial_equivalence_rel_equivalence)
 
-lemma partial_equivalence_rel_equivalence_rel_inv_eq_partial_equivalence_rel_equivalence
-  [simp]: "((\<ge>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>))"
+lemma partial_equivalence_rel_equivalence_rel_inv_eq_partial_equivalence_rel_equivalence [simp]:
+  "((\<ge>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>L\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R\<^esub>))"
   by (intro ext iffI)
   (auto intro!: transport.partial_equivalence_rel_equivalence_if_galois_equivalenceI
     elim!: transport.partial_equivalence_rel_equivalenceE

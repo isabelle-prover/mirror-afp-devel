@@ -19,6 +19,12 @@ lemma bi_total_onE [elim]:
   obtains "left_total_on P R" "rel_surjective_at Q R"
   using assms unfolding bi_total_on_def by auto
 
+lemma bi_total_on_restricts_if_Fun_Rel_iff_if_bi_total_on:
+  assumes "bi_total_on P Q R"
+  and "(R \<Rrightarrow> (\<longleftrightarrow>)) P Q"
+  shows "bi_total_on P Q R\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub>"
+  using assms by force
+
 definition "bi_total \<equiv> bi_total_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool) :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool"
 
 lemma bi_total_eq_bi_total_on:

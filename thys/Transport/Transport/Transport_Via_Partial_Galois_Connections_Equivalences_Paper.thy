@@ -2,7 +2,7 @@
 section \<open>Transport Paper Guide\<close>
 theory Transport_Via_Partial_Galois_Connections_Equivalences_Paper
   imports
-    Transport
+    Transport_Black_Box
     Transport_Natural_Functors
     Transport_Partial_Quotient_Types
     Transport_Prototype
@@ -48,7 +48,7 @@ Theorem
   \<^item> Lemma 5: @{thm "galois.order_equivalence_if_reflexive_on_in_field_if_galois_equivalence"}
 
 \<^item> Section 4.1: Closure (Dependent) Function Relator can be found in
-  @{dir "Functions"}.
+  @{dir "Black_Box/Functions"}.
 
   \<^item> Monotone function relator @{theory "Transport.Monotone_Function_Relator"}.
 
@@ -72,13 +72,13 @@ Theorem
   \<^item> Lemma 9: @{thm "transport_Mono_Fun_Rel.left_rel_eq_tfr_leftI"}
 
 \<^item> Section 4.2: Closure Natural Functors can be found in
-  @{dir "Natural_Functors"}.
+  @{dir "Black_Box/Natural_Functors"}.
   \<^item> Theorem 3: see @{theory "Transport.Transport_Natural_Functors"}
 
   \<^item> Theorem 4: @{thm "transport_natural_functor.left_Galois_eq_Frel_left_Galois"}
 
 
-\<^item> Section 4.3: Closure Compositions can be found in @{dir "Compositions"}.
+\<^item> Section 4.3: Closure Compositions can be found in @{dir "Black_Box/Compositions"}.
 
   \<^item> Setup for simple case in @{theory "Transport.Transport_Compositions_Agree_Base"}
 
@@ -90,7 +90,7 @@ Theorem
   \<^item> Theorem 6: @{thm "transport_comp.left_Galois_eq_comp_left_GaloisI"}
 
   (*results from Appendix*)
-  \<^item> Theorem 9: see @{dir "Compositions/Agree"}, results in
+  \<^item> Theorem 9: see @{dir "Black_Box/Compositions/Agree"}, results in
 
     @{locale transport_comp_same}.
   \<^item> Theorem 10: @{thm "transport_comp.galois_connection_left_right_if_galois_equivalenceI"}

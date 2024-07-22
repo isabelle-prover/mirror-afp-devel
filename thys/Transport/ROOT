@@ -27,21 +27,24 @@ session Transport = "HOL" +
     "HOL_Basics/Predicates"
     "HOL_Basics/Galois"
     "Transport"
-    "Transport/Compositions"
-    "Transport/Compositions/Agree"
-    "Transport/Compositions/Generic"
+    "Transport/Black_Box"
+    "Transport/Black_Box/Compositions"
+    "Transport/Black_Box/Compositions/Agree"
+    "Transport/Black_Box/Compositions/Generic"
+    "Transport/Black_Box/Functions"
+    "Transport/Black_Box/Natural_Functors"
     "Transport/Examples"
     "Transport/Examples/Prototype"
     "Transport/Examples/Typedef"
-    "Transport/Functions"
-    "Transport/Natural_Functors"
+    "Transport/White_Box"
   theories
     HOL_Basics
     HOL_Alignments
     HOL_Algebra_Alignments
     HOL_Syntax_Bundles
+    Transport_Black_Box
+    Transport_White_Box
     Transport
-    Transport_Natural_Functors
     (*Examples*)
     Transport_Dep_Fun_Rel_Examples
     Transport_Lists_Sets_Examples

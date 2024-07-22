@@ -1,10 +1,8 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 theory Transport
   imports
-    Transport_Bijections
-    Transport_Compositions
-    Transport_Functions
-    Transport_Identity
+    Transport_Black_Box
+    Transport_White_Box
 begin
 
 paragraph \<open>Summary\<close>
