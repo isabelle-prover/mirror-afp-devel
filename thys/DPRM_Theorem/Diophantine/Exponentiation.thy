@@ -77,9 +77,10 @@ proof (induct n)
   show ?case by simp
 next
   case (Suc n)
-  have pos: "0 < \<alpha> b (Suc n)" by (simp add:Suc)
+  have pos: "0 < \<alpha> b (Suc n)"
+    using Suc by fastforce
   have "\<alpha> b (Suc n) \<le> (int b) * (\<alpha> b (Suc n)) - \<alpha> b (Suc n)" using pos Suc by simp
-  also have "... < \<alpha> b (Suc (Suc n))" by (simp add: Suc)
+  also have "... < \<alpha> b (Suc (Suc n))" using Suc by fastforce
   finally show ?case using pos Suc by simp
 qed
 

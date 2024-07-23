@@ -974,12 +974,12 @@ lemma blocks_with_x_partition:
   shows "partition_on (\<V> - {x}) {b - {x} |b. b \<in># \<B> \<and> x \<in> b}"
 proof (intro partition_onI )
   have gtt: "\<And> bl. bl \<in># \<B> \<Longrightarrow> card bl \<ge> 2" using block_size_gt_t
-    by (simp add: block_sizes nat_int_comparison(3)) 
+    using block_sizes by blast
   show "\<And>p. p \<in> {b - {x} |b. b \<in># \<B> \<and> x \<in> b} \<Longrightarrow> p \<noteq> {}"
   proof -
     fix p assume "p \<in> {b - {x} |b. b \<in># \<B> \<and> x \<in> b}"
     then obtain b where ptx: "p = b - {x}" and "b \<in># \<B>" and xinb: "x \<in> b" by blast
-    then have ge2: "card b \<ge> 2" using gtt by (simp add: nat_int_comparison(3)) 
+    then have ge2: "card b \<ge> 2" using gtt by simp 
     then have "finite b" by (metis card.infinite not_numeral_le_zero) 
     then have "card p = card b - 1" using xinb ptx by simp
     then have "card p \<ge> 1" using ge2 by linarith
@@ -1030,7 +1030,7 @@ lemma KGDD_by_deleting_point:
   shows "K_GDD (del_point x) (str_del_point_blocks x) \<K> { b - {x} | b . b \<in># \<B> \<and> x \<in> b}"
 proof -
   have "\<And> bl. bl \<in># \<B> \<Longrightarrow> card bl \<ge> 2" using block_size_gt_t 
-    by (simp add: block_sizes nat_int_comparison(3))
+    by (simp add: block_sizes)
   then interpret des: proper_design "(del_point x)" "(str_del_point_blocks x)" 
     using strong_delete_point_proper assms by blast
   show ?thesis using blocks_with_x_partition strong_delete_point_groups_index_zero 
