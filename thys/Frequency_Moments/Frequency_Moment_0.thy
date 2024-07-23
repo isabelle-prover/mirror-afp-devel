@@ -1248,7 +1248,7 @@ proof -
     O[?F](\<lambda>x. ln (real (n_of x)) + 1 / (real_of_rat (\<delta>_of x))\<^sup>2 * (ln (ln (real (n_of x))) + ln (1 / real_of_rat (\<delta>_of x))))"
     using exp_pos order_trans[OF exp_gt_1]
     by (intro landau_sum_2 evt[where n="exp 1" and \<delta>="1"] ln_ge_zero
-        iffD2[OF ln_ge_iff] add_nonneg_nonneg mult_nonneg_nonneg) (auto)
+        iffD2[OF ln_ge_iff] add_nonneg_nonneg mult_nonneg_nonneg; force) 
   hence 13: "(\<lambda>x. log 2 (real (r_of x) + 1)) \<in> O[?F](g)"
     unfolding g_def  by (intro landau_o.big_mult_1' 1, auto)
   have 14: "(\<lambda>x. 1) \<in> O[?F](\<lambda>x. real (n_of x))"
