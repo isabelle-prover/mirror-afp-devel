@@ -915,9 +915,8 @@ proof -
     "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. real (n_of x))"
     "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. real (m_of x))"
     "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. real (k_of x))"
-    by (intro landau_o.big_mono eventually_mono[OF evt], auto)+
-
-
+    using landau_o.big_mono eventually_mono[OF evt]
+    by (smt (verit, del_insts) real_norm_def)+
   have "(\<lambda>x. ln (real (m_of x) + 1)) \<in> O[?F](\<lambda>x. ln (real (m_of x)))"
     by (intro landau_ln_2[where a="2"] evt[where m="2"] sum_in_bigo 1, auto)
   hence 2: " (\<lambda>x. log 2 (real (m_of x) + 1)) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln (real (m_of x)))"
