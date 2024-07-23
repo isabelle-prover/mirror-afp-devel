@@ -71,8 +71,7 @@ proof -
     have "odd p" using n \<open>odd n\<close> by simp
     
     then obtain b where "\<not>QuadRes p b" 
-      using not_QuadRes_ex[of "int p"]
-      using \<open>prime p\<close> prime_gt_1_int by auto 
+      using not_QuadRes_ex[of "int p"] \<open>1 < p\<close> by auto 
 
     then have "[b \<noteq> 0] (mod p)" 
       unfolding cong_def QuadRes_def

@@ -71,12 +71,12 @@ proof -
       show "3 \<le> n \<longrightarrow> 1 \<le> real n * ln (real n)"
       proof standard
         assume "3 \<le> n"
-        hence "1 \<le> real n"
+        hence A: "1 \<le> real n"
           by simp
-        moreover have "1 \<le> ln (real n)" 
+        have B: "1 \<le> ln (real n)" 
           using ln_ln_nonneg' \<open>3 \<le> n\<close> by simp
-        ultimately show "1 \<le> real n * ln (real n)"
-          by (auto simp: order_trans)
+        show "1 \<le> real n * ln (real n)"
+          using mult_mono [OF A B] by simp
       qed
     qed
     thus ?thesis

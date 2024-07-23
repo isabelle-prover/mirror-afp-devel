@@ -1202,8 +1202,8 @@ proof -
   have 8:" (\<lambda>_. 1) \<in>
     O[?F](\<lambda>x. ln (real (n_of x)) + 1 / (real_of_rat (\<delta>_of x))\<^sup>2 * (ln (ln (real (n_of x))) + ln (1 / real_of_rat (\<delta>_of x))))"
     using order_trans[OF exp_gt_1] exp_pos
-    by (intro landau_sum_1 7 evt[where n="exp 1" and \<delta>="1"] ln_ge_zero  iffD2[OF ln_ge_iff]
-        mult_nonneg_nonneg add_nonneg_nonneg) auto
+    by(intro landau_sum_1 7 evt[where n="exp 1" and \<delta>="1"] ln_ge_zero  iffD2[OF ln_ge_iff]
+        mult_nonneg_nonneg add_nonneg_nonneg; force)
 
   have "(\<lambda>x. ln (real (s_of x) + 1)) \<in> O[?F](\<lambda>x. ln (1 / real_of_rat (\<epsilon>_of x)))"
     by (intro landau_ln_3 sum_in_bigo 6 1, simp)
@@ -1220,7 +1220,7 @@ proof -
   O[?F](\<lambda>x. ln (real (n_of x)) + 1 / (real_of_rat (\<delta>_of x))\<^sup>2 * (ln (ln (real (n_of x))) + ln (1 / real_of_rat (\<delta>_of x))))"
     using order_trans[OF exp_gt_1] exp_pos
     by (intro landau_sum_2  evt[where n="exp 1" and \<delta>="1"] ln_ge_zero  iffD2[OF ln_ge_iff]
-        mult_nonneg_nonneg add_nonneg_nonneg) (auto simp add:log_def)
+        mult_nonneg_nonneg add_nonneg_nonneg; force simp add:log_def)
   hence 11: "(\<lambda>x. log 2 (real (t_of x) + 1)) \<in> O[?F](g)"
     unfolding g_def  by (intro landau_o.big_mult_1' 1, auto)
   have " (\<lambda>x. 1) \<in> O[?F](\<lambda>x. real (n_of x))"
@@ -1231,7 +1231,7 @@ proof -
   hence 12: "(\<lambda>x. log 2 (real (n_of x) + 21)) \<in> O[?F](g)"
     unfolding g_def using exp_pos order_trans[OF exp_gt_1]
     by (intro landau_o.big_mult_1' 1 landau_sum_1  evt[where n="exp 1" and \<delta>="1"]
-        ln_ge_zero  iffD2[OF ln_ge_iff] mult_nonneg_nonneg add_nonneg_nonneg)  (auto simp add:log_def)
+        ln_ge_zero  iffD2[OF ln_ge_iff] mult_nonneg_nonneg add_nonneg_nonneg; force simp add:log_def)
 
   have "(\<lambda>x. ln (1 / real_of_rat (\<delta>_of x))) \<in> O[?F](\<lambda>x. 1 / (real_of_rat (\<delta>_of x))\<^sup>2)"
     by (intro landau_ln_3 evt[where \<delta>="1"] landau_o.big_mono)
