@@ -15,7 +15,6 @@ theory Reversed_Bit_Lists
     Least_significant_bit
     Most_significant_bit
     Rsplit
-    Bits_Int
     Even_More_List
     "HOL-Library.Sublist"
     Aligned
@@ -496,18 +495,6 @@ lemma len_bin_to_bl_aux: "length (bin_to_bl_aux n w bs) = n + length bs"
 
 lemma len_bin_to_bl: "length (bin_to_bl n w) = n"
   by (fact size_bin_to_bl) (* FIXME: duplicate *)
-
-lemma sign_bl_bin': "bin_sign (bl_to_bin_aux bs w) = bin_sign w"
-  by (induction bs arbitrary: w) (simp_all add: bin_sign_def)
-
-lemma sign_bl_bin: "bin_sign (bl_to_bin bs) = 0"
-  by (simp add: bl_to_bin_def sign_bl_bin')
-
-lemma bl_sbin_sign_aux: "hd (bin_to_bl_aux (Suc n) w bs) = (bin_sign (signed_take_bit n w) = -1)"
-  by (induction n arbitrary: w bs) (auto simp add: bin_sign_def even_iff_mod_2_eq_zero bit_Suc)
-
-lemma bl_sbin_sign: "hd (bin_to_bl (Suc n) w) = (bin_sign (signed_take_bit n w) = -1)"
-  unfolding bin_to_bl_def by (rule bl_sbin_sign_aux)
 
 lemma bin_nth_bl: "n < m \<Longrightarrow> bit w n = nth (rev (bin_to_bl m w)) n"
   by (metis bin_bl_bin bin_nth_of_bl nth_bintr size_bin_to_bl)
@@ -1154,9 +1141,6 @@ lemma hd_to_bl_iff:
   \<open>hd (to_bl w) \<longleftrightarrow> bit w (LENGTH('a) - 1)\<close>
   for w :: \<open>'a::len word\<close>
   by (simp add: to_bl_eq_rev hd_map hd_rev)
-
-lemma hd_bl_sign_sint: "hd (to_bl w) = (bin_sign (sint w) = -1)"
-  by (simp add: hd_to_bl_iff bit_last_iff bin_sign_def)
 
 lemma of_bl_drop':
   "lend = length bl - LENGTH('a::len) \<Longrightarrow>

@@ -2591,4 +2591,17 @@ proof -
     done
 qed
 
+context
+  includes bit_operations_syntax
+begin
+
+lemma wils1:
+  \<open>word_of_int (NOT (uint (word_of_int x :: 'a word))) = (word_of_int (NOT x) :: 'a::len word)\<close>
+  \<open>word_of_int (uint (word_of_int x :: 'a word) XOR uint (word_of_int y :: 'a word)) = (word_of_int (x XOR y) :: 'a::len word)\<close>
+  \<open>word_of_int (uint (word_of_int x :: 'a word) AND uint (word_of_int y :: 'a word)) = (word_of_int (x AND y) :: 'a::len word)\<close>
+  \<open>word_of_int (uint (word_of_int x :: 'a word) OR uint (word_of_int y :: 'a word)) = (word_of_int (x OR y) :: 'a::len word)\<close>
+  by (simp_all add: word_of_int_eq_iff uint_word_of_int_eq take_bit_not_take_bit)
+
+end
+
 end

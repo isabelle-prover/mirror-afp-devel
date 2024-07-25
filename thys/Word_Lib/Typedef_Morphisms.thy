@@ -13,7 +13,7 @@
 section \<open>Type Definition Theorems\<close>
 
 theory Typedef_Morphisms
-  imports Main "HOL-Library.Word" Bit_Comprehension Bits_Int
+  imports Main "HOL-Library.Word" More_Int Bit_Comprehension
 begin
 
 subsection "More lemmas about normal type definitions"

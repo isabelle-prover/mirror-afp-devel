@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *)
 
-section \<open>Bitwise Operations on integers\<close>
+section \<open>More on bitwise operations on integers\<close>
 
-theory Bits_Int
-  imports Main "HOL-Library.Word" "Word_Lib.Generic_set_bit"
+theory More_Int
+  imports Main
 begin
 
 (* FIXME: move to Word distribution? *)
@@ -18,13 +18,6 @@ lemma bin_nth_minus_Bit0[simp]:
 lemma bin_nth_minus_Bit1[simp]:
   "0 < n \<Longrightarrow> bit (numeral (num.Bit1 w) :: int) n = bit (numeral w :: int) (n - 1)"
   by (cases n; simp)
-
-lemma eq_mod_iff: "0 < n \<Longrightarrow> b = b mod n \<longleftrightarrow> 0 \<le> b \<and> b < n"
-  for b n :: int
-  using pos_mod_sign [of n b] pos_mod_bound [of n b] by safe simp_all
-
-
-subsection \<open>Various lemmas\<close>
 
 lemma bin_cat_eq_push_bit_add_take_bit:
   \<open>concat_bit n l k = push_bit n k + take_bit n l\<close>
@@ -802,8 +795,6 @@ lemma int_shiftr_numeral_Suc0 [simp]:
 
 lemmas bin_log_bintrs = bin_trunc_not bin_trunc_xor bin_trunc_and bin_trunc_or
 
-\<comment> \<open>following definitions require both arithmetic and bit-wise word operations\<close>
-
 lemma bintrunc_shiftl:
   "take_bit n (push_bit i m) = push_bit i (take_bit (n - i) m)"
   for m :: int
@@ -823,6 +814,8 @@ begin
 lemma and_bin_mask_conv_mod: "x AND mask n = x mod 2 ^ n"
   for x :: int
   by (simp flip: take_bit_eq_mod add: take_bit_eq_mask)
+
+end
 
 end
 
@@ -855,132 +848,5 @@ lemma sbintrunc_If:
 lemma bintrunc_id:
   "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
   by (simp add: take_bit_int_eq_self_iff le_less_trans)
-
-\<comment> \<open>to get \<open>word_no_log_defs\<close> from \<open>word_log_defs\<close>, using \<open>bin_log_bintrs\<close>\<close>
-lemmas wils1 = bin_log_bintrs [THEN word_of_int_eq_iff [THEN iffD2],
-  folded uint_word_of_int_eq, THEN eq_reflection]
-
-
-subsection \<open>Legacy operations\<close>
-
-definition bin_sign :: "int \<Rightarrow> int"
-  where "bin_sign k = (if k \<ge> 0 then 0 else - 1)"
-
-lemma bin_sign_simps [simp]:
-  "bin_sign 0 = 0"
-  "bin_sign 1 = 0"
-  "bin_sign (- 1) = - 1"
-  "bin_sign (numeral k) = 0"
-  "bin_sign (- numeral k) = -1"
-  by (simp_all add: bin_sign_def)
-
-lemma bin_sign_rest [simp]: "bin_sign ((\<lambda>k::int. k div 2) w) = bin_sign w"
-  by (simp add: bin_sign_def)
-
-lemma sign_bintr: "bin_sign ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = 0"
-  by (simp add: bin_sign_def)
-
-lemma bin_sign_lem: "(bin_sign ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n bin) = -1) = bit bin n"
-  by (simp add: bin_sign_def)
-
-lemma sign_Pls_ge_0: "bin_sign bin = 0 \<longleftrightarrow> bin \<ge> 0"
-  for bin :: int
-  by (simp add: bin_sign_def)
-
-lemma sign_Min_lt_0: "bin_sign bin = -1 \<longleftrightarrow> bin < 0"
-  for bin :: int
-  by (simp add: bin_sign_def)
-
-lemma bin_sign_cat: "bin_sign ((\<lambda>k n l. concat_bit n l k) x n y) = bin_sign x"
-proof -
-  have \<open>0 \<le> x\<close> if \<open>0 \<le> x * 2 ^ n + y mod 2 ^ n\<close>
-  proof -
-    have \<open>y mod 2 ^ n < 2 ^ n\<close>
-      using pos_mod_bound [of \<open>2 ^ n\<close> y] by simp
-    then have \<open>\<not> y mod 2 ^ n \<ge> 2 ^ n\<close>
-      by (simp add: less_le)
-    with that have \<open>x \<noteq> - 1\<close>
-      by auto
-    have *: \<open>- 1 \<le> (- (y mod 2 ^ n)) div 2 ^ n\<close>
-      by (simp add: zdiv_zminus1_eq_if)
-    from that have \<open>- (y mod 2 ^ n) \<le> x * 2 ^ n\<close>
-      by simp
-    then have \<open>(- (y mod 2 ^ n)) div 2 ^ n \<le> (x * 2 ^ n) div 2 ^ n\<close>
-      using zdiv_mono1 zero_less_numeral zero_less_power by blast
-    with * have \<open>- 1 \<le> x * 2 ^ n div 2 ^ n\<close> by simp
-    with \<open>x \<noteq> - 1\<close> show ?thesis
-      by simp
-  qed
-  then show ?thesis
-    by (simp add: bin_sign_def not_le not_less bin_cat_eq_push_bit_add_take_bit push_bit_eq_mult take_bit_eq_mod)
-qed
-
-lemma le_int_or: "bin_sign y = 0 \<Longrightarrow> x \<le> x OR y"
-  for x y :: int
-  by (simp add: bin_sign_def or_greater_eq split: if_splits)
-
-lemmas int_and_le =
-  xtrans(3) [OF bbw_ao_absorbs (2) [THEN conjunct2, symmetric] le_int_or]
-
-lemma bin_sign_mask [simp]: "bin_sign (mask n) = 0"
-  by (simp add: bin_sign_def bin_mask_conv_pow2)
-
-lemma bin_sign_and:
-  "bin_sign (i AND j) = - (bin_sign i * bin_sign j)"
-by(simp add: bin_sign_def)
-
-lemma bin_nth_minus_p2:
-  assumes sign: "bin_sign x = 0"
-    and y: "y = push_bit n 1"
-    and m: "m < n"
-    and x: "x < y"
-  shows "bit (x - y) m = bit x m"
-proof -
-  from \<open>bin_sign x = 0\<close> have \<open>x \<ge> 0\<close>
-    by (simp add: sign_Pls_ge_0) 
-  moreover from x y have \<open>x < 2 ^ n\<close>
-    by simp
-  ultimately have \<open>q < n\<close> if \<open>bit x q\<close> for q
-    using that by (metis bit_take_bit_iff take_bit_int_eq_self)
-  then have \<open>bit (x + NOT (mask n)) m = bit x m\<close>
-    using \<open>m < n\<close> by (simp add: disjunctive_add bit_simps)
-  also have \<open>x + NOT (mask n) = x - y\<close>
-    using y by (simp flip: minus_exp_eq_not_mask)
-  finally show ?thesis .
-qed
-
-lemma msb_conv_bin_sign:
-  "msb x \<longleftrightarrow> bin_sign x = -1"
-  by (simp add: bin_sign_def not_le msb_int_def)
-
-lemma word_msb_def:
-  "msb a \<longleftrightarrow> bin_sign (sint a) = - 1"
-  by (simp flip: msb_conv_bin_sign add: msb_int_def word_msb_sint)
-
-lemma sign_uint_Pls [simp]: "bin_sign (uint x) = 0"
-  by (simp add: sign_Pls_ge_0)
-
-lemma msb_word_def:
-  \<open>msb a \<longleftrightarrow> bin_sign (signed_take_bit (LENGTH('a) - 1) (uint a)) = - 1\<close>
-  for a :: \<open>'a::len word\<close>
-  by (simp add: bin_sign_def bit_simps msb_word_iff_bit)
-
-lemma bin_sign_sc [simp]: "bin_sign (bin_sc n b w) = bin_sign w"
-proof (induction n arbitrary: w)
-  case 0
-  then show ?case
-    by (auto simp add: bin_sign_def) (use bin_rest_ge_0 in fastforce)
-next
-  case (Suc n)
-  from Suc [of \<open>w div 2\<close>]
-  show ?case by (auto simp add: bin_sign_def split: if_splits)
-qed
-
-end
-
-
-code_identifier
-  code_module Bits_Int \<rightharpoonup>
-  (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
 
 end

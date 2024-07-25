@@ -6,7 +6,7 @@
 
 theory Examples
   imports
-    Bit_Shifts_Infix_Syntax Next_and_Prev Signed_Division_Word Bitwise
+    Bit_Shifts_Infix_Syntax Next_and_Prev Signed_Division_Word Bitwise Generic_set_bit
 begin
 
 context

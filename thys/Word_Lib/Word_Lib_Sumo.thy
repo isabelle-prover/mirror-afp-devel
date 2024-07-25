@@ -13,7 +13,6 @@ imports
   Bit_Comprehension
   Bit_Comprehension_Int
   Bit_Shifts_Infix_Syntax
-  Bits_Int
   Bitwise_Signed
   Bitwise
   Enumeration_Word
@@ -23,6 +22,8 @@ imports
   More_Arithmetic
   More_Divides
   More_Sublist
+  More_Int
+  Bin_sign
   Even_More_List
   More_Misc
   Strict_part_mono
