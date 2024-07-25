@@ -26,7 +26,6 @@ imports
   Bin_sign
   Even_More_List
   More_Misc
-  Strict_part_mono
   Legacy_Aliases
   Most_significant_bit
   Next_and_Prev

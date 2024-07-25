@@ -392,6 +392,10 @@ text \<open>
 section \<open>Changelog\<close>
 
 text \<open>
+  \<^descr>[Changes since AFP 2024] ~
+
+    \<^item> Theory \<^text>\<open>Strict_part_mono\<close> is not part of text\<open>Word_Lib_Sumo\<close> any longer.
+
   \<^descr>[Changes since AFP 2022] ~
 
     \<^item> Theory \<^text>\<open>Word_Lib.Ancient_Numeral\<close> has been removed from session.
