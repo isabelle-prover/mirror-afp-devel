@@ -5,6 +5,7 @@ text \<open>
   The proof follows Lemmas 1 and 2 from Chakraborty et al.~\cite{DBLP:conf/ijcai/ChakrabortyMV16}.
   \<close>
 theory ApproxMCCoreAnalysis imports
+  "HOL-Decision_Procs.Dense_Linear_Order"
   ApproxMCCore
 begin
 
