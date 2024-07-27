@@ -5,6 +5,7 @@ session Approximate_Model_Counting = Universal_Hash_Families +
   sessions
     Concentration_Inequalities
     Monad_Normalisation
+    Median_Method
   theories
     ApproxMCPreliminaries
     RandomXOR

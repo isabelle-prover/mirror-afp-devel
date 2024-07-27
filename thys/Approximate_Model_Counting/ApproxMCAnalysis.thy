@@ -150,16 +150,15 @@ definition approxmc :: "'fml \<Rightarrow> 'a set \<Rightarrow> real \<Rightarro
 lemma median_commute:
   assumes "t \<ge> 1"
   shows "(real \<circ> median t) = (\<lambda>w::nat \<Rightarrow> nat. median t (real \<circ> w))"
-  unfolding median_def map_map[symmetric]
-  apply (subst Median.map_sort[where f = "\<lambda>x. real x"])
-  subgoal by (clarsimp simp add:mono_def)
-  apply (subst nth_map)
-  using assms by auto
+proof -
+  have "real (median t x) = median t (real \<circ> x)" for x
+    using assms by (intro median_commute_mono) (simp_all add:incseq_def)
+  thus ?thesis by auto
+qed
 
 lemma median_default:
   shows "median t y = median t (\<lambda>x. if x < t then y x else def)"
-  unfolding median_def
-  by (auto intro!: arg_cong[where f = "\<lambda>ls. sort ls ! (t div 2)"])
+  by (intro median_cong) auto
 
 definition default_\<alpha>::"'a set \<Rightarrow> nat assg"
   where "default_\<alpha> S i = (if i < card S - 1 then Some True else None)"
