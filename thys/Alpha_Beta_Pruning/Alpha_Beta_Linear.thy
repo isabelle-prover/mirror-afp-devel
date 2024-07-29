@@ -1303,13 +1303,13 @@ TODO: ab function with cache.
 *)
 
 lemma ab_twice_lb:
- "\<lbrakk> \<forall>a b. fishburn a b (maxmin t) (ab a b t); b \<le> ab a b t; max a' (ab a b t) < b' \<rbrakk> \<Longrightarrow>
-  fishburn a' b' (maxmin t) (ab (max a' (ab a b t)) b' t)"
+ "\<lbrakk> \<forall>a b. fishburn a b (maxmin t) (abf a b t); b \<le> abf a b t; max a' (abf a b t) < b' \<rbrakk> \<Longrightarrow>
+  fishburn a' b' (maxmin t) (abf (max a' (abf a b t)) b' t)"
 by (smt (verit, del_insts) order.eq_iff order.strict_trans leI max_less_iff_conj)
 
 lemma ab_twice_ub:
- "\<lbrakk> \<forall>a b. fishburn a b (maxmin t) (ab a b t); ab a b t \<le> a; min b' (ab a b t) > a' \<rbrakk> \<Longrightarrow>
-  fishburn a' b' (maxmin t) (ab a' (min b' (ab a b t)) t)"
+ "\<lbrakk> \<forall>a b. fishburn a b (maxmin t) (abf a b t); abf a b t \<le> a; min b' (abf a b t) > a' \<rbrakk> \<Longrightarrow>
+  fishburn a' b' (maxmin t) (abf a' (min b' (abf a b t)) t)"
 by (smt (verit, best) linorder_not_le min.absorb1 min.absorb2 min.strict_boundedE nless_le)
 
 text \<open>But what does a narrower window achieve?
