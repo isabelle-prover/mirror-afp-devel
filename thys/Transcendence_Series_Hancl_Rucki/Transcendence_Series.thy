@@ -1004,11 +1004,9 @@ proof-
     ultimately show ?thesis using finite_subset by auto
   qed
   ultimately show ?thesis 
-    apply (fold \<xi>_def)
+    unfolding \<xi>_def [symmetric]
     using RothsTheorem[rule_format,of \<xi> "2 + \<delta> * \<epsilon> / (1 + \<epsilon>)",folded pqs_def] 
-      \<open>\<delta> >0\<close> \<open>\<epsilon>>0\<close> 
-    apply (auto simp:divide_simps )
-    by (meson mult_le_0_iff not_less)
+      \<open>\<delta> >0\<close> \<open>\<epsilon>>0\<close> mult_le_0_iff by force 
 qed
 
 subsection\<open> Acknowledgements\<close>
