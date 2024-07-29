@@ -987,12 +987,11 @@ proof (rule compet_lb0[OF _ _ assms(1) \<open>c\<ge>0\<close>])
     also have "2*real(?on n) / ((l+1)*(n+1)) \<le> 2*real(?on n)/(2*(?off n + ?a))"
     proof -
       have 0: "2*real(?on n) \<ge> 0" by simp
-      have 1: "0 < real ((l + 1) * (n + 1))" by (simp del: of_nat_Suc)
       have "?off n \<ge> length(?cruel n)"
         by(rule T_ge_len) (simp add: adv_def)
       hence "?off n > n" by simp
       hence "?off n + ?a > 0" using \<open>n \<ge> l^2 + l + 1\<close> by linarith
-      hence 2: "real_of_int(2*(?off n + ?a)) > 0"
+      hence *: "real_of_int(2*(?off n + ?a)) > 0"
         by(simp only: of_int_0_less_iff zero_less_mult_iff zero_less_numeral simp_thms)
       have "?off n + ?a \<le> (l+1)*(n) div 2"
         using T_adv[OF \<open>l\<noteq>0\<close>, of A n]
@@ -1001,7 +1000,7 @@ proof (rule compet_lb0[OF _ _ assms(1) \<open>c\<ge>0\<close>])
       finally have "2*(?off n + ?a) \<le> (l+1)*(n+1)"
         by (simp add: zdiv_int)
       hence "of_int(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: of_int_le_iff)
-      from divide_left_mono[OF this 0 mult_pos_pos[OF 1 2]] show ?thesis .
+      from divide_left_mono[OF this 0] * show ?thesis .
     qed
     also have "\<dots> = ?on n / (?off n + ?a)"
       by (simp del: distrib_left_numeral One_nat_def cruel.simps)

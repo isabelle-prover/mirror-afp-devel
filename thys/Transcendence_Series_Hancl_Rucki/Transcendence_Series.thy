@@ -844,12 +844,8 @@ proof-
             by (simp add: prod.atLeast0_atMost_Suc)
           finally show ?case .
         qed 
-        then show ?thesis
-          apply (rule_tac divide_left_mono)
-          apply (rule powr_mono2)
-          using \<open>\<delta>>0\<close> \<open>\<epsilon>>0\<close> q_pos[of k] 
-           apply (auto simp:powr_mult[symmetric])
-          by (metis aa_bb_pos(1) less_irrefl)
+        with \<open>\<epsilon>>0\<close> \<open>\<delta>>0\<close> q_pos[of k]  show ?thesis
+          by (intro divide_left_mono powr_mono2) auto
       qed 
       finally show "\<bar>\<xi> -  p k / q k\<bar> < 1 /  q k powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))" .
     qed
