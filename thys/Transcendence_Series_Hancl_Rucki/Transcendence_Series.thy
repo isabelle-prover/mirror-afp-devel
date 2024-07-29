@@ -845,7 +845,7 @@ proof-
           finally show ?case .
         qed 
         with \<open>\<epsilon>>0\<close> \<open>\<delta>>0\<close> q_pos[of k]  show ?thesis
-          by (intro divide_left_mono powr_mono2) auto
+          by (smt (verit, best) powr_mono2 mult_pos_pos divide_pos_pos frac_le of_int_pos powr_gt_zero)
       qed 
       finally show "\<bar>\<xi> -  p k / q k\<bar> < 1 /  q k powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))" .
     qed

@@ -412,19 +412,19 @@ next
     finally have ex_lower: "1 / (?v ^ ?v) * (real n ^ ?v * p n ^ ?e) \<le> \<mu>"
       .
 
-\<comment> \<open>Upper bound for the inverse expectation. Follows trivially from above.\<close>
+    \<comment> \<open>Upper bound for the inverse expectation. Follows trivially from above.\<close>
     have ex_lower_pos: "0 < 1 / ?v ^ ?v * (real n ^ ?v * p n ^ ?e)"
-    proof (intro mult_pos_pos vpowv_inv_gr_z mult_pos_pos)
-      have "0 < real n"
-        using n v_e_nz by linarith
-      thus "0 < real n ^ ?v"
-        by simp
-    next
-      show "0 < p n ^ card (uedges H)"
-        using p_nz by simp
-    qed
+      proof (rule mult_pos_pos[OF vpowv_inv_gr_z mult_pos_pos])
+        have "0 < real n"
+          using n nonempty finite unfolding nonempty_graph_def finite_graph_def by auto
+        thus "0 < real n ^ ?v"
+          by simp
+      next
+        show "0 < p n ^ card (uedges H)"
+          using p_nz by simp
+      qed
     hence "1 / \<mu> \<le> 1 / (1 / ?v ^ ?v * (real n ^ ?v * p n ^ ?e))"
-      by (intro divide_left_mono ex_lower) auto
+      by (rule divide_left_mono[OF ex_lower zero_le_one mult_pos_pos[OF \<mu>_non_zero]])
     hence inv_ex_upper: "1 / \<mu> \<le> ?v ^ ?v * (1 / (real n ^ ?v * p n ^ ?e))"
       by simp
 

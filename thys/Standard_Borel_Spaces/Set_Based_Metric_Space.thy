@@ -921,8 +921,7 @@ proof -
         proof cases
           case 2
           show ?thesis
-            unfolding f_def
-            by (smt (verit, del_insts) "2" frac_le mdist_set_nonneg)
+            unfolding f_def by(rule divide_left_mono[OF _ _ mult_pos_pos]) (auto simp: 2 add_strict_increasing)
         qed (simp add: f_def)
       qed
       also have "... \<le> 1" by simp
