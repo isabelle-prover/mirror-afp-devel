@@ -1015,8 +1015,13 @@ proof -
   also have "... = 16 powr ((real l - 1)*(ln \<Lambda> / ln (19/20)+1))"
     using l_gt_0 by (subst of_nat_diff) auto
   also have "... \<le> 16 powr ((real l - 1)*(ln \<Lambda> / (-0.05)+1))"
-    using l_gt_0 \<Lambda>_gt_0 \<Lambda>_le_1
-    by (intro powr_mono mult_left_mono add_mono divide_left_mono_neg 12) auto
+  proof -
+    have "ln \<Lambda> / - ln (19/20) \<ge> ln \<Lambda> / 0.05"
+      using 12 \<Lambda>_gt_0 \<Lambda>_le_1
+      by (intro divide_left_mono_neg) auto
+    with l_gt_0 show ?thesis
+      by (intro powr_mono mult_left_mono add_mono; linarith)
+  qed
   also have "... = 16 powr ((real l - 1)*(20 * (-ln \<Lambda>)+1))"
     by (simp add:algebra_simps)
   also have "... = 16 powr ((real l - 1)*(20 * -(min (ln (1/16)) (-l*ln l^3))+1))"
