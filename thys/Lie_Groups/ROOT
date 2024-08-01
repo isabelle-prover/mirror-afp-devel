@@ -1,0 +1,32 @@
+chapter AFP
+
+session "Lie_Groups" (AFP) = Smooth_Manifolds +
+  options [timeout = 600]
+
+  sessions
+    Jacobson_Basic_Algebra
+    Types_To_Sets_Extension
+    "HOL-Eisbach"
+    Cayley_Hamilton
+
+  theories [document = false]
+    Diff_PiE
+    Transfer_Cayley_Hamilton
+
+(* The top-level theories of the submission: *)
+  theories
+    Algebra_On
+    Groups_On_With
+    Linear_Algebra_More
+    More_Manifolds
+    Smooth_Vector_Fields
+    Manifold_Lie_Bracket
+    Lie_Group
+    Lie_Algebra
+    Classical_Groups
+
+
+(* Dependencies on document source files: *)
+  document_files
+    "root.bib"
+    "root.tex"

@@ -1,0 +1,34 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Lie Groups and Algebras}
+\author{Richard Schmoetten and Jacques D. Fleuriot}
+\maketitle
+
+\begin{abstract}
+	Lie Groups are formalised as locales, building on the theory of Smooth Manifolds \cite{Smooth_Manifolds-AFP}. We formalise the diffeomorphism group of a manifold, and the action of a Lie group on a manifold. The general linear group is shown to be a Lie group by proving properties of the determinant, and matrix inverses.
+	We also develop a theory of smooth vector fields on a $C^\infty$ manifold $M$, defined as smooth maps from the manifold to its tangent bundle $TM$. We employ a shortcut that avoids difficulties in defining the tangent bundle as a manifold, but which still leads to vector fields with the properties one would expect. Notably, they are derivations $C^\infty(M) \to C^\infty(M)$.
+	We construct \emph{the} Lie algebra of a Lie group as an algebra of left-invariant smooth vector fields. Our main reference for the mathematics of smooth manifolds is Lee's textbook \cite{lee2012}, which also contains material on Lie groups and algebras.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
