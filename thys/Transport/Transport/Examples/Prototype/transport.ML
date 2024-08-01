@@ -203,7 +203,7 @@ fun note_facts (binding, mixfix) ctxt related_thm y binding_thms_attribs =
         (binding_def_simplified, y_def_simplified, []),
         (binding_def_eta_expanded_simplified, y_def_eta_expanded_simplified, [])
       ] @ binding_thms_attribs)
-  in Local_Theory.notes facts ctxt |> snd end
+  in Local_Theory.notes facts ctxt end
 
 (*black-box transport as described in the Transport paper*)
 fun after_qed_blackbox (binding, mixfix) [thms as [per_thm, in_dom_thm]] ctxt =
@@ -241,7 +241,6 @@ fun setup_goals_blackbox ctxt (L, R, cx) maxidx =
     val transport_defs = Transport_Defs.get ctxt
     val goals = Local_Defs.fold ctxt transport_defs transport_per_start_thm
       |> Thm.prems_of
-      |> map (rpair [])
   in goals end
 
 fun setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx =
@@ -250,8 +249,27 @@ fun setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx =
     (*check*)
     val Galois = mk_hom_Galois (Thm.typ_of_cterm cx) yT L R r (Thm.term_of cx) y
       |> Syntax.check_term ctxt
-    val goal = Util.mk_judgement Galois |> rpair []
+    val goal = Util.mk_judgement Galois
   in [goal] end
+
+fun setup_goal_terms opts ctxt cx yT =
+  let
+    (**configuration**)
+    val opts_default_names = ["L", "R", "y"]
+    val opts_constraints =
+      [Util.mk_hom_rel_type (Thm.typ_of_cterm cx), Util.mk_hom_rel_type yT, yT]
+      |> map Type.constraint
+    (**parse**)
+    val opts = map (Syntax.parse_term ctxt |> Option.map) opts
+    val params_maxidx = Util.list_max (the_default ~1 o Option.map Term.maxidx_of_term)
+      (Thm.maxidx_of_cterm cx) opts
+    fun create_var (NONE, n) maxidx =
+          Term_Util.fresh_var n dummyT params_maxidx ||> Integer.max maxidx
+      | create_var (SOME t, _) created = (t, created)
+    val (ts, maxidx) =
+      fold_map create_var (opts ~~ opts_default_names) params_maxidx
+      |>> map2 I opts_constraints
+  in (ts, maxidx) end
 
 fun setup_proof ((((binding, opt_yT, mixfix), params), unfolds), whitebox) lthy =
   let
@@ -267,32 +285,15 @@ fun setup_proof ((((binding, opt_yT, mixfix), params), unfolds), whitebox) lthy 
       (**unfold passed theorems**)
       |> Drule.cterm_rule (Local_Defs.unfold ctxt unfolds)
     (*transport relations and transport term goal*)
-    val ([L, R, y], maxidx) =
-      let
-        (**configuration**)
-        val opts = [PA.get_L_safe params, PA.get_R_safe params, PA.get_y_safe params]
-        val opts_default_names = ["L", "R", "y"]
-        val opts_constraints =
-          [Util.mk_hom_rel_type (Thm.typ_of_cterm cx), Util.mk_hom_rel_type yT, yT]
-          |> map Type.constraint
-        (**parse**)
-        val opts = map (Syntax.parse_term ctxt |> Option.map) opts
-        val params_maxidx = Util.list_max (the_default ~1 o Option.map Term.maxidx_of_term)
-          (Thm.maxidx_of_cterm cx) opts
-        fun create_var (NONE, n) maxidx =
-              Term_Util.fresh_var n dummyT params_maxidx ||> Integer.max maxidx
-          | create_var (SOME t, _) created = (t, created)
-        val (ts, maxidx) =
-          fold_map create_var (opts ~~ opts_default_names) params_maxidx
-          |>> map2 I opts_constraints
-      in (ts, maxidx) end
+    val ([L, R, y], maxidx) = setup_goal_terms
+      [PA.get_L_safe params, PA.get_R_safe params, PA.get_y_safe params] ctxt cx yT
     (*initialise goals and callback*)
     val (goals, after_qed) = if whitebox
-      then (setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx, after_qed_whitebox)
+      then (setup_goals_whitebox ctxt (yT, L, R, cx, y) maxidx, snd ooo after_qed_whitebox)
       (*TODO: consider y in blackbox proofs*)
-      else (setup_goals_blackbox ctxt (L, R, cx) maxidx, after_qed_blackbox)
+      else (setup_goals_blackbox ctxt (L, R, cx) maxidx, snd ooo after_qed_blackbox)
   in
-    Proof.theorem NONE (after_qed (binding, mixfix)) [goals] ctxt
+    Proof.theorem NONE (after_qed (binding, mixfix)) [map (rpair []) goals] ctxt
     |> Proof.refine_singleton Util.split_conjunctions
   end
 
