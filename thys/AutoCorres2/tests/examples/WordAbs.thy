@@ -359,7 +359,7 @@ lemma "n < 32 \<Longrightarrow> 0 <=s x \<Longrightarrow> sint x << nat (int n) 
        \<lbrace>\<lambda>r s. r = Result (x << nat (int n))\<rbrace>"
   unfolding  S_shiftl_U_abs_U'_def
   by (runs_to_vcg \<open>simp add: INT_MAX_def shiftl_int_def
-                   nat_int_comparison(2) uint_sint_nonneg\<close>)
+      nat_int_comparison(2) uint_sint_nonneg del: of_nat_less_numeral_iff\<close>)
 
 lemma "x < 0 \<Longrightarrow> \<not> succeeds (S_shiftl_U_abs_S' (x :: int) (n :: word32)) s"
   unfolding S_shiftl_U_abs_S'_def

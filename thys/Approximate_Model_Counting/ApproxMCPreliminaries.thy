@@ -4,7 +4,7 @@ text \<open> This section proves some simplified/specialized forms of lemmas
   that will be used in the algorithm's analysis later. \<close>
 
 theory ApproxMCPreliminaries imports
-  Frequency_Moments.Probability_Ext
+  Universal_Hash_Families.Carter_Wegman_Hash_Family
   Concentration_Inequalities.Bienaymes_Identity
   Concentration_Inequalities.Paley_Zygmund_Inequality
 begin

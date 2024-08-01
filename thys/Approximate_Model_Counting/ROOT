@@ -1,10 +1,11 @@
 chapter AFP
 
-session Approximate_Model_Counting = Frequency_Moments +
+session Approximate_Model_Counting = Universal_Hash_Families +
   options [timeout = 600]
   sessions
     Concentration_Inequalities
     Monad_Normalisation
+    Median_Method
   theories
     ApproxMCPreliminaries
     RandomXOR

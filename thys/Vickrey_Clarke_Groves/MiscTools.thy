@@ -1161,11 +1161,11 @@ corollary lm145:
 lemma lm146: 
   assumes "card (Pow A) \<noteq> 0" 
   shows "card A=Discrete.log (card (Pow A))" 
-  using assms log_exp card_Pow by (metis card.infinite finite_Pow_iff)
+  using assms log_power card_Pow by (metis card.infinite finite_Pow_iff)
 
 lemma log_2 [simp]:
   "Discrete.log 2 = 1"
-  using log_exp [of 1] by simp
+  using log_power [of 1] by simp
 
 lemma lm147: 
   assumes "card (Pow A) = 2" 

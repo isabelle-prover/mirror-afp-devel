@@ -91,7 +91,7 @@ context
 begin
 
 lemma D'_pos: "D' > 0"
-  using nonsquare by (auto simp: D'_def of_nat_ge_1_iff intro: Nat.gr0I)
+  unfolding D'_def using nonsquare of_nat_ge_1_iff by force
 
 lemma D'_sqr_less_D: "D'\<^sup>2 < D"
 proof -
@@ -373,7 +373,7 @@ lemma red_assoc_begin:
   "surd_to_real_cnj (D', D - D'\<^sup>2) = -1 / (sqrt D + D')"
 proof -
   have pos: "D > 0" "D' > 0"
-    using nonsquare by (auto simp: D'_def of_nat_ge_1_iff intro!: Nat.gr0I)
+    using D'_def D'_pos is_nth_power_0_iff by force+
 
   have "sqrt D \<noteq> D'"
     using irrat_sqrt_nonsquare[OF nonsquare] by auto

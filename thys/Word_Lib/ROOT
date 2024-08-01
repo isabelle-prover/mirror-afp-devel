@@ -15,8 +15,8 @@ session Word_Lib = HOL +
     More_Sublist
     Strict_part_mono
   theories
-    Bits_Int
     Bit_Comprehension
+    More_Int
     More_Word
     Bit_Shifts_Infix_Syntax
     Next_and_Prev
@@ -25,6 +25,7 @@ session Word_Lib = HOL +
     Many_More
     Singleton_Bit_Shifts
     Typedef_Morphisms
+    Bin_sign
   theories
     Bitwise
     Guide

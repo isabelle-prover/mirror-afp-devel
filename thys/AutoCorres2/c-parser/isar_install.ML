@@ -164,7 +164,7 @@ fun do_cpp ctxt {error_detail, cpp_path} {includes, src_path, lines} =
                val tmp = Utils.sanitized_path thy tmp_dir src_path
                fun plural 1 = "" | plural _ = "s"
                val tmp_includes = map (Utils.sanitized_path thy tmp_dir o Path.explode) includes
-               val includes_string = String.concat (map (fn path => "-I " ^ File.bash_path path ^ " ")
+               val includes_string = String.concat (map (fn path => "-I" ^ File.bash_path path ^ " ")
                      (tmp_dir :: tmp_includes))
                val cmdline = File.bash_path p ^ " " ^ includes_string ^ " -CC " ^ File.bash_path tmp
                val res = Isabelle_System.bash_process (Bash.script cmdline) |> Process_Result.check

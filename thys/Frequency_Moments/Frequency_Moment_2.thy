@@ -640,17 +640,17 @@ proof -
      (auto intro!:iffD2[OF ln_ge_iff] simp add:abs_ge_iff)
 
   have unit_3: "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. real (n_of x))"
-    by (intro landau_o.big_mono evt, auto)
+    using of_nat_le_iff by (intro landau_o.big_mono evt; fastforce)
 
   have unit_4: "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. real (m_of x))"
-    by (intro landau_o.big_mono evt, auto)
+    using of_nat_le_iff by (intro landau_o.big_mono evt; fastforce)
 
   have unit_5: "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. ln (real (n_of x)))"
     by (auto intro!: landau_o.big_mono evt[where n="exp 1"])
       (metis abs_ge_self linorder_not_le ln_ge_iff not_exp_le_zero order.trans)
 
   have unit_6: "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln (real (m_of x)))"
-    by (intro landau_sum_1 evt unit_5 iffD2[OF ln_ge_iff], auto)
+    by (intro landau_sum_1 evt[where m=1 and n=1] unit_5 iffD2[OF ln_ge_iff]) auto
 
   have unit_7: "(\<lambda>_. 1) \<in> O[?F](\<lambda>x. 1 / real_of_rat (\<epsilon>_of x))"
     by (intro landau_o.big_mono  evt[where \<epsilon>="1"], auto)
@@ -683,17 +683,19 @@ proof -
      apply (metis dual_order.trans mult_left_mono mult_of_nat_commute of_nat_0_le_iff verit_prod_simplify(1))
     using l3_aux by simp
   also have "(\<lambda>x. ln (real (n_of x) * real (m_of x))) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln(real (m_of x)))"
-    by (intro landau_o.big_mono evt[where m="1" and n="1"], auto simp add:ln_mult)
+    by (intro landau_o.big_mono evt[where m=1 and n=1], auto simp add:ln_mult)
   finally have l3: "(\<lambda>x. ln (real (m_of x) * (18 + 4 * real (n_of x)) + 1)) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln (real (m_of x)))"
     using  landau_o.big_trans by simp
 
+  have \<section>: "(\<lambda>x. q + 2 * real (n_of x))
+        \<in> O[sequentially \<times>\<^sub>F sequentially \<times>\<^sub>F at_right 0 \<times>\<^sub>F at_right 0](\<lambda>x. real (n_of x))"
+    if "q>0" for q
+    using that
+    by  (auto intro!: sum_in_bigo simp add:unit_3)
   have l4: "(\<lambda>x. ln (8 + 2 * real (n_of x))) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln (real (m_of x)))"
-    by (intro landau_sum_1  evt[where n="2"] landau_ln_2[where a="2"] iffD2[OF ln_ge_iff])
-     (auto intro!: sum_in_bigo simp add:unit_3)
-
+    by (intro \<section> landau_sum_1  evt[where m=1 and n="2"] landau_ln_2[where a="2"] iffD2[OF ln_ge_iff]) auto
   have l5: "(\<lambda>x. ln (9 + 2 * real (n_of x))) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln (real (m_of x)))"
-    by (intro landau_sum_1  evt[where n="2"] landau_ln_2[where a="2"] iffD2[OF ln_ge_iff])
-     (auto intro!: sum_in_bigo simp add:unit_3)
+    by (intro \<section> landau_sum_1  evt[where m=1 and n="2"] landau_ln_2[where a="2"] iffD2[OF ln_ge_iff]) auto
 
   have l6: "(\<lambda>x. ln (real (nat \<lceil>6 / (\<delta>_of x)\<^sup>2\<rceil>) + 1)) \<in> O[?F](g)"
     unfolding g_def

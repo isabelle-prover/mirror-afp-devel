@@ -63,7 +63,7 @@ lemma Rep_0: "Rep 0 = 0"
   by (simp add: zero_def Rep_Abs_0)
 
 lemma Rep_Abs_1: "Rep (Abs 1) = 1"
-  by (simp add: Abs_inverse size1)
+  using size1 by (simp add: Abs_inverse)
 
 lemma Rep_1: "Rep 1 = 1"
   by (simp add: one_def Rep_Abs_1)
@@ -71,7 +71,7 @@ lemma Rep_1: "Rep 1 = 1"
 lemma Rep_mod: "Rep x mod int CARD ('a) = Rep x"
   apply (rule_tac x=x in type_definition.Abs_cases [OF type])
   apply (simp add: type_definition.Abs_inverse [OF type])
-done
+  done
 
 lemmas Rep_simps =
   Rep_inject_sym Rep_inverse Rep_Abs_mod Rep_mod Rep_Abs_0 Rep_Abs_1

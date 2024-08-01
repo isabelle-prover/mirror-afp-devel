@@ -140,4 +140,8 @@ lemma msrevs:
   for n :: nat
   by simp_all
 
+lemma eq_mod_iff: "0 < n \<Longrightarrow> b = b mod n \<longleftrightarrow> 0 \<le> b \<and> b < n"
+  for b n :: int
+  using pos_mod_sign [of n b] pos_mod_bound [of n b] by safe simp_all
+
 end

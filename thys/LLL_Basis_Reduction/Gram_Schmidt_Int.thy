@@ -1025,7 +1025,9 @@ proof -
     also have "... \<le> 1 * N"
       using N_fs that by auto
     also have "\<dots> \<le> of_nat m * N ^ (3 * Suc m)"
-      using m N_1 by (intro mult_mono) (auto intro!: mult_mono self_le_power)
+      using m N_1 mult_mono self_le_power
+      by (intro mult_mono self_le_power)
+         (auto simp del: length_0_conv length_greater_0_conv)
     finally show ?thesis
       by (auto)
   qed
