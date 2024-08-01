@@ -8,6 +8,8 @@ sig
   val fresh_vars : string -> typ list -> int -> term list * int
   val fresh_var : string -> typ -> int -> term * int
 
+  val strip_ccomb : cterm -> cterm * cterm list
+
   (*returns outer parameters in reversed order*)
   val strip_all : term -> (string * typ) list * term
   val strip_call : cterm -> cterm Binders.binders * cterm
@@ -25,6 +27,8 @@ sig
   (*replace outer parameters by fresh meta variables*)
   val forall_elim_vars : term -> int -> term * int
 
+  val mk_equals : 'a Binders.binders -> term * term -> term
+
   val protect : cterm -> cterm
   val unprotect : cterm -> cterm
 
@@ -40,6 +44,13 @@ fun fresh_vars name Ts idx =
   in fold_map mk_var_inc Ts idx end
 
 fun fresh_var name = yield_singleton (fresh_vars name)
+
+val strip_ccomb =
+  let fun strip cargs ct =
+    ((let val (ct, cx) = Thm.dest_comb ct
+    in strip (cx :: cargs) ct end)
+    handle CTERM _ => (ct, cargs))
+  in strip [] end
 
 val strip_all =
   let fun strip params (Const ("Pure.all", _) $ Abs (a, T, t)) = strip ((a, T) :: params) t
@@ -85,6 +96,10 @@ fun forall_elim_vars t i =
       fold_map (uncurry fresh_var) params i
       |>> Term.subst_bounds o rpair tbody
   end
+
+fun mk_equals binders (lhs, rhs) =
+  let val T = fastype_of1 (Binders.binder_types binders, lhs)
+  in \<^Const>\<open>Pure.eq T for lhs rhs\<close> end
 
 val protect = Drule.protect
 val unprotect = Thm.dest_arg

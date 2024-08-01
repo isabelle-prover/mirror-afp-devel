@@ -3,6 +3,7 @@ section \<open>ML Unifiers\<close>
 theory ML_Unifiers_Base
   imports
     ML_Unification_Base
+    ML_Tactic_Utils
 begin
 
 paragraph \<open>Summary\<close>
@@ -21,5 +22,9 @@ paragraph \<open>Standard Unifiers\<close>
 ML_file\<open>higher_order_unification.ML\<close>
 ML_file\<open>higher_order_pattern_unification.ML\<close>
 ML_file\<open>first_order_unification.ML\<close>
+
+paragraph \<open>Unification via Tactics\<close>
+
+ML_file\<open>tactic_unification.ML\<close>
 
 end

@@ -13,13 +13,11 @@ sig
   val mk_SIMPS_TO_cprop : cterm * cterm -> cterm
 
   val finish_SIMPS_TO_tac : Proof.context -> int -> tactic
+  val finish_SIMPS_TO_unif_tac : Proof.context -> int -> tactic
   val SIMPS_TO_tac : (int -> tactic) -> Proof.context -> int -> tactic
+  val SIMPS_TO_unif_tac : (int -> tactic) -> Proof.context -> int -> tactic
 
   val SIMPS_TO_thmsq : (int -> tactic) -> Proof.context -> cterm * cterm -> thm Seq.seq
-
-  val simp_inst_tac : (int -> tactic) -> int -> tactic
-
-  val SIMPS_TO_thm_resultsq : (int -> tactic) -> Proof.context -> cterm -> (thm * cterm) Seq.seq
 end
 
 structure Simps_To : SIMPS_TO =
@@ -35,8 +33,12 @@ val cdest_SIMPS_TO = Thm.dest_comb #>> Thm.dest_arg
 fun mk_SIMPS_TO_cprop (clhs, crhs) = \<^instantiate>\<open>'a = \<open>Thm.ctyp_of_cterm clhs\<close> and clhs and crhs
   in cprop\<open>PROP (SIMPS_TO clhs crhs)\<close> for clhs :: 'a\<close>
 
-fun finish_SIMPS_TO_tac ctxt = match_tac ctxt [@{thm SIMPS_TOI}]
+val finish_thm = @{thm SIMPS_TOI}
+
+fun finish_SIMPS_TO_tac ctxt = match_tac ctxt [finish_thm]
+fun finish_SIMPS_TO_unif_tac ctxt = resolve_tac ctxt [finish_thm]
 fun SIMPS_TO_tac simp_tac ctxt = simp_tac THEN' finish_SIMPS_TO_tac ctxt
+fun SIMPS_TO_unif_tac simp_tac ctxt = simp_tac THEN' finish_SIMPS_TO_unif_tac ctxt
 
 fun SIMPS_TO_thmsq simp_tac ctxt (ctp as (clhs, crhs)) =
   (let val goal = mk_SIMPS_TO_cprop ctp
@@ -55,18 +57,5 @@ fun SIMPS_TO_thmsq simp_tac ctxt (ctp as (clhs, crhs)) =
       Pretty.str " not equal"
     ] |> Pretty.string_of);
     Seq.empty)
-
-fun simp_inst_tac simp_tac =
-  let fun inst_tac cconcl =
-    PRIMITIVE (cdest_SIMPS_TO cconcl |> swap |> Thm.first_order_match |> Thm.instantiate)
-  in simp_tac THEN' Tactic_Util.CSUBGOAL_STRIPPED (snd o snd) (K o inst_tac) end
-
-fun SIMPS_TO_thm_resultsq simp_tac ctxt ct =
-  let val cvar = Term_Util.fresh_var "x" (Thm.typ_of_cterm ct) (Thm.maxidx_of_cterm ct)
-    |> fst |> Thm.cterm_of ctxt
-  in
-    SIMPS_TO_thmsq (simp_inst_tac simp_tac) ctxt (ct, cvar)
-    |> Seq.map (fn thm => (thm, Thm.cconcl_of thm |> cdest_SIMPS_TO |> snd))
-  end
 
 end

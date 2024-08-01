@@ -42,6 +42,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Unification_Hints_
 structure GUtil = General_Util
 structure TUtil = Term_Util
 structure CUtil = Conversion_Util
+structure UUtil = Unification_Util
 
 type unif_hint = thm
 
@@ -66,8 +67,7 @@ Unifies the hint's conclusion with (t1, t2) using match.
 Unifies resulting unification problems using unify.
 Normalises the terms and theorems after unify with norms.
 Returns a sequence of (env, thm) pairs.*)
-fun try_hint match norms hint unify binders ctxt (t1, t2)
-  (Envir.Envir {maxidx, tenv, tyenv}) =
+fun try_hint match norms hint unify binders ctxt (t1, t2) env =
   let
     val dest_all_equals = TUtil.strip_all ##> Logic.dest_equals
     val rev_binders = rev binders
@@ -77,7 +77,7 @@ fun try_hint match norms hint unify binders ctxt (t1, t2)
     (*lift hint to include bound variables and increase indexes*)
     val lifted_hint =
       (*"P" is just some dummy proposition variable with appropriate index*)
-      Logic.list_all (map fst rev_binders, Var (("P", maxidx + 1), propT))
+      Logic.list_all (map fst rev_binders, Var (("P", Envir.maxidx_of env + 1), propT))
       |> Thm.cterm_of ctxt
       (*lift bound variables to the hint*)
       |> GUtil.flip Thm.lift_rule hint
@@ -87,7 +87,7 @@ fun try_hint match norms hint unify binders ctxt (t1, t2)
     val (P, Q) = dest_all_equals hint_concl |> snd
     val match = match binders ctxt
     val (no_hint_match, match_env_concl_thmpq) =
-      Envir.Envir {maxidx = Thm.maxidx_of lifted_hint, tenv = tenv, tyenv = tyenv}
+      UUtil.update_maxidx_envir (Thm.maxidx_of lifted_hint) env
       |> match (P, t1)
       |> Seq.maps (fn (env, thm1) => match (Q, t2) env |> Seq.map (apsnd (pair thm1)))
       |> GUtil.seq_is_empty
@@ -115,11 +115,10 @@ fun try_hint match norms hint unify binders ctxt (t1, t2)
           let
             (*instantiate the theorems*)
             val conv = #conv norms
-            val lifted_hint_inst = Unification_Util.inst_norm_thm (#inst_thm norms) conv ctxt
-              env_res lifted_hint
+            val lifted_hint_inst = UUtil.inst_norm_thm (#inst_thm norms) conv ctxt env_res lifted_hint
             val inst_term = #inst_term norms env_res
-            val mk_inst_cbinders = map (Thm.cterm_of ctxt o inst_term o snd)
-            val norm_unif_thm = Unification_Util.inst_norm_thm (#inst_unif_thm norms) conv ctxt env_res
+            val mk_inst_cbinders = map (snd #> inst_term #> Thm.cterm_of ctxt)
+            val norm_unif_thm = UUtil.inst_norm_thm (#inst_unif_thm norms) conv ctxt env_res
             fun forall_intr binders = fold Thm.forall_intr (mk_inst_cbinders binders) o norm_unif_thm
             val prem_thms_inst = map (uncurry forall_intr) prem_thms |> rev
             val (concl_thmL, concl_thmR) = apply2 norm_unif_thm concl_thmp
@@ -139,7 +138,7 @@ fun try_hints get_hints match norms unif binders ctxt (t1, t2) env =
   (@{log Logger.TRACE} ctxt (fn _ =>
     Pretty.block [
       Pretty.str "Trying unification hints for ",
-      Unification_Util.pretty_unif_problem ctxt (t1, t2)
+      UUtil.pretty_unif_problem ctxt (t1, t2)
     ] |> Pretty.string_of);
   get_hints binders ctxt (t1, t2) env
   |> Seq.maps (fn hint => try_hint match norms hint unif binders ctxt (t1, t2) env))

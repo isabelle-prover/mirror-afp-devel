@@ -58,7 +58,7 @@ sig
 
   (*creates equality theorem for a subgoal from an equality theorem for the subgoal's conclusion;
     fails if the equality theorem contains a tpair or implicit Assumption mentioning one of the bound variables*)
-  val eq_subgoal_from_eq_concl : cterm Binders.binders -> cterm list -> thm -> Proof.context ->
+  val eq_subgoal_from_eq_concl : cterm Binders.binders -> cterm list -> Proof.context -> thm ->
     thm option
 
   (*rewrite a subgoal given an equality theorem and environment for the subgoal's conclusion*)
@@ -158,7 +158,7 @@ val no_lift_eresolve_tac = no_lift_biresolve_tac true
 
 fun rewrite_subgoal_tac eq_thm = CONVERSION (K (Thm.symmetric eq_thm))
 
-fun eq_subgoal_from_eq_concl cbinders cprems eq_thm ctxt =
+fun eq_subgoal_from_eq_concl cbinders cprems ctxt eq_thm =
   let
     fun all_abstract ((x, T), cfree) =
       let val all_const = Logic.all_const T |> Thm.cterm_of ctxt
@@ -186,8 +186,8 @@ fun rewrite_subgoal_unif_concl inst_binders norm_state norm_eq_thm binders (env_
         val cterm_of = Thm.cterm_of ctxt
         val cprems = map (cterm_of o Binders.replace_binders binders) prems
       in
-        eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems (norm_eq_thm ctxt env eq_thm)
-          ctxt
+        norm_eq_thm ctxt env eq_thm
+        |> eq_subgoal_from_eq_concl (map (apsnd cterm_of) binders) cprems ctxt
         |> Option.map rewrite_subgoal_tac
         |> the_default (K no_tac)
       end
@@ -223,7 +223,7 @@ fun protect_tac n ctxt =
         in
           @{thm Pure.prop_def}
           |> Thm.instantiate' [] [SOME cconcl_protected]
-          |> (fn eq_thm => eq_subgoal_from_eq_concl cbinders cprems_unprotected eq_thm ctxt)
+          |> eq_subgoal_from_eq_concl cbinders cprems_unprotected ctxt
           |> Option.map (fn protected_eq_thm => rewrite_subgoal_tac protected_eq_thm i)
           |> the_default no_tac
         end

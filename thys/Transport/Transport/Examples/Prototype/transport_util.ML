@@ -80,6 +80,7 @@ fun add_suffix binding suffix = concat_bindings [binding, suffix]
 val set_proof_mode_schematic = Proof_Context.set_mode Proof_Context.mode_schematic
 val set_proof_mode_pattern = Proof_Context.set_mode Proof_Context.mode_pattern
 
+(*TODO: use Specification.definition*)
 fun create_local_theory_def (binding, mixfix) attribs t =
   Local_Theory.define ((binding, mixfix), ((Thm.def_binding binding, attribs), t))
 

@@ -15,10 +15,8 @@ and [[rec_uhint where hint_preprocessor = \<open>Unification_Hints_Base.obj_logi
 lemma eq_TrueI: "PROP P \<Longrightarrow> PROP P \<equiv> Trueprop True" by (standard) simp
 declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
   (Simplifier_Unification.SIMPS_TO_unify @{thm eq_TrueI}
-  |> Unification_Combinator.norm_closed_unifier
-    (Unification_Util.inst_norm_term'
+  |> Unification_Combinator.norm_unifier (Unification_Util.inst_norm_term'
       Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
-  |> Unification_Combinator.unifier_from_closed_unifier
   |> K)
   (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_unif\<close> Prio.HIGH)\<close>]]
 

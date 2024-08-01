@@ -2,7 +2,7 @@
 section \<open>Simps To\<close>
 theory Simps_To
   imports
-    ML_Tactic_Utils
+    ML_Unifiers_Base
     Setup_Result_Commands
 begin
 
@@ -48,22 +48,13 @@ paragraph \<open>Examples\<close>
 
 experiment
 begin
-lemma
-  assumes [simp]: "P \<equiv> Q"
-  and [simp]: "Q \<equiv> R"
-  shows "PROP SIMPS_TO P Q"
-  apply simp \<comment>\<open>Note: only the left-hand side is simplified.\<close>
-  ML_command\<open> \<comment>\<open>obtaining the normal form theorem for a term in ML\<close>
-    Simps_To.SIMPS_TO_thm_resultsq (simp_tac @{context}) @{context} @{cterm P}
-    |> Seq.list_of |> map @{print}
-  \<close>
-  oops
 
 schematic_goal
   assumes [simp]: "P \<equiv> Q"
   and [simp]: "Q \<equiv> R"
-  shows "PROP SIMPS_TO P ?Q"
-  by (tactic \<open>Simps_To.SIMPS_TO_tac (Simps_To.simp_inst_tac (simp_tac @{context})) @{context} 1\<close>)
+  shows "PROP SIMPS_TO_UNIF P ?A"
+  by (tactic \<open>Simps_To_Unif.SIMPS_TO_UNIF_tac (simp_tac @{context})
+    (K all_tac) 1 @{context} 1\<close>)
 
 end
 

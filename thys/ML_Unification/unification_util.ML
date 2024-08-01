@@ -25,6 +25,7 @@ sig
   val maxidx_of_terms : term list -> int
   (*returns empty environment with maxidx set to maximum of given terms*)
   val empty_envir : term * term -> Envir.env
+  val update_maxidx_envir : int -> Envir.env -> Envir.env
 
   (* type unification *)
 
@@ -118,6 +119,8 @@ fun pretty_call_theory_unif ctxt tp = Pretty.block [
 fun maxidx_of_terms ts = fold (Integer.max o maxidx_of_term) ts ~1
 
 fun empty_envir (t1, t2) = Envir.empty (maxidx_of_terms [t1, t2])
+fun update_maxidx_envir maxidx' (Envir.Envir {maxidx, tenv = tenv, tyenv = tyenv}) =
+  Envir.Envir {maxidx = Integer.max maxidx maxidx', tenv = tenv, tyenv = tyenv}
 
 (* type unification *)
 

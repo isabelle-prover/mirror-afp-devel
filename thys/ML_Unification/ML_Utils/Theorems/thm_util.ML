@@ -11,6 +11,8 @@ sig
 
   (*fails if the theorem contains a tpair or implicit Assumption mentioning the bound variable*)
   val abstract_rule : Proof.context -> string -> cterm -> thm -> thm option
+  val forall_intr : Proof.context -> cterm -> thm -> thm option
+
   val protect : thm -> thm
 end
 
@@ -30,6 +32,9 @@ fun pretty_THM ctxt (msg, subgoal, thms) = Pretty.block [
   ]
 
 fun abstract_rule ctxt n ct thm = SOME (Thm.abstract_rule n ct thm)
+  handle THM data => (@{log Logger.DEBUG} ctxt (fn _ => pretty_THM ctxt data |> Pretty.string_of);
+    NONE)
+fun forall_intr ctxt ct thm = SOME (Thm.forall_intr ct thm)
   handle THM data => (@{log Logger.DEBUG} ctxt (fn _ => pretty_THM ctxt data |> Pretty.string_of);
     NONE)
 
