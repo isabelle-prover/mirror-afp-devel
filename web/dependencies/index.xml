@@ -11,8 +11,36 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Cayley_Hamilton</title>
+          <link>/dependencies/cayley_hamilton/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cayley_hamilton/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jacobson_Basic_Algebra</title>
+          <link>/dependencies/jacobson_basic_algebra/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jacobson_basic_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Smooth_Manifolds</title>
+          <link>/dependencies/smooth_manifolds/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/smooth_manifolds/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Types_To_Sets_Extension</title>
+          <link>/dependencies/types_to_sets_extension/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/types_to_sets_extension/</guid>
+          <description></description>
+        </item>
         <item>
           <title>EnrichedCategoryBasics</title>
           <link>/dependencies/enrichedcategorybasics/</link>
@@ -816,13 +844,6 @@
           <link>/dependencies/separation_algebra/</link>
           <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/separation_algebra/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Jacobson_Basic_Algebra</title>
-          <link>/dependencies/jacobson_basic_algebra/</link>
-          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/jacobson_basic_algebra/</guid>
           <description></description>
         </item>
         <item>
@@ -2111,13 +2132,6 @@
           <link>/dependencies/launchbury/</link>
           <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
           <guid>/dependencies/launchbury/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cayley_Hamilton</title>
-          <link>/dependencies/cayley_hamilton/</link>
-          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/cayley_hamilton/</guid>
           <description></description>
         </item>
         <item>

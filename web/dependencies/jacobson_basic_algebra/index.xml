@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 21 Nov 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/jacobson_basic_algebra/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Lie Groups and Algebras</title>
+          <link>/entries/Lie_Groups.html</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Lie_Groups.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Kneser&#39;s Theorem and the Cauchy–Davenport Theorem</title>
           <link>/entries/Kneser_Cauchy_Davenport.html</link>

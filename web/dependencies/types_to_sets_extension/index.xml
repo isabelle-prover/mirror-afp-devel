@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Cayley_Hamilton on Archive of Formal Proofs
+    <title>Types_To_Sets_Extension on Archive of Formal Proofs
     </title>
-    <link>/dependencies/cayley_hamilton/</link>
+    <link>/dependencies/types_to_sets_extension/</link>
     <description>
-        Recent content in Cayley_Hamilton 
+        Recent content in Types_To_Sets_Extension 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/cayley_hamilton/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/dependencies/types_to_sets_extension/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Lie Groups and Algebras</title>
           <link>/entries/Lie_Groups.html</link>
           <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Lie_Groups.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Echelon Form</title>
-          <link>/entries/Echelon_Form.html</link>
-          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Echelon_Form.html</guid>
           <description></description>
         </item>
   </channel>

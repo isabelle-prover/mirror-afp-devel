@@ -3,27 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
+    <loc>/dependencies/cayley_hamilton/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/fleuriot/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/jacobson_basic_algebra/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Lie_Groups.html</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/schmoetten/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/smooth_manifolds/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/types_to_sets_extension/</loc>
+    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/EnrichedCategoryBasics.html</loc>
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/enrichedcategorybasics/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/monoidalcategory/</loc>
@@ -36,9 +60,6 @@
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/stark/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Linear_Diophantine_Preprocessor.html</loc>
@@ -1151,9 +1172,6 @@
     <loc>/authors/baksys/</loc>
     <lastmod>2022-11-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/jacobson_basic_algebra/</loc>
-    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Kneser_Cauchy_Davenport.html</loc>
     <lastmod>2022-11-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -1428,9 +1446,6 @@
     <lastmod>2022-04-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Dedekind_Real.html</loc>
-    <lastmod>2022-03-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/fleuriot/</loc>
     <lastmod>2022-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Ackermanns_not_PR.html</loc>
@@ -1839,9 +1854,6 @@
     <lastmod>2021-08-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/palmer/</loc>
-    <lastmod>2021-07-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/schmoetten/</loc>
     <lastmod>2021-07-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Schutz_Spacetime.html</loc>
@@ -4009,9 +4021,6 @@
   </url><url>
     <loc>/entries/Call_Arity.html</loc>
     <lastmod>2015-02-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/cayley_hamilton/</loc>
-    <lastmod>2015-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Echelon_Form.html</loc>
     <lastmod>2015-02-12T00:00:00+00:00</lastmod>
@@ -6184,6 +6193,8 @@
     <loc>/sessions/lem/</loc>
   </url><url>
     <loc>/sessions/levy_prokhorov_metric/</loc>
+  </url><url>
+    <loc>/sessions/lie_groups/</loc>
   </url><url>
     <loc>/sessions/lifting_definition_option/</loc>
   </url><url>
