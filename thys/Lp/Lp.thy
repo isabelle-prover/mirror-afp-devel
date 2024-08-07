@@ -143,7 +143,7 @@ lemma (in prob_space) bound_L1_Lp:
 proof -
   have *: "norm x \<le> 1 + (norm x) powr p" for x::real
     apply (cases "norm x \<le> 1")
-    apply (meson le_add_same_cancel1 order.trans powr_ge_pzero)
+    apply (meson le_add_same_cancel1 order.trans powr_ge_zero)
     apply (metis add_le_same_cancel2 assms(1) less_le_trans linear not_less not_one_le_zero powr_le_cancel_iff powr_one_gt_zero_iff)
     done
   show *: "integrable M f"
@@ -318,7 +318,7 @@ proof -
       apply (rule integral_mono', rule Bochner_Integration.integrable_add)
       apply (rule Holder_inequality(1)[of p q], auto)
       apply (rule Holder_inequality(1)[of p q], auto)
-      by (metis abs_ge_zero abs_triangle_ineq comm_semiring_class.distrib le_less mult_mono' powr_ge_pzero)
+      by (metis abs_ge_zero abs_triangle_ineq comm_semiring_class.distrib le_less mult_mono' powr_ge_zero)
     also have "... = (\<integral>x. \<bar>f x\<bar> * \<bar>f x + g x\<bar> powr (p-1) \<partial>M) + (\<integral>x. \<bar>g x\<bar> * \<bar>f x + g x\<bar> powr (p-1) \<partial>M)"
       apply (rule Bochner_Integration.integral_add) by (rule Holder_inequality(1)[of p q], auto)+
     also have "... \<le> abs (\<integral>x. \<bar>f x\<bar> * \<bar>f x + g x\<bar> powr (p-1) \<partial>M) + abs (\<integral>x. \<bar>g x\<bar> * \<bar>f x + g x\<bar> powr (p-1) \<partial>M)"
