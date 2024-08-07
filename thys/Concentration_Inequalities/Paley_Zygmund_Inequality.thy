@@ -31,7 +31,7 @@ proof -
     using ZAEpos intZ integral_ge_const prob_Collect_eq_1 by auto
 
   have ezp: "expectation (\<lambda>x. \<bar>Z x - \<theta> * eZ\<bar> powr p) \<ge> 0"
-    by (meson Bochner_Integration.integral_nonneg powr_ge_pzero)
+    by (meson Bochner_Integration.integral_nonneg powr_ge_zero)
 
   have "expectation (\<lambda>z. Z z - \<theta> * eZ) = expectation (\<lambda>z. Z z + (- \<theta> * eZ))"
     by auto
@@ -108,7 +108,7 @@ proof -
   also have "... =
      (expectation (\<lambda>x. \<bar>Z x - \<theta> * eZ\<bar> powr p) powr (1 / p)) powr q *
      (expectation (\<lambda>x. indicat_real {z \<in> space M. \<theta> * eZ < Z z} x) powr (1 / q)) powr q"
-    using powr_ge_pzero powr_mult by presburger
+    using powr_ge_zero powr_mult by presburger
   also have "... =
      (expectation (\<lambda>x. \<bar>Z x - \<theta> * eZ\<bar> powr p) powr (1 / p)) powr q *
      (expectation (\<lambda>x. indicat_real {z \<in> space M. \<theta> * eZ < Z z} x))"
@@ -171,7 +171,7 @@ proof -
     using Bochner_Integration.integral_nonneg Zpos by blast
 
   have ezp: "expectation (\<lambda>x. \<bar>Z x - \<theta> * eZ\<bar> powr p) \<ge> 0"
-    by (meson Bochner_Integration.integral_nonneg powr_ge_pzero)
+    by (meson Bochner_Integration.integral_nonneg powr_ge_zero)
 
   have "expectation (\<lambda>z. Z z - \<theta> * eZ) = expectation (\<lambda>z. Z z + (- \<theta> * eZ))"
     by auto

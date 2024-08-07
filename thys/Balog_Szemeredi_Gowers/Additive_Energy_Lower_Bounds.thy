@@ -30,7 +30,7 @@ proof-
   also have "... \<le> (card((sumset A A)) powr(1/2)) * (\<Sum> x \<in> sumset A A . (f_sum x A)^2) powr(1/2)"
     using Cauchy_Schwarz_ineq_sum2[of "\<lambda> d. 1" "\<lambda> d. f_sum d A"] by auto
   also have "...\<le> ((C * (card A)) powr(1/2)) * ((\<Sum> x \<in> sumset A A . (f_sum x A)^2)) powr(1/2) "
-    by (metis mult.commute mult_left_mono assms(3) of_nat_0_le_iff powr_ge_pzero powr_mono2 
+    by (metis mult.commute mult_left_mono assms(3) of_nat_0_le_iff powr_ge_zero powr_mono2 
         zero_le_divide_1_iff zero_le_numeral)
   finally have "((card A)^2)^2 \<le> (((C * (card A)) powr(1/2)) * ((\<Sum> x \<in> sumset A A . (f_sum x A)^2)) powr(1/2))^2"
     by (metis of_nat_0_le_iff of_nat_power_eq_of_nat_cancel_iff power_mono)
@@ -70,7 +70,7 @@ proof-
   also have "... \<le> (card((differenceset A A)) powr (1/2)) * (\<Sum> x \<in> differenceset A A . (f_diff x A)^2) powr(1/2)"
     using Cauchy_Schwarz_ineq_sum2[of "\<lambda> d. 1" "\<lambda> d. f_diff d A"] by auto
   also have "...\<le> ((C * (card A))powr (1/2)) * ((\<Sum> x \<in> differenceset A A . (f_diff x A)^2)) powr(1/2)"
-    by (metis mult.commute mult_left_mono assms(3) of_nat_0_le_iff powr_ge_pzero powr_mono2 
+    by (metis mult.commute mult_left_mono assms(3) of_nat_0_le_iff powr_ge_zero powr_mono2 
         zero_le_divide_1_iff zero_le_numeral)
   finally have "((card A)^2)^2 \<le> (((C * (card A))powr (1/2)) * ((\<Sum> x \<in> differenceset A A . (f_diff x A)^2)) powr(1/2))^2"
     by (metis of_nat_0_le_iff of_nat_power_eq_of_nat_cancel_iff power_mono)
