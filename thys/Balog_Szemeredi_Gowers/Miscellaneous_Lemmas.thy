@@ -101,7 +101,7 @@ lemma le_powr_half_mult:
   assumes "x ^ 2 \<le> y * z" and "0 \<le> y" and "0 \<le> z"
   shows "x \<le> y powr(1/2) * z powr (1/2)"
   using assms power2_eq_square
-  by (metis dual_order.trans linorder_linear powr_ge_pzero powr_half_sqrt powr_mult real_le_rsqrt 
+  by (metis dual_order.trans linorder_linear powr_ge_zero powr_half_sqrt powr_mult real_le_rsqrt 
     real_sqrt_le_0_iff)
 
 lemma Cauchy_Schwarz_ineq_sum2:
