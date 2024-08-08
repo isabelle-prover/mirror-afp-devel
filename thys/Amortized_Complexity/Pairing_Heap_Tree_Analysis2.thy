@@ -5,7 +5,8 @@ section \<open>Pairing Heaps\<close>
 subsection \<open>Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree_Analysis2
-imports  
+imports
+  "HOL-Data_Structures.Define_Time_Function"
   Pairing_Heap.Pairing_Heap_Tree
   Amortized_Framework
   Priority_Queue_ops_merge
@@ -125,29 +126,6 @@ proof -
   finally show ?thesis .
 qed
 
-lemma is_root_merge:
-  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (merge h1 h2)"
-by (simp split: tree.splits)
-
-lemma is_root_insert: "is_root h \<Longrightarrow> is_root (insert x h)"
-by (simp split: tree.splits)
-
-lemma is_root_del_min:
-  assumes "is_root h" shows "is_root (del_min h)"
-proof (cases h)
-  case [simp]: (Node hs1 x hs)
-  have "hs = Leaf" using assms by simp
-  thus ?thesis 
-  proof (cases hs1)
-    case (Node hs2 y hs')
-    then obtain la a ra where "pass\<^sub>1 hs1 = Node a la ra" 
-      using pass\<^sub>1_struct by blast
-    moreover obtain lb b where "pass\<^sub>2 \<dots> = Node b lb Leaf"
-      using pass\<^sub>2_struct by blast
-    ultimately show ?thesis using assms by simp
-  qed simp
-qed simp
-
 lemma pass\<^sub>1_len: "len (pass\<^sub>1 h) \<le> len h"
 by (induct h rule: pass\<^sub>1.induct) simp_all
 
@@ -157,26 +135,26 @@ fun exec :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree"
 "exec (Insert x) [h] = insert x h" |
 "exec Merge [h1,h2] = merge h1 h2"
 
-fun T_pass\<^sub>1 :: "'a tree \<Rightarrow> nat" where
-"T_pass\<^sub>1 (Node _ _ (Node _ _ hs')) = T_pass\<^sub>1 hs' + 1" |
-"T_pass\<^sub>1 h = 1"
+time_fun link
 
-fun T_pass\<^sub>2 :: "'a tree \<Rightarrow> nat" where
-  "T_pass\<^sub>2 Leaf = 1"
-| "T_pass\<^sub>2 (Node _ _ hs) = T_pass\<^sub>2 hs + 1"
+lemma T_link_0[simp]: "T_link h = 0"
+by (cases h rule: T_link.cases) auto
 
-fun T_del_min :: "('a::linorder) tree \<Rightarrow> nat" where
-"T_del_min Leaf = 1" |
-"T_del_min (Node hs _ _) = T_pass\<^sub>2 (pass\<^sub>1 hs) + T_pass\<^sub>1 hs + 1"
+time_fun pass\<^sub>1
 
-fun T_insert :: "'a \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_insert a h = 1"
+time_fun pass\<^sub>2
 
-fun T_merge :: "'a tree \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"T_merge h1 h2 = 1"
+time_fun del_min
+
+time_fun merge
+
+lemma T_merge_0[simp]: "T_merge h1 h2 = 0"
+by (cases "(h1,h2)" rule: T_merge.cases) auto
+
+time_fun insert
 
 lemma A_del_min: assumes "is_root h"
-shows "T_del_min h + \<Phi>(del_min h) - \<Phi> h \<le> 2 * log 2 (size h + 1) + 5"
+shows "T_del_min h + \<Phi>(del_min h) - \<Phi> h \<le> 2 * log 2 (size h + 1) + 4"
 proof (cases h)
   case [simp]: (Node hs1 x hs)
   have "T_pass\<^sub>2 (pass\<^sub>1 hs1) + real(T_pass\<^sub>1 hs1) \<le> real(len hs1) + 2"
@@ -191,11 +169,11 @@ proof (cases h)
   ultimately show ?thesis by(simp)
 qed simp
 
-lemma A_insert: "is_root h \<Longrightarrow> T_insert a h + \<Phi>(insert a h) - \<Phi> h \<le> log 2 (size h + 1) + 1"
+lemma A_insert: "is_root h \<Longrightarrow> T_insert a h + \<Phi>(insert a h) - \<Phi> h \<le> log 2 (size h + 1)"
 by(drule \<Delta>\<Phi>_insert) simp
 
 lemma A_merge: assumes "is_root h1" "is_root h2"
-shows "T_merge h1 h2 + \<Phi>(merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size h1 + size h2 + 1) + 2"
+shows "T_merge h1 h2 + \<Phi>(merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> log 2 (size h1 + size h2 + 1) + 1"
 proof (cases h1)
   case Leaf thus ?thesis by (cases h2) auto
 next
@@ -213,16 +191,16 @@ next
 qed
 
 fun cost :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
-  "cost Empty [] = 1"
+  "cost Empty [] = 0"
 | "cost Del_min [h] = T_del_min h"
 | "cost (Insert a) [h] = T_insert a h"
 | "cost Merge [h1,h2] = T_merge h1 h2"
 
 fun U :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> real" where
-  "U Empty [] = 1"
-| "U (Insert a) [h] = log 2 (size h + 1) + 1"
-| "U Del_min [h] = 2 * log 2 (size h + 1) + 5"
-| "U Merge [h1,h2] = log 2 (size h1 + size h2 + 1) + 2"
+  "U Empty [] = 0"
+| "U (Insert a) [h] = log 2 (size h + 1)"
+| "U Del_min [h] = 2 * log 2 (size h + 1) + 4"
+| "U Merge [h1,h2] = log 2 (size h1 + size h2 + 1) + 1"
 
 interpretation Amortized
 where arity = arity and exec = exec and cost = cost and inv = is_root 

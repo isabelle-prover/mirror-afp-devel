@@ -31,12 +31,16 @@ fun pass\<^sub>2 :: "('a::linorder) tree \<Rightarrow> 'a tree" where
 
 fun del_min :: "('a::linorder) tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
-| "del_min (Node hs _ Leaf) = pass\<^sub>2 (pass\<^sub>1 hs)"
+| "del_min (Node hs _ _) = pass\<^sub>2 (pass\<^sub>1 hs)"
 
 fun merge :: "('a::linorder) tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
   "merge Leaf hp = hp"
 | "merge hp Leaf = hp"
-| "merge (Node hsx x Leaf) (Node hsy y Leaf) = link (Node hsx x (Node hsy y Leaf))"
+| "merge (Node hsx x _) (Node hsy y _) = link (Node hsx x (Node hsy y Leaf))"
+
+text \<open>Both @{const del_min} and @{const merge} need only be defined for arguments
+that are roots, i.e. of the form @{term "Node hp x Leaf"}. For simplicity
+they are totalized.\<close>
 
 fun insert :: "('a::linorder) \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "insert x hp = merge (Node Leaf x Leaf) hp"

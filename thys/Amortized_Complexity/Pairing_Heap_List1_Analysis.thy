@@ -4,6 +4,7 @@ subsection \<open>Okasaki's Pairing Heap\<close>
 
 theory Pairing_Heap_List1_Analysis
 imports
+  "HOL-Data_Structures.Define_Time_Function"
   Pairing_Heap.Pairing_Heap_List1
   Amortized_Framework
   Priority_Queue_ops_merge
@@ -234,27 +235,30 @@ fun exec :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> 'a heap"
 "exec (Insert x) [h] = Pairing_Heap_List1.insert x h" |
 "exec Merge [h1,h2] = merge h1 h2"
 
-fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a heap list \<Rightarrow> nat" where
-  "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [] = 1"
-| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 [_] = 1"
-| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (_ # _ # hs) = 1 + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs"
+time_fun merge
 
-fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a heap list \<Rightarrow> nat" where
- "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 [] = 1"
-| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (_ # hs) = 1 + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 hs"
+lemma T_merge_0[simp]: "T_merge h1 h2 = 0"
+by (cases "(h1,h2)" rule: T_merge.cases) auto
+
+time_fun insert
+
+time_fun pass\<^sub>1
+
+time_fun pass\<^sub>2
+
+time_fun del_min
 
 fun cost :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> nat" where
-"cost Empty _ = 1" |
-"cost Del_min [heap.Empty] = 1" |
-"cost Del_min [Hp x hs] = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
-"cost (Insert a) _ = 1" |
-"cost Merge _ = 1"
+"cost Empty _ = 0" |
+"cost Del_min [hp] = T_del_min hp" |
+"cost (Insert a) [hp] = T_insert a hp" |
+"cost Merge [hp1,hp2] = T_merge hp1 hp2"
 
 fun U :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> real" where
-"U Empty _ = 1" |
-"U (Insert a) [h] = log 2 (size_hp h + 1) + 1" |
+"U Empty _ = 0" |
+"U (Insert a) [h] = log 2 (size_hp h + 1)" |
 "U Del_min [h] = 3*log 2 (size_hp h + 1) + 4" |
-"U Merge [h1,h2] = log 2 (size_hp h1 + size_hp h2 + 1) + 2"
+"U Merge [h1,h2] = log 2 (size_hp h1 + size_hp h2 + 1) + 1"
 
 interpretation pairing: Amortized
 where arity = arity and exec = exec and cost = cost and inv = "is_root"
@@ -297,7 +301,7 @@ next
     show ?thesis
     proof (cases h)
       case [simp]: (Hp x hs)
-      have "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs \<le> 2 + length hs"
+      have "T_pass\<^sub>2 (pass\<^sub>1 hs) + T_pass\<^sub>1 hs \<le> 2 + length hs"
         by (induct hs rule: pass\<^sub>1.induct) simp_all
       hence  "cost f ss \<le> \<dots>" by simp
       moreover have  "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size_hp h + 1) - length hs + 2"
