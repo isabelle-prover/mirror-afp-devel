@@ -1,6 +1,6 @@
 (* Author: Tobias Nipkow *)
 
-subsection \<open>Transfer of Tree Analysis to List Representation\<close>
+subsection \<open>Okasaki's Pairing Heaps via Transfer from Tree Analysis\<close>
 
 theory Pairing_Heap_List1_Analysis2
 imports

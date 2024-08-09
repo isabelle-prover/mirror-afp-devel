@@ -1,8 +1,6 @@
 (* Author: Hauke Brinkop and Tobias Nipkow *)
 
-section \<open>Pairing Heaps\<close>
-
-subsection \<open>Binary Tree Representation\<close>
+subsection \<open>Binary Tree Representation (Simplified)\<close>
 
 theory Pairing_Heap_Tree_Analysis2
 imports
@@ -17,6 +15,9 @@ text
 \<open>Verification of logarithmic bounds on the amortized complexity of pairing heaps.
 As in \<^cite>\<open>"FredmanSST86" and "Brinkop"\<close>, except that the treatment of @{const pass\<^sub>1} is simplified.
 TODO: convert the other Pairing Heap analyses to this one.\<close>
+
+
+subsubsection \<open>Analysis\<close>
 
 fun len :: "'a tree \<Rightarrow> nat" where 
   "len Leaf = 0"
@@ -128,6 +129,9 @@ qed
 
 lemma pass\<^sub>1_len: "len (pass\<^sub>1 h) \<le> len h"
 by (induct h rule: pass\<^sub>1.induct) simp_all
+
+
+subsubsection \<open>Putting it all together (boiler plate)\<close>
 
 fun exec :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" | 

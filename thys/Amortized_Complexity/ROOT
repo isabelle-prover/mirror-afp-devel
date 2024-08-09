@@ -17,6 +17,7 @@ session Amortized_Complexity = "HOL-Library" +
     Pairing_Heap_Tree_Analysis
     Pairing_Heap_Tree_Analysis2
     Pairing_Heap_List1_Analysis
+    Pairing_Heap_List1_Analysis1
     Pairing_Heap_List1_Analysis2
     Pairing_Heap_List2_Analysis
   document_files
