@@ -176,7 +176,7 @@ proof -
       thus ?thesis
         by blast
     next
-      case (bisim_steps m s1' i s2\<^sub>0 n\<^sub>1 n\<^sub>2 s2' i')
+      case (bisim_steps i s1\<^sub>0 s2\<^sub>0 m s1' n s2' i')
       hence "\<exists>i s1' s2'. step1\<^sup>+\<^sup>+ s1 s1' \<and> step2\<^sup>+\<^sup>+ s2 s2' \<and> match i s1' s2'"
         by (metis tranclp_power zero_less_Suc)
       thus ?thesis ..
@@ -336,11 +336,11 @@ qed
 end
 
 definition safe_state where
-  "safe_state \<R> \<F> s \<longleftrightarrow> (\<forall>s'. \<R>\<^sup>*\<^sup>* s s' \<longrightarrow> \<F> s' \<or> (\<exists>s''. \<R> s' s''))"
+  "safe_state \<R> \<F> s \<longleftrightarrow> (\<forall>s'. \<R>\<^sup>*\<^sup>* s s' \<longrightarrow> stuck_state \<R> s' \<longrightarrow> \<F> s')"
 
 lemma step_preserves_safe_state:
   "\<R> s s' \<Longrightarrow> safe_state \<R> \<F> s \<Longrightarrow> safe_state \<R> \<F> s'"
-  by (simp add: converse_rtranclp_into_rtranclp safe_state_def)
+  by (simp add: safe_state_def converse_rtranclp_into_rtranclp)
 
 lemma rtranclp_step_preserves_safe_state:
   "\<R>\<^sup>*\<^sup>* s s' \<Longrightarrow> safe_state \<R> \<F> s \<Longrightarrow> safe_state \<R> \<F> s'"
@@ -353,7 +353,8 @@ lemma tranclp_step_preserves_safe_state:
 lemma safe_state_before_step_if_safe_state_after:
   assumes "right_unique \<R>"
   shows "\<R> s s' \<Longrightarrow> safe_state \<R> \<F> s' \<Longrightarrow> safe_state \<R> \<F> s"
-  by (metis (full_types) assms converse_rtranclpE right_uniqueD safe_state_def)
+  by (smt (verit, ccfv_threshold) assms converse_rtranclpE right_uniqueD safe_state_def
+      stuck_state_def)
 
 lemma safe_state_before_rtranclp_step_if_safe_state_after:
   assumes "right_unique \<R>"
@@ -366,9 +367,15 @@ lemma safe_state_before_tranclp_step_if_safe_state_after:
   by (meson assms safe_state_before_rtranclp_step_if_safe_state_after tranclp_into_rtranclp)
 
 lemma safe_state_if_all_states_safe:
+  fixes \<R> \<F> s
   assumes "\<And>s. \<F> s \<or> (\<exists>s'. \<R> s s')"
   shows "safe_state \<R> \<F> s"
-  using assms by (simp add: safe_state_def)
+  using assms by (metis safe_state_def stuck_state_def)
+
+lemma
+  fixes \<R> \<F> s
+  shows "safe_state \<R> \<F> s \<Longrightarrow> \<F> s \<or> (\<exists>s'. \<R> s s')"
+  by (metis rtranclp.rtrancl_refl safe_state_def stuck_state_def)
 
 lemma matching_states_agree_on_stuck_if_they_agree_on_final:
   assumes
@@ -380,6 +387,39 @@ lemma matching_states_agree_on_stuck_if_they_agree_on_final:
   shows "\<forall>i s1 s2. match i s1 s2 \<longrightarrow> stuck_state step1 s1 \<longleftrightarrow> stuck_state step2 s2"
     using assms by (metis rtranclp.rtrancl_refl safe_state_def stuck_state_def)
 
+locale wellbehaved_transition_system =
+  fixes \<R> :: "'s \<Rightarrow> 's \<Rightarrow> bool" and \<F> :: "'s \<Rightarrow> bool" and \<S> :: "'s \<Rightarrow> bool"
+  assumes
+    determ: "right_unique \<R>" and
+    stuck_if_final: "\<And>x. \<F> x \<Longrightarrow> stuck_state \<R> x" and
+    safe_if_invar: "\<And>x. \<S> x \<Longrightarrow> safe_state \<R> \<F> x"
+
+lemma (in wellbehaved_transition_system) final_iff_stuck_if_invar:
+  fixes x
+  assumes "\<S> x"
+  shows "\<F> x \<longleftrightarrow> stuck_state \<R> x"
+proof (intro iffI)
+  assume "\<F> x"
+  thus "stuck_state \<R> x"
+    by (fact stuck_if_final)
+next
+  assume "stuck_state \<R> x"
+  thus "\<F> x"
+    by (metis assms rtranclp.rtrancl_refl safe_if_invar safe_state_def stuck_state_def)
+qed
+
+lemma wellbehaved_transition_systems_agree_on_final_iff_agree_on_stuck:
+  fixes
+    \<R>\<^sub>a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and \<F>\<^sub>a :: "'a \<Rightarrow> bool" and
+    \<R>\<^sub>b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" and \<F>\<^sub>b :: "'b \<Rightarrow> bool" and
+    \<M> :: "'i \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
+  assumes
+    "wellbehaved_transition_system \<R>\<^sub>a \<F>\<^sub>a (\<lambda>a. \<exists>i b. \<M> i a b)" and
+    "wellbehaved_transition_system \<R>\<^sub>b \<F>\<^sub>b (\<lambda>b. \<exists>i a. \<M> i a b)" and
+    "\<M> i a b"
+  shows "(\<F>\<^sub>a a \<longleftrightarrow> \<F>\<^sub>b b) \<longleftrightarrow> (stuck_state \<R>\<^sub>a a \<longleftrightarrow> stuck_state \<R>\<^sub>b b)"
+  using assms
+  by (metis (mono_tags, lifting) wellbehaved_transition_system.final_iff_stuck_if_invar)
 
 corollary lift_strong_simulation_to_bisimulation':
   fixes
@@ -432,28 +472,53 @@ proof -
         order_well_founded sim]
     by (smt (verit))
 
+  have wellbehaved1: "wellbehaved_transition_system step1 final1 (\<lambda>a. \<exists>i b. MATCH i a b)"
+  proof unfold_locales
+    show "right_unique step1"
+      using \<open>right_unique step1\<close> .
+  next
+    show "\<And>x. final1 x \<Longrightarrow> stuck_state step1 x"
+      unfolding stuck_state_def
+      using final1_stuck by metis
+  next
+    show "\<And>x. \<exists>i b. MATCH i x b \<Longrightarrow> safe_state step1 final1 x"
+      by (meson MATCH_spec assms(1) matching_states_are_safe safe_state_before_tranclp_step_if_safe_state_after)
+  qed
+
+  have wellbehaved2: "wellbehaved_transition_system step2 final2 (\<lambda>b. \<exists>i a. MATCH i a b)"
+  proof unfold_locales
+    show "right_unique step2"
+      using \<open>right_unique step2\<close> .
+  next
+    show "\<And>x. final2 x \<Longrightarrow> stuck_state step2 x"
+      unfolding stuck_state_def
+      using final2_stuck by metis
+  next
+    show "\<And>x. \<exists>i a. MATCH i a x \<Longrightarrow> safe_state step2 final2 x"
+      by (meson MATCH_spec assms(2) matching_states_are_safe
+          safe_state_before_tranclp_step_if_safe_state_after)
+  qed
+
   show thesis
   proof (rule that)
     show "\<And>i s1 s2. match i s1 s2 \<Longrightarrow> \<exists>j. MATCH j s1 s2"
       using MATCH_if_match .
   next
-    show "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> final1 s1 = final2 s2"
-      using MATCH_spec
-      by (metis converse_tranclpE final1_stuck final2_stuck matching_states_agree_on_final)
-  next
-    show "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> stuck_state step1 s1 = stuck_state step2 s2"
+    show "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> stuck_state step1 s1 \<longleftrightarrow> stuck_state step2 s2"
       using MATCH_spec
       by (metis stuck_state_def tranclpD)
+
+    then show "\<And>j s1 s2. MATCH j s1 s2 \<Longrightarrow> final1 s1 \<longleftrightarrow> final2 s2"
+      using wellbehaved_transition_systems_agree_on_final_iff_agree_on_stuck[
+          OF wellbehaved1 wellbehaved2]
+      by blast
   next
     fix j s1 s2
     assume "MATCH j s1 s2"
     then show "safe_state step1 final1 s1 \<and> safe_state step2 final2 s2"
-      apply -
-      apply (drule MATCH_spec)
-      apply (elim disjE exE conjE)
-      using matching_states_are_safe apply metis
-      using safe_state_before_tranclp_step_if_safe_state_after
-      by (metis assms(1) assms(2) matching_states_are_safe)
+      using wellbehaved_transition_system.safe_if_invar[OF wellbehaved1, of s1]
+      using wellbehaved_transition_system.safe_if_invar[OF wellbehaved2, of s2]
+      by blast
   next
     show "wfp ORDER"
       using \<open>wfp ORDER\<close> .
