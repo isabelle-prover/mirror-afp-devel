@@ -28,17 +28,29 @@ fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> 
 section \<open>Calculus\<close>
 
 inductive Calculus :: \<open>'p fm list \<Rightarrow> 'p fm list \<Rightarrow> bool\<close> (\<open>_ \<turnstile>\<^sub>S _\<close> [50, 50] 50) where
-  Axiom [intro]: \<open>p # A \<turnstile>\<^sub>S p # B\<close>
-| FlsL [intro]: \<open>\<^bold>\<bottom> # A \<turnstile>\<^sub>S B\<close>
-| FlsR [dest]: \<open>A \<turnstile>\<^sub>S \<^bold>\<bottom> # B \<Longrightarrow> A \<turnstile>\<^sub>S B\<close>
+  Axiom [simp]: \<open>p # A \<turnstile>\<^sub>S p # B\<close>
+| FlsL [simp]: \<open>\<^bold>\<bottom> # A \<turnstile>\<^sub>S B\<close>
+| FlsR [elim]: \<open>A \<turnstile>\<^sub>S \<^bold>\<bottom> # B \<Longrightarrow> A \<turnstile>\<^sub>S B\<close>
 | ImpL [intro]: \<open>A \<turnstile>\<^sub>S p # B \<Longrightarrow> q # A \<turnstile>\<^sub>S B \<Longrightarrow> (p \<^bold>\<longrightarrow> q) # A \<turnstile>\<^sub>S B\<close>
 | ImpR [intro]: \<open>p # A \<turnstile>\<^sub>S q # B \<Longrightarrow> A \<turnstile>\<^sub>S (p \<^bold>\<longrightarrow> q) # B\<close>
-| Cut [elim]: \<open>A \<turnstile>\<^sub>S p # B \<Longrightarrow> p # C \<turnstile>\<^sub>S D \<Longrightarrow> A @ C \<turnstile>\<^sub>S B @ D\<close>
+| Cut: \<open>A \<turnstile>\<^sub>S [p] \<Longrightarrow> p # A \<turnstile>\<^sub>S B \<Longrightarrow> A \<turnstile>\<^sub>S B\<close>
 | WeakenL: \<open>A \<turnstile>\<^sub>S B \<Longrightarrow> set A \<subseteq> set A' \<Longrightarrow> A' \<turnstile>\<^sub>S B\<close>
 | WeakenR: \<open>A \<turnstile>\<^sub>S B \<Longrightarrow> set B \<subseteq> set B' \<Longrightarrow> A \<turnstile>\<^sub>S B'\<close>
 
 lemma Boole: \<open>\<^bold>\<not> p # A \<turnstile>\<^sub>S [] \<Longrightarrow> A \<turnstile>\<^sub>S [p]\<close>
-  by (metis Axiom Cut ImpR WeakenR append_self_conv2 self_append_conv set_subset_Cons)
+  by (meson Axiom Cut ImpL ImpR WeakenR set_subset_Cons)
+
+lemma Cut':
+  assumes \<open>A \<turnstile>\<^sub>S p # B\<close> \<open>p # C \<turnstile>\<^sub>S D\<close>
+  shows \<open>A @ C \<turnstile>\<^sub>S B @ D\<close>
+proof -
+  from assms(1) have \<open>A @ C \<turnstile>\<^sub>S p # B @ D\<close>
+    using WeakenL[where A'=\<open>A @ C\<close>] WeakenR[where B'=\<open>p # B @ D\<close>] by fastforce
+  moreover from assms(2) have \<open>p # A @ C \<turnstile>\<^sub>S B @ D\<close>
+    using WeakenL[where A'=\<open>p # A @ C\<close>] WeakenR[where B'=\<open>B @ D\<close>] by fastforce
+  ultimately show ?thesis
+    by (meson Axiom Cut ImpL ImpR)
+qed
 
 section \<open>Soundness\<close>
 
@@ -56,7 +68,7 @@ section \<open>Maximal Consistent Sets\<close>
 definition consistent :: \<open>'p fm set \<Rightarrow> bool\<close> where
   \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>S [\<^bold>\<bottom>]\<close>
 
-interpretation MCS_No_Saturation consistent
+interpretation MCS_No_Witnessing consistent
 proof
   fix S S' :: \<open>'p fm set\<close>
   assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
@@ -88,10 +100,10 @@ next
   then show \<open>A \<turnstile>\<^sub>S [p]\<close>
     by (metis Axiom WeakenL set_ConsD subsetI)
 next
-  fix A B and p q :: \<open>'p fm\<close>
-  assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>p # B \<turnstile>\<^sub>S [q]\<close>
-  then show \<open>A @ B \<turnstile>\<^sub>S [q]\<close>
-    using Cut by fastforce
+  fix A and p q :: \<open>'p fm\<close>
+  assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>p # A \<turnstile>\<^sub>S [q]\<close>
+  then show \<open>A \<turnstile>\<^sub>S [q]\<close>
+    using Cut by blast
 qed
 
 section \<open>Truth Lemma\<close>
@@ -107,7 +119,7 @@ fun semics :: \<open>'p model \<Rightarrow> ('p model \<Rightarrow> 'p fm \<Righ
 fun rel :: \<open>'p fm set \<Rightarrow> 'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> where
   \<open>rel H _ p = (p \<in> H)\<close>
 
-theorem Hintikka_model':
+theorem saturated_model':
   assumes \<open>\<And>p. semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
   shows \<open>p \<in> H \<longleftrightarrow> \<lbrakk>hmodel H\<rbrakk> p\<close>
 proof (induct p rule: wf_induct[where r=\<open>measure size\<close>])
@@ -119,7 +131,7 @@ next
     using assms[of x] by (cases x) simp_all
 qed
 
-lemma Hintikka_Extend:
+lemma saturated_MCS:
   assumes \<open>consistent H\<close> \<open>maximal H\<close>
   shows \<open>semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
 proof (cases p)
@@ -135,7 +147,7 @@ next
   moreover have \<open>p # A \<turnstile>\<^sub>S [\<^bold>\<bottom>] \<Longrightarrow> A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q]\<close> for A
     by (meson FlsR ImpR WeakenR set_subset_Cons)
   moreover have \<open>A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q] \<Longrightarrow> B \<turnstile>\<^sub>S [p] \<Longrightarrow> A @ B \<turnstile>\<^sub>S [q]\<close> for A B
-    using Cut by (metis Axiom ImpL append_Nil append_Nil2)
+    by (metis Axiom Cut Cut' ImpL append_Nil)
   ultimately have \<open>(p \<in> H \<longrightarrow> q \<in> H) \<longleftrightarrow> p \<^bold>\<longrightarrow> q \<in> H\<close>
     using assms MCS_derive MCS_derive_fls Axiom
     by (metis append_Cons append_Nil insert_subset list.simps(15))
@@ -143,7 +155,7 @@ next
     using Imp by simp
 qed simp
 
-interpretation Truth_No_Saturation consistent semics semantics \<open>\<lambda>H. {hmodel H}\<close> rel
+interpretation Truth_No_Witnessing consistent semics semantics \<open>\<lambda>H. {hmodel H}\<close> rel
 proof
   fix p and M :: \<open>'p model\<close>
   show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> semics M semantics p\<close>
@@ -152,12 +164,12 @@ next
   fix p and H :: \<open>'p fm set\<close> and M :: \<open>'p model\<close>
   assume \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close> \<open>M \<in> {hmodel H}\<close>
   then show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> rel H M p\<close>
-    using Hintikka_model' by auto
+    using saturated_model' by auto
 next
   fix H :: \<open>'p fm set\<close>
   assume \<open>consistent H\<close> \<open>maximal H\<close>
   then show \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
-    using Hintikka_Extend by auto
+    using saturated_MCS by auto
 qed
 
 section \<open>Completeness\<close>
@@ -182,7 +194,7 @@ proof (rule ccontr)
   then have \<open>consistent ?H\<close> \<open>maximal ?H\<close>
     using MCS_Extend' by blast+
   then have \<open>p \<in> ?H \<longleftrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p
-    using truth_lemma_no_saturation by fastforce
+    using truth_lemma_no_Witnessing by fastforce
   then have \<open>p \<in> ?S \<longrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p
     using Extend_subset by blast
   then have \<open>\<lbrakk>hmodel ?H\<rbrakk> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> X. \<lbrakk>hmodel ?H\<rbrakk> q\<close>

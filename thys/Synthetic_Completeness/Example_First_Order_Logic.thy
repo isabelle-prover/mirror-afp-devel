@@ -127,7 +127,7 @@ lemma size_sub_fm [simp]: \<open>size_fm (sub_fm s p) = size_fm p\<close>
 section \<open>Calculus\<close>
 
 inductive Calculus :: \<open>('f, 'p) fm list \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool\<close> (\<open>_ \<turnstile>\<^sub>\<forall> _\<close> [50, 50] 50) where
-  Assm [intro]: \<open>p \<in> set A \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p\<close>
+  Assm [simp]: \<open>p \<in> set A \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p\<close>
 | FlsE [elim]: \<open>A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p\<close>
 | ImpI [intro]: \<open>p # A \<turnstile>\<^sub>\<forall> q \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p \<^bold>\<longrightarrow> q\<close>
 | ImpE [elim]: \<open>A \<turnstile>\<^sub>\<forall> p \<^bold>\<longrightarrow> q \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p \<Longrightarrow> A \<turnstile>\<^sub>\<forall> q\<close>
@@ -259,7 +259,7 @@ proof (induct p S rule: witness.induct)
     using 1(1-2) a(1) consistent_add_witness[where S=\<open>{\<^bold>\<not>\<^bold>\<forall>p} \<union> S\<close>] by fastforce
 qed (auto simp: assms)
 
-interpretation MCS_Saturation consistent params_fm witness
+interpretation MCS_Witnessing consistent params_fm witness
 proof
   fix S S' :: \<open>('f, 'p) fm set\<close>
   assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
@@ -297,12 +297,12 @@ next
   fix A and p :: \<open>('f, 'p) fm\<close>
   assume \<open>p \<in> set A\<close>
   then show \<open>A \<turnstile>\<^sub>\<forall> p\<close>
-    by blast
+    by simp
 next
-  fix A B and p q :: \<open>('f, 'p) fm\<close>
-  assume \<open>A \<turnstile>\<^sub>\<forall> p\<close> \<open>p # B \<turnstile>\<^sub>\<forall> q\<close>
-  then show \<open>A @ B \<turnstile>\<^sub>\<forall> q\<close>
-    using Weaken ImpI ImpE by (metis Un_upper2 inf_sup_ord(3) set_append)
+  fix A and p q :: \<open>('f, 'p) fm\<close>
+  assume \<open>A \<turnstile>\<^sub>\<forall> p\<close> \<open>p # A \<turnstile>\<^sub>\<forall> q\<close>
+  then show \<open>A \<turnstile>\<^sub>\<forall> q\<close>
+    by (metis ImpI ImpE)
 qed
 
 section \<open>Truth Lemma\<close>
@@ -320,7 +320,7 @@ fun semics ::
 fun rel :: \<open>('f, 'p) fm set \<Rightarrow> ('f tm, 'f, 'p) model \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool\<close> where
   \<open>rel H (E, _, _) p = (sub_fm E p \<in> H)\<close>
 
-theorem Hintikka_model':
+theorem saturated_model':
   assumes \<open>\<And>p. semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
   shows \<open>p \<in> H \<longleftrightarrow> \<lbrakk>hmodel H\<rbrakk> p\<close>
 proof (induct p rule: wf_induct[where r=\<open>measure size_fm\<close>])
@@ -332,8 +332,8 @@ next
     using assms[of x] by (cases x) simp_all
 qed
 
-lemma Hintikka_Extend:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
+lemma saturated_MCS:
+  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close>
   shows \<open>semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
 proof (cases p)
   case Fls
@@ -364,7 +364,7 @@ next
       then have \<open>\<^bold>\<not> \<^bold>\<forall>p \<in> H\<close>
         using assms(2) unfolding maximal_def by blast
       then obtain a where \<open>\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p \<in> H\<close>
-        using assms(3) unfolding saturated_def by fastforce
+        using assms(3) unfolding witnessed_def by fastforce
       moreover have \<open>\<langle>\<^bold>\<star>a\<rangle>p \<in> H\<close>
         using \<open>\<forall>x. \<langle>x\<rangle>p \<in> H\<close> by blast
       ultimately show False
@@ -379,7 +379,7 @@ next
     using Uni by simp
 qed simp
 
-interpretation Truth_Saturation
+interpretation Truth_Witnessing
   consistent params_fm witness semics semantics_fm \<open>\<lambda>H. {hmodel H}\<close> rel
 proof unfold_locales
   fix p and M :: \<open>('a tm, 'f, 'p) model\<close>
@@ -389,12 +389,12 @@ next
   fix p and H :: \<open>('f, 'p) fm set\<close> and M :: \<open>('f tm, 'f, 'p) model\<close>
   assume \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close> \<open>M \<in> {hmodel H}\<close>
   then show \<open>\<lbrakk>M\<rbrakk> p \<longleftrightarrow> rel H M p\<close>
-    using Hintikka_model' by auto
+    using saturated_model' by auto
 next
   fix H :: \<open>('f, 'p) fm set\<close>
-  assume \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
+  assume \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close>
   then show \<open>\<forall>M \<in> {hmodel H}. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
-    using Hintikka_Extend by auto
+    using saturated_MCS by auto
 qed
 
 section \<open>Cardinalities\<close>
@@ -536,10 +536,10 @@ proof (rule ccontr)
     by (metis UN_insert insert_is_Un sup_commute)
   then have \<open>|UNIV :: ('f, 'p) fm set| \<le>o |UNIV - params' ?S|\<close>
     using assms card_of_fm ordLeq_transitive by blast
-  ultimately have \<open>consistent ?H\<close> \<open>maximal ?H\<close> \<open>saturated ?H\<close>
+  ultimately have \<open>consistent ?H\<close> \<open>maximal ?H\<close> \<open>witnessed ?H\<close>
     using MCS_Extend by fast+
   then have \<open>p \<in> ?H \<longleftrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p
-    using truth_lemma_saturation by fastforce
+    using truth_lemma_Witnessing by fastforce
   then have \<open>p \<in> ?S \<longrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p
     using Extend_subset by blast
   then have \<open>\<lbrakk>hmodel ?H\<rbrakk> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> X. \<lbrakk>hmodel ?H\<rbrakk> q\<close>

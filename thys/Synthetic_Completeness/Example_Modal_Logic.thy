@@ -185,7 +185,7 @@ section \<open>Maximal Consistent Sets\<close>
 definition consistent :: \<open>('i, 'p) fm set \<Rightarrow> bool\<close> where
   \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
 
-interpretation MCS_No_Saturation consistent
+interpretation MCS_No_Witnessing consistent
 proof
   fix S S' :: \<open>('i, 'p) fm set\<close>
   assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
@@ -212,10 +212,10 @@ next
   then show \<open>A \<turnstile>\<^sub>\<box> p\<close>
     by (metis K_imply_head K_imply_weaken Un_upper2 set_append split_list_first)
 next
-  fix A B and p q :: \<open>('i, 'p) fm\<close>
-  assume \<open>A \<turnstile>\<^sub>\<box> p\<close> \<open>p # B \<turnstile>\<^sub>\<box> q\<close>
-  then show \<open>A @ B \<turnstile>\<^sub>\<box> q\<close>
-    by (metis K_imply_head K_right_mp R1 imply.simps(2) imply_append)
+  fix A and p q :: \<open>('i, 'p) fm\<close>
+  assume \<open>A \<turnstile>\<^sub>\<box> p\<close> \<open>p # A \<turnstile>\<^sub>\<box> q\<close>
+  then show \<open>A \<turnstile>\<^sub>\<box> q\<close>
+    using K_ImpI K_right_mp by blast
 qed
 
 lemma exists_finite_inconsistent:
@@ -280,7 +280,7 @@ fun semics ::
 fun rel :: \<open>('i, 'p) fm set \<Rightarrow> ('i, 'p, ('i, 'p) fm set) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> where
   \<open>rel _ (_, w) p = (p \<in> w)\<close>
 
-lemma Hintikka_model':
+lemma saturated_model':
   fixes V :: \<open>('i, 'p) fm set\<close>
   assumes \<open>\<And>(V :: ('i, 'p) fm set) p. V \<in> mcss \<Longrightarrow> semics (canonical, V) (rel H) p \<longleftrightarrow> p \<in> V\<close>
   shows \<open>V \<in> mcss \<Longrightarrow> (canonical, V) \<Turnstile> p \<longleftrightarrow> p \<in> V\<close>
@@ -298,7 +298,7 @@ lemma maximal_extension:
   shows \<open>\<exists>W. V \<subseteq> W \<and> consistent W \<and> maximal W\<close>
   using assms MCS_Extend' Extend_subset by meson
 
-lemma Hintikka_canonical:
+lemma saturated_canonical:
   assumes \<open>V \<in> mcss\<close>
   shows \<open>semics (canonical, V) (rel H) p \<longleftrightarrow> rel H (canonical, V) p\<close>
 proof (cases p)
@@ -372,7 +372,7 @@ next
     using Box by simp
 qed simp
 
-interpretation Truth_No_Saturation consistent semics semantics
+interpretation Truth_No_Witnessing consistent semics semantics
   \<open>\<lambda>_. {(canonical, V) |V. V \<in> mcss}\<close> rel
 proof
   fix p and M :: \<open>('i, 'p, ('i, 'p) fm set) ctx\<close>
@@ -383,18 +383,18 @@ next
   assume \<open>\<forall>M\<in>{(canonical, V) |V. V \<in> mcss}. \<forall>p. semics M (rel H) p = rel H M p\<close>
     \<open>M \<in> {(canonical, V) |V. V \<in> mcss}\<close>
   then show \<open>(M \<Turnstile> p) = rel H M p\<close>
-    using Hintikka_model'[of H _ p] by auto
+    using saturated_model'[of H _ p] by auto
 next
   fix H :: \<open>('i, 'p) fm set\<close>
   assume \<open>consistent H\<close> \<open>maximal H\<close>
   then show \<open>\<forall>M\<in>{(canonical, V) |V. V \<in> mcss}. \<forall>p. semics M (rel H) p = rel H M p\<close>
-    using Hintikka_canonical by blast
+    using saturated_canonical by blast
 qed
 
 lemma Truth_lemma:
   assumes \<open>consistent V\<close> \<open>maximal V\<close>
   shows \<open>(canonical, V) \<Turnstile> p \<longleftrightarrow> p \<in> V\<close>
-  using assms truth_lemma_no_saturation by fastforce
+  using assms truth_lemma_no_Witnessing by fastforce
 
 lemma canonical_model:
   assumes \<open>consistent S\<close> \<open>p \<in> S\<close>

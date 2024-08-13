@@ -161,7 +161,7 @@ end
 
 section \<open>Ordinal Locale\<close>
 
-locale MCS_Lim_Ord = MCS_Base +
+locale MCS_Lim_Ord = MCS_Base consistent for consistent :: \<open>'a set \<Rightarrow> bool\<close> +
   fixes r :: \<open>'a rel\<close>
   assumes WELL: \<open>Well_order r\<close>
     and Cinfinite_r: \<open>Cinfinite r\<close>
@@ -244,7 +244,7 @@ qed
 
 lemma extend_under: \<open>m \<in> under r n \<Longrightarrow> extend S m \<subseteq> extend S n\<close>
   using extend_underS wo_rel.supr_greater[OF wo_rel_r] wo_rel.supr_under[OF wo_rel_r]
-  by (metis emptyE in_Above_under set_eq_subset underS_I under_Field under_empty)
+  by (metis emptyE in_Above_under set_eq_subset underS_I under_empty)
 
 subsection \<open>Consistency\<close>
 
@@ -407,15 +407,15 @@ proof safe
     using Extend_bound by fast
 qed
 
-subsection \<open>Saturation\<close>
+subsection \<open>Witnessing\<close>
 
-definition saturated' :: \<open>'a set \<Rightarrow> bool\<close> where
-  \<open>saturated' S \<equiv> \<forall>p \<in> S. p \<in> Field r \<longrightarrow> (\<exists>S'. witness p S' \<subseteq> S)\<close>
+definition witnessed' :: \<open>'a set \<Rightarrow> bool\<close> where
+  \<open>witnessed' S \<equiv> \<forall>p \<in> S. p \<in> Field r \<longrightarrow> (\<exists>S'. witness p S' \<subseteq> S)\<close>
 
-lemma saturated'_Extend:
+lemma witnessed'_Extend:
   assumes \<open>consistent (Extend S)\<close>
-  shows \<open>saturated' (Extend S)\<close>
-  unfolding saturated'_def
+  shows \<open>witnessed' (Extend S)\<close>
+  unfolding witnessed'_def
 proof safe
   fix p
   assume *: \<open>p \<in> Extend S\<close> \<open>p \<in> Field r\<close>
@@ -438,9 +438,9 @@ qed
 
 end
 
-section \<open>Locale with Saturation\<close>
+section \<open>Locale with Witnessing\<close>
 
-locale MCS_Saturation = MCS_Base +
+locale MCS_Witnessing = MCS_Base consistent for consistent :: \<open>'a set \<Rightarrow> bool\<close> +
   assumes infinite_UNIV: \<open>infinite (UNIV :: 'a set)\<close>
   fixes params :: \<open>'a \<Rightarrow> 'i set\<close>
     and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close>
@@ -449,7 +449,7 @@ locale MCS_Saturation = MCS_Base +
     and \<open>\<And>p S. consistent ({p} \<union> S) \<Longrightarrow> infinite (UNIV - (\<Union>q \<in> S. params q))
       \<Longrightarrow> consistent (witness p S \<union> {p} \<union> S)\<close>
 
-sublocale MCS_Saturation \<subseteq> MCS_Lim_Ord _ \<open>|UNIV|\<close>
+sublocale MCS_Witnessing \<subseteq> MCS_Lim_Ord _ \<open>|UNIV|\<close> _ _
 proof
   show \<open>Well_order |UNIV|\<close>
     by simp
@@ -459,20 +459,20 @@ next
 next
   fix p
   show \<open>finite (params p)\<close>
-    by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
+    by (metis MCS_Witnessing_axioms MCS_Witnessing_axioms_def MCS_Witnessing_def)
 next
   fix p S
   show \<open>finite (\<Union>q \<in> witness p S. params q)\<close>
-    by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
+    by (metis MCS_Witnessing_axioms MCS_Witnessing_axioms_def MCS_Witnessing_def)
 next
   fix p S
   show \<open>consistent ({p} \<union> S) \<Longrightarrow>
            infinite (UNIV - (\<Union>q \<in> S. params q)) \<Longrightarrow>
            consistent (witness p S \<union> {p} \<union> S)\<close>
-    by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
+    by (metis MCS_Witnessing_axioms MCS_Witnessing_axioms_def MCS_Witnessing_def)
 qed
 
-context MCS_Saturation begin
+context MCS_Witnessing begin
 
 theorem Extend_subset: \<open>S \<subseteq> Extend S\<close>
   by (simp add: Extend_subset')
@@ -483,33 +483,33 @@ lemma maximal_maximal': \<open>maximal S \<longleftrightarrow> maximal' S\<close
 lemma maximal_Extend: \<open>maximal (Extend S)\<close>
   using maximal'_Extend maximal_maximal' by fast
 
-definition saturated :: \<open>'a set \<Rightarrow> bool\<close> where
-  \<open>saturated S \<equiv> \<forall>p \<in> S. \<exists>S'. witness p S' \<subseteq> S\<close>
+definition witnessed :: \<open>'a set \<Rightarrow> bool\<close> where
+  \<open>witnessed S \<equiv> \<forall>p \<in> S. \<exists>S'. witness p S' \<subseteq> S\<close>
 
-lemma saturated_saturated': \<open>saturated S \<longleftrightarrow> saturated' S\<close>
-  unfolding saturated_def saturated'_def by simp
+lemma witnessed_witnessed': \<open>witnessed S \<longleftrightarrow> witnessed' S\<close>
+  unfolding witnessed_def witnessed'_def by simp
 
-lemma saturated_Extend:
+lemma witnessed_Extend:
   assumes \<open>consistent (Extend S)\<close>
-  shows \<open>saturated (Extend S)\<close>
-  using assms saturated'_Extend saturated_saturated' by blast
+  shows \<open>witnessed (Extend S)\<close>
+  using assms witnessed'_Extend witnessed_witnessed' by blast
 
 theorem MCS_Extend:
   assumes \<open>consistent S\<close> \<open>|UNIV :: 'a set| \<le>o |UNIV - paramss S|\<close>
-  shows \<open>consistent (Extend S)\<close> \<open>maximal (Extend S)\<close> \<open>saturated (Extend S)\<close>
-  using assms consistent_Extend maximal_Extend saturated_Extend by blast+
+  shows \<open>consistent (Extend S)\<close> \<open>maximal (Extend S)\<close> \<open>witnessed (Extend S)\<close>
+  using assms consistent_Extend maximal_Extend witnessed_Extend by blast+
 
 end
 
-section \<open>Locale without Saturation\<close>
+section \<open>Locale without Witnessing\<close>
 
-locale MCS_No_Saturation = MCS_Base +
+locale MCS_No_Witnessing = MCS_Base consistent for consistent :: \<open>'a set \<Rightarrow> bool\<close> +
   assumes \<open>infinite (UNIV :: 'a set)\<close>
 
-sublocale MCS_No_Saturation \<subseteq> MCS_Saturation consistent \<open>\<lambda>_. {} :: 'a set\<close> \<open>\<lambda>_ _. {}\<close>
+sublocale MCS_No_Witnessing \<subseteq> MCS_Witnessing consistent \<open>\<lambda>_. {} :: 'a set\<close> \<open>\<lambda>_ _. {}\<close>
 proof
   show \<open>infinite (UNIV :: 'a set)\<close>
-    using MCS_No_Saturation_axioms MCS_No_Saturation_axioms_def MCS_No_Saturation_def by blast
+    using MCS_No_Witnessing_axioms MCS_No_Witnessing_axioms_def MCS_No_Witnessing_def by blast
 next
   show \<open>finite {}\<close> ..
 next
@@ -521,10 +521,10 @@ next
     by simp
 qed
 
-context MCS_No_Saturation begin
+context MCS_No_Witnessing begin
 
-lemma always_saturated [simp]: \<open>saturated H\<close>
-  unfolding saturated_def by simp
+lemma always_witnessed [simp]: \<open>witnessed H\<close>
+  unfolding witnessed_def by simp
 
 theorem MCS_Extend':
   assumes \<open>consistent S\<close>
@@ -541,30 +541,30 @@ locale Truth_Base =
     and models_from :: \<open>'a set \<Rightarrow> 'model set\<close>
     and rel :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
   assumes semics_semantics: \<open>semantics M p \<longleftrightarrow> semics M semantics p\<close>
-    and Hintikka_model: \<open>\<And>H M p. \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p \<Longrightarrow>
+    and saturated_model: \<open>\<And>H M p. \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p \<Longrightarrow>
       M \<in> models_from H \<Longrightarrow> semantics M p \<longleftrightarrow> rel H M p\<close>
 
-locale Truth_Saturation = MCS_Saturation + Truth_Base +
-  assumes MCS_Hintikka: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow> saturated H \<Longrightarrow>
+locale Truth_Witnessing = MCS_Witnessing + Truth_Base +
+  assumes MCS_saturated: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow> witnessed H \<Longrightarrow>
       \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
 begin
 
-theorem truth_lemma_saturation:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close> \<open>M \<in> models_from H\<close>
+theorem truth_lemma_Witnessing:
+  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close> \<open>M \<in> models_from H\<close>
   shows \<open>semantics M p \<longleftrightarrow> rel H M p\<close>
-  using Hintikka_model MCS_Hintikka assms .
+  using saturated_model MCS_saturated assms .
 
 end
 
-locale Truth_No_Saturation = MCS_No_Saturation + Truth_Base +
-  assumes MCS_Hintikka: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow>
+locale Truth_No_Witnessing = MCS_No_Witnessing + Truth_Base +
+  assumes MCS_saturated: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow>
       \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
 begin
 
-theorem truth_lemma_no_saturation:
+theorem truth_lemma_no_Witnessing:
   assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>M \<in> models_from H\<close>
   shows \<open>semantics M p \<longleftrightarrow> rel H M p\<close>
-  using Hintikka_model MCS_Hintikka assms .
+  using saturated_model MCS_saturated assms .
 
 end
 

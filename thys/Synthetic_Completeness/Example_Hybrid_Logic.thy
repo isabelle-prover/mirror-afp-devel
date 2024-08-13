@@ -58,19 +58,19 @@ lemma semantics_fresh_lbd:
 section \<open>Calculus\<close>
 
 inductive Calculus :: \<open>('i, 'p) lbd list \<Rightarrow> ('i, 'p) lbd \<Rightarrow> bool\<close> (\<open>_ \<turnstile>\<^sub>@ _\<close> [50, 50] 50) where
-  Assm [intro]: \<open>(i, p) \<in> set A \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p)\<close>
-| Ref [intro]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>i)\<close>
-| Nom [intro]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>k) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, p)\<close>
+  Assm [simp]: \<open>(i, p) \<in> set A \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p)\<close>
+| Ref [simp]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>i)\<close>
+| Nom: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>k) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, p)\<close>
 | FlsE [elim]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<bottom>) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, p)\<close>
 | ImpI [intro]: \<open>(i, p) # A \<turnstile>\<^sub>@ (i, q) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p \<^bold>\<longrightarrow> q)\<close>
-| ImpE [elim]: \<open>A \<turnstile>\<^sub>@ (i, p \<^bold>\<longrightarrow> q) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, q)\<close>
+| ImpE [dest]: \<open>A \<turnstile>\<^sub>@ (i, p \<^bold>\<longrightarrow> q) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, q)\<close>
 | SatI [intro]: \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, \<^bold>@i p)\<close>
-| SatE [elim]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>@k p) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, p)\<close>
+| SatE [dest]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>@k p) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, p)\<close>
 | DiaI [intro]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<diamond> (\<^bold>\<cdot>k)) \<Longrightarrow> A \<turnstile>\<^sub>@ (k, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, \<^bold>\<diamond> p)\<close>
 | DiaE [elim]: \<open>A \<turnstile>\<^sub>@ (i, \<^bold>\<diamond> p) \<Longrightarrow> k \<notin> nominals ({(i, p), (j, q)} \<union> set A) \<Longrightarrow>
     (k, p) # (i, \<^bold>\<diamond> (\<^bold>\<cdot>k)) # A \<turnstile>\<^sub>@ (j, q) \<Longrightarrow> A \<turnstile>\<^sub>@ (j, q)\<close>
 | Clas: \<open>(i, p \<^bold>\<longrightarrow> q) # A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p)\<close>
-| Weak: \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> (k, q) # A \<turnstile>\<^sub>@ (i, p)\<close>
+| Cut: \<open>A \<turnstile>\<^sub>@ (k, q) \<Longrightarrow> (k, q) # B \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A @ B \<turnstile>\<^sub>@ (i, p)\<close>
 
 section \<open>Soundness\<close>
 
@@ -106,47 +106,52 @@ corollary \<open>\<not> ([] \<turnstile>\<^sub>@ (i, \<^bold>\<bottom>))\<close>
 
 section \<open>Admissible Rules\<close>
 
-lemma Assm_head: \<open>(p, i) # A \<turnstile>\<^sub>@ (p, i)\<close>
+lemma Assm_head [simp]: \<open>(p, i) # A \<turnstile>\<^sub>@ (p, i)\<close>
   by auto
+
+lemma Weak': \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> A @ B \<turnstile>\<^sub>@ (i, p)\<close>
+  by (simp add: Cut)
+
+lemma SatE':
+  assumes \<open>(k, q) # A \<turnstile>\<^sub>@ (i, p)\<close>
+  shows \<open>(j, \<^bold>@k q) # A \<turnstile>\<^sub>@ (i, p)\<close>
+proof -
+  have \<open>[(j, \<^bold>@k q)] \<turnstile>\<^sub>@ (k, q)\<close>
+    by (meson Assm_head SatE)
+  then show ?thesis
+    using assms by (auto dest: Cut)
+qed
+
+lemma ImpI':
+  assumes \<open>(k, q) # A \<turnstile>\<^sub>@ (i, p)\<close>
+  shows \<open>A \<turnstile>\<^sub>@ (i, (\<^bold>@k q) \<^bold>\<longrightarrow> p)\<close>
+  using assms SatE' by fast
+
+lemma Weaken: \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> B \<turnstile>\<^sub>@ (i, p)\<close>
+proof (induct A arbitrary: p)
+  case Nil
+  then show ?case
+    by (metis Weak' append_Nil)
+next
+  case (Cons kq A)
+  then show ?case
+  proof (cases kq)
+    case (Pair k q)
+    then have \<open>B \<turnstile>\<^sub>@ (i, \<^bold>@k q \<^bold>\<longrightarrow> p)\<close>
+      using Cons by (simp add: ImpI')
+    then show ?thesis
+      using Pair Cons(3) by fastforce
+  qed
+qed
+
+lemma Weak: \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> (k, q) # A \<turnstile>\<^sub>@ (i, p)\<close>
+  using Weaken[where A=A and B=\<open>(k, q) # A\<close>] by auto
 
 lemma deduct1: \<open>A \<turnstile>\<^sub>@ (i, p \<^bold>\<longrightarrow> q) \<Longrightarrow> (i, p) # A \<turnstile>\<^sub>@ (i, q)\<close>
   by (meson ImpE Weak Assm_head)
 
 lemma Boole: \<open>(i, \<^bold>\<not> p) # A \<turnstile>\<^sub>@ (i, \<^bold>\<bottom>) \<Longrightarrow> A \<turnstile>\<^sub>@ (i, p)\<close>
   using Clas FlsE by meson
-
-lemma Weak': \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> B @ A \<turnstile>\<^sub>@ (i, p)\<close>
-proof (induct B)
-  case (Cons b B)
-  then show ?case
-    by (cases b) (metis Cons Weak append_Cons)
-qed simp
-
-lemma ImpI':
-  assumes \<open>(k, q) # A \<turnstile>\<^sub>@ (i, p)\<close>
-  shows \<open>A \<turnstile>\<^sub>@ (i, (\<^bold>@k q) \<^bold>\<longrightarrow> p)\<close>
-  using assms
-proof -
-  have \<open>(k, q) # A \<turnstile>\<^sub>@ (k, \<^bold>@i p)\<close>
-    using assms by fast
-  then show ?thesis
-    by (meson Assm_head ImpE ImpI SatE Weak)
-qed
-
-lemma Weaken: \<open>A \<turnstile>\<^sub>@ (i, p) \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> B \<turnstile>\<^sub>@ (i, p)\<close>
-proof (induct A arbitrary: i p)
-  case Nil
-  then show ?case
-    using Weak' by fastforce
-next
-  case (Cons kq A)
-  then show ?case
-  proof (cases kq)
-    case (Pair k q)
-    then show ?thesis
-      using Cons by (meson Assm ImpI' ImpE SatI list.set_intros(1) set_subset_Cons subset_eq)
-  qed
-qed
 
 interpretation Derivations Calculus
 proof
@@ -179,7 +184,7 @@ proof
   moreover have \<open>(i, \<^bold>\<diamond> p) # S' \<turnstile>\<^sub>@ (i, \<^bold>\<diamond> p)\<close>
     by auto
   ultimately have \<open>(i, \<^bold>\<diamond> p) # S' \<turnstile>\<^sub>@ (i, \<^bold>\<bottom>)\<close>
-    by fastforce
+    by fast
   moreover have \<open>set ((i, \<^bold>\<diamond> p) # S') \<subseteq> S\<close>
     using \<open>set S' \<subseteq> S\<close> assms(2) by simp
   ultimately show False
@@ -210,7 +215,7 @@ proof (induct \<open>(i, p)\<close> S arbitrary: i p rule: witness.induct)
     using 1(1-2) consistent_add_witness[where S=\<open>{(i, \<^bold>\<diamond> p)} \<union> S\<close>] by simp
 qed (auto simp: assms)
 
-interpretation MCS_Saturation consistent nominals_lbd witness
+interpretation MCS_Witnessing consistent nominals_lbd witness
 proof
   fix S S' :: \<open>('i, 'p) lbd set\<close>
   assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
@@ -252,16 +257,14 @@ next
   then show \<open>A \<turnstile>\<^sub>@ p\<close>
     by (metis Assm surj_pair)
 next
-  fix A B and p q :: \<open>('i, 'p) lbd\<close>
-  assume \<open>A \<turnstile>\<^sub>@ p\<close> \<open>p # B \<turnstile>\<^sub>@ q\<close>
-  then have \<open>A @ B \<turnstile>\<^sub>@ p\<close> \<open>p # A @ B \<turnstile>\<^sub>@ q\<close>
-    by (simp_all add: derive_struct subsetI)
-  then show \<open>A @ B \<turnstile>\<^sub>@ q\<close>
+  fix A and p q :: \<open>('i, 'p) lbd\<close>
+  assume \<open>A \<turnstile>\<^sub>@ p\<close> \<open>p # A \<turnstile>\<^sub>@ q\<close>
+  then show \<open>A \<turnstile>\<^sub>@ q\<close>
     by (cases p, cases q) (meson ImpE ImpI' SatI)
 qed
 
-lemma saturated: \<open>saturated H \<Longrightarrow> (i, \<^bold>\<diamond>p) \<in> H \<Longrightarrow> \<exists>k. (i, \<^bold>\<diamond> (\<^bold>\<cdot>k)) \<in> H \<and> (k, p) \<in> H\<close>
-  unfolding saturated_def by (metis insert_subset witness.simps(1))
+lemma witnessed: \<open>witnessed H \<Longrightarrow> (i, \<^bold>\<diamond>p) \<in> H \<Longrightarrow> \<exists>k. (i, \<^bold>\<diamond> (\<^bold>\<cdot>k)) \<in> H \<and> (k, p) \<in> H\<close>
+  unfolding witnessed_def by (metis insert_subset witness.simps(1))
 
 section \<open>Nominals\<close>
 
@@ -279,14 +282,12 @@ lemma MCS_Nom_trans:
   assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>(i, \<^bold>\<cdot>j) \<in> S\<close> \<open>(j, \<^bold>\<cdot>k) \<in> S\<close>
   shows \<open>(i, \<^bold>\<cdot>k) \<in> S\<close>
 proof -
-  have \<open>\<exists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>j)\<close>
-    using assms MCS_derive by blast
-  then have \<open>\<exists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>j) \<and> S' \<turnstile>\<^sub>@ (j, \<^bold>\<cdot>k)\<close>
-    by (metis Assm_head Calculus.intros(12) assms(4) insert_subset list.set(2))
-  then have \<open>\<exists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>k)\<close>
+  have \<open>[(i, \<^bold>\<cdot>j), (j, \<^bold>\<cdot>k)] \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>j)\<close> \<open>[(i, \<^bold>\<cdot>j), (j, \<^bold>\<cdot>k)] \<turnstile>\<^sub>@ (j, \<^bold>\<cdot>k)\<close>
+    by simp_all
+  then have \<open>[(i, \<^bold>\<cdot>j), (j, \<^bold>\<cdot>k)] \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>k)\<close>
     using Nom Ref by metis
   then show ?thesis
-    using assms MCS_derive by blast
+    using assms MCS_derive by force
 qed
 
 section \<open>Truth Lemma\<close>
@@ -347,14 +348,10 @@ lemma hequiv_Nom:
   assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>hequiv H i k\<close> \<open>(i, p) \<in> H\<close>
   shows \<open>(k, p) \<in> H\<close>
 proof -
-  have \<open>\<exists>A. set A \<subseteq> H \<and> A \<turnstile>\<^sub>@ (i, p)\<close>
-    using assms MCS_derive by fast
-  then have \<open>\<exists>A. set A \<subseteq> H \<and> A \<turnstile>\<^sub>@ (i, p) \<and> A \<turnstile>\<^sub>@ (i, \<^bold>\<cdot>k)\<close>
-    using assms(3) unfolding hequiv_def by (metis Assm_head Weak insert_subset list.simps(15))
-  then have \<open>\<exists>A. set A \<subseteq> H \<and> A \<turnstile>\<^sub>@ (k, p)\<close>
-    using Nom by fast
+  have \<open>[(i, \<^bold>\<cdot>k), (i, p)] \<turnstile>\<^sub>@ (k, p)\<close>
+    by (meson Assm_head Nom Weak)
   then show ?thesis
-    using assms MCS_derive by fast
+    using assms MCS_derive unfolding hequiv_def by force
 qed
 
 definition reach :: \<open>('i, 'p) lbd set \<Rightarrow> 'i \<Rightarrow> 'i set\<close> where
@@ -363,7 +360,7 @@ definition reach :: \<open>('i, 'p) lbd set \<Rightarrow> 'i \<Rightarrow> 'i se
 abbreviation canonical :: \<open>('i \<times> ('i, 'p) fm) set \<Rightarrow> 'i \<Rightarrow> ('i, 'p, 'i) ctx\<close> where
   \<open>canonical H i \<equiv> (Model (reach H) (val H), assign H, assign H i)\<close>
 
-lemma Hintikka_model':
+lemma saturated_model':
   assumes \<open>\<And>i p. semics (canonical H i) (rel H) p \<longleftrightarrow> rel H (canonical H i) p\<close>
   shows \<open>(canonical H i \<Turnstile> p) \<longleftrightarrow> rel H (canonical H i) p\<close>
 proof (induct p arbitrary: i rule: wf_induct[where r=\<open>measure size\<close>])
@@ -375,13 +372,13 @@ next
     using assms[of i x] by (cases x) (auto simp: reach_def)
 qed
 
-lemma Hintikka_Extend':
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
+lemma saturated_MCS':
+  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close>
   shows \<open>semics (canonical H i) (rel H) p \<longleftrightarrow> rel H (canonical H i) p\<close>
 proof (cases p)
   case Fls
   have \<open>(assign H i, \<^bold>\<bottom>) \<notin> H\<close>
-    using assms(1-2) MCS_derive unfolding consistent_def by fast
+    using assms(1-2) MCS_derive unfolding consistent_def by blast
   then show ?thesis
     using Fls by simp
 next
@@ -424,7 +421,7 @@ next
   next
     assume \<open>(assign H i, \<^bold>\<diamond> p) \<in> H\<close>
     then have \<open>\<exists>k. (assign H i, \<^bold>\<diamond> (\<^bold>\<cdot>k)) \<in> H \<and> (k, p) \<in> H\<close>
-      using assms(3) saturated by fast
+      using assms(3) witnessed by fast
     then have \<open>\<exists>k. (assign H i, \<^bold>\<diamond> (\<^bold>\<cdot>k)) \<in> H \<and> (assign H k, p) \<in> H\<close>
       by (meson assms(1-2) hequiv_Nom hequiv_assign)
     then show \<open>\<exists>k \<in> reach H (assign H i). (k, p) \<in> H\<close>
@@ -440,7 +437,7 @@ next
     using Sat by simp
 qed
 
-interpretation Truth_Saturation
+interpretation Truth_Witnessing
   consistent nominals_lbd witness semics semantics \<open>\<lambda>H. {canonical H i |i. True}\<close> rel
 proof unfold_locales
   fix p and M :: \<open>('i, 'p, 'w) ctx\<close>
@@ -451,20 +448,20 @@ next
   assume \<open>\<forall>M \<in> {canonical H i |i. True}. \<forall>p. semics M (rel H) p = rel H M p\<close>
     \<open>M \<in> {canonical H i |i. True}\<close>
   then show \<open>(M \<Turnstile> p) = rel H M p\<close>
-    using Hintikka_model' by fast
+    using saturated_model' by fast
 next
   fix H :: \<open>('i, 'p) lbd set\<close>
-  assume \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
+  assume \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close>
   then show \<open>\<forall>M\<in>{canonical H i |i. True}. \<forall>p. semics M (rel H) p = rel H M p\<close>
-    using Hintikka_Extend' by fast
+    using saturated_MCS' by fast
 qed
 
 lemma Truth_lemma:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close>
+  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close>
   shows \<open>(canonical H i \<Turnstile> p) \<longleftrightarrow> (i, p) \<in> H\<close>
 proof -
   have \<open>(canonical H i \<Turnstile> p) \<longleftrightarrow> (assign H i, p) \<in> H\<close>
-    using truth_lemma_saturation assms by fastforce
+    using truth_lemma_Witnessing assms by fastforce
   then show ?thesis
     using assms by (meson MCS_Nom_sym hequiv_Nom hequiv_assign hequiv_def)
 qed
@@ -589,7 +586,7 @@ proof (rule ccontr)
     by (metis UN_insert insert_is_Un sup_commute)
   then have \<open>|UNIV :: ('i, 'p) lbd set| \<le>o |UNIV - nominals ?S|\<close>
     using assms card_of_lbd ordLeq_transitive by blast
-  ultimately have \<open>consistent ?H\<close> \<open>maximal ?H\<close> \<open>saturated ?H\<close>
+  ultimately have \<open>consistent ?H\<close> \<open>maximal ?H\<close> \<open>witnessed ?H\<close>
     using MCS_Extend by fast+
   then have \<open>canonical ?H i \<Turnstile> p \<longleftrightarrow> (i, p) \<in> ?H\<close> for i p
     using Truth_lemma by fast

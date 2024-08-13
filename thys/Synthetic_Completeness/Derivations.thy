@@ -52,20 +52,31 @@ section \<open>MCSs and Derivability\<close>
 
 locale Derivations_MCS_Cut = Derivations_MCS +
   assumes derive_assm: \<open>\<And>A p. p \<in> set A \<Longrightarrow> derive A p\<close>
-    and derive_cut: \<open>\<And>A B p q. derive A p \<Longrightarrow> derive (p # B) q \<Longrightarrow> derive (A @ B) q\<close>
+    and derive_cut: \<open>\<And>A p q. derive A p \<Longrightarrow> derive (p # A) q \<Longrightarrow> derive A q\<close>
 begin
+
+theorem Cut_struct:
+  assumes \<open>derive A p\<close> \<open>derive (p # B) q\<close>
+  shows \<open>derive (A @ B) q\<close>
+proof -
+  from assms(1) have \<open>derive (A @ B) p\<close>
+    using derive_struct by simp
+  moreover from assms(2) have \<open>derive (p # A @ B) q\<close>
+    using derive_struct[where A=\<open>p # B\<close> and B=\<open>p # A @ B\<close>] by auto
+  ultimately show ?thesis
+    using derive_cut by blast
+qed
 
 theorem MCS_derive:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
   shows \<open>p \<in> S \<longleftrightarrow> (\<exists>S'. set S' \<subseteq> S \<and> derive S' p)\<close>
-proof
+proof safe
   assume \<open>p \<in> S\<close>
   then show \<open>\<exists>S'. set S' \<subseteq> S \<and> derive S' p\<close>
     using derive_assm by (metis List.set_insert empty_set empty_subsetI insert_subset singletonI)
 next
-  assume \<open>\<exists>A. set A \<subseteq> S \<and> derive A p\<close>
-  then obtain A where A: \<open>set A \<subseteq> S\<close> \<open>derive A p\<close>
-    by blast
+  fix A
+  assume A: \<open>set A \<subseteq> S\<close> \<open>derive A p\<close>
   have \<open>consistent ({p} \<union> S)\<close>
     unfolding consistent_derive_fls
   proof safe
@@ -74,13 +85,19 @@ next
     then obtain C where C: \<open>derive (p # C) fls\<close> \<open>set C \<subseteq> S\<close>
       using derive_split1 by blast
     then have \<open>derive (A @ C) fls\<close>
-      using A derive_cut by blast
+      using A Cut_struct by fast
     then show False
       using A(1) B(1) C assms(1) consistent_derive_fls by simp
   qed
   then show \<open>p \<in> S\<close>
     using assms unfolding maximal_def by auto
 qed
+
+theorem MCS_derive_consequence:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>set A \<subseteq> S\<close> \<open>derive A q\<close>
+  shows \<open>q \<in> S\<close>
+    using MCS_derive assms by blast
+    
 
 end
 

@@ -26,7 +26,7 @@ fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> 
 section \<open>Calculus\<close>
 
 inductive Calculus :: \<open>'p fm list \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>T _\<close> [50] 50) where
-  Axiom [intro]: \<open>\<turnstile>\<^sub>T \<^bold>\<ddagger>P # \<^bold>\<not> \<^bold>\<ddagger>P # A\<close>
+  Axiom [simp]: \<open>\<turnstile>\<^sub>T \<^bold>\<ddagger>P # \<^bold>\<not> \<^bold>\<ddagger>P # A\<close>
 | NegI [intro]: \<open>\<turnstile>\<^sub>T p # A \<Longrightarrow> \<turnstile>\<^sub>T \<^bold>\<not> \<^bold>\<not> p # A\<close>
 | ImpP [intro]: \<open>\<turnstile>\<^sub>T \<^bold>\<not> p # A \<Longrightarrow> \<turnstile>\<^sub>T q # A \<Longrightarrow> \<turnstile>\<^sub>T (p \<^bold>\<longrightarrow> q) # A\<close>
 | ImpN [intro]: \<open>\<turnstile>\<^sub>T p # \<^bold>\<not> q # A \<Longrightarrow> \<turnstile>\<^sub>T \<^bold>\<not> (p \<^bold>\<longrightarrow> q) # A\<close>
@@ -53,7 +53,7 @@ section \<open>Maximal Consistent Sets\<close>
 definition consistent :: \<open>'p fm set \<Rightarrow> bool\<close> where
   \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> \<turnstile>\<^sub>T S'\<close>
 
-interpretation MCS_No_Saturation consistent
+interpretation MCS_No_Witnessing consistent
 proof
   fix S S' :: \<open>'p fm set\<close>
   assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
@@ -107,7 +107,7 @@ proof
   then have \<open>set [\<^bold>\<ddagger>P, \<^bold>\<not> \<^bold>\<ddagger>P] \<subseteq> H\<close>
     by simp
   moreover have \<open>\<turnstile>\<^sub>T [\<^bold>\<ddagger>P, \<^bold>\<not> \<^bold>\<ddagger>P]\<close>
-    by blast
+    by simp
   ultimately show False
     using assms unfolding consistent_def by blast
 next
