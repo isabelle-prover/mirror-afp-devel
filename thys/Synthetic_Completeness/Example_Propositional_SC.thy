@@ -40,18 +40,6 @@ inductive Calculus :: \<open>'p fm list \<Rightarrow> 'p fm list \<Rightarrow> b
 lemma Boole: \<open>\<^bold>\<not> p # A \<turnstile>\<^sub>S [] \<Longrightarrow> A \<turnstile>\<^sub>S [p]\<close>
   by (meson Axiom Cut ImpL ImpR WeakenR set_subset_Cons)
 
-lemma Cut':
-  assumes \<open>A \<turnstile>\<^sub>S p # B\<close> \<open>p # C \<turnstile>\<^sub>S D\<close>
-  shows \<open>A @ C \<turnstile>\<^sub>S B @ D\<close>
-proof -
-  from assms(1) have \<open>A @ C \<turnstile>\<^sub>S p # B @ D\<close>
-    using WeakenL[where A'=\<open>A @ C\<close>] WeakenR[where B'=\<open>p # B @ D\<close>] by fastforce
-  moreover from assms(2) have \<open>p # A @ C \<turnstile>\<^sub>S B @ D\<close>
-    using WeakenL[where A'=\<open>p # A @ C\<close>] WeakenR[where B'=\<open>B @ D\<close>] by fastforce
-  ultimately show ?thesis
-    by (meson Axiom Cut ImpL ImpR)
-qed
-
 section \<open>Soundness\<close>
 
 theorem soundness: \<open>A \<turnstile>\<^sub>S B \<Longrightarrow> \<forall>q \<in> set A. \<lbrakk>I\<rbrakk> q \<Longrightarrow> \<exists>p \<in> set B. \<lbrakk>I\<rbrakk> p\<close>
@@ -147,7 +135,7 @@ next
   moreover have \<open>p # A \<turnstile>\<^sub>S [\<^bold>\<bottom>] \<Longrightarrow> A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q]\<close> for A
     by (meson FlsR ImpR WeakenR set_subset_Cons)
   moreover have \<open>A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q] \<Longrightarrow> B \<turnstile>\<^sub>S [p] \<Longrightarrow> A @ B \<turnstile>\<^sub>S [q]\<close> for A B
-    by (metis Axiom Cut Cut' ImpL append_Nil)
+    by (meson Axiom Cut Cut_struct ImpL)
   ultimately have \<open>(p \<in> H \<longrightarrow> q \<in> H) \<longleftrightarrow> p \<^bold>\<longrightarrow> q \<in> H\<close>
     using assms MCS_derive MCS_derive_fls Axiom
     by (metis append_Cons append_Nil insert_subset list.simps(15))

@@ -93,12 +93,6 @@ next
     using assms unfolding maximal_def by auto
 qed
 
-theorem MCS_derive_consequence:
-  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>set A \<subseteq> S\<close> \<open>derive A q\<close>
-  shows \<open>q \<in> S\<close>
-    using MCS_derive assms by blast
-    
-
 end
 
 end
