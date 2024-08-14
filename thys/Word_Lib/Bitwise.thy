@@ -447,6 +447,7 @@ fun nat_get_Suc_simproc_fn n_sucs ctxt ct =
 fun nat_get_Suc_simproc n_sucs ts =
   Simplifier.make_simproc \<^context>
    {name = "nat_get_Suc",
+    kind = Simproc,
     lhss = map (fn t => t $ \<^term>\<open>n :: nat\<close>) ts,
     proc = K (nat_get_Suc_simproc_fn n_sucs),
     identifier = []};

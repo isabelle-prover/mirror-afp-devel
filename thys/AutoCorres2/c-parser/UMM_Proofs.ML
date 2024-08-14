@@ -326,7 +326,8 @@ fun field_ti_to_field_lookup t =
       \<^instantiate>\<open>'a = \<open>Logic.dest_type T\<close> and T=T and fs=fs in term \<open>field_lookup (typ_info_t T) fs 0\<close>\<close>
   | t => raise TERM ("field_ti_to_field_lookup: unexcpected term", [t])
 
-val _ = Theory.local_setup (Simplifier.define_simproc {name= \<^binding>\<open>field_lookup\<close>, passive = false, identifier=[],
+val _ = Theory.local_setup (Simplifier.define_simproc
+  {name= \<^binding>\<open>field_lookup\<close>, passive = false, kind = Simproc, identifier=[],
   lhss =[\<^term>\<open>field_lookup (typ_info_t (TYPE('a::c_type))) (f1#f2#fs) n\<close>,
          \<^term>\<open>field_lookup (typ_info_t (TYPE('c::c_type['d::finite]))) [f1] n\<close>,
          \<^term>\<open>field_lookup (typ_uinfo_t (TYPE('a::c_type))) fs n\<close>,
@@ -379,7 +380,8 @@ fun gen_typuinfo_simproc augment ctxt =
   let val umm_ctxt = typuinfo_aux_ctxt ctxt
   in  Cached_Theory_Simproc.gen_simproc (umm_ctxt, Cached_Theory_Simproc.recert, Cached_Theory_Simproc.add_cache) augment end
 
-val _ = Theory.local_setup (Simplifier.define_simproc {name = \<^binding>\<open>type_calculations\<close>, passive = false, identifier = [],
+val _ = Theory.local_setup (Simplifier.define_simproc
+  {name = \<^binding>\<open>type_calculations\<close>, passive = false, kind = Simproc, identifier = [],
   lhss = [
    \<^term>\<open>set (field_names_no_padding (typ_info_t TYPE('a::c_type)) (export_uinfo (typ_info_t TYPE('b::c_type))))\<close>,
    \<^term>\<open>set (all_field_names_no_padding (typ_info_t TYPE('a::c_type)))\<close>,
@@ -413,7 +415,8 @@ val _ = Theory.local_setup (Simplifier.define_simproc {name = \<^binding>\<open>
     end } #> snd);
 val (type_calculations_simproc_name, type_calculations_simproc) = Simplifier.check_simproc (Context.the_local_context ()) ("type_calculations", Position.none)
 
-val _ = Theory.local_setup (Simplifier.define_simproc {name = \<^binding>\<open>typuinfo_calculations\<close>, passive = false, identifier=[],
+val _ = Theory.local_setup (Simplifier.define_simproc
+  {name = \<^binding>\<open>typuinfo_calculations\<close>, passive = false, kind = Simproc, identifier=[],
  lhss = [
    \<^term>\<open>export_uinfo (typ_info_t TYPE('a::c_type)) = export_uinfo (typ_info_t TYPE('b::c_type))\<close>,
    \<^term>\<open>typ_uinfo_t TYPE('a::c_type) = export_uinfo (typ_info_t TYPE('b::c_type))\<close>,
