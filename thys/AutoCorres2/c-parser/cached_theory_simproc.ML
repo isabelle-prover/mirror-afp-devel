@@ -260,7 +260,7 @@ val get_cache_ss =
 fun derive_thms rules thm = map_filter (try (fn r => r OF [thm])) rules
 
 fun pretty_cache name get ctxt=
-  get ctxt |> Simplifier.dest_ss |> #simps |> map (Thm.pretty_thm_item ctxt o #2) |>
+  get ctxt |> Simplifier.dest_simps |> map (Thm.pretty_thm_item ctxt o #2) |>
   Pretty.big_list (name ^ ": ")
 
 val pretty_cache = pretty_cache "cache" get_cache_ss
