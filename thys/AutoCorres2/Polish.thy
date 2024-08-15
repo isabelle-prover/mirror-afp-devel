@@ -1268,7 +1268,7 @@ fun stop_cong rule =
 
 fun mk_rule ctxt name split_vars thm =
   let
-    val eq = Simpdata.mk_meta_cong ctxt thm
+    val eq = Simplifier.mk_cong ctxt thm
     val apply_thm = eq |> Drule.zero_var_indexes
     val lhs = lhs_of apply_thm
     val stop_thm = stop_cong apply_thm
