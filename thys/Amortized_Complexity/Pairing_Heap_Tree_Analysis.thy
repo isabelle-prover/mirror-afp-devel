@@ -6,6 +6,7 @@ subsection \<open>Binary Tree Representation\<close>
 
 theory Pairing_Heap_Tree_Analysis
 imports  
+  "HOL-Data_Structures.Define_Time_Function"
   Pairing_Heap.Pairing_Heap_Tree
   Amortized_Framework
   Priority_Queue_ops_merge
@@ -15,6 +16,9 @@ begin
 text
 \<open>Verification of logarithmic bounds on the amortized complexity of
 pairing heaps \<^cite>\<open>"FredmanSST86" and "Brinkop"\<close>.\<close>
+
+
+subsubsection \<open>Analysis\<close>
 
 fun len :: "'a tree \<Rightarrow> nat" where 
   "len Leaf = 0"
@@ -127,15 +131,7 @@ proof (induction hs)
     finally show ?thesis .
   qed simp
 qed simp
-(*
-lemma \<Delta>\<Phi>_mergepairs: assumes "hs \<noteq> Leaf"
-  shows "\<Phi> (merge_pairs hs) - \<Phi> hs \<le> 3 * log 2 (size hs) - len hs + 2"
-proof -
-  have "pass\<^sub>1 hs \<noteq> Leaf" by (metis assms eq_size_0 size_pass\<^sub>1)
-  with assms \<Delta>\<Phi>_pass1[of hs] \<Delta>\<Phi>_pass2[of "pass\<^sub>1 hs"]
-  show ?thesis by (auto simp add: size_pass\<^sub>1 pass12_merge_pairs)
-qed
-*)
+
 lemma \<Delta>\<Phi>_del_min: assumes "hs \<noteq> Leaf"
 shows "\<Phi> (del_min (Node hs x Leaf)) - \<Phi> (Node hs x Leaf) 
   \<le> 3*log 2 (size hs) - len hs + 2"
@@ -152,31 +148,11 @@ proof -
   ultimately show ?thesis using assms by linarith
 qed
 
-lemma is_root_merge:
-  "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> is_root (merge h1 h2)"
-by (simp split: tree.splits)
-
-lemma is_root_insert: "is_root h \<Longrightarrow> is_root (insert x h)"
-by (simp split: tree.splits)
-
-lemma is_root_del_min:
-  assumes "is_root h" shows "is_root (del_min h)"
-proof (cases h)
-  case [simp]: (Node lx x rx)
-  have "rx = Leaf" using assms by simp
-  thus ?thesis 
-  proof (cases lx)
-    case (Node ly y ry)
-    then obtain la a ra where "pass\<^sub>1 lx = Node a la ra" 
-      using pass\<^sub>1_struct by blast
-    moreover obtain lb b where "pass\<^sub>2 \<dots> = Node b lb Leaf"
-      using pass\<^sub>2_struct by blast
-    ultimately show ?thesis using assms by simp
-  qed simp
-qed simp
-
 lemma pass\<^sub>1_len: "len (pass\<^sub>1 h) \<le> len h"
 by (induct h rule: pass\<^sub>1.induct) simp_all
+
+
+subsubsection \<open>Putting it all together (boiler plate)\<close>
 
 fun exec :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" | 
@@ -184,27 +160,35 @@ fun exec :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> 'a tree"
 "exec (Insert x) [h] = insert x h" |
 "exec Merge [h1,h2] = merge h1 h2"
 
-fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 :: "'a tree \<Rightarrow> nat" where
-  "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 Leaf = 1"
-| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (Node _ _ Leaf) = 1"
-| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 (Node _ _ (Node _ _ ry)) = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 ry + 1"
+time_fun link
 
-fun T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a tree \<Rightarrow> nat" where
-  "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 Leaf = 1"
-| "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (Node _ _ rx) = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 rx + 1"
+lemma T_link_0[simp]: "T_link h = 0"
+by (cases h rule: T_link.cases) auto
+
+time_fun pass\<^sub>1
+
+time_fun pass\<^sub>2
+
+time_fun del_min
+
+time_fun merge
+
+lemma T_merge_0[simp]: "T_merge h1 h2 = 0"
+by (cases "(h1,h2)" rule: T_merge.cases) auto
+
+time_fun insert
 
 fun cost :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> nat" where
-  "cost Empty [] = 1"
-| "cost Del_min [Leaf] = 1"
-| "cost Del_min [Node lx _  _] = T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
-| "cost (Insert a) _ = 1"
-| "cost Merge _ = 1"
+  "cost Empty [] = 0"
+| "cost Del_min [hp] = T_del_min hp"
+| "cost (Insert a) [hp] = T_insert a hp"
+| "cost Merge [h1,h2] = T_merge h1 h2"
 
 fun U :: "'a :: linorder op \<Rightarrow> 'a tree list \<Rightarrow> real" where
-  "U Empty [] = 1"
-| "U (Insert a) [h] = log 2 (size h + 1) + 1"
+  "U Empty [] = 0"
+| "U (Insert a) [h] = log 2 (size h + 1)"
 | "U Del_min [h] = 3*log 2 (size h + 1) + 4"
-| "U Merge [h1,h2] = log 2 (size h1 + size h2 + 1) + 2"
+| "U Merge [h1,h2] = log 2 (size h1 + size h2 + 1) + 1"
 
 interpretation Amortized
 where arity = arity and exec = exec and cost = cost and inv = is_root 
@@ -228,7 +212,7 @@ next
     show ?thesis
     proof (cases h)
       case [simp]: (Node lx x rx)
-      have "T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + T\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> len lx + 2"
+      have "T_pass\<^sub>2 (pass\<^sub>1 lx) + T_pass\<^sub>1 lx \<le> len lx + 2"
         by (induct lx rule: pass\<^sub>1.induct) simp_all
       hence "cost f ss \<le> \<dots>" by simp 
       moreover have "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size h + 1) - len lx + 2"
