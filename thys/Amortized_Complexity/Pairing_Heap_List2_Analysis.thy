@@ -82,7 +82,7 @@ by(cases hs) auto
 
 lemma \<Delta>\<Phi>_insert:
   "\<Phi> (Pairing_Heap_List2.insert x h) - \<Phi> h \<le> log 2 (sz h + 1)"
-by(induct h)(auto simp: link2 split: hp.split)
+by(cases h)(auto simp: link2 split: hp.split)
 
 lemma \<Delta>\<Phi>_link: "\<Phi> (link h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2 * log 2 (sz h1 + sz h2)"
 by (induction h1 h2 rule: link.induct) (simp  add: add_increasing)
@@ -114,17 +114,14 @@ done
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> [] \<Longrightarrow> \<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (sz hs)"
 proof (induction hs)
   case (Cons h hs)
-  thus ?case
-  proof -
-    obtain x hs2 where [simp]: "h = Hp x hs2" by (metis hp.exhaust)
-    show ?thesis
-    proof (cases "pass\<^sub>2 hs")
-      case [simp]: (Some h2)
-      obtain y hs3 where [simp]: "h2 = Hp y hs3" by (metis hp.exhaust)
-      from Some size_hps_pass2[of hs,symmetric] Cons show ?thesis
-        by(cases "hs=[]")(auto simp: add_mono)
-    qed simp
-  qed
+  obtain x hs2 where [simp]: "h = Hp x hs2" by (metis hp.exhaust)
+  show ?case
+  proof (cases "pass\<^sub>2 hs")
+    case [simp]: (Some h2)
+    obtain y hs3 where [simp]: "h2 = Hp y hs3" by (metis hp.exhaust)
+    from Some size_hps_pass2[of hs,symmetric] Cons show ?thesis
+      by(cases "hs=[]")(auto simp: add_mono)
+  qed simp
 qed simp
 
 corollary \<Delta>\<Phi>_pass2': "\<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (sz hs + 1)"

@@ -68,17 +68,25 @@ by (induction hs rule: merge_pairs.induct) (auto split: option.split)
 
 declare pass12_merge_pairs[code_unfold]
 
+text \<open>Abstraction functions:\<close>
+
+fun mset_hp :: "'a hp \<Rightarrow>'a multiset" where
+"mset_hp (Hp x hs) = {#x#} + sum_list(map mset_hp hs)"
+
+definition mset_heap :: "'a heap \<Rightarrow>'a multiset" where
+"mset_heap ho = (case ho of None \<Rightarrow> {#} | Some h \<Rightarrow> mset_hp h)"
+
 
 subsubsection \<open>Invariants\<close>
 
 fun php :: "('a::linorder) hp \<Rightarrow> bool" where
-"php (Hp x hs) = (\<forall>h \<in> set hs. (\<forall>y \<in> set_hp h. x \<le> y) \<and> php h)"
+"php (Hp x hs) = (\<forall>h \<in> set hs. (\<forall>y \<in># mset_hp h. x \<le> y) \<and> php h)"
 
 definition invar :: "('a::linorder) heap \<Rightarrow> bool" where
 "invar ho = (case ho of None \<Rightarrow> True | Some h \<Rightarrow> php h)"
 
 lemma php_link: "php h1 \<Longrightarrow> php h2 \<Longrightarrow> php (link h1 h2)"
-by (induction h1 h2 rule: link.induct) fastforce+
+by (induction h1 h2 rule: link.induct) (fastforce simp flip: sum_mset_sum_list)+
 
 lemma invar_merge:
   "\<lbrakk> invar h1; invar h2 \<rbrakk> \<Longrightarrow> invar (merge h1 h2)"
@@ -103,15 +111,6 @@ by(induction h rule: del_min.induct)
 
 subsubsection \<open>Functional Correctness\<close>
 
-fun mset_hp :: "'a hp \<Rightarrow>'a multiset" where
-"mset_hp (Hp x hs) = {#x#} + sum_mset(mset(map mset_hp hs))"
-
-definition mset_heap :: "'a heap \<Rightarrow>'a multiset" where
-"mset_heap ho = (case ho of None \<Rightarrow> {#} | Some h \<Rightarrow> mset_hp h)"
-
-lemma set_mset_mset_hp: "set_mset (mset_hp h) = set_hp h"
-by(induction h) auto
-
 lemma mset_hp_empty[simp]: "mset_hp hp \<noteq> {#}"
 by (cases hp) auto
 
@@ -122,12 +121,11 @@ lemma mset_heap_empty: "mset_heap h = {#} \<longleftrightarrow> h = None"
 by (cases h) (auto simp add: mset_heap_def)
 
 lemma get_min_in:
-  "h \<noteq> None \<Longrightarrow> get_min h \<in> set_hp(the h)"
+  "h \<noteq> None \<Longrightarrow> get_min h \<in># mset_hp(the h)"
 by(induction rule: get_min.induct)(auto)
 
-lemma get_min_min: "\<lbrakk> h \<noteq> None; invar h; x \<in> set_hp(the h) \<rbrakk> \<Longrightarrow> get_min h \<le> x"
-by(induction h rule: get_min.induct)(auto simp: invar_def)
-
+lemma get_min_min: "\<lbrakk> h \<noteq> None; invar h; x \<in># mset_hp(the h) \<rbrakk> \<Longrightarrow> get_min h \<le> x"
+by(induction h rule: get_min.induct)(auto simp: invar_def simp flip: sum_mset_sum_list)
 
 lemma mset_link: "mset_hp (link h1 h2) = mset_hp h1 + mset_hp h2"
 by(induction h1 h2 rule: link.induct)(auto simp: add_ac)
@@ -139,14 +137,18 @@ by (induction h1 h2 rule: merge.induct)
 lemma mset_insert: "mset_heap (insert a h) = {#a#} + mset_heap h"
 by(cases h) (auto simp add: mset_link mset_heap_def insert_def)
 
-lemma mset_merge_pairs: "mset_heap (merge_pairs hs) = sum_mset(image_mset mset_hp (mset hs))"
+lemma mset_pass\<^sub>1: "sum_list(map mset_hp (pass\<^sub>1 hs)) = sum_list(map mset_hp hs)"
+by(induction hs rule: pass\<^sub>1.induct)
+  (auto simp: mset_link split: option.split)
+
+lemma mset_pass\<^sub>2: "mset_heap (pass\<^sub>2 hs) = sum_list(map mset_hp hs)"
 by(induction hs rule: merge_pairs.induct)
-  (auto simp: mset_merge mset_link mset_heap_def Let_def split: option.split)
+  (auto simp: mset_link mset_heap_def split: option.split)
 
 lemma mset_del_min: "h \<noteq> None \<Longrightarrow>
   mset_heap (del_min h) = mset_heap h - {#get_min h#}"
 by(induction h rule: del_min.induct)
-  (auto simp: mset_heap_Some pass12_merge_pairs mset_merge_pairs)
+  (auto simp: mset_heap_Some mset_pass\<^sub>1 mset_pass\<^sub>2)
 
 
 text \<open>Last step: prove all axioms of the priority queue specification:\<close>
@@ -166,7 +168,7 @@ next
   case 4 thus ?case by(simp add: mset_del_min mset_heap_empty)
 next
   case (5 q) thus ?case using get_min_in[of q]
-    by(auto simp add: eq_Min_iff get_min_min mset_heap_empty mset_heap_Some set_mset_mset_hp)
+    by(auto simp add: eq_Min_iff get_min_min mset_heap_empty mset_heap_Some)
 next
   case 6 thus ?case by (simp add: invar_def)
 next
