@@ -175,15 +175,15 @@ qed
 interpretation Derivations Calculus_assms
 proof
   fix A B and p :: \<open>('i, 'p) fm\<close>
-  assume \<open>\<turnstile>\<^sub>\<box> A \<^bold>\<leadsto> p\<close> \<open>set A \<subseteq> set B\<close>
+  assume \<open>\<turnstile>\<^sub>\<box> A \<^bold>\<leadsto> p\<close> \<open>set A = set B\<close>
   then show \<open>\<turnstile>\<^sub>\<box> B \<^bold>\<leadsto> p\<close>
     using K_imply_weaken by blast
-qed
+qed simp
 
 section \<open>Maximal Consistent Sets\<close>
 
 definition consistent :: \<open>('i, 'p) fm set \<Rightarrow> bool\<close> where
-  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
+  \<open>consistent S \<equiv> \<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
 
 interpretation MCS_No_Witnessing consistent
 proof
@@ -201,21 +201,30 @@ next
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
 qed
 
-interpretation Derivations_MCS_Cut Calculus_assms consistent \<open>\<^bold>\<bottom>\<close>
+interpretation Derivations_Cut_MCS Calculus_assms consistent \<open>\<^bold>\<bottom>\<close>
 proof
   fix S :: \<open>('i, 'p) fm set\<close>
-  show \<open>consistent S = (\<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<box> \<^bold>\<bottom>)\<close>
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>)\<close>
     unfolding consistent_def ..
 next
-  fix A and p :: \<open>('i, 'p) fm\<close>
-  assume \<open>p \<in> set A\<close>
-  then show \<open>A \<turnstile>\<^sub>\<box> p\<close>
-    by (metis K_imply_head K_imply_weaken Un_upper2 set_append split_list_first)
-next
-  fix A and p q :: \<open>('i, 'p) fm\<close>
-  assume \<open>A \<turnstile>\<^sub>\<box> p\<close> \<open>p # A \<turnstile>\<^sub>\<box> q\<close>
-  then show \<open>A \<turnstile>\<^sub>\<box> q\<close>
-    using K_ImpI K_right_mp by blast
+  fix A B and p q :: \<open>('i, 'p) fm\<close>
+  assume \<open>A \<turnstile>\<^sub>\<box> p\<close> \<open>p # B \<turnstile>\<^sub>\<box> q\<close>
+  then show \<open>A @ B \<turnstile>\<^sub>\<box> q\<close>
+    by (metis K_right_mp add_imply imply.simps(2) imply_append)
+qed
+
+interpretation Derivations_Bot Calculus_assms consistent \<open>\<^bold>\<bottom>\<close>
+proof
+  show \<open>\<And>A r. A \<turnstile>\<^sub>\<box> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile>\<^sub>\<box> r\<close>
+    using K_Boole K_imply_Cons by blast
+qed
+
+interpretation Derivations_Imp Calculus_assms consistent \<open>\<^bold>\<bottom>\<close> \<open>\<lambda>p q. p \<^bold>\<longrightarrow> q\<close>
+proof
+  show \<open>\<And>A p q. p # A \<turnstile>\<^sub>\<box> q \<Longrightarrow> A \<turnstile>\<^sub>\<box> p \<^bold>\<longrightarrow> q\<close>
+    using K_ImpI by blast
+  show \<open>\<And>A p q. A \<turnstile>\<^sub>\<box> p \<Longrightarrow> A \<turnstile>\<^sub>\<box> p \<^bold>\<longrightarrow> q \<Longrightarrow> A \<turnstile>\<^sub>\<box> q\<close>
+    using K_right_mp by blast
 qed
 
 lemma exists_finite_inconsistent:
@@ -237,21 +246,10 @@ proof -
     by (meson that)
 qed
 
-lemma MCS_consequent:
-  assumes \<open>consistent V\<close> \<open>maximal V\<close> \<open>p \<^bold>\<longrightarrow> q \<in> V\<close> \<open>p \<in> V\<close>
-  shows \<open>q \<in> V\<close>
-  using assms MCS_derive
-  by (metis (mono_tags, lifting) K_imply_Cons K_imply_head K_right_mp insert_subset list.simps(15))
-
 theorem deriv_in_maximal:
   assumes \<open>consistent V\<close> \<open>maximal V\<close> \<open>\<turnstile>\<^sub>\<box> p\<close>
   shows \<open>p \<in> V\<close>
-  using assms R1 derive_split1 unfolding consistent_def maximal_def by (metis imply.simps(2))
-
-theorem exactly_one_in_maximal:
-  assumes \<open>consistent V\<close> \<open>maximal V\<close>
-  shows \<open>p \<in> V \<longleftrightarrow> (\<^bold>\<not> p) \<notin> V\<close>
-  using assms MCS_derive MCS_derive_fls by (metis K_Boole K_imply_Cons K_imply_head K_right_mp)
+  using assms MCS_derive by fastforce
 
 section \<open>Truth Lemma\<close>
 
@@ -309,11 +307,8 @@ proof (cases p)
     using Fls by simp
 next
   case (Imp p q)
-  have \<open>(p \<in> V \<longrightarrow> q \<in> V) \<longleftrightarrow> p \<^bold>\<longrightarrow> q \<in> V\<close>
-    using assms MCS_derive MCS_derive_fls MCS_consequent
-    by (metis (no_types, lifting) CollectD K_Boole K_ImpI K_imply_Cons)
   then show ?thesis
-    using Imp by simp
+    using assms by auto
 next
   case (Box i p)
   have \<open>(\<forall>v \<in> mcss \<inter> reach i V. p \<in> v) = (\<^bold>\<box> i p \<in> V)\<close>
@@ -333,13 +328,13 @@ next
       then obtain W where W: \<open>{\<^bold>\<not> p} \<union> known V i \<subseteq> W\<close> \<open>consistent W\<close> \<open>maximal W\<close>
         using \<open>V \<in> mcss\<close> maximal_extension by blast
       then have \<open>(canonical, W) \<Turnstile> \<^bold>\<not> p\<close>
-        using "*" exactly_one_in_maximal by auto
+        using * MCS_not_xor by auto
       moreover have \<open>W \<in> reach i V\<close> \<open>W \<in> mcss\<close>
         using W by simp_all
       ultimately have \<open>(canonical, V) \<Turnstile> \<^bold>\<not> \<^bold>\<box> i p\<close>
         by auto
       then show False
-        using * W(1) \<open>W \<in> mcss\<close> exactly_one_in_maximal by auto
+        using * W(1) \<open>W \<in> mcss\<close> MCS_not_xor by auto
     qed
 
     then obtain W where W:
@@ -349,7 +344,7 @@ next
     obtain L where L: \<open>set L = W\<close>
       using \<open>finite W\<close> finite_list by blast
     then have \<open>\<turnstile>\<^sub>\<box> L \<^bold>\<leadsto> p\<close>
-      using W(4) derive_split1 unfolding consistent_def by (meson K_Boole K_imply_weaken)
+      by (metis K_Boole K_imply_weaken W(4) consistent_underivable insert_is_Un list.simps(15))
     then have \<open>\<turnstile>\<^sub>\<box> \<^bold>\<box> i (L \<^bold>\<leadsto> p)\<close>
       using R2 by fast
     then have \<open>map (\<^bold>\<box> i) L \<turnstile>\<^sub>\<box> \<^bold>\<box> i p\<close>
@@ -363,7 +358,7 @@ next
       then have \<open>\<^bold>\<box> i a \<in> V\<close>
         by auto
       then have \<open>(map (\<^bold>\<box> i) L \<^bold>\<leadsto> \<^bold>\<box> i p) \<in> V\<close>
-        using Cons(2) \<open>consistent V\<close> \<open>maximal V\<close> MCS_consequent by auto
+        using Cons(2) \<open>consistent V\<close> \<open>maximal V\<close> MCS_impE by auto
       then show ?case
         using Cons by auto
     qed simp
@@ -401,20 +396,12 @@ lemma canonical_model:
   defines \<open>V \<equiv> Extend S\<close> and \<open>M \<equiv> canonical\<close>
   shows \<open>(M, V) \<Turnstile> p\<close> \<open>consistent V\<close> \<open>maximal V\<close>
 proof -
-  have \<open>consistent V\<close>
+  show \<open>consistent V\<close>
     using \<open>consistent S\<close> unfolding V_def using consistent_Extend by auto
-  have \<open>maximal V\<close>
+  moreover show \<open>maximal V\<close>
     unfolding V_def using maximal_Extend by blast
-  { fix x
-    assume \<open>x \<in> S\<close>
-    then have \<open>x \<in> V\<close>
-      unfolding V_def using Extend_subset by blast
-    then have \<open>(M, V) \<Turnstile> x\<close>
-      unfolding M_def using Truth_lemma \<open>consistent V\<close> \<open>maximal V\<close> by blast }
-  then show \<open>(M, V) \<Turnstile> p\<close>
-    using \<open>p \<in> S\<close> by blast+
-  show \<open>consistent V\<close> \<open>maximal V\<close>
-    by fact+
+  ultimately show \<open>(M, V) \<Turnstile> p\<close>
+    using assms(2) Extend_subset Truth_lemma unfolding M_def V_def by blast
 qed
 
 section \<open>Completeness\<close>
@@ -425,14 +412,14 @@ theorem strong_completeness:
   shows \<open>\<exists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>\<box> p\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>\<box> p\<close>
-  then have *: \<open>\<forall>A. set A \<subseteq> X \<longrightarrow> \<not> (\<^bold>\<not> p) # A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
-    using K_Boole by blast
+  then have *: \<open>\<forall>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<longrightarrow> \<not> A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
+    using K_Boole botE by (metis derive_split1 insert_is_Un subset_insert)
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?V = \<open>Extend ?S\<close>
 
   have \<open>consistent ?S\<close>
-    using * derive_split1 unfolding consistent_def by meson
+    using * unfolding consistent_def .
   then have \<open>(canonical, ?V) \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> X. (canonical, ?V) \<Turnstile> q\<close>
     using canonical_model by fastforce+
   moreover have \<open>?V \<in> mcss\<close>

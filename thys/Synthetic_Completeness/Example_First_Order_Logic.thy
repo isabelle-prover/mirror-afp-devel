@@ -182,8 +182,11 @@ qed
 
 interpretation Derivations Calculus
 proof
+  show \<open>\<And>A p. p \<in> set A \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p\<close>
+    by simp
+next
   fix A B and p :: \<open>('f, 'p) fm\<close>
-  assume \<open>A \<turnstile>\<^sub>\<forall> p\<close> \<open>set A \<subseteq> set B\<close>
+  assume \<open>A \<turnstile>\<^sub>\<forall> p\<close> \<open>set A = set B\<close>
   then show \<open>B \<turnstile>\<^sub>\<forall> p\<close>
     using Weaken by blast
 qed
@@ -191,52 +194,33 @@ qed
 section \<open>Maximal Consistent Sets\<close>
 
 definition consistent :: \<open>('f, 'p) fm set \<Rightarrow> bool\<close> where
-  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
+  \<open>consistent S \<equiv> \<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
 
 fun witness :: \<open>('f, 'p) fm \<Rightarrow> ('f, 'p) fm set \<Rightarrow> ('f, 'p) fm set\<close> where
   \<open>witness (\<^bold>\<not> (\<^bold>\<forall>p)) S = {\<^bold>\<not> \<langle>\<^bold>\<star>(SOME a. a \<notin> params' ({p} \<union> S))\<rangle>p}\<close>
 | \<open>witness _ _ = {}\<close>
 
-lemma consistent_add_instance:
-  assumes \<open>consistent S\<close> \<open>\<^bold>\<forall>p \<in> S\<close>
-  shows \<open>consistent ({\<langle>t\<rangle>p} \<union> S)\<close>
-  unfolding consistent_def
-proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {\<langle>t\<rangle>p} \<union> S \<and> S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
-  then obtain S' where \<open>set S' \<subseteq> S\<close> \<open>\<langle>t\<rangle>p # S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
-    using assms derive_split1 by metis
-  then have \<open>\<^bold>\<forall>p # S' \<turnstile>\<^sub>\<forall> \<^bold>\<not> \<langle>t\<rangle>p\<close>
-    using Weak by blast
-  moreover have \<open>\<^bold>\<forall>p # S' \<turnstile>\<^sub>\<forall> \<langle>t\<rangle>p\<close>
-    using Assm_head by fast
-  ultimately have \<open>\<^bold>\<forall>p # S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
-    by fast
-  moreover have \<open>set ((\<^bold>\<forall>p) # S') \<subseteq> S\<close>
-    using \<open>set S' \<subseteq> S\<close> assms(2) by simp
-  ultimately show False
-    using assms(1) unfolding consistent_def by blast
-qed
-
 lemma consistent_add_witness:
   assumes \<open>consistent S\<close> \<open>\<^bold>\<not> (\<^bold>\<forall>p) \<in> S\<close> \<open>a \<notin> params' S\<close>
   shows \<open>consistent ({\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p} \<union> S)\<close>
   unfolding consistent_def
-proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p} \<union> S \<and> S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
-  then obtain S' where \<open>set S' \<subseteq> S\<close> \<open>(\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p) # S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
-    using assms derive_split1 by metis
-  then have \<open>S' \<turnstile>\<^sub>\<forall> \<langle>\<^bold>\<star>a\<rangle>p\<close>
+proof safe
+  fix A
+  assume \<open>set A \<subseteq> {\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p} \<union> S\<close> \<open>A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
+  then obtain A' where \<open>set A' \<subseteq> S\<close> \<open>(\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p) # A' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
+    using assms derive_split1 by (metis consistent_def insert_is_Un subset_insert)
+  then have \<open>A' \<turnstile>\<^sub>\<forall> \<langle>\<^bold>\<star>a\<rangle>p\<close>
     using Boole by blast
-  moreover have \<open>a \<notin> params_fm p\<close> \<open>\<forall>p \<in> set S'. a \<notin> params_fm p\<close>
-    using \<open>set S' \<subseteq> S\<close> assms(2-3) by auto
-  then have \<open>a \<notin> params' ({p} \<union> set S')\<close>
+  moreover have \<open>a \<notin> params_fm p\<close> \<open>\<forall>p \<in> set A'. a \<notin> params_fm p\<close>
+    using \<open>set A' \<subseteq> S\<close> assms(2-3) by auto
+  then have \<open>a \<notin> params' ({p} \<union> set A')\<close>
     using calculation by fast
-  ultimately have \<open>S' \<turnstile>\<^sub>\<forall> \<^bold>\<forall>p\<close>
+  ultimately have \<open>A' \<turnstile>\<^sub>\<forall> \<^bold>\<forall>p\<close>
     by fastforce
-  then have \<open>\<^bold>\<not> (\<^bold>\<forall>p) # S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
+  then have \<open>\<^bold>\<not> (\<^bold>\<forall>p) # A' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
     using Weak Assm_head by fast
-  moreover have \<open>set ((\<^bold>\<not> (\<^bold>\<forall>p)) # S') \<subseteq> S\<close>
-    using \<open>set S' \<subseteq> S\<close> assms(2) by simp
+  moreover have \<open>set ((\<^bold>\<not> (\<^bold>\<forall>p)) # A') \<subseteq> S\<close>
+    using \<open>set A' \<subseteq> S\<close> assms(2) by simp
   ultimately show False
     using assms(1) unfolding consistent_def by blast
 qed
@@ -288,22 +272,23 @@ next
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
 qed
 
-interpretation Derivations_MCS_Cut Calculus consistent \<open>\<^bold>\<bottom>\<close>
+interpretation Derivations_Cut_MCS Calculus consistent \<open>\<^bold>\<bottom>\<close>
 proof
   fix S :: \<open>('f, 'p) fm set\<close>
-  show \<open>consistent S = (\<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>)\<close>
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>)\<close>
     unfolding consistent_def ..
 next
-  fix A and p :: \<open>('f, 'p) fm\<close>
-  assume \<open>p \<in> set A\<close>
-  then show \<open>A \<turnstile>\<^sub>\<forall> p\<close>
-    by simp
-next
-  fix A and p q :: \<open>('f, 'p) fm\<close>
-  assume \<open>A \<turnstile>\<^sub>\<forall> p\<close> \<open>p # A \<turnstile>\<^sub>\<forall> q\<close>
-  then show \<open>A \<turnstile>\<^sub>\<forall> q\<close>
-    by (metis ImpI ImpE)
+  fix A B and p q :: \<open>('f, 'p) fm\<close>
+  assume \<open>A \<turnstile>\<^sub>\<forall> p\<close> \<open>p # B \<turnstile>\<^sub>\<forall> q\<close>
+  then show \<open>A @ B \<turnstile>\<^sub>\<forall> q\<close>
+    by (metis Calculus.simps Un_upper1 Weak' Weaken set_append)
 qed
+
+interpretation Derivations_Bot Calculus consistent \<open>\<^bold>\<bottom>\<close>
+proof qed fast
+
+interpretation Derivations_Imp Calculus consistent \<open>\<^bold>\<bottom>\<close> \<open>\<lambda>p q. p \<^bold>\<longrightarrow> q\<close>
+proof qed fast+
 
 section \<open>Truth Lemma\<close>
 
@@ -336,48 +321,13 @@ lemma saturated_MCS:
   assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>witnessed H\<close>
   shows \<open>semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
 proof (cases p)
-  case Fls
-  have \<open>\<^bold>\<bottom> \<notin> H\<close>
-    using assms MCS_derive unfolding consistent_def by blast
-  then show ?thesis
-    using Fls by simp
-next
-  case (Imp p q)
-  have \<open>p # A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p \<^bold>\<longrightarrow> q\<close> \<open>A \<turnstile>\<^sub>\<forall> q \<Longrightarrow> A \<turnstile>\<^sub>\<forall> p \<^bold>\<longrightarrow> q\<close> for A
-    by (auto simp: Weak)
-  moreover have \<open>A \<turnstile>\<^sub>\<forall> p \<^bold>\<longrightarrow> q \<Longrightarrow> p # A \<turnstile>\<^sub>\<forall> q\<close> for A
-    using deduct1 .
-  ultimately have \<open>(p \<in> H \<longrightarrow> q \<in> H) \<longleftrightarrow> p \<^bold>\<longrightarrow> q \<in> H\<close>
-    using assms(1-2) MCS_derive MCS_derive_fls by (metis insert_subset list.simps(15))
-  then show ?thesis
-    using Imp by simp
-next
   case (Uni p)
-  have \<open>(\<forall>x. \<langle>x\<rangle>p \<in> H) \<longleftrightarrow> (\<^bold>\<forall>p \<in> H)\<close>
-  proof
-    assume \<open>\<forall>x. \<langle>x\<rangle>p \<in> H\<close>
-    show \<open>\<^bold>\<forall>p \<in> H\<close>
-    proof (rule ccontr)
-      assume \<open>\<^bold>\<forall>p \<notin> H\<close>
-      then have \<open>consistent ({\<^bold>\<not> \<^bold>\<forall>p} \<union> H)\<close>
-        using Boole assms(1-2) MCS_derive derive_split1 by (metis consistent_derive_fls)
-      then have \<open>\<^bold>\<not> \<^bold>\<forall>p \<in> H\<close>
-        using assms(2) unfolding maximal_def by blast
-      then obtain a where \<open>\<^bold>\<not> \<langle>\<^bold>\<star>a\<rangle>p \<in> H\<close>
-        using assms(3) unfolding witnessed_def by fastforce
-      moreover have \<open>\<langle>\<^bold>\<star>a\<rangle>p \<in> H\<close>
-        using \<open>\<forall>x. \<langle>x\<rangle>p \<in> H\<close> by blast
-      ultimately show False
-        using assms(1-2) MCS_derive by (metis consistent_def deduct1 insert_subset list.simps(15))
-    qed
-  next
-    assume \<open>\<^bold>\<forall>p \<in> H\<close>
-    then show \<open>\<forall>x. \<langle>x\<rangle>p \<in> H\<close>
-      using assms(1-2) consistent_add_instance maximal_def by blast
-  qed
-  then show ?thesis
-    using Uni by simp
-qed simp
+  moreover have \<open>(\<forall>x. \<langle>x\<rangle>p \<in> H) \<longleftrightarrow> (\<^bold>\<forall>p \<in> H)\<close>
+    using assms unfolding witnessed_def
+    by (metis MCS_derive MCS_not_xor UniE insert_subset witness.simps(1))
+  ultimately show ?thesis
+    by simp
+qed (use assms(1-2) in auto)
 
 interpretation Truth_Witnessing
   consistent params_fm witness semics semantics_fm \<open>\<lambda>H. {hmodel H}\<close> rel
@@ -516,14 +466,14 @@ theorem strong_completeness:
   shows \<open>\<exists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>\<forall> p\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>\<forall> p\<close>
-  then have *: \<open>\<nexists>A. set A \<subseteq> X \<and> \<^bold>\<not> p # A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
-    using Boole by blast
+  then have *: \<open>\<forall>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<longrightarrow> \<not> A \<turnstile>\<^sub>\<forall> \<^bold>\<bottom>\<close>
+    using Boole FlsE by (metis derive_split1 insert_is_Un subset_insert)
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?H = \<open>Extend ?S\<close>
 
   have \<open>consistent ?S\<close>
-    using * by (meson consistent_def derive_split1)
+    unfolding consistent_def using * by blast
   moreover have \<open>infinite (UNIV - params' X)\<close>
     using assms(2-3)
     by (metis Cinfinite_csum Cnotzero_UNIV Field_card_of cinfinite_def cinfinite_mono)

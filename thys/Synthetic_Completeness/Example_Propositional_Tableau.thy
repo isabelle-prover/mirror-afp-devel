@@ -51,7 +51,7 @@ corollary \<open>\<not> (\<turnstile>\<^sub>T [])\<close>
 section \<open>Maximal Consistent Sets\<close>
 
 definition consistent :: \<open>'p fm set \<Rightarrow> bool\<close> where
-  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> \<turnstile>\<^sub>T S'\<close>
+  \<open>consistent S \<equiv> \<forall>A. set A \<subseteq> S \<longrightarrow> \<not> \<turnstile>\<^sub>T A\<close>
 
 interpretation MCS_No_Witnessing consistent
 proof
@@ -72,12 +72,12 @@ qed
 interpretation Refutations_MCS Calculus consistent
 proof
   fix A B :: \<open>'p fm list\<close>
-  assume \<open>\<turnstile>\<^sub>T A\<close> \<open>set A \<subseteq> set B\<close>
+  assume \<open>\<turnstile>\<^sub>T A\<close> \<open>set A = set B\<close>
   then show \<open>\<turnstile>\<^sub>T B\<close>
-    using Weaken by meson
+    using Weaken by blast
 next
   fix S :: \<open>'p fm set\<close>
-  show \<open>consistent S \<longleftrightarrow> (\<nexists>S'. set S' \<subseteq> S \<and> \<turnstile>\<^sub>T S')\<close>
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> \<turnstile>\<^sub>T A)\<close>
     unfolding consistent_def ..
 qed
 
@@ -183,8 +183,8 @@ theorem strong_completeness:
   shows \<open>\<exists>A. set A \<subseteq> X \<and> \<turnstile>\<^sub>T \<^bold>\<not> p # A\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>A. set A \<subseteq> X \<and> \<turnstile>\<^sub>T \<^bold>\<not> p # A\<close>
-  then have *: \<open>\<nexists>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<and> \<turnstile>\<^sub>T A\<close>
-    using refute_split1 by blast
+  then have *: \<open>\<forall>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<longrightarrow> \<not> \<turnstile>\<^sub>T A\<close>
+    using refute_split1 by (metis Weaken insert_is_Un set_subset_Cons subset_insert)
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?H = \<open>Extend ?S\<close>

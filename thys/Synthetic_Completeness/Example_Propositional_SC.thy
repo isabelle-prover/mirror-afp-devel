@@ -54,7 +54,7 @@ corollary \<open>\<not> ([] \<turnstile>\<^sub>S [])\<close>
 section \<open>Maximal Consistent Sets\<close>
 
 definition consistent :: \<open>'p fm set \<Rightarrow> bool\<close> where
-  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>S [\<^bold>\<bottom>]\<close>
+  \<open>consistent S \<equiv> \<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>S [\<^bold>\<bottom>]\<close>
 
 interpretation MCS_No_Witnessing consistent
 proof
@@ -72,15 +72,15 @@ next
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
 qed
 
-interpretation Derivations_MCS_Cut \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close>
+interpretation Derivations_Cut_MCS \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close>
 proof
   fix A B and p :: \<open>'p fm\<close>
-  assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>set A \<subseteq> set B\<close>
+  assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>set A = set B\<close>
   then show \<open>B \<turnstile>\<^sub>S [p]\<close>
     using WeakenL by blast
 next
   fix S :: \<open>'p fm set\<close>
-  show \<open>consistent S \<longleftrightarrow> (\<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>S [\<^bold>\<bottom>])\<close>
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>S [\<^bold>\<bottom>])\<close>
     unfolding consistent_def ..
 next
   fix A and p :: \<open>'p fm\<close>
@@ -88,11 +88,25 @@ next
   then show \<open>A \<turnstile>\<^sub>S [p]\<close>
     by (metis Axiom WeakenL set_ConsD subsetI)
 next
-  fix A and p q :: \<open>'p fm\<close>
-  assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>p # A \<turnstile>\<^sub>S [q]\<close>
-  then show \<open>A \<turnstile>\<^sub>S [q]\<close>
+  fix A B and p q :: \<open>'p fm\<close>
+  assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>p # B \<turnstile>\<^sub>S [q]\<close>
+  then have \<open>A @ B \<turnstile>\<^sub>S [p]\<close> \<open>p # A @ B \<turnstile>\<^sub>S [q]\<close>
+    by (fastforce intro: WeakenL)+
+  then show \<open>A @ B \<turnstile>\<^sub>S [q]\<close>
     using Cut by blast
 qed
+
+interpretation Derivations_Bot \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close>
+proof
+  show \<open>\<And>A r. A \<turnstile>\<^sub>S [\<^bold>\<bottom>] \<Longrightarrow> A \<turnstile>\<^sub>S [r]\<close>
+    using Cut FlsL by blast
+qed
+
+interpretation Derivations_Imp \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close> \<open>\<lambda>p q. p \<^bold>\<longrightarrow> q\<close>
+proof
+  show \<open>\<And>A p q. A \<turnstile>\<^sub>S [p] \<Longrightarrow> A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q] \<Longrightarrow> A \<turnstile>\<^sub>S [q]\<close>
+    by (meson Axiom Cut ImpL)
+qed blast
 
 section \<open>Truth Lemma\<close>
 
@@ -122,26 +136,7 @@ qed
 lemma saturated_MCS:
   assumes \<open>consistent H\<close> \<open>maximal H\<close>
   shows \<open>semics (hmodel H) (rel H) p \<longleftrightarrow> p \<in> H\<close>
-proof (cases p)
-  case Fls
-  have \<open>\<^bold>\<bottom> \<notin> H\<close>
-    using assms MCS_derive consistent_def by blast
-  then show ?thesis
-    using Fls by simp
-next
-  case (Imp p q)
-  have \<open>A \<turnstile>\<^sub>S [q] \<Longrightarrow> A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q]\<close> for A
-    by (meson ImpR WeakenL set_subset_Cons)
-  moreover have \<open>p # A \<turnstile>\<^sub>S [\<^bold>\<bottom>] \<Longrightarrow> A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q]\<close> for A
-    by (meson FlsR ImpR WeakenR set_subset_Cons)
-  moreover have \<open>A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q] \<Longrightarrow> B \<turnstile>\<^sub>S [p] \<Longrightarrow> A @ B \<turnstile>\<^sub>S [q]\<close> for A B
-    by (meson Axiom Cut Cut_struct ImpL)
-  ultimately have \<open>(p \<in> H \<longrightarrow> q \<in> H) \<longleftrightarrow> p \<^bold>\<longrightarrow> q \<in> H\<close>
-    using assms MCS_derive MCS_derive_fls Axiom
-    by (metis append_Cons append_Nil insert_subset list.simps(15))
-  then show ?thesis
-    using Imp by simp
-qed simp
+  using assms by (cases p) auto
 
 interpretation Truth_No_Witnessing consistent semics semantics \<open>\<lambda>H. {hmodel H}\<close> rel
 proof
@@ -167,18 +162,14 @@ theorem strong_completeness:
   shows \<open>\<exists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>S [p]\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>S [p]\<close>
-  then have \<open>\<nexists>A. set A \<subseteq> X \<and> \<^bold>\<not> p # A \<turnstile>\<^sub>S []\<close>
-    using Boole by blast
-  then have \<open>\<nexists>A. set A \<subseteq> X \<and> \<^bold>\<not> p # A \<turnstile>\<^sub>S [\<^bold>\<bottom>]\<close>
-    by fast
-  then have *: \<open>\<nexists>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<and> A \<turnstile>\<^sub>S [\<^bold>\<bottom>]\<close>
-    using derive_split1 by blast
+  then have *: \<open>\<forall>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<longrightarrow> \<not> A \<turnstile>\<^sub>S [\<^bold>\<bottom>]\<close>
+    using derive_split1 botE Boole FlsR by (metis (full_types) insert_is_Un subset_insert_iff)
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?H = \<open>Extend ?S\<close>
 
   have \<open>consistent ?S\<close>
-    unfolding consistent_def using * by blast
+    unfolding consistent_def using * .
   then have \<open>consistent ?H\<close> \<open>maximal ?H\<close>
     using MCS_Extend' by blast+
   then have \<open>p \<in> ?H \<longleftrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p

@@ -38,30 +38,6 @@ proof
     using leD by blast
 qed
 
-lemma split_finite_sets:
-  assumes \<open>finite A\<close> \<open>finite B\<close>
-  assumes \<open>A \<subseteq> B \<union> S\<close>
-  shows \<open>\<exists>B' C. finite C \<and> (B' \<union> C = A) \<and> B' \<subseteq> B \<and> C \<subseteq> S\<close>
-  using assms subset_UnE by fastforce
-
-lemma split_list:
-  assumes \<open>set A \<subseteq> set B \<union> S\<close>
-  shows \<open>\<exists>B' C. set (B' @ C) = set A \<and> set B' \<subseteq> set B \<and> set C \<subseteq> S\<close>
-  using assms split_finite_sets[where A=\<open>set A\<close> and B=\<open>set B\<close> and S=S]
-  by (metis List.finite_set finite_Un finite_list set_append)
-
-lemma struct_split:
-  assumes \<open>\<And>A B. P A \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> P B\<close> \<open>P A\<close> \<open>set A \<subseteq> set B \<union> X\<close>
-  shows \<open>\<exists>C. set C \<subseteq> X \<and> P (B @ C)\<close>
-proof -
-  obtain B' C where C: \<open>set (B' @ C) = set A\<close> \<open>set B' \<subseteq> set B\<close> \<open>set C \<subseteq> X\<close>
-    using assms(3) split_list by meson
-  then have \<open>P (B @ C)\<close>
-    using assms(1)[where B=\<open>B @ C\<close>] assms(2) by fastforce
-  then show ?thesis
-    using C by blast
-qed
-
 context wo_rel begin
 
 lemma underS_bound: \<open>a \<in> underS n \<Longrightarrow> b \<in> underS n \<Longrightarrow> a \<in> under b \<or> b \<in> under a\<close>
@@ -156,6 +132,51 @@ begin
 
 definition maximal :: \<open>'a set \<Rightarrow> bool\<close> where
   \<open>maximal S \<equiv> \<forall>p. consistent ({p} \<union> S) \<longrightarrow> p \<in> S\<close>
+
+theorem MCS_inconsistent:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+  shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>S'. finite S' \<and> S' \<subseteq> ({p} \<union> S) \<and> p \<in> S' \<and> \<not> consistent S')\<close>
+proof
+  assume \<open>p \<notin> S\<close>
+  then show \<open>\<exists>S'. finite S' \<and> S' \<subseteq> ({p} \<union> S) \<and> p \<in> S' \<and> \<not> consistent S'\<close>
+    using assms consistent_hereditary inconsistent_finite unfolding maximal_def
+    by (metis insert_is_Un subset_insert)
+next
+  assume \<open>\<exists>S'. finite S' \<and> S' \<subseteq> ({p} \<union> S) \<and> p \<in> S' \<and> \<not> consistent S'\<close>
+  then show \<open>p \<notin> S\<close>
+    using assms consistent_hereditary by blast
+qed
+
+theorem MCS_consistent_support:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+    and \<open>finite A\<close> \<open>A \<subseteq> S\<close>
+  shows \<open>p \<in> S \<longleftrightarrow> (\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> A \<subseteq> S' \<longrightarrow> consistent S')\<close>
+proof
+  assume \<open>p \<in> S\<close>
+  then show \<open>\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> A \<subseteq> S' \<longrightarrow> consistent S'\<close>
+    using assms consistent_hereditary by blast
+next
+  assume *: \<open>\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> A \<subseteq> S' \<longrightarrow> consistent S'\<close>
+  then have \<open>\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> consistent S'\<close>
+  proof safe
+    fix S'
+    let ?S' = \<open>A \<union> S'\<close>
+    assume \<open>finite S'\<close> \<open>S' \<subseteq> {p} \<union> S\<close> \<open>p \<in> S'\<close>
+    then have \<open>finite ?S'\<close> \<open>?S' \<subseteq> {p} \<union> S\<close> \<open>p \<in> ?S'\<close> \<open>A \<subseteq> ?S'\<close>
+      using assms(3-4) by auto
+    then have \<open>consistent ?S'\<close>
+      using * by simp
+    then show \<open>consistent S'\<close>
+      using consistent_hereditary by blast
+  qed
+  then show \<open>p \<in> S\<close>
+    using assms MCS_inconsistent by metis
+qed
+
+corollary MCS_consistent:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+  shows \<open>p \<in> S \<longleftrightarrow> (\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> consistent S')\<close>
+  using assms MCS_consistent_support[where A=\<open>{}\<close>] by simp
 
 end
 
