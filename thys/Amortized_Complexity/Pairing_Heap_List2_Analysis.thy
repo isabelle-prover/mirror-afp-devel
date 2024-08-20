@@ -194,7 +194,7 @@ time_fun merge
 lemma T_merge_0[simp]: "T_merge h1 h2 = 0"
 by (cases "(h1,h2)" rule: merge.cases) auto
 
-lemma A_insert: "T_insert a h + \<Phi>(Pairing_Heap_List2.insert a ho) - \<Phi> ho \<le> log 2 (sz ho + 1)"
+lemma A_insert: "T_insert a ho + \<Phi>(Pairing_Heap_List2.insert a ho) - \<Phi> ho \<le> log 2 (sz ho + 1)"
 using \<Delta>\<Phi>_insert by auto
 
 lemma A_merge:
