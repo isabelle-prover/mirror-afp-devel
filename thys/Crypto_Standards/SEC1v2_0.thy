@@ -1159,7 +1159,7 @@ proof -
     by (simp add: add_divide_distrib h3) 
   have h5: "(real p / real n) \<le> ?h"              using h4 by auto
   have h6: "(real p / real n) < h + 1"           using h5 h2 by linarith
-  have a1: "real (p div n) \<le> (real p / real n)"  using of_nat_div_le_of_nat by blast 
+  have a1: "real (p div n) \<le> (real p / real n)"  using real_of_nat_div4 by blast 
   have a2: "p div n < h + 1"                     using h6 a1 by auto
   show ?thesis                                   using a2 by simp
 qed
