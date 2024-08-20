@@ -64,18 +64,18 @@ by (induction hs rule: size_hps.induct) auto
 
 declare algebra_simps[simp]
 
-lemma size_hps_Cons[simp]: "sz(h # hs) = sz (h::_ hp) + sz hs"
+lemma sz_hps_Cons[simp]: "sz(h # hs) = sz (h::_ hp) + sz hs"
 by(cases h) simp
 
 lemma link2: "link (Hp x lx) h = (case h of (Hp y ly) \<Rightarrow> 
     (if x < y then Hp x (Hp y ly # lx) else Hp y (Hp x lx # ly)))"
 by(simp split: hp.split)
 
-lemma size_hps_link: "sz(hps (link h1 h2)) = sz h1 + sz h2 - 1" 
+lemma sz_hps_link: "sz(hps (link h1 h2)) = sz h1 + sz h2 - 1" 
 by (induction rule: link.induct) simp_all
 
 lemma pass\<^sub>1_size[simp]: "sz (pass\<^sub>1 hs) = sz hs" 
-by (induction hs rule: pass\<^sub>1.induct) (simp_all add: size_hps_link)
+by (induction hs rule: pass\<^sub>1.induct) (simp_all add: sz_hps_link)
 
 lemma pass\<^sub>2_None[simp]: "pass\<^sub>2 hs = None \<longleftrightarrow> hs = []"
 by(cases hs) auto
@@ -85,8 +85,19 @@ lemma \<Delta>\<Phi>_insert:
 by(cases h)(auto simp: link2 split: hp.split)
 
 lemma \<Delta>\<Phi>_link: "\<Phi> (link h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2 * log 2 (sz h1 + sz h2)"
-by (induction h1 h2 rule: link.induct) (simp  add: add_increasing)
+by (cases "(h1,h2)" rule: link.cases) (simp  add: add_increasing)
+(* unused
+lemma \<Phi>_Cons: "\<Phi> (h # hs) = \<Phi>(hps h) + \<Phi> hs + log 2 (sz(hps h) + sz hs + 1)"
+by(cases h) simp
 
+lemma \<Phi>_hps_link:
+  "\<Phi> (hps(link h1 h2)) = \<Phi> (hps h1) + \<Phi> (hps h2) + log 2 (sz h1+sz h2-1)"
+by (cases "(h1,h2)" rule: link.cases) (simp)
+
+lemma \<Phi>_link:
+  "\<Phi> (link h1 h2) = \<Phi> (hps h1) + \<Phi> (hps h2) + log 2 (sz h1+sz h2-1) + log 2 (sz h1+sz h2)"
+by (cases "(h1,h2)" rule: link.cases) (simp)
+*)
 lemma \<Delta>\<Phi>_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> 2 * log 2 (sz hs + 1) - length hs + 2"
 proof (induction hs rule: pass\<^sub>1.induct)
   case (3 h1 h2 hs)
@@ -108,19 +119,35 @@ qed simp_all
 
 lemma size_hps_pass2: "sz(pass\<^sub>2 hs) = sz hs"
 apply(induction hs rule: pass\<^sub>2.induct)
-apply(auto simp: size_hps_link split: option.split)
+apply(auto simp: sz_hps_link split: option.split)
 done
 
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> [] \<Longrightarrow> \<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (sz hs)"
 proof (induction hs)
-  case (Cons h hs)
-  obtain x hs2 where [simp]: "h = Hp x hs2" by (metis hp.exhaust)
+  case IH: (Cons h1 hs')
+  obtain x hs1 where [simp]: "h1 = Hp x hs1" by (metis hp.exhaust)
   show ?case
-  proof (cases "pass\<^sub>2 hs")
-    case [simp]: (Some h2)
-    obtain y hs3 where [simp]: "h2 = Hp y hs3" by (metis hp.exhaust)
-    from Some size_hps_pass2[of hs,symmetric] Cons show ?thesis
-      by(cases "hs=[]")(auto simp: add_mono)
+  proof (cases "hs' = []")
+    case False
+    then obtain h2 where [simp]: "pass\<^sub>2 hs' = Some h2" by fastforce
+    then obtain y hs2 where [simp]: "h2 = Hp y hs2" by (metis hp.exhaust)
+(* automatic: *)
+    from False size_hps_pass2[of hs',symmetric] IH(1) have ?thesis
+      by(simp add: add_mono)
+(* explicit: *)
+    let ?n1 = "sz hs1" let ?n2 = "sz hs2"
+    have *: "\<Phi> (link h1 h2) = \<Phi> hs1 + \<Phi> hs2 + log 2 (?n1+?n2+1) + log 2 (?n1+?n2+2)"
+      by simp
+    have [simp]: "sz hs' = sz hs2 + 1" using size_hps_pass2[of hs'] by simp
+    hence IH2: "\<Phi> (hs2) - \<Phi> hs' \<le> 0" using IH(1)[OF False] by simp
+    have "\<Phi> (pass\<^sub>2 (h1 # hs')) - \<Phi> (h1 # hs') = \<Phi> (link h1 h2) - (\<Phi> hs1 + \<Phi> hs' + log 2 (?n1+sz hs'+1))"
+      by simp
+    also have "\<dots> = \<Phi> hs2 + log 2 (?n1+?n2+1) - \<Phi> hs'"
+      using * by simp
+    also have "\<dots> \<le> log 2 (?n1+?n2+1)"
+      using IH2 by simp
+    also have "\<dots> \<le> log 2 (sz(h1 # hs'))" by simp
+    finally show ?thesis .
   qed simp
 qed simp
 
@@ -139,7 +166,7 @@ shows "\<Phi> (del_min (Some h)) - \<Phi> (Some h)
 proof -
   obtain x hs where [simp]: "h = Hp x hs" by (meson hp.exhaust_sel)
   have "\<Phi> (del_min (Some h)) - \<Phi> (Some h) =
-        \<Phi> (pass\<^sub>2 (pass\<^sub>1 hs)) - (log 2 (1 + real (sz hs)) + \<Phi> hs)" by simp
+        \<Phi> (pass\<^sub>2 (pass\<^sub>1 hs)) - (log 2 (sz hs + 1) + \<Phi> hs)" by simp
   also have "\<dots> \<le> \<Phi> (pass\<^sub>1 hs) - \<Phi> hs"
     using \<Delta>\<Phi>_pass2'[of "pass\<^sub>1 hs"] by(simp)
   also have "\<dots> \<le> 2 * log 2 (sz hs + 1) - length hs + 2" by(rule \<Delta>\<Phi>_pass1)
@@ -179,21 +206,20 @@ proof (cases "(ho1,ho2)" rule: merge.cases)
 qed auto
 
 lemma A_del_min:
-  "T_del_min ho + \<Phi> (del_min ho) - \<Phi> ho \<le> 3*log 2 (sz ho + 1) + 4"
+  "T_del_min ho + \<Phi> (del_min ho) - \<Phi> ho \<le> 2*log 2 (sz ho + 1) + 4"
 proof (cases ho)
   case [simp]: (Some h)
   show ?thesis
   proof (cases h)
     case [simp]: (Hp x hs)
-    have *: "0 \<le> log 2 (1 + real(sz hs))" by simp
     have "T_pass\<^sub>2 (pass\<^sub>1 hs) + T_pass\<^sub>1 hs \<le> 2 + length hs"
       by (induct hs rule: T_pass\<^sub>1.induct) (auto split: option.split)
     hence  "T_del_min ho  \<le> \<dots>" by simp
     moreover
-    have "\<Phi> (del_min ho) - \<Phi> ho \<le> 3*log 2 (sz ho) - length hs + 2"
-      using  \<Delta>\<Phi>_del_min[of h] apply (simp) using * by linarith
+    have "\<Phi> (del_min ho) - \<Phi> ho \<le> 2*log 2 (sz ho) - length hs + 2"
+      using  \<Delta>\<Phi>_del_min[of h] by (simp)
     moreover
-    have "\<dots> \<le> 3*log 2 (sz ho + 1) - length hs + 2" by simp
+    have "\<dots> \<le> 2*log 2 (sz ho + 1) - length hs + 2" by simp
     ultimately show ?thesis
       by linarith
   qed
@@ -215,7 +241,7 @@ fun cost :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> nat" whe
 fun U :: "'a :: linorder op \<Rightarrow> 'a heap list \<Rightarrow> real" where
 "U Empty _ = 0" |
 "U (Insert a) [h] = log 2 (sz h + 1)" |
-"U Del_min [h] = 3*log 2 (sz h + 1) + 4" |
+"U Del_min [h] = 2*log 2 (sz h + 1) + 4" |
 "U Merge [h1,h2] = 2*log 2 (sz h1 + sz h2 + 1)"
 
 interpretation pairing: Amortized
