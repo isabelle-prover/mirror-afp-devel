@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 09 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>lammich</title>
+          <link>/authors/lammich/</link>
+          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/lammich/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wimmer</title>
+          <link>/authors/wimmer/</link>
+          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/wimmer/</guid>
+          <description></description>
+        </item>
         <item>
           <title>fleuriot</title>
           <link>/authors/fleuriot/</link>
@@ -158,13 +172,6 @@
           <link>/authors/yao/</link>
           <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
           <guid>/authors/yao/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>wimmer</title>
-          <link>/authors/wimmer/</link>
-          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/wimmer/</guid>
           <description></description>
         </item>
         <item>
@@ -1264,13 +1271,6 @@
           <link>/authors/michaelis/</link>
           <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
           <guid>/authors/michaelis/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>lammich</title>
-          <link>/authors/lammich/</link>
-          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/authors/lammich/</guid>
           <description></description>
         </item>
         <item>

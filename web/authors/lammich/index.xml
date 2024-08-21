@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 23 Nov 2021 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 09 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/lammich/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Worklist Algorithms</title>
+          <link>/entries/Worklist_Algorithms.html</link>
+          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Worklist_Algorithms.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>van Emde Boas Trees</title>
           <link>/entries/Van_Emde_Boas_Trees.html</link>

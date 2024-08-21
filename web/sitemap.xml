@@ -3,18 +3,39 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/cayley_hamilton/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/lammich/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/probabilistic_timed_automata/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/refine_imperative_hol/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wimmer/</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Worklist_Algorithms.html</loc>
+    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/cayley_hamilton/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/fleuriot/</loc>
@@ -35,14 +56,8 @@
     <loc>/dependencies/smooth_manifolds/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/types_to_sets_extension/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2024-06-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/EnrichedCategoryBasics.html</loc>
     <lastmod>2024-06-16T00:00:00+00:00</lastmod>
@@ -228,9 +243,6 @@
     <lastmod>2024-05-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/show/</loc>
-    <lastmod>2024-05-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/wimmer/</loc>
     <lastmod>2024-05-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/binder/</loc>
@@ -1613,9 +1625,6 @@
     <loc>/authors/michaelis/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/refine_imperative_hol/</loc>
-    <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/robdd/</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
@@ -1623,9 +1632,6 @@
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/automatic_refinement/</loc>
-    <lastmod>2021-11-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/lammich/</loc>
     <lastmod>2021-11-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Van_Emde_Boas_Trees.html</loc>
@@ -7130,6 +7136,8 @@
     <loc>/sessions/word_lib/</loc>
   </url><url>
     <loc>/sessions/workerwrapper/</loc>
+  </url><url>
+    <loc>/sessions/worklist_algorithms/</loc>
   </url><url>
     <loc>/sessions/x86_semantics/</loc>
   </url><url>
