@@ -101,19 +101,19 @@ by (cases "(h1,h2)" rule: link.cases) (simp)
 lemma \<Delta>\<Phi>_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> 2 * log 2 (sz hs + 1) - length hs + 2"
 proof (induction hs rule: pass\<^sub>1.induct)
   case (3 h1 h2 hs)
-  let ?h12s = "h1 # h2 # hs" let ?m = "sz hs"
+  let ?hs' = "h1 # h2 # hs" let ?m = "sz hs"
   obtain x1 hs1 x2 hs2 where h12: "h1 = Hp x1 hs1" "h2 = Hp x2 hs2"
     using hp.exhaust_sel by blast
   let ?n1 = "sz hs1" let ?n2 = "sz hs2"
-  have "\<Phi> (pass\<^sub>1 ?h12s) - \<Phi> ?h12s = \<Phi> (pass\<^sub>1 hs) + log 2 (?n1+?n2+1) - \<Phi> hs - log 2 (?n2+?m+1)" 
+  have "\<Phi> (pass\<^sub>1 ?hs') - \<Phi> ?hs' = \<Phi> (pass\<^sub>1 hs) + log 2 (?n1+?n2+1) - \<Phi> hs - log 2 (?n2+?m+1)" 
     by (simp add: h12)
   also have "\<dots> \<le> log 2 (?n1+?n2+1) - log 2 (?n2+?m+1) + 2 * log 2 (?m+1) - length hs + 2" 
     using 3 by (simp)
   also have "\<dots> \<le> 2 * log 2 (?n1+?n2+?m+2) - log 2 (?n2+?m+1) + log 2 (?m+1) - length hs" 
         using ld_sum_inequality [of "?n1+?n2+1" "?m+1"] by(simp)
   also have "\<dots> \<le> 2 * log 2 (?n1+?n2+?m+2) - length hs" by simp
-  also have "\<dots> = 2 * log 2 (sz ?h12s) - length ?h12s + 2" using h12 by simp
-  also have "\<dots> \<le> 2 * log 2 (sz ?h12s + 1) - length ?h12s + 2" using h12 by simp
+  also have "\<dots> = 2 * log 2 (sz ?hs') - length ?hs' + 2" using h12 by simp
+  also have "\<dots> \<le> 2 * log 2 (sz ?hs' + 1) - length ?hs' + 2" using h12 by simp
   finally show ?case .
 qed simp_all
 
@@ -124,29 +124,29 @@ done
 
 lemma \<Delta>\<Phi>_pass2: "hs \<noteq> [] \<Longrightarrow> \<Phi> (pass\<^sub>2 hs) - \<Phi> hs \<le> log 2 (sz hs)"
 proof (induction hs)
-  case IH: (Cons h1 hs')
+  case IH: (Cons h1 hs)
   obtain x hs1 where [simp]: "h1 = Hp x hs1" by (metis hp.exhaust)
   show ?case
-  proof (cases "hs' = []")
+  proof (cases "hs = []")
     case False
-    then obtain h2 where [simp]: "pass\<^sub>2 hs' = Some h2" by fastforce
+    then obtain h2 where [simp]: "pass\<^sub>2 hs = Some h2" by fastforce
     then obtain y hs2 where [simp]: "h2 = Hp y hs2" by (metis hp.exhaust)
 (* automatic: *)
-    from False size_hps_pass2[of hs',symmetric] IH(1) have ?thesis
+    from False size_hps_pass2[of hs,symmetric] IH(1) have ?thesis
       by(simp add: add_mono)
 (* explicit: *)
     let ?n1 = "sz hs1" let ?n2 = "sz hs2"
     have *: "\<Phi> (link h1 h2) = \<Phi> hs1 + \<Phi> hs2 + log 2 (?n1+?n2+1) + log 2 (?n1+?n2+2)"
       by simp
-    have [simp]: "sz hs' = sz hs2 + 1" using size_hps_pass2[of hs'] by simp
-    hence IH2: "\<Phi> (hs2) - \<Phi> hs' \<le> 0" using IH(1)[OF False] by simp
-    have "\<Phi> (pass\<^sub>2 (h1 # hs')) - \<Phi> (h1 # hs') = \<Phi> (link h1 h2) - (\<Phi> hs1 + \<Phi> hs' + log 2 (?n1+sz hs'+1))"
+    have [simp]: "sz hs = sz hs2 + 1" using size_hps_pass2[of hs] by simp
+    hence IH2: "\<Phi> (hs2) - \<Phi> hs \<le> 0" using IH(1)[OF False] by simp
+    have "\<Phi> (pass\<^sub>2 (h1 # hs)) - \<Phi> (h1 # hs) = \<Phi> (link h1 h2) - (\<Phi> hs1 + \<Phi> hs + log 2 (?n1+sz hs+1))"
       by simp
-    also have "\<dots> = \<Phi> hs2 + log 2 (?n1+?n2+1) - \<Phi> hs'"
+    also have "\<dots> = \<Phi> hs2 + log 2 (?n1+?n2+1) - \<Phi> hs"
       using * by simp
     also have "\<dots> \<le> log 2 (?n1+?n2+1)"
       using IH2 by simp
-    also have "\<dots> \<le> log 2 (sz(h1 # hs'))" by simp
+    also have "\<dots> \<le> log 2 (sz(h1 # hs))" by simp
     finally show ?thesis .
   qed simp
 qed simp
