@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Coproduct_Measure" (AFP) = "S_Finite_Measure_Monad" +
+  options [timeout = 600]
+  theories
+    "Lemmas_Coproduct_Measure"
+    "Coproduct_Measure"
+    "Coproduct_Measure_Additional"
+  document_files
+    "root.tex"
+    "root.bib"

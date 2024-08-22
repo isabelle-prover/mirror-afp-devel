@@ -1,8 +1,7 @@
 chapter AFP
 
-session "S_Finite_Measure_Monad" = "HOL-Probability" +
+session "S_Finite_Measure_Monad" = "Standard_Borel_Spaces" +
   options [timeout = 600]
-  sessions "Standard_Borel_Spaces"
   theories
     "Lemmas_S_Finite_Measure_Monad"
     "Kernels"
