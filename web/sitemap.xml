@@ -107,10 +107,16 @@
     <loc>/authors/tan/</loc>
     <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Coproduct_Measure.html</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/hirata/</loc>
     <lastmod>2024-06-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/riesz_representation/</loc>
+    <lastmod>2024-06-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/s_finite_measure_monad/</loc>
     <lastmod>2024-06-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/standard_borel_spaces/</loc>
@@ -672,9 +678,6 @@
     <lastmod>2023-11-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Disintegration.html</loc>
-    <lastmod>2023-11-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/s_finite_measure_monad/</loc>
     <lastmod>2023-11-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Labeled_Transition_Systems.html</loc>
@@ -5401,6 +5404,8 @@
     <loc>/sessions/cook_levin/</loc>
   </url><url>
     <loc>/sessions/coppersmith_method/</loc>
+  </url><url>
+    <loc>/sessions/coproduct_measure/</loc>
   </url><url>
     <loc>/sessions/core_dom/</loc>
   </url><url>
