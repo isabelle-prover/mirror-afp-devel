@@ -14,6 +14,13 @@
       <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>popescu</title>
+          <link>/authors/popescu/</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/popescu/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>wright</title>
           <link>/authors/wright/</link>
           <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
@@ -109,13 +116,6 @@
           <link>/authors/buday/</link>
           <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
           <guid>/authors/buday/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>popescu</title>
-          <link>/authors/popescu/</link>
-          <pubDate>Sat, 25 May 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/popescu/</guid>
           <description></description>
         </item>
         <item>

@@ -20,6 +20,9 @@
     <loc>/entries/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/popescu/</loc>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/secret_directed_unwinding/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -174,9 +177,6 @@
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Countable_Sums_and_Discrete_Distributions.html</loc>
-    <lastmod>2024-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/popescu/</loc>
     <lastmod>2024-05-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/coinductive/</loc>
