@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/programming-languages/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>A formalized programming language with speculative execution</title>
+          <link>/entries/IMP_With_Speculation.html</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_With_Speculation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A formalized programming language with speculative execution</title>
+          <link>/entries/IMP_With_Speculation.html</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_With_Speculation.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
           <link>/entries/Solidity.html</link>
           <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 09 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>wright</title>
+          <link>/authors/wright/</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/wright/</guid>
+          <description></description>
+        </item>
         <item>
           <title>lammich</title>
           <link>/authors/lammich/</link>
@@ -123,13 +130,6 @@
           <link>/authors/griffin/</link>
           <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
           <guid>/authors/griffin/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>wright</title>
-          <link>/authors/wright/</link>
-          <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/wright/</guid>
           <description></description>
         </item>
         <item>

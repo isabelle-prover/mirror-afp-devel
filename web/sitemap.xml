@@ -3,19 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IMP_With_Speculation.html</loc>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/secret_directed_unwinding/</loc>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/wright/</loc>
+    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lammich/</loc>
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
@@ -24,9 +36,6 @@
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/refine_imperative_hol/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wimmer/</loc>
@@ -192,9 +201,6 @@
     <lastmod>2024-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Secret_Directed_Unwinding.html</loc>
-    <lastmod>2024-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/wright/</loc>
     <lastmod>2024-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/akra_bazzi/</loc>
@@ -6024,6 +6030,8 @@
     <loc>/sessions/imp_compiler_reuse/</loc>
   </url><url>
     <loc>/sessions/imp_noninterference/</loc>
+  </url><url>
+    <loc>/sessions/imp_with_speculation/</loc>
   </url><url>
     <loc>/sessions/imp2/</loc>
   </url><url>

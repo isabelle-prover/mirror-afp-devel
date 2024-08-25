@@ -1,0 +1,32 @@
+title = "A formalized programming language with speculative execution"
+date = 2024-08-16
+topics = [
+  "Computer science/Programming languages",
+  "Computer science/Security",
+  "Computer science/Semantics and reasoning",
+]
+abstract = "We present the formalization of a programming language whose operational semantics allows for the speculative execution of its statements. This type of semantics is relevant for discussing transient execution security vulnerabilities such as Spectre and Meltdown. An instantiation of Relative Security to this language is provided along with proofs of security and insecurity of selected programs from the Spectre benchmark."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wright]
+email = "wright_email"
+
+[contributors]
+
+[notify]
+wright = "wright_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+#  "10.1109/CSF61375.2024.00027",
+]
+pubs = [
+  "https://doi.ieeecomputersociety.org/10.1109/CSF61375.2024.00027",
+]
