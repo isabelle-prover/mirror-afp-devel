@@ -1,0 +1,34 @@
+chapter AFP
+
+session IMP_With_Speculation = 
+  Secret_Directed_Unwinding + 
+  options [timeout = 900]
+  directories 
+    Examples
+    IMP
+    Instance_IMP
+  theories [document = false] 
+    Language_Prelims
+  theories
+    Language_Syntax
+    Step_Basic
+    Step_Normal
+    Step_Spec
+    Instance_Common
+    Instance_Secret_IMem
+    Instance_Secret_IMem_Inp
+    Fun1
+    Fun1_insecure
+    Fun2
+    Fun2_secure
+    Fun3
+    Fun3_secure
+    Fun4
+    Fun4_secure
+    Fun5
+    Fun5_secure    
+    Fun6
+    Fun6_secure
+  document_files
+    "root.tex"
+    "root.bib"
