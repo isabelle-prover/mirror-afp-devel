@@ -14,10 +14,14 @@ note = ""
 [authors.wright]
 email = "wright_email"
 
+[authors.popescu]
+email = "popescu_email"
+
 [contributors]
 
 [notify]
 wright = "wright_email"
+popescu = "popescu_email"
 
 [history]
 
