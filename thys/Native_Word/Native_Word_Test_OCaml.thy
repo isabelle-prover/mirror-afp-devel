@@ -1,4 +1,4 @@
-(*  Title:      Native_Word_Test_MLton2.thy
+(*  Title:      Native_Word_Test_OCaml.thy
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
@@ -9,8 +9,8 @@ begin
 section \<open>Test with OCaml\<close>
 
 test_code
-  test_uint64 "test_uint64' = 0x12"
-  test_uint32 "test_uint32' = 0x12"
+  test_uint64 \<open>test_uint64' = 0x12\<close>
+  test_uint32 \<open>test_uint32' = 0x12\<close>
   test_uint
   test_casts''
   test_casts_uint

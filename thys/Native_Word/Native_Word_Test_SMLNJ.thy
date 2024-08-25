@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-theory Native_Word_Test_SMLNJ imports
+theory Native_Word_Test_SMLNJ
+imports
   Native_Word_Test
 begin
 

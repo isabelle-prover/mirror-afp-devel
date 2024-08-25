@@ -2,11 +2,12 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-theory Native_Word_Test_PolyML64 imports
+theory Native_Word_Test_PolyML64
+imports
   Native_Word_Test
 begin
 
-test_code "test_uint64' = 0x12"
+test_code \<open>test_uint64' = 0x12\<close>
 in PolyML
 
 ML \<open>
