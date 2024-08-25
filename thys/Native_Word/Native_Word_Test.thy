@@ -7,7 +7,7 @@ chapter \<open>Test cases\<close>
 theory Native_Word_Test
 imports
   Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
-  "HOL-Library.Code_Test" "Word_Lib.Bit_Shifts_Infix_Syntax"
+  "HOL-Library.Code_Test"
 begin
 
 export_code
@@ -81,9 +81,6 @@ context
   includes bit_operations_syntax
 begin
 
-abbreviation (input) sshiftr_uint8 (infixl ">>>" 55)
-  where \<open>w >>> n \<equiv> signed_drop_bit_uint8 n w\<close>
-
 definition test_uint8 :: bool
   where \<open>test_uint8 \<longleftrightarrow>
   (([ 0x101, -1, -255, 0xFF, 0x12
@@ -98,9 +95,10 @@ definition test_uint8 :: bool
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
-    , 1 << 2, -1 << 3, 1 << 8, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 8, -100 >> 8
-    , 100 >>> 3, -100 >>> 3, 100 >>> 8, -100 >>> 8] :: uint8 list)
+    , push_bit 2 1, push_bit 3 (- 1), push_bit 8 1, push_bit 0 1
+    , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 8 100, drop_bit 8 (- 100)
+    , signed_drop_bit_uint8 3 100, signed_drop_bit_uint8 3 (- 100)
+    , signed_drop_bit_uint8 8 100, signed_drop_bit_uint8 8 (- 100)] :: uint8 list)
    =
     [ 1, 255, 1, 255, 18
     , 18
@@ -147,7 +145,7 @@ end
 ML_val \<open>val true = @{code test_uint8}\<close>
 
 definition test_uint8' :: uint8
-  where \<open>test_uint8' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2\<close>
+  where \<open>test_uint8' = drop_bit 2 (push_bit 3 (0 + 10 - 14 * 3 div 6 mod 3))\<close>
 
 ML \<open>val 0wx12 = @{code test_uint8'}\<close>
 
@@ -171,9 +169,6 @@ context
   includes bit_operations_syntax
 begin
 
-abbreviation (input) sshiftr_uint16 (infixl ">>>" 55)
-  where \<open>w >>> n \<equiv> signed_drop_bit_uint16 n w\<close>
-
 definition test_uint16 :: bool
   where \<open>test_uint16 \<longleftrightarrow>
   (([ 0x10001, -1, -65535, 0xFFFF, 0x1234
@@ -188,9 +183,10 @@ definition test_uint16 :: bool
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
-    , 1 << 2, -1 << 3, 1 << 16, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 16, -100 >> 16
-    , 100 >>> 3, -100 >>> 3, 100 >>> 16, -100 >>> 16] :: uint16 list)
+    , push_bit 2 1, push_bit 3 (- 1), push_bit 16 1, push_bit 0 1
+    , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 16 100, drop_bit 16 (- 100)
+    , signed_drop_bit_uint16 3 100, signed_drop_bit_uint16 3 (- 100)
+    , signed_drop_bit_uint16 16 100, signed_drop_bit_uint16 16 (- 100)] :: uint16 list)
    =
     [ 1, 65535, 1, 65535, 4660
     , 18
@@ -249,9 +245,6 @@ context
   includes bit_operations_syntax
 begin
 
-abbreviation (input) sshiftr_uint32 (infixl ">>>" 55)
-  where \<open>w >>> n \<equiv> signed_drop_bit_uint32 n w\<close>
-
 definition test_uint32 :: bool
   where \<open>test_uint32 \<longleftrightarrow>
   (([ 0x100000001, -1, -4294967291, 0xFFFFFFFF, 0x12345678
@@ -266,9 +259,10 @@ definition test_uint32 :: bool
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
-    , 1 << 2, -1 << 3, 1 << 32, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 32, -100 >> 32
-    , 100 >>> 3, -100 >>> 3, 100 >>> 32, -100 >>> 32] :: uint32 list)
+    , push_bit 2 1, push_bit 3 (- 1), push_bit 32 1, push_bit 0 1
+    , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 32 100, drop_bit 32 (- 100)
+    , signed_drop_bit_uint32 3 100, signed_drop_bit_uint32 3 (- 100)
+    , signed_drop_bit_uint32 32 100, signed_drop_bit_uint32 32 (- 100)] :: uint32 list)
    =
     [ 1, 4294967295, 5, 4294967295, 305419896
     , 18
@@ -279,7 +273,7 @@ definition test_uint32 :: bool
     , 2, 4294967294
     , 15, 4294967281, 20, 1891143032
     , 1, 1431655763, 0, 0
-    , 2, 2, 4294967291, 5 
+    , 2, 2, 4294967291, 5
     , 21, 4294967295, 4, 4294967289
     , 5, 5, 4294967291, 4294967291
     , 4, 4294967288, 0, 1
@@ -312,8 +306,8 @@ end
 
 ML_val \<open>val true = @{code test_uint32}\<close>
 
-definition test_uint32' :: uint32 
-  where \<open>test_uint32' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2\<close>
+definition test_uint32' :: uint32
+  where \<open>test_uint32' = drop_bit 2 (push_bit 3 (0 + 10 - 14 * 3 div 6 mod 3))\<close>
 
 ML \<open>val 0wx12 = @{code test_uint32'}\<close>
 
@@ -339,9 +333,6 @@ context
   includes bit_operations_syntax
 begin
 
-abbreviation (input) sshiftr_uint64 (infixl ">>>" 55)
-  where \<open>w >>> n \<equiv> signed_drop_bit_uint64 n w\<close>
-
 definition test_uint64 :: bool
   where \<open>test_uint64 \<longleftrightarrow>
   (([ 0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFFFFFFF, 0x1234567890ABCDEF
@@ -356,9 +347,10 @@ definition test_uint64 :: bool
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
-    , 1 << 2, -1 << 3, 1 << 64, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 64, -100 >> 64
-    , 100 >>> 3, -100 >>> 3, 100 >>> 64, -100 >>> 64] :: uint64 list)
+    , push_bit 2 1, push_bit 3 (- 1), push_bit 64 1, push_bit 0 1
+    , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 64 100, drop_bit 64 (- 100)
+    , signed_drop_bit_uint64 3 100, signed_drop_bit_uint64 3 (- 100)
+    , signed_drop_bit_uint64 64 100, signed_drop_bit_uint64 64 (- 100)] :: uint64 list)
    =
     [ 1, 18446744073709551615, 9223372036854775808, 18446744073709551615, 1311768467294899695
     , 18
@@ -404,9 +396,10 @@ value [nbe] \<open>[0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFF
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
-    , 1 << 2, -1 << 3, 1 << 64, 1 << 0
-    , 100 >> 3, -100 >> 3, 100 >> 64, -100 >> 64
-    , 100 >>> 3, -100 >>> 3, 100 >>> 64, -100 >>> 64] :: uint64 list\<close>
+    , push_bit 2 1, push_bit 3 (- 1), push_bit 64 1, push_bit 0 1
+    , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 64 100, drop_bit 64 (- 100)
+    , signed_drop_bit_uint64 3 100, signed_drop_bit_uint64 3 (- 100)
+    , signed_drop_bit_uint64 64 100, signed_drop_bit_uint64 64 (- 100)] :: uint64 list\<close>
 
 export_code test_uint64 checking SML Haskell? OCaml? Scala
 
@@ -419,7 +412,7 @@ end
 ML_val \<open>val true = @{code test_uint64}\<close>
 
 definition test_uint64' :: uint64
-  where \<open>test_uint64' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2\<close>
+  where \<open>test_uint64' = drop_bit 2 (push_bit 3 (0 + 10 - 14 * 3 div 6 mod 3))\<close>
 
 ML \<open>val 0wx12 = @{code test_uint64'}\<close>
 
@@ -431,9 +424,6 @@ section \<open>Tests for \<^typ>\<open>uint\<close>\<close>
 context
   includes bit_operations_syntax
 begin
-
-abbreviation (input) sshiftr_uint (infixl ">>>" 55)
-  where \<open>w >>> n \<equiv> signed_drop_bit_uint n w\<close>
 
 definition test_uint :: bool
   where \<open>test_uint = (let
@@ -453,9 +443,10 @@ definition test_uint :: bool
       , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
       , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
       , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit (- 5) dflt_size True, set_bit (- 5) dflt_size False
-      , 1 << 2, -1 << 3, push_bit dflt_size 1, 1 << 0
-      , 31 >> 3, -1 >> 3, 31 >> dflt_size, -1 >> dflt_size
-      , 15 >>> 2, -1 >>> 3, 15 >>> dflt_size, -1 >>> dflt_size]
+      , push_bit 2 1, push_bit 3 (- 1), push_bit dflt_size 1, push_bit 0 1
+      , drop_bit 3 31, drop_bit 3 (- 1), drop_bit dflt_size 31, drop_bit dflt_size (- 1)
+      , signed_drop_bit_uint 2 15, signed_drop_bit_uint 3 (- 1)
+      , signed_drop_bit_uint dflt_size 15, signed_drop_bit_uint dflt_size (- 1)]
     else []) :: uint list));
 
   test_list2 = (let
@@ -475,8 +466,8 @@ definition test_uint :: bool
       , set_bit 5 4 True, -1, set_bit 5 0 False, -7
       , 5, 5, -5, -5
       , 4, -8, 0, 1
-      , 3, (S >> 3) - 1, 0, 0
-      , 3, (S >> 1) + (S >> 1) - 1, 0, -1]
+      , 3, drop_bit 3 S - 1, 0, 0
+      , 3, drop_bit 1 S + drop_bit 1 S - 1, 0, -1]
     else []) :: int list));
 
   test_list_c1 = (let
