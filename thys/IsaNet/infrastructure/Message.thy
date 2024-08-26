@@ -37,9 +37,6 @@ text \<open>Syntax sugar\<close>
 syntax
   "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
 
-syntax (xsymbols)
-  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
-
 translations
   "\<langle>x, y, z\<rangle>" \<rightleftharpoons> "\<langle>x, \<langle>y, z\<rangle>\<rangle>"
   "\<langle>x, y\<rangle>"    \<rightleftharpoons> "CONST MPair x y"
