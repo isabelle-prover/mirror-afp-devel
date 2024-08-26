@@ -1,0 +1,34 @@
+title = "Difference Bound Matrices"
+date = 2024-08-14
+topics = [
+  "Computer science/Algorithms/Graph",
+  "Computer science/Data structures",
+]
+abstract = "Difference Bound Matrices (DBMs) [2] are a data structure used to represent a type of convex polytope, often referred to as zones. DBMs find applications in various fields, such as timed automata model checking and static program analysis. This entry formalizes DBMs and the operations for inclusion checking, intersection, variable reset, upper-bound relaxation, and extrapolation (as used in timed automata model checking). With the help of the Imperative Refinement Framework, efficient imperative implementations of these operations are also provided. For each zone, there exists a canonical DBM. The characteristic properties of canonical forms are proved, including the fact that DBMs can be transformed into canonical form using the Floyd-Warshall algorithm. This entry is part of the work described in a paper by the authors of this entry [4] and a PhD thesis [3]."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wimmer]
+email = "wimmer_email"
+
+[authors.lammich]
+email = "lammich_email"
+
+[contributors]
+
+[notify]
+wimmer = "wimmer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-319-89960-2_4",
+]
+pubs = [
+  "https://nbn-resolving.org/urn:nbn:de:bvb:91-diss-20201209-1576100-1-0",
+]
