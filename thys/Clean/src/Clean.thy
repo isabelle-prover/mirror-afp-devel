@@ -1347,7 +1347,7 @@ definition if_C :: "[('\<sigma>_ext) control_state_ext \<Rightarrow> bool,
                               then Some(undefined, \<sigma>)  \<comment> \<open>state unchanged, return arbitrary\<close>
                               else if c \<sigma> then E \<sigma> else F \<sigma>)"     
 
-syntax    (xsymbols)
+syntax
           "_if_SECLEAN" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(if\<^sub>C _ then _ else _fi)" [5,8,8]20)
 translations 
@@ -1362,7 +1362,7 @@ definition while_C :: "(('\<sigma>_ext) control_state_ext \<Rightarrow> bool)
                                else ((MonadSE.while_SE (\<lambda> \<sigma>. \<not>exec_stop \<sigma> \<and> c \<sigma>) B) ;- 
                                      unset_break_status) \<sigma>)"
   
-syntax    (xsymbols)
+syntax
           "_while_C" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(while\<^sub>C _ do _ od)" [8,8]20)
 translations 

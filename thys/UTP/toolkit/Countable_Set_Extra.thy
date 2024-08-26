@@ -70,7 +70,7 @@ syntax
 translations
   "{x . P}\<^sub>c" \<rightleftharpoons> "(CONST cset_Collect) (\<lambda> x . P)"
 
-syntax (xsymbols)
+syntax
   "_cCollect" :: "pttrn => 'a cset => bool => 'a cset"    ("(1{_ \<in>\<^sub>c/ _./ _}\<^sub>c)")
 translations
   "{x \<in>\<^sub>c A. P}\<^sub>c" => "CONST cset_Coll A (\<lambda> x. P)"

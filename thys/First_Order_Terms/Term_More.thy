@@ -2072,7 +2072,7 @@ hide_const suptcp
 
 abbreviation suptc_pred where "suptc_pred C t \<equiv> (C, t) \<in> suptc"
 
-notation (xsymbols)
+notation
   suptc_pred ("(_/ \<rhd>c _)" [56, 56] 55)
 
 lemma suptc_subst: "C \<rhd>c s \<Longrightarrow> C \<cdot>\<^sub>c \<sigma> \<rhd>c s \<cdot> \<sigma>"

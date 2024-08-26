@@ -64,7 +64,7 @@ The index variable of the summation ranges over the finite universe of its type.
 Finite sums are defined recursively using the binary aggregation and $\bot + \bot$ for the empty sum.
 \<close>
 
-syntax (xsymbols)
+syntax
   "_sum_ab_semigroup_add_0" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Sum>\<^sub>_ _)" [0,10] 10)
 
 translations
