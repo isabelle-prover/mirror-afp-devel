@@ -79,6 +79,7 @@ nonterminal
   dobinds and dobind and nobind
 
 syntax (input)
+  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
   "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ <-/ _)" 10)
   ""           :: "dobind => dobinds"                 ("_")
   "_nobind"    :: "'a => dobind"                      ("_")
@@ -86,9 +87,6 @@ syntax (input)
 
   "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
   "_doE" :: "[dobinds, 'a] => 'a"  ("(doE ((_);//(_))//odE)" 100)
-
-syntax (xsymbols)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
 
 translations
   "_do (_dobinds b bs) e"  \<rightharpoonup> "_do b (_do bs e)"
