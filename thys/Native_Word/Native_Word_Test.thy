@@ -30,16 +30,22 @@ definition bit_integer_test :: bool
     , -3 OR 1, 1 OR -3, 3 OR 5, -3 OR (- 5)
     , NOT 1, NOT (- 3)
     , -1 XOR 3, 1 XOR (- 3), 3 XOR 5, -5 XOR (- 3)
+    , Bit_Operations.set_bit 4 5, Bit_Operations.set_bit 2 (- 5)
+    , Bit_Operations.unset_bit 0 5, Bit_Operations.unset_bit 1 (- 5)
+    , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , push_bit 2 1, push_bit 3 (- 1)
-    , drop_bit 3 100, drop_bit 3 (- 100)] :: integer list)
+    , drop_bit 3 100, drop_bit 3 (- 100)
+    , take_bit 4 100, take_bit 4 (- 100)] :: integer list)
   = [ 3, 1, 1, -7
     , -3, -3, 7, -1
     , -2, 2
     , -4, -4, 6, 6
+    , 21, -1, 4, -7, 21, -7
     , 21, -1, 4, -7
     , 4, -8
-    , 12, -13] \<and>
+    , 12, -13
+    , 4, 12] \<and>
     [ bit (5 :: integer) 4, bit (5 :: integer) 2, bit (-5 :: integer) 4, bit (-5 :: integer) 2
     , lsb (5 :: integer), lsb (4 :: integer), lsb (-1 :: integer), lsb (-2 :: integer),
       msb (5 :: integer), msb (0 :: integer), msb (-1 :: integer), msb (-2 :: integer)]
@@ -93,12 +99,19 @@ definition test_uint8 :: bool
     , 5 * 3, -5 * 3, -5 * -4, 0x12 * 0x87
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+    , Bit_Operations.set_bit 4 5, Bit_Operations.set_bit 2 (- 5)
+    , Bit_Operations.set_bit 32 5, Bit_Operations.set_bit 32 (- 5)
+    , Bit_Operations.unset_bit 0 5, Bit_Operations.unset_bit 1 (- 5)
+    , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
+    , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
+    , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 8 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 8 100, drop_bit 8 (- 100)
     , signed_drop_bit_uint8 3 100, signed_drop_bit_uint8 3 (- 100)
-    , signed_drop_bit_uint8 8 100, signed_drop_bit_uint8 8 (- 100)] :: uint8 list)
+    , signed_drop_bit_uint8 8 100, signed_drop_bit_uint8 8 (- 100)
+    , take_bit 4 100, take_bit 4 (- 100)] :: uint8 list)
    =
     [ 1, 255, 1, 255, 18
     , 18
@@ -110,11 +123,13 @@ definition test_uint8 :: bool
     , 15, 241, 20, 126
     , 1, 83, 0, 0
     , 2, 2, 251, 5
+    , 21, 255, 5, 251, 4, 249, 5, 251, 21, 249, 5, 251
     , 21, 255, 4, 249
     , 5, 5, 251, 251
     , 4, 248, 0, 1
     , 12, 19, 0, 0
-    , 12, 243, 0, 255]) \<and>
+    , 12, 243, 0, 255
+    , 4, 12]) \<and>
   ([ (0x5 :: uint8) = 0x5, (0x5 :: uint8) = 0x6
    , (0x5 :: uint8) < 0x5, (0x5 :: uint8) < 0x6, (-5 :: uint8) < 6, (6 :: uint8) < -5
    , (0x5 :: uint8) \<le> 0x5, (0x5 :: uint8) \<le> 0x4, (-5 :: uint8) \<le> 6, (6 :: uint8) \<le> -5
@@ -181,12 +196,19 @@ definition test_uint16 :: bool
     , 5 * 3, -5 * 3, -5 * -4, 0x1234 * 0x8765
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+    , Bit_Operations.set_bit 4 5, Bit_Operations.set_bit 2 (- 5)
+    , Bit_Operations.set_bit 32 5, Bit_Operations.set_bit 32 (- 5)
+    , Bit_Operations.unset_bit 0 5, Bit_Operations.unset_bit 1 (- 5)
+    , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
+    , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
+    , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 16 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 16 100, drop_bit 16 (- 100)
     , signed_drop_bit_uint16 3 100, signed_drop_bit_uint16 3 (- 100)
-    , signed_drop_bit_uint16 16 100, signed_drop_bit_uint16 16 (- 100)] :: uint16 list)
+    , signed_drop_bit_uint16 16 100, signed_drop_bit_uint16 16 (- 100)
+    , take_bit 4 100, take_bit 4 (- 100)] :: uint16 list)
    =
     [ 1, 65535, 1, 65535, 4660
     , 18
@@ -198,11 +220,13 @@ definition test_uint16 :: bool
     , 15, 65521, 20, 39556
     , 1, 21843, 0, 0
     , 2, 2, 65531, 5
+    , 21, 65535, 5, 65531, 4, 65529, 5, 65531, 21, 65529, 5, 65531
     , 21, 65535, 4, 65529
     , 5, 5, 65531, 65531
     , 4, 65528, 0, 1
     , 12, 8179, 0, 0
-    , 12, 65523, 0, 65535]) \<and>
+    , 12, 65523, 0, 65535
+    , 4, 12]) \<and>
   ([ (0x5 :: uint16) = 0x5, (0x5 :: uint16) = 0x6
    , (0x5 :: uint16) < 0x5, (0x5 :: uint16) < 0x6, (-5 :: uint16) < 6, (6 :: uint16) < -5
    , (0x5 :: uint16) \<le> 0x5, (0x5 :: uint16) \<le> 0x4, (-5 :: uint16) \<le> 6, (6 :: uint16) \<le> -5
@@ -257,12 +281,19 @@ definition test_uint32 :: bool
     , 5 * 3, -5 * 3, -5 * -4, 0x12345678 * 0x87654321
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+    , Bit_Operations.set_bit 4 5, Bit_Operations.set_bit 2 (- 5)
+    , Bit_Operations.set_bit 32 5, Bit_Operations.set_bit 32 (- 5)
+    , Bit_Operations.unset_bit 0 5, Bit_Operations.unset_bit 1 (- 5)
+    , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
+    , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
+    , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 32 True, set_bit 5 32 False, set_bit (- 5) 32 True, set_bit (- 5) 32 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 32 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 32 100, drop_bit 32 (- 100)
     , signed_drop_bit_uint32 3 100, signed_drop_bit_uint32 3 (- 100)
-    , signed_drop_bit_uint32 32 100, signed_drop_bit_uint32 32 (- 100)] :: uint32 list)
+    , signed_drop_bit_uint32 32 100, signed_drop_bit_uint32 32 (- 100)
+    , take_bit 4 100, take_bit 4 (- 100)] :: uint32 list)
    =
     [ 1, 4294967295, 5, 4294967295, 305419896
     , 18
@@ -274,11 +305,13 @@ definition test_uint32 :: bool
     , 15, 4294967281, 20, 1891143032
     , 1, 1431655763, 0, 0
     , 2, 2, 4294967291, 5
+    , 21, 4294967295, 5, 4294967291, 4, 4294967289, 5, 4294967291, 21, 4294967289, 5, 4294967291
     , 21, 4294967295, 4, 4294967289
     , 5, 5, 4294967291, 4294967291
     , 4, 4294967288, 0, 1
     , 12, 536870899, 0, 0
-    , 12, 4294967283, 0, 4294967295]) \<and>
+    , 12, 4294967283, 0, 4294967295
+    , 4, 12]) \<and>
   ([ (0x5 :: uint32) = 0x5, (0x5 :: uint32) = 0x6
    , (0x5 :: uint32) < 0x5, (0x5 :: uint32) < 0x6, (-5 :: uint32) < 6, (6 :: uint32) < -5
    , (0x5 :: uint32) \<le> 0x5, (0x5 :: uint32) \<le> 0x4, (-5 :: uint32) \<le> 6, (6 :: uint32) \<le> -5
@@ -345,12 +378,19 @@ definition test_uint64 :: bool
     , 5 * 3, -5 * 3, -5 * -4, 0x1234567890ABCDEF * 0xFEDCBA0987654321
     , 5 div 3, -5 div 3, -5 div -3, 5 div -3
     , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+    , Bit_Operations.set_bit 4 5, Bit_Operations.set_bit 2 (- 5)
+    , Bit_Operations.set_bit 32 5, Bit_Operations.set_bit 32 (- 5)
+    , Bit_Operations.unset_bit 0 5, Bit_Operations.unset_bit 1 (- 5)
+    , Bit_Operations.unset_bit 32 5, Bit_Operations.unset_bit 32 (- 5)
+    , Bit_Operations.flip_bit 4 5, Bit_Operations.flip_bit 1 (- 5)
+    , Bit_Operations.flip_bit 32 5, Bit_Operations.flip_bit 32 (- 5)
     , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
     , set_bit 5 64 True, set_bit 5 64 False, set_bit (- 5) 64 True, set_bit (- 5) 64 False
     , push_bit 2 1, push_bit 3 (- 1), push_bit 64 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 64 100, drop_bit 64 (- 100)
     , signed_drop_bit_uint64 3 100, signed_drop_bit_uint64 3 (- 100)
-    , signed_drop_bit_uint64 64 100, signed_drop_bit_uint64 64 (- 100)] :: uint64 list)
+    , signed_drop_bit_uint64 64 100, signed_drop_bit_uint64 64 (- 100)
+    , take_bit 4 100, take_bit 4 (- 100)] :: uint64 list)
    =
     [ 1, 18446744073709551615, 9223372036854775808, 18446744073709551615, 1311768467294899695
     , 18
@@ -362,11 +402,13 @@ definition test_uint64 :: bool
     , 15, 18446744073709551601, 20, 14000077364136384719
     , 1, 6148914691236517203, 0, 0
     , 2, 2, 18446744073709551611, 5 
+    , 21, 18446744073709551615, 4294967301, 18446744073709551611, 4, 18446744073709551609, 5, 18446744069414584315, 21, 18446744073709551609, 4294967301, 18446744069414584315
     , 21, 18446744073709551615, 4, 18446744073709551609
     , 5, 5, 18446744073709551611, 18446744073709551611
     , 4, 18446744073709551608, 0, 1
     , 12, 2305843009213693939, 0, 0
-    , 12, 18446744073709551603, 0, 18446744073709551615]) \<and>
+    , 12, 18446744073709551603, 0, 18446744073709551615
+    , 4, 12]) \<and>
   ([ (0x5 :: uint64) = 0x5, (0x5 :: uint64) = 0x6
    , (0x5 :: uint64) < 0x5, (0x5 :: uint64) < 0x6, (-5 :: uint64) < 6, (6 :: uint64) < -5
    , (0x5 :: uint64) \<le> 0x5, (0x5 :: uint64) \<le> 0x4, (-5 :: uint64) \<le> 6, (6 :: uint64) \<le> -5 
@@ -399,7 +441,8 @@ value [nbe] \<open>[0x10000000000000001, -1, -9223372036854775808, 0xFFFFFFFFFFF
     , push_bit 2 1, push_bit 3 (- 1), push_bit 64 1, push_bit 0 1
     , drop_bit 3 100, drop_bit 3 (- 100), drop_bit 64 100, drop_bit 64 (- 100)
     , signed_drop_bit_uint64 3 100, signed_drop_bit_uint64 3 (- 100)
-    , signed_drop_bit_uint64 64 100, signed_drop_bit_uint64 64 (- 100)] :: uint64 list\<close>
+    , signed_drop_bit_uint64 64 100, signed_drop_bit_uint64 64 (- 100)
+    , take_bit 4 100, take_bit 4 (- 100)] :: uint64 list\<close>
 
 export_code test_uint64 checking SML Haskell? OCaml? Scala
 
@@ -441,12 +484,16 @@ definition test_uint :: bool
     @ (if dflt_size > 4 then
       [ 5 div 3, -5 div 3, -5 div -3, 5 div -3
       , 5 mod 3, -5 mod 3, -5 mod -3, 5 mod -3
+      , Bit_Operations.set_bit dflt_size 5, Bit_Operations.set_bit dflt_size (- 5)
+      , Bit_Operations.unset_bit dflt_size 5, Bit_Operations.unset_bit dflt_size (- 5)
+      , Bit_Operations.flip_bit 0 5, Bit_Operations.flip_bit 0 (- 5)
       , set_bit 5 4 True, set_bit (- 5) 2 True, set_bit 5 0 False, set_bit (- 5) 1 False
       , set_bit 5 dflt_size True, set_bit 5 dflt_size False, set_bit (- 5) dflt_size True, set_bit (- 5) dflt_size False
       , push_bit 2 1, push_bit 3 (- 1), push_bit dflt_size 1, push_bit 0 1
       , drop_bit 3 31, drop_bit 3 (- 1), drop_bit dflt_size 31, drop_bit dflt_size (- 1)
       , signed_drop_bit_uint 2 15, signed_drop_bit_uint 3 (- 1)
-      , signed_drop_bit_uint dflt_size 15, signed_drop_bit_uint dflt_size (- 1)]
+      , signed_drop_bit_uint dflt_size 15, signed_drop_bit_uint dflt_size (- 1)
+      , take_bit 4 100, take_bit 4 (- 100)]
     else []) :: uint list));
 
   test_list2 = (let
@@ -463,11 +510,13 @@ definition test_uint :: bool
     @ (if dflt_size > 4 then
       [ 5 div 3, (S - 5) div 3, (S - 5) div (S - 3), 5 div (S - 3)
       , 5 mod 3, (S - 5) mod 3, (S - 5) mod (S - 3), 5 mod (S - 3)
+      , 5, -5, 5, -5, 4, -6
       , set_bit 5 4 True, -1, set_bit 5 0 False, -7
       , 5, 5, -5, -5
       , 4, -8, 0, 1
       , 3, drop_bit 3 S - 1, 0, 0
-      , 3, drop_bit 1 S + drop_bit 1 S - 1, 0, -1]
+      , 3, drop_bit 1 S + drop_bit 1 S - 1, 0, -1
+      , 4, 12]
     else []) :: int list));
 
   test_list_c1 = (let
