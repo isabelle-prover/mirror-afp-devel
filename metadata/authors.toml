@@ -3634,6 +3634,22 @@ host = [
 [kreuzer.homepages]
 kreuzer_homepage = "https://www21.in.tum.de/team/kreuzer/"
 
+[krofta]
+name = "Niklas Krofta"
+
+[krofta.emails]
+
+[krofta.emails.krofta_email]
+user = [
+  "nkrofta",
+]
+host = [
+  "outlook",
+  "com",
+]
+
+[krofta.homepages]
+
 [kuncak]
 name = "Viktor Kuncak"
 

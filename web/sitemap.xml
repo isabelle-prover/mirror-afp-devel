@@ -3,12 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/IMP_With_Speculation.html</loc>
-    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/krofta/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Topological_Groups.html</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IMP_With_Speculation.html</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
@@ -17,16 +32,10 @@
     <loc>/dependencies/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/popescu/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/secret_directed_unwinding/</loc>
-    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wright/</loc>
@@ -66,9 +75,6 @@
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lie_Groups.html</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/schmoetten/</loc>
@@ -7039,6 +7045,8 @@
     <loc>/sessions/tools/</loc>
   </url><url>
     <loc>/sessions/top_down_solver/</loc>
+  </url><url>
+    <loc>/sessions/topological_groups/</loc>
   </url><url>
     <loc>/sessions/topological_semantics/</loc>
   </url><url>

@@ -1,0 +1,26 @@
+title = "Topological Groups"
+date = 2024-08-19
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = "Topological groups are blends of groups and topological spaces with the property that the multiplication and inversion operations are continuous functions. They frequently occur in mathematics and physics, e.g. in the form of Lie groups. We formalize the theory of topological groups on top of HOL-Algebra and HOL-Analysis. Topological groups are defined via a locale. We also introduce a set-based notion of uniform spaces in order to define the uniform structures of topological groups. The most notable formalized result is the Birkhoff-Kakutani theorem which characterizes metrizable topological groups. Our formalization also defines the important matrix groups $\\mathrm{GL}_n(\\mathbb{R})$, $\\mathrm{SL}_n(\\mathbb{R})$, $\\mathrm{O}_n$, $\\mathrm{SO}_n$ and proves them to be topological groups."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.krofta]
+email = "krofta_email"
+
+[contributors]
+
+[notify]
+krofta = "krofta_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

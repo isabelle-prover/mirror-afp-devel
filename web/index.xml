@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 19 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Topological Groups</title>
+          <link>/entries/Topological_Groups.html</link>
+          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Topological_Groups.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A formalized programming language with speculative execution</title>
           <link>/entries/IMP_With_Speculation.html</link>
@@ -11547,6 +11554,13 @@
           <link>/sessions/top_down_solver/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/top_down_solver/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Topological_Groups</title>
+          <link>/sessions/topological_groups/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/topological_groups/</guid>
           <description></description>
         </item>
         <item>
