@@ -60,6 +60,11 @@ syntax
   "_VBex" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>(_/\<in>\<^sub>\<circ>_)./ _)" [0, 0, 10] 10)
   "_VBex1" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>!(_/\<in>\<^sub>\<circ>_)./ _)" [0, 0, 10] 10)
 
+syntax_consts
+  "_VBall" \<rightleftharpoons> Ball and
+  "_VBex" \<rightleftharpoons> Bex and
+  "_VBex1" \<rightleftharpoons> Ex1
+
 translations
   "\<forall>x\<in>\<^sub>\<circ>A. P" \<rightleftharpoons> "CONST Ball (CONST elts A) (\<lambda>x. P)"
   "\<exists>x\<in>\<^sub>\<circ>A. P" \<rightleftharpoons> "CONST Bex (CONST elts A) (\<lambda>x. P)"
@@ -72,6 +77,7 @@ subsubsection\<open>\<open>VLambda\<close>\<close>
 text\<open>The following notation was adapted from \<^cite>\<open>"paulson_hereditarily_2013"\<close>.\<close>
 
 syntax "_vlam" :: "[pttrn, V, V] \<Rightarrow> V" (\<open>(3\<lambda>_\<in>\<^sub>\<circ>_./ _)\<close> 10)
+syntax_consts "_vlam" \<rightleftharpoons> VLambda
 translations "\<lambda>x\<in>\<^sub>\<circ>A. f" \<rightleftharpoons> "CONST VLambda A (\<lambda>x. f)"
 
 

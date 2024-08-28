@@ -74,6 +74,7 @@ definition SetDC :: "('a \<Rightarrow> 's prog) \<Rightarrow> ('s \<Rightarrow> 
 
 syntax "_SetDC" :: "pttrn => ('s => 'a set) => 's prog => 's prog"
                    ("\<Sqinter>_\<in>_./ _" 100)
+syntax_consts "_SetDC" == SetDC
 translations "\<Sqinter>x\<in>S. p" == "CONST SetDC (%x. p) S"
 
 text \<open>The above syntax allows us to write @{term "\<Sqinter>x\<in>S. Apply f"}\<close>
@@ -94,6 +95,7 @@ where
 text \<open>This gives us something like let syntax\<close>
 syntax "_Bind" :: "pttrn => ('s => 'a) => 's prog => 's prog"
        ("_ is _ in _" [55,55,55]55)
+syntax_consts "_Bind" == Bind
 translations "x is f in a" => "CONST Bind f (%x. a)"
 
 definition flip :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'c"
@@ -103,10 +105,12 @@ text \<open>The following pair of translations introduce let-style syntax
   for @{term SetPC} and @{term SetDC}, respectively.\<close>
 syntax "_PBind" :: "pttrn => ('s => real) => 's prog => 's prog"
                    ("bind _ at _ in _" [55,55,55]55)
+syntax_consts "_PBind" == SetPC
 translations "bind x at p in a" => "CONST SetPC (%x. a) (CONST flip (%x. p))"
 
 syntax "_DBind" :: "pttrn => ('s => 'a set) \<Rightarrow> 's prog => 's prog"
                    ("bind _ from _ in _" [55,55,55]55)
+syntax_consts "_DBind" == SetDC
 translations "bind x from S in a" => "CONST SetDC (%x. a) S"
 
 text \<open>The following syntax translations are for convenience when
@@ -126,6 +130,8 @@ parse_translation \<open>[(@{syntax_const "_assign"}, assign_tr)]\<close>
 syntax
   "_SetPC" :: "ident => ('s => 'a => real) => 's prog"
               ("choose _ at _" [66,66]66)
+syntax_consts
+  "_SetPC" \<rightleftharpoons> SetPC
 ML \<open>
   fun set_pc_tr _ [Const (f,_), P] =
       Const ("SetPC", dummyT) $
@@ -141,6 +147,8 @@ parse_translation \<open>[(@{syntax_const "_SetPC"}, set_pc_tr)]\<close>
 
 syntax
   "_set_dc" :: "ident => ('s => 'a set) => 's prog" ("_ :\<in> _" [66,66]66)
+syntax_consts
+  "_set_dc" \<rightleftharpoons> SetDC
 ML \<open>
   fun set_dc_tr _ [Const (f,_), S] =
       Const ("SetDC", dummyT) $
@@ -160,7 +168,8 @@ text \<open>These definitions instantiate the embedding as either
 
 syntax
   "_set_dc_UNIV" :: "ident => 's prog" ("any _" [66]66)
-
+syntax_consts
+  "_set_dc_UNIV" == SetDC
 translations
   "_set_dc_UNIV x" => "_set_dc x (%_. CONST UNIV)"
 

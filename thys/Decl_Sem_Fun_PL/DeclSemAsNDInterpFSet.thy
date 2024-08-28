@@ -13,6 +13,7 @@ definition set_bind :: "'a M \<Rightarrow> ('a \<Rightarrow> 'b M) \<Rightarrow>
 declare set_bind_def[simp]
 
 syntax "_set_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
+syntax_consts "_set_bind" \<rightleftharpoons> set_bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST set_bind E (\<lambda>P. F)"
 
 definition return :: "'a \<Rightarrow> 'a M" where

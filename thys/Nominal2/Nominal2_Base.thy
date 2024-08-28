@@ -3135,6 +3135,9 @@ subsection \<open>Syntax for coercing at-elements to the atom-type\<close>
 syntax
   "_atom_constrain" :: "logic \<Rightarrow> type \<Rightarrow> logic" ("_:::_" [4, 0] 3)
 
+syntax_consts
+  "_atom_constrain" == atom
+
 translations
   "_atom_constrain a t" => "CONST atom (_constrain a t)"
 

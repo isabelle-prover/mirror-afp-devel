@@ -37,6 +37,8 @@ For finite types, this is implemented in Isabelle/HOL as the repeated applicatio
 syntax
   "_sum_sup_monoid" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^sub>_ _)" [0,10] 10)
   "_sum_sup_monoid_bounded" :: "idt \<Rightarrow> 'b set \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^bsub>_\<in>_\<^esub> _)" [0,51,10] 10)
+syntax_consts
+  "_sum_sup_monoid" "_sum_sup_monoid_bounded" \<rightleftharpoons> sup_monoid.sum
 translations
   "\<Squnion>\<^sub>x t" => "XCONST sup_monoid.sum (\<lambda>x . t) { x . CONST True }"
   "\<Squnion>\<^bsub>x\<in>X\<^esub> t" => "XCONST sup_monoid.sum (\<lambda>x . t) X"

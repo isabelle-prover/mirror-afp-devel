@@ -100,6 +100,7 @@ where
 syntax "iter_hcomp_syntax" :: 
   "'a \<Rightarrow> ('a fset) \<Rightarrow> ('a \<Rightarrow> interface) \<Rightarrow> interface"
       ("(\<Otimes>_|\<in>|_. _)" [0,0,10] 10)
+syntax_consts "iter_hcomp_syntax" == iter_hcomp  
 translations "\<Otimes>x|\<in>|M. e" == "CONST iter_hcomp M (\<lambda>x. e)"
 
 term "\<Otimes>P|\<in>|Ps. f P" \<comment> \<open>this is eta-expanded, so prints in expanded form\<close>

@@ -28,7 +28,8 @@ locale is_cat_obj_empty_terminal = is_cat_limit \<alpha> cat_0 \<CC> \<open>cf_0
 
 syntax "_is_cat_obj_empty_terminal" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F :/ 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51] 51)
-translations "\<ZZ> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_obj_empty_terminal" \<rightleftharpoons> is_cat_obj_empty_terminal
+translations "\<ZZ> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>1 0\<^sub>C\<^sub>F : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_obj_empty_terminal \<alpha> \<CC> z \<ZZ>"
 
 locale is_cat_obj_empty_initial = is_cat_colimit \<alpha> cat_0 \<CC> \<open>cf_0 \<CC>\<close> z \<ZZ> 
@@ -36,7 +37,8 @@ locale is_cat_obj_empty_initial = is_cat_colimit \<alpha> cat_0 \<CC> \<open>cf_
 
 syntax "_is_cat_obj_empty_initial" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ 0\<^sub>C\<^sub>F >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 _ :/ 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51] 51)
-translations "\<ZZ> : 0\<^sub>C\<^sub>F >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 z : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_obj_empty_initial" \<rightleftharpoons> is_cat_obj_empty_initial
+translations "\<ZZ> : 0\<^sub>C\<^sub>F >\<^sub>C\<^sub>F\<^sub>.\<^sub>0 z : 0\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_obj_empty_initial \<alpha> \<CC> z \<ZZ>"
 
 
@@ -416,6 +418,7 @@ locale is_cat_obj_id_initial = is_cat_limit \<alpha> \<CC> \<CC> \<open>cf_id \<
 
 syntax "_is_cat_obj_id_initial" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>0 id\<^sub>C :/ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cat_obj_id_initial" \<rightleftharpoons> is_cat_obj_id_initial
 translations "\<ZZ> : z <\<^sub>C\<^sub>F\<^sub>.\<^sub>0 id\<^sub>C : \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_obj_id_initial \<alpha> \<CC> z \<ZZ>"
 
@@ -423,7 +426,8 @@ locale is_cat_obj_id_terminal = is_cat_colimit \<alpha> \<CC> \<CC> \<open>cf_id
 
 syntax "_is_cat_obj_id_terminal" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ id\<^sub>C >\<^sub>C\<^sub>F\<^sub>.\<^sub>1 _ :/ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51] 51)
-translations "\<ZZ> : id\<^sub>C >\<^sub>C\<^sub>F\<^sub>.\<^sub>1 z : \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_obj_id_terminal" \<rightleftharpoons> is_cat_obj_id_terminal
+translations "\<ZZ> : id\<^sub>C >\<^sub>C\<^sub>F\<^sub>.\<^sub>1 z : \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_obj_id_terminal \<alpha> \<CC> z \<ZZ>"
 
 

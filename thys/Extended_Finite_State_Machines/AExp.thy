@@ -58,6 +58,9 @@ syntax
   "_fUpdate"  :: "'a \<Rightarrow> fupdbinds \<Rightarrow> 'a"            ("_/'((_)')" [1000, 0] 900)
   "_State" :: "fupdbinds => 'a" ("<_>")
 
+syntax_consts
+  "_fupdbind" "_fupdbinds" "_fUpdate" "_State" \<rightleftharpoons> finfun_update
+
 translations
   "_fUpdate f (_fupdbinds b bs)" \<rightleftharpoons> "_fUpdate (_fUpdate f b) bs"
   "f(x$:=y)" \<rightleftharpoons> "CONST finfun_update f x y"

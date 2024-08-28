@@ -846,6 +846,7 @@ definition ntcf_arrow_vcomp :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> 
 
 syntax "_ntcf_arrow_vcomp" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" 
   (\<open>(_/ \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^bsub>_,_\<^esub> _)\<close> [55, 56, 57, 58] 55)
+syntax_consts "_ntcf_arrow_vcomp" \<rightleftharpoons> ntcf_arrow_vcomp
 translations "\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^bsub>\<AA>,\<BB>\<^esub> \<NN>" \<rightleftharpoons> "CONST ntcf_arrow_vcomp \<AA> \<BB> \<MM> \<NN>"
 
 

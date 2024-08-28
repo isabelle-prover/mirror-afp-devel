@@ -38,6 +38,7 @@ definition smc_prod :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
 
 syntax "_PSEMICATEGORY" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" 
   ("(3\<Prod>\<^sub>S\<^sub>M\<^sub>C_\<in>\<^sub>\<circ>_./ _)" [0, 0, 10] 10)
+syntax_consts "_PSEMICATEGORY" \<rightleftharpoons> smc_prod
 translations "\<Prod>\<^sub>S\<^sub>M\<^sub>Ci\<in>\<^sub>\<circ>I. \<AA>" \<rightleftharpoons> "CONST smc_prod I (\<lambda>i. \<AA>)"
 
 

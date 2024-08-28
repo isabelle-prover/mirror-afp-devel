@@ -24,6 +24,9 @@ syntax
   \<comment> \<open>llist Enumeration\<close>
   "_llist" :: "args => 'a llist"    ("[[(_)]]")
 
+syntax_consts
+  "_llist" == LCons
+
 translations
   "[[x, xs]]" == "x $ [[xs]]"
   "[[x]]" == "x $ [[]]"

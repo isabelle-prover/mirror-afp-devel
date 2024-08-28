@@ -15,6 +15,8 @@ begin
 
 syntax
   "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" [36,36,36] 60)
+syntax_consts
+  "_sats" \<rightleftharpoons> sats
 translations
   "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
 

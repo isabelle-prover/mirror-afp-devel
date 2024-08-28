@@ -207,6 +207,10 @@ syntax
   "_mu" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<mu> _ \<bullet> _" [0, 10] 10)
   "_nu" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<nu> _ \<bullet> _" [0, 10] 10)
 
+syntax_consts
+  "_mu" == lfp and
+  "_nu" == gfp
+
 notation gfp ("\<mu>")
 notation lfp ("\<nu>")
 
@@ -298,7 +302,9 @@ text \<open> We define the following operator which is dual of existential quant
     
 lift_definition var_res :: "'\<alpha> upred \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> upred" is
 "\<lambda> P x b. \<exists> b'. P (b' \<oplus>\<^sub>L b on x)" .
-    
+
+syntax_consts
+  "_uvar_res" \<rightleftharpoons> var_res
 translations
   "_uvar_res P a" \<rightleftharpoons> "CONST var_res P a"
 
@@ -333,6 +339,9 @@ adhoc_overloading
 syntax
   "_uneq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl "\<noteq>\<^sub>u" 50)
   "_unmem"      :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix "\<notin>\<^sub>u" 50)
+
+syntax_consts
+  "_uneq" "_unmem" == unot
 
 translations
   "x \<noteq>\<^sub>u y" == "CONST unot (x =\<^sub>u y)"

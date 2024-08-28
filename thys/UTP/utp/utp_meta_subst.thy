@@ -15,6 +15,9 @@ update_uexpr_rep_eq_thms \<comment> \<open> Reread @{text rep_eq} theorems. \<cl
 syntax
   "_msubst"   :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" ("(_\<lbrakk>_\<rightarrow>_\<rbrakk>)" [990,0,0] 991)
 
+syntax_consts
+  "_msubst" == msubst
+
 translations
   "_msubst P x v" == "CONST msubst (\<lambda> x. P) v"
      

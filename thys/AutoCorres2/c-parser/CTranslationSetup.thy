@@ -53,6 +53,8 @@ definition coerce::"'a::mem_type \<Rightarrow> 'b::mem_type" where
 
 syntax
   "_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1COERCE/(1'(_ \<rightarrow> _')))")
+syntax_consts
+  "_coerce" == coerce
 translations
   "COERCE('a \<rightarrow> 'b)" => "CONST coerce :: ('a  \<Rightarrow> 'b)"
 typed_print_translation

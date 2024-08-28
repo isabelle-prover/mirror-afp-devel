@@ -22,6 +22,8 @@ definition inprod_cvec :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> c
                in vec_cnj (z1, z2) *\<^sub>v\<^sub>v (w1, w2))"
 syntax
   "_inprod_cvec" :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> complex"  ("\<langle>_,_\<rangle>")
+syntax_consts
+  "_inprod_cvec" == inprod_cvec
 translations
   "\<langle>z,w\<rangle>" == "CONST inprod_cvec z w"
 
@@ -60,6 +62,8 @@ definition norm_cvec :: "complex_vec \<Rightarrow> real" where
   [simp]: "norm_cvec z = sqrt (Re \<langle>z,z\<rangle>)"
 syntax
   "_norm_cvec" :: "complex_vec \<Rightarrow> complex"  ("\<langle>_\<rangle>")
+syntax_consts
+  "_norm_cvec" == norm_cvec
 translations
   "\<langle>z\<rangle>" == "CONST norm_cvec z"
 

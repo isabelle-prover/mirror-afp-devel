@@ -280,6 +280,9 @@ definition coerceQuantT :: "'d\<^sub>2 itself \<Rightarrow> 'a['d\<^sub>1::dim_t
 syntax
   "_QCOERCE" :: "type \<Rightarrow> logic \<Rightarrow> logic" ("QCOERCE[_]")
 
+syntax_consts
+  "_QCOERCE" == coerceQuantT
+
 translations
   "QCOERCE['t]" == "CONST coerceQuantT TYPE('t)"
 

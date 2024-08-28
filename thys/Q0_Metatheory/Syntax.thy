@@ -137,6 +137,10 @@ syntax
   "_FVar" :: "nat \<Rightarrow> type \<Rightarrow> form" ("_\<^bsub>_\<^esub>" [899, 0] 900)
   "_FCon" :: "nat \<Rightarrow> type \<Rightarrow> form" ("\<lbrace>_\<rbrace>\<^bsub>_\<^esub>" [899, 0] 900)
   "_FAbs" :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" ("(4\<lambda>_\<^bsub>_\<^esub>./ _)" [0, 0, 104] 104)
+syntax_consts
+  "_FVar" \<rightleftharpoons> FVar and
+  "_FCon" \<rightleftharpoons> FCon and
+  "_FAbs" \<rightleftharpoons> FAbs
 translations
   "x\<^bsub>\<alpha>\<^esub>" \<rightleftharpoons> "CONST FVar (x, \<alpha>)"
   "\<lbrace>c\<rbrace>\<^bsub>\<alpha>\<^esub>" \<rightleftharpoons> "CONST FCon (c, \<alpha>)"

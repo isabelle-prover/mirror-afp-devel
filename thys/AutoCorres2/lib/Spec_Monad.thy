@@ -1012,6 +1012,7 @@ syntax "_Res" :: "pttrn \<Rightarrow> pttrn" ("Res _")
 
 definition undefined_unit::"unit \<Rightarrow> 'b" where "undefined_unit x \<equiv> undefined"
 
+syntax_consts "_Res" \<rightleftharpoons> case_exception_or_result
 translations "\<lambda>Res x. b" \<rightleftharpoons> "CONST case_exception_or_result (CONST undefined_unit) (\<lambda>x. b)"
 
 term "\<lambda>Res x. f x"

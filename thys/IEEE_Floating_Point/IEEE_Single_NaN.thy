@@ -38,6 +38,7 @@ text \<open>Note that @{typ "('e, 'f) floatSingleNaN"} does not count the hidden
   from the definition of @{typ "('e, 'f) float"} in IEEE.thy.\<close>
 
 syntax "_floatSingleNaN" :: "type \<Rightarrow> type \<Rightarrow> type" ("'(_, _') floatSingleNaN")
+syntax_types "_floatSingleNaN" \<rightleftharpoons> floatSingleNaN
 text \<open>Parse \<open>('a, 'b) floatSingleNaN\<close> as \<open>('a::len, 'b::len) floatSingleNaN\<close>.\<close>
 
 parse_translation \<open>

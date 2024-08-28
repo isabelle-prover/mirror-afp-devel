@@ -24,6 +24,9 @@ no_syntax
   "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow>\<^sub>c (_)" [51, 50, 50] 50)
 end
 unbundle crel_mono_wrt_syntax
+syntax_consts
+  "_crel_mono_wrt" \<rightleftharpoons> crel_mono_wrt and
+  "_crel_dep_mono_wrt" \<rightleftharpoons> crel_dep_mono_wrt
 translations
   "A \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_mono_wrt A B"
   "(x : A) \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_dep_mono_wrt A (\<lambda>x. B)"

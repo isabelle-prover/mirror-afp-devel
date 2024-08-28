@@ -1350,6 +1350,8 @@ definition if_C :: "[('\<sigma>_ext) control_state_ext \<Rightarrow> bool,
 syntax
           "_if_SECLEAN" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(if\<^sub>C _ then _ else _fi)" [5,8,8]20)
+syntax_consts
+          "_if_SECLEAN" == Clean.if_C
 translations 
           "(if\<^sub>C cond then T1 else T2 fi)" == "CONST Clean.if_C cond T1 T2"
 
@@ -1365,6 +1367,8 @@ definition while_C :: "(('\<sigma>_ext) control_state_ext \<Rightarrow> bool)
 syntax
           "_while_C" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(while\<^sub>C _ do _ od)" [8,8]20)
+syntax_consts
+          "_while_C" == Clean.while_C
 translations 
           "while\<^sub>C c do b od" == "CONST Clean.while_C c b"
 

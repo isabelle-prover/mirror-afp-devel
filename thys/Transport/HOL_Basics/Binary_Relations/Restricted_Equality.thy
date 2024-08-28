@@ -27,6 +27,9 @@ no_syntax
 end
 unbundle eq_rel_restrict_syntax
 
+syntax_consts
+  "_eq_restrict_infix" \<rightleftharpoons> rel_restrict_left and
+  "_eq_restrict" \<rightleftharpoons> rel_restrict_left
 translations
   "(=\<^bsub>P\<^esub>)" \<rightleftharpoons> "CONST rel_restrict_left (=) P"
   "x =\<^bsub>P\<^esub> y" \<rightleftharpoons> "CONST rel_restrict_left (=) P x y"

@@ -121,6 +121,10 @@ syntax
   "_Pfun"     :: "maplets => ('a, 'b) pfun"            ("(1{_}\<^sub>p)")
   "_plam"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("\<lambda> _ | _ . _" [0,0,10] 10)
 
+syntax_consts
+  "_PfunUpd" "_Pfun" == pfun_upd and
+  "_plam" == plambda
+
 translations
   "_PfunUpd m (_Maplets xy ms)"  == "_PfunUpd (_PfunUpd m xy) ms"
   "_PfunUpd m (_maplet  x y)"    == "CONST pfun_upd m x y"

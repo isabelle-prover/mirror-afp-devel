@@ -61,6 +61,8 @@ Section syntax for @{const \<open>scons\<close>} ala Haskell.
 syntax
   "_scons_section" :: "'a \<rightarrow> [:'a:] \<rightarrow> [:'a:]" ("'(:#')")
   "_scons_section_left" :: "'a \<Rightarrow> [:'a:] \<rightarrow> [:'a:]" ("'(_:#')")
+syntax_consts
+  "_scons_section_left" == scons
 translations
   "(x:#)" == "(CONST Rep_cfun) (CONST scons) x"
 
@@ -69,6 +71,8 @@ abbreviation scons_section_right :: "[:'a:] \<Rightarrow> 'a \<rightarrow> [:'a:
 
 syntax
   "_strict_list" :: "args \<Rightarrow> [:'a:]" ("[:(_):]")
+syntax_consts
+  "_strict_list" == scons
 translations
   "[:x, xs:]" == "x :# [:xs:]"
   "[:x:]" == "x :# [::]"

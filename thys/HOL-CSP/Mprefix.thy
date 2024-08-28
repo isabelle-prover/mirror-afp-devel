@@ -124,6 +124,9 @@ syntax
 
 term "Ball A (\<lambda>x. P)"
 
+syntax_consts
+  "_Mprefix" \<rightleftharpoons> Mprefix
+
 translations
   "\<box>x\<in>A \<rightarrow> P" \<rightleftharpoons> "CONST Mprefix A (\<lambda>x. P)"
 
@@ -385,6 +388,11 @@ syntax
                                         ("(3(_\<^bold>!_) /\<rightarrow> _)" [0,0,78] 78)
   "_writeS" :: "['a, 'a process] => 'a process"
                                         ("(3_ /\<rightarrow> _)" [0,78]78)
+
+syntax_consts
+  "_read" "_readX" "_readS" \<rightleftharpoons> read and
+  "_write" \<rightleftharpoons> "write" and
+  "_writeS" \<rightleftharpoons> write0
 
 subsection\<open>CSP$_M$-Style Syntax for Communication Primitives\<close>
 translations

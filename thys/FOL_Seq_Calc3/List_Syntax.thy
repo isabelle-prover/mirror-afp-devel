@@ -34,6 +34,12 @@ syntax
   "_Bex1List"       :: \<open>pttrn \<Rightarrow> 'a list \<Rightarrow> bool \<Rightarrow> bool\<close>  (\<open>(3\<exists>!(_/[\<in>]_)./ _)\<close> [0, 0, 10] 10)
   "_BleastList"     :: \<open>id \<Rightarrow> 'a list \<Rightarrow> bool \<Rightarrow> 'a\<close>       (\<open>(3LEAST(_/[\<in>]_)./ _)\<close> [0, 0, 10] 10)
 
+syntax_consts
+  "_BallList" \<rightleftharpoons> Ball and
+  "_BexList" \<rightleftharpoons> Bex and
+  "_Bex1List" \<rightleftharpoons> Ex1 and
+  "_BleastList" \<rightleftharpoons> Least
+
 translations
   "\<forall>x[\<in>]A. P" \<rightleftharpoons> "CONST Ball (CONST set A) (\<lambda>x. P)"
   "\<exists>x[\<in>]A. P" \<rightleftharpoons> "CONST Bex (CONST set A) (\<lambda>x. P)"
@@ -53,6 +59,11 @@ syntax
   "_setleAllList"   :: \<open>[idt, 'a, bool] \<Rightarrow> bool\<close>   (\<open>(3\<forall>_[\<subseteq>]_./ _)\<close> [0, 0, 10] 10)
   "_setleExList"    :: \<open>[idt, 'a, bool] \<Rightarrow> bool\<close>   (\<open>(3\<exists>_[\<subseteq>]_./ _)\<close> [0, 0, 10] 10)
   "_setleEx1List"   :: \<open>[idt, 'a, bool] \<Rightarrow> bool\<close>   (\<open>(3\<exists>!_[\<subseteq>]_./ _)\<close> [0, 0, 10] 10)
+
+syntax_consts
+  "_setlessAllList" "_setleAllList" \<rightleftharpoons> All and
+  "_setlessExList" "_setleExList" \<rightleftharpoons> Ex and
+  "_setleEx1List" \<rightleftharpoons> Ex1
 
 translations
   "\<forall>A[\<subset>]B. P" \<rightharpoonup> "\<forall>A. A [\<subset>] B \<longrightarrow> P"

@@ -334,6 +334,8 @@ where
 syntax
   "_sum" :: "idt => nat => nat => nat"
     ("SUMM _<_. _" [0, 0, 10] 10)
+syntax_consts
+  "_sum" == sum
 translations
   "SUMM j<k. b" == "CONST sum (\<lambda>j. b) k"
 

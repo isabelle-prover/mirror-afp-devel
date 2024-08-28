@@ -11,16 +11,19 @@ definition subsummable (infix "subsummable" 50)
 
 syntax "_subsum" :: "pttrn \<Rightarrow> nat set \<Rightarrow> 'a \<Rightarrow> 'a"
   ("(2\<Sum>`_ \<in> (_)./ _)" [0, 0, 10] 10)
+syntax_consts "_subsum" == subsum
 translations
   "\<Sum>` x\<in>S. t" => "CONST subsum (\<lambda>x. t) S"
 
 syntax "_subsum_prop" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"
   ("(2\<Sum>`_ | (_)./ _)" [0, 0, 10] 10)
+syntax_consts "_subsum_prop" == subsum
 translations
   "\<Sum>` x|P. t" => "CONST subsum (\<lambda>x. t) {x. P}"
 
 syntax "_subsum_ge" :: "pttrn \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a"
   ("(2\<Sum>`_ \<ge> _./ _)" [0, 0, 10] 10)
+syntax_consts "_subsum_ge" == subsum
 translations
   "\<Sum>` x\<ge>n. t" => "CONST subsum (\<lambda>x. t) {n..}"
 

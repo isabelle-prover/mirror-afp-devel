@@ -51,6 +51,8 @@ abbreviation upper_sum
   where "upper_sum seq n \<equiv> \<Sum>i. seq (i + n)"
 syntax
   "_from_sum" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Sum>_\<ge>_./ _)" [0,0,10] 10)
+syntax_consts
+  "_from_sum" == upper_sum
 translations
   "\<Sum>i\<ge>n. t" == "CONST upper_sum (\<lambda>i. t) n"
 

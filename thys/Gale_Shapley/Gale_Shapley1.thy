@@ -21,6 +21,9 @@ lemmas conj12 = conjunct1 conjunct2
 syntax
   "_assign_list" :: "idt \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> 'com"  ("(2_[_] :=/ _)" [70, 0, 65] 61)
 
+syntax_consts
+  "_assign_list" \<rightleftharpoons> list_update
+
 translations
   "xs[n] := e" \<rightharpoonup> "xs := CONST list_update xs n e"
 

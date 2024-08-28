@@ -230,6 +230,9 @@ definition hash_pro_pmf ::
 syntax
   "_FLIPBIND"     :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow> 'b"  (infixr "=<<" 54)
 
+syntax_consts
+  "_FLIPBIND"       == Monad_Syntax.bind
+
 translations
   "_FLIPBIND f g"   => "g \<bind> f"
 

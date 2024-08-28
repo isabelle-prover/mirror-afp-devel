@@ -67,6 +67,8 @@ notation bind_SE ("bind\<^sub>S\<^sub>E")
 syntax
           "_bind_SE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(2 _ \<leftarrow> _; _)" [5,8,8]8)
+syntax_consts
+          "_bind_SE" == bind_SE
 translations 
           "x \<leftarrow> f; g" == "CONST bind_SE f (% x . g)"
 
@@ -180,6 +182,8 @@ where     "if_SE c E F = (\<lambda>\<sigma>. if c \<sigma> then E \<sigma> else 
 syntax
           "_if_SE" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(if\<^sub>S\<^sub>E _ then _ else _fi)" [5,8,8]8)
+syntax_consts
+          "_if_SE" == if_SE
 translations 
           "(if\<^sub>S\<^sub>E cond then T1 else T2 fi)" == "CONST if_SE cond T1 T2"
 
@@ -316,6 +320,8 @@ where     "while_SE c B \<equiv> (Rel2Mon(lfp(\<Gamma> c (Mon2Rel B))))"
 syntax
           "_while_SE" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
           ("(while\<^sub>S\<^sub>E _ do _ od)" [8,8]8)
+syntax_consts
+          "_while_SE" == while_SE
 translations 
           "while\<^sub>S\<^sub>E c do b od" == "CONST while_SE c b"
 

@@ -234,6 +234,15 @@ syntax
   "_uwhile_inv_bot" :: "uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" ("while\<^sub>\<bottom> _ invr _ do _ od" 71)
   "_uwhile_vrt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" ("while _ invr _ vrt _ do _ od")
 
+syntax_consts
+  "_uassume" == rassume and
+  "_uassert" == rassert and
+  "_uwhile" "_uwhile_top" == while_top and
+  "_uwhile_bot" == while_bot and
+  "_uwhile_inv" == while_inv and
+  "_uwhile_inv_bot" == while_inv_bot and
+  "_uwhile_vrt" == while_vrt
+
 translations
   "_uassume b" == "CONST rassume b"
   "_uassert b" == "CONST rassert b"

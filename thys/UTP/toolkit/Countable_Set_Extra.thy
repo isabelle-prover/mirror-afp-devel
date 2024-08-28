@@ -49,6 +49,10 @@ syntax
   "_cBall" :: "pttrn => 'a cset => bool => bool" ("(3\<forall> _\<in>\<^sub>c_./ _)" [0, 0, 10] 10)
   "_cBex"  :: "pttrn => 'a cset => bool => bool" ("(3\<exists> _\<in>\<^sub>c_./ _)" [0, 0, 10] 10)
 
+syntax_consts
+  "_cBall" == cBall and
+  "_cBex" == cBex
+
 translations
   "\<forall> x\<in>\<^sub>cA. P" == "CONST cBall A (%x. P)"
   "\<exists> x\<in>\<^sub>cA. P" == "CONST cBex  A (%x. P)"
@@ -66,12 +70,15 @@ declare cset_Collect_def [simp]
 
 syntax
   "_cColl" :: "pttrn => bool => 'a cset" ("(1{_./ _}\<^sub>c)")
-
+syntax_consts
+  "_cColl" \<rightleftharpoons> cset_Collect
 translations
   "{x . P}\<^sub>c" \<rightleftharpoons> "(CONST cset_Collect) (\<lambda> x . P)"
 
 syntax
   "_cCollect" :: "pttrn => 'a cset => bool => 'a cset"    ("(1{_ \<in>\<^sub>c/ _./ _}\<^sub>c)")
+syntax_consts
+  "_cCollect" \<rightleftharpoons> cset_Coll
 translations
   "{x \<in>\<^sub>c A. P}\<^sub>c" => "CONST cset_Coll A (\<lambda> x. P)"
 

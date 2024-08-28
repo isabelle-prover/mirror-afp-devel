@@ -146,6 +146,10 @@ syntax
   "_Ballon" :: \<open>pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool\<close> (\<open>(3\<forall>(_/on_)./ _)\<close> [0, 0, 10] 10)
   "_Bexon" :: \<open>pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool\<close> (\<open>(3\<exists>(_/on_)./ _)\<close> [0, 0, 10] 10)
 
+syntax_consts
+  "_Ballon" \<rightleftharpoons> All and
+  "_Bexon" \<rightleftharpoons> Ex
+
 translations
   "\<forall>p on A. P" \<rightharpoonup> "\<forall>p. p on A \<longrightarrow> P"
   "\<exists>p on A. P" \<rightharpoonup> "\<exists>p. p on A \<and> P"

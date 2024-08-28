@@ -88,6 +88,10 @@ syntax (input)
   "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
   "_doE" :: "[dobinds, 'a] => 'a"  ("(doE ((_);//(_))//odE)" 100)
 
+syntax_consts
+  "_do" \<rightleftharpoons> bind_nd and
+  "_doE" \<rightleftharpoons> bindE
+
 translations
   "_do (_dobinds b bs) e"  \<rightharpoonup> "_do b (_do bs e)"
   "_do (_nobind b) e"      \<rightharpoonup> "CONST bind_nd b (\<lambda>_. e)"
@@ -102,6 +106,9 @@ term "do x <- f; g x od"
 
 syntax
   "_doO" :: "[dobinds, 'a] => 'a"  ("(DO (_);//   (_)//OD)" 100)
+
+syntax_consts
+  "_doO" == obind
 
 translations
   "_doO (_dobinds b bs) e" == "_doO b (_doO bs e)"

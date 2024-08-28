@@ -38,7 +38,8 @@ locale is_cat_rKe =
 
 syntax "_is_cat_rKe" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<circ>\<^sub>C\<^sub>F _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<index> _ :/ _ \<mapsto>\<^sub>C _ \<mapsto>\<^sub>C _)\<close> [51, 51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<TT> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons> 
+syntax_consts "_is_cat_rKe" \<rightleftharpoons> is_cat_rKe
+translations "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<TT> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons>
   "CONST is_cat_rKe \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT> \<GG> \<epsilon>"
 
 locale is_cat_lKe =
@@ -55,7 +56,8 @@ locale is_cat_lKe =
 
 syntax "_is_cat_lKe" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<index> _ \<circ>\<^sub>C\<^sub>F _ :/ _ \<mapsto>\<^sub>C _ \<mapsto>\<^sub>C _)\<close> [51, 51, 51, 51, 51, 51, 51] 51)
-translations "\<eta> : \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<FF> \<circ>\<^sub>C\<^sub>F \<KK> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons> 
+syntax_consts "_is_cat_lKe" \<rightleftharpoons> is_cat_lKe
+translations "\<eta> : \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<FF> \<circ>\<^sub>C\<^sub>F \<KK> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons>
   "CONST is_cat_lKe \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT> \<FF> \<eta>"
 
 
@@ -2715,6 +2717,7 @@ syntax "_is_cat_rKe_preserves" ::
     \<open>(_ :/ _ \<circ>\<^sub>C\<^sub>F _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<index> _ :/ _ \<mapsto>\<^sub>C _ \<mapsto>\<^sub>C _ : _ \<mapsto>\<mapsto>\<^sub>C _)\<close> 
     [51, 51, 51, 51, 51, 51, 51, 51, 51] 51
   )
+syntax_consts "_is_cat_rKe_preserves" \<rightleftharpoons> is_cat_rKe_preserves
 translations "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<TT> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C (\<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C \<DD>)" \<rightleftharpoons> 
   "CONST is_cat_rKe_preserves \<alpha> \<BB> \<CC> \<AA> \<DD> \<KK> \<TT> \<GG> \<HH> \<epsilon>"
 
@@ -2730,6 +2733,7 @@ syntax "_is_cat_lKe_preserves" ::
     \<open>(_ :/ _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<index> _ \<circ>\<^sub>C\<^sub>F _ :/ _ \<mapsto>\<^sub>C _ \<mapsto>\<^sub>C _ : _ \<mapsto>\<mapsto>\<^sub>C _)\<close> 
     [51, 51, 51, 51, 51, 51, 51, 51, 51] 51
   )
+syntax_consts "_is_cat_lKe_preserves" \<rightleftharpoons> is_cat_lKe_preserves
 translations "\<eta> : \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^bsub>\<alpha>\<^esub> \<FF> \<circ>\<^sub>C\<^sub>F \<KK> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C (\<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C \<DD>)" \<rightleftharpoons>
   "CONST is_cat_lKe_preserves \<alpha> \<BB> \<CC> \<AA> \<DD> \<KK> \<TT> \<FF> \<HH> \<eta>"
 

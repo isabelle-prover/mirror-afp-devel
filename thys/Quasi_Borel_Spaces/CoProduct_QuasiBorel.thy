@@ -63,6 +63,8 @@ definition coprod_qbs :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow
 
 syntax
  "_coprod_qbs" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" ("(3\<amalg>\<^sub>Q _\<in>_./ _)"  10)
+syntax_consts
+ "_coprod_qbs" \<rightleftharpoons> coprod_qbs
 translations
  "\<amalg>\<^sub>Q x\<in>I. M" \<rightleftharpoons> "CONST coprod_qbs I (\<lambda>x. M)"
 

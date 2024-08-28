@@ -67,6 +67,9 @@ Finite sums are defined recursively using the binary aggregation and $\bot + \bo
 syntax
   "_sum_ab_semigroup_add_0" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Sum>\<^sub>_ _)" [0,10] 10)
 
+syntax_consts
+  "_sum_ab_semigroup_add_0" == ab_semigroup_add_0.sum_0
+
 translations
   "\<Sum>\<^sub>x t" => "XCONST ab_semigroup_add_0.sum_0 XCONST plus (XCONST plus XCONST bot XCONST bot) (\<lambda>x . t) { x . CONST True }"
 

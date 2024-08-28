@@ -16,6 +16,9 @@ consts
 syntax
   "_uwp" :: "logic \<Rightarrow> uexp \<Rightarrow> logic" (infix "wp" 60)
 
+syntax_consts
+  "_uwp" == uwp
+
 translations
   "_uwp P b" == "CONST uwp P b"
 

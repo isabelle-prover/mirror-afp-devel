@@ -35,6 +35,7 @@ locale is_cat_limit = is_cat_cone \<alpha> r \<JJ> \<CC> \<FF> u for \<alpha> \<
 
 syntax "_is_cat_limit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_cat_limit" \<rightleftharpoons> is_cat_limit
 translations "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_limit \<alpha> \<JJ> \<CC> \<FF> r u"
 
@@ -44,7 +45,8 @@ locale is_cat_colimit = is_cat_cocone \<alpha> r \<JJ> \<CC> \<FF> u for \<alpha
 
 syntax "_is_cat_colimit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
-translations "u : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m r : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_colimit" \<rightleftharpoons> is_cat_colimit
+translations "u : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m r : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_colimit \<alpha> \<JJ> \<CC> \<FF> r u"
 
 
@@ -853,6 +855,7 @@ locale is_tm_cat_limit = is_tm_cat_cone \<alpha> r \<JJ> \<CC> \<FF> u for \<alp
 
 syntax "_is_tm_cat_limit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>l\<^sub>i\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_cat_limit" \<rightleftharpoons> is_tm_cat_limit
 translations "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>l\<^sub>i\<^sub>m \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_tm_cat_limit \<alpha> \<JJ> \<CC> \<FF> r u"
 
@@ -863,6 +866,7 @@ locale is_tm_cat_colimit = is_tm_cat_cocone \<alpha> r \<JJ> \<CC> \<FF> u for \
 
 syntax "_is_tm_cat_colimit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_cat_colimit" \<rightleftharpoons> is_tm_cat_colimit
 translations "u : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m r : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_tm_cat_colimit \<alpha> \<JJ> \<CC> \<FF> r u"
 
@@ -1445,6 +1449,7 @@ locale is_cat_finite_limit =
 
 syntax "_is_cat_finite_limit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_cat_finite_limit" \<rightleftharpoons> is_cat_finite_limit
 translations "u : r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_finite_limit \<alpha> \<JJ> \<CC> \<FF> r u"
 
@@ -1454,6 +1459,7 @@ locale is_cat_finite_colimit =
 
 syntax "_is_cat_finite_colimit" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_cat_finite_colimit" \<rightleftharpoons> is_cat_finite_colimit
 translations "u : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>l\<^sub>i\<^sub>m\<^sub>.\<^sub>f\<^sub>i\<^sub>n r : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_finite_colimit \<alpha> \<JJ> \<CC> \<FF> r u"
 

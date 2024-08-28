@@ -25,6 +25,11 @@ syntax
   "_prj" :: "type \<Rightarrow> logic" ("(1PRJ/(1'(_')))")
   "_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1COERCE/(1'(_,/ _')))")
 
+syntax_consts
+  "_emb" \<rightleftharpoons> emb and
+  "_prj" \<rightleftharpoons> prj and
+  "_coerce" \<rightleftharpoons> coerce
+
 translations
   "EMB('a)" \<rightharpoonup> "CONST emb :: 'a \<rightarrow> udom"
   "PRJ('a)" \<rightharpoonup> "CONST prj :: udom \<rightarrow> 'a"

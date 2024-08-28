@@ -36,6 +36,7 @@ definition dg_prod :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
 
 syntax "_PDIGRAPH" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
   (\<open>(3\<Prod>\<^sub>D\<^sub>G_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
+syntax_consts "_PDIGRAPH" \<rightleftharpoons> dg_prod
 translations "\<Prod>\<^sub>D\<^sub>Gi\<in>\<^sub>\<circ>I. \<AA>" \<rightleftharpoons> "CONST dg_prod I (\<lambda>i. \<AA>)"
 
 

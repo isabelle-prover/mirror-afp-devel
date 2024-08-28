@@ -63,6 +63,7 @@ locale is_semifunctor =
 
 syntax "_is_semifunctor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_semifunctor" \<rightleftharpoons> is_semifunctor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_semifunctor \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation (input) is_cn_semifunctor :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -70,6 +71,7 @@ abbreviation (input) is_cn_semifunctor :: "V \<Rightarrow> V \<Rightarrow> V \<R
 
 syntax "_is_cn_semifunctor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<^sub>S\<^sub>M\<^sub>C\<mapsto>\<mapsto>\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cn_semifunctor" \<rightleftharpoons> is_cn_semifunctor
 translations "\<FF> : \<AA> \<^sub>S\<^sub>M\<^sub>C\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>" \<rightharpoonup> "CONST is_cn_semifunctor \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation all_smcfs :: "V \<Rightarrow> V"
@@ -1405,6 +1407,7 @@ locale is_ft_semifunctor = is_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alpha
 
 syntax "_is_ft_semifunctor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_ft_semifunctor" \<rightleftharpoons> is_ft_semifunctor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_ft_semifunctor \<alpha> \<AA> \<BB> \<FF>"
 
 lemma (in is_ft_semifunctor) ft_smcf_is_ft_dghm'[slicing_intros]:
@@ -1550,6 +1553,7 @@ locale is_fl_semifunctor = is_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alpha
 
 syntax "_is_fl_semifunctor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_fl_semifunctor" \<rightleftharpoons> is_fl_semifunctor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_fl_semifunctor \<alpha> \<AA> \<BB> \<FF>"
 
 lemma (in is_fl_semifunctor) fl_smcf_is_fl_dghm'[slicing_intros]:
@@ -1675,6 +1679,7 @@ locale is_ff_semifunctor =
 
 syntax "_is_ff_semifunctor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>f\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_ff_semifunctor" \<rightleftharpoons> is_ff_semifunctor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>f\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_ff_semifunctor \<alpha> \<AA> \<BB> \<FF>"
 
 
@@ -1746,6 +1751,7 @@ locale is_iso_semifunctor = is_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alph
 
 syntax "_is_iso_semifunctor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_iso_semifunctor" \<rightleftharpoons> is_iso_semifunctor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_iso_semifunctor \<alpha> \<AA> \<BB> \<FF>"
 
 lemma (in is_iso_semifunctor) iso_smcf_is_iso_dghm'[slicing_intros]:

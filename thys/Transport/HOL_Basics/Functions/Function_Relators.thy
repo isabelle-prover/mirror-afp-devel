@@ -41,6 +41,9 @@ no_syntax
     ("'(_/ :/ _/ |/ _') \<Rrightarrow> (_)" [51, 50, 50, 50] 50)
 end
 unbundle Dep_Fun_Rel_syntax
+syntax_consts
+  "_Fun_Rel" \<rightleftharpoons> Fun_Rel and
+  "_Dep_Fun_Rel_rel" "_Dep_Fun_Rel_rel_if" "_Dep_Fun_Rel_pred" "_Dep_Fun_Rel_pred_if" \<rightleftharpoons> Dep_Fun_Rel
 translations
   "R \<Rrightarrow> S" \<rightleftharpoons> "CONST Fun_Rel R S"
   "(x y \<Colon> R) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel R (\<lambda>x y. S)"

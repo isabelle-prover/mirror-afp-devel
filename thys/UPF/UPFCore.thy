@@ -131,6 +131,11 @@ syntax
    "_MapUpd"      :: "['a |-> 'b, policylets] => 'a |-> 'b"  ("_/'(_')" [900,0]900)
   "_emptypolicy" :: "'a |-> 'b"                             ("\<emptyset>")
 
+syntax_consts
+  "_policylet1" \<rightleftharpoons> allow and
+  "_policylet2" \<rightleftharpoons> deny and
+  "_Maplets" "_MapUpd" \<rightleftharpoons> fun_upd and
+  "_emptypolicy" \<rightleftharpoons> Map.empty
 translations
   "_MapUpd m (_Maplets xy ms)"   \<rightleftharpoons> "_MapUpd (_MapUpd m xy) ms"
   "_MapUpd m (_policylet1 x y)"  \<rightleftharpoons> "m(x := CONST Some (CONST allow y))"
@@ -179,6 +184,8 @@ text\<open>
 
 syntax
   "_policyoverride"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>" 100)
+syntax_consts
+  "_policyoverride" \<rightleftharpoons> map_add
 translations
   "p \<Oplus> q" \<rightleftharpoons> "q ++ p" 
 
@@ -212,6 +219,8 @@ where  "m2 ++_A m1 =
 
 syntax
   "_policyoverride_A"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>\<^sub>A" 100)
+syntax_consts
+  "_policyoverride_A" \<rightleftharpoons> override_A
 translations
   "p \<Oplus>\<^sub>A q" \<rightleftharpoons> "p ++_A q"
 
@@ -246,6 +255,8 @@ where "m1 ++_D m2 =
  
 syntax
   "_policyoverride_D"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>\<^sub>D" 100)
+syntax_consts
+  "_policyoverride_D" \<rightleftharpoons> override_D
 translations
   "p \<Oplus>\<^sub>D q" \<rightleftharpoons> "p ++_D q"
 
@@ -287,6 +298,8 @@ where
 
 syntax
   "_policy_range_comp" :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>" (infixl "o\<^sub>f" 55)
+syntax_consts
+  "_policy_range_comp" \<rightleftharpoons> policy_range_comp
 translations
   "p o\<^sub>f q" \<rightleftharpoons> "p o_f q"
 

@@ -84,6 +84,9 @@ type_synonym state = "var \<Rightarrow> nat"
 syntax
  "_assign" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("_ ::= _" [1000, 61] 61)
 
+syntax_consts
+  "_assign" == Assign
+
 translations
   "x ::= expr" == "CONST Atm (CONST Assign x expr)"
  

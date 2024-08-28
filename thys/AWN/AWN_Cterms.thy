@@ -45,6 +45,11 @@ syntax
      :: "[('s, 'm, 'p, 'l) seqp, ('s, 'm, 'p, 'l) seqp_env, ('s, 'm, 'p, 'l) seqp] \<Rightarrow> bool"
      ("(_) \<leadsto>\<^bsub>_\<^esub>\<^sup>+ (_)" [61, 0, 61] 50)
 
+syntax_consts
+  "_microstep" \<rightleftharpoons> microstep and
+  "_microstep_rtcl" \<rightleftharpoons> microstep_rtcl and
+  "_microstep_tcl" \<rightleftharpoons> microstep_tcl
+
 translations
   "p1 \<leadsto>\<^bsub>\<Gamma>\<^esub> p2"  \<rightleftharpoons> "CONST microstep \<Gamma> p1 p2"
   "p1 \<leadsto>\<^bsub>\<Gamma>\<^esub>\<^sup>* p2" \<rightleftharpoons> "CONST microstep_rtcl \<Gamma> p1 p2"

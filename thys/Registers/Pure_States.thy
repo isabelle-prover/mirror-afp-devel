@@ -78,6 +78,9 @@ syntax "_pure_tensor2" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarr
 syntax "_pure_tensor1" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> pure_tensor\<close>
 syntax "_pure_tensor_start" :: \<open>pure_tensor \<Rightarrow> 'a\<close> ("'(_')")
 
+syntax_consts
+  "_pure_tensor" "_pure_tensor2" "_pure_tensor_start" \<rightleftharpoons> tensor_ell2
+
 translations
   "_pure_tensor2 F \<psi> G \<phi>" \<rightharpoonup> "CONST pure_state (F; G) (\<psi> \<otimes>\<^sub>s \<phi>)"
   "_pure_tensor F \<psi> (CONST pure_state G \<phi>)" \<rightharpoonup> "CONST pure_state (F; G) (\<psi> \<otimes>\<^sub>s \<phi>)"

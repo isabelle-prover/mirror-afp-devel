@@ -80,7 +80,9 @@ notation bind_SE ("bind\<^sub>S\<^sub>E")
 syntax
           "_bind_SE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E"  
                                                                           ("(2 _ \<leftarrow> _; _)" [5,8,8]8)
-translations 
+syntax_consts
+          "_bind_SE" \<rightleftharpoons> bind_SE
+translations
           "x \<leftarrow> f; g" \<rightleftharpoons> "CONST bind_SE f (% x . g)"
 
 definition unit_SE :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   ("(return _)" 8) 
@@ -300,7 +302,8 @@ notation   unit_SB ("unit\<^sub>S\<^sub>B")
 
 syntax "_bind_SB" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B,('o','\<sigma>)MON\<^sub>S\<^sub>B] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B" 
                                                                          ("(2 _ := _; _)" [5,8,8]8)
-translations 
+syntax_consts "_bind_SB" \<rightleftharpoons> bind_SB
+translations
           "x := f; g" \<rightleftharpoons> "CONST bind_SB f (% x . g)"
 
 lemma bind_left_unit_SB : "(x := returns a; m) = m"
@@ -335,7 +338,8 @@ where     "bind_SBE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarr
 
 syntax "_bind_SBE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E" 
                                                                          ("(2 _ :\<equiv> _; _)" [5,8,8]8)
-translations 
+syntax_consts "_bind_SBE" \<rightleftharpoons> bind_SBE
+translations
           "x :\<equiv> f; g" \<rightleftharpoons> "CONST bind_SBE f (% x . g)"
 
 definition unit_SBE   :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E"   ("(returning _)" 8) 

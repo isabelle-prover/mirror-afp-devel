@@ -32,7 +32,8 @@ locale is_cat_equalizer =
 
 syntax "_is_cat_equalizer" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q '(_,_,_,_') :/ \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_equalizer" \<rightleftharpoons> is_cat_equalizer
+translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,F,F') : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_equalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon>"
 
 locale is_cat_coequalizer =
@@ -46,7 +47,8 @@ locale is_cat_coequalizer =
 
 syntax "_is_cat_coequalizer" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ '(_,_,_,_') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q _ :/ \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_coequalizer" \<rightleftharpoons> is_cat_coequalizer
+translations "\<epsilon> : (\<aa>,\<bb>,F,F') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<Up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_coequalizer \<alpha> \<aa> \<bb> F F' \<CC> E \<epsilon>"
 
 
@@ -761,7 +763,8 @@ locale is_cat_equalizer_2 =
 
 syntax "_is_cat_equalizer_2" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q '(_,_,_,_') :/ \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_equalizer_2" \<rightleftharpoons> is_cat_equalizer_2
+translations "\<epsilon> : E <\<^sub>C\<^sub>F\<^sub>.\<^sub>e\<^sub>q (\<aa>,\<bb>,\<gg>,\<ff>) : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_equalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon>"
 
 locale is_cat_coequalizer_2 =
@@ -773,7 +776,8 @@ locale is_cat_coequalizer_2 =
 
 syntax "_is_cat_coequalizer_2" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ '(_,_,_,_') >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q _ :/ \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51] 51)
-translations "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_coequalizer_2" \<rightleftharpoons> is_cat_coequalizer_2
+translations "\<epsilon> : (\<aa>,\<bb>,\<gg>,\<ff>) >\<^sub>C\<^sub>F\<^sub>.\<^sub>c\<^sub>o\<^sub>e\<^sub>q E : \<up>\<up>\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_coequalizer_2 \<alpha> \<aa> \<bb> \<gg> \<ff> \<CC> E \<epsilon>"
 
 

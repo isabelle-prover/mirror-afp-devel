@@ -53,6 +53,9 @@ syntax
   "_lmupdbinds" :: "[lmupdbind, lmupdbinds] => lmupdbinds"    ("_,/ _")
   "_LMUpdate" :: "['a, lmupdbinds] => 'a"    ("_/[(_)]" [900,0] 900)
 
+syntax_consts
+  "_lmupdbind" "_lmupdbinds" "_LMUpdate" == list_multupd
+
 translations
   "_LMUpdate xs (_lmupdbinds b bs)" == "_LMUpdate (_LMUpdate xs b) bs"
   "xs[is[:=]ys]" == "CONST list_multupd xs is ys"
@@ -613,6 +616,9 @@ syntax
 "_Mlex":: "('a \<Rightarrow> nat) \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) set"
       (infixr "<*MLEX*>" 30)
 
+syntax_consts
+"_Measure" == measure and
+"_Mlex" == mlex_prod
 
 translations
  "MEASURE f"       => "(CONST measure) (_quote f)"

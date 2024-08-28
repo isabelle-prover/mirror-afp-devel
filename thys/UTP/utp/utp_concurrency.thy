@@ -47,6 +47,11 @@ syntax
   "_svarleft"  :: "svid \<Rightarrow> svid" ("0-_" [995] 995)
   "_svarright" :: "svid \<Rightarrow> svid" ("1-_" [995] 995)
 
+syntax_consts
+  "_svarpre" \<rightleftharpoons> pre_uvar and
+  "_svarleft" \<rightleftharpoons> left_uvar and
+  "_svarright" \<rightleftharpoons> right_uvar
+
 translations
   "_svarpre x"   == "CONST pre_uvar x"
   "_svarleft x"  == "CONST left_uvar x"

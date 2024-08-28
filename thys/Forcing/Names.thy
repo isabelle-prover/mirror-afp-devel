@@ -14,6 +14,8 @@ definition
 
 syntax
   "_SepReplace"  :: "[i, pttrn, i, o] \<Rightarrow> i"  ("(1{_ ../ _ \<in> _, _})")
+syntax_consts
+  "_SepReplace" == SepReplace
 translations
   "{b .. x\<in>A, Q}" => "CONST SepReplace(A, \<lambda>x. b, \<lambda>x. Q)"
 

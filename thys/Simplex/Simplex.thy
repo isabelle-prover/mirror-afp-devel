@@ -110,6 +110,8 @@ definition map2fun:: "(var, 'a :: zero) mapping \<Rightarrow> var \<Rightarrow> 
   "map2fun v \<equiv> \<lambda>x. case look v x of None \<Rightarrow> 0 | Some y \<Rightarrow> y"
 syntax
   "_map2fun" :: "(var, 'a) mapping \<Rightarrow> var \<Rightarrow> 'a"  ("\<langle>_\<rangle>")
+syntax_consts
+  "_map2fun" == map2fun
 translations
   "\<langle>v\<rangle>" == "CONST map2fun v"
 
@@ -1494,6 +1496,8 @@ fun satisfies_bounds_set  :: "'a::linorder valuation \<Rightarrow> 'a bounds \<t
 declare satisfies_bounds_set.simps [simp del]
 syntax
   "_satisfies_bounds_set" :: "(var \<Rightarrow> 'a::linorder) \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> var set \<Rightarrow> bool"    ("_ \<Turnstile>\<^sub>b _ \<parallel>/ _")
+syntax_consts
+  "_satisfies_bounds_set" == satisfies_bounds_set
 translations
   "v \<Turnstile>\<^sub>b b \<parallel> S" == "CONST satisfies_bounds_set v b S"
 lemma satisfies_bounds_set_iff:

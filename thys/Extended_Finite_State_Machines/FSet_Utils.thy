@@ -24,6 +24,11 @@ syntax
   "_fBnex"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<nexists>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
   "_fBex1"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>!(_/|\<in>|_)./ _)" [0, 0, 10] 10)
 
+syntax_consts
+  "_fBall" "_fBnex" \<rightleftharpoons> fBall and
+  "_fBex" \<rightleftharpoons> fBex and
+  "_fBex1" \<rightleftharpoons> Ex1
+  
 translations
   "\<forall>x|\<in>|A. P" \<rightleftharpoons> "CONST fBall A (\<lambda>x. P)"
   "\<exists>x|\<in>|A. P" \<rightleftharpoons> "CONST fBex  A (\<lambda>x. P)"

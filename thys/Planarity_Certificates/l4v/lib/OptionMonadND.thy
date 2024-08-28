@@ -21,6 +21,9 @@ begin
 syntax
   "_doO" :: "[dobinds, 'a] => 'a"  ("(DO (_);//   (_)//OD)" 100)
 
+syntax_consts
+  "_doO" == obind
+
 translations
   "_doO (_dobinds b bs) e" == "_doO b (_doO bs e)"
   "_doO (_nobind b) e"     == "b |>> (CONST K_bind e)"

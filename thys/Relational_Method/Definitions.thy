@@ -505,6 +505,9 @@ datatype msg =
 syntax
   "_MPair"  :: "['a, args] \<Rightarrow> 'a * 'b"  ("(2\<lbrace>_,/ _\<rbrace>)")
   "_IDInfo" :: "[agent_id, msg] \<Rightarrow> msg"      ("(2\<langle>_,/ _\<rangle>)")
+syntax_consts
+  "_MPair" \<rightleftharpoons> MPair and
+  "_IDInfo" \<rightleftharpoons> IDInfo
 translations
   "\<lbrace>X, Y, Z\<rbrace>" \<rightleftharpoons> "\<lbrace>X, \<lbrace>Y, Z\<rbrace>\<rbrace>"
   "\<lbrace>X, Y\<rbrace>" \<rightleftharpoons> "CONST MPair X Y"

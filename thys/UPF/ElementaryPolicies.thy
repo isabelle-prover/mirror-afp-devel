@@ -72,11 +72,15 @@ definition
 
 syntax
   "_allow_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("A\<^sub>p")
+syntax_consts
+  "_allow_pfun" \<rightleftharpoons> allow_pfun
 translations
   "A\<^sub>p f" \<rightleftharpoons> "AllA f"
 
 syntax
   "_deny_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("D\<^sub>p")
+syntax_consts
+  "_deny_pfun" \<rightleftharpoons> deny_pfun
 translations
   "D\<^sub>p f" \<rightleftharpoons> "AllD f"
 

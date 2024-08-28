@@ -209,6 +209,7 @@ locale is_preorder_functor =
 
 syntax "_is_preorder_functor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<le>\<^sub>C\<^sub>.\<^sub>P\<^sub>E\<^sub>O\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_preorder_functor" \<rightleftharpoons> is_preorder_functor
 translations "\<FF> : \<AA> \<le>\<^sub>C\<^sub>.\<^sub>P\<^sub>E\<^sub>O\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_preorder_functor \<alpha> \<AA> \<BB> \<FF>"
 
 

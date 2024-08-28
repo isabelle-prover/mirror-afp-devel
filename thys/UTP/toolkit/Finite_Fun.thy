@@ -105,6 +105,9 @@ syntax
   "_FfunUpd"  :: "[('a, 'b) ffun, maplets] => ('a, 'b) ffun" ("_'(_')\<^sub>f" [900,0]900)
   "_Ffun"     :: "maplets => ('a, 'b) ffun"            ("(1{_}\<^sub>f)")
 
+syntax_consts
+  "_FfunUpd" "_Ffun" \<rightleftharpoons> ffun_upd
+  
 translations
   "_FfunUpd m (_Maplets xy ms)"  == "_FfunUpd (_FfunUpd m xy) ms"
   "_FfunUpd m (_maplet  x y)"    == "CONST ffun_upd m x y"

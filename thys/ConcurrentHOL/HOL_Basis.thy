@@ -29,6 +29,9 @@ syntax
   "_PAR1"     :: "pttrns \<Rightarrow> 'a set \<Rightarrow> 'b"                    ("(3\<Parallel>_./ _)" [0, 10] 10)
   "_PAR"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"               ("(3\<Parallel>_\<in>_./ _)" [0, 0, 10] 10)
 
+syntax_consts
+  "_PAR1" "_PAR" \<rightleftharpoons> Parallel
+
 translations
   "\<Parallel>x y. f"   \<rightleftharpoons> "\<Parallel>x. \<Parallel>y. f"
   "\<Parallel>x. f"     \<rightleftharpoons> "CONST Parallel CONST UNIV (\<lambda>x. f)"

@@ -28,6 +28,8 @@ TYPE('a)\<close>. \medskip\<close>
 
 syntax  "_TC" :: "type \<Rightarrow> logic"  ("(1TC/(1'(_')))")
 
+syntax_consts "_TC" \<rightleftharpoons> tc
+
 translations "TC('a)" \<rightleftharpoons> "CONST tc TYPE('a)"
 
 

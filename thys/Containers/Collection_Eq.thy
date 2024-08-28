@@ -26,6 +26,8 @@ end
 
 syntax "_CEQ" :: "type => logic"  ("(1CEQ/(1'(_')))")
 
+syntax_consts "_CEQ" == ceq
+
 parse_translation \<open>
 let
   fun ceq_tr [ty] =

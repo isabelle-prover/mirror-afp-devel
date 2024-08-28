@@ -733,7 +733,8 @@ text \<open> Map comprehension simply converts a relation built through set comp
 
 syntax
   "_Mapcompr" :: "'a \<Rightarrow> 'b \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a \<rightharpoonup> 'b"    ("(1[_ \<mapsto> _ |/_./ _])")
-
+syntax_consts
+  "_Mapcompr" == graph_map
 translations
   "_Mapcompr F G xs P" == "CONST graph_map {(F, G) | xs. P}"
 

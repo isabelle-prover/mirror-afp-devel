@@ -159,6 +159,8 @@ qed
                 
 syntax
   "_OclFinsequence" :: "args => ('\<AA>,'a::null) Sequence"    ("Sequence{(_)}")
+syntax_consts
+  "_OclFinsequence" == OclPrepend
 translations
   "Sequence{x, xs}" == "CONST OclPrepend (Sequence{xs}) x"
   "Sequence{x}"     == "CONST OclPrepend (Sequence{}) x "
@@ -319,6 +321,8 @@ where     "OclIterate S A F = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \
 syntax  
   "_OclIterateSeq"  :: "[('\<AA>,'\<alpha>::null) Sequence, idt, idt, '\<alpha>, '\<beta>] => ('\<AA>,'\<gamma>)val"
                         ("_ ->iterate\<^sub>S\<^sub>e\<^sub>q'(_;_=_ | _')" (*[71,100,70]50*))
+syntax_consts
+  "_OclIterateSeq" == OclIterate
 translations
   "X->iterate\<^sub>S\<^sub>e\<^sub>q(a; x = A | P)" == "CONST OclIterate X A (%a. (% x. P))"
 
@@ -332,6 +336,8 @@ where     "OclForall S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = true | x a
 
 syntax
   "_OclForallSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->forAll\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+syntax_consts
+  "_OclForallSeq" == UML_Sequence.OclForall
 translations
   "X->forAll\<^sub>S\<^sub>e\<^sub>q(x | P)" == "CONST UML_Sequence.OclForall X (%x. P)"
 
@@ -343,6 +349,8 @@ where     "OclExists S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = false | x 
 
 syntax
   "_OclExistSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->exists\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+syntax_consts
+  "_OclExistSeq" == OclExists
 translations
   "X->exists\<^sub>S\<^sub>e\<^sub>q(x | P)" == "CONST OclExists X (%x. P)"
 
@@ -354,6 +362,8 @@ where     "OclCollect S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Sequence{
 
 syntax
   "_OclCollectSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->collect\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+syntax_consts
+  "_OclCollectSeq" == OclCollect
 translations
   "X->collect\<^sub>S\<^sub>e\<^sub>q(x | P)" == "CONST OclCollect X (%x. P)"
 
@@ -366,6 +376,8 @@ where     "OclSelect S P =
 
 syntax
   "_OclSelectSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"  ("(_)->select\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+syntax_consts
+  "_OclSelectSeq" == UML_Sequence.OclSelect
 translations
   "X->select\<^sub>S\<^sub>e\<^sub>q(x | P)" == "CONST UML_Sequence.OclSelect X (%x. P)"
 

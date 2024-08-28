@@ -35,6 +35,8 @@ end
 
 syntax
   "_fColl" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a set"    ("(1{|_./ _|})")
+syntax_consts
+  "_fColl" \<rightleftharpoons> fCollect
 translations
   "{|x. P|}" \<rightleftharpoons> "CONST fCollect (\<lambda>x. P)"
 
@@ -42,6 +44,8 @@ syntax (ASCII)
   "_fCollect" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> 'a set"  ("(1{(_/|:| _)./ _})")
 syntax
   "_fCollect" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> 'a set"  ("(1{(_/ |\<in>| _)./ _})")
+syntax_consts
+  "_fCollect" \<rightleftharpoons> fCollect
 translations
   "{p|:|A. P}" \<rightharpoonup> "CONST fCollect (\<lambda>p. p |\<in>| A \<and> P)"
 
@@ -56,6 +60,10 @@ syntax (input)
 syntax
   "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
   "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
+
+syntax_consts
+  "_fBall" \<rightleftharpoons> fBall and
+  "_fBex" \<rightleftharpoons> fBex
 
 translations
   "\<forall>x|\<in>|A. P" \<rightleftharpoons> "CONST fBall A (\<lambda>x. P)"
@@ -73,6 +81,10 @@ syntax
   "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"   ("(3\<forall>_|\<subseteq>|_./ _)" [0, 0, 10] 10)
   "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"   ("(3\<exists>_|\<subseteq>|_./ _)" [0, 0, 10] 10)
 
+syntax_consts
+  "_setlessfAll" "_setlefAll" \<rightleftharpoons> All and
+  "_setlessfEx" "_setlefEx" \<rightleftharpoons> Ex
+
 translations
  "\<forall>A|\<subset>|B. P" \<rightharpoonup> "\<forall>A. A |\<subset>| B \<longrightarrow> P"
  "\<exists>A|\<subset>|B. P" \<rightharpoonup> "\<exists>A. A |\<subset>| B \<and> P"
@@ -81,6 +93,9 @@ translations
 
 syntax
   "_fSetcompr" :: "'a \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a fset"    ("(1{|_ |/_./ _|})")
+
+syntax_consts
+  "_fSetcompr" \<rightleftharpoons> fCollect
 
 parse_translation \<open>
   let
@@ -140,6 +155,8 @@ let
 
 syntax
   "_fSigma" :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> 'b fset \<Rightarrow> ('a \<times> 'b) set"  ("(3fSIGMA _|:|_./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_fSigma" \<rightleftharpoons> fSigma
 translations
   "fSIGMA x|:|A. B" \<rightleftharpoons> "CONST fSigma A (\<lambda>x. B)"
 

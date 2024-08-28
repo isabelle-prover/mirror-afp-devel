@@ -21,7 +21,8 @@ notation fminus (infixl "-\<^sub>f" 65)
 
 syntax
   "_FinFset" :: "args => 'a fset"    ("\<lbrace>(_)\<rbrace>")
-
+syntax_consts
+  "_FinFset" == finsert
 translations
   "\<lbrace>x, xs\<rbrace>" == "CONST finsert x \<lbrace>xs\<rbrace>"
   "\<lbrace>x\<rbrace>" == "CONST finsert x \<lbrace>\<rbrace>"

@@ -20,6 +20,9 @@ syntax
   "_FmapUpd"  :: "[('a, 'b) fmap, fmaplets] \<Rightarrow> ('a, 'b) fmap" ("_/'(_')" [900, 0] 900)
   "_Fmap"     :: "fmaplets \<Rightarrow> ('a, 'b) fmap"                  ("(1{_})")
 
+syntax_consts
+  "_fmaplet" "_fmaplets" "_Fmaplets" "_FmapUpd" "_Fmap" \<rightleftharpoons> fmupd
+
 translations
   "_FmapUpd m (_Fmaplets xy ms)"  \<rightleftharpoons> "_FmapUpd (_FmapUpd m xy) ms"
   "_FmapUpd m (_fmaplet  x y)"    \<rightleftharpoons> "CONST fmupd x y m"

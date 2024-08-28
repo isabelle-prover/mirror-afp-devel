@@ -24,6 +24,9 @@ syntax (ASCII)
   "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"              ("_ /|->f/ _")
   "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"              ("_ /[|->f]/ _")
 
+syntax_consts
+  "_fmaplet" "_fmaplets" "_FMaplets" "_FMapUpd" "_FMap" \<rightleftharpoons> fmupd
+
 translations
   "_FMapUpd m (_FMaplets xy ms)"      \<rightleftharpoons> "_FMapUpd (_FMapUpd m xy) ms"
   "_FMapUpd m (_fmaplet  x y)"        \<rightleftharpoons> "CONST fmupd x y m"

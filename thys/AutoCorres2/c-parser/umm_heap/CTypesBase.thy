@@ -69,6 +69,8 @@ end
 
 syntax
   "_Ptr" :: "type \<Rightarrow> logic" ("(1PTR/(1'(_')))")
+syntax_consts
+  "_Ptr" == Ptr
 translations
   "PTR('a)" => "CONST Ptr :: (addr \<Rightarrow> 'a ptr)"
 typed_print_translation
@@ -85,6 +87,8 @@ primrec
 
 syntax
   "_Ptr_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1PTR'_COERCE/(1'(_ \<rightarrow> _')))")
+syntax_consts
+  "_Ptr_coerce" == ptr_coerce
 translations
   "PTR_COERCE('a \<rightarrow> 'b)" => "CONST ptr_coerce :: ('a ptr \<Rightarrow> 'b ptr)"
 typed_print_translation

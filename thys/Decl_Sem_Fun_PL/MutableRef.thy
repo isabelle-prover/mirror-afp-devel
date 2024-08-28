@@ -44,6 +44,7 @@ definition bind :: "'a M \<Rightarrow> ('a \<Rightarrow> 'b M) \<Rightarrow> 'b 
 declare bind_def[simp]
 
 syntax "_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
+syntax_consts "_bind" \<rightleftharpoons> bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST bind E (\<lambda>P. F)"
 
 no_notation "binomial" (infix "choose" 64)
@@ -65,6 +66,7 @@ definition err_bind :: "val M \<Rightarrow> (val \<Rightarrow> val M) \<Rightarr
 declare err_bind_def[simp]
 
 syntax "_errset_bind" :: "[pttrns,val M,val] \<Rightarrow> 'c" ("(_ := _;//_)" 0)
+syntax_consts "_errset_bind" \<rightleftharpoons> err_bind
 translations "P := E; F" \<rightleftharpoons> "CONST err_bind E (\<lambda>P. F)"
 
 definition down :: "val \<Rightarrow> val M" where

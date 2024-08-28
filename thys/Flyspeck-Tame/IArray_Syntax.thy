@@ -28,6 +28,11 @@ syntax
  "_tabulate3" :: "'a \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> 'a iarray"
    ("(\<lbrakk>_. _ < _, _ < _, _ < _ \<rbrakk>)")
 
+syntax_consts
+  "_tabulate" == tabulate and
+  "_tabulate2" == tabulate2 and
+  "_tabulate3" == tabulate3
+
 translations 
   "\<lbrakk>f. x < n\<rbrakk>" == "CONST tabulate n (\<lambda>x. f)"
   "\<lbrakk>f. x < m, y < n\<rbrakk>" == "CONST tabulate2 m n (\<lambda>x y. f)"
