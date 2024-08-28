@@ -283,7 +283,7 @@ doc_class "corollary"   = math_content +
    invariant d  :: "mcc \<sigma> = corr"
 
 
-text\<open>A premise or premiss[a] is a proposition — a true or false declarative statement—
+text\<open>A premise or premiss[a] is a proposition --- a true or false declarative statement---
      used in an argument to prove the truth of another proposition called the conclusion.\<close>
 doc_class "premise"     = math_content +
    referentiable :: bool <= "True"
@@ -667,9 +667,9 @@ section\<open>Miscelleous\<close>
 
 subsection\<open>Common Abbreviations\<close>
 
-define_shortcut* eg  \<rightleftharpoons> \<open>\eg\<close>  (* Latin: „exempli gratia“  meaning  „for example“. *)
-                 ie  \<rightleftharpoons> \<open>\ie\<close>  (* Latin: „id est“  meaning „that is to say“. *)
-                 etc \<rightleftharpoons> \<open>\etc\<close> (* Latin : „et cetera“ meaning „et cetera“ *)
+define_shortcut* eg  \<rightleftharpoons> \<open>\eg\<close>  (* Latin: "exempli gratia"  meaning  "for example". *)
+                 ie  \<rightleftharpoons> \<open>\ie\<close>  (* Latin: "id est"  meaning "that is to say". *)
+                 etc \<rightleftharpoons> \<open>\etc\<close> (* Latin : "et cetera" meaning "et cetera" *)
 
 print_doc_classes
 

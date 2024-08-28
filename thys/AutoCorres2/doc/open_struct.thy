@@ -494,7 +494,7 @@ thm "heap_inner_C_map_def"
 text \<open>To express "update the non-addressable fields of the dedicated heap" in an uniform way
 we make use of the concept of \<^emph>\<open>scenes\<close> from the world of \<^emph>\<open>lenses\<close>. In contrast to lenses, 
 scenes are formalised by properties of a single function \<^typ>\<open>'a \<Rightarrow> 'a \<Rightarrow> 'a\<close> which is referred to as
-˜\<^emph>\<open>merge\<close> or 'overrider' operation. The intuition of \<^term>\<open>merge x y\<close> is that we take certain
+\<^emph>\<open>merge\<close> or 'overrider' operation. The intuition of \<^term>\<open>merge x y\<close> is that we take certain
 portions of a compound value \<^term>\<open>x\<close> and merge (or override) them into another compound value
  \<^term>\<open>y\<close>. Scenes are formalised in locale \<^locale>\<open>is_scene\<close>. The notion \<^emph>\<open>merge\<close> emphasises the
 the symmetric nature of the merge operation. Like a lense, a scene 'focuses' on a portion of a 

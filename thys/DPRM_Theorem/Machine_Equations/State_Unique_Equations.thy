@@ -16,7 +16,7 @@ begin
   definition state_bound :: "bool" where
     "state_bound \<equiv> \<forall>k<m. s k < b ^ q" 
 (* This means s k,q = 0 for all k < m. *)
-(* Reminder: s m = b^q \<^bold>— s m,t = 1 at t = q and nowhere else*)
+(* Reminder: s m = b^q --- s m,t = 1 at t = q and nowhere else*)
   
   definition state_unique_equations :: "bool" where
     "state_unique_equations \<equiv> state_mask \<and> state_bound"

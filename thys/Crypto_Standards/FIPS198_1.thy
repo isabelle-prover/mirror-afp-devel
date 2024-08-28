@@ -33,11 +33,11 @@ that the sender is a member of the community of users that share the key."
 "HMAC uses the following parameters:
 B      Block size (in bytes) of the input to the Approved hash function.
 H      An Approved hash function.
-ipad   Inner pad; the byte x‘36’ repeated B times.
+ipad   Inner pad; the byte x'36' repeated B times.
 K      Secret key shared between the originator and the intended receiver(s).
 K0     The key K after any necessary pre-processing to form a B byte key.
 L      Block size (in bytes) of the output of the Approved hash function.
-opad   Outer pad; the byte x‘5c’ repeated B times.
+opad   Outer pad; the byte x'5c' repeated B times.
 text   The data on which the HMAC is calculated; text does not include the padded key.
        The length of text is n bits, where 0 \<le> n < 2^B - 8B."
 

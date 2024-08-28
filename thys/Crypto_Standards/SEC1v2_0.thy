@@ -1972,9 +1972,8 @@ subsection \<open>3.9 Key Wrap Schemes\<close>
 
 text \<open>This subsection specifies that either the NIST AES key wrap algorithm or the CMS TDES key
 wrap algorithm
-• must be used as the key wrap scheme in the Wrapped Key Transport Scheme, and
-• should be used more generally when wrapping an existing symmetric key with another sym-
-metric key.
+\<^item> must be used as the key wrap scheme in the Wrapped Key Transport Scheme, and
+\<^item> should be used more generally when wrapping an existing symmetric key with another symmetric key.
 
 A key wrap scheme takes as input a key-encryption key K, an octet string of length wrapkeylen, 
 and an octet string C which is the key that needs wrapping.  It produces an octet string W, 

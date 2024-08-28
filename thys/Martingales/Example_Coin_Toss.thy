@@ -8,18 +8,18 @@ begin
 section \<open>Example: Coin Toss\<close>
 
 text \<open>Consider a coin-tossing game, where the coin lands on heads with probability \<open>p \<in> [0, 1]\<close>. Assume that the gambler wins a fixed amount \<open>c > 0\<close> on a heads outcome 
-      and loses the same amount \<open>c\<close> on a tails outcome. Let \<open>(X\<^sub>n)\<^sub>n\<^sub>\<in>\<^sub>\<nat>\<close> be a stochastic process, where \<open>X\<^sub>n\<close> denotes the gambler’s fortune after the \<open>n\<close>-th coin toss. 
+      and loses the same amount \<open>c\<close> on a tails outcome. Let \<open>(X\<^sub>n)\<^sub>n\<^sub>\<in>\<^sub>\<nat>\<close> be a stochastic process, where \<open>X\<^sub>n\<close> denotes the gambler's fortune after the \<open>n\<close>-th coin toss. 
       Then, we have the following three cases.\<close>
 
 text \<open>1. If \<open>p = 1/2\<close>, it means the coin is fair and has an equal chance of landing heads or tails. 
-      In this case, the gambler, on average, neither wins nor loses money over time. The expected value of the gambler’s fortune stays the same over time. 
+      In this case, the gambler, on average, neither wins nor loses money over time. The expected value of the gambler's fortune stays the same over time. 
       Therefore, \<open>(X\<^sub>n)\<^sub>n\<^sub>\<in>\<^sub>\<nat>\<close> is a martingale.\<close>
 text \<open>2. If \<open>p \<ge> 1/2\<close> , it means the coin is biased in favor of heads. In this case, the gambler is more likely to win money on each bet. 
-      Over time, the gambler’s fortune tends to increase on average. 
+      Over time, the gambler's fortune tends to increase on average. 
       Therefore, \<open>(X\<^sub>n)\<^sub>n\<^sub>\<in>\<^sub>\<nat>\<close> is a submartingale.\<close>
 
 text \<open>3. If \<open>p \<le> 1/2\<close> , it means the coin is biased in favor of tails. In this scenario, the gambler is more likely to lose money on each bet. 
-      Over time, the gambler’s fortune decreases on average. 
+      Over time, the gambler's fortune decreases on average. 
       Therefore, \<open>(X\<^sub>n)\<^sub>n\<^sub>\<in>\<^sub>\<nat>\<close> is a supermartingale.\<close>
 
 text \<open>To formalize this example, we first consider a probability space consisting of infinite sequences of coin tosses.\<close>

@@ -107,7 +107,7 @@ val verbose_msg_tac = Utils.verbose_msg_tac
 (*
  * Custom unifier for trace_solve_tac.
  * Isabelle's built-in unifier has several problems:
- * 1. It gives up when the unifications become “complicated”, even if it is
+ * 1. It gives up when the unifications become "complicated", even if it is
  *    only due to variables needing large instantiations.
  *    This happens for trace_solve_tac because it unifies subgoals with subgoal proofs,
  *    thus it may instantiate a variable to an entire program term.
