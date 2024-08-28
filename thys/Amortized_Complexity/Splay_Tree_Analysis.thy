@@ -88,11 +88,11 @@ next
 next
   case (6 x a b A B C)
   hence *: "\<langle>l, x, r\<rangle> \<in> subtrees A" by(fastforce dest: in_set_tree_if)
-  obtain A1 a' A2 where sp: "splay x A = Node A1 a' A2"
+  obtain A1 x' A2 where sp: "splay x A = Node A1 x' A2"
     using splay_not_Leaf[OF \<open>A \<noteq> Leaf\<close>] by blast
   let ?X = "Node l x r" let ?AB = "Node A a B"  let ?ABC = "Node ?AB b C"
-  let ?A' = "Node A1 a' A2"
-  let ?BC = "Node B b C"  let ?A2BC = "Node A2 a ?BC" let ?A1A2BC = "Node A1 a' ?A2BC"
+  let ?A' = "Node A1 x' A2"
+  let ?BC = "Node B b C"  let ?A2BC = "Node A2 a ?BC" let ?A1A2BC = "Node A1 x' ?A2BC"
   have 0: "\<phi> ?A1A2BC = \<phi> ?ABC" using sp by(simp add: size_if_splay)
   have 1: "\<Phi> ?A1A2BC - \<Phi> ?ABC = \<Phi> A1 + \<Phi> A2 + \<phi> ?A2BC + \<phi> ?BC - \<Phi> A - \<phi> ?AB"
     using 0 by (simp)
@@ -118,11 +118,11 @@ next
 next
   case (8 a x b B A C)
   hence *: "\<langle>l, x, r\<rangle> \<in> subtrees B" by(fastforce dest: in_set_tree_if)
-  obtain B1 b' B2 where sp: "splay x B = Node B1 b' B2"
+  obtain B1 x' B2 where sp: "splay x B = Node B1 x' B2"
      using splay_not_Leaf[OF \<open>B \<noteq> Leaf\<close>] by blast
   let ?X = "Node l x r" let ?AB = "Node A a B"  let ?ABC = "Node ?AB b C"
-  let ?B' = "Node B1 b' B2"
-  let ?AB1 = "Node A a B1"  let ?B2C = "Node B2 b C" let ?AB1B2C = "Node ?AB1 b' ?B2C"
+  let ?B' = "Node B1 x' B2"
+  let ?AB1 = "Node A a B1"  let ?B2C = "Node B2 b C" let ?AB1B2C = "Node ?AB1 x' ?B2C"
   have 0: "\<phi> ?AB1B2C = \<phi> ?ABC" using sp by(simp add: size_if_splay)
   have 1: "\<Phi> ?AB1B2C - \<Phi> ?ABC = \<Phi> B1 + \<Phi> B2 + \<phi> ?AB1 + \<phi> ?B2C - \<Phi> B - \<phi> ?AB"
     using 0 by (simp)
@@ -147,10 +147,10 @@ next
 next
   case (11 b x c C A D)
   hence *: "\<langle>l, x, r\<rangle> \<in> subtrees C" by(fastforce dest: in_set_tree_if)
-  obtain C1 c' C2 where sp: "splay x C = Node C1 c' C2"
+  obtain C1 x' C2 where sp: "splay x C = Node C1 x' C2"
     using splay_not_Leaf[OF \<open>C \<noteq> Leaf\<close>] by blast
   let ?X = "Node l x r" let ?CD = "Node C c D"  let ?ACD = "Node A b ?CD"
-  let ?C' = "Node C1 c' C2"
+  let ?C' = "Node C1 x' C2"
   let ?C2D = "Node C2 c D"  let ?AC1 = "Node A b C1"
   have "A_splay x ?ACD = A_splay x C + \<phi> ?C2D + \<phi> ?AC1 - \<phi> ?CD - \<phi> ?C' + 1"
     using "11.hyps" sp
@@ -170,7 +170,7 @@ next
   hence 0: "x \<notin> set_tree B \<and> x \<notin> set_tree A"
     using "14.prems"(1) \<open>b<x\<close> by(auto)
   hence 1: "x \<in> set_tree CD" using "14.prems" \<open>b<x\<close> \<open>a<x\<close> by (auto)
-  obtain C c D where sp: "splay x CD = Node C c D"
+  obtain C x' D where sp: "splay x CD = Node C x' D"
     using splay_not_Leaf[OF \<open>CD \<noteq> Leaf\<close>] by blast
   from zig_zig[of CD x D C l r _ b B a A] 14 sp 0
   show ?case by(auto simp: A_splay_def size_if_splay algebra_simps)
