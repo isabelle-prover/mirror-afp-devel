@@ -7,7 +7,7 @@ theory Clique_Large_Monotone_Circuits
 begin
 
 text \<open>disable list-syntax\<close>
-no_syntax "_list" :: "args \<Rightarrow> 'a list" ("[(_)]")
+no_syntax "_list" :: "list_args \<Rightarrow> 'a list" ("[(_)]")
 no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" ("[(_)]")
 
 hide_const (open) Sigma_Algebra.measure
