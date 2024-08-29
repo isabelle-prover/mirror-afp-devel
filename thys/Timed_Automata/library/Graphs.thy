@@ -1,14 +1,13 @@
 (* Author: Simon Wimmer *)
+chapter \<open>Graphs\<close>
+
 theory Graphs
   imports
     More_List Stream_More
     "HOL-Library.Rewrite"
-    Instantiate_Existentials
 begin
 
-section \<open>Graphs\<close>
-
-subsection \<open>Basic Definitions and Theorems\<close>
+section \<open>Basic Definitions and Theorems\<close>
 
 locale Graph_Defs =
   fixes E :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -124,9 +123,7 @@ lemma run_cycle:
       apply (rule disjI1)
       apply (inst_existentials "y # xs' @ [x]")
       using steps_append_single[of "y # xs'" x]
-         apply (auto elim: steps.cases split: if_split_asm)
-       apply (subst (2) cycle_Cons, simp) (* XXX Automate forward reasoning *)
-      apply (subst cycle_Cons, simp)
+         apply (auto elim: steps.cases split: if_split_asm simp: cycle_Cons)
       done
     done
 qed
@@ -342,6 +339,10 @@ lemma reaches1_steps_iff:
   "x \<rightarrow>\<^sup>+ y \<longleftrightarrow> (\<exists> xs. steps (x # xs @ [y]))"
   using steps_reaches1 reaches1_steps by fast
 
+lemma reaches_steps_iff2:
+  "x \<rightarrow>* y \<longleftrightarrow> (x = y \<or> (\<exists>vs. steps (x # vs @ [y])))"
+  by (simp add: Nitpick.rtranclp_unfold reaches1_steps_iff)
+
 lemma reaches1_reaches_iff1:
   "x \<rightarrow>\<^sup>+ y \<longleftrightarrow> (\<exists> z. x \<rightarrow> z \<and> z \<rightarrow>* y)"
   by (auto dest: tranclpD)
@@ -373,6 +374,181 @@ lemma steps_last_step:
   "\<exists> a. a \<rightarrow> last xs" if "steps xs" "length xs > 1"
   using that by induction auto
 
+lemma steps_remove_cycleE:
+  assumes "steps (a # xs @ [b])"
+  obtains ys where "steps (a # ys @ [b])" "distinct ys" "a \<notin> set ys" "b \<notin> set ys" "set ys \<subseteq> set xs"
+  using assms
+proof (induction "length xs" arbitrary: xs rule: less_induct)
+  case less
+  note prems = less.prems(2) and intro = less.prems(1) and IH = less.hyps
+  consider
+    "distinct xs" "a \<notin> set xs" "b \<notin> set xs" | "a \<in> set xs" | "b \<in> set xs" | "\<not> distinct xs"
+    by auto
+  then consider (goal) ?case
+    | (a) as bs where "xs = as @ a # bs" | (b) as bs where "xs = as @ b # bs"
+    | (between) x as bs cs where "xs = as @ x # bs @ x # cs"
+    using prems by (cases; fastforce dest: not_distinct_decomp simp: split_list intro: intro)
+  then show ?case
+  proof cases
+    case a
+    with prems show ?thesis
+      by - (rule IH[where xs = bs], auto 4 3 intro: intro dest: stepsD)
+  next
+    case b
+    with prems have "steps (a # as @ b # [] @ (bs @ [b]))"
+      by simp
+    then have "steps (a # as @ [b])"
+      by (metis Cons_eq_appendI Graph_Defs.steps_appendD1 append_eq_appendI neq_Nil_conv)
+    with b show ?thesis
+      by - (rule IH[where xs = as], auto 4 3 dest: stepsD intro: intro)
+  next
+    case between
+    with prems have "steps (a # as @ x # cs @ [b])"
+      by simp (metis
+          stepsI append_Cons list.distinct(1) list.sel(1) list.sel(3) steps_append steps_decomp)
+    with between show ?thesis
+      by - (rule IH[where xs = "as @ x # cs"], auto 4 3 intro: intro dest: stepsD)
+  qed
+qed
+
+lemma reaches1_stepsE:
+  assumes "a \<rightarrow>\<^sup>+ b"
+  obtains xs where "steps (a # xs @ [b])" "distinct xs" "a \<notin> set xs" "b \<notin> set xs"
+proof -
+  from assms obtain xs where "steps (a # xs @ [b])"
+    by (auto dest: reaches1_steps)
+  then show ?thesis
+    by - (erule steps_remove_cycleE, rule that)
+qed
+
+lemma reaches_stepsE:
+  assumes "a \<rightarrow>* b"
+  obtains "a = b" | xs where "steps (a # xs @ [b])" "distinct xs" "a \<notin> set xs" "b \<notin> set xs"
+proof -
+  from assms consider "a = b" | xs where "a \<rightarrow>\<^sup>+ b"
+    by (meson rtranclpD)
+  then show ?thesis
+    by cases ((erule reaches1_stepsE)?; rule that; assumption)+
+qed
+
+definition sink where
+  "sink a \<equiv> \<nexists>b. a \<rightarrow> b"
+
+lemma sink_or_cycle:
+  assumes "finite {b. reaches a b}"
+  obtains b where "reaches a b" "sink b" | b where "reaches a b" "reaches1 b b"
+proof -
+  let ?S = "{b. reaches1 a b}"
+  have "?S \<subseteq> {b. reaches a b}"
+    by auto
+  then have "finite ?S"
+    using assms by (rule finite_subset)
+  then show ?thesis
+    using that
+  proof (induction ?S arbitrary: a rule: finite_psubset_induct)
+    case psubset
+    consider (empty) "Collect (reaches1 a) = {}" | b where "reaches1 a b"
+      by auto
+    then show ?case
+    proof cases
+      case empty
+      then have "sink a"
+        unfolding sink_def by auto
+      with psubset.prems show ?thesis
+        by auto
+    next
+      case 2
+      show ?thesis
+      proof (cases "reaches b a")
+        case True
+        with \<open>reaches1 a b\<close> have "reaches1 a a"
+          by auto
+        with psubset.prems show ?thesis
+          by auto
+      next
+        case False
+        show ?thesis
+        proof (cases "reaches1 b b")
+          case True
+          with \<open>reaches1 a b\<close> psubset.prems show ?thesis
+            by (auto intro: tranclp_into_rtranclp)
+        next
+          case False
+          with \<open>\<not> reaches b a\<close> \<open>reaches1 a b\<close> have "Collect (reaches1 b) \<subset> Collect (reaches1 a)"
+            by (intro psubsetI) auto
+          then show ?thesis
+            using \<open>reaches1 a b\<close> psubset.prems
+            by - (erule psubset.hyps; meson tranclp_into_rtranclp tranclp_rtranclp_tranclp)
+        qed
+      qed
+    qed
+  qed
+qed
+
+text \<open>
+  A directed graph where every node has at least one ingoing edge, contains a directed cycle.
+\<close>
+lemma directed_graph_indegree_ge_1_cycle':
+  assumes "finite S" "S \<noteq> {}" "\<forall> y \<in> S. \<exists> x \<in> S. E x y"
+  shows "\<exists> x \<in> S. \<exists> y. E x y \<and> E\<^sup>*\<^sup>* y x"
+  using assms
+proof (induction arbitrary: E rule: finite_ne_induct)
+  case (singleton x)
+  then show ?case by auto
+next
+  case (insert x S E)
+  from insert.prems obtain y where "y \<in> insert x S" "E y x"
+    by auto
+  show ?case
+  proof (cases "y = x")
+    case True
+    with \<open>E y x\<close> show ?thesis by auto
+  next
+    case False
+    with \<open>y \<in> _\<close> have "y \<in> S" by auto
+    define E' where "E' a b \<equiv> E a b \<or> (a = y \<and> E x b)" for a b
+    have E'_E: "\<exists> c. E a c \<and> E\<^sup>*\<^sup>* c b" if "E' a b" for a b
+      using that \<open>E y x\<close> unfolding E'_def by auto
+    have [intro]: "E\<^sup>*\<^sup>* a b" if "E' a b" for a b
+      using that \<open>E y x\<close> unfolding E'_def by auto
+    have [intro]: "E\<^sup>*\<^sup>* a b" if "E'\<^sup>*\<^sup>* a b" for a b
+      using that by (induction; blast intro: rtranclp_trans)
+    have "\<forall>y\<in>S. \<exists>x\<in>S. E' x y"
+    proof (rule ballI)
+      fix b assume "b \<in> S"
+      with insert.prems obtain a where "a \<in> insert x S" "E a b"
+        by auto
+      show "\<exists>a\<in>S. E' a b"
+      proof (cases "a = x")
+        case True
+        with \<open>E a b\<close> have "E' y b" unfolding E'_def by simp
+        with \<open>y \<in> S\<close> show ?thesis ..
+      next
+        case False
+        with \<open>a \<in> _\<close> \<open>E a b\<close> show ?thesis unfolding E'_def by auto
+      qed
+    qed
+    from insert.IH[OF this] obtain x y where "x \<in> S" "E' x y" "E'\<^sup>*\<^sup>* y x" by safe
+    then show ?thesis by (blast intro: rtranclp_trans dest: E'_E)
+    qed
+  qed
+
+lemma directed_graph_indegree_ge_1_cycle:
+  assumes "finite S" "S \<noteq> {}" "\<forall> y \<in> S. \<exists> x \<in> S. E x y"
+  shows "\<exists> x \<in> S. \<exists> y. x \<rightarrow>\<^sup>+ x"
+  using directed_graph_indegree_ge_1_cycle'[OF assms] reaches1_reaches_iff1 by blast
+
+
+text \<open>Vertices of a graph\<close>
+
+definition "vertices = {x. \<exists>y. E x y \<or> E y x}"
+
+lemma reaches1_verts:
+  assumes "x \<rightarrow>\<^sup>+ y"
+  shows "x \<in> vertices" and "y \<in> vertices"
+  using assms reaches1_reaches_iff2 reaches1_reaches_iff1 vertices_def by blast+
+
+
 lemmas graphI =
   steps.intros
   steps_append_single
@@ -382,7 +558,7 @@ lemmas graphI =
 end (* Graph Defs *)
 
 
-subsection \<open>Graphs with a Start Node\<close>
+section \<open>Graphs with a Start Node\<close>
 
 locale Graph_Start_Defs = Graph_Defs +
   fixes s\<^sub>0 :: 'a
@@ -438,8 +614,7 @@ proof induction
   then show ?case by (inst_existentials "[s\<^sub>0]"; force)
 next
   case (step y z)
-  from step.IH obtain xs where "steps xs" "s\<^sub>0 = hd xs" "y = last xs"
-    by auto
+  from step.IH obtain xs where "steps xs" "s\<^sub>0 = hd xs" "y = last xs" by clarsimp
   with step.hyps show ?case
     apply (inst_existentials "xs @ [z]")
     apply (force intro: graphI)
@@ -501,9 +676,9 @@ lemmas graph_startI =
 end (* Graph Start Defs *)
 
 
-subsection \<open>Subgraphs\<close>
+section \<open>Subgraphs\<close>
 
-subsubsection \<open>Edge-induced Subgraphs\<close>
+subsection \<open>Edge-induced Subgraphs\<close>
 
 locale Subgraph_Defs = G: Graph_Defs +
   fixes E' :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -574,7 +749,7 @@ lemma reachable:
 
 end (* Subgraph Start *)
 
-subsubsection \<open>Node-induced Subgraphs\<close>
+subsection \<open>Node-induced Subgraphs\<close>
 
 locale Subgraph_Node_Defs = Graph_Defs +
   fixes V :: "'a \<Rightarrow> bool"
@@ -628,7 +803,7 @@ notation G'.reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40)
 end (* Subgraph_Node_Defs_Notation *)
 
 
-subsubsection \<open>The Reachable Subgraph\<close>
+subsection \<open>The Reachable Subgraph\<close>
 
 context Graph_Start_Defs
 begin
@@ -674,7 +849,7 @@ lemma reachable_steps_equiv:
 end (* Graph Start Defs *)
 
 
-subsection \<open>Bundles\<close>
+section \<open>Bundles\<close>
 
 bundle graph_automation
 begin
@@ -709,7 +884,68 @@ lemmas [dest]  = Subgraph_Node_Defs.subgraphD
 end (* Bundle *)
 
 
-subsection \<open>Simulations and Bisimulations\<close>
+section \<open>Directed Acyclic Graphs\<close>
+locale DAG = Graph_Defs +
+  assumes acyclic: "\<not> E\<^sup>+\<^sup>+ x x"
+begin
+
+lemma topological_numbering:
+  fixes S assumes "finite S"
+  shows "\<exists>f :: _ \<Rightarrow> nat. inj_on f S \<and> (\<forall>x \<in> S. \<forall>y \<in> S. E x y \<longrightarrow> f x < f y)"
+  using assms
+proof (induction rule: finite_psubset_induct)
+  case (psubset A)
+  show ?case
+  proof (cases "A = {}")
+    case True
+    then show ?thesis
+      by simp
+  next
+    case False
+    then obtain x where x: "x \<in> A" "\<forall>y \<in> A. \<not>E y x"
+      using directed_graph_indegree_ge_1_cycle[OF \<open>finite A\<close>] acyclic by auto
+    let ?A = "A - {x}"
+    from \<open>x \<in> A\<close> have "?A \<subset> A"
+      by auto
+    from psubset.IH(1)[OF this] obtain f :: "_ \<Rightarrow> nat" where f:
+      "inj_on f ?A" "\<forall>x\<in>?A. \<forall>y\<in>?A. x \<rightarrow> y \<longrightarrow> f x < f y"
+      by blast
+    let ?f = "\<lambda>y. if x \<noteq> y then f y + 1 else 0"
+    from \<open>x \<in> A\<close> have "A = insert x ?A"
+      by auto
+    from \<open>inj_on f ?A\<close> have "inj_on ?f A"
+      by (auto simp: inj_on_def)
+    moreover from f(2) x(2) have "\<forall>x\<in>A. \<forall>y\<in>A. x \<rightarrow> y \<longrightarrow> ?f x < ?f y"
+      by auto
+    ultimately show ?thesis
+      by blast
+  qed
+qed
+
+end
+
+
+section \<open>Finite Graphs\<close>
+
+locale Finite_Graph = Graph_Defs +
+  assumes finite_graph: "finite vertices"
+
+locale Finite_DAG = Finite_Graph + DAG
+begin
+
+lemma finite_reachable:
+  "finite {y. x \<rightarrow>* y}" (is "finite ?S")
+proof -
+  have "?S \<subseteq> insert x vertices"
+    by (metis insertCI mem_Collect_eq reaches1_verts(2) rtranclpD subsetI)
+  also from finite_graph have "finite \<dots>" ..
+  finally show ?thesis .
+qed
+
+end
+
+
+section \<open>Graph Invariants\<close>
 
 locale Graph_Invariant = Graph_Defs +
   fixes P :: "'a \<Rightarrow> bool"
@@ -728,6 +964,31 @@ lemma invariant_run:
   assumes run: "run (x ## xs)" and P: "P x"
   shows "pred_stream P (x ## xs)"
   using run P by (coinduction arbitrary: x xs) (auto 4 3 elim: invariant run.cases)
+
+text \<open>Every graph invariant induces a subgraph.\<close>
+sublocale Subgraph_Node_Defs where E = E and V = P .
+
+lemma subgraph':
+  assumes "x \<rightarrow> y" "P x"
+  shows "E' x y"
+  using assms by (intro subgraph') (auto intro: invariant)
+
+lemma invariant_steps_iff:
+  "G'.steps (v # vs) \<longleftrightarrow> steps (v # vs)" if "P v"
+  apply (rule iffI)
+  subgoal
+    using G'.steps_alt_induct steps_appendI by blast
+  subgoal premises prems
+    using prems \<open>P v\<close> by (induction "v # vs" arbitrary: v vs) (auto intro: subgraph' invariant)
+  done
+
+lemma invariant_reaches_iff:
+  "G'.reaches u v \<longleftrightarrow> reaches u v" if "P u"
+  using that by (simp add: reaches_steps_iff2 G'.reaches_steps_iff2 invariant_steps_iff)
+
+lemma invariant_reaches1_iff:
+  "G'.reaches1 u v \<longleftrightarrow> reaches1 u v" if "P u"
+  using that by (simp add: reaches1_steps_iff G'.reaches1_steps_iff invariant_steps_iff)
 
 end (* Graph Invariant *)
 
@@ -796,6 +1057,8 @@ lemma invariant_reaches1:
 
 end (* Graph Invariant *)
 
+
+section \<open>Simulations and Bisimulations\<close>
 locale Simulation_Defs =
   fixes A :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and B :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
     and sim :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixr "\<sim>" 60)
@@ -857,6 +1120,8 @@ sublocale Simulation A B equiv' by standard (auto dest: A_B_step simp: equiv'_de
 
 sublocale PA_invariant: Graph_Invariant A PA by standard blast
 
+sublocale PB_invariant: Graph_Invariant B PB by standard blast
+
 lemma simulation_reaches:
   "\<exists> b'. B\<^sup>*\<^sup>* b b' \<and> a' \<sim> b' \<and> PA a' \<and> PB b'" if "A\<^sup>*\<^sup>* a a'" "a \<sim> b" "PA a" "PB b"
   using simulation_reaches[of a a' b] that unfolding equiv'_def by simp
@@ -870,7 +1135,7 @@ lemma simulation_steps':
   "\<exists> bs. B.steps (b # bs) \<and> list_all2 (\<lambda> a b. a \<sim> b) as bs \<and> list_all PA as \<and> list_all PB bs"
   if "A.steps (a # as)" "a \<sim> b" "PA a" "PB b"
   using simulation_steps[OF that]
-  by (metis (mono_tags, lifting) list_all2_conv_all_nth list_all_length)
+  by (force dest: list_all2_set1 list_all2_set2 simp: list_all_iff elim: list_all2_mono)
 
 context
   fixes f
@@ -884,12 +1149,15 @@ lemma simulation_steps'_map:
     \<and> list_all PA as \<and> list_all PB bs"
   if "A.steps (a # as)" "a \<sim> b" "PA a" "PB b"
 proof -
-  from simulation_steps'[OF that]
-  obtain bs where bs: "B.steps (b # bs)" "list_all2 (\<sim>) as bs" "list_all PA as" "list_all PB bs"
-    by auto
-  from bs(2) have "bs = map f as"
+  from simulation_steps'[OF that] obtain bs where guessed:
+    "B.steps (b # bs)"
+    "list_all2 (\<sim>) as bs"
+    "list_all PA as"
+    "list_all PB bs"
+    by safe
+  from this(2) have "bs = map f as"
     by (induction; simp add: eq)
-  with bs show ?thesis
+  with guessed show ?thesis
     by auto
 qed
 
@@ -994,9 +1262,13 @@ lemma steps_map:
   "\<exists> as. bs = map f as" if "B.steps (f a # bs)" "PA a" "PB (f a)"
 proof -
   have "a \<sim> f a" unfolding eq ..
-  from B_A.simulation_steps'[OF that(1) this \<open>PB _\<close> \<open>PA _\<close>]
-  obtain as where "list_all2 (\<lambda>a b. b \<sim> a) bs as" by auto
-  then show ?thesis
+  from B_A.simulation_steps'[OF that(1) this \<open>PB _\<close> \<open>PA _\<close>] obtain as where
+    "A.steps (a # as)"
+    "list_all2 (\<lambda>a b. b \<sim> a) bs as"
+    "list_all PB bs"
+    "list_all PA as"
+    by safe
+  from this(2) show ?thesis
     unfolding eq by (inst_existentials as, induction rule: list_all2_induct, auto)
 qed
 
@@ -1028,7 +1300,7 @@ lemma stream_all2_equiv'_D:
   using stream_all2_weaken[OF that equiv'_D] by fast
 
 lemma stream_all2_equiv'_D2:
-  "stream_all2 B_A.equiv' ys xs \<Longrightarrow> stream_all2 (\<sim>)\<inverse>\<inverse> ys xs"
+  "stream_all2 B_A.equiv' ys xs \<Longrightarrow> stream_all2 ((\<sim>)\<inverse>\<inverse>) ys xs"
   by (coinduction arbitrary: xs ys) (auto simp: B_A.equiv'_def)
 
 lemma stream_all2_rotate_1:
@@ -1240,7 +1512,7 @@ proof -
   interpret B: Bisimulation_Invariants B C sim2 PB QB PC QC
     by (rule assms(2))
   show ?thesis
-    by (standard; (blast dest: A.A_B_step B.A_B_step | blast dest: A.B_A_step B.B_A_step))
+    by (standard, blast dest: A.A_B_step B.A_B_step) (blast dest: A.B_A_step B.B_A_step)+
 qed
 
 lemma Bisimulation_Invariant_Invariants_composition:

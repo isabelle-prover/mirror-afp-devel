@@ -1,11 +1,9 @@
 theory Lib
-  imports "Timed_Automata.Timed_Automata"
-          "Timed_Automata.Approx_Beta"
-          "MDP_Aux"
-          "Finiteness"
-          "Sequence_LTL"
-          "Instantiate_Existentials"
-          "Graphs"
+  imports
+    MDP_Aux
+    Timed_Automata.Timed_Automata
+    Timed_Automata.Approx_Beta
+    Finiteness
 begin
 
 section \<open>Misc\<close>
@@ -80,6 +78,7 @@ proof -
   ultimately show ?thesis by (blast intro: finite_subset)
 qed
 
+thm stream_pred_cases
 (* TODO: Move/should be somewhere already *)
 lemma pred_stream_stl: "pred_stream \<phi> xs \<longrightarrow> pred_stream \<phi> (stl xs)"
   by (cases xs) auto
@@ -104,7 +103,7 @@ lemma HLD_mono:
 
 lemma alw_HLD_smap:
   "alw (HLD (f ` S)) (smap f \<omega>)" if "alw (HLD S) \<omega>"
-  using that by (auto 4 3 elim: HLD_mono alw_mono)
+  using that by (fastforce elim: HLD_mono alw_mono)
 
 lemma alw_disjoint_ccontr:
   assumes "alw (HLD S) \<omega>" "ev (alw (HLD R)) \<omega>" "R \<inter> S = {}"
@@ -623,7 +622,7 @@ proof -
     apply (rule arg_cong2[where f = alw])
      apply (rule ext)
     subgoal for xs
-      using MC.alw_HLD_iff_sconst[of u "smap (f o state) xs"] by (simp add: HLD_iff)
+      using MC.alw_HLD_iff_sconst[of u "smap (f o state) xs"] by (simp add: HLD_iff comp_def)
     by (rule HOL.refl)
   have "AE \<omega> in ?M. alw (\<lambda> xs. smap (f o state) xs \<noteq> sconst u) \<omega>"
     apply (rule MC.AE_T_alw)
@@ -649,7 +648,7 @@ proof -
     apply (rule arg_cong2[where f = alw])
      apply (rule ext)
     subgoal for xs
-      using MC.alw_HLD_iff_sconst[of u "smap (f o state) xs"] by (simp add: HLD_iff)
+      using MC.alw_HLD_iff_sconst[of u "smap (f o state) xs"] by (simp add: HLD_iff comp_def)
     by (rule HOL.refl)
   have "AE \<omega> in ?M. alw (\<lambda> xs. smap (f o state) xs \<noteq> sconst u) \<omega>"
     apply (rule MC.AE_T_alw)

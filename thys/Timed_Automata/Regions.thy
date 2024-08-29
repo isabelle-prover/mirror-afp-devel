@@ -1,7 +1,7 @@
 chapter \<open>The Classic Construction for Decidability\<close>
 
 theory Regions
-imports Timed_Automata Misc
+imports Timed_Automata TA_Misc
 begin
 
 text \<open>
@@ -19,16 +19,6 @@ datatype intv =
 
 type_synonym t = real
 
-instantiation real :: time
-begin
-  instance proof
-    fix x y :: real assume "x < y"
-    then show "\<exists> z > x. z < y" using Rats_cases using dense_order_class.dense by blast
-  next
-    have "(1:: real) \<noteq> 0" by auto
-    then show "\<exists>x. (x::real) \<noteq> 0" by blast
-  qed
-end
 
 inductive valid_intv :: "nat \<Rightarrow> intv \<Rightarrow> bool"
 where
@@ -181,7 +171,7 @@ proof (standard, standard)
     thus ?case unfolding intv_of_def
     proof (auto, goal_cases)
       case A: (1 a)
-      from A(2) have "\<lfloor>u x\<rfloor> = u x" by (metis of_int_floor_cancel of_int_of_nat_eq) 
+      from A(2) have "\<lfloor>u x\<rfloor> = u x" by (metis of_int_floor_cancel of_int_of_nat_eq)
       with assm A(1) have "u x = real (nat \<lfloor>u x\<rfloor>)" by auto
       then show ?case by auto
     next
@@ -231,7 +221,7 @@ where
 lemma region_not_empty_aux:
   assumes "0 < f" "f < 1" "0 < g" "g < 1"
   shows "frac (get_intv_val (Intv d) f) \<le> frac (get_intv_val (Intv d') g) \<longleftrightarrow> f \<le> g"
-using assms by (simp, metis frac_eq frac_nat_add_id less_eq_real_def) 
+using assms by (simp, metis frac_eq frac_nat_add_id less_eq_real_def)
 
 lemma region_not_empty:
   assumes "finite X" "valid_region X k I r"
@@ -276,7 +266,7 @@ proof -
     by (standard, case_tac "I x") auto
   next
     show "{x \<in> X. \<exists>d. I x = Intv d} = {x \<in> X. \<exists>d. I x = Intv d}" ..
-  next  
+  next
     from frac_order show "\<forall>x\<in>?X\<^sub>0. \<forall>y\<in>?X\<^sub>0. ((x, y) \<in> r) = (frac (?v x) \<le> frac (?v y))" by blast
   qed
   then show ?thesis by auto
@@ -726,7 +716,7 @@ proof (safe, goal_cases)
                   assume A: "I y = Intv c"
                   have le: "frac (v x) <= frac (v y)" by (simp add: **)
                   from frac_bound * have "t < 1 - frac (v x)" "t < 1 - frac (v y)" by fastforce+
-                  with 2 t have 
+                  with 2 t have
                     "frac (v x) + t = frac (v x + t)" "frac (v y) + t = frac (v y + t)"
                   using F by blast+
                   with le show ?case unfolding cval_add_def by fastforce
@@ -1102,7 +1092,7 @@ proof (safe, goal_cases)
       have "t > 0"
       proof (rule ccontr, goal_cases)
         case 1 with t v show False unfolding cval_add_def by auto
-      qed 
+      qed
       show "\<forall>y\<in>X\<^sub>0. \<forall>z\<in>X\<^sub>0. ((y, z) \<in> r) = (frac ((v \<oplus> t)y) \<le> frac ((v \<oplus> t) z))"
       proof (auto simp: X\<^sub>0_def, goal_cases)
         case (1 y z d d')
@@ -1344,7 +1334,7 @@ by (metis Diff_disjoint Diff_subset inf_commute less_le psubset_card_mono)
 subsubsection \<open>Proof\<close>
 
 text \<open>
-  First we show that a shift by a non-negative integer constant means that any two valuations from 
+  First we show that a shift by a non-negative integer constant means that any two valuations from
   the same region are being shifted to the same region.
 \<close>
 
@@ -1451,7 +1441,7 @@ proof -
       proof (cases "I x")
         case (Const c)
         with x \<open>v \<in> R\<close> \<open>v' \<in> R\<close> A(1) have "v x = c" "v' x = c" by fastforce+
-        then have "frac (v x) \<le> frac (v y)" "frac (v' x) \<le> frac (v' y)" by(simp add: frac_def)+
+        then have "frac (v x) \<le> frac (v y)" "frac (v' x) \<le> frac (v' y)" unfolding frac_def by simp+
         then show ?thesis by auto
       next
         case (Intv c)
@@ -1685,11 +1675,10 @@ proof (induction "card C" arbitrary: C I r v v' t rule: less_induct)
     obtain x' where x': "x' \<in> ?X\<^sub>0" "\<forall> y \<in> ?X\<^sub>0. x' \<noteq> y \<longrightarrow> (y, x') \<in> r" by fastforce
     from this(2) have "\<forall>y\<in>?X\<^sub>0. (x', y) \<in> r \<longrightarrow> (y, x') \<in> r" by auto
     with x'(1) have "?M \<noteq> {}" by fastforce
-    from closest_prestable_2[OF F2 less.prems(4) valid this] closest_valid_2[OF F2 less.prems(4) valid this] 
+    from closest_prestable_2[OF F2 less.prems(4) valid this] closest_valid_2[OF F2 less.prems(4) valid this]
     obtain I' r'
       where   stability:
         "\<forall> v \<in> region X I r. \<forall> t\<ge>0. (v \<oplus> t) \<notin> region X I r \<longrightarrow> (\<exists>t'\<le>t. (v \<oplus> t') \<in> region X I' r' \<and> t' \<ge> 0)"
-      and succ_not_refl: "\<forall> v \<in> region X I' r'. \<forall> t\<ge>0. (v \<oplus> t) \<notin> region X I r"
       and critical_mono: "\<forall> v \<in> region X I r. \<forall>t. \<forall> t'.
                             {x. x \<in> X \<and> (\<exists> c. I' x = Intv c \<and> (v \<oplus> t') x + (t - t') \<ge> real (c + 1))}
                             = {x. x \<in> X \<and> (\<exists> c. I x  = Intv c \<and> v x + t \<ge> real (c + 1))} - ?M"
@@ -1900,66 +1889,71 @@ section \<open>Compability With Clock Constraints\<close>
 
 definition ccval ("\<lbrace>_\<rbrace>" [100]) where "ccval cc \<equiv> {v. v \<turnstile> cc}"
 
-definition ccompatible
+definition acompatible
 where
-  "ccompatible \<R> cc \<equiv> \<forall> R \<in> \<R>. R \<subseteq> ccval cc \<or> ccval cc \<inter> R = {}"
+  "acompatible \<R> ac \<equiv> \<forall> R \<in> \<R>. R \<subseteq> {v. v \<turnstile>\<^sub>a ac} \<or> {v. v \<turnstile>\<^sub>a ac} \<inter> R = {}"
+
+lemma acompatibleD:
+  assumes "acompatible \<R> ac" "R \<in> \<R>" "u \<in> R" "v \<in> R" "u \<turnstile>\<^sub>a ac"
+  shows "v \<turnstile>\<^sub>a ac"
+  using assms unfolding acompatible_def by auto
 
 lemma ccompatible1:
   fixes X k fixes c :: real
   defines "\<R> \<equiv> {region X I r |I r. valid_region X k I r}"
   assumes "c \<le> k x" "c \<in> \<nat>" "x \<in> X"
-  shows "ccompatible \<R> (EQ x c)" using assms unfolding ccompatible_def
+  shows "acompatible \<R> (EQ x c)" using assms unfolding acompatible_def
 proof (auto, goal_cases)
   case A: (1 I r v u)
-  from A(3) obtain d where d: "c = of_nat d" unfolding Nats_def by auto
-  with A(8) have u: "u x = c" "u x = d" unfolding ccval_def by auto
+  from A(3,9) obtain d where d: "c = of_nat d" unfolding Nats_def by auto
+  with A(8,9) have u: "u x = c" "u x = d" unfolding ccval_def by auto
   have "I x = Const d"
   proof (cases "I x", goal_cases)
     case (1 c')
-    with A(4,9) have "u x = c'" by fastforce
+    with A have "u x = c'" by fastforce
     with 1 u show ?case by auto
   next
     case (2 c')
-    with A(4,9) have "c' < u x" "u x < c' + 1" by fastforce+
+    with A have "c' < u x" "u x < c' + 1" by fastforce+
     with 2 u show ?case by auto
   next
     case (3 c')
-    with A(4,9) have "c' < u x" by fastforce
+    with A have "c' < u x" by fastforce
     moreover from 3 A(4,5) have "c' \<ge> k x" by fastforce
     ultimately show ?case using u A(2) by auto
   qed
   with A(4,6) d have "v x = c" by fastforce
-  with A(3,5) have "v \<turnstile> EQ x c" by auto
-  with A(7) show False unfolding ccval_def by auto
+  with A(3,5) have "v \<turnstile>\<^sub>a EQ x c" by auto
+  with A show False unfolding ccval_def by auto
 qed
 
 lemma ccompatible2:
   fixes X k fixes c :: real
   defines "\<R> \<equiv> {region X I r |I r. valid_region X k I r}"
   assumes "c \<le> k x" "c \<in> \<nat>" "x \<in> X"
-  shows "ccompatible \<R> (LT x c)" using assms unfolding ccompatible_def
+  shows "acompatible \<R> (LT x c)" using assms unfolding acompatible_def
 proof (auto, goal_cases)
   case A: (1 I r v u)
   from A(3) obtain d :: nat where d: "c = of_nat d" unfolding Nats_def by blast
-  with A(8) have u: "u x < c" "u x < d" unfolding ccval_def by auto
+  with A have u: "u x < c" "u x < d" unfolding ccval_def by auto
   have "v x < c"
   proof (cases "I x", goal_cases)
     case (1 c')
-    with A(4,6,9) have "u x = c'" "v x = c'" by fastforce+
+    with A have "u x = c'" "v x = c'" by fastforce+
     with u show "v x < c" by auto
   next
     case (2 c')
-    with A(4,6,9) have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
+    with A have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
     with u A(3) have "c' + 1 \<le> d" by auto
     with d have "c' + 1 \<le> c" by auto
     with B u show "v x < c" by auto
   next
     case (3 c')
-    with A(4,9) have "c' < u x" by fastforce
+    with A have "c' < u x" by fastforce
     moreover from 3 A(4,5) have "c' \<ge> k x" by fastforce
     ultimately show ?case using u A(2) by auto
   qed
-  with A(4,6) have "v \<turnstile> LT x c" by auto
+  with A(4,6) have "v \<turnstile>\<^sub>a LT x c" by auto
   with A(7) show False unfolding ccval_def by auto
 qed
 
@@ -1967,27 +1961,27 @@ lemma ccompatible3:
   fixes X k fixes c :: real
   defines "\<R> \<equiv> {region X I r |I r. valid_region X k I r}"
   assumes "c \<le> k x" "c \<in> \<nat>" "x \<in> X"
-  shows "ccompatible \<R> (LE x c)" using assms unfolding ccompatible_def
+  shows "acompatible \<R> (LE x c)" using assms unfolding acompatible_def
 proof (auto, goal_cases)
   case A: (1 I r v u)
   from A(3) obtain d :: nat where d: "c = of_nat d" unfolding Nats_def by blast
-  with A(8) have u: "u x \<le> c" "u x \<le> d" unfolding ccval_def by auto
+  with A have u: "u x \<le> c" "u x \<le> d" unfolding ccval_def by auto
   have "v x \<le> c"
   proof (cases "I x", goal_cases)
-    case (1 c') with A(4,6,9) u show ?case by fastforce
+    case (1 c') with A u show ?case by fastforce
   next
     case (2 c')
-    with A(4,6,9) have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
+    with A have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
     with u A(3) have "c' + 1 \<le> d" by auto
     with d u A(3) have "c' + 1 \<le> c" by auto
     with B u show "v x \<le> c" by auto
   next
     case (3 c')
-    with A(4,9) have "c' < u x" by fastforce
+    with A have "c' < u x" by fastforce
     moreover from 3 A(4,5) have "c' \<ge> k x" by fastforce
     ultimately show ?case using u A(2) by auto
   qed
-  with A(4,6) have "v \<turnstile> LE x c" by auto
+  with A(4,6) have "v \<turnstile>\<^sub>a LE x c" by auto
   with A(7) show False unfolding ccval_def by auto
 qed
 
@@ -1995,17 +1989,17 @@ lemma ccompatible4:
   fixes X k fixes c :: real
   defines "\<R> \<equiv> {region X I r |I r. valid_region X k I r}"
   assumes "c \<le> k x" "c \<in> \<nat>" "x \<in> X"
-  shows "ccompatible \<R> (GT x c)" using assms unfolding ccompatible_def
+  shows "acompatible \<R> (GT x c)" using assms unfolding acompatible_def
 proof (auto, goal_cases)
   case A: (1 I r v u)
   from A(3) obtain d :: nat where d: "c = of_nat d" unfolding Nats_def by blast
-  with A(8) have u: "u x > c" "u x > d" unfolding ccval_def by auto
+  with A have u: "u x > c" "u x > d" unfolding ccval_def by auto
   have "v x > c"
   proof (cases "I x", goal_cases)
-    case (1 c') with A(4,6,9) u show ?case by fastforce
+    case (1 c') with A u show ?case by fastforce
   next
     case (2 c')
-    with A(4,6,9) have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
+    with A have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
     with d u have "c' \<ge> c" by auto
     with B u show "v x > c" by auto
   next
@@ -2014,7 +2008,7 @@ proof (auto, goal_cases)
     moreover from 3 A(4,5) have "c' \<ge> k x" by fastforce
     ultimately show ?case using A(2) u(1) by auto
   qed
-  with A(4,6) have "v \<turnstile> GT x c" by auto
+  with A(4,6) have "v \<turnstile>\<^sub>a GT x c" by auto
   with A(7) show False unfolding ccval_def by auto
 qed
 
@@ -2022,17 +2016,17 @@ lemma ccompatible5:
   fixes X k fixes c :: real
   defines "\<R> \<equiv> {region X I r |I r. valid_region X k I r}"
   assumes "c \<le> k x" "c \<in> \<nat>" "x \<in> X"
-  shows "ccompatible \<R> (GE x c)" using assms unfolding ccompatible_def
+  shows "acompatible \<R> (GE x c)" using assms unfolding acompatible_def
 proof (auto, goal_cases)
   case A: (1 I r v u)
   from A(3) obtain d :: nat where d: "c = of_nat d" unfolding Nats_def by blast
-  with A(8) have u: "u x \<ge> c" "u x \<ge> d" unfolding ccval_def by auto
+  with A have u: "u x \<ge> c" "u x \<ge> d" unfolding ccval_def by auto
   have "v x \<ge> c"
   proof (cases "I x", goal_cases)
-    case (1 c') with A(4,6,9) u show ?case by fastforce
+    case (1 c') with A u show ?case by fastforce
   next
     case (2 c')
-    with A(4,6,9) have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
+    with A have B: "c' < u x" "u x < c' + 1" "c' < v x" "v x < c' + 1" by fastforce+
     with d u have "c' \<ge> c" by auto
     with B u show "v x \<ge> c" by auto
   next
@@ -2041,9 +2035,20 @@ proof (auto, goal_cases)
     moreover from 3 A(4,5) have "c' \<ge> k x" by fastforce
     ultimately show ?case using A(2) u(1) by auto
   qed
-  with A(4,6) have "v \<turnstile> GE x c" by auto
+  with A(4,6) have "v \<turnstile>\<^sub>a GE x c" by auto
   with A(7) show False unfolding ccval_def by auto
 qed
+
+lemma acompatible:
+  fixes X k fixes c :: real
+  defines "\<R> \<equiv> {region X I r |I r. valid_region X k I r}"
+  assumes "c \<le> k x" "c \<in> \<nat>" "x \<in> X" "constraint_pair ac = (x, c)"
+  shows "acompatible \<R> ac" using assms
+by (cases ac) (auto intro: ccompatible1 ccompatible2 ccompatible3 ccompatible4 ccompatible5)
+
+definition ccompatible
+where
+  "ccompatible \<R> cc \<equiv> \<forall> R \<in> \<R>. R \<subseteq> \<lbrace>cc\<rbrace> \<or> \<lbrace>cc\<rbrace> \<inter> R = {}"
 
 lemma ccompatible:
   fixes X k fixes c :: nat
@@ -2051,12 +2056,17 @@ lemma ccompatible:
   assumes "\<forall>(x,m) \<in> collect_clock_pairs cc. m \<le> k x \<and> x \<in> X \<and> m \<in> \<nat>"
   shows "ccompatible \<R> cc" using assms
 proof (induction cc)
-  case (AND cc1 cc2)
-  then have IH: "ccompatible \<R> cc1" "ccompatible \<R> cc2" by auto
-  moreover have "\<lbrace>AND cc1 cc2\<rbrace> = \<lbrace>cc1\<rbrace> \<inter> \<lbrace>cc2\<rbrace>" unfolding ccval_def by auto
-  ultimately show ?case unfolding ccompatible_def by auto
-qed (auto intro: ccompatible1 ccompatible2 ccompatible3 ccompatible4 ccompatible5)
-
+  case Nil
+  then show ?case by (auto simp: ccompatible_def ccval_def clock_val_def)
+next
+  case (Cons ac cc)
+  then have "ccompatible \<R> cc" by (auto simp: collect_clock_pairs_def)
+  moreover have
+    "acompatible \<R> ac"
+  using Cons.prems by (auto intro: acompatible simp: collect_clock_pairs_def \<R>_def)
+  ultimately show ?case
+    unfolding ccompatible_def acompatible_def ccval_def by (fastforce simp: clock_val_def)
+qed
 
 section \<open>Compability with Resets\<close>
 
@@ -2175,18 +2185,18 @@ proof -
       { fix y assume y: "y \<in> ?X\<^sub>0" "x \<noteq> y" "(y, x) \<in> r"
         then have L: "frac (v y) \<in> ?L" by auto
         with Max_in[OF fin(1)] have In: "Max ?L \<in> ?L" by auto
-        then have "frac (Max ?L) = (Max ?L)" using frac_idempotent by fastforce
+        then have "frac (Max ?L) = (Max ?L)" using frac_frac by fastforce
         from Max_ge[OF fin(1) L] have "frac (v y) \<le> Max ?L" .
-        also have "\<dots> = frac (Max ?L)" using In frac_idempotent[symmetric] by fastforce
+        also have "\<dots> = frac (Max ?L)" using In frac_frac[symmetric] by fastforce
         also have "\<dots> = frac (c + Max ?L)" by (auto simp: frac_nat_add_id)
         finally have "frac (v y) \<le> frac ?l" using L by auto
       } note L_bound = this
       { fix y assume y: "y \<in> ?X\<^sub>0" "x \<noteq> y" "(x,y) \<in> r"
         then have U: "frac (v y) \<in> ?U" by auto
         with Min_in[OF fin(2)] have In: "Min ?U \<in> ?U" by auto
-        then have "frac (Min ?U) = (Min ?U)" using frac_idempotent by fastforce
+        then have "frac (Min ?U) = (Min ?U)" using frac_frac by fastforce
         have "frac (c + Min ?U) = frac (Min ?U)" by (auto simp: frac_nat_add_id)
-        also have "\<dots> = Min ?U" using In frac_idempotent by fastforce
+        also have "\<dots> = Min ?U" using In frac_frac by fastforce
         also from Min_le[OF fin(2) U] have "Min ?U \<le> frac (v y)" .
         finally have "frac ?u \<le> frac (v y)" using U by auto
       } note U_bound = this
@@ -2300,7 +2310,7 @@ proof -
           by auto
           from trans l_u(5-) have "(l,u) \<in> ?r" unfolding trans_def by blast
           with l_u(1-4) v have *: "Max ?L \<le> Min ?U" by fastforce
-          with l_u(1,2) have "frac (Max ?L) \<le> frac (Min ?U)" by (simp add: frac_idempotent)
+          with l_u(1,2) have "frac (Max ?L) \<le> frac (Min ?U)" by (simp add: frac_frac)
           with frac_nat_add_id l(1) False have "frac ?l \<le> frac ?u" by simp
           with l(1) * False show ?thesis by simp
         qed
@@ -2319,7 +2329,7 @@ proof -
         show ?thesis
         proof (cases "?U = {}")
           case True
-          with T show ?thesis by (simp)
+          with T show ?thesis by (simp add: floor_nat_add_id)
         next
           case False
           from U_intv[OF False] have "0 \<le> Min ?U" "Min ?U < 1" by auto
@@ -2337,11 +2347,11 @@ proof -
         show ?thesis
         proof (cases "?L = {}")
           case True
-          with T show ?thesis by (simp)
+          with T show ?thesis by (simp add: floor_nat_add_id)
         next
           case False
           from L_intv[OF False] have "0 \<le> Max ?L" "Max ?L < 1" by auto
-          from floor_nat_add_id[OF this] T False show ?thesis by (auto)
+          from floor_nat_add_id[OF this] T False show ?thesis by auto
         qed
       qed
       { assume "?L \<noteq> {}" "?U \<noteq> {}"
@@ -2369,7 +2379,7 @@ proof -
           with d have "d = ((floor ?l + floor ?u) + (frac (v y) + frac (v y))) / 2"
           unfolding frac_def by auto
           also have "\<dots> = c + frac (v y)" using \<open>floor ?l = c\<close> floor_u \<open>?U \<noteq> {}\<close> by auto
-          finally show "frac (v y) = frac d" using frac_nat_add_id frac_idempotent by metis
+          finally show "frac (v y) = frac d" using frac_nat_add_id frac_frac by metis
         next
           assume A: "frac (v y) = frac d"
           show "(y, x) \<in> r"
@@ -2379,7 +2389,7 @@ proof -
             from U_bound[OF y this] have u_y:"frac ?u \<le> frac (v y)" by auto
             from y B' have U: "?U \<noteq> {}" and "frac (v y) \<in> ?U" by auto
             then have u: "frac ?u = Min ?U" using Min_in[OF fin(2) \<open>?U \<noteq> {}\<close>]
-            by (auto simp: frac_nat_add_id frac_idempotent)
+            by (auto simp: frac_nat_add_id frac_frac)
             show False
             proof (cases "?L = {}")
               case True
@@ -2423,7 +2433,7 @@ proof -
             from L_bound[OF y this] have l_y:"frac ?l \<ge> frac (v y)" by auto
             from y B' have L: "?L \<noteq> {}" and "frac (v y) \<in> ?L" by auto
             then have l: "frac ?l = Max ?L" using Max_in[OF fin(1) \<open>?L \<noteq> {}\<close>]
-            by (auto simp: frac_nat_add_id frac_idempotent)
+            by (auto simp: frac_nat_add_id frac_frac)
             show False
             proof (cases "?U = {}")
               case True
@@ -2480,7 +2490,7 @@ proof -
         case False
         note F = this
         then have l: "?l = c + Max ?L" "frac ?l = Max ?L" using Max_in[OF fin(1) \<open>?L \<noteq> {}\<close>]
-        by (auto simp: frac_nat_add_id frac_idempotent)
+        by (auto simp: frac_nat_add_id frac_frac)
         from L_intv[OF F] have *: "0 < Max ?L" "Max ?L < 1" by auto
         show ?thesis
         proof (cases "?U = {}")
@@ -2495,7 +2505,7 @@ proof -
         next
           case False
           then have u: "?u = c + Min ?U" "frac ?u = Min ?U" using Min_in[OF fin(2) False]
-          by (auto simp: frac_nat_add_id frac_idempotent)
+          by (auto simp: frac_nat_add_id frac_frac)
           from U_intv[OF False] have **: "0 < Min ?U" "Min ?U < 1" by auto
           from l u d have "d = ((c + c) + (Max ?L + Min ?U)) / 2" by auto
           also have "\<dots> = c + (Max ?L + Min ?U) / 2" by simp
@@ -2523,7 +2533,7 @@ proof -
         case False
         note F = this
         then have u: "?u = c + Min ?U" "frac ?u = Min ?U" using Min_in[OF fin(2) \<open>?U \<noteq> {}\<close>]
-        by (auto simp: frac_nat_add_id frac_idempotent)
+        by (auto simp: frac_nat_add_id frac_frac)
         from U_intv[OF F] have *: "0 < Min ?U" "Min ?U < 1" by auto
         show ?thesis
         proof (cases "?L = {}")
@@ -2539,7 +2549,7 @@ proof -
         next
           case False
           then have l: "?l = c + Max ?L" "frac ?l = Max ?L" using Max_in[OF fin(1) False]
-          by (auto simp: frac_nat_add_id frac_idempotent)
+          by (auto simp: frac_nat_add_id frac_frac)
           from L_intv[OF False] have **: "0 < Max ?L" "Max ?L < 1" by auto
           from l u d have "d = ((c + c) + (Max ?L + Min ?U)) / 2" by auto
           also have "\<dots> = c + (Max ?L + Min ?U) / 2" by simp
@@ -2661,6 +2671,83 @@ next
   ultimately show ?case by presburger
 qed
 
+text \<open>
+  This is the only additional lemma necessary to make local \<open>\<alpha>\<close>-closures work.
+\<close>
+lemma region_set_subs:
+  fixes X k k' and c :: nat
+  defines "\<R>  \<equiv> {region X I r |I r. valid_region X k I r}"
+  defines "\<R>' \<equiv> {region X I r |I r. valid_region X k' I r}"
+  assumes "R \<in> \<R>" "v \<in> R" "finite X" "0 \<le> c" "set cs \<subseteq> X" "\<forall> y. y \<notin> set cs \<longrightarrow> k y \<ge> k' y"
+  shows "[[cs \<rightarrow> c]v]\<^sub>\<R>' \<supseteq> region_set' R cs c" "[[cs \<rightarrow> c]v]\<^sub>\<R>' \<in> \<R>'" "[cs \<rightarrow> c]v \<in> [[cs \<rightarrow> c]v]\<^sub>\<R>'"
+proof -
+  from assms obtain I r where R: "R = region X I r" "valid_region X k I r" "v \<in> region X I r" by auto
+  \<comment> \<open>The set of movers, that is all intervals that now are unbounded due to changing from \<open>k\<close> to \<open>k'\<close>\<close>
+  let ?M = "{x \<in> X. isIntv (I x) \<and> intv_const (I x) \<ge> k' x \<or> intv_const (I x) > k' x}"
+  let ?I = "\<lambda> y.
+    if y \<in> set cs then (if c \<le> k' y then Const c else Greater (k' y))
+    else if (isIntv (I y) \<and> intv_const (I y) \<ge> k' y \<or> intv_const (I y) > k' y) then Greater (k' y)
+    else I y"
+  let ?r = "{(y,z) \<in> r. y \<notin> set cs \<and> z \<notin> set cs \<and> y \<notin> ?M \<and> z \<notin> ?M}"
+  let ?X\<^sub>0 = "{x \<in> X. \<exists> c. I x = Intv c}"
+  let ?X\<^sub>0' = "{x \<in> X. \<exists> c. ?I x = Intv c}"
+
+  from R(2) have refl: "refl_on ?X\<^sub>0 r" and trans: "trans r" and total: "total_on ?X\<^sub>0 r" by auto
+
+  have valid: "valid_region X k' ?I ?r"
+  proof
+    show "?X\<^sub>0' = ?X\<^sub>0'" by auto
+  next
+    from refl show "refl_on ?X\<^sub>0' ?r" unfolding refl_on_def by auto
+  next
+    from trans show "trans ?r" unfolding trans_def by auto
+  next
+    from total show "total_on ?X\<^sub>0' ?r" unfolding total_on_def by auto
+  next
+    from R(2) have "\<forall> x \<in> X. valid_intv (k x) (I x)" by auto
+    then show "\<forall> x \<in> X. valid_intv (k' x) (?I x)"
+      apply safe
+      subgoal for x'
+        using \<open>\<forall> y. y \<notin> set cs \<longrightarrow> k y \<ge> k' y\<close>
+        by (cases "I x'"; force)
+      done
+  qed
+
+  { fix v assume v: "v \<in> region_set' R cs c"
+    with R(1) obtain v' where v': "v' \<in> region X I r" "v = [cs \<rightarrow> c]v'"
+      unfolding region_set'_def by auto
+    have "v \<in> region X ?I ?r"
+    proof (standard, goal_cases)
+      case 1
+      from v' \<open>0 \<le> c\<close> show ?case
+        apply -
+        apply rule
+        subgoal for x
+          by (cases "x \<in> set cs") auto
+        done
+    next
+      case 2
+      from v' show ?case
+        apply -
+        apply rule
+        subgoal for x'
+            by (cases "I x'"; cases "x' \<in> set cs"; force)
+        done
+    next
+      show "?X\<^sub>0' = ?X\<^sub>0'" by auto
+    next
+      from v' show "\<forall> y \<in> ?X\<^sub>0'. \<forall> z \<in> ?X\<^sub>0'. (y,z) \<in> ?r \<longleftrightarrow> frac (v y) \<le> frac (v z)" by auto
+    qed
+  }
+  then have "region_set' R cs c \<subseteq> region X ?I ?r" by blast
+  moreover from valid have *: "region X ?I ?r \<in> \<R>'" unfolding \<R>'_def by blast
+  moreover from assms have **: "[cs \<rightarrow> c]v \<in> region_set' R cs c" unfolding region_set'_def by auto
+  ultimately show
+    "[[cs \<rightarrow> c]v]\<^sub>\<R>' \<supseteq> region_set' R cs c" "[[cs \<rightarrow> c]v]\<^sub>\<R>' \<in> \<R>'" "[cs \<rightarrow> c]v \<in> [[cs \<rightarrow> c]v]\<^sub>\<R>'"
+    using region_unique[of \<R>', OF _ _ *, unfolded \<R>'_def, OF HOL.refl]
+    unfolding \<R>'_def[symmetric] by auto
+qed
+
 section \<open>A Semantics Based on Regions\<close>
 
 subsection \<open>Single step\<close>
@@ -2671,7 +2758,7 @@ inductive step_r ::
 where
   step_t_r:
   "\<lbrakk>\<R> = {region X I r |I r. valid_region X k I r}; valid_abstraction A X k; R \<in> \<R>; R' \<in> Succ \<R> R;
-    R \<subseteq> \<lbrace>inv_of A l\<rbrace>; R' \<subseteq> \<lbrace>inv_of A l\<rbrace>\<rbrakk> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto> \<langle>l,R'\<rangle>" |
+    R' \<subseteq> \<lbrace>inv_of A l\<rbrace>\<rbrakk> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto> \<langle>l,R'\<rangle>" |
   step_a_r:
   "\<lbrakk>\<R> = {region X I r |I r. valid_region X k I r}; valid_abstraction A X k; A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l'; R \<in> \<R>\<rbrakk>
     \<Longrightarrow> A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto> \<langle>l',region_set' (R \<inter> {u. u \<turnstile> g}) r 0 \<inter> {u. u \<turnstile> inv_of A l'}\<rangle>"
@@ -2746,12 +2833,12 @@ proof (induction rule: step.induct, goal_cases)
   ultimately show ?case using *(3) by meson
 next
   case (2 A l u d l' u')
-  hence u': "u' = (u \<oplus> d)" "u \<turnstile> inv_of A l" "u \<oplus> d \<turnstile> inv_of A l" "0 \<le> d" and "l = l'" by auto
+  hence u': "u' = (u \<oplus> d)" "u \<oplus> d \<turnstile> inv_of A l" "0 \<le> d" and "l = l'" by (auto elim!: step_t.cases)
   from region_cover'[OF 2(2,4)] have R: "[u]\<^sub>\<R> \<in> \<R>" "u \<in> [u]\<^sub>\<R>" by auto
-  from SuccI2[OF 2(2) this(2,1) u'(4), of "[u']\<^sub>\<R>"] u'(1) have u'1:
+  from SuccI2[OF 2(2) this(2,1) \<open>0 \<le> d\<close>, of "[u']\<^sub>\<R>"] u'(1) have u'1:
     "[u']\<^sub>\<R> \<in> Succ \<R> ([u]\<^sub>\<R>)" "[u']\<^sub>\<R> \<in> \<R>"
   by auto
-  from regions_closed'[OF 2(2) R(1,2) u'(4)] u'(1) have u'2: "u' \<in> [u']\<^sub>\<R>" by simp
+  from regions_closed'[OF 2(2) R(1,2) \<open>0 \<le> d\<close>] u'(1) have u'2: "u' \<in> [u']\<^sub>\<R>" by simp
   from 2(3) have *:
     "\<forall>(x, m)\<in>clkp_set A. m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
     "collect_clkvt (trans_of A) \<subseteq> X"
@@ -2760,7 +2847,7 @@ next
   from *(1) u'(2) have "\<forall>(x, m)\<in>collect_clock_pairs (inv_of A l). m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
   unfolding clkp_set_def collect_clki_def inv_of_def by fastforce
   from ccompatible[OF this, folded 2(2)] u'1(2) u'2 u'(1,2,3) R have
-    "[u']\<^sub>\<R> \<subseteq> \<lbrace>inv_of A l\<rbrace>" "([u]\<^sub>\<R>) \<subseteq> \<lbrace>inv_of A l\<rbrace>"
+    "[u']\<^sub>\<R> \<subseteq> \<lbrace>inv_of A l\<rbrace>"
   unfolding ccompatible_def ccval_def by auto
   with 2 u'1 R(1) have "A,\<R> \<turnstile> \<langle>l, ([u]\<^sub>\<R>)\<rangle> \<leadsto> \<langle>l,([u']\<^sub>\<R>)\<rangle>" by auto
   with u'1(2) u'2 \<open>l = l'\<close> show ?case by meson
@@ -2830,8 +2917,8 @@ lemma emptiness_preservance_steps: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \
 by blast+
 
 text \<open>
-  Note how it is important to define the multi-step semantics "the right way round".
-  This also the direction Bouyer implies for her implicit induction.
+  Note how it is important to define the multi-step semantics ``the right way round".
+  This is also the direction Bouyer implies for her implicit induction.
 \<close>
 
 lemma steps_r_sound:
@@ -2844,7 +2931,7 @@ next
   from emptiness_preservance[OF step.hyps(2)] step.prems have "R' \<noteq> {}" by fastforce
   with step obtain u' where u': "u' \<in> R'" "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>* \<langle>l',u'\<rangle>" by auto
   with step_r_sound[OF step(2,4,5)] obtain u'' where "u'' \<in> R''" "A \<turnstile> \<langle>l', u'\<rangle> \<rightarrow> \<langle>l'',u''\<rangle>" by blast
-  with u' show ?case by (auto intro: steps_alt)
+  with u' show ?case by (auto 4 5 intro: steps_alt)
 qed
 
 lemma steps_r_sound':
@@ -2887,5 +2974,227 @@ next
   by (subst steps_r_alt) auto
   with R'' region_cover'[OF step(4,6)] show ?case by auto
 qed
+
+(*
+section \<open>A Semantics Based on Regions\<close>
+
+subsection \<open>Single step\<close>
+
+inductive step_r ::
+  "('a, 'c, t, 's) ta \<Rightarrow> ('c, t) zone set \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
+("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+where
+  step_r:
+  "\<lbrakk>\<R> = {region X I r |I r. valid_region X k I r}; valid_abstraction A X k; A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l';
+    R \<in> \<R>; R' \<in> Succ \<R> R; R' \<subseteq> \<lbrace>inv_of A l\<rbrace>
+   \<rbrakk>
+ \<Longrightarrow>
+  A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto> \<langle>l', region_set' (R' \<inter> {u. u \<turnstile> g}) r 0 \<inter> {u. u \<turnstile> inv_of A l'}\<rangle>"
+
+inductive_cases[elim!]: "A,\<R> \<turnstile> \<langle>l, u\<rangle> \<leadsto> \<langle>l', u'\<rangle>"
+
+declare step_r.intros[intro]
+
+lemma region_cover':
+  assumes "\<R> = {region X I r |I r. valid_region X k I r}" and "\<forall>x\<in>X. 0 \<le> v x"
+  shows "v \<in> [v]\<^sub>\<R>" "[v]\<^sub>\<R> \<in> \<R>"
+proof -
+  from region_cover[OF assms(2), of k] assms obtain R where R: "R \<in> \<R>" "v \<in> R" by auto
+  from regions_closed'[OF assms(1) R, of 0] show "v \<in> [v]\<^sub>\<R>" unfolding cval_add_def by auto
+  from regions_closed[OF assms(1) R, of 0] show "[v]\<^sub>\<R> \<in> \<R>" unfolding cval_add_def by auto
+qed
+
+lemma step_r_complete_aux:
+  fixes R r A l' g
+  defines "R' \<equiv> region_set' (R \<inter> {u. u \<turnstile> g}) r 0 \<inter> {u. u \<turnstile> inv_of A l'}"
+  assumes "\<R> = {region X I r |I r. valid_region X k I r}"
+    and "valid_abstraction A X k"
+    and "u \<in> R"
+    and "R \<in> \<R>"
+    and "A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l'"
+    and "u \<turnstile> g"
+    and "[r\<rightarrow>0]u \<turnstile> inv_of A l'"
+  shows "R = R \<inter> {u. u \<turnstile> g} \<and> R' = region_set' R r 0 \<and> R' \<in> \<R>"
+proof -
+  note A = assms(2-)
+  from A(2) have *:
+    "\<forall>(x, m)\<in>clkp_set A. m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
+    "collect_clkvt (trans_of A) \<subseteq> X"
+    "finite X"
+  by (fastforce elim: valid_abstraction.cases)+
+  from A(5) *(2) have r: "set r \<subseteq> X" unfolding collect_clkvt_def by fastforce
+  from *(1) A(5) have "\<forall>(x, m)\<in>collect_clock_pairs g. m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
+  unfolding clkp_set_def collect_clkt_def by fastforce
+  from ccompatible[OF this, folded A(1)] A(3,4,6) have "R \<subseteq> \<lbrace>g\<rbrace>"
+  unfolding ccompatible_def ccval_def by blast
+  then have R_id: "R \<inter> {u. u \<turnstile> g} = R" unfolding ccval_def by auto
+  from region_set'_id[OF A(4)[unfolded A(1)] A(3) *(3) _ _ r, of 0, folded A(1)]
+  have **:
+    "[[r\<rightarrow>0]u]\<^sub>\<R> = region_set' R r 0" "[[r\<rightarrow>0]u]\<^sub>\<R> \<in> \<R>" "[r\<rightarrow>0]u \<in> [[r\<rightarrow>0]u]\<^sub>\<R>"
+  by auto
+  let ?R = "[[r\<rightarrow>0]u]\<^sub>\<R>"
+  from *(1) A(5) have ***:
+    "\<forall>(x, m) \<in> collect_clock_pairs (inv_of A l'). m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
+  unfolding inv_of_def clkp_set_def collect_clki_def by fastforce
+  from ccompatible[OF this, folded A(1)] **(2-) A(7) have "?R \<subseteq> \<lbrace>inv_of A l'\<rbrace>"
+  unfolding ccompatible_def ccval_def by blast
+  then have ***: "?R \<inter> {u. u \<turnstile> inv_of A l'} = ?R" unfolding ccval_def by auto
+  with **(1,2) R_id show ?thesis by (auto simp: R'_def)
+qed
+
+lemma step_r_complete:
+  "\<lbrakk>A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow> \<langle>l',u'\<rangle>; \<R> = {region X I r |I r. valid_region X k I r}; valid_abstraction A X k;
+    \<forall> x \<in> X. u x \<ge> 0\<rbrakk> \<Longrightarrow> \<exists> R'. A,\<R> \<turnstile> \<langle>l, ([u]\<^sub>\<R>)\<rangle> \<leadsto> \<langle>l',R'\<rangle> \<and> u' \<in> R' \<and> R' \<in> \<R>"
+proof (induction rule: step'.induct)
+  case prems: (step' A l u d l' u' a l'' u'')
+  then have u': "u' = (u \<oplus> d)" "u \<oplus> d \<turnstile> inv_of A l" "0 \<le> d" and "l = l'" by auto
+  from prems obtain g r where u'':
+    "u'' = [r\<rightarrow>0]u'" "A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l''" "u' \<turnstile> g" "u'' \<turnstile> inv_of A l''"
+    by atomize_elim (auto 4 4 elim: step_a.cases)
+  from region_cover'[OF \<open>\<R> = _\<close> prems(5)] have R: "[u]\<^sub>\<R> \<in> \<R>" "u \<in> [u]\<^sub>\<R>" by auto
+  from SuccI2[OF \<open>\<R> = _\<close> this(2,1) \<open>0 \<le> _\<close>, of "[u']\<^sub>\<R>"] \<open>u' = _\<close> have u'1:
+    "[u']\<^sub>\<R> \<in> Succ \<R> ([u]\<^sub>\<R>)" "[u']\<^sub>\<R> \<in> \<R>"
+    by auto
+  from R(1,2) u'(1,3) have u'2: "[u']\<^sub>\<R> \<in> \<R>" "u' \<in> [u']\<^sub>\<R>"
+    by (auto intro: regions_closed[OF \<open>\<R> = _\<close>] regions_closed'[OF \<open>\<R> = _\<close>])
+  from prems(4) have *:
+    "\<forall>(x, m)\<in>clkp_set A. m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
+    "collect_clkvt (trans_of A) \<subseteq> X"
+    "finite X"
+  by (fastforce elim: valid_abstraction.cases)+
+  from *(1) u'(2) have
+    "\<forall>(x, m)\<in>collect_clock_pairs (inv_of A l). m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
+    "\<forall>(x, m)\<in>collect_clock_pairs (inv_of A l''). m \<le> real (k x) \<and> x \<in> X \<and> m \<in> \<nat>"
+  unfolding clkp_set_def collect_clki_def inv_of_def by fastforce+
+  with u'2 u'(1,2) have
+    "[u']\<^sub>\<R> \<subseteq> \<lbrace>inv_of A l\<rbrace>"
+    by (auto 4 4 simp add: ccompatible_def ccval_def \<open>\<R> = _\<close>[symmetric] dest!: ccompatible)
+  then have **: "([u']\<^sub>\<R>) \<inter> {u. u \<turnstile> inv_of A l} = ([u']\<^sub>\<R>)" by (auto simp: ccval_def)
+  let ?R'= "region_set' (([u']\<^sub>\<R>) \<inter> {u. u \<turnstile> g}) r 0 \<inter> {u. u \<turnstile> inv_of A l''}"
+  from step_r_complete_aux[OF \<open>\<R> = _\<close> prems(4) u'2(2,1) u''(2,3)] u''(1,4)
+  have *: "([u']\<^sub>\<R>) \<inter> {u. u \<turnstile> g} = [u']\<^sub>\<R>" "?R' = region_set' ([u']\<^sub>\<R>) r 0" "?R' \<in> \<R>" by auto
+  from prems(3,4) have "collect_clkvt (trans_of A) \<subseteq> X" "finite X"
+    by (auto elim: valid_abstraction.cases)
+  with u''(2) have r: "set r \<subseteq> X" unfolding collect_clkvt_def by fastforce
+  from * \<open>u'' = _\<close> \<open>u' \<in> _\<close> have "u'' \<in> ?R'" unfolding region_set'_def by auto
+  moreover from step_r[OF \<open>\<R> = _\<close> prems(4) u''(2) R(1) u'1(1) \<open>[u']\<^sub>\<R> \<subseteq> _\<close>] have
+    "A,\<R> \<turnstile> \<langle>l, ([u]\<^sub>\<R>)\<rangle> \<leadsto> \<langle>l'', ?R'\<rangle>"
+    by (simp add: ** )
+  ultimately show ?case using \<open>?R' \<in> \<R>\<close> by (intro exI conjI; auto)
+qed
+
+text \<open>
+  Compare this to lemma \<open>step_z_sound\<close>. This version is weaker because for regions we may very well
+  arrive at a successor for which not every valuation can be reached by the predecessor.
+  This is the case for e.g. the region with only Greater (k x) bounds.
+\<close>
+
+lemma step_r_sound:
+  "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto> \<langle>l',R'\<rangle> \<Longrightarrow> \<R> = {region X I r |I r. valid_region X k I r}
+  \<Longrightarrow> R' \<noteq> {} \<Longrightarrow> (\<forall> u \<in> R. \<exists> u' \<in> R'. A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow> \<langle>l',u'\<rangle>)"
+proof (induction rule: step_r.induct)
+  case A: (step_r \<R> X k A l g a r l' R R')
+  show ?case
+  proof
+    fix u assume u: "u \<in> R"
+    from set_of_regions[OF A(4)[unfolded A(1)], folded A(1), OF  u A(5)] A(2)
+    obtain t where t: "t \<ge> 0" "[u \<oplus> t]\<^sub>\<R> = R'" by (auto elim: valid_abstraction.cases)
+    with regions_closed'[OF A(1,4) u] have *: "(u \<oplus> t) \<in> R'" by auto
+    from A(6,8) obtain v where v: "v \<in> R'" "v \<turnstile> inv_of A l" "v \<turnstile> g" "[r\<rightarrow>0]v \<turnstile> inv_of A l'"
+      unfolding region_set'_def ccval_def by auto
+    let ?R' = "region_set' (R' \<inter> {u. u \<turnstile> g}) r 0 \<inter> {u. u \<turnstile> inv_of A l'}"
+    from step_r_complete_aux[OF A(1,2) v(1) _ A(3)] \<open>R' \<in> _\<close> v have R:
+      "R' = R' \<inter> {u. u \<turnstile> g}" "?R' = region_set' R' r 0"
+      by auto
+    from A have "collect_clkvt (trans_of A) \<subseteq> X" by (auto elim: valid_abstraction.cases)
+    with A(3) have r: "set r \<subseteq> X" unfolding collect_clkvt_def by fastforce
+    from * R A(6) have *:
+      "u \<oplus> t \<turnstile> inv_of A l" "[r\<rightarrow>0](u \<oplus> t) \<in> ?R'" "(u \<oplus> t) \<turnstile> g" "[r\<rightarrow>0](u \<oplus> t) \<turnstile> inv_of A l'"
+      unfolding region_set'_def ccval_def by auto
+    with A(3) \<open>t \<ge> 0\<close> have "A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow> \<langle>l',[r\<rightarrow>0](u \<oplus> t)\<rangle>" by (auto intro: step_a.intros)
+    with * show "\<exists>a\<in>?R'. A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow> \<langle>l',a\<rangle>" by meson
+  qed
+qed
+
+subsection \<open>Multi Step\<close>
+
+inductive
+  steps_r :: "('a, 'c, t, 's) ta \<Rightarrow> ('c, t) zone set \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
+("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>* \<langle>_, _\<rangle>" [61,61,61,61,61,61] 61)
+where
+  refl: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l, R\<rangle>" |
+  step: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l', R'\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l', R'\<rangle> \<leadsto> \<langle>l'', R''\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l'', R''\<rangle>"
+
+declare steps_r.intros[intro]
+
+lemma steps_alt:
+  "A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l',u'\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l', u'\<rangle> \<rightarrow> \<langle>l'',u''\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l'',u''\<rangle>"
+by (induction rule: steps'.induct) auto
+
+lemma emptiness_preservation: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto> \<langle>l',R'\<rangle> \<Longrightarrow> R = {} \<Longrightarrow> R' = {}"
+by (induction rule: step_r.cases) (auto simp: region_set'_def)
+
+lemma emptiness_preservation_steps: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l',R'\<rangle> \<Longrightarrow> R = {} \<Longrightarrow> R' = {}"
+ apply (induction rule: steps_r.induct)
+  apply blast
+ apply (subst emptiness_preservation)
+by blast+
+
+text \<open>
+  Note how it is important to define the multi-step semantics "the right way round".
+  This also the direction Bouyer implies for her implicit induction.
+\<close>
+
+lemma steps_r_sound:
+  "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l', R'\<rangle> \<Longrightarrow> \<R> = {region X I r |I r. valid_region X k I r}
+  \<Longrightarrow> R' \<noteq> {} \<Longrightarrow> u \<in> R \<Longrightarrow> \<exists> u' \<in> R'. A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l', u'\<rangle>"
+proof (induction rule: steps_r.induct)
+  case refl then show ?case by auto
+next
+  case (step A \<R> l R l' R' l'' R'')
+  from emptiness_preservation[OF step.hyps(2)] step.prems have "R' \<noteq> {}" by fastforce
+  with step obtain u' where u': "u' \<in> R'" "A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l',u'\<rangle>" by auto
+  with step_r_sound[OF step(2,4,5)] obtain u'' where "u'' \<in> R''" "A \<turnstile>' \<langle>l', u'\<rangle> \<rightarrow> \<langle>l'',u''\<rangle>" by blast
+  with u' show ?case by - (rule bexI[where x = u'']; blast intro: steps_alt)
+qed
+
+lemma steps_r_sound':
+  "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l', R'\<rangle> \<Longrightarrow> \<R> = {region X I r |I r. valid_region X k I r}
+  \<Longrightarrow> R' \<noteq> {} \<Longrightarrow> (\<exists> u' \<in> R'. \<exists> u \<in> R.  A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l', u'\<rangle>)"
+proof goal_cases
+  case 1
+  with emptiness_preservation_steps[OF this(1)] obtain u where "u \<in> R" by auto
+  with steps_r_sound[OF 1 this] show ?case by auto
+qed
+
+lemma single_step_r:
+  "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto> \<langle>l', R'\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l', R'\<rangle>"
+by (metis steps_r.refl steps_r.step)
+
+lemma steps_r_alt:
+  "A,\<R> \<turnstile> \<langle>l', R'\<rangle> \<leadsto>* \<langle>l'', R''\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto> \<langle>l', R'\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l'', R''\<rangle>"
+ apply (induction rule: steps_r.induct)
+  apply (rule single_step_r)
+by auto
+
+lemma steps_r_complete:
+  "\<lbrakk>A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l',u'\<rangle>; \<R> = {region X I r |I r. valid_region X k I r}; valid_abstraction A X k;
+    \<forall> x \<in> X. u x \<ge> 0\<rbrakk> \<Longrightarrow> \<exists> R'. A,\<R> \<turnstile> \<langle>l, ([u]\<^sub>\<R>)\<rangle> \<leadsto>* \<langle>l',R'\<rangle> \<and> u' \<in> R'"
+proof (induction rule: steps'.induct)
+  case (refl' A l u)
+  from region_cover'[OF refl'(1,3)] show ?case by auto
+next
+  case (step' A l u l' u' l'' u'')
+  from step_r_complete[OF step'(1,4-6)] obtain R' where R':
+    "A,\<R> \<turnstile> \<langle>l, ([u]\<^sub>\<R>)\<rangle> \<leadsto> \<langle>l',R'\<rangle>" "u' \<in> R'" "R' \<in> \<R>"
+    by auto
+  from R'(2,3) step'(4) have "\<forall>x\<in>X. 0 \<le> u' x" by auto
+  with step' obtain R'' where R'': "A,\<R> \<turnstile> \<langle>l', ([u']\<^sub>\<R>)\<rangle> \<leadsto>* \<langle>l'',R''\<rangle>" "u'' \<in> R''" by auto
+  with region_unique[OF step'(4) R'(2,3)] R'(1) have "A,\<R> \<turnstile> \<langle>l, ([u]\<^sub>\<R>)\<rangle> \<leadsto>* \<langle>l'',R''\<rangle>"
+  by (subst steps_r_alt) auto
+  with R'' region_cover'[OF step'(4,6)] show ?case by auto
+qed
+
+  *)
 
 end

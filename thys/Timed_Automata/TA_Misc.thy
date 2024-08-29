@@ -1,13 +1,12 @@
-(*<*)
-theory Misc
-imports Complex_Main
+section \<open>Mixed Material\<close>
+
+theory TA_Misc
+  imports Main HOL.Real
 begin
 
-chapter \<open>Basic lemmas which do not belong to the particular domain of Timed Automata\<close>
+subsection \<open>Reals\<close>
 
-section \<open>Reals\<close>
-
-subsection \<open>Properties of fractions\<close>
+subsubsection \<open>Properties of fractions\<close>
 
 lemma frac_add_le_preservation:
   fixes a d :: real and b :: nat
@@ -129,8 +128,6 @@ proof (standard, goal_cases)
   with assms show ?case by auto
 qed
 
-lemma frac_idempotent: "frac (frac x) = frac x" by (simp add: frac_eq frac_lt_1)
-
 lemma frac_nat_add_id: "frac ((n :: nat) + (r :: real)) = frac r" \<comment> \<open>Found by sledgehammer\<close>
 proof -
   have "\<And>r. frac (r::real) < 1"
@@ -187,7 +184,7 @@ lemma ints_le_add_frac2:
 using assms
 by (metis add.commute add_le_cancel_left add_mono_thms_linordered_semiring(1) int_lt_Suc_le leD le_less_linear)
 
-section \<open>Ordering Fractions\<close>
+subsection \<open>Ordering Fractions\<close>
 
 lemma distinct_twice_contradiction:
   "xs ! i = x \<Longrightarrow> xs ! j = x \<Longrightarrow> i < j \<Longrightarrow> j < length xs \<Longrightarrow> \<not> distinct xs"
@@ -225,7 +222,8 @@ lemma (in linorder) linorder_order_fun:
   where "(\<forall> x \<in> S. \<forall> y \<in> S. f x \<le> f y \<longleftrightarrow> x \<le> y)" and "range f \<subseteq> {0..card S - 1}"
 proof -
   obtain l where l_def: "l = sorted_list_of_set S" by auto
-  with assms have l: "set l = S" "sorted l" "distinct l" by auto
+  with sorted_list_of_set(1)[OF assms] have l: "set l = S" "sorted l" "distinct l"
+    by auto
   from l(1,3) \<open>finite S\<close> have len: "length l = card S" using distinct_card by force 
   let ?f = "\<lambda> x. if x \<notin> S then 0 else THE i. i < length l \<and> l ! i = x"
   { fix x y assume A: "x \<in> S" "y \<in> S" "x < y"
@@ -634,7 +632,7 @@ proof -
   then show ?thesis ..
 qed
 
-section \<open>Finiteness\<close>
+subsection \<open>Finiteness\<close>
 
 lemma pairwise_finiteI:
   assumes "finite {b. \<exists>a. P a b}" (is "finite ?B")
@@ -669,26 +667,8 @@ proof -
   with assms show ?thesis by (blast intro: finite_subset)
 qed
 
-lemma finite_set_of_finite_funs2:
-  fixes A :: "'a set" 
-    and B :: "'b set"
-    and C :: "'c set"
-    and d :: "'c" 
-  assumes "finite A"
-    and "finite B"
-    and "finite C"
-  shows "finite {f. \<forall>x. \<forall>y. (x \<in> A \<and> y \<in> B \<longrightarrow> f x y \<in> C) \<and> (x \<notin> A \<longrightarrow> f x y = d) \<and> (y \<notin> B \<longrightarrow> f x y = d)}"
-proof -
-  let ?S = "{f. \<forall>x. \<forall>y. (x \<in> A \<and> y \<in> B \<longrightarrow> f x y \<in> C) \<and> (x \<notin> A \<longrightarrow> f x y = d) \<and> (y \<notin> B \<longrightarrow> f x y = d)}"
-  let ?R = "{g. \<forall>x. (x \<in> B \<longrightarrow> g x \<in> C) \<and> (x \<notin> B \<longrightarrow> g x = d)}"
-  let ?Q = "{f. \<forall>x. (x \<in> A \<longrightarrow> f x \<in> ?R) \<and> (x \<notin> A \<longrightarrow> f x = (\<lambda>y. d))}"
-  from finite_set_of_finite_funs[OF assms(2,3)] have "finite ?R" .
-  from finite_set_of_finite_funs[OF assms(1) this, of "\<lambda> y. d"] have "finite ?Q" .
-  moreover have "?S = ?Q" by auto (case_tac "xa \<in> A", auto)
-  ultimately show ?thesis by simp
-qed
 
-section \<open>Numbering the elements of finite sets\<close>
+subsection \<open>Numbering the elements of finite sets\<close>
 
 lemma upt_last_append: "a \<le> b \<Longrightarrow> [a..<b] @ [b] = [a ..< Suc b]" by (induction b) auto
 
@@ -812,5 +792,10 @@ proof -
   ultimately show ?thesis ..
 qed
 
+subsection \<open>Products\<close>
+
+lemma prod_set_fst_id:
+  "x = y" if "\<forall> a \<in> x. fst a = b" "\<forall> a \<in> y. fst a = b" "snd ` x = snd ` y"
+  using that by (auto 4 6 simp: fst_def snd_def image_def split: prod.splits)
+
 end
-(*>*)

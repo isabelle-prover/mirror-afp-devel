@@ -1,17 +1,21 @@
 (* Author: Simon Wimmer *)
+chapter Miscellaneous
+
+section \<open>Lists\<close>
+
 theory More_List
   imports
     Main
     Instantiate_Existentials
 begin
 
-section \<open>First and Last Elements of Lists\<close>
+subsection \<open>First and Last Elements of Lists\<close>
 
 lemma (in -) hd_butlast_last_id:
   "hd xs # tl (butlast xs) @ [last xs] = xs" if "length xs > 1"
   using that by (cases xs) auto
 
-section \<open>@{term list_all}\<close>
+subsection \<open>@{term list_all}\<close>
 
 lemma (in -) list_all_map:
   assumes inv: "\<And> x. P x \<Longrightarrow> \<exists> y. f y = x"
@@ -24,7 +28,7 @@ lemma (in -) list_all_map:
     by (inst_existentials "a # as'") simp
   done
 
-section \<open>@{term list_all2}\<close>
+subsection \<open>@{term list_all2}\<close>
 
 lemma list_all2_op_map_iff:
   "list_all2 (\<lambda> a b. b = f a) xs ys \<longleftrightarrow> map f xs = ys"
@@ -68,13 +72,13 @@ lemma list_all2_set2:
   "\<forall>x\<in>set as. \<exists>xa\<in>set xs. P xa x" if "list_all2 P xs as"
   using that by - (rule list_all2_set1, subst (asm) list_all2_swap)
 
-section \<open>Distinct lists\<close>
+subsection \<open>Distinct lists\<close>
 
 (* XXX Duplication with Floyd_Warshall.thy *)
-lemma distinct_length_le:"finite s \<Longrightarrow> set xs \<subseteq> s \<Longrightarrow> distinct xs \<Longrightarrow> length xs \<le> card s"
+lemma distinct_length_le: "finite s \<Longrightarrow> set xs \<subseteq> s \<Longrightarrow> distinct xs \<Longrightarrow> length xs \<le> card s"
   by (metis card_mono distinct_card)
 
-section \<open>@{term filter}\<close>
+subsection \<open>@{term filter}\<close>
 
 lemma filter_eq_appendD:
   "\<exists> xs' ys'. filter P xs' = xs \<and> filter P ys' = ys \<and> as = xs' @ ys'" if "filter P as = xs @ ys"
@@ -106,7 +110,7 @@ lemma list_all2_replicate_elem_filter:
   using assms
   by (induction n arbitrary: ys; fastforce dest: list_all2_elem_filter simp: list_all2_append1)
 
-section \<open>Sublists\<close>
+subsection \<open>Sublists\<close>
 
 lemma nths_split:
   "nths xs (A \<union> B) = nths xs A @ nths xs B" if "\<forall> i \<in> A. \<forall> j \<in> B. i < j"

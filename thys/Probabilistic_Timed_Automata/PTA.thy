@@ -278,8 +278,7 @@ proof -
   with x(1) assms show ?thesis by auto
 qed
 
-(* XXX Remove Caml case *)
-context AlphaClosure
+context AlphaClosure_global
 begin
 
 (* XXX Clean *)
@@ -458,26 +457,6 @@ qed
 
 end (* Alpha Closure global *)
 
-subsection \<open>Justifying Timed Until vs \<^emph>\<open>suntil\<close>\<close>
-
-(* XXX Move *)
-lemma guard_continuous:
-  assumes "u \<turnstile> g" "u \<oplus> t \<turnstile> g" "0 \<le> (t'::'t::time)" "t' \<le> t"
-  shows "u \<oplus> t' \<turnstile> g"
-  using assms
-  by (induction g;
-      auto 4 3
-        simp: cval_add_def order_le_less_subst2 order_subst2 add_increasing2
-        intro: less_le_trans
-     )
-
-(* XXX Move *)
-(*
-lemma guard_continuous:
-  assumes "u \<turnstile> g" "u \<oplus> t \<turnstile> g" "0 \<le> t'" "t' \<le> t"
-  shows "u \<oplus> t' \<turnstile> g"
-  using assms by (auto 4 4 intro: atomic_guard_continuous simp: list_all_iff)
-*)
 
 section \<open>Definition and Semantics\<close>
 
@@ -623,7 +602,7 @@ end (* Probabilistic Timed Automaton *)
 section \<open>Constructing the Corresponding Finite MDP on Regions\<close>
 
 locale Probabilistic_Timed_Automaton_Regions =
-  Probabilistic_Timed_Automaton A + Regions \<X>
+  Probabilistic_Timed_Automaton A + Regions_global \<X>
   for A :: "('c, t, 's) pta" +
   \<comment> \<open>The following are necessary to obtain a \<open>finite\<close> MDP\<close>
   assumes finite: "finite \<X>" "finite L" "finite (trans_of A)"

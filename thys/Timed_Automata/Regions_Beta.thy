@@ -1,5 +1,9 @@
 theory Regions_Beta
-imports Misc DBM_Normalization DBM_Operations
+  imports
+    TA_Misc
+    Difference_Bound_Matrices.DBM_Normalization
+    Difference_Bound_Matrices.DBM_Operations
+    Difference_Bound_Matrices.Zones
 begin
 
 chapter \<open>Refinement to \<open>\<beta>\<close>-regions\<close>
@@ -20,18 +24,6 @@ datatype intv' =
   Smaller' int
 
 type_synonym t = real
-
-instantiation real :: time
-begin
-  instance proof
-    fix x y :: real
-    assume "x < y" 
-    then show "\<exists>z>x. z < y" using dense_order_class.dense by blast 
-  next
-    have "(1 :: real) \<noteq> 0" by auto
-    then show "\<exists>x. (x::real) \<noteq> 0" ..
-  qed
-end
 
 inductive valid_intv :: "nat \<Rightarrow> intv \<Rightarrow> bool"
 where
@@ -229,12 +221,16 @@ proof goal_cases
 qed
 
 locale Beta_Regions =
-  fixes X k \<R> and V :: "('c, t) cval set"
-  defines "\<R> \<equiv> {region X I J r | I J r. valid_region X k I J r}"
-  defines "V \<equiv> {v . \<forall> x \<in> X. v x \<ge> 0}"
+  fixes X :: "'c set" and k :: "'c \<Rightarrow> nat"
   assumes finite: "finite X"
   assumes non_empty: "X \<noteq> {}"
 begin
+
+definition
+  "\<R> \<equiv> {region X I J r | I J r. valid_region X k I J r}"
+
+definition V :: "('c, t) cval set" where
+  "V \<equiv> {v . \<forall> x \<in> X. v x \<ge> 0}"
 
 lemma \<R>_regions_distinct:
   "\<lbrakk>R \<in> \<R>; v \<in> R; R' \<in> \<R>; R \<noteq> R'\<rbrakk> \<Longrightarrow> v \<notin> R'"
@@ -347,7 +343,7 @@ proof goal_cases
   case 1
   note A = this
   with region_cover[OF ] obtain R where R: "R \<in> \<R> \<and> v \<in> R" by fastforce
-  moreover 
+  moreover
   { fix R' assume "R' \<in> \<R> \<and> v \<in> R'"
    with R valid_regions_distinct[OF _ _ _ _] have "R' = R" unfolding \<R>_def by blast
   }
@@ -564,6 +560,7 @@ qed
 
 end
 
+
 section \<open>Approximation with \<open>\<beta>\<close>-regions\<close>
 
 locale Beta_Regions' = Beta_Regions +
@@ -573,7 +570,7 @@ locale Beta_Regions' = Beta_Regions +
   assumes not_in_X: "not_in_X \<notin> X"
 begin
 
-definition "v' \<equiv> \<lambda> i. if i \<le> n then (THE c. c \<in> X \<and> v c = i) else not_in_X"
+definition "v' \<equiv> \<lambda> i. if 0 < i \<and> i \<le> n then (THE c. c \<in> X \<and> v c = i) else not_in_X"
 
 lemma v_v':
   "\<forall> c \<in> X. v' (v c) = c"
@@ -585,50 +582,66 @@ abbreviation
 definition normalized:
   "normalized M \<equiv>
     (\<forall> i j. 0 < i \<and> i \<le> n \<and> 0 < j \<and> j \<le> n \<and> M i j \<noteq> \<infinity> \<longrightarrow>
-       Lt (- ((k o v') j)) \<le> M i j \<and> M i j \<le> Le ((k o v') i))
+       Lt (- (real((k o v') j))) \<le> M i j \<and> M i j \<le> Le ((k o v') i))
     \<and> (\<forall> i \<le> n. i > 0 \<longrightarrow> (M i 0 \<le> Le ((k o v') i) \<or> M i 0 = \<infinity>) \<and> Lt (- ((k o v') i)) \<le> M 0 i)"
 
 definition apx_def:
   "Approx\<^sub>\<beta> Z \<equiv> \<Inter> {S. \<exists> U M. S = \<Union> U \<and> U \<subseteq> \<R> \<and> Z \<subseteq> S \<and> vabstr S M \<and> normalized M}"
+
+definition
+  "normalized' M \<equiv>
+    (\<forall> i j. 0 < i \<and> i \<le> n \<and> 0 < j \<and> j \<le> n \<and> M i j \<noteq> \<infinity> \<and> i \<noteq> j \<longrightarrow>
+       Lt (- (real((k o v') j))) \<le> M i j \<and> M i j \<le> Le ((k o v') i))
+    \<and> (\<forall> i \<le> n. i > 0 \<longrightarrow> (M i 0 \<le> Le ((k o v') i) \<or> M i 0 = \<infinity>) \<and> Lt (- ((k o v') i)) \<le> M 0 i)"
+
+lemma normalized'_normalized:
+  assumes "\<forall>i \<le> n. M i i = 0" "normalized' M"
+  shows "normalized M"
+  using assms unfolding normalized'_def normalized
+  apply auto
+   apply (smt Lt_le_LeI neutral of_nat_0_le_iff Le_le_LeI)+
+  done
+
+lemma normalized_normalized':
+  "normalized' M" if "normalized M"
+  using that unfolding normalized'_def normalized by simp
 
 lemma apx_min:
   "S = \<Union> U \<Longrightarrow> U \<subseteq> \<R> \<Longrightarrow> S = [M]\<^bsub>v,n\<^esub> \<Longrightarrow> \<forall> i\<le>n. \<forall> j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>
   \<Longrightarrow> normalized M \<Longrightarrow> Z \<subseteq> S \<Longrightarrow> Approx\<^sub>\<beta> Z \<subseteq> S"
 unfolding apx_def by blast
 
-lemma "U \<noteq> {} \<Longrightarrow> x \<in> \<Inter> U \<Longrightarrow> \<exists> S \<in> U. x \<in> S" by auto
+lemma \<R>_union: "\<Union>\<R> = V" using region_cover unfolding V_def \<R>_def by auto
 
-lemma \<R>_union: "\<Union> \<R> = V" using region_cover unfolding V_def \<R>_def by auto
+definition V_dbm where
+  "V_dbm \<equiv> \<lambda>i j. if i = 0 then Le 0 else \<infinity>"
+
+lemma v_not_eq_0:
+  "v c \<noteq> 0"
+  using clock_numbering(1) by (metis not_less_zero)
+
+lemma V_dbm_eq_V: "[V_dbm]\<^bsub>v,n\<^esub> = V"
+  unfolding V_dbm_def V_def DBM_zone_repr_def DBM_val_bounded_def
+proof ((clarsimp; safe), goal_cases)
+  case (1 u c)
+  with clock_numbering have "dbm_entry_val u None (Some c) (Le 0)" by auto
+  then show ?case by auto
+next
+  case (4 u c)
+  with clock_numbering have "c \<in> X" by blast
+  with 4(1) show ?case by auto
+qed (auto simp: v_not_eq_0)
+
+lemma V_dbm_int:
+  "\<forall> i\<le>n. \<forall> j\<le>n. V_dbm i j \<noteq> \<infinity> \<longrightarrow> get_const (V_dbm i j) \<in> \<int>"
+  unfolding V_dbm_def by auto
+
+lemma normalized_V_dbm:
+  "normalized V_dbm"
+  unfolding V_dbm_def normalized less_eq dbm_le_def by auto
 
 lemma all_dbm: "\<exists> M. vabstr (\<Union>\<R>) M \<and> normalized M"
-proof -
-  let ?M = "\<lambda> i j. if i = 0 then Le 0 else \<infinity>"
-  have "[?M]\<^bsub>v,n\<^esub> = V" unfolding V_def DBM_zone_repr_def DBM_val_bounded_def
-  proof (auto, goal_cases)
-    case (1 u c)
-    with clock_numbering have "dbm_entry_val u None (Some c) (Le 0)" by auto
-    then show ?case by auto
-  next
-    case (2 u c)
-    from clock_numbering(1) have "0 \<noteq> v c" by auto
-    with 2 show ?case by auto 
-  next
-    case (3 u c)
-    from clock_numbering(1) have "0 \<noteq> v c" by auto
-    with 3 show ?case by auto 
-  next
-    case (4 u c)
-    with clock_numbering have "c \<in> X" by blast
-    with 4(1) show ?case by auto
-  next
-    case (5 u c1)
-    from clock_numbering(1) have "0 \<noteq> v c1" by auto
-    with 5 show ?case by auto
-  qed
-  moreover have "\<forall> i\<le>n. \<forall> j\<le>n. ?M i j \<noteq> \<infinity> \<longrightarrow> get_const (?M i j) \<in> \<int>" by auto
-  moreover have "normalized ?M" unfolding normalized less_eq dbm_le_def by auto
-  ultimately show ?thesis using \<R>_union by auto
-qed
+  using V_dbm_eq_V V_dbm_int normalized_V_dbm using \<R>_union by auto
 
 lemma \<R>_int:
   "R \<in> \<R> \<Longrightarrow> R' \<in> \<R> \<Longrightarrow> R \<noteq> R' \<Longrightarrow> R \<inter> R' = {}" using \<R>_regions_distinct by blast
@@ -676,6 +689,29 @@ proof -
   ultimately show ?thesis by auto
 qed
 
+lemma DBM_set_diag:
+  assumes "[M]\<^bsub>v,n\<^esub> \<noteq> {}"
+  shows "[M]\<^bsub>v,n\<^esub> = [(\<lambda>i j. if i = j then Le 0 else M i j)]\<^bsub>v,n\<^esub>"
+using non_empty_dbm_diag_set[OF clock_numbering(1) assms] unfolding neutral by auto
+
+lemma apx_min':
+  "S = \<Union> U \<Longrightarrow> U \<subseteq> \<R> \<Longrightarrow> S = [M]\<^bsub>v,n\<^esub> \<Longrightarrow> \<forall> i\<le>n. \<forall> j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>
+  \<Longrightarrow> normalized' M \<Longrightarrow> Z \<subseteq> S \<Longrightarrow> Approx\<^sub>\<beta> Z \<subseteq> S"
+proof (cases "S = {}", goal_cases)
+  case 1
+  then show ?thesis
+    using empty_zone_dbm apx_min by metis
+next
+  case 2
+  let ?M = "(\<lambda>i j. if i = j then Le 0 else M i j)"
+  from DBM_set_diag 2 have "[M]\<^bsub>v,n\<^esub> = [?M]\<^bsub>v,n\<^esub>"
+    by blast
+  moreover from \<open>normalized' _\<close> have "normalized ?M"
+    by (intro normalized'_normalized; simp add: normalized'_def neutral)
+  ultimately show ?thesis
+    using 2 by (intro apx_min[where M = ?M]) auto
+qed
+
 lemma valid_dbms_int:
   "\<forall>X\<in>{S. \<exists>M. vabstr S M}. \<forall>Y\<in>{S. \<exists>M. vabstr S M}. X \<inter> Y \<in> {S. \<exists>M. vabstr S M}"
 proof (auto, goal_cases)
@@ -688,15 +724,13 @@ proof (auto, goal_cases)
   ultimately show ?case by auto
 qed
 
-print_statement split_min
-
 lemma split_min':
   "P (min i j) = ((min i j = i \<longrightarrow> P i) \<and> (min i j = j \<longrightarrow> P j))"
-unfolding min_def by auto
+  unfolding min_def by auto
 
 lemma normalized_and_preservation:
   "normalized M1 \<Longrightarrow> normalized M2 \<Longrightarrow> normalized (And M1 M2)"
-unfolding normalized by safe (subst And.simps, split split_min', fastforce)+
+  unfolding normalized by safe (subst And.simps, split split_min', fastforce)+
 
 lemma valid_dbms_int':
   "\<forall>X\<in>{S. \<exists>M. vabstr S M \<and> normalized M}. \<forall>Y\<in>{S. \<exists>M. vabstr S M \<and> normalized M}.
@@ -723,13 +757,14 @@ proof -
   ultimately have "finite ?A" by (auto intro: finite_subset)
   from all_dbm obtain M where M:
     "vabstr (\<Union>\<R>) M" "normalized M"
-  by auto
-  with \<open>_ \<subseteq> V\<close> \<R>_union have "V \<in> ?A" by blast
+    by auto
+  with \<open>_ \<subseteq> V\<close> \<R>_union[symmetric] have "V \<in> ?A"
+    by safe (intro conjI exI; auto)
   then have "?A \<noteq> {}" by blast
   have "?A \<subseteq> {S. \<exists> M. vabstr S M \<and> normalized M}" by auto
   with aux3[OF valid_dbms_int' this \<open>?A \<noteq> _\<close> \<open>finite ?A\<close>] have
     "\<Inter> ?A \<in> {S. \<exists> M. vabstr S M \<and> normalized M}"
-  by blast
+    by blast
   then obtain M where *: "vabstr (Approx\<^sub>\<beta> Z) M" "normalized M" unfolding apx_def by auto
   have "\<Union> ?U = \<Inter> ?A"
   proof (safe, goal_cases)
@@ -774,18 +809,20 @@ end
 
 section \<open>Computing \<open>\<beta>\<close>-Approximation\<close>
 
+subsection \<open>Computation\<close>
+
 context Beta_Regions'
 begin
 
 lemma dbm_regions:
-  "vabstr S M \<Longrightarrow> normalized M \<Longrightarrow> [M]\<^bsub>v,n\<^esub> \<noteq> {} \<Longrightarrow> [M]\<^bsub>v,n\<^esub> \<subseteq> V \<Longrightarrow> \<exists> U \<subseteq> \<R>. S = \<Union> U"
+  "vabstr S M \<Longrightarrow> normalized' M \<Longrightarrow> [M]\<^bsub>v,n\<^esub> \<noteq> {} \<Longrightarrow> [M]\<^bsub>v,n\<^esub> \<subseteq> V \<Longrightarrow> \<exists> U \<subseteq> \<R>. S = \<Union> U"
 proof goal_cases
   case A: 1
   let ?U =
     "{R \<in> \<R>. \<exists> I J r. R = region X I J r \<and> valid_region X k I J r \<and>
       (\<forall> c \<in> X.
         (\<forall> d. I c = Const d \<longrightarrow> M (v c) 0 \<ge> Le d \<and> M 0 (v c) \<ge> Le (-d)) \<and>
-        (\<forall> d. I c = Intv d \<longrightarrow>  M (v c) 0 \<ge> Lt (d + 1) \<and> M 0 (v c) \<ge> Lt (-d)) \<and> 
+        (\<forall> d. I c = Intv d \<longrightarrow>  M (v c) 0 \<ge> Lt (d + 1) \<and> M 0 (v c) \<ge> Lt (-d)) \<and>
         (I c = Greater (k c) \<longrightarrow>  M (v c) 0 = \<infinity>)
       ) \<and>
       (\<forall> x \<in> X. \<forall> y \<in> X.
@@ -823,19 +860,19 @@ proof goal_cases
       proof (cases "I c")
         case (Const d)
         with B(4) \<open>c \<in> X\<close> have "M 0 (v c) \<ge> Le (- real d)" by auto
-        with * Const show ?thesis by - (rule dbm_entry_val_mono_2[folded less_eq], auto)
+        with * Const show ?thesis by - (rule dbm_entry_val_mono2[folded less_eq], auto)
       next
         case (Intv d)
         with B(4) \<open>c \<in> X\<close> have "M 0 (v c) \<ge> Lt (- real d)" by auto
-        with * Intv show ?thesis by - (rule dbm_entry_val_mono_2[folded less_eq], auto)
+        with * Intv show ?thesis by - (rule dbm_entry_val_mono2[folded less_eq], auto)
       next
         case (Greater d)
         with B(3) \<open>c \<in> X\<close> have "I c = Greater (k c)" by fastforce
         with * have "- u c < - k c" by auto
         moreover from A(2) *(2) \<open>v c \<le> n\<close> \<open>v c > 0\<close> have
           "Lt (- k c) \<le> M 0 (v c)"
-        unfolding normalized by force
-        ultimately show ?thesis by - (rule dbm_entry_val_mono_2[folded less_eq], auto)
+        unfolding normalized'_def by force
+        ultimately show ?thesis by - (rule dbm_entry_val_mono2[folded less_eq], auto)
       qed
     next
       case (3 u I J r c)
@@ -847,11 +884,11 @@ proof goal_cases
       proof (cases "I c")
         case (Const d)
         with B(4) \<open>c \<in> X\<close> have "M (v c) 0 \<ge> Le d" by auto
-        with * Const show ?thesis by - (rule dbm_entry_val_mono_3[folded less_eq], auto)
+        with * Const show ?thesis by - (rule dbm_entry_val_mono3[folded less_eq], auto)
       next
         case (Intv d)
         with B(4) \<open>c \<in> X\<close> have "M (v c) 0 \<ge> Lt (real d + 1)" by auto
-        with * Intv show ?thesis by - (rule dbm_entry_val_mono_3[folded less_eq], auto)
+        with * Intv show ?thesis by - (rule dbm_entry_val_mono3[folded less_eq], auto)
       next
         case (Greater d)
         with B(3) \<open>c \<in> X\<close> have "I c = Greater (k c)" by fastforce
@@ -872,19 +909,21 @@ proof goal_cases
           with C B(3) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> have "c \<le> - k c2" by fastforce
           moreover from C \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> ** Smaller' have "u c1 - u c2 < c" by auto
           moreover from A(2) *(3,4) B(6,7) \<open>v c1 > 0\<close> \<open>v c2 > 0\<close> have
-            "M (v c1) (v c2) \<ge> Lt (- k c2) \<or> M (v c1) (v c2) = \<infinity>"
-          unfolding normalized by fastforce
-          ultimately show ?thesis by (safe) (rule dbm_entry_val_mono_1[folded less_eq], auto)
+            "M (v c1) (v c2) \<ge> Lt (- k c2) \<or> M (v c1) (v c2) = \<infinity> \<or> v c1 = v c2"
+          unfolding normalized'_def by fastforce
+        ultimately show ?thesis
+          by - (safe, rule dbm_entry_val_mono1[folded less_eq], auto,
+                smt *(3,4) int_le_real_less of_int_1 of_nat_0_le_iff)
         next
           case (Const' c)
           with C B(5) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> have "M (v c1) (v c2) \<ge> Le c" by auto
           with Const' ** \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> show ?thesis
-          by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+          by (auto intro: dbm_entry_val_mono1[folded less_eq])
         next
           case (Intv' c)
           with C B(5) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> have "M (v c1) (v c2) \<ge> Lt (real_of_int c + 1)" by auto
           with Intv' ** \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> show ?thesis
-          by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+          by (auto intro: dbm_entry_val_mono1[folded less_eq])
         next
           case (Greater' c)
           with C B(3) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> have "c = k c1" by fastforce
@@ -901,7 +940,7 @@ proof goal_cases
           moreover from \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> 1 Const B(5) have
             "Le (real c - real d) \<le> M (v c1) (v c2)"
           by meson
-          ultimately show ?thesis by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+          ultimately show ?thesis by (auto intro: dbm_entry_val_mono1[folded less_eq])
         next
           case (Intv d)
           with Const \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> *(1,2) have "u c1 = c" "d < u c2" by auto
@@ -909,7 +948,7 @@ proof goal_cases
           moreover from Const \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> Intv B(5) have
             "Lt (real c - d) \<le> M (v c1) (v c2)"
           by meson
-          ultimately show ?thesis by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+          ultimately show ?thesis by (auto intro: dbm_entry_val_mono1[folded less_eq])
         next
           case Greater then show ?thesis by (auto intro: GreaterI)
         qed
@@ -923,7 +962,7 @@ proof goal_cases
           moreover from \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> Intv Const B(5) have
             "Lt (real c - real d + 1) \<le> M (v c1) (v c2)"
           by meson
-          ultimately show ?thesis by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+          ultimately show ?thesis by (auto intro: dbm_entry_val_mono1[folded less_eq])
         next
           case (2 d)
           show ?case
@@ -939,7 +978,7 @@ proof goal_cases
               moreover from nat_intv_frac_decomp[of c "u c1"] nat_intv_frac_decomp[of d "u c2"]
                             B(1,2) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> T True Intv 2 *(1,2)
               have "u c1 - u c2 = real c - d" by auto
-              ultimately show ?thesis by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+              ultimately show ?thesis by (auto intro: dbm_entry_val_mono1[folded less_eq])
             next
               case False
               with T B(5) 2 Intv \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> have
@@ -948,7 +987,7 @@ proof goal_cases
               moreover from nat_intv_frac_decomp[of c "u c1"] nat_intv_frac_decomp[of d "u c2"]
                             B(1,2) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> T False Intv 2 *(1,2)
               have "u c1 - u c2 < real c - d" by auto
-              ultimately show ?thesis by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+              ultimately show ?thesis by (auto intro: dbm_entry_val_mono1[folded less_eq])
             qed
           next
             case False
@@ -956,7 +995,7 @@ proof goal_cases
                 "Lt (real c - real d + 1) \<le> M (v c1) (v c2)"
             by meson
             moreover from 2 Intv \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> * have "u c1 - u c2 < c - real d + 1" by auto
-            ultimately show ?thesis by (auto intro: dbm_entry_val_mono_1[folded less_eq])
+            ultimately show ?thesis by (auto intro: dbm_entry_val_mono1[folded less_eq])
           qed
         next
           case Greater then show ?thesis by (auto intro: GreaterI)
@@ -1033,7 +1072,7 @@ proof goal_cases
         ultimately show "Lt (- real d) \<le> M 0 (v c)" unfolding less_eq dbm_le_def
           proof (cases "M 0 (v c)", -, auto, goal_cases)
             case prems: (1 x1)
-            then have "u c = d + frac (u c)" by (metis nat_intv_frac_decomp \<open>u c < d + 1\<close>) 
+            then have "u c = d + frac (u c)" by (metis nat_intv_frac_decomp \<open>u c < d + 1\<close>)
             with prems(5) have "- x1 \<le> d + frac (u c)" by auto
             with prems(1) frac_ge_0 frac_lt_1 have "- x1 \<le> d"
             by - (rule ints_le_add_frac2[of "frac (u c)" d "-x1"]; fastforce)
@@ -1041,7 +1080,7 @@ proof goal_cases
             then show ?case by auto
           next
             case prems: (2 x1)
-            then have "u c = d + frac (u c)" by (metis nat_intv_frac_decomp \<open>u c < d + 1\<close>) 
+            then have "u c = d + frac (u c)" by (metis nat_intv_frac_decomp \<open>u c < d + 1\<close>)
             with prems(5) have "- x1 \<le> d + frac (u c)" by auto
             with prems(1) frac_ge_0 frac_lt_1 have "- x1 \<le> d"
             by - (rule ints_le_add_frac2[of "frac (u c)" d "-x1"]; fastforce)
@@ -1053,7 +1092,7 @@ proof goal_cases
         with R \<open>u \<in> R\<close> have *: "intv_elem c u (I c)" by auto
         fix d assume **: "I c = Greater (k c)"
         have "M (v c) 0 \<le> Le ((k o v') (v c)) \<or> M (v c) 0 = \<infinity>"
-        using A(2) \<open>c \<in> X\<close> clock_numbering unfolding normalized by auto
+        using A(2) \<open>c \<in> X\<close> clock_numbering unfolding normalized'_def by auto
         with v_v' \<open>c \<in> X\<close> have "M (v c) 0 \<le> Le (k c) \<or> M (v c) 0 = \<infinity>" by auto
         moreover from * ** have "k c < u c" by fastforce
         moreover from ** clock_numbering(3) \<open>c \<in> X\<close> 1 have
@@ -1149,7 +1188,7 @@ proof goal_cases
           case (8 c d) with R(1) \<open>u \<in> R\<close> X show ?case by auto
         next
           case (9 c d)
-          with * nat_intv_frac_decomp[of c "u x"] nat_intv_frac_decomp[of d "u y"] have 
+          with * nat_intv_frac_decomp[of c "u x"] nat_intv_frac_decomp[of d "u y"] have
             "u x - u y = real c - d" by auto
           with *** show ?case unfolding less_eq dbm_le_def by (cases "M (v x) (v y)") auto
         next
@@ -1188,18 +1227,22 @@ proof goal_cases
           by (cases "M (v y) (v x)", auto) (fastforce intro: int_lt_Suc_le int_lt_neq_prev_lt)+
         next
           case (15 d)
-          have "M (v x) (v y) \<le> Le ((k o v') (v x)) \<or> M (v x) (v y) = \<infinity>"
-          using A(2) X clock_numbering unfolding normalized by auto
-          with v_v' X have "M (v x) (v y) \<le> Le (k x) \<or> M (v x) (v y) = \<infinity>" by auto
+          have "M (v x) (v y) \<le> Le ((k o v') (v x)) \<or> M (v x) (v y) = \<infinity> \<or> v x = v y"
+            using A(2) X clock_numbering unfolding normalized'_def by metis
+          with v_v' X have "M (v x) (v y) \<le> Le (k x) \<or> M (v x) (v y) = \<infinity>  \<or> v x = v y" by auto
           moreover from 15 * ** have "u x - u y > k x" by auto
-          ultimately show ?case unfolding less_eq dbm_le_def using *** by (cases "M (v x) (v y)", auto)
+          ultimately show ?case
+             unfolding less_eq dbm_le_def using ***
+             by (cases "M (v x) (v y)", auto) (smt X(1) X(2) of_nat_0_le_iff v_v')+
         next
           case (16 d)
-          have "M (v x) (v y) \<le> Le ((k o v') (v x)) \<or> M (v x) (v y) = \<infinity>"
-          using A(2) X clock_numbering unfolding normalized by auto
-          with v_v' X have "M (v x) (v y) \<le> Le (k x) \<or> M (v x) (v y) = \<infinity>" by auto
+          have "M (v x) (v y) \<le> Le ((k o v') (v x)) \<or> M (v x) (v y) = \<infinity> \<or> v x = v y"
+          using A(2) X clock_numbering unfolding normalized'_def by metis
+          with v_v' X have "M (v x) (v y) \<le> Le (k x) \<or> M (v x) (v y) = \<infinity> \<or> v x = v y" by auto
           moreover from 16 * ** have "u x - u y > k x" by auto
-          ultimately show ?case unfolding less_eq dbm_le_def using *** by (cases "M (v x) (v y)", auto)
+          ultimately show ?case
+            unfolding less_eq dbm_le_def using ***
+            by (cases "M (v x) (v y)", auto) (smt X(1) X(2) of_nat_0_le_iff v_v')+
         next
           case 17 with ** *** show ?case unfolding less_eq dbm_le_def by (cases "M (v x) (v y)", auto)
         next
@@ -1248,528 +1291,12 @@ proof goal_cases
 qed
 
 lemma dbm_regions':
-  "vabstr S M \<Longrightarrow> normalized M \<Longrightarrow> S \<subseteq> V \<Longrightarrow> \<exists> U \<subseteq> \<R>. S = \<Union> U"
+  "vabstr S M \<Longrightarrow> normalized' M \<Longrightarrow> S \<subseteq> V \<Longrightarrow> \<exists> U \<subseteq> \<R>. S = \<Union> U"
 using dbm_regions by (cases "S = {}") auto
 
 lemma dbm_regions'':
-  "dbm_int M n \<Longrightarrow> normalized M \<Longrightarrow> [M]\<^bsub>v,n\<^esub> \<subseteq> V \<Longrightarrow> \<exists> U \<subseteq> \<R>. [M]\<^bsub>v,n\<^esub> = \<Union> U"
+  "dbm_int M n \<Longrightarrow> normalized' M \<Longrightarrow> [M]\<^bsub>v,n\<^esub> \<subseteq> V \<Longrightarrow> \<exists> U \<subseteq> \<R>. [M]\<^bsub>v,n\<^esub> = \<Union> U"
 using dbm_regions' by auto
-
-lemma canonical_saturated_1:
-  assumes "Le r \<le> M (v c1) 0"
-    and "Le (- r) \<le> M 0 (v c1)"
-    and "cycle_free M n"
-    and "canonical M n"
-    and "v c1 \<le> n"
-    and "v c1 > 0"
-    and "\<forall>c. v c \<le> n \<longrightarrow> 0 < v c"
-  obtains u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c1 = r"
-proof -
-  let ?M' = "\<lambda>i' j'. if i'=v c1 \<and> j'=0 then Le r else if i'=0 \<and> j'=v c1 then Le (- r) else M i' j'"
-  from fix_index'[OF assms(1-5)] assms(6) have M':
-    "\<forall>u. DBM_val_bounded v u ?M' n \<longrightarrow> DBM_val_bounded v u M n"
-    "cycle_free ?M' n" "?M' (v c1) 0 = Le r" "?M' 0 (v c1) = Le (- r)"
-  by auto
-  with cyc_free_obtains_valuation[unfolded cycle_free_diag_equiv, of ?M' n v] assms(7) obtain u where
-    u: "DBM_val_bounded v u ?M' n"
-  by fastforce
-  with assms(5,6) M'(3,4) have "u c1 = r" unfolding DBM_val_bounded_def by fastforce
-  moreover from u M'(1) have "u \<in> [M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def by auto
-  ultimately show thesis by (auto intro: that)
-qed
-
-lemma canonical_saturated_2:
-  assumes "Le r \<le> M 0 (v c2)"
-    and "Le (- r) \<le> M (v c2) 0"
-    and "cycle_free M n"
-    and "canonical M n"
-    and "v c2 \<le> n"
-    and "v c2 > 0"
-    and "\<forall>c. v c \<le> n \<longrightarrow> 0 < v c"
-  obtains u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c2 = - r"
-proof -
-  let ?M' = "\<lambda>i' j'. if i'=0 \<and> j'=v c2 then Le r else if i'=v c2 \<and> j'=0 then Le (-r) else M i' j'"
-  from fix_index'[OF assms(1-4)] assms(5,6) have M':
-    "\<forall>u. DBM_val_bounded v u ?M' n \<longrightarrow> DBM_val_bounded v u M n"
-    "cycle_free ?M' n" "?M' 0 (v c2) = Le r" "?M' (v c2) 0 = Le (- r)"
-  by auto
-  with cyc_free_obtains_valuation[unfolded cycle_free_diag_equiv, of ?M' n v] assms(7) obtain u where
-    u: "DBM_val_bounded v u ?M' n"
-  by fastforce
-  with assms(5,6) M'(3,4) have "u c2 \<le> -r" "- u c2 \<le> r" unfolding DBM_val_bounded_def by fastforce+
-  then have "u c2 = -r" by (simp add: le_minus_iff)
-  moreover from u M'(1) have "u \<in> [M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def by auto
-  ultimately show thesis by (auto intro: that)
-qed
-
-lemma canonical_saturated_3:
-  assumes "Le r \<le> M (v c1) (v c2)"
-    and "Le (- r) \<le> M (v c2) (v c1)"
-    and "cycle_free M n"
-    and "canonical M n"
-    and "v c1 \<le> n" "v c2 \<le> n"
-    and "v c1 \<noteq> v c2"
-    and "\<forall>c. v c \<le> n \<longrightarrow> 0 < v c"
-  obtains u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c1 - u c2 = r"
-proof -
-  let ?M'="\<lambda>i' j'. if i'=v c1 \<and> j'=v c2 then Le r else if i'=v c2 \<and> j'=v c1 then Le (-r) else M i' j'"
-  from fix_index'[OF assms(1-7), of v] assms(7,8) have M':
-    "\<forall>u. DBM_val_bounded v u ?M' n \<longrightarrow> DBM_val_bounded v u M n"
-    "cycle_free ?M' n" "?M' (v c1) (v c2) = Le r" "?M' (v c2) (v c1) = Le (- r)"
-  by auto
-  with cyc_free_obtains_valuation[unfolded cycle_free_diag_equiv, of ?M' n v] assms obtain u where u:
-    "DBM_val_bounded v u ?M' n"
-  by fastforce
-  with assms(5,6) M'(3,4) have
-    "u c1 - u c2 \<le> r" "u c2 - u c1 \<le> - r"
-  unfolding DBM_val_bounded_def by fastforce+
-  then have "u c1 - u c2 = r" by (simp add: le_minus_iff)
-  moreover from u M'(1) have "u \<in> [M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def by auto
-  ultimately show thesis by (auto intro: that)
-qed
-
-lemma DBM_canonical_subset_le:
-  notes any_le_inf[intro]
-  fixes M :: "t DBM"
-  assumes "canonical M n" "[M]\<^bsub>v,n\<^esub> \<subseteq> [M']\<^bsub>v,n\<^esub>" "[M]\<^bsub>v,n\<^esub> \<noteq> {}" "i \<le> n" "j \<le> n" "i \<noteq> j"
-  shows "M i j \<le> M' i j"
-proof -
-  from non_empty_cycle_free[OF assms(3)] clock_numbering(2) have "cycle_free M n" by auto
-  with assms(1,4,5) have non_neg:
-    "M i j + M j i \<ge> Le 0"
-  by (metis cycle_free_diag order.trans neutral)
-  
-  from clock_numbering have cn: "\<forall>c. v c \<le> n \<longrightarrow> 0 < v c" by auto
-  show ?thesis
-  proof (cases "i = 0")
-    case True
-    show ?thesis
-    proof (cases "j = 0")
-      case True
-      with assms \<open>i = 0\<close> show ?thesis
-      unfolding neutral DBM_zone_repr_def DBM_val_bounded_def less_eq by auto
-    next
-      case False
-      then have "j > 0" by auto
-      with \<open>j \<le> n\<close> clock_numbering obtain c2 where c2: "v c2 = j" by auto
-      note t = canonical_saturated_2[OF _ _ \<open>cycle_free M n\<close> assms(1) assms(5)[folded c2] _ cn,unfolded c2]
-      show ?thesis
-      proof (rule ccontr, goal_cases)
-        case 1
-        { fix d assume 1: "M 0 j = \<infinity>"
-          obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "d < r"
-          proof (cases "M j 0")
-            case (Le d')
-            obtain r where "r > - d'" using gt_ex by blast
-            with Le 1 show ?thesis by (intro that[of "max r (d + 1)"]) auto
-          next
-            case (Lt d')
-            obtain r where "r > - d'" using gt_ex by blast
-            with Lt 1 show ?thesis by (intro that[of "max r (d + 1)"]) auto
-          next
-            case INF
-            with 1 show ?thesis by (intro that[of "d + 1"]) auto
-          qed
-          then have "\<exists> r. Le r \<le> M 0 j \<and> Le (-r) \<le> M j 0 \<and> d < r" by auto
-        } note inf_case = this
-        { fix a b d :: real assume 1: "a < b" assume b: "b + d > 0"
-          then have *: "b > -d" by auto
-          obtain r where "r > - d" "r > a" "r < b"
-          proof (cases "a \<ge> - d")
-            case True
-            from 1 obtain r where "r > a" "r < b" using dense by auto
-            with True show ?thesis by (auto intro: that[of r])
-          next
-            case False
-            with * obtain r where "r > -d" "r < b" using dense by auto
-            with False show ?thesis by (auto intro: that[of r])
-          qed
-          then have "\<exists> r. r > -d \<and> r > a \<and> r < b" by auto
-        } note gt_case = this
-        { fix a r assume r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "a < r" "M' 0 j = Le a \<or> M' 0 j = Lt a"
-          from t[OF this(1,2) \<open>0 < j\<close>] obtain u where u: "u \<in> [M]\<^bsub>v,n\<^esub>" "u c2 = - r" .
-          with \<open>j \<le> n\<close> c2 assms(2) have "dbm_entry_val u None (Some c2) (M' 0 j)"
-          unfolding DBM_zone_repr_def DBM_val_bounded_def by blast
-          with u(2) r(3,4) have False by auto
-        } note contr = this
-        from 1 True have "M' 0 j < M 0 j" by auto
-        then show False unfolding less
-        proof (cases rule: dbm_lt.cases)
-          case (1 d)
-          with inf_case obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "d < r" by auto
-          from contr[OF this] 1 show False by fast
-        next
-          case (2 d)
-          with inf_case obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "d < r" by auto
-          from contr[OF this] 2 show False by fast
-        next
-          case (3 a b)
-          obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "a < r"
-          proof (cases "M j 0")
-            case (Le d')
-            with 3 non_neg \<open>i = 0\<close> have "b + d' \<ge> 0" unfolding mult by auto
-            then have "b \<ge> - d'" by auto
-            with 3 obtain r where "r \<ge> - d'" "r > a" "r \<le> b" by blast
-            with Le 3 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d')
-            with 3 non_neg \<open>i = 0\<close> have "b + d' > 0" unfolding mult by auto
-            from gt_case[OF 3(3) this] obtain r where "r > - d'" "r > a" "r \<le> b" by auto
-            with Lt 3 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            with 3 show ?thesis by (intro that[of b]) auto
-          qed
-          from contr[OF this] 3 show False by fast
-        next
-          case (4 a b)
-          obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "a < r"
-          proof (cases "M j 0")
-            case (Le d)
-            with 4 non_neg \<open>i = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 4(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Le 4 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d)
-            with 4 non_neg \<open>i = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 4(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Lt 4 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            from 4 dense obtain r where "r > a" "r < b" by auto
-            with 4 INF show ?thesis by (intro that[of r]) auto
-          qed
-          from contr[OF this] 4 show False by fast
-        next
-          case (5 a b)
-          obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "a \<le> r"
-          proof (cases "M j 0")
-            case (Le d')
-            with 5 non_neg \<open>i = 0\<close> have "b + d' \<ge> 0" unfolding mult by auto
-            then have "b \<ge> - d'" by auto
-            with 5 obtain r where "r \<ge> - d'" "r \<ge> a" "r \<le> b" by blast
-            with Le 5 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d')
-            with 5 non_neg \<open>i = 0\<close> have "b + d' > 0" unfolding mult by auto
-            then have "b > - d'" by auto
-            with 5 obtain r where "r > - d'" "r \<ge> a" "r \<le> b" by blast
-            with Lt 5 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            with 5 show ?thesis by (intro that[of b]) auto
-          qed
-          from t[OF this(1,2) \<open>j > 0\<close>] obtain u where u: "u \<in> [M]\<^bsub>v,n\<^esub>" "u c2 = - r" .
-          with \<open>j \<le> n\<close> c2 assms(2) have "dbm_entry_val u None (Some c2) (M' 0 j)"
-          unfolding DBM_zone_repr_def DBM_val_bounded_def by blast
-          with u(2) r(3) 5 show False by auto
-        next
-          case (6 a b)
-          obtain r where r: "Le r \<le> M 0 j" "Le (-r) \<le> M j 0" "a < r"
-          proof (cases "M j 0")
-            case (Le d)
-            with 6 non_neg \<open>i = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 6(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Le 6 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d)
-            with 6 non_neg \<open>i = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 6(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Lt 6 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            from 6 dense obtain r where "r > a" "r < b" by auto
-            with 6 INF show ?thesis by (intro that[of r]) auto
-          qed
-          from contr[OF this] 6 show False by fast
-        qed
-      qed
-    qed
-  next
-    case False
-    then have "i > 0" by auto
-    with \<open>i \<le> n\<close> clock_numbering obtain c1 where c1: "v c1 = i" by auto
-    show ?thesis
-    proof (cases "j = 0")
-      case True
-      note t = canonical_saturated_1[OF _ _ \<open>cycle_free M n\<close> assms(1) assms(4)[folded c1] _ cn,
-                                     unfolded c1]
-      show ?thesis
-      proof (rule ccontr, goal_cases)
-        case 1
-        { fix d assume 1: "M i 0 = \<infinity>"
-          obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "d < r"
-          proof (cases "M 0 i")
-            case (Le d')
-            obtain r where "r > - d'" using gt_ex by blast
-            with Le 1 show ?thesis by (intro that[of "max r (d + 1)"]) auto
-          next
-            case (Lt d')
-            obtain r where "r > - d'" using gt_ex by blast
-            with Lt 1 show ?thesis by (intro that[of "max r (d + 1)"]) auto
-          next
-            case INF
-            with 1 show ?thesis by (intro that[of "d + 1"]) auto
-          qed
-          then have "\<exists> r. Le r \<le> M i 0 \<and> Le (-r) \<le> M 0 i \<and> d < r" by auto
-        } note inf_case = this
-        { fix a b d :: real assume 1: "a < b" assume b: "b + d > 0"
-          then have *: "b > -d" by auto
-          obtain r where "r > - d" "r > a" "r < b"
-          proof (cases "a \<ge> - d")
-            case True
-            from 1 obtain r where "r > a" "r < b" using dense by auto
-            with True show ?thesis by (auto intro: that[of r])
-          next
-            case False
-            with * obtain r where "r > -d" "r < b" using dense by auto
-            with False show ?thesis by (auto intro: that[of r])
-          qed
-          then have "\<exists> r. r > -d \<and> r > a \<and> r < b" by auto
-        } note gt_case = this
-        { fix a r assume r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "a < r" "M' i 0 = Le a \<or> M' i 0 = Lt a"
-          from t[OF this(1,2) \<open>i > 0\<close>] obtain u where u: "u \<in> [M]\<^bsub>v,n\<^esub>" "u c1 = r" .
-          with \<open>i \<le> n\<close> c1 assms(2) have "dbm_entry_val u (Some c1) None (M' i 0)"
-          unfolding DBM_zone_repr_def DBM_val_bounded_def by blast
-          with u(2) r(3,4) have False by auto
-        } note contr = this
-        from 1 True have "M' i 0 < M i 0" by auto
-        then show False unfolding less
-        proof (cases rule: dbm_lt.cases)
-          case (1 d)
-          with inf_case obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "d < r" by auto
-          from contr[OF this] 1 show False by fast
-        next
-          case (2 d)
-          with inf_case obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "d < r" by auto
-          from contr[OF this] 2 show False by fast
-        next
-          case (3 a b)
-          obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "a < r"
-          proof (cases "M 0 i")
-            case (Le d')
-            with 3 non_neg \<open>j = 0\<close> have "b + d' \<ge> 0" unfolding mult by auto
-            then have "b \<ge> - d'" by auto
-            with 3 obtain r where "r \<ge> - d'" "r > a" "r \<le> b" by blast
-            with Le 3 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d')
-            with 3 non_neg \<open>j = 0\<close> have "b + d' > 0" unfolding mult by auto
-            from gt_case[OF 3(3) this] obtain r where "r > - d'" "r > a" "r \<le> b" by auto
-            with Lt 3 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            with 3 show ?thesis by (intro that[of b]) auto
-          qed
-          from contr[OF this] 3 show False by fast
-        next
-          case (4 a b)
-          obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "a < r"
-          proof (cases "M 0 i")
-            case (Le d)
-            with 4 non_neg \<open>j = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 4(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Le 4 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d)
-            with 4 non_neg \<open>j = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 4(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Lt 4 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            from 4 dense obtain r where "r > a" "r < b" by auto
-            with 4 INF show ?thesis by (intro that[of r]) auto
-          qed
-          from contr[OF this] 4 show False by fast
-        next
-          case (5 a b)
-          obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "a \<le> r"
-          proof (cases "M 0 i")
-            case (Le d')
-            with 5 non_neg \<open>j = 0\<close> have "b + d' \<ge> 0" unfolding mult by auto
-            then have "b \<ge> - d'" by auto
-            with 5 obtain r where "r \<ge> - d'" "r \<ge> a" "r \<le> b" by blast
-            with Le 5 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d')
-            with 5 non_neg \<open>j = 0\<close> have "b + d' > 0" unfolding mult by auto
-            then have "b > - d'" by auto
-            with 5 obtain r where "r > - d'" "r \<ge> a" "r \<le> b" by blast
-            with Lt 5 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            with 5 show ?thesis by (intro that[of b]) auto
-          qed
-          from t[OF this(1,2) \<open>i > 0\<close>] obtain u where u: "u \<in> [M]\<^bsub>v,n\<^esub>" "u c1 = r" .
-          with \<open>i \<le> n\<close> c1 assms(2) have "dbm_entry_val u (Some c1) None (M' i 0)"
-          unfolding DBM_zone_repr_def DBM_val_bounded_def by blast
-          with u(2) r(3) 5 show False by auto
-        next
-          case (6 a b)
-          obtain r where r: "Le r \<le> M i 0" "Le (-r) \<le> M 0 i" "a < r"
-          proof (cases "M 0 i")
-            case (Le d)
-            with 6 non_neg \<open>j = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 6(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Le 6 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d)
-            with 6 non_neg \<open>j = 0\<close> have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 6(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Lt 6 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            from 6 dense obtain r where "r > a" "r < b" by auto
-            with 6 INF show ?thesis by (intro that[of r]) auto
-          qed
-          from contr[OF this] 6 show False by fast
-        qed
-      qed
-    next
-      case False
-      then have "j > 0" by auto
-      with \<open>j \<le> n\<close> clock_numbering obtain c2 where c2: "v c2 = j" by auto
-      note t = canonical_saturated_3[OF _ _ \<open>cycle_free M n\<close> assms(1) assms(4)[folded c1]
-                                        assms(5)[folded c2] _ cn, unfolded c1 c2]
-      show ?thesis
-      proof (rule ccontr, goal_cases)
-        case 1
-        { fix d assume 1: "M i j = \<infinity>"
-          obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "d < r"
-          proof (cases "M j i")
-            case (Le d')
-            obtain r where "r > - d'" using gt_ex by blast
-            with Le 1 show ?thesis by (intro that[of "max r (d + 1)"]) auto
-          next
-            case (Lt d')
-            obtain r where "r > - d'" using gt_ex by blast
-            with Lt 1 show ?thesis by (intro that[of "max r (d + 1)"]) auto
-          next
-            case INF
-            with 1 show ?thesis by (intro that[of "d + 1"]) auto
-          qed
-          then have "\<exists> r. Le r \<le> M i j \<and> Le (-r) \<le> M j i \<and> d < r" by auto
-        } note inf_case = this
-        { fix a b d :: real assume 1: "a < b" assume b: "b + d > 0"
-          then have *: "b > -d" by auto
-          obtain r where "r > - d" "r > a" "r < b"
-          proof (cases "a \<ge> - d")
-            case True
-            from 1 obtain r where "r > a" "r < b" using dense by auto
-            with True show ?thesis by (auto intro: that[of r])
-          next
-            case False
-            with * obtain r where "r > -d" "r < b" using dense by auto
-            with False show ?thesis by (auto intro: that[of r])
-          qed
-          then have "\<exists> r. r > -d \<and> r > a \<and> r < b" by auto
-        } note gt_case = this
-        { fix a r assume r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "a < r" "M' i j = Le a \<or> M' i j = Lt a"
-          from t[OF this(1,2) \<open>i \<noteq> j\<close>] obtain u where u: "u \<in> [M]\<^bsub>v,n\<^esub>" "u c1 - u c2 = r" .
-          with \<open>i \<le> n\<close> \<open>j \<le> n\<close> c1 c2 assms(2) have "dbm_entry_val u (Some c1) (Some c2) (M' i j)"
-          unfolding DBM_zone_repr_def DBM_val_bounded_def by blast
-          with u(2) r(3,4) have False by auto
-        } note contr = this
-        from 1 have "M' i j < M i j" by auto
-        then show False unfolding less
-        proof (cases rule: dbm_lt.cases)
-          case (1 d)
-          with inf_case obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "d < r" by auto
-          from contr[OF this] 1 show False by fast
-        next
-          case (2 d)
-          with inf_case obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "d < r" by auto
-          from contr[OF this] 2 show False by fast
-        next
-          case (3 a b)
-          obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "a < r"
-          proof (cases "M j i")
-            case (Le d')
-            with 3 non_neg have "b + d' \<ge> 0" unfolding mult by auto
-            then have "b \<ge> - d'" by auto
-            with 3 obtain r where "r \<ge> - d'" "r > a" "r \<le> b" by blast
-            with Le 3 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d')
-            with 3 non_neg have "b + d' > 0" unfolding mult by auto
-            from gt_case[OF 3(3) this] obtain r where "r > - d'" "r > a" "r \<le> b" by auto
-            with Lt 3 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            with 3 show ?thesis by (intro that[of b]) auto
-          qed
-          from contr[OF this] 3 show False by fast
-        next
-          case (4 a b)
-          obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "a < r"
-          proof (cases "M j i")
-            case (Le d)
-            with 4 non_neg have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 4(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Le 4 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d)
-            with 4 non_neg have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 4(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Lt 4 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            from 4 dense obtain r where "r > a" "r < b" by auto
-            with 4 INF show ?thesis by (intro that[of r]) auto
-          qed
-          from contr[OF this] 4 show False by fast
-        next
-          case (5 a b)
-          obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "a \<le> r"
-          proof (cases "M j i")
-            case (Le d')
-            with 5 non_neg have "b + d' \<ge> 0" unfolding mult by auto
-            then have "b \<ge> - d'" by auto
-            with 5 obtain r where "r \<ge> - d'" "r \<ge> a" "r \<le> b" by blast
-            with Le 5 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d')
-            with 5 non_neg have "b + d' > 0" unfolding mult by auto
-            then have "b > - d'" by auto
-            with 5 obtain r where "r > - d'" "r \<ge> a" "r \<le> b" by blast
-            with Lt 5 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            with 5 show ?thesis by (intro that[of b]) auto
-          qed
-          from t[OF this(1,2) \<open>i \<noteq> j\<close>] obtain u where u: "u \<in> [M]\<^bsub>v,n\<^esub>" "u c1 - u c2= r" .
-          with \<open>i \<le> n\<close> \<open>j \<le> n\<close> c1 c2 assms(2) have "dbm_entry_val u (Some c1) (Some c2) (M' i j)"
-          unfolding DBM_zone_repr_def DBM_val_bounded_def by blast
-          with u(2) r(3) 5 show False by auto
-        next
-          case (6 a b)
-          obtain r where r: "Le r \<le> M i j" "Le (-r) \<le> M j i" "a < r"
-          proof (cases "M j i")
-            case (Le d)
-            with 6 non_neg have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 6(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Le 6 show ?thesis by (intro that[of r]) auto
-          next
-            case (Lt d)
-            with 6 non_neg have "b + d > 0" unfolding mult by auto
-            from gt_case[OF 6(3) this] obtain r where "r > - d" "r > a" "r < b" by auto
-            with Lt 6 show ?thesis by (intro that[of r]) auto
-          next
-            case INF
-            from 6 dense obtain r where "r > a" "r < b" by auto
-            with 6 INF show ?thesis by (intro that[of r]) auto
-          qed
-          from contr[OF this] 6 show False by fast
-        qed
-      qed
-    qed
-  qed
-qed
-
-lemma DBM_set_diag:
-  assumes "[M]\<^bsub>v,n\<^esub> \<noteq> {}"
-  shows "[M]\<^bsub>v,n\<^esub> = [(\<lambda> i j. if i = j then Le 0 else M i j)]\<^bsub>v,n\<^esub>"
-using non_empty_dbm_diag_set[OF clock_numbering(1) assms] unfolding neutral by auto
 
 lemma DBM_le_subset':
   assumes "\<forall>i \<le> n. \<forall> j \<le> n. i \<noteq> j \<longrightarrow> M i j \<le> M' i j"
@@ -1784,19 +1311,19 @@ proof -
 qed
 
 lemma neg_diag_empty_spec:
-  assumes "i \<le> n" "M i i < \<one>"
+  assumes "i \<le> n" "M i i < 0"
   shows "[M]\<^bsub>v,n\<^esub> = {}"
 using assms neg_diag_empty[where v= v and M = M, OF _ assms] clock_numbering(2) by auto
 
 lemma canonical_empty_zone_spec:
   assumes "canonical M n"
-  shows "[M]\<^bsub>v,n\<^esub> = {} \<longleftrightarrow> (\<exists>i\<le>n. M i i < \<one>)"
+  shows "[M]\<^bsub>v,n\<^esub> = {} \<longleftrightarrow> (\<exists>i\<le>n. M i i < 0)"
 using canonical_empty_zone[of n v M, OF _ _ assms] clock_numbering by auto
 
 lemma norm_set_diag:
   assumes "canonical M n" "[M]\<^bsub>v,n\<^esub> \<noteq> {}"
   obtains M' where "[M]\<^bsub>v,n\<^esub> = [M']\<^bsub>v,n\<^esub>" "[norm M (k o v') n]\<^bsub>v,n\<^esub> = [norm M' (k o v') n]\<^bsub>v,n\<^esub>"
-                   "\<forall> i \<le> n. M' i i = \<one>" "canonical M' n"
+                   "\<forall> i \<le> n. M' i i = 0" "canonical M' n"
 proof -
   from assms(2) neg_diag_empty_spec have *: "\<forall> i\<le>n. M i i \<ge> Le 0" unfolding neutral by force
   let ?M = "\<lambda>i j. if i = j then Le 0 else M i j"
@@ -1807,22 +1334,22 @@ proof -
   from DBM_set_diag[OF this] DBM_set_diag[OF assms(2)] have
     "[M]\<^bsub>v,n\<^esub> = [?M]\<^bsub>v,n\<^esub>" "[?NM]\<^bsub>v,n\<^esub> = [?M2]\<^bsub>v,n\<^esub>"
   by auto
-  moreover have "norm ?M (k o v') n = ?M2" unfolding norm_def by fastforce
-  moreover have "\<forall> i \<le> n. ?M i i = \<one>" unfolding neutral by auto
+  moreover have "norm ?M (k o v') n = ?M2" unfolding norm_def norm_diag_def by fastforce
+  moreover have "\<forall> i \<le> n. ?M i i = 0" unfolding neutral by auto
   moreover have "canonical ?M n" using assms(1) *
-  unfolding neutral[symmetric] less_eq[symmetric] mult[symmetric] by fastforce
+  unfolding neutral[symmetric] less_eq[symmetric] add[symmetric] by fastforce
   ultimately show ?thesis by (auto intro: that)
 qed
 
-lemma norm_normalizes:
+lemma norm_normalizes':
   notes any_le_inf[intro]
-  shows "normalized (norm M (k o v') n)"
-unfolding normalized
+  shows "normalized' (norm M (k o v') n)"
+unfolding normalized'_def
 proof (safe, goal_cases)
   case (1 i j)
   show ?case
   proof (cases "M i j < Lt (- real (k (v' j)))")
-    case True with 1 show ?thesis unfolding norm_def less by (auto simp: Let_def)
+    case True with 1 show ?thesis unfolding norm_def less by (auto simp: Let_def neutral)
   next
     case False
     with 1 show ?thesis unfolding norm_def by (auto simp: Let_def)
@@ -1833,9 +1360,10 @@ next
   then have *: "Lt (- k (v' j)) < Le (k (v' i))" by (auto intro: Lt_lt_LeI)
   show ?case
   proof (cases "M i j \<le> Le (real (k (v' i)))")
-    case False with 2 show ?thesis unfolding norm_def less_eq dbm_le_def by (auto simp: Let_def)
+    case False with 2 show ?thesis
+      unfolding norm_def less_eq dbm_le_def by (auto simp: Let_def neutral split: if_split_asm)
   next
-    case True with 2 show ?thesis unfolding norm_def by (auto simp: Let_def)
+    case True with 2 show ?thesis unfolding norm_def by (auto simp: Let_def split: if_split_asm)
   qed
 next
   case (3 i)
@@ -1857,10 +1385,19 @@ next
   qed
 qed
 
+lemma norm_normalizes:
+  assumes "\<forall>i \<le> n. M i i = 0"
+  shows "normalized (norm M (k o v') n)"
+  apply (rule normalized'_normalized)
+  subgoal
+    using assms unfolding norm_def norm_diag_def by (auto simp: DBM.neutral)
+  by (rule norm_normalizes')
+
 lemma norm_int_preservation:
+  fixes M :: "real DBM"
   assumes "dbm_int M n" "i \<le> n" "j \<le> n" "norm M (k o v') n i j \<noteq> \<infinity>"
   shows "get_const (norm M (k o v') n i j) \<in> \<int>"
-using assms unfolding norm_def by (auto simp: Let_def)
+  using assms unfolding norm_def by (auto simp: Let_def norm_diag_def)
 
 lemma norm_V_preservation':
   notes any_le_inf[intro]
@@ -1873,22 +1410,16 @@ proof -
     with clock_numbering have c: "c \<in> X" "v c > 0" "v c \<le> n" by auto
     with assms(2) have
       "M 0 (v c) + M (v c) 0 \<ge> M 0 0"
-    unfolding mult less_eq by blast
+    unfolding add less_eq by blast
     moreover from cycle_free_diag[OF *] have "M 0 0 \<ge> Le 0" unfolding neutral by auto
     ultimately have ge_0: "M 0 (v c) + M (v c) 0 \<ge> Le 0" by auto
     have "M 0 (v c) \<le> Le 0"
     proof (cases "M 0 (v c)")
       case (Le d)
       with ge_0 have "M (v c) 0 \<ge> Le (-d)"
-       apply (cases "M (v c) 0")
-         unfolding mult apply auto
-         apply (rename_tac x1)
-         apply (subgoal_tac "-d \<le> x1")
-         apply auto
-       apply (rename_tac x2)
-       apply (subgoal_tac "-d < x2")
-      by auto
-      with Le canonical_saturated_2[OF _ _ \<open>cycle_free M n\<close> assms(2) c(3)] clock_numbering(1)
+         unfolding add by (cases "M (v c) 0") auto
+       with Le canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free M n\<close> assms(2) c(3)]
+         clock_numbering(1)
       obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = -d" by auto
       with assms(1) c(1) Le show ?thesis unfolding V_def by fastforce
     next
@@ -1905,24 +1436,30 @@ proof -
         show ?thesis
         proof (cases "M (v c) 0")
           case (Le d')
-          with Lt ge_0 have *: "d > -d'" unfolding mult by auto
+          with Lt ge_0 have *: "d > -d'" unfolding add by auto
           show ?thesis
           proof (cases "d' < 0")
             case True
-            from * clock_numbering(1) canonical_saturated_1[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] Lt Le
-            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = d'" by auto
+            from
+              * clock_numbering(1)
+              canonical_saturated_1[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] Lt Le
+            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = d'"
+              by auto
             with \<open>d' < 0\<close> assms(1) \<open>c \<in> X\<close> show ?thesis unfolding V_def by fastforce
           next
             case False
             then have "d' \<ge> 0" by auto
             with \<open>d > 0\<close> have "Le (d / 2) \<le> Lt d" "Le (- (d /2)) \<le> Le d'" by auto
-            with canonical_saturated_2[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] Lt Le clock_numbering(1)
-            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - (d / 2)" by auto
+            with
+              canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)]
+              Lt Le clock_numbering(1)
+            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - (d / 2)"
+              by auto (metis Le_le_LtD \<open>Le (d / 2) \<le> Lt d\<close>)
             with \<open>d > 0\<close> assms(1) \<open>c \<in> X\<close> show ?thesis unfolding V_def by fastforce
           qed
         next
           case (Lt d')
-          with Lt' ge_0 have *: "d > -d'" unfolding mult by auto
+          with Lt' ge_0 have *: "d > -d'" unfolding add by auto
           then have **: "-d < d'" by auto
           show ?thesis
           proof (cases "d' \<le> 0")
@@ -1934,8 +1471,11 @@ proof -
           next
             case False
             with \<open>d > 0\<close> have "Le (d / 2) \<le> Lt d" "Le (- (d /2)) \<le> Lt d'" by auto
-            with canonical_saturated_2[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] Lt Lt' clock_numbering(1)
-            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - (d / 2)" by auto
+            with
+              canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] 
+              Lt Lt' clock_numbering(1)
+            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - (d / 2)"
+              by auto (metis Le_le_LtD \<open>Le (d / 2) \<le> Lt d\<close>)
             with \<open>d > 0\<close> assms(1) \<open>c \<in> X\<close> show ?thesis unfolding V_def by fastforce
           qed
         next
@@ -1944,8 +1484,11 @@ proof -
           proof (cases "d > 0")
             case True
             from \<open>d > 0\<close> have "Le (d / 2) \<le> Lt d" by auto
-            with INF canonical_saturated_2[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] Lt clock_numbering(1)
-            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - (d / 2)" by auto
+            with
+              INF canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)]
+              Lt clock_numbering(1)
+            obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - (d / 2)"
+              by auto (metis Le_le_LtD \<open>Le (d / 2) \<le> Lt d\<close> any_le_inf)
             with \<open>d > 0\<close> assms(1) \<open>c \<in> X\<close> show ?thesis unfolding V_def by fastforce
           next
             case False
@@ -1959,25 +1502,30 @@ proof -
       proof (cases "M (v c) 0")
         case (Le d)
         let ?d = "if d \<le> 0 then -d + 1 else d"
-        from Le INF canonical_saturated_2[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3), of ?d] clock_numbering(1)
-        obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by (cases "d < 0") force+
+        from Le INF canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3), of ?d]
+          clock_numbering(1)
+        obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by (cases "d < 0") (auto simp: any_le_inf, smt)
         from that[OF this] show thesis by auto
       next
         case (Lt d)
         let ?d = "if d \<le> 0 then -d + 1 else d"
-        from Lt INF canonical_saturated_2[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3), of ?d] clock_numbering(1)
-        obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by (cases "d < 0") force+
+        from Lt INF canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3), of ?d]
+          clock_numbering(1)
+        obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by (cases "d < 0") (auto simp: any_le_inf, smt)
         from that[OF this] show thesis by auto
       next
         case INF
-        with \<open>M 0 (v c) = \<infinity>\<close> canonical_saturated_2[OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)] clock_numbering(1)
+        with
+          \<open>M 0 (v c) = \<infinity>\<close> canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3)]
+          clock_numbering(1)
         obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - 1" by auto
         from that[OF this] show thesis by auto
       qed
       with assms(1) \<open>c \<in> X\<close> show ?thesis unfolding V_def by fastforce
     qed
     moreover then have "\<not> Le 0 \<prec> M 0 (v c)" unfolding less[symmetric] by auto
-    ultimately have *: "?M 0 (v c) \<le> Le 0" using assms(3) c unfolding norm_def by (auto simp: Let_def)
+    ultimately have *: "?M 0 (v c) \<le> Le 0"
+      using assms(3) c unfolding norm_def by (auto simp: Let_def)
     fix u assume u: "u \<in> [?M]\<^bsub>v,n\<^esub>"
     with c have "dbm_entry_val u None (Some c) (?M 0 (v c))"
     unfolding DBM_val_bounded_def DBM_zone_repr_def by auto
@@ -1991,24 +1539,29 @@ lemma norm_V_preservation:
   shows "[norm M (k o v') n]\<^bsub>v,n\<^esub> \<subseteq> V" (is "[?M]\<^bsub>v,n\<^esub> \<subseteq> V")
 proof (cases "[M]\<^bsub>v,n\<^esub> = {}")
   case True
-  obtain i where i: "i \<le> n" "M i i < \<one>" by (metis True assms(2) canonical_empty_zone_spec)
-  have "\<not> Le (k (v' i)) < Le 0" unfolding less by (cases "k (v' i) = 0", auto)
-  with i have "?M i i < \<one>" unfolding norm_def by (auto simp: neutral less Let_def)
+  obtain i where i: "i \<le> n" "M i i < 0" by (metis True assms(2) canonical_empty_zone_spec)
+  have "\<not> Le (real (k (v' i))) < Le 0" unfolding less by (cases "k (v' i) = 0", auto)
+  with i have "?M i i < 0" unfolding norm_def by (auto simp: neutral less Let_def norm_diag_def)
   with neg_diag_empty_spec[OF \<open>i \<le> n\<close>] have "[?M]\<^bsub>v,n\<^esub> = {}" .
   then show ?thesis by auto
 next
   case False
-  from norm_set_diag[OF assms(2) False] norm_V_preservation' False assms
-  show ?thesis by metis
+  with assms show ?thesis
+    apply -
+    apply (rule norm_set_diag[OF assms(2) False])
+    apply (rule norm_V_preservation')
+    apply auto
+    done
 qed
 
 lemma norm_min:
-  assumes "normalized M1" "[M]\<^bsub>v,n\<^esub> \<subseteq> [M1]\<^bsub>v,n\<^esub>"
-          "canonical M n" "[M]\<^bsub>v,n\<^esub> \<noteq> {}" "[M]\<^bsub>v,n\<^esub> \<subseteq> V"
+  assumes "normalized' M1" "[M]\<^bsub>v,n\<^esub> \<subseteq> [M1]\<^bsub>v,n\<^esub>"
+    "canonical M n" "[M]\<^bsub>v,n\<^esub> \<noteq> {}" "[M]\<^bsub>v,n\<^esub> \<subseteq> V"
   shows "[norm M (k o v') n]\<^bsub>v,n\<^esub> \<subseteq> [M1]\<^bsub>v,n\<^esub>" (is "[?M2]\<^bsub>v,n\<^esub> \<subseteq> [M1]\<^bsub>v,n\<^esub>")
 proof -
-  have le: "\<And> i j. i \<le> n \<Longrightarrow> j \<le> n \<Longrightarrow> i \<noteq> j\<Longrightarrow> M i j \<le> M1 i j" using assms(2,3,4)
-  by (auto intro!: DBM_canonical_subset_le)
+  have le: "\<And> i j. i \<le> n \<Longrightarrow> j \<le> n \<Longrightarrow> i \<noteq> j\<Longrightarrow> M i j \<le> M1 i j"
+    using assms(2,3,4) clock_numbering(2)
+    by (auto intro!: DBM_canonical_subset_le[OF _ _ _ _ _ _ clock_numbering(1)])
   from assms have "[M1]\<^bsub>v,n\<^esub> \<noteq> {}" by auto
   with neg_diag_empty_spec have *: "\<forall> i\<le>n. M1 i i \<ge> Le 0" unfolding neutral by force
   from assms norm_V_preservation have V: "[?M2]\<^bsub>v,n\<^esub> \<subseteq> V" by auto
@@ -2024,7 +1577,7 @@ proof -
       with V have v_bound: "dbm_entry_val u None (Some c) (Le 0)" unfolding V_def by auto
       from that c have bound:
         "dbm_entry_val u None (Some c) (?M2 0 (v c))"
-      unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
+        unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
       show ?case
       proof (cases "M 0 (v c) < Lt (- k c)")
         case False
@@ -2032,30 +1585,30 @@ proof -
         proof (cases "Le 0 < M 0 (v c)")
           case True
           with le c(1,2) have "Le 0 \<le> M1 0 (v c)" by fastforce
-          with dbm_entry_val_mono_2[OF v_bound, folded less_eq] show ?thesis by fast
+          with dbm_entry_val_mono2[OF v_bound, folded less_eq] show ?thesis by fast
         next
           case F: False
           with assms(3) False c have "?M2 0 (v c) = M 0 (v c)" unfolding less norm_def by auto
-          with le c bound show ?thesis by (auto intro: dbm_entry_val_mono_2[folded less_eq])
+          with le c bound show ?thesis by (auto intro: dbm_entry_val_mono2[folded less_eq])
         qed
       next
         case True
-        have "Lt (- k c) \<prec> Le 0" by auto
+        have "Lt (real_of_int (- k c)) \<prec> Le 0" by auto
         with True c assms(3) have "?M2 0 (v c) = Lt (- k c)" unfolding less norm_def by auto
-        moreover from assms(1) c have "Lt (- k c) \<le> M1 0 (v c)" unfolding normalized by auto
-        ultimately show ?thesis using le c bound by (auto intro: dbm_entry_val_mono_2[folded less_eq])
+        moreover from assms(1) c have "Lt (- k c) \<le> M1 0 (v c)" unfolding normalized'_def by auto
+        ultimately show ?thesis using le c bound by (auto intro: dbm_entry_val_mono2[folded less_eq])
       qed
     next
       case (3 c)
       then have c: "v c > 0" "v c \<le> n" "c \<in> X" "v' (v c) = c" using clock_numbering v_v' by metis+
       from that c have bound:
         "dbm_entry_val u (Some c) None (?M2 (v c) 0)"
-      unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
+        unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
       show ?case
       proof (cases "M (v c) 0 \<le> Le (k c)")
         case False
         with le c have "\<not> M1 (v c) 0 \<le> Le (k c)" by fastforce
-        with assms(1) c show ?thesis unfolding normalized by fastforce
+        with assms(1) c show ?thesis unfolding normalized'_def by fastforce
       next
         case True
         show ?thesis
@@ -2067,23 +1620,24 @@ proof -
         next
           case False
           with True assms(3) c have "?M2 (v c) 0 = M (v c) 0" unfolding less less_eq norm_def
-          by (auto simp: Let_def)
-          with dbm_entry_val_mono_3[OF bound, folded less_eq] le c show ?thesis by auto
+            by (auto simp: Let_def)
+          with dbm_entry_val_mono3[OF bound, folded less_eq] le c show ?thesis by auto
         qed
       qed
     next
       case (4 c1 c2)
       then have c:
-        "v c1 > 0" "v c1 \<le> n" "c1 \<in> X" "v' (v c1) = c1" "v c2 > 0" "v c2 \<le> n" "c2 \<in> X" "v' (v c2) = c2"
-      using clock_numbering v_v' by metis+
+        "v c1 > 0" "v c1 \<le> n" "c1 \<in> X" "v' (v c1) = c1" "v c2 > 0" "v c2 \<le> n"
+        "c2 \<in> X" "v' (v c2) = c2"
+        using clock_numbering v_v' by metis+
       from that c have bound:
         "dbm_entry_val u (Some c1) (Some c2) (?M2 (v c1) (v c2))"
-      unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
+        unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
       show ?case
       proof (cases "c1 = c2")
         case True
         then have "dbm_entry_val u (Some c1) (Some c2) (Le 0)" by auto
-        with c True * dbm_entry_val_mono_1[OF this, folded less_eq] show ?thesis by auto
+        with c True * dbm_entry_val_mono1[OF this, folded less_eq] show ?thesis by auto
       next
         case False
         with clock_numbering(1) \<open>v c1 \<le> n\<close> \<open>v c2 \<le> n\<close> have neq: "v c1 \<noteq> v c2" by auto
@@ -2093,25 +1647,25 @@ proof -
           show ?thesis
           proof (cases "M (v c1) (v c2) < Lt (- real (k c2))")
             case F: False
-            with c False assms(3) have
+            with c False assms(3) neq have
               "?M2 (v c1) (v c2) = M (v c1) (v c2)"
-            unfolding norm_def less by auto
-            with dbm_entry_val_mono_1[OF bound, folded less_eq] le c neq show ?thesis by auto
+              unfolding norm_def norm_diag_def less by simp
+            with dbm_entry_val_mono1[OF bound, folded less_eq] le c neq show ?thesis by auto
           next
             case True
-            with c False assms(3) have "?M2 (v c1) (v c2) = Lt (- k c2)" unfolding less norm_def
-            by auto
+            with c False assms(3) neq have "?M2 (v c1) (v c2) = Lt (- k c2)"
+              unfolding less norm_def by simp
             moreover from assms(1) c have "M1 (v c1) (v c2) = \<infinity> \<or> M1 (v c1) (v c2) \<ge> Lt (- k c2)"
-            unfolding normalized by fastforce
-            ultimately show ?thesis using dbm_entry_val_mono_1[OF bound, folded less_eq] by auto
+              using neq unfolding normalized'_def by fastforce
+            ultimately show ?thesis using dbm_entry_val_mono1[OF bound, folded less_eq] by auto
           qed
         next
           case True
           with le c neq have "M1 (v c1) (v c2) > Le (k c1)" by fastforce
-          moreover from True c assms(3) have "?M2 (v c1) (v c2) = \<infinity>" unfolding norm_def less
-          by auto
+          moreover from True c assms(3) neq have "?M2 (v c1) (v c2) = \<infinity>"
+            unfolding norm_def less by simp
           moreover from assms(1) c have "M1 (v c1) (v c2) = \<infinity> \<or> M1 (v c1) (v c2) \<le> Le (k c1)"
-          unfolding normalized by fastforce
+            using neq unfolding normalized'_def by fastforce
           ultimately show ?thesis by auto
         qed
       qed
@@ -2125,25 +1679,19 @@ lemma apx_norm_eq:
   shows "Approx\<^sub>\<beta> ([M]\<^bsub>v,n\<^esub>) = [norm M (k o v') n]\<^bsub>v,n\<^esub>"
 proof -
   let ?M = "norm M (k o v') n"
-  from assms norm_V_preservation norm_int_preservation norm_normalizes
-  have *: "vabstr ([?M]\<^bsub>v,n\<^esub>) ?M" "normalized ?M" "[?M]\<^bsub>v,n\<^esub> \<subseteq> V" by presburger+
+  from assms norm_V_preservation norm_int_preservation norm_normalizes' have *:
+    "vabstr ([?M]\<^bsub>v,n\<^esub>) ?M" "normalized' ?M" "[?M]\<^bsub>v,n\<^esub> \<subseteq> V"
+    by auto
   from dbm_regions'[OF this] obtain U where U: "U \<subseteq> \<R>" "[?M]\<^bsub>v,n\<^esub> = \<Union>U" by auto
-  from assms(3) have **: "[M]\<^bsub>v,n\<^esub> \<subseteq> [?M]\<^bsub>v,n\<^esub>" by (simp add: norm_mono clock_numbering(1) subsetI) 
+  from assms(3) have **: "[M]\<^bsub>v,n\<^esub> \<subseteq> [?M]\<^bsub>v,n\<^esub>" by (simp add: norm_mono clock_numbering(1) subsetI)
   show ?thesis
   proof (cases "[M]\<^bsub>v,n\<^esub> = {}")
     case True
     from canonical_empty_zone_spec[OF \<open>canonical M n\<close>] True obtain i where i:
-      "i \<le> n" "M i i < \<one>"
-    by auto
-    with assms(3) have "?M i i < \<one>" unfolding neutral norm_def
-    proof (cases "i = 0", auto intro: Lt_lt_LeI, goal_cases)
-      case 1
-      then show ?case unfolding less by auto
-    next
-      case 2
-      have "\<not> Le (real (k (v' i))) \<prec> Le 0" by auto
-      with 2 show ?case by (auto simp: Let_def less)
-    qed
+      "i \<le> n" "M i i < 0"
+      by auto
+    then have "?M i i < 0"
+      unfolding norm_def norm_diag_def by (auto simp: DBM.neutral DBM.less)
     from neg_diag_empty[of n v i ?M, OF _ \<open>i \<le> n\<close> this] clock_numbering have
       "[?M]\<^bsub>v,n\<^esub> = {}"
     by (auto intro: Lt_lt_LeI)
@@ -2154,12 +1702,13 @@ proof -
       "Approx\<^sub>\<beta> ([M]\<^bsub>v,n\<^esub>) = \<Union>U'" "U' \<subseteq> \<R>" "[M]\<^bsub>v,n\<^esub> \<subseteq> Approx\<^sub>\<beta> ([M]\<^bsub>v,n\<^esub>)"
       "vabstr (Approx\<^sub>\<beta> ([M]\<^bsub>v,n\<^esub>)) M1" "normalized M1"
     by auto
-    from norm_min[OF U'(5) _ assms(1) False assms(2)] U'(3,4) *(1) apx_min[OF U(2,1) _ _ *(2) **]
-    show ?thesis by blast
+    from norm_min[OF _ _ assms(1) False assms(2)] U'(3,4,5) *(1) apx_min'[OF U(2,1) _ _ *(2) **]
+    show ?thesis
+      by (auto dest!: normalized_normalized')
   qed
 qed
 
-end        
+end
 
 
 section \<open>Auxiliary \<open>\<beta>\<close>-boundedness Theorems\<close>
@@ -2341,7 +1890,7 @@ proof -
         case (Const d)
         with C(1,2) Intv A(2,3) 23(2) have "real c - d < m" by auto
         then have "real c < m + d" by linarith
-        then have "c < m + d" by linarith 
+        then have "c < m + d" by linarith
         then have "real c + 1 - d \<le> m" by simp
         with Const Intv R R' show ?thesis by blast
       next
@@ -2735,7 +2284,7 @@ proof (goal_cases)
     moreover from clock_numbering(1) have "v c > 0" by auto
     ultimately show False by auto
   qed
-  let ?M = "\<lambda> i j. if (i = v x \<and> j = v y) then Lt m else if i = j \<or> i = 0 then Le 0 else \<infinity>"
+  let ?M = "\<lambda> i j. if (i = v x \<and> j = v y) then Lt (real_of_int m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
   have "{u \<in> V. u x - u y < m} = [?M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def DBM_val_bounded_def
   using * ** proof (auto, goal_cases)
     case (1 u c)
@@ -2793,7 +2342,7 @@ proof (goal_cases)
     moreover from clock_numbering(1) have "v c > 0" by auto
     ultimately show False by auto
   qed
-  let ?M = "\<lambda> i j. if (i = v x \<and> j = v y) then Le m else if i = j \<or> i = 0 then Le 0 else \<infinity>"
+  let ?M = "\<lambda> i j. if (i = v x \<and> j = v y) then Le (real_of_int m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
   have "{u \<in> V. u x - u y \<le> m} = [?M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def DBM_val_bounded_def
   using * **
   proof (auto, goal_cases)
@@ -2849,7 +2398,7 @@ proof (goal_cases)
     moreover from clock_numbering(1) have "v c > 0" by auto
     ultimately show False by auto
   qed
-  let ?M = "\<lambda> i j. if (i = v x \<and> j = 0) then Lt m else if i = j \<or> i = 0 then Le 0 else \<infinity>"
+  let ?M = "\<lambda> i j. if (i = v x \<and> j = 0) then Lt (real_of_int m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
   have "{u \<in> V. u x < m} = [?M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def DBM_val_bounded_def
   using * **
   proof (auto, goal_cases)
@@ -2899,7 +2448,7 @@ proof goal_cases
   obtain M where "vabstr {u \<in> V. u x > m} M" "normalized M"
   proof (cases "m \<ge> 0")
     case True
-    let ?M = "\<lambda> i j. if (i = 0 \<and> j = v x) then Lt (-m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
+    let ?M = "\<lambda> i j. if (i = 0 \<and> j = v x) then Lt (-real_of_int m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
     have "{u \<in> V. u x > m} = [?M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def DBM_val_bounded_def
     using * **
     proof (auto, goal_cases)
@@ -2957,7 +2506,7 @@ proof -
     moreover from clock_numbering(1) have "v c > 0" by auto
     ultimately show False by auto
   qed
-  let ?M = "\<lambda> i j. if (i = v x \<and> j = 0) then Le m else if i = j \<or> i = 0 then Le 0 else \<infinity>"
+  let ?M = "\<lambda> i j. if (i = v x \<and> j = 0) then Le (real_of_int m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
   have "{u \<in> V. u x \<le> m} = [?M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def DBM_val_bounded_def
   using * **
   proof (auto, goal_cases)
@@ -3017,7 +2566,7 @@ proof -
   obtain M where "vabstr {u \<in> V. u x \<ge> m} M" "normalized M"
   proof (cases "m \<ge> 0")
     case True
-    let ?M = "\<lambda> i j. if (i = 0 \<and> j = v x) then Le (-m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
+    let ?M = "\<lambda> i j. if (i = 0 \<and> j = v x) then Le (-real_of_int m) else if i = j \<or> i = 0 then Le 0 else \<infinity>"
     have "{u \<in> V. u x \<ge> m} = [?M]\<^bsub>v,n\<^esub>" unfolding DBM_zone_repr_def DBM_val_bounded_def
     using * **
     proof (auto, goal_cases)

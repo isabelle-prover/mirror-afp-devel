@@ -162,8 +162,8 @@ locale Probabilistic_Timed_Automaton_Regions_Reachability =
   Probabilistic_Timed_Automaton_Regions k v n not_in_X A
     for k v n not_in_X and A :: "('c, t, 's) pta" +
   fixes \<phi> \<psi> :: "('s * ('c, t) cval) \<Rightarrow> bool" fixes s
-  assumes \<phi>: "\<And> x y. x \<in> S \<Longrightarrow> x ~ y \<Longrightarrow> \<phi> x \<longleftrightarrow> \<phi> y"
-  assumes \<psi>: "\<And> x y. x \<in> S \<Longrightarrow> x ~ y \<Longrightarrow> \<psi> x \<longleftrightarrow> \<psi> y"
+  assumes \<phi>: "\<And> x y. x \<in> S \<Longrightarrow> timed_bisim x y \<Longrightarrow> \<phi> x \<longleftrightarrow> \<phi> y"
+  assumes \<psi>: "\<And> x y. x \<in> S \<Longrightarrow> timed_bisim x y \<Longrightarrow> \<psi> x \<longleftrightarrow> \<psi> y"
   assumes s[intro, simp]: "s \<in> S"
 begin
 
@@ -1690,7 +1690,7 @@ lemma AE_alw_ev_same_loc_iff:
           apply (intro allI impI)
           apply (frule stream.rel_mono_strong[where Ra = "\<lambda>s t. t = absc s"])
           by (auto simp: * stream.rel_eq stream_all2_refl alw_holds_pred_stream_iff[symmetric]
-              K_cfg_same_loc_iff HLD_def elim!: alw_ev_cong)
+              K_cfg_same_loc_iff HLD_def comp_def elim!: alw_ev_cong)
         subgoal
           by (rule rel_funI) (auto intro!: rel_pmf_reflI simp: pmf.rel_map(2) K_cfg_map_absc)
         using \<open>cfg \<in> valid_cfg\<close> by simp+
@@ -1877,7 +1877,7 @@ proof -
         by - (intro alw_HLD_smap alw_disjoint_ccontr[where
               S = "(snd o state) ` MDP.MC.acc `` {repcs st cfg}"
               and R = "{u}" and \<omega> = "smap (snd o state) \<omega>"
-              ]; auto simp: HLD_iff)
+              ]; auto simp: HLD_iff comp_def)
     qed
   qed
 
@@ -1977,9 +1977,9 @@ proof -
         by (rule enabled_stream_trans')
       moreover from prems(1) have
         "\<forall>u. (\<forall>c\<in>\<X>. real (k c) < u c) \<longrightarrow> \<not> ev (alw (\<lambda>xs. snd (shd xs) = u)) (smap state \<omega>)"
-        by simp
+        by (simp add: comp_def)
       ultimately show ?case using \<open>\<R>_div _\<close>
-        by (simp add: stream.map_comp state_absc \<open>smap _ \<omega> = _\<close> \<R>_divergent_divergent)
+        by (simp add: stream.map_comp state_absc \<open>smap _ \<omega> = _\<close> \<R>_divergent_divergent comp_def)
     qed
   with MDP.valid_cfgD \<open>cfg \<in> R_G.valid_cfg\<close> * show ?thesis unfolding cfg_on_div_def by auto force
 qed
@@ -2116,7 +2116,7 @@ proof -
       from this(1,2,5,6) show ?case
         by (intro alw_HLD_smap alw_disjoint_ccontr[where
               S = "state ` MDP.MC.acc `` {repcs st cfg}" and R = "{s}" and \<omega> = "smap state \<omega>"
-              ]; simp add: HLD_iff; blast)
+              ]; simp add: HLD_iff comp_def; blast)
     qed
   qed
 
