@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Compactness Theorem for Propositional Logic and Combinatorial Applications}
+\author{Fabián Fernando Serrano Suárez$^\dag$,  Thaynara Arielly de Lima$^\star$, \\
+Mauricio Ayala-Rincón$^\ddag$\\[2mm]
+\mbox{}$^\dag$ Universidad Nacional de Colombia - 
+Sede Manizales, Colombia \\[1mm]
+\mbox{}$^\star$Universidade Federal de Goiás, Goiânia, Brazil\\[1mm] 
+\mbox{}$^\ddag$Universidade de Brasília, Brasília D.F., Brazil\\
+ }
+
+\maketitle
+
+\begin{abstract}
+This theory formalises the compactness theorem for propositional 
+logic based on the model existence theorem approach. 
+It also presents applications of compactness theorem to formalize 
+combinatorial theorems over countable structures:  
+the De Bruijn-Erd\H{o}s Graph coloring theorem for countable graphs, 
+König Lemma, and set- and graph-theoretical versions of Hall's Theorem for countable families of sets and graphs.
+\end{abstract}
+
+
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+
+
+%
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
