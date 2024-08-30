@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Marriage on Archive of Formal Proofs
+    <title>suarez on Archive of Formal Proofs
     </title>
-    <link>/dependencies/marriage/</link>
+    <link>/authors/suarez/</link>
     <description>
-        Recent content in Marriage 
+        Recent content in suarez 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 19 Aug 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/marriage/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/suarez/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Compactness Theorem for Propositional Logic and Combinatorial Applications</title>
           <link>/entries/Prop_Compactness.html</link>
           <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Prop_Compactness.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Latin Square</title>
-          <link>/entries/Latin_Square.html</link>
-          <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Latin_Square.html</guid>
           <description></description>
         </item>
   </channel>

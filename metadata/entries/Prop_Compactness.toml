@@ -1,0 +1,37 @@
+title = "Compactness Theorem for Propositional Logic and Combinatorial Applications"
+date = 2024-08-19
+topics = [
+  "Logic/General logic/Classical propositional logic",
+  "Mathematics/Combinatorics",
+]
+abstract = "This theory formalises the compactness theorem for propositional logic based on the model existence theorem approach. It also presents applications of compactness theorem to formalize combinatorial the- orems over countable structures: the De Bruijn-Erdös Graph color- ing theorem for countable graphs, König Lemma, and set- and graph- theoretical versions of Hall’s Theorem for countable families of sets and graphs."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.suarez]
+email = "suarez_email"
+
+[authors.limat]
+email = "limat_email"
+
+[authors.rincon]
+email = "rincon_email"
+
+[contributors]
+
+[notify]
+rincon = "rincon_email"
+limat = "limat_email"
+suarez = "suarez_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-16681-5_7",
+]
+pubs = []

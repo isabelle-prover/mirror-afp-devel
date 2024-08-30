@@ -3948,6 +3948,23 @@ orcid = "0000-0003-1701-0435"
 
 [lima.homepages]
 
+[limat]
+name = "Thaynara Arielly de Lima"
+orcid = "0000-0002-0852-9086"
+
+[limat.emails]
+
+[limat.emails.limat_email]
+user = [
+  "thaynaradelima",
+]
+host = [
+  "ufg",
+  "br",
+]
+
+[limat.homepages]
+
 [lindenberg]
 name = "Christina Lindenberg"
 
@@ -5778,6 +5795,23 @@ name = "Tom Ridge"
 
 [ridge.homepages]
 
+[rincon]
+name = "Mauricio Ayala-Rincón"
+orcid = "0000-0003-0089-3905"
+
+[rincon.emails]
+
+[rincon.emails.rincon_email]
+user = [
+  "ayala",
+]
+host = [
+  "unb",
+  "br",
+]
+
+[rincon.homepages]
+
 [rizaldi]
 name = "Albert Rizaldi"
 
@@ -6822,6 +6856,24 @@ name = "Daniel Stüwe"
 [stuewe.emails]
 
 [stuewe.homepages]
+
+[suarez]
+name = "Fabián Fernando Serran Suárez"
+orcid = "0000-0002-9817-4855"
+
+[suarez.emails]
+
+[suarez.emails.suarez_email]
+user = [
+  "ffserranos",
+]
+host = [
+  "unal",
+  "edu",
+  "co",
+]
+
+[suarez.homepages]
 
 [sudbrock]
 name = "Henning Sudbrock"

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 19 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Marriage</title>
+          <link>/dependencies/marriage/</link>
+          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/marriage/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Secret_Directed_Unwinding</title>
           <link>/dependencies/secret_directed_unwinding/</link>
@@ -2076,13 +2083,6 @@
           <link>/dependencies/sqrt_babylonian/</link>
           <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
           <guid>/dependencies/sqrt_babylonian/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Marriage</title>
-          <link>/dependencies/marriage/</link>
-          <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/marriage/</guid>
           <description></description>
         </item>
         <item>

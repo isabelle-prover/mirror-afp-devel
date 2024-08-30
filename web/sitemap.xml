@@ -8,13 +8,34 @@
     <loc>/authors/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Prop_Compactness.html</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/krofta/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/limat/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/marriage/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/mathematics/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/rincon/</loc>
+    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/suarez/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/popescu/</loc>
@@ -162,9 +180,6 @@
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/first_order_terms/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lp_duality/</loc>
@@ -3893,9 +3908,6 @@
     <loc>/entries/Latin_Square.html</loc>
     <lastmod>2015-12-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/marriage/</loc>
-    <lastmod>2015-12-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Ergodic_Theory.html</loc>
     <lastmod>2015-12-01T00:00:00+00:00</lastmod>
   </url><url>
@@ -6664,6 +6676,8 @@
     <loc>/sessions/promela/</loc>
   </url><url>
     <loc>/sessions/proof_strategy_language/</loc>
+  </url><url>
+    <loc>/sessions/prop_compactness/</loc>
   </url><url>
     <loc>/sessions/propositional_logic_class/</loc>
   </url><url>
