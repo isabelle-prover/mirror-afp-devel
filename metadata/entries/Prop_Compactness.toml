@@ -4,11 +4,13 @@ topics = [
   "Logic/General logic/Classical propositional logic",
   "Mathematics/Combinatorics",
 ]
-abstract = "This theory formalises the compactness theorem for propositional logic based 
+abstract = """
+This theory formalises the compactness theorem for propositional logic based 
 on the model existence theorem approach. It also presents applications 
 of the compactness theorem to formalize combinatorial theorems over countable structures: 
 the de Bruijn-Erdős Graph coloring theorem for countable graphs, König's Lemma, 
-and set- and graph-theoretical versions of Hall’s Theorem for countable families of sets and graphs."
+and set- and graph-theoretical versions of Hall’s Theorem for countable families of sets and graphs.
+"""
 license = "bsd"
 note = ""
 
