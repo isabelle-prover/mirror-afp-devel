@@ -83,6 +83,18 @@
     <loc>/authors/wimmer/</loc>
     <lastmod>2024-08-14T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/amjad/</loc>
+    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/connor/</loc>
+    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/LTL3_Semantics.html</loc>
+    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/glabbeek/</loc>
+    <lastmod>2024-08-12T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/probabilistic_timed_automata/</loc>
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -3959,9 +3971,6 @@
     <loc>/entries/Encodability_Process_Calculi.html</loc>
     <lastmod>2015-08-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/glabbeek/</loc>
-    <lastmod>2015-08-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Case_Labeling.html</loc>
     <lastmod>2015-07-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -6349,6 +6358,8 @@
     <loc>/sessions/ltl_to_dra/</loc>
   </url><url>
     <loc>/sessions/ltl_to_gba/</loc>
+  </url><url>
+    <loc>/sessions/ltl3_semantics/</loc>
   </url><url>
     <loc>/sessions/lucas_theorem/</loc>
   </url><url>

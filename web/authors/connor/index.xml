@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>glabbeek on Archive of Formal Proofs
+    <title>connor on Archive of Formal Proofs
     </title>
-    <link>/authors/glabbeek/</link>
+    <link>/authors/connor/</link>
     <description>
-        Recent content in glabbeek 
+        Recent content in connor 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Mon, 12 Aug 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/glabbeek/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/connor/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Definitive Set Semantics for LTL3</title>
           <link>/entries/LTL3_Semantics.html</link>
           <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
           <guid>/entries/LTL3_Semantics.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Analysing and Comparing Encodability Criteria for Process Calculi</title>
-          <link>/entries/Encodability_Process_Calculi.html</link>
-          <pubDate>Mon, 10 Aug 2015 00:00:00 +0000</pubDate>
-          <guid>/entries/Encodability_Process_Calculi.html</guid>
           <description></description>
         </item>
   </channel>

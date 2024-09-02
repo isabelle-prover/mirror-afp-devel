@@ -78,6 +78,15 @@ host = [
 
 [amani.homepages]
 
+[amjad]
+name = "Rayhana Amjad"
+orcid = "0000-0002-3086-1720"
+
+[amjad.emails]
+
+[amjad.homepages]
+amjad_homepage = "https://rayhana.dev/"
+
 [ammer]
 name = "Thomas Ammer"
 
@@ -1309,6 +1318,24 @@ host = [
 ]
 
 [cohen.homepages]
+
+[connor]
+name = "Liam O'Connor"
+orcid = "0000-0003-2765-4269"
+
+[connor.emails]
+
+[connor.emails.connor_email]
+user = [
+  "me",
+]
+host = [
+  "liamoc",
+  "net",
+]
+
+[connor.homepages]
+connor_homepage = "https://liamoc.net"
 
 [cordwell]
 name = "Katherine Kosaian"
