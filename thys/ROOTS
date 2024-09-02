@@ -628,6 +628,7 @@ Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
+Ramsey_Bounds
 Ramsey-Infinite
 Random_BSTs
 Random_Graph_Subgraph_Threshold

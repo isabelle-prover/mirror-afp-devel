@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+%%Euro-style date: 20 September 1955
+\def\today{\number\day\space\ifcase\month\or
+January\or February\or March\or April\or May\or June\or
+July\or August\or September\or October\or November\or December\fi
+\space\number\year}
+
+
+\begin{document}
+
+\title{Ramsey Number Bounds}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+Ramsey's theorem~\cite{bollobas-graph-theory} implies that for any given natural numbers $k$ and $l$, there exists some $R(k,l)$
+such that a graph having at least $R(k,l)$ vertices must have either a clique of cardinality $k$
+or an anticlique (independent set) of cardinality $l$. Equivalently, for a \emph{complete} graph of size $R(k,l)$,
+every red/blue colouring of the edges must yield an entirely red $k$-clique or an entirely blue $l$-clique.
+Although $R(k,l)$ is for practical purposes impossible to calculate from $k$ and $l$, 
+some upper and lower bounds are known. The celebrated probabilistic argument by Paul Erd\H{o}s is 
+formalised here, with various of its consequences.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+Many thanks to Andrew Thomason and Chelsea Edmonds for their help with the probabilistic proofs,
+and to Bhavik Mehta for making his large Ramsey development available online.
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178), funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
