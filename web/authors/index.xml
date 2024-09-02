@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 19 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 22 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>paulson</title>
+          <link>/authors/paulson/</link>
+          <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/paulson/</guid>
+          <description></description>
+        </item>
         <item>
           <title>krofta</title>
           <link>/authors/krofta/</link>
@@ -564,13 +571,6 @@
           <link>/authors/taha/</link>
           <pubDate>Tue, 05 Dec 2023 00:00:00 +0000</pubDate>
           <guid>/authors/taha/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>paulson</title>
-          <link>/authors/paulson/</link>
-          <pubDate>Mon, 27 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/paulson/</guid>
           <description></description>
         </item>
         <item>

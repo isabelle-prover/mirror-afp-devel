@@ -3,18 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/Prop_Compactness.html</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Ramsey_Bounds.html</loc>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/undirected_graph_theory/</loc>
+    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Prop_Compactness.html</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/krofta/</loc>
@@ -29,16 +44,10 @@
     <loc>/dependencies/marriage/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/rincon/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/suarez/</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Topological_Groups.html</loc>
@@ -455,9 +464,6 @@
     <loc>/authors/karayel/</loc>
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/undirected_graph_theory/</loc>
-    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Continued_Fractions.html</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -627,9 +633,6 @@
     <lastmod>2023-11-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/KnuthMorrisPratt.html</loc>
-    <lastmod>2023-11-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
     <lastmod>2023-11-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
@@ -6728,6 +6731,8 @@
     <loc>/sessions/query_optimization/</loc>
   </url><url>
     <loc>/sessions/quick_sort_cost/</loc>
+  </url><url>
+    <loc>/sessions/ramsey_bounds/</loc>
   </url><url>
     <loc>/sessions/ramsey-infinite/</loc>
   </url><url>
