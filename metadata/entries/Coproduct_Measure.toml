@@ -1,0 +1,37 @@
+title = "Coproduct Measure"
+date = 2024-06-04
+topics = [
+  "Mathematics/Measure and integration",
+]
+abstract = """
+This entry formalizes the coproduct measure.
+Let $I$ be a set and $\\{M_i\\}_{i\\in I}$ measurable spaces.
+The $\\sigma$-algebra
+on $\\coprod_{i\\in I} M_i = \\{(i,x)\\mid i\\in I\\land x\\in M_i\\}$
+is defined as the least one making $(\\lambda x.\\: (i,x))$ measurable for all $i\\in I$.
+Let $\\mu_i$ be measures on $M_i$ for all $i\\in I$ and $A$ a measurable set of $\\coprod_{i\\in I} M_i$.
+The coproduct measure $\\coprod_{i\\in I} \\mu_i$ is defined as follows:
+\\[\\left(\\coprod_{i\\in I} \\mu_i\\right)(A) = \\sum_{i\\in I} \\mu_i(A_i), \\quad \\text{where $A_i = \\{x\\mid (i,x)\\in A\\}$.}\\]
+ 
+We also prove the relationship with coproduct quasi-Borel spaces:
+the functor $R: \\mathbf{Meas}\\to\\mathbf{QBS}$ preserves countable coproducts."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hirata]
+email = "hirata_email"
+
+[contributors]
+
+[notify]
+hirata = "hirata_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

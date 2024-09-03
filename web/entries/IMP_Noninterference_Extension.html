@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP - Archive of Formal Proofs</title>
+    <meta name="description" content="In a previous paper of mine, the notion of termination-sensitive information flow security with
+respect to a level-based interference relation, as studied...">
+
+  <meta property="og:title" content="Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/IMP_Noninterference_Extension.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-09-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-02T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>E</span>xtension of <span class='first'>S</span>tateful <span class='first'>I</span>ntransitive <span class='first'>N</span>oninterference with <span class='first'>I</span>nputs, <span class='first'>O</span>utputs, and <span class='first'>N</span>ondeterminism in <span class='first'>L</span>anguage <span class='first'>I</span><span class='first'>M</span><span class='first'>P</span>
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/noce">Pasquale Noce</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsicGFzcXVhbGUiLCJub2NlIiwibGF2b3JvIl19">📧</a>
+
+      </p>
+      <p class="date">September 2, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">In a previous paper of mine, the notion of termination-sensitive information flow security with
+respect to a level-based interference relation, as studied by Volpano, Smith, and Irvine and
+formalized in Nipkow and Klein's book on formal programming language semantics (in the version of
+February 2023), is generalized to the notion of termination-sensitive information flow correctness
+with respect to an interference function mapping program states to (generally) intransitive
+interference relations.
+
+This paper extends both the aforesaid information flow correctness criterion and the related static
+type system to the case of an imperative programming language supporting inputs, outputs, and
+nondeterminism. Regarding inputs and nondeterminism, Volpano, Smith, and Irvine observe that their
+soundness theorem no longer holds if their core language is extended with these features. This paper
+shows that the difficulty can be solved by extending the inductive definition of the language's
+operational semantics, which enables to apply a suitably extended information flow correctness
+criterion based on stateful intransitive noninterference, as well as an extended static type system
+enforcing this criterion, to such an extended programming language. Although an extension with
+inputs, outputs, and nondeterminism of the didactic programming language IMP employed in the book is
+used for this purpose, the introduced concepts apply to larger, real-world imperative programming
+languages as well.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/type-systems">Computer science/Programming languages/Type systems</a></li>
+          <li><a href="../topics/computer-science/programming-languages/static-analysis">Computer science/Programming languages/Static analysis</a></li>
+          <li><a href="../topics/computer-science/security">Computer science/Security</a></li>
+          <li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li>
+      </ul>
+      <h3>Session IMP_Noninterference_Extension</h3>
+      <ul>
+          <li><a href="../sessions/imp_noninterference_extension/#Small_Step">Small_Step</a></li>
+          <li><a href="../sessions/imp_noninterference_extension/#Definitions">Definitions</a></li>
+          <li><a href="../sessions/imp_noninterference_extension/#Idempotence">Idempotence</a></li>
+          <li><a href="../sessions/imp_noninterference_extension/#Overapproximation">Overapproximation</a></li>
+          <li><a href="../sessions/imp_noninterference_extension/#Correctness_Lemmas">Correctness_Lemmas</a></li>
+          <li><a href="../sessions/imp_noninterference_extension/#Correctness_Theorem">Correctness_Theorem</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/IMP_Noninterference_Extension/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/IMP_Noninterference_Extension/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/IMP_Noninterference_Extension/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">IMP_Noninterference_Extension-AFP</p>
+        <pre id="copy-text">@article{IMP_Noninterference_Extension-AFP,
+  author  = {Pasquale Noce},
+  title   = {Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/IMP_Noninterference_Extension.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-IMP_Noninterference_Extension-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

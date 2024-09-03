@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Smooth_Manifolds on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/smooth_manifolds/</link>
+    <description>
+        Recent content in Smooth_Manifolds 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/smooth_manifolds/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Lie Groups and Algebras</title>
+          <link>/entries/Lie_Groups.html</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Lie_Groups.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

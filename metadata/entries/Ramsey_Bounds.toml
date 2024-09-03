@@ -1,0 +1,33 @@
+title = "Ramsey Number Bounds"
+date = 2024-08-22
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+Ramsey's theorem implies that for any given natural numbers $k$ and $l$, there exists some $R(k,l)$
+such that a graph having at least $R(k,l)$ vertices must have either a clique of cardinality $k$
+or an anticlique (independent set) of cardinality $l$. Equivalently, for a complete graph of size $R(k,l)$,
+every red/blue colouring of the edges must yield an entirely red $k$-clique or an entirely blue $l$-clique.
+Although $R(k,l)$ is for practical purposes impossible to calculate from $k$ and $l$, 
+some upper and lower bounds are known. The celebrated probabilistic argument by Paul Erdős is 
+formalised here, with various of its consequences."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

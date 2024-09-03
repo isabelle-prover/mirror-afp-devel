@@ -1,0 +1,12 @@
+chapter AFP
+
+session "LTL3_Semantics" = HOL + 
+  options [timeout = 600]
+  theories
+    AnswerIndexedFamilies
+	Traces
+	LinearTemporalLogic
+	LTL3
+  document_files
+    "root.bib"
+    "root.tex"

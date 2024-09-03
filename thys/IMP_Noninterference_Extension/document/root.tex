@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper,fleqn]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Extension of Stateful Intransitive Noninterference\\with Inputs, Outputs, and Nondeterminism\\in Language IMP}
+\author{Pasquale Noce\\Senior Staff Firmware Engineer at HID Global, Italy\\pasquale dot noce dot lavoro at gmail dot com\\pasquale dot noce at hidglobal dot com}
+\maketitle
+
+\begin{abstract}
+In a previous paper of mine, the notion of termination-sensitive information flow security with
+respect to a level-based interference relation, as studied by Volpano, Smith, and Irvine and
+formalized in Nipkow and Klein's book on formal programming language semantics (in the version of
+February 2023), is generalized to the notion of termination-sensitive information flow correctness
+with respect to an interference function mapping program states to (generally) intransitive
+interference relations.
+
+This paper extends both the aforesaid information flow correctness criterion and the related static
+type system to the case of an imperative programming language supporting inputs, outputs, and
+nondeterminism. Regarding inputs and nondeterminism, Volpano, Smith, and Irvine observe that their
+soundness theorem no longer holds if their core language is extended with these features. This paper
+shows that the difficulty can be solved by extending the inductive definition of the language's
+operational semantics, which enables to apply a suitably extended information flow correctness
+criterion based on stateful intransitive noninterference, as well as an extended static type system
+enforcing this criterion, to such an extended programming language. Although an extension with
+inputs, outputs, and nondeterminism of the didactic programming language IMP employed in the book is
+used for this purpose, the introduced concepts apply to larger, real-world imperative programming
+languages as well.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

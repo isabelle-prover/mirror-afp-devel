@@ -1,0 +1,21 @@
+chapter AFP
+
+session Prop_Compactness = "HOL-Library" +
+  options [timeout = 300]
+
+  sessions
+    "Marriage"
+
+  theories
+    "Hall_Theorem_Graphs"  
+    "Hall_Theorem"
+    "k_coloring"
+    "KoenigLemma"
+    "PropCompactness"
+    "ModelExistence"
+    "HintikkaTheory"
+    "FinitenessClosedCharProp"
+
+  document_files
+    "root.tex"
+    "root.bib"

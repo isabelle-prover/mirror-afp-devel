@@ -11,8 +11,71 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
+          <link>/entries/IMP_Noninterference_Extension.html</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Noninterference_Extension.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ramsey Number Bounds</title>
+          <link>/entries/Ramsey_Bounds.html</link>
+          <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Ramsey_Bounds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Compactness Theorem for Propositional Logic and Combinatorial Applications</title>
+          <link>/entries/Prop_Compactness.html</link>
+          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Prop_Compactness.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Topological Groups</title>
+          <link>/entries/Topological_Groups.html</link>
+          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Topological_Groups.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A formalized programming language with speculative execution</title>
+          <link>/entries/IMP_With_Speculation.html</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_With_Speculation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Difference Bound Matrices</title>
+          <link>/entries/Difference_Bound_Matrices.html</link>
+          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Difference_Bound_Matrices.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Definitive Set Semantics for LTL3</title>
+          <link>/entries/LTL3_Semantics.html</link>
+          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL3_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Worklist Algorithms</title>
+          <link>/entries/Worklist_Algorithms.html</link>
+          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Worklist_Algorithms.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lie Groups and Algebras</title>
+          <link>/entries/Lie_Groups.html</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Lie_Groups.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Enriched Category Basics</title>
           <link>/entries/EnrichedCategoryBasics.html</link>
@@ -46,6 +109,13 @@
           <link>/entries/Coppersmith_Method.html</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Coppersmith_Method.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Coproduct Measure</title>
+          <link>/entries/Coproduct_Measure.html</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Coproduct_Measure.html</guid>
           <description></description>
         </item>
         <item>
@@ -6930,6 +7000,13 @@
           <description></description>
         </item>
         <item>
+          <title>Coproduct_Measure</title>
+          <link>/sessions/coproduct_measure/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/coproduct_measure/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Core_DOM</title>
           <link>/sessions/core_dom/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -7235,6 +7312,13 @@
           <link>/sessions/dict_construction/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/dict_construction/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Difference_Bound_Matrices</title>
+          <link>/sessions/difference_bound_matrices/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/difference_bound_matrices/</guid>
           <description></description>
         </item>
         <item>
@@ -8421,6 +8505,20 @@
           <description></description>
         </item>
         <item>
+          <title>IMP_Noninterference_Extension</title>
+          <link>/sessions/imp_noninterference_extension/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/imp_noninterference_extension/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IMP_With_Speculation</title>
+          <link>/sessions/imp_with_speculation/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/imp_with_speculation/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>IMP2</title>
           <link>/sessions/imp2/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8981,6 +9079,13 @@
           <description></description>
         </item>
         <item>
+          <title>Lie_Groups</title>
+          <link>/sessions/lie_groups/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/lie_groups/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Lifting_Definition_Option</title>
           <link>/sessions/lifting_definition_option/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9230,6 +9335,13 @@
           <link>/sessions/ltl_to_gba/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/ltl_to_gba/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LTL3_Semantics</title>
+          <link>/sessions/ltl3_semantics/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/ltl3_semantics/</guid>
           <description></description>
         </item>
         <item>
@@ -10248,6 +10360,13 @@
           <description></description>
         </item>
         <item>
+          <title>Prop_Compactness</title>
+          <link>/sessions/prop_compactness/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/prop_compactness/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Propositional_Logic_Class</title>
           <link>/sessions/propositional_logic_class/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -10399,6 +10518,13 @@
           <link>/sessions/quick_sort_cost/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/quick_sort_cost/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ramsey_Bounds</title>
+          <link>/sessions/ramsey_bounds/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/ramsey_bounds/</guid>
           <description></description>
         </item>
         <item>
@@ -11487,6 +11613,13 @@
           <description></description>
         </item>
         <item>
+          <title>Topological_Groups</title>
+          <link>/sessions/topological_groups/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/topological_groups/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Topological_Semantics</title>
           <link>/sessions/topological_semantics/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11883,6 +12016,13 @@
           <link>/sessions/workerwrapper/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/workerwrapper/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Worklist_Algorithms</title>
+          <link>/sessions/worklist_algorithms/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/worklist_algorithms/</guid>
           <description></description>
         </item>
         <item>

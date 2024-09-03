@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Definitive Set Semantics for LTL3 - Archive of Formal Proofs</title>
+    <meta name="description" content="LTL3 is a multi-valued variant of Linear-time Temporal Logic for runtime verification applications, originally due to Bauer et al. The semantic...">
+
+  <meta property="og:title" content="Definitive Set Semantics for LTL3" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/LTL3_Semantics.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-08-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-12T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Definitive Set Semantics for LTL3"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>D</span>efinitive <span class='first'>S</span>et <span class='first'>S</span>emantics for <span class='first'>L</span><span class='first'>T</span><span class='first'>L</span>3
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/amjad">Rayhana Amjad</a> <a href="https://rayhana.dev/">🌐</a>, <a href="../authors/glabbeek">Rob van Glabbeek</a> <a href="http://theory.stanford.edu/~rvg/">🌐</a> and <a href="../authors/connor">Liam O&rsquo;Connor</a> <a href="https://liamoc.net">🌐</a>
+
+      </p>
+      <p class="date">August 12, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">LTL3 is a multi-valued variant of Linear-time Temporal Logic for runtime verification
+applications, originally due to Bauer et al. The semantic descriptions of LTL3 in
+previous work are given only in terms of the relationship to conventional LTL. In this
+submission, which accompanies our EXPRESS/SOS 2024 paper, "Semantics for Linear-time Temporal Logic with Finite Observations", we instead give a full model-based inductive accounting of the semantics of LTL3, in terms of families of <em>definitive prefix sets</em>. We show that our definitive prefix sets are isomorphic to linear-time temporal properties (sets of infinite traces), and thereby show that our semantics
+of LTL3 directly correspond to the semantics of conventional LTL. In addition, we
+formalise the formula progression evaluation technique originally due to Kabanza et al., popularly used in runtime
+verification and testing contexts, and show its soundness and completeness up to finite traces with respect to our semantics.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/general-logic/temporal-logic">Logic/General logic/Temporal logic</a></li>
+          <li><a href="../topics/computer-science/concurrency">Computer science/Concurrency</a></li>
+          <li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li>
+      </ul>
+      <h3>Session LTL3_Semantics</h3>
+      <ul>
+          <li><a href="../sessions/ltl3_semantics/#AnswerIndexedFamilies">AnswerIndexedFamilies</a></li>
+          <li><a href="../sessions/ltl3_semantics/#Traces">Traces</a></li>
+          <li><a href="../sessions/ltl3_semantics/#LinearTemporalLogic">LinearTemporalLogic</a></li>
+          <li><a href="../sessions/ltl3_semantics/#LTL3">LTL3</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/LTL3_Semantics/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/LTL3_Semantics/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/LTL3_Semantics/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">LTL3_Semantics-AFP</p>
+        <pre id="copy-text">@article{LTL3_Semantics-AFP,
+  author  = {Rayhana Amjad and Rob van Glabbeek and Liam O'Connor},
+  title   = {Definitive Set Semantics for LTL3},
+  journal = {Archive of Formal Proofs},
+  month   = {August},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/LTL3_Semantics.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-LTL3_Semantics-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

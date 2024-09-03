@@ -11,15 +11,8 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 15 Mar 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/frequency_moments/index.xml" rel="self" type="application/rss+xml" />
-        <item>
-          <title>Approximate Model Counting</title>
-          <link>/entries/Approximate_Model_Counting.html</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Approximate_Model_Counting.html</guid>
-          <description></description>
-        </item>
         <item>
           <title>Distributed Distinct Elements</title>
           <link>/entries/Distributed_Distinct_Elements.html</link>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>connor on Archive of Formal Proofs
+    </title>
+    <link>/authors/connor/</link>
+    <description>
+        Recent content in connor 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Mon, 12 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/connor/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Definitive Set Semantics for LTL3</title>
+          <link>/entries/LTL3_Semantics.html</link>
+          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL3_Semantics.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

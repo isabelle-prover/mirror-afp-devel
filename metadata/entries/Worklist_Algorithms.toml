@@ -1,0 +1,33 @@
+title = "Worklist Algorithms"
+date = 2024-08-09
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = "This entry verifies a number of worklist algorithms for exploring sets of reachable sets of transition systems with subsumption relations. Informally speaking, a node $a$ is subsumed by a node $b$ if everything that is reachable from $a$ is also reachable from $b$. Starting from a general abstract view of transition systems, we gradually add structure while refining our algorithms to more efficient versions. In the end, we obtain efficient imperative algorithms, which operate on a shared data structure to keep track of explored and yet-to-be-explored states, similar to the algorithms used in timed automata model checking [2, 1]. This entry forms part of the work described in a paper by the authors of this entry [4] and a PhD thesis [3]."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wimmer]
+email = "wimmer_email"
+
+[authors.lammich]
+email = "lammich_email"
+
+[contributors]
+
+[notify]
+wimmer = "wimmer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-319-89960-2_4",
+]
+pubs = [
+  "https://nbn-resolving.org/urn:nbn:de:bvb:91-diss-20201209-1576100-1-0",
+]

@@ -13,6 +13,27 @@
     
       <atom:link href="/topics/logic/general-logic/temporal-logic/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Definitive Set Semantics for LTL3</title>
+          <link>/entries/LTL3_Semantics.html</link>
+          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL3_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Definitive Set Semantics for LTL3</title>
+          <link>/entries/LTL3_Semantics.html</link>
+          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL3_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Definitive Set Semantics for LTL3</title>
+          <link>/entries/LTL3_Semantics.html</link>
+          <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/LTL3_Semantics.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>A Verified Proof Checker for Metric First-Order Temporal Logic</title>
           <link>/entries/MFOTL_Checker.html</link>
           <pubDate>Tue, 16 Apr 2024 00:00:00 +0000</pubDate>
