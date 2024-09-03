@@ -3,15 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IMP_Noninterference_Extension.html</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/noce/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
     <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
@@ -21,9 +33,6 @@
     <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Ramsey_Bounds.html</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/undirected_graph_theory/</loc>
@@ -54,9 +63,6 @@
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IMP_With_Speculation.html</loc>
-    <lastmod>2024-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/popescu/</loc>
@@ -549,9 +555,6 @@
     <lastmod>2024-02-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IMP_Noninterference.html</loc>
-    <lastmod>2024-02-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/noce/</loc>
     <lastmod>2024-02-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/bootle/</loc>
@@ -6068,6 +6071,8 @@
     <loc>/sessions/imp_compiler_reuse/</loc>
   </url><url>
     <loc>/sessions/imp_noninterference/</loc>
+  </url><url>
+    <loc>/sessions/imp_noninterference_extension/</loc>
   </url><url>
     <loc>/sessions/imp_with_speculation/</loc>
   </url><url>

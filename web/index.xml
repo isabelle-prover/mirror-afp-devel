@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 22 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
+          <link>/entries/IMP_Noninterference_Extension.html</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Noninterference_Extension.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Ramsey Number Bounds</title>
           <link>/entries/Ramsey_Bounds.html</link>
@@ -8495,6 +8502,13 @@
           <link>/sessions/imp_noninterference/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/imp_noninterference/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>IMP_Noninterference_Extension</title>
+          <link>/sessions/imp_noninterference_extension/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/imp_noninterference_extension/</guid>
           <description></description>
         </item>
         <item>
