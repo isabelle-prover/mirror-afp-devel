@@ -14,6 +14,13 @@
       <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>An Exponential Improvement for Diagonal Ramsey</title>
+          <link>/entries/Diagonal_Ramsey.html</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Diagonal_Ramsey.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
           <link>/entries/IMP_Noninterference_Extension.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>

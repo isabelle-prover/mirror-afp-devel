@@ -5,10 +5,16 @@
     <loc>/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Diagonal_Ramsey.html</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
@@ -17,20 +23,23 @@
     <loc>/entries/IMP_Noninterference_Extension.html</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/noce/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ramsey_bounds/</loc>
+    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/stirling_formula/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
-    <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Ramsey_Bounds.html</loc>
     <lastmod>2024-08-22T00:00:00+00:00</lastmod>
@@ -1041,9 +1050,6 @@
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/staats/</loc>
-    <lastmod>2023-04-03T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/stirling_formula/</loc>
     <lastmod>2023-04-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CommCSL.html</loc>
@@ -5555,6 +5561,8 @@
     <loc>/sessions/design_theory/</loc>
   </url><url>
     <loc>/sessions/dfs_framework/</loc>
+  </url><url>
+    <loc>/sessions/diagonal_ramsey/</loc>
   </url><url>
     <loc>/sessions/dict_construction/</loc>
   </url><url>
