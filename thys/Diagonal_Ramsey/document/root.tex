@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+%%Euro-style date: 20 September 1955
+\def\today{\number\day\space\ifcase\month\or
+January\or February\or March\or April\or May\or June\or
+July\or August\or September\or October\or November\or December\fi
+\space\number\year}
+
+\begin{document}
+
+\title{An Exponential Improvement\\ for Diagonal Ramsey}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+
+The (diagonal) Ramsey number $R(k)$ denotes the minimum size of a complete graph such that every red-blue colouring of its edges contains a monochromatic subgraph of size $k$.
+In 1935, Erd\H{o}s and Szekeres found an upper bound, proving that $R(k)\le 4^k$. Somewhat later, a lower bound of $\sqrt{2}^k$ was established.
+In subsequent improvements to the upper bound, the base of the exponent stubbornly 
+remained at 4 until March 2023, when Campos et al. \cite{campos-exponential-ramsey}
+sensationally showed that $R(k)\le (4-\epsilon)^k$ for a particular
+small positive $\epsilon$.
+
+The Isabelle/HOL formalisation of the result presented here is largely
+independent of the prior formalisation (in Lean) by Bhavik Mehta.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+Many thanks to Mantas Bakšys, Chelsea Edmonds, Bhavik Mehta, Fedor Petrov and Andrew Thomason for their help with aspects of the proofs.
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178), funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

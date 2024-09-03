@@ -1,0 +1,37 @@
+title = "An Exponential Improvement for Diagonal Ramsey"
+date = 2024-09-02
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+The (diagonal) Ramsey number $R(k)$ denotes the minimum size of a complete graph such that every red-blue colouring of its edges contains a monochromatic subgraph of size $k$.
+In 1935, Erdős and Szekeres found an upper bound, proving that $R(k)\\le 4^k$. Somewhat later, a lower bound of $\\sqrt{2}^k$ was established.
+In subsequent improvements to the upper bound, the base of the exponent stubbornly 
+remained at 4 until March 2023, when Campos et al.
+sensationally showed that $R(k)\\le (4-\\epsilon)^k$ for a particular
+small positive $\\epsilon$.
+
+The Isabelle/HOL formalisation of the result presented here is largely
+independent of the prior formalisation (in Lean) by Bhavik Mehta."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2303.09521",
+]
+pubs = []
