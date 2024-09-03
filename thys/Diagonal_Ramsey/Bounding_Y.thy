@@ -347,7 +347,7 @@ proof (cases "h > 2*\<kappa> + 1")
     using hgt_greater by force
   with less_h show ?thesis
     unfolding \<kappa>_def
-    by (smt (verit) less_imp_le_nat of_nat_diff of_nat_floor of_nat_mono powr_ge_pzero)
+    by (smt (verit) less_imp_le_nat of_nat_diff of_nat_floor of_nat_mono powr_ge_zero)
 next
   case False
   then show ?thesis
@@ -735,13 +735,13 @@ proof -
       show ?thesis
       proof (intro mult_right_mono)
         have "eps k powr (1/2) * pee (i-1) \<le> eps k powr (1/2) * 1"
-          by (metis mult.commute mult_right_mono powr_ge_pzero pee_le1)
+          by (metis mult.commute mult_right_mono powr_ge_zero pee_le1)
         moreover have "3 * eps k \<le> eps k powr (1/2)"
         proof -
           have "3 * eps k = 3 * (eps k powr (1/2))\<^sup>2"
             using eps_ge0 powr_half_sqrt real_sqrt_pow2 by presburger
           also have "\<dots> \<le> 3 * ((1/3) * eps k powr (1/2))"
-            by (smt (verit) big13 mult_right_mono power2_eq_square powr_ge_pzero)
+            by (smt (verit) big13 mult_right_mono power2_eq_square powr_ge_zero)
           also have "\<dots> \<le> eps k powr (1/2)"
             by simp
           finally show ?thesis .

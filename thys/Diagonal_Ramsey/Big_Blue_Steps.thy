@@ -4,40 +4,10 @@ theory Big_Blue_Steps imports Book
 
 begin
 
-subsection \<open>Material to delete for Isabelle 2025\<close>
-
-(*migrated 2024-08-06*)
-lemma gbinomial_mono:
-  fixes k::nat and a::real
-  assumes "of_nat k \<le> a" "a \<le> b" shows "a gchoose k \<le> b gchoose k"
-  using assms
-  by (force simp: gbinomial_prod_rev intro!: divide_right_mono prod_mono)
-
-(*migrated 2024-08-06*)
+(*FIXME: move?*)
 lemma gbinomial_is_prod: "(a gchoose k) = (\<Prod>i<k. (a - of_nat i) / (1 + of_nat i))"
   unfolding gbinomial_prod_rev
   by (induction k; simp add: divide_simps)
-
-lemma smallo_multiples: (*migrated 2024-08-06*)
-  assumes f: "f \<in> o(real)" and "k>0"
-  shows "(\<lambda>n. f (k * n)) \<in> o(real)"
-  unfolding smallo_def mem_Collect_eq
-proof (intro strip)
-  fix c::real
-  assume "c>0"
-  then have "c/k > 0"
-    by (simp add: assms)
-  with assms have "\<forall>\<^sub>F n in sequentially. \<bar>f n\<bar> \<le> c / real k * n"
-    by (force simp: smallo_def del: divide_const_simps)
-  then obtain N where "\<And>n. n\<ge>N \<Longrightarrow> \<bar>f n\<bar> \<le> c/k * n"
-    by (meson eventually_at_top_linorder)
-  then have "\<And>m. (k*m)\<ge>N \<Longrightarrow> \<bar>f (k*m)\<bar> \<le> c/k * (k*m)"
-    by blast
-  with \<open>k>0\<close> have "\<forall>\<^sub>F m in sequentially. \<bar>f (k*m)\<bar> \<le> c/k * (k*m)"
-    by (smt (verit, del_insts) One_nat_def Suc_leI eventually_at_top_linorderI mult_1_left mult_le_mono)
-  then show "\<forall>\<^sub>F n in sequentially. norm (f (k * n)) \<le> c * norm (real n)"
-    by eventually_elim (use \<open>k>0\<close> in auto)
-qed
 
 subsection \<open>Preliminaries\<close>
 
@@ -417,7 +387,7 @@ proposition Blue_4_1:
   shows "\<exists>S T. good_blue_book X (S,T) \<and> card S \<ge> l powr (1/4)"
 proof -
   have lpowr0[simp]: "0 \<le> \<lceil>l powr r\<rceil>" for r
-    by (metis ceiling_mono ceiling_zero powr_ge_pzero)
+    by (metis ceiling_mono ceiling_zero powr_ge_zero)
   define b where "b \<equiv> b_of l"
   define W where "W \<equiv> {x\<in>X. bluish X x}"
   define m where "m \<equiv> m_of l"

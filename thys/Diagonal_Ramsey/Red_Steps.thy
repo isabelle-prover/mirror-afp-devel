@@ -442,7 +442,7 @@ proof -
       using powr_mult_base [of "eps k"] eps_gt0 by (force simp: Red_5_7c mult.commute)
     also have "\<dots> \<le> eps k powr (1/2) * (pee i)"
       using p_gt_invk 
-      by (smt (verit) divide_inverse inverse_eq_divide mult_left_mono powr_ge_pzero)
+      by (smt (verit) divide_inverse inverse_eq_divide mult_left_mono powr_ge_zero)
     finally have "eps k powr -(1/2) * alpha (hgt (pee i)) \<le> eps k powr (1/2) * (pee i)" .
     then have "(1 - (eps k) powr (1/2)) * pee i * card Y \<le> (pee i - eps k powr -(1/2) * alpha (hgt (pee i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)

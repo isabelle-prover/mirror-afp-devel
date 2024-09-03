@@ -2,7 +2,7 @@ section \<open>Background material: the neighbours of vertices\<close>
 
 text \<open>Preliminaries for the Book Algorithm\<close>
 
-theory Neighbours imports General_Extras "Ramsey_Bounds.Ramsey_Bounds"
+theory Neighbours imports "Ramsey_Bounds.Ramsey_Bounds"
 
 begin
 

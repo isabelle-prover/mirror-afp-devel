@@ -173,7 +173,7 @@ proof -
     by (simp add: \<gamma>_def powr_minus powr_add powr_divide divide_simps)
   also have "\<dots> \<le> (2 powr (logstir (k+l)) / (2 powr (logstir k)  * 2 powr (logstir l)))
                  * (k+l) powr (k+l) / (k powr k * l powr l)"
-    by (smt (verit, del_insts) * divide_right_mono mult_less_0_iff mult_right_mono powr_add powr_diff powr_ge_pzero powr_mono)
+    by (smt (verit, del_insts) * divide_right_mono mult_less_0_iff mult_right_mono powr_add powr_diff powr_ge_zero powr_mono)
   also have "\<dots> = fact(k+l) / (fact k * fact l)"
     using l by (simp add: logfact_eq_stir_times powr_add divide_simps flip: powr_realpow)
   also have "\<dots> = real (k+l choose l)"
@@ -447,7 +447,7 @@ proof -
     unfolding l34_def 
   proof (intro powr_mono powr_mono2 mult_mono ceiling_mono of_nat_mono nat_mono \<open>l \<le> k\<close>)
     show "0 \<le> real_of_int \<lceil>k powr (3/4)\<rceil>"
-      by (meson le_of_int_ceiling order.trans powr_ge_pzero)
+      by (meson le_of_int_ceiling order.trans powr_ge_zero)
   qed (use assms \<section> in auto)
   finally show ?thesis .
 qed
@@ -574,11 +574,11 @@ proof -
     using \<open>t < k\<close> \<gamma>01 mult_right_mono [OF ln_add_one_self_le_self2 [of "-\<gamma>"], of "real k - t"] 
     by (simp add: algebra_simps)
   also have "\<dots> = ln (exp (-\<delta>*k) * (1-\<gamma>) powr (- real k + t) * (bigbeta/\<gamma>) ^ card \<S>)"
-    using \<gamma>01 bigbeta01 by (simp add: ln_mult ln_div ln_realpow ln_powr)
+    using \<gamma>01 bigbeta01 by (simp add: ln_mult ln_div ln_realpow)
   also have "\<dots> \<le> ln (2 powr ok_fun_93g \<gamma> k)"
-    using le_2_powr_g \<gamma>01 bigbeta01 by simp
+    using le_2_powr_g \<gamma>01 bigbeta01 by (simp del: ln_powr)
   also have "\<dots> = ok_fun_93g \<gamma> k * ln 2"
-    by (auto simp: ln_powr)
+    by auto
   finally have "\<gamma> * (real k - t) - \<delta>*k - ?\<xi> * ln (\<gamma>/bigbeta) \<le> ok_fun_93g \<gamma> k * ln 2" .
   then have "\<gamma> * (real k - t) \<le> ?\<xi> * ln (\<gamma>/bigbeta) + \<delta>*k + ok_fun_93g \<gamma> k * ln 2"
     by simp
@@ -588,7 +588,7 @@ proof -
       using kn0 bigbeta_le bigbeta_ge \<open>bigbeta>0\<close> by (simp add: field_simps)
     then have X: "ln (\<gamma>/bigbeta) \<le> ln \<gamma> + 2 * ln k"
       using \<open>bigbeta>0\<close> \<open>\<gamma>>0\<close> kn0 
-      by (metis divide_pos_pos ln_mono ln_mult mult_2 mult_pos_pos of_nat_0_less_iff power2_eq_square)
+      by (metis ln_mult_pos ln_realpow of_nat_numeral of_nat_zero_less_power_iff divide_pos_pos ln_mono)
     show ?thesis
       using mult_right_mono [OF X, of "2 * k powr (19/20) / (1-\<gamma>)"] \<open>\<gamma><1\<close>
       by (simp add: ok_fun_93h_def algebra_simps)
@@ -1602,10 +1602,10 @@ proof (rule ccontr)
   next
     case False 
     have YMK: "\<gamma>-\<gamma>' \<le> m/k"
-      using ln0 \<open>m<l\<close> 
+      using \<open>m<l\<close> 
       apply (simp add: \<gamma>_def \<gamma>'_def divide_simps)
       apply (simp add: algebra_simps)
-      by (smt (verit, best) mult_left_mono mult_right_mono nat_less_real_le of_nat_0_le_iff)
+      by (smt (verit) mult_left_mono mult_right_mono nat_less_real_le of_nat_0_le_iff)
 
     define \<delta>' where "\<delta>' \<equiv> \<gamma>'/20"
     have no_RedU_K: "\<not> (\<exists>K. UBB.size_clique k K RedU)"

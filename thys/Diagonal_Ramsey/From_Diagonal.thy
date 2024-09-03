@@ -167,8 +167,10 @@ proof -
           finally have "inverse (\<mu> * (1 + t/s)) \<le> \<mu> * k" .
           moreover have "0 < \<mu> * (1 + real t / real s)"
             using \<mu>01 \<open>0 < s\<close> by (simp add: zero_less_mult_iff add_num_frac)
-          ultimately show "- log 2 (\<mu> * (1 + real t / real s)) \<le> log 2 \<mu> + log 2 (real k)"
+          ultimately have "- log 2 (\<mu> * (1 + real t / real s)) \<le> log 2 (\<mu> * k)"
             using \<mu>01 kn0 by (simp add: zero_less_mult_iff flip: log_inverse log_mult)
+          then show "- log 2 (\<mu> * (1 + real t / real s)) \<le> log 2 \<mu> + log 2 (real k)"
+            using \<open>\<mu>>0\<close> kn0 log_mult by fastforce
         qed (use True \<mu>eq in auto)
         with \<open>s>0\<close> big\<mu>1 True show ?thesis
           by (simp add: \<mu>eq h_def mult_le_0_iff)
@@ -257,8 +259,11 @@ proof -
       have le_ok_fun: "g712 k - h k \<le> ok_fun_11_2 \<mu> k"
         by (simp add: g712_def h_def ok_fun_11_2_def g_def ok_fun_11_2a_def a_def ok_fun_11_2c_def)
       have "log 2 nV' \<le> s * log 2 (\<mu> / bigbeta) + k * log 2 (1/\<mu>) + t * log 2 (1 / (1-\<mu>)) + (g712 k)"
-        using \<mu>01 \<open>nV' \<ge> 2\<close> 
-        by (simp add: bb_gt0 log_mult log_nat_power order.trans [OF Transcendental.log_mono [OF _ _ 59]])
+      proof (intro order.trans [OF Transcendental.log_mono [OF _ _ 59]])
+        show "log 2 (2 powr g712 k * (1/\<mu>) ^ k * (1 / (1-\<mu>)) ^ t * (\<mu> / bigbeta) ^ s)
+            \<le> s * log 2 (\<mu> / bigbeta) + k * log 2 (1/\<mu>) + t * log 2 (1 / (1-\<mu>)) + g712 k"
+          using bb_gt0 \<mu>01 by (simp add: log_mult log_nat_power)
+      qed (use \<open>nV' \<ge> 2\<close> in auto)
       with \<dagger> le_ok_fun show "log 2 nV' \<le> k * log 2 (1/\<mu>) + t * log 2 (1 / (1-\<mu>)) + s * log 2 (ratio \<mu> s t) + ok_fun_11_2 \<mu> k"
         by simp
     qed
@@ -381,7 +386,7 @@ lemma le_FF_bound:
 proof (cases "\<lfloor>k - x*k\<rfloor> = 0")
   case True  \<comment>\<open>to handle the singularity\<close>
   with assms log2_RN_ge0[of k] show ?thesis
-    by (simp add: True FF_def FF_bound_def) 
+    by (simp add: True FF_def FF_bound_def log_def)
 next
   case False
   with gr0I have "k>0" by fastforce

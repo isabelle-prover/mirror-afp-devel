@@ -519,7 +519,7 @@ proof -
   have "\<And>x. x \<in> X \<Longrightarrow> card (Neighbours Red x \<inter> Y) < p * real (card Y)"
     using assms
     unfolding red_dense_def
-    by (smt (verit) alpha_ge0 mult_right_mono of_nat_0_le_iff powr_ge_pzero zero_le_mult_iff)
+    by (smt (verit) alpha_ge0 mult_right_mono of_nat_0_le_iff powr_ge_zero zero_le_mult_iff)
   with \<open>X\<noteq>{}\<close> show ?thesis
     by (smt (verit) \<open>finite X\<close> of_nat_sum sum_strict_mono mult_of_nat_commute sum_constant)
 qed
@@ -932,7 +932,7 @@ lemma Xseq_Suc_subset: "Xseq (Suc i) \<subseteq> Xseq i" and  Yseq_Suc_subset: "
   by (metis V_state_stepper degree_reg_subset finX next_state_subset)+
 
 lemma Xseq_antimono: "j \<le> i \<Longrightarrow> Xseq i \<subseteq> Xseq j"
-  by (simp add: lift_Suc_antimono_le[of UNIV] Xseq_Suc_subset)
+  by (simp add: Xseq_Suc_subset lift_Suc_antimono_le)
 
 lemma Xseq_subset_V: "Xseq i \<subseteq> V"
   using XY0 Xseq_0 Xseq_antimono by blast
@@ -944,7 +944,7 @@ lemma Yseq_0 [simp]: "Yseq 0 = Y0"
   by (simp add: Yseq_def)
 
 lemma Yseq_antimono: "j \<le> i \<Longrightarrow> Yseq i \<subseteq> Yseq j"
-  by (simp add: Yseq_Suc_subset lift_Suc_antimono_le[of UNIV])
+  by (simp add: Yseq_Suc_subset lift_Suc_antimono_le)
 
 lemma Yseq_subset_V: "Yseq i \<subseteq> V"
   using XY0 Yseq_0 Yseq_antimono by blast
@@ -975,7 +975,7 @@ lemma Aseq_Suc_subset: "Aseq i \<subseteq> Aseq (Suc i)" and Bseq_Suc_subset: "B
 lemma
   assumes "j \<le> i"
   shows Aseq_mono: "Aseq j \<subseteq> Aseq i" and Bseq_mono: "Bseq j \<subseteq> Bseq i"
-  using assms by (auto simp: Aseq_Suc_subset Bseq_Suc_subset lift_Suc_mono_le[of UNIV])
+  using assms by (auto simp: Aseq_Suc_subset Bseq_Suc_subset lift_Suc_mono_le)
 
 lemma Aseq_subset_V: "Aseq i \<subseteq> V"
   using stepper_A[of i] by (simp add: Aseq_def split: prod.split) 

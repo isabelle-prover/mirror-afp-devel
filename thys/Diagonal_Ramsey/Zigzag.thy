@@ -339,7 +339,7 @@ proof -
       then have "(\<Sum>h = 1..maxh. (\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h) / alpha h) \<ge> 0"
         by (force simp: alpha_ge0 intro: sum_nonneg)
       then show ?thesis
-        by (smt (verit, ccfv_SIG) powr_ge_pzero)
+        by (smt (verit, ccfv_SIG) powr_ge_zero)
     next
       case False
       then have \<Delta>\<Delta>_le0: "\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h \<le> 0" if "h\<ge>1" for h
@@ -568,7 +568,7 @@ lemma Big_ZZ_8_6:
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_ge_at_top eventually_all_geI1 [where L=1])   
    apply real_asymp
-  by (smt (verit, ccfv_SIG) frac_le powr_ge_pzero)
+  by (smt (verit, ccfv_SIG) frac_le powr_ge_zero)
 
 lemma (in Book) ZZ_8_6:
   assumes big: "Big_ZZ_8_6 \<mu> l" 

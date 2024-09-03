@@ -85,8 +85,8 @@ next
     by simp
   finally have \<section>: "(a choose b) * ?p ^ b * (1-?p) ^ (a-b) \<le> 1" .
   have "log 2 (a choose b) + b * log 2 ?p + (a-b) * log 2 (1-?p) \<le> 0"
-    using Transcendental.log_mono [OF _ _ \<section>]
-    by (simp add: p01 assms log_mult log_nat_power)
+    using Transcendental.log_mono [OF _ _ \<section>] False assms 
+    by (force simp add: p01 log_mult log_nat_power)
   then show ?thesis
     using p01 False assms unfolding H_def by (simp add: divide_simps)
 qed 
@@ -153,7 +153,7 @@ lemma FF_le_f1:
 proof (cases "nat\<lfloor>k - x*k\<rfloor> = 0")
   case True
   with x show ?thesis
-    by (simp add: FF_def f1_def H_ge0)
+    by (simp add: FF_def f1_def H_ge0 log_def)
 next
   case False
   let ?kl = "k + k - nat \<lceil>x*k\<rceil>"
@@ -169,10 +169,7 @@ next
   then have \<section>: "RN k (nat\<lfloor>k - x*k\<rfloor>) \<le> k + nat\<lfloor>k - x*k\<rfloor> choose k"
     using RN_le_choose by force
   also have "\<dots> \<le> k + k - nat\<lceil>x*k\<rceil> choose k"
-  proof (intro Binomial.binomial_mono)
-    show "k + nat \<lfloor>k - x*k\<rfloor> \<le> ?kl"
-      using False le by linarith
-  qed
+    using False Nat.le_diff_conv2 binomial_right_mono le by fastforce
   finally have "RN k (nat \<lfloor>real k - x*k\<rfloor>) \<le> ?kl choose k" .
   with RN_gt0 have "FF k x y \<le> log 2 (?kl choose k) / k + x + y"
     by (simp add: FF_def divide_right_mono nat_less_real_le)
@@ -978,14 +975,14 @@ proof
     then have "log 2 (RN k k) \<le> (2-delta') * k"
       by (meson of_nat_0_less_iff pos_divide_le_eq)
     then have "RN k k \<le> 2 powr ((2-delta') * k)"
-      by (smt (verit, best) Transcendental.log_le_iff powr_ge_pzero)
+      by (smt (verit, best) Transcendental.log_le_iff powr_ge_zero)
     then show "RN k k \<le> (2 powr (2-delta')) ^ k"
       by (simp add: mult.commute powr_power)
   qed
   moreover have "2 powr (2-delta') \<le> 4 - ?\<epsilon>"
     unfolding delta'_def by (approximation 25)
   ultimately show "\<forall>\<^sup>\<infinity>k. real (RN k k) \<le> (4-?\<epsilon>) ^ k"
-    by (smt (verit) power_mono powr_ge_pzero eventually_mono)
+    by (smt (verit) power_mono powr_ge_zero eventually_mono)
 qed auto
 
 end
