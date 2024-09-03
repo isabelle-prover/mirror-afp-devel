@@ -351,14 +351,14 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
-Interval_Analysis
+IMP_Noninterference
+IMP_Noninterference_Extension
+IMP_With_Speculation
 IO_Language_Conformance
 IP_Addresses
 Imperative_Insertion_Sort
 Implicational_Logic
 Impossible_Geometry
-IMP_Noninterference
-IMP_With_Speculation
 Incompleteness
 Incredible_Proof_Machine
 Independence_CH
@@ -370,6 +370,7 @@ InformationFlowSlicing_Inter
 Integration
 Interpolation_Polynomials_HOL_Algebra
 Interpreter_Optimizations
+Interval_Analysis
 Interval_Arithmetic_Word32
 Intro_Dest_Elim
 Involutions2Squares

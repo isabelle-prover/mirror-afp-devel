@@ -1,0 +1,15 @@
+chapter AFP
+session IMP_Noninterference_Extension (AFP) = HOL +
+  options [timeout = 900]
+  sessions
+    "HOL-IMP"
+  theories
+    Small_Step
+    Definitions
+    Idempotence
+    Overapproximation
+    Correctness_Lemmas
+    Correctness_Theorem
+  document_files
+    "root.bib"
+    "root.tex"
