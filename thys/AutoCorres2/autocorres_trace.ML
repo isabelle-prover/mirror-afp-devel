@@ -638,10 +638,6 @@ fun cterm_to_string no_markup =
   #> (if no_markup then XML.content_of else YXML.string_of_body)
   #> dropQuotes
 
-fun intercalate _ [] = []
-  | intercalate _ [x] = [x]
-  | intercalate l (x::xs) = x :: l @ intercalate l xs
-
 fun print_ac_trace' indent (RuleTrace tr) =
   let val print_cterm = cterm_to_string true
       val print_thm = Thm.cprop_of #> print_cterm
@@ -652,7 +648,7 @@ fun print_ac_trace' indent (RuleTrace tr) =
     (if null (#trace tr) then indent ^ "Proof: " ^ print_thm (#step tr |> fst) ^ "\n" else
        indent ^ "Proof:\n" ^
        indent' ^ "Step: " ^ print_thm (#step tr |> fst) ^ "\n\n" ^
-       String.concat (map (print_ac_trace' indent') (#trace tr) |> intercalate ["\n"]))
+       cat_lines (map (print_ac_trace' indent') (#trace tr)))
   end
 in
 val print_ac_trace = print_ac_trace' ""
