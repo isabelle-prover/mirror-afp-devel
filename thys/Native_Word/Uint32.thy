@@ -541,19 +541,12 @@ code_printing constant uint32_set_bit \<rightharpoonup>
   (Scala) "Uint32.set'_bit" and
   (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit x n b)"
 
-definition uint32_shiftl :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
-where [code del]:
-  "uint32_shiftl x n = (if n < 0 \<or> 32 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
-
-lemma shiftl_uint32_code [code]: "push_bit n x = (if n < 32 then uint32_shiftl x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint32_shiftl_def
-  by transfer simp
-
-lemma uint32_shiftl_code [code]:
-  "Rep_uint32 (uint32_shiftl w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (push_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint32 w))"
-  including undefined_transfer unfolding uint32_shiftl_def
-  by transfer simp
+global_interpretation uint32: word_type_copy_target_language Abs_uint32 Rep_uint32 signed_drop_bit_uint32
+  uint32_of_nat nat_of_uint32 uint32_of_int int_of_uint32 Uint32 integer_of_uint32 32 set_bits_aux_uint32 32 31
+  defines uint32_shiftl = uint32.shiftl
+    and uint32_shiftr = uint32.shiftr
+    and uint32_sshiftr = uint32.sshiftr
+  by standard simp_all
 
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and
@@ -562,41 +555,12 @@ code_printing constant uint32_shiftl \<rightharpoonup>
   (Scala) "Uint32.shiftl" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftl out of bounds\" else Uint32.shiftl x i)"
 
-definition uint32_shiftr :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
-where [code del]:
-  "uint32_shiftr x n = (if n < 0 \<or> 32 \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
-
-lemma shiftr_uint32_code [code]: "drop_bit n x = (if n < 32 then uint32_shiftr x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint32_shiftr_def
-  by transfer simp
-
-lemma uint32_shiftr_code [code]:
-  "Rep_uint32 (uint32_shiftr w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined (drop_bit :: nat \<Rightarrow> uint32 \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint32 w))"
-  including undefined_transfer unfolding uint32_shiftr_def by transfer simp
-
 code_printing constant uint32_shiftr \<rightharpoonup>
   (SML) "Uint32.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint32.shiftr" and
   (Scala) "Uint32.shiftr" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr out of bounds\" else Uint32.shiftr x i)"
-
-definition uint32_sshiftr :: "uint32 \<Rightarrow> integer \<Rightarrow> uint32"
-where [code del]:
-  "uint32_sshiftr x n =
-  (if n < 0 \<or> 32 \<le> n then undefined signed_drop_bit_uint32 n x else signed_drop_bit_uint32 (nat_of_integer n) x)"
-
-lemma sshiftr_uint32_code [code]:
-  "signed_drop_bit_uint32 n x = 
-  (if n < 32 then uint32_sshiftr x (integer_of_nat n) else if bit x 31 then - 1 else 0)"
-  including undefined_transfer integer.lifting unfolding uint32_sshiftr_def
-  by transfer (simp add: not_less signed_drop_bit_beyond)
-
-lemma uint32_sshiftr_code [code]:
-  "Rep_uint32 (uint32_sshiftr w n) =
-  (if n < 0 \<or> 32 \<le> n then Rep_uint32 (undefined signed_drop_bit_uint32 n w) else signed_drop_bit (nat_of_integer n) (Rep_uint32 w))"
-including undefined_transfer unfolding uint32_sshiftr_def by transfer simp
 
 code_printing constant uint32_sshiftr \<rightharpoonup>
   (SML) "Uint32.shiftr'_signed" and

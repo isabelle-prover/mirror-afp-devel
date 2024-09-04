@@ -718,18 +718,12 @@ code_printing constant uint_set_bit \<rightharpoonup>
   (OCaml) "Uint.set'_bit" and
   (Scala) "Uint.set'_bit"
 
-definition uint_shiftl :: "uint \<Rightarrow> integer \<Rightarrow> uint"
-where [code del]:
-  "uint_shiftl x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (push_bit :: nat \<Rightarrow> uint \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
-
-lemma shiftl_uint_code [code]: "push_bit n x = (if n < dflt_size then uint_shiftl x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint_shiftl_def
-  by (transfer fixing: n) simp
-
-lemma uint_shiftl_code [code]:
-  "Rep_uint (uint_shiftl w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (push_bit :: nat \<Rightarrow> uint \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint w))"
-  including undefined_transfer integer.lifting unfolding uint_shiftl_def by transfer simp
+global_interpretation uint: word_type_copy_target_language Abs_uint Rep_uint signed_drop_bit_uint
+  uint_of_nat nat_of_uint uint_of_int int_of_uint Uint integer_of_uint dflt_size set_bits_aux_uint \<open>of_nat dflt_size\<close> wivs_index
+  defines uint_shiftl = uint.shiftl
+    and uint_shiftr = uint.shiftr
+    and uint_sshiftr = uint.sshiftr
+  by standard (simp_all add: wivs_index_def)
 
 code_printing constant uint_shiftl \<rightharpoonup>
   (SML) "Uint.shiftl" and
@@ -739,19 +733,6 @@ code_printing constant uint_shiftl \<rightharpoonup>
   (OCaml) "Uint.shiftl" and
   (Scala) "Uint.shiftl"
 
-definition uint_shiftr :: "uint \<Rightarrow> integer \<Rightarrow> uint"
-where [code del]:
-  "uint_shiftr x n = (if n < 0 \<or> dflt_size_integer \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
-
-lemma shiftr_uint_code [code]: "drop_bit n x = (if n < dflt_size then uint_shiftr x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint_shiftr_def
-  by (transfer fixing: n) simp
-
-lemma uint_shiftr_code [code]:
-  "Rep_uint (uint_shiftr w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined (drop_bit :: nat \<Rightarrow> uint \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint w))"
-  including undefined_transfer integer.lifting unfolding uint_shiftr_def by transfer simp
-
 code_printing constant uint_shiftr \<rightharpoonup>
   (SML) "Uint.shiftr" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
@@ -759,23 +740,6 @@ code_printing constant uint_shiftr \<rightharpoonup>
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint.shiftr" and
   (Scala) "Uint.shiftr"
-
-definition uint_sshiftr :: "uint \<Rightarrow> integer \<Rightarrow> uint"
-where [code del]:
-  "uint_sshiftr x n =
-  (if n < 0 \<or> dflt_size_integer \<le> n then undefined signed_drop_bit_uint n x else signed_drop_bit_uint (nat_of_integer n) x)"
-
-lemma sshiftr_uint_code [code]:
-  "signed_drop_bit_uint n x = 
-  (if n < dflt_size then uint_sshiftr x (integer_of_nat n) else 
-    if bit x wivs_index then -1 else 0)"
-including undefined_transfer integer.lifting unfolding uint_sshiftr_def
-by transfer(simp add: not_less signed_drop_bit_beyond word_size wivs_index_def)
-
-lemma uint_sshiftr_code [code]:
-  "Rep_uint (uint_sshiftr w n) =
-  (if n < 0 \<or> dflt_size_integer \<le> n then Rep_uint (undefined signed_drop_bit_uint n w) else signed_drop_bit (nat_of_integer n) (Rep_uint w))"
-including undefined_transfer integer.lifting unfolding uint_sshiftr_def by transfer simp
 
 code_printing constant uint_sshiftr \<rightharpoonup>
   (SML) "Uint.shiftr'_signed" and
@@ -823,5 +787,7 @@ lemmas partial_term_of_uint [code] = partial_term_of_code
 
 instance ..
 end
+
+find_consts name: wivs
 
 end

@@ -414,62 +414,22 @@ code_printing constant uint16_set_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.setBitBounded" and
   (Scala) "Uint16.set'_bit"
 
-definition uint16_shiftl :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
-where [code del]:
-  "uint16_shiftl x n = (if n < 0 \<or> 16 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
-
-lemma shiftl_uint16_code [code]: "push_bit n x = (if n < 16 then uint16_shiftl x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint16_shiftl_def
-  by transfer simp
-
-lemma uint16_shiftl_code [code]:
-  "Rep_uint16 (uint16_shiftl w n) =
-  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (push_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) w n)
-   else push_bit (nat_of_integer n) (Rep_uint16 w))"
-  including undefined_transfer unfolding uint16_shiftl_def
-  by transfer simp
+global_interpretation uint16: word_type_copy_target_language Abs_uint16 Rep_uint16 signed_drop_bit_uint16
+  uint16_of_nat nat_of_uint16 uint16_of_int int_of_uint16 Uint16 integer_of_uint16 16 set_bits_aux_uint16 16 15
+  defines uint16_shiftl = uint16.shiftl
+    and uint16_shiftr = uint16.shiftr
+    and uint16_sshiftr = uint16.sshiftr
+  by standard simp_all
 
 code_printing constant uint16_shiftl \<rightharpoonup>
   (SML_word) "Uint16.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (Scala) "Uint16.shiftl"
 
-definition uint16_shiftr :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
-where [code del]:
-  "uint16_shiftr x n = (if n < 0 \<or> 16 \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
-
-lemma shiftr_uint16_code [code]: "drop_bit n x = (if n < 16 then uint16_shiftr x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint16_shiftr_def
-  by transfer simp
-
-lemma uint16_shiftr_code [code]:
-  "Rep_uint16 (uint16_shiftr w n) =
-  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined (drop_bit :: nat \<Rightarrow> uint16 \<Rightarrow> _) w n)
-   else drop_bit (nat_of_integer n) (Rep_uint16 w))"
-including undefined_transfer unfolding uint16_shiftr_def by transfer simp
-
 code_printing constant uint16_shiftr \<rightharpoonup>
   (SML_word) "Uint16.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (Scala) "Uint16.shiftr"
-
-definition uint16_sshiftr :: "uint16 \<Rightarrow> integer \<Rightarrow> uint16"
-where [code del]:
-  "uint16_sshiftr x n =
-  (if n < 0 \<or> 16 \<le> n then undefined signed_drop_bit_uint16 n x else signed_drop_bit_uint16 (nat_of_integer n) x)"
-
-lemma sshiftr_uint16_code [code]:
-  "signed_drop_bit_uint16 n x = 
-  (if n < 16 then uint16_sshiftr x (integer_of_nat n) else if bit x 15 then -1 else 0)"
-  including undefined_transfer integer.lifting unfolding uint16_sshiftr_def
-  by transfer (simp add: not_less signed_drop_bit_beyond word_size)
-
-lemma uint16_sshiftr_code [code]:
-  "Rep_uint16 (uint16_sshiftr w n) =
-  (if n < 0 \<or> 16 \<le> n then Rep_uint16 (undefined signed_drop_bit_uint16 n w)
-   else signed_drop_bit (nat_of_integer n) (Rep_uint16 w))"
-  including undefined_transfer unfolding uint16_sshiftr_def
-  by transfer simp
 
 code_printing constant uint16_sshiftr \<rightharpoonup>
   (SML_word) "Uint16.shiftr'_signed" and
