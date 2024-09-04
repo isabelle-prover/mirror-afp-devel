@@ -136,7 +136,7 @@ fun timeit_prepare_msg' level ctxt phase clique f =
 
 fun timeit_ts_msg level ctxt fnames f = 
   let
-    val fgroup = Utils.commas fnames
+    val fgroup = commas fnames
     val phase = FunctionInfo.TS
     fun mk_msg s e = 
           s ^ " (" ^ FunctionInfo.string_of_phase phase ^ ") for function(s) " ^ fgroup ^ e
@@ -499,7 +499,7 @@ fun define_funcs_single_recursive_group
 
     val prev_phase = FunctionInfo.prev_phase skips phase
  
-    val fn_names_str = Utils.commas (map get_const_name fn_names);
+    val fn_names_str = commas (map get_const_name fn_names);
     val filename = ProgramInfo.get_prog_name prog_info
     val def_loc = AutoCorresData.definition_locale lthy skips phase filename fn_names;
     val _ = writeln ("Defining (" ^ FunctionInfo.string_of_phase phase ^ ") " ^ fn_names_str ^ " in locale " ^ def_loc)
@@ -794,7 +794,7 @@ fun convert_and_define_clique
     val loc = the (Named_Target.bottom_locale_of lthy)
     val _ = case todo_clique of [] => () | stuff => 
         verbose_msg 0 lthy (fn _ => "Conversions (" ^ FunctionInfo.string_of_phase phase ^ 
-                 ") for: " ^ Utils.commas stuff ^ " in locale " ^ loc) 
+                 ") for: " ^ commas stuff ^ " in locale " ^ loc) 
 
     val conv_results =
       todo_clique

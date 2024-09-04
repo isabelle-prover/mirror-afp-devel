@@ -709,7 +709,7 @@ let
        lthy
     else
       let
-        val _ = writeln ("Translating (type strengthen) " ^ Utils.commas fn_names);
+        val _ = writeln ("Translating (type strengthen) " ^ commas fn_names);
 
         val lthy = lthy |> AutoCorresData.in_theory (
             AutoCorresData.add_definition_and_corres_proof_locales prog_info base_locale_opt infos_prev_phase skips phase fn_names 

@@ -596,13 +596,6 @@ fun infer_head ctxt (c as Const (cn, cT)) args =
   handle ERROR str => raise TERM (str, c:: args)
   
 
-(* Put commas between a list of strings. *)
-fun commas l =
-  map Pretty.str l
-  |> Pretty.commas
-  |> Pretty.enclose "" ""
-  |> Pretty.unformatted_string_of
-
 (* Make a list of conjunctions. *)
 fun mk_conj_list [] = @{term "HOL.True"}
   | mk_conj_list [x] = x
