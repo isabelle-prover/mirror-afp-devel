@@ -391,6 +391,20 @@ lemma signed_drop_bit_code [code]:
     word_of_0 word_of_1 word_of_minus sshiftr_def bit_eq_word_of not_less,
     simp add: size_eq_length size_integer_eq_length almost_size_eq_decr_length signed_drop_bit_beyond)
 
+definition test_bit :: \<open>'a \<Rightarrow> integer \<Rightarrow> bool\<close>
+  where \<open>test_bit w k = (if k < 0 \<or> size_integer \<le> k then undefined (bit :: 'a \<Rightarrow> _) w k
+   else bit w (nat_of_integer k))\<close>
+
+lemma test_bit_eq [code]:
+  \<open>test_bit w k = (if k < 0 \<or> size_integer \<le> k then undefined (bit :: 'a \<Rightarrow> _) w k
+    else bit (word_of w) (nat_of_integer k))\<close>
+  by (simp add: test_bit_def bit_eq_word_of)
+
+lemma bit_code [code]:
+  \<open>bit w n \<longleftrightarrow> n < size \<and> test_bit w (integer_of_nat n)\<close>
+  by (simp add: test_bit_def integer_of_nat_eq_of_nat)
+    (simp add: bit_eq_word_of size_eq_length size_integer_eq_length impossible_bit)
+
 end
 
 end

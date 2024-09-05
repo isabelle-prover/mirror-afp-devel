@@ -692,21 +692,13 @@ code_printing
   (OCaml) "Int64.div" and
   (Scala) "_ '/ _"
 
-definition uint64_test_bit :: "uint64 \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]:
-  "uint64_test_bit x n =
-  (if n < 0 \<or> 63 < n then undefined (bit :: uint64 \<Rightarrow> _) x n
-   else bit x (nat_of_integer n))"
-
-lemma bit_uint64_code [code]:
-  "bit x n \<longleftrightarrow> n < 64 \<and> uint64_test_bit x (integer_of_nat n)"
-  including undefined_transfer integer.lifting unfolding uint64_test_bit_def
-  by transfer (auto dest: bit_imp_le_length)
-
-lemma uint64_test_bit_code [code]:
-  "uint64_test_bit w n =
-  (if n < 0 \<or> 63 < n then undefined (bit :: uint64 \<Rightarrow> _) w n else bit (Rep_uint64 w) (nat_of_integer n))"
-  unfolding uint64_test_bit_def by(simp add: bit_uint64.rep_eq)
+global_interpretation uint64: word_type_copy_target_language Abs_uint64 Rep_uint64 signed_drop_bit_uint64
+  uint64_of_nat nat_of_uint64 uint64_of_int int_of_uint64 Uint64 integer_of_uint64 64 set_bits_aux_uint64 64 63
+  defines uint64_test_bit = uint64.test_bit
+    and uint64_shiftl = uint64.shiftl
+    and uint64_shiftr = uint64.shiftr
+    and uint64_sshiftr = uint64.sshiftr
+  by standard simp_all
 
 code_printing constant uint64_test_bit \<rightharpoonup>
   (SML) "Uint64.test'_bit" and
@@ -739,13 +731,6 @@ code_printing constant uint64_set_bit \<rightharpoonup>
   (Scala) "Uint64.set'_bit" and
   (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_set'_bit out of bounds\") else Uint64.set'_bit x i b)"
 
-global_interpretation uint64: word_type_copy_target_language Abs_uint64 Rep_uint64 signed_drop_bit_uint64
-  uint64_of_nat nat_of_uint64 uint64_of_int int_of_uint64 Uint64 integer_of_uint64 64 set_bits_aux_uint64 64 63
-  defines uint64_shiftl = uint64.shiftl
-    and uint64_shiftr = uint64.shiftr
-    and uint64_sshiftr = uint64.sshiftr
-  by standard simp_all
-
 code_printing constant uint64_shiftl \<rightharpoonup>
   (SML) "Uint64.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
@@ -776,7 +761,7 @@ lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint64) 63"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint64_code [code]: "msb x \<longleftrightarrow> uint64_test_bit x 63"
-  by (simp add: uint64_test_bit_def uint64_msb_test_bit)
+  by (simp add: uint64.test_bit_def uint64_msb_test_bit)
 
 lemma uint64_of_int_code [code]:
   "uint64_of_int i = Uint64 (integer_of_int i)"

@@ -494,21 +494,13 @@ code_printing
   (OCaml) "Int32.div" and
   (Scala) "_ '/ _"
 
-definition uint32_test_bit :: "uint32 \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]:
-  "uint32_test_bit x n =
-  (if n < 0 \<or> 31 < n then undefined (bit :: uint32 \<Rightarrow> _) x n
-   else bit x (nat_of_integer n))"
-
-lemma test_bit_uint32_code [code]:
-  "bit x n \<longleftrightarrow> n < 32 \<and> uint32_test_bit x (integer_of_nat n)"
-  including undefined_transfer integer.lifting unfolding uint32_test_bit_def
-  by (transfer, simp, transfer, simp)
-
-lemma uint32_test_bit_code [code]:
-  "uint32_test_bit w n =
-  (if n < 0 \<or> 31 < n then undefined (bit :: uint32 \<Rightarrow> _) w n else bit (Rep_uint32 w) (nat_of_integer n))"
-  unfolding uint32_test_bit_def by(simp add: bit_uint32.rep_eq)
+global_interpretation uint32: word_type_copy_target_language Abs_uint32 Rep_uint32 signed_drop_bit_uint32
+  uint32_of_nat nat_of_uint32 uint32_of_int int_of_uint32 Uint32 integer_of_uint32 32 set_bits_aux_uint32 32 31
+  defines uint32_test_bit = uint32.test_bit
+    and uint32_shiftl = uint32.shiftl
+    and uint32_shiftr = uint32.shiftr
+    and uint32_sshiftr = uint32.sshiftr
+  by standard simp_all
 
 code_printing constant uint32_test_bit \<rightharpoonup>
   (SML) "Uint32.test'_bit" and
@@ -541,13 +533,6 @@ code_printing constant uint32_set_bit \<rightharpoonup>
   (Scala) "Uint32.set'_bit" and
   (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit x n b)"
 
-global_interpretation uint32: word_type_copy_target_language Abs_uint32 Rep_uint32 signed_drop_bit_uint32
-  uint32_of_nat nat_of_uint32 uint32_of_int int_of_uint32 Uint32 integer_of_uint32 32 set_bits_aux_uint32 32 31
-  defines uint32_shiftl = uint32.shiftl
-    and uint32_shiftr = uint32.shiftr
-    and uint32_sshiftr = uint32.sshiftr
-  by standard simp_all
-
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
@@ -578,7 +563,7 @@ lemma uint32_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint32) 31"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint32_code [code]: "msb x \<longleftrightarrow> uint32_test_bit x 31"
-  by (simp add: uint32_test_bit_def uint32_msb_test_bit)
+  by (simp add: uint32.test_bit_def uint32_msb_test_bit)
 
 lemma uint32_of_int_code [code]:
   "uint32_of_int i = Uint32 (integer_of_int i)"

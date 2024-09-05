@@ -410,29 +410,19 @@ code_printing
 | constant uint8_sdiv \<rightharpoonup>
   (Scala) "(_ '/ _).toByte"
 
-definition uint8_test_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]:
-  "uint8_test_bit x n =
-  (if n < 0 \<or> 7 < n then undefined (bit :: uint8 \<Rightarrow> _) x n
-   else bit x (nat_of_integer n))"
-
-lemma bit_uint8_code [code]:
-  "bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
-  including undefined_transfer integer.lifting unfolding uint8_test_bit_def
-  by (transfer, simp, transfer, simp)
-
-lemma uint8_test_bit_code [code]:
-  "uint8_test_bit w n =
-  (if n < 0 \<or> 7 < n then undefined (bit :: uint8 \<Rightarrow> _) w n else bit (Rep_uint8 w) (nat_of_integer n))"
-  unfolding uint8_test_bit_def
-  by (simp add: bit_uint8.rep_eq)
+global_interpretation uint8: word_type_copy_target_language Abs_uint8 Rep_uint8 signed_drop_bit_uint8
+  uint8_of_nat nat_of_uint8 uint8_of_int int_of_uint8 Uint8 integer_of_uint8 8 set_bits_aux_uint8 8 7
+  defines uint8_test_bit = uint8.test_bit
+    and uint8_shiftl = uint8.shiftl
+    and uint8_shiftr = uint8.shiftr
+    and uint8_sshiftr = uint8.sshiftr
+  by standard simp_all
 
 code_printing constant uint8_test_bit \<rightharpoonup>
   (SML) "Uint8.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint8.test'_bit" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit x i)"
-
 
 definition uint8_set_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint8"
 where [code del]:
@@ -456,13 +446,6 @@ code_printing constant uint8_set_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.setBitBounded" and
   (Scala) "Uint8.set'_bit" and
   (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_set'_bit out of bounds\") else Uint8.set'_bit x i b)"
-
-global_interpretation uint8: word_type_copy_target_language Abs_uint8 Rep_uint8 signed_drop_bit_uint8
-  uint8_of_nat nat_of_uint8 uint8_of_int int_of_uint8 Uint8 integer_of_uint8 8 set_bits_aux_uint8 8 7
-  defines uint8_shiftl = uint8.shiftl
-    and uint8_shiftr = uint8.shiftr
-    and uint8_sshiftr = uint8.sshiftr
-  by standard simp_all
 
 code_printing constant uint8_shiftl \<rightharpoonup>
   (SML) "Uint8.shiftl" and
@@ -491,7 +474,7 @@ lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint8) 7"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
-  by (simp add: uint8_test_bit_def uint8_msb_test_bit)
+  by (simp add: uint8.test_bit_def uint8_msb_test_bit)
 
 lemma uint8_of_int_code [code]:
   "uint8_of_int i = Uint8 (integer_of_int i)"

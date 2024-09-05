@@ -371,21 +371,13 @@ code_printing constant uint16_div \<rightharpoonup>
   (Haskell) "Prelude.mod" and
   (Scala) "(_ % _).toChar"
 
-definition uint16_test_bit :: "uint16 \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]:
-  "uint16_test_bit x n =
-  (if n < 0 \<or> 15 < n then undefined (bit :: uint16 \<Rightarrow> _) x n
-   else bit x (nat_of_integer n))"
-
-lemma test_bit_uint16_code [code]:
-  "bit x n \<longleftrightarrow> n < 16 \<and> uint16_test_bit x (integer_of_nat n)"
-  including undefined_transfer integer.lifting unfolding uint16_test_bit_def
-  by (transfer, simp, transfer, simp)
-
-lemma uint16_test_bit_code [code]:
-  "uint16_test_bit w n =
-  (if n < 0 \<or> 15 < n then undefined (bit :: uint16 \<Rightarrow> _) w n else bit (Rep_uint16 w) (nat_of_integer n))"
-  unfolding uint16_test_bit_def by (simp add: bit_uint16.rep_eq)
+global_interpretation uint16: word_type_copy_target_language Abs_uint16 Rep_uint16 signed_drop_bit_uint16
+  uint16_of_nat nat_of_uint16 uint16_of_int int_of_uint16 Uint16 integer_of_uint16 16 set_bits_aux_uint16 16 15
+  defines uint16_test_bit = uint16.test_bit
+    and uint16_shiftl = uint16.shiftl
+    and uint16_shiftr = uint16.shiftr
+    and uint16_sshiftr = uint16.sshiftr
+  by standard simp_all
 
 code_printing constant uint16_test_bit \<rightharpoonup>
   (SML_word) "Uint16.test'_bit" and
@@ -414,13 +406,6 @@ code_printing constant uint16_set_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.setBitBounded" and
   (Scala) "Uint16.set'_bit"
 
-global_interpretation uint16: word_type_copy_target_language Abs_uint16 Rep_uint16 signed_drop_bit_uint16
-  uint16_of_nat nat_of_uint16 uint16_of_int int_of_uint16 Uint16 integer_of_uint16 16 set_bits_aux_uint16 16 15
-  defines uint16_shiftl = uint16.shiftl
-    and uint16_shiftr = uint16.shiftr
-    and uint16_sshiftr = uint16.sshiftr
-  by standard simp_all
-
 code_printing constant uint16_shiftl \<rightharpoonup>
   (SML_word) "Uint16.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
@@ -441,7 +426,7 @@ lemma uint16_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint16) 15"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint16_test_bit x 15"
-  by (simp add: uint16_test_bit_def uint16_msb_test_bit)
+  by (simp add: uint16.test_bit_def uint16_msb_test_bit)
 
 lemma uint16_of_int_code [code]: "uint16_of_int i = Uint16 (integer_of_int i)"
 including integer.lifting by transfer simp
