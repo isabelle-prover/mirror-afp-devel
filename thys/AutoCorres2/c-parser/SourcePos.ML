@@ -98,8 +98,8 @@ val show_c_parser_positions = "show_c_parser_positions"
 val _ =
   ML_system_pp (fn depth => fn pretty => fn (pos:t) =>
     if print_mode_active show_c_parser_positions 
-    then Pretty.to_polyml (prettyPos pos)
-    else Pretty.to_polyml (Pretty.str "<pos>"));
+    then Pretty.to_ML (prettyPos pos)
+    else ML_Pretty.str "<pos>");
 
 end
 

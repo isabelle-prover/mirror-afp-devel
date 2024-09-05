@@ -105,8 +105,8 @@ structure Wrap =
 val _ =
   ML_system_pp (fn depth => fn pretty => fn (region:t) =>
     if print_mode_active SourcePos.show_c_parser_positions 
-    then Pretty.to_polyml (prettyRegion region)
-    else Pretty.to_polyml (Pretty.str "<region>"));
+    then Pretty.to_ML (prettyRegion region)
+    else ML_Pretty.str "<region>");
 end
 
 local
