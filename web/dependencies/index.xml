@@ -28,6 +28,13 @@
           <description></description>
         </item>
         <item>
+          <title>Mersenne_Primes</title>
+          <link>/dependencies/mersenne_primes/</link>
+          <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mersenne_primes/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Undirected_Graph_Theory</title>
           <link>/dependencies/undirected_graph_theory/</link>
           <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>

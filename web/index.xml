@@ -28,6 +28,13 @@
           <description></description>
         </item>
         <item>
+          <title>With-Type – Poor man&#39;s dependent types</title>
+          <link>/entries/With_Type.html</link>
+          <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/With_Type.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Ramsey Number Bounds</title>
           <link>/entries/Ramsey_Bounds.html</link>
           <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
@@ -12009,6 +12016,13 @@
           <link>/sessions/winding_number_eval/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/winding_number_eval/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>With_Type</title>
+          <link>/sessions/with_type/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/with_type/</guid>
           <description></description>
         </item>
         <item>

@@ -7426,8 +7426,20 @@ host = [
   "ee",
 ]
 
+[unruh.emails.unruh_email1]
+user = [
+  "afp",
+  "xkjnfh",
+]
+host = [
+  "rwth",
+  "unruh",
+  "de",
+]
+
 [unruh.homepages]
 unruh_homepage = "https://www.ut.ee/~unruh/"
+unruh_homepage1 = "https://qis.rwth-aachen.de/people/unruh/"
 
 [urban]
 name = "Christian Urban"

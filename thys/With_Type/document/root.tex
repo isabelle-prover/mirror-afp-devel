@@ -1,0 +1,132 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath, amssymb}
+\usepackage{mathpartir}
+\usepackage{newunicodechar}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newunicodechar{∀}{\ensuremath\forall}
+\newunicodechar{∃}{\ensuremath\exists}
+
+% \DeclareUnicodeCharacter{2200}{\ensuremath\forall}
+% \DeclareUnicodeCharacter{2203}{\ensuremath\exists}
+
+
+\begin{document}
+
+\title{With-Type -- Poor man's dependent types}
+\author{Dominique Unruh\\
+ \footnotesize RWTH Aachen, University of Tartu}
+\maketitle
+
+\begin{abstract}
+  The type system of Isabelle/HOL does not support dependent types or arbitrary quantification over types.
+  We introduce a system to mimic dependent types and existential quantification over types \emph{in limited circumstances} at the top level of theorems.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+The type system of Isabelle/HOL is relatively limited when it comes to the treatment of types (at least when compared with systems such as Coq or Lean).
+There is no support for arbitrary quantification over types, nor can types depend on other values.
+\emph{Universal} quantification over types is implicitly possible at the top level of a theorem because type variables are treated as universally quantified.%
+\footnote{For example, a theorem such as \texttt{(1::?'a) + 1 = 2} can be interpreted as \texttt{∀a.~(1::a) + 1 = 2}.}
+In a very limited way, we can also mimic existential quantification on the top level:
+Instead of saying, e.g., \texttt{∃a.~card (UNIV ::~a set) = 3} (``there exists a type with three elements''),
+we can define a type with the desired property (\texttt{typedef witness = "{1,2,3::int}"}) and prove \texttt{card (UNIV ::~witness set) = 3}. This achieves the same thing but it suffers from several drawbacks:
+\begin{itemize}
+\item We can only use this encoding at the top level of theorems. E.g., we cannot represent the claim \texttt{P (∃a.~card (UNIV ::~a set) = 3)} where \texttt{P} is an arbitrary predicate.
+\item It only works when we can explicitly construct the type that is claimed to exist (because we need to describe it in the \texttt{typedef} command).
+\item The witness we give cannot depend on variables local to the current theorem or proof because the \texttt{typedef} command can only be given on the top level of a theory, and can only depend on constants.
+  E.g., it would not be possible to express something like:
+  \begin{equation}\label{eq:ex.any.size}
+    \texttt{∀n::nat. (n >= 1 ---> (∃a.~card (UNIV ::~a set) = n))}.
+  \end{equation}
+\end{itemize}
+In this work, we resolve the third limitation.
+Concretely, we will be able to define a set (not a type!) \texttt{witness n} that depends on a natural number \texttt{n},\footnote{In this example, \texttt{witness n} simply has to be an arbitrary \texttt{n}-element set, e.g., \texttt{witness n = \{..<n\}}.}
+and write:
+\[
+\texttt{n >= 1 ---> let 'a::type=witness n in (card (UNIV ::~'a set) = n)} 
+\]
+This statement is read as:
+\begin{quote}
+  If \texttt{n >= 1}, and \texttt{'a} is defined to be the type described by the set \texttt{witness n}
+  (imagine a \emph{local} \texttt{typedef 'a = "witness n"}), then \texttt{card (UNIV ::~a set) = n} holds.
+\end{quote}
+This is nothing else than~\eqref{eq:ex.any.size} with an explicitly specified witness.
+
+We call the Isabelle constant implementing this construct \texttt{with\_type}, because \texttt{let 'a::type=witness in P} can be read as ``with type \texttt{'a} defined by \texttt{witness}, \texttt{P} holds''.
+
+Since in \texttt{let 'a::type=spec in \dots}, the \texttt{spec} can depend on local variables,
+we essentially have encoded a limited version of dependent types.
+Limited because our encoding is not meaningful except at the top level of a theorem (``\texttt{premises ==> let 'a::type = \dots}'' is ok, ``\texttt{P (let 'a::type = \dots)}'' for arbitrary \texttt{P} is not).
+
+To be able to actually use this encoding in proofs, we implement three reasoning rules for introduction, elimination, and modus ponens.
+These are \emph{roughly} the following:
+\begin{center}
+  $\inferrule*[right=Intro]{
+    \texttt{P}\ \textit{(given typedef)}
+  }{
+    \texttt{let 'a::type = w in P}
+  }$
+
+  \medskip
+  
+  $\inferrule*[right=Elim]{
+    \texttt{let 'a::type = w in P}
+    \\
+    \texttt{'a}\textit{ does not occur in }\texttt{P}
+  }{
+    \mathtt{P}
+  }$
+
+  \medskip
+  
+  $\inferrule*[right=ModusPonens]{
+    \texttt{let 'a::type = w in P}
+    \\
+    \texttt{P ==> Q}\ \textit{(given typedef)}
+  }{
+    \texttt{let 'a::type = w in Q}
+  }$
+\end{center}
+Here ``\textit{(given typedef)}'' means that the respective premise can be shown in a context where
+the local equivalent of a \texttt{typedef 'a = "w"} was declared.
+(In particular, there are morphisms \texttt{rep}, \texttt{abs} between \texttt{'a} and the set \texttt{w}.)
+
+The elimination rule uses the \texttt{Types\_To\_Sets} extension \cite{types-to-sets} to get rid of the ``unused'' \texttt{let 'a::type}.
+
+\bigskip
+
+The \texttt{with\_type} mechanism is not limited to types of type class \texttt{type}
+(the Isabelle/HOL type class containing all types).
+We can also write, e.g., \texttt{let 'a::ab\_group\_add = set with ops in P} which would say that \texttt{'a} is an abelian additive group (type class \texttt{ab\_group\_add}) defined via \texttt{typedef 'a = "set"} with group operations \texttt{ops} (which specifies the addition operation, the neutral element, etc.).
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+

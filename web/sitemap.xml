@@ -41,6 +41,18 @@
     <loc>/topics/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/mersenne_primes/</loc>
+    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/tools/</loc>
+    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/unruh/</loc>
+    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/With_Type.html</loc>
+    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Ramsey_Bounds.html</loc>
     <lastmod>2024-08-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -414,9 +426,6 @@
     <lastmod>2024-04-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/simpl/</loc>
-    <lastmod>2024-04-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/tools/</loc>
     <lastmod>2024-04-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tuch/</loc>
@@ -1737,9 +1746,6 @@
     <lastmod>2021-10-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Registers.html</loc>
-    <lastmod>2021-10-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/unruh/</loc>
     <lastmod>2021-10-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Belief_Revision.html</loc>
@@ -7202,6 +7208,8 @@
     <loc>/sessions/wieferich_kempner/</loc>
   </url><url>
     <loc>/sessions/winding_number_eval/</loc>
+  </url><url>
+    <loc>/sessions/with_type/</loc>
   </url><url>
     <loc>/sessions/woot_strong_eventual_consistency/</loc>
   </url><url>
