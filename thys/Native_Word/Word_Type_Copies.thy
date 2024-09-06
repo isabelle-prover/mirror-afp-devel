@@ -14,6 +14,8 @@ theory Word_Type_Copies
     "Code_Target_Word_Base"
 begin
 
+section \<open>Establishing type class instances for type copies of word type\<close>
+
 text \<open>The lifting machinery is not localized, hence the abstract proofs are carried out using morphisms.\<close>
 
 locale word_type_copy =
@@ -328,6 +330,80 @@ lemma of_class_set_bit:
 lemma of_class_bit_comprehension:
   \<open>OFCLASS('a, bit_comprehension_class)\<close>
   by standard (simp add: eq_iff_word_of word_of_set_bits bit_eq_word_of set_bits_bit_eq)
+
+end
+
+section \<open>Establishing operation variants tailored towards target languages\<close>
+
+locale word_type_copy_target_language = word_type_copy_misc +
+  constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder} \<Rightarrow> 'b::len word\<close>
+  fixes size_integer :: integer
+    and almost_size :: nat
+  assumes size_integer_eq_length: \<open>size_integer = Nat.of_nat LENGTH('b::len)\<close>
+    and almost_size_eq_decr_length: \<open>almost_size = LENGTH('b::len) - Suc 0\<close>
+begin
+
+definition shiftl :: \<open>'a \<Rightarrow> integer \<Rightarrow> 'a\<close>
+  where \<open>shiftl w k = (if k < 0 \<or> size_integer \<le> k then undefined (push_bit :: nat \<Rightarrow> 'a \<Rightarrow> 'a) w k
+    else push_bit (nat_of_integer k) w)\<close>
+
+lemma word_of_shiftl [code abstract]:
+  \<open>word_of (shiftl w k) =
+  (if k < 0 \<or> size_integer \<le> k then word_of (undefined (push_bit :: _ \<Rightarrow> _ \<Rightarrow> 'a) w k)
+   else push_bit (nat_of_integer k) (word_of w))\<close>
+  by (simp add: shiftl_def word_of_push_bit)
+
+lemma push_bit_code [code]:
+  \<open>push_bit k w = (if k < size then shiftl w (integer_of_nat k) else 0)\<close>
+  by (rule word_of_eqI)
+    (simp add: integer_of_nat_eq_of_nat word_of_push_bit word_of_0 shiftl_def, simp add: size_eq_length size_integer_eq_length)
+
+definition shiftr :: \<open>'a \<Rightarrow> integer \<Rightarrow> 'a\<close>
+  where \<open>shiftr w k = (if k < 0 \<or> size_integer \<le> k then undefined (drop_bit :: nat \<Rightarrow> 'a \<Rightarrow> 'a) w k
+    else drop_bit (nat_of_integer k) w)\<close>
+
+lemma word_of_shiftr [code abstract]:
+  \<open>word_of (shiftr w k) =
+  (if k < 0 \<or> size_integer \<le> k then word_of (undefined (drop_bit :: _ \<Rightarrow> _ \<Rightarrow> 'a) w k)
+   else drop_bit (nat_of_integer k) (word_of w))\<close>
+  by (simp add: shiftr_def word_of_drop_bit)
+
+lemma drop_bit_code [code]:
+  \<open>drop_bit k w = (if k < size then shiftr w (integer_of_nat k) else 0)\<close>
+  by (rule word_of_eqI)
+    (simp add: integer_of_nat_eq_of_nat word_of_drop_bit word_of_0 shiftr_def, simp add: size_eq_length size_integer_eq_length)
+
+definition sshiftr :: \<open>'a \<Rightarrow> integer \<Rightarrow> 'a\<close>
+  where \<open>sshiftr w k = (if k < 0 \<or> size_integer \<le> k then undefined (signed_drop_bit :: _ \<Rightarrow> _ \<Rightarrow> 'a) w k
+    else signed_drop_bit (nat_of_integer k) w)\<close>
+
+lemma word_of_sshiftr [code abstract]:
+  \<open>word_of (sshiftr w k) =
+  (if k < 0 \<or> size_integer \<le> k then word_of (undefined (signed_drop_bit :: _ \<Rightarrow> _ \<Rightarrow> 'a) w k)
+   else Word.signed_drop_bit (nat_of_integer k) (word_of w))\<close>
+  by (simp add: sshiftr_def word_of_signed_drop_bit)
+
+lemma signed_drop_bit_code [code]:
+  \<open>signed_drop_bit k w = (if k < size then sshiftr w (integer_of_nat k)
+    else if (bit w almost_size) then - 1 else 0)\<close>
+  by (rule word_of_eqI)
+    (simp add: integer_of_nat_eq_of_nat word_of_signed_drop_bit
+    word_of_0 word_of_1 word_of_minus sshiftr_def bit_eq_word_of not_less,
+    simp add: size_eq_length size_integer_eq_length almost_size_eq_decr_length signed_drop_bit_beyond)
+
+definition test_bit :: \<open>'a \<Rightarrow> integer \<Rightarrow> bool\<close>
+  where \<open>test_bit w k = (if k < 0 \<or> size_integer \<le> k then undefined (bit :: 'a \<Rightarrow> _) w k
+   else bit w (nat_of_integer k))\<close>
+
+lemma test_bit_eq [code]:
+  \<open>test_bit w k = (if k < 0 \<or> size_integer \<le> k then undefined (bit :: 'a \<Rightarrow> _) w k
+    else bit (word_of w) (nat_of_integer k))\<close>
+  by (simp add: test_bit_def bit_eq_word_of)
+
+lemma bit_code [code]:
+  \<open>bit w n \<longleftrightarrow> n < size \<and> test_bit w (integer_of_nat n)\<close>
+  by (simp add: test_bit_def integer_of_nat_eq_of_nat)
+    (simp add: bit_eq_word_of size_eq_length size_integer_eq_length impossible_bit)
 
 end
 
