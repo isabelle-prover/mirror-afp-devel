@@ -628,27 +628,25 @@ fun fconv_rule_maybe_traced ctxt conv thm do_trace =
 
 (* Display and debugging utils *)
 local
-fun dropQuotes s = if String.isPrefix "\"" s andalso String.isSuffix "\"" s
-                       then String.substring (s, 1, String.size s - 2) else s
 
-fun cterm_to_string no_markup =
-  Proof_Display.pp_cterm
-  #> Pretty.string_of
-  #> YXML.parse_body
-  #> (if no_markup then XML.content_of else YXML.string_of_body)
-  #> dropQuotes
+fun print_term ctxt t =
+  Syntax.string_of_term ctxt t
+  |> YXML.parse_body
+  |> XML.content_of
 
 fun print_ac_trace' indent (RuleTrace tr) =
-  let val print_cterm = cterm_to_string true
-      val print_thm = Thm.cprop_of #> print_cterm
-      val indent' = indent ^ "  "
+  let
+    val ctxt = ML_PP.toplevel_context ()
+    val print_cterm = print_term ctxt o Thm.term_of
+    val print_thm = print_term ctxt o Thm.prop_of
+    val indent2 = indent ^ "  "
   in
     indent ^ "Subgoal: " ^ print_cterm (#input tr) ^ "\n" ^
     indent ^ "Output:  " ^ print_thm (#output tr) ^ "\n" ^
     (if null (#trace tr) then indent ^ "Proof: " ^ print_thm (#step tr |> fst) ^ "\n" else
        indent ^ "Proof:\n" ^
-       indent' ^ "Step: " ^ print_thm (#step tr |> fst) ^ "\n\n" ^
-       cat_lines (map (print_ac_trace' indent') (#trace tr)))
+       indent2 ^ "Step: " ^ print_thm (#step tr |> fst) ^ "\n\n" ^
+       cat_lines (map (print_ac_trace' indent2) (#trace tr)))
   end
 in
 val print_ac_trace = print_ac_trace' ""
