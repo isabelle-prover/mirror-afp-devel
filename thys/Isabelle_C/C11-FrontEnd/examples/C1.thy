@@ -90,8 +90,7 @@ val S =  (C11_Ast_Lib.fold_cTranslationUnit selectIdent0 ast_unit []);
 fun print ({args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.data_string S'::[], 
            sub_tag = STAG, tag = TAG}
           :C11_Ast_Lib.node_content)
-         = let fun dark_matter (x:bstring) = XML.content_of (YXML.parse_body x) 
-           in writeln (":>"^dark_matter(S)^"<:>"^(S')^"<:>"^STAG^"<:>"^TAG^"<:") end;
+         = writeln (":>"^Protocol_Message.clean_output S^"<:>"^(S')^"<:>"^STAG^"<:>"^TAG^"<:");
 
 app print S; (* these strings are representations for C_Ast.abr_string, 
                 where the main constructor is C_Ast.SS_base. *)
@@ -102,13 +101,9 @@ map (YXML.parse_body o (fn {args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.d
 subsection\<open>A small compiler to Isabelle term's.\<close>
 
 ML\<open>
-
-fun drop_dark_matter x = (XML.content_of o YXML.parse_body) x 
-
-
 fun node_content_2_free (x : C11_Ast_Lib.node_content) =
     let  val C11_Ast_Lib.data_string a_markup = hd(#args(x));
-         val id = hd(tl(String.tokens (fn x => x = #"\"")(drop_dark_matter a_markup)))
+         val id = hd(tl(String.tokens (fn x => x = #"\"")(Protocol_Message.clean_output a_markup)))
     in Free(id,dummyT) end  (* no type inference *);
 
 
@@ -118,7 +113,7 @@ fun selectIdent0Binary (a as { tag, sub_tag, args }:C11_Ast_Lib.node_content)
                        (c : term list)=  
     case tag of
       "Ident0" => (node_content_2_free a)::c
-     |"CBinary0" => (case (drop_dark_matter sub_tag, c) of 
+     |"CBinary0" => (case (Protocol_Message.clean_output sub_tag, c) of 
                       ("CAddOp0",b::a::R) => (Const("Groups.plus_class.plus",dummyT) $ a $ b :: R)
                     | ("CMulOp0",b::a::R) => (Const("Groups.times_class.times",dummyT) $ a $ b :: R)
                     | ("CDivOp0",b::a::R) => (Const("Rings.divide_class.divide",dummyT) $ a $ b :: R)

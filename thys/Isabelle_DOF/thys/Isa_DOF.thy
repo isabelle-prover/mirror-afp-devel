@@ -124,7 +124,7 @@ struct
     Name_Space.check (Context.Theory thy)
                       (get_onto_classes (Proof_Context.init_global thy)) (name, Position.none) |> #2
 
-  fun markup2string s = YXML.content_of s
+  fun markup2string s = Protocol_Message.clean_output s
                         |> Symbol.explode
                         |> List.filter (fn c => c <> Symbol.DEL)
                         |> String.concat
@@ -1900,7 +1900,7 @@ fun create_and_check_docitem is_monitor {is_inline=is_inline} {define=define} bi
                                without using the burden of ontology classes.
                                ex: text*[sdf]\<open> Lorem ipsum @{thm refl}\<close> *)
                      else let
-                            fun conv_attrs ((lhs, pos), rhs) = (YXML.content_of lhs,pos,"=", Syntax.parse_term (Proof_Context.init_global thy) rhs)
+                            fun conv_attrs ((lhs, pos), rhs) = (Protocol_Message.clean_output lhs,pos,"=", Syntax.parse_term (Proof_Context.init_global thy) rhs)
                             val assns' = map conv_attrs doc_attrs
                             val defaults_init = create_default_object thy binding cid_long typ
                             fun conv (na, _(*ty*), parsed_term) =(Binding.name_of na, Binding.pos_of na, "=", parsed_term);
@@ -2116,7 +2116,7 @@ fun update_instance_command  ((binding, cid_pos),
       val _ = if cid' = DOF_core.default_cid  orelse cid = cid'
               then () 
               else error("incompatible classes:"^cid^":"^cid')
-      fun conv_attrs (((lhs, pos), opn), rhs) = ((YXML.content_of lhs),pos,opn, 
+      fun conv_attrs (((lhs, pos), opn), rhs) = ((Protocol_Message.clean_output lhs),pos,opn, 
                                                   Syntax.parse_term (Proof_Context.init_global thy) rhs)
       val assns' = map conv_attrs doc_attrs
       val def_trans_value  =
@@ -2258,7 +2258,7 @@ fun meta_args_2_latex thy sem_attrs transform_attr
 
 
         fun markup2string s = String.concat (List.filter (fn c => c <> Symbol.DEL) 
-                                            (Symbol.explode (YXML.content_of s)))
+                                            (Symbol.explode (Protocol_Message.clean_output s)))
         fun ltx_of_markup ctxt s = let
   	                            val term = (Syntax.check_term ctxt o Syntax.parse_term ctxt) s
                                 val str_of_term = ltx_of_term  ctxt true term 
@@ -3117,7 +3117,7 @@ fun add_doc_class_cmd overloaded (raw_params, binding)
       val params = map (apsnd (Typedecl.read_constraint ctxt)) raw_params;
       val ctxt1 = fold (Variable.declare_typ o TFree) params ctxt;
       fun markup2string s = String.concat (List.filter (fn c => c <> Symbol.DEL) 
-                                            (Symbol.explode (YXML.content_of s)))
+                                            (Symbol.explode (Protocol_Message.clean_output s)))
       val name' =
         case raw_parent of
             NONE => DOF_core.default_cid
@@ -3230,8 +3230,8 @@ fun add_onto_morphism classes_mappings eqs thy =
       val converts =
         map (fn (oclasses, dclass) =>
                let
-                 val oclasses_string = map YXML.content_of oclasses
-                 val dclass_string = YXML.content_of dclass
+                 val oclasses_string = map Protocol_Message.clean_output oclasses
+                 val dclass_string = Protocol_Message.clean_output dclass
                  val const_sub_name = dclass_string
                                       |> (oclasses_string |> fold_rev (fn x => fn y => x ^ "_" ^ y))
                                       |> String.explode |> map (fn x => "\<^sub>" ^ (String.str x)) |> String.concat

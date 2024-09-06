@@ -189,7 +189,7 @@ fun hammer_logtac (pstate:Proof.state) =
                                 if did_smt_timeout tokens then drop 5 tokens else drop 2 tokens)
                             <$> rev           (* drop "(0.1 ms)." and such.*)
                             <$> String.concatWith " "            : string option;
-    val apply_script_cntnt = omap YXML.content_of one_line_apply : string option;
+    val apply_script_cntnt = omap Protocol_Message.clean_output one_line_apply : string option;
     val sh_returned        = if is_some apply_script_cntnt
                              then valOf result |> fst else false : bool;
   in

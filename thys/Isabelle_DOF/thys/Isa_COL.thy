@@ -410,7 +410,7 @@ fun convert_meta_args ctxt (X, (((str,_),value) :: R)) =
      let fun conv_int x = snd(HOLogic.dest_number(Syntax.read_term ctxt x))
                           handle TERM _ =>  error "Illegal int format."
      in
-         (case YXML.content_of str of 
+         (case Protocol_Message.clean_output str of 
              "relative_width" =>  upd_relative_width (K (conv_int value))
                                   o  convert_meta_args ctxt (X, R)
           |  "relative_height" => upd_relative_height (K (conv_int value))
@@ -421,7 +421,7 @@ fun convert_meta_args ctxt (X, (((str,_),value) :: R)) =
    |convert_meta_args _ (_,[]) = I
 
 fun convert_src_from_margs ctxt (X, (((str,_),value)::R)) = 
-          (case YXML.content_of str of 
+          (case Protocol_Message.clean_output str of 
              "file_src" => Input.string (HOLogic.dest_string (Syntax.read_term ctxt value))
            | _          => convert_src_from_margs ctxt (X,R))
    |convert_src_from_margs _ (_, [])     = error("No file_src provided.")
@@ -851,12 +851,12 @@ val _ = block_antiquotation \<^binding>\<open>block\<close> (block_modes -- Scan
         |> Theory.setup
 
 fun convert_meta_args ctxt (X, (((str,_),value) :: R)) =
-    (case YXML.content_of str of
-         "frametitle" =>  upd_frametitle (K(YXML.content_of value |> read_string))
+    (case Protocol_Message.clean_output str of
+         "frametitle" =>  upd_frametitle (K(Protocol_Message.clean_output value |> read_string))
                             o convert_meta_args ctxt (X, R)
-       | "framesubtitle" => upd_framesubtitle (K(YXML.content_of value |> read_string))
+       | "framesubtitle" => upd_framesubtitle (K(Protocol_Message.clean_output value |> read_string))
                               o convert_meta_args ctxt (X, R)
-       | "options" => upd_options (K(YXML.content_of value |> read_string))
+       | "options" => upd_options (K(Protocol_Message.clean_output value |> read_string))
                         o convert_meta_args ctxt (X, R)
        | s => error("!undefined attribute:"^s))
   | convert_meta_args _ (_,[]) = I

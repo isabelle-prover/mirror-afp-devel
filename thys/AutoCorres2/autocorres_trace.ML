@@ -630,9 +630,7 @@ fun fconv_rule_maybe_traced ctxt conv thm do_trace =
 local
 
 fun print_term ctxt t =
-  Syntax.string_of_term ctxt t
-  |> YXML.parse_body
-  |> XML.content_of
+  Protocol_Message.clean_output (Syntax.string_of_term ctxt t)
 
 fun print_ac_trace' indent (RuleTrace tr) =
   let
