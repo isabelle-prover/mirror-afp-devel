@@ -42,13 +42,16 @@
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/mersenne_primes/</loc>
-    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/tools/</loc>
-    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/unruh/</loc>
-    <lastmod>2024-08-29T00:00:00+00:00</lastmod>
+    <lastmod>2024-08-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Wlog.html</loc>
+    <lastmod>2024-08-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/With_Type.html</loc>
     <lastmod>2024-08-29T00:00:00+00:00</lastmod>
@@ -7210,6 +7213,8 @@
     <loc>/sessions/winding_number_eval/</loc>
   </url><url>
     <loc>/sessions/with_type/</loc>
+  </url><url>
+    <loc>/sessions/wlog/</loc>
   </url><url>
     <loc>/sessions/woot_strong_eventual_consistency/</loc>
   </url><url>

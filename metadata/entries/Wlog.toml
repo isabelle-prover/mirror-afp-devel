@@ -1,0 +1,26 @@
+title = "Without Loss of Generality"
+date = 2024-08-30
+topics = [
+  "Tools",
+]
+abstract = "We introduce a new command <code>wlog</code> in Isabelle/HOL that allows us to (soundly) assume facts without loss of generality inside a proof."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.unruh]
+homepage = "unruh_homepage1"
+
+[contributors]
+
+[notify]
+unruh = "unruh_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
