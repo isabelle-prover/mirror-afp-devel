@@ -729,21 +729,21 @@ code_printing constant uint64_set_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.setBitBounded" and
   (OCaml) "Uint64.set'_bit" and
   (Scala) "Uint64.set'_bit" and
-  (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_set'_bit out of bounds\") else Uint64.set'_bit x i b)"
+  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_set'_bit out of bounds\") else Uint64.set'_bit w i b)"
 
 code_printing constant uint64_shiftl \<rightharpoonup>
   (SML) "Uint64.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (OCaml) "Uint64.shiftl" and
   (Scala) "Uint64.shiftl" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftl out of bounds\") else Uint64.shiftl x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftl out of bounds\") else Uint64.shiftl w i)"
 
 code_printing constant uint64_shiftr \<rightharpoonup>
   (SML) "Uint64.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint64.shiftr" and
   (Scala) "Uint64.shiftr" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr out of bounds\") else Uint64.shiftr x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr out of bounds\") else Uint64.shiftr w i)"
 
 code_printing constant uint64_sshiftr \<rightharpoonup>
   (SML) "Uint64.shiftr'_signed" and
@@ -751,7 +751,7 @@ code_printing constant uint64_sshiftr \<rightharpoonup>
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint64.Int64) _)) :: Uint64.Word64)" and
   (OCaml) "Uint64.shiftr'_signed" and
   (Scala) "Uint64.shiftr'_signed" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed w i)"
 
 context
   includes bit_operations_syntax

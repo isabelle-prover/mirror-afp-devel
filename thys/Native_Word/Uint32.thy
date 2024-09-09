@@ -531,21 +531,21 @@ code_printing constant uint32_set_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.setBitBounded" and
   (OCaml) "Uint32.set'_bit" and
   (Scala) "Uint32.set'_bit" and
-  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit x n b)"
+  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit w n b)"
 
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (OCaml) "Uint32.shiftl" and
   (Scala) "Uint32.shiftl" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftl out of bounds\" else Uint32.shiftl x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftl out of bounds\" else Uint32.shiftl w i)"
 
 code_printing constant uint32_shiftr \<rightharpoonup>
   (SML) "Uint32.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint32.shiftr" and
   (Scala) "Uint32.shiftr" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr out of bounds\" else Uint32.shiftr x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr out of bounds\" else Uint32.shiftr w i)"
 
 code_printing constant uint32_sshiftr \<rightharpoonup>
   (SML) "Uint32.shiftr'_signed" and
@@ -553,7 +553,7 @@ code_printing constant uint32_sshiftr \<rightharpoonup>
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint32.Int32) _)) :: Uint32.Word32)" and
   (OCaml) "Uint32.shiftr'_signed" and
   (Scala) "Uint32.shiftr'_signed" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr'_signed out of bounds\" else Uint32.shiftr'_signed x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 32 then raise Fail \"argument to uint32'_shiftr'_signed out of bounds\" else Uint32.shiftr'_signed w i)"
 
 context
   includes bit_operations_syntax
