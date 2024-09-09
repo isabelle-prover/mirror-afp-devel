@@ -416,6 +416,7 @@ global_interpretation uint8: word_type_copy_target_language Abs_uint8 Rep_uint8 
     and uint8_shiftl = uint8.shiftl
     and uint8_shiftr = uint8.shiftr
     and uint8_sshiftr = uint8.sshiftr
+    and uint8_set_bit = uint8.set_bit
   by standard simp_all
 
 code_printing constant uint8_test_bit \<rightharpoonup>
@@ -423,23 +424,6 @@ code_printing constant uint8_test_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint8.test'_bit" and
   (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit w i)"
-
-definition uint8_set_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint8"
-where [code del]:
-  "uint8_set_bit x n b =
-  (if n < 0 \<or> 7 < n then undefined (set_bit :: uint8 \<Rightarrow> _) x n b
-   else set_bit x (nat_of_integer n) b)"
-
-lemma set_bit_uint8_code [code]:
-  "set_bit x n b = (if n < 8 then uint8_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer integer.lifting unfolding uint8_set_bit_def
-by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
-
-lemma uint8_set_bit_code [code]:
-  "Rep_uint8 (uint8_set_bit w n b) = 
-  (if n < 0 \<or> 7 < n then Rep_uint8 (undefined (set_bit :: uint8 \<Rightarrow> _) w n b)
-   else set_bit (Rep_uint8 w) (nat_of_integer n) b)"
-including undefined_transfer unfolding uint8_set_bit_def by transfer simp
 
 code_printing constant uint8_set_bit \<rightharpoonup>
   (SML) "Uint8.set'_bit" and

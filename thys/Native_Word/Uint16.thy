@@ -377,29 +377,13 @@ global_interpretation uint16: word_type_copy_target_language Abs_uint16 Rep_uint
     and uint16_shiftl = uint16.shiftl
     and uint16_shiftr = uint16.shiftr
     and uint16_sshiftr = uint16.sshiftr
+    and uint16_set_bit = uint16.set_bit
   by standard simp_all
 
 code_printing constant uint16_test_bit \<rightharpoonup>
   (SML_word) "Uint16.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint16.test'_bit"
-
-definition uint16_set_bit :: "uint16 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint16"
-where [code del]:
-  "uint16_set_bit x n b =
-  (if n < 0 \<or> 15 < n then undefined (set_bit :: uint16 \<Rightarrow> _) x n b
-   else set_bit x (nat_of_integer n) b)"
-
-lemma set_bit_uint16_code [code]:
-  "set_bit x n b = (if n < 16 then uint16_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer integer.lifting unfolding uint16_set_bit_def
-by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
-
-lemma uint16_set_bit_code [code]:
-  "Rep_uint16 (uint16_set_bit w n b) = 
-  (if n < 0 \<or> 15 < n then Rep_uint16 (undefined (set_bit :: uint16 \<Rightarrow> _) w n b)
-   else set_bit (Rep_uint16 w) (nat_of_integer n) b)"
-including undefined_transfer unfolding uint16_set_bit_def by transfer simp
 
 code_printing constant uint16_set_bit \<rightharpoonup>
   (SML_word) "Uint16.set'_bit" and

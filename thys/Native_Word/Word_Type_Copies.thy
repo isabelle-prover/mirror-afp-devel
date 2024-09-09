@@ -336,7 +336,7 @@ end
 section \<open>Establishing operation variants tailored towards target languages\<close>
 
 locale word_type_copy_target_language = word_type_copy_misc +
-  constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder} \<Rightarrow> 'b::len word\<close>
+  constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder, Generic_set_bit.set_bit} \<Rightarrow> 'b::len word\<close>
   fixes size_integer :: integer
     and almost_size :: nat
   assumes size_integer_eq_length: \<open>size_integer = Nat.of_nat LENGTH('b::len)\<close>
@@ -404,6 +404,23 @@ lemma bit_code [code]:
   \<open>bit w n \<longleftrightarrow> n < size \<and> test_bit w (integer_of_nat n)\<close>
   by (simp add: test_bit_def integer_of_nat_eq_of_nat)
     (simp add: bit_eq_word_of size_eq_length size_integer_eq_length impossible_bit)
+
+definition set_bit :: \<open>'a \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> 'a\<close>
+  where \<open>set_bit w k b =
+  (if k < 0 \<or> size_integer \<le> k then undefined (Generic_set_bit.set_bit :: 'a \<Rightarrow> _) w k b
+   else Generic_set_bit.set_bit w (nat_of_integer k) b)\<close>
+
+lemma word_of_gen_set_bit [code abstract]:
+  \<open>word_of (set_bit w k b) =
+  (if k < 0 \<or> size_integer \<le> k then word_of (undefined (Generic_set_bit.set_bit :: 'a \<Rightarrow> _) w k b)
+   else Generic_set_bit.set_bit (word_of w) (nat_of_integer k) b)\<close>
+  by (simp add: set_bit_def word_of_generic_set_bit)
+
+lemma generic_set_bit_code [code]:
+  \<open>Generic_set_bit.set_bit w n b = (if n < size then set_bit w (integer_of_nat n) b else w)\<close>
+  by (rule word_of_eqI)
+    (simp add: set_bit_def word_of_generic_set_bit, simp add: integer_of_nat_eq_of_nat
+     size_eq_length size_integer_eq_length set_bit_beyond word_size)
 
 end
 
