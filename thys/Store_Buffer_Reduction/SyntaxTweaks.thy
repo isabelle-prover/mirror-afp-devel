@@ -139,14 +139,6 @@ syntax (latex output)
 "_rec_sel" :: "'r \<Rightarrow> id \<Rightarrow> 'a" ("_._" [1000,1000]1000)
 
 
-ML_command \<open>
-  Markup.add_mode Latex.latexN (fn (s, props) =>
-    if member (op =) [Markup.boundN, Markup.freeN, Markup.varN, Markup.tfreeN, Markup.tvarN] s
-    then YXML.output_markup (Markup.latex_macro (s ^ "ify"))
-    else Latex.latex_markup (s, props));
-\<close>
-
-
 text \<open>invisible binder in case we want to force "bound"-markup\<close>
 consts Bind:: "('a \<Rightarrow> 'b) \<Rightarrow> 'c" (binder "Bind " 10)
 translations
