@@ -58,14 +58,14 @@ declare [[ucombine add = \<open>
     open Term_Normalisation
     (*ignore changes of schematic variables to avoid loops due to index-raising of some tactics*)
     val eq_beta_eta_dummy_vars = apply2 (beta_eta_short #> dummy_vars) #> op aconv
+    val unif = Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+    val norms = Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
   in
     Standard_Unification_Combine.eunif_data
       (Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
-        Simplifier_Unification.simp_unify
-        (Unification_Util.inst_norm_term'
-          Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
-        Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
-        Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
+        (Simplifier_Unification.simp_unify norms unif norms)
+        (Unification_Util.inst_norm_term' norms)
+        unif
       |> Type_Unification.e_unify Unification_Util.unify_types
       |> K)
       (Standard_Unification_Combine.default_metadata \<^binding>\<open>simp_unif\<close>)

@@ -28,10 +28,10 @@ declare [[ucombine add = \<open>
   in
     Standard_Unification_Combine.eunif_data
       (Simplifier_Unification.simp_unify_progress eq_beta_eta_dummy_vars
-        (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI})
+        (Simplifier_Unification.SIMPS_TO_UNIF_unify @{thm eq_TrueI}
+          Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
         (Unification_Util.inst_norm_term'
           Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
-        Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify
         Standard_Mixed_Unification.first_higherp_decomp_comb_higher_unify
       |> K)
       (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_UNIF_unif\<close> Prio.HIGH)
