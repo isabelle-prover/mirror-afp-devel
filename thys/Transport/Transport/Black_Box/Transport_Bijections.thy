@@ -5,6 +5,8 @@ theory Transport_Bijections
     Restricted_Equality
     Functions_Bijection
     Transport_Base
+    Binary_Relations_Asymmetric
+    Binary_Relations_Connected
 begin
 
 paragraph \<open>Summary\<close>
@@ -192,6 +194,76 @@ sublocale teq_restr_bij? : transport_eq_restrict_bijection \<top> \<top> l r
   rewrites "(=\<^bsub>\<top> :: 'a \<Rightarrow> bool\<^esub>) = ((=) :: 'a \<Rightarrow> _)"
   and "(=\<^bsub>\<top> :: 'b \<Rightarrow> bool\<^esub>) = ((=) :: 'b \<Rightarrow> _)"
   using bijection_on_in_field by unfold_locales simp_all
+
+end
+
+lemma mono_wrt_rel_if_connected_on_if_asymmetric_if_mono_if_inverse_on:
+  assumes conn: "connected_on (in_field L) L"
+  and asym: "asymmetric R"
+  and monol: "(L \<Rightarrow> R) l"
+  and monor: "(in_field R \<Rightarrow> in_field L) r"
+  and inv: "inverse_on (in_field R) r l"
+  shows "(R \<Rightarrow> L) r"
+proof (intro mono_wrt_relI)
+  fix x y assume "R x y"
+  with monor have "in_field L (r x)" "in_field L (r y)" by blast+
+  with conn consider "r x = r y" | "L (r y) (r x)" | "L (r x) (r y)" by blast
+  then show "L (r x) (r y)"
+  proof cases
+    case 1
+    moreover from inv have "injective_on (in_field R) r" using injective_on_if_inverse_on by blast
+    ultimately have "x = y" using \<open>R x y\<close> by (blast dest: injective_onD)
+    with asym \<open>R x y\<close> show ?thesis by blast
+  next
+    case 2
+    with monol have "R (l (r y)) (l (r x))" by auto
+    moreover from inv \<open>R x y\<close> have "l (r y) = y" "l (r x) = x" by (blast dest: inverse_onD)+
+    ultimately have "R y x" by simp
+    with asym \<open>R x y\<close> show ?thesis by blast
+  qed auto
+qed
+
+context galois
+begin
+
+lemma transport_bijection_if_asymmetric_if_connected_on_if_mono_if_bijection_on:
+  assumes "bijection_on (in_field (\<le>\<^bsub>L\<^esub>)) (in_field (\<le>\<^bsub>R\<^esub>)) l r"
+  and "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"
+  and "connected_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
+  and "asymmetric (\<le>\<^bsub>R\<^esub>)"
+  shows "transport_bijection (\<le>\<^bsub>L\<^esub>) (\<le>\<^bsub>R\<^esub>) l r"
+proof (intro transport_bijection.intro)
+  from assms show "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"
+    by (auto intro: mono_wrt_rel_if_connected_on_if_asymmetric_if_mono_if_inverse_on)
+qed (use assms in auto)
+
+lemma inverse_on_if_connected_on_if_asymmetric_if_galois_connection:
+  assumes gconn: "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"
+  and conn: "connected_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
+  and asym: "asymmetric (\<le>\<^bsub>R\<^esub>)"
+  shows "inverse_on (in_field (\<le>\<^bsub>L\<^esub>)) l r"
+proof (intro inverse_onI)
+  fix x assume "in_field (\<le>\<^bsub>L\<^esub>) x"
+  moreover with gconn have "in_field (\<le>\<^bsub>L\<^esub>) (\<eta> x)" by force
+  ultimately consider "\<eta> x \<le>\<^bsub>L\<^esub> x \<or> x \<le>\<^bsub>L\<^esub> \<eta> x" | "\<eta> x = x" using conn by blast
+  then show "r (l x) = x"
+  proof cases
+    case 1
+    then show ?thesis using gconn asym by (cases rule: disjE) force+
+  qed auto
+qed
+
+interpretation flip : galois R L r l .
+
+corollary bijection_on_if_connected_on_if_asymmetric_if_galois_equivalence:
+  assumes "((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>)) l r"
+  and "asymmetric (\<le>\<^bsub>L\<^esub>)" "asymmetric (\<le>\<^bsub>R\<^esub>)"
+  and "connected_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)" "connected_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>)"
+  shows "bijection_on (in_field (\<le>\<^bsub>L\<^esub>)) (in_field (\<le>\<^bsub>R\<^esub>)) l r"
+  using assms by (intro transport_bijection.bijection_on_in_field transport_bijection.intro
+    inverse_on_if_connected_on_if_asymmetric_if_galois_connection
+    flip.inverse_on_if_connected_on_if_asymmetric_if_galois_connection)
+  auto
 
 end
 

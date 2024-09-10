@@ -40,7 +40,7 @@ fun finish_SIMPS_TO_unif_tac ctxt = resolve_tac ctxt [finish_thm]
 fun SIMPS_TO_tac simp_tac ctxt = simp_tac THEN' finish_SIMPS_TO_tac ctxt
 fun SIMPS_TO_unif_tac simp_tac ctxt = simp_tac THEN' finish_SIMPS_TO_unif_tac ctxt
 
-fun SIMPS_TO_thmsq simp_tac ctxt (ctp as (clhs, crhs)) =
+fun SIMPS_TO_thmsq simp_tac ctxt (ctp as (clhs, crhs)) = Seq.make (fn _ =>
   (let val goal = mk_SIMPS_TO_cprop ctp
   in
     (@{log Logger.TRACE} ctxt (fn _ => Pretty.block [
@@ -49,13 +49,13 @@ fun SIMPS_TO_thmsq simp_tac ctxt (ctp as (clhs, crhs)) =
         Pretty.str " theorems for ",
         Unification_Util.pretty_terms ctxt (map Thm.term_of [clhs, crhs])
       ] |> Pretty.string_of);
-    Util.HEADGOAL (Util.apply_tac (SIMPS_TO_tac simp_tac ctxt)) goal)
+    Util.HEADGOAL (Util.apply_tac (SIMPS_TO_tac simp_tac ctxt)) goal |> Seq.pull)
   end)
   handle TYPE _ => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
       Pretty.str "Types of terms ",
       Unification_Util.pretty_terms ctxt (map Thm.term_of [clhs, crhs]),
       Pretty.str " not equal"
     ] |> Pretty.string_of);
-    Seq.empty)
+    NONE))
 
 end

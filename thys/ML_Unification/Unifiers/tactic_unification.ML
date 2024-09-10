@@ -23,7 +23,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Tactic_Unification
 type env_tactic = Envir.env * thm -> (Envir.env * thm) Seq.seq
 fun env_tac_from_no_inst_tac tac i (env, state) = tac i state |> Seq.map (pair env)
 
-fun unify normt tac binders ctxt (tp as (lhs, rhs)) env =
+fun unify normt tac binders ctxt (tp as (lhs, rhs)) env = Seq.make (fn _ =>
   let
     val rev_binders = rev binders
     fun forall_elim (env, state) = Binders.norm_binders (normt env) rev_binders
@@ -38,12 +38,13 @@ fun unify normt tac binders ctxt (tp as (lhs, rhs)) env =
     |> Tactic_Util.HEADGOAL (tac tp) o pair env
     |> Seq.map_filter (try (apsnd (Goal.finish ctxt)))
     |> Seq.map forall_elim)
+    |> Seq.pull
     handle TYPE _ => (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Types of terms ",
         Unification_Util.pretty_terms ctxt [lhs, rhs],
         Pretty.str " not equal"
       ] |> Pretty.string_of);
-      Seq.empty)
-  end
+      NONE)
+  end)
 
 end

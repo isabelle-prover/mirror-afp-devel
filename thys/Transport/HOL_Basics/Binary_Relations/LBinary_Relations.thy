@@ -11,6 +11,7 @@ theory LBinary_Relations
     Binary_Relations_Extend
     Binary_Relations_Lattice
     Binary_Relations_Least
+    Binary_Relations_Reflexive_Closure
     Binary_Relations_Transitive_Closure
     Dependent_Binary_Relations
     Restricted_Equality

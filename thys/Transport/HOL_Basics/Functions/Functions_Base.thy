@@ -11,6 +11,8 @@ definition "id x \<equiv> x"
 lemma id_eq_self [simp]: "id x = x"
   unfolding id_def ..
 
+lemma rel_map_id_eq_self [simp]: "rel_map id R = R" by (intro ext) auto
+
 consts comp :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 bundle comp_syntax begin notation comp (infixl "\<circ>" 55) end

@@ -8,5 +8,6 @@ paragraph \<open>Summary\<close>
 text \<open>General ML utilities.\<close>
 
 ML_file\<open>general_util.ML\<close>
+ML_file\<open>either.ML\<close>
 
 end

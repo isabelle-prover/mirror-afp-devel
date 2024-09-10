@@ -5,6 +5,7 @@ theory Wellfounded_Transitive_Recursion
   imports
     Binary_Relations_Transitive
     Binary_Relations_Wellfounded
+    Binary_Relation_Functions
     Functions_Restrict
 begin
 
@@ -39,29 +40,35 @@ lemma fun_rel_restrict_cong [cong]:
   shows "fun_rel_restrict f R y = fun_rel_restrict g R' y"
   using assms by (intro ext) (auto simp: fun_rel_restrict_eq_fun_restrict fun_restrict_eq_if)
 
+lemma fun_rel_restrict_rel_restrict_eq_fun_restrict_fun_rel_restrictI [simp]:
+  assumes "P x"
+  shows "fun_rel_restrict f (rel_restrict R P) x = (fun_rel_restrict f R x)\<restriction>\<^bsub>P\<^esub>"
+  using assms unfolding fun_rel_restrict_eq_fun_restrict fun_restrict_eq_if by fastforce
+
+
 context
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and step :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b"
 begin
 
-definition "wfrec_step f x = step (fun_rel_restrict (f x) R x) x"
+definition "wf_rec_step f x = step (fun_rel_restrict (f x) R x) x"
 
-lemma wfrec_step_eq: "wfrec_step f x = step (fun_rel_restrict (f x) R x) x"
-  unfolding wfrec_step_def by simp
+lemma wf_rec_step_eq: "wf_rec_step f x = step (fun_rel_restrict (f x) R x) x"
+  unfolding wf_rec_step_def by simp
 
-definition "is_recfun X f \<equiv> f = fun_rel_restrict (wfrec_step (\<lambda>_. f)) R X"
+definition "is_recfun X f \<equiv> f = fun_rel_restrict (wf_rec_step (\<lambda>_. f)) R X"
 
 definition "the_recfun X = (THE f. is_recfun X f)"
 
 lemma is_recfunI [intro]:
-  assumes "\<And>x. R x X \<Longrightarrow> f x = wfrec_step (\<lambda>_. f) x"
+  assumes "\<And>x. R x X \<Longrightarrow> f x = wf_rec_step (\<lambda>_. f) x"
   and "\<And>x. \<not>(R x X) \<Longrightarrow> f x = undefined"
   shows "is_recfun X f"
-  using assms unfolding is_recfun_def wfrec_step_eq fun_rel_restrict_eq_fun_restrict fun_restrict_eq_if
+  using assms unfolding is_recfun_def wf_rec_step_eq fun_rel_restrict_eq_fun_restrict fun_restrict_eq_if
   by (intro ext) simp
 
 lemma is_recfunE [elim]:
   assumes "is_recfun X f"
-  obtains "\<And>x. R x X \<Longrightarrow> f x = wfrec_step (\<lambda>_. f) x"
+  obtains "\<And>x. R x X \<Longrightarrow> f x = wf_rec_step (\<lambda>_. f) x"
     "\<And>x. \<not>(R x X) \<Longrightarrow> f x = undefined"
   using assms[unfolded is_recfun_def, THEN fun_cong]
   unfolding fun_rel_restrict_eq_fun_restrict fun_restrict_eq_if
@@ -70,7 +77,7 @@ lemma is_recfunE [elim]:
 lemma eq_if_rel_if_is_recfun:
   assumes "is_recfun X f"
   and "R x X"
-  shows "f x = wfrec_step (\<lambda>_. f) x"
+  shows "f x = wf_rec_step (\<lambda>_. f) x"
   using assms by auto
 
 lemma eq_if_not_rel_if_is_recfun:
@@ -92,8 +99,8 @@ using wf \<open>R Z X\<close> \<open>R Z Y\<close>
 proof (induction Z rule: wellfounded_induct)
   case (step Z)
   then have "f z = g z" if "R z Z" for z using that trans by auto
-  moreover have "f Z = wfrec_step (\<lambda>_. f) Z" "g Z = wfrec_step (\<lambda>_. g) Z" using assms step.prems by auto
-  ultimately show ?case by (auto simp: wfrec_step_eq)
+  moreover have "f Z = wf_rec_step (\<lambda>_. f) Z" "g Z = wf_rec_step (\<lambda>_. g) Z" using assms step.prems by auto
+  ultimately show ?case by (auto simp: wf_rec_step_eq)
 qed
 
 corollary eq_if_is_recfunI:
@@ -121,7 +128,7 @@ proof -
   then show ?thesis by auto
 qed
 
-definition "wftrec \<equiv> wfrec_step the_recfun"
+definition "wft_rec \<equiv> wf_rec_step the_recfun"
 
 lemma ex_is_recfunI: "\<exists>f. is_recfun X f"
 using wf
@@ -129,7 +136,7 @@ proof (induction X rule: wellfounded_induct)
   case (step X)
   then have is_recfun: "is_recfun x (the_recfun x)" if "R x X" for x
     using is_recfun_the_recfun_if_is_recfunI that by blast
-  define f where "f \<equiv> fun_rel_restrict wftrec R X"
+  define f where "f \<equiv> fun_rel_restrict wft_rec R X"
   have "fun_rel_restrict f R x = fun_rel_restrict (the_recfun x) R x" if "R x X" for x
   proof -
     have "f y = (the_recfun x) y" if "R y x" for y
@@ -139,34 +146,34 @@ proof (induction X rule: wellfounded_induct)
       with fun_rel_restrict_eq_fun_rel_restrict_if_is_recfunI have
         "fun_rel_restrict (the_recfun y) R y = fun_rel_restrict (the_recfun x) R y"
         using \<open>R y x\<close> by auto
-      moreover have "f y = wftrec y"
+      moreover have "f y = wft_rec y"
         unfolding f_def using \<open>R y x\<close> \<open>R x X\<close> trans by auto
-      moreover have "wfrec_step (\<lambda>_. the_recfun x) y = (the_recfun x) y"
+      moreover have "wf_rec_step (\<lambda>_. the_recfun x) y = (the_recfun x) y"
         using \<open>R y x\<close> \<open>R x X\<close> is_recfun by fastforce
-      ultimately show ?thesis by (auto simp: wftrec_def wfrec_step_eq)
+      ultimately show ?thesis by (auto simp: wft_rec_def wf_rec_step_eq)
     qed
     then show ?thesis by auto
   qed
-  then have "is_recfun X f" unfolding f_def by (auto simp: wftrec_def wfrec_step_eq)
+  then have "is_recfun X f" unfolding f_def by (auto simp: wft_rec_def wf_rec_step_eq)
   then show ?case by auto
 qed
 
 corollary is_recfun_the_recfunI: "is_recfun X (the_recfun X)"
   using is_recfun_the_recfun_if_is_recfunI ex_is_recfunI by blast
 
-theorem wftrec_eq_wfrec_stepI: "wftrec X = wfrec_step (\<lambda>_. wftrec) X"
+theorem wft_rec_eq_wf_rec_stepI: "wft_rec X = wf_rec_step (\<lambda>_. wft_rec) X"
 proof -
-  have "(the_recfun X) x = wfrec_step the_recfun x" if "R x X" for x
+  have "(the_recfun X) x = wf_rec_step the_recfun x" if "R x X" for x
   proof -
-    have "(the_recfun X) x = wfrec_step (\<lambda>_. the_recfun X) x"
+    have "(the_recfun X) x = wf_rec_step (\<lambda>_. the_recfun X) x"
       using is_recfun_the_recfunI \<open>R x X\<close> by auto
     moreover have "fun_rel_restrict (the_recfun x) R x = fun_rel_restrict (the_recfun X) R x"
       using fun_rel_restrict_eq_fun_rel_restrict_if_is_recfunI is_recfun_the_recfunI \<open>R x X\<close>
       by blast
-    ultimately show ?thesis by (auto simp: wfrec_step_eq)
+    ultimately show ?thesis by (auto simp: wf_rec_step_eq)
   qed
-  then have "fun_rel_restrict (the_recfun X) R X = fun_rel_restrict (wfrec_step the_recfun) R X" by simp
-  then show ?thesis by (simp add: wftrec_def wfrec_step_eq)
+  then have "fun_rel_restrict (the_recfun X) R X = fun_rel_restrict (wf_rec_step the_recfun) R X" by simp
+  then show ?thesis by (simp add: wft_rec_def wf_rec_step_eq)
 qed
 
 end

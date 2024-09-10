@@ -6,6 +6,8 @@ theory Binary_Relations_Transitive_Closure
     Binary_Relations_Transitive
 begin
 
+(*FIXME: not so pretty; misses crucial introduction rules*)
+
 consts trans_closure_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'b"
 
 definition "trans_closure_on_pred (P :: 'a \<Rightarrow> bool) R x y \<equiv>

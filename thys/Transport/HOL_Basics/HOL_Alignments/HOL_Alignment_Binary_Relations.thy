@@ -35,9 +35,40 @@ lemma antisymmetric_on_set_iff_antisymmetric_on_pred [iff]:
   "antisymmetric_on (S :: 'a set) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> antisymmetric_on (mem_of S) R"
   by simp
 
+lemma antisymp_on_eq_antisymmetric_on [HOL_bin_rel_alignment]:
+  "antisymp_on = antisymmetric_on"
+  by (intro ext) (auto intro: antisymp_onI dest: antisymmetric_onD antisymp_onD)
+
 lemma antisymp_eq_antisymmetric [HOL_bin_rel_alignment]:
   "antisymp = antisymmetric"
   by (intro ext) (auto intro: antisympI dest: antisymmetricD antisympD)
+
+subparagraph \<open>Asymmetric\<close>
+
+overloading
+  asymmetric_on_set \<equiv> "asymmetric_on :: 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "asymmetric_on_set (S :: 'a set) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _ \<equiv> asymmetric_on (mem_of S)"
+end
+
+lemma asymmetric_on_set_eq_asymmetric_on_pred [simp]:
+  "(asymmetric_on (S :: 'a set) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) = asymmetric_on (mem_of S)"
+  unfolding asymmetric_on_set_def by simp
+
+lemma asymmetric_on_set_eq_asymmetric_on_pred_uhint [uhint]:
+  assumes "P \<equiv> mem_of S"
+  shows "asymmetric_on (S :: 'a set) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool \<equiv> asymmetric_on P"
+  using assms by simp
+
+lemma asymmetric_on_set_iff_asymmetric_on_pred [iff]:
+  "asymmetric_on (S :: 'a set) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> asymmetric_on (mem_of S) R"
+  by simp
+
+lemma asymp_on_eq_asymmetric_on [HOL_bin_rel_alignment]: "asymp_on = asymmetric_on"
+  by (intro ext) (auto dest: asymp_onD)
+
+lemma asymp_eq_asymmetric [HOL_bin_rel_alignment]: "asymp = asymmetric"
+  by (intro ext) (auto dest: asympD)
 
 subparagraph \<open>Injective\<close>
 
@@ -261,6 +292,9 @@ lemma symmetric_on_set_iff_symmetric_on_pred [iff]:
   "symmetric_on (S :: 'a set) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> symmetric_on (mem_of S) R"
   by simp
 
+lemma symp_on_eq_symmetric_on [HOL_bin_rel_alignment]: "symp_on = symmetric_on"
+  by (intro ext) (blast intro: symp_onI dest: symmetric_onD symp_onD)
+
 lemma symp_eq_symmetric [HOL_bin_rel_alignment]: "symp = symmetric"
   by (intro ext) (blast intro: sympI dest: symmetricD sympD)
 
@@ -287,9 +321,51 @@ lemma transitive_on_set_iff_transitive_on_pred [iff]:
   "transitive_on (S :: 'a set) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> transitive_on (mem_of S) R"
   by simp
 
+lemma transp_on_eq_transitive_on [HOL_bin_rel_alignment]: "transp_on = transitive_on"
+  by (intro ext) (blast intro: transp_onI dest: transp_onD transitive_onD)
+
 lemma transp_eq_transitive [HOL_bin_rel_alignment]: "transp = transitive"
   by (intro ext) (blast intro: transpI dest: transpD)
 
+subparagraph \<open>Well-Founded\<close>
+
+overloading
+  wellfounded_on_set \<equiv> "wellfounded_on :: 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "wellfounded_on_set (S :: 'a set) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> _ \<equiv> wellfounded_on (mem_of S)"
+end
+
+lemma wellfounded_on_set_eq_wellfounded_on_pred [simp]:
+  "(wellfounded_on (S :: 'a set) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) = wellfounded_on (mem_of S)"
+  unfolding wellfounded_on_set_def by simp
+
+lemma wellfounded_on_set_eq_wellfounded_on_pred_uhint [uhint]:
+  assumes "P \<equiv> mem_of S"
+  shows "wellfounded_on (S :: 'a set) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool \<equiv> wellfounded_on P"
+  using assms by simp
+
+lemma wellfounded_on_set_iff_wellfounded_on_pred [iff]:
+  "wellfounded_on (S :: 'a set) (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<longleftrightarrow> wellfounded_on (mem_of S) R"
+  by simp
+
+lemma wfp_on_eq_wellfounded_on [HOL_bin_rel_alignment]: "wfp_on = wellfounded_on"
+proof (urule (rr) ext iffI wellfounded_onI)
+  fix A R Q x assume "wfp_on A R" and hyps: "mem_of A x" "Q x"
+  then show "\<exists>m : mem_of A. Q m \<and> (\<forall>y : mem_of A. R y m \<longrightarrow> \<not> Q y)"
+  by (induction rule: wfp_on_induct) (use hyps in auto)
+next
+  fix A :: "'a set" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" assume wf: "wellfounded_on A R"
+  {
+    fix P x assume hyps: "x \<in> A" "\<forall>x \<in> A. (\<forall>y \<in> A. R y x \<longrightarrow> P y) \<longrightarrow> P x"
+    with wf have "P x"
+    unfolding wellfounded_on_set_iff_wellfounded_on_pred
+    by (induction rule: wellfounded_on_induct) (use hyps in blast)+
+  }
+  then show "wfp_on A R" unfolding wfp_on_def by blast
+qed
+
+lemma wfp_eq_wellfounded [HOL_bin_rel_alignment]: "wfp = wellfounded"
+  by (urule fun_cong[OF wfp_on_eq_wellfounded_on])
 
 subparagraph \<open>Bi-Total\<close>
 
@@ -356,6 +432,9 @@ adhoc_overloading rel_restrict_left rel_restrict_left_set
 definition "rel_restrict_right_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'b set) \<equiv> R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
 adhoc_overloading rel_restrict_right rel_restrict_right_set
 
+definition "rel_restrict_set (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<up>\<^bsub>mem_of S\<^esub>"
+adhoc_overloading rel_restrict rel_restrict_set
+
 lemma rel_restrict_left_set_eq_restrict_left_pred [simp]:
   "R\<restriction>\<^bsub>S\<^esub> = R\<restriction>\<^bsub>mem_of S\<^esub>"
   unfolding rel_restrict_left_set_def by simp
@@ -366,7 +445,7 @@ lemma rel_restrict_left_set_eq_restrict_left_pred_uhint [uhint]:
   shows "R\<restriction>\<^bsub>S\<^esub> \<equiv> R'\<restriction>\<^bsub>P\<^esub>"
   using assms by simp
 
-lemma restrict_left_set_iff_restrict_left_pred [iff]: "R\<restriction>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<restriction>\<^bsub>mem_of S\<^esub> x y"
+lemma rel_restrict_left_set_iff_restrict_left_pred [iff]: "R\<restriction>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<restriction>\<^bsub>mem_of S\<^esub> x y"
   by simp
 
 lemma rel_restrict_right_set_eq_restrict_right_pred [simp]:
@@ -379,7 +458,20 @@ lemma rel_restrict_right_set_eq_restrict_right_pred_uhint [uhint]:
   shows "R\<upharpoonleft>\<^bsub>S\<^esub> \<equiv> R'\<upharpoonleft>\<^bsub>P\<^esub>"
   using assms by simp
 
-lemma restrict_right_set_iff_restrict_right_pred [iff]: "R\<upharpoonleft>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<upharpoonleft>\<^bsub>mem_of S\<^esub> x y"
+lemma rel_restrict_right_set_iff_restrict_right_pred [iff]: "R\<upharpoonleft>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<upharpoonleft>\<^bsub>mem_of S\<^esub> x y"
+  by simp
+
+lemma rel_restrict_set_eq_restrict_pred [simp]:
+  "R\<up>\<^bsub>S\<^esub> = R\<up>\<^bsub>mem_of S\<^esub>"
+  unfolding rel_restrict_set_def by simp
+
+lemma rel_restrict_set_eq_restrict_pred_uhint [uhint]:
+  assumes "R \<equiv> R'"
+  and "P \<equiv> mem_of S"
+  shows "R\<up>\<^bsub>S\<^esub> \<equiv> R'\<up>\<^bsub>P\<^esub>"
+  using assms by simp
+
+lemma rel_restrict_set_iff_restrict_pred [iff]: "R\<up>\<^bsub>S\<^esub> x y \<longleftrightarrow> R\<up>\<^bsub>mem_of S\<^esub> x y"
   by simp
 
 end

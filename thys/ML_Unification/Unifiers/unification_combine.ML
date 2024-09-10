@@ -151,13 +151,13 @@ fun pretty_data ctxt = get_eunif_datas (Context.Proof ctxt)
   |> Pretty.fbreaks
   |> Pretty.block
 
-fun e_unify unif binders ctxt tp env =
+fun e_unify unif binders ctxt tp env = Seq.make (fn _ =>
   (@{log Logger.DEBUG} ctxt (fn _ =>
     Pretty.block [
       Pretty.str "Combining e-unifiers for ",
       Unification_Util.pretty_unif_problem ctxt (apply2 (Envir_Normalisation.norm_term_unif env) tp)
     ] |> Pretty.string_of);
-  UCB.concat_e_unifiers (get_e_unifiers (Context.Proof ctxt)) unif binders ctxt tp env)
+  UCB.concat_e_unifiers (get_e_unifiers (Context.Proof ctxt)) unif binders ctxt tp env) |> Seq.pull)
 
 val binding = FIU.mk_binding_id_prefix "ucombine"
 

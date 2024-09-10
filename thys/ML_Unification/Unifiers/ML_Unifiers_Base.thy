@@ -5,7 +5,7 @@ theory ML_Unifiers_Base
     ML_Unification_Base
     ML_Tactic_Utils
 begin
-
+(*TODO: make all sequence computations lazy*)
 paragraph \<open>Summary\<close>
 text \<open>Unification modulo equations and combinators for unifiers.\<close>
 

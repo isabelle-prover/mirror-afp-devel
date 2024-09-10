@@ -24,7 +24,7 @@ structure Util = Unification_Util
 val norms = Unification_Util.beta_eta_short_norms_unif
 
 val unify =
-  let fun unif binders ctxt tp env =
+  let fun unif binders ctxt tp env = Seq.make (fn _ =>
     let
       val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
           Pretty.str "Higher-order unifying ",
@@ -46,7 +46,8 @@ val unify =
       Unify.hounifiers (map fst binders) (Context.Proof ctxt, env, [tp])
       (*add the flex-flex pairs to the theorem*)
       |> Seq.maps (create_env_thmq o fst)
-    end
+      |> Seq.pull
+    end)
   in Type_Unification.e_unify Util.unify_types unif end
 
 end

@@ -157,14 +157,13 @@ lemma reflexive_on_left_if_inflationary_on_unit_if_inverse_on:
   assumes "inverse_on P l r"
   and "inflationary_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
   shows "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
-  using assms by (intro reflexive_onI) (auto dest!: inverse_onD)
+  using assms by (intro reflexive_onI) (force dest: inverse_onD)
 
 lemma rel_equivalence_on_unit_if_reflexive_on_if_inverse_on:
   assumes "inverse_on P l r"
   and "reflexive_on P (\<le>\<^bsub>L\<^esub>)"
   shows "rel_equivalence_on P (\<le>\<^bsub>L\<^esub>) \<eta>"
-  using assms by (intro rel_equivalence_onI inflationary_onI deflationary_onI)
-  (auto dest!: inverse_onD)
+  using assms by (intro rel_equivalence_onI inflationary_onI deflationary_onI) (force dest: inverse_onD)+
 
 end
 

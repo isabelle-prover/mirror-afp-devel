@@ -26,6 +26,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger
 
 structure UUtil = Unification_Util
 structure UC = Unification_Combinator
+open Either
 
 exception FALLBACK of Pretty.T
 
@@ -39,8 +40,6 @@ fun bounds_prefix bounds [] = (rev bounds, [])
       then bounds_prefix (t :: bounds) ts
       else (rev bounds, t :: ts)
 val bounds_prefix = bounds_prefix []
-
-datatype ('a, 'b) either = Left of 'a | Right of 'b
 
 fun bounds_prefix2 (bounds1, _) ([], _) = Left (rev bounds1, [])
   | bounds_prefix2 (_, bounds2) (_, []) = Right (rev bounds2, [])
@@ -89,10 +88,10 @@ fun decomposed_msg ctxt (ph, th) (ps, ts) = Pretty.block [
 
 val failed_decompose_msg = Pretty.str "Decomposition failed."
 
-fun e_match match_pattern match_theory binders ctxt (pt as (p, t)) env =
+fun e_match match_pattern match_theory binders ctxt (pt as (p, t)) env = Seq.make (fn _ =>
   let val failed_sub_patterns_msg = Pretty.str "Matching of sub-patterns failed."
   in
-    (@{log Logger.DEBUG} ctxt (fn _ => decompose_msg ctxt pt);
+    ((@{log Logger.DEBUG} ctxt (fn _ => decompose_msg ctxt pt);
     case pattern_prefix_match p of
       SOME (ph, ps) => (case mk_decomp_other ps t of
         SOME (th, ts) =>
@@ -106,16 +105,17 @@ fun e_match match_pattern match_theory binders ctxt (pt as (p, t)) env =
         msg,
         UUtil.pretty_call_theory_match ctxt pt
       ] |> Pretty.block |> Pretty.string_of);
-      match_theory binders ctxt pt env)
-  end
+      match_theory binders ctxt pt env))
+    |> Seq.pull
+  end)
 
-fun e_unify unif_pattern unif_theory binders ctxt (tp as (s, t)) env =
+fun e_unify unif_pattern unif_theory binders ctxt (tp as (s, t)) env = Seq.make (fn _ =>
   let
     val unif_patterns =
       UUtil.strip_comb_strip_comb Envir_Normalisation.norm_thm_types_unif unif_pattern
     val failed_sub_patterns_msg = Pretty.str "Unification of sub-patterns failed."
   in
-    (@{log Logger.DEBUG} ctxt (fn _ => decompose_msg ctxt tp);
+    ((@{log Logger.DEBUG} ctxt (fn _ => decompose_msg ctxt tp);
     case pattern_prefix_unif tp of
       SOME (Left (sh, ss)) => (case mk_decomp_other ss t of
         SOME (th, ts) =>
@@ -134,7 +134,8 @@ fun e_unify unif_pattern unif_theory binders ctxt (tp as (s, t)) env =
         msg,
         UUtil.pretty_call_theory_unif ctxt tp
       ] |> Pretty.block |> Pretty.string_of);
-      unif_theory binders ctxt tp env)
-  end
+      unif_theory binders ctxt tp env))
+    |> Seq.pull
+  end)
 
 end

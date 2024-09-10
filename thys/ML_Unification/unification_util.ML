@@ -190,12 +190,12 @@ fun inst_norm_thm inst_thm conv = Conversion_Util.apply_thm_conv conv ooo inst_t
 fun inst_norm_subgoal inst_thm conv i = Conversion_Util.apply_subgoal_conv conv i ooo inst_thm
 
 (* shared standard cases for unifiers *)
-fun smash_tpairs_if_occurs ctxt t (env, thm) =
+fun smash_tpairs_if_occurs ctxt t (env, thm) = Seq.make (fn _ =>
   let
     val tpairs = Thm.tpairs_of thm
     fun occs_t s = Logic.occs (t, s)
   in
-    if exists (fn (t1, t2) => occs_t t1 orelse occs_t t2) tpairs
+    (if exists (fn (t1, t2) => occs_t t1 orelse occs_t t2) tpairs
     then
       let
         (*in a perfect world, we would make the relevant tpairs of the theorem
@@ -220,10 +220,11 @@ fun smash_tpairs_if_occurs ctxt t (env, thm) =
               ]|> Pretty.string_of);
             Seq.empty))
       end
-    else Seq.single (env, thm)
-  end
+    else Seq.single (env, thm))
+    |> Seq.pull
+  end)
 
-fun abstract_abstract norm_term_type unify binders ctxt name T tbp =
+fun abstract_abstract norm_term_type unify binders ctxt name T tbp env = Seq.make (fn _ =>
   let
     val (binder as (_, bvar), ctxt') = Binders.fix_binder (name, T) ctxt
     fun norm_abstract (env, thm) =
@@ -234,9 +235,9 @@ fun abstract_abstract norm_term_type unify binders ctxt name T tbp =
           UBase.abstract_rule ctxt' name (Thm.cterm_of ctxt' (norm_bvar env)) thm
           |> Option.map (pair env))
       end
-  in unify (binder :: binders) ctxt' tbp #> Seq.maps norm_abstract end
+  in unify (binder :: binders) ctxt' tbp env |> Seq.maps norm_abstract |> Seq.pull end)
 
-fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env =
+fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env = Seq.make (fn _ =>
   let val (ns, Ts) = (if is_Const s then dest_Const else dest_Free) s
   in
     if ns = nt then
@@ -244,16 +245,17 @@ fun rigid_rigid norm_term_type unify_types ctxt s (nt, Tt) env =
       in
         (env', UBase.reflexive_term ctxt (norm_term_type tyenv s))
         |> Seq.single
+        |> Seq.pull
       end
-    else Seq.empty
-  end
+    else NONE
+  end)
 
-fun bound_bound binders ctxt (i, j) =
+fun bound_bound binders ctxt (i, j) = Seq.make (fn _ =>
   if i = j
-  then Binders.nth_binder_data binders i |> UBase.reflexive_term ctxt |> Seq.single
-  else Seq.empty
+  then Binders.nth_binder_data binders i |> UBase.reflexive_term ctxt |> Seq.single |> Seq.pull
+  else NONE)
 
-fun comb_comb norm_thm_types unify ctxt (f, x) (g, y) env =
+fun comb_comb norm_thm_types unify ctxt (f, x) (g, y) env = Seq.make (fn _ =>
   let
     val unif = unify ctxt
     val env_thmq = unif (f, g) env
@@ -263,9 +265,9 @@ fun comb_comb norm_thm_types unify ctxt (f, x) (g, y) env =
       apply2 (norm_thm_types ctxt env) thmp
       |> uncurry UBase.combination
       |> pair env
-  in Seq.map combine env_thmq end
+  in Seq.map combine env_thmq |> Seq.pull end)
 
-fun args_args norm_thm_types unify ctxt (ss, ts) env_thmhq =
+fun args_args norm_thm_types unify ctxt (ss, ts) env_thmhq = Seq.make (fn _ =>
   (let
     val args = ss ~~ ts
     fun unif_arg tp = Seq.maps
@@ -278,13 +280,13 @@ fun args_args norm_thm_types unify ctxt (ss, ts) env_thmhq =
         val norm_thm_types = norm_thm_types ctxt env_res
         fun norm_combine thm_arg thm = norm_thm_types thm_arg |> UBase.combination thm
       in (env_res, fold_rev norm_combine arg_thms (norm_thm_types thmh)) end
-  in Seq.maps (fn (env, thmh) => unif_args env |> Seq.map (combine thmh)) env_thmhq end)
-  handle ListPair.UnequalLengths => Seq.empty
+  in Seq.maps (fn (env, thmh) => unif_args env |> Seq.map (combine thmh)) env_thmhq |> Seq.pull end)
+  handle ListPair.UnequalLengths => NONE)
 
-fun strip_comb_strip_comb norm_thm_types unify binders ctxt (sh, th) (ss, ts) =
-  unify binders ctxt (sh, th)
-  #> args_args norm_thm_types (unify binders) ctxt (ss, ts)
-
+fun strip_comb_strip_comb norm_thm_types unify binders ctxt (sh, th) (ss, ts) env = Seq.make (fn _ =>
+  unify binders ctxt (sh, th) env
+  |> args_args norm_thm_types (unify binders) ctxt (ss, ts)
+  |> Seq.pull)
 
 (* logging *)
 

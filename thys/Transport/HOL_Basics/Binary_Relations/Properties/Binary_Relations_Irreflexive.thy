@@ -2,9 +2,7 @@
 subsubsection \<open>Irreflexive\<close>
 theory Binary_Relations_Irreflexive
   imports
-    HOL_Syntax_Bundles_Lattices
-    ML_Unification.ML_Unification_HOL_Setup
-    ML_Unification.Unify_Resolve_Tactics
+    Functions_Monotone
 begin
 
 consts irreflexive_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
@@ -12,7 +10,7 @@ consts irreflexive_on :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 overloading
   irreflexive_on_pred \<equiv> "irreflexive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 begin
-  definition "irreflexive_on_pred P R \<equiv> \<forall>x. P x \<longrightarrow> \<not>(R x x)"
+  definition "irreflexive_on_pred P R \<equiv> \<forall>x : P. \<not>(R x x)"
 end
 
 lemma irreflexive_onI [intro]:
@@ -25,6 +23,11 @@ lemma irreflexive_onD [dest]:
   and "P x"
   shows "\<not>(R x x)"
   using assms unfolding irreflexive_on_pred_def by blast
+
+lemma antimono_irreflexive_on:
+  "((\<le>) \<Rightarrow> (\<le>) \<Rrightarrow> (\<ge>)) (irreflexive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool)"
+  by blast
+
 
 consts irreflexive :: "'a \<Rightarrow> bool"
 

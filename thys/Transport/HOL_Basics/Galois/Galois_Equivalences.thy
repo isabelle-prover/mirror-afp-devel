@@ -119,11 +119,9 @@ qed
 
 subsection \<open>Equivalence of Order Equivalences and Galois Equivalences\<close>
 
-text \<open>In general categories, every adjoint equivalence is an equivalence
-but not vice versa.
+text \<open>In general categories, every adjoint equivalence is an equivalence but not vice versa.
 In the category of preorders, however, they are morally the same: the
-adjoint zigzag equations are satisfied up to unique isomorphism rather than
-equality.
+adjoint zigzag equations are satisfied up to unique isomorphism rather than equality.
 In the category of partial orders, the concepts coincide.\<close>
 
 lemma half_galois_prop_left_left_right_if_transitive_if_order_equivalence:

@@ -250,7 +250,7 @@ fun focus_delete_prems_tac is tac ctxt =
   focus_prems_tac is tac ctxt
   THEN' thin_tacs (1 upto length is)
 
-fun apply_tac tac i = Goal.init #> tac i #> Seq.map Goal.conclude
+fun apply_tac tac i = Seq.single #> Seq.map Goal.init #> Seq.maps (tac i) #> Seq.map Goal.conclude
 
 end
 

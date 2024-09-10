@@ -19,7 +19,13 @@ lemma linear_order_onE [elim]:
   obtains "partial_order_on P R" "connected_on P R"
   using assms unfolding linear_order_on_def by auto
 
-definition "(linear_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) \<equiv> linear_order_on (\<top> :: 'a \<Rightarrow> bool)"
+consts linear_order :: "'a \<Rightarrow> bool"
+
+overloading
+  linear_order \<equiv> "linear_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
+begin
+  definition "(linear_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) \<equiv> linear_order_on (\<top> :: 'a \<Rightarrow> bool)"
+end
 
 lemma linear_order_eq_linear_order_on:
   "(linear_order :: ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool) = linear_order_on (\<top> :: 'a \<Rightarrow> bool)"

@@ -9,6 +9,9 @@ theory Orders
     Partial_Equivalence_Relations
     Partial_Orders
     Preorders
+    Strict_Linear_Orders
+    Strict_Partial_Orders
+    Wellorders
 begin
 
 paragraph \<open>Summary\<close>

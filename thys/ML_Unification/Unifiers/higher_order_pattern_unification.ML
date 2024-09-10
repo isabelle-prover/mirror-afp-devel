@@ -100,7 +100,7 @@ fun match_bind (tenv, binders, ixn, T, is, t) =
 (** higher-order pattern E-unification **)
 val norms_match = Util.beta_eta_short_norms_match
 
-fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt env =
+fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt env = Seq.make (fn _ =>
   let
     val norm_pt = apfst o Util.inst_norm_term' norms_match
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
@@ -184,9 +184,9 @@ fun e_match match_types match_theory_pattern match_theory_fail binders ctxt pt e
         Pretty.str "Higher-order pattern matching ",
         Util.pretty_unif_problem ctxt (norm_pt env pt)
       ] |> Pretty.string_of);
-    match binders ctxt pt env)
-    handle Unification_Base.UNIF => Seq.empty (*types do not match*)
-  end
+    match binders ctxt pt env |> Seq.pull)
+    handle Unification_Base.UNIF => NONE (*types do not match*)
+  end)
 
 (*standard higher-order pattern matching*)
 val match = e_match Util.match_types Unification_Combinator.fail_match
@@ -389,7 +389,7 @@ fun flexrigid unify_types ctxt (params as (env, binders, F, Fty, is, t)) =
 (** higher-order pattern E-unification **)
 val norms_unify = Util.beta_eta_short_norms_unif
 
-fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st env =
+fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st env = Seq.make (fn _ =>
   let
     fun unif binders ctxt st env =
       let
@@ -462,9 +462,9 @@ fun e_unify unify_types unify_theory_pattern unify_theory_fail binders ctxt st e
         Pretty.str "Higher-order pattern unifying ",
         Util.pretty_unif_problem ctxt (apply2 (Norm.norm_term_unif env) st)
       ] |> Pretty.string_of);
-    unif binders ctxt st env)
-    handle Unification_Base.UNIF => Seq.empty (*types do not unify*)
-  end
+    unif binders ctxt st env |> Seq.pull)
+    handle Unification_Base.UNIF => NONE (*types do not unify*)
+  end)
 
 (*standard higher-order pattern unification*)
 val unify = e_unify Util.unify_types Unification_Combinator.fail_unify

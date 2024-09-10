@@ -69,6 +69,11 @@ lemma inverse_onD:
   shows "g (f x) = x"
   using assms unfolding inverse_on_pred_def by blast
 
+lemma inverse_onE:
+  assumes "inverse_on P f g"
+  obtains "\<And>x. P x \<Longrightarrow> g (f x) = x"
+  using assms inverse_onD by fastforce
+
 lemma injective_on_if_inverse_on:
   assumes inv: "inverse_on (P :: 'a \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) (g :: 'b \<Rightarrow> 'a)"
   shows "injective_on P f"
@@ -92,6 +97,9 @@ lemma inverse_on_has_inverse_on_the_inverse_on_if_injective_on:
   shows "inverse_on (has_inverse_on P f) (the_inverse_on P f) f"
   using assms by (intro inverse_onI) auto
 
+lemma antimono_inverse_on: "antimono (inverse_on ::  ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool)"
+  by (fastforce dest: inverse_onD)
+
 lemma inverse_on_compI:
   fixes P :: "'a \<Rightarrow> bool" and P' :: "'b \<Rightarrow> bool"
   and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a" and f' :: "'b \<Rightarrow> 'c" and g' :: "'c \<Rightarrow> 'b"
@@ -99,7 +107,7 @@ lemma inverse_on_compI:
   and "inverse_on P f g"
   and "inverse_on P' f' g'"
   shows "inverse_on P (f' \<circ> f) (g \<circ> g')"
-  using assms by (intro inverse_onI) (auto dest!: inverse_onD)
+  using assms by (intro inverse_onI) (force dest: inverse_onD)
 
 consts inverse :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
@@ -127,6 +135,11 @@ lemma inverseD:
   assumes "inverse f g"
   shows "g (f x) = x"
   using assms by (urule (d) inverse_onD where chained = insert) simp_all
+
+lemma inverseE:
+  assumes "inverse f g"
+  obtains "\<And>x. g (f x) = x"
+  using assms by (urule (e) inverse_onE where chained = insert) simp_all
 
 lemma inverse_on_if_inverse:
   fixes P :: "'a \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"

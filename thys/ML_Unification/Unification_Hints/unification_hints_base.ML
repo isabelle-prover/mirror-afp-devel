@@ -67,7 +67,7 @@ Unifies the hint's conclusion with (t1, t2) using match.
 Unifies resulting unification problems using unify.
 Normalises the terms and theorems after unify with norms.
 Returns a sequence of (env, thm) pairs.*)
-fun try_hint match norms hint unify binders ctxt (t1, t2) env =
+fun try_hint match norms hint unify binders ctxt (t1, t2) env = Seq.make (fn _ =>
   let
     val dest_all_equals = TUtil.strip_all ##> Logic.dest_equals
     val rev_binders = rev binders
@@ -92,7 +92,7 @@ fun try_hint match norms hint unify binders ctxt (t1, t2) env =
       |> Seq.maps (fn (env, thm1) => match (Q, t2) env |> Seq.map (apsnd (pair thm1)))
       |> GUtil.seq_is_empty
   in
-    if no_hint_match then (@{log Logger.TRACE} ctxt (K "Hint does not match."); Seq.empty)
+    if no_hint_match then (@{log Logger.TRACE} ctxt (K "Hint does not match."); NONE)
     else
       let
         val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
@@ -128,13 +128,13 @@ fun try_hint match norms hint unify binders ctxt (t1, t2) env =
               |> GUtil.flip Thm.transitive concl_thmR
               |> Thm.transitive (Unification_Base.symmetric concl_thmL)
           in (env_res, thm_res) end
-      in Seq.maps unify_prems match_env_concl_thmpq |> Seq.map inst_discharge end
-  end
+      in Seq.maps unify_prems match_env_concl_thmpq |> Seq.map inst_discharge |> Seq.pull end
+  end)
 
 type hint_retrieval = term Binders.binders -> Proof.context -> term * term -> Envir.env ->
   unif_hint Seq.seq
 
-fun try_hints get_hints match norms unif binders ctxt (t1, t2) env =
+fun try_hints get_hints match norms unif binders ctxt (t1, t2) env = Seq.make (fn _ =>
   (@{log Logger.TRACE} ctxt (fn _ =>
     Pretty.block [
       Pretty.str "Trying unification hints for ",
@@ -142,5 +142,6 @@ fun try_hints get_hints match norms unif binders ctxt (t1, t2) env =
     ] |> Pretty.string_of);
   get_hints binders ctxt (t1, t2) env
   |> Seq.maps (fn hint => try_hint match norms hint unif binders ctxt (t1, t2) env))
+  |> Seq.pull)
 
 end

@@ -39,7 +39,7 @@ val norms_match = Util.eta_short_norms_match
 
 (*Note: by E-matching we mean "matching modulo equalities" in the general sense,
 i.e. when matching p \<equiv>? t, t may contain variables.*)
-fun e_match match_types match_theory binders ctxt pt env =
+fun e_match match_types match_theory binders ctxt pt env = Seq.make (fn _ =>
   let
     val norm_pt = apfst o Util.inst_norm_term' norms_match
     fun rigid_rigid ctxt p n env = (*normalise the types in rigid-rigid cases*)
@@ -127,7 +127,8 @@ fun e_match match_types match_theory binders ctxt pt env =
         Util.pretty_unif_problem ctxt (norm_pt env pt)
       ] |> Pretty.string_of);
     match binders ctxt pt env)
-  end
+    |> Seq.pull
+  end)
 
 (*standard first-order matching*)
 val match = e_match Util.match_types Unification_Combinator.fail_match
@@ -142,7 +143,7 @@ fun occurs v (Var (x, _)) = x = v
 
 val norms_unify = Util.eta_short_norms_unif
 
-fun e_unify unify_types unify_theory binders ctxt st env =
+fun e_unify unify_types unify_theory binders ctxt st env = Seq.make (fn _ =>
   let
     val norm_st = apply2 o Util.inst_norm_term' norms_unify
     fun rigid_rigid ctxt t n env = (*we do not have to normalise types in rigid-rigid cases*)
@@ -227,7 +228,8 @@ fun e_unify unify_types unify_theory binders ctxt st env =
         Util.pretty_unif_problem ctxt (norm_st env st)
       ] |> Pretty.string_of);
     unif binders ctxt st env)
-  end
+    |> Seq.pull
+  end)
 
 (*standard first-order unification*)
 val unify = e_unify Util.unify_types Unification_Combinator.fail_unify

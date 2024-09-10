@@ -149,6 +149,10 @@ lemma mono_dep_bin_rel_top_dep_bin_rel_inf_rel_restrict_right:
   "(({\<Sum>}x : A. B x) \<Rightarrow> (P : \<top>) \<Rightarrow> ({\<Sum>}x : A. B x \<sqinter> P)) rel_restrict_right"
   by fast
 
+lemma mono_dep_bin_rel_top_dep_bin_rel_inf_rel_restrict:
+  "(({\<Sum>}x : A. B x) \<Rightarrow> (P : \<top>) \<Rightarrow> ({\<Sum>}x : A \<sqinter> P. B x \<sqinter> P)) rel_restrict"
+  by fast
+
 lemma le_if_rel_agree_on_if_dep_bin_relI:
   assumes "({\<Sum>}x : A. B x) R"
   and "rel_agree_on A \<R>"

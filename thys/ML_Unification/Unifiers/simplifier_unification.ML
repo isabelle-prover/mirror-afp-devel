@@ -87,7 +87,7 @@ fun simp_unify norms unif binders ctxt =
       i state)
   in Tactic_Unification.unify (#inst_term norms) eq_tac binders ctxt end
 
-fun simp_unify_progress teq simp_unify norm_term norms unif binders ctxt tp env =
+fun simp_unify_progress teq simp_unify norm_term norms unif binders ctxt tp env = Seq.make (fn _ =>
   let
     val tp as (lhs, rhs) = apply2 (norm_term env) tp
     fun unify binders ctxt tp' env =
@@ -102,6 +102,6 @@ fun simp_unify_progress teq simp_unify norm_term norms unif binders ctxt tp env 
           K Seq.empty) env
         else unif binders ctxt tp' env
       end
-  in simp_unify norms unify binders ctxt tp env end
+  in simp_unify norms unify binders ctxt tp env |> Seq.pull end)
 
 end

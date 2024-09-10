@@ -3,6 +3,7 @@ theory Order_Functors
   imports
     Order_Functors_Base
     Order_Equivalences
+    Order_Isomorphisms
 begin
 
 paragraph \<open>Summary\<close>

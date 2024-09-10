@@ -119,9 +119,9 @@ fun multi_thm x = Attrib.multi_thm x handle ERROR m => fail (K m) ()
 val thms = Scan.repeats multi_thm
 fun nonempty_thms msg_of = nonempty_list msg_of thms
 
-structure Internal_Int_Data = Generic_Data( type T = int val empty = 0 val merge = fst)
+structure Internal_Int_Data = Generic_Data(type T = int; val empty = 0; val merge = fst)
 
-fun ML_int msg_of =
+fun ML_int empty_msg_of =
   let fun int_from_code ((code, ctxt), pos) =
     let val put_int_code = ML_Code_Util.read "Parse_Util.Internal_Int_Data.put"
       @ ML_Code_Util.atomic code
@@ -132,6 +132,6 @@ fun ML_int msg_of =
     end
   in
     Scan.lift Parse.int
-    || ((Scan.lift (nonempty_code msg_of) -- Args.context |> position') >> int_from_code)
+    || ((Scan.lift (nonempty_code empty_msg_of) -- Args.context |> position') >> int_from_code)
   end
 end

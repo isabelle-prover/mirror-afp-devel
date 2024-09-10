@@ -73,7 +73,7 @@ ML\<open>
 local_setup \<open>Standard_Unification_Hints.setup_attribute NONE\<close>
 declare [[uhint where concl_unifier = \<open>fn binders =>
   Standard_Unification_Combine.delete_eunif_data
-    (Standard_Unification_Combine.metadata Standard_Unification_Hints.binding (Prio.LOW + 1))
+    (Standard_Unification_Combine.metadata Standard_Unification_Hints.binding (Prio.inc Prio.LOW))
   (*TODO: should we also remove the recursive hint unifier here? time will tell...*)
   (*#> Standard_Unification_Combine.delete_eunif_data
     (Standard_Unification_Combine.metadata Standard_Unification_Hints_Rec.binding Prio.LOW)*)
@@ -93,7 +93,7 @@ declare [[ucombine add = \<open>Standard_Unification_Combine.eunif_data
     (Unification_Util.inst_norm_term'
       Standard_Mixed_Unification.norms_first_higherp_decomp_comb_higher_unify)
   |> K)
-  (Standard_Unification_Combine.metadata Standard_Unification_Hints.binding (Prio.LOW + 1))\<close>]]
+  (Standard_Unification_Combine.metadata Standard_Unification_Hints.binding (Prio.inc Prio.LOW))\<close>]]
 
 
 text\<open>Examples see @{dir "../Examples"}.\<close>

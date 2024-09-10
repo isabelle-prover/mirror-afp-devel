@@ -42,6 +42,13 @@ lemma transitive_on_rel_inv_iff_transitive_on [iff]:
 lemma antimono_transitive_on: "antimono (transitive_on :: ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool)"
   by (intro antimonoI) (auto dest: transitive_onD)
 
+lemma transitive_on_rel_map_if_mono_wrt_pred_if_transitive_on:
+  fixes P :: "'a \<Rightarrow> bool" and R :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
+  assumes "transitive_on P R"
+  and "(Q \<Rightarrow> P) f"
+  shows "transitive_on Q (rel_map f R)"
+  using assms by (fastforce dest: transitive_onD)
+
 consts transitive :: "'a \<Rightarrow> bool"
 
 overloading

@@ -19,8 +19,7 @@ lemma le_relD [dest]:
 
 lemma le_relE:
   assumes "R \<le> S"
-  and "R x y"
-  obtains "S x y"
+  obtains "\<And>x y.  R x y \<Longrightarrow> S x y"
   using assms by blast
 
 end

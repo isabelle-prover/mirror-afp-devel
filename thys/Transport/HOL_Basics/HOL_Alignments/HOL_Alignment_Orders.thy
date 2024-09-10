@@ -111,8 +111,9 @@ paragraph \<open>Properties\<close>
 subparagraph \<open>Equivalence Relations\<close>
 
 lemma equiv_eq_equivalence_rel [HOL_order_alignment]: "equivp = equivalence_rel"
-  by (intro ext) (fastforce intro!: equivpI
-    simp: HOL_bin_rel_alignment reflexive_eq_reflexive_on elim!: equivpE)
+  by (intro ext) (fastforce intro: equivpI
+    simp: HOL_bin_rel_alignment equivalence_rel_eq_equivalence_rel_on
+    elim: equivpE)
 
 
 subparagraph \<open>Partial Equivalence Relations\<close>
@@ -120,7 +121,9 @@ subparagraph \<open>Partial Equivalence Relations\<close>
 lemma part_equiv_eq_partial_equivalence_rel_if_rel [HOL_order_alignment]:
   assumes "R x y"
   shows "part_equivp R = partial_equivalence_rel R"
-  using assms by (fastforce intro!: part_equivpI simp: HOL_bin_rel_alignment elim!: part_equivpE)
+  using assms by (fastforce intro!: part_equivpI simp: HOL_bin_rel_alignment
+    partial_equivalence_rel_eq_partial_equivalence_rel_on
+    elim!: part_equivpE)
 
 
 subparagraph \<open>Partial Orders\<close>
@@ -139,5 +142,25 @@ lemma partial_preordering_eq [HOL_order_alignment]:
   by (intro ext) (auto intro: partial_preordering.intro
     dest: partial_preordering.trans partial_preordering.refl reflexiveD)
 
+subparagraph \<open>Linear Orders\<close>
+
+lemma (in linorder) linear_order: "linear_order (\<le>)"
+  using linear partial_order by blast
+
+subparagraph \<open>Strict Parital Orders\<close>
+
+lemma (in preordering) linear_order: "strict_partial_order (\<^bold><)"
+  using strict_iff_not trans by blast
+
+subparagraph \<open>Strict Linear Orders\<close>
+
+lemma (in linorder) strict_linear_order: "strict_linear_order (<)"
+  using preordering.linear_order local.order.linear_order
+  by (intro strict_linear_orderI) auto
+
+subparagraph \<open>Well-Orders\<close>
+
+lemma (in wellorder) wellorder: "wellorder (<)"
+  by (metis wellorderI local.strict_linear_order local.wfp_on_less wfp_eq_wellfounded)
 
 end

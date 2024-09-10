@@ -19,7 +19,7 @@ val logger = Logger.setup_new_logger Unification_Base.logger "Type_Unification"
 structure Norm = Envir_Normalisation
 structure Util = Unification_Util
 
-fun e_match match_types match_theory binders ctxt (pt as (p, t)) env =
+fun e_match match_types match_theory binders ctxt (pt as (p, t)) env = Seq.make (fn _ =>
   let val binder_types = Binders.binder_types binders
   in
     (@{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
@@ -27,11 +27,12 @@ fun e_match match_types match_theory binders ctxt (pt as (p, t)) env =
         Util.pretty_unif_problem ctxt pt
       ] |> Pretty.string_of);
     match_types ctxt (Envir.fastype env binder_types p, fastype_of1 (binder_types, t)) env
-    |> match_theory binders ctxt pt)
-    handle Unification_Base.UNIF => Seq.empty
-  end
+    |> match_theory binders ctxt pt
+    |> Seq.pull)
+    handle Unification_Base.UNIF => NONE
+  end)
 
-fun e_unify unif_types unif_theory binders ctxt st env =
+fun e_unify unif_types unif_theory binders ctxt st env = Seq.make (fn _ =>
   let val binder_types = Binders.binder_types binders
   in
     (@{log Logger.DEBUG} ctxt (fn _ =>
@@ -41,8 +42,9 @@ fun e_unify unif_types unif_theory binders ctxt st env =
       ]
       |> Pretty.string_of);
     unif_types ctxt (apply2 (Envir.fastype env binder_types) st) env
-    |> unif_theory binders ctxt st)
-    handle Unification_Base.UNIF => Seq.empty
-  end
+    |> unif_theory binders ctxt st
+    |> Seq.pull)
+    handle Unification_Base.UNIF => NONE
+  end)
 
 end

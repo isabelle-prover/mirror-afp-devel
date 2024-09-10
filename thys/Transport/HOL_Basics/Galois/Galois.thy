@@ -2,6 +2,7 @@
 theory Galois
   imports
     Galois_Equivalences
+    Galois_Equivalent
     Galois_Relator
 begin
 

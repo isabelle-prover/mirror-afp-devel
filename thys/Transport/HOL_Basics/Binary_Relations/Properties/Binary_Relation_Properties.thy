@@ -3,6 +3,7 @@ subsection \<open>Basic Properties\<close>
 theory Binary_Relation_Properties
   imports
     Binary_Relations_Antisymmetric
+    Binary_Relations_Asymmetric
     Binary_Relations_Bi_Total
     Binary_Relations_Bi_Unique
     Binary_Relations_Connected

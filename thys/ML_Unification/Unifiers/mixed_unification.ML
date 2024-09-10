@@ -27,7 +27,7 @@ structure UUtil = Unification_Util
 structure UCO = Unification_Combinator
 structure UC = A.UC
 
-fun first_higherp_decomp_comb_higher_unify binders ctxt tp env =
+fun first_higherp_decomp_comb_higher_unify binders ctxt tp env = Seq.make (fn _ =>
   let
     val unify_types = UUtil.unify_types
     val comb_higher = UCO.add_fallback_unifier UC.e_unify Higher_Order_Unification.unify
@@ -48,7 +48,8 @@ fun first_higherp_decomp_comb_higher_unify binders ctxt tp env =
       UUtil.pretty_unif_problem ctxt (apply2 (Envir_Normalisation.norm_term_unif env) tp)]
       |> Pretty.string_of);
     fo_higherp_decomp_comb_higher binders ctxt tp env)
-  end
+    |> Seq.pull
+  end)
 
 val norms_first_higherp_decomp_comb_higher_unify = UUtil.beta_eta_short_norms_unif
 

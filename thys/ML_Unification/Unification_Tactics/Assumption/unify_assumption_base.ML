@@ -22,13 +22,13 @@ structure UBase = Unification_Base
 
 local
 (*returns unification result and updated state where the unified assumption is moved to the front*)
-fun unify_assumption unify ctxt i state =
+fun unify_assumption unify ctxt i state = Seq.make (fn _ =>
   (let
     val strip_subgoal = Term_Util.strip_nth_subgoal i
     val (rparams, (prems, _)) = strip_subgoal state
     val nprems = length prems
   in
-    if nprems < 1 then Seq.empty
+    if nprems < 1 then NONE
     else
       let
         val (binders, unif_ctxt) = Binders.fix_binders rparams ctxt
@@ -65,12 +65,12 @@ fun unify_assumption unify ctxt i state =
             |> Seq.maps (mk_result prem_index)
             |> Seq.append
           end
-      in General_Util.fold_rev_index unify_prem prems Seq.empty end
+      in General_Util.fold_rev_index unify_prem prems Seq.empty |> Seq.pull end
   end)
-  handle TERM _ => Seq.empty
+  handle TERM _ => NONE)
 in
 
-fun unify_assumption_tac_index norms unify ctxt i state =
+fun unify_assumption_tac_index norms unify ctxt i state = Seq.make (fn _ =>
   let
     val _ = @{log Logger.DEBUG} ctxt (fn _ => Pretty.block [
         Pretty.str "Trying proof by assumption for subgoal ",
@@ -88,10 +88,9 @@ fun unify_assumption_tac_index norms unify ctxt i state =
       (*unified premise is moved to the front; now close by equality assumption*)
       |> Seq.maps (DETERM (Tactic_Util.nth_eq_assume_tac 1 i))
       |> Seq.map (pair n)
-  in unify_assumption unify ctxt i state |> Seq.maps rewrite_subgoal end
+  in unify_assumption unify ctxt i state |> Seq.maps rewrite_subgoal |> Seq.pull end)
 
-fun unify_assumption_tac norms =
-  Seq.map snd oooo unify_assumption_tac_index norms
+fun unify_assumption_tac norms = Seq.map snd oooo unify_assumption_tac_index norms
 
 end
 

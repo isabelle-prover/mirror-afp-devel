@@ -118,7 +118,7 @@ fun retrieve_sym retrieve ti tp = interleave
   (retrieve ti (swap tp) |> map (apfst Unification_Hints_Base.symmetric_hint))
 
 (*FIXME: use Prio.Table instead of sorted lists*)
-val sort_hint_prios = sort (Prio.ord o apply2 snd)
+val sort_hint_prios = sort (rev_order o Prio.ord o apply2 snd)
 
 val sorted_hint_seq_of_hint_prios =
   sort_hint_prios #> Seq.of_list #> Seq.map fst
@@ -393,7 +393,7 @@ fun del_hint hint context =
 
 val binding = FIU.mk_binding_id_prefix "uhint"
 
-fun try_hints binders ctxt tp =
+fun try_hints binders ctxt tp env = Seq.make (fn _ =>
   let
     val context = Context.Proof ctxt
     val _ = @{log Logger.DEBUG} ctxt (fn _ => pretty_spaced_block [
@@ -402,7 +402,7 @@ fun try_hints binders ctxt tp =
         Pretty.str "for",
         Unification_Util.pretty_unif_problem ctxt tp
       ])
-  in UH.try_hints (get_retrieval context (get_indexes context)) binders ctxt tp end
+  in UH.try_hints (get_retrieval context (get_indexes context)) binders ctxt tp env |> Seq.pull end)
 
 val default_entries = PA.empty_entries () |> fold PA.set_entry [PA.prio TUHP.MEDIUM]
 
