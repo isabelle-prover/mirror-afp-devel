@@ -113,7 +113,7 @@ fun entity check markup binding index =
           if Context_Position.is_reported ctxt pos then ignore (check ctxt (name, pos)) else ();
         val latex =
           idx ^
-          (Output.output name
+          (Latex.output_ name
             |> (if markup = "" then I else enclose ("\\" ^ markup ^ "{") "}")
             |> hyper o enclose "\\mbox{\\isa{" "}}");
       in Latex.string latex end);
