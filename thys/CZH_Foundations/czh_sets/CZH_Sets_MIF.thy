@@ -26,6 +26,9 @@ syntax
 syntax (ASCII)
   "_if_clause" :: "[pttrn, 'a] \<Rightarrow> if_clause" ("(2_ =>/ _)" 13)
 
+syntax_consts
+  "_if_block" "_if_clause" "_if_final" "_if_cons" \<rightleftharpoons> multi_If
+
 translations
   "_if_block (_if_cons (_if_clause b t) (_if_final e))"
     \<rightleftharpoons> "CONST multi_If b t e"

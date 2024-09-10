@@ -21,8 +21,7 @@ end = struct
   val eq = (op =)
 end
 
-val _ = ML_system_pp (fn _ => fn _ => fn t => 
-    Pretty.to_polyml (Pretty.str (MString.destPP t)));
+val _ = ML_system_pp (fn _ => fn _ => fn t => ML_Pretty.str (MString.destPP t));
 
 structure MSymTab = Table(struct
   type key = MString.t

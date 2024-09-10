@@ -769,6 +769,8 @@ definition PiQ :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b quasi_borel) \<Righ
 
 syntax
   "_PiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i => 'a) quasi_borel"  ("(3\<Pi>\<^sub>Q _\<in>_./ _)"  10)
+syntax_consts
+  "_PiQ" == PiQ
 translations
   "\<Pi>\<^sub>Q x\<in>I. X" == "CONST PiQ I (\<lambda>x. X)"
 
@@ -889,6 +891,8 @@ definition coPiQ :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> ('a
 
 syntax
  "_coPiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" ("(3\<amalg>\<^sub>Q _\<in>_./ _)"  10)
+syntax_consts
+ "_coPiQ" \<rightleftharpoons> coPiQ
 translations
  "\<amalg>\<^sub>Q x\<in>I. X" \<rightleftharpoons> "CONST coPiQ I (\<lambda>x. X)"
 

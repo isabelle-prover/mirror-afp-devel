@@ -69,6 +69,9 @@ syntax
   "_Mndetprefix"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'a process \<Rightarrow> 'a process" 
                           ("(3\<sqinter>_\<in>_ \<rightarrow> / _)" [0, 0, 70] 70)
 
+syntax_consts
+  "_Mndetprefix" \<rightleftharpoons> Mndetprefix
+
 translations
   "\<sqinter>x\<in>A\<rightarrow> P" \<rightleftharpoons> "CONST Mndetprefix A (\<lambda>x. P)"
 

@@ -500,7 +500,7 @@ fun get_first_subterm P t =
 
 \<comment> \<open>Split a tuple completely in one step, instead of repeated applications of @{thm split_paired_all}\<close>
 val split_tupled_all_simproc =
-  Simplifier.make_simproc @{context}{name = "split_tupled_all_simproc", identifier = [],
+  Simplifier.make_simproc @{context}{name = "split_tupled_all_simproc", kind = Simproc, identifier = [],
    lhss = [Proof_Context.read_term_pattern @{context} "\<And>r. PROP ?P r"],
     proc = fn _ => fn ctxt => fn ct =>
      let
@@ -532,7 +532,7 @@ step instead of repeated application of @{thm Product_Type.prod.case} or
 @{thm Product_Type.case_prod_conv}\<close>
 
 val tuple_case_simproc =
-  Simplifier.make_simproc @{context} {name = "tuple_simproc", identifier = [],
+  Simplifier.make_simproc @{context} {name = "tuple_simproc", kind = Simproc, identifier = [],
    lhss = [Proof_Context.read_term_pattern @{context} "case_prod ?X (?x,?y)"],
     proc = fn _ => fn ctxt => fn ct =>
      let
@@ -751,7 +751,7 @@ fun mksimps ctxt thm =
   end
 
 val SPLIT_simproc =
-  Simplifier.make_simproc @{context} {name = "SPLIT_simproc", identifier = [],
+  Simplifier.make_simproc @{context} {name = "SPLIT_simproc", kind = Simproc, identifier = [],
     lhss = [Proof_Context.read_term_pattern @{context} "PROP SPLIT ?P",
             Proof_Context.read_term_pattern @{context} "SPLIT ?P"],
     proc = fn _ => fn ctxt => fn ct =>
@@ -886,7 +886,7 @@ fun split_rule_simproc ctxt name pattern rule =
      val _ = map split_rule (comb_product (map (K (1 upto 3)) rule_vars))
      val _ = trace_cache_info ()
   in
-    Simplifier.make_simproc ctxt {name = Binding.name_of name, identifier = [],
+    Simplifier.make_simproc ctxt {name = Binding.name_of name, kind = Simproc, identifier = [],
       lhss = [pat],
       proc = fn _ => fn ctxt => fn ct =>
         let

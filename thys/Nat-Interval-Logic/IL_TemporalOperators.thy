@@ -65,6 +65,9 @@ definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool
 syntax
   "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<box> _ _./ _)" [0, 0, 10] 10)
   "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<diamond> _ _./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_iAll" \<rightleftharpoons> iAll and
+  "_iEx" \<rightleftharpoons> iEx
 translations
   "\<box> t I. P" \<rightleftharpoons> "CONST iAll I (\<lambda>t. P)"
   "\<diamond> t I. P" \<rightleftharpoons> "CONST iEx I (\<lambda>t. P)"
@@ -80,6 +83,9 @@ definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> boo
 syntax
   "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle> _ _ _./ _)" [0, 0, 10] 10)
   "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_iNext" \<rightleftharpoons> iNext and
+  "_iLast" \<rightleftharpoons> iLast
 translations
   "\<circle> t t0 I. P" \<rightleftharpoons> "CONST iNext t0 I (\<lambda>t. P)"
   "\<ominus> t t0 I. P" \<rightleftharpoons> "CONST iLast t0 I (\<lambda>t. P)"
@@ -108,6 +114,11 @@ syntax
   "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
   "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
   "_iLastStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_iNextWeak" \<rightleftharpoons> iNextWeak and
+  "_iNextStrong" \<rightleftharpoons> iNextStrong and
+  "_iLastWeak" \<rightleftharpoons> iLastWeak and
+  "_iLastStrong" \<rightleftharpoons> iLastStrong
 translations
   "\<circle>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iNextWeak t0 I (\<lambda>t. P)"
   "\<circle>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iNextStrong t0 I (\<lambda>t. P)"
@@ -137,6 +148,9 @@ syntax
     ("(_./ _ (3\<U> _ _)./ _)" [10, 0, 0, 0, 10] 10)
   "_iSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<S> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+syntax_consts
+  "_iUntil" \<rightleftharpoons> iUntil and
+  "_iSince" \<rightleftharpoons> iSince
 translations
   "P. t \<U> t' I. Q" \<rightleftharpoons> "CONST iUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
   "P. t \<S> t' I. Q" \<rightleftharpoons> "CONST iSince I (\<lambda>t. P) (\<lambda>t'. Q)"
@@ -152,6 +166,9 @@ syntax
     ("(_./ _ (3\<W> _ _)./ _)" [10, 0, 0, 0, 10] 10)
   "_iWeakSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<B> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+syntax_consts
+  "_iWeakUntil" \<rightleftharpoons> iWeakUntil and
+  "_iWeakSince" \<rightleftharpoons> iWeakSince
 translations
   "P. t \<W> t' I. Q" \<rightleftharpoons> "CONST iWeakUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
   "P. t \<B> t' I. Q" \<rightleftharpoons> "CONST iWeakSince I (\<lambda>t. P) (\<lambda>t'. Q)"
@@ -168,6 +185,9 @@ syntax
     ("(_./ _ (3\<R> _ _)./ _)" [10, 0, 0, 0, 10] 10)
   "_iTrigger" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<T> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+syntax_consts
+  "_iRelease" \<rightleftharpoons> iRelease and
+  "_iTrigger" \<rightleftharpoons> iTrigger
 translations
   "P. t \<R> t' I. Q" \<rightleftharpoons> "CONST iRelease I (\<lambda>t. P) (\<lambda>t'. Q)"
   "P. t \<T> t' I. Q" \<rightleftharpoons> "CONST iTrigger I (\<lambda>t. P) (\<lambda>t'. Q)"

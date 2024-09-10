@@ -21,6 +21,7 @@ locale is_tm_ntcf = is_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> for \<alpha> 
 
 syntax "_is_tm_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_ntcf" \<rightleftharpoons> is_tm_ntcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons>
   "CONST is_tm_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 
@@ -250,6 +251,7 @@ locale is_tm_iso_ntcf = is_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> + is_
 
 syntax "_is_tm_iso_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ : _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>i\<^sub>s\<^sub>o _ : _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_iso_ntcf" \<rightleftharpoons> is_tm_iso_ntcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons>
   "CONST is_tm_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 
@@ -374,6 +376,7 @@ locale is_tiny_ntcf = is_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> for \<alpha
 
 syntax "_is_tiny_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tiny_ntcf" \<rightleftharpoons> is_tiny_ntcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> 
   "CONST is_tiny_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 
@@ -645,6 +648,7 @@ locale is_tiny_iso_ntcf = is_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> + i
 
 syntax "_is_tiny_iso_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ : _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^sub>.\<^sub>i\<^sub>s\<^sub>o _ : _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tiny_iso_ntcf" \<rightleftharpoons> is_tiny_iso_ntcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons>
   "CONST is_tiny_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 

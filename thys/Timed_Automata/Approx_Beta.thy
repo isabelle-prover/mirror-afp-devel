@@ -2,24 +2,27 @@ theory Approx_Beta
   imports DBM_Zone_Semantics Regions_Beta Closure
 begin
 
+no_notation infinity ("\<infinity>")
+
 chapter \<open>Correctness of \<open>\<beta>\<close>-approximation from \<open>\<alpha>\<close>-regions\<close>
-
-text \<open>Instantiating real\<close>
-
-instantiation real :: linordered_ab_monoid_add
-begin
-
-definition
-  neutral_real: "\<one> = (0 :: real)"
-
-instance by standard (auto simp: neutral_real)
-
-end
 
 text \<open>Merging the locales for the two types of regions\<close>
 
-locale Regions =
-  fixes X and k :: "'c \<Rightarrow> nat" and v :: "'c \<Rightarrow> nat" and n :: nat and not_in_X
+locale Regions_defs =
+  Alpha_defs X for X :: "'c set"+
+  fixes v :: "'c \<Rightarrow> nat" and n :: nat
+begin
+
+abbreviation vabstr :: "('c, t) zone \<Rightarrow> _ \<Rightarrow> _" where
+  "vabstr S M \<equiv> S = [M]\<^bsub>v,n\<^esub> \<and> (\<forall> i\<le>n. \<forall> j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>)"
+
+definition "V' \<equiv> {Z. Z \<subseteq> V \<and> (\<exists> M. vabstr Z M)}"
+
+end
+
+locale Regions_global =
+  Regions_defs X v n for X :: "'c set" and v n +
+  fixes k :: "'c \<Rightarrow> nat" and not_in_X
   assumes finite: "finite X"
   assumes clock_numbering: "clock_numbering' v n" "\<forall>k\<le>n. k > 0 \<longrightarrow> (\<exists>c \<in> X. v c = k)"
                            "\<forall> c \<in> X. v c \<le> n"
@@ -28,13 +31,18 @@ locale Regions =
 begin
 
 definition \<R>_def:  "\<R> \<equiv> {Regions.region X I r | I r. Regions.valid_region X k I r}"
-definition \<R>\<^sub>\<beta>_def: "\<R>\<^sub>\<beta> \<equiv> {Regions_Beta.region X I J r | I J r. Regions_Beta.valid_region X k I J r}"
-definition V_def:  "V \<equiv> {v . \<forall> x \<in> X. v x \<ge> 0}"
 
-sublocale alpha_interp: AlphaClosure X k \<R> V by (unfold_locales) (auto simp: finite \<R>_def V_def)
+sublocale alpha_interp:
+  AlphaClosure_global X k \<R> by (unfold_locales) (auto simp: finite \<R>_def V_def)
 
-sublocale beta_interp: Beta_Regions' X k \<R>\<^sub>\<beta> V v n not_in_X
-using finite non_empty clock_numbering not_in_X by (unfold_locales) (auto simp: \<R>\<^sub>\<beta>_def V_def)
+sublocale beta_interp: Beta_Regions' X k v n not_in_X
+  rewrites "beta_interp.V = V"
+  using finite non_empty clock_numbering not_in_X unfolding V_def
+  by - ((subst Beta_Regions.V_def)?, unfold_locales; (assumption | rule HOL.refl))+
+
+abbreviation \<R>\<^sub>\<beta> where "\<R>\<^sub>\<beta> \<equiv> beta_interp.\<R>"
+
+lemmas \<R>\<^sub>\<beta>_def = beta_interp.\<R>_def
 
 abbreviation "Approx\<^sub>\<beta> \<equiv> beta_interp.Approx\<^sub>\<beta>"
 
@@ -60,20 +68,23 @@ lemma region_dbm:
 proof -
   from assms obtain I r where R: "R = region X I r" "valid_region X k I r" unfolding \<R>_def by blast
   let ?X\<^sub>0 = "{x \<in> X. \<exists>d. I x = Regions.intv.Intv d}"
-  define f where "f x = (if isIntv (I x) then Lt (intv_const (I x) + 1)
-                 else if isConst (I x) then Le (intv_const (I x))
-                 else \<infinity>)" for x
-  define g where "g x = (if isIntv (I x) then Lt (- intv_const (I x))
-                 else if isConst (I x) then Le (- intv_const (I x))
-                 else Lt (- k x))" for x
-  define h where "h x y = (if isIntv (I x) \<and> isIntv (I y) then
-                      if (y, x) \<in> r \<and> (x, y) \<notin> r then Lt (int (intv_const (I x)) - intv_const (I y) + 1)
-                      else if (x, y) \<in> r \<and> (y, x) \<notin> r then Lt (int (intv_const (I x)) - intv_const (I y))
-                      else Le (int (intv_const (I x)) - intv_const (I y))
-                   else if isConst (I x) \<and> isConst (I y) then Le (int (intv_const (I x)) - intv_const (I y))
-                   else if isIntv (I x) \<and> isConst (I y) then Lt (int (intv_const (I x)) + 1 - intv_const (I y))
-                   else if isConst (I x) \<and> isIntv (I y) then Lt (int (intv_const (I x)) - intv_const (I y))
-                   else \<infinity>)" for x y
+  define f where "f \<equiv>
+  \<lambda> x. if isIntv (I x) then Lt (real (intv_const (I x) + 1))
+       else if isConst (I x) then Le (real (intv_const (I x)))
+       else \<infinity>"
+  define g where "g \<equiv>
+  \<lambda> x. if isIntv (I x) then Lt (- real (intv_const (I x)))
+       else if isConst (I x) then Le (- real (intv_const (I x)))
+       else Lt (- real (k x))"
+  define h where "h \<equiv>
+  \<lambda> x y. if isIntv (I x) \<and> isIntv (I y) then
+      if (y, x) \<in> r \<and> (x, y) \<notin> r then Lt (real_of_int (int (intv_const (I x)) - intv_const (I y) + 1))
+      else if (x, y) \<in> r \<and> (y, x) \<notin> r then Lt (int (intv_const (I x)) - intv_const (I y))
+      else Le (int (intv_const (I x)) - intv_const (I y))
+   else if isConst (I x) \<and> isConst (I y) then Le (int (intv_const (I x)) - intv_const (I y))
+   else if isIntv (I x) \<and> isConst (I y) then Lt (int (intv_const (I x)) + 1 - intv_const (I y))
+   else if isConst (I x) \<and> isIntv (I y) then Lt (int (intv_const (I x)) - intv_const (I y))
+   else \<infinity>"
   let ?M = "\<lambda> i j. if i = 0 then if j = 0 then Le 0 else g (v' j)
                    else if j = 0 then f (v' i) else if i = j then Le 0 else h (v' i) (v' j)"
   have "[?M]\<^bsub>v,n\<^esub> \<subseteq> R"
@@ -131,7 +142,7 @@ proof -
           from A False clock_numbering have B:
             "v x \<le> n" "v x > 0" "v' (v x) = x" "v y \<le> n" "v y > 0" "v' (v y) = y" "v x \<noteq> v y"
           unfolding v'_def by auto
-          with u have *: 
+          with u have *:
             "dbm_entry_val u (Some x) (Some y) (h x y)" "dbm_entry_val u (Some y) (Some x) (h y x)"
             "dbm_entry_val u None (Some x) (g x)" "dbm_entry_val u (Some x) None (f x)"
             "dbm_entry_val u None (Some y) (g y)" "dbm_entry_val u (Some y) None (f y)"
@@ -483,23 +494,10 @@ qed
 lemma len_inf_elem:
   "(a, b) \<in> set (arcs i j xs) \<Longrightarrow> M a b = \<infinity> \<Longrightarrow> len M i j xs = \<infinity>"
 apply (induction rule: arcs.induct)
-  apply (auto simp: mult)
+  apply (auto simp: add)
   apply (rename_tac a' b' x xs)
   apply (case_tac "M a' x")
 by auto
-
-lemma dbm_add_strict_right_mono_neutral: "a < Le d \<Longrightarrow> a + Le (-d) < Le 0"
-unfolding less mult by (cases a) (auto elim!: dbm_lt.cases)
-
-lemma dbm_lt_not_inf_less[intro]: "A \<noteq> \<infinity> \<Longrightarrow> A \<prec> \<infinity>" by (cases A) auto
-
-lemma add_inf[simp]:
-  "a + \<infinity> = \<infinity>" "\<infinity> + a = \<infinity>"
-unfolding mult by (cases a) auto
-
-lemma inf_lt[simp,dest!]:
-  "\<infinity> < x \<Longrightarrow> False"
-by (cases x) (auto simp: less)
 
 lemma zone_diag_lt:
   assumes "a \<le> n" "b \<le> n" and C: "v c1 = a" "v c2 = b" and not0: "a > 0" "b > 0"
@@ -658,12 +656,12 @@ by (induction xs arbitrary: i) auto
 
 lemma get_const_distr:
   "a \<noteq> \<infinity> \<Longrightarrow> b \<noteq> \<infinity> \<Longrightarrow> get_const (a + b) = get_const a + get_const b"
-by (cases a) (cases b, auto simp: mult)+
+by (cases a) (cases b, auto simp: add)+
 
 lemma len_int_dbm_closed:
   "\<forall> (i, j) \<in> set (arcs i j xs). (get_const (M i j) :: real) \<in> \<int> \<and> M i j \<noteq> \<infinity>
   \<Longrightarrow> get_const (len M i j xs) \<in> \<int> \<and> len M i j xs \<noteq> \<infinity>"
-by (induction xs arbitrary: i) (auto simp: get_const_distr, simp add: dbm_add_not_inf mult)
+by (induction xs arbitrary: i) (auto simp: get_const_distr, simp add: dbm_add_not_inf add)
 
 lemma zone_diag_le_3:
   assumes "a \<le> n" and C: "v c = a" and not0: "a > 0"
@@ -785,21 +783,19 @@ lemma non_empty_dbm_diag_set':
   assumes "clock_numbering' v n" "\<forall>i\<le>n. \<forall>j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>"
           "[M]\<^bsub>v,n\<^esub> \<noteq> {}"
   obtains M' where "[M]\<^bsub>v,n\<^esub> = [M']\<^bsub>v,n\<^esub> \<and> (\<forall>i\<le>n. \<forall>j\<le>n. M' i j \<noteq> \<infinity> \<longrightarrow> get_const (M' i j) \<in> \<int>)
-    \<and> (\<forall> i \<le> n. M' i i = \<one>)"
+    \<and> (\<forall> i \<le> n. M' i i = 0)"
 proof -
-  let ?M = "\<lambda>i j. if i = j then \<one> else M i j"
+  let ?M = "\<lambda>i j. if i = j then 0 else M i j"
   from non_empty_dbm_diag_set[OF assms(1,3)] have "[M]\<^bsub>v,n\<^esub> = [?M]\<^bsub>v,n\<^esub>" by auto
   moreover from assms(2) have "\<forall>i\<le>n. \<forall>j\<le>n. ?M i j \<noteq> \<infinity> \<longrightarrow> get_const (?M i j) \<in> \<int>"
   unfolding neutral by auto
-  moreover have "\<forall> i \<le> n. ?M i i = \<one>" by auto
+  moreover have "\<forall> i \<le> n. ?M i i = 0" by auto
   ultimately show ?thesis by (auto intro: that)
 qed
 
 lemma dbm_entry_int:
-  "x \<noteq> \<infinity> \<Longrightarrow> get_const x \<in> \<int> \<Longrightarrow> \<exists> d :: int. x = Le d \<or> x = Lt d"
+  "(x :: t DBMEntry) \<noteq> \<infinity> \<Longrightarrow> get_const x \<in> \<int> \<Longrightarrow> \<exists> d :: int. x = Le d \<or> x = Lt d"
 apply (cases x) using Ints_cases by auto
-
-abbreviation "vabstr \<equiv> beta_interp.vabstr"
 
 
 section \<open>Bouyer's Main Theorem\<close>
@@ -808,7 +804,7 @@ theorem region_zone_intersect_empty_approx_correct:
   assumes "R \<in> \<R>" "Z \<subseteq> V" "R \<inter> Z = {}" "vabstr Z M"
   shows "R \<inter> Approx\<^sub>\<beta> Z = {}"
 proof -
-  define v' where "v' i = (THE c. c \<in> X \<and> v c = i)" for i
+  define v' where "v' \<equiv> \<lambda> i. THE c. c \<in> X \<and> v c = i"
   from region_dbm[OF assms(1)] obtain M\<^sub>R where M\<^sub>R:
     "[M\<^sub>R]\<^bsub>v,n\<^esub> = R" "\<forall>i\<le>n. \<forall>j\<le>n. M\<^sub>R i 0 = \<infinity> \<and> 0 < j \<and> i \<noteq> j \<longrightarrow> M\<^sub>R i j = \<infinity> \<and> M\<^sub>R j i = \<infinity>"
     "\<forall>i\<le>n. M\<^sub>R i i = Le 0"
@@ -830,7 +826,7 @@ proof -
   next
     case False
     from clock_numbering(2) have cn_weak: "\<forall>k\<le>n. 0 < k \<longrightarrow> (\<exists> c. v c = k)" by auto
-    
+
     show ?thesis
     proof (cases "Z = {}")
       case True
@@ -841,12 +837,13 @@ proof -
         "Z = [M]\<^bsub>v,n\<^esub>" "\<forall> i\<le>n. \<forall> j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>"
       by auto
       from this(1) non_empty_dbm_diag_set'[OF clock_numbering(1) this(2)] \<open>Z \<noteq> {}\<close> obtain M where M:
-        "Z = [M]\<^bsub>v,n\<^esub> \<and> (\<forall>i\<le>n. \<forall>j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>) \<and> (\<forall>i\<le>n. M i i = \<one>)"
+        "Z = [M]\<^bsub>v,n\<^esub> \<and> (\<forall>i\<le>n. \<forall>j\<le>n. M i j \<noteq> \<infinity> \<longrightarrow> get_const (M i j) \<in> \<int>) \<and> (\<forall>i\<le>n. M i i = 0)"
       by auto
       with not_empty_cyc_free[OF cn_weak] False have "cyc_free M n" by auto
       then have "cycle_free M n" using cycle_free_diag_equiv by auto
       from M have "Z = [FW M n]\<^bsub>v,n\<^esub>" unfolding neutral by (auto intro!: FW_zone_equiv[OF cn_weak])
-      moreover from fw_canonical[OF \<open>cycle_free M _\<close>] M have "canonical (FW M n) n" unfolding neutral by auto
+      moreover from fw_canonical[OF \<open>cyc_free M _\<close>] M have "canonical (FW M n) n"
+        unfolding neutral by auto
       moreover from FW_int_preservation M have
         "\<forall>i\<le>n. \<forall>j\<le>n. FW M n i j \<noteq> \<infinity> \<longrightarrow> get_const (FW M n i j) \<in> \<int>"
       by auto
@@ -859,14 +856,14 @@ proof -
       moreover from DBM_le_subset[folded less_eq, of n ?M M\<^sub>R] have "[?M]\<^bsub>v,n\<^esub> \<subseteq> [M\<^sub>R]\<^bsub>v,n\<^esub>" by auto
       ultimately have "[?M]\<^bsub>v,n\<^esub> = {}" by blast
       then have "\<not> cyc_free ?M n" using cyc_free_not_empty[of n ?M v] clock_numbering(1) by auto
-      then obtain i xs where xs: "i \<le> n" "set xs \<subseteq> {0..n}" "len ?M i i xs < \<one>" by auto
+      then obtain i xs where xs: "i \<le> n" "set xs \<subseteq> {0..n}" "len ?M i i xs < 0" by auto
       from this(1,2) canonical_shorten_rotate_neg_cycle[OF M(2) this(2,1,3)] obtain i ys where ys:
-        "len ?M i i ys < \<one>"
+        "len ?M i i ys < 0"
         "set ys \<subseteq> {0..n}" "successive (\<lambda>(a, b). ?M a b = M a b) (arcs i i ys)" "i \<le> n"
         and distinct: "distinct ys" "i \<notin> set ys"
         and cycle_closes: "ys \<noteq> [] \<longrightarrow> ?M i (hd ys) \<noteq> M i (hd ys) \<or> ?M (last ys) i \<noteq> M (last ys) i"
       by fastforce
-      
+
       have one_M_aux:
         "len ?M i j ys = len M\<^sub>R i j ys" if "\<forall> (a,b) \<in> set (arcs i j ys). M a b \<ge> M\<^sub>R a b" for j
       using that by (induction ys arbitrary: i) (auto simp: min_def)
@@ -875,7 +872,7 @@ proof -
         case 1
         then have "\<forall>(a, b)\<in>set (arcs i i ys). M\<^sub>R a b \<le> M a b" by auto
         from one_M_aux[OF this] have "len ?M i i ys = len M\<^sub>R i i ys" .
-        with Nil ys(1) xs(3) have "len M\<^sub>R i i ys < \<one>" by simp
+        with Nil ys(1) xs(3) have "len M\<^sub>R i i ys < 0" by simp
         from DBM_val_bounded_neg_cycle[OF _ \<open>i \<le> n\<close> \<open>set ys \<subseteq> _\<close> this cn_weak]
         have "[M\<^sub>R]\<^bsub>v,n\<^esub> = {}" unfolding DBM_zone_repr_def by auto
         with \<open>R \<noteq> {}\<close> M\<^sub>R(1) show False by auto
@@ -888,21 +885,21 @@ proof -
         case 1
         then have "\<forall>(a, b)\<in>set (arcs i i ys). M\<^sub>R a b \<ge> M a b" by auto
         from one_M_R_aux[OF this] have "len ?M i i ys = len M i i ys" .
-        with Nil ys(1) xs(3) have "len M i i ys < \<one>" by simp
+        with Nil ys(1) xs(3) have "len M i i ys < 0" by simp
         from DBM_val_bounded_neg_cycle[OF _ \<open>i \<le> n\<close> \<open>set ys \<subseteq> _\<close> this cn_weak]
         have "[M]\<^bsub>v,n\<^esub> = {}" unfolding DBM_zone_repr_def by auto
         with \<open>Z \<noteq> {}\<close> M(1) show False by auto
       qed
-      
+
       have 0: "(0,0) \<notin> set (arcs i i ys)"
       proof (cases "ys = []")
-        case False with distinct show ?thesis using arcs_distinct1 by blast 
+        case False with distinct show ?thesis using arcs_distinct1 by blast
       next
-        case True with ys(1) have "?M i i < \<one>" by auto
-        then have "M i i < \<one> \<or> M\<^sub>R i i < \<one>" by (simp add: min_less_iff_disj)
+        case True with ys(1) have "?M i i < 0" by auto
+        then have "M i i < 0 \<or> M\<^sub>R i i < 0" by (simp add: min_less_iff_disj)
         from one_M one_M_R True show ?thesis by auto
       qed
-      
+
       { fix a b assume A: "(a,b) \<in> set (arcs i i ys)"
         assume not0: "a > 0"
         from aux1[OF ys(4,4,2) A] have C2: "a \<le> n" by auto
@@ -923,10 +920,10 @@ proof -
         "\<And> a b. (a,b) \<in> set (arcs i i ys) \<Longrightarrow> a > 0 \<Longrightarrow> b > 0 \<Longrightarrow>
           \<exists> c1 \<in> X. \<exists> c2 \<in> X. v c1 = a \<and> v c2 = b \<and> v' a = c1 \<and> v' b = c2 &&& a \<le> n &&& b \<le> n"
       using clock_dest_1 clock_dest_2 by (auto) presburger
-      
+
       { fix a assume A: "(a,0) \<in> set (arcs i i ys)"
         assume not0: "a > 0"
-        assume bounded: "M\<^sub>R a 0 \<noteq> \<infinity>" 
+        assume bounded: "M\<^sub>R a 0 \<noteq> \<infinity>"
         assume lt: "M a 0 < M\<^sub>R a 0"
         from clock_dest_1[OF A not0] obtain c1 where C:
           "v c1 = a" "c1 \<in> X" "v' a = c1" and C2: "a \<le> n"
@@ -944,7 +941,7 @@ proof -
           from dbm_lt'2[OF assms(2)[folded M(1)] this C2 C(1) not0] have
             "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c1 < d}"
           by auto
-          from beta_interp.\<beta>_boundedness_lt'[OF ** C(2) this] have
+          from beta_interp.\<beta>_boundedness_lt'[OF ** C(2) this, unfolded \<R>\<^sub>\<beta>_def] have
             "Approx\<^sub>\<beta> ([M]\<^bsub>v,n\<^esub>) \<subseteq> {u \<in> V. u c1 < d}"
           .
           moreover
@@ -986,10 +983,10 @@ proof -
           ultimately show ?thesis using M\<^sub>R(1) M(1) by auto
         qed
       } note bounded_zero_1 = this
-      
+
       { fix a assume A: "(0,a) \<in> set (arcs i i ys)"
         assume not0: "a > 0"
-        assume bounded: "M\<^sub>R a 0 \<noteq> \<infinity>" 
+        assume bounded: "M\<^sub>R a 0 \<noteq> \<infinity>"
         assume lt: "M 0 a < M\<^sub>R 0 a"
         from clock_dest_2[OF A not0] obtain c1 where C:
           "v c1 = a" "c1 \<in> X" "v' a = c1" and C2: "a \<le> n"
@@ -1049,19 +1046,19 @@ proof -
           ultimately show ?thesis using M\<^sub>R(1) M(1) by auto
         qed
       } note bounded_zero_2 = this
-      
+
       { fix a b c c1 c2 assume A: "(a,b) \<in> set (arcs i i ys)"
         assume not0: "a > 0" "b > 0"
         assume lt: "M a b = Lt c"
-        assume neg: "M a b + M\<^sub>R b a < \<one>"
+        assume neg: "M a b + M\<^sub>R b a < 0"
         assume C: "v c1 = a" "v c2 = b" "c1 \<in> X" "c2 \<in> X" and C2: "a \<le> n" "b \<le> n"
         assume valid: "-k c2 \<le> -get_const (M\<^sub>R b a)" "-get_const (M\<^sub>R b a) \<le> k c1"
         from neg have "M\<^sub>R b a \<noteq> \<infinity>" by auto
         then obtain d where *: "M\<^sub>R b a = Le d \<or> M\<^sub>R b a = Lt d" by (cases "M\<^sub>R b a", auto)+
         with M\<^sub>R(7) \<open>_ _ _ \<noteq> \<infinity>\<close> have "d \<in> \<int>" by fastforce
-        with * obtain d :: int where *: "M\<^sub>R b a = Le d \<or> M\<^sub>R b a = Lt d" using Ints_cases by auto 
+        with * obtain d :: int where *: "M\<^sub>R b a = Le d \<or> M\<^sub>R b a = Lt d" using Ints_cases by auto
         with valid have valid: "- k c2 \<le> -d" "-d \<le> k c1" by auto
-        from * neg lt have "M a b \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+        from * neg lt have "M a b \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
         by (auto elim!: dbm_lt.cases)
         from dbm_lt'[OF assms(2)[folded M(1)] this C2 C(1,2) not0] have
           "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c1 - u c2 < - d}"
@@ -1081,7 +1078,7 @@ proof -
 
       { fix a b assume A: "(a,b) \<in> set (arcs i i ys)"
         assume not0: "a > 0" "b > 0"
-        assume neg: "M a b + M\<^sub>R b a < \<one>"
+        assume neg: "M a b + M\<^sub>R b a < 0"
         from clock_dest[OF A not0] obtain c1 c2 where
           C: "v c1 = a" "v c2 = b" "c1 \<in> X" "c2 \<in> X" and C2: "a \<le> n" "b \<le> n"
         by blast
@@ -1110,7 +1107,7 @@ proof -
         from c have ?thesis
         proof (standard, goal_cases)
           case 2
-          with neg d have "M a b \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+          with neg d have "M a b \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
           by (auto elim!: dbm_lt.cases)
           with aux show ?thesis .
         next
@@ -1119,12 +1116,12 @@ proof -
           from d(1) show ?thesis
           proof (standard, goal_cases)
             case 1
-            with A neg d have "M a b \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M a b \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             with aux show ?thesis .
           next
             case 2
-            with A neg d have "M a b \<le> Le (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M a b \<le> Le (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             from dbm_le'[OF assms(2)[folded M(1)] this C2 C(1,2) not0] have
               "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c1 - u c2 \<le> - d}"
@@ -1146,7 +1143,7 @@ proof -
 
       { fix a b assume A: "(a,0) \<in> set (arcs i i ys)"
         assume not0: "a > 0"
-        assume neg: "M a 0 + M\<^sub>R 0 a < \<one>"
+        assume neg: "M a 0 + M\<^sub>R 0 a < 0"
         from clock_dest_1[OF A not0] obtain c1 where C: "v c1 = a" "c1 \<in> X" and C2: "a \<le> n" by blast
         with clock_numbering(1) have C3: "v' a = c1" unfolding v'_def by auto
         from neg have inf: "M a 0 \<noteq> \<infinity>" "M\<^sub>R 0 a \<noteq> \<infinity>" by auto
@@ -1173,7 +1170,7 @@ proof -
         from c have ?thesis
         proof (standard, goal_cases)
           case 2
-          with neg d have "M a 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+          with neg d have "M a 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
           by (auto elim!: dbm_lt.cases)
           with aux show ?thesis .
         next
@@ -1182,12 +1179,12 @@ proof -
           from d(1) show ?thesis
           proof (standard, goal_cases)
             case 1
-            with A neg d have "M a 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M a 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             with aux show ?thesis .
           next
             case 2
-            with A neg d have "M a 0 \<le> Le (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M a 0 \<le> Le (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             from dbm_le'2[OF assms(2)[folded M(1)] this C2 C(1) not0] have
               "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c1 \<le> - d}"
@@ -1209,14 +1206,14 @@ proof -
 
       { fix a b assume A: "(0,b) \<in> set (arcs i i ys)"
         assume not0: "b > 0"
-        assume neg: "M 0 b + M\<^sub>R b 0 < \<one>"
+        assume neg: "M 0 b + M\<^sub>R b 0 < 0"
         from clock_dest_2[OF A not0] obtain c2 where
           C:  "v c2 = b" "c2 \<in> X" and C2: "b \<le> n"
         by blast
         with clock_numbering(1) have C3: "v' b = c2" unfolding v'_def by auto
         from neg have "M 0 b \<noteq> \<infinity>" "M\<^sub>R b 0 \<noteq> \<infinity>" by auto
         with M\<^sub>R(5) not0 C2 C3 obtain d :: int where d:
-          "M\<^sub>R b 0 = Le d \<or> M\<^sub>R b 0 = Lt d" "d \<le> k c2" 
+          "M\<^sub>R b 0 = Le d \<or> M\<^sub>R b 0 = Lt d" "d \<le> k c2"
         unfolding v'_def by fastforce
         from \<open>M 0 b \<noteq> \<infinity>\<close> obtain c where c: "M 0 b = Le c \<or> M 0 b = Lt c" by (cases "M 0 b") auto
         { assume "M 0 b \<le> Lt (-d)"
@@ -1238,7 +1235,7 @@ proof -
         from c have ?thesis
         proof (standard, goal_cases)
           case 2
-          with neg d have "M 0 b \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+          with neg d have "M 0 b \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
           by (auto elim!: dbm_lt.cases)
           with aux show ?thesis .
         next
@@ -1246,12 +1243,12 @@ proof -
           from d(1) show ?thesis
           proof (standard, goal_cases)
             case 1
-            with A neg have "M 0 b \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg have "M 0 b \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             with aux show ?thesis .
           next
             case 2
-            with A neg c have "M 0 b \<le> Le (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg c have "M 0 b \<le> Le (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             from dbm_le'3[OF assms(2)[folded M(1)] this C2 C(1) not0] have
               "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c2 \<ge> d}"
@@ -1273,14 +1270,14 @@ proof -
 
       { fix a b assume A: "(a,b) \<in> set (arcs i i ys)"
         assume not0: "b > 0" "a > 0"
-        assume neg: "M\<^sub>R a b + M b a < \<one>"
+        assume neg: "M\<^sub>R a b + M b a < 0"
         from clock_dest[OF A not0(2,1)] obtain c1 c2 where
           C: "v c1 = a" "v c2 = b" "c1 \<in> X" "c2 \<in> X" and C2: "a \<le> n" "b \<le> n"
         by blast
         then have C3: "v' a = c1" "v' b = c2" unfolding v'_def using clock_numbering(1) by auto
         from neg have inf: "M b a \<noteq> \<infinity>" "M\<^sub>R a b \<noteq> \<infinity>" by auto
         with M\<^sub>R(8) not0 C(3,4) C2 C3 obtain d :: int where d:
-          "M\<^sub>R a b = Le d \<or> M\<^sub>R a b = Lt d" "d \<ge> -int (k c2)" "d \<le> int (k c1)" 
+          "M\<^sub>R a b = Le d \<or> M\<^sub>R a b = Lt d" "d \<ge> -int (k c2)" "d \<le> int (k c1)"
         unfolding v'_def by blast
         from inf obtain c where c: "M b a = Le c \<or> M b a = Lt c" by (cases "M b a") auto
         { assume "M b a \<le> Lt (-d)"
@@ -1301,7 +1298,7 @@ proof -
         from c have ?thesis
         proof (standard, goal_cases)
           case 2
-          with neg d have "M b a \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+          with neg d have "M b a \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
           by (auto elim!: dbm_lt.cases)
           with aux show ?thesis .
         next
@@ -1309,12 +1306,12 @@ proof -
           from d(1) show ?thesis
           proof (standard, goal_cases)
             case 1
-            with A neg d have "M b a \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M b a \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             with aux show ?thesis .
           next
             case 2
-            with A neg d have "M b a \<le> Le (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M b a \<le> Le (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             from dbm_le'[OF assms(2)[folded M(1)] this C2(2,1) C(2,1) not0] have
               "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c2 - u c1 \<le> - d}"
@@ -1335,7 +1332,7 @@ proof -
 
       { fix a b assume A: "(a,0) \<in> set (arcs i i ys)"
         assume not0: "a > 0"
-        assume neg: "M\<^sub>R a 0 + M 0 a < \<one>"
+        assume neg: "M\<^sub>R a 0 + M 0 a < 0"
         from clock_dest_1[OF A not0] obtain c1 where C: "v c1 = a" "c1 \<in> X" and C2: "a \<le> n" by blast
         with clock_numbering(1) have C3: "v' a = c1" unfolding v'_def by auto
         from neg have inf: "M 0 a \<noteq> \<infinity>" "M\<^sub>R a 0 \<noteq> \<infinity>" by auto
@@ -1362,7 +1359,7 @@ proof -
         from c have ?thesis
         proof (standard, goal_cases)
           case 2
-          with neg d have "M 0 a \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+          with neg d have "M 0 a \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
           by (auto elim!: dbm_lt.cases)
           with aux show ?thesis .
         next
@@ -1370,12 +1367,12 @@ proof -
           from d(1) show ?thesis
           proof (standard, goal_cases)
             case 1
-            with A neg d have "M 0 a \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M 0 a \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             with aux show ?thesis .
           next
             case 2
-            with A neg d have "M 0 a \<le> Le (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg d have "M 0 a \<le> Le (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             from dbm_le'3[OF assms(2)[folded M(1)] this C2 C(1) not0] have
               "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c1 \<ge> d}"
@@ -1397,14 +1394,14 @@ proof -
 
       { fix a b assume A: "(0,b) \<in> set (arcs i i ys)"
         assume not0: "b > 0"
-        assume neg: "M\<^sub>R 0 b + M b 0 < \<one>"
+        assume neg: "M\<^sub>R 0 b + M b 0 < 0"
         from clock_dest_2[OF A not0] obtain c2 where
           C:  "v c2 = b" "c2 \<in> X" and C2: "b \<le> n"
         by blast
         with clock_numbering(1) have C3: "v' b = c2" unfolding v'_def by auto
         from neg have "M b 0 \<noteq> \<infinity>" "M\<^sub>R 0 b \<noteq> \<infinity>" by auto
         with M\<^sub>R(6) not0 C2 C3 obtain d :: int where d:
-          "M\<^sub>R 0 b = Le d \<or> M\<^sub>R 0 b = Lt d" "-d \<le> k c2" 
+          "M\<^sub>R 0 b = Le d \<or> M\<^sub>R 0 b = Lt d" "-d \<le> k c2"
         unfolding v'_def by fastforce
         from \<open>M b 0 \<noteq> \<infinity>\<close> obtain c where c: "M b 0 = Le c \<or> M b 0 = Lt c" by (cases "M b 0") auto
         { assume "M b 0 \<le> Lt (-d)"
@@ -1426,7 +1423,7 @@ proof -
         from c have ?thesis
         proof (standard, goal_cases)
           case 2
-          with neg d have "M b 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+          with neg d have "M b 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
           by (auto elim!: dbm_lt.cases)
           with aux show ?thesis .
         next
@@ -1435,12 +1432,12 @@ proof -
           from d(1) show ?thesis
           proof (standard, goal_cases)
             case 1
-            with A neg have "M b 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg have "M b 0 \<le> Lt (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             with aux show ?thesis .
           next
             case 2
-            with A neg c have "M b 0 \<le> Le (-d)" unfolding less_eq dbm_le_def mult neutral less
+            with A neg c have "M b 0 \<le> Le (-d)" unfolding less_eq dbm_le_def add neutral less
             by (auto elim!: dbm_lt.cases)
             from dbm_le'2[OF assms(2)[folded M(1)] this C2 C(1) not0] have
               "[M]\<^bsub>v,n\<^esub> \<subseteq> {u \<in> V. u c2 \<le> - d}"
@@ -1520,7 +1517,7 @@ proof -
       } note bounded = this
 
       { assume not_bounded: "\<forall> (a,b) \<in> set (arcs i i ys). M a b < M\<^sub>R a b \<longrightarrow> M\<^sub>R a 0 = \<infinity> \<or> M\<^sub>R b 0 = \<infinity>"
-        have "\<exists> y z zs. set zs \<union> {0, y, z} = set (i # ys) \<and> len ?M 0 0 (y # z # zs) < Le 0 \<and> 
+        have "\<exists> y z zs. set zs \<union> {0, y, z} = set (i # ys) \<and> len ?M 0 0 (y # z # zs) < Le 0 \<and>
                     (\<forall> (a,b) \<in> set (arcs 0 0 (y # z # zs)). M a b < M\<^sub>R a b \<longrightarrow> a = y \<and> b = z)
                     \<and> M y z < M\<^sub>R y z \<and> distinct (0 # y # z # zs) \<or> ?thesis"
         proof (cases ys)
@@ -1528,15 +1525,14 @@ proof -
           show ?thesis
           proof (cases "M i i < M\<^sub>R i i")
             case True
-            then have "?M i i = M i i"
-              by simp
-            with Nil ys(1) xs(3) have *: "M i i < \<one>" by simp
+            then have "?M i i = M i i" by simp
+            with Nil ys(1) xs(3) have *: "M i i < 0" by simp
             with neg_cycle_empty[OF cn_weak _ \<open>i \<le> n\<close>, of "[]" M] have "[M]\<^bsub>v,n\<^esub> = {}" by auto
             with \<open>Z \<noteq> {}\<close> M(1) show ?thesis by auto
           next
             case False
-            then have "?M i i = M\<^sub>R i i" by (simp add: min_absorb2) 
-            with Nil ys(1) xs(3) have "M\<^sub>R i i < \<one>" by simp
+            then have "?M i i = M\<^sub>R i i" by (simp add: min_absorb2)
+            with Nil ys(1) xs(3) have "M\<^sub>R i i < 0" by simp
             with neg_cycle_empty[OF cn_weak _ \<open>i \<le> n\<close>, of "[]" M\<^sub>R] have "[M\<^sub>R]\<^bsub>v,n\<^esub> = {}" by auto
             with \<open>R \<noteq> {}\<close> M\<^sub>R(1) show ?thesis by auto
           qed
@@ -1547,13 +1543,13 @@ proof -
           proof (cases ws)
             case Nil
             with ws ys xs(3) have *:
-              "?M i w + ?M w i < \<one>" "?M w i = M w i \<longrightarrow> ?M i w \<noteq> M i w" "(i, w) \<in> set (arcs i i ys)"
+              "?M i w + ?M w i < 0" "?M w i = M w i \<longrightarrow> ?M i w \<noteq> M i w" "(i, w) \<in> set (arcs i i ys)"
             by auto
             have "R \<inter> Approx\<^sub>\<beta> Z = {}"
             proof (cases "?M w i = M w i")
               case True
               with *(2) have "?M i w = M\<^sub>R i w" unfolding min_def by auto
-              with *(1) True have neg: "M\<^sub>R i w + M w i < \<one>" by auto
+              with *(1) True have neg: "M\<^sub>R i w + M w i < 0" by auto
               show ?thesis
               proof (cases "i = 0")
                 case True
@@ -1583,7 +1579,7 @@ proof -
               with one_M ws Nil have "M i w < M\<^sub>R i w" by auto
               then have "?M i w = M i w" unfolding min_def by auto
               moreover from False *(2) have "?M w i = M\<^sub>R w i" unfolding min_def by auto
-              ultimately have neg: "M i w + M\<^sub>R w i < \<one>" using *(1) by auto
+              ultimately have neg: "M i w + M\<^sub>R w i < 0" using *(1) by auto
               show ?thesis
               proof (cases "i = 0")
                 case True
@@ -1629,10 +1625,9 @@ proof -
               "len ?M a a (b # ws') = len ?M z z (a # b # zs)"
               "set (arcs a a (b # ws')) = set (arcs z z (a # b # zs))"
             by (auto simp add: comm)
-            from ys(1) xs(3) ws'(1) have "len ?M a a (b # ws') < \<one>" by auto
+            from ys(1) xs(3) ws'(1) have "len ?M a a (b # ws') < 0" by auto
             from ws'(2) ys(2) \<open>i \<le> n\<close> z have n_bounds: "a \<le> n" "b \<le> n" "set ws' \<subseteq> {0..n}" "z \<le> n" by auto
-            from * have a_b: "?M a b = M a b"
-              by simp
+            from * have a_b: "?M a b = M a b" by simp
             from successive successive_split[of _ "arcs a z (b # zs)" "[(z,a), (a,b)]"]
             have first: "successive (\<lambda>(a, b). ?M a b = M a b) (arcs a z (b # zs))" and
                  last_two: "successive (\<lambda>(a, b). ?M a b = M a b) [(z, a), (a, b)]"
@@ -1662,7 +1657,7 @@ proof -
               qed
               with \<open>?M b z = M\<^sub>R b z\<close> have "len ?M b a ws' = \<infinity>" by (auto intro: len_inf_elem[OF z(1)])
               then have "\<infinity> = len ?M a a (b # ws')" by simp
-              with \<open>len ?M a a _ < \<one>\<close> show ?thesis by auto
+              with \<open>len ?M a a _ < 0\<close> show ?thesis by auto
             next
               assume inf: "M\<^sub>R a 0 = \<infinity>"
               show "z = 0"
@@ -1672,12 +1667,11 @@ proof -
                 from distinct z have "a \<noteq> z" by auto
                 with \<open>z \<noteq> 0\<close> \<open>a \<le> n\<close> \<open>z \<le> n\<close> M\<^sub>R(2) inf have "M\<^sub>R z a = \<infinity>" by blast
                 with \<open>?M z a = M\<^sub>R z a\<close> have "len ?M z z (a # b # zs) = \<infinity>" by (auto intro: len_inf_elem)
-                with \<open>len ?M a a _ < \<one>\<close> rotated show False by auto
+                with \<open>len ?M a a _ < 0\<close> rotated show False by auto
               qed
             qed
             { fix c d assume A: "(c, d) \<in> set (arcs 0 0 (a # b # zs))" "M c d < M\<^sub>R c d"
-              then have *: "?M c d = M c d"
-                by simp
+              then have *: "?M c d = M c d" by simp
               from rotated(2) A \<open>z = 0\<close> not_bounded ws'(4) have **: "M\<^sub>R c 0 = \<infinity> \<or> M\<^sub>R d 0 = \<infinity>" by auto
               { assume inf: "M\<^sub>R c 0 = \<infinity>"
                 fix x assume x: "(x, c) \<in> set (arcs a 0 (b # zs))" "?M x c \<noteq> M x c"
@@ -1695,7 +1689,7 @@ proof -
                     "len ?M a 0 (b # zs) = \<infinity>"
                   by (fastforce intro: len_inf_elem[OF x(1)])
                   with \<open>z = 0\<close> have "len ?M z z (a # b # zs) = \<infinity>" by auto
-                  with \<open>len ?M a a _ < \<one>\<close> rotated show False by auto
+                  with \<open>len ?M a a _ < 0\<close> rotated show False by auto
                 qed
                 with arcs_distinct_dest1[OF _ x(1), of z] z distinct x \<open>z = 0\<close> have False by auto
               } note c_0_inf = this
@@ -1732,7 +1726,7 @@ proof -
                   next
                     case True
                     have ****: "successive (\<lambda>(a, b). ?M a b = M a b) (arcs a 0 (b # zs))"
-                    using first \<open>z = 0\<close> arcs_decomp successive_arcs z by auto 
+                    using first \<open>z = 0\<close> arcs_decomp successive_arcs z by auto
                     show ?thesis
                     proof (cases zs)
                       case Nil
@@ -1784,7 +1778,7 @@ proof -
                       qed
                       with \<open>?M d e = M\<^sub>R d e\<close> have "len ?M b 0 zs = \<infinity>" by (auto intro: len_inf_elem[OF e(1)])
                       with \<open>z = 0\<close> rotated have "\<infinity> = len ?M a a (b # ws')" by simp
-                      with \<open>len ?M a a _ < \<one>\<close> show ?thesis by auto
+                      with \<open>len ?M a a _ < 0\<close> show ?thesis by auto
                     next
                       assume "M\<^sub>R c 0 = \<infinity>" from c_0_inf[OF this x] show False .
                     qed
@@ -1902,14 +1896,14 @@ proof -
           have ?thesis
           proof (cases "M\<^sub>R 0 y + M\<^sub>R z 0 = Lt (c + d)")
             case True
-            from ** have "(M\<^sub>R 0 y + M\<^sub>R z 0) + M y z < Le 0" using comm assoc by metis
+            from ** have "(M\<^sub>R 0 y + M\<^sub>R z 0) + M y z < Le 0" using comm add.assoc by metis
             with True have **: "Lt (c + d) + M y z < Le 0" by simp
-            then have "M y z \<le> Le (- (c + d))" unfolding less less_eq dbm_le_def mult
+            then have "M y z \<le> Le (- (c + d))" unfolding less less_eq dbm_le_def add
             by (cases "M y z") (fastforce elim!: dbm_lt.cases)+
             from dbm_le'[OF assms(2)[folded M(1)] this \<open>y \<le> n\<close> \<open>z \<le> n\<close> C(3,4)] \<open>y \<noteq> 0\<close> \<open>z \<noteq> 0\<close> M
             have subs: "Z \<subseteq> {u \<in> V. u c1 - u c2 \<le> - (c + d)}" by blast
             with c d have "- k (v' z) \<le> - (c + d)" "- (c + d) \<le> k (v' y)" by auto
-            with beta_interp.\<beta>_boundedness_diag_le'[OF _ _ C(1,2) subs] C2 have 
+            with beta_interp.\<beta>_boundedness_diag_le'[OF _ _ C(1,2) subs] C2 have
               "Approx\<^sub>\<beta> Z \<subseteq> {u \<in> V. u c1 - u c2 \<le> - (c + d)}"
             by auto
             moreover
@@ -1917,20 +1911,20 @@ proof -
               with C \<open>y \<le> n\<close> \<open>z \<le> n\<close> M\<^sub>R(1) have
                 "dbm_entry_val u (Some c2) None (M\<^sub>R z 0)" "dbm_entry_val u None (Some c1) (M\<^sub>R 0 y)"
               unfolding DBM_zone_repr_def DBM_val_bounded_def by auto
-              with True c d(1) have "u \<notin> {u \<in> V. u c1 - u c2 \<le> - (c + d)}" unfolding mult by auto
+              with True c d(1) have "u \<notin> {u \<in> V. u c1 - u c2 \<le> - (c + d)}" unfolding add by auto
             }
             ultimately show ?thesis by blast
           next
             case False
-            with c d have "M\<^sub>R 0 y + M\<^sub>R z 0 = Le (c + d)" unfolding mult by fastforce
-            moreover from ** have "(M\<^sub>R 0 y + M\<^sub>R z 0) + M y z < Le 0" using comm assoc by metis
+            with c d have "M\<^sub>R 0 y + M\<^sub>R z 0 = Le (c + d)" unfolding add by fastforce
+            moreover from ** have "(M\<^sub>R 0 y + M\<^sub>R z 0) + M y z < Le 0" using comm add.assoc by metis
             ultimately have **: "Le (c + d) + M y z < Le 0" by simp
-            then have "M y z \<le> Lt (- (c + d))" unfolding less less_eq dbm_le_def mult
+            then have "M y z \<le> Lt (- (c + d))" unfolding less less_eq dbm_le_def add
             by (cases "M y z") (fastforce elim!: dbm_lt.cases)+
             from dbm_lt'[OF assms(2)[folded M(1)] this \<open>y \<le> n\<close> \<open>z \<le> n\<close> C(3,4)] \<open>y \<noteq> 0\<close> \<open>z \<noteq> 0\<close> M
             have subs: "Z \<subseteq> {u \<in> V. u c1 - u c2 < - (c + d)}" by auto
             from c d(2-) C2 have "- k c2 \<le> - (c + d)" "- (c + d) \<le> k c1" by auto
-            from beta_interp.\<beta>_boundedness_diag_lt'[OF this C(1,2) subs] have 
+            from beta_interp.\<beta>_boundedness_diag_lt'[OF this C(1,2) subs] have
               "Approx\<^sub>\<beta> Z \<subseteq> {u \<in> V. u c1 - u c2 < - (c + d)}"
             .
             moreover
@@ -1980,8 +1974,6 @@ proof -
   then show ?thesis unfolding alpha_interp.cla_def by blast
 qed
 
-definition "V' \<equiv> {Z. Z \<subseteq> V \<and> (\<exists> M. vabstr Z M)}"
-
 corollary approx_\<beta>_closure_\<alpha>': "Z \<in> V' \<Longrightarrow> Approx\<^sub>\<beta> Z \<subseteq> Closure\<^sub>\<alpha> Z"
 using approx_\<beta>_closure_\<alpha> unfolding V'_def by auto
 
@@ -2011,215 +2003,335 @@ next
   ultimately show ?thesis using *(1,4) unfolding V'_def by auto
 qed
 
+end (* End of context for global regions *)
+
+lemma valid_abstraction_pairsD:
+  "\<forall>(x, m)\<in>Timed_Automata.clkp_set A. x \<in> X \<and> m \<in> \<nat>" if "valid_abstraction A X k"
+  using that
+  apply cases
+  unfolding clkp_set_def Timed_Automata.clkp_set_def
+  unfolding collect_clki_def Timed_Automata.collect_clki_def
+  unfolding collect_clkt_def Timed_Automata.collect_clkt_def
+  by blast
+
 section \<open>A New Zone Semantics Abstracting with \<open>Approx\<^sub>\<beta>\<close>\<close>
 
-lemma step_z_V':
-  assumes "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto> \<langle>l',Z'\<rangle>" "valid_abstraction A X k" "\<forall>c\<in>clk_set A. v c \<le> n" "Z \<in> V'"
-  shows "Z' \<in> V'"
-proof -
-  from assms(3) clock_numbering have numbering: "global_clock_numbering A v n" by metis
-  from assms(4) obtain M where M:
-    "Z \<subseteq> V" "Z = [M]\<^bsub>v,n\<^esub>" "dbm_int M n"
-  unfolding V'_def by auto
-  from alpha_interp.step_z_V[OF assms(1) M(1)] M(2) assms(1) step_z_dbm_DBM[OF _ numbering]
-       step_z_dbm_preserves_int[OF _ numbering assms(2) M(3)]
-  obtain M' where M': "Z' \<subseteq> V" "Z' = [M']\<^bsub>v,n\<^esub>" "dbm_int M' n" by metis
-  then show ?thesis unfolding V'_def by blast
-qed
+locale Regions =
+  Regions_defs X v n for X and v :: "'c \<Rightarrow> nat" and n :: nat +
+  fixes k :: "'s \<Rightarrow> 'c \<Rightarrow> nat" and not_in_X
+  assumes finite: "finite X"
+  assumes clock_numbering:
+    "clock_numbering' v n" "\<forall>k\<le>n. k > 0 \<longrightarrow> (\<exists>c \<in> X. v c = k)" "\<forall> c \<in> X. v c \<le> n"
+  assumes not_in_X: "not_in_X \<notin> X"
+  assumes non_empty: "X \<noteq> {}"
+begin
 
-lemma steps_z_V':
-  "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto>* \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<in> V'"
-by (induction rule: steps_z.induct) (auto intro: step_z_V')
+definition \<R>_def: "\<R> l \<equiv> {Regions.region X I r | I r. Regions.valid_region X (k l) I r}"
+
+definition \<R>\<^sub>\<beta>_def:
+  "\<R>\<^sub>\<beta> l \<equiv> {Regions_Beta.region X I J r | I J r. Regions_Beta.valid_region X (k l) I J r}"
+
+sublocale
+  AlphaClosure X k \<R> by (unfold_locales) (auto simp: finite \<R>_def V_def)
+
+abbreviation "Approx\<^sub>\<beta> l Z \<equiv> Beta_Regions'.Approx\<^sub>\<beta> X (k l) v n not_in_X Z"
 
 
 subsection \<open>Single Step\<close>
 
 inductive step_z_beta ::
-  "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta> \<langle>_, _\<rangle>" [61,61,61] 61)
+  "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
+("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<beta>(_)\<^esub> \<langle>_, _\<rangle>" [61,61,61,61] 61)
 where
-  step_beta: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto> \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Approx\<^sub>\<beta> Z'\<rangle>"
+  step_beta: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', Approx\<^sub>\<beta> l' Z'\<rangle>"
 
-inductive_cases[elim!]: "A \<turnstile> \<langle>l, u\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l',u'\<rangle>"
+inductive_cases[elim!]: "A \<turnstile> \<langle>l, u\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l',u'\<rangle>"
 
 declare step_z_beta.intros[intro]
 
+
+(* XXX All of these should be considered for moving into the locales for global sets of regions *)
+context
+  fixes l' :: 's
+begin
+
+interpretation regions: Regions_global _ _ _ "k l'"
+  by standard (rule finite clock_numbering not_in_X non_empty)+
+
+lemma step_z_V':
+  assumes "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l',Z'\<rangle>" "valid_abstraction A X k" "\<forall>c\<in>clk_set A. v c \<le> n" "Z \<in> V'"
+  shows "Z' \<in> V'"
+proof -
+  from assms(3) clock_numbering have numbering: "global_clock_numbering A v n" by metis
+  from assms(4) obtain M where M:
+    "Z \<subseteq> V" "Z = [M]\<^bsub>v,n\<^esub>" "dbm_int M n"
+    unfolding V'_def by auto
+  from valid_abstraction_pairsD[OF assms(2)] have "\<forall>(x, m)\<in>Timed_Automata.clkp_set A. m \<in> \<nat>"
+    by blast
+  from step_z_V[OF assms(1) M(1)] M(2) assms(1) step_z_dbm_DBM[OF _ numbering]
+       step_z_dbm_preserves_int[OF _ numbering this M(3)]
+  obtain M' where M': "Z' \<subseteq> V" "Z' = [M']\<^bsub>v,n\<^esub>" "dbm_int M' n" by metis
+  then show ?thesis unfolding V'_def by blast
+qed
+
 lemma step_z_alpha_sound:
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<noteq> {}
-  \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto> \<langle>l',Z''\<rangle> \<and> Z'' \<noteq> {}"
- apply (induction rule: step_z_beta.induct)
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V'
+  \<Longrightarrow> Z' \<noteq> {} \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l',Z''\<rangle> \<and> Z'' \<noteq> {}"
+ apply (induction l' \<equiv> l' Z' rule: step_z_beta.induct)
  apply (frule step_z_V')
     apply assumption+
- apply (rotate_tac 4)
- apply (drule apx_empty_iff')
+  apply (rotate_tac 5)
+ apply (drule regions.apx_empty_iff')
 by blast
 
 lemma step_z_alpha_complete:
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto> \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<noteq> {}
-  \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle> \<and> Z'' \<noteq> {}"
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V'
+  \<Longrightarrow> Z' \<noteq> {} \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', Z''\<rangle> \<and> Z'' \<noteq> {}"
  apply (frule step_z_V')
     apply assumption+
  apply (rotate_tac 4)
- apply (drule apx_empty_iff')
-by blast
-
-subsection \<open>Multi step\<close>
-
-inductive
-  steps_z_beta :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>_, _\<rangle>" [61,61,61] 61)
-where
-  refl: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l, Z\<rangle>" |
-  step: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l'', Z''\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l'', Z''\<rangle>"
-
-declare steps_z_beta.intros[intro]
-
-lemma V'_V: "Z \<in> V' \<Longrightarrow> Z \<subseteq> V" unfolding V'_def by auto
-
-lemma steps_z_beta_V':
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow>\<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<in> V'"
-proof (induction rule: steps_z_beta.induct)
-  case refl then show ?case by fast
-next
-  case (step A l Z l' Z' l'' Z'')
-  from this(2) obtain Z''' where Z''': "A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto> \<langle>l'',Z'''\<rangle>" "Z'' = Approx\<^sub>\<beta> Z'''" by auto
-  from step_z_V'[OF this(1)] step have "Z''' \<in> V'" by auto
-  from apx_V'[OF V'_V, OF this] Z'''(2) show ?case by auto
-qed
+ apply (drule regions.apx_empty_iff')
+ by blast
 
 lemma alpha_beta_step:
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V'
-  \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle> \<and> Z' \<subseteq> Z''"
-  apply (induction rule: step_z_beta.induct)
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V'
+  \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<alpha>(a)\<^esub> \<langle>l', Z''\<rangle> \<and> Z' \<subseteq> Z''"
+  apply (induction l' \<equiv> l' Z' rule: step_z_beta.induct)
   apply (frule step_z_V')
     apply assumption+
   apply (rotate_tac 4)
-  apply (drule approx_\<beta>_closure_\<alpha>')
+  apply (drule regions.approx_\<beta>_closure_\<alpha>')
   apply auto
-done 
-
-subsubsection \<open>Soundness\<close>
+done
 
 lemma alpha_beta_step':
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> W \<subseteq> V
-  \<Longrightarrow> Z \<subseteq> W \<Longrightarrow> \<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'"
-proof (induction rule: step_z_beta.induct)
-  case (step_beta A l Z l' Z')
-  from alpha_interp.step_z_mono[OF step_beta(1,6)] obtain W' where W':
-    "A \<turnstile> \<langle>l, W\<rangle> \<leadsto> \<langle>l',W'\<rangle>" "Z' \<subseteq> W'"
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> W \<subseteq> V
+  \<Longrightarrow> Z \<subseteq> W \<Longrightarrow> \<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^bsub>\<alpha>(a)\<^esub> \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'"
+proof (induction l' \<equiv> l' Z' rule: step_z_beta.induct)
+  case (step_beta A l Z a Z')
+  from step_z_mono[OF step_beta(1,6)] obtain W' where W':
+    "A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l',W'\<rangle>" "Z' \<subseteq> W'"
   by blast
-  from approx_\<beta>_closure_\<alpha>'[OF step_z_V'[OF step_beta(1-4)]]
-       alpha_interp.cla_mono[OF this(2)] this(1)
+  from regions.approx_\<beta>_closure_\<alpha>'[OF step_z_V'[OF step_beta(1-4)]]
+       regions.alpha_interp.cla_mono[OF this(2)] this(1)
   show ?case by auto
 qed
 
-lemma alpha_beta_steps:
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V'
-  \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l', Z''\<rangle> \<and> Z' \<subseteq> Z''"
-proof (induction rule: steps_z_beta.induct)
-  case refl then show ?case by auto
-next
-  case (step A l Z l' Z' l'' Z'')
-  then obtain Z''' where *: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l',Z'''\<rangle>" "Z' \<subseteq> Z'''" by auto
-  from alpha_beta_step'[OF step.hyps(2) step.prems(1,2) steps_z_beta_V'[OF step.hyps(1) step.prems]
-                        alpha_interp.steps_z_alpha_V[OF this(1) V'_V] this(2)] step.prems
-  obtain W' where "A \<turnstile> \<langle>l', Z'''\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l'',W'\<rangle>" "Z'' \<subseteq> W'" by blast
-  with * show ?case by auto
+lemma apx_mono:
+  "Z' \<subseteq> V \<Longrightarrow> Z \<subseteq> Z' \<Longrightarrow> Approx\<^sub>\<beta> l' Z \<subseteq> Approx\<^sub>\<beta> l' Z'"
+proof (goal_cases)
+  case 1
+  with regions.beta_interp.apx_in have
+    "regions.Approx\<^sub>\<beta> Z' \<in> {S. \<exists>U M. S = \<Union>U \<and> U \<subseteq> regions.\<R>\<^sub>\<beta> \<and> Z' \<subseteq> S \<and> regions.beta_interp.vabstr S M
+                      \<and> regions.beta_interp.normalized M}"
+  by auto
+  with 1 obtain U M where
+    "regions.Approx\<^sub>\<beta> Z' = \<Union>U" "U \<subseteq> regions.\<R>\<^sub>\<beta>" "Z \<subseteq> regions.Approx\<^sub>\<beta> Z'"
+    "regions.beta_interp.vabstr (regions.Approx\<^sub>\<beta> Z') M"
+    "regions.beta_interp.normalized M"
+  by auto
+  with regions.beta_interp.apx_min show ?thesis by auto
 qed
 
+end (* End of context for global regions *)
+
+lemma step_z'_V':
+  assumes "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto> \<langle>l',Z'\<rangle>" "valid_abstraction A X k" "\<forall>c\<in>clk_set A. v c \<le> n" "Z \<in> V'"
+  shows "Z' \<in> V'"
+  using assms unfolding step_z'_def by (auto elim: step_z_V')
+
+lemma steps_z_V':
+  "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto>* \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<in> V'"
+  by (induction rule: rtranclp_induct2; blast intro: step_z'_V')
+
+subsection \<open>Multi step\<close>
+
+definition
+  step_z_beta' :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
+("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta> \<langle>_, _\<rangle>" [61,61,61] 61)
+where
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle> = (\<exists> Z' a. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l, Z'\<rangle> \<and> A \<turnstile> \<langle>l, Z'\<rangle> \<leadsto>\<^bsub>\<beta>(\<upharpoonleft>a)\<^esub> \<langle>l', Z''\<rangle>)"
+
+abbreviation
+  steps_z_beta :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
+("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>_, _\<rangle>" [61,61,61] 61)
+where
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z''\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle>)\<^sup>*\<^sup>* (l, Z) (l', Z'')"
+
+lemma V'_V: "Z \<in> V' \<Longrightarrow> Z \<subseteq> V" unfolding V'_def by auto
+
+context
+  fixes A :: "('a, 'c, t, 's) ta"
+  assumes valid_ta: "valid_abstraction A X k" "\<forall>c\<in>clk_set A. v c \<le> n"
+begin
+
+interpretation alpha: AlphaClosure_global _ "k l'" "\<R> l'" by standard (rule finite)
+lemma [simp]: "alpha.cla l' = cla l'" unfolding alpha.cla_def cla_def ..
+
+lemma step_z_alpha'_V:
+  "Z' \<subseteq> V" if "Z \<subseteq> V" "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z'\<rangle>"
+  using that alpha.closure_V[simplified] unfolding step_z_alpha'_def by blast
+
+lemma step_z_beta'_V':
+  "Z' \<in> V'" if "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l',Z'\<rangle>" "Z \<in> V'"
+proof -
+  interpret regions: Regions_global _ _ _ "k l'"
+    by standard (rule finite clock_numbering not_in_X non_empty)+
+  from that valid_ta show ?thesis
+    unfolding step_z_beta'_def by (blast intro: step_z_V' regions.apx_V'[OF V'_V])
+qed
+
+lemma steps_z_beta_V':
+  "A \<turnstile> \<langle>l,Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l',Z'\<rangle> \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<in> V'"
+  by (induction rule: rtranclp_induct2; blast intro: step_z_beta'_V')
+
+subsubsection \<open>Soundness\<close>
+
+lemma alpha'_beta'_step:
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle> \<Longrightarrow> Z \<in> V' \<Longrightarrow> W \<subseteq> V \<Longrightarrow> Z \<subseteq> W \<Longrightarrow> \<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'"
+  unfolding step_z_beta'_def step_z_alpha'_def
+  apply (elim exE conjE)
+  apply (frule step_z_mono, assumption)
+  apply (elim exE conjE)
+  apply (frule alpha_beta_step'[OF _ valid_ta])
+     prefer 3
+  using valid_ta by (blast intro: step_z_V' dest: step_z_V)+
+
+lemma alpha_beta_sim:
+  "Simulation_Invariant 
+    (\<lambda>(l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle>)
+    (\<lambda>(l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle>)
+    (\<lambda>(l, Z) (l', Z'). l = l' \<and> Z \<subseteq> Z') (\<lambda>(_, Z). Z \<in> V') (\<lambda>(_, Z). Z \<subseteq> V)"
+  by standard (auto elim: alpha'_beta'_step step_z_beta'_V' dest: step_z_alpha'_V)
+
+interpretation
+  Simulation_Invariant
+  "\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle>"
+  "\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle>"
+  "\<lambda> (l, Z) (l', Z'). l = l' \<and> Z \<subseteq> Z'"
+  "\<lambda> (_, Z). Z \<in> V'" "\<lambda> (_, Z). Z \<subseteq> V"
+  by (fact alpha_beta_sim)
+
+lemma alpha_beta_steps:
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> Z \<in> V' \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l', Z''\<rangle> \<and> Z' \<subseteq> Z''"
+  using simulation_reaches[of "(l, Z)" "(l', Z')" "(l, Z)"] by (auto dest: V'_V)
+
+(*
 corollary steps_z_beta_sound:
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> \<forall>c\<in>clk_set A. v c \<le> n \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> Z \<in> V' \<Longrightarrow> Z' \<noteq> {}
   \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l', Z''\<rangle> \<and> Z'' \<noteq> {}"
 proof (goal_cases)
   case 1
-  then have "Z \<subseteq> V" unfolding V'_def by auto
+  interpret regions: Regions_global _ _ _ "k l'"
+    by standard (rule finite clock_numbering not_in_X non_empty)+
+  from 1 have "Z \<subseteq> V" unfolding V'_def by auto
   from alpha_beta_steps[OF 1(1,3,2,4)] obtain Z''' where *:
     "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l',Z'''\<rangle>" "Z' \<subseteq> Z'''"
-    by blast
-  from alpha_interp.steps_z_alpha_closure_involutive[OF *(1) 1(3) \<open>Z \<subseteq> V\<close>] obtain Z'' where
-    Z'': "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z''\<rangle>" "Closure\<^sub>\<alpha> Z''' \<subseteq> Closure\<^sub>\<alpha> Z''" "Z'' \<subseteq> Z'''"
-    by blast
-  with alpha_interp.closure_subs[OF alpha_interp.steps_z_alpha_V[OF *(1) \<open>Z \<subseteq> V\<close>]] 1(5)
-    alpha_interp.cla_empty_iff[OF alpha_interp.steps_z_V, OF this(1) \<open>Z \<subseteq> V\<close>] *(2)
+  by blast
+  from steps_z_alpha_closure_involutive[OF *(1) 1(3) \<open>Z \<subseteq> V\<close>] obtain Z'' where
+    "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z''\<rangle>" "Closure\<^sub>\<alpha>\<^sub>,\<^sub>l' Z''' \<subseteq> Closure\<^sub>\<alpha>\<^sub>,\<^sub>l' Z''" "Z'' \<subseteq> Z'''"
+  by blast
+  moreover with
+    regions.alpha_interp.closure_subs[OF steps_z_alpha_V[OF *(1) \<open>Z \<subseteq> V\<close>]] 1(5)
+    regions.alpha_interp.cla_empty_iff[OF steps_z_V, OF this(1) \<open>Z \<subseteq> V\<close>] *(2)
   have "Z'' \<noteq> {}" by auto
-  with Z'' show ?thesis by auto
+  ultimately show ?thesis by auto
 qed
+*)
+
+end (* Valid TA *)
 
 subsubsection \<open>Completeness\<close>
 
-lemma apx_mono:
-  "Z' \<subseteq> V \<Longrightarrow> Z \<subseteq> Z' \<Longrightarrow> Approx\<^sub>\<beta> Z \<subseteq> Approx\<^sub>\<beta> Z'"
-proof (goal_cases)
-  case 1
-  with beta_interp.apx_in have
-    "Approx\<^sub>\<beta> Z' \<in> {S. \<exists>U M. S = \<Union>U \<and> U \<subseteq> \<R>\<^sub>\<beta> \<and> Z' \<subseteq> S \<and> beta_interp.vabstr S M
-                      \<and> beta_interp.normalized M}"
-  by auto
-  with 1 obtain U M where
-    "Approx\<^sub>\<beta> Z' = \<Union>U" "U \<subseteq> \<R>\<^sub>\<beta>" "Z \<subseteq> Approx\<^sub>\<beta> Z'" "beta_interp.vabstr (Approx\<^sub>\<beta> Z') M"
-    "beta_interp.normalized M"
-  by auto
-  with beta_interp.apx_min show ?thesis by auto
-qed
-
 lemma step_z_beta_mono:
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle> \<Longrightarrow> Z \<subseteq> W \<Longrightarrow> W \<subseteq> V \<Longrightarrow> \<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'"
+  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> Z \<subseteq> W \<Longrightarrow> W \<subseteq> V \<Longrightarrow> \<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'"
 proof (goal_cases)
   case 1
-  then obtain Z'' where *: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto> \<langle>l',Z''\<rangle>" "Z' = Approx\<^sub>\<beta> Z''" by auto
-  from alpha_interp.step_z_mono[OF this(1) 1(2)] obtain W' where
-    "A \<turnstile> \<langle>l, W\<rangle> \<leadsto> \<langle>l',W'\<rangle>" "Z'' \<subseteq> W'"
+  then obtain Z'' where *: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l',Z''\<rangle>" "Z' = Approx\<^sub>\<beta> l' Z''" by auto
+  from step_z_mono[OF this(1) 1(2)] obtain W' where
+    "A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l',W'\<rangle>" "Z'' \<subseteq> W'"
   by auto
-  moreover with *(2) apx_mono[OF alpha_interp.step_z_V] \<open>W \<subseteq> V\<close> have
-    "Z' \<subseteq> Approx\<^sub>\<beta> W'"
+  moreover with *(2) apx_mono[OF step_z_V] \<open>W \<subseteq> V\<close> have
+    "Z' \<subseteq> Approx\<^sub>\<beta> l' W'"
   by metis
   ultimately show ?case by blast
 qed
 
+lemma step_z_beta'_V:
+  "Z' \<subseteq> V" if "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle>" "Z \<subseteq> V"
+proof -
+  interpret regions: Regions_global _ _ _ "k l'"
+    by standard (rule finite clock_numbering not_in_X non_empty)+
+  from that show ?thesis unfolding step_z_beta'_def
+    by (auto intro: regions.apx_V dest: step_z_V del: subsetI)
+qed
+
+lemma steps_z_beta_V:
+  "Z' \<subseteq> V" if "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle>" "Z \<subseteq> V"
+  using that by (induction rule: rtranclp_induct2; blast intro: step_z_beta'_V del: subsetI)
+
+lemma step_z_beta'_mono:
+  "\<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'" if "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle>" "Z \<subseteq> W" "W \<subseteq> V"
+  using that unfolding step_z_beta'_def
+  apply (elim exE conjE)
+  apply (frule step_z_mono, assumption)
+  apply (elim exE conjE)
+  apply (drule step_z_beta_mono, assumption)
+   apply (auto dest: step_z_V)
+  done
+(*
 lemma steps_z_beta_V: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> Z \<subseteq> V \<Longrightarrow> Z' \<subseteq> V"
 proof (induction rule: steps_z_beta.induct)
   case refl then show ?case by blast
 next
-  case (step A l Z l' Z' l'' Z'')
-  then obtain Z''' where "A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto> \<langle>l'',Z'''\<rangle>" "Z'' = Approx\<^sub>\<beta> Z'''" by auto
-  with alpha_interp.step_z_V[OF this(1)] apx_V step(3,4) show "Z'' \<subseteq> V" by auto
+  case (step A l Z l' Z' Z'' a l'' Z''')
+  interpret regions: Regions_global _ _ _ "k l''"
+    by standard (rule finite clock_numbering not_in_X non_empty)+
+  from step have "Z'' \<subseteq> V" by (metis step_z_V)
+  from step obtain W''' where "A \<turnstile> \<langle>l', Z''\<rangle> \<leadsto>\<^bsub>\<upharpoonleft>a\<^esub> \<langle>l'', W'''\<rangle>" "Z''' = Approx\<^sub>\<beta> l'' W'''" by auto
+  with \<open>Z'' \<subseteq> V\<close> show ?case by (metis regions.apx_V step_z_V)
 qed
+*)
+
+
 
 lemma steps_z_beta_mono:
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z'\<rangle> \<Longrightarrow> Z \<subseteq> W \<Longrightarrow> W \<subseteq> V \<Longrightarrow> \<exists> W'. A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', W'\<rangle> \<and> Z' \<subseteq> W'"
-proof (induction rule: steps_z_beta.induct)
-  case refl then show ?case by auto
-next
-  case (step A l Z l' Z' l'' Z'')
-  then obtain W' where "A \<turnstile> \<langle>l, W\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l',W'\<rangle>" "Z' \<subseteq> W'" by auto
-  with step_z_beta_mono[OF step(2) this(2) steps_z_beta_V[OF this(1) step(5)]] show ?case by blast
-qed
+  apply (induction rule: rtranclp_induct2)
+   apply blast
+  apply (clarsimp; drule step_z_beta'_mono;
+      blast intro: rtranclp.intros(2) steps_z_beta_V del: subsetI)
+  done
 
-lemma steps_z_beta_alt:
-  "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l'', Z''\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l'', Z''\<rangle>"
-by (rotate_tac, induction rule: steps_z_beta.induct) blast+
-
+(*
 lemma steps_z_beta_complete:
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l', Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> Z \<subseteq> V
   \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l',Z''\<rangle> \<and> Z' \<subseteq> Z''"
 proof (induction rule: steps_z.induct)
-  case refl with apx_empty_iff show ?case by blast
+  case refl show ?case by blas
 next
-  case (step A l Z l' Z' l'' Z'')
-  with alpha_interp.step_z_V[OF this(1,5)] obtain Z''' where
-    "A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l'',Z'''\<rangle>" "Z'' \<subseteq> Z'''"
-  by blast
-  with steps_z_beta_mono[OF this(1) beta_interp.apx_subset apx_V[OF alpha_interp.step_z_V[OF step(1,5)]]]
-  obtain W' where "A \<turnstile> \<langle>l', Approx\<^sub>\<beta> Z'\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l'', W'\<rangle>" " Z'' \<subseteq> W'" by auto
-  moreover with step(1) have "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l'',W'\<rangle>" by (auto intro: steps_z_beta_alt)
-  ultimately show ?case by auto
+  case (step A l Z l' Z' a l'' Z'' l''' Z''')
+  interpret regions: Regions_global _ _ _ "k l''"
+    by standard (rule finite clock_numbering not_in_X non_empty)+
+  from step_z_V[OF step(2) step_z_V[OF step(1,6)]] have "Z'' \<subseteq> V" .
+  with step obtain W''' where W'':
+    "A \<turnstile> \<langle>l'', Z''\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l''', W'''\<rangle>" "Z''' \<subseteq> W'''"
+    by blast
+  with steps_z_beta_mono[OF W''(1) regions.beta_interp.apx_subset regions.apx_V[OF \<open>Z'' \<subseteq> V\<close>]]
+  obtain W4 where
+    "A \<turnstile> \<langle>l'', Approx\<^sub>\<beta> l'' Z''\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l''', W4\<rangle>" "W''' \<subseteq> W4"
+    by auto
+  with step(1,2) have "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l''', W4\<rangle>"
+    by (blast intro: steps_z_beta_alt elim!: step_z.cases)
+  with \<open>Z''' \<subseteq> W'''\<close> \<open>W''' \<subseteq> W4\<close> show ?case by auto
 qed
 
 lemma steps_z_beta_complete':
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z'\<rangle> \<Longrightarrow> valid_abstraction A X k \<Longrightarrow> Z \<subseteq> V \<Longrightarrow> Z' \<noteq> {}
   \<Longrightarrow> \<exists> Z''. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l',Z''\<rangle> \<and> Z'' \<noteq> {}"
-using steps_z_beta_complete by fast
+using steps_z_beta_complete by blast
+*)
 
-end
+end (* End of locale for local regions *)
 
-end
+end (* End of Theory *)

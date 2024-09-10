@@ -1,0 +1,41 @@
+title = "Definitive Set Semantics for LTL3"
+date = 2024-08-12
+topics = [
+  "Logic/General logic/Temporal logic",
+  "Computer science/Concurrency",
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+LTL3 is a multi-valued variant of Linear-time Temporal Logic for runtime verification
+applications, originally due to Bauer et al. The semantic descriptions of LTL3 in
+previous work are given only in terms of the relationship to conventional LTL. In this
+submission, which accompanies our EXPRESS/SOS 2024 paper, \"Semantics for Linear-time Temporal Logic with Finite Observations\", we instead give a full model-based inductive accounting of the semantics of LTL3, in terms of families of <em>definitive prefix sets</em>. We show that our definitive prefix sets are isomorphic to linear-time temporal properties (sets of infinite traces), and thereby show that our semantics
+of LTL3 directly correspond to the semantics of conventional LTL. In addition, we
+formalise the formula progression evaluation technique originally due to Kabanza et al., popularly used in runtime
+verification and testing contexts, and show its soundness and completeness up to finite traces with respect to our semantics."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.amjad]
+homepage = "amjad_homepage"
+
+[authors.glabbeek]
+homepage = "glabbeek_homepage"
+
+[authors.connor]
+homepage = "connor_homepage"
+
+[contributors]
+
+[notify]
+connor = "connor_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -31,6 +31,7 @@ locale is_cat_obj_prod =
 
 syntax "_is_cat_obj_prod" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod> _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_cat_obj_prod" \<rightleftharpoons> is_cat_obj_prod
 translations "\<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod> A : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_obj_prod \<alpha> I A \<CC> P \<pi>"
 
@@ -40,6 +41,7 @@ locale is_cat_obj_coprod =
 
 syntax "_is_cat_obj_coprod" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod> _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_cat_obj_coprod" \<rightleftharpoons> is_cat_obj_coprod
 translations "\<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod> U : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_cat_obj_coprod \<alpha> I A \<CC> U \<pi>"
 
@@ -239,6 +241,7 @@ locale is_tm_cat_obj_prod =
 
 syntax "_is_tm_cat_obj_prod" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>\<Prod> _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_cat_obj_prod" \<rightleftharpoons> is_tm_cat_obj_prod
 translations "\<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>\<Prod> A : I \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_tm_cat_obj_prod \<alpha> I A \<CC> P \<pi>"
 
@@ -248,6 +251,7 @@ locale is_tm_cat_obj_coprod =
 
 syntax "_is_tm_cat_obj_coprod" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>\<Coprod> _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_cat_obj_coprod" \<rightleftharpoons> is_tm_cat_obj_coprod
 translations "\<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>\<Coprod> U : I \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_tm_cat_obj_coprod \<alpha> I A \<CC> U \<pi>"
 
@@ -373,7 +377,8 @@ locale is_cat_finite_obj_prod = is_cat_obj_prod \<alpha> I A \<CC> P \<pi>
 
 syntax "_is_cat_finite_obj_prod" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
-translations "\<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n A : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_finite_obj_prod" \<rightleftharpoons> is_cat_finite_obj_prod
+translations "\<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Prod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n A : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_finite_obj_prod \<alpha> I A \<CC> P \<pi>"
 
 locale is_cat_finite_obj_coprod = is_cat_obj_coprod \<alpha> I A \<CC> U \<pi> 
@@ -382,7 +387,8 @@ locale is_cat_finite_obj_coprod = is_cat_obj_coprod \<alpha> I A \<CC> U \<pi>
 
 syntax "_is_cat_finite_obj_coprod" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
-translations "\<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n U : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_finite_obj_coprod" \<rightleftharpoons> is_cat_finite_obj_coprod
+translations "\<pi> : A >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<Coprod>\<^sub>.\<^sub>f\<^sub>i\<^sub>n U : I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_finite_obj_coprod \<alpha> I A \<CC> U \<pi>"
 
 lemma (in is_cat_finite_obj_prod) cat_fin_obj_prod_index_vfinite: "vfinite I"
@@ -486,7 +492,8 @@ locale is_cat_obj_prod_2 = is_cat_obj_prod \<alpha> \<open>2\<^sub>\<nat>\<close
 
 syntax "_is_cat_obj_prod_2" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<times> {_,_} :/ 2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
-translations "\<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<times> {a,b} : 2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_obj_prod_2" \<rightleftharpoons> is_cat_obj_prod_2
+translations "\<pi> : P <\<^sub>C\<^sub>F\<^sub>.\<^sub>\<times> {a,b} : 2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_obj_prod_2 \<alpha> a b \<CC> P \<pi>"
 
 locale is_cat_obj_coprod_2 = is_cat_obj_coprod \<alpha> \<open>2\<^sub>\<nat>\<close> \<open>if2 a b\<close> \<CC> P \<pi>
@@ -494,7 +501,8 @@ locale is_cat_obj_coprod_2 = is_cat_obj_coprod \<alpha> \<open>2\<^sub>\<nat>\<c
 
 syntax "_is_cat_obj_coprod_2" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ {_,_} >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<uplus> _ :/ 2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
-translations "\<pi> : {a,b} >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<uplus> U : 2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_obj_coprod_2" \<rightleftharpoons> is_cat_obj_coprod_2
+translations "\<pi> : {a,b} >\<^sub>C\<^sub>F\<^sub>.\<^sub>\<uplus> U : 2\<^sub>C \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_obj_coprod_2 \<alpha> a b \<CC> U \<pi>"
 
 abbreviation proj_fst where "proj_fst \<pi> \<equiv> vpfst (\<pi>\<lparr>NTMap\<rparr>)"

@@ -328,6 +328,8 @@ lemmas non_terminating_Par = non_terminating_Sync[where A = \<open>UNIV\<close>]
 
 syntax
   "_writeS"  :: "['b \<Rightarrow> 'a, pttrn, 'b set, 'a process] => 'a process"  ("(4(_\<^bold>!_\<^bold>|_) /\<rightarrow> _)" [0,0,50,78] 50)
+syntax_consts
+  "_writeS" == Mndetprefix
 translations
   "_writeS c p b P"  => "CONST Mndetprefix (c ` {p. b}) (\<lambda>_. P)"
 

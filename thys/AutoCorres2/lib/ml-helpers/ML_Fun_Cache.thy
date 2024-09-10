@@ -258,7 +258,7 @@ fun string_of_handler x = (string_of_info o get_info) x
 
 val _ =
   ML_system_pp (fn depth => fn pretty => fn handler =>
-    Pretty.to_polyml (pretty_handler handler));
+    Pretty.to_ML (pretty_handler handler));
 
 end;
 \<close>

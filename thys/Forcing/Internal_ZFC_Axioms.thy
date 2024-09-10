@@ -56,6 +56,8 @@ synthesize "ZF_choice_fm" from_schematic ZF_choice_auto
 
 syntax
   "_choice" :: "i"  ("AC")
+syntax_consts
+  "_choice" \<rightleftharpoons> ZF_choice_fm
 translations
   "AC" \<rightharpoonup> "CONST ZF_choice_fm"
 

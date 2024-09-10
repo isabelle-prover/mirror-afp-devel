@@ -155,7 +155,7 @@ fun mk_alpha_prems lthy alpha_map alpha_bn_map is_rec (args, args') bclause =
 (* produces the introduction rule for an alpha rule *)
 fun mk_alpha_intros lthy alpha_map alpha_bn_map (constr, ty, arg_tys, is_rec) bclauses =
   let
-    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
+    val arg_names = Case_Translation.make_tnames arg_tys
     val arg_names' = Name.variant_list arg_names arg_names
     val args = map Free (arg_names ~~ arg_tys)
     val args' = map Free (arg_names' ~~ arg_tys)
@@ -198,7 +198,7 @@ fun mk_alpha_bn lthy alpha_map alpha_bn_map bn_args is_rec (args, args') bclause
 
 fun mk_alpha_bn_intro lthy bn_trm alpha_map alpha_bn_map (bn_args, (constr, _, arg_tys, is_rec)) bclauses =
   let
-    val arg_names = Old_Datatype_Prop.make_tnames arg_tys
+    val arg_names = Case_Translation.make_tnames arg_tys
     val arg_names' = Name.variant_list arg_names arg_names
     val args = map Free (arg_names ~~ arg_tys)
     val args' = map Free (arg_names' ~~ arg_tys)

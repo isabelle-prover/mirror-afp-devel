@@ -82,6 +82,10 @@ syntax (ASCII)
   "_doN_bind" :: "[pttrn, 'a] \<Rightarrow> doN_bind" ("(2_ <-/ _)" 13)
   "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl ">>" 54)
 
+syntax_consts
+  "_doN_block" "_doN_bind" "_doN_cons" "_thenM" \<rightleftharpoons> bind_doE and
+  "_doN_let" \<rightleftharpoons> Let
+
 translations
   "_doN_block (_doN_cons (_doN_then t) (_doN_final e))"
     \<rightleftharpoons> "CONST bind_doN t (\<lambda>_. e)"

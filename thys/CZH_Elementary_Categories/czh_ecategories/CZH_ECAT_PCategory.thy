@@ -38,6 +38,7 @@ definition cat_prod :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
 
 syntax "_PCATEGORY" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" 
   ("(3\<Prod>\<^sub>C_\<in>\<^sub>\<circ>_./ _)" [0, 0, 10] 10)
+syntax_consts "_PCATEGORY" \<rightleftharpoons> cat_prod
 translations "\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>I. \<AA>" \<rightleftharpoons> "CONST cat_prod I (\<lambda>i. \<AA>)"
 
 
@@ -974,6 +975,7 @@ definition prodfunctor_proj :: "V \<Rightarrow> V \<Rightarrow> (V \<Rightarrow>
 
 syntax "_PPRODFUNCTOR_PROJ" :: "V \<Rightarrow> pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" 
   (\<open>(_\<^bsub>(3\<Prod>\<^sub>C_\<in>\<^sub>\<circ>_-\<^sub>\<circ>_./_),_\<^esub>/'(/-,_/'))\<close> [51, 51, 51, 51, 51, 51, 51] 51)
+syntax_consts "_PPRODFUNCTOR_PROJ" \<rightleftharpoons> prodfunctor_proj
 translations "\<SS>\<^bsub>\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>I-\<^sub>\<circ>J. \<AA>,\<DD>\<^esub>(-,c)" \<rightleftharpoons> 
   "CONST prodfunctor_proj \<SS> I (\<lambda>i. \<AA>) \<DD> J c"
 

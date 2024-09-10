@@ -563,7 +563,7 @@ proof cases
     qed
     
     have "8 powr (3*(k+1)) = (8 powr (k+1))^3"
-      by (metis of_int_mult of_int_numeral powr_ge_pzero powr_numeral powr_powr powr_powr_swap) 
+      by (metis of_int_mult of_int_numeral powr_ge_zero powr_numeral powr_powr powr_powr_swap) 
     have "\<forall>(x::int)\<ge>1. x^3 - (x-1)^3  = 3*x^2 - 3*x +1"
       by Groebner_Basis.algebra
     hence "\<forall>(x::int)\<ge>1. x^3 - (x-1)^3  < 3*x^2"
@@ -714,7 +714,7 @@ formalisation.  This does not affect the proof in any meaningful way.\<close>
     hence "b^3 < (8 powr (k))^3"
       using power_strict_mono by fastforce
     hence "b^3 < 8 powr (3*k)"
-      by (metis mult.commute of_int_mult of_int_numeral powr_ge_pzero powr_numeral powr_powr)
+      by (metis mult.commute of_int_mult of_int_numeral powr_ge_zero powr_numeral powr_powr)
     have "N - a^3 \<ge> 8*8 powr (3*k)"
       using \<open>(i - 1)^3 < i^3\<close> \<open>8 * 8 powr (3*k) \<le> N - i^3\<close>
       by (smt (verit, best)  a_def int_ops(6) of_int_less_iff of_int_of_nat_eq of_nat_power)
@@ -774,7 +774,7 @@ formalisation.  This does not affect the proof in any meaningful way.\<close>
       by simp
     have exp24:"(8::nat)^(2*(nat k)) = 8 powr (2*k)"
       using \<open>3 \<le> k\<close> powr_int
-      by (metis exp23 of_int_mult of_int_numeral of_nat_power power_even_eq powr_ge_pzero 
+      by (metis exp23 of_int_mult of_int_numeral of_nat_power power_even_eq powr_ge_zero 
           powr_numeral powr_powr powr_powr_swap) 
     hence "6*(8::nat)^(2*(nat k)) = 6*8 powr (2*k)"
       by simp
@@ -925,7 +925,7 @@ the false statement a > 31, we have corrected these mistakes.  This does not aff
       hence "N - ((N - 10000) powr (1/3)) powr 3 \<le> 10000"
         using powr_powr powr_one_gt_zero_iff ge40000 by force
       hence "N - \<lfloor>(N-10000) powr (1/3) + 1\<rfloor> powr 3 < 10000"
-        by (smt (verit, best) powr_ge_pzero powr_less_mono2 real_of_int_floor_add_one_gt)
+        by (smt (verit, best) powr_ge_zero powr_less_mono2 real_of_int_floor_add_one_gt)
       hence "N - (a+1) powr 3 < 10000"
         using a_def one_add_floor by simp
       have "(a+1) powr 3 = (a+1)^3"
@@ -1014,7 +1014,7 @@ the false statement a > 31, we have corrected these mistakes.  This does not aff
         hence "N' - ((N' - 10000) powr (1/3)) powr 3 \<le> 10000"
           using powr_powr powr_one_gt_zero_iff \<open>N' > 40000\<close> by force
         hence "N' - \<lfloor>(N'-10000) powr (1/3) + 1\<rfloor> powr 3 < 10000"
-          by (smt (verit, best) powr_ge_pzero powr_less_mono2 real_of_int_floor_add_one_gt)
+          by (smt (verit, best) powr_ge_zero powr_less_mono2 real_of_int_floor_add_one_gt)
         hence "N' - (b+1) powr 3 < 10000"
           using b_def one_add_floor by simp
         have "(b+1) powr 3 = (b+1)^3"
@@ -1108,7 +1108,7 @@ the false statement a > 31, we have corrected these mistakes.  This does not aff
           hence "N'' - ((N'' - 10000) powr (1/3)) powr 3 \<le> 10000"
             using powr_powr powr_one_gt_zero_iff \<open>N' > 40000\<close> by force
           hence "N'' - \<lfloor>(N''-10000) powr (1/3) + 1\<rfloor> powr 3 < 10000"
-            by (smt (verit, best) powr_ge_pzero powr_less_mono2 real_of_int_floor_add_one_gt)
+            by (smt (verit, best) powr_ge_zero powr_less_mono2 real_of_int_floor_add_one_gt)
           hence "N'' - (c+1) powr 3 < 10000"
             using c_def one_add_floor by simp
           have "(c+1) powr 3 = (c+1)^3"
@@ -1149,17 +1149,17 @@ the false statement a > 31, we have corrected these mistakes.  This does not aff
           moreover have "\<dots> \<le> 10000 + 4*((10000 + 4*((10000 + 4*((int 8^10) powr (2/3))) powr (2/3))) powr (2/3))"
             using leq8pow10 powr_less_mono2 nle_le
             by (smt (verit, best) numeral_power_le_of_nat_cancel_iff of_int_of_nat_eq of_nat_0_le_iff 
-                of_nat_power powr_ge_pzero zero_less_divide_iff)
+                of_nat_power powr_ge_zero zero_less_divide_iff)
           moreover have "\<dots> = 10000 + 4*((10000 + 4*((4204304) powr (2/3))) powr (2/3))"
             using powr_powr by simp
           (*4251528 is the next lowest cube number after 4204304*)
           moreover have "\<dots> \<le> 10000 + 4*((10000 + 4*((4251528) powr (2/3))) powr (2/3))" 
-            by (smt (verit, best) powr_ge_pzero powr_less_mono2 zero_less_divide_iff)
+            by (smt (verit, best) powr_ge_zero powr_less_mono2 zero_less_divide_iff)
           moreover have "\<dots> = 10000 + 4*((114976) powr (2/3))"
             by auto
           (*117649 is the next lowest cube number after 114976*)
           moreover have "\<dots> \<le> 10000 + 4*((117649) powr (2/3))" 
-            by (smt (verit, best) powr_ge_pzero powr_less_mono2 zero_less_divide_iff)
+            by (smt (verit, best) powr_ge_zero powr_less_mono2 zero_less_divide_iff)
           moreover have "\<dots> \<le> 20000"
             by auto
           ultimately have "N - (nat a)^3 - (nat b)^3 - (nat c)^3 \<le> 20000"

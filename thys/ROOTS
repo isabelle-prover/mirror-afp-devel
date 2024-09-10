@@ -153,6 +153,7 @@ Constructor_Funs
 Containers
 Continued_Fractions
 Cook_Levin
+Coproduct_Measure
 CoreC++
 Core_DOM
 Core_SC_DOM
@@ -188,7 +189,9 @@ Derangements
 Deriving
 Descartes_Sign_Rule
 Design_Theory
+Diagonal_Ramsey
 Dict_Construction
+Difference_Bound_Matrices
 Differential_Dynamic_Logic
 Differential_Game_Logic
 DigitsInBase
@@ -349,13 +352,14 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
-Interval_Analysis
+IMP_Noninterference
+IMP_Noninterference_Extension
+IMP_With_Speculation
 IO_Language_Conformance
 IP_Addresses
 Imperative_Insertion_Sort
 Implicational_Logic
 Impossible_Geometry
-IMP_Noninterference
 Incompleteness
 Incredible_Proof_Machine
 Independence_CH
@@ -367,6 +371,7 @@ InformationFlowSlicing_Inter
 Integration
 Interpolation_Polynomials_HOL_Algebra
 Interpreter_Optimizations
+Interval_Analysis
 Interval_Arithmetic_Word32
 Intro_Dest_Elim
 Involutions2Squares
@@ -406,6 +411,7 @@ Koenigsberg_Friendship
 Kruskal
 Kummer_Congruence
 Kuratowski_Closure_Complement
+Lie_Groups
 LLL_Basis_Reduction
 LLL_Factorization
 LOFT
@@ -415,6 +421,7 @@ LTL_Master_Theorem
 LTL_Normal_Form
 LTL_to_DRA
 LTL_to_GBA
+LTL3_Semantics
 Lam-ml-Normalization
 LambdaAuth
 LambdaMu
@@ -603,6 +610,7 @@ Proof_Strategy_Language
 PropResPI
 Propositional_Logic_Class
 Propositional_Proof_Systems
+Prop_Compactness
 Prpu_Maxflow
 PseudoHoops
 Psi_Calculi
@@ -623,6 +631,7 @@ Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
+Ramsey_Bounds
 Ramsey-Infinite
 Random_BSTs
 Random_Graph_Subgraph_Threshold
@@ -770,6 +779,7 @@ Three_Circles
 Three_Squares
 Timed_Automata
 Top_Down_Solver
+Topological_Groups
 Topological_Semantics
 Topology
 TortoiseHare
@@ -826,6 +836,7 @@ Wieferich_Kempner
 Winding_Number_Eval
 Word_Lib
 WorkerWrapper
+Worklist_Algorithms
 X86_Semantics
 XML
 Youngs_Inequality

@@ -1199,7 +1199,7 @@ proof-
     using bss bss power2_eq_square by metis
   then have "(card (differenceset A' A')) \<le> (card (differenceset A' B))^2/card B"  
     using Bg0 nonzero_mult_div_cancel_left[of "card B" "card(differenceset A' A')"]
-      divide_right_mono by (smt (verit) of_nat_0 of_nat_mono real_of_nat_div4)
+      divide_right_mono by (smt (verit) of_nat_0 of_nat_mono of_nat_div_le_of_nat)
   moreover have "(card (differenceset A' B))^2  \<le> ((2^13) * (1/c^15)*(card A))^2"  
     using hcardle  by simp
   ultimately have "(card (differenceset A' A')) \<le> ((2^13) * (1/c^15)*(card A))^2/(card B)" 
@@ -1245,7 +1245,7 @@ proof-
     by (metis card_minusset' subset_trans sumset_commute)
   then have "(card (sumset A' A')) \<le> (card (differenceset A' B))^2/card B"  
     using bg0 nonzero_mult_div_cancel_left[of "card B" "card(sumset A' A')"]
-      divide_right_mono by (smt (verit) of_nat_0 of_nat_mono real_of_nat_div4)
+      divide_right_mono by (smt (verit) of_nat_0 of_nat_mono of_nat_div_le_of_nat)
   moreover have "(card (differenceset A' B))^2  \<le> ((2^13) * (1/c^15) * (card A))^2"  
     using hcardle  by simp
   ultimately have "(card (sumset A' A')) \<le> ((2^13) * (1/c^15) * (card A))^2/(card B)" 

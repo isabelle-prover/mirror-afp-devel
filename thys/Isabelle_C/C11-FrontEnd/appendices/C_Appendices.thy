@@ -113,7 +113,7 @@ fun entity check markup binding index =
           if Context_Position.is_reported ctxt pos then ignore (check ctxt (name, pos)) else ();
         val latex =
           idx ^
-          (Output.output name
+          (Latex.output_ name
             |> (if markup = "" then I else enclose ("\\" ^ markup ^ "{") "}")
             |> hyper o enclose "\\mbox{\\isa{" "}}");
       in Latex.string latex end);
@@ -673,7 +673,7 @@ fun selectIdent0Binary (a as { tag, sub_tag, args }:C11_Ast_Lib.node_content)
                        (c : term list)=  
     case tag of
       "Ident0" => (node_content_2_free a)::c
-     |"CBinary0" => (case (drop_dark_matter sub_tag, c) of 
+     |"CBinary0" => (case (Protocol_Message.clean_output sub_tag, c) of 
                       ("CAddOp0",b::a::R) => (Const("Groups.plus_class.plus",dummyT) $ a $ b :: R)
                     | ("CMulOp0",b::a::R) => (Const("Groups.times_class.times",dummyT) $ a $ b :: R)
                     | ("CDivOp0",b::a::R) => (Const("Rings.divide_class.divide",dummyT) $ a $ b :: R)

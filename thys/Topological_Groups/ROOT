@@ -1,0 +1,20 @@
+chapter AFP
+
+session "Topological_Groups" = "HOL-Analysis" +
+  options [timeout = 300]
+
+sessions
+  "HOL-Library"
+  "HOL-Algebra"
+  "HOL-Combinatorics"
+
+  theories
+    "Topological_Group"
+    "Topological_Group_Examples"
+    "Uniform_Structure"
+    "Matrix_Group"
+ 
+(* Dependencies on document source files: *)
+  document_files
+    "root.bib"
+    "root.tex"

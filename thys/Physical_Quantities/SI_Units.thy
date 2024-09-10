@@ -100,6 +100,9 @@ abbreviation qmconv ::
 syntax
   "_qmconv" :: "type \<Rightarrow> type \<Rightarrow> logic" ("QMC'(_ \<rightarrow> _')")
 
+syntax_consts
+  "_qmconv" == qmconv
+
 translations
   "QMC('s\<^sub>1 \<rightarrow> 's\<^sub>2)" == "CONST qmconv TYPE('s\<^sub>1) TYPE('s\<^sub>2)"
 

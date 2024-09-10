@@ -141,6 +141,8 @@ by(simp add: embed_measure_count_space'[symmetric] nn_integral_embed_measure' me
 syntax
   "_nn_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  ("(2\<Sum>\<^sup>+ _\<in>_./ _)" [0, 51, 10] 10)
   "_nn_sum_UNIV" :: "pttrn \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add" ("(2\<Sum>\<^sup>+ _./ _)" [0, 10] 10)
+syntax_consts
+  "_nn_sum" "_nn_sum_UNIV" \<rightleftharpoons> nn_integral
 translations
   "\<Sum>\<^sup>+ i\<in>A. b" \<rightleftharpoons> "CONST nn_integral (CONST count_space A) (\<lambda>i. b)"
   "\<Sum>\<^sup>+ i. b" \<rightleftharpoons> "\<Sum>\<^sup>+ i\<in>CONST UNIV. b"

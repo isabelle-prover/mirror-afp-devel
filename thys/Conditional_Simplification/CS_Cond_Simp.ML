@@ -280,19 +280,10 @@ fun cs_intro_thms_of_cs_match mdefault thms = thms
   | cs_intro_thms_of_cs_match mshallow thms = thms |> rev
   | cs_intro_thms_of_cs_match mfull thms = thms
 
-val default_intro_thms = [@{thm TrueI}];
+val default_intro_thms = @{thms TrueI};
 
-fun is_sc_match ctxt (sc_rule, t) =
-  let 
-    fun seq_null seq = is_none (Seq.pull seq);
-    val sc_match = Thm.concl_of sc_rule
-  in
-    (sc_match, t)
-    |> single
-    |> Unify.matchers (Context.Proof ctxt) 
-    |> seq_null
-    |> not
-  end;
+fun is_sc_match ctxt (rule, t) =
+  is_some (Seq.pull (Unify.matchers (Context.Proof ctxt) [(Thm.concl_of rule, t)]));
 
 fun cs_intro_step_tac ctxt verbose m all_rwrs i =
   let

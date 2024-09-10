@@ -30,7 +30,7 @@ abbreviation ddediomond  :: "\<sigma>\<Rightarrow>\<sigma>" ("\<diamond>") where
 
 abbreviation evalid :: "\<sigma>\<Rightarrow>bool" ("\<lfloor>_\<rfloor>"[8]109)  \<comment>\<open>Global validity\<close>
   where "\<lfloor>p\<rfloor> \<equiv> \<forall>w. p w"
-abbreviation ecjactual :: "\<sigma>\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sub>l"[7]105)  \<comment>\<open>Local validity — in world aw\<close>
+abbreviation ecjactual :: "\<sigma>\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sub>l"[7]105)  \<comment>\<open>Local validity --- in world aw\<close>
   where "\<lfloor>p\<rfloor>\<^sub>l \<equiv> p(aw)"
 
 consts r :: "\<alpha>" (infixr "\<^bold>r" 70)  \<comment>\<open>Betterness relation\<close>

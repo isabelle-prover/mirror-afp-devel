@@ -20,6 +20,9 @@ by the verification condition generator, while simplifying assertions.
 syntax
 "_Let'" :: "[letbinds, basicblock] => basicblock"  ("(LET (_)/ IN (_))" 23)
 
+syntax_consts
+  "_Let'" == Let'
+
 translations
   "_Let' (_binds b bs) e"  == "_Let' b (_Let' bs e)"
   "_Let' (_bind x a) e"    == "CONST Let' a (%x. e)"

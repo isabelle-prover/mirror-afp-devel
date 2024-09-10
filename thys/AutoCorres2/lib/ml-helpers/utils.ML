@@ -306,11 +306,7 @@ fun no_dummy_type t = true |> fold_types (fn T => fn b => b andalso no_dummy_typ
 val has_dummy_type = not o no_dummy_type
 
 fun infer_types_simple ctxt t =
-  if has_dummy_type t 
-  then t |>
-    singleton (Type_Infer_Context.infer_types ctxt) |>
-    singleton (Type_Infer.fixate ctxt false)
-  else t
+  t |> has_dummy_type t ? singleton (Type_Infer_Context.infer_types_finished ctxt)
 
 fun infer_schematic_types ctxt t =
   infer_types_simple ctxt (dummy_schematic t)

@@ -14,7 +14,10 @@ consts
 
 syntax
   "_usedBy" :: "salpha \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (infix "\<natural>" 20)
-  
+
+syntax_consts
+  "_usedBy" == usedBy
+
 translations
   "_usedBy x p" == "CONST usedBy x p"                                           
   "_usedBy (_salphaset (_salphamk (x +\<^sub>L y))) P"  <= "_usedBy (x +\<^sub>L y) P"

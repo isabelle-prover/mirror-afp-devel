@@ -64,6 +64,7 @@ fun MultiNdet_list :: \<open>['a list, 'a \<Rightarrow> 'b process] \<Rightarrow
 
 syntax       "_MultiNdet_list" :: \<open>[pttrn,'a set,'b process] \<Rightarrow> 'b process\<close>
                                   (\<open>(3\<Sqinter>\<^sub>l _\<in>_. / _)\<close> 76)
+syntax_consts "_MultiNdet_list" \<rightleftharpoons> MultiNdet_list
 translations  "\<Sqinter>\<^sub>l p \<in> l. P "  \<rightleftharpoons> "CONST MultiNdet_list l (\<lambda>p. P)"
 
 
@@ -118,6 +119,7 @@ definition MultiNdet :: \<open>['a set, 'a \<Rightarrow> 'b process] \<Rightarro
 
 
 syntax "_MultiNdet" :: \<open>[pttrn, 'a set, 'b process] \<Rightarrow> 'b process\<close> (\<open>(3\<Sqinter> _\<in>_. / _)\<close> 76)
+syntax_consts "_MultiNdet" \<rightleftharpoons> MultiNdet
 translations "\<Sqinter> p \<in> A. P" \<rightleftharpoons> "CONST MultiNdet A (\<lambda>p. P)"
 
 

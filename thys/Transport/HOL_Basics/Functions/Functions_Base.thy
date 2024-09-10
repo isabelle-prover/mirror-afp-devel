@@ -54,6 +54,9 @@ no_syntax
     ('a \<Rightarrow> 'd)" ("'(_/ : / _') \<leadsto> (_)" [41, 41, 40] 40)
 end
 unbundle dep_fun_map_syntax
+syntax_consts
+  "_fun_map" \<rightleftharpoons> fun_map and
+  "_dep_fun_map" \<rightleftharpoons> dep_fun_map
 translations
   "f \<leadsto> g" \<rightleftharpoons> "CONST fun_map f g"
   "(x : f) \<leadsto> g" \<rightleftharpoons> "CONST dep_fun_map f (\<lambda>x. g)"

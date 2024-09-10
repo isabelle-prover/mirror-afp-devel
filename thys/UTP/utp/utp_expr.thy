@@ -98,6 +98,9 @@ text \<open> A literal is the expression @{term "\<guillemotleft>v\<guillemotrig
 syntax
   "_uuvar" :: "svar \<Rightarrow> logic" ("_")
 
+syntax_consts
+  "_uuvar" == var
+
 translations
   "_uuvar x" == "CONST var x"
   

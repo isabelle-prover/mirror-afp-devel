@@ -1,0 +1,18 @@
+chapter AFP
+
+session Difference_Bound_Matrices (AFP) = Floyd_Warshall +
+  options
+    [timeout=600]
+  sessions
+    Show
+  theories
+    DBM_Basics
+    FW_More
+    DBM_Operations
+    DBM_Normalization
+    DBM_Constraint_Systems
+    DBM_Operations_Impl_Refine
+    DBM_Examples
+  document_files
+    "root.tex"
+    "root.bib"

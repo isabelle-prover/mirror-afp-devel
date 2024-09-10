@@ -29,6 +29,9 @@ no_syntax
 end
 unbundle Mono_Dep_Fun_Rel_syntax
 
+syntax_consts
+  "_Mono_Fun_Rel_rel" \<rightleftharpoons> Mono_Fun_Rel and
+  "_Mono_Dep_Fun_Rel_rel" "_Mono_Dep_Fun_Rel_rel_if" \<rightleftharpoons> Mono_Dep_Fun_Rel
 translations
   "R \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Fun_Rel R S"
   "(x y \<Colon> R) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. S)"

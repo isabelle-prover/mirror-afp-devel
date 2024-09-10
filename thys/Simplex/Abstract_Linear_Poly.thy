@@ -162,6 +162,8 @@ lift_definition valuate :: "linear_poly \<Rightarrow> 'a valuation \<Rightarrow>
 
 syntax
   "_valuate" :: "linear_poly \<Rightarrow> 'a valuation \<Rightarrow> 'a"    ("_ \<lbrace> _ \<rbrace>")
+syntax_consts
+  "_valuate" == valuate
 translations
   "p\<lbrace>v\<rbrace> " == "CONST valuate p v"
 

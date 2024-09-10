@@ -596,13 +596,6 @@ fun infer_head ctxt (c as Const (cn, cT)) args =
   handle ERROR str => raise TERM (str, c:: args)
   
 
-(* Put commas between a list of strings. *)
-fun commas l =
-  map Pretty.str l
-  |> Pretty.commas
-  |> Pretty.enclose "" ""
-  |> Pretty.unformatted_string_of
-
 (* Make a list of conjunctions. *)
 fun mk_conj_list [] = @{term "HOL.True"}
   | mk_conj_list [x] = x
@@ -1023,7 +1016,7 @@ fun solved_tac thm =
 
 (* Convenience function for making simprocs. *)
 fun mk_simproc' ctxt (name : string, pats : string list, proc : Proof.context -> cterm -> thm option) = let
-  in Simplifier.make_simproc ctxt {name = name, identifier = [],  
+  in Simplifier.make_simproc ctxt {name = name, kind = Simproc, identifier = [],  
         lhss = map (Proof_Context.read_term_pattern ctxt) pats,
         proc = K proc} end
 
@@ -1242,7 +1235,7 @@ fun trace_conv msg ct =
 
 fun trace_simps msg P ctxt =
  let
-   val simps = simpset_of ctxt |> dest_ss |> #simps |> filter P |> map snd
+   val simps = simpset_of ctxt |> Simplifier.dest_simps |> filter P |> map #2
    val _ = tracing (Pretty.string_of (Pretty.big_list msg (map (Thm.pretty_thm ctxt) simps)))
  in
    ()

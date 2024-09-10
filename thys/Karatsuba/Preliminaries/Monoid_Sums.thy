@@ -27,6 +27,8 @@ text "The syntactic sugar used for @{const finsum} is adapted accordingly."
 syntax
   "_monoid_sum_list" :: "index \<Rightarrow> idt \<Rightarrow> 'c list \<Rightarrow> 'c \<Rightarrow> 'a"
       ("(3\<Oplus>__\<leftarrow>_. _)" [1000, 0, 51, 10] 10)
+syntax_consts
+  "_monoid_sum_list" \<rightleftharpoons> abelian_monoid.monoid_sum_list
 translations
   "\<Oplus>\<^bsub>G\<^esub>i\<leftarrow>xs. b" \<rightleftharpoons> "CONST abelian_monoid.monoid_sum_list G (\<lambda>i. b) xs"
 

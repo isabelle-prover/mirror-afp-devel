@@ -31,6 +31,8 @@ end
 
 syntax
   "_Ucast" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1UCAST/(1'(_ \<rightarrow> _')))")
+syntax_consts
+  "_Ucast" == ucast
 translations
   "UCAST('s \<rightarrow> 't)" => "CONST ucast :: ('s word \<Rightarrow> 't word)"
 typed_print_translation
@@ -39,6 +41,8 @@ typed_print_translation
 
 syntax
   "_Scast" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1SCAST/(1'(_ \<rightarrow> _')))")
+syntax_consts
+  "_Scast" == scast
 translations
   "SCAST('s \<rightarrow> 't)" => "CONST scast :: ('s word \<Rightarrow> 't word)"
 typed_print_translation
@@ -47,6 +51,8 @@ typed_print_translation
 
 syntax
   "_Revcast" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1REVCAST/(1'(_ \<rightarrow> _')))")
+syntax_consts
+  "_Revcast" == revcast
 translations
   "REVCAST('s \<rightarrow> 't)" => "CONST revcast :: ('s word \<Rightarrow> 't word)"
 typed_print_translation

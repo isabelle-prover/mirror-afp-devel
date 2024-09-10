@@ -30,6 +30,10 @@ syntax
   "_state_lenses" :: "pttrn \<Rightarrow> logic"
   "_state_decl" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("LOCAL _ \<bullet> _" [0, 10] 10) 
 
+syntax_types
+  "_lensT" \<rightleftharpoons> lens and
+  "_pairT" \<rightleftharpoons> prod
+
 translations
   (type) "PAIRTYPE('a, 'b)" => (type) "'a \<times> 'b"
   (type) "LENSTYPE('a, 'b)" => (type) "'a \<Longrightarrow> 'b"

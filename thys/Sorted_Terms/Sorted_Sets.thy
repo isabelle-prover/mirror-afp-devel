@@ -168,6 +168,10 @@ syntax
   all_hastype :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<forall>_ :/ _ in/ _./ _" [50,51,51,10]10)
   ex_hastype :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<exists>_ :/ _ in/ _./ _" [50,51,51,10]10)
 
+syntax_consts
+  all_hastype \<rightleftharpoons> all_hastype and
+  ex_hastype \<rightleftharpoons> ex_hastype
+
 translations
   "\<forall>a : \<sigma> in A. e" \<rightleftharpoons> "CONST all_hastype \<sigma> A (\<lambda>a. e)"
   "\<exists>a : \<sigma> in A. e" \<rightleftharpoons> "CONST ex_hastype \<sigma> A (\<lambda>a. e)"

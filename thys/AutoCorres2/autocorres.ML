@@ -520,7 +520,7 @@ fun finalise prog_info skips keep_going existing_ts (cliques, thy) =
       val ts_info_todos = Symtab.dest ts_info 
           |> filter_out (fn (k,p) => not (member (op =) clique k) orelse Symtab.defined existing_ts k)
 
-      val _ = verbose_msg 0 lthy (fn _ => "Doing final autocorres proof for: " ^ Utils.commas (map fst ts_info_todos) ^ 
+      val _ = verbose_msg 0 lthy (fn _ => "Doing final autocorres proof for: " ^ commas (map fst ts_info_todos) ^ 
                 " in locale " ^ loc)
 
       val ac_corres_thms = ts_info_todos
@@ -639,9 +639,9 @@ let
   val functions_to_translate = Symset.union undefined_functions functions_to_translate
 
   val _ = verbose_msg 0 lthy (fn _ => "autocorres scope: selected " ^ Int.toString (Symset.card functions_to_translate) ^ " function(s): " ^ 
-            Utils.commas (Symset.dest functions_to_translate) ^ "\n" ^
+            commas (Symset.dest functions_to_translate) ^ "\n" ^
             "autocorres scope: wrapping " ^ Int.toString (Symset.card functions_to_wrap) ^ " function(s): " ^
-            Utils.commas (Symset.dest functions_to_wrap));
+            commas (Symset.dest functions_to_wrap));
 
   val nothing_todo =  Symset.is_empty (Symset.subtract already_translated functions_to_translate) 
 

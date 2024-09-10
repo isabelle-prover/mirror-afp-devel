@@ -11,28 +11,28 @@ these conversions to be between non-negative integers and w-bit words.  The foll
 from the standard where we have replaced "octet" with "word" and any instance of 8 with w:
 
 "Two data conversion primitives are employed in the schemes defined in this document:
-  •I2OSP – Integer-to-Word-String primitive
-  •OS2IP – Word-String-to-Integer primitive
+  \<^item> I2OSP -- Integer-to-Word-String primitive
+  \<^item> OS2IP -- Word-String-to-Integer primitive
 For the purposes of this document, and consistent with ASN.1 syntax, a word string is an ordered
 sequence of words (w-bit values).  The sequence is indexed from first (conventionally,
 leftmost) to last (rightmost).  For purposes of conversion to and from integers, the first word
 is considered the most significant in the following conversion primitives.
 
-I2OSP – Integer-to-Word-String primitive:
+I2OSP -- Integer-to-Word-String primitive:
 
 Write the integer x in its unique xLen-digit representation in base (2^w):
-  x = x_{xLen–1} (2^w)^{xLen–1} + x_{xLen–2} (2^w)^{xLen–2} + ... + x_1 (2^w) + x_0,  
+  x = x_{xLen-1} (2^w)^{xLen-1} + x_{xLen-2} (2^w)^{xLen-2} + ... + x_1 (2^w) + x_0,  
 where 0 \<le> x_i < (2^w) (note that one or more leading digits will be zero if x is less than 
-(2^w)^{xLen–1}). 
+(2^w)^{xLen-1}). 
 
-Let the word X_i have the integer value x_{xLen–i} for 1 \<le> i \<le>xLen.  Output the word string 
+Let the word X_i have the integer value x_{xLen-i} for 1 \<le> i \<le>xLen.  Output the word string 
   X = X_1 X_2 ... X_{xLen}. 
 
-OS2IP – Word-String-to-Integer primitive:
+OS2IP -- Word-String-to-Integer primitive:
 
-Let X_1 X_2 ...X_{xLen} be the words of X from first to last, and let x_{xLen–i} be the integer 
+Let X_1 X_2 ...X_{xLen} be the words of X from first to last, and let x_{xLen-i} be the integer 
 value of the word X_i for 1 \<le> i \<le> xLen.  Let 
-  x = x_{xLen–1} (2^w)^{xLen–1} + x_{xLen–2} (2^w)^{xLen–2} + ... + x_1 (2^w) + x_0. 
+  x = x_{xLen-1} (2^w)^{xLen-1} + x_{xLen-2} (2^w)^{xLen-2} + ... + x_1 (2^w) + x_0. 
 Output x."
 
 For this theory, we want to be agnostic to the variable type that might be used to store the word

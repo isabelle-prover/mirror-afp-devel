@@ -68,6 +68,7 @@ locale is_ntcf =
 
 syntax "_is_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>C\<^sub>F _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_ntcf" \<rightleftharpoons> is_ntcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 
 abbreviation all_ntcfs :: "V \<Rightarrow> V"
@@ -1854,6 +1855,7 @@ locale is_iso_ntcf = is_ntcf +
 
 syntax "_is_iso_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ : _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o _ : _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_iso_ntcf" \<rightleftharpoons> is_iso_ntcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> 
   "CONST is_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 

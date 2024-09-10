@@ -1,0 +1,23 @@
+chapter AFP
+
+session Worklist_Algorithms (AFP) = Refine_Imperative_HOL +
+  options
+    [timeout=600]
+  sessions
+    Probabilistic_Timed_Automata
+  theories
+    Worklist_Locales
+    Worklist_Common
+    Worklist_Algorithms_Misc
+    Worklist_Algorithms_Tracing
+    Worklist_Algorithms_Subsumption_Graphs
+    Unified_PW_Impl
+    Worklist_Subsumption_Multiset
+    Worklist_Subsumption_Impl1
+    Liveness_Subsumption_Impl
+    Next_Key
+    Leadsto_Impl
+  document_files
+    "root.tex"
+    "wasysym.sty"
+    "root.bib"

@@ -281,6 +281,9 @@ class dim_type = unitary +
 syntax
   "_QD" :: "type \<Rightarrow> logic" ("QD'(_')")
 
+syntax_consts
+  "_QD" == dim_ty_sem
+
 translations
   "QD('a)" == "CONST dim_ty_sem TYPE('a)"
 

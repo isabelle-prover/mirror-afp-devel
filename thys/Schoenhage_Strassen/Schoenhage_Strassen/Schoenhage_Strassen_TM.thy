@@ -1422,7 +1422,7 @@ proof (cases "d > 0")
     also have "... \<le> x powr c"
       apply (intro powr_mono2)
       subgoal using assms by simp
-      subgoal unfolding N_def by (rule powr_ge_pzero)
+      subgoal unfolding N_def by (rule powr_ge_zero)
       subgoal by (rule that)
       done
     finally show ?thesis .
@@ -1432,7 +1432,7 @@ next
   case False
   then show ?thesis
     apply (intro always_eventually allI)
-    subgoal for x using powr_ge_pzero[of x c] by argo
+    subgoal for x using powr_ge_zero[of x c] by argo
     done
 qed
 
@@ -1598,7 +1598,7 @@ proof (induction m rule: less_induct)
       using kar_aux_const_gt_0 by (intro mult_le_mono order.refl nat_mono mult_ceiling_le; simp)
     also have "... = karatsuba_const * (nat \<lceil>16 powr log 2 3\<rceil> * nat \<lceil>kar_aux_const * real (2 ^ (2 * n))\<rceil>)"
       apply (intro arg_cong2[where f = "(*)"] refl nat_mult_distrib)
-      using powr_ge_pzero[of 16 "log 2 3"] by linarith
+      using powr_ge_zero[of 16 "log 2 3"] by linarith
     also have "... \<le> karatsuba_const * (nat \<lceil>16 powr log 2 3\<rceil> * nat (\<lceil>kar_aux_const\<rceil> * \<lceil>real (2 ^ (2 * n))\<rceil>))"
       apply (intro mult_le_mono order.refl nat_mono mult_ceiling_le)
       using kar_aux_const_gt_0 by simp_all

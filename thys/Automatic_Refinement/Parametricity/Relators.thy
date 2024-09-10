@@ -40,6 +40,8 @@ definition relAPP
 
 syntax "_rel_APP" :: "args \<Rightarrow> 'a \<Rightarrow> 'b" ("\<langle>_\<rangle>_" [0,900] 900)
 
+syntax_consts "_rel_APP" == relAPP
+
 translations
   "\<langle>x,xs\<rangle>R" == "\<langle>xs\<rangle>(CONST relAPP R x)"
   "\<langle>x\<rangle>R" == "CONST relAPP R x"

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Secret_Directed_Unwinding on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/secret_directed_unwinding/</link>
+    <description>
+        Recent content in Secret_Directed_Unwinding 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Fri, 16 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/secret_directed_unwinding/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A formalized programming language with speculative execution</title>
+          <link>/entries/IMP_With_Speculation.html</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_With_Speculation.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

@@ -28,7 +28,8 @@ syntax "_is_cat_pw_rKe" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<
     \<open>(_ :/ _ \<circ>\<^sub>C\<^sub>F _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^sub>.\<^sub>p\<^sub>w\<index> _ :/ _ \<mapsto>\<^sub>C _ \<mapsto>\<^sub>C _)\<close> 
     [51, 51, 51, 51, 51, 51, 51] 51
   )
-translations "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^sub>.\<^sub>p\<^sub>w\<^bsub>\<alpha>\<^esub> \<TT> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons> 
+syntax_consts "_is_cat_pw_rKe" \<rightleftharpoons> is_cat_pw_rKe
+translations "\<epsilon> : \<GG> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>r\<^sub>K\<^sub>e\<^sub>.\<^sub>p\<^sub>w\<^bsub>\<alpha>\<^esub> \<TT> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons>
   "CONST is_cat_pw_rKe \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT> \<GG> \<epsilon>"
 
 locale is_cat_pw_lKe = is_cat_lKe \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT> \<FF> \<eta>
@@ -43,7 +44,8 @@ syntax "_is_cat_pw_lKe" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<
     \<open>(_ :/ _ \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^sub>.\<^sub>p\<^sub>w\<index> _ \<circ>\<^sub>C\<^sub>F _ :/ _ \<mapsto>\<^sub>C _ \<mapsto>\<^sub>C _)\<close> 
     [51, 51, 51, 51, 51, 51, 51] 51
   )
-translations "\<eta> : \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^sub>.\<^sub>p\<^sub>w\<^bsub>\<alpha>\<^esub> \<FF> \<circ>\<^sub>C\<^sub>F \<KK> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons> 
+syntax_consts "_is_cat_pw_lKe" \<rightleftharpoons> is_cat_pw_lKe
+translations "\<eta> : \<TT> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>K\<^sub>e\<^sub>.\<^sub>p\<^sub>w\<^bsub>\<alpha>\<^esub> \<FF> \<circ>\<^sub>C\<^sub>F \<KK> : \<BB> \<mapsto>\<^sub>C \<CC> \<mapsto>\<^sub>C \<AA>" \<rightleftharpoons>
   "CONST is_cat_pw_lKe \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT> \<FF> \<eta>"
 
 lemma (in is_cat_pw_rKe) cat_pw_rKe_preserved'[cat_Kan_cs_intros]: 

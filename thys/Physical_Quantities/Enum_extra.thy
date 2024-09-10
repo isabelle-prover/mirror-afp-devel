@@ -37,6 +37,9 @@ subsection \<open> Enumeration Indices \<close>
 syntax
   "_ENUM" :: "type \<Rightarrow> logic" ("ENUM'(_')")
 
+syntax_consts
+  "_ENUM" == Enum.enum
+
 translations
   "ENUM('a)" => "CONST Enum.enum :: ('a::enum) list"
 

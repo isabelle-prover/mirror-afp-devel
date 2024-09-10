@@ -20,6 +20,8 @@ no_syntax
   "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
 end
 unbundle rel_lambda_syntax
+syntax_consts
+  "_rel_lambda" \<rightleftharpoons> rel_lambda
 translations
   "\<lambda>x xs : A. f" \<rightharpoonup> "CONST rel_lambda A (\<lambda>x. (\<lambda>xs : A. f))"
   "\<lambda>x : A. f" \<rightleftharpoons> "CONST rel_lambda A (\<lambda>x. f)"

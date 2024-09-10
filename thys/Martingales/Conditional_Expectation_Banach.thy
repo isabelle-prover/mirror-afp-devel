@@ -43,7 +43,7 @@ lemma has_cond_expD:
         "g \<in> borel_measurable F"
   using assms unfolding has_cond_exp_def by simp+
 
-text \<open>Now we can use Hilbert’s \<open>\<some>\<close>-operator to define the conditional expectation, if it exists.\<close>
+text \<open>Now we can use Hilbert's \<open>\<some>\<close>-operator to define the conditional expectation, if it exists.\<close>
 
 definition cond_exp :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b::{banach, second_countable_topology})" where
   "cond_exp M F f = (if \<exists>g. has_cond_exp M F f g then (SOME g. has_cond_exp M F f g) else (\<lambda>_. 0))"

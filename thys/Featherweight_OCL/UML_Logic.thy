@@ -691,7 +691,7 @@ definition OclValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(
 where     "\<tau> \<Turnstile> P \<equiv> ((P \<tau>) = true \<tau>)"
 
 syntax OclNonValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_)/ |\<noteq> (_))" 50)
-
+syntax_consts OclNonValid == Not
 translations "\<tau> |\<noteq> P" == "\<not>(\<tau> \<Turnstile> P)" 
 
 subsubsection\<open>Global vs. Local Judgements\<close>
@@ -1152,6 +1152,8 @@ text\<open>with {term "not"} we can express the notation:\<close>
 
 syntax
   "notequal"        :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean"   (infix "<>" 40)
+syntax_consts
+  notequal == OclNot
 translations
   "a <> b" == "CONST OclNot(a \<doteq> b)"
        

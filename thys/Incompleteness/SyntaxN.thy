@@ -158,6 +158,9 @@ nominal_termination (eqvt)
 syntax
   "_EvalTm" :: "tm \<Rightarrow> (name, hf) finfun \<Rightarrow> hf"      ("\<lbrakk>_\<rbrakk>_" [0,1000]1000)
 
+syntax_consts
+  "_EvalTm" == eval_tm
+
 translations
   "\<lbrakk>tm\<rbrakk>e"    == "CONST eval_tm e tm"
 

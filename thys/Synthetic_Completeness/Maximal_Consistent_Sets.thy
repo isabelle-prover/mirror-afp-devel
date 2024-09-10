@@ -38,30 +38,6 @@ proof
     using leD by blast
 qed
 
-lemma split_finite_sets:
-  assumes \<open>finite A\<close> \<open>finite B\<close>
-  assumes \<open>A \<subseteq> B \<union> S\<close>
-  shows \<open>\<exists>B' C. finite C \<and> (B' \<union> C = A) \<and> B' \<subseteq> B \<and> C \<subseteq> S\<close>
-  using assms subset_UnE by fastforce
-
-lemma split_list:
-  assumes \<open>set A \<subseteq> set B \<union> S\<close>
-  shows \<open>\<exists>B' C. set (B' @ C) = set A \<and> set B' \<subseteq> set B \<and> set C \<subseteq> S\<close>
-  using assms split_finite_sets[where A=\<open>set A\<close> and B=\<open>set B\<close> and S=S]
-  by (metis List.finite_set finite_Un finite_list set_append)
-
-lemma struct_split:
-  assumes \<open>\<And>A B. P A \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> P B\<close> \<open>P A\<close> \<open>set A \<subseteq> set B \<union> X\<close>
-  shows \<open>\<exists>C. set C \<subseteq> X \<and> P (B @ C)\<close>
-proof -
-  obtain B' C where C: \<open>set (B' @ C) = set A\<close> \<open>set B' \<subseteq> set B\<close> \<open>set C \<subseteq> X\<close>
-    using assms(3) split_list by meson
-  then have \<open>P (B @ C)\<close>
-    using assms(1)[where B=\<open>B @ C\<close>] assms(2) by fastforce
-  then show ?thesis
-    using C by blast
-qed
-
 context wo_rel begin
 
 lemma underS_bound: \<open>a \<in> underS n \<Longrightarrow> b \<in> underS n \<Longrightarrow> a \<in> under b \<or> b \<in> under a\<close>
@@ -146,7 +122,7 @@ proof -
     using ordLeq_transitive by blast
 qed
 
-section \<open>Base Locale\<close>
+section \<open>Base Locales\<close>
 
 locale MCS_Base =
   fixes consistent :: \<open>'a set \<Rightarrow> bool\<close>
@@ -157,14 +133,55 @@ begin
 definition maximal :: \<open>'a set \<Rightarrow> bool\<close> where
   \<open>maximal S \<equiv> \<forall>p. consistent ({p} \<union> S) \<longrightarrow> p \<in> S\<close>
 
+theorem MCS_inconsistent:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+  shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>S'. finite S' \<and> S' \<subseteq> ({p} \<union> S) \<and> p \<in> S' \<and> \<not> consistent S')\<close>
+proof
+  assume \<open>p \<notin> S\<close>
+  then show \<open>\<exists>S'. finite S' \<and> S' \<subseteq> ({p} \<union> S) \<and> p \<in> S' \<and> \<not> consistent S'\<close>
+    using assms consistent_hereditary inconsistent_finite unfolding maximal_def
+    by (metis insert_is_Un subset_insert)
+next
+  assume \<open>\<exists>S'. finite S' \<and> S' \<subseteq> ({p} \<union> S) \<and> p \<in> S' \<and> \<not> consistent S'\<close>
+  then show \<open>p \<notin> S\<close>
+    using assms consistent_hereditary by blast
+qed
+
+theorem MCS_consistent_support:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+    and \<open>finite A\<close> \<open>A \<subseteq> S\<close>
+  shows \<open>p \<in> S \<longleftrightarrow> (\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> A \<subseteq> S' \<longrightarrow> consistent S')\<close>
+proof
+  assume \<open>p \<in> S\<close>
+  then show \<open>\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> A \<subseteq> S' \<longrightarrow> consistent S'\<close>
+    using assms consistent_hereditary by blast
+next
+  assume *: \<open>\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> A \<subseteq> S' \<longrightarrow> consistent S'\<close>
+  then have \<open>\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> consistent S'\<close>
+  proof safe
+    fix S'
+    let ?S' = \<open>A \<union> S'\<close>
+    assume \<open>finite S'\<close> \<open>S' \<subseteq> {p} \<union> S\<close> \<open>p \<in> S'\<close>
+    then have \<open>finite ?S'\<close> \<open>?S' \<subseteq> {p} \<union> S\<close> \<open>p \<in> ?S'\<close> \<open>A \<subseteq> ?S'\<close>
+      using assms(3-4) by auto
+    then have \<open>consistent ?S'\<close>
+      using * by simp
+    then show \<open>consistent S'\<close>
+      using consistent_hereditary by blast
+  qed
+  then show \<open>p \<in> S\<close>
+    using assms MCS_inconsistent by metis
+qed
+
+corollary MCS_consistent:
+  assumes \<open>consistent S\<close> \<open>maximal S\<close>
+  shows \<open>p \<in> S \<longleftrightarrow> (\<forall>S' \<subseteq> {p} \<union> S. finite S' \<longrightarrow> p \<in> S' \<longrightarrow> consistent S')\<close>
+  using assms MCS_consistent_support[where A=\<open>{}\<close>] by simp
+
 end
 
-section \<open>Ordinal Locale\<close>
-
-locale MCS_Lim_Ord = MCS_Base +
-  fixes r :: \<open>'a rel\<close>
-  assumes WELL: \<open>Well_order r\<close>
-    and Cinfinite_r: \<open>Cinfinite r\<close>
+locale MCS_Witness = MCS_Base consistent
+  for consistent :: \<open>'a set \<Rightarrow> bool\<close> +
   fixes params :: \<open>'a \<Rightarrow> 'i set\<close>
     and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close>
   assumes finite_params: \<open>\<And>p. finite (params p)\<close>
@@ -174,11 +191,38 @@ locale MCS_Lim_Ord = MCS_Base +
       \<Longrightarrow> consistent (witness p S \<union> {p} \<union> S)\<close>
 begin
 
+definition witnessed :: \<open>'a set \<Rightarrow> bool\<close> where
+  \<open>witnessed S \<equiv> \<forall>p \<in> S. \<exists>S'. witness p S' \<subseteq> S\<close>
+
+abbreviation MCS :: \<open>'a set \<Rightarrow> bool\<close> where
+  \<open>MCS S \<equiv> consistent S \<and> maximal S \<and> witnessed S\<close>
+
+end
+
+locale MCS_No_Witness = MCS_Base
+
+sublocale MCS_No_Witness \<subseteq> MCS_Witness consistent \<open>\<lambda>_. {}\<close> \<open>\<lambda>_ _. {}\<close>
+proof qed simp_all
+
+section \<open>Ordinal Locale\<close>
+
+locale MCS_Lim_Ord = MCS_Witness consistent params witness
+  for consistent :: \<open>'a set \<Rightarrow> bool\<close>
+    and params :: \<open>'a \<Rightarrow> 'i set\<close>
+    and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close> +
+  fixes r :: \<open>'a rel\<close>
+  assumes WELL: \<open>Well_order r\<close>
+    and Cinfinite_r: \<open>Cinfinite r\<close>
+begin
+
 lemma wo_rel_r: \<open>wo_rel r\<close>
   by (simp add: WELL wo_rel.intro)
 
 lemma isLimOrd_r: \<open>isLimOrd r\<close>
   using Cinfinite_r card_order_infinite_isLimOrd cinfinite_def by blast
+
+lemma nonempty_Field_r: \<open>Field r \<noteq> {}\<close>
+  using Cinfinite_r cinfinite_def infinite_imp_nonempty by blast
 
 subsection \<open>Lindenbaum Extension\<close>
 
@@ -221,8 +265,8 @@ next
     by (metis SUP_upper2 emptyE underS_I)
 qed
 
-lemma Extend_subset': \<open>Field r \<noteq> {} \<Longrightarrow> S \<subseteq> Extend S\<close>
-  unfolding Extend_def using extend_subset by fast
+lemma Extend_subset: \<open>S \<subseteq> Extend S\<close>
+  unfolding Extend_def using extend_subset nonempty_Field_r by fast
 
 lemma extend_underS: \<open>m \<in> underS r n \<Longrightarrow> extend S m \<subseteq> extend S n\<close>
 proof (induct n rule: wo_rel.well_order_inductZSL[OF wo_rel_r])
@@ -244,7 +288,7 @@ qed
 
 lemma extend_under: \<open>m \<in> under r n \<Longrightarrow> extend S m \<subseteq> extend S n\<close>
   using extend_underS wo_rel.supr_greater[OF wo_rel_r] wo_rel.supr_under[OF wo_rel_r]
-  by (metis emptyE in_Above_under set_eq_subset underS_I under_Field under_empty)
+  by (metis emptyE in_Above_under set_eq_subset underS_I under_empty)
 
 subsection \<open>Consistency\<close>
 
@@ -407,18 +451,18 @@ proof safe
     using Extend_bound by fast
 qed
 
-subsection \<open>Saturation\<close>
+subsection \<open>Witnessing\<close>
 
-definition saturated' :: \<open>'a set \<Rightarrow> bool\<close> where
-  \<open>saturated' S \<equiv> \<forall>p \<in> S. p \<in> Field r \<longrightarrow> (\<exists>S'. witness p S' \<subseteq> S)\<close>
+definition witnessed' :: \<open>'a set \<Rightarrow> bool\<close> where
+  \<open>witnessed' S \<equiv> \<forall>p \<in> Field r. p \<in> S \<longrightarrow> (\<exists>S'. witness p S' \<subseteq> S)\<close>
 
-lemma saturated'_Extend:
+lemma witnessed'_Extend:
   assumes \<open>consistent (Extend S)\<close>
-  shows \<open>saturated' (Extend S)\<close>
-  unfolding saturated'_def
+  shows \<open>witnessed' (Extend S)\<close>
+  unfolding witnessed'_def
 proof safe
   fix p
-  assume *: \<open>p \<in> Extend S\<close> \<open>p \<in> Field r\<close>
+  assume *: \<open>p \<in> Field r\<close> \<open>p \<in> Extend S\<close>
   then have \<open>extend S p \<subseteq> Extend S\<close>
     unfolding Extend_def by blast
   then have \<open>consistent ({p} \<union> extend S p)\<close>
@@ -438,44 +482,24 @@ qed
 
 end
 
-section \<open>Locale with Saturation\<close>
+section \<open>Locales for Universe Well-Order\<close>
 
-locale MCS_Saturation = MCS_Base +
+locale MCS_Witness_UNIV = MCS_Witness consistent params witness
+  for consistent :: \<open>'a set \<Rightarrow> bool\<close> 
+    and params :: \<open>'a \<Rightarrow> 'i set\<close>
+    and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close> +
   assumes infinite_UNIV: \<open>infinite (UNIV :: 'a set)\<close>
-  fixes params :: \<open>'a \<Rightarrow> 'i set\<close>
-    and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close>
-  assumes \<open>\<And>p. finite (params p)\<close>
-    and \<open>\<And>p S. finite (\<Union>q \<in> witness p S. params q)\<close>
-    and \<open>\<And>p S. consistent ({p} \<union> S) \<Longrightarrow> infinite (UNIV - (\<Union>q \<in> S. params q))
-      \<Longrightarrow> consistent (witness p S \<union> {p} \<union> S)\<close>
 
-sublocale MCS_Saturation \<subseteq> MCS_Lim_Ord _ \<open>|UNIV|\<close>
+sublocale MCS_Witness_UNIV \<subseteq> MCS_Lim_Ord consistent params witness \<open>|UNIV|\<close>
 proof
   show \<open>Well_order |UNIV|\<close>
     by simp
 next
   show \<open>Cinfinite |UNIV :: 'a set|\<close>
     unfolding cinfinite_def using infinite_UNIV by simp
-next
-  fix p
-  show \<open>finite (params p)\<close>
-    by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
-next
-  fix p S
-  show \<open>finite (\<Union>q \<in> witness p S. params q)\<close>
-    by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
-next
-  fix p S
-  show \<open>consistent ({p} \<union> S) \<Longrightarrow>
-           infinite (UNIV - (\<Union>q \<in> S. params q)) \<Longrightarrow>
-           consistent (witness p S \<union> {p} \<union> S)\<close>
-    by (metis MCS_Saturation_axioms MCS_Saturation_axioms_def MCS_Saturation_def)
 qed
 
-context MCS_Saturation begin
-
-theorem Extend_subset: \<open>S \<subseteq> Extend S\<close>
-  by (simp add: Extend_subset')
+context MCS_Witness_UNIV begin
 
 lemma maximal_maximal': \<open>maximal S \<longleftrightarrow> maximal' S\<close>
   unfolding maximal_def maximal'_def by simp
@@ -483,89 +507,78 @@ lemma maximal_maximal': \<open>maximal S \<longleftrightarrow> maximal' S\<close
 lemma maximal_Extend: \<open>maximal (Extend S)\<close>
   using maximal'_Extend maximal_maximal' by fast
 
-definition saturated :: \<open>'a set \<Rightarrow> bool\<close> where
-  \<open>saturated S \<equiv> \<forall>p \<in> S. \<exists>S'. witness p S' \<subseteq> S\<close>
+lemma witnessed_witnessed': \<open>witnessed S \<longleftrightarrow> witnessed' S\<close>
+  unfolding witnessed_def witnessed'_def by auto
 
-lemma saturated_saturated': \<open>saturated S \<longleftrightarrow> saturated' S\<close>
-  unfolding saturated_def saturated'_def by simp
-
-lemma saturated_Extend:
+lemma witnessed_Extend:
   assumes \<open>consistent (Extend S)\<close>
-  shows \<open>saturated (Extend S)\<close>
-  using assms saturated'_Extend saturated_saturated' by blast
+  shows \<open>witnessed (Extend S)\<close>
+  using assms witnessed'_Extend witnessed_witnessed' by blast
 
 theorem MCS_Extend:
   assumes \<open>consistent S\<close> \<open>|UNIV :: 'a set| \<le>o |UNIV - paramss S|\<close>
-  shows \<open>consistent (Extend S)\<close> \<open>maximal (Extend S)\<close> \<open>saturated (Extend S)\<close>
-  using assms consistent_Extend maximal_Extend saturated_Extend by blast+
+  shows \<open>MCS (Extend S)\<close>
+  using assms consistent_Extend maximal_Extend witnessed_Extend by blast
 
 end
 
-section \<open>Locale without Saturation\<close>
+locale MCS_No_Witness_UNIV = MCS_No_Witness consistent
+  for consistent :: \<open>'a set \<Rightarrow> bool\<close> +
+  assumes infinite_UNIV' [simp]: \<open>infinite (UNIV :: 'a set)\<close>
 
-locale MCS_No_Saturation = MCS_Base +
-  assumes \<open>infinite (UNIV :: 'a set)\<close>
+sublocale MCS_No_Witness_UNIV \<subseteq> MCS_Witness_UNIV consistent \<open>\<lambda>_. {}\<close> \<open>\<lambda>_ _. {}\<close>
+proof qed simp
 
-sublocale MCS_No_Saturation \<subseteq> MCS_Saturation consistent \<open>\<lambda>_. {} :: 'a set\<close> \<open>\<lambda>_ _. {}\<close>
-proof
-  show \<open>infinite (UNIV :: 'a set)\<close>
-    using MCS_No_Saturation_axioms MCS_No_Saturation_axioms_def MCS_No_Saturation_def by blast
-next
-  show \<open>finite {}\<close> ..
-next
-  show \<open>finite (\<Union>_\<in>{}. {})\<close>
-    by fast
-next
-  fix p S
-  show \<open>consistent ({p} \<union> S) \<Longrightarrow> consistent ({} \<union> {p} \<union> S)\<close>
-    by simp
-qed
-
-context MCS_No_Saturation begin
-
-lemma always_saturated [simp]: \<open>saturated H\<close>
-  unfolding saturated_def by simp
+context MCS_No_Witness_UNIV
+begin
 
 theorem MCS_Extend':
   assumes \<open>consistent S\<close>
-  shows \<open>consistent (Extend S)\<close> \<open>maximal (Extend S)\<close>
-  using assms consistent_Extend maximal_Extend by simp_all
+  shows \<open>MCS (Extend S)\<close>
+  unfolding witnessed_def using assms consistent_Extend maximal_Extend
+  by (metis Diff_empty UN_constant card_of_UNIV empty_subsetI)
 
 end
 
 section \<open>Truth Lemma\<close>
 
 locale Truth_Base =
-  fixes semics :: \<open>'model \<Rightarrow> ('model \<Rightarrow> 'fm \<Rightarrow> bool) \<Rightarrow> 'fm \<Rightarrow> bool\<close>
+  fixes semics :: \<open>'model \<Rightarrow> ('model \<Rightarrow> 'fm \<Rightarrow> bool) \<Rightarrow> 'fm \<Rightarrow> bool\<close> (\<open>_ \<langle>_\<rangle>= _\<close> [55, 0, 55] 55)
+    and semantics :: \<open>'model \<Rightarrow> 'fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile> _\<close> [50, 50] 50)
+    and \<M> :: \<open>'a set \<Rightarrow> 'model set\<close>
+    and \<R> :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
+  assumes semics_semantics: \<open>M \<Turnstile> p \<longleftrightarrow> M \<langle>\<lambda>N q. N \<Turnstile> q\<rangle>= p\<close>
+begin
+
+abbreviation saturated :: \<open>'a set \<Rightarrow> bool\<close> where
+  \<open>saturated S \<equiv> \<forall>p. \<forall>M \<in> \<M> S. M \<langle>\<R> S\<rangle>= p \<longleftrightarrow> \<R> S M p\<close>
+
+end
+
+locale Truth_Witness = Truth_Base semics semantics \<M> \<R> + MCS_Witness consistent params witness
+  for semics :: \<open>'model \<Rightarrow> ('model \<Rightarrow> 'fm \<Rightarrow> bool) \<Rightarrow> 'fm \<Rightarrow> bool\<close> (\<open>_ \<langle>_\<rangle>= _\<close> [55, 0, 55] 55)
+    and semantics :: \<open>'model \<Rightarrow> 'fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile> _\<close> [50, 50] 50)
+    and \<M> :: \<open>'a set \<Rightarrow> 'model set\<close>
+    and \<R> :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
+    and consistent :: \<open>'a set \<Rightarrow> bool\<close>
+    and params :: \<open>'a \<Rightarrow> 'i set\<close>
+    and witness :: \<open>'a \<Rightarrow> 'a set \<Rightarrow> 'a set\<close> +
+  assumes saturated_semantics: \<open>\<And>S M p. saturated S \<Longrightarrow> M \<in> \<M> S \<Longrightarrow> \<R> S M p \<longleftrightarrow> M \<Turnstile> p\<close>
+    and MCS_saturated: \<open>\<And>S. MCS S \<Longrightarrow> saturated S\<close>
+begin
+
+theorem truth_lemma:
+  assumes \<open>MCS S\<close> \<open>M \<in> \<M> S\<close>
+  shows \<open>M \<Turnstile> p \<longleftrightarrow> \<R> S M p\<close>
+  using saturated_semantics MCS_saturated assms by blast
+
+end
+
+locale Truth_No_Witness = Truth_Witness semics semantics \<M> \<R> consistent \<open>\<lambda>_. {}\<close> \<open>\<lambda>_ _. {}\<close>
+  for semics :: \<open>'model \<Rightarrow> ('model \<Rightarrow> 'fm \<Rightarrow> bool) \<Rightarrow> 'fm \<Rightarrow> bool\<close>
     and semantics :: \<open>'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
-    and models_from :: \<open>'a set \<Rightarrow> 'model set\<close>
-    and rel :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
-  assumes semics_semantics: \<open>semantics M p \<longleftrightarrow> semics M semantics p\<close>
-    and Hintikka_model: \<open>\<And>H M p. \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p \<Longrightarrow>
-      M \<in> models_from H \<Longrightarrow> semantics M p \<longleftrightarrow> rel H M p\<close>
-
-locale Truth_Saturation = MCS_Saturation + Truth_Base +
-  assumes MCS_Hintikka: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow> saturated H \<Longrightarrow>
-      \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
-begin
-
-theorem truth_lemma_saturation:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>saturated H\<close> \<open>M \<in> models_from H\<close>
-  shows \<open>semantics M p \<longleftrightarrow> rel H M p\<close>
-  using Hintikka_model MCS_Hintikka assms .
-
-end
-
-locale Truth_No_Saturation = MCS_No_Saturation + Truth_Base +
-  assumes MCS_Hintikka: \<open>\<And>H. consistent H \<Longrightarrow> maximal H \<Longrightarrow>
-      \<forall>M \<in> models_from H. \<forall>p. semics M (rel H) p \<longleftrightarrow> rel H M p\<close>
-begin
-
-theorem truth_lemma_no_saturation:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>M \<in> models_from H\<close>
-  shows \<open>semantics M p \<longleftrightarrow> rel H M p\<close>
-  using Hintikka_model MCS_Hintikka assms .
-
-end
+    and \<M> :: \<open>'a set \<Rightarrow> 'model set\<close>
+    and \<R> :: \<open>'a set \<Rightarrow> 'model \<Rightarrow> 'fm \<Rightarrow> bool\<close>
+    and consistent :: \<open>'a set \<Rightarrow> bool\<close>
 
 end

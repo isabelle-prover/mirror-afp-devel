@@ -41,6 +41,7 @@ definition is_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Righta
   where "is_arr \<CC> a b f \<longleftrightarrow> f \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr> \<and> \<CC>\<lparr>Dom\<rparr>\<lparr>f\<rparr> = a \<and> \<CC>\<lparr>Cod\<rparr>\<lparr>f\<rparr> = b"
 
 syntax "_is_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" (\<open>_ : _ \<mapsto>\<index> _\<close> [51, 51, 51] 51)
+syntax_consts "_is_arr" \<rightleftharpoons> is_arr
 translations "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_arr \<CC> a b f"
 
 

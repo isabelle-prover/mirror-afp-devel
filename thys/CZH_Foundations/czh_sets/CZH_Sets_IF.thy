@@ -30,6 +30,8 @@ subsection\<open>Intersection of an indexed family of sets\<close>
 
 syntax "_VIFINTER" :: "pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"  (\<open>(3\<Inter>\<^sub>\<circ>_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
 
+syntax_consts "_VIFINTER" \<rightleftharpoons> VInter
+
 translations "\<Inter>\<^sub>\<circ>x\<in>\<^sub>\<circ>A. f" \<rightleftharpoons> "CONST VInter (CONST imVLambda A (\<lambda>x. f))"
 
 
@@ -163,6 +165,8 @@ lemma vifintersection_vrange_VLambda: "(\<Inter>\<^sub>\<circ>i\<in>\<^sub>\<cir
 subsection\<open>Union of an indexed family of sets\<close>
 
 syntax "_VIFUNION" :: "pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(3\<Union>\<^sub>\<circ>_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
+
+syntax_consts "_VIFUNION" \<rightleftharpoons> VUnion
 
 translations "\<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A. f" \<rightleftharpoons> "CONST VUnion (CONST imVLambda A (\<lambda>x. f))"
 
@@ -466,6 +470,8 @@ and elementary properties.
 
 syntax "_VSIGMA" :: "pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(3\<Coprod>\<^sub>\<circ>_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
 
+syntax_consts "_VSIGMA" \<rightleftharpoons> VSigma
+
 translations "\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A" \<rightleftharpoons> "CONST VSigma I (\<lambda>i. A)"
 
 
@@ -555,6 +561,8 @@ definition vproduct :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
   where "vproduct I A = set {f. vsv f \<and> \<D>\<^sub>\<circ> f = I \<and> (\<forall>i\<in>\<^sub>\<circ>I. f\<lparr>i\<rparr> \<in>\<^sub>\<circ> A i)}"
 
 syntax "_VPRODUCT" :: "pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(3\<Prod>\<^sub>\<circ>_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
+
+syntax_consts "_VPRODUCT" \<rightleftharpoons> vproduct
 
 translations "\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A" \<rightleftharpoons> "CONST vproduct I (\<lambda>i. A)"
 

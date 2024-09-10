@@ -160,6 +160,7 @@ locale is_tiny_preorder_functor =
 
 syntax "_is_tiny_preorder_functor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<le>\<^sub>C\<^sub>.\<^sub>P\<^sub>E\<^sub>O\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_tiny_preorder_functor" \<rightleftharpoons> is_tiny_preorder_functor
 translations "\<FF> : \<AA> \<le>\<^sub>C\<^sub>.\<^sub>P\<^sub>E\<^sub>O\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> 
   "CONST is_tiny_preorder_functor \<alpha> \<AA> \<BB> \<FF>"
 

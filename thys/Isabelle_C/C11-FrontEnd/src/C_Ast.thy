@@ -398,12 +398,10 @@ fun toString_cIntFlag  (X:C_Ast.cIntFlag)    = @{make_string} X
                                              
 fun toString_cIntRepr  (X:C_Ast.cIntRepr)    = @{make_string} X
 
-fun dark_matter x = XML.content_of (YXML.parse_body x)
-
 
 fun toString_abr_string S = case  to_String_b_a_s_e S of 
-                               ST X => dark_matter X
-                             | STa S => map (dark_matter o Int.toString) S 
+                               ST X => Protocol_Message.clean_output X
+                             | STa S => map (Protocol_Message.clean_output o Int.toString) S 
                                         |> String.concatWith "," 
                                         |> enclose "[" "]"
  

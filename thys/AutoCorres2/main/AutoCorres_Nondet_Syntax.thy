@@ -79,6 +79,7 @@ nonterminal
   dobinds and dobind and nobind
 
 syntax (input)
+  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
   "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ <-/ _)" 10)
   ""           :: "dobind => dobinds"                 ("_")
   "_nobind"    :: "'a => dobind"                      ("_")
@@ -87,8 +88,9 @@ syntax (input)
   "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
   "_doE" :: "[dobinds, 'a] => 'a"  ("(doE ((_);//(_))//odE)" 100)
 
-syntax (xsymbols)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
+syntax_consts
+  "_do" \<rightleftharpoons> bind_nd and
+  "_doE" \<rightleftharpoons> bindE
 
 translations
   "_do (_dobinds b bs) e"  \<rightharpoonup> "_do b (_do bs e)"
@@ -104,6 +106,9 @@ term "do x <- f; g x od"
 
 syntax
   "_doO" :: "[dobinds, 'a] => 'a"  ("(DO (_);//   (_)//OD)" 100)
+
+syntax_consts
+  "_doO" == obind
 
 translations
   "_doO (_dobinds b bs) e" == "_doO b (_doO bs e)"

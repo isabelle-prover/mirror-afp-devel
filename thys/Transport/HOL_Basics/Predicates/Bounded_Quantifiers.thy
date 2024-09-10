@@ -24,6 +24,8 @@ no_syntax
 no_notation ball ("\<forall>(\<^bsub>_\<^esub>)")
 end
 unbundle ball_syntax
+syntax_consts
+  "_ball" "_ball2" \<rightleftharpoons> ball
 translations
   "\<forall>x xs : P. Q" \<rightharpoonup> "CONST ball P (\<lambda>x. _ball2 xs P Q)"
   "_ball2 x P Q" \<rightharpoonup> "\<forall>x : P. Q"
@@ -46,6 +48,8 @@ no_syntax
 no_notation bex ("\<exists>(\<^bsub>_\<^esub>)")
 end
 unbundle bex_syntax
+syntax_consts
+  "_bex" "_bex2" \<rightleftharpoons> bex
 translations
   "\<exists>x xs : P. Q" \<rightharpoonup> "CONST bex P (\<lambda>x. _bex2 xs P Q)"
   "_bex2 x P Q" \<rightharpoonup> "\<exists>x : P. Q"
@@ -68,6 +72,8 @@ no_syntax
 no_notation bex1 ("\<exists>!(\<^bsub>_\<^esub>)")
 end
 unbundle bex1_syntax
+syntax_consts
+  "_bex1" "_bex12" \<rightleftharpoons> bex1
 translations
   "\<exists>!x xs : P. Q" \<rightharpoonup> "CONST bex1 P (\<lambda>x. _bex12 xs P Q)"
   "_bex12 x P Q" \<rightharpoonup> "\<exists>!x : P. Q"

@@ -512,6 +512,8 @@ text \<open>Contrary to the set version @{term \<open>SIGMA x:A. B\<close>}, we 
 syntax
   "_Sigma_mset" :: "[pttrn, 'a multiset, 'b multiset] => ('a * 'b) multiset"
   ("(3SIGMAMSET _\<in>#_./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_Sigma_mset" \<rightleftharpoons> Sigma_mset
 translations
   "SIGMAMSET x\<in>#A. B" == "CONST Sigma_mset A (\<lambda>x. B)"
 

@@ -20,6 +20,9 @@ abbreviation "\<e> k \<equiv> axis k 1"
 syntax
   "_ivl_integral" :: "real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> pttrn \<Rightarrow> bool" ("(3\<integral>\<^sub>_\<^sup>_ (_)\<partial>/_)" [0, 0, 10] 10)
 
+syntax_consts
+  "_ivl_integral" \<rightleftharpoons> ivl_integral
+
 translations
   "\<integral>\<^sub>a\<^sup>b f \<partial>x" \<rightleftharpoons> "CONST ivl_integral a b (\<lambda>x. f)"
 

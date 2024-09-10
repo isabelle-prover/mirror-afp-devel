@@ -190,7 +190,7 @@ definition finite_field_ops32 :: "uint32 arith_ops_record" where
 end 
 
 lemma shiftr_uint32_code [code_unfold]: "drop_bit 1 x = (uint32_shiftr x 1)"
-  by (simp add: uint32_shiftr_def)
+  by (simp add: uint32.shiftr_def)
 
 (* ******************************************************************************** *)
 subsubsection \<open>Transfer Relation\<close>
@@ -891,7 +891,7 @@ definition finite_field_ops64 :: "uint64 arith_ops_record" where
 end 
 
 lemma shiftr_uint64_code [code_unfold]: "drop_bit 1 x = (uint64_shiftr x 1)"
-  by (simp add: uint64_shiftr_def)
+  by (simp add: uint64.shiftr_def)
 
 text \<open>For soundness of the 64-bit implementation, we mainly prove that this implementation
   implements the int-based implementation of GF(p).\<close>

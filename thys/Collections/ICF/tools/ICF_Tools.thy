@@ -137,7 +137,7 @@ ML \<open>
 
     local
       fun sss_add_single thm ss = let
-        val simps = Raw_Simplifier.dest_ss (simpset_of ss) |> #simps |> map #2;
+        val simps = Simplifier.dest_simps (simpset_of ss) |> map #2;
         val ess = ss delsimps simps;
         val thm' = simplify ss thm;
 

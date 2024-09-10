@@ -75,13 +75,13 @@ notation st_elim ("{elim| _ |}")
 notation st_oblig ("{oblig| _ |}")
 notation st_failed ("<strg-failed>")
 
-syntax
+syntax (ASCII)
   "_ap_strg_bool" :: "['a, 'a] => 'a"  ("_ =strg<--|=> _")
   "_ap_wkn_bool" :: "['a, 'a] => 'a"  ("_ =strg-->|=> _")
   "_ap_ge_bool" :: "['a, 'a] => 'a"  ("_ =strg<=|=> _")
   "_ap_le_bool" :: "['a, 'a] => 'a"  ("_ =strg>=|=> _")
 
-syntax(xsymbols)
+syntax
   "_ap_strg_bool" :: "['a, 'a] => 'a"  ("_ =strg\<longleftarrow>|=> _")
   "_ap_wkn_bool" :: "['a, 'a] => 'a"  ("_ =strg\<longrightarrow>|=> _")
   "_ap_ge_bool" :: "['a, 'a] => 'a"  ("_ =strg\<le>|=> _")

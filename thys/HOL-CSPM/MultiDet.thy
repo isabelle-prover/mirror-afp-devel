@@ -57,6 +57,7 @@ definition  MultiDet :: \<open>['a set, 'a \<Rightarrow> 'b process] \<Rightarro
 
 (* Unfortunately, we don't have a big \<box> in jedit *)
 syntax "_MultiDet" :: \<open>[pttrn, 'a set, 'b process] \<Rightarrow> 'b process\<close>  (\<open>(3\<^bold>\<box>_\<in>_. / _)\<close> 75)
+syntax_consts "_MultiDet" \<rightleftharpoons> MultiDet
 translations "\<^bold>\<box> p \<in> A. P"  \<rightleftharpoons>  "CONST MultiDet A (\<lambda>p. P)"
 
 

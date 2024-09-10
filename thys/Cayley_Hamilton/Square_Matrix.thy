@@ -16,6 +16,8 @@ typedef ('a, 'n) sq_matrix = "UNIV :: ('n \<Rightarrow> 'n \<Rightarrow> 'a) set
 
 syntax "_sq_matrix" :: "type \<Rightarrow> type \<Rightarrow> type" ("(_ ^^/ _)" [15, 16] 15)
 
+syntax_types "_sq_matrix" \<rightleftharpoons> sq_matrix
+
 parse_translation \<open>
   let
     fun vec t u = Syntax.const @{type_syntax sq_matrix} $ t $ u;

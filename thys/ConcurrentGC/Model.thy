@@ -971,6 +971,9 @@ where
 syntax
   "_gc_fassign" :: "location \<Rightarrow> idt \<Rightarrow> 'ref \<Rightarrow> 'field \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> \<acute>_ := \<acute>_ \<rightarrow> _" [0, 0, 0, 70] 71)
   "_gc_massign" :: "location \<Rightarrow> idt \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> \<acute>_ := \<acute>_ \<rightarrow> flag" [0, 0, 0] 71)
+syntax_consts
+  "_gc_fassign" \<rightleftharpoons> gc_deref and
+  "_gc_massign" \<rightleftharpoons> gc_load_mark
 translations
   "\<lbrace>l\<rbrace> \<acute>q := \<acute>r\<rightarrow>f"    => "CONST gc_deref l r \<guillemotleft>f\<guillemotright> (_update_name q)"
   "\<lbrace>l\<rbrace> \<acute>m := \<acute>r\<rightarrow>flag" => "CONST gc_load_mark l r (_update_name m)"

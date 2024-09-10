@@ -460,6 +460,8 @@ hide_const (open) zero \<comment> \<open>mandatory qualifier: \<^const>\<open>c_
 
 syntax
   "_zero" :: "type \<Rightarrow> logic" ("(1ZERO/(1'(_')))")
+syntax_consts
+  "_zero" == c_type_class.zero
 translations
   "ZERO('a)" => "CONST c_type_class.zero :: ('a)"
 

@@ -196,6 +196,10 @@ syntax
   "_vlist" :: "fsfields \<Rightarrow> V" ("[(_)]\<^sub>\<circ>")
   "_vapp" :: "V \<Rightarrow> fsfields \<Rightarrow> V" ("_ \<lparr>(_)\<rparr>\<^sub>\<bullet>" [100, 100] 100)
 
+syntax_consts
+  "_vlist" == vcons and
+  "_vapp" == app
+
 translations
   "[xs, x]\<^sub>\<circ>" == "[xs]\<^sub>\<circ> #\<^sub>\<circ> x"
   "[x]\<^sub>\<circ>" == "[]\<^sub>\<circ> #\<^sub>\<circ> x"

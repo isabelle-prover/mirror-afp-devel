@@ -895,7 +895,7 @@ subsection \<open>S-coupled Simulation\<close>
 
 text \<open>Originally coupled simulation was introduced as two weak simulations coupled at the stable
   states. We give the definitions from @{cite "parrow1992" and "ps1994"} and a proof connecting
-  this notion to “our” coupled similarity in the absence of divergences following
+  this notion to ``our'' coupled similarity in the absence of divergences following
   @{cite "sangiorgi2012"}.\<close>
 
 \<comment>\<open>From @{cite "parrow1992"}\<close>

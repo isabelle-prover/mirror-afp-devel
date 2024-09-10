@@ -260,6 +260,9 @@ syntax
   "_recbinds" :: "recbindt \<Rightarrow> recbinds \<Rightarrow> recbinds"  ("_;/ _")
   "_Letrec"   :: "recbinds \<Rightarrow> logic \<Rightarrow> logic"        ("(Letrec (_)/ in (_))" 10)
 
+syntax_consts
+  "_recbind" "_recbindt" "_recbinds" "_Letrec" == CLetrec
+
 translations
   (recbindt) "x = a, (y,ys) = (b,bs)" == (recbindt) "(x,y,ys) = (a,b,bs)"
   (recbindt) "x = a, y = b"          == (recbindt) "(x,y) = (a,b)"

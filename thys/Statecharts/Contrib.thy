@@ -20,7 +20,9 @@ syntax (ASCII)
   "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  ("(3%_:_./ _)" [0, 0, 3] 3)
 syntax
   "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  ("(3\<lambda>_\<in>_./ _)" [0, 0, 3] 3)
-translations 
+syntax_consts
+  "_lambda_in" == restrict
+translations
   "\<lambda>x\<in>A. f"  == "CONST restrict (%x. f) A"
 
 

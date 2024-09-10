@@ -39,6 +39,10 @@ homepage = "wimmer_homepage"
 wimmer = "wimmer_email"
 
 [history]
+2024-08-28 = """
+rebased session on new separate entry "Difference_Bound_Matrices";
+added some new material from Munta<br>
+"""
 
 [extra]
 

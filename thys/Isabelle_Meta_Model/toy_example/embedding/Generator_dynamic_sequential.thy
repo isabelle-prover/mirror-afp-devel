@@ -130,7 +130,7 @@ ML\<open>
 structure From = struct
  val string = META.SS_base o META.ST
  val binding = string o Binding.name_of
- (*fun term ctxt s = string (XML.content_of (YXML.parse_body (Syntax.string_of_term ctxt s)))*)
+ (*fun term ctxt s = string (Protocol_Message.clean_output (Syntax.string_of_term ctxt s))*)
  val internal_oid = META.Oid o Code_Numeral.natural_of_integer
  val option = Option.map
  val list = List.map
@@ -790,11 +790,11 @@ val compiler = let open Export_code_env in
                       SML.Filename.stdout ml_ext_ml ^ "\"]))"
                   , "use \"" ^ SML.Filename.argument ml_ext_ml ^ "\"" ]
              , ml let val arg = "argument" in
-                  [ "val " ^ arg ^ " = XML.content_of (YXML.parse_body (@{make_string} (" ^
+                  [ "val " ^ arg ^ " = Protocol_Message.clean_output (@{make_string} (" ^
                     ml_module ^ "." ^
                     mk_free (Proof_Context.init_global thy)
                             Isabelle.argument_main
-                            ([]: (string * string) list) ^ ")))"
+                            ([]: (string * string) list) ^ "))"
                   , "use \"" ^ SML.Filename.function ml_ext_ml ^ "\""
                   , "ML_Context.eval_source (ML_Compiler.verbose false ML_Compiler.flags) (Input.source false (\"let open " ^
                       ml_module ^ " in " ^ Isabelle.function ^ " (\" ^ " ^ arg ^
@@ -1094,7 +1094,7 @@ end
 subsection\<open>Factoring All Meta Commands Together\<close>
 
 setup\<open>ML_Antiquotation.inline @{binding mk_string} (Scan.succeed
-"(fn ctxt => fn x => ML_Pretty.string_of_polyml (ML_system_pretty (x, FixedInt.fromInt (Config.get ctxt (ML_Print_Depth.print_depth)))))")
+"(fn ctxt => fn x => ML_Pretty.string_of (ML_system_pretty (x, FixedInt.fromInt (Config.get ctxt (ML_Print_Depth.print_depth)))))")
 \<close>
 
 ML\<open>
@@ -1258,7 +1258,7 @@ structure TOY_parse = struct
   val colon = Parse.$$$ ":"
   fun repeat2 scan = scan ::: Scan.repeat1 scan
 
-  fun xml_unescape s = (XML.content_of (YXML.parse_body s), Position.none)
+  fun xml_unescape s = (Protocol_Message.clean_output s, Position.none)
                        |> Symbol_Pos.explode |> Symbol_Pos.implode |> From.string
 
   fun outer_syntax_command2 mk_string cmd_spec cmd_descr parser v_true v_false get_all_meta_embed =

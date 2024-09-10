@@ -78,6 +78,15 @@ host = [
 
 [amani.homepages]
 
+[amjad]
+name = "Rayhana Amjad"
+orcid = "0000-0002-3086-1720"
+
+[amjad.emails]
+
+[amjad.homepages]
+amjad_homepage = "https://rayhana.dev/"
+
 [ammer]
 name = "Thomas Ammer"
 
@@ -1310,6 +1319,24 @@ host = [
 ]
 
 [cohen.homepages]
+
+[connor]
+name = "Liam O'Connor"
+orcid = "0000-0003-2765-4269"
+
+[connor.emails]
+
+[connor.emails.connor_email]
+user = [
+  "me",
+]
+host = [
+  "liamoc",
+  "net",
+]
+
+[connor.homepages]
+connor_homepage = "https://liamoc.net"
 
 [cordwell]
 name = "Katherine Kosaian"
@@ -3635,6 +3662,22 @@ host = [
 [kreuzer.homepages]
 kreuzer_homepage = "https://www21.in.tum.de/team/kreuzer/"
 
+[krofta]
+name = "Niklas Krofta"
+
+[krofta.emails]
+
+[krofta.emails.krofta_email]
+user = [
+  "nkrofta",
+]
+host = [
+  "outlook",
+  "com",
+]
+
+[krofta.homepages]
+
 [kuncak]
 name = "Viktor Kuncak"
 
@@ -3932,6 +3975,23 @@ orcid = "0000-0003-1701-0435"
 [lima.emails]
 
 [lima.homepages]
+
+[limat]
+name = "Thaynara Arielly de Lima"
+orcid = "0000-0002-0852-9086"
+
+[limat.emails]
+
+[limat.emails.limat_email]
+user = [
+  "thaynaradelima",
+]
+host = [
+  "ufg",
+  "br",
+]
+
+[limat.homepages]
 
 [lindenberg]
 name = "Christina Lindenberg"
@@ -5763,6 +5823,23 @@ name = "Tom Ridge"
 
 [ridge.homepages]
 
+[rincon]
+name = "Mauricio Ayala-Rincón"
+orcid = "0000-0003-0089-3905"
+
+[rincon.emails]
+
+[rincon.emails.rincon_email]
+user = [
+  "ayala",
+]
+host = [
+  "unb",
+  "br",
+]
+
+[rincon.homepages]
+
 [rizaldi]
 name = "Albert Rizaldi"
 
@@ -6807,6 +6884,24 @@ name = "Daniel Stüwe"
 [stuewe.emails]
 
 [stuewe.homepages]
+
+[suarez]
+name = "Fabián Fernando Serran Suárez"
+orcid = "0000-0002-9817-4855"
+
+[suarez.emails]
+
+[suarez.emails.suarez_email]
+user = [
+  "ffserranos",
+]
+host = [
+  "unal",
+  "edu",
+  "co",
+]
+
+[suarez.homepages]
 
 [sudbrock]
 name = "Henning Sudbrock"

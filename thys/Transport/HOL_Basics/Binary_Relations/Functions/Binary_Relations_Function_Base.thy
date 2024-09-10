@@ -24,6 +24,9 @@ no_syntax
   "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow> (_)" [41, 41, 40] 40)
 end
 unbundle rel_mono_wrt_syntax
+syntax_consts
+  "_rel_mono_wrt" \<rightleftharpoons> rel_mono_wrt and
+  "_rel_dep_mono_wrt_pred" \<rightleftharpoons> rel_dep_mono_wrt
 translations
   "A \<rightarrow> B" \<rightleftharpoons> "CONST rel_mono_wrt A B"
   "(x : A) \<rightarrow> B" \<rightleftharpoons> "CONST rel_dep_mono_wrt A (\<lambda>x. B)"

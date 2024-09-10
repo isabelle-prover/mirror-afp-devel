@@ -1159,7 +1159,7 @@ proof -
     by (simp add: add_divide_distrib h3) 
   have h5: "(real p / real n) \<le> ?h"              using h4 by auto
   have h6: "(real p / real n) < h + 1"           using h5 h2 by linarith
-  have a1: "real (p div n) \<le> (real p / real n)"  using real_of_nat_div4 by blast 
+  have a1: "real (p div n) \<le> (real p / real n)"  using of_nat_div_le_of_nat by blast 
   have a2: "p div n < h + 1"                     using h6 a1 by auto
   show ?thesis                                   using a2 by simp
 qed
@@ -1972,9 +1972,8 @@ subsection \<open>3.9 Key Wrap Schemes\<close>
 
 text \<open>This subsection specifies that either the NIST AES key wrap algorithm or the CMS TDES key
 wrap algorithm
-• must be used as the key wrap scheme in the Wrapped Key Transport Scheme, and
-• should be used more generally when wrapping an existing symmetric key with another sym-
-metric key.
+\<^item> must be used as the key wrap scheme in the Wrapped Key Transport Scheme, and
+\<^item> should be used more generally when wrapping an existing symmetric key with another symmetric key.
 
 A key wrap scheme takes as input a key-encryption key K, an octet string of length wrapkeylen, 
 and an octet string C which is the key that needs wrapping.  It produces an octet string W, 

@@ -82,6 +82,8 @@ lift_definition add_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> 'a zmu
 
 syntax
   "_zmultiset" :: "args \<Rightarrow> 'a zmultiset" ("{#(_)#}\<^sub>z")
+syntax_consts
+  "_zmultiset" == add_zmset
 translations
   "{#x, xs#}\<^sub>z" == "CONST add_zmset x {#xs#}\<^sub>z"
   "{#x#}\<^sub>z" == "CONST add_zmset x {#}\<^sub>z"
@@ -158,6 +160,10 @@ syntax
 syntax (ASCII)
   "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
   "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
+
+syntax_consts
+  "_ZMBall" \<rightleftharpoons> Signed_Multiset.Ball and
+  "_ZMBex" \<rightleftharpoons> Signed_Multiset.Bex
 
 translations
   "\<forall>x\<in>#\<^sub>zA. P" \<rightleftharpoons> "CONST Signed_Multiset.Ball A (\<lambda>x. P)"

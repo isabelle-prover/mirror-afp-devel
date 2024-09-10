@@ -19,6 +19,7 @@ typedef (overloaded) ('e::len, 'f::len) float = "UNIV::(1 word \<times> 'e word 
 setup_lifting type_definition_float
 
 syntax "_float" :: "type \<Rightarrow> type \<Rightarrow> type" ("'(_, _') float")
+syntax_types "_float" \<rightleftharpoons> float
 text \<open>parse \<open>('a, 'b) float\<close> as ('a::len, 'b::len) float.\<close>
 
 parse_translation \<open>

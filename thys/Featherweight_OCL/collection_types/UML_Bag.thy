@@ -360,6 +360,8 @@ qed
 
 syntax
   "_OclFinbag" :: "args => ('\<AA>,'a::null) Bag"    ("Bag{(_)}")
+syntax_consts
+  "_OclFinbag" == OclIncluding
 translations
   "Bag{x, xs}" == "CONST OclIncluding (Bag{xs}) x"
   "Bag{x}"     == "CONST OclIncluding (Bag{}) x "
@@ -480,6 +482,8 @@ where     "OclForall S P = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<ta
                                  else \<bottom>)"
 syntax
   "_OclForallBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->forAll\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+syntax_consts
+  "_OclForallBag" == UML_Bag.OclForall
 translations
   "X->forAll\<^sub>B\<^sub>a\<^sub>g(x | P)" == "CONST UML_Bag.OclForall X (%x. P)"
 
@@ -493,6 +497,8 @@ where     "OclExists S P = not(UML_Bag.OclForall S (\<lambda> X. not (P X)))"
 
 syntax
   "_OclExistBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->exists\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+syntax_consts
+  "_OclExistBag" == UML_Bag.OclExists
 translations
   "X->exists\<^sub>B\<^sub>a\<^sub>g(x | P)" == "CONST UML_Bag.OclExists X (%x. P)"
 
@@ -508,6 +514,8 @@ where     "OclIterate S A F = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \
 syntax
   "_OclIterateBag"  :: "[('\<AA>,'\<alpha>::null) Bag, idt, idt, '\<alpha>, '\<beta>] => ('\<AA>,'\<gamma>)val"
                         ("_ ->iterate\<^sub>B\<^sub>a\<^sub>g'(_;_=_ | _')" (*[71,100,70]50*))
+syntax_consts
+  "_OclIterateBag" == OclIterate
 translations
   "X->iterate\<^sub>B\<^sub>a\<^sub>g(a; x = A | P)" == "CONST OclIterate X A (%a. (% x. P))"
 
@@ -529,6 +537,8 @@ where "OclSelect S P = (\<lambda>\<tau>. if (\<delta> S) \<tau> = true \<tau>
                               else invalid \<tau>)"
 syntax
   "_OclSelectBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->select\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+syntax_consts
+  "_OclSelectBag" == OclSelect
 translations
   "X->select\<^sub>B\<^sub>a\<^sub>g(x | P)" == "CONST OclSelect X (% x. P)"
 
@@ -540,6 +550,8 @@ definition OclReject :: "[('\<AA>,'\<alpha>::null)Bag,('\<AA>,'\<alpha>)val\<Rig
 where "OclReject S P = OclSelect S (not o P)"
 syntax
   "_OclRejectBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->reject\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+syntax_consts
+  "_OclRejectBag" == OclReject
 translations
   "X->reject\<^sub>B\<^sub>a\<^sub>g(x | P)" == "CONST OclReject X (% x. P)"
 

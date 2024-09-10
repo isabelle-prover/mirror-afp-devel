@@ -2263,7 +2263,7 @@ text \<open>The markup is itself encoded in the string by the format @{ML_struct
 The plain information (without markup) can be extracted:
 \<close>
 ML_val \<open>
-YXML.content_of str
+Protocol_Message.clean_output str
 \<close>
 text \<open>The markup can be expanded to the @{ML_type XML.tree} by @{ML YXML.parse}\<close>
 ML_val \<open>

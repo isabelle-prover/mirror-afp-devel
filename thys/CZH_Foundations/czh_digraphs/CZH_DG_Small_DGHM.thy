@@ -31,6 +31,7 @@ locale is_tm_dghm =
 
 syntax "_is_tm_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_tm_dghm" \<rightleftharpoons> is_tm_dghm
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_tm_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation (input) is_cn_tm_dghm :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -38,6 +39,7 @@ abbreviation (input) is_cn_tm_dghm :: "V \<Rightarrow> V \<Rightarrow> V \<Right
 
 syntax "_is_cn_tm_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<mapsto>\<mapsto>\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cn_tm_dghm" \<rightleftharpoons> is_cn_tm_dghm
 translations "\<FF> : \<AA> \<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>" \<rightharpoonup> "CONST is_cn_tm_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation all_tm_dghms :: "V \<Rightarrow> V"
@@ -255,6 +257,7 @@ locale is_tiny_dghm =
 
 syntax "_is_tiny_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_tiny_dghm" \<rightleftharpoons> is_tiny_dghm
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_tiny_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation (input) is_cn_tiny_dghm :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -262,6 +265,7 @@ abbreviation (input) is_cn_tiny_dghm :: "V \<Rightarrow> V \<Rightarrow> V \<Rig
 
 syntax "_is_cn_tiny_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<mapsto>\<mapsto>\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cn_tiny_dghm" \<rightleftharpoons> is_cn_tiny_dghm
 translations "\<FF> : \<AA> \<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>" \<rightharpoonup> "CONST is_cn_tiny_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation all_tiny_dghms :: "V \<Rightarrow> V"

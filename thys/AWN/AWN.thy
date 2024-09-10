@@ -91,6 +91,16 @@ syntax
   "_lreceive" :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
                  ("(3{_}receive'((_)') .)//_" [0, 0, 60] 60)
 
+syntax_consts
+  "_guard" "_lguard" "_ifguard" \<rightleftharpoons> GUARD and
+  "_assign" "_lassign" "_bassign" "_lbassign" \<rightleftharpoons> ASSIGN and
+  "_unicast" "_lunicast" \<rightleftharpoons> UCAST and
+  "_bcast" "_lbcast" \<rightleftharpoons> BCAST and
+  "_gcast" "_lgcast" \<rightleftharpoons> GCAST and
+  "_send" "_lsend" \<rightleftharpoons> SEND and
+  "_deliver" "_ldeliver" \<rightleftharpoons> DELIVER and
+  "_receive" "_lreceive" \<rightleftharpoons> RECEIVE
+
 translations
   "_guard f p"     \<rightleftharpoons> "CONST GUARD () f p"
   "_lguard l f p"  \<rightleftharpoons> "CONST GUARD l f p"

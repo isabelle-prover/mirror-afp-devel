@@ -7,42 +7,56 @@ chapter \<open>Refutations\<close>
 
 theory Refutations imports Maximal_Consistent_Sets begin
 
+lemma split_finite_sets:
+  assumes \<open>finite A\<close> \<open>finite B\<close>
+    and \<open>A \<subseteq> B \<union> S\<close>
+  shows \<open>\<exists>B' C. finite C \<and> A = B' \<union> C \<and> B' = A \<inter> B \<and> C \<subseteq> S\<close>
+  using assms subset_UnE by auto
+
+lemma split_list:
+  assumes \<open>set A \<subseteq> set B \<union> S\<close>
+  shows \<open>\<exists>B' C. set (B' @ C) = set A \<and> set B' = set A \<inter> set B \<and> set C \<subseteq> S\<close>
+  using assms split_finite_sets[where A=\<open>set A\<close> and B=\<open>set B\<close> and S=S]
+  by (metis List.finite_set finite_Un finite_list set_append)
+
 section \<open>Rearranging Refutations\<close>
 
 locale Refutations =
   fixes refute :: \<open>'a list \<Rightarrow> bool\<close>
-  assumes refute_struct: \<open>\<And>A B. refute A \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> refute B\<close>
+  assumes refute_set: \<open>\<And>A B. refute A \<Longrightarrow> set A = set B \<Longrightarrow> refute B\<close>
 begin
 
 theorem refute_split:
   assumes \<open>set A \<subseteq> set B \<union> X\<close> \<open>refute A\<close>
-  shows \<open>\<exists>C. set C \<subseteq> X \<and> refute (B @ C)\<close>
-  using struct_split[where P=refute] refute_struct assms by blast
+  shows \<open>\<exists>B' C. set B' = set A \<inter> set B \<and> set C \<subseteq> X \<and> refute (B' @ C)\<close>
+  using assms refute_set split_list[where A=A and B=B] by metis
 
 corollary refute_split1:
-  assumes \<open>set A \<subseteq> {q} \<union> X\<close> \<open>refute A\<close>
+  assumes \<open>set A \<subseteq> {q} \<union> X\<close> \<open>refute A\<close> \<open>q \<in> set A\<close>
   shows \<open>\<exists>C. set C \<subseteq> X \<and> refute (q # C)\<close>
-  using assms refute_split[where B=\<open>[q]\<close>] by simp
+  using assms refute_split[where A=A and X=X and B=\<open>[q]\<close>] refute_set by auto
 
 end
 
 section \<open>MCSs and Refutability\<close>
 
 locale Refutations_MCS = Refutations + MCS_Base +
-  assumes consistent_refute: \<open>\<And>S. consistent S = (\<nexists>S'. set S' \<subseteq> S \<and> refute S')\<close>
+  assumes consistent_refute: \<open>\<And>S. consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> refute A)\<close>
 begin
 
 theorem MCS_refute:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
-  shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>S'. set S' \<subseteq> S \<and> refute (p # S'))\<close>
-proof
-  assume \<open>p \<notin> S\<close>
-  then show \<open>\<exists>S'. set S' \<subseteq> S \<and> refute (p # S')\<close>
-    using assms refute_split1 consistent_refute unfolding maximal_def by metis
-next
-  assume \<open>\<exists>S'. set S' \<subseteq> S \<and> refute (p # S')\<close>
-  then show \<open>p \<notin> S\<close>
-    using assms consistent_refute by fastforce
+  shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> refute (p # A))\<close>
+proof -
+  have \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> {p} \<union> S \<and> p \<in> set A \<and> (\<exists>B. set B \<subseteq> set A \<and> refute B))\<close>
+    using MCS_inconsistent[OF assms] unfolding consistent_refute
+    by (metis List.finite_set finite_list)
+  moreover have \<open>\<forall>B. set B \<subseteq> {p} \<union> S \<longrightarrow> refute B \<longrightarrow> p \<in> set B\<close>
+    using assms unfolding consistent_refute by blast
+  then have \<open>\<forall>B. set B \<subseteq> {p} \<union> S \<longrightarrow> refute B \<longrightarrow> (\<exists>B'. set B' \<subseteq> S \<and> refute (p # B'))\<close>
+    using refute_split1 by blast
+  ultimately show \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> refute (p # A))\<close>
+    using assms(1) consistent_refute by auto
 qed
 
 end

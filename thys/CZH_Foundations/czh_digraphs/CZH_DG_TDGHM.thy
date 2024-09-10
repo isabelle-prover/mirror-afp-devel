@@ -56,6 +56,7 @@ locale is_tdghm =
 
 syntax "_is_tdghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M _ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tdghm" \<rightleftharpoons> is_tdghm
 translations "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons>
   "CONST is_tdghm \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 

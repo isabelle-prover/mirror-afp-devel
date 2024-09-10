@@ -21,6 +21,7 @@ locale is_tm_functor = is_functor \<alpha> \<AA> \<BB> \<FF>  for \<alpha> \<AA>
 
 syntax "_is_tm_functor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_tm_functor" \<rightleftharpoons> is_tm_functor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_tm_functor \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation (input) is_cn_tm_functor :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -28,6 +29,7 @@ abbreviation (input) is_cn_tm_functor :: "V \<Rightarrow> V \<Rightarrow> V \<Ri
 
 syntax "_is_cn_tm_functor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<^sub>C\<^sub>.\<^sub>t\<^sub>m\<mapsto>\<mapsto>\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cn_tm_functor" \<rightleftharpoons> is_cn_tm_functor
 translations "\<FF> : \<AA> \<^sub>C\<^sub>.\<^sub>t\<^sub>m\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>" \<rightharpoonup> "CONST is_cn_tm_functor \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation all_tm_cfs :: "V \<Rightarrow> V"
@@ -229,6 +231,7 @@ locale is_tiny_functor = is_functor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA
 
 syntax "_is_tiny_functor" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_tiny_functor" \<rightleftharpoons> is_tiny_functor
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_tiny_functor \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation (input) is_cn_tiny_cf :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -236,6 +239,7 @@ abbreviation (input) is_cn_tiny_cf :: "V \<Rightarrow> V \<Rightarrow> V \<Right
 
 syntax "_is_cn_tiny_cf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<mapsto>\<mapsto>\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cn_tiny_cf" \<rightleftharpoons> is_cn_cf
 translations "\<FF> : \<AA> \<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>" \<rightharpoonup> "CONST is_cn_cf \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation all_tiny_cfs :: "V \<Rightarrow> V"

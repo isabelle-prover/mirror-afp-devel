@@ -1514,6 +1514,8 @@ text\<open>Some syntactic sugar for \<open>inner_dirsum\<close>, borrowed from t
 syntax 
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b"
   ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
+syntax_consts
+  "_inner_dirsum" == inner_dirsum
 translations \<comment> \<open>Beware of argument permutation!\<close>
   "\<Oplus>M\<leftarrow>Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"
 

@@ -23,6 +23,7 @@ locale is_tm_tdghm =
 
 syntax "_is_tm_tdghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>m _ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_tdghm" \<rightleftharpoons> is_tm_tdghm
 translations "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>m \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons>
   "CONST is_tm_tdghm \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 
@@ -224,6 +225,7 @@ locale is_tiny_tdghm =
 
 syntax "_is_tiny_tdghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y _ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tiny_tdghm" \<rightleftharpoons> is_tiny_tdghm
 translations "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons>
   "CONST is_tiny_tdghm \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 

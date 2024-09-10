@@ -11,8 +11,99 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sun, 16 Jun 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Ramsey_Bounds</title>
+          <link>/dependencies/ramsey_bounds/</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ramsey_bounds/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stirling_Formula</title>
+          <link>/dependencies/stirling_formula/</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stirling_formula/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Undirected_Graph_Theory</title>
+          <link>/dependencies/undirected_graph_theory/</link>
+          <pubDate>Thu, 22 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/undirected_graph_theory/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Marriage</title>
+          <link>/dependencies/marriage/</link>
+          <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/marriage/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Secret_Directed_Unwinding</title>
+          <link>/dependencies/secret_directed_unwinding/</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/secret_directed_unwinding/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Floyd_Warshall</title>
+          <link>/dependencies/floyd_warshall/</link>
+          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/floyd_warshall/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Show</title>
+          <link>/dependencies/show/</link>
+          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/show/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Probabilistic_Timed_Automata</title>
+          <link>/dependencies/probabilistic_timed_automata/</link>
+          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/probabilistic_timed_automata/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Imperative_HOL</title>
+          <link>/dependencies/refine_imperative_hol/</link>
+          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_imperative_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cayley_Hamilton</title>
+          <link>/dependencies/cayley_hamilton/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/cayley_hamilton/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jacobson_Basic_Algebra</title>
+          <link>/dependencies/jacobson_basic_algebra/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jacobson_basic_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Smooth_Manifolds</title>
+          <link>/dependencies/smooth_manifolds/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/smooth_manifolds/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Types_To_Sets_Extension</title>
+          <link>/dependencies/types_to_sets_extension/</link>
+          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/types_to_sets_extension/</guid>
+          <description></description>
+        </item>
         <item>
           <title>EnrichedCategoryBasics</title>
           <link>/dependencies/enrichedcategorybasics/</link>
@@ -60,6 +151,13 @@
           <link>/dependencies/riesz_representation/</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/riesz_representation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>S_Finite_Measure_Monad</title>
+          <link>/dependencies/s_finite_measure_monad/</link>
+          <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/s_finite_measure_monad/</guid>
           <description></description>
         </item>
         <item>
@@ -175,13 +273,6 @@
           <description></description>
         </item>
         <item>
-          <title>Show</title>
-          <link>/dependencies/show/</link>
-          <pubDate>Thu, 02 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/show/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Functional-Automata</title>
           <link>/dependencies/functional-automata/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
@@ -280,13 +371,6 @@
           <description></description>
         </item>
         <item>
-          <title>Undirected_Graph_Theory</title>
-          <link>/dependencies/undirected_graph_theory/</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/undirected_graph_theory/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Pell</title>
           <link>/dependencies/pell/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
@@ -315,10 +399,10 @@
           <description></description>
         </item>
         <item>
-          <title>Frequency_Moments</title>
-          <link>/dependencies/frequency_moments/</link>
+          <title>Median_Method</title>
+          <link>/dependencies/median_method/</link>
           <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/frequency_moments/</guid>
+          <guid>/dependencies/median_method/</guid>
           <description></description>
         </item>
         <item>
@@ -473,13 +557,6 @@
           <link>/dependencies/finite-map-extras/</link>
           <pubDate>Sat, 04 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/finite-map-extras/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>S_Finite_Measure_Monad</title>
-          <link>/dependencies/s_finite_measure_monad/</link>
-          <pubDate>Thu, 02 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/s_finite_measure_monad/</guid>
           <description></description>
         </item>
         <item>
@@ -721,10 +798,10 @@
           <description></description>
         </item>
         <item>
-          <title>Stirling_Formula</title>
-          <link>/dependencies/stirling_formula/</link>
+          <title>Frequency_Moments</title>
+          <link>/dependencies/frequency_moments/</link>
           <pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/stirling_formula/</guid>
+          <guid>/dependencies/frequency_moments/</guid>
           <description></description>
         </item>
         <item>
@@ -816,13 +893,6 @@
           <link>/dependencies/separation_algebra/</link>
           <pubDate>Fri, 25 Nov 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/separation_algebra/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Jacobson_Basic_Algebra</title>
-          <link>/dependencies/jacobson_basic_algebra/</link>
-          <pubDate>Mon, 21 Nov 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/jacobson_basic_algebra/</guid>
           <description></description>
         </item>
         <item>
@@ -973,13 +1043,6 @@
           <description></description>
         </item>
         <item>
-          <title>Median_Method</title>
-          <link>/dependencies/median_method/</link>
-          <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/median_method/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Prefix_Free_Code_Combinators</title>
           <link>/dependencies/prefix_free_code_combinators/</link>
           <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
@@ -1075,13 +1138,6 @@
           <link>/dependencies/mdp-rewards/</link>
           <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/mdp-rewards/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Refine_Imperative_HOL</title>
-          <link>/dependencies/refine_imperative_hol/</link>
-          <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/refine_imperative_hol/</guid>
           <description></description>
         </item>
         <item>
@@ -2037,13 +2093,6 @@
           <description></description>
         </item>
         <item>
-          <title>Marriage</title>
-          <link>/dependencies/marriage/</link>
-          <pubDate>Wed, 02 Dec 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/marriage/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Case_Labeling</title>
           <link>/dependencies/case_labeling/</link>
           <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
@@ -2111,13 +2160,6 @@
           <link>/dependencies/launchbury/</link>
           <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
           <guid>/dependencies/launchbury/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Cayley_Hamilton</title>
-          <link>/dependencies/cayley_hamilton/</link>
-          <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/cayley_hamilton/</guid>
           <description></description>
         </item>
         <item>

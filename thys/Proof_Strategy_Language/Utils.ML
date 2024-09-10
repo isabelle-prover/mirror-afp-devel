@@ -435,7 +435,7 @@ fun get_simp_rules (ctxt:context) (goal:thm) =
   let
     val const_names   = Isabelle_Utils.get_const_names_in_1st_subg goal;
     val related_rules = names_to_rules ctxt goal "" const_names;
-    val simpset_thms  = ctxt |> simpset_of |> Raw_Simplifier.dest_ss |> #simps |> map snd;
+    val simpset_thms  = ctxt |> simpset_of |> Simplifier.dest_simps |> map #2;
     fun eq_test (thm1, (_, thm2)) = Thm.eq_thm (thm1, thm2);
     val unique_rules  = subtract eq_test simpset_thms related_rules;
   in

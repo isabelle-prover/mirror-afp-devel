@@ -5535,7 +5535,7 @@ proof (induct "card (set vts)" arbitrary: vts p I B rule: less_induct)
   
       (* construct vertices for the pocket polygon *)
       let ?pocket_vts = "?pocket_path_vts @ [?rotated_vts!0]"
-      (* the interior of the polygon pocket — this should be the good linepath of the filled in polygon*)
+      (* the interior of the polygon pocket --- this should be the good linepath of the filled in polygon*)
       let ?pocket_good_path_vts = "tl (butlast ?pocket_path_vts)"
       (*let ?filled_vts = "filter (\<lambda>v. v \<notin> set ?pocket_good_path_vts) ?rotated_vts"*)
       let ?filled_vts = "fill_pocket_0 ?rotated_vts (length ?pocket_path_vts)"

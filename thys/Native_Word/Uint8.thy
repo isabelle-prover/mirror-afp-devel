@@ -410,121 +410,45 @@ code_printing
 | constant uint8_sdiv \<rightharpoonup>
   (Scala) "(_ '/ _).toByte"
 
-definition uint8_test_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]:
-  "uint8_test_bit x n =
-  (if n < 0 \<or> 7 < n then undefined (bit :: uint8 \<Rightarrow> _) x n
-   else bit x (nat_of_integer n))"
-
-lemma bit_uint8_code [code]:
-  "bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
-  including undefined_transfer integer.lifting unfolding uint8_test_bit_def
-  by (transfer, simp, transfer, simp)
-
-lemma uint8_test_bit_code [code]:
-  "uint8_test_bit w n =
-  (if n < 0 \<or> 7 < n then undefined (bit :: uint8 \<Rightarrow> _) w n else bit (Rep_uint8 w) (nat_of_integer n))"
-  unfolding uint8_test_bit_def
-  by (simp add: bit_uint8.rep_eq)
+global_interpretation uint8: word_type_copy_target_language Abs_uint8 Rep_uint8 signed_drop_bit_uint8
+  uint8_of_nat nat_of_uint8 uint8_of_int int_of_uint8 Uint8 integer_of_uint8 8 set_bits_aux_uint8 8 7
+  defines uint8_test_bit = uint8.test_bit
+    and uint8_shiftl = uint8.shiftl
+    and uint8_shiftr = uint8.shiftr
+    and uint8_sshiftr = uint8.sshiftr
+    and uint8_set_bit = uint8.set_bit
+  by standard simp_all
 
 code_printing constant uint8_test_bit \<rightharpoonup>
   (SML) "Uint8.test'_bit" and
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint8.test'_bit" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit x i)"
-
-
-definition uint8_set_bit :: "uint8 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint8"
-where [code del]:
-  "uint8_set_bit x n b =
-  (if n < 0 \<or> 7 < n then undefined (set_bit :: uint8 \<Rightarrow> _) x n b
-   else set_bit x (nat_of_integer n) b)"
-
-lemma set_bit_uint8_code [code]:
-  "set_bit x n b = (if n < 8 then uint8_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer integer.lifting unfolding uint8_set_bit_def
-by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
-
-lemma uint8_set_bit_code [code]:
-  "Rep_uint8 (uint8_set_bit w n b) = 
-  (if n < 0 \<or> 7 < n then Rep_uint8 (undefined (set_bit :: uint8 \<Rightarrow> _) w n b)
-   else set_bit (Rep_uint8 w) (nat_of_integer n) b)"
-including undefined_transfer unfolding uint8_set_bit_def by transfer simp
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit w i)"
 
 code_printing constant uint8_set_bit \<rightharpoonup>
   (SML) "Uint8.set'_bit" and
   (Haskell) "Data'_Bits.setBitBounded" and
   (Scala) "Uint8.set'_bit" and
-  (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_set'_bit out of bounds\") else Uint8.set'_bit x i b)"
-
-
-definition uint8_shiftl :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
-where [code del]:
-  "uint8_shiftl x n = (if n < 0 \<or> 8 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint8 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
-
-lemma shiftl_uint8_code [code]:
-  "push_bit n x = (if n < 8 then uint8_shiftl x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint8_shiftl_def
-  by transfer simp
-
-lemma uint8_shiftl_code [code]:
-  "Rep_uint8 (uint8_shiftl w n) =
-  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (push_bit :: nat \<Rightarrow> uint8 \<Rightarrow> _) w n)
-   else push_bit (nat_of_integer n) (Rep_uint8 w))"
-  including undefined_transfer unfolding uint8_shiftl_def
-  by transfer simp
+  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_set'_bit out of bounds\") else Uint8.set'_bit w i b)"
 
 code_printing constant uint8_shiftl \<rightharpoonup>
   (SML) "Uint8.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (Scala) "Uint8.shiftl" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_shiftl out of bounds\") else Uint8.shiftl x i)"
-
-definition uint8_shiftr :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
-where [code del]:
-  "uint8_shiftr x n = (if n < 0 \<or> 8 \<le> n then undefined (drop_bit :: _ \<Rightarrow> _ \<Rightarrow> uint8) x n else drop_bit (nat_of_integer n) x)"
-
-lemma shiftr_uint8_code [code]:
-  "drop_bit n x = (if n < 8 then uint8_shiftr x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint8_shiftr_def
-  by transfer simp
-
-lemma uint8_shiftr_code [code]:
-  "Rep_uint8 (uint8_shiftr w n) =
-  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined (drop_bit :: _ \<Rightarrow> _ \<Rightarrow> uint8) w n) 
-   else drop_bit (nat_of_integer n) (Rep_uint8 w))"
-including undefined_transfer unfolding uint8_shiftr_def by transfer simp
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_shiftl out of bounds\") else Uint8.shiftl w i)"
 
 code_printing constant uint8_shiftr \<rightharpoonup>
   (SML) "Uint8.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (Scala) "Uint8.shiftr" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_shiftr out of bounds\") else Uint8.shiftr x i)"
-
-definition uint8_sshiftr :: "uint8 \<Rightarrow> integer \<Rightarrow> uint8"
-where [code del]:
-  "uint8_sshiftr x n =
-  (if n < 0 \<or> 8 \<le> n then undefined signed_drop_bit_uint8 n x else signed_drop_bit_uint8 (nat_of_integer n) x)"
-
-lemma sshiftr_uint8_code [code]:
-  "signed_drop_bit_uint8 n x = 
-  (if n < 8 then uint8_sshiftr x (integer_of_nat n) else if bit x 7 then -1 else 0)"
-  including undefined_transfer integer.lifting unfolding uint8_sshiftr_def
-  by transfer (simp add: not_less signed_drop_bit_beyond word_size)
-
-lemma uint8_sshiftr_code [code]:
-  "Rep_uint8 (uint8_sshiftr w n) =
-  (if n < 0 \<or> 8 \<le> n then Rep_uint8 (undefined signed_drop_bit_uint8 n w)
-   else signed_drop_bit (nat_of_integer n) (Rep_uint8 w))"
-  including undefined_transfer unfolding uint8_sshiftr_def
-  by transfer simp
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_shiftr out of bounds\") else Uint8.shiftr w i)"
 
 code_printing constant uint8_sshiftr \<rightharpoonup>
   (SML) "Uint8.shiftr'_signed" and
   (Haskell) 
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint8.Int8) _)) :: Uint8.Word8)" and
   (Scala) "Uint8.shiftr'_signed" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_sshiftr out of bounds\") else Uint8.shiftr'_signed x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_sshiftr out of bounds\") else Uint8.shiftr'_signed w i)"
 
 context
   includes bit_operations_syntax
@@ -534,7 +458,7 @@ lemma uint8_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint8) 7"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint16_code [code]: "msb x \<longleftrightarrow> uint8_test_bit x 7"
-  by (simp add: uint8_test_bit_def uint8_msb_test_bit)
+  by (simp add: uint8.test_bit_def uint8_msb_test_bit)
 
 lemma uint8_of_int_code [code]:
   "uint8_of_int i = Uint8 (integer_of_int i)"

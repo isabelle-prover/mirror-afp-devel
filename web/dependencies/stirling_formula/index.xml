@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 03 Apr 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/stirling_formula/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>An Exponential Improvement for Diagonal Ramsey</title>
+          <link>/entries/Diagonal_Ramsey.html</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Diagonal_Ramsey.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Distributed Distinct Elements</title>
           <link>/entries/Distributed_Distinct_Elements.html</link>

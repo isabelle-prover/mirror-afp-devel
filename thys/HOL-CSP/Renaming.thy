@@ -193,6 +193,8 @@ text \<open>Some syntaxic sugar\<close>
 
 syntax
   "_Renaming"  :: \<open>'a process \<Rightarrow> updbinds \<Rightarrow> 'a process\<close> (\<open>_\<lbrakk>_\<rbrakk>\<close> [100, 100]) (*see the values we need, at least 51*)
+syntax_consts
+  "_Renaming" \<rightleftharpoons> Renaming
 translations
   "_Renaming P updates" \<rightleftharpoons> "CONST Renaming P (_Update (CONST id) updates)"
 

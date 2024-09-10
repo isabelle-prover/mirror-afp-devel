@@ -692,21 +692,14 @@ code_printing
   (OCaml) "Int64.div" and
   (Scala) "_ '/ _"
 
-definition uint64_test_bit :: "uint64 \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]:
-  "uint64_test_bit x n =
-  (if n < 0 \<or> 63 < n then undefined (bit :: uint64 \<Rightarrow> _) x n
-   else bit x (nat_of_integer n))"
-
-lemma bit_uint64_code [code]:
-  "bit x n \<longleftrightarrow> n < 64 \<and> uint64_test_bit x (integer_of_nat n)"
-  including undefined_transfer integer.lifting unfolding uint64_test_bit_def
-  by transfer (auto dest: bit_imp_le_length)
-
-lemma uint64_test_bit_code [code]:
-  "uint64_test_bit w n =
-  (if n < 0 \<or> 63 < n then undefined (bit :: uint64 \<Rightarrow> _) w n else bit (Rep_uint64 w) (nat_of_integer n))"
-  unfolding uint64_test_bit_def by(simp add: bit_uint64.rep_eq)
+global_interpretation uint64: word_type_copy_target_language Abs_uint64 Rep_uint64 signed_drop_bit_uint64
+  uint64_of_nat nat_of_uint64 uint64_of_int int_of_uint64 Uint64 integer_of_uint64 64 set_bits_aux_uint64 64 63
+  defines uint64_test_bit = uint64.test_bit
+    and uint64_shiftl = uint64.shiftl
+    and uint64_shiftr = uint64.shiftr
+    and uint64_sshiftr = uint64.sshiftr
+    and uint64_set_bit = uint64.set_bit
+  by standard simp_all
 
 code_printing constant uint64_test_bit \<rightharpoonup>
   (SML) "Uint64.test'_bit" and
@@ -715,85 +708,26 @@ code_printing constant uint64_test_bit \<rightharpoonup>
   (Scala) "Uint64.test'_bit" and
   (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_test'_bit out of bounds\") else Uint64.test'_bit x i)"
 
-definition uint64_set_bit :: "uint64 \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> uint64"
-where [code del]:
-  "uint64_set_bit x n b =
-  (if n < 0 \<or> 63 < n then undefined (set_bit :: uint64 \<Rightarrow> _) x n b
-   else set_bit x (nat_of_integer n) b)"
-
-lemma set_bit_uint64_code [code]:
-  "set_bit x n b = (if n < 64 then uint64_set_bit x (integer_of_nat n) b else x)"
-including undefined_transfer integer.lifting unfolding uint64_set_bit_def
-by(transfer)(auto cong: conj_cong simp add: not_less set_bit_beyond word_size)
-
-lemma uint64_set_bit_code [code]:
-  "Rep_uint64 (uint64_set_bit w n b) = 
-  (if n < 0 \<or> 63 < n then Rep_uint64 (undefined (set_bit :: uint64 \<Rightarrow> _) w n b)
-   else set_bit (Rep_uint64 w) (nat_of_integer n) b)"
-including undefined_transfer unfolding uint64_set_bit_def by transfer simp
-
 code_printing constant uint64_set_bit \<rightharpoonup>
   (SML) "Uint64.set'_bit" and
   (Haskell) "Data'_Bits.setBitBounded" and
   (OCaml) "Uint64.set'_bit" and
   (Scala) "Uint64.set'_bit" and
-  (Eval) "(fn x => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_set'_bit out of bounds\") else Uint64.set'_bit x i b)"
-
-definition uint64_shiftl :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
-where [code del]:
-  "uint64_shiftl x n = (if n < 0 \<or> 64 \<le> n then undefined (push_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) x n else push_bit (nat_of_integer n) x)"
-
-lemma shiftl_uint64_code [code]: "push_bit n x = (if n < 64 then uint64_shiftl x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint64_shiftl_def
-  by transfer simp
-
-lemma uint64_shiftl_code [code]:
-  "Rep_uint64 (uint64_shiftl w n) =
-  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined (push_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) w n) else push_bit (nat_of_integer n) (Rep_uint64 w))"
-including undefined_transfer unfolding uint64_shiftl_def by transfer simp
+  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_set'_bit out of bounds\") else Uint64.set'_bit w i b)"
 
 code_printing constant uint64_shiftl \<rightharpoonup>
   (SML) "Uint64.shiftl" and
   (Haskell) "Data'_Bits.shiftlBounded" and
   (OCaml) "Uint64.shiftl" and
   (Scala) "Uint64.shiftl" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftl out of bounds\") else Uint64.shiftl x i)"
-
-definition uint64_shiftr :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
-where [code del]:
-  "uint64_shiftr x n = (if n < 0 \<or> 64 \<le> n then undefined (drop_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) x n else drop_bit (nat_of_integer n) x)"
-
-lemma shiftr_uint64_code [code]: "drop_bit n x = (if n < 64 then uint64_shiftr x (integer_of_nat n) else 0)"
-  including undefined_transfer integer.lifting unfolding uint64_shiftr_def
-  by transfer simp
-
-lemma uint64_shiftr_code [code]:
-  "Rep_uint64 (uint64_shiftr w n) =
-  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined (drop_bit :: nat \<Rightarrow> uint64 \<Rightarrow> _) w n) else drop_bit (nat_of_integer n) (Rep_uint64 w))"
-  including undefined_transfer unfolding uint64_shiftr_def by transfer simp
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftl out of bounds\") else Uint64.shiftl w i)"
 
 code_printing constant uint64_shiftr \<rightharpoonup>
   (SML) "Uint64.shiftr" and
   (Haskell) "Data'_Bits.shiftrBounded" and
   (OCaml) "Uint64.shiftr" and
   (Scala) "Uint64.shiftr" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr out of bounds\") else Uint64.shiftr x i)"
-
-definition uint64_sshiftr :: "uint64 \<Rightarrow> integer \<Rightarrow> uint64"
-where [code del]:
-  "uint64_sshiftr x n =
-  (if n < 0 \<or> 64 \<le> n then undefined signed_drop_bit_uint64 n x else signed_drop_bit_uint64 (nat_of_integer n) x)"
-
-lemma sshiftr_uint64_code [code]:
-  "signed_drop_bit_uint64 n x = 
-  (if n < 64 then uint64_sshiftr x (integer_of_nat n) else if bit x 63 then - 1 else 0)"
-  including undefined_transfer integer.lifting unfolding uint64_sshiftr_def
-  by transfer (simp add: not_less signed_drop_bit_beyond)
-
-lemma uint64_sshiftr_code [code]:
-  "Rep_uint64 (uint64_sshiftr w n) =
-  (if n < 0 \<or> 64 \<le> n then Rep_uint64 (undefined signed_drop_bit_uint64 n w) else signed_drop_bit (nat_of_integer n) (Rep_uint64 w))"
-including undefined_transfer unfolding uint64_sshiftr_def by transfer simp
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr out of bounds\") else Uint64.shiftr w i)"
 
 code_printing constant uint64_sshiftr \<rightharpoonup>
   (SML) "Uint64.shiftr'_signed" and
@@ -801,7 +735,7 @@ code_printing constant uint64_sshiftr \<rightharpoonup>
     "(Prelude.fromInteger (Prelude.toInteger (Data'_Bits.shiftrBounded (Prelude.fromInteger (Prelude.toInteger _) :: Uint64.Int64) _)) :: Uint64.Word64)" and
   (OCaml) "Uint64.shiftr'_signed" and
   (Scala) "Uint64.shiftr'_signed" and
-  (Eval) "(fn x => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed x i)"
+  (Eval) "(fn w => fn i => if i < 0 orelse i >= 64 then raise (Fail \"argument to uint64'_shiftr'_signed out of bounds\") else Uint64.shiftr'_signed w i)"
 
 context
   includes bit_operations_syntax
@@ -811,7 +745,7 @@ lemma uint64_msb_test_bit: "msb x \<longleftrightarrow> bit (x :: uint64) 63"
   by transfer (simp add: msb_word_iff_bit)
 
 lemma msb_uint64_code [code]: "msb x \<longleftrightarrow> uint64_test_bit x 63"
-  by (simp add: uint64_test_bit_def uint64_msb_test_bit)
+  by (simp add: uint64.test_bit_def uint64_msb_test_bit)
 
 lemma uint64_of_int_code [code]:
   "uint64_of_int i = Uint64 (integer_of_int i)"

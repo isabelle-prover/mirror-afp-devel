@@ -44,6 +44,7 @@ begin
   notation lnth (infixl "?!" 100)
 
   syntax "_llist" :: "args \<Rightarrow> 'a llist" ("<_>")
+  syntax_consts "_llist" \<rightleftharpoons> LCons
   translations
     "<a, x>" \<rightleftharpoons> "a % <x>"
     "<a>" \<rightleftharpoons> "a % <>"

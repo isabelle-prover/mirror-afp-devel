@@ -28,7 +28,8 @@ locale is_cat_pullback =
 
 syntax "_is_cat_pullback" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>b _\<rightarrow>_\<rightarrow>_\<leftarrow>_\<leftarrow>_ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51, 51, 51] 51)
-translations "x : X <\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>b \<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_pullback" \<rightleftharpoons> is_cat_pullback
+translations "x : X <\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>b \<aa>\<rightarrow>\<gg>\<rightarrow>\<oo>\<leftarrow>\<ff>\<leftarrow>\<bb> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_pullback \<alpha> \<aa> \<gg> \<oo> \<ff> \<bb> \<CC> X x"
                         
 locale is_cat_pushout =
@@ -38,7 +39,8 @@ locale is_cat_pushout =
 
 syntax "_is_cat_pushout" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _\<leftarrow>_\<leftarrow>_\<rightarrow>_\<rightarrow>_ >\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>o _ \<mapsto>\<mapsto>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51, 51, 51, 51] 51)
-translations "x : \<aa>\<leftarrow>\<gg>\<leftarrow>\<oo>\<rightarrow>\<ff>\<rightarrow>\<bb> >\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>o X \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
+syntax_consts "_is_cat_pushout" \<rightleftharpoons> is_cat_pushout
+translations "x : \<aa>\<leftarrow>\<gg>\<leftarrow>\<oo>\<rightarrow>\<ff>\<rightarrow>\<bb> >\<^sub>C\<^sub>F\<^sub>.\<^sub>p\<^sub>o X \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons>
   "CONST is_cat_pushout \<alpha> \<aa> \<gg> \<oo> \<ff> \<bb> \<CC> X x"
 
 

@@ -28,6 +28,8 @@ subsubsection \<open>Section syntax for @{const Cons}\<close>
 syntax
   "_Cons_section" :: "'a \<rightarrow> ['a] \<rightarrow> ['a]" ("'(:')")
   "_Cons_section_left" :: "'a \<Rightarrow> ['a] \<rightarrow> ['a]" ("'(_:')")
+syntax_consts
+  "_Cons_section_left" == Cons
 translations
   "(x:)" == "(CONST Rep_cfun) (CONST Cons) x"
 
@@ -36,6 +38,8 @@ abbreviation Cons_section_right :: "['a] \<Rightarrow> 'a \<rightarrow> ['a]" ("
 
 syntax
   "_lazy_list" :: "args \<Rightarrow> ['a]" ("[(_)]")
+syntax_consts
+  "_lazy_list" == Cons
 translations
   "[x, xs]" == "x : [xs]"
   "[x]" == "x : []"

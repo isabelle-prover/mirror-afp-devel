@@ -4262,6 +4262,8 @@ qed
 
 syntax
   "_HypDer" :: "form \<Rightarrow> form set \<Rightarrow> form \<Rightarrow> bool" ("_,_ \<turnstile> _" [50, 50, 50] 50)
+syntax_consts
+  "_HypDer" \<rightleftharpoons> is_derivable_from_hyps
 translations
   "\<H>, H \<turnstile> P" \<rightharpoonup> "\<H> \<union> {H} \<turnstile> P"
 

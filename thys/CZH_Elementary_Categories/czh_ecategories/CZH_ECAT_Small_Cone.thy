@@ -21,6 +21,7 @@ locale is_tm_cat_cone =
 
 syntax "_is_tm_cat_cone" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ <\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_cat_cone" \<rightleftharpoons> is_tm_cat_cone
 translations "\<NN> : c <\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>c\<^sub>o\<^sub>n\<^sub>e \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_tm_cat_cone \<alpha> c \<JJ> \<CC> \<FF> \<NN>"
 
@@ -31,6 +32,7 @@ locale is_tm_cat_cocone =
 
 syntax "_is_tm_cat_cocone" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ >\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e _ :/ _ \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_tm_cat_cocone" \<rightleftharpoons> is_tm_cat_cocone
 translations "\<NN> : \<FF> >\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>c\<^sub>o\<^sub>c\<^sub>o\<^sub>n\<^sub>e c : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<CC>" \<rightleftharpoons> 
   "CONST is_tm_cat_cocone \<alpha> c \<JJ> \<CC> \<FF> \<NN>"
 

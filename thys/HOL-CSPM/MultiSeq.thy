@@ -57,6 +57,7 @@ definition MultiSeq :: \<open>['a list, 'a \<Rightarrow> 'b process] \<Rightarro
 
 syntax  "_MultiSeq" :: \<open>[pttrn,'a list, 'b process] \<Rightarrow> 'b process\<close>
                        (\<open>(3SEQ _\<in>@_./ _)\<close> 73)
+syntax_consts "_MultiSeq" \<rightleftharpoons> MultiSeq
 translations  "SEQ i \<in>@ A. P " \<rightleftharpoons> "CONST MultiSeq A (\<lambda>i. P)"
 
 

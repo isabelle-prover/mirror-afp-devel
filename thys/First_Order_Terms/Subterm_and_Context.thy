@@ -71,6 +71,10 @@ syntax
 "_All_subt" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<forall>_\<lhd>_./ _)" [0, 0, 10] 10)
 "_Ex_subt" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<exists>_\<lhd>_./ _)" [0, 0, 10] 10)
 
+syntax_consts
+  "_All_supteq" "_All_supt" "_All_subteq" "_All_subt" \<rightleftharpoons> All and
+  "_Ex_supteq" "_Ex_supt" "_Ex_subteq" "_Ex_subt" \<rightleftharpoons> Ex
+
 (* for parsing *)
 translations
   "\<forall>x\<unrhd>y. P" \<rightharpoonup> "\<forall>x. x \<unrhd> y \<longrightarrow> P"

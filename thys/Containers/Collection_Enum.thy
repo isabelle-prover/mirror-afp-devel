@@ -40,6 +40,8 @@ end
 
 syntax "_CENUM" :: "type => logic"  ("(1CENUM/(1'(_')))")
 
+syntax_consts "_CENUM" == cEnum
+
 parse_translation \<open>
 let
   fun cenum_tr [ty] =

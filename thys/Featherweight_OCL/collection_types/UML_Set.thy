@@ -368,6 +368,8 @@ qed
 
 syntax
   "_OclFinset" :: "args => ('\<AA>,'a::null) Set"    ("Set{(_)}")
+syntax_consts
+  "_OclFinset" == OclIncluding
 translations
   "Set{x, xs}" == "CONST OclIncluding (Set{xs}) x"
   "Set{x}"     == "CONST OclIncluding (Set{}) x "
@@ -507,6 +509,8 @@ where     "OclForall S P = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<ta
                                  else \<bottom>)"
 syntax
   "_OclForallSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->forAll\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+syntax_consts
+  "_OclForallSet" == UML_Set.OclForall
 translations
   "X->forAll\<^sub>S\<^sub>e\<^sub>t(x | P)" == "CONST UML_Set.OclForall X (%x. P)"
 
@@ -520,6 +524,8 @@ where     "OclExists S P = not(UML_Set.OclForall S (\<lambda> X. not (P X)))"
 
 syntax
   "_OclExistSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->exists\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+syntax_consts
+  "_OclExistSet" == UML_Set.OclExists
 translations
   "X->exists\<^sub>S\<^sub>e\<^sub>t(x | P)" == "CONST UML_Set.OclExists X (%x. P)"
 
@@ -535,6 +541,8 @@ where "OclIterate S A F = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<tau
 syntax
   "_OclIterateSet"  :: "[('\<AA>,'\<alpha>::null) Set, idt, idt, '\<alpha>, '\<beta>] => ('\<AA>,'\<gamma>)val"
                         ("_ ->iterate\<^sub>S\<^sub>e\<^sub>t'(_;_=_ | _')" (*[71,100,70]50*))
+syntax_consts
+  "_OclIterateSet" == OclIterate
 translations
   "X->iterate\<^sub>S\<^sub>e\<^sub>t(a; x = A | P)" == "CONST OclIterate X A (%a. (% x. P))"
 
@@ -550,6 +558,8 @@ where "OclSelect S P = (\<lambda>\<tau>. if (\<delta> S) \<tau> = true \<tau>
                               else invalid \<tau>)"
 syntax
   "_OclSelectSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->select\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+syntax_consts
+  "_OclSelectSet" == OclSelect
 translations
   "X->select\<^sub>S\<^sub>e\<^sub>t(x | P)" == "CONST OclSelect X (% x. P)"
 
@@ -561,6 +571,8 @@ definition OclReject :: "[('\<AA>,'\<alpha>::null)Set,('\<AA>,'\<alpha>)val\<Rig
 where "OclReject S P = OclSelect S (not o P)"
 syntax
   "_OclRejectSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->reject\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+syntax_consts
+  "_OclRejectSet" == OclReject
 translations
   "X->reject\<^sub>S\<^sub>e\<^sub>t(x | P)" == "CONST OclReject X (% x. P)"
 

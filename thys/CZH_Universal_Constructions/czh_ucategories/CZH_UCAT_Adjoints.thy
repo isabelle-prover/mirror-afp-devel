@@ -50,6 +50,7 @@ locale is_cf_adjunction =
 
 syntax "_is_cf_adjunction" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ : _ \<rightleftharpoons>\<^sub>C\<^sub>F _ : _ \<rightleftharpoons>\<rightleftharpoons>\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_cf_adjunction" \<rightleftharpoons> is_cf_adjunction
 translations "\<Phi> : \<FF> \<rightleftharpoons>\<^sub>C\<^sub>F \<GG> : \<CC> \<rightleftharpoons>\<rightleftharpoons>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>" \<rightleftharpoons> 
   "CONST is_cf_adjunction \<alpha> \<CC> \<DD> \<FF> \<GG> \<Phi>"
 

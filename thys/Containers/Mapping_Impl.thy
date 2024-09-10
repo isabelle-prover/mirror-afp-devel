@@ -213,6 +213,9 @@ class mapping_impl =
 syntax (input)
   "_MAPPING_IMPL" :: "type => logic"  ("(1MAPPING'_IMPL/(1'(_')))")
 
+syntax_consts
+  "_MAPPING_IMPL" == mapping_impl
+
 parse_translation \<open>
 let
   fun mapping_impl_tr [ty] =

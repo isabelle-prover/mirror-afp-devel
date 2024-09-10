@@ -11,7 +11,7 @@ section \<open>Syntax\<close>
 
 datatype ('i, 'p) fm
   = Fls (\<open>\<^bold>\<bottom>\<close>)
-  | Pro 'p (\<open>\<^bold>\<ddagger>\<close>)
+  | Pro 'p (\<open>\<^bold>\<cdot>\<close>)
   | Imp \<open>('i, 'p) fm\<close> \<open>('i, 'p) fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 55)
   | Box 'i \<open>('i, 'p) fm\<close> (\<open>\<^bold>\<box>\<close>)
 
@@ -21,21 +21,21 @@ abbreviation Neg (\<open>\<^bold>\<not> _\<close> [70] 70) where
 section \<open>Semantics\<close>
 
 datatype ('i, 'p, 'w) model =
-  Model (\<W>: \<open>'w set\<close>) (\<R>: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>) (\<V>: \<open>'w \<Rightarrow> 'p \<Rightarrow> bool\<close>)
+  Model (W: \<open>'w set\<close>) (R: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>) (V: \<open>'w \<Rightarrow> 'p \<Rightarrow> bool\<close>)
 
 type_synonym ('i, 'p, 'w) ctx = \<open>('i, 'p, 'w) model \<times> 'w\<close>
 
-fun semantics :: \<open>('i, 'p, 'w) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile> _\<close> [50, 50] 50) where
-  \<open>_ \<Turnstile> \<^bold>\<bottom> \<longleftrightarrow> False\<close>
-| \<open>(M, w) \<Turnstile> \<^bold>\<ddagger>P \<longleftrightarrow> \<V> M w P\<close>
-| \<open>(M, w) \<Turnstile> p \<^bold>\<longrightarrow> q \<longleftrightarrow> (M, w) \<Turnstile> p \<longrightarrow> (M, w) \<Turnstile> q\<close>
-| \<open>(M, w) \<Turnstile> \<^bold>\<box> i p \<longleftrightarrow> (\<forall>v \<in> \<W> M \<inter> \<R> M i w. (M, v) \<Turnstile> p)\<close>
+fun semantics :: \<open>('i, 'p, 'w) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>\<box> _\<close> [50, 50] 50) where
+  \<open>_ \<Turnstile>\<^sub>\<box> \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>(M, w) \<Turnstile>\<^sub>\<box> \<^bold>\<cdot>P \<longleftrightarrow> V M w P\<close>
+| \<open>(M, w) \<Turnstile>\<^sub>\<box> p \<^bold>\<longrightarrow> q \<longleftrightarrow> (M, w) \<Turnstile>\<^sub>\<box> p \<longrightarrow> (M, w) \<Turnstile>\<^sub>\<box> q\<close>
+| \<open>(M, w) \<Turnstile>\<^sub>\<box> \<^bold>\<box> i p \<longleftrightarrow> (\<forall>v \<in> W M \<inter> R M i w. (M, v) \<Turnstile>\<^sub>\<box> p)\<close>
 
 section \<open>Calculus\<close>
 
 primrec eval :: \<open>('p \<Rightarrow> bool) \<Rightarrow> (('i, 'p) fm \<Rightarrow> bool) \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> where
   \<open>eval _ _ \<^bold>\<bottom> = False\<close>
-| \<open>eval g _ (\<^bold>\<ddagger>P) = g P\<close>
+| \<open>eval g _ (\<^bold>\<cdot>P) = g P\<close>
 | \<open>eval g h (p \<^bold>\<longrightarrow> q) = (eval g h p \<longrightarrow> eval g h q)\<close>
 | \<open>eval _ h (\<^bold>\<box> i p) = h (\<^bold>\<box> i p)\<close>
 
@@ -56,24 +56,24 @@ abbreviation Calculus_assms (\<open>_ \<turnstile>\<^sub>\<box> _\<close> [50, 5
 
 section \<open>Soundness\<close>
 
-lemma eval_semantics: \<open>eval (g w) (\<lambda>q. (Model W r g, w) \<Turnstile> q) p = ((Model W r g, w) \<Turnstile> p)\<close>
+lemma eval_semantics: \<open>eval (g w) (\<lambda>q. (Model Ws r g, w) \<Turnstile>\<^sub>\<box> q) p = ((Model Ws r g, w) \<Turnstile>\<^sub>\<box> p)\<close>
   by (induct p) simp_all
 
 lemma tautology:
   assumes \<open>tautology p\<close>
-  shows \<open>(M, w) \<Turnstile> p\<close>
+  shows \<open>(M, w) \<Turnstile>\<^sub>\<box> p\<close>
 proof -
-  from assms have \<open>eval (g w) (\<lambda>q. (Model W r g, w) \<Turnstile> q) p\<close> for W g r
+  from assms have \<open>eval (g w) (\<lambda>q. (Model Ws r g, w) \<Turnstile>\<^sub>\<box> q) p\<close> for Ws g r
     by simp
-  then have \<open>(Model W r g, w) \<Turnstile> p\<close> for W g r
+  then have \<open>(Model Ws r g, w) \<Turnstile>\<^sub>\<box> p\<close> for Ws g r
     using eval_semantics by fast
-  then show \<open>(M, w) \<Turnstile> p\<close>
+  then show \<open>(M, w) \<Turnstile>\<^sub>\<box> p\<close>
     by (metis model.exhaust)
 qed
 
 theorem soundness:
-  assumes \<open>\<And>M w p. A p \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> (M, w) \<Turnstile> p\<close>
-  shows \<open>\<turnstile>\<^sub>\<box> p \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> (M, w) \<Turnstile> p\<close>
+  assumes \<open>\<And>M w p. A p \<Longrightarrow> w \<in> W M \<Longrightarrow> (M, w) \<Turnstile>\<^sub>\<box> p\<close>
+  shows \<open>\<turnstile>\<^sub>\<box> p \<Longrightarrow> w \<in> W M \<Longrightarrow> (M, w) \<Turnstile>\<^sub>\<box> p\<close>
   by (induct p arbitrary: w rule: Calculus.induct) (auto simp: assms tautology)
 
 section \<open>Admissible rules\<close>
@@ -172,279 +172,203 @@ proof -
     using assms R1 by blast
 qed
 
-interpretation Derivations Calculus_assms
-proof
-  fix A B and p :: \<open>('i, 'p) fm\<close>
-  assume \<open>\<turnstile>\<^sub>\<box> A \<^bold>\<leadsto> p\<close> \<open>set A \<subseteq> set B\<close>
-  then show \<open>\<turnstile>\<^sub>\<box> B \<^bold>\<leadsto> p\<close>
-    using K_imply_weaken by blast
-qed
-
 section \<open>Maximal Consistent Sets\<close>
 
 definition consistent :: \<open>('i, 'p) fm set \<Rightarrow> bool\<close> where
-  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
+  \<open>consistent S \<equiv> \<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
 
-interpretation MCS_No_Saturation consistent
+interpretation MCS_No_Witness_UNIV consistent
 proof
-  fix S S' :: \<open>('i, 'p) fm set\<close>
-  assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
-  then show \<open>consistent S'\<close>
-    unfolding consistent_def by fast
-next
-  fix S :: \<open>('i, 'p) fm set\<close>
-  assume \<open>\<not> consistent S\<close>
-  then show \<open>\<exists>S' \<subseteq> S. finite S' \<and> \<not> consistent S'\<close>
-    unfolding consistent_def by blast
-next
   show \<open>infinite (UNIV :: ('i, 'p) fm set)\<close>
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
-qed
+qed (auto simp: consistent_def)
 
-interpretation Derivations_MCS_Cut Calculus_assms consistent \<open>\<^bold>\<bottom>\<close>
+interpretation Derivations_Cut_MCS Calculus_assms consistent \<open>\<^bold>\<bottom>\<close>
 proof
-  fix S :: \<open>('i, 'p) fm set\<close>
-  show \<open>consistent S = (\<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile>\<^sub>\<box> \<^bold>\<bottom>)\<close>
-    unfolding consistent_def ..
+  fix A B and p :: \<open>('i, 'p) fm\<close>
+  assume \<open>\<turnstile>\<^sub>\<box> A \<^bold>\<leadsto> p\<close> \<open>set A = set B\<close>
+  then show \<open>\<turnstile>\<^sub>\<box> B \<^bold>\<leadsto> p\<close>
+    using K_imply_weaken by blast
 next
-  fix A and p :: \<open>('i, 'p) fm\<close>
-  assume \<open>p \<in> set A\<close>
-  then show \<open>A \<turnstile>\<^sub>\<box> p\<close>
-    by (metis K_imply_head K_imply_weaken Un_upper2 set_append split_list_first)
+  fix S :: \<open>('i, 'p) fm set\<close>
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>)\<close>
+    unfolding consistent_def ..
 next
   fix A B and p q :: \<open>('i, 'p) fm\<close>
   assume \<open>A \<turnstile>\<^sub>\<box> p\<close> \<open>p # B \<turnstile>\<^sub>\<box> q\<close>
   then show \<open>A @ B \<turnstile>\<^sub>\<box> q\<close>
-    by (metis K_imply_head K_right_mp R1 imply.simps(2) imply_append)
+    by (metis K_right_mp add_imply imply.simps(2) imply_append)
+qed simp
+
+interpretation Derivations_Bot Calculus_assms consistent \<open>\<^bold>\<bottom>\<close>
+proof
+  show \<open>\<And>A r. A \<turnstile>\<^sub>\<box> \<^bold>\<bottom> \<Longrightarrow> A \<turnstile>\<^sub>\<box> r\<close>
+    using K_Boole K_imply_Cons by blast
 qed
 
-lemma exists_finite_inconsistent:
-  assumes \<open>\<not> consistent ({\<^bold>\<not> p} \<union> V)\<close>
-  obtains W where \<open>{\<^bold>\<not> p} \<union> W \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close> \<open>finite W\<close> \<open>\<not> consistent ({\<^bold>\<not> p} \<union> W)\<close>
-proof -
-  obtain W' where W': \<open>set W' \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>W' \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
-    using assms unfolding consistent_def by blast
-  let ?S = \<open>removeAll (\<^bold>\<not> p) W'\<close>
-  have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> set ?S)\<close>
-    unfolding consistent_def using W'(2) by auto
-  moreover have \<open>finite (set ?S)\<close>
-    by blast
-  moreover have \<open>{\<^bold>\<not> p} \<union> set ?S \<subseteq> {\<^bold>\<not> p} \<union> V\<close>
-    using W'(1) by auto
-  moreover have \<open>(\<^bold>\<not> p) \<notin> set ?S\<close>
-    by simp
-  ultimately show ?thesis
-    by (meson that)
+interpretation Derivations_Imp Calculus_assms consistent \<open>\<^bold>\<bottom>\<close> \<open>\<lambda>p q. p \<^bold>\<longrightarrow> q\<close>
+proof
+  show \<open>\<And>A p q. p # A \<turnstile>\<^sub>\<box> q \<Longrightarrow> A \<turnstile>\<^sub>\<box> p \<^bold>\<longrightarrow> q\<close>
+    using K_ImpI by blast
+  show \<open>\<And>A p q. A \<turnstile>\<^sub>\<box> p \<Longrightarrow> A \<turnstile>\<^sub>\<box> p \<^bold>\<longrightarrow> q \<Longrightarrow> A \<turnstile>\<^sub>\<box> q\<close>
+    using K_right_mp by blast
 qed
-
-lemma MCS_consequent:
-  assumes \<open>consistent V\<close> \<open>maximal V\<close> \<open>p \<^bold>\<longrightarrow> q \<in> V\<close> \<open>p \<in> V\<close>
-  shows \<open>q \<in> V\<close>
-  using assms MCS_derive
-  by (metis (mono_tags, lifting) K_imply_Cons K_imply_head K_right_mp insert_subset list.simps(15))
 
 theorem deriv_in_maximal:
-  assumes \<open>consistent V\<close> \<open>maximal V\<close> \<open>\<turnstile>\<^sub>\<box> p\<close>
-  shows \<open>p \<in> V\<close>
-  using assms R1 derive_split1 unfolding consistent_def maximal_def by (metis imply.simps(2))
-
-theorem exactly_one_in_maximal:
-  assumes \<open>consistent V\<close> \<open>maximal V\<close>
-  shows \<open>p \<in> V \<longleftrightarrow> (\<^bold>\<not> p) \<notin> V\<close>
-  using assms MCS_derive MCS_derive_fls by (metis K_Boole K_imply_Cons K_imply_head K_right_mp)
+  assumes \<open>consistent S\<close> \<open>maximal S\<close> \<open>\<turnstile>\<^sub>\<box> p\<close>
+  shows \<open>p \<in> S\<close>
+  using assms MCS_derive by fastforce
 
 section \<open>Truth Lemma\<close>
 
-abbreviation val :: \<open>('i, 'p) fm set \<Rightarrow> 'p \<Rightarrow> bool\<close> where
-  \<open>val V P \<equiv> \<^bold>\<ddagger>P \<in> V\<close>
-
 abbreviation known :: \<open>('i, 'p) fm set \<Rightarrow> 'i \<Rightarrow> ('i, 'p) fm set\<close> where
-  \<open>known V i \<equiv> {p. \<^bold>\<box> i p \<in> V}\<close>
+  \<open>known S i \<equiv> {p. \<^bold>\<box> i p \<in> S}\<close>
 
 abbreviation reach :: \<open>'i \<Rightarrow> ('i, 'p) fm set \<Rightarrow> ('i, 'p) fm set set\<close> where
-  \<open>reach i V \<equiv> {W. known V i \<subseteq> W}\<close>
+  \<open>reach i S \<equiv> {S'. known S i \<subseteq> S' \<and> MCS S'}\<close>
 
-abbreviation mcss :: \<open>('i, 'p) fm set set\<close> where
-  \<open>mcss \<equiv> {W. consistent W \<and> maximal W}\<close>
-
-abbreviation canonical :: \<open>('i, 'p, ('i, 'p) fm set) model\<close> where
-  \<open>canonical \<equiv> Model mcss reach val\<close>
+abbreviation canonical :: \<open>('i, 'p) fm set \<Rightarrow> ('i, 'p, ('i, 'p) fm set) ctx\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
+  \<open>\<lbrakk>S\<rbrakk> \<equiv> (Model {S. MCS S} reach (\<lambda>S P. \<^bold>\<cdot>P \<in> S), S)\<close>
 
 fun semics ::
-  \<open>('i, 'p, 'w) ctx \<Rightarrow> (('i, 'p, 'w) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool) \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> where
-  \<open>semics _ _ \<^bold>\<bottom> \<longleftrightarrow> False\<close>
-| \<open>semics (M, w) _ (\<^bold>\<ddagger>P) \<longleftrightarrow> \<V> M w P\<close>
-| \<open>semics (M, w) rel (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> rel (M, w) p \<longrightarrow> rel (M, w) q\<close>
-| \<open>semics (M, w) rel (\<^bold>\<box> i p) \<longleftrightarrow> (\<forall>v \<in> \<W> M \<inter> \<R> M i w. rel (M, v) p)\<close>
+  \<open>('i, 'p, 'w) ctx \<Rightarrow> (('i, 'p, 'w) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool) \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close>
+  (\<open>_ \<langle>_\<rangle>=\<^sub>\<box> _\<close> [55, 0, 55] 55) where
+  \<open>_ \<langle>_\<rangle>=\<^sub>\<box> \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>(M, w) \<langle>_\<rangle>=\<^sub>\<box> \<^bold>\<cdot>P \<longleftrightarrow> V M w P\<close>
+| \<open>(M, w) \<langle>\<R>\<rangle>=\<^sub>\<box> p \<^bold>\<longrightarrow> q \<longleftrightarrow> \<R> (M, w) p \<longrightarrow> \<R> (M, w) q\<close>
+| \<open>(M, w) \<langle>\<R>\<rangle>=\<^sub>\<box> \<^bold>\<box> i p \<longleftrightarrow> (\<forall>v \<in> W M \<inter> R M i w. \<R> (M, v) p)\<close>
 
-fun rel :: \<open>('i, 'p) fm set \<Rightarrow> ('i, 'p, ('i, 'p) fm set) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> where
-  \<open>rel _ (_, w) p = (p \<in> w)\<close>
+fun rel :: \<open>('i, 'p) fm set \<Rightarrow> ('i, 'p, ('i, 'p) fm set) ctx \<Rightarrow> ('i, 'p) fm \<Rightarrow> bool\<close> (\<open>\<R>\<^sub>\<box>\<close>) where
+  \<open>\<R>\<^sub>\<box> _ (_, w) p \<longleftrightarrow> p \<in> w\<close>
 
-lemma Hintikka_model':
-  fixes V :: \<open>('i, 'p) fm set\<close>
-  assumes \<open>\<And>(V :: ('i, 'p) fm set) p. V \<in> mcss \<Longrightarrow> semics (canonical, V) (rel H) p \<longleftrightarrow> p \<in> V\<close>
-  shows \<open>V \<in> mcss \<Longrightarrow> (canonical, V) \<Turnstile> p \<longleftrightarrow> p \<in> V\<close>
-proof (induct p arbitrary: V rule: wf_induct[where r=\<open>measure size\<close>])
+theorem saturated_model:
+  fixes S :: \<open>('i, 'p) fm set\<close>
+  assumes \<open>\<And>(S :: ('i, 'p) fm set) p. MCS S \<Longrightarrow> \<lbrakk>S\<rbrakk> \<langle>\<R>\<^sub>\<box> S'\<rangle>=\<^sub>\<box> p \<longleftrightarrow> p \<in> S\<close>
+  shows \<open>MCS S \<Longrightarrow> \<lbrakk>S\<rbrakk> \<Turnstile>\<^sub>\<box> p \<longleftrightarrow> p \<in> S\<close>
+proof (induct p arbitrary: S rule: wf_induct[where r=\<open>measure size\<close>])
   case 1
   then show ?case ..
 next
   case (2 x)
   then show ?case
-    using assms[of V x] by (cases x) auto
+    using assms[of S x] by (cases x) auto
 qed
 
-lemma maximal_extension:
-  assumes \<open>consistent V\<close>
-  shows \<open>\<exists>W. V \<subseteq> W \<and> consistent W \<and> maximal W\<close>
-  using assms MCS_Extend' Extend_subset by meson
-
-lemma Hintikka_canonical:
-  assumes \<open>V \<in> mcss\<close>
-  shows \<open>semics (canonical, V) (rel H) p \<longleftrightarrow> rel H (canonical, V) p\<close>
+theorem saturated_MCS:
+  assumes \<open>MCS S\<close>
+  shows \<open>\<lbrakk>S\<rbrakk> \<langle>\<R>\<^sub>\<box> S'\<rangle>=\<^sub>\<box> p \<longleftrightarrow> \<R>\<^sub>\<box> S' \<lbrakk>S\<rbrakk> p\<close>
 proof (cases p)
   case Fls
-  have \<open>\<^bold>\<bottom> \<notin> V\<close>
+  have \<open>\<^bold>\<bottom> \<notin> S\<close>
     using assms MCS_derive unfolding consistent_def by blast
   then show ?thesis
     using Fls by simp
 next
   case (Imp p q)
-  have \<open>(p \<in> V \<longrightarrow> q \<in> V) \<longleftrightarrow> p \<^bold>\<longrightarrow> q \<in> V\<close>
-    using assms MCS_derive MCS_derive_fls MCS_consequent
-    by (metis (no_types, lifting) CollectD K_Boole K_ImpI K_imply_Cons)
   then show ?thesis
-    using Imp by simp
+    using assms by auto
 next
   case (Box i p)
-  have \<open>(\<forall>v \<in> mcss \<inter> reach i V. p \<in> v) = (\<^bold>\<box> i p \<in> V)\<close>
+  have \<open>(\<forall>S' \<in> reach i S. p \<in> S') \<longleftrightarrow> \<^bold>\<box> i p \<in> S\<close>
   proof
-    assume \<open>\<^bold>\<box> i p \<in> V\<close>
-    then show \<open>\<forall>v \<in> mcss \<inter> reach i V. p \<in> v\<close>
+    assume \<open>\<^bold>\<box> i p \<in> S\<close>
+    then show \<open>\<forall>S' \<in> reach i S. p \<in> S'\<close>
       by auto
   next
-    assume *: \<open>\<forall>v \<in> mcss \<inter> reach i V. p \<in> v\<close>
-
-    have \<open>consistent V\<close> \<open>maximal V\<close>
-      using \<open>V \<in> mcss\<close> by blast+
-
-    have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> known V i)\<close>
+    assume *: \<open>\<forall>S' \<in> reach i S. p \<in> S'\<close>
+    have \<open>\<not> consistent ({\<^bold>\<not> p} \<union> known S i)\<close>
     proof
-      assume \<open>consistent ({\<^bold>\<not> p} \<union> known V i)\<close>
-      then obtain W where W: \<open>{\<^bold>\<not> p} \<union> known V i \<subseteq> W\<close> \<open>consistent W\<close> \<open>maximal W\<close>
-        using \<open>V \<in> mcss\<close> maximal_extension by blast
-      then have \<open>(canonical, W) \<Turnstile> \<^bold>\<not> p\<close>
-        using "*" exactly_one_in_maximal by auto
-      moreover have \<open>W \<in> reach i V\<close> \<open>W \<in> mcss\<close>
-        using W by simp_all
-      ultimately have \<open>(canonical, V) \<Turnstile> \<^bold>\<not> \<^bold>\<box> i p\<close>
+      assume \<open>consistent ({\<^bold>\<not> p} \<union> known S i)\<close>
+      then obtain S' where S': \<open>{\<^bold>\<not> p} \<union> known S i \<subseteq> S'\<close> \<open>MCS S'\<close>
+        using \<open>MCS S\<close> MCS_Extend' Extend_subset by metis
+      then have \<open>\<lbrakk>S'\<rbrakk> \<Turnstile>\<^sub>\<box> \<^bold>\<not> p\<close>
+        using * MCS_not_xor by auto
+      moreover have \<open>S' \<in> reach i S\<close>
+        using S' by simp
+      ultimately have \<open>\<lbrakk>S\<rbrakk> \<Turnstile>\<^sub>\<box> \<^bold>\<not> \<^bold>\<box> i p\<close>
         by auto
       then show False
-        using * W(1) \<open>W \<in> mcss\<close> exactly_one_in_maximal by auto
+        using * S'(1) \<open>MCS S'\<close> MCS_not_xor by auto
     qed
-
-    then obtain W where W:
-      \<open>{\<^bold>\<not> p} \<union> W \<subseteq> {\<^bold>\<not> p} \<union> known V i\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close> \<open>finite W\<close> \<open>\<not> consistent ({\<^bold>\<not> p} \<union> W)\<close>
-      using exists_finite_inconsistent by metis
-
-    obtain L where L: \<open>set L = W\<close>
-      using \<open>finite W\<close> finite_list by blast
-    then have \<open>\<turnstile>\<^sub>\<box> L \<^bold>\<leadsto> p\<close>
-      using W(4) derive_split1 unfolding consistent_def by (meson K_Boole K_imply_weaken)
-    then have \<open>\<turnstile>\<^sub>\<box> \<^bold>\<box> i (L \<^bold>\<leadsto> p)\<close>
+    then obtain A where A: \<open>\<^bold>\<not> p # A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close> \<open>set A \<subseteq> known S i\<close>
+      unfolding consistent_def using derive_split1 K_imply_Cons
+      by (metis (no_types, lifting) insert_is_Un subset_insert)
+    then have \<open>\<turnstile>\<^sub>\<box> A \<^bold>\<leadsto> p\<close>
+      using K_Boole by blast
+    then have \<open>\<turnstile>\<^sub>\<box> \<^bold>\<box> i (A \<^bold>\<leadsto> p)\<close>
       using R2 by fast
-    then have \<open>map (\<^bold>\<box> i) L \<turnstile>\<^sub>\<box> \<^bold>\<box> i p\<close>
+    then have \<open>map (\<^bold>\<box> i) A \<turnstile>\<^sub>\<box> \<^bold>\<box> i p\<close>
       using K_distrib_K_imp by fast
-    then have \<open>(map (\<^bold>\<box> i) L \<^bold>\<leadsto> \<^bold>\<box> i p) \<in> V\<close>
-      using deriv_in_maximal \<open>V \<in> mcss\<close> by blast
-    then show \<open>\<^bold>\<box> i p \<in> V\<close>
-      using L W(1-2)
-    proof (induct L arbitrary: W)
+    then have \<open>(map (\<^bold>\<box> i) A \<^bold>\<leadsto> \<^bold>\<box> i p) \<in> S\<close>
+      using deriv_in_maximal \<open>MCS S\<close> by blast
+    then show \<open>\<^bold>\<box> i p \<in> S\<close>
+      using A(2)
+    proof (induct A)
       case (Cons a L)
-      then have \<open>\<^bold>\<box> i a \<in> V\<close>
+      then have \<open>\<^bold>\<box> i a \<in> S\<close>
         by auto
-      then have \<open>(map (\<^bold>\<box> i) L \<^bold>\<leadsto> \<^bold>\<box> i p) \<in> V\<close>
-        using Cons(2) \<open>consistent V\<close> \<open>maximal V\<close> MCS_consequent by auto
+      then have \<open>(map (\<^bold>\<box> i) L \<^bold>\<leadsto> \<^bold>\<box> i p) \<in> S\<close>
+        using Cons(2) \<open>MCS S\<close> MCS_impE by auto
       then show ?case
-        using Cons by auto
+        using Cons by simp
     qed simp
   qed
   then show ?thesis
-    using Box by simp
+    using Box by auto
 qed simp
 
-interpretation Truth_No_Saturation consistent semics semantics
-  \<open>\<lambda>_. {(canonical, V) |V. V \<in> mcss}\<close> rel
+interpretation Truth_No_Witness semics semantics \<open>\<lambda>_. {\<lbrakk>S\<rbrakk> |S. MCS S}\<close> \<open>\<R>\<^sub>\<box>\<close> consistent
 proof
   fix p and M :: \<open>('i, 'p, ('i, 'p) fm set) ctx\<close>
-  show \<open>(M \<Turnstile> p) = semics M semantics p\<close>
+  show \<open>(M \<Turnstile>\<^sub>\<box> p) = M \<langle>semantics\<rangle>=\<^sub>\<box> p\<close>
     by (cases M, induct p) simp_all
 next
-  fix p and H :: \<open>('i, 'p) fm set\<close> and M :: \<open>('i, 'p, ('i, 'p) fm set) ctx\<close>
-  assume \<open>\<forall>M\<in>{(canonical, V) |V. V \<in> mcss}. \<forall>p. semics M (rel H) p = rel H M p\<close>
-    \<open>M \<in> {(canonical, V) |V. V \<in> mcss}\<close>
-  then show \<open>(M \<Turnstile> p) = rel H M p\<close>
-    using Hintikka_model'[of H _ p] by auto
+  fix p and S :: \<open>('i, 'p) fm set\<close> and M :: \<open>('i, 'p, ('i, 'p) fm set) ctx\<close>
+  assume \<open>\<forall>p. \<forall>M\<in>{\<lbrakk>S\<rbrakk> |S. MCS S}. M \<langle>\<R>\<^sub>\<box> S\<rangle>=\<^sub>\<box> p = \<R>\<^sub>\<box> S M p\<close> \<open>M \<in> {\<lbrakk>S\<rbrakk> |S. MCS S}\<close>
+  then show \<open>\<R>\<^sub>\<box> S M p = (M \<Turnstile>\<^sub>\<box> p)\<close>
+    using saturated_model[of S _ p] by auto
 next
-  fix H :: \<open>('i, 'p) fm set\<close>
-  assume \<open>consistent H\<close> \<open>maximal H\<close>
-  then show \<open>\<forall>M\<in>{(canonical, V) |V. V \<in> mcss}. \<forall>p. semics M (rel H) p = rel H M p\<close>
-    using Hintikka_canonical by blast
+  fix S :: \<open>('i, 'p) fm set\<close> and M :: \<open>('i, 'p, ('i, 'p) fm set) ctx\<close>
+  assume \<open>MCS S\<close>
+  then show \<open>\<forall>p. \<forall>M\<in>{\<lbrakk>S\<rbrakk> |S. MCS S}. M \<langle>\<R>\<^sub>\<box> S\<rangle>=\<^sub>\<box> p = \<R>\<^sub>\<box> S M p\<close>
+    using saturated_MCS by blast
 qed
 
 lemma Truth_lemma:
-  assumes \<open>consistent V\<close> \<open>maximal V\<close>
-  shows \<open>(canonical, V) \<Turnstile> p \<longleftrightarrow> p \<in> V\<close>
-  using assms truth_lemma_no_saturation by fastforce
-
-lemma canonical_model:
-  assumes \<open>consistent S\<close> \<open>p \<in> S\<close>
-  defines \<open>V \<equiv> Extend S\<close> and \<open>M \<equiv> canonical\<close>
-  shows \<open>(M, V) \<Turnstile> p\<close> \<open>consistent V\<close> \<open>maximal V\<close>
-proof -
-  have \<open>consistent V\<close>
-    using \<open>consistent S\<close> unfolding V_def using consistent_Extend by auto
-  have \<open>maximal V\<close>
-    unfolding V_def using maximal_Extend by blast
-  { fix x
-    assume \<open>x \<in> S\<close>
-    then have \<open>x \<in> V\<close>
-      unfolding V_def using Extend_subset by blast
-    then have \<open>(M, V) \<Turnstile> x\<close>
-      unfolding M_def using Truth_lemma \<open>consistent V\<close> \<open>maximal V\<close> by blast }
-  then show \<open>(M, V) \<Turnstile> p\<close>
-    using \<open>p \<in> S\<close> by blast+
-  show \<open>consistent V\<close> \<open>maximal V\<close>
-    by fact+
-qed
+  assumes \<open>MCS S\<close>
+  shows \<open>\<lbrakk>S\<rbrakk> \<Turnstile>\<^sub>\<box> p \<longleftrightarrow> p \<in> S\<close>
+  using assms truth_lemma by fastforce
 
 section \<open>Completeness\<close>
 
 theorem strong_completeness:
-  assumes \<open>\<forall>M :: ('i, 'p, ('i, 'p) fm set) model. \<forall>w \<in> \<W> M.
-    (\<forall>q \<in> X. (M, w) \<Turnstile> q) \<longrightarrow> (M, w) \<Turnstile> p\<close>
+  assumes \<open>\<forall>M :: ('i, 'p, ('i, 'p) fm set) model. \<forall>w \<in> W M.
+    (\<forall>q \<in> X. (M, w) \<Turnstile>\<^sub>\<box> q) \<longrightarrow> (M, w) \<Turnstile>\<^sub>\<box> p\<close>
   shows \<open>\<exists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>\<box> p\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>A. set A \<subseteq> X \<and> A \<turnstile>\<^sub>\<box> p\<close>
-  then have *: \<open>\<forall>A. set A \<subseteq> X \<longrightarrow> \<not> (\<^bold>\<not> p) # A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
-    using K_Boole by blast
+  then have *: \<open>\<forall>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<longrightarrow> \<not> A \<turnstile>\<^sub>\<box> \<^bold>\<bottom>\<close>
+    using K_Boole botE by (metis derive_split1 insert_is_Un subset_insert)
 
-  let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
-  let ?V = \<open>Extend ?S\<close>
+  let ?X = \<open>{\<^bold>\<not> p} \<union> X\<close>
+  let ?S = \<open>Extend ?X\<close>
 
-  have \<open>consistent ?S\<close>
-    using * derive_split1 unfolding consistent_def by meson
-  then have \<open>(canonical, ?V) \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> X. (canonical, ?V) \<Turnstile> q\<close>
-    using canonical_model by fastforce+
-  moreover have \<open>?V \<in> mcss\<close>
-    using \<open>consistent ?S\<close> maximal_Extend canonical_model(2) by blast
-  ultimately have \<open>(canonical, ?V) \<Turnstile> p\<close>
-    using assms by simp
+  have \<open>consistent ?X\<close>
+    using * unfolding consistent_def .
+  then have \<open>MCS ?S\<close>
+    using MCS_Extend' by blast
+  moreover have \<open>\<^bold>\<not> p \<in> ?S\<close> \<open>X \<subseteq> ?S\<close>
+    using Extend_subset by fast+
+  ultimately have \<open>\<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>\<box> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> X. \<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>\<box> q\<close>
+    using assms Truth_lemma by fast+
+  then have \<open>\<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>\<box> p\<close>
+    using assms \<open>MCS ?S\<close> by simp
   then show False
-    using \<open>(canonical, ?V) \<Turnstile> (\<^bold>\<not> p)\<close> by simp
+    using \<open>\<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>\<box> (\<^bold>\<not> p)\<close> by simp
 qed
 
 abbreviation valid :: \<open>('i, 'p) fm \<Rightarrow> bool\<close> where
-  \<open>valid p \<equiv> \<forall>(M :: ('i, 'p, ('i, 'p) fm set) model). \<forall>w \<in> \<W> M. (M, w) \<Turnstile> p\<close>
+  \<open>valid p \<equiv> \<forall>(M :: ('i, 'p, ('i, 'p) fm set) model). \<forall>w \<in> W M. (M, w) \<Turnstile>\<^sub>\<box> p\<close>
 
 corollary completeness: \<open>valid p \<Longrightarrow> \<turnstile>\<^sub>\<box> p\<close>
   using strong_completeness[where X=\<open>{}\<close>] by simp

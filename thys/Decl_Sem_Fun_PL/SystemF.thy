@@ -30,6 +30,7 @@ definition set_bind :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightar
 declare set_bind_def[simp]
 
 syntax "_set_bind" :: "[pttrns,'a set,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
+syntax_consts "_set_bind" \<rightleftharpoons> set_bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST set_bind E (\<lambda>P. F)"
 
 definition errset_bind :: "val set \<Rightarrow> (val \<Rightarrow> val set) \<Rightarrow> val set" where
@@ -37,6 +38,7 @@ definition errset_bind :: "val set \<Rightarrow> (val \<Rightarrow> val set) \<R
 declare errset_bind_def[simp]
 
 syntax "_errset_bind" :: "[pttrns,val set,val] \<Rightarrow> 'c" ("(_ := _;//_)" 0)
+syntax_consts "_errset_bind" \<rightleftharpoons> errset_bind
 translations "P := E; F" \<rightleftharpoons> "CONST errset_bind E (\<lambda>P. F)"
 
 definition return :: "val \<Rightarrow> val set" where

@@ -776,6 +776,7 @@ definition is_monic_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<
 
 syntax "_is_monic_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>_ : _ \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<index> _\<close> [51, 51, 51] 51)
+syntax_consts "_is_monic_arr" \<rightleftharpoons> is_monic_arr
 translations "m : b \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>\<CC>\<^esub> c" \<rightleftharpoons> "CONST is_monic_arr \<CC> b c m"
 
 definition is_epic_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -783,6 +784,7 @@ definition is_epic_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<R
 
 syntax "_is_epic_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>_ : _ \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<index> _\<close> [51, 51, 51] 51)
+syntax_consts "_is_epic_arr" \<rightleftharpoons> is_epic_arr
 translations "e : a \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_epic_arr \<CC> a b e"
 
 
@@ -938,6 +940,7 @@ definition is_idem_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "is_idem_arr \<CC> b f \<longleftrightarrow> f : b \<mapsto>\<^bsub>\<CC>\<^esub> b \<and> f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = f"
 
 syntax "_is_idem_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" (\<open>_ : \<mapsto>\<^sub>i\<^sub>d\<^sub>e\<index> _\<close> [51, 51] 51)
+syntax_consts "_is_idem_arr" \<rightleftharpoons> is_idem_arr
 translations "f : \<mapsto>\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_idem_arr \<CC> b f"
 
 
@@ -1044,6 +1047,7 @@ definition is_zero_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<R
 
 syntax "_is_zero_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>_ : _ \<mapsto>\<^sub>0\<index> _\<close> [51, 51, 51] 51)
+syntax_consts "_is_zero_arr" \<rightleftharpoons> is_zero_arr
 translations "h : a \<mapsto>\<^sub>0\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_zero_arr \<CC> a b h"
 
 

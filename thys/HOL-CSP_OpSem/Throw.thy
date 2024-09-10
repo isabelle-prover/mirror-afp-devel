@@ -204,6 +204,7 @@ text \<open>We add some syntactic sugar.\<close>
 
 syntax "_Throw" :: \<open>['\<alpha> process, pttrn, '\<alpha> set, '\<alpha> \<Rightarrow> '\<alpha> process] \<Rightarrow> '\<alpha> process\<close>
                    (\<open>((_) \<Theta> (_\<in>_)./ (_))\<close> [73, 0, 0, 73] 72)
+syntax_consts "_Throw" \<rightleftharpoons> Throw
 translations "P \<Theta> a \<in> A. Q" \<rightleftharpoons> "CONST Throw P A (\<lambda>a. Q)"
 
 abbreviation Throw_without_free_var :: 

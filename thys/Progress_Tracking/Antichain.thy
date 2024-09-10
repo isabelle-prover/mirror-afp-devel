@@ -98,6 +98,8 @@ syntax (ASCII)
   "_ACCollect" :: "pttrn \<Rightarrow> 'a :: order antichain \<Rightarrow> bool \<Rightarrow> 'a antichain" ("(1{_ :\<^sub>A _./ _})")
 syntax
   "_ACCollect" :: "pttrn \<Rightarrow> 'a :: order antichain \<Rightarrow> bool \<Rightarrow> 'a antichain" ("(1{_ \<in>\<^sub>A _./ _})")
+syntax_consts
+  "_ACCollect" == filter_antichain
 translations
   "{x \<in>\<^sub>A M. P}" == "CONST filter_antichain (\<lambda>x. P) M"
 

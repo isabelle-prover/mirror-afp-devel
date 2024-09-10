@@ -37,6 +37,9 @@ syntax
   "_Enum"     :: "[V, Vs] \<Rightarrow> Vs"             ("_,/ _")
   "_Tuple"    :: "[V, Vs] \<Rightarrow> V"              ("\<langle>(_,/ _)\<rangle>")
   "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>_,/ _\<rangle>")
+syntax_consts
+  "_Enum" "_Tuple" \<rightleftharpoons> vpair and
+  "_hpattern" \<rightleftharpoons> vsplit
 translations
   "<x, y, z>"    \<rightleftharpoons> "<x, <y, z>>"
   "<x, y>"       \<rightleftharpoons> "CONST vpair x y"

@@ -412,6 +412,8 @@ syntax
   "_dobinds"   :: "[dobind, dobinds] => dobinds"      ("(_);//(_)")
 
   "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
+syntax_consts
+  "_do" == bind
 translations
   "_do (_dobinds b bs) e"  == "_do b (_do bs e)"
   "_do (_nobind b) e"      == "b >>= (CONST K_bind e)"
@@ -445,6 +447,9 @@ text \<open>
 
 syntax
   "_doE" :: "[dobinds, 'a] => 'a"  ("(doE ((_);//(_))//odE)" 100)
+
+syntax_consts
+  "_doE" == bindE
 
 translations
   "_doE (_dobinds b bs) e"  == "_doE b (_doE bs e)"

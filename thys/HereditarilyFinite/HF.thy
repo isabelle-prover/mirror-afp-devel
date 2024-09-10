@@ -50,6 +50,8 @@ syntax (ASCII)
   "_HFinset" :: "args \<Rightarrow> hf"      ("{|(_)|}")
 syntax
   "_HFinset" :: "args \<Rightarrow> hf"      ("\<lbrace>_\<rbrace>")
+syntax_consts
+  "_HFinset" \<rightleftharpoons> inserthf
 translations
   "\<lbrace>x, y\<rbrace>" \<rightleftharpoons> "\<lbrace>y\<rbrace> \<triangleleft> x"
   "\<lbrace>x\<rbrace>"    \<rightleftharpoons> "0 \<triangleleft> x"
@@ -178,6 +180,9 @@ syntax
   "_Enum"     :: "[hf, hfs] \<Rightarrow> hfs"             ("_,/ _")
   "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("\<langle>(_,/ _)\<rangle>")
   "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>_,/ _\<rangle>")
+syntax_consts
+  "_Enum" "_Tuple" \<rightleftharpoons> hpair and
+  "_hpattern" \<rightleftharpoons> hsplit
 translations
   "<x, y, z>"    \<rightleftharpoons> "<x, <y, z>>"
   "<x, y>"       \<rightleftharpoons> "CONST hpair x y"
@@ -244,6 +249,8 @@ syntax (ASCII)
   "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    ("(1\<lbrace>_ <:/ _./ _\<rbrace>)")
 syntax
   "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    ("(1\<lbrace>_ \<^bold>\<in>/ _./ _\<rbrace>)")
+syntax_consts
+  "_HCollect" \<rightleftharpoons> HCollect
 translations
   "\<lbrace>x \<^bold>\<in> A. P\<rbrace>" \<rightleftharpoons> "CONST HCollect (\<lambda>x. P) A"
 
@@ -389,6 +396,11 @@ syntax
   "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1\<lbrace>_ ./ _ \<^bold>\<in> _\<rbrace>)" [51,0,51])
   "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Sqinter>_\<^bold>\<in>_./ _)" 10)
   "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Squnion>_\<^bold>\<in>_./ _)" 10)
+syntax_consts
+  "_HReplace" \<rightleftharpoons> Replace and
+  "_HRepFun" \<rightleftharpoons> RepFun and
+  "_HINTER" \<rightleftharpoons> HInter and
+  "_HUNION" \<rightleftharpoons> HUnion
 translations
   "\<lbrace>y. x\<^bold>\<in>A, Q\<rbrace>" \<rightleftharpoons> "CONST Replace A (\<lambda>x y. Q)"
   "\<lbrace>b. x\<^bold>\<in>A\<rbrace>"    \<rightleftharpoons> "CONST RepFun A (\<lambda>x. b)"
@@ -700,6 +712,10 @@ syntax
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
   "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
   "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>!_\<^bold>\<in>_./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_HBall" \<rightleftharpoons> HBall and
+  "_HBex" \<rightleftharpoons> HBex and
+  "_HBex1" \<rightleftharpoons> Ex1
 translations
   "\<forall>x\<^bold>\<in>A. P" \<rightleftharpoons> "CONST HBall A (\<lambda>x. P)"
   "\<exists>x\<^bold>\<in>A. P" \<rightleftharpoons> "CONST HBex A (\<lambda>x. P)"
@@ -891,6 +907,10 @@ syntax
   "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Prod>_\<^bold>\<in>_./ _)" 10)
   "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sum>_\<^bold>\<in>_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
+syntax_consts
+  "_PROD" \<rightleftharpoons> HPi and
+  "_SUM" \<rightleftharpoons> HSigma and
+  "_lam" \<rightleftharpoons> HLambda
 translations
   "\<Prod>x\<^bold>\<in>A. B" \<rightleftharpoons> "CONST HPi A (\<lambda>x. B)"
   "\<Sum>x\<^bold>\<in>A. B" \<rightleftharpoons> "CONST HSigma A (\<lambda>x. B)"

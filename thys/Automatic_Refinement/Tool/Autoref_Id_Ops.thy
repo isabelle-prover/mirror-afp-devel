@@ -18,6 +18,8 @@ definition intfAPP
 
 syntax "_intf_APP" :: "args \<Rightarrow> 'a \<Rightarrow> 'b" ("\<langle>_\<rangle>\<^sub>i_" [0,900] 900)
 
+syntax_consts "_intf_APP" == intfAPP
+
 translations
   "\<langle>x,xs\<rangle>\<^sub>iR" == "\<langle>xs\<rangle>\<^sub>i(CONST intfAPP R x)"
   "\<langle>x\<rangle>\<^sub>iR" == "CONST intfAPP R x"

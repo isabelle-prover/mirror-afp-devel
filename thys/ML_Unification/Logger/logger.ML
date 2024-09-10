@@ -152,7 +152,7 @@ fun log_config binding {log_level, output, msg_filter, show_logger} level messag
           Pretty.block [Pretty.str "Logger: ", pretty_binding binding],
           Pretty.str msg
         ] |> Pretty.block |> Pretty.string_of)
-    in if msg_filter (YXML.content_of msg) then output level msg else () end
+    in if msg_filter (Protocol_Message.clean_output msg) then output level msg else () end
 
 structure BT = Binding_Tree
 

@@ -56,20 +56,20 @@ lemma splay_code: "splay x (Node AB b CD) =
             (case cmp x a of EQ \<Rightarrow> Node A a (Node B b CD) |
              LT \<Rightarrow>  if A = Leaf then Node A a (Node B b CD)
                        else case splay x A of
-                         Node A\<^sub>1 a' A\<^sub>2 \<Rightarrow> Node A\<^sub>1 a' (Node A\<^sub>2 a (Node B b CD)) |
+                         Node A\<^sub>1 x' A\<^sub>2 \<Rightarrow> Node A\<^sub>1 x' (Node A\<^sub>2 a (Node B b CD)) |
              GT \<Rightarrow> if B = Leaf then Node A a (Node B b CD)
                        else case splay x B of
-                         Node B\<^sub>1 b' B\<^sub>2 \<Rightarrow> Node (Node A a B\<^sub>1) b' (Node B\<^sub>2 b CD))) |
+                         Node B\<^sub>1 x' B\<^sub>2 \<Rightarrow> Node (Node A a B\<^sub>1) x' (Node B\<^sub>2 b CD))) |
    GT \<Rightarrow> (case CD of
           Leaf \<Rightarrow> Node AB b CD |
           Node C c D \<Rightarrow>
             (case cmp x c of EQ \<Rightarrow> Node (Node AB b C) c D |
              LT \<Rightarrow> if C = Leaf then Node (Node AB b C) c D
                        else case splay x C of
-                         Node C\<^sub>1 c' C\<^sub>2 \<Rightarrow> Node (Node AB b C\<^sub>1) c' (Node C\<^sub>2 c D) |
+                         Node C\<^sub>1 x' C\<^sub>2 \<Rightarrow> Node (Node AB b C\<^sub>1) x' (Node C\<^sub>2 c D) |
              GT \<Rightarrow> if D=Leaf then Node (Node AB b C) c D
                        else case splay x D of
-                         Node D\<^sub>1 d D\<^sub>2 \<Rightarrow> Node (Node (Node AB b C) c D\<^sub>1) d D\<^sub>2)))"
+                         Node D\<^sub>1 x' D\<^sub>2 \<Rightarrow> Node (Node (Node AB b C) c D\<^sub>1) x' D\<^sub>2)))"
 by(auto split!: tree.split)
 
 definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where

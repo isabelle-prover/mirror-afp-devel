@@ -550,6 +550,8 @@ syntax (ASCII)
   "_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  ("(3SUM (_/:_)./ _)" [0, 51, 10] 10)
 syntax
   "_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  ("(2\<Sum>(_/\<in>_)./ _)" [0, 51, 10] 10)
+syntax_consts
+  "_sum" \<rightleftharpoons> sum_0
 translations \<comment> \<open>Beware of argument permutation!\<close>
   "\<Sum>i\<in>A. b" \<rightleftharpoons> "CONST sum_0 (\<lambda>i. b) A"
 
@@ -559,6 +561,8 @@ syntax (ASCII)
   "_qsum" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  ("(3SUM _ |/ _./ _)" [0, 0, 10] 10)
 syntax
   "_qsum" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  ("(2\<Sum>_ | (_)./ _)" [0, 0, 10] 10)
+syntax_consts
+  "_qsum" \<rightleftharpoons> sum_0
 translations
   "\<Sum>x|P. t" => "CONST sum_0 (\<lambda>x. t) {x. P}"
 

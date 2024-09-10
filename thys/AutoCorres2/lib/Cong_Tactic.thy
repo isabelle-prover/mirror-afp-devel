@@ -84,7 +84,7 @@ fun const_cong ctxt = CSUBGOAL (fn (cgoal, i) =>
           (Const (c, _), Const (c', _)) =>
             if c = c'
             then
-              case AList.lookup (op =) (#congs (dest_ss (simpset_of ctxt))) (true, c) of
+              case AList.lookup (op =) (Simplifier.dest_congs (simpset_of ctxt)) (true, c) of
                 SOME thm =>
                   resolve_tac ctxt [Thm.transfer' ctxt thm RS meta_eq_to_obj_eq] i
               | NONE => no_tac

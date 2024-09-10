@@ -1045,6 +1045,7 @@ definition is_iso_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Ri
 
 syntax "_is_iso_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>_ : _ \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<index> _\<close> [51, 51, 51] 51)
+syntax_consts "_is_iso_arr" \<rightleftharpoons> is_iso_arr
 translations "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_iso_arr \<CC> a b f"
 
 
@@ -1407,6 +1408,7 @@ definition obj_iso :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "obj_iso \<CC> a b \<longleftrightarrow> (\<exists>f. f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b)"
 
 syntax "_obj_iso" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" (\<open>(_/ \<approx>\<^sub>o\<^sub>b\<^sub>j\<index> _)\<close> [55, 56] 55)
+syntax_consts "_obj_iso" \<rightleftharpoons> obj_iso
 translations "a \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST obj_iso \<CC> a b"
 
 

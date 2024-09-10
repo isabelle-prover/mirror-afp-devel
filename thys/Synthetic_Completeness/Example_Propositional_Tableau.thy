@@ -10,7 +10,7 @@ theory Example_Propositional_Tableau imports Refutations begin
 section \<open>Syntax\<close>
 
 datatype 'p fm
-  = Pro 'p (\<open>\<^bold>\<ddagger>\<close>)
+  = Pro 'p (\<open>\<^bold>\<cdot>\<close>)
   | Neg \<open>'p fm\<close> (\<open>\<^bold>\<not> _\<close> [70] 70)
   | Imp \<open>'p fm\<close> \<open>'p fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 55)
 
@@ -18,96 +18,86 @@ section \<open>Semantics\<close>
 
 type_synonym 'p model = \<open>'p \<Rightarrow> bool\<close>
 
-fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
-  \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<ddagger>P) \<longleftrightarrow> I P\<close>
-| \<open>\<lbrakk>I\<rbrakk> (\<^bold>\<not> p) \<longleftrightarrow> \<not> \<lbrakk>I\<rbrakk> p\<close>
-| \<open>\<lbrakk>I\<rbrakk> (p \<^bold>\<longrightarrow> q) \<longleftrightarrow> \<lbrakk>I\<rbrakk> p \<longrightarrow> \<lbrakk>I\<rbrakk> q\<close>
+fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>T _\<close> [50, 50] 50) where
+  \<open>I \<Turnstile>\<^sub>T \<^bold>\<cdot>P \<longleftrightarrow> I P\<close>
+| \<open>I \<Turnstile>\<^sub>T \<^bold>\<not> p \<longleftrightarrow> \<not> I \<Turnstile>\<^sub>T p\<close>
+| \<open>I \<Turnstile>\<^sub>T p \<^bold>\<longrightarrow> q \<longleftrightarrow> I \<Turnstile>\<^sub>T p \<longrightarrow> I \<Turnstile>\<^sub>T q\<close>
 
 section \<open>Calculus\<close>
 
 inductive Calculus :: \<open>'p fm list \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>T _\<close> [50] 50) where
-  Axiom [intro]: \<open>\<turnstile>\<^sub>T \<^bold>\<ddagger>P # \<^bold>\<not> \<^bold>\<ddagger>P # A\<close>
+  Axiom [simp]: \<open>\<turnstile>\<^sub>T \<^bold>\<cdot>P # \<^bold>\<not> \<^bold>\<cdot>P # A\<close>
 | NegI [intro]: \<open>\<turnstile>\<^sub>T p # A \<Longrightarrow> \<turnstile>\<^sub>T \<^bold>\<not> \<^bold>\<not> p # A\<close>
 | ImpP [intro]: \<open>\<turnstile>\<^sub>T \<^bold>\<not> p # A \<Longrightarrow> \<turnstile>\<^sub>T q # A \<Longrightarrow> \<turnstile>\<^sub>T (p \<^bold>\<longrightarrow> q) # A\<close>
 | ImpN [intro]: \<open>\<turnstile>\<^sub>T p # \<^bold>\<not> q # A \<Longrightarrow> \<turnstile>\<^sub>T \<^bold>\<not> (p \<^bold>\<longrightarrow> q) # A\<close>
-| Weaken: \<open>\<turnstile>\<^sub>T A \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> \<turnstile>\<^sub>T B\<close>
+| Weak: \<open>\<turnstile>\<^sub>T A \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> \<turnstile>\<^sub>T B\<close>
 
-lemma Weaken2:
+lemma Weak2:
   assumes \<open>\<turnstile>\<^sub>T p # A\<close> \<open>\<turnstile>\<^sub>T q # B\<close>
   shows \<open>\<turnstile>\<^sub>T p # A @ B \<and> \<turnstile>\<^sub>T q # A @ B\<close>
-  using assms Weaken[where A=\<open>_ # _\<close> and B=\<open>_ # A @ B\<close>] by fastforce
+  using assms Weak[where A=\<open>_ # _\<close> and B=\<open>_ # A @ B\<close>] by fastforce
 
 section \<open>Soundness\<close>
 
-theorem soundness: \<open>\<turnstile>\<^sub>T A \<Longrightarrow> \<exists>p \<in> set A. \<not> \<lbrakk>I\<rbrakk> p\<close>
+theorem soundness: \<open>\<turnstile>\<^sub>T A \<Longrightarrow> \<exists>p \<in> set A. \<not> I \<Turnstile>\<^sub>T p\<close>
   by (induct A rule: Calculus.induct) auto
 
-corollary soundness': \<open>\<turnstile>\<^sub>T [\<^bold>\<not> p] \<Longrightarrow> \<lbrakk>I\<rbrakk> p\<close>
+corollary soundness': \<open>\<turnstile>\<^sub>T [\<^bold>\<not> p] \<Longrightarrow> I \<Turnstile>\<^sub>T p\<close>
   using soundness by fastforce
 
-corollary \<open>\<not> (\<turnstile>\<^sub>T [])\<close>
+corollary \<open>\<not> \<turnstile>\<^sub>T []\<close>
   using soundness by fastforce
 
 section \<open>Maximal Consistent Sets\<close>
 
 definition consistent :: \<open>'p fm set \<Rightarrow> bool\<close> where
-  \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> \<turnstile>\<^sub>T S'\<close>
+  \<open>consistent S \<equiv> \<forall>A. set A \<subseteq> S \<longrightarrow> \<not> \<turnstile>\<^sub>T A\<close>
 
-interpretation MCS_No_Saturation consistent
+interpretation MCS_No_Witness_UNIV consistent
 proof
-  fix S S' :: \<open>'p fm set\<close>
-  assume \<open>consistent S\<close> \<open>S' \<subseteq> S\<close>
-  then show \<open>consistent S'\<close>
-    unfolding consistent_def by fast
-next
-  fix S :: \<open>'p fm set\<close>
-  assume \<open>\<not> consistent S\<close>
-  then show \<open>\<exists>S'\<subseteq>S. finite S' \<and> \<not> consistent S'\<close>
-    unfolding consistent_def by blast
-next
   show \<open>infinite (UNIV :: 'p fm set)\<close>
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
-qed
+qed (auto simp: consistent_def)
 
 interpretation Refutations_MCS Calculus consistent
 proof
   fix A B :: \<open>'p fm list\<close>
-  assume \<open>\<turnstile>\<^sub>T A\<close> \<open>set A \<subseteq> set B\<close>
+  assume \<open>\<turnstile>\<^sub>T A\<close> \<open>set A = set B\<close>
   then show \<open>\<turnstile>\<^sub>T B\<close>
-    using Weaken by meson
+    using Weak by blast
 next
   fix S :: \<open>'p fm set\<close>
-  show \<open>consistent S \<longleftrightarrow> (\<nexists>S'. set S' \<subseteq> S \<and> \<turnstile>\<^sub>T S')\<close>
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> \<turnstile>\<^sub>T A)\<close>
     unfolding consistent_def ..
 qed
 
 section \<open>Truth Lemma\<close>
 
-abbreviation (input) hmodel :: \<open>'p fm set \<Rightarrow> 'p model\<close> where
-  \<open>hmodel H \<equiv> \<lambda>P. \<^bold>\<ddagger>P \<in> H\<close>
+abbreviation (input) canonical :: \<open>'p fm set \<Rightarrow> 'p model\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
+  \<open>\<lbrakk>S\<rbrakk> \<equiv> \<lambda>P. \<^bold>\<cdot>P \<in> S\<close>
 
 locale Hintikka =
   fixes H :: \<open>'a fm set\<close>
-  assumes AxiomH: \<open>\<And>P. \<^bold>\<ddagger>P \<in> H \<Longrightarrow> \<^bold>\<not> \<^bold>\<ddagger>P \<in> H \<Longrightarrow> False\<close>
+  assumes AxiomH: \<open>\<And>P. \<^bold>\<cdot>P \<in> H \<Longrightarrow> \<^bold>\<not> \<^bold>\<cdot>P \<in> H \<Longrightarrow> False\<close>
     and NegIH: \<open>\<And>p. \<^bold>\<not> \<^bold>\<not> p \<in> H \<Longrightarrow> p \<in> H\<close>
     and ImpPH: \<open>\<And>p q. p \<^bold>\<longrightarrow> q \<in> H \<Longrightarrow> \<^bold>\<not> p \<in> H \<or> q \<in> H\<close>
     and ImpNH: \<open>\<And>p q. \<^bold>\<not> (p \<^bold>\<longrightarrow> q) \<in> H \<Longrightarrow> p \<in> H \<and> \<^bold>\<not> q \<in> H\<close>
 
 lemma Hintikka_model:
   assumes \<open>Hintikka H\<close>
-  shows \<open>(p \<in> H \<longrightarrow> \<lbrakk>hmodel H\<rbrakk> p) \<and> (\<^bold>\<not> p \<in> H \<longrightarrow> \<not> \<lbrakk>hmodel H\<rbrakk> p)\<close>
+  shows \<open>(p \<in> H \<longrightarrow> \<lbrakk>H\<rbrakk> \<Turnstile>\<^sub>T p) \<and> (\<^bold>\<not> p \<in> H \<longrightarrow> \<not> \<lbrakk>H\<rbrakk> \<Turnstile>\<^sub>T p)\<close>
   using assms by (induct p) (unfold Hintikka_def semantics.simps; blast)+
 
 lemma MCS_Hintikka:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close>
+  assumes \<open>MCS H\<close>
   shows \<open>Hintikka H\<close>
 proof
   fix P
-  assume \<open>\<^bold>\<ddagger>P \<in> H\<close> \<open>\<^bold>\<not> \<^bold>\<ddagger>P \<in> H\<close>
-  then have \<open>set [\<^bold>\<ddagger>P, \<^bold>\<not> \<^bold>\<ddagger>P] \<subseteq> H\<close>
+  assume \<open>\<^bold>\<cdot>P \<in> H\<close> \<open>\<^bold>\<not> \<^bold>\<cdot>P \<in> H\<close>
+  then have \<open>set [\<^bold>\<cdot>P, \<^bold>\<not> \<^bold>\<cdot>P] \<subseteq> H\<close>
     by simp
-  moreover have \<open>\<turnstile>\<^sub>T [\<^bold>\<ddagger>P, \<^bold>\<not> \<^bold>\<ddagger>P]\<close>
-    by blast
+  moreover have \<open>\<turnstile>\<^sub>T [\<^bold>\<cdot>P, \<^bold>\<not> \<^bold>\<cdot>P]\<close>
+    by simp
   ultimately show False
     using assms unfolding consistent_def by blast
 next
@@ -126,7 +116,7 @@ next
     then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T \<^bold>\<not> p # A\<close> \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T q # A\<close>
       using assms MCS_refute by blast+
     then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T \<^bold>\<not> p # A \<and> \<turnstile>\<^sub>T q # A\<close>
-      using Weaken2[where p=\<open>\<^bold>\<not> p\<close> and q=q] by (metis Un_least set_append)
+      using Weak2[where p=\<open>\<^bold>\<not> p\<close> and q=q] by (metis Un_least set_append)
     then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T (p \<^bold>\<longrightarrow> q) # A\<close>
       by blast
     then have \<open>p \<^bold>\<longrightarrow> q \<notin> H\<close>
@@ -148,7 +138,7 @@ next
       then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T p # A\<close>
         using assms MCS_refute by blast
       then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T p # \<^bold>\<not> q # A\<close>
-        using Weaken[where B=\<open>p # \<^bold>\<not> q # _\<close>] by fastforce
+        using Weak[where B=\<open>p # \<^bold>\<not> q # _\<close>] by fastforce
       then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T \<^bold>\<not> (p \<^bold>\<longrightarrow> q) # A\<close>
         by fast
       then have \<open>\<^bold>\<not> (p \<^bold>\<longrightarrow> q) \<notin> H\<close>
@@ -160,7 +150,7 @@ next
       then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T \<^bold>\<not> q # A\<close>
         using assms MCS_refute by blast
       then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T p # \<^bold>\<not> q # A\<close>
-        using Weaken by (metis set_subset_Cons)
+        using Weak by (metis set_subset_Cons)
       then have \<open>\<exists>A. set A \<subseteq> H \<and> \<turnstile>\<^sub>T \<^bold>\<not> (p \<^bold>\<longrightarrow> q) # A\<close>
         by fast
       then have \<open>\<^bold>\<not> (p \<^bold>\<longrightarrow> q) \<notin> H\<close>
@@ -172,41 +162,41 @@ next
 qed
 
 lemma truth_lemma:
-  assumes \<open>consistent H\<close> \<open>maximal H\<close> \<open>p \<in> H\<close>
-  shows \<open>\<lbrakk>hmodel H\<rbrakk> p\<close>
+  assumes \<open>MCS H\<close> \<open>p \<in> H\<close>
+  shows \<open>\<lbrakk>H\<rbrakk> \<Turnstile>\<^sub>T p\<close>
   using Hintikka_model MCS_Hintikka assms by blast
 
 section \<open>Completeness\<close>
 
 theorem strong_completeness:
-  assumes \<open>\<forall>M :: 'p model. (\<forall>q \<in> X. \<lbrakk>M\<rbrakk> q) \<longrightarrow> \<lbrakk>M\<rbrakk> p\<close>
+  assumes \<open>\<forall>M. (\<forall>q \<in> X. M \<Turnstile>\<^sub>T q) \<longrightarrow> M \<Turnstile>\<^sub>T p\<close>
   shows \<open>\<exists>A. set A \<subseteq> X \<and> \<turnstile>\<^sub>T \<^bold>\<not> p # A\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>A. set A \<subseteq> X \<and> \<turnstile>\<^sub>T \<^bold>\<not> p # A\<close>
-  then have *: \<open>\<nexists>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<and> \<turnstile>\<^sub>T A\<close>
-    using refute_split1 by blast
+  then have *: \<open>\<forall>A. set A \<subseteq> {\<^bold>\<not> p} \<union> X \<longrightarrow> \<not> \<turnstile>\<^sub>T A\<close>
+    using refute_split1 by (metis Weak insert_is_Un set_subset_Cons subset_insert)
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?H = \<open>Extend ?S\<close>
 
   have \<open>consistent ?S\<close>
     unfolding consistent_def using * by blast
-  then have \<open>consistent ?H\<close> \<open>maximal ?H\<close>
-    using MCS_Extend' by blast+
-  then have \<open>p \<in> ?H \<longrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p
-    using truth_lemma by fastforce
-  then have \<open>p \<in> ?S \<longrightarrow> \<lbrakk>hmodel ?H\<rbrakk> p\<close> for p
+  then have \<open>MCS ?H\<close>
+    using MCS_Extend' by blast
+  then have \<open>p \<in> ?H \<longrightarrow> \<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T p\<close> for p
+    using truth_lemma by blast
+  then have \<open>p \<in> ?S \<longrightarrow> \<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T p\<close> for p
     using Extend_subset by blast
-  then have \<open>\<lbrakk>hmodel ?H\<rbrakk> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> X. \<lbrakk>hmodel ?H\<rbrakk> q\<close>
+  then have \<open>\<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T \<^bold>\<not> p\<close> \<open>\<forall>q \<in> X. \<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T q\<close>
     by blast+
-  moreover from this have \<open>\<lbrakk>hmodel ?H\<rbrakk> p\<close>
+  moreover from this have \<open>\<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T p\<close>
     using assms(1) by blast
   ultimately show False
     by simp
 qed
 
 abbreviation valid :: \<open>'p fm \<Rightarrow> bool\<close> where
-  \<open>valid p \<equiv> \<forall>M. \<lbrakk>M\<rbrakk> p\<close>
+  \<open>valid p \<equiv> \<forall>M. M \<Turnstile>\<^sub>T p\<close>
 
 theorem completeness:
   assumes \<open>valid p\<close>

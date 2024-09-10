@@ -17,6 +17,9 @@ consts
 syntax
   "_replace_error" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a" (infixl "<?" 61)
 
+syntax_consts
+  "_replace_error" \<rightleftharpoons> update_error
+
 translations
   "m <? e" \<rightharpoonup> "m <+? (\<lambda>_. e)"
 

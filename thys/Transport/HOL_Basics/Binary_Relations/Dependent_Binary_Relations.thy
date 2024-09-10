@@ -19,6 +19,8 @@ no_syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Right
 no_notation bin_rel (infixr "{\<times>}" 51)
 end
 unbundle bin_rel_syntax
+syntax_consts
+  "_dep_bin_rel" \<rightleftharpoons> dep_bin_rel
 translations
   "{\<Sum>}x : A. B" \<rightleftharpoons> "CONST dep_bin_rel A (\<lambda>x. B)"
 

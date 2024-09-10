@@ -13,6 +13,7 @@ primrec ListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> 'a::comm_monoid_add)
 
 syntax "_ListSum" :: "idt \<Rightarrow> 'b list \<Rightarrow> ('a::comm_monoid_add) \<Rightarrow> 
   ('a::comm_monoid_add)"    ("\<Sum>\<^bsub>_\<in>_\<^esub> _" [0, 0, 10] 10)
+syntax_consts "_ListSum" == ListSum
 translations "\<Sum>\<^bsub>x\<in>xs\<^esub> f" == "CONST ListSum xs (\<lambda>x. f)" 
 
 lemma [simp]: "(\<Sum>\<^bsub>v \<in> V\<^esub> 0) = (0::nat)" by (induct V) simp_all

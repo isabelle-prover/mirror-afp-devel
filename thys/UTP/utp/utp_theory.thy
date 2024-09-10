@@ -170,6 +170,10 @@ syntax
   "_tmu" :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<^bold>\<mu>\<index> _ \<bullet> _" [0, 10] 10)
   "_tnu" :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<^bold>\<nu>\<index> _ \<bullet> _" [0, 10] 10)
 
+syntax_consts
+  "_tmu" == LEAST_FP and
+  "_tnu" == GREATEST_FP
+
 notation gfp ("\<mu>")
 notation lfp ("\<nu>")
 

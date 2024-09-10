@@ -13,6 +13,34 @@
     
       <atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
+          <link>/entries/IMP_Noninterference_Extension.html</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Noninterference_Extension.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Extension of Stateful Intransitive Noninterference with Inputs, Outputs, and Nondeterminism in Language IMP</title>
+          <link>/entries/IMP_Noninterference_Extension.html</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_Noninterference_Extension.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A formalized programming language with speculative execution</title>
+          <link>/entries/IMP_With_Speculation.html</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_With_Speculation.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A formalized programming language with speculative execution</title>
+          <link>/entries/IMP_With_Speculation.html</link>
+          <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/IMP_With_Speculation.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Relative Security</title>
           <link>/entries/Relative_Security.html</link>
           <pubDate>Fri, 24 May 2024 00:00:00 +0000</pubDate>

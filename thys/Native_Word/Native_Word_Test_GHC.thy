@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-theory Native_Word_Test_GHC imports
+theory Native_Word_Test_GHC
+imports
   Native_Word_Test
 begin
 
@@ -20,50 +21,51 @@ test_code
   test_casts_uint test_casts_uint' test_casts_uint''
 in GHC
 
+
 subsection \<open>Test quickcheck narrowing\<close>
 
 context
   includes bit_operations_syntax
 begin
 
-lemma "(x :: uint64) AND y = x OR y"
-quickcheck[narrowing, expect=counterexample]
+lemma \<open>(x :: uint64) AND y = x OR y\<close>
+quickcheck [narrowing, expect=counterexample]
 oops
 
-lemma "(f :: uint64 \<Rightarrow> bool) = g"
-quickcheck[narrowing, size=3, expect=counterexample]
+lemma \<open>(f :: uint64 \<Rightarrow> bool) = g\<close>
+quickcheck [narrowing, size=3, expect=counterexample]
 oops
 
-lemma "(x :: uint32) AND y = x OR y"
-quickcheck[narrowing, expect=counterexample]
+lemma \<open>(x :: uint32) AND y = x OR y\<close>
+quickcheck [narrowing, expect=counterexample]
 oops
 
-lemma "(f :: uint32 \<Rightarrow> bool) = g"
-quickcheck[narrowing, size=3, expect=counterexample]
+lemma \<open>(f :: uint32 \<Rightarrow> bool) = g\<close>
+quickcheck [narrowing, size=3, expect=counterexample]
 oops
 
-lemma "(x :: uint16) AND y = x OR y"
-quickcheck[narrowing, expect=counterexample]
+lemma \<open>(x :: uint16) AND y = x OR y\<close>
+quickcheck [narrowing, expect=counterexample]
 oops
 
-lemma "(f :: uint16 \<Rightarrow> bool) = g"
-quickcheck[narrowing, size=3, expect=counterexample]
+lemma \<open>(f :: uint16 \<Rightarrow> bool) = g\<close>
+quickcheck [narrowing, size=3, expect=counterexample]
 oops
 
-lemma "(x :: uint8) AND y = x OR y"
-quickcheck[narrowing, expect=counterexample]
+lemma \<open>(x :: uint8) AND y = x OR y\<close>
+quickcheck [narrowing, expect=counterexample]
 oops
 
-lemma "(f :: uint8 \<Rightarrow> bool) = g"
-quickcheck[narrowing, size=3, expect=counterexample]
+lemma \<open>(f :: uint8 \<Rightarrow> bool) = g\<close>
+quickcheck [narrowing, size=3, expect=counterexample]
 oops
 
-lemma "(x :: uint) AND y = x OR y"
-quickcheck[narrowing, expect=counterexample]
+lemma \<open>(x :: uint) AND y = x OR y\<close>
+quickcheck [narrowing, expect=counterexample]
 oops
 
-lemma "(f :: uint \<Rightarrow> bool) = g"
-quickcheck[narrowing, size=3, expect=counterexample]
+lemma \<open>(f :: uint \<Rightarrow> bool) = g\<close>
+quickcheck [narrowing, size=3, expect=counterexample]
 oops
 
 end

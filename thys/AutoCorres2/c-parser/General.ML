@@ -154,13 +154,13 @@ fun sort_like_list eq xs = sort (ord_like_list eq xs)
  *)
 exception InvalidInput of string;
 fun invalid_typ s (t : typ) =
-    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ YXML.content_of (@{make_string} t) ^ "'")
+    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ Protocol_Message.clean_output (@{make_string} t) ^ "'")
 fun invalid_term s (t : term) =
-    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ YXML.content_of (@{make_string} t) ^ "'")
+    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ Protocol_Message.clean_output (@{make_string} t) ^ "'")
 fun invalid_term' ctxt s (t : term) =
-    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^  YXML.content_of (Pretty.string_of (Syntax.pretty_term ctxt t)) ^ "'")
+    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ Protocol_Message.clean_output (Pretty.string_of (Syntax.pretty_term ctxt t)) ^ "'")
 fun invalid_input s t =
-    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ YXML.content_of t ^ "'")
+    raise InvalidInput ("Expected " ^ s ^ ", but got '" ^ Protocol_Message.clean_output t ^ "'")
 
 (*
  * Decoding and parsing Isabelle terms into ML terms.

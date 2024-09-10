@@ -45,7 +45,7 @@ structure Record_Intf: RECORD_INTF = struct
   );
 
   fun get_unf_ss context = Data.get context
-  val get_unf_thms = Data.get #> Raw_Simplifier.dest_ss #> #simps #> map #2
+  val get_unf_thms = Data.get #> Simplifier.dest_simps #> map #2
 
   fun add_unf_thms thms context = let
     val ctxt = Context.proof_of context

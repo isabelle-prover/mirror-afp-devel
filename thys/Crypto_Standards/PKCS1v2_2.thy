@@ -406,19 +406,19 @@ lemma ValidPublicKeyPair_to_ValidPrivateKey:
 
 section \<open>Section 4: Data Conversion Primitives\<close>
 text \<open>"Two data conversion primitives are employed in the schemes defined in this document:
-  •I2OSP – Integer-to-Octet-String primitive
-  •OS2IP – Octet-String-to-Integer primitive
+  \<^item> I2OSP -- Integer-to-Octet-String primitive
+  \<^item> OS2IP -- Octet-String-to-Integer primitive
 For the purposes of this document, and consistent with ASN.1 syntax, an octet string is an ordered
 sequence of octets (eight-bit bytes).  The sequence is indexed from first (conventionally,  
 leftmost) to last (rightmost).  For purposes of conversion to and from integers, the first octet
 is considered the most significant in the following conversion primitives.
 
 Write the integer x in its unique xLen-digit representation in base 256:
-  x = x_{xLen–1} 256^{xLen–1} + x_{xLen–2} 256^{xLen–2} + ... + x_1 256 + x_0,  
+  x = x_{xLen-1} 256^{xLen-1} + x_{xLen-2} 256^{xLen-2} + ... + x_1 256 + x_0,  
 where 0 \<le> xi < 256 (note that one or more leading digits will be zero if x is less than 
-256^{xLen–1}). 
+256^{xLen-1}). 
 
-Let the octet X_i have the integer value x{xLen–i} for 1 \<le> i \<le>xLen.  Output the octet string 
+Let the octet X_i have the integer value x{xLen-i} for 1 \<le> i \<le>xLen.  Output the octet string 
   X = X_1 X_2 ... X_{xLen}."
 
 Octets.thy is a separate theory that contains all the foundational lemmas related to these data
@@ -854,7 +854,7 @@ RSAES-OAEP-ENCRYPT ((n, e), M, L)
           MGF    mask generation function 
  Input:  (n, e)  recipient's RSA public key (k denotes the length in octets of the RSA modulus n)
           M      message to be encrypted, an octet string of length mLen,  
-                 where  mLen\<le>k – 2hLen – 2
+                 where  mLen\<le>k - 2hLen - 2
           L      optional label to be associated with the message; the default value for L, if L is
                  not provided, is the empty string
  Output:  C      ciphertext, an octet string of length k"
@@ -1022,7 +1022,7 @@ text\<open> "RSAES-OAEP-DECRYPT (K, C, L)
           C     ciphertext to be decrypted, an octet string of length k, where  k\<ge> 2hLen + 2
           L     optional label whose association with the message is to be verified;
                 the default value for L, if L is not provided, is the empty string
-Output:   M     message, an octet string of length mLen, where mLen\<le>k – 2hLen – 2"
+Output:   M     message, an octet string of length mLen, where mLen\<le>k - 2hLen - 2"
 \<close>
 
 definition PKCS1_OAEP_decode_Y :: "octets \<Rightarrow> nat" where
@@ -1880,7 +1880,7 @@ subsection \<open>Section 7.2: RSAES-PKCS1-v1.5\<close>
 text \<open>"RSAES-PKCS1-v1_5  combines the RSAEP and RSADP primitives (Sections  5.1.1  and 5.1.2) with
 the EME-PKCS1-v1_5 encoding method (step 1 in Section 7.2.1 and step 3 in Section 7.2.2). It is
 mathematically equivalent to the encryption scheme in PKCS #1 v1.5. RSAES-PKCS1-v1_5 can operate on
-messages of length up to k – 11 octets (k is the octet length of the RSA modulus), although care
+messages of length up to k - 11 octets (k is the octet length of the RSA modulus), although care
 should be taken to avoid certain attacks on low-exponent RSA due to Coppersmith, Franklin, Patarin,
 and Reiter when long messages are encrypted (see the third bullet in the notes below and [10]; [14]
 contains an improved attack).  As a general rule, the use of this scheme for encrypting an

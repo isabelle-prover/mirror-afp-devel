@@ -117,6 +117,7 @@ qed
 
 
 syntax  "_GlobalNdet" :: \<open>[pttrn,'a set,'b process] \<Rightarrow> 'b process\<close> (\<open>(3\<sqinter> _\<in>_. / _)\<close> 76)
+syntax_consts "_GlobalNdet" \<rightleftharpoons> GlobalNdet
 translations  "\<sqinter> p \<in> A. P " \<rightleftharpoons> "CONST GlobalNdet A (\<lambda>p. P)"
 
 text\<open>Note that the global non-deterministic choice @{term [eta_contract = false] \<open>\<sqinter> p \<in> A. P p\<close>}

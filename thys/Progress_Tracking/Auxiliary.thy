@@ -246,6 +246,8 @@ syntax (ASCII)
   "_comprehension_zmset" :: "'a \<Rightarrow> 'b \<Rightarrow> 'b zmultiset \<Rightarrow> 'a zmultiset"  ("({#_/. _ :#z _#})")
 syntax
   "_comprehension_zmset" :: "'a \<Rightarrow> 'b \<Rightarrow> 'b zmultiset \<Rightarrow> 'a zmultiset"  ("({#_/. _ \<in>#\<^sub>z _#})")
+syntax_consts
+  "_comprehension_zmset" \<rightleftharpoons> image_zmset
 translations
   "{#e. x \<in>#\<^sub>z M#}" \<rightleftharpoons> "CONST image_zmset (\<lambda>x. e) M"
 

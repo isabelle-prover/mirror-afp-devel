@@ -41,6 +41,9 @@ no_syntax
     ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [51, 50, 50, 50] 50)
 end
 unbundle dep_mono_wrt_syntax
+syntax_consts
+  "_mono_wrt" \<rightleftharpoons> mono_wrt and
+  "_dep_mono_wrt_rel" "_dep_mono_wrt_rel_if" "_dep_mono_wrt_pred" "_dep_mono_wrt_pred_if" \<rightleftharpoons> dep_mono_wrt
 translations
   "R \<Rightarrow> S" \<rightleftharpoons> "CONST mono_wrt R S"
   "(x y \<Colon> R) \<Rightarrow> S" \<rightleftharpoons> "CONST dep_mono_wrt R (\<lambda>x y. S)"

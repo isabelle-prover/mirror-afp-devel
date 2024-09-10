@@ -94,6 +94,7 @@ setup \<open>
     ctxt addsimprocs
       [Simplifier.make_simproc \<^context>
         {name = "card_UNIV",
+         kind = Simproc,
          lhss = [\<^term>\<open>card UNIV\<close>],
          proc = fn _ => fn _ => fn ct =>
           SOME @{thm card_UNIV_code [THEN eq_reflection]},

@@ -430,7 +430,7 @@ simproc_setup subst_order ("subst_upd_uvar (subst_upd_uvar \<sigma> x u) y v") =
   \<open>(fn _ => fn ctxt => fn ct => 
         case (Thm.term_of ct) of
           Const ("utp_subst.subst_upd_uvar", _) $ (Const ("utp_subst.subst_upd_uvar", _) $ s $ x $ u) $ y $ v
-            => if (YXML.content_of (Syntax.string_of_term ctxt x) > YXML.content_of(Syntax.string_of_term ctxt y))
+            => if (Protocol_Message.clean_output (Syntax.string_of_term ctxt x) > Protocol_Message.clean_output(Syntax.string_of_term ctxt y))
                then SOME (mk_meta_eq @{thm usubst_upd_comm})
                else NONE  |
           _ => NONE) 

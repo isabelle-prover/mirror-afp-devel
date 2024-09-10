@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+\usepackage{amsmath}
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap]{stmaryrd}
+%for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Coproduct Measure}
+\author{Michikazu Hirata}
+\maketitle
+\begin{abstract}
+  This entry formalizes the coproduct measure.
+  Let $I$ be a set and $\{M_i\}_{i\in I}$ measurable spaces.
+  The $\sigma$-algebra
+  on $\coprod_{i\in I} M_i = \{(i,x)\mid i\in I\land x\in M_i\}$
+  is defined as the least one making $(\lambda x.\: (i,x))$ measurable for all $i\in I$.
+  Let $\mu_i$ be measures on $M_i$ for all $i\in I$ and $A$ a measurable set of $\coprod_{i\in I} M_i$.
+  The coproduct measure $\coprod_{i\in I} \mu_i$ is defined as follows:
+  \[\left(\coprod_{i\in I} \mu_i\right)(A) = \sum_{i\in I} \mu_i(A_i), \quad \text{where $A_i = \{x\mid (i,x)\in A\}$.}\]
+
+  We also prove the relationship with coproduct quasi-Borel spaces:
+  the functor $R: \mathbf{Meas}\to\mathbf{QBS}$ preserves
+  countable coproducts.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

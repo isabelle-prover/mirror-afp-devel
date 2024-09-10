@@ -251,6 +251,9 @@ where [upred_defs]: "upred_ares P a = (P \<restriction>\<^sub>v a) \<restriction
 syntax
   "_upred_ares" :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl "\<restriction>\<^sub>p" 90)
 
+syntax_consts
+  "_upred_ares" == upred_ares
+
 translations
   "_upred_ares P a" == "CONST upred_ares P a"
   

@@ -35,6 +35,8 @@ lemma (in ccompare) ID_ccompare:
   
 syntax "_CCOMPARE" :: "type => logic"  ("(1CCOMPARE/(1'(_')))")
 
+syntax_consts "_CCOMPARE" == ccompare
+
 parse_translation \<open>
 let
   fun ccompare_tr [ty] =

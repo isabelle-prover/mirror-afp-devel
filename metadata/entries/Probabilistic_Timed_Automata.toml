@@ -34,6 +34,9 @@ wimmer = "wimmer_email"
 hoelzl = "hoelzl_email"
 
 [history]
+2024-08-28 = """
+moved library material to parent session
+"""
 
 [extra]
 

@@ -117,6 +117,8 @@ subsubsection \<open>@{const concat}\<close>
 
 syntax
   "_concat" :: "idt \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
+syntax_consts
+  "_concat" == concat
 translations
   "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs]" 
 

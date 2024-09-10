@@ -1,0 +1,32 @@
+title = "Lie Groups and Algebras"
+date = 2024-07-31
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Geometry",
+]
+abstract = "Lie Groups are formalised as locales, building on the AFP theory of Smooth Manifolds. We formalise the diffeomorphism group of a manifold, and the action of a Lie group on a manifold. The general linear group is shown to be a Lie group by proving properties of the determinant, and matrix inverses. We also develop a theory of smooth vector fields on a $C^\\infty$ manifold $M$, defined as smooth maps from the manifold to its tangent bundle $TM$. We employ a shortcut that avoids difficulties in defining the tangent bundle as a manifold, but which still leads to vector fields with the properties one would expect. Notably, they are derivations $C^\\infty(M) \\to C^\\infty(M)$. We then construct the Lie algebra of a Lie group as an algebra of left-invariant smooth vector fields."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schmoetten]
+email = "schmoetten_email"
+
+[authors.fleuriot]
+email = "fleuriot_email"
+
+[contributors]
+
+[notify]
+schmoetten = "schmoetten_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "https://arxiv.org/abs/2407.19211",
+]

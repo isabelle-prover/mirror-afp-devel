@@ -237,6 +237,8 @@ qed
 
 syntax
   "_sum_sup_monoid" :: "idt \<Rightarrow> nat \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>_<_ . _)" [0,51,10] 10)
+syntax_consts
+  "_sum_sup_monoid" == sup_monoid.sum
 translations
   "\<Squnion>x<y . t" => "XCONST sup_monoid.sum (\<lambda>x . t) { x . x < y }"
 

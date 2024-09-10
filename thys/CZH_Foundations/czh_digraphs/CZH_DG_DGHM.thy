@@ -63,6 +63,7 @@ locale is_dghm =
 
 syntax "_is_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_dghm" \<rightleftharpoons> is_dghm
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation (input) is_cn_dghm :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -70,6 +71,7 @@ abbreviation (input) is_cn_dghm :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarr
 
 syntax "_is_cn_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   (\<open>(_ :/ _ \<^sub>D\<^sub>G\<mapsto>\<mapsto>\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_cn_dghm" \<rightleftharpoons> is_cn_dghm
 translations "\<FF> : \<AA> \<^sub>D\<^sub>G\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>" \<rightharpoonup> "CONST is_cn_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 abbreviation all_dghms :: "V \<Rightarrow> V"
@@ -1140,6 +1142,7 @@ locale is_ft_dghm = is_dghm \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> 
 
 syntax "_is_ft_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_ft_dghm" \<rightleftharpoons> is_ft_dghm
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_ft_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 
@@ -1382,6 +1385,7 @@ locale is_ff_dghm = is_ft_dghm \<alpha> \<AA> \<BB> \<FF> + is_fl_dghm \<alpha> 
 
 syntax "_is_ff_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>f\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_ff_dghm" \<rightleftharpoons> is_ff_dghm
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>f\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_ff_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 
@@ -1444,6 +1448,7 @@ locale is_iso_dghm = is_dghm \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB>
 
 syntax "_is_iso_dghm" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<index> _)\<close> [51, 51, 51] 51)
+syntax_consts "_is_iso_dghm" \<rightleftharpoons> is_iso_dghm
 translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> "CONST is_iso_dghm \<alpha> \<AA> \<BB> \<FF>"
 
 sublocale is_iso_dghm \<subseteq> ObjMap: v11 \<open>\<FF>\<lparr>ObjMap\<rparr>\<close>

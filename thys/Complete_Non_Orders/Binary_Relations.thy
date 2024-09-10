@@ -39,6 +39,9 @@ text \<open>Below we introduce an Isabelle-notation for $\{ \ldots x\ldots \mid 
 syntax
   "_range" :: "'a \<Rightarrow> idts \<Rightarrow> 'a set" ("(1{_ /|./ _})")
   "_image" :: "'a \<Rightarrow> pttrn \<Rightarrow> 'a set \<Rightarrow> 'a set"  ("(1{_ /|./ (_/ \<in> _)})")
+syntax_consts
+  "_range" \<rightleftharpoons> range and
+  "_image" \<rightleftharpoons> image
 translations
   "{e |. p}" \<rightleftharpoons> "CONST range (\<lambda>p. e)"
   "{e |. p \<in> A}" \<rightleftharpoons> "CONST image (\<lambda>p. e) A"

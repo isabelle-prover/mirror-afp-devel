@@ -457,8 +457,7 @@ structure Nano_Json_Serialize_Isar = struct
                       | _ $ (_ $ json_term) => json_term
                       | _ => error ("Term structure not supported.")
         val json_string  = Nano_Json_Serializer.serialize_term_pretty json_term 
-        val json_bytes = (XML.add_content (YXML.parse json_string) Buffer.empty)
-                           |> Bytes.buffer
+        val json_bytes = Bytes.string (Protocol_Message.clean_output json_string)
     in
         case filename of 
              SOME filename => let 

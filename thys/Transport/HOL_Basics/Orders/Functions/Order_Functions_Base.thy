@@ -32,6 +32,8 @@ no_syntax
 no_notation bi_related ("'(\<equiv>(\<^bsub>_\<^esub>)')")
 end
 unbundle bi_related_syntax
+syntax_consts
+  "_bi_related" \<rightleftharpoons> bi_related
 translations
   "x \<equiv>\<^bsub>R\<^esub> y" \<rightleftharpoons> "CONST bi_related R x y"
 

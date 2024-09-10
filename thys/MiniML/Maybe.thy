@@ -14,6 +14,7 @@ definition
   "option_bind m f = (case m of None => None | Some r => f r)"
 
 syntax "_option_bind" :: "[pttrns,'a option,'b] => 'c" ("(_ := _;//_)" 0)
+syntax_consts "_option_bind" == option_bind
 translations "P := E; F" == "CONST option_bind E (\<lambda>P. F)"
 
 

@@ -1,0 +1,11 @@
+chapter AFP
+
+session Ramsey_Bounds = "HOL-Probability" +
+  options [timeout = 300, document_build = pdflatex]
+  sessions "HOL-Library" Undirected_Graph_Theory
+  theories
+    Ramsey_Bounds
+  document_files
+    "root.tex"
+    "root.bib"
+

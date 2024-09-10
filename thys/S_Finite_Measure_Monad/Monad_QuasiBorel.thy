@@ -184,6 +184,8 @@ interpretation qbs_measure : quot_type "qbs_s_finite_eq" "Abs_qbs_measure" "Rep_
 
 syntax
  "_qbs_measure" :: "'a quasi_borel \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real measure \<Rightarrow> 'a qbs_measure" ("\<lbrakk>_,/ _,/ _\<rbrakk>\<^sub>s\<^sub>f\<^sub>i\<^sub>n")
+syntax_consts
+ "_qbs_measure" \<rightleftharpoons> qbs_measure
 translations
  "\<lbrakk>X, \<alpha>, \<mu>\<rbrakk>\<^sub>s\<^sub>f\<^sub>i\<^sub>n" \<rightleftharpoons> "CONST qbs_measure (X, \<alpha>, \<mu>)"
 
@@ -1703,6 +1705,9 @@ is "\<lambda>(X,\<alpha>,\<mu>). almost_everywhere (distr \<mu> (qbs_to_measure 
 syntax
   "_qbs_almost_everywhere" :: "pttrn \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> bool" ("AE\<^sub>Q _ in _. _" [0,0,10] 10)
 
+syntax_consts
+  "_qbs_almost_everywhere" \<rightleftharpoons> qbs_almost_everywhere
+
 translations
   "AE\<^sub>Q x in p. P" \<rightleftharpoons> "CONST qbs_almost_everywhere p (\<lambda>x. P)"
 
@@ -1804,14 +1809,20 @@ is "\<lambda>p f. if f \<in> (fst p) \<rightarrow>\<^sub>Q qbs_borel then (\<int
 syntax
   "_qbs_nn_integral" :: "pttrn \<Rightarrow> ennreal \<Rightarrow> 'a qbs_measure \<Rightarrow> ennreal" ("\<integral>\<^sup>+\<^sub>Q((2 _./ _)/ \<partial>_)" [60,61] 110)
 
+syntax_consts
+  "_qbs_nn_integral" \<rightleftharpoons> qbs_nn_integral
+
 translations
- "\<integral>\<^sup>+\<^sub>Q x. f \<partial>p" \<rightleftharpoons> "CONST qbs_nn_integral p (\<lambda>x. f)"
+  "\<integral>\<^sup>+\<^sub>Q x. f \<partial>p" \<rightleftharpoons> "CONST qbs_nn_integral p (\<lambda>x. f)"
 
 syntax
   "_qbs_integral" :: "pttrn \<Rightarrow> _ \<Rightarrow> 'a qbs_measure \<Rightarrow> _" ("\<integral>\<^sub>Q((2 _./ _)/ \<partial>_)" [60,61] 110)
 
+syntax_consts
+  "_qbs_integral" \<rightleftharpoons> qbs_integral
+
 translations
- "\<integral>\<^sub>Q x. f \<partial>p" \<rightleftharpoons> "CONST qbs_integral p (\<lambda>x. f)"
+  "\<integral>\<^sub>Q x. f \<partial>p" \<rightleftharpoons> "CONST qbs_integral p (\<lambda>x. f)"
 
 lemma(in qbs_s_finite)
   shows qbs_nn_integral_def: "f \<in> X \<rightarrow>\<^sub>Q qbs_borel \<Longrightarrow> (\<integral>\<^sup>+\<^sub>Q x. f x \<partial>\<lbrakk>X, \<alpha>, \<mu>\<rbrakk>\<^sub>s\<^sub>f\<^sub>i\<^sub>n) = (\<integral>\<^sup>+x. f (\<alpha> x) \<partial> \<mu>)"
@@ -3239,6 +3250,8 @@ definition PiQ_measure :: "['a set, 'a \<Rightarrow> 'b qbs_measure] \<Rightarro
 
 syntax
   "_PiQ_measure" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a qbs_measure \<Rightarrow> ('i => 'a) qbs_measure"  ("(3\<Pi>\<^sub>Q\<^sub>m\<^sub>e\<^sub>a\<^sub>s _\<in>_./ _)"  10)
+syntax_consts
+  "_PiQ_measure" == PiQ_measure
 translations
   "\<Pi>\<^sub>Q\<^sub>m\<^sub>e\<^sub>a\<^sub>s x\<in>I. X" == "CONST PiQ_measure I (\<lambda>x. X)"
 

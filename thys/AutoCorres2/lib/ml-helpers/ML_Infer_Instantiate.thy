@@ -585,8 +585,7 @@ This might be further fine-tuned by inserting explicit dummy types to be inferre
 
 ML \<open>
 fun infer_types_simple ctxt =
-   singleton (Type_Infer_Context.infer_types ctxt) #>
-   singleton (Type_Infer.fixate ctxt false);
+   singleton (Type_Infer_Context.infer_types_finished ctxt);
 
 val b = Free("n", dummyT)
 val t1 = \<^instantiate>\<open>'a = \<^typ>\<open>_\<close> and a = \<open>@{term "1::nat"}\<close> and b=\<open>b\<close> 

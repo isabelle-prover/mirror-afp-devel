@@ -65,6 +65,7 @@ fun MultiSync_list :: \<open>['b set, 'a list, 'a \<Rightarrow> 'b process] \<Ri
 
 syntax "_MultiSync_list" :: \<open>[pttrn, 'b set, 'a list, 'b process] \<Rightarrow> 'b process\<close>
                             (\<open>(3\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<^sub>l_\<in>_./ _)\<close> 63)
+syntax_consts "_MultiSync_list" \<rightleftharpoons> MultiSync_list
 translations  "\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>l p \<in> L. P " \<rightleftharpoons> "CONST MultiSync_list S L (\<lambda>p. P)"
 
 
@@ -113,6 +114,7 @@ definition MultiSync :: \<open>['b set, 'a multiset, 'a \<Rightarrow> 'b process
 
 syntax "_MultiSync" :: \<open>[pttrn,'b set,'a multiset,'b process] \<Rightarrow> 'b process\<close>
                        (\<open>(3\<^bold>\<lbrakk>_\<^bold>\<rbrakk> _\<in>#_. / _)\<close> 63)
+syntax_consts "_MultiSync" \<rightleftharpoons> MultiSync
 translations "\<^bold>\<lbrakk>S\<^bold>\<rbrakk> p \<in># M. P " \<rightleftharpoons> "CONST MultiSync S M (\<lambda>p. P)"
 
 
@@ -125,6 +127,7 @@ abbreviation MultiInter :: \<open>['a multiset, 'a \<Rightarrow> 'b process] \<R
 
 syntax "_MultiInter" :: \<open>[pttrn, 'a multiset, 'b process] \<Rightarrow> 'b process\<close>
                         (\<open>(3\<^bold>|\<^bold>|\<^bold>| _\<in>#_. / _)\<close> 77)
+syntax_consts "_MultiInter" \<rightleftharpoons> MultiInter
 translations "\<^bold>|\<^bold>|\<^bold>| p \<in># M. P" \<rightleftharpoons> "CONST MultiInter M (\<lambda>p. P)"
 
 
@@ -136,6 +139,7 @@ abbreviation MultiPar :: \<open>['a multiset, 'a \<Rightarrow> 'b process] \<Rig
 
 syntax "_MultiPar" :: \<open>[pttrn, 'a multiset, 'b process] \<Rightarrow> 'b process\<close>
                       (\<open>(3\<^bold>|\<^bold>| _\<in>#_. / _)\<close> 77)
+syntax_consts "_MultiPar" \<rightleftharpoons> MultiPar
 translations "\<^bold>|\<^bold>| p \<in># M. P" \<rightleftharpoons> "CONST MultiPar M (\<lambda>p. P)"
 
 

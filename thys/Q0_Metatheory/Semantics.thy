@@ -17,6 +17,8 @@ notation app (infixl "\<bullet>" 300)
 
 syntax
   "_vlambda" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" ("(3\<^bold>\<lambda>_\<^bold>:_ \<^bold>./ _)" [0, 0, 3] 3)
+syntax_consts
+  "_vlambda" \<rightleftharpoons> VLambda
 translations
   "\<^bold>\<lambda>x \<^bold>: A\<^bold>. f" \<rightleftharpoons> "CONST VLambda A (\<lambda>x. f)"
 

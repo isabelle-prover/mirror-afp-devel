@@ -1,8 +1,19 @@
 chapter AFP
 
-session "Timed_Automata" = HOL +
+session "Timed_Automata" = Difference_Bound_Matrices +
   options [timeout = 600]
+  sessions
+    Transition_Systems_and_Automata
+  directories
+    library
+  theories [document=false]
+    Instantiate_Existentials
   theories
+    More_List
+    Stream_More
+    TA_Misc
+    Graphs
+    CTL
     Normalized_Zone_Semantics
   document_files
     "root.tex"

@@ -614,7 +614,7 @@ subsubsection\<open>Examples\<close>
 text\<open>
 \<^item> common short-cut hiding \<^LaTeX> code in the integrated source:
     @{theory_text [display]
-      \<open>define_shortcut* eg  \<rightleftharpoons> \<open>\eg\<close>  (* Latin: „exempli gratia“  meaning  „for example“. *)
+      \<open>define_shortcut* eg  \<rightleftharpoons> \<open>\eg\<close>  (* Latin: "exempli gratia"  meaning  "for example". *)
                       clearpage \<rightleftharpoons> \<open>\clearpage{}\<close>\<close>}
 \<^item> non-checking macro:
     @{theory_text [display]

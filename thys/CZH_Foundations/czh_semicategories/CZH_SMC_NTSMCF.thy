@@ -71,6 +71,7 @@ locale is_ntsmcf =
 
 syntax "_is_ntsmcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>(_ :/ _ \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F _ :/ _ \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<index> _)\<close> [51, 51, 51, 51, 51] 51)
+syntax_consts "_is_ntsmcf" \<rightleftharpoons> is_ntsmcf
 translations "\<NN> : \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> 
   "CONST is_ntsmcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 

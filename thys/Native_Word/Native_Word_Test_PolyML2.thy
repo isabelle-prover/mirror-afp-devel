@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-theory Native_Word_Test_PolyML2 imports
+theory Native_Word_Test_PolyML2
+imports
   Native_Word_Test_Emu
 begin
 

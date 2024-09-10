@@ -423,7 +423,8 @@ datatype msg =
 
 syntax
   "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"  ("(2\<lbrace>_,/ _\<rbrace>)")
-
+syntax_consts
+  "_MTuple" \<rightleftharpoons> MPair
 translations
   "\<lbrace>x, y, z\<rbrace>" \<rightleftharpoons> "\<lbrace>x, \<lbrace>y, z\<rbrace>\<rbrace>"
   "\<lbrace>x, y\<rbrace>" \<rightleftharpoons> "CONST MPair x y"

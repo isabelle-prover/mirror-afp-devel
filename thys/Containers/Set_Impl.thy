@@ -1864,6 +1864,9 @@ class set_impl =
 syntax (input)
   "_SET_IMPL" :: "type => logic"  ("(1SET'_IMPL/(1'(_')))")
 
+syntax_consts
+  "_SET_IMPL" == set_impl
+
 parse_translation \<open>
 let
   fun set_impl_tr [ty] =
