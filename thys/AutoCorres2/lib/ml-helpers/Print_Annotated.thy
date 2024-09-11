@@ -33,14 +33,12 @@ fun string_of_term ctxt margin t =
       |> Config.put show_types false
       |> Config.put show_sorts false
       |> Config.put show_consts false
-    fun print_term t' =
-      Syntax.unparse_term ctxt' t'
-      |> Pretty.string_of_ops (Pretty.output_ops margin)
   in
     t
     |> singleton (Syntax.uncheck_terms ctxt')
     |> Sledgehammer_Isar_Annotate.annotate_types_in_term ctxt'
-    |> Print_Mode.setmp [] print_term
+    |> Syntax.unparse_term ctxt'
+    |> Pretty.string_of_ops (Pretty.pure_output_ops margin)
   end
 
 fun string_of_thm ctxt margin thm =

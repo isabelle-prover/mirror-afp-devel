@@ -53,10 +53,7 @@ val sanitize_string =
 
 
 fun term_to_string ctxt t =
-  let
-    val ctxt' = Config.put show_markup false ctxt;
-  in Print_Mode.setmp [] (Syntax.string_of_term ctxt') t
-  end;
+  Pretty.pure_string_of (Syntax.pretty_term (Config.put show_markup false ctxt) t);
 
 
 fun term_to_string_safe ctxt t = 

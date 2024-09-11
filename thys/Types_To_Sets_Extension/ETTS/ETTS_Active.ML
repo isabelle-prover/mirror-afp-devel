@@ -60,7 +60,8 @@ fun string_of_etts_thm_type tts_lemma = "tts_lemma"
 
 (*ported from Sketch_and_Explore*)
 fun print_term ctxt t = t
-  |> Print_Mode.setmp [] (Syntax.unparse_term ctxt #> Pretty.string_of)
+  |> Syntax.unparse_term ctxt
+  |> Pretty.pure_string_of
   |> Sledgehammer_Util.simplify_spaces
   |> ATP_Util.maybe_quote ctxt;
 
