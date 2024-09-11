@@ -1,8 +1,7 @@
 section \<open>Preliminaries\<close>
 
 theory Worklist_Locales
-  imports Refine_Imperative_HOL.Sepref Collections.HashCode Probabilistic_Timed_Automata.Graphs
-  "HOL-ex.Sketch_and_Explore"
+  imports Refine_Imperative_HOL.Sepref Collections.HashCode Timed_Automata.Graphs
 begin
 
 subsection \<open>Search Spaces\<close>

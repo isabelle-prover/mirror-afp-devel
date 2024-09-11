@@ -2,8 +2,8 @@ section \<open>Subsumption Graphs\<close>
 
 theory Worklist_Algorithms_Subsumption_Graphs
   imports
-    Probabilistic_Timed_Automata.Graphs
-    Probabilistic_Timed_Automata.More_List
+    Timed_Automata.Graphs
+    Timed_Automata.More_List
 begin
 
 subsection \<open>Preliminaries\<close>
