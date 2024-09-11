@@ -829,7 +829,8 @@ let
 
   val lthy = Named_Target.theory_init thy
 
-  val _ = Utils.verbose_msg 0 lthy (fn _ => Record.string_of_record lthy AC_Names.new_heap_recN)
+  val _ = Utils.verbose_msg 0 lthy
+    (fn _ => Pretty.string_of (Record.pretty_record_cmd lthy AC_Names.new_heap_recN))
 
   fun typ_uinfo_t T = \<^instantiate>\<open>'a=T in term \<open>typ_uinfo_t TYPE('a::c_type)\<close>\<close>
   fun indexes n = \<^instantiate>\<open>n=\<open>HOLogic.mk_number @{typ nat} n\<close> in term \<open>array_fields n\<close>\<close>
