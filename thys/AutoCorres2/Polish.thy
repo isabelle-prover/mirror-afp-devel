@@ -1390,12 +1390,11 @@ fun add_global_stop_cong thm =
 fun del_global_stop_cong thm =
   map_stop_congs (fn congs => (build_congs (remove Thm.eq_thm_prop thm congs)))
 
-fun pretty_binding b = Pretty.str (More_Binding.here b)
 fun pretty_entry label p = Pretty.block [(Pretty.str (suffix ": " label)), p]
 
 fun pretty_rule ctxt (rule:rule) =
  Pretty.item (
- [pretty_entry "rule" (pretty_binding (#name rule)), Pretty.brk 1,
+ [pretty_entry "rule" (More_Binding.here_pretty (#name rule)), Pretty.brk 1,
   Pretty.indent 2 (Thm.pretty_thm ctxt (#apply_thm rule) |> Pretty.cartouche), Pretty.brk 1])
 
 fun pretty_rules ctxt (rules: rule list) = Pretty.big_list ("rules") (map (pretty_rule ctxt) rules)
@@ -1407,7 +1406,7 @@ fun print_rules context =
 
 fun pretty_cond_rule ctxt (rule:cond_rule) =
  Pretty.item (
- [pretty_entry "cond_rule" (pretty_binding (#name rule)), Pretty.brk 1,
+ [pretty_entry "cond_rule" (More_Binding.here_pretty (#name rule)), Pretty.brk 1,
   Pretty.indent 2 (Thm.pretty_thm ctxt (#thm rule) |> Pretty.cartouche), Pretty.brk 1])
 
 fun pretty_derive_rules ctxt (rules: cond_rule list) = 

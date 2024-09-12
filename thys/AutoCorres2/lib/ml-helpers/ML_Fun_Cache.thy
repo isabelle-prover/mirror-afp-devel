@@ -83,24 +83,24 @@ end
 
 
 ML \<open>
+signature MORE_BINDING = sig
+  val here_pretty: binding -> Pretty.T
+  val here: binding -> string
+end
 
-structure More_Binding = struct
+structure More_Binding: MORE_BINDING = struct
 
-\<comment>\<open>cf. @{ML Position.here}\<close>
-fun here b =
+fun here_pretty b =
   let
     val pos = Binding.pos_of b
-    val text = Binding.print b
-    val props = Position.properties_of pos;
-    val (s1, s2) =
-      (case (Position.line_of pos, Position.file_of pos) of
-        (SOME i, NONE) => (" ", "(line " ^ Value.print_int i ^ ")")
-      | (SOME i, SOME name) => (" ", "(line " ^ Value.print_int i ^ " of " ^ quote name ^ ")")
-      | (NONE, SOME name) => (" ", "(file " ^ quote name ^ ")")
-      | _ => if Position.is_reported pos then ("", "\092<^here>") else ("", ""));
+    val prt0 = Pretty.mark_str_position (pos, Binding.long_name_of b)
   in
-    Markup.markup (Markup.properties props Markup.position) (text ^ s1 ^ s2)
-  end;
+    (case Pretty.here pos of
+      [] => prt0
+    | prts => Pretty.block0 (prt0 :: prts))
+  end
+
+val here = Pretty.unformatted_string_of o here_pretty
 
 end
 

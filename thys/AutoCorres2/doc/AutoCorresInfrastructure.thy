@@ -2259,15 +2259,20 @@ text \<open>You can make the markup visible by sending it to an output function,
 ML \<open>
 tracing str
 \<close>
-text \<open>The markup is itself encoded in the string by the format @{ML_structure YXML}
-The plain information (without markup) can be extracted:
+text \<open>The markup is itself encoded in the string by the format @{ML_structure YXML}.
 \<close>
+text \<open>The markup can be expanded to the @{ML_type XML.body} by @{ML YXML.parse_body}:\<close>
 ML_val \<open>
-Protocol_Message.clean_output str
+YXML.parse_body str
 \<close>
-text \<open>The markup can be expanded to the @{ML_type XML.tree} by @{ML YXML.parse}\<close>
+text \<open>The plain text (without markup) can be extracted like this:\<close>
 ML_val \<open>
-YXML.parse str
+XML.content_of o YXML.parse_body
+\<close>
+text \<open>
+It is also possible to produce pretty printed output without markup using
+@{ML Pretty.pure_string_of} (see also @{ML Pretty.string_of_ops} and
+@{ML Pretty.pure_output_ops}).
 \<close>
 
 text \<open>

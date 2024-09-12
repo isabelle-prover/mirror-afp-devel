@@ -815,7 +815,7 @@ let
             (if returned < found
              then " (" ^ string_of_int returned ^ " displayed)"
              else ""));
-    val position_markup = Position.markup (Position.thread_data ()) Markup.position;
+    val position_markup = Position.markup (Position.thread_data ());
   val pretty = Pretty.block
         (Pretty.fbreaks
           (Pretty.mark position_markup (Pretty.keyword1 "AOT_find_theorems") ::

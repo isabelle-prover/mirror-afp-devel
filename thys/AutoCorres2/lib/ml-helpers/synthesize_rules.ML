@@ -425,7 +425,6 @@ fun add_mk_patterns rules_name (mk_patterns: (binding * (Proof.context -> int ->
 fun rule_ord (rule1, rule2) =  rev_order (int_ord (#priority (rule1:rule), #priority (rule2:rule)))
 
 (* pretty printing *)
-fun pretty_binding b = Pretty.str (More_Binding.here b)
 
 fun prt_term ctxt =
       singleton (Syntax.uncheck_terms ctxt) #>
@@ -451,7 +450,7 @@ fun markup_name ctxt rules_name =
 
 fun pretty_rule ctxt (rule: rule) =
   Pretty.item (
-   [pretty_entry "rule" (pretty_binding (#name rule)), Pretty.brk 1,
+   [pretty_entry "rule" (More_Binding.here_pretty (#name rule)), Pretty.brk 1,
     Pretty.indent 2 (Thm.pretty_thm ctxt (#rule rule) |> Pretty.cartouche), Pretty.brk 1,
     pretty_entry "priority" (Pretty.str (string_of_int (#priority rule))), Pretty.brk 1,
     pretty_entry "pattern" (prt_term ctxt (#pattern rule) |> Pretty.cartouche), Pretty.brk 1,
