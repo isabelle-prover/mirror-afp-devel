@@ -83,15 +83,24 @@ end
 
 
 ML \<open>
+signature MORE_BINDING = sig
+  val here_pretty: binding -> Pretty.T
+  val here: binding -> string
+end
 
-structure More_Binding = struct
+structure More_Binding: MORE_BINDING = struct
 
-fun here b =
+fun here_pretty b =
   let
     val pos = Binding.pos_of b
-    val text = Binding.print b
-    val (s1, s2) = Position.here_strs pos;
-  in Markup.markup (Position.markup pos) (text ^ s1 ^ s2) end;
+    val prt0 = Pretty.mark_str_position (pos, Binding.long_name_of b)
+  in
+    (case Pretty.here pos of
+      [] => prt0
+    | prts => Pretty.block0 (prt0 :: prts))
+  end
+
+val here = Pretty.unformatted_string_of o here_pretty
 
 end
 
