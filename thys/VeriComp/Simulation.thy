@@ -313,6 +313,11 @@ locale bisimulation =
     order\<^sub>b :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
     match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
 
+lemma (in bisimulation) agree_on_final:
+  assumes "match i s1 s2"
+  shows "final1 s1 \<longleftrightarrow> final2 s2"
+  by (meson assms forward_simulation.match_final forward_simulation_axioms match_final)
+
 lemma obtains_bisimulation_from_forward_simulation:
   fixes
     step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 :: "'state1 \<Rightarrow> bool" and
