@@ -86,21 +86,12 @@ ML \<open>
 
 structure More_Binding = struct
 
-\<comment>\<open>cf. @{ML Position.here}\<close>
 fun here b =
   let
     val pos = Binding.pos_of b
     val text = Binding.print b
-    val props = Position.properties_of pos;
-    val (s1, s2) =
-      (case (Position.line_of pos, Position.file_of pos) of
-        (SOME i, NONE) => (" ", "(line " ^ Value.print_int i ^ ")")
-      | (SOME i, SOME name) => (" ", "(line " ^ Value.print_int i ^ " of " ^ quote name ^ ")")
-      | (NONE, SOME name) => (" ", "(file " ^ quote name ^ ")")
-      | _ => if Position.is_reported pos then ("", "\092<^here>") else ("", ""));
-  in
-    Markup.markup (Markup.properties props Markup.position) (text ^ s1 ^ s2)
-  end;
+    val (s1, s2) = Position.here_strs pos;
+  in Markup.markup (Position.markup pos) (text ^ s1 ^ s2) end;
 
 end
 
