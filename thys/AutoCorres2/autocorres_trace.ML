@@ -630,7 +630,7 @@ fun fconv_rule_maybe_traced ctxt conv thm do_trace =
 local
 
 fun print_term ctxt t =
-  Protocol_Message.clean_output (Syntax.string_of_term ctxt t)
+  Pretty.pure_string_of (Syntax.pretty_term ctxt t)
 
 fun print_ac_trace' indent (RuleTrace tr) =
   let
