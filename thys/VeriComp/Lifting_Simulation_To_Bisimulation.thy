@@ -1,7 +1,5 @@
 theory Lifting_Simulation_To_Bisimulation
-  imports
-    Main
-    "VeriComp.Well_founded"
+  imports Well_founded
 begin
 
 definition stuck_state :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" where

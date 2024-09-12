@@ -1,7 +1,7 @@
 section \<open>Infinitely Transitive Closure\<close>
 
 theory Inf
-  imports Well_founded
+  imports Main
 begin
 
 coinductive inf :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" for r where
@@ -12,9 +12,9 @@ coinductive inf_wf :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('
   inf_wf_step: "r\<^sup>+\<^sup>+ x y \<Longrightarrow> inf_wf r order n y \<Longrightarrow> inf_wf r order m x"
 
 lemma inf_wf_to_step_inf_wf:
-  assumes "well_founded order"
+  assumes "wfp order"
   shows "inf_wf r order n x \<Longrightarrow> \<exists>y m. r x y \<and> inf_wf r order m y"
-proof (induction n arbitrary: x rule: well_founded.induct[OF assms(1)])
+proof (induction n arbitrary: x rule: wfp_induct_rule[OF assms(1)])
   case (1 n)
   from "1.prems"(1) show ?case
   proof (induction rule: inf_wf.cases)
@@ -28,7 +28,7 @@ proof (induction n arbitrary: x rule: well_founded.induct[OF assms(1)])
 qed
 
 lemma inf_wf_to_inf:
-  assumes "well_founded order"
+  assumes "wfp order"
   shows "inf_wf r order n x \<Longrightarrow> inf r x"
 proof (coinduction arbitrary: x n rule: inf.coinduct)
   case (inf x n)

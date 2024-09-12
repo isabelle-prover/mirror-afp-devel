@@ -12,8 +12,7 @@ subsection \<open>Backward simulation\<close>
 
 locale backward_simulation =
   L1: semantics step1 final1 +
-  L2: semantics step2 final2 +
-  well_founded "(\<sqsubset>)"
+  L2: semantics step2 final2
   for
     step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
     step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
@@ -23,6 +22,8 @@ locale backward_simulation =
   fixes
     match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
   assumes
+    wfp_order:
+      "wfp (\<sqsubset>)" and
     match_final:
       "match i s1 s2 \<Longrightarrow> final2 s2 \<Longrightarrow> final1 s1" and
     simulation:
@@ -108,7 +109,7 @@ proof -
       using \<open>inf step2 s2'\<close> by auto
   qed
   thus ?thesis using inf_wf_to_inf
-    by (auto intro: inf_wf_to_inf well_founded_axioms)
+    by (auto intro: inf_wf_to_inf wfp_order)
 qed
 
 subsubsection \<open>Preservation of behaviour\<close>
@@ -148,8 +149,7 @@ subsection \<open>Forward simulation\<close>
 
 locale forward_simulation =
   L1: semantics step1 final1 +
-  L2: semantics step2 final2 +
-  well_founded "(\<sqsubset>)"
+  L2: semantics step2 final2
   for
     step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
     step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
@@ -159,6 +159,8 @@ locale forward_simulation =
   fixes
     match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
   assumes
+    wfp_order:
+      "wfp (\<sqsubset>)" and
     match_final:
       "match i s1 s2 \<Longrightarrow> final1 s1 \<Longrightarrow> final2 s2" and
     simulation:
@@ -239,7 +241,7 @@ proof -
       using inf_s1' by auto
   qed
   thus ?thesis using inf_wf_to_inf
-    by (auto intro: inf_wf_to_inf well_founded_axioms)
+    by (auto intro: inf_wf_to_inf wfp_order)
 qed
 
 
@@ -527,13 +529,13 @@ next
   show "semantics step3 final3"
     by (auto intro: backward_simulation.axioms assms)
 next
-  show "well_founded (lex_prodp order1\<^sup>+\<^sup>+ order2)"
-    using assms[THEN backward_simulation.axioms(3)]
-    by (simp add: lex_prodp_well_founded well_founded.intro well_founded.wf wfp_tranclp)
-next
   show "backward_simulation_axioms step1 step3 final1 final3
     (lex_prodp order1\<^sup>+\<^sup>+ order2) (rel_comp match1 match2)"
   proof
+    show "wfp (lex_prodp order1\<^sup>+\<^sup>+ order2)"
+      using assms[THEN backward_simulation.wfp_order]
+      by (simp add: lex_prodp_wfP wfp_tranclp)
+  next
     fix i s1 s3
     assume
       match: "rel_comp match1 match2 i s1 s3" and
@@ -604,12 +606,12 @@ proof intro_locales
   show "semantics step final"
     by (auto intro: backward_simulation.axioms assms)
 next
-  show "well_founded (lexp order\<^sup>+\<^sup>+)"
-    using backward_simulation.axioms(3)[OF assms] lex_list_well_founded
-    using well_founded.intro well_founded.wf wfp_tranclp by blast
-next
   show "backward_simulation_axioms step step final final (lexp order\<^sup>+\<^sup>+) (rel_comp_pow match)"
   proof unfold_locales
+    show "wfp (lexp order\<^sup>+\<^sup>+)"
+      using assms[THEN backward_simulation.wfp_order]
+      by (simp add: lex_list_wfP wfp_tranclp)
+  next
     fix "is" s1 s2
     assume "rel_comp_pow match is s1 s2" and "final s2"
     thus "final s1" thm rel_comp_pow.induct
@@ -717,18 +719,17 @@ next
     using assms
     by (auto intro: forward_simulation.axioms)
 next
-  have "wfp order1" and "wfp order2"
-    using assms
-    by (simp_all add: forward_simulation_def well_founded.wf)
-
-  hence "wfp (\<lambda>i i'. lex_prodp order2\<^sup>+\<^sup>+ order1 (prod.swap i) (prod.swap i'))"
-    by (metis (no_types, lifting) lex_prodp_wfP wfp_if_convertible_to_wfp wfp_tranclp)
-
-  thus "well_founded ORDER"
-    by (simp add: ORDER_def well_founded.intro)
-next
   show "forward_simulation_axioms step1 step3 final1 final3 ORDER (rel_comp match1 match2)"
   proof unfold_locales
+    have "wfp order1" and "wfp order2"
+      using assms(1,2)[THEN forward_simulation.wfp_order] .
+
+    hence "wfp (\<lambda>i i'. lex_prodp order2\<^sup>+\<^sup>+ order1 (prod.swap i) (prod.swap i'))"
+      by (metis (no_types, lifting) lex_prodp_wfP wfp_if_convertible_to_wfp wfp_tranclp)
+
+    thus "wfp ORDER"
+      by (simp add: ORDER_def)
+  next
     fix i s1 s3
     assume
       match: "rel_comp match1 match2 i s1 s3" and

@@ -4,25 +4,6 @@ theory Well_founded
   imports Main
 begin
 
-locale well_founded =
-  fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>" 70)
-  assumes
-    wf: "wfP (\<sqsubset>)"
-begin
-
-lemmas induct = wfp_induct_rule[OF wf]
-
-end
-
-subsection \<open>Unit\<close>
-
-lemma wfP_unit: "wfP (\<lambda>() (). False)"
-  by (simp add: Nitpick.case_unit_unfold wfp_eq_minimal)
-
-interpretation well_founded "\<lambda>() (). False"
-  apply unfold_locales
-  by (auto intro: wfP_unit)
-
 subsection \<open>Lexicographic product\<close>
 
 context
@@ -40,9 +21,9 @@ lemma lex_prodp_lex_prod:
 
 lemma lex_prodp_wfP:
   assumes
-    "wfP r1" and
-    "wfP r2"
-  shows "wfP lex_prodp"
+    "wfp r1" and
+    "wfp r2"
+  shows "wfp lex_prodp"
 proof (rule wfpUNIVI)
   show "\<And>P. \<forall>x. (\<forall>y. lex_prodp y x \<longrightarrow> P y) \<longrightarrow> P x \<Longrightarrow> (\<And>x. P x)"
   proof -
@@ -63,13 +44,6 @@ proof (rule wfpUNIVI)
 qed
 
 end
-
-lemma lex_prodp_well_founded:
-  assumes
-    "well_founded r1" and
-    "well_founded r2"
-  shows "well_founded (lex_prodp r1 r2)"
-  using well_founded.intro lex_prodp_wfP assms[THEN well_founded.wf] by auto
 
 subsection \<open>Lexicographic list\<close>
 
@@ -99,10 +73,5 @@ qed
 
 lemma lex_list_wfP: "wfP order \<Longrightarrow> wfP (lexp order)"
   by (simp add: lexp_lex wf_lex wfp_def)
-
-lemma lex_list_well_founded:
-  assumes "well_founded order"
-  shows "well_founded (lexp order)"
-  using well_founded.intro assms(1)[THEN well_founded.wf, THEN lex_list_wfP] by auto
 
 end
