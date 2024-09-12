@@ -64,9 +64,9 @@ lemma fixpoint_eq_comp_pow:
 
 lemma compiler_composition_fixpoint:
   assumes
-    "compiler step step final final load load order match compile"
-  shows "compiler step step final final load load
-    (lexp order\<^sup>+\<^sup>+) (rel_comp_pow match) (fixpoint m compile)"
+    "compiler step final load step final load match order compile"
+  shows "compiler step final load step final load
+    (rel_comp_pow match) (lexp order\<^sup>+\<^sup>+) (fixpoint m compile)"
 proof (rule compiler.intro)
   show "compiler_axioms load load (rel_comp_pow match) (fixpoint m compile)"
   proof unfold_locales

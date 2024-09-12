@@ -14,13 +14,11 @@ locale backward_simulation =
   L1: semantics step1 final1 +
   L2: semantics step2 final2
   for
-    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    final1 :: "'state1 \<Rightarrow> bool" and
-    final2 :: "'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70) +
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 :: "'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" +
   fixes
-    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
+    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70)
   assumes
     wfp_order:
       "wfp (\<sqsubset>)" and
@@ -151,13 +149,11 @@ locale forward_simulation =
   L1: semantics step1 final1 +
   L2: semantics step2 final2
   for
-    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    final1 :: "'state1 \<Rightarrow> bool" and
-    final2 :: "'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70) +
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 :: "'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" +
   fixes
-    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
+    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70)
   assumes
     wfp_order:
       "wfp (\<sqsubset>)" and
@@ -304,16 +300,14 @@ end
 subsection \<open>Bisimulation\<close>
 
 locale bisimulation =
-  forward_simulation step1 step2 final1 final2 order\<^sub>f match +
-  backward_simulation step1 step2 final1 final2 order\<^sub>b match
+  forward_simulation step1 final1 step2 final2 match order\<^sub>f +
+  backward_simulation step1 final1 step2 final2 match order\<^sub>b
   for
-    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    final1 :: "'state1 \<Rightarrow> bool" and
-    final2 :: "'state2 \<Rightarrow> bool" and
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 :: "'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" and
+    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
     order\<^sub>f :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
-    order\<^sub>b :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
-    match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool"
+    order\<^sub>b :: "'index \<Rightarrow> 'index \<Rightarrow> bool"
 
 lemma (in bisimulation) agree_on_final:
   assumes "match i s1 s2"
@@ -339,7 +333,7 @@ lemma obtains_bisimulation_from_forward_simulation:
     MATCH :: "nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
     ORDER :: "nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   where
-    "bisimulation step1 step2 final1 final2 ORDER ORDER MATCH"
+    "bisimulation step1 final1 step2 final2 MATCH ORDER ORDER"
 proof -
   have "simulation step1 step2 match lt"
     using fsim unfolding simulation_def by metis
@@ -360,7 +354,7 @@ proof -
         \<open>simulation step1 step2 match lt\<close>]
     by blast
 
-  have "bisimulation step1 step2 final1 final2 ORDER ORDER MATCH"
+  have "bisimulation step1 final1 step2 final2 MATCH ORDER ORDER"
   proof unfold_locales
     show "\<And>i s1 s2. MATCH i s1 s2 \<Longrightarrow> final1 s1 \<Longrightarrow> final2 s2"
       using \<open>\<And>s2 s1 j. MATCH j s1 s2 \<Longrightarrow> final1 s1 = final2 s2\<close> by metis
@@ -406,7 +400,7 @@ corollary ex_bisimulation_from_forward_simulation:
     fsim: "\<forall>i s1 s2 s1'. match i s1 s2 \<longrightarrow> step1 s1 s1' \<longrightarrow>
       (\<exists>i' s2'. step2\<^sup>+\<^sup>+ s2 s2' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1' s2 \<and> lt i' i)"
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool) ORDER\<^sub>f ORDER\<^sub>b.
-    bisimulation step1 step2 final1 final2 ORDER\<^sub>f ORDER\<^sub>b MATCH"
+    bisimulation step1 final1 step2 final2 MATCH ORDER\<^sub>f ORDER\<^sub>b"
   using obtains_bisimulation_from_forward_simulation[OF assms] by metis
 
 lemma obtains_bisimulation_from_backward_simulation:
@@ -428,7 +422,7 @@ lemma obtains_bisimulation_from_backward_simulation:
     MATCH :: "nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
     ORDER :: "nat \<times> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   where
-    "bisimulation step1 step2 final1 final2 ORDER ORDER MATCH"
+    "bisimulation step1 final1 step2 final2 MATCH ORDER ORDER"
 proof -
   have matching_states_agree_on_final': "\<forall>i s2 s1. (\<lambda>i s2 s1. match i s1 s2) i s2 s1 \<longrightarrow> final2 s2 \<longleftrightarrow> final1 s1"
     using matching_states_agree_on_final by simp
@@ -456,7 +450,7 @@ proof -
         \<open>simulation step2 step1 (\<lambda>i s2 s1. match i s1 s2) lt\<close>]
     by (smt (verit))
 
-  have "bisimulation step1 step2 final1 final2 ORDER ORDER (\<lambda>i s1 s2. MATCH i s2 s1)"
+  have "bisimulation step1 final1 step2 final2 (\<lambda>i s1 s2. MATCH i s2 s1) ORDER ORDER"
   proof unfold_locales
     show "\<And>i s1 s2. MATCH i s2 s1 \<Longrightarrow> final1 s1 \<Longrightarrow> final2 s2"
       using \<open>\<And>s2 s1 j. MATCH j s2 s1 \<Longrightarrow> final1 s1 = final2 s2\<close> by metis
@@ -502,7 +496,7 @@ corollary ex_bisimulation_from_backward_simulation:
     bsim: "\<forall>i s1 s2 s2'. match i s1 s2 \<longrightarrow> step2 s2 s2' \<longrightarrow>
       (\<exists>i' s1'. step1\<^sup>+\<^sup>+ s1 s1' \<and> match i' s1' s2') \<or> (\<exists>i'. match i' s1 s2' \<and> lt i' i)"
   shows "\<exists>(MATCH :: nat \<times> nat \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool) ORDER\<^sub>f ORDER\<^sub>b.
-    bisimulation step1 step2 final1 final2 ORDER\<^sub>f ORDER\<^sub>b MATCH"
+    bisimulation step1 final1 step2 final2 MATCH ORDER\<^sub>f ORDER\<^sub>b"
   using obtains_bisimulation_from_backward_simulation[OF assms] by metis
 
 
@@ -517,11 +511,11 @@ subsubsection \<open>Composition of backward simulations\<close>
 
 lemma backward_simulation_composition:
   assumes
-    "backward_simulation step1 step2 final1 final2 order1 match1"
-    "backward_simulation step2 step3 final2 final3 order2 match2"
+    "backward_simulation step1 final1 step2 final2 match1 order1"
+    "backward_simulation step2 final2 step3 final3 match2 order2"
   shows
-    "backward_simulation step1 step3 final1 final3
-      (lex_prodp order1\<^sup>+\<^sup>+ order2) (rel_comp match1 match2)"
+    "backward_simulation step1 final1 step3 final3
+      (rel_comp match1 match2) (lex_prodp order1\<^sup>+\<^sup>+ order2)"
 proof intro_locales
   show "semantics step1 final1"
     by (auto intro: backward_simulation.axioms assms)
@@ -529,8 +523,8 @@ next
   show "semantics step3 final3"
     by (auto intro: backward_simulation.axioms assms)
 next
-  show "backward_simulation_axioms step1 step3 final1 final3
-    (lex_prodp order1\<^sup>+\<^sup>+ order2) (rel_comp match1 match2)"
+  show "backward_simulation_axioms step1 final1 step3 final3
+    (rel_comp match1 match2) (lex_prodp order1\<^sup>+\<^sup>+ order2)"
   proof
     show "wfp (lex_prodp order1\<^sup>+\<^sup>+ order2)"
       using assms[THEN backward_simulation.wfp_order]
@@ -599,14 +593,14 @@ end
 
 lemma backward_simulation_pow:
   assumes
-    "backward_simulation step step final final order match"
+    "backward_simulation step final step final match order"
   shows
-    "backward_simulation step step final final (lexp order\<^sup>+\<^sup>+) (rel_comp_pow match)"
+    "backward_simulation step final step final (rel_comp_pow match) (lexp order\<^sup>+\<^sup>+)"
 proof intro_locales
   show "semantics step final"
     by (auto intro: backward_simulation.axioms assms)
 next
-  show "backward_simulation_axioms step step final final (lexp order\<^sup>+\<^sup>+) (rel_comp_pow match)"
+  show "backward_simulation_axioms step final step final (rel_comp_pow match) (lexp order\<^sup>+\<^sup>+)"
   proof unfold_locales
     show "wfp (lexp order\<^sup>+\<^sup>+)"
       using assms[THEN backward_simulation.wfp_order]
@@ -704,12 +698,10 @@ subsubsection \<open>Composition of forward simulations\<close>
 
 lemma forward_simulation_composition:
   assumes
-    "forward_simulation step1 step2 final1 final2 order1 match1"
-    "forward_simulation step2 step3 final2 final3 order2 match2"
+    "forward_simulation step1 final1 step2 final2 match1 order1"
+    "forward_simulation step2 final2 step3 final3 match2 order2"
   defines "ORDER \<equiv> \<lambda>i i'. lex_prodp order2\<^sup>+\<^sup>+ order1 (prod.swap i) (prod.swap i')"
-  shows
-    "forward_simulation step1 step3 final1 final3
-      ORDER (rel_comp match1 match2)"
+  shows "forward_simulation step1 final1 step3 final3 (rel_comp match1 match2) ORDER"
 proof intro_locales
   show "semantics step1 final1"
     using assms
@@ -719,7 +711,7 @@ next
     using assms
     by (auto intro: forward_simulation.axioms)
 next
-  show "forward_simulation_axioms step1 step3 final1 final3 ORDER (rel_comp match1 match2)"
+  show "forward_simulation_axioms step1 final1 step3 final3 (rel_comp match1 match2) ORDER"
   proof unfold_locales
     have "wfp order1" and "wfp order2"
       using assms(1,2)[THEN forward_simulation.wfp_order] .
@@ -801,33 +793,33 @@ lemma bisimulation_composition:
     match1 :: "'i \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool" and order1\<^sub>f order1\<^sub>b :: "'i \<Rightarrow> 'i \<Rightarrow> bool" and
     match2 :: "'j \<Rightarrow> 's2 \<Rightarrow> 's3 \<Rightarrow> bool" and order2\<^sub>f order2\<^sub>b :: "'j \<Rightarrow> 'j \<Rightarrow> bool"
   assumes
-    "bisimulation step1 step2 final1 final2 order1\<^sub>f order1\<^sub>b match1"
-    "bisimulation step2 step3 final2 final3 order2\<^sub>f order2\<^sub>b match2"
+    "bisimulation step1 final1 step2 final2 match1 order1\<^sub>f order1\<^sub>b"
+    "bisimulation step2 final2 step3 final3 match2 order2\<^sub>f order2\<^sub>b"
   obtains
     ORDER\<^sub>f :: "'i \<times> 'j \<Rightarrow> 'i \<times> 'j \<Rightarrow> bool" and
     ORDER\<^sub>b :: "'i \<times> 'j \<Rightarrow> 'i \<times> 'j \<Rightarrow> bool" and
     MATCH :: "'i \<times> 'j \<Rightarrow> 's1 \<Rightarrow> 's3 \<Rightarrow> bool"
-  where "bisimulation step1 step3 final1 final3 ORDER\<^sub>f ORDER\<^sub>b MATCH"
+  where "bisimulation step1 final1 step3 final3 MATCH ORDER\<^sub>f ORDER\<^sub>b"
 proof atomize_elim
   have
-    forward12: "forward_simulation step1 step2 final1 final2 order1\<^sub>f match1" and
-    forward23: "forward_simulation step2 step3 final2 final3 order2\<^sub>f match2" and
-    backward12: "backward_simulation step1 step2 final1 final2 order1\<^sub>b match1" and
-    backward23: "backward_simulation step2 step3 final2 final3 order2\<^sub>b match2"
+    forward12: "forward_simulation step1 final1 step2 final2 match1 order1\<^sub>f" and
+    forward23: "forward_simulation step2 final2 step3 final3 match2 order2\<^sub>f" and
+    backward12: "backward_simulation step1 final1 step2 final2 match1 order1\<^sub>b" and
+    backward23: "backward_simulation step2 final2 step3 final3 match2 order2\<^sub>b"
     using assms by (simp_all add: bisimulation.axioms)
 
   obtain
     ORDER\<^sub>f ORDER\<^sub>b :: "'i \<times> 'j \<Rightarrow> 'i \<times> 'j \<Rightarrow> bool" and
     MATCH :: "'i \<times> 'j \<Rightarrow> 's1 \<Rightarrow> 's3 \<Rightarrow> bool" where
-    "forward_simulation step1 step3 final1 final3 ORDER\<^sub>f MATCH" and
-    "backward_simulation step1 step3 final1 final3 ORDER\<^sub>b MATCH"
+    "forward_simulation step1 final1 step3 final3 MATCH ORDER\<^sub>f" and
+    "backward_simulation step1 final1 step3 final3 MATCH ORDER\<^sub>b"
     unfolding atomize_conj
     using forward_simulation_composition[OF forward12 forward23]
     using backward_simulation_composition[OF backward12 backward23]
     by metis
 
-  thus "\<exists>(ORDER\<^sub>f :: 'i \<times> 'j \<Rightarrow> 'i \<times> 'j \<Rightarrow> bool) ORDER\<^sub>b.
-    Ex (bisimulation step1 step3 final1 final3 ORDER\<^sub>f ORDER\<^sub>b)"
+  thus "\<exists>(MATCH :: 'i \<times> 'j \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> bool) ORDER\<^sub>f ORDER\<^sub>b.
+    (bisimulation step1 final1 step3 final3 MATCH ORDER\<^sub>f ORDER\<^sub>b)"
     using bisimulation.intro by blast
 qed
 

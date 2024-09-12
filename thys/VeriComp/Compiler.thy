@@ -21,14 +21,12 @@ end
 locale compiler =
   L1: language step1 final1 load1 +
   L2: language step2 final2 load2 +
-  backward_simulation step1 step2 final1 final2 order match
+  backward_simulation step1 final1 step2 final2 match order
   for
-    step1 and step2 and
-    final1 and final2 and
-    load1 :: "'prog1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
-    load2 :: "'prog2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" and
-    match +
+    step1 :: "'state1 \<Rightarrow> 'state1 \<Rightarrow> bool" and final1 and load1 :: "'prog1 \<Rightarrow> 'state1 \<Rightarrow> bool" and
+    step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 and load2 :: "'prog2 \<Rightarrow> 'state2 \<Rightarrow> bool" and
+    match and
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" +
   fixes
     compile :: "'prog1 \<Rightarrow> 'prog2 option"
   assumes
@@ -67,10 +65,10 @@ subsection \<open>Composition of compilers\<close>
 
 lemma compiler_composition:
   assumes
-    "compiler step1 step2 final1 final2 load1 load2 order1 match1 compile1" and
-    "compiler step2 step3 final2 final3 load2 load3 order2 match2 compile2"
-  shows "compiler step1 step3 final1 final3 load1 load3
-    (lex_prodp order1\<^sup>+\<^sup>+ order2) (rel_comp match1 match2) (compile2 \<Lleftarrow> compile1)"
+    "compiler step1 final1 load1 step2 final2 load2 match1 order1 compile1" and
+    "compiler step2 final2 load2 step3 final3 load3 match2 order2 compile2"
+  shows "compiler step1 final1 load1 step3 final3 load3
+    (rel_comp match1 match2) (lex_prodp order1\<^sup>+\<^sup>+ order2) (compile2 \<Lleftarrow> compile1)"
 proof (rule compiler.intro) 
   show "language step1 final1"
     using assms(1)[THEN compiler.axioms(1)] .
@@ -78,8 +76,8 @@ next
   show "language step3 final3"
     using assms(2)[THEN compiler.axioms(2)] .
 next
-  show "backward_simulation step1 step3 final1 final3
-     (lex_prodp order1\<^sup>+\<^sup>+ order2) (rel_comp match1 match2)"
+  show "backward_simulation step1 final1 step3 final3
+     (rel_comp match1 match2) (lex_prodp order1\<^sup>+\<^sup>+ order2)"
     using backward_simulation_composition[OF assms[THEN compiler.axioms(3)]] .
 next
   show "compiler_axioms load1 load3 (rel_comp match1 match2) (compile2 \<Lleftarrow> compile1)"
@@ -103,9 +101,9 @@ qed
 
 lemma compiler_composition_pow:
   assumes
-    "compiler step step final final load load order match compile"
-  shows "compiler step step final final load load
-    (lexp order\<^sup>+\<^sup>+) (rel_comp_pow match) (option_comp_pow compile n)"
+    "compiler step final load step final load match order compile"
+  shows "compiler step final load step final load
+    (rel_comp_pow match) (lexp order\<^sup>+\<^sup>+) (option_comp_pow compile n)"
 proof (induction n rule: option_comp_pow.induct)
   case 1
   show ?case

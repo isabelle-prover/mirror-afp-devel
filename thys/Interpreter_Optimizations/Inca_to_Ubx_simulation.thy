@@ -1239,11 +1239,10 @@ proof (cases s1 s2 rule: match.cases)
   qed
 qed
 
-sublocale inca_to_ubx_simulation:
-  backward_simulation Sinca.step Subx.step
-    "final Finca_get Inca.IReturn"
-    "final Fubx_get Ubx.IReturn"
-    "\<lambda>_ _. False" "\<lambda>_. match"
+sublocale inca_to_ubx_simulation: backward_simulation where
+  step1 = Sinca.step and final1 = "final Finca_get Inca.IReturn" and
+  step2 = Subx.step and final2 = "final Fubx_get Ubx.IReturn" and
+  match = "\<lambda>_. match" and order = "\<lambda>_ _. False"
   using match_final_backward backward_lockstep_simulation
    lockstep_to_plus_backward_simulation[of match Subx.step Sinca.step]
   by unfold_locales auto
@@ -2355,11 +2354,10 @@ proof (cases s1 s2 rule: match.cases)
   qed
 qed
 
-sublocale inca_ubx_forward_simulation:
-  forward_simulation Sinca.step Subx.step
-    "final Finca_get Inca.IReturn"
-    "final Fubx_get Ubx.IReturn"
-    "\<lambda>_ _. False" "\<lambda>_. match"
+sublocale inca_ubx_forward_simulation: forward_simulation where
+  step1 = Sinca.step and final1 = "final Finca_get Inca.IReturn" and
+  step2 = Subx.step and final2 = "final Fubx_get Ubx.IReturn" and
+  match = "\<lambda>_. match" and order = "\<lambda>_ _. False"
   using match_final_forward forward_lockstep_simulation
   using lockstep_to_plus_forward_simulation[of match Sinca.step _ Subx.step]
   by unfold_locales auto
@@ -2367,9 +2365,10 @@ sublocale inca_ubx_forward_simulation:
 
 section \<open>Bisimulation\<close>
 
-sublocale inca_ubx_bisimulation:
-  bisimulation Sinca.step Subx.step "final Finca_get Inca.IReturn" "final Fubx_get Ubx.IReturn"
-  "\<lambda>_ _. False" "\<lambda>_ _. False" "\<lambda>_. match"
+sublocale inca_ubx_bisimulation: bisimulation where
+  step1 = Sinca.step and final1 = "final Finca_get Inca.IReturn" and
+  step2 = Subx.step and final2 = "final Fubx_get Ubx.IReturn" and
+  match = "\<lambda>_. match" and order\<^sub>f = "\<lambda>_ _. False" and order\<^sub>b = "\<lambda>_ _. False"
   by unfold_locales
 
 end
