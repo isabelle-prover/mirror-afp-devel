@@ -1,0 +1,11 @@
+chapter AFP
+
+session Pi_Irrational = "HOL-Analysis" +
+  options [timeout = 300]
+  sessions
+    "Polynomial_Interpolation"
+  theories
+    Pi_Irrational
+  document_files
+    "root.tex"
+    "root.bib"
