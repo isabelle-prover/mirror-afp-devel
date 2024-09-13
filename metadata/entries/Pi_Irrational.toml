@@ -1,0 +1,34 @@
+title = "A simple proof that π is irrational"
+date = 2024-09-13
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>This entry provides a formalisation of Niven's famously
+short one-page proof that $\\pi$ is irrational. The proof uses
+only elementary algebra and analysis.</p>
+
+<p>The intrinsic de Bruijn factor, i.e. the file size ratio between
+the gzipped Isabelle sources and a gzipped LaTeX version of the original
+paper's content, is roughly 4 despite the original paper's terse
+presentation.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

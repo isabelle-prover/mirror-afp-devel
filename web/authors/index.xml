@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 13 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>eberl</title>
+          <link>/authors/eberl/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/eberl/</guid>
+          <description></description>
+        </item>
         <item>
           <title>noce</title>
           <link>/authors/noce/</link>
@@ -459,13 +466,6 @@
           <link>/authors/karayel/</link>
           <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/authors/karayel/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>eberl</title>
-          <link>/authors/eberl/</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/eberl/</guid>
           <description></description>
         </item>
         <item>

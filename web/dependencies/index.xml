@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 13 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Polynomial_Interpolation</title>
+          <link>/dependencies/polynomial_interpolation/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomial_interpolation/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Ramsey_Bounds</title>
           <link>/dependencies/ramsey_bounds/</link>
@@ -515,13 +522,6 @@
           <link>/dependencies/linear_recurrences/</link>
           <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/linear_recurrences/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polynomial_Interpolation</title>
-          <link>/dependencies/polynomial_interpolation/</link>
-          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomial_interpolation/</guid>
           <description></description>
         </item>
         <item>
