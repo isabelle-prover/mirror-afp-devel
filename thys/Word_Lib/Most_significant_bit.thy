@@ -104,7 +104,7 @@ lemma word_msb_0 [simp]: "\<not> msb (0::'a::len word)"
   by (simp add: msb_word_iff_bit)
 
 lemma word_msb_1 [simp]: "msb (1::'a::len word) \<longleftrightarrow> LENGTH('a) = 1"
-  by (simp add: msb_word_iff_bit le_Suc_eq)
+  by (simp add: bit_last_iff msb_word_iff_bit)
 
 lemma word_msb_nth: "msb w = bit (uint w) (LENGTH('a) - 1)"
   for w :: "'a::len word"
