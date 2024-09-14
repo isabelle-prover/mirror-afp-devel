@@ -322,33 +322,6 @@ next
   finally show ?thesis .
 qed
 
-lemma mod_mod_power:
-  fixes k :: nat
-  shows "k mod 2 ^ m mod 2 ^ n = k mod 2 ^ (min m n)"
-proof (cases "m \<le> n")
-  case True
-
-  then have "k mod 2 ^ m mod 2 ^ n = k mod 2 ^ m"
-    apply -
-    apply (subst mod_less [where n = "2 ^ n"])
-    apply (rule order_less_le_trans [OF mod_less_divisor])
-    apply simp+
-    done
-  also have "\<dots> = k mod  2 ^ (min m n)" using True by simp
-  finally show ?thesis .
-next
-  case False
-  then have "n < m" by simp
-  then obtain d where md: "m = n + d"
-    by (auto dest: less_imp_add_positive)
-  then have "k mod 2 ^ m = 2 ^ n * (k div 2 ^ n mod 2 ^ d) + k mod 2 ^ n"
-    by (simp add: mod_mult2_eq power_add)
-  then have "k mod 2 ^ m mod 2 ^ n = k mod 2 ^ n"
-    by (simp add: mod_add_left_eq)
-  then show ?thesis using False
-    by simp
-qed
-
 lemma mod_div_equality_div_eq:
   "a div b * b = (a - (a mod b) :: int)"
   by (simp add: field_simps)
@@ -389,16 +362,11 @@ lemma int_div_sub_1:
 
 lemma power_minus_is_div:
   "b \<le> a \<Longrightarrow> (2 :: nat) ^ (a - b) = 2 ^ a div 2 ^ b"
-  apply (induct a arbitrary: b)
-   apply simp
-  apply (erule le_SucE)
-   apply (clarsimp simp:Suc_diff_le le_iff_add power_add)
-  apply simp
-  done
+  by (simp add: power_diff)
 
 lemma two_pow_div_gt_le:
   "v < 2 ^ n div (2 ^ m :: nat) \<Longrightarrow> m \<le> n"
-  by (clarsimp dest!: less_two_pow_divD)
+  using less_two_pow_divD by blast
 
 lemma td_gal_lt:
   \<open>0 < c \<Longrightarrow> a < b * c \<longleftrightarrow> a div c < b\<close>
