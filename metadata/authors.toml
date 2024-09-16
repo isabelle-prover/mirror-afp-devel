@@ -1548,16 +1548,6 @@ name = "Martin Desharnais"
 
 [desharnais.emails.desharnais_email]
 user = [
-  "martin",
-  "desharnais",
-]
-host = [
-  "unibw",
-  "de",
-]
-
-[desharnais.emails.desharnais_email1]
-user = [
   "desharnais",
 ]
 host = [
