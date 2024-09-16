@@ -11,4 +11,3 @@ session Chebyshev_Prime_Bounds (AFP) = "Zeta_Function" +
     Chebyshev_Prime_Bounds
   document_files
     "root.tex"
-    "root.bib"
