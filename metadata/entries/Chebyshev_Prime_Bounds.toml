@@ -1,0 +1,46 @@
+title = "Concrete bounds for Chebyshev’s prime counting functions"
+date = 2024-09-13
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>
+This entry derives explicit lower and upper bounds for Chebyshev's prime counting functions
+\\[\\psi(x) = \\sum_{\\substack{p^k \\leq x \\\\ k > 0}} \\log p\\hskip4em \\vartheta(x) = \\sum_{p\\leq x} \\log p\\ .\\]
+</p>
+<p>
+Concretely, the following inequalities are proven:</p>
+<ul>
+<li>$\\psi(x)\\geq 0.9x$ for $x\\geq 41$</li>
+<li>$\\vartheta(x) \\geq 0.82x$ if $x\\geq 97$</li>
+<li>$\\vartheta(x) \\leq \\psi(x) \\leq 1.2x$ if $x\\geq 0$</li>
+</ul>
+<p>
+The proofs work by careful estimation of $\\psi(x)$, with
+Stirling's formula as a starting point, to prove the bound for 
+all $x\\geq x_0$ with a concrete $x_0$, followed by brute-force
+approximation for all $x$ below $x_0$.</p>
+
+<p>An easy corollary of this is <em>Bertrand's postulate</em>, i.e. the fact that for any
+$x > 1$ the interval $(x,2x)$ contains at least one prime (a fact that has already
+been shown in the AFP using weaker bounds for $\\psi$ and $\\vartheta$).</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

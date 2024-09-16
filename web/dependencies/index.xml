@@ -21,17 +21,38 @@
           <description></description>
         </item>
         <item>
-          <title>Ramsey_Bounds</title>
-          <link>/dependencies/ramsey_bounds/</link>
-          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/ramsey_bounds/</guid>
+          <title>Prime_Distribution_Elementary</title>
+          <link>/dependencies/prime_distribution_elementary/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_distribution_elementary/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Prime_Number_Theorem</title>
+          <link>/dependencies/prime_number_theorem/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_number_theorem/</guid>
           <description></description>
         </item>
         <item>
           <title>Stirling_Formula</title>
           <link>/dependencies/stirling_formula/</link>
-          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/stirling_formula/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Zeta_Function</title>
+          <link>/dependencies/zeta_function/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/zeta_function/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ramsey_Bounds</title>
+          <link>/dependencies/ramsey_bounds/</link>
+          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ramsey_bounds/</guid>
           <description></description>
         </item>
         <item>
@@ -280,13 +301,6 @@
           <description></description>
         </item>
         <item>
-          <title>Prime_Number_Theorem</title>
-          <link>/dependencies/prime_number_theorem/</link>
-          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/prime_number_theorem/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Functional-Automata</title>
           <link>/dependencies/functional-automata/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
@@ -396,13 +410,6 @@
           <link>/dependencies/polynomial_factorization/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/polynomial_factorization/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Zeta_Function</title>
-          <link>/dependencies/zeta_function/</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/zeta_function/</guid>
           <description></description>
         </item>
         <item>
@@ -1523,13 +1530,6 @@
           <link>/dependencies/matrix/</link>
           <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/matrix/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Prime_Distribution_Elementary</title>
-          <link>/dependencies/prime_distribution_elementary/</link>
-          <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/prime_distribution_elementary/</guid>
           <description></description>
         </item>
         <item>

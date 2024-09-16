@@ -11,6 +11,9 @@
     <loc>/authors/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Chebyshev_Prime_Bounds.html</loc>
+    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -26,7 +29,19 @@
     <loc>/dependencies/polynomial_interpolation/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/prime_distribution_elementary/</loc>
+    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/prime_number_theorem/</loc>
+    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/stirling_formula/</loc>
+    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/topics/</loc>
+    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Diagonal_Ramsey.html</loc>
@@ -45,9 +60,6 @@
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ramsey_bounds/</loc>
-    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/stirling_formula/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/mersenne_primes/</loc>
@@ -332,9 +344,6 @@
     <loc>/entries/PNT_with_Remainder.html</loc>
     <lastmod>2024-05-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/prime_number_theorem/</loc>
-    <lastmod>2024-05-05T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/song/</loc>
     <lastmod>2024-05-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -522,9 +531,6 @@
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polynomial_factorization/</loc>
-    <lastmod>2024-03-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-03-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Approximate_Model_Counting.html</loc>
@@ -2343,9 +2349,6 @@
     <lastmod>2020-05-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Irrational_Series_Erdos_Straus.html</loc>
-    <lastmod>2020-05-12T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/prime_distribution_elementary/</loc>
     <lastmod>2020-05-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/dunaev/</loc>
@@ -5301,6 +5304,8 @@
     <loc>/sessions/chandy_lamport/</loc>
   </url><url>
     <loc>/sessions/chebyshev_polynomials/</loc>
+  </url><url>
+    <loc>/sessions/chebyshev_prime_bounds/</loc>
   </url><url>
     <loc>/sessions/cheri-c_memory_model/</loc>
   </url><url>
