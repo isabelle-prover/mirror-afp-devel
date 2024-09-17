@@ -196,10 +196,9 @@ struct
     (Output.writeln (string_of_undecl_item item);
     (case item of
       (no_syntax (mode, args)) =>
-        (Sign.syntax_cmd false mode args)
+        Named_Target.theory_map (Local_Theory.syntax_cmd false mode args)
     | (no_notation (mode, args)) =>
-        (Named_Target.theory_map
-          (Local_Theory.notation_cmd false mode args))));
+        Named_Target.theory_map (Local_Theory.notation_cmd false mode args)));
 
   fun execute_all thy =
     (Output.writeln "Restoring purged notations and syntax...\n";
