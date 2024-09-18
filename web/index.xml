@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 13 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>NREST: Nondeterministc RESsult monad with Time</title>
+          <link>/entries/NREST.html</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/NREST.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A simple proof that π is irrational</title>
           <link>/entries/Pi_Irrational.html</link>
@@ -9860,6 +9867,13 @@
           <link>/sessions/normbyeval/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/normbyeval/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>NREST</title>
+          <link>/sessions/nrest/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/nrest/</guid>
           <description></description>
         </item>
         <item>

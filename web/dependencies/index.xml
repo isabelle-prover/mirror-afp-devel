@@ -11,8 +11,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 13 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Automatic_Refinement</title>
+          <link>/dependencies/automatic_refinement/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/automatic_refinement/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Case_Labeling</title>
+          <link>/dependencies/case_labeling/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/case_labeling/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Monadic</title>
+          <link>/dependencies/refine_monadic/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_monadic/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Polynomial_Interpolation</title>
           <link>/dependencies/polynomial_interpolation/</link>
@@ -1162,13 +1183,6 @@
           <description></description>
         </item>
         <item>
-          <title>Automatic_Refinement</title>
-          <link>/dependencies/automatic_refinement/</link>
-          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/automatic_refinement/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Hermite_Lindemann</title>
           <link>/dependencies/hermite_lindemann/</link>
           <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
@@ -1708,13 +1722,6 @@
           <description></description>
         </item>
         <item>
-          <title>Refine_Monadic</title>
-          <link>/dependencies/refine_monadic/</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/dependencies/refine_monadic/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Simplex</title>
           <link>/dependencies/simplex/</link>
           <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
@@ -2097,13 +2104,6 @@
           <link>/dependencies/sqrt_babylonian/</link>
           <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
           <guid>/dependencies/sqrt_babylonian/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Case_Labeling</title>
-          <link>/dependencies/case_labeling/</link>
-          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/case_labeling/</guid>
           <description></description>
         </item>
         <item>

@@ -3,24 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/Pi_Irrational.html</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/automatic_refinement/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/case_labeling/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/haslbeckm/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/NREST.html</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/refine_monadic/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Pi_Irrational.html</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Chebyshev_Prime_Bounds.html</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/mathematics/</loc>
@@ -38,16 +59,10 @@
     <loc>/dependencies/stirling_formula/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Diagonal_Ramsey.html</loc>
-    <lastmod>2024-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IMP_Noninterference_Extension.html</loc>
@@ -1712,9 +1727,6 @@
     <loc>/entries/Simplicial_complexes_and_boolean_functions.html</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/automatic_refinement/</loc>
-    <lastmod>2021-11-23T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Van_Emde_Boas_Trees.html</loc>
     <lastmod>2021-11-23T00:00:00+00:00</lastmod>
   </url><url>
@@ -2783,16 +2795,10 @@
     <loc>/authors/biendarra/</loc>
     <lastmod>2019-02-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/haslbeckm/</loc>
-    <lastmod>2019-02-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Kruskal.html</loc>
     <lastmod>2019-02-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/matroids/</loc>
-    <lastmod>2019-02-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/refine_monadic/</loc>
     <lastmod>2019-02-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Probabilistic_Prime_Tests.html</loc>
@@ -3955,9 +3961,6 @@
   </url><url>
     <loc>/entries/TortoiseHare.html</loc>
     <lastmod>2015-11-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/case_labeling/</loc>
-    <lastmod>2015-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/noschinski/</loc>
     <lastmod>2015-11-11T00:00:00+00:00</lastmod>
@@ -6562,6 +6565,8 @@
     <loc>/sessions/noninterference_sequential_composition/</loc>
   </url><url>
     <loc>/sessions/normbyeval/</loc>
+  </url><url>
+    <loc>/sessions/nrest/</loc>
   </url><url>
     <loc>/sessions/nullstellensatz/</loc>
   </url><url>

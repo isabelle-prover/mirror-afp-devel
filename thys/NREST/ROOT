@@ -1,0 +1,19 @@
+chapter AFP
+
+session NREST = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+    Automatic_Refinement
+    Refine_Monadic
+    Case_Labeling
+  theories
+    NREST
+    RefineMonadicVCG
+    Refine_Foreach
+    DataRefinement
+    SepLogic_Misc
+    NREST_Auxiliaries
+  document_files
+    "root.tex"
+    "root.bib"

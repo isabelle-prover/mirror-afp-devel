@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 13 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>haslbeckm</title>
+          <link>/authors/haslbeckm/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/haslbeckm/</guid>
+          <description></description>
+        </item>
         <item>
           <title>eberl</title>
           <link>/authors/eberl/</link>
@@ -2034,13 +2041,6 @@
           <link>/authors/biendarra/</link>
           <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
           <guid>/authors/biendarra/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>haslbeckm</title>
-          <link>/authors/haslbeckm/</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/authors/haslbeckm/</guid>
           <description></description>
         </item>
         <item>
