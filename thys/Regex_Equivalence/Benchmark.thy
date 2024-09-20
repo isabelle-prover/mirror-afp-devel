@@ -120,7 +120,7 @@ fun pad i = if i < 10 then 4
        else 0;
 fun round n ts =
   warning (string_of_int n ^ implode (replicate (1 + pad n) " ") ^
-    space_implode " " (map Time.toString ts))
+    implode_space (map Time.toString ts))
 
 fun run checkers sizes =
   let

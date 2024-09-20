@@ -24,7 +24,7 @@ fun print_success writeln_info stats =
     val discarded_str =
       if num_discarded_tests = 0
       then "."
-      else SpecCheck_Util.spaces [";", string_of_int num_discarded_tests,  "discarded."]
+      else implode_space [";", string_of_int num_discarded_tests,  "discarded."]
   in
     implode ["OK, passed ", num_success_tests, " tests", discarded_str]
     |> writeln_info
@@ -35,7 +35,7 @@ fun print_gave_up writeln_warning stats =
     val num_success_tests = string_of_int (#num_success_tests stats)
     val num_discarded_tests = string_of_int (#num_discarded_tests stats)
   in
-    SpecCheck_Util.spaces ["Gave up! Passed only", num_success_tests, "test(s);", num_discarded_tests,
+    implode_space ["Gave up! Passed only", num_success_tests, "test(s);", num_discarded_tests,
       "discarded test(s)."]
     |> writeln_warning
   end
@@ -58,7 +58,7 @@ fun print_failure_data writeln_warning ctxt show_opt failure_data =
       in fold (fn x => fn _ => writeln_warning x) counterexamples () end
 
 fun print_failure writeln_warning ctxt show_opt (stats, failure_data) =
-  ((SpecCheck_Util.spaces ["Failed! Falsified (after", string_of_int (num_tests stats), "test(s) and ",
+  ((implode_space ["Failed! Falsified (after", string_of_int (num_tests stats), "test(s) and ",
     string_of_int (num_shrinks stats), "shrink(s)):"] |> writeln_warning);
   print_failure_data writeln_warning ctxt show_opt failure_data)
 
@@ -80,7 +80,7 @@ fun style_custom writeln_info writeln_warning show_opt ctxt name total_time
   result =
   let val stats = stats_of_result result
   in
-    writeln_info (SpecCheck_Util.spaces ["Testing:", name]);
+    writeln_info (implode_space ["Testing:", name]);
     (case result of
       Success _ => print_success writeln_info stats
     | Gave_Up _ => print_gave_up writeln_warning stats
