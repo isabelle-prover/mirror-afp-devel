@@ -138,7 +138,7 @@ fun binom_dist p n r =
 
 fun range_int (min, max) r =
   if min > max
-  then raise Fail (SpecCheck_Util.spaces ["Range_Int:", string_of_int min, ">", string_of_int max])
+  then raise Fail (implode_space ["Range_Int:", string_of_int min, ">", string_of_int max])
   else
     SpecCheck_Random.real_unit r
     |>> (fn s => Int.min (min + Real.floor (s * Real.fromInt (max - min + 1)), max))

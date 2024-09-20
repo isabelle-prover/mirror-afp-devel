@@ -502,7 +502,7 @@ local
 val trim = filter (fn s => s <> "" andalso s <> "set");
 
 fun str_of_T (Type (c, Ts)) =
-    space_implode " " (trim [commas (trim (map str_of_T Ts)), Long_Name.base_name c])
+    implode_space (trim [commas (trim (map str_of_T Ts)), Long_Name.base_name c])
   | str_of_T _ = "";
 
 fun get_edge thm = thm

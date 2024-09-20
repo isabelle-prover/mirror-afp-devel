@@ -29,8 +29,7 @@ open SpecCheck_Gen_Text
 
 fun range_real (min, max) r =
   if min > max
-  then
-    raise Fail (SpecCheck_Util.spaces ["Range_Real:", string_of_real min, ">", string_of_real max])
+  then raise Fail (implode_space ["Range_Real:", string_of_real min, ">", string_of_real max])
   else SpecCheck_Random.real_unit r |>> (fn s => min + (s * max - s * min))
 
 val digits = string (range_int (1, Real.precision)) (range_char (#"0", #"9"))

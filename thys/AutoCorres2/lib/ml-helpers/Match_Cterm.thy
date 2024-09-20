@@ -53,7 +53,7 @@ fun switch (c::cs) = (fn x => (* to allow partial evaluation on list elements *)
   | switch [] = raise Match
 
 (* ML code composition *)
-fun ml_val_binding (name, value) = space_implode " " ["val", name, "=", value];
+fun ml_val_binding (name, value) = implode_space ["val", name, "=", value];
 fun ml_indent n str = String.concat (replicate n " ") ^ str
 
 fun ml_let_binding vals body =  
@@ -68,22 +68,22 @@ fun ml_tuple elems  = enclose "(" ")" (space_implode ", " elems)
 fun ml_record elems = enclose "{" "}" (space_implode ", " elems)
 val ml_atomic = enclose "(" ")"
 
-fun triv_record_field name = space_implode " " [name, "=", name]
+fun triv_record_field name = implode_space [name, "=", name]
 val triv_record_inst = map triv_record_field #> ml_record
 
 fun ml_fun name args body = 
-  space_implode " " (["fun", name] @ args @ ["="]) ::
+  implode_space (["fun", name] @ args @ ["="]) ::
   (map (ml_indent 2) body)
 
 fun ml_fn args body = 
-  space_implode " " (map (fn arg => space_implode " " ["fn", arg, "=>"]) args)::
+  implode_space (map (fn arg => implode_space ["fn", arg, "=>"]) args)::
   (map (ml_indent 2) body)
 
-fun ml_apply f args = space_implode " " (f :: args)
+fun ml_apply f args = implode_space (f :: args)
 
 fun ml_check_match term_pat args ct = (* apply to args to ommit warning on unused identifiers *)
   ml_apply 
-    (ml_atomic (space_implode " " ["fn", term_pat, "=>", ml_tuple args, "| _ => raise Match" ]))
+    (ml_atomic (implode_space ["fn", term_pat, "=>", ml_tuple args, "| _ => raise Match" ]))
     [ml_atomic (ml_apply "Thm.term_of" [ct])]
 
 

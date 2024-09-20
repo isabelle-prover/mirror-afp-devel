@@ -33,7 +33,7 @@ structure ML_Code_Util : ML_CODE_UTIL =
 struct
 
 val internal_name = prefix "INTERNAL___"
-val spaces = space_implode " "
+val spaces = implode_space
 
 type code = ML_Lex.token Antiquote.antiquote list
 

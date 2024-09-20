@@ -223,7 +223,7 @@ fun apply_runs_to splitter_opt trace prg = with_rules (fn ctxt => fn rules =>
         val d = Thm_Name.print (Thm.derivation_name thm)
       in
         "At " ^ Syntax.string_of_term ctxt (head_of prg) ^ " apply " ^ msg ^ ": " ^
-          space_implode " " [d, "(" ^ string_of_int (i + 1) ^ " of " ^ string_of_int n ^ ")"] 
+          implode_space [d, "(" ^ string_of_int (i + 1) ^ " of " ^ string_of_int n ^ ")"] 
      end
     fun MAP f = FIRST (map_index f rules)
   in
