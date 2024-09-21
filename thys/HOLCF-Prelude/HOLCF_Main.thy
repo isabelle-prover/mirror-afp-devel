@@ -43,8 +43,8 @@ no_syntax
 no_notation
   List.Nil ("[]")
 
-no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("([_]/ => _)" [0, 0] 0)
-no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("([_]/ \<Rightarrow> _)" [0, 0] 0)
+no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("(\<open>notation=\<open>infix =>\<close>\<close>[_]/ => _)" [0, 0] 0)
+no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("(\<open>notation=\<open>infix \<Rightarrow>\<close>\<close>[_]/ \<Rightarrow> _)" [0, 0] 0)
 
 no_translations
   "[x<-xs . P]" == "CONST List.filter (%x. P) xs"
