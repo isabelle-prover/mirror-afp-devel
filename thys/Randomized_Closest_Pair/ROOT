@@ -1,0 +1,22 @@
+chapter AFP
+
+session "Randomized_Closest_Pair" = "Distributed_Distinct_Elements" +
+  options [timeout = 1200]
+
+sessions
+  Distributed_Distinct_Elements
+  Approximate_Model_Counting
+  Root_Balanced_Tree
+  Karatsuba
+  Closest_Pair_Points
+
+theories
+  "Randomized_Closest_Pair"
+  "Randomized_Closest_Pair_Correct"
+  "Randomized_Closest_Pair_Growth"
+  "Randomized_Closest_Pair_Time"
+
+(* Dependencies on document source files: *)
+document_files
+  "root.bib"
+  "root.tex"
