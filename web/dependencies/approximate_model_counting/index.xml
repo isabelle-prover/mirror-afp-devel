@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Karatsuba on Archive of Formal Proofs
+    <title>Approximate_Model_Counting on Archive of Formal Proofs
     </title>
-    <link>/dependencies/karatsuba/</link>
+    <link>/dependencies/approximate_model_counting/</link>
     <description>
-        Recent content in Karatsuba 
+        Recent content in Approximate_Model_Counting 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/dependencies/karatsuba/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/dependencies/approximate_model_counting/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
           <link>/entries/Randomized_Closest_Pair.html</link>
           <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Randomized_Closest_Pair.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Schönhage-Strassen Multiplication</title>
-          <link>/entries/Schoenhage_Strassen.html</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Schoenhage_Strassen.html</guid>
           <description></description>
         </item>
   </channel>

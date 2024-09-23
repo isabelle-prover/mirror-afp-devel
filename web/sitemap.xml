@@ -62,6 +62,30 @@
     <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/approximate_model_counting/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/closest_pair_points/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/distributed_distinct_elements/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/fan/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/karatsuba/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/karayel/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Randomized_Closest_Pair.html</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/root_balanced_tree/</loc>
+    <lastmod>2024-09-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Diagonal_Ramsey.html</loc>
     <lastmod>2024-09-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -323,13 +347,7 @@
     <loc>/dependencies/akra_bazzi/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/karatsuba/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/number_theoretic_transform/</loc>
-    <lastmod>2024-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/root_balanced_tree/</loc>
     <lastmod>2024-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Schoenhage_Strassen.html</loc>
@@ -528,12 +546,6 @@
     <lastmod>2024-03-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Derandomization_Conditional_Expectations.html</loc>
-    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/distributed_distinct_elements/</loc>
-    <lastmod>2024-03-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/karayel/</loc>
     <lastmod>2024-03-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Continued_Fractions.html</loc>
@@ -6791,6 +6803,8 @@
     <loc>/sessions/randomised_bsts/</loc>
   </url><url>
     <loc>/sessions/randomised_social_choice/</loc>
+  </url><url>
+    <loc>/sessions/randomized_closest_pair/</loc>
   </url><url>
     <loc>/sessions/rank_nullity_theorem/</loc>
   </url><url>

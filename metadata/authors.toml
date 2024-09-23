@@ -1876,6 +1876,23 @@ host = [
 
 [essmann.homepages]
 
+[fan]
+name = "Zixuan Fan"
+
+[fan.emails]
+
+[fan.emails.fan_email]
+user = [
+  "zixuan",
+  "fan",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[fan.homepages]
+
 [felgenhauer]
 name = "Bertram Felgenhauer"
 

@@ -35,6 +35,13 @@
           <description></description>
         </item>
         <item>
+          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
+          <link>/entries/Randomized_Closest_Pair.html</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Randomized_Closest_Pair.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>An Exponential Improvement for Diagonal Ramsey</title>
           <link>/entries/Diagonal_Ramsey.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
@@ -10630,6 +10637,13 @@
           <link>/sessions/randomised_social_choice/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/randomised_social_choice/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Randomized_Closest_Pair</title>
+          <link>/sessions/randomized_closest_pair/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/randomized_closest_pair/</guid>
           <description></description>
         </item>
         <item>
