@@ -10,12 +10,12 @@ note = ""
 [authors]
 
 [authors.desharnais]
-email = "desharnais_email1"
+email = "desharnais_email"
 
 [contributors]
 
 [notify]
-desharnais = "desharnais_email1"
+desharnais = "desharnais_email"
 
 [history]
 2024-07-18 = "Add lemmas lifting non-redundancy and termination to projectable strategies."
