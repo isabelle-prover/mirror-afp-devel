@@ -90,7 +90,7 @@ text \<open>We now need permutations on matrices to show that a matrix if a matr
 definition permutation_mat :: "nat \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> 'a :: semiring_1 mat" where
   "permutation_mat n p = Matrix.mat n n (\<lambda> (i,j). (if i = p j then 1 else 0))" 
 
-no_notation m_inv ("inv\<index> _" [81] 80)
+no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
 
 lemma permutation_mat_dim[simp]: "permutation_mat n p \<in> carrier_mat n n" 
   "dim_row (permutation_mat n p) = n"

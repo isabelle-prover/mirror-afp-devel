@@ -55,7 +55,7 @@ Seen from an automata perspective (where the monad - operations correspond to
 the step function), valid execution sequences can be used to model ``feasible paths''
 across an automaton.\<close>
 
-definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>" 9)
+definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 9)
 where "(\<sigma> \<Turnstile> m) = (m \<sigma> \<noteq> None \<and> fst(the (m \<sigma>)))"
 text\<open>This notation consideres failures as valid -- a definition
 inspired by I/O conformance.\<close>
@@ -549,7 +549,7 @@ qed
 
 subsection\<open>Miscellaneous\<close>
 
-no_notation unit_SE ("(result _)" 8)
+no_notation unit_SE (\<open>(result _)\<close> 8)
 
 end
   

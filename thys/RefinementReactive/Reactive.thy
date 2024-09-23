@@ -133,7 +133,7 @@ begin
   definition "local_init init S = Inf (S ` init)"
 
   definition "zip_set A B = {u . ((fst o u) \<in> A) \<and> ((snd o u) \<in> B)}"
-  definition nzip:: "('x \<Rightarrow> 'a) \<Rightarrow> ('x \<Rightarrow> 'b) \<Rightarrow> 'x \<Rightarrow> ('a\<times>'b)" (infixl "||" 65) where "(xs || ys) i = (xs i, ys i)"
+  definition nzip:: "('x \<Rightarrow> 'a) \<Rightarrow> ('x \<Rightarrow> 'b) \<Rightarrow> 'x \<Rightarrow> ('a\<times>'b)" (infixl \<open>||\<close> 65) where "(xs || ys) i = (xs i, ys i)"
 
   lemma [simp]: "fst \<circ> x || y = x"
     by (simp add: fun_eq_iff nzip_def)

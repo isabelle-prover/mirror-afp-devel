@@ -31,7 +31,7 @@ definition is_val :: "exp \<Rightarrow> bool" where
   "is_val v \<equiv> isval v \<and> FV v = {}"
 declare is_val_def[simp]
 
-inductive reduce :: "exp \<Rightarrow> exp \<Rightarrow> bool" (infix "\<longrightarrow>" 55) where
+inductive reduce :: "exp \<Rightarrow> exp \<Rightarrow> bool" (infix \<open>\<longrightarrow>\<close> 55) where
   beta[intro!]: "\<lbrakk> is_val v \<rbrakk> \<Longrightarrow> EApp (ELam x e) v \<longrightarrow> (subst x v e)" |
   app_left[intro!]: "\<lbrakk> e1 \<longrightarrow> e1' \<rbrakk> \<Longrightarrow> EApp e1 e2 \<longrightarrow> EApp e1' e2" |
   app_right[intro!]: "\<lbrakk> e2 \<longrightarrow> e2' \<rbrakk> \<Longrightarrow> EApp e1 e2 \<longrightarrow> EApp e1 e2'" |
@@ -49,7 +49,7 @@ inductive_cases
   red_lam_inv[elim!]: "ELam x e \<longrightarrow> e'" and
   red_app_inv[elim!]: "EApp e1 e2 \<longrightarrow> e'"
   
-inductive multi_step :: "exp \<Rightarrow> exp \<Rightarrow> bool" (infix "\<longrightarrow>*" 55) where
+inductive multi_step :: "exp \<Rightarrow> exp \<Rightarrow> bool" (infix \<open>\<longrightarrow>*\<close> 55) where
   ms_nil[intro!]: "e \<longrightarrow>* e" |
   ms_cons[intro!]: "\<lbrakk> e1 \<longrightarrow> e2; e2 \<longrightarrow>* e3 \<rbrakk> \<Longrightarrow> e1 \<longrightarrow>* e3"
 
@@ -71,7 +71,7 @@ fun observe :: "exp \<Rightarrow> obs \<Rightarrow> bool" where
   "observe (ELam x e) OFun = True" |
   "observe e ob = False" 
 
-definition run :: "exp \<Rightarrow> obs \<Rightarrow> bool" (infix "\<Down>" 52) where
+definition run :: "exp \<Rightarrow> obs \<Rightarrow> bool" (infix \<open>\<Down>\<close> 52) where
   "run e ob \<equiv> ((\<exists> v. e \<longrightarrow>* v \<and> observe v ob)
               \<or> ((diverge e \<or> goes_wrong e) \<and> ob = OBad))"
 

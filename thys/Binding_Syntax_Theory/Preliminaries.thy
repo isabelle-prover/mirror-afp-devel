@@ -322,7 +322,7 @@ by (force simp: fun_eq_iff option.case_eq_if)
  
 definition comp2 ::
 "('b1 \<Rightarrow> 'b2 \<Rightarrow> 'c) \<Rightarrow> ('a1 \<Rightarrow> 'b1) \<Rightarrow> ('a2 \<Rightarrow> 'b2) \<Rightarrow> ('a1 \<Rightarrow> 'a2 \<Rightarrow> 'c)"
-("_ o2 '(_,_')" 55)
+(\<open>_ o2 '(_,_')\<close> 55)
 where "h o2 (f,g) == \<lambda> x y. h (f x) (g y)"
 
 lemma comp2_simp[simp]:

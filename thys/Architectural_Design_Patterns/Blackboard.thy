@@ -26,10 +26,10 @@ text \<open>
   In the following, we describe the locale for the blackboard pattern.
 \<close>
 locale blackboard = publisher_subscriber bbactive bbcmp ksactive kscmp bbrp bbcs kscs ksrp
-  for bbactive :: "'bid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
-    and bbcmp :: "'bid \<Rightarrow> cnf \<Rightarrow> 'BB" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
-    and ksactive :: "'kid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
-    and kscmp :: "'kid \<Rightarrow> cnf \<Rightarrow> 'KS" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
+  for bbactive :: "'bid \<Rightarrow> cnf \<Rightarrow> bool" (\<open>\<parallel>_\<parallel>\<^bsub>_\<^esub>\<close> [0,110]60)
+    and bbcmp :: "'bid \<Rightarrow> cnf \<Rightarrow> 'BB" (\<open>\<sigma>\<^bsub>_\<^esub>(_)\<close> [0,110]60)
+    and ksactive :: "'kid \<Rightarrow> cnf \<Rightarrow> bool" (\<open>\<parallel>_\<parallel>\<^bsub>_\<^esub>\<close> [0,110]60)
+    and kscmp :: "'kid \<Rightarrow> cnf \<Rightarrow> 'KS" (\<open>\<sigma>\<^bsub>_\<^esub>(_)\<close> [0,110]60)
     and bbrp :: "'BB \<Rightarrow> (PROB set) subscription set"
     and bbcs :: "'BB \<Rightarrow> (PROB \<times> SOL)"
     and kscs :: "'KS \<Rightarrow> (PROB \<times> SOL) set"
@@ -77,10 +77,10 @@ locale blackboard = publisher_subscriber bbactive bbcmp ksactive kscmp bbrp bbcs
     and conn2: "\<And>k kid. \<parallel>kid\<parallel>\<^bsub>k\<^esub>
       \<Longrightarrow> ksop (\<sigma>\<^bsub>kid\<^esub>(k)) = (\<Union>bid\<in>{bid. \<parallel>bid\<parallel>\<^bsub>k\<^esub>}. {bbop (\<sigma>\<^bsub>bid\<^esub>(k))})"
 begin
-  notation sb.lNAct ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
-  notation sb.nxtAct ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
-  notation pb.lNAct ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
-  notation pb.nxtAct ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
+  notation sb.lNAct (\<open>\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
+  notation sb.nxtAct (\<open>\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
+  notation pb.lNAct (\<open>\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
+  notation pb.nxtAct (\<open>\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
 
   subsubsection "Calculus Interpretation"
   text \<open>

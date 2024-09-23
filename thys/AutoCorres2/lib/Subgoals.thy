@@ -9,7 +9,7 @@ theory Subgoals
   keywords "prefers" :: prf_script % "proof" and "subgoals" :: prf_script_goal % "proof" 
 begin
 
-definition protected_conjunction :: "prop \<Rightarrow> prop \<Rightarrow> prop" (infixr "&^&" 2) where
+definition protected_conjunction :: "prop \<Rightarrow> prop \<Rightarrow> prop" (infixr \<open>&^&\<close> 2) where
   "protected_conjunction A B \<equiv> (PROP A &&& PROP B)"
 
 definition

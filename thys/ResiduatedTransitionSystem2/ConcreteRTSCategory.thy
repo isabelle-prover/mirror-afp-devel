@@ -71,7 +71,7 @@ begin
     where "Con t u \<equiv> Arr t \<and> Arr u \<and> Dom t = Dom u \<and> Cod t = Cod u \<and>
                      residuation.con (Hom (Dom t) (Cod t)) (Trn t) (Trn u)"
 
-    fun resid  (infix "\\" 70)
+    fun resid  (infix \<open>\\<close> 70)
     where "resid Null u = Null"
         | "resid t Null = Null"
         | "resid t u =
@@ -141,7 +141,7 @@ begin
         by auto metis+
     qed
 
-    notation V.con  (infix "\<frown>" 50)
+    notation V.con  (infix \<open>\<frown>\<close> 50)
 
     lemma con_char:
     shows "t \<frown> u \<longleftrightarrow> Con t u"
@@ -399,7 +399,7 @@ begin
             con_char staE)
     qed
 
-    definition hcomp  (infixr "\<star>" 53)
+    definition hcomp  (infixr \<open>\<star>\<close> 53)
     where "t \<star> u \<equiv> if V.arr t \<and> V.arr u \<and> Dom t = Cod u
                     then MkArr (Dom u) (Cod t)
                                (Comp (Dom u) (Cod u) (Cod t) (Trn t) (Trn u))

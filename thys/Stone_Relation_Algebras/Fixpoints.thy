@@ -67,10 +67,10 @@ text \<open>
 The actual least/greatest (pre/post)fixpoints of a given function $f$ are extracted by the following operators.
 \<close>
 
-definition the_least_fixpoint        :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("\<mu> _"  [201] 200) where "\<mu>  f = (THE x . is_least_fixpoint f x)"
-definition the_greatest_fixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("\<nu> _"  [201] 200) where "\<nu>  f = (THE x . is_greatest_fixpoint f x)"
-definition the_least_prefixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("p\<mu> _" [201] 200) where "p\<mu> f = (THE x . is_least_prefixpoint f x)"
-definition the_greatest_postfixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("p\<nu> _" [201] 200) where "p\<nu> f = (THE x . is_greatest_postfixpoint f x)"
+definition the_least_fixpoint        :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>\<mu> _\<close>  [201] 200) where "\<mu>  f = (THE x . is_least_fixpoint f x)"
+definition the_greatest_fixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>\<nu> _\<close>  [201] 200) where "\<nu>  f = (THE x . is_greatest_fixpoint f x)"
+definition the_least_prefixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>p\<mu> _\<close> [201] 200) where "p\<mu> f = (THE x . is_least_prefixpoint f x)"
+definition the_greatest_postfixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>p\<nu> _\<close> [201] 200) where "p\<nu> f = (THE x . is_greatest_postfixpoint f x)"
 
 text \<open>
 We start with basic consequences of the above definitions.

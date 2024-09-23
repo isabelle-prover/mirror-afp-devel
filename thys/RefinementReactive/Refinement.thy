@@ -9,38 +9,38 @@ text\<open>
 \<close>
 
   notation
-    bot ("\<bottom>") and
-    top ("\<top>") and
-    inf (infixl "\<sqinter>" 70)
-    and sup (infixl "\<squnion>" 65)
+    bot (\<open>\<bottom>\<close>) and
+    top (\<open>\<top>\<close>) and
+    inf (infixl \<open>\<sqinter>\<close> 70)
+    and sup (infixl \<open>\<squnion>\<close> 65)
 
   subsection\<open>Basic predicate transformers\<close>
 
   definition
-    demonic :: "('a => 'b::lattice) => 'b => 'a \<Rightarrow> bool" ("[: _ :]" [0] 1000) where
+    demonic :: "('a => 'b::lattice) => 'b => 'a \<Rightarrow> bool" (\<open>[: _ :]\<close> [0] 1000) where
     "[:Q:] p s = (Q s \<le> p)"
 
   definition
-    assert::"'a::semilattice_inf => 'a => 'a" ("{. _ .}" [0] 1000) where
+    assert::"'a::semilattice_inf => 'a => 'a" (\<open>{. _ .}\<close> [0] 1000) where
     "{.p.} q \<equiv>  p \<sqinter> q"
 
   definition
-    "assume"::"('a::boolean_algebra) => 'a => 'a" ("[. _ .]" [0] 1000) where
+    "assume"::"('a::boolean_algebra) => 'a => 'a" (\<open>[. _ .]\<close> [0] 1000) where
     "[.p.] q \<equiv>  (-p \<squnion> q)"
 
   definition
-    angelic :: "('a \<Rightarrow> 'b::{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("{: _ :}" [0] 1000) where
+    angelic :: "('a \<Rightarrow> 'b::{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>{: _ :}\<close> [0] 1000) where
     "{:Q:} p s = (Q s \<sqinter> p \<noteq> \<bottom>)"
 
   syntax
-    "_assert" :: "patterns => logic => logic"    ("(1{._./ _.})")
+    "_assert" :: "patterns => logic => logic"    (\<open>(1{._./ _.})\<close>)
   translations
     "_assert (_patterns x xs) P" == "CONST assert (CONST id (_abs (_pattern x xs) P))"
     "_assert x P" == "CONST assert (CONST id (_abs x P))"
 
   term "{.x,z . P x y.}"
 
-  syntax "_update" :: "patterns => patterns => logic => logic" ("_ \<leadsto> _ . _" 0)
+  syntax "_update" :: "patterns => patterns => logic => logic" (\<open>_ \<leadsto> _ . _\<close> 0)
   translations
     "_update (_patterns x xs) (_patterns y ys) t" == "CONST id (_abs
          (_pattern x xs) (CONST id (_abs (_pattern y ys) t)))"
@@ -307,7 +307,7 @@ text\<open>
   both $S$ and $T$.
 \<close>
 
-  definition fusion :: "(('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)) \<Rightarrow> (('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)) \<Rightarrow> (('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool))" (infixl "\<parallel>" 70) where
+  definition fusion :: "(('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)) \<Rightarrow> (('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)) \<Rightarrow> (('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool))" (infixl \<open>\<parallel>\<close> 70) where
     "(S \<parallel> S') q x = (\<exists> (p::'a\<Rightarrow>bool) p' . p \<sqinter> p' \<le> q \<and> S p x \<and> S' p' x)"
 
   lemma fusion_spec: "({.p.} \<circ> [:r:]) \<parallel> ({.p'.} \<circ> [:r':]) = ({.p \<sqinter> p'.} \<circ> [:r \<sqinter> r':])"

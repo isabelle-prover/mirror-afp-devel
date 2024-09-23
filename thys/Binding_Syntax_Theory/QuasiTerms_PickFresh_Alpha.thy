@@ -491,8 +491,8 @@ apply(simp add: aux_alpha_ignoreSecond_qTermLessQSwapped_wf)
 by(auto simp add: qTermQSwappedLess_def qTermLess_modulo_def
    aux_alpha_ignoreSecond_def qSwap_qSwapped)
 
-abbreviation alpha_abbrev (infix "#=" 50) where "X #= Y \<equiv> alpha X Y"
-abbreviation alphaAbs_abbrev (infix "$=" 50) where "A $= B \<equiv> alphaAbs A B"
+abbreviation alpha_abbrev (infix \<open>#=\<close> 50) where "X #= Y \<equiv> alpha X Y"
+abbreviation alphaAbs_abbrev (infix \<open>$=\<close> 50) where "A $= B \<equiv> alphaAbs A B"
 
 (*********************************************)
 context FixVars

@@ -24,8 +24,8 @@ lemmas mat_def = Finite_Cartesian_Product.mat_def
 lemmas det_def = Determinants.det_def
 lemmas row_def = Finite_Cartesian_Product.row_def
 
-notation vec_index (infixl "$v" 90)
-notation vec_nth (infixl "$h" 90)
+notation vec_index (infixl \<open>$v\<close> 90)
+notation vec_nth (infixl \<open>$h\<close> 90)
 
 
 text \<open>Forget that @{typ "'a mat"}, @{typ "'a Matrix.vec"}, and @{typ "'a poly"} 

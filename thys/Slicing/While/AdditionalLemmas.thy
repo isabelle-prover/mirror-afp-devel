@@ -6,11 +6,11 @@ begin
 subsection \<open>Paths to @{term "(_Exit_)"} and from @{term "(_Entry_)"} exist\<close>
 
 abbreviation path :: "cmd \<Rightarrow> w_node \<Rightarrow> w_edge list \<Rightarrow> w_node \<Rightarrow> bool" 
-("_ \<turnstile> _ -_\<rightarrow>* _")
+(\<open>_ \<turnstile> _ -_\<rightarrow>* _\<close>)
   where "prog \<turnstile> n -as\<rightarrow>* n' \<equiv> CFG.path sourcenode targetnode (valid_edge prog) 
     n as n'"
 
-definition label_incrs :: "w_edge list \<Rightarrow> nat \<Rightarrow> w_edge list" ("_ \<oplus>s _" 60)
+definition label_incrs :: "w_edge list \<Rightarrow> nat \<Rightarrow> w_edge list" (\<open>_ \<oplus>s _\<close> 60)
   where "as \<oplus>s i \<equiv> map (\<lambda>(n,et,n'). (n \<oplus> i,et,n' \<oplus> i)) as"
 
 

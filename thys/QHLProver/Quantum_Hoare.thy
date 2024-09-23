@@ -92,10 +92,10 @@ proof (auto)
   then show "matrix_sum d (\<lambda>k. adjoint (M k) * P k * M k) n \<le>\<^sub>L 1\<^sub>m d" using lowner_le_def d by auto
 qed
 
-definition hoare_total_correct :: "complex mat \<Rightarrow> com \<Rightarrow> complex mat \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
+definition hoare_total_correct :: "complex mat \<Rightarrow> com \<Rightarrow> complex mat \<Rightarrow> bool" (\<open>\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}\<close> 50) where
   "\<Turnstile>\<^sub>t {P} S {Q} \<longleftrightarrow> (\<forall>\<rho>\<in>density_states. trace (P * \<rho>) \<le> trace (Q * denote S \<rho>))"
 
-definition hoare_partial_correct :: "complex mat \<Rightarrow> com \<Rightarrow> complex mat \<Rightarrow> bool" ("\<Turnstile>\<^sub>p {(1_)}/ (_)/ {(1_)}" 50) where
+definition hoare_partial_correct :: "complex mat \<Rightarrow> com \<Rightarrow> complex mat \<Rightarrow> bool" (\<open>\<Turnstile>\<^sub>p {(1_)}/ (_)/ {(1_)}\<close> 50) where
   "\<Turnstile>\<^sub>p {P} S {Q} \<longleftrightarrow> (\<forall>\<rho>\<in>density_states. trace (P * \<rho>) \<le> trace (Q * denote S \<rho>) + (trace \<rho> - trace (denote S \<rho>)))"
 
 (* Proposition 6.1 (1) *)
@@ -969,7 +969,7 @@ qed
 
 subsection \<open>Hoare triples for partial correctness\<close>
 
-inductive hoare_partial :: "complex mat \<Rightarrow> com \<Rightarrow> complex mat \<Rightarrow> bool" ("\<turnstile>\<^sub>p ({(1_)}/ (_)/ {(1_)})" 50) where
+inductive hoare_partial :: "complex mat \<Rightarrow> com \<Rightarrow> complex mat \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>p ({(1_)}/ (_)/ {(1_)})\<close> 50) where
   "is_quantum_predicate P \<Longrightarrow> \<turnstile>\<^sub>p {P} SKIP {P}"
 | "is_quantum_predicate P \<Longrightarrow> \<turnstile>\<^sub>p {adjoint U * P * U} Utrans U {P}"
 | "is_quantum_predicate P \<Longrightarrow> is_quantum_predicate Q \<Longrightarrow> is_quantum_predicate R \<Longrightarrow>

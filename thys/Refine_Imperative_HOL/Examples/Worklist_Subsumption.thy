@@ -43,7 +43,7 @@ locale Search_Space_Defs =
   fixes E :: "'a \<Rightarrow> 'a \<Rightarrow> bool" \<comment> \<open>Step relation\<close>
     and a\<^sub>0 :: 'a                \<comment> \<open>Start state\<close> 
     and F :: "'a \<Rightarrow> bool"      \<comment> \<open>Final states\<close>
-    and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 50) \<comment> \<open>Subsumption preorder\<close>
+    and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) \<comment> \<open>Subsumption preorder\<close>
 begin
   definition reachable where
     "reachable = E\<^sup>*\<^sup>* a\<^sub>0"

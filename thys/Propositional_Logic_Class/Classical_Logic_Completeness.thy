@@ -26,11 +26,11 @@ text \<open> Here we provide the usual language for formulae in the propositiona
        language is straight-forward using an algebraic data type. \<close>
 
 datatype 'a classical_propositional_formula =
-      Falsum ("\<^bold>\<bottom>")
-    | Proposition 'a ("\<^bold>\<langle> _ \<^bold>\<rangle>" [45])
+      Falsum (\<open>\<^bold>\<bottom>\<close>)
+    | Proposition 'a (\<open>\<^bold>\<langle> _ \<^bold>\<rangle>\<close> [45])
     | Implication
         "'a classical_propositional_formula"
-        "'a classical_propositional_formula" (infixr "\<^bold>\<rightarrow>" 70)
+        "'a classical_propositional_formula" (infixr \<open>\<^bold>\<rightarrow>\<close> 70)
 
 section \<open> Propositional Calculus \<close>
 
@@ -42,7 +42,7 @@ named_theorems classical_propositional_calculus
   "Rules for the Propositional Calculus"
 
 inductive classical_propositional_calculus ::
-  "'a classical_propositional_formula \<Rightarrow> bool" ("\<turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p _" [60] 55)
+  "'a classical_propositional_formula \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p _\<close> [60] 55)
   where
      axiom_k [classical_propositional_calculus]:
        "\<turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<phi> \<^bold>\<rightarrow> \<psi> \<^bold>\<rightarrow> \<phi>"
@@ -74,7 +74,7 @@ text \<open> Below we give the typical definition of the Tarski truth relation
 
 primrec classical_propositional_semantics ::
   "'a set \<Rightarrow> 'a classical_propositional_formula \<Rightarrow> bool"
-  (infix "\<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p" 65)
+  (infix \<open>\<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p\<close> 65)
   where
        "\<MM> \<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<^bold>\<langle> p \<^bold>\<rangle> = (p \<in> \<MM>)"
     |  "\<MM> \<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<phi> \<^bold>\<rightarrow> \<psi> = (\<MM> \<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<phi> \<longrightarrow> \<MM> \<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<psi>)"
@@ -91,19 +91,19 @@ section \<open> Soundness and Completeness Proofs \label{sec:classical-logic-com
 definition strong_classical_propositional_deduction ::
   "'a classical_propositional_formula set
     \<Rightarrow> 'a classical_propositional_formula \<Rightarrow> bool"
-  (infix "\<tturnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p" 65)
+  (infix \<open>\<tturnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p\<close> 65)
   where
     [simp]: "\<Gamma> \<tturnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<phi> \<equiv> \<Gamma> \<tturnstile> \<phi>"
 
 definition strong_classical_propositional_tarski_truth ::
   "'a classical_propositional_formula set
     \<Rightarrow> 'a classical_propositional_formula \<Rightarrow> bool"
-  (infix "\<TTurnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p" 65)
+  (infix \<open>\<TTurnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p\<close> 65)
   where
     [simp]: "\<Gamma> \<TTurnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<phi> \<equiv> \<forall> \<MM>.(\<forall> \<gamma> \<in> \<Gamma>. \<MM> \<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<gamma>) \<longrightarrow> \<MM> \<Turnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<phi>"
 
 definition theory_propositions ::
-  "'a classical_propositional_formula set \<Rightarrow> 'a set" ("\<^bold>\<lbrace> _ \<^bold>\<rbrace>" [50])
+  "'a classical_propositional_formula set \<Rightarrow> 'a set" (\<open>\<^bold>\<lbrace> _ \<^bold>\<rbrace>\<close> [50])
   where
     [simp]: "\<^bold>\<lbrace> \<Gamma> \<^bold>\<rbrace> = {p . \<Gamma> \<tturnstile>\<^sub>p\<^sub>r\<^sub>o\<^sub>p \<^bold>\<langle> p \<^bold>\<rangle>}"
 
@@ -246,7 +246,7 @@ text \<open> In future work we may make a tactic for this, but for now we just
 
 primrec (in classical_logic)
    classical_propositional_formula_embedding
-   :: "'a classical_propositional_formula \<Rightarrow> 'a" ("\<^bold>\<lparr> _ \<^bold>\<rparr>" [50]) where
+   :: "'a classical_propositional_formula \<Rightarrow> 'a" (\<open>\<^bold>\<lparr> _ \<^bold>\<rparr>\<close> [50]) where
      "\<^bold>\<lparr> \<^bold>\<langle> p \<^bold>\<rangle> \<^bold>\<rparr> = p"
    | "\<^bold>\<lparr> \<phi> \<^bold>\<rightarrow> \<psi> \<^bold>\<rparr> = \<^bold>\<lparr> \<phi> \<^bold>\<rparr> \<rightarrow> \<^bold>\<lparr> \<psi> \<^bold>\<rparr>"
    | "\<^bold>\<lparr> \<^bold>\<bottom> \<^bold>\<rparr> = \<bottom>"

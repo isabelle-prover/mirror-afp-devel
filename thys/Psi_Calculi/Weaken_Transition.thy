@@ -9,7 +9,7 @@ begin
 context weak
 begin
 
-definition weakenTransition :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> 'a action \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<Longrightarrow>_ \<prec> _" [80, 80, 80, 80] 80)
+definition weakenTransition :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> 'a action \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<Longrightarrow>_ \<prec> _\<close> [80, 80, 80, 80] 80)
 where
   "\<Psi> \<rhd> P \<Longrightarrow>\<alpha> \<prec> P' \<equiv> (\<exists>P''' P''. \<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''' \<and> \<Psi> \<rhd> P''' \<longmapsto>\<alpha> \<prec> P'' \<and> \<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P') \<or> (P = P' \<and> \<alpha> = \<tau>)"
 

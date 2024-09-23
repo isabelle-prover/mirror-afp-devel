@@ -35,10 +35,10 @@ declare [[syntax_ambiguity_warning = false]]
 
 
 datatype com_flow =
-  Assign vname aexp  ("_ ::= _" [1000, 61] 70) |
-  Input vname  ("(IN _)" [61] 70) |
-  Output vname  ("(OUT _)" [61] 70) |
-  Observe "vname set"  ("\<langle>_\<rangle>" [61] 70)
+  Assign vname aexp  (\<open>_ ::= _\<close> [1000, 61] 70) |
+  Input vname  (\<open>(IN _)\<close> [61] 70) |
+  Output vname  (\<open>(OUT _)\<close> [61] 70) |
+  Observe "vname set"  (\<open>\<langle>_\<rangle>\<close> [61] 70)
 
 type_synonym flow = "com_flow list"
 type_synonym tag = "vname \<times> nat"
@@ -49,21 +49,21 @@ type_synonym state_upd = "vname \<times> val option"
 
 definition eq_streams ::
  "stream \<Rightarrow> stream \<Rightarrow> inputs \<Rightarrow> inputs \<Rightarrow> tag set \<Rightarrow> bool"
-  ("(_ = _ '(\<subseteq> _, _, _'))" [51, 51] 50) where
+  (\<open>(_ = _ '(\<subseteq> _, _, _'))\<close> [51, 51] 50) where
 "f = f' (\<subseteq> vs, vs', T) \<equiv> \<forall>(x, n) \<in> T.
   f x (length [p\<leftarrow>vs. fst p = x] + n) =
   f' x (length [p\<leftarrow>vs'. fst p = x] + n)"
 
 abbreviation eq_states :: "state \<Rightarrow> state \<Rightarrow> vname set \<Rightarrow> bool"
-  ("(_ = _ '(\<subseteq> _'))" [51, 51] 50) where
+  (\<open>(_ = _ '(\<subseteq> _'))\<close> [51, 51] 50) where
 "s = t (\<subseteq> X) \<equiv> \<forall>x \<in> X. s x = t x"
 
 abbreviation univ_states :: "state set \<Rightarrow> vname set \<Rightarrow> state set"
-  ("(Univ _ '(\<subseteq> _'))" [51] 75) where
+  (\<open>(Univ _ '(\<subseteq> _'))\<close> [51] 75) where
 "Univ A (\<subseteq> X) \<equiv> {s. \<exists>t \<in> A. s = t (\<subseteq> X)}"
 
 abbreviation univ_vars_if :: "state set \<Rightarrow> vname set \<Rightarrow> vname set"
-  ("(Univ?? _ _)" [51, 75] 75) where
+  (\<open>(Univ?? _ _)\<close> [51, 75] 75) where
 "Univ?? A X \<equiv> if A = {} then UNIV else X"
 
 abbreviation "tl2 xs \<equiv> tl (tl xs)"
@@ -176,7 +176,7 @@ subsection "Local context definitions"
 locale noninterf =
   fixes
     interf :: "state \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> bool"
-      ("(_: _ \<leadsto> _)" [51, 51, 51] 50) and
+      (\<open>(_: _ \<leadsto> _)\<close> [51, 51, 51] 50) and
     dom :: "vname \<Rightarrow> 'd" and
     state :: "vname set"
   assumes
@@ -549,7 +549,7 @@ definition correct :: "com \<Rightarrow> state set \<Rightarrow> vname set \<Rig
 
 
 abbreviation noninterf_set :: "state set \<Rightarrow> vname set \<Rightarrow> vname set \<Rightarrow> bool"
-  ("(_: _ \<leadsto>| _)" [51, 51, 51] 50) where
+  (\<open>(_: _ \<leadsto>| _)\<close> [51, 51, 51] 50) where
 "A: X \<leadsto>| Y \<equiv> \<forall>y \<in> Y. \<exists>s \<in> A. \<exists>x \<in> X. \<not> s: dom x \<leadsto> dom y"
 
 abbreviation ok_flow_aux_1 where
@@ -624,7 +624,7 @@ special value standing for \emph{arbitrary}.
 \null
 \<close>
 
-primrec btyping1 :: "bexp \<Rightarrow> bool option" ("(\<turnstile> _)" [51] 55) where
+primrec btyping1 :: "bexp \<Rightarrow> bool option" (\<open>(\<turnstile> _)\<close> [51] 55) where
 
 "\<turnstile> Bc v = Some v" |
 
@@ -640,7 +640,7 @@ primrec btyping1 :: "bexp \<Rightarrow> bool option" ("(\<turnstile> _)" [51] 55
 
 inductive_set ctyping1_merge_aux :: "state_upd list set \<Rightarrow>
   state_upd list set \<Rightarrow> (state_upd list \<times> bool) list set"
-  (infix "\<Squnion>" 55) for A and B where
+  (infix \<open>\<Squnion>\<close> 55) for A and B where
 
  "xs \<in> A \<Longrightarrow> [(xs, True)] \<in> A \<Squnion> B" |
 
@@ -656,22 +656,22 @@ declare ctyping1_merge_aux.intros [intro]
 
 definition ctyping1_append ::
  "state_upd list set \<Rightarrow> state_upd list set \<Rightarrow> state_upd list set"
-  (infixl "@" 55) where
+  (infixl \<open>@\<close> 55) where
 "A @ B \<equiv> {xs @ ys | xs ys. xs \<in> A \<and> ys \<in> B}"
 
 definition ctyping1_merge ::
  "state_upd list set \<Rightarrow> state_upd list set \<Rightarrow> state_upd list set"
-  (infixl "\<squnion>" 55) where
+  (infixl \<open>\<squnion>\<close> 55) where
 "A \<squnion> B \<equiv> {concat (map fst ws) | ws. ws \<in> A \<Squnion> B}"
 
 definition ctyping1_merge_append ::
  "state_upd list set \<Rightarrow> state_upd list set \<Rightarrow> state_upd list set"
-  (infixl "\<squnion>\<^sub>@" 55) where
+  (infixl \<open>\<squnion>\<^sub>@\<close> 55) where
 "A \<squnion>\<^sub>@ B \<equiv> (if card B = Suc 0 then A else A \<squnion> B) @ B"
 
 
 primrec ctyping1_aux :: "com \<Rightarrow> state_upd list set"
-  ("(\<turnstile> _)" [51] 60) where
+  (\<open>(\<turnstile> _)\<close> [51] 60) where
 
 "\<turnstile> SKIP = {[]}" |
 
@@ -696,7 +696,7 @@ primrec ctyping1_aux :: "com \<Rightarrow> state_upd list set"
   (if f \<in> {Some True, None} then \<turnstile> c else {}))"
 
 definition ctyping1 :: "com \<Rightarrow> state set \<Rightarrow> vname set \<Rightarrow> config"
-  ("(\<turnstile> _ '(\<subseteq> _, _'))" [51] 55) where
+  (\<open>(\<turnstile> _ '(\<subseteq> _, _'))\<close> [51] 55) where
 "\<turnstile> c (\<subseteq> A, X) \<equiv> let F = {\<lambda>x. [y\<leftarrow>ys. fst y = x] | ys. ys \<in> \<turnstile> c} in
   ({\<lambda>x. if f x = []
      then s x else case snd (last (f x)) of None \<Rightarrow> t x | Some i \<Rightarrow> i |
@@ -734,7 +734,7 @@ evaluated at compile time.
 \<close>
 
 primrec btyping2_aux :: "bexp \<Rightarrow> state set \<Rightarrow> vname set \<Rightarrow> state set option"
-  ("(\<TTurnstile> _ '(\<subseteq> _, _'))" [51] 55) where
+  (\<open>(\<TTurnstile> _ '(\<subseteq> _, _'))\<close> [51] 55) where
 
 "\<TTurnstile> Bc v (\<subseteq> A, _) = Some (if v then A else {})" |
 
@@ -749,26 +749,26 @@ primrec btyping2_aux :: "bexp \<Rightarrow> state set \<Rightarrow> vname set \<
 
 definition btyping2 ::
  "bexp \<Rightarrow> state set \<Rightarrow> vname set \<Rightarrow> state set \<times> state set"
-  ("(\<Turnstile> _ '(\<subseteq> _, _'))" [51] 55) where
+  (\<open>(\<Turnstile> _ '(\<subseteq> _, _'))\<close> [51] 55) where
 "\<Turnstile> b (\<subseteq> A, X) \<equiv> case \<TTurnstile> b (\<subseteq> A, X) of
   Some A' \<Rightarrow> (A', A - A') | _ \<Rightarrow> (A, A)"
 
 
 abbreviation interf_set :: "state set \<Rightarrow> vname set \<Rightarrow> vname set \<Rightarrow> bool"
-  ("(_: _ \<leadsto> _)" [51, 51, 51] 50) where
+  (\<open>(_: _ \<leadsto> _)\<close> [51, 51, 51] 50) where
 "A: X \<leadsto> Y \<equiv> \<forall>s \<in> A. \<forall>x \<in> X. \<forall>y \<in> Y. s: dom x \<leadsto> dom y"
 
 abbreviation atyping :: "bool \<Rightarrow> aexp \<Rightarrow> vname set \<Rightarrow> bool"
-  ("(_ \<Turnstile> _ '(\<subseteq> _'))" [51, 51] 50) where
+  (\<open>(_ \<Turnstile> _ '(\<subseteq> _'))\<close> [51, 51] 50) where
 "v \<Turnstile> a (\<subseteq> X) \<equiv> avars a = {} \<or> avars a \<subseteq> state \<inter> X \<and> v"
 
 definition univ_states_if :: "state set \<Rightarrow> vname set \<Rightarrow> state set"
-  ("(Univ? _ _)" [51, 75] 75) where
+  (\<open>(Univ? _ _)\<close> [51, 75] 75) where
 "Univ? A X \<equiv> if state \<subseteq> X then A else Univ A (\<subseteq> {})"
 
 
 fun ctyping2 :: "scope \<Rightarrow> com \<Rightarrow> state set \<Rightarrow> vname set \<Rightarrow> config option"
-  ("(_ \<Turnstile> _ '(\<subseteq> _, _'))" [51, 51] 55) where
+  (\<open>(_ \<Turnstile> _ '(\<subseteq> _, _'))\<close> [51, 51] 55) where
 
 "_ \<Turnstile> SKIP (\<subseteq> A, X) = Some (A, Univ?? A X)" |
 

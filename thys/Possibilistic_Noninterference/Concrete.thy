@@ -82,7 +82,7 @@ datatype atom = Assign var exp
 type_synonym state = "var \<Rightarrow> nat"
  
 syntax
- "_assign" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("_ ::= _" [1000, 61] 61)
+ "_assign" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>_ ::= _\<close> [1000, 61] 61)
 
 syntax_consts
   "_assign" == Assign
@@ -156,12 +156,12 @@ abbreviation "siso c \<equiv> Example_PL.siso c"
 abbreviation "siso0 c \<equiv> Example_PL.siso0 c"
 abbreviation "discr c \<equiv> Example_PL.discr c"
 abbreviation "discr0 c \<equiv> Example_PL.discr0 c"
-abbreviation Sbis_abbrev (infix "\<approx>s" 55) where "c1 \<approx>s c2 \<equiv> (c1,c2) \<in> Example_PL.Sbis"
-abbreviation ZObis_abbrev (infix "\<approx>01" 55) where "c1 \<approx>01 c2 \<equiv> (c1,c2) \<in> Example_PL.ZObis"
-abbreviation ZObisT_abbrev (infix "\<approx>01T" 55) where "c1 \<approx>01T c2 \<equiv> (c1,c2) \<in> Example_PL.ZObisT"
-abbreviation Wbis_abbrev (infix "\<approx>w" 55) where "c1 \<approx>w c2 \<equiv> (c1,c2) \<in> Example_PL.Wbis"
-abbreviation WbisT_abbrev (infix "\<approx>wT" 55) where "c1 \<approx>wT c2 \<equiv> (c1,c2) \<in> Example_PL.WbisT"
-abbreviation BisT_abbrev (infix "\<approx>T" 55) where "c1 \<approx>T c2 \<equiv> (c1,c2) \<in> Example_PL.BisT"
+abbreviation Sbis_abbrev (infix \<open>\<approx>s\<close> 55) where "c1 \<approx>s c2 \<equiv> (c1,c2) \<in> Example_PL.Sbis"
+abbreviation ZObis_abbrev (infix \<open>\<approx>01\<close> 55) where "c1 \<approx>01 c2 \<equiv> (c1,c2) \<in> Example_PL.ZObis"
+abbreviation ZObisT_abbrev (infix \<open>\<approx>01T\<close> 55) where "c1 \<approx>01T c2 \<equiv> (c1,c2) \<in> Example_PL.ZObisT"
+abbreviation Wbis_abbrev (infix \<open>\<approx>w\<close> 55) where "c1 \<approx>w c2 \<equiv> (c1,c2) \<in> Example_PL.Wbis"
+abbreviation WbisT_abbrev (infix \<open>\<approx>wT\<close> 55) where "c1 \<approx>wT c2 \<equiv> (c1,c2) \<in> Example_PL.WbisT"
+abbreviation BisT_abbrev (infix \<open>\<approx>T\<close> 55) where "c1 \<approx>T c2 \<equiv> (c1,c2) \<in> Example_PL.BisT"
 
 subsection \<open>Programs from EXAMPLE 1\<close>
 

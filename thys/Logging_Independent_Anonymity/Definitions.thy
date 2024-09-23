@@ -206,8 +206,8 @@ datatype msg =
   IDInfo agent_id msg
 
 syntax
-  "_MPair"  :: "['a, args] \<Rightarrow> 'a * 'b"  ("(2\<lbrace>_,/ _\<rbrace>)")
-  "_IDInfo" :: "[agent_id, msg] \<Rightarrow> msg"      ("(2\<langle>_,/ _\<rangle>)")
+  "_MPair"  :: "['a, args] \<Rightarrow> 'a * 'b"  (\<open>(2\<lbrace>_,/ _\<rbrace>)\<close>)
+  "_IDInfo" :: "[agent_id, msg] \<Rightarrow> msg"      (\<open>(2\<langle>_,/ _\<rangle>)\<close>)
 syntax_consts
   "_MPair" \<rightleftharpoons> MPair and
   "_IDInfo" \<rightleftharpoons> IDInfo
@@ -452,10 +452,10 @@ definition rel :: "(state \<times> state) set" where
   rel_hash \<union> rel_dec \<union> rel_enc \<union> rel_sep \<union> rel_con \<union>
   rel_id_pubk_less \<union> rel_id_pubk_more \<union> rel_id_pubk_prik \<union> rel_id_hash"
 
-abbreviation in_rel :: "state \<Rightarrow> state \<Rightarrow> bool" (infix "\<turnstile>" 60) where
+abbreviation in_rel :: "state \<Rightarrow> state \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 60) where
 "s \<turnstile> s' \<equiv> (s, s') \<in> rel"
 
-abbreviation in_rel_rtrancl :: "state \<Rightarrow> state \<Rightarrow> bool" (infix "\<Turnstile>" 60) where
+abbreviation in_rel_rtrancl :: "state \<Rightarrow> state \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 60) where
 "s \<Turnstile> s' \<equiv> (s, s') \<in> rel\<^sup>*"
 
 end

@@ -2,7 +2,7 @@ section \<open>More Terms and Literals\<close>
 
 theory Resolution imports TermsAndLiterals Tree begin
 
-fun complement :: "'t literal \<Rightarrow> 't literal" ("_\<^sup>c" [300] 300) where
+fun complement :: "'t literal \<Rightarrow> 't literal" (\<open>_\<^sup>c\<close> [300] 300) where
   "(Pos P ts)\<^sup>c = Neg P ts"  
 | "(Neg P ts)\<^sup>c = Pos P ts"
 
@@ -44,7 +44,7 @@ section \<open>Clauses\<close>
 
 type_synonym 't clause = "'t literal set"
 
-abbreviation complementls :: "'t literal set \<Rightarrow> 't literal set" ("_\<^sup>C" [300] 300) where 
+abbreviation complementls :: "'t literal set \<Rightarrow> 't literal set" (\<open>_\<^sup>C\<close> [300] 300) where 
   "L\<^sup>C \<equiv> complement ` L"
 
 lemma cancel_compls1: "(L\<^sup>C)\<^sup>C = L"
@@ -161,18 +161,18 @@ section \<open>Substitutions\<close>
 
 type_synonym substitution = "var_sym \<Rightarrow> fterm" 
 
-fun sub  :: "fterm \<Rightarrow> substitution \<Rightarrow> fterm" (infixl "\<cdot>\<^sub>t" 55) where
+fun sub  :: "fterm \<Rightarrow> substitution \<Rightarrow> fterm" (infixl \<open>\<cdot>\<^sub>t\<close> 55) where
   "(Var x) \<cdot>\<^sub>t \<sigma> = \<sigma> x"
 | "(Fun f ts) \<cdot>\<^sub>t \<sigma> = Fun f (map (\<lambda>t. t \<cdot>\<^sub>t \<sigma>) ts)"
 
-abbreviation subs :: "fterm list \<Rightarrow> substitution \<Rightarrow> fterm list" (infixl "\<cdot>\<^sub>t\<^sub>s" 55) where
+abbreviation subs :: "fterm list \<Rightarrow> substitution \<Rightarrow> fterm list" (infixl \<open>\<cdot>\<^sub>t\<^sub>s\<close> 55) where
   "ts \<cdot>\<^sub>t\<^sub>s \<sigma> \<equiv> (map (\<lambda>t. t \<cdot>\<^sub>t \<sigma>) ts)"
 
-fun subl :: "fterm literal \<Rightarrow> substitution \<Rightarrow> fterm literal" (infixl "\<cdot>\<^sub>l" 55) where
+fun subl :: "fterm literal \<Rightarrow> substitution \<Rightarrow> fterm literal" (infixl \<open>\<cdot>\<^sub>l\<close> 55) where
   "(Pos p ts) \<cdot>\<^sub>l \<sigma> = Pos p (ts \<cdot>\<^sub>t\<^sub>s \<sigma>)"
 | "(Neg p ts) \<cdot>\<^sub>l \<sigma> = Neg p (ts \<cdot>\<^sub>t\<^sub>s \<sigma>)"
 
-abbreviation subls :: "fterm literal set \<Rightarrow> substitution \<Rightarrow> fterm literal set" (infixl "\<cdot>\<^sub>l\<^sub>s" 55) where
+abbreviation subls :: "fterm literal set \<Rightarrow> substitution \<Rightarrow> fterm literal set" (infixl \<open>\<cdot>\<^sub>l\<^sub>s\<close> 55) where
   "L \<cdot>\<^sub>l\<^sub>s \<sigma> \<equiv> (\<lambda>l. l \<cdot>\<^sub>l \<sigma>) ` L"
 
 lemma subls_def2: "L \<cdot>\<^sub>l\<^sub>s \<sigma> = {l \<cdot>\<^sub>l \<sigma>|l. l \<in> L}" by auto
@@ -293,7 +293,7 @@ qed
 
 subsection \<open>Composition\<close>
 
-definition composition :: "substitution \<Rightarrow> substitution \<Rightarrow> substitution"  (infixl "\<cdot>" 55) where
+definition composition :: "substitution \<Rightarrow> substitution \<Rightarrow> substitution"  (infixl \<open>\<cdot>\<close> 55) where
   "(\<sigma>\<^sub>1 \<cdot> \<sigma>\<^sub>2) x = (\<sigma>\<^sub>1 x) \<cdot>\<^sub>t \<sigma>\<^sub>2"
 
 lemma composition_conseq2t:  "(t \<cdot>\<^sub>t \<sigma>\<^sub>1) \<cdot>\<^sub>t \<sigma>\<^sub>2 = t \<cdot>\<^sub>t (\<sigma>\<^sub>1 \<cdot> \<sigma>\<^sub>2)" 

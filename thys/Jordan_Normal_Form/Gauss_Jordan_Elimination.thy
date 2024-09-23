@@ -21,7 +21,7 @@ definition mat_multrow_gen :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarr
   "mat_multrow_gen mul k a A = mat (dim_row A) (dim_col A) 
      (\<lambda> (i,j). if k = i then mul a (A $$ (i,j)) else A $$ (i,j))"
 
-abbreviation mat_multrow :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("multrow") where
+abbreviation mat_multrow :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>multrow\<close>) where
   "multrow \<equiv> mat_multrow_gen ((*))"
 
 lemmas mat_multrow_def = mat_multrow_gen_def
@@ -30,7 +30,7 @@ definition multrow_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: semiring_1 
   "multrow_mat n k a = mat n n 
      (\<lambda> (i,j). if k = i \<and> k = j then a else if i = j then 1 else 0)"
 
-definition mat_swaprows :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("swaprows")where
+definition mat_swaprows :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>swaprows\<close>)where
   "swaprows k l A = mat (dim_row A) (dim_col A) 
     (\<lambda> (i,j). if k = i then A $$ (l,j) else if l = i then A $$ (k,j) else A $$ (i,j))"
 
@@ -42,7 +42,7 @@ definition mat_addrow_gen :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarro
   "mat_addrow_gen ad mul a k l A = mat (dim_row A) (dim_col A) 
     (\<lambda> (i,j). if k = i then ad (mul a (A $$ (l,j))) (A $$ (i,j)) else A $$ (i,j))"
 
-abbreviation mat_addrow :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("addrow") where
+abbreviation mat_addrow :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>addrow\<close>) where
   "addrow \<equiv> mat_addrow_gen (+) ((*))"
 
 lemmas mat_addrow_def = mat_addrow_gen_def

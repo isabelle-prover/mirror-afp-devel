@@ -24,22 +24,22 @@ declare to_mtx_inverse [simp]
 
 setup_lifting type_definition_sq_mtx
 
-lift_definition sq_mtx_ith :: "'m sq_mtx \<Rightarrow> 'm \<Rightarrow> (real^'m)" (infixl "$$" 90) is "($)" .
+lift_definition sq_mtx_ith :: "'m sq_mtx \<Rightarrow> 'm \<Rightarrow> (real^'m)" (infixl \<open>$$\<close> 90) is "($)" .
 
-lift_definition sq_mtx_vec_mult :: "'m sq_mtx \<Rightarrow> (real^'m) \<Rightarrow> (real^'m)" (infixl "*\<^sub>V" 90) is "(*v)" .
+lift_definition sq_mtx_vec_mult :: "'m sq_mtx \<Rightarrow> (real^'m) \<Rightarrow> (real^'m)" (infixl \<open>*\<^sub>V\<close> 90) is "(*v)" .
 
 lift_definition vec_sq_mtx_prod :: "(real^'m) \<Rightarrow> 'm sq_mtx \<Rightarrow> (real^'m)" is "(v*)" .
 
-lift_definition sq_mtx_diag :: "(('m::finite) \<Rightarrow> real) \<Rightarrow> ('m::finite) sq_mtx" (binder "\<d>\<i>\<a>\<g> " 10) 
+lift_definition sq_mtx_diag :: "(('m::finite) \<Rightarrow> real) \<Rightarrow> ('m::finite) sq_mtx" (binder \<open>\<d>\<i>\<a>\<g> \<close> 10) 
   is diag_mat .
 
-lift_definition sq_mtx_transpose :: "('m::finite) sq_mtx \<Rightarrow> 'm sq_mtx" ("_\<^sup>\<dagger>") is transpose .
+lift_definition sq_mtx_transpose :: "('m::finite) sq_mtx \<Rightarrow> 'm sq_mtx" (\<open>_\<^sup>\<dagger>\<close>) is transpose .
 
-lift_definition sq_mtx_inv :: "('m::finite) sq_mtx \<Rightarrow> 'm sq_mtx" ("_\<^sup>-\<^sup>1" [90]) is matrix_inv .
+lift_definition sq_mtx_inv :: "('m::finite) sq_mtx \<Rightarrow> 'm sq_mtx" (\<open>_\<^sup>-\<^sup>1\<close> [90]) is matrix_inv .
 
-lift_definition sq_mtx_row :: "'m \<Rightarrow> ('m::finite) sq_mtx \<Rightarrow> real^'m" ("\<r>\<o>\<w>") is row .
+lift_definition sq_mtx_row :: "'m \<Rightarrow> ('m::finite) sq_mtx \<Rightarrow> real^'m" (\<open>\<r>\<o>\<w>\<close>) is row .
 
-lift_definition sq_mtx_col :: "'m \<Rightarrow> ('m::finite) sq_mtx \<Rightarrow> real^'m" ("\<c>\<o>\<l>")  is column .
+lift_definition sq_mtx_col :: "'m \<Rightarrow> ('m::finite) sq_mtx \<Rightarrow> real^'m" (\<open>\<c>\<o>\<l>\<close>)  is column .
 
 lemma to_vec_eq_ith: "(to_vec A) $ i = A $$ i"
   by transfer simp
@@ -355,7 +355,7 @@ lemma sq_mtx_inv_mult:
 lemma sq_mtx_inv_one[simp]: "1\<^sup>-\<^sup>1 = 1"
   by (simp add: sq_mtx_inv_unique)
 
-definition similar_sq_mtx :: "('n::finite) sq_mtx \<Rightarrow> 'n sq_mtx \<Rightarrow> bool" (infixr "\<sim>" 25)
+definition similar_sq_mtx :: "('n::finite) sq_mtx \<Rightarrow> 'n sq_mtx \<Rightarrow> bool" (infixr \<open>\<sim>\<close> 25)
   where "(A \<sim> B) \<longleftrightarrow> (\<exists> P. mtx_invertible P \<and> A = P\<^sup>-\<^sup>1 * B * P)"
 
 lemma similar_sq_mtx_matrix: "(A \<sim> B) = similar_matrix (to_vec A) (to_vec B)"

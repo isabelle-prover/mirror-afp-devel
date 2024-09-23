@@ -425,7 +425,7 @@ qed
 
 subsubsection "The Potential Function"
  
-fun phi :: "nat \<Rightarrow>'a list\<times>  (bool list \<times> 'a list)  \<Rightarrow> real" ("\<phi>")  where
+fun phi :: "nat \<Rightarrow>'a list\<times>  (bool list \<times> 'a list)  \<Rightarrow> real" (\<open>\<phi>\<close>)  where
 "phi n (c,(b,_)) = (\<Sum>(x,y)\<in>(Inv c (s_A n)). (if b!(index init y) then 2 else 1))"
 
 lemma phi': "phi n z = (\<Sum>(x,y)\<in>(Inv (fst z) (s_A n)). (if (fst (snd z))!(index init y) then 2 else 1))"
@@ -448,10 +448,10 @@ lemma phi_nonzero: "phi n (c,(b,i)) \<ge> 0"
 by (simp add: sum_nonneg split_def)
 
 (* definition of the potential function! *)
-definition Phi :: "nat \<Rightarrow> real" ("\<Phi>") where
+definition Phi :: "nat \<Rightarrow> real" (\<open>\<Phi>\<close>) where
 "Phi n = E( map_pmf (\<phi> n) (config'' BIT qs init n))"
 
-definition PhiPlus :: "nat \<Rightarrow> real" ("\<Phi>\<^sup>+") where
+definition PhiPlus :: "nat \<Rightarrow> real" (\<open>\<Phi>\<^sup>+\<close>) where
 "PhiPlus n = (let
         nextconfig = bind_pmf (config'' BIT qs init n)
                 (\<lambda>(s,is). bind_pmf  (BIT_step (s,is) (qs!n)) (\<lambda>(a,nis). return_pmf (step s (qs!n) a,nis)) ) 

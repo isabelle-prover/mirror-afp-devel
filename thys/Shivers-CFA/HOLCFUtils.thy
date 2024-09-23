@@ -207,7 +207,7 @@ text \<open>
 To match Shivers' syntax we introduce the power-syntax for iterated function application.
 \<close>
 
-abbreviation niceiterate ("(_\<^bsup>_\<^esup>)" [1000] 1000)
+abbreviation niceiterate (\<open>(_\<^bsup>_\<^esup>)\<close> [1000] 1000)
   where "niceiterate f i \<equiv> iterate i\<cdot>f"
 
 end

@@ -604,13 +604,13 @@ subsection \<open>Appending paths\<close>
 
 text\<open>Avoided name clash by calling one path Path.\<close>
 
-definition path_via :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" ("_ \<turnstile> Path _ to _ via _ " [51,51,51,51] 50) where
+definition path_via :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" (\<open>_ \<turnstile> Path _ to _ via _ \<close> [51,51,51,51] 50) where
   "P \<turnstile> Path C to D via Cs \<equiv> Subobjs P C Cs \<and> last Cs = D"
 
-definition path_unique :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> Path _ to _ unique" [51,51,51] 50) where
+definition path_unique :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" (\<open>_ \<turnstile> Path _ to _ unique\<close> [51,51,51] 50) where
   "P \<turnstile> Path C to D unique \<equiv> \<exists>!Cs. Subobjs P C Cs \<and> last Cs = D"
 
-definition appendPath :: "path \<Rightarrow> path \<Rightarrow> path" (infixr "@\<^sub>p" 65) where
+definition appendPath :: "path \<Rightarrow> path \<Rightarrow> path" (infixr \<open>@\<^sub>p\<close> 65) where
   "Cs @\<^sub>p Cs' \<equiv> if (last Cs = hd Cs') then Cs @ (tl Cs') else Cs'"
 
 
@@ -621,7 +621,7 @@ by(auto simp:appendPath_def last_append)(cases Cs, simp_all)+
 
 inductive
   casts_to :: "prog \<Rightarrow> ty \<Rightarrow> val \<Rightarrow> val \<Rightarrow> bool"
-    ("_ \<turnstile> _ casts _ to _ " [51,51,51,51] 50)
+    (\<open>_ \<turnstile> _ casts _ to _ \<close> [51,51,51,51] 50)
   for P :: prog
 where
 
@@ -635,7 +635,7 @@ where
 
 inductive
   Casts_to :: "prog \<Rightarrow> ty list \<Rightarrow> val list \<Rightarrow> val list \<Rightarrow> bool"
-    ("_ \<turnstile> _ Casts _ to _ " [51,51,51,51] 50)
+    (\<open>_ \<turnstile> _ Casts _ to _ \<close> [51,51,51,51] 50)
   for P :: prog
 where
 
@@ -660,7 +660,7 @@ subsection \<open>The relation on paths\<close>
 
 inductive_set
   leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> path) set"
-  and leq_path1' :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubset>\<^sup>1 _" [71,71,71] 70)
+  and leq_path1' :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" (\<open>_,_ \<turnstile> _ \<sqsubset>\<^sup>1 _\<close> [71,71,71] 70)
   for P :: prog and C :: cname
 where
   "P,C \<turnstile> Cs \<sqsubset>\<^sup>1 Ds \<equiv> (Cs,Ds) \<in> leq_path1 P C"
@@ -670,7 +670,7 @@ where
   \<Longrightarrow> P,C \<turnstile> Cs \<sqsubset>\<^sup>1 [D]"
 
 abbreviation
-  leq_path :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" ("_,_ \<turnstile> _ \<sqsubseteq> _"  [71,71,71] 70) where
+  leq_path :: "prog \<Rightarrow> cname \<Rightarrow> [path, path] \<Rightarrow> bool" (\<open>_,_ \<turnstile> _ \<sqsubseteq> _\<close>  [71,71,71] 70) where
   "P,C \<turnstile> Cs \<sqsubseteq> Ds \<equiv> (Cs,Ds) \<in> (leq_path1 P C)\<^sup>*"
 
 
@@ -695,7 +695,7 @@ definition FieldDecls :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightar
                                     \<and> map_of fs F = Some T)}"
 
 definition LeastFieldDecl  :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has least _:_ via _" [51,0,0,0,51] 50) where
+    (\<open>_ \<turnstile> _ has least _:_ via _\<close> [51,0,0,0,51] 50) where
   "P \<turnstile> C has least F:T via Cs \<equiv>
    (Cs,T) \<in> FieldDecls P C F \<and>
    (\<forall>(Cs',T') \<in> FieldDecls P C F. P,C \<turnstile> Cs \<sqsubseteq> Cs')"
@@ -707,11 +707,11 @@ definition MethodDefs :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightar
 
   \<comment> \<open>needed for well formed criterion\<close>
 definition HasMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has _ = _ via _" [51,0,0,0,51] 50) where
+    (\<open>_ \<turnstile> _ has _ = _ via _\<close> [51,0,0,0,51] 50) where
   "P \<turnstile> C has M = mthd via Cs \<equiv> (Cs,mthd) \<in> MethodDefs P C M"
 
 definition LeastMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has least _ = _ via _" [51,0,0,0,51] 50) where
+    (\<open>_ \<turnstile> _ has least _ = _ via _\<close> [51,0,0,0,51] 50) where
   "P \<turnstile> C has least M = mthd via Cs \<equiv>
    (Cs,mthd) \<in> MethodDefs P C M \<and>
    (\<forall>(Cs',mthd') \<in> MethodDefs P C M. P,C \<turnstile> Cs \<sqsubseteq> Cs')"
@@ -728,7 +728,7 @@ definition OverriderMethodDefs :: "prog \<Rightarrow> subobj \<Rightarrow> mname
                       P,mdc R \<turnstile> Cs \<sqsubseteq> (snd R)@\<^sub>pCs'}"
 
 definition FinalOverriderMethodDef :: "prog \<Rightarrow> subobj \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-    ("_ \<turnstile> _ has overrider _ = _ via _" [51,0,0,0,51] 50) where
+    (\<open>_ \<turnstile> _ has overrider _ = _ via _\<close> [51,0,0,0,51] 50) where
   "P \<turnstile> R has overrider M = mthd via Cs \<equiv> 
       (Cs,mthd) \<in> OverriderMethodDefs P R M \<and> 
       card(OverriderMethodDefs P R M) = 1"
@@ -737,7 +737,7 @@ definition FinalOverriderMethodDef :: "prog \<Rightarrow> subobj \<Rightarrow> m
 
 inductive
   SelectMethodDef :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> mname \<Rightarrow> method \<Rightarrow> path \<Rightarrow> bool"
-     ("_ \<turnstile> '(_,_') selects _ = _ via _" [51,0,0,0,0,51] 50)
+     (\<open>_ \<turnstile> '(_,_') selects _ = _ via _\<close> [51,0,0,0,0,51] 50)
   for P :: prog
 where
 

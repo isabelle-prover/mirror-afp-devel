@@ -227,7 +227,7 @@ fun alpha_Tree_termination :: "('a, 'b, 'c, 'd) Tree \<times> ('a, 'b, 'c, 'd) T
 text \<open>Here it comes \ldots\<close>
 
 function (sequential)
-  alpha_Tree :: "('idx,'pred::pt,'act::bn,'eff::fs) Tree \<Rightarrow> ('idx,'pred,'act,'eff) Tree \<Rightarrow> bool" (infix "=\<^sub>\<alpha>" 50) where
+  alpha_Tree :: "('idx,'pred::pt,'act::bn,'eff::fs) Tree \<Rightarrow> ('idx,'pred,'act,'eff) Tree \<Rightarrow> bool" (infix \<open>=\<^sub>\<alpha>\<close> 50) where
 \<comment> \<open>@{const alpha_Tree}\<close>
   alpha_tConj: "tConj tset1 =\<^sub>\<alpha> tConj tset2 \<longleftrightarrow> rel_bset alpha_Tree tset1 tset2"
 | alpha_tNot: "tNot t1 =\<^sub>\<alpha> tNot t2 \<longleftrightarrow> t1 =\<^sub>\<alpha> t2"
@@ -1353,7 +1353,7 @@ where
 | Act:  "f \<in>\<^sub>f\<^sub>s F \<Longrightarrow> bn \<alpha> \<sharp>* (F,f) \<Longrightarrow> is_FL_formula (L (\<alpha>,F,f)) x \<Longrightarrow> is_FL_formula F (Act f \<alpha> x)"
 
 abbreviation in_\<A> :: "('idx,'pred,'act,'effect) formula \<Rightarrow> 'effect first \<Rightarrow> bool"
-  ("_ \<in> \<A>[_]" [51,0] 50) where
+  (\<open>_ \<in> \<A>[_]\<close> [51,0] 50) where
   "x \<in> \<A>[F] \<equiv> is_FL_formula F x"
 
 declare is_FL_formula.induct [case_names Conj Not Pred Act, induct type: formula]

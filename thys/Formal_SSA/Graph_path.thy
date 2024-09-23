@@ -131,7 +131,7 @@ begin
     empty_path[intro]: "\<lbrakk>n \<in> set (\<alpha>n g); invar g\<rbrakk> \<Longrightarrow> path g [n]"
     | Cons_path[intro]: "\<lbrakk>path g ns; n' \<in> set (predecessors g (hd ns))\<rbrakk> \<Longrightarrow> path g (n'#ns)"
 
-  definition path2 :: "'g \<Rightarrow> 'node \<Rightarrow> 'node list \<Rightarrow> 'node \<Rightarrow> bool" ("_ \<turnstile> _-_\<rightarrow>_" [51,0,0,51] 80) where
+  definition path2 :: "'g \<Rightarrow> 'node \<Rightarrow> 'node list \<Rightarrow> 'node \<Rightarrow> bool" (\<open>_ \<turnstile> _-_\<rightarrow>_\<close> [51,0,0,51] 80) where
     "path2 g n ns m \<equiv> path g ns \<and> n = hd ns \<and> m = last ns"
 
   abbreviation "\<alpha> g \<equiv> \<lparr>nodes = set (\<alpha>n g), edges = \<alpha>e g\<rparr>"

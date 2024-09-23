@@ -38,7 +38,7 @@ if $s\not\in p$ and behaves as skip otherwise.
 \<close>
 
 definition
-  assert::"'a::semilattice_inf \<Rightarrow> 'a \<Rightarrow> 'a" ("{. _ .}" [0] 1000) where
+  assert::"'a::semilattice_inf \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>{. _ .}\<close> [0] 1000) where
   "{.p.} q \<equiv>  p \<sqinter> q"
 
 lemma mono_assert [simp]: "mono {.p.}"
@@ -54,7 +54,7 @@ if $s\not\in p$ and behaves as skip otherwise.
 \<close>
 
 definition
-  "assume" :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" ("[. _ .]" [0] 1000) where
+  "assume" :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>[. _ .]\<close> [0] 1000) where
   "[. p .] q \<equiv>  -p \<squnion> q"
 
 
@@ -76,7 +76,7 @@ in $s$.
 \<close>
 
 definition
-  demonic :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> 'b::ord \<Rightarrow> 'a set" ("[: _ :]" [0] 1000) where
+  demonic :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> 'b::ord \<Rightarrow> 'a set" (\<open>[: _ :]\<close> [0] 1000) where
   "[:Q:] p = {s . Q s \<le> p}"
 
 lemma mono_demonic [simp]: "mono [:Q:]"
@@ -108,10 +108,10 @@ such that $Q\ s \ s'$, then the angelic update of $Q$ fails in $s$.
 
 definition
   angelic :: "('a \<Rightarrow> 'b::{semilattice_inf,order_bot}) \<Rightarrow> 'b \<Rightarrow> 'a set" 
-               ("{: _ :}" [0] 1000) where
+               (\<open>{: _ :}\<close> [0] 1000) where
   "{:Q:} p = {s . (Q s) \<sqinter> p \<noteq> \<bottom>}"
 
-syntax "_update" :: "patterns => patterns => logic => logic" ("_ \<leadsto> _ . _" 0)
+syntax "_update" :: "patterns => patterns => logic => logic" (\<open>_ \<leadsto> _ . _\<close> 0)
 translations
   "_update (_patterns x xs) (_patterns y ys) t" == "CONST id (_abs
            (_pattern x xs) (_Coll (_pattern y ys) t))"

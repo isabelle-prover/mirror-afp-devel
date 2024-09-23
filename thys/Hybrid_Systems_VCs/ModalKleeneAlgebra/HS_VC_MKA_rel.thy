@@ -31,15 +31,15 @@ text \<open> Lemmas for manipulation of predicates in the relational model \<clo
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
-        and antidomain_semiringl.ads_d ("d")
+no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
+        and antidomain_semiringl.ads_d (\<open>d\<close>)
 
-notation Id ("skip")
-     and relcomp (infixl ";" 70)
-     and zero_class.zero ("0")
-     and rel_aka.fbox ("wp")
+notation Id (\<open>skip\<close>)
+     and relcomp (infixl \<open>;\<close> 70)
+     and zero_class.zero (\<open>0\<close>)
+     and rel_aka.fbox (\<open>wp\<close>)
 
-definition p2r :: "'a pred \<Rightarrow> 'a rel" ("(1\<lceil>_\<rceil>)") where
+definition p2r :: "'a pred \<Rightarrow> 'a rel" (\<open>(1\<lceil>_\<rceil>)\<close>) where
   "\<lceil>P\<rceil> = {(s,s) |s. P s}"
 
 lemma p2r_simps[simp]: 
@@ -66,7 +66,7 @@ lemma wp_test[simp]: "wp \<lceil>P\<rceil> \<lceil>Q\<rceil> = \<lceil>\<lambda>
 
 \<comment> \<open> Assignments \<close>
 
-definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) rel" ("(2_ ::= _)" [70, 65] 61) 
+definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) rel" (\<open>(2_ ::= _)\<close> [70, 65] 61) 
   where "(x ::= e) = {(s, vec_upd s x (e s))| s. True}" 
 
 lemma wp_assign [simp]: "wp (x ::= e) \<lceil>Q\<rceil> = \<lceil>\<lambda>s. Q (\<chi> j. ((($) s)(x := (e s))) j)\<rceil>"
@@ -74,7 +74,7 @@ lemma wp_assign [simp]: "wp (x ::= e) \<lceil>Q\<rceil> = \<lceil>\<lambda>s. Q 
 
 \<comment> \<open> Nondeterministic assignments \<close>
 
-definition nondet_assign :: "'b \<Rightarrow> ('a^'b) rel" ("(2_ ::= ? )" [70] 61)
+definition nondet_assign :: "'b \<Rightarrow> ('a^'b) rel" (\<open>(2_ ::= ? )\<close> [70] 61)
   where "(x ::= ?) = {(s,vec_upd s x k)|s k. True}"
 
 lemma wp_nondet_assign[simp]: "wp (x ::= ?) \<lceil>P\<rceil> = \<lceil>\<lambda>s. \<forall>k. P (\<chi> j. ((($) s)(x := k)) j)\<rceil>"
@@ -88,12 +88,12 @@ lemma le_wp_choice_iff: "\<lceil>P\<rceil> \<le> wp (X \<union> Y) \<lceil>Q\<rc
 
 \<comment> \<open> Conditional statement \<close>
 
-abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("IF _ THEN _ ELSE _" [64,64] 63) 
+abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>IF _ THEN _ ELSE _\<close> [64,64] 63) 
   where "IF P THEN X ELSE Y \<equiv> rel_aka.aka_cond \<lceil>P\<rceil> X Y"
 
 \<comment> \<open> Finite iteration \<close>
 
-abbreviation loopi_sugar :: "'a rel \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("LOOP _ INV _ " [64,64] 63)
+abbreviation loopi_sugar :: "'a rel \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>LOOP _ INV _ \<close> [64,64] 63)
   where "LOOP R INV I \<equiv> rel_aka.aka_loopi R \<lceil>I\<rceil>"
 
 lemma change_loopI: "LOOP X INV G = LOOP X INV I"
@@ -112,7 +112,7 @@ subsubsection \<open> Evolution commands \<close>
 
 text \<open>Verification by providing evolution\<close>
 
-definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b rel" ("EVOL")
+definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b rel" (\<open>EVOL\<close>)
   where "EVOL \<phi> G U = {(s,s') |s s'. s' \<in> g_orbit (\<lambda>t. \<phi> t s) G (U s)}"
 
 lemma wp_g_dyn[simp]:  
@@ -123,7 +123,7 @@ lemma wp_g_dyn[simp]:
 text \<open>Verification by providing solutions\<close>
 
 definition g_ode :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> real \<Rightarrow> 
-  'a rel" ("(1x\<acute>=_ & _ on _ _ @ _)") 
+  'a rel" (\<open>(1x\<acute>=_ & _ on _ _ @ _)\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0) = {(s,s') |s s'. s' \<in> g_orbital f G U S t\<^sub>0 s}"
 
 lemma wp_g_orbital: "wp (x\<acute>= f & G on U S @ t\<^sub>0) \<lceil>Q\<rceil> = 
@@ -162,7 +162,7 @@ end
 text \<open> Verification with differential invariants \<close>
 
 definition g_ode_inv :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("(1x\<acute>=_ & _ on _ _ @ _ DINV _ )") 
+  real \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>(1x\<acute>=_ & _ on _ _ @ _ DINV _ )\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0 DINV I) = (x\<acute>= f & G on U S @ t\<^sub>0)"
 
 lemma wp_g_orbital_guard: 
@@ -223,10 +223,10 @@ subsubsection \<open> Derivation of the rules of dL \<close>
 text \<open> We derive rules of differential dynamic logic (dL). This allows the components to reason 
 in the style of that logic. \<close>
 
-abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("(1x\<acute>=_ & _)") 
+abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>(1x\<acute>=_ & _)\<close>) 
   where "(x\<acute>=f & G) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0)"
 
-abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("(1x\<acute>=_ & _ DINV _)") 
+abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>(1x\<acute>=_ & _ DINV _)\<close>) 
   where "(x\<acute>= f & G DINV I) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0 DINV I)"
 
 lemma diff_solve_axiom1: 

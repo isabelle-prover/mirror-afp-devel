@@ -163,9 +163,9 @@ definition beginning_block :: "binA list * binA list"  where
   "beginning_block = (SOME pair. \<alpha>\<^sub>g \<cdot> g\<^sub>m (fst pair) = \<alpha>\<^sub>h \<cdot> h\<^sub>m (snd pair) \<and>
    (\<forall> p' q'. \<alpha>\<^sub>g \<cdot> g\<^sub>m p' = \<alpha>\<^sub>h \<cdot> h\<^sub>m q' \<longrightarrow> (fst pair) \<le>p p' \<and> (snd pair) \<le>p q'))"
 
-definition fst_beginning_block ("p") where
+definition fst_beginning_block (\<open>p\<close>) where
   "fst_beginning_block \<equiv> fst beginning_block"
-definition snd_beginning_block ("q") where
+definition snd_beginning_block (\<open>q\<close>) where
   "snd_beginning_block \<equiv> snd beginning_block"
 
 lemma begin_block: "\<alpha> \<cdot> g\<^sub>m p = h\<^sub>m q" and
@@ -224,8 +224,8 @@ proof-
   show "marked.blockP c".
 qed
 
-notation marked.suc_fst ("\<ee>") and
-         marked.suc_snd ("\<ff>")
+notation marked.suc_fst (\<open>\<ee>\<close>) and
+         marked.suc_snd (\<open>\<ff>\<close>)
 
 lemma sucs_eq: "g\<^sub>m (\<ee> \<tau>) = h\<^sub>m (\<ff> \<tau>)"
   using marked.blocks_eq both_blocks by blast
@@ -540,11 +540,11 @@ next
       unfolding coin_block_def using ssufD1[OF ssuf_ext[OF \<open>p <s \<ee> [c]\<close>]] by blast
   next \<comment> \<open>the other option leads to a contradiction\<close>
     write
-      marked.sucs.h.bin_morph_mismatch_suf ("\<dd>") and
-      marked.sucs.h.bin_code_lcs ("\<beta>\<^sub>\<hh>") and
-      hm.bin_code_lcs ("\<beta>\<^sub>H") and
-      gm.bin_code_lcs ("\<beta>\<^sub>G") and
-      g.bin_code_lcs ("\<beta>\<^sub>g")
+      marked.sucs.h.bin_morph_mismatch_suf (\<open>\<dd>\<close>) and
+      marked.sucs.h.bin_code_lcs (\<open>\<beta>\<^sub>\<hh>\<close>) and
+      hm.bin_code_lcs (\<open>\<beta>\<^sub>H\<close>) and
+      gm.bin_code_lcs (\<open>\<beta>\<^sub>G\<close>) and
+      g.bin_code_lcs (\<open>\<beta>\<^sub>g\<close>)
     assume "\<not> q \<le>s q \<cdot> \<ff> [c]"
       \<comment> \<open>suffix of @{term q}\<close>
     hence "\<not> q \<le>s q \<cdot> \<ff> ([c]\<^sup>@ Suc t)"
@@ -654,7 +654,7 @@ proof-
     by (cases rule: bin_swap_exhaust[of "last \<tau>" a1]) simp_all
 qed
 
-definition coincidence_exponent ("t") where
+definition coincidence_exponent (\<open>t\<close>) where
   "coincidence_exponent = (LEAST x. (q \<le>s q \<cdot> \<ff>([a1] \<cdot> [1-a1]\<^sup>@Suc x)))"
 
 lemma q_nemp: "q \<noteq> \<epsilon>"
@@ -1111,9 +1111,9 @@ proof-
   have assms': "binary_code x' y'" "binary_code u' v'"
     using assms unfolding x'_def y'_def u'_def v'_def by simp_all
 
-  define first_morphism ("g ")
+  define first_morphism (\<open>g \<close>)
     where "first_morphism \<equiv> bin_morph_of x' y'"
-  define second_morphism ("h")
+  define second_morphism (\<open>h\<close>)
     where "second_morphism \<equiv> bin_morph_of u' v'"
   note mdefs = first_morphism_def second_morphism_def
   have ranges: "range g = \<langle>{x',y'}\<rangle>" "range h = \<langle>{u',v'}\<rangle>"
@@ -1164,12 +1164,12 @@ proof-
       from min_coin_setD[OF this(1)] \<open>g r1 =\<^sub>m h s1\<close> this(2)
       interpret binary_codes_coincidence_two_generators g h
         by unfold_locales auto
-      write g.marked_version ("g\<^sub>m") and
-        h.marked_version ("h\<^sub>m") and
-        fst_beginning_block ("p")  and
-        snd_beginning_block ("q")  and
-        h.bin_code_lcp ("\<alpha>\<^sub>h") and
-        marked.suc_snd ("\<ff>")
+      write g.marked_version (\<open>g\<^sub>m\<close>) and
+        h.marked_version (\<open>h\<^sub>m\<close>) and
+        fst_beginning_block (\<open>p\<close>)  and
+        snd_beginning_block (\<open>q\<close>)  and
+        h.bin_code_lcp (\<open>\<alpha>\<^sub>h\<close>) and
+        marked.suc_snd (\<open>\<ff>\<close>)
       show thesis
       proof(cases)
         assume "\<forall> a. coin_block [a]"
@@ -1187,7 +1187,7 @@ proof-
         then obtain a1 where "\<not> coin_block [a1]" by blast
         then interpret binary_codes_coincidence_infinite g h a1
           by unfold_locales
-        write coincidence_exponent ("t")
+        write coincidence_exponent (\<open>t\<close>)
 
         from inter_basis[unfolded ranges infinite_basis bin_morph_of_range, folded Setcompr_eq_image, unfolded mem_Collect_eq]
         have inter:"\<BB> (\<langle>{x', y'}\<rangle> \<inter> \<langle>{u', v'}\<rangle>) = {(h \<circ> (\<lambda>x. (q \<cdot> x)\<^sup><\<inverse>q ) \<circ> \<ff>) x |x. x \<in> {[1 - a1]} \<union> \<W>}".

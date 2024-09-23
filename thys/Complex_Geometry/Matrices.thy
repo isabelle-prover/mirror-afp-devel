@@ -23,7 +23,7 @@ definition vec_zero :: "complex_vec" where
 
 text \<open>Vector scalar multiplication\<close>
 
-fun mult_sv :: "complex \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl "*\<^sub>s\<^sub>v" 100) where
+fun mult_sv :: "complex \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl \<open>*\<^sub>s\<^sub>v\<close> 100) where
   "k *\<^sub>s\<^sub>v (x, y) = (k*x, k*y)"
 
 lemma fst_mult_sv [simp]: 
@@ -52,7 +52,7 @@ lemma mult_sv_ex_id2 [simp]:
 
 text \<open>Scalar product of two vectors\<close>
 
-fun mult_vv :: "complex \<times> complex \<Rightarrow> complex \<times> complex \<Rightarrow> complex" (infixl "*\<^sub>v\<^sub>v" 100) where
+fun mult_vv :: "complex \<times> complex \<Rightarrow> complex \<times> complex \<Rightarrow> complex" (infixl \<open>*\<^sub>v\<^sub>v\<close> 100) where
  "(x, y) *\<^sub>v\<^sub>v (a, b) = x*a + y*b"
 
 lemma mult_vv_commute:
@@ -104,7 +104,7 @@ type_synonym complex_mat = "complex \<times> complex \<times> complex \<times> c
 
 text \<open>Matrix scalar multiplication\<close>
 
-fun mult_sm :: "complex \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl "*\<^sub>s\<^sub>m" 100) where
+fun mult_sm :: "complex \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl \<open>*\<^sub>s\<^sub>m\<close> 100) where
   "k *\<^sub>s\<^sub>m (a, b, c, d) = (k*a, k*b, k*c, k*d)"
 
 lemma mult_sm_distribution [simp]:
@@ -133,10 +133,10 @@ text \<open>Matrix addition and subtraction\<close>
 
 definition mat_zero :: "complex_mat" where [simp]: "mat_zero = (0, 0, 0, 0)"
 
-fun mat_plus :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl "+\<^sub>m\<^sub>m" 100) where
+fun mat_plus :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl \<open>+\<^sub>m\<^sub>m\<close> 100) where
   "mat_plus (a1, b1, c1, d1) (a2, b2, c2, d2) = (a1+a2, b1+b2, c1+c2, d1+d2)"
 
-fun mat_minus :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl "-\<^sub>m\<^sub>m" 100) where
+fun mat_minus :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl \<open>-\<^sub>m\<^sub>m\<close> 100) where
   "mat_minus (a1, b1, c1, d1) (a2, b2, c2, d2) = (a1-a2, b1-b2, c1-c2, d1-d2)"
 
 fun mat_uminus :: "complex_mat \<Rightarrow> complex_mat" where
@@ -150,7 +150,7 @@ lemma nonzero_mult_real:
 
 text \<open>Matrix multiplication.\<close>
 
-fun mult_mm :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl "*\<^sub>m\<^sub>m" 100) where
+fun mult_mm :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex_mat" (infixl \<open>*\<^sub>m\<^sub>m\<close> 100) where
   "(a1, b1, c1, d1) *\<^sub>m\<^sub>m (a2, b2, c2, d2) =
    (a1*a2 + b1*c2, a1*b2 + b1*d2, c1*a2+d1*c2, c1*b2+d1*d2)"
 
@@ -432,10 +432,10 @@ fun mat_trace where
 
 text \<open>Multiplication of matrix and a vector\<close>
 
-fun mult_mv :: "complex_mat \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl "*\<^sub>m\<^sub>v" 100)  where
+fun mult_mv :: "complex_mat \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl \<open>*\<^sub>m\<^sub>v\<close> 100)  where
   "(a, b, c, d) *\<^sub>m\<^sub>v (x, y) = (x*a + y*b, x*c + y*d)"
 
-fun mult_vm :: "complex_vec \<Rightarrow> complex_mat \<Rightarrow> complex_vec" (infixl "*\<^sub>v\<^sub>m" 100) where
+fun mult_vm :: "complex_vec \<Rightarrow> complex_mat \<Rightarrow> complex_vec" (infixl \<open>*\<^sub>v\<^sub>m\<close> 100) where
   "(x, y) *\<^sub>v\<^sub>m (a, b, c, d)  = (x*a + y*c, x*b + y*d)"
 
 lemma eye_mv_l [simp]:

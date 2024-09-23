@@ -18,7 +18,7 @@ locale into_set = two_cats AA BB
   defines "U \<equiv> (UNIV::'a set)"
   defines "Set \<equiv> set_cat U"
   assumes BB_Set: "BB = Set"
-  fixes homf ("Hom'(_,'_')")
+  fixes homf (\<open>Hom'(_,'_')\<close>)
   defines "homf A \<equiv> \<lparr>
   om = (\<lambda>B\<in>Ob. Hom A B),
   am = (\<lambda>f\<in>Ar. \<lparr>set_dom=Hom A (Dom f),set_func=(\<lambda>g\<in>Hom A (Dom f). f \<bullet> g),set_cod=Hom A (Cod f)\<rparr>)

@@ -211,7 +211,7 @@ subsection \<open>Silent moves\<close>
 inductive silent_move :: 
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
   (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge \<Rightarrow> 'node list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') -_\<rightarrow>\<^sub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51) 
+(\<open>_,_ \<turnstile> '(_,_') -_\<rightarrow>\<^sub>\<tau> '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
 
 where silent_move_intra:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; intra_kind(kind a);
@@ -603,7 +603,7 @@ qed
 inductive silent_moves :: 
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
   (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge list \<Rightarrow> 'node list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') =_\<Rightarrow>\<^sub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51)
+(\<open>_,_ \<turnstile> '(_,_') =_\<Rightarrow>\<^sub>\<tau> '(_,_')\<close> [51,50,0,0,50,0,0] 51)
 
   where silent_moves_Nil: "length ms = length s \<Longrightarrow> S,f \<turnstile> (ms,s) =[]\<Rightarrow>\<^sub>\<tau> (ms,s)"
 
@@ -1164,7 +1164,7 @@ subsection \<open>Observable moves\<close>
 inductive observable_move ::
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
    (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge \<Rightarrow> 'node list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') -_\<rightarrow> '(_,_')" [51,50,0,0,50,0,0] 51) 
+(\<open>_,_ \<turnstile> '(_,_') -_\<rightarrow> '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
  
   where observable_move_intra:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; valid_edge a; intra_kind(kind a); 
@@ -1193,7 +1193,7 @@ inductive observable_move ::
 inductive observable_moves :: 
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
    (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge list \<Rightarrow> 'node list \<Rightarrow> (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') =_\<Rightarrow> '(_,_')" [51,50,0,0,50,0,0] 51) 
+(\<open>_,_ \<turnstile> '(_,_') =_\<Rightarrow> '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
 
   where observable_moves_snoc:
   "\<lbrakk>S,f \<turnstile> (ms,s) =as\<Rightarrow>\<^sub>\<tau> (ms',s'); S,f \<turnstile> (ms',s') -a\<rightarrow> (ms'',s'')\<rbrakk> 
@@ -1333,7 +1333,7 @@ qed(auto simp:intra_kind_def)
 subsection \<open>Relevant variables\<close>
 
 inductive_set relevant_vars ::
-  "'node SDG_node set \<Rightarrow> 'node SDG_node \<Rightarrow> 'var set" ("rv _")
+  "'node SDG_node set \<Rightarrow> 'node SDG_node \<Rightarrow> 'var set" (\<open>rv _\<close>)
 for S :: "'node SDG_node set" and n :: "'node SDG_node"
 
 where rvI:

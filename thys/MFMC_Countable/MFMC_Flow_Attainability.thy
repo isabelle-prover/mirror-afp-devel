@@ -1076,7 +1076,7 @@ qed
 
 end
 
-definition plus_flow :: "('v, 'more) graph_scheme \<Rightarrow> 'v flow \<Rightarrow> 'v flow \<Rightarrow> 'v flow" (infixr "\<oplus>\<index>" 65)
+definition plus_flow :: "('v, 'more) graph_scheme \<Rightarrow> 'v flow \<Rightarrow> 'v flow \<Rightarrow> 'v flow" (infixr \<open>\<oplus>\<index>\<close> 65)
 where "plus_flow G f g = (\<lambda>(x, y). if edge G x y then f (x, y) + g (x, y) - g (y, x) else 0)"
 
 lemma plus_flow_simps [simp]: fixes G (structure) shows
@@ -1283,7 +1283,7 @@ next
   finally show "KIR (f \<oplus> g) x" by simp
 qed
 
-definition minus_flow :: "'v flow \<Rightarrow> 'v flow \<Rightarrow> 'v flow" (infixl "\<ominus>" 65)
+definition minus_flow :: "'v flow \<Rightarrow> 'v flow \<Rightarrow> 'v flow" (infixl \<open>\<ominus>\<close> 65)
 where
   "f \<ominus> g = (\<lambda>(x, y). if edge \<Delta> x y then f (x, y) - g (x, y) else if edge \<Delta> y x then g (y, x) - f (y, x) else 0)"
 

@@ -6,7 +6,7 @@ theory Weak_Early_Cong
   imports Weak_Early_Bisim Weak_Early_Step_Sim Strong_Early_Bisim
 begin
 
-definition weakCongruence :: "pi \<Rightarrow> pi \<Rightarrow> bool" (infixr "\<simeq>" 65)
+definition weakCongruence :: "pi \<Rightarrow> pi \<Rightarrow> bool" (infixr \<open>\<simeq>\<close> 65)
 where "P \<simeq> Q \<equiv> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q \<and> Q \<leadsto>\<guillemotleft>weakBisim\<guillemotright> P"
 
 lemma weakCongISym[consumes 1, case_names cSym cSim]:

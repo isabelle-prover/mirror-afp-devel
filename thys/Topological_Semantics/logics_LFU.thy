@@ -24,7 +24,7 @@ lemma "EXPN \<C> = CNTR \<B>" using EXPN_CNTR_dual1 EXPN_fp by blast
 lemma "EXPN \<C> = CNTR \<I>" by (simp add: EXPN_CNTR_dual1)
 
 text\<open>For LFUs we use the negation previously defined as @{text "\<I>\<^sup>d\<^sup>- = \<C>\<^sup>-"}.\<close>
-abbreviation neg ("\<^bold>\<not>_"[70]71) where "neg \<equiv> \<C>\<^sup>-"
+abbreviation neg (\<open>\<^bold>\<not>_\<close>[70]71) where "neg \<equiv> \<C>\<^sup>-"
 
 text\<open>In terms of the border operator the negation looks as follows:\<close>
 lemma neg_char: "EXPN \<C> \<Longrightarrow> \<^bold>\<not>A = (\<^bold>\<midarrow>A \<^bold>\<and> \<B>\<^sup>d A)" unfolding conn by (metis EXPN_def compl_def dimpl_def dual_invol op_fixpoint_def subset_def svfun_compl_def)
@@ -36,13 +36,13 @@ lemma "CLOSURE \<C> \<Longrightarrow> [\<turnstile> a \<^bold>\<or> \<^bold>\<no
 
 text\<open>We define two pairs of un/determinedness operators and show how they relate to each other.
 This logic corresponds to the paracomplete dual of the LFI 'RmbC-ciw'.\<close>
-abbreviation op_det_a::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<currency>\<^sup>A_" [57]58) 
+abbreviation op_det_a::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<currency>\<^sup>A_\<close> [57]58) 
   where "\<currency>\<^sup>AA \<equiv> A \<^bold>\<or> \<^bold>\<not>A"
-abbreviation op_und_a::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<star>\<^sup>A_" [57]58) (* \<star> as truth-gap *)
+abbreviation op_und_a::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<star>\<^sup>A_\<close> [57]58) (* \<star> as truth-gap *)
   where "\<star>\<^sup>AA \<equiv> \<^bold>\<midarrow>\<currency>\<^sup>AA"
-abbreviation op_det_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<currency>\<^sup>B_" [57]58) 
+abbreviation op_det_b::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<currency>\<^sup>B_\<close> [57]58) 
   where "\<currency>\<^sup>BA \<equiv> \<B>\<^sup>d A"
-abbreviation op_und_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<star>\<^sup>B_" [57]58) (* \<star> as border of the complement *)
+abbreviation op_und_b::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<star>\<^sup>B_\<close> [57]58) (* \<star> as border of the complement *)
   where "\<star>\<^sup>BA \<equiv> \<B>\<^sup>d\<^sup>- A"
 
 

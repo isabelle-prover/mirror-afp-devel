@@ -120,7 +120,7 @@ next
   qed
 qed
 
-definition binary_and ("[_ = _ && _]" 1000)
+definition binary_and (\<open>[_ = _ && _]\<close> 1000)
   where "[A = B && C] \<equiv> (TERNARY (\<lambda>a b c. a = b && c) A B C)"
 
 lemma binary_and_dioph[dioph]:
@@ -144,7 +144,7 @@ qed
 declare binary_and_def[defs]
 
 
-definition binary_and_attempt :: "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial" ("_ &? _") where
+definition binary_and_attempt :: "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial" (\<open>_ &? _\<close>) where
   "A &? B \<equiv> Const 0"
 
 end

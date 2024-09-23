@@ -46,7 +46,7 @@ theory  UML_State
 imports UML_Library
 begin
 
-no_notation None ("\<bottom>")
+no_notation None (\<open>\<bottom>\<close>)
 section\<open>Introduction: States over Typed Object Universes\<close>
 
 text\<open>\label{sec:universe}
@@ -478,7 +478,7 @@ declare OclAllInstances_generic_def [simp]
 subsubsection\<open>OclAllInstances (@post)\<close>
 
 definition OclAllInstances_at_post :: "('\<AA> :: object \<rightharpoonup> '\<alpha>) \<Rightarrow> ('\<AA>, '\<alpha> option option) Set"
-                           ("_ .allInstances'(')")
+                           (\<open>_ .allInstances'(')\<close>)
 where  "OclAllInstances_at_post =  OclAllInstances_generic snd"
 
 lemma OclAllInstances_at_post_defined: "\<tau> \<Turnstile> \<delta> (H .allInstances())"
@@ -584,7 +584,7 @@ by(rule state_update_vs_allInstances_generic_tc[OF snd_conv], insert assms)
 subsubsection\<open>OclAllInstances (@pre)\<close>
 
 definition OclAllInstances_at_pre :: "('\<AA> :: object \<rightharpoonup> '\<alpha>) \<Rightarrow> ('\<AA>, '\<alpha> option option) Set"
-                           ("_ .allInstances@pre'(')")
+                           (\<open>_ .allInstances@pre'(')\<close>)
 where  "OclAllInstances_at_pre = OclAllInstances_generic fst"
 
 lemma OclAllInstances_at_pre_defined: "\<tau> \<Turnstile> \<delta> (H .allInstances@pre())"
@@ -732,7 +732,7 @@ qed
 
 subsection\<open>OclIsNew, OclIsDeleted, OclIsMaintained, OclIsAbsent\<close>
 
-definition OclIsNew:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   ("(_).oclIsNew'(')")
+definition OclIsNew:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   (\<open>(_).oclIsNew'(')\<close>)
 where "X .oclIsNew() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \<tau>
                               then \<lfloor>\<lfloor>oid_of (X \<tau>) \<notin> dom(heap(fst \<tau>)) \<and>
                                      oid_of (X \<tau>) \<in> dom(heap(snd \<tau>))\<rfloor>\<rfloor>
@@ -742,19 +742,19 @@ text\<open>The following predicates --- which are not part of the OCL standard d
 complete the goal of \inlineisar+oclIsNew+ by describing where an object belongs.
 \<close>
 
-definition OclIsDeleted:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   ("(_).oclIsDeleted'(')")
+definition OclIsDeleted:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   (\<open>(_).oclIsDeleted'(')\<close>)
 where "X .oclIsDeleted() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \<tau>
                               then \<lfloor>\<lfloor>oid_of (X \<tau>) \<in> dom(heap(fst \<tau>)) \<and>
                                      oid_of (X \<tau>) \<notin> dom(heap(snd \<tau>))\<rfloor>\<rfloor>
                               else invalid \<tau>)"
 
-definition OclIsMaintained:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"("(_).oclIsMaintained'(')")
+definition OclIsMaintained:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"(\<open>(_).oclIsMaintained'(')\<close>)
 where "X .oclIsMaintained() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \<tau>
                               then \<lfloor>\<lfloor>oid_of (X \<tau>) \<in> dom(heap(fst \<tau>)) \<and>
                                      oid_of (X \<tau>) \<in> dom(heap(snd \<tau>))\<rfloor>\<rfloor>
                               else invalid \<tau>)"
 
-definition OclIsAbsent:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   ("(_).oclIsAbsent'(')")
+definition OclIsAbsent:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   (\<open>(_).oclIsAbsent'(')\<close>)
 where "X .oclIsAbsent() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \<tau>
                               then \<lfloor>\<lfloor>oid_of (X \<tau>) \<notin> dom(heap(fst \<tau>)) \<and>
                                      oid_of (X \<tau>) \<notin> dom(heap(snd \<tau>))\<rfloor>\<rfloor>
@@ -785,7 +785,7 @@ between old and new objects in the state (provided that they exist in
 both states), with the exception of those objects.\<close>
 
 definition OclIsModifiedOnly ::"('\<AA>::object,'\<alpha>::{null,object})Set \<Rightarrow> '\<AA> Boolean"
-                        ("_->oclIsModifiedOnly'(')")
+                        (\<open>_->oclIsModifiedOnly'(')\<close>)
 where "X->oclIsModifiedOnly() \<equiv> (\<lambda>(\<sigma>,\<sigma>').
                            let X' = (oid_of ` \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e(X(\<sigma>,\<sigma>'))\<rceil>\<rceil>);
                                S = ((dom (heap \<sigma>) \<inter> dom (heap \<sigma>')) - X')
@@ -829,12 +829,12 @@ definition [simp]: "OclSelf x H fst_snd = (\<lambda>\<tau> . if (\<delta> x) \<t
 
 definition OclSelf_at_pre :: "('\<AA>::object,'\<alpha>::{null,object})val \<Rightarrow>
                       ('\<AA> \<Rightarrow> '\<alpha>) \<Rightarrow>
-                      ('\<AA>::object,'\<alpha>::{null,object})val" ("(_)@pre(_)")
+                      ('\<AA>::object,'\<alpha>::{null,object})val" (\<open>(_)@pre(_)\<close>)
 where "x @pre H = OclSelf x H fst"
 
 definition OclSelf_at_post :: "('\<AA>::object,'\<alpha>::{null,object})val \<Rightarrow>
                       ('\<AA> \<Rightarrow> '\<alpha>) \<Rightarrow>
-                      ('\<AA>::object,'\<alpha>::{null,object})val" ("(_)@post(_)")
+                      ('\<AA>::object,'\<alpha>::{null,object})val" (\<open>(_)@post(_)\<close>)
 where "x @post H = OclSelf x H snd"
 
 subsection\<open>Framing Theorem\<close>

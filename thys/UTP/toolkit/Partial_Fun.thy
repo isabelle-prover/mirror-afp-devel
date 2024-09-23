@@ -21,7 +21,7 @@ typedef ('a, 'b) pfun = "UNIV :: ('a \<rightharpoonup> 'b) set" ..
 
 setup_lifting type_definition_pfun
 
-lift_definition pfun_app :: "('a, 'b) pfun \<Rightarrow> 'a \<Rightarrow> 'b" ("_'(_')\<^sub>p" [999,0] 999) is 
+lift_definition pfun_app :: "('a, 'b) pfun \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>_'(_')\<^sub>p\<close> [999,0] 999) is 
 "\<lambda> f x. if (x \<in> dom f) then the (f x) else undefined" .
 
 lift_definition pfun_upd :: "('a, 'b) pfun \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a, 'b) pfun"
@@ -31,9 +31,9 @@ lift_definition pdom :: "('a, 'b) pfun \<Rightarrow> 'a set" is dom .
 
 lift_definition pran :: "('a, 'b) pfun \<Rightarrow> 'b set" is ran .
 
-lift_definition pfun_comp :: "('b, 'c) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> ('a, 'c) pfun" (infixl "\<circ>\<^sub>p" 55) is map_comp .
+lift_definition pfun_comp :: "('b, 'c) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> ('a, 'c) pfun" (infixl \<open>\<circ>\<^sub>p\<close> 55) is map_comp .
 
-lift_definition pfun_member :: "'a \<times> 'b \<Rightarrow> ('a, 'b) pfun \<Rightarrow> bool" (infix "\<in>\<^sub>p" 50) is "(\<in>\<^sub>m)" .
+lift_definition pfun_member :: "'a \<times> 'b \<Rightarrow> ('a, 'b) pfun \<Rightarrow> bool" (infix \<open>\<in>\<^sub>p\<close> 50) is "(\<in>\<^sub>m)" .
 
 lift_definition pId_on :: "'a set \<Rightarrow> ('a, 'a) pfun" is "\<lambda> A x. if (x \<in> A) then Some x else None" .
 
@@ -43,10 +43,10 @@ abbreviation pId :: "('a, 'a) pfun" where
 lift_definition plambda :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a, 'b) pfun"
 is "\<lambda> P f x. if (P x) then Some (f x) else None" .
 
-lift_definition pdom_res :: "'a set \<Rightarrow> ('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun" (infixl "\<lhd>\<^sub>p" 85)
+lift_definition pdom_res :: "'a set \<Rightarrow> ('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun" (infixl \<open>\<lhd>\<^sub>p\<close> 85)
 is "\<lambda> A f. restrict_map f A" .
 
-lift_definition pran_res :: "('a, 'b) pfun \<Rightarrow> 'b set \<Rightarrow> ('a, 'b) pfun" (infixl "\<rhd>\<^sub>p" 85)
+lift_definition pran_res :: "('a, 'b) pfun \<Rightarrow> 'b set \<Rightarrow> ('a, 'b) pfun" (infixl \<open>\<rhd>\<^sub>p\<close> 85)
 is ran_restrict_map .
 
 lift_definition pfun_graph :: "('a, 'b) pfun \<Rightarrow> ('a \<times> 'b) set" is map_graph .
@@ -65,7 +65,7 @@ lift_definition zero_pfun :: "('a, 'b) pfun" is "Map.empty" .
 instance ..
 end
 
-abbreviation pempty :: "('a, 'b) pfun" ("{}\<^sub>p")
+abbreviation pempty :: "('a, 'b) pfun" (\<open>{}\<^sub>p\<close>)
 where "pempty \<equiv> 0"
 
 instantiation pfun :: (type, type) plus
@@ -90,7 +90,7 @@ lift_definition inf_pfun :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightar
 instance ..
 end
 
-abbreviation pfun_inter :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun" (infixl "\<inter>\<^sub>p" 80)
+abbreviation pfun_inter :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun" (infixl \<open>\<inter>\<^sub>p\<close> 80)
 where "pfun_inter \<equiv> inf"
 
 instantiation pfun :: (type, type) order
@@ -103,10 +103,10 @@ instance
   by (intro_classes, (transfer, auto intro: map_le_trans simp add: map_le_antisym)+)
 end
 
-abbreviation pfun_subset :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> bool" (infix "\<subset>\<^sub>p" 50)
+abbreviation pfun_subset :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> bool" (infix \<open>\<subset>\<^sub>p\<close> 50)
 where "pfun_subset \<equiv> less"
 
-abbreviation pfun_subset_eq :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> bool" (infix "\<subseteq>\<^sub>p" 50)
+abbreviation pfun_subset_eq :: "('a, 'b) pfun \<Rightarrow> ('a, 'b) pfun \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>p\<close> 50)
 where "pfun_subset_eq \<equiv> less_eq"
 
 instance pfun :: (type, type) semilattice_inf
@@ -117,9 +117,9 @@ lemma pfun_subset_eq_least [simp]:
   by (transfer, auto)
 
 syntax
-  "_PfunUpd"  :: "[('a, 'b) pfun, maplets] => ('a, 'b) pfun" ("_'(_')\<^sub>p" [900,0]900)
-  "_Pfun"     :: "maplets => ('a, 'b) pfun"            ("(1{_}\<^sub>p)")
-  "_plam"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("\<lambda> _ | _ . _" [0,0,10] 10)
+  "_PfunUpd"  :: "[('a, 'b) pfun, maplets] => ('a, 'b) pfun" (\<open>_'(_')\<^sub>p\<close> [900,0]900)
+  "_Pfun"     :: "maplets => ('a, 'b) pfun"            (\<open>(1{_}\<^sub>p)\<close>)
+  "_plam"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<lambda> _ | _ . _\<close> [0,0,10] 10)
 
 syntax_consts
   "_PfunUpd" "_Pfun" == pfun_upd and

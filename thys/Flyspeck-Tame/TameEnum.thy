@@ -10,10 +10,10 @@ begin
 definition is_tame :: "graph \<Rightarrow> bool" where
 "is_tame g  \<equiv>  tame10 g \<and> tame11a g \<and> tame12o g \<and> is_tame13a g"
 
-definition next_tame :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_tame\<^bsub>_\<^esub>") where
+definition next_tame :: "nat \<Rightarrow> graph \<Rightarrow> graph list" (\<open>next'_tame\<^bsub>_\<^esub>\<close>) where
 "next_tame\<^bsub>p\<^esub> \<equiv> filter (\<lambda>g. \<not> final g \<or> is_tame g) \<circ> next_tame0\<^bsub>p\<^esub>"
 
-definition TameEnumP :: "nat \<Rightarrow> graph set" ("TameEnum\<^bsub>_\<^esub>") where
+definition TameEnumP :: "nat \<Rightarrow> graph set" (\<open>TameEnum\<^bsub>_\<^esub>\<close>) where
 "TameEnum\<^bsub>p\<^esub> \<equiv> {g. Seed\<^bsub>p\<^esub> [next_tame\<^bsub>p\<^esub>]\<rightarrow>* g \<and> final g}"
 
 definition TameEnum :: "graph set" where

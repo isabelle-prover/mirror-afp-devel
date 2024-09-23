@@ -71,7 +71,7 @@ fun interleaves ::
 
 abbreviation interleaves_syntax ::
     "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_ \<simeq> {_, _, _})" [60, 60, 60] 51)
+    (\<open>(_ \<simeq> {_, _, _})\<close> [60, 60, 60] 51)
   where "xs \<simeq> {ys, zs, P} \<equiv> interleaves P xs ys zs"
 
 text \<open>
@@ -528,7 +528,7 @@ fun Interleaves ::
 
 abbreviation Interleaves_syntax ::
     "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> bool"
-    ("(_ \<cong> {_, _, _})" [60, 60, 60] 51)
+    (\<open>(_ \<cong> {_, _, _})\<close> [60, 60, 60] 51)
   where "xs \<cong> {ys, zs, P} \<equiv> Interleaves P xs ys zs"
 
 text \<open>

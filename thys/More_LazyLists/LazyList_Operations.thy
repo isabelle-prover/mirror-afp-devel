@@ -14,15 +14,15 @@ by (metis co.enat.exhaust eSuc_minus_1 idiff_0 iless_Suc_eq less_imp_le)
 
 (* Some notations: *)
 
-abbreviation LNil_abbr ("[[]]") where "LNil_abbr \<equiv> LNil"
+abbreviation LNil_abbr (\<open>[[]]\<close>) where "LNil_abbr \<equiv> LNil"
 
-abbreviation LCons_abbr (infixr "$" 65) where "x $ xs \<equiv> LCons x xs"
+abbreviation LCons_abbr (infixr \<open>$\<close> 65) where "x $ xs \<equiv> LCons x xs"
 
 abbreviation lnever :: "('a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool" where "lnever U \<equiv> llist_all (\<lambda> a. \<not> U a)"
   
 syntax
   \<comment> \<open>llist Enumeration\<close>
-  "_llist" :: "args => 'a llist"    ("[[(_)]]")
+  "_llist" :: "args => 'a llist"    (\<open>[[(_)]]\<close>)
 
 syntax_consts
   "_llist" == LCons

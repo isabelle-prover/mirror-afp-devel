@@ -74,9 +74,9 @@ primrec atom_com :: "\<^cancel>\<open>('s,'p,'f) body \<Rightarrow>\<close> ('s,
 
 inductive
       "step"::"[('s,'p,'f) body, ('s,'p,'f) config,('s,'p,'f) config] \<Rightarrow> bool"
-                                ("_\<turnstile> (_ \<rightarrow>/ _)" [81,81,81] 100)
+                                (\<open>_\<turnstile> (_ \<rightarrow>/ _)\<close> [81,81,81] 100)
   and "step_rtrancl" :: "[('s,'p,'f) body, ('s,'p,'f) config,('s,'p,'f) config] \<Rightarrow> bool"
-                                ("_ \<turnstile> (_ \<rightarrow>\<^sup>*/ _)" [81,81,81] 100)
+                                (\<open>_ \<turnstile> (_ \<rightarrow>\<^sup>*/ _)\<close> [81,81,81] 100)
   for \<Gamma>::"('s,'p,'f) body"
 where
   "\<Gamma> \<turnstile> a \<rightarrow>\<^sup>* b \<equiv> (step \<Gamma>)\<^sup>*\<^sup>* a b"
@@ -202,13 +202,13 @@ inductive_cases step_Normal_elim_cases [cases set]:
 
 abbreviation 
  "step_trancl" :: "[('s,'p,'f) body, ('s,'p,'f) config,('s,'p,'f) config] \<Rightarrow> bool"
-                                ("_\<turnstile> (_ \<rightarrow>\<^sup>+/ _)" [81,81,81] 100)
+                                (\<open>_\<turnstile> (_ \<rightarrow>\<^sup>+/ _)\<close> [81,81,81] 100)
  where
   "\<Gamma> \<turnstile>cf0 \<rightarrow>\<^sup>+ cf1 \<equiv> (CONST step \<Gamma>)\<^sup>+\<^sup>+ cf0 cf1"
 
 abbreviation 
  "step_n_trancl" :: "[('s,'p,'f) body, ('s,'p,'f) config,nat,('s,'p,'f) config] \<Rightarrow> bool"
-                                ("_\<turnstile> (_ \<rightarrow>\<^sup>n_/ _)" [81,81,81,81] 100)
+                                (\<open>_\<turnstile> (_ \<rightarrow>\<^sup>n_/ _)\<close> [81,81,81,81] 100)
  where
   "\<Gamma> \<turnstile>cf0 \<rightarrow>\<^sup>nn cf1 \<equiv> (CONST step \<Gamma> ^^ n) cf0 cf1"
 

@@ -137,12 +137,12 @@ definition dealloc :: "'a::heap.addr_of \<Rightarrow> heap.t \<Rightarrow> heap.
   "dealloc r s = s |` {heap.addr_of r}"
 
 \<comment>\<open> allows no changes to \<open>rs\<close>, asserts the \<open>rep_inv\<close> of \<open>rs\<close> is valid, arbitrary changes to \<open>-rs\<close> \<close>
-definition Id_on :: "'a::heap.addr_of set \<Rightarrow> heap.t rel" ("heap.Id\<^bsub>_\<^esub>") where
+definition Id_on :: "'a::heap.addr_of set \<Rightarrow> heap.t rel" (\<open>heap.Id\<^bsub>_\<^esub>\<close>) where
   "heap.Id\<^bsub>rs\<^esub> = (\<Inter>r\<in>rs. heap.rep_inv_rel r \<inter> Id\<^bsub>\<lambda>s. s (heap.addr_of r)\<^esub>)"
 
 \<comment>\<open> allows arbitrary changes to \<open>rs\<close> provided the \<open>rep_inv\<close> of \<open>rs\<close> is respected.
     requires addresses in \<open>-heap.addr_of ` rs\<close> to be unchanged \<close>
-definition modifies :: "'a::heap.addr_of set \<Rightarrow> heap.t rel" ("heap.modifies\<^bsub>_\<^esub>") where
+definition modifies :: "'a::heap.addr_of set \<Rightarrow> heap.t rel" (\<open>heap.modifies\<^bsub>_\<^esub>\<close>) where
   "heap.modifies\<^bsub>rs\<^esub> = (\<Inter>r\<in>rs. heap.rep_inv_rel r) \<inter> {(s, s'). \<forall>r\<in>-heap.addr_of ` rs. s r = s' r}"
 
 setup \<open>Sign.mandatory_path "get"\<close>
@@ -528,10 +528,10 @@ definition coerce :: "('i::Ix, 'a::heap.rep) array \<Rightarrow> ('j \<times> 'j
                  then Some (Array b (array.arr a))
                  else None)"
 
-definition Id_on :: "('i::Ix, 'a::heap.rep) array \<Rightarrow> 'i set \<Rightarrow> heap.t rel" ("Array.Id\<^bsub>_, _\<^esub>") where
+definition Id_on :: "('i::Ix, 'a::heap.rep) array \<Rightarrow> 'i set \<Rightarrow> heap.t rel" (\<open>Array.Id\<^bsub>_, _\<^esub>\<close>) where
   "Array.Id\<^bsub>a, is\<^esub> = heap.rep_inv_rel a \<inter> {(s, s'). \<forall>i\<in>is. Array.get a i s = Array.get a i s'}"
 
-definition modifies :: "('i::Ix, 'a::heap.rep) array \<Rightarrow> 'i set \<Rightarrow> heap.t rel" ("Array.modifies\<^bsub>_, _\<^esub>") where
+definition modifies :: "('i::Ix, 'a::heap.rep) array \<Rightarrow> 'i set \<Rightarrow> heap.t rel" (\<open>Array.modifies\<^bsub>_, _\<^esub>\<close>) where
   "Array.modifies\<^bsub>a, is\<^esub>
     = heap.modifies\<^bsub>{a}\<^esub> \<inter> {(s, s'). \<forall>i\<in>set (Array.interval a) - is. Array.get a i s = Array.get a i s'}"
 

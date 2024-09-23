@@ -977,12 +977,12 @@ lemma K2_isometry_inverse_inv [simp]:
   by simp
 
 definition real_hyp2_C :: "[hyp2, hyp2, hyp2, hyp2] \<Rightarrow> bool"
-  ("_ _ \<congruent>\<^sub>K _ _" [99,99,99,99] 50) where
+  (\<open>_ _ \<congruent>\<^sub>K _ _\<close> [99,99,99,99] 50) where
   "p q \<congruent>\<^sub>K r s \<equiv>
     (\<exists> A. is_K2_isometry A \<and> hyp2_cltn2 p A = r \<and> hyp2_cltn2 q A = s)"
 
 definition real_hyp2_B :: "[hyp2, hyp2, hyp2] \<Rightarrow> bool"
-("B\<^sub>K _ _ _" [99,99,99] 50) where
+(\<open>B\<^sub>K _ _ _\<close> [99,99,99] 50) where
   "B\<^sub>K p q r \<equiv> B\<^sub>\<real> (hyp2_rep p) (hyp2_rep q) (hyp2_rep r)"
 
 

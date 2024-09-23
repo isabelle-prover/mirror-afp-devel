@@ -46,7 +46,7 @@ begin
 
   type_synonym cmd = SM_Syntax.cmd
 
-  notation cmd.Seq (infixr ";" 50)
+  notation cmd.Seq (infixr \<open>;\<close> 50)
 
   definition efalse :: "exp" where "efalse \<equiv> e_const 0"
   definition etrue :: "exp" where "etrue \<equiv> e_const 1"

@@ -21,17 +21,17 @@ subsection \<open>General Definitions\<close>
 
 text\<open>  The following is an existence predicate for our object-language. (We have previously shown it is equivalent to its
  meta-logical counterpart.) \<close>  
-abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" ("E!") where
+abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" (\<open>E!\<close>) where
   "E! x  \<equiv> (\<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w)"
   
 text\<open> Reminder: The `\<open>\<lparr>_\<rparr>\<close>' parenthesis are used to convert an extensional object into its `rigid'
 intensional counterpart (e.g. \<open>\<lparr>\<phi>\<rparr> \<equiv> \<lambda>w. \<phi>\<close>). \<close>
   
-consts positiveProperty::"\<up>\<langle>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>")
-abbreviation God::"\<up>\<langle>\<zero>\<rangle>" ("G") where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> \<lparr>Y x\<rparr>)"
-abbreviation God_star::"\<up>\<langle>\<zero>\<rangle>" ("G*") where "G* \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<leftrightarrow> \<lparr>Y x\<rparr>)"
+consts positiveProperty::"\<up>\<langle>\<langle>\<zero>\<rangle>\<rangle>" (\<open>\<P>\<close>)
+abbreviation God::"\<up>\<langle>\<zero>\<rangle>" (\<open>G\<close>) where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> \<lparr>Y x\<rparr>)"
+abbreviation God_star::"\<up>\<langle>\<zero>\<rangle>" (\<open>G*\<close>) where "G* \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<leftrightarrow> \<lparr>Y x\<rparr>)"
 
-abbreviation Entailment::"\<up>\<langle>\<langle>\<zero>\<rangle>,\<langle>\<zero>\<rangle>\<rangle>" (infix "\<Rrightarrow>" 60) where
+abbreviation Entailment::"\<up>\<langle>\<langle>\<zero>\<rangle>,\<langle>\<zero>\<rangle>\<rangle>" (infix \<open>\<Rrightarrow>\<close> 60) where
   "X \<Rrightarrow> Y \<equiv>  \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ez. \<lparr>X z\<rparr> \<^bold>\<rightarrow> \<lparr>Y z\<rparr>)"
   
 subsection \<open>Part I - God's Existence is Possible\<close>  
@@ -79,7 +79,7 @@ lemma A4b: "\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<righta
     
 lemma True nitpick[satisfy] oops \<comment> \<open>model found: so far all axioms consistent\<close>
 
-abbreviation essenceOf::"\<up>\<langle>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" ("\<E>") where
+abbreviation essenceOf::"\<up>\<langle>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" (\<open>\<E>\<close>) where
   "\<E> Y x \<equiv> \<lparr>Y x\<rparr> \<^bold>\<and> (\<^bold>\<forall>Z::\<langle>\<zero>\<rangle>. \<lparr>Z x\<rparr> \<^bold>\<rightarrow> Y \<Rrightarrow> Z)"
   
 text\<open>  Theorem 11.20 - Informal Proposition 5  \<close>
@@ -87,7 +87,7 @@ theorem GodIsEssential: "\<lfloor>\<^bold>\<forall>x. G x \<^bold>\<rightarrow> 
 text\<open>  Theorem 11.21  \<close>
 theorem God_starIsEssential: "\<lfloor>\<^bold>\<forall>x. G* x \<^bold>\<rightarrow> ((\<E> \<down>\<^sub>1G*) x)\<rfloor>" by meson
     
-abbreviation necExistencePred:: "\<up>\<langle>\<zero>\<rangle>" ("NE") where
+abbreviation necExistencePred:: "\<up>\<langle>\<zero>\<rangle>" (\<open>NE\<close>) where
   "NE x  \<equiv> \<lambda>w. (\<^bold>\<forall>Y.  \<E> Y x \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<exists>\<^sup>Ez. \<lparr>Y z\<rparr>)) w"
 text\<open> \bigbreak \<close>
 text\<open>  Informal Axiom 5 \<close>

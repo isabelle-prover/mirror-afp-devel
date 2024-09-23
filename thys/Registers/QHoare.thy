@@ -4,7 +4,7 @@ theory QHoare
   imports Quantum_Extra
 begin
 
-no_notation Order.top ("\<top>\<index>")
+no_notation Order.top (\<open>\<top>\<index>\<close>)
 
 locale qhoare =
   fixes memory_type :: "'mem::finite itself"
@@ -18,7 +18,7 @@ definition "program S = fold (o\<^sub>C\<^sub>L) S id_cblinfun" for S :: \<open>
 definition hoare :: \<open>'mem ell2 ccsubspace \<Rightarrow> ('mem ell2 \<Rightarrow>\<^sub>C\<^sub>L 'mem ell2) list \<Rightarrow> 'mem ell2 ccsubspace \<Rightarrow> bool\<close> where
   "hoare C p D \<longleftrightarrow> (\<forall>\<psi>\<in>space_as_set C. program p *\<^sub>V \<psi> \<in> space_as_set D)" for C p D
 
-definition EQ :: "('a update \<Rightarrow> 'mem update) \<Rightarrow> 'a ell2 \<Rightarrow> 'mem ell2 ccsubspace" (infix "=\<^sub>q" 75) where
+definition EQ :: "('a update \<Rightarrow> 'mem update) \<Rightarrow> 'a ell2 \<Rightarrow> 'mem ell2 ccsubspace" (infix \<open>=\<^sub>q\<close> 75) where
   "EQ R \<psi> = R (selfbutter \<psi>) *\<^sub>S \<top>"
 
 lemma program_skip[simp]: "program [] = id_cblinfun"

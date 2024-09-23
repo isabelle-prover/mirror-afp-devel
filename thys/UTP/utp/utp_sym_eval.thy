@@ -7,7 +7,7 @@ begin
 text \<open> The following operator applies a variable context $\Gamma$ as an assignment, and composes 
   it with a relation $P$ for the purposes of evaluation. \<close>
 
-definition utp_sym_eval :: "'s usubst \<Rightarrow> 's hrel \<Rightarrow> 's hrel" (infixr "\<Turnstile>" 55) where
+definition utp_sym_eval :: "'s usubst \<Rightarrow> 's hrel \<Rightarrow> 's hrel" (infixr \<open>\<Turnstile>\<close> 55) where
 [upred_defs]: "utp_sym_eval \<Gamma> P = (\<langle>\<Gamma>\<rangle>\<^sub>a ;; P)"
 
 named_theorems symeval
@@ -42,7 +42,7 @@ lemma while_inv_false_symeval [symeval]: "\<lbrakk> \<Gamma> \<dagger> b = false
 method sym_eval = (simp add: symeval usubst lit_simps[THEN sym]), (simp del: One_nat_def add: One_nat_def[THEN sym])?
 
 syntax
-  "_terminated" :: "logic \<Rightarrow> logic" ("terminated: _" [999] 999)
+  "_terminated" :: "logic \<Rightarrow> logic" (\<open>terminated: _\<close> [999] 999)
 
 translations
   "terminated: \<Gamma>" == "\<Gamma> \<Turnstile> II"

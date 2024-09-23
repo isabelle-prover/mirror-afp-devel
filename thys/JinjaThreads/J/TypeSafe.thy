@@ -104,7 +104,7 @@ qed auto
 
 text\<open>Combining conformance of heap and local variables:\<close>
 
-definition (in J_heap_conf_base) sconf :: "env \<Rightarrow> ('addr, 'heap) Jstate \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>"   [51,51]50)
+definition (in J_heap_conf_base) sconf :: "env \<Rightarrow> ('addr, 'heap) Jstate \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<surd>\<close>   [51,51]50)
   where "E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in hconf h \<and> P,h \<turnstile> l (:\<le>) E \<and> preallocated h"
 
 context J_conf_read begin

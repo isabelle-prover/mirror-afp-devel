@@ -243,9 +243,9 @@ lift_definition image_zmset :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a zmultiset
   by (auto simp: equiv_zmset_def simp flip: image_mset_union)
 
 syntax (ASCII)
-  "_comprehension_zmset" :: "'a \<Rightarrow> 'b \<Rightarrow> 'b zmultiset \<Rightarrow> 'a zmultiset"  ("({#_/. _ :#z _#})")
+  "_comprehension_zmset" :: "'a \<Rightarrow> 'b \<Rightarrow> 'b zmultiset \<Rightarrow> 'a zmultiset"  (\<open>({#_/. _ :#z _#})\<close>)
 syntax
-  "_comprehension_zmset" :: "'a \<Rightarrow> 'b \<Rightarrow> 'b zmultiset \<Rightarrow> 'a zmultiset"  ("({#_/. _ \<in>#\<^sub>z _#})")
+  "_comprehension_zmset" :: "'a \<Rightarrow> 'b \<Rightarrow> 'b zmultiset \<Rightarrow> 'a zmultiset"  (\<open>({#_/. _ \<in>#\<^sub>z _#})\<close>)
 syntax_consts
   "_comprehension_zmset" \<rightleftharpoons> image_zmset
 translations
@@ -391,13 +391,13 @@ lemma alw_relates: "alw (relates P) s \<longleftrightarrow> P (shd s) (shd (stl 
 
 subsection\<open>Notation\<close>
 
-no_notation AND  (infix "aand" 60)
-no_notation OR   (infix "or" 60)
-no_notation IMPL (infix "imp" 60)
+no_notation AND  (infix \<open>aand\<close> 60)
+no_notation OR   (infix \<open>or\<close> 60)
+no_notation IMPL (infix \<open>imp\<close> 60)
 
-notation AND  (infixr "aand" 70)
-notation OR   (infixr "or" 65)
-notation IMPL (infixr "imp" 60)
+notation AND  (infixr \<open>aand\<close> 70)
+notation OR   (infixr \<open>or\<close> 65)
+notation IMPL (infixr \<open>imp\<close> 60)
 
 lifting_update multiset.lifting
 lifting_forget multiset.lifting

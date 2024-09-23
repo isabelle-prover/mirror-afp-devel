@@ -12,20 +12,20 @@ abbreviation "Mono_Fun_Rel R S \<equiv> Mono_Dep_Fun_Rel R (\<lambda>_ _. S)"
 bundle Mono_Dep_Fun_Rel_syntax begin
 syntax
   "_Mono_Fun_Rel_rel" :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow>
-    ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("(_) \<Rrightarrow>\<oplus> (_)" [41, 40] 40)
+    ('a \<Rightarrow> 'b) \<Rightarrow> bool" (\<open>(_) \<Rrightarrow>\<oplus> (_)\<close> [41, 40] 40)
   "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" ("'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)" [41, 41, 41, 40] 40)
+    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)
   "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)" [41, 41, 41, 41, 40] 40)
+    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
 end
 bundle no_Mono_Dep_Fun_Rel_syntax begin
 no_syntax
   "_Mono_Fun_Rel_rel" :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow>
-    ('a \<Rightarrow> 'b) \<Rightarrow> bool" ("(_) \<Rrightarrow>\<oplus> (_)" [41, 40] 40)
+    ('a \<Rightarrow> 'b) \<Rightarrow> bool" (\<open>(_) \<Rrightarrow>\<oplus> (_)\<close> [41, 40] 40)
   "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" ("'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)" [41, 41, 41, 40] 40)
+    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)
   "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)" [41, 41, 41, 41, 40] 40)
+    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
 end
 unbundle Mono_Dep_Fun_Rel_syntax
 
@@ -44,17 +44,17 @@ begin
 
 sublocale o : orders L "R a b" for a b .
 
-notation L (infix "\<le>\<^bsub>L\<^esub>" 50)
-notation o.ge_left (infix "\<ge>\<^bsub>L\<^esub>" 50)
+notation L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
+notation o.ge_left (infix \<open>\<ge>\<^bsub>L\<^esub>\<close> 50)
 
-notation R ("(\<le>\<^bsub>R (_) (_)\<^esub>)" 50)
+notation R (\<open>(\<le>\<^bsub>R (_) (_)\<^esub>)\<close> 50)
 abbreviation "right_infix c a b d \<equiv> (\<le>\<^bsub>R a b\<^esub>) c d"
-notation right_infix ("(_) \<le>\<^bsub>R (_) (_)\<^esub> (_)" [51,51,51,51] 50)
+notation right_infix (\<open>(_) \<le>\<^bsub>R (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
 
-notation o.ge_right ("(\<ge>\<^bsub>R (_) (_)\<^esub>)" 50)
+notation o.ge_right (\<open>(\<ge>\<^bsub>R (_) (_)\<^esub>)\<close> 50)
 
 abbreviation (input) "ge_right_infix d a b c \<equiv> (\<ge>\<^bsub>R a b\<^esub>) d c"
-notation ge_right_infix ("(_) \<ge>\<^bsub>R (_) (_)\<^esub> (_)" [51,51,51,51] 50)
+notation ge_right_infix (\<open>(_) \<ge>\<^bsub>R (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
 
 abbreviation (input) "DFR \<equiv> ((a b \<Colon> L) \<Rrightarrow> R a b)"
 

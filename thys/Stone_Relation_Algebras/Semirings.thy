@@ -297,10 +297,10 @@ We therefore reintroduce it without requiring a unary inverse.
 \<close>
 
 no_notation
-  inverse_divide (infixl "'/" 70)
+  inverse_divide (infixl \<open>'/\<close> 70)
 
 notation
-  divide (infixl "'/" 70)
+  divide (infixl \<open>'/\<close> 70)
 
 class residuated_pre_left_semiring = pre_left_semiring + divide +
   assumes lres_galois: "x * y \<le> z \<longleftrightarrow> x \<le> z / y"

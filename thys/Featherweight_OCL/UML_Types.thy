@@ -57,12 +57,12 @@ text\<open>
   the presentation more like a textbook:
 \<close>
 
-no_notation ceiling  ("\<lceil>_\<rceil>") (* For Real Numbers only ... Otherwise has unfortunate side-effects on syntax. *)
-no_notation floor  ("\<lfloor>_\<rfloor>") (* For Real Numbers only ... Otherwise has unfortunate side-effects on syntax. *)
+no_notation ceiling  (\<open>\<lceil>_\<rceil>\<close>) (* For Real Numbers only ... Otherwise has unfortunate side-effects on syntax. *)
+no_notation floor  (\<open>\<lfloor>_\<rfloor>\<close>) (* For Real Numbers only ... Otherwise has unfortunate side-effects on syntax. *)
 
-type_notation option ("\<langle>_\<rangle>\<^sub>\<bottom>") (* NOTE: "_\<^sub>\<bottom>" also works *)
-notation Some ("\<lfloor>(_)\<rfloor>")
-notation None ("\<bottom>")
+type_notation option (\<open>\<langle>_\<rangle>\<^sub>\<bottom>\<close>) (* NOTE: "_\<^sub>\<bottom>" also works *)
+notation Some (\<open>\<lfloor>(_)\<rfloor>\<close>)
+notation None (\<open>\<bottom>\<close>)
 
 text\<open>These commands introduce an alternative, more compact notation for the type constructor
  @{typ "'\<alpha> option"}, namely @{typ "\<langle>'\<alpha>\<rangle>\<^sub>\<bottom>"}. Furthermore, the constructors @{term "Some X"} and 
@@ -72,7 +72,7 @@ text\<open>
   The following function (corresponding to @{term the} in the Isabelle/HOL library)
   is defined as the inverse of the injection @{term Some}.
 \<close>
-fun    drop :: "'\<alpha> option \<Rightarrow> '\<alpha>" ("\<lceil>(_)\<rceil>")
+fun    drop :: "'\<alpha> option \<Rightarrow> '\<alpha>" (\<open>\<lceil>(_)\<rceil>\<close>)
 where  drop_lift[simp]: "\<lceil>\<lfloor>v\<rfloor>\<rceil> = v"
 
 text\<open>The definitions for the constants and operations based on functions
@@ -89,7 +89,7 @@ is semantically not only superfluous, but from an Isabelle perspective strictly 
 the way for certain consistency checks performed by the definitional packages.
 \<close>
 
-definition Sem :: "'a \<Rightarrow> 'a" ("I\<lbrakk>_\<rbrakk>")
+definition Sem :: "'a \<Rightarrow> 'a" (\<open>I\<lbrakk>_\<rbrakk>\<close>)
 where "I\<lbrakk>x\<rbrakk> \<equiv> x"
 
 
@@ -412,7 +412,7 @@ end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>,'\<beta>) Pair  = "('\<AA>, ('\<alpha>,'\<beta>) Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
-type_notation   Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e ("Pair'(_,_')")
+type_notation   Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (\<open>Pair'(_,_')\<close>)
 
 subsection\<open>The Construction of the Set Type\<close>
 
@@ -452,7 +452,7 @@ end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>) Set  = "('\<AA>, '\<alpha> Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
-type_notation   Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e ("Set'(_')")
+type_notation   Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (\<open>Set'(_')\<close>)
 
 subsection\<open>The Construction of the Bag Type\<close>
 text\<open>The core of an own type construction is done via a type
@@ -496,7 +496,7 @@ end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>) Bag  = "('\<AA>, '\<alpha> Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
-type_notation   Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e ("Bag'(_')")
+type_notation   Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (\<open>Bag'(_')\<close>)
 
 subsection\<open>The Construction of the Sequence Type\<close>
 
@@ -536,7 +536,7 @@ end
 
 text\<open>...  and lifting this type to the format of a valuation gives us:\<close>
 type_synonym    ('\<AA>,'\<alpha>) Sequence  = "('\<AA>, '\<alpha> Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) val"
-type_notation   Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e ("Sequence'(_')")
+type_notation   Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (\<open>Sequence'(_')\<close>)
 
 subsection\<open>Discussion: The Representation of UML/OCL Types in Featherweight OCL\<close>
 text\<open>In the introduction, we mentioned that there is an ``injective representation

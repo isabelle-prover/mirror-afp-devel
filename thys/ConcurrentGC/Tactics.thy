@@ -26,12 +26,12 @@ Specialise CIMP's pre/post validity to our system.
 \<close>
 
 definition
-  valid_proc :: "('field, 'mut, 'payload, 'ref) gc_pred \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_pred \<Rightarrow> bool" ("\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>")
+  valid_proc :: "('field, 'mut, 'payload, 'ref) gc_pred \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_pred \<Rightarrow> bool" (\<open>\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>\<close>)
 where
   "\<lbrace>P\<rbrace> p \<lbrace>Q\<rbrace> = (\<forall>(c, afts) \<in> vcg_fragments (gc_coms p). gc_coms, p, afts \<turnstile> \<lbrace>P\<rbrace> c \<lbrace>Q\<rbrace>)"
 
 abbreviation
-  valid_proc_inv_syn :: "('field, 'mut, 'payload, 'ref) gc_pred \<Rightarrow> 'mut process_name \<Rightarrow> bool" ("\<lbrace>_\<rbrace> _" [100,0] 100)
+  valid_proc_inv_syn :: "('field, 'mut, 'payload, 'ref) gc_pred \<Rightarrow> 'mut process_name \<Rightarrow> bool" (\<open>\<lbrace>_\<rbrace> _\<close> [100,0] 100)
 where
   "\<lbrace>P\<rbrace> p \<equiv> \<lbrace>P\<rbrace> p \<lbrace>P\<rbrace>"
 

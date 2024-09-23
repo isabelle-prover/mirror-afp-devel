@@ -15,7 +15,7 @@ begin
 subsection \<open>Domain Semigroups and Domain Monoids\<close>
 
 class domain_op =
-  fixes domain_op :: "'a \<Rightarrow> 'a" ("d")
+  fixes domain_op :: "'a \<Rightarrow> 'a" (\<open>d\<close>)
 
 text \<open>First we define the class of domain semigroups. Axioms are taken from~\<^cite>\<open>"DesharnaisJipsenStruth"\<close>.\<close>
 
@@ -68,7 +68,7 @@ lemma d_type: "\<forall>P. (\<forall>x. x = d x \<longrightarrow> P x) \<longlef
 
 text \<open>We define the semilattice ordering on domain semigroups and explore the semilattice of domain elements from the order point of view.\<close>
 
-definition ds_ord :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50) where
+definition ds_ord :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50) where
   "x \<sqsubseteq> y \<longleftrightarrow> x = d x \<cdot> y"
 
 lemma ds_ord_refl: "x \<sqsubseteq> x"
@@ -658,7 +658,7 @@ class domain_semiring_top = domain_semiring + order_top
 
 begin
 
-notation top ("\<top>")
+notation top (\<open>\<top>\<close>)
 
 lemma kat_equivalence_greatest: "d x \<le> d y \<longleftrightarrow> x \<le> d y \<cdot> \<top>"
 proof
@@ -681,7 +681,7 @@ begin
 
 text \<open>We define a forward diamond operator over a domain semiring. A more modular consideration is not given at the moment.\<close>
 
-definition fd :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("( |_\<rangle> _)" [61,81] 82) where
+definition fd :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>( |_\<rangle> _)\<close> [61,81] 82) where
   "|x\<rangle> y = d (x \<cdot> y)"
 
 lemma fdia_d_simp [simp]: "|x\<rangle> d y = |x\<rangle> y"

@@ -23,14 +23,14 @@ isomorphism): \<open>\<simeq>\<close> also allows to reverse the orientation of
 all faces.\<close>
 
 consts
- pr_isomorphic  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<cong>" 60)
+ pr_isomorphic  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<cong>\<close> 60)
 (* isomorphic :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<simeq>" 60)
 *)
 (*
 definition "congs"  :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<cong>" 60) where
  "F\<^sub>1 \<cong> (F\<^sub>2::'a list) \<equiv> \<exists>n. F\<^sub>2 = rotate n F\<^sub>1"
 *)
-definition Iso :: "('a list * 'a list) set" ("{\<cong>}") where
+definition Iso :: "('a list * 'a list) set" (\<open>{\<cong>}\<close>) where
  "{\<cong>} \<equiv> {(F\<^sub>1, F\<^sub>2). F\<^sub>1 \<cong> F\<^sub>2}"
 
 lemma [iff]: "((x,y) \<in> {\<cong>}) = x \<cong> y"
@@ -831,7 +831,7 @@ definition is_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow
 definition is_iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
 "is_iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<equiv> is_Iso \<phi> (set Fs\<^sub>1) (set Fs\<^sub>2)"
 
-definition iso_fgraph :: "'a fgraph \<Rightarrow> 'a fgraph \<Rightarrow> bool" (infix "\<simeq>" 60) where
+definition iso_fgraph :: "'a fgraph \<Rightarrow> 'a fgraph \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 60) where
 "g\<^sub>1 \<simeq> g\<^sub>2  \<equiv>  \<exists>\<phi>. is_iso \<phi> g\<^sub>1 g\<^sub>2"
 
 
@@ -901,11 +901,11 @@ subsection\<open>Elementhood and containment modulo\<close>
 interpretation qle_gr: quasi_order "(\<simeq>)"
 proof qed (auto intro:iso_fgraph_trans)
 
-abbreviation qle_gr_in :: "'a fgraph \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<in>\<^sub>\<simeq>" 60)
+abbreviation qle_gr_in :: "'a fgraph \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix \<open>\<in>\<^sub>\<simeq>\<close> 60)
 where "x \<in>\<^sub>\<simeq> M \<equiv> qle_gr.in_qle x M"
-abbreviation qle_gr_sub :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "\<subseteq>\<^sub>\<simeq>" 60)
+abbreviation qle_gr_sub :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix \<open>\<subseteq>\<^sub>\<simeq>\<close> 60)
 where "x \<subseteq>\<^sub>\<simeq> M \<equiv> qle_gr.subseteq_qle x M"
-abbreviation qle_gr_eq :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix "=\<^sub>\<simeq>" 60)
+abbreviation qle_gr_eq :: "'a fgraph set \<Rightarrow> 'a fgraph set \<Rightarrow> bool"  (infix \<open>=\<^sub>\<simeq>\<close> 60)
 where "x =\<^sub>\<simeq> M \<equiv> qle_gr.seteq_qle x M"
 
 end

@@ -11,14 +11,14 @@ context env begin
 definition
   "weakSimulation" :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>
                        ('b \<times> ('a, 'b, 'c) psi \<times> ('a, 'b, 'c) psi) set \<Rightarrow> 
-                       ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<leadsto><_> _" [80, 80, 80, 80] 80)
+                       ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<leadsto><_> _\<close> [80, 80, 80, 80] 80)
 where
   "\<Psi> \<rhd> P \<leadsto><Rel> Q \<equiv> (\<forall>\<Psi>' \<alpha> Q'. \<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> bn \<alpha> \<sharp>* \<Psi> \<longrightarrow> bn \<alpha> \<sharp>* P \<longrightarrow> \<alpha> \<noteq> \<tau> \<longrightarrow>
                       (\<exists>P''. \<Psi> : Q \<rhd> P \<Longrightarrow>\<alpha> \<prec> P'' \<and> (\<exists>P'. \<Psi> \<otimes> \<Psi>' \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P' \<and> (\<Psi> \<otimes> \<Psi>', P', Q') \<in> Rel))) \<and> 
                       (\<forall>Q'. \<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q' \<longrightarrow> (\<exists>P'. \<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P' \<and> (\<Psi>, P', Q') \<in> Rel))"
 
 abbreviation
-  weakSimulationNilJudge ("_ \<leadsto><_> _" [80, 80, 80] 80) where "P \<leadsto><Rel> Q \<equiv> SBottom' \<rhd> P \<leadsto><Rel> Q"
+  weakSimulationNilJudge (\<open>_ \<leadsto><_> _\<close> [80, 80, 80] 80) where "P \<leadsto><Rel> Q \<equiv> SBottom' \<rhd> P \<leadsto><Rel> Q"
 
 lemma weakSimI[consumes 1, case_names cAct cTau]:
   fixes \<Psi>   :: 'b

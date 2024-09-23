@@ -40,7 +40,7 @@ by (metis assms tensor_from_vec_simp)
 abbreviation order::"'a tensor \<Rightarrow> nat" where
   "order t == length (dims t)"
 
-inductive valid_index::"nat list \<Rightarrow> nat list \<Rightarrow> bool" (infix "\<lhd>" 50) where
+inductive valid_index::"nat list \<Rightarrow> nat list \<Rightarrow> bool" (infix \<open>\<lhd>\<close> 50) where
   Nil: "[] \<lhd> []" |
   Cons: "is \<lhd> ds \<Longrightarrow> i<d \<Longrightarrow> i#is \<lhd> d#ds"
 

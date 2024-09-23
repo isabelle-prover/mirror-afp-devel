@@ -562,7 +562,7 @@ lemma rule_R'_preserves_typing:
 abbreviation is_hyps :: "form set \<Rightarrow> bool" where
   "is_hyps \<H> \<equiv> \<H> \<subseteq> wffs\<^bsub>o\<^esub> \<and> finite \<H>"
 
-inductive is_derivable_from_hyps :: "form set \<Rightarrow> form \<Rightarrow> bool" ("_ \<turnstile> _" [50, 50] 50) for \<H> where
+inductive is_derivable_from_hyps :: "form set \<Rightarrow> form \<Rightarrow> bool" (\<open>_ \<turnstile> _\<close> [50, 50] 50) for \<H> where
   dv_hyp: "\<H> \<turnstile> A" if "A \<in> \<H>" and "is_hyps \<H>"
 | dv_thm: "\<H> \<turnstile> A" if "is_theorem A" and "is_hyps \<H>"
 | dv_rule_R': "\<H> \<turnstile> D" if "\<H> \<turnstile> C" and "\<H> \<turnstile> E" and "is_rule_R'_app \<H> p D C E" and "is_hyps \<H>"
@@ -1056,7 +1056,7 @@ next
     by (blast intro: dv_thm)
 qed
 
-abbreviation is_derivable_from_no_hyps ("\<turnstile> _" [50] 50) where
+abbreviation is_derivable_from_no_hyps (\<open>\<turnstile> _\<close> [50] 50) where
   "\<turnstile> A \<equiv> {} \<turnstile> A"
 
 corollary derivability_implies_hyp_derivability:

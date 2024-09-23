@@ -107,7 +107,7 @@ and fls
 and dsj
 and num
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and "proof" :: "'proof set" and prfOf encPf
 and Pf
@@ -175,7 +175,7 @@ and fls
 and dsj
 and num
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and isTrue
 and P
@@ -215,7 +215,7 @@ and fls
 and dsj
 and num
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and isTrue
 and P
@@ -260,7 +260,7 @@ and Var num FvarsT substT Fvars subst
 and eql cnj imp all exi
 and fls
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and P
 +
@@ -340,7 +340,7 @@ and Var num FvarsT substT Fvars subst
 and eql cnj dsj imp all exi
 and fls
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and P
 and isTrue
@@ -413,7 +413,7 @@ and fls
 and dsj
 and num
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and isTrue
 and P

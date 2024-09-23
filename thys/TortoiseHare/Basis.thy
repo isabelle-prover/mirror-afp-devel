@@ -14,63 +14,63 @@ We adopt point-free notation for our assertions over program states.
 \<close>
 
 abbreviation (input)
-  pred_K :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" ("\<langle>_\<rangle>") where
+  pred_K :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>\<langle>_\<rangle>\<close>) where
   "\<langle>f\<rangle> \<equiv> \<lambda>s. f"
 
 abbreviation (input)
-  pred_not :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("\<^bold>\<not>") where
+  pred_not :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (\<open>\<^bold>\<not>\<close>) where
   "\<^bold>\<not>a \<equiv> \<lambda>s. \<not>a s"
 
 abbreviation (input)
-  pred_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "\<^bold>\<and>" 35) where
+  pred_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr \<open>\<^bold>\<and>\<close> 35) where
   "a \<^bold>\<and> b \<equiv> \<lambda>s. a s \<and> b s"
 
 abbreviation (input)
-  pred_implies :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "\<^bold>\<longrightarrow>" 25) where
+  pred_implies :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr \<open>\<^bold>\<longrightarrow>\<close> 25) where
   "a \<^bold>\<longrightarrow> b \<equiv> \<lambda>s. a s \<longrightarrow> b s"
 
 abbreviation (input)
-  pred_eq :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>=" 40) where
+  pred_eq :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold>=\<close> 40) where
   "a \<^bold>= b \<equiv> \<lambda>s. a s = b s"
 
 abbreviation (input)
-  pred_member :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>\<in>" 40) where
+  pred_member :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold>\<in>\<close> 40) where
   "a \<^bold>\<in> b \<equiv> \<lambda>s. a s \<in> b s"
 
 abbreviation (input)
-  pred_neq :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>\<noteq>" 40) where
+  pred_neq :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold>\<noteq>\<close> 40) where
   "a \<^bold>\<noteq> b \<equiv> \<lambda>s. a s \<noteq> b s"
 
 abbreviation (input)
-  pred_If :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" ("(\<^bold>if (_)/ \<^bold>then (_)/ \<^bold>else (_))" [0, 0, 10] 10) where
+  pred_If :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>(\<^bold>if (_)/ \<^bold>then (_)/ \<^bold>else (_))\<close> [0, 0, 10] 10) where
   "\<^bold>if P \<^bold>then x \<^bold>else y \<equiv> \<lambda>s. if P s then x s else y s"
 
 abbreviation (input)
-  pred_less :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold><" 40) where
+  pred_less :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold><\<close> 40) where
   "a \<^bold>< b \<equiv> \<lambda>s. a s < b s"
 
 abbreviation (input)
-  pred_le :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>\<le>" 40) where
+  pred_le :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold>\<le>\<close> 40) where
   "a \<^bold>\<le> b \<equiv> \<lambda>s. a s \<le> b s"
 
 abbreviation (input)
-  pred_plus :: "('a \<Rightarrow> 'b::plus) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infixl "\<^bold>+" 65) where
+  pred_plus :: "('a \<Rightarrow> 'b::plus) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infixl \<open>\<^bold>+\<close> 65) where
   "a \<^bold>+ b \<equiv> \<lambda>s. a s + b s"
 
 abbreviation (input)
-  pred_minus :: "('a \<Rightarrow> 'b::minus) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infixl "\<^bold>-" 65) where
+  pred_minus :: "('a \<Rightarrow> 'b::minus) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infixl \<open>\<^bold>-\<close> 65) where
   "a \<^bold>- b \<equiv> \<lambda>s. a s - b s"
 
 abbreviation (input)
-  fun_fanout :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> 'a \<Rightarrow> 'b \<times> 'c" (infix "\<^bold>\<bowtie>" 35) where
+  fun_fanout :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> 'a \<Rightarrow> 'b \<times> 'c" (infix \<open>\<^bold>\<bowtie>\<close> 35) where
   "f \<^bold>\<bowtie> g \<equiv> \<lambda>x. (f x, g x)"
 
 abbreviation (input)
-  pred_all :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder "\<^bold>\<forall>" 10) where
+  pred_all :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder \<open>\<^bold>\<forall>\<close> 10) where
   "\<^bold>\<forall>x. P x \<equiv> \<lambda>s. \<forall>x. P x s"
 
 abbreviation (input)
-  pred_ex :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder "\<^bold>\<exists>" 10) where
+  pred_ex :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder \<open>\<^bold>\<exists>\<close> 10) where
   "\<^bold>\<exists>x. P x \<equiv> \<lambda>s. \<exists>x. P x s"
 
 section\<open> ``Monoidal'' Hoare logic \<close>
@@ -88,11 +88,11 @@ consist of the state-transformer semantics of statements.
 
 \<close>
 
-definition valid :: "('s \<Rightarrow> bool) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> bool" ("\<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>") where
+definition valid :: "('s \<Rightarrow> bool) \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> bool" (\<open>\<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>\<close>) where
   "\<lbrace>P\<rbrace> c \<lbrace>Q\<rbrace> \<equiv> \<forall>s. P s \<longrightarrow> Q (c s)"
 
-notation (input) id ("SKIP")
-notation fcomp (infixl ";;" 60)
+notation (input) id (\<open>SKIP\<close>)
+notation fcomp (infixl \<open>;;\<close> 60)
 
 named_theorems wp_intro "weakest precondition intro rules"
 

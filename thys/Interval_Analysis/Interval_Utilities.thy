@@ -210,7 +210,7 @@ lemma mk_interval_upper[simp]: \<open> upper (mk_interval (x,y)) = (if x \<le> y
 section\<open>Linear Order on List of Intervals\<close>
 
 definition
-  le_interval_list :: \<open>('a::linorder) interval list \<Rightarrow> 'a interval list \<Rightarrow> bool\<close> ("(_/ \<le>\<^sub>I _)" [51, 51] 50)
+  le_interval_list :: \<open>('a::linorder) interval list \<Rightarrow> 'a interval list \<Rightarrow> bool\<close> (\<open>(_/ \<le>\<^sub>I _)\<close> [51, 51] 50)
   where
     \<open>le_interval_list Xs Ys \<equiv> (length Xs = length Ys) \<and> (foldl (\<and>) True (map2 (\<le>) Xs Ys))\<close>
 
@@ -312,7 +312,7 @@ lemma times_interval_left:
 
 section\<open>Support for Lists of Intervals \<close>
 
-abbreviation in_interval_list::\<open>('a::preorder) list \<Rightarrow> 'a interval list \<Rightarrow> bool\<close> ("(_/ \<in>\<^sub>I _)" [51, 51] 50)
+abbreviation in_interval_list::\<open>('a::preorder) list \<Rightarrow> 'a interval list \<Rightarrow> bool\<close> (\<open>(_/ \<in>\<^sub>I _)\<close> [51, 51] 50)
   where \<open>in_interval_list xs Xs \<equiv> foldl (\<and>) True (map2 (in_interval) xs Xs)\<close>
 
 lemma interval_of_in_interval_list[simp]: \<open>xs \<in>\<^sub>I map interval_of xs\<close>

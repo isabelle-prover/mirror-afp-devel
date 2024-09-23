@@ -11,12 +11,12 @@ imports Main
 
 begin    
 
-notation relcomp (infixl ";" 70)
-notation inf (infixl "\<sqinter>" 70)  
-notation sup (infixl "\<squnion>" 65)
-notation Id_on ("s2r")
-notation Domain ("r2s")
-notation Collect ("p2s")
+notation relcomp (infixl \<open>;\<close> 70)
+notation inf (infixl \<open>\<sqinter>\<close> 70)  
+notation sup (infixl \<open>\<squnion>\<close> 65)
+notation Id_on (\<open>s2r\<close>)
+notation Domain (\<open>r2s\<close>)
+notation Collect (\<open>p2s\<close>)
 
 definition rel_n :: "'a rel \<Rightarrow> 'a rel" where 
   "rel_n  \<equiv> (\<lambda>X. Id \<inter> - X)"  

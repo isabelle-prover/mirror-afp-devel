@@ -58,7 +58,7 @@ definition pint :: "'a[Volume]" where
 definition gallon :: "'a[Volume]" where
 [si_eq]: "gallon = 8 *\<^sub>Q pint"
 
-definition degrees_farenheit :: "'a \<Rightarrow> 'a[\<Theta>]" ("_\<degree>F" [999] 999)
+definition degrees_farenheit :: "'a \<Rightarrow> 'a[\<Theta>]" (\<open>_\<degree>F\<close> [999] 999)
   where [si_eq]: "degrees_farenheit x = (x + 459.67)\<cdot>5/9 *\<^sub>Q kelvin"
 
 default_sort type

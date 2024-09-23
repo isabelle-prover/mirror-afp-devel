@@ -17,34 +17,34 @@ consts lH :: "(Dom,('id,'val) Expr) lHatches"
 
 abbreviation MWLsStepsdet' :: 
   "(('id,'val) Expr, 'id, 'val, (('id,'val) Expr,'id) MWLsCom) TLSteps_curry"
-("(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0,0] 81)
+(\<open>(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0,0] 81)
 where
 "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>c2,m2\<rangle> \<equiv> 
   ((c1,m1),\<alpha>,(c2,m2)) \<in> MWLs_semantics.MWLsSteps_det ExprEval BMap"
 
 abbreviation d_equal' :: "('id, 'val) State 
   \<Rightarrow> Dom \<Rightarrow> ('id, 'val) State \<Rightarrow> bool" 
-( "(_ =\<^bsub>_\<^esub> _)" )
+( \<open>(_ =\<^bsub>_\<^esub> _)\<close> )
 where
 "m =\<^bsub>d\<^esub> m' \<equiv> WHATWHERE.d_equal DA d m m'"
 
 abbreviation dH_equal' :: "('id, 'val) State \<Rightarrow> Dom 
   \<Rightarrow> (Dom,('id,'val) Expr) Hatches
   \<Rightarrow> ('id, 'val) State \<Rightarrow> bool"
-( "(_ \<sim>\<^bsub>_,_\<^esub> _)" )
+( \<open>(_ \<sim>\<^bsub>_,_\<^esub> _)\<close> )
 where
 "m \<sim>\<^bsub>d,H\<^esub> m' \<equiv> WHATWHERE.dH_equal ExprEval DA d H m m'"
 
 abbreviation NextMem' :: "(('id,'val) Expr, 'id) MWLsCom 
   \<Rightarrow> ('id,'val) State \<Rightarrow> ('id,'val) State"
-("\<lbrakk>_\<rbrakk>'(_')")
+(\<open>\<lbrakk>_\<rbrakk>'(_')\<close>)
 where
 "\<lbrakk>c\<rbrakk>(m) 
   \<equiv> WHATWHERE.NextMem (MWLs_semantics.MWLsSteps_det ExprEval BMap) c m"
 
 abbreviation dH_indistinguishable' :: "('id,'val) Expr \<Rightarrow> Dom 
   \<Rightarrow> (Dom,('id,'val) Expr) Hatches \<Rightarrow> ('id,'val) Expr \<Rightarrow> bool" 
-( "(_ \<equiv>\<^bsub>_,_\<^esub> _)" )
+( \<open>(_ \<equiv>\<^bsub>_,_\<^esub> _)\<close> )
 where
 "e1 \<equiv>\<^bsub>d,H\<^esub> e2 
   \<equiv> WHATWHERE_Secure_Programs.dH_indistinguishable ExprEval DA d H e1 e2"
@@ -58,7 +58,7 @@ where
 inductive 
 ExprSecTyping :: "(Dom, ('id,'val) Expr) Hatches
   \<Rightarrow> ('id, 'val) Expr \<Rightarrow> Dom \<Rightarrow> bool"
-("_ \<turnstile>\<^bsub>\<E>\<^esub> _ : _")
+(\<open>_ \<turnstile>\<^bsub>\<E>\<^esub> _ : _\<close>)
 for H :: "(Dom, ('id, 'val) Expr) Hatches"
 where 
 Consts: "H \<turnstile>\<^bsub>\<E>\<^esub> (Const v) : d" |
@@ -71,7 +71,7 @@ Ops: "\<lbrakk> \<forall>i < length arglist. H \<turnstile>\<^bsub>\<E>\<^esub> 
   in expressions\<close>
 primrec Subst :: "('id, 'val) Expr \<Rightarrow> ('id, 'val) Expr 
   \<Rightarrow> ('id, 'val) Expr \<Rightarrow> ('id, 'val) Expr"
-("_<_\\_>")
+(\<open>_<_\_>\<close>)
 and SubstL :: "('id, 'val) Expr list \<Rightarrow> ('id, 'val) Expr 
   \<Rightarrow> ('id, 'val) Expr \<Rightarrow> ('id, 'val) Expr list"
 where

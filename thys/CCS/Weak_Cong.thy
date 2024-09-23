@@ -6,7 +6,7 @@ theory Weak_Cong
   imports Weak_Cong_Sim Weak_Bisim Strong_Bisim_SC
 begin
 
-definition weakCongruence :: "ccs \<Rightarrow> ccs \<Rightarrow> bool" ("_ \<cong> _" [70, 70] 65)
+definition weakCongruence :: "ccs \<Rightarrow> ccs \<Rightarrow> bool" (\<open>_ \<cong> _\<close> [70, 70] 65)
 where
   "P \<cong> Q \<equiv> P \<leadsto><weakBisimulation> Q \<and> Q \<leadsto><weakBisimulation> P"
 

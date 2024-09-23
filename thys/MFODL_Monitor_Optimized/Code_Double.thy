@@ -232,7 +232,7 @@ end
 lift_definition sqrt_double :: "double \<Rightarrow> double" is float_sqrt
   by (auto simp: is_nan_float_sqrt)
 
-no_notation plus_infinity ("\<infinity>")
+no_notation plus_infinity (\<open>\<infinity>\<close>)
 
 lift_definition infinity :: "double" is plus_infinity .
 

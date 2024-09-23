@@ -20,7 +20,7 @@ locale prules = constants C_info "fst |`| rs" for C_info and rs :: "prule fset" 
 
 subsubsection \<open>Rewriting\<close>
 
-inductive prewrite :: "prule fset \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>p/ _ \<longrightarrow>/ _" [50,0,50] 50) for rs where
+inductive prewrite :: "prule fset \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>p/ _ \<longrightarrow>/ _\<close> [50,0,50] 50) for rs where
 step: "(name, rhs) |\<in>| rs \<Longrightarrow> rs \<turnstile>\<^sub>p Pconst name \<longrightarrow> rhs" |
 beta: "c |\<in>| cs \<Longrightarrow> c \<turnstile> t \<rightarrow> t' \<Longrightarrow> rs \<turnstile>\<^sub>p Pabs cs $\<^sub>p t \<longrightarrow> t'" |
 "fun": "rs \<turnstile>\<^sub>p t \<longrightarrow> t' \<Longrightarrow> rs \<turnstile>\<^sub>p t $\<^sub>p u \<longrightarrow> t' $\<^sub>p u" |
@@ -29,7 +29,7 @@ arg: "rs \<turnstile>\<^sub>p u \<longrightarrow> u' \<Longrightarrow> rs \<turn
 global_interpretation prewrite: rewriting "prewrite rs" for rs
 by standard (auto intro: prewrite.intros simp: app_pterm_def)+
 
-abbreviation prewrite_rt :: "prule fset \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>p/ _ \<longrightarrow>*/ _" [50,0,50] 50) where
+abbreviation prewrite_rt :: "prule fset \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>p/ _ \<longrightarrow>*/ _\<close> [50,0,50] 50) where
 "prewrite_rt rs \<equiv> (prewrite rs)\<^sup>*\<^sup>*"
 
 subsubsection \<open>Translation from @{typ irule_set} to @{typ "prule fset"}\<close>

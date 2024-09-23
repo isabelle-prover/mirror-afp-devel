@@ -95,7 +95,7 @@ where "no_calls P h es = (\<forall>aMvs. calls es = \<lfloor>aMvs\<rfloor> \<lon
 inductive red0 :: 
   "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr list \<Rightarrow> 'heap
   \<Rightarrow> ('addr, 'thread_id, 'heap) J0_thread_action \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr list \<Rightarrow> 'heap \<Rightarrow> bool"
-  ("_,_ \<turnstile>0 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))" [51,0,0,0,0,0,0,0,0] 81)
+  (\<open>_,_ \<turnstile>0 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0,0,0] 81)
 for P :: "'addr J_prog" and t :: 'thread_id
 where
 

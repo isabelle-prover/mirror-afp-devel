@@ -4,7 +4,7 @@ theory Formal_Polynomial_Derivatives
   imports "HOL-Algebra.Polynomial_Divisibility" "Ring_Characteristic"
 begin
 
-definition pderiv ("pderiv\<index>") where
+definition pderiv (\<open>pderiv\<index>\<close>) where
   "pderiv\<^bsub>R\<^esub> x = ring.normalize R (
     map (\<lambda>i. int_embed R i \<otimes>\<^bsub>R\<^esub> ring.coeff R x i) (rev [1..<length x]))"
 

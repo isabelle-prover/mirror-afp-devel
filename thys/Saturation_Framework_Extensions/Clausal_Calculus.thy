@@ -21,27 +21,27 @@ subsection \<open>Setup\<close>
 text \<open>To avoid confusion, we use the symbol \<open>\<TTurnstile>\<close> (with or without subscripts) for the ``models''
 and entailment relations on clauses and \<open>\<Turnstile>\<close> for the abstract concept of consequence.\<close>
 
-abbreviation true_lit_thick :: "'a interp \<Rightarrow> 'a literal \<Rightarrow> bool" (infix "\<TTurnstile>l" 50) where
+abbreviation true_lit_thick :: "'a interp \<Rightarrow> 'a literal \<Rightarrow> bool" (infix \<open>\<TTurnstile>l\<close> 50) where
   "I \<TTurnstile>l L \<equiv> I \<Turnstile>l L"
 
-abbreviation true_cls_thick :: "'a interp \<Rightarrow> 'a clause \<Rightarrow> bool" (infix "\<TTurnstile>" 50) where
+abbreviation true_cls_thick :: "'a interp \<Rightarrow> 'a clause \<Rightarrow> bool" (infix \<open>\<TTurnstile>\<close> 50) where
   "I \<TTurnstile> C \<equiv> I \<Turnstile> C"
 
-abbreviation true_clss_thick :: "'a interp \<Rightarrow> 'a clause set \<Rightarrow> bool" (infix "\<TTurnstile>s" 50) where
+abbreviation true_clss_thick :: "'a interp \<Rightarrow> 'a clause set \<Rightarrow> bool" (infix \<open>\<TTurnstile>s\<close> 50) where
   "I \<TTurnstile>s \<C> \<equiv> I \<Turnstile>s \<C>"
 
-abbreviation true_cls_mset_thick :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix "\<TTurnstile>m" 50) where
+abbreviation true_cls_mset_thick :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix \<open>\<TTurnstile>m\<close> 50) where
   "I \<TTurnstile>m \<C> \<equiv> I \<Turnstile>m \<C>"
 
-no_notation true_lit (infix "\<Turnstile>l" 50)
-no_notation true_cls (infix "\<Turnstile>" 50)
-no_notation true_clss (infix "\<Turnstile>s" 50)
-no_notation true_cls_mset (infix "\<Turnstile>m" 50)
+no_notation true_lit (infix \<open>\<Turnstile>l\<close> 50)
+no_notation true_cls (infix \<open>\<Turnstile>\<close> 50)
+no_notation true_clss (infix \<open>\<Turnstile>s\<close> 50)
+no_notation true_cls_mset (infix \<open>\<Turnstile>m\<close> 50)
 
 
 subsection \<open>Consequence Relation\<close>
 
-abbreviation entails_clss :: "'a clause set \<Rightarrow> 'a clause set \<Rightarrow> bool" (infix "\<TTurnstile>e" 50) where
+abbreviation entails_clss :: "'a clause set \<Rightarrow> 'a clause set \<Rightarrow> bool" (infix \<open>\<TTurnstile>e\<close> 50) where
   "N1 \<TTurnstile>e N2 \<equiv> \<forall>I. I \<TTurnstile>s N1 \<longrightarrow> I \<TTurnstile>s N2"
 
 lemma entails_iff_unsatisfiable_single:

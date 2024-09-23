@@ -257,7 +257,7 @@ subsubsection\<open>Composition\<close>
 
 definition fcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<circ>\<^sub>\<bullet>\<close> 75)
   where "r \<circ>\<^sub>\<bullet> s = set {[a, c]\<^sub>\<circ> | a c. \<exists>b. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> s \<and> [b, c]\<^sub>\<circ> \<in>\<^sub>\<circ> r}"
-notation fcomp (infixr "\<circ>\<^sub>\<bullet>" 75)
+notation fcomp (infixr \<open>\<circ>\<^sub>\<bullet>\<close> 75)
 
 lemma fcomp_small[simp]: "small {[a, c]\<^sub>\<circ> | a c. \<exists>b. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> s \<and> [b, c]\<^sub>\<circ> \<in>\<^sub>\<circ> r}" 
   (is \<open>small ?s\<close>)
@@ -1019,7 +1019,7 @@ subsubsection\<open>Image\<close>
 
 definition fimage :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>`\<^sub>\<bullet>\<close> 90)
   where "r `\<^sub>\<bullet> A = \<R>\<^sub>\<bullet> (r \<restriction>\<^sup>l\<^sub>\<bullet> A)"
-notation fimage (infixr "`\<^sub>\<bullet>" 90)
+notation fimage (infixr \<open>`\<^sub>\<bullet>\<close> 90)
 
 lemma fimage_small[simp]: "small {b. \<exists>a\<in>\<^sub>\<circ>A. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> r}"
 proof-

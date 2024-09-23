@@ -88,7 +88,7 @@ begin
 subsubsection "Congruence"
 definition OFSC ::
   "['p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool"
-  ("_ _ _ _ OFSC _ _ _ _" [99,99,99,99,99,99,99,99] 50)
+  (\<open>_ _ _ _ OFSC _ _ _ _\<close> [99,99,99,99,99,99,99,99] 50)
   where
     "A B C D OFSC A' B' C' D' \<equiv>
 
@@ -101,7 +101,7 @@ definition OFSC ::
 
 definition Cong3 ::
   "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool"
-  ("_ _ _ Cong3 _ _ _" [99,99,99,99,99,99] 50)
+  (\<open>_ _ _ Cong3 _ _ _\<close> [99,99,99,99,99,99] 50)
   where
     "A B C Cong3 A' B' C' \<equiv>
 
@@ -113,7 +113,7 @@ subsubsection "Betweenness"
 
 definition Col ::
   "['p,'p,'p] \<Rightarrow> bool"
-  ("Col _ _ _" [99,99,99] 50)
+  (\<open>Col _ _ _\<close> [99,99,99] 50)
   where
     "Col A B C \<equiv>
 
@@ -121,7 +121,7 @@ definition Col ::
 
 definition Bet4 ::
   "['p,'p,'p,'p] \<Rightarrow> bool"
-  ("Bet4 _ _ _ _" [99,99,99,99] 50)
+  (\<open>Bet4 _ _ _ _\<close> [99,99,99,99] 50)
   where
     "Bet4 A1 A2 A3 A4 \<equiv>
 
@@ -131,7 +131,7 @@ definition Bet4 ::
   Bet A1 A2 A4"
 
 definition BetS ::
-  "['p,'p,'p] \<Rightarrow> bool" ("BetS _ _ _" [99,99,99] 50)
+  "['p,'p,'p] \<Rightarrow> bool" (\<open>BetS _ _ _\<close> [99,99,99] 50)
   where
     "BetS A B C \<equiv>
 
@@ -143,7 +143,7 @@ subsubsection "Collinearity"
 
 definition FSC ::
   "['p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool"
-  ("_ _ _ _ FSC _ _ _ _" [99,99,99,99,99,99,99,99] 50)
+  (\<open>_ _ _ _ FSC _ _ _ _\<close> [99,99,99,99,99,99,99,99] 50)
   where
     "A B C D FSC A' B' C' D' \<equiv>
 
@@ -155,7 +155,7 @@ definition FSC ::
 subsubsection "Congruence and Betweenness"
 definition IFSC ::
   "['p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool"
-  ("_ _ _ _ IFSC _ _ _ _" [99,99,99,99,99,99,99,99] 50)
+  (\<open>_ _ _ _ IFSC _ _ _ _\<close> [99,99,99,99,99,99,99,99] 50)
   where
     "A B C D IFSC A' B' C' D' \<equiv>
 
@@ -169,26 +169,26 @@ definition IFSC ::
 subsubsection "Between transivitity  LE"
 
 definition Le ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ Le _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ Le _ _\<close> [99,99,99,99] 50)
   where "A B Le C D \<equiv>
 
   \<exists> E. (Bet C E D \<and> Cong A B C E)"
 
 
 definition Lt ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ Lt _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ Lt _ _\<close> [99,99,99,99] 50)
   where "A B Lt C D \<equiv>
 
   A B Le C D \<and> \<not> Cong A B C D"
 
 definition Ge ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _Ge _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _Ge _ _\<close> [99,99,99,99] 50)
   where "A B Ge C D \<equiv>
 
   C D Le A B"
 
 definition Gt ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ Gt _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ Gt _ _\<close> [99,99,99,99] 50)
   where "A B Gt C D \<equiv>
 
   C D Lt A B"
@@ -196,7 +196,7 @@ definition Gt ::
 subsubsection "Out lines"
 
 definition Out ::
-  "['p,'p,'p] \<Rightarrow> bool" ("_ Out _ _" [99,99,99] 50)
+  "['p,'p,'p] \<Rightarrow> bool" (\<open>_ Out _ _\<close> [99,99,99] 50)
   where "P Out A B \<equiv>
 
   A \<noteq> P \<and>
@@ -206,7 +206,7 @@ definition Out ::
 subsubsection "Midpoint"
 
 definition Midpoint ::
-  "['p,'p,'p] \<Rightarrow> bool" ("_ Midpoint _ _" [99,99,99] 50)
+  "['p,'p,'p] \<Rightarrow> bool" (\<open>_ Midpoint _ _\<close> [99,99,99] 50)
   where "M Midpoint A B \<equiv>
 
   Bet A M B \<and>
@@ -215,13 +215,13 @@ definition Midpoint ::
 subsubsection "Orthogonality"
 
 definition Per ::
-  "['p,'p,'p] \<Rightarrow> bool" ("Per _ _ _" [99,99,99] 50)
+  "['p,'p,'p] \<Rightarrow> bool" (\<open>Per _ _ _\<close> [99,99,99] 50)
   where "Per A B C \<equiv>
 
   \<exists> C'::'p. (B Midpoint C C' \<and> Cong A C A C')"
 
 definition PerpAt ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ PerpAt _ _ _ _ " [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ PerpAt _ _ _ _ \<close> [99,99,99,99,99] 50)
   where "X PerpAt A B C D \<equiv>
 
   A \<noteq> B \<and>
@@ -231,7 +231,7 @@ definition PerpAt ::
   (\<forall> U V. ((Col U A B \<and> Col V C D) \<longrightarrow> Per U X V))"
 
 definition Perp ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ Perp _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ Perp _ _\<close> [99,99,99,99] 50)
   where "A B Perp C D \<equiv>
 
   \<exists> X::'p. X PerpAt A B C D"
@@ -239,78 +239,78 @@ definition Perp ::
 subsubsection "Coplanar"
 
 definition Coplanar ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Coplanar _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Coplanar _ _ _ _\<close> [99,99,99,99] 50)
   where "Coplanar A B C D \<equiv>
   \<exists> X. (Col A B X \<and> Col C D X) \<or>
             (Col A C X \<and> Col B D X) \<or>
             (Col A D X \<and> Col B C X)"
 
 definition TS ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ TS _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ TS _ _\<close> [99,99,99,99] 50)
   where "A B TS P Q \<equiv>
   \<not> Col P A B \<and> \<not> Col Q A B \<and> (\<exists> T::'p. Col T A B \<and> Bet P T Q)"
 
 definition ReflectL ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ ReflectL _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ ReflectL _ _\<close> [99,99,99,99] 50)
   where "P' P ReflectL A B \<equiv>
   (\<exists> X. X Midpoint P P' \<and> Col A B X) \<and> (A B Perp P P' \<or> P = P')"
 
 definition Reflect ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ Reflect _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ Reflect _ _\<close> [99,99,99,99] 50)
   where "P' P Reflect A B \<equiv>
  (A \<noteq> B \<and> P' P ReflectL A B) \<or> (A = B \<and> A Midpoint P P')"
 
 definition InAngle ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ InAngle _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ InAngle _ _ _\<close> [99,99,99,99] 50)
   where "P InAngle A B C \<equiv>
   A \<noteq> B \<and> C \<noteq> B \<and> P \<noteq> B \<and>
 (\<exists> X. Bet A X C \<and> (X = B \<or> B Out X P))"
 
 definition ParStrict::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ ParStrict _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ ParStrict _ _\<close> [99,99,99,99] 50)
   where "A B ParStrict C D \<equiv>  Coplanar A B C D \<and> \<not> (\<exists> X. Col X A B \<and> Col X C D)"
 
 definition Par::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ Par _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ Par _ _\<close> [99,99,99,99] 50)
   where "A B Par C D \<equiv>
   A B ParStrict C D \<or> (A \<noteq> B \<and> C \<noteq> D \<and> Col A C D \<and> Col B C D)"
 
 definition Plg::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Plg _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Plg _ _ _ _\<close> [99,99,99,99] 50)
   where "Plg  A B C D \<equiv>
   (A \<noteq> C \<or> B \<noteq> D) \<and> (\<exists> M. M Midpoint A C \<and> M Midpoint B D)"
 
 definition ParallelogramStrict::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("ParallelogramStrict _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>ParallelogramStrict _ _ _ _\<close> [99,99,99,99] 50)
   where "ParallelogramStrict A B A' B' \<equiv>
   A A' TS B B' \<and> A B Par A' B' \<and> Cong A B A' B'"
 
 definition ParallelogramFlat::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("ParallelogramFlat _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>ParallelogramFlat _ _ _ _\<close> [99,99,99,99] 50)
   where "ParallelogramFlat A B A' B' \<equiv>
   Col A B A' \<and> Col A B B' \<and>
   Cong A B A' B' \<and> Cong A B' A' B \<and>
   (A \<noteq> A' \<or> B \<noteq> B')"
 
 definition Parallelogram::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Parallelogram _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Parallelogram _ _ _ _\<close> [99,99,99,99] 50)
   where "Parallelogram A B A' B' \<equiv>
   ParallelogramStrict A B A' B' \<or> ParallelogramFlat A B A' B'"
 
 definition Rhombus::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Rhombus _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Rhombus _ _ _ _\<close> [99,99,99,99] 50)
   where "Rhombus A B C D \<equiv> Plg A B C D \<and> Cong A B B C"
 
 definition Rectangle::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Rectangle _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Rectangle _ _ _ _\<close> [99,99,99,99] 50)
   where "Rectangle A B C D \<equiv> Plg A B C D \<and> Cong A C B D"
 
 definition Square::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Square _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Square _ _ _ _\<close> [99,99,99,99] 50)
   where "Square A B C D \<equiv> Rectangle A B C D \<and> Cong A B B C"
 
 definition Lambert::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Lambert _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Lambert _ _ _ _\<close> [99,99,99,99] 50)
   where "Lambert A B C D \<equiv>
   A \<noteq> B \<and> B \<noteq> C \<and> C \<noteq> D \<and>
  A \<noteq> D \<and> Per B A D \<and> Per A D C \<and> Per A B C \<and> Coplanar A B C D"
@@ -318,42 +318,42 @@ definition Lambert::
 subsubsection "Plane"
 
 definition OS ::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("_ _ OS _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ OS _ _\<close> [99,99,99,99] 50)
   where "A B OS P Q \<equiv>
 \<exists> R::'p. A B TS P R \<and> A B TS Q R"
 
 definition TSP ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _TSP _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _TSP _ _\<close> [99,99,99,99,99] 50)
   where "A B C TSP P Q \<equiv>
   (\<not> Coplanar A B C P) \<and> (\<not> Coplanar A B C Q) \<and>
 (\<exists> T. Coplanar A B C T \<and> Bet P T Q)"
 
 definition OSP ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ OSP _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ OSP _ _\<close> [99,99,99,99,99] 50)
   where "A B C OSP P Q \<equiv>
 \<exists> R. ((A B C TSP P R) \<and> (A B C TSP Q R))"
 
 definition Saccheri::
-  "['p,'p,'p,'p] \<Rightarrow> bool" ("Saccheri _ _ _ _" [99,99,99,99] 50)
+  "['p,'p,'p,'p] \<Rightarrow> bool" (\<open>Saccheri _ _ _ _\<close> [99,99,99,99] 50)
   where "Saccheri A B C D \<equiv>
   Per B A D \<and> Per A D C \<and> Cong A B C D \<and> A D OS B C"
 
 subsubsection "Line reflexivity 2D"
 
 definition ReflectLAt ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ ReflectLAt _ _ _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ ReflectLAt _ _ _ _\<close> [99,99,99,99,99] 50)
   where "M ReflectLAt P' P A B \<equiv>
   (M Midpoint P P' \<and> Col A B M) \<and> (A B Perp P P' \<or> P = P')"
 
 definition ReflectAt ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ ReflectAt _ _ _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ ReflectAt _ _ _ _\<close> [99,99,99,99,99] 50)
   where "M ReflectAt P' P A B \<equiv>
 (A \<noteq> B \<and> M ReflectLAt P' P A B) \<or> (A = B \<and> A = M \<and> M Midpoint P P')"
 
 subsubsection "Line reflexivity"
 
 definition upper_dim_axiom ::
-  "bool" ("UpperDimAxiom" [] 50)
+  "bool" (\<open>UpperDimAxiom\<close> [] 50)
   where
     "upper_dim_axiom \<equiv>
 
@@ -366,7 +366,7 @@ definition upper_dim_axiom ::
   (Bet A B C \<or> Bet B C A \<or> Bet C A B)"
 
 definition all_coplanar_axiom ::
-  "bool" ("AllCoplanarAxiom" [] 50)
+  "bool" (\<open>AllCoplanarAxiom\<close> [] 50)
   where
     "AllCoplanarAxiom \<equiv>
 
@@ -381,7 +381,7 @@ definition all_coplanar_axiom ::
 subsubsection "Angles"
 
 definition CongA ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ CongA _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ CongA _ _ _\<close> [99,99,99,99,99,99] 50)
   where "A B C CongA D E F \<equiv>
   A \<noteq> B \<and> C \<noteq> B \<and> D \<noteq> E \<and> F \<noteq> E \<and>
 (\<exists> A' C' D' F'. Bet B A A' \<and> Cong A A' E D \<and>
@@ -391,41 +391,41 @@ definition CongA ::
   Cong A' C' D' F')"
 
 definition LeA ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ LeA _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ LeA _ _ _\<close> [99,99,99,99,99,99] 50)
   where "A B C LeA D E F \<equiv>
 \<exists> P. (P InAngle D E F \<and> A B C CongA D E P)"
 
 definition LtA ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ LtA _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ LtA _ _ _\<close> [99,99,99,99,99,99] 50)
   where "A B C LtA D E F \<equiv> A B C LeA D E F \<and> \<not> A B C CongA D E F"
 
 definition GtA ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ GtA _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ GtA _ _ _\<close> [99,99,99,99,99,99] 50)
   where "A B C GtA D E F \<equiv> D E F LtA A B C"
 
 definition Acute ::
-  "['p,'p,'p] \<Rightarrow> bool" ("Acute _ _ _" [99,99,99] 50)
+  "['p,'p,'p] \<Rightarrow> bool" (\<open>Acute _ _ _\<close> [99,99,99] 50)
   where "Acute A B C \<equiv>
 \<exists> A' B' C'. (Per A' B' C' \<and> A B C LtA A' B' C')"
 
 definition Obtuse ::
-  "['p,'p,'p] \<Rightarrow> bool" ("Obtuse _ _ _" [99,99,99] 50)
+  "['p,'p,'p] \<Rightarrow> bool" (\<open>Obtuse _ _ _\<close> [99,99,99] 50)
   where "Obtuse A B C \<equiv>
 \<exists> A' B' C'. (Per A' B' C' \<and> A' B' C' LtA A B C)"
 
 definition OrthAt ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ OrthAt _ _ _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ OrthAt _ _ _ _ _\<close> [99,99,99,99,99,99] 50)
   where "X OrthAt A B C U V \<equiv>
   \<not> Col A B C \<and> U \<noteq> V \<and> Coplanar A B C X \<and> Col U V X \<and>
   (\<forall> P Q. (Coplanar A B C P \<and> Col U V Q) \<longrightarrow> Per P X Q)"
 
 definition Orth ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ Orth _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ Orth _ _\<close> [99,99,99,99,99] 50)
   where "A B C Orth U V \<equiv> \<exists> X. X OrthAt A B C U V"
 
 definition SuppA ::
   "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool"
-  ("_ _ _ SuppA _ _ _ " [99,99,99,99,99,99] 50)
+  (\<open>_ _ _ SuppA _ _ _ \<close> [99,99,99,99,99,99] 50)
   where
     "A B C SuppA D E F \<equiv>
   A \<noteq> B \<and> (\<exists> A'. Bet A B A' \<and>  D E F CongA C B A')"
@@ -433,21 +433,21 @@ definition SuppA ::
 subsubsection "Sum of angles"
 
 definition SumA ::
-  "['p,'p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ _ _ _ SumA _ _ _" [99,99,99,99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ _ _ _ SumA _ _ _\<close> [99,99,99,99,99,99,99,99,99] 50)
   where
     "A B C D E F SumA G H I \<equiv>
 
   \<exists> J. (C B J CongA D E F \<and> \<not> B C OS A J \<and> Coplanar A B C J \<and> A B J CongA G H I)"
 
 definition TriSumA ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ _ _ TriSumA _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ _ _ TriSumA _ _ _\<close> [99,99,99,99,99,99] 50)
   where
     "A B C TriSumA D E F \<equiv>
 
   \<exists> G H I. (A B C B C A SumA G H I \<and> G H I C A B SumA D E F)"
 
 definition SAMS ::
-  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" ("SAMS _ _ _ _ _ _" [99,99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>SAMS _ _ _ _ _ _\<close> [99,99,99,99,99,99] 50)
   where
     "SAMS A B C D E F \<equiv>
 
@@ -458,7 +458,7 @@ definition SAMS ::
 subsubsection "Parallelism"
 
 definition Inter ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ Inter _ _ _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ Inter _ _ _ _\<close> [99,99,99,99,99] 50)
   where "X Inter A1 A2 B1 B2 \<equiv>
 
   B1 \<noteq> B2 \<and>
@@ -468,7 +468,7 @@ definition Inter ::
 subsubsection "Perpendicularity"
 
 definition Perp2 ::
-  "['p,'p,'p,'p,'p] \<Rightarrow> bool" ("_ Perp2 _ _ _ _" [99,99,99,99,99] 50)
+  "['p,'p,'p,'p,'p] \<Rightarrow> bool" (\<open>_ Perp2 _ _ _ _\<close> [99,99,99,99,99] 50)
   where
     "P Perp2 A B C D \<equiv>
 
@@ -477,21 +477,21 @@ definition Perp2 ::
 subsubsection "Lentgh"
 
 definition QCong::
-  "(['p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCong _" [99] 50)
+  "(['p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCong _\<close> [99] 50)
   where
     "QCong l \<equiv>
 
   \<exists> A B. (\<forall> X Y. (Cong A B X Y \<longleftrightarrow> l X Y))"
 
 definition TarskiLen::
-  "['p,'p,(['p,'p] \<Rightarrow> bool)] \<Rightarrow> bool" ("TarskiLen _ _ _" [99,99,99] 50)
+  "['p,'p,(['p,'p] \<Rightarrow> bool)] \<Rightarrow> bool" (\<open>TarskiLen _ _ _\<close> [99,99,99] 50)
   where
     "TarskiLen A B l \<equiv>
 
   QCong l \<and> l A B"
 
 definition QCongNull ::
-  "(['p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongNull _" [99] 50)
+  "(['p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongNull _\<close> [99] 50)
   where
     "QCongNull l \<equiv>
 
@@ -500,14 +500,14 @@ definition QCongNull ::
 subsubsection "Equivalence Class of Angles"
 
 definition QCongA ::
-  "(['p, 'p, 'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongA _" [99] 50)
+  "(['p, 'p, 'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongA _\<close> [99] 50)
   where
     "QCongA a \<equiv>
 
   \<exists> A B C. (A \<noteq> B \<and> C \<noteq> B \<and> (\<forall> X Y Z. A B C CongA X Y Z \<longleftrightarrow> a X Y Z))"
 
 definition Ang ::
-  "['p,'p,'p, (['p, 'p, 'p] \<Rightarrow> bool) ] \<Rightarrow> bool" ("_ _ _ Ang _" [99,99,99,99] 50)
+  "['p,'p,'p, (['p, 'p, 'p] \<Rightarrow> bool) ] \<Rightarrow> bool" (\<open>_ _ _ Ang _\<close> [99,99,99,99] 50)
   where
     "A B C Ang a \<equiv>
 
@@ -515,21 +515,21 @@ definition Ang ::
   a A B C"
 
 definition QCongAAcute ::
-  "(['p, 'p, 'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongAACute _" [99] 50)
+  "(['p, 'p, 'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongAACute _\<close> [99] 50)
   where
     "QCongAAcute a \<equiv>
 
   \<exists> A B C. (Acute A B C \<and> (\<forall> X Y Z. (A B C CongA X Y Z \<longleftrightarrow> a X Y Z)))"
 
 definition AngAcute ::
-  "['p,'p,'p, (['p,'p,'p] \<Rightarrow> bool)] \<Rightarrow> bool" ("_ _ _ AngAcute _" [99,99,99,99] 50)
+  "['p,'p,'p, (['p,'p,'p] \<Rightarrow> bool)] \<Rightarrow> bool" (\<open>_ _ _ AngAcute _\<close> [99,99,99,99] 50)
   where
     "A B C AngAcute a \<equiv>
 
   ((QCongAAcute a) \<and> (a A B C))"
 
 definition QCongANullAcute ::
-  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongANullAcute _" [99] 50)
+  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongANullAcute _\<close> [99] 50)
   where
     "QCongANullAcute a \<equiv>
 
@@ -537,7 +537,7 @@ definition QCongANullAcute ::
    (\<forall> A B C. (a A B C \<longrightarrow> B Out A C))"
 
 definition QCongAnNull ::
-  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongAnNull _" [99] 50)
+  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongAnNull _\<close> [99] 50)
   where
     "QCongAnNull a \<equiv>
 
@@ -545,7 +545,7 @@ definition QCongAnNull ::
   (\<forall> A B C. (a A B C \<longrightarrow> \<not> B Out A C))"
 
 definition QCongAnFlat ::
-  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongAnFlat _" [99] 50)
+  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongAnFlat _\<close> [99] 50)
   where
     "QCongAnFlat a \<equiv>
 
@@ -553,7 +553,7 @@ definition QCongAnFlat ::
   (\<forall> A B C. (a A B C \<longrightarrow> \<not> Bet A B C))"
 
 definition IsNullAngaP ::
-  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("IsNullAngaP _" [99] 50)
+  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>IsNullAngaP _\<close> [99] 50)
   where
     "IsNullAngaP a\<equiv>
 
@@ -561,7 +561,7 @@ definition IsNullAngaP ::
   (\<exists> A B C. (a A B C \<and> B Out A C))"
 
 definition QCongANull ::
-  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" ("QCongANull _" [99] 50)
+  "(['p,'p,'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>QCongANull _\<close> [99] 50)
   where
     "QCongANull a \<equiv>
 
@@ -569,7 +569,7 @@ definition QCongANull ::
   (\<forall> A B C. (a A B C \<longrightarrow> B Out A C))"
 
 definition AngFlat ::
-  "(['p, 'p, 'p] \<Rightarrow> bool) \<Rightarrow> bool" ("AngFlat _" [99] 50)
+  "(['p, 'p, 'p] \<Rightarrow> bool) \<Rightarrow> bool" (\<open>AngFlat _\<close> [99] 50)
   where
     "AngFlat a \<equiv>
 
@@ -580,14 +580,14 @@ subsection "Parallel's definition Postulate"
 
 definition tarski_s_parallel_postulate ::
   "bool"
-  ("TarskiSParallelPostulate")
+  (\<open>TarskiSParallelPostulate\<close>)
   where
     "tarski_s_parallel_postulate \<equiv>
 \<forall> A B C D T. (Bet A D T \<and> Bet B D C \<and> A \<noteq> D) \<longrightarrow>
 (\<exists> X Y. Bet A B X \<and> Bet A C Y \<and> Bet X T Y)"
 
 definition euclid_5 ::
-  "bool" ("Euclid5")
+  "bool" (\<open>Euclid5\<close>)
   where
     "euclid_5 \<equiv>
 
@@ -602,7 +602,7 @@ definition euclid_5 ::
   (\<exists> I. BetS S Q I \<and> BetS P U I)"
 
 definition euclid_s_parallel_postulate ::
-  "bool" ("EuclidSParallelPostulate")
+  "bool" (\<open>EuclidSParallelPostulate\<close>)
   where
     "euclid_s_parallel_postulate \<equiv>
 
@@ -616,7 +616,7 @@ definition euclid_s_parallel_postulate ::
 
 definition playfair_s_postulate ::
   "bool"
-  ("PlayfairSPostulate")
+  (\<open>PlayfairSPostulate\<close>)
   where
     "playfair_s_postulate \<equiv>
 

@@ -16,7 +16,7 @@ datatype (atoms: 'a) fm =
   TrueF | FalseF | Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
   Neg "'a fm" | ExQ "'a fm"
 
-notation map_fm ("map\<^sub>f\<^sub>m")
+notation map_fm (\<open>map\<^sub>f\<^sub>m\<close>)
 
 abbreviation Imp where "Imp \<phi>\<^sub>1 \<phi>\<^sub>2 \<equiv> Or (Neg \<phi>\<^sub>1) \<phi>\<^sub>2"
 abbreviation AllQ where "AllQ \<phi> \<equiv> Neg(ExQ(Neg \<phi>))"
@@ -44,7 +44,7 @@ abbreviation "Disj is f \<equiv> list_disj (map f is)"
 
 lemmas atoms_map_fm[simp] = fm.set_map
 
-fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("amap\<^sub>f\<^sub>m") where
+fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" (\<open>amap\<^sub>f\<^sub>m\<close>) where
 "amap\<^sub>f\<^sub>m h TrueF = TrueF" |
 "amap\<^sub>f\<^sub>m h FalseF = FalseF" |
 "amap\<^sub>f\<^sub>m h (Atom a) = h a" |

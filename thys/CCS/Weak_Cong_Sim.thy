@@ -6,7 +6,7 @@ theory Weak_Cong_Sim
   imports Weak_Cong_Semantics Weak_Sim Strong_Sim
 begin
 
-definition weakCongSimulation :: "ccs \<Rightarrow> (ccs \<times> ccs) set \<Rightarrow> ccs \<Rightarrow> bool"   ("_ \<leadsto><_> _" [80, 80, 80] 80)
+definition weakCongSimulation :: "ccs \<Rightarrow> (ccs \<times> ccs) set \<Rightarrow> ccs \<Rightarrow> bool"   (\<open>_ \<leadsto><_> _\<close> [80, 80, 80] 80)
 where
   "P \<leadsto><Rel> Q \<equiv> \<forall>a Q'. Q \<longmapsto>a \<prec> Q' \<longrightarrow> (\<exists>P'. P \<Longrightarrow>a \<prec> P' \<and> (P', Q') \<in> Rel)"
 

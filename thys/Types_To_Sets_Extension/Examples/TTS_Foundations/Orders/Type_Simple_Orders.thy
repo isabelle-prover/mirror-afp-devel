@@ -34,21 +34,21 @@ locale ord_syntax = ord le ls for le ls :: "['a, 'a] \<Rightarrow> bool"
 begin
 
 notation
-  le ("'(\<le>\<^sub>a')") and
-  le (infix "\<le>\<^sub>a" 50) and
-  ls ("'(<\<^sub>a')") and
-  ls (infix "<\<^sub>a" 50)
+  le (\<open>'(\<le>\<^sub>a')\<close>) and
+  le (infix \<open>\<le>\<^sub>a\<close> 50) and
+  ls (\<open>'(<\<^sub>a')\<close>) and
+  ls (infix \<open><\<^sub>a\<close> 50)
 
-abbreviation (input) ge (infix "\<ge>\<^sub>a" 50)
+abbreviation (input) ge (infix \<open>\<ge>\<^sub>a\<close> 50)
   where "x \<ge>\<^sub>a y \<equiv> y \<le>\<^sub>a x"
-abbreviation (input) gt (infix ">\<^sub>a" 50)
+abbreviation (input) gt (infix \<open>>\<^sub>a\<close> 50)
   where "x >\<^sub>a y \<equiv> y <\<^sub>a x"
 
 notation
-  ge ("'(\<ge>\<^sub>a')") and
-  ge (infix "\<ge>\<^sub>a" 50) and
-  gt ("'(>\<^sub>a')") and
-  gt (infix ">\<^sub>a" 50)
+  ge (\<open>'(\<ge>\<^sub>a')\<close>) and
+  ge (infix \<open>\<ge>\<^sub>a\<close> 50) and
+  gt (\<open>'(>\<^sub>a')\<close>) and
+  gt (infix \<open>>\<^sub>a\<close> 50)
 
 end
 
@@ -557,14 +557,14 @@ text\<open>Concrete syntax.\<close>
 locale bot = extremum bot for bot :: 'a
 begin
 
-notation bot ("\<bottom>")
+notation bot (\<open>\<bottom>\<close>)
 
 end
 
 locale top = extremum top for top :: 'a
 begin
 
-notation top ("\<top>")
+notation top (\<open>\<top>\<close>)
 
 end
 

@@ -143,9 +143,9 @@ begin
       using G.path_Obj G.path_concat
       by (unfold_locales, simp_all)
 
-    abbreviation comp      (infixr "\<cdot>" 55)
+    abbreviation comp      (infixr \<open>\<cdot>\<close> 55)
     where "comp \<equiv> COMP"
-    notation in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     abbreviation Path
     where "Path \<equiv> Map"
@@ -180,9 +180,9 @@ begin
         apply (metis empty_iff)
       by (metis empty_iff singletonD)
 
-    abbreviation comp      (infixr "\<cdot>" 55)
+    abbreviation comp      (infixr \<open>\<cdot>\<close> 55)
     where "comp \<equiv> COMP"
-    notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma is_discrete:
     shows "arr f \<longleftrightarrow> ide f"
@@ -257,8 +257,8 @@ begin
     sublocale free_category "{False, True}" Arr "\<lambda>_. False" "\<lambda>_. True"
       by (unfold_locales, simp_all)
 
-    notation comp                  (infixr "\<cdot>" 55)
-    notation in_hom                ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation comp                  (infixr \<open>\<cdot>\<close> 55)
+    notation in_hom                (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     definition Zero
     where "Zero \<equiv> MkIde False"

@@ -35,7 +35,7 @@ lemma (in node_histories) history_finite:
   shows "finite (set (history i))"
 by auto
     
-definition (in node_histories) history_order :: "'evt \<Rightarrow> nat \<Rightarrow> 'evt \<Rightarrow> bool" ("_/ \<sqsubset>\<^sup>_/ _" [50,1000,50]50) where
+definition (in node_histories) history_order :: "'evt \<Rightarrow> nat \<Rightarrow> 'evt \<Rightarrow> bool" (\<open>_/ \<sqsubset>\<^sup>_/ _\<close> [50,1000,50]50) where
   "x \<sqsubset>\<^sup>i z \<equiv> \<exists>xs ys zs. xs@x#ys@z#zs = history i"
 
 lemma (in node_histories) node_total_order_trans:
@@ -78,7 +78,7 @@ lemma (in node_histories) node_order_is_total:
     shows "e1 \<sqsubset>\<^sup>i e2 \<or> e2 \<sqsubset>\<^sup>i e1"
   using assms unfolding history_order_def by(metis list_split_two_elems histories_distinct)
 
-definition (in node_histories) prefix_of_node_history :: "'evt list \<Rightarrow> nat \<Rightarrow> bool" (infix "prefix of" 50) where
+definition (in node_histories) prefix_of_node_history :: "'evt list \<Rightarrow> nat \<Rightarrow> bool" (infix \<open>prefix of\<close> 50) where
   "xs prefix of i \<equiv> \<exists>ys. xs@ys = history i"
 
 lemma (in node_histories) carriers_head_lt:

@@ -15,7 +15,7 @@ begin
 subsection \<open>A class for generating numerals\<close>
 
 class tape =
-  fixes tape_of :: "'a \<Rightarrow> cell list" ("<_>" 100)
+  fixes tape_of :: "'a \<Rightarrow> cell list" (\<open><_>\<close> 100)
 
 
 instantiation nat::tape begin

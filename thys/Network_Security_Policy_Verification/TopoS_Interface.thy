@@ -183,7 +183,7 @@ The details can be looked up in \<^cite>\<open>"diekmann2014forte"\<close>.
   locale SecurityInvariant = SecurityInvariant_preliminaries sinvar
     for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
     +
-    fixes default_node_properties :: "'a" ("\<bottom>") 
+    fixes default_node_properties :: "'a" (\<open>\<bottom>\<close>) 
     and receiver_violation :: "bool"
     assumes 
       \<comment> \<open>default value can never fix a security violation.\<close>
@@ -268,7 +268,7 @@ subsection \<open>Information Flow Security Strategy (IFS)\<close>
   locale SecurityInvariant_IFS = SecurityInvariant_preliminaries sinvar
       for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
       +
-      fixes default_node_properties :: "'a" ("\<bottom>") 
+      fixes default_node_properties :: "'a" (\<open>\<bottom>\<close>) 
       assumes  default_secure_IFS:
         "\<lbrakk> wf_graph G; f \<in> set_offending_flows G nP \<rbrakk> \<Longrightarrow>
           \<forall>i \<in> snd` f. \<not> sinvar G (nP(i := \<bottom>))"
@@ -325,7 +325,7 @@ subsection \<open>Access Control Strategy (ACS)\<close>
   locale SecurityInvariant_ACS = SecurityInvariant_preliminaries sinvar
       for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
       +
-      fixes default_node_properties :: "'a" ("\<bottom>") 
+      fixes default_node_properties :: "'a" (\<open>\<bottom>\<close>) 
       assumes  default_secure_ACS:
         "\<lbrakk> wf_graph G; f \<in> set_offending_flows G nP \<rbrakk> \<Longrightarrow>
           \<forall>i \<in> fst` f. \<not> sinvar G (nP(i := \<bottom>))"

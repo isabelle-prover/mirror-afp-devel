@@ -35,7 +35,7 @@ definition
   "mbind \<equiv> \<Lambda> f g. (case f of Nothing \<Rightarrow> Nothing | Just\<cdot>f' \<Rightarrow> g\<cdot>f')"
 
 abbreviation
-  mbind_syn :: "'a Maybe \<Rightarrow> ('a \<rightarrow> 'b Maybe) \<Rightarrow> 'b Maybe" (infixl ">>=\<^sub>M" 55) where
+  mbind_syn :: "'a Maybe \<Rightarrow> ('a \<rightarrow> 'b Maybe) \<Rightarrow> 'b Maybe" (infixl \<open>>>=\<^sub>M\<close> 55) where
   "f >>=\<^sub>M g \<equiv> mbind\<cdot>f\<cdot>g"
 
 lemma mbind_strict1[simp]: "\<bottom> >>=\<^sub>M g = \<bottom>" by (simp add: mbind_def)

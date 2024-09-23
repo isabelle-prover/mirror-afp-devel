@@ -17,9 +17,9 @@ type_synonym
 
 inductive
   WT :: "[J_prog,env, expr     , ty     ] \<Rightarrow> bool"
-         ("_,_ \<turnstile> _ :: _"   [51,51,51]50)
+         (\<open>_,_ \<turnstile> _ :: _\<close>   [51,51,51]50)
   and WTs :: "[J_prog,env, expr list, ty list] \<Rightarrow> bool"
-         ("_,_ \<turnstile> _ [::] _" [51,51,51]50)
+         (\<open>_,_ \<turnstile> _ [::] _\<close> [51,51,51]50)
   for P :: J_prog
 where
   

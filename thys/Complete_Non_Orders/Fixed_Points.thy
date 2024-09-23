@@ -189,7 +189,7 @@ qed
 end
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50) and A :: "'a set" and f
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50) and A :: "'a set" and f
   assumes f: "f ` A \<subseteq> A"
 begin
 
@@ -868,7 +868,7 @@ lemmas setwiseE[elim] = setwise_def[unfolded atomize_eq, THEN iffD1, elim_format
 
 context fixed_point_proof begin
 
-abbreviation setwise_less_eq (infix "\<sqsubseteq>\<^sup>s" 50) where "(\<sqsubseteq>\<^sup>s) \<equiv> setwise (\<sqsubseteq>)"
+abbreviation setwise_less_eq (infix \<open>\<sqsubseteq>\<^sup>s\<close> 50) where "(\<sqsubseteq>\<^sup>s) \<equiv> setwise (\<sqsubseteq>)"
 
 subsection \<open>Least Quasi-Fixed Points for Attractive Relations.\<close>
 
@@ -880,7 +880,7 @@ lemma attract_mono_imp_least_qfp:
 proof-
   interpret attractive using attract by auto
   interpret sym: transitive A "(\<sim>)" using sym_transitive.
-  define ecl ("[_]\<^sub>\<sim>") where "[x]\<^sub>\<sim> \<equiv> {y \<in> A. x \<sim> y} \<union> {x}" for x
+  define ecl (\<open>[_]\<^sub>\<sim>\<close>) where "[x]\<^sub>\<sim> \<equiv> {y \<in> A. x \<sim> y} \<union> {x}" for x
   define Q where "Q \<equiv> {[x]\<^sub>\<sim> |. x \<in> A}"
   { fix X x assume XQ: "X \<in> Q" and xX: "x \<in> X"
     then have XA: "X \<subseteq> A" by (auto simp: Q_def ecl_def)

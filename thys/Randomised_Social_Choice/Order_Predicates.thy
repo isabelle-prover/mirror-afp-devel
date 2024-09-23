@@ -105,20 +105,20 @@ end
 
 text \<open>Some fancy notation for order relations\<close>
 abbreviation (input) weakly_preferred :: "'a \<Rightarrow> 'a relation \<Rightarrow> 'a \<Rightarrow> bool"
-    ("_ \<preceq>[_] _" [51,10,51] 60) where
+    (\<open>_ \<preceq>[_] _\<close> [51,10,51] 60) where
   "a \<preceq>[R] b \<equiv> R a b"
   
-definition strongly_preferred ("_ \<prec>[_] _" [51,10,51] 60) where
+definition strongly_preferred (\<open>_ \<prec>[_] _\<close> [51,10,51] 60) where
   "a \<prec>[R] b \<equiv> (a \<preceq>[R] b) \<and> \<not>(b \<preceq>[R] a)"
 
-definition indifferent ("_ \<sim>[_] _" [51,10,51] 60) where
+definition indifferent (\<open>_ \<sim>[_] _\<close> [51,10,51] 60) where
   "a \<sim>[R] b \<equiv> (a \<preceq>[R] b) \<and> (b \<preceq>[R] a)"
 
-abbreviation (input) weakly_not_preferred ("_ \<succeq>[_] _" [51,10,51] 60) where
+abbreviation (input) weakly_not_preferred (\<open>_ \<succeq>[_] _\<close> [51,10,51] 60) where
   "a \<succeq>[R] b \<equiv> b \<preceq>[R] a"
   term "a \<succeq>[R] b \<longleftrightarrow> b \<preceq>[R] a"
 
-abbreviation (input) strongly_not_preferred ("_ \<succ>[_] _" [51,10,51] 60) where
+abbreviation (input) strongly_not_preferred (\<open>_ \<succ>[_] _\<close> [51,10,51] 60) where
   "a \<succ>[R] b \<equiv> b \<prec>[R] a"
 
 context preorder_on

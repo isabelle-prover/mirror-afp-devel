@@ -7,7 +7,7 @@ section\<open>Embedded Ternary-Matching Big Step Semantics\<close>
 subsection\<open>Ternary Semantics (Big Step)\<close>
 
 inductive approximating_bigstep :: "('a, 'p) match_tac \<Rightarrow> 'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool"
-  ("_,_\<turnstile> \<langle>_, _\<rangle> \<Rightarrow>\<^sub>\<alpha> _"  [60,60,20,98,98] 89)
+  (\<open>_,_\<turnstile> \<langle>_, _\<rangle> \<Rightarrow>\<^sub>\<alpha> _\<close>  [60,60,20,98,98] 89)
   for \<gamma> and p where
 skip:  "\<gamma>,p\<turnstile> \<langle>[], t\<rangle> \<Rightarrow>\<^sub>\<alpha> t" |
 accept:  "\<lbrakk>matches \<gamma> m Accept p\<rbrakk> \<Longrightarrow> \<gamma>,p\<turnstile> \<langle>[Rule m Accept], Undecided\<rangle> \<Rightarrow>\<^sub>\<alpha> Decision FinalAllow" |

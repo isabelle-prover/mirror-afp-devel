@@ -13,7 +13,7 @@ context kyber_ntt
 begin
 
 
-definition mult_ntt:: "'a qr \<Rightarrow> 'a qr \<Rightarrow> 'a qr" (infixl "*\<^bsub>ntt\<^esub>" 70) where
+definition mult_ntt:: "'a qr \<Rightarrow> 'a qr \<Rightarrow> 'a qr" (infixl \<open>*\<^bsub>ntt\<^esub>\<close> 70) where
   "mult_ntt f g = inv_ntt_poly (ntt_poly f \<star> ntt_poly g)"
 
 lemma mult_ntt:
@@ -21,7 +21,7 @@ lemma mult_ntt:
   unfolding mult_ntt_def using convolution_thm_ntt_poly by auto
 
 definition scalar_prod_ntt:: 
-  "('a qr, 'k) vec \<Rightarrow> ('a qr, 'k) vec \<Rightarrow> 'a qr" (infixl "\<bullet>\<^bsub>ntt\<^esub>" 70) where
+  "('a qr, 'k) vec \<Rightarrow> ('a qr, 'k) vec \<Rightarrow> 'a qr" (infixl \<open>\<bullet>\<^bsub>ntt\<^esub>\<close> 70) where
   "scalar_prod_ntt v w = 
   (\<Sum>i\<in>(UNIV::'k set). (vec_nth v i) *\<^bsub>ntt\<^esub> (vec_nth w i))"
 
@@ -30,7 +30,7 @@ lemma scalar_prod_ntt:
   unfolding scalar_product_def scalar_prod_ntt_def using mult_ntt by auto
 
 definition mat_vec_mult_ntt:: 
-  "(('a qr, 'k) vec, 'k) vec \<Rightarrow> ('a qr, 'k) vec \<Rightarrow> ('a qr, 'k) vec" (infixl "\<cdot>\<^bsub>ntt\<^esub>" 70) where
+  "(('a qr, 'k) vec, 'k) vec \<Rightarrow> ('a qr, 'k) vec \<Rightarrow> ('a qr, 'k) vec" (infixl \<open>\<cdot>\<^bsub>ntt\<^esub>\<close> 70) where
   "mat_vec_mult_ntt A v = vec_lambda (\<lambda>i. 
   (\<Sum>j\<in>UNIV. (vec_nth (vec_nth A i) j) *\<^bsub>ntt\<^esub> (vec_nth v j)))"
 

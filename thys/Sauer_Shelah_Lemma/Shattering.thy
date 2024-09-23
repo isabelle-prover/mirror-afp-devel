@@ -12,7 +12,7 @@ begin
 
 subsection \<open>Intersection of a family of sets with a set\<close>
 
-abbreviation IntF :: "'a set set \<Rightarrow> 'a set \<Rightarrow> 'a set set" (infixl "\<inter>*" 60)
+abbreviation IntF :: "'a set set \<Rightarrow> 'a set \<Rightarrow> 'a set set" (infixl \<open>\<inter>*\<close> 60)
   where "F \<inter>* S \<equiv> ((\<inter>) S) ` F"
 
 lemma idem_IntF:
@@ -77,7 +77,7 @@ qed
 
 subsection \<open>Definition of @{term shatters}, @{term VC_dim} and @{term shattered_by}\<close>
 
-abbreviation shatters :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl "shatters" 70)
+abbreviation shatters :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl \<open>shatters\<close> 70)
   where "H shatters A \<equiv> H \<inter>* A = Pow A"
 
 definition VC_dim :: "'a set set \<Rightarrow> nat"

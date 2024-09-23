@@ -20,7 +20,7 @@ section \<open>Syntax and typing\<close>
 datatype type_sym =
   Ind | 
   Tv |
-  Fun type_sym type_sym (infixl "\<^bold>\<Leftarrow>" 80)
+  Fun type_sym type_sym (infixl \<open>\<^bold>\<Leftarrow>\<close> 80)
 
 type_synonym var_sym = string
 type_synonym cst_sym = string
@@ -28,8 +28,8 @@ type_synonym cst_sym = string
 datatype trm =
   Var var_sym type_sym |
   Cst cst_sym type_sym |
-  App trm trm (infixl "\<^bold>\<cdot>" 80) |
-  Abs var_sym type_sym trm ("\<^bold>[\<^bold>\<lambda>_:_. _\<^bold>]" [80,80,80])
+  App trm trm (infixl \<open>\<^bold>\<cdot>\<close> 80) |
+  Abs var_sym type_sym trm (\<open>\<^bold>[\<^bold>\<lambda>_:_. _\<^bold>]\<close> [80,80,80])
 
 fun vars :: "trm \<Rightarrow> (var_sym * type_sym) set" where
   "vars (Var x \<alpha>) = {(x,\<alpha>)}"
@@ -245,37 +245,37 @@ section \<open>Defined wffs\<close>
 
 subsection \<open>Common expressions\<close>
 
-abbreviation (input) Var_yi ("y\<^sub>i") where
+abbreviation (input) Var_yi (\<open>y\<^sub>i\<close>) where
   "y\<^sub>i == Cst ''y'' Ind"
 
-abbreviation (input) Var_xo ("x\<^sub>o") where
+abbreviation (input) Var_xo (\<open>x\<^sub>o\<close>) where
   "x\<^sub>o == Var ''x'' Tv"
 
-abbreviation (input) Var_yo ("y\<^sub>o") where
+abbreviation (input) Var_yo (\<open>y\<^sub>o\<close>) where
   "y\<^sub>o == Var ''y'' Tv"
 
-abbreviation (input) Fun_oo ("oo") where
+abbreviation (input) Fun_oo (\<open>oo\<close>) where
   "oo == Tv \<^bold>\<Leftarrow> Tv"
 
-abbreviation (input) Fun_ooo ("ooo") where
+abbreviation (input) Fun_ooo (\<open>ooo\<close>) where
   "ooo == oo \<^bold>\<Leftarrow> Tv"
 
-abbreviation (input) Var_goo ("g\<^sub>o\<^sub>o") where
+abbreviation (input) Var_goo (\<open>g\<^sub>o\<^sub>o\<close>) where
   "g\<^sub>o\<^sub>o == Var ''g'' oo"
 
-abbreviation (input) Var_gooo ("g\<^sub>o\<^sub>o\<^sub>o") where
+abbreviation (input) Var_gooo (\<open>g\<^sub>o\<^sub>o\<^sub>o\<close>) where
   "g\<^sub>o\<^sub>o\<^sub>o == Var ''g'' ooo"
 
 
 subsection \<open>Equality symbol\<close>
 
-abbreviation QQ :: "type_sym \<Rightarrow> trm" ("\<^bold>Q") where
+abbreviation QQ :: "type_sym \<Rightarrow> trm" (\<open>\<^bold>Q\<close>) where
   "\<^bold>Q \<alpha> \<equiv> Cst ''Q'' \<alpha>"
 
 
 subsection \<open>Description or selection operator\<close>
 
-abbreviation \<iota>\<iota> :: "trm" ("\<^bold>\<iota>") where
+abbreviation \<iota>\<iota> :: "trm" (\<open>\<^bold>\<iota>\<close>) where
   "\<^bold>\<iota> \<equiv> Cst ''i'' (Ind \<^bold>\<Leftarrow> (Tv \<^bold>\<Leftarrow> Ind))"
 
 
@@ -284,7 +284,7 @@ subsection \<open>Equality\<close>
 definition Eql :: "trm \<Rightarrow> trm \<Rightarrow> type_sym \<Rightarrow> trm" where
   "Eql A B \<alpha> \<equiv> (\<^bold>Q (Tv \<^bold>\<Leftarrow> \<alpha> \<^bold>\<Leftarrow> \<alpha>)) \<^bold>\<cdot> A \<^bold>\<cdot> B"
 
-abbreviation Eql' :: "trm \<Rightarrow> type_sym \<Rightarrow> trm \<Rightarrow> trm" ("\<^bold>[_ \<^bold>=_\<^bold>= _\<^bold>]" [89]) where
+abbreviation Eql' :: "trm \<Rightarrow> type_sym \<Rightarrow> trm \<Rightarrow> trm" (\<open>\<^bold>[_ \<^bold>=_\<^bold>= _\<^bold>]\<close> [89]) where
   "\<^bold>[A \<^bold>=\<alpha>\<^bold>= B\<^bold>] \<equiv> Eql A B \<alpha>"
 
 definition LHS where
@@ -349,7 +349,7 @@ lemma wff_PI_subterm_iff[simp]:
 
 subsection \<open>Forall\<close>
 
-definition Forall :: "string \<Rightarrow> type_sym \<Rightarrow> trm \<Rightarrow> trm" ("\<^bold>[\<^bold>\<forall>_:_. _\<^bold>]" [80,80,80]) where 
+definition Forall :: "string \<Rightarrow> type_sym \<Rightarrow> trm \<Rightarrow> trm" (\<open>\<^bold>[\<^bold>\<forall>_:_. _\<^bold>]\<close> [80,80,80]) where 
   "\<^bold>[\<^bold>\<forall>x:\<alpha>. A\<^bold>] = (PI \<alpha>) \<^bold>\<cdot> \<^bold>[\<^bold>\<lambda>x:\<alpha>. A\<^bold>]"
 
 lemma wff_Forall[simp]: "wff Tv A \<Longrightarrow> wff Tv \<^bold>[\<^bold>\<forall>x:\<alpha>. A\<^bold>]"
@@ -424,7 +424,7 @@ lemma wff_Con_sym_subterm2_iff[simp]:
 
 subsection \<open>Conjunction\<close>
 
-definition Con :: "trm \<Rightarrow> trm \<Rightarrow> trm" (infix "\<^bold>\<and>" 80) where
+definition Con :: "trm \<Rightarrow> trm \<Rightarrow> trm" (infix \<open>\<^bold>\<and>\<close> 80) where
   "A \<^bold>\<and> B = Con_sym \<^bold>\<cdot> A \<^bold>\<cdot> B"
 
 lemma wff_Con[simp]: "wff Tv A \<Longrightarrow> wff Tv B \<Longrightarrow> wff Tv (A \<^bold>\<and> B)"
@@ -474,7 +474,7 @@ lemma wff_Imp_sym_subterm2_iff[simp]:
 
 subsection \<open>Implication\<close>
 
-definition Imp :: "trm \<Rightarrow> trm \<Rightarrow> trm" (infix "\<^bold>\<longrightarrow>" 80) where
+definition Imp :: "trm \<Rightarrow> trm \<Rightarrow> trm" (infix \<open>\<^bold>\<longrightarrow>\<close> 80) where
   "A \<^bold>\<longrightarrow> B = Imp_sym \<^bold>\<cdot> A \<^bold>\<cdot> B"
 
 lemma wff_Imp[simp]: "wff Tv A \<Longrightarrow> wff Tv B \<Longrightarrow> wff Tv (A \<^bold>\<longrightarrow> B)"

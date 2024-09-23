@@ -4,7 +4,7 @@ imports CNF_Formulas SC_Cut
 begin
 
 text\<open>Left handed SC with NNF transformation:\<close>
-inductive LSC ("(_ \<Rightarrow>\<^sub>n)" [53]) where
+inductive LSC (\<open>(_ \<Rightarrow>\<^sub>n)\<close> [53]) where
 \<comment> \<open>logic:\<close>
 Ax: "\<^bold>\<not>(Atom k),Atom k,\<Gamma> \<Rightarrow>\<^sub>n" |
 BotL: "\<bottom>,\<Gamma> \<Rightarrow>\<^sub>n" |

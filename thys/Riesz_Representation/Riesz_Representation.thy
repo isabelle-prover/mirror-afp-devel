@@ -65,7 +65,7 @@ qed(auto dest: integrable_Re integrable_Im)
 
 subsection \<open> Compact Supports \<close>
 definition has_compact_support_on :: "('a \<Rightarrow> 'b :: monoid_add) \<Rightarrow> 'a topology \<Rightarrow> bool"
-   (infix "has'_compact'_support'_on" 60) where
+   (infix \<open>has'_compact'_support'_on\<close> 60) where
    "f has_compact_support_on X \<longleftrightarrow> compactin X (X closure_of support_on (topspace X) f)"
 
 lemma has_compact_support_on_iff:

@@ -6,7 +6,7 @@ theory Weak_Late_Cong_Subst
   imports Weak_Late_Cong Weak_Late_Bisim_Subst Strong_Late_Bisim_Subst
 begin
 
-definition congruenceSubst :: "pi \<Rightarrow> pi\<Rightarrow> bool" (infixr "\<simeq>\<^sup>s" 65) where
+definition congruenceSubst :: "pi \<Rightarrow> pi\<Rightarrow> bool" (infixr \<open>\<simeq>\<^sup>s\<close> 65) where
   "P \<simeq>\<^sup>s Q \<equiv> (P, Q) \<in> (substClosed congruence)"
 
 lemmas congruenceSubstDef = congruenceSubst_def congruence_def substClosed_def

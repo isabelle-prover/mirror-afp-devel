@@ -17,10 +17,10 @@ section \<open>One morphism\<close>
 
 subsection  \<open>Morphism, core map and extension\<close>
 
-definition list_extension :: "('a \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list)" ("_\<^sup>\<L>" [1000] 1000)
+definition list_extension :: "('a \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list)" (\<open>_\<^sup>\<L>\<close> [1000] 1000)
   where "t\<^sup>\<L> \<equiv> (\<lambda> x. concat (map t x))"
 
-definition morphism_core :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a  \<Rightarrow> 'b list)" ("_\<^sup>\<C>" [1000] 1000)
+definition morphism_core :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a  \<Rightarrow> 'b list)" (\<open>_\<^sup>\<C>\<close> [1000] 1000)
   where core_def: "f\<^sup>\<C> \<equiv> (\<lambda> x. f [x])"
 
 (*QUESTION simp? abbereviation?
@@ -670,10 +670,10 @@ lemma (in morphism) marked_morphismI:
 
 subsection "Image length"
 
-definition max_image_length:: "('a list \<Rightarrow> 'b list) \<Rightarrow> nat" ("\<lceil>_\<rceil>")
+definition max_image_length:: "('a list \<Rightarrow> 'b list) \<Rightarrow> nat" (\<open>\<lceil>_\<rceil>\<close>)
   where "max_image_length f = Max (length`(range f\<^sup>\<C>))"
 
-definition min_image_length::"('a list \<Rightarrow> 'b list) \<Rightarrow> nat" ("\<lfloor>_\<rfloor>" )
+definition min_image_length::"('a list \<Rightarrow> 'b list) \<Rightarrow> nat" (\<open>\<lfloor>_\<rfloor>\<close> )
   where "min_image_length f = Min (length`(range f\<^sup>\<C>))"
 
 lemma max_im_len_id: "\<lceil>id::('a list \<Rightarrow> 'a list)\<rceil> = 1" and min_im_len_id: "\<lfloor>id::('a list \<Rightarrow> 'a list)\<rfloor> = 1"
@@ -868,7 +868,7 @@ text \<open>Solutions and the coincidence pairs are defined for any two mappings
 subsection \<open>Solutions\<close>
 
 definition minimal_solution :: "'a list \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> bool"
-  ("_ \<in> _ =\<^sub>M _" [80,80,80] 51 )
+  (\<open>_ \<in> _ =\<^sub>M _\<close> [80,80,80] 51 )
   where min_sol_def:  "minimal_solution s g h \<equiv> s \<noteq> \<epsilon> \<and> g s = h s
       \<and> (\<forall> s'. s' \<noteq> \<epsilon> \<and> s' \<le>p s \<and> g s' = h s' \<longrightarrow> s' = s)"
 
@@ -927,7 +927,7 @@ qed
 
 subsection \<open>Coincidence pairs\<close>
 
-definition coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" ("\<CC>")
+definition coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" (\<open>\<CC>\<close>)
   where "coincidence_set g h \<equiv> {(r,s). g r = h s}"
 
 lemma coin_set_eq: "(g \<circ> fst)`(\<CC> g h) = (h \<circ> snd)`(\<CC> g h)"
@@ -967,10 +967,10 @@ qed
 
 lemmas coin_set_inter_snd = coin_set_inter_fst[unfolded coin_set_eq]
 
-definition minimal_coincidence :: "('a list \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow>  'a list \<Rightarrow> bool" ("(_ _) =\<^sub>m (_ _)" [80,81,80,81] 51 )
+definition minimal_coincidence :: "('a list \<Rightarrow> 'b list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow>  'a list \<Rightarrow> bool" (\<open>(_ _) =\<^sub>m (_ _)\<close> [80,81,80,81] 51 )
   where min_coin_def:  "minimal_coincidence g r h s \<equiv> r \<noteq> \<epsilon> \<and> s \<noteq> \<epsilon> \<and> g r = h s \<and> (\<forall> r' s'. r' \<le>np r \<and> s' \<le>np s \<and> g r' = h s' \<longrightarrow> r' = r \<and> s' = s)"
 
-definition min_coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" ("\<CC>\<^sub>m")
+definition min_coincidence_set :: "('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<Rightarrow> 'b list) \<Rightarrow> ('a list \<times> 'a list) set" (\<open>\<CC>\<^sub>m\<close>)
   where "min_coincidence_set g h \<equiv> ({(r,s) . g r =\<^sub>m h s})"
 
 lemma min_coin_minD: "g r =\<^sub>m h s \<Longrightarrow> r' \<le>np r \<Longrightarrow> s' \<le>np s \<Longrightarrow>  g r' = h s' \<Longrightarrow> r' = r \<and> s' = s"

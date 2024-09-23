@@ -70,19 +70,19 @@ lemma min_set_obtains:
 
 subsection \<open>Minimal operators on sets\<close>
 
-definition product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<otimes>" 65)
+definition product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr \<open>\<otimes>\<close> 65)
   where "A \<otimes> B = {a |\<union>| b | a b. a \<in> A \<and> b \<in> B}"
 
-definition min_product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<otimes>\<^sub>m" 65)
+definition min_product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr \<open>\<otimes>\<^sub>m\<close> 65)
   where "A \<otimes>\<^sub>m B = min_set (A \<otimes> B)"
 
-definition min_union :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<union>\<^sub>m" 65)
+definition min_union :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr \<open>\<union>\<^sub>m\<close> 65)
   where "A \<union>\<^sub>m B = min_set (A \<union> B)"
 
-definition product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>")
+definition product_set :: "'a fset set set \<Rightarrow> 'a fset set" (\<open>\<Otimes>\<close>)
   where "\<Otimes> X = Finite_Set.fold product {{||}} X"
 
-definition min_product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>\<^sub>m")
+definition min_product_set :: "'a fset set set \<Rightarrow> 'a fset set" (\<open>\<Otimes>\<^sub>m\<close>)
   where "\<Otimes>\<^sub>m X = Finite_Set.fold min_product {{||}} X"
 
 
@@ -853,7 +853,7 @@ qed simp
 
 text \<open>For the proof of correctness, we redefine the @{const product} operator on lists.\<close>
 
-definition list_product :: "'a list set \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixl "\<otimes>\<^sub>l" 65)
+definition list_product :: "'a list set \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixl \<open>\<otimes>\<^sub>l\<close> 65)
 where
   "A \<otimes>\<^sub>l B = {a @ b | a b. a \<in> A \<and> b \<in> B}"
 

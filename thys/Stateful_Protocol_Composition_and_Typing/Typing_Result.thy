@@ -1393,7 +1393,7 @@ private inductive well_analyzed::"('fun,'var) extstrand \<Rightarrow> bool" wher
 | Decomp: "\<lbrakk>well_analyzed A; t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t A \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t A) - (Var ` \<V>)\<rbrakk>
     \<Longrightarrow> well_analyzed (A@[Decomp t])"
 
-private fun subst_apply_extstrandstep (infix "\<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p" 51) where
+private fun subst_apply_extstrandstep (infix \<open>\<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p\<close> 51) where
   "subst_apply_extstrandstep (Step x) \<theta> = Step (x \<cdot>\<^sub>s\<^sub>t\<^sub>p \<theta>)"
 | "subst_apply_extstrandstep (Decomp t) \<theta> = Decomp (t \<cdot> \<theta>)"
 
@@ -1411,7 +1411,7 @@ private lemma vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p_subst_apply_simps[simp]:
   "vars\<^sub>e\<^sub>s\<^sub>t\<^sub>p ((Step (\<forall>X\<langle>\<or>\<noteq>: F\<rangle>\<^sub>s\<^sub>t)) \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) = set X \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<theta>)"
 by auto
 
-private definition subst_apply_extstrand (infix "\<cdot>\<^sub>e\<^sub>s\<^sub>t" 51) where "S \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) S"
+private definition subst_apply_extstrand (infix \<open>\<cdot>\<^sub>e\<^sub>s\<^sub>t\<close> 51) where "S \<cdot>\<^sub>e\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>e\<^sub>s\<^sub>t\<^sub>p \<theta>) S"
 
 private abbreviation update\<^sub>s\<^sub>t::"('fun,'var) strands \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) strands"
 where
@@ -2936,7 +2936,7 @@ subsubsection \<open>Transition Systems Definitions\<close>
 inductive pts_symbolic::
   "(('fun,'var) strands \<times> ('fun,'var) strand) \<Rightarrow>
    (('fun,'var) strands \<times> ('fun,'var) strand) \<Rightarrow> bool"
-(infix "\<Rightarrow>\<^sup>\<bullet>" 50) where
+(infix \<open>\<Rightarrow>\<^sup>\<bullet>\<close> 50) where
   Nil[simp]:        "[] \<in> \<S> \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet> (update\<^sub>s\<^sub>t \<S> [],\<A>)"
 | Send[simp]:       "send\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S> \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet> (update\<^sub>s\<^sub>t \<S> (send\<langle>t\<rangle>\<^sub>s\<^sub>t#S),\<A>@[receive\<langle>t\<rangle>\<^sub>s\<^sub>t])"
 | Receive[simp]:    "receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S> \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet> (update\<^sub>s\<^sub>t \<S> (receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S),\<A>@[send\<langle>t\<rangle>\<^sub>s\<^sub>t])"
@@ -2946,7 +2946,7 @@ inductive pts_symbolic::
 private inductive pts_symbolic_c::
   "(('fun,'var) strands \<times> ('fun,'var) extstrand) \<Rightarrow>
    (('fun,'var) strands \<times> ('fun,'var) extstrand) \<Rightarrow> bool"
-(infix "\<Rightarrow>\<^sup>\<bullet>\<^sub>c" 50) where
+(infix \<open>\<Rightarrow>\<^sup>\<bullet>\<^sub>c\<close> 50) where
   Nil[simp]:        "[] \<in> \<S> \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (update\<^sub>s\<^sub>t \<S> [],\<A>)"
 | Send[simp]:       "send\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S> \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (update\<^sub>s\<^sub>t \<S> (send\<langle>t\<rangle>\<^sub>s\<^sub>t#S),\<A>@[Step (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
 | Receive[simp]:    "receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S \<in> \<S> \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (update\<^sub>s\<^sub>t \<S> (receive\<langle>t\<rangle>\<^sub>s\<^sub>t#S),\<A>@[Step (send\<langle>t\<rangle>\<^sub>s\<^sub>t)])"
@@ -2955,8 +2955,8 @@ private inductive pts_symbolic_c::
 | Decompose[simp]:  "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>e\<^sub>s\<^sub>t \<A> \<union> assignment_rhs\<^sub>e\<^sub>s\<^sub>t \<A>)
                      \<Longrightarrow> (\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet>\<^sub>c (\<S>,\<A>@[Decomp (Fun f T)])"
 
-abbreviation pts_symbolic_rtrancl (infix "\<Rightarrow>\<^sup>\<bullet>\<^sup>*" 50) where "a \<Rightarrow>\<^sup>\<bullet>\<^sup>* b \<equiv> pts_symbolic\<^sup>*\<^sup>* a b"
-private abbreviation pts_symbolic_c_rtrancl (infix "\<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>*" 50) where "a \<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>* b \<equiv> pts_symbolic_c\<^sup>*\<^sup>* a b"
+abbreviation pts_symbolic_rtrancl (infix \<open>\<Rightarrow>\<^sup>\<bullet>\<^sup>*\<close> 50) where "a \<Rightarrow>\<^sup>\<bullet>\<^sup>* b \<equiv> pts_symbolic\<^sup>*\<^sup>* a b"
+private abbreviation pts_symbolic_c_rtrancl (infix \<open>\<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>*\<close> 50) where "a \<Rightarrow>\<^sup>\<bullet>\<^sub>c\<^sup>* b \<equiv> pts_symbolic_c\<^sup>*\<^sup>* a b"
 
 lemma pts_symbolic_induct[consumes 1, case_names Nil Send Receive Equality Inequality]:
   assumes "(\<S>,\<A>) \<Rightarrow>\<^sup>\<bullet> (\<S>',\<A>')"

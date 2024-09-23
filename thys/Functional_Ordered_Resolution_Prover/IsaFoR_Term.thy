@@ -25,11 +25,11 @@ begin
 hide_const (open) mgu
 
 abbreviation subst_apply_literal ::
-  "('f, 'v) term literal \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term literal" (infixl "\<cdot>lit" 60) where
+  "('f, 'v) term literal \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term literal" (infixl \<open>\<cdot>lit\<close> 60) where
   "L \<cdot>lit \<sigma> \<equiv> map_literal (\<lambda>A. A \<cdot> \<sigma>) L"
 
 definition subst_apply_clause ::
-  "('f, 'v) term clause \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term clause" (infixl "\<cdot>cls" 60) where
+  "('f, 'v) term clause \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term clause" (infixl \<open>\<cdot>cls\<close> 60) where
   "C \<cdot>cls \<sigma> = image_mset (\<lambda>L. L \<cdot>lit \<sigma>) C"
 
 abbreviation vars_lit :: "('f, 'v) term literal \<Rightarrow> 'v set" where

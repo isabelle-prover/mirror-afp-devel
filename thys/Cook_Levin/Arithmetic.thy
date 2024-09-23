@@ -446,7 +446,7 @@ When handling natural numbers, Turing machines will usually have tape contents
 of the following form:
 \<close>
 
-abbreviation ncontents :: "nat \<Rightarrow> (nat \<Rightarrow> symbol)" ("\<lfloor>_\<rfloor>\<^sub>N") where
+abbreviation ncontents :: "nat \<Rightarrow> (nat \<Rightarrow> symbol)" (\<open>\<lfloor>_\<rfloor>\<^sub>N\<close>) where
   "\<lfloor>n\<rfloor>\<^sub>N \<equiv> \<lfloor>canrepr n\<rfloor>"
 
 lemma ncontents_0: "\<lfloor>0\<rfloor>\<^sub>N = \<lfloor>[]\<rfloor>"
@@ -6290,7 +6290,7 @@ In order to support Boolean operations, we represent the value True by the
 number~1 and False by~0.
 \<close>
 
-abbreviation bcontents :: "bool \<Rightarrow> (nat \<Rightarrow> symbol)" ("\<lfloor>_\<rfloor>\<^sub>B") where
+abbreviation bcontents :: "bool \<Rightarrow> (nat \<Rightarrow> symbol)" (\<open>\<lfloor>_\<rfloor>\<^sub>B\<close>) where
   "\<lfloor>b\<rfloor>\<^sub>B \<equiv> \<lfloor>if b then 1 else 0\<rfloor>\<^sub>N"
 
 text \<open>

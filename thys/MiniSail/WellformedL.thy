@@ -50,7 +50,7 @@ qed(auto+)
 
 section \<open>Context Extension\<close>
 
-definition wfExt :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Gamma> \<Rightarrow> bool" (" _ ; _  \<turnstile>\<^sub>w\<^sub>f _ < _ " [50,50,50] 50)   where
+definition wfExt :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Gamma> \<Rightarrow> bool" (\<open> _ ; _  \<turnstile>\<^sub>w\<^sub>f _ < _ \<close> [50,50,50] 50)   where
   "wfExt T B G1 G2 = (wfG T B G2 \<and> wfG T B G1 \<and> toSet G1 \<subseteq> toSet G2)" 
 
 section \<open>Context\<close>

@@ -4702,22 +4702,22 @@ context MinkowskiBetweenness begin
 text \<open>Define additional notation for non-strict \<^term>\<open>local_ordering\<close> -
   cf Schutz' monograph \<^cite>\<open>\<open> p.~27\<close> in "schutz1997"\<close>.\<close>
 
-abbreviation nonstrict_betw_right :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_;_;_\<rbrakk>") where
+abbreviation nonstrict_betw_right :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_;_;_\<rbrakk>\<close>) where
   "nonstrict_betw_right a b c \<equiv> [a;b;c] \<or> b = c"
 
-abbreviation nonstrict_betw_left :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("\<lbrakk>_;_;_]") where
+abbreviation nonstrict_betw_left :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>\<lbrakk>_;_;_]\<close>) where
   "nonstrict_betw_left a b c \<equiv> [a;b;c] \<or> b = a"
 
 abbreviation nonstrict_betw_both :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (* ("[(_ _ _)]") *) where
   "nonstrict_betw_both a b c \<equiv> nonstrict_betw_left a b c \<or> nonstrict_betw_right a b c"
 
-abbreviation betw4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_;_;_;_]") where
+abbreviation betw4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_;_;_;_]\<close>) where
   "betw4 a b c d \<equiv> [a;b;c] \<and> [b;c;d]"
 
-abbreviation nonstrict_betw_right4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_;_;_;_\<rbrakk>") where
+abbreviation nonstrict_betw_right4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_;_;_;_\<rbrakk>\<close>) where
   "nonstrict_betw_right4 a b c d \<equiv> betw4 a b c d \<or> c = d"
 
-abbreviation nonstrict_betw_left4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("\<lbrakk>_;_;_;_]") where
+abbreviation nonstrict_betw_left4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>\<lbrakk>_;_;_;_]\<close>) where
   "nonstrict_betw_left4 a b c d \<equiv> betw4 a b c d \<or> a = b"
 
 abbreviation nonstrict_betw_both4 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (* ("[(_ _ _ _)]") *) where

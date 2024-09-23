@@ -21,7 +21,7 @@ subsection \<open>Qubits\<close>
 
 text\<open>In this theory @{text cpx} stands for @{text complex}.\<close>
 
-definition cpx_vec_length :: "complex vec \<Rightarrow> real" ("\<parallel>_\<parallel>") where
+definition cpx_vec_length :: "complex vec \<Rightarrow> real" (\<open>\<parallel>_\<parallel>\<close>) where
 "cpx_vec_length v \<equiv> sqrt(\<Sum>i<dim_vec v. (cmod (v $ i))\<^sup>2)"
 
 lemma cpx_length_of_vec_of_list [simp]:
@@ -110,7 +110,7 @@ subsection "The Hermitian Conjugation"
 
 text \<open>The Hermitian conjugate of a complex matrix is the complex conjugate of its transpose. \<close>
 
-definition dagger :: "complex mat \<Rightarrow> complex mat" ("_\<^sup>\<dagger>") where
+definition dagger :: "complex mat \<Rightarrow> complex mat" (\<open>_\<^sup>\<dagger>\<close>) where
   "M\<^sup>\<dagger> \<equiv> mat (dim_col M) (dim_row M) (\<lambda>(i,j). cnj(M $$ (j,i)))"
 
 text \<open>We introduce the type of complex square matrices.\<close>
@@ -213,7 +213,7 @@ lemma (in gate) gate_is_inv:
 
 subsection "Relations Between Complex Conjugation, Hermitian Conjugation, Transposition and Unitarity"
 
-notation transpose_mat ("(_\<^sup>t)")
+notation transpose_mat (\<open>(_\<^sup>t)\<close>)
 
 lemma col_tranpose [simp]:
   assumes "dim_row M = n" and "i < n"
@@ -231,7 +231,7 @@ lemma row_transpose [simp]:
   shows "row (M\<^sup>t) i = col M i"
   using assms by simp
 
-definition cpx_mat_cnj :: "complex mat \<Rightarrow> complex mat" ("(_\<^sup>\<star>)") where
+definition cpx_mat_cnj :: "complex mat \<Rightarrow> complex mat" (\<open>(_\<^sup>\<star>)\<close>) where
 "cpx_mat_cnj M \<equiv> mat (dim_row M) (dim_col M) (\<lambda>(i,j). cnj (M $$ (i,j)))"
 
 lemma cpx_mat_cnj_id [simp]:
@@ -419,7 +419,7 @@ subsection "The Inner Product"
 
 text \<open>We introduce a coercion between complex vectors and (column) complex matrices.\<close>
 
-definition ket_vec :: "complex vec \<Rightarrow> complex mat" ("|_\<rangle>") where
+definition ket_vec :: "complex vec \<Rightarrow> complex mat" (\<open>|_\<rangle>\<close>) where
 "|v\<rangle> \<equiv> mat (dim_vec v) 1 (\<lambda>(i,j). v $ i)"
 
 lemma ket_vec_index [simp]:
@@ -454,7 +454,7 @@ lemma row_bra_vec [simp]:
 
 text \<open>We introduce a definition called @{term "bra"} to see a vector as a column matrix.\<close>
 
-definition bra :: "complex mat \<Rightarrow> complex mat" ("\<langle>_|") where
+definition bra :: "complex mat \<Rightarrow> complex mat" (\<open>\<langle>_|\<close>) where
 "\<langle>v| \<equiv> mat 1 (dim_row v) (\<lambda>(i,j). cnj(v $$ (j,i)))"
 
 text \<open>The relation between @{term "bra"}, @{term "bra_vec"} and @{term "ket_vec"} is given as follows.\<close>
@@ -469,7 +469,7 @@ lemma row_bra [simp]:
 
 text \<open>We introduce the inner product of two complex vectors in @{text "\<complex>\<^sup>n"}.\<close>
 
-definition inner_prod :: "complex vec \<Rightarrow> complex vec \<Rightarrow> complex" ("\<langle>_|_\<rangle>") where
+definition inner_prod :: "complex vec \<Rightarrow> complex vec \<Rightarrow> complex" (\<open>\<langle>_|_\<rangle>\<close>) where
 "inner_prod u v \<equiv> \<Sum> i \<in> {0..< dim_vec v}. cnj(u $ i) * (v $ i)"
 
 lemma inner_prod_with_row_bra_vec [simp]:
@@ -1260,16 +1260,16 @@ We introduce below the so-called Bell states, also known as EPR pairs (EPR stand
 Podolsky and Rosen).
 \<close>
 
-definition bell00 ::"complex mat" ("|\<beta>\<^sub>0\<^sub>0\<rangle>") where
+definition bell00 ::"complex mat" (\<open>|\<beta>\<^sub>0\<^sub>0\<rangle>\<close>) where
 "bell00 \<equiv> 1/sqrt(2) \<cdot>\<^sub>m |vec 4 (\<lambda>i. if i=0 \<or> i=3 then 1 else 0)\<rangle>"
 
-definition bell01 ::"complex mat" ("|\<beta>\<^sub>0\<^sub>1\<rangle>") where
+definition bell01 ::"complex mat" (\<open>|\<beta>\<^sub>0\<^sub>1\<rangle>\<close>) where
 "bell01 \<equiv> 1/sqrt(2) \<cdot>\<^sub>m |vec 4 (\<lambda>i. if i=1 \<or> i=2 then 1 else 0)\<rangle>"
 
-definition bell10 ::"complex mat" ("|\<beta>\<^sub>1\<^sub>0\<rangle>") where
+definition bell10 ::"complex mat" (\<open>|\<beta>\<^sub>1\<^sub>0\<rangle>\<close>) where
 "bell10 \<equiv> 1/sqrt(2) \<cdot>\<^sub>m |vec 4 (\<lambda>i. if i=0 then 1 else if i=3 then -1 else 0)\<rangle>"
 
-definition bell11 ::"complex mat" ("|\<beta>\<^sub>1\<^sub>1\<rangle>") where
+definition bell11 ::"complex mat" (\<open>|\<beta>\<^sub>1\<^sub>1\<rangle>\<close>) where
 "bell11 \<equiv> 1/sqrt(2) \<cdot>\<^sub>m |vec 4 (\<lambda>i. if i=1 then 1 else if i=2 then -1 else 0)\<rangle>"
 
 lemma
@@ -1304,7 +1304,7 @@ subsection \<open>The Bitwise Inner Product\<close>
 definition bitwise_inner_prod:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where 
 "bitwise_inner_prod n i j = (\<Sum>k\<in>{0..<n}. (bin_rep n i) ! k * (bin_rep n j) ! k)"
 
-abbreviation bip:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" ("_ \<cdot>\<^bsub>_\<^esub>  _") where
+abbreviation bip:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" (\<open>_ \<cdot>\<^bsub>_\<^esub>  _\<close>) where
 "bip i n j \<equiv> bitwise_inner_prod n i j"
 
 lemma bitwise_inner_prod_fst_el_0: 

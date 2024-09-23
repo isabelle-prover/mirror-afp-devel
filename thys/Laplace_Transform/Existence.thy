@@ -6,7 +6,7 @@ begin
 subsection \<open>Definition\<close>
 
 definition has_laplace :: "(real \<Rightarrow> complex) \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> bool"
-  (infixr "has'_laplace" 46)
+  (infixr \<open>has'_laplace\<close> 46)
   where "(f has_laplace L) s \<longleftrightarrow> ((\<lambda>t. exp (t *\<^sub>R - s) * f t) has_integral L) {0..}"
 
 lemma has_laplaceI:

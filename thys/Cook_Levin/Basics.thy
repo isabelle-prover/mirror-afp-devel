@@ -286,14 +286,14 @@ symbols number~4 and~5 are chosen arbitrarily. While we will encounter Turing
 machines with huge alphabets, only the following symbols will be used literally:
 \<close>
 
-abbreviation (input) blank_symbol :: nat ("\<box>") where "\<box> \<equiv> 0"
-abbreviation (input) start_symbol :: nat ("\<triangleright>")   where "\<triangleright> \<equiv> 1"
-abbreviation (input) zero_symbol :: nat ("\<zero>")   where "\<zero> \<equiv> 2"
-abbreviation (input) one_symbol :: nat ("\<one>")    where "\<one> \<equiv> 3"
-abbreviation (input) bar_symbol :: nat ("\<bar>")      where "\<bar> \<equiv> 4"
-abbreviation (input) sharp_symbol :: nat ("\<sharp>")  where "\<sharp> \<equiv> 5"
+abbreviation (input) blank_symbol :: nat (\<open>\<box>\<close>) where "\<box> \<equiv> 0"
+abbreviation (input) start_symbol :: nat (\<open>\<triangleright>\<close>)   where "\<triangleright> \<equiv> 1"
+abbreviation (input) zero_symbol :: nat (\<open>\<zero>\<close>)   where "\<zero> \<equiv> 2"
+abbreviation (input) one_symbol :: nat (\<open>\<one>\<close>)    where "\<one> \<equiv> 3"
+abbreviation (input) bar_symbol :: nat (\<open>\<bar>\<close>)      where "\<bar> \<equiv> 4"
+abbreviation (input) sharp_symbol :: nat (\<open>\<sharp>\<close>)  where "\<sharp> \<equiv> 5"
 
-no_notation abs ("\<bar>_\<bar>")
+no_notation abs (\<open>\<bar>_\<bar>\<close>)
 
 text \<open>
 Tapes are infinite in one direction, so each cell can be addressed by a natural
@@ -417,7 +417,7 @@ text \<open>
 Reading symbols from one tape, from all tapes, and from configurations:
 \<close>
 
-abbreviation tape_read :: "tape \<Rightarrow> symbol" ("|.|") where
+abbreviation tape_read :: "tape \<Rightarrow> symbol" (\<open>|.|\<close>) where
   "|.| tp \<equiv> fst tp (snd tp)"
 
 definition read :: "tape list \<Rightarrow> symbol list" where
@@ -482,58 +482,58 @@ mark ($!$) accesses an element in a list on the left-hand side term.
 \null
 \<close>
 
-abbreviation config_length :: "config \<Rightarrow> nat"  ("||_||") where
+abbreviation config_length :: "config \<Rightarrow> nat"  (\<open>||_||\<close>) where
   "config_length cfg \<equiv> length (snd cfg)"
 
-abbreviation tape_move_right :: "tape \<Rightarrow> nat \<Rightarrow> tape" (infixl "|+|" 60) where
+abbreviation tape_move_right :: "tape \<Rightarrow> nat \<Rightarrow> tape" (infixl \<open>|+|\<close> 60) where
   "tp |+| n \<equiv> (fst tp, snd tp + n)"
 
-abbreviation tape_move_left :: "tape \<Rightarrow> nat \<Rightarrow> tape" (infixl "|-|" 60) where
+abbreviation tape_move_left :: "tape \<Rightarrow> nat \<Rightarrow> tape" (infixl \<open>|-|\<close> 60) where
   "tp |-| n \<equiv> (fst tp, snd tp - n)"
 
-abbreviation tape_move_to :: "tape \<Rightarrow> nat \<Rightarrow> tape" (infixl "|#=|" 60) where
+abbreviation tape_move_to :: "tape \<Rightarrow> nat \<Rightarrow> tape" (infixl \<open>|#=|\<close> 60) where
   "tp |#=| n \<equiv> (fst tp, n)"
 
-abbreviation tape_write :: "tape \<Rightarrow> symbol \<Rightarrow> tape" (infixl "|:=|" 60) where
+abbreviation tape_write :: "tape \<Rightarrow> symbol \<Rightarrow> tape" (infixl \<open>|:=|\<close> 60) where
   "tp |:=| h \<equiv> ((fst tp) (snd tp := h), snd tp)"
 
-abbreviation config_tape_by_no :: "config \<Rightarrow> nat \<Rightarrow> tape" (infix "<!>" 90) where
+abbreviation config_tape_by_no :: "config \<Rightarrow> nat \<Rightarrow> tape" (infix \<open><!>\<close> 90) where
   "cfg <!> j \<equiv> snd cfg ! j"
 
-abbreviation config_contents_by_no :: "config \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> symbol)" (infix "<:>" 100) where
+abbreviation config_contents_by_no :: "config \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> symbol)" (infix \<open><:>\<close> 100) where
   "cfg <:> j \<equiv> fst (cfg <!> j)"
 
-abbreviation config_pos_by_no :: "config \<Rightarrow> nat \<Rightarrow> nat" (infix "<#>" 100) where
+abbreviation config_pos_by_no :: "config \<Rightarrow> nat \<Rightarrow> nat" (infix \<open><#>\<close> 100) where
   "cfg <#> j \<equiv> snd (cfg <!> j)"
 
-abbreviation config_symbol_read :: "config \<Rightarrow> nat \<Rightarrow> symbol" (infix "<.>" 100) where
+abbreviation config_symbol_read :: "config \<Rightarrow> nat \<Rightarrow> symbol" (infix \<open><.>\<close> 100) where
   "cfg <.> j \<equiv> (cfg <:> j) (cfg <#> j)"
 
-abbreviation config_update_state :: "config \<Rightarrow> nat \<Rightarrow> config" (infix "<+=>" 90) where
+abbreviation config_update_state :: "config \<Rightarrow> nat \<Rightarrow> config" (infix \<open><+=>\<close> 90) where
   "cfg <+=> q \<equiv> (fst cfg + q, snd cfg)"
 
-abbreviation tapes_contents_by_no :: "tape list \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> symbol)" (infix ":::" 100) where
+abbreviation tapes_contents_by_no :: "tape list \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> symbol)" (infix \<open>:::\<close> 100) where
   "tps ::: j \<equiv> fst (tps ! j)"
 
-abbreviation tapes_pos_by_no :: "tape list \<Rightarrow> nat \<Rightarrow> nat" (infix ":#:" 100) where
+abbreviation tapes_pos_by_no :: "tape list \<Rightarrow> nat \<Rightarrow> nat" (infix \<open>:#:\<close> 100) where
   "tps :#: j \<equiv> snd (tps ! j)"
 
-abbreviation tapes_symbol_read :: "tape list \<Rightarrow> nat \<Rightarrow> symbol" (infix ":.:" 100) where
+abbreviation tapes_symbol_read :: "tape list \<Rightarrow> nat \<Rightarrow> symbol" (infix \<open>:.:\<close> 100) where
   "tps :.: j \<equiv> (tps ::: j) (tps :#: j)"
 
-abbreviation jump_by_no :: "state \<times> action list \<Rightarrow> state" ("[*] _" [90]) where
+abbreviation jump_by_no :: "state \<times> action list \<Rightarrow> state" (\<open>[*] _\<close> [90]) where
   "[*] sas \<equiv> fst sas"
 
-abbreviation actions_of_cmd :: "state \<times> action list \<Rightarrow> action list" ("[!!] _" [100] 100) where
+abbreviation actions_of_cmd :: "state \<times> action list \<Rightarrow> action list" (\<open>[!!] _\<close> [100] 100) where
   "[!!] sas \<equiv> snd sas"
 
-abbreviation action_by_no :: "state \<times> action list \<Rightarrow> nat \<Rightarrow> action" (infix "[!]" 90) where
+abbreviation action_by_no :: "state \<times> action list \<Rightarrow> nat \<Rightarrow> action" (infix \<open>[!]\<close> 90) where
   "sas [!] j \<equiv> snd sas ! j"
 
-abbreviation write_by_no :: "state \<times> action list \<Rightarrow> nat \<Rightarrow> symbol" (infix "[.]" 90) where
+abbreviation write_by_no :: "state \<times> action list \<Rightarrow> nat \<Rightarrow> symbol" (infix \<open>[.]\<close> 90) where
   "sas [.] j \<equiv> fst (sas [!] j)"
 
-abbreviation direction_by_no :: "state \<times> action list \<Rightarrow> nat \<Rightarrow> direction" (infix "[~]" 100) where
+abbreviation direction_by_no :: "state \<times> action list \<Rightarrow> nat \<Rightarrow> direction" (infix \<open>[~]\<close> 100) where
   "sas [~] j \<equiv> snd (sas [!] j)"
 
 text \<open>
@@ -878,7 +878,7 @@ Most often the tapes will have a start symbol in the first cell followed by
 a finite sequence of symbols.
 \<close>
 
-definition contents :: "symbol list \<Rightarrow> (nat \<Rightarrow> symbol)" ("\<lfloor>_\<rfloor>") where
+definition contents :: "symbol list \<Rightarrow> (nat \<Rightarrow> symbol)" (\<open>\<lfloor>_\<rfloor>\<close>) where
   "\<lfloor>xs\<rfloor> i \<equiv> if i = 0 then \<triangleright> else if i \<le> length xs then xs ! (i - 1) else \<box>"
 
 lemma contents_at_0 [simp]: "\<lfloor>zs\<rfloor> 0 = \<triangleright>"
@@ -1208,7 +1208,7 @@ denote the bits by @{text \<bbbO>} and @{text \<bbbI>}.
 
 type_synonym string = "bool list"
 
-notation False ("\<bbbO>") and True ("\<bbbI>")
+notation False (\<open>\<bbbO>\<close>) and True (\<open>\<bbbI>\<close>)
 
 text \<open>
 This keeps the more abstract level of computable functions separate from the
@@ -1490,7 +1490,7 @@ $\bbbO\bbbO\bbbO\bbbI\bbbO\bbbO\bbbO\bbbO\bbbI\bbbI\bbbO\bbbI\bbbO\bbbI\bbbO\bbb
 abbreviation bitenc :: "string \<Rightarrow> string" where
   "bitenc x \<equiv> concat (map (\<lambda>h. [\<bbbO>, h]) x)"
 
-definition string_pair :: "string \<Rightarrow> string \<Rightarrow> string" ("\<langle>_, _\<rangle>") where
+definition string_pair :: "string \<Rightarrow> string \<Rightarrow> string" (\<open>\<langle>_, _\<rangle>\<close>) where
   "\<langle>x, y\<rangle> \<equiv> bitenc x @ [\<bbbI>, \<bbbI>] @ bitenc y"
 
 text \<open>
@@ -1685,7 +1685,7 @@ text \<open>
 Turing machines have to deal with pairs of symbol sequences rather than strings.
 \<close>
 
-abbreviation pair :: "string \<Rightarrow> string \<Rightarrow> symbol list" ("\<langle>_; _\<rangle>") where
+abbreviation pair :: "string \<Rightarrow> string \<Rightarrow> symbol list" (\<open>\<langle>_; _\<rangle>\<close>) where
   "\<langle>x; y\<rangle> \<equiv> string_to_symbols \<langle>x, y\<rangle>"
 
 lemma symbols_lt_pair: "symbols_lt 4 \<langle>x; y\<rangle>"

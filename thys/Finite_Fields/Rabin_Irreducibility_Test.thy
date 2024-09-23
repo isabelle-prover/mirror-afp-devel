@@ -7,7 +7,7 @@ begin
 text \<open>This section introduces an effective test for irreducibility of polynomials
 (in finite fields) based on Rabin~\cite{rabin1980}.\<close>
 
-definition pcoprime :: "_ \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("pcoprime\<index>")
+definition pcoprime :: "_ \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>pcoprime\<index>\<close>)
   where "pcoprime\<^bsub>R\<^esub> p q =
     (\<forall>r \<in> carrier (poly_ring R). r pdivides\<^bsub>R\<^esub> p \<and> r pdivides\<^bsub>R\<^esub> q \<longrightarrow> degree r = 0)"
 

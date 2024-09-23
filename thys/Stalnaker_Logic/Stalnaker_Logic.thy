@@ -443,7 +443,7 @@ qed
 
 section \<open>System S4.2\<close>
 
-abbreviation SystemS4_2 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>4\<^sub>2 _" [50] 50) where
+abbreviation SystemS4_2 :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>S\<^sub>4\<^sub>2 _\<close> [50] 50) where
   \<open>\<turnstile>\<^sub>S\<^sub>4\<^sub>2 p \<equiv> AxT \<oplus> Ax4 \<oplus> Ax_2 \<turnstile> p\<close>
 
 abbreviation AxS4_2 :: \<open>'i fm \<Rightarrow> bool\<close> where
@@ -507,10 +507,10 @@ corollary
 
 section \<open>Topological S4 axioms\<close>
 
-abbreviation DoubleImp (infixr "\<^bold>\<longleftrightarrow>" 25) where
+abbreviation DoubleImp (infixr \<open>\<^bold>\<longleftrightarrow>\<close> 25) where
   \<open>(p\<^bold>\<longleftrightarrow>q) \<equiv> ((p \<^bold>\<longrightarrow> q) \<^bold>\<and> (q \<^bold>\<longrightarrow> p))\<close>
 
-inductive System_topoS4 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>T\<^sub>o\<^sub>p _" [50] 50) where
+inductive System_topoS4 :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>T\<^sub>o\<^sub>p _\<close> [50] 50) where
   A1': \<open>tautology p \<Longrightarrow> \<turnstile>\<^sub>T\<^sub>o\<^sub>p p\<close>
 | AR: \<open>\<turnstile>\<^sub>T\<^sub>o\<^sub>p ((K i (p \<^bold>\<and> q)) \<^bold>\<longleftrightarrow> ((K i p) \<^bold>\<and> K i q))\<close>
 | AT': \<open>\<turnstile>\<^sub>T\<^sub>o\<^sub>p (K i p \<^bold>\<longrightarrow> p)\<close>

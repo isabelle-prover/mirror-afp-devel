@@ -11,7 +11,7 @@ context weak begin
 definition
   "weakenStatImp" :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>
                      ('b \<times> ('a, 'b, 'c) psi \<times> ('a, 'b, 'c) psi) set \<Rightarrow> 
-                     ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<lessapprox>\<^sub>w<_> _" [80, 80, 80, 80] 80)
+                     ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<lessapprox>\<^sub>w<_> _\<close> [80, 80, 80, 80] 80)
 where "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<Rel> Q \<equiv> \<exists>Q'. \<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<and> insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q') \<Psi> \<and> (\<Psi>, P, Q') \<in> Rel"
 
 lemma weakenStatImpMonotonic:

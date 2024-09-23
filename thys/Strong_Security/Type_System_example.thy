@@ -15,20 +15,20 @@ consts BMap :: "'val \<Rightarrow> bool"
 
 abbreviation d_indistinguishable' :: "('id,'val) Expr \<Rightarrow> Dom
   \<Rightarrow> ('id,'val) Expr \<Rightarrow> bool"
-( "(_ \<equiv>\<^bsub>_\<^esub> _)" )
+( \<open>(_ \<equiv>\<^bsub>_\<^esub> _)\<close> )
 where 
 "e1 \<equiv>\<^bsub>d\<^esub> e2 
   \<equiv> Strongly_Secure_Programs.d_indistinguishable ExprEval DA d e1 e2"
 
 abbreviation relatedbyUSdB' :: "(('id,'val) Expr, 'id) MWLfCom list 
-  \<Rightarrow> Dom \<Rightarrow> (('id,'val) Expr, 'id) MWLfCom list \<Rightarrow> bool" (infixr "\<approx>\<^bsub>_\<^esub>" 65)
+  \<Rightarrow> Dom \<Rightarrow> (('id,'val) Expr, 'id) MWLfCom list \<Rightarrow> bool" (infixr \<open>\<approx>\<^bsub>_\<^esub>\<close> 65)
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> Strong_Security.USdB 
   (MWLf_semantics.MWLfSteps_det ExprEval BMap) DA d"
 
 \<comment> \<open>Security typing rules for expressions - will be part of a side condition\<close>
 inductive 
 ExprSecTyping :: "('id, 'val) Expr \<Rightarrow> Dom set \<Rightarrow> bool"
-("\<turnstile>\<^bsub>\<E>\<^esub> _ : _")
+(\<open>\<turnstile>\<^bsub>\<E>\<^esub> _ : _\<close>)
 where 
 Consts: "\<turnstile>\<^bsub>\<E>\<^esub> (Const v) : {d}" |
 Vars: "\<turnstile>\<^bsub>\<E>\<^esub> (Var x) : {DA x}" |

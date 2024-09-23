@@ -1277,7 +1277,7 @@ fun sum_assn :: "('ai \<Rightarrow> 'a \<Rightarrow> assn) \<Rightarrow> ('bi \<
 | "sum_assn A B (Inr bi) (Inr b) = B bi b"
 | "sum_assn A B _ _ = false"  
 
-notation sum_assn (infixr "+\<^sub>a" 67)
+notation sum_assn (infixr \<open>+\<^sub>a\<close> 67)
   
 lemma sum_assn_pure[safe_constraint_rules]: "\<lbrakk>is_pure A; is_pure B\<rbrakk> \<Longrightarrow> is_pure (sum_assn A B)"
   apply (auto simp: is_pure_iff_pure_assn)

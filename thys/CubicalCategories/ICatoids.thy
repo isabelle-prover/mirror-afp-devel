@@ -13,10 +13,10 @@ begin
 
 text \<open>All categories considered in this component are single-set categories.\<close>
 
-no_notation src ("\<sigma>")
+no_notation src (\<open>\<sigma>\<close>)
 
-notation True ("tt") 
-notation False ("ff")
+notation True (\<open>tt\<close>) 
+notation False (\<open>ff\<close>)
 
 abbreviation Fix :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a set" where
   "Fix f \<equiv> {x. f x = x}"
@@ -43,11 +43,11 @@ lemma (in functional_catoid) pcomp_def_var4: "\<Delta> x y \<Longrightarrow> x \
 subsection \<open>Indexed catoids and categories\<close>
 
 class face_map_op = 
-  fixes fmap :: "nat \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a" ("\<partial>") 
+  fixes fmap :: "nat \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<partial>\<close>) 
 
 begin
 
-abbreviation Face :: "nat \<Rightarrow> bool \<Rightarrow> 'a set \<Rightarrow> 'a set" ("\<partial>\<partial>") where
+abbreviation Face :: "nat \<Rightarrow> bool \<Rightarrow> 'a set \<Rightarrow> 'a set" (\<open>\<partial>\<partial>\<close>) where
   "\<partial>\<partial> i \<alpha> \<equiv> image (\<partial> i \<alpha>)"
 
 abbreviation face_fix :: "nat \<Rightarrow> 'a set" where
@@ -60,7 +60,7 @@ abbreviation "FFx i X \<equiv> (\<forall>x \<in> X. fFx i x)"
 end
 
 class icomp_op =
-  fixes icomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a set" ("_\<odot>\<^bsub>_\<^esub>_"[70,70,70]70)
+  fixes icomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>_\<odot>\<^bsub>_\<^esub>_\<close>[70,70,70]70)
 
 class imultisemigroup = icomp_op +
   assumes iassoc: "(\<Union>v \<in> y \<odot>\<^bsub>i\<^esub> z. x \<odot>\<^bsub>i\<^esub> v) = (\<Union>v \<in> x \<odot>\<^bsub>i\<^esub> y. v \<odot>\<^bsub>i\<^esub> z)"
@@ -72,7 +72,7 @@ sublocale ims: multisemigroup "\<lambda>x y. x \<odot>\<^bsub>i\<^esub> y"
 
 abbreviation "DD \<equiv> ims.\<Delta>"
 
-abbreviation iconv :: "'a set \<Rightarrow> nat \<Rightarrow> 'a set \<Rightarrow> 'a set" ("_\<star>\<^bsub>_\<^esub>_"[70,70,70]70) where
+abbreviation iconv :: "'a set \<Rightarrow> nat \<Rightarrow> 'a set \<Rightarrow> 'a set" (\<open>_\<star>\<^bsub>_\<^esub>_\<close>[70,70,70]70) where
   "X \<star>\<^bsub>i\<^esub> Y \<equiv> ims.conv i X Y"
 
 end
@@ -123,7 +123,7 @@ sublocale icat: single_set_category "\<lambda>x y. x \<odot>\<^bsub>i\<^esub> y"
    apply (metis dual_order.eq_iff icid.src_local_cond icid.st_locality_locality local.locality)
   by (metis icid.st_locality_locality local.iDst local.locality order_refl)
 
-abbreviation ipcomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" ("_\<otimes>\<^bsub>_\<^esub>_"[70,70,70]70) where
+abbreviation ipcomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_\<otimes>\<^bsub>_\<^esub>_\<close>[70,70,70]70) where
   "x \<otimes>\<^bsub>i\<^esub> y \<equiv> icat.pcomp i x y"
 
 lemma iconv_prop: "X \<star>\<^bsub>i\<^esub> Y = {x \<otimes>\<^bsub>i\<^esub>y |x y. x \<in> X \<and> y \<in> Y \<and> DD i x y}"

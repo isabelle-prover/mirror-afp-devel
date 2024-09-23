@@ -75,12 +75,12 @@ elements of the content of \<^cite>\<open>"cain_nine_2019"\<close>.
 lemma exI': "P x \<Longrightarrow> \<exists>x. P x" by auto
 
 class tta_mult =
-  fixes tta_mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "*\<^sub>t\<^sub>t\<^sub>a" 65)
+  fixes tta_mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>*\<^sub>t\<^sub>t\<^sub>a\<close> 65)
 
 class tta_semigroup = tta_mult +
   assumes tta_assoc[simp]: "(a *\<^sub>t\<^sub>t\<^sub>a b) *\<^sub>t\<^sub>t\<^sub>a c = a *\<^sub>t\<^sub>t\<^sub>a (b *\<^sub>t\<^sub>t\<^sub>a c)"
 
-definition set_mult :: "'a::tta_mult set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "\<^bold>*\<^sub>t\<^sub>t\<^sub>a" 65) 
+definition set_mult :: "'a::tta_mult set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl \<open>\<^bold>*\<^sub>t\<^sub>t\<^sub>a\<close> 65) 
   where "set_mult S T = {s *\<^sub>t\<^sub>t\<^sub>a t | s t. s \<in> S \<and> t \<in> T}"
 
 definition left_ideal :: "'a::tta_mult set \<Rightarrow> bool"

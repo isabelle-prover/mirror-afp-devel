@@ -18,20 +18,20 @@ subsection \<open> Hoare logic in KAT \<close>
 
 text \<open> Here we derive the rules of Hoare Logic. \<close>
 
-notation t ("\<tt>\<tt>")
+notation t (\<open>\<tt>\<tt>\<close>)
 
 hide_const t
 
-no_notation if_then_else ("if _ then _ else _ fi" [64,64,64] 63)
-        and HOL.If ("(if (_)/ then (_)/ else (_))" [0, 0, 10] 10)
-        and while ("while _ do _ od" [64,64] 63)
+no_notation if_then_else (\<open>if _ then _ else _ fi\<close> [64,64,64] 63)
+        and HOL.If (\<open>(if (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
+        and while (\<open>while _ do _ od\<close> [64,64] 63)
 
 context kat (* mostly by Victor Gomes, Georg Struth *)
 begin
  
 \<comment> \<open> Definitions of Hoare Triple \<close>
 
-definition Hoare :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("H") where
+definition Hoare :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>H\<close>) where
   "H p x q \<longleftrightarrow> \<tt>\<tt> p \<cdot> x \<le> x \<cdot> \<tt>\<tt> q" 
 
 lemma H_consl: "\<tt>\<tt> p \<le> \<tt>\<tt> p' \<Longrightarrow> H p' x q \<Longrightarrow> H p x q"
@@ -65,7 +65,7 @@ lemma H_choice: "H p x q \<Longrightarrow> H p y q \<Longrightarrow> H p (x + y)
 
 \<comment> \<open> Conditional statement \<close>
 
-definition kat_cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _" [64,64,64] 63) where
+definition kat_cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _\<close> [64,64,64] 63) where
   "if p then x else y = (\<tt>\<tt> p \<cdot> x + n p \<cdot> y)"
 
 lemma H_var: "H p x q \<longleftrightarrow> \<tt>\<tt> p \<cdot> x \<cdot> n q = 0"
@@ -88,10 +88,10 @@ lemma H_cond: "H (\<tt>\<tt> p \<cdot> \<tt>\<tt> r) x q \<Longrightarrow> H (\<
 
 \<comment> \<open> While loop \<close>
 
-definition kat_while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _" [64,64] 63) where
+definition kat_while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _\<close> [64,64] 63) where
   "while b do x = (\<tt>\<tt> b \<cdot> x)\<^sup>\<star> \<cdot> n b"
 
-definition kat_while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _" [64,64,64] 63) where
+definition kat_while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ inv _ do _\<close> [64,64,64] 63) where
   "while p inv i do x = while p do x"
 
 lemma H_exp1: "H (\<tt>\<tt> p \<cdot> \<tt>\<tt> r) x q \<Longrightarrow> H p (\<tt>\<tt> r \<cdot> x) q"
@@ -126,7 +126,7 @@ proof-
     unfolding Hoare_def using assms(3) phl_cons2 by blast
 qed
 
-definition kat_loop_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("loop _ inv _ " [64,64] 63)
+definition kat_loop_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>loop _ inv _ \<close> [64,64] 63)
   where "loop x inv i = x\<^sup>\<star>"
 
 lemma H_loop: "H p x p \<Longrightarrow> H p (loop x inv i) p"

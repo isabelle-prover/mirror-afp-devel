@@ -66,7 +66,7 @@ text \<open>Two angles can be considered too similar if they differ by less than
 an 11th grade class and was chosen that statistically, 99\% will consider the
 angles as different.\<close>
 
-definition similar_angle :: "real \<Rightarrow> real \<Rightarrow> bool"  (infix "\<sim>" 50)
+definition similar_angle :: "real \<Rightarrow> real \<Rightarrow> bool"  (infix \<open>\<sim>\<close> 50)
   where "similar_angle x y = (abs (x - y) < 15)"
 
 text \<open>The usual definitions of right-angled and isosceles, using the just

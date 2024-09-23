@@ -26,7 +26,7 @@ As shown below, in the case of preorders, the definitions coincide.\<close>
 
 definition "galois_equivalence \<equiv> ((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r \<and> ((\<le>\<^bsub>R\<^esub>) \<unlhd> (\<le>\<^bsub>L\<^esub>)) r l"
 
-notation galois.galois_equivalence (infix "\<equiv>\<^sub>G" 50)
+notation galois.galois_equivalence (infix \<open>\<equiv>\<^sub>G\<close> 50)
 
 lemma galois_equivalenceI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<stileturn> (\<le>\<^bsub>R\<^esub>)) l r"

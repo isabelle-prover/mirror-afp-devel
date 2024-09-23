@@ -379,22 +379,22 @@ code_printing constant ToNat \<rightharpoonup> (Haskell) "CodeConst.To.nat"
 
 subsection\<open>Some Notations (I): Raw Translations\<close>
 
-syntax "_sprint0" :: "_ \<Rightarrow> ml_string" ("sprint0 (_)\<acute>")
+syntax "_sprint0" :: "_ \<Rightarrow> ml_string" (\<open>sprint0 (_)\<acute>\<close>)
 translations "sprint0 x\<acute>" \<rightleftharpoons> "CONST sprintf0 x"
 
-syntax "_sprint1" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" ("sprint1 (_)\<acute>")
+syntax "_sprint1" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" (\<open>sprint1 (_)\<acute>\<close>)
 translations "sprint1 x\<acute>" \<rightleftharpoons> "CONST sprintf1 x"
 
-syntax "_sprint2" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" ("sprint2 (_)\<acute>")
+syntax "_sprint2" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" (\<open>sprint2 (_)\<acute>\<close>)
 translations "sprint2 x\<acute>" \<rightleftharpoons> "CONST sprintf2 x"
 
-syntax "_sprint3" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" ("sprint3 (_)\<acute>")
+syntax "_sprint3" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" (\<open>sprint3 (_)\<acute>\<close>)
 translations "sprint3 x\<acute>" \<rightleftharpoons> "CONST sprintf3 x"
 
-syntax "_sprint4" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" ("sprint4 (_)\<acute>")
+syntax "_sprint4" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" (\<open>sprint4 (_)\<acute>\<close>)
 translations "sprint4 x\<acute>" \<rightleftharpoons> "CONST sprintf4 x"
 
-syntax "_sprint5" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" ("sprint5 (_)\<acute>")
+syntax "_sprint5" :: "_ \<Rightarrow> _ \<Rightarrow> ml_string" (\<open>sprint5 (_)\<acute>\<close>)
 translations "sprint5 x\<acute>" \<rightleftharpoons> "CONST sprintf5 x"
 
 subsection\<open>Some Notations (II): Polymorphic Cartouches\<close>

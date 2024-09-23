@@ -21,7 +21,7 @@ sledgehammer_params[minimize=false,preplay_timeout=10,timeout=30,verbose=true,st
 
 subsection \<open>Replication of symbols\<close>
 
-abbreviation exponent :: "'a \<Rightarrow> nat \<Rightarrow> 'a list" ("_ \<up> _" [100, 99] 100)
+abbreviation exponent :: "'a \<Rightarrow> nat \<Rightarrow> 'a list" (\<open>_ \<up> _\<close> [100, 99] 100)
   where "x \<up> n == replicate n x"
 
 lemma hd_repeat_cases:

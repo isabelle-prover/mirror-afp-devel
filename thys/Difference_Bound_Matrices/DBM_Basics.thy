@@ -342,7 +342,7 @@ fun val_0 :: "('c \<Rightarrow> ('a :: linordered_ab_group_add)) \<Rightarrow> '
   "val_0 u None = 0" |
   "val_0 u (Some c) = u c"
 
-notation val_0 ("_\<^sub>\<zero> _" [90,90] 90)
+notation val_0 (\<open>_\<^sub>\<zero> _\<close> [90,90] 90)
 
 lemma dbm_entry_val_None_None[dest]:
   "dbm_entry_val u None None l \<Longrightarrow> l = \<infinity>"

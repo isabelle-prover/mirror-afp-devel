@@ -1523,7 +1523,7 @@ declare underS_notIn [simp]
 text \<open>The abbrevation $=o$ is used both in \verb+Set_Algebras+ and Cardinals.
 We disable the one from \verb+Set_Algebras+.\<close>
 
-no_notation elt_set_eq (infix "=o" 50)
+no_notation elt_set_eq (infix \<open>=o\<close> 50)
 
 lemma regularCard_ordIso:
   assumes "Card_order r" "regularCard r" "s =o r"

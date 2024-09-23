@@ -530,7 +530,7 @@ subsection\<open>Composition of covariant semifunctors\<close>
 
 subsubsection\<open>Definition and elementary properties\<close>
 
-abbreviation (input) smcf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F" 55)
+abbreviation (input) smcf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<close> 55)
   where "smcf_comp \<equiv> dghm_comp"
 
 
@@ -2093,7 +2093,7 @@ locale iso_semicategory = L: semicategory \<alpha> \<AA> + R: semicategory \<alp
   for \<alpha> \<AA> \<BB> +
   assumes iso_smc_is_iso_semifunctor: "\<exists>\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
 
-notation iso_semicategory (infixl "\<approx>\<^sub>S\<^sub>M\<^sub>C\<index>" 50)
+notation iso_semicategory (infixl \<open>\<approx>\<^sub>S\<^sub>M\<^sub>C\<index>\<close> 50)
 
 
 text\<open>Rules.\<close>

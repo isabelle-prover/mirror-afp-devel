@@ -18,7 +18,7 @@ begin
 
   locale subcategory =
     C: category C
-    for C :: "'a comp"      (infixr "\<cdot>\<^sub>C" 55)
+    for C :: "'a comp"      (infixr \<open>\<cdot>\<^sub>C\<close> 55)
     and Arr :: "'a \<Rightarrow> bool" +
     assumes inclusion: "Arr f \<Longrightarrow> C.arr f"
     and dom_closed: "Arr f \<Longrightarrow> Arr (C.dom f)"
@@ -26,10 +26,10 @@ begin
     and comp_closed: "\<lbrakk> Arr f; Arr g; C.cod f = C.dom g \<rbrakk> \<Longrightarrow> Arr (g \<cdot>\<^sub>C f)"
   begin
 
-    no_notation C.in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation C.in_hom       ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
+    no_notation C.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation C.in_hom       (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
 
-    definition comp         (infixr "\<cdot>" 55)
+    definition comp         (infixr \<open>\<cdot>\<close> 55)
     where "g \<cdot> f = (if Arr f \<and> Arr g \<and> C.cod f = C.dom g then g \<cdot>\<^sub>C f else C.null)"
 
     interpretation partial_composition comp
@@ -141,7 +141,7 @@ begin
     theorem is_category:
     shows "category comp" ..
 
-    notation in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma dom_simp:
     assumes "arr f"

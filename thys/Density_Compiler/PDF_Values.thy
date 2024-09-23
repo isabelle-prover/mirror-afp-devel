@@ -21,7 +21,7 @@ datatype val = UnitVal
   | BoolVal (extract_bool: bool)
   | IntVal (extract_int: int)
   | RealVal (extract_real: real)
-  | PairVal (extract_fst: val) (extract_snd: val)  ("<|_, _|>"  [0, 61] 1000)
+  | PairVal (extract_fst: val) (extract_snd: val)  (\<open><|_, _|>\<close>  [0, 61] 1000)
 where
   "extract_bool UnitVal = False"
 | "extract_bool (IntVal i) = False"

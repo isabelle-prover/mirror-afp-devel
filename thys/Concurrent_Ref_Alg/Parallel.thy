@@ -12,10 +12,10 @@ text \<open>
 \<close>
 
 locale skip = 
-  fixes skip :: "'a::refinement_lattice"  ("skip") 
+  fixes skip :: "'a::refinement_lattice"  (\<open>skip\<close>) 
 
 locale par =
-  fixes par :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<parallel>" 75)
+  fixes par :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<parallel>\<close> 75)
   assumes abort_par:   "\<bottom> \<parallel> c = \<bottom>"    (* ++ *)
 
 locale parallel = par + skip + par: comm_monoid par skip

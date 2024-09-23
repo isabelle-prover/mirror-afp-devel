@@ -22,7 +22,7 @@ relation \<open>\<longmapsto>\<close>, we introduce the inductive predicate \<op
 denoting that \<open>u\<close> is a normal form of \<open>t\<close>.
 \<close>
 
-inductive norm :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<Down>" 50)
+inductive norm :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl \<open>\<Down>\<close> 50)
 where
   "t \<in> value \<Longrightarrow> t \<Down> t"
 | "t \<longmapsto> s \<Longrightarrow> s \<Down> u \<Longrightarrow> t \<Down> u"

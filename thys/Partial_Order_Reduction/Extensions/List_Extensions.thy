@@ -11,7 +11,7 @@ begin
     "i \<ge> length xs \<Longrightarrow> (xs @ ys) ! i = ys ! (i - length xs)"
     unfolding nth_append by simp+
 
-  notation zip (infixr "||" 51)
+  notation zip (infixr \<open>||\<close> 51)
 
   abbreviation "project A \<equiv> filter (\<lambda> a. a \<in> A)"
   abbreviation "select s w \<equiv> nths w s"

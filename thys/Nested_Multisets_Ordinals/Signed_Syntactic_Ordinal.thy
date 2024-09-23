@@ -17,7 +17,7 @@ subsection \<open>Natural (Hessenberg) Product\<close>
 instantiation zhmultiset :: comm_ring_1
 begin
 
-abbreviation \<omega>\<^sub>z_exp :: "hmultiset \<Rightarrow> zhmultiset" ("\<omega>\<^sub>z^") where
+abbreviation \<omega>\<^sub>z_exp :: "hmultiset \<Rightarrow> zhmultiset" (\<open>\<omega>\<^sub>z^\<close>) where
   "\<omega>\<^sub>z^ \<equiv> \<lambda>m. ZHMSet {#m#}\<^sub>z"
 
 lift_definition one_zhmultiset :: zhmultiset is "{#0#}\<^sub>z" .

@@ -37,13 +37,13 @@ where "microstep_tcl \<Gamma> p q \<equiv> (microstep \<Gamma>)\<^sup>+\<^sup>+ 
 syntax
   "_microstep"
      :: "[('s, 'm, 'p, 'l) seqp, ('s, 'm, 'p, 'l) seqp_env, ('s, 'm, 'p, 'l) seqp] \<Rightarrow> bool"
-     ("(_) \<leadsto>\<^bsub>_\<^esub> (_)" [61, 0, 61] 50)
+     (\<open>(_) \<leadsto>\<^bsub>_\<^esub> (_)\<close> [61, 0, 61] 50)
   "_microstep_rtcl"
      :: "[('s, 'm, 'p, 'l) seqp, ('s, 'm, 'p, 'l) seqp_env, ('s, 'm, 'p, 'l) seqp] \<Rightarrow> bool"
-     ("(_) \<leadsto>\<^bsub>_\<^esub>\<^sup>* (_)" [61, 0, 61] 50)
+     (\<open>(_) \<leadsto>\<^bsub>_\<^esub>\<^sup>* (_)\<close> [61, 0, 61] 50)
   "_microstep_tcl"
      :: "[('s, 'm, 'p, 'l) seqp, ('s, 'm, 'p, 'l) seqp_env, ('s, 'm, 'p, 'l) seqp] \<Rightarrow> bool"
-     ("(_) \<leadsto>\<^bsub>_\<^esub>\<^sup>+ (_)" [61, 0, 61] 50)
+     (\<open>(_) \<leadsto>\<^bsub>_\<^esub>\<^sup>+ (_)\<close> [61, 0, 61] 50)
 
 syntax_consts
   "_microstep" \<rightleftharpoons> microstep and

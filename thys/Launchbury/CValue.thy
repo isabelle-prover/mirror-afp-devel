@@ -9,7 +9,7 @@ domain CValue
 fixrec CFn_project :: "CValue \<rightarrow> (C \<rightarrow> CValue) \<rightarrow> (C \<rightarrow> CValue)"
  where "CFn_project\<cdot>(CFn\<cdot>f)\<cdot>v = f \<cdot> v"
 
-abbreviation CFn_project_abbr (infix "\<down>CFn" 55)
+abbreviation CFn_project_abbr (infix \<open>\<down>CFn\<close> 55)
   where "f \<down>CFn v \<equiv> CFn_project\<cdot>f\<cdot>v"
 
 lemma CFn_project_strict[simp]:

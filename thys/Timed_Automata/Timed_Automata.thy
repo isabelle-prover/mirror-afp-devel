@@ -37,7 +37,7 @@ definition inv_of  :: "('a, 'c, 'time, 's) ta \<Rightarrow> ('c, 'time, 's) inva
 
 abbreviation transition ::
   "('a, 'c, 'time, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, 'time) cconstraint \<Rightarrow> 'a \<Rightarrow> 'c list \<Rightarrow> 's \<Rightarrow> bool"
-("_ \<turnstile> _ \<longrightarrow>\<^bsup>_,_,_\<^esup> _" [61,61,61,61,61,61] 61) where
+(\<open>_ \<turnstile> _ \<longrightarrow>\<^bsup>_,_,_\<^esup> _\<close> [61,61,61,61,61,61] 61) where
   "(A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l') \<equiv> (l,g,a,r,l') \<in> trans_of A"
 
 subsection \<open>Collecting Information About Clocks\<close>
@@ -93,7 +93,7 @@ where
 
 section \<open>Operational Semantics\<close>
 
-inductive clock_val_a ("_ \<turnstile>\<^sub>a _" [62, 62] 62) where
+inductive clock_val_a (\<open>_ \<turnstile>\<^sub>a _\<close> [62, 62] 62) where
   "\<lbrakk>u c < d\<rbrakk> \<Longrightarrow> u \<turnstile>\<^sub>a LT c d" |
   "\<lbrakk>u c \<le> d\<rbrakk> \<Longrightarrow> u \<turnstile>\<^sub>a LE c d" |
   "\<lbrakk>u c = d\<rbrakk> \<Longrightarrow> u \<turnstile>\<^sub>a EQ c d" |
@@ -108,7 +108,7 @@ inductive_cases[elim!]: "u \<turnstile>\<^sub>a GT c d"
 
 declare clock_val_a.intros[intro]
 
-definition clock_val :: "('c, 't) cval \<Rightarrow> ('c, 't::time) cconstraint \<Rightarrow> bool" ("_ \<turnstile> _" [62, 62] 62)
+definition clock_val :: "('c, 't) cval \<Rightarrow> ('c, 't::time) cconstraint \<Rightarrow> bool" (\<open>_ \<turnstile> _\<close> [62, 62] 62)
 where
   "u \<turnstile> cc = list_all (clock_val_a u) cc"
 
@@ -130,7 +130,7 @@ lemma guard_continuous:
 
 inductive step_t ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> ('t::time) \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow>\<^bsup>_\<^esup> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow>\<^bsup>_\<^esup> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "\<lbrakk>u \<oplus> d \<turnstile> inv_of A l; d \<ge> 0\<rbrakk> \<Longrightarrow> A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>\<^bsup>d\<^esup> \<langle>l, u \<oplus> d\<rangle>"
 
@@ -162,13 +162,13 @@ end (* End of context for aggressive elimination and intro rules *)
 
 inductive step_a ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow>\<^bsub>_\<^esub> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow>\<^bsub>_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "\<lbrakk>A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l'; u \<turnstile> g; u' \<turnstile> inv_of A l'; u' = [r \<rightarrow> 0]u\<rbrakk> \<Longrightarrow> (A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>\<^bsub>a\<^esub> \<langle>l', u'\<rangle>)"
 
 inductive step ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow> \<langle>_,_\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow> \<langle>_,_\<rangle>\<close> [61,61,61] 61)
 where
   step_a: "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>\<^bsub>a\<^esub> \<langle>l',u'\<rangle> \<Longrightarrow> (A \<turnstile> \<langle>l, u\<rangle> \<rightarrow> \<langle>l',u'\<rangle>)" |
   step_t: "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>\<^bsup>d\<^esup> \<langle>l',u'\<rangle> \<Longrightarrow> (A \<turnstile> \<langle>l, u\<rangle> \<rightarrow> \<langle>l',u'\<rangle>)"
@@ -178,7 +178,7 @@ declare step.cases[elim]
 
 inductive
   steps :: "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow>* \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<rightarrow>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   refl: "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>* \<langle>l, u\<rangle>" |
   step: "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow> \<langle>l', u'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l', u'\<rangle> \<rightarrow>* \<langle>l'', u''\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>* \<langle>l'', u''\<rangle>"
@@ -190,7 +190,7 @@ section \<open>Contracting Runs\<close>
 
 inductive step' ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile>'' \<langle>_, _\<rangle> \<rightarrow> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile>'' \<langle>_, _\<rangle> \<rightarrow> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   step': "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>\<^bsup>d\<^esup> \<langle>l', u'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l', u'\<rangle> \<rightarrow>\<^bsub>a\<^esub> \<langle>l'', u''\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow> \<langle>l'', u''\<rangle>"
 
@@ -205,7 +205,7 @@ lemma step'_altI:
 
 inductive
   steps' :: "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile>'' \<langle>_, _\<rangle> \<rightarrow>* \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile>'' \<langle>_, _\<rangle> \<rightarrow>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   refl': "A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l, u\<rangle>" |
   step': "A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow> \<langle>l', u'\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l', u'\<rangle> \<rightarrow>* \<langle>l'', u''\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>* \<langle>l'', u''\<rangle>"
@@ -277,11 +277,11 @@ end (* End of context for aggressive elimination and intro rules *)
 
 section \<open>Zone Semantics\<close>
 
-datatype 'a action = Tau ("\<tau>") | Action 'a ("\<upharpoonleft>_")
+datatype 'a action = Tau (\<open>\<tau>\<close>) | Action 'a (\<open>\<upharpoonleft>_\<close>)
 
 inductive step_z ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) zone \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> ('c, 't) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_\<^esub> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step_t_z:
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l, Z\<^sup>\<up> \<inter> {u. u \<turnstile> inv_of A l}\<rangle>" |
@@ -297,13 +297,13 @@ subsection \<open>Zone Semantics for Compressed Runs\<close>
 
 definition
   step_z' :: "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) zone \<Rightarrow> 's \<Rightarrow> ('c, 't) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto> \<langle>l', Z''\<rangle> \<equiv> (\<exists> Z' a. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l, Z'\<rangle> \<and> A \<turnstile> \<langle>l, Z'\<rangle> \<leadsto>\<^bsub>\<upharpoonleft>a\<^esub> \<langle>l', Z''\<rangle>)"
 
 abbreviation
   steps_z :: "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) zone \<Rightarrow> 's \<Rightarrow> ('c, 't) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>* \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l', Z''\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto> \<langle>l', Z''\<rangle>)\<^sup>*\<^sup>* (l, Z) (l', Z'')"
 

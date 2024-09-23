@@ -17,7 +17,7 @@ latter where possible.
 \<close>
 
 notation
-  times (infixl "\<cdot>" 70)
+  times (infixl \<open>\<cdot>\<close> 70)
 
 text \<open>
 Some classes in our algebraic hierarchy are most naturally defined as
@@ -31,10 +31,10 @@ declaration to a common superclass.
 \<close>
 
 class star_op =
-  fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [101] 100)
+  fixes star :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<star>\<close> [101] 100)
 
 class omega_op =
-  fixes omega :: "'a \<Rightarrow> 'a" ("_\<^sup>\<omega>" [101] 100)
+  fixes omega :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<omega>\<close> [101] 100)
 
 (*
 class residual_r_op =

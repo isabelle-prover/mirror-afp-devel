@@ -48,7 +48,7 @@ text \<open>Next we define a Hoare triple to make the format of the rules more e
 context pre_dioid_one
 begin
 
-abbreviation (in near_dioid) ht :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("\<lbrace>_\<rbrace>_\<lbrace>_\<rbrace>") where
+abbreviation (in near_dioid) ht :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>\<lbrace>_\<rbrace>_\<lbrace>_\<rbrace>\<close>) where
   "\<lbrace>x\<rbrace> y \<lbrace>z\<rbrace> \<equiv> x \<cdot> y \<le> y \<cdot> z" 
 
 lemma ht_phl_skip: "\<lbrace>x\<rbrace> 1 \<lbrace>x\<rbrace>"

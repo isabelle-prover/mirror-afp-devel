@@ -99,7 +99,7 @@ text \<open>
   than @{text y}.
 \<close>
 
-definition precedes ("_ \<preceq> _ in _" [100,100,100] 39) where
+definition precedes (\<open>_ \<preceq> _ in _\<close> [100,100,100] 39) where
   "x \<preceq> y in xs \<equiv> \<exists>l r. xs = l @ (x # r) \<and> y \<in> set (x # r)"
 
 lemma precedes_mem:

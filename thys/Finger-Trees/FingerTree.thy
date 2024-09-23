@@ -285,7 +285,7 @@ done
 
 text "Append an element at the left end"
 definition lcons :: "('e \<times> 'a::monoid_add) 
-    \<Rightarrow> ('e,'a) FingerTreeStruc \<Rightarrow> ('e,'a) FingerTreeStruc" (infixr "\<lhd>" 65) where
+    \<Rightarrow> ('e,'a) FingerTreeStruc \<Rightarrow> ('e,'a) FingerTreeStruc" (infixr \<open>\<lhd>\<close> 65) where
   "a \<lhd> t = nlcons (Tip (fst a) (snd a)) t"
 
 lemma lcons_correct: 
@@ -304,7 +304,7 @@ lemma lcons_list[simp]: "toList (a \<lhd> t) = a # (toList t)"
 text "Append an element at the right end"
 definition rcons 
   :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e \<times> 'a) \<Rightarrow> ('e,'a) FingerTreeStruc"
-      (infixl "\<rhd>" 65) where
+      (infixl \<open>\<rhd>\<close> 65) where
   "t \<rhd> a = nrcons t (Tip (fst a) (snd a))"
 
 lemma rcons_correct: 
@@ -2044,8 +2044,8 @@ end
 interpretation FingerTreeStruc: FingerTreeStruc_loc .
 
 (* Hide the concrete syntax *)
-no_notation FingerTreeStruc.lcons (infixr "\<lhd>" 65)
-no_notation FingerTreeStruc.rcons (infixl "\<rhd>" 65)
+no_notation FingerTreeStruc.lcons (infixr \<open>\<lhd>\<close> 65)
+no_notation FingerTreeStruc.rcons (infixl \<open>\<rhd>\<close> 65)
 
 subsection "Hiding the invariant"
 text_raw\<open>\label{sec:hide_invar}\<close>

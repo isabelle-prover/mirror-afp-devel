@@ -44,7 +44,7 @@ unfolding varsPB_def nvPB_def by auto
 
 subsection\<open>The calculus\<close>
 
-inductive mcalc (infix "\<turnstile>" 40) where
+inductive mcalc (infix \<open>\<turnstile>\<close> 40) where
  [simp]: "infTp \<sigma> \<Longrightarrow> \<sigma> \<turnstile> c"
 |[simp]: "(\<forall> x \<in> nvC c. tpOfV x \<noteq> \<sigma>) \<Longrightarrow> \<sigma> \<turnstile> c"
 

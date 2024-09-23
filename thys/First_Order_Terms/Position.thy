@@ -18,10 +18,10 @@ begin
 
 type_synonym pos = "nat list"
 
-definition less_eq_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix "\<le>\<^sub>p" 50) where
+definition less_eq_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix \<open>\<le>\<^sub>p\<close> 50) where
   "p \<le>\<^sub>p q \<longleftrightarrow> (\<exists>r. p @ r = q)"
 
-definition less_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix "<\<^sub>p" 50) where
+definition less_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infix \<open><\<^sub>p\<close> 50) where
   "p <\<^sub>p q \<longleftrightarrow> p \<le>\<^sub>p q \<and> p \<noteq> q"
 
 lemma less_eq_pos_eq_prefix: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
@@ -154,7 +154,7 @@ lemma remove_suffix_Some [simp]:
 
 lemma Nil_power [simp]: "[] ^ n = []" by (induct n) auto
 
-fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infixr "\<bottom>" 64)
+fun parallel_pos :: "pos \<Rightarrow> pos \<Rightarrow> bool" (infixr \<open>\<bottom>\<close> 64)
   where
     "[] \<bottom> _ \<longleftrightarrow> False"
   | "_ \<bottom> [] \<longleftrightarrow> False"

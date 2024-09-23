@@ -10,7 +10,7 @@ section \<open>Parallel reduction\<close>
 theory ParRed imports "HOL-Proofs-Lambda.Commutation" Sigma begin
 
 subsection \<open>Parallel reduction\<close>
-inductive par_beta :: "[sterm,sterm] \<Rightarrow> bool"  (infixl "\<Rightarrow>\<^sub>\<beta>" 50)
+inductive par_beta :: "[sterm,sterm] \<Rightarrow> bool"  (infixl \<open>\<Rightarrow>\<^sub>\<beta>\<close> 50)
   where
   pbeta_Fvar[simp,intro!]: "Fvar x \<Rightarrow>\<^sub>\<beta> Fvar x"
 | pbeta_Obj[simp,intro!] : 
@@ -45,7 +45,7 @@ inductive_cases par_beta_cases [elim!]:
   "Upd f l t \<Rightarrow>\<^sub>\<beta> u"
 
 abbreviation
-  par_beta_ascii :: "[sterm, sterm] => bool"  (infixl "=>" 50) where
+  par_beta_ascii :: "[sterm, sterm] => bool"  (infixl \<open>=>\<close> 50) where
   "t => u == par_beta t u"
 
 lemma Obj_par_red[consumes 1, case_names obj]: 

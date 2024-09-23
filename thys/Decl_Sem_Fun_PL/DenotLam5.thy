@@ -56,7 +56,7 @@ lemma e_if_elim[elim]: "\<lbrakk> v \<in> E (EIf e1 e2 e3) \<rho>;
    \<And> n. \<lbrakk> VNat n \<in> E e1 \<rho>; n = 0 \<longrightarrow> v \<in> E e3 \<rho>; n \<noteq> 0 \<longrightarrow> v \<in> E e2 \<rho> \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" 
   by auto 
     
-definition xenv_le :: "name set \<Rightarrow> env \<Rightarrow> env \<Rightarrow> bool" ("_ \<turnstile> _ \<sqsubseteq> _" [51,51,51] 52) where 
+definition xenv_le :: "name set \<Rightarrow> env \<Rightarrow> env \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<sqsubseteq> _\<close> [51,51,51] 52) where 
   "X \<turnstile> \<rho> \<sqsubseteq> \<rho>' \<equiv> \<forall> x v. x \<in> X \<and> lookup \<rho> x = Some v \<longrightarrow> (\<exists> v'. lookup \<rho>' x = Some v' \<and> v \<sqsubseteq> v')" 
 declare xenv_le_def[simp]
     

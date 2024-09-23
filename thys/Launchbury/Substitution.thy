@@ -5,14 +5,14 @@ begin
 text \<open>Defining a substitution function on terms turned out to be slightly tricky.\<close>
 
 fun
-  subst_var :: "var \<Rightarrow> var \<Rightarrow> var \<Rightarrow> var" ("_[_::v=_]" [1000,100,100] 1000)
+  subst_var :: "var \<Rightarrow> var \<Rightarrow> var \<Rightarrow> var" (\<open>_[_::v=_]\<close> [1000,100,100] 1000)
 where "x[y ::v= z] = (if x = y then z else x)"
 
 nominal_function  (default "case_sum (\<lambda>x. Inl undefined) (\<lambda>x. Inr undefined)",
                   invariant "\<lambda> a r . (\<forall> \<Gamma> y z . ((a = Inr (\<Gamma>, y, z) \<and> atom ` domA \<Gamma> \<sharp>* (y, z)) \<longrightarrow> map (\<lambda>x . atom (fst x))  (Sum_Type.projr r) = map (\<lambda>x . atom (fst x)) \<Gamma>))")
-  subst :: "exp \<Rightarrow> var \<Rightarrow> var \<Rightarrow> exp" ("_[_::=_]" [1000,100,100] 1000)
+  subst :: "exp \<Rightarrow> var \<Rightarrow> var \<Rightarrow> exp" (\<open>_[_::=_]\<close> [1000,100,100] 1000)
 and
-  subst_heap :: "heap \<Rightarrow> var \<Rightarrow> var \<Rightarrow> heap" ("_[_::h=_]" [1000,100,100] 1000)
+  subst_heap :: "heap \<Rightarrow> var \<Rightarrow> var \<Rightarrow> heap" (\<open>_[_::h=_]\<close> [1000,100,100] 1000)
 where
    "(Var x)[y ::= z] = Var (x[y ::v= z])"
  | "(App e v)[y ::= z] = App (e[y ::= z]) (v[y ::v= z])"

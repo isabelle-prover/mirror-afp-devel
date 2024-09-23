@@ -14,7 +14,7 @@ record ('o1, 'o2, 'm1, 'm2, 'a, 'b) Functor =
   MapM :: "'m1 \<Rightarrow> 'm2" 
 
 abbreviation
-  FunctorMorApp :: "('o1, 'o2, 'm1, 'm2, 'a1, 'a2, 'a) Functor_scheme \<Rightarrow> 'm1 \<Rightarrow> 'm2" (infixr "##" 70) where
+  FunctorMorApp :: "('o1, 'o2, 'm1, 'm2, 'a1, 'a2, 'a) Functor_scheme \<Rightarrow> 'm1 \<Rightarrow> 'm2" (infixr \<open>##\<close> 70) where
   "FunctorMorApp F m \<equiv> (MapM F) m"
 
 definition
@@ -22,7 +22,7 @@ definition
   "MapO F X \<equiv> THE Y . Y \<in> Obj(CatCod F) \<and>  F ## (Id (CatDom F) X) = Id (CatCod F) Y"
 
 abbreviation
-  FunctorObjApp :: "('o1, 'o2, 'm1, 'm2, 'a1, 'a2, 'a) Functor_scheme \<Rightarrow> 'o1 \<Rightarrow> 'o2" (infixr "@@" 70) where
+  FunctorObjApp :: "('o1, 'o2, 'm1, 'm2, 'a1, 'a2, 'a) Functor_scheme \<Rightarrow> 'o1 \<Rightarrow> 'o2" (infixr \<open>@@\<close> 70) where
   "FunctorObjApp F X \<equiv> (MapO F X)"
 
 locale PreFunctor = 
@@ -56,14 +56,14 @@ by (simp add: Functor_def FunctorM_def)
 lemmas functor_simps = PreFunctor.FunctorComp PreFunctor.FunctorId
 
 definition 
-  functor_abbrev ("Ftor _ : _ \<longrightarrow> _" [81]) where
+  functor_abbrev (\<open>Ftor _ : _ \<longrightarrow> _\<close> [81]) where
   "Ftor F : A \<longrightarrow> B \<equiv> (Functor F) \<and> (CatDom F = A) \<and> (CatCod F = B)"
 
 lemma functor_abbrevE[elim]: "\<lbrakk>Ftor F : A \<longrightarrow> B ; \<lbrakk>(Functor F) ; (CatDom F = A) ; (CatCod F = B)\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
 by (auto simp add: functor_abbrev_def)
 
 definition
-  functor_comp_def ("_ \<approx>>;;; _" [81]) where
+  functor_comp_def (\<open>_ \<approx>>;;; _\<close> [81]) where
   "functor_comp_def F G \<equiv> (Functor F) \<and> (Functor G) \<and> (CatDom G = CatCod F)"
 
 lemma functor_comp_def[elim]: "\<lbrakk>F \<approx>>;;; G ; \<lbrakk>Functor F ; Functor G ; CatDom G = CatCod F\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
@@ -238,11 +238,11 @@ proof(intro_locales)
 qed
 
 definition 
-  IdentityFunctor' :: "('o,'m,'a) Category_scheme \<Rightarrow> ('o,'o,'m,'m,'a,'a) Functor" ("FId'' _" [70]) where
+  IdentityFunctor' :: "('o,'m,'a) Category_scheme \<Rightarrow> ('o,'o,'m,'m,'a,'a) Functor" (\<open>FId'' _\<close> [70]) where
   "IdentityFunctor' C \<equiv> \<lparr>CatDom = C , CatCod = C , MapM = (\<lambda> f . f) \<rparr>"
 
 definition 
-  IdentityFunctor ("FId _" [70]) where
+  IdentityFunctor (\<open>FId _\<close> [70]) where
   "IdentityFunctor C \<equiv> MakeFtor(IdentityFunctor' C)"
 
 lemma IdFtor'PreFunctor: "Category C \<Longrightarrow> PreFunctor (FId' C)"
@@ -326,14 +326,14 @@ qed
 
 definition
   FunctorComp' :: "('o1,'o2,'m1,'m2,'a1,'a2) Functor \<Rightarrow> ('o2,'o3,'m2,'m3,'b1,'b2) Functor
-                    \<Rightarrow> ('o1,'o3,'m1,'m3,'a1,'b2) Functor" (infixl ";;:" 71) where
+                    \<Rightarrow> ('o1,'o3,'m1,'m3,'a1,'b2) Functor" (infixl \<open>;;:\<close> 71) where
   "FunctorComp' F G \<equiv> \<lparr>
         CatDom = CatDom F , 
         CatCod = CatCod G ,
         MapM   = \<lambda> f . (MapM G)((MapM F) f)
   \<rparr>"
 
-definition FunctorComp (infixl ";;;" 71) where "FunctorComp F G \<equiv> MakeFtor (FunctorComp' F G)"
+definition FunctorComp (infixl \<open>;;;\<close> 71) where "FunctorComp F G \<equiv> MakeFtor (FunctorComp' F G)"
 
 lemma FtorCompComp':
   assumes "f \<approx>>\<^bsub>CatDom F\<^esub> g"

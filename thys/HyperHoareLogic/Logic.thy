@@ -197,7 +197,7 @@ text \<open>Core rules from figure 2\<close>
 
 inductive syntactic_HHT ::
  "(('lvar, 'lval, 'pvar, 'pval) state hyperassertion) \<Rightarrow> ('pvar, 'pval) stmt \<Rightarrow> (('lvar, 'lval, 'pvar, 'pval) state hyperassertion) \<Rightarrow> bool"
-   ("\<turnstile> {_} _ {_}" [51,0,0] 81) where
+   (\<open>\<turnstile> {_} _ {_}\<close> [51,0,0] 81) where
   RuleSkip: "\<turnstile> {P} Skip {P}"
 | RuleCons: "\<lbrakk> entails P P' ; entails Q' Q ; \<turnstile> {P'} C {Q'} \<rbrakk> \<Longrightarrow> \<turnstile> {P} C {Q}"
 | RuleSeq: "\<lbrakk> \<turnstile> {P} C1 {R} ; \<turnstile> {R} C2 {Q} \<rbrakk> \<Longrightarrow> \<turnstile> {P} (Seq C1 C2) {Q}"
@@ -212,7 +212,7 @@ inductive syntactic_HHT ::
 subsection \<open>Soundness\<close>
 
 text \<open>Definition 5: Hyper-Triples\<close>
-definition hyper_hoare_triple ("\<Turnstile> {_} _ {_}" [51,0,0] 81) where
+definition hyper_hoare_triple (\<open>\<Turnstile> {_} _ {_}\<close> [51,0,0] 81) where
   "\<Turnstile> {P} C {Q} \<longleftrightarrow> (\<forall>S. P S \<longrightarrow> Q (sem C S))"
 
 lemma hyper_hoare_tripleI:

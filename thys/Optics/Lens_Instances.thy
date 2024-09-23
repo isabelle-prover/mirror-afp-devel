@@ -173,9 +173,9 @@ definition list_lens :: "nat \<Rightarrow> ('a::two \<Longrightarrow> 'a list)" 
 [lens_defs]: "list_lens i = \<lparr> lens_get = (\<lambda> xs. nth' xs i)
                             , lens_put = (\<lambda> xs x. list_augment xs i x) \<rparr>"
 
-abbreviation hd_lens ("hd\<^sub>L") where "hd_lens \<equiv> list_lens 0"
+abbreviation hd_lens (\<open>hd\<^sub>L\<close>) where "hd_lens \<equiv> list_lens 0"
 
-definition tl_lens :: "'a list \<Longrightarrow> 'a list" ("tl\<^sub>L") where
+definition tl_lens :: "'a list \<Longrightarrow> 'a list" (\<open>tl\<^sub>L\<close>) where
 [lens_defs]: "tl_lens = \<lparr> lens_get = (\<lambda> xs. tl xs)
                         , lens_put = (\<lambda> xs xs'. hd xs # xs') \<rparr>"
 
@@ -262,7 +262,7 @@ text \<open>We also add support for record lenses. Every record created can yiel
 abbreviation (input) "fld_put f \<equiv> (\<lambda> \<sigma> u. f (\<lambda>_. u) \<sigma>)"
 
 syntax 
-  "_FLDLENS" :: "id \<Rightarrow> logic"  ("FLDLENS _")
+  "_FLDLENS" :: "id \<Rightarrow> logic"  (\<open>FLDLENS _\<close>)
 translations 
   "FLDLENS x" => "\<lparr> lens_get = x, lens_put = CONST fld_put (_update_name x) \<rparr>"
 
@@ -270,7 +270,7 @@ text \<open> We also allow the extraction of the "base lens", which characterise
   by a record without the extension. \<close>
 
 syntax
-  "_BASELENS" :: "id \<Rightarrow> logic"  ("BASELENS _")
+  "_BASELENS" :: "id \<Rightarrow> logic"  (\<open>BASELENS _\<close>)
 
 abbreviation (input) "base_lens t e m \<equiv> \<lparr> lens_get = t, lens_put = \<lambda> s v. e v (m s) \<rparr>"
 
@@ -330,7 +330,7 @@ text \<open> Every type defined by a \<^bold>\<open>typedef\<close> command indu
 context type_definition
 begin
 
-definition typedef_lens :: "'b \<Longrightarrow> 'a" ("typedef\<^sub>L") where
+definition typedef_lens :: "'b \<Longrightarrow> 'a" (\<open>typedef\<^sub>L\<close>) where
 [lens_defs]: "typedef\<^sub>L = \<lparr> lens_get = Abs, lens_put = (\<lambda> s. Rep) \<rparr>"
 
 lemma pbij_typedef_lens [simp]: "pbij_lens typedef\<^sub>L"
@@ -371,7 +371,7 @@ text \<open>
 \<close>
   
 syntax 
-  "_lmap" :: "id \<Rightarrow> logic" ("lmap[_]")
+  "_lmap" :: "id \<Rightarrow> logic" (\<open>lmap[_]\<close>)
 
 ML \<open>
   fun lmap_tr [Free (name, _)] =

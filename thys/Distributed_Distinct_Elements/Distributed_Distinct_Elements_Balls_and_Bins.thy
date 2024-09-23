@@ -226,7 +226,7 @@ qed
 text \<open>The following describes polynomials of a given maximal degree as a subset of the functions,
 similar to the subsets @{term "\<int>"} or @{term "\<rat>"} as subsets of larger number classes.\<close>
 
-definition Polynomials ("\<bbbP>")
+definition Polynomials (\<open>\<bbbP>\<close>)
   where "Polynomials k = {f. \<exists>p. f = poly p \<and> degree p \<le> k}"
 
 lemma Polynomials_mono:

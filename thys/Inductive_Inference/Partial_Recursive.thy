@@ -82,16 +82,16 @@ abbreviation recfn :: "nat \<Rightarrow> recf \<Rightarrow> bool" where
 
 text \<open>Some abbreviations for working with @{typ "nat option"}:\<close>
 
-abbreviation divergent :: "nat option \<Rightarrow> bool" ("_ \<up>" [50] 50) where
+abbreviation divergent :: "nat option \<Rightarrow> bool" (\<open>_ \<up>\<close> [50] 50) where
   "x \<up> \<equiv> x = None"
 
-abbreviation convergent :: "nat option \<Rightarrow> bool" ("_ \<down>" [50] 50) where
+abbreviation convergent :: "nat option \<Rightarrow> bool" (\<open>_ \<down>\<close> [50] 50) where
   "x \<down> \<equiv> x \<noteq> None"
 
-abbreviation convergent_eq :: "nat option \<Rightarrow> nat \<Rightarrow> bool" (infix "\<down>=" 50) where
+abbreviation convergent_eq :: "nat option \<Rightarrow> nat \<Rightarrow> bool" (infix \<open>\<down>=\<close> 50) where
   "x \<down>= y \<equiv> x = Some y"
 
-abbreviation convergent_neq :: "nat option \<Rightarrow> nat \<Rightarrow> bool" (infix "\<down>\<noteq>" 50) where
+abbreviation convergent_neq :: "nat option \<Rightarrow> nat \<Rightarrow> bool" (infix \<open>\<down>\<noteq>\<close> 50) where
   "x \<down>\<noteq> y \<equiv> x \<down> \<and> x \<noteq> Some y"
 
 text \<open>In prose the terms ``halt'', ``terminate'', ``converge'', and
@@ -314,7 +314,7 @@ lemma eval_Mn_diverg:
 
 subsection \<open>Extensional equality\<close>
 
-definition exteq :: "recf \<Rightarrow> recf \<Rightarrow> bool" (infix "\<simeq>" 55) where
+definition exteq :: "recf \<Rightarrow> recf \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 55) where
   "f \<simeq> g \<equiv> arity f = arity g \<and> (\<forall>xs. length xs = arity f \<longrightarrow> eval f xs = eval g xs)"
 
 lemma exteq_refl: "f \<simeq> f"

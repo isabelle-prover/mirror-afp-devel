@@ -16,9 +16,9 @@ text\<open>\label{TAO_PossibleWorlds_Definitions}\<close>
   definition Situation where
     "Situation x \<equiv> \<lparr>A!,x\<rparr> \<^bold>& (\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<rightarrow> Propositional F)"
 
-  definition EncodeProposition (infixl "\<^bold>\<Sigma>" 70) where
+  definition EncodeProposition (infixl \<open>\<^bold>\<Sigma>\<close> 70) where
     "x\<^bold>\<Sigma>p \<equiv> \<lparr>A!,x\<rparr> \<^bold>& \<lbrace>x, \<^bold>\<lambda> x . p\<rbrace>"
-  definition TrueInSituation (infixl "\<^bold>\<Turnstile>" 10) where
+  definition TrueInSituation (infixl \<open>\<^bold>\<Turnstile>\<close> 10) where
     "x \<^bold>\<Turnstile> p \<equiv> Situation x \<^bold>& x\<^bold>\<Sigma>p"
   definition PossibleWorld where
     "PossibleWorld x \<equiv> Situation x \<^bold>& \<^bold>\<diamond>(\<^bold>\<forall> p . x\<^bold>\<Sigma>p \<^bold>\<equiv> p)"

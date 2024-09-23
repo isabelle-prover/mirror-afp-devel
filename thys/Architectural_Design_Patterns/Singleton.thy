@@ -15,8 +15,8 @@ text \<open>
   In the following we formalize a variant of the Singleton pattern.
 \<close>
 locale singleton = dynamic_component cmp active
-    for active :: "'id \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
-    and cmp :: "'id \<Rightarrow> cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60) +
+    for active :: "'id \<Rightarrow> cnf \<Rightarrow> bool" (\<open>\<parallel>_\<parallel>\<^bsub>_\<^esub>\<close> [0,110]60)
+    and cmp :: "'id \<Rightarrow> cnf \<Rightarrow> 'cmp" (\<open>\<sigma>\<^bsub>_\<^esub>(_)\<close> [0,110]60) +
 assumes alwaysActive: "\<And>k. \<exists>id. \<parallel>id\<parallel>\<^bsub>k\<^esub>"
     and unique: "\<exists>id. \<forall>k. \<forall>id'. (\<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id = id')"
 begin

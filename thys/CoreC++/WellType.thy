@@ -15,9 +15,9 @@ subsection \<open>The rules\<close>
 
 inductive
   WT :: "[prog,env,expr     ,ty     ] \<Rightarrow> bool"
-         ("_,_ \<turnstile> _ :: _"   [51,51,51]50)
+         (\<open>_,_ \<turnstile> _ :: _\<close>   [51,51,51]50)
   and WTs :: "[prog,env,expr list,ty list] \<Rightarrow> bool"
-         ("_,_ \<turnstile> _ [::] _" [51,51,51]50)
+         (\<open>_,_ \<turnstile> _ [::] _\<close> [51,51,51]50)
   for P :: prog
 where
   

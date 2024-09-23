@@ -21,16 +21,16 @@ begin
     G: "functor" C D G +
     \<eta>: natural_isomorphism D D D.map "G o F" \<eta> +
     \<epsilon>: natural_isomorphism C C "F o G" C.map \<epsilon>
-  for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-  and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
   and F :: "'d \<Rightarrow> 'c"
   and G :: "'c \<Rightarrow> 'd"
   and \<eta> :: "'d \<Rightarrow> 'd"
   and \<epsilon> :: "'c \<Rightarrow> 'c"
   begin
 
-    notation C.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
     lemma C_arr_expansion:
     assumes "C.arr f"
@@ -177,14 +177,14 @@ begin
     C: category C +
     D: category D +
     "functor" C D G
-  for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-  and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
   and G :: "'c \<Rightarrow> 'd" +
   assumes induces_equivalence: "\<exists>F \<eta> \<epsilon>. equivalence_of_categories C D F G \<eta> \<epsilon>"
   begin
 
-    notation C.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
   end
 
@@ -341,8 +341,8 @@ begin
     unit_counit_adjunction C D F G \<eta> \<epsilon> +
     \<eta>: natural_isomorphism D D D.map "G o F" \<eta> +
     \<epsilon>: natural_isomorphism C C "F o G" C.map \<epsilon>
-  for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-  and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
   and F :: "'d \<Rightarrow> 'c"
   and G :: "'c \<Rightarrow> 'd"
   and \<eta> :: "'d \<Rightarrow> 'd"
@@ -480,13 +480,13 @@ begin
     D: category D +
     fully_faithful_functor C D F +
     essentially_surjective_functor C D F
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
     and F :: "'c \<Rightarrow> 'd"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
     lemma is_left_adjoint_functor:
     shows "left_adjoint_functor C D F"

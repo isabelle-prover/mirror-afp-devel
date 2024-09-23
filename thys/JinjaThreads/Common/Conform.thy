@@ -13,16 +13,16 @@ begin
 
 context heap_base begin
 
-definition conf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty \<Rightarrow> bool"   ("_,_ \<turnstile> _ :\<le> _"  [51,51,51,51] 50)
+definition conf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty \<Rightarrow> bool"   (\<open>_,_ \<turnstile> _ :\<le> _\<close>  [51,51,51,51] 50)
 where "P,h \<turnstile> v :\<le> T  \<equiv> \<exists>T'. typeof\<^bsub>h\<^esub> v = Some T' \<and> P \<turnstile> T' \<le> T"
 
-definition lconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (vname \<rightharpoonup> 'addr val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   ("_,_ \<turnstile> _ '(:\<le>') _" [51,51,51,51] 50)
+definition lconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> (vname \<rightharpoonup> 'addr val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool"   (\<open>_,_ \<turnstile> _ '(:\<le>') _\<close> [51,51,51,51] 50)
 where "P,h \<turnstile> l (:\<le>) E  \<equiv> \<forall>V v. l V = Some v \<longrightarrow> (\<exists>T. E V = Some T \<and> P,h \<turnstile> v :\<le> T)"
 
-abbreviation confs :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [:\<le>] _" [51,51,51,51] 50)
+abbreviation confs :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty list \<Rightarrow> bool" (\<open>_,_ \<turnstile> _ [:\<le>] _\<close> [51,51,51,51] 50)
 where "P,h \<turnstile> vs [:\<le>] Ts  ==  list_all2 (conf P h) vs Ts"
 
-definition tconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'thread_id \<Rightarrow> bool" ("_,_ \<turnstile> _ \<surd>t" [51,51,51] 50)
+definition tconf :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'thread_id \<Rightarrow> bool" (\<open>_,_ \<turnstile> _ \<surd>t\<close> [51,51,51] 50)
 where "P,h \<turnstile> t \<surd>t \<equiv> \<exists>C. typeof_addr h (thread_id2addr t) = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 
 end

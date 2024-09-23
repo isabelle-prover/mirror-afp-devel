@@ -23,7 +23,7 @@ abbreviation update_const::"[('a \<Rightarrow> 'a) \<Rightarrow> 'r \<Rightarrow
 "update_const Upd \<equiv> \<lambda> e. \<lambda> (A, A'). A' = Upd (\<lambda> _. e) A"
 
 syntax
-  "_synt_assign" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  ("_ := _")
+  "_synt_assign" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  (\<open>_ := _\<close>)
 
 
 ML \<open>
@@ -37,8 +37,8 @@ structure VARs_Data = Proof_Data
 nonterminal circus_action and circus_schema
 
 syntax
-  "_circus_action" :: "'a => circus_action"  ("_")   (* FIXME unused!? *)
-  "_circus_schema" :: "'a => circus_schema"  ("_")
+  "_circus_action" :: "'a => circus_action"  (\<open>_\<close>)   (* FIXME unused!? *)
+  "_circus_schema" :: "'a => circus_schema"  (\<open>_\<close>)
 
 parse_translation \<open>
   let

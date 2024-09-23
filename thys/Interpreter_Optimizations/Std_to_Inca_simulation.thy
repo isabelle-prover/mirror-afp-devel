@@ -176,7 +176,7 @@ qed
 
 section \<open>Simulation relation\<close>
 
-inductive match (infix "\<sim>" 55) where
+inductive match (infix \<open>\<sim>\<close> 55) where
   "wf_fundefs (Fstd_get F1) \<Longrightarrow>
   rel_fundefs (Fstd_get F1) (Finca_get F2) \<Longrightarrow>
   (State F1 H st) \<sim> (State F2 H st)"

@@ -120,7 +120,7 @@ next
 
 
 syntax
-  "_Mprefix" :: "[pttrn,'a set,'a process] \<Rightarrow> 'a process"	("(3\<box>(_/\<in>_)/ \<rightarrow> (_))"[0,0,64]64)
+  "_Mprefix" :: "[pttrn,'a set,'a process] \<Rightarrow> 'a process"	(\<open>(3\<box>(_/\<in>_)/ \<rightarrow> (_))\<close>[0,0,64]64)
 
 term "Ball A (\<lambda>x. P)"
 
@@ -379,15 +379,15 @@ where      "write0 a P \<equiv> Mprefix {a} (\<lambda> x. P)"
 
 syntax
   "_read"   :: "[id, pttrn, 'a process] => 'a process"
-                                        ("(3(_\<^bold>?_) /\<rightarrow> _)" [0,0,78] 78)
+                                        (\<open>(3(_\<^bold>?_) /\<rightarrow> _)\<close> [0,0,78] 78)
   "_readX"  :: "[id, pttrn, bool,'a process] => 'a process"
-                                        ("(3(_\<^bold>?_)\<^bold>|_ /\<rightarrow> _)" [0,0,78] 78)
+                                        (\<open>(3(_\<^bold>?_)\<^bold>|_ /\<rightarrow> _)\<close> [0,0,78] 78)
   "_readS"  :: "[id, pttrn, 'b set,'a process] => 'a process"
-                                        ("(3(_\<^bold>?_)\<in>_ /\<rightarrow> _)" [0,0,78] 78)
+                                        (\<open>(3(_\<^bold>?_)\<in>_ /\<rightarrow> _)\<close> [0,0,78] 78)
   "_write"  :: "[id, 'b, 'a process] => 'a process"
-                                        ("(3(_\<^bold>!_) /\<rightarrow> _)" [0,0,78] 78)
+                                        (\<open>(3(_\<^bold>!_) /\<rightarrow> _)\<close> [0,0,78] 78)
   "_writeS" :: "['a, 'a process] => 'a process"
-                                        ("(3_ /\<rightarrow> _)" [0,78]78)
+                                        (\<open>(3_ /\<rightarrow> _)\<close> [0,78]78)
 
 syntax_consts
   "_read" "_readX" "_readS" \<rightleftharpoons> read and

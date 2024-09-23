@@ -10,10 +10,10 @@ locale Postdomination = CFGExit sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>)  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
-  and Exit::"'node"  ("'('_Exit'_')") +
+  and Exit::"'node"  (\<open>'('_Exit'_')\<close>) +
   assumes Entry_path:"valid_node n \<Longrightarrow> \<exists>as. (_Entry_) -as\<rightarrow>\<^sub>\<surd>* n"
   and Exit_path:"valid_node n \<Longrightarrow> \<exists>as. n -as\<rightarrow>\<^sub>\<surd>* (_Exit_)"
   and method_exit_unique:
@@ -66,7 +66,7 @@ proof -
 qed
 
 
-definition postdominate :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ postdominates _" [51,0])
+definition postdominate :: "'node \<Rightarrow> 'node \<Rightarrow> bool" (\<open>_ postdominates _\<close> [51,0])
 where postdominate_def:"n' postdominates n \<equiv> 
   (valid_node n \<and> valid_node n' \<and>
   (\<forall>as pex. (n -as\<rightarrow>\<^sub>\<iota>* pex \<and> method_exit pex) \<longrightarrow> n' \<in> set (sourcenodes as)))"

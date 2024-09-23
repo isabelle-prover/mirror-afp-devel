@@ -281,7 +281,7 @@ where
   "map_vars_mctxt vw (MVar v) = (MVar (vw v))" |
   "map_vars_mctxt vw (MFun f Cs) = MFun f (map (map_vars_mctxt vw) Cs)"
 
-inductive eq_fill :: "('f, 'v) term \<Rightarrow> ('f, 'v) mctxt \<times> ('f, 'v) term list \<Rightarrow> bool" ("(_/ =\<^sub>f _)" [51, 51] 50)
+inductive eq_fill :: "('f, 'v) term \<Rightarrow> ('f, 'v) mctxt \<times> ('f, 'v) term list \<Rightarrow> bool" (\<open>(_/ =\<^sub>f _)\<close> [51, 51] 50)
 where
   eqfI [intro]: "t = fill_holes D ss \<Longrightarrow> num_holes D = length ss \<Longrightarrow> t =\<^sub>f (D, ss)"
 

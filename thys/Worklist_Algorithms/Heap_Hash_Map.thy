@@ -6,9 +6,9 @@ theory Heap_Hash_Map
     Refine_Imperative_HOL.IICF
 begin
 
-no_notation Ref.update ("_ := _" 62)
+no_notation Ref.update (\<open>_ := _\<close> 62)
 
-definition big_star :: "assn multiset \<Rightarrow> assn" ("\<And>* _" [60] 90) where
+definition big_star :: "assn multiset \<Rightarrow> assn" (\<open>\<And>* _\<close> [60] 90) where
   "big_star S \<equiv> fold_mset (*) emp S"
 
 interpretation comp_fun_commute_mult:

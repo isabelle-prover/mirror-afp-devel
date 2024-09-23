@@ -43,9 +43,9 @@ text \<open> We set up syntax for the three variable classes using a subscript $
   respectively. \<close> 
 
 syntax
-  "_svarpre"   :: "svid \<Rightarrow> svid" ("_\<^sub><" [995] 995)
-  "_svarleft"  :: "svid \<Rightarrow> svid" ("0-_" [995] 995)
-  "_svarright" :: "svid \<Rightarrow> svid" ("1-_" [995] 995)
+  "_svarpre"   :: "svid \<Rightarrow> svid" (\<open>_\<^sub><\<close> [995] 995)
+  "_svarleft"  :: "svid \<Rightarrow> svid" (\<open>0-_\<close> [995] 995)
+  "_svarright" :: "svid \<Rightarrow> svid" (\<open>1-_\<close> [995] 995)
 
 syntax_consts
   "_svarpre" \<rightleftharpoons> pre_uvar and
@@ -169,9 +169,9 @@ definition U1\<alpha> where [upred_defs]: "U1\<alpha> = (1\<^sub>L \<times>\<^su
 
 text \<open> We then create the following intuitive syntax for separating simulations. \<close>
   
-abbreviation U0_alpha_lift ("\<lceil>_\<rceil>\<^sub>0") where "\<lceil>P\<rceil>\<^sub>0 \<equiv> P \<oplus>\<^sub>p U0\<alpha>"
+abbreviation U0_alpha_lift (\<open>\<lceil>_\<rceil>\<^sub>0\<close>) where "\<lceil>P\<rceil>\<^sub>0 \<equiv> P \<oplus>\<^sub>p U0\<alpha>"
 
-abbreviation U1_alpha_lift ("\<lceil>_\<rceil>\<^sub>1") where "\<lceil>P\<rceil>\<^sub>1 \<equiv> P \<oplus>\<^sub>p U1\<alpha>"
+abbreviation U1_alpha_lift (\<open>\<lceil>_\<rceil>\<^sub>1\<close>) where "\<lceil>P\<rceil>\<^sub>1 \<equiv> P \<oplus>\<^sub>p U1\<alpha>"
   
 text \<open> @{term "\<lceil>P\<rceil>\<^sub>0"} is predicate $P$ where all variables are indexed by $0$, and 
   @{term "\<lceil>P\<rceil>\<^sub>1"} is where all variables are indexed by $1$. We can thus equivalently express separating 
@@ -247,7 +247,7 @@ text \<open> Associativity of a merge means that if we construct a three way mer
   the two way merge in an appropriate way.
 \<close>
   
-definition ThreeWayMerge :: "'\<alpha> merge \<Rightarrow> (('\<alpha>, '\<alpha>, ('\<alpha>, '\<alpha>, '\<alpha>) mrg) mrg, '\<alpha>) urel" ("\<^bold>M3'(_')") where
+definition ThreeWayMerge :: "'\<alpha> merge \<Rightarrow> (('\<alpha>, '\<alpha>, ('\<alpha>, '\<alpha>, '\<alpha>) mrg) mrg, '\<alpha>) urel" (\<open>\<^bold>M3'(_')\<close>) where
 [upred_defs]: "ThreeWayMerge M = (($0-\<^bold>v\<acute> =\<^sub>u $0-\<^bold>v \<and> $1-\<^bold>v\<acute> =\<^sub>u $1-0-\<^bold>v \<and> $\<^bold>v\<^sub><\<acute> =\<^sub>u $\<^bold>v\<^sub><) ;; M ;; U0 \<and> $1-\<^bold>v\<acute> =\<^sub>u $1-1-\<^bold>v \<and> $\<^bold>v\<^sub><\<acute> =\<^sub>u $\<^bold>v\<^sub><) ;; M"
   
 text \<open> The next definition rotates the inputs to a three way merge to the left one place. \<close>
@@ -264,7 +264,7 @@ subsection \<open> Parallel Operators \<close>
 text \<open> We implement the following useful abbreviation for separating of two parallel processes and
   copying of the before variables, all to act as input to the merge predicate. \<close>
 
-abbreviation par_sep (infixr "\<parallel>\<^sub>s" 85) where
+abbreviation par_sep (infixr \<open>\<parallel>\<^sub>s\<close> 85) where
 "P \<parallel>\<^sub>s Q \<equiv> (P ;; U0) \<and> (Q ;; U1) \<and> $\<^bold>v\<^sub><\<acute> =\<^sub>u $\<^bold>v"
 
 text \<open> The following implementation of parallel by merge is less general than the book version, in
@@ -274,7 +274,7 @@ text \<open> The following implementation of parallel by merge is less general t
 
 definition 
   par_by_merge :: "('\<alpha>, '\<beta>) urel \<Rightarrow> (('\<alpha>, '\<beta>, '\<gamma>) mrg, '\<delta>) urel \<Rightarrow> ('\<alpha>, '\<gamma>) urel \<Rightarrow> ('\<alpha>, '\<delta>) urel" 
-  ("_ \<parallel>\<^bsub>_\<^esub> _" [85,0,86] 85)
+  (\<open>_ \<parallel>\<^bsub>_\<^esub> _\<close> [85,0,86] 85)
 where [upred_defs]: "P \<parallel>\<^bsub>M\<^esub> Q = (P \<parallel>\<^sub>s Q ;; M)"
 
 lemma par_by_merge_alt_def: "P \<parallel>\<^bsub>M\<^esub> Q = (\<lceil>P\<rceil>\<^sub>0 \<and> \<lceil>Q\<rceil>\<^sub>1 \<and> $\<^bold>v\<^sub><\<acute> =\<^sub>u $\<^bold>v) ;; M"
@@ -460,13 +460,13 @@ subsection \<open> Example: Simple State-Space Division \<close>
   
 text \<open> The following merge predicate divides the state space using a pair of independent lenses. \<close>
   
-definition StateMerge :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> ('b \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> merge" ("M[_|_]\<^sub>\<sigma>") where
+definition StateMerge :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> ('b \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> merge" (\<open>M[_|_]\<^sub>\<sigma>\<close>) where
 [upred_defs]: "M[a|b]\<^sub>\<sigma> = ($\<^bold>v\<acute> =\<^sub>u ($\<^bold>v\<^sub>< \<oplus> $0-\<^bold>v on &a) \<oplus> $1-\<^bold>v on &b)"
 
 lemma swap_StateMerge: "a \<bowtie> b \<Longrightarrow> (swap\<^sub>m ;; M[a|b]\<^sub>\<sigma>) = M[b|a]\<^sub>\<sigma>"
   by (rel_auto, simp_all add: lens_indep_comm)
    
-abbreviation StateParallel :: "'\<alpha> hrel \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> ('b \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" ("_ |_|_|\<^sub>\<sigma> _" [85,0,0,86] 86)
+abbreviation StateParallel :: "'\<alpha> hrel \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> ('b \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (\<open>_ |_|_|\<^sub>\<sigma> _\<close> [85,0,0,86] 86)
 where "P |a|b|\<^sub>\<sigma> Q \<equiv> P \<parallel>\<^bsub>M[a|b]\<^sub>\<sigma>\<^esub> Q"
     
 lemma StateParallel_commute: "a \<bowtie> b \<Longrightarrow> P |a|b|\<^sub>\<sigma> Q = Q |b|a|\<^sub>\<sigma> P"

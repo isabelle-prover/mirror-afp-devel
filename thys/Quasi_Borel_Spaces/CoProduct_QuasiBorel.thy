@@ -62,7 +62,7 @@ definition coprod_qbs :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow
 "coprod_qbs I X \<equiv> Abs_quasi_borel (SIGMA i:I. qbs_space (X i), coprod_qbs_Mx I X)"
 
 syntax
- "_coprod_qbs" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" ("(3\<amalg>\<^sub>Q _\<in>_./ _)"  10)
+ "_coprod_qbs" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" (\<open>(3\<amalg>\<^sub>Q _\<in>_./ _)\<close>  10)
 syntax_consts
  "_coprod_qbs" \<rightleftharpoons> coprod_qbs
 translations

@@ -246,7 +246,7 @@ qed
 subsection \<open>The language \<open>a\<^sup>n b\<^sup>n\<close> is not regular\<close>
 
 abbreviation
-  replicate_rev ("_ ^^^ _" [100, 100] 100)
+  replicate_rev (\<open>_ ^^^ _\<close> [100, 100] 100)
 where
   "a ^^^ n \<equiv> replicate n a"
 

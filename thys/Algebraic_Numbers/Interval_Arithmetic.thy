@@ -115,7 +115,7 @@ qed
 
 subsection \<open>Membership\<close>
 
-fun in_interval :: "'a :: order \<Rightarrow> 'a interval \<Rightarrow> bool" ("(_/ \<in>\<^sub>i _)" [51, 51] 50) where
+fun in_interval :: "'a :: order \<Rightarrow> 'a interval \<Rightarrow> bool" (\<open>(_/ \<in>\<^sub>i _)\<close> [51, 51] 50) where
   "y \<in>\<^sub>i Interval lx ux = (lx \<le> y \<and> y \<le> ux)" 
 
 lemma in_interval_to_interval[intro!]: "a \<in>\<^sub>i to_interval a"
@@ -243,7 +243,7 @@ qed
 subsection \<open>Convergence\<close>
 
 definition interval_tendsto :: "(nat \<Rightarrow> 'a :: topological_space interval) \<Rightarrow> 'a \<Rightarrow> bool"
-  (infixr "\<longlonglongrightarrow>\<^sub>i" 55) where
+  (infixr \<open>\<longlonglongrightarrow>\<^sub>i\<close> 55) where
   "(X \<longlonglongrightarrow>\<^sub>i x) \<equiv> ((interval.upper \<circ> X) \<longlonglongrightarrow> x) \<and> ((interval.lower \<circ> X) \<longlonglongrightarrow> x)"
 
 lemma interval_tendstoI[intro]:
@@ -337,7 +337,7 @@ subsection \<open>Complex Intervals\<close>
 
 datatype complex_interval = Complex_Interval (Re_interval: "real interval") (Im_interval: "real interval")
 
-definition in_complex_interval :: "complex \<Rightarrow> complex_interval \<Rightarrow> bool" ("(_/ \<in>\<^sub>c _)" [51, 51] 50) where
+definition in_complex_interval :: "complex \<Rightarrow> complex_interval \<Rightarrow> bool" (\<open>(_/ \<in>\<^sub>c _)\<close> [51, 51] 50) where
   "y \<in>\<^sub>c x \<equiv> (case x of Complex_Interval r i \<Rightarrow> Re y \<in>\<^sub>i r \<and> Im y \<in>\<^sub>i i)" 
       
 instantiation complex_interval :: comm_monoid_add begin
@@ -422,7 +422,7 @@ proof -
     by (induct xs arbitrary: Z z, auto intro!: plus_complex_interval of_int_complex_interval x)
 qed
   
-definition complex_interval_tendsto (infix "\<longlonglongrightarrow>\<^sub>c" 55) where
+definition complex_interval_tendsto (infix \<open>\<longlonglongrightarrow>\<^sub>c\<close> 55) where
   "C \<longlonglongrightarrow>\<^sub>c c \<equiv> ((Re_interval \<circ> C) \<longlonglongrightarrow>\<^sub>i Re c) \<and> ((Im_interval \<circ> C) \<longlonglongrightarrow>\<^sub>i Im c)"
 
 lemma complex_interval_tendstoI[intro!]:

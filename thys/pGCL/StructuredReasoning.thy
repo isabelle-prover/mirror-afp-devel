@@ -272,7 +272,7 @@ entailment form. The benefit is that it allows us to define transitivity rules f
 (also/finally) reasoning.\<close>
 
 definition
-  wp_valid :: "('a \<Rightarrow> real) \<Rightarrow> 'a prog \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool" ("\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>p")
+  wp_valid :: "('a \<Rightarrow> real) \<Rightarrow> 'a prog \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool" (\<open>\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>p\<close>)
 where
   "wp_valid P prog Q \<equiv> P \<tturnstile> wp prog Q"
 

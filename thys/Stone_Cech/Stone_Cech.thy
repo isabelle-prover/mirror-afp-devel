@@ -144,16 +144,16 @@ section \<open>
 \<close>
 
 abbreviation continuous_from_to 
-    :: "'a topology \<Rightarrow> 'b topology \<Rightarrow> ('a \<Rightarrow> 'b) set" ("cts[ _, _]") 
+    :: "'a topology \<Rightarrow> 'b topology \<Rightarrow> ('a \<Rightarrow> 'b) set" (\<open>cts[ _, _]\<close>) 
   where "continuous_from_to X Y \<equiv> { f . continuous_map X Y f }"
 
 abbreviation continuous_from_to_extensional 
-     :: "'a topology \<Rightarrow> 'b topology \<Rightarrow> ('a \<Rightarrow> 'b) set" ("cts\<^sub>E[ _, _ ]")
+     :: "'a topology \<Rightarrow> 'b topology \<Rightarrow> ('a \<Rightarrow> 'b) set" (\<open>cts\<^sub>E[ _, _ ]\<close>)
   where "continuous_from_to_extensional X Y \<equiv> (topspace X \<rightarrow>\<^sub>E topspace Y) \<inter> cts[X,Y]"
 
 (* Sets of continuous functions from a space X to any common space satisfying condition P *)
 abbreviation continuous_maps_from_to_shared_where ::
-    "'a topology \<Rightarrow> ('b topology \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) set \<Rightarrow> bool" ("cts'_on _ to'_shared  _")
+    "'a topology \<Rightarrow> ('b topology \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) set \<Rightarrow> bool" (\<open>cts'_on _ to'_shared  _\<close>)
   where "continuous_maps_from_to_shared_where X P 
             \<equiv> (\<lambda> fs . (\<exists> Y . P Y \<and> fs \<subseteq> cts[X,Y]))"
 
@@ -208,10 +208,10 @@ lemma fbounded_iff:
   shows "fbounded f X \<longleftrightarrow> fbounded_below f X \<and> fbounded_above f X"
   by auto
 
-abbreviation c_of :: "'a topology \<Rightarrow> ('a \<Rightarrow> real) set" (" C( _ ) ")
+abbreviation c_of :: "'a topology \<Rightarrow> ('a \<Rightarrow> real) set" (\<open> C( _ ) \<close>)
   where "C(X) \<equiv> { f . continuous_map X euclideanreal f }"
 
-abbreviation cstar_of :: "'a topology \<Rightarrow> ('a \<Rightarrow> real) set"  (" C*( _ ) ")
+abbreviation cstar_of :: "'a topology \<Rightarrow> ('a \<Rightarrow> real) set"  (\<open> C*( _ ) \<close>)
   where "C* X \<equiv> { f | f . f \<in> c_of X \<and> fbounded f X }"
 
 definition cstar_id :: "'a topology \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> 'a \<Rightarrow> real"
@@ -1509,7 +1509,7 @@ subsection \<open>
 definition scEmbeddedCopy :: "'a topology \<Rightarrow> (('a \<Rightarrow> real) \<Rightarrow> real) set"
   where "scEmbeddedCopy X = scEmbed X ` topspace X"
 
-definition scCompactification :: "'a topology \<Rightarrow> (('a \<Rightarrow> real) \<Rightarrow> real) topology" ("\<beta> _")
+definition scCompactification :: "'a topology \<Rightarrow> (('a \<Rightarrow> real) \<Rightarrow> real) topology" (\<open>\<beta> _\<close>)
   where "scCompactification X 
             = subtopology (scProduct X) ((scProduct X) closure_of (scEmbeddedCopy X))"
 

@@ -9,13 +9,13 @@ class plus_cpo = plus + cpo +
   assumes cont_plus2: "cont (\<lambda>y::'a::{plus,cpo}. x + y)"
 begin
 
-abbreviation plus_section :: "'a \<rightarrow> 'a \<rightarrow> 'a" ("'(+')") where
+abbreviation plus_section :: "'a \<rightarrow> 'a \<rightarrow> 'a" (\<open>'(+')\<close>) where
   "(+) \<equiv> \<Lambda> x y. x + y"
 
-abbreviation plus_section_left :: "'a \<Rightarrow> 'a \<rightarrow> 'a" ("'(_+')") where
+abbreviation plus_section_left :: "'a \<Rightarrow> 'a \<rightarrow> 'a" (\<open>'(_+')\<close>) where
   "(x+) \<equiv> \<Lambda> y. x + y"
 
-abbreviation plus_section_right :: "'a \<Rightarrow> 'a \<rightarrow> 'a" ("'(+_')") where
+abbreviation plus_section_right :: "'a \<Rightarrow> 'a \<rightarrow> 'a" (\<open>'(+_')\<close>) where
   "(+y) \<equiv> \<Lambda> x. x + y"
 
 end
@@ -25,13 +25,13 @@ class minus_cpo = minus + cpo +
   assumes cont_minus2: "cont (\<lambda>y::'a::{minus,cpo}. x - y)"
 begin
 
-abbreviation minus_section :: "'a \<rightarrow> 'a \<rightarrow> 'a" ("'(-')") where
+abbreviation minus_section :: "'a \<rightarrow> 'a \<rightarrow> 'a" (\<open>'(-')\<close>) where
   "(-) \<equiv> \<Lambda> x y. x - y"
 
-abbreviation minus_section_left :: "'a \<Rightarrow> 'a \<rightarrow> 'a" ("'(_-')") where
+abbreviation minus_section_left :: "'a \<Rightarrow> 'a \<rightarrow> 'a" (\<open>'(_-')\<close>) where
   "(x-) \<equiv> \<Lambda> y. x - y"
 
-abbreviation minus_section_right :: "'a \<Rightarrow> 'a \<rightarrow> 'a" ("'(-_')") where
+abbreviation minus_section_right :: "'a \<Rightarrow> 'a \<rightarrow> 'a" (\<open>'(-_')\<close>) where
   "(-y) \<equiv> \<Lambda> x. x - y"
 
 end

@@ -26,10 +26,10 @@ locale SDG = CFGExit_wf sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>)  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
-  and Exit::"'node"  ("'('_Exit'_')") 
+  and Exit::"'node"  (\<open>'('_Exit'_')\<close>) 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list"
 
@@ -172,7 +172,7 @@ qed
 
 subsection \<open>Data dependence\<close>
 
-inductive SDG_Use :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool" ("_ \<in> Use\<^bsub>SDG\<^esub> _")
+inductive SDG_Use :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool" (\<open>_ \<in> Use\<^bsub>SDG\<^esub> _\<close>)
 where CFG_Use_SDG_Use:
   "\<lbrakk>valid_node m; V \<in> Use m; n = CFG_node m\<rbrakk> \<Longrightarrow> V \<in> Use\<^bsub>SDG\<^esub> n"
   | Actual_in_SDG_Use:
@@ -182,7 +182,7 @@ where CFG_Use_SDG_Use:
     V = outs!x\<rbrakk> \<Longrightarrow> V \<in> Use\<^bsub>SDG\<^esub> n"
 
 
-abbreviation notin_SDG_Use :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"  ("_ \<notin> Use\<^bsub>SDG\<^esub> _")
+abbreviation notin_SDG_Use :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"  (\<open>_ \<notin> Use\<^bsub>SDG\<^esub> _\<close>)
   where "V \<notin> Use\<^bsub>SDG\<^esub> n \<equiv> \<not> V \<in> Use\<^bsub>SDG\<^esub> n"
 
 
@@ -228,7 +228,7 @@ qed
 
 
 
-inductive SDG_Def :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool" ("_ \<in> Def\<^bsub>SDG\<^esub> _")
+inductive SDG_Def :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool" (\<open>_ \<in> Def\<^bsub>SDG\<^esub> _\<close>)
 where CFG_Def_SDG_Def:
   "\<lbrakk>valid_node m; V \<in> Def m; n = CFG_node m\<rbrakk> \<Longrightarrow> V \<in> Def\<^bsub>SDG\<^esub> n"
   | Formal_in_SDG_Def:
@@ -237,7 +237,7 @@ where CFG_Def_SDG_Def:
   | Actual_out_SDG_Def:
   "\<lbrakk>valid_SDG_node n; n = Actual_out (m,x); V = (ParamDefs m)!x\<rbrakk> \<Longrightarrow> V \<in> Def\<^bsub>SDG\<^esub> n"
 
-abbreviation notin_SDG_Def :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"  ("_ \<notin> Def\<^bsub>SDG\<^esub> _")
+abbreviation notin_SDG_Def :: "'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"  (\<open>_ \<notin> Def\<^bsub>SDG\<^esub> _\<close>)
   where "V \<notin> Def\<^bsub>SDG\<^esub> n \<equiv> \<not> V \<in> Def\<^bsub>SDG\<^esub> n"
 
 
@@ -282,7 +282,7 @@ qed
 
 
 definition data_dependence :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-("_ influences _ in _" [51,0,0])
+(\<open>_ influences _ in _\<close> [51,0,0])
   where "n influences V in n' \<equiv> \<exists>as. (V \<in> Def\<^bsub>SDG\<^esub> n) \<and> (V \<in> Use\<^bsub>SDG\<^esub> n') \<and> 
   (parent_node n -as\<rightarrow>\<^sub>\<iota>* parent_node n') \<and>
   (\<forall>n''. valid_SDG_node n'' \<and> parent_node n'' \<in> set (sourcenodes (tl as))
@@ -292,7 +292,7 @@ definition data_dependence :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> '
 subsection \<open>Control dependence\<close>
 
 definition control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-  ("_ controls _" [51,0])
+  (\<open>_ controls _\<close> [51,0])
 where "n controls n' \<equiv> \<exists>a a' as. n -a#as\<rightarrow>\<^sub>\<iota>* n' \<and> n' \<notin> set(sourcenodes (a#as)) \<and>
     intra_kind(kind a) \<and> n' postdominates (targetnode a) \<and> 
     valid_edge a' \<and> intra_kind(kind a') \<and> sourcenode a' = n \<and> 
@@ -480,17 +480,17 @@ subsection \<open>SDG without summary edges\<close>
 
 
 inductive cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ \<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
+    (\<open>_ \<longrightarrow>\<^bsub>cd\<^esub> _\<close> [51,0] 80)
   and ddep_edge :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ -_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0] 80)
+    (\<open>_ -_\<rightarrow>\<^sub>d\<^sub>d _\<close> [51,0,0] 80)
   and call_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ -_\<rightarrow>\<^bsub>call\<^esub> _" [51,0,0] 80)
+    (\<open>_ -_\<rightarrow>\<^bsub>call\<^esub> _\<close> [51,0,0] 80)
   and return_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ -_\<rightarrow>\<^bsub>ret\<^esub> _" [51,0,0] 80)
+    (\<open>_ -_\<rightarrow>\<^bsub>ret\<^esub> _\<close> [51,0,0] 80)
   and param_in_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ -_:_\<rightarrow>\<^bsub>in\<^esub> _" [51,0,0,0] 80)
+    (\<open>_ -_:_\<rightarrow>\<^bsub>in\<^esub> _\<close> [51,0,0,0] 80)
   and param_out_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ -_:_\<rightarrow>\<^bsub>out\<^esub> _" [51,0,0,0] 80)
+    (\<open>_ -_:_\<rightarrow>\<^bsub>out\<^esub> _\<close> [51,0,0,0] 80)
   and SDG_edge :: "'node SDG_node \<Rightarrow> 'var option \<Rightarrow> 
                           ('pname \<times> bool) option \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
 
@@ -724,7 +724,7 @@ subsection \<open>Intraprocedural paths in the SDG\<close>
 
 inductive intra_SDG_path :: 
   "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-("_ i-_\<rightarrow>\<^sub>d* _" [51,0,0] 80) 
+(\<open>_ i-_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80) 
 
 where iSp_Nil:
   "valid_SDG_node n \<Longrightarrow> n i-[]\<rightarrow>\<^sub>d* n"
@@ -812,7 +812,7 @@ subsection \<open>Control dependence paths in the SDG\<close>
 
 inductive cdep_SDG_path :: 
   "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-("_ cd-_\<rightarrow>\<^sub>d* _" [51,0,0] 80) 
+(\<open>_ cd-_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80) 
 
 where cdSp_Nil:
   "valid_SDG_node n \<Longrightarrow> n cd-[]\<rightarrow>\<^sub>d* n"
@@ -1296,7 +1296,7 @@ subsection \<open>Paths consisting of calls and control dependences\<close>
 
 inductive call_cdep_SDG_path ::
   "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-("_ cc-_\<rightarrow>\<^sub>d* _" [51,0,0] 80)
+(\<open>_ cc-_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80)
 where ccSp_Nil:
   "valid_SDG_node n \<Longrightarrow> n cc-[]\<rightarrow>\<^sub>d* n"
 
@@ -1987,19 +1987,19 @@ subsection \<open>SDG with summary edges\<close>
 
 
 inductive sum_cdep_edge :: "'node SDG_node \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ s\<longrightarrow>\<^bsub>cd\<^esub> _" [51,0] 80)
+    (\<open>_ s\<longrightarrow>\<^bsub>cd\<^esub> _\<close> [51,0] 80)
   and sum_ddep_edge :: "'node SDG_node \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ s-_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0] 80)
+    (\<open>_ s-_\<rightarrow>\<^sub>d\<^sub>d _\<close> [51,0,0] 80)
   and sum_call_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ s-_\<rightarrow>\<^bsub>call\<^esub> _" [51,0,0] 80)
+    (\<open>_ s-_\<rightarrow>\<^bsub>call\<^esub> _\<close> [51,0,0] 80)
   and sum_return_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ s-_\<rightarrow>\<^bsub>ret\<^esub> _" [51,0,0] 80)
+    (\<open>_ s-_\<rightarrow>\<^bsub>ret\<^esub> _\<close> [51,0,0] 80)
   and sum_param_in_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ s-_:_\<rightarrow>\<^bsub>in\<^esub> _" [51,0,0,0] 80)
+    (\<open>_ s-_:_\<rightarrow>\<^bsub>in\<^esub> _\<close> [51,0,0,0] 80)
   and sum_param_out_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'var \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-    ("_ s-_:_\<rightarrow>\<^bsub>out\<^esub> _" [51,0,0,0] 80)
+    (\<open>_ s-_:_\<rightarrow>\<^bsub>out\<^esub> _\<close> [51,0,0,0] 80)
   and sum_summary_edge :: "'node SDG_node \<Rightarrow> 'pname \<Rightarrow> 'node SDG_node \<Rightarrow> bool" 
-    ("_ s-_\<rightarrow>\<^bsub>sum\<^esub> _" [51,0] 80)
+    (\<open>_ s-_\<rightarrow>\<^bsub>sum\<^esub> _\<close> [51,0] 80)
   and sum_SDG_edge :: "'node SDG_node \<Rightarrow> 'var option \<Rightarrow> 
                           ('pname \<times> bool) option \<Rightarrow> bool \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
 
@@ -2294,7 +2294,7 @@ subsection \<open>Paths consisting of intraprocedural and summary edges in the S
 
 inductive intra_sum_SDG_path ::
   "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-("_ is-_\<rightarrow>\<^sub>d* _" [51,0,0] 80)
+(\<open>_ is-_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80)
 where isSp_Nil:
   "valid_SDG_node n \<Longrightarrow> n is-[]\<rightarrow>\<^sub>d* n"
 
@@ -2765,7 +2765,7 @@ text \<open>SDG paths without return edges\<close>
 
 inductive intra_call_sum_SDG_path ::
   "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-("_ ics-_\<rightarrow>\<^sub>d* _" [51,0,0] 80)
+(\<open>_ ics-_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80)
 where icsSp_Nil:
   "valid_SDG_node n \<Longrightarrow> n ics-[]\<rightarrow>\<^sub>d* n"
 
@@ -3158,7 +3158,7 @@ subsection \<open>SDG paths without call edges\<close>
 
 inductive intra_return_sum_SDG_path ::
   "'node SDG_node \<Rightarrow> 'node SDG_node list \<Rightarrow> 'node SDG_node \<Rightarrow> bool"
-("_ irs-_\<rightarrow>\<^sub>d* _" [51,0,0] 80)
+(\<open>_ irs-_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80)
 where irsSp_Nil:
   "valid_SDG_node n \<Longrightarrow> n irs-[]\<rightarrow>\<^sub>d* n"
 

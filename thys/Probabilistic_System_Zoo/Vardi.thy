@@ -12,7 +12,7 @@ begin
   datatype ('a, 'b, 'k) var0 = PMF "('a \<times> 'b) pmf" | BPS "('a \<times> 'b) set['k]"
 end
 
-inductive var_eq :: "('a, 'b, 'k) var0 \<Rightarrow> ('a, 'b, 'k) var0 \<Rightarrow> bool" (infixl "\<sim>" 65) where
+inductive var_eq :: "('a, 'b, 'k) var0 \<Rightarrow> ('a, 'b, 'k) var0 \<Rightarrow> bool" (infixl \<open>\<sim>\<close> 65) where
   var_eq_reflp[intro]: "x \<sim> x"
 | [intro]: "PMF (return_pmf (a, x)) \<sim> BPS (bsingleton (a, x))"
 | [intro]: "BPS (bsingleton (a, x)) \<sim> PMF (return_pmf (a, x))"

@@ -183,8 +183,8 @@ abbreviation diffSup :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> b
   "diffSup i j k \<equiv> (i - j \<ge> k \<or> j - i \<ge> k)"
 
 class symmetry_ops =
-  fixes symmetry :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" ("\<sigma>")
-  and inv_symmetry :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" ("\<theta>") 
+  fixes symmetry :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<sigma>\<close>)
+  and inv_symmetry :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<theta>\<close>) 
 
 begin
 
@@ -194,13 +194,13 @@ abbreviation "\<theta>\<theta> i \<equiv> image (\<theta> i)"
 
 text \<open>symcomp i j composes the symmetry maps from index i to index i+j-1.\<close>
 
-primrec symcomp :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Sigma>") where
+primrec symcomp :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<Sigma>\<close>) where
     "\<Sigma> i 0 x = x"
   | "\<Sigma> i (Suc j) x = \<sigma> (i + j) (\<Sigma> i j x)"
 
 text \<open>inv-symcomp i j composes the inverse symmetries from i+j-1 to i.\<close>
 
-primrec inv_symcomp :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Theta>") where
+primrec inv_symcomp :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<Theta>\<close>) where
     "\<Theta> i 0 x = x"
   | "\<Theta> i (Suc j) x = \<Theta> i j (\<theta> (i + j) x)"
 

@@ -9,7 +9,7 @@ context indexed_weak_nominal_ts
 begin
 
   definition is_distinguishing_formula :: "('idx, 'pred, 'act) formula \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool"
-    ("_ distinguishes _ from _" [100,100,100] 100)
+    (\<open>_ distinguishes _ from _\<close> [100,100,100] 100)
   where
     "x distinguishes P from Q \<equiv> P \<Turnstile> x \<and> \<not> Q \<Turnstile> x"
 

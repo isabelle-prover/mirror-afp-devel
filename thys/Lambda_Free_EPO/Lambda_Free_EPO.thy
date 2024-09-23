@@ -20,7 +20,7 @@ subsection \<open>Setup\<close>
 
 locale epo = ground_heads "(>\<^sub>s)" arity_sym arity_var
     for
-      gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) and
+      gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>>\<^sub>s\<close> 50) and
       arity_sym :: "'s \<Rightarrow> enat" and
       arity_var :: "'v \<Rightarrow> enat" +
   fixes
@@ -85,13 +85,13 @@ lemma chkchop_mono[mono]: "gt \<le> gt' \<Longrightarrow> chkchop gt \<le> chkch
 lemma chkchop_same_mono[mono]: "gt \<le> gt' \<Longrightarrow> chkchop_same gt \<le> chkchop_same gt'"
   using chkchop_same_def by fastforce
 
-inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
+inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>>\<^sub>t\<close> 50) where
   gt_chop: "is_App t \<Longrightarrow> chop t >\<^sub>t s \<or> chop t = s \<Longrightarrow> t >\<^sub>t s"
 | gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> is_Sym (head s) \<Longrightarrow> chkchop (>\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "head t = head s \<Longrightarrow> chkchop_same (>\<^sub>t) t s \<Longrightarrow>
     (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
-abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
+abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>\<ge>\<^sub>t\<close> 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"
 
 inductive gt_chop :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" where
@@ -881,7 +881,7 @@ proof (simp only: atomize_imp,
   qed      
 qed  
 
-abbreviation gtg :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>g" 50) where
+abbreviation gtg :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>>\<^sub>t\<^sub>g\<close> 50) where
   "(>\<^sub>t\<^sub>g) \<equiv> \<lambda>t s. ground t \<and> t >\<^sub>t s"
 
 theorem gt_wf:

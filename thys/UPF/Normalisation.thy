@@ -255,7 +255,7 @@ text\<open>
 fun prod_list :: "('\<alpha> \<mapsto>'\<beta>) \<Rightarrow> (('\<gamma> \<mapsto>'\<delta>) list) \<Rightarrow> 
                   (('\<alpha> \<mapsto>'\<beta>) \<Rightarrow> ('\<gamma> \<mapsto>'\<delta>) \<Rightarrow> (('\<alpha> \<times> '\<gamma>) \<mapsto> ('\<beta> \<times> '\<delta>))) \<Rightarrow>
                   (('\<beta> \<times> '\<delta>) \<Rightarrow> 'y) \<Rightarrow> ('x \<Rightarrow> ('\<alpha> \<times> '\<gamma>)) \<Rightarrow>  
-                  (('x \<mapsto> 'y) list)"  (infixr "\<Otimes>\<^sub>L" 54) where
+                  (('x \<mapsto> 'y) list)"  (infixr \<open>\<Otimes>\<^sub>L\<close> 54) where
   "prod_list x (y#ys) par_comb ran_adapt dom_adapt = 
   ((ran_adapt o_f ((par_comb x y) o dom_adapt))#(prod_list x ys par_comb ran_adapt dom_adapt))"
 | "prod_list x [] par_comb ran_adapt dom_adapt = []"
@@ -266,7 +266,7 @@ text\<open>
   
 definition prod_2_list :: "[('\<alpha> \<mapsto>'\<beta>), (('\<gamma> \<mapsto>'\<delta>) list)] \<Rightarrow> 
                   (('\<beta> \<times> '\<delta>) \<Rightarrow> 'y) \<Rightarrow> ('x \<Rightarrow> ('\<alpha> \<times> '\<gamma>)) \<Rightarrow> 
-                  (('x \<mapsto> 'y) list)" (infixr "\<Otimes>\<^sub>2\<^sub>L" 55) where 
+                  (('x \<mapsto> 'y) list)" (infixr \<open>\<Otimes>\<^sub>2\<^sub>L\<close> 55) where 
   "x \<Otimes>\<^sub>2\<^sub>L y =  (\<lambda> d r. (x \<Otimes>\<^sub>L y) (\<Otimes>\<^sub>2) d r)"  
   
 lemma list2listNMT:  "x \<noteq> [] \<Longrightarrow> map sem x \<noteq> []"

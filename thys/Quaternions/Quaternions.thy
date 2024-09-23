@@ -24,27 +24,27 @@ lemma quat_eq_iff: "x = y \<longleftrightarrow> Re x = Re y \<and> Im1 x = Im1 y
 
 context
 begin
-no_notation Complex.imaginary_unit ("\<i>")
+no_notation Complex.imaginary_unit (\<open>\<i>\<close>)
 
-primcorec quat_ii :: quat  ("\<i>")
+primcorec quat_ii :: quat  (\<open>\<i>\<close>)
   where "Re \<i> = 0" | "Im1 \<i> = 1" | "Im2 \<i> = 0" | "Im3 \<i> = 0"
 
-primcorec quat_jj :: quat  ("\<j>")
+primcorec quat_jj :: quat  (\<open>\<j>\<close>)
   where "Re \<j> = 0" | "Im1 \<j> = 0" | "Im2 \<j> = 1" | "Im3 \<j> = 0"
 
-primcorec quat_kk :: quat  ("\<k>")
+primcorec quat_kk :: quat  (\<open>\<k>\<close>)
   where "Re \<k> = 0" | "Im1 \<k> = 0" | "Im2 \<k> = 0" | "Im3 \<k> = 1"
 
 end
 
 bundle quaternion_syntax begin
-notation quat_ii ("\<i>")
-no_notation Complex.imaginary_unit ("\<i>")
+notation quat_ii (\<open>\<i>\<close>)
+no_notation Complex.imaginary_unit (\<open>\<i>\<close>)
 end
 
 bundle no_quaternion_syntax begin
-no_notation quat_ii ("\<i>")
-notation Complex.imaginary_unit ("\<i>")
+no_notation quat_ii (\<open>\<i>\<close>)
+notation Complex.imaginary_unit (\<open>\<i>\<close>)
 end
 
 unbundle quaternion_syntax

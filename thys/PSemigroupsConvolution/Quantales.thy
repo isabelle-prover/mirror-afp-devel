@@ -13,14 +13,14 @@ theory Quantales
 
 begin
   
-notation sup (infixl "\<squnion>" 60)
-  and inf (infixl "\<sqinter>" 55)
-  and top ("\<top>")
-  and bot ("\<bottom>")
-  and relcomp (infixl ";" 70) 
-  and times (infixl "\<cdot>" 70)
-  and Sup ("\<Squnion>_" [900] 900)  
-  and Inf ("\<Sqinter>_" [900] 900)
+notation sup (infixl \<open>\<squnion>\<close> 60)
+  and inf (infixl \<open>\<sqinter>\<close> 55)
+  and top (\<open>\<top>\<close>)
+  and bot (\<open>\<bottom>\<close>)
+  and relcomp (infixl \<open>;\<close> 70) 
+  and times (infixl \<open>\<cdot>\<close> 70)
+  and Sup (\<open>\<Squnion>_\<close> [900] 900)  
+  and Inf (\<open>\<Sqinter>_\<close> [900] 900)
   
 subsection \<open>Properties of Complete Lattices\<close>
   
@@ -78,10 +78,10 @@ lemma sup_distr: "(x \<squnion> y) \<cdot> z = (x \<cdot> z) \<squnion> (y \<cdo
 lemma mult_isor: "x \<le> y \<Longrightarrow> x \<cdot> z \<le> y \<cdot> z"
   by (metis sup.absorb_iff1 sup_distr)
     
-definition bres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60) where 
+definition bres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<rightarrow>\<close> 60) where 
   "x \<rightarrow> z = \<Squnion>{y. x \<cdot> y \<le> z}"
 
-definition fres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leftarrow>" 60) where 
+definition fres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<leftarrow>\<close> 60) where 
   "z \<leftarrow> y = \<Squnion>{x. x \<cdot> y \<le> z}"
 
 lemma bres_galois_imp: "x \<cdot> y \<le> z \<longrightarrow> y \<le> x \<rightarrow> z"
@@ -351,7 +351,7 @@ subsection \<open>Quantale Modules and Semidirect Products\<close>
 text \<open>Quantale modules are extensions of semigroup actions in that a quantale acts on a complete lattice.\<close>
   
 locale unital_quantale_module = 
-  fixes act :: "'a::unital_quantale \<Rightarrow> 'b::complete_lattice \<Rightarrow> 'b" ("\<alpha>")
+  fixes act :: "'a::unital_quantale \<Rightarrow> 'b::complete_lattice \<Rightarrow> 'b" (\<open>\<alpha>\<close>)
   assumes act1: "\<alpha> (x \<cdot> y) p = \<alpha> x (\<alpha> y p)"
     and act2 [simp]: "\<alpha> 1 p = p" 
     and act3: "\<alpha> (\<Squnion>X) p = \<Squnion>{\<alpha> x p |x. x \<in> X}"

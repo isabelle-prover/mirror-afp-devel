@@ -451,11 +451,11 @@ begin
 
 abbreviation "combine_points \<equiv> \<V> \<union> \<V>'" 
 
-notation combine_points ("\<V>\<^sup>+")
+notation combine_points (\<open>\<V>\<^sup>+\<close>)
 
 abbreviation "combine_blocks \<equiv> \<B> + \<B>'"
 
-notation combine_blocks ("\<B>\<^sup>+")
+notation combine_blocks (\<open>\<B>\<^sup>+\<close>)
 
 sublocale combine_sys: incidence_system "\<V>\<^sup>+" "\<B>\<^sup>+"
   using sys1.wellformed sys2.wellformed by (unfold_locales) auto

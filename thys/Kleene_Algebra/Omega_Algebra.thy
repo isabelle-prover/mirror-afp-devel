@@ -116,7 +116,7 @@ of omega algebra. We therefore baptise it~$\top$.\<close>
 lemma max_element: "x \<le> 1\<^sup>\<omega>"
   by (simp add: omega_coinduct_eq_var2)
 
-definition top ("\<top>")
+definition top (\<open>\<top>\<close>)
   where "\<top> = 1\<^sup>\<omega>"
 
 lemma star_omega_3 [simp]: "(x\<^sup>\<star>)\<^sup>\<omega> = \<top>"

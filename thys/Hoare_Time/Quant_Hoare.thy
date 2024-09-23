@@ -14,10 +14,10 @@ text \<open>The support of an assn2\<close>
  
 
 abbreviation state_subst :: "state \<Rightarrow> aexp \<Rightarrow> vname \<Rightarrow> state"
-  ("_[_'/_]" [1000,0,0] 999)
+  (\<open>_[_'/_]\<close> [1000,0,0] 999)
 where "s[a/x] == s(x := aval a s)"
 
-fun emb :: "bool \<Rightarrow> enat" ("\<up>") where
+fun emb :: "bool \<Rightarrow> enat" (\<open>\<up>\<close>) where
    "emb False = \<infinity>"
  | "emb True = 0"
   
@@ -26,13 +26,13 @@ subsection "Validity of quantitative Hoare Triple"
 (* this definition refines the definition of validity of normal Hoare Triple for total correctness  *)
 
 definition hoare2_valid :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>2 {(1_)}/ (_)/ {(1_)}" 50) where
+  (\<open>\<Turnstile>\<^sub>2 {(1_)}/ (_)/ {(1_)}\<close> 50) where
 "\<Turnstile>\<^sub>2 {P} c {Q}  \<longleftrightarrow>  (\<forall>s.  P s < \<infinity> \<longrightarrow> (\<exists>t p. ((c,s) \<Rightarrow> p \<Down> t) \<and> P s \<ge> p + Q t))"
 
 subsection "Hoare logic for quantiative reasoning"
 
 inductive
-  hoare2 :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" ("\<turnstile>\<^sub>2 ({(1_)}/ (_)/ {(1_)})" 50)
+  hoare2 :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>2 ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
 
 Skip:  "\<turnstile>\<^sub>2 {%s. eSuc (P s)} SKIP {P}"  |
@@ -270,7 +270,7 @@ subsection "Completeness"
     
   
 (* the WeakestPrePotential  *)  
-definition wp2 :: "com \<Rightarrow> qassn \<Rightarrow> qassn" ("wp\<^sub>2") where
+definition wp2 :: "com \<Rightarrow> qassn \<Rightarrow> qassn" (\<open>wp\<^sub>2\<close>) where
 "wp\<^sub>2 c Q  =  (\<lambda>s. (if (\<exists>t p. (c,s) \<Rightarrow> p \<Down> t \<and> Q t < \<infinity>)  then enat (THE p. \<exists>t. (c,s) \<Rightarrow> p \<Down> t) + Q (THE t. \<exists>p. (c,s) \<Rightarrow> p \<Down> t) else \<infinity>))"
 
 lemma wp2_alt: "wp\<^sub>2 c Q = (\<lambda>s. (if \<down>(c,s) then enat (\<down>\<^sub>t (c, s)) + Q (\<down>\<^sub>s (c, s)) else \<infinity>))"

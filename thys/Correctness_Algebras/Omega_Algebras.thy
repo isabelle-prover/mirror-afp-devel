@@ -14,7 +14,7 @@ begin
 nitpick_params [timeout = 600]
 
 class omega =
-  fixes omega :: "'a \<Rightarrow> 'a" ("_\<^sup>\<omega>" [100] 100)
+  fixes omega :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<omega>\<close> [100] 100)
 
 class left_omega_algebra = left_kleene_algebra + omega +
   assumes omega_unfold: "y\<^sup>\<omega> = y * y\<^sup>\<omega>"
@@ -493,7 +493,7 @@ sublocale top_left_bot_omega_algebra < comb3: itering where circ = "(\<lambda>x 
   using omega_circ_simulate_left_plus omega_translate_2 by auto
 
 class Omega =
-  fixes Omega :: "'a \<Rightarrow> 'a" ("_\<^sup>\<Omega>" [100] 100)
+  fixes Omega :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<Omega>\<close> [100] 100)
 
 end
 

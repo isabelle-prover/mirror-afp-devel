@@ -69,7 +69,7 @@ subsection\<open>Extending the Meta-Model\<close>
 
 locale SML
 begin
-no_type_notation abr_string ("string") definition "string = SML_string"
+no_type_notation abr_string (\<open>string\<close>) definition "string = SML_string"
 definition "rewrite = SML_rewrite"
 definition "basic = SML_basic"
 definition "binop = SML_binop"

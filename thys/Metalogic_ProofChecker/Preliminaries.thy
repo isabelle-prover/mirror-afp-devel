@@ -16,7 +16,7 @@ fun the_default :: "'a \<Rightarrow> 'a option \<Rightarrow> 'a" where
   "the_default a None = a"
 | "the_default _ (Some b) = b"
 
-abbreviation Or :: "'a option \<Rightarrow> 'a option \<Rightarrow> 'a option" (infixl "OR" 60) where
+abbreviation Or :: "'a option \<Rightarrow> 'a option \<Rightarrow> 'a option" (infixl \<open>OR\<close> 60) where
   "e1 OR e2 \<equiv> case e1 of None \<Rightarrow> e2 | p \<Rightarrow> p"
 
 lemma Or_Some: "(e1 OR e2) = Some x \<longleftrightarrow> e1 = Some x \<or> (e1 = None \<and> e2 = Some x)"

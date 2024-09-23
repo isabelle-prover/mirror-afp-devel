@@ -16,7 +16,7 @@ text \<open>
 \<close>
 
 class dagger_op =
-  fixes dagger :: "'a \<Rightarrow> 'a" ("_\<^sup>\<dagger>" [101] 100)
+  fixes dagger :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<dagger>\<close> [101] 100)
 
 subsection\<open>Near Conway Algebras\<close>
 

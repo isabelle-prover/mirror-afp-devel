@@ -384,13 +384,13 @@ begin
 
 definition
   wt_instrs :: "instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i' list \<Rightarrow> bool"
-    ("(\<turnstile> _, _ /[::]/ _)" [0,0,51] 50) where
+    (\<open>(\<turnstile> _, _ /[::]/ _)\<close> [0,0,51] 50) where
   "\<turnstile> is,xt [::] \<tau>s \<longleftrightarrow> size is < size \<tau>s \<and> pcs xt \<subseteq> {0..<size is} \<and>
   (\<forall>pc< size is. P,T\<^sub>r,mxs,size \<tau>s,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
 end
 
-notation TC2.wt_instrs ("(_,_,_ \<turnstile>/ _, _ /[::]/ _)" [50,50,50,50,50,51] 50)
+notation TC2.wt_instrs (\<open>(_,_,_ \<turnstile>/ _, _ /[::]/ _)\<close> [50,50,50,50,50,51] 50)
 
 (*<*)
 lemmas (in TC2) wt_defs =

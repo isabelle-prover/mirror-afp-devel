@@ -17,7 +17,7 @@ to obtain an operation of converse that is closer to algebras of paths and relat
 subsection \<open>Involutive Kleene algebra\<close>
 
 class invol_op = 
-  fixes invol :: "'a \<Rightarrow> 'a" ("_\<^sup>\<circ>" [101] 100)
+  fixes invol :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<circ>\<close> [101] 100)
 
 class involutive_dioid = dioid_one_zero + invol_op +
   assumes inv_invol [simp]: "(x\<^sup>\<circ>)\<^sup>\<circ> = x"

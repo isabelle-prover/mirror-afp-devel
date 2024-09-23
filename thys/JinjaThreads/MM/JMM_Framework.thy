@@ -404,7 +404,7 @@ locale heap_multithreaded_base =
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool" 
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and convert_RA :: "'addr released_locks \<Rightarrow> ('addr, 'thread_id) obs_event list"
 
 sublocale heap_multithreaded_base < mthr: if_multithreaded_base final r convert_RA
@@ -447,7 +447,7 @@ locale heap_multithreaded =
   and heap_read :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> bool"
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool" 
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and convert_RA :: "'addr released_locks \<Rightarrow> ('addr, 'thread_id) obs_event list" 
   and P :: "'md prog"
 
@@ -738,7 +738,7 @@ locale allocated_multithreaded =
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool" 
   and allocated :: "'heap \<Rightarrow> 'addr set"
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and P :: "'md prog"
   +
   assumes red_allocated_mono: "t \<turnstile> (x, m) -ta\<rightarrow> (x', m') \<Longrightarrow> allocated m \<subseteq> allocated m'"
@@ -1189,7 +1189,7 @@ locale if_known_addrs_base =
   multithreaded_base final r convert_RA
   for known_addrs :: "'t \<Rightarrow> 'x \<Rightarrow> 'addr set"
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 't, 'x, 'heap, 'addr, 'obs) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80)
+  and r :: "('addr, 't, 'x, 'heap, 'addr, 'obs) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80)
   and convert_RA :: "'addr released_locks \<Rightarrow> 'obs list"
 
 sublocale if_known_addrs_base < "if": known_addrs_base known_addrs_if .
@@ -1216,7 +1216,7 @@ locale known_addrs =
   and allocated :: "'heap \<Rightarrow> 'addr set"
   and known_addrs :: "'thread_id \<Rightarrow> 'x \<Rightarrow> 'addr set"
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and P :: "'md prog"
   +
   assumes red_known_addrs_new:
@@ -1234,7 +1234,7 @@ locale known_addrs =
   \<comment> \<open>second possibility necessary for @{term heap_clone}\<close>
 begin
 
-notation mthr.redT_syntax1 ("_ -_\<triangleright>_\<rightarrow> _" [50,0,0,50] 80)
+notation mthr.redT_syntax1 (\<open>_ -_\<triangleright>_\<rightarrow> _\<close> [50,0,0,50] 80)
 
 lemma if_red_known_addrs_new: 
   assumes "t \<turnstile> (x, m) -ta\<rightarrow>i (x', m')"
@@ -1576,7 +1576,7 @@ locale known_addrs_typing =
   and allocated :: "'heap \<Rightarrow> 'addr set"
   and known_addrs :: "'thread_id \<Rightarrow> 'x \<Rightarrow> 'addr set"
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and wfx :: "'thread_id \<Rightarrow> 'x \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'md prog"
   +

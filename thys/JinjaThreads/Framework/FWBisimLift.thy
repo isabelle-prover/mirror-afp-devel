@@ -6,7 +6,7 @@ begin
 context FWbisimulation_base begin
 
 inductive init_fin_bisim :: "'t \<Rightarrow> ((status \<times> 'x1) \<times> 'm1, (status \<times> 'x2) \<times> 'm2) bisim"
-  ("_ \<turnstile> _ \<approx>i _"[50,50,50] 60)
+  (\<open>_ \<turnstile> _ \<approx>i _\<close>[50,50,50] 60)
 for t :: 't
 where
   PreStart: "t \<turnstile> (x1, m1) \<approx> (x2, m2) \<Longrightarrow> t \<turnstile> ((PreStart, x1), m1) \<approx>i ((PreStart, x2), m2)"
@@ -15,7 +15,7 @@ where
     "\<lbrakk> t \<turnstile> (x1, m1) \<approx> (x2, m2); final1 x1; final2 x2 \<rbrakk>
     \<Longrightarrow> t \<turnstile> ((Finished, x1), m1) \<approx>i ((Finished, x2), m2)"
 
-definition init_fin_bisim_wait :: "(status \<times> 'x1, status \<times> 'x2) bisim" ("_ \<approx>iw _" [50,50] 60)
+definition init_fin_bisim_wait :: "(status \<times> 'x1, status \<times> 'x2) bisim" (\<open>_ \<approx>iw _\<close> [50,50] 60)
 where 
   "init_fin_bisim_wait = (\<lambda>(status1, x1) (status2, x2). status1 = Running \<and> status2 = Running \<and> x1 \<approx>w x2)"
 

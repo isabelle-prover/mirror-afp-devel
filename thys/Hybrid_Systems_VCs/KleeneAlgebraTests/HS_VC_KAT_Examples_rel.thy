@@ -55,10 +55,10 @@ text \<open> The ODEs @{text "x' t = y t"} and {text "y' t = - x t"} describe th
 a mass attached to a string looked from above. We use @{text "s$1"} to represent the x-coordinate
 and @{text "s$2"} for the y-coordinate. We prove that this motion remains circular. \<close>
 
-abbreviation fpend :: "real^2 \<Rightarrow> real^2" ("f")
+abbreviation fpend :: "real^2 \<Rightarrow> real^2" (\<open>f\<close>)
   where "f s \<equiv> (\<chi> i. if i=1 then s$2 else -s$1)"
 
-abbreviation pend_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>")
+abbreviation pend_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>\<phi>\<close>)
   where "\<phi> \<tau> s \<equiv> (\<chi> i. if i = 1 then s$1 \<cdot> cos \<tau> + s$2 \<cdot> sin \<tau> 
   else - s$1 \<cdot> sin \<tau> + s$2 \<cdot> cos \<tau>)"
 
@@ -83,8 +83,8 @@ lemma local_flow_pend: "local_flow f UNIV UNIV \<phi>"
 lemma pendulum_flow: "\<^bold>{\<lambda>s. r\<^sup>2 = (s $ 1)\<^sup>2 + (s $ 2)\<^sup>2\<^bold>} (x\<acute>=f & G) \<^bold>{\<lambda>s. r\<^sup>2 = (s $ 1)\<^sup>2 + (s $ 2)\<^sup>2\<^bold>}"
   by (subst local_flow.sH_g_ode_subset[OF local_flow_pend], simp_all)
 
-no_notation fpend ("f")
-        and pend_flow ("\<phi>")
+no_notation fpend (\<open>f\<close>)
+        and pend_flow (\<open>\<phi>\<close>)
 
 
 subsubsection \<open> Bouncing Ball \<close>
@@ -96,10 +96,10 @@ flips the velocity. That is, we model it as a completely elastic collision with 
 @{text "s$1"} to represent the ball's height and @{text "s$2"} for its velocity. We prove that the 
 ball remains above ground and below its initial resting position. \<close>
 
-abbreviation fball :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("f") 
+abbreviation fball :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>f\<close>) 
   where "f g s \<equiv> (\<chi> i. if i=1 then s$2 else g)"
 
-abbreviation ball_flow :: "real \<Rightarrow> real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>") 
+abbreviation ball_flow :: "real \<Rightarrow> real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>\<phi>\<close>) 
   where "\<phi> g \<tau> s \<equiv> (\<chi> i. if i=1 then g \<cdot> \<tau> ^ 2/2 + s$2 \<cdot> \<tau> + s$1 else g \<cdot> \<tau> + s$2)"
 
 \<comment> \<open>Verified with differential invariants \<close>
@@ -231,8 +231,8 @@ lemma R_bouncing_ball_dyn:
   apply(refinement; (rule R_bb_assign[OF assms])?)
   using assms by (auto simp: bb_real_arith)
 
-no_notation fball ("f")
-        and ball_flow ("\<phi>")
+no_notation fball (\<open>f\<close>)
+        and ball_flow (\<open>\<phi>\<close>)
 
 
 subsubsection \<open> Thermostat \<close>
@@ -247,16 +247,16 @@ to save temperature measurements. Finally, @{term "4::5"} states whether the hea
 (@{text "s$4 = 1"}) or off (@{text "s$4 = 0"}). We prove that the thermostat keeps the room's 
 temperature between @{text "Tmin"} and @{text "Tmax"}. \<close>
 
-abbreviation therm_vec_field :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("f")
+abbreviation therm_vec_field :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>f\<close>)
   where "f a L s \<equiv> (\<chi> i. if i = 2 then 1 else (if i = 1 then - a * (s$1 - L) else 0))"
 
-abbreviation therm_guard :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("G")
+abbreviation therm_guard :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>G\<close>)
   where "G Tmin Tmax a L s \<equiv> (s$2 \<le> - (ln ((L-(if L=0 then Tmin else Tmax))/(L-s$3)))/a)"
 
-abbreviation therm_loop_inv :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("I")
+abbreviation therm_loop_inv :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>I\<close>)
   where "I Tmin Tmax s \<equiv> Tmin \<le> s$1 \<and> s$1 \<le> Tmax \<and> (s$4 = 0 \<or> s$4 = 1)"
 
-abbreviation therm_flow :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("\<phi>")
+abbreviation therm_flow :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>\<phi>\<close>)
   where "\<phi> a L \<tau> s \<equiv> (\<chi> i. if i = 1 then - exp(-a * \<tau>) * (L - s$1) + L else 
   (if i = 2 then \<tau> + s$2 else s$i))"
 
@@ -438,10 +438,10 @@ lemma R_thermostat_flow:
       (rule R_therm_dyn_down)?, (rule R_therm_dyn_up)?, (rule R_assign_law)?)
   using assms by auto
 
-no_notation therm_vec_field ("f")
-        and therm_flow ("\<phi>")
-        and therm_guard ("G")
-        and therm_loop_inv ("I")
+no_notation therm_vec_field (\<open>f\<close>)
+        and therm_flow (\<open>\<phi>\<close>)
+        and therm_guard (\<open>G\<close>)
+        and therm_loop_inv (\<open>I\<close>)
 
 
 subsubsection \<open> Water tank \<close> \<comment> \<open> Variation of Hespanha and Alur's tank \<close>
@@ -459,20 +459,20 @@ level of water measured by the chronometer, and @{term "4::4"} states whether th
 (@{text "s$4 = 1"}) or off (@{text "s$4 = 0"}). We prove that the controller keeps the level of
 water between @{text "hmin"} and @{text "hmax"}. \<close>
 
-abbreviation tank_vec_field :: "real \<Rightarrow> real^4 \<Rightarrow> real^4" ("f")
+abbreviation tank_vec_field :: "real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>f\<close>)
   where "f k s \<equiv> (\<chi> i. if i = 2 then 1 else (if i = 1 then k else 0))"
 
-abbreviation tank_flow :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("\<phi>")
+abbreviation tank_flow :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>\<phi>\<close>)
   where "\<phi> k \<tau> s \<equiv> (\<chi> i. if i = 1 then k * \<tau> + s$1 else 
   (if i = 2 then \<tau> + s$2 else s$i))"
 
-abbreviation tank_guard :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("G")
+abbreviation tank_guard :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>G\<close>)
   where "G Hm k s \<equiv> s$2 \<le> (Hm - s$3)/k"
 
-abbreviation tank_loop_inv :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("I")
+abbreviation tank_loop_inv :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>I\<close>)
   where "I hmin hmax s \<equiv> hmin \<le> s$1 \<and> s$1 \<le> hmax \<and> (s$4 = 0 \<or> s$4 = 1)"
 
-abbreviation tank_diff_inv :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("dI")
+abbreviation tank_diff_inv :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>dI\<close>)
   where "dI hmin hmax k s \<equiv> s$1 = k \<cdot> s$2 + s$3 \<and> 0 \<le> s$2 \<and> 
     hmin \<le> s$3 \<and> s$3 \<le> hmax \<and> (s$4 =0 \<or> s$4 = 1)"
 
@@ -580,12 +580,12 @@ lemma tank_inv:
 
 \<comment> \<open>Refined with differential invariants \<close>
 
-abbreviation tank_ctrl :: "real \<Rightarrow> real \<Rightarrow> (real^4) rel" ("ctrl")
+abbreviation tank_ctrl :: "real \<Rightarrow> real \<Rightarrow> (real^4) rel" (\<open>ctrl\<close>)
   where "ctrl hmin hmax \<equiv> ((2 ::=(\<lambda>s.0));(3 ::=(\<lambda>s. s$1));
     (IF (\<lambda>s. s$4 = 0 \<and> s$3 \<le> hmin + 1) THEN (4 ::= (\<lambda>s.1)) ELSE 
     (IF (\<lambda>s. s$4 = 1 \<and> s$3 \<ge> hmax - 1) THEN (4 ::= (\<lambda>s.0)) ELSE skip)))"
 
-abbreviation tank_dyn_dinv :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> (real^4) rel" ("dyn")
+abbreviation tank_dyn_dinv :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> (real^4) rel" (\<open>dyn\<close>)
   where "dyn c\<^sub>i c\<^sub>o hmin hmax \<tau> \<equiv> (IF (\<lambda>s. s$4 = 0) THEN 
       (x\<acute>= (\<lambda>t. f (c\<^sub>i-c\<^sub>o)) & G hmax (c\<^sub>i-c\<^sub>o) on (\<lambda>s. {0..\<tau>}) UNIV @ 0 DINV (dI hmin hmax (c\<^sub>i-c\<^sub>o))) 
      ELSE 
@@ -634,10 +634,10 @@ proof-
     by (auto simp: O_assoc)
 qed
 
-no_notation tank_vec_field ("f")
-        and tank_flow ("\<phi>")
-        and tank_guard ("G")
-        and tank_loop_inv ("I")
-        and tank_diff_inv ("dI")
+no_notation tank_vec_field (\<open>f\<close>)
+        and tank_flow (\<open>\<phi>\<close>)
+        and tank_guard (\<open>G\<close>)
+        and tank_loop_inv (\<open>I\<close>)
+        and tank_diff_inv (\<open>dI\<close>)
 
 end

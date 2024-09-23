@@ -8,11 +8,11 @@ begin
 
 declare name_fresh[simp del]
 
-nominal_datatype freeRes = InputR name name              ("_<_>" [110, 110] 110)
-                         | OutputR name name             ("_[_]" [110, 110] 110)
-                         | TauR                          ("\<tau>" 110)
+nominal_datatype freeRes = InputR name name              (\<open>_<_>\<close> [110, 110] 110)
+                         | OutputR name name             (\<open>_[_]\<close> [110, 110] 110)
+                         | TauR                          (\<open>\<tau>\<close> 110)
 
-nominal_datatype residual = BoundOutputR name "\<guillemotleft>name\<guillemotright> pi" ("_<\<nu>_> \<prec> _" [110, 110, 110] 110)
+nominal_datatype residual = BoundOutputR name "\<guillemotleft>name\<guillemotright> pi" (\<open>_<\<nu>_> \<prec> _\<close> [110, 110, 110] 110)
                           | FreeR freeRes pi
 
 lemma alphaBoundOutput:
@@ -35,9 +35,9 @@ qed
 
 declare name_fresh[simp]
 
-abbreviation Transitions_Freejudge ("_ \<prec> _" [80, 80] 80) where "\<alpha> \<prec> P' \<equiv> (FreeR \<alpha> P')"
+abbreviation Transitions_Freejudge (\<open>_ \<prec> _\<close> [80, 80] 80) where "\<alpha> \<prec> P' \<equiv> (FreeR \<alpha> P')"
 
-inductive "TransitionsEarly" :: "pi \<Rightarrow> residual \<Rightarrow> bool" ("_ \<longmapsto> _" [80, 80] 80)
+inductive "TransitionsEarly" :: "pi \<Rightarrow> residual \<Rightarrow> bool" (\<open>_ \<longmapsto> _\<close> [80, 80] 80)
 where
   Tau:               "\<tau>.(P) \<longmapsto> \<tau> \<prec> P"
 | Input:             "\<lbrakk>x \<noteq> a; x \<noteq> u\<rbrakk> \<Longrightarrow> a<x>.P \<longmapsto> a<u> \<prec> (P[x::=u])"

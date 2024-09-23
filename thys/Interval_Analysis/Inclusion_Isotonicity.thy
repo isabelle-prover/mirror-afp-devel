@@ -40,7 +40,7 @@ section\<open>Interval Extension\<close>
 subsection \<open>Textbook Definition of Interval Extension\<close>
 definition\<^marker>\<open>tag important\<close>
   is_interval_extension_of :: \<open>('a::preorder interval \<Rightarrow> 'b::preorder interval) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool\<close>  
-                               (infix "(is'_interval'_extension'_of)" 50)
+                               (infix \<open>(is'_interval'_extension'_of)\<close> 50)
 where 
   \<open>((F is_interval_extension_of f)) = (\<forall> x. (F (interval_of x)) = interval_of (f x))\<close>
 

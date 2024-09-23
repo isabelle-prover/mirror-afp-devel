@@ -1050,15 +1050,15 @@ fun trace_attr_t cid oid =
 
 \<comment> \<open>and others in the future : file, http, thy, ...\<close> 
 
-datatype "typ" = Isabelle_DOF_typ string ("@{typ _}")
-datatype "term" = Isabelle_DOF_term string ("@{term _}")
-datatype "thm" = Isabelle_DOF_thm string ("@{thm _}")
-datatype "file" = Isabelle_DOF_file string ("@{file _}")
-datatype "thy" = Isabelle_DOF_thy string ("@{thy _}")
-consts Isabelle_DOF_docitem      :: "string \<Rightarrow> 'a" ("@{docitem _}")
-datatype "docitem_attr" = Isabelle_DOF_docitem_attr string  string ("@{docitemattr (_) :: (_)}")
-consts Isabelle_DOF_trace_attribute :: "string \<Rightarrow> (string * string) list" ("@{trace'_attribute _}")
-consts Isabelle_DOF_instances_of :: "string \<Rightarrow> 'a list" ("@{instances'_of _}")
+datatype "typ" = Isabelle_DOF_typ string (\<open>@{typ _}\<close>)
+datatype "term" = Isabelle_DOF_term string (\<open>@{term _}\<close>)
+datatype "thm" = Isabelle_DOF_thm string (\<open>@{thm _}\<close>)
+datatype "file" = Isabelle_DOF_file string (\<open>@{file _}\<close>)
+datatype "thy" = Isabelle_DOF_thy string (\<open>@{thy _}\<close>)
+consts Isabelle_DOF_docitem      :: "string \<Rightarrow> 'a" (\<open>@{docitem _}\<close>)
+datatype "docitem_attr" = Isabelle_DOF_docitem_attr string  string (\<open>@{docitemattr (_) :: (_)}\<close>)
+consts Isabelle_DOF_trace_attribute :: "string \<Rightarrow> (string * string) list" (\<open>@{trace'_attribute _}\<close>)
+consts Isabelle_DOF_instances_of :: "string \<Rightarrow> 'a list" (\<open>@{instances'_of _}\<close>)
 
 \<comment> \<open>Dynamic setup of inner syntax cartouche\<close>
 
@@ -1090,7 +1090,7 @@ ML \<open>
   end;
 \<close>
 
-syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> _"  ("_")
+syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> _"  (\<open>_\<close>)
 
 ML\<open>
 structure Cartouche_Grammar = struct

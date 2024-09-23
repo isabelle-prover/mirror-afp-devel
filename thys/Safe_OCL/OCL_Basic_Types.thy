@@ -26,10 +26,10 @@ datatype ('a :: order) basic_type =
 | Integer
 | UnlimitedNatural
 | String
-| ObjectType 'a ("\<langle>_\<rangle>\<^sub>\<T>" [0] 1000)
+| ObjectType 'a (\<open>\<langle>_\<rangle>\<^sub>\<T>\<close> [0] 1000)
 | Enum "'a enum"
 
-inductive basic_subtype (infix "\<sqsubset>\<^sub>B" 65) where
+inductive basic_subtype (infix \<open>\<sqsubset>\<^sub>B\<close> 65) where
   "OclVoid \<sqsubset>\<^sub>B Boolean"
 | "OclVoid \<sqsubset>\<^sub>B UnlimitedNatural"
 | "OclVoid \<sqsubset>\<^sub>B String"
@@ -363,7 +363,7 @@ lemma basic_type_less_right_simps [simp]:
 
 section \<open>Upper Semilattice of Basic Types\<close>
 
-notation sup (infixl "\<squnion>" 65)
+notation sup (infixl \<open>\<squnion>\<close> 65)
 
 instantiation basic_type :: (semilattice_sup) semilattice_sup
 begin

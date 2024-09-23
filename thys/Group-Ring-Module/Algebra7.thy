@@ -21,7 +21,7 @@ chapter "Modules"
 section "Basic properties of Modules"
 
 record ('a, 'b) Module = "'a aGroup" +
-  sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>s\<index>" 76)
+  sprod  :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<cdot>\<^sub>s\<index>\<close> 76)
 
 locale Module = aGroup M for M (structure) +
   fixes R (structure)
@@ -52,7 +52,7 @@ definition
     sprod = \<lambda>a. \<lambda>x\<in>H. sprod M a x\<rparr>" 
 
 abbreviation
-  MODULE  (infixl "module" 58) where
+  MODULE  (infixl \<open>module\<close> 58) where
  "R module M == Module M R"
  
 
@@ -206,7 +206,7 @@ definition
 definition
   mimg :: "[('b, 'm) Ring_scheme, ('a, 'b, 'm1) Module_scheme, 
            ('c, 'b, 'm2) Module_scheme, 'a \<Rightarrow> 'c] \<Rightarrow>  ('c, 'b) Module" 
-                 ("(4mimg\<^bsub>_ _,_\<^esub>/ _)" [88,88,88,89]88) where
+                 (\<open>(4mimg\<^bsub>_ _,_\<^esub>/ _)\<close> [88,88,88,89]88) where
   "mimg\<^bsub>R M,N\<^esub> f = mdl N (f ` (carrier M))"
 
 definition
@@ -472,7 +472,7 @@ definition
 definition
   HOM :: "[('b, 'more) Ring_scheme, ('a, 'b, 'more1) Module_scheme, 
     ('c, 'b, 'more2) Module_scheme] \<Rightarrow> ('a \<Rightarrow> 'c, 'b) Module"   
-    ("(3HOM\<^bsub>_\<^esub> _/ _)" [90, 90, 91] 90) where
+    (\<open>(3HOM\<^bsub>_\<^esub> _/ _)\<close> [90, 90, 91] 90) where
  "HOM\<^bsub>R\<^esub> M N = \<lparr>carrier = mHom R M N, pop = tOp_mHom R M N, 
   mop = iOp_mHom R M N, zero = mzeromap M N,  sprod =sprod_mHom R M N \<rparr>"
 
@@ -769,7 +769,7 @@ definition
   "misomorphic R M N \<longleftrightarrow> (\<exists>f. f \<in> mHom R M N \<and> bijec\<^bsub>M,N\<^esub> f)"
 
 definition
-  mId :: "('a, 'b, 'm1) Module_scheme \<Rightarrow> 'a \<Rightarrow> 'a"   ("(mId\<^bsub>_\<^esub>/ )" [89]88) where
+  mId :: "('a, 'b, 'm1) Module_scheme \<Rightarrow> 'a \<Rightarrow> 'a"   (\<open>(mId\<^bsub>_\<^esub>/ )\<close> [89]88) where
   "mId\<^bsub>M\<^esub> = (\<lambda>m\<in>carrier M. m)"
 
 definition
@@ -777,7 +777,7 @@ definition
   "mcompose M g f = compose (carrier M) g f"
 
 abbreviation
-  MISOM  ("(3_ \<cong>\<^bsub>_\<^esub> _)" [82,82,83]82) where
+  MISOM  (\<open>(3_ \<cong>\<^bsub>_\<^esub> _)\<close> [82,82,83]82) where
   "M \<cong>\<^bsub>R\<^esub> N == misomorphic R M N"
 
 lemma (in Module) minjec_inj:"\<lbrakk>R module N; injec\<^bsub>M,N\<^esub> f\<rbrakk> \<Longrightarrow>
@@ -1239,11 +1239,11 @@ definition
  (* N/H, where N is a submodule *)
 
 abbreviation
-  QMODULE  (infixl "'/'\<^sub>m" 200) where
+  QMODULE  (infixl \<open>'/'\<^sub>m\<close> 200) where
   "M /\<^sub>m H == qmodule M H"
 
 abbreviation
-  SUBMRSET  ("(3_/ \<^sub>s'/'\<^sub>_/ _)" [82,82,83]82) where
+  SUBMRSET  (\<open>(3_/ \<^sub>s'/'\<^sub>_/ _)\<close> [82,82,83]82) where
   "N \<^sub>s/\<^sub>M H == sub_mr_set_cos M H N"
 
 lemma (in Module) qmodule_carr:"submodule R M H \<Longrightarrow>
@@ -1541,7 +1541,7 @@ definition
   "indmhom R M N f = (\<lambda>X\<in> (set_mr_cos M (ker\<^bsub>M,N\<^esub> f)). f ( SOME x. x \<in> X))"
 
 abbreviation
-  INDMHOM  ("(4_\<^sup>\<flat>\<^bsub>_ _, _\<^esub>)" [92,92,92,93]92) where
+  INDMHOM  (\<open>(4_\<^sup>\<flat>\<^bsub>_ _, _\<^esub>)\<close> [92,92,92,93]92) where
   "f\<^sup>\<flat>\<^bsub>R M,N\<^esub> == indmhom R M N f"
 
 
@@ -1920,7 +1920,7 @@ definition
              (* H \<subseteq> N *)
 
 abbreviation
-  MQP  ("(3Mp\<^bsub>_  _,_\<^esub>)" [82,82,83]82) where
+  MQP  (\<open>(3Mp\<^bsub>_  _,_\<^esub>)\<close> [82,82,83]82) where
   "Mp\<^bsub>M H,N\<^esub> == mQmp M H N"
 
  (* "\<lbrakk> R Module M; H \<subseteq> N \<rbrakk> \<Longrightarrow> Mp\<^bsub>M H,N\<^esub> \<in> rHom (M /\<^sub> m H) (M /\<^sub>m N)"  *)
@@ -2420,7 +2420,7 @@ done
 
 definition
   iotam :: "[('a, 'r, 'm) Module_scheme, 'a set, 'a set] \<Rightarrow> ('a \<Rightarrow> 'a)"
-      ("(3\<iota>m\<^bsub>_ _,_\<^esub>)" [82, 82, 83]82) where
+      (\<open>(3\<iota>m\<^bsub>_ _,_\<^esub>)\<close> [82, 82, 83]82) where
   "\<iota>m\<^bsub>M H,K\<^esub> = (\<lambda>x\<in>H. (x \<plusminus>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>))"  (** later we define miota. This is not 
  equal to iotam **) 
 
@@ -3421,7 +3421,7 @@ definition
   "smodule_ideal_coeff R M A = linear_span R M A (carrier M)"
 
 abbreviation
-  SMLIDEALCOEFF  ("(3_/ \<odot>\<^bsub>_\<^esub> _)" [64,64,65]64) where
+  SMLIDEALCOEFF  (\<open>(3_/ \<odot>\<^bsub>_\<^esub> _)\<close> [64,64,65]64) where
   "A \<odot>\<^bsub>R\<^esub> M == smodule_ideal_coeff R M A"
 
 lemma (in Module) smodule_ideal_coeff_is_Submodule:"ideal R A  \<Longrightarrow>
@@ -3447,11 +3447,11 @@ definition
 
 definition
   Annihilator :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme]
-    \<Rightarrow> 'r set" ("(Ann\<^bsub>_\<^esub> _)" [82,83]82) where
+    \<Rightarrow> 'r set" (\<open>(Ann\<^bsub>_\<^esub> _)\<close> [82,83]82) where
   "Ann\<^bsub>R\<^esub> M = quotient_of_submodules R M {\<zero>\<^bsub>M\<^esub>} (carrier M)"
 
 abbreviation
-  QOFSUBMDS  ("(4_ \<^bsub>_\<ddagger>_\<^esub> _)" [82,82,82,83]82) where
+  QOFSUBMDS  (\<open>(4_ \<^bsub>_\<ddagger>_\<^esub> _)\<close> [82,82,82,83]82) where
   "N \<^bsub>R\<ddagger>M\<^esub> P == quotient_of_submodules R M N P"
 
 lemma (in Module) quotient_of_submodules_inc_0:
@@ -3821,7 +3821,7 @@ definition
   "fGOver M R \<longleftrightarrow> (\<exists>H. finite_generator R M H)"
 
 abbreviation
-  FGENOVER  (infixl "fgover" 70) where
+  FGENOVER  (infixl \<open>fgover\<close> 70) where
   "M fgover R == fGOver M R"
 
 lemma (in Module) h_in_linear_span:"\<lbrakk>H \<subseteq> carrier M; h \<in> H\<rbrakk> \<Longrightarrow>

@@ -24,7 +24,7 @@ text \<open>
   not hold.
 \<close>
 
-definition assertion :: "'a \<Rightarrow> 'a" ("_\<^sup>o" [101] 100) where
+definition assertion :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>o\<close> [101] 100) where
   "test p \<Longrightarrow> p\<^sup>o = !p\<cdot>\<top> + 1"
 
 lemma asg: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> q \<le> 1 \<and> 1 \<le> p\<^sup>o"

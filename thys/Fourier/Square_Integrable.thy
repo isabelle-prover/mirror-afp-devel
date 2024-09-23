@@ -6,7 +6,7 @@ begin
 
 subsection\<open>Basic definitions\<close>
 
-definition square_integrable:: "(real \<Rightarrow> real) \<Rightarrow> real set \<Rightarrow> bool" (infixr "square'_integrable" 46)
+definition square_integrable:: "(real \<Rightarrow> real) \<Rightarrow> real set \<Rightarrow> bool" (infixr \<open>square'_integrable\<close> 46)
   where "f square_integrable S \<equiv> S \<in> sets lebesgue \<and> f \<in> borel_measurable (lebesgue_on S) \<and> integrable (lebesgue_on S) (\<lambda>x. f x ^ 2)"
 
 lemma square_integrable_imp_measurable:

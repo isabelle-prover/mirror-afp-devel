@@ -14,7 +14,7 @@ record ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans =
   NatTransMap :: "'o1 \<Rightarrow> 'm2"
 
 abbreviation
-  NatTransApp :: "('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow> 'o1 \<Rightarrow> 'm2" (infixr "$$" 70) where
+  NatTransApp :: "('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow> 'o1 \<Rightarrow> 'm2" (infixr \<open>$$\<close> 70) where
   "NatTransApp \<eta> X \<equiv> (NatTransMap \<eta>) X"
 
 definition  "NTCatDom \<eta> \<equiv> CatDom (NTDom \<eta>)"
@@ -48,7 +48,7 @@ definition MakeNT :: "('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow> ('o1, 
   \<rparr>"
 
 definition 
-  nt_abbrev ("NT _ : _ \<Longrightarrow> _" [81]) where
+  nt_abbrev (\<open>NT _ : _ \<Longrightarrow> _\<close> [81]) where
   "NT f : F \<Longrightarrow> G \<equiv> (NatTrans f) \<and> (NTDom f = F) \<and> (NTCod f = G)"
 
 lemma nt_abbrevE[elim]: "\<lbrakk>NT f : F \<Longrightarrow> G ; \<lbrakk>(NatTrans f) ; (NTDom f = F) ; (NTCod f = G)\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
@@ -86,7 +86,7 @@ qed
 
 definition  
    NTCompDefined :: "('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans 
-                      \<Rightarrow> ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow> bool" (infixl "\<approx>>\<bullet>" 65) where
+                      \<Rightarrow> ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow> bool" (infixl \<open>\<approx>>\<bullet>\<close> 65) where
   "NTCompDefined \<eta>1 \<eta>2 \<equiv> NatTrans \<eta>1 \<and> NatTrans \<eta>2 \<and> NTCatDom \<eta>2 = NTCatDom \<eta>1 \<and> 
                          NTCatCod \<eta>2 = NTCatCod \<eta>1 \<and> NTCod \<eta>1 = NTDom \<eta>2"
 
@@ -198,7 +198,7 @@ by (simp add: IdNatTransNatTrans' IdNatTrans_def MakeNT)
 definition
   NatTransComp' :: "('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow>
                    ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans \<Rightarrow>
-                   ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans" (infixl "\<bullet>1" 75) where
+                   ('o1, 'o2, 'm1, 'm2, 'a, 'b) NatTrans" (infixl \<open>\<bullet>1\<close> 75) where
   "NatTransComp' \<eta>1 \<eta>2 = \<lparr>
       NTDom = NTDom \<eta>1 , 
       NTCod = NTCod \<eta>2 , 
@@ -206,7 +206,7 @@ definition
   \<rparr>"
 
 
-definition NatTransComp (infixl "\<bullet>" 75) where "\<eta>1 \<bullet> \<eta>2 \<equiv> MakeNT(\<eta>1 \<bullet>1 \<eta>2)"
+definition NatTransComp (infixl \<open>\<bullet>\<close> 75) where "\<eta>1 \<bullet> \<eta>2 \<equiv> MakeNT(\<eta>1 \<bullet>1 \<eta>2)"
 
 lemma NatTransComp_Comp1: "\<lbrakk>x \<in> Obj (NTCatDom f) ; f \<approx>>\<bullet> g\<rbrakk> \<Longrightarrow> (f \<bullet> g) $$ x = (f $$ x) ;;\<^bsub>NTCatCod g\<^esub> (g $$ x)"
 by(auto simp add: NatTransComp_def NatTransComp'_def MakeNT_def NTCatCod_def NTCatDom_def)

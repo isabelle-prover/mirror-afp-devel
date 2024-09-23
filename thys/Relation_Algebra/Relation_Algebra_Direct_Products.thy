@@ -77,7 +77,7 @@ by (metis assms dp_aux2 inf.commute)
 
 text \<open>Next we define a function which is an isomorphism on projections.\<close>
 
-definition Phi :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Phi>")
+definition Phi :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<Phi>\<close>)
   where "\<Phi> \<equiv> (\<lambda>w x y z. w ; y\<^sup>\<smile> \<cdot> x ; z\<^sup>\<smile>)"
 
 lemma Phi_conv: "(\<Phi> w x y z)\<^sup>\<smile> = y ; w\<^sup>\<smile> \<cdot> z ; x\<^sup>\<smile>"

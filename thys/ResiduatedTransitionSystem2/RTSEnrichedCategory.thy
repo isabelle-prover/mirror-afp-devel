@@ -190,12 +190,12 @@ section "RTS-Enriched Categories induce RTS-Categories"
   and Comp :: "'O \<Rightarrow> 'O \<Rightarrow> 'O \<Rightarrow> 'A rtscatx.arr"
   begin
 
-    notation RTS.in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation RTS.prod      (infixr "\<otimes>" 51)
-    notation RTS.one       ("\<one>")
-    notation RTS.assoc     ("\<a>[_, _, _]")
-    notation RTS.lunit     ("\<l>[_]")
-    notation RTS.runit     ("\<r>[_]")
+    notation RTS.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation RTS.prod      (infixr \<open>\<otimes>\<close> 51)
+    notation RTS.one       (\<open>\<one>\<close>)
+    notation RTS.assoc     (\<open>\<a>[_, _, _]\<close>)
+    notation RTS.lunit     (\<open>\<l>[_]\<close>)
+    notation RTS.runit     (\<open>\<r>[_]\<close>)
 
     text\<open>
       Here we define the ``global RTS'', obtained as the disjoint union of all the
@@ -237,7 +237,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
       each of the hom-RTS's.
     \<close>
 
-    fun resid  (infix "\\" 70)
+    fun resid  (infix \<open>\\<close> 70)
     where "resid Null u = Null"
         | "resid t Null = Null"
         | "resid t u = (if Con t u
@@ -334,7 +334,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
       qed
     qed
 
-    notation V.con  (infix "\<frown>" 50)
+    notation V.con  (infix \<open>\<frown>\<close> 50)
 
     lemma con_char:
     shows "t \<frown> u \<longleftrightarrow> Con t u"
@@ -569,7 +569,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
       before the composition operation can be applied.
     \<close>
 
-    definition hcomp  (infixr "\<star>" 53)
+    definition hcomp  (infixr \<open>\<star>\<close> 53)
     where "t \<star> u \<equiv>
            if V.arr t \<and> V.arr u \<and> Dom t = Cod u
            then MkArr (Dom u) (Cod t)
@@ -2017,7 +2017,7 @@ subsection "The Small Case"
        the isomorphisms @{term UP} and @{term DN}.
      \<close>
 
-     abbreviation hcomp' :: "'A resid"  (infixr "\<star>\<acute>" 53)
+     abbreviation hcomp' :: "'A resid"  (infixr \<open>\<star>\<acute>\<close> 53)
      where "t \<star>\<acute> u \<equiv> DN (UP t \<star> UP u)"
 
      interpretation H': Category.partial_magma hcomp'
@@ -2822,24 +2822,24 @@ section "RTS-Categories induce RTS-Enriched Categories"
     universe arr_type +
     locally_small_rts_category resid hcomp
   for arr_type :: "'A itself"
-  and resid :: "'A resid"  (infix "\\" 70)
-  and hcomp :: "'A comp"   (infixr "\<star>" 53)
+  and resid :: "'A resid"  (infix \<open>\\<close> 70)
+  and hcomp :: "'A comp"   (infixr \<open>\<star>\<close> 53)
   begin
 
     sublocale RTS: rtscat arr_type ..
 
     (* TODO: The composition in RTS is more important here than composition of transitions. *)
-    no_notation V.comp       (infixr "\<cdot>" 55)
-    no_notation H.in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    no_notation RTS.prod     (infixr "\<otimes>" 51)
+    no_notation V.comp       (infixr \<open>\<cdot>\<close> 55)
+    no_notation H.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    no_notation RTS.prod     (infixr \<open>\<otimes>\<close> 51)
 
     (* TODO: Why isn't other notation inherited from rtscat? *)
-    notation RTS.in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation RTS.CMC.tensor    (infixr "\<otimes>" 51)
-    notation RTS.CMC.unity     ("\<one>")
-    notation RTS.CMC.assoc     ("\<a>[_, _, _]")
-    notation RTS.CMC.lunit     ("\<l>[_]")
-    notation RTS.CMC.runit     ("\<r>[_]")
+    notation RTS.in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation RTS.CMC.tensor    (infixr \<open>\<otimes>\<close> 51)
+    notation RTS.CMC.unity     (\<open>\<one>\<close>)
+    notation RTS.CMC.assoc     (\<open>\<a>[_, _, _]\<close>)
+    notation RTS.CMC.lunit     (\<open>\<l>[_]\<close>)
+    notation RTS.CMC.runit     (\<open>\<r>[_]\<close>)
 
     abbreviation Obj
     where "Obj \<equiv> Collect H.ide"
@@ -3895,10 +3895,10 @@ subsection "Functoriality"
     B: locally_small_rts_category resid\<^sub>B comp\<^sub>B +
     F: rts_functor resid\<^sub>A comp\<^sub>A resid\<^sub>B comp\<^sub>B F
   for arr_type :: "'A itself"
-  and resid\<^sub>A :: "'A resid"  (infix "\\\<^sub>A" 70)
-  and comp\<^sub>A :: "'A comp"    (infixr "\<star>\<^sub>A" 53)
-  and resid\<^sub>B :: "'A resid"  (infix "\\\<^sub>B" 70)
-  and comp\<^sub>B :: "'A comp"    (infixr "\<star>\<^sub>B" 53)
+  and resid\<^sub>A :: "'A resid"  (infix \<open>\\<^sub>A\<close> 70)
+  and comp\<^sub>A :: "'A comp"    (infixr \<open>\<star>\<^sub>A\<close> 53)
+  and resid\<^sub>B :: "'A resid"  (infix \<open>\\<^sub>B\<close> 70)
+  and comp\<^sub>B :: "'A comp"    (infixr \<open>\<star>\<^sub>B\<close> 53)
   and F :: "'A \<Rightarrow> 'A"
   begin
 
@@ -4406,7 +4406,7 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
     interpretation RC: rts_category_of_enriched_category arr_type
                          Obj Hom Id Comp ..
 
-    no_notation RTS.prod     (infixr "\<otimes>" 51)
+    no_notation RTS.prod     (infixr \<open>\<otimes>\<close> 51)
 
     interpretation Trn: simulation RC.resid resid
                          \<open>\<lambda>t. if RC.arr t then RC.Trn t else null\<close>

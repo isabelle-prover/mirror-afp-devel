@@ -11,28 +11,28 @@ begin
 
 datatype (dead 'a, dead 'b, dead 'addr) exp
   = new cname      \<comment> \<open>class instance creation\<close>
-  | newArray ty "('a,'b,'addr) exp" ("newA _\<lfloor>_\<rceil>" [99,0] 90)    \<comment> \<open>array instance creation: type, size in outermost dimension\<close>
+  | newArray ty "('a,'b,'addr) exp" (\<open>newA _\<lfloor>_\<rceil>\<close> [99,0] 90)    \<comment> \<open>array instance creation: type, size in outermost dimension\<close>
   | Cast ty "('a,'b,'addr) exp"      \<comment> \<open>type cast\<close>
-  | InstanceOf "('a,'b,'addr) exp" ty ("_ instanceof _" [99, 99] 90) \<comment> \<open>instance of\<close>
+  | InstanceOf "('a,'b,'addr) exp" ty (\<open>_ instanceof _\<close> [99, 99] 90) \<comment> \<open>instance of\<close>
   | Val "'addr val"      \<comment> \<open>value\<close>
-  | BinOp "('a,'b,'addr) exp" bop "('a,'b,'addr) exp"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      \<comment> \<open>binary operation\<close>
+  | BinOp "('a,'b,'addr) exp" bop "('a,'b,'addr) exp"     (\<open>_ \<guillemotleft>_\<guillemotright> _\<close> [80,0,81] 80)      \<comment> \<open>binary operation\<close>
   | Var 'a                                               \<comment> \<open>local variable (incl. parameter)\<close>
-  | LAss 'a "('a,'b,'addr) exp"            ("_:=_" [90,90]90)                    \<comment> \<open>local assignment\<close>
-  | AAcc "('a,'b,'addr) exp" "('a,'b,'addr) exp"            ("_\<lfloor>_\<rceil>" [99,0] 90)          \<comment> \<open>array cell read\<close>
-  | AAss "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<lfloor>_\<rceil> := _" [10,99,90] 90)    \<comment> \<open>array cell assignment\<close>
-  | ALen "('a,'b,'addr) exp"                 ("_\<bullet>length" [10] 90)          \<comment> \<open>array length\<close>
-  | FAcc "('a,'b,'addr) exp" vname cname     ("_\<bullet>_{_}" [10,90,99]90)       \<comment> \<open>field access\<close>
-  | FAss "('a,'b,'addr) exp" vname cname "('a,'b,'addr) exp"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      \<comment> \<open>field assignment\<close>
-  | CompareAndSwap "('a,'b,'addr) exp" cname vname "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("_\<bullet>compareAndSwap('(_\<bullet>_, _, _'))" [10,90,90,90,90] 90) \<comment> \<open>compare and swap\<close>
-  | Call "('a,'b,'addr) exp" mname "('a,'b,'addr) exp list"     ("_\<bullet>_'(_')" [90,99,0] 90)            \<comment> \<open>method call\<close>
-  | Block 'a ty "'addr val option" "('a,'b,'addr) exp"    ("'{_:_=_; _}")
-  | Synchronized 'b "('a,'b,'addr) exp" "('a,'b,'addr) exp" ("sync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
-  | InSynchronized 'b 'addr "('a,'b,'addr) exp" ("insync\<^bsub>_\<^esub> '(_') _" [99,99,90] 90)
-  | Seq "('a,'b,'addr) exp" "('a,'b,'addr) exp"     ("_;;/ _"             [61,60]60)
-  | Cond "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp"     ("if '(_') _/ else _" [80,79,79]70)
-  | While "('a,'b,'addr) exp" "('a,'b,'addr) exp"     ("while '(_') _"     [80,79]70)
+  | LAss 'a "('a,'b,'addr) exp"            (\<open>_:=_\<close> [90,90]90)                    \<comment> \<open>local assignment\<close>
+  | AAcc "('a,'b,'addr) exp" "('a,'b,'addr) exp"            (\<open>_\<lfloor>_\<rceil>\<close> [99,0] 90)          \<comment> \<open>array cell read\<close>
+  | AAss "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp" (\<open>_\<lfloor>_\<rceil> := _\<close> [10,99,90] 90)    \<comment> \<open>array cell assignment\<close>
+  | ALen "('a,'b,'addr) exp"                 (\<open>_\<bullet>length\<close> [10] 90)          \<comment> \<open>array length\<close>
+  | FAcc "('a,'b,'addr) exp" vname cname     (\<open>_\<bullet>_{_}\<close> [10,90,99]90)       \<comment> \<open>field access\<close>
+  | FAss "('a,'b,'addr) exp" vname cname "('a,'b,'addr) exp"     (\<open>_\<bullet>_{_} := _\<close> [10,90,99,90]90)      \<comment> \<open>field assignment\<close>
+  | CompareAndSwap "('a,'b,'addr) exp" cname vname "('a,'b,'addr) exp" "('a,'b,'addr) exp" (\<open>_\<bullet>compareAndSwap('(_\<bullet>_, _, _'))\<close> [10,90,90,90,90] 90) \<comment> \<open>compare and swap\<close>
+  | Call "('a,'b,'addr) exp" mname "('a,'b,'addr) exp list"     (\<open>_\<bullet>_'(_')\<close> [90,99,0] 90)            \<comment> \<open>method call\<close>
+  | Block 'a ty "'addr val option" "('a,'b,'addr) exp"    (\<open>'{_:_=_; _}\<close>)
+  | Synchronized 'b "('a,'b,'addr) exp" "('a,'b,'addr) exp" (\<open>sync\<^bsub>_\<^esub> '(_') _\<close> [99,99,90] 90)
+  | InSynchronized 'b 'addr "('a,'b,'addr) exp" (\<open>insync\<^bsub>_\<^esub> '(_') _\<close> [99,99,90] 90)
+  | Seq "('a,'b,'addr) exp" "('a,'b,'addr) exp"     (\<open>_;;/ _\<close>             [61,60]60)
+  | Cond "('a,'b,'addr) exp" "('a,'b,'addr) exp" "('a,'b,'addr) exp"     (\<open>if '(_') _/ else _\<close> [80,79,79]70)
+  | While "('a,'b,'addr) exp" "('a,'b,'addr) exp"     (\<open>while '(_') _\<close>     [80,79]70)
   | throw "('a,'b,'addr) exp"
-  | TryCatch "('a,'b,'addr) exp" cname 'a "('a,'b,'addr) exp"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
+  | TryCatch "('a,'b,'addr) exp" cname 'a "('a,'b,'addr) exp"     (\<open>try _/ catch'(_ _') _\<close>  [0,99,80,79] 70)
 
 type_synonym
   'addr expr = "(vname, unit, 'addr) exp"    \<comment> \<open>Jinja expression\<close>
@@ -68,88 +68,88 @@ where "Throw a == throw (Val (Addr a))"
 abbreviation (in heap_base) THROW :: "cname \<Rightarrow> ('a,'b,'addr) exp"
 where "THROW xc == Throw (addr_of_sys_xcpt xc)"
 
-abbreviation sync_unit_syntax :: "('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" ("sync'(_') _" [99,90] 90)
+abbreviation sync_unit_syntax :: "('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" (\<open>sync'(_') _\<close> [99,90] 90)
 where "sync(e1) e2 \<equiv> sync\<^bsub>()\<^esub> (e1) e2"
 
-abbreviation insync_unit_syntax :: "'addr \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" ("insync'(_') _" [99,90] 90)
+abbreviation insync_unit_syntax :: "'addr \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" (\<open>insync'(_') _\<close> [99,90] 90)
 where "insync(a) e2 \<equiv> insync\<^bsub>()\<^esub> (a) e2"
 
 text \<open>Java syntax for binary operators\<close>
 
 abbreviation BinOp_Eq :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-  ("_ \<guillemotleft>==\<guillemotright> _" [80,81] 80)
+  (\<open>_ \<guillemotleft>==\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>==\<guillemotright> e' \<equiv> e \<guillemotleft>Eq\<guillemotright> e'"
 
 abbreviation BinOp_NotEq :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>!=\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>!=\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>!=\<guillemotright> e' \<equiv> e \<guillemotleft>NotEq\<guillemotright> e'"
 
 abbreviation BinOp_LessThan :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft><\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft><\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft><\<guillemotright> e' \<equiv> e \<guillemotleft>LessThan\<guillemotright> e'"
 
 abbreviation BinOp_LessOrEqual :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft><=\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft><=\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft><=\<guillemotright> e' \<equiv> e \<guillemotleft>LessOrEqual\<guillemotright> e'"
 
 abbreviation BinOp_GreaterThan :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>>\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>>\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>>\<guillemotright> e' \<equiv> e \<guillemotleft>GreaterThan\<guillemotright> e'"
 
 abbreviation BinOp_GreaterOrEqual :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>>=\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>>=\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>>=\<guillemotright> e' \<equiv> e \<guillemotleft>GreaterOrEqual\<guillemotright> e'"
 
 abbreviation BinOp_Add :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>+\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>+\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>+\<guillemotright> e' \<equiv> e \<guillemotleft>Add\<guillemotright> e'"
 
 abbreviation BinOp_Subtract :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>-\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>-\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>-\<guillemotright> e' \<equiv> e \<guillemotleft>Subtract\<guillemotright> e'"
 
 abbreviation BinOp_Mult :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>*\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>*\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>*\<guillemotright> e' \<equiv> e \<guillemotleft>Mult\<guillemotright> e'"
 
 abbreviation BinOp_Div :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>'/\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>'/\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>/\<guillemotright> e' \<equiv> e \<guillemotleft>Div\<guillemotright> e'"
 
 abbreviation BinOp_Mod :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>%\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>%\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>%\<guillemotright> e' \<equiv> e \<guillemotleft>Mod\<guillemotright> e'"
 
 abbreviation BinOp_BinAnd :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>&\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>&\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>&\<guillemotright> e' \<equiv> e \<guillemotleft>BinAnd\<guillemotright> e'"
 
 abbreviation BinOp_BinOr :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>|\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>|\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>|\<guillemotright> e' \<equiv> e \<guillemotleft>BinOr\<guillemotright> e'"
 
 abbreviation BinOp_BinXor :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>^\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>^\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>^\<guillemotright> e' \<equiv> e \<guillemotleft>BinXor\<guillemotright> e'"
 
 abbreviation BinOp_ShiftLeft :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft><<\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft><<\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft><<\<guillemotright> e' \<equiv> e \<guillemotleft>ShiftLeft\<guillemotright> e'"
 
 abbreviation BinOp_ShiftRightZeros :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>>>>\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>>>>\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>>>>\<guillemotright> e' \<equiv> e \<guillemotleft>ShiftRightZeros\<guillemotright> e'"
 
 abbreviation BinOp_ShiftRightSigned :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>>>\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>>>\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>>>\<guillemotright> e' \<equiv> e \<guillemotleft>ShiftRightSigned\<guillemotright> e'"
 
 abbreviation BinOp_CondAnd :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>&&\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>&&\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>&&\<guillemotright> e' \<equiv> if (e) e' else false"
 
 abbreviation BinOp_CondOr :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
-   ("_ \<guillemotleft>||\<guillemotright> _" [80,81] 80)
+   (\<open>_ \<guillemotleft>||\<guillemotright> _\<close> [80,81] 80)
 where "e \<guillemotleft>||\<guillemotright> e' \<equiv> if (e) true else e'"
 
 lemma inj_Val [simp]: "inj Val"

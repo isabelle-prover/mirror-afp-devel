@@ -956,7 +956,7 @@ lemmas leibniz_rule'_higher_interval = leibniz_rule'_higher[where 'b="_::ordered
 subsection \<open>Smoothness\<close>
 
 definition k_smooth_on :: "enat \<Rightarrow>'a::real_normed_vector set \<Rightarrow> ('a \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> bool"
-  ("_-smooth'_on" [1000]) where
+  (\<open>_-smooth'_on\<close> [1000]) where
  smooth_on_def: "k-smooth_on S f = (\<forall>n\<le>k. higher_differentiable_on S f n)"
 
 abbreviation "smooth_on S f \<equiv> \<infinity>-smooth_on S f"

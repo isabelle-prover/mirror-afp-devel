@@ -1728,7 +1728,7 @@ lemma neg_unique:
   "are_complementary x y \<Longrightarrow> are_complementary x z \<Longrightarrow> y = z"
   by (metis order.antisym il_inf_left_unit il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone_var)
 
-definition neg :: "'a \<Rightarrow> 'a" ("!")
+definition neg :: "'a \<Rightarrow> 'a" (\<open>!\<close>)
   where "!x \<equiv> THE y . are_complementary x y"
 
 lemma neg_char:

@@ -33,7 +33,7 @@ text \<open>
 The function \<open>\<A>\<close> evaluates a syntactic value into a semantic datum. Constants and primitive operations are left untouched. Variable references are resolved in two stages: First the current binding contour is fetched from the binding environment \<open>\<beta>\<close>, then the stored value is fetched from the variable environment \<open>ve\<close>. A lambda expression is bundled with the current contour environment to form a closure.
 \<close>
 
-fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" ("\<A>")
+fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" (\<open>\<A>\<close>)
   where "\<A> (C _ i) \<beta> ve = DI i"
   |     "\<A> (P prim) \<beta> ve = DP prim"
   |     "\<A> (R _ var) \<beta> ve =
@@ -93,8 +93,8 @@ type_synonym fstate = "(d \<times> d list \<times> venv \<times> contour)"
 type_synonym cstate = "(call \<times> benv \<times> venv \<times> contour)"
 
 
-fixrec   evalF :: "fstate discr \<rightarrow> ans" ("\<F>")
-     and evalC :: "cstate discr \<rightarrow> ans" ("\<C>")
+fixrec   evalF :: "fstate discr \<rightarrow> ans" (\<open>\<F>\<close>)
+     and evalC :: "cstate discr \<rightarrow> ans" (\<open>\<C>\<close>)
   where "evalF\<cdot>fstate = (case undiscr fstate of
              (DC (Lambda lab vs c, \<beta>), as, ve, b) \<Rightarrow>
                (if length vs = length as
@@ -134,7 +134,7 @@ text \<open>
 To evaluate a full program, it is passed to \<open>\<F>\<close> with proper initializations of the other arguments. We test our semantics function against two example programs and observe that the expected value is returned. 
 \<close>
 
-definition evalCPS :: "prog \<Rightarrow> ans" ("\<PR>")
+definition evalCPS :: "prog \<Rightarrow> ans" (\<open>\<PR>\<close>)
   where "\<PR> l = (let ve = Map.empty;
                           \<beta> = Map.empty;
                           f = \<A> (L l) \<beta> ve

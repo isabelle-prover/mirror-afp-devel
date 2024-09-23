@@ -24,7 +24,7 @@ lemma Suc_add_max_le[simp]:
   "(Suc(n + max i j) \<le> m) = (Suc(n + i) \<le> m \<and> Suc(n + j) \<le> m)"
 by arith
 
-notation Some  ("(\<lfloor>_\<rfloor>)")
+notation Some  (\<open>(\<lfloor>_\<rfloor>)\<close>)
 
 lemma butlast_tail:
   "butlast (Xs@[X,Y]) = Xs@[X]"

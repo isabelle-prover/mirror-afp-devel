@@ -8,7 +8,7 @@ theory Quadratic_Forms
   imports Complex_Main Low_Dimensional_Linear_Algebra
 begin
 
-consts qf_app :: "'a \<Rightarrow> 'b \<Rightarrow> int" (infixl "$$" 65)
+consts qf_app :: "'a \<Rightarrow> 'b \<Rightarrow> int" (infixl \<open>$$\<close> 65)
 
 definition qf2_app :: "mat2 \<Rightarrow> vec2 \<Rightarrow> int" where
 "qf2_app m v = <v | m $ v>"
@@ -56,7 +56,7 @@ lemma qf3_positive_definite_positive:
   using assms unfolding qf3_positive_definite_def
   by (metis order_less_le order_refl qf3_app_zero)
 
-consts qf_action :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>" 55)
+consts qf_action :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<cdot>\<close> 55)
 
 definition qf2_action :: "mat2 \<Rightarrow> mat2 \<Rightarrow> mat2" where
 "qf2_action a u = u\<^sup>T * a * u"
@@ -92,7 +92,7 @@ lemma qf3_action_mul [simp]:
   unfolding qf3_action_def
   by (simp add: algebra_simps)
 
-consts qf_equiv :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "~" 65)
+consts qf_equiv :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>~\<close> 65)
 
 definition qf2_equiv :: "mat2 \<Rightarrow> mat2 \<Rightarrow> bool" where
 "qf2_equiv a b = (\<exists>u. mat_det u = 1 \<and> a \<cdot> u = b)"

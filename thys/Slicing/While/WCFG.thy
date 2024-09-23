@@ -4,11 +4,11 @@ theory WCFG imports Com "../Basic/BasicDefs" begin
 
 subsection\<open>CFG nodes\<close>
 
-datatype w_node = Node nat ("'('_ _ '_')")
-  | Entry ("'('_Entry'_')")
-  | Exit ("'('_Exit'_')") 
+datatype w_node = Node nat (\<open>'('_ _ '_')\<close>)
+  | Entry (\<open>'('_Entry'_')\<close>)
+  | Exit (\<open>'('_Exit'_')\<close>) 
 
-fun label_incr :: "w_node \<Rightarrow> nat \<Rightarrow> w_node" ("_ \<oplus> _" 60)
+fun label_incr :: "w_node \<Rightarrow> nat \<Rightarrow> w_node" (\<open>_ \<oplus> _\<close> 60)
 where "(_ l _) \<oplus> i = (_ l + i _)"
   | "(_Entry_) \<oplus> i = (_Entry_)"
   | "(_Exit_) \<oplus> i  = (_Exit_)"
@@ -56,7 +56,7 @@ subsection\<open>CFG edges\<close>
 type_synonym w_edge = "(w_node \<times> state edge_kind \<times> w_node)"
 
 inductive While_CFG :: "cmd \<Rightarrow> w_node \<Rightarrow> state edge_kind \<Rightarrow> w_node \<Rightarrow> bool"
-  ("_ \<turnstile> _ -_\<rightarrow> _")
+  (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close>)
 where
 
 WCFG_Entry_Exit:

@@ -11,7 +11,7 @@ primrec subst where
 "subst A F (G \<^bold>\<rightarrow> H) = (subst A F G \<^bold>\<rightarrow> subst A F H)" |
 "subst A F (\<^bold>\<not> H) = (\<^bold>\<not> (subst A F H))"
 term subst
-abbreviation subst_syntax ("(_[/(_/'//_)])" [70,70] 69) where
+abbreviation subst_syntax (\<open>(_[/(_/'//_)])\<close> [70,70] 69) where
 "A[B / C] \<equiv> subst C B A"
 
 lemma no_subst[simp]: "k \<notin> atoms F \<Longrightarrow> F[G / k] = F" by(induction F; simp)

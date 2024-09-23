@@ -134,11 +134,11 @@ end
 
 locale subgroup_of_additive_abelian_group = 
   subgroup_of_abelian_group H G "(\<oplus>)" \<zero> + additive_abelian_group G "(\<oplus>)" \<zero> 
-  for H G and addition (infixl "\<oplus>" 65)  and zero ("\<zero>")
+  for H G and addition (infixl \<open>\<oplus>\<close> 65)  and zero (\<open>\<zero>\<close>)
 
 begin 
 
-notation Left_Coset  (infixl "\<cdot>|" 70)
+notation Left_Coset  (infixl \<open>\<cdot>|\<close> 70)
 
 lemma Left_Coset_eq_sumset:
   assumes "x \<in> G"

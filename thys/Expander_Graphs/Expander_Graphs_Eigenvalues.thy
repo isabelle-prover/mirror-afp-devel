@@ -24,8 +24,8 @@ hide_fact Matrix_Legacy.mat_def
 hide_fact Matrix.vec_eq_iff
 hide_fact Matrix.mat_def
 hide_fact Matrix.row_def
-no_notation Matrix.scalar_prod  (infix "\<bullet>" 70)
-no_notation Ordered_Semiring.max ("Max\<index>")
+no_notation Matrix.scalar_prod  (infix \<open>\<bullet>\<close> 70)
+no_notation Ordered_Semiring.max (\<open>Max\<index>\<close>)
 
 lemma mult_right_mono': "y \<ge> (0::real) \<Longrightarrow> x \<le> z \<or> y = 0 \<Longrightarrow> x * y \<le> z * y"
   by (metis mult_cancel_right mult_right_mono)

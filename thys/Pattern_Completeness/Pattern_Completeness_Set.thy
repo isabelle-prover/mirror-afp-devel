@@ -100,7 +100,7 @@ The formal inference rules further separate those rules that deliver a bottom- o
 the ones that deliver a transformed problem.\<close>
 
 inductive mp_step :: "('f,'v,'s)match_problem_set \<Rightarrow> ('f,'v,'s)match_problem_set \<Rightarrow> bool"
-(infix "\<rightarrow>\<^sub>s" 50) where
+(infix \<open>\<rightarrow>\<^sub>s\<close> 50) where
   mp_decompose: "length ts = length ls \<Longrightarrow> insert (Fun f ts, Fun f ls) mp \<rightarrow>\<^sub>s set (zip ts ls) \<union> mp"
 | mp_match: "x \<notin> \<Union> (vars ` snd ` mp) \<Longrightarrow> insert (t, Var x) mp \<rightarrow>\<^sub>s mp" 
 | mp_identity: "mp \<rightarrow>\<^sub>s mp"
@@ -110,7 +110,7 @@ inductive mp_fail :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
 | mp_clash': "Conflict_Clash s t \<Longrightarrow> mp_fail ({(s,Var x),(t, Var x)} \<union> mp)"
 
 inductive pp_step :: "('f,'v,'s)pat_problem_set \<Rightarrow> ('f,'v,'s)pat_problem_set \<Rightarrow> bool"
-(infix "\<Rightarrow>\<^sub>s" 50) where
+(infix \<open>\<Rightarrow>\<^sub>s\<close> 50) where
   pp_simp_mp: "mp \<rightarrow>\<^sub>s mp' \<Longrightarrow> insert mp pp \<Rightarrow>\<^sub>s insert mp' pp" 
 | pp_remove_mp: "mp_fail mp \<Longrightarrow> insert mp pp \<Rightarrow>\<^sub>s pp"
 
@@ -118,7 +118,7 @@ inductive pp_success :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
   "pp_success (insert {} pp)" 
 
 inductive P_step_set :: "('f,'v,'s)pats_problem_set \<Rightarrow> ('f,'v,'s)pats_problem_set \<Rightarrow> bool"
-(infix "\<Rrightarrow>\<^sub>s" 50) where
+(infix \<open>\<Rrightarrow>\<^sub>s\<close> 50) where
   P_fail: "insert {} P \<Rrightarrow>\<^sub>s bottom"
 | P_simp: "pp \<Rightarrow>\<^sub>s pp' \<Longrightarrow> insert pp P \<Rrightarrow>\<^sub>s insert pp' P"
 | P_remove_pp: "pp_success pp \<Longrightarrow> insert pp P \<Rrightarrow>\<^sub>s P"

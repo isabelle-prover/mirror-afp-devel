@@ -16,16 +16,16 @@ text\<open>  We show here that God's necessary existence follows from its possib
 
 subsubsection \<open>General Definitions\<close>
   
-abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" ("E!") where
+abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" (\<open>E!\<close>) where
   "E! x  \<equiv> (\<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w)" 
   
-consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>")
+consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" (\<open>\<P>\<close>)
   
-abbreviation God::"\<up>\<langle>\<zero>\<rangle>" ("G") where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> Y x)"
-abbreviation God_star::"\<up>\<langle>\<zero>\<rangle>" ("G*") where
+abbreviation God::"\<up>\<langle>\<zero>\<rangle>" (\<open>G\<close>) where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> Y x)"
+abbreviation God_star::"\<up>\<langle>\<zero>\<rangle>" (\<open>G*\<close>) where
   "G* \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<leftrightarrow> Y x)"
   
-abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix "\<Rrightarrow>" 60) where 
+abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix \<open>\<Rrightarrow>\<close> 60) where 
   "X \<Rrightarrow> Y \<equiv>  \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ez. X z \<^bold>\<rightarrow> Y z)"
 
 subsubsection \<open>Results from Part I\<close> 
@@ -69,9 +69,9 @@ subsubsection \<open>Theorems\<close>
 text\<open>  Remark: Essence is defined here (and in Fitting's variant) in the version of Scott; G\"odel's original version leads to the inconsistency
  reported in \<^cite>\<open>C55 and C60\<close> \<close>
 
-abbreviation essenceOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" ("\<E>") where
+abbreviation essenceOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" (\<open>\<E>\<close>) where
   "\<E> Y x \<equiv> (Y x) \<^bold>\<and> (\<^bold>\<forall>Z. Z x \<^bold>\<rightarrow> Y \<Rrightarrow> Z)"   
-abbreviation beingIdenticalTo::"\<zero>\<Rightarrow>\<up>\<langle>\<zero>\<rangle>" ("id") where
+abbreviation beingIdenticalTo::"\<zero>\<Rightarrow>\<up>\<langle>\<zero>\<rangle>" (\<open>id\<close>) where
   "id x  \<equiv> (\<lambda>y. y\<^bold>\<approx>x)"  \<comment> \<open>note that \emph{id} is a rigid predicate\<close>  
 
 text\<open>  Theorem 11.20 - Informal Proposition 5  \<close>
@@ -124,7 +124,7 @@ proof (rule ccontr)
 qed
 
 text\<open>  Definition 11.24 - Necessary Existence (Informal Definition 6):  \<close>  
-abbreviation necessaryExistencePred::"\<up>\<langle>\<zero>\<rangle>" ("NE") 
+abbreviation necessaryExistencePred::"\<up>\<langle>\<zero>\<rangle>" (\<open>NE\<close>) 
   where "NE x  \<equiv> (\<lambda>w. (\<^bold>\<forall>Y.  \<E> Y x \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<exists>\<^sup>E Y) w)"
 
 text\<open>  Axiom 11.25 (Informal Axiom 5) \<close>

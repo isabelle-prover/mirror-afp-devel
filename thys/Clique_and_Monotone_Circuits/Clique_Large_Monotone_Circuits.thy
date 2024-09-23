@@ -7,23 +7,23 @@ theory Clique_Large_Monotone_Circuits
 begin
 
 text \<open>disable list-syntax\<close>
-no_syntax "_list" :: "list_args \<Rightarrow> 'a list" ("[(_)]")
-no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" ("[(_)]")
+no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>)
+no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" (\<open>[(_)]\<close>)
 
 hide_const (open) Sigma_Algebra.measure
 
 subsection \<open>Plain Graphs\<close>
 
-definition binprod :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set" (infixl "\<cdot>" 60) where
+definition binprod :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set" (infixl \<open>\<cdot>\<close> 60) where
   "X \<cdot> Y = {{x,y} | x y. x \<in> X \<and> y \<in> Y \<and> x \<noteq> y}"
 
-abbreviation sameprod :: "'a set \<Rightarrow> 'a set set" ("(_)^\<two>") where
+abbreviation sameprod :: "'a set \<Rightarrow> 'a set set" (\<open>(_)^\<two>\<close>) where
   "X^\<two> \<equiv> X \<cdot> X" 
 
 lemma sameprod_altdef: "X^\<two> = {Y. Y \<subseteq> X \<and> card Y = 2}" 
   unfolding binprod_def by (auto simp: card_2_iff)
 
-definition numbers :: "nat \<Rightarrow> nat set" ("[(_)]") where
+definition numbers :: "nat \<Rightarrow> nat set" (\<open>[(_)]\<close>) where
   "[n] \<equiv> {..<n}" 
 
 lemma card_sameprod: "finite X \<Longrightarrow> card (X^\<two>) = card X choose 2" 
@@ -311,7 +311,7 @@ qed
 
 subsection \<open>Basic operations on sets of graphs\<close>
 
-definition odot :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl "\<odot>" 65) where 
+definition odot :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl \<open>\<odot>\<close> 65) where 
   "X \<odot> Y = { D \<union> E | D E. D \<in> X \<and> E \<in> Y}" 
 
 lemma union_\<G>[intro]: "G \<in> \<G> \<Longrightarrow> H \<in> \<G> \<Longrightarrow> G \<union> H \<in> \<G>" 
@@ -324,7 +324,7 @@ subsection \<open>Acceptability\<close>
 
 text \<open>Definition 2\<close>
 
-definition accepts :: "graph set \<Rightarrow> graph \<Rightarrow> bool" (infixl "\<tturnstile>" 55) where
+definition accepts :: "graph set \<Rightarrow> graph \<Rightarrow> bool" (infixl \<open>\<tturnstile>\<close> 55) where
   "(X \<tturnstile> G) = (\<exists> D \<in> X. D \<subseteq> G)" 
 
 
@@ -454,7 +454,7 @@ lemma finite_v_gs_Gl: assumes "X \<subseteq> \<G>l"
 definition \<P>L\<G>l :: "graph set set" where
   "\<P>L\<G>l = { X . X \<subseteq> \<G>l \<and> card (v_gs X) \<le> L}"
 
-definition odotl :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl "\<odot>l" 65) where
+definition odotl :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl \<open>\<odot>l\<close> 65) where
   "X \<odot>l Y = (X \<odot> Y) \<inter> \<G>l" 
 
 
@@ -970,22 +970,22 @@ qed
 
 text \<open>Definition 8\<close>
 
-definition sqcup :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl "\<squnion>" 65) where
+definition sqcup :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl \<open>\<squnion>\<close> 65) where
   "X \<squnion> Y = PLU (X \<union> Y)" 
 
-definition sqcap :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl "\<sqinter>" 65) where
+definition sqcap :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl \<open>\<sqinter>\<close> 65) where
   "X \<sqinter> Y = PLU (X \<odot>l Y)" 
 
-definition deviate_pos_cup :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" ("\<partial>\<squnion>Pos") where
+definition deviate_pos_cup :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (\<open>\<partial>\<squnion>Pos\<close>) where
   "\<partial>\<squnion>Pos X Y = POS \<inter> ACC (X \<union> Y) - ACC (X \<squnion> Y)" 
 
-definition deviate_pos_cap :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" ("\<partial>\<sqinter>Pos") where
+definition deviate_pos_cap :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (\<open>\<partial>\<sqinter>Pos\<close>) where
   "\<partial>\<sqinter>Pos X Y = POS \<inter> ACC (X \<odot> Y) - ACC (X \<sqinter> Y)" 
 
-definition deviate_neg_cup :: "graph set \<Rightarrow> graph set \<Rightarrow> colorf set" ("\<partial>\<squnion>Neg") where
+definition deviate_neg_cup :: "graph set \<Rightarrow> graph set \<Rightarrow> colorf set" (\<open>\<partial>\<squnion>Neg\<close>) where
   "\<partial>\<squnion>Neg X Y = ACC_cf (X \<squnion> Y) - ACC_cf (X \<union> Y)" 
 
-definition deviate_neg_cap :: "graph set \<Rightarrow> graph set \<Rightarrow> colorf set" ("\<partial>\<sqinter>Neg") where
+definition deviate_neg_cap :: "graph set \<Rightarrow> graph set \<Rightarrow> colorf set" (\<open>\<partial>\<sqinter>Neg\<close>) where
   "\<partial>\<sqinter>Neg X Y = ACC_cf (X \<sqinter> Y) - ACC_cf (X \<odot> Y)" 
 
 text \<open>Lemma 9 -- without applying Lemma 7\<close>
@@ -1317,10 +1317,10 @@ definition ACC_cf_mf :: "'a mformula \<Rightarrow> colorf set" where
 definition ACC_mf :: "'a mformula \<Rightarrow> graph set" where
   "ACC_mf \<phi> = ACC (SET \<phi>)" 
 
-definition deviate_pos :: "'a mformula \<Rightarrow> graph set" ("\<partial>Pos") where
+definition deviate_pos :: "'a mformula \<Rightarrow> graph set" (\<open>\<partial>Pos\<close>) where
   "\<partial>Pos \<phi> = POS \<inter> ACC_mf \<phi> - ACC (APR \<phi>)" 
 
-definition deviate_neg :: "'a mformula \<Rightarrow> colorf set" ("\<partial>Neg") where
+definition deviate_neg :: "'a mformula \<Rightarrow> colorf set" (\<open>\<partial>Neg\<close>) where
   "\<partial>Neg \<phi> = ACC_cf (APR \<phi>) - ACC_cf_mf \<phi>" 
 
 text \<open>Lemma 11.1\<close>

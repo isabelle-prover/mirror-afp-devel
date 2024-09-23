@@ -14,7 +14,7 @@ hide_const (open) Left Right
 
 domain ('a, 'b) Either = Left 'a | Right 'b
 
-domain ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
+domain ('a, 'b) Both  (infixl \<open>:!:\<close> 25) = Both 'a 'b (infixl \<open>:!:\<close> 75)
 
 domain 'a L = L (lazy 'a)
 

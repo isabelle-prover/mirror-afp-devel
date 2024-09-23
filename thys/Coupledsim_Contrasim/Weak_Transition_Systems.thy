@@ -5,7 +5,7 @@ theory Weak_Transition_Systems
 begin                
 
 locale lts_tau = lts trans for
-  trans :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<longmapsto>_  _" [70, 70, 70] 80) + fixes
+  trans :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<longmapsto>_  _\<close> [70, 70, 70] 80) + fixes
   \<tau> :: \<open>'a\<close> begin
   
 definition tau :: \<open>'a \<Rightarrow> bool\<close> where \<open>tau a \<equiv> (a = \<tau>)\<close>
@@ -13,7 +13,7 @@ definition tau :: \<open>'a \<Rightarrow> bool\<close> where \<open>tau a \<equi
 lemma tau_tau[simp]: \<open>tau \<tau>\<close> unfolding tau_def by simp
 
 abbreviation weak_step :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close>
-     ("_ \<Rightarrow>_  _" [70, 70, 70] 80)
+     (\<open>_ \<Rightarrow>_  _\<close> [70, 70, 70] 80)
 where
   \<open>(p \<Rightarrow>a q) \<equiv> (\<exists> pq1 pq2.
     p \<longmapsto>* tau pq1 \<and>
@@ -26,14 +26,14 @@ lemma step_weak_step:
    using assms steps.refl by auto
     
 abbreviation weak_step_tau :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close>
-     ("_ \<Rightarrow>^_  _" [70, 70, 70] 80)
+     (\<open>_ \<Rightarrow>^_  _\<close> [70, 70, 70] 80)
 where
   \<open>(p \<Rightarrow>^a q) \<equiv>
     (tau a \<longrightarrow> p \<longmapsto>* tau q) \<and>
     (\<not>tau a \<longrightarrow> p \<Rightarrow>a q)\<close>
 
 abbreviation weak_step_delay :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close>
-     ("_ =\<rhd> _  _" [70, 70, 70] 80)
+     (\<open>_ =\<rhd> _  _\<close> [70, 70, 70] 80)
 where
   \<open>(p =\<rhd>a q) \<equiv> 
     (tau a \<longrightarrow> p \<longmapsto>* tau q) \<and>
@@ -56,7 +56,7 @@ lemma weak_step_delay_left:
   using assms steps_left by metis
 
 primrec weak_step_seq :: \<open>'s \<Rightarrow> 'a list \<Rightarrow> 's \<Rightarrow> bool\<close>
-     ("_ \<Rightarrow>$ _  _" [70, 70, 70] 80)
+     (\<open>_ \<Rightarrow>$ _  _\<close> [70, 70, 70] 80)
   where
     \<open>weak_step_seq p0 [] p1 = p0 \<longmapsto>* tau p1\<close>
   | \<open>weak_step_seq p0 (a#A) p1 = (\<exists> p01 . p0 \<Rightarrow>^a p01 \<and> weak_step_seq p01 A p1)\<close>

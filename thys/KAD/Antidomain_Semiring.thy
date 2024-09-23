@@ -16,7 +16,7 @@ subsection \<open>Antidomain Monoids\<close>
 text \<open>We axiomatise antidomain monoids, using the axioms of~\<^cite>\<open>"DesharnaisJipsenStruth"\<close>.\<close>
 
 class antidomain_op =
-  fixes antidomain_op :: "'a \<Rightarrow> 'a" ("ad")
+  fixes antidomain_op :: "'a \<Rightarrow> 'a" (\<open>ad\<close>)
 
 class antidomain_left_monoid = monoid_mult + antidomain_op +
   assumes am1 [simp]: "ad x \<cdot> x = ad 1"
@@ -27,18 +27,18 @@ class antidomain_left_monoid = monoid_mult + antidomain_op +
 
 begin
 
-no_notation domain_op ("d")
-no_notation zero_class.zero ("0")
+no_notation domain_op (\<open>d\<close>)
+no_notation zero_class.zero (\<open>0\<close>)
 
 text \<open>We define a zero element and operations of domain and addition.\<close>
 
-definition a_zero :: "'a" ("0") where
+definition a_zero :: "'a" (\<open>0\<close>) where
   "0 = ad 1"
 
-definition am_d :: "'a \<Rightarrow> 'a" ("d") where
+definition am_d :: "'a \<Rightarrow> 'a" (\<open>d\<close>) where
    "d x = ad (ad x)"
 
-definition am_add_op :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<oplus>" 65) where
+definition am_add_op :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<oplus>\<close> 65) where
   "x \<oplus> y \<equiv> ad (ad x \<cdot> ad y)"
 
 lemma a_d_zero [simp]: "ad x \<cdot> d x = 0"
@@ -256,8 +256,8 @@ lemma kat_3_equiv: "d x \<cdot> y \<cdot> ad z = 0 \<longleftrightarrow> d x \<c
   apply (metis kat_3')
   by (simp add: mult_assoc a_zero_def am_d_def)
 
-no_notation a_zero ("0")
-no_notation am_d ("d")
+no_notation a_zero (\<open>0\<close>)
+no_notation am_d (\<open>d\<close>)
 
 end
 
@@ -265,7 +265,7 @@ subsection \<open>Antidomain Near-Semirings\<close>
 
 text \<open>We define antidomain near-semirings. We do not consider units separately. The axioms are taken from~\<^cite>\<open>"DesharnaisStruthAMAST"\<close>.\<close>
 
-notation zero_class.zero ("0")
+notation zero_class.zero (\<open>0\<close>)
 
 class antidomain_near_semiring = ab_near_semiring_one_zerol + antidomain_op + plus_ord +
   assumes ans1 [simp]: "ad x \<cdot> x = 0"
@@ -275,7 +275,7 @@ class antidomain_near_semiring = ab_near_semiring_one_zerol + antidomain_op + pl
 
 begin
 
-definition ans_d :: "'a \<Rightarrow> 'a" ("d") where
+definition ans_d :: "'a \<Rightarrow> 'a" (\<open>d\<close>) where
    "d x = ad (ad x)"
 
 lemma a_a_one [simp]: "d 1 = 1"
@@ -486,7 +486,7 @@ proof -
     by blast
 qed
 
-no_notation ans_d ("d")
+no_notation ans_d (\<open>d\<close>)
 
 end
 
@@ -501,7 +501,7 @@ class antidomain_pre_dioid = pre_dioid_one_zerol + antidomain_op +
 
 begin
 
-definition apd_d :: "'a \<Rightarrow> 'a" ("d") where
+definition apd_d :: "'a \<Rightarrow> 'a" (\<open>d\<close>) where
    "d x = ad (ad x)"
 
 lemma a_very_costrict'': "ad x = 1 \<longleftrightarrow> x = 0"
@@ -724,7 +724,7 @@ lemma "ad (x \<cdot> y) \<cdot> ad (x \<cdot> ad y) = ad x"
 (*nitpick [expect=genuine]*)
 oops
 
-no_notation apd_d ("d")
+no_notation apd_d (\<open>d\<close>)
 
 end
 
@@ -739,7 +739,7 @@ class antidomain_semiringl = semiring_one_zerol + plus_ord + antidomain_op +
 
 begin
 
-definition ads_d :: "'a \<Rightarrow> 'a" ("d") where
+definition ads_d :: "'a \<Rightarrow> 'a" (\<open>d\<close>) where
   "d x = ad (ad x)"
 
 lemma one_idem': "1 + 1 = 1"
@@ -789,9 +789,9 @@ subclass antidomain_left_monoid
 
 text \<open>Every antidomain left semiring is a domain left semiring.\<close>
 
-no_notation domain_semiringl_class.fd ("( |_\<rangle> _)" [61,81] 82)
+no_notation domain_semiringl_class.fd (\<open>( |_\<rangle> _)\<close> [61,81] 82)
 
-definition fdia :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("( |_\<rangle> _)" [61,81] 82) where
+definition fdia :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>( |_\<rangle> _)\<close> [61,81] 82) where
   "|x\<rangle> y = ad (ad (x \<cdot> y))"
 
 sublocale ds: domain_semiringl "(+)" "(\<cdot>)" 1 0 "\<lambda>x. ad (ad x)" "(\<le>)" "(<)"
@@ -1060,7 +1060,7 @@ lemma fdia_export_2: "ad y \<cdot> |x\<rangle> z = |ad y \<cdot> x\<rangle> z"
 lemma fdia_split: "|x\<rangle> y = d z \<cdot> |x\<rangle> y + ad z \<cdot> |x\<rangle> y"
   by (metis mult_onel ans3 distrib_right ads_d_def)
 
-definition fbox :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("( |_] _)" [61,81] 82) where
+definition fbox :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>( |_] _)\<close> [61,81] 82) where
   "|x] y = ad (x \<cdot> ad y)"
 
 text \<open>The next lemmas establish the De Morgan duality between boxes and diamonds.\<close>

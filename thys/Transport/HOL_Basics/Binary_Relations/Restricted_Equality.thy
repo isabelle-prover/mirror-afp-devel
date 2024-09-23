@@ -16,14 +16,14 @@ elements. The restriction can be formulated, for example, by a predicate or a se
 bundle eq_rel_restrict_syntax
 begin
 syntax
-  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
-  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
+  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) =(\<^bsub>_\<^esub>) (_)\<close> [51,51,51] 50)
+  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>'(=(\<^bsub>_\<^esub>)')\<close>)
 end
 bundle no_eq_rel_restrict_syntax
 begin
 no_syntax
-  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) =(\<^bsub>_\<^esub>) (_)" [51,51,51] 50)
-  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" ("'(=(\<^bsub>_\<^esub>)')")
+  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) =(\<^bsub>_\<^esub>) (_)\<close> [51,51,51] 50)
+  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>'(=(\<^bsub>_\<^esub>)')\<close>)
 end
 unbundle eq_rel_restrict_syntax
 

@@ -132,9 +132,9 @@ begin
 
 definition threes :: "'a \<times> 'a \<times> 'a" where
   "threes = (SOME (x, y, z). x \<noteq> y \<and> x \<noteq> z \<and> y \<noteq> z)"
-definition three\<^sub>1 :: 'a ("\<^bold>1") where "\<^bold>1 = fst threes"
-definition three\<^sub>2 :: 'a ("\<^bold>2") where "\<^bold>2 = fst (snd threes)"
-definition three\<^sub>3 :: 'a ("\<^bold>3") where "\<^bold>3 = snd (snd (threes))"
+definition three\<^sub>1 :: 'a (\<open>\<^bold>1\<close>) where "\<^bold>1 = fst threes"
+definition three\<^sub>2 :: 'a (\<open>\<^bold>2\<close>) where "\<^bold>2 = fst (snd threes)"
+definition three\<^sub>3 :: 'a (\<open>\<^bold>3\<close>) where "\<^bold>3 = snd (snd (threes))"
 
 lemma three_neq_aux: "\<^bold>1 \<noteq> \<^bold>2" "\<^bold>1 \<noteq> \<^bold>3" "\<^bold>2 \<noteq> \<^bold>3"
 proof -
@@ -471,7 +471,7 @@ begin
 definition pchoose :: "real \<Rightarrow> 'm \<Rightarrow> 'm \<Rightarrow> 'm" where
   "pchoose r m m' = sample (map_pmf (\<lambda>b. if b then \<^bold>1 else \<^bold>2) (bernoulli_pmf r)) (\<lambda>x. if x = \<^bold>1 then m else m')"
 
-abbreviation pchoose_syntax :: "'m \<Rightarrow> real \<Rightarrow> 'm \<Rightarrow> 'm" ("_ \<lhd> _ \<rhd> _" [100, 0, 100] 99) where
+abbreviation pchoose_syntax :: "'m \<Rightarrow> real \<Rightarrow> 'm \<Rightarrow> 'm" (\<open>_ \<lhd> _ \<rhd> _\<close> [100, 0, 100] 99) where
   "m \<lhd> r \<rhd> m' \<equiv> pchoose r m m'"
 
 lemma pchoose_0: "m \<lhd> 0 \<rhd> m' = m'"
@@ -2126,7 +2126,7 @@ locale nondetM_base = monad_base return bind
   and merge :: "('a, 'm, 's) merge"
   and empty :: "'s"
   and single :: "'a \<Rightarrow> 's"
-  and union :: "'s \<Rightarrow> 's \<Rightarrow> 's"  (infixl "\<^bold>\<union>" 65)
+  and union :: "'s \<Rightarrow> 's \<Rightarrow> 's"  (infixl \<open>\<^bold>\<union>\<close> 65)
 begin
 
 definition return_nondet :: "('a, ('a, 'm) nondetT) return"
@@ -2202,7 +2202,7 @@ locale nondetM = nondetM_base return bind merge empty single union
   and merge :: "('a, 'm, 's) merge"
   and empty :: "'s"
   and single :: "'a \<Rightarrow> 's"
-  and union :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<^bold>\<union>" 65)
+  and union :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<^bold>\<union>\<close> 65)
   +
   assumes bind_merge_merge:
     "\<And>y f g. bind (merge y f) (\<lambda>A. merge A g) = merge y (\<lambda>x. bind (f x) (\<lambda>A. merge A g))"
@@ -2319,7 +2319,7 @@ locale nondetM_ask = nondetM return bind merge empty single union
   and merge :: "('a, 'm, 's) merge"
   and empty :: "'s"
   and single :: "'a \<Rightarrow> 's"
-  and union :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<^bold>\<union>" 65)
+  and union :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<^bold>\<union>\<close> 65)
   +
   assumes monad_reader: "monad_reader return bind ask"
   assumes merge_ask:

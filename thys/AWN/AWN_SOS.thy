@@ -167,7 +167,7 @@ definition
   par_comp :: "('s1, 'm seq_action) automaton
               \<Rightarrow> ('s2, 'm seq_action) automaton
               \<Rightarrow> ('s1 \<times> 's2, 'm seq_action) automaton"
-  ("(_ \<langle>\<langle> _)" [102, 103] 102)
+  (\<open>(_ \<langle>\<langle> _)\<close> [102, 103] 102)
 where
   "s \<langle>\<langle> t \<equiv> \<lparr> init = init s \<times> init t, trans = parp_sos (trans s) (trans t) \<rparr>"
 
@@ -241,7 +241,7 @@ lemma arrives_or_not:
 definition
   node_comp :: "ip \<Rightarrow> ('s, 'm seq_action) automaton \<Rightarrow> ip set
                    \<Rightarrow> ('s net_state, 'm node_action) automaton"
-    ("(\<langle>_ : (_) : _\<rangle>)" [0, 0, 0] 104)
+    (\<open>(\<langle>_ : (_) : _\<rangle>)\<close> [0, 0, 0] 104)
 where
   "\<langle>i : np : R\<^sub>i\<rangle> \<equiv> \<lparr> init = {NodeS i s R\<^sub>i|s. s \<in> init np}, trans = node_sos (trans np) \<rparr>"
 

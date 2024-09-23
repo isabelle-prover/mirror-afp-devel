@@ -20,7 +20,7 @@ definition
   "val(G,\<tau>) \<equiv> wfrec(edrel(eclose({\<tau>})), \<tau> ,Hv(G))"
 
 definition
-  GenExt :: "[i,i]\<Rightarrow>i"     ("_[_]" [71,1])
+  GenExt :: "[i,i]\<Rightarrow>i"     (\<open>_[_]\<close> [71,1])
   where "M[G] \<equiv> {val(G,\<tau>). \<tau> \<in> M}"
 
 lemma map_val_in_MG:

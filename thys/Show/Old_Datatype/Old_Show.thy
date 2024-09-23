@@ -56,11 +56,11 @@ where
 
 end
 
-abbreviation shows_cons :: "string \<Rightarrow> shows \<Rightarrow> shows" (infixr "+#+" 10)
+abbreviation shows_cons :: "string \<Rightarrow> shows \<Rightarrow> shows" (infixr \<open>+#+\<close> 10)
 where
   "s +#+ p \<equiv> shows_string s \<circ> p"
 
-abbreviation (input) shows_append :: "shows \<Rightarrow> shows \<Rightarrow> shows" (infixr "+@+" 10)
+abbreviation (input) shows_append :: "shows \<Rightarrow> shows \<Rightarrow> shows" (infixr \<open>+@+\<close> 10)
 where
   "s +@+ p \<equiv> s \<circ> p"
 

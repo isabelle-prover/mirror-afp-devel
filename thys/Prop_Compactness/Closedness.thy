@@ -27,7 +27,7 @@ definition subset_closed :: "'a set set \<Rightarrow> bool" where
   "subset_closed \<C> = (\<forall>S \<in> \<C>. \<forall>S'. S' \<subseteq> S \<longrightarrow> S' \<in> \<C>)"
 
 
-definition closure_subset :: "'a set set \<Rightarrow> 'a set set" ("_⁺"[1000] 1000) where
+definition closure_subset :: "'a set set \<Rightarrow> 'a set set" (\<open>_⁺\<close>[1000] 1000) where
   "\<C>⁺ = {S. \<exists>S' \<in> \<C>. S \<subseteq> S'}"
 
 

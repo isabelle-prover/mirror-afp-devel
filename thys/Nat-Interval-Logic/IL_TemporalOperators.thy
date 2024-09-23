@@ -63,8 +63,8 @@ definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool
 
 
 syntax
-  "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<box> _ _./ _)" [0, 0, 10] 10)
-  "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<diamond> _ _./ _)" [0, 0, 10] 10)
+  "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<box> _ _./ _)\<close> [0, 0, 10] 10)
+  "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<diamond> _ _./ _)\<close> [0, 0, 10] 10)
 syntax_consts
   "_iAll" \<rightleftharpoons> iAll and
   "_iEx" \<rightleftharpoons> iEx
@@ -81,8 +81,8 @@ definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> boo
   where "iLast t0 I P \<equiv> P (iprev t0 I)"
 
 syntax
-  "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle> _ _ _./ _)" [0, 0, 10] 10)
-  "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
+  "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<circle> _ _ _./ _)\<close> [0, 0, 10] 10)
+  "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<ominus> _ _ _./ _)\<close> [0, 0, 10] 10)
 syntax_consts
   "_iNext" \<rightleftharpoons> iNext and
   "_iLast" \<rightleftharpoons> iLast
@@ -110,10 +110,10 @@ definition iLastStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarro
   where "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
 
 syntax
-  "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
-  "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
-  "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
-  "_iLastStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
+  "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<circle>\<^sub>W _ _ _./ _)\<close> [0, 0, 10] 10)
+  "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<circle>\<^sub>S _ _ _./ _)\<close> [0, 0, 10] 10)
+  "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<ominus>\<^sub>W _ _ _./ _)\<close> [0, 0, 10] 10)
+  "_iLastStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" (\<open>(3\<ominus>\<^sub>S _ _ _./ _)\<close> [0, 0, 10] 10)
 syntax_consts
   "_iNextWeak" \<rightleftharpoons> iNextWeak and
   "_iNextStrong" \<rightleftharpoons> iNextStrong and
@@ -145,9 +145,9 @@ definition iSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (
 
 syntax
   "_iUntil" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_./ _ (3\<U> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+    (\<open>(_./ _ (3\<U> _ _)./ _)\<close> [10, 0, 0, 0, 10] 10)
   "_iSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_./ _ (3\<S> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+    (\<open>(_./ _ (3\<S> _ _)./ _)\<close> [10, 0, 0, 0, 10] 10)
 syntax_consts
   "_iUntil" \<rightleftharpoons> iUntil and
   "_iSince" \<rightleftharpoons> iSince
@@ -163,9 +163,9 @@ definition iWeakSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarro
 
 syntax
   "_iWeakUntil" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_./ _ (3\<W> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+    (\<open>(_./ _ (3\<W> _ _)./ _)\<close> [10, 0, 0, 0, 10] 10)
   "_iWeakSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_./ _ (3\<B> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+    (\<open>(_./ _ (3\<B> _ _)./ _)\<close> [10, 0, 0, 0, 10] 10)
 syntax_consts
   "_iWeakUntil" \<rightleftharpoons> iWeakUntil and
   "_iWeakSince" \<rightleftharpoons> iWeakSince
@@ -182,9 +182,9 @@ definition iTrigger :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow>
 
 syntax
   "_iRelease" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_./ _ (3\<R> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+    (\<open>(_./ _ (3\<R> _ _)./ _)\<close> [10, 0, 0, 0, 10] 10)
   "_iTrigger" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
-    ("(_./ _ (3\<T> _ _)./ _)" [10, 0, 0, 0, 10] 10)
+    (\<open>(_./ _ (3\<T> _ _)./ _)\<close> [10, 0, 0, 0, 10] 10)
 syntax_consts
   "_iRelease" \<rightleftharpoons> iRelease and
   "_iTrigger" \<rightleftharpoons> iTrigger

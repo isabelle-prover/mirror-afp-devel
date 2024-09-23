@@ -10,7 +10,7 @@ begin
 text \<open>Do not import this theory. It contains an inconsistent axiomatization.
 The point is to exhibit the particular inconsistency.\<close>
 
-typedef ('a, 'k) bset ("_ set[_]" [22, 21] 21) =
+typedef ('a, 'k) bset (\<open>_ set[_]\<close> [22, 21] 21) =
   "{A :: 'a set. |A| <o |UNIV :: 'k set|}"
   morphisms set_bset Abs_bset
   by (rule exI[of _ "{}"]) (auto simp: card_of_empty4 csum_def)

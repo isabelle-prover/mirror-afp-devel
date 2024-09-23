@@ -28,7 +28,7 @@ lemma scalar_prod_comm:
 lemma vec_scalar_mult_fun: "vec n (\<lambda>x. c * f x) = c \<cdot>\<^sub>v vec n f"
   by (simp add: smult_vec_def, rule vec_cong, rule refl, simp)
 
-definition mult_vec_mat :: "'a vec \<Rightarrow> 'a :: semiring_0 mat \<Rightarrow> 'a vec" (infixl "\<^sub>v*" 70)
+definition mult_vec_mat :: "'a vec \<Rightarrow> 'a :: semiring_0 mat \<Rightarrow> 'a vec" (infixl \<open>\<^sub>v*\<close> 70)
   where "v \<^sub>v* A \<equiv> vec (dim_col A) (\<lambda>j. v \<bullet> col A j)"
 
 definition resize_vec :: "nat \<Rightarrow> 'a vec \<Rightarrow> 'a vec"

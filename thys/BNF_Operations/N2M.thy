@@ -11,7 +11,7 @@ theory N2M
 begin
 (*>*)
 
-notation BNF_Def.convol ("<_, _>")
+notation BNF_Def.convol (\<open><_, _>\<close>)
 
 declare [[bnf_internals]]
 

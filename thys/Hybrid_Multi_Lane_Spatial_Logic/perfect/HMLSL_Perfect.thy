@@ -29,9 +29,9 @@ proof unfold_locales
         traffic.sdGeZero) 
 qed
   
-notation hmlsl.re ("re'(_')")
-notation hmlsl.cl("cl'(_')")
-notation hmlsl.len ("len")
+notation hmlsl.re (\<open>re'(_')\<close>)
+notation hmlsl.cl(\<open>cl'(_')\<close>)
+notation hmlsl.len (\<open>len\<close>)
 
 text \<open>
  The spatial atoms are independent of the perspective of the view. 

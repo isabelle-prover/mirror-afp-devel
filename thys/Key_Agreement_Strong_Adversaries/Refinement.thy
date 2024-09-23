@@ -284,7 +284,7 @@ subsubsection \<open>Hoare triples\<close>
 
 definition 
   PO_hoare :: "['s set, ('s \<times> 's) set, 's set] \<Rightarrow> bool"
-     ("(3{_} _ {> _})" [0, 0, 0] 90)
+     (\<open>(3{_} _ {> _})\<close> [0, 0, 0] 90)
 where
   "{pre} R {> post} \<equiv> R``pre \<subseteq> post"
 
@@ -450,7 +450,7 @@ composition, which is defined as follows: @{thm relcomp_def [no_vars]}.)\<close>
 definition
   PO_rhoare :: 
     "[('s \<times> 't) set, ('s \<times> 's) set, ('t \<times> 't) set, ('s \<times> 't) set] \<Rightarrow> bool"
-     ("(4{_} _, _ {> _})" [0, 0, 0] 90)
+     (\<open>(4{_} _, _ {> _})\<close> [0, 0, 0] 90)
 where
   "{pre} Ra, Rc {> post} \<equiv> pre O Rc \<subseteq> Ra O post"
 

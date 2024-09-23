@@ -90,7 +90,7 @@ text\<open>The monotonicity calculus from the Classen et. al. paper, applied
 to non-infinite types only: it checks that any variable in any literal of any clause
 is indeed guarded by its guard:\<close>
 
-inductive mcalc2 (infix "\<turnstile>2" 40) where
+inductive mcalc2 (infix \<open>\<turnstile>2\<close> 40) where
  [simp]: "infTp \<sigma> \<Longrightarrow> \<sigma> \<turnstile>2 c"
 |[simp]: "(\<And> l x. \<lbrakk>l \<in> set c; x \<in> nv2L l; tpOfV x = \<sigma>\<rbrakk>
          \<Longrightarrow> isGuard x (grdOf c l x)) \<Longrightarrow> \<sigma> \<turnstile>2 c"

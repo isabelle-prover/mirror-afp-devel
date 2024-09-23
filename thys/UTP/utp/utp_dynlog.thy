@@ -8,10 +8,10 @@ subsection \<open> Definitions \<close>
 
 named_theorems dynlog_simp and dynlog_intro
 
-definition dBox :: "'s hrel \<Rightarrow> 's upred \<Rightarrow> 's upred" ("\<^bold>[_\<^bold>]_" [0,999] 999)
+definition dBox :: "'s hrel \<Rightarrow> 's upred \<Rightarrow> 's upred" (\<open>\<^bold>[_\<^bold>]_\<close> [0,999] 999)
 where [upred_defs]: "dBox A \<Phi> = A wp \<Phi>"
 
-definition dDia :: "'s hrel \<Rightarrow> 's upred \<Rightarrow> 's upred" ("\<^bold><_\<^bold>>_" [0,999] 999)
+definition dDia :: "'s hrel \<Rightarrow> 's upred \<Rightarrow> 's upred" (\<open>\<^bold><_\<^bold>>_\<close> [0,999] 999)
 where [upred_defs]: "dDia A \<Phi> = (\<not> \<^bold>[A\<^bold>] (\<not> \<Phi>))"
 
 subsection \<open> Box Laws \<close>

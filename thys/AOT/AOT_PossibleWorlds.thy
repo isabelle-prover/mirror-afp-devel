@@ -156,7 +156,7 @@ qed
 AOT_register_variable_names
   Situation: s
 
-AOT_define TruthInSituation :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("(_ \<Turnstile>/ _)" [100, 40] 100)
+AOT_define TruthInSituation :: \<open>\<tau> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>(_ \<Turnstile>/ _)\<close> [100, 40] 100)
   "true-in-s": \<open>s \<Turnstile> p \<equiv>\<^sub>d\<^sub>f s\<^bold>\<Sigma>p\<close>
 
 notepad
@@ -653,7 +653,7 @@ definition ConditionOnPropositionalProperties :: \<open>(<\<kappa>> \<Rightarrow
                         [v \<Turnstile> \<forall>F (\<phi>{F} \<rightarrow> Propositional([F]))]\<close>
 
 syntax ConditionOnPropositionalProperties :: \<open>id_position \<Rightarrow> AOT_prop\<close>
-  ("CONDITION'_ON'_PROPOSITIONAL'_PROPERTIES'(_')")
+  (\<open>CONDITION'_ON'_PROPOSITIONAL'_PROPERTIES'(_')\<close>)
 
 AOT_theorem "cond-prop[E]":
   assumes \<open>CONDITION_ON_PROPOSITIONAL_PROPERTIES(\<phi>)\<close>

@@ -911,7 +911,7 @@ lemma up_canonical_diag_preservation:
   shows "\<forall> i \<le> n. (up_canonical M) i i = 0"
 unfolding up_canonical_def using assms by auto
 
-no_notation Ref.update ("_ := _" 62)
+no_notation Ref.update (\<open>_ := _\<close> 62)
 
 definition up_canonical_upd :: "'t DBM' \<Rightarrow> nat \<Rightarrow> 't DBM'" where
   "up_canonical_upd M n = fold (\<lambda> i M. M((i,0) := \<infinity>)) [1..<n+1] M"

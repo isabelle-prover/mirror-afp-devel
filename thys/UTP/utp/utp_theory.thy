@@ -10,7 +10,7 @@ text \<open> Here, we mechanise a representation of UTP theories using locales~\
 
 subsection \<open> Complete lattice of predicates \<close>
 
-definition upred_lattice :: "('\<alpha> upred) gorder" ("\<P>") where
+definition upred_lattice :: "('\<alpha> upred) gorder" (\<open>\<P>\<close>) where
 "upred_lattice = \<lparr> carrier = UNIV, eq = (=), le = (\<sqsubseteq>) \<rparr>"
 
 text \<open> @{term "\<P>"} is the complete lattice of alphabetised predicates. All other theories will
@@ -107,7 +107,7 @@ text \<open> We next define a hierarchy of locales that characterise different c
   Minimally we require that a UTP theory's healthiness condition is idempotent. \<close>
 
 locale utp_theory =
-  fixes hcond :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" ("\<H>")
+  fixes hcond :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (\<open>\<H>\<close>)
   assumes HCond_Idem: "\<H>(\<H>(P)) = \<H>(P)"
 begin
 
@@ -140,42 +140,42 @@ text \<open> The healthiness conditions of a UTP theory lattice form a complete 
   use of complete lattice results from HOL-Algebra~\<^cite>\<open>"Ballarin17"\<close>, such as the Knaster-Tarski theorem. We can also
   retrieve lattice operators as below. \<close>
 
-abbreviation utp_top ("\<^bold>\<top>")
+abbreviation utp_top (\<open>\<^bold>\<top>\<close>)
 where "utp_top \<equiv> top (utp_order \<H>)"
 
-abbreviation utp_bottom ("\<^bold>\<bottom>")
+abbreviation utp_bottom (\<open>\<^bold>\<bottom>\<close>)
 where "utp_bottom \<equiv> bottom (utp_order \<H>)"
 
-abbreviation utp_join (infixl "\<^bold>\<squnion>" 65) where
+abbreviation utp_join (infixl \<open>\<^bold>\<squnion>\<close> 65) where
 "utp_join \<equiv> join (utp_order \<H>)"
 
-abbreviation utp_meet (infixl "\<^bold>\<sqinter>" 70) where
+abbreviation utp_meet (infixl \<open>\<^bold>\<sqinter>\<close> 70) where
 "utp_meet \<equiv> meet (utp_order \<H>)"
 
-abbreviation utp_sup ("\<^bold>\<Squnion>_" [90] 90) where
+abbreviation utp_sup (\<open>\<^bold>\<Squnion>_\<close> [90] 90) where
 "utp_sup \<equiv> Lattice.sup (utp_order \<H>)"
 
-abbreviation utp_inf ("\<^bold>\<Sqinter>_" [90] 90) where
+abbreviation utp_inf (\<open>\<^bold>\<Sqinter>_\<close> [90] 90) where
 "utp_inf \<equiv> Lattice.inf (utp_order \<H>)"
 
-abbreviation utp_gfp ("\<^bold>\<nu>") where
+abbreviation utp_gfp (\<open>\<^bold>\<nu>\<close>) where
 "utp_gfp \<equiv> GREATEST_FP (utp_order \<H>)"
 
-abbreviation utp_lfp ("\<^bold>\<mu>") where
+abbreviation utp_lfp (\<open>\<^bold>\<mu>\<close>) where
 "utp_lfp \<equiv> LEAST_FP (utp_order \<H>)"
 
 end
 
 syntax
-  "_tmu" :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<^bold>\<mu>\<index> _ \<bullet> _" [0, 10] 10)
-  "_tnu" :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<^bold>\<nu>\<index> _ \<bullet> _" [0, 10] 10)
+  "_tmu" :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<^bold>\<mu>\<index> _ \<bullet> _\<close> [0, 10] 10)
+  "_tnu" :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<^bold>\<nu>\<index> _ \<bullet> _\<close> [0, 10] 10)
 
 syntax_consts
   "_tmu" == LEAST_FP and
   "_tnu" == GREATEST_FP
 
-notation gfp ("\<mu>")
-notation lfp ("\<nu>")
+notation gfp (\<open>\<mu>\<close>)
+notation lfp (\<open>\<nu>\<close>)
 
 translations
   "\<^bold>\<mu>\<^bsub>H\<^esub> X \<bullet> P" == "CONST LEAST_FP (CONST utp_order H) (\<lambda> X. P)"  
@@ -442,13 +442,13 @@ text \<open> There also exist UTP theories with units. Not all theories have bot
 
 locale utp_theory_units =
   utp_theory_rel +
-  fixes utp_unit ("\<I>\<I>")
+  fixes utp_unit (\<open>\<I>\<I>\<close>)
   assumes Healthy_Unit [closure]: "\<I>\<I> is \<H>"
 begin
 
 text \<open> We can characterise the theory Kleene star by lifting the relational one. \<close>
 
-definition utp_star ("_\<^bold>\<star>" [999] 999) where
+definition utp_star (\<open>_\<^bold>\<star>\<close> [999] 999) where
 [upred_defs]: "utp_star P = (P\<^sup>\<star> ;; \<I>\<I>)"
 
 text \<open> We can then characterise tests as refinements of units. \<close>
@@ -543,7 +543,7 @@ subsection \<open> Theory links \<close>
 text \<open> We can also describe links between theories, such a Galois connections and retractions,
   using the following notation. \<close>
 
-definition mk_conn ("_ \<Leftarrow>\<langle>_,_\<rangle>\<Rightarrow> _" [90,0,0,91] 91) where
+definition mk_conn (\<open>_ \<Leftarrow>\<langle>_,_\<rangle>\<Rightarrow> _\<close> [90,0,0,91] 91) where
 "H1 \<Leftarrow>\<langle>\<H>\<^sub>1,\<H>\<^sub>2\<rangle>\<Rightarrow> H2 \<equiv> \<lparr> orderA = utp_order H1, orderB = utp_order H2, lower = \<H>\<^sub>2, upper = \<H>\<^sub>1 \<rparr>"
 
 lemma mk_conn_orderA [simp]: "\<X>\<^bsub>H1 \<Leftarrow>\<langle>\<H>\<^sub>1,\<H>\<^sub>2\<rangle>\<Rightarrow> H2\<^esub> = utp_order H1"

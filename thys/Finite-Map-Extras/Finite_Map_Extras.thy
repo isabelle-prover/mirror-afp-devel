@@ -13,12 +13,12 @@ notation fmempty (\<open>{$$}\<close>)
 nonterminal fmaplets and fmaplet
 
 syntax
-  "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"                        ("_ /$$:=/ _")
-  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"                        ("_ /[$$:=]/ _")
-  ""          :: "fmaplet \<Rightarrow> fmaplets"                        ("_")
-  "_Fmaplets" :: "[fmaplet, fmaplets] \<Rightarrow> fmaplets"            ("_,/ _")
-  "_FmapUpd"  :: "[('a, 'b) fmap, fmaplets] \<Rightarrow> ('a, 'b) fmap" ("_/'(_')" [900, 0] 900)
-  "_Fmap"     :: "fmaplets \<Rightarrow> ('a, 'b) fmap"                  ("(1{_})")
+  "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"                        (\<open>_ /$$:=/ _\<close>)
+  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"                        (\<open>_ /[$$:=]/ _\<close>)
+  ""          :: "fmaplet \<Rightarrow> fmaplets"                        (\<open>_\<close>)
+  "_Fmaplets" :: "[fmaplet, fmaplets] \<Rightarrow> fmaplets"            (\<open>_,/ _\<close>)
+  "_FmapUpd"  :: "[('a, 'b) fmap, fmaplets] \<Rightarrow> ('a, 'b) fmap" (\<open>_/'(_')\<close> [900, 0] 900)
+  "_Fmap"     :: "fmaplets \<Rightarrow> ('a, 'b) fmap"                  (\<open>(1{_})\<close>)
 
 syntax_consts
   "_fmaplet" "_fmaplets" "_Fmaplets" "_FmapUpd" "_Fmap" \<rightleftharpoons> fmupd

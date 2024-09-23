@@ -8,8 +8,8 @@ section \<open>Nominal Transition Systems and Bisimulations with Unobservable Tr
 subsection \<open>Nominal transition systems with unobservable transitions\<close>
 
 locale weak_nominal_ts = nominal_ts satisfies transition
-  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
-  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix "\<rightarrow>" 70) +
+  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 70)
+  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<close> 70) +
   fixes \<tau> :: 'act
   assumes tau_eqvt [eqvt]: "p \<bullet> \<tau> = \<tau>"
 begin
@@ -20,14 +20,14 @@ begin
   lemma bn_tau_fresh [simp]: "bn \<tau> \<sharp>* P"
   by (simp add: fresh_star_def)
 
-  inductive tau_transition :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix "\<Rightarrow>" 70) where
+  inductive tau_transition :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix \<open>\<Rightarrow>\<close> 70) where
     tau_refl [simp]: "P \<Rightarrow> P"
   | tau_step: "\<lbrakk> P \<rightarrow> \<langle>\<tau>, P'\<rangle>; P' \<Rightarrow> P'' \<rbrakk> \<Longrightarrow> P \<Rightarrow> P''"
 
-  definition observable_transition :: "'state \<Rightarrow> 'act \<Rightarrow> 'state \<Rightarrow> bool" ("_/ \<Rightarrow>{_}/ _" [70, 70, 71] 71) where
+  definition observable_transition :: "'state \<Rightarrow> 'act \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_/ \<Rightarrow>{_}/ _\<close> [70, 70, 71] 71) where
     "P \<Rightarrow>{\<alpha>} P' \<equiv> \<exists>Q Q'. P \<Rightarrow> Q \<and> Q \<rightarrow> \<langle>\<alpha>, Q'\<rangle> \<and> Q' \<Rightarrow> P'"
 
-  definition weak_transition :: "'state \<Rightarrow> 'act \<Rightarrow> 'state \<Rightarrow> bool" ("_/ \<Rightarrow>\<langle>_\<rangle>/ _" [70, 70, 71] 71) where
+  definition weak_transition :: "'state \<Rightarrow> 'act \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_/ \<Rightarrow>\<langle>_\<rangle>/ _\<close> [70, 70, 71] 71) where
     "P \<Rightarrow>\<langle>\<alpha>\<rangle> P' \<equiv> if \<alpha> = \<tau> then P \<Rightarrow> P' else P \<Rightarrow>{\<alpha>} P'"
 
   text \<open>The transition relations defined above are equivariant.\<close>
@@ -122,7 +122,7 @@ begin
       \<comment> \<open>weak simulation\<close>
       (\<forall>P Q. R P Q \<longrightarrow> (\<forall>\<alpha> P'. bn \<alpha> \<sharp>* Q \<longrightarrow> P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<longrightarrow> (\<exists>Q'. Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q' \<and> R P' Q')))"
 
-  definition weakly_bisimilar :: "'state \<Rightarrow> 'state \<Rightarrow> bool"  (infix "\<approx>\<cdot>" 100) where
+  definition weakly_bisimilar :: "'state \<Rightarrow> 'state \<Rightarrow> bool"  (infix \<open>\<approx>\<cdot>\<close> 100) where
     "P \<approx>\<cdot> Q \<equiv> \<exists>R. is_weak_bisimulation R \<and> R P Q"
 
   text \<open>@{const weakly_bisimilar} is an equivariant equivalence relation.\<close>

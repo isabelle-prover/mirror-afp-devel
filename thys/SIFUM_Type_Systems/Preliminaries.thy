@@ -16,8 +16,8 @@ text \<open>We consider a two-element security lattice:\<close>
 datatype Sec = High | Low
 
 notation
-  less_eq  (infix "\<sqsubseteq>" 50) and
-  less  (infix "\<sqsubset>" 50)
+  less_eq  (infix \<open>\<sqsubseteq>\<close> 50) and
+  less  (infix \<open>\<sqsubset>\<close> 50)
 
 text \<open>@{term Sec} forms a (complete) lattice:\<close>
 instantiation Sec :: complete_lattice

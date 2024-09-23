@@ -275,18 +275,18 @@ lemma component_of_term_of_pair [term_simps]: "component_of_term (term_of_pair (
 
 subsubsection \<open>Additive Structure of Terms\<close>
 
-definition splus :: "'a \<Rightarrow> 't \<Rightarrow> 't" (infixl "\<oplus>" 75)
+definition splus :: "'a \<Rightarrow> 't \<Rightarrow> 't" (infixl \<open>\<oplus>\<close> 75)
   where "splus t v = term_of_pair (t + pp_of_term v, component_of_term v)"
 
-definition sminus :: "'t \<Rightarrow> 'a \<Rightarrow> 't" (infixl "\<ominus>" 75)
+definition sminus :: "'t \<Rightarrow> 'a \<Rightarrow> 't" (infixl \<open>\<ominus>\<close> 75)
   where "sminus v t = term_of_pair (pp_of_term v - t, component_of_term v)"
 
 text \<open>Note that the argument order in @{const sminus} is reversed compared to the order in @{const splus}.\<close>
 
-definition adds_pp :: "'a \<Rightarrow> 't \<Rightarrow> bool" (infix "adds\<^sub>p" 50)
+definition adds_pp :: "'a \<Rightarrow> 't \<Rightarrow> bool" (infix \<open>adds\<^sub>p\<close> 50)
   where "adds_pp t v \<longleftrightarrow> t adds pp_of_term v"
 
-definition adds_term :: "'t \<Rightarrow> 't \<Rightarrow> bool" (infix "adds\<^sub>t" 50)
+definition adds_term :: "'t \<Rightarrow> 't \<Rightarrow> bool" (infix \<open>adds\<^sub>t\<close> 50)
   where "adds_term u v \<longleftrightarrow> component_of_term u = component_of_term v \<and> pp_of_term u adds pp_of_term v"
 
 lemma pp_of_term_splus [term_simps]: "pp_of_term (t \<oplus> v) = t + pp_of_term v"
@@ -994,7 +994,7 @@ lemma proj_lift_poly_fun_homogenous:
 
 subsection \<open>Component-wise Multiplication\<close>
 
-definition mult_vec :: "('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::semiring_0)" (infixl "**" 75)
+definition mult_vec :: "('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::semiring_0)" (infixl \<open>**\<close> 75)
   where "mult_vec = lift_poly_fun_2 (*)"
 
 lemma lookup_mult_vec:
@@ -1125,7 +1125,7 @@ qed
 
 subsection \<open>Scalar Multiplication\<close>
 
-definition mult_scalar :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::semiring_0)" (infixl "\<odot>" 75)
+definition mult_scalar :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::semiring_0)" (infixl \<open>\<odot>\<close> 75)
   where "mult_scalar p = lift_poly_fun ((*) p)"
 
 lemma lookup_mult_scalar:
@@ -1739,7 +1739,7 @@ qed
 
 end (* term_powerprod *)
 
-definition map_scale :: "'b \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::mult_zero)" (infixr "\<cdot>" 71)
+definition map_scale :: "'b \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::mult_zero)" (infixr \<open>\<cdot>\<close> 71)
   where "map_scale c = Poly_Mapping.map ((*) c)"
 
 text \<open>If the polynomial mapping \<open>p\<close> is interpreted as a power-product, then @{term "c \<cdot> p"}

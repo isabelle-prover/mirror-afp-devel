@@ -97,7 +97,7 @@ proof -
 qed
 
 definition restrict_relp :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
-  ("_ \<upharpoonleft> (_ \<otimes> _)" [53, 54, 54] 53)
+  (\<open>_ \<upharpoonleft> (_ \<otimes> _)\<close> [53, 54, 54] 53)
 where "restrict_relp R P Q = (\<lambda>x y. R x y \<and> P x \<and> Q y)"
 
 lemma restrict_relp_apply [simp]: "(R \<upharpoonleft> P \<otimes> Q) x y \<longleftrightarrow> R x y \<and> P x \<and> Q y"

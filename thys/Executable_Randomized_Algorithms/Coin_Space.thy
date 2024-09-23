@@ -25,12 +25,12 @@ abbreviation discrete_sigma_algebra
 
 bundle discrete_sigma_algebra_notation
 begin
-  notation discrete_sigma_algebra ("\<D>")
+  notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
 
 bundle no_discrete_sigma_algebra_notation
 begin
-  no_notation discrete_sigma_algebra ("\<D>")
+  no_notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
 
 unbundle discrete_sigma_algebra_notation
@@ -543,12 +543,12 @@ definition coin_space :: "coin_stream measure"
 
 bundle coin_space_notation
 begin
-  notation coin_space ("\<B>")
+  notation coin_space (\<open>\<B>\<close>)
 end
 
 bundle no_coin_space_notation
 begin
-  no_notation coin_space ("\<B>")
+  no_notation coin_space (\<open>\<B>\<close>)
 end
 
 unbundle coin_space_notation

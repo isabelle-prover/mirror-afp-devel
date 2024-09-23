@@ -184,7 +184,7 @@ qed
 
 subsection\<open>Inner mult over real iarrays\<close>
 
-definition inner_iarray :: "real iarray => real iarray => real"  (infixl "\<bullet>i" 70)
+definition inner_iarray :: "real iarray => real iarray => real"  (infixl \<open>\<bullet>i\<close> 70)
   where "inner_iarray A B = sum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}"
 
 lemma vec_to_iarray_inner:

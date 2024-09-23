@@ -467,7 +467,7 @@ subsubsection\<open>The inclusion of R into its fraction field\<close>
 definition Frac_inc where
 "Frac_inc R =  eq_obj_rng_of_frac.rng_to_rng_of_frac R (nonzero R)"
 
-abbreviation(in domain_frac)(input) inc ("\<iota>") where
+abbreviation(in domain_frac)(input) inc (\<open>\<iota>\<close>) where
 "inc \<equiv>  Frac_inc R"
 
 lemma(in domain_frac) inc_equation:

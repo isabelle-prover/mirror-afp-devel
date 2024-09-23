@@ -20,7 +20,7 @@ lemma compl_compl_eq_id [simp]:
   "UNIV - (UNIV - s) = s"
 by auto
 
-notation sym_diff (infixl "\<Delta>" 70)
+notation sym_diff (infixl \<open>\<Delta>\<close> 70)
 
 subsection \<open>Set-Interval.thy\<close>
 

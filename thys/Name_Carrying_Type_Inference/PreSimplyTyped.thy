@@ -28,7 +28,7 @@ fun ptrm_fvs :: "'a ptrm \<Rightarrow> 'a set" where
 | "ptrm_fvs (PFst P) = ptrm_fvs P"
 | "ptrm_fvs (PSnd P) = ptrm_fvs P"
 
-fun ptrm_apply_prm :: "'a prm \<Rightarrow> 'a ptrm \<Rightarrow> 'a ptrm" (infixr "\<bullet>" 150) where
+fun ptrm_apply_prm :: "'a prm \<Rightarrow> 'a ptrm \<Rightarrow> 'a ptrm" (infixr \<open>\<bullet>\<close> 150) where
   "ptrm_apply_prm \<pi> PUnit = PUnit"
 | "ptrm_apply_prm \<pi> (PVar x) = PVar (\<pi> $ x)"
 | "ptrm_apply_prm \<pi> (PApp A B) = PApp (ptrm_apply_prm \<pi> A) (ptrm_apply_prm \<pi> B)"
@@ -37,7 +37,7 @@ fun ptrm_apply_prm :: "'a prm \<Rightarrow> 'a ptrm \<Rightarrow> 'a ptrm" (infi
 | "ptrm_apply_prm \<pi> (PFst P) = PFst (ptrm_apply_prm \<pi> P)"
 | "ptrm_apply_prm \<pi> (PSnd P) = PSnd (ptrm_apply_prm \<pi> P)"
 
-inductive ptrm_alpha_equiv :: "'a ptrm \<Rightarrow> 'a ptrm \<Rightarrow> bool" (infix "\<approx>" 100) where
+inductive ptrm_alpha_equiv :: "'a ptrm \<Rightarrow> 'a ptrm \<Rightarrow> bool" (infix \<open>\<approx>\<close> 100) where
   unit:       "PUnit \<approx> PUnit"
 | var:        "(PVar x) \<approx> (PVar x)"
 | app:        "\<lbrakk>A \<approx> B; C \<approx> D\<rbrakk> \<Longrightarrow> (PApp A C) \<approx> (PApp B D)"

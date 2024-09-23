@@ -362,7 +362,7 @@ qed
 
 text \<open>The numbering $\psi$ is defined via @{term[names_short] prefixes}.\<close>
 
-definition psi :: partial2 ("\<psi>") where
+definition psi :: partial2 (\<open>\<psi>\<close>) where
   "\<psi> j x \<equiv> Some (e_nth (prefixes j (Suc x)) x)"
 
 lemma psi_in_R2: "\<psi> \<in> \<R>\<^sup>2"

@@ -13,13 +13,13 @@ adhoc_overloading eval eval_rel
 
 bundle eval_syntax
 begin
-notation eval ("'(`')")
-notation eval ("(_`_)" [999, 1000] 999)
+notation eval (\<open>'(`')\<close>)
+notation eval (\<open>(_`_)\<close> [999, 1000] 999)
 end
 bundle no_eval_syntax
 begin
-no_notation eval ("'(`')")
-no_notation eval ("(_`_)" [999, 1000] 999)
+no_notation eval (\<open>'(`')\<close>)
+no_notation eval (\<open>(_`_)\<close> [999, 1000] 999)
 end
 unbundle eval_syntax
 

@@ -19,14 +19,14 @@ definition minimalFace :: "face list \<Rightarrow> face" where
 definition minimalVertex :: "graph \<Rightarrow> face \<Rightarrow> vertex" where
  "minimalVertex g f \<equiv> minimal (height g) (vertices f)" 
 
-definition next_plane :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_plane\<^bsub>_\<^esub>") where
+definition next_plane :: "nat \<Rightarrow> graph \<Rightarrow> graph list" (\<open>next'_plane\<^bsub>_\<^esub>\<close>) where
  "next_plane\<^bsub>p\<^esub> g \<equiv>
      let fs = nonFinals g in
      if fs = [] then [] 
      else let f = minimalFace fs; v = minimalVertex g f in
           \<Squnion>\<^bsub>i\<in>[3..<Suc(maxGon p)]\<^esub> generatePolygon i v f g"
 
-definition PlaneGraphsP :: "nat \<Rightarrow> graph set" ("PlaneGraphs\<^bsub>_\<^esub>") where
+definition PlaneGraphsP :: "nat \<Rightarrow> graph set" (\<open>PlaneGraphs\<^bsub>_\<^esub>\<close>) where
 "PlaneGraphs\<^bsub>p\<^esub> \<equiv> {g. Seed\<^bsub>p\<^esub> [next_plane\<^bsub>p\<^esub>]\<rightarrow>* g \<and> final g}"
 
 definition PlaneGraphs :: "graph set" where

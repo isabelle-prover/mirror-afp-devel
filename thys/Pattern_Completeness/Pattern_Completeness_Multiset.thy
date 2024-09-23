@@ -45,7 +45,7 @@ definition subst_pat_problem_mset :: "('f,nat \<times> 's)subst \<Rightarrow> ('
 definition \<tau>s_list :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> ('f,nat \<times> 's)subst list" where 
   "\<tau>s_list n x = map (\<tau>c n x) (Cl (snd x))" 
 
-inductive mp_step_mset :: "('f,'v,'s)match_problem_mset \<Rightarrow> ('f,'v,'s)match_problem_mset \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>m" 50)where
+inductive mp_step_mset :: "('f,'v,'s)match_problem_mset \<Rightarrow> ('f,'v,'s)match_problem_mset \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>m\<close> 50)where
   match_decompose: "(f,length ts) = (g,length ls)
     \<Longrightarrow> add_mset (Fun f ts, Fun g ls) mp \<rightarrow>\<^sub>m mp + mset (zip ts ls)" 
 | match_match: "x \<notin> \<Union> (vars ` snd ` set_mset mp)
@@ -59,7 +59,7 @@ inductive match_fail :: "('f,'v,'s)match_problem_mset \<Rightarrow> bool" where
 | match_clash': "Conflict_Clash s t \<Longrightarrow> match_fail (add_mset (s, Var x) (add_mset (t, Var x) mp))"       
 
 inductive pp_step_mset :: "('f,'v,'s)pat_problem_mset \<Rightarrow> ('f,'v,'s)pats_problem_mset \<Rightarrow> bool"
-  (infix "\<Rightarrow>\<^sub>m" 50) where
+  (infix \<open>\<Rightarrow>\<^sub>m\<close> 50) where
   pat_remove_pp: "add_mset {#} pp \<Rightarrow>\<^sub>m {#}" 
 | pat_simp_mp: "mp_step_mset mp mp' \<Longrightarrow> add_mset mp pp \<Rightarrow>\<^sub>m {# (add_mset mp' pp) #}" 
 | pat_remove_mp: "match_fail mp \<Longrightarrow> add_mset mp pp \<Rightarrow>\<^sub>m {# pp #}"
@@ -73,12 +73,12 @@ inductive pat_fail :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
 | pat_empty: "pat_fail {#}" 
 
 inductive P_step_mset :: "('f,'v,'s)pats_problem_mset \<Rightarrow> ('f,'v,'s)pats_problem_mset \<Rightarrow> bool"
-  (infix "\<Rrightarrow>\<^sub>m" 50)where
+  (infix \<open>\<Rrightarrow>\<^sub>m\<close> 50)where
   P_failure: "pat_fail pp \<Longrightarrow> add_mset pp P \<noteq> bottom_mset \<Longrightarrow> add_mset pp P \<Rrightarrow>\<^sub>m bottom_mset" 
 | P_simp_pp: "pp \<Rightarrow>\<^sub>m pp' \<Longrightarrow> add_mset pp P \<Rrightarrow>\<^sub>m pp' + P"
 
 text \<open>The relation (encoded as predicate) is finally wrapped in a set\<close>
-definition P_step :: "(('f,'v,'s)pats_problem_mset \<times> ('f,'v,'s)pats_problem_mset)set" ("\<Rrightarrow>") where
+definition P_step :: "(('f,'v,'s)pats_problem_mset \<times> ('f,'v,'s)pats_problem_mset)set" (\<open>\<Rrightarrow>\<close>) where
   "\<Rrightarrow> = {(P,P'). P \<Rrightarrow>\<^sub>m P'}" 
 
 
@@ -353,17 +353,17 @@ definition meas_symbols :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
 definition meas_setsize :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
   "meas_setsize p = sum_ms (sum_ms (\<lambda> _. 1)) p + size p" 
 
-definition rel_pat :: "(('f,'v,'s)pat_problem_mset \<times> ('f,'v,'s)pat_problem_mset)set" ("\<prec>") where
+definition rel_pat :: "(('f,'v,'s)pat_problem_mset \<times> ('f,'v,'s)pat_problem_mset)set" (\<open>\<prec>\<close>) where
   "(\<prec>) = inv_image ({(x, y). x < y} <*lex*> {(x, y). x < y} <*lex*> {(x, y). x < y} <*lex*> {(x, y). x < y}) 
   (\<lambda> mp. (meas_diff mp, meas_finvars mp, meas_symbols mp, meas_setsize mp))" 
  
-abbreviation gt_rel_pat (infix "\<succ>" 50) where
+abbreviation gt_rel_pat (infix \<open>\<succ>\<close> 50) where
   "pp \<succ> pp' \<equiv> (pp',pp) \<in> \<prec>" 
 
-definition rel_pats :: "(('f,'v,'s)pats_problem_mset \<times> ('f,'v,'s)pats_problem_mset)set" ("\<prec>mul") where
+definition rel_pats :: "(('f,'v,'s)pats_problem_mset \<times> ('f,'v,'s)pats_problem_mset)set" (\<open>\<prec>mul\<close>) where
   "\<prec>mul = mult (\<prec>)" 
 
-abbreviation gt_rel_pats (infix "\<succ>mul" 50) where
+abbreviation gt_rel_pats (infix \<open>\<succ>mul\<close> 50) where
   "P \<succ>mul P' \<equiv> (P',P) \<in> \<prec>mul" 
 
 lemma wf_rel_pat: "wf \<prec>" 

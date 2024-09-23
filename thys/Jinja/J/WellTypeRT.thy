@@ -14,9 +14,9 @@ inductive
   WTrt :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"
   and WTrts :: "J_prog \<Rightarrow> heap \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> ty list \<Rightarrow> bool"
   and WTrt2 :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
-        ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
+        (\<open>_,_,_ \<turnstile> _ : _\<close>   [51,51,51]50)
   and WTrts2 :: "[J_prog,env,heap,expr list, ty list] \<Rightarrow> bool"
-        ("_,_,_ \<turnstile> _ [:] _" [51,51,51]50)
+        (\<open>_,_,_ \<turnstile> _ [:] _\<close> [51,51,51]50)
   for P :: J_prog and h :: heap
 where
   

@@ -30,8 +30,8 @@ type_synonym name = string
 datatype type =
     TVar nat
   | Top
-  | Fun type type    (infixr "\<rightarrow>" 200)
-  | TyAll type type  ("(3\<forall><:_./ _)" [0, 10] 10)
+  | Fun type type    (infixr \<open>\<rightarrow>\<close> 200)
+  | TyAll type type  (\<open>(3\<forall><:_./ _)\<close> [0, 10] 10)
   | RcdT "(name \<times> type) list"
 
 type_synonym fldT = "name \<times> type"
@@ -73,13 +73,13 @@ datatype pat = PVar type | PRcd "(name \<times> pat) list"
 
 datatype trm =
     Var nat
-  | Abs type trm   ("(3\<lambda>:_./ _)" [0, 10] 10)
-  | TAbs type trm  ("(3\<lambda><:_./ _)" [0, 10] 10)
-  | App trm trm    (infixl "\<bullet>" 200)
-  | TApp trm type  (infixl "\<bullet>\<^sub>\<tau>" 200)
+  | Abs type trm   (\<open>(3\<lambda>:_./ _)\<close> [0, 10] 10)
+  | TAbs type trm  (\<open>(3\<lambda><:_./ _)\<close> [0, 10] 10)
+  | App trm trm    (infixl \<open>\<bullet>\<close> 200)
+  | TApp trm type  (infixl \<open>\<bullet>\<^sub>\<tau>\<close> 200)
   | Rcd "(name \<times> trm) list"
-  | Proj trm name  ("(_.._)" [90, 91] 90)
-  | LET pat trm trm ("(LET (_ =/ _)/ IN (_))" 10)
+  | Proj trm name  (\<open>(_.._)\<close> [90, 91] 90)
+  | LET pat trm trm (\<open>(LET (_ =/ _)/ IN (_))\<close> 10)
 
 type_synonym fld = "name \<times> trm"
 type_synonym rcd = "(name \<times> trm) list"
@@ -96,9 +96,9 @@ can be treated like a nested abstraction \<open>(\<lambda>:T\<^sub>1. \<dots> \<
 
 subsection \<open>Lifting and Substitution\<close>
 
-primrec psize :: "pat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^sub>p")
-  and rsize :: "rpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^sub>r")
-  and fsize :: "fpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^sub>f")
+primrec psize :: "pat \<Rightarrow> nat" (\<open>\<parallel>_\<parallel>\<^sub>p\<close>)
+  and rsize :: "rpat \<Rightarrow> nat" (\<open>\<parallel>_\<parallel>\<^sub>r\<close>)
+  and fsize :: "fpat \<Rightarrow> nat" (\<open>\<parallel>_\<parallel>\<^sub>f\<close>)
 where
   "\<parallel>PVar T\<parallel>\<^sub>p = 1"
 | "\<parallel>PRcd fs\<parallel>\<^sub>p = \<parallel>fs\<parallel>\<^sub>r"
@@ -106,9 +106,9 @@ where
 | "\<parallel>f \<Colon> fs\<parallel>\<^sub>r = \<parallel>f\<parallel>\<^sub>f + \<parallel>fs\<parallel>\<^sub>r"
 | "\<parallel>(l, p)\<parallel>\<^sub>f = \<parallel>p\<parallel>\<^sub>p"
 
-primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^sub>\<tau>")
-  and liftrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT" ("\<up>\<^sub>r\<^sub>\<tau>")
-  and liftfT :: "nat \<Rightarrow> nat \<Rightarrow> fldT \<Rightarrow> fldT" ("\<up>\<^sub>f\<^sub>\<tau>")
+primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" (\<open>\<up>\<^sub>\<tau>\<close>)
+  and liftrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT" (\<open>\<up>\<^sub>r\<^sub>\<tau>\<close>)
+  and liftfT :: "nat \<Rightarrow> nat \<Rightarrow> fldT \<Rightarrow> fldT" (\<open>\<up>\<^sub>f\<^sub>\<tau>\<close>)
 where
   "\<up>\<^sub>\<tau> n k (TVar i) = (if i < k then TVar i else TVar (i + n))"
 | "\<up>\<^sub>\<tau> n k Top = Top"
@@ -119,9 +119,9 @@ where
 | "\<up>\<^sub>r\<^sub>\<tau> n k (f \<Colon> fs) = \<up>\<^sub>f\<^sub>\<tau> n k f \<Colon> \<up>\<^sub>r\<^sub>\<tau> n k fs"
 | "\<up>\<^sub>f\<^sub>\<tau> n k (l, T) = (l, \<up>\<^sub>\<tau> n k T)"
 
-primrec liftp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat" ("\<up>\<^sub>p")
-  and liftrp :: "nat \<Rightarrow> nat \<Rightarrow> rpat \<Rightarrow> rpat" ("\<up>\<^sub>r\<^sub>p")
-  and liftfp :: "nat \<Rightarrow> nat \<Rightarrow> fpat \<Rightarrow> fpat" ("\<up>\<^sub>f\<^sub>p")
+primrec liftp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat" (\<open>\<up>\<^sub>p\<close>)
+  and liftrp :: "nat \<Rightarrow> nat \<Rightarrow> rpat \<Rightarrow> rpat" (\<open>\<up>\<^sub>r\<^sub>p\<close>)
+  and liftfp :: "nat \<Rightarrow> nat \<Rightarrow> fpat \<Rightarrow> fpat" (\<open>\<up>\<^sub>f\<^sub>p\<close>)
 where
   "\<up>\<^sub>p n k (PVar T) = PVar (\<up>\<^sub>\<tau> n k T)"
 | "\<up>\<^sub>p n k (PRcd fs) = PRcd (\<up>\<^sub>r\<^sub>p n k fs)"
@@ -129,9 +129,9 @@ where
 | "\<up>\<^sub>r\<^sub>p n k (f \<Colon> fs) = \<up>\<^sub>f\<^sub>p n k f \<Colon> \<up>\<^sub>r\<^sub>p n k fs"
 | "\<up>\<^sub>f\<^sub>p n k (l, p) = (l, \<up>\<^sub>p n k p)"
 
-primrec lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" ("\<up>")
-  and liftr :: "nat \<Rightarrow> nat \<Rightarrow> rcd \<Rightarrow> rcd" ("\<up>\<^sub>r")
-  and liftf :: "nat \<Rightarrow> nat \<Rightarrow> fld \<Rightarrow> fld" ("\<up>\<^sub>f")
+primrec lift :: "nat \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm" (\<open>\<up>\<close>)
+  and liftr :: "nat \<Rightarrow> nat \<Rightarrow> rcd \<Rightarrow> rcd" (\<open>\<up>\<^sub>r\<close>)
+  and liftf :: "nat \<Rightarrow> nat \<Rightarrow> fld \<Rightarrow> fld" (\<open>\<up>\<^sub>f\<close>)
 where
   "\<up> n k (Var i) = (if i < k then Var i else Var (i + n))"
 | "\<up> n k (\<lambda>:T. t) = (\<lambda>:\<up>\<^sub>\<tau> n k T. \<up> n (k + 1) t)"
@@ -145,9 +145,9 @@ where
 | "\<up>\<^sub>r n k (f \<Colon> fs) = \<up>\<^sub>f n k f \<Colon> \<up>\<^sub>r n k fs"
 | "\<up>\<^sub>f n k (l, t) = (l, \<up> n k t)"
 
-primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>\<tau>" [300, 0, 0] 300)
-  and substrTT :: "rcdT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcdT"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<^sub>\<tau>" [300, 0, 0] 300)
-  and substfTT :: "fldT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fldT"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<^sub>\<tau>" [300, 0, 0] 300)
+primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>\<tau>\<close> [300, 0, 0] 300)
+  and substrTT :: "rcdT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcdT"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<^sub>\<tau>\<close> [300, 0, 0] 300)
+  and substfTT :: "fldT \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fldT"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<^sub>\<tau>\<close> [300, 0, 0] 300)
 where
   "(TVar i)[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau> =
      (if k < i then TVar (i - 1) else if i = k then \<up>\<^sub>\<tau> k 0 S else TVar i)"
@@ -159,9 +159,9 @@ where
 | "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>\<tau> = f[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>\<tau> \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>\<tau>"
 | "(l, T)[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>\<tau> = (l, T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
 
-primrec substpT :: "pat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> pat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>p" [300, 0, 0] 300)
-  and substrpT :: "rpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rpat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<^sub>p" [300, 0, 0] 300)
-  and substfpT :: "fpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fpat"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<^sub>p" [300, 0, 0] 300)
+primrec substpT :: "pat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> pat"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>p\<close> [300, 0, 0] 300)
+  and substrpT :: "rpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rpat"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<^sub>p\<close> [300, 0, 0] 300)
+  and substfpT :: "fpat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fpat"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<^sub>p\<close> [300, 0, 0] 300)
 where
   "(PVar T)[k \<mapsto>\<^sub>\<tau> S]\<^sub>p = PVar (T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>)"
 | "(PRcd fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>p = PRcd (fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p)"
@@ -169,7 +169,7 @@ where
 | "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p = f[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>p \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r\<^sub>p"
 | "(l, p)[k \<mapsto>\<^sub>\<tau> S]\<^sub>f\<^sub>p = (l, p[k \<mapsto>\<^sub>\<tau> S]\<^sub>p)"
 
-primrec decp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat"  ("\<down>\<^sub>p")
+primrec decp :: "nat \<Rightarrow> nat \<Rightarrow> pat \<Rightarrow> pat"  (\<open>\<down>\<^sub>p\<close>)
 where
   "\<down>\<^sub>p 0 k p = p"
 | "\<down>\<^sub>p (Suc n) k p = \<down>\<^sub>p n k (p[k \<mapsto>\<^sub>\<tau> Top]\<^sub>p)"
@@ -182,9 +182,9 @@ respectively. The extension of the existing lifting and substitution
 functions to records is fairly standard.
 \<close>
 
-primrec subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
-  and substr :: "rcd \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> rcd"  ("_[_ \<mapsto> _]\<^sub>r" [300, 0, 0] 300)
-  and substf :: "fld \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> fld"  ("_[_ \<mapsto> _]\<^sub>f" [300, 0, 0] 300)
+primrec subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  (\<open>_[_ \<mapsto> _]\<close> [300, 0, 0] 300)
+  and substr :: "rcd \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> rcd"  (\<open>_[_ \<mapsto> _]\<^sub>r\<close> [300, 0, 0] 300)
+  and substf :: "fld \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> fld"  (\<open>_[_ \<mapsto> _]\<^sub>f\<close> [300, 0, 0] 300)
 where
   "(Var i)[k \<mapsto> s] =
      (if k < i then Var (i - 1) else if i = k then \<up> k 0 s else Var i)"
@@ -209,9 +209,9 @@ the \<open>LET\<close> binder, where @{term "\<parallel>p\<parallel>\<^sub>p"} i
 in the pattern @{term p}.
 \<close>
 
-primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"  ("_[_ \<mapsto>\<^sub>\<tau> _]" [300, 0, 0] 300)
-  and substrT :: "rcd \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcd"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r" [300, 0, 0] 300)
-  and substfT :: "fld \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fld"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f" [300, 0, 0] 300)
+primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<close> [300, 0, 0] 300)
+  and substrT :: "rcd \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcd"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r\<close> [300, 0, 0] 300)
+  and substfT :: "fld \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> fld"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>f\<close> [300, 0, 0] 300)
 where
   "(Var i)[k \<mapsto>\<^sub>\<tau> S] = (if k < i then Var (i - 1) else Var i)"
 | "(t \<bullet> u)[k \<mapsto>\<^sub>\<tau> S] = t[k \<mapsto>\<^sub>\<tau> S] \<bullet> u[k \<mapsto>\<^sub>\<tau> S]"
@@ -226,12 +226,12 @@ where
 | "(f \<Colon> fs)[k \<mapsto>\<^sub>\<tau> S]\<^sub>r = f[k \<mapsto>\<^sub>\<tau> S]\<^sub>f \<Colon> fs[k \<mapsto>\<^sub>\<tau> S]\<^sub>r"
 | "(l, t)[k \<mapsto>\<^sub>\<tau> S]\<^sub>f = (l, t[k \<mapsto>\<^sub>\<tau> S])"
 
-primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^sub>e")
+primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" (\<open>\<up>\<^sub>e\<close>)
 where
   "\<up>\<^sub>e n k [] = []"
 | "\<up>\<^sub>e n k (B \<Colon> \<Gamma>) = mapB (\<up>\<^sub>\<tau> n (k + \<parallel>\<Gamma>\<parallel>)) B \<Colon> \<up>\<^sub>e n k \<Gamma>"
 
-primrec substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>e" [300, 0, 0] 300)
+primrec substE :: "env \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> env"  (\<open>_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>e\<close> [300, 0, 0] 300)
 where
   "[][k \<mapsto>\<^sub>\<tau> T]\<^sub>e = []"
 | "(B \<Colon> \<Gamma>)[k \<mapsto>\<^sub>\<tau> T]\<^sub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^sub>\<tau> T]\<^sub>e"
@@ -243,22 +243,22 @@ for simultaneously substituting terms @{term us} for variables with
 consecutive indices:
 \<close>
 
-primrec substs :: "trm \<Rightarrow> nat \<Rightarrow> trm list \<Rightarrow> trm"  ("_[_ \<mapsto>\<^sub>s _]" [300, 0, 0] 300)
+primrec substs :: "trm \<Rightarrow> nat \<Rightarrow> trm list \<Rightarrow> trm"  (\<open>_[_ \<mapsto>\<^sub>s _]\<close> [300, 0, 0] 300)
 where
   "t[k \<mapsto>\<^sub>s []] = t"
 | "t[k \<mapsto>\<^sub>s u \<Colon> us] = t[k + \<parallel>us\<parallel> \<mapsto> u][k \<mapsto>\<^sub>s us]"
 
-primrec decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("\<down>\<^sub>\<tau>")
+primrec decT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  (\<open>\<down>\<^sub>\<tau>\<close>)
 where
   "\<down>\<^sub>\<tau> 0 k T = T"
 | "\<down>\<^sub>\<tau> (Suc n) k T = \<down>\<^sub>\<tau> n k (T[k \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>)"
 
-primrec decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  ("\<down>\<^sub>e")
+primrec decE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env"  (\<open>\<down>\<^sub>e\<close>)
 where
   "\<down>\<^sub>e 0 k \<Gamma> = \<Gamma>"
 | "\<down>\<^sub>e (Suc n) k \<Gamma> = \<down>\<^sub>e n k (\<Gamma>[k \<mapsto>\<^sub>\<tau> Top]\<^sub>e)"
 
-primrec decrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT"  ("\<down>\<^sub>r\<^sub>\<tau>")
+primrec decrT :: "nat \<Rightarrow> nat \<Rightarrow> rcdT \<Rightarrow> rcdT"  (\<open>\<down>\<^sub>r\<^sub>\<tau>\<close>)
 where
   "\<down>\<^sub>r\<^sub>\<tau> 0 k fTs = fTs"
 | "\<down>\<^sub>r\<^sub>\<tau> (Suc n) k fTs = \<down>\<^sub>r\<^sub>\<tau> n k (fTs[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>)"
@@ -592,7 +592,7 @@ all labels @{term l} in @{term fs} are {\it unique}.
 \<close>
 
 inductive
-  well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f _" [50, 50] 50)
+  well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  (\<open>_ \<turnstile>\<^sub>w\<^sub>f _\<close> [50, 50] 50)
 where
   wf_TVar: "\<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i"
 | wf_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f Top"
@@ -601,8 +601,8 @@ where
 | wf_RcdT: "unique fs \<Longrightarrow> \<forall>(l, T)\<in>set fs. \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs"
 
 inductive
-  well_formedE :: "env \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f" [50] 50)
-  and well_formedB :: "env \<Rightarrow> binding \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f\<^sub>B _" [50, 50] 50)
+  well_formedE :: "env \<Rightarrow> bool"  (\<open>_ \<turnstile>\<^sub>w\<^sub>f\<close> [50] 50)
+  and well_formedB :: "env \<Rightarrow> binding \<Rightarrow> bool"  (\<open>_ \<turnstile>\<^sub>w\<^sub>f\<^sub>B _\<close> [50, 50] 50)
 where
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<equiv> \<Gamma> \<turnstile>\<^sub>w\<^sub>f type_ofB B"
 | wf_Nil: "[] \<turnstile>\<^sub>w\<^sub>f"
@@ -843,7 +843,7 @@ are already well-formed.
 \<close>
 
 inductive
-  subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [50, 50, 50] 50)
+  subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  (\<open>_ \<turnstile> _ <: _\<close> [50, 50, 50] 50)
 where
   SA_Top: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f S \<Longrightarrow> \<Gamma> \<turnstile> S <: Top"
 | SA_refl_TVar: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i \<Longrightarrow> \<Gamma> \<turnstile> TVar i <: TVar i"
@@ -1318,8 +1318,8 @@ in @{term \<Delta>} appear in reverse order.
 \<close>
 
 inductive
-  ptyping :: "pat \<Rightarrow> type \<Rightarrow> env \<Rightarrow> bool"  ("\<turnstile> _ : _ \<Rightarrow> _" [50, 50, 50] 50)
-  and ptypings :: "rpat \<Rightarrow> rcdT \<Rightarrow> env \<Rightarrow> bool"  ("\<turnstile> _ [:] _ \<Rightarrow> _" [50, 50, 50] 50)
+  ptyping :: "pat \<Rightarrow> type \<Rightarrow> env \<Rightarrow> bool"  (\<open>\<turnstile> _ : _ \<Rightarrow> _\<close> [50, 50, 50] 50)
+  and ptypings :: "rpat \<Rightarrow> rcdT \<Rightarrow> env \<Rightarrow> bool"  (\<open>\<turnstile> _ [:] _ \<Rightarrow> _\<close> [50, 50, 50] 50)
 where
   P_Var: "\<turnstile> PVar T : T \<Rightarrow> [VarB T]"
 | P_Rcd: "\<turnstile> fps [:] fTs \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> PRcd fps : RcdT fTs \<Rightarrow> \<Delta>"
@@ -1336,8 +1336,8 @@ with a typing judgement \<open>\<Gamma> \<turnstile> fs [:] fTs\<close> for reco
 \<close>
 
 inductive
-  typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ : _" [50, 50, 50] 50)
-  and typings :: "env \<Rightarrow> rcd \<Rightarrow> rcdT \<Rightarrow> bool"  ("_ \<turnstile> _ [:] _" [50, 50, 50] 50)
+  typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"  (\<open>_ \<turnstile> _ : _\<close> [50, 50, 50] 50)
+  and typings :: "env \<Rightarrow> rcd \<Rightarrow> rcdT \<Rightarrow> bool"  (\<open>_ \<turnstile> _ [:] _\<close> [50, 50, 50] 50)
 where
   T_Var: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma>\<langle>i\<rangle> = \<lfloor>VarB U\<rfloor> \<Longrightarrow> T = \<up>\<^sub>\<tau> (Suc i) 0 U \<Longrightarrow> \<Gamma> \<turnstile> Var i : T"
 | T_Abs: "VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2 \<Longrightarrow> \<Gamma> \<turnstile> (\<lambda>:T\<^sub>1. t\<^sub>2) : T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2"
@@ -1912,8 +1912,8 @@ against a list of fields @{term fs}:
 \<close>
 
 inductive
-  match :: "pat \<Rightarrow> trm \<Rightarrow> trm list \<Rightarrow> bool"  ("\<turnstile> _ \<rhd> _ \<Rightarrow> _" [50, 50, 50] 50)
-  and matchs :: "rpat \<Rightarrow> rcd \<Rightarrow> trm list \<Rightarrow> bool"  ("\<turnstile> _ [\<rhd>] _ \<Rightarrow> _" [50, 50, 50] 50)
+  match :: "pat \<Rightarrow> trm \<Rightarrow> trm list \<Rightarrow> bool"  (\<open>\<turnstile> _ \<rhd> _ \<Rightarrow> _\<close> [50, 50, 50] 50)
+  and matchs :: "rpat \<Rightarrow> rcd \<Rightarrow> trm list \<Rightarrow> bool"  (\<open>\<turnstile> _ [\<rhd>] _ \<Rightarrow> _\<close> [50, 50, 50] 50)
 where
   M_PVar: "\<turnstile> PVar T \<rhd> t \<Rightarrow> [t]"
 | M_Rcd: "\<turnstile> fps [\<rhd>] fs \<Rightarrow> ts \<Longrightarrow> \<turnstile> PRcd fps \<rhd> Rcd fs \<Rightarrow> ts"
@@ -1926,8 +1926,8 @@ The rules of the evaluation relation for the calculus with records are as follow
 \<close>
 
 inductive
-  eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<longmapsto>" 50)
-  and evals :: "rcd \<Rightarrow> rcd \<Rightarrow> bool"  (infixl "[\<longmapsto>]" 50)
+  eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl \<open>\<longmapsto>\<close> 50)
+  and evals :: "rcd \<Rightarrow> rcd \<Rightarrow> bool"  (infixl \<open>[\<longmapsto>]\<close> 50)
 where
   E_Abs: "v\<^sub>2 \<in> value \<Longrightarrow> (\<lambda>:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet> v\<^sub>2 \<longmapsto> t\<^sub>1\<^sub>2[0 \<mapsto> v\<^sub>2]"
 | E_TAbs: "(\<lambda><:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]"

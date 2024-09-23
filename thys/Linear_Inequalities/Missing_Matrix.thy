@@ -87,7 +87,7 @@ lemma elements_mat_uminus[simp]: "elements_mat (-A) = uminus ` elements_mat A"
 lemma vec_set_uminus[simp]: "vec_set (-A) = uminus ` vec_set A"
   unfolding vec_set_def by auto
 
-definition append_cols :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat"  (infixr "@\<^sub>c" 65) where
+definition append_cols :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat"  (infixr \<open>@\<^sub>c\<close> 65) where
   "A @\<^sub>c B = (A\<^sup>T @\<^sub>r B\<^sup>T)\<^sup>T"
 
 lemma carrier_append_cols[simp, intro]:

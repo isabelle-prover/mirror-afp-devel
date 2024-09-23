@@ -33,7 +33,7 @@ definition twiddleStore::"PBij \<Rightarrow> Store \<Rightarrow> Store \<Rightar
 where "twiddleStore \<beta> s1 s2 =
   (\<forall> x. CONTEXT x = low \<longrightarrow> (\<beta>, s1 x, s2 x) : twiddleVal)"
 
-abbreviation twiddleStore_syntax  ("_  \<approx>\<^sub>_ _" [100,100] 50)
+abbreviation twiddleStore_syntax  (\<open>_  \<approx>\<^sub>_ _\<close> [100,100] 50)
   where "s \<approx>\<^sub>\<beta> t == twiddleStore \<beta> s t"
 
 text\<open>On objects, we require the values in low fields to be related,
@@ -95,7 +95,7 @@ definition twiddle::"PBij \<Rightarrow> State \<Rightarrow> State \<Rightarrow> 
 where "twiddle \<beta> s t = (noLowDPs s \<and> noLowDPs t \<and> 
                  (fst s) \<approx>\<^sub>\<beta> (fst t) \<and> twiddleHeap \<beta> (snd s) (snd t))"
 
-abbreviation twiddle_syntax  ("_ \<equiv>\<^sub>_ _" [100,100] 50)
+abbreviation twiddle_syntax  (\<open>_ \<equiv>\<^sub>_ _\<close> [100,100] 50)
   where "s \<equiv>\<^sub>\<beta> t == twiddle \<beta> s t"
 
 text\<open>The following properties are easily proven by unfolding the

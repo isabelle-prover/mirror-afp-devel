@@ -18,23 +18,23 @@ abbreviation Succ where "Succ sucx x \<equiv> FAnd (FBase (Less None x sucx)) (F
 
 definition "Thm idx \<phi> = check_eqv idx \<phi> (FBool True)"
 
-abbreviation FTrue ("\<top>") where "FTrue \<equiv> FBool True"
-abbreviation FFalse ("\<bottom>") where "FFalse \<equiv> FBool False"
+abbreviation FTrue (\<open>\<top>\<close>) where "FTrue \<equiv> FBool True"
+abbreviation FFalse (\<open>\<bottom>\<close>) where "FFalse \<equiv> FBool False"
 
-notation FImp (infixr "-->" 25)
-notation (output) FO ("1")
-notation (output) SO ("2")
-notation FEx ("\<exists>\<^sub>_ _" [10] 10)
-notation FAll ("\<forall>\<^sub>_ _" [10] 10)
-notation FNot ("\<not> _" [40] 40)
-notation FOr (infixr "\<or>" 30)
-notation FAnd (infixr "\<and>" 35)
-abbreviation FLess ("x\<^sub>_ < x\<^sub>_" [65, 66] 65) where "FLess m1 m2 \<equiv> FBase (Less None m1 m2)"
-abbreviation FIn ("x\<^sub>_ \<in> X\<^bsub>_\<^esub>" [65, 66] 65) where "FIn m M \<equiv> FBase (In False m M)"
-abbreviation FEq_Const ("x\<^sub>_ = _" [65, 66] 65) where "FEq_Const m n \<equiv> FBase (Eq_Const None m n)"
-abbreviation FEq_Plus ("x\<^sub>_ = x\<^sub>_ + _" [65, 66] 65) where "FEq_Plus m n i \<equiv> FBase (Plus_FO None m n i)"
-abbreviation FSuc_SO ("X\<^sub>_ = X\<^sub>_ + 1" [65, 66] 65) where "FSuc_SO m n \<equiv> FBase (Suc_SO False False m n)"
-abbreviation FQ ("[x\<^sub>_]" [66] 65) where "FQ m \<equiv> FBase (Fo m)"
+notation FImp (infixr \<open>-->\<close> 25)
+notation (output) FO (\<open>1\<close>)
+notation (output) SO (\<open>2\<close>)
+notation FEx (\<open>\<exists>\<^sub>_ _\<close> [10] 10)
+notation FAll (\<open>\<forall>\<^sub>_ _\<close> [10] 10)
+notation FNot (\<open>\<not> _\<close> [40] 40)
+notation FOr (infixr \<open>\<or>\<close> 30)
+notation FAnd (infixr \<open>\<and>\<close> 35)
+abbreviation FLess (\<open>x\<^sub>_ < x\<^sub>_\<close> [65, 66] 65) where "FLess m1 m2 \<equiv> FBase (Less None m1 m2)"
+abbreviation FIn (\<open>x\<^sub>_ \<in> X\<^bsub>_\<^esub>\<close> [65, 66] 65) where "FIn m M \<equiv> FBase (In False m M)"
+abbreviation FEq_Const (\<open>x\<^sub>_ = _\<close> [65, 66] 65) where "FEq_Const m n \<equiv> FBase (Eq_Const None m n)"
+abbreviation FEq_Plus (\<open>x\<^sub>_ = x\<^sub>_ + _\<close> [65, 66] 65) where "FEq_Plus m n i \<equiv> FBase (Plus_FO None m n i)"
+abbreviation FSuc_SO (\<open>X\<^sub>_ = X\<^sub>_ + 1\<close> [65, 66] 65) where "FSuc_SO m n \<equiv> FBase (Suc_SO False False m n)"
+abbreviation FQ (\<open>[x\<^sub>_]\<close> [66] 65) where "FQ m \<equiv> FBase (Fo m)"
 
 lemma "check_eqv (Abs_idx (1, 0)) (FAnd (FEq_Const 0 100000) (FEq_Const 0 0)) FFalse"
   by check_equiv
@@ -65,9 +65,9 @@ lemma "Thm (Abs_idx (0, 1)) (FNot M2L)"
 lemma "Thm (Abs_idx (0, 0)) \<Phi>"
   by (simp add: Thm_def \<Phi>_def) check_equiv
 
-abbreviation Globally ("\<box>_" [40] 40) where "Globally P == %n. FAll FO (FImp (FNot (FBase (Less None (n+1) 0))) (P 0))"
-abbreviation Future ("\<diamond>_" [40] 40) where "Future P == %n. FEx FO (FAnd (FNot (FBase (Less None (n+1) 0))) (P 0))"
-abbreviation IMP (infixr "\<rightarrow>" 50) where "IMP P1 P2 == %n. FImp (P1 n) (P2 n)"
+abbreviation Globally (\<open>\<box>_\<close> [40] 40) where "Globally P == %n. FAll FO (FImp (FNot (FBase (Less None (n+1) 0))) (P 0))"
+abbreviation Future (\<open>\<diamond>_\<close> [40] 40) where "Future P == %n. FEx FO (FAnd (FNot (FBase (Less None (n+1) 0))) (P 0))"
+abbreviation IMP (infixr \<open>\<rightarrow>\<close> 50) where "IMP P1 P2 == %n. FImp (P1 n) (P2 n)"
 
 definition \<Psi> :: "nat \<Rightarrow> formula" where
   "\<Psi> n = FAll FO (((\<box>(foldr (\<lambda>i \<phi>. (\<lambda>m. FBase (In False m i)) \<rightarrow> \<phi>) [0..<n] (\<lambda>m. FBase (In False m n)))) \<rightarrow>

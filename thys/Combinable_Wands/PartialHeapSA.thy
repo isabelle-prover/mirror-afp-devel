@@ -52,10 +52,10 @@ definition larger_heap where
 definition unit :: "state" where
   "unit = Abs_state (empty_mask, empty_heap)"
 
-definition plus :: "state \<Rightarrow> state \<rightharpoonup> state" (infixl "\<oplus>" 63) where
+definition plus :: "state \<Rightarrow> state \<rightharpoonup> state" (infixl \<open>\<oplus>\<close> 63) where
   "a \<oplus> b = (if compatible (Rep_state a) (Rep_state b) then Some (Abs_state (add_states (Rep_state a) (Rep_state b))) else None)"
 
-definition core :: "state \<Rightarrow> state" (" |_| ") where
+definition core :: "state \<Rightarrow> state" (\<open> |_| \<close>) where
   "core \<phi> = Abs_state (empty_mask, get_h \<phi>)"
 
 definition stable :: "state \<Rightarrow> bool" where
@@ -509,11 +509,11 @@ qed
 subsection \<open>This state model corresponds to a separation algebra\<close>
 
 global_interpretation PartialSA: package_logic plus core unit stable
-  defines greater (infixl "\<succeq>" 50) = "PartialSA.greater"
-      and add_set (infixl "\<otimes>" 60) = "PartialSA.add_set"
-      and defined (infixl "|#|" 60) = "PartialSA.defined"
-      and greater_set (infixl "|\<ggreater>|" 50) = "PartialSA.greater_set"
-      and minus (infixl "|\<ominus>|" 60) = "PartialSA.minus"
+  defines greater (infixl \<open>\<succeq>\<close> 50) = "PartialSA.greater"
+      and add_set (infixl \<open>\<otimes>\<close> 60) = "PartialSA.add_set"
+      and defined (infixl \<open>|#|\<close> 60) = "PartialSA.defined"
+      and greater_set (infixl \<open>|\<ggreater>|\<close> 50) = "PartialSA.greater_set"
+      and minus (infixl \<open>|\<ominus>|\<close> 60) = "PartialSA.minus"
   apply standard
   apply (simp add: commutative)
   using asso1 apply blast

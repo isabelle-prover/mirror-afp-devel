@@ -42,9 +42,9 @@ lemma H_eq: "P \<subseteq> Id \<Longrightarrow> Q \<subseteq> Id \<Longrightarro
   apply (auto simp: rel_ad_def)
 done
 
-no_notation VC_KAD.spec_sugar ("PRE _ _ POST _" [64,64,64] 63)
-and VC_KAD.cond_sugar ("IF _ THEN _ ELSE _ FI" [64,64,64] 63)
-and VC_KAD.gets ("_ ::= _" [70, 65] 61)
+no_notation VC_KAD.spec_sugar (\<open>PRE _ _ POST _\<close> [64,64,64] 63)
+and VC_KAD.cond_sugar (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63)
+and VC_KAD.gets (\<open>_ ::= _\<close> [70, 65] 61)
 
 text \<open>Next we provide some syntactic sugar.\<close>
 

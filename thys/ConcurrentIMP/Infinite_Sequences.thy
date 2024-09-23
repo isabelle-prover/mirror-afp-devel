@@ -18,7 +18,7 @@ We use the customary function-based representation.
 type_synonym 'a seq = "nat \<Rightarrow> 'a"
 type_synonym 'a seq_pred = "'a seq \<Rightarrow> bool"
 
-definition suffix :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" (infixl "|\<^sub>s" 60) where
+definition suffix :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" (infixl \<open>|\<^sub>s\<close> 60) where
   "\<sigma> |\<^sub>s i \<equiv> \<lambda>j. \<sigma> (j + i)"
 
 primrec stake :: "nat \<Rightarrow> 'a seq \<Rightarrow> 'a list" where
@@ -30,7 +30,7 @@ primrec shift :: "'a list \<Rightarrow> 'a seq \<Rightarrow> 'a seq" (infixr \<o
 | "shift (x # xs) \<sigma> = (\<lambda>i. case i of 0 \<Rightarrow> x | Suc i \<Rightarrow> shift xs \<sigma> i)"
 
 (* FIXME misleading: this is \<sigma>(i, i+j). Use a bundle for this notation. FIXME move *)
-abbreviation interval_syn ("_'(_ \<rightarrow> _')" [69, 0, 0] 70) where (* FIXME priorities *)
+abbreviation interval_syn (\<open>_'(_ \<rightarrow> _')\<close> [69, 0, 0] 70) where (* FIXME priorities *)
   "\<sigma>(i \<rightarrow> j) \<equiv> stake j (\<sigma> |\<^sub>s i)"
 
 lemma suffix_eval: "(\<sigma> |\<^sub>s i) j = \<sigma> (j + i)"

@@ -71,7 +71,7 @@ text \<open>
 The following inductive predicate formalizes the resolution prover in Figure 5.
 \<close>
 
-inductive RP :: "'a state \<Rightarrow> 'a state \<Rightarrow> bool" (infix "\<leadsto>" 50) where
+inductive RP :: "'a state \<Rightarrow> 'a state \<Rightarrow> bool" (infix \<open>\<leadsto>\<close> 50) where
   tautology_deletion: "Neg A \<in># C \<Longrightarrow> Pos A \<in># C \<Longrightarrow> (N \<union> {C}, P, Q) \<leadsto> (N, P, Q)"
 | forward_subsumption: "D \<in> P \<union> Q \<Longrightarrow> subsumes D C \<Longrightarrow> (N \<union> {C}, P, Q) \<leadsto> (N, P, Q)"
 | backward_subsumption_P: "D \<in> N \<Longrightarrow> strictly_subsumes D C \<Longrightarrow> (N, P \<union> {C}, Q) \<leadsto> (N, P, Q)"

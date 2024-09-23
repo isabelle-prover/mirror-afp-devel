@@ -38,7 +38,7 @@ text \<open>An abbreviation of the + and \#\# operators in Separation\_Algebra.t
   This notion is closer to the ternary relational atoms used in the literature. 
   This will be the main data structure which our labelled sequent calculus works on.\<close>
 
-definition tern_rel:: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_,_\<triangleright>_)" 25) where
+definition tern_rel:: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_,_\<triangleright>_)\<close> 25) where
   "tern_rel a b c \<equiv> a ## b \<and> a + b = c"
   
 lemma exist_comb: "x ## y \<Longrightarrow> \<exists>z. (x,y\<triangleright>z)"
@@ -552,7 +552,7 @@ proof-
         sep_substate_disj_add')   
 qed
 
-abbreviation sep_septraction :: "(('a::sep_algebra) \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr "\<longrightarrow>\<oplus>" 25)
+abbreviation sep_septraction :: "(('a::sep_algebra) \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr \<open>\<longrightarrow>\<oplus>\<close> 25)
   where
     "P \<longrightarrow>\<oplus> Q \<equiv>  not (P \<longrightarrow>* not Q)"
   

@@ -58,7 +58,7 @@ For executability, we may need to assume that this type is infinite.\<close>
 typedecl fid_t
 
 datatype fresh_t = 
-  mk_fresh "fid_t" "nat"      (infixr "$" 65) 
+  mk_fresh "fid_t" "nat"      (infixr \<open>$\<close> 65) 
 
 fun fid :: "fresh_t \<Rightarrow> fid_t" where
   "fid (f $ n) = f"

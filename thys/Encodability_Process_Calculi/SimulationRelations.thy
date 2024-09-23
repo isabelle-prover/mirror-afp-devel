@@ -1448,7 +1448,7 @@ inductive_set stepsClosure :: "('a \<times> 'a) set \<Rightarrow> 'a processCalc
           \<Longrightarrow> (P, R) \<in> stepsClosure Rel Cal"
 
 abbreviation stepsClosureInfix ::
-    "'a \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> 'a processCalculus \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<R>\<mapsto><_,_> _" [75, 75, 75, 75] 80)
+    "'a \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> 'a processCalculus \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<R>\<mapsto><_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<R>\<mapsto><Rel,Cal> Q \<equiv> (P, Q) \<in> stepsClosure Rel Cal"
 

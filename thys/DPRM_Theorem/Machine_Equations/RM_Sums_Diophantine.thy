@@ -8,7 +8,7 @@ begin
 
 definition sum_ssub_nzero_of_bit_and  :: "polynomial \<Rightarrow> nat \<Rightarrow> polynomial list \<Rightarrow> polynomial list
                                     \<Rightarrow> relation" 
-  ("[_ = \<Sum>S- _ '(_ && _')]") where
+  (\<open>[_ = \<Sum>S- _ '(_ && _')]\<close>) where
   "[x = \<Sum>S- d (s && z)] \<equiv> let x' = push_param x (length p);
                                 s' = push_param_list s (length p); 
                                 z' = push_param_list z (length p)
@@ -58,7 +58,7 @@ qed
 
 definition sum_ssub_zero_of_bit_and  :: "polynomial \<Rightarrow> nat \<Rightarrow> polynomial list \<Rightarrow> polynomial list
                                     \<Rightarrow> relation" 
-  ("[_ = \<Sum>S0 _ '(_ && _')]") where
+  (\<open>[_ = \<Sum>S0 _ '(_ && _')]\<close>) where
   "[x = \<Sum>S0 d (s && z)] \<equiv> let x' = push_param x (length p);
                                 s' = push_param_list s (length p); 
                                 z' = push_param_list z (length p)

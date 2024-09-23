@@ -41,7 +41,7 @@ lemma toplevel_summands_finite[simp]:
   "finite (toplevel_summands r)"
   by (induct r) auto
 
-primrec ACI_norm :: "('a::linorder) rexp \<Rightarrow> 'a rexp"  ("\<guillemotleft>_\<guillemotright>") where
+primrec ACI_norm :: "('a::linorder) rexp \<Rightarrow> 'a rexp"  (\<open>\<guillemotleft>_\<guillemotright>\<close>) where
   "\<guillemotleft>Zero\<guillemotright> = Zero"
 | "\<guillemotleft>One\<guillemotright> = One"
 | "\<guillemotleft>Atom a\<guillemotright> = Atom a"

@@ -464,7 +464,7 @@ is a Gödel number of $f$ can be learned finitely by always hypothesizing
 $f(0)$. The class is not in NUM and therefore serves to separate NUM and
 FIN.\<close>
 
-definition V0 :: "partial1 set" ("V\<^sub>0") where
+definition V0 :: "partial1 set" (\<open>V\<^sub>0\<close>) where
   "V\<^sub>0 = {f. f \<in> \<R> \<and> \<phi> (the (f 0)) = f}"
 
 lemma V0_altdef: "V\<^sub>0 = {[i] \<odot> f| i f. f \<in> \<R> \<and> \<phi> i = [i] \<odot> f}"

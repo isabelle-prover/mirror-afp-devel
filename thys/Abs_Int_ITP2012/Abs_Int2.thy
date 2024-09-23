@@ -23,8 +23,8 @@ end
 hide_const bot
 
 class L_top_bot = SL_top +
-fixes meet :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<sqinter>" 65)
-and bot :: "'a" ("\<bottom>")
+fixes meet :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<sqinter>\<close> 65)
+and bot :: "'a" (\<open>\<bottom>\<close>)
 assumes meet_le1 [simp]: "x \<sqinter> y \<sqsubseteq> x"
 and meet_le2 [simp]: "x \<sqinter> y \<sqsubseteq> y"
 and meet_greatest: "x \<sqsubseteq> y \<Longrightarrow> x \<sqsubseteq> z \<Longrightarrow> x \<sqsubseteq> y \<sqinter> z"

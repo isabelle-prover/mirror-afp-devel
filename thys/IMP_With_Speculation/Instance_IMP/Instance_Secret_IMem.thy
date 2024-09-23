@@ -6,7 +6,7 @@ theory Instance_Secret_IMem
 imports Instance_Common "Relative_Security.Relative_Security"
 begin
 
-no_notation bot ("\<bottom>")
+no_notation bot (\<open>\<bottom>\<close>)
 type_synonym secret = "state"
 
 context Prog_Mispred

@@ -10,9 +10,9 @@ type_synonym 'a property = "'a \<Rightarrow> bool"
 
 locale sep_algebra =
 
-  fixes plus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a option" (infixl "\<oplus>" 63)
+  fixes plus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a option" (infixl \<open>\<oplus>\<close> 63)
 
-  fixes core :: "'a \<Rightarrow> 'a" (" |_| ")
+  fixes core :: "'a \<Rightarrow> 'a" (\<open> |_| \<close>)
   (* Largest duplicable part of a state *)
 
   assumes commutative: "a \<oplus> b = b \<oplus> a"
@@ -38,28 +38,28 @@ lemma asso3:
 
 subsection  \<open>Definitions\<close>
 
-definition defined :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "##" 62) where
+definition defined :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>##\<close> 62) where
   "a ## b \<longleftrightarrow> a \<oplus> b \<noteq> None"
 
-definition greater :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<succeq>" 50) where
+definition greater :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<succeq>\<close> 50) where
   "a \<succeq> b \<longleftrightarrow> (\<exists>c. Some a = b \<oplus> c)"
 
 definition pure :: "'a \<Rightarrow> bool" where
   "pure a \<longleftrightarrow> Some a = a \<oplus> a"
 
-definition minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<ominus>" 63)
+definition minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<ominus>\<close> 63)
   where "b \<ominus> a = (THE_default b (\<lambda>x. Some b = a \<oplus> x \<and> x \<succeq> |b| ))"
 
-definition add_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "\<otimes>" 60) where
+definition add_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl \<open>\<otimes>\<close> 60) where
   "A \<otimes> B = { \<phi> | \<phi> a b. a \<in> A \<and> b \<in> B \<and> Some \<phi> = a \<oplus> b }"
 
-definition greater_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl "\<ggreater>" 50) where
+definition greater_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl \<open>\<ggreater>\<close> 50) where
   "A \<ggreater> B \<longleftrightarrow> (\<forall>a \<in> A. \<exists>b \<in> B. a \<succeq> b)"
 
 definition up_closed :: "'a set \<Rightarrow> bool" where
   "up_closed A \<longleftrightarrow> (\<forall>\<phi>'. (\<exists>\<phi> \<in> A. \<phi>' \<succeq> \<phi>) \<longrightarrow> \<phi>' \<in> A)"
 
-definition equiv :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl "\<sim>" 40) where
+definition equiv :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl \<open>\<sim>\<close> 40) where
   "A \<sim> B \<longleftrightarrow> A \<ggreater> B \<and> B \<ggreater> A"
 
 definition setify :: "'a property \<Rightarrow> ('a set \<Rightarrow> bool)" where

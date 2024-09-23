@@ -490,7 +490,7 @@ variables in $vs$ and to false the other variables. This is more general than we
 need, because for us $vs$ will always be an interval.
 \<close>
 
-definition Psi :: "nat list \<Rightarrow> nat \<Rightarrow> formula" ("\<Psi>") where
+definition Psi :: "nat list \<Rightarrow> nat \<Rightarrow> formula" (\<open>\<Psi>\<close>) where
   "\<Psi> vs k \<equiv> map (\<lambda>s. [Pos s]) (take k vs) @ map (\<lambda>s. [Neg s]) (drop k vs)"
 
 lemma Psi_unary:
@@ -608,7 +608,7 @@ The family $\Upsilon$ of CNF formulas also takes as parameter a list of variable
 indices.
 \<close>
 
-definition Upsilon :: "nat list \<Rightarrow> formula" ("\<Upsilon>") where
+definition Upsilon :: "nat list \<Rightarrow> formula" (\<open>\<Upsilon>\<close>) where
   "\<Upsilon> vs \<equiv> map (\<lambda>s. [Pos s]) (take 2 vs) @ map (\<lambda>s. [Neg s]) (drop 3 vs)"
 
 text \<open>
@@ -1186,7 +1186,7 @@ The intervals $\gamma_i$ and $w_0, \dots, w_9$ do not depend on $x$, and so can
 be defined here already.
 \<close>
 
-definition gamma :: "nat \<Rightarrow> nat list" ("\<gamma>") where
+definition gamma :: "nat \<Rightarrow> nat list" (\<open>\<gamma>\<close>) where
   "\<gamma> i \<equiv> [i * H..<Suc i * H]"
 
 lemma length_gamma [simp]: "length (\<gamma> i) = H"
@@ -1243,7 +1243,7 @@ There is a CNF formula $\psi$ that contains the first $3Z + H$ variables and
 is satisfied by exactly the assignments specified by $F$.
 \<close>
 
-definition psi :: formula ("\<psi>") where
+definition psi :: formula (\<open>\<psi>\<close>) where
   "\<psi> \<equiv> SOME \<phi>.
     fsize \<phi> \<le> (3 * Z + H) * 2 ^ (3 * Z + H) \<and>
     length \<phi> \<le> 2 ^ (3 * Z + H) \<and>
@@ -1288,7 +1288,7 @@ text \<open>
 The CNF formula $\psi'$ is analogous to $\psi$ from the previous case.
 \<close>
 
-definition psi' :: formula ("\<psi>''") where
+definition psi' :: formula (\<open>\<psi>''\<close>) where
   "\<psi>' \<equiv> SOME \<phi>.
     fsize \<phi> \<le> (2*Z+H) * 2 ^ (2*Z+H) \<and>
     length \<phi> \<le> 2 ^ (2*Z+H) \<and>
@@ -1736,13 +1736,13 @@ The intervals $\zeta_0$, $\zeta_1$, and $\zeta_2$ are long enough for a unary
 encoding of the three components of a snapshot:
 \<close>
 
-definition zeta0 :: "nat \<Rightarrow> nat list" ("\<zeta>\<^sub>0") where
+definition zeta0 :: "nat \<Rightarrow> nat list" (\<open>\<zeta>\<^sub>0\<close>) where
   "\<zeta>\<^sub>0 t \<equiv> [N + t * Z..<N + t * Z + H]"
 
-definition zeta1 :: "nat \<Rightarrow> nat list" ("\<zeta>\<^sub>1") where
+definition zeta1 :: "nat \<Rightarrow> nat list" (\<open>\<zeta>\<^sub>1\<close>) where
   "\<zeta>\<^sub>1 t \<equiv> [N + t * Z + H..<N + t * Z + 2 * H]"
 
-definition zeta2 :: "nat \<Rightarrow> nat list" ("\<zeta>\<^sub>2") where
+definition zeta2 :: "nat \<Rightarrow> nat list" (\<open>\<zeta>\<^sub>2\<close>) where
   "\<zeta>\<^sub>2 t \<equiv> [N + t * Z + 2 * H..<N + (Suc t) * Z]"
 
 lemma length_zeta0 [simp]: "length (\<zeta>\<^sub>0 t) = H"
@@ -1759,7 +1759,7 @@ The substitutions $\rho_t$, which have to be applied to $\psi$ to get the CNF
 formulas $\chi_t$ for the case $\prev(t) < t$:
 \<close>
 
-definition rho :: "nat \<Rightarrow> nat list" ("\<rho>") where
+definition rho :: "nat \<Rightarrow> nat list" (\<open>\<rho>\<close>) where
   "\<rho> t \<equiv>
      \<zeta>\<^sub>0 (t - 1) @ \<zeta>\<^sub>1 (t - 1) @ \<zeta>\<^sub>2 (t - 1) @
      \<zeta>\<^sub>0 (prev m t) @ \<zeta>\<^sub>1 (prev m t) @ \<zeta>\<^sub>2 (prev m t) @
@@ -1774,7 +1774,7 @@ The substitutions $\rho_t'$, which have to be applied to $\psi'$ to get
 the CNF formulas $\chi_t$ for the case $\prev(t) = t$:
 \<close>
 
-definition rho' :: "nat \<Rightarrow> nat list" ("\<rho>''") where
+definition rho' :: "nat \<Rightarrow> nat list" (\<open>\<rho>''\<close>) where
   "\<rho>' t \<equiv>
      \<zeta>\<^sub>0 (t - 1) @ \<zeta>\<^sub>1 (t - 1) @ \<zeta>\<^sub>2 (t - 1) @
      \<zeta>\<^sub>0 t @ \<zeta>\<^sub>1 t @ \<zeta>\<^sub>2 t @
@@ -1796,7 +1796,7 @@ lemma nth_append3:
 
 text \<open>The formulas $\chi_t$ representing snapshots for $0 < t \leq T'$:\<close>
 
-definition chi :: "nat \<Rightarrow> formula" ("\<chi>") where
+definition chi :: "nat \<Rightarrow> formula" (\<open>\<chi>\<close>) where
   "\<chi> t \<equiv> if prev m t < t then relabel (\<rho> t) \<psi> else relabel (\<rho>' t) \<psi>'"
 
 text \<open>
@@ -2199,57 +2199,57 @@ formula $\Phi$, and thus $\Phi$ itself.
 Representing the snapshot in step~0:
 \<close>
 
-definition PHI0 :: formula ("\<Phi>\<^sub>0") where
+definition PHI0 :: formula (\<open>\<Phi>\<^sub>0\<close>) where
   "\<Phi>\<^sub>0 \<equiv> \<Psi> (\<zeta>\<^sub>0 0) 1 @ \<Psi> (\<zeta>\<^sub>1 0) 1 @ \<Psi> (\<zeta>\<^sub>2 0) 0"
 
 text \<open>The start symbol at the beginning of the input tape:\<close>
 
-definition PHI1 :: formula ("\<Phi>\<^sub>1") where
+definition PHI1 :: formula (\<open>\<Phi>\<^sub>1\<close>) where
   "\<Phi>\<^sub>1 \<equiv> \<Psi> (\<gamma> 0) 1"
 
 text \<open>The separator \textbf{11} between $x$ and $u$:\<close>
 
-definition PHI2 :: formula ("\<Phi>\<^sub>2") where
+definition PHI2 :: formula (\<open>\<Phi>\<^sub>2\<close>) where
   "\<Phi>\<^sub>2 \<equiv> \<Psi> (\<gamma> (2*n+1)) 3 @ \<Psi> (\<gamma> (2*n+2)) 3"
 
 text \<open>The zeros before the symbols of $x$:\<close>
 
-definition PHI3 :: formula ("\<Phi>\<^sub>3") where
+definition PHI3 :: formula (\<open>\<Phi>\<^sub>3\<close>) where
   "\<Phi>\<^sub>3 \<equiv> concat (map (\<lambda>i. \<Psi> (\<gamma> (2*i+1)) 2) [0..<n])"
 
 text \<open>The zeros before the symbols of $u$:\<close>
 
-definition PHI4 :: formula ("\<Phi>\<^sub>4") where
+definition PHI4 :: formula (\<open>\<Phi>\<^sub>4\<close>) where
   "\<Phi>\<^sub>4 \<equiv> concat (map (\<lambda>i. \<Psi> (\<gamma> (2*n+2+2*i+1)) 2) [0..<p n])"
 
 text \<open>The blank symbols after the input $\langle x, u\rangle$:\<close>
 
-definition PHI5 :: formula ("\<Phi>\<^sub>5") where
+definition PHI5 :: formula (\<open>\<Phi>\<^sub>5\<close>) where
   "\<Phi>\<^sub>5 \<equiv> concat (map (\<lambda>i. \<Psi> (\<gamma> (2*n + 2*p n + 3 + i)) 0) [0..<T'])"
 
 text \<open>The symbols of $x$:\<close>
 
-definition PHI6 :: formula ("\<Phi>\<^sub>6") where
+definition PHI6 :: formula (\<open>\<Phi>\<^sub>6\<close>) where
   "\<Phi>\<^sub>6 \<equiv> concat (map (\<lambda>i. \<Psi> (\<gamma> (2*i+2)) (if x ! i then 3 else 2)) [0..<n])"
 
 text \<open>Constraining the symbols of $u$ to be from $\{\mathbf{0}, \mathbf{1}\}$:\<close>
 
-definition PHI7 :: formula ("\<Phi>\<^sub>7") where
+definition PHI7 :: formula (\<open>\<Phi>\<^sub>7\<close>) where
   "\<Phi>\<^sub>7 \<equiv> concat (map (\<lambda>i. \<Upsilon> (\<gamma> (2*n+4+2*i))) [0..<p n])"
 
 text \<open>Reading a \textbf{1} in the final step to signal acceptance of $\langle x, u\rangle$:\<close>
 
-definition PHI8 :: formula ("\<Phi>\<^sub>8") where
+definition PHI8 :: formula (\<open>\<Phi>\<^sub>8\<close>) where
   "\<Phi>\<^sub>8 \<equiv> \<Psi> (\<zeta>\<^sub>1 T') 3"
 
 text \<open>The snapshots after the first and before the last:\<close>
 
-definition PHI9 :: formula ("\<Phi>\<^sub>9") where
+definition PHI9 :: formula (\<open>\<Phi>\<^sub>9\<close>) where
   "\<Phi>\<^sub>9 \<equiv> concat (map (\<lambda>t. \<chi> (Suc t)) [0..<T'])"
 
 text \<open>The complete formula:\<close>
 
-definition PHI :: formula ("\<Phi>") where
+definition PHI :: formula (\<open>\<Phi>\<close>) where
   "\<Phi> \<equiv> \<Phi>\<^sub>0 @ \<Phi>\<^sub>1 @ \<Phi>\<^sub>2 @ \<Phi>\<^sub>3 @ \<Phi>\<^sub>4 @ \<Phi>\<^sub>5 @ \<Phi>\<^sub>6 @ \<Phi>\<^sub>7 @ \<Phi>\<^sub>8 @ \<Phi>\<^sub>9"
 
 
@@ -2585,7 +2585,7 @@ snapshot contains a \textbf{1} as the symbol under the output tape head.
 The following function maps a string $u$ to an assignment as just described.
 \<close>
 
-definition beta :: "string \<Rightarrow> assignment" ("\<beta>") where
+definition beta :: "string \<Rightarrow> assignment" (\<open>\<beta>\<close>) where
   "\<beta> u i \<equiv>
     if i < N then
       let

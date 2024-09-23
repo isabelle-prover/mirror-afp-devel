@@ -60,7 +60,7 @@ $\delta^{\star}$, thus we introduce the map \texttt{star} and apply \texttt{adho
 get the notation working in all three situations:
 \<close>
 
-consts star :: "'typ1 \<Rightarrow> 'typ2" ("_\<^sup>\<star>" [1000] 999)
+consts star :: "'typ1 \<Rightarrow> 'typ2" (\<open>_\<^sup>\<star>\<close> [1000] 999)
 
 adhoc_overloading
   star lists
@@ -73,7 +73,7 @@ rather than right group actions:
 \<close>
 
 definition
-  make_op :: "('grp \<Rightarrow> 'X \<Rightarrow> 'X) \<Rightarrow> 'grp \<Rightarrow> 'X \<Rightarrow> 'X" (infixl "(\<odot>\<index>)" 70)
+  make_op :: "('grp \<Rightarrow> 'X \<Rightarrow> 'X) \<Rightarrow> 'grp \<Rightarrow> 'X \<Rightarrow> 'X" (infixl \<open>(\<odot>\<index>)\<close> 70)
   where " (\<odot> \<^bsub>\<phi>\<^esub>) \<equiv> (\<lambda>g. (\<lambda>x. \<phi> g x))"
 
 lemmas make_op_def [simp, GMN_simps]
@@ -140,7 +140,7 @@ adhoc_overloading
 
 definition 
   induced_quot_map ::
-  "'Y set \<Rightarrow> ('grp \<Rightarrow> 'Y \<Rightarrow> 'Y) \<Rightarrow> ('Y \<times>'Y) set \<Rightarrow> 'grp \<Rightarrow> 'Y set \<Rightarrow> 'Y set" ("[_]\<^sub>_\<index>" 60)
+  "'Y set \<Rightarrow> ('grp \<Rightarrow> 'Y \<Rightarrow> 'Y) \<Rightarrow> ('Y \<times>'Y) set \<Rightarrow> 'grp \<Rightarrow> 'Y set \<Rightarrow> 'Y set" (\<open>[_]\<^sub>_\<index>\<close> 60)
   where "([ func ]\<^sub>R \<^bsub>S\<^esub>) = (\<lambda>g\<in>carrier G. (\<lambda>x \<in> (S // R). R `` {(func g) (SOME z. z\<in>x)}))"
 
 lemmas induced_star_map_def [simp, GMN_simps]
@@ -919,7 +919,7 @@ locale det_aut =
     states :: "'state set" and
     init_state :: "'state" and
     fin_states :: "'state set" and
-    trans_func :: "'state \<Rightarrow> 'alpha \<Rightarrow> 'state" ("\<delta>")
+    trans_func :: "'state \<Rightarrow> 'alpha \<Rightarrow> 'state" (\<open>\<delta>\<close>)
   assumes
     init_state_is_a_state:
     "init_state \<in> states" and
@@ -1249,8 +1249,8 @@ text \<open>
 To avoid ambiguous parse trees:
 \<close>
 
-no_notation trans_is_eq_var.GA_0.induced_quot_map ("[_]\<^sub>_\<index>" 60)
-no_notation states_a_G_set.induced_quot_map ("[_]\<^sub>_\<index>" 60)
+no_notation trans_is_eq_var.GA_0.induced_quot_map (\<open>[_]\<^sub>_\<index>\<close> 60)
+no_notation states_a_G_set.induced_quot_map (\<open>[_]\<^sub>_\<index>\<close> 60)
 
 end
 
@@ -1342,15 +1342,15 @@ proof-
 qed
 
 definition (in det_G_aut)
-  reachable_states :: "'states set" ("S\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h")
+  reachable_states :: "'states set" (\<open>S\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h\<close>)
   where "S\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h = {s . \<exists> w \<in> A\<^sup>\<star>. (\<delta>\<^sup>\<star>) i w = s}"
 
 definition (in det_G_aut)
-  reachable_trans :: "'states \<Rightarrow> 'alpha \<Rightarrow> 'states" ("\<delta>\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h")
+  reachable_trans :: "'states \<Rightarrow> 'alpha \<Rightarrow> 'states" (\<open>\<delta>\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h\<close>)
   where "\<delta>\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h s a = (\<lambda>(s', a') \<in> S\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h \<times> A. \<delta> s' a') (s, a)"
 
 definition (in det_G_aut)
-  reachable_action :: "'grp \<Rightarrow> 'states \<Rightarrow> 'states" ("\<psi>\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h")
+  reachable_action :: "'grp \<Rightarrow> 'states \<Rightarrow> 'states" (\<open>\<psi>\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h\<close>)
   where "\<psi>\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h g s = (\<lambda>(g', s') \<in> carrier G \<times> S\<^sub>r\<^sub>e\<^sub>a\<^sub>c\<^sub>h. \<psi> g' s') (g, s)"
 
 lemma (in det_G_aut) reachable_action_is_restict:
@@ -1796,7 +1796,7 @@ Syntactic Automaton
 context language begin
 
 definition
-  rel_MN :: "('alpha list \<times> 'alpha list) set" ("\<equiv>\<^sub>M\<^sub>N")
+  rel_MN :: "('alpha list \<times> 'alpha list) set" (\<open>\<equiv>\<^sub>M\<^sub>N\<close>)
   where "rel_MN = {(w, w') \<in> (A\<^sup>\<star>)\<times>(A\<^sup>\<star>). (\<forall>v \<in> A\<^sup>\<star>. (w @ v) \<in> L \<longleftrightarrow> (w' @ v) \<in> L)}"
 
 lemma MN_rel_equival:
@@ -1808,11 +1808,11 @@ abbreviation
   where "MN_equiv \<equiv> A\<^sup>\<star> // rel_MN" 
 
 definition
-  alt_natural_map_MN :: "'alpha list \<Rightarrow> 'alpha list set " ("[_]\<^sub>M\<^sub>N")
+  alt_natural_map_MN :: "'alpha list \<Rightarrow> 'alpha list set " (\<open>[_]\<^sub>M\<^sub>N\<close>)
   where "[w]\<^sub>M\<^sub>N = rel_MN `` {w}"
 
 definition
-  MN_trans_func :: "('alpha list set) \<Rightarrow> 'alpha \<Rightarrow> 'alpha list set" ("\<delta>\<^sub>M\<^sub>N")
+  MN_trans_func :: "('alpha list set) \<Rightarrow> 'alpha \<Rightarrow> 'alpha list set" (\<open>\<delta>\<^sub>M\<^sub>N\<close>)
   where "MN_trans_func W' a' =
      (\<lambda>(W,a) \<in> MN_equiv \<times> A. rel_MN `` {(SOME w. w \<in> W) @ [a]}) (W', a')"
 
@@ -3235,7 +3235,7 @@ By \texttt{group\_hom.img\_is\_subgroup} this is an equivalent definition:
 locale data_symm = group_action G D \<pi>
   for 
     G :: "('grp, 'b) monoid_scheme" and
-    D :: "'D set" ("\<bbbD>") and
+    D :: "'D set" (\<open>\<bbbD>\<close>) and
     \<pi> 
 
 text \<open>
@@ -3245,7 +3245,7 @@ The following locales corresponds to definition 4.3 from \cite{bojanczyk2014auto
 locale supports = data_symm G D \<pi> + alt_grp_act G X \<phi> 
   for
     G :: "('grp, 'b) monoid_scheme" and
-    D :: "'D set" ("\<bbbD>") and
+    D :: "'D set" (\<open>\<bbbD>\<close>) and
     \<pi> and
     X :: "'X set" (structure) and
     \<phi> +
@@ -3380,7 +3380,7 @@ end
 locale nominal = data_symm G D \<pi> + alt_grp_act G X \<phi>
   for
     G :: "('grp, 'b) monoid_scheme" and
-    D :: "'D set" ("\<bbbD>") and
+    D :: "'D set" (\<open>\<bbbD>\<close>) and
     \<pi> and
     X :: "'X set" (structure) and
     \<phi> +
@@ -3391,7 +3391,7 @@ locale nominal = data_symm G D \<pi> + alt_grp_act G X \<phi>
 locale nominal_det_G_aut = det_G_aut + 
   nominal G D \<pi> A \<phi> + nominal G D \<pi> S \<psi>
   for
-    D :: "'D set" ("\<bbbD>") and
+    D :: "'D set" (\<open>\<bbbD>\<close>) and
     \<pi> 
 
 text \<open>

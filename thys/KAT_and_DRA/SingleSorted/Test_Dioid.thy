@@ -17,7 +17,7 @@ text \<open>
 subsection \<open>Test Monoids\<close>
 
 class n_op =
-  fixes n_op :: "'a \<Rightarrow> 'a" ("n _" [90] 91)
+  fixes n_op :: "'a \<Rightarrow> 'a" (\<open>n _\<close> [90] 91)
 
 class test_monoid = monoid_mult + n_op +
   assumes tm1 [simp]: "n n 1 = 1" 
@@ -28,12 +28,12 @@ begin
 
 (*no_notation zero_class.zero ("0")*)
 
-definition a_zero :: "'a" ("o") where 
+definition a_zero :: "'a" (\<open>o\<close>) where 
   "o \<equiv> n 1"
 
 abbreviation "t x \<equiv> n n x"
 
-definition n_add_op :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<oplus>" 65) where 
+definition n_add_op :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<oplus>\<close> 65) where 
   "x \<oplus> y \<equiv> n (n x \<cdot> n y)"
 
 lemma "n 1 \<cdot> x = n 1"
@@ -128,7 +128,7 @@ lemma n_distrib2: "n x \<oplus> n y \<cdot> n z = (n x \<oplus> n y) \<cdot> (n 
 lemma n_distrib2_opp: "n x \<cdot> n y \<oplus> n z = (n x \<oplus> n z) \<cdot> (n y \<oplus> n z)"
   by (metis de_morgan1 mult_t_closed n_distrib1_opp n_add_op_def)
 
-definition ts_ord :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50) where
+definition ts_ord :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50) where
   "x \<sqsubseteq> y = (n x \<cdot> n y = n y)"
 
 lemma ts_ord_alt: "n x \<sqsubseteq> n y \<longleftrightarrow> n x \<oplus> n y = n y"
@@ -396,7 +396,7 @@ lemma zero_trans: "0 = o"
 definition test :: "'a \<Rightarrow> bool" where
   "test p \<equiv> t p = p"
 
-notation n_op ("!_" [101] 100)
+notation n_op (\<open>!_\<close> [101] 100)
 
 lemma test_prop: "(\<forall>x. test x \<longrightarrow> P x) \<longleftrightarrow> (\<forall>x. P (t x))"
   by (metis test_def t_n_closed)

@@ -17,13 +17,13 @@ begin
 
 abbreviation (input)
   Receive :: "'location \<Rightarrow> 'channel \<Rightarrow> ('val \<Rightarrow> 'state \<Rightarrow> 'state)
-             \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" ("\<lbrace>_\<rbrace>/ _\<triangleright>_" [0,0,81] 81)
+             \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" (\<open>\<lbrace>_\<rbrace>/ _\<triangleright>_\<close> [0,0,81] 81)
 where
   "\<lbrace>l\<rbrace> ch\<triangleright>f \<equiv> \<lbrace>l\<rbrace> Response (\<lambda>q s. if fst q = ch then {(f (snd q) s, ())} else {})"
 
 abbreviation (input)
   Send :: "'location \<Rightarrow> 'channel \<Rightarrow> ('state \<Rightarrow> 'val) \<times> ('state \<Rightarrow> 'state)
-          \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" ("\<lbrace>_\<rbrace>/ _\<triangleleft>_" [0,0,81] 81)
+          \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" (\<open>\<lbrace>_\<rbrace>/ _\<triangleleft>_\<close> [0,0,81] 81)
 where
   "\<lbrace>l\<rbrace> ch\<triangleleft>f \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (ch, fst f s)) (\<lambda>ans s. {snd f s})"
 
@@ -72,7 +72,7 @@ abbreviation sys :: ex_sys where
   "sys \<equiv> \<lparr>PGMs = ex_coms, INIT = ex_init, FAIR = \<langle>True\<rangle>\<rparr>" (* FIXME add fairness hypotheses *)
 
 abbreviation
-  filter_on_channel :: "ex_chname \<Rightarrow> ex_state \<Rightarrow> ex_val list" ("\<downharpoonright>_" [100] 101)
+  filter_on_channel :: "ex_chname \<Rightarrow> ex_state \<Rightarrow> ex_val list" (\<open>\<downharpoonright>_\<close> [100] 101)
 where
   "\<downharpoonright>ch \<equiv> map (snd \<circ> fst) \<circ> filter ((=) ch \<circ> fst \<circ> fst) \<circ> HST"
 

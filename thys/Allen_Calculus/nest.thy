@@ -29,7 +29,7 @@ where "END i  = {j | j. (j,i) \<in> e \<union> ov^-1 \<union> s^-1 \<union> d^-1
 definition (in arelations) NEST ::"'a nest \<Rightarrow> bool"
 where "NEST S \<equiv> \<exists>i. \<I> i \<and> (S = BEGIN i \<or> S = END i)"
 
-definition (in arelations) before :: "'a nest \<Rightarrow> 'a nest \<Rightarrow> bool" (infix "\<lless>" 100)
+definition (in arelations) before :: "'a nest \<Rightarrow> 'a nest \<Rightarrow> bool" (infix \<open>\<lless>\<close> 100)
 where "before N M \<equiv> NEST N \<and> NEST M \<and> (\<exists>n m. \<^cancel>\<open>\<I> m \<and> \<I> n \<and>\<close> n \<in> N \<and> m \<in> M \<and> (n,m) \<in> b)"
 
 subsection \<open>Properties of Nests\<close>

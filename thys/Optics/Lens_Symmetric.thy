@@ -8,15 +8,15 @@ text \<open> A characterisation of Hofmann's ``Symmetric Lenses''~\<^cite>\<open
   a lens is accompanied by its complement. \<close>
 
 record ('a, 'b, 's) slens = 
-  view   :: "'a \<Longrightarrow> 's" ("\<V>\<index>") \<comment> \<open> The region characterised \<close>
-  coview :: "'b \<Longrightarrow> 's" ("\<C>\<index>") \<comment> \<open> The complement of the region \<close>
+  view   :: "'a \<Longrightarrow> 's" (\<open>\<V>\<index>\<close>) \<comment> \<open> The region characterised \<close>
+  coview :: "'b \<Longrightarrow> 's" (\<open>\<C>\<index>\<close>) \<comment> \<open> The complement of the region \<close>
 
 type_notation
-  slens ("<_, _> \<Longleftrightarrow> _" [0, 0, 0] 0)
+  slens (\<open><_, _> \<Longleftrightarrow> _\<close> [0, 0, 0] 0)
 
 declare slens.defs [lens_defs]
 
-definition slens_compl :: "(<'a, 'c> \<Longleftrightarrow> 'b) \<Rightarrow> <'c, 'a> \<Longleftrightarrow> 'b" ("-\<^sub>L _" [81] 80) where
+definition slens_compl :: "(<'a, 'c> \<Longleftrightarrow> 'b) \<Rightarrow> <'c, 'a> \<Longleftrightarrow> 'b" (\<open>-\<^sub>L _\<close> [81] 80) where
 [lens_defs]: "slens_compl a = \<lparr> view = coview a, coview = view a \<rparr>"
 
 lemma view_slens_compl [simp]: "\<V>\<^bsub>-\<^sub>L a\<^esub> =  \<C>\<^bsub>a\<^esub>"

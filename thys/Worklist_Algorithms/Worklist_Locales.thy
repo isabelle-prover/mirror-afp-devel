@@ -13,15 +13,15 @@ locale Search_Space_Defs =
   fixes E :: "'a \<Rightarrow> 'a \<Rightarrow> bool" \<comment> \<open>Step relation\<close>
     and a\<^sub>0 :: 'a                \<comment> \<open>Start state\<close>
     and F :: "'a \<Rightarrow> bool"      \<comment> \<open>Final states\<close>
-    and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 50) \<comment> \<open>Subsumption preorder\<close>
+    and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) \<comment> \<open>Subsumption preorder\<close>
 begin
 
   sublocale Graph_Start_Defs E a\<^sub>0 .
 
-  definition subsumes_strictly (infix "\<prec>" 50) where
+  definition subsumes_strictly (infix \<open>\<prec>\<close> 50) where
     "subsumes_strictly x y = (x \<preceq> y \<and> \<not> y \<preceq> x)"
 
-  no_notation fun_rel_syn (infixr "\<rightarrow>" 60)
+  no_notation fun_rel_syn (infixr \<open>\<rightarrow>\<close> 60)
 
   definition "F_reachable \<equiv> \<exists>a. reachable a \<and> F a"
 
@@ -116,7 +116,7 @@ locale Search_Space' = Search_Space +
 locale Search_Space'_finite = Search_Space' + Search_Space_finite
 
 locale Search_Space''_Defs = Search_Space_Defs_Empty +
-  fixes subsumes' :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<unlhd>" 50) \<comment> \<open>Subsumption preorder\<close>
+  fixes subsumes' :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<unlhd>\<close> 50) \<comment> \<open>Subsumption preorder\<close>
 
 locale Search_Space''_pre = Search_Space''_Defs +
   assumes empty_subsumes': "\<not> empty a \<Longrightarrow> a \<preceq> b \<longleftrightarrow> a \<unlhd> b"

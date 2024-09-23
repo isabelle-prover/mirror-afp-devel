@@ -145,7 +145,7 @@ post:  result = if self.boss = null
                   
 text\<open>For the case of recursive queries, we use at present just axiomatizations:\<close>               
                   
-axiomatization contents :: "Person \<Rightarrow> Set_Integer"  ("(1(_).contents'('))" 50)
+axiomatization contents :: "Person \<Rightarrow> Set_Integer"  (\<open>(1(_).contents'('))\<close> 50)
 where contents_def:
 "(self .contents()) = (\<lambda> \<tau>. SOME res. let res = \<lambda> _. res in
                             if \<tau> \<Turnstile> (\<delta> self)
@@ -221,7 +221,7 @@ by(rule contents.unfold2[of _ _ _ "\<lambda> X. true"], simp_all add: assms)
 text\<open>Since we have only one interpretation function, we need the corresponding
 operation on the pre-state:\<close>               
 
-consts contentsATpre :: "Person \<Rightarrow> Set_Integer"  ("(1(_).contents@pre'('))" 50)
+consts contentsATpre :: "Person \<Rightarrow> Set_Integer"  (\<open>(1(_).contents@pre'('))\<close> 50)
 
 axiomatization where contentsATpre_def:
 " (self).contents@pre() = (\<lambda> \<tau>.
@@ -309,7 +309,7 @@ contents() = contents@pre()->including(x)
 This boils down to:
 \<close>
 
-definition insert :: "Person \<Rightarrow>Integer \<Rightarrow> Void"  ("(1(_).insert'(_'))" 50)
+definition insert :: "Person \<Rightarrow>Integer \<Rightarrow> Void"  (\<open>(1(_).insert'(_'))\<close> 50)
 where "self .insert(x) \<equiv> 
             (\<lambda> \<tau>. SOME res. let res = \<lambda> _. res in
                   if (\<tau> \<Turnstile> (\<delta> self)) \<and>  (\<tau> \<Turnstile> \<upsilon> x)

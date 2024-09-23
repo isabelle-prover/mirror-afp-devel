@@ -22,7 +22,7 @@ The predicate \<open>reach\<close> decides whether a location is reachable from 
 
 inductive
   reach :: "Store \<Rightarrow> Location \<Rightarrow> Value \<Rightarrow> bool" 
-    ("_\<turnstile> _ reachable'_from _" [91,91,91]90)
+    (\<open>_\<turnstile> _ reachable'_from _\<close> [91,91,91]90)
   for s :: Store
 where
   Immediate: "ref l \<noteq> nullV \<Longrightarrow> s\<turnstile> l reachable_from (ref l)"
@@ -463,7 +463,7 @@ in \<^cite>\<open>\<open>p. 54\<close> in "Poetzsch-Heffter97specification"\<clo
 \<close>
 
 definition rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
-  ("_\<turnstile>Ref _ reachable'_from _" [91,91,91]90) where
+  (\<open>_\<turnstile>Ref _ reachable'_from _\<close> [91,91,91]90) where
 "s\<turnstile>Ref y reachable_from x = (\<exists> l. s\<turnstile> l reachable_from x \<and> y = ref l)"
 
 
@@ -572,7 +572,7 @@ definition xeq:: "Value \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bo
              (\<forall> l. s\<turnstile> l reachable_from x \<longrightarrow> s@@l = t@@l))"
 
 abbreviation xeq_syntax :: "Store \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool"
-  ("_/ (\<equiv>[_])/ _" [900,0,900] 900)
+  (\<open>_/ (\<equiv>[_])/ _\<close> [900,0,900] 900)
 where "s \<equiv>[x] t == xeq x s t"
 
 
@@ -756,7 +756,7 @@ The stores have to be X-equivalent for the references of the
 first store that are alive, and the values of the static fields have to be the same in both stores.
 \<close>
 
-definition lessalive:: "Store \<Rightarrow> Store \<Rightarrow> bool" ("_/ \<lless> _" [70,71] 70)
+definition lessalive:: "Store \<Rightarrow> Store \<Rightarrow> bool" (\<open>_/ \<lless> _\<close> [70,71] 70)
   where "lessalive s t = ((\<forall> x. alive x s \<longrightarrow> s \<equiv>[x] t) \<and> (\<forall> f. s@@staticLoc f = t@@staticLoc f))"
 
 text \<open>We define an introduction rule for the new operator.\<close>

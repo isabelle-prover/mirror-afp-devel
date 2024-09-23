@@ -41,11 +41,11 @@ sublocale padic_fields < Qp: domain_coord_rings Q\<^sub>p "UP Q\<^sub>p"
 context padic_fields
 begin
 no_notation Zp.to_fun (infixl\<open>\<bullet>\<close> 70)
-no_notation ideal_prod (infixl "\<cdot>\<index>" 80)
+no_notation ideal_prod (infixl \<open>\<cdot>\<index>\<close> 80)
 
 notation
-evimage (infixr "\<inverse>\<index>" 90) and
-euminus_set ("_ \<^sup>c\<index>" 70)
+evimage (infixr \<open>\<inverse>\<index>\<close> 90) and
+euminus_set (\<open>_ \<^sup>c\<index>\<close> 70)
 
 
 type_synonym padic_tuple = "padic_number list"
@@ -6889,7 +6889,7 @@ lemma graph_closed:
 
 text\<open>The \<open>m\<close>-dimensional diagonal set is semialgebraic\<close>
 
-notation diagonal ("\<Delta> ")
+notation diagonal (\<open>\<Delta> \<close>)
 
 lemma diag_is_algebraic:
   shows "is_algebraic Q\<^sub>p (n + n) (\<Delta> n)"

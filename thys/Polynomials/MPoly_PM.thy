@@ -439,10 +439,10 @@ subsection \<open>Indeterminates\<close>
 definition indets :: "(('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'x set"
   where "indets p = \<Union> (keys ` keys p)"
 
-definition PPs :: "'x set \<Rightarrow> ('x \<Rightarrow>\<^sub>0 nat) set"  (".[(_)]")
+definition PPs :: "'x set \<Rightarrow> ('x \<Rightarrow>\<^sub>0 nat) set"  (\<open>.[(_)]\<close>)
   where "PPs X = {t. keys t \<subseteq> X}"
 
-definition Polys :: "'x set \<Rightarrow> (('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::zero) set"  ("P[(_)]")
+definition Polys :: "'x set \<Rightarrow> (('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::zero) set"  (\<open>P[(_)]\<close>)
   where "Polys X = {p. keys p \<subseteq> .[X]}"
 
 subsubsection \<open>@{const indets}\<close>
@@ -4262,8 +4262,8 @@ end (* ordered_powerprod *)
 
 locale pm_powerprod =
   ordered_powerprod ord ord_strict
-  for ord::"('x::{countable,linorder} \<Rightarrow>\<^sub>0 nat) \<Rightarrow> ('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow> bool" (infixl "\<preceq>" 50)
-  and ord_strict (infixl "\<prec>" 50)
+  for ord::"('x::{countable,linorder} \<Rightarrow>\<^sub>0 nat) \<Rightarrow> ('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 50)
+  and ord_strict (infixl \<open>\<prec>\<close> 50)
 begin
 
 sublocale gd_powerprod ..

@@ -16,7 +16,7 @@ proof-
   then show ?thesis by auto
 qed
 
-definition binomial_coefficient ("[_ = _ choose _]" 1000)
+definition binomial_coefficient (\<open>[_ = _ choose _]\<close> 1000)
   where "[A = B choose C] \<equiv> (TERNARY (\<lambda>a b c. a = b choose c) A B C)"
 
 lemma binomial_coefficient_dioph[dioph]:
@@ -63,7 +63,7 @@ lemma odd_dioph_repr:
   shows "odd a \<longleftrightarrow> (\<exists>x::nat. a = 2*x + 1)"
   by (meson dvd_triv_left even_plus_one_iff oddE)
 
-definition odd_lift ("ODD _" [999] 1000)
+definition odd_lift (\<open>ODD _\<close> [999] 1000)
   where "ODD A \<equiv> (UNARY (odd) A)"
 
 lemma odd_dioph[dioph]:

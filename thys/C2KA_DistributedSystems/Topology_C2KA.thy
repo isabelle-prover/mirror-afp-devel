@@ -38,22 +38,22 @@ theory Topology_C2KA
 begin
 
 no_notation
-comp (infixl "\<circ>" 55)
-and rtrancl ("(_\<^sup>*)" [1000] 999)
+comp (infixl \<open>\<circ>\<close> 55)
+and rtrancl (\<open>(_\<^sup>*)\<close> [1000] 999)
 
 text \<open>
 The locale \emph{topology-c2ka} extends the axiomatisation of \emph{c2ka} to support the notions of topology. 
 \<close>
 
 locale topology_c2ka = c2ka +
-  fixes orbit :: "'a::cka \<Rightarrow> 'a::cka set" ("Orb")
-  and strong_orbit :: "'a::cka \<Rightarrow> 'a::cka set" ("Orb\<^sub>S")
-  and stabiliser :: "'a::cka \<Rightarrow> 'b::stimuli set" ("Stab")
+  fixes orbit :: "'a::cka \<Rightarrow> 'a::cka set" (\<open>Orb\<close>)
+  and strong_orbit :: "'a::cka \<Rightarrow> 'a::cka set" (\<open>Orb\<^sub>S\<close>)
+  and stabiliser :: "'a::cka \<Rightarrow> 'b::stimuli set" (\<open>Stab\<close>)
   and fixed :: "'a::cka \<Rightarrow> bool"
-  and encompassing_relation_behaviours :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool"  (infix "\<lless>\<^sub>\<K>" 50)
-  and encompassing_relation_stimuli :: "'b set \<Rightarrow> 'b set \<Rightarrow> bool"  (infix "\<lless>\<^sub>\<S>" 50)
-  and induced :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<lhd>" 50)
-  and orbit_equivalent :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<sim>\<^sub>\<K>" 50)
+  and encompassing_relation_behaviours :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool"  (infix \<open>\<lless>\<^sub>\<K>\<close> 50)
+  and encompassing_relation_stimuli :: "'b set \<Rightarrow> 'b set \<Rightarrow> bool"  (infix \<open>\<lless>\<^sub>\<S>\<close> 50)
+  and induced :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<lhd>\<close> 50)
+  and orbit_equivalent :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<sim>\<^sub>\<K>\<close> 50)
   assumes orb_def: "x \<in> Orb(a) \<longleftrightarrow> (\<exists>s. (s \<circ> a = x))"
   and orbs_def: "b \<in> Orb\<^sub>S(a) \<longleftrightarrow> Orb(b) = Orb(a)"
   and stab_def: "s \<in> Stab(a) \<longleftrightarrow> s \<circ> a = a"

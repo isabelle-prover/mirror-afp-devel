@@ -37,13 +37,13 @@ where
 lemma chkargs_mono[mono]: "gt \<le> gt' \<Longrightarrow> chkargs gt \<le> chkargs gt'"
   by force
 
-inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t" 50) where
+inductive gt :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>>\<^sub>t\<close> 50) where
   gt_arg: "ti \<in> set (args t) \<Longrightarrow> ti >\<^sub>t s \<or> ti = s \<Longrightarrow> t >\<^sub>t s"
 | gt_diff: "head t >\<^sub>h\<^sub>d head s \<Longrightarrow> chkvar t s \<Longrightarrow> chkargs (>\<^sub>t) t s \<Longrightarrow> t >\<^sub>t s"
 | gt_same: "head t = head s \<Longrightarrow> chkargs (>\<^sub>t) t s \<Longrightarrow>
     (\<forall>f \<in> ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)) \<Longrightarrow> t >\<^sub>t s"
 
-abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
+abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>\<ge>\<^sub>t\<close> 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"
 
 
@@ -214,10 +214,10 @@ abbreviation
 where
   "chkargs \<equiv> rpo_optim.chkargs"
 
-abbreviation gt_optim :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix ">\<^sub>t\<^sub>o" 50) where
+abbreviation gt_optim :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>>\<^sub>t\<^sub>o\<close> 50) where
   "(>\<^sub>t\<^sub>o) \<equiv> rpo_optim.gt ground_heads_var (>\<^sub>s) extf"
 
-abbreviation ge_optim :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t\<^sub>o" 50) where
+abbreviation ge_optim :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>\<ge>\<^sub>t\<^sub>o\<close> 50) where
   "(\<ge>\<^sub>t\<^sub>o) \<equiv> rpo_optim.ge ground_heads_var (>\<^sub>s) extf"
 
 theorem gt_iff_optim: "t >\<^sub>t s \<longleftrightarrow> t >\<^sub>t\<^sub>o s"

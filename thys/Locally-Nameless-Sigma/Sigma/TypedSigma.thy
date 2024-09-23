@@ -23,7 +23,7 @@ where
  "do (Object l) = (dom l)"
 
 primrec
-  type_get :: "type \<Rightarrow> Label \<Rightarrow> (type \<times> type) option "  ("_^_" 1000)
+  type_get :: "type \<Rightarrow> Label \<Rightarrow> (type \<times> type) option "  (\<open>_^_\<close> 1000)
 where
  "(Object l)^n = (l n)"
 
@@ -31,7 +31,7 @@ where
      as the empty object does not yield ok env otherwise *)
 inductive 
   typing :: "(type environment) \<Rightarrow> sterm \<Rightarrow> type \<Rightarrow> bool"    
-  ("_ \<turnstile> _ : _" [80, 0, 80] 230)
+  (\<open>_ \<turnstile> _ : _\<close> [80, 0, 80] 230)
 where 
   T_Var[intro!]:
     "\<lbrakk> ok env; x \<in> env_dom env; (the (env!x)) = T \<rbrakk> 

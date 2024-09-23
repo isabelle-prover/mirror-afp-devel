@@ -464,7 +464,7 @@ proof-
   then show ?thesis unfolding in_Hom_iff by simp
 qed
 
-abbreviation (input) converse_Set :: "V \<Rightarrow> V" ("(_\<inverse>\<^sub>S\<^sub>e\<^sub>t)" [1000] 999)
+abbreviation (input) converse_Set :: "V \<Rightarrow> V" (\<open>(_\<inverse>\<^sub>S\<^sub>e\<^sub>t)\<close> [1000] 999)
   where "a\<inverse>\<^sub>S\<^sub>e\<^sub>t \<equiv> a\<inverse>\<^sub>R\<^sub>e\<^sub>l"
 
 lemma cat_Set_the_inverse[cat_Set_cs_simps]:

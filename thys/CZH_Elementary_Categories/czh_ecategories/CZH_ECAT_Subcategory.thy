@@ -30,7 +30,7 @@ locale subcategory = sdg: category \<alpha> \<BB> + dg: category \<alpha> \<CC> 
   assumes subcat_subsemicategory: "cat_smc \<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> cat_smc \<CC>" 
     and subcat_CId: "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr> \<Longrightarrow> \<BB>\<lparr>CId\<rparr>\<lparr>a\<rparr> = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
 
-abbreviation is_subcategory ("(_/ \<subseteq>\<^sub>C\<index> _)" [51, 51] 50)
+abbreviation is_subcategory (\<open>(_/ \<subseteq>\<^sub>C\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> subcategory \<alpha> \<BB> \<CC>"
 
 
@@ -394,7 +394,7 @@ text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 locale fl_subcategory = subcategory +
   assumes fl_subcat_fl_subsemicategory: "cat_smc \<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
 
-abbreviation is_fl_subcategory ("(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)" [51, 51] 50)
+abbreviation is_fl_subcategory (\<open>(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> fl_subcategory \<alpha> \<BB> \<CC>"
 
 
@@ -437,7 +437,7 @@ See
 locale wide_subcategory = subcategory +
   assumes wide_subcat_wide_subsemicategory: "cat_smc \<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
 
-abbreviation is_wide_subcategory ("(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<index> _)" [51, 51] 50)
+abbreviation is_wide_subcategory (\<open>(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> wide_subcategory \<alpha> \<BB> \<CC>"
 
 
@@ -534,7 +534,7 @@ locale replete_subcategory = subcategory \<alpha> \<BB> \<CC> for \<alpha> \<BB>
   assumes rep_subcat_is_iso_arr_is_arr: 
     "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr> \<Longrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b \<Longrightarrow> f : a \<mapsto>\<^bsub>\<BB>\<^esub> b"
 
-abbreviation is_replete_subcategory ("(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>r\<^sub>e\<^sub>p\<index> _)" [51, 51] 50)
+abbreviation is_replete_subcategory (\<open>(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>r\<^sub>e\<^sub>p\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>C\<^sub>.\<^sub>r\<^sub>e\<^sub>p\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> replete_subcategory \<alpha> \<BB> \<CC>"
 
 
@@ -686,7 +686,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 locale wide_replete_subcategory = 
   wide_subcategory \<alpha> \<BB> \<CC> + replete_subcategory \<alpha> \<BB> \<CC> for \<alpha> \<BB> \<CC>
 
-abbreviation is_wide_replete_subcategory ("(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>w\<^sub>r\<index> _)" [51, 51] 50)
+abbreviation is_wide_replete_subcategory (\<open>(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>w\<^sub>r\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>C\<^sub>.\<^sub>w\<^sub>r\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> wide_replete_subcategory \<alpha> \<BB> \<CC>"
 
 

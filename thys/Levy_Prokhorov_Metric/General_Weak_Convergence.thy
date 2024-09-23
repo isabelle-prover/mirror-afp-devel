@@ -74,11 +74,11 @@ qed simp
 
 subsection \<open>Weak Convergence\<close>
 abbreviation weak_conv_on :: "('a \<Rightarrow> 'b measure) \<Rightarrow> 'b measure \<Rightarrow> 'a filter \<Rightarrow> 'b topology \<Rightarrow> bool"
-   ( "'((_)/ \<Rightarrow>\<^sub>W\<^sub>C (_)') (_)/ on (_)" [56, 55] 55) where
+   ( \<open>'((_)/ \<Rightarrow>\<^sub>W\<^sub>C (_)') (_)/ on (_)\<close> [56, 55] 55) where
 "weak_conv_on Ni N F X \<equiv> limitin (weak_conv_topology X) Ni N F"
 
 abbreviation weak_conv_on_seq :: "(nat \<Rightarrow> 'b measure) \<Rightarrow> 'b measure \<Rightarrow> 'b topology \<Rightarrow> bool"
-   ( "'((_)/ \<Rightarrow>\<^sub>W\<^sub>C (_)') on (_)" [56, 55] 55) where
+   ( \<open>'((_)/ \<Rightarrow>\<^sub>W\<^sub>C (_)') on (_)\<close> [56, 55] 55) where
 "weak_conv_on_seq Ni N X \<equiv> weak_conv_on Ni N sequentially X"
 
 subsection \<open> Limit in Topology of Weak Convegence \<close>

@@ -4,7 +4,7 @@ theory Liveness_Subsumption_Impl
   imports Liveness_Subsumption_Map Heap_Hash_Map Worklist_Algorithms_Tracing
 begin
 
-no_notation Ref.update ("_ := _" 62)
+no_notation Ref.update (\<open>_ := _\<close> 62)
 
 locale Liveness_Search_Space_Key_Impl_Defs =
   Liveness_Search_Space_Key_Defs _ _ _ _ _ _ key for key :: "'a \<Rightarrow> 'k" +

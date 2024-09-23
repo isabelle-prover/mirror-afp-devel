@@ -14,23 +14,23 @@ begin
 \<comment> \<open>SYNTAX\<close>
 
 datatype ('exp, 'id) MWLsCom
-  = Skip "nat" ("skip\<^bsub>_\<^esub>" [50] 70)
+  = Skip "nat" (\<open>skip\<^bsub>_\<^esub>\<close> [50] 70)
   | Assign "'id" "nat" "'exp"
-       ("_:=\<^bsub>_\<^esub> _" [70,50,70] 70)
+       (\<open>_:=\<^bsub>_\<^esub> _\<close> [70,50,70] 70)
 
   | Seq "('exp, 'id) MWLsCom"
          "('exp, 'id) MWLsCom"
-       ("_;_" [61,60] 60)
+       (\<open>_;_\<close> [61,60] 60)
 
   | If_Else "nat" "'exp" "('exp, 'id) MWLsCom"
          "('exp, 'id) MWLsCom"
-       ("if\<^bsub>_\<^esub> _ then _ else _ fi" [50,80,79,79] 70)
+       (\<open>if\<^bsub>_\<^esub> _ then _ else _ fi\<close> [50,80,79,79] 70)
 
   | While_Do "nat" "'exp" "('exp, 'id) MWLsCom"
-       ("while\<^bsub>_\<^esub> _ do _ od" [50,80,79] 70)
+       (\<open>while\<^bsub>_\<^esub> _ do _ od\<close> [50,80,79] 70)
 
   | Spawn "nat" "(('exp, 'id) MWLsCom) list"
-       ("spawn\<^bsub>_\<^esub> _" [50,70] 70)
+       (\<open>spawn\<^bsub>_\<^esub> _\<close> [50,70] 70)
 
 \<comment> \<open>function for obtaining the program point of some MWLsloc command\<close>
 primrec pp ::"('exp, 'id) MWLsCom \<Rightarrow> nat"
@@ -107,7 +107,7 @@ MWLsSteps_det ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TLSteps"
 and MWLslocSteps_det' ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TLSteps_curry"
-("(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0,0] 81)
+(\<open>(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0,0] 81)
 where
 "\<langle>c1,m1\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>c2,m2\<rangle> \<equiv> ((c1,m1),\<alpha>,(c2,m2)) \<in> MWLsSteps_det" |
 skip: "\<langle>skip\<^bsub>\<iota>\<^esub>,m\<rangle> \<rightarrow>\<lhd>[]\<rhd> \<langle>None,m\<rangle>" |
@@ -141,7 +141,7 @@ MWLsSteps_ndet ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TPSteps"
 and MWLsSteps_ndet' ::
   "('exp, 'id, 'val, ('exp, 'id) MWLsCom) TPSteps_curry"
-("(1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0] 81)
+(\<open>(1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0] 81)
 where
 "\<langle>V,m\<rangle> \<Rightarrow> \<langle>V',m'\<rangle> \<equiv> ((V,m),(V',m')) \<in> MWLsSteps_ndet" |
 stepthreadi1: "\<langle>ci,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>None,m'\<rangle> \<Longrightarrow>

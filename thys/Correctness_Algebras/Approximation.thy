@@ -14,7 +14,7 @@ begin
 nitpick_params [timeout = 600]
 
 class apx =
-  fixes apx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes apx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 
 class apx_order = apx +
   assumes apx_reflexive: "x \<sqsubseteq> x"
@@ -31,12 +31,12 @@ sublocale apx_order < apx: order where less_eq = apx and less = "\<lambda>x y . 
 context apx_order
 begin
 
-abbreviation the_apx_least_fixpoint    :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("\<kappa> _" [201] 200)  where "\<kappa>  f \<equiv> apx.the_least_fixpoint f"
-abbreviation the_apx_least_prefixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("p\<kappa> _" [201] 200) where "p\<kappa> f \<equiv> apx.the_least_prefixpoint f"
+abbreviation the_apx_least_fixpoint    :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>\<kappa> _\<close> [201] 200)  where "\<kappa>  f \<equiv> apx.the_least_fixpoint f"
+abbreviation the_apx_least_prefixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>p\<kappa> _\<close> [201] 200) where "p\<kappa> f \<equiv> apx.the_least_prefixpoint f"
 
 definition is_apx_meet  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"          where "is_apx_meet x y z \<equiv> z \<sqsubseteq> x \<and> z \<sqsubseteq> y \<and> (\<forall>w . w \<sqsubseteq> x \<and> w \<sqsubseteq> y \<longrightarrow> w \<sqsubseteq> z)"
 definition has_apx_meet :: "'a \<Rightarrow> 'a \<Rightarrow> bool"                where "has_apx_meet x y \<equiv> \<exists>z . is_apx_meet x y z"
-definition the_apx_meet :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<triangle>" 66) where "x \<triangle> y \<equiv> THE z . is_apx_meet x y z"
+definition the_apx_meet :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<triangle>\<close> 66) where "x \<triangle> y \<equiv> THE z . is_apx_meet x y z"
 
 lemma apx_meet_unique:
   "has_apx_meet x y \<Longrightarrow> \<exists>!z . is_apx_meet x y z"

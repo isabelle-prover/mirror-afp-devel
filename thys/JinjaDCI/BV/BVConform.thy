@@ -17,20 +17,20 @@ begin
 subsection \<open> @{text "correct_state"} definitions \<close>
 
 definition confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
-    ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
+    (\<open>_,_ \<turnstile> _ :\<le>\<^sub>\<top> _\<close> [51,51,51,51] 50)
 where
   "P,h \<turnstile> v :\<le>\<^sub>\<top> E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
 notation (ASCII)
-  confT  ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+  confT  (\<open>_,_ |- _ :<=T _\<close> [51,51,51,51] 50)
 
 abbreviation
   confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool" 
-      ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50) where
+      (\<open>_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _\<close> [51,51,51,51] 50) where
   "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
 notation (ASCII)
-  confTs  ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
+  confTs  (\<open>_,_ |- _ [:<=T] _\<close> [51,51,51,51] 50)
 
 fun Called_context :: "jvm_prog \<Rightarrow> cname \<Rightarrow> instr \<Rightarrow> bool" where
 "Called_context P C\<^sub>0 (New C') = (C\<^sub>0=C')" |
@@ -48,7 +48,7 @@ lemma Called_context_Called_set:
  "Called_context P D i \<Longrightarrow> i \<in> Called_set" by(cases i, auto)
 
 fun valid_ics :: "jvm_prog \<Rightarrow> heap \<Rightarrow> sheap \<Rightarrow> cname \<times> mname \<times> pc \<times> init_call_status \<Rightarrow> bool"
-  ("_,_,_ \<turnstile>\<^sub>i _" [51,51,51,51] 50) where
+  (\<open>_,_,_ \<turnstile>\<^sub>i _\<close> [51,51,51,51] 50) where
 "valid_ics P h sh (C,M,pc,Calling C' Cs)
  = (let ins = instrs_of P C M in Called_context P (last (C'#Cs)) (ins!pc)
     \<and> is_class P C')" |
@@ -109,7 +109,7 @@ definition conf_clinit :: "jvm_prog \<Rightarrow> sheap \<Rightarrow> frame list
 
 (*************************)
 
-definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<surd>"  [61,0,0] 61)
+definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"  (\<open>_,_ \<turnstile> _ \<surd>\<close>  [61,0,0] 61)
 where
   "correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs,sh).
   case xp of
@@ -124,7 +124,7 @@ where
   | Some x \<Rightarrow> frs = []" 
 
 notation
-  correct_state  ("_,_ |- _ [ok]"  [61,0,0] 61)
+  correct_state  (\<open>_,_ |- _ [ok]\<close>  [61,0,0] 61)
 
 subsection \<open> Values and @{text "\<top>"} \<close>
 

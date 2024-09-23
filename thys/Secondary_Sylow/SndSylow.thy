@@ -7,7 +7,7 @@ theory SndSylow
 imports SubgroupConjugation
 begin
 
-no_notation Multiset.subset_mset  (infix "<#" 50) (*prevent a clash with the same syntax for l_coset*)
+no_notation Multiset.subset_mset  (infix \<open><#\<close> 50) (*prevent a clash with the same syntax for l_coset*)
 
 section \<open>The Secondary Sylow Theorems\<close>
 

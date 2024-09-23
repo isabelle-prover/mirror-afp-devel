@@ -13,16 +13,16 @@ subsection \<open>Peleg composition, parallel composition (inner union) and unit
 
 type_synonym ('a,'b) mrel = "('a,'b set) rel"
 
-definition s_prod :: "('a,'b) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'c) mrel" (infixl "\<cdot>" 75) where
+definition s_prod :: "('a,'b) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'c) mrel" (infixl \<open>\<cdot>\<close> 75) where
   "R \<cdot> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S) \<and> A = \<Union>(f ` B)))}"
 
-definition s_id :: "('a,'a) mrel" ("1\<^sub>\<sigma>") where
+definition s_id :: "('a,'a) mrel" (\<open>1\<^sub>\<sigma>\<close>) where
   "1\<^sub>\<sigma> = (\<Union>a. {(a,{a})})"
 
-definition p_prod :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (infixl "\<parallel>" 70) where
+definition p_prod :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (infixl \<open>\<parallel>\<close> 70) where
   "R \<parallel> S = {(a,A). (\<exists>B C. A = B \<union> C \<and> (a,B) \<in> R \<and> (a,C) \<in> S)}"
 
-definition p_id :: "('a,'b) mrel" ("1\<^sub>\<pi>") where
+definition p_id :: "('a,'b) mrel" (\<open>1\<^sub>\<pi>\<close>) where
   "1\<^sub>\<pi> = (\<Union>a. {(a,{})})"
 
 definition U :: "('a,'b) mrel" where
@@ -901,7 +901,7 @@ lemma U_par_nc [simp]: "NC \<cdot> 1\<^sub>\<pi> \<parallel> U = U"
 
 subsection \<open>Up-closure and Parikh composition\<close>
 
-definition s_prod_pa :: "('a,'b) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'c) mrel" (infixl "\<otimes>" 75) where
+definition s_prod_pa :: "('a,'b) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'c) mrel" (infixl \<open>\<otimes>\<close> 75) where
   "R \<otimes> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<forall>b \<in> B. (b,A) \<in> S))}"
 
 lemma U_par_st: "(a,A) \<in> R \<parallel> U \<longleftrightarrow> (\<exists>B. B \<subseteq> A \<and> (a,B) \<in> R)"
@@ -1000,10 +1000,10 @@ qed
 
 subsection \<open>Nonterminal and terminal multirelations\<close>
 
-definition tau :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("\<tau>") where
+definition tau :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>\<tau>\<close>) where
   "\<tau> R = R \<cdot> {}"
 
-definition nu :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("\<nu>") where
+definition nu :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>\<nu>\<close>) where
   "\<nu> R = R \<inter> NC"
 
 lemma nc_s [simp]: "\<nu> 1\<^sub>\<sigma> = 1\<^sub>\<sigma>"

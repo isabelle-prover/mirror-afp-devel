@@ -5,9 +5,9 @@ theory Laws
 begin
 
 text \<open>This notation is only used inside this file\<close>
-notation comp_update (infixl "*\<^sub>u" 55)
-notation tensor_update (infixr "\<otimes>\<^sub>u" 70)
-notation register_pair ("'(_;_')")
+notation comp_update (infixl \<open>*\<^sub>u\<close> 55)
+notation tensor_update (infixr \<open>\<otimes>\<^sub>u\<close> 70)
+notation register_pair (\<open>'(_;_')\<close>)
 
 subsection \<open>Elementary facts\<close>
 
@@ -59,7 +59,7 @@ lemma register_tensor_id_update[simp]:
 
 subsection \<open>Tensor product of registers\<close>
 
-definition register_tensor  (infixr "\<otimes>\<^sub>r" 70) where
+definition register_tensor  (infixr \<open>\<otimes>\<^sub>r\<close> 70) where
   "register_tensor F G = register_pair (\<lambda>a. tensor_update (F a) id_update) (\<lambda>b. tensor_update id_update (G b))"
 
 lemma register_tensor_is_register: 
@@ -798,17 +798,17 @@ end
 
 subsection \<open>Notation\<close>
 
-no_notation comp_update (infixl "*\<^sub>u" 55)
-no_notation tensor_update (infixr "\<otimes>\<^sub>u" 70)
+no_notation comp_update (infixl \<open>*\<^sub>u\<close> 55)
+no_notation tensor_update (infixr \<open>\<otimes>\<^sub>u\<close> 70)
 
 bundle register_notation begin
-notation register_tensor (infixr "\<otimes>\<^sub>r" 70)
-notation register_pair ("'(_;_')")
+notation register_tensor (infixr \<open>\<otimes>\<^sub>r\<close> 70)
+notation register_pair (\<open>'(_;_')\<close>)
 end
 
 bundle no_register_notation begin
-no_notation register_tensor (infixr "\<otimes>\<^sub>r" 70)
-no_notation register_pair ("'(_;_')")
+no_notation register_tensor (infixr \<open>\<otimes>\<^sub>r\<close> 70)
+no_notation register_pair (\<open>'(_;_')\<close>)
 end
 
 end

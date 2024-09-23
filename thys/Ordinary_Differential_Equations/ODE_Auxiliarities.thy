@@ -102,8 +102,8 @@ qed
 
 subsection \<open>Intervals\<close>
 
-notation closed_segment ("(1{_--_})")
-notation open_segment ("(1{_<--<_})")
+notation closed_segment (\<open>(1{_--_})\<close>)
+notation open_segment (\<open>(1{_<--<_})\<close>)
 
 lemma min_zero_mult_nonneg_le: "0 \<le> h' \<Longrightarrow> h' \<le> h \<Longrightarrow> min 0 (h * k::real) \<le> h' * k"
   by (metis dual_order.antisym le_cases min_le_iff_disj mult_eq_0_iff mult_le_0_iff

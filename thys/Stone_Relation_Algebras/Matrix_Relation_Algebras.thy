@@ -35,8 +35,8 @@ For finite types, this is implemented in Isabelle/HOL as the repeated applicatio
 \<close>
 
 syntax
-  "_sum_sup_monoid" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^sub>_ _)" [0,10] 10)
-  "_sum_sup_monoid_bounded" :: "idt \<Rightarrow> 'b set \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^bsub>_\<in>_\<^esub> _)" [0,51,10] 10)
+  "_sum_sup_monoid" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" (\<open>(\<Squnion>\<^sub>_ _)\<close> [0,10] 10)
+  "_sum_sup_monoid_bounded" :: "idt \<Rightarrow> 'b set \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" (\<open>(\<Squnion>\<^bsub>_\<in>_\<^esub> _)\<close> [0,51,10] 10)
 syntax_consts
   "_sum_sup_monoid" "_sum_sup_monoid_bounded" \<rightleftharpoons> sup_monoid.sum
 translations
@@ -202,18 +202,18 @@ Its unit lifts given zero and one elements into an identity matrix.
 Converse is matrix transpose with an additional componentwise transpose.
 \<close>
 
-definition less_eq_matrix :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"                                           (infix "\<preceq>" 50)   where "f \<preceq> g = (\<forall>e . f e \<le> g e)"
-definition less_matrix    :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"                                           (infix "\<prec>" 50)   where "f \<prec> g = (f \<preceq> g \<and> \<not> g \<preceq> f)"
-definition sup_matrix     :: "('a,'b::sup) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                                 (infixl "\<oplus>" 65)  where "f \<oplus> g = (\<lambda>e . f e \<squnion> g e)"
-definition inf_matrix     :: "('a,'b::inf) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                                 (infixl "\<otimes>" 67)  where "f \<otimes> g = (\<lambda>e . f e \<sqinter> g e)"
-definition minus_matrix   :: "('a,'b::{uminus,inf}) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                        (infixl "\<ominus>" 65)  where "f \<ominus> g = (\<lambda>e . f e \<sqinter> -g e)"
-definition implies_matrix :: "('a,'b::implies) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                             (infixl "\<oslash>" 65)  where "f \<oslash> g = (\<lambda>e . f e \<leadsto> g e)"
-definition times_matrix   :: "('a,'b::{times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square" (infixl "\<odot>" 70)  where "f \<odot> g = (\<lambda>(i,j) . \<Squnion>\<^sub>k f (i,k) * g (k,j))"
-definition uminus_matrix  :: "('a,'b::uminus) square \<Rightarrow> ('a,'b) square"                                                ("\<ominus> _" [80] 80)  where "\<ominus>f    = (\<lambda>e . -f e)"
-definition conv_matrix    :: "('a,'b::conv) square \<Rightarrow> ('a,'b) square"                                                  ("_\<^sup>t" [100] 100) where "f\<^sup>t      = (\<lambda>(i,j) . (f (j,i))\<^sup>T)"
-definition bot_matrix     :: "('a,'b::bot) square"                                                                     ("mbot")         where "mbot   = (\<lambda>e . bot)"
-definition top_matrix     :: "('a,'b::top) square"                                                                     ("mtop")         where "mtop   = (\<lambda>e . top)"
-definition one_matrix     :: "('a,'b::{one,bot}) square"                                                               ("mone")         where "mone   = (\<lambda>(i,j) . if i = j then 1 else bot)"
+definition less_eq_matrix :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"                                           (infix \<open>\<preceq>\<close> 50)   where "f \<preceq> g = (\<forall>e . f e \<le> g e)"
+definition less_matrix    :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"                                           (infix \<open>\<prec>\<close> 50)   where "f \<prec> g = (f \<preceq> g \<and> \<not> g \<preceq> f)"
+definition sup_matrix     :: "('a,'b::sup) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                                 (infixl \<open>\<oplus>\<close> 65)  where "f \<oplus> g = (\<lambda>e . f e \<squnion> g e)"
+definition inf_matrix     :: "('a,'b::inf) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                                 (infixl \<open>\<otimes>\<close> 67)  where "f \<otimes> g = (\<lambda>e . f e \<sqinter> g e)"
+definition minus_matrix   :: "('a,'b::{uminus,inf}) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                        (infixl \<open>\<ominus>\<close> 65)  where "f \<ominus> g = (\<lambda>e . f e \<sqinter> -g e)"
+definition implies_matrix :: "('a,'b::implies) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                             (infixl \<open>\<oslash>\<close> 65)  where "f \<oslash> g = (\<lambda>e . f e \<leadsto> g e)"
+definition times_matrix   :: "('a,'b::{times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square" (infixl \<open>\<odot>\<close> 70)  where "f \<odot> g = (\<lambda>(i,j) . \<Squnion>\<^sub>k f (i,k) * g (k,j))"
+definition uminus_matrix  :: "('a,'b::uminus) square \<Rightarrow> ('a,'b) square"                                                (\<open>\<ominus> _\<close> [80] 80)  where "\<ominus>f    = (\<lambda>e . -f e)"
+definition conv_matrix    :: "('a,'b::conv) square \<Rightarrow> ('a,'b) square"                                                  (\<open>_\<^sup>t\<close> [100] 100) where "f\<^sup>t      = (\<lambda>(i,j) . (f (j,i))\<^sup>T)"
+definition bot_matrix     :: "('a,'b::bot) square"                                                                     (\<open>mbot\<close>)         where "mbot   = (\<lambda>e . bot)"
+definition top_matrix     :: "('a,'b::top) square"                                                                     (\<open>mtop\<close>)         where "mtop   = (\<lambda>e . top)"
+definition one_matrix     :: "('a,'b::{one,bot}) square"                                                               (\<open>mone\<close>)         where "mone   = (\<lambda>(i,j) . if i = j then 1 else bot)"
 
 subsection \<open>Stone Algebras\<close>
 

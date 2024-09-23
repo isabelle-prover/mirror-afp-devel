@@ -6,7 +6,7 @@ theory Weak_Early_Step_Sim
   imports Weak_Early_Sim Strong_Early_Sim
 begin
 
-definition weakStepSimulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" ("_ \<leadsto>\<guillemotleft>_\<guillemotright> _" [80, 80, 80] 80) where
+definition weakStepSimulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<leadsto>\<guillemotleft>_\<guillemotright> _\<close> [80, 80, 80] 80) where
   "P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q \<equiv> (\<forall>Q' a x. Q \<longmapsto>a<\<nu>x> \<prec> Q' \<longrightarrow> x \<sharp> P \<longrightarrow> (\<exists>P' . P \<Longrightarrow>a<\<nu>x> \<prec> P' \<and> (P', Q') \<in> Rel)) \<and>
                          (\<forall>Q' \<alpha>. Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> (\<exists>P'. P \<Longrightarrow>\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel))"
 

@@ -4,7 +4,7 @@ begin
 
 section\<open>Setup\<close>
 
-abbreviation bra_ket ("\<langle>_|_\<rangle>")
+abbreviation bra_ket (\<open>\<langle>_|_\<rangle>\<close>)
   where "\<langle>u|v\<rangle> \<equiv> inner_prod u v"
 
 text\<open>Fix an n-dimensional normalized quantum state $\psi$.\<close>
@@ -24,7 +24,7 @@ text\<open>
   The mean value of an observable A is defined as $\langle \psi | A | \psi \rangle$. It is useful to
   have a scalar matrix of appropriate dimension containing this value. On paper, this is usually implicit.
 \<close>
-abbreviation mean_mat :: "complex Matrix.mat \<Rightarrow> complex Matrix.mat" ("\<llangle>_\<rrangle>")
+abbreviation mean_mat :: "complex Matrix.mat \<Rightarrow> complex Matrix.mat" (\<open>\<llangle>_\<rrangle>\<close>)
   where "\<llangle>A\<rrangle> \<equiv> \<langle>\<psi>| A *\<^sub>v \<psi>\<rangle> \<cdot>\<^sub>m 1\<^sub>m n"
 
 text\<open>
@@ -32,15 +32,15 @@ text\<open>
   Since the standard deviation is real (see lemma std-dev-real), we can define it as being of type real using norm.
   This simultaneously restricts it to positive values. (powers of two are expanded for simplicity)
 \<close>
-abbreviation std_dev :: "complex Matrix.mat \<Rightarrow> real" ("\<Delta>")
+abbreviation std_dev :: "complex Matrix.mat \<Rightarrow> real" (\<open>\<Delta>\<close>)
   where "\<Delta> A \<equiv> norm (csqrt (\<langle>\<psi>| (A * A *\<^sub>v \<psi>)\<rangle> - \<langle>\<psi>| A *\<^sub>v \<psi>\<rangle> * \<langle>\<psi>| A *\<^sub>v \<psi>\<rangle>))"   
 
 end 
 
-abbreviation commutator :: "complex Matrix.mat \<Rightarrow> complex Matrix.mat \<Rightarrow> complex Matrix.mat" ("\<lbrakk>_,_\<rbrakk>")
+abbreviation commutator :: "complex Matrix.mat \<Rightarrow> complex Matrix.mat \<Rightarrow> complex Matrix.mat" (\<open>\<lbrakk>_,_\<rbrakk>\<close>)
   where "commutator A B \<equiv> (A * B - B * A)"
 
-abbreviation anticommutator :: "complex Matrix.mat \<Rightarrow> complex Matrix.mat \<Rightarrow> complex Matrix.mat" ("\<lbrace>_,_\<rbrace>")
+abbreviation anticommutator :: "complex Matrix.mat \<Rightarrow> complex Matrix.mat \<Rightarrow> complex Matrix.mat" (\<open>\<lbrace>_,_\<rbrace>\<close>)
   where "anticommutator A B \<equiv> (A * B + B * A)"
 
 section\<open>Auxiliary Lemmas\<close>

@@ -447,19 +447,19 @@ setup_lifting type_definition_process
 text \<open>This is where we differ from previous versions: we lift definitions 
       using Isabelle's machinery instead of doing it by hand.\<close>
 
-lift_definition Failures :: "'\<alpha> process \<Rightarrow> ('\<alpha> failure set)" ("\<F>")
+lift_definition Failures :: "'\<alpha> process \<Rightarrow> ('\<alpha> failure set)" (\<open>\<F>\<close>)
   is "\<lambda>P. FAILURES P" .
 
 
-lift_definition Traces :: "'\<alpha> process \<Rightarrow>  ('\<alpha> trace set)"   ("\<T>")
+lift_definition Traces :: "'\<alpha> process \<Rightarrow>  ('\<alpha> trace set)"   (\<open>\<T>\<close>)
   is "\<lambda>P. TRACES P" .
 
 
-lift_definition Divergences :: "'\<alpha> process \<Rightarrow> '\<alpha> divergence"     ("\<D>")
+lift_definition Divergences :: "'\<alpha> process \<Rightarrow> '\<alpha> divergence"     (\<open>\<D>\<close>)
   is "\<lambda>P. DIVERGENCES P" .
 
 
-lift_definition Refusals :: "'\<alpha> process \<Rightarrow> ('\<alpha> refusal set)"  ("\<R>")
+lift_definition Refusals :: "'\<alpha> process \<Rightarrow> ('\<alpha> refusal set)"  (\<open>\<R>\<close>)
   is "\<lambda>P. REFUSALS P" .
 
 
@@ -808,7 +808,7 @@ text\<open> \ldots while the second returns the set of possible
 refusal sets after a given trace $s$ and a given process
 $P$: \<close>
 
-definition Ra :: "['\<alpha> process, '\<alpha> trace] \<Rightarrow> ('\<alpha> refusal set)" ("\<R>\<^sub>a")
+definition Ra :: "['\<alpha> process, '\<alpha> trace] \<Rightarrow> ('\<alpha> refusal set)" (\<open>\<R>\<^sub>a\<close>)
   where   "\<R>\<^sub>a P s = {X. (s, X) \<in> \<F> P}"
 
 text\<open> In the following, we link the process theory to the underlying 

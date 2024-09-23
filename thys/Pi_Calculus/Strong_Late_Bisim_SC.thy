@@ -489,7 +489,7 @@ proof -
     by(coinduct rule: bisimCoinduct) (fastforce intro: resTauLeft resTauRight reflexive)+
 qed
 
-inductive structCong :: "pi \<Rightarrow> pi \<Rightarrow> bool" ("_ \<equiv>\<^sub>s _" [70, 70] 70)
+inductive structCong :: "pi \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<equiv>\<^sub>s _\<close> [70, 70] 70)
 where
   Refl: "P \<equiv>\<^sub>s P"
 | Sym:  "P \<equiv>\<^sub>s Q \<Longrightarrow> Q \<equiv>\<^sub>s P"

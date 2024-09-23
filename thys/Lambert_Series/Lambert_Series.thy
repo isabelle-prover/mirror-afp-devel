@@ -14,7 +14,7 @@ begin
 subsection \<open>Definition\<close>
 
 (*<*)
-no_notation Infinite_Set_Sum.abs_summable_on (infix "abs'_summable'_on" 50)
+no_notation Infinite_Set_Sum.abs_summable_on (infix \<open>abs'_summable'_on\<close> 50)
 (*>*)
 
 text \<open>

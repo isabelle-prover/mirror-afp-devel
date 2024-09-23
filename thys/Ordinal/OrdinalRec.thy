@@ -56,7 +56,7 @@ done
 subsection \<open>Partial orders\<close>
 
 locale porder =
-  fixes le  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "<<" 55)
+  fixes le  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open><<\<close> 55)
 assumes po_refl:    "\<And>x. x << x"
     and po_trans:   "\<And>x y z. \<lbrakk>x << y; y << z\<rbrakk> \<Longrightarrow> x << z"
     and po_antisym: "\<And>x y. \<lbrakk>x << y; y << x\<rbrakk> \<Longrightarrow> x = y"

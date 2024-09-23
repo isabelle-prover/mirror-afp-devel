@@ -397,7 +397,7 @@ locale TC2 = TC0 +
 begin
   
 definition
-  wt_instrs :: "'addr instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i' list \<Rightarrow> bool" ("(\<turnstile> _, _ /[::]/ _)" [0,0,51] 50)
+  wt_instrs :: "'addr instr list \<Rightarrow> ex_table \<Rightarrow> ty\<^sub>i' list \<Rightarrow> bool" (\<open>(\<turnstile> _, _ /[::]/ _)\<close> [0,0,51] 50)
 where
   "\<turnstile> is,xt [::] \<tau>s \<equiv> size is < size \<tau>s \<and> pcs xt \<subseteq> {0..<size is} \<and> (\<forall>pc< size is. P,T\<^sub>r,mxs,size \<tau>s,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
@@ -874,7 +874,7 @@ next
   qed
 qed
 
-abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_/ \<bind> _)" [51, 50] 50) where
+abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (\<open>(_/ \<bind> _)\<close> [51, 50] 50) where
   "postfix xs ys \<equiv> suffix ys xs"
 
 lemma postfix_conv_eq_length_drop: 

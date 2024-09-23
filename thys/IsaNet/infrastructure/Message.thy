@@ -35,7 +35,7 @@ datatype msgterm =
 
 text \<open>Syntax sugar\<close>
 syntax
-  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"       ("(2\<langle>_,/ _\<rangle>)")
+  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"       (\<open>(2\<langle>_,/ _\<rangle>)\<close>)
 
 syntax_consts
   "_MTuple" \<rightleftharpoons> MPair
@@ -45,10 +45,10 @@ translations
   "\<langle>x, y\<rangle>"    \<rightleftharpoons> "CONST MPair x y"
 
 syntax
-  "_MHF" :: "['a, 'b , 'c, 'd, 'e] \<Rightarrow> 'a * 'b * 'c * 'd * 'e"  ("(5HF\<lhd>_,/ _,/ _,/ _,/ _\<rhd>)")
+  "_MHF" :: "['a, 'b , 'c, 'd, 'e] \<Rightarrow> 'a * 'b * 'c * 'd * 'e"  (\<open>(5HF\<lhd>_,/ _,/ _,/ _,/ _\<rhd>)\<close>)
 
 abbreviation
-  Mac :: "[msgterm,msgterm] \<Rightarrow> msgterm"                       ("(4Mac[_] /_)" [0, 1000])
+  Mac :: "[msgterm,msgterm] \<Rightarrow> msgterm"                       (\<open>(4Mac[_] /_)\<close> [0, 1000])
 where
   \<comment> \<open>Message Y paired with a MAC computed with the help of X\<close>
   "Mac[X] Y \<equiv> Hash \<langle>X,Y\<rangle>"

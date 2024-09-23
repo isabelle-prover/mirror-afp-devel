@@ -19,7 +19,7 @@ class involutive_domain_semiring = domain_semiring + involutive_dioid
 
 begin
 
-notation domain_op ("dom")
+notation domain_op (\<open>dom\<close>)
 
 lemma strong_conv_conv: "dom x \<le> x \<cdot> x\<^sup>\<circ> \<Longrightarrow> x \<le> x \<cdot> x\<^sup>\<circ> \<cdot> x"
 proof-

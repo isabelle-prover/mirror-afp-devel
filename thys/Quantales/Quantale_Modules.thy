@@ -17,7 +17,7 @@ These have been investigated by Abramsky and Vickers~\<^cite>\<open>"AbramskyV93
 of pointfree topology.\<close>
   
 locale unital_quantale_module = 
-  fixes act :: "'a::unital_quantale \<Rightarrow> 'b::complete_lattice_with_dual \<Rightarrow> 'b" ("\<alpha>")
+  fixes act :: "'a::unital_quantale \<Rightarrow> 'b::complete_lattice_with_dual \<Rightarrow> 'b" (\<open>\<alpha>\<close>)
   assumes act1: "\<alpha> (x \<cdot> y) p = \<alpha> x (\<alpha> y p)"
     and act2 [simp]: "\<alpha> 1 p = p" 
     and act3: "\<alpha> (\<Squnion>X) p = (\<Squnion>x \<in> X. \<alpha> x p)"

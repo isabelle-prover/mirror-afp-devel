@@ -5,7 +5,7 @@ theory Probability_Inequality_Completeness
     "Suppes_Theorem.Probability_Logic"
 begin
 
-no_notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+no_notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 text \<open> We introduce a novel logical calculus and prove completeness for
        probability inequalities. This is a vast generalization of \<^emph>\<open>Suppes' Theorem\<close>
@@ -57,7 +57,7 @@ text \<open> Our new logical calculus is a recursively defined relation \<open>(
 text \<open> We call our new logical relation \<^emph>\<open>measure deduction\<close>: \<close>
 
 primrec (in classical_logic)
-  measure_deduction :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "$\<turnstile>" 60)
+  measure_deduction :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix \<open>$\<turnstile>\<close> 60)
   where
     "\<Gamma> $\<turnstile> [] = True"
   | "\<Gamma> $\<turnstile> (\<phi> # \<Phi>) =
@@ -118,7 +118,7 @@ text \<open> To motivate this notion, let's reuse the metaphor that \<open>\<Gam
        avoids the complexity of iteratively cutting up balls of clay. \<close>
 
 definition (in implication_logic)
-  stronger_theory_relation :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<preceq>" 100)
+  stronger_theory_relation :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 100)
   where
     "\<Sigma> \<preceq> \<Gamma> =
        (\<exists> \<Phi>. map snd \<Phi> = \<Sigma>
@@ -126,7 +126,7 @@ definition (in implication_logic)
             \<and> (\<forall> (\<gamma>,\<sigma>) \<in> set \<Phi>. \<turnstile> \<gamma> \<rightarrow> \<sigma>))"
 
 abbreviation (in implication_logic)
-  stronger_theory_relation_op :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<succeq>" 100)
+  stronger_theory_relation_op :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix \<open>\<succeq>\<close> 100)
   where
     "\<Gamma> \<succeq> \<Sigma> \<equiv> \<Sigma> \<preceq> \<Gamma>"
 
@@ -828,7 +828,7 @@ text \<open> Transitivity is complicated. It requires constructing many witnesse
        constructions that allow us to establish \<^term>\<open>\<Gamma> $\<turnstile> \<Lambda> \<Longrightarrow> \<Lambda> $\<turnstile> \<Delta> \<Longrightarrow> \<Gamma> $\<turnstile> \<Delta>\<close>. \<close>
 
 primrec (in implication_logic)
-  first_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<AA>")
+  first_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<AA>\<close>)
   where
     "\<AA> \<Psi> [] = []"
   | "\<AA> \<Psi> (\<delta> # \<Delta>) =
@@ -837,7 +837,7 @@ primrec (in implication_logic)
            | Some \<psi> \<Rightarrow> \<psi> # (\<AA> (remove1 \<psi> \<Psi>) \<Delta>))"
 
 primrec (in implication_logic)
-  second_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<BB>")
+  second_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<BB>\<close>)
   where
     "\<BB> \<Psi> [] = []"
   | "\<BB> \<Psi> (\<delta> # \<Delta>) =
@@ -1129,7 +1129,7 @@ proof -
 qed
 
 primrec (in classical_logic)
-  merge_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<JJ>")
+  merge_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<JJ>\<close>)
   where
     "\<JJ> \<Psi> [] = \<Psi>"
   | "\<JJ> \<Psi> (\<delta> # \<Delta>) =
@@ -2088,7 +2088,7 @@ next
 qed
 
 primrec (in implication_logic)
-  X_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<XX>")
+  X_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<XX>\<close>)
   where
     "\<XX> \<Psi> [] = []"
   | "\<XX> \<Psi> (\<delta> # \<Delta>) =
@@ -2097,7 +2097,7 @@ primrec (in implication_logic)
            | Some \<psi> \<Rightarrow> (fst \<psi> \<rightarrow> fst \<delta>, snd \<psi>) # (\<XX> (remove1 \<psi> \<Psi>) \<Delta>))"
 
 primrec (in implication_logic)
-  X_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<XX>\<^sub>\<bullet>")
+  X_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<XX>\<^sub>\<bullet>\<close>)
   where
     "\<XX>\<^sub>\<bullet> \<Psi> [] = []"
   | "\<XX>\<^sub>\<bullet> \<Psi> (\<delta> # \<Delta>) =
@@ -2106,7 +2106,7 @@ primrec (in implication_logic)
            | Some \<psi> \<Rightarrow> (fst \<psi> \<rightarrow> fst \<delta>, snd \<psi>) # (\<XX>\<^sub>\<bullet> (remove1 \<psi> \<Psi>) \<Delta>))"
 
 primrec (in implication_logic)
-  Y_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<YY>")
+  Y_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<YY>\<close>)
   where
     "\<YY> \<Psi> [] = \<Psi>"
   | "\<YY> \<Psi> (\<delta> # \<Delta>) =
@@ -2116,7 +2116,7 @@ primrec (in implication_logic)
                        (\<YY> (remove1 \<psi> \<Psi>) \<Delta>))"
 
 primrec (in implication_logic)
-  Y_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<YY>\<^sub>\<bullet>")
+  Y_component :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<YY>\<^sub>\<bullet>\<close>)
   where
     "\<YY>\<^sub>\<bullet> \<Psi> [] = []"
   | "\<YY>\<^sub>\<bullet> \<Psi> (\<delta> # \<Delta>) =
@@ -3001,7 +3001,7 @@ proof -
 qed
 
 primrec (in classical_logic)
-  submerge_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<EE>")
+  submerge_witness :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<EE>\<close>)
   where
     "\<EE> \<Sigma> [] = map (\<lambda> \<sigma>. (\<bottom>, (uncurry (\<squnion>)) \<sigma>)) \<Sigma>"
   | "\<EE> \<Sigma> (\<delta> # \<Delta>) =
@@ -3263,7 +3263,7 @@ proof -
 qed
 
 primrec (in classical_logic)
-  recover_witness_A :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<PP>")
+  recover_witness_A :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<PP>\<close>)
   where
     "\<PP> \<Sigma> [] = \<Sigma>"
   | "\<PP> \<Sigma> (\<delta> # \<Delta>) =
@@ -3272,7 +3272,7 @@ primrec (in classical_logic)
            | Some \<sigma> \<Rightarrow> (fst \<sigma> \<squnion> fst \<delta>, snd \<delta>) # (\<PP> (remove1 \<sigma> \<Sigma>) \<Delta>))"
 
 primrec (in classical_logic)
-  recover_complement_A :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<PP>\<^sup>C")
+  recover_complement_A :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<PP>\<^sup>C\<close>)
   where
     "\<PP>\<^sup>C \<Sigma> [] = []"
   | "\<PP>\<^sup>C \<Sigma> (\<delta> # \<Delta>) =
@@ -3281,7 +3281,7 @@ primrec (in classical_logic)
            | Some \<sigma> \<Rightarrow> (\<PP>\<^sup>C (remove1 \<sigma> \<Sigma>) \<Delta>))"
 
 primrec (in classical_logic)
-  recover_witness_B :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" ("\<QQ>")
+  recover_witness_B :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<QQ>\<close>)
   where
     "\<QQ> \<Sigma> [] = []"
   | "\<QQ> \<Sigma> (\<delta> # \<Delta>) =
@@ -4437,7 +4437,7 @@ text \<open> The theorem @{thm measure_negation_swap [no_vars]} gives rise to
        with each dispatched conclusion. \<close>
 
 primrec (in classical_logic)
-  counting_deduction :: "'a list \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> bool" ("_ #\<turnstile> _ _" [60,100,59] 60)
+  counting_deduction :: "'a list \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ #\<turnstile> _ _\<close> [60,100,59] 60)
   where
     "\<Gamma> #\<turnstile> 0 \<phi> = True"
   | "\<Gamma> #\<turnstile> (Suc n) \<phi> = (\<exists> \<Psi>. mset (map snd \<Psi>) \<subseteq># mset \<Gamma> \<and>
@@ -4894,7 +4894,7 @@ text \<open> Given a list of assumptions \<open>\<Phi>\<close> and formula \<ope
        will care about \<open>\<phi> = \<bottom>\<close>, we provide a general definition in the more
        general axiom class @{class implication_logic}. \<close>
 
-definition (in implication_logic) relative_maximals :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a list set" ("\<M>")
+definition (in implication_logic) relative_maximals :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a list set" (\<open>\<M>\<close>)
   where
     "\<M> \<Gamma> \<phi> =
         { \<Phi>. mset \<Phi> \<subseteq># mset \<Gamma>
@@ -5145,7 +5145,7 @@ text \<open> Because we do not work at the semantic level, computing if \<open>M
        logic to be linear temporal logic or even first order logic. In such
        cases the complexity class would be higher in the complexity hierarchy. \<close>
 
-definition (in implication_logic) relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" ("\<bar> _ \<bar>\<^sub>_" [45])
+definition (in implication_logic) relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" (\<open>\<bar> _ \<bar>\<^sub>_\<close> [45])
   where
     "(\<bar> \<Gamma> \<bar>\<^sub>\<phi>) = (if \<M> \<Gamma> \<phi> = {} then 0 else Max { length \<Phi> | \<Phi>. \<Phi> \<in> \<M> \<Gamma> \<phi> })"
 
@@ -5153,7 +5153,7 @@ abbreviation (in classical_logic) MaxSAT :: "'a list \<Rightarrow> nat"
   where
     "MaxSAT \<Gamma> \<equiv> \<bar> \<Gamma> \<bar>\<^sub>\<bottom>"
 
-definition (in implication_logic) complement_relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" ("\<parallel> _ \<parallel>\<^sub>_" [45])
+definition (in implication_logic) complement_relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" (\<open>\<parallel> _ \<parallel>\<^sub>_\<close> [45])
   where
     "(\<parallel> \<Gamma> \<parallel>\<^sub>\<phi>) = length \<Gamma> - \<bar> \<Gamma> \<bar>\<^sub>\<phi>"
 
@@ -5220,7 +5220,7 @@ section \<open> Reducing Counting Deduction to MaxSAT \<close>
 text \<open> Here we present a major result: counting deduction may be reduced to
        MaxSAT. \<close>
 
-primrec MaxSAT_optimal_pre_witness :: "'a list \<Rightarrow> ('a list \<times> 'a) list" ("\<VV>")
+primrec MaxSAT_optimal_pre_witness :: "'a list \<Rightarrow> ('a list \<times> 'a) list" (\<open>\<VV>\<close>)
   where
     "\<VV> [] = []"
   | "\<VV> (\<psi> # \<Psi>) = (\<Psi>, \<psi>) # \<VV> \<Psi>"
@@ -5483,15 +5483,15 @@ proof -
 qed
 
 abbreviation (in classical_logic)
-  MaxSAT_optimal_witness :: "'a \<Rightarrow> 'a list \<Rightarrow> ('a \<times> 'a) list" ("\<WW>")
+  MaxSAT_optimal_witness :: "'a \<Rightarrow> 'a list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<WW>\<close>)
   where "\<WW> \<phi> \<Xi> \<equiv> map (\<lambda>(\<Psi>,\<psi>). (\<Psi> :\<rightarrow> \<phi>, \<psi>)) (\<VV> \<Xi>)"
 
 abbreviation (in classical_logic)
-  disjunction_MaxSAT_optimal_witness :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" ("\<WW>\<^sub>\<squnion>")
+  disjunction_MaxSAT_optimal_witness :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" (\<open>\<WW>\<^sub>\<squnion>\<close>)
   where "\<WW>\<^sub>\<squnion> \<phi> \<Psi> \<equiv> map (uncurry (\<squnion>)) (\<WW> \<phi> \<Psi>)"
 
 abbreviation (in classical_logic)
-  implication_MaxSAT_optimal_witness :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" ("\<WW>\<^sub>\<rightarrow>")
+  implication_MaxSAT_optimal_witness :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" (\<open>\<WW>\<^sub>\<rightarrow>\<close>)
   where "\<WW>\<^sub>\<rightarrow> \<phi> \<Psi> \<equiv> map (uncurry (\<rightarrow>)) (\<WW> \<phi> \<Psi>)"
 
 lemma (in classical_logic) MaxSAT_optimal_witness_conjunction_identity:
@@ -6716,7 +6716,7 @@ qed
 
 
 primrec (in implication_logic)
-  MaxSAT_witness :: "('a \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> ('a \<times> 'a) list" ("\<UU>")
+  MaxSAT_witness :: "('a \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> ('a \<times> 'a) list" (\<open>\<UU>\<close>)
   where
     "\<UU> _ [] = []"
   | "\<UU> \<Sigma> (\<xi> # \<Xi>) = (case find (\<lambda> \<sigma>. \<xi> = snd \<sigma>) \<Sigma> of
@@ -8089,26 +8089,26 @@ theorem (in consistent_classical_logic) probability_inequality_equiv:
   unfolding dirac_collapse
   using dirac_inequality_equiv dirac_ceiling by blast
 
-no_notation first_component ("\<AA>")
-no_notation second_component ("\<BB>")
-no_notation merge_witness ("\<JJ>")
-no_notation X_witness ("\<XX>")
-no_notation X_component ("\<XX>\<^sub>\<bullet>")
-no_notation Y_witness ("\<YY>")
-no_notation Y_component ("\<YY>\<^sub>\<bullet>")
-no_notation submerge_witness ("\<EE>")
-no_notation recover_witness_A ("\<PP>")
-no_notation recover_complement_A ("\<PP>\<^sup>C")
-no_notation recover_witness_B ("\<QQ>")
-no_notation relative_maximals ("\<M>")
-no_notation relative_MaxSAT ("\<bar> _ \<bar>\<^sub>_" [45])
-no_notation complement_relative_MaxSAT ("\<parallel> _ \<parallel>\<^sub>_" [45])
-no_notation MaxSAT_optimal_pre_witness ("\<VV>")
-no_notation MaxSAT_optimal_witness ("\<WW>")
-no_notation disjunction_MaxSAT_optimal_witness ("\<WW>\<^sub>\<squnion>")
-no_notation implication_MaxSAT_optimal_witness ("\<WW>\<^sub>\<rightarrow>")
-no_notation MaxSAT_witness ("\<UU>")
+no_notation first_component (\<open>\<AA>\<close>)
+no_notation second_component (\<open>\<BB>\<close>)
+no_notation merge_witness (\<open>\<JJ>\<close>)
+no_notation X_witness (\<open>\<XX>\<close>)
+no_notation X_component (\<open>\<XX>\<^sub>\<bullet>\<close>)
+no_notation Y_witness (\<open>\<YY>\<close>)
+no_notation Y_component (\<open>\<YY>\<^sub>\<bullet>\<close>)
+no_notation submerge_witness (\<open>\<EE>\<close>)
+no_notation recover_witness_A (\<open>\<PP>\<close>)
+no_notation recover_complement_A (\<open>\<PP>\<^sup>C\<close>)
+no_notation recover_witness_B (\<open>\<QQ>\<close>)
+no_notation relative_maximals (\<open>\<M>\<close>)
+no_notation relative_MaxSAT (\<open>\<bar> _ \<bar>\<^sub>_\<close> [45])
+no_notation complement_relative_MaxSAT (\<open>\<parallel> _ \<parallel>\<^sub>_\<close> [45])
+no_notation MaxSAT_optimal_pre_witness (\<open>\<VV>\<close>)
+no_notation MaxSAT_optimal_witness (\<open>\<WW>\<close>)
+no_notation disjunction_MaxSAT_optimal_witness (\<open>\<WW>\<^sub>\<squnion>\<close>)
+no_notation implication_MaxSAT_optimal_witness (\<open>\<WW>\<^sub>\<rightarrow>\<close>)
+no_notation MaxSAT_witness (\<open>\<UU>\<close>)
 
-notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 end

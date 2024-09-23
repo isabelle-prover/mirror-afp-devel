@@ -23,7 +23,7 @@ subsection\<open>$p$-adic Balls\<close>
 context padic_fields
 begin
 
-definition c_ball :: "int \<Rightarrow> padic_number \<Rightarrow> padic_number set" ("B\<^bsub>_\<^esub>[_]") where
+definition c_ball :: "int \<Rightarrow> padic_number \<Rightarrow> padic_number set" (\<open>B\<^bsub>_\<^esub>[_]\<close>) where
 "c_ball n c = {x \<in> carrier Q\<^sub>p. val (x \<ominus> c) \<ge> n}"
 
 lemma c_ballI: 
@@ -383,7 +383,7 @@ proof-
     by auto
 qed
 
-definition radius :: "padic_number set \<Rightarrow> int" ("rad") where
+definition radius :: "padic_number set \<Rightarrow> int" (\<open>rad\<close>) where
 "radius B = (SOME n. (\<exists>c \<in> carrier Q\<^sub>p . B = B\<^bsub>n\<^esub>[c]))"
 
 lemma radius_of_ball:
@@ -934,7 +934,7 @@ lemma UNIV_convex:
   apply(rule is_convexI)
   by blast
 
-definition closed_interval ("I[_ _]") where
+definition closed_interval (\<open>I[_ _]\<close>) where
   "closed_interval \<alpha> \<beta> = {a . \<alpha> \<le> a \<and>  a \<le> \<beta>}"
 
 lemma closed_interval_is_convex:

@@ -14,20 +14,20 @@ begin
 
 
 definition confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
-    ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
+    (\<open>_,_ \<turnstile> _ :\<le>\<^sub>\<top> _\<close> [51,51,51,51] 50)
 where
   "P,h \<turnstile> v :\<le>\<^sub>\<top> E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
 notation (ASCII)
-  confT  ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+  confT  (\<open>_,_ |- _ :<=T _\<close> [51,51,51,51] 50)
 
 abbreviation
   confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool" 
-      ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50) where
+      (\<open>_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _\<close> [51,51,51,51] 50) where
   "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
 notation (ASCII)
-  confTs  ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
+  confTs  (\<open>_,_ |- _ [:<=T] _\<close> [51,51,51,51] 50)
 
 definition conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^sub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
 where
@@ -54,7 +54,7 @@ where
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 
-definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<surd>"  [61,0,0] 61)
+definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"  (\<open>_,_ \<turnstile> _ \<surd>\<close>  [61,0,0] 61)
 where
   "correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs).
   case xp of
@@ -69,7 +69,7 @@ where
   | Some x \<Rightarrow> frs = []" 
 
 notation
-  correct_state  ("_,_ |- _ [ok]"  [61,0,0] 61)
+  correct_state  (\<open>_,_ |- _ [ok]\<close>  [61,0,0] 61)
 
 
 subsection \<open>Values and \<open>\<top>\<close>\<close>

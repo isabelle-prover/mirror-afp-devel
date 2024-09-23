@@ -63,13 +63,13 @@ declare [[syntax_ambiguity_warning = false]]
 
 datatype com =
   SKIP |
-  Assign vname aexp  ("_ ::= _" [1000, 61] 61) |
-  Seq com com  ("_;;/ _" [60, 61] 60) |
-  If bexp com com  ("(IF _/ THEN _/ ELSE _)" [0, 0, 61] 61) |
-  Or com com  ("(_ OR _)" [60, 61] 61) |
-  While bexp com  ("(WHILE _/ DO _)" [0, 61] 61)
+  Assign vname aexp  (\<open>_ ::= _\<close> [1000, 61] 61) |
+  Seq com com  (\<open>_;;/ _\<close> [60, 61] 60) |
+  If bexp com com  (\<open>(IF _/ THEN _/ ELSE _)\<close> [0, 0, 61] 61) |
+  Or com com  (\<open>(_ OR _)\<close> [60, 61] 61) |
+  While bexp com  (\<open>(WHILE _/ DO _)\<close> [0, 61] 61)
 
-inductive big_step :: "com \<times> state \<Rightarrow> state \<Rightarrow> bool" (infix "\<Rightarrow>" 55) where
+inductive big_step :: "com \<times> state \<Rightarrow> state \<Rightarrow> bool" (infix \<open>\<Rightarrow>\<close> 55) where
 Skip:  "(SKIP, s) \<Rightarrow> s" |
 Assign:  "(x ::= a, s) \<Rightarrow> s(x := aval a s)" |
 Seq:  "\<lbrakk>(c\<^sub>1, s\<^sub>1) \<Rightarrow> s\<^sub>2; (c\<^sub>2, s\<^sub>2) \<Rightarrow> s\<^sub>3\<rbrakk> \<Longrightarrow> (c\<^sub>1;; c\<^sub>2, s\<^sub>1) \<Rightarrow> s\<^sub>3" |
@@ -86,9 +86,9 @@ declare big_step.intros [intro]
 abbreviation (output)
 "isize xs \<equiv> int (length xs)"
 
-notation isize ("size")
+notation isize (\<open>size\<close>)
 
-primrec (nonexhaustive) inth :: "'a list \<Rightarrow> int \<Rightarrow> 'a" (infixl "!!" 100) where
+primrec (nonexhaustive) inth :: "'a list \<Rightarrow> int \<Rightarrow> 'a" (infixl \<open>!!\<close> 100) where
 "(x # xs) !! i = (if i = 0 then x else xs !! (i - 1))"
 
 lemma inth_append [simp]:
@@ -121,7 +121,7 @@ type_synonym config = "int \<times> state \<times> stack"
 abbreviation "hd2 xs \<equiv> hd (tl xs)"
 abbreviation "tl2 xs \<equiv> tl (tl xs)"
 
-inductive iexec :: "instr \<times> config \<Rightarrow> config \<Rightarrow> bool" (infix "\<mapsto>" 55) where
+inductive iexec :: "instr \<times> config \<Rightarrow> config \<Rightarrow> bool" (infix \<open>\<mapsto>\<close> 55) where
 LoadI:  "(LOADI i, pc, s, stk) \<mapsto> (pc + 1, s, i # stk)" |
 Load:  "(LOAD x, pc, s, stk) \<mapsto> (pc + 1, s, s x # stk)" |
 Add:  "(ADD, pc, s, stk) \<mapsto> (pc + 1, s, (hd2 stk + hd stk) # tl2 stk)" |
@@ -150,11 +150,11 @@ inductive_cases JmpGeE  [elim!]:  "(JMPGE i, pc, s, stk) \<mapsto> cf"
 inductive_cases JmpNdE  [elim!]:  "(JMPND i, pc, s, stk) \<mapsto> cf"
 
 definition exec1 :: "instr list \<Rightarrow> config \<Rightarrow> config \<Rightarrow> bool"
-  ("(_/ \<turnstile>/ _/ \<rightarrow>/ _)" 55) where
+  (\<open>(_/ \<turnstile>/ _/ \<rightarrow>/ _)\<close> 55) where
 "P \<turnstile> cf \<rightarrow> cf' \<equiv> (P !! fst cf, cf) \<mapsto> cf' \<and> 0 \<le> fst cf \<and> fst cf < size P"
 
 abbreviation exec :: "instr list \<Rightarrow> config \<Rightarrow> config \<Rightarrow> bool"
-  ("(_/ \<turnstile>/ _/ \<rightarrow>*/ _)" 55) where
+  (\<open>(_/ \<turnstile>/ _/ \<rightarrow>*/ _)\<close> 55) where
 "exec P \<equiv> star (exec1 P)"
 
 text \<open>

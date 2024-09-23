@@ -124,10 +124,10 @@ subsection \<open>The pointwise ordering on two equal-length lists of natural nu
 text \<open>Gowers uses the usual symbol ($\le$) for his pointwise ordering.
    In our development, $\le$ is the lexicographic ordering and $\unlhd$ is the pointwise ordering.\<close>
 
-definition pointwise_le :: "[nat list, nat list] \<Rightarrow> bool" (infixr "\<unlhd>" 50 )
+definition pointwise_le :: "[nat list, nat list] \<Rightarrow> bool" (infixr \<open>\<unlhd>\<close> 50 )
   where "x \<unlhd> y \<equiv> list_all2 (\<le>) x y"
 
-definition pointwise_less :: "[nat list, nat list] \<Rightarrow> bool" (infixr "\<lhd>" 50 )
+definition pointwise_less :: "[nat list, nat list] \<Rightarrow> bool" (infixr \<open>\<lhd>\<close> 50 )
   where "x \<lhd> y \<equiv> x \<unlhd> y \<and> x \<noteq> y"
 
 lemma pointwise_le_iff_nth:

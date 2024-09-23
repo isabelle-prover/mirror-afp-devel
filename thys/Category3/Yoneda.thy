@@ -46,8 +46,8 @@ begin
   locale hom_functor =
     C: category C +
     S: set_category S setp
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's" +
   assumes maps_arr_to_Univ: "C.arr f \<Longrightarrow> \<phi> (C.dom f, C.cod f) f \<in> S.Univ"
@@ -58,9 +58,9 @@ begin
     sublocale Cop: dual_category C ..
     sublocale CopxC: product_category Cop.comp C ..
 
-    notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
-    notation CopxC.comp   (infixr "\<odot>" 55)
-    notation CopxC.in_hom ("\<guillemotleft>_ : _ \<rightleftharpoons> _\<guillemotright>")
+    notation S.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>\<close>)
+    notation CopxC.comp   (infixr \<open>\<odot>\<close> 55)
+    notation CopxC.in_hom (\<open>\<guillemotleft>_ : _ \<rightleftharpoons> _\<guillemotright>\<close>)
 
     definition set
     where "set ba \<equiv> \<phi> (fst ba, snd ba) ` C.hom (fst ba) (snd ba)"
@@ -386,8 +386,8 @@ begin
     CopxC: product_category Cop.comp C +
     S: set_category S setp +
     Hom: hom_functor C S setp \<phi>
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   begin
@@ -395,7 +395,7 @@ begin
     sublocale Cop_S: functor_category Cop.comp S ..
     sublocale curried_functor' Cop.comp C S Hom.map ..
 
-    notation Cop_S.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] _\<guillemotright>")
+    notation Cop_S.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] _\<guillemotright>\<close>)
 
     abbreviation \<psi>
     where "\<psi> \<equiv> Hom.\<psi>"
@@ -481,8 +481,8 @@ begin
   locale yoneda_lemma =
     yoneda_functor_fixed_object C S setp \<phi> a +
     F: set_valued_functor Cop.comp S setp F
-  for C :: "'c comp" (infixr "\<cdot>" 55)
-  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  for C :: "'c comp" (infixr \<open>\<cdot>\<close> 55)
+  and S :: "'s comp" (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and F :: "'c \<Rightarrow> 's"
@@ -858,8 +858,8 @@ begin
     yoneda_functor_fixed_object C S setp \<phi> a +
     Ya': yoneda_functor_fixed_object C S setp \<phi> a' +
     yoneda_lemma C S setp \<phi> "Y a'" a
-  for C :: "'c comp" (infixr "\<cdot>" 55)
-  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  for C :: "'c comp" (infixr \<open>\<cdot>\<close> 55)
+  and S :: "'s comp" (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and a :: 'c

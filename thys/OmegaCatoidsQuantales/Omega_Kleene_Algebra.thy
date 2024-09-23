@@ -16,7 +16,7 @@ text \<open>Here we develop $\omega$-semigroups and $\omega$-Kleene algebras.\<c
 subsection \<open>Copies for i-structures\<close>
 
 class icomp_op =
-  fixes icomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<cdot>\<^bsub>_\<^esub> _" [70,70,70]70)
+  fixes icomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_ \<cdot>\<^bsub>_\<^esub> _\<close> [70,70,70]70)
 
 class iid_op =
   fixes un :: "nat \<Rightarrow> 'a"

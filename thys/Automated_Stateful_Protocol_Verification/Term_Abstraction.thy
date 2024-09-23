@@ -12,27 +12,27 @@ theory Term_Abstraction
 begin
 
 subsection \<open>Definitions\<close>
-fun to_abs ("\<alpha>\<^sub>0") where
+fun to_abs (\<open>\<alpha>\<^sub>0\<close>) where
   "\<alpha>\<^sub>0 [] _ = {}"
 | "\<alpha>\<^sub>0 ((Fun (Val m) [],Fun (Set s) S)#D) n =
     (if m = n then insert s (\<alpha>\<^sub>0 D n) else \<alpha>\<^sub>0 D n)"
 | "\<alpha>\<^sub>0 (_#D) n = \<alpha>\<^sub>0 D n"
 
-fun abs_apply_term (infixl "\<cdot>\<^sub>\<alpha>" 67) where
+fun abs_apply_term (infixl \<open>\<cdot>\<^sub>\<alpha>\<close> 67) where
   "Var x \<cdot>\<^sub>\<alpha> \<alpha> = Var x"
 | "Fun (Val n) T \<cdot>\<^sub>\<alpha> \<alpha> = Fun (Abs (\<alpha> n)) (map (\<lambda>t. t \<cdot>\<^sub>\<alpha> \<alpha>) T)"
 | "Fun f T \<cdot>\<^sub>\<alpha> \<alpha> = Fun f (map (\<lambda>t. t \<cdot>\<^sub>\<alpha> \<alpha>) T)"
 
-definition abs_apply_list (infixl "\<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t" 67) where
+definition abs_apply_list (infixl \<open>\<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t\<close> 67) where
   "M \<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<alpha> \<equiv> map (\<lambda>t. t \<cdot>\<^sub>\<alpha> \<alpha>) M"
 
-definition abs_apply_terms (infixl "\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t" 67) where
+definition abs_apply_terms (infixl \<open>\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t\<close> 67) where
   "M \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t \<alpha> \<equiv> (\<lambda>t. t \<cdot>\<^sub>\<alpha> \<alpha>) ` M"
 
-definition abs_apply_pairs (infixl "\<cdot>\<^sub>\<alpha>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s" 67) where
+definition abs_apply_pairs (infixl \<open>\<cdot>\<^sub>\<alpha>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s\<close> 67) where
   "F \<cdot>\<^sub>\<alpha>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<alpha> \<equiv> map (\<lambda>(s,t). (s \<cdot>\<^sub>\<alpha> \<alpha>, t \<cdot>\<^sub>\<alpha> \<alpha>)) F"
 
-definition abs_apply_strand_step (infixl "\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<^sub>p" 67) where
+definition abs_apply_strand_step (infixl \<open>\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<^sub>p\<close> 67) where
   "s \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<^sub>p \<alpha> \<equiv> (case s of
     (l,send\<langle>ts\<rangle>) \<Rightarrow> (l,send\<langle>ts \<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<alpha>\<rangle>)
   | (l,receive\<langle>ts\<rangle>) \<Rightarrow> (l,receive\<langle>ts \<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<alpha>\<rangle>)
@@ -42,7 +42,7 @@ definition abs_apply_strand_step (infixl "\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t
   | (l,\<langle>ac: t \<in> t'\<rangle>) \<Rightarrow> (l,\<langle>ac: (t \<cdot>\<^sub>\<alpha> \<alpha>) \<in> (t' \<cdot>\<^sub>\<alpha> \<alpha>)\<rangle>)
   | (l,\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>) \<Rightarrow> (l,\<forall>X\<langle>\<or>\<noteq>: (F \<cdot>\<^sub>\<alpha>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<alpha>) \<or>\<notin>: (F' \<cdot>\<^sub>\<alpha>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<alpha>)\<rangle>))"
 
-definition abs_apply_strand (infixl "\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t" 67) where
+definition abs_apply_strand (infixl \<open>\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<close> 67) where
   "S \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t \<alpha> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<^sub>p \<alpha>) S"
 
 

@@ -10,7 +10,7 @@ context Postdomination begin
 subsubsection \<open>Definition and some lemmas\<close>
 
 definition standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-  ("_ controls\<^sub>s _" [51,0])
+  (\<open>_ controls\<^sub>s _\<close> [51,0])
 where standard_control_dependences_eq:"n controls\<^sub>s n' \<equiv> \<exists>as. n controls\<^sub>s n' via as"
 
 lemma standard_control_dependence_def:"n controls\<^sub>s n' =

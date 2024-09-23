@@ -33,7 +33,7 @@ proof -
 qed
 
 
-fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
+fun min_inf :: "atom fm \<Rightarrow> atom fm" (\<open>inf\<^sub>-\<close>) where
 "inf\<^sub>- (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
 "inf\<^sub>- (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
 "inf\<^sub>- (Atom(Le i (k#ks))) =

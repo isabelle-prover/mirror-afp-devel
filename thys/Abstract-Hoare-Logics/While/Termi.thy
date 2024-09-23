@@ -17,7 +17,7 @@ semantics by merely adding a second inductively defined judgement
 started in state @{term s}:\<close>
 
 inductive
-  termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50)
+  termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl \<open>\<down>\<close> 50)
 where
   (*<*)Do[iff]:(*>*) "f s \<noteq> {} \<Longrightarrow> Do f \<down> s"
 

@@ -616,7 +616,7 @@ lemma comp_test:
 end
 
 class dual =
-  fixes dual :: "'a \<Rightarrow> 'a" ("_\<^sup>d" [100] 100)
+  fixes dual :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>d\<close> [100] 100)
 
 class multirelation_algebra_3 = lattice_ordered_pre_left_semiring + dual +
   assumes dual_involutive: "x\<^sup>d\<^sup>d = x"

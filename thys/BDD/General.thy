@@ -608,7 +608,7 @@ where
   ((\<forall>p. p \<in> set_of t \<longrightarrow> p \<in> set (levellist ! var p)) \<and>
    (\<forall>k < length levellist. \<forall>p \<in> set (levellist ! k). p \<in> set_of t \<and> var p = k))"
 
-definition cong_eval :: "bdt \<Rightarrow> bdt \<Rightarrow> bool" (infix "\<sim>" 60)
+definition cong_eval :: "bdt \<Rightarrow> bdt \<Rightarrow> bool" (infix \<open>\<sim>\<close> 60)
   where "cong_eval bdt\<^sub>1 bdt\<^sub>2 = (eval bdt\<^sub>1 = eval bdt\<^sub>2)"
 
 lemma cong_eval_sym: "l \<sim> r = r \<sim> l"
@@ -632,7 +632,7 @@ lemma cong_eval_child_low: " l \<sim> r \<Longrightarrow> l \<sim> (Bdt_Node l v
 
 
 
-definition null_comp :: "(ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref)" (infix "\<propto>" 60)
+definition null_comp :: "(ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref)" (infix \<open>\<propto>\<close> 60)
   where "null_comp a b = (\<lambda> p. (if (b p) = Null then Null else ((a \<circ> b) p)))"
 
 lemma null_comp_not_Null [simp]: "h q \<noteq> Null \<Longrightarrow> (g \<propto> h) q = g (h q)"

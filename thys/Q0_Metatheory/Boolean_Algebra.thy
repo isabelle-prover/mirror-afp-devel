@@ -19,28 +19,28 @@ lemma bool_to_V_injectivity [simp]:
 definition bool_from_V :: "V \<Rightarrow> bool" where
   [simp]: "bool_from_V = inv bool_to_V"
 
-definition top :: V ("\<^bold>T") where
+definition top :: V (\<open>\<^bold>T\<close>) where
   [simp]: "\<^bold>T = bool_to_V True"
 
-definition bottom :: V ("\<^bold>F") where
+definition bottom :: V (\<open>\<^bold>F\<close>) where
   [simp]: "\<^bold>F = bool_to_V False"
 
-definition two_valued_boolean_algebra_universe :: V ("\<bool>") where
+definition two_valued_boolean_algebra_universe :: V (\<open>\<bool>\<close>) where
   [simp]: "\<bool> = set {\<^bold>T, \<^bold>F}"
 
-definition negation :: "V \<Rightarrow> V" ("\<sim> _" [141] 141) where
+definition negation :: "V \<Rightarrow> V" (\<open>\<sim> _\<close> [141] 141) where
   [simp]: "\<sim> p = bool_to_V (\<not> bool_from_V p)"
 
-definition conjunction :: "V \<Rightarrow> V \<Rightarrow> V" (infixr "\<^bold>\<and>" 136) where
+definition conjunction :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<^bold>\<and>\<close> 136) where
   [simp]: "p \<^bold>\<and> q = bool_to_V (bool_from_V p \<and> bool_from_V q)"
 
-definition disjunction :: "V \<Rightarrow> V \<Rightarrow> V" (infixr "\<^bold>\<or>" 131) where
+definition disjunction :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<^bold>\<or>\<close> 131) where
   [simp]: "p \<^bold>\<or> q = \<sim> (\<sim> p \<^bold>\<and> \<sim> q)"
 
-definition implication :: "V \<Rightarrow> V \<Rightarrow> V" (infixr "\<^bold>\<supset>" 121) where
+definition implication :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<^bold>\<supset>\<close> 121) where
   [simp]: "p \<^bold>\<supset> q = \<sim> p \<^bold>\<or> q"
 
-definition iff :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<^bold>\<equiv>" 150) where
+definition iff :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<^bold>\<equiv>\<close> 150) where
   [simp]: "p \<^bold>\<equiv> q = (p \<^bold>\<supset> q) \<^bold>\<and> (q \<^bold>\<supset> p)"
 
 lemma boolean_algebra_simps [simp]:

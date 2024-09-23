@@ -35,10 +35,10 @@ lemma (in linorder) lexordp_ext: "ord_class.lexordp u v \<Longrightarrow>  \<not
 context linorder
 begin
 
-abbreviation Lyndon_less :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl "<lex" 50)
+abbreviation Lyndon_less :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl \<open><lex\<close> 50)
   where "Lyndon_less xs ys \<equiv> ord_class.lexordp xs ys"
 
-abbreviation Lyndon_le :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl "\<le>lex" 50)
+abbreviation Lyndon_le :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl \<open>\<le>lex\<close> 50)
   where "Lyndon_le xs ys \<equiv> ord_class.lexordp_eq xs ys"
 
 interpretation rlex: linorder "(\<le>lex)" "(<lex)"
@@ -383,7 +383,7 @@ qed
 
 section "Longest Lyndon suffix"
 
-fun longest_Lyndon_suffix:: "'a list \<Rightarrow> 'a list" ("LynSuf") where
+fun longest_Lyndon_suffix:: "'a list \<Rightarrow> 'a list" (\<open>LynSuf\<close>) where
   "longest_Lyndon_suffix \<epsilon> = \<epsilon>" |
   "longest_Lyndon_suffix (a#w) = (if Lyndon (a#w) then a#w else longest_Lyndon_suffix w)"
 
@@ -493,7 +493,7 @@ lemma longest_Lyndon_suf_shorter: assumes "w \<noteq> \<epsilon>"
 
 section "Lyndon factorizations"
 
-function Lyndon_fac::"'a list  \<Rightarrow> 'a list list" ("LynFac")
+function Lyndon_fac::"'a list  \<Rightarrow> 'a list list" (\<open>LynFac\<close>)
   where "Lyndon_fac w  = (if w \<noteq> \<epsilon> then ((Lyndon_fac (w \<^sup><\<inverse>(LynSuf w) )) \<cdot> [LynSuf w]) else \<epsilon>)"
   using longest_Lyndon_suffix.cases by blast+
 termination

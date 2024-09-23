@@ -19,9 +19,9 @@ type_synonym
 
 inductive
   WT\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1     , ty     ] \<Rightarrow> bool"
-         ("(_,_ \<turnstile>\<^sub>1/ _ :: _)"   [51,51,51]50)
+         (\<open>(_,_ \<turnstile>\<^sub>1/ _ :: _)\<close>   [51,51,51]50)
   and WTs\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1 list, ty list] \<Rightarrow> bool"
-         ("(_,_ \<turnstile>\<^sub>1/ _ [::] _)" [51,51,51]50)
+         (\<open>(_,_ \<turnstile>\<^sub>1/ _ [::] _)\<close> [51,51,51]50)
   for P :: J\<^sub>1_prog
 where
   
@@ -210,9 +210,9 @@ inductive
   WTrt\<^sub>1 :: "J\<^sub>1_prog \<Rightarrow> heap \<Rightarrow> sheap \<Rightarrow> env\<^sub>1 \<Rightarrow> expr\<^sub>1 \<Rightarrow> ty \<Rightarrow> bool"
   and WTrts\<^sub>1 :: "J\<^sub>1_prog \<Rightarrow> heap \<Rightarrow> sheap \<Rightarrow> env\<^sub>1 \<Rightarrow> expr\<^sub>1 list \<Rightarrow> ty list \<Rightarrow> bool"
   and WTrt2\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1,heap,sheap,expr\<^sub>1,ty] \<Rightarrow> bool"
-        ("_,_,_,_ \<turnstile>\<^sub>1 _ : _"   [51,51,51,51]50)
+        (\<open>_,_,_,_ \<turnstile>\<^sub>1 _ : _\<close>   [51,51,51,51]50)
   and WTrts2\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1,heap,sheap,expr\<^sub>1 list, ty list] \<Rightarrow> bool"
-        ("_,_,_,_ \<turnstile>\<^sub>1 _ [:] _" [51,51,51,51]50)
+        (\<open>_,_,_,_ \<turnstile>\<^sub>1 _ [:] _\<close> [51,51,51,51]50)
   for P :: J\<^sub>1_prog and h :: heap and sh :: sheap
 where
   

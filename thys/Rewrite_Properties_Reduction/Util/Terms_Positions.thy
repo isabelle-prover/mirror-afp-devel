@@ -45,7 +45,7 @@ fun inv_const_ctxt' where
 subsubsection \<open>Replace term at a given position in contexts\<close>
 
 fun replace_term_context_at :: "('f, 'v) ctxt \<Rightarrow> pos \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) ctxt"
-  ("_[_ \<leftarrow> _]\<^sub>C" [1000, 0] 1000) where
+  (\<open>_[_ \<leftarrow> _]\<^sub>C\<close> [1000, 0] 1000) where
   "replace_term_context_at \<box> p u = \<box>"
 | "replace_term_context_at (More f ss C ts) (i # ps) u =
     (if i < length ss then More f (ss[i := (ss ! i)[ps \<leftarrow> u]]) C ts

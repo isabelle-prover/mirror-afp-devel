@@ -243,10 +243,10 @@ inductive store_extension :: "s \<Rightarrow> s \<Rightarrow> bool" where
   store_extension \<lparr>s.inst = insts, s.funcs = fs, s.tab = tclss, s.mem = bss, s.globs = gs\<rparr>
                     \<lparr>s.inst = insts', s.funcs = fs', s.tab = tclss', s.mem = bss', s.globs = gs'\<rparr>"
 
-abbreviation to_e_list :: "b_e list \<Rightarrow> e list" ("$* _" 60) where
+abbreviation to_e_list :: "b_e list \<Rightarrow> e list" (\<open>$* _\<close> 60) where
   "to_e_list b_es \<equiv> map Basic b_es"
 
-abbreviation v_to_e_list :: "v list \<Rightarrow> e list" ("$$* _" 60) where
+abbreviation v_to_e_list :: "v list \<Rightarrow> e list" (\<open>$$* _\<close> 60) where
   "v_to_e_list ves \<equiv> map (\<lambda>v. $C v) ves"
 
   (* Lfilled depth thing-to-fill fill-with result *)

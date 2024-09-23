@@ -125,7 +125,7 @@ proof -
 qed
 
 
-definition mask_equations_relation ("[MASK] _ _ _ _ _ _") where
+definition mask_equations_relation (\<open>[MASK] _ _ _ _ _ _\<close>) where
   "[MASK] c d e f r z \<equiv> LARY (\<lambda>ll. rm_eq_fixes.mask_equations n 
                               (ll!0!0) (ll!0!1) (ll!0!2) (ll!0!3) (nth (ll!1)) (nth (ll!2)))
                               [[c, d, e, f], r, z]"

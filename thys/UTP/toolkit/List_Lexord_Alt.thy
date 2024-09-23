@@ -14,7 +14,7 @@ begin
 text \<open> Since we can't instantiate the order class twice for lists, and we want prefix as
   the default order for the UTP we here add syntax for the lexicographic order relation. \<close>
 
-definition list_lex_less :: "'a::linorder list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "<\<^sub>l" 50)
+definition list_lex_less :: "'a::linorder list \<Rightarrow> 'a list \<Rightarrow> bool" (infix \<open><\<^sub>l\<close> 50)
 where "xs <\<^sub>l ys \<longleftrightarrow> (xs, ys) \<in> lexord {(u, v). u < v}"
 
 lemma list_lex_less_neq [simp]: "x <\<^sub>l y \<Longrightarrow> x \<noteq> y"

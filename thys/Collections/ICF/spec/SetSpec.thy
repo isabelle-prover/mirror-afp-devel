@@ -20,7 +20,7 @@ text \<open>
 
 (* Drop some notation that gets in the way here*)
 (*no_notation member (infixl "mem" 55)*)
-notation insert ("set'_ins")
+notation insert (\<open>set'_ins\<close>)
 
 type_synonym ('x,'s) set_\<alpha> = "'s \<Rightarrow> 'x set"
 type_synonym ('x,'s) set_invar = "'s \<Rightarrow> bool"
@@ -1175,7 +1175,7 @@ subsection "Record Based Interface"
   lemmas StdOSet_intro =
     StdOSet.intro[OF StdSet_intro, rem_dup_prems]
 
-no_notation insert ("set'_ins")
+no_notation insert (\<open>set'_ins\<close>)
 (*notation member (infixl "mem" 55)*)
 
 end

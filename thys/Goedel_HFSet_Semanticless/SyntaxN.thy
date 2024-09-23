@@ -30,9 +30,9 @@ subsection\<open>The datatypes\<close>
 nominal_datatype tm = Zero | Var name | Eats tm tm
 
 nominal_datatype fm =
-    Mem tm tm    (infixr "IN" 150)
-  | Eq tm tm     (infixr "EQ" 150)
-  | Disj fm fm   (infixr "OR" 130)
+    Mem tm tm    (infixr \<open>IN\<close> 150)
+  | Eq tm tm     (infixr \<open>EQ\<close> 150)
+  | Disj fm fm   (infixr \<open>OR\<close> 130)
   | Neg fm
   | Ex x::name f::fm binds x in f
 
@@ -73,7 +73,7 @@ lemma subst_tm_commute2 [simp]:
 lemma repeat_subst_tm [simp]: "subst i u (subst i t tm) = subst i (subst i u t) tm"
   by (induct tm rule: tm.induct) auto
 
-nominal_function  subst_fm :: "fm \<Rightarrow> name \<Rightarrow> tm \<Rightarrow> fm" ("_'(_::=_')" [1000, 0, 0] 200)
+nominal_function  subst_fm :: "fm \<Rightarrow> name \<Rightarrow> tm \<Rightarrow> fm" (\<open>_'(_::=_')\<close> [1000, 0, 0] 200)
   where
     Mem:  "(Mem t u)(i::=x)  = Mem (subst i x t) (subst i x u)"
   | Eq:   "(Eq t u)(i::=x)   = Eq  (subst i x t) (subst i x u)"
@@ -187,7 +187,7 @@ lemma ORD_OF_eqvt [eqvt]: "(p \<bullet> ORD_OF n) = ORD_OF (p \<bullet> n)"
 
 subsection\<open>Derived logical connectives\<close>
 
-abbreviation Imp :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "IMP" 125)
+abbreviation Imp :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr \<open>IMP\<close> 125)
   where "Imp A B \<equiv> Disj (Neg A) B"
 
 abbreviation All :: "name \<Rightarrow> fm \<Rightarrow> fm"
@@ -198,7 +198,7 @@ abbreviation All2 :: "name \<Rightarrow> tm \<Rightarrow> fm \<Rightarrow> fm" \
 
 subsubsection\<open>Conjunction\<close>
 
-definition Conj :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "AND" 135)
+definition Conj :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr \<open>AND\<close> 135)
   where "Conj A B \<equiv> Neg (Disj (Neg A) (Neg B))"
 
 lemma Conj_eqvt [eqvt]: "p \<bullet> (A AND B) = (p \<bullet> A) AND (p \<bullet> B)"
@@ -221,7 +221,7 @@ lemma subst_fm_Conj [simp]: "(A AND B)(i::=x) = (A(i::=x)) AND (B(i::=x))"
 
 subsubsection\<open>If and only if\<close>
 
-definition Iff :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "IFF" 125)
+definition Iff :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr \<open>IFF\<close> 125)
   where "Iff A B = Conj (Imp A B) (Imp B A)"
 
 lemma Iff_eqvt [eqvt]: "p \<bullet> (A IFF B) = (p \<bullet> A) IFF (p \<bullet> B)"
@@ -322,7 +322,7 @@ text\<open>This arbitrary additional axiom generalises the statements of the inc
   must be a form that can be formalised for the proof predicate.\<close>
 consts  extra_axiom :: fm
 
-inductive hfthm :: "fm set \<Rightarrow> fm \<Rightarrow> bool" (infixl "\<turnstile>" 55)
+inductive hfthm :: "fm set \<Rightarrow> fm \<Rightarrow> bool" (infixl \<open>\<turnstile>\<close> 55)
   where
     Hyp:    "A \<in> H \<Longrightarrow> H \<turnstile> A"
   | Extra:  "H \<turnstile> extra_axiom"

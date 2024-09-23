@@ -306,7 +306,7 @@ lemma absolutely_continuous_trans:
   using assms by(auto simp: absolutely_continuous_def)
 
 subsection \<open> Equivalence of Measures \<close>
-abbreviation equivalence_measure :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> bool" (infix "~\<^sub>M" 60)
+abbreviation equivalence_measure :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> bool" (infix \<open>~\<^sub>M\<close> 60)
   where "equivalence_measure M N \<equiv> absolutely_continuous M N \<and> absolutely_continuous N M"
 
 lemma equivalence_measure_refl: "M ~\<^sub>M M"

@@ -63,25 +63,25 @@ context sifum_refinement begin
 
 abbreviation 
   conf_abv\<^sub>A :: "'Com\<^sub>A \<Rightarrow> 'Var\<^sub>A Mds \<Rightarrow> ('Var\<^sub>A, 'Val) Mem \<Rightarrow> (_,_,_) LocalConf"
-  ("\<langle>_, _, _\<rangle>\<^sub>A" [0, 0, 0] 1000)
+  (\<open>\<langle>_, _, _\<rangle>\<^sub>A\<close> [0, 0, 0] 1000)
 where
   "\<langle> c, mds, mem \<rangle>\<^sub>A \<equiv> ((c, mds), mem)"
 
 abbreviation 
   conf_abv\<^sub>C :: "'Com\<^sub>C \<Rightarrow> 'Var\<^sub>C Mds \<Rightarrow> ('Var\<^sub>C, 'Val) Mem \<Rightarrow> (_,_,_) LocalConf"
-  ("\<langle>_, _, _\<rangle>\<^sub>C" [0, 0, 0] 1000)
+  (\<open>\<langle>_, _, _\<rangle>\<^sub>C\<close> [0, 0, 0] 1000)
 where
   "\<langle> c, mds, mem \<rangle>\<^sub>C \<equiv> ((c, mds), mem)"
 
 abbreviation 
   eval_abv\<^sub>A :: "('Com\<^sub>A, 'Var\<^sub>A, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>\<^sub>A" 70)
+  (infixl \<open>\<leadsto>\<^sub>A\<close> 70)
  where
   "x \<leadsto>\<^sub>A y \<equiv> (x, y) \<in> eval\<^sub>A"
 
 abbreviation 
   eval_abv\<^sub>C :: "('Com\<^sub>C, 'Var\<^sub>C, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>\<^sub>C" 70)
+  (infixl \<open>\<leadsto>\<^sub>C\<close> 70)
 where
   "x \<leadsto>\<^sub>C y \<equiv> (x, y) \<in> eval\<^sub>C"
 

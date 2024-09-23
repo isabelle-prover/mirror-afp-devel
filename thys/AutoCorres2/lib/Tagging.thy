@@ -13,13 +13,13 @@ begin
 
 subsection \<open>Basic Definitions and Theorems\<close>
 
-definition ASM_TAG ("\<paragraph>") where
+definition ASM_TAG (\<open>\<paragraph>\<close>) where
   "ASM_TAG t \<equiv> True"
 
-definition TAG :: "'b \<Rightarrow> 'a :: {} \<Rightarrow> 'a" ("_ \<bar> _" [13, 13] 14) where
+definition TAG :: "'b \<Rightarrow> 'a :: {} \<Rightarrow> 'a" (\<open>_ \<bar> _\<close> [13, 13] 14) where
   \<open>TAG t x \<equiv> x\<close>
 
-abbreviation tag_prop ("_ \<bar>\<bar> _" [0, 0] 0) where
+abbreviation tag_prop (\<open>_ \<bar>\<bar> _\<close> [0, 0] 0) where
   "tag_prop t x \<equiv> PROP TAG t x"
 
 lemma TAG_cong[cong]: "x \<equiv> y \<Longrightarrow> (tag \<bar> x) \<equiv> tag \<bar> (y::'a::{})"

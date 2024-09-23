@@ -102,14 +102,14 @@ lemma subst_subst:
   shows "subst y u (subst x s t) = subst x (subst y u s) (subst y u t)"
 using assms by (nominal_induct t avoiding: x y u s rule: term.strong_induct) (auto simp: fresh_subst)
 
-inductive_set Beta ("{\<rightarrow>\<^sub>\<beta>}")
+inductive_set Beta (\<open>{\<rightarrow>\<^sub>\<beta>}\<close>)
 where
   root: "atom x \<sharp> t \<Longrightarrow> (App (Abs x s) t, subst x t s) \<in> {\<rightarrow>\<^sub>\<beta>}"
 | Appl: "(s, t) \<in> {\<rightarrow>\<^sub>\<beta>} \<Longrightarrow> (App s u, App t u) \<in> {\<rightarrow>\<^sub>\<beta>}"
 | Appr: "(s, t) \<in> {\<rightarrow>\<^sub>\<beta>} \<Longrightarrow> (App u s, App u t) \<in> {\<rightarrow>\<^sub>\<beta>}"
 | Abs: "(s, t) \<in> {\<rightarrow>\<^sub>\<beta>} \<Longrightarrow> (Abs x s, Abs x t) \<in> {\<rightarrow>\<^sub>\<beta>}"
 
-abbreviation beta ("(_/ \<rightarrow>\<^sub>\<beta> _)" [56, 56] 55)
+abbreviation beta (\<open>(_/ \<rightarrow>\<^sub>\<beta> _)\<close> [56, 56] 55)
 where
   "s \<rightarrow>\<^sub>\<beta> t \<equiv> (s, t) \<in> {\<rightarrow>\<^sub>\<beta>}"
 
@@ -123,7 +123,7 @@ by (simp_all add: fresh_star_def fresh_subst)
 
 lemmas Beta_strong_induct = Betap.strong_induct [to_set]
 
-abbreviation betas (infix "\<rightarrow>\<^sub>\<beta>\<^sup>*" 50)
+abbreviation betas (infix \<open>\<rightarrow>\<^sub>\<beta>\<^sup>*\<close> 50)
 where
   "s \<rightarrow>\<^sub>\<beta>\<^sup>* t \<equiv> (s, t) \<in> {\<rightarrow>\<^sub>\<beta>}\<^sup>*"
 
@@ -135,7 +135,7 @@ where
 by (nf fresh: fresh_subst)
 nominal_termination (eqvt) by lexicographic_order
 
-nominal_function bullet :: "term \<Rightarrow> term" ("_\<^sup>\<bullet>" [1000] 1000)
+nominal_function bullet :: "term \<Rightarrow> term" (\<open>_\<^sup>\<bullet>\<close> [1000] 1000)
 where
   "(Var x)\<^sup>\<bullet> = Var x"
 | "(Abs x t)\<^sup>\<bullet> = Abs x t\<^sup>\<bullet>"

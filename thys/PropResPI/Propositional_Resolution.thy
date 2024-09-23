@@ -103,16 +103,16 @@ some basic properties.\<close>
 
 type_synonym 'a Interpretation  = "'a set" 
 
-fun validate_literal :: "'at Interpretation \<Rightarrow> 'at Literal \<Rightarrow> bool" (infix "\<Turnstile>" 65)
+fun validate_literal :: "'at Interpretation \<Rightarrow> 'at Literal \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 65)
   where
     "(validate_literal I (Pos A)) = (A \<in> I)" |
     "(validate_literal I (Neg A)) = (A \<notin> I)"
 
-fun validate_clause :: "'at Interpretation \<Rightarrow> 'at Clause \<Rightarrow> bool" (infix "\<Turnstile>" 65)
+fun validate_clause :: "'at Interpretation \<Rightarrow> 'at Clause \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 65)
   where
     "(validate_clause I C) = (\<exists>L. (L \<in>  C) \<and> (validate_literal I L))"
 
-fun validate_formula :: "'at Interpretation \<Rightarrow> 'at Formula \<Rightarrow> bool" (infix "\<Turnstile>" 65)
+fun validate_formula :: "'at Interpretation \<Rightarrow> 'at Formula \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 65)
   where
     "(validate_formula I S) = (\<forall>C. (C \<in> S \<longrightarrow> (validate_clause I C)))"     
 

@@ -5,10 +5,10 @@ theory ValidPaths imports WellFormed "../StaticInter/Postdomination" begin
 subsection \<open>Intraprocedural paths from method entry and to method exit\<close>
 
 
-abbreviation path :: "wf_prog \<Rightarrow> node \<Rightarrow> edge list \<Rightarrow> node \<Rightarrow> bool" ("_ \<turnstile> _ -_\<rightarrow>* _")
+abbreviation path :: "wf_prog \<Rightarrow> node \<Rightarrow> edge list \<Rightarrow> node \<Rightarrow> bool" (\<open>_ \<turnstile> _ -_\<rightarrow>* _\<close>)
   where "\<And>wfp. wfp \<turnstile> n -as\<rightarrow>* n' \<equiv> CFG.path sourcenode targetnode (valid_edge wfp) n as n'"
 
-definition label_incrs :: "edge list \<Rightarrow> nat \<Rightarrow> edge list" ("_ \<oplus>s _" 60)
+definition label_incrs :: "edge list \<Rightarrow> nat \<Rightarrow> edge list" (\<open>_ \<oplus>s _\<close> 60)
   where "as \<oplus>s i \<equiv> map (\<lambda>((p,n),et,(p',n')). ((p,n \<oplus> i),et,(p',n' \<oplus> i))) as"
 
 

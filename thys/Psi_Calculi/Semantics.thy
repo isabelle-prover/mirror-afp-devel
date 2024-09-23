@@ -7,8 +7,8 @@ theory Semantics
 begin
 
 nominal_datatype ('a, 'b, 'c) boundOutput = 
-  BOut "'a::fs_name" "('a, 'b::fs_name, 'c::fs_name) psi" ("_ \<prec>'' _" [110, 110] 110)
-| BStep "\<guillemotleft>name\<guillemotright> ('a, 'b, 'c) boundOutput"                ("\<lparr>\<nu>_\<rparr>_" [110, 110] 110)
+  BOut "'a::fs_name" "('a, 'b::fs_name, 'c::fs_name) psi" (\<open>_ \<prec>'' _\<close> [110, 110] 110)
+| BStep "\<guillemotleft>name\<guillemotright> ('a, 'b, 'c) boundOutput"                (\<open>\<lparr>\<nu>_\<rparr>_\<close> [110, 110] 110)
 
 primrec BOresChain :: "name list \<Rightarrow> ('a::fs_name, 'b::fs_name, 'c::fs_name) boundOutput \<Rightarrow> 
                       ('a, 'b, 'c) boundOutput" where
@@ -16,7 +16,7 @@ primrec BOresChain :: "name list \<Rightarrow> ('a::fs_name, 'b::fs_name, 'c::fs
 | Step: "BOresChain (x#xs) B = \<lparr>\<nu>x\<rparr>(BOresChain xs B)"
 
 abbreviation
-  BOresChainJudge ("\<lparr>\<nu>*_\<rparr>_" [80, 80] 80) where "\<lparr>\<nu>*xvec\<rparr>B \<equiv> BOresChain xvec B"
+  BOresChainJudge (\<open>\<lparr>\<nu>*_\<rparr>_\<close> [80, 80] 80) where "\<lparr>\<nu>*xvec\<rparr>B \<equiv> BOresChain xvec B"
 
 lemma BOresChainEqvt[eqvt]:
   fixes perm :: "name prm"
@@ -1158,9 +1158,9 @@ nominal_datatype ('a, 'b, 'c) residual =
 | ROut 'a "('a, 'b, 'c) boundOutput"
 | RTau "('a, 'b, 'c) psi"
 
-nominal_datatype 'a action = In "'a::fs_name" 'a      ("_\<lparr>_\<rparr>" [90, 90] 90)
-                   | Out "'a::fs_name" "name list" 'a ("_\<lparr>\<nu>*_\<rparr>\<langle>_\<rangle>" [90, 90, 90] 90)
-                   | Tau                              ("\<tau>" 90)
+nominal_datatype 'a action = In "'a::fs_name" 'a      (\<open>_\<lparr>_\<rparr>\<close> [90, 90] 90)
+                   | Out "'a::fs_name" "name list" 'a (\<open>_\<lparr>\<nu>*_\<rparr>\<langle>_\<rangle>\<close> [90, 90, 90] 90)
+                   | Tau                              (\<open>\<tau>\<close> 90)
 
 nominal_primrec bn :: "('a::fs_name) action \<Rightarrow> name list"
   where
@@ -1176,7 +1176,7 @@ lemma bnEqvt[eqvt]:
   shows "(p \<bullet> bn \<alpha>) = bn(p \<bullet> \<alpha>)"
 by(nominal_induct \<alpha> rule: action.strong_induct) auto
 
-nominal_primrec create_residual :: "('a::fs_name) action \<Rightarrow> ('a, 'b::fs_name, 'c::fs_name) psi \<Rightarrow> ('a, 'b, 'c) residual" ("_ \<prec> _" [80, 80] 80)
+nominal_primrec create_residual :: "('a::fs_name) action \<Rightarrow> ('a, 'b::fs_name, 'c::fs_name) psi \<Rightarrow> ('a, 'b, 'c) residual" (\<open>_ \<prec> _\<close> [80, 80] 80)
 where 
   "(M\<lparr>N\<rparr>) \<prec> P = RIn M N P"
 | "M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P = ROut M (\<lparr>\<nu>*xvec\<rparr>(N \<prec>' P))"
@@ -1501,7 +1501,7 @@ apply(auto simp add: residualInject)
 by(drule_tac boundOutputScopeDest) auto
 
 abbreviation
-  outputJudge ("_\<langle>_\<rangle>" [110, 110] 110) where "M\<langle>N\<rangle> \<equiv> M\<lparr>\<nu>*([])\<rparr>\<langle>N\<rangle>"
+  outputJudge (\<open>_\<langle>_\<rangle>\<close> [110, 110] 110) where "M\<langle>N\<rangle> \<equiv> M\<lparr>\<nu>*([])\<rparr>\<langle>N\<rangle>"
 
 declare [[unify_trace_bound=100]]
 
@@ -1515,21 +1515,21 @@ locale env = substPsi substTerm substAssert substCond +
   and SBottom'   :: 'b
   and SChanEq'   :: "'a \<Rightarrow> 'a \<Rightarrow> 'c"
 begin
-notation SCompose' (infixr "\<otimes>" 90)
-notation SImp' ("_ \<turnstile> _" [85, 85] 85)
-notation FrameImp ("_ \<turnstile>\<^sub>F _" [85, 85] 85) 
+notation SCompose' (infixr \<open>\<otimes>\<close> 90)
+notation SImp' (\<open>_ \<turnstile> _\<close> [85, 85] 85)
+notation FrameImp (\<open>_ \<turnstile>\<^sub>F _\<close> [85, 85] 85) 
 abbreviation
-  FBottomJudge ("\<bottom>\<^sub>F" 90) where "\<bottom>\<^sub>F \<equiv> (FAssert SBottom')"
-notation SChanEq' ("_ \<leftrightarrow> _" [90, 90] 90)
-notation substTerm ("_[_::=_]" [100, 100, 100] 100)
-notation subs ("_[_::=_]" [100, 100, 100] 100)
-notation AssertionStatEq ("_ \<simeq> _" [80, 80] 80)
-notation FrameStatEq ("_ \<simeq>\<^sub>F _" [80, 80] 80)
-notation SBottom' ("\<one>" 190)
-abbreviation insertAssertion' ("insertAssertion") where "insertAssertion' \<equiv> assertionAux.insertAssertion (\<otimes>)"
+  FBottomJudge (\<open>\<bottom>\<^sub>F\<close> 90) where "\<bottom>\<^sub>F \<equiv> (FAssert SBottom')"
+notation SChanEq' (\<open>_ \<leftrightarrow> _\<close> [90, 90] 90)
+notation substTerm (\<open>_[_::=_]\<close> [100, 100, 100] 100)
+notation subs (\<open>_[_::=_]\<close> [100, 100, 100] 100)
+notation AssertionStatEq (\<open>_ \<simeq> _\<close> [80, 80] 80)
+notation FrameStatEq (\<open>_ \<simeq>\<^sub>F _\<close> [80, 80] 80)
+notation SBottom' (\<open>\<one>\<close> 190)
+abbreviation insertAssertion' (\<open>insertAssertion\<close>) where "insertAssertion' \<equiv> assertionAux.insertAssertion (\<otimes>)"
 
 inductive semantics :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) residual \<Rightarrow> bool"
-                       ("_ \<rhd> _ \<longmapsto> _" [50, 50, 50] 50)
+                       (\<open>_ \<rhd> _ \<longmapsto> _\<close> [50, 50, 50] 50)
 where
   cInput:  "\<lbrakk>\<Psi> \<turnstile> M \<leftrightarrow> K; distinct xvec; set xvec \<subseteq> supp N; xvec \<sharp>* Tvec;
             length xvec = length Tvec;
@@ -1573,7 +1573,7 @@ where
 | Bang:    "\<lbrakk>\<Psi> \<rhd> P \<parallel> !P \<longmapsto> Rs; guarded P\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> !P \<longmapsto> Rs"
 
 abbreviation
-  semanticsBottomJudge ("_ \<longmapsto> _" [50, 50] 50) where "P \<longmapsto> Rs \<equiv> \<one> \<rhd> P \<longmapsto> Rs"
+  semanticsBottomJudge (\<open>_ \<longmapsto> _\<close> [50, 50] 50) where "P \<longmapsto> Rs \<equiv> \<one> \<rhd> P \<longmapsto> Rs"
 
 equivariance env.semantics
 
@@ -6717,7 +6717,7 @@ proof -
 qed
 
 abbreviation
-  statImpJudge ("_ \<hookrightarrow> _" [80, 80] 80)
+  statImpJudge (\<open>_ \<hookrightarrow> _\<close> [80, 80] 80)
   where "\<Psi> \<hookrightarrow> \<Psi>' \<equiv> AssertionStatImp \<Psi> \<Psi>'"
 
 lemma statEqTransition:
@@ -7622,7 +7622,7 @@ apply(cases "\<alpha>=\<tau>")
 by(auto intro: expandTauFrame[where C=C] expandNonTauFrame[where C=C and C'=C'])
 
 abbreviation
-  frameImpJudge ("_ \<hookrightarrow>\<^sub>F _" [80, 80] 80)
+  frameImpJudge (\<open>_ \<hookrightarrow>\<^sub>F _\<close> [80, 80] 80)
   where "F \<hookrightarrow>\<^sub>F G \<equiv> FrameStatImp F G"
 
 lemma FrameStatEqImpCompose:

@@ -4,10 +4,10 @@ imports
   Refine_Basic Refine_Leof "Generic/RefineG_While"
 begin
 
-definition WHILEIT ("WHILE\<^sub>T\<^bsup>_\<^esup>") where 
+definition WHILEIT (\<open>WHILE\<^sub>T\<^bsup>_\<^esup>\<close>) where 
   "WHILEIT \<equiv> iWHILEIT bind RETURN"
-definition WHILEI ("WHILE\<^bsup>_\<^esup>") where "WHILEI \<equiv> iWHILEI bind RETURN"
-definition WHILET ("WHILE\<^sub>T") where "WHILET \<equiv> iWHILET bind RETURN"
+definition WHILEI (\<open>WHILE\<^bsup>_\<^esup>\<close>) where "WHILEI \<equiv> iWHILEI bind RETURN"
+definition WHILET (\<open>WHILE\<^sub>T\<close>) where "WHILET \<equiv> iWHILET bind RETURN"
 definition WHILE where "WHILE \<equiv> iWHILE bind RETURN"
 
 interpretation while?: generic_WHILE_rules bind RETURN SPEC

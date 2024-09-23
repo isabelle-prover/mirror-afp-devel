@@ -6,7 +6,7 @@ begin
 
 text \<open> The standard HOL power operator is only for natural powers. This operator allows integers. \<close>
 
-definition intpow :: "'a::{linordered_field} \<Rightarrow> int \<Rightarrow> 'a" (infixr "^\<^sub>Z" 80) where
+definition intpow :: "'a::{linordered_field} \<Rightarrow> int \<Rightarrow> 'a" (infixr \<open>^\<^sub>Z\<close> 80) where
 "intpow x n = (if (n < 0) then inverse (x ^ nat (-n)) else (x ^ nat n))"
 
 lemma intpow_zero [simp]: "x ^\<^sub>Z 0 = 1"

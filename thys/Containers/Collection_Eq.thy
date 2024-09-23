@@ -24,7 +24,7 @@ abbreviation ceq' :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "ceq' \<equi
 
 end
 
-syntax "_CEQ" :: "type => logic"  ("(1CEQ/(1'(_')))")
+syntax "_CEQ" :: "type => logic"  (\<open>(1CEQ/(1'(_')))\<close>)
 
 syntax_consts "_CEQ" == ceq
 

@@ -29,7 +29,7 @@ definition PiQ :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b quasi_borel) \<Righ
 "PiQ I M \<equiv> Abs_quasi_borel (\<Pi>\<^sub>E i\<in>I. qbs_space (M i), prod_qbs_Mx I M)"
 
 syntax
-  "_PiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i => 'a) quasi_borel"  ("(3\<Pi>\<^sub>Q _\<in>_./ _)"  10)
+  "_PiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i => 'a) quasi_borel"  (\<open>(3\<Pi>\<^sub>Q _\<in>_./ _)\<close>  10)
 syntax_consts
   "_PiQ" == PiQ
 translations

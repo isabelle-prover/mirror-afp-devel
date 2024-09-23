@@ -30,16 +30,16 @@ Boolean matrix (all of its entries are @{const True}), the converse or
 transpose of a matrix, the intersection of two Boolean matrices and the
 complement of a Boolean matrix.\<close>
 
-definition mat_top :: "('a, 'b, bool) matrix" ("\<tau>")
+definition mat_top :: "('a, 'b, bool) matrix" (\<open>\<tau>\<close>)
   where "\<tau> i j \<equiv> True"
 
-definition mat_transpose :: "('a, 'b, 'c) matrix \<Rightarrow> ('b, 'a, 'c) matrix" ("_\<^sup>\<dagger>" [101] 100)
+definition mat_transpose :: "('a, 'b, 'c) matrix \<Rightarrow> ('b, 'a, 'c) matrix" (\<open>_\<^sup>\<dagger>\<close> [101] 100)
   where "f\<^sup>\<dagger> \<equiv> (\<lambda>i j. f j i)"
 
-definition mat_inter :: "('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix" (infixl "\<sqinter>" 70)
+definition mat_inter :: "('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix" (infixl \<open>\<sqinter>\<close> 70)
   where "f \<sqinter> g \<equiv> (\<lambda>i j. f i j \<cdot> g i j)"
 
-definition mat_complement :: "('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix" ("_\<^sup>c" [101] 100)
+definition mat_complement :: "('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix" (\<open>_\<^sup>c\<close> [101] 100)
   where "f\<^sup>c = (\<lambda>i j. - f i j)"
 
 text \<open>Next we show that the Booleans form a dioid. We state this as an

@@ -85,7 +85,7 @@ lemma shift [simp]: \<open>shift e 0 x = e\<langle>0:x\<rangle>\<close>
 lemma semantics [iff]: \<open>semantics e f g p \<longleftrightarrow> eval e f g (from_fm p)\<close>
   by (induct p arbitrary: e) simp_all
 
-abbreviation valid ("\<then> _" 0) where
+abbreviation valid (\<open>\<then> _\<close> 0) where
   \<open>(\<then> p) \<equiv> \<forall>(e :: _ \<Rightarrow> nat hterm) f g. semantics e f g p\<close>
 
 theorem complete_sound: \<open>\<then> p \<Longrightarrow> \<tturnstile> [p]\<close> \<open>\<tturnstile> [q] \<Longrightarrow> semantics e f g q\<close>

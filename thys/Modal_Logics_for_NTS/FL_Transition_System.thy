@@ -25,9 +25,9 @@ depending on the action of a transition and the chosen effect.\<close>
 type_synonym ('a,'eff) later = "'a \<times> 'eff first \<times> 'eff \<Rightarrow> 'eff first"
 
 locale effect_nominal_ts = nominal_ts satisfies transition
-  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
-  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix "\<rightarrow>" 70) +
-  fixes effect_apply :: "'effect::fs \<Rightarrow> 'state \<Rightarrow> 'state" ("\<langle>_\<rangle>_" [0,101] 100)
+  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 70)
+  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<close> 70) +
+  fixes effect_apply :: "'effect::fs \<Rightarrow> 'state \<Rightarrow> 'state" (\<open>\<langle>_\<rangle>_\<close> [0,101] 100)
     and L :: "('act,'effect) later"
   assumes effect_apply_eqvt: "eqvt effect_apply"  (* using [eqvt] here generates an error message *)
       and L_eqvt: "eqvt L"  \<comment> \<open>@{term L} is assumed to be equivariant.\<close>
@@ -64,7 +64,7 @@ begin
   definition FL_bisimilar :: "'effect first \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool" where
     "FL_bisimilar F P Q \<equiv> \<exists>R. is_L_bisimulation R \<and> (R F) P Q"
 
-  abbreviation FL_bisimilar' ("_ \<sim>\<cdot>[_] _" [51,0,51] 50) where
+  abbreviation FL_bisimilar' (\<open>_ \<sim>\<cdot>[_] _\<close> [51,0,51] 50) where
     "P \<sim>\<cdot>[F] Q \<equiv> FL_bisimilar F P Q"
 
   text \<open>@{term "FL_bisimilar"} is an equivariant relation, and (for every~@{term F}) an

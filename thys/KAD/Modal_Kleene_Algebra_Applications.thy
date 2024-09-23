@@ -52,7 +52,7 @@ subsection \<open>Derivation of Segerberg's Formula\<close>
 
 text \<open>This example is taken from~\<^cite>\<open>"DesharnaisMoellerStruthLMCS"\<close>.\<close>
 
-definition Alpha :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("A")
+definition Alpha :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>A\<close>)
   where "A x y = d (x \<cdot> y) \<cdot> ad y"
 
 lemma A_dom [simp]: "d (A x y) = A x y"
@@ -101,7 +101,7 @@ subsection \<open>Wellfoundedness and Loeb's Formula\<close>
 
 text \<open>This example is taken from~\<^cite>\<open>"DesharnaisStruthSCP"\<close>.\<close>
 
-definition Omega :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Omega>")
+definition Omega :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<Omega>\<close>)
   where "\<Omega> x y = d y \<cdot> ad (x \<cdot> y)"
 
 text \<open>If $y$ is a set, then $\Omega(x,y)$ describes those elements in $y$ from which no further $x$ transitions are possible.\<close>
@@ -266,7 +266,7 @@ text \<open>The notion of divergence has been added to modal Kleene algebras in~
 More facts about divergence could be added in the future. Some could be adapted from omega algebras.\<close>
 
 class nabla_op =
-  fixes nabla :: "'a \<Rightarrow> 'a" ("\<nabla>_" [999] 1000)
+  fixes nabla :: "'a \<Rightarrow> 'a" (\<open>\<nabla>_\<close> [999] 1000)
 
 class fdivergence_kleene_algebra = antidomain_kleene_algebra + nabla_op +
   assumes nabla_closure [simp]: "d \<nabla> x = \<nabla> x"
@@ -445,7 +445,7 @@ qed
 
 text \<open>The final examples can be found in~\<^cite>\<open>"guttmannstruthweber11algmeth"\<close>.\<close>
 
-definition T :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<leadsto> _ \<leadsto> _" [61,61,61] 60)
+definition T :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_ \<leadsto> _ \<leadsto> _\<close> [61,61,61] 60)
   where "p\<leadsto>x\<leadsto>q \<equiv> ad p + |x] d q"
 
 lemma T_d [simp]: "d (p\<leadsto>x\<leadsto>q) = p\<leadsto>x\<leadsto>q"

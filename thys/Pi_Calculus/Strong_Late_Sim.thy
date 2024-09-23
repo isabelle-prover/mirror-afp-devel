@@ -10,7 +10,7 @@ definition derivative :: "pi \<Rightarrow> pi \<Rightarrow> subject \<Rightarrow
   "derivative P Q a x Rel \<equiv> case a of InputS b \<Rightarrow> (\<forall>u. (P[x::=u], Q[x::=u]) \<in> Rel)
                                     | BoundOutputS b \<Rightarrow> (P, Q) \<in> Rel"
 
-definition simulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" ("_ \<leadsto>[_] _" [80, 80, 80] 80) where
+definition simulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<leadsto>[_] _\<close> [80, 80, 80] 80) where
   "P \<leadsto>[Rel] Q \<equiv> (\<forall>a x Q'. Q \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> Q' \<and> x \<sharp> P \<longrightarrow> (\<exists>P'. P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P' \<and> derivative P' Q' a x Rel)) \<and>
                  (\<forall>\<alpha> Q'. Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel))"
 

@@ -7,13 +7,13 @@ subsection \<open>Standard Postdomination\<close>
 locale Postdomination = CFGExit sourcenode targetnode kind valid_edge Entry Exit 
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Exit :: "'node" ("'('_Exit'_')") +
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Exit :: "'node" (\<open>'('_Exit'_')\<close>) +
   assumes Entry_path:"valid_node n \<Longrightarrow> \<exists>as. (_Entry_) -as\<rightarrow>* n"
   and Exit_path:"valid_node n \<Longrightarrow> \<exists>as. n -as\<rightarrow>* (_Exit_)"
 
 begin
 
-definition postdominate :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ postdominates _" [51,0])
+definition postdominate :: "'node \<Rightarrow> 'node \<Rightarrow> bool" (\<open>_ postdominates _\<close> [51,0])
 where postdominate_def:"n' postdominates n \<equiv> 
     (valid_node n \<and> valid_node n' \<and>
     ((\<forall>as. n -as\<rightarrow>* (_Exit_) \<longrightarrow> n' \<in> set (sourcenodes as))))"
@@ -323,14 +323,14 @@ locale StrongPostdomination =
   Postdomination sourcenode targetnode kind valid_edge Entry Exit 
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Exit :: "'node" ("'('_Exit'_')") +
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Exit :: "'node" (\<open>'('_Exit'_')\<close>) +
   assumes successor_set_finite: "valid_node n \<Longrightarrow> 
   finite {n'. \<exists>a'. valid_edge a' \<and> sourcenode a' = n \<and> targetnode a' = n'}"
 
 begin
 
 definition  strong_postdominate :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-("_ strongly-postdominates _" [51,0])
+(\<open>_ strongly-postdominates _\<close> [51,0])
 where strong_postdominate_def:"n' strongly-postdominates n \<equiv>
   (n' postdominates n \<and> 
   (\<exists>k \<ge> 1. \<forall>as nx. n -as\<rightarrow>* nx \<and> 

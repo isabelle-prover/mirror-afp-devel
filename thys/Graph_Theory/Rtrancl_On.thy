@@ -24,7 +24,7 @@ where
       "(a, b) \<in> rtrancl_on F r  \<Longrightarrow> (b, c) \<in> r \<Longrightarrow> c \<in> F
       \<Longrightarrow> (a, c) \<in> rtrancl_on F r"
 
-definition symcl :: "'a rel \<Rightarrow> 'a rel" ("(_\<^sup>s)" [1000] 999) where
+definition symcl :: "'a rel \<Rightarrow> 'a rel" (\<open>(_\<^sup>s)\<close> [1000] 999) where
   "symcl R = R \<union> (\<lambda>(a,b). (b,a)) ` R"
 
 lemma in_rtrancl_on_in_F:

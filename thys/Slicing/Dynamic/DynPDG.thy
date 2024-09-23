@@ -15,11 +15,11 @@ locale DynPDG =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and Exit :: "'node" ("'('_Exit'_')") +
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>) +
   fixes dyn_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" 
-("_ controls _ via _" [51,0,0])
+(\<open>_ controls _ via _\<close> [51,0,0])
   assumes Exit_not_dyn_control_dependent:"n controls n' via as \<Longrightarrow> n' \<noteq> (_Exit_)"
   assumes dyn_control_dependence_path:
   "n controls n' via as  \<Longrightarrow> n -as\<rightarrow>* n' \<and> as \<noteq> []"
@@ -27,9 +27,9 @@ locale DynPDG =
 begin
 
 inductive cdep_edge :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool" 
-    ("_ -_\<rightarrow>\<^sub>c\<^sub>d _" [51,0,0] 80)
+    (\<open>_ -_\<rightarrow>\<^sub>c\<^sub>d _\<close> [51,0,0] 80)
   and ddep_edge :: "'node \<Rightarrow> 'var \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
-    ("_ -'{_'}_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0,0] 80)
+    (\<open>_ -'{_'}_\<rightarrow>\<^sub>d\<^sub>d _\<close> [51,0,0,0] 80)
   and DynPDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
@@ -46,7 +46,7 @@ where
 
 
 inductive DynPDG_path :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
-("_ -_\<rightarrow>\<^sub>d* _" [51,0,0] 80) 
+(\<open>_ -_\<rightarrow>\<^sub>d* _\<close> [51,0,0] 80) 
 
 where DynPDG_path_Nil:
   "valid_node n \<Longrightarrow> n -[]\<rightarrow>\<^sub>d* n"
@@ -394,9 +394,9 @@ locale DynStandardControlDependencePDG =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and Exit :: "'node" ("'('_Exit'_')")
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>)
 
 begin
 
@@ -427,9 +427,9 @@ locale DynWeakControlDependencePDG =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and Exit :: "'node" ("'('_Exit'_')")
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>)
 
 begin
 

@@ -268,7 +268,7 @@ lemma ordinal_times_not_0 [simp]:
 subsection \<open>Exponentiation\<close>
 
 definition
-  exp_ordinal :: "[ordinal, ordinal] \<Rightarrow> ordinal" (infixr "**" 75) where
+  exp_ordinal :: "[ordinal, ordinal] \<Rightarrow> ordinal" (infixr \<open>**\<close> 75) where
   "(**) = (\<lambda>x. if 0 < x then ordinal_rec 1 (\<lambda>p w. w * x)
                          else (\<lambda>y. if y = 0 then 1 else 0))"
 

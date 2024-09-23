@@ -17,9 +17,9 @@ type_synonym
 
 inductive
   WT\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1     , ty     ] \<Rightarrow> bool"
-         ("(_,_ \<turnstile>\<^sub>1/ _ :: _)"   [51,51,51]50)
+         (\<open>(_,_ \<turnstile>\<^sub>1/ _ :: _)\<close>   [51,51,51]50)
   and WTs\<^sub>1 :: "[J\<^sub>1_prog,env\<^sub>1, expr\<^sub>1 list, ty list] \<Rightarrow> bool"
-         ("(_,_ \<turnstile>\<^sub>1/ _ [::] _)" [51,51,51]50)
+         (\<open>(_,_ \<turnstile>\<^sub>1/ _ [::] _)\<close> [51,51,51]50)
   for P :: J\<^sub>1_prog
 where
   

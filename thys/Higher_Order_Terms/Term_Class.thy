@@ -15,9 +15,9 @@ section \<open>A simple term type, modelled after Pure's \<open>term\<close> typ
 datatype "term" =
   Const name |
   Free name |
-  Abs "term" ("\<Lambda> _" [71] 71) |
+  Abs "term" (\<open>\<Lambda> _\<close> [71] 71) |
   Bound nat |
-  App "term" "term" (infixl "$" 70)
+  App "term" "term" (infixl \<open>$\<close> 70)
 
 derive linorder "term"
 
@@ -656,7 +656,7 @@ by (smt fminusE fmpred_iff fset_mp fsubsetI closed_except_def match_vars match_d
 fun rewrite_step :: "(term \<times> 'a) \<Rightarrow> 'a \<Rightarrow> 'a option" where
 "rewrite_step (t\<^sub>1, t\<^sub>2) u = map_option (subst t\<^sub>2) (match t\<^sub>1 u)"
 
-abbreviation rewrite_step' :: "(term \<times> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_/ \<turnstile>/ _ \<rightarrow>/ _" [50,0,50] 50) where
+abbreviation rewrite_step' :: "(term \<times> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_/ \<turnstile>/ _ \<rightarrow>/ _\<close> [50,0,50] 50) where
 "r \<turnstile> t \<rightarrow> u \<equiv> rewrite_step r t = Some u"
 
 lemma rewrite_step_closed:
@@ -672,7 +672,7 @@ proof -
     using assms by auto
 qed
 
-definition matches :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<lesssim>" 50) where
+definition matches :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<lesssim>\<close> 50) where
 "t \<lesssim> u \<longleftrightarrow> (\<exists>env. subst t env = u)"
 
 lemma matchesI[intro]: "subst t env = u \<Longrightarrow> t \<lesssim> u"
@@ -839,7 +839,7 @@ by (induct xs arbitrary: f) auto
 lemma subst_list_comb: "subst (list_comb f xs) env = list_comb (subst f env) (map (\<lambda>t. subst t env) xs)"
 by (induct xs arbitrary: f) auto
 
-abbreviation const_list_comb :: "name \<Rightarrow> 'a list \<Rightarrow> 'a" (infixl "$$" 70) where
+abbreviation const_list_comb :: "name \<Rightarrow> 'a list \<Rightarrow> 'a" (infixl \<open>$$\<close> 70) where
 "const_list_comb name \<equiv> list_comb (const name)"
 
 lemma list_strip_comb[simp]: "list_comb (fst (strip_comb t)) (snd (strip_comb t)) = t"

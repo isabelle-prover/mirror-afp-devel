@@ -7,8 +7,8 @@ begin
 section \<open>First direction of MN: \<open>finite partition \<Rightarrow> regular language\<close>\<close>
 
 notation 
-  conc (infixr "\<cdot>" 100) and
-  star ("_\<star>" [101] 102)
+  conc (infixr \<open>\<cdot>\<close> 100) and
+  star (\<open>_\<star>\<close> [101] 102)
 
 lemma Pair_Collect [simp]:
   shows "(x, y) \<in> {(x, y). P x y} \<longleftrightarrow> P x y"
@@ -17,12 +17,12 @@ by simp
 text \<open>Myhill-Nerode relation\<close>
 
 definition
-  str_eq :: "'a lang \<Rightarrow> ('a list \<times> 'a list) set" ("\<approx>_" [100] 100)
+  str_eq :: "'a lang \<Rightarrow> ('a list \<times> 'a list) set" (\<open>\<approx>_\<close> [100] 100)
 where
   "\<approx>A \<equiv> {(x, y).  (\<forall>z. x @ z \<in> A \<longleftrightarrow> y @ z \<in> A)}"
 
 abbreviation
-  str_eq_applied :: "'a list \<Rightarrow> 'a lang \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<approx>_ _")
+  str_eq_applied :: "'a list \<Rightarrow> 'a lang \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<approx>_ _\<close>)
 where
   "x \<approx>A y \<equiv> (x, y) \<in> \<approx>A"
 
@@ -78,7 +78,7 @@ by simp
 text \<open>Transitions between equivalence classes\<close>
 
 definition 
-  transition :: "'a lang \<Rightarrow> 'a \<Rightarrow> 'a lang \<Rightarrow> bool" ("_ \<Turnstile>_\<Rightarrow>_" [100,100,100] 100)
+  transition :: "'a lang \<Rightarrow> 'a \<Rightarrow> 'a lang \<Rightarrow> bool" (\<open>_ \<Turnstile>_\<Rightarrow>_\<close> [100,100,100] 100)
 where
   "Y \<Turnstile>c\<Rightarrow> X \<equiv> Y \<cdot> {[c]} \<subseteq> X"
 

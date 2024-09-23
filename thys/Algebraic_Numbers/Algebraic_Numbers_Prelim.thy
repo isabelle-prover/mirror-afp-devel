@@ -204,7 +204,7 @@ qed
 
 text \<open>Definition of being algebraic with explicit witness polynomial.\<close>
 
-definition represents :: "int poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> bool" (infix "represents" 51)
+definition represents :: "int poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> bool" (infix \<open>represents\<close> 51)
   where "p represents x = (ipoly p x = 0 \<and> p \<noteq> 0)"
 
 lemma representsI[intro]: "ipoly p x = 0 \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> p represents x"

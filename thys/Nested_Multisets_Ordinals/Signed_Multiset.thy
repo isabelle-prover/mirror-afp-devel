@@ -31,7 +31,7 @@ begin
 
 lift_definition zero_zmultiset :: "'a zmultiset" is "({#}, {#})" .
 
-abbreviation empty_zmset :: "'a zmultiset" ("{#}\<^sub>z") where
+abbreviation empty_zmset :: "'a zmultiset" (\<open>{#}\<^sub>z\<close>) where
   "empty_zmset \<equiv> 0"
 
 lift_definition minus_zmultiset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> 'a zmultiset" is
@@ -81,7 +81,7 @@ lift_definition add_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> 'a zmu
   by (auto simp: equiv_zmset_def)
 
 syntax
-  "_zmultiset" :: "args \<Rightarrow> 'a zmultiset" ("{#(_)#}\<^sub>z")
+  "_zmultiset" :: "args \<Rightarrow> 'a zmultiset" (\<open>{#(_)#}\<^sub>z\<close>)
 syntax_consts
   "_zmultiset" == add_zmset
 translations
@@ -124,23 +124,23 @@ abbreviation elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" wh
   "elem_zmset a M \<equiv> a \<in> set_zmset M"
 
 notation
-  elem_zmset ("'(\<in>#\<^sub>z')") and
-  elem_zmset ("(_/ \<in>#\<^sub>z _)" [51, 51] 50)
+  elem_zmset (\<open>'(\<in>#\<^sub>z')\<close>) and
+  elem_zmset (\<open>(_/ \<in>#\<^sub>z _)\<close> [51, 51] 50)
 
 notation (ASCII)
-  elem_zmset ("'(:#z')") and
-  elem_zmset ("(_/ :#z _)" [51, 51] 50)
+  elem_zmset (\<open>'(:#z')\<close>) and
+  elem_zmset (\<open>(_/ :#z _)\<close> [51, 51] 50)
 
 abbreviation not_elem_zmset :: "'a \<Rightarrow> 'a zmultiset \<Rightarrow> bool" where
   "not_elem_zmset a M \<equiv> a \<notin> set_zmset M"
 
 notation
-  not_elem_zmset ("'(\<notin>#\<^sub>z')") and
-  not_elem_zmset ("(_/ \<notin>#\<^sub>z _)" [51, 51] 50)
+  not_elem_zmset (\<open>'(\<notin>#\<^sub>z')\<close>) and
+  not_elem_zmset (\<open>(_/ \<notin>#\<^sub>z _)\<close> [51, 51] 50)
 
 notation (ASCII)
-  not_elem_zmset ("'(~:#z')") and
-  not_elem_zmset ("(_/ ~:#z _)" [51, 51] 50)
+  not_elem_zmset (\<open>'(~:#z')\<close>) and
+  not_elem_zmset (\<open>(_/ ~:#z _)\<close> [51, 51] 50)
 
 context
 begin
@@ -154,12 +154,12 @@ qualified abbreviation Bex :: "'a zmultiset \<Rightarrow> ('a \<Rightarrow> bool
 end
 
 syntax
-  "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_\<in>#\<^sub>z_./ _)" [0, 0, 10] 10)
-  "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_\<in>#\<^sub>z_./ _)" [0, 0, 10] 10)
+  "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<forall>_\<in>#\<^sub>z_./ _)\<close> [0, 0, 10] 10)
+  "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<exists>_\<in>#\<^sub>z_./ _)\<close> [0, 0, 10] 10)
 
 syntax (ASCII)
-  "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
-  "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
+  "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<forall>_:#\<^sub>z_./ _)\<close> [0, 0, 10] 10)
+  "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<exists>_:#\<^sub>z_./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_ZMBall" \<rightleftharpoons> Signed_Multiset.Ball and
@@ -403,31 +403,31 @@ qed
 
 subsubsection \<open>Pointwise Ordering Induced by @{const zcount}\<close>
 
-definition subseteq_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix "\<subseteq>#\<^sub>z" 50) where
+definition subseteq_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix \<open>\<subseteq>#\<^sub>z\<close> 50) where
   "A \<subseteq>#\<^sub>z B \<longleftrightarrow> (\<forall>a. zcount A a \<le> zcount B a)"
 
-definition subset_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix "\<subset>#\<^sub>z" 50) where
+definition subset_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix \<open>\<subset>#\<^sub>z\<close> 50) where
   "A \<subset>#\<^sub>z B \<longleftrightarrow> A \<subseteq>#\<^sub>z B \<and> A \<noteq> B"
 
 abbreviation (input)
-  supseteq_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix "\<supseteq>#\<^sub>z" 50)
+  supseteq_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix \<open>\<supseteq>#\<^sub>z\<close> 50)
 where
   "supseteq_zmset A B \<equiv> B \<subseteq>#\<^sub>z A"
 
 abbreviation (input)
-  supset_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix "\<supset>#\<^sub>z" 50)
+  supset_zmset :: "'a zmultiset \<Rightarrow> 'a zmultiset \<Rightarrow> bool" (infix \<open>\<supset>#\<^sub>z\<close> 50)
 where
   "supset_zmset A B \<equiv> B \<subset>#\<^sub>z A"
 
 notation (input)
-  subseteq_zmset (infix "\<subseteq>#\<^sub>z" 50) and
-  supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50)
+  subseteq_zmset (infix \<open>\<subseteq>#\<^sub>z\<close> 50) and
+  supseteq_zmset (infix \<open>\<supseteq>#\<^sub>z\<close> 50)
 
 notation (ASCII)
-  subseteq_zmset (infix "\<subseteq>#\<^sub>z" 50) and
-  subset_zmset (infix "\<subset>#\<^sub>z" 50) and
-  supseteq_zmset (infix "\<supseteq>#\<^sub>z" 50) and
-  supset_zmset (infix ">#\<^sub>z" 50)
+  subseteq_zmset (infix \<open>\<subseteq>#\<^sub>z\<close> 50) and
+  subset_zmset (infix \<open>\<subset>#\<^sub>z\<close> 50) and
+  supseteq_zmset (infix \<open>\<supseteq>#\<^sub>z\<close> 50) and
+  supset_zmset (infix \<open>>#\<^sub>z\<close> 50)
 
 interpretation subset_zmset: ordered_ab_semigroup_add_imp_le "(+)" "(-)" "(\<subseteq>#\<^sub>z)" "(\<subset>#\<^sub>z)"
   by unfold_locales (auto simp add: subset_zmset_def subseteq_zmset_def zmultiset_eq_iff
@@ -561,9 +561,9 @@ lift_definition filter_zmset :: "('a \<Rightarrow> bool) \<Rightarrow> 'a zmulti
   by (auto simp del: filter_union_mset simp: equiv_zmset_def filter_union_mset[symmetric])
 
 syntax (ASCII)
-  "_ZMCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#z _./ _#})")
+  "_ZMCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" (\<open>(1{#_ :#z _./ _#})\<close>)
 syntax
-  "_ZMCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ \<in>#\<^sub>z _./ _#})")
+  "_ZMCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" (\<open>(1{#_ \<in>#\<^sub>z _./ _#})\<close>)
 translations
   "{#x \<in>#\<^sub>z M. P#}" == "CONST filter_zmset (\<lambda>x. P) M"
 

@@ -44,7 +44,7 @@ subsection \<open>Setup of Extraction-Tools\<close>
 
   abbreviation hfunspec 
     :: "('a \<Rightarrow> 'b \<Rightarrow> assn) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> assn)\<times>('a \<Rightarrow> 'b \<Rightarrow> assn)" 
-    ("(_\<^sup>?)" [1000] 999)
+    (\<open>(_\<^sup>?)\<close> [1000] 999)
     where "R\<^sup>? \<equiv> hf_pres R UNSPEC"
 
   definition SYNTH :: "('a \<Rightarrow> 'r nres) \<Rightarrow> (('ai \<Rightarrow>'ri Heap) \<times> ('a \<Rightarrow> 'r nres)) set \<Rightarrow> bool"

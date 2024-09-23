@@ -7,8 +7,8 @@ imports PQ Binomial_Queue
 begin
 
 notation
-  "PQ.values" ("|(_)|")
-  and "PQ.priorities" ("\<parallel>(_)\<parallel>")
+  "PQ.values" (\<open>|(_)|\<close>)
+  and "PQ.priorities" (\<open>\<parallel>(_)\<parallel>\<close>)
 
 text \<open>
   \noindent Naming convention: prefix \<open>bt_\<close> for bintrees, \<open>bts_\<close> for bintree lists,
@@ -939,7 +939,7 @@ proof -
 qed
 
 no_notation
-  "PQ.values" ("|(_)|")
-  and "PQ.priorities" ("\<parallel>(_)\<parallel>")
+  "PQ.values" (\<open>|(_)|\<close>)
+  and "PQ.priorities" (\<open>\<parallel>(_)\<parallel>\<close>)
 
 end

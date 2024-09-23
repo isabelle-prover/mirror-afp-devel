@@ -23,7 +23,7 @@ subsubsection \<open>Appending a functions to a list\<close>
 
 type_synonym 'a ilist = "nat \<Rightarrow> 'a"
 
-definition i_append :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist" (infixr "\<frown>" 65)
+definition i_append :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist" (infixr \<open>\<frown>\<close> 65)
   where "xs \<frown> f \<equiv> \<lambda>n. if n < length xs then xs ! n else f (n - length xs)"
 
 text \<open>
@@ -316,9 +316,9 @@ definition i_take  :: "nat \<Rightarrow> 'a ilist \<Rightarrow> 'a list"
 definition i_drop  :: "nat \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist"
   where "i_drop n f \<equiv> (\<lambda>x. f (n + x))"
 
-abbreviation i_take' :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl "\<Down>" 100)
+abbreviation i_take' :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl \<open>\<Down>\<close> 100)
   where "f \<Down> n \<equiv> i_take n f"
-abbreviation i_drop' :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a ilist"  (infixl "\<Up>" 100)
+abbreviation i_drop' :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a ilist"  (infixl \<open>\<Up>\<close> 100)
   where "f \<Up> n \<equiv> i_drop n f"
 
 lemma "f \<Down> n = map f [0..<n]"
@@ -780,13 +780,13 @@ where
     FL xs \<Rightarrow> enat (length xs) |
     IL f  \<Rightarrow> \<infinity>"
 
-definition gCons :: "'a \<Rightarrow> 'a glist \<Rightarrow> 'a glist"  (infixr "#\<^sub>g" 65)
+definition gCons :: "'a \<Rightarrow> 'a glist \<Rightarrow> 'a glist"  (infixr \<open>#\<^sub>g\<close> 65)
 where
   "x #\<^sub>g a \<equiv> case a of
     FL xs \<Rightarrow> FL (x # xs) |
     IL g  \<Rightarrow> IL ([x] \<frown> g)"
 
-definition gappend :: "'a glist \<Rightarrow> 'a glist \<Rightarrow> 'a glist"  (infixr "@\<^sub>g" 65)
+definition gappend :: "'a glist \<Rightarrow> 'a glist \<Rightarrow> 'a glist"  (infixr \<open>@\<^sub>g\<close> 65)
 where
   "gappend a b \<equiv> case a of
     FL xs \<Rightarrow> (case b of FL ys \<Rightarrow> FL (xs @ ys) | IL f \<Rightarrow> IL (xs \<frown> f)) |
@@ -808,16 +808,16 @@ where
       IL f  \<Rightarrow> IL (f \<Up> m)) |
     \<infinity> \<Rightarrow> FL []"
 
-definition gnth :: "'a glist \<Rightarrow> nat \<Rightarrow> 'a"  (infixl "!\<^sub>g" 100)
+definition gnth :: "'a glist \<Rightarrow> nat \<Rightarrow> 'a"  (infixl \<open>!\<^sub>g\<close> 100)
 where
   "a !\<^sub>g n \<equiv> case a of
     FL xs \<Rightarrow> xs ! n |
     IL f  \<Rightarrow> f n"
 
-abbreviation g_take' :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"  (infixl "\<down>\<^sub>g" 100)
+abbreviation g_take' :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"  (infixl \<open>\<down>\<^sub>g\<close> 100)
   where "a \<down>\<^sub>g n \<equiv> gtake n a"
 
-abbreviation g_drop' :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"  (infixl "\<up>\<^sub>g" 100)
+abbreviation g_drop' :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"  (infixl \<open>\<up>\<^sub>g\<close> 100)
   where "a \<up>\<^sub>g n \<equiv> gdrop n a"
 
 

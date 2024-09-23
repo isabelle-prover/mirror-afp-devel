@@ -4,7 +4,7 @@ theory ND
 imports Formulas
 begin
 
-inductive ND :: "'a formula set \<Rightarrow> 'a formula \<Rightarrow> bool" (infix "\<turnstile>" 30) where
+inductive ND :: "'a formula set \<Rightarrow> 'a formula \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 30) where
 Ax: "F \<in> \<Gamma> \<Longrightarrow> \<Gamma> \<turnstile> F" |
 NotE: "\<lbrakk>\<Gamma> \<turnstile> Not F; \<Gamma> \<turnstile> F \<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> \<bottom>" |
 NotI: "F \<triangleright> \<Gamma> \<turnstile> \<bottom> \<Longrightarrow> \<Gamma> \<turnstile> Not F" |

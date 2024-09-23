@@ -14,16 +14,16 @@ begin
 nitpick_params [timeout = 600]
 
 class while =
-  fixes while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<star>" 59)
+  fixes while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<star>\<close> 59)
 
 class n =
   fixes n :: "'a \<Rightarrow> 'a"
 
 class diamond =
-  fixes diamond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("| _ > _" [50,90] 95)
+  fixes diamond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>| _ > _\<close> [50,90] 95)
 
 class box =
-  fixes box :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("| _ ] _" [50,90] 95)
+  fixes box :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>| _ ] _\<close> [50,90] 95)
 
 context ord
 begin

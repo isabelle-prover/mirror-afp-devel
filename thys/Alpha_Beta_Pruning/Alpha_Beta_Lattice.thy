@@ -43,18 +43,18 @@ by (metis (no_types, opaque_lifting) inf.left_idem inf_commute inf_sup_distrib1 
 
 text \<open>Generalization of Knuth and Moore's equivalence modulo:\<close>
 abbreviation
-  eq_mod :: "('a::lattice) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<simeq>/ _/ '(mod _,_'))" [51,51,0,0]) where
+  eq_mod :: "('a::lattice) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<simeq>/ _/ '(mod _,_'))\<close> [51,51,0,0]) where
  "eq_mod x y a b \<equiv> a \<squnion> x \<sqinter> b = a \<squnion> y \<sqinter> b"
 
-notation (latex output) eq_mod ("(_ \<simeq>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
+notation (latex output) eq_mod (\<open>(_ \<simeq>/ _/ '(\<^latex>\<open>\textup{mod}\<close> _,_'))\<close> [51,51,0,0])
 
 text \<open>\<open>ab\<close> is bounded by \<open>v\<close> mod \<open>a,b\<close>, or the other way around.\<close>
 abbreviation "bounded (a::_::lattice) b v ab \<equiv> b \<sqinter> v \<le> ab \<and> ab \<le> a \<squnion> v"
 
-abbreviation bounded2 :: "('a::lattice) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<sqsubseteq>/ _/ '(mod _,_'))" [51,51,0,0])
+abbreviation bounded2 :: "('a::lattice) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<sqsubseteq>/ _/ '(mod _,_'))\<close> [51,51,0,0])
 where "bounded2 ab v a b \<equiv> bounded a b v ab"
 
-notation (latex output) bounded2 ("(_ \<sqsubseteq>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
+notation (latex output) bounded2 (\<open>(_ \<sqsubseteq>/ _/ '(\<^latex>\<open>\textup{mod}\<close> _,_'))\<close> [51,51,0,0])
 
 lemma bounded_bot_top:
 fixes v ab :: "'a::distrib_bounded_lattice"

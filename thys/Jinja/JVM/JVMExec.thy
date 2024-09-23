@@ -30,7 +30,7 @@ fun exec :: "jvm_prog \<times> jvm_state => jvm_state option" where \<comment> \
 inductive_set
   exec_1 :: "jvm_prog \<Rightarrow> (jvm_state \<times> jvm_state) set"
   and exec_1' :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool" 
-    ("_ \<turnstile>/ _ -jvm\<rightarrow>\<^sub>1/ _" [61,61,61] 60)
+    (\<open>_ \<turnstile>/ _ -jvm\<rightarrow>\<^sub>1/ _\<close> [61,61,61] 60)
   for P :: jvm_prog
 where
   "P \<turnstile> \<sigma> -jvm\<rightarrow>\<^sub>1 \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> exec_1 P"
@@ -38,12 +38,12 @@ where
 
 \<comment> \<open>reflexive transitive closure:\<close>
 definition exec_all :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
-    ("(_ \<turnstile>/ _ -jvm\<rightarrow>/ _)" [61,61,61]60) where
+    (\<open>(_ \<turnstile>/ _ -jvm\<rightarrow>/ _)\<close> [61,61,61]60) where
 (* FIXME exec_all \<rightarrow> exec_star, also in Def.JVM *)
   exec_all_def1: "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1 P)\<^sup>*"
 
 notation (ASCII)
-  exec_all  ("_ |-/ _ -jvm->/ _" [61,61,61]60)
+  exec_all  (\<open>_ |-/ _ -jvm->/ _\<close> [61,61,61]60)
 
 
 lemma exec_1_eq:

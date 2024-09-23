@@ -35,16 +35,16 @@ method intro_cong for A :: "cong_tag_type list" uses more =
 
 bundle intro_cong_syntax
 begin
-  notation cong_tag_1 ("\<sigma>\<^sub>1")
-  notation cong_tag_2 ("\<sigma>\<^sub>2")
-  notation cong_tag_3 ("\<sigma>\<^sub>3")
+  notation cong_tag_1 (\<open>\<sigma>\<^sub>1\<close>)
+  notation cong_tag_2 (\<open>\<sigma>\<^sub>2\<close>)
+  notation cong_tag_3 (\<open>\<sigma>\<^sub>3\<close>)
 end
 
 bundle no_intro_cong_syntax
 begin
-  no_notation cong_tag_1 ("\<sigma>\<^sub>1")
-  no_notation cong_tag_2 ("\<sigma>\<^sub>2")
-  no_notation cong_tag_3 ("\<sigma>\<^sub>3")
+  no_notation cong_tag_1 (\<open>\<sigma>\<^sub>1\<close>)
+  no_notation cong_tag_2 (\<open>\<sigma>\<^sub>2\<close>)
+  no_notation cong_tag_3 (\<open>\<sigma>\<^sub>3\<close>)
 end
 
 lemma restr_Collect_cong:

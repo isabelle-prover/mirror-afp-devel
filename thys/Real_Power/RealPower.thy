@@ -358,12 +358,12 @@ by (blast intro: Bseq_monoseq_convergent Bseq_powrat_incseq_of incseq_imp_monose
 text\<open>We're now ready to define real exponentation.\<close>
 
 definition
-    powa  :: "[real,real] \<Rightarrow> real"      (infixr "powa" 80) where
+    powa  :: "[real,real] \<Rightarrow> real"      (infixr \<open>powa\<close> 80) where
    "a powa x = (THE y. (\<lambda>n. a pow\<^sub>\<rat> (incseq_of x n)) \<longlonglongrightarrow> y)"
 
 text \<open>real exponents.\<close>
 definition
-    powreal  :: "[real,real] \<Rightarrow> real"     (infixr "pow\<^sub>\<real>" 80) where
+    powreal  :: "[real,real] \<Rightarrow> real"     (infixr \<open>pow\<^sub>\<real>\<close> 80) where
     "a pow\<^sub>\<real> x = (if 0 < a \<and> a < 1 then (inverse a) powa (-x) 
                  else if a \<ge> 1 then a powa x else 0)"
 

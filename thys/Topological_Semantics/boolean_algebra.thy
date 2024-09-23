@@ -10,13 +10,13 @@ declare[[show_types]]
 sledgehammer_params[isar_proof=false]
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=3, atoms=a b c d] (*default Nitpick settings*)
 text\<open>We hide some Isabelle/HOL notation from the libraries (which we don't use) to avoid overloading\<close>
-hide_const(open) List.list.Nil no_notation List.list.Nil ("[]")  (*We have no use for lists... *)
-hide_const(open) Relation.converse no_notation Relation.converse ("(_\<inverse>)" [1000] 999) (*..nor for relations in this work*)
-hide_const(open) Fun.comp no_notation Fun.comp (infixl "\<circ>" 55) (*we redefine function composition below*)
-hide_const(open) Groups.plus_class.plus no_notation Groups.plus_class.plus (infixl "+" 65) (*we don't use this*)
-hide_const(open) Groups.times_class.times no_notation Groups.times_class.times (infixl "*" 70) (*we don't use this*)
-hide_const(open) Groups.minus_class.minus no_notation Groups.minus_class.minus (infixl "-" 65) (*we don't use this*)
-hide_const(open) Groups.uminus_class.uminus no_notation Groups.uminus_class.uminus ("- _" [81] 80) (*we don't use this*)
+hide_const(open) List.list.Nil no_notation List.list.Nil (\<open>[]\<close>)  (*We have no use for lists... *)
+hide_const(open) Relation.converse no_notation Relation.converse (\<open>(_\<inverse>)\<close> [1000] 999) (*..nor for relations in this work*)
+hide_const(open) Fun.comp no_notation Fun.comp (infixl \<open>\<circ>\<close> 55) (*we redefine function composition below*)
+hide_const(open) Groups.plus_class.plus no_notation Groups.plus_class.plus (infixl \<open>+\<close> 65) (*we don't use this*)
+hide_const(open) Groups.times_class.times no_notation Groups.times_class.times (infixl \<open>*\<close> 70) (*we don't use this*)
+hide_const(open) Groups.minus_class.minus no_notation Groups.minus_class.minus (infixl \<open>-\<close> 65) (*we don't use this*)
+hide_const(open) Groups.uminus_class.uminus no_notation Groups.uminus_class.uminus (\<open>- _\<close> [81] 80) (*we don't use this*)
 (*-----------------------------------*)
 
 section \<open>Shallow semantical embedding of (a logic of) Boolean algebras\<close>
@@ -55,9 +55,9 @@ intended to act as 'topological operators' in the given context.\<close>
 subsection \<open>Encoding Boolean operations\<close>
 
 text\<open>Standard inclusion-based order structure on sets.\<close>
-definition subset::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> bool" (infixr "\<^bold>\<le>" 45) 
+definition subset::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> bool" (infixr \<open>\<^bold>\<le>\<close> 45) 
   where "A \<^bold>\<le> B \<equiv> \<forall>p. A p \<longrightarrow> B p"
-definition setequ::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> bool" (infixr "\<^bold>=" 45) 
+definition setequ::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> bool" (infixr \<open>\<^bold>=\<close> 45) 
   where "A \<^bold>= B \<equiv> \<forall>p. A p \<longleftrightarrow> B p"
 
 named_theorems order (*to group together order-related definitions*)
@@ -72,25 +72,25 @@ lemma setequ_ext: "(A \<^bold>= B) = (A = B)" unfolding order by blast
 
 text\<open>We now encode connectives for (distributive and complemented) bounded lattices, mostly 
 by reusing their counterpart meta-logical HOL connectives.\<close>
-definition meet::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr "\<^bold>\<and>" 54) 
+definition meet::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr \<open>\<^bold>\<and>\<close> 54) 
   where "A \<^bold>\<and> B \<equiv> \<lambda>p. (A p) \<and> (B p)" \<comment>\<open> intersection \<close>
-definition join::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr "\<^bold>\<or>" 53) 
+definition join::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr \<open>\<^bold>\<or>\<close> 53) 
   where "A \<^bold>\<or> B \<equiv> \<lambda>p. (A p) \<or> (B p)" \<comment>\<open> union \<close>
-definition top::"'w \<sigma>" ("\<^bold>\<top>")    
+definition top::"'w \<sigma>" (\<open>\<^bold>\<top>\<close>)    
   where "\<^bold>\<top> \<equiv> \<lambda>w. True"   \<comment>\<open> universe \<close>
-definition bottom::"'w \<sigma>" ("\<^bold>\<bottom>") 
+definition bottom::"'w \<sigma>" (\<open>\<^bold>\<bottom>\<close>) 
   where "\<^bold>\<bottom> \<equiv> \<lambda>w. False"  \<comment>\<open> empty-set \<close>
 
 text\<open>And introduce further operations to obtain a Boolean algebra (of sets).\<close>
-definition compl::"'w \<sigma> \<Rightarrow> 'w \<sigma>" ("\<^bold>\<midarrow>_" [57]58)
+definition compl::"'w \<sigma> \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<midarrow>_\<close> [57]58)
   where "\<^bold>\<midarrow>A  \<equiv> \<lambda>p. \<not>(A p)" \<comment>\<open>  (set-)complement \<close>
-definition impl::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr "\<^bold>\<rightarrow>" 51)
+definition impl::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr \<open>\<^bold>\<rightarrow>\<close> 51)
   where "A \<^bold>\<rightarrow> B \<equiv> \<lambda>p. (A p) \<longrightarrow> (B p)" \<comment>\<open>  (set-)implication \<close>
-definition diff::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr "\<^bold>\<leftharpoonup>" 51) 
+definition diff::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr \<open>\<^bold>\<leftharpoonup>\<close> 51) 
   where "A \<^bold>\<leftharpoonup> B \<equiv> \<lambda>p. (A p) \<and> \<not>(B p)" \<comment>\<open>  (set-)difference \<close>
-definition dimpl::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr "\<^bold>\<leftrightarrow>" 51)
+definition dimpl::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr \<open>\<^bold>\<leftrightarrow>\<close> 51)
   where "A \<^bold>\<leftrightarrow> B \<equiv> \<lambda>p. (A p) = (B p)" \<comment>\<open>  double implication \<close>
-definition sdiff::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr "\<^bold>\<triangle>" 51)
+definition sdiff::"'w \<sigma> \<Rightarrow> 'w \<sigma> \<Rightarrow> 'w \<sigma>" (infixr \<open>\<^bold>\<triangle>\<close> 51)
   where "A \<^bold>\<triangle> B \<equiv> \<lambda>p. (A p) \<noteq> (B p)" \<comment>\<open>  symmetric difference (aka. xor)  \<close>
 
 named_theorems conn (*to group together definitions for algebraic connectives*)
@@ -183,17 +183,17 @@ abbreviation "isEmpty S \<equiv> \<forall>x. \<not>S x"
 abbreviation "nonEmpty S \<equiv> \<exists>x. S x"
 
 text\<open>Function composition.\<close>
-definition fun_comp :: "('b \<Rightarrow> 'c) \<Rightarrow> ( 'a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'c" (infixl "\<circ>" 75) 
+definition fun_comp :: "('b \<Rightarrow> 'c) \<Rightarrow> ( 'a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'c" (infixl \<open>\<circ>\<close> 75) 
   where "\<phi> \<circ> \<psi> \<equiv> \<lambda>x. \<phi> (\<psi> x)"
 
 text\<open>Inverse projection maps a unary function to a 'projected' binary function wrt. its 1st argument.\<close>
-abbreviation inv_proj::\<open>('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c)\<close> ("(_)\<upharpoonleft>")
+abbreviation inv_proj::\<open>('a \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c)\<close> (\<open>(_)\<upharpoonleft>\<close>)
   where "D\<upharpoonleft> \<equiv> \<lambda>A B. D A"
 
 text\<open>Image of a mapping @{text "\<phi>"}, with range as an special case.\<close>
-definition image::"('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)" ("\<lbrakk>_ _\<rbrakk>") 
+definition image::"('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)" (\<open>\<lbrakk>_ _\<rbrakk>\<close>) 
   where "\<lbrakk>\<phi> S\<rbrakk> \<equiv> \<lambda>y. \<exists>x. (S x) \<and> (\<phi> x) = y"
-definition range::"('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool)" ("\<lbrakk>_'_\<rbrakk>") 
+definition range::"('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool)" (\<open>\<lbrakk>_'_\<rbrakk>\<close>) 
   where "\<lbrakk>\<phi> _\<rbrakk> \<equiv> \<lambda>Y. \<exists>x. (\<phi> x) = Y"
 lemma range_char1: "\<lbrakk>\<phi> _\<rbrakk> = \<lbrakk>\<phi> (\<lambda>x. True)\<rbrakk>" by (simp add: image_def range_def)
 lemma range_char2: "\<lbrakk>\<phi> _\<rbrakk> = (\<lambda>X. \<exists>S. \<lbrakk>\<phi> S\<rbrakk> X)" unfolding range_def image_def by blast

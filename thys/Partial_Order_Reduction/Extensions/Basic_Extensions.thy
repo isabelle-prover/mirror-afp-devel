@@ -88,7 +88,7 @@ begin
     lemma const4_apply[simp]: "const4 x y z u v = x" unfolding const4_def by rule
     lemma const5_apply[simp]: "const5 x y z u v w = x" unfolding const5_def by rule
 
-    definition zip_fun :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> 'a \<Rightarrow> 'b \<times> 'c" (infixr "\<parallel>" 51)
+    definition zip_fun :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> 'a \<Rightarrow> 'b \<times> 'c" (infixr \<open>\<parallel>\<close> 51)
       where "f \<parallel> g \<equiv> \<lambda> x. (f x, g x)"
   
     lemma zip_fun_simps[simp]:

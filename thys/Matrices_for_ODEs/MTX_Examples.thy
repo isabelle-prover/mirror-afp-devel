@@ -17,17 +17,17 @@ begin
 subsection \<open> Examples \<close>
 
 abbreviation hoareT :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a set) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" 
-  ("PRE_ HP _ POST _" [85,85]85) where "PRE P HP X POST Q \<equiv> (P \<le> |X]Q)"
+  (\<open>PRE_ HP _ POST _\<close> [85,85]85) where "PRE P HP X POST Q \<equiv> (P \<le> |X]Q)"
 
 
 subsubsection \<open> Verification by uniqueness. \<close>
 
-abbreviation mtx_circ :: "2 sq_mtx" ("A")
+abbreviation mtx_circ :: "2 sq_mtx" (\<open>A\<close>)
   where "A \<equiv> mtx  
    ([0,  1] # 
     [-1, 0] # [])"
 
-abbreviation mtx_circ_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>")
+abbreviation mtx_circ_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>\<phi>\<close>)
   where "\<phi> t s \<equiv> (\<chi> i. if i = 1 then s$1 * cos t + s$2 * sin t else - s$1 * sin t + s$2 * cos t)"
 
 lemma mtx_circ_flow_eq: "exp (t *\<^sub>R A) *\<^sub>V s = \<phi> t s"
@@ -43,18 +43,18 @@ lemma mtx_circ:
   apply(subst local_flow.fbox_g_ode_subset[OF local_flow_sq_mtx_linear])
   unfolding mtx_circ_flow_eq by auto
 
-no_notation mtx_circ ("A")
-        and mtx_circ_flow ("\<phi>")
+no_notation mtx_circ (\<open>A\<close>)
+        and mtx_circ_flow (\<open>\<phi>\<close>)
 
 
 subsubsection \<open> Flow of diagonalisable matrix. \<close>
 
-abbreviation mtx_hOsc :: "real \<Rightarrow> real \<Rightarrow> 2 sq_mtx" ("A")
+abbreviation mtx_hOsc :: "real \<Rightarrow> real \<Rightarrow> 2 sq_mtx" (\<open>A\<close>)
   where "A a b \<equiv> mtx  
    ([0, 1] # 
     [a, b] # [])"
 
-abbreviation mtx_chB_hOsc :: "real \<Rightarrow> real \<Rightarrow> 2 sq_mtx" ("P")
+abbreviation mtx_chB_hOsc :: "real \<Rightarrow> real \<Rightarrow> 2 sq_mtx" (\<open>P\<close>)
   where "P a b \<equiv> mtx
    ([a, b] # 
     [1, 1] # [])"
@@ -145,13 +145,13 @@ lemma overdamped_door:
   by (clarsimp simp: overdamped_door_arith)
 
 
-no_notation mtx_hOsc ("A")
-        and mtx_chB_hOsc ("P")
+no_notation mtx_hOsc (\<open>A\<close>)
+        and mtx_chB_hOsc (\<open>P\<close>)
 
 
 subsubsection \<open> Flow of non-diagonalisable matrix. \<close>
 
-abbreviation mtx_cnst_acc :: "3 sq_mtx" ("K")
+abbreviation mtx_cnst_acc :: "3 sq_mtx" (\<open>K\<close>)
   where "K \<equiv> mtx (
   [0,1,0] #
   [0,0,1] # 
@@ -233,6 +233,6 @@ lemma docking_station:
   apply(clarsimp simp: le_fun_def local_flow.fbox_g_ode_subset[OF local_flow_sq_mtx_linear[of K]])
   unfolding exp_mtx_cnst_acc_vec_mult_eq using assms by (simp add: docking_station_arith)
 
-no_notation mtx_cnst_acc ("K")
+no_notation mtx_cnst_acc (\<open>K\<close>)
 
 end

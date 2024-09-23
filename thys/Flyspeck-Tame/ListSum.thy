@@ -12,7 +12,7 @@ primrec ListSum :: "'b list \<Rightarrow> ('b \<Rightarrow> 'a::comm_monoid_add)
 | "ListSum (l#ls) f = f l + ListSum ls f"
 
 syntax "_ListSum" :: "idt \<Rightarrow> 'b list \<Rightarrow> ('a::comm_monoid_add) \<Rightarrow> 
-  ('a::comm_monoid_add)"    ("\<Sum>\<^bsub>_\<in>_\<^esub> _" [0, 0, 10] 10)
+  ('a::comm_monoid_add)"    (\<open>\<Sum>\<^bsub>_\<in>_\<^esub> _\<close> [0, 0, 10] 10)
 syntax_consts "_ListSum" == ListSum
 translations "\<Sum>\<^bsub>x\<in>xs\<^esub> f" == "CONST ListSum xs (\<lambda>x. f)" 
 

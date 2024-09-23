@@ -10,7 +10,7 @@ imports
   Collections.CollectionsV1
 begin
 
-no_notation fun_rel_syn (infixr "\<rightarrow>" 60)
+no_notation fun_rel_syn (infixr \<open>\<rightarrow>\<close> 60)
 
 text_raw \<open>\label{sec:absalgo}\<close>
 text \<open>This theory defines tree automata algorithms on an abstract level, 

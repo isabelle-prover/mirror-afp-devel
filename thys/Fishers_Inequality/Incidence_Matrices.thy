@@ -292,7 +292,7 @@ subsection \<open>0-1 Matrices \<close>
 text \<open>Incidence matrices contain only two elements: 0 and 1. We define a locale which provides
 a context to work in for matrices satisfying this condition for any @{typ "'b :: zero_neq_one"} type.\<close>
 locale zero_one_matrix = 
-  fixes matrix :: "'b :: {zero_neq_one} mat" ("M")
+  fixes matrix :: "'b :: {zero_neq_one} mat" (\<open>M\<close>)
   assumes elems01: "elements_mat M \<subseteq> {0, 1}"
 begin
 

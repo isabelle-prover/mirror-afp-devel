@@ -18,7 +18,7 @@ locale backward_simulation =
     step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" +
   fixes
     match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70)
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 70)
   assumes
     wfp_order:
       "wfp (\<sqsubset>)" and
@@ -153,7 +153,7 @@ locale forward_simulation =
     step2 :: "'state2 \<Rightarrow> 'state2 \<Rightarrow> bool" and final2 :: "'state2 \<Rightarrow> bool" +
   fixes
     match :: "'index \<Rightarrow> 'state1 \<Rightarrow> 'state2 \<Rightarrow> bool" and
-    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix "\<sqsubset>" 70)
+    order :: "'index \<Rightarrow> 'index \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 70)
   assumes
     wfp_order:
       "wfp (\<sqsubset>)" and

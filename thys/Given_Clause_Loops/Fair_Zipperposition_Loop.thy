@@ -36,8 +36,8 @@ locale fair_zipperposition_loop =
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set" and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) and
     t_empty :: 't and
     t_add_llist :: "'f inference llist \<Rightarrow> 't \<Rightarrow> 't" and
     t_remove_llist :: "'f inference llist \<Rightarrow> 't \<Rightarrow> 't" and
@@ -49,7 +49,7 @@ locale fair_zipperposition_loop =
     p_remove :: "'f \<Rightarrow> 'p \<Rightarrow> 'p" and
     p_felems :: "'p \<Rightarrow> 'f fset" +
   fixes
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
     wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
     transp_Prec_S: "transp (\<prec>S)" and
@@ -118,7 +118,7 @@ fun formulas_union :: "'f set \<times> 'f set \<times> 'f set \<Rightarrow> 'f s
   "formulas_union (P, Y, A) = P \<union> Y \<union> A"
 
 inductive
-  fair_ZL :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_state \<Rightarrow> bool" (infix "\<leadsto>ZLf" 50)
+  fair_ZL :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_state \<Rightarrow> bool" (infix \<open>\<leadsto>ZLf\<close> 50)
 where
   compute_infer: "(\<exists>\<iota>s \<in># t_llists T. \<iota>s \<noteq> LNil) \<Longrightarrow> t_pick_elem T = (\<iota>0, T') \<Longrightarrow>
     \<iota>0 \<in> no_labels.Red_I (fset A \<union> {C}) \<Longrightarrow>
@@ -474,13 +474,13 @@ fun mset_of_zl_fstate :: "('t, 'p, 'f) ZLf_state \<Rightarrow> 'f multiset" wher
   "mset_of_zl_fstate (T, D, P, Y, A) =
    mset_set (passive.elems P) + mset_set (set_option Y) + mset_set (fset A)"
 
-abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> bool" (infix "\<prec>\<prec>S" 50)  where
+abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> bool" (infix \<open>\<prec>\<prec>S\<close> 50)  where
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
   using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
 
-definition Less_state :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_state \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+definition Less_state :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where
   "St' \<sqsubset> St \<longleftrightarrow>
    mset_of_zl_fstate St' \<prec>\<prec>S mset_of_zl_fstate St

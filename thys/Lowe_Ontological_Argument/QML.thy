@@ -23,54 +23,54 @@ subsection \<open>Logical Constants as Truth-Sets\<close>
 text\<open>\noindent{Using the technique of \emph{shallow semantic embedding} each operator gets defined as a function
 on world-dependent formulas or \emph{truth sets}.}\<close>
   
-abbreviation mand::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr "\<^bold>\<and>"(*<*)51(*>*))
+abbreviation mand::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr \<open>\<^bold>\<and>\<close>(*<*)51(*>*))
   where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda>w. (\<phi> w)\<and>(\<psi> w)"
-abbreviation mor::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr "\<^bold>\<or>"(*<*)50(*>*))
+abbreviation mor::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr \<open>\<^bold>\<or>\<close>(*<*)50(*>*))
   where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda>w. (\<phi> w)\<or>(\<psi> w)"
-abbreviation mimp::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr "\<^bold>\<rightarrow>"(*<*)49(*>*))
+abbreviation mimp::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr \<open>\<^bold>\<rightarrow>\<close>(*<*)49(*>*))
   where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda>w. (\<phi> w)\<longrightarrow>(\<psi> w)"
-abbreviation mequ::"wo\<Rightarrow>wo\<Rightarrow>wo" (infix "\<^bold>\<leftrightarrow>"(*<*)48(*>*))
+abbreviation mequ::"wo\<Rightarrow>wo\<Rightarrow>wo" (infix \<open>\<^bold>\<leftrightarrow>\<close>(*<*)48(*>*))
   where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda>w. (\<phi> w)\<longleftrightarrow>(\<psi> w)"
-abbreviation mnot::"wo\<Rightarrow>wo" ("\<^bold>\<not>_"(*<*)[52]53(*>*))
+abbreviation mnot::"wo\<Rightarrow>wo" (\<open>\<^bold>\<not>_\<close>(*<*)[52]53(*>*))
   where "\<^bold>\<not>\<phi> \<equiv> \<lambda>w. \<not>(\<phi> w)"
 (*<*)
-abbreviation xor:: "bool\<Rightarrow>bool\<Rightarrow>bool" (infix"\<oplus>"50) where "\<phi>\<oplus>\<psi> \<equiv>  (\<phi>\<or>\<psi>) \<and> \<not>(\<phi>\<and>\<psi>)" 
-abbreviation mxor::"wo\<Rightarrow>wo\<Rightarrow>wo" (infix"\<^bold>\<oplus>"50) where "\<phi>\<^bold>\<oplus>\<psi> \<equiv> \<lambda>w. (\<phi> w)\<oplus>(\<psi> w)"
+abbreviation xor:: "bool\<Rightarrow>bool\<Rightarrow>bool" (infix\<open>\<oplus>\<close>50) where "\<phi>\<oplus>\<psi> \<equiv>  (\<phi>\<or>\<psi>) \<and> \<not>(\<phi>\<and>\<psi>)" 
+abbreviation mxor::"wo\<Rightarrow>wo\<Rightarrow>wo" (infix\<open>\<^bold>\<oplus>\<close>50) where "\<phi>\<^bold>\<oplus>\<psi> \<equiv> \<lambda>w. (\<phi> w)\<oplus>(\<psi> w)"
 (*>*)
 
 text\<open>\noindent{We embed a modal logic \emph{K} by defining the box and diamond operators using restricted quantification
 over the set of `accessible' worlds (using an \emph{accessibility} relation \emph{R} as a guard).}\<close>
   
-consts R::"w\<Rightarrow>w\<Rightarrow>bool" (infix "r"(*<*)70(*>*)) \<comment> \<open>Accessibility relation\<close>
-abbreviation mbox :: "wo\<Rightarrow>wo" ("\<^bold>\<box>_"(*<*)[52]53(*>*))
+consts R::"w\<Rightarrow>w\<Rightarrow>bool" (infix \<open>r\<close>(*<*)70(*>*)) \<comment> \<open>Accessibility relation\<close>
+abbreviation mbox :: "wo\<Rightarrow>wo" (\<open>\<^bold>\<box>_\<close>(*<*)[52]53(*>*))
   where "\<^bold>\<box>\<phi> \<equiv> \<lambda>w.\<forall>v. (w r v)\<longrightarrow>(\<phi> v)"
-abbreviation mdia :: "wo\<Rightarrow>wo" ("\<^bold>\<diamond>_"(*<*)[52]53(*>*))
+abbreviation mdia :: "wo\<Rightarrow>wo" (\<open>\<^bold>\<diamond>_\<close>(*<*)[52]53(*>*))
   where "\<^bold>\<diamond>\<phi> \<equiv> \<lambda>w.\<exists>v. (w r v)\<and>(\<phi> v)"
 
 subsection \<open>Quantification\<close>
 text\<open>\noindent{Quantifiers are defined analogously.}\<close>
   
-abbreviation mforall::"('t\<Rightarrow>wo)\<Rightarrow>wo" ("\<^bold>\<forall>")
+abbreviation mforall::"('t\<Rightarrow>wo)\<Rightarrow>wo" (\<open>\<^bold>\<forall>\<close>)
   where "\<^bold>\<forall>\<Phi> \<equiv> \<lambda>w.\<forall>x. (\<Phi> x w)"
-abbreviation mexists::"('t\<Rightarrow>wo)\<Rightarrow>wo" ("\<^bold>\<exists>")
+abbreviation mexists::"('t\<Rightarrow>wo)\<Rightarrow>wo" (\<open>\<^bold>\<exists>\<close>)
   where "\<^bold>\<exists>\<Phi> \<equiv> \<lambda>w.\<exists>x. (\<Phi> x w)"
-abbreviation mforallB  :: "('t\<Rightarrow>wo)\<Rightarrow>wo" (binder "\<^bold>\<forall>"(*<*)[8]9(*>*))
+abbreviation mforallB  :: "('t\<Rightarrow>wo)\<Rightarrow>wo" (binder \<open>\<^bold>\<forall>\<close>(*<*)[8]9(*>*))
   where "\<^bold>\<forall>x. (\<phi> x) \<equiv> \<^bold>\<forall>\<phi>"  
-abbreviation mexistsB  :: "('t\<Rightarrow>wo)\<Rightarrow>wo" (binder "\<^bold>\<exists>"(*<*)[8]9(*>*))
+abbreviation mexistsB  :: "('t\<Rightarrow>wo)\<Rightarrow>wo" (binder \<open>\<^bold>\<exists>\<close>(*<*)[8]9(*>*))
   where "\<^bold>\<exists>x. (\<phi> x) \<equiv> \<^bold>\<exists>\<phi>" 
       
 subsection \<open>Equality\<close> 
 text\<open>\noindent{Two different definitions of equality are given. The first one is an extension of standard
 equality for use in world-dependent formulas. The second is the well-known Leibniz equality.}\<close>
-abbreviation meq:: "'t\<Rightarrow>'t\<Rightarrow>wo" (infix "\<^bold>\<approx>"(*<*)60(*>*))
+abbreviation meq:: "'t\<Rightarrow>'t\<Rightarrow>wo" (infix \<open>\<^bold>\<approx>\<close>(*<*)60(*>*))
   where "x \<^bold>\<approx> y \<equiv> \<lambda>w. x = y"    
-abbreviation meqL:: "e\<Rightarrow>e\<Rightarrow>wo" (infix "\<^bold>\<approx>\<^sup>L"(*<*)52(*>*))
+abbreviation meqL:: "e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>\<^bold>\<approx>\<^sup>L\<close>(*<*)52(*>*))
   where "x \<^bold>\<approx>\<^sup>L y \<equiv> \<lambda>w. \<forall>\<phi>. (\<phi> x w)\<longrightarrow>(\<phi> y w)"
       
 subsection \<open>Validity\<close>
 text\<open>\noindent{Validity is defined as truth in \emph{all} worlds and represented by wrapping the formula
 in special brackets (\<open>\<lfloor>-\<rfloor>\<close>).}\<close>  
-abbreviation valid::"wo\<Rightarrow>bool" ("\<lfloor>_\<rfloor>") where "\<lfloor>\<psi>\<rfloor> \<equiv>  \<forall>w.(\<psi> w)"
+abbreviation valid::"wo\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<close>) where "\<lfloor>\<psi>\<rfloor> \<equiv>  \<forall>w.(\<psi> w)"
   
 subsection \<open>Verifying the Embedding\<close>
 text\<open>\noindent{The above definitions introduce modal logic \emph{K} with quantification,

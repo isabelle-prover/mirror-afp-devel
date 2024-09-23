@@ -35,7 +35,7 @@ lemma wp_mono: "mono (wp c)"
      (auto simp: monotone_def le_fun_def intro: order_trans le_infI1 le_infI2
            intro!: add_mono mult_left_mono lfp_mono[THEN le_funD])
 
-abbreviation det :: "'s pgcl \<Rightarrow> 's \<Rightarrow> ('s pgcl \<times> 's) pmf set" ("\<lless> _, _ \<ggreater>") where
+abbreviation det :: "'s pgcl \<Rightarrow> 's \<Rightarrow> ('s pgcl \<times> 's) pmf set" (\<open>\<lless> _, _ \<ggreater>\<close>) where
   "det c s \<equiv> {return_pmf (c, s)}"
 
 subsection \<open>Operational Semantics\<close>

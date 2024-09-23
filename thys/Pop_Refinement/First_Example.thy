@@ -104,12 +104,12 @@ text \<open>Evaluating an expression in an environment yields a value,
 or an error (@{const None})
 if the expression contains a variable not in the environment.\<close>
 
-definition mul_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl "\<otimes>" 70)
+definition mul_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl \<open>\<otimes>\<close> 70)
 \<comment> \<open>Lifting of multiplication to @{typ "nat option"}.\<close>
 where "U\<^sub>1 \<otimes> U\<^sub>2 \<equiv>
   case (U\<^sub>1, U\<^sub>2) of (Some u\<^sub>1, Some u\<^sub>2) \<Rightarrow> Some (u\<^sub>1 * u\<^sub>2) | _ \<Rightarrow> None"
 
-definition add_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl "\<oplus>" 65)
+definition add_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl \<open>\<oplus>\<close> 65)
 \<comment> \<open>Lifting of addition to @{typ "nat option"}.\<close>
 where "U\<^sub>1 \<oplus> U\<^sub>2 \<equiv>
   case (U\<^sub>1, U\<^sub>2) of (Some u\<^sub>1, Some u\<^sub>2) \<Rightarrow> Some (u\<^sub>1 + u\<^sub>2) | _ \<Rightarrow> None"

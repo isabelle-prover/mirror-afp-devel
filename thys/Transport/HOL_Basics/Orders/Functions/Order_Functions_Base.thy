@@ -23,13 +23,13 @@ end
 grammar whenever using an expression of the form "definition c \<equiv> t"*)
 bundle bi_related_syntax begin
 syntax
-  "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) \<equiv>\<^bsub>(_)\<^esub> (_)" [51,51,51] 50)
-notation bi_related ("'(\<equiv>(\<^bsub>_\<^esub>)')")
+  "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) \<equiv>\<^bsub>(_)\<^esub> (_)\<close> [51,51,51] 50)
+notation bi_related (\<open>'(\<equiv>(\<^bsub>_\<^esub>)')\<close>)
 end
 bundle no_bi_related_syntax begin
 no_syntax
-  "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" ("(_) \<equiv>\<^bsub>(_)\<^esub> (_)" [51,51,51] 50)
-no_notation bi_related ("'(\<equiv>(\<^bsub>_\<^esub>)')")
+  "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) \<equiv>\<^bsub>(_)\<^esub> (_)\<close> [51,51,51] 50)
+no_notation bi_related (\<open>'(\<equiv>(\<^bsub>_\<^esub>)')\<close>)
 end
 unbundle bi_related_syntax
 syntax_consts

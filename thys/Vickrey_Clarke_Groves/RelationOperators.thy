@@ -41,7 +41,7 @@ definition runiq :: "('a \<times> 'b) set \<Rightarrow> bool"
 subsection \<open>Restriction\<close>
 
 text \<open>restriction of a relation to a set (usually resulting in a relation with a smaller domain)\<close>
-definition restrict :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'b) set" (infix "||" 75)
+definition restrict :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'b) set" (infix \<open>||\<close> 75)
   where "R || X = (X \<times> Range R) \<inter> R"
 
 text \<open>extensional characterization of the pairs within a restricted relation\<close>
@@ -77,7 +77,7 @@ subsection \<open>Relation outside some set\<close>
 text \<open>For a set-theoretical relation @{term R} and an ``exclusion'' set @{term X}, return those
   tuples of @{term R} whose first component is not in @{term X}.  In other words, exclude @{term X}
   from the domain of @{term R}.\<close>
-definition Outside :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'b) set" (infix "outside" 75)
+definition Outside :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'b) set" (infix \<open>outside\<close> 75)
    where "R outside X = R - (X \<times> Range R)"
 
 text \<open>Considering a relation outside some set @{term X} reduces its domain by @{term X}.\<close>
@@ -136,7 +136,7 @@ subsection \<open>Evaluation as a function\<close>
 
 text \<open>Evaluates a relation @{term R} for a single argument, as if it were a function.
   This will only work if @{term R} is right-unique, i.e. if the image is always a singleton set.\<close>
-fun eval_rel :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b" (infix ",," 75) (* . (Mizar's notation) confuses Isar *)
+fun eval_rel :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b" (infix \<open>,,\<close> 75) (* . (Mizar's notation) confuses Isar *)
     where "R ,, a = the_elem (R `` {a})"
 
 subsection \<open>Paste\<close>
@@ -144,7 +144,7 @@ subsection \<open>Paste\<close>
 text \<open>the union of two binary relations @{term P} and @{term Q}, where pairs from @{term Q}
   override pairs from @{term P} when their first components coincide.
 This is particularly useful when P, Q are @{term runiq}, and one wants to preserve that property.\<close>
-definition paste (infix "+*" 75)
+definition paste (infix \<open>+*\<close> 75)
    where "P +* Q = (P outside Domain Q) \<union> Q"
 
 text \<open>If a relation @{term P} is a subrelation of another relation @{term Q} on @{term Q}'s

@@ -67,7 +67,7 @@ end
 locale poly_inter =
   fixes F :: "('f \<times> nat) set" 
   and   I :: "'f \<Rightarrow> 'a :: linordered_idom mpoly" 
-  and   gt :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) 
+  and   gt :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50) 
 begin
 
 definition I' where "I' f vs = insertion (\<lambda> i. if i < length vs then vs ! i else 0) (I f)" 
@@ -77,7 +77,7 @@ abbreviation monotone_poly where "monotone_poly \<equiv> monotone_poly_wrt gt"
 
 abbreviation weakly_monotone_poly where "weakly_monotone_poly \<equiv> monotone_poly_wrt (\<ge>)" 
 
-definition gt_poly :: "'a mpoly \<Rightarrow> 'a mpoly \<Rightarrow> bool" (infix "\<succ>\<^sub>p" 50) where
+definition gt_poly :: "'a mpoly \<Rightarrow> 'a mpoly \<Rightarrow> bool" (infix \<open>\<succ>\<^sub>p\<close> 50) where
   "(p \<succ>\<^sub>p q) = (\<forall> \<alpha>. assignment \<alpha> \<longrightarrow> insertion \<alpha> p \<succ> insertion \<alpha> q)" 
 
 definition valid_monotone_poly :: "('f \<times> nat) \<Rightarrow> bool" where

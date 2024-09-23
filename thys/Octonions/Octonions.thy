@@ -28,35 +28,35 @@ lemma octo_eq_iff:
 context
 begin
 
-primcorec octo_e0 :: octo ("e0")
+primcorec octo_e0 :: octo (\<open>e0\<close>)
 where "Ree e0 = 1" | "Im1 e0 = 0" | "Im2 e0 = 0" | "Im3 e0 = 0"
   | "Im4 e0 = 0" | "Im5 e0 = 0" | "Im6 e0 = 0" | "Im7 e0 = 0"
 
-primcorec octo_e1 :: octo  ("e1")
+primcorec octo_e1 :: octo  (\<open>e1\<close>)
   where "Ree e1 = 0" | "Im1 e1 = 1" | "Im2 e1 = 0" | "Im3 e1 = 0"
   | "Im4 e1 = 0" | "Im5 e1 = 0" | "Im6 e1 = 0" | "Im7 e1 = 0"
 
-primcorec octo_e2 :: octo  ("e2")
+primcorec octo_e2 :: octo  (\<open>e2\<close>)
   where "Ree e2 = 0" | "Im1 e2 = 0" | "Im2 e2 = 1" | "Im3 e2 = 0"
   | "Im4 e2 = 0" | "Im5 e2 = 0" | "Im6 e2 = 0" | "Im7 e2 = 0"
 
-primcorec octo_e3 :: octo ("e3")
+primcorec octo_e3 :: octo (\<open>e3\<close>)
   where "Ree e3 = 0" | "Im1 e3 = 0" | "Im2 e3 = 0" | "Im3 e3 = 1"
   | "Im4 e3 = 0" | "Im5 e3 = 0" | "Im6 e3 = 0" | "Im7 e3 = 0"
 
-primcorec octo_e4 :: octo ("e4")
+primcorec octo_e4 :: octo (\<open>e4\<close>)
   where "Ree e4 = 0" | "Im1 e4 = 0" | "Im2 e4 = 0" | "Im3 e4 = 0"
   | "Im4 e4 = 1" | "Im5 e4 = 0" | "Im6 e4 = 0" | "Im7 e4 = 0"
 
-primcorec octo_e5 :: octo ("e5")
+primcorec octo_e5 :: octo (\<open>e5\<close>)
   where "Ree e5 = 0" | "Im1 e5 = 0" | "Im2 e5 = 0" | "Im3 e5 = 0"
   | "Im4 e5 = 0" | "Im5 e5 = 1" | "Im6 e5 = 0" | "Im7 e5 = 0"
 
-primcorec octo_e6 :: octo ("e6")
+primcorec octo_e6 :: octo (\<open>e6\<close>)
   where "Ree e6 = 0" | "Im1 e6 = 0" | "Im2 e6 = 0" | "Im3 e6 = 0"
   | "Im4 e6 = 0" | "Im5 e6 = 0" | "Im6 e6 = 1" | "Im7 e6 = 0"
 
-primcorec octo_e7 :: octo ("e7")
+primcorec octo_e7 :: octo (\<open>e7\<close>)
   where "Ree e7 = 0" | "Im1 e7 = 0" | "Im2 e7 = 0" | "Im3 e7 = 0"
   | "Im4 e7 = 0" | "Im5 e7 = 0" | "Im6 e7 = 0" | "Im7 e7 = 1"
 end
@@ -1203,28 +1203,28 @@ unbundle no_cross7_syntax
 bundle octonion_syntax
 begin
 
-notation octo_e0 ("e0")
-notation octo_e1 ("e1")
-notation octo_e2 ("e2")
-notation octo_e3 ("e3")
-notation octo_e4 ("e4")
-notation octo_e5 ("e5")
-notation octo_e6 ("e6")
-notation octo_e7 ("e7")
+notation octo_e0 (\<open>e0\<close>)
+notation octo_e1 (\<open>e1\<close>)
+notation octo_e2 (\<open>e2\<close>)
+notation octo_e3 (\<open>e3\<close>)
+notation octo_e4 (\<open>e4\<close>)
+notation octo_e5 (\<open>e5\<close>)
+notation octo_e6 (\<open>e6\<close>)
+notation octo_e7 (\<open>e7\<close>)
 
 end
 
 bundle no_octonion_syntax
 begin
 
-no_notation octo_e0 ("e0")
-no_notation octo_e1 ("e1")
-no_notation octo_e2 ("e2")
-no_notation octo_e3 ("e3")
-no_notation octo_e4 ("e4")
-no_notation octo_e5 ("e5")
-no_notation octo_e6 ("e6")
-no_notation octo_e7 ("e7")
+no_notation octo_e0 (\<open>e0\<close>)
+no_notation octo_e1 (\<open>e1\<close>)
+no_notation octo_e2 (\<open>e2\<close>)
+no_notation octo_e3 (\<open>e3\<close>)
+no_notation octo_e4 (\<open>e4\<close>)
+no_notation octo_e5 (\<open>e5\<close>)
+no_notation octo_e6 (\<open>e6\<close>)
+no_notation octo_e7 (\<open>e7\<close>)
 
 end
 

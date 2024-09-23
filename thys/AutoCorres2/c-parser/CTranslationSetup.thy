@@ -52,7 +52,7 @@ definition coerce::"'a::mem_type \<Rightarrow> 'b::mem_type" where
   "coerce v = from_bytes (to_bytes_p v)"
 
 syntax
-  "_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1COERCE/(1'(_ \<rightarrow> _')))")
+  "_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1COERCE/(1'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_coerce" == coerce
 translations

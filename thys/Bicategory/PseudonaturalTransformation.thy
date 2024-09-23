@@ -51,16 +51,16 @@ begin
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
     F: pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F +
     G: pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D G \<Phi>\<^sub>G
-  for V\<^sub>C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
-  and H\<^sub>C :: "'c comp"                   (infixr "\<star>\<^sub>C" 53)
-  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       ("\<a>\<^sub>C[_, _, _]")
-  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   ("\<i>\<^sub>C[_]")
+  for V\<^sub>C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and H\<^sub>C :: "'c comp"                   (infixr \<open>\<star>\<^sub>C\<close> 53)
+  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   (\<open>\<i>\<^sub>C[_]\<close>)
   and src\<^sub>C :: "'c \<Rightarrow> 'c"
   and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-  and V\<^sub>D :: "'d comp"                   (infixr "\<cdot>\<^sub>D" 55)
-  and H\<^sub>D :: "'d comp"                   (infixr "\<star>\<^sub>D" 53)
-  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       ("\<a>\<^sub>D[_, _, _]")
-  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   ("\<i>\<^sub>D[_]")
+  and V\<^sub>D :: "'d comp"                   (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+  and H\<^sub>D :: "'d comp"                   (infixr \<open>\<star>\<^sub>D\<close> 53)
+  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   (\<open>\<i>\<^sub>D[_]\<close>)
   and src\<^sub>D :: "'d \<Rightarrow> 'd"
   and trg\<^sub>D :: "'d \<Rightarrow> 'd"
   and F :: "'c \<Rightarrow> 'd"
@@ -127,16 +127,16 @@ begin
     C: bicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
     F: pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F
-  for V\<^sub>C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
-  and H\<^sub>C :: "'c comp"                   (infixr "\<star>\<^sub>C" 53)
-  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       ("\<a>\<^sub>C[_, _, _]")
-  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   ("\<i>\<^sub>C[_]")
+  for V\<^sub>C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and H\<^sub>C :: "'c comp"                   (infixr \<open>\<star>\<^sub>C\<close> 53)
+  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   (\<open>\<i>\<^sub>C[_]\<close>)
   and src\<^sub>C :: "'c \<Rightarrow> 'c"
   and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-  and V\<^sub>D :: "'d comp"                   (infixr "\<cdot>\<^sub>D" 55)
-  and H\<^sub>D :: "'d comp"                   (infixr "\<star>\<^sub>D" 53)
-  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       ("\<a>\<^sub>D[_, _, _]")
-  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   ("\<i>\<^sub>D[_]")
+  and V\<^sub>D :: "'d comp"                   (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+  and H\<^sub>D :: "'d comp"                   (infixr \<open>\<star>\<^sub>D\<close> 53)
+  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   (\<open>\<i>\<^sub>D[_]\<close>)
   and src\<^sub>D :: "'d \<Rightarrow> 'd"
   and trg\<^sub>D :: "'d \<Rightarrow> 'd"
   and F :: "'c \<Rightarrow> 'd"
@@ -301,16 +301,16 @@ begin
          V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F G \<Phi>\<^sub>G \<sigma>\<^sub>0 \<sigma>\<^sub>1 +
     \<rho>: pseudonatural_transformation
          V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D G \<Phi>\<^sub>G H \<Phi>\<^sub>H \<rho>\<^sub>0 \<rho>\<^sub>1
-  for V\<^sub>C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
-  and H\<^sub>C :: "'c comp"                   (infixr "\<star>\<^sub>C" 53)
-  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       ("\<a>\<^sub>C[_, _, _]")
-  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   ("\<i>\<^sub>C[_]")
+  for V\<^sub>C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and H\<^sub>C :: "'c comp"                   (infixr \<open>\<star>\<^sub>C\<close> 53)
+  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   (\<open>\<i>\<^sub>C[_]\<close>)
   and src\<^sub>C :: "'c \<Rightarrow> 'c"
   and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-  and V\<^sub>D :: "'d comp"                   (infixr "\<cdot>\<^sub>D" 55)
-  and H\<^sub>D :: "'d comp"                   (infixr "\<star>\<^sub>D" 53)
-  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       ("\<a>\<^sub>D[_, _, _]")
-  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   ("\<i>\<^sub>D[_]")
+  and V\<^sub>D :: "'d comp"                   (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+  and H\<^sub>D :: "'d comp"                   (infixr \<open>\<star>\<^sub>D\<close> 53)
+  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   (\<open>\<i>\<^sub>D[_]\<close>)
   and src\<^sub>D :: "'d \<Rightarrow> 'd"
   and trg\<^sub>D :: "'d \<Rightarrow> 'd"
   and F :: "'c \<Rightarrow> 'd"
@@ -1282,22 +1282,22 @@ begin
     H: pseudofunctor V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C H \<Phi>\<^sub>H +
     \<tau>: pseudonatural_transformation
          V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F G \<Phi>\<^sub>G \<tau>\<^sub>0 \<tau>\<^sub>1
-  for V\<^sub>B :: "'b comp"                   (infixr "\<cdot>\<^sub>B" 55)
-  and H\<^sub>B :: "'b comp"                   (infixr "\<star>\<^sub>B" 53)
-  and \<a>\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"       ("\<a>\<^sub>B[_, _, _]")
-  and \<i>\<^sub>B :: "'b \<Rightarrow> 'b"                   ("\<i>\<^sub>B[_]")
+  for V\<^sub>B :: "'b comp"                   (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and H\<^sub>B :: "'b comp"                   (infixr \<open>\<star>\<^sub>B\<close> 53)
+  and \<a>\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"       (\<open>\<a>\<^sub>B[_, _, _]\<close>)
+  and \<i>\<^sub>B :: "'b \<Rightarrow> 'b"                   (\<open>\<i>\<^sub>B[_]\<close>)
   and src\<^sub>B :: "'b \<Rightarrow> 'b"
   and trg\<^sub>B :: "'b \<Rightarrow> 'b"
-  and V\<^sub>C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
-  and H\<^sub>C :: "'c comp"                   (infixr "\<star>\<^sub>C" 53)
-  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       ("\<a>\<^sub>C[_, _, _]")
-  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   ("\<i>\<^sub>C[_]")
+  and V\<^sub>C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and H\<^sub>C :: "'c comp"                   (infixr \<open>\<star>\<^sub>C\<close> 53)
+  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   (\<open>\<i>\<^sub>C[_]\<close>)
   and src\<^sub>C :: "'c \<Rightarrow> 'c"
   and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-  and V\<^sub>D :: "'d comp"                   (infixr "\<cdot>\<^sub>D" 55)
-  and H\<^sub>D :: "'d comp"                   (infixr "\<star>\<^sub>D" 53)
-  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       ("\<a>\<^sub>D[_, _, _]")
-  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   ("\<i>\<^sub>D[_]")
+  and V\<^sub>D :: "'d comp"                   (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+  and H\<^sub>D :: "'d comp"                   (infixr \<open>\<star>\<^sub>D\<close> 53)
+  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   (\<open>\<i>\<^sub>D[_]\<close>)
   and src\<^sub>D :: "'d \<Rightarrow> 'd"
   and trg\<^sub>D :: "'d \<Rightarrow> 'd"
   and F :: "'c \<Rightarrow> 'd"
@@ -1532,22 +1532,22 @@ begin
     H: pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D H \<Phi>\<^sub>H +
     \<tau>: pseudonatural_transformation
          V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C F \<Phi>\<^sub>F G \<Phi>\<^sub>G \<tau>\<^sub>0 \<tau>\<^sub>1
-  for V\<^sub>B :: "'b comp"                   (infixr "\<cdot>\<^sub>B" 55)
-  and H\<^sub>B :: "'b comp"                   (infixr "\<star>\<^sub>B" 53)
-  and \<a>\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"       ("\<a>\<^sub>B[_, _, _]")
-  and \<i>\<^sub>B :: "'b \<Rightarrow> 'b"                   ("\<i>\<^sub>B[_]")
+  for V\<^sub>B :: "'b comp"                   (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and H\<^sub>B :: "'b comp"                   (infixr \<open>\<star>\<^sub>B\<close> 53)
+  and \<a>\<^sub>B :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"       (\<open>\<a>\<^sub>B[_, _, _]\<close>)
+  and \<i>\<^sub>B :: "'b \<Rightarrow> 'b"                   (\<open>\<i>\<^sub>B[_]\<close>)
   and src\<^sub>B :: "'b \<Rightarrow> 'b"
   and trg\<^sub>B :: "'b \<Rightarrow> 'b"
-  and V\<^sub>C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
-  and H\<^sub>C :: "'c comp"                   (infixr "\<star>\<^sub>C" 53)
-  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       ("\<a>\<^sub>C[_, _, _]")
-  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   ("\<i>\<^sub>C[_]")
+  and V\<^sub>C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and H\<^sub>C :: "'c comp"                   (infixr \<open>\<star>\<^sub>C\<close> 53)
+  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   (\<open>\<i>\<^sub>C[_]\<close>)
   and src\<^sub>C :: "'c \<Rightarrow> 'c"
   and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-  and V\<^sub>D :: "'d comp"                   (infixr "\<cdot>\<^sub>D" 55)
-  and H\<^sub>D :: "'d comp"                   (infixr "\<star>\<^sub>D" 53)
-  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       ("\<a>\<^sub>D[_, _, _]")
-  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   ("\<i>\<^sub>D[_]")
+  and V\<^sub>D :: "'d comp"                   (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+  and H\<^sub>D :: "'d comp"                   (infixr \<open>\<star>\<^sub>D\<close> 53)
+  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   (\<open>\<i>\<^sub>D[_]\<close>)
   and src\<^sub>D :: "'d \<Rightarrow> 'd"
   and trg\<^sub>D :: "'d \<Rightarrow> 'd"
   and F :: "'b \<Rightarrow> 'c"
@@ -2599,7 +2599,7 @@ begin
     qed
 
     interpretation EV: self_evaluation_map V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D ..
-    notation EV.eval ("\<lbrace>_\<rbrace>")
+    notation EV.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     sublocale pseudonatural_equivalence
                      V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D G \<Phi>\<^sub>G F \<Phi>\<^sub>F \<tau>\<^sub>0' \<tau>\<^sub>1'
@@ -7995,16 +7995,16 @@ begin
     F: equivalence_pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F +
     pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D G \<Phi>\<^sub>G +
     \<tau>: pseudonatural_equivalence V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F G \<Phi>\<^sub>G \<tau>\<^sub>0 \<tau>\<^sub>1
-  for V\<^sub>C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
-  and H\<^sub>C :: "'c comp"                   (infixr "\<star>\<^sub>C" 53)
-  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       ("\<a>\<^sub>C[_, _, _]")
-  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   ("\<i>\<^sub>C[_]")
+  for V\<^sub>C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and H\<^sub>C :: "'c comp"                   (infixr \<open>\<star>\<^sub>C\<close> 53)
+  and \<a>\<^sub>C :: "'c \<Rightarrow> 'c \<Rightarrow> 'c \<Rightarrow> 'c"       (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+  and \<i>\<^sub>C :: "'c \<Rightarrow> 'c"                   (\<open>\<i>\<^sub>C[_]\<close>)
   and src\<^sub>C :: "'c \<Rightarrow> 'c"
   and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-  and V\<^sub>D :: "'d comp"                   (infixr "\<cdot>\<^sub>D" 55)
-  and H\<^sub>D :: "'d comp"                   (infixr "\<star>\<^sub>D" 53)
-  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       ("\<a>\<^sub>D[_, _, _]")
-  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   ("\<i>\<^sub>D[_]")
+  and V\<^sub>D :: "'d comp"                   (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+  and H\<^sub>D :: "'d comp"                   (infixr \<open>\<star>\<^sub>D\<close> 53)
+  and \<a>\<^sub>D :: "'d \<Rightarrow> 'd \<Rightarrow> 'd \<Rightarrow> 'd"       (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+  and \<i>\<^sub>D :: "'d \<Rightarrow> 'd"                   (\<open>\<i>\<^sub>D[_]\<close>)
   and src\<^sub>D :: "'d \<Rightarrow> 'd"
   and trg\<^sub>D :: "'d \<Rightarrow> 'd"
   and F :: "'c \<Rightarrow> 'd"

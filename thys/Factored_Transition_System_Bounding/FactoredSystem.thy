@@ -8,7 +8,7 @@ section "Factored System"
 
 \<comment> \<open>NOTE hide the '++' operator from 'Map' to prevent warnings.\<close>
 hide_const (open) Map.map_add
-no_notation Map.map_add (infixl "++" 100)
+no_notation Map.map_add (infixl \<open>++\<close> 100)
 
 
 subsection "Semantics of Plan Execution"

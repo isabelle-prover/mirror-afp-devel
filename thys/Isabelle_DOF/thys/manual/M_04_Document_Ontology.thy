@@ -23,7 +23,7 @@ begin
 
 
 (*<*)
-definition combinator1 :: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (infixl "|>" 65)
+definition combinator1 :: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (infixl \<open>|>\<close> 65)
   where "x |> f = f x"
 
 

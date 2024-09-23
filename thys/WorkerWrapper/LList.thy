@@ -19,8 +19,8 @@ text\<open>The list can contain anything that is a predomain.\<close>
 default_sort predomain
 
 domain 'a llist =
-    lnil ("lnil")
-  | lcons (lazy "'a") (lazy "'a llist") (infixr ":@" 65)
+    lnil (\<open>lnil\<close>)
+  | lcons (lazy "'a") (lazy "'a llist") (infixr \<open>:@\<close> 65)
 
 (*<*)
 (* Why aren't these in the library? *)
@@ -52,7 +52,7 @@ where
 | "lappend\<cdot>(x :@ xs)\<cdot>ys = x :@ (lappend\<cdot>xs\<cdot>ys)"
 
 abbreviation
-  lappend_syn :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist" (infixr ":++" 65) where
+  lappend_syn :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist" (infixr \<open>:++\<close> 65) where
   "xs :++ ys \<equiv> lappend\<cdot>xs\<cdot>ys"
 
 lemma lappend_strict': "lappend\<cdot>\<bottom> = (\<Lambda> a. \<bottom>)"

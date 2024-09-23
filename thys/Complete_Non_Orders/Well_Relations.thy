@@ -101,7 +101,7 @@ lemmas Restrp_tranclp_induct[consumes 0, case_names less] = Restrp.tranclp.induc
 end
 
 context
-  fixes A :: "'a set" and less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+  fixes A :: "'a set" and less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 begin
 
 lemma well_foundedI_pf:
@@ -232,7 +232,7 @@ next
 qed
 
 lemma Restrp_tranclp_well_founded_iff:
-  fixes less (infix "\<sqsubset>" 50)
+  fixes less (infix \<open>\<sqsubset>\<close> 50)
   shows "well_founded UNIV ((\<sqsubset>) \<restriction> A)\<^sup>+\<^sup>+ \<longleftrightarrow> well_founded A (\<sqsubset>)" (is "?l \<longleftrightarrow> ?r")
 proof (rule iffI)
   show "?r \<Longrightarrow> ?l" by (fact well_founded.Restrp_tranclp_well_founded)
@@ -257,7 +257,7 @@ lemma (in well_founded) well_founded_subset:
   using assms well_founded_axioms by (auto simp: well_founded_iff_ex_extremal)
 
 lemma well_founded_extend:
-  fixes less (infix "\<sqsubset>" 50)
+  fixes less (infix \<open>\<sqsubset>\<close> 50)
   assumes A: "well_founded A (\<sqsubset>)"
   assumes B: "well_founded B (\<sqsubset>)"
   assumes AB: "\<forall>a \<in> A. \<forall>b \<in> B. \<not>b \<sqsubset> a"
@@ -291,7 +291,7 @@ proof (intro well_foundedI_extremal)
 qed
 
 lemma closed_UN_well_founded:
-  fixes r (infix "\<sqsubset>" 50)
+  fixes r (infix \<open>\<sqsubset>\<close> 50)
   assumes XX: "\<forall>X\<in>XX. well_founded X (\<sqsubset>) \<and> (\<forall>x\<in>X. \<forall>y\<in>\<Union>XX. y \<sqsubset> x \<longrightarrow> y \<in> X)"
   shows "well_founded (\<Union>XX) (\<sqsubset>)"
 proof (intro well_foundedI_extremal)
@@ -372,7 +372,7 @@ lemma well_related_subset: "B \<subseteq> A \<Longrightarrow> well_related_set B
   by (auto intro!: well_related_set.intro nonempty_imp_ex_extreme)
 
 lemma monotone_image_well_related:
-  fixes leB (infix "\<unlhd>" 50)
+  fixes leB (infix \<open>\<unlhd>\<close> 50)
   assumes mono: "monotone_on A (\<sqsubseteq>) (\<unlhd>) f" shows "well_related_set (f ` A) (\<unlhd>)"
 proof (intro well_related_set.intro)
   interpret less_eq_dualize.
@@ -399,7 +399,7 @@ lemma well_related_set_empty[intro!]: "well_related_set {} r"
   by (auto intro!: well_related_setI)
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma well_related_iff_neg_well_founded:
@@ -420,14 +420,14 @@ lemma closed_UN_well_related:
 end
 
 lemma well_related_extend:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes "well_related_set A (\<sqsubseteq>)" and "well_related_set B (\<sqsubseteq>)" and "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b"
   shows "well_related_set (A \<union> B) (\<sqsubseteq>)"
   using well_founded_extend[of _ "\<lambda>x y. \<not> y \<sqsubseteq> x", folded well_related_iff_neg_well_founded]
   using assms by auto
 
 lemma pair_well_related:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes "i \<sqsubseteq> i" and "i \<sqsubseteq> j" and "j \<sqsubseteq> j"
   shows "well_related_set {i, j} (\<sqsubseteq>)"
 proof (intro well_related_setI)
@@ -504,7 +504,7 @@ proof
 qed
 
 lemma semiattractive_extend:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes A: "semiattractive A (\<sqsubseteq>)" and B: "semiattractive B (\<sqsubseteq>)"
     and AB: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b \<and> \<not> b \<sqsubseteq> a"
   shows "semiattractive (A \<union> B) (\<sqsubseteq>)"
@@ -522,7 +522,7 @@ proof-
 qed
 
 lemma pre_well_order_extend:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes A: "pre_well_ordered_set A (\<sqsubseteq>)" and B: "pre_well_ordered_set B (\<sqsubseteq>)"
     and AB: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b \<and> \<not> b \<sqsubseteq> a"
   shows "pre_well_ordered_set (A\<union>B) (\<sqsubseteq>)"
@@ -536,7 +536,7 @@ proof-
 qed
 
 lemma (in well_related_set) monotone_image_pre_well_ordered:
-  fixes leB (infix "\<sqsubseteq>''" 50)
+  fixes leB (infix \<open>\<sqsubseteq>''\<close> 50)
   assumes mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>') f"
     and image: "semiattractive (f ` A) (\<sqsubseteq>')"
   shows "pre_well_ordered_set (f ` A) (\<sqsubseteq>')"
@@ -577,7 +577,7 @@ proof
 qed
 
 context
-  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 context
@@ -618,7 +618,7 @@ qed
 end
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma well_order_extend:
@@ -651,7 +651,7 @@ lemma closed_UN_well_ordered:
 end
 
 lemma (in well_related_set) monotone_image_well_ordered:
-  fixes leB (infix "\<sqsubseteq>''" 50)
+  fixes leB (infix \<open>\<sqsubseteq>''\<close> 50)
   assumes mono: "monotone_on A (\<sqsubseteq>) (\<sqsubseteq>') f"
     and image: "antisymmetric (f ` A) (\<sqsubseteq>')"
   shows "well_ordered_set (f ` A) (\<sqsubseteq>')"
@@ -762,7 +762,7 @@ lemma pair_omega_chain:
 text \<open>Every omega-chain is a well-order.\<close>
 
 lemma omega_chain_imp_well_related:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes A: "omega_chain A (\<sqsubseteq>)" shows "well_related_set A (\<sqsubseteq>)"
 proof
   interpret less_eq_dualize.
@@ -788,7 +788,7 @@ subsubsection \<open>Relation image that preserves well-orderedness.\<close>
 
 definition "well_image f A (\<sqsubseteq>) fa fb \<equiv>
   \<forall>a b. extreme {x\<in>A. fa = f x} (\<sqsubseteq>)\<^sup>- a \<longrightarrow> extreme {y\<in>A. fb = f y} (\<sqsubseteq>)\<^sup>- b \<longrightarrow> a \<sqsubseteq> b"
-  for less_eq (infix "\<sqsubseteq>" 50)
+  for less_eq (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemmas well_imageI = well_image_def[unfolded atomize_eq, THEN iffD2, rule_format]
 lemmas well_imageD = well_image_def[unfolded atomize_eq, THEN iffD1, rule_format]

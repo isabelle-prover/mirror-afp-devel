@@ -9,7 +9,7 @@ ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 
 
 (* Copied from Transfer.thy in the main library. *)
-notation rel_fun (infixr "===>" 55)
-notation map_fun (infixr "--->" 55)
+notation rel_fun (infixr \<open>===>\<close> 55)
+notation map_fun (infixr \<open>--->\<close> 55)
 
 end

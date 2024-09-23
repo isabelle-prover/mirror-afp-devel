@@ -872,7 +872,7 @@ lemma permut_length:
 declare permut_def[simp del]
 
 lemma foldl_assoc:
-  fixes b :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>" 55)
+  fixes b :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<cdot>\<close> 55)
   assumes "\<And>f g h. f \<cdot> (g \<cdot> h) = f \<cdot> g \<cdot> h"
   shows "foldl (\<cdot>) (x \<cdot> y) zs = x \<cdot> foldl (\<cdot>) y zs"
   using assms[symmetric] by (induct zs arbitrary: y) simp_all

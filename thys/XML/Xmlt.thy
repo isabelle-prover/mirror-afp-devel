@@ -99,7 +99,7 @@ lemma bind2_code[code]:
   "bind2 (sumbot a) f g = (case a of Inl a \<Rightarrow> f a | Inr b \<Rightarrow> g b)"
   by (cases a) (auto simp: bind2_def)
 
-definition xml_or (infixr "XMLor" 51)
+definition xml_or (infixr \<open>XMLor\<close> 51)
   where
     "xml_or p1 p2 x \<equiv> case x of (x1,atts,flag,cands,rest) \<Rightarrow> (
   bind2 (p1 (x1,atts,True,cands,rest))
@@ -249,25 +249,25 @@ definition xml_take_attribute_default :: "string \<Rightarrow> ltag \<Rightarrow
 
 nonterminal xml_binds and xml_bind
 syntax
-  "_xml_block" :: "xml_binds \<Rightarrow> 'a" ("XMLdo {//(2  _)//}" [12] 1000)
-  "_xml_take"  :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>/ _)" 13)
-  "_xml_take_text"  :: "pttrn \<Rightarrow> xml_bind" ("(2_ \<leftarrow>text)" 13)
-  "_xml_take_int"  :: "pttrn \<Rightarrow> xml_bind" ("(2_ \<leftarrow>int)" 13)
-  "_xml_take_nat"  :: "pttrn \<Rightarrow> xml_bind" ("(2_ \<leftarrow>nat)" 13)
-  "_xml_take_att"  :: "pttrn \<Rightarrow> ltag \<Rightarrow> xml_bind" ("(2_ \<leftarrow>att/ _)" 13)
-  "_xml_take_att_optional" :: "pttrn \<Rightarrow> ltag \<Rightarrow> xml_bind" ("(2_ \<leftarrow>att?/ _)" 13)
-  "_xml_take_att_default" :: "pttrn \<Rightarrow> ltag \<Rightarrow> string \<Rightarrow> xml_bind" ("(2_ \<leftarrow>att[(_)]/ _)" 13)
-  "_xml_take_optional" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>?/ _)" 13)
-  "_xml_take_default" :: "pttrn \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>[(_)]/ _)" 13)
-  "_xml_take_all" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>*/ _)" 13)
-  "_xml_take_many" :: "pttrn \<Rightarrow> nat \<Rightarrow> enat \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ \<leftarrow>^{(_)..(_)}/ _)" 13)
-  "_xml_let" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2let _ =/ _)" [1000, 13] 13)
-  "_xml_final" :: "'a xmlst \<Rightarrow> xml_binds" ("_")
-  "_xml_cons" :: "xml_bind \<Rightarrow> xml_binds \<Rightarrow> xml_binds" ("_;//_" [13, 12] 12)
-  "_xml_do" :: "ltag \<Rightarrow> xml_binds \<Rightarrow> 'a" ("XMLdo (_) {//(2 _)//}" [1000,12] 1000)
+  "_xml_block" :: "xml_binds \<Rightarrow> 'a" (\<open>XMLdo {//(2  _)//}\<close> [12] 1000)
+  "_xml_take"  :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>/ _)\<close> 13)
+  "_xml_take_text"  :: "pttrn \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>text)\<close> 13)
+  "_xml_take_int"  :: "pttrn \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>int)\<close> 13)
+  "_xml_take_nat"  :: "pttrn \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>nat)\<close> 13)
+  "_xml_take_att"  :: "pttrn \<Rightarrow> ltag \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>att/ _)\<close> 13)
+  "_xml_take_att_optional" :: "pttrn \<Rightarrow> ltag \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>att?/ _)\<close> 13)
+  "_xml_take_att_default" :: "pttrn \<Rightarrow> ltag \<Rightarrow> string \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>att[(_)]/ _)\<close> 13)
+  "_xml_take_optional" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>?/ _)\<close> 13)
+  "_xml_take_default" :: "pttrn \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>[(_)]/ _)\<close> 13)
+  "_xml_take_all" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>*/ _)\<close> 13)
+  "_xml_take_many" :: "pttrn \<Rightarrow> nat \<Rightarrow> enat \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2_ \<leftarrow>^{(_)..(_)}/ _)\<close> 13)
+  "_xml_let" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2let _ =/ _)\<close> [1000, 13] 13)
+  "_xml_final" :: "'a xmlst \<Rightarrow> xml_binds" (\<open>_\<close>)
+  "_xml_cons" :: "xml_bind \<Rightarrow> xml_binds \<Rightarrow> xml_binds" (\<open>_;//_\<close> [13, 12] 12)
+  "_xml_do" :: "ltag \<Rightarrow> xml_binds \<Rightarrow> 'a" (\<open>XMLdo (_) {//(2 _)//}\<close> [1000,12] 1000)
 
 syntax (ASCII)
-  "_xml_take" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" ("(2_ <-/ _)" 13)
+  "_xml_take" :: "pttrn \<Rightarrow> 'a \<Rightarrow> xml_bind" (\<open>(2_ <-/ _)\<close> 13)
 
 translations
   "_xml_block (_xml_cons (_xml_take p x) (_xml_final e))"

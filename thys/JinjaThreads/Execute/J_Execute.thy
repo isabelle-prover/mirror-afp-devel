@@ -26,7 +26,7 @@ abbreviation sc_red ::
   "((addr, thread_id, heap) external_thread_action \<Rightarrow> (addr, thread_id, 'o, heap) Jinja_thread_action)
   \<Rightarrow> addr J_prog \<Rightarrow> thread_id \<Rightarrow> addr expr \<Rightarrow> heap \<times> addr locals
   \<Rightarrow> (addr, thread_id, 'o, heap) Jinja_thread_action \<Rightarrow> addr expr \<Rightarrow> heap \<times> addr locals \<Rightarrow> bool"
-  ("_,_,_ \<turnstile>sc ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0,0] 81)
+  (\<open>_,_,_ \<turnstile>sc ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [51,51,0,0,0,0,0,0] 81)
 where
   "sc_red extTA P \<equiv> sc.red (TYPE(addr J_mb)) P extTA P"
 

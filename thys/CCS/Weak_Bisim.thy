@@ -20,7 +20,7 @@ where
 monos weakMonoCoinduct
 
 abbreviation
-  weakBisimJudge ("_ \<approx> _" [70, 70] 65) where "P \<approx> Q \<equiv> (P, Q) \<in> weakBisimulation"
+  weakBisimJudge (\<open>_ \<approx> _\<close> [70, 70] 65) where "P \<approx> Q \<equiv> (P, Q) \<in> weakBisimulation"
 
 lemma weakBisimulationCoinductAux[consumes 1]:
   fixes P :: "ccs"

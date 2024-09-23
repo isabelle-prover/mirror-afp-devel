@@ -7,7 +7,7 @@ begin
 text \<open> The HOL standard library only has groups based on addition. Here, we build one based on
   multiplication. \<close>
 
-notation times (infixl "\<cdot>" 70)
+notation times (infixl \<open>\<cdot>\<close> 70)
 
 class group_mult = inverse + monoid_mult +
   assumes left_inverse: "inverse a \<cdot> a = 1"
@@ -42,7 +42,7 @@ lemma inverse_divide [simp]: "inverse (a / b) = b / a"
 
 end
 
-abbreviation (input) npower :: "'a::{power,inverse} \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<^sup>-\<^sup>_)" [1000,999] 999) 
+abbreviation (input) npower :: "'a::{power,inverse} \<Rightarrow> nat \<Rightarrow> 'a"  (\<open>(_\<^sup>-\<^sup>_)\<close> [1000,999] 999) 
   where "npower x n \<equiv> inverse (x ^ n)"
 
 end

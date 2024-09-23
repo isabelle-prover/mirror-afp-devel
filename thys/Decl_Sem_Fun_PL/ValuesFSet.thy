@@ -6,16 +6,16 @@ datatype val = VNat nat | VFun "(val \<times> val) fset"
 
 type_synonym func = "(val \<times> val) fset"
 
-inductive val_le :: "val \<Rightarrow> val \<Rightarrow> bool" (infix "\<sqsubseteq>" 52) where
+inductive val_le :: "val \<Rightarrow> val \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 52) where
   vnat_le[intro!]: "(VNat n) \<sqsubseteq> (VNat n)" |
   vfun_le[intro!]: "fset t1 \<subseteq> fset t2 \<Longrightarrow> (VFun t1) \<sqsubseteq> (VFun t2)"
 
 type_synonym env = "((name \<times> val) list)"
 
-definition env_le :: "env \<Rightarrow> env \<Rightarrow> bool" (infix "\<sqsubseteq>" 52) where 
+definition env_le :: "env \<Rightarrow> env \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 52) where 
   "\<rho> \<sqsubseteq> \<rho>' \<equiv> \<forall> x v. lookup \<rho> x = Some v \<longrightarrow> (\<exists> v'. lookup \<rho>' x = Some v' \<and> v \<sqsubseteq> v')" 
 
-definition env_eq :: "env \<Rightarrow> env \<Rightarrow> bool" (infix "\<approx>" 50) where
+definition env_eq :: "env \<Rightarrow> env \<Rightarrow> bool" (infix \<open>\<approx>\<close> 50) where
   "\<rho> \<approx> \<rho>' \<equiv> (\<forall> x. lookup \<rho> x = lookup \<rho>' x)"
 
 fun vadd :: "(val \<times> nat) \<times> (val \<times> nat) \<Rightarrow> nat \<Rightarrow> nat" where

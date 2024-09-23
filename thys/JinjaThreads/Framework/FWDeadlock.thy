@@ -730,7 +730,7 @@ end
 
 locale preserve_deadlocked = multithreaded final r convert_RA 
   for final :: "'x \<Rightarrow> bool"
-  and r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('l,'t,'x,'m,'w,'o) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   +
   fixes wf_state :: "('l,'t,'x,'m,'w) state set"

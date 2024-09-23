@@ -145,7 +145,7 @@ lemma I_subst_pretty:
 by(simp add:I_subst eval_def)
 
 
-fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
+fun min_inf :: "atom fm \<Rightarrow> atom fm" (\<open>inf\<^sub>-\<close>) where
 "inf\<^sub>- (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
 "inf\<^sub>- (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (inf\<^sub>- \<phi>\<^sub>1) (inf\<^sub>- \<phi>\<^sub>2)" |
 "inf\<^sub>- (Atom(Less r (c#cs))) =
@@ -153,7 +153,7 @@ fun min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
 "inf\<^sub>- (Atom(Eq r (c#cs))) = (if c=0 then Atom(Eq r cs) else FalseF)" |
 "inf\<^sub>- \<phi> = \<phi>"
 
-fun plus_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>+") where
+fun plus_inf :: "atom fm \<Rightarrow> atom fm" (\<open>inf\<^sub>+\<close>) where
 "inf\<^sub>+ (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (inf\<^sub>+ \<phi>\<^sub>1) (inf\<^sub>+ \<phi>\<^sub>2)" |
 "inf\<^sub>+ (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (inf\<^sub>+ \<phi>\<^sub>1) (inf\<^sub>+ \<phi>\<^sub>2)" |
 "inf\<^sub>+ (Atom(Less r (c#cs))) =

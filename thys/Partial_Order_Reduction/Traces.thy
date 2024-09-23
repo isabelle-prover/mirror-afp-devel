@@ -12,7 +12,7 @@ begin
     abbreviation Ind :: "'item set \<Rightarrow> 'item set \<Rightarrow> bool"
       where "Ind A B \<equiv> \<forall> a \<in> A. \<forall> b \<in> B. ind a b"
 
-    inductive eq_swap :: "'item list \<Rightarrow> 'item list \<Rightarrow> bool" (infix "=\<^sub>S" 50)
+    inductive eq_swap :: "'item list \<Rightarrow> 'item list \<Rightarrow> bool" (infix \<open>=\<^sub>S\<close> 50)
       where swap: "ind a b \<Longrightarrow> u @ [a] @ [b] @ v =\<^sub>S u @ [b] @ [a] @ v"
 
     declare eq_swap.intros[intro]
@@ -106,7 +106,7 @@ begin
       show ?case using 2 by simp
     qed
 
-    abbreviation eq_fin :: "'item list \<Rightarrow> 'item list \<Rightarrow> bool" (infix "=\<^sub>F" 50)
+    abbreviation eq_fin :: "'item list \<Rightarrow> 'item list \<Rightarrow> bool" (infix \<open>=\<^sub>F\<close> 50)
       where "eq_fin \<equiv> eq_swap\<^sup>*\<^sup>*"
 
     lemma eq_fin_symp[intro, sym]: "u =\<^sub>F v \<Longrightarrow> v =\<^sub>F u"
@@ -211,7 +211,7 @@ begin
       finally show ?case by this
     qed
 
-    definition le_fin :: "'item list \<Rightarrow> 'item list \<Rightarrow> bool" (infix "\<preceq>\<^sub>F" 50)
+    definition le_fin :: "'item list \<Rightarrow> 'item list \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>F\<close> 50)
       where "w\<^sub>1 \<preceq>\<^sub>F w\<^sub>2 \<equiv> \<exists> v\<^sub>1. w\<^sub>1 @ v\<^sub>1 =\<^sub>F w\<^sub>2"
 
     lemma le_finI[intro 0]:
@@ -326,7 +326,7 @@ begin
       qed
     qed
 
-    definition le_fininf :: "'item list \<Rightarrow> 'item stream \<Rightarrow> bool" (infix "\<preceq>\<^sub>F\<^sub>I" 50)
+    definition le_fininf :: "'item list \<Rightarrow> 'item stream \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>F\<^sub>I\<close> 50)
       where "w\<^sub>1 \<preceq>\<^sub>F\<^sub>I w\<^sub>2 \<equiv> \<exists> v\<^sub>2. v\<^sub>2 \<le>\<^sub>F\<^sub>I w\<^sub>2 \<and> w\<^sub>1 \<preceq>\<^sub>F v\<^sub>2"
 
     lemma le_fininfI[intro 0]:
@@ -393,7 +393,7 @@ begin
       finally show ?thesis by this
     qed
 
-    definition le_inf :: "'item stream \<Rightarrow> 'item stream \<Rightarrow> bool" (infix "\<preceq>\<^sub>I" 50)
+    definition le_inf :: "'item stream \<Rightarrow> 'item stream \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>I\<close> 50)
       where "w\<^sub>1 \<preceq>\<^sub>I w\<^sub>2 \<equiv> \<forall> v\<^sub>1. v\<^sub>1 \<le>\<^sub>F\<^sub>I w\<^sub>1 \<longrightarrow> v\<^sub>1 \<preceq>\<^sub>F\<^sub>I w\<^sub>2"
 
     lemma le_infI[intro 0]:
@@ -482,7 +482,7 @@ begin
       show "u \<preceq>\<^sub>F w (l (length u))" using 3 unfolding 2 by this
     qed
 
-    definition eq_inf :: "'item stream \<Rightarrow> 'item stream \<Rightarrow> bool" (infix "=\<^sub>I" 50)
+    definition eq_inf :: "'item stream \<Rightarrow> 'item stream \<Rightarrow> bool" (infix \<open>=\<^sub>I\<close> 50)
       where "w\<^sub>1 =\<^sub>I w\<^sub>2 \<equiv> w\<^sub>1 \<preceq>\<^sub>I w\<^sub>2 \<and> w\<^sub>2 \<preceq>\<^sub>I w\<^sub>1"
 
     lemma eq_infI[intro 0]:

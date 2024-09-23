@@ -72,7 +72,7 @@ definition valid_footprint :: "heap_typ_desc \<Rightarrow> addr \<Rightarrow> ty
 
 
 definition (in c_type) h_t_valid ::
-  "heap_typ_desc \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a ptr \<Rightarrow> bool" ("_,_ \<Turnstile>\<^sub>t _" [99,0,99] 100) where
+  "heap_typ_desc \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a ptr \<Rightarrow> bool" (\<open>_,_ \<Turnstile>\<^sub>t _\<close> [99,0,99] 100) where
   "d,g \<Turnstile>\<^sub>t p \<equiv> valid_footprint d (ptr_val (p::'a ptr)) (typ_uinfo_t TYPE('a)) \<and> g p"
 
 
@@ -102,7 +102,7 @@ definition proj_d :: "heap_state \<Rightarrow> heap_typ_desc" where
       \<lambda>n. case_option None (Some \<circ> s_heap_tag) (s (x,SIndexTyp n)))"
 
 definition (in c_type) s_valid ::
-  "heap_state \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a ptr \<Rightarrow> bool" ("_,_ \<Turnstile>\<^sub>s _" [100,0,100] 100) where
+  "heap_state \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a ptr \<Rightarrow> bool" (\<open>_,_ \<Turnstile>\<^sub>s _\<close> [100,0,100] 100) where
   "s,g \<Turnstile>\<^sub>s p \<equiv> proj_d s,g \<Turnstile>\<^sub>t p"
 
 definition heap_list_s :: "heap_state \<Rightarrow> nat \<Rightarrow> addr \<Rightarrow>  byte list" where
@@ -118,7 +118,7 @@ definition (in c_type) heap_update_s :: "'a ptr \<Rightarrow> 'a \<Rightarrow> h
 definition (in c_type) lift_t :: "'a ptr_guard \<Rightarrow> heap_raw_state \<Rightarrow> 'a typ_heap" where
   "lift_t g \<equiv> lift_typ_heap g \<circ> lift_state"
 
-definition tag_disj :: "('a, 'b) typ_desc \<Rightarrow> ('a,'b) typ_desc \<Rightarrow> bool" ("_ \<bottom>\<^sub>t _" [90,90] 90) where
+definition tag_disj :: "('a, 'b) typ_desc \<Rightarrow> ('a,'b) typ_desc \<Rightarrow> bool" (\<open>_ \<bottom>\<^sub>t _\<close> [90,90] 90) where
   "f \<bottom>\<^sub>t g \<equiv> \<not> (f \<le> g \<or> g \<le> f)"
 
 definition ladder_set :: "typ_uinfo \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (typ_uinfo \<times> nat) set" where
@@ -163,10 +163,10 @@ definition (in c_type) field_offset_footprint :: "'a ptr \<Rightarrow> (qualifie
   "field_offset_footprint p fs \<equiv> {Ptr &(p\<rightarrow>k) | k. k \<in> set fs}"
 
 
-definition sub_typ :: "'a::c_type itself \<Rightarrow> 'b::c_type itself \<Rightarrow> bool" ("_ \<le>\<^sub>\<tau> _" [51, 51] 50) where
+definition sub_typ :: "'a::c_type itself \<Rightarrow> 'b::c_type itself \<Rightarrow> bool" (\<open>_ \<le>\<^sub>\<tau> _\<close> [51, 51] 50) where
   "s \<le>\<^sub>\<tau> t \<equiv> typ_uinfo_t s \<le> typ_uinfo_t t"
 
-definition sub_typ_proper :: "'a::c_type itself \<Rightarrow> 'b::c_type itself \<Rightarrow> bool" ("_ <\<^sub>\<tau> _" [51, 51] 50)
+definition sub_typ_proper :: "'a::c_type itself \<Rightarrow> 'b::c_type itself \<Rightarrow> bool" (\<open>_ <\<^sub>\<tau> _\<close> [51, 51] 50)
   where
   "s <\<^sub>\<tau> t \<equiv> typ_uinfo_t s < typ_uinfo_t t"
 
@@ -235,7 +235,7 @@ definition (in c_type) ptr_retyp :: "'a ptr \<Rightarrow> heap_typ_desc \<Righta
 definition (in c_type) field_fd :: "'a itself \<Rightarrow> qualified_field_name \<Rightarrow> 'a field_desc" where
   "field_fd t n \<equiv> field_desc (field_typ t n)"
 
-definition tag_disj_typ :: "'a::c_type itself \<Rightarrow> 'b::c_type itself \<Rightarrow> bool" ("_ \<bottom>\<^sub>\<tau> _") where
+definition tag_disj_typ :: "'a::c_type itself \<Rightarrow> 'b::c_type itself \<Rightarrow> bool" (\<open>_ \<bottom>\<^sub>\<tau> _\<close>) where
   "s \<bottom>\<^sub>\<tau> t \<equiv> typ_uinfo_t s \<bottom>\<^sub>t typ_uinfo_t t"
 
 text \<open>----\<close>

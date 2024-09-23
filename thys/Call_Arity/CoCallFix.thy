@@ -12,8 +12,8 @@ definition Aexp :: "exp \<Rightarrow> (Arity \<rightarrow> AEnv)"
 
 sublocale ArityAnalysis Aexp.
 
-abbreviation Aexp_syn' ("\<A>\<^bsub>_\<^esub>") where "\<A>\<^bsub>a\<^esub> \<equiv> (\<lambda>e. Aexp e\<cdot>a)"
-abbreviation Aexp_bot_syn' ("\<A>\<^sup>\<bottom>\<^bsub>_\<^esub>") where "\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> \<equiv> (\<lambda>e. fup\<cdot>(Aexp e)\<cdot>a)"
+abbreviation Aexp_syn' (\<open>\<A>\<^bsub>_\<^esub>\<close>) where "\<A>\<^bsub>a\<^esub> \<equiv> (\<lambda>e. Aexp e\<cdot>a)"
+abbreviation Aexp_bot_syn' (\<open>\<A>\<^sup>\<bottom>\<^bsub>_\<^esub>\<close>) where "\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> \<equiv> (\<lambda>e. fup\<cdot>(Aexp e)\<cdot>a)"
 
 lemma Aexp_eq:
   "\<A>\<^bsub>a\<^esub> e = fst (cccExp e \<cdot> a)"

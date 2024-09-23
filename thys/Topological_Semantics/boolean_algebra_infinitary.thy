@@ -8,9 +8,9 @@ text\<open>Our aim is to encode complete Boolean algebras (of sets) which we can
 interpret quantified formulas (somewhat in the spirit of Boolean-valued models for set theory).\<close>
 
 text\<open>We start by defining infinite meet (infimum) and infinite join (supremum) operations.\<close>
-definition infimum:: "('w \<sigma>)\<sigma> \<Rightarrow> 'w \<sigma>" ("\<^bold>\<And>_") 
+definition infimum:: "('w \<sigma>)\<sigma> \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<And>_\<close>) 
   where "\<^bold>\<And>S \<equiv> \<lambda>w. \<forall>X. S X \<longrightarrow> X w"
-definition supremum::"('w \<sigma>)\<sigma> \<Rightarrow> 'w \<sigma>" ("\<^bold>\<Or>_") 
+definition supremum::"('w \<sigma>)\<sigma> \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<Or>_\<close>) 
   where "\<^bold>\<Or>S \<equiv> \<lambda>w. \<exists>X. S X  \<and>  X w"
 
 declare infimum_def[conn] supremum_def[conn] (*add infimum and supremum to definition set of algebra connectives*)
@@ -21,26 +21,26 @@ lemma iDM_b:" \<^bold>\<midarrow>(\<^bold>\<Or>S) \<^bold>= \<^bold>\<And>(S\<^s
 
 text\<open>We show that our encoded Boolean algebras are lattice-complete.
 The functions below return the set of upper-/lower-bounds of a set of sets S (wrt. domain D).\<close>
-definition upper_bounds::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("ub")
+definition upper_bounds::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>ub\<close>)
   where "ub S \<equiv> \<lambda>U. \<forall>X. S X \<longrightarrow> X \<^bold>\<le> U" 
-definition upper_bounds_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("ub\<^sup>_")
+definition upper_bounds_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>ub\<^sup>_\<close>)
   where "ub\<^sup>D S \<equiv> \<lambda>U. D U \<and> (\<forall>X. S X \<longrightarrow> X \<^bold>\<le> U)" 
-definition lower_bounds::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("lb")
+definition lower_bounds::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>lb\<close>)
   where "lb S \<equiv> \<lambda>L. \<forall>X. S X \<longrightarrow> L \<^bold>\<le> X"
-definition lower_bounds_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("lb\<^sup>_")
+definition lower_bounds_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>lb\<^sup>_\<close>)
   where "lb\<^sup>D S \<equiv> \<lambda>L. D L \<and> (\<forall>X. S X \<longrightarrow> L \<^bold>\<le> X)"
 
 lemma ub_char: "ub S = (let D=\<^bold>\<top> in ub\<^sup>D S) " by (simp add: top_def upper_bounds_def upper_bounds_restr_def)
 lemma lb_char: "lb S = (let D=\<^bold>\<top> in lb\<^sup>D S) " by (simp add: top_def lower_bounds_def lower_bounds_restr_def)
 
 text\<open>Similarly, the functions below return the set of least/greatest upper-/lower-bounds for S (wrt. D).\<close>
-definition lub::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("lub") 
+definition lub::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>lub\<close>) 
   where "lub S \<equiv> \<lambda>U. ub S U \<and> (\<forall>X. ub S X \<longrightarrow> U \<^bold>\<le> X)"
-definition lub_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("lub\<^sup>_") 
+definition lub_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>lub\<^sup>_\<close>) 
   where "lub\<^sup>D S \<equiv> \<lambda>U. ub\<^sup>D S U \<and> (\<forall>X. ub\<^sup>D S X \<longrightarrow> U \<^bold>\<le> X)"
-definition glb::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("glb")
+definition glb::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>glb\<close>)
   where "glb S \<equiv> \<lambda>L. lb S L \<and> (\<forall>X. lb S X \<longrightarrow> X \<^bold>\<le> L)"
-definition glb_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" ("glb\<^sup>_")
+definition glb_restr::"('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma> \<Rightarrow> ('w \<sigma>)\<sigma>" (\<open>glb\<^sup>_\<close>)
   where "glb\<^sup>D S \<equiv> \<lambda>L. lb\<^sup>D S L \<and> (\<forall>X. lb\<^sup>D S X \<longrightarrow> X \<^bold>\<le> L)"
 
 text\<open>Both pairs of definitions above are suitably related.

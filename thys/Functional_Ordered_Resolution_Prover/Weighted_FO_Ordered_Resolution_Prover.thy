@@ -77,7 +77,7 @@ abbreviation Liminf_wstate :: "'a wstate llist \<Rightarrow> 'a state" where
 lemma timestamp_le_weight: "n \<le> weight (C, n)"
   by (induct n, simp, metis weight_mono[of k "Suc k" for k] Suc_le_eq le_less le_trans)
 
-inductive weighted_RP :: "'a wstate \<Rightarrow> 'a wstate \<Rightarrow> bool" (infix "\<leadsto>\<^sub>w" 50) where
+inductive weighted_RP :: "'a wstate \<Rightarrow> 'a wstate \<Rightarrow> bool" (infix \<open>\<leadsto>\<^sub>w\<close> 50) where
   tautology_deletion: "Neg A \<in># C \<Longrightarrow> Pos A \<in># C \<Longrightarrow> (N + {#(C, i)#}, P, Q, n) \<leadsto>\<^sub>w (N, P, Q, n)"
 | forward_subsumption: "D \<in># image_mset fst (P + Q) \<Longrightarrow> subsumes D C \<Longrightarrow>
     (N + {#(C, i)#}, P, Q, n) \<leadsto>\<^sub>w (N, P, Q, n)"
@@ -826,7 +826,7 @@ declare weight.simps [simp del]
 sublocale wrp: weighted_FO_resolution_prover _ _ _ _ _ _ _ _ weight
   by unfold_locales (rule weight_mono)
 
-notation wrp.weighted_RP (infix "\<leadsto>\<^sub>w" 50)
+notation wrp.weighted_RP (infix \<open>\<leadsto>\<^sub>w\<close> 50)
 
 end
 

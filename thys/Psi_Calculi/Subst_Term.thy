@@ -7,7 +7,7 @@ theory Subst_Term
 begin
 
 locale substType =
-  fixes subst :: "'a::fs_name \<Rightarrow> name list \<Rightarrow> 'b::fs_name list \<Rightarrow> 'a" ("_[_::=_]" [80, 80 ,80] 130)
+  fixes subst :: "'a::fs_name \<Rightarrow> name list \<Rightarrow> 'b::fs_name list \<Rightarrow> 'a" (\<open>_[_::=_]\<close> [80, 80 ,80] 130)
 
   assumes eq[eqvt]: "\<And>p::name prm. (p \<bullet> (M[xvec::=Tvec])) = ((p \<bullet> M)[(p \<bullet> xvec)::=(p \<bullet> Tvec)])"
 (*  and subst1:       "\<And>xvec Tvec T x. \<lbrakk>length xvec = length Tvec; distinct xvec; (x::name) \<sharp> T[xvec::=Tvec]; x \<sharp> xvec\<rbrakk> \<Longrightarrow> x \<sharp> T"
@@ -130,7 +130,7 @@ proof -
     by(simp add: renaming)
 qed
 
-definition seqSubst :: "'a \<Rightarrow> (name list \<times> 'b list) list \<Rightarrow> 'a" ("_[<_>]" [80, 80] 130)
+definition seqSubst :: "'a \<Rightarrow> (name list \<times> 'b list) list \<Rightarrow> 'a" (\<open>_[<_>]\<close> [80, 80] 130)
   where "M[<\<sigma>>] \<equiv> foldl (\<lambda>N. \<lambda>(xvec, Tvec). N[xvec::=Tvec]) M \<sigma>"
 
 lemma seqSubstNil[simp]:

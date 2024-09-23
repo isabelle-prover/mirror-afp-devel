@@ -776,9 +776,9 @@ locale PL_Indis =
 context PL_Indis
 begin
 
-no_notation eqpoll (infixl "\<approx>" 50)
+no_notation eqpoll (infixl \<open>\<approx>\<close> 50)
 
-abbreviation indisAbbrev (infix "\<approx>" 50)
+abbreviation indisAbbrev (infix \<open>\<approx>\<close> 50)
 where "s1 \<approx> s2 \<equiv> (s1, s2) \<in> indis"
 
 lemma refl_indis: "refl indis"
@@ -1105,8 +1105,8 @@ text\<open>The associated bisimilarity relations:\<close>
 definition Sbis where "Sbis \<equiv> gfp Sretr"
 definition ZObis where "ZObis \<equiv> gfp ZOretr"
 
-abbreviation Sbis_abbrev (infix "\<approx>s" 55) where "c \<approx>s d \<equiv> (c, d) : Sbis"
-abbreviation ZObis_abbrev (infix "\<approx>01" 55) where "c \<approx>01 d \<equiv> (c, d) : ZObis"
+abbreviation Sbis_abbrev (infix \<open>\<approx>s\<close> 55) where "c \<approx>s d \<equiv> (c, d) : Sbis"
+abbreviation ZObis_abbrev (infix \<open>\<approx>01\<close> 55) where "c \<approx>01 d \<equiv> (c, d) : ZObis"
 
 lemmas bis_defs = Sbis_def ZObis_def
 

@@ -165,7 +165,7 @@ subsubsection \<open>Instance Helper\<close>
   qed
   
   lemma (in SecurityInvariant_withOffendingFlows) ENF_default_update_fst: 
-  fixes "default_node_properties" :: "'a" ("\<bottom>")
+  fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
   assumes modelInv: "\<not> sinvar G nP"
     and   ENFdef: "sinvar_all_edges_normal_form P"
     and   secdef: "\<forall> (nP::'v \<Rightarrow> 'a) e1 e2. \<not> (P (nP e1) (nP e2)) \<longrightarrow> \<not> (P \<bottom> (nP e2))"
@@ -184,7 +184,7 @@ subsubsection \<open>Instance Helper\<close>
 
   
   lemma (in SecurityInvariant_withOffendingFlows) 
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     shows "\<not> sinvar G nP \<Longrightarrow> sinvar_all_edges_normal_form P \<Longrightarrow>
     (\<forall> (nP::'v \<Rightarrow> 'a) e1 e2. \<not> (P (nP e1) (nP e2)) \<longrightarrow>  \<not> (P \<bottom> (nP e2))) \<Longrightarrow>
     (\<forall> (nP::'v \<Rightarrow> 'a) e1 e2. \<not> (P (nP e1) (nP e2)) \<longrightarrow> \<not> (P (nP e1) \<bottom>)) \<Longrightarrow>
@@ -224,7 +224,7 @@ subsubsection \<open>Instance Helper\<close>
   
   (* fsts version *)
   lemma (in SecurityInvariant_withOffendingFlows)  ENF_fsts_refl_instance:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_enf_refl: "ENF_refl P"
     and   a3: "\<forall> (nP::'v \<Rightarrow> 'a) e1 e2. \<not> (P (nP e1) (nP e2)) \<longrightarrow> \<not> (P \<bottom> (nP e2))" (*changed \<And> to \<forall>*)
     and   a_offending: "f \<in> set_offending_flows G nP"
@@ -267,7 +267,7 @@ subsubsection \<open>Instance Helper\<close>
 
   (* snds version *)
   lemma (in SecurityInvariant_withOffendingFlows)  ENF_snds_refl_instance:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_enf_refl: "ENF_refl P"
     and   a3: "\<forall> (nP::'v \<Rightarrow> 'a) e1 e2. \<not> (P (nP e1) (nP e2)) \<longrightarrow> \<not> (P (nP e1) \<bottom>)"
     and   a_offending: "f \<in> set_offending_flows G nP"
@@ -419,7 +419,7 @@ subsubsection \<open>Instance helper\<close>
 
   (* fsts version *)
   lemma (in SecurityInvariant_withOffendingFlows)  ENFnrSR_fsts_weakrefl_instance:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_enf: "sinvar_all_edges_normal_form_not_refl_SR P"
     and   a_weakrefl: "\<forall> s r. P \<bottom> s \<bottom> r"
     and   a_botdefault: "\<forall> s r. (nP r) \<noteq> \<bottom> \<longrightarrow> \<not> P (nP s) s (nP r) r \<longrightarrow> \<not> P \<bottom> s (nP r) r"
@@ -471,7 +471,7 @@ subsubsection \<open>Instance helper\<close>
 
   (* snds version *)
   lemma (in SecurityInvariant_withOffendingFlows)  ENFnrSR_snds_weakrefl_instance:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_enf: "sinvar_all_edges_normal_form_not_refl_SR P"
     and   a_weakrefl: "\<forall> s r. P \<bottom> s \<bottom> r"
     and   a_botdefault: "\<forall> s r. (nP s) \<noteq> \<bottom> \<longrightarrow> \<not> P (nP s) s (nP r) r \<longrightarrow> \<not> P (nP s) s \<bottom> r"
@@ -546,7 +546,7 @@ subsubsection \<open>Offending Flows\<close>
 subsubsection \<open>Instance helper\<close>
   (* fsts version *)
   lemma (in SecurityInvariant_withOffendingFlows)  ENFnr_fsts_weakrefl_instance:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_enf: "sinvar_all_edges_normal_form_not_refl P"
     and   a_botdefault: "\<forall> e1 e2. e2 \<noteq> \<bottom> \<longrightarrow> \<not> P e1 e2 \<longrightarrow> \<not> P \<bottom> e2"
     and   a_alltobot: "\<forall> e1. P e1 \<bottom>"
@@ -564,7 +564,7 @@ subsubsection \<open>Instance helper\<close>
   
   (* snds version *)
   lemma (in SecurityInvariant_withOffendingFlows)  ENFnr_snds_weakrefl_instance:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_enf: "sinvar_all_edges_normal_form_not_refl P"
     and   a_botdefault: "\<forall> e1 e2. \<not> P e1 e2 \<longrightarrow> \<not> P e1 \<bottom>"
     and   a_bottoall: "\<forall> e2. P \<bottom> e2"
@@ -585,7 +585,7 @@ subsubsection \<open>Instance helper\<close>
 
   (* snds version DRAFT*)
   lemma (in SecurityInvariant_withOffendingFlows)  ENF_weakrefl_instance_FALSE:
-    fixes "default_node_properties" :: "'a" ("\<bottom>")
+    fixes "default_node_properties" :: "'a" (\<open>\<bottom>\<close>)
     assumes a_wfG: "wf_graph G"
     and   a_not_eval: "\<not> sinvar G nP"
     and   a_enf: "sinvar_all_edges_normal_form P"

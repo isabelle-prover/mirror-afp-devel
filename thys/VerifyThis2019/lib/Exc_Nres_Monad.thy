@@ -35,23 +35,23 @@ definition [enres_unfolds]: "CATCH m h \<equiv> do { r\<leftarrow>m; case r of I
 
 abbreviation (do_notation) bind_doE where "bind_doE \<equiv> ebind"
 
-notation (output) bind_doE (infixl "\<bind>" 54)
-notation (ASCII output) bind_doE (infixl ">>=" 54)
+notation (output) bind_doE (infixl \<open>\<bind>\<close> 54)
+notation (ASCII output) bind_doE (infixl \<open>>>=\<close> 54)
 
 
 nonterminal doE_binds and doE_bind
 syntax
-  "_doE_block" :: "doE_binds \<Rightarrow> 'a" ("doE {//(2  _)//}" [12] 62)
-  "_doE_bind"  :: "[pttrn, 'a] \<Rightarrow> doE_bind" ("(2_ \<leftarrow>/ _)" 13)
-  "_doE_let" :: "[pttrn, 'a] \<Rightarrow> doE_bind" ("(2let _ =/ _)" [1000, 13] 13)
-  "_doE_then" :: "'a \<Rightarrow> doE_bind" ("_" [14] 13)
-  "_doE_final" :: "'a \<Rightarrow> doE_binds" ("_")
-  "_doE_cons" :: "[doE_bind, doE_binds] \<Rightarrow> doE_binds" ("_;//_" [13, 12] 12)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl "\<then>" 54)
+  "_doE_block" :: "doE_binds \<Rightarrow> 'a" (\<open>doE {//(2  _)//}\<close> [12] 62)
+  "_doE_bind"  :: "[pttrn, 'a] \<Rightarrow> doE_bind" (\<open>(2_ \<leftarrow>/ _)\<close> 13)
+  "_doE_let" :: "[pttrn, 'a] \<Rightarrow> doE_bind" (\<open>(2let _ =/ _)\<close> [1000, 13] 13)
+  "_doE_then" :: "'a \<Rightarrow> doE_bind" (\<open>_\<close> [14] 13)
+  "_doE_final" :: "'a \<Rightarrow> doE_binds" (\<open>_\<close>)
+  "_doE_cons" :: "[doE_bind, doE_binds] \<Rightarrow> doE_binds" (\<open>_;//_\<close> [13, 12] 12)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl \<open>\<then>\<close> 54)
 
 syntax (ASCII)
-  "_doE_bind" :: "[pttrn, 'a] \<Rightarrow> doE_bind" ("(2_ <-/ _)" 13)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixr ">>" 54)
+  "_doE_bind" :: "[pttrn, 'a] \<Rightarrow> doE_bind" (\<open>(2_ <-/ _)\<close> 13)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixr \<open>>>\<close> 54)
 
 syntax_consts
   "_doE_block" "_doE_bind" "_doE_cons" "_thenM" \<rightleftharpoons> bind_doE and
@@ -384,7 +384,7 @@ lemma sum_rel_conv:
   subgoal by (cases s; auto)
   done  
 
-definition econc_fun ("\<Down>\<^sub>E") where [enres_unfolds]: "econc_fun E R \<equiv> \<Down>(\<langle>E,R\<rangle>sum_rel)"
+definition econc_fun (\<open>\<Down>\<^sub>E\<close>) where [enres_unfolds]: "econc_fun E R \<equiv> \<Down>(\<langle>E,R\<rangle>sum_rel)"
 
 lemma RELATES_pat_erefine[refine_dref_pattern]: "\<lbrakk>RELATES R; mi \<le>\<Down>\<^sub>E E R m \<rbrakk> \<Longrightarrow> mi \<le>\<Down>\<^sub>E E R m" .
 

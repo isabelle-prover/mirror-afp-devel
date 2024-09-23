@@ -11,12 +11,12 @@ context env begin
 definition
   "weakCongSimulation" :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>
                        ('b \<times> ('a, 'b, 'c) psi \<times> ('a, 'b, 'c) psi) set \<Rightarrow> 
-                       ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<leadsto>\<guillemotleft>_\<guillemotright> _" [80, 80, 80, 80] 80)
+                       ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<leadsto>\<guillemotleft>_\<guillemotright> _\<close> [80, 80, 80, 80] 80)
 where
   "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q \<equiv> \<forall>Q'. \<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q' \<longrightarrow> (\<exists>P'. \<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P' \<and> (\<Psi>, P', Q') \<in> Rel)"
 
 abbreviation
-  weakCongSimulationNilJudge ("_ \<leadsto>\<guillemotleft>_\<guillemotright> _" [80, 80, 80] 80) where "P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q \<equiv> SBottom' \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q"
+  weakCongSimulationNilJudge (\<open>_ \<leadsto>\<guillemotleft>_\<guillemotright> _\<close> [80, 80, 80] 80) where "P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q \<equiv> SBottom' \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q"
 
 lemma weakCongSimI[case_names cTau]:
   fixes \<Psi>   :: 'b

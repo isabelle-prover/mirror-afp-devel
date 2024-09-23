@@ -11,7 +11,7 @@ imports
   Main
 
 begin
-definition xor::"bool \<Rightarrow> bool \<Rightarrow> bool" (infixl "\<oplus>" 60)
+definition xor::"bool \<Rightarrow> bool \<Rightarrow> bool" (infixl \<open>\<oplus>\<close> 60)
 where "xor A B \<equiv> (A \<and> \<not>B) \<or> (\<not>A \<and> B)"
 
 declare xor_def [simp]

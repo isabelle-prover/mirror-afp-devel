@@ -9,8 +9,8 @@ imports Messages More_Unification
 begin
 
 subsection \<open>Syntax for the Intruder Deduction Relations\<close>
-consts INTRUDER_SYNTH::"('f,'v) terms \<Rightarrow> ('f,'v) term \<Rightarrow> bool" (infix "\<turnstile>\<^sub>c" 50)
-consts INTRUDER_DEDUCT::"('f,'v) terms \<Rightarrow> ('f,'v) term \<Rightarrow> bool" (infix "\<turnstile>" 50)
+consts INTRUDER_SYNTH::"('f,'v) terms \<Rightarrow> ('f,'v) term \<Rightarrow> bool" (infix \<open>\<turnstile>\<^sub>c\<close> 50)
+consts INTRUDER_DEDUCT::"('f,'v) terms \<Rightarrow> ('f,'v) term \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 50)
 
 
 subsection \<open>Intruder Model Locale\<close>
@@ -49,9 +49,9 @@ lemma Ana_vars: assumes "Ana t = (K,M)" shows "fv\<^sub>s\<^sub>e\<^sub>t (set K
 by (rule Ana_keys_fv[OF assms]) (use Ana_subterm[OF assms] subtermeq_vars_subset in auto)
 
 abbreviation \<V> where "\<V> \<equiv> UNIV::'var set"
-abbreviation \<Sigma>n ("\<Sigma>\<^sup>_") where "\<Sigma>\<^sup>n \<equiv> {f::'fun. arity f = n}"
-abbreviation \<Sigma>npub ("\<Sigma>\<^sub>p\<^sub>u\<^sub>b\<^sup>_") where "\<Sigma>\<^sub>p\<^sub>u\<^sub>b\<^sup>n \<equiv> {f. public f} \<inter> \<Sigma>\<^sup>n"
-abbreviation \<Sigma>npriv ("\<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v\<^sup>_") where "\<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v\<^sup>n \<equiv> {f. \<not>public f} \<inter> \<Sigma>\<^sup>n"
+abbreviation \<Sigma>n (\<open>\<Sigma>\<^sup>_\<close>) where "\<Sigma>\<^sup>n \<equiv> {f::'fun. arity f = n}"
+abbreviation \<Sigma>npub (\<open>\<Sigma>\<^sub>p\<^sub>u\<^sub>b\<^sup>_\<close>) where "\<Sigma>\<^sub>p\<^sub>u\<^sub>b\<^sup>n \<equiv> {f. public f} \<inter> \<Sigma>\<^sup>n"
+abbreviation \<Sigma>npriv (\<open>\<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v\<^sup>_\<close>) where "\<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v\<^sup>n \<equiv> {f. \<not>public f} \<inter> \<Sigma>\<^sup>n"
 abbreviation \<Sigma>\<^sub>p\<^sub>u\<^sub>b where "\<Sigma>\<^sub>p\<^sub>u\<^sub>b \<equiv> (\<Union>n. \<Sigma>\<^sub>p\<^sub>u\<^sub>b\<^sup>n)"
 abbreviation \<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v where "\<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v \<equiv> (\<Union>n. \<Sigma>\<^sub>p\<^sub>r\<^sub>i\<^sub>v\<^sup>n)"
 abbreviation \<Sigma> where "\<Sigma> \<equiv> (\<Union>n. \<Sigma>\<^sup>n)"
@@ -729,7 +729,7 @@ text \<open>
 \<close>
 inductive intruder_deduct_restricted::
   "('fun,'var) terms \<Rightarrow> (('fun,'var) term \<Rightarrow> bool) \<Rightarrow> ('fun,'var) term \<Rightarrow> bool"
-  ("\<langle>_;_\<rangle> \<turnstile>\<^sub>r _" 50)
+  (\<open>\<langle>_;_\<rangle> \<turnstile>\<^sub>r _\<close> 50)
 where
   AxiomR[simp]:   "t \<in> M \<Longrightarrow> \<langle>M; Q\<rangle> \<turnstile>\<^sub>r t"
 | ComposeR[simp]: "\<lbrakk>length T = arity f; public f; \<And>t. t \<in> set T \<Longrightarrow> \<langle>M; Q\<rangle> \<turnstile>\<^sub>r t; Q (Fun f T)\<rbrakk>
@@ -744,7 +744,7 @@ text \<open>
 \<close>
 inductive intruder_deduct_num::
   "('fun,'var) terms \<Rightarrow> nat \<Rightarrow> ('fun,'var) term \<Rightarrow> bool"
-  ("\<langle>_; _\<rangle> \<turnstile>\<^sub>n _" 50)
+  (\<open>\<langle>_; _\<rangle> \<turnstile>\<^sub>n _\<close> 50)
 where
   AxiomN[simp]:   "t \<in> M \<Longrightarrow> \<langle>M; 0\<rangle> \<turnstile>\<^sub>n t"
 | ComposeN[simp]: "\<lbrakk>length T = arity f; public f; \<And>t. t \<in> set T \<Longrightarrow> \<langle>M; steps t\<rangle> \<turnstile>\<^sub>n t\<rbrakk>

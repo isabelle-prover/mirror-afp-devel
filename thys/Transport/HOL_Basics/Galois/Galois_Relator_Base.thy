@@ -17,10 +17,10 @@ text \<open>Morally speaking, the Galois relator characterises when two terms
 definition "Galois x y \<equiv> in_codom (\<le>\<^bsub>R\<^esub>) y \<and> x \<le>\<^bsub>L\<^esub> r y"
 
 abbreviation "left_Galois \<equiv> Galois"
-notation left_Galois (infix "\<^bsub>L\<^esub>\<lessapprox>" 50)
+notation left_Galois (infix \<open>\<^bsub>L\<^esub>\<lessapprox>\<close> 50)
 
 abbreviation (input) "ge_Galois_left \<equiv> (\<^bsub>L\<^esub>\<lessapprox>)\<inverse>"
-notation ge_Galois_left (infix "\<greaterapprox>\<^bsub>L\<^esub>" 50)
+notation ge_Galois_left (infix \<open>\<greaterapprox>\<^bsub>L\<^esub>\<close> 50)
 
 text \<open>Here we only introduced the (left) Galois relator @{term "(\<^bsub>L\<^esub>\<lessapprox>)"}.
 All other variants can be introduced by considering suitable flipped and inversed

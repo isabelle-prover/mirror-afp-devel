@@ -31,24 +31,24 @@ text \<open>The following presents several axiom systems that shall be under stu
 subsection \<open>Common Algebras\<close>
 
 class common_algebra = uminus +
-  fixes inf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<sqinter>" 70)
-  fixes sup :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>" 65)
-  fixes bot :: "'a" ("\<bottom>")
-  fixes top :: "'a" ("\<top>")
+  fixes inf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<sqinter>\<close> 70)
+  fixes sup :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<squnion>\<close> 65)
+  fixes bot :: "'a" (\<open>\<bottom>\<close>)
+  fixes top :: "'a" (\<open>\<top>\<close>)
   assumes sup_assoc: "x \<squnion> (y \<squnion> z) = (x \<squnion> y) \<squnion> z"
   assumes sup_comm: "x \<squnion> y = y \<squnion> x" 
 
 context common_algebra begin
 
-definition less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50) where
+definition less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50) where
    "x \<sqsubseteq> y = (x \<squnion> y = y)"
-definition less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>" 50) where
+definition less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50) where
    "x \<sqsubset> y = (x \<sqsubseteq> y \<and> \<not> y \<sqsubseteq> x)"
-definition minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl "-" 65) where 
+definition minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl \<open>-\<close> 65) where 
    "minus x y = (x \<sqinter> - y)"
 
 (* We shall need some object in order to define falsum and verum *)
-definition secret_object1 :: "'a" ("\<iota>") where
+definition secret_object1 :: "'a" (\<open>\<iota>\<close>) where
   "\<iota> = (SOME x. True)"
 
 end
@@ -413,15 +413,15 @@ context common_algebra begin
 
 (* Iteration Machinery/Shorthand *)
 
-primrec copyp :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<otimes>" 80)
+primrec copyp :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<otimes>\<close> 80)
 where 
   copyp_0:   "0 \<otimes> x = x"
 | copyp_Suc: "(Suc k) \<otimes> x = (k \<otimes> x) \<squnion> x"
 
 no_notation 
-  Product_Type.Times (infixr "\<times>" 80)
+  Product_Type.Times (infixr \<open>\<times>\<close> 80)
 
-primrec copy :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<times>" 85)
+primrec copy :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<times>\<close> 85)
 where
   "0 \<times> x = x"
 | "(Suc k) \<times> x = k \<otimes> x"
@@ -540,17 +540,17 @@ text \<open>The theorem asserting all Robbins algebras are Boolean
 
 context robbins_algebra begin
 
-definition secret_object2 :: "'a" ("\<alpha>") where
+definition secret_object2 :: "'a" (\<open>\<alpha>\<close>) where
   "\<alpha> = -(-(\<iota> \<squnion> \<iota> \<squnion> \<iota>) \<squnion> \<iota>)"
-definition secret_object3 :: "'a" ("\<beta>") where
+definition secret_object3 :: "'a" (\<open>\<beta>\<close>) where
   "\<beta> = \<iota> \<squnion> \<iota>"
-definition secret_object4 :: "'a" ("\<delta>") where
+definition secret_object4 :: "'a" (\<open>\<delta>\<close>) where
   "\<delta> = \<beta> \<squnion> (-(\<alpha> \<squnion> -\<beta>) \<squnion> -(\<alpha> \<squnion> -\<beta>))"
-definition secret_object5 :: "'a" ("\<gamma>") where
+definition secret_object5 :: "'a" (\<open>\<gamma>\<close>) where
   "\<gamma> = \<delta> \<squnion> -(\<delta> \<squnion> -\<delta>)"
-definition winker_object :: "'a" ("\<rho>") where
+definition winker_object :: "'a" (\<open>\<rho>\<close>) where
   "\<rho> = \<gamma> \<squnion> \<gamma> \<squnion> \<gamma>"
-definition fake_bot :: "'a" ("\<bottom>\<bottom>") where
+definition fake_bot :: "'a" (\<open>\<bottom>\<bottom>\<close>) where
   "\<bottom>\<bottom> = -(\<rho> \<squnion> -\<rho>)"
 
 (* Towards Winker's Identity *)
@@ -964,22 +964,22 @@ qed
 
 end
 
-no_notation secret_object1 ("\<iota>")
-   and secret_object2 ("\<alpha>") 
-   and secret_object3 ("\<beta>")
-   and secret_object4 ("\<delta>")
-   and secret_object5 ("\<gamma>")
-   and winker_object ("\<rho>")
-   and less_eq  (infix "\<sqsubseteq>" 50) 
-   and less (infix "\<sqsubset>" 50)
-   and inf (infixl "\<sqinter>" 70) 
-   and sup (infixl "\<squnion>" 65) 
-   and top ("\<top>")
-   and bot ("\<bottom>")
-   and copyp (infix "\<otimes>" 80)
-   and copy (infix "\<times>" 85)
+no_notation secret_object1 (\<open>\<iota>\<close>)
+   and secret_object2 (\<open>\<alpha>\<close>) 
+   and secret_object3 (\<open>\<beta>\<close>)
+   and secret_object4 (\<open>\<delta>\<close>)
+   and secret_object5 (\<open>\<gamma>\<close>)
+   and winker_object (\<open>\<rho>\<close>)
+   and less_eq  (infix \<open>\<sqsubseteq>\<close> 50) 
+   and less (infix \<open>\<sqsubset>\<close> 50)
+   and inf (infixl \<open>\<sqinter>\<close> 70) 
+   and sup (infixl \<open>\<squnion>\<close> 65) 
+   and top (\<open>\<top>\<close>)
+   and bot (\<open>\<bottom>\<close>)
+   and copyp (infix \<open>\<otimes>\<close> 80)
+   and copy (infix \<open>\<times>\<close> 85)
 
 notation
-  Product_Type.Times  (infixr "\<times>" 80)
+  Product_Type.Times  (infixr \<open>\<times>\<close> 80)
 
 end

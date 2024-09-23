@@ -35,29 +35,29 @@ begin
       $$\Box \alpha = \bigwedge_{i:nat} \alpha !! i$$
 \<close>
   notation
-    bot ("\<bottom>") and
-    top ("\<top>") and
-    inf (infixl "\<sqinter>" 70)
-    and sup (infixl "\<squnion>" 65)
+    bot (\<open>\<bottom>\<close>) and
+    top (\<open>\<top>\<close>) and
+    inf (infixl \<open>\<sqinter>\<close> 70)
+    and sup (infixl \<open>\<squnion>\<close> 65)
 
   class temporal = complete_boolean_algebra +
-    fixes at :: "'a \<Rightarrow> nat \<Rightarrow> 'a" (infixl "!!" 150)
+    fixes at :: "'a \<Rightarrow> nat \<Rightarrow> 'a" (infixl \<open>!!\<close> 150)
     assumes [simp]: "a !! i !! j = a !! (i + j)"
     assumes [simp]: "a !! 0 = a"
     assumes [simp]: "\<top> !! i = \<top>"
     assumes [simp]: "-(a !! i) = (-a) !! i"
     assumes [simp]: "(a \<sqinter> b) !! i = (a !! i) \<sqinter> (b !! i)"
     begin
-      definition always :: "'a \<Rightarrow> 'a"  ("\<box> (_)" [900] 900) where
+      definition always :: "'a \<Rightarrow> 'a"  (\<open>\<box> (_)\<close> [900] 900) where
         "\<box> p = (INF i . p !! i)"
 
-      definition eventually :: "'a \<Rightarrow> 'a"  ("\<diamond> (_)" [900] 900) where
+      definition eventually :: "'a \<Rightarrow> 'a"  (\<open>\<diamond> (_)\<close> [900] 900) where
         "\<diamond> p = (SUP i . p !! i)"
 
-      definition "next" :: "'a \<Rightarrow> 'a"  ("\<circle> (_)" [900] 900) where
+      definition "next" :: "'a \<Rightarrow> 'a"  (\<open>\<circle> (_)\<close> [900] 900) where
         "\<circle> p = p !! (Suc 0)"
 
-      definition until :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "until" 65) where 
+      definition until :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>until\<close> 65) where 
         "(p until q) = (SUP n . (Inf (at p ` {i . i < n})) \<sqinter> (q !! n))"
     end
 
@@ -178,11 +178,11 @@ text\<open>
 \<close>
 
   class trace =
-    fixes suffix :: "'a \<Rightarrow> nat \<Rightarrow> 'a" ("_[_ ..]" [80, 15] 80)
+    fixes suffix :: "'a \<Rightarrow> nat \<Rightarrow> 'a" (\<open>_[_ ..]\<close> [80, 15] 80)
     assumes [simp]: "a[i..][j..] = a[i + j..]"
     assumes [simp]: "a[0..] = a"
     begin
-      definition "next_trace" :: "'a \<Rightarrow> 'a"  ("\<odot> (_)" [900] 900) where
+      definition "next_trace" :: "'a \<Rightarrow> 'a"  (\<open>\<odot> (_)\<close> [900] 900) where
         "\<odot> p = p[Suc 0..]"
     end
 

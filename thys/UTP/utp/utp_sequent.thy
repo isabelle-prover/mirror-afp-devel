@@ -4,10 +4,10 @@ theory utp_sequent
   imports utp_pred_laws
 begin
 
-definition sequent :: "'\<alpha> upred \<Rightarrow> '\<alpha> upred \<Rightarrow> bool" (infixr "\<tturnstile>" 15) where
+definition sequent :: "'\<alpha> upred \<Rightarrow> '\<alpha> upred \<Rightarrow> bool" (infixr \<open>\<tturnstile>\<close> 15) where
 [upred_defs]: "sequent P Q = (Q \<sqsubseteq> P)"
 
-abbreviation sequent_triv ("\<tturnstile> _" [15] 15) where "\<tturnstile> P \<equiv> (true \<tturnstile> P)"
+abbreviation sequent_triv (\<open>\<tturnstile> _\<close> [15] 15) where "\<tturnstile> P \<equiv> (true \<tturnstile> P)"
 
 translations
   "\<tturnstile> P" <= "true \<tturnstile> P"

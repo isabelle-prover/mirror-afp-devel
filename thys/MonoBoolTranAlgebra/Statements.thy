@@ -15,7 +15,7 @@ assumption that we have a monotonic boolean transformers algebra with
 post condition statement.\<close>
 
 definition
-  "assume" :: "'a::mbt_algebra Assertion \<Rightarrow> 'a"  ("[\<cdot> _ ]" [0] 1000) where
+  "assume" :: "'a::mbt_algebra Assertion \<Rightarrow> 'a"  (\<open>[\<cdot> _ ]\<close> [0] 1000) where
   "[\<cdot>p] =  {\<cdot>p} ^ o"
 
 lemma [simp]: "{\<cdot>p} * \<top> \<sqinter> [\<cdot>p] = {\<cdot>p}"
@@ -202,7 +202,7 @@ lemma hoare_choice: "hoare p (x \<sqinter> y) q = ((hoare p) x q & (hoare p y q)
   by auto
 
 definition
-  if_stm:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("(If (_)/ then (_)/ else (_))" [0, 0, 10] 10) where
+  if_stm:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>(If (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10) where
   "if_stm b x y = (([\<cdot> b ] * x) \<sqinter> ([\<cdot> -b ] * y))"
 
 lemma if_assertion: "(If p then x else y) = {\<cdot>p} * x \<squnion> {\<cdot> -p} * y"
@@ -276,7 +276,7 @@ theorem hoare_fixpoint_complete_mbt:
   by auto
 
 definition
-  while:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a" ("(While (_)/ do (_))" [0, 10] 10) where
+  while:: "'a::mbt_algebra Assertion \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>(While (_)/ do (_))\<close> [0, 10] 10) where
   "while p x = ([\<cdot> p] * x) ^ \<omega> * [\<cdot> -p ]"
 
 lemma while_false: "(While \<bottom> do x) = 1"

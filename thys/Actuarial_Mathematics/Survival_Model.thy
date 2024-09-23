@@ -66,7 +66,7 @@ proof (rule antisym)
   qed
 qed
 
-definition death_pt :: ereal ("$\<psi>")
+definition death_pt :: ereal (\<open>$\<psi>\<close>)
   where "$\<psi> \<equiv> Inf (ereal ` {x \<in> \<real>. ccdf (distr \<MM> borel X) x = 0})"
     \<comment> \<open>This is my original notation,
         which is used to develop life insurance mathematics rigorously.\<close>
@@ -164,7 +164,7 @@ lemma alive_event[simp]: "alive x \<in> MM_PS.events" for x::real
 lemma X_alivex_measurable[measurable, simp]: "X \<in> borel_measurable (\<MM> \<downharpoonright> alive x)" for x::real
   unfolding cond_prob_space_def by (measurable; simp add: measurable_restrict_space1)
 
-definition futr_life :: "real \<Rightarrow> ('a \<Rightarrow> real)" ("T")
+definition futr_life :: "real \<Rightarrow> ('a \<Rightarrow> real)" (\<open>T\<close>)
   where "T x \<equiv> (\<lambda>\<xi>. X \<xi> - x)"
     \<comment> \<open>Note that \<open>T(x) : space \<MM> \<rightarrow> \<real>\<close> represents the time until death of a person aged \<open>x\<close>.\<close>
 
@@ -190,49 +190,49 @@ lemma PT0_eq_PX_lborel: "\<P>(\<xi> in \<MM>. T 0 \<xi> \<in> A \<bar> T 0 \<xi>
 
 subsubsection \<open>Actuarial Notations on the Survival Model\<close>
 
-definition survive :: "real \<Rightarrow> real \<Rightarrow> real" ("$p'_{_&_}" [0,0] 200)
+definition survive :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$p'_{_&_}\<close> [0,0] 200)
   where "$p_{t&x} \<equiv> ccdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) t"
     \<comment> \<open>the probability that a person aged \<open>x\<close> will survive for \<open>t\<close> years\<close>
     \<comment> \<open>Note that the function \<open>$p_{\<cdot>&x}\<close> is the survival function
         on \<open>(\<MM> \<downharpoonright> alive x)\<close> for the random variable \<open>T(x)\<close>.\<close>
     \<comment> \<open>The parameter \<open>t\<close> is usually nonnegative, but theoretically it can be negative.\<close>
 
-abbreviation survive_1 :: "real \<Rightarrow> real" ("$p'__" [101] 200)
+abbreviation survive_1 :: "real \<Rightarrow> real" (\<open>$p'__\<close> [101] 200)
   where "$p_x \<equiv> $p_{1&x}"
 
-definition die :: "real \<Rightarrow> real \<Rightarrow> real" ("$q'_{_&_}" [0,0] 200)
+definition die :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$q'_{_&_}\<close> [0,0] 200)
   where "$q_{t&x} \<equiv> cdf (distr (\<MM> \<downharpoonright> alive x) borel (T x)) t"
     \<comment> \<open>the probability that a person aged \<open>x\<close> will die within \<open>t\<close> years\<close>
     \<comment> \<open>Note that the function \<open>$q_{\<cdot>&x}\<close> is the cumulative distributive function
         on \<open>(\<MM> \<downharpoonright> alive x)\<close> for the random variable \<open>T(x)\<close>.\<close>
     \<comment> \<open>The parameter \<open>t\<close> is usually nonnegative, but theoretically it can be negative.\<close>
 
-abbreviation die_1 :: "real \<Rightarrow> real" ("$q'__" [101] 200)
+abbreviation die_1 :: "real \<Rightarrow> real" (\<open>$q'__\<close> [101] 200)
   where "$q_x \<equiv> $q_{1&x}"
 
-definition die_defer :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real" ("$q'_{_\<bar>_&_}" [0,0,0] 200)
+definition die_defer :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real" (\<open>$q'_{_\<bar>_&_}\<close> [0,0,0] 200)
   where "$q_{f\<bar>t&x} = \<bar>$q_{f+t&x} - $q_{f&x}\<bar>"
     \<comment> \<open>the probability that a person aged \<open>x\<close> will die within \<open>t\<close> years, deferred \<open>f\<close> years\<close>
     \<comment> \<open>The parameters \<open>f\<close> and \<open>t\<close> are usually nonnegative, but theoretically they can be negative.\<close>
 
-abbreviation die_defer_1 :: "real \<Rightarrow> real \<Rightarrow> real" ("$q'_{_\<bar>&_}" [0,0] 200)
+abbreviation die_defer_1 :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$q'_{_\<bar>&_}\<close> [0,0] 200)
   where "$q_{f\<bar>&x} \<equiv> $q_{f\<bar>1&x}"
 
-definition life_expect :: "real \<Rightarrow> real" ("$e`\<circ>'__" [101] 200)
+definition life_expect :: "real \<Rightarrow> real" (\<open>$e`\<circ>'__\<close> [101] 200)
   where "$e`\<circ>_x \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (T x)"
     \<comment> \<open>complete life expectation\<close>
     \<comment> \<open>Note that \<open>$e`\<circ>_x\<close> is calculated as \<open>0\<close> when \<open>nn_integral (\<MM> \<downharpoonright> alve x) (T x) = \<infinity>\<close>.\<close>
 
-definition temp_life_expect :: "real \<Rightarrow> real \<Rightarrow>real" ("$e`\<circ>'_{_:_}" [0,0] 200)
+definition temp_life_expect :: "real \<Rightarrow> real \<Rightarrow>real" (\<open>$e`\<circ>'_{_:_}\<close> [0,0] 200)
   where "$e`\<circ>_{x:n} \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. min (T x \<xi>) n)"
     \<comment> \<open>temporary complete life expectation\<close>
 
-definition curt_life_expect :: "real \<Rightarrow> real" ("$e'__" [101] 200)
+definition curt_life_expect :: "real \<Rightarrow> real" (\<open>$e'__\<close> [101] 200)
   where "$e_x \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. \<lfloor>T x \<xi>\<rfloor>)"
     \<comment> \<open>curtate life expectation\<close>
     \<comment> \<open>Note that \<open>$e_x\<close> is calculated as \<open>0\<close> when \<open>nn_integral (\<MM> \<downharpoonright> alive x) \<lfloor>T x\<rfloor> = \<infinity>\<close>.\<close>
 
-definition temp_curt_life_expect :: "real \<Rightarrow> real \<Rightarrow> real" ("$e'_{_:_}" [0,0] 200)
+definition temp_curt_life_expect :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$e'_{_:_}\<close> [0,0] 200)
   where "$e_{x:n} \<equiv> integral\<^sup>L (\<MM> \<downharpoonright> alive x) (\<lambda>\<xi>. \<lfloor>min (T x \<xi>) n\<rfloor>)"
     \<comment> \<open>temporary curtate life expectation\<close>
     \<comment> \<open>In the definition \<open>n\<close> can be a real number, but in practice \<open>n\<close> is usually a natural number.\<close>
@@ -2190,7 +2190,7 @@ corollary e_integral_pdfX: "$e`\<circ>_0 = integral {0..} (\<lambda>x. pdfX x * 
 
 subsubsection \<open>Introduction of Force of Mortality\<close>
 
-definition force_mortal :: "real \<Rightarrow> real" ("$\<mu>'__" [101] 200)
+definition force_mortal :: "real \<Rightarrow> real" (\<open>$\<mu>'__\<close> [101] 200)
   where "$\<mu>_x \<equiv> MM_PS.hazard_rate X x"
 
 lemma mu_pdfX: "$\<mu>_x = pdfX x / ccdf (distr \<MM> borel X) x"
@@ -2833,7 +2833,7 @@ locale limited_survival_function = survival_model +
   assumes psi_limited[simp]: "$\<psi> < \<infinity>"
 begin
 
-definition ult_age :: nat ("$\<omega>")
+definition ult_age :: nat (\<open>$\<omega>\<close>)
   where "$\<omega> \<equiv> LEAST x::nat. ccdf (distr \<MM> borel X) x = 0"
     \<comment> \<open>the conventional notation for ultimate age\<close>
 

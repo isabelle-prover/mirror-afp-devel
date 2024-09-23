@@ -12,7 +12,7 @@ subsection\<open>Differentiability on a Set\<close>
 
 text\<open>A function is differentiable on a set iff it is differentiable at any point within that set.\<close>
 definition field_differentiable_on :: "('a \<Rightarrow> 'a::real_normed_field) \<Rightarrow> 'a set \<Rightarrow> bool"
-  (infix "field'_differentiable'_on" 50)
+  (infix \<open>field'_differentiable'_on\<close> 50)
   where "f field_differentiable_on s \<equiv> \<forall>x\<in>s. f field_differentiable (at x within s)"
 
 text\<open>This is preserved for subsets.\<close>
@@ -28,7 +28,7 @@ text\<open>
   of x and its derivative is differentiable at x.
 \<close>
 definition twice_field_differentiable_at :: "['a \<Rightarrow> 'a::real_normed_field, 'a ] \<Rightarrow> bool"
-  (infixr "(twice'_field'_differentiable'_at)" 50)
+  (infixr \<open>(twice'_field'_differentiable'_at)\<close> 50)
   where "f twice_field_differentiable_at x \<equiv>
            \<exists>S. f field_differentiable_on S \<and> x \<in> interior S \<and> (deriv f) field_differentiable (at x)"
 

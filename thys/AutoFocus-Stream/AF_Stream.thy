@@ -16,8 +16,8 @@ subsubsection \<open>Time-synchronous streams\<close>
 datatype 'a message_af = NoMsg | Msg 'a
 
 notation (latex)
-  NoMsg  ("\<NoMsg>") and
-  Msg  ("\<Msg>")
+  NoMsg  (\<open>\<NoMsg>\<close>) and
+  Msg  (\<open>\<Msg>\<close>)
 
 text \<open>Abbreviation for finite streams\<close>
 type_synonym 'a fstream_af = "'a message_af list"
@@ -238,29 +238,29 @@ subsection \<open>Expanding and compressing lists and streams\<close>
 
 subsubsection \<open>Expanding message streams\<close>
 
-primrec f_expand :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl "\<odot>\<^sub>f" 100)
+primrec f_expand :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl \<open>\<odot>\<^sub>f\<close> 100)
 where
   f_expand_Nil: "[] \<odot>\<^sub>f k = []"
 | f_expand_Cons: "(x # xs) \<odot>\<^sub>f k =
     (if 0 < k then x # \<NoMsg>\<^bsup>k - Suc 0\<^esup> @ (xs \<odot>\<^sub>f k) else [])"
 
-definition i_expand :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl "\<odot>\<^sub>i" 100)
+definition i_expand :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl \<open>\<odot>\<^sub>i\<close> 100)
 where
   "i_expand \<equiv> \<lambda>f k n.
    (if k = 0 then \<NoMsg> else
     if n mod k = 0 then f (n div k) else \<NoMsg>)"
 
-primrec f_expand_Suc :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl "\<odot>\<^bsub>fSuc\<^esub>" 100)
+primrec f_expand_Suc :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl \<open>\<odot>\<^bsub>fSuc\<^esub>\<close> 100)
 where
   "f_expand_Suc [] k = []"
 | "f_expand_Suc (x # xs) k = x # \<NoMsg>\<^bsup>k\<^esup> @ (f_expand_Suc xs k)"
 
-definition i_expand_Suc :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl "\<odot>\<^bsub>iSuc\<^esub>" 100)
+definition i_expand_Suc :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl \<open>\<odot>\<^bsub>iSuc\<^esub>\<close> 100)
   where "i_expand_Suc \<equiv> \<lambda>f k n. if n mod (Suc k) = 0 then f (n div (Suc k)) else \<NoMsg>"
 
 notation
-  f_expand  (infixl "\<odot>" 100) and
-  i_expand  (infixl "\<odot>" 100)
+  f_expand  (infixl \<open>\<odot>\<close> 100) and
+  i_expand  (infixl \<open>\<odot>\<close> 100)
 
 
 lemma length_f_expand_Suc[simp]: "length (f_expand_Suc xs k) = length xs * Suc k"
@@ -775,15 +775,15 @@ where
   "last_message [] = \<NoMsg>"
 | "last_message (x # xs) = (if last_message xs = \<NoMsg> then x else last_message xs)"
 
-definition f_shrink :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl "\<div>\<^sub>f" 100)
+definition f_shrink :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl \<open>\<div>\<^sub>f\<close> 100)
   where "f_shrink xs k \<equiv> f_aggregate xs k last_message"
 
-definition i_shrink :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl "\<div>\<^sub>i" 100)
+definition i_shrink :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl \<open>\<div>\<^sub>i\<close> 100)
   where "i_shrink f k \<equiv> i_aggregate f k last_message"
 
 notation
-  f_shrink  (infixl "\<div>" 100) and
-  i_shrink  (infixl "\<div>" 100)
+  f_shrink  (infixl \<open>\<div>\<close> 100) and
+  i_shrink  (infixl \<open>\<div>\<close> 100)
 
 
 lemmas f_shrink_defs = f_shrink_def f_aggregate_def
@@ -1285,15 +1285,15 @@ text \<open>
   Returns for each point in time the currently last non-empty message
   of the current stream cycle of length \<open>k\<close>.\<close>
 
-definition f_last_message_hold :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl "\<longmapsto>\<^sub>f" 100)
+definition f_last_message_hold :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl \<open>\<longmapsto>\<^sub>f\<close> 100)
   where "f_last_message_hold xs k \<equiv> concat (map last_message_hold (list_slice2 xs k))"
 
-definition i_last_message_hold :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl "\<longmapsto>\<^sub>i" 100)
+definition i_last_message_hold :: "'a istream_af \<Rightarrow> nat \<Rightarrow> 'a istream_af" (infixl \<open>\<longmapsto>\<^sub>i\<close> 100)
   where "i_last_message_hold f k \<equiv> \<lambda>n. last_message (f \<Up> (n - n mod k) \<Down> Suc (n mod k))"
 
 notation
-  f_last_message_hold  (infixl "\<longmapsto>" 100) and
-  i_last_message_hold  (infixl "\<longmapsto>" 100)
+  f_last_message_hold  (infixl \<open>\<longmapsto>\<close> 100) and
+  i_last_message_hold  (infixl \<open>\<longmapsto>\<close> 100)
 
 lemma f_last_message_hold_0[simp]: "xs \<longmapsto>\<^sub>f 0 = last_message_hold xs"
 by (simp add: f_last_message_hold_def list_slice2_0)
@@ -1449,15 +1449,15 @@ text \<open>
   by just aggregating every sequence of length k
   to its last element.\<close>
 
-definition f_shrink_last :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"   (infixl "\<div>\<^bsub>fl\<^esub>" 100)
+definition f_shrink_last :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"   (infixl \<open>\<div>\<^bsub>fl\<^esub>\<close> 100)
   where "f_shrink_last xs k \<equiv> f_aggregate xs k last"
 
-definition i_shrink_last :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a ilist" (infixl "\<div>\<^bsub>il\<^esub>" 100)
+definition i_shrink_last :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a ilist" (infixl \<open>\<div>\<^bsub>il\<^esub>\<close> 100)
   where "i_shrink_last f k \<equiv> i_aggregate f k last"
 
 notation
-  f_shrink_last  (infixl "\<div>\<^sub>l" 100) and
-  i_shrink_last  (infixl "\<div>\<^sub>l" 100)
+  f_shrink_last  (infixl \<open>\<div>\<^sub>l\<close> 100) and
+  i_shrink_last  (infixl \<open>\<div>\<^sub>l\<close> 100)
 
 
 lemma f_shrink_last_0[simp]: "xs \<div>\<^bsub>fl\<^esub> 0 = []"

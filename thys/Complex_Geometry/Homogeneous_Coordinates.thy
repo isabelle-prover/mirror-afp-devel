@@ -19,7 +19,7 @@ subsection \<open>Definition of homogeneous coordinates\<close>
 
 text \<open>Two complex vectors are equivalent iff they are proportional.\<close>
 
-definition complex_cvec_eq :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> bool" (infix "\<approx>\<^sub>v" 50)  where
+definition complex_cvec_eq :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> bool" (infix \<open>\<approx>\<^sub>v\<close> 50)  where
   [simp]: "z1 \<approx>\<^sub>v z2 \<longleftrightarrow> (\<exists> k. k \<noteq> (0::complex) \<and> z2 = k *\<^sub>s\<^sub>v z1)"
 
 lemma complex_cvec_eq_mix:
@@ -73,7 +73,7 @@ typedef complex_homo_coords = "{v::complex_vec. v \<noteq> vec_zero}"
 
 setup_lifting type_definition_complex_homo_coords
 
-lift_definition complex_homo_coords_eq :: "complex_homo_coords \<Rightarrow> complex_homo_coords \<Rightarrow> bool" (infix "\<approx>" 50) is complex_cvec_eq
+lift_definition complex_homo_coords_eq :: "complex_homo_coords \<Rightarrow> complex_homo_coords \<Rightarrow> bool" (infix \<open>\<approx>\<close> 50) is complex_cvec_eq
   done
 
 lemma complex_homo_coords_eq_reflp [simp]:
@@ -129,11 +129,11 @@ subsection \<open>Some characteristic points in $\mathbb{C}P^1$\<close>
 (* ---------------------------------------------------------------------------- *)
 
 text \<open>Infinite point\<close>
-definition inf_cvec :: "complex_vec" ("\<infinity>\<^sub>v") where
+definition inf_cvec :: "complex_vec" (\<open>\<infinity>\<^sub>v\<close>) where
   [simp]: "inf_cvec = (1, 0)"
-lift_definition inf_hcoords :: "complex_homo_coords"  ("\<infinity>\<^sub>h\<^sub>c") is inf_cvec
+lift_definition inf_hcoords :: "complex_homo_coords"  (\<open>\<infinity>\<^sub>h\<^sub>c\<close>) is inf_cvec
   by simp
-lift_definition inf :: "complex_homo"  ("\<infinity>\<^sub>h")  is inf_hcoords
+lift_definition inf :: "complex_homo"  (\<open>\<infinity>\<^sub>h\<close>)  is inf_hcoords
 done
 
 lemma inf_cvec_z2_zero_iff:
@@ -143,11 +143,11 @@ lemma inf_cvec_z2_zero_iff:
   by auto
 
 text \<open>Zero\<close>
-definition zero_cvec :: "complex_vec" ("0\<^sub>v") where
+definition zero_cvec :: "complex_vec" (\<open>0\<^sub>v\<close>) where
   [simp]: "zero_cvec = (0, 1)"
-lift_definition zero_hcoords :: "complex_homo_coords" ("0\<^sub>h\<^sub>c") is zero_cvec
+lift_definition zero_hcoords :: "complex_homo_coords" (\<open>0\<^sub>h\<^sub>c\<close>) is zero_cvec
   by simp
-lift_definition zero :: "complex_homo" ("0\<^sub>h") is zero_hcoords
+lift_definition zero :: "complex_homo" (\<open>0\<^sub>h\<close>) is zero_hcoords
   done
 
 lemma zero_cvec_z1_zero_iff:
@@ -157,11 +157,11 @@ lemma zero_cvec_z1_zero_iff:
   by auto
 
 text \<open>One\<close>
-definition one_cvec :: "complex_vec" ("1\<^sub>v")where
+definition one_cvec :: "complex_vec" (\<open>1\<^sub>v\<close>)where
   [simp]: "one_cvec = (1, 1)"
-lift_definition one_hcoords :: "complex_homo_coords" ("1\<^sub>h\<^sub>c") is one_cvec
+lift_definition one_hcoords :: "complex_homo_coords" (\<open>1\<^sub>h\<^sub>c\<close>) is one_cvec
   by simp
-lift_definition one :: "complex_homo" ("1\<^sub>h") is one_hcoords
+lift_definition one :: "complex_homo" (\<open>1\<^sub>h\<close>) is one_hcoords
   done
 
 lemma zero_one_infty_not_equal [simp]:
@@ -169,11 +169,11 @@ lemma zero_one_infty_not_equal [simp]:
   by (transfer, transfer, simp)+
 
 text \<open>Imaginary unit\<close>
-definition ii_cvec :: "complex_vec" ("ii\<^sub>v") where
+definition ii_cvec :: "complex_vec" (\<open>ii\<^sub>v\<close>) where
   [simp]: "ii_cvec = (\<i>, 1)"
-lift_definition ii_hcoords :: "complex_homo_coords" ("ii\<^sub>h\<^sub>c") is ii_cvec
+lift_definition ii_hcoords :: "complex_homo_coords" (\<open>ii\<^sub>h\<^sub>c\<close>) is ii_cvec
   by simp
-lift_definition ii :: "complex_homo" ("ii\<^sub>h") is ii_hcoords
+lift_definition ii :: "complex_homo" (\<open>ii\<^sub>h\<close>) is ii_hcoords
   done
 
 lemma ex_3_different_points:
@@ -332,16 +332,16 @@ subsubsection \<open>Addition\<close>
 text \<open>$\infty_h\ +_h\ \infty_h$ is ill-defined. Since functions must be total, for formal reasons we
 define it arbitrarily to be $\infty_h$.\<close>
 
-definition add_cvec :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl "+\<^sub>v" 60) where
+definition add_cvec :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl \<open>+\<^sub>v\<close> 60) where
   [simp]: "add_cvec z w = (let (z1, z2) = z; (w1, w2) = w
                                 in if z2 \<noteq> 0 \<or> w2 \<noteq> 0 then
                                       (z1*w2 + w1*z2, z2*w2)
                                    else
                                       (1, 0))"
-lift_definition add_hcoords :: "complex_homo_coords \<Rightarrow> complex_homo_coords \<Rightarrow> complex_homo_coords" (infixl "+\<^sub>h\<^sub>c" 60) is add_cvec
+lift_definition add_hcoords :: "complex_homo_coords \<Rightarrow> complex_homo_coords \<Rightarrow> complex_homo_coords" (infixl \<open>+\<^sub>h\<^sub>c\<close> 60) is add_cvec
   by (auto split: if_split_asm)
 
-lift_definition add :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl "+\<^sub>h" 60) is add_hcoords
+lift_definition add :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl \<open>+\<^sub>h\<close> 60) is add_hcoords
 proof transfer
   fix z w z' w' :: complex_vec
   obtain z1 z2 w1 w2 z'1 z'2 w'1 w'2 where
@@ -420,11 +420,11 @@ lemma inf_add_inf:
 subsubsection \<open>Unary minus\<close>
 (* ---------------------------------------------------------------------------- *)
 
-definition uminus_cvec :: "complex_vec \<Rightarrow> complex_vec" ("~\<^sub>v") where
+definition uminus_cvec :: "complex_vec \<Rightarrow> complex_vec" (\<open>~\<^sub>v\<close>) where
   [simp]: "~\<^sub>v z = (let (z1, z2) = z in (-z1, z2))"
-lift_definition uminus_hcoords :: "complex_homo_coords \<Rightarrow> complex_homo_coords" ("~\<^sub>h\<^sub>c") is uminus_cvec
+lift_definition uminus_hcoords :: "complex_homo_coords \<Rightarrow> complex_homo_coords" (\<open>~\<^sub>h\<^sub>c\<close>) is uminus_cvec
   by auto
-lift_definition uminus :: "complex_homo \<Rightarrow> complex_homo" ("~\<^sub>h") is uminus_hcoords
+lift_definition uminus :: "complex_homo \<Rightarrow> complex_homo" (\<open>~\<^sub>h\<close>) is uminus_hcoords
   by transfer auto
 
 lemma uminus_of_complex [simp]:
@@ -462,7 +462,7 @@ subsubsection \<open>Subtraction\<close>
 text \<open>Operation $\infty_h\ -_h\ \infty_h$ is ill-defined, but we define it arbitrarily to $0_h$. It breaks the connection between
    subtraction with addition and unary minus, but seems more intuitive.\<close>
 
-definition sub :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl "-\<^sub>h" 60) where
+definition sub :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl \<open>-\<^sub>h\<close> 60) where
   "z -\<^sub>h w = (if z = \<infinity>\<^sub>h \<and> w = \<infinity>\<^sub>h then 0\<^sub>h else z +\<^sub>h (~\<^sub>h w))"
 
 lemma of_complex_sub_of_complex [simp]:
@@ -572,16 +572,16 @@ subsubsection \<open>Multiplication\<close>
 text \<open>Operations $0_h \cdot_h \infty_h$ and $\infty_h \cdot_h 0_h$ are ill defined. Since all
 functions must be total, for formal reasons we define it arbitrarily to be $1_h$.\<close>
 
-definition mult_cvec :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl "*\<^sub>v" 70) where
+definition mult_cvec :: "complex_vec \<Rightarrow> complex_vec \<Rightarrow> complex_vec" (infixl \<open>*\<^sub>v\<close> 70) where
  [simp]: "z *\<^sub>v w = (let (z1, z2) = z; (w1, w2) = w
                      in if (z1 = 0 \<and> w2 = 0) \<or> (w1 = 0 \<and> z2 = 0) then
                           (1, 1)
                         else
                           (z1*w1, z2*w2))"
-lift_definition mult_hcoords :: "complex_homo_coords \<Rightarrow> complex_homo_coords \<Rightarrow> complex_homo_coords" (infixl "*\<^sub>h\<^sub>c" 70) is mult_cvec
+lift_definition mult_hcoords :: "complex_homo_coords \<Rightarrow> complex_homo_coords \<Rightarrow> complex_homo_coords" (infixl \<open>*\<^sub>h\<^sub>c\<close> 70) is mult_cvec
   by (auto split: if_split_asm)
 
-lift_definition mult :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl "*\<^sub>h" 70) is mult_hcoords
+lift_definition mult :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl \<open>*\<^sub>h\<close> 70) is mult_hcoords
 proof transfer
   fix z w z' w' :: complex_vec
   obtain z1 z2 w1 w2 z'1 z'2 w'1 w'2 where
@@ -770,7 +770,7 @@ subsubsection \<open>Division\<close>
 text \<open>Operations $0_h :_h 0_h$ and $\infty_h :_h \infty_h$ are ill-defined. For formal reasons they
 are defined to be $1_h$ (by the definition of multiplication).\<close>
 
-definition divide :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl ":\<^sub>h" 70) where
+definition divide :: "complex_homo \<Rightarrow> complex_homo \<Rightarrow> complex_homo" (infixl \<open>:\<^sub>h\<close> 70) where
   "x :\<^sub>h y = x *\<^sub>h (reciprocal y)"
 
 lemma divide_zero_right [simp]:

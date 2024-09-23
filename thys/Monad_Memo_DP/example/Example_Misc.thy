@@ -41,8 +41,8 @@ paragraph \<open>Syntax\<close>
 
 bundle app_syntax begin
 
-notation App (infixl "$" 999)
-notation Wrap ("\<llangle>_\<rrangle>")
+notation App (infixl \<open>$\<close> 999)
+notation Wrap (\<open>\<llangle>_\<rrangle>\<close>)
 
 end
 

@@ -181,7 +181,7 @@ text\<open>Constructor for turning a monomial into a polynomial\<close>
 definition mset_to_IP :: "('a, 'b) ring_scheme \<Rightarrow> 'c monomial \<Rightarrow> ('a,'c) mvar_poly" where
 "mset_to_IP R m n= (if (n = m) then \<one>\<^bsub>R\<^esub> else \<zero>\<^bsub>R\<^esub>)"
 
-definition var_to_IP :: "('a, 'b) ring_scheme \<Rightarrow> 'c \<Rightarrow> ('a,'c) mvar_poly" ("pvar") where
+definition var_to_IP :: "('a, 'b) ring_scheme \<Rightarrow> 'c \<Rightarrow> ('a,'c) mvar_poly" (\<open>pvar\<close>) where
 "var_to_IP R i = mset_to_IP R {#i#}"
 
 context ring
@@ -715,7 +715,7 @@ definition P_ring_mult :: "('a, 'b) ring_scheme \<Rightarrow> ('a,'c) mvar_poly 
   where
 "P_ring_mult R P Q m = (finsum R (\<lambda>x. (P x) \<otimes>\<^bsub>R\<^esub> (Q (m - x))) (mset_factors m))"
 
-abbreviation(in ring) P_ring_mult_in_ring (infixl "\<Otimes>\<^sub>p" 65)where
+abbreviation(in ring) P_ring_mult_in_ring (infixl \<open>\<Otimes>\<^sub>p\<close> 65)where
 "P_ring_mult_in_ring \<equiv>  P_ring_mult R"
 
 (**************************************************************************************************)
@@ -5252,7 +5252,7 @@ next
   qed
 qed
 
-abbreviation mon_term ("Mt") where
+abbreviation mon_term (\<open>Mt\<close>) where
 "Mt k m \<equiv> poly_scalar_mult R k (mset_to_IP R m)"
 
 lemma poly_eval_monom_term_mult:

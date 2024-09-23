@@ -78,10 +78,10 @@ duality, which is not formalised.\<close>
 
 text \<open>The following functions have left-sided elements as fixpoints.\<close>
 
-definition lsl:: "'a::quantale \<Rightarrow> 'a" ("\<nu>") where 
+definition lsl:: "'a::quantale \<Rightarrow> 'a" (\<open>\<nu>\<close>) where 
   "\<nu> x = \<top> \<cdot> x"
 
-definition lsu :: "'a::quantale \<Rightarrow> 'a" ("\<nu>\<^sup>\<natural>") where 
+definition lsu :: "'a::quantale \<Rightarrow> 'a" (\<open>\<nu>\<^sup>\<natural>\<close>) where 
   "\<nu>\<^sup>\<natural> x = \<top> \<rightarrow> x"
 
 text \<open>These functions are adjoints.\<close>

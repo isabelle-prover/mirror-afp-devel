@@ -11,7 +11,7 @@ subsubsection \<open>Towards meets: Lower bounds\<close>
 
 context po
 begin
-definition is_lb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix ">|" 55) where
+definition is_lb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>>|\<close> 55) where
   "S >| x \<longleftrightarrow> (\<forall>y\<in>S. x \<sqsubseteq> y)"
 
 lemma is_lbI: "(!!x. x \<in> S ==> l \<sqsubseteq> x) ==> S >| l"
@@ -31,10 +31,10 @@ lemma is_lb_downward: "[|S >| l; y \<sqsubseteq> l|] ==> S >| y"
 
 subsubsection \<open>Greatest lower bounds\<close>
 
-definition is_glb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix ">>|" 55) where
+definition is_glb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>>>|\<close> 55) where
   "S >>| x \<longleftrightarrow> S >| x \<and> (\<forall>u. S >| u --> u \<sqsubseteq> x)"
 
-definition glb :: "'a set \<Rightarrow> 'a" ("\<Sqinter>_" [60]60) where
+definition glb :: "'a set \<Rightarrow> 'a" (\<open>\<Sqinter>_\<close> [60]60) where
   "glb S = (THE x. S >>| x)" 
 
 text \<open>Access to the definition as inference rule\<close>
@@ -115,7 +115,7 @@ begin
   done
 end
 
-definition meet :: "'a::cpo \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<sqinter>" 80) where
+definition meet :: "'a::cpo \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<sqinter>\<close> 80) where
   "x \<sqinter> y = (if \<exists> z. {x, y} >>| z then glb {x, y} else x)"
 
 lemma meet_def': "(x::'a::Finite_Meet_cpo) \<sqinter> y = glb {x, y}"

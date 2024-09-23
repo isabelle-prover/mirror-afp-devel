@@ -13,13 +13,13 @@ begin
 subsection\<open>Definitions\<close>
 
 locale bl_chain = totally_ordered_hoop + 
-  fixes zeroA :: "'a" ("0\<^sup>A")
+  fixes zeroA :: "'a" (\<open>0\<^sup>A\<close>)
   assumes zero_closed: "0\<^sup>A \<in> A"
   assumes zero_first: "x \<in> A \<Longrightarrow> 0\<^sup>A \<le>\<^sup>A x"
 
 locale bounded_tower_of_irr_hoops = tower_of_irr_hoops +
-  fixes zeroI ("0\<^sup>I") 
-  fixes zeroS ("0\<^sup>S")
+  fixes zeroI (\<open>0\<^sup>I\<close>) 
+  fixes zeroS (\<open>0\<^sup>S\<close>)
   assumes I_zero_closed : "0\<^sup>I \<in> I"
   and zero_first: "i \<in> I \<Longrightarrow> 0\<^sup>I \<le>\<^sup>I i"
   and first_zero_closed: "0\<^sup>S \<in> UNI 0\<^sup>I"
@@ -27,11 +27,11 @@ locale bounded_tower_of_irr_hoops = tower_of_irr_hoops +
 begin
 
 abbreviation (uni_zero)
-  uni_zero :: "'b set"  ("\<bbbA>\<^sub>0\<^sub>I")
+  uni_zero :: "'b set"  (\<open>\<bbbA>\<^sub>0\<^sub>I\<close>)
   where "\<bbbA>\<^sub>0\<^sub>I \<equiv> UNI 0\<^sup>I"
 
 abbreviation (imp_zero)
-  imp_zero :: "['b, 'b] \<Rightarrow> 'b"  ("((_)/ \<rightarrow>\<^sup>0\<^sup>I / (_))" [61,61] 60)
+  imp_zero :: "['b, 'b] \<Rightarrow> 'b"  (\<open>((_)/ \<rightarrow>\<^sup>0\<^sup>I / (_))\<close> [61,61] 60)
   where "x \<rightarrow>\<^sup>0\<^sup>I y \<equiv> IMP 0\<^sup>I x y"
 
 end
@@ -41,7 +41,7 @@ begin
 
 subsection\<open>First element of @{term I}\<close>
 
-definition zeroI :: "'a set" ("0\<^sup>I")
+definition zeroI :: "'a set" (\<open>0\<^sup>I\<close>)
   where "0\<^sup>I = \<pi> 0\<^sup>A"
 
 lemma I_zero_closed: "0\<^sup>I \<in> I"
@@ -78,15 +78,15 @@ qed
 
 subsection\<open>Main result for BL-chains\<close>
 
-definition zeroS :: "'a" ("0\<^sup>S")
+definition zeroS :: "'a" (\<open>0\<^sup>S\<close>)
   where "0\<^sup>S = 0\<^sup>A"
 
 abbreviation (uniA_zero)
-  uniA_zero :: "'a set" ("(\<bbbA>\<^sub>0\<^sub>I)")
+  uniA_zero :: "'a set" (\<open>(\<bbbA>\<^sub>0\<^sub>I)\<close>)
   where "\<bbbA>\<^sub>0\<^sub>I \<equiv> UNI\<^sub>A 0\<^sup>I"
 
 abbreviation (impA_zero_xy)
-  impA_zero_xy :: "['a, 'a] \<Rightarrow> 'a"  ("((_)/ \<rightarrow>\<^sup>0\<^sup>I / (_))" [61, 61] 60)
+  impA_zero_xy :: "['a, 'a] \<Rightarrow> 'a"  (\<open>((_)/ \<rightarrow>\<^sup>0\<^sup>I / (_))\<close> [61, 61] 60)
   where "x \<rightarrow>\<^sup>0\<^sup>I y \<equiv> IMP\<^sub>A 0\<^sup>I x y"
 
 lemma tower_is_bounded:

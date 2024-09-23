@@ -16,7 +16,7 @@ definition weakSimAux :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi
                          (\<forall>Q' a x. (Q \<longmapsto> a<x> \<prec> Q' \<and> x \<sharp> P) \<longrightarrow> (\<exists>P''. \<forall>u. \<exists>P'. P \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel)) \<and>
                          (\<forall>Q' \<alpha>. Q \<longmapsto> \<alpha> \<prec> Q' \<longrightarrow> (\<exists>P'. P \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel))"
 
-definition weakSimulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" ("_ \<leadsto>\<^sup>^<_> _" [80, 80, 80] 80) where
+definition weakSimulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<leadsto>\<^sup>^<_> _\<close> [80, 80, 80] 80) where
   "P \<leadsto>\<^sup>^<Rel> Q \<equiv> (\<forall>Rs. Q \<longmapsto> Rs \<longrightarrow> weakSimAct P Rs P Rel)"
 
 lemmas simDef = weakSimAct_def weakSimulation_def

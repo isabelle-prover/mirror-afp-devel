@@ -46,28 +46,28 @@ where
   "sup P mxs mxl \<equiv> snd(snd(sl P mxs mxl))"
 
 definition sup_ty_opt :: "['c prog,ty err,ty err] \<Rightarrow> bool" 
-  ("_ \<turnstile> _ \<le>\<^sub>\<top> _" [71,71,71] 70)
+  (\<open>_ \<turnstile> _ \<le>\<^sub>\<top> _\<close> [71,71,71] 70)
 where
   "sup_ty_opt P \<equiv> Err.le (widen P)"
 
 definition sup_state :: "['c prog,ty\<^sub>i,ty\<^sub>i] \<Rightarrow> bool"   
-  ("_ \<turnstile> _ \<le>\<^sub>i _" [71,71,71] 70)
+  (\<open>_ \<turnstile> _ \<le>\<^sub>i _\<close> [71,71,71] 70)
 where
   "sup_state P \<equiv> Product.le (Listn.le (widen P)) (Listn.le (sup_ty_opt P))"
 
 definition sup_state_opt :: "['c prog,ty\<^sub>i',ty\<^sub>i'] \<Rightarrow> bool" 
-  ("_ \<turnstile> _ \<le>'' _" [71,71,71] 70)
+  (\<open>_ \<turnstile> _ \<le>'' _\<close> [71,71,71] 70)
 where
   "sup_state_opt P \<equiv> Opt.le (sup_state P)"
 
-abbreviation sup_loc :: "['c prog,ty\<^sub>l,ty\<^sub>l] \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>\<^sub>\<top>] _"  [71,71,71] 70)
+abbreviation sup_loc :: "['c prog,ty\<^sub>l,ty\<^sub>l] \<Rightarrow> bool" (\<open>_ \<turnstile> _ [\<le>\<^sub>\<top>] _\<close>  [71,71,71] 70)
 where "P \<turnstile> LT [\<le>\<^sub>\<top>] LT' \<equiv> list_all2 (sup_ty_opt P) LT LT'"
 
 notation (ASCII)
-  sup_ty_opt ("_ |- _ <=T _" [71,71,71] 70) and
-  sup_state ("_ |- _ <=i _"  [71,71,71] 70) and
-  sup_state_opt ("_ |- _ <=' _"  [71,71,71] 70) and
-  sup_loc ("_ |- _ [<=T] _"  [71,71,71] 70)
+  sup_ty_opt (\<open>_ |- _ <=T _\<close> [71,71,71] 70) and
+  sup_state (\<open>_ |- _ <=i _\<close>  [71,71,71] 70) and
+  sup_state_opt (\<open>_ |- _ <=' _\<close>  [71,71,71] 70) and
+  sup_loc (\<open>_ |- _ [<=T] _\<close>  [71,71,71] 70)
 
 subsection "Unfolding"
 

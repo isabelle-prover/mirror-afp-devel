@@ -9,7 +9,7 @@ context StrongPostdomination begin
 
 definition 
   weak_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-  ("_ weakly controls _" [51,0])
+  (\<open>_ weakly controls _\<close> [51,0])
 where weak_control_dependences_eq:
     "n weakly controls n' \<equiv> \<exists>as. n weakly controls n' via as"
 

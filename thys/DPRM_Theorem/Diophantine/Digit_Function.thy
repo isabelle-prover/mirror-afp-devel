@@ -4,7 +4,7 @@ theory Digit_Function
   imports Exponential_Relation "Digit_Expansions.Bits_Digits"
 begin
 
-definition digit ("[ _ = Digit _ _ _]" [999] 1000)
+definition digit (\<open>[ _ = Digit _ _ _]\<close> [999] 1000)
   where "[D = Digit AA K BASE] \<equiv> (QUATERNARY (\<lambda>d a k b. b > 1
                                     \<and> d = nth_digit a k b) D AA K BASE)"
 lemma mod_dioph2[dioph]:

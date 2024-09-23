@@ -242,7 +242,7 @@ section \<open> List Mapping \<close>
 text \<open> The following notation for permutations is slightly nicer when
        formatted in \LaTeX. \<close>
 
-notation perm (infix "\<rightleftharpoons>" 50)
+notation perm (infix \<open>\<rightleftharpoons>\<close> 50)
 
 lemma map_monotonic:
   assumes "mset A \<subseteq># mset B"
@@ -542,7 +542,7 @@ qed
 
 section \<open> List Subtraction \<close>
 
-primrec list_subtract :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl "\<ominus>" 70)
+primrec list_subtract :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl \<open>\<ominus>\<close> 70)
   where
       "xs \<ominus> [] = xs"
     | "xs \<ominus> (y # ys) = (remove1 y (xs \<ominus> ys))"
@@ -1148,7 +1148,7 @@ qed
 
 section \<open> List Intersection \<close>
 
-primrec list_intersect :: "'a list => 'a list => 'a list"  (infixl "\<^bold>\<inter>" 60)
+primrec list_intersect :: "'a list => 'a list => 'a list"  (infixl \<open>\<^bold>\<inter>\<close> 60)
   where
     "_ \<^bold>\<inter> [] = []"
   | "xs \<^bold>\<inter> (y # ys) =

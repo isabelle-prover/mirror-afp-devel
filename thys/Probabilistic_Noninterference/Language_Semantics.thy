@@ -432,7 +432,7 @@ subsection \<open>Syntax\<close>
 datatype ('test, 'atom, 'choice) cmd =
   Done
 | Atm "'atom"
-| Seq "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd" ("_ ;; _"  [60, 61] 60)
+| Seq "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd" (\<open>_ ;; _\<close>  [60, 61] 60)
 | While "'test" "('test, 'atom, 'choice) cmd"
 | Ch 'choice "('test, 'atom, 'choice) cmd" "('test, 'atom, 'choice) cmd"
 | Par "('test, 'atom, 'choice) cmd list"
@@ -1259,7 +1259,7 @@ next
   qed
 qed auto
 
-abbreviation fromPlus ("(1{_..<+_})") where
+abbreviation fromPlus (\<open>(1{_..<+_})\<close>) where
 "{a ..<+ b} \<equiv> {a ..< a + b}"
 
 lemma brnL_UN:

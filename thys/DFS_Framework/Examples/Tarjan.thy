@@ -37,7 +37,7 @@ abbreviation "the_lowlink s v \<equiv> the (lowlink s v)"
 
 context timing_syntax
 begin
-  notation the_lowlink ("\<zeta>")
+  notation the_lowlink (\<open>\<zeta>\<close>)
 end
 
 locale Tarjan_def = graph_defs G

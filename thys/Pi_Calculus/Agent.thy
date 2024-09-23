@@ -53,16 +53,16 @@ lemmas name_per_rev = pt_pi_rev[OF pt_name_inst, OF at_name_inst]
 lemmas name_exists_fresh = at_exists_fresh[OF at_name_inst, OF fs_name1]
 lemmas name_perm_compose = pt_perm_compose[OF pt_name_inst, OF at_name_inst]
 
-nominal_datatype pi = PiNil                  ("\<zero>")
-                    | Output name name pi    ("_{_}._" [120, 120, 110] 110)
-                    | Tau pi                 ("\<tau>._" [120] 110)
-                    | Input name "\<guillemotleft>name\<guillemotright> pi" ("_<_>._" [120, 120, 110] 110)
-                    | Match name name pi     ("[_\<frown>_]_" [120, 120, 110] 110)
-                    | Mismatch name name pi  ("[_\<noteq>_]_" [120, 120, 110] 110)
-                    | Sum pi pi              (infixr "\<oplus>" 90)
-                    | Par pi pi              (infixr "\<parallel>" 85)
-                    | Res "\<guillemotleft>name\<guillemotright> pi"        ("<\<nu>_>_" [100, 100] 100)
-                    | Bang pi                ("!_" [110] 110)
+nominal_datatype pi = PiNil                  (\<open>\<zero>\<close>)
+                    | Output name name pi    (\<open>_{_}._\<close> [120, 120, 110] 110)
+                    | Tau pi                 (\<open>\<tau>._\<close> [120] 110)
+                    | Input name "\<guillemotleft>name\<guillemotright> pi" (\<open>_<_>._\<close> [120, 120, 110] 110)
+                    | Match name name pi     (\<open>[_\<frown>_]_\<close> [120, 120, 110] 110)
+                    | Mismatch name name pi  (\<open>[_\<noteq>_]_\<close> [120, 120, 110] 110)
+                    | Sum pi pi              (infixr \<open>\<oplus>\<close> 90)
+                    | Par pi pi              (infixr \<open>\<parallel>\<close> 85)
+                    | Res "\<guillemotleft>name\<guillemotright> pi"        (\<open><\<nu>_>_\<close> [100, 100] 100)
+                    | Bang pi                (\<open>!_\<close> [110] 110)
 
 lemmas name_fresh[simp] = at_fresh[OF at_name_inst]
 
@@ -103,7 +103,7 @@ qed
 
 (*Substitution*)
 
-definition subst_name :: "name \<Rightarrow> name \<Rightarrow> name \<Rightarrow> name"   ("_[_::=_]" [110, 110, 110] 110)
+definition subst_name :: "name \<Rightarrow> name \<Rightarrow> name \<Rightarrow> name"   (\<open>_[_::=_]\<close> [110, 110, 110] 110)
 where
   "a[b::=c] \<equiv> if (a = b) then c else a"
 
@@ -120,7 +120,7 @@ by(auto simp add: at_bij[OF at_name_inst])
 
 
 nominal_primrec (freshness_context: "(c::name, d::name)")
-  subs :: "pi \<Rightarrow> name \<Rightarrow> name \<Rightarrow> pi" ("_[_::=_]" [100,100,100] 100)
+  subs :: "pi \<Rightarrow> name \<Rightarrow> name \<Rightarrow> pi" (\<open>_[_::=_]\<close> [100,100,100] 100)
 where
   "\<zero>[c::=d] = \<zero>"
 | "\<tau>.(P)[c::=d] = \<tau>.(P[c::=d])"
@@ -301,7 +301,7 @@ by(blast)+
   
 (******** Sequential substitution *******)
 
-primrec seqSubs :: "pi \<Rightarrow> (name \<times> name) list \<Rightarrow> pi" ("_[<_>]" [100,100] 100) where
+primrec seqSubs :: "pi \<Rightarrow> (name \<times> name) list \<Rightarrow> pi" (\<open>_[<_>]\<close> [100,100] 100) where
   "P[<[]>] = P"
 | "P[<(x#\<sigma>)>] = (P[(fst x)::=(snd x)])[<\<sigma>>]"
 

@@ -18,9 +18,9 @@ end
 context register_machine 
 begin
 
-no_notation ppolynomial.Sum (infixl "\<^bold>+" 65) 
-no_notation ppolynomial.NatDiff (infixl "\<^bold>-" 65) 
-no_notation ppolynomial.Prod (infixl "\<^bold>*" 70) 
+no_notation ppolynomial.Sum (infixl \<open>\<^bold>+\<close> 65) 
+no_notation ppolynomial.NatDiff (infixl \<open>\<^bold>-\<close> 65) 
+no_notation ppolynomial.Prod (infixl \<open>\<^bold>*\<close> 70) 
 
 
 lemma state_0_dioph:

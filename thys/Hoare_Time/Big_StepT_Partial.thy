@@ -72,7 +72,7 @@ lemma  fixes ps:: partstate
 subsubsection "Big step Semantics on partial states"
 
 inductive
-  big_step_t_part :: "com \<times> partstate \<Rightarrow> nat \<Rightarrow> partstate \<Rightarrow> bool"  ("_ \<Rightarrow>\<^sub>A _ \<Down> _" 55)
+  big_step_t_part :: "com \<times> partstate \<Rightarrow> nat \<Rightarrow> partstate \<Rightarrow> bool"  (\<open>_ \<Rightarrow>\<^sub>A _ \<Down> _\<close> 55)
 where
 Skip: "(SKIP,s) \<Rightarrow>\<^sub>A Suc 0 \<Down> s" |
 Assign: "\<lbrakk> vars a \<union> {x} \<subseteq> dom ps; paval a ps = v ; ps' = ps(x \<mapsto> v) \<rbrakk> \<Longrightarrow> (x ::= a,ps) \<Rightarrow>\<^sub>A Suc 0 \<Down> ps'" |
@@ -293,7 +293,7 @@ qed
     
 subsection \<open>Dollar and Pointsto\<close>    
     
-definition dollar :: "nat \<Rightarrow> assn2" ("$") where
+definition dollar :: "nat \<Rightarrow> assn2" (\<open>$\<close>) where
   "dollar q = (%(s,c). s = 0 \<and> c=q)"
   
   
@@ -333,13 +333,13 @@ lemma T: assumes "(embP Q \<and>* $ n) = (embP P \<and>* $ m)"
           using assms orthogonal_split by auto
   
   
-definition pointsto :: "vname \<Rightarrow> val \<Rightarrow> assn2"  ("_ \<hookrightarrow> _" [56,51] 56) where
+definition pointsto :: "vname \<Rightarrow> val \<Rightarrow> assn2"  (\<open>_ \<hookrightarrow> _\<close> [56,51] 56) where
   "v \<hookrightarrow> n = (%(s,c). s = [v \<mapsto> n] \<and> c=0)"
   
 (* If you don't mind syntax ambiguity: *)
-notation pred_ex (binder "\<exists>" 10)
+notation pred_ex (binder \<open>\<exists>\<close> 10)
   
-definition maps_to_ex :: "vname \<Rightarrow> assn2" ("_ \<hookrightarrow> -" [56] 56)
+definition maps_to_ex :: "vname \<Rightarrow> assn2" (\<open>_ \<hookrightarrow> -\<close> [56] 56)
   where "x \<hookrightarrow> - \<equiv> \<exists>y. x \<hookrightarrow> y"
         
 fun lmaps_to_ex :: "vname set \<Rightarrow> assn2" where

@@ -15,7 +15,7 @@ safety.\<close>
 
 section \<open>Store Lemmas\<close>
 
-abbreviation delta_ext (" _ \<sqsubseteq> _ ") where  
+abbreviation delta_ext (\<open> _ \<sqsubseteq> _ \<close>) where  
   "delta_ext \<Delta> \<Delta>' \<equiv> (setD \<Delta> \<subseteq> setD \<Delta>')" 
 
 nominal_function dc_of :: "branch_s \<Rightarrow> string" where

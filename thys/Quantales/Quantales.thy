@@ -49,10 +49,10 @@ lemma mult_isor: "x \<le> y \<Longrightarrow> x \<cdot> z \<le> y \<cdot> z"
 
 text \<open>Left and right residuals can be defined in every proto-nearquantale.\<close>
     
-definition bres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60) where 
+definition bres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<rightarrow>\<close> 60) where 
   "x \<rightarrow> z = \<Squnion>{y. x \<cdot> y \<le> z}"
 
-definition fres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leftarrow>" 60) where 
+definition fres :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<leftarrow>\<close> 60) where 
   "z \<leftarrow> y = \<Squnion>{x. x \<cdot> y \<le> z}"
 
 text \<open>The left one is a right adjoint  to composition. For the right one, additional assumptions are needed\<close>

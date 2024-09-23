@@ -110,14 +110,14 @@ inductive red ::
    \<Rightarrow> 'addr expr \<Rightarrow> ('addr, 'heap) Jstate
    \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action
    \<Rightarrow> 'addr expr \<Rightarrow> ('addr, 'heap) Jstate \<Rightarrow> bool"
-  ("_,_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0,0] 81)
+  (\<open>_,_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [51,51,0,0,0,0,0,0] 81)
  and reds ::
   "(('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action)
    \<Rightarrow> 'addr J_prog \<Rightarrow> 'thread_id 
    \<Rightarrow> 'addr expr list \<Rightarrow> ('addr, 'heap) Jstate 
    \<Rightarrow> ('addr, 'thread_id, 'x,'heap) Jinja_thread_action
    \<Rightarrow> 'addr expr list \<Rightarrow> ('addr, 'heap) Jstate \<Rightarrow> bool"
-               ("_,_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0,0] 81)
+               (\<open>_,_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))\<close> [51,51,0,0,0,0,0,0] 81)
 for extTA :: "('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> ('addr, 'thread_id, 'x, 'heap) Jinja_thread_action"
 and P :: "'addr J_prog" and t :: 'thread_id
 where
@@ -437,13 +437,13 @@ inductive_cases reds_cases:
 abbreviation red' ::
   "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr \<Rightarrow> ('heap \<times> 'addr locals) 
   \<Rightarrow> ('addr, 'thread_id, 'heap) J_thread_action \<Rightarrow> 'addr expr \<Rightarrow> ('heap \<times> 'addr locals) \<Rightarrow> bool"
-  ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+  (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
 where "red' P \<equiv> red (extTA2J P) P"
 
 abbreviation reds' :: 
   "'addr J_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr list \<Rightarrow> ('heap \<times> 'addr locals)
   \<Rightarrow> ('addr, 'thread_id, 'heap) J_thread_action \<Rightarrow> 'addr expr list \<Rightarrow> ('heap \<times> 'addr locals) \<Rightarrow> bool"
-  ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+  (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
 where "reds' P \<equiv> reds (extTA2J P) P"
 
 subsection\<open>Some easy lemmas\<close>

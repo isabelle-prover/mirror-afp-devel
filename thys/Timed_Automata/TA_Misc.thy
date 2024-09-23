@@ -266,7 +266,7 @@ qed
 
 locale enumerateable =
   fixes T :: "'a set"
-  fixes less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<prec>" 50)
+  fixes less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50)
   assumes finite: "finite T"
   assumes total:  "\<forall> x \<in> T. \<forall> y \<in> T. x \<noteq> y \<longrightarrow> (x \<prec> y) \<or> (y \<prec> x)"
   assumes trans:  "\<forall>x \<in> T. \<forall> y \<in> T. \<forall> z \<in> T. (x :: 'a) \<prec> y \<longrightarrow> y \<prec> z \<longrightarrow> x \<prec> z"

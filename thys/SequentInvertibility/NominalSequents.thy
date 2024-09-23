@@ -19,19 +19,19 @@ Recall we defined formulae as being indexed by a type of connectives.  We could 
 
 nominal_datatype form = At "nat" "var list" 
                                   | Cpd0 "string" "form_list"
-                                  | Cpd1 "string" "\<guillemotleft>var\<guillemotright>form" ("_ (\<nabla> [_]._)" (*<*)[100,100,100]100(*>*))
+                                  | Cpd1 "string" "\<guillemotleft>var\<guillemotright>form" (\<open>_ (\<nabla> [_]._)\<close> (*<*)[100,100,100]100(*>*))
                                   | ff
 and form_list = FNil
                    | FCons "form" "form_list"
 
 (*<*)
-abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
+abbreviation multiset_abbrev (\<open>\<LM> _  \<RM>\<close> [75]75) where
    "\<LM> A \<RM> \<equiv> {# A #}"
 
-abbreviation multiset_empty ("\<Empt>" 75) where
+abbreviation multiset_empty (\<open>\<Empt>\<close> 75) where
   "\<Empt> \<equiv> {#}"
 
-datatype sequent = Sequent "form multiset" "form multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype sequent = Sequent "form multiset" "form multiset" (\<open> (_) \<Rightarrow>* (_)\<close> [6,6] 5)
 
 
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
@@ -42,10 +42,10 @@ type_synonym rule = "sequent list * sequent"
 type_synonym deriv = "sequent * nat"
 
 abbreviation
-multiset_plus (infixl "\<oplus>" 80) where
+multiset_plus (infixl \<open>\<oplus>\<close> 80) where
    "(\<Gamma> :: form multiset) \<oplus> (A :: form) \<equiv> \<Gamma> + \<LM>A\<RM>"
 abbreviation
-multiset_minus (infixl "\<ominus>" 80) where
+multiset_minus (infixl \<open>\<ominus>\<close> 80) where
    "(\<Gamma> :: form multiset) \<ominus>  (A :: form) \<equiv> \<Gamma> - \<LM>A\<RM>" 
 
 consts
@@ -86,10 +86,10 @@ definition uniqueConclusion :: "rule set \<Rightarrow> bool"
 
 end
 
-primrec sequentMinus :: "sequent \<Rightarrow> form \<Rightarrow> sequent" ("_ - _" [100,100]100) where
+primrec sequentMinus :: "sequent \<Rightarrow> form \<Rightarrow> sequent" (\<open>_ - _\<close> [100,100]100) where
   "(\<Gamma> \<Rightarrow>* \<Delta>) - A = (\<Gamma> \<ominus> A \<Rightarrow>* \<Delta> \<ominus> A)"
 
-primrec listMinus :: "sequent list \<Rightarrow> form \<Rightarrow> sequent list" (" _ - _ " [100,100]100) where
+primrec listMinus :: "sequent list \<Rightarrow> form \<Rightarrow> sequent list" (\<open> _ - _ \<close> [100,100]100) where
   "[] - A = []"
 | "(P # Ps) - A = (P - A) # (Ps - A)"
 
@@ -136,7 +136,7 @@ proof-
 then show ?thesis by auto
 qed
 (*<*)
-primrec subst :: "var \<Rightarrow> var \<Rightarrow> var list \<Rightarrow> var list" ("[_;_]_" [100,100,100] 100) where
+primrec subst :: "var \<Rightarrow> var \<Rightarrow> var list \<Rightarrow> var list" (\<open>[_;_]_\<close> [100,100,100] 100) where
   Empt:"[z;y][] = []"
 | NEmpt:"[z;y](x#ys) = (if x=y then (z#([z;y]ys)) else (x#([z;y]ys)))"
 
@@ -151,8 +151,8 @@ text\<open>
 \noindent Substitution is defined in the usual way:\<close>
 
 nominal_primrec 
-    subst_form  :: "var \<Rightarrow> var \<Rightarrow> form \<Rightarrow> form" ("[_,_]_"(*<*) [100,100,100] 100(*>*))
-and subst_forms :: "var \<Rightarrow> var \<Rightarrow> form_list \<Rightarrow> form_list" ("[_,_]_"(*<*) [100,100,100] 100(*>*))
+    subst_form  :: "var \<Rightarrow> var \<Rightarrow> form \<Rightarrow> form" (\<open>[_,_]_\<close>(*<*) [100,100,100] 100(*>*))
+and subst_forms :: "var \<Rightarrow> var \<Rightarrow> form_list \<Rightarrow> form_list" (\<open>[_,_]_\<close>(*<*) [100,100,100] 100(*>*))
 where
    "[z,y](At P xs) = At P ([z;y]xs)"
 |  "x\<sharp>(z,y) \<Longrightarrow> [z,y](F \<nabla> [x].A) = F \<nabla> [x].([z,y]A)"
@@ -183,7 +183,7 @@ Extending the rule sets with passive parts depends upon which kind of active par
 \<close>
 
 (* We need to be careful now about how to extend a rule, since we have binding *)
-inductive_set extRules :: "rule set \<Rightarrow> rule set"   (" _*" )
+inductive_set extRules :: "rule set \<Rightarrow> rule set"   (\<open> _*\<close> )
    for R :: "rule set"
    where
   id(*<*)[intro](*>*):   "\<lbrakk> r \<in> R ; r \<in> Ax \<rbrakk> \<Longrightarrow> extendRule S r \<in> R*"

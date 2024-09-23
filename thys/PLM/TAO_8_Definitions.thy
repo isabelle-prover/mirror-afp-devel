@@ -9,7 +9,7 @@ text\<open>\label{TAO_Definitions}\<close>
 
 subsection\<open>Property Negations\<close>
 
-consts propnot :: "'a\<Rightarrow>'a" ("_\<^sup>-" [90] 90)
+consts propnot :: "'a\<Rightarrow>'a" (\<open>_\<^sup>-\<close> [90] 90)
 overloading propnot\<^sub>0 \<equiv> "propnot :: \<Pi>\<^sub>0\<Rightarrow>\<Pi>\<^sub>0"
             propnot\<^sub>1 \<equiv> "propnot :: \<Pi>\<^sub>1\<Rightarrow>\<Pi>\<^sub>1"
             propnot\<^sub>2 \<equiv> "propnot :: \<Pi>\<^sub>2\<Rightarrow>\<Pi>\<^sub>2"
@@ -91,9 +91,9 @@ definition Null :: "\<kappa>\<Rightarrow>\<o>" where
 definition Universal :: "\<kappa>\<Rightarrow>\<o>" where
   "Universal \<equiv> \<lambda> x . \<lparr>A!,x\<rparr> \<^bold>& (\<^bold>\<forall> F . \<lbrace>x, F\<rbrace>)"
 
-definition NullObject :: "\<kappa>" ("\<^bold>a\<^sub>\<emptyset>") where
+definition NullObject :: "\<kappa>" (\<open>\<^bold>a\<^sub>\<emptyset>\<close>) where
   "NullObject \<equiv> (\<^bold>\<iota>x . Null (x\<^sup>P))"
-definition UniversalObject :: "\<kappa>" ("\<^bold>a\<^sub>V") where
+definition UniversalObject :: "\<kappa>" (\<open>\<^bold>a\<^sub>V\<close>) where
   "UniversalObject \<equiv> (\<^bold>\<iota>x . Universal (x\<^sup>P))"
 
 subsection\<open>Propositional Properties\<close>
@@ -108,7 +108,7 @@ definition Indiscriminate :: "\<Pi>\<^sub>1\<Rightarrow>\<o>" where
 
 subsection\<open>Miscellaneous\<close>
 
-definition not_identical\<^sub>E :: "\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (infixl "\<^bold>\<noteq>\<^sub>E" 63)
+definition not_identical\<^sub>E :: "\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (infixl \<open>\<^bold>\<noteq>\<^sub>E\<close> 63)
   where "not_identical\<^sub>E \<equiv> \<lambda> x y . \<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . x\<^sup>P \<^bold>=\<^sub>E y\<^sup>P))\<^sup>-, x, y\<rparr>"
 
 (*<*)

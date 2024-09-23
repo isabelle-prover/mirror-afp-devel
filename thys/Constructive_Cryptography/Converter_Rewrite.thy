@@ -4,7 +4,7 @@ begin
 
 section \<open>Equivalence of converters restricted by interfaces\<close>
 
-coinductive eq_resource_on :: "'a set \<Rightarrow> ('a, 'b) resource \<Rightarrow> ('a, 'b) resource \<Rightarrow> bool" ("_ \<turnstile>\<^sub>R/ _ \<sim>/ _" [100, 99, 99] 99)
+coinductive eq_resource_on :: "'a set \<Rightarrow> ('a, 'b) resource \<Rightarrow> ('a, 'b) resource \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>R/ _ \<sim>/ _\<close> [100, 99, 99] 99)
   for A where
     eq_resource_onI: "A \<turnstile>\<^sub>R res \<sim> res'" if
     "\<And>a. a \<in> A \<Longrightarrow> rel_spmf (rel_prod (=) (eq_resource_on A)) (run_resource res a) (run_resource res' a)"
@@ -350,7 +350,7 @@ lemma eq_\<I>_gpvD_results_gpv2:
 
 
 coinductive eq_\<I>_converter :: "('a, 'b) \<I> \<Rightarrow> ('out, 'in) \<I> \<Rightarrow> ('a, 'b, 'out, 'in) converter \<Rightarrow> ('a, 'b, 'out, 'in) converter \<Rightarrow> bool"
-  ("_,_ \<turnstile>\<^sub>C/ _ \<sim>/ _" [100, 0, 99, 99] 99)
+  (\<open>_,_ \<turnstile>\<^sub>C/ _ \<sim>/ _\<close> [100, 0, 99, 99] 99)
   for \<I> \<I>' where
     eq_\<I>_converterI: "\<I>, \<I>' \<turnstile>\<^sub>C conv \<sim> conv'" if
     "\<And>q. q \<in> outs_\<I> \<I> \<Longrightarrow> eq_\<I>_gpv (rel_prod (eq_onp (\<lambda>r. r \<in> responses_\<I> \<I> q)) (eq_\<I>_converter \<I> \<I>')) \<I>' (run_converter conv q) (run_converter conv' q)"

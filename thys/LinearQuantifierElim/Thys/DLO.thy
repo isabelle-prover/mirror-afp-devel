@@ -145,7 +145,7 @@ fun amin_inf :: "atom \<Rightarrow> atom fm" where
 "amin_inf (Eq _ 0) = FalseF" |
 "amin_inf (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
+abbreviation min_inf :: "atom fm \<Rightarrow> atom fm" (\<open>inf\<^sub>-\<close>) where
 "inf\<^sub>- \<equiv> amap\<^sub>f\<^sub>m amin_inf"
 
 fun aplus_inf :: "atom \<Rightarrow> atom fm" where
@@ -157,7 +157,7 @@ fun aplus_inf :: "atom \<Rightarrow> atom fm" where
 "aplus_inf (Eq _ 0) = FalseF" |
 "aplus_inf (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation plus_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>+") where
+abbreviation plus_inf :: "atom fm \<Rightarrow> atom fm" (\<open>inf\<^sub>+\<close>) where
 "inf\<^sub>+ \<equiv> amap\<^sub>f\<^sub>m aplus_inf"
 
 lemma min_inf:

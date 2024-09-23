@@ -599,10 +599,10 @@ text \<open>
   a Galois connection to express data refinement by program refinement.
 \<close>
 
-definition conc_fun ("\<Down>") where
+definition conc_fun (\<open>\<Down>\<close>) where
   "conc_fun R m \<equiv> case m of FAILi \<Rightarrow> FAIL | RES X \<Rightarrow> RES (R\<inverse>``X)"
 
-definition abs_fun ("\<Up>") where
+definition abs_fun (\<open>\<Up>\<close>) where
   "abs_fun R m \<equiv> case m of FAILi \<Rightarrow> FAIL 
     | RES X \<Rightarrow> if X\<subseteq>Domain R then RES (R``X) else FAIL"
 

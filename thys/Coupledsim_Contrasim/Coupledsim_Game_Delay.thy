@@ -42,7 +42,7 @@ locale cs_game =
   lts_tau trans \<tau> +
   simple_game cs_game_moves cs_game_defender_node
 for
-  trans :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<longmapsto>_  _" [70, 70, 70] 80) and
+  trans :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<longmapsto>_  _\<close> [70, 70, 70] 80) and
   \<tau> :: \<open>'a\<close>
 begin
 

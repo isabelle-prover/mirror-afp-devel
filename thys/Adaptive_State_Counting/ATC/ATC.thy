@@ -485,7 +485,7 @@ fun atc_io_reduction_on_sets :: "('in, 'out, 'state1) FSM \<Rightarrow> 'in list
   "atc_io_reduction_on_sets M1 TS \<Omega> M2 = (\<forall> iseq \<in> TS . atc_io_reduction_on M1 M2 iseq \<Omega>)"
 
 notation 
-  atc_io_reduction_on_sets ("(_ \<preceq>\<lbrakk>_._\<rbrakk> _)" [1000,1000,1000,1000])
+  atc_io_reduction_on_sets (\<open>(_ \<preceq>\<lbrakk>_._\<rbrakk> _)\<close> [1000,1000,1000,1000])
 
 
 

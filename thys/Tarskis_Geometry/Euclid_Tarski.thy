@@ -13,11 +13,11 @@ subsection "Real Euclidean space satisfies the first five axioms"
 
 abbreviation
   real_euclid_C :: "[real^('n::finite), real^('n), real^('n), real^('n)] \<Rightarrow> bool"
-  ("_ _ \<congruent>\<^sub>\<real> _ _" [99,99,99,99] 50) where
+  (\<open>_ _ \<congruent>\<^sub>\<real> _ _\<close> [99,99,99,99] 50) where
     "real_euclid_C \<equiv> norm_metric.smC"
 
 definition real_euclid_B :: "[real^('n::finite), real^('n), real^('n)] \<Rightarrow> bool"
-  ("B\<^sub>\<real> _ _ _" [99,99,99] 50) where
+  (\<open>B\<^sub>\<real> _ _ _\<close> [99,99,99] 50) where
     "B\<^sub>\<real> a b c \<equiv> \<exists>l. 0 \<le> l \<and> l \<le> 1 \<and> b - a = l *\<^sub>R (c - a)"
 
 interpretation real_euclid: tarski_first5 real_euclid_C real_euclid_B

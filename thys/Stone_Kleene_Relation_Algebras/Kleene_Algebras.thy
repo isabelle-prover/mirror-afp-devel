@@ -24,7 +24,7 @@ We start with left Kleene algebras, which use the left unfold and left induction
 \<close>
 
 class star =
-  fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [100] 100)
+  fixes star :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<star>\<close> [100] 100)
 
 class left_kleene_algebra = idempotent_left_semiring + star +
   assumes star_left_unfold : "1 \<squnion> y * y\<^sup>\<star> \<le> y\<^sup>\<star>"
@@ -32,9 +32,9 @@ class left_kleene_algebra = idempotent_left_semiring + star +
 begin
 
 no_notation
-  trancl ("(_\<^sup>+)" [1000] 999)
+  trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
 
-abbreviation tc ("_\<^sup>+" [100] 100) where "tc x \<equiv> x * x\<^sup>\<star>"
+abbreviation tc (\<open>_\<^sup>+\<close> [100] 100) where "tc x \<equiv> x * x\<^sup>\<star>"
 
 lemma star_left_unfold_equal:
   "1 \<squnion> x * x\<^sup>\<star> = x\<^sup>\<star>"

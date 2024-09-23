@@ -28,10 +28,10 @@ by (induction t arbitrary: k i) (auto simp add: Suc_diff_le)
 
 subsubsection \<open>Reduction\<close>
 
-abbreviation beta_eta :: "dB \<Rightarrow> dB \<Rightarrow> bool" (infixl "\<rightarrow>\<^sub>\<beta>\<^sub>\<eta>" 50)
+abbreviation beta_eta :: "dB \<Rightarrow> dB \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<^sub>\<beta>\<^sub>\<eta>\<close> 50)
 where "beta_eta \<equiv> sup beta eta"
 
-abbreviation beta_eta_reds :: "dB \<Rightarrow> dB \<Rightarrow> bool" (infixl "\<rightarrow>\<^sub>\<beta>\<^sub>\<eta>\<^sup>*" 50)
+abbreviation beta_eta_reds :: "dB \<Rightarrow> dB \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<^sub>\<beta>\<^sub>\<eta>\<^sup>*\<close> 50)
 where "s \<rightarrow>\<^sub>\<beta>\<^sub>\<eta>\<^sup>* t \<equiv> (beta_eta)\<^sup>*\<^sup>* s t"
 
 lemma beta_into_beta_eta_reds: "s \<rightarrow>\<^sub>\<beta> t \<Longrightarrow> s \<rightarrow>\<^sub>\<beta>\<^sub>\<eta>\<^sup>* t"
@@ -74,7 +74,7 @@ subsubsection \<open>Equivalence\<close>
 
 text \<open>Terms are equivalent iff they can be reduced to a common term.\<close>
 
-definition term_equiv :: "dB \<Rightarrow> dB \<Rightarrow> bool" (infixl "\<leftrightarrow>" 50)
+definition term_equiv :: "dB \<Rightarrow> dB \<Rightarrow> bool" (infixl \<open>\<leftrightarrow>\<close> 50)
 where "term_equiv = joinablep beta_eta_reds"
 
 lemma term_equivI:

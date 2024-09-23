@@ -7,7 +7,7 @@ begin
 
 subsection \<open> Expression type \<close>
   
-purge_notation BNF_Def.convol ("\<langle>(_,/ _)\<rangle>")
+purge_notation BNF_Def.convol (\<open>\<langle>(_,/ _)\<rangle>\<close>)
 
 text \<open> Before building the predicate model, we will build a model of expressions that generalise
   alphabetised predicates. Expressions are represented semantically as mapping from
@@ -20,8 +20,8 @@ typedef ('t, '\<alpha>) uexpr = "UNIV :: ('\<alpha> \<Rightarrow> 't) set" ..
 
 setup_lifting type_definition_uexpr
     
-notation Rep_uexpr ("\<lbrakk>_\<rbrakk>\<^sub>e")
-notation Abs_uexpr ("mk\<^sub>e")
+notation Rep_uexpr (\<open>\<lbrakk>_\<rbrakk>\<^sub>e\<close>)
+notation Abs_uexpr (\<open>mk\<^sub>e\<close>)
 
 lemma uexpr_eq_iff:
   "e = f \<longleftrightarrow> (\<forall> b. \<lbrakk>e\<rbrakk>\<^sub>e b = \<lbrakk>f\<rbrakk>\<^sub>e b)"
@@ -45,7 +45,7 @@ lift_definition var :: "('t \<Longrightarrow> '\<alpha>) \<Rightarrow> ('t, '\<a
 text \<open> A literal is simply a constant function expression, always returning the same value
   for any binding. \<close>
 
-lift_definition lit :: "'t \<Rightarrow> ('t, '\<alpha>) uexpr" ("\<guillemotleft>_\<guillemotright>") is "\<lambda> v b. v" .
+lift_definition lit :: "'t \<Rightarrow> ('t, '\<alpha>) uexpr" (\<open>\<guillemotleft>_\<guillemotright>\<close>) is "\<lambda> v b. v" .
 
 text \<open> We define lifting for unary, binary, ternary, and quaternary expression constructs, that 
   simply take a HOL function with correct number of arguments and apply it function to all possible 
@@ -79,13 +79,13 @@ definition uIf :: "bool \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" wher
 
 abbreviation cond ::
   "('a,'\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> ('a,'\<alpha>) uexpr \<Rightarrow> ('a,'\<alpha>) uexpr"
-  ("(3_ \<triangleleft> _ \<triangleright>/ _)" [52,0,53] 52)
+  (\<open>(3_ \<triangleleft> _ \<triangleright>/ _)\<close> [52,0,53] 52)
 where "P \<triangleleft> b \<triangleright> Q \<equiv> trop uIf b P Q"
 
 text \<open> UTP expression is equality is simply HOL equality lifted using the @{term bop} binary 
   expression constructor. \<close>
     
-definition eq_upred :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infixl "=\<^sub>u" 50)
+definition eq_upred :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infixl \<open>=\<^sub>u\<close> 50)
 where [uexpr_defs]: "eq_upred x y = bop HOL.eq x y"
 
 text \<open> A literal is the expression @{term "\<guillemotleft>v\<guillemotright>"}, where @{term v} is any HOL term. Actually, the
@@ -96,7 +96,7 @@ text \<open> A literal is the expression @{term "\<guillemotleft>v\<guillemotrig
   We also set up syntax for UTP variable expressions. \<close>
   
 syntax
-  "_uuvar" :: "svar \<Rightarrow> logic" ("_")
+  "_uuvar" :: "svar \<Rightarrow> logic" (\<open>_\<close>)
 
 syntax_consts
   "_uuvar" == var
@@ -190,11 +190,11 @@ text \<open> We add new non-terminals for UTP tuples and maplets. \<close>
 nonterminal utuple_args and umaplet and umaplets
 
 syntax \<comment> \<open> Core expression constructs \<close>
-  "_ucoerce"    :: "logic \<Rightarrow> type \<Rightarrow> logic" (infix ":\<^sub>u" 50)
-  "_ulambda"    :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<lambda> _ \<bullet> _" [0, 10] 10)
-  "_ulens_ovrd" :: "logic \<Rightarrow> logic \<Rightarrow> salpha \<Rightarrow> logic" ("_ \<oplus> _ on _" [85, 0, 86] 86)
-  "_ulens_get"  :: "logic \<Rightarrow> svar \<Rightarrow> logic" ("_:_" [900,901] 901)
-  "_umem"       :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix "\<in>\<^sub>u" 50)
+  "_ucoerce"    :: "logic \<Rightarrow> type \<Rightarrow> logic" (infix \<open>:\<^sub>u\<close> 50)
+  "_ulambda"    :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<lambda> _ \<bullet> _\<close> [0, 10] 10)
+  "_ulens_ovrd" :: "logic \<Rightarrow> logic \<Rightarrow> salpha \<Rightarrow> logic" (\<open>_ \<oplus> _ on _\<close> [85, 0, 86] 86)
+  "_ulens_get"  :: "logic \<Rightarrow> svar \<Rightarrow> logic" (\<open>_:_\<close> [900,901] 901)
+  "_umem"       :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix \<open>\<in>\<^sub>u\<close> 50)
 
 translations
   "\<lambda> x \<bullet> p" == "CONST ulambda (\<lambda> x. p)"
@@ -205,12 +205,12 @@ translations
   "x \<in>\<^sub>u A" == "CONST bop (\<in>) x A"
 
 syntax \<comment> \<open> Tuples \<close>
-  "_utuple"     :: "('a, '\<alpha>) uexpr \<Rightarrow> utuple_args \<Rightarrow> ('a * 'b, '\<alpha>) uexpr" ("(1'(_,/ _')\<^sub>u)")
-  "_utuple_arg"  :: "('a, '\<alpha>) uexpr \<Rightarrow> utuple_args" ("_")
-  "_utuple_args" :: "('a, '\<alpha>) uexpr => utuple_args \<Rightarrow> utuple_args"     ("_,/ _")
-  "_uunit"      :: "('a, '\<alpha>) uexpr" ("'(')\<^sub>u")
-  "_ufst"       :: "('a \<times> 'b, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" ("\<pi>\<^sub>1'(_')")
-  "_usnd"       :: "('a \<times> 'b, '\<alpha>) uexpr \<Rightarrow> ('b, '\<alpha>) uexpr" ("\<pi>\<^sub>2'(_')")
+  "_utuple"     :: "('a, '\<alpha>) uexpr \<Rightarrow> utuple_args \<Rightarrow> ('a * 'b, '\<alpha>) uexpr" (\<open>(1'(_,/ _')\<^sub>u)\<close>)
+  "_utuple_arg"  :: "('a, '\<alpha>) uexpr \<Rightarrow> utuple_args" (\<open>_\<close>)
+  "_utuple_args" :: "('a, '\<alpha>) uexpr => utuple_args \<Rightarrow> utuple_args"     (\<open>_,/ _\<close>)
+  "_uunit"      :: "('a, '\<alpha>) uexpr" (\<open>'(')\<^sub>u\<close>)
+  "_ufst"       :: "('a \<times> 'b, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" (\<open>\<pi>\<^sub>1'(_')\<close>)
+  "_usnd"       :: "('a \<times> 'b, '\<alpha>) uexpr \<Rightarrow> ('b, '\<alpha>) uexpr" (\<open>\<pi>\<^sub>2'(_')\<close>)
 
 translations
   "()\<^sub>u"      == "\<guillemotleft>()\<guillemotright>"
@@ -220,10 +220,10 @@ translations
   "\<pi>\<^sub>2(x)"    == "CONST uop CONST snd x"
 
 syntax \<comment> \<open> Orders \<close>
-  "_uless"      :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix "<\<^sub>u" 50)
-  "_uleq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix "\<le>\<^sub>u" 50)
-  "_ugreat"     :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix ">\<^sub>u" 50)
-  "_ugeq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix "\<ge>\<^sub>u" 50)
+  "_uless"      :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix \<open><\<^sub>u\<close> 50)
+  "_uleq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix \<open>\<le>\<^sub>u\<close> 50)
+  "_ugreat"     :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix \<open>>\<^sub>u\<close> 50)
+  "_ugeq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix \<open>\<ge>\<^sub>u\<close> 50)
 
 translations
   "x <\<^sub>u y"   == "CONST bop (<) x y"

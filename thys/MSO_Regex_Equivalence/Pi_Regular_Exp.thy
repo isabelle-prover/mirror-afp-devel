@@ -61,7 +61,7 @@ lemma toplevel_summands_finite[simp]:
   "finite (toplevel_summands r)"
   by (induct r) auto
 
-primrec ACI_norm :: "('a::linorder) rexp \<Rightarrow> 'a rexp"  ("\<guillemotleft>_\<guillemotright>") where
+primrec ACI_norm :: "('a::linorder) rexp \<Rightarrow> 'a rexp"  (\<open>\<guillemotleft>_\<guillemotright>\<close>) where
   "\<guillemotleft>Zero\<guillemotright> = Zero"
 | "\<guillemotleft>Full\<guillemotright> = Full"
 | "\<guillemotleft>One\<guillemotright> = One"
@@ -260,7 +260,7 @@ qed auto
 subsection \<open>Wellformedness w.r.t. an alphabet\<close>
 
 locale alphabet =
-fixes \<Sigma> :: "nat \<Rightarrow> 'a set" ("\<Sigma> _")
+fixes \<Sigma> :: "nat \<Rightarrow> 'a set" (\<open>\<Sigma> _\<close>)
 and wf_atom :: "nat \<Rightarrow> 'b :: linorder \<Rightarrow> bool"
 begin
 

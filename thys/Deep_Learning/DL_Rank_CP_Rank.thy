@@ -9,7 +9,7 @@ begin
 
 abbreviation "mrank A == vec_space.rank (dim_row A) A"
 
-no_notation "normal_rel"  (infixl "\<lhd>" 60)
+no_notation "normal_rel"  (infixl \<open>\<lhd>\<close> 60)
 
 lemma lookup_order1_prod:
 assumes "\<And>B. B\<in>set Bs \<Longrightarrow> Tensor.order B = 1"

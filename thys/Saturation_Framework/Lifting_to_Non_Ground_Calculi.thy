@@ -24,7 +24,7 @@ locale standard_lifting = inference_system Inf_F +
     Inf_F :: \<open>'f inference set\<close> and
     Bot_G :: \<open>'g set\<close> and
     Inf_G ::  \<open>'g inference set\<close> and
-    entails_G ::  \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
+    entails_G ::  \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix \<open>\<Turnstile>G\<close> 50) and
     Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close>
   + fixes
@@ -44,7 +44,7 @@ abbreviation \<G>_Fset :: \<open>'f set \<Rightarrow> 'g set\<close> where
 
 lemma \<G>_subset: \<open>N1 \<subseteq> N2 \<Longrightarrow> \<G>_Fset N1 \<subseteq> \<G>_Fset N2\<close> by auto
 
-abbreviation entails_\<G>  :: \<open>'f set \<Rightarrow> 'f set \<Rightarrow> bool\<close> (infix "\<Turnstile>\<G>" 50) where
+abbreviation entails_\<G>  :: \<open>'f set \<Rightarrow> 'f set \<Rightarrow> bool\<close> (infix \<open>\<Turnstile>\<G>\<close> 50) where
   \<open>N1 \<Turnstile>\<G> N2 \<equiv> \<G>_Fset N1 \<Turnstile>G \<G>_Fset N2\<close>
 
 lemma subs_Bot_G_entails:
@@ -107,7 +107,7 @@ locale strong_standard_lifting = inference_system Inf_F +
     Inf_F :: \<open>'f inference set\<close> and
     Bot_G :: \<open>'g set\<close> and
     Inf_G ::  \<open>'g inference set\<close> and
-    entails_G ::  \<open>'g set  \<Rightarrow> 'g set  \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
+    entails_G ::  \<open>'g set  \<Rightarrow> 'g set  \<Rightarrow> bool\<close> (infix \<open>\<Turnstile>G\<close> 50) and
     Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close>
   + fixes
@@ -162,7 +162,7 @@ locale tiebreaker_lifting =
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
     Bot_G :: \<open>'g set\<close> and
-    entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
+    entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix \<open>\<Turnstile>G\<close> 50) and
     Inf_G :: \<open>'g inference set\<close> and
     Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
@@ -617,7 +617,7 @@ qed
 sublocale intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_I_\<G>_q Red_F_\<G>_q
   by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family)
 
-abbreviation entails_\<G> :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
+abbreviation entails_\<G> :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<inter>\<G>\<close> 50) where
   "(\<Turnstile>\<inter>\<G>) \<equiv> entails"
 
 abbreviation Red_I_\<G> :: "'f set \<Rightarrow> 'f inference set" where

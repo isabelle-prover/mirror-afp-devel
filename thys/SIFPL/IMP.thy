@@ -117,14 +117,14 @@ SemComp:  "\<lbrakk> s,c1 \<longrightarrow>\<^sub>n r; r,c2 \<longrightarrow>\<^
 *)
 
 abbreviation
-SemN  :: "[State, IMP, nat, State] \<Rightarrow> bool"   (" _ , _ \<rightarrow>\<^sub>_  _ ")
+SemN  :: "[State, IMP, nat, State] \<Rightarrow> bool"   (\<open> _ , _ \<rightarrow>\<^sub>_  _ \<close>)
 where
 "s,c \<rightarrow>\<^sub>n t == (s,c,n,t) : Semn"
 
 text\<open>Often, the height index does not matter, so we define a notion
 hiding it.\<close>
 
-definition Sem :: "[State, IMP, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
+definition Sem :: "[State, IMP, State] \<Rightarrow> bool" (\<open>_ , _ \<Down> _ \<close> 1000)
 where "s,c \<Down> t = (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
 
 text\<open>Inductive elimination rules for the (indexed) dynamic semantics:\<close>

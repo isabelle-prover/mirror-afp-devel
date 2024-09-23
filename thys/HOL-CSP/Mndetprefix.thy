@@ -67,7 +67,7 @@ lift_definition Mndetprefix   :: "['\<alpha> set, '\<alpha> \<Rightarrow> '\<alp
 
 syntax
   "_Mndetprefix"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'a process \<Rightarrow> 'a process" 
-                          ("(3\<sqinter>_\<in>_ \<rightarrow> / _)" [0, 0, 70] 70)
+                          (\<open>(3\<sqinter>_\<in>_ \<rightarrow> / _)\<close> [0, 0, 70] 70)
 
 syntax_consts
   "_Mndetprefix" \<rightleftharpoons> Mndetprefix

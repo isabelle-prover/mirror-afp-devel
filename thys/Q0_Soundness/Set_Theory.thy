@@ -52,11 +52,11 @@ text \<open>
 
 (* Corresponds to CakeML's constant is_set_theory_def *)
 locale set_theory =
-  fixes mem :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix "\<in>:" 67)
-  fixes sub :: "'s \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> 's" (infix "suchthat" 67)
+  fixes mem :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>\<in>:\<close> 67)
+  fixes sub :: "'s \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> 's" (infix \<open>suchthat\<close> 67)
   fixes pow :: "'s \<Rightarrow> 's"
-  fixes uni :: "'s \<Rightarrow> 's" ("\<Union>:_" [900] 900)
-  fixes upair :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infix "+:" 67)
+  fixes uni :: "'s \<Rightarrow> 's" (\<open>\<Union>:_\<close> [900] 900)
+  fixes upair :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infix \<open>+:\<close> 67)
   assumes extensional: "\<And>x y. x = y \<longleftrightarrow> (\<forall>a. a \<in>: x \<longleftrightarrow> a \<in>: y)"
   assumes mem_sub[simp]: "\<And>x P a. a \<in>: (x suchthat P) \<longleftrightarrow> a \<in>: x \<and> P a"
   assumes mem_pow[simp]: "\<And>x a. a \<in>: (pow x) \<longleftrightarrow> (\<forall>b. b \<in>: a \<longrightarrow> b \<in>: x)"
@@ -97,7 +97,7 @@ proof
 qed
 
 (* Corresponds to CakeML's Ø *)
-definition empt :: 's ("Ø") where
+definition empt :: 's (\<open>Ø\<close>) where
  "Ø = undefined suchthat (\<lambda>x. False)" 
 
 (* Corresponds to CakeML's theorem mem_empty *)
@@ -133,7 +133,7 @@ lemma mem_two[simp]: "\<forall>x. x \<in>: two \<longleftrightarrow> x = Ø \<or
   unfolding two_def by auto 
 
 (* Corresponds to CakeML's constant pair *)
-definition pair :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infix ",:" 50) where
+definition pair :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infix \<open>,:\<close> 50) where
   "(x,:y) = (unit x) +: (x +: y)"
 
 (* Corresponds to CakeML's theorem upair_inj *)
@@ -152,7 +152,7 @@ lemma pair_inj:
   using pair_def upair_inj unit_inj unit_eq_upair by metis
 
 (* Corresponds to CakeML's constant binary_uni *)
-definition binary_uni (infix "\<union>:" 67) where
+definition binary_uni (infix \<open>\<union>:\<close> 67) where
   "x \<union>: y = \<Union>: (x +: y)"
 
 (* Corresponds to CakeML's theorem mem_binary_uni *)
@@ -161,7 +161,7 @@ lemma mem_binary_uni[simp]:
   unfolding binary_uni_def by auto
 
 (* Corresponds to CakeML's constant product *)
-definition product :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infix "\<times>:" 67) where
+definition product :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infix \<open>\<times>:\<close> 67) where
   "x \<times>: y = (pow (pow (x \<union>: y)) suchthat (\<lambda>a. \<exists>b c. b \<in>: x \<and> c \<in>: y \<and> a = (b,:c)))"
 
 (* Corresponds to CakeML's theorem mem_product *)
@@ -180,7 +180,7 @@ definition funspace where
      (\<lambda>f. \<forall>a. a \<in>: x \<longrightarrow> (\<exists>!b. (a,:b) \<in>: f)))"
 
 (* Corresponds to CakeML's constant apply *)
-definition "apply" :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<cdot>" 68) where
+definition "apply" :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<cdot>\<close> 68) where
   "(x\<cdot>y) = (SOME a. (y,:a) \<in>: x)"
 
 (* Corresponds to CakeML's overloading of boolset *)
@@ -478,7 +478,7 @@ next
   qed
 qed
 
-definition subs :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix "\<subseteq>:" 67) where
+definition subs :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>\<subseteq>:\<close> 67) where
   "x \<subseteq>: y \<longleftrightarrow> x \<in>: pow y"
 
 

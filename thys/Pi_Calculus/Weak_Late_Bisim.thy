@@ -15,7 +15,7 @@ where
 monos monoAux
 
 abbreviation
-  "weakBisimJudge" (infixr "\<approx>" 65)  where "P \<approx> Q \<equiv> (P, Q) \<in> weakBisim"
+  "weakBisimJudge" (infixr \<open>\<approx>\<close> 65)  where "P \<approx> Q \<equiv> (P, Q) \<in> weakBisim"
 
 lemma weakBisimCoinductAux[case_names weakBisim, case_conclusion weakBisim step, consumes 1]:
   assumes p: "(P, Q) \<in> X"

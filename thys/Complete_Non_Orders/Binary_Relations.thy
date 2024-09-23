@@ -37,8 +37,8 @@ lemma image_subsetD: "f ` A \<subseteq> B \<Longrightarrow> a \<in> A \<Longrigh
 text \<open>Below we introduce an Isabelle-notation for $\{ \ldots x\ldots \mid x \in X \}$.\<close>
 
 syntax
-  "_range" :: "'a \<Rightarrow> idts \<Rightarrow> 'a set" ("(1{_ /|./ _})")
-  "_image" :: "'a \<Rightarrow> pttrn \<Rightarrow> 'a set \<Rightarrow> 'a set"  ("(1{_ /|./ (_/ \<in> _)})")
+  "_range" :: "'a \<Rightarrow> idts \<Rightarrow> 'a set" (\<open>(1{_ /|./ _})\<close>)
+  "_image" :: "'a \<Rightarrow> pttrn \<Rightarrow> 'a set \<Rightarrow> 'a set"  (\<open>(1{_ /|./ (_/ \<in> _)})\<close>)
 syntax_consts
   "_range" \<rightleftharpoons> range and
   "_image" \<rightleftharpoons> image
@@ -57,7 +57,7 @@ subsection \<open>Various Definitions\<close>
 text \<open>Here we introduce various definitions for binary relations.
 The first one is our abbreviation for the dual of a relation.\<close>
 
-abbreviation(input) dual ("(_\<^sup>-)" [1000] 1000) where "r\<^sup>- x y \<equiv> r y x"
+abbreviation(input) dual (\<open>(_\<^sup>-)\<close> [1000] 1000) where "r\<^sup>- x y \<equiv> r y x"
 
 lemma conversep_is_dual[simp]: "conversep = dual" by auto
 
@@ -83,12 +83,12 @@ text \<open>The symmetric part of a relation:\<close>
 definition sympartp where "sympartp r x y \<equiv> r x y \<and> r y x"
 
 lemma sympartpI[intro]:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes "x \<sqsubseteq> y" and "y \<sqsubseteq> x" shows "sympartp (\<sqsubseteq>) x y"
   using assms by (auto simp: sympartp_def)
 
 lemma sympartpE[elim]:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes "sympartp (\<sqsubseteq>) x y" and "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> x \<Longrightarrow> thesis" shows thesis
   using assms by (auto simp: sympartp_def)
 
@@ -132,7 +132,7 @@ text \<open>The asymmetric part:\<close>
 definition "asympartp r x y \<equiv> r x y \<and> \<not> r y x"
 
 lemma asympartpE[elim]:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   shows "asympartp (\<sqsubseteq>) x y \<Longrightarrow> (x \<sqsubseteq> y \<Longrightarrow> \<not>y \<sqsubseteq> x \<Longrightarrow> thesis) \<Longrightarrow> thesis"
   by (auto simp: asympartp_def)
 
@@ -148,7 +148,7 @@ lemma asympartp_dual: "asympartp r\<^sup>- = (asympartp r)\<^sup>-" by auto
 
 text \<open>Restriction to a set:\<close>
 
-definition Restrp (infixl "\<restriction>" 60) where "(r \<restriction> A) a b \<equiv> a \<in> A \<and> b \<in> A \<and> r a b"
+definition Restrp (infixl \<open>\<restriction>\<close> 60) where "(r \<restriction> A) a b \<equiv> a \<in> A \<and> b \<in> A \<and> r a b"
 
 lemmas RestrpI[intro!] = Restrp_def[unfolded atomize_eq, THEN iffD2, unfolded conj_imp_eq_imp_imp]
 lemmas RestrpE[elim!] = Restrp_def[unfolded atomize_eq, THEN iffD1, elim_format, unfolded conj_imp_eq_imp_imp]
@@ -163,7 +163,7 @@ lemma sympartp_Restrp[simp]: "sympartp (r \<restriction> A) \<equiv> sympartp r 
   by (auto simp: atomize_eq)
 
 text \<open>Relational images:\<close>
-definition Imagep (infixr "```" 59) where "r ``` A \<equiv> {b. \<exists>a \<in> A. r a b}"
+definition Imagep (infixr \<open>```\<close> 59) where "r ``` A \<equiv> {b. \<exists>a \<in> A. r a b}"
 
 lemma Imagep_Image: "r ``` A = {(a,b). r a b} `` A"
   by (auto simp: Imagep_def)
@@ -176,10 +176,10 @@ lemma subset_Imagep: "B \<subseteq> r ``` A \<longleftrightarrow> (\<forall>b\<i
   by (auto simp: Imagep_def)
 
 text \<open>Bounds of a set:\<close>
-definition "bound X (\<sqsubseteq>) b \<equiv> \<forall>x \<in> X. x \<sqsubseteq> b" for r (infix "\<sqsubseteq>" 50)
+definition "bound X (\<sqsubseteq>) b \<equiv> \<forall>x \<in> X. x \<sqsubseteq> b" for r (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemma
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   shows boundI[intro!]: "(\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> b) \<Longrightarrow> bound X (\<sqsubseteq>) b"
     and boundE[elim]: "bound X (\<sqsubseteq>) b \<Longrightarrow> ((\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> b) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
     and boundD: "bound X (\<sqsubseteq>) b \<Longrightarrow> a \<in> X \<Longrightarrow> a \<sqsubseteq> b"
@@ -196,7 +196,7 @@ lemma bound_un: "bound (A \<union> B) = bound A \<sqinter> bound B"
   by auto
 
 lemma bound_insert[simp]:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   shows "bound (insert x X) (\<sqsubseteq>) b \<longleftrightarrow> x \<sqsubseteq> b \<and> bound X (\<sqsubseteq>) b" by auto
 
 lemma bound_cong:
@@ -210,17 +210,17 @@ lemma bound_subsel: "le \<le> le' \<Longrightarrow> bound A le \<le> bound A le'
   by (auto simp add: bound_def)
 
 text \<open>Extreme (greatest) elements in a set:\<close>
-definition "extreme X (\<sqsubseteq>) e \<equiv> e \<in> X \<and> (\<forall>x \<in> X. x \<sqsubseteq> e)" for r (infix "\<sqsubseteq>" 50)
+definition "extreme X (\<sqsubseteq>) e \<equiv> e \<in> X \<and> (\<forall>x \<in> X. x \<sqsubseteq> e)" for r (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemma
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   shows extremeI[intro]: "e \<in> X \<Longrightarrow> (\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> e) \<Longrightarrow> extreme X (\<sqsubseteq>) e"
     and extremeD: "extreme X (\<sqsubseteq>) e \<Longrightarrow> e \<in> X" "extreme X (\<sqsubseteq>) e \<Longrightarrow> (\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> e)"
     and extremeE[elim]: "extreme X (\<sqsubseteq>) e \<Longrightarrow> (e \<in> X \<Longrightarrow> (\<And>x. x \<in> X \<Longrightarrow> x \<sqsubseteq> e) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
   by (auto simp: extreme_def)
 
 lemma
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   shows extreme_UNIV[simp]: "extreme UNIV (\<sqsubseteq>) t \<longleftrightarrow> (\<forall>x. x \<sqsubseteq> t)" by auto
 
 lemma extreme_iff_bound: "extreme X r e \<longleftrightarrow> bound X r e \<and> e \<in> X" by auto
@@ -248,14 +248,14 @@ text \<open>Now suprema and infima are given uniformly as follows.
 \<close>
 
 definition
-  "extreme_bound A (\<sqsubseteq>) X \<equiv> extreme {b \<in> A. bound X (\<sqsubseteq>) b} (\<sqsubseteq>)\<^sup>-" for r (infix "\<sqsubseteq>" 50)
+  "extreme_bound A (\<sqsubseteq>) X \<equiv> extreme {b \<in> A. bound X (\<sqsubseteq>) b} (\<sqsubseteq>)\<^sup>-" for r (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemmas extreme_boundI_extreme = extreme_bound_def[unfolded atomize_eq, THEN fun_cong, THEN iffD2]
 
 lemmas extreme_boundD_extreme = extreme_bound_def[unfolded atomize_eq, THEN fun_cong, THEN iffD1]
 
 context
-  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma extreme_boundI[intro]:
@@ -375,10 +375,10 @@ lemma extreme_bound_cong:
 
 text \<open>Maximal or Minimal\<close>
 
-definition "extremal X (\<sqsubseteq>) x \<equiv> x \<in> X \<and> (\<forall>y \<in> X. x \<sqsubseteq> y \<longrightarrow> y \<sqsubseteq> x)" for r (infix "\<sqsubseteq>" 50)
+definition "extremal X (\<sqsubseteq>) x \<equiv> x \<in> X \<and> (\<forall>y \<in> X. x \<sqsubseteq> y \<longrightarrow> y \<sqsubseteq> x)" for r (infix \<open>\<sqsubseteq>\<close> 50)
 
 context
-  fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma extremalI:
@@ -399,7 +399,7 @@ lemma extremalD:
 end
 
 context
-  fixes ir (infix "\<preceq>" 50) and r (infix "\<sqsubseteq>" 50) and I f
+  fixes ir (infix \<open>\<preceq>\<close> 50) and r (infix \<open>\<sqsubseteq>\<close> 50) and I f
   assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f"
 begin
 
@@ -417,8 +417,8 @@ lemma monotone_image_extreme:
 end
 
 context
-  fixes ir :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix "\<preceq>" 50)
-    and r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes ir :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50)
+    and r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
     and f and A and e and I
   assumes fIA: "f ` I \<subseteq> A"
     and mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f"
@@ -447,16 +447,16 @@ text \<open>The following locales do not assume anything, but provide infix nota
 relations.\<close>
 
 locale less_eq_syntax =
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 
 locale less_syntax =
-  fixes less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+  fixes less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 
 locale equivalence_syntax =
-  fixes equiv :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sim>" 50)
+  fixes equiv :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sim>\<close> 50)
 begin
 
-abbreviation equiv_class ("[_]\<^sub>\<sim>") where "[x]\<^sub>\<sim> \<equiv> { y. x \<sim> y }"
+abbreviation equiv_class (\<open>[_]\<^sub>\<sim>\<close>) where "[x]\<^sub>\<sim> \<equiv> { y. x \<sim> y }"
 
 end
 
@@ -466,23 +466,23 @@ To avoid needless constants, one should be careful when declaring them as subloc
 locale less_eq_dualize = less_eq_syntax
 begin
 
-abbreviation (input) greater_eq (infix "\<sqsupseteq>" 50) where "x \<sqsupseteq> y \<equiv> y \<sqsubseteq> x"
+abbreviation (input) greater_eq (infix \<open>\<sqsupseteq>\<close> 50) where "x \<sqsupseteq> y \<equiv> y \<sqsubseteq> x"
 
 end
 
 locale less_eq_symmetrize = less_eq_dualize
 begin
 
-abbreviation sym (infix "\<sim>" 50) where "(\<sim>) \<equiv> sympartp (\<sqsubseteq>)"
-abbreviation equiv (infix "(\<simeq>)" 50) where "(\<simeq>) \<equiv> equivpartp (\<sqsubseteq>)"
+abbreviation sym (infix \<open>\<sim>\<close> 50) where "(\<sim>) \<equiv> sympartp (\<sqsubseteq>)"
+abbreviation equiv (infix \<open>(\<simeq>)\<close> 50) where "(\<simeq>) \<equiv> equivpartp (\<sqsubseteq>)"
 
 end
 
 locale less_eq_asymmetrize = less_eq_symmetrize
 begin
 
-abbreviation less (infix "\<sqsubset>" 50) where "(\<sqsubset>) \<equiv> asympartp (\<sqsubseteq>)"
-abbreviation greater (infix "\<sqsupset>" 50) where "(\<sqsupset>) \<equiv> (\<sqsubset>)\<^sup>-"
+abbreviation less (infix \<open>\<sqsubset>\<close> 50) where "(\<sqsubset>) \<equiv> asympartp (\<sqsubseteq>)"
+abbreviation greater (infix \<open>\<sqsupset>\<close> 50) where "(\<sqsupset>) \<equiv> (\<sqsubset>)\<^sup>-"
 
 lemma asym_cases[consumes 1, case_names asym sym]:
   assumes "x \<sqsubseteq> y" and "x \<sqsubset> y \<Longrightarrow> thesis" and "x \<sim> y \<Longrightarrow> thesis"
@@ -494,12 +494,12 @@ end
 locale less_dualize = less_syntax
 begin
 
-abbreviation (input) greater (infix "\<sqsupset>" 50) where "x \<sqsupset> y \<equiv> y \<sqsubset> x"
+abbreviation (input) greater (infix \<open>\<sqsupset>\<close> 50) where "x \<sqsupset> y \<equiv> y \<sqsubset> x"
 
 end
 
 locale related_set =
-  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes A :: "'a set" and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 
 subsubsection \<open>Basic Properties of Relations\<close>
 
@@ -532,7 +532,7 @@ lemma reflexive_cong:
   "(\<And>a b. a \<in> A \<Longrightarrow> b \<in> A \<Longrightarrow> r a b \<longleftrightarrow> r' a b) \<Longrightarrow> reflexive A r \<longleftrightarrow> reflexive A r'"
   by (simp add: reflexive_def)
 
-locale irreflexive = related_set A "(\<sqsubset>)" for A and less (infix "\<sqsubset>" 50) +
+locale irreflexive = related_set A "(\<sqsubset>)" for A and less (infix \<open>\<sqsubset>\<close> 50) +
   assumes irrefl: "x \<in> A \<Longrightarrow> \<not> x \<sqsubset> x"
 begin
 
@@ -604,7 +604,7 @@ lemmas transitiveI = transitive.intro
 
 lemma transitive_ball[code]:
   "transitive A (\<sqsubseteq>) \<longleftrightarrow> (\<forall>x \<in> A. \<forall>y \<in> A. \<forall>z \<in> A. x \<sqsubseteq> y \<longrightarrow> y \<sqsubseteq> z \<longrightarrow> x \<sqsubseteq> z)"
-  for less_eq (infix "\<sqsubseteq>" 50)
+  for less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   by (auto simp: transitive_def)
 
 lemma transitive_cong:
@@ -625,7 +625,7 @@ lemma transitive_empty[intro!]: "transitive {} r" by (auto intro!: transitive.in
 lemma tranclp_transitive: "transitive A (tranclp r)"
   using tranclp_trans by unfold_locales
 
-locale symmetric = related_set A "(\<sim>)" for A and equiv (infix "\<sim>" 50) +
+locale symmetric = related_set A "(\<sim>)" for A and equiv (infix \<open>\<sim>\<close> 50) +
   assumes sym[sym]: "x \<sim> y \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<sim> x"
 begin
 
@@ -700,7 +700,7 @@ lemma antisymmetric_cong:
 lemma antisymmetric_empty[intro!]: "antisymmetric {} r" by auto
 
 lemma antisymmetric_union:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes A: "antisymmetric A (\<sqsubseteq>)" and B: "antisymmetric B (\<sqsubseteq>)"
     and AB: "\<forall>a \<in> A. \<forall>b \<in> B. a \<sqsubseteq> b \<longrightarrow> b \<sqsubseteq> a \<longrightarrow> a = b"
   shows "antisymmetric (A \<union> B) (\<sqsubseteq>)"
@@ -896,7 +896,7 @@ subsection \<open>Combined Properties\<close>
 
 text \<open>Some combinations of the above basic properties are given names.\<close>
 
-locale asymmetric = related_set A "(\<sqsubset>)" for A and less (infix "\<sqsubset>" 50) +
+locale asymmetric = related_set A "(\<sqsubset>)" for A and less (infix \<open>\<sqsubset>\<close> 50) +
   assumes asym: "x \<sqsubset> y \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> False"
 begin
 
@@ -918,7 +918,7 @@ end
 lemmas asymmetricI = asymmetric.intro
 
 lemma asymmetric_iff_irreflexive_antisymmetric:
-  fixes less (infix "\<sqsubset>" 50)
+  fixes less (infix \<open>\<sqsubset>\<close> 50)
   shows "asymmetric A (\<sqsubset>) \<longleftrightarrow> irreflexive A (\<sqsubset>) \<and> antisymmetric A (\<sqsubset>)" (is "?l \<longleftrightarrow> ?r")
 proof
   assume ?l
@@ -1148,7 +1148,7 @@ lemma equivalence_cong:
 text \<open>Some combinations lead to uninteresting relations.\<close>
 
 context
-  fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<bowtie>" 50)
+  fixes r :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<bowtie>\<close> 50)
 begin
 
 proposition reflexive_irreflexive_is_empty:
@@ -1224,7 +1224,7 @@ lemmas semiconnexI[intro] = semiconnex.intro
 
 text \<open>Totality is negated antisymmetry \cite[Proposition 2.2.4]{Schmidt1993}.\<close>
 proposition semiconnex_iff_neg_antisymmetric:
-  fixes less (infix "\<sqsubset>" 50)
+  fixes less (infix \<open>\<sqsubset>\<close> 50)
   shows "semiconnex A (\<sqsubset>) \<longleftrightarrow> antisymmetric A (\<lambda>x y. \<not> x \<sqsubset> y)" (is "?l \<longleftrightarrow> ?r")
 proof (intro iffI semiconnexI antisymmetricI)
   assume ?l
@@ -1298,7 +1298,7 @@ lemmas connexE = connex.comparable_cases
 lemma connex_empty: "connex {} A" by auto
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma connex_iff_semiconnex_reflexive: "connex A (\<sqsubseteq>) \<longleftrightarrow> semiconnex A (\<sqsubseteq>) \<and> reflexive A (\<sqsubseteq>)"
@@ -1403,7 +1403,7 @@ lemma total_ordered_set_cong:
 
 
 lemma monotone_connex_image:
-  fixes ir (infix "\<preceq>" 50) and r (infix "\<sqsubseteq>" 50)
+  fixes ir (infix \<open>\<preceq>\<close> 50) and r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f" and connex: "connex I (\<preceq>)"
   shows "connex (f ` I) (\<sqsubseteq>)"
 proof (rule connexI)
@@ -1711,7 +1711,7 @@ lemma pointwise_extreme:
   by (auto intro!: pointwiseI extremeI elim!: extremeE)
 
 lemma pointwise_extreme_bound:
-  fixes r (infix "\<sqsubseteq>" 50)
+  fixes r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes F: "F \<subseteq> {f. f ` X \<subseteq> A}"
   shows "extreme_bound {f. f ` X \<subseteq> A} (pointwise X (\<sqsubseteq>)) F s \<longleftrightarrow>
     (\<forall>x \<in> X. extreme_bound A (\<sqsubseteq>) {f x |. f \<in> F} (s x))" (is "?p \<longleftrightarrow> ?a")
@@ -1762,7 +1762,7 @@ lemma dual_pointwise_extreme_bound:
   by (simp)
 
 lemma pointwise_monotone_on:
-  fixes less_eq (infix "\<sqsubseteq>" 50) and prec_eq (infix "\<preceq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50) and prec_eq (infix \<open>\<preceq>\<close> 50)
   shows "monotone_on I (\<preceq>) (pointwise A (\<sqsubseteq>)) f \<longleftrightarrow>
    (\<forall>a \<in> A. monotone_on I (\<preceq>) (\<sqsubseteq>) (\<lambda>i. f i a))" (is "?l \<longleftrightarrow> ?r")
 proof (safe intro!: monotone_onI pointwiseI)
@@ -2302,7 +2302,7 @@ sublocale total_ordering \<subseteq> dual: total_ordering A "(\<sqsubseteq>)\<^s
   by unfold_locales auto
 
 lemma(in antisymmetric) monotone_extreme_imp_extreme_bound_iff:
-  fixes ir (infix "\<preceq>" 50)
+  fixes ir (infix \<open>\<preceq>\<close> 50)
   assumes "f ` C \<subseteq> A" and "monotone_on C (\<preceq>) (\<sqsubseteq>) f" and i: "extreme C (\<preceq>) i"
   shows "extreme_bound A (\<sqsubseteq>) (f ` C) x \<longleftrightarrow> f i = x"
   using dual.extreme_unique monotone_extreme_extreme_boundI[OF assms]

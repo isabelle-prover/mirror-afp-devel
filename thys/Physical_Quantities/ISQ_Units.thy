@@ -15,7 +15,7 @@ lift_definition is_base_unit :: "'a::one['d::dim_type, 's::unit_system] \<Righta
 definition mk_base_unit :: "'u itself \<Rightarrow> 's itself \<Rightarrow> ('a::one)['u::basedim_type, 's::unit_system]" 
   where "mk_base_unit t s = 1"
 
-syntax "_mk_base_unit" :: "type \<Rightarrow> type \<Rightarrow> logic" ("BUNIT'(_, _')")
+syntax "_mk_base_unit" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>BUNIT'(_, _')\<close>)
 syntax_consts "_mk_base_unit" == mk_base_unit
 translations "BUNIT('a, 's)" == "CONST mk_base_unit TYPE('a) TYPE('s)"
 

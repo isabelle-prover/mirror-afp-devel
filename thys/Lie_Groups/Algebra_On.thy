@@ -28,9 +28,9 @@ locale bilinear_on =
   vector_space_pair_on V W scaleV scaleW +
   vector_space_on X scaleX
   for V:: "'b::ab_group_add set" and W::"'c::ab_group_add set" and X::"'d::ab_group_add set"
-    and scaleV::"'a::field\<Rightarrow>'b\<Rightarrow>'b" (infixr "\<Zspot>\<^sub>V" 75)
-    and scaleW::"'a\<Rightarrow>'c\<Rightarrow>'c" (infixr "\<Zspot>\<^sub>W" 75)
-    and scaleX::"'a\<Rightarrow>'d\<Rightarrow>'d" (infixr "\<Zspot>\<^sub>X" 75) +
+    and scaleV::"'a::field\<Rightarrow>'b\<Rightarrow>'b" (infixr \<open>\<Zspot>\<^sub>V\<close> 75)
+    and scaleW::"'a\<Rightarrow>'c\<Rightarrow>'c" (infixr \<open>\<Zspot>\<^sub>W\<close> 75)
+    and scaleX::"'a\<Rightarrow>'d\<Rightarrow>'d" (infixr \<open>\<Zspot>\<^sub>X\<close> 75) +
   fixes f::"'b\<Rightarrow>'c\<Rightarrow>'d"
   assumes linearL: "w\<in>W \<Longrightarrow> linear_on V X scaleV scaleX (\<lambda>v. f v w)"
     and linearR: "v\<in>V \<Longrightarrow> linear_on W X scaleW scaleX (\<lambda>w. f v w)"
@@ -229,8 +229,8 @@ begin
 end
 
 lemma algebra_onI [intro]:
-  fixes scale :: "'a::field \<Rightarrow> 'b::ab_group_add \<Rightarrow> 'b" (infixr "*\<^sub>S" 75)
-    and amult (infixr "\<Zspot>" 74)
+  fixes scale :: "'a::field \<Rightarrow> 'b::ab_group_add \<Rightarrow> 'b" (infixr \<open>*\<^sub>S\<close> 75)
+    and amult (infixr \<open>\<Zspot>\<close> 74)
   assumes "vector_space_on S scale"
     and distR: "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> (x+y) \<Zspot> z = x \<Zspot> z + y \<Zspot> z"
     and distL: "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> z \<Zspot> (x+y) = z \<Zspot> x + z \<Zspot> y"
@@ -244,8 +244,8 @@ lemma algebra_onI [intro]:
 
 
 lemma (in vector_space_on) scalar_compat_iff:
-  fixes scale_notation (infixr "*\<^sub>S" 75)
-    and amult (infixr "\<Zspot>" 74)
+  fixes scale_notation (infixr \<open>*\<^sub>S\<close> 75)
+    and amult (infixr \<open>\<Zspot>\<close> 74)
   defines "scale_notation \<equiv> scale"
   assumes distR: "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> (x+y) \<Zspot> z = x \<Zspot> z + y \<Zspot> z"
     and distL: "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> z \<Zspot> (x+y) = z \<Zspot> x + z \<Zspot> y"
@@ -265,8 +265,8 @@ qed (metis mem_scale scale_notation_def scale_scale_on)
 
 
 lemma (in vector_space_on) algebra_onI:
-  fixes scale_notation (infixr "*\<^sub>S" 75)
-    and amult (infixr "\<Zspot>" 74)
+  fixes scale_notation (infixr \<open>*\<^sub>S\<close> 75)
+    and amult (infixr \<open>\<Zspot>\<close> 74)
   defines "scale_notation \<equiv> scale"
   assumes distR: "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> (x+y) \<Zspot> z = x \<Zspot> z + y \<Zspot> z"
     and distL: "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> z \<Zspot> (x+y) = z \<Zspot> x + z \<Zspot> y"
@@ -304,7 +304,7 @@ lemma (in algebra_on) lie_algebraI:
 
 lemma (in vector_space_on) lie_algebraI:
   fixes lie_bracket :: "'b \<Rightarrow> 'b \<Rightarrow> 'b" (\<open>[_;_]\<close> 74)
-    and scale_notation (infixr "*\<^sub>S" 75)
+    and scale_notation (infixr \<open>*\<^sub>S\<close> 75)
   defines "scale_notation \<equiv> scale"
   assumes distributivity:
       "\<And>x y z. \<lbrakk>x\<in>S; y\<in>S; z\<in>S\<rbrakk> \<Longrightarrow> [(x+y); z] = [x; z] + [y; z] \<and> [z; (x+y)] = [z; x] + [z; y]"

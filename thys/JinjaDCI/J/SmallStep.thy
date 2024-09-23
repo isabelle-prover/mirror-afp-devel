@@ -55,9 +55,9 @@ inductive_set
   red  :: "J_prog \<Rightarrow> ((expr \<times> state \<times> bool) \<times> (expr \<times> state \<times> bool)) set"
   and reds  :: "J_prog \<Rightarrow> ((expr list \<times> state \<times> bool) \<times> (expr list \<times> state \<times> bool)) set"
   and red' :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> bool"
-          ("_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+          (\<open>_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
   and reds' :: "J_prog \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> bool"
-          ("_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+          (\<open>_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
   for P :: J_prog
 where
 
@@ -413,12 +413,12 @@ subsection\<open> The reflexive transitive closure \<close>
 
 abbreviation
   Step :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> bool"
-          ("_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+          (\<open>_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
   where "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow>* \<langle>e',s',b'\<rangle> \<equiv> ((e,s,b), e',s',b') \<in> (red P)\<^sup>*"
 
 abbreviation
   Steps :: "J_prog \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool \<Rightarrow> bool"
-          ("_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+          (\<open>_ \<turnstile> ((1\<langle>_,/_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
   where "P \<turnstile> \<langle>es,s,b\<rangle> [\<rightarrow>]* \<langle>es',s',b'\<rangle> \<equiv> ((es,s,b), es',s',b') \<in> (reds P)\<^sup>*"
 
 

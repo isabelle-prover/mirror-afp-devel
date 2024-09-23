@@ -355,14 +355,14 @@ subsection\<open>Validity Syntax\<close>
 text\<open>\label{TAO_Semantics_Validity}\<close>
 
 (* disable list syntax [] to replace it with truth evaluation *)
-(*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" ("[(_)]") (*>*) 
-(*<*) no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" ("[(_)]") (*>*) 
+(*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
+(*<*) no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
 
-abbreviation validity_in :: "\<o>\<Rightarrow>i\<Rightarrow>bool" ("[_ in _]" [1]) where
+abbreviation validity_in :: "\<o>\<Rightarrow>i\<Rightarrow>bool" (\<open>[_ in _]\<close> [1]) where
   "validity_in \<equiv> \<lambda> \<phi> v . v \<Turnstile> \<phi>"
-definition actual_validity :: "\<o>\<Rightarrow>bool" ("[_]" [1]) where
+definition actual_validity :: "\<o>\<Rightarrow>bool" (\<open>[_]\<close> [1]) where
   "actual_validity \<equiv> \<lambda> \<phi> . dw \<Turnstile> \<phi>"
-definition necessary_validity :: "\<o>\<Rightarrow>bool" ("\<box>[_]" [1]) where
+definition necessary_validity :: "\<o>\<Rightarrow>bool" (\<open>\<box>[_]\<close> [1]) where
   "necessary_validity \<equiv> \<lambda> \<phi> . \<forall> v . (v \<Turnstile> \<phi>)"
 
 (*<*)

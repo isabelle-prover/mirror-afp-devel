@@ -39,7 +39,7 @@ The following definitions concern properties of relations that require converse 
 \<close>
 
 class conv =
-  fixes conv :: "'a \<Rightarrow> 'a" ("_\<^sup>T" [100] 100)
+  fixes conv :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>T\<close> [100] 100)
 
 class bounded_distrib_allegory_signature = inf + sup + times + conv + bot + top + one + ord
 begin
@@ -1351,7 +1351,7 @@ text \<open>
 The pseudocomplement of tests is given by the following operation.
 \<close>
 
-abbreviation coreflexive_complement :: "'a \<Rightarrow> 'a" ("_ ''" [80] 80)
+abbreviation coreflexive_complement :: "'a \<Rightarrow> 'a" (\<open>_ ''\<close> [80] 80)
   where "x ' \<equiv> -x \<sqinter> 1"
 
 lemma coreflexive_comp_top_coreflexive_complement:
@@ -1997,10 +1997,10 @@ text \<open>
 We define and study the univalent part and the multivalent part of a relation.
 \<close>
 
-abbreviation univalent_part :: "'a \<Rightarrow> 'a" ("up")
+abbreviation univalent_part :: "'a \<Rightarrow> 'a" (\<open>up\<close>)
   where "up x \<equiv> x \<sqinter> -(x * -1)"
 
-abbreviation multivalent_part :: "'a \<Rightarrow> 'a" ("mp")
+abbreviation multivalent_part :: "'a \<Rightarrow> 'a" (\<open>mp\<close>)
   where "mp x \<equiv> x \<sqinter> x * -1"
 
 lemma up_mp_disjoint:

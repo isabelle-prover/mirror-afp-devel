@@ -34,7 +34,7 @@ proof (rule wfUNIVI)
     by (induct M; rule IH[rule_format]) (auto simp: sub_nmset.simps)
 qed
 
-primrec depth_nmset :: "'a nmultiset \<Rightarrow> nat" ("|_|") where
+primrec depth_nmset :: "'a nmultiset \<Rightarrow> nat" (\<open>|_|\<close>) where
   "|Elem a| = 0"
 | "|MSet M| = (let X = set_mset (image_mset depth_nmset M) in if X = {} then 0 else Suc (Max X))"
 

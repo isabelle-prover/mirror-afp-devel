@@ -24,10 +24,10 @@ begin
   subsection \<open>Function Refinement with Precondition\<close>
   definition fref :: "('c \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'c) set \<Rightarrow> ('b \<times> 'd) set
            \<Rightarrow> (('a \<Rightarrow> 'b) \<times> ('c \<Rightarrow> 'd)) set"
-    ("[_]\<^sub>f _ \<rightarrow> _" [0,60,60] 60)         
+    (\<open>[_]\<^sub>f _ \<rightarrow> _\<close> [0,60,60] 60)         
   where "[P]\<^sub>f R \<rightarrow> S \<equiv> {(f,g). \<forall>x y. P y \<and> (x,y)\<in>R \<longrightarrow> (f x, g y)\<in>S}"
   
-  abbreviation freft ("_ \<rightarrow>\<^sub>f _" [60,60] 60) where "R \<rightarrow>\<^sub>f S \<equiv> ([\<lambda>_. True]\<^sub>f R \<rightarrow> S)"
+  abbreviation freft (\<open>_ \<rightarrow>\<^sub>f _\<close> [60,60] 60) where "R \<rightarrow>\<^sub>f S \<equiv> ([\<lambda>_. True]\<^sub>f R \<rightarrow> S)"
   
   lemma rel2p_fref[rel2p]: "rel2p (fref P R S) 
     = (\<lambda>f g. (\<forall>x y. P y \<longrightarrow> rel2p R x y \<longrightarrow> rel2p S (f x) (g y)))"  
@@ -134,11 +134,11 @@ begin
    \<Rightarrow> (('a \<Rightarrow> 'ai \<Rightarrow> assn) \<times> ('a \<Rightarrow> 'ai \<Rightarrow> assn)) 
    \<Rightarrow> ('b \<Rightarrow> 'bi \<Rightarrow> assn) 
    \<Rightarrow> (('ai \<Rightarrow> 'bi Heap) \<times> ('a\<Rightarrow>'b nres)) set"
-   ("[_]\<^sub>a _ \<rightarrow> _" [0,60,60] 60)
+   (\<open>[_]\<^sub>a _ \<rightarrow> _\<close> [0,60,60] 60)
    where
     "[P]\<^sub>a RS \<rightarrow> T \<equiv> { (f,g) . \<forall>c a.  P a \<longrightarrow> hn_refine (fst RS a c) (f c) (snd RS a c) T (g a)}"
 
-  abbreviation hfreft ("_ \<rightarrow>\<^sub>a _" [60,60] 60) where "RS \<rightarrow>\<^sub>a T \<equiv> ([\<lambda>_. True]\<^sub>a RS \<rightarrow> T)"
+  abbreviation hfreft (\<open>_ \<rightarrow>\<^sub>a _\<close> [60,60] 60) where "RS \<rightarrow>\<^sub>a T \<equiv> ([\<lambda>_. True]\<^sub>a RS \<rightarrow> T)"
 
   lemma hfrefI[intro?]: 
     assumes "\<And>c a. P a \<Longrightarrow> hn_refine (fst RS a c) (f c) (snd RS a c) T (g a)"
@@ -174,11 +174,11 @@ begin
 
   abbreviation hfkeep 
     :: "('a \<Rightarrow> 'b \<Rightarrow> assn) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> assn)\<times>('a \<Rightarrow> 'b \<Rightarrow> assn)" 
-    ("(_\<^sup>k)" [1000] 999)
+    (\<open>(_\<^sup>k)\<close> [1000] 999)
     where "R\<^sup>k \<equiv> hf_pres R True"
   abbreviation hfdrop 
     :: "('a \<Rightarrow> 'b \<Rightarrow> assn) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> assn)\<times>('a \<Rightarrow> 'b \<Rightarrow> assn)" 
-    ("(_\<^sup>d)" [1000] 999)
+    (\<open>(_\<^sup>d)\<close> [1000] 999)
     where "R\<^sup>d \<equiv> hf_pres R False"
 
   abbreviation "hn_kede R kd \<equiv> hn_ctxt (snd (hf_pres R kd))"
@@ -203,7 +203,7 @@ begin
     (('a \<Rightarrow> 'b \<Rightarrow> assn)\<times>('a \<Rightarrow> 'b \<Rightarrow> assn)) 
     \<Rightarrow> (('c \<Rightarrow> 'd \<Rightarrow> assn)\<times>('c \<Rightarrow> 'd \<Rightarrow> assn))
     \<Rightarrow> ((('a\<times>'c) \<Rightarrow> ('b \<times> 'd) \<Rightarrow> assn) \<times> (('a\<times>'c) \<Rightarrow> ('b \<times> 'd) \<Rightarrow> assn))"
-    (infixl "*\<^sub>a" 65)
+    (infixl \<open>*\<^sub>a\<close> 65)
     where "RR *\<^sub>a SS \<equiv> (prod_assn (fst RR) (fst SS), prod_assn (snd RR) (snd SS))"
 
   lemma hfprod_fst_snd[simp]:

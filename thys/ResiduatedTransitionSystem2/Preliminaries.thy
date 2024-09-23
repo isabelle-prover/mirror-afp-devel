@@ -57,8 +57,8 @@ section "Simulations"
   locale constant_simulation =
     A: rts A +
     B: rts B
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and b :: 'b +
   assumes ide_b: "B.ide b"
   begin
@@ -81,8 +81,8 @@ section "Simulations"
     B: rts B +
     F: simulation B A F +
     G: simulation A B G
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'b \<Rightarrow> 'a"
   and G :: "'a \<Rightarrow> 'b" +
   assumes inv: "G o F = I B"
@@ -553,8 +553,8 @@ section "Transformations"
     B: extensional_rts B
   begin
 
-    notation B.comp  (infixr "\<cdot>\<^sub>B" 55)
-    notation B.join  (infix "\<squnion>\<^sub>B" 52)
+    notation B.comp  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.join  (infix \<open>\<squnion>\<^sub>B\<close> 52)
 
     lemma naturality1'\<^sub>E:
     shows "F t \<cdot>\<^sub>B \<tau> (A.trg t) = \<tau> t"
@@ -674,8 +674,8 @@ section "Transformations"
     B: extensional_rts B + 
     F: simulation A B F +
     G: simulation A B G
-  for A :: "'a resid"      (infix "\\\<^sub>A" 55)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 55)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 55)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
@@ -686,8 +686,8 @@ section "Transformations"
   and joinable: "A.arr t \<Longrightarrow> B.joinable (\<tau> (A.src t)) (F t)"
   begin
 
-    notation B.comp  (infixr "\<cdot>\<^sub>B" 55)
-    notation B.join  (infix "\<squnion>\<^sub>B" 52)
+    notation B.comp  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.join  (infix \<open>\<squnion>\<^sub>B\<close> 52)
 
     definition map
     where "map t = \<tau> (A.src t) \<squnion>\<^sub>B F t"
@@ -756,8 +756,8 @@ section "Transformations"
   locale constant_transformation =
     A: weakly_extensional_rts A +
     B: weakly_extensional_rts B
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and t :: 'b +
   assumes arr_t: "B.arr t"
   begin
@@ -979,27 +979,27 @@ section "Transformations"
     F: binary_simulation A1 A0 B F +
     G: binary_simulation A1 A0 B G +
     transformation A1xA0.resid B F G \<tau>
-  for A1 :: "'a1 resid"     (infix "\\\<^sub>A\<^sub>1" 55)
-  and A0 :: "'a0 resid"     (infix "\\\<^sub>A\<^sub>0" 55)
-  and B :: "'b resid"       (infix "\\\<^sub>B" 55)
+  for A1 :: "'a1 resid"     (infix \<open>\\<^sub>A\<^sub>1\<close> 55)
+  and A0 :: "'a0 resid"     (infix \<open>\\<^sub>A\<^sub>0\<close> 55)
+  and B :: "'b resid"       (infix \<open>\\<^sub>B\<close> 55)
   and F :: "'a1 * 'a0 \<Rightarrow> 'b"
   and G :: "'a1 * 'a0 \<Rightarrow> 'b"
   and \<tau> :: "'a1 * 'a0 \<Rightarrow> 'b"
   begin
 
-    notation A0.con     (infix "\<frown>\<^sub>A\<^sub>0" 50)
-    notation A0.prfx    (infix "\<lesssim>\<^sub>A\<^sub>0" 50)
-    notation A0.cong    (infix "\<sim>\<^sub>A\<^sub>0" 50)
+    notation A0.con     (infix \<open>\<frown>\<^sub>A\<^sub>0\<close> 50)
+    notation A0.prfx    (infix \<open>\<lesssim>\<^sub>A\<^sub>0\<close> 50)
+    notation A0.cong    (infix \<open>\<sim>\<^sub>A\<^sub>0\<close> 50)
 
-    notation A1.con     (infix "\<frown>\<^sub>A\<^sub>1" 50)
-    notation A1.prfx    (infix "\<lesssim>\<^sub>A\<^sub>1" 50)
-    notation A1.cong    (infix "\<sim>\<^sub>A\<^sub>1" 50)
+    notation A1.con     (infix \<open>\<frown>\<^sub>A\<^sub>1\<close> 50)
+    notation A1.prfx    (infix \<open>\<lesssim>\<^sub>A\<^sub>1\<close> 50)
+    notation A1.cong    (infix \<open>\<sim>\<^sub>A\<^sub>1\<close> 50)
 
-    notation B.con     (infix "\<frown>\<^sub>B" 50)
-    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
-    notation B.cong    (infix "\<sim>\<^sub>B" 50)
+    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
+    notation B.cong    (infix \<open>\<sim>\<^sub>B\<close> 50)
 
-    notation A1xA0.resid    (infix "\\\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>0" 55)
+    notation A1xA0.resid    (infix \<open>\\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>0\<close> 55)
 
     sublocale A1xA0: product_of_weakly_extensional_rts A1 A0 ..
 
@@ -1174,11 +1174,11 @@ section "Transformations"
     interpret GoK: composite_simulation A B C K G ..
     show ?thesis
     proof
-       write A  (infix "\\\<^sub>A" 55)
-       write B  (infix "\\\<^sub>B" 55)
-       write C  (infix "\\\<^sub>C" 55)
-       write B.join  (infixr "\<squnion>\<^sub>B" 52)
-       write C.join  (infixr "\<squnion>\<^sub>C" 52)
+       write A  (infix \<open>\\<^sub>A\<close> 55)
+       write B  (infix \<open>\\<^sub>B\<close> 55)
+       write C  (infix \<open>\\<^sub>C\<close> 55)
+       write B.join  (infixr \<open>\<squnion>\<^sub>B\<close> 52)
+       write C.join  (infixr \<open>\<squnion>\<^sub>C\<close> 52)
        fix t
        show "\<not> A.arr t \<Longrightarrow> (\<sigma> \<circ> \<tau>) t = C.null"
          by (simp add: \<sigma>.extensional \<tau>.extensional)

@@ -5,10 +5,10 @@ begin
 subsubsection \<open>Ground context\<close>
 
 datatype (gfuns_ctxt: 'f) gctxt =
-  GHole ("\<box>\<^sub>G") | GMore 'f "'f gterm list" "'f gctxt" "'f gterm list"
+  GHole (\<open>\<box>\<^sub>G\<close>) | GMore 'f "'f gterm list" "'f gctxt" "'f gterm list"
 declare gctxt.map_comp[simp]
 
-fun gctxt_apply_term :: "'f gctxt \<Rightarrow> 'f gterm \<Rightarrow> 'f gterm" ("_\<langle>_\<rangle>\<^sub>G" [1000, 0] 1000) where
+fun gctxt_apply_term :: "'f gctxt \<Rightarrow> 'f gterm \<Rightarrow> 'f gterm" (\<open>_\<langle>_\<rangle>\<^sub>G\<close> [1000, 0] 1000) where
   "\<box>\<^sub>G\<langle>s\<rangle>\<^sub>G = s" |
   "(GMore f ss1 C ss2)\<langle>s\<rangle>\<^sub>G = GFun f (ss1 @ C\<langle>s\<rangle>\<^sub>G # ss2)"
 
@@ -19,7 +19,7 @@ fun hole_gpos where
 lemma gctxt_eq [simp]: "(C\<langle>s\<rangle>\<^sub>G = C\<langle>t\<rangle>\<^sub>G) = (s = t)"
   by (induct C) auto
 
-fun gctxt_compose :: "'f gctxt \<Rightarrow> 'f gctxt \<Rightarrow> 'f gctxt" (infixl "\<circ>\<^sub>G\<^sub>c" 75) where
+fun gctxt_compose :: "'f gctxt \<Rightarrow> 'f gctxt \<Rightarrow> 'f gctxt" (infixl \<open>\<circ>\<^sub>G\<^sub>c\<close> 75) where
   "\<box>\<^sub>G \<circ>\<^sub>G\<^sub>c D = D" |
   "(GMore f ss1 C ss2) \<circ>\<^sub>G\<^sub>c D = GMore f ss1 (C \<circ>\<^sub>G\<^sub>c D) ss2"
 

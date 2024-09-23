@@ -51,7 +51,7 @@ begin
 
 subsection\<open>The Ndet Operator Definition\<close>
 lift_definition
-        Ndet     :: "['\<alpha> process,'\<alpha> process] \<Rightarrow> '\<alpha> process"   (infixl "|-|" 80)
+        Ndet     :: "['\<alpha> process,'\<alpha> process] \<Rightarrow> '\<alpha> process"   (infixl \<open>|-|\<close> 80)
 is   "\<lambda>P Q. (\<F> P \<union> \<F> Q , \<D> P \<union> \<D> Q)"
 proof(simp only: fst_conv snd_conv Rep_process is_process_def DIVERGENCES_def FAILURES_def,
       intro conjI)
@@ -89,7 +89,7 @@ next
      qed
 
 notation
-  Ndet (infixl "\<sqinter>" 80)
+  Ndet (infixl \<open>\<sqinter>\<close> 80)
 
 
 subsection \<open>The Projections\<close>

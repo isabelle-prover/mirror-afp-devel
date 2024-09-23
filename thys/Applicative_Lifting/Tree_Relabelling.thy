@@ -181,7 +181,7 @@ by(simp add: State_Monad.ap_def State_Monad.bind_def Let_def split_def o_def fun
 lemma ap_pure_bind_state: "pure x \<diamondop> State_Monad.bind y f = State_Monad.bind y ((\<diamondop>) (pure x) \<circ> f)"
 by(simp add: ap_conv_bind_state o_def)
 
-definition kleisli_state :: "('b \<Rightarrow> ('s, 'c) state) \<Rightarrow> ('a \<Rightarrow> ('s, 'b) state) \<Rightarrow> 'a \<Rightarrow> ('s, 'c) state" (infixl "\<bullet>" 55)
+definition kleisli_state :: "('b \<Rightarrow> ('s, 'c) state) \<Rightarrow> ('a \<Rightarrow> ('s, 'b) state) \<Rightarrow> 'a \<Rightarrow> ('s, 'c) state" (infixl \<open>\<bullet>\<close> 55)
 where [simp]: "kleisli_state g f a = State_Monad.bind (f a) g"
 
 definition fetch :: "('a stream, 'a) state"

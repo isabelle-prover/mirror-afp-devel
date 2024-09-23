@@ -52,7 +52,7 @@ operator execution at any time step may be sequentialised in any order (due to n
 
 definition encode_problem_with_operator_interference_exclusion
   :: "'variable strips_problem \<Rightarrow> nat \<Rightarrow> sat_plan_variable formula"
-  ("\<Phi>\<^sub>\<forall> _ _" 52)
+  (\<open>\<Phi>\<^sub>\<forall> _ _\<close> 52)
   where "encode_problem_with_operator_interference_exclusion \<Pi> t
     \<equiv> encode_initial_state \<Pi>
       \<^bold>\<and> (encode_operators \<Pi> t

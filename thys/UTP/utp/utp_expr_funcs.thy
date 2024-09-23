@@ -3,11 +3,11 @@ theory utp_expr_funcs
 begin
 
 syntax \<comment> \<open> Polymorphic constructs \<close>
-  "_uceil"      :: "logic \<Rightarrow> logic" ("\<lceil>_\<rceil>\<^sub>u")
-  "_ufloor"     :: "logic \<Rightarrow> logic" ("\<lfloor>_\<rfloor>\<^sub>u")
-  "_umin"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("min\<^sub>u'(_, _')")
-  "_umax"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("max\<^sub>u'(_, _')")
-  "_ugcd"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("gcd\<^sub>u'(_, _')")
+  "_uceil"      :: "logic \<Rightarrow> logic" (\<open>\<lceil>_\<rceil>\<^sub>u\<close>)
+  "_ufloor"     :: "logic \<Rightarrow> logic" (\<open>\<lfloor>_\<rfloor>\<^sub>u\<close>)
+  "_umin"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>min\<^sub>u'(_, _')\<close>)
+  "_umax"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>max\<^sub>u'(_, _')\<close>)
+  "_ugcd"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>gcd\<^sub>u'(_, _')\<close>)
 
 translations
   \<comment> \<open> Type-class polymorphic constructs \<close>
@@ -18,26 +18,26 @@ translations
   "\<lfloor>x\<rfloor>\<^sub>u" == "CONST uop CONST floor x"
 
 syntax \<comment> \<open> Lists / Sequences \<close>
-  "_ucons"      :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr "#\<^sub>u" 65)
-  "_unil"       :: "('a list, '\<alpha>) uexpr" ("\<langle>\<rangle>")
-  "_ulist"      :: "args => ('a list, '\<alpha>) uexpr"    ("\<langle>(_)\<rangle>")
-  "_uappend"    :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (infixr "^\<^sub>u" 80)
-  "_udconcat"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr "\<^sup>\<frown>\<^sub>u" 90)
-  "_ulast"      :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" ("last\<^sub>u'(_')")
-  "_ufront"     :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" ("front\<^sub>u'(_')")
-  "_uhead"      :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" ("head\<^sub>u'(_')")
-  "_utail"      :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" ("tail\<^sub>u'(_')")
-  "_utake"      :: "(nat, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" ("take\<^sub>u'(_,/ _')")
-  "_udrop"      :: "(nat, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" ("drop\<^sub>u'(_,/ _')")
-  "_ufilter"    :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (infixl "\<restriction>\<^sub>u" 75)
-  "_uextract"   :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (infixl "\<upharpoonleft>\<^sub>u" 75)
-  "_uelems"     :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" ("elems\<^sub>u'(_')")
-  "_usorted"    :: "('a list, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" ("sorted\<^sub>u'(_')")
-  "_udistinct"  :: "('a list, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" ("distinct\<^sub>u'(_')")
-  "_uupto"      :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("\<langle>_.._\<rangle>")
-  "_uupt"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("\<langle>_..<_\<rangle>")
-  "_umap"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("map\<^sub>u")
-  "_uzip"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("zip\<^sub>u")
+  "_ucons"      :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr \<open>#\<^sub>u\<close> 65)
+  "_unil"       :: "('a list, '\<alpha>) uexpr" (\<open>\<langle>\<rangle>\<close>)
+  "_ulist"      :: "args => ('a list, '\<alpha>) uexpr"    (\<open>\<langle>(_)\<rangle>\<close>)
+  "_uappend"    :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (infixr \<open>^\<^sub>u\<close> 80)
+  "_udconcat"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr \<open>\<^sup>\<frown>\<^sub>u\<close> 90)
+  "_ulast"      :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" (\<open>last\<^sub>u'(_')\<close>)
+  "_ufront"     :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (\<open>front\<^sub>u'(_')\<close>)
+  "_uhead"      :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" (\<open>head\<^sub>u'(_')\<close>)
+  "_utail"      :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (\<open>tail\<^sub>u'(_')\<close>)
+  "_utake"      :: "(nat, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (\<open>take\<^sub>u'(_,/ _')\<close>)
+  "_udrop"      :: "(nat, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (\<open>drop\<^sub>u'(_,/ _')\<close>)
+  "_ufilter"    :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (infixl \<open>\<restriction>\<^sub>u\<close> 75)
+  "_uextract"   :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr \<Rightarrow> ('a list, '\<alpha>) uexpr" (infixl \<open>\<upharpoonleft>\<^sub>u\<close> 75)
+  "_uelems"     :: "('a list, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (\<open>elems\<^sub>u'(_')\<close>)
+  "_usorted"    :: "('a list, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (\<open>sorted\<^sub>u'(_')\<close>)
+  "_udistinct"  :: "('a list, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (\<open>distinct\<^sub>u'(_')\<close>)
+  "_uupto"      :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<langle>_.._\<rangle>\<close>)
+  "_uupt"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<langle>_..<_\<rangle>\<close>)
+  "_umap"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>map\<^sub>u\<close>)
+  "_uzip"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>zip\<^sub>u\<close>)
 
 translations
   "x #\<^sub>u ys" == "CONST bop (#) x ys"
@@ -63,20 +63,20 @@ translations
   "zip\<^sub>u xs ys" == "CONST bop CONST zip xs ys"
 
 syntax \<comment> \<open> Sets \<close>
-  "_ufinite"    :: "logic \<Rightarrow> logic" ("finite\<^sub>u'(_')")
-  "_uempset"    :: "('a set, '\<alpha>) uexpr" ("{}\<^sub>u")
-  "_uset"       :: "args => ('a set, '\<alpha>) uexpr" ("{(_)}\<^sub>u")
-  "_uunion"     :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (infixl "\<union>\<^sub>u" 65)
-  "_uinter"     :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (infixl "\<inter>\<^sub>u" 70)
-  "_uinsert"    :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("insert\<^sub>u")
-  "_uimage"     :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("_\<lparr>_\<rparr>\<^sub>u" [10,0] 10)
-  "_usubset"    :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix "\<subset>\<^sub>u" 50)
-  "_usubseteq"  :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix "\<subseteq>\<^sub>u" 50)
-  "_uconverse"  :: "logic \<Rightarrow> logic" ("(_\<^sup>~)" [1000] 999)
-  "_ucarrier"   :: "type \<Rightarrow> logic" ("[_]\<^sub>T")
-  "_uid"        :: "type \<Rightarrow> logic" ("id[_]")
-  "_uproduct"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr "\<times>\<^sub>u" 80)
-  "_urelcomp"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr ";\<^sub>u" 75)
+  "_ufinite"    :: "logic \<Rightarrow> logic" (\<open>finite\<^sub>u'(_')\<close>)
+  "_uempset"    :: "('a set, '\<alpha>) uexpr" (\<open>{}\<^sub>u\<close>)
+  "_uset"       :: "args => ('a set, '\<alpha>) uexpr" (\<open>{(_)}\<^sub>u\<close>)
+  "_uunion"     :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (infixl \<open>\<union>\<^sub>u\<close> 65)
+  "_uinter"     :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (infixl \<open>\<inter>\<^sub>u\<close> 70)
+  "_uinsert"    :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>insert\<^sub>u\<close>)
+  "_uimage"     :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>_\<lparr>_\<rparr>\<^sub>u\<close> [10,0] 10)
+  "_usubset"    :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix \<open>\<subset>\<^sub>u\<close> 50)
+  "_usubseteq"  :: "('a set, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix \<open>\<subseteq>\<^sub>u\<close> 50)
+  "_uconverse"  :: "logic \<Rightarrow> logic" (\<open>(_\<^sup>~)\<close> [1000] 999)
+  "_ucarrier"   :: "type \<Rightarrow> logic" (\<open>[_]\<^sub>T\<close>)
+  "_uid"        :: "type \<Rightarrow> logic" (\<open>id[_]\<close>)
+  "_uproduct"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr \<open>\<times>\<^sub>u\<close> 80)
+  "_urelcomp"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixr \<open>;\<^sub>u\<close> 75)
 
 translations
   "finite\<^sub>u(x)" == "CONST uop (CONST finite) x"
@@ -100,16 +100,16 @@ translations
   "A ;\<^sub>u B"    == "CONST bop CONST relcomp A B"
 
 syntax \<comment> \<open> Partial functions \<close>
-  "_umap_plus"  :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl "\<oplus>\<^sub>u" 85)
-  "_umap_minus" :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl "\<ominus>\<^sub>u" 85)
+  "_umap_plus"  :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl \<open>\<oplus>\<^sub>u\<close> 85)
+  "_umap_minus" :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl \<open>\<ominus>\<^sub>u\<close> 85)
 
 translations
   "f \<oplus>\<^sub>u g"   => "(f :: ((_, _) pfun, _) uexpr) + g"
   "f \<ominus>\<^sub>u g"   => "(f :: ((_, _) pfun, _) uexpr) - g"
   
 syntax \<comment> \<open> Sum types \<close>
-  "_uinl"       :: "logic \<Rightarrow> logic" ("inl\<^sub>u'(_')")
-  "_uinr"       :: "logic \<Rightarrow> logic" ("inr\<^sub>u'(_')")
+  "_uinl"       :: "logic \<Rightarrow> logic" (\<open>inl\<^sub>u'(_')\<close>)
+  "_uinr"       :: "logic \<Rightarrow> logic" (\<open>inr\<^sub>u'(_')\<close>)
   
 translations
   "inl\<^sub>u(x)" == "CONST uop CONST Inl x"
@@ -121,10 +121,10 @@ text \<open> We provide syntax for various types of set collectors, including in
   set comprehension which is purpose built as a new lifted definition. \<close>
   
 syntax
-  "_uset_atLeastAtMost" :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" ("(1{_.._}\<^sub>u)")
-  "_uset_atLeastLessThan" :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" ("(1{_..<_}\<^sub>u)")
-  "_uset_compr" :: "pttrn \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> ('b, '\<alpha>) uexpr \<Rightarrow> ('b set, '\<alpha>) uexpr" ("(1{_ :/ _ |/ _ \<bullet>/ _}\<^sub>u)")
-  "_uset_compr_nset" :: "pttrn \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> ('b, '\<alpha>) uexpr \<Rightarrow> ('b set, '\<alpha>) uexpr" ("(1{_ |/ _ \<bullet>/ _}\<^sub>u)")
+  "_uset_atLeastAtMost" :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (\<open>(1{_.._}\<^sub>u)\<close>)
+  "_uset_atLeastLessThan" :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr" (\<open>(1{_..<_}\<^sub>u)\<close>)
+  "_uset_compr" :: "pttrn \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> ('b, '\<alpha>) uexpr \<Rightarrow> ('b set, '\<alpha>) uexpr" (\<open>(1{_ :/ _ |/ _ \<bullet>/ _}\<^sub>u)\<close>)
+  "_uset_compr_nset" :: "pttrn \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> ('b, '\<alpha>) uexpr \<Rightarrow> ('b set, '\<alpha>) uexpr" (\<open>(1{_ |/ _ \<bullet>/ _}\<^sub>u)\<close>)
 
 lift_definition ZedSetCompr ::
   "('a set, '\<alpha>) uexpr \<Rightarrow> ('a \<Rightarrow> (bool, '\<alpha>) uexpr \<times> ('b, '\<alpha>) uexpr) \<Rightarrow> ('b set, '\<alpha>) uexpr"
@@ -151,9 +151,9 @@ definition ucont_on :: "('a::topological_space \<Rightarrow> 'b::topological_spa
 [uexpr_defs]: "ucont_on = (\<lambda> f A. continuous_on A f)"
 
 syntax
-  "_ulim_left"  :: "id \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("lim\<^sub>u'(_ \<rightarrow> _\<^sup>-')'(_')")
-  "_ulim_right" :: "id \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("lim\<^sub>u'(_ \<rightarrow> _\<^sup>+')'(_')")
-  "_ucont_on"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix "cont-on\<^sub>u" 90)
+  "_ulim_left"  :: "id \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>lim\<^sub>u'(_ \<rightarrow> _\<^sup>-')'(_')\<close>)
+  "_ulim_right" :: "id \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>lim\<^sub>u'(_ \<rightarrow> _\<^sup>+')'(_')\<close>)
+  "_ucont_on"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infix \<open>cont-on\<^sub>u\<close> 90)
 
 translations
   "lim\<^sub>u(x \<rightarrow> p\<^sup>-)(e)" == "CONST bop CONST ulim_left p (\<lambda> x \<bullet> e)"

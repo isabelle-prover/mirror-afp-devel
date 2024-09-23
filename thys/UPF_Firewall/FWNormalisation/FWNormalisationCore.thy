@@ -87,7 +87,7 @@ datatype ('\<alpha>,'\<beta>) Combinators =
   DenyAll
   | DenyAllFromTo '\<alpha> '\<alpha> 
   | AllowPortFromTo '\<alpha> '\<alpha> '\<beta> 
-  | Conc "(('\<alpha>,'\<beta>) Combinators)" "(('\<alpha>,'\<beta>) Combinators)" (infixr "\<oplus>" 80)
+  | Conc "(('\<alpha>,'\<beta>) Combinators)" "(('\<alpha>,'\<beta>) Combinators)" (infixr \<open>\<oplus>\<close> 80)
 
 text\<open>
   And define the semantic interpretation of it. For technical reasons, we fix here the type to 

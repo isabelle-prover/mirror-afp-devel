@@ -15,7 +15,7 @@ begin
 
 subsection\<open> Matrix operator norm \<close>
 
-abbreviation op_norm :: "('a::real_normed_algebra_1)^'n^'m \<Rightarrow> real" ("(1\<parallel>_\<parallel>\<^sub>o\<^sub>p)" [65] 61)
+abbreviation op_norm :: "('a::real_normed_algebra_1)^'n^'m \<Rightarrow> real" (\<open>(1\<parallel>_\<parallel>\<^sub>o\<^sub>p)\<close> [65] 61)
   where "\<parallel>A\<parallel>\<^sub>o\<^sub>p \<equiv> onorm (\<lambda>x. A *v x)"
 
 lemma norm_matrix_bound:
@@ -180,7 +180,7 @@ qed
 
 subsection\<open> Matrix maximum norm \<close>
 
-abbreviation max_norm :: "real^'n^'m \<Rightarrow> real" ("(1\<parallel>_\<parallel>\<^sub>m\<^sub>a\<^sub>x)" [65] 61)
+abbreviation max_norm :: "real^'n^'m \<Rightarrow> real" (\<open>(1\<parallel>_\<parallel>\<^sub>m\<^sub>a\<^sub>x)\<close> [65] 61)
   where "\<parallel>A\<parallel>\<^sub>m\<^sub>a\<^sub>x \<equiv> Max (abs ` (entries A))"
 
 lemma max_norm_def: "\<parallel>A\<parallel>\<^sub>m\<^sub>a\<^sub>x = Max {\<bar>A $ i $ j\<bar>|i j. i\<in>UNIV \<and> j\<in>UNIV}"

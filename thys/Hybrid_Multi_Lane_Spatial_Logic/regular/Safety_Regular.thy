@@ -30,10 +30,10 @@ proof unfold_locales
     by (metis less_add_same_cancel2 less_trans regular_def
         traffic.psGeZero traffic.sdGeZero) 
 qed
-notation hmlsl.space ("space")
-notation hmlsl.re ("re'(_')")
-notation hmlsl.cl("cl'(_')")
-notation hmlsl.len ("len")
+notation hmlsl.space (\<open>space\<close>)
+notation hmlsl.re (\<open>re'(_')\<close>)
+notation hmlsl.cl(\<open>cl'(_')\<close>)
+notation hmlsl.len (\<open>len\<close>)
 
 text\<open>
 First we show that the same "safety" theorem as for perfect senors can be 

@@ -8,7 +8,7 @@ begin
 text \<open>Source: Schlöder, Julian.  Ordinal Arithmetic; available online at
     \url{http://www.math.uni-bonn.de/ag/logik/teaching/2012WS/Set%20theory/oa.pdf}\<close>
 
-definition oexp :: "[V,V] \<Rightarrow> V" (infixr "\<up>" 80)
+definition oexp :: "[V,V] \<Rightarrow> V" (infixr \<open>\<up>\<close> 80)
   where "oexp a b \<equiv> transrec (\<lambda>f x. if x=0 then 1
                                     else if Limit x then if a=0 then 0 else \<Squnion>\<xi> \<in> elts x. f \<xi>
                                     else f (\<Squnion>(elts x)) * a)  b"

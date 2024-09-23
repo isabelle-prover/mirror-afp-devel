@@ -29,9 +29,9 @@ imports
 begin
 
 record 'a ordered_semiring = "'a ring" +
-  geq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succeq>\<index>" 50)
-  gt :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>\<index>" 50)
-  max :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("Max\<index>")
+  geq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succeq>\<index>\<close> 50)
+  gt :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<index>\<close> 50)
+  max :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>Max\<index>\<close>)
 
 lemmas ordered_semiring_record_simps = ring_record_simps ordered_semiring.simps
 

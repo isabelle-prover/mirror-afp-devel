@@ -587,11 +587,11 @@ text \<open>
   the end of the next chapter.\<close>
 
 inductive typing :: "('a :: ocl_object_model) type env \<Rightarrow> 'a expr \<Rightarrow> 'a type \<Rightarrow> bool"
-       ("(1_/ \<turnstile>\<^sub>E/ (_ :/ _))" [51,51,51] 50)
-    and collection_parts_typing ("(1_/ \<turnstile>\<^sub>C/ (_ :/ _))" [51,51,51] 50)
-    and collection_part_typing ("(1_/ \<turnstile>\<^sub>P/ (_ :/ _))" [51,51,51] 50)
-    and iterator_typing ("(1_/ \<turnstile>\<^sub>I/ (_ :/ _))" [51,51,51] 50)
-    and expr_list_typing ("(1_/ \<turnstile>\<^sub>L/ (_ :/ _))" [51,51,51] 50) where
+       (\<open>(1_/ \<turnstile>\<^sub>E/ (_ :/ _))\<close> [51,51,51] 50)
+    and collection_parts_typing (\<open>(1_/ \<turnstile>\<^sub>C/ (_ :/ _))\<close> [51,51,51] 50)
+    and collection_part_typing (\<open>(1_/ \<turnstile>\<^sub>P/ (_ :/ _))\<close> [51,51,51] 50)
+    and iterator_typing (\<open>(1_/ \<turnstile>\<^sub>I/ (_ :/ _))\<close> [51,51,51] 50)
+    and expr_list_typing (\<open>(1_/ \<turnstile>\<^sub>L/ (_ :/ _))\<close> [51,51,51] 50) where
 
 \<comment> \<open>Primitive Literals\<close>
 

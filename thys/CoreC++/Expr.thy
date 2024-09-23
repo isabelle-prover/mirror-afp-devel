@@ -17,32 +17,32 @@ datatype expr
   = new cname            \<comment> \<open>class instance creation\<close>
   | Cast cname expr      \<comment> \<open>dynamic type cast\<close>
   | StatCast cname expr  \<comment> \<open>static type cast\<close>        
-                                 ("\<lparr>_\<rparr>_" [80,81] 80)
+                                 (\<open>\<lparr>_\<rparr>_\<close> [80,81] 80)
   | Val val              \<comment> \<open>value\<close>
-  | BinOp expr bop expr          ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)     
+  | BinOp expr bop expr          (\<open>_ \<guillemotleft>_\<guillemotright> _\<close> [80,0,81] 80)     
      \<comment> \<open>binary operation\<close>
   | Var vname            \<comment> \<open>local variable\<close>
-  | LAss vname expr              ("_:=_" [70,70] 70)            
+  | LAss vname expr              (\<open>_:=_\<close> [70,70] 70)            
      \<comment> \<open>local assignment\<close>
-  | FAcc expr vname path         ("_\<bullet>_{_}" [10,90,99] 90)      
+  | FAcc expr vname path         (\<open>_\<bullet>_{_}\<close> [10,90,99] 90)      
      \<comment> \<open>field access\<close>
-  | FAss expr vname path expr    ("_\<bullet>_{_} := _" [10,70,99,70] 70)      
+  | FAss expr vname path expr    (\<open>_\<bullet>_{_} := _\<close> [10,70,99,70] 70)      
      \<comment> \<open>field assignment\<close>
   | Call expr "cname option" mname "expr list"
      \<comment> \<open>method call\<close>
-  | Block vname ty expr          ("'{_:_; _}")
-  | Seq expr expr                ("_;;/ _" [61,60] 60)
-  | Cond expr expr expr          ("if '(_') _/ else _" [80,79,79] 70)
-  | While expr expr              ("while '(_') _" [80,79] 70)
+  | Block vname ty expr          (\<open>'{_:_; _}\<close>)
+  | Seq expr expr                (\<open>_;;/ _\<close> [61,60] 60)
+  | Cond expr expr expr          (\<open>if '(_') _/ else _\<close> [80,79,79] 70)
+  | While expr expr              (\<open>while '(_') _\<close> [80,79] 70)
   | throw expr
 
 abbreviation (input)
-  DynCall :: "expr \<Rightarrow> mname \<Rightarrow> expr list \<Rightarrow> expr" ("_\<bullet>_'(_')" [90,99,0] 90) where
+  DynCall :: "expr \<Rightarrow> mname \<Rightarrow> expr list \<Rightarrow> expr" (\<open>_\<bullet>_'(_')\<close> [90,99,0] 90) where
   "e\<bullet>M(es) == Call e None M es"
 
 abbreviation (input)
   StaticCall :: "expr \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> expr list \<Rightarrow> expr" 
-     ("_\<bullet>'(_::')_'(_')" [90,99,99,0] 90) where
+     (\<open>_\<bullet>'(_::')_'(_')\<close> [90,99,99,0] 90) where
   "e\<bullet>(C::)M(es) == Call e (Some C) M es"
 
 

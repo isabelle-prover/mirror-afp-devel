@@ -19,7 +19,7 @@ locale finite_or_infinite_iteration = seq_distrib + upper_galois_connections
 begin
 
 definition
-  iter :: "'a \<Rightarrow> 'a" ("_\<^sup>\<omega>" [103] 102) (* this can be entered as \sup\circ *)
+  iter :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<omega>\<close> [103] 102) (* this can be entered as \sup\circ *)
 where
   "c\<^sup>\<omega> \<equiv> lfp (\<lambda> x. nil \<sqinter> c;x)"
 
@@ -123,7 +123,7 @@ locale finite_iteration = seq_distrib + lower_galois_connections
 begin
 
 definition
-  fiter :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [101] 100)
+  fiter :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<star>\<close> [101] 100)
 where
   "c\<^sup>\<star> \<equiv> gfp (\<lambda> x. nil \<sqinter> c;x)"
 
@@ -207,7 +207,7 @@ locale infinite_iteration = seq_distrib + lower_galois_connections
 begin
 
 definition
-  infiter :: "'a  \<Rightarrow> 'a" ("_\<^sup>\<infinity>" [105] 106)
+  infiter :: "'a  \<Rightarrow> 'a" (\<open>_\<^sup>\<infinity>\<close> [105] 106)
 where
   "c\<^sup>\<infinity> \<equiv> lfp (\<lambda> x. c;x)"
 

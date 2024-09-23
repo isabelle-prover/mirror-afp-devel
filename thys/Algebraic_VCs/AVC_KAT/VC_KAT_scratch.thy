@@ -17,7 +17,7 @@ in a partial correctness setting.\<close>
 
 subsubsection \<open>KAT: Definition and Basic Properties\<close>
 
-notation times (infixl "\<cdot>" 70)
+notation times (infixl \<open>\<cdot>\<close> 70)
 
 class plus_ord = plus + ord +
   assumes less_eq_def: "x \<le> y \<longleftrightarrow> x + y = y"
@@ -56,7 +56,7 @@ lemma add_lub: "x + y \<le> z \<longleftrightarrow> x \<le> z \<and> y \<le> z"
 end
 
 class kleene_algebra = dioid + 
-  fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [101] 100)
+  fixes star :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<star>\<close> [101] 100)
   assumes star_unfoldl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"  
   and star_unfoldr: "1 + x\<^sup>\<star> \<cdot> x \<le> x\<^sup>\<star>"
   and star_inductl: "z + x \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
@@ -86,7 +86,7 @@ class kat = kleene_algebra +
 
 begin
 
-definition t_op :: "'a \<Rightarrow> 'a" ("t_" [100] 101) where
+definition t_op :: "'a \<Rightarrow> 'a" (\<open>t_\<close> [100] 101) where
   "t x = at (at x)"
 
 lemma t_n [simp]: "t (at x) = at x"
@@ -106,13 +106,13 @@ subsubsection\<open>Propositional Hoare Logic\<close>
 definition H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "H p x q \<longleftrightarrow> t p \<cdot> x \<le> x \<cdot> t q"
 
-definition if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
+definition if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _ fi\<close> [64,64,64] 63) where
   "if p then x else y fi = t p \<cdot> x + at p \<cdot> y"
 
-definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [64,64] 63) where
+definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ od\<close> [64,64] 63) where
   "while p do x od = (t p \<cdot> x)\<^sup>\<star> \<cdot> at p"
 
-definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _ od" [64,64,64] 63) where
+definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ inv _ do _ od\<close> [64,64,64] 63) where
   "while p inv i do x od = while p do x od"
 
 lemma H_skip: "H p 1 p"
@@ -173,7 +173,7 @@ end
 
 subsubsection\<open>Soundness and Relation KAT\<close>
 
-notation relcomp (infixl ";" 70)
+notation relcomp (infixl \<open>;\<close> 70)
 
 interpretation rel_d: dioid Id "{}" "(\<union>)" "(;)" "(\<subseteq>)" "(\<subset>)" 
   by (standard, auto)
@@ -217,7 +217,7 @@ subsubsection\<open>Embedding Predicates in Relations\<close>
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-abbreviation p2r :: "'a pred \<Rightarrow> 'a rel" ("\<lceil>_\<rceil>") where
+abbreviation p2r :: "'a pred \<Rightarrow> 'a rel" (\<open>\<lceil>_\<rceil>\<close>) where
   "\<lceil>P\<rceil> \<equiv> {(s,s) |s. P s}"
 
 lemma t_p2r [simp]: "rel_kat.t_op \<lceil>P\<rceil> = \<lceil>P\<rceil>"
@@ -242,7 +242,7 @@ subsubsection \<open>Store and Assignment\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
-definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" ("_ ::= _" [70, 65] 61) where 
+definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" (\<open>_ ::= _\<close> [70, 65] 61) where 
   "v ::= e = {(s, s(v := e s)) |s. True}"
 
 lemma H_assign: "rel_kat.H \<lceil>\<lambda>s. P (s (v := e s))\<rceil> (v ::= e) \<lceil>P\<rceil>"
@@ -251,13 +251,13 @@ lemma H_assign: "rel_kat.H \<lceil>\<lambda>s. P (s (v := e s))\<rceil> (v ::= e
 lemma H_assign_var: "(\<forall>s. P s \<longrightarrow> Q (s (v := e s))) \<Longrightarrow> rel_kat.H \<lceil>P\<rceil> (v ::= e) \<lceil>Q\<rceil>"
   by (auto simp: gets_def rel_kat.H_def rel_kat.t_op_def rel_at_def)
 
-abbreviation H_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" ("PRE _ _ POST _" [64,64,64] 63) where
+abbreviation H_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" (\<open>PRE _ _ POST _\<close> [64,64,64] 63) where
   "PRE P X POST Q \<equiv> rel_kat.H \<lceil>P\<rceil> X \<lceil>Q\<rceil>"
 
-abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("IF _ THEN _ ELSE _ FI" [64,64,64] 63) where
+abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63) where
   "IF P THEN X ELSE Y FI \<equiv> rel_kat.if_then_else \<lceil>P\<rceil> X Y"
 
-abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
+abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>WHILE _ INV _ DO _ OD\<close> [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> rel_kat.while_inv \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
 subsubsection \<open>Verification Example\<close>

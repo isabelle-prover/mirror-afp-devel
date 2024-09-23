@@ -90,7 +90,7 @@ fun stack :: "conf \<Rightarrow> stack" where "stack (\<Gamma>, e, S) = S"
                  
 interpretation traces step.
 
-abbreviation trace_syn ("_ \<Rightarrow>\<^sup>*\<^bsub>_\<^esub> _" [50,50,50] 50) where "trace_syn \<equiv> trace"
+abbreviation trace_syn (\<open>_ \<Rightarrow>\<^sup>*\<^bsub>_\<^esub> _\<close> [50,50,50] 50) where "trace_syn \<equiv> trace"
 
 lemma conf_trace_induct_final[consumes 1, case_names trace_nil trace_cons]:
   "(\<Gamma>, e, S) \<Rightarrow>\<^sup>*\<^bsub>T\<^esub> final \<Longrightarrow> (\<And> \<Gamma> e S. final = (\<Gamma>, e, S) \<Longrightarrow> P \<Gamma> e S [] (\<Gamma>, e, S)) \<Longrightarrow> (\<And>\<Gamma> e S T \<Gamma>' e' S'. (\<Gamma>', e', S') \<Rightarrow>\<^sup>*\<^bsub>T\<^esub> final \<Longrightarrow> P \<Gamma>' e' S' T final \<Longrightarrow> (\<Gamma>, e, S) \<Rightarrow> (\<Gamma>', e', S') \<Longrightarrow> P \<Gamma> e S ((\<Gamma>', e', S') # T) final) \<Longrightarrow> P \<Gamma> e S T final"
@@ -102,7 +102,7 @@ interpretation balance_trace step  stack
   apply auto
   done
 
-abbreviation bal_syn ("_ \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>_\<^esub> _" [50,50,50] 50) where "bal_syn \<equiv> bal"
+abbreviation bal_syn (\<open>_ \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>_\<^esub> _\<close> [50,50,50] 50) where "bal_syn \<equiv> bal"
 
 lemma isVal_stops:
   assumes "isVal e"

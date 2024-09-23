@@ -24,9 +24,9 @@ The operator @{text \<open>\<oplus>\<^sub>\<or>\<close>} creates or-trees and @{
 And-attack trees @{text \<open>l \<oplus>\<^sub>\<and> s\<close>} and or-attack trees @{text \<open>l \<oplus>\<^sub>\<or> s\<close>} 
 combine lists of attack trees $l$ either conjunctively or disjunctively and
 consist of a list of sub-attacks -- again attack trees.\<close>
-datatype ('s :: state) attree = BaseAttack "('s set) * ('s set)" ("\<N>\<^bsub>(_)\<^esub>") |
-                  AndAttack "('s attree) list" "('s set) * ('s set)" ("_ \<oplus>\<^sub>\<and>\<^bsup>(_)\<^esup>" 60) | 
-                  OrAttack  "('s attree) list" "('s set) * ('s set)" ("_ \<oplus>\<^sub>\<or>\<^bsup>(_)\<^esup>" 61)
+datatype ('s :: state) attree = BaseAttack "('s set) * ('s set)" (\<open>\<N>\<^bsub>(_)\<^esub>\<close>) |
+                  AndAttack "('s attree) list" "('s set) * ('s set)" (\<open>_ \<oplus>\<^sub>\<and>\<^bsup>(_)\<^esup>\<close> 60) | 
+                  OrAttack  "('s attree) list" "('s set) * ('s set)" (\<open>_ \<oplus>\<^sub>\<or>\<^bsup>(_)\<^esup>\<close> 61)
 
 primrec attack :: "('s :: state) attree \<Rightarrow> ('s set) * ('s set)"
   where 
@@ -45,7 +45,7 @@ defined attack vectors are used to define how nodes in an attack tree
 can be expanded into more detailed (refined) attack sequences. This 
 process of refinement @{text "\<sqsubseteq>"} allows to eventually reach a fully detailed
 attack that can then be proved using @{text "\<turnstile>"}.\<close>
-inductive refines_to :: "[('s :: state) attree, 's attree] \<Rightarrow> bool" ("_ \<sqsubseteq> _" [40] 40)
+inductive refines_to :: "[('s :: state) attree, 's attree] \<Rightarrow> bool" (\<open>_ \<sqsubseteq> _\<close> [40] 40)
 where 
 refI: "\<lbrakk>  A = ((l @ [ \<N>\<^bsub>(si',si'')\<^esub>] @ l'')\<oplus>\<^sub>\<and>\<^bsup>(si,si''')\<^esup> );
           A' = (l' \<oplus>\<^sub>\<and>\<^bsup>(si',si'')\<^esup>);
@@ -116,7 +116,7 @@ state that fulfills the attack property.
    \end{itemize}
 \end{itemize}
 The proof calculus is thus completely described by one recursive function. \<close>
-fun is_attack_tree :: "[('s :: state) attree] \<Rightarrow> bool"  ("\<turnstile>_" [40] 40) 
+fun is_attack_tree :: "[('s :: state) attree] \<Rightarrow> bool"  (\<open>\<turnstile>_\<close> [40] 40) 
 where 
 att_base:  "(\<turnstile> \<N>\<^bsub>s\<^esub>) = ( (\<forall> x \<in> (fst s). (\<exists> y \<in> (snd s). x  \<rightarrow>\<^sub>i y )))" |
 att_and: "(\<turnstile>(As \<oplus>\<^sub>\<and>\<^bsup>s\<^esup>)) = 
@@ -350,11 +350,11 @@ lemma att_elem_seq0: "\<turnstile> x1 \<Longrightarrow> (\<forall> x \<in> fst(a
   by (simp add: att_elem_seq)
           
 subsection \<open>Valid refinements\<close>
-definition valid_ref :: "[('s :: state) attree, 's attree] \<Rightarrow> bool" ("_ \<sqsubseteq>\<^sub>V _" 50)
+definition valid_ref :: "[('s :: state) attree, 's attree] \<Rightarrow> bool" (\<open>_ \<sqsubseteq>\<^sub>V _\<close> 50)
   where
 "A \<sqsubseteq>\<^sub>V A' \<equiv>  ( (A \<sqsubseteq> A') \<and>  \<turnstile> A')"
 
-definition ref_validity :: "[('s :: state) attree] \<Rightarrow> bool" ("\<turnstile>\<^sub>V _" 50)
+definition ref_validity :: "[('s :: state) attree] \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>V _\<close> 50)
   where
 "\<turnstile>\<^sub>V A  \<equiv>  (\<exists> A'. (A \<sqsubseteq>\<^sub>V A'))"
 

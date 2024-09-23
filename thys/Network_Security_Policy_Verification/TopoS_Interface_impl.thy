@@ -15,7 +15,7 @@ section\<open>Executable Implementation with Lists\<close>
     by %invisible (metis wf_list_graph_def wf_list_graph_iff_wf_graph)
 
   locale TopoS_List_Impl = 
-    fixes default_node_properties :: "'a" ("\<bottom>") 
+    fixes default_node_properties :: "'a" (\<open>\<bottom>\<close>) 
     and sinvar_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
     and sinvar_impl::"('v::vertex) list_graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
     and receiver_violation :: "bool"

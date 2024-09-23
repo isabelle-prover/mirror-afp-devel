@@ -194,10 +194,10 @@ consts dummyDet :: "'a::cpo \<Rightarrow> 'b::cpo \<Rightarrow> 'b::cpo"
 consts dummyNDet :: "'a::cpo \<Rightarrow> 'b::cpo \<Rightarrow> 'b::cpo"
 consts dummyHide :: "'b::cpo \<Rightarrow> 'a \<Rightarrow> 'b::cpo"
 
-notation dummyPrefix (infixr  "\<rightarrow>" 50)
-notation dummyDet    (infixr  "\<box>" 50)
-notation dummyNDet   (infixr  "\<sqinter>" 50)
-notation dummyHide   (infixr  "\<setminus>" 50)
+notation dummyPrefix (infixr  \<open>\<rightarrow>\<close> 50)
+notation dummyDet    (infixr  \<open>\<box>\<close> 50)
+notation dummyNDet   (infixr  \<open>\<sqinter>\<close> 50)
+notation dummyHide   (infixr  \<open>\<setminus>\<close> 50)
 (*>*)
 
 text\<open>
@@ -307,10 +307,10 @@ text\<open>
    \end{figure}\<close>
 
 (*<*)
-no_notation dummyPrefix  (infixr  "\<rightarrow>" 50)
-no_notation dummyDet     (infixr  "\<box>" 50)
-no_notation dummyNDet    (infixr  "\<sqinter>" 50)
-no_notation dummyHide    (infixr  "\<setminus>" 50)
+no_notation dummyPrefix  (infixr  \<open>\<rightarrow>\<close> 50)
+no_notation dummyDet     (infixr  \<open>\<box>\<close> 50)
+no_notation dummyNDet    (infixr  \<open>\<sqinter>\<close> 50)
+no_notation dummyHide    (infixr  \<open>\<setminus>\<close> 50)
 
 end
 (*>*)

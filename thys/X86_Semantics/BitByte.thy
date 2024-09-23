@@ -15,7 +15,7 @@ subsection \<open>Basics\<close>
 unbundle bit_operations_syntax
 unbundle bit_projection_infix_syntax
 
-definition take_bits :: "nat \<Rightarrow> nat \<Rightarrow> 'a::len word \<Rightarrow> 'a::len word" ("\<langle>_,_\<rangle>_" 51) \<comment> \<open>little-endian\<close>
+definition take_bits :: "nat \<Rightarrow> nat \<Rightarrow> 'a::len word \<Rightarrow> 'a::len word" (\<open>\<langle>_,_\<rangle>_\<close> 51) \<comment> \<open>little-endian\<close>
   where "take_bits l h w \<equiv> (w >> l) AND mask (h-l)"
 
 text \<open>

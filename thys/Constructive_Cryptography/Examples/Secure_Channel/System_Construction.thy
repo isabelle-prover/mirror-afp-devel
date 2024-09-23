@@ -169,7 +169,7 @@ definition dec :: "(unit, 'm option, unit + unit, 'k + 'c option) converter" whe
     | _ \<Rightarrow> Done None)
   )) ()"
 
-definition \<pi>E :: "(auth_query, 'c option, auth_query, 'c option) converter" ("\<pi>\<^sup>E") where
+definition \<pi>E :: "(auth_query, 'c option, auth_query, 'c option) converter" (\<open>\<pi>\<^sup>E\<close>) where
   "\<pi>\<^sup>E \<equiv> 1\<^sub>C"
 
 definition "routing \<equiv> (1\<^sub>C |\<^sub>= lassocr\<^sub>C) \<odot> swap_lassocr \<odot> (1\<^sub>C |\<^sub>= (1\<^sub>C |\<^sub>= swap_lassocr) \<odot> swap_lassocr) \<odot> rassocl\<^sub>C"
@@ -208,7 +208,7 @@ definition dem :: "(unit, 'm option, 'm + unit, 'r + ('a \<times> 'm) option) co
     | _ \<Rightarrow> Done None)
   )) ()"
 
-definition \<pi>E :: "(('a \<times> 'm) insec_query, ('a \<times> 'm) option, ('a \<times> 'm) insec_query, ('a \<times> 'm) option) converter" ("\<pi>\<^sup>E") where
+definition \<pi>E :: "(('a \<times> 'm) insec_query, ('a \<times> 'm) option, ('a \<times> 'm) insec_query, ('a \<times> 'm) option) converter" (\<open>\<pi>\<^sup>E\<close>) where
   "\<pi>\<^sup>E \<equiv> 1\<^sub>C"
 
 definition "routing \<equiv> (1\<^sub>C |\<^sub>= lassocr\<^sub>C) \<odot> swap_lassocr \<odot> (1\<^sub>C |\<^sub>= (1\<^sub>C |\<^sub>= swap_lassocr) \<odot> swap_lassocr) \<odot> rassocl\<^sub>C"

@@ -50,7 +50,7 @@ locale forcing_notion =
     and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
 begin
 
-abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
+abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl \<open>\<preceq>\<close> 50)
   where "x \<preceq> y \<equiv> \<langle>x,y\<rangle>\<in>leq"
 
 lemma refl_leq:
@@ -94,7 +94,7 @@ lemma leq_reflI: "p\<in>P \<Longrightarrow> p\<preceq>p"
 lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
   unfolding compat_def compat_in_def .
 
-abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
+abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl \<open>\<bottom>\<close> 50)
   where "p \<bottom> q \<equiv> \<not> compat(p,q)"
 
 lemma compatI[intro!]: "d\<in>P \<Longrightarrow> d\<preceq>p \<Longrightarrow> d\<preceq>q \<Longrightarrow> compat(p,q)"

@@ -46,7 +46,7 @@ lemma Unf_idem:
   "Unf (Unf \<phi>) \<sim>\<^sub>P Unf \<phi>"
   by (induction \<phi>) (auto simp: ltl_prop_equiv_def)
 
-definition ltl_prop_unfold_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>\<^sub>Q" 75)
+definition ltl_prop_unfold_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<sim>\<^sub>Q\<close> 75)
 where
   "\<phi> \<sim>\<^sub>Q \<psi> \<equiv> (Unf \<phi>) \<sim>\<^sub>P (Unf \<psi>)"
 

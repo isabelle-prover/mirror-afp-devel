@@ -10,10 +10,10 @@ imports Maybe
 begin
 
 \<comment> \<open>type expressions\<close>
-datatype "typ" = TVar nat | Fun "typ" "typ" (infixr "->" 70)
+datatype "typ" = TVar nat | Fun "typ" "typ" (infixr \<open>->\<close> 70)
 
 \<comment> \<open>type schemata\<close>
-datatype type_scheme = FVar nat | BVar nat | SFun type_scheme type_scheme (infixr "=->" 70)
+datatype type_scheme = FVar nat | BVar nat | SFun type_scheme type_scheme (infixr \<open>=->\<close> 70)
 
 \<comment> \<open>embedding types into type schemata\<close>
 fun mk_scheme :: "typ => type_scheme" where
@@ -32,7 +32,7 @@ class type_struct =
     \<comment> \<open>@{text "bound_tv s"}: the type variables occurring bound in the type structure s\<close>
   fixes min_new_bound_tv :: "'a => nat"
     \<comment> \<open>minimal new free / bound variable\<close>
-  fixes app_subst :: "subst => 'a => 'a" ("$")
+  fixes app_subst :: "subst => 'a => 'a" (\<open>$\<close>)
     \<comment> \<open>extension of substitution to type structures\<close>
 
 instantiation "typ" :: type_struct

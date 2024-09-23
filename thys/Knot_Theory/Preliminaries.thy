@@ -26,12 +26,12 @@ type_synonym block = "brick list"
 text\<open>wall are link diagrams obtained by placing a horizontal blocks a top each other\<close>
 
 datatype wall =  basic block
-                |prod block  wall  (infixr "*" 66)
+                |prod block  wall  (infixr \<open>*\<close> 66)
 
 text\<open>Concatenate gives us the block obtained by putting two blocks next to each other\<close>
 
 
-primrec concatenate :: "block => block => block" (infixr "\<otimes>" 65) where
+primrec concatenate :: "block => block => block" (infixr \<open>\<otimes>\<close> 65) where
 concatenates_Nil: "[] \<otimes> ys = ys" |
 concatenates_Cons: "((x#xs)\<otimes>ys) = x#(xs\<otimes>ys)"
 
@@ -52,7 +52,7 @@ lemma right_associativity: "x\<otimes>(y\<otimes>z) =x \<otimes> y \<otimes>z"
 
 text\<open>Compose gives us the wall obtained by putting a wall above another, perhaps in an invalid way.
 \<close>
-primrec compose :: "wall => wall => wall" (infixr "\<circ>" 66) where
+primrec compose :: "wall => wall => wall" (infixr \<open>\<circ>\<close> 66) where
 compose_Nil: "(basic x) \<circ>  ys = prod x ys" |
 compose_Cons: "((prod x xs)\<circ>ys) = prod x (xs\<circ>ys)"
 

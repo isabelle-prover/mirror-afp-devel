@@ -3,10 +3,10 @@ theory CNF
 imports Main "HOL-Library.Simps_Case_Conv"
 begin
 
-datatype 'a literal = Pos 'a ("(_\<^sup>+)" [1000] 999) | Neg 'a ("(_\<inverse>)" [1000] 999)
+datatype 'a literal = Pos 'a (\<open>(_\<^sup>+)\<close> [1000] 999) | Neg 'a (\<open>(_\<inverse>)\<close> [1000] 999)
 
 type_synonym 'a clause = "'a literal set"
-abbreviation empty_clause ("\<box>" (* \box *)) where "\<box> \<equiv> {} :: 'a clause"
+abbreviation empty_clause (\<open>\<box>\<close> (* \box *)) where "\<box> \<equiv> {} :: 'a clause"
 (* unfortunately, we'll also have those as lists, occasionally. *)
 
 primrec atoms_of_lit where

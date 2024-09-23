@@ -378,7 +378,7 @@ memoize_correct
 definition
   "compute_W n = snd (run_state (State_Main.map\<^sub>T' (\<lambda>i. W\<^sub>m' i n) [0..n]) Mapping.empty)"
 
-notation W\<^sub>m.crel_vs ("crel")
+notation W\<^sub>m.crel_vs (\<open>crel\<close>)
 
 lemmas W\<^sub>m_crel = W\<^sub>m.crel[unfolded W\<^sub>m.consistentDP_def, THEN rel_funD,
       of "(m, x)" "(m, y)" for m x y, unfolded prod.case]

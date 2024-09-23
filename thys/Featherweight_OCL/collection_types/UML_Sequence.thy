@@ -46,7 +46,7 @@ imports "../basic_types/UML_Boolean"
         "../basic_types/UML_Integer"
 begin
 
-no_notation None ("\<bottom>")
+no_notation None (\<open>\<bottom>\<close>)
 section\<open>Collection Type Sequence: Operations\<close>
 
 subsection\<open>Basic Properties of the Sequence Type\<close>
@@ -98,7 +98,7 @@ interpretation  StrictRefEq\<^sub>S\<^sub>e\<^sub>q : profile_bin\<^sub>S\<^sub>
 
 
 subsection\<open>Constants: mtSequence\<close>
-definition mtSequence ::"('\<AA>,'\<alpha>::null) Sequence"  ("Sequence{}")
+definition mtSequence ::"('\<AA>,'\<alpha>::null) Sequence"  (\<open>Sequence{}\<close>)
 where     "Sequence{} \<equiv> (\<lambda> \<tau>.  Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>[]::'\<alpha> list\<rfloor>\<rfloor> )"
 
 
@@ -132,7 +132,7 @@ definition OclPrepend   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>
 where     "OclPrepend x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                     then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> (y \<tau>)#\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> \<rfloor>\<rfloor>
                                     else invalid \<tau> )"
-notation   OclPrepend   ("_->prepend\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclPrepend   (\<open>_->prepend\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 
 interpretation OclPrepend:profile_bin\<^sub>d_\<^sub>v OclPrepend "\<lambda>x y. Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>y#\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil>\<rfloor>\<rfloor>"
 proof -  
@@ -158,7 +158,7 @@ proof -
 qed
                 
 syntax
-  "_OclFinsequence" :: "args => ('\<AA>,'a::null) Sequence"    ("Sequence{(_)}")
+  "_OclFinsequence" :: "args => ('\<AA>,'a::null) Sequence"    (\<open>Sequence{(_)}\<close>)
 syntax_consts
   "_OclFinsequence" == OclPrepend
 translations
@@ -171,7 +171,7 @@ definition OclIncluding   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alph
 where     "OclIncluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                     then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>  @ [y \<tau>] \<rfloor>\<rfloor>
                                     else invalid \<tau> )"
-notation   OclIncluding   ("_->including\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclIncluding   (\<open>_->including\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 
 interpretation OclIncluding : 
                profile_bin\<^sub>d_\<^sub>v OclIncluding "\<lambda>x y. Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> @ [y]\<rfloor>\<rfloor>"
@@ -231,7 +231,7 @@ where     "OclExcluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \
                                     then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> filter (\<lambda>x. x = y \<tau>)
                                                                    \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>\<rfloor>\<rfloor>
                                     else invalid \<tau> )"
-notation   OclExcluding   ("_->excluding\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclExcluding   (\<open>_->excluding\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 
 interpretation OclExcluding:profile_bin\<^sub>d_\<^sub>v OclExcluding 
                           "\<lambda>x y. Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> filter (\<lambda>x. x = y) \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x)\<rceil>\<rceil>\<rfloor>\<rfloor>"
@@ -249,7 +249,7 @@ subsection\<open>Definition: Append\<close>
 text\<open>Identical to OclIncluding.\<close>
 definition OclAppend   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Sequence"
 where     "OclAppend = OclIncluding"
-notation   OclAppend   ("_->append\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclAppend   (\<open>_->append\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 
 interpretation OclAppend : 
                profile_bin\<^sub>d_\<^sub>v OclAppend "\<lambda>x y. Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> @ [y]\<rfloor>\<rfloor>"
@@ -263,7 +263,7 @@ where     "OclUnion x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau
                                 then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> @
                                                         \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil>\<rfloor>\<rfloor>
                                 else invalid \<tau> )"
-notation   OclUnion   ("_->union\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclUnion   (\<open>_->union\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 
 interpretation OclUnion : 
                profile_bin\<^sub>d_\<^sub>d OclUnion "\<lambda>x y. Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> @ \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e y\<rceil>\<rceil>\<rfloor>\<rfloor>"
@@ -286,7 +286,7 @@ where     "OclAt x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \
                                   then \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> ! (nat \<lceil>\<lceil>y \<tau>\<rceil>\<rceil> - 1) 
                                   else invalid \<tau>
                              else invalid \<tau> )"
-notation   OclAt ("_->at\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclAt (\<open>_->at\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 (*TODO Locale - Equivalent*)  
 
 
@@ -296,7 +296,7 @@ where     "OclFirst x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> 
                                 case \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> of [] \<Rightarrow> invalid \<tau>
                                                                | x # _ \<Rightarrow> x
                               else invalid \<tau> )"
-notation   OclFirst   ("_->first\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclFirst   (\<open>_->first\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 (*TODO Locale - Equivalent*)  
 
 
@@ -308,7 +308,7 @@ where     "OclLast x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> t
                                else
                                  last \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>
                              else invalid \<tau> )"
-notation   OclLast   ("_->last\<^sub>S\<^sub>e\<^sub>q'(_')")
+notation   OclLast   (\<open>_->last\<^sub>S\<^sub>e\<^sub>q'(_')\<close>)
 (*TODO Locale - Equivalent*)  
 
 subsection\<open>Definition: Iterate\<close>
@@ -320,7 +320,7 @@ where     "OclIterate S A F = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \
                                     else \<bottom>)"
 syntax  
   "_OclIterateSeq"  :: "[('\<AA>,'\<alpha>::null) Sequence, idt, idt, '\<alpha>, '\<beta>] => ('\<AA>,'\<gamma>)val"
-                        ("_ ->iterate\<^sub>S\<^sub>e\<^sub>q'(_;_=_ | _')" (*[71,100,70]50*))
+                        (\<open>_ ->iterate\<^sub>S\<^sub>e\<^sub>q'(_;_=_ | _')\<close> (*[71,100,70]50*))
 syntax_consts
   "_OclIterateSeq" == OclIterate
 translations
@@ -335,7 +335,7 @@ definition OclForall     :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha
 where     "OclForall S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = true | x and (P b)))"
 
 syntax
-  "_OclForallSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->forAll\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+  "_OclForallSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->forAll\<^sub>S\<^sub>e\<^sub>q'(_|_')\<close>)
 syntax_consts
   "_OclForallSeq" == UML_Sequence.OclForall
 translations
@@ -348,7 +348,7 @@ definition OclExists     :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha
 where     "OclExists S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = false | x or (P b)))"
 
 syntax
-  "_OclExistSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->exists\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+  "_OclExistSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->exists\<^sub>S\<^sub>e\<^sub>q'(_|_')\<close>)
 syntax_consts
   "_OclExistSeq" == OclExists
 translations
@@ -361,7 +361,7 @@ definition OclCollect     :: "[('\<AA>,'\<alpha>::null)Sequence,('\<AA>,'\<alpha
 where     "OclCollect S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Sequence{} | x->prepend\<^sub>S\<^sub>e\<^sub>q(P b)))"
 
 syntax
-  "_OclCollectSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->collect\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+  "_OclCollectSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->collect\<^sub>S\<^sub>e\<^sub>q'(_|_')\<close>)
 syntax_consts
   "_OclCollectSeq" == OclCollect
 translations
@@ -375,7 +375,7 @@ where     "OclSelect S P =
            (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Sequence{} | if P b then x->prepend\<^sub>S\<^sub>e\<^sub>q(b) else x endif))"
 
 syntax
-  "_OclSelectSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"  ("(_)->select\<^sub>S\<^sub>e\<^sub>q'(_|_')")
+  "_OclSelectSeq" :: "[('\<AA>,'\<alpha>::null) Sequence,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"  (\<open>(_)->select\<^sub>S\<^sub>e\<^sub>q'(_|_')\<close>)
 syntax_consts
   "_OclSelectSeq" == UML_Sequence.OclSelect
 translations
@@ -384,7 +384,7 @@ translations
 (*TODO Locale - Equivalent*)  
 
 subsection\<open>Definition: Size\<close>
-definition OclSize     :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>)Integer" ("(_)->size\<^sub>S\<^sub>e\<^sub>q'(')")
+definition OclSize     :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>)Integer" (\<open>(_)->size\<^sub>S\<^sub>e\<^sub>q'(')\<close>)
 where     "OclSize S = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = \<zero> | x +\<^sub>i\<^sub>n\<^sub>t \<one> ))"
 
 (*TODO Locale - Equivalent*)  
@@ -392,7 +392,7 @@ where     "OclSize S = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = \<zero> | x +\
 subsection\<open>Definition: IsEmpty\<close>
 definition OclIsEmpty   :: "('\<AA>,'\<alpha>::null) Sequence \<Rightarrow> '\<AA> Boolean"
 where     "OclIsEmpty x =  ((\<upsilon> x and not (\<delta> x)) or ((OclSize x) \<doteq> \<zero>))"
-notation   OclIsEmpty     ("_->isEmpty\<^sub>S\<^sub>e\<^sub>q'(')" (*[66]*))
+notation   OclIsEmpty     (\<open>_->isEmpty\<^sub>S\<^sub>e\<^sub>q'(')\<close> (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
@@ -400,7 +400,7 @@ subsection\<open>Definition: NotEmpty\<close>
 
 definition OclNotEmpty   :: "('\<AA>,'\<alpha>::null) Sequence \<Rightarrow> '\<AA> Boolean"
 where     "OclNotEmpty x =  not(OclIsEmpty x)"
-notation   OclNotEmpty    ("_->notEmpty\<^sub>S\<^sub>e\<^sub>q'(')" (*[66]*))
+notation   OclNotEmpty    (\<open>_->notEmpty\<^sub>S\<^sub>e\<^sub>q'(')\<close> (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
@@ -412,7 +412,7 @@ definition "OclANY x = (\<lambda> \<tau>.
   else
     case drop (drop (Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>))) of [] \<Rightarrow> \<bottom>
                                               | l \<Rightarrow> hd l)"
-notation   OclANY   ("_->any\<^sub>S\<^sub>e\<^sub>q'(')")
+notation   OclANY   (\<open>_->any\<^sub>S\<^sub>e\<^sub>q'(')\<close>)
 
 (*TODO Locale - Equivalent*)  
 
@@ -427,8 +427,8 @@ consts (* abstract set collection operations *)
   (*OclReverse*)
     OclSum         :: " ('\<AA>,'\<alpha>::null) Sequence \<Rightarrow> '\<AA> Integer"
   
-notation  OclCount       ("_->count\<^sub>S\<^sub>e\<^sub>q'(_')" (*[66,65]65*))
-notation  OclSum         ("_->sum\<^sub>S\<^sub>e\<^sub>q'(')" (*[66]*))
+notation  OclCount       (\<open>_->count\<^sub>S\<^sub>e\<^sub>q'(_')\<close> (*[66,65]65*))
+notation  OclSum         (\<open>_->sum\<^sub>S\<^sub>e\<^sub>q'(')\<close> (*[66]*))
 
 subsection\<open>Logical Properties\<close>
 

@@ -453,12 +453,12 @@ definition bernoulli_rat :: "nat \<Rightarrow> rat"
 
 bundle bernoulli_notation
 begin
-notation bernoulli_rat ("\<B>")
+notation bernoulli_rat (\<open>\<B>\<close>)
 end
 
 bundle no_bernoulli_notation
 begin
-no_notation bernoulli_rat ("\<B>")
+no_notation bernoulli_rat (\<open>\<B>\<close>)
 end
 
 lemma bernoulli_num_eq_0_iff: "bernoulli_num n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"

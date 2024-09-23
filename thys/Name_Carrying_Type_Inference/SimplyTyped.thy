@@ -17,7 +17,7 @@ lift_definition Pair :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> 'a trm" is PP
 lift_definition Fst :: "'a trm \<Rightarrow> 'a trm" is PFst using ptrm_alpha_equiv.fst.
 lift_definition Snd :: "'a trm \<Rightarrow> 'a trm" is PSnd using ptrm_alpha_equiv.snd.
 lift_definition fvs :: "'a trm \<Rightarrow> 'a set" is ptrm_fvs using ptrm_alpha_equiv_fvs.
-lift_definition prm :: "'a prm \<Rightarrow> 'a trm \<Rightarrow> 'a trm" (infixr "\<cdot>" 150) is ptrm_apply_prm
+lift_definition prm :: "'a prm \<Rightarrow> 'a trm \<Rightarrow> 'a trm" (infixr \<open>\<cdot>\<close> 150) is ptrm_apply_prm
   using ptrm_alpha_equiv_prm.
 lift_definition depth :: "'a trm \<Rightarrow> nat" is size using ptrm_size_alpha_equiv.
 
@@ -581,7 +581,7 @@ lemma trm_prm_fvs:
   shows "fvs (\<pi> \<cdot> M) = \<pi> {$} fvs M"
 by(transfer, metis ptrm_prm_fvs)
 
-inductive typing :: "'a typing_ctx \<Rightarrow> 'a trm \<Rightarrow> type \<Rightarrow> bool" ("_ \<turnstile> _ : _") where
+inductive typing :: "'a typing_ctx \<Rightarrow> 'a trm \<Rightarrow> type \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close>) where
   tunit: "\<Gamma> \<turnstile> Unit : TUnit"
 | tvar:  "\<Gamma> x = Some \<tau> \<Longrightarrow> \<Gamma> \<turnstile> Var x : \<tau>"
 | tapp:  "\<lbrakk>\<Gamma> \<turnstile> f : (TArr \<tau> \<sigma>); \<Gamma> \<turnstile> x : \<tau>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> App f x : \<sigma>"
@@ -1380,7 +1380,7 @@ lemma substitutes_function:
   shows "\<exists>! X. substitutes A x M X"
 using substitutes_total substitutes_unique by metis
 
-definition subst :: "'a trm \<Rightarrow> 'a \<Rightarrow> 'a trm \<Rightarrow> 'a trm" ("_[_ ::= _]") where
+definition subst :: "'a trm \<Rightarrow> 'a \<Rightarrow> 'a trm \<Rightarrow> 'a trm" (\<open>_[_ ::= _]\<close>) where
   "subst A x M \<equiv> (THE X. substitutes A x M X)"
 
 lemma subst_simp_unit:
@@ -1712,7 +1712,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<sigma> rule: trm_strong_dept
 qed
 
 
-inductive beta_reduction :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" ("_ \<rightarrow>\<beta> _") where
+inductive beta_reduction :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" (\<open>_ \<rightarrow>\<beta> _\<close>) where
   beta:  "(App (Fn x T A) M) \<rightarrow>\<beta> (A[x ::= M])"
 | app1:  "A \<rightarrow>\<beta> A' \<Longrightarrow> (App A B) \<rightarrow>\<beta> (App A' B)"
 | app2:  "B \<rightarrow>\<beta> B' \<Longrightarrow> (App A B) \<rightarrow>\<beta> (App A B')"
@@ -2086,7 +2086,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
   next  
 qed
 
-inductive beta_reduces :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" ("_ \<rightarrow>\<beta>\<^sup>* _") where
+inductive beta_reduces :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" (\<open>_ \<rightarrow>\<beta>\<^sup>* _\<close>) where
   reflexive:  "M \<rightarrow>\<beta>\<^sup>* M"
 | transitive: "\<lbrakk>M \<rightarrow>\<beta>\<^sup>* M'; M' \<rightarrow>\<beta> M''\<rbrakk> \<Longrightarrow> M \<rightarrow>\<beta>\<^sup>* M''"
 
@@ -2225,7 +2225,7 @@ using assms proof(induction)
   next
 qed
 
-inductive parallel_reduction :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" ("_ >> _") where
+inductive parallel_reduction :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" (\<open>_ >> _\<close>) where
   refl: "A >> A"
 | beta: "\<lbrakk>A >> A'; B >> B'\<rbrakk> \<Longrightarrow> (App (Fn x T A) B) >> (A'[x ::= B'])"
 | eta:  "A >> A' \<Longrightarrow> (Fn x T A) >> (Fn x T A')"
@@ -2751,7 +2751,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
   next
 qed
 
-inductive complete_development :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" ("_ >>> _") where
+inductive complete_development :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" (\<open>_ >>> _\<close>) where
   unit: "Unit >>> Unit"
 | var:  "(Var x) >>> (Var x)"
 | beta: "\<lbrakk>A >>> A'; B >>> B'\<rbrakk> \<Longrightarrow> (App (Fn x T A) B) >>> (A'[x ::= B'])"
@@ -3131,7 +3131,7 @@ proof -
   thus ?thesis by blast
 qed
 
-inductive parallel_reduces :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" ("_ >>\<^sup>* _") where
+inductive parallel_reduces :: "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" (\<open>_ >>\<^sup>* _\<close>) where
   reflexive: "A >>\<^sup>* A"
 | transitive: "\<lbrakk>A >>\<^sup>* A'; A' >> A''\<rbrakk> \<Longrightarrow> A >>\<^sup>* A''"
 

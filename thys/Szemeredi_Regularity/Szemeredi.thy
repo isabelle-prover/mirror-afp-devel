@@ -146,7 +146,7 @@ it is strict but later proofs require the non-strict version. The two definition
 be equivalent under fairly mild conditions, but even those conditions turn out to be onerous.\<close>
 
 definition regular_pair::  "real \<Rightarrow> uvert set  \<Rightarrow> uvert set \<Rightarrow> ugraph \<Rightarrow> bool" 
-     ("_-regular'_pair" [999]1000)
+     (\<open>_-regular'_pair\<close> [999]1000)
   where "\<epsilon>-regular_pair X Y G \<equiv> 
     \<forall>A B. A \<subseteq> X \<and> B \<subseteq> Y \<and> (card A \<ge> \<epsilon> * card X) \<and> (card B \<ge> \<epsilon> * card Y) \<longrightarrow>
               \<bar>edge_density A B G - edge_density X Y G\<bar> \<le> \<epsilon>" for \<epsilon>::real
@@ -221,13 +221,13 @@ text \<open>For the sake of generality, and following Zhao's Online Lecture
 we do not impose disjointness: we do not include @{term "i\<noteq>j"} below.\<close>
 
 definition irregular_set:: "[real, ugraph, uvert set set] \<Rightarrow> (uvert set \<times> uvert set) set"
-  ("_-irregular'_set" [999]1000)
+  (\<open>_-irregular'_set\<close> [999]1000)
   where "\<epsilon>-irregular_set \<equiv> \<lambda>G P. {(R,S)|R S. R\<in>P \<and> S\<in>P \<and> \<not> \<epsilon>-regular_pair R S G}"
   for \<epsilon>::real
 
 text\<open>A regular partition may contain a few irregular pairs as long as their total size is bounded as follows.\<close>
 definition regular_partition:: "[real, ugraph, uvert set set] \<Rightarrow> bool" 
-    ("_-regular'_partition" [999]1000)
+    (\<open>_-regular'_partition\<close> [999]1000)
   where
   "\<epsilon>-regular_partition \<equiv> \<lambda>G P . 
      partition_on (uverts G) P \<and>

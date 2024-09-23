@@ -3,73 +3,73 @@ imports Main
 begin
 
 syntax (implnl output)
-  "\<Longrightarrow>" :: "prop \<Rightarrow> prop \<Rightarrow> prop" ("_ //\<Longrightarrow> _" [0,1] 1)
+  "\<Longrightarrow>" :: "prop \<Rightarrow> prop \<Rightarrow> prop" (\<open>_ //\<Longrightarrow> _\<close> [0,1] 1)
 
 notation (holimplnl output)
-"implies" ("(2_ \<longrightarrow>// _)" [0,1] 1)
+"implies" (\<open>(2_ \<longrightarrow>// _)\<close> [0,1] 1)
 notation (holimplnl output)
-"conj" ("_ \<and>/ _" [34,35]35)
+"conj" (\<open>_ \<and>/ _\<close> [34,35]35)
   
 
 syntax (letnl output)
-  "_binds"      :: "[letbind, letbinds] => letbinds"     ("_;//_")
+  "_binds"      :: "[letbind, letbinds] => letbinds"     (\<open>_;//_\<close>)
 text \<open>Theorems as inference rules, usepackage mathpartir\<close>
 
-syntax (eqindent output) "op =" ::"['a, 'a] => bool"               ( "(2_ =/ _)" [49,50]50)
+syntax (eqindent output) "op =" ::"['a, 'a] => bool"               ( \<open>(2_ =/ _)\<close> [49,50]50)
 
 (* LOGIC *)
 syntax (latex output)
   If            :: "[bool, 'a, 'a] => 'a"
-  ("(\<^latex>\<open>\\holkeyword{\<close>if\<^latex>\<open>}\<close>(_)/ \<^latex>\<open>\\holkeyword{\<close>then\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\\holkeyword{\<close>else\<^latex>\<open>}\<close> (_))" 10)
+  (\<open>(\<^latex>\<open>\holkeyword{\<close>if\<^latex>\<open>}\<close>(_)/ \<^latex>\<open>\holkeyword{\<close>then\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\holkeyword{\<close>else\<^latex>\<open>}\<close> (_))\<close> 10)
 
   "_Let"        :: "[letbinds, 'a] => 'a"
-  ("(\<^latex>\<open>\\holkeyword{\<close>let\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\\holkeyword{\<close>in\<^latex>\<open>}\<close> (_))" 10)
+  (\<open>(\<^latex>\<open>\holkeyword{\<close>let\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\holkeyword{\<close>in\<^latex>\<open>}\<close> (_))\<close> 10)
 
   "_case_syntax":: "['a, cases_syn] => 'b"
-  ("(\<^latex>\<open>\\holkeyword{\<close>case\<^latex>\<open>}\<close> _ \<^latex>\<open>\\holkeyword{\<close>of\<^latex>\<open>}\<close>/ _)" 10)
+  (\<open>(\<^latex>\<open>\holkeyword{\<close>case\<^latex>\<open>}\<close> _ \<^latex>\<open>\holkeyword{\<close>of\<^latex>\<open>}\<close>/ _)\<close> 10)
 
 notation (Rule output)
-  Pure.imp  ("\<^latex>\<open>\\mbox{}\\inferrule{\\mbox{\<close>_\<^latex>\<open>}}\<close>\<^latex>\<open>{\\mbox{\<close>_\<^latex>\<open>}}\<close>")
+  Pure.imp  (\<open>\<^latex>\<open>\mbox{}\inferrule{\mbox{\<close>_\<^latex>\<open>}}\<close>\<^latex>\<open>{\mbox{\<close>_\<^latex>\<open>}}\<close>\<close>)
 
 syntax (Rule output)
   "_bigimpl" :: "asms \<Rightarrow> prop \<Rightarrow> prop"
-  ("\<^latex>\<open>\\mbox{}\\inferrule{\<close>_\<^latex>\<open>}\<close>\<^latex>\<open>{\\mbox{\<close>_\<^latex>\<open>}}\<close>")
+  (\<open>\<^latex>\<open>\mbox{}\inferrule{\<close>_\<^latex>\<open>}\<close>\<^latex>\<open>{\mbox{\<close>_\<^latex>\<open>}}\<close>\<close>)
 
   "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" 
-  ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\\\\\<close>/ _")
+  (\<open>\<^latex>\<open>\mbox{\<close>_\<^latex>\<open>}\\\<close>/ _\<close>)
 
-  "_asm" :: "prop \<Rightarrow> asms" ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\<close>")
+  "_asm" :: "prop \<Rightarrow> asms" (\<open>\<^latex>\<open>\mbox{\<close>_\<^latex>\<open>}\<close>\<close>)
 
 
 notation (Axiom output)
-  "Trueprop"  ("\<^latex>\<open>\\mbox{}\\inferrule{\\mbox{}}{\\mbox{\<close>_\<^latex>\<open>}}\<close>")
+  "Trueprop"  (\<open>\<^latex>\<open>\mbox{}\inferrule{\mbox{}}{\mbox{\<close>_\<^latex>\<open>}}\<close>\<close>)
 
 syntax (IfThen output)
   "==>" :: "prop \<Rightarrow> prop \<Rightarrow> prop"
-  ("\<^latex>\<open>{\\normalsize{}\<close>If\<^latex>\<open>\\,}\<close> _/ \<^latex>\<open>{\\normalsize \\,\<close>then\<^latex>\<open>\\,}\<close>/ _.")
+  (\<open>\<^latex>\<open>{\normalsize{}\<close>If\<^latex>\<open>\,}\<close> _/ \<^latex>\<open>{\normalsize \,\<close>then\<^latex>\<open>\,}\<close>/ _.\<close>)
 
   "_bigimpl" :: "asms \<Rightarrow> prop \<Rightarrow> prop"
-  ("\<^latex>\<open>{\\normalsize{}\<close>If\<^latex>\<open>\\,}\<close> _ /\<^latex>\<open>{\\normalsize \\,\<close>then\<^latex>\<open>\\,}\<close>/ _.")
+  (\<open>\<^latex>\<open>{\normalsize{}\<close>If\<^latex>\<open>\,}\<close> _ /\<^latex>\<open>{\normalsize \,\<close>then\<^latex>\<open>\,}\<close>/ _.\<close>)
 
-  "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\<close> /\<^latex>\<open>{\\normalsize \\,\<close>and\<^latex>\<open>\\,}\<close>/ _")
-  "_asm" :: "prop \<Rightarrow> asms" ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\<close>")
+  "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" (\<open>\<^latex>\<open>\mbox{\<close>_\<^latex>\<open>}\<close> /\<^latex>\<open>{\normalsize \,\<close>and\<^latex>\<open>\,}\<close>/ _\<close>)
+  "_asm" :: "prop \<Rightarrow> asms" (\<open>\<^latex>\<open>\mbox{\<close>_\<^latex>\<open>}\<close>\<close>)
 
 syntax (IfThenNoBox output)
   "==>" :: "prop \<Rightarrow> prop \<Rightarrow> prop"
-  ("\<^latex>\<open>{\\normalsize{}\<close>If\<^latex>\<open>\\,}\<close> _/ \<^latex>\<open>{\\normalsize \\,\<close>then\<^latex>\<open>\\,}\<close>/ _.")
+  (\<open>\<^latex>\<open>{\normalsize{}\<close>If\<^latex>\<open>\,}\<close> _/ \<^latex>\<open>{\normalsize \,\<close>then\<^latex>\<open>\,}\<close>/ _.\<close>)
   "_bigimpl" :: "asms \<Rightarrow> prop \<Rightarrow> prop"
-  ("\<^latex>\<open>{\\normalsize{}\<close>If\<^latex>\<open>\\,}\<close> _ /\<^latex>\<open>{\\normalsize \\,\<close>then\<^latex>\<open>:\\,}\<close>/ _.")
-  "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" ("_ /\<^latex>\<open>{\\normalsize \\,\<close>and\<^latex>\<open>\\,}\<close>/ _")
-  "_asm" :: "prop \<Rightarrow> asms" ("_")
+  (\<open>\<^latex>\<open>{\normalsize{}\<close>If\<^latex>\<open>\,}\<close> _ /\<^latex>\<open>{\normalsize \,\<close>then\<^latex>\<open>:\,}\<close>/ _.\<close>)
+  "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" (\<open>_ /\<^latex>\<open>{\normalsize \,\<close>and\<^latex>\<open>\,}\<close>/ _\<close>)
+  "_asm" :: "prop \<Rightarrow> asms" (\<open>_\<close>)
 
 
 text \<open>power\<close>
 syntax (latex output)
-  power :: "['a::power, nat] => 'a"           ("_\<^bsup>_\<^esup>" [1000,0]80)
+  power :: "['a::power, nat] => 'a"           (\<open>_\<^bsup>_\<^esup>\<close> [1000,0]80)
 
 (* empty set *)
 syntax (latex output)
-  "_emptyset" :: "'a set"              ("\<emptyset>")
+  "_emptyset" :: "'a set"              (\<open>\<emptyset>\<close>)
 translations
   "_emptyset"      <= "{}"
 
@@ -84,80 +84,80 @@ translations
 
 
 syntax (latex output)
- Cons :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"    (infixr "\<cdot>" 65)
+ Cons :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"    (infixr \<open>\<cdot>\<close> 65)
 
 syntax (latex output)
- "Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
- "None" :: "'a option" ("\<bottom>")
+ "Some" :: "'a \<Rightarrow> 'a option" (\<open>(\<lfloor>_\<rfloor>)\<close>)
+ "None" :: "'a option" (\<open>\<bottom>\<close>)
 
 text \<open>lesser indentation as default\<close>
 syntax (latex output)
-  "ALL "        :: "[idts, bool] => bool"                ("(2\<forall>_./ _)" [0, 10] 10)
-  "EX "         :: "[idts, bool] => bool"                ("(2\<exists>_./ _)" [0, 10] 10)
+  "ALL "        :: "[idts, bool] => bool"                (\<open>(2\<forall>_./ _)\<close> [0, 10] 10)
+  "EX "         :: "[idts, bool] => bool"                (\<open>(2\<exists>_./ _)\<close> [0, 10] 10)
 
 text \<open>space around \<in>\<close>
 syntax (latex output)
-  "_Ball"       :: "pttrn => 'a set => bool => bool"      ("(3\<forall>_\<^latex>\<open>\\,\<close>\<in>_./ _)" [0, 0, 10] 10)
-  "_Bex"        :: "pttrn => 'a set => bool => bool"      ("(3\<exists>_\<^latex>\<open>\\,\<close>\<in>_./ _)" [0, 0, 10] 10)
+  "_Ball"       :: "pttrn => 'a set => bool => bool"      (\<open>(3\<forall>_\<^latex>\<open>\,\<close>\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_Bex"        :: "pttrn => 'a set => bool => bool"      (\<open>(3\<exists>_\<^latex>\<open>\,\<close>\<in>_./ _)\<close> [0, 0, 10] 10)
 
 text \<open>compact line breaking for some infix operators\<close>
 term "HOL.conj"
 notation (compact output)
-"conj" ("_ \<and>/ _" [34,35]35)
+"conj" (\<open>_ \<and>/ _\<close> [34,35]35)
 notation (compact output)
-"append" ("_ @/ _" [64,65]65)
+"append" (\<open>_ @/ _\<close> [64,65]65)
 
 text \<open>force a newline after definition equation\<close>
 syntax (defnl output)
-  "=="       :: "[prop, prop] => prop"                ("(2_ \<equiv>// _)" [1,2] 2) 
+  "=="       :: "[prop, prop] => prop"                (\<open>(2_ \<equiv>// _)\<close> [1,2] 2) 
 syntax (defeqnl output)
-  "=="       :: "[prop, prop] => prop"                ("(2_ =// _)" [1,2] 2) 
+  "=="       :: "[prop, prop] => prop"                (\<open>(2_ =// _)\<close> [1,2] 2) 
 syntax (eqnl output)
-  "op ="       :: "['a, 'a] => bool"                     ("(2_ =// _)" [1,2] 2) 
+  "op ="       :: "['a, 'a] => bool"                     (\<open>(2_ =// _)\<close> [1,2] 2) 
 syntax (latex output)
-  "=="       :: "[prop, prop] => prop"                ("(2_ \<equiv>/ _)" [1,2] 2) 
+  "=="       :: "[prop, prop] => prop"                (\<open>(2_ \<equiv>/ _)\<close> [1,2] 2) 
 
 text \<open>New-line after assumptions\<close>
 syntax (asmnl output)
   "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" 
-  ("_; // _")
+  (\<open>_; // _\<close>)
 
 text \<open>uncurry functions\<close>
 syntax (uncurry output)
-"_cargs" :: "'a \<Rightarrow> cargs \<Rightarrow> cargs" ("_, _")
-"_applC" :: "[('b => 'a), cargs] => logic" ("(1_/(1'(_')))" [1000, 0] 1000)
+"_cargs" :: "'a \<Rightarrow> cargs \<Rightarrow> cargs" (\<open>_, _\<close>)
+"_applC" :: "[('b => 'a), cargs] => logic" (\<open>(1_/(1'(_')))\<close> [1000, 0] 1000)
 
 text \<open>but keep curried notation for constructors\<close>
 syntax (uncurry output)
-"_cargs_curry":: "'a \<Rightarrow> cargs \<Rightarrow> cargs" ("_ _" [1000,1000] 1000)
-"_applC_curry":: "[('b => 'a), cargs] => logic" ("(1_/ _)" [1000, 1000] 999)
+"_cargs_curry":: "'a \<Rightarrow> cargs \<Rightarrow> cargs" (\<open>_ _\<close> [1000,1000] 1000)
+"_applC_curry":: "[('b => 'a), cargs] => logic" (\<open>(1_/ _)\<close> [1000, 1000] 999)
 
 
 
 text \<open>`dot'-selector notation for records\<close>
 syntax (latex output)
-"_rec_sel" :: "'r \<Rightarrow> id \<Rightarrow> 'a" ("_._" [1000,1000]1000)
+"_rec_sel" :: "'r \<Rightarrow> id \<Rightarrow> 'a" (\<open>_._\<close> [1000,1000]1000)
 
 
 text \<open>invisible binder in case we want to force "bound"-markup\<close>
-consts Bind:: "('a \<Rightarrow> 'b) \<Rightarrow> 'c" (binder "Bind " 10)
+consts Bind:: "('a \<Rightarrow> 'b) \<Rightarrow> 'c" (binder \<open>Bind \<close> 10)
 translations
   "f" <= "Bind x. f"
 
 
 (* length *)
 notation (latex output)
-  length  ("|_|")
+  length  (\<open>|_|\<close>)
 
 (* Optional values *)
 notation (latex output)
-  None ("\<bottom>")
+  None (\<open>\<bottom>\<close>)
 
 notation (latex output)
-  Some ("\<lfloor>_\<rfloor>")
+  Some (\<open>\<lfloor>_\<rfloor>\<close>)
 
 (* nth *)
 notation (latex output)
-  nth  ("_\<^latex>\<open>\\ensuremath{_{[\<close>_\<^latex>\<open>]}}\<close>" [1000,0] 1000)
+  nth  (\<open>_\<^latex>\<open>\ensuremath{_{[\<close>_\<^latex>\<open>]}}\<close>\<close> [1000,0] 1000)
 
 end

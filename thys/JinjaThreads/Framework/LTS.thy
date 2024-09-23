@@ -10,7 +10,7 @@ imports
   Coinductive.TLList
 begin
 
-no_notation floor ("\<lfloor>_\<rfloor>")
+no_notation floor (\<open>\<lfloor>_\<rfloor>\<close>)
 
 lemma rel_option_mono:
   "\<lbrakk> rel_option R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> rel_option R' x y"
@@ -85,16 +85,16 @@ subsection \<open>Labelled transition systems\<close>
 type_synonym ('a, 'b) trsys = "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
 
 locale trsys = 
-  fixes trsys :: "('s, 'tl) trsys" ("_/ -_\<rightarrow>/ _" [50, 0, 50] 60)
+  fixes trsys :: "('s, 'tl) trsys" (\<open>_/ -_\<rightarrow>/ _\<close> [50, 0, 50] 60)
 begin
 
-abbreviation Trsys :: "('s, 'tl list) trsys" ("_/ -_\<rightarrow>*/ _" [50,0,50] 60)
+abbreviation Trsys :: "('s, 'tl list) trsys" (\<open>_/ -_\<rightarrow>*/ _\<close> [50,0,50] 60)
 where "\<And>tl. s -tl\<rightarrow>* s' \<equiv> rtrancl3p trsys s tl s'"
 
-coinductive inf_step :: "'s \<Rightarrow> 'tl llist \<Rightarrow> bool" ("_ -_\<rightarrow>* \<infinity>" [50, 0] 80)
+coinductive inf_step :: "'s \<Rightarrow> 'tl llist \<Rightarrow> bool" (\<open>_ -_\<rightarrow>* \<infinity>\<close> [50, 0] 80)
 where inf_stepI: "\<lbrakk> trsys a b a'; a' -bs\<rightarrow>* \<infinity> \<rbrakk> \<Longrightarrow> a -LCons b bs\<rightarrow>* \<infinity>"
 
-coinductive inf_step_table :: "'s \<Rightarrow> ('s \<times> 'tl \<times> 's) llist \<Rightarrow> bool" ("_ -_\<rightarrow>*t \<infinity>" [50, 0] 80)
+coinductive inf_step_table :: "'s \<Rightarrow> ('s \<times> 'tl \<times> 's) llist \<Rightarrow> bool" (\<open>_ -_\<rightarrow>*t \<infinity>\<close> [50, 0] 80)
 where 
   inf_step_tableI:
   "\<And>tl. \<lbrakk> trsys s tl s'; s' -stls\<rightarrow>*t \<infinity> \<rbrakk> 
@@ -329,7 +329,7 @@ locale \<tau>trsys = trsys +
   fixes \<tau>move :: "('s, 'tl) trsys"
 begin
 
-inductive silent_move :: "'s \<Rightarrow> 's \<Rightarrow> bool" ("_ -\<tau>\<rightarrow> _" [50, 50] 60)
+inductive silent_move :: "'s \<Rightarrow> 's \<Rightarrow> bool" (\<open>_ -\<tau>\<rightarrow> _\<close> [50, 50] 60)
 where [intro]: "!!tl. \<lbrakk> trsys s tl s'; \<tau>move s tl s' \<rbrakk> \<Longrightarrow> s -\<tau>\<rightarrow> s'"
 
 declare silent_move.cases [elim]
@@ -337,22 +337,22 @@ declare silent_move.cases [elim]
 lemma silent_move_iff: "silent_move = (\<lambda>s s'. (\<exists>tl. trsys s tl s' \<and> \<tau>move s tl s'))"
 by(auto simp add: fun_eq_iff)
 
-abbreviation silent_moves :: "'s \<Rightarrow> 's \<Rightarrow> bool" ("_ -\<tau>\<rightarrow>* _" [50, 50] 60)
+abbreviation silent_moves :: "'s \<Rightarrow> 's \<Rightarrow> bool" (\<open>_ -\<tau>\<rightarrow>* _\<close> [50, 50] 60)
 where "silent_moves == silent_move^**"
 
-abbreviation silent_movet :: "'s \<Rightarrow> 's \<Rightarrow> bool" ("_ -\<tau>\<rightarrow>+ _" [50, 50] 60)
+abbreviation silent_movet :: "'s \<Rightarrow> 's \<Rightarrow> bool" (\<open>_ -\<tau>\<rightarrow>+ _\<close> [50, 50] 60)
 where "silent_movet == silent_move^++"
 
-coinductive \<tau>diverge :: "'s \<Rightarrow> bool" ("_ -\<tau>\<rightarrow> \<infinity>" [50] 60)
+coinductive \<tau>diverge :: "'s \<Rightarrow> bool" (\<open>_ -\<tau>\<rightarrow> \<infinity>\<close> [50] 60)
 where
   \<tau>divergeI: "\<lbrakk> s -\<tau>\<rightarrow> s'; s' -\<tau>\<rightarrow> \<infinity> \<rbrakk> \<Longrightarrow> s -\<tau>\<rightarrow> \<infinity>"
 
-coinductive \<tau>inf_step :: "'s \<Rightarrow> 'tl llist \<Rightarrow> bool" ("_ -\<tau>-_\<rightarrow>* \<infinity>" [50, 0] 60)
+coinductive \<tau>inf_step :: "'s \<Rightarrow> 'tl llist \<Rightarrow> bool" (\<open>_ -\<tau>-_\<rightarrow>* \<infinity>\<close> [50, 0] 60)
 where
   \<tau>inf_step_Cons: "\<And>tl. \<lbrakk> s -\<tau>\<rightarrow>* s'; s' -tl\<rightarrow> s''; \<not> \<tau>move s' tl s''; s'' -\<tau>-tls\<rightarrow>* \<infinity> \<rbrakk> \<Longrightarrow> s -\<tau>-LCons tl tls\<rightarrow>* \<infinity>"
 | \<tau>inf_step_Nil: "s -\<tau>\<rightarrow> \<infinity> \<Longrightarrow> s -\<tau>-LNil\<rightarrow>* \<infinity>"
 
-coinductive \<tau>inf_step_table :: "'s \<Rightarrow> ('s \<times> 's \<times> 'tl \<times> 's) llist \<Rightarrow> bool" ("_ -\<tau>-_\<rightarrow>*t \<infinity>" [50, 0] 80)
+coinductive \<tau>inf_step_table :: "'s \<Rightarrow> ('s \<times> 's \<times> 'tl \<times> 's) llist \<Rightarrow> bool" (\<open>_ -\<tau>-_\<rightarrow>*t \<infinity>\<close> [50, 0] 80)
 where
   \<tau>inf_step_table_Cons:
   "\<And>tl. \<lbrakk> s -\<tau>\<rightarrow>* s'; s' -tl\<rightarrow> s''; \<not> \<tau>move s' tl s''; s'' -\<tau>-tls\<rightarrow>*t \<infinity> \<rbrakk> \<Longrightarrow> s -\<tau>-LCons (s, s', tl, s'') tls\<rightarrow>*t \<infinity>"
@@ -374,13 +374,13 @@ where
 definition silent_move_from :: "'s \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow> bool"
 where "silent_move_from s0 s1 s2 \<longleftrightarrow> silent_moves s0 s1 \<and> silent_move s1 s2"
 
-inductive \<tau>rtrancl3p :: "'s \<Rightarrow> 'tl list \<Rightarrow> 's \<Rightarrow> bool" ("_ -\<tau>-_\<rightarrow>* _" [50, 0, 50] 60)
+inductive \<tau>rtrancl3p :: "'s \<Rightarrow> 'tl list \<Rightarrow> 's \<Rightarrow> bool" (\<open>_ -\<tau>-_\<rightarrow>* _\<close> [50, 0, 50] 60)
 where
   \<tau>rtrancl3p_refl: "\<tau>rtrancl3p s [] s"
 | \<tau>rtrancl3p_step: "\<And>tl. \<lbrakk> s -tl\<rightarrow> s'; \<not> \<tau>move s tl s'; \<tau>rtrancl3p s' tls s'' \<rbrakk> \<Longrightarrow> \<tau>rtrancl3p s (tl # tls) s''"
 | \<tau>rtrancl3p_\<tau>step: "\<And>tl. \<lbrakk> s -tl\<rightarrow> s'; \<tau>move s tl s'; \<tau>rtrancl3p s' tls s'' \<rbrakk> \<Longrightarrow> \<tau>rtrancl3p s tls s''"
 
-coinductive \<tau>Runs :: "'s \<Rightarrow> ('tl, 's option) tllist \<Rightarrow> bool" ("_ \<Down> _" [50, 50] 51)
+coinductive \<tau>Runs :: "'s \<Rightarrow> ('tl, 's option) tllist \<Rightarrow> bool" (\<open>_ \<Down> _\<close> [50, 50] 51)
 where
   Terminate: "\<lbrakk> s -\<tau>\<rightarrow>* s'; \<And>tl s''. \<not> s' -tl\<rightarrow> s'' \<rbrakk> \<Longrightarrow> s \<Down> TNil \<lfloor>s'\<rfloor>" 
 | Diverge: "s -\<tau>\<rightarrow> \<infinity> \<Longrightarrow> s \<Down> TNil None"

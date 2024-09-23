@@ -502,7 +502,7 @@ text \<open>Definition of the cartesian products over multisets. The constructio
 definition Sigma_mset :: "'a multiset \<Rightarrow> ('a \<Rightarrow> 'b multiset) \<Rightarrow> ('a \<times> 'b) multiset" where
   "Sigma_mset A B \<equiv> \<Sum>\<^sub># {#{#(a, b). b \<in># B a#}. a \<in># A #}"
 
-abbreviation Times_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" (infixr "\<times>#" 80) where
+abbreviation Times_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" (infixr \<open>\<times>#\<close> 80) where
   "Times_mset A B \<equiv> Sigma_mset A (\<lambda>_. B)"
 
 hide_const (open) Times_mset
@@ -511,7 +511,7 @@ text \<open>Contrary to the set version @{term \<open>SIGMA x:A. B\<close>}, we 
 
 syntax
   "_Sigma_mset" :: "[pttrn, 'a multiset, 'b multiset] => ('a * 'b) multiset"
-  ("(3SIGMAMSET _\<in>#_./ _)" [0, 0, 10] 10)
+  (\<open>(3SIGMAMSET _\<in>#_./ _)\<close> [0, 0, 10] 10)
 syntax_consts
   "_Sigma_mset" \<rightleftharpoons> Sigma_mset
 translations

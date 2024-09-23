@@ -13,19 +13,19 @@ begin
   text \<open>The specification parser must interpret the annotations in the program.\<close>
   
   definition WHILE_annotI :: "(state \<Rightarrow> bool) \<Rightarrow> bexp \<Rightarrow> com \<Rightarrow> com" 
-    ("(WHILE {_} _/ DO _)"  [0, 0, 61] 61) 
+    (\<open>(WHILE {_} _/ DO _)\<close>  [0, 0, 61] 61) 
     where [vcg_annotation_defs]: "WHILE_annotI (I::state \<Rightarrow> bool) \<equiv> While"
     
   lemmas annotate_whileI = WHILE_annotI_def[symmetric]
   
   definition WHILE_annotRVI :: "'a rel \<Rightarrow> (state \<Rightarrow> 'a) \<Rightarrow> (state \<Rightarrow> bool) \<Rightarrow> bexp \<Rightarrow> com \<Rightarrow> com" 
-      ("(WHILE {_} {_} {_} _/ DO _)"  [0, 0, 0, 0, 61] 61)
+      (\<open>(WHILE {_} {_} {_} _/ DO _)\<close>  [0, 0, 0, 0, 61] 61)
     where [vcg_annotation_defs]: "WHILE_annotRVI R V I \<equiv> While" for R V I
     
   lemmas annotate_whileRVI = WHILE_annotRVI_def[symmetric]
   
   definition WHILE_annotVI :: "(state \<Rightarrow> int) \<Rightarrow> (state \<Rightarrow> bool) \<Rightarrow> bexp \<Rightarrow> com \<Rightarrow> com" 
-    ("(WHILE {_} {_} _/ DO _)"  [0, 0, 0, 61] 61)
+    (\<open>(WHILE {_} {_} _/ DO _)\<close>  [0, 0, 0, 61] 61)
   where [vcg_annotation_defs]: "WHILE_annotVI V I \<equiv> While" for V I
   lemmas annotate_whileVI = WHILE_annotVI_def[symmetric]
   

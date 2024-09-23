@@ -9,21 +9,21 @@ begin
 nominal_datatype subject = InputS name
                          | BoundOutputS name
 
-nominal_datatype freeRes = OutputR name name             ("_[_]" [130, 130] 110)
-                         | TauR                          ("\<tau>" 130)
+nominal_datatype freeRes = OutputR name name             (\<open>_[_]\<close> [130, 130] 110)
+                         | TauR                          (\<open>\<tau>\<close> 130)
 
-nominal_datatype residual = BoundR subject "\<guillemotleft>name\<guillemotright> pi" ("_\<guillemotleft>_\<guillemotright> \<prec> _" [80, 80, 80] 80)
-                          | FreeR freeRes pi           ("_ \<prec> _" [80, 80] 80)
+nominal_datatype residual = BoundR subject "\<guillemotleft>name\<guillemotright> pi" (\<open>_\<guillemotleft>_\<guillemotright> \<prec> _\<close> [80, 80, 80] 80)
+                          | FreeR freeRes pi           (\<open>_ \<prec> _\<close> [80, 80] 80)
 
 lemmas residualInject = residual.inject freeRes.inject subject.inject
 
-abbreviation "Transitions_Inputjudge" :: "name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> residual" ("_<_> \<prec> _" [80, 80, 80] 80)
+abbreviation "Transitions_Inputjudge" :: "name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> residual" (\<open>_<_> \<prec> _\<close> [80, 80, 80] 80)
 where "a<x> \<prec> P' \<equiv> ((InputS a)\<guillemotleft>x\<guillemotright> \<prec> P')"
 
-abbreviation "Transitions_BoundOutputjudge" :: "name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> residual" ("_<\<nu>_> \<prec> _" [80, 80, 80] 80)
+abbreviation "Transitions_BoundOutputjudge" :: "name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> residual" (\<open>_<\<nu>_> \<prec> _\<close> [80, 80, 80] 80)
 where "a<\<nu>x> \<prec> P' \<equiv> (BoundR (BoundOutputS a) x P')"
 
-inductive transitions :: "pi \<Rightarrow> residual \<Rightarrow> bool"      ("_ \<longmapsto> _" [80, 80] 80)
+inductive transitions :: "pi \<Rightarrow> residual \<Rightarrow> bool"      (\<open>_ \<longmapsto> _\<close> [80, 80] 80)
 where
   Tau:               "\<tau>.(P) \<longmapsto> \<tau> \<prec> P"
 | Input:             "x \<noteq> a \<Longrightarrow> a<x>.P \<longmapsto> a<x> \<prec> P"

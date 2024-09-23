@@ -49,25 +49,25 @@ Post-proceedings of the 24th International Conference on Types for Proofs and Pr
 
 section \<open>Notation\<close>
 
-notation Pro ("\<langle>_\<rangle>" [39] 39)
-notation Truth ("\<^bold>\<top>")
-notation Neg' ("\<^bold>\<not> _" [40] 40)
-notation Con' (infixr "\<^bold>\<and>" 35)
-notation Eql (infixr "\<^bold>\<Leftrightarrow>" 25)
-notation Eql' (infixr "\<^bold>\<leftrightarrow>" 25)
-notation Falsity ("\<^bold>\<bottom>")
-notation Dis' (infixr "\<^bold>\<or>" 30) 
-notation Imp (infixr "\<^bold>\<Rightarrow>" 25) 
-notation Imp' (infixr "\<^bold>\<rightarrow>" 25)
-notation Box ("\<^bold>\<box> _" [40] 40) 
-notation Neg ("\<^bold>\<rightharpoondown>\<^bold>\<rightharpoondown> _" [40] 40)
-notation Con (infixr "\<^bold>\<and>\<^bold>\<and>" 35) 
-notation Dis (infixr "\<^bold>\<or>\<^bold>\<or>" 30)
-notation Cla ("\<^bold>\<Delta> _" [40] 40) 
-notation Nab ("\<^bold>\<nabla> _" [40] 40)
-abbreviation DetTrue :: tv ("\<bullet>") where "\<bullet> \<equiv> Det True"
-abbreviation DetFalse :: tv ("\<circ>") where "\<circ> \<equiv> Det False"
-notation Indet ("\<lfloor>_\<rfloor>" [39] 39)
+notation Pro (\<open>\<langle>_\<rangle>\<close> [39] 39)
+notation Truth (\<open>\<^bold>\<top>\<close>)
+notation Neg' (\<open>\<^bold>\<not> _\<close> [40] 40)
+notation Con' (infixr \<open>\<^bold>\<and>\<close> 35)
+notation Eql (infixr \<open>\<^bold>\<Leftrightarrow>\<close> 25)
+notation Eql' (infixr \<open>\<^bold>\<leftrightarrow>\<close> 25)
+notation Falsity (\<open>\<^bold>\<bottom>\<close>)
+notation Dis' (infixr \<open>\<^bold>\<or>\<close> 30) 
+notation Imp (infixr \<open>\<^bold>\<Rightarrow>\<close> 25) 
+notation Imp' (infixr \<open>\<^bold>\<rightarrow>\<close> 25)
+notation Box (\<open>\<^bold>\<box> _\<close> [40] 40) 
+notation Neg (\<open>\<^bold>\<rightharpoondown>\<^bold>\<rightharpoondown> _\<close> [40] 40)
+notation Con (infixr \<open>\<^bold>\<and>\<^bold>\<and>\<close> 35) 
+notation Dis (infixr \<open>\<^bold>\<or>\<^bold>\<or>\<close> 30)
+notation Cla (\<open>\<^bold>\<Delta> _\<close> [40] 40) 
+notation Nab (\<open>\<^bold>\<nabla> _\<close> [40] 40)
+abbreviation DetTrue :: tv (\<open>\<bullet>\<close>) where "\<bullet> \<equiv> Det True"
+abbreviation DetFalse :: tv (\<open>\<circ>\<close>) where "\<circ> \<equiv> Det False"
+notation Indet (\<open>\<lfloor>_\<rfloor>\<close> [39] 39)
 
 text 
 \<open>
@@ -411,19 +411,19 @@ section \<open>Derived Formula Constructors\<close>
 definition PRO :: "id list \<Rightarrow> fm list" where
   "PRO ids \<equiv> map Pro ids"
 
-definition Pro_nat :: "nat \<Rightarrow> fm" ("\<langle>_\<rangle>\<^sub>1" [40] 40) where
+definition Pro_nat :: "nat \<Rightarrow> fm" (\<open>\<langle>_\<rangle>\<^sub>1\<close> [40] 40) where
   "\<langle>n\<rangle>\<^sub>1 \<equiv> \<langle>string_of_nat n\<rangle>"
 
-definition PRO_nat :: "nat list \<Rightarrow> fm list" ("\<langle>_\<rangle>\<^sub>1\<^sub>2\<^sub>3" [40] 40) where
+definition PRO_nat :: "nat list \<Rightarrow> fm list" (\<open>\<langle>_\<rangle>\<^sub>1\<^sub>2\<^sub>3\<close> [40] 40) where
   "\<langle>ns\<rangle>\<^sub>1\<^sub>2\<^sub>3 \<equiv> map Pro_nat ns"
 
-definition CON :: "fm list \<Rightarrow> fm" ("[\<^bold>\<and>\<^bold>\<and>] _" [40] 40) where
+definition CON :: "fm list \<Rightarrow> fm" (\<open>[\<^bold>\<and>\<^bold>\<and>] _\<close> [40] 40) where
   "[\<^bold>\<and>\<^bold>\<and>] ps \<equiv> foldr Con ps \<^bold>\<top>"
 
-definition DIS :: "fm list \<Rightarrow> fm" ("[\<^bold>\<or>\<^bold>\<or>] _" [40] 40) where
+definition DIS :: "fm list \<Rightarrow> fm" (\<open>[\<^bold>\<or>\<^bold>\<or>] _\<close> [40] 40) where
   "[\<^bold>\<or>\<^bold>\<or>] ps \<equiv> foldr Dis ps \<^bold>\<bottom>"
 
-definition NAB :: "fm list \<Rightarrow> fm" ("[\<^bold>\<nabla>] _" [40] 40) where
+definition NAB :: "fm list \<Rightarrow> fm" (\<open>[\<^bold>\<nabla>] _\<close> [40] 40) where
   "[\<^bold>\<nabla>] ps \<equiv> [\<^bold>\<and>\<^bold>\<and>] (map Nab ps)"
 
 definition off_diagonal_product :: "'a set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set" where
@@ -432,7 +432,7 @@ definition off_diagonal_product :: "'a set \<Rightarrow> 'a set \<Rightarrow> ('
 definition List_off_diagonal_product :: "'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<times> 'a) list" where
   "List_off_diagonal_product xs ys \<equiv> filter (\<lambda>(x,y). not_equal x y) (List.product xs ys)"
 
-definition ExiEql :: "fm list \<Rightarrow> fm" ("[\<^bold>\<exists>\<^bold>=] _" [40] 40) where
+definition ExiEql :: "fm list \<Rightarrow> fm" (\<open>[\<^bold>\<exists>\<^bold>=] _\<close> [40] 40) where
   "[\<^bold>\<exists>\<^bold>=] ps \<equiv> [\<^bold>\<or>\<^bold>\<or>] (map (\<lambda>(x,y). x \<^bold>\<Leftrightarrow> y) (List_off_diagonal_product ps ps))"
 
 lemma cla_false_Imp:

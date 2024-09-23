@@ -27,7 +27,7 @@ locale rely_quotient = par_distrib + conjunction_parallel
 begin
 
 definition
-  rely_quotient :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "'/'/" 85)
+  rely_quotient :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>'/'/\<close> 85)
 where
   "c // i \<equiv> \<Sqinter>{ d. (c \<sqsubseteq> d \<parallel> i)}"
 

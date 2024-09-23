@@ -38,7 +38,7 @@ datatype
 text\<open>Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...\<close>
 
 syntax
-  "_MTuple"      :: "['a, args] => 'a * 'b"       ("(2\<lbrace>_,/ _\<rbrace>)")
+  "_MTuple"      :: "['a, args] => 'a * 'b"       (\<open>(2\<lbrace>_,/ _\<rbrace>)\<close>)
 syntax_consts
   "_MTuple"     == MPair
 translations
@@ -47,7 +47,7 @@ translations
 
 
 definition
-  HPair :: "[msg,msg] \<Rightarrow> msg"                       ("(4Hash[_] /_)" [0, 1000])
+  HPair :: "[msg,msg] \<Rightarrow> msg"                       (\<open>(4Hash[_] /_)\<close> [0, 1000])
 where
   \<comment> \<open>Message Y paired with a MAC computed with the help of X\<close>
   "Hash[X] Y \<equiv> \<lbrace>Hash\<lbrace>X,Y\<rbrace>, Y\<rbrace>"

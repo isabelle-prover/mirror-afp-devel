@@ -6,7 +6,7 @@ theory Late_Tau_Chain
   imports Late_Semantics1
 begin
 
-abbreviation "tauChain_judge" :: "pi \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>\<tau> _" [80, 80] 80)
+abbreviation "tauChain_judge" :: "pi \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sub>\<tau> _\<close> [80, 80] 80)
 where "P \<Longrightarrow>\<^sub>\<tau> P' \<equiv> (P, P') \<in> {(P, P') | P P'. P \<longmapsto>\<tau> \<prec> P'}^*"
 
 lemma singleTauChain:

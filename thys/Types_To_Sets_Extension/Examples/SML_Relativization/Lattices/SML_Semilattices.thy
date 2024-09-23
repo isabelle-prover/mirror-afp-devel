@@ -112,8 +112,8 @@ proof
     by (fastforce simp: commute order_iff)
 qed
 
-notation le (infix "\<le>\<^sub>o\<^sub>w" 50)
-  and ls (infix "<\<^sub>o\<^sub>w" 50)
+notation le (infix \<open>\<le>\<^sub>o\<^sub>w\<close> 50)
+  and ls (infix \<open><\<^sub>o\<^sub>w\<close> 50)
 
 end
 

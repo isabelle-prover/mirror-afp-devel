@@ -24,7 +24,7 @@ class heyting_algebra = complete_lattice +
   assumes inf_Sup_distrib1: "\<And>Y::'a set. \<And>x::'a. x \<sqinter> (\<Squnion>Y) = (\<Squnion>y\<in>Y. x \<sqinter> y)"
 begin
 
-definition heyting :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<^bold>\<longrightarrow>\<^sub>H" 53) where
+definition heyting :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<^bold>\<longrightarrow>\<^sub>H\<close> 53) where
   "x \<^bold>\<longrightarrow>\<^sub>H y = \<Squnion>{z. x \<sqinter> z \<le> y}"
 
 lemma heyting: \<comment>\<open> The Galois property for \<open>(\<sqinter>)\<close> and \<open>\<^bold>\<longrightarrow>\<^sub>H\<close> \<close>
@@ -289,7 +289,7 @@ setup \<open>Sign.parent_path\<close>
 
 paragraph\<open> Pseudocomplements \<close>
 
-definition pseudocomplement :: "'a::heyting_algebra \<Rightarrow> 'a" ("\<^bold>\<not>\<^sub>H _" [75] 75) where
+definition pseudocomplement :: "'a::heyting_algebra \<Rightarrow> 'a" (\<open>\<^bold>\<not>\<^sub>H _\<close> [75] 75) where
   "\<^bold>\<not>\<^sub>Hx = x \<^bold>\<longrightarrow>\<^sub>H \<bottom>"
 
 lemma pseudocomplementI:

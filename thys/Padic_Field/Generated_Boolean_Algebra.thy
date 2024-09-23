@@ -999,7 +999,7 @@ lemma disjointI:
   shows "disjoint Ss"
   by (meson assms disjoint_def)
 
-definition is_partition  :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl "partitions" 75) where
+definition is_partition  :: "'a set set \<Rightarrow> 'a set \<Rightarrow> bool" (infixl \<open>partitions\<close> 75) where
 "S partitions A = (disjoint S \<and> \<Union> S = A)"
 
 lemma is_partitionE: 

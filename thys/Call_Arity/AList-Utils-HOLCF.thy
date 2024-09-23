@@ -3,7 +3,7 @@ imports "Launchbury.HOLCF-Utils" "Launchbury.HOLCF-Join-Classes" "Launchbury.ALi
 begin
 
 syntax
-  "_BLubMap" :: "[pttrn, pttrn, 'a \<rightharpoonup> 'b, 'b] \<Rightarrow> 'b" ("(3\<Squnion>/_/\<mapsto>/_/\<in>/_/./ _)" [0,0,0, 10] 10)
+  "_BLubMap" :: "[pttrn, pttrn, 'a \<rightharpoonup> 'b, 'b] \<Rightarrow> 'b" (\<open>(3\<Squnion>/_/\<mapsto>/_/\<in>/_/./ _)\<close> [0,0,0, 10] 10)
 
 syntax_consts
   "_BLubMap" == lub

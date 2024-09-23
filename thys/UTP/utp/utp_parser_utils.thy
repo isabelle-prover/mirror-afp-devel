@@ -13,7 +13,7 @@ imports
 begin
 
 syntax
-  "_id_string"     :: "id \<Rightarrow> string" ("IDSTR'(_')")
+  "_id_string"     :: "id \<Rightarrow> string" (\<open>IDSTR'(_')\<close>)
 
 ML \<open>
 signature UTP_PARSER_UTILS =

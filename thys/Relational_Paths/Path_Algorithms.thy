@@ -20,7 +20,7 @@ imports "HOL-Hoare.Hoare_Logic" Rooted_Paths
 begin
 
 no_notation
-  trancl ("(_\<^sup>+)" [1000] 999)
+  trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
 
 class choose_singleton_point_signature =
   fixes choose_singleton :: "'a \<Rightarrow> 'a"
@@ -35,11 +35,11 @@ class relation_algebra_rtc_tarski_choose_point =
 begin
 
 no_notation
-  composition (infixl ";" 75) and
-  times (infixl "*" 70)
+  composition (infixl \<open>;\<close> 75) and
+  times (infixl \<open>*\<close> 70)
 
 notation
-  composition (infixl "*" 75)
+  composition (infixl \<open>*\<close> 75)
 
 subsection \<open>Construction of a path\<close>
 

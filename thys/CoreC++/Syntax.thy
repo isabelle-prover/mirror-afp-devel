@@ -14,7 +14,7 @@ theory Syntax imports Exceptions begin
 text\<open>Syntactic sugar\<close>
 
 abbreviation (input)
-  InitBlock :: "vname \<Rightarrow> ty \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr"   ("(1'{_:_ := _;/ _})") where
+  InitBlock :: "vname \<Rightarrow> ty \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr"   (\<open>(1'{_:_ := _;/ _})\<close>) where
   "InitBlock V T e1 e2 == {V:T; V := e1;; e2}"
 
 abbreviation unit where "unit == Val Unit"

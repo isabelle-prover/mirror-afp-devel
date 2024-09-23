@@ -91,7 +91,7 @@ lemma r_sigma: "eval r_sigma [i, x] = \<phi> (the (eval r_limr [i])) x"
 lemma r_sigma_total: "total r_sigma"
   using r_sigma r_limr r_sigma_recfn totalI2[of r_sigma] by simp
 
-abbreviation sigma :: partial2 ("\<sigma>") where
+abbreviation sigma :: partial2 (\<open>\<sigma>\<close>) where
   "\<sigma> i x \<equiv> eval r_sigma [i, x]"
 
 lemma sigma: "\<sigma> i = \<phi> (the (eval r_limr [i]))"
@@ -599,7 +599,7 @@ definition "r_tau \<equiv> Cn 2 r_nth [Cn 2 r_pdec1 [Cn 2 r_state [r_dettime, Id
 lemma r_tau_recfn: "recfn 2 r_tau"
   unfolding r_tau_def using r_dettime_recfn r_state_recfn by simp
 
-abbreviation tau :: partial2 ("\<tau>") where
+abbreviation tau :: partial2 (\<open>\<tau>\<close>) where
   "\<tau> i x \<equiv> eval r_tau [i, x]"
 
 lemma tau_in_P2: "\<tau> \<in> \<P>\<^sup>2"
@@ -1178,7 +1178,7 @@ corollary not_learn_lim_V: "\<not> learn_lim \<phi> (V_bclim i) (\<sigma> i)"
 
 text \<open>Next we define the separating class.\<close>
 
-definition V_BCLIM :: "partial1 set" ("V\<^bsub>BC-LIM\<^esub>") where
+definition V_BCLIM :: "partial1 set" (\<open>V\<^bsub>BC-LIM\<^esub>\<close>) where
   "V\<^bsub>BC-LIM\<^esub> \<equiv> \<Union>i. V_bclim i"
 
 lemma V_BCLIM_R1: "V\<^bsub>BC-LIM\<^esub> \<subseteq> \<R>"
@@ -1209,7 +1209,7 @@ define a hypothesis space that for every function $\tau_i$ and every list $b$
 of numbers contains a copy of $\tau_i$ with the first $|b|$ values replaced
 by $b$.\<close>
 
-definition psitau :: partial2 ("\<psi>\<^sup>\<tau>") where
+definition psitau :: partial2 (\<open>\<psi>\<^sup>\<tau>\<close>) where
   "\<psi>\<^sup>\<tau> b x \<equiv> (if x < e_length b then Some (e_nth b x) else \<tau> (e_hd b) x)"
 
 lemma psitau_in_P2: "\<psi>\<^sup>\<tau> \<in> \<P>\<^sup>2"

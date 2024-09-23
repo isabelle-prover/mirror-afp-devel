@@ -199,7 +199,7 @@ text \<open>
   Similarly, we can define $(a / b)\ \text{mod}\ m$ whenever $b$ and $m$ are coprime by choosing to
    interpret $(1 / b)\ \text{mod}\ m$ as the modular inverse of $b$ modulo $m$:
 \<close>
-definition qmod :: "rat \<Rightarrow> int \<Rightarrow> int" (infixl "qmod" 70) where
+definition qmod :: "rat \<Rightarrow> int \<Rightarrow> int" (infixl \<open>qmod\<close> 70) where
   "x qmod m = (let (a, b) = quotient_of x in if coprime b m then (a * modular_inverse m b) mod m else 0)"
 
 lemma qmod_mod_absorb [simp]: "x qmod m mod m = x qmod m"

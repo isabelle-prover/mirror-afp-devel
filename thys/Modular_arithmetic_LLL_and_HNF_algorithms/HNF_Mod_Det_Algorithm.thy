@@ -33,8 +33,8 @@ fun make_first_column_positive :: "int mat \<Rightarrow> int mat" where
 
 
 locale mod_operation =
-  fixes generic_mod :: "int \<Rightarrow> int \<Rightarrow> int" (infixl "gmod" 70)
-    and generic_div :: "int \<Rightarrow> int \<Rightarrow> int" (infixl "gdiv" 70)
+  fixes generic_mod :: "int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>gmod\<close> 70)
+    and generic_div :: "int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>gdiv\<close> 70)
 begin
 
 text \<open>Version for reducing all elements\<close>

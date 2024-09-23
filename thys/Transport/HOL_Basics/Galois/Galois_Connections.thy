@@ -10,7 +10,7 @@ begin
 
 definition "galois_connection \<equiv> ((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l \<and> ((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r \<and> ((\<le>\<^bsub>L\<^esub>) \<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"
 
-notation galois.galois_connection (infix "\<stileturn>" 50)
+notation galois.galois_connection (infix \<open>\<stileturn>\<close> 50)
 
 lemma galois_connectionI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l" and "((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>)) r"

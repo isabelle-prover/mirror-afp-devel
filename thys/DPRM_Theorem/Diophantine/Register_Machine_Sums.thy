@@ -25,7 +25,7 @@ qed
   
  
 definition sum_program :: "program \<Rightarrow> (nat \<Rightarrow> polynomial) \<Rightarrow> polynomial" 
-  ("[\<Sum>_] _" [100, 100] 100) where
+  (\<open>[\<Sum>_] _\<close> [100, 100] 100) where
   "[\<Sum>p] f \<equiv> sum_polynomial f [0..<length p]" 
 
 lemma sum_program_push: "m = length ns \<Longrightarrow> length l = length p \<Longrightarrow>
@@ -35,7 +35,7 @@ lemma sum_program_push: "m = length ns \<Longrightarrow> length l = length p \<L
   oops
 
 definition sum_radd_polynomial :: "program \<Rightarrow> register \<Rightarrow> (nat \<Rightarrow> polynomial) \<Rightarrow> polynomial" 
-  ("[\<Sum>R+] _ _ _") where
+  (\<open>[\<Sum>R+] _ _ _\<close>) where
   "[\<Sum>R+] p l f \<equiv> [\<Sum>p] (\<lambda>k. if isadd (p!k) \<and> l = modifies (p!k) then f k else Const 0)"
 
 lemma sum_radd_polynomial_eval[defs]:
@@ -52,7 +52,7 @@ proof -
 qed
 
 definition sum_rsub_polynomial :: "program \<Rightarrow> register \<Rightarrow> (nat \<Rightarrow> polynomial) \<Rightarrow> polynomial" 
-  ("[\<Sum>R-] _ _ _") where
+  (\<open>[\<Sum>R-] _ _ _\<close>) where
   "[\<Sum>R-] p l f \<equiv> [\<Sum>p] (\<lambda>k. if issub (p!k) \<and> l = modifies (p!k) then f k else Const 0)"
 
 lemma sum_rsub_polynomial_eval[defs]:
@@ -69,7 +69,7 @@ proof -
 qed
 
 definition sum_sadd_polynomial :: "program \<Rightarrow> state \<Rightarrow> (nat \<Rightarrow> polynomial) \<Rightarrow> polynomial" 
-  ("[\<Sum>S+] _ _ _") where
+  (\<open>[\<Sum>S+] _ _ _\<close>) where
   "[\<Sum>S+] p d f \<equiv> [\<Sum>p] (\<lambda>k. if isadd (p!k) \<and> d = goes_to (p!k) then f k else Const 0)"
 
 lemma sum_sadd_polynomial_eval[defs]:
@@ -86,7 +86,7 @@ proof -
 qed
 
 definition sum_ssub_nzero_polynomial :: "program \<Rightarrow> state \<Rightarrow> (nat \<Rightarrow> polynomial) \<Rightarrow> polynomial" 
-  ("[\<Sum>S-] _ _ _") where
+  (\<open>[\<Sum>S-] _ _ _\<close>) where
   "[\<Sum>S-] p d f \<equiv> [\<Sum>p] (\<lambda>k. if issub (p!k) \<and> d = goes_to (p!k) then f k else Const 0)"
 
 lemma sum_ssub_nzero_polynomial_eval[defs]:
@@ -103,7 +103,7 @@ proof -
 qed
 
 definition sum_ssub_zero_polynomial :: "program \<Rightarrow> state \<Rightarrow> (nat \<Rightarrow> polynomial) \<Rightarrow> polynomial" 
-  ("[\<Sum>S0] _ _ _") where
+  (\<open>[\<Sum>S0] _ _ _\<close>) where
   "[\<Sum>S0] p d f \<equiv> [\<Sum>p] (\<lambda>k. if issub (p!k) \<and> d = goes_to_alt (p!k) then f k else Const 0)"
 
 lemma sum_ssub_zero_polynomial_eval[defs]:

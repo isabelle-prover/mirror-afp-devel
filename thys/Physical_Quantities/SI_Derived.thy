@@ -44,7 +44,7 @@ abbreviation "sievert \<equiv> metre\<^sup>\<two> \<^bold>\<cdot> second\<^sup>-
 
 abbreviation "katal \<equiv> mole \<^bold>\<cdot> second\<^sup>-\<^sup>\<one>"
 
-definition degrees_celcius :: "'a::field_char_0 \<Rightarrow> 'a[\<Theta>]" ("_\<degree>C" [999] 999) 
+definition degrees_celcius :: "'a::field_char_0 \<Rightarrow> 'a[\<Theta>]" (\<open>_\<degree>C\<close> [999] 999) 
   where [si_eq]: "degrees_celcius x = (x *\<^sub>Q kelvin) + approx_ice_point"
 
 definition [si_eq]: "gram = milli *\<^sub>Q kilogram"

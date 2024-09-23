@@ -86,9 +86,9 @@ begin
   context elementary_closed_monoidal_category
   begin
 
-    notation Curry  ("Curry[_, _, _]")
+    notation Curry  (\<open>Curry[_, _, _]\<close>)
 
-    abbreviation Uncurry  ("Uncurry[_, _]")
+    abbreviation Uncurry  (\<open>Uncurry[_, _]\<close>)
     where "Uncurry[b, c] f \<equiv> eval b c \<cdot> (f \<otimes> b)"
 
     lemma Curry_in_hom [intro]:
@@ -250,22 +250,22 @@ begin
         using e.arrow by metis
     qed
 
-    definition some_exp  ("exp\<^sup>?")
+    definition some_exp  (\<open>exp\<^sup>?\<close>)
     where "exp\<^sup>? b c \<equiv> SOME x. ide x \<and>
                                 (\<exists>e. \<guillemotleft>e : x \<otimes> b \<rightarrow> c\<guillemotright> \<and>
                                   (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes> b \<rightarrow> c\<guillemotright>
                                           \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> x\<guillemotright> \<and> g = e \<cdot> (f \<otimes> b))))"
 
-    definition some_eval  ("eval\<^sup>?")
+    definition some_eval  (\<open>eval\<^sup>?\<close>)
     where "eval\<^sup>? b c \<equiv> SOME e. \<guillemotleft>e : exp\<^sup>? b c \<otimes> b \<rightarrow> c\<guillemotright> \<and>
                                  (\<forall>a g. ide a \<and> \<guillemotleft>g : a \<otimes> b \<rightarrow> c\<guillemotright>
                                           \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = e \<cdot> (f \<otimes> b)))"
 
-    definition some_Curry  ("Curry\<^sup>?[_, _, _]")
+    definition some_Curry  (\<open>Curry\<^sup>?[_, _, _]\<close>)
     where "Curry\<^sup>?[a, b, c] g \<equiv>
            THE f. \<guillemotleft>f : a \<rightarrow> exp\<^sup>? b c\<guillemotright> \<and> g = eval\<^sup>? b c \<cdot> (f \<otimes> b)"
 
-    abbreviation some_Uncurry  ("Uncurry\<^sup>?[_, _]")
+    abbreviation some_Uncurry  (\<open>Uncurry\<^sup>?[_, _]\<close>)
     where "Uncurry\<^sup>?[b, c] f \<equiv> eval\<^sup>? b c \<cdot> (f \<otimes> b)"
 
     lemma Curry_uniqueness:
@@ -358,12 +358,12 @@ begin
   context elementary_closed_monoidal_category
   begin
 
-    abbreviation cov_Exp  ("Exp\<^sup>\<rightarrow>")
+    abbreviation cov_Exp  (\<open>Exp\<^sup>\<rightarrow>\<close>)
     where "Exp\<^sup>\<rightarrow> x g \<equiv> if arr g
                        then Curry[exp x (dom g), x, cod g] (g \<cdot> eval x (dom g))
                        else null"
 
-    abbreviation cnt_Exp  ("Exp\<^sup>\<leftarrow>")
+    abbreviation cnt_Exp  (\<open>Exp\<^sup>\<leftarrow>\<close>)
     where "Exp\<^sup>\<leftarrow> f y \<equiv> if arr f
                        then Curry[exp (cod f) y, dom f, y]
                               (eval (cod f) y \<cdot> (exp (cod f) y \<otimes> f))

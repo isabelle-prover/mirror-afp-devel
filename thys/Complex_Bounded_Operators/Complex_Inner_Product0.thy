@@ -433,7 +433,7 @@ subsection \<open>Gradient derivative\<close>
 
 definition\<^marker>\<open>tag important\<close>
   cgderiv :: "['a::complex_inner \<Rightarrow> complex, 'a, 'a] \<Rightarrow> bool"
-  ("(cGDERIV (_)/ (_)/ :> (_))" [1000, 1000, 60] 60)
+  (\<open>(cGDERIV (_)/ (_)/ :> (_))\<close> [1000, 1000, 60] 60)
   where
     (* Must be "cinner D" not "\<lambda>h. cinner h D", otherwise not even "cGDERIV id x :> 1" holds *)
     "cGDERIV f x :> D \<longleftrightarrow> FDERIV f x :> cinner D"
@@ -538,11 +538,11 @@ qed
 
 
 bundle cinner_syntax begin
-notation cinner (infix "\<bullet>\<^sub>C" 70)
+notation cinner (infix \<open>\<bullet>\<^sub>C\<close> 70)
 end
 
 bundle no_cinner_syntax begin
-no_notation cinner (infix "\<bullet>\<^sub>C" 70)
+no_notation cinner (infix \<open>\<bullet>\<^sub>C\<close> 70)
 end
 
 end

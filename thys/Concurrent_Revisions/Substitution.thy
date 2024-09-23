@@ -36,13 +36,13 @@ subsection \<open>Example model\<close>
 
 subsubsection Preliminaries
 
-notation set3_val ("\<V>\<^sub>V")
-notation set3_expr ("\<V>\<^sub>E")
+notation set3_val (\<open>\<V>\<^sub>V\<close>)
+notation set3_expr (\<open>\<V>\<^sub>E\<close>)
 
-abbreviation rename_vars_val :: "('v \<Rightarrow> 'v) \<Rightarrow> ('r,'l,'v) val \<Rightarrow> ('r,'l,'v) val" ("\<R>\<V>\<^sub>V") where
+abbreviation rename_vars_val :: "('v \<Rightarrow> 'v) \<Rightarrow> ('r,'l,'v) val \<Rightarrow> ('r,'l,'v) val" (\<open>\<R>\<V>\<^sub>V\<close>) where
   "\<R>\<V>\<^sub>V \<zeta> \<equiv> map_val id id \<zeta>"
 
-abbreviation rename_vars_expr :: "('v \<Rightarrow> 'v) \<Rightarrow> ('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) expr" ("\<R>\<V>\<^sub>E") where
+abbreviation rename_vars_expr :: "('v \<Rightarrow> 'v) \<Rightarrow> ('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) expr" (\<open>\<R>\<V>\<^sub>E\<close>) where
   "\<R>\<V>\<^sub>E \<zeta> \<equiv> map_expr id id \<zeta>"
 
 lemma var_renaming_preserves_size: (* for termination proof *)

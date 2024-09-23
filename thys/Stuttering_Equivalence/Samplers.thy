@@ -280,7 +280,7 @@ text \<open>
   if it contains no finite stuttering: whenever two subsequent
   elements are equal then all subsequent elements are the same.
 \<close>
-definition stutter_reduced ("\<natural>_" [100] 100) where
+definition stutter_reduced (\<open>\<natural>_\<close> [100] 100) where
   "\<natural>\<sigma> = \<sigma> \<circ> (max_stutter_sampler \<sigma>)"
 
 definition stutter_free where

@@ -182,7 +182,7 @@ where
  else x"
 
 abbreviation sw_abbrev :: "'var \<Rightarrow> 'varSort \<Rightarrow> 'var \<Rightarrow> 'var \<Rightarrow> 'varSort \<Rightarrow> 'var"
-("_ @_[_ \<and> _]'__" 200)
+(\<open>_ @_[_ \<and> _]'__\<close> 200)
 where "(x @xs[y1 \<and> y2]_ys) == sw ys y1 y2 xs x"
 
 definition sb :: "'varSort \<Rightarrow> 'var \<Rightarrow> 'var \<Rightarrow> 'varSort \<Rightarrow> 'var \<Rightarrow> 'var"
@@ -193,7 +193,7 @@ where
  else x"
 
 abbreviation sb_abbrev :: "'var \<Rightarrow> 'varSort \<Rightarrow> 'var \<Rightarrow> 'var \<Rightarrow> 'varSort \<Rightarrow> 'var"
-("_ @_[_ '/ _]'__" 200)
+(\<open>_ @_[_ '/ _]'__\<close> 200)
 where "(x @xs[y1 / y2]_ys) == sb ys y1 y2 xs x"
 
 theorem sw_simps1[simp]: "(x @xs[x \<and> y]_xs) = y"
@@ -338,12 +338,12 @@ lemmas qSwapAll_simps = qSwap.simps qSwapAbs.simps
 
 abbreviation qSwap_abbrev ::
   "('index,'bindex,'varSort,'var,'opSym)qTerm \<Rightarrow> 'var \<Rightarrow> 'var \<Rightarrow> 'varSort \<Rightarrow>
-   ('index,'bindex,'varSort,'var,'opSym)qTerm" ("_ #[[_ \<and> _]]'__" 200)
+   ('index,'bindex,'varSort,'var,'opSym)qTerm" (\<open>_ #[[_ \<and> _]]'__\<close> 200)
 where "(X #[[z1 \<and> z2]]_zs) == qSwap zs z1 z2 X"
 
 abbreviation qSwapAbs_abbrev ::
   "('index,'bindex,'varSort,'var,'opSym)qAbs \<Rightarrow> 'var \<Rightarrow> 'var \<Rightarrow> 'varSort \<Rightarrow>
-   ('index,'bindex,'varSort,'var,'opSym)qAbs" ("_ $[[_ \<and> _]]'__" 200)
+   ('index,'bindex,'varSort,'var,'opSym)qAbs" (\<open>_ $[[_ \<and> _]]'__\<close> 200)
 where "(A $[[z1 \<and> z2]]_zs) == qSwapAbs zs z1 z2 A"
 
 definition

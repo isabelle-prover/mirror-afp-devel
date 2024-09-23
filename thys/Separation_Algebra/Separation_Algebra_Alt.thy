@@ -22,7 +22,7 @@ text \<open>
    actually use it. We remove the notation for map-add so it doesn't
    conflict.
 *)
-no_notation map_add (infixl "++" 100)
+no_notation map_add (infixl \<open>++\<close> 100)
 
 definition
   lift2 :: "('a => 'b => 'c option) \<Rightarrow> 'a option => 'b option => 'c option"
@@ -31,7 +31,7 @@ where
 
 
 class sep_algebra_alt = zero +
-  fixes add :: "'a => 'a => 'a option" (infixr "\<oplus>" 65)
+  fixes add :: "'a => 'a => 'a option" (infixr \<open>\<oplus>\<close> 65)
 
   assumes add_zero [simp]: "x \<oplus> 0 = Some x"
   assumes add_comm: "x \<oplus> y = y \<oplus> x"
@@ -40,7 +40,7 @@ class sep_algebra_alt = zero +
 begin
 
 definition
-  disjoint :: "'a => 'a => bool" (infix "##" 60)
+  disjoint :: "'a => 'a => bool" (infix \<open>##\<close> 60)
 where
   "a ## b \<equiv> a \<oplus> b \<noteq> None"
 
@@ -57,19 +57,19 @@ lemma add_zero2 [simp]: "0 \<oplus> x = Some x"
   by (subst add_comm) auto
 
 definition
-  substate :: "'a => 'a => bool" (infix "\<preceq>" 60) where
+  substate :: "'a => 'a => bool" (infix \<open>\<preceq>\<close> 60) where
   "a \<preceq> b \<equiv> \<exists>c. a \<oplus> c = Some b"
 
 definition
-  sep_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixl "**" 61)
+  sep_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixl \<open>**\<close> 61)
   where
   "P ** Q \<equiv> \<lambda>s. \<exists>p q. p \<oplus> q = Some s \<and> P p \<and> Q q"
 
-definition emp :: "'a \<Rightarrow> bool" ("\<box>") where
+definition emp :: "'a \<Rightarrow> bool" (\<open>\<box>\<close>) where
   "\<box> \<equiv> \<lambda>s. s = 0"
 
 definition
-  sep_impl :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr "\<longrightarrow>\<^sup>*" 25)
+  sep_impl :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr \<open>\<longrightarrow>\<^sup>*\<close> 25)
   where
   "P \<longrightarrow>\<^sup>* Q \<equiv> \<lambda>h. \<forall>h' h''. h \<oplus> h' = Some h'' \<and> P h' \<longrightarrow> Q h''"
 
@@ -81,7 +81,7 @@ definition (in -)
 
 
 abbreviation
-  add2 :: "'a option => 'a option => 'a option" (infixr "++" 65)
+  add2 :: "'a option => 'a option => 'a option" (infixr \<open>++\<close> 65)
 where
   "add2 == lift2 add"
 

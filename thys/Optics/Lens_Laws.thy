@@ -11,16 +11,16 @@ text \<open>This theory introduces the signature of lenses and indentifies the c
   classes, including laws for well-behaved, very well-behaved, and bijective lenses~\<^cite>\<open>"Foster07" and "Fischer2015" and "Gibbons17"\<close>.\<close>
   
 record ('a, 'b) lens =
-  lens_get :: "'b \<Rightarrow> 'a" ("get\<index>")
-  lens_put :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" ("put\<index>")
+  lens_get :: "'b \<Rightarrow> 'a" (\<open>get\<index>\<close>)
+  lens_put :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>put\<index>\<close>)
 
 type_notation
-  lens (infixr "\<Longrightarrow>" 0)
+  lens (infixr \<open>\<Longrightarrow>\<close> 0)
 
 text \<open> Alternative parameters ordering, inspired by Back and von Wright's refinement 
   calculus~\<^cite>\<open>"Back1998"\<close>, which similarly uses two functions to characterise updates to variables. \<close>
 
-abbreviation (input) lens_set :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b" ("lset\<index>") where
+abbreviation (input) lens_set :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b" (\<open>lset\<index>\<close>) where
 "lens_set \<equiv> (\<lambda> X v s. put\<^bsub>X\<^esub> s v)"
 
 text \<open>
@@ -46,39 +46,39 @@ named_theorems lens_defs
 text \<open> @{text lens_source} gives the set of constructible sources; that is those that can be built
   by putting a value into an arbitrary source. \<close>
 
-definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" ("\<S>\<index>") where
+definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" (\<open>\<S>\<index>\<close>) where
 "lens_source X = {s. \<exists> v s'. s = put\<^bsub>X\<^esub> s' v}"
 
 text \<open> A partial version of @{const lens_get}, which can be useful for partial lenses. \<close>
 
-definition lens_partial_get :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a option" ("pget\<index>") where
+definition lens_partial_get :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a option" (\<open>pget\<index>\<close>) where
 "lens_partial_get x s = (if s \<in> \<S>\<^bsub>x\<^esub> then Some (get\<^bsub>x\<^esub> s) else None)"
 
-abbreviation some_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b" ("src\<index>") where
+abbreviation some_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b" (\<open>src\<index>\<close>) where
 "some_source X \<equiv> (SOME s. s \<in> \<S>\<^bsub>X\<^esub>)"
 
-definition lens_create :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" ("create\<index>") where
+definition lens_create :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>create\<index>\<close>) where
 [lens_defs]: "create\<^bsub>X\<^esub> v = put\<^bsub>X\<^esub> (src\<^bsub>X\<^esub>) v"
 
 text \<open> Function $\lcreate_X~v$ creates an instance of the source type of $X$ by injecting $v$
   as the view, and leaving the remaining context arbitrary. \<close>
     
-definition lens_update :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'b)" ("update\<index>") where
+definition lens_update :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'b)" (\<open>update\<index>\<close>) where
 [lens_defs]: "lens_update X f \<sigma> = put\<^bsub>X\<^esub> \<sigma> (f (get\<^bsub>X\<^esub> \<sigma>))"
 
 text \<open> The update function is analogous to the record update function which lifts a function
   on a view type to one on the source type. \<close>
 
-definition lens_obs_eq :: "('b \<Longrightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<simeq>\<index>" 50) where
+definition lens_obs_eq :: "('b \<Longrightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<simeq>\<index>\<close> 50) where
 [lens_defs]: "s\<^sub>1 \<simeq>\<^bsub>X\<^esub> s\<^sub>2 = (s\<^sub>1 = put\<^bsub>X\<^esub> s\<^sub>2 (get\<^bsub>X\<^esub> s\<^sub>1))"
 
 text \<open> This relation states that two sources are equivalent outside of the region characterised
   by lens $X$. \<close>
 
-definition lens_override :: "('b \<Longrightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<triangleleft>\<index>" 95) where
+definition lens_override :: "('b \<Longrightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<triangleleft>\<index>\<close> 95) where
 [lens_defs]: "S\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> S\<^sub>2 = put\<^bsub>X\<^esub> S\<^sub>1 (get\<^bsub>X\<^esub> S\<^sub>2)"
 
-abbreviation (input) lens_override' :: "'a \<Rightarrow> 'a \<Rightarrow> ('b \<Longrightarrow> 'a) \<Rightarrow> 'a" ("_ \<oplus>\<^sub>L _ on _" [95,0,96] 95) where
+abbreviation (input) lens_override' :: "'a \<Rightarrow> 'a \<Rightarrow> ('b \<Longrightarrow> 'a) \<Rightarrow> 'a" (\<open>_ \<oplus>\<^sub>L _ on _\<close> [95,0,96] 95) where
 "S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X \<equiv> S\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> S\<^sub>2"
 
 text \<open>Lens override uses a lens to replace part of a source type with a given value for the
@@ -419,7 +419,7 @@ locale lens_indep =
   and lens_put_irr1: "get\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> \<sigma> v) = get\<^bsub>X\<^esub> \<sigma>"
   and lens_put_irr2: "get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> \<sigma> u) = get\<^bsub>Y\<^esub> \<sigma>"
 
-notation lens_indep (infix "\<bowtie>" 50)
+notation lens_indep (infix \<open>\<bowtie>\<close> 50)
 
 lemma lens_indepI:
   "\<lbrakk> \<And> u v \<sigma>. put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v;
@@ -470,7 +470,7 @@ text \<open> Lens compatibility is a weaker notion than independence. It allows 
   so long as they manipulate the source in the same way in that region. It is most easily defined
   in terms of a function for copying a region from one source to another using a lens. \<close>
 
-definition lens_compat (infix "##\<^sub>L" 50) where
+definition lens_compat (infix \<open>##\<^sub>L\<close> 50) where
 [lens_defs]: "lens_compat X Y = (\<forall>s\<^sub>1 s\<^sub>2. s\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> s\<^sub>2 \<triangleleft>\<^bsub>Y\<^esub> s\<^sub>2 = s\<^sub>1 \<triangleleft>\<^bsub>Y\<^esub> s\<^sub>2 \<triangleleft>\<^bsub>X\<^esub> s\<^sub>2)"
 
 lemma lens_compat_idem [simp]: "x ##\<^sub>L x"

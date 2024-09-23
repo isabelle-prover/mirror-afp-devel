@@ -25,17 +25,17 @@ abbreviation "\<I> \<equiv> \<C>\<^sup>d"
 abbreviation "CLOSURE \<phi> \<equiv> ADDI \<phi> \<and> EXPN \<phi> \<and> NORM \<phi> \<and> IDEM \<phi>"
 abbreviation "INTERIOR \<phi> \<equiv> MULT \<phi> \<and> CNTR \<phi> \<and> DNRM \<phi> \<and> IDEM \<phi>"
 
-definition mforallInt::"(\<sigma> \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" ("\<^bold>\<Pi>\<^sup>I_") 
+definition mforallInt::"(\<sigma> \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" (\<open>\<^bold>\<Pi>\<^sup>I_\<close>) 
   where "\<^bold>\<Pi>\<^sup>I\<phi> \<equiv> \<^bold>\<Pi>[fp \<I>]\<phi>"
-definition mexistsInt::"(\<sigma> \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" ("\<^bold>\<Sigma>\<^sup>I_") 
+definition mexistsInt::"(\<sigma> \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" (\<open>\<^bold>\<Sigma>\<^sup>I_\<close>) 
   where "\<^bold>\<Sigma>\<^sup>I\<phi> \<equiv> \<^bold>\<Sigma>[fp \<I>]\<phi>"
 
 (*To improve readability, we introduce for them standard binder notation.*)
-notation mforallInt (binder "\<^bold>\<forall>\<^sup>I" [48]49) 
-notation mexistsInt (binder "\<^bold>\<exists>\<^sup>I" [48]49) 
+notation mforallInt (binder \<open>\<^bold>\<forall>\<^sup>I\<close> [48]49) 
+notation mexistsInt (binder \<open>\<^bold>\<exists>\<^sup>I\<close> [48]49) 
 
-abbreviation intneg ("\<^bold>\<not>\<^sup>I_") where "\<^bold>\<not>\<^sup>IA \<equiv> \<I>\<^sup>d\<^sup>- A"
-abbreviation parneg ("\<^bold>\<not>\<^sup>C_") where "\<^bold>\<not>\<^sup>CA \<equiv> \<C>\<^sup>d\<^sup>- A"
+abbreviation intneg (\<open>\<^bold>\<not>\<^sup>I_\<close>) where "\<^bold>\<not>\<^sup>IA \<equiv> \<I>\<^sup>d\<^sup>- A"
+abbreviation parneg (\<open>\<^bold>\<not>\<^sup>C_\<close>) where "\<^bold>\<not>\<^sup>CA \<equiv> \<C>\<^sup>d\<^sup>- A"
 
 lemma "(\<^bold>\<forall>X. (\<^bold>\<exists>B. (X  \<^bold>\<leftrightarrow> \<^bold>\<midarrow>B))) \<^bold>= \<^bold>\<top>" by (smt (verit, del_insts) compl_def dimpl_def mexists_def mforall_def setequ_def top_def)
 lemma "(\<^bold>\<forall>\<^sup>IX. (\<^bold>\<exists>\<^sup>IB. (X  \<^bold>\<leftrightarrow> \<^bold>\<not>\<^sup>IB))) \<^bold>= \<^bold>\<top>" nitpick oops \<comment>\<open> counterexample \<close>

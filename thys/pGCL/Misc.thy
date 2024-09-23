@@ -323,7 +323,7 @@ subsection \<open>Truncated Subtraction\<close>
 text_raw \<open>\label{s:trunc_sub}\<close>
 
 definition
-  tminus :: "real \<Rightarrow> real \<Rightarrow> real" (infixl "\<ominus>" 60)
+  tminus :: "real \<Rightarrow> real \<Rightarrow> real" (infixl \<open>\<ominus>\<close> 60)
 where
   "x \<ominus> y = max (x - y) 0"
 

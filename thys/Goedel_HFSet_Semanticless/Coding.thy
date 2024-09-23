@@ -466,7 +466,7 @@ lemma HTuple_minus_1: "n > 0 \<Longrightarrow> HTuple n = HPair Zero (HTuple (n 
 lemmas HTS = HTuple_minus_1 HTuple.simps \<comment> \<open>for freeness reasoning on codes\<close>
 
 class quot =
-  fixes quot :: "'a \<Rightarrow> tm"  ("\<guillemotleft>_\<guillemotright>")
+  fixes quot :: "'a \<Rightarrow> tm"  (\<open>\<guillemotleft>_\<guillemotright>\<close>)
 
 instantiation tm :: quot
 begin
@@ -636,7 +636,7 @@ lemma fresh_vquot_dbfm [simp]: "i \<sharp> vquot_dbfm V fm \<longleftrightarrow>
   by (induct fm rule: dbfm.induct) (auto simp: HPair_def HTuple_minus_1)
 
 class vquot =
-  fixes vquot :: "'a \<Rightarrow> name set \<Rightarrow> tm"  ("\<lfloor>_\<rfloor>_"  [0,1000]1000)
+  fixes vquot :: "'a \<Rightarrow> name set \<Rightarrow> tm"  (\<open>\<lfloor>_\<rfloor>_\<close>  [0,1000]1000)
 
 instantiation tm :: vquot
 begin

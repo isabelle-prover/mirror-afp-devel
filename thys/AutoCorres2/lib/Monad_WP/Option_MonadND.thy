@@ -19,7 +19,7 @@ where
 
 definition
   ocatch :: "('s,('e + 'a)) lookup \<Rightarrow> ('e \<Rightarrow> ('s,'a) lookup) \<Rightarrow> ('s, 'a) lookup"
-  (infix "<ocatch>" 10)
+  (infix \<open><ocatch>\<close> 10)
 where
   "f <ocatch> handler \<equiv> do {
      x \<leftarrow> f;
@@ -52,7 +52,7 @@ where
   "omap f xs \<equiv> osequence (map f xs)"
 
 definition
-  opt_cons :: "'a option \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixr "o#" 65)
+  opt_cons :: "'a option \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixr \<open>o#\<close> 65)
 where
   "opt_cons x xs \<equiv> case x of None \<Rightarrow> xs | Some x' \<Rightarrow> x' # xs"
 

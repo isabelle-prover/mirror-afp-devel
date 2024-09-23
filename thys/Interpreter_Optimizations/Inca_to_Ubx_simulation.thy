@@ -459,7 +459,7 @@ qed
 
 section \<open>Simulation relation\<close>
 
-inductive match (infix "\<sim>" 55) where
+inductive match (infix \<open>\<sim>\<close> 55) where
   matchI: "Subx.wf_state (State F2 H st2) \<Longrightarrow>
     rel_fundefs (Finca_get F1) (Fubx_get F2) \<Longrightarrow>
     rel_stacktraces (Fubx_get F2) None st1 st2 \<Longrightarrow>

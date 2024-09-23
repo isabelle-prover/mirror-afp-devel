@@ -20,7 +20,7 @@ where
 
 abbreviation d_equal' :: "('id, 'val) State 
   \<Rightarrow> 'd::order \<Rightarrow> ('id, 'val) State \<Rightarrow> bool" 
-( "(_ =\<^bsub>_\<^esub> _)" )
+( \<open>(_ =\<^bsub>_\<^esub> _)\<close> )
 where
 "m =\<^bsub>d\<^esub> m' \<equiv> d_equal d m m'"
 
@@ -31,7 +31,7 @@ by (simp add: d_equal_def)
 
 
 abbreviation SRabbr :: "('exp, 'id, 'val, 'com) TSteps_curry"
-("(1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0] 81)
+(\<open>(1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0] 81)
 where
 "\<langle>c,m\<rangle> \<rightarrow> \<langle>c',m'\<rangle> \<equiv> ((c,m),(c',m')) \<in> SR"
 
@@ -47,12 +47,12 @@ where
 
 \<comment> \<open>union of all strong d-bisimulations\<close>
 definition USdB :: "'d \<Rightarrow> 'com Bisimulation_type"
-("\<approx>\<^bsub>_\<^esub>" 65)
+(\<open>\<approx>\<^bsub>_\<^esub>\<close> 65)
 where
 "\<approx>\<^bsub>d\<^esub> \<equiv> \<Union>{r. (Strong_d_Bisimulation d r)}"
 
 abbreviation relatedbyUSdB :: "'com list \<Rightarrow> 'd \<Rightarrow> 'com list \<Rightarrow> bool" 
-("(_ \<approx>\<^bsub>_\<^esub> _)" [66,66] 65)
+(\<open>(_ \<approx>\<^bsub>_\<^esub> _)\<close> [66,66] 65)
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> USdB d"
 
 \<comment> \<open>predicate to define when a program is strongly secure\<close>

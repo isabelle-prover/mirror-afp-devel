@@ -37,13 +37,13 @@ text\<open>
 datatype Gp = con | dis | imp
 type_synonym Gp_form = "Gp form"
 
-abbreviation con_form (infixl "\<and>*" 80) where
+abbreviation con_form (infixl \<open>\<and>*\<close> 80) where
    "p \<and>* q \<equiv> Compound con [p,q]"
 
-abbreviation dis_form (infixl "\<or>*" 80) where
+abbreviation dis_form (infixl \<open>\<or>*\<close> 80) where
    "p \<or>* q \<equiv> Compound dis [p,q]"
 
-abbreviation imp_form (infixl "\<supset>" 80) where
+abbreviation imp_form (infixl \<open>\<supset>\<close> 80) where
    "p \<supset> q  \<equiv> Compound imp [p,q]"
 (* --------------------------------------------
    --------------------------------------------
@@ -51,13 +51,13 @@ abbreviation imp_form (infixl "\<supset>" 80) where
    --------------------------------------------
    -------------------------------------------- *)
 (*<*)
-abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
+abbreviation multiset_abbrev (\<open>\<LM> _  \<RM>\<close> [75]75) where
    "\<LM> A \<RM> \<equiv> {# A #}"
 
-abbreviation multiset_empty ("\<Empt>" 75) where
+abbreviation multiset_empty (\<open>\<Empt>\<close> 75) where
   "\<Empt> \<equiv> {#}"
 
-datatype 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (\<open> (_) \<Rightarrow>* (_)\<close> [6,6] 5)
 
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
    can be represented as a list of premisses and a conclusion.  We need a list since a list is finite
@@ -67,10 +67,10 @@ type_synonym 'a rule = "'a sequent list * 'a sequent"
 type_synonym 'a deriv = "'a sequent * nat"
 
 abbreviation
-multiset_plus (infixl "\<oplus>" 80) where
+multiset_plus (infixl \<open>\<oplus>\<close> 80) where
    "(\<Gamma> :: 'a multiset) \<oplus> (A :: 'a) \<equiv> \<Gamma> + \<LM>A\<RM>"
 abbreviation
-multiset_minus (infixl "\<ominus>" 80) where
+multiset_minus (infixl \<open>\<ominus>\<close> 80) where
    "(\<Gamma> :: 'a multiset) \<ominus>  (A :: 'a) \<equiv> \<Gamma> - \<LM>A\<RM>" 
 
 consts
@@ -187,7 +187,7 @@ text\<open>
 \noindent Given a rule set $\mathcal{R}$, the \textit{extension} of $\mathcal{R}$, called $\mathcal{R}^{\star}$, is then defined as another inductive set:
 \<close>
 
-inductive_set extRules :: "'a rule set \<Rightarrow> 'a rule set"  ("_*")
+inductive_set extRules :: "'a rule set \<Rightarrow> 'a rule set"  (\<open>_*\<close>)
   for R :: "'a rule set" 
   where I(*<*)[intro](*>*): "r \<in> R \<Longrightarrow> extendRule seq r \<in> R*"
 

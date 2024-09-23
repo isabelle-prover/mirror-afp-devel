@@ -11,8 +11,8 @@ theory "Modal_Kleene_Algebra_Var"
 
 begin
 
-notation domain_op ("dom") 
-notation range_op ("cod") 
+notation domain_op (\<open>dom\<close>) 
+notation range_op (\<open>cod\<close>) 
 
 subclass (in domain_semiring) dioid_one_zero..
 

@@ -50,11 +50,11 @@ setup_lifting type_definition_\<Pi>\<^sub>3
 subsection\<open>Individual Terms and Definite Descriptions\<close>
 text\<open>\label{TAO_Embedding_IndividualTerms}\<close>
 
-lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
+lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" (\<open>_\<^sup>P\<close> [90] 90) is Some .
 lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "(\<noteq>) None" .
 lift_definition rep :: "\<kappa>\<Rightarrow>\<nu>" is the .
 
-lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\<^bold>\<iota>" [8] 9) is
+lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder \<open>\<^bold>\<iota>\<close> [8] 9) is
   "\<lambda> \<phi> . if (\<exists>! x . (\<phi> x) dj dw)
          then Some (THE x . (\<phi> x) dj dw)
          else None" .
@@ -69,20 +69,20 @@ definition \<nu>\<upsilon> :: "\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsil
 subsection\<open>Exemplification of n-place-Relations.\<close>
 text\<open>\label{TAO_Embedding_Exemplification}\<close>
 
-lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" ("\<lparr>_\<rparr>") is id .
-lift_definition exe1::"\<Pi>\<^sub>1\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_\<rparr>") is
+lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" (\<open>\<lparr>_\<rparr>\<close>) is id .
+lift_definition exe1::"\<Pi>\<^sub>1\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (\<open>\<lparr>_,_\<rparr>\<close>) is
   "\<lambda> F x s w . (proper x) \<and> F (\<nu>\<upsilon> (rep x)) s w" .
-lift_definition exe2::"\<Pi>\<^sub>2\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_,_\<rparr>") is
+lift_definition exe2::"\<Pi>\<^sub>2\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (\<open>\<lparr>_,_,_\<rparr>\<close>) is
   "\<lambda> F x y s w . (proper x) \<and> (proper y) \<and>
      F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) s w" .
-lift_definition exe3::"\<Pi>\<^sub>3\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_,_,_\<rparr>") is
+lift_definition exe3::"\<Pi>\<^sub>3\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (\<open>\<lparr>_,_,_,_\<rparr>\<close>) is
 "\<lambda> F x y z s w . (proper x) \<and> (proper y) \<and> (proper z) \<and>
    F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) (\<nu>\<upsilon> (rep z)) s w" .
 
 subsection\<open>Encoding\<close>
 text\<open>\label{TAO_Embedding_Encoding}\<close>
 
-lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" ("\<lbrace>_,_\<rbrace>") is
+lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" (\<open>\<lbrace>_,_\<rbrace>\<close>) is
   "\<lambda> x F s w . (proper x) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . F \<in> \<alpha>) (rep x)" .
 
 subsection\<open>Connectives and Quantifiers\<close>
@@ -91,25 +91,25 @@ text\<open>\label{TAO_Embedding_Connectives}\<close>
 consts I_NOT :: "j\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>i\<Rightarrow>bool"
 consts I_IMPL :: "j\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>(i\<Rightarrow>bool)"
 
-lift_definition not :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<not>_" [54] 70) is
+lift_definition not :: "\<o>\<Rightarrow>\<o>" (\<open>\<^bold>\<not>_\<close> [54] 70) is
   "\<lambda> p s w . s = dj \<and> \<not>p dj w \<or> s \<noteq> dj \<and> (I_NOT s (p s) w)" .
-lift_definition impl :: "\<o>\<Rightarrow>\<o>\<Rightarrow>\<o>" (infixl "\<^bold>\<rightarrow>" 51) is
+lift_definition impl :: "\<o>\<Rightarrow>\<o>\<Rightarrow>\<o>" (infixl \<open>\<^bold>\<rightarrow>\<close> 51) is
   "\<lambda> p q s w . s = dj \<and> (p dj w \<longrightarrow> q dj w) \<or> s \<noteq> dj \<and> (I_IMPL s (p s) (q s) w)" .
-lift_definition forall\<^sub>\<nu> :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>\<nu>" [8] 9) is
+lift_definition forall\<^sub>\<nu> :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<^sub>\<nu>\<close> [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<nu> . (\<phi> x) s w" .
-lift_definition forall\<^sub>0 :: "(\<Pi>\<^sub>0\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>0" [8] 9) is
+lift_definition forall\<^sub>0 :: "(\<Pi>\<^sub>0\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<^sub>0\<close> [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>0 . (\<phi> x) s w" .
-lift_definition forall\<^sub>1 :: "(\<Pi>\<^sub>1\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>1" [8] 9) is
+lift_definition forall\<^sub>1 :: "(\<Pi>\<^sub>1\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<^sub>1\<close> [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>1  . (\<phi> x) s w" .
-lift_definition forall\<^sub>2 :: "(\<Pi>\<^sub>2\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>2" [8] 9) is
+lift_definition forall\<^sub>2 :: "(\<Pi>\<^sub>2\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<^sub>2\<close> [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>2  . (\<phi> x) s w" .
-lift_definition forall\<^sub>3 :: "(\<Pi>\<^sub>3\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>3" [8] 9) is
+lift_definition forall\<^sub>3 :: "(\<Pi>\<^sub>3\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<^sub>3\<close> [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<Pi>\<^sub>3  . (\<phi> x) s w" .
-lift_definition forall\<^sub>\<o> :: "(\<o>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>\<^sub>\<o>" [8] 9) is
+lift_definition forall\<^sub>\<o> :: "(\<o>\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<^sub>\<o>\<close> [8] 9) is
   "\<lambda> \<phi> s w . \<forall> x :: \<o>  . (\<phi> x) s w" .
-lift_definition box :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<box>_" [62] 63) is
+lift_definition box :: "\<o>\<Rightarrow>\<o>" (\<open>\<^bold>\<box>_\<close> [62] 63) is
   "\<lambda> p s w . \<forall> v . p s v" .
-lift_definition actual :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<A>_" [64] 65) is
+lift_definition actual :: "\<o>\<Rightarrow>\<o>" (\<open>\<^bold>\<A>_\<close> [64] 65) is
   "\<lambda> p s w . p s dw" .
 
 text\<open>
@@ -130,12 +130,12 @@ text\<open>
 \end{remark}
 \<close>
 
-lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is id .
-lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
+lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" (\<open>\<^bold>\<lambda>\<^sup>0\<close>) is id .
+lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder \<open>\<^bold>\<lambda>\<close> [8] 9) is
   "\<lambda> \<phi> u s w . \<exists> x . \<nu>\<upsilon> x = u \<and> \<phi> x s w" .
-lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" ("\<^bold>\<lambda>\<^sup>2") is
+lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>2" (\<open>\<^bold>\<lambda>\<^sup>2\<close>) is
   "\<lambda> \<phi> u v s w . \<exists> x y . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<phi> x y s w" .
-lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
+lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" (\<open>\<^bold>\<lambda>\<^sup>3\<close>) is
   "\<lambda> \<phi> u v r s w . \<exists> x y z . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<nu>\<upsilon> z = r \<and> \<phi> x y z s w" .
 
 subsection\<open>Proper Maps\<close>
@@ -167,7 +167,7 @@ lift_definition IsProperInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<k
 subsection\<open>Validity\<close> 
 text\<open>\label{TAO_Embedding_Validity}\<close>
 
-lift_definition valid_in :: "i\<Rightarrow>\<o>\<Rightarrow>bool" (infixl "\<Turnstile>" 5) is
+lift_definition valid_in :: "i\<Rightarrow>\<o>\<Rightarrow>bool" (infixl \<open>\<Turnstile>\<close> 5) is
   "\<lambda> v \<phi> . \<phi> dj v" .
 
 text\<open>
@@ -213,7 +213,7 @@ text\<open>
 \<close>
 
 
-lift_definition Concrete::"\<Pi>\<^sub>1" ("E!") is
+lift_definition Concrete::"\<Pi>\<^sub>1" (\<open>E!\<close>) is
   "\<lambda> u s w . case u of \<omega>\<upsilon> x \<Rightarrow> ConcreteInWorld x w | _ \<Rightarrow> False" .
 
 text\<open>

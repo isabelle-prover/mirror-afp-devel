@@ -14,13 +14,13 @@ definition "\<gamma>_ivl i = (case i of
   I None (Some h) \<Rightarrow> {..h} |
   I None None \<Rightarrow> UNIV)"
 
-abbreviation I_Some_Some :: "int \<Rightarrow> int \<Rightarrow> ivl"  ("{_\<dots>_}") where
+abbreviation I_Some_Some :: "int \<Rightarrow> int \<Rightarrow> ivl"  (\<open>{_\<dots>_}\<close>) where
 "{lo\<dots>hi} == I (Some lo) (Some hi)"
-abbreviation I_Some_None :: "int \<Rightarrow> ivl"  ("{_\<dots>}") where
+abbreviation I_Some_None :: "int \<Rightarrow> ivl"  (\<open>{_\<dots>}\<close>) where
 "{lo\<dots>} == I (Some lo) None"
-abbreviation I_None_Some :: "int \<Rightarrow> ivl"  ("{\<dots>_}") where
+abbreviation I_None_Some :: "int \<Rightarrow> ivl"  (\<open>{\<dots>_}\<close>) where
 "{\<dots>hi} == I None (Some hi)"
-abbreviation I_None_None :: "ivl"  ("{\<dots>}") where
+abbreviation I_None_None :: "ivl"  (\<open>{\<dots>}\<close>) where
 "{\<dots>} == I None None"
 
 definition "num_ivl n = {n\<dots>n}"

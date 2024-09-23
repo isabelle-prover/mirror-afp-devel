@@ -10,19 +10,19 @@ imports Typing_Framework_1
 begin
 
 definition lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Rightarrow> (nat \<times> 's) set \<Rightarrow> bool"
-    ("(_ /{\<sqsubseteq>\<^bsub>_\<^esub>} _)" [50, 0, 51] 50)
+    (\<open>(_ /{\<sqsubseteq>\<^bsub>_\<^esub>} _)\<close> [50, 0, 51] 50)
   where "A {\<sqsubseteq>\<^bsub>r\<^esub>} B \<equiv> \<forall>(p,\<tau>) \<in> A. \<exists>\<tau>'. (p,\<tau>') \<in> B \<and> \<tau> \<sqsubseteq>\<^sub>r \<tau>'"
 
 notation (ASCII)
-  lesubstep_type  ("(_ /{<='__} _)" [50, 0, 51] 50)
+  lesubstep_type  (\<open>(_ /{<='__} _)\<close> [50, 0, 51] 50)
 
-primrec pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a"  ("(_ /\<Squnion>\<^bsub>_\<^esub> _)" [65, 0, 66] 65)
+primrec pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(_ /\<Squnion>\<^bsub>_\<^esub> _)\<close> [65, 0, 66] 65)
 where
   "pluslussub [] f y = y"
 | "pluslussub (x#xs) f y = pluslussub xs f (x \<squnion>\<^sub>f y)"
 (*<*)
 notation (ASCII)
-  pluslussub  ("(_ /++'__ _)" [65, 1000, 66] 65)
+  pluslussub  (\<open>(_ /++'__ _)\<close> [65, 1000, 66] 65)
 (*>*)
 
 definition bounded :: "'s step_type \<Rightarrow> nat \<Rightarrow> bool"

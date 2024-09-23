@@ -10,7 +10,7 @@ theory Involutive_Residuated
 begin
 
 class uminus' =
-  fixes uminus' :: "'a \<Rightarrow> 'a" ("-'' _" [81] 80)
+  fixes uminus' :: "'a \<Rightarrow> 'a" (\<open>-'' _\<close> [81] 80)
 
 text \<open>
   Involutive posets is a structure where the double negation property holds for the 

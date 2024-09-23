@@ -31,8 +31,8 @@ datatype ('a, 'p) Kform
   = Kprop "'p"
   | Knot "('a, 'p) Kform"
   | Kand "('a, 'p) Kform" "('a, 'p) Kform"
-  | Kknows "'a" "('a, 'p) Kform"  ("\<^bold>K\<^sub>_ _")
-  | Kcknows "'a list" "('a, 'p) Kform" ("\<^bold>C\<^bsub>_\<^esub> _")
+  | Kknows "'a" "('a, 'p) Kform"  (\<open>\<^bold>K\<^sub>_ _\<close>)
+  | Kcknows "'a list" "('a, 'p) Kform" (\<open>\<^bold>C\<^bsub>_\<^esub> _\<close>)
 
 text\<open>
 
@@ -143,7 +143,7 @@ A formula $\phi$ is satisfied at a world $w$ in Kripke structure $M$
 in the following way:\<close>
 
 fun models :: "('a, 'p, 'w) KripkeStructure \<Rightarrow> 'w \<Rightarrow> ('a, 'p) Kform
-           \<Rightarrow> bool" ("(_, _ \<Turnstile> _)" [80,0,80] 80) where
+           \<Rightarrow> bool" (\<open>(_, _ \<Turnstile> _)\<close> [80,0,80] 80) where
   "M, w \<Turnstile> (Kprop p) = valuation M w p"
 | "M, w \<Turnstile> (Knot \<phi>) = (\<not> M, w \<Turnstile> \<phi>)"
 | "M, w \<Turnstile> (Kand \<phi> \<psi>) = (M, w \<Turnstile> \<phi> \<and> M, w \<Turnstile> \<psi>)"

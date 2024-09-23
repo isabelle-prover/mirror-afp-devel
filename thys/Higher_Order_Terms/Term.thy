@@ -111,7 +111,7 @@ fun replace_bound :: "nat \<Rightarrow> term \<Rightarrow> term \<Rightarrow> te
 "replace_bound lev (\<Lambda> u) t = \<Lambda> replace_bound (lev + 1) u t" |
 "replace_bound _ t _ = t"
 
-abbreviation \<beta>_reduce :: "term \<Rightarrow> term \<Rightarrow> term" ("_ [_]\<^sub>\<beta>") where
+abbreviation \<beta>_reduce :: "term \<Rightarrow> term \<Rightarrow> term" (\<open>_ [_]\<^sub>\<beta>\<close>) where
 "t [u]\<^sub>\<beta> \<equiv> replace_bound 0 t u"
 
 lemma replace_bound_frees: "frees (replace_bound n t t') |\<subseteq>| frees t |\<union>| frees t'"

@@ -19,7 +19,7 @@ proof -
     by (auto simp: o_def id, subst (1 2) sum_list_0, auto)
 qed
 
-definition Ints_vec ("\<int>\<^sub>v") where
+definition Ints_vec (\<open>\<int>\<^sub>v\<close>) where
   "\<int>\<^sub>v = {x. \<forall> i < dim_vec x. x $ i \<in> \<int>}"
 
 definition indexed_Ints_vec  where
@@ -34,7 +34,7 @@ lemma indexed_Ints_vec_subset: "\<int>\<^sub>v \<subseteq> indexed_Ints_vec I"
 lemma Ints_vec_vec_set: "v \<in> \<int>\<^sub>v = (vec_set v \<subseteq> \<int>)"
   unfolding Ints_vec_def vec_set_def by auto
 
-definition Ints_mat ("\<int>\<^sub>m") where
+definition Ints_mat (\<open>\<int>\<^sub>m\<close>) where
   "\<int>\<^sub>m = {A. \<forall> i < dim_row A. \<forall> j < dim_col A. A $$ (i,j) \<in> \<int>}"
 
 lemma Ints_mat_elements_mat: "A \<in> \<int>\<^sub>m = (elements_mat A \<subseteq> \<int>)"

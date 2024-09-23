@@ -58,12 +58,12 @@ among distributed system agents.
 \<close>
 
 locale communication_c2ka = topology_c2ka +
-  fixes dcs :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>\<S>" 50)
-  and pcs :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>\<S>\<^sup>+" 50)
-  and dce :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>\<E>" 50)
-  and pce :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>\<E>\<^sup>+" 50)
-  and pdc :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<leadsto>" 50)
-  and pfc :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix "\<leadsto>\<^sup>+" 50)
+  fixes dcs :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>\<S>\<close> 50)
+  and pcs :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>\<S>\<^sup>+\<close> 50)
+  and dce :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>\<E>\<close> 50)
+  and pce :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>\<E>\<^sup>+\<close> 50)
+  and pdc :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<leadsto>\<close> 50)
+  and pfc :: "'a::cka \<Rightarrow> 'a::cka \<Rightarrow> bool" (infix \<open>\<leadsto>\<^sup>+\<close> 50)
   and stimuli_connected :: "'a set \<Rightarrow> bool"
   and universally_influential :: "'a::cka \<times> 'a set \<Rightarrow> bool"
   assumes dcs_def: "a \<rightarrow>\<^sub>\<S> b \<longleftrightarrow> 

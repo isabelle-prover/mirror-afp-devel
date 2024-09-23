@@ -50,13 +50,13 @@ begin
 
 definition rm_constant_equations :: 
   "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> relation" 
-  ("[CONST] _ _ _ _ _ _") where
+  (\<open>[CONST] _ _ _ _ _ _\<close>) where
   "[CONST] b c d e f q \<equiv> NARY (\<lambda>l. rm_eq_fixes.constants_equations 
                                    (l!0) (l!1) (l!2) (l!3) (l!4) (l!5)) [b, c, d, e, f, q]"
 
 definition rm_miscellaneous_equations :: 
   "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> relation" 
-  ("[MISC] _ _ _") where
+  (\<open>[MISC] _ _ _\<close>) where
   "[MISC] c a q \<equiv> NARY (\<lambda>l. rm_eq_fixes.miscellaneous_equations 
                                    (l!0) (l!1) (l!2)) [c, a, q]"
 

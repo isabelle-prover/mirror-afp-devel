@@ -19,7 +19,7 @@ subsubsection \<open>Definition for Hoare\_halt and Hoare\_unhalt conditions\<cl
 type_synonym assert = "tape \<Rightarrow> bool"
 
 definition 
-  assert_imp :: "assert \<Rightarrow> assert \<Rightarrow> bool" ("_ \<mapsto> _" [0, 0] 100)
+  assert_imp :: "assert \<Rightarrow> assert \<Rightarrow> bool" (\<open>_ \<mapsto> _\<close> [0, 0] 100)
   where
     "P \<mapsto> Q \<equiv> \<forall>l r. P (l, r) \<longrightarrow> Q (l, r)"
 
@@ -38,7 +38,7 @@ lemma refl_assert[intro, simp]:
  *)
 
 fun 
-  holds_for :: "(tape \<Rightarrow> bool) \<Rightarrow> config \<Rightarrow> bool" ("_ holds'_for _" [100, 99] 100)
+  holds_for :: "(tape \<Rightarrow> bool) \<Rightarrow> config \<Rightarrow> bool" (\<open>_ holds'_for _\<close> [100, 99] 100)
   where
     "P holds_for (s, l, r) = P (l, r)"  
 
@@ -57,7 +57,7 @@ lemma is_final_holds[simp]:
  *)
 
 definition
-  Hoare_halt :: "assert \<Rightarrow> tprog0 \<Rightarrow> assert \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)" 50)
+  Hoare_halt :: "assert \<Rightarrow> tprog0 \<Rightarrow> assert \<Rightarrow> bool" (\<open>(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)\<close> 50)
   where
     "\<lbrace>P\<rbrace> p \<lbrace>Q\<rbrace> \<equiv> (\<forall>tap. P tap \<longrightarrow> (\<exists>n. is_final (steps0 (1, tap) p n) \<and> Q holds_for (steps0 (1, tap) p n) ))"
 
@@ -66,7 +66,7 @@ definition
    then the program p never reaches the final state 0. 
  *)
 definition
-  Hoare_unhalt :: "assert \<Rightarrow> tprog0 \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)) \<up>" 50)
+  Hoare_unhalt :: "assert \<Rightarrow> tprog0 \<Rightarrow> bool" (\<open>(\<lbrace>(1_)\<rbrace>/ (_)) \<up>\<close> 50)
   where
     "\<lbrace>P\<rbrace> p \<up> \<equiv> \<forall>tap. P tap \<longrightarrow> (\<forall> n . \<not>(is_final (steps0 (1, tap) p n)))"
 

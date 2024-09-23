@@ -6,18 +6,18 @@ theory Strong_Early_Late_Comp
   imports Strong_Late_Bisim_Subst_SC Strong_Early_Bisim_Subst
 begin
 
-abbreviation TransitionsLate_judge ("_ \<longmapsto>\<^sub>l _" [80, 80] 80) where "P \<longmapsto>\<^sub>l Rs \<equiv> transitions P Rs"
-abbreviation TransitionsEarly_judge ("_ \<longmapsto>\<^sub>e _" [80, 80] 80) where "P \<longmapsto>\<^sub>e Rs \<equiv> TransitionsEarly P Rs"
+abbreviation TransitionsLate_judge (\<open>_ \<longmapsto>\<^sub>l _\<close> [80, 80] 80) where "P \<longmapsto>\<^sub>l Rs \<equiv> transitions P Rs"
+abbreviation TransitionsEarly_judge (\<open>_ \<longmapsto>\<^sub>e _\<close> [80, 80] 80) where "P \<longmapsto>\<^sub>e Rs \<equiv> TransitionsEarly P Rs"
 
-abbreviation Transitions_InputjudgeLate ("_<_> \<prec>\<^sub>l _" [80, 80] 80) where "a<x> \<prec>\<^sub>l P' \<equiv> (Late_Semantics.BoundR (Late_Semantics.InputS a) x P')"
-abbreviation Transitions_OutputjudgeLate ("_[_] \<prec>\<^sub>l _" [80, 80] 80) where "a[b] \<prec>\<^sub>l P' \<equiv> (Late_Semantics.FreeR (Late_Semantics.OutputR a b) P')"
-abbreviation Transitions_BoundOutputjudgeLate ("_<\<nu>_> \<prec>\<^sub>l _" [80, 80] 80) where "a<\<nu>x> \<prec>\<^sub>l P' \<equiv> (Late_Semantics.BoundR (Late_Semantics.BoundOutputS a) x P')"
-abbreviation Transitions_TaujudgeLate ("\<tau> \<prec>\<^sub>l _" 80) where "\<tau> \<prec>\<^sub>l P' \<equiv> (Late_Semantics.FreeR Late_Semantics.TauR P')"
+abbreviation Transitions_InputjudgeLate (\<open>_<_> \<prec>\<^sub>l _\<close> [80, 80] 80) where "a<x> \<prec>\<^sub>l P' \<equiv> (Late_Semantics.BoundR (Late_Semantics.InputS a) x P')"
+abbreviation Transitions_OutputjudgeLate (\<open>_[_] \<prec>\<^sub>l _\<close> [80, 80] 80) where "a[b] \<prec>\<^sub>l P' \<equiv> (Late_Semantics.FreeR (Late_Semantics.OutputR a b) P')"
+abbreviation Transitions_BoundOutputjudgeLate (\<open>_<\<nu>_> \<prec>\<^sub>l _\<close> [80, 80] 80) where "a<\<nu>x> \<prec>\<^sub>l P' \<equiv> (Late_Semantics.BoundR (Late_Semantics.BoundOutputS a) x P')"
+abbreviation Transitions_TaujudgeLate (\<open>\<tau> \<prec>\<^sub>l _\<close> 80) where "\<tau> \<prec>\<^sub>l P' \<equiv> (Late_Semantics.FreeR Late_Semantics.TauR P')"
 
-abbreviation Transitions_InputjudgeEarly ("_<_> \<prec>\<^sub>e _" [80, 80] 80) where "a<x> \<prec>\<^sub>e P' \<equiv> (Early_Semantics.FreeR (Early_Semantics.InputR a x) P')"
-abbreviation Transitions_OutputjudgeEarly ("_[_] \<prec>\<^sub>e _" [80, 80] 80) where "a[b] \<prec>\<^sub>e P' \<equiv> (Early_Semantics.FreeR (Early_Semantics.OutputR a b) P')"
-abbreviation Transitions_BoundOutputjudgeEarly ("_<\<nu>_> \<prec>\<^sub>e _" [80, 80] 80) where "a<\<nu>x> \<prec>\<^sub>e P' \<equiv>(Early_Semantics.BoundOutputR a x P')"
-abbreviation Transitions_TaujudgeEarly ("\<tau> \<prec>\<^sub>e _" 80) where "\<tau> \<prec>\<^sub>e P' \<equiv> (Early_Semantics.FreeR Early_Semantics.TauR P')"
+abbreviation Transitions_InputjudgeEarly (\<open>_<_> \<prec>\<^sub>e _\<close> [80, 80] 80) where "a<x> \<prec>\<^sub>e P' \<equiv> (Early_Semantics.FreeR (Early_Semantics.InputR a x) P')"
+abbreviation Transitions_OutputjudgeEarly (\<open>_[_] \<prec>\<^sub>e _\<close> [80, 80] 80) where "a[b] \<prec>\<^sub>e P' \<equiv> (Early_Semantics.FreeR (Early_Semantics.OutputR a b) P')"
+abbreviation Transitions_BoundOutputjudgeEarly (\<open>_<\<nu>_> \<prec>\<^sub>e _\<close> [80, 80] 80) where "a<\<nu>x> \<prec>\<^sub>e P' \<equiv>(Early_Semantics.BoundOutputR a x P')"
+abbreviation Transitions_TaujudgeEarly (\<open>\<tau> \<prec>\<^sub>e _\<close> 80) where "\<tau> \<prec>\<^sub>e P' \<equiv> (Early_Semantics.FreeR Early_Semantics.TauR P')"
 
 lemma earlyLateOutput:
   fixes P  :: pi
@@ -737,8 +737,8 @@ by(auto intro: earlyLateTau lateEarlyTau)
 
 (****************** Simulation ******************)
 
-abbreviation simLate_judge ("_ \<leadsto>\<^sub>l[_] _" [80, 80, 80] 80) where "P \<leadsto>\<^sub>l[Rel] Q \<equiv> Strong_Late_Sim.simulation P Rel Q"
-abbreviation simEarly_judge ("_ \<leadsto>\<^sub>e[_] _" [80, 80, 80] 80) where "P \<leadsto>\<^sub>e[Rel] Q \<equiv> Strong_Early_Sim.strongSimEarly P Rel Q"
+abbreviation simLate_judge (\<open>_ \<leadsto>\<^sub>l[_] _\<close> [80, 80, 80] 80) where "P \<leadsto>\<^sub>l[Rel] Q \<equiv> Strong_Late_Sim.simulation P Rel Q"
+abbreviation simEarly_judge (\<open>_ \<leadsto>\<^sub>e[_] _\<close> [80, 80, 80] 80) where "P \<leadsto>\<^sub>e[Rel] Q \<equiv> Strong_Early_Sim.strongSimEarly P Rel Q"
 
 lemma lateEarlySim:
   fixes P   :: pi
@@ -790,8 +790,8 @@ qed
 
 (*************** Bisimulation ***************)
 
-abbreviation bisimLate_judge ("_ \<sim>\<^sub>l _" [80, 80] 80) where "P \<sim>\<^sub>l Q \<equiv> (P, Q) \<in> Strong_Late_Bisim.bisim"
-abbreviation bisimEarly_judge ("_ \<sim>\<^sub>e _" [80, 80] 80) where "P \<sim>\<^sub>e Q \<equiv> (P, Q) \<in> Strong_Early_Bisim.bisim"
+abbreviation bisimLate_judge (\<open>_ \<sim>\<^sub>l _\<close> [80, 80] 80) where "P \<sim>\<^sub>l Q \<equiv> (P, Q) \<in> Strong_Late_Bisim.bisim"
+abbreviation bisimEarly_judge (\<open>_ \<sim>\<^sub>e _\<close> [80, 80] 80) where "P \<sim>\<^sub>e Q \<equiv> (P, Q) \<in> Strong_Early_Bisim.bisim"
 
 lemma lateEarlyBisim:
   fixes P :: pi
@@ -807,8 +807,8 @@ by(coinduct rule: Strong_Early_Bisim.weak_coinduct)
 
 (*************** Congruence ***************)
 
-abbreviation congLate_judge ("_ \<sim>\<^sup>s\<^sub>l _" [80, 80] 80) where "P \<sim>\<^sup>s\<^sub>l Q \<equiv> (P, Q) \<in> (substClosed Strong_Late_Bisim.bisim)"
-abbreviation congEarly_judge ("_ \<sim>\<^sup>s\<^sub>e _" [80, 80] 80) where "P \<sim>\<^sup>s\<^sub>e Q \<equiv> (P, Q) \<in> (substClosed Strong_Early_Bisim.bisim)"
+abbreviation congLate_judge (\<open>_ \<sim>\<^sup>s\<^sub>l _\<close> [80, 80] 80) where "P \<sim>\<^sup>s\<^sub>l Q \<equiv> (P, Q) \<in> (substClosed Strong_Late_Bisim.bisim)"
+abbreviation congEarly_judge (\<open>_ \<sim>\<^sup>s\<^sub>e _\<close> [80, 80] 80) where "P \<sim>\<^sup>s\<^sub>e Q \<equiv> (P, Q) \<in> (substClosed Strong_Early_Bisim.bisim)"
 
 lemma lateEarlyCong:
   fixes P :: pi

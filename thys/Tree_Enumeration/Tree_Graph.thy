@@ -1110,7 +1110,7 @@ interpretation inv_iso: graph_isomorphism V\<^sub>H E\<^sub>H V\<^sub>G E\<^sub>
 
 end
 
-fun graph_isomorph :: "'a pregraph \<Rightarrow> 'b pregraph \<Rightarrow> bool" (infix "\<simeq>" 50) where
+fun graph_isomorph :: "'a pregraph \<Rightarrow> 'b pregraph \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 50) where
   "(V\<^sub>G,E\<^sub>G) \<simeq> (V\<^sub>H,E\<^sub>H) \<longleftrightarrow> (\<exists>f. graph_isomorphism V\<^sub>G E\<^sub>G V\<^sub>H E\<^sub>H f)"
 
 lemma (in graph_system) graph_isomorphism_id: "graph_isomorphism V E V E id"

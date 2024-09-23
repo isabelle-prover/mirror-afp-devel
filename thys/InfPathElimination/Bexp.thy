@@ -46,7 +46,7 @@ text \<open>A boolean expression @{term "\<phi>"} entails another boolean expres
 states making @{term "\<phi>"} true also make @{term "\<psi>"} true.\<close>
 
 definition entails ::
-  "('v,'d) bexp \<Rightarrow> ('v,'d) bexp \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>B" 55) 
+  "('v,'d) bexp \<Rightarrow> ('v,'d) bexp \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>B\<close> 55) 
 where
   "\<phi> \<Turnstile>\<^sub>B \<psi> \<equiv> (\<forall> \<sigma>. \<phi> \<sigma> \<longrightarrow> \<psi> \<sigma>)"
 

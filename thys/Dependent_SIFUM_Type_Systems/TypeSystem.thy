@@ -146,7 +146,7 @@ where
   "stable \<S> x \<equiv> x \<in> (fst \<S> \<union> snd \<S>)"
 
 definition
-  add_pred :: "'BExp preds \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp \<Rightarrow> 'BExp preds" ("_ +\<^sub>_ _" [120, 120, 120] 1000)
+  add_pred :: "'BExp preds \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp \<Rightarrow> 'BExp preds" (\<open>_ +\<^sub>_ _\<close> [120, 120, 120] 1000)
 where
   "P +\<^sub>\<S> e \<equiv> (if (\<forall>x\<in>bexp_vars e. stable \<S> x) then P \<union> {e} else P)"
 
@@ -158,7 +158,7 @@ lemma add_pred_subset:
 
 (* TODO: overloads the syntax for partial functions --- pick something else? *)
 definition
-  restrict_preds_to_vars :: "'BExp preds \<Rightarrow> 'Var set \<Rightarrow> 'BExp preds" ("_ |` _" [120, 120] 1000)
+  restrict_preds_to_vars :: "'BExp preds \<Rightarrow> 'Var set \<Rightarrow> 'BExp preds" (\<open>_ |` _\<close> [120, 120] 1000)
 where
   "P |` V \<equiv> {e. e \<in> P \<and> bexp_vars e \<subseteq> V}"
 
@@ -203,31 +203,31 @@ begin
 (* Redefined since Isabelle does not seem to be able to reuse the abbreviation from the old locale *)
 abbreviation 
   mm_equiv_abv2 :: "(_, _, _) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infix "\<approx>" 60)
+  (infix \<open>\<approx>\<close> 60)
 where 
   "mm_equiv_abv2 c c' \<equiv> mm_equiv_abv c c'"
 
 abbreviation 
   eval_abv2 :: "(_, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>" 70)
+  (infixl \<open>\<leadsto>\<close> 70)
 where
   "x \<leadsto> y \<equiv> (x, y) \<in> eval\<^sub>w"
   
 abbreviation 
   eval_plus_abv :: "(_, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>\<^sup>+" 70)
+  (infixl \<open>\<leadsto>\<^sup>+\<close> 70)
 where
   "x \<leadsto>\<^sup>+ y \<equiv> (x, y) \<in> eval\<^sub>w\<^sup>+"
   
 abbreviation 
   no_eval_abv :: "(_, 'Var, 'Val) LocalConf \<Rightarrow> bool" 
-  ("_ \<leadsto> \<bottom>")
+  (\<open>_ \<leadsto> \<bottom>\<close>)
 where
   "x \<leadsto> \<bottom> \<equiv> \<forall> y. (x, y) \<notin> eval\<^sub>w"
 
 abbreviation 
   low_indistinguishable_abv :: "'Var Mds \<Rightarrow> ('Var, 'AExp, 'BExp) Stmt \<Rightarrow> (_, _, _) Stmt \<Rightarrow> bool"
-  ("_ \<sim>\<index> _" [100, 100] 80)
+  (\<open>_ \<sim>\<index> _\<close> [100, 100] 80)
 where
   "c \<sim>\<^bsub>mds\<^esub> c' \<equiv> low_indistinguishable mds c c'"
 
@@ -269,7 +269,7 @@ lemma Un_type_wellformed:
   by(fastforce simp: \<C>_def elim!: subsetCE)
 
 inductive 
-  type_aexpr :: "('Var,'BExp) TyEnv \<Rightarrow> 'AExp \<Rightarrow> 'BExp Type \<Rightarrow> bool" ("_ \<turnstile>\<^sub>a _ \<in> _" [120, 120, 120] 1000)
+  type_aexpr :: "('Var,'BExp) TyEnv \<Rightarrow> 'AExp \<Rightarrow> 'BExp Type \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>a _ \<in> _\<close> [120, 120, 120] 1000)
 where
   type_aexpr [intro!]: "\<Gamma> \<turnstile>\<^sub>a e \<in> \<Union> (image (\<lambda> x. to_total \<Gamma> x) (aexp_vars e))"
 
@@ -290,7 +290,7 @@ lemma type_aexpr_type_wellformed:
 inductive_cases type_aexpr_elim [elim]: "\<Gamma> \<turnstile>\<^sub>a e \<in> t"
 
 inductive
-  type_bexpr :: "('Var,'BExp) TyEnv \<Rightarrow> 'BExp \<Rightarrow> 'BExp Type \<Rightarrow> bool" ("_ \<turnstile>\<^sub>b _ \<in> _ " [120, 120, 120] 1000)
+  type_bexpr :: "('Var,'BExp) TyEnv \<Rightarrow> 'BExp \<Rightarrow> 'BExp Type \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>b _ \<in> _ \<close> [120, 120, 120] 1000)
 where
   type_bexpr [intro!]: "\<Gamma> \<turnstile>\<^sub>b e \<in> \<Union> (image (\<lambda> x. to_total \<Gamma> x) (bexp_vars e))"
 
@@ -360,7 +360,7 @@ where
   "add_anno_dom \<Gamma> \<S> (Rel v _) = dom \<Gamma>"
 
 definition 
-  add_anno :: "('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'Var ModeUpd \<Rightarrow> ('Var,'BExp) TyEnv" ("_ \<oplus>\<^sub>_ _" [120, 120, 120] 1000)
+  add_anno :: "('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'Var ModeUpd \<Rightarrow> ('Var,'BExp) TyEnv" (\<open>_ \<oplus>\<^sub>_ _\<close> [120, 120, 120] 1000)
 where
   "\<Gamma> \<oplus>\<^sub>\<S> upd = restrict_map (\<lambda>x. Some (to_total \<Gamma> x)) (add_anno_dom \<Gamma> \<S> upd)"
 
@@ -463,7 +463,7 @@ where
   "add_anno_stable \<S> (Rel v _) = \<S>"
 
 definition
-  pred_entailment :: "'BExp preds \<Rightarrow> 'BExp preds \<Rightarrow> bool" (infix "\<turnstile>" 70)
+  pred_entailment :: "'BExp preds \<Rightarrow> 'BExp preds \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 70)
 where
   "P \<turnstile> P' \<equiv> \<forall>mem. pred P mem \<longrightarrow> pred P' mem"
 
@@ -472,7 +472,7 @@ text \<open>
   semantic property.
 \<close>
 definition
-  subtype :: "'BExp Type \<Rightarrow> 'BExp preds \<Rightarrow> 'BExp Type \<Rightarrow> bool" ("_ \<le>:\<^sub>_ _" [120, 120, 120] 1000)
+  subtype :: "'BExp Type \<Rightarrow> 'BExp preds \<Rightarrow> 'BExp Type \<Rightarrow> bool" (\<open>_ \<le>:\<^sub>_ _\<close> [120, 120, 120] 1000)
 where
   "t \<le>:\<^sub>P t' \<equiv> (P \<union> t') \<turnstile> t"
 
@@ -523,7 +523,7 @@ lemma subtype_correct:
   done
 
 definition
-  type_equiv :: "'BExp Type \<Rightarrow> 'BExp preds \<Rightarrow> 'BExp Type \<Rightarrow> bool" ("_ =:\<^sub>_ _" [120, 120, 120] 1000)
+  type_equiv :: "'BExp Type \<Rightarrow> 'BExp preds \<Rightarrow> 'BExp Type \<Rightarrow> bool" (\<open>_ =:\<^sub>_ _\<close> [120, 120, 120] 1000)
 where
   "t =:\<^sub>P t' \<equiv> t \<le>:\<^sub>P t' \<and> t' \<le>:\<^sub>P t"
   
@@ -584,7 +584,7 @@ lemma type_equiv_subset:
   done
   
 definition
-  context_equiv :: "('Var,'BExp) TyEnv \<Rightarrow> 'BExp preds \<Rightarrow> ('Var,'BExp) TyEnv \<Rightarrow> bool" ("_ =:\<^sub>_ _" [120, 120, 120] 1000)
+  context_equiv :: "('Var,'BExp) TyEnv \<Rightarrow> 'BExp preds \<Rightarrow> ('Var,'BExp) TyEnv \<Rightarrow> bool" (\<open>_ =:\<^sub>_ _\<close> [120, 120, 120] 1000)
 where
   "\<Gamma> =:\<^sub>P \<Gamma>' \<equiv> dom \<Gamma> = dom \<Gamma>' \<and>
                            (\<forall>x\<in>dom \<Gamma>'. type_equiv (the (\<Gamma> x)) P (the (\<Gamma>' x)))"
@@ -677,7 +677,7 @@ lemma context_equiv_entailment:
   
 inductive 
   has_type :: "('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp preds \<Rightarrow> ('Var, 'AExp, 'BExp) Stmt \<Rightarrow> ('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp preds \<Rightarrow> bool"
-  ("\<turnstile> _,_,_ {_} _,_,_" [120, 120, 120, 120, 120, 120, 120] 1000)
+  (\<open>\<turnstile> _,_,_ {_} _,_,_\<close> [120, 120, 120, 120, 120, 120, 120] 1000)
 where
   stop_type [intro]: "\<turnstile> \<Gamma>,\<S>,P {Stop} \<Gamma>,\<S>,P" |
   skip_type [intro] : "\<turnstile> \<Gamma>,\<S>,P {Skip} \<Gamma>,\<S>,P" |
@@ -793,7 +793,7 @@ inductive_cases has_type_elim: "\<turnstile> \<Gamma>,\<S>,P { c } \<Gamma>',\<S
 inductive_cases has_type_stop_elim: "\<turnstile> \<Gamma>,\<S>,P { Stop } \<Gamma>',\<S>',P'"
 
 definition tyenv_eq :: "('Var,'BExp) TyEnv \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> bool"
-  (infix "=\<index>" 60)
+  (infix \<open>=\<index>\<close> 60)
   where "mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2 \<equiv> \<forall> x. (type_max (to_total \<Gamma> x) mem\<^sub>1 = Low \<longrightarrow> mem\<^sub>1 x = mem\<^sub>2 x)"
 
 lemma type_max_dma_type [simp]:
@@ -858,7 +858,7 @@ inductive_set \<R>\<^sub>1 :: "('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Ri
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
   ('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp preds \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-  bool" ("_ \<R>\<^sup>1\<^bsub>_,_,_\<^esub> _" [120, 120, 120, 120, 120] 1000)
+  bool" (\<open>_ \<R>\<^sup>1\<^bsub>_,_,_\<^esub> _\<close> [120, 120, 120, 120, 120] 1000)
   for \<Gamma>' :: "('Var,'BExp) TyEnv"
   and \<S>' :: "'Var Stable"
   and P' :: "'BExp preds"
@@ -870,7 +870,7 @@ where
 
 inductive \<R>\<^sub>3_aux :: "(('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
                  ('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp preds \<Rightarrow> (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-                 bool" ("_ \<R>\<^sup>3\<^bsub>_,_,_\<^esub> _" [120, 120, 120, 120, 120] 1000)
+                 bool" (\<open>_ \<R>\<^sup>3\<^bsub>_,_,_\<^esub> _\<close> [120, 120, 120, 120, 120] 1000)
   and \<R>\<^sub>3 :: "('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp preds \<Rightarrow> (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf rel"
   where
   "\<R>\<^sub>3 \<Gamma>' \<S>' P' \<equiv> {(lc\<^sub>1, lc\<^sub>2). \<R>\<^sub>3_aux lc\<^sub>1 \<Gamma>' \<S>' P' lc\<^sub>2}" |
@@ -896,7 +896,7 @@ inductive_set \<R> :: "('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
   ('Var,'BExp) TyEnv \<Rightarrow> 'Var Stable \<Rightarrow> 'BExp preds \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-  bool" ("_ \<R>\<^sup>u\<^bsub>_,_,_\<^esub> _" [120, 120, 120, 120, 120] 1000)
+  bool" (\<open>_ \<R>\<^sup>u\<^bsub>_,_,_\<^esub> _\<close> [120, 120, 120, 120, 120] 1000)
   for \<Gamma> :: "('Var,'BExp) TyEnv"
   and \<S> :: "'Var Stable"
   and P :: "'BExp preds"
@@ -3872,7 +3872,7 @@ where
 (* The typing relation for lists of commands ("thread pools"). *)
 inductive 
   type_global :: "(('Var, 'AExp, 'BExp) Stmt \<times> 'Var Mds) list \<Rightarrow> bool"
-  ("\<turnstile> _" [120] 1000)
+  (\<open>\<turnstile> _\<close> [120] 1000)
 where
   "\<lbrakk> list_all (\<lambda> (c,m). (\<exists> \<Gamma>' \<S>' P'. \<turnstile> (\<Gamma>_of_mds m),(\<S>_of_mds m),{} { c } \<Gamma>',\<S>',P') \<and> mds_yields_stable_types m) cs ;
        \<forall> mem. sound_mode_use (cs, mem)

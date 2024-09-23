@@ -13,7 +13,7 @@ imports
 begin
 
 definition C :: "'a \<Rightarrow> 'a::ring_1 poly" where "C c = [:c:]"
-abbreviation CC ("\<^bold>C") where "\<^bold>C \<equiv> map_sq_matrix C"
+abbreviation CC (\<open>\<^bold>C\<close>) where "\<^bold>C \<equiv> map_sq_matrix C"
 
 lemma degree_C[simp]: "degree (C a) = 0"
   by (simp add: C_def)
@@ -47,7 +47,7 @@ lemma C_linear:
   by (simp_all add: C_def)
 
 definition X :: "'a::ring_1 poly" where "X = [:0, 1:]"
-abbreviation XX ("\<^bold>X") where "\<^bold>X \<equiv> diag X"
+abbreviation XX (\<open>\<^bold>X\<close>) where "\<^bold>X \<equiv> diag X"
 
 lemma degree_X[simp]: "degree X = 1"
   by (simp add: X_def)

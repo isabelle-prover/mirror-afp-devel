@@ -22,7 +22,7 @@ locale natural_transformation = two_cats +
   and "\<forall>A\<in>Ob. \<forall>B\<in>Ob. \<forall>f\<in>Hom A B. (G\<^bsub>\<a>\<^esub> f) \<bullet>\<^bsub>BB\<^esub> (u A) = (u B) \<bullet>\<^bsub>BB\<^esub> (F\<^bsub>\<a>\<^esub> f)"
 
 abbreviation
-  nt_syn  ("_ : _ \<Rightarrow> _ in Func '(_ , _ ')" [81]) where
+  nt_syn  (\<open>_ : _ \<Rightarrow> _ in Func '(_ , _ ')\<close> [81]) where
   "u : F \<Rightarrow> G in Func(AA, BB) \<equiv> natural_transformation AA BB F G u"
 
 (* is this doing what I think its doing? *)

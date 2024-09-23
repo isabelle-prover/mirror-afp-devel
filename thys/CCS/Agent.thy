@@ -8,16 +8,16 @@ begin
 
 atom_decl name
 
-nominal_datatype act = actAction name      ("\<lparr>_\<rparr>" 100)
-                     | actCoAction name    ("\<langle>_\<rangle>" 100)
-                     | actTau              ("\<tau>" 100)
+nominal_datatype act = actAction name      (\<open>\<lparr>_\<rparr>\<close> 100)
+                     | actCoAction name    (\<open>\<langle>_\<rangle>\<close> 100)
+                     | actTau              (\<open>\<tau>\<close> 100)
 
-nominal_datatype ccs = CCSNil           ("\<zero>" 115)
-                     | Action act ccs   ("_._" [120, 110] 110)
-                     | Sum ccs ccs      (infixl "\<oplus>" 90)
-                     | Par ccs ccs      (infixl "\<parallel>" 85)
-                     | Res "\<guillemotleft>name\<guillemotright> ccs" ("\<lparr>\<nu>_\<rparr>_" [105, 100] 100)
-                     | Bang ccs         ("!_" [95])
+nominal_datatype ccs = CCSNil           (\<open>\<zero>\<close> 115)
+                     | Action act ccs   (\<open>_._\<close> [120, 110] 110)
+                     | Sum ccs ccs      (infixl \<open>\<oplus>\<close> 90)
+                     | Par ccs ccs      (infixl \<open>\<parallel>\<close> 85)
+                     | Res "\<guillemotleft>name\<guillemotright> ccs" (\<open>\<lparr>\<nu>_\<rparr>_\<close> [105, 100] 100)
+                     | Bang ccs         (\<open>!_\<close> [95])
 
 nominal_primrec coAction :: "act \<Rightarrow> act"
 where
@@ -61,7 +61,7 @@ lemma alphaRes:
 using assms
 by(auto simp add: ccs.inject alpha fresh_left calc_atm pt_swap_bij[OF pt_name_inst, OF at_name_inst]pt3[OF pt_name_inst, OF at_ds1[OF at_name_inst]])
 
-inductive semantics :: "ccs \<Rightarrow> act \<Rightarrow> ccs \<Rightarrow> bool"    ("_ \<longmapsto>_ \<prec> _" [80, 80, 80] 80)
+inductive semantics :: "ccs \<Rightarrow> act \<Rightarrow> ccs \<Rightarrow> bool"    (\<open>_ \<longmapsto>_ \<prec> _\<close> [80, 80, 80] 80)
 where
   Action:   "\<alpha>.(P) \<longmapsto>\<alpha> \<prec> P"
 | Sum1:     "P \<longmapsto>\<alpha> \<prec> P' \<Longrightarrow> P \<oplus> Q \<longmapsto>\<alpha> \<prec> P'"

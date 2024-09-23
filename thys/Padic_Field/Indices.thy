@@ -33,7 +33,7 @@ fun flat_map :: "('a => 'b list) => 'a list => 'b list" where
   "flat_map f [] = []"
  |"flat_map f (h#t) = (f h)@(flat_map f t)"
 
-abbreviation(input) project_at_indices ("\<pi>\<^bsub>_\<^esub>") where
+abbreviation(input) project_at_indices (\<open>\<pi>\<^bsub>_\<^esub>\<close>) where
 "project_at_indices S as \<equiv> nths as S"
 
 fun insert_at_index :: " 'a list \<Rightarrow>'a \<Rightarrow> nat \<Rightarrow> 'a list" where
@@ -405,7 +405,7 @@ lemma project_at_indices_nth':
   by (metis assms(1) assms(2) finite_lessThan finite_subset indices_of_def nth_elem_set_rank_inv 
       project_at_indices_nth set_rank_range)
 
-fun proj_away_from_index :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list" ("\<pi>\<^bsub>\<noteq>_\<^esub>")where
+fun proj_away_from_index :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list" (\<open>\<pi>\<^bsub>\<noteq>_\<^esub>\<close>)where
 "proj_away_from_index n as = (take n as)@(drop (Suc n) as)"
 
 text\<open>proj\_away\_from\_index is an inverse to insert\_at\_index\<close>

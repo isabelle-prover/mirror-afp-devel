@@ -8,8 +8,8 @@ theory Relative_Security
 imports Relative_Security_fin "Preliminaries/Trivia"
 begin
 
-no_notation relcomp (infixr "O" 75)
-no_notation relcompp (infixr "OO" 75)
+no_notation relcomp (infixr \<open>O\<close> 75)
+no_notation relcompp (infixr \<open>OO\<close> 75)
 
 
 subsection \<open>Leakage models and attacker models \<close>

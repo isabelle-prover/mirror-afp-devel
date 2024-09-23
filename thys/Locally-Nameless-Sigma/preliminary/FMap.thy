@@ -12,7 +12,7 @@ section \<open>Finite maps with axclasses\<close>
 
 theory FMap imports ListPre begin
 
-type_synonym ('a, 'b) fmap = "('a :: finite) \<rightharpoonup> 'b" (infixl "-~>" 50)
+type_synonym ('a, 'b) fmap = "('a :: finite) \<rightharpoonup> 'b" (infixl \<open>-~>\<close> 50)
 
 class inftype =
 assumes infinite: "\<not>finite UNIV"
@@ -69,7 +69,7 @@ definition
                                   else None))" 
 
 definition
-  fmap_minus_direct :: "[('a -~> 'b), ('a * 'b)] \<Rightarrow> ('a -~> 'b)" (infixl "--" 50) where
+  fmap_minus_direct :: "[('a -~> 'b), ('a * 'b)] \<Rightarrow> ('a -~> 'b)" (infixl \<open>--\<close> 50) where
   "F -- x = (\<lambda>z. if (fst x = z \<and> ((F (fst x)) = Some (snd x))) 
                    then None 
                    else (F z))"

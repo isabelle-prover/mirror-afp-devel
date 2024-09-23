@@ -61,8 +61,8 @@ text \<open>To simplify formulations, we include the state invariant
 typedef (overloaded) rstate_t = "{ s . atomic_step_invariant s }"
   using initial_invariant by auto
 
-definition abs :: "state_t \<Rightarrow> rstate_t" ("\<up> _") where "abs = Abs_rstate_t"
-definition rep :: "rstate_t \<Rightarrow> state_t" ("\<down> _") where "rep = Rep_rstate_t"
+definition abs :: "state_t \<Rightarrow> rstate_t" (\<open>\<up> _\<close>) where "abs = Abs_rstate_t"
+definition rep :: "rstate_t \<Rightarrow> state_t" (\<open>\<down> _\<close>) where "rep = Rep_rstate_t"
 
 lemma rstate_invariant:
   shows "atomic_step_invariant (\<down>s)"

@@ -294,7 +294,7 @@ text \<open>Isabelle's goal mechanism wants to aggressively expand meta-conjunct
 context begin
 
 definition
-  conjunction' :: "prop \<Rightarrow> prop \<Rightarrow> prop" (infixr "&^&" 2) where
+  conjunction' :: "prop \<Rightarrow> prop \<Rightarrow> prop" (infixr \<open>&^&\<close> 2) where
   "conjunction' A B \<equiv> (PROP A &&& PROP B)"
 
 

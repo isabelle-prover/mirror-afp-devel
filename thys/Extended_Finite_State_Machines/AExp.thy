@@ -45,18 +45,18 @@ lemma aval_plus_symmetry: "aval (Plus x y) s = aval (Plus y x) s"
   by (simp add: value_plus_symmetry)
 
 text \<open>A little syntax magic to write larger states compactly:\<close>
-definition null_state ("<>") where
+definition null_state (\<open><>\<close>) where
   "null_state \<equiv> (K$ bot)"
 
-no_notation finfun_update ("_'(_ $:= _')" [1000, 0, 0] 1000)
+no_notation finfun_update (\<open>_'(_ $:= _')\<close> [1000, 0, 0] 1000)
 nonterminal fupdbinds and fupdbind
 
 syntax
-  "_fupdbind" :: "'a \<Rightarrow> 'a \<Rightarrow> fupdbind"             ("(2_ $:=/ _)")
-  ""         :: "fupdbind \<Rightarrow> fupdbinds"             ("_")
-  "_fupdbinds":: "fupdbind \<Rightarrow> fupdbinds \<Rightarrow> fupdbinds" ("_,/ _")
-  "_fUpdate"  :: "'a \<Rightarrow> fupdbinds \<Rightarrow> 'a"            ("_/'((_)')" [1000, 0] 900)
-  "_State" :: "fupdbinds => 'a" ("<_>")
+  "_fupdbind" :: "'a \<Rightarrow> 'a \<Rightarrow> fupdbind"             (\<open>(2_ $:=/ _)\<close>)
+  ""         :: "fupdbind \<Rightarrow> fupdbinds"             (\<open>_\<close>)
+  "_fupdbinds":: "fupdbind \<Rightarrow> fupdbinds \<Rightarrow> fupdbinds" (\<open>_,/ _\<close>)
+  "_fUpdate"  :: "'a \<Rightarrow> fupdbinds \<Rightarrow> 'a"            (\<open>_/'((_)')\<close> [1000, 0] 900)
+  "_State" :: "fupdbinds => 'a" (\<open><_>\<close>)
 
 syntax_consts
   "_fupdbind" "_fupdbinds" "_fUpdate" "_State" \<rightleftharpoons> finfun_update

@@ -7,7 +7,7 @@ text \<open>Weak order dependence is just defined as a static control dependence
 subsection\<open>Definition and some lemmas\<close>
 
 definition (in CFG) weak_order_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'node \<Rightarrow> bool"
-   ("_ \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d _,_")
+   (\<open>_ \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d _,_\<close>)
 where wod_def:"n \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d n\<^sub>1,n\<^sub>2 \<equiv> ((n\<^sub>1 \<noteq> n\<^sub>2) \<and>
    (\<exists>as. (n -as\<rightarrow>* n\<^sub>1) \<and> (n\<^sub>2 \<notin> set (sourcenodes as))) \<and>
    (\<exists>as. (n -as\<rightarrow>* n\<^sub>2) \<and> (n\<^sub>1 \<notin> set (sourcenodes as))) \<and>

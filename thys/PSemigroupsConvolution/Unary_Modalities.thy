@@ -16,10 +16,10 @@ in combination with partial semigroups or monoids, for modelling the Halpern-Sho
   
 subsection \<open>Forward and Backward Diamonds\<close>
 
-definition fdia :: "('a \<times> 'b) set \<Rightarrow> ('b \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'a \<Rightarrow> 'c" ("( |_\<rangle> _ _)" [61,81] 82) where
+definition fdia :: "('a \<times> 'b) set \<Rightarrow> ('b \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'a \<Rightarrow> 'c" (\<open>( |_\<rangle> _ _)\<close> [61,81] 82) where
   "( |R\<rangle> f x) = \<Squnion>{f y|y. (x,y) \<in> R}" 
 
-definition bdia :: "('a \<times> 'b) set \<Rightarrow> ('a \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'b \<Rightarrow> 'c" ("( \<langle>_| _ _)" [61,81] 82)where
+definition bdia :: "('a \<times> 'b) set \<Rightarrow> ('a \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>( \<langle>_| _ _)\<close> [61,81] 82)where
   "(\<langle>R| f y) = \<Squnion>{f x |x. (x,y) \<in> R}"  
 
 definition c1 :: "'a \<Rightarrow> 'b::unital_quantale" where
@@ -81,10 +81,10 @@ lemma fdia_Id [simp]: "( |Id\<rangle> f x) = f x"
     
 subsection \<open>Forward and Backward Boxes\<close>
   
-definition fbox :: "('a \<times> 'b) set \<Rightarrow> ('b \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'a \<Rightarrow> 'c" ("|_] _ _" [61,81] 82) where
+definition fbox :: "('a \<times> 'b) set \<Rightarrow> ('b \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'a \<Rightarrow> 'c" (\<open>|_] _ _\<close> [61,81] 82) where
   "( |R] f x) = \<Sqinter>{f y|y. (x,y) \<in> R}" 
 
-definition bbox :: "('a \<times> 'b) set \<Rightarrow> ('a \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'b \<Rightarrow> 'c" ("[_| _ _" [61,81] 82)where
+definition bbox :: "('a \<times> 'b) set \<Rightarrow> ('a \<Rightarrow> 'c::complete_lattice) \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>[_| _ _\<close> [61,81] 82)where
   "([R| f y) = \<Sqinter>{f x |x. (x,y) \<in> R}"  
   
   

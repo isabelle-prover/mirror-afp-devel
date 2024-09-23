@@ -181,7 +181,7 @@ by (induct xs arbitrary: s) (auto simp: trace.aset.simps)
 
 setup \<open>Sign.parent_path\<close>
 
-definition natural :: "('a, 's, 'v) trace.t \<Rightarrow> ('a, 's, 'v) trace.t" ("\<natural>") where
+definition natural :: "('a, 's, 'v) trace.t \<Rightarrow> ('a, 's, 'v) trace.t" (\<open>\<natural>\<close>) where
   "\<natural>\<sigma> = trace.T (trace.init \<sigma>) (trace.natural' (trace.init \<sigma>) (trace.rest \<sigma>)) (trace.term \<sigma>)"
 
 setup \<open>Sign.mandatory_path "natural"\<close>
@@ -370,7 +370,7 @@ setup \<open>Sign.parent_path\<close>
 interpretation stuttering: galois.image_vimage_idempotent "\<natural>"
 by (simp add: galois.image_vimage_idempotent.intro)
 
-abbreviation stuttering_equiv_syn :: "('a, 's, 'v) trace.t \<Rightarrow> ('a, 's, 'v) trace.t \<Rightarrow> bool" (infix "\<simeq>\<^sub>S" 50) where
+abbreviation stuttering_equiv_syn :: "('a, 's, 'v) trace.t \<Rightarrow> ('a, 's, 'v) trace.t \<Rightarrow> bool" (infix \<open>\<simeq>\<^sub>S\<close> 50) where
   "\<sigma>\<^sub>1 \<simeq>\<^sub>S \<sigma>\<^sub>2 \<equiv> trace.stuttering.equivalent \<sigma>\<^sub>1 \<sigma>\<^sub>2"
 
 setup \<open>Sign.mandatory_path "stuttering"\<close>
@@ -641,10 +641,10 @@ setup \<open>Sign.parent_path\<close>
 
 setup \<open>Sign.mandatory_path "spec"\<close>
 
-lift_definition singleton :: "('a, 's, 'v) trace.t \<Rightarrow> ('a, 's, 'v) spec" ("\<lblot>_\<rblot>") is raw.singleton
+lift_definition singleton :: "('a, 's, 'v) trace.t \<Rightarrow> ('a, 's, 'v) spec" (\<open>\<lblot>_\<rblot>\<close>) is raw.singleton
 by (simp add: raw.singleton_def)
 
-abbreviation singleton_trace_syn :: "'s \<Rightarrow> ('a \<times> 's) list \<Rightarrow> 'v option \<Rightarrow> ('a, 's, 'v) spec" ("\<lblot>_, _, _\<rblot>") where
+abbreviation singleton_trace_syn :: "'s \<Rightarrow> ('a \<times> 's) list \<Rightarrow> 'v option \<Rightarrow> ('a, 's, 'v) spec" (\<open>\<lblot>_, _, _\<rblot>\<close>) where
   "\<lblot>s, xs, v\<rblot> \<equiv> \<lblot>trace.T s xs v\<rblot>"
 
 setup \<open>Sign.mandatory_path "singleton"\<close>

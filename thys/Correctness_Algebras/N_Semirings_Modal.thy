@@ -123,7 +123,7 @@ lemma diamond_isotone:
   "w \<le> y \<Longrightarrow> x \<le> z \<Longrightarrow> |w>x \<le> |y>z"
   by (meson diamond_left_isotone diamond_right_isotone order_trans)
 
-definition ndiamond_L :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<parallel> _ \<guillemotright> _" [50,90] 95)
+definition ndiamond_L :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<parallel> _ \<guillemotright> _\<close> [50,90] 95)
   where "\<parallel>x\<guillemotright>y \<equiv> n(x * y) * L"
 
 lemma ndiamond_to_L:
@@ -346,7 +346,7 @@ lemma box_antitone_isotone:
   "y \<le> w \<Longrightarrow> x \<le> z \<Longrightarrow> |w]x \<le> |y]z"
   by (meson box_left_antitone box_right_isotone order.trans)
 
-definition nbox_L :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<parallel> _ \<rbrakk> _" [50,90] 95)
+definition nbox_L :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<parallel> _ \<rbrakk> _\<close> [50,90] 95)
   where "\<parallel>x\<rbrakk>y \<equiv> an(x * an(y) * L) * L"
 
 lemma nbox_to_L:

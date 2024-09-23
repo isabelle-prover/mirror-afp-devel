@@ -16,7 +16,7 @@ text\<open>This theory derives proof rules for liveness properties.\<close>
 definition enabled :: "'a formula \<Rightarrow> 'a formula"
 where "enabled F \<equiv> \<lambda> s. \<exists> t. ((first s) ## t) \<Turnstile> F"
 
-syntax "_Enabled" :: "lift \<Rightarrow> lift" ("(Enabled _)" [90] 90)
+syntax "_Enabled" :: "lift \<Rightarrow> lift" (\<open>(Enabled _)\<close> [90] 90)
 
 translations "_Enabled" \<rightleftharpoons> "CONST enabled"
 
@@ -37,10 +37,10 @@ text\<open>
 \<close>
 
 syntax
- "_WF" :: "[lift,lift] \<Rightarrow> lift" ("(WF'(_')'_(_))"  [20,1000] 90)
- "_SF" :: "[lift,lift] \<Rightarrow> lift" ("(SF'(_')'_(_))"  [20,1000] 90)
- "_WFsp" :: "[lift,lift] \<Rightarrow> lift" ("(WF '(_')'_(_))"  [20,1000] 90)
- "_SFsp" :: "[lift,lift] \<Rightarrow> lift" ("(SF '(_')'_(_))"  [20,1000] 90)
+ "_WF" :: "[lift,lift] \<Rightarrow> lift" (\<open>(WF'(_')'_(_))\<close>  [20,1000] 90)
+ "_SF" :: "[lift,lift] \<Rightarrow> lift" (\<open>(SF'(_')'_(_))\<close>  [20,1000] 90)
+ "_WFsp" :: "[lift,lift] \<Rightarrow> lift" (\<open>(WF '(_')'_(_))\<close>  [20,1000] 90)
+ "_SFsp" :: "[lift,lift] \<Rightarrow> lift" (\<open>(SF '(_')'_(_))\<close>  [20,1000] 90)
 
 translations
  "_WF" \<rightleftharpoons> "CONST WeakF"

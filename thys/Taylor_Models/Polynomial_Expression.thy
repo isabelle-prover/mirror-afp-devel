@@ -19,8 +19,8 @@ subsection \<open>Datatype of polynomial expressions\<close>
 datatype 'a poly = C 'a | Bound nat | Add "'a poly" "'a poly" | Sub "'a poly" "'a poly"
   | Mul "'a poly" "'a poly"| Neg "'a poly"| Pw "'a poly" nat | CN "'a poly" nat "'a poly"
 
-abbreviation poly_0 :: "'a::zero poly" ("0\<^sub>p") where "0\<^sub>p \<equiv> C 0"
-abbreviation poly_p :: "'a \<Rightarrow> 'a poly" ("'((_)')\<^sub>p") where "(i)\<^sub>p \<equiv> C i"
+abbreviation poly_0 :: "'a::zero poly" (\<open>0\<^sub>p\<close>) where "0\<^sub>p \<equiv> C 0"
+abbreviation poly_p :: "'a \<Rightarrow> 'a poly" (\<open>'((_)')\<^sub>p\<close>) where "(i)\<^sub>p \<equiv> C i"
 
 
 subsection\<open>Boundedness, substitution and all that\<close>
@@ -122,7 +122,7 @@ subsection \<open>Operations for normalization\<close>
 declare if_cong[fundef_cong del]
 declare let_cong[fundef_cong del]
 
-fun polyadd :: "'a::{plus,zero} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" (infixl "+\<^sub>p" 60)
+fun polyadd :: "'a::{plus,zero} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" (infixl \<open>+\<^sub>p\<close> 60)
 where
   "polyadd (C c) (C c') = C (c + c')"
 | "polyadd (C c) (CN c' n' p') = CN (polyadd (C c) c') n' p'"
@@ -138,16 +138,16 @@ where
 | "polyadd a b = Add a b"
 
 
-fun polyneg :: "'a::uminus poly \<Rightarrow> 'a poly" ("~\<^sub>p")
+fun polyneg :: "'a::uminus poly \<Rightarrow> 'a poly" (\<open>~\<^sub>p\<close>)
 where
   "polyneg (C c) = C (-c)"
 | "polyneg (CN c n p) = CN (polyneg c) n (polyneg p)"
 | "polyneg a = Neg a"
 
-definition polysub :: "'a::{plus,zero,uminus} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" (infixl "-\<^sub>p" 60)
+definition polysub :: "'a::{plus,zero,uminus} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" (infixl \<open>-\<^sub>p\<close> 60)
   where "p -\<^sub>p q = polyadd p (polyneg q)"
 
-fun polymul :: "'a::{plus,zero,times} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" (infixl "*\<^sub>p" 60)
+fun polymul :: "'a::{plus,zero,times} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" (infixl \<open>*\<^sub>p\<close> 60)
 where
   "polymul (C c) (C c') = C (c * c')"
 | "polymul (C c) (CN c' n' p') =
@@ -173,7 +173,7 @@ where
         d = polymul q q
       in if even n then d else polymul p d)"
 
-abbreviation poly_pow :: "'a::{plus,zero,times,one} poly \<Rightarrow> nat \<Rightarrow> 'a poly" (infixl "^\<^sub>p" 60)
+abbreviation poly_pow :: "'a::{plus,zero,times,one} poly \<Rightarrow> nat \<Rightarrow> 'a poly" (infixl \<open>^\<^sub>p\<close> 60)
   where "a ^\<^sub>p k \<equiv> polypow k a"
 
 function polynate :: "'a::{plus,uminus,zero,times,one} poly \<Rightarrow> 'a poly"

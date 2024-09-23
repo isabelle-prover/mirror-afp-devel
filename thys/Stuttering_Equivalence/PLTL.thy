@@ -277,11 +277,11 @@ text \<open>
 \<close>
 
 definition state_sim :: "['a, ('a \<Rightarrow> bool) set, 'a] \<Rightarrow> bool" 
-  ("_ ~_~ _" [70,100,70] 50) where
+  (\<open>_ ~_~ _\<close> [70,100,70] 50) where
   "s ~A~ t = (\<forall>p\<in>A. p s \<longleftrightarrow> p t)"
 
 definition seq_sim :: "[nat \<Rightarrow> 'a, ('a \<Rightarrow> bool) set, nat \<Rightarrow> 'a] \<Rightarrow> bool"
-  ("_ \<simeq>_\<simeq> _" [70,100,70] 50)  where
+  (\<open>_ \<simeq>_\<simeq> _\<close> [70,100,70] 50)  where
   "\<sigma> \<simeq>A\<simeq> \<tau> = (\<forall>n. (\<sigma> n) ~A~ (\<tau> n))"
 
 text \<open>

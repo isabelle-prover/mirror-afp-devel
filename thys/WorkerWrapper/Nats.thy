@@ -58,7 +58,7 @@ definition
   "uPlus \<equiv> \<Lambda> x y. Discr (undiscr x + undiscr y)"
 
 abbreviation
-  uPlus_syn :: "UNat \<Rightarrow> UNat \<Rightarrow> UNat" (infixl "+\<^sub>#" 65) where
+  uPlus_syn :: "UNat \<Rightarrow> UNat \<Rightarrow> UNat" (infixl \<open>+\<^sub>#\<close> 65) where
   "x +\<^sub># y \<equiv> uPlus\<cdot>x\<cdot>y"
 
 instantiation discr :: (plus) plus
@@ -72,7 +72,7 @@ definition
   "uMinus \<equiv> \<Lambda> x y. Discr (undiscr x - undiscr y)"
 
 abbreviation
-  uMinus_syn :: "UNat \<Rightarrow> UNat \<Rightarrow> UNat" (infixl "-\<^sub>#" 65) where
+  uMinus_syn :: "UNat \<Rightarrow> UNat \<Rightarrow> UNat" (infixl \<open>-\<^sub>#\<close> 65) where
   "x -\<^sub># y \<equiv> uMinus\<cdot>x\<cdot>y"
 
 instantiation discr :: (minus) minus
@@ -86,7 +86,7 @@ definition
   "uMult \<equiv> \<Lambda> x y. Discr (undiscr x * undiscr y)"
 
 abbreviation
-  uMult_syn :: "UNat \<Rightarrow> UNat \<Rightarrow> UNat" (infixl "*\<^sub>#" 65) where
+  uMult_syn :: "UNat \<Rightarrow> UNat \<Rightarrow> UNat" (infixl \<open>*\<^sub>#\<close> 65) where
   "x *\<^sub># y \<equiv> uMult\<cdot>x\<cdot>y"
 
 instantiation discr :: (times) times
@@ -129,7 +129,7 @@ definition
   "bbind \<equiv> \<Lambda> b g. fup\<cdot>g\<cdot>b"
 
 abbreviation
-  bbind_syn :: "('a::cpo)\<^sub>\<bottom> \<Rightarrow> ('a \<rightarrow> ('b::pcpo)) \<Rightarrow> 'b" (infixl ">>=" 65) where
+  bbind_syn :: "('a::cpo)\<^sub>\<bottom> \<Rightarrow> ('a \<rightarrow> ('b::pcpo)) \<Rightarrow> 'b" (infixl \<open>>>=\<close> 65) where
   "b >>= g \<equiv> bbind\<cdot>b\<cdot>g"
 
 lemma bbind_strict1[simp]: "bbind\<cdot>\<bottom> = \<bottom>"
@@ -161,7 +161,7 @@ definition
   "bKleisli \<equiv> \<Lambda> f g x. f\<cdot>x >>= g"
 
 abbreviation
-  bKleisli_syn :: "('a::cpo \<rightarrow> ('b::cpo)\<^sub>\<bottom>) \<Rightarrow> ('b \<rightarrow> ('c::cpo)\<^sub>\<bottom>) \<Rightarrow> ('a \<rightarrow> 'c\<^sub>\<bottom>)" (infixl ">=>" 65) where
+  bKleisli_syn :: "('a::cpo \<rightarrow> ('b::cpo)\<^sub>\<bottom>) \<Rightarrow> ('b \<rightarrow> ('c::cpo)\<^sub>\<bottom>) \<Rightarrow> ('a \<rightarrow> 'c\<^sub>\<bottom>)" (infixl \<open>>=>\<close> 65) where
   "b >=> g \<equiv> bKleisli\<cdot>b\<cdot>g"
 
 lemma bKleisli_strict1[simp]: "bKleisli\<cdot>\<bottom> = \<bottom>"
@@ -313,15 +313,15 @@ lemma bpred_eval[simp]: "bpred p\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = (if p
   unfolding bpred_def by simp
 
 abbreviation
-  beq_syn :: "'a::countable discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "=\<^sub>B" 50) where
+  beq_syn :: "'a::countable discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix \<open>=\<^sub>B\<close> 50) where
   "x =\<^sub>B y \<equiv> bpred (=)\<cdot>x\<cdot>y"
 
 abbreviation
-  ble_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "\<le>\<^sub>B" 50) where
+  ble_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix \<open>\<le>\<^sub>B\<close> 50) where
   "x \<le>\<^sub>B y \<equiv> bpred (\<le>)\<cdot>x\<cdot>y"
 
 abbreviation
-  blt_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "<\<^sub>B" 50) where
+  blt_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix \<open><\<^sub>B\<close> 50) where
   "x <\<^sub>B y \<equiv> bpred (<)\<cdot>x\<cdot>y"
 
 subsection\<open>The flat domain of natural numbers\<close>

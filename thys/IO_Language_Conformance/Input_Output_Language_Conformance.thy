@@ -41,7 +41,7 @@ shows "is_language X Y (L1 \<inter> L2)"
 fun language_for_state :: "('x,'y) language \<Rightarrow> ('x,'y) word \<Rightarrow> ('x,'y) language" where
   "language_for_state L \<pi> = {\<tau> . \<pi>@\<tau> \<in> L}" 
 
-notation language_for_state ("\<L>[_,_]")
+notation language_for_state (\<open>\<L>[_,_]\<close>)
 
 lemma language_for_state_is_language :
   assumes "is_language X Y L"
@@ -85,8 +85,8 @@ fun are_equivalent_for_language :: "('x,'y) language \<Rightarrow> ('x,'y) word 
 
 abbreviation(input) "input_projection \<pi> \<equiv> map fst \<pi>"
 abbreviation(input) "output_projection \<pi> \<equiv> map snd \<pi>"
-notation input_projection ("[_]\<^sub>I")
-notation output_projection ("[_]\<^sub>O")
+notation input_projection (\<open>[_]\<^sub>I\<close>)
+notation output_projection (\<open>[_]\<^sub>O\<close>)
 
 
 fun is_executable :: "('x,'y) language \<Rightarrow> ('x,'y) word \<Rightarrow> 'x list \<Rightarrow> bool" where
@@ -98,7 +98,7 @@ fun executable_sequences :: "('x,'y) language \<Rightarrow> ('x,'y) word \<Right
 fun executable_inputs :: "('x,'y) language \<Rightarrow> ('x,'y) word \<Rightarrow> 'x set" where 
   "executable_inputs L \<pi> = {x . is_executable L \<pi> [x]}"
 
-notation executable_inputs ("exec[_,_]")
+notation executable_inputs (\<open>exec[_,_]\<close>)
 
 
 lemma executable_sequences_alt_def : "executable_sequences L \<pi> = {xs . \<exists> ys . length ys = length xs \<and> zip xs ys \<in> \<L>[L,\<pi>]}"
@@ -155,7 +155,7 @@ shows  "(output_sequences L \<pi> xs = {}) = ((\<pi> \<notin> L) \<or> (\<not> i
 fun outputs :: "('x,'y) language \<Rightarrow> ('x,'y) word \<Rightarrow> 'x \<Rightarrow> 'y set" where 
   "outputs L \<pi> x = {y . [(x,y)] \<in> \<L>[L,\<pi>]}"
 
-notation outputs ("out[_,_,_]")
+notation outputs (\<open>out[_,_,_]\<close>)
 
 lemma outputs_in_alphabet :
   assumes "is_language X Y L"
@@ -240,7 +240,7 @@ subsection \<open>$\preceq$ Conformance\<close>
 fun type_1_conforms :: "('x,'y) language \<Rightarrow> 'x alphabet \<Rightarrow> 'y output_relation \<Rightarrow> ('x,'y) language \<Rightarrow> bool" where
   "type_1_conforms L1 X H L2 = (\<forall> \<pi> \<in> L1 \<inter> L2 . \<forall> x \<in> X . (out[L1,\<pi>,x],out[L2,\<pi>,x]) \<in> H)"
 
-notation type_1_conforms ("_ \<preceq>[_,_] _")
+notation type_1_conforms (\<open>_ \<preceq>[_,_] _\<close>)
 
 fun equiv :: "'y alphabet \<Rightarrow> 'y output_relation" where 
   "equiv Y = {(A,A) | A . A \<subseteq> Y}"
@@ -492,7 +492,7 @@ fun type_2_conforms :: "('x,'y) language \<Rightarrow> 'x alphabet \<Rightarrow>
       (\<forall> \<pi> \<in> L1 \<inter> L2 . \<forall> x \<in> X . (out[L1,\<pi>,x],out[L2,\<pi>,x]) \<in> H) \<and>
       (\<forall> \<pi> \<in> L1 \<inter> L2 . exec[L2,\<pi>] \<noteq> {} \<longrightarrow> (\<exists> x . out[L1,\<pi>,x] \<inter> out[L2,\<pi>,x] \<noteq> {})))"
 
-notation type_2_conforms ("_ \<le>[_,_] _")
+notation type_2_conforms (\<open>_ \<le>[_,_] _\<close>)
 
 fun semieq :: "'y alphabet \<Rightarrow> 'y output_relation" where 
   "semieq Y = {(A,A) | A . A \<subseteq> Y} \<union> {({},A) | A . A \<subseteq> Y} \<union> {(A,{}) | A . A \<subseteq> Y}"

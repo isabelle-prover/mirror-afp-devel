@@ -10,7 +10,7 @@ imports Lambda_Free_RPOs.Lambda_Free_Term Lambda_Free_RPOs.Extension_Orders Poly
 begin
 
 locale kbo_basic_basis = gt_sym "(>\<^sub>s)"
-    for gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) +
+    for gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>>\<^sub>s\<close> 50) +
   fixes
     wt_sym :: "'s \<Rightarrow> nat" and
     \<epsilon> :: nat and
@@ -33,7 +33,7 @@ end
 
 locale kbo_std_basis = ground_heads "(>\<^sub>s)" arity_sym arity_var
     for
-      gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) and
+      gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>>\<^sub>s\<close> 50) and
       arity_sym :: "'s \<Rightarrow> enat" and
       arity_var :: "'v \<Rightarrow> enat" +
   fixes

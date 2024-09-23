@@ -15,12 +15,12 @@ section \<open>Gauss sums\<close>
 
 bundle vec_lambda_notation
 begin
-notation vec_lambda (binder "\<chi>" 10)
+notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
 bundle no_vec_lambda_notation
 begin
-no_notation vec_lambda (binder "\<chi>" 10)
+no_notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
 unbundle no_vec_lambda_notation

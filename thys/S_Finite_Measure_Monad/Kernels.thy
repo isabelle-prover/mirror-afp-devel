@@ -1386,7 +1386,7 @@ lemma measurable_s_finite_measure_algebra:
   K \<in> measurable M (s_finite_measure_algebra N)"
   by (auto intro!: measurable_Sup2 measurable_vimage_algebra2 simp: s_finite_measure_algebra_def)
 
-definition bind_kernel :: "'a measure \<Rightarrow> ('a \<Rightarrow> 'b measure) \<Rightarrow> 'b measure" (infixl "\<bind>\<^sub>k" 54) where
+definition bind_kernel :: "'a measure \<Rightarrow> ('a \<Rightarrow> 'b measure) \<Rightarrow> 'b measure" (infixl \<open>\<bind>\<^sub>k\<close> 54) where
 "bind_kernel M k = (if space M = {} then count_space {} else
     let Y = k (SOME x. x \<in> space M) in
      measure_of (space Y) (sets Y) (\<lambda>B. \<integral>\<^sup>+x. (k x B) \<partial>M))"

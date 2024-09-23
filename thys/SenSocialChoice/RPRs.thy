@@ -43,10 +43,10 @@ orders per type, we need to repeat some things.
 
 type_synonym 'a RPR = "('a * 'a) set"
 
-abbreviation rpr_eq_syntax :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<preceq> _" [50, 1000, 51] 50) where
+abbreviation rpr_eq_syntax :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<^bsub>_\<^esub>\<preceq> _\<close> [50, 1000, 51] 50) where
   "x \<^bsub>r\<^esub>\<preceq> y == (x, y) \<in> r"
 
-definition indifferent_pref :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<approx> _" [50, 1000, 51] 50) where
+definition indifferent_pref :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<^bsub>_\<^esub>\<approx> _\<close> [50, 1000, 51] 50) where
   "x \<^bsub>r\<^esub>\<approx> y \<equiv> (x \<^bsub>r\<^esub>\<preceq> y \<and> y \<^bsub>r\<^esub>\<preceq> x)"
 
 lemma indifferent_prefI[intro]: "\<lbrakk> x \<^bsub>r\<^esub>\<preceq> y; y \<^bsub>r\<^esub>\<preceq> x \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<approx> y"
@@ -55,7 +55,7 @@ lemma indifferent_prefI[intro]: "\<lbrakk> x \<^bsub>r\<^esub>\<preceq> y; y \<^
 lemma indifferent_prefD[dest]: "x \<^bsub>r\<^esub>\<approx> y \<Longrightarrow> x \<^bsub>r\<^esub>\<preceq> y \<and> y \<^bsub>r\<^esub>\<preceq> x"
   unfolding indifferent_pref_def by simp
 
-definition strict_pref :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<^bsub>_\<^esub>\<prec> _" [50, 1000, 51] 50) where
+definition strict_pref :: "'a \<Rightarrow> 'a RPR \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<^bsub>_\<^esub>\<prec> _\<close> [50, 1000, 51] 50) where
   "x \<^bsub>r\<^esub>\<prec> y \<equiv> (x \<^bsub>r\<^esub>\<preceq> y \<and> \<not>(y \<^bsub>r\<^esub>\<preceq> x))"
 
 lemma strict_pref_def_irrefl[simp]: "\<not> (x \<^bsub>r\<^esub>\<prec> x)" unfolding strict_pref_def by blast

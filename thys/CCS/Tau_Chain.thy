@@ -7,7 +7,7 @@ theory Tau_Chain
 begin
 
 
-definition tauChain :: "ccs \<Rightarrow> ccs \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>\<tau> _" [80, 80] 80)
+definition tauChain :: "ccs \<Rightarrow> ccs \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sub>\<tau> _\<close> [80, 80] 80)
   where "P \<Longrightarrow>\<^sub>\<tau> P' \<equiv> (P, P') \<in> {(P, P') | P P'. P \<longmapsto>\<tau> \<prec> P'}^*"
 
 lemma tauChainInduct[consumes 1, case_names Base Step]:

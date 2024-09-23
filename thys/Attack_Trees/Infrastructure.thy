@@ -119,7 +119,7 @@ typedef label_fun = "{f :: dlm * data \<Rightarrow> dlm * data.
                         \<forall> x:: dlm * data. fst x = fst (f x)}"  
   by (fastforce)
 
-definition secure_process :: "label_fun \<Rightarrow> dlm * data \<Rightarrow> dlm * data" (infixr "\<Updown>" 50)
+definition secure_process :: "label_fun \<Rightarrow> dlm * data \<Rightarrow> dlm * data" (infixr \<open>\<Updown>\<close> 50)
   where "f  \<Updown> d \<equiv> (Rep_label_fun f) d" 
 
 (* This part is relevant to model Insiders but is not needed for Infrastructures.
@@ -156,7 +156,7 @@ where "Insider' P a C \<equiv> (tipping_point (astate a) \<longrightarrow> (\<fo
 
 text \<open>The predicate atI -- mixfix syntax @{text \<open>@\<^bsub>G\<^esub>\<close>} -- expresses that an actor (identity) 
       is at a certain location in an igraph.\<close>
-definition atI :: "[identity, igraph, location] \<Rightarrow> bool" ("_ @\<^bsub>(_)\<^esub> _" 50)
+definition atI :: "[identity, igraph, location] \<Rightarrow> bool" (\<open>_ @\<^bsub>(_)\<^esub> _\<close> 50)
 where "a @\<^bsub>G\<^esub> l \<equiv> a \<in> (agra G l)"
 
 text \<open>Policies specify the expected behaviour of actors of an infrastructure. 
@@ -203,7 +203,7 @@ where "move_graph_a n l l' g \<equiv> Lgraph (gra g)
                      ((agra g)(l := (agra g l) - {n}))(l' := (insert n (agra g l')))
                      else (agra g))(cgra g)(lgra g)"
 
-inductive state_transition_in :: "[infrastructure, infrastructure] \<Rightarrow> bool" ("(_ \<rightarrow>\<^sub>n _)" 50)
+inductive state_transition_in :: "[infrastructure, infrastructure] \<Rightarrow> bool" (\<open>(_ \<rightarrow>\<^sub>n _)\<close> 50)
 where
   move: "\<lbrakk> G = graphI I; a @\<^bsub>G\<^esub> l; l \<in> nodes G; l' \<in> nodes G;
           (a) \<in> actors_graph(graphI I); enables I l' (Actor a) move;
@@ -260,7 +260,7 @@ definition
 instance
   by (rule state.intro_of_class)
 
-definition state_transition_in_refl ("(_ \<rightarrow>\<^sub>n* _)" 50)
+definition state_transition_in_refl (\<open>(_ \<rightarrow>\<^sub>n* _)\<close> 50)
 where "s \<rightarrow>\<^sub>n* s' \<equiv> ((s,s') \<in> {(x,y). state_transition_in x y}\<^sup>*)"
 
 end

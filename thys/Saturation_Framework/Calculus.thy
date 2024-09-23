@@ -20,7 +20,7 @@ subsection \<open>Consequence Relations\<close>
 locale consequence_relation =
   fixes
     Bot :: "'f set" and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50)
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50)
   assumes
     bot_not_empty: "Bot \<noteq> {}" and
     bot_entails_all: "B \<in> Bot \<Longrightarrow> {B} \<Turnstile> N1" and
@@ -66,7 +66,7 @@ lemma bot_not_empty: "Bot \<noteq> {}"
   using Q_nonempty consequence_relation.bot_not_empty consequence_relation_family.q_cons_rel
     consequence_relation_family_axioms by blast
 
-definition entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>Q" 50) where
+definition entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>Q\<close> 50) where
   "N1 \<Turnstile>Q N2 \<longleftrightarrow> (\<forall>q \<in> Q. entails_q q N1 N2)"
 
 (* lem:intersection-of-conseq-rel *)
@@ -141,7 +141,7 @@ locale calculus = inference_system Inf + consequence_relation Bot entails
   for
     Bot :: "'f set" and
     Inf :: \<open>'f inference set\<close> and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50)
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50)
   + fixes
     Red_I :: "'f set \<Rightarrow> 'f inference set" and
     Red_F :: "'f set \<Rightarrow> 'f set"
@@ -199,7 +199,7 @@ qed
 definition fair :: "'f set llist \<Rightarrow> bool" where
   "fair Ns \<longleftrightarrow> Inf_from (Liminf_llist Ns) \<subseteq> Sup_llist (lmap Red_I Ns)"
 
-inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>" 50) where
+inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<rhd>\<close> 50) where
   derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd> N"
 
 lemma gt_Max_notin: \<open>finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> x > Max A \<Longrightarrow> x \<notin> A\<close> by auto

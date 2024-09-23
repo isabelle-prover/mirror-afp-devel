@@ -12,7 +12,7 @@ of the term forms\<close>
 section \<open>Class\<close>
 
 class has_subst_v = fs +
-  fixes subst_v :: "'a::fs \<Rightarrow> x \<Rightarrow> v \<Rightarrow> 'a::fs"   ("_[_::=_]\<^sub>v" [1000,50,50] 1000)
+  fixes subst_v :: "'a::fs \<Rightarrow> x \<Rightarrow> v \<Rightarrow> 'a::fs"   (\<open>_[_::=_]\<^sub>v\<close> [1000,50,50] 1000)
   assumes fresh_subst_v_if:  "y \<sharp> (subst_v a x v)  \<longleftrightarrow> (atom x \<sharp> a \<and> y \<sharp> a) \<or> (y \<sharp> v \<and> (y \<sharp> a \<or> y = atom x))" 
     and    forget_subst_v[simp]:  "atom x \<sharp> a \<Longrightarrow> subst_v a  x v = a"
     and    subst_v_id[simp]:      "subst_v a x (V_var x) = a"
@@ -70,7 +70,7 @@ nominal_function
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_vv_abbrev :: "v \<Rightarrow> x \<Rightarrow> v \<Rightarrow> v" ("_[_::=_]\<^sub>v\<^sub>v" [1000,50,50] 1000)
+  subst_vv_abbrev :: "v \<Rightarrow> x \<Rightarrow> v \<Rightarrow> v" (\<open>_[_::=_]\<^sub>v\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "v[x::=v']\<^sub>v\<^sub>v  \<equiv> subst_vv v x v'" 
 
@@ -154,7 +154,7 @@ nominal_function subst_ev :: "e \<Rightarrow> x \<Rightarrow> v  \<Rightarrow> e
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_ev_abbrev :: "e \<Rightarrow> x \<Rightarrow> v \<Rightarrow> e" ("_[_::=_]\<^sub>e\<^sub>v" [1000,50,50] 500)
+  subst_ev_abbrev :: "e \<Rightarrow> x \<Rightarrow> v \<Rightarrow> e" (\<open>_[_::=_]\<^sub>e\<^sub>v\<close> [1000,50,50] 500)
   where 
     "e[x::=v']\<^sub>e\<^sub>v  \<equiv> subst_ev e x v' " 
 
@@ -269,7 +269,7 @@ nominal_function subst_cev :: "ce \<Rightarrow> x \<Rightarrow> v  \<Rightarrow>
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_cev_abbrev :: "ce \<Rightarrow> x \<Rightarrow> v \<Rightarrow> ce" ("_[_::=_]\<^sub>c\<^sub>e\<^sub>v" [1000,50,50] 500)
+  subst_cev_abbrev :: "ce \<Rightarrow> x \<Rightarrow> v \<Rightarrow> ce" (\<open>_[_::=_]\<^sub>c\<^sub>e\<^sub>v\<close> [1000,50,50] 500)
   where 
     "e[x::=v']\<^sub>c\<^sub>e\<^sub>v  \<equiv> subst_cev  e x v'" 
 
@@ -392,7 +392,7 @@ nominal_function subst_cv :: "c \<Rightarrow> x \<Rightarrow> v  \<Rightarrow> c
 nominal_termination (eqvt)  by lexicographic_order
 
 abbreviation 
-  subst_cv_abbrev :: "c \<Rightarrow> x \<Rightarrow> v \<Rightarrow> c" ("_[_::=_]\<^sub>c\<^sub>v" [1000,50,50] 1000)
+  subst_cv_abbrev :: "c \<Rightarrow> x \<Rightarrow> v \<Rightarrow> c" (\<open>_[_::=_]\<^sub>c\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "c[x::=v']\<^sub>c\<^sub>v  \<equiv> subst_cv c x v'" 
 
@@ -523,7 +523,7 @@ qed(fast+)
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_gv_abbrev :: "\<Gamma> \<Rightarrow> x \<Rightarrow> v \<Rightarrow> \<Gamma>" ("_[_::=_]\<^sub>\<Gamma>\<^sub>v" [1000,50,50] 1000)
+  subst_gv_abbrev :: "\<Gamma> \<Rightarrow> x \<Rightarrow> v \<Rightarrow> \<Gamma>" (\<open>_[_::=_]\<^sub>\<Gamma>\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "g[x::=v]\<^sub>\<Gamma>\<^sub>v  \<equiv> subst_gv g x v" 
 
@@ -595,7 +595,7 @@ qed
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_tv_abbrev :: "\<tau> \<Rightarrow> x \<Rightarrow> v \<Rightarrow> \<tau>" ("_[_::=_]\<^sub>\<tau>\<^sub>v" [1000,50,50] 1000)
+  subst_tv_abbrev :: "\<tau> \<Rightarrow> x \<Rightarrow> v \<Rightarrow> \<tau>" (\<open>_[_::=_]\<^sub>\<tau>\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "t[x::=v]\<^sub>\<tau>\<^sub>v  \<equiv> subst_tv t x v" 
 
@@ -922,7 +922,7 @@ nominal_function subst_dv :: "\<Delta> \<Rightarrow> x \<Rightarrow> v \<Rightar
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_dv_abbrev :: "\<Delta> \<Rightarrow> x \<Rightarrow> v \<Rightarrow> \<Delta>" ("_[_::=_]\<^sub>\<Delta>\<^sub>v" [1000,50,50] 1000)
+  subst_dv_abbrev :: "\<Delta> \<Rightarrow> x \<Rightarrow> v \<Rightarrow> \<Delta>" (\<open>_[_::=_]\<^sub>\<Delta>\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "\<Delta>[x::=v]\<^sub>\<Delta>\<^sub>v  \<equiv> subst_dv \<Delta> x v " 
 
@@ -1063,12 +1063,12 @@ qed
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_sv_abbrev :: "s \<Rightarrow> x \<Rightarrow> v \<Rightarrow> s" ("_[_::=_]\<^sub>s\<^sub>v" [1000,50,50] 1000)
+  subst_sv_abbrev :: "s \<Rightarrow> x \<Rightarrow> v \<Rightarrow> s" (\<open>_[_::=_]\<^sub>s\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "s[x::=v]\<^sub>s\<^sub>v  \<equiv> subst_sv s x v" 
 
 abbreviation 
-  subst_branchv_abbrev :: "branch_s \<Rightarrow> x \<Rightarrow> v \<Rightarrow> branch_s" ("_[_::=_]\<^sub>s\<^sub>v" [1000,50,50] 1000)
+  subst_branchv_abbrev :: "branch_s \<Rightarrow> x \<Rightarrow> v \<Rightarrow> branch_s" (\<open>_[_::=_]\<^sub>s\<^sub>v\<close> [1000,50,50] 1000)
   where 
     "s[x::=v]\<^sub>s\<^sub>v  \<equiv> subst_branchv s x v" 
 

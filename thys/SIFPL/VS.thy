@@ -24,7 +24,7 @@ consts CONTEXT :: "Var \<Rightarrow> TP"
 text\<open>Next, we define when two states are considered (low)
 equivalent.\<close>
 
-definition twiddle::"State \<Rightarrow> State \<Rightarrow> bool" (" _ \<approx> _ " [100,100] 100)
+definition twiddle::"State \<Rightarrow> State \<Rightarrow> bool" (\<open> _ \<approx> _ \<close> [100,100] 100)
 where "s \<approx> ss = (\<forall> x. CONTEXT x = low \<longrightarrow> s x = ss x)"
 
 text\<open>A command $c$ is \emph{secure} if the low equivalence of any two

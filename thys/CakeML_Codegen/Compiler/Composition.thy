@@ -468,7 +468,7 @@ apply (rule refl)
 done
 
 abbreviation (input) "vrelated \<equiv> srules_as_vrules.vrelated"
-notation srules_as_vrules.vrelated ("\<turnstile>\<^sub>v/ _ \<approx> _" [0, 50] 50)
+notation srules_as_vrules.vrelated (\<open>\<turnstile>\<^sub>v/ _ \<approx> _\<close> [0, 50] 50)
 
 lemma vrecabs_global_css_refl:
   assumes "name |\<in>| fmdom global_css"

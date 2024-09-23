@@ -29,7 +29,7 @@ typedef 'd update = "update :: ('d data => 'd data) set"
   done
  
 definition
- UpdateApply :: "['d update, 'd data] => 'd data" ("(_ !!!/ _)" [10,11]10) where
+ UpdateApply :: "['d update, 'd data] => 'd data" (\<open>(_ !!!/ _)\<close> [10,11]10) where
  "UpdateApply U D == Rep_update U D" 
 
 definition
@@ -85,7 +85,7 @@ typedef 'd pupdate = "pupdate :: ('d data => 'd pdata) set"
   done
  
 definition
- PUpdateApply :: "['d pupdate, 'd data] => 'd pdata" ("(_ !!/ _)" [10,11]10) where
+ PUpdateApply :: "['d pupdate, 'd data] => 'd pdata" (\<open>(_ !!/ _)\<close> [10,11]10) where
  "PUpdateApply U D = Rep_pupdate U D" 
 
 definition
@@ -143,7 +143,7 @@ subsubsection \<open>\<open>SequentialRacing\<close>\<close>
 
 definition
  UpdateOverride :: "['d pupdate, 'd update] => 
-                     'd update" ("(_ [U+]/ _)" [10,11]10) where
+                     'd update" (\<open>(_ [U+]/ _)\<close> [10,11]10) where
  "UpdateOverride U P = Abs_update (\<lambda> DA . (U !! DA) [D+] (P !!! DA))"
  
 

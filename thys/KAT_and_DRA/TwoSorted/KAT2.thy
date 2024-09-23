@@ -15,7 +15,7 @@ text \<open>
   This alternative can be developed further along the lines of the one-sorted implementation.
 \<close>
 
-syntax "_kat" :: "'a \<Rightarrow> 'a" ("`_`")
+syntax "_kat" :: "'a \<Rightarrow> 'a" (\<open>`_`\<close>)
 
 ML \<open>
 val kat_test_vars = ["p","q","r","s","t","p'","q'","r'","s'","t'","p''","q''","r''","s''","t''"]
@@ -79,7 +79,7 @@ setup \<open>VCGRules.setup\<close>
 
 locale dioid_tests =
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::dioid_one_zerol"
-  and not :: "'b::dioid_one_zerol \<Rightarrow> 'b::dioid_one_zerol" ("-")
+  and not :: "'b::dioid_one_zerol \<Rightarrow> 'b::dioid_one_zerol" (\<open>-\<close>)
   assumes test_sup [simp,kat_hom]: "test (sup p q) = `p + q`"
   and test_inf [simp,kat_hom]: "test (inf p q) = `p \<cdot> q`"
   and test_top [simp,kat_hom]: "test top = 1"
@@ -88,7 +88,7 @@ locale dioid_tests =
   and test_iso_eq [kat_hom]: "p \<le> q \<longleftrightarrow> `p \<le> q`"
 begin
 
-notation test ("\<iota>")
+notation test (\<open>\<iota>\<close>)
 
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
@@ -121,7 +121,7 @@ end
 
 locale kat = 
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::kleene_algebra"
-  and not :: "'b::kleene_algebra \<Rightarrow> 'b::kleene_algebra" ("!")
+  and not :: "'b::kleene_algebra \<Rightarrow> 'b::kleene_algebra" (\<open>!\<close>)
   assumes is_dioid_tests: "dioid_tests test not"
 
 sublocale kat \<subseteq> dioid_tests using is_dioid_tests .
@@ -129,7 +129,7 @@ sublocale kat \<subseteq> dioid_tests using is_dioid_tests .
 context kat
 begin
 
-notation test ("\<iota>")
+notation test (\<open>\<iota>\<close>)
 
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
@@ -163,7 +163,7 @@ lemma [simp]: "`!p \<cdot> p = 0`"
 lemma [simp]: "`p \<cdot> !p = 0`"
   by (metis inf_compl_bot test_bot test_inf test_not)
 
-definition hoare_triple :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool" ("\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>") where
+definition hoare_triple :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool" (\<open>\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>\<close>) where
   "\<lbrace>p\<rbrace> c \<lbrace>q\<rbrace> \<equiv> p\<cdot>c \<le> c\<cdot>q"
 
 declare hoare_triple_def[iff]
@@ -218,7 +218,7 @@ proof -
     by force
 qed
 
-definition While :: "'b \<Rightarrow> 'b \<Rightarrow> 'b" ("While _ Do _ End" [50,50] 51) where
+definition While :: "'b \<Rightarrow> 'b \<Rightarrow> 'b" (\<open>While _ Do _ End\<close> [50,50] 51) where
   "While t Do c End = (t\<cdot>c)\<^sup>\<star>\<cdot>!t"
 
 lemma hoare_while: "`\<lbrace>p \<cdot> t\<rbrace> c \<lbrace>p\<rbrace>` \<Longrightarrow> `\<lbrace>p\<rbrace> While t Do c End \<lbrace>!t \<cdot> p\<rbrace>`"
@@ -227,7 +227,7 @@ lemma hoare_while: "`\<lbrace>p \<cdot> t\<rbrace> c \<lbrace>p\<rbrace>` \<Long
 lemma [vcg]: "`\<lbrace>p \<cdot> t\<rbrace> c \<lbrace>p\<rbrace>` \<Longrightarrow> `!t \<cdot> p \<le> q` \<Longrightarrow> `\<lbrace>p\<rbrace> While t Do c End \<lbrace>q\<rbrace>`"
   by (metis hoare_weakening hoare_while order_refl test_inf test_iso_eq test_not)
 
-definition If :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b" ("If _ Then _ Else _" [50,50,50] 51) where
+definition If :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b" (\<open>If _ Then _ Else _\<close> [50,50,50] 51) where
   "If p Then c1 Else c2 \<equiv> p\<cdot>c1 + !p\<cdot>c2"
 
 lemma hoare_if [vcg]: "`\<lbrace>p \<cdot> t\<rbrace> c1 \<lbrace>q\<rbrace>` \<Longrightarrow> `\<lbrace>p \<cdot> !t\<rbrace> c2 \<lbrace>q\<rbrace>` \<Longrightarrow> `\<lbrace>p\<rbrace> If t Then c1 Else c2 \<lbrace>q\<rbrace>`"

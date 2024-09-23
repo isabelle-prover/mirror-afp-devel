@@ -31,7 +31,7 @@ interpretation ppath_aka: antidomain_kleene_algebra pp_a "(\<union>)" pp_prod pp
 text \<open>A verification component can then be built with little effort, by and large reusing
 parts of the relational components that are generic with respect to the store.\<close>      
 
-definition pp_gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store ppath set" ("_ ::= _" [70, 65] 61) where 
+definition pp_gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store ppath set" (\<open>_ ::= _\<close> [70, 65] 61) where 
   "v ::= e = {Cons s (Node (s (v := e s))) | s. True}"
 
 definition p2pp :: "'a pred \<Rightarrow> 'a ppath set" where
@@ -43,27 +43,27 @@ lemma pp_a_neg [simp]: "pp_a (p2pp Q) = p2pp (-Q)"
 lemma ppath_assign [simp]: "ppath_aka.fbox (v ::= e) (p2pp Q) = p2pp (\<lambda>s. Q (s(v := e s)))"
   by (force simp: ppath_aka.fbox_def pp_a_def p2pp_def pp_prod_def pp_gets_def)      
 
-no_notation spec_sugar ("PRE _ _ POST _" [64,64,64] 63)
-   and relcomp (infixl ";" 70)
-   and cond_sugar ("IF _ THEN _ ELSE _ FI" [64,64,64] 63)
-   and whilei_sugar ("WHILE _ INV _ DO _ OD" [64,64,64] 63)
-   and gets ("_ ::= _" [70, 65] 61)
-   and rel_antidomain_kleene_algebra.fbox ("wp")
-   and rel_antidomain_kleene_algebra.ads_d ("rdom")
-   and p2r ("\<lceil>_\<rceil>")
+no_notation spec_sugar (\<open>PRE _ _ POST _\<close> [64,64,64] 63)
+   and relcomp (infixl \<open>;\<close> 70)
+   and cond_sugar (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63)
+   and whilei_sugar (\<open>WHILE _ INV _ DO _ OD\<close> [64,64,64] 63)
+   and gets (\<open>_ ::= _\<close> [70, 65] 61)
+   and rel_antidomain_kleene_algebra.fbox (\<open>wp\<close>)
+   and rel_antidomain_kleene_algebra.ads_d (\<open>rdom\<close>)
+   and p2r (\<open>\<lceil>_\<rceil>\<close>)
 
-notation ppath_aka.fbox ("wp")
-  and ppath_aka.ads_d ("rdom")
-  and p2pp ("\<lceil>_\<rceil>")
-  and pp_prod (infixl ";" 70)
+notation ppath_aka.fbox (\<open>wp\<close>)
+  and ppath_aka.ads_d (\<open>rdom\<close>)
+  and p2pp (\<open>\<lceil>_\<rceil>\<close>)
+  and pp_prod (infixl \<open>;\<close> 70)
 
-abbreviation spec_sugar :: "'a pred \<Rightarrow> 'a ppath set \<Rightarrow> 'a pred \<Rightarrow> bool" ("PRE _ _ POST _" [64,64,64] 63) where
+abbreviation spec_sugar :: "'a pred \<Rightarrow> 'a ppath set \<Rightarrow> 'a pred \<Rightarrow> bool" (\<open>PRE _ _ POST _\<close> [64,64,64] 63) where
   "PRE P X POST Q \<equiv> rdom \<lceil>P\<rceil> \<subseteq> wp X \<lceil>Q\<rceil>"
 
-abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" ("IF _ THEN _ ELSE _ FI" [64,64,64] 63) where
+abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63) where
   "IF P THEN X ELSE Y FI \<equiv> ppath_aka.cond \<lceil>P\<rceil> X Y"
 
-abbreviation whilei_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
+abbreviation whilei_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" (\<open>WHILE _ INV _ DO _ OD\<close> [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> ppath_aka.whilei \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
 lemma [simp]: "p2pp P \<union> p2pp Q = p2pp (P \<squnion> Q)"

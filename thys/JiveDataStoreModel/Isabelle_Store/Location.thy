@@ -95,7 +95,7 @@ lemma ref_simps [simp]:
 
 text \<open>The function \<open>loc\<close> denotes the subscription of an object 
 reference with an attribute.\<close>
-primrec loc:: "Value \<Rightarrow> AttId \<Rightarrow> Location"  ("_.._" [80,80] 80)
+primrec loc:: "Value \<Rightarrow> AttId \<Rightarrow> Location"  (\<open>_.._\<close> [80,80] 80)
 where "loc (objV c a) f = objLoc (catt c f) a"
 text \<open>Note that we only define subscription properly for object references.
 For all other values we do not provide any defining equation, so they will 
@@ -107,7 +107,7 @@ primrec arr_len:: "Value \<Rightarrow> Location"
 where "arr_len (arrV T a) = arrLenLoc T a"
 
 text \<open>Arrays can be indexed by the function \<open>arr_loc\<close>.\<close>
-primrec arr_loc:: "Value \<Rightarrow> nat \<Rightarrow> Location" ("_.[_]" [80,80] 80)
+primrec arr_loc:: "Value \<Rightarrow> nat \<Rightarrow> Location" (\<open>_.[_]\<close> [80,80] 80)
 where "arr_loc (arrV T a) i = arrLoc T a i" 
 
 text \<open>The functions @{term "loc"}, @{term "arr_len"} and @{term "arr_loc"}

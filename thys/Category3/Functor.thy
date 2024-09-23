@@ -20,8 +20,8 @@ begin
   locale "functor" =
     A: category A +
     B: category B
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b" +
   assumes is_extensional: "\<not>A.arr f \<Longrightarrow> F f = B.null"
   and preserves_arr: "A.arr f \<Longrightarrow> B.arr (F f)"
@@ -30,8 +30,8 @@ begin
   and preserves_comp [iff]: "A.seq g f \<Longrightarrow> F (g \<cdot>\<^sub>A f) = F g \<cdot>\<^sub>B F f"
   begin
 
-    notation A.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
-    notation B.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    notation A.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>\<close>)
+    notation B.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
     lemma preserves_hom [intro]:
     assumes "\<guillemotleft>f : a \<rightarrow>\<^sub>A b\<guillemotright>"
@@ -111,7 +111,7 @@ begin
 
   locale endofunctor =
     "functor" A A F
-  for A :: "'a comp"     (infixr "\<cdot>" 55)
+  for A :: "'a comp"     (infixr \<open>\<cdot>\<close> 55)
   and F :: "'a \<Rightarrow> 'a"
 
   locale faithful_functor = "functor" A B F
@@ -452,8 +452,8 @@ begin
     B: category B +
     F: "functor" B A F +
     G: "functor" A B G
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'b \<Rightarrow> 'a"
   and G :: "'a \<Rightarrow> 'b" +
   assumes inv: "G o F = identity_functor.map B"
@@ -472,8 +472,8 @@ begin
   locale isomorphic_categories =
     A: category A +
     B: category B
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55) +
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55) +
   assumes iso: "\<exists>F G. inverse_functors A B F G"
 
   sublocale inverse_functors \<subseteq> isomorphic_categories A B
@@ -512,8 +512,8 @@ begin
     A: category A +
     B: category B +
     G: "functor" A B G
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and G :: "'a \<Rightarrow> 'b" +
   assumes invertible: "\<exists>F. inverse_functors A B F G"
   begin
@@ -706,13 +706,13 @@ begin
     F: "functor" A B F +
     Aop: dual_category A +
     Bop: dual_category B
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   begin
 
-    notation Aop.comp     (infixr "\<cdot>\<^sub>A\<^sup>o\<^sup>p" 55)
-    notation Bop.comp     (infixr "\<cdot>\<^sub>B\<^sup>o\<^sup>p" 55)
+    notation Aop.comp     (infixr \<open>\<cdot>\<^sub>A\<^sup>o\<^sup>p\<close> 55)
+    notation Bop.comp     (infixr \<open>\<cdot>\<^sub>B\<^sup>o\<^sup>p\<close> 55)
 
     abbreviation map
     where "map \<equiv> F"

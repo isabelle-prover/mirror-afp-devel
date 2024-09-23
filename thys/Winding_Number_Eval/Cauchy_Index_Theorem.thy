@@ -262,10 +262,10 @@ subsection \<open>Sign at a filter\<close>
  
 (*Relaxation in types could be done in the future.*)
 definition has_sgnx::"(real \<Rightarrow> real) \<Rightarrow> real \<Rightarrow> real filter \<Rightarrow> bool" 
-    (infixr "has'_sgnx" 55) where
+    (infixr \<open>has'_sgnx\<close> 55) where
   "(f has_sgnx c) F= (eventually (\<lambda>x. sgn(f x) = c) F)"    
   
-definition sgnx_able (infixr "sgnx'_able" 55) where
+definition sgnx_able (infixr \<open>sgnx'_able\<close> 55) where
   "(f sgnx_able F) = (\<exists>c. (f has_sgnx c) F)"
   
 definition sgnx where

@@ -61,7 +61,7 @@ locale HMM3 = HMM3_defs _ _ \<O>\<^sub>s \<K> + HMM2 \<O>\<^sub>s \<K> for \<O>\
 context HMM_defs
 begin
 
-no_notation (ASCII) comp  (infixl "o" 55)
+no_notation (ASCII) comp  (infixl \<open>o\<close> 55)
 
 text \<open>The ``default'' observation.\<close>
 definition

@@ -33,7 +33,7 @@ lemma Collect_eq:
 lemma iff_impI: "\<lbrakk>P \<Longrightarrow> Q = R\<rbrakk> \<Longrightarrow> (P \<longrightarrow> Q) = (P \<longrightarrow> R)" by blast
 
 definition
-  fun_app :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infixr "$" 10) where
+  fun_app :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infixr \<open>$\<close> 10) where
   "f $ x \<equiv> f x"
 
 declare fun_app_def [iff]
@@ -59,17 +59,17 @@ lemma split_apply_cong[fundef_cong]:
   by (simp add: split_def)
 
 definition
-  pred_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixl "and" 35)
+  pred_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixl \<open>and\<close> 35)
 where
   "pred_conj P Q \<equiv> \<lambda>x. P x \<and> Q x"
 
 definition
-  pred_disj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixl "or" 30)
+  pred_disj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixl \<open>or\<close> 30)
 where
   "pred_disj P Q \<equiv> \<lambda>x. P x \<or> Q x"
 
 definition
-  pred_neg :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" ("not _" [40] 40)
+  pred_neg :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (\<open>not _\<close> [40] 40)
 where
   "pred_neg P \<equiv> \<lambda>x. \<not> P x"
 

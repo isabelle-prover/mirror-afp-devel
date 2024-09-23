@@ -45,7 +45,7 @@ instance
 end
 
 definition
-  upto_enum_step :: "('a :: len) word \<Rightarrow> 'a word \<Rightarrow> 'a word \<Rightarrow> 'a word list" ("[_ , _ .e. _]")
+  upto_enum_step :: "('a :: len) word \<Rightarrow> 'a word \<Rightarrow> 'a word \<Rightarrow> 'a word list" (\<open>[_ , _ .e. _]\<close>)
 where
   "upto_enum_step a b c \<equiv>
       if c < a then [] else map (\<lambda>x. a + x * (b - a)) [0 .e. (c - a) div (b - a)]"

@@ -606,7 +606,7 @@ done
 
 definition
   Ostrowski_base :: "[_, nat \<Rightarrow> 'b \<Rightarrow> ant, nat] \<Rightarrow> (nat \<Rightarrow> 'b)"
-                             ("(\<Omega>\<^bsub>_ _ _\<^esub>)" [90,90,91]90) where
+                             (\<open>(\<Omega>\<^bsub>_ _ _\<^esub>)\<close> [90,90,91]90) where
   "Ostrowski_base K vv n = (\<lambda>j\<in>{h. h \<le> n}. (SOME x. x\<in>carrier K \<and>
                             (Ostrowski_elem K n (vv \<circ> (\<tau>\<^bsub>0 j\<^esub>)) x)))"
 
@@ -830,7 +830,7 @@ apply (frule  aGroup.ag_pOp_add_r[of "K" "1\<^sub>r \<plusminus> -\<^sub>a ((\<O
 done
 
 abbreviation
-  CHOOSE :: "[nat, nat] \<Rightarrow> nat"  ("(\<^bsub>_\<^esub>C\<^bsub>_\<^esub>)" [80, 81]80) where
+  CHOOSE :: "[nat, nat] \<Rightarrow> nat"  (\<open>(\<^bsub>_\<^esub>C\<^bsub>_\<^esub>)\<close> [80, 81]80) where
   "\<^bsub>n\<^esub>C\<^bsub>i\<^esub> == n choose i"
 
 lemma (in Ring) expansion_of_sum1:"x \<in> carrier R \<Longrightarrow> 
@@ -1412,7 +1412,7 @@ done
  
 definition
   app_lb :: "[_ , nat, nat \<Rightarrow> 'b \<Rightarrow> ant, nat \<Rightarrow> 'b, nat] \<Rightarrow> 
-            (nat \<Rightarrow> nat)"   ("(5\<Psi>\<^bsub>_ _ _ _ _\<^esub>)" [98,98,98,98,99]98) where
+            (nat \<Rightarrow> nat)"   (\<open>(5\<Psi>\<^bsub>_ _ _ _ _\<^esub>)\<close> [98,98,98,98,99]98) where
   "\<Psi>\<^bsub>K n vv x m\<^esub> = (\<lambda>j\<in>{h. h \<le> n}. (SOME L. (\<forall>N. L < N \<longrightarrow>
   (an m) \<le> (vv j (\<Sigma>\<^sub>e K (\<lambda>j\<in>{h. h \<le> n}. (x j) \<cdot>\<^sub>r\<^bsub>K\<^esub> (1\<^sub>r\<^bsub>K\<^esub> \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub>
   (1\<^sub>r\<^bsub>K\<^esub> \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub> ((\<Omega>\<^bsub>K vv n\<^esub>) j)^\<^bsup>K N\<^esup>)^\<^bsup>K N\<^esup>)) n \<plusminus>\<^bsub>K\<^esub> -\<^sub>a\<^bsub>K\<^esub> (x j))))))"
@@ -1551,7 +1551,7 @@ done
 definition
   ring_n_pd :: "[('b, 'm) Ring_scheme, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
                              nat ] \<Rightarrow> ('b, 'm) Ring_scheme"
-                 ("(3O\<^bsub>_ _ _\<^esub>)" [98,98,99]98) where
+                 (\<open>(3O\<^bsub>_ _ _\<^esub>)\<close> [98,98,99]98) where
   "O\<^bsub>K P n\<^esub> = Sr K {x. x \<in> carrier K \<and>
            (\<forall>j \<le> n. 0 \<le> ((\<nu>\<^bsub>K (P j)\<^esub>) x))}" 
   (** ring defined by n prime divisors **)
@@ -1605,7 +1605,7 @@ done
 definition
   prime_n_pd :: "[_, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
                              nat, nat] \<Rightarrow> 'b set"
-                 ("(4P\<^bsub>_ _ _\<^esub> _)" [98,98,98,99]98) where
+                 (\<open>(4P\<^bsub>_ _ _\<^esub> _)\<close> [98,98,98,99]98) where
   "P\<^bsub>K P n\<^esub> j = {x. x \<in> (carrier (O\<^bsub>K P n\<^esub>)) \<and> 0 < ((\<nu>\<^bsub>K (P j)\<^esub>) x)}"
 
 lemma (in Corps) zero_in_ring_n_pd_zero_K:"distinct_pds K n P \<Longrightarrow> 
@@ -1954,7 +1954,7 @@ definition
 
 definition
   Kbase :: "[_, nat, nat \<Rightarrow> ('r \<Rightarrow> ant) set] 
-               \<Rightarrow> (nat \<Rightarrow> 'r)" ("(3Kb\<^bsub>_ _ _\<^esub>)" [95,95,96]95) where
+               \<Rightarrow> (nat \<Rightarrow> 'r)" (\<open>(3Kb\<^bsub>_ _ _\<^esub>)\<close> [95,95,96]95) where
   "Kb\<^bsub>K n P \<^esub> = (SOME f. KbaseP K P n f)"
 
 lemma (in Corps) KbaseTr:"distinct_pds K n P \<Longrightarrow>  \<exists>f. KbaseP K P n f"
@@ -2659,7 +2659,7 @@ text\<open>We write the element
 
 definition
   mIg :: "[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
-             'b set] \<Rightarrow> 'b" ("(4mIg\<^bsub> _ _ _ _\<^esub>)" [82,82,82,83]82) where
+             'b set] \<Rightarrow> 'b" (\<open>(4mIg\<^bsub> _ _ _ _\<^esub>)\<close> [82,82,82,83]82) where
   "mIg\<^bsub>K n P I\<^esub> = \<Sigma>\<^sub>e K (\<lambda>k. (Zl_mI K P I k) \<cdot>\<^sub>r\<^bsub>K\<^esub>
              ((mprod_exp K (K_gamma k) (Kb\<^bsub>K n P\<^esub>) n)\<^bsub>K\<^esub>\<^bsup>(m_zmax_pdsI K n P I)\<^esup>)) n"
 

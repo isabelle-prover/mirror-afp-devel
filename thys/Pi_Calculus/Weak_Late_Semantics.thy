@@ -9,7 +9,7 @@ begin
 definition weakTransition :: "(pi \<times> residual) set"
   where "weakTransition \<equiv> Weak_Late_Step_Semantics.transition \<union> {x. \<exists>P. x = (P, \<tau> \<prec> P)}"
 
-abbreviation weakLateTransition_judge :: "pi \<Rightarrow> residual \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>l\<^sup>^_" [80, 80] 80)
+abbreviation weakLateTransition_judge :: "pi \<Rightarrow> residual \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sub>l\<^sup>^_\<close> [80, 80] 80)
   where "P \<Longrightarrow>\<^sub>l\<^sup>^Rs \<equiv> (P, Rs) \<in> weakTransition"
 
 lemma transitionI:

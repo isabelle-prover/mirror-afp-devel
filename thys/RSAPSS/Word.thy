@@ -35,26 +35,26 @@ lemma int_nat_two_exp: "2 ^ k = int (2 ^ k)"
 subsection \<open>Bits\<close>
 
 datatype bit =
-    Zero ("\<zero>")
-  | One ("\<one>")
+    Zero (\<open>\<zero>\<close>)
+  | One (\<open>\<one>\<close>)
 
 primrec bitval :: "bit => nat" where
     "bitval \<zero> = 0"
   | "bitval \<one> = 1"
 
-primrec bitnot :: "bit => bit"  ("\<not>\<^sub>b _" [40] 40) where
+primrec bitnot :: "bit => bit"  (\<open>\<not>\<^sub>b _\<close> [40] 40) where
     bitnot_zero: "(\<not>\<^sub>b \<zero>) = \<one>"
   | bitnot_one : "(\<not>\<^sub>b \<one>) = \<zero>"
 
-primrec bitand :: "bit => bit => bit"  (infixr "\<and>\<^sub>b" 35) where
+primrec bitand :: "bit => bit => bit"  (infixr \<open>\<and>\<^sub>b\<close> 35) where
     bitand_zero: "(\<zero> \<and>\<^sub>b y) = \<zero>"
   | bitand_one:  "(\<one> \<and>\<^sub>b y) = y"
 
-primrec bitor :: "bit => bit => bit"  (infixr "\<or>\<^sub>b" 30) where
+primrec bitor :: "bit => bit => bit"  (infixr \<open>\<or>\<^sub>b\<close> 30) where
     bitor_zero: "(\<zero> \<or>\<^sub>b y) = y"
   | bitor_one:  "(\<one> \<or>\<^sub>b y) = \<one>"
 
-primrec bitxor :: "bit => bit => bit"  (infixr "\<oplus>\<^sub>b" 30) where
+primrec bitxor :: "bit => bit => bit"  (infixr \<open>\<oplus>\<^sub>b\<close> 30) where
     bitxor_zero: "(\<zero> \<oplus>\<^sub>b y) = y"
   | bitxor_one:  "(\<one> \<oplus>\<^sub>b y) = (bitnot y)"
 

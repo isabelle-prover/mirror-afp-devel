@@ -1042,7 +1042,7 @@ qed
 text \<open>The computable variant of Else is defined next as Elsee.\<close>
 definition "toFunctionWithFallbackAlg R fallback == 
             (% x. if (x \<in> Domain R) then (R,,x) else fallback)"
-notation toFunctionWithFallbackAlg (infix "Elsee" 75) 
+notation toFunctionWithFallbackAlg (infix \<open>Elsee\<close> 75) 
 
 end
 

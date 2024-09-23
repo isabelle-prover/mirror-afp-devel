@@ -25,11 +25,11 @@ fun fv_fo_term_list :: "'a term \<Rightarrow> nat list" where
 definition fv_terms_set :: "('a term) list \<Rightarrow> nat set" where
   "fv_terms_set ts = \<Union>(set (map fv_term_set ts))"
 
-fun eval_term :: "'a val \<Rightarrow> 'a term \<Rightarrow> 'a" (infix "\<cdot>" 60) where
+fun eval_term :: "'a val \<Rightarrow> 'a term \<Rightarrow> 'a" (infix \<open>\<cdot>\<close> 60) where
   "eval_term \<sigma> (Const c) = c"
 | "eval_term \<sigma> (Var n) = \<sigma> n"
 
-definition eval_terms :: "'a val \<Rightarrow> ('a term) list \<Rightarrow> 'a list" (infix "\<odot>" 60) where
+definition eval_terms :: "'a val \<Rightarrow> ('a term) list \<Rightarrow> 'a list" (infix \<open>\<odot>\<close> 60) where
   "eval_terms \<sigma> ts = map (eval_term \<sigma>) ts"
 
 lemma finite_set_term: "finite (set_term t)"
@@ -171,10 +171,10 @@ lemma sat_fun_upd: "n \<notin> fv Q \<Longrightarrow> sat Q I (\<sigma>(n := z))
 lemma sat_exists[simp]: "sat (exists n Q) I \<sigma> = (\<exists>x. sat Q I (\<sigma>(n := x)))"
   by (auto simp add: exists_def sat_fun_upd)
 
-abbreviation eq (infix "\<approx>" 80) where
+abbreviation eq (infix \<open>\<approx>\<close> 80) where
   "x \<approx> y \<equiv> Eq x (Var y)"
 
-definition equiv (infix "\<triangleq>" 100) where
+definition equiv (infix \<open>\<triangleq>\<close> 100) where
   "Q1 \<triangleq> Q2 = (\<forall>I \<sigma>. finite (adom I) \<longrightarrow> sat Q1 I \<sigma> \<longleftrightarrow> sat Q2 I \<sigma>)"
 
 lemma equiv_refl[iff]: "Q \<triangleq> Q"
@@ -426,11 +426,11 @@ lemma Exists_in_sub_DISJ: "Exists x Q' \<in> sub (DISJ \<Q>) \<Longrightarrow> f
 
 subsection \<open>Substitution\<close>
 
-fun subst_term ("_[_ \<^bold>\<rightarrow>t _]" [90, 0, 0] 91) where
+fun subst_term (\<open>_[_ \<^bold>\<rightarrow>t _]\<close> [90, 0, 0] 91) where
   "Var z[x \<^bold>\<rightarrow>t y] = Var (if x = z then y else z)"
 | "Const c[x \<^bold>\<rightarrow>t y] = Const c"
 
-abbreviation substs_term ("_[_ \<^bold>\<rightarrow>t\<^sup>* _]" [90, 0, 0] 91) where
+abbreviation substs_term (\<open>_[_ \<^bold>\<rightarrow>t\<^sup>* _]\<close> [90, 0, 0] 91) where
   "t[xs \<^bold>\<rightarrow>t\<^sup>* ys] \<equiv> fold (\<lambda>(x, y) t. t[x \<^bold>\<rightarrow>t y]) (zip xs ys) t"
 
 lemma size_subst_term[simp]: "size (t[x \<^bold>\<rightarrow>t y]) = size t"
@@ -442,7 +442,7 @@ lemma fv_subst_term[simp]: "fv_term_set (t[x \<^bold>\<rightarrow>t y]) =
 
 definition "fresh2 x y Q = Suc (Max (insert x (insert y (fv Q))))"
 
-function (sequential) subst :: "('a, 'b) fmla \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a, 'b) fmla" ("_[_ \<^bold>\<rightarrow> _]" [90, 0, 0] 91) where
+function (sequential) subst :: "('a, 'b) fmla \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a, 'b) fmla" (\<open>_[_ \<^bold>\<rightarrow> _]\<close> [90, 0, 0] 91) where
   "Bool t[x \<^bold>\<rightarrow> y] = Bool t"
 | "Pred p ts[x \<^bold>\<rightarrow> y] = Pred p (map (\<lambda>t. t[x \<^bold>\<rightarrow>t y]) ts)"
 | "Eq z t[x \<^bold>\<rightarrow> y] = Eq (if z = x then y else z) (t[x \<^bold>\<rightarrow>t y])"
@@ -453,7 +453,7 @@ function (sequential) subst :: "('a, 'b) fmla \<Rightarrow> nat \<Rightarrow> na
     if z = y then let z' = fresh2 x y Q in Exists z' (Q[z \<^bold>\<rightarrow> z'][x \<^bold>\<rightarrow> y]) else Exists z (Q[x \<^bold>\<rightarrow> y]))"
   by pat_completeness auto
 
-abbreviation substs ("_[_ \<^bold>\<rightarrow>\<^sup>* _]" [90, 0, 0] 91) where
+abbreviation substs (\<open>_[_ \<^bold>\<rightarrow>\<^sup>* _]\<close> [90, 0, 0] 91) where
   "Q[xs \<^bold>\<rightarrow>\<^sup>* ys] \<equiv> fold (\<lambda>(x, y) Q. Q[x \<^bold>\<rightarrow> y]) (zip xs ys) Q"
 
 lemma size_subst_p[simp]: "subst_dom (Q, x, y) \<Longrightarrow> size (Q[x \<^bold>\<rightarrow> y]) = size Q"
@@ -862,7 +862,7 @@ lemma gen_sat:
 
 subsection \<open>Variable Erasure\<close>
 
-fun erase :: "('a, 'b) fmla \<Rightarrow> nat \<Rightarrow> ('a, 'b) fmla" (infix "\<^bold>\<bottom>" 65) where
+fun erase :: "('a, 'b) fmla \<Rightarrow> nat \<Rightarrow> ('a, 'b) fmla" (infix \<open>\<^bold>\<bottom>\<close> 65) where
   "Bool t \<^bold>\<bottom> x = Bool t"
 | "Pred p ts \<^bold>\<bottom> x = (if x \<in> fv_terms_set ts then Bool False else Pred p ts)"
 | "Eq z t \<^bold>\<bottom> x = (if t = Var z then Bool True else

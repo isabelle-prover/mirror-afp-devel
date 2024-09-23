@@ -2,7 +2,7 @@ theory Horn_Inference
   imports Main
 begin
 
-datatype 'a horn = horn "'a list" 'a (infix "\<rightarrow>\<^sub>h" 55)
+datatype 'a horn = horn "'a list" 'a (infix \<open>\<rightarrow>\<^sub>h\<close> 55)
 
 locale horn =
   fixes \<H> :: "'a horn set"
@@ -17,7 +17,7 @@ definition infer0 where
 definition infer1 where
   "infer1 x B = {a |as a. as \<rightarrow>\<^sub>h a \<in> \<H> \<and> x \<in> set as \<and> set as \<subseteq> B \<union> {x}}"
 
-inductive step :: "'a set \<times> 'a set \<Rightarrow> 'a set \<times> 'a set \<Rightarrow> bool" (infix "\<turnstile>" 50) where
+inductive step :: "'a set \<times> 'a set \<Rightarrow> 'a set \<times> 'a set \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 50) where
   delete: "x \<in> B \<Longrightarrow> (insert x G, B) \<turnstile> (G, B)"
 | propagate: "(insert x G, B) \<turnstile> (G \<union> infer1 x B, insert x B)"
 | refl: "(G, B) \<turnstile> (G, B)"

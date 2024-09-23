@@ -773,7 +773,7 @@ proof(induct rule: simI[of _ _ _ _ "()"])
   qed
 qed
 
-no_notation relcomp (infixr "O" 75)
+no_notation relcomp (infixr \<open>O\<close> 75)
 
 lemma bangPres:
   fixes \<Psi>   :: 'b
@@ -1161,7 +1161,7 @@ proof(induct rule: simI[of _ _ _ _ "()"])
   qed
 qed
 
-notation relcomp (infixr "O" 75)
+notation relcomp (infixr \<open>O\<close> 75)
 
 end
 

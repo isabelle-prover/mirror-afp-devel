@@ -49,8 +49,8 @@ begin
     Hom: hom_functor C S setp \<phi> +
     Ya: yoneda_functor_fixed_object C S setp \<phi> a +
     natural_isomorphism Cop.comp S \<open>Ya.Y a\<close> F \<Phi>
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and F :: "'c \<Rightarrow> 's"
@@ -77,8 +77,8 @@ begin
     Ya': yoneda_functor_fixed_object C S setp \<phi> a' +
     \<Phi>: representation_of_functor C S setp \<phi> F a \<Phi> +
     \<Phi>': representation_of_functor C S setp \<phi> F a' \<Phi>'
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
   and F :: "'c \<Rightarrow> 's"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
@@ -163,12 +163,12 @@ begin
     C: category C +
     J: category J +
     "functor" J C D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
   begin
 
-    notation J.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J _\<guillemotright>")
+    notation J.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>J _\<guillemotright>\<close>)
 
   end
  
@@ -189,8 +189,8 @@ begin
     D: diagram J C D +
     A: constant_functor J C a +
     natural_transformation J C A.map D \<chi>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
   and a :: 'c
   and \<chi> :: "'j \<Rightarrow> 'c"
@@ -395,7 +395,7 @@ begin
     interpret \<tau>o\<chi>f: vertical_composite J C \<chi>f.A.map D D' \<open>D.cones_map f \<chi>\<close> \<tau> ..
     interpret \<tau>o\<chi>_f: cone J C D' a' \<open>D'.cones_map f \<tau>o\<chi>.map\<close>
       using f \<tau>o\<chi>.cone_axioms D'.cones_map_mapsto [of f] by blast
-    write C (infixr "\<cdot>" 55)
+    write C (infixr \<open>\<cdot>\<close> 55)
     show "D'.cones_map f \<tau>o\<chi>.map = \<tau>o\<chi>f.map"
     proof (intro NaturalTransformation.eqI)
       show "natural_transformation J C \<chi>f.A.map D' (D'.cones_map f \<tau>o\<chi>.map)" ..
@@ -434,14 +434,14 @@ begin
     J: category J +
     D: diagram J C D +
     S: replete_concrete_set_category S UNIV \<iota>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and \<iota> :: "('j \<Rightarrow> 'c) \<Rightarrow> 's"
   begin
 
-    notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
+    notation S.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     abbreviation \<o> where "\<o> \<equiv> S.DN"
 
@@ -537,8 +537,8 @@ begin
     J: category J +
     D: diagram J C D +
     cone J C D a \<chi>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
   and a :: 'c
   and \<chi> :: "'j \<Rightarrow> 'c" +
@@ -686,10 +686,10 @@ begin
     Cones: cones_functor J C D S \<iota> +
     Hom: hom_functor C S \<open>\<lambda>A. A \<subseteq> S.Univ\<close> \<phi> +
     representation_of_functor C S S.setp \<phi> Cones.map a \<Phi>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and \<iota> :: "('j \<Rightarrow> 'c) \<Rightarrow> 's"
   and a :: 'c
@@ -711,10 +711,10 @@ begin
     Hom: hom_functor C S S.setp \<phi> +
     \<Phi>: representation_of_functor C S S.setp \<phi> Cones.map a \<Phi> +
     \<chi>: limit_cone J C D a \<chi>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
-  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and \<iota> :: "('j \<Rightarrow> 'c) \<Rightarrow> 's"
   and a :: 'c
@@ -753,7 +753,7 @@ begin
     interpretation CopxC: product_category Cop.comp C ..
     interpretation S: replete_setcat \<open>TYPE('c + ('j \<Rightarrow> 'c))\<close> .
 
-    notation S.comp      (infixr "\<cdot>\<^sub>S" 55)
+    notation S.comp      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
 
     interpretation Sr: replete_concrete_set_category S.comp UNIV \<open>S.UP o Inr\<close>
       apply unfold_locales
@@ -1104,7 +1104,7 @@ begin
     shows "limit_situation J C D S.comp \<phi> \<iota> a \<Phi> \<chi>"
       using \<chi>_in_terms_of_\<Phi> \<Phi>o_def by unfold_locales auto
 
-    no_notation S.comp      (infixr "\<cdot>\<^sub>S" 55)
+    no_notation S.comp      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
 
   end
 
@@ -1497,13 +1497,13 @@ begin
     C: category C +
     J: category J +
     J_C: functor_category J C
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   begin
 
-    notation J.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J _\<guillemotright>")
-    notation J_C.comp     (infixr "\<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>]" 55)
-    notation J_C.in_hom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] _\<guillemotright>")
+    notation J.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>J _\<guillemotright>\<close>)
+    notation J_C.comp     (infixr \<open>\<cdot>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>]\<close> 55)
+    notation J_C.in_hom   (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>J\<^sub>,\<^sub>C\<^sub>] _\<guillemotright>\<close>)
 
     definition map :: "'c \<Rightarrow> ('j, 'c) J_C.arr"
     where "map f = (if C.arr f then J_C.MkArr (constant_functor.map J C (C.dom f))
@@ -1873,8 +1873,8 @@ begin
     \<Delta>: diagonal_functor J C +
     "functor" J_C.comp C G +
     Adj: meta_adjunction J_C.comp C \<Delta>.map G \<phi> \<psi>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and G :: "('j, 'c) functor_category.arr \<Rightarrow> 'c"
   and \<phi> :: "'c \<Rightarrow> ('j, 'c) functor_category.arr \<Rightarrow> 'c"
   and \<psi> :: "('j, 'c) functor_category.arr \<Rightarrow> 'c \<Rightarrow> ('j, 'c) functor_category.arr" +
@@ -2403,8 +2403,8 @@ begin
 
   locale empty_diagram =
     diagram J C D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c" +
   assumes is_empty: "\<not>J.arr j"
   begin
@@ -2483,8 +2483,8 @@ begin
   locale discrete_diagram =
     J: category J +
     diagram J C D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c" +
   assumes is_discrete: "J.arr = J.ide"
   begin
@@ -2531,7 +2531,7 @@ begin
     J: discrete_category I null +
     C: category C
   for I :: "'i set"
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'i \<Rightarrow> 'c"
   and null :: 'i +
   assumes maps_to_ide: "i \<in> I \<Longrightarrow> C.ide (D i)"
@@ -2551,8 +2551,8 @@ begin
     C: category C +
     D: discrete_diagram J C D +
     limit_cone J C D a \<pi>
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and C :: "'c comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 'c"
   and a :: 'c
   and \<pi> :: "'j \<Rightarrow> 'c"
@@ -3067,14 +3067,14 @@ begin
   locale parallel_pair_diagram =
     J: parallel_pair +
     C: category C
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and f0 :: 'c
   and f1 :: 'c +
   assumes is_parallel: "C.par f0 f1"
   begin
 
-    no_notation J.comp   (infixr "\<cdot>" 55)
-    notation J.comp      (infixr "\<cdot>\<^sub>J" 55)
+    no_notation J.comp   (infixr \<open>\<cdot>\<close> 55)
+    notation J.comp      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
 
     definition map
     where "map \<equiv> (\<lambda>j. if j = J.Zero then C.dom f0
@@ -3213,7 +3213,7 @@ begin
     C: category C +
     D: parallel_pair_diagram C f0 f1 +
     limit_cone J.comp C D.map "C.dom e" "D.mkCone e"
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and f0 :: 'c
   and f1 :: 'c
   and e :: 'c
@@ -3422,12 +3422,12 @@ begin
 
   locale category_with_equalizers =
     category C
-  for C :: "'c comp"      (infixr "\<cdot>" 55) +
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55) +
   assumes has_equalizers: "has_equalizers"
   begin
 
     lemma has_limits_if_has_products:
-    fixes J :: "'j comp"  (infixr "\<cdot>\<^sub>J" 55)
+    fixes J :: "'j comp"  (infixr \<open>\<cdot>\<^sub>J\<close> 55)
     assumes "category J" and "has_products (Collect (partial_composition.ide J))"
     and "has_products (Collect (partial_composition.arr J))"
     shows "has_limits_of_shape J"
@@ -3830,13 +3830,13 @@ begin
     J: category J +
     S: set_category S is_set +
     diagram J S D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and S :: "'s comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and is_set :: "'s set \<Rightarrow> bool"
   and D :: "'j \<Rightarrow> 's"
   begin
 
-    notation S.in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation S.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     text\<open>
       An object @{term a} of a set category @{term[source=true] S} is a limit of a diagram in
@@ -4157,8 +4157,8 @@ begin
     J: category J +
     S: replete_set_category S +
     diagram J S D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and S :: "'s comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and D :: "'j \<Rightarrow> 's"
   begin
 
@@ -4382,8 +4382,8 @@ begin
     S: set_category S \<SS> +
     discrete_diagram J S D +
     diagram_in_set_category J S \<SS> D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and S :: "'s comp"      (infixr "\<cdot>" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and \<SS> :: "'s set \<Rightarrow> bool"
   and D :: "'j \<Rightarrow> 's"
   begin
@@ -4856,16 +4856,16 @@ begin
     B: category B +
     JxA: product_category J A +
     binary_functor J A B D
-  for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
-  and A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
+  and A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and D :: "'j * 'a \<Rightarrow> 'b"
   begin
 
     (* Notation for A.in_hom and B.in_hom is being inherited, but from where? *)
-    notation J.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J _\<guillemotright>")
-    notation JxA.comp     (infixr "\<cdot>\<^sub>J\<^sub>x\<^sub>A" 55)
-    notation JxA.in_hom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J\<^sub>x\<^sub>A _\<guillemotright>")
+    notation J.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>J _\<guillemotright>\<close>)
+    notation JxA.comp     (infixr \<open>\<cdot>\<^sub>J\<^sub>x\<^sub>A\<close> 55)
+    notation JxA.in_hom   (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>J\<^sub>x\<^sub>A _\<guillemotright>\<close>)
 
     text\<open>
       A choice of limit cone for each diagram \<open>D (-, a)\<close>, where @{term a}
@@ -5077,9 +5077,9 @@ begin
     B: category B +
     A_B: functor_category A B +
     diagram J A_B.comp D
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
-  and J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and J :: "'j comp"      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
   and D :: "'j \<Rightarrow> ('a, 'b) functor_category.arr"
   begin
 
@@ -5088,8 +5088,8 @@ begin
     interpretation E: evaluation_functor A B ..
     interpretation Curry: currying J A B ..
 
-    notation JxA.comp     (infixr "\<cdot>\<^sub>J\<^sub>x\<^sub>A" 55)
-    notation JxA.in_hom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J\<^sub>x\<^sub>A _\<guillemotright>")
+    notation JxA.comp     (infixr \<open>\<cdot>\<^sub>J\<^sub>x\<^sub>A\<close> 55)
+    notation JxA.in_hom   (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>J\<^sub>x\<^sub>A _\<guillemotright>\<close>)
 
     text\<open>
       Evaluation of a functor or natural transformation from @{term[source=true] J}

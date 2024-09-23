@@ -22,7 +22,7 @@ definition scaleRat_real :: "rat \<Rightarrow> real \<Rightarrow> real" where
 instance by standard (auto simp add: field_simps of_rat_mult of_rat_add)
 end
 
-abbreviation real_satisfies_constraints :: "real valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>r\<^sub>c\<^sub>s" 100) where
+abbreviation real_satisfies_constraints :: "real valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>r\<^sub>c\<^sub>s\<close> 100) where
   "v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs \<equiv> \<forall> c \<in> cs. v \<Turnstile>\<^sub>c c"
 
 definition of_rat_val :: "rat valuation \<Rightarrow> real valuation" where
@@ -104,7 +104,7 @@ qed
 
 text \<open>The main result of simplex, now using unsatisfiability over the reals.\<close>
 
-fun i_satisfies_cs_real (infixl "\<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s" 100) where
+fun i_satisfies_cs_real (infixl \<open>\<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s Simplex.restrict_to I cs"
 
 lemma simplex_index_real:

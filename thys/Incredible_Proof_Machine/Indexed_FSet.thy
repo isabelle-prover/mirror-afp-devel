@@ -30,7 +30,7 @@ lemma length_list_of_fset[simp]: "length (list_of_fset s) = size s"
 lemma nth_list_of_fset_mem[simp]: "i < size s \<Longrightarrow> list_of_fset s ! i |\<in>| s"
   by (metis fset_from_list_of_fset length_list_of_fset mem_fset_from_list nth_mem)
 
-inductive indexed_fmember :: "'a \<Rightarrow> nat \<Rightarrow> 'a fset \<Rightarrow> bool" ("_ |\<in>|\<^bsub>_\<^esub> _" [50,50,50] 50 ) where
+inductive indexed_fmember :: "'a \<Rightarrow> nat \<Rightarrow> 'a fset \<Rightarrow> bool" (\<open>_ |\<in>|\<^bsub>_\<^esub> _\<close> [50,50,50] 50 ) where
   "i < size s \<Longrightarrow> list_of_fset s ! i |\<in>|\<^bsub>i\<^esub> s"
 
 lemma indexed_fmember_is_fmember: "x |\<in>|\<^bsub>i\<^esub> s \<Longrightarrow> x |\<in>| s"
@@ -68,7 +68,7 @@ lemma mem_set_indexed_members'[simp]:
   "t \<in> set (indexed_members s) \<longleftrightarrow> snd t |\<in>|\<^bsub>fst t\<^esub> s"
   by (cases t, simp add: mem_set_indexed_members)
 
-definition fnth (infixl "|!|" 100)  where
+definition fnth (infixl \<open>|!|\<close> 100)  where
   "s |!| n = list_of_fset s ! n"
 lemma fnth_indexed_fmember: "i < size s \<Longrightarrow> s |!| i |\<in>|\<^bsub>i\<^esub> s"
   unfolding fnth_def by (rule indexed_fmember.intros)

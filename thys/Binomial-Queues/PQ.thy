@@ -53,10 +53,10 @@ proof -
   thus "p = q" by (simp add: alist_of_inverse)
 qed
 
-definition "values" :: "('a, 'b::linorder) pq \<Rightarrow> 'a list" ("|(_)|") where
+definition "values" :: "('a, 'b::linorder) pq \<Rightarrow> 'a list" (\<open>|(_)|\<close>) where
   "values q = map fst (alist_of q)"
 
-definition priorities :: "('a, 'b::linorder) pq \<Rightarrow> 'b list" ("\<parallel>(_)\<parallel>") where
+definition priorities :: "('a, 'b::linorder) pq \<Rightarrow> 'b list" (\<open>\<parallel>(_)\<parallel>\<close>) where
   "priorities q = map snd (alist_of q)"
 
 lemma values_set:
@@ -248,7 +248,7 @@ lemma pop_simps [simp]:
 hide_const (open) Abs_pq alist_of "values" priority empty is_empty push min pop
 
 no_notation
-  "PQ.values" ("|(_)|")
-  and "PQ.priorities" ("\<parallel>(_)\<parallel>")
+  "PQ.values" (\<open>|(_)|\<close>)
+  and "PQ.priorities" (\<open>\<parallel>(_)\<parallel>\<close>)
 
 end

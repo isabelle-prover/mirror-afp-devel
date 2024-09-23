@@ -251,7 +251,7 @@ primcorec Not :: "'a language \<Rightarrow> 'a language" where
   "\<oo> (Not r) = (\<not> \<oo> r)"
 | "\<dd> (Not r) = (\<lambda>a. Not (\<dd> r a))"
 
-primcorec Full :: "'a language" ("\<Sigma>\<^sup>*") where
+primcorec Full :: "'a language" (\<open>\<Sigma>\<^sup>*\<close>) where
   "\<oo> Full = True"
 | "\<dd> Full = (\<lambda>_. Full)"
 

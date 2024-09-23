@@ -13,7 +13,7 @@ theory Distributed_Distinct_Elements_Accuracy_Without_Cutoff
 begin
 
 hide_fact (open) Discrete.log_mono
-no_notation Polynomials.var ("X\<index>")
+no_notation Polynomials.var (\<open>X\<index>\<close>)
 
 locale inner_algorithm_fix_A = inner_algorithm +
   fixes A

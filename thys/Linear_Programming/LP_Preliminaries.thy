@@ -466,19 +466,19 @@ proof -
 qed
 
 
-definition mat_times_vec_leq ("[_*\<^sub>v_]\<le>_" [1000,1000,100])
+definition mat_times_vec_leq (\<open>[_*\<^sub>v_]\<le>_\<close> [1000,1000,100])
   where
     "[A *\<^sub>v x]\<le>b \<longleftrightarrow> (\<forall>i < dim_vec b. (A *\<^sub>v x)$i \<le> b$i) \<and>
                     (dim_row A = dim_vec b) \<and>
                     (dim_col A = dim_vec x)"
 
-definition vec_times_mat_eq ("[_\<^sub>v*_]=_" [1000,1000,100])
+definition vec_times_mat_eq (\<open>[_\<^sub>v*_]=_\<close> [1000,1000,100])
   where
     "[y \<^sub>v* A]=c \<longleftrightarrow> (\<forall>i < dim_vec c. (A\<^sup>T *\<^sub>v y)$i = c$i) \<and>
                     (dim_col A\<^sup>T = dim_vec y) \<and>
                     (dim_row A\<^sup>T = dim_vec c)"
 
-definition vec_times_mat_leq ("[_\<^sub>v*_]\<le>_" [1000,1000,100])
+definition vec_times_mat_leq (\<open>[_\<^sub>v*_]\<le>_\<close> [1000,1000,100])
   where
     "[y \<^sub>v* A]\<le>c \<longleftrightarrow> (\<forall>i < dim_vec c. (A\<^sup>T *\<^sub>v y)$i \<le> c$i) \<and>
                     (dim_col A\<^sup>T = dim_vec y) \<and>

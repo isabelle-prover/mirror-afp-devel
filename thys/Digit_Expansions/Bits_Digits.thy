@@ -5,7 +5,7 @@ theory Bits_Digits
 begin
 
 text \<open>We define the n-th bit of a number in base 2 representation \<close>
-definition nth_bit :: "nat \<Rightarrow> nat \<Rightarrow> nat" (infix "\<exclamdown>" 100) where
+definition nth_bit :: "nat \<Rightarrow> nat \<Rightarrow> nat" (infix \<open>\<exclamdown>\<close> 100) where
   "nth_bit num k = (num div (2 ^ k)) mod 2"
 
 lemma nth_bit_eq_of_bool_bit:

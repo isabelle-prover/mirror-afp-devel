@@ -32,8 +32,8 @@ locale fair_zipperposition_loop_wo_ghosts =
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set" and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) and
     t_empty :: 't and
     t_add_llist :: "'f inference llist \<Rightarrow> 't \<Rightarrow> 't" and
     t_remove_llist :: "'f inference llist \<Rightarrow> 't \<Rightarrow> 't" and
@@ -44,7 +44,7 @@ locale fair_zipperposition_loop_wo_ghosts =
     p_add :: "'f \<Rightarrow> 'p \<Rightarrow> 'p" and
     p_remove :: "'f \<Rightarrow> 'p \<Rightarrow> 'p" and
     p_felems :: "'p \<Rightarrow> 'f fset" and
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
 begin
 
 fun wo_ghosts_of :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_wo_ghosts_state" where
@@ -53,7 +53,7 @@ fun wo_ghosts_of :: "('t, 'p, 'f) ZLf_state \<Rightarrow> ('t, 'p, 'f) ZLf_wo_gh
 inductive
   fair_ZL_wo_ghosts ::
   "('t, 'p, 'f) ZLf_wo_ghosts_state \<Rightarrow> ('t, 'p, 'f) ZLf_wo_ghosts_state \<Rightarrow> bool"
-  (infix "\<leadsto>ZLfw" 50)
+  (infix \<open>\<leadsto>ZLfw\<close> 50)
   where
   compute_infer: "(\<exists>\<iota>s \<in># t_llists T. \<iota>s \<noteq> LNil) \<Longrightarrow> t_pick_elem T = (\<iota>0, T') \<Longrightarrow>
     \<iota>0 \<in> no_labels.Red_I (fset A \<union> {C}) \<Longrightarrow>
@@ -161,8 +161,8 @@ text \<open>This subsection was originally contributed by Andrei Popescu.\<close
 
 locale bisim =
   fixes erase :: "'state0 \<Rightarrow> 'state"
-  and R :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix "\<leadsto>" 60)
-  and R0 :: "'state0 \<Rightarrow> 'state0 \<Rightarrow> bool" (infix "\<leadsto>0" 60)
+  and R :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix \<open>\<leadsto>\<close> 60)
+  and R0 :: "'state0 \<Rightarrow> 'state0 \<Rightarrow> bool" (infix \<open>\<leadsto>0\<close> 60)
   assumes simul: "\<And>St0 St'. erase St0 \<leadsto> St' \<Longrightarrow> \<exists>St0'. erase St0' = St' \<and> St0 \<leadsto>0 St0'"
 begin
 
@@ -588,7 +588,7 @@ locale fifo_zipperposition_loop =
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) +
   fixes
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
     wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
     transp_Prec_S: "transp (\<prec>S)" and

@@ -237,7 +237,7 @@ text \<open>
 lemmas eff_simps [simp] = eff_def norm_eff_def xcpt_eff_def
 (*declare app'Invoke [simp del]*)
 
-definition phi_append :: ty\<^sub>m ("\<phi>\<^sub>a")
+definition phi_append :: ty\<^sub>m (\<open>\<phi>\<^sub>a\<close>)
 where
   "\<phi>\<^sub>a \<equiv> map (\<lambda>(x,y). Some (x, map OK y)) [ 
    (                                    [], [Class list_name, Class list_name]),
@@ -272,7 +272,7 @@ text \<open>
 
   @{prop [display] "P n"} 
 \<close>
-definition intervall :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" ("_ \<in> [_, _')")
+definition intervall :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" (\<open>_ \<in> [_, _')\<close>)
 where
   "x \<in> [a, b) \<equiv> a \<le> x \<and> x < b"
 
@@ -336,7 +336,7 @@ text \<open>Some abbreviations for readability\<close>
 abbreviation "Clist == Class list_name"
 abbreviation "Ctest == Class test_name"
 
-definition phi_makelist :: ty\<^sub>m ("\<phi>\<^sub>m")
+definition phi_makelist :: ty\<^sub>m (\<open>\<phi>\<^sub>m\<close>)
 where
   "\<phi>\<^sub>m \<equiv> map (\<lambda>(x,y). Some (x, y)) [ 
     (                                   [], [OK Ctest, Err     , Err     ]),
@@ -431,7 +431,7 @@ lemma wf_md'E:
 (*>*)
 
 text \<open>The whole program is welltyped:\<close>
-definition Phi :: ty\<^sub>P ("\<Phi>")
+definition Phi :: ty\<^sub>P (\<open>\<Phi>\<close>)
 where
   "\<Phi> C mn \<equiv> if C = test_name \<and> mn = makelist_name then \<phi>\<^sub>m else 
              if C = list_name \<and> mn = append_name then \<phi>\<^sub>a else []"

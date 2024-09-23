@@ -35,8 +35,8 @@ lemma less_min_eq2:
   "(a :: 'a :: order) > b \<Longrightarrow> min a b = b"
 by(auto simp add: min_def order_less_imp_le)
 
-no_notation floor ("\<lfloor>_\<rfloor>")
-notation Some ("(\<lfloor>_\<rfloor>)")
+no_notation floor (\<open>\<lfloor>_\<rfloor>\<close>)
+notation Some (\<open>(\<lfloor>_\<rfloor>)\<close>)
 
 (*<*)
 declare

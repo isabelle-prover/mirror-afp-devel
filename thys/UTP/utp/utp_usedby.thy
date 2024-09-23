@@ -13,7 +13,7 @@ consts
   usedBy :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 syntax
-  "_usedBy" :: "salpha \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (infix "\<natural>" 20)
+  "_usedBy" :: "salpha \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (infix \<open>\<natural>\<close> 20)
 
 syntax_consts
   "_usedBy" == usedBy

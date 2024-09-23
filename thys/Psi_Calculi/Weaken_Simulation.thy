@@ -12,7 +12,7 @@ begin
 definition
   "weakenSimulation" :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>
                          ('b \<times> ('a, 'b, 'c) psi \<times> ('a, 'b, 'c) psi) set \<Rightarrow> 
-                         ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<leadsto>\<^sub>w<_> _" [80, 80, 80, 80] 80)
+                         ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<leadsto>\<^sub>w<_> _\<close> [80, 80, 80, 80] 80)
 where
   "\<Psi> \<rhd> P \<leadsto>\<^sub>w<Rel> Q \<equiv> \<forall>\<alpha> Q'. \<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> bn \<alpha> \<sharp>* \<Psi> \<longrightarrow> bn \<alpha> \<sharp>* P \<longrightarrow> (\<exists>P'. \<Psi> \<rhd> P \<Longrightarrow>\<alpha> \<prec> P' \<and> (\<Psi>, P', Q') \<in> Rel)"
 

@@ -22,7 +22,7 @@ theory \<open>HOL-Library.Equipollence\<close> in the main library of Isabelle/H
 
 subsection\<open>\<open>veqpoll\<close>\<close>
 
-abbreviation veqpoll :: "V \<Rightarrow> V \<Rightarrow> bool" (infixl "\<approx>\<^sub>\<circ>" 50) 
+abbreviation veqpoll :: "V \<Rightarrow> V \<Rightarrow> bool" (infixl \<open>\<approx>\<^sub>\<circ>\<close> 50) 
   where "A \<approx>\<^sub>\<circ> B \<equiv> elts A \<approx> elts B"
 
 
@@ -80,7 +80,7 @@ lemma veqpoll_vpair:
 
 subsection\<open>\<open>vlepoll\<close>\<close>
 
-abbreviation vlepoll :: "V \<Rightarrow> V \<Rightarrow> bool" (infixl "\<lesssim>\<^sub>\<circ>" 50) 
+abbreviation vlepoll :: "V \<Rightarrow> V \<Rightarrow> bool" (infixl \<open>\<lesssim>\<^sub>\<circ>\<close> 50) 
   where "A \<lesssim>\<^sub>\<circ> B \<equiv> elts A \<lesssim> elts B"
 
 

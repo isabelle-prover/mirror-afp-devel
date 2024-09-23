@@ -651,7 +651,7 @@ text \<open>We define Church encodings for @{type nat} and @{type Ord}. Note tha
 abbreviation Z\<^sub>N where "Z\<^sub>N \<equiv> (\<lambda>s z. z)"
 abbreviation S\<^sub>N where "S\<^sub>N \<equiv> (\<lambda>n s z. s (n s z))"
 
-primrec fold_nat ("\<langle>_\<rangle>\<^sub>N") where
+primrec fold_nat (\<open>\<langle>_\<rangle>\<^sub>N\<close>) where
   "\<langle>0\<rangle>\<^sub>N = Z\<^sub>N"
 | "\<langle>Suc n\<rangle>\<^sub>N = S\<^sub>N \<langle>n\<rangle>\<^sub>N"
 
@@ -663,7 +663,7 @@ abbreviation Z\<^sub>O where "Z\<^sub>O \<equiv> (\<lambda>z s l. z)"
 abbreviation S\<^sub>O where "S\<^sub>O \<equiv> (\<lambda>n z s l. s (n z s l))"
 abbreviation L\<^sub>O where "L\<^sub>O \<equiv> (\<lambda>f z s l. l (\<lambda>i. f i z s l))"
 
-primrec fold_Ord ("\<langle>_\<rangle>\<^sub>O") where
+primrec fold_Ord (\<open>\<langle>_\<rangle>\<^sub>O\<close>) where
   "\<langle>Z\<rangle>\<^sub>O = Z\<^sub>O"
 | "\<langle>S n\<rangle>\<^sub>O = S\<^sub>O \<langle>n\<rangle>\<^sub>O"
 | "\<langle>L f\<rangle>\<^sub>O = L\<^sub>O (\<lambda>i. \<langle>f i\<rangle>\<^sub>O)"

@@ -49,7 +49,7 @@ qed
 
 
 
-definition closure_cfinite :: "'a set set \<Rightarrow> 'a set set" ("_⁻" [1000] 999) where
+definition closure_cfinite :: "'a set set \<Rightarrow> 'a set set" (\<open>_⁻\<close> [1000] 999) where
   "\<C>⁻ = {S. \<forall>S'. S' \<subseteq> S \<longrightarrow> finite S' \<longrightarrow> S' \<in> \<C>}"
 
 

@@ -79,15 +79,15 @@ using assms by (simp add: pflat_len_def)
 section \<open>Orderings\<close>
 
 
-definition prefix_list:: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<sqsubseteq>pre _" [60,59] 60)
+definition prefix_list:: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<sqsubseteq>pre _\<close> [60,59] 60)
 where
   "ps1 \<sqsubseteq>pre ps2 \<equiv> \<exists>ps'. ps1 @ps' = ps2"
 
-definition sprefix_list:: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<sqsubset>spre _" [60,59] 60)
+definition sprefix_list:: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<sqsubset>spre _\<close> [60,59] 60)
 where
   "ps1 \<sqsubset>spre ps2 \<equiv> ps1 \<sqsubseteq>pre ps2 \<and> ps1 \<noteq> ps2"
 
-inductive lex_list :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" ("_ \<sqsubset>lex _" [60,59] 60)
+inductive lex_list :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" (\<open>_ \<sqsubset>lex _\<close> [60,59] 60)
 where
   "[] \<sqsubset>lex (p#ps)"
 | "ps1 \<sqsubset>lex ps2 \<Longrightarrow> (p#ps1) \<sqsubset>lex (p#ps2)"
@@ -131,7 +131,7 @@ done
 section \<open>POSIX Ordering of Values According to Okui \& Suzuki\<close>
 
 
-definition PosOrd:: "'a val \<Rightarrow> nat list \<Rightarrow> 'a val \<Rightarrow> bool" ("_ \<sqsubset>val _ _" [60, 60, 59] 60)
+definition PosOrd:: "'a val \<Rightarrow> nat list \<Rightarrow> 'a val \<Rightarrow> bool" (\<open>_ \<sqsubset>val _ _\<close> [60, 60, 59] 60)
 where
   "v1 \<sqsubset>val p v2 \<equiv> pflat_len v1 p > pflat_len v2 p \<and>
                    (\<forall>q \<in> Pos v1 \<union> Pos v2. q \<sqsubset>lex p \<longrightarrow> pflat_len v1 q = pflat_len v2 q)"
@@ -146,11 +146,11 @@ apply(auto)
 done
 
 
-definition PosOrd_ex:: "'a val \<Rightarrow> 'a val \<Rightarrow> bool" ("_ :\<sqsubset>val _" [60, 59] 60)
+definition PosOrd_ex:: "'a val \<Rightarrow> 'a val \<Rightarrow> bool" (\<open>_ :\<sqsubset>val _\<close> [60, 59] 60)
 where
   "v1 :\<sqsubset>val v2 \<equiv> \<exists>p. v1 \<sqsubset>val p v2"
 
-definition PosOrd_ex_eq:: "'a val \<Rightarrow> 'a val \<Rightarrow> bool" ("_ :\<sqsubseteq>val _" [60, 59] 60)
+definition PosOrd_ex_eq:: "'a val \<Rightarrow> 'a val \<Rightarrow> bool" (\<open>_ :\<sqsubseteq>val _\<close> [60, 59] 60)
 where
   "v1 :\<sqsubseteq>val v2 \<equiv> v1 :\<sqsubset>val v2 \<or> v1 = v2"
 

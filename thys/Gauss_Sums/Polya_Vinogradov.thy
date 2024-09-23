@@ -663,8 +663,8 @@ theorem (in dcharacter) polya_vinogradov_inequality_explicit:
   assumes nonprincipal: "\<chi> \<noteq> principal_dchar n"
   shows   "norm (sum \<chi> {1..x}) < sqrt conductor * ln conductor * divisor_count (n div conductor)"
 proof -
-  write primitive_extension ("\<Phi>")
-  write conductor ("c")
+  write primitive_extension (\<open>\<Phi>\<close>)
+  write conductor (\<open>c\<close>)
   interpret \<Phi>: primitive_dchar c "residue_mult_group c" primitive_extension
     using primitive_primitive_extension nonprincipal by metis
 

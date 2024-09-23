@@ -8,10 +8,10 @@ This is the actual denotational semantics as found in \<^cite>\<open>"launchbury
 
 interpretation semantic_domain Fn Fn_project B B_project "(\<Lambda> x. x)".
 
-notation ESem_syn ("\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>"  [60,60] 60)
-notation EvalHeapSem_syn  ("\<^bold>\<lbrakk> _ \<^bold>\<rbrakk>\<^bsub>_\<^esub>"  [0,0] 110)
-notation HSem_syn ("\<lbrace>_\<rbrace>_"  [60,60] 60)
-notation AHSem_bot ("\<lbrace>_\<rbrace>"  [60] 60)
+notation ESem_syn (\<open>\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>\<close>  [60,60] 60)
+notation EvalHeapSem_syn  (\<open>\<^bold>\<lbrakk> _ \<^bold>\<rbrakk>\<^bsub>_\<^esub>\<close>  [0,0] 110)
+notation HSem_syn (\<open>\<lbrace>_\<rbrace>_\<close>  [60,60] 60)
+notation AHSem_bot (\<open>\<lbrace>_\<rbrace>\<close>  [60] 60)
 
 lemma ESem_simps_as_defined:
   "\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>\<^esub> =  Fn\<cdot>(\<Lambda> v. \<lbrakk> e \<rbrakk>\<^bsub>(\<rho> f|` (fv (Lam [x].e)))(x := v)\<^esub>)"

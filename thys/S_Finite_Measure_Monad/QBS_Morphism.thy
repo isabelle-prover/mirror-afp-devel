@@ -9,7 +9,7 @@ imports
 
 begin
 
-abbreviation qbs_morphism :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) set" (infixr "\<rightarrow>\<^sub>Q" 60) where 
+abbreviation qbs_morphism :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) set" (infixr \<open>\<rightarrow>\<^sub>Q\<close> 60) where 
   "X \<rightarrow>\<^sub>Q Y \<equiv> qbs_space (X \<Rightarrow>\<^sub>Q Y)"
 
 lemma qbs_morphismI: "(\<And>\<alpha>. \<alpha> \<in> qbs_Mx X \<Longrightarrow> f \<circ> \<alpha> \<in> qbs_Mx Y) \<Longrightarrow> f \<in> X \<rightarrow>\<^sub>Q Y"
@@ -96,7 +96,7 @@ lemma qbs_morphism_from_empty: "qbs_space X = {} \<Longrightarrow> f \<in> X \<r
 lemma unit_quasi_borel_terminal: "\<exists>! f. f \<in> X \<rightarrow>\<^sub>Q unit_quasi_borel"
   by(fastforce simp: qbs_morphism_def)
 
-definition to_unit_quasi_borel :: "'a \<Rightarrow> unit" ("!\<^sub>Q") where
+definition to_unit_quasi_borel :: "'a \<Rightarrow> unit" (\<open>!\<^sub>Q\<close>) where
 "to_unit_quasi_borel \<equiv> (\<lambda>r.())"
 
 lemma to_unit_quasi_borel_morphism:

@@ -530,13 +530,13 @@ structures through the simulation.
 
 \<close>
 
-abbreviation jkbpCSn :: "nat \<Rightarrow> 'ss set"(*<*)("jkbpCS\<^bsub>_\<^esub>")(*>*) where
+abbreviation jkbpCSn :: "nat \<Rightarrow> 'ss set"(*<*)(\<open>jkbpCS\<^bsub>_\<^esub>\<close>)(*>*) where
   "jkbpCS\<^bsub>n\<^esub> \<equiv> simf ` jkbpC\<^bsub>n\<^esub>"
 
 abbreviation jkbpCS :: "'ss set" where
   "jkbpCS \<equiv> simf ` jkbpC"
 
-abbreviation MCSn :: "nat \<Rightarrow> ('a, 'p, 'ss) KripkeStructure"(*<*)("MCS\<^bsub>_\<^esub>")(*>*) where
+abbreviation MCSn :: "nat \<Rightarrow> ('a, 'p, 'ss) KripkeStructure"(*<*)(\<open>MCS\<^bsub>_\<^esub>\<close>)(*>*) where
   "MCS\<^bsub>n\<^esub> \<equiv> mkKripke jkbpCS\<^bsub>n\<^esub> simRels simVal"
 
 abbreviation MCS :: "('a, 'p, 'ss) KripkeStructure" where

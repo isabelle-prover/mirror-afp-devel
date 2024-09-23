@@ -55,7 +55,7 @@ schematic_goal ZF_choice_auto:
 synthesize "ZF_choice_fm" from_schematic ZF_choice_auto
 
 syntax
-  "_choice" :: "i"  ("AC")
+  "_choice" :: "i"  (\<open>AC\<close>)
 syntax_consts
   "_choice" \<rightleftharpoons> ZF_choice_fm
 translations
@@ -468,7 +468,7 @@ lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
   
 txt\<open>Satisfaction of a set of sentences\<close>
 definition
-  satT :: "[i,i] \<Rightarrow> o"  ("_ \<Turnstile> _" [36,36] 60) where
+  satT :: "[i,i] \<Rightarrow> o"  (\<open>_ \<Turnstile> _\<close> [36,36] 60) where
   "A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. (A,[] \<Turnstile> \<phi>)"
 
 lemma satTI [intro!]: 

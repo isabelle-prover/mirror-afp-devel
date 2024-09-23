@@ -184,7 +184,7 @@ lemma divides_ff_trans:
 lemma divides_ff_mult_right: "a \<noteq> 0 \<Longrightarrow> divides_ff (x * inverse a) y \<Longrightarrow> divides_ff x (a * y)"
   unfolding divides_ff_def divide_inverse[symmetric] by auto
 
-definition eq_dff :: "'a :: ufd fract \<Rightarrow> 'a fract \<Rightarrow> bool" (infix "=dff" 50) where
+definition eq_dff :: "'a :: ufd fract \<Rightarrow> 'a fract \<Rightarrow> bool" (infix \<open>=dff\<close> 50) where
   "x =dff y \<longleftrightarrow> divides_ff x y \<and> divides_ff y x"
 
 lemma eq_dffI[intro]: "divides_ff x y \<Longrightarrow> divides_ff y x \<Longrightarrow> x =dff y" 

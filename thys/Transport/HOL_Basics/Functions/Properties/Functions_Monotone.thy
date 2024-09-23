@@ -20,25 +20,25 @@ consts mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 bundle dep_mono_wrt_syntax begin
 syntax
-  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr "\<Rightarrow>" 50)
+  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>\<Rightarrow>\<close> 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)" [51, 51, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50] 50)
   "_dep_mono_wrt_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)" [51, 51, 50, 50, 50] 50)
-  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("'(_/ :/ _') \<Rightarrow> (_)" [51, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50, 50] 50)
+  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>'(_/ :/ _') \<Rightarrow> (_)\<close> [51, 50, 50] 50)
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [51, 50, 50, 50] 50)
+    (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
 bundle no_dep_mono_wrt_syntax begin
 no_syntax
-  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr "\<Rightarrow>" 50)
+  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>\<Rightarrow>\<close> 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)" [51, 51, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50] 50)
   "_dep_mono_wrt_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)" [51, 51, 50, 50, 50] 50)
-  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("'(_/ :/ _') \<Rightarrow> (_)" [51, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50, 50] 50)
+  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>'(_/ :/ _') \<Rightarrow> (_)\<close> [51, 50, 50] 50)
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    ("'(_/ :/ _/ |/ _') \<Rightarrow> (_)" [51, 50, 50, 50] 50)
+    (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
 unbundle dep_mono_wrt_syntax
 syntax_consts

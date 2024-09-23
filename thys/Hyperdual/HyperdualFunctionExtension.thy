@@ -47,7 +47,7 @@ text\<open>
   The extension can be used to extract the function value, and first and second derivatives at x
   when applied to @{term "x *\<^sub>H re + e1 + e2 + 0 *\<^sub>H e12"}, which we denote by @{term "\<beta> x"}.
 \<close>
-definition hyperdualx :: "('a :: real_normed_field) \<Rightarrow> 'a hyperdual" ("\<beta>")
+definition hyperdualx :: "('a :: real_normed_field) \<Rightarrow> 'a hyperdual" (\<open>\<beta>\<close>)
   where "\<beta> x = (Hyperdual x 1 1 0)"
 
 lemma hyperdualx_sel [simp]:

@@ -10,7 +10,7 @@ section \<open>Eudoxus Reals\<close>
 subsection \<open>Type Definition\<close>
 
 text \<open>Two slopes are said to be equivalent if their difference is bounded.\<close>
-definition eudoxus_rel :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int) \<Rightarrow> bool" (infix "\<sim>\<^sub>e" 50) where 
+definition eudoxus_rel :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int) \<Rightarrow> bool" (infix \<open>\<sim>\<^sub>e\<close> 50) where 
   "f \<sim>\<^sub>e g \<equiv> slope f \<and> slope g \<and> bounded (\<lambda>n. f n - g n)"
 
 lemma eudoxus_rel_equivp:
@@ -106,7 +106,7 @@ lemma zero_iff_bounded': "x = 0 \<longleftrightarrow> bounded (rep_real x)" by (
 
 lemma zero_def: "0 = abs_real (\<lambda>_. 0)" unfolding zero_real_def by simp
 
-definition eudoxus_plus :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int)" (infixl "+\<^sub>e" 60) where
+definition eudoxus_plus :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int)" (infixl \<open>+\<^sub>e\<close> 60) where
   "(f :: int \<Rightarrow> int) +\<^sub>e g = (\<lambda>z. f z + g z)"
 
 declare slope_add[intro, simp]
@@ -126,7 +126,7 @@ lemma abs_real_plus[simp]:
   shows "abs_real f + abs_real g = abs_real (f +\<^sub>e g)"
   using assms unfolding plus_real_def by auto
 
-definition eudoxus_uminus :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int)" ("-\<^sub>e") where
+definition eudoxus_uminus :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int)" (\<open>-\<^sub>e\<close>) where
   "-\<^sub>e (f :: int \<Rightarrow> int) = (\<lambda>x. - f x)"
 
 declare slope_uminus'[intro, simp]
@@ -181,7 +181,7 @@ declare slope_one[intro!, simp]
 
 lemma one_def: "1 = abs_real id" unfolding one_real_def by simp
 
-definition eudoxus_times :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> int" (infixl "*\<^sub>e" 60) where
+definition eudoxus_times :: "(int \<Rightarrow> int) \<Rightarrow> (int \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> int" (infixl \<open>*\<^sub>e\<close> 60) where
   "f *\<^sub>e g = f o g"
 
 declare slope_comp[intro, simp]

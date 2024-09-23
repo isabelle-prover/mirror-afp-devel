@@ -9,7 +9,7 @@ domain Value = Fn (lazy "Value \<rightarrow> Value") | B (lazy "bool discr")
 fixrec Fn_project :: "Value \<rightarrow> Value \<rightarrow> Value"
  where "Fn_project\<cdot>(Fn\<cdot>f) = f"
 
-abbreviation Fn_project_abbr (infix "\<down>Fn" 55)
+abbreviation Fn_project_abbr (infix \<open>\<down>Fn\<close> 55)
   where "f \<down>Fn v \<equiv> Fn_project\<cdot>f\<cdot>v"
 
 lemma [simp]:

@@ -12,8 +12,8 @@ These designs are a type of t-design, where $t = 2$\<close>
 
 subsection \<open>BIBD Basics\<close>
 locale bibd = t_design \<V> \<B> \<k> 2 \<Lambda> 
-  for point_set ("\<V>") and block_collection ("\<B>") 
-    and u_block_size ("\<k>") and index ("\<Lambda>")
+  for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) 
+    and u_block_size (\<open>\<k>\<close>) and index (\<open>\<Lambda>\<close>)
 
 begin
 
@@ -316,11 +316,11 @@ text \<open>A derived bibd takes a block from a valid bibd as the new point sets
 of that block with other blocks as it's block set\<close>
 
 locale bibd_block_transformations = bibd + 
-  fixes block :: "'a set" ("bl")
+  fixes block :: "'a set" (\<open>bl\<close>)
   assumes valid_block: "bl \<in># \<B>"
 begin
 
-definition derived_blocks :: "'a set multiset" ("(\<B>\<^sup>D)") where 
+definition derived_blocks :: "'a set multiset" (\<open>(\<B>\<^sup>D)\<close>) where 
 "\<B>\<^sup>D \<equiv> {# bl \<inter> b . b \<in># (\<B> - {#bl#}) #}"
 
 lemma derive_define_flip: "{# b \<inter> bl . b \<in># (\<B> - {#bl#}) #} = \<B>\<^sup>D"
@@ -385,7 +385,7 @@ subsubsection \<open>Residual Designs\<close>
 text \<open>Similar to derived designs, a residual design takes the complement of a block bl as it's new
 point set, and the complement of all other blocks with respect to bl.\<close>
 
-definition residual_blocks :: "'a set multiset" ("(\<B>\<^sup>R)") where
+definition residual_blocks :: "'a set multiset" (\<open>(\<B>\<^sup>R)\<close>) where
 "\<B>\<^sup>R \<equiv> {# b - bl . b \<in># (\<B> - {#bl#}) #}" 
 
 lemma residual_order: "card (bl\<^sup>c) = \<v> - \<k>" 

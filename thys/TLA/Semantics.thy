@@ -79,19 +79,19 @@ subsubsection "Concrete Syntax"
 text\<open>This is the concrete syntax for the (abstract) operators above.\<close>
 
 syntax
- "_always" :: "lift \<Rightarrow> lift" ("(\<box>_)" [90] 90) 
- "_nexts" :: "lift \<Rightarrow> lift" ("(\<circle>_)" [90] 90) 
- "_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<box>[_]'_(_))" [20,1000] 90)
- "_before"    :: "lift \<Rightarrow> lift"  ("($_)" [100] 99)
- "_after"     :: "lift \<Rightarrow> lift"  ("(_$)" [100] 99)
- "_prime"     :: "lift \<Rightarrow> lift"  ("(_`)" [100] 99)  
- "_unch"     :: "lift \<Rightarrow> lift"  ("(Unchanged _)" [100] 99) 
- "TEMP"  :: "lift \<Rightarrow> 'b" ("(TEMP _)")
+ "_always" :: "lift \<Rightarrow> lift" (\<open>(\<box>_)\<close> [90] 90) 
+ "_nexts" :: "lift \<Rightarrow> lift" (\<open>(\<circle>_)\<close> [90] 90) 
+ "_action" :: "[lift,lift] \<Rightarrow> lift" (\<open>(\<box>[_]'_(_))\<close> [20,1000] 90)
+ "_before"    :: "lift \<Rightarrow> lift"  (\<open>($_)\<close> [100] 99)
+ "_after"     :: "lift \<Rightarrow> lift"  (\<open>(_$)\<close> [100] 99)
+ "_prime"     :: "lift \<Rightarrow> lift"  (\<open>(_`)\<close> [100] 99)  
+ "_unch"     :: "lift \<Rightarrow> lift"  (\<open>(Unchanged _)\<close> [100] 99) 
+ "TEMP"  :: "lift \<Rightarrow> 'b" (\<open>(TEMP _)\<close>)
 
 syntax (ASCII)
- "_always" :: "lift \<Rightarrow> lift" ("([]_)" [90] 90)
- "_nexts" :: "lift \<Rightarrow> lift" ("(Next _)" [90] 90)
- "_action" :: "[lift,lift] \<Rightarrow> lift" ("([][_]'_(_))" [20,1000] 90)
+ "_always" :: "lift \<Rightarrow> lift" (\<open>([]_)\<close> [90] 90)
+ "_nexts" :: "lift \<Rightarrow> lift" (\<open>(Next _)\<close> [90] 90)
+ "_action" :: "[lift,lift] \<Rightarrow> lift" (\<open>([][_]'_(_))\<close> [20,1000] 90)
 
 translations
  "_always" \<rightleftharpoons> "CONST always"
@@ -126,17 +126,17 @@ where "leadsto P Q \<equiv> LIFT \<box>(P \<longrightarrow> eventually Q)"
 subsubsection "Concrete Syntax"
 
 syntax (ASCII)
-  "_actrans" :: "[lift,lift] \<Rightarrow> lift" ("([_]'_(_))"  [20,1000] 90)
-  "_eventually" :: "lift \<Rightarrow> lift" ("(<>_)" [90] 90)
-  "_angle_action" :: "[lift,lift] \<Rightarrow> lift" ("(<><_>'_(_))" [20,1000] 90)
-  "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" ("(<_>'_(_))" [20,1000] 90)
-  "_leadsto" :: "[lift,lift] \<Rightarrow> lift" ("(_ ~> _)" [26,25] 25)
+  "_actrans" :: "[lift,lift] \<Rightarrow> lift" (\<open>([_]'_(_))\<close>  [20,1000] 90)
+  "_eventually" :: "lift \<Rightarrow> lift" (\<open>(<>_)\<close> [90] 90)
+  "_angle_action" :: "[lift,lift] \<Rightarrow> lift" (\<open>(<><_>'_(_))\<close> [20,1000] 90)
+  "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" (\<open>(<_>'_(_))\<close> [20,1000] 90)
+  "_leadsto" :: "[lift,lift] \<Rightarrow> lift" (\<open>(_ ~> _)\<close> [26,25] 25)
 
 syntax
-  "_eventually" :: "lift \<Rightarrow> lift" ("(\<diamond>_)" [90] 90)
-  "_angle_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<diamond>\<langle>_\<rangle>'_(_))" [20,1000] 90)
-  "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" ("(\<langle>_\<rangle>'_(_))" [20,1000] 90)
-  "_leadsto" :: "[lift,lift] \<Rightarrow> lift" ("(_ \<leadsto> _)" [26,25] 25)
+  "_eventually" :: "lift \<Rightarrow> lift" (\<open>(\<diamond>_)\<close> [90] 90)
+  "_angle_action" :: "[lift,lift] \<Rightarrow> lift" (\<open>(\<diamond>\<langle>_\<rangle>'_(_))\<close> [20,1000] 90)
+  "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" (\<open>(\<langle>_\<rangle>'_(_))\<close> [20,1000] 90)
+  "_leadsto" :: "[lift,lift] \<Rightarrow> lift" (\<open>(_ \<leadsto> _)\<close> [26,25] 25)
 
 translations 
   "_actrans" \<rightleftharpoons> "CONST actrans"
@@ -205,8 +205,8 @@ definition nstutinv :: "('a,'b) formfun \<Rightarrow> bool"
 where "nstutinv P \<equiv> \<forall> \<sigma> \<tau>. (first \<sigma> = first \<tau>) \<and> (tail \<sigma>) \<approx> (tail \<tau>) \<longrightarrow> (\<sigma> \<Turnstile> P) = (\<tau> \<Turnstile> P)"
 
 syntax
-  "_stutinv" :: "lift \<Rightarrow> bool" ("(STUTINV _)" [40] 40)
-  "_nstutinv" :: "lift \<Rightarrow> bool" ("(NSTUTINV _)" [40] 40)
+  "_stutinv" :: "lift \<Rightarrow> bool" (\<open>(STUTINV _)\<close> [40] 40)
+  "_nstutinv" :: "lift \<Rightarrow> bool" (\<open>(NSTUTINV _)\<close> [40] 40)
 
 translations
   "_stutinv" \<rightleftharpoons> "CONST stutinv"

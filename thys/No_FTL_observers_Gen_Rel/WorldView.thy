@@ -28,7 +28,7 @@ begin
 class WorldView = Points + 
 fixes
 (* Worldview relation *)
-  W :: "Body \<Rightarrow> Body \<Rightarrow> 'a Point \<Rightarrow> bool" ("_ sees _ at _")
+  W :: "Body \<Rightarrow> Body \<Rightarrow> 'a Point \<Rightarrow> bool" (\<open>_ sees _ at _\<close>)
 begin
 
 abbreviation ev :: "Body \<Rightarrow> 'a Point \<Rightarrow> Body set"

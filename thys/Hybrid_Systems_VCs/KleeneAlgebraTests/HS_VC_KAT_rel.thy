@@ -36,16 +36,16 @@ text \<open> Lemmas for manipulation of predicates in the relational model \<clo
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-notation Id ("skip")
-     and empty ("abort")
-     and relcomp (infixr ";" 75)
+notation Id (\<open>skip\<close>)
+     and empty (\<open>abort\<close>)
+     and relcomp (infixr \<open>;\<close> 75)
 
-no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
-        and Archimedean_Field.floor_ceiling_class.floor ("\<lfloor>_\<rfloor>")
-        and tau ("\<tau>")
-        and n_op ("n _" [90] 91)
+no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
+        and Archimedean_Field.floor_ceiling_class.floor (\<open>\<lfloor>_\<rfloor>\<close>)
+        and tau (\<open>\<tau>\<close>)
+        and n_op (\<open>n _\<close> [90] 91)
 
-definition p2r :: "'a pred \<Rightarrow> 'a rel" ("\<lceil>_\<rceil>") where
+definition p2r :: "'a pred \<Rightarrow> 'a rel" (\<open>\<lceil>_\<rceil>\<close>) where
   "\<lceil>P\<rceil> = {(s,s) |s. P s}"
 
 lemma p2r_simps[simp]: 
@@ -65,7 +65,7 @@ lemma RdL_is_rRKAT: "(\<forall>x. {(x,x)}; R1 \<subseteq> {(x,x)}; R2) = (R1 \<s
 
 \<comment> \<open> Hoare Triples \<close>
 
-abbreviation relHoare ("\<^bold>{_\<^bold>}_\<^bold>{_\<^bold>}") 
+abbreviation relHoare (\<open>\<^bold>{_\<^bold>}_\<^bold>{_\<^bold>}\<close>) 
   where "\<^bold>{P\<^bold>}X\<^bold>{Q\<^bold>} \<equiv> rel_kat.Hoare \<lceil>P\<rceil> X \<lceil>Q\<rceil>"
 
 lemma rel_kat_H: "\<^bold>{P\<^bold>} X \<^bold>{Q\<^bold>} \<longleftrightarrow> (\<forall>s s'. P s \<longrightarrow> (s,s') \<in> X \<longrightarrow> Q s')"
@@ -94,7 +94,7 @@ lemma H_abort: "\<^bold>{P\<^bold>} abort \<^bold>{Q\<^bold>}"
 
 \<comment> \<open> Assignments \<close>
 
-definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) rel" ("(2_ ::= _)" [70, 65] 61) 
+definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) rel" (\<open>(2_ ::= _)\<close> [70, 65] 61) 
   where "(x ::= e) \<equiv> {(s, vec_upd s x (e s))| s. True}" 
 
 lemma sH_assign[simp]: "\<^bold>{P\<^bold>} (x ::= e) \<^bold>{Q\<^bold>} \<longleftrightarrow> (\<forall>s. P s \<longrightarrow> Q (\<chi> j. ((($) s)(x := (e s))) j))"
@@ -105,7 +105,7 @@ lemma H_assign: "P = (\<lambda>s. Q (\<chi> j. ((($) s)(x := (e s))) j)) \<Longr
 
 \<comment> \<open> Nondeterministic assignments \<close>
 
-definition nondet_assign :: "'b \<Rightarrow> ('a^'b) rel" ("(2_ ::= ? )" [70] 61)
+definition nondet_assign :: "'b \<Rightarrow> ('a^'b) rel" (\<open>(2_ ::= ? )\<close> [70] 61)
   where "(x ::= ?) = {(s,vec_upd s x k)|s k. True}"
 
 lemma sH_nondet_assign[simp]: 
@@ -141,7 +141,7 @@ lemma H_choice: "\<^bold>{P\<^bold>} X \<^bold>{Q\<^bold>} \<Longrightarrow> \<^
 \<comment> \<open> Conditional Statement \<close>
 
 abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" 
-  ("IF _ THEN _ ELSE _" [64,64] 63) 
+  (\<open>IF _ THEN _ ELSE _\<close> [64,64] 63) 
   where "IF B THEN X ELSE Y \<equiv> rel_kat.kat_cond \<lceil>B\<rceil> X Y"
 
 lemma sH_cond[simp]: 
@@ -155,7 +155,7 @@ lemma H_cond:
 \<comment> \<open> While Loop \<close>
 
 abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" 
-  ("WHILE _ INV _ DO _" [64,64,64] 63) 
+  (\<open>WHILE _ INV _ DO _\<close> [64,64,64] 63) 
   where "WHILE B INV I DO X \<equiv> rel_kat.kat_while_inv \<lceil>B\<rceil> \<lceil>I\<rceil> X"
 
 lemma sH_whileI: "\<forall>s. P s \<longrightarrow> I s \<Longrightarrow> \<forall>s. I s \<and> \<not> B s \<longrightarrow> Q s \<Longrightarrow> \<^bold>{\<lambda>s. I s \<and> B s\<^bold>} X \<^bold>{I\<^bold>} 
@@ -168,7 +168,7 @@ lemma "\<^bold>{\<lambda>s. P s \<and> B s\<^bold>} X \<^bold>{\<lambda>s. P s\<
 
 \<comment> \<open> Finite Iteration \<close>
 
-abbreviation loopi_sugar :: "'a rel \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("LOOP _ INV _ " [64,64] 63)
+abbreviation loopi_sugar :: "'a rel \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>LOOP _ INV _ \<close> [64,64] 63)
   where "LOOP X INV I \<equiv> rel_kat.kat_loop_inv X \<lceil>I\<rceil>"
 
 lemma H_loop: "\<^bold>{P\<^bold>} X \<^bold>{P\<^bold>} \<Longrightarrow> \<^bold>{P\<^bold>} (LOOP X INV I) \<^bold>{P\<^bold>}"
@@ -182,7 +182,7 @@ subsubsection \<open> Evolution commands \<close>
 
 \<comment> \<open>Verification by providing evolution\<close>
 
-definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b rel" ("EVOL")
+definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b rel" (\<open>EVOL\<close>)
   where "EVOL \<phi> G U = {(s,s') |s s'. s' \<in> g_orbit (\<lambda>t. \<phi> t s) G (U s)}"
 
 lemma sH_g_evol[simp]:  
@@ -199,7 +199,7 @@ lemma H_g_evol:
 \<comment> \<open>Verification by providing solutions\<close>
 
 definition g_ode :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> real \<Rightarrow> 
-  'a rel" ("(1x\<acute>=_ & _ on _ _ @ _)") 
+  'a rel" (\<open>(1x\<acute>=_ & _ on _ _ @ _)\<close>) 
   where "(x\<acute>= f & G on T S @ t\<^sub>0) = {(s,s') |s s'. s' \<in> g_orbital f G T S t\<^sub>0 s}"
 
 lemma H_g_orbital: 
@@ -262,7 +262,7 @@ end
 \<comment> \<open> Verification with differential invariants \<close>
 
 definition g_ode_inv :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("(1x\<acute>=_ & _ on _ _ @ _ DINV _ )") 
+  real \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>(1x\<acute>=_ & _ on _ _ @ _ DINV _ )\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0 DINV I) = (x\<acute>= f & G on U S @ t\<^sub>0)"
 
 lemma sH_g_orbital_guard: 
@@ -500,10 +500,10 @@ subsection \<open> Derivation of the rules of dL \<close>
 text \<open> We derive rules of differential dynamic logic (dL). This allows the components to reason 
 in the style of that logic. \<close>
 
-abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("(1x\<acute>=_ & _)") 
+abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>(1x\<acute>=_ & _)\<close>) 
   where "(x\<acute>=f & G) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0)"
 
-abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel" ("(1x\<acute>=_ & _ DINV _)") 
+abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel" (\<open>(1x\<acute>=_ & _ DINV _)\<close>) 
   where "(x\<acute>= f & G DINV I) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0 DINV I)"
 
 lemma diff_solve_rule1:

@@ -339,7 +339,7 @@ end
 
 subsection \<open>Membership\<close>
 
-abbreviation (in preorder) in_minterval_ovl ("(_/ \<in>\<^sub>n\<^sub>o _)" [51, 51] 50)
+abbreviation (in preorder) in_minterval_ovl (\<open>(_/ \<in>\<^sub>n\<^sub>o _)\<close> [51, 51] 50)
   where "in_minterval_ovl x X \<equiv> x \<in> set_of_ovl X"
 
 lemma in_minterval_ovl_to_minterval_ovl[intro!]: "a \<in>\<^sub>n\<^sub>o minterval_ovl_of a"

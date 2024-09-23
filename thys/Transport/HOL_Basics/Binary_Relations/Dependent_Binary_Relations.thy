@@ -10,13 +10,13 @@ consts bin_rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 bundle bin_rel_syntax
 begin
-syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> ("{\<Sum>}_ : _./ _" [51, 50, 50] 51)
-notation bin_rel (infixr "{\<times>}" 51)
+syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> (\<open>{\<Sum>}_ : _./ _\<close> [51, 50, 50] 51)
+notation bin_rel (infixr \<open>{\<times>}\<close> 51)
 end
 bundle no_bin_rel_syntax
 begin
-no_syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> ("{\<Sum>}_ : _./ _" [51, 50, 50] 51)
-no_notation bin_rel (infixr "{\<times>}" 51)
+no_syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> (\<open>{\<Sum>}_ : _./ _\<close> [51, 50, 50] 51)
+no_notation bin_rel (infixr \<open>{\<times>}\<close> 51)
 end
 unbundle bin_rel_syntax
 syntax_consts

@@ -126,7 +126,7 @@ lemma no_empty_in_non_overlapping:
   using assms is_non_overlapping_def by fast
 
 text \<open>@{term P} is a partition of the set @{term A}. The infix notation takes the form ``noun-verb-object''\<close>
-definition is_partition_of (infix "partitions" 75)
+definition is_partition_of (infix \<open>partitions\<close> 75)
            where "is_partition_of P A = (\<Union> P = A \<and> is_non_overlapping P)"
 
 text \<open>No partition of a non-empty set is empty.\<close>

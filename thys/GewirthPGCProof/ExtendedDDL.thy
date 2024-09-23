@@ -39,11 +39,11 @@ subsection \<open>Logical Validity\<close>
 
 text\<open>\noindent{Kaplan's notion of (context-dependent) logical truth for a sentence corresponds to its (context-sensitive) formula
 (of type \<open>c\<Rightarrow>w\<Rightarrow>bool\<close> i.e. m) being true in the given context and at its corresponding world.}\<close>
-abbreviation ldtruectx::"m\<Rightarrow>c\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sub>_") where "\<lfloor>\<phi>\<rfloor>\<^sub>c \<equiv> \<phi> c (World c)" \<comment> \<open>  truth in the given context \<close>
+abbreviation ldtruectx::"m\<Rightarrow>c\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<^sub>_\<close>) where "\<lfloor>\<phi>\<rfloor>\<^sub>c \<equiv> \<phi> c (World c)" \<comment> \<open>  truth in the given context \<close>
 
 text\<open>\noindent{Kaplan's LD notion of logical validity for a sentence corresponds to its being true in all contexts.
 This notion is also known as indexical validity.}\<close>
-abbreviation ldvalid::"m\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sup>D") where "\<lfloor>\<phi>\<rfloor>\<^sup>D \<equiv> \<forall>c. \<lfloor>\<phi>\<rfloor>\<^sub>c" \<comment> \<open> LD validity (true in every context) \<close>
+abbreviation ldvalid::"m\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<^sup>D\<close>) where "\<lfloor>\<phi>\<rfloor>\<^sup>D \<equiv> \<forall>c. \<lfloor>\<phi>\<rfloor>\<^sub>c" \<comment> \<open> LD validity (true in every context) \<close>
 
 text\<open>\noindent{Here we show that indexical validity is indeed weaker than its classical modal counterpart (truth at all worlds for all contexts):}\<close>
 lemma "\<lfloor>A\<rfloor> \<Longrightarrow> \<lfloor>A\<rfloor>\<^sup>D" by simp
@@ -63,7 +63,7 @@ traditional alethic necessity).
 In Kaplan's framework, a sentence being logically (i.e. indexically) valid means its being true \emph{a priori}: it is guaranteed to be true
 in every possible context in which it is uttered, even though it may express distinct propositions in different contexts. This correlation
 between indexical validity and \emph{a prioricity} has also been claimed in other two-dimensional semantic frameworks \<^cite>\<open>"SEP2DSem"\<close>.}\<close>
-abbreviation ldvalidbox :: "m\<Rightarrow>m" ("\<^bold>\<box>\<^sup>D_" [52]53) where "\<^bold>\<box>\<^sup>D\<phi> \<equiv> \<lambda>c w. \<lfloor>\<phi>\<rfloor>\<^sup>D" \<comment> \<open> notice the D superscript \<close>
+abbreviation ldvalidbox :: "m\<Rightarrow>m" (\<open>\<^bold>\<box>\<^sup>D_\<close> [52]53) where "\<^bold>\<box>\<^sup>D\<phi> \<equiv> \<lambda>c w. \<lfloor>\<phi>\<rfloor>\<^sup>D" \<comment> \<open> notice the D superscript \<close>
 lemma "\<lfloor>\<^bold>\<box>\<^sup>D\<phi>\<rfloor>\<^sub>C \<equiv> \<forall>c.\<lfloor>\<phi>\<rfloor>\<^sub>c" by simp \<comment> \<open>  this operator works analogously to the box operator in modal logic S5 \<close>
 
 text\<open>\noindent{Quite trivially, the necessitation rule works for the combination of indexical validity with the previous operator.}\<close>
@@ -75,10 +75,10 @@ use the necessitation rule for some inference steps.}\<close>
 
 subsection \<open>Quantification\<close>
 text\<open>\noindent{ We also enrich our logic with (higher-order) quantifiers (using parameterised types).}\<close>
-abbreviation mforall::"('t\<Rightarrow>m)\<Rightarrow>m" ("\<^bold>\<forall>") where "\<^bold>\<forall>\<Phi> \<equiv> \<lambda>c w.\<forall>x. (\<Phi> x c w)"
-abbreviation mexists::"('t\<Rightarrow>m)\<Rightarrow>m" ("\<^bold>\<exists>") where "\<^bold>\<exists>\<Phi> \<equiv> \<lambda>c w.\<exists>x. (\<Phi> x c w)"    
-abbreviation mforallBinder::"('t\<Rightarrow>m)\<Rightarrow>m" (binder"\<^bold>\<forall>"[8]9) where "\<^bold>\<forall>x. (\<phi> x) \<equiv> \<^bold>\<forall>\<phi>"  
-abbreviation mexistsBinder::"('t\<Rightarrow>m)\<Rightarrow>m" (binder"\<^bold>\<exists>"[8]9) where "\<^bold>\<exists>x. (\<phi> x) \<equiv> \<^bold>\<exists>\<phi>"
+abbreviation mforall::"('t\<Rightarrow>m)\<Rightarrow>m" (\<open>\<^bold>\<forall>\<close>) where "\<^bold>\<forall>\<Phi> \<equiv> \<lambda>c w.\<forall>x. (\<Phi> x c w)"
+abbreviation mexists::"('t\<Rightarrow>m)\<Rightarrow>m" (\<open>\<^bold>\<exists>\<close>) where "\<^bold>\<exists>\<Phi> \<equiv> \<lambda>c w.\<exists>x. (\<Phi> x c w)"    
+abbreviation mforallBinder::"('t\<Rightarrow>m)\<Rightarrow>m" (binder\<open>\<^bold>\<forall>\<close>[8]9) where "\<^bold>\<forall>x. (\<phi> x) \<equiv> \<^bold>\<forall>\<phi>"  
+abbreviation mexistsBinder::"('t\<Rightarrow>m)\<Rightarrow>m" (binder\<open>\<^bold>\<exists>\<close>[8]9) where "\<^bold>\<exists>x. (\<phi> x) \<equiv> \<^bold>\<exists>\<phi>"
 (*<*)
 end
 (*>*)

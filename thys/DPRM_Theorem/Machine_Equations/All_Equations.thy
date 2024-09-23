@@ -10,7 +10,7 @@ begin
 
 definition all_equations_relation :: "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial
   \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial list \<Rightarrow> polynomial list \<Rightarrow> polynomial list
-  \<Rightarrow> relation" ("[ALLEQ] _ _ _ _ _ _ _ _ _ _") where
+  \<Rightarrow> relation" (\<open>[ALLEQ] _ _ _ _ _ _ _ _ _ _\<close>) where
   "[ALLEQ] a q b c d e f r z s 
          \<equiv> LARY (\<lambda>ll. all_equations (ll!0!0) (ll!0!1) (ll!0!2) (ll!0!3) (ll!0!4) (ll!0!5) (ll!0!6)
                                      (nth (ll!1)) (nth (ll!2)) (nth (ll!3)))
@@ -51,7 +51,7 @@ definition rm_equations :: "nat \<Rightarrow> bool" where
                       \<exists> s :: state \<Rightarrow> nat.
                       all_equations a q b c d e f r z s"
 
-definition rm_equations_relation :: "polynomial \<Rightarrow> relation" ("[RM] _") where
+definition rm_equations_relation :: "polynomial \<Rightarrow> relation" (\<open>[RM] _\<close>) where
   "[RM] A \<equiv> UNARY (rm_equations) A"
 
 (* Correct assumptions: Need validity of p *)

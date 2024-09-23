@@ -17,11 +17,11 @@ text \<open>
 \<close>
 
 no_notation 
-  plus (infixl "+" 65) and 
-  less_eq  ("'(\<le>')") and
-  less_eq  ("(_/ \<le> _)"  [51, 51] 50)
+  plus (infixl \<open>+\<close> 65) and 
+  less_eq  (\<open>'(\<le>')\<close>) and
+  less_eq  (\<open>(_/ \<le> _)\<close>  [51, 51] 50)
 
-notation comp (infixl "\<cdot>" 55)
+notation comp (infixl \<open>\<cdot>\<close> 55)
 
 type_synonym 'a bfun = "'a set \<Rightarrow> 'a set"
 
@@ -33,16 +33,16 @@ definition top :: "'a bfun" where "top \<equiv> \<lambda>x. UNIV"
 definition bot :: "'a bfun" where "bot \<equiv> \<lambda>x. {}"
 definition adjoint :: "'a bfun \<Rightarrow> 'a bfun" where "adjoint f \<equiv> (\<lambda>p. - f (-p))"
 
-definition fun_inter :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> 'a bfun" (infix "\<sqinter>" 51) where
+definition fun_inter :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> 'a bfun" (infix \<open>\<sqinter>\<close> 51) where
   "f \<sqinter> g \<equiv> \<lambda>p. f p \<inter> g p"
 
-definition fun_union :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> 'a bfun" (infix "+" 52) where
+definition fun_union :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> 'a bfun" (infix \<open>+\<close> 52) where
   "f + g \<equiv> \<lambda>p. f p \<union> g p"
 
-definition fun_order :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> bool" (infix "\<le>" 50) where
+definition fun_order :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> bool" (infix \<open>\<le>\<close> 50) where
   "f \<le> g \<equiv> \<forall>p. f p \<subseteq> g p"
 
-definition fun_strict_order :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> bool" (infix "<." 50) where
+definition fun_strict_order :: "'a bfun \<Rightarrow> 'a bfun \<Rightarrow> bool" (infix \<open><.\<close> 50) where
   "f <. g \<equiv> f \<le> g \<and> f \<noteq> g"
 
 definition N :: "'a bfun \<Rightarrow> 'a bfun" where

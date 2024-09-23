@@ -12,16 +12,16 @@ consts ball :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 bundle ball_syntax
 begin
 syntax
-  "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> ("(2\<forall>_ : _./ _)" 10)
+  "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<forall>_ : _./ _)\<close> 10)
   "_ball2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-notation ball ("\<forall>(\<^bsub>_\<^esub>)")
+notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 end
 bundle no_ball_syntax
 begin
 no_syntax
-  "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> ("(2\<forall>_ : _./ _)" 10)
+  "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<forall>_ : _./ _)\<close> 10)
   "_ball2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-no_notation ball ("\<forall>(\<^bsub>_\<^esub>)")
+no_notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 end
 unbundle ball_syntax
 syntax_consts
@@ -36,16 +36,16 @@ consts bex :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 bundle bex_syntax
 begin
 syntax
-  "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> ("(2\<exists>_ : _./ _)" 10)
+  "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>_ : _./ _)\<close> 10)
   "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-notation bex ("\<exists>(\<^bsub>_\<^esub>)")
+notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 end
 bundle no_bex_syntax
 begin
 no_syntax
-  "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> ("(2\<exists>_ : _./ _)" 10)
+  "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>_ : _./ _)\<close> 10)
   "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-no_notation bex ("\<exists>(\<^bsub>_\<^esub>)")
+no_notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 end
 unbundle bex_syntax
 syntax_consts
@@ -60,16 +60,16 @@ consts bex1 :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 bundle bex1_syntax
 begin
 syntax
-  "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> ("(2\<exists>!_ : _./ _)" 10)
+  "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>!_ : _./ _)\<close> 10)
   "_bex12" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-notation bex1 ("\<exists>!(\<^bsub>_\<^esub>)")
+notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 end
 bundle no_bex1_syntax
 begin
 no_syntax
-  "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> ("(2\<exists>!_ : _./ _)" 10)
+  "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>!_ : _./ _)\<close> 10)
   "_bex12" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-no_notation bex1 ("\<exists>!(\<^bsub>_\<^esub>)")
+no_notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 end
 unbundle bex1_syntax
 syntax_consts

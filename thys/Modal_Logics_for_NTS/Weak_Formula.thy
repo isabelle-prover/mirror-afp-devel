@@ -39,8 +39,8 @@ want to work with a fixed (sufficiently large) index type.
 Also, we use~@{term \<tau>} in our definition of weak formulas.\<close>
 
 locale indexed_weak_nominal_ts = weak_nominal_ts satisfies transition
-  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
-  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix "\<rightarrow>" 70) +
+  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 70)
+  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<close> 70) +
   assumes card_idx_perm: "|UNIV::perm set| <o |UNIV::'idx set|"
       and card_idx_state: "|UNIV::'state set| <o |UNIV::'idx set|"
       and card_idx_nat: "|UNIV::nat set| <o |UNIV::'idx set|"
@@ -156,7 +156,7 @@ begin
     "Act \<alpha>1 (weak_tau_modality x1) = Act \<alpha>2 (weak_tau_modality x2) \<longleftrightarrow> Act \<alpha>1 x1 = Act \<alpha>2 x2"
     by (simp add: Act_eq_iff_perm)
 
-  definition weak_action_modality :: "'act \<Rightarrow> ('idx,'pred::fs,'act::bn) formula \<Rightarrow> ('idx,'pred,'act) formula" ("\<langle>\<langle>_\<rangle>\<rangle>_")
+  definition weak_action_modality :: "'act \<Rightarrow> ('idx,'pred::fs,'act::bn) formula \<Rightarrow> ('idx,'pred,'act) formula" (\<open>\<langle>\<langle>_\<rangle>\<rangle>_\<close>)
     where
       "\<langle>\<langle>\<alpha>\<rangle>\<rangle>x \<equiv> if \<alpha> = \<tau> then weak_tau_modality x else weak_tau_modality (Act \<alpha> (weak_tau_modality x))"
 

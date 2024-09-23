@@ -156,7 +156,7 @@ proof
   qed
 qed
 
-definition  eq_class_of_rng_of_frac:: "_ \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> _set" (infix "|\<index>" 10)
+definition  eq_class_of_rng_of_frac:: "_ \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> _set" (infix \<open>|\<index>\<close> 10)
   where "r |\<^bsub>rel\<^esub> s \<equiv> {(r', s') \<in> carrier rel. (r, s) .=\<^bsub>rel\<^esub> (r', s')}"
 
 lemma class_of_to_rel:
@@ -196,7 +196,7 @@ proof
   qed
 qed
 
-definition set_eq_class_of_rng_of_frac:: "_ \<Rightarrow> _set" ("set'_class'_of\<index>")
+definition set_eq_class_of_rng_of_frac:: "_ \<Rightarrow> _set" (\<open>set'_class'_of\<index>\<close>)
   where "set_class_of\<^bsub>rel\<^esub> \<equiv> {(r |\<^bsub>rel\<^esub> s)| r s. (r, s) \<in> carrier rel}"
 
 (* The lemma below should be moved to theory Congruence in HOL-Algebra *)

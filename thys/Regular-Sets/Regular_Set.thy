@@ -8,7 +8,7 @@ begin
 
 type_synonym 'a lang = "'a list set"
 
-definition conc :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a lang" (infixr "@@" 75) where
+definition conc :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a lang" (infixr \<open>@@\<close> 75) where
 "A @@ B = {xs@ys | xs ys. xs:A & ys:B}"
 
 text \<open>checks the code preprocessor for set comprehensions\<close>
@@ -321,7 +321,7 @@ lemma Deriv_code [code]:
 
 subsection \<open>Shuffle product\<close>
 
-definition Shuffle (infixr "\<parallel>" 80) where
+definition Shuffle (infixr \<open>\<parallel>\<close> 80) where
   "Shuffle A B = \<Union>{shuffles xs ys | xs ys. xs \<in> A \<and> ys \<in> B}"
 
 lemma Deriv_Shuffle[simp]:

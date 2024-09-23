@@ -6,7 +6,7 @@ subsection \<open>Bottom terms\<close>
 
 datatype 'f bot_term = Bot | BFun 'f (args: "'f bot_term list")
 
-fun term_to_bot_term :: "('f, 'v) term \<Rightarrow> 'f bot_term"  ("_\<^sup>\<bottom>" [80] 80) where
+fun term_to_bot_term :: "('f, 'v) term \<Rightarrow> 'f bot_term"  (\<open>_\<^sup>\<bottom>\<close> [80] 80) where
   "(Var _)\<^sup>\<bottom> = Bot"
 | "(Fun f ts)\<^sup>\<bottom> = BFun f (map term_to_bot_term ts)"
 
@@ -49,7 +49,7 @@ lemma merge_symmetric:
   shows "(t, s) \<in> mergeP"
   using assms by induct auto
 
-fun merge_terms :: "'f bot_term \<Rightarrow> 'f bot_term \<Rightarrow> 'f bot_term"  (infixr "\<up>" 67) where
+fun merge_terms :: "'f bot_term \<Rightarrow> 'f bot_term \<Rightarrow> 'f bot_term"  (infixr \<open>\<up>\<close> 67) where
   "Bot \<up> s = s"
 | "s \<up> Bot = s"
 | "(BFun f ss) \<up> (BFun g ts) = (if f = g \<and> length ss = length ts
@@ -89,8 +89,8 @@ inductive_set bless_eq where
 text \<open>Infix syntax.\<close>
 abbreviation "bless_eq_pred s t \<equiv> (s, t) \<in> bless_eq"
 notation
-  bless_eq ("{\<le>\<^sub>b}") and
-  bless_eq_pred ("(_/ \<le>\<^sub>b _)" [56, 56] 55)
+  bless_eq (\<open>{\<le>\<^sub>b}\<close>) and
+  bless_eq_pred (\<open>(_/ \<le>\<^sub>b _)\<close> [56, 56] 55)
 
 lemma BFun_leq_Bot_False [simp]:
   "BFun f ts \<le>\<^sub>b Bot \<longleftrightarrow> False"

@@ -4,7 +4,7 @@ theory MutableRef
   imports Main "HOL-Library.FSet" 
 begin
 
-datatype ty = TNat | TFun ty ty (infix "\<rightarrow>" 60) | TPair ty ty | TRef ty
+datatype ty = TNat | TFun ty ty (infix \<open>\<rightarrow>\<close> 60) | TPair ty ty | TRef ty
 
 type_synonym name = nat
 
@@ -20,7 +20,7 @@ datatype val = VNat nat | VFun "(val \<times> val) fset" | VPair val val | VAddr
 type_synonym func = "(val \<times> val) fset"
 type_synonym store = "func"
 
-inductive val_le :: "val \<Rightarrow> val \<Rightarrow> bool" (infix "\<sqsubseteq>" 52) where
+inductive val_le :: "val \<Rightarrow> val \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 52) where
   vnat_le[intro!]: "(VNat n) \<sqsubseteq> (VNat n)" |
   vaddr_le[intro!]: "(VAddr a) \<sqsubseteq> (VAddr a)" | 
   wrong_le[intro!]: "Wrong \<sqsubseteq> Wrong" |
@@ -43,11 +43,11 @@ definition bind :: "'a M \<Rightarrow> ('a \<Rightarrow> 'b M) \<Rightarrow> 'b 
   "bind m f \<mu>1 \<equiv> { (v,\<mu>3). \<exists> v' \<mu>2. (v',\<mu>2) \<in> m \<mu>1 \<and> (v,\<mu>3) \<in> f v' \<mu>2 }"
 declare bind_def[simp]
 
-syntax "_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
+syntax "_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" (\<open>(_ \<leftarrow> _;//_)\<close> 0)
 syntax_consts "_bind" \<rightleftharpoons> bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST bind E (\<lambda>P. F)"
 
-no_notation "binomial" (infix "choose" 64)
+no_notation "binomial" (infix \<open>choose\<close> 64)
 
 definition choose :: "'a set \<Rightarrow> 'a M" where
   "choose S \<mu> \<equiv> {(a,\<mu>1). a \<in> S \<and> \<mu>1=\<mu>}"
@@ -65,7 +65,7 @@ definition err_bind :: "val M \<Rightarrow> (val \<Rightarrow> val M) \<Rightarr
   "err_bind m f \<equiv> (x \<leftarrow> m; if x = Wrong then return Wrong else f x)"
 declare err_bind_def[simp]
 
-syntax "_errset_bind" :: "[pttrns,val M,val] \<Rightarrow> 'c" ("(_ := _;//_)" 0)
+syntax "_errset_bind" :: "[pttrns,val M,val] \<Rightarrow> 'c" (\<open>(_ := _;//_)\<close> 0)
 syntax_consts "_errset_bind" \<rightleftharpoons> err_bind
 translations "P := E; F" \<rightleftharpoons> "CONST err_bind E (\<lambda>P. F)"
 

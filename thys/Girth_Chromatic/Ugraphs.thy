@@ -48,7 +48,7 @@ definition uwalks :: "ugraph \<Rightarrow> uwalk set" where
 definition ucycles :: "ugraph \<Rightarrow> uwalk set" where
   "ucycles G \<equiv> {p. uwalk_length p \<ge> 3 \<and> p \<in> uwalks G \<and> distinct (tl p) \<and> hd p = last p}"
 
-definition remove_vertex :: "ugraph \<Rightarrow> nat \<Rightarrow> ugraph" ("_ -- _" [60,60] 60) where
+definition remove_vertex :: "ugraph \<Rightarrow> nat \<Rightarrow> ugraph" (\<open>_ -- _\<close> [60,60] 60) where
   "remove_vertex G u \<equiv> (uverts G - {u}, uedges G - {A \<in> uedges G. u \<in> A})"
 
 

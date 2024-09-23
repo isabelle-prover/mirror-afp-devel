@@ -163,7 +163,7 @@ theorem Girard_Newton:
              (0 :: 'a :: comm_ring_1 mpoly)"
   (is "?lhs = 0")
 proof -
-  write Poly_Mapping.single ("sng")
+  write Poly_Mapping.single (\<open>sng\<close>)
 
   define n where "n = card X"
   define \<A> :: "(nat set \<times> nat) set"

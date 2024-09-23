@@ -252,7 +252,7 @@ definition fqtran :: "'a::inf \<Rightarrow> 'a \<Rightarrow> 'a" where
 
 text \<open>The following standard construction lifts elements of boolean algebras to transformers.\<close>
 
-definition bqtran :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" ("\<lfloor>_\<rfloor>") where
+definition bqtran :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<lfloor>_\<rfloor>\<close>) where
   "\<lfloor>x\<rfloor> y = -x \<squnion> y"
 
 text \<open>The conditional and while rule of Hoare logic are now derivable.\<close>

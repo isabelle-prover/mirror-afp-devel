@@ -37,8 +37,8 @@ definition intersect :: "'a multiset \<Rightarrow> 'a set \<Rightarrow> 'a multi
  where "intersect M S = filter_mset (\<lambda>x. x \<in> S) M"
 
 notation
- diff      (infixl "-s" 800) and
- intersect (infixl "\<inter>s" 800)
+ diff      (infixl \<open>-s\<close> 800) and
+ intersect (infixl \<open>\<inter>s\<close> 800)
 
 lemma count_diff [simp]:
   "count (M -s A) a = count M a * of_bool (a \<notin> A)"
@@ -93,9 +93,9 @@ definition dl :: "'a rel \<Rightarrow> 'a list \<Rightarrow> 'a set"
  where "dl r \<sigma> = ds r (set \<sigma>)"
 
 notation
- ds (infixl "\<down>s" 900) and
- dm (infixl "\<down>m" 900) and
- dl (infixl "\<down>l" 900)
+ ds (infixl \<open>\<down>s\<close> 900) and
+ dm (infixl \<open>\<down>m\<close> 900) and
+ dl (infixl \<open>\<down>l\<close> 900)
 
 text \<open>missing but useful\<close>
 lemma ds_ds_subseteq_ds: assumes t: "trans r" shows "ds r (ds r S) \<subseteq> ds r S" proof
@@ -501,7 +501,7 @@ fun lexmax :: "'a rel \<Rightarrow> 'a list \<Rightarrow> 'a multiset" where
  | "lexmax r (\<alpha>#\<sigma>) =  {#\<alpha>#} + (lexmax r \<sigma> -s ds r {\<alpha>})"
 
 notation
- lexmax ("_|_|" [1000] 1000)
+ lexmax (\<open>_|_|\<close> [1000] 1000)
 
 lemma lexmax_singleton: "r|[\<alpha>]| = {#\<alpha>#}" unfolding lexmax.simps diff_def by simp
 

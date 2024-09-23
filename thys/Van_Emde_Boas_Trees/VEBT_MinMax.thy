@@ -23,13 +23,13 @@ fun option_shift::"('a\<Rightarrow>'a\<Rightarrow>'a) \<Rightarrow>'a option \<R
 "option_shift _ _ None = None"|
 "option_shift f (Some a) (Some b) = Some (f a b)"
 
-definition power::"nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl"^\<^sub>o" 81) where
+definition power::"nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl\<open>^\<^sub>o\<close> 81) where
 "power= option_shift (^)"
 
-definition add::"nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl"+\<^sub>o" 79) where
+definition add::"nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl\<open>+\<^sub>o\<close> 79) where
 "add= option_shift (+)"
 
-definition mul::"nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl"*\<^sub>o" 80) where
+definition mul::"nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl\<open>*\<^sub>o\<close> 80) where
 "mul = option_shift (*)"
 
 fun option_comp_shift::"('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool" where
@@ -37,13 +37,13 @@ fun option_comp_shift::"('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> '
 "option_comp_shift _ _ None = False"|
 "option_comp_shift f (Some x) (Some y) =  f x y"
 
-fun less::"nat option \<Rightarrow> nat option \<Rightarrow> bool" (infixl"<\<^sub>o" 80) where
+fun less::"nat option \<Rightarrow> nat option \<Rightarrow> bool" (infixl\<open><\<^sub>o\<close> 80) where
 "less x y= option_comp_shift (<) x y"
 
-fun lesseq::"nat option \<Rightarrow> nat option \<Rightarrow> bool" (infixl"\<le>\<^sub>o" 80) where
+fun lesseq::"nat option \<Rightarrow> nat option \<Rightarrow> bool" (infixl\<open>\<le>\<^sub>o\<close> 80) where
 "lesseq x y = option_comp_shift (\<le>) x y"
 
-fun greater::"nat option \<Rightarrow> nat option \<Rightarrow> bool" (infixl">\<^sub>o" 80) where
+fun greater::"nat option \<Rightarrow> nat option \<Rightarrow> bool" (infixl\<open>>\<^sub>o\<close> 80) where
 "greater x y = option_comp_shift (>) x y"
 
 lemma add_shift:"x+y = z \<longleftrightarrow> Some x +\<^sub>o Some y = Some z" 

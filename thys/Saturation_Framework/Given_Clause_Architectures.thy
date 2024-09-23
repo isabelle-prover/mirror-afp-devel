@@ -31,9 +31,9 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
     and \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
   + fixes
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) and
+    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix \<open>\<sqsubset>L\<close> 50) and
     active :: "'l"
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
@@ -51,10 +51,10 @@ begin
 abbreviation Inf_FL :: "('f \<times> 'l) inference set" where
   "Inf_FL \<equiv> {\<iota>\<^sub>F\<^sub>L. Infer (map fst (prems_of \<iota>\<^sub>F\<^sub>L)) (fst (concl_of \<iota>\<^sub>F\<^sub>L)) \<in> Inf_F}"
 
-abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<preceq>\<cdot>" 50) where
+abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<preceq>\<cdot>\<close> 50) where
   "C \<preceq>\<cdot> D \<equiv> C \<doteq> D \<or> C \<prec>\<cdot> D"
 
-definition Prec_FL :: "('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool" (infix "\<sqsubset>" 50) where
+definition Prec_FL :: "('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50) where
   "Cl1 \<sqsubset> Cl2 \<longleftrightarrow> fst Cl1 \<prec>\<cdot> fst Cl2 \<or> (fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
 
 lemma irrefl_prec_F: "\<not> C \<prec>\<cdot> C"
@@ -186,7 +186,7 @@ sublocale lifting_intersection Inf_FL Bot_G Q Inf_G_q entails_q Red_I_q Red_F_q
       no_labels.ground.consequence_relation_family_axioms
       no_labels.ground.inference_system_family_axioms)
 
-notation derive (infix "\<rhd>L" 50)
+notation derive (infix \<open>\<rhd>L\<close> 50)
 
 lemma std_Red_I_eq: "std.Red_I = Red_I_\<G>"
   unfolding Red_I_\<G>_q_def Red_I_\<G>_L_q_def by simp
@@ -405,9 +405,9 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) and
+    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix \<open>\<sqsubset>L\<close> 50) and
     active :: 'l +
   assumes
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
@@ -416,7 +416,7 @@ begin
 lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> prems_of \<iota> \<noteq> []"
   using inf_have_prems by fastforce
 
-inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<leadsto>GC" 50) where
+inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix \<open>\<leadsto>GC\<close> 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> N1 \<leadsto>GC N2"
 | infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
@@ -733,14 +733,14 @@ locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) and
+    Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix \<open>\<sqsubset>L\<close> 50) and
     active :: 'l
 begin
 
 inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
-  'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<leadsto>LGC" 50) where
+  'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix \<open>\<leadsto>LGC\<close> 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> (T, N1) \<leadsto>LGC (T, N2)" |
   schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>

@@ -28,15 +28,15 @@ text \<open>
   at positions, which are contained in the interval.
   For instance, \<open>f_join [0,10,20,30,40] {1,4} = [10,40]\<close>\<close>
 
-definition f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl "\<Join>\<^sub>f" 100)
+definition f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl \<open>\<Join>\<^sub>f\<close> 100)
   where "xs \<Join>\<^sub>f I \<equiv> f_join_aux xs 0 I"
 
-definition i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl "\<Join>\<^sub>i" 100)
+definition i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl \<open>\<Join>\<^sub>i\<close> 100)
   where "f \<Join>\<^sub>i I \<equiv> \<lambda>n. (f (I \<rightarrow> n))"
 
 notation
-  f_join  (infixl "\<Join>\<^sub>" 100) and
-  i_join  (infixl "\<Join>\<^sub>" 100)
+  f_join  (infixl \<open>\<Join>\<^sub>\<close> 100) and
+  i_join  (infixl \<open>\<Join>\<^sub>\<close> 100)
 
 text \<open>
   The function \<open>i_f_join\<close> can be used for the case,
@@ -48,10 +48,10 @@ text \<open>
   cuts the resulting stream at this position
   and returns a finite stream.\<close>
 
-definition i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
+definition i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl \<open>\<Join>\<^bsub>i-f\<^esub>\<close> 100)
   where "f \<Join>\<^bsub>i-f\<^esub> I \<equiv> f \<Down> Suc (Max I) \<Join>\<^sub>f I"
 notation
-  i_f_join  (infixl "\<Join>\<^sub>" 100)
+  i_f_join  (infixl \<open>\<Join>\<^sub>\<close> 100)
 
 text \<open>
   The function \<open>i_f_join\<close> should be used

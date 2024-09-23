@@ -20,7 +20,7 @@ text\<open>
 subsection\<open>Type Class\<close>
 text\<open>\label{TAO_Quantifiable_Class}\<close>
 
-class quantifiable = fixes forall :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>" [8] 9)
+class quantifiable = fixes forall :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<forall>\<close> [8] 9)
   assumes quantifiable_T8: "(w \<Turnstile> (\<^bold>\<forall> x . \<psi> x)) = (\<forall> x . (w \<Turnstile> (\<psi> x)))"
 begin
 end

@@ -50,7 +50,7 @@ by(simp add: cname_of_def h.cname_of_def[abs_def])
 
 definition addr_loc_type :: "'m prog \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool"
 where "addr_loc_type P = h.addr_loc_type P undefined"
-notation addr_loc_type ("_ \<turnstile> _@_ : _" [50, 50, 50, 50] 51)
+notation addr_loc_type (\<open>_ \<turnstile> _@_ : _\<close> [50, 50, 50, 50] 51)
 lemma addr_loc_type_conv_addr_loc_type [heap_independent, iff]: 
   "h.addr_loc_type P h = addr_loc_type P"
 by(simp add: addr_loc_type_def h.addr_loc_type_def)
@@ -66,26 +66,26 @@ by(simp add: typeof_addr_loc_def h.typeof_addr_loc_def[abs_def])
 
 definition conf :: "'a prog \<Rightarrow> 'addr val \<Rightarrow> ty \<Rightarrow> bool"
 where "conf P \<equiv> h.conf P undefined"
-notation conf ("_ \<turnstile> _ :\<le> _"  [51,51,51] 50)
+notation conf (\<open>_ \<turnstile> _ :\<le> _\<close>  [51,51,51] 50)
 lemma conf_conv_conf [heap_independent, iff]: "h.conf P h = conf P"
 by(simp add: conf_def heap_base.conf_def[abs_def])
 lemmas defval_conf [simp] = h.defval_conf[unfolded heap_independent]
 
 definition lconf :: "'m prog \<Rightarrow> (vname \<rightharpoonup> 'addr val) \<Rightarrow> (vname \<rightharpoonup> ty) \<Rightarrow> bool" 
 where "lconf P = h.lconf P undefined"
-notation lconf ("_ \<turnstile> _ '(:\<le>') _" [51,51,51] 50)
+notation lconf (\<open>_ \<turnstile> _ '(:\<le>') _\<close> [51,51,51] 50)
 lemma lconf_conv_lconf [heap_independent, iff]: "h.lconf P h = lconf P"
 by(simp add: lconf_def h.lconf_def[abs_def])
 
 definition confs :: "'m prog \<Rightarrow> 'addr val list \<Rightarrow> ty list \<Rightarrow> bool"
 where "confs P = h.confs P undefined"
-notation confs ("_ \<turnstile> _ [:\<le>] _" [51,51,51] 50)
+notation confs (\<open>_ \<turnstile> _ [:\<le>] _\<close> [51,51,51] 50)
 lemma confs_conv_confs [heap_independent, iff]: "h.confs P h = confs P"
 by(simp add: confs_def)
 
 definition tconf :: "'m prog \<Rightarrow> 'thread_id \<Rightarrow> bool" 
 where "tconf P = h.tconf P undefined"
-notation tconf ("_ \<turnstile> _ \<surd>t" [51,51] 50)
+notation tconf (\<open>_ \<turnstile> _ \<surd>t\<close> [51,51] 50)
 lemma tconf_conv_tconf [heap_independent, iff]: "h.tconf P h = tconf P"
 by(simp add: tconf_def h.tconf_def[abs_def])
 
@@ -215,7 +215,7 @@ locale known_addrs_typing' =
   and allocated :: "'heap \<Rightarrow> 'addr set"
   and known_addrs :: "'thread_id \<Rightarrow> 'x \<Rightarrow> 'addr set"
   and final :: "'x \<Rightarrow> bool"
-  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80) 
+  and r :: "('addr, 'thread_id, 'x, 'heap, 'addr, ('addr, 'thread_id) obs_event) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80) 
   and wfx :: "'thread_id \<Rightarrow> 'x \<Rightarrow> 'heap \<Rightarrow> bool"
   and P :: "'md prog"
   +

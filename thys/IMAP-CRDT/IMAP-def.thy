@@ -28,7 +28,7 @@ definition op_elem :: "('id, 'a) operation \<Rightarrow> 'a" where
     Store e mo i \<Rightarrow> e"
 
 definition interpret_op :: "('id, 'a) operation \<Rightarrow> ('id, 'a) state \<rightharpoonup> ('id, 'a) state" 
-  ("\<langle>_\<rangle>" [0] 1000) where
+  (\<open>\<langle>_\<rangle>\<close> [0] 1000) where
   "interpret_op oper state \<equiv>
     let metadata = fst (state (op_elem oper));
         files = snd (state (op_elem oper));

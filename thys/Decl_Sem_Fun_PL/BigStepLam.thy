@@ -10,7 +10,7 @@ datatype bval
 
 type_synonym benv = "(name \<times> bval) list"
 
-inductive eval :: "benv \<Rightarrow> exp \<Rightarrow> bval \<Rightarrow> bool" ("_ \<turnstile> _ \<Down> _" [50,50,50] 51) where
+inductive eval :: "benv \<Rightarrow> exp \<Rightarrow> bval \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<Down> _\<close> [50,50,50] 51) where
   eval_nat[intro!]: "\<rho> \<turnstile> ENat n \<Down> BNat n" |
   eval_var[intro!]: "lookup \<rho> x = Some v \<Longrightarrow> \<rho> \<turnstile> EVar x \<Down> v" |
   eval_lam[intro!]: "\<rho> \<turnstile> ELam x e \<Down> BClos x e \<rho>" |

@@ -39,11 +39,11 @@ begin
     FoT\<^sub>C: composite_functor C.CC.comp C D T\<^sub>C F +
     T\<^sub>DoFF: composite_functor C.CC.comp D.CC.comp D FF.map T\<^sub>D +
     \<phi>: natural_isomorphism C.CC.comp D T\<^sub>DoFF.map FoT\<^sub>C.map \<phi>
-  for C :: "'c comp"                    (infixr "\<cdot>\<^sub>C" 55)
+  for C :: "'c comp"                    (infixr \<open>\<cdot>\<^sub>C\<close> 55)
   and T\<^sub>C :: "'c * 'c \<Rightarrow> 'c"
   and \<alpha>\<^sub>C :: "'c * 'c * 'c \<Rightarrow> 'c"
   and \<iota>\<^sub>C :: "'c"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  and D :: "'d comp"                    (infixr \<open>\<cdot>\<^sub>D\<close> 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
@@ -56,16 +56,16 @@ begin
            = \<phi> (a, T\<^sub>C (b, c)) \<cdot>\<^sub>D T\<^sub>D (F a, \<phi> (b, c)) \<cdot>\<^sub>D \<alpha>\<^sub>D (F a, F b, F c)"
   begin
 
-    notation C.tensor                     (infixr "\<otimes>\<^sub>C" 53)
-    and C.unity                           ("\<I>\<^sub>C")
-    and C.lunit                           ("\<l>\<^sub>C[_]")
-    and C.runit                           ("\<r>\<^sub>C[_]")
-    and C.assoc                           ("\<a>\<^sub>C[_, _, _]")
-    and D.tensor                          (infixr "\<otimes>\<^sub>D" 53)
-    and D.unity                           ("\<I>\<^sub>D")
-    and D.lunit                           ("\<l>\<^sub>D[_]")
-    and D.runit                           ("\<r>\<^sub>D[_]")
-    and D.assoc                           ("\<a>\<^sub>D[_, _, _]")
+    notation C.tensor                     (infixr \<open>\<otimes>\<^sub>C\<close> 53)
+    and C.unity                           (\<open>\<I>\<^sub>C\<close>)
+    and C.lunit                           (\<open>\<l>\<^sub>C[_]\<close>)
+    and C.runit                           (\<open>\<r>\<^sub>C[_]\<close>)
+    and C.assoc                           (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+    and D.tensor                          (infixr \<open>\<otimes>\<^sub>D\<close> 53)
+    and D.unity                           (\<open>\<I>\<^sub>D\<close>)
+    and D.lunit                           (\<open>\<l>\<^sub>D[_]\<close>)
+    and D.runit                           (\<open>\<r>\<^sub>D[_]\<close>)
+    and D.assoc                           (\<open>\<a>\<^sub>D[_, _, _]\<close>)
 
     lemma \<phi>_in_hom:
     assumes "C.ide a" and "C.ide b"
@@ -162,15 +162,15 @@ begin
         by (unfold_locales, auto)
     qed
 
-    no_notation D.tensor   (infixr "\<otimes>\<^sub>D" 53)
-    notation D.C\<^sub>1.tensor   (infixr "\<otimes>\<^sub>D" 53)   (* equal to D.tensor *)
-    no_notation D.assoc    ("\<a>\<^sub>D[_, _, _]")
-    notation D.C\<^sub>1.assoc    ("\<a>\<^sub>D[_, _, _]")      (* equal to D.assoc *)
-    no_notation D.assoc'   ("\<a>\<^sub>D\<^sup>-\<^sup>1[_, _, _]")
-    notation D.C\<^sub>1.assoc'   ("\<a>\<^sub>D\<^sup>-\<^sup>1[_, _, _]")   (* equal to D.assoc' *)
-    notation D.C\<^sub>1.unity    ("\<I>\<^sub>1")
-    notation D.C\<^sub>1.lunit    ("\<l>\<^sub>1[_]")
-    notation D.C\<^sub>1.runit    ("\<r>\<^sub>1[_]")
+    no_notation D.tensor   (infixr \<open>\<otimes>\<^sub>D\<close> 53)
+    notation D.C\<^sub>1.tensor   (infixr \<open>\<otimes>\<^sub>D\<close> 53)   (* equal to D.tensor *)
+    no_notation D.assoc    (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+    notation D.C\<^sub>1.assoc    (\<open>\<a>\<^sub>D[_, _, _]\<close>)      (* equal to D.assoc *)
+    no_notation D.assoc'   (\<open>\<a>\<^sub>D\<^sup>-\<^sup>1[_, _, _]\<close>)
+    notation D.C\<^sub>1.assoc'   (\<open>\<a>\<^sub>D\<^sup>-\<^sup>1[_, _, _]\<close>)   (* equal to D.assoc' *)
+    notation D.C\<^sub>1.unity    (\<open>\<I>\<^sub>1\<close>)
+    notation D.C\<^sub>1.lunit    (\<open>\<l>\<^sub>1[_]\<close>)
+    notation D.C\<^sub>1.runit    (\<open>\<r>\<^sub>1[_]\<close>)
 
     lemma \<I>\<^sub>1_char [simp]:
     shows "\<I>\<^sub>1 = F \<I>\<^sub>C"
@@ -554,11 +554,11 @@ $$\xymatrix{
     C: monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C +
     D: monoidal_category D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D +
     "functor" C D F
-  for C :: "'c comp"                    (infixr "\<cdot>\<^sub>C" 55)
+  for C :: "'c comp"                    (infixr \<open>\<cdot>\<^sub>C\<close> 55)
   and T\<^sub>C :: "'c * 'c \<Rightarrow> 'c"
   and \<alpha>\<^sub>C :: "'c * 'c * 'c \<Rightarrow> 'c"
   and \<iota>\<^sub>C :: "'c"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  and D :: "'d comp"                    (infixr \<open>\<cdot>\<^sub>D\<close> 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
@@ -569,16 +569,16 @@ $$\xymatrix{
                                    F (\<alpha>\<^sub>C (a, b, c)) = \<alpha>\<^sub>D (F a, F b, F c)"
   begin
 
-    notation C.tensor                  (infixr "\<otimes>\<^sub>C" 53)
-    and C.unity                        ("\<I>\<^sub>C")
-    and C.lunit                        ("\<l>\<^sub>C[_]")
-    and C.runit                        ("\<r>\<^sub>C[_]")
-    and C.assoc                        ("\<a>\<^sub>C[_, _, _]")
-    and D.tensor                       (infixr "\<otimes>\<^sub>D" 53)
-    and D.unity                        ("\<I>\<^sub>D")
-    and D.lunit                        ("\<l>\<^sub>D[_]")
-    and D.runit                        ("\<r>\<^sub>D[_]")
-    and D.assoc                        ("\<a>\<^sub>D[_, _, _]")
+    notation C.tensor                  (infixr \<open>\<otimes>\<^sub>C\<close> 53)
+    and C.unity                        (\<open>\<I>\<^sub>C\<close>)
+    and C.lunit                        (\<open>\<l>\<^sub>C[_]\<close>)
+    and C.runit                        (\<open>\<r>\<^sub>C[_]\<close>)
+    and C.assoc                        (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+    and D.tensor                       (infixr \<open>\<otimes>\<^sub>D\<close> 53)
+    and D.unity                        (\<open>\<I>\<^sub>D\<close>)
+    and D.lunit                        (\<open>\<l>\<^sub>D[_]\<close>)
+    and D.runit                        (\<open>\<r>\<^sub>D[_]\<close>)
+    and D.assoc                        (\<open>\<a>\<^sub>D[_, _, _]\<close>)
 
     lemma strictly_preserves_tensor:
     assumes "C.arr f" and "C.arr g"
@@ -751,11 +751,11 @@ $$\xymatrix{
     D: monoidal_category D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D +
     equivalence_of_categories C D F G \<eta> \<epsilon> +
     monoidal_functor D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C F \<phi>
-  for C :: "'c comp"                    (infixr "\<cdot>\<^sub>C" 55)
+  for C :: "'c comp"                    (infixr \<open>\<cdot>\<^sub>C\<close> 55)
   and T\<^sub>C :: "'c * 'c \<Rightarrow> 'c"
   and \<alpha>\<^sub>C :: "'c * 'c * 'c \<Rightarrow> 'c"
   and \<iota>\<^sub>C :: "'c"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  and D :: "'d comp"                    (infixr \<open>\<cdot>\<^sub>D\<close> 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"

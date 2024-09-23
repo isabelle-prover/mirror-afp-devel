@@ -213,7 +213,7 @@ lemma empty_quasi_borel_iff:
   by(auto intro!: qbs_eqI simp: qbs_empty_equiv)
 
 subsubsection \<open> Unit Space \<close>
-definition unit_quasi_borel :: "unit quasi_borel" ("1\<^sub>Q") where
+definition unit_quasi_borel :: "unit quasi_borel" (\<open>1\<^sub>Q\<close>) where
 "unit_quasi_borel \<equiv> Abs_quasi_borel (UNIV,UNIV)"
 
 lemma
@@ -287,7 +287,7 @@ proof -
 qed
 
 subsubsection \<open> Binary Product Spaces \<close>
-definition pair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<times> 'b) quasi_borel" (infixr "\<Otimes>\<^sub>Q" 80) where
+definition pair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<times> 'b) quasi_borel" (infixr \<open>\<Otimes>\<^sub>Q\<close> 80) where
 "pair_qbs X Y = Abs_quasi_borel (qbs_space X \<times> qbs_space Y, {f. fst \<circ> f \<in> qbs_Mx X \<and> snd \<circ> f \<in> qbs_Mx Y})"
 
 lemma
@@ -360,7 +360,7 @@ definition copair_qbs_Mx :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> (rea
      (\<exists> \<alpha>1\<in> qbs_Mx X. \<exists> \<alpha>2\<in> qbs_Mx Y.
           g = (\<lambda>r::real. (if (r \<in> S) then Inl (\<alpha>1 r) else Inr (\<alpha>2 r)))))}"
 
-definition copair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a + 'b) quasi_borel" (infixr "\<Oplus>\<^sub>Q" 65) where
+definition copair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a + 'b) quasi_borel" (infixr \<open>\<Oplus>\<^sub>Q\<close> 65) where
 "copair_qbs X Y \<equiv> Abs_quasi_borel (qbs_space X <+> qbs_space Y, copair_qbs_Mx X Y)"
 
 text \<open> The following is an equivalent definition of @{term copair_qbs_Mx}. \<close>
@@ -768,7 +768,7 @@ definition PiQ :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b quasi_borel) \<Righ
 "PiQ I X \<equiv> Abs_quasi_borel (\<Pi>\<^sub>E i\<in>I. qbs_space (X i), {\<alpha>. \<forall>i. (i \<in> I \<longrightarrow> (\<lambda>r. \<alpha> r i) \<in> qbs_Mx (X i)) \<and> (i \<notin> I \<longrightarrow> (\<lambda>r. \<alpha> r i) = (\<lambda>r. undefined))})"
 
 syntax
-  "_PiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i => 'a) quasi_borel"  ("(3\<Pi>\<^sub>Q _\<in>_./ _)"  10)
+  "_PiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i => 'a) quasi_borel"  (\<open>(3\<Pi>\<^sub>Q _\<in>_./ _)\<close>  10)
 syntax_consts
   "_PiQ" == PiQ
 translations
@@ -890,7 +890,7 @@ definition coPiQ :: "['a set, 'a \<Rightarrow> 'b quasi_borel] \<Rightarrow> ('a
 "coPiQ I X \<equiv> Abs_quasi_borel (SIGMA i:I. qbs_space (X i), coPiQ_Mx I X)"
 
 syntax
- "_coPiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" ("(3\<amalg>\<^sub>Q _\<in>_./ _)"  10)
+ "_coPiQ" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a quasi_borel \<Rightarrow> ('i \<times> 'a) quasi_borel" (\<open>(3\<amalg>\<^sub>Q _\<in>_./ _)\<close>  10)
 syntax_consts
  "_coPiQ" \<rightleftharpoons> coPiQ
 translations
@@ -1250,7 +1250,7 @@ lemma option_qbs_space: "qbs_space (option_qbs X) = {Some x|x. x \<in> qbs_space
   by(auto simp: option_qbs_def map_qbs_space copair_qbs_space) (metis InrI image_eqI insert_iff old.sum.simps(6), metis InlI image_iff sum.case(1))
 
 subsubsection \<open> Function Spaces \<close>
-definition exp_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) quasi_borel" (infixr "\<Rightarrow>\<^sub>Q" 61) where
+definition exp_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) quasi_borel" (infixr \<open>\<Rightarrow>\<^sub>Q\<close> 61) where
 "X \<Rightarrow>\<^sub>Q Y \<equiv> Abs_quasi_borel ({f. \<forall>\<alpha> \<in> qbs_Mx X. f \<circ> \<alpha> \<in> qbs_Mx Y}, {g. \<forall>\<alpha>\<in> borel_measurable borel. \<forall>\<beta>\<in> qbs_Mx X. (\<lambda>r. g (\<alpha> r) (\<beta> r)) \<in> qbs_Mx Y})"
 
 lemma

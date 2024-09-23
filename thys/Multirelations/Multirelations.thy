@@ -16,25 +16,25 @@ text \<open>We define a type synonym for multirelations.\<close>
 
 type_synonym 'a mrel = "('a * ('a set)) set"
 
-no_notation  s_prod (infixl "\<cdot>" 80)
-no_notation s_id ("1\<^sub>\<sigma>")
-no_notation c_prod (infixl "\<parallel>" 80)
-no_notation c_id ("1\<^sub>\<pi>")
+no_notation  s_prod (infixl \<open>\<cdot>\<close> 80)
+no_notation s_id (\<open>1\<^sub>\<sigma>\<close>)
+no_notation c_prod (infixl \<open>\<parallel>\<close> 80)
+no_notation c_id (\<open>1\<^sub>\<pi>\<close>)
 
 text \<open>Now we start with formalising the multirelational model. First
   we define  sequential composition and paraellel composition of multirelations, their units and 
 the universal multirelation as in Section 2 of the article.\<close>
 
-definition s_prod :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel" (infixl "\<cdot>" 70) where
+definition s_prod :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel" (infixl \<open>\<cdot>\<close> 70) where
   "R \<cdot> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S) \<and> A = \<Union>{f b |b. b \<in> B}))}"
 
-definition s_id :: "'a mrel" ("1\<^sub>\<sigma>") where
+definition s_id :: "'a mrel" (\<open>1\<^sub>\<sigma>\<close>) where
   "1\<^sub>\<sigma> \<equiv> \<Union>a. {(a,{a})}"
 
-definition p_prod :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel"  (infixl "\<parallel>" 70) where
+definition p_prod :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel"  (infixl \<open>\<parallel>\<close> 70) where
   "R \<parallel> S = {(a,A). (\<exists>B C. A = B \<union> C \<and> (a,B) \<in> R \<and> (a,C) \<in> S)}"
  
-definition p_id :: "'a mrel" ("1\<^sub>\<pi>") where
+definition p_id :: "'a mrel" (\<open>1\<^sub>\<pi>\<close>) where
   "1\<^sub>\<pi> \<equiv> \<Union>a. {(a,{})}"
 
 definition U :: "'a mrel" where 
@@ -777,7 +777,7 @@ subsection \<open>Relationship with Up-Closed Multirelations\<close>
 
 text \<open>We now define Parikh's sequential composition.\<close>
 
-definition s_prod_pa :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel" (infixl "\<otimes>" 70) where
+definition s_prod_pa :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel" (infixl \<open>\<otimes>\<close> 70) where
   "R \<otimes> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<forall>b \<in> B. (b,A) \<in> S))}"
 
 text \<open>We show that Parikh's definition doesn't preserve up-closure.\<close>

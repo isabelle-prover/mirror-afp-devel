@@ -17,7 +17,7 @@ imports "Abstract-Rewriting.Abstract_Rewriting"
 begin
 
 locale z_property =
-  fixes bullet :: "'a \<Rightarrow> 'a" ("_\<^sup>\<bullet>" [1000] 1000)
+  fixes bullet :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<bullet>\<close> [1000] 1000)
   and R :: "'a rel"
   assumes Z: "(a, b) \<in> R \<Longrightarrow> (b, a\<^sup>\<bullet>) \<in> R\<^sup>* \<and> (a\<^sup>\<bullet>, b\<^sup>\<bullet>) \<in> R\<^sup>*"
 begin
@@ -50,7 +50,7 @@ definition "R\<^sub>d = {(a, b). (a, b) \<in> R\<^sup>* \<and> (b, a\<^sup>\<bul
 end
 
 locale angle_property =
-  fixes bullet :: "'a \<Rightarrow> 'a" ("_\<^sup>\<bullet>" [1000] 1000)
+  fixes bullet :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<bullet>\<close> [1000] 1000)
   and R :: "'a rel"
   and R\<^sub>d :: "'a rel"
   assumes intermediate: "R \<subseteq> R\<^sub>d" "R\<^sub>d \<subseteq> R\<^sup>*"

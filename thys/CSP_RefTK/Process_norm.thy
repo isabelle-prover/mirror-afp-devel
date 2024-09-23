@@ -53,7 +53,7 @@ section\<open>Deterministic normal-forms with explicit state\<close>
 
 abbreviation "P_dnorm \<tau> \<upsilon> \<equiv> (\<mu> X. (\<lambda> s. \<box> e \<in> (\<tau> s) \<rightarrow> X (\<upsilon> s e)))"
 
-notation      P_dnorm ("P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>_,_\<rbrakk>" 60)
+notation      P_dnorm (\<open>P\<^sub>n\<^sub>o\<^sub>r\<^sub>m\<lbrakk>_,_\<rbrakk>\<close> 60)
 
 lemma dnorm_cont[simp]:
   fixes \<tau>::"'\<sigma>::type \<Rightarrow> 'event::type set" and \<upsilon>::"'\<sigma> \<Rightarrow> 'event \<Rightarrow> '\<sigma>"

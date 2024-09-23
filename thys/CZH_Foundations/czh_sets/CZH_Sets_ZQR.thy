@@ -352,9 +352,9 @@ definition vreal_plus :: V
   where "vreal_plus = 
     (\<lambda>x\<in>\<^sub>\<circ>\<real>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (real_of_vreal (x\<lparr>0\<^sub>\<nat>\<rparr>) + real_of_vreal (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<real>)"
 
-abbreviation vreal_plus_app :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "+\<^sub>\<real>" 65)
+abbreviation vreal_plus_app :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>+\<^sub>\<real>\<close> 65)
   where "vreal_plus_app a b \<equiv> vreal_plus\<lparr>a, b\<rparr>\<^sub>\<bullet>"
-notation vreal_plus_app (infixl "+\<^sub>\<real>" 65)
+notation vreal_plus_app (infixl \<open>+\<^sub>\<real>\<close> 65)
 
 lemma vreal_plus_transfer[transfer_rule]: 
   includes lifting_syntax
@@ -371,9 +371,9 @@ definition vreal_mult :: V
   where "vreal_mult = 
     (\<lambda>x\<in>\<^sub>\<circ>\<real>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (real_of_vreal (x\<lparr>0\<^sub>\<nat>\<rparr>) * real_of_vreal (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<real>)"
 
-abbreviation vreal_mult_app (infixl "*\<^sub>\<real>" 70) 
+abbreviation vreal_mult_app (infixl \<open>*\<^sub>\<real>\<close> 70) 
   where "vreal_mult_app a b \<equiv> vreal_mult\<lparr>a, b\<rparr>\<^sub>\<bullet>"
-notation vreal_mult_app (infixl "*\<^sub>\<real>" 70)
+notation vreal_mult_app (infixl \<open>*\<^sub>\<real>\<close> 70)
 
 lemma vreal_mult_transfer[transfer_rule]: 
   includes lifting_syntax
@@ -470,7 +470,7 @@ definition vreal_minus :: V
   where "vreal_minus =
     (\<lambda>x\<in>\<^sub>\<circ>\<real>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (real_of_vreal (x\<lparr>0\<^sub>\<nat>\<rparr>) - real_of_vreal (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<real>)"
 
-abbreviation vreal_minus_app (infixl "-\<^sub>\<real>" 65) 
+abbreviation vreal_minus_app (infixl \<open>-\<^sub>\<real>\<close> 65) 
   where "vreal_minus_app a b \<equiv> vreal_minus\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vreal_minus_transfer[transfer_rule]: 
@@ -1027,7 +1027,7 @@ definition vint_plus :: V
   where "vint_plus = 
     (\<lambda>x\<in>\<^sub>\<circ>\<int>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (int_of_vint (x\<lparr>0\<^sub>\<nat>\<rparr>) + int_of_vint (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<int>)"
 
-abbreviation vint_plus_app (infixl "+\<^sub>\<int>" 65) 
+abbreviation vint_plus_app (infixl \<open>+\<^sub>\<int>\<close> 65) 
   where "vint_plus_app a b \<equiv> vint_plus\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vint_plus_transfer[transfer_rule]: 
@@ -1044,7 +1044,7 @@ definition vint_mult :: V
   where "vint_mult = 
     (\<lambda>x\<in>\<^sub>\<circ>\<int>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (int_of_vint (x\<lparr>0\<^sub>\<nat>\<rparr>) * int_of_vint (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<int>)"
 
-abbreviation vint_mult_app (infixl "*\<^sub>\<int>" 65) 
+abbreviation vint_mult_app (infixl \<open>*\<^sub>\<int>\<close> 65) 
   where "vint_mult_app a b \<equiv> vint_mult\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vint_mult_transfer[transfer_rule]: 
@@ -1060,7 +1060,7 @@ text\<open>Unary minus.\<close>
 definition vint_uminus :: V 
   where "vint_uminus = (\<lambda>x\<in>\<^sub>\<circ>\<int>\<^sub>\<circ>. (uminus (int_of_vint x))\<^sub>\<int>)"
 
-abbreviation vint_uminus_app ("-\<^sub>\<int> _" [81] 80) 
+abbreviation vint_uminus_app (\<open>-\<^sub>\<int> _\<close> [81] 80) 
   where "-\<^sub>\<int> a \<equiv> vint_uminus\<lparr>a\<rparr>"
 
 lemma vint_uminus_transfer[transfer_rule]: 
@@ -1077,7 +1077,7 @@ definition vint_le :: V
   where "vint_le =
     set {[a, b]\<^sub>\<circ> | a b. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> \<int>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat> \<and> int_of_vint a \<le> int_of_vint b}"
 
-abbreviation vint_le' ("(_/ \<le>\<^sub>\<int> _)"  [51, 51] 50)
+abbreviation vint_le' (\<open>(_/ \<le>\<^sub>\<int> _)\<close>  [51, 51] 50)
   where "a \<le>\<^sub>\<int> b \<equiv> [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> vint_le"
 
 lemma small_vint_le[simp]: 
@@ -1101,7 +1101,7 @@ definition vint_ls :: V
   where "vint_ls =
     set {[a, b]\<^sub>\<circ> | a b. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> \<int>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat> \<and> int_of_vint a < int_of_vint b}"
 
-abbreviation vint_ls' ("(_/ <\<^sub>\<int> _)"  [51, 51] 50)
+abbreviation vint_ls' (\<open>(_/ <\<^sub>\<int> _)\<close>  [51, 51] 50)
   where "a <\<^sub>\<int> b \<equiv> [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> vint_ls"
 
 lemma small_vint_ls[simp]: 
@@ -1125,7 +1125,7 @@ definition vint_minus :: V
   where "vint_minus = 
     (\<lambda>x\<in>\<^sub>\<circ>\<int>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (int_of_vint (x\<lparr>0\<^sub>\<nat>\<rparr>) - int_of_vint (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<int>)"
 
-abbreviation vint_minus_app (infixl "-\<^sub>\<int>" 65) 
+abbreviation vint_minus_app (infixl \<open>-\<^sub>\<int>\<close> 65) 
   where "vint_minus_app a b \<equiv> vint_minus\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vint_minus_transfer[transfer_rule]: 
@@ -1627,7 +1627,7 @@ definition vrat_plus :: V
   where "vrat_plus = 
     (\<lambda>x\<in>\<^sub>\<circ>\<rat>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (rat_of_vrat (x\<lparr>0\<^sub>\<nat>\<rparr>) + rat_of_vrat (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<rat>)"
 
-abbreviation vrat_plus_app (infixl "+\<^sub>\<rat>" 65) 
+abbreviation vrat_plus_app (infixl \<open>+\<^sub>\<rat>\<close> 65) 
   where "vrat_plus_app a b \<equiv> vrat_plus\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vrat_plus_transfer[transfer_rule]: 
@@ -1644,7 +1644,7 @@ definition vrat_mult :: V
   where "vrat_mult =
     (\<lambda>x\<in>\<^sub>\<circ>\<rat>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (rat_of_vrat (x\<lparr>0\<^sub>\<nat>\<rparr>) * rat_of_vrat (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<rat>)"
 
-abbreviation vrat_mult_app (infixl "*\<^sub>\<rat>" 65) 
+abbreviation vrat_mult_app (infixl \<open>*\<^sub>\<rat>\<close> 65) 
   where "vrat_mult_app a b \<equiv> vrat_mult\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vrat_mult_transfer[transfer_rule]: 
@@ -1660,7 +1660,7 @@ text\<open>Unary minus.\<close>
 definition vrat_uminus :: V 
   where "vrat_uminus = (\<lambda>x\<in>\<^sub>\<circ>\<rat>\<^sub>\<circ>. (uminus (rat_of_vrat x))\<^sub>\<rat>)"
 
-abbreviation vrat_uminus_app ("-\<^sub>\<rat> _" [81] 80) 
+abbreviation vrat_uminus_app (\<open>-\<^sub>\<rat> _\<close> [81] 80) 
   where "-\<^sub>\<rat> a \<equiv> vrat_uminus\<lparr>a\<rparr>"
 
 lemma vrat_uminus_transfer[transfer_rule]: 
@@ -1676,7 +1676,7 @@ text\<open>Multiplicative inverse.\<close>
 definition vrat_inverse :: V 
   where "vrat_inverse = (\<lambda>x\<in>\<^sub>\<circ>\<rat>\<^sub>\<circ>. (inverse (rat_of_vrat x))\<^sub>\<rat>)"
 
-abbreviation vrat_inverse_app ("(_\<inverse>\<^sub>\<rat>)" [1000] 999) 
+abbreviation vrat_inverse_app (\<open>(_\<inverse>\<^sub>\<rat>)\<close> [1000] 999) 
   where "a\<inverse>\<^sub>\<rat> \<equiv> vrat_inverse\<lparr>a\<rparr>"
 
 lemma vrat_inverse_transfer[transfer_rule]: 
@@ -1693,7 +1693,7 @@ definition vrat_le :: V
   where "vrat_le =
     set {[a, b]\<^sub>\<circ> | a b. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> \<rat>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat> \<and> rat_of_vrat a \<le> rat_of_vrat b}"
 
-abbreviation vrat_le' ("(_/ \<le>\<^sub>\<rat> _)"  [51, 51] 50)
+abbreviation vrat_le' (\<open>(_/ \<le>\<^sub>\<rat> _)\<close>  [51, 51] 50)
   where "a \<le>\<^sub>\<rat> b \<equiv> [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> vrat_le"
 
 lemma small_vrat_le[simp]: 
@@ -1717,7 +1717,7 @@ definition vrat_ls :: V
   where "vrat_ls =
     set {[a, b]\<^sub>\<circ> | a b. [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> \<rat>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat> \<and> rat_of_vrat a < rat_of_vrat b}"
 
-abbreviation vrat_ls' ("(_/ <\<^sub>\<rat> _)"  [51, 51] 50)
+abbreviation vrat_ls' (\<open>(_/ <\<^sub>\<rat> _)\<close>  [51, 51] 50)
   where "a <\<^sub>\<rat> b \<equiv> [a, b]\<^sub>\<circ> \<in>\<^sub>\<circ> vrat_ls"
 
 lemma small_vrat_ls[simp]: 
@@ -1740,7 +1740,7 @@ definition vrat_minus :: V
   where "vrat_minus = 
     (\<lambda>x\<in>\<^sub>\<circ>\<rat>\<^sub>\<circ> ^\<^sub>\<times> 2\<^sub>\<nat>. (rat_of_vrat (x\<lparr>0\<^sub>\<nat>\<rparr>) - rat_of_vrat (x\<lparr>1\<^sub>\<nat>\<rparr>))\<^sub>\<rat>)"
 
-abbreviation vrat_minus_app (infixl "-\<^sub>\<rat>" 65) 
+abbreviation vrat_minus_app (infixl \<open>-\<^sub>\<rat>\<close> 65) 
   where "vrat_minus_app a b \<equiv> vrat_minus\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 lemma vrat_minus_transfer[transfer_rule]: 

@@ -24,7 +24,7 @@ qed
 
 locale semantics =
   fixes
-    step :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix "\<rightarrow>" 50) and
+    step :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix \<open>\<rightarrow>\<close> 50) and
     final :: "'state \<Rightarrow> bool"
   assumes
     final_finished: "final s \<Longrightarrow> finished step s"
@@ -39,15 +39,15 @@ lemma finished_step:
   "step s s' \<Longrightarrow> \<not>finished step s"
 by (auto simp add: finished_def)
 
-abbreviation eval :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix "\<rightarrow>\<^sup>*" 50) where
+abbreviation eval :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sup>*\<close> 50) where
   "eval \<equiv> step\<^sup>*\<^sup>*"
 
 abbreviation inf_step :: "'state \<Rightarrow> bool" where
   "inf_step \<equiv> inf step"
 
 notation
-  inf_step ("'(\<rightarrow>\<^sup>\<infinity>')" [] 50) and
-  inf_step ("_ \<rightarrow>\<^sup>\<infinity>" [55] 50)
+  inf_step (\<open>'(\<rightarrow>\<^sup>\<infinity>')\<close> [] 50) and
+  inf_step (\<open>_ \<rightarrow>\<^sup>\<infinity>\<close> [55] 50)
 
 lemma inf_not_finished: "s \<rightarrow>\<^sup>\<infinity> \<Longrightarrow> \<not> finished step s"
   using inf.cases finished_step by metis
@@ -69,7 +69,7 @@ lemma step_converges_or_diverges: "(\<exists>s'. s \<rightarrow>\<^sup>* s' \<an
 
 subsection \<open>Behaviour of a dynamic execution\<close>
 
-inductive state_behaves :: "'state \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix "\<down>" 50) where
+inductive state_behaves :: "'state \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix \<open>\<down>\<close> 50) where
   state_terminates:
     "s1 \<rightarrow>\<^sup>* s2 \<Longrightarrow> finished step s2 \<Longrightarrow> final s2 \<Longrightarrow> s1 \<down> (Terminates s2)" |
   state_diverges:

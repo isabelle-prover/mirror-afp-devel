@@ -31,7 +31,7 @@ subsubsection\<open>Membership\<close>
 
 text\<open>Check if the literal is member of a clause, clause is a member 
   of a formula or the literal is a member of a formula\<close>
-consts member  :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixl "el" 55)
+consts member  :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixl \<open>el\<close> 55)
 
 overloading literalElClause \<equiv> "member :: Literal \<Rightarrow> Clause \<Rightarrow> bool"
 begin

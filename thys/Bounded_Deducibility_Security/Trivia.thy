@@ -17,7 +17,7 @@ qed
 
 text\<open>Right cons:\<close>
 
-abbreviation Rcons (infix "##" 70) where "xs ## x \<equiv> xs @ [x]"
+abbreviation Rcons (infix \<open>##\<close> 70) where "xs ## x \<equiv> xs @ [x]"
 
 lemma two_singl_Rcons: "[a,b] = [a] ## b" by auto
 
@@ -31,7 +31,7 @@ proof (cases ys)
     with Cons show thesis by (intro that) auto
 qed auto
 
-abbreviation lmember ("(_/ \<in>\<in> _)" [50, 51] 50) where "x \<in>\<in> xs \<equiv> x \<in> set xs"
+abbreviation lmember (\<open>(_/ \<in>\<in> _)\<close> [50, 51] 50) where "x \<in>\<in> xs \<equiv> x \<in> set xs"
 
 lemma right_cons_left[simp]: "i < length as \<Longrightarrow> (as ## a)!i = as!i"
 by (metis butlast_snoc nth_butlast)+

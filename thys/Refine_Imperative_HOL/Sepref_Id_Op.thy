@@ -38,9 +38,9 @@ text \<open> The following constants are meant to encode abstraction and
 definition [simp]: "PROTECT2 x (y::prop) \<equiv> x"
 consts DUMMY :: "prop"
 
-abbreviation PROTECT2_syn ("'(#_#')") where "PROTECT2_syn t \<equiv> PROTECT2 t DUMMY"
+abbreviation PROTECT2_syn (\<open>'(#_#')\<close>) where "PROTECT2_syn t \<equiv> PROTECT2 t DUMMY"
 
-abbreviation (input)ABS2 :: "('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'b" (binder "\<lambda>\<^sub>2" 10)
+abbreviation (input)ABS2 :: "('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'b" (binder \<open>\<lambda>\<^sub>2\<close> 10)
   where "ABS2 f \<equiv> (\<lambda>x. PROTECT2 (f x) DUMMY)"
 
 lemma beta: "(\<lambda>\<^sub>2x. f x)$x \<equiv> f x" by simp
@@ -50,7 +50,7 @@ text \<open>
   Required to avoid infinite pattern rewriting in some cases, e.g., map-lookup.
 \<close>
 
-definition APP' (infixl "$''" 900) where [simp, autoref_tag_defs]: "f$'a \<equiv> f a"
+definition APP' (infixl \<open>$''\<close> 900) where [simp, autoref_tag_defs]: "f$'a \<equiv> f a"
 
 text \<open>
   Sometimes, whole terms should be protected from being processed by our tool.
@@ -70,7 +70,7 @@ definition [simp, autoref_tag_defs]: "UNPROTECT x \<equiv> x" \<comment> \<open>
 subsection \<open>Operation Identification\<close>
 
 text \<open> Indicator predicate for conceptual typing of a constant \<close>
-definition intf_type :: "'a \<Rightarrow> 'b itself \<Rightarrow> bool" (infix "::\<^sub>i" 10) where
+definition intf_type :: "'a \<Rightarrow> 'b itself \<Rightarrow> bool" (infix \<open>::\<^sub>i\<close> 10) where
   [simp]: "c::\<^sub>iI \<equiv> True"
 
 lemma itypeI: "c::\<^sub>iI" by simp
@@ -78,7 +78,7 @@ lemma itypeI': "intf_type c TYPE('T)" by (rule itypeI)
 
 lemma itype_self: "(c::'a) ::\<^sub>i TYPE('a)" by simp
 
-definition CTYPE_ANNOT :: "'b \<Rightarrow> 'a itself \<Rightarrow> 'b" (infix ":::\<^sub>i" 10) where
+definition CTYPE_ANNOT :: "'b \<Rightarrow> 'a itself \<Rightarrow> 'b" (infix \<open>:::\<^sub>i\<close> 10) where
   [simp]: "c:::\<^sub>iI \<equiv> c"
 
 text \<open> Wrapper predicate for an conceptual type inference \<close>

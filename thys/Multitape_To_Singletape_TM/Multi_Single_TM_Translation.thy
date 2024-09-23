@@ -22,8 +22,8 @@ begin
 subsection \<open>Definition of the Translation\<close>
 
 datatype 'a tuple_symbol = NO_HAT "'a" | HAT "'a"
-datatype ('a, 'k) st_tape_symbol = ST_LE ("\<turnstile>") | TUPLE "'k \<Rightarrow> 'a tuple_symbol" | INP "'a"
-datatype 'a sym_or_bullet = SYM "'a" | BULLET ("\<bullet>")
+datatype ('a, 'k) st_tape_symbol = ST_LE (\<open>\<turnstile>\<close>) | TUPLE "'k \<Rightarrow> 'a tuple_symbol" | INP "'a"
+datatype 'a sym_or_bullet = SYM "'a" | BULLET (\<open>\<bullet>\<close>)
 
 datatype ('a,'q,'k) st_states = 
   R\<^sub>1 "'a sym_or_bullet" |

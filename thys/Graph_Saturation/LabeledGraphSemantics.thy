@@ -61,7 +61,7 @@ fun semantics where
 "semantics G (A_Cnv a) = converse (semantics G a)" |
 "semantics G (A_Lbl l) = getRel l G"
 
-notation semantics (":_:\<lbrakk>_\<rbrakk>" 55)
+notation semantics (\<open>:_:\<lbrakk>_\<rbrakk>\<close> 55)
 
 type_synonym 'v sentence = "'v allegorical_term \<times> 'v allegorical_term"
 
@@ -70,12 +70,12 @@ datatype 'v Standard_Constant = S_Top | S_Bot | S_Idt | S_Const 'v
 text \<open>Definition 3. We don't define sentences but instead simply work with pairs of terms.\<close>
 abbreviation holds where
 "holds G S \<equiv> :G:\<lbrakk>fst S\<rbrakk> = :G:\<lbrakk>snd S\<rbrakk>"
-notation holds (infix "\<Turnstile>" 55)
+notation holds (infix \<open>\<Turnstile>\<close> 55)
 
 abbreviation subset_sentence where
 "subset_sentence A B \<equiv> (A,A_Int A B)"
 
-notation subset_sentence (infix "\<sqsubseteq>" 60)
+notation subset_sentence (infix \<open>\<sqsubseteq>\<close> 60)
 
 text \<open>Lemma 1.\<close>
 lemma sentence_iff[simp]:

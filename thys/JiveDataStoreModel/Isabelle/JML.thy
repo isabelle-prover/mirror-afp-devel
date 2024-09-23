@@ -13,7 +13,7 @@ text \<open>JML operators that are to be used in Hoare formulae can be formalize
 \<close>
 
 definition
-  instanceof :: "Value \<Rightarrow> Javatype \<Rightarrow> bool"  ("_ @instanceof _")
+  instanceof :: "Value \<Rightarrow> Javatype \<Rightarrow> bool"  (\<open>_ @instanceof _\<close>)
 where
   "instanceof v t = (typeof v \<le> t)"
 

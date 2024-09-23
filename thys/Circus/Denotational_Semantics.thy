@@ -297,7 +297,7 @@ done
 subsection \<open>Sequential composition\<close>
 
 definition 
-Seq::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "`;`" 24)
+Seq::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl \<open>`;`\<close> 24)
 where "P `;` Q \<equiv> action_of (relation_of P ;; relation_of Q)"
 
 lemma Seq_is_action: "(relation_of P ;; relation_of Q) \<in> {p. is_CSP_process p}"
@@ -338,7 +338,7 @@ by (auto simp: Skip_comp_absorb relation_of_inject[symmetric] relation_of_Seq)
 subsection \<open>Internal choice\<close>
 
 definition 
-Ndet::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "\<sqinter>" 18) 
+Ndet::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl \<open>\<sqinter>\<close> 18) 
 where "P \<sqinter> Q \<equiv> action_of ((relation_of P) \<or> (relation_of Q))"
 
 lemma Ndet_is_action: "((relation_of P) \<or> (relation_of Q)) \<in> {p. is_CSP_process p}"
@@ -358,7 +358,7 @@ by (auto simp: mono_def less_eq_action ref_def relation_of_Ndet)
 subsection \<open>External choice\<close>
 
 definition
-Det::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "\<box>" 18)
+Det::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl \<open>\<box>\<close> 18)
 where "P \<box> Q \<equiv> action_of(R((\<not>((relation_of P)\<^sup>f\<^sub>f) \<and> \<not>((relation_of Q)\<^sup>f\<^sub>f)) \<turnstile>
                                              (((relation_of P)\<^sup>t\<^sub>f \<and> ((relation_of Q)\<^sup>t\<^sub>f))
                                                 \<triangleleft> \<lambda>(A, A'). tr A = tr A' \<and> wait A' \<triangleright>
@@ -420,7 +420,7 @@ subsection \<open>Local state external choice\<close>
 
 definition
 Loc::"'\<sigma> \<Rightarrow> ('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> '\<sigma> \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" 
-                                        ("'(()loc _ \<bullet> _ ') \<boxplus> '(()loc _ \<bullet> _ ')")
+                                        (\<open>'(()loc _ \<bullet> _ ') \<boxplus> '(()loc _ \<bullet> _ ')\<close>)
 where "(loc s1 \<bullet> P) \<boxplus> (loc s2 \<bullet> Q) \<equiv> 
                    ((rd_assign s1)`;`P) \<box> ((rd_assign s2)`;` Q)"
 
@@ -472,7 +472,7 @@ fun MergeSt :: "'\<sigma> local_state \<Rightarrow> '\<sigma> local_state \<Righ
 "MergeSt (s1,s1') (s2,s2') = ((\<lambda>(S, S'). (s1' s1) (more S) = more S');; 
                             (\<lambda>(S::('\<theta>,'\<sigma>) alphabet_rp, S'). (s2' s2) (more S) = more S'))"
 
-definition listCons ::"'\<theta> \<Rightarrow> '\<theta> list list \<Rightarrow> '\<theta> list list" ("_ ## _") where
+definition listCons ::"'\<theta> \<Rightarrow> '\<theta> list list \<Rightarrow> '\<theta> list list" (\<open>_ ## _\<close>) where
 "a ## l = ((map (Cons a)) l)"
 
 fun ParMergel :: "'\<theta>::ev_eq list \<Rightarrow> '\<theta> list \<Rightarrow> '\<theta> set \<Rightarrow> '\<theta> list list" where
@@ -517,7 +517,7 @@ definition M_par::"(('\<theta>::ev_eq), '\<sigma>) alpha_rp_scheme \<Rightarrow>
 
 definition  Par::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> 
                     ('\<sigma>  \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> '\<theta> set \<Rightarrow> ('\<sigma>  \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> 
-                    ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" ("_ \<lbrakk> _ | _ | _ \<rbrakk> _") where
+                    ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (\<open>_ \<lbrakk> _ | _ | _ \<rbrakk> _\<close>) where
 "A1 \<lbrakk> ns1 | cs | ns2 \<rbrakk> A2 \<equiv> (action_of (R ((\<lambda> (S, S'). 
  \<not> (\<exists> tr1 tr2. ((relation_of A1)\<^sup>f\<^sub>f ;; (\<lambda> (S, S'). tr1 = (tr S))) (S, S') 
  \<and> (spec False (wait S) (relation_of A2) ;; (\<lambda> (S, _). tr2 = (tr S))) (S, S')
@@ -573,7 +573,7 @@ subsection \<open>Local parallel block\<close>
 
 definition
 ParLoc::"'\<sigma> \<Rightarrow> ('\<sigma> \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> '\<theta> set \<Rightarrow> '\<sigma> \<Rightarrow> ('\<sigma> \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action"
-                                        ("'(()par _ | _ \<bullet> _ ') \<lbrakk> _ \<rbrakk> '(()par _ | _ \<bullet> _ ')")
+                                        (\<open>'(()par _ | _ \<bullet> _ ') \<lbrakk> _ \<rbrakk> '(()par _ | _ \<bullet> _ ')\<close>)
 where 
 "(par s1 | ns1 \<bullet> P) \<lbrakk> cs \<rbrakk> (par s2 | ns2 \<bullet> Q) \<equiv> ((rd_assign s1)`;`P) \<lbrakk> ns1 | cs | ns2 \<rbrakk> ((rd_assign s2)`;` Q)"
 
@@ -585,7 +585,7 @@ definition ASSIGN::"('v, '\<sigma>) var_list \<Rightarrow> ('\<sigma> \<Rightarr
 "ASSIGN x e \<equiv> action_of (R (true \<turnstile> (\<lambda> (S, S'). tr S' = tr S \<and> \<not>wait S' \<and> 
                                  (more S' = (update x (\<lambda>_. (e (more S)))) (more S)))))"
 
-syntax "_assign"::"id \<Rightarrow> ('\<sigma> \<Rightarrow> 'v) \<Rightarrow> ('\<theta>, '\<sigma>) action"  ("_ `:=` _")
+syntax "_assign"::"id \<Rightarrow> ('\<sigma> \<Rightarrow> 'v) \<Rightarrow> ('\<theta>, '\<sigma>) action"  (\<open>_ `:=` _\<close>)
 translations "y `:=` vv" => "CONST ASSIGN (VAR y) vv"
 
 lemma Assign_is_action: 
@@ -628,7 +628,7 @@ definition Var::"('v, '\<sigma>) var_list \<Rightarrow>('\<theta>, '\<sigma>) ac
      (relation_of A;;
      (R(true \<turnstile> (\<lambda> (A, A').  tr A' = tr A \<and> \<not>wait A' \<and> more A' = (decrease v (more A)))))))"
 
-syntax "_var"::"idt \<Rightarrow> ('\<theta>, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" ("var _ \<bullet> _" [1000] 999)
+syntax "_var"::"idt \<Rightarrow> ('\<theta>, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" (\<open>var _ \<bullet> _\<close> [1000] 999)
 translations "var y \<bullet> Act" => "CONST Var (VAR_LIST y) Act"
 
 lemma Var_is_action:
@@ -667,7 +667,7 @@ definition Let::"('v, '\<sigma>) var_list \<Rightarrow>('\<theta>, '\<sigma>) ac
 "Let v A \<equiv> action_of((relation_of A;;
      (R(true \<turnstile> (\<lambda> (A, A').  tr A' = tr A \<and> \<not>wait A' \<and> more A' = (decrease v (more A)))))))"
 
-syntax "_let"::"idt \<Rightarrow> ('\<theta>, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" ("let _ \<bullet> _" [1000] 999)
+syntax "_let"::"idt \<Rightarrow> ('\<theta>, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" (\<open>let _ \<bullet> _\<close> [1000] 999)
 translations "let y \<bullet> Act" => "CONST Let (VAR_LIST y) Act"
 
 lemma Let_is_action:
@@ -748,7 +748,7 @@ done
 
 subsection \<open>Guarded action\<close>
 
-definition Guard::"'\<sigma> predicate \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" ("_ `&` _")
+definition Guard::"'\<sigma> predicate \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" (\<open>_ `&` _\<close>)
 where "g `&` P \<equiv> action_of(R (((g o more o fst) \<longrightarrow> \<not> ((relation_of P)\<^sup>f\<^sub>f)) \<turnstile> 
                              (((g o more o fst) \<and> ((relation_of P)\<^sup>t\<^sub>f)) \<or> 
                          ((\<not>(g o more o fst)) \<and> (\<lambda> (A, A'). tr A' = tr A \<and> wait A')))))"
@@ -884,11 +884,11 @@ write0::"'\<theta> \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarr
 where "write0 c P \<equiv> Prefix0 c P"
 
 syntax
-"_read"  ::"[id, pttrn, ('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" ("(_`?`_ /\<rightarrow> _)")
-"_readS" ::"[id, pttrn, '\<theta> set,('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" ("(_`?`_`:`_ /\<rightarrow> _)")
-"_readSS" ::"[id, pttrn, '\<sigma> => '\<theta> set,('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" ("(_`?`_`\<in>`_ /\<rightarrow> _)")
-"_write" ::"[id, '\<sigma>, ('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" ("(_`!`_ /\<rightarrow> _)")
-"_writeS"::"['\<theta>, ('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" ("(_ /\<rightarrow> _)")
+"_read"  ::"[id, pttrn, ('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" (\<open>(_`?`_ /\<rightarrow> _)\<close>)
+"_readS" ::"[id, pttrn, '\<theta> set,('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" (\<open>(_`?`_`:`_ /\<rightarrow> _)\<close>)
+"_readSS" ::"[id, pttrn, '\<sigma> => '\<theta> set,('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" (\<open>(_`?`_`\<in>`_ /\<rightarrow> _)\<close>)
+"_write" ::"[id, '\<sigma>, ('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" (\<open>(_`!`_ /\<rightarrow> _)\<close>)
+"_writeS"::"['\<theta>, ('\<theta>, '\<sigma>) action] => ('\<theta>, '\<sigma>) action" (\<open>(_ /\<rightarrow> _)\<close>)
 
 translations
 "_read c p P"    == "CONST read c (VAR_LIST p) P" 
@@ -942,7 +942,7 @@ by (auto simp: mono_def less_eq_action ref_def relation_of_Prefix0)
 
 subsection \<open>Hiding\<close>
 
-definition Hide::"('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> '\<theta> set \<Rightarrow> ('\<theta>, '\<sigma>) action" (infixl "\\" 18) where
+definition Hide::"('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> '\<theta> set \<Rightarrow> ('\<theta>, '\<sigma>) action" (infixl \<open>\\<close> 18) where
 "P \\ cs \<equiv> action_of(R(\<lambda>(S, S'). \<exists> s. (diff_tr S' S) = (tr_filter (s - (tr S)) cs) &
              (relation_of P)(S, S'\<lparr>tr := s, ref := (ref S') \<union> cs \<rparr>));; (relation_of Skip))"
 
@@ -1010,7 +1010,7 @@ Instantiating the complete lattice class allows one to inherit these properties 
 definition of the least fixed-point for monotonic functions over Circus actions.
 \<close>
 
-syntax "_MU"::"[idt, idt \<Rightarrow> ('\<theta>, '\<sigma>) action] \<Rightarrow> ('\<theta>, '\<sigma>) action"  ("\<mu> _ \<bullet> _")
+syntax "_MU"::"[idt, idt \<Rightarrow> ('\<theta>, '\<sigma>) action] \<Rightarrow> ('\<theta>, '\<sigma>) action"  (\<open>\<mu> _ \<bullet> _\<close>)
 translations "_MU X P" == "CONST lfp (\<lambda> X. P)"
 
 

@@ -58,16 +58,16 @@ lemma ball_eq_sym: "\<forall>(x, y) \<in> S. f x y = g x y \<Longrightarrow> \<f
 lemma wf_measure_size: "wf (measure size)" by simp
 
 notation
-  Some ("\<lfloor>_\<rfloor>")
+  Some (\<open>\<lfloor>_\<rfloor>\<close>)
 
 notation
-  None ("\<bottom>")
+  None (\<open>\<bottom>\<close>)
 
 notation
-  length ("\<parallel>_\<parallel>")
+  length (\<open>\<parallel>_\<parallel>\<close>)
 
 notation
-  Cons ("_ \<Colon>/ _" [66, 65] 65)
+  Cons (\<open>_ \<Colon>/ _\<close> [66, 65] 65)
 
 text \<open>
 The following variant of the standard \<open>nth\<close> function returns
@@ -75,7 +75,7 @@ The following variant of the standard \<open>nth\<close> function returns
 \<close>
 
 primrec
-  nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" ("_\<langle>_\<rangle>" [90, 0] 91)
+  nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" (\<open>_\<langle>_\<rangle>\<close> [90, 0] 91)
 where
   "[]\<langle>i\<rangle> = \<bottom>"
 | "(x # xs)\<langle>i\<rangle> = (case i of 0 \<Rightarrow> \<lfloor>x\<rfloor> | Suc j \<Rightarrow> xs \<langle>j\<rangle>)"
@@ -96,7 +96,7 @@ lemma [simp]: "\<parallel>xs\<parallel> \<le> i \<Longrightarrow> (xs @ ys)\<lan
 
 text \<open>Association lists\<close>
 
-primrec assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>\<^sub>?" [90, 0] 91)
+primrec assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" (\<open>_\<langle>_\<rangle>\<^sub>?\<close> [90, 0] 91)
 where
   "[]\<langle>a\<rangle>\<^sub>? = \<bottom>"
 | "(x # xs)\<langle>a\<rangle>\<^sub>? = (if fst x = a then \<lfloor>snd x\<rfloor> else xs\<langle>a\<rangle>\<^sub>?)"
@@ -114,7 +114,7 @@ lemma map_assoc_None [simp]:
   by (induct ps) auto
 
 no_syntax
-  "_Map" :: "maplets => 'a \<rightharpoonup> 'b"  ("(1[_])")
+  "_Map" :: "maplets => 'a \<rightharpoonup> 'b"  (\<open>(1[_])\<close>)
 
 
 end

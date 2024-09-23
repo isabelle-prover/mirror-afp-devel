@@ -25,7 +25,7 @@ definition token_fails :: "nat \<Rightarrow> bool"
 where
   "token_fails x = (\<exists>n. sink (token_run x n) \<and> token_run x n \<notin> F)"
 
-definition accept :: "bool" ("accept\<^sub>M")
+definition accept :: "bool" (\<open>accept\<^sub>M\<close>)
 where
   "accept \<longleftrightarrow> (\<forall>\<^sub>\<infinity>x. token_succeeds x)"
 

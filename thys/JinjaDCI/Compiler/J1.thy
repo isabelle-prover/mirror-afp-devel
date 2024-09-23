@@ -60,9 +60,9 @@ where
 
 inductive
   eval\<^sub>1 :: "J\<^sub>1_prog \<Rightarrow> expr\<^sub>1 \<Rightarrow> state\<^sub>1 \<Rightarrow> expr\<^sub>1 \<Rightarrow> state\<^sub>1 \<Rightarrow> bool"
-          ("_ \<turnstile>\<^sub>1 ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+          (\<open>_ \<turnstile>\<^sub>1 ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81)
   and evals\<^sub>1 :: "J\<^sub>1_prog \<Rightarrow> expr\<^sub>1 list \<Rightarrow> state\<^sub>1 \<Rightarrow> expr\<^sub>1 list \<Rightarrow> state\<^sub>1 \<Rightarrow> bool"
-           ("_ \<turnstile>\<^sub>1 ((1\<langle>_,/_\<rangle>) [\<Rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+           (\<open>_ \<turnstile>\<^sub>1 ((1\<langle>_,/_\<rangle>) [\<Rightarrow>]/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81)
   for P :: J\<^sub>1_prog
 where
 

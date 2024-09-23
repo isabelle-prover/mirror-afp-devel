@@ -15,7 +15,7 @@ text \<open>
   This alternative can be developed further along the lines of the one-sorted implementation.
 \<close>
 
-syntax "_dra" :: "'a \<Rightarrow> 'a" ("`_`")
+syntax "_dra" :: "'a \<Rightarrow> 'a" (\<open>`_`\<close>)
 
 ML \<open>
 val dra_test_vars = ["p","q","r","s","t","p'","q'","r'","s'","t'","p''","q''","r''","s''","t''"]
@@ -79,7 +79,7 @@ setup \<open>VCGRules.setup\<close>
 
 locale drat =
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::dra"
-  and not :: "'b::dra \<Rightarrow> 'b::dra" ("!")
+  and not :: "'b::dra \<Rightarrow> 'b::dra" (\<open>!\<close>)
   assumes test_sup [simp,kat_hom]: "test (sup p q) = `p + q`"
   and test_inf [simp,kat_hom]: "test (inf p q) = `p \<cdot> q`"
   and test_top [simp,kat_hom]: "test top = 1"
@@ -89,7 +89,7 @@ locale drat =
 
 begin
 
-notation test ("\<iota>")
+notation test (\<open>\<iota>\<close>)
 
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)

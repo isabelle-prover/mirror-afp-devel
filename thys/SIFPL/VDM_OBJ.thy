@@ -15,11 +15,11 @@ text\<open>Assertions are binary state predicates, as before.\<close>
 type_synonym "Assn" = "State \<Rightarrow> State \<Rightarrow> bool"
 
 definition VDM_validn :: "nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool" 
-                         (" \<Turnstile>\<^sub>_ _ : _ " 50)
+                         (\<open> \<Turnstile>\<^sub>_ _ : _ \<close> 50)
 where "(\<Turnstile>\<^sub>n c : A) = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) \<longrightarrow> A s t))"
 
 definition VDM_valid :: "OBJ \<Rightarrow> Assn \<Rightarrow> bool"
-                         (" \<Turnstile> _ : _ " 50)
+                         (\<open> \<Turnstile> _ : _ \<close> 50)
 where "(\<Turnstile> c : A) = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
 
 lemma VDM_valid_validn: "\<Turnstile> c:A \<Longrightarrow> \<Turnstile>\<^sub>n c:A"
@@ -40,10 +40,10 @@ done
 (*>*)
 
 definition Ctxt_validn :: "nat \<Rightarrow> (Assn set) \<Rightarrow> bool"
-                       (" \<Turnstile>\<^sub>_ _  " 50)
+                       (\<open> \<Turnstile>\<^sub>_ _  \<close> 50)
 where "(\<Turnstile>\<^sub>n G) = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> \<Turnstile>\<^sub>n Call : A))"
 
-definition Ctxt_valid :: "Assn set \<Rightarrow> bool" (" \<Turnstile> _ " 50)
+definition Ctxt_valid :: "Assn set \<Rightarrow> bool" (\<open> \<Turnstile> _ \<close> 50)
 where "(\<Turnstile> G) = (\<forall> A . A \<in> G \<longrightarrow> \<Turnstile> Call : A)"
 
 lemma Ctxt_valid_validn: "\<Turnstile> G \<Longrightarrow> \<Turnstile>\<^sub>n G"
@@ -68,11 +68,11 @@ done
 (*>*)
 
 definition valid :: "(Assn set) \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool"
-                      ("_ \<Turnstile> _ : _ " 50)
+                      (\<open>_ \<Turnstile> _ : _ \<close> 50)
 where "(G \<Turnstile> c : A) = (Ctxt_valid G \<longrightarrow> VDM_valid c A)"
 
 definition validn :: "(Assn set) \<Rightarrow> nat \<Rightarrow> OBJ \<Rightarrow> Assn \<Rightarrow> bool"
-                     ("_ \<Turnstile>\<^sub>_ _ : _" 50)
+                     (\<open>_ \<Turnstile>\<^sub>_ _ : _\<close> 50)
 where "(G \<Turnstile>\<^sub>n c : A) = (\<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n c : A)"
 
 lemma validn_valid: "(\<forall> n . G \<Turnstile>\<^sub>n c : A) \<Longrightarrow> G \<Turnstile> c : A"
@@ -148,7 +148,7 @@ VDMSkip: "(G, Skip, \<lambda> s t . t=s):VDM_proof"
   (G, c, B):VDM_proof"
 
 abbreviation VDM_deriv :: "[Assn set, OBJ, Assn] \<Rightarrow> bool" 
-                   ("_ \<rhd> _ : _" [100,100] 50)
+                   (\<open>_ \<rhd> _ : _\<close> [100,100] 50)
 where "G \<rhd> c : A == (G,c,A) \<in> VDM_proof"
 
 text\<open>The while-rule is in fact inter-derivable with the following rule.\<close>

@@ -185,8 +185,8 @@ lemma no_Call_from_ClassMain [dest!]: "PROG P \<turnstile> ClassMain P sees M:Ts
 lemma no_Call_in_ClassMain [dest!]: "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = mb in ClassMain P \<Longrightarrow> False"
   by (fastforce dest: sees_method_idemp)
 
-inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, cname \<times> mname \<times> pc, cname \<times> mname) edge_kind \<Rightarrow> cfg_node \<Rightarrow> bool" (" _ \<turnstile> _ -_\<rightarrow> _")
-  and reachable :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> bool" (" _ \<turnstile> \<Rightarrow>_")
+inductive JVMCFG :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> (var, val, cname \<times> mname \<times> pc, cname \<times> mname) edge_kind \<Rightarrow> cfg_node \<Rightarrow> bool" (\<open> _ \<turnstile> _ -_\<rightarrow> _\<close>)
+  and reachable :: "jvm_method \<Rightarrow> cfg_node \<Rightarrow> bool" (\<open> _ \<turnstile> \<Rightarrow>_\<close>)
   where
     Entry_reachable: "(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, None, Enter)"
   | reachable_step: "\<lbrakk> P \<turnstile> \<Rightarrow>n; P \<turnstile> n -(e)\<rightarrow> n' \<rbrakk> \<Longrightarrow> P \<turnstile> \<Rightarrow>n'"

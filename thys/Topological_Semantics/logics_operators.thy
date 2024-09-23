@@ -11,34 +11,34 @@ text\<open>Conversions between interior, closure and exterior are straightforwar
   We focus here on conversions involving the border and frontier operators.\<close>
 
 text\<open>Interior operator as derived from border.\<close>
-definition Int_br::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<I>\<^sub>B") 
+definition Int_br::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<I>\<^sub>B\<close>) 
   where "\<I>\<^sub>B \<B> \<equiv> \<lambda>A. A \<^bold>\<leftharpoonup> (\<B> A)"
 text\<open>Interior operator as derived from frontier.\<close>
-definition Int_fr::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<I>\<^sub>F") 
+definition Int_fr::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<I>\<^sub>F\<close>) 
   where "\<I>\<^sub>F \<F> \<equiv> \<lambda>A. A \<^bold>\<leftharpoonup> (\<F> A)"
 text\<open>Closure operator as derived from border.\<close>
-definition Cl_br::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<C>\<^sub>B") 
+definition Cl_br::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<C>\<^sub>B\<close>) 
   where "\<C>\<^sub>B \<B> \<equiv> \<lambda>A. A \<^bold>\<or> \<B>(\<^bold>\<midarrow>A)"
 text\<open>Closure operator as derived from frontier.\<close>
-definition Cl_fr::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<C>\<^sub>F") 
+definition Cl_fr::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<C>\<^sub>F\<close>) 
   where "\<C>\<^sub>F \<F> \<equiv> \<lambda>A. A \<^bold>\<or> (\<F> A)"
 text\<open>Frontier operator as derived from interior.\<close>
-definition Fr_int::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<F>\<^sub>I") 
+definition Fr_int::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<F>\<^sub>I\<close>) 
   where "\<F>\<^sub>I \<I> \<equiv> \<lambda>A. \<^bold>\<midarrow>(\<I> A \<^bold>\<or> \<I>(\<^bold>\<midarrow>A))"
 text\<open>Frontier operator as derived from closure.\<close>
-definition Fr_cl::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<F>\<^sub>C") 
+definition Fr_cl::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<F>\<^sub>C\<close>) 
   where "\<F>\<^sub>C \<C> \<equiv> \<lambda>A. (\<C> A) \<^bold>\<and> \<C>(\<^bold>\<midarrow>A)"
 text\<open>Frontier operator as derived from border.\<close>
-definition Fr_br::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<F>\<^sub>B") 
+definition Fr_br::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<F>\<^sub>B\<close>) 
   where "\<F>\<^sub>B \<B> \<equiv> \<lambda>A. \<B> A \<^bold>\<or> \<B>(\<^bold>\<midarrow>A)"
 text\<open>Border operator as derived from interior.\<close>
-definition Br_int::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<B>\<^sub>I") 
+definition Br_int::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<B>\<^sub>I\<close>) 
   where "\<B>\<^sub>I \<I> \<equiv> \<lambda>A. A \<^bold>\<leftharpoonup> (\<I> A)"
 text\<open>Border operator as derived from closure.\<close>
-definition Br_cl::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<B>\<^sub>C")  
+definition Br_cl::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<B>\<^sub>C\<close>)  
   where "\<B>\<^sub>C \<C> \<equiv> \<lambda>A. A \<^bold>\<and> \<C>(\<^bold>\<midarrow>A)"
 text\<open>Border operator as derived from frontier.\<close>
-definition Br_fr::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" ("\<B>\<^sub>F") 
+definition Br_fr::"('w \<sigma>\<Rightarrow>'w \<sigma>)\<Rightarrow>('w \<sigma>\<Rightarrow>'w \<sigma>)" (\<open>\<B>\<^sub>F\<close>) 
   where "\<B>\<^sub>F \<F> \<equiv> \<lambda>A. A \<^bold>\<and> (\<F> A)"
 
 text\<open>Inter-definitions involving border or frontier do not hold without restrictions.\<close>

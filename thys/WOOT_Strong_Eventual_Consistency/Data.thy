@@ -131,9 +131,9 @@ text \<open>The WOOT Framework requires a unique identifier for each insert oper
 subsubsection \<open>Extended Identifiers\<close>
 
 datatype '\<I> extended
-  = Begin ("\<turnstile>")
-  | InString '\<I> ("(1\<lbrakk>_\<rbrakk>)")
-  | End ("\<stileturn>")
+  = Begin (\<open>\<turnstile>\<close>)
+  | InString '\<I> (\<open>(1\<lbrakk>_\<rbrakk>)\<close>)
+  | End (\<open>\<stileturn>\<close>)
 derive linorder extended
 
 text \<open>We embed the set of identifiers in an extension containing two additional elements

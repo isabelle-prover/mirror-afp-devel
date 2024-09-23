@@ -19,7 +19,7 @@ lemma defined_bottom [simp]: "\<not> defined \<bottom>"
 lemma defined_seq [simp]: "defined x \<Longrightarrow> seq\<cdot>x\<cdot>y = y"
   by (simp add: defined_def)
 
-consts val :: "'a::type \<Rightarrow> 'b::type" ("\<lbrakk>_\<rbrakk>")
+consts val :: "'a::type \<Rightarrow> 'b::type" (\<open>\<lbrakk>_\<rbrakk>\<close>)
 
 text \<open>val for booleans\<close>
 

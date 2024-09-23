@@ -789,7 +789,7 @@ context
   fixes n :: nat
 begin
 
-definition cyclic_convolution :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl "\<star>" 70) where
+definition cyclic_convolution :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl \<open>\<star>\<close> 70) where
   "cyclic_convolution a b \<equiv> [(\<Oplus>\<sigma> \<leftarrow> [0..<n]. (a ! \<sigma> \<otimes> b ! ((n + i - \<sigma>) mod n))). i \<leftarrow> [0..<n]]"
 
 lemma cyclic_convolution_length[simp]:

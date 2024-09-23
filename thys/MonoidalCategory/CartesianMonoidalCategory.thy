@@ -16,7 +16,7 @@ section "Symmetric Monoidal Category"
     S: symmetry_functor C C +
     ToS: composite_functor CC.comp CC.comp C S.map T +
     \<sigma>: natural_isomorphism CC.comp C T ToS.map \<sigma>
-  for C :: "'a comp"                            (infixr "\<cdot>" 55)
+  for C :: "'a comp"                            (infixr \<open>\<cdot>\<close> 55)
   and T :: "'a * 'a \<Rightarrow> 'a"
   and \<alpha> :: "'a * 'a * 'a \<Rightarrow> 'a"
   and \<iota> :: 'a
@@ -28,20 +28,20 @@ section "Symmetric Monoidal Category"
                              = (b \<otimes> \<sigma> (a, c)) \<cdot> \<alpha> (b, a, c) \<cdot> (\<sigma> (a, b) \<otimes> c)"
   begin
 
-    abbreviation sym                  ("\<s>[_, _]")
+    abbreviation sym                  (\<open>\<s>[_, _]\<close>)
     where "sym a b \<equiv> \<sigma> (a, b)"
 
   end
 
   locale elementary_symmetric_monoidal_category =
     elementary_monoidal_category C tensor unity lunit runit assoc
-  for C :: "'a comp"                  (infixr "\<cdot>" 55)
-  and tensor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"       (infixr "\<otimes>" 53)
-  and unity :: 'a                      ("\<I>")
-  and lunit :: "'a \<Rightarrow> 'a"              ("\<l>[_]")
-  and runit :: "'a \<Rightarrow> 'a"              ("\<r>[_]")
-  and assoc :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("\<a>[_, _, _]")
-  and sym :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          ("\<s>[_, _]") +
+  for C :: "'a comp"                  (infixr \<open>\<cdot>\<close> 55)
+  and tensor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"       (infixr \<open>\<otimes>\<close> 53)
+  and unity :: 'a                      (\<open>\<I>\<close>)
+  and lunit :: "'a \<Rightarrow> 'a"              (\<open>\<l>[_]\<close>)
+  and runit :: "'a \<Rightarrow> 'a"              (\<open>\<r>[_]\<close>)
+  and assoc :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>\<a>[_, _, _]\<close>)
+  and sym :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (\<open>\<s>[_, _]\<close>) +
   assumes sym_in_hom: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> \<guillemotleft>\<s>[a, b] : a \<otimes> b \<rightarrow> b \<otimes> a\<guillemotright>"
   and sym_naturality: "\<lbrakk> arr f; arr g \<rbrakk> \<Longrightarrow> \<s>[cod f, cod g] \<cdot> (f \<otimes> g) = (g \<otimes> f) \<cdot> \<s>[dom f, dom g]"
   and sym_inverse: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> inverse_arrows \<s>[a, b] \<s>[b, a]"
@@ -196,7 +196,7 @@ section "Cartesian Monoidal Category"
 
   locale cartesian_monoidal_category =
     monoidal_category C T \<alpha> \<iota>
-  for C :: "'a comp"                            (infixr "\<cdot>" 55)
+  for C :: "'a comp"                            (infixr \<open>\<cdot>\<close> 55)
   and T :: "'a * 'a \<Rightarrow> 'a"
   and \<alpha> :: "'a * 'a * 'a \<Rightarrow> 'a"
   and \<iota> :: 'a +
@@ -213,7 +213,7 @@ section "Cartesian Monoidal Category"
     shows "category_with_terminal_object C"
       ..
 
-    definition the_trm  ("\<t>[_]")
+    definition the_trm  (\<open>\<t>[_]\<close>)
     where "the_trm \<equiv> \<lambda>f. THE t. \<guillemotleft>t : dom f \<rightarrow> \<I>\<guillemotright>"
 
     lemma trm_in_hom [intro]:
@@ -244,10 +244,10 @@ section "Cartesian Monoidal Category"
     shows "elementary_category_with_terminal_object C \<I> the_trm"
       ..
 
-    definition pr\<^sub>0  ("\<pp>\<^sub>0[_, _]")
+    definition pr\<^sub>0  (\<open>\<pp>\<^sub>0[_, _]\<close>)
     where "pr\<^sub>0 a b \<equiv> \<l>[b] \<cdot> (\<t>[a] \<otimes> b)"
 
-    definition pr\<^sub>1  ("\<pp>\<^sub>1[_, _]")
+    definition pr\<^sub>1  (\<open>\<pp>\<^sub>1[_, _]\<close>)
     where "pr\<^sub>1 a b \<equiv> \<r>[a] \<cdot> (a \<otimes> \<t>[b])"
 
     (* TODO: Must use qualified name to avoid clash between definitions of assoc. *)
@@ -287,10 +287,10 @@ section "Cartesian Monoidal Category"
     sublocale cartesian_category C
       using is_cartesian_category by blast
 
-    abbreviation dup  ("\<d>[_]")
+    abbreviation dup  (\<open>\<d>[_]\<close>)
     where "dup \<equiv> ECC.dup"
 
-    abbreviation tuple  ("\<langle>_, _\<rangle>")
+    abbreviation tuple  (\<open>\<langle>_, _\<rangle>\<close>)
     where "\<langle>f, g\<rangle> \<equiv> ECC.tuple f g"
 
     lemma prod_eq_tensor:
@@ -574,14 +574,14 @@ section "Elementary Cartesian Monoidal Category"
 
   locale elementary_cartesian_monoidal_category =
     elementary_monoidal_category C tensor unity lunit runit assoc
-  for C :: "'a comp"                   (infixr "\<cdot>" 55)
-  and tensor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"       (infixr "\<otimes>" 53)
-  and unity :: 'a                      ("\<I>")
-  and lunit :: "'a \<Rightarrow> 'a"              ("\<l>[_]")
-  and runit :: "'a \<Rightarrow> 'a"              ("\<r>[_]")
-  and assoc :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("\<a>[_, _, _]")
-  and trm :: "'a \<Rightarrow> 'a"                ("\<t>[_]")
-  and dup :: "'a \<Rightarrow> 'a"                ("\<d>[_]") +
+  for C :: "'a comp"                   (infixr \<open>\<cdot>\<close> 55)
+  and tensor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"       (infixr \<open>\<otimes>\<close> 53)
+  and unity :: 'a                      (\<open>\<I>\<close>)
+  and lunit :: "'a \<Rightarrow> 'a"              (\<open>\<l>[_]\<close>)
+  and runit :: "'a \<Rightarrow> 'a"              (\<open>\<r>[_]\<close>)
+  and assoc :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>\<a>[_, _, _]\<close>)
+  and trm :: "'a \<Rightarrow> 'a"                (\<open>\<t>[_]\<close>)
+  and dup :: "'a \<Rightarrow> 'a"                (\<open>\<d>[_]\<close>) +
   assumes trm_in_hom: "ide a \<Longrightarrow> \<guillemotleft>\<t>[a] : a \<rightarrow> \<I>\<guillemotright>"
   and trm_unity: "\<t>[\<I>] = \<I>"
   and trm_naturality: "arr f \<Longrightarrow> \<t>[cod f] \<cdot> f = \<t>[dom f]"

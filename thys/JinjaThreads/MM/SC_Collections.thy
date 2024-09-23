@@ -192,9 +192,9 @@ where
 abbreviation sc_wf_start_state :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> bool"
 where "sc_wf_start_state P \<equiv> sc.wf_start_state TYPE('m) P P"
 
-notation sc.conf ("_,_ \<turnstile>sc _ :\<le> _"  [51,51,51,51] 50)
-notation sc.confs ("_,_ \<turnstile>sc _ [:\<le>] _" [51,51,51,51] 50)
-notation sc.hext ("_ \<unlhd>sc _" [51,51] 50)
+notation sc.conf (\<open>_,_ \<turnstile>sc _ :\<le> _\<close>  [51,51,51,51] 50)
+notation sc.confs (\<open>_,_ \<turnstile>sc _ [:\<le>] _\<close> [51,51,51,51] 50)
+notation sc.hext (\<open>_ \<unlhd>sc _\<close> [51,51] 50)
 
 lemma new_Addr_SomeI: "\<exists>a. new_Addr h = Some a"
 by(simp add: new_Addr_def)
@@ -252,7 +252,7 @@ by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def rm.lookup_correct r
 
 subsection \<open>Conformance\<close>
 
-definition sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile>sc _ \<surd>" [51,51,51] 50)
+definition sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   (\<open>_,_ \<turnstile>sc _ \<surd>\<close> [51,51,51] 50)
 where
   "P,h \<turnstile>sc obj \<surd>  \<equiv>
    (case obj of 
@@ -264,7 +264,7 @@ where
       is_type P (T\<lfloor>\<rceil>) \<and> (\<forall>n. n < si \<longrightarrow> (\<exists>v. rm_\<alpha> el n = Some v \<and> P,h \<turnstile>sc v :\<le> T)) \<and>
       (\<forall>F T fm. P \<turnstile> Object has F:T (fm) in Object \<longrightarrow> (\<exists>v. lm_lookup F f = Some v \<and> P,h \<turnstile>sc v :\<le> T)))"
 
-definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile>sc _ \<surd>" [51,51] 50)
+definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  (\<open>_ \<turnstile>sc _ \<surd>\<close> [51,51] 50)
 where "P \<turnstile>sc h \<surd> \<longleftrightarrow> (\<forall>a obj. rm_\<alpha> h a = Some obj \<longrightarrow> P,h \<turnstile>sc obj \<surd>)"
 
 interpretation sc: 

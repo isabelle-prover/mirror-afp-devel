@@ -32,7 +32,7 @@ text \<open>Isomorphism's are defined by the Handbook of Combinatorial Designs
 \<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>\<close>
 
 locale incidence_system_isomorphism = source: incidence_system \<V> \<B> + target: incidence_system \<V>' \<B>'
-  for "\<V>" and "\<B>" and "\<V>'" and "\<B>'" + fixes bij_map ("\<pi>")
+  for "\<V>" and "\<B>" and "\<V>'" and "\<B>'" + fixes bij_map (\<open>\<pi>\<close>)
   assumes bij: "bij_betw \<pi> \<V> \<V>'"
   assumes block_img: "image_mset ((`) \<pi>) \<B> = \<B>'"
 begin
@@ -164,7 +164,7 @@ subsection \<open>Design Isomorphisms\<close>
 text \<open>Apply the concept of isomorphisms to designs only\<close>
 
 locale design_isomorphism = incidence_system_isomorphism \<V> \<B> \<V>' \<B>' \<pi> + source: design \<V> \<B> + 
-  target: design \<V>' \<B>' for \<V> and \<B> and \<V>' and \<B>' and bij_map ("\<pi>")
+  target: design \<V>' \<B>' for \<V> and \<B> and \<V>' and \<B>' and bij_map (\<open>\<pi>\<close>)
   
 context design_isomorphism
 begin
@@ -178,7 +178,7 @@ end
 subsubsection \<open>Isomorphism Operation\<close>
 text \<open>Define the concept of isomorphic designs outside the scope of locale\<close>
 
-definition isomorphic_designs (infixl "\<cong>\<^sub>D" 50) where
+definition isomorphic_designs (infixl \<open>\<cong>\<^sub>D\<close> 50) where
 "\<D> \<cong>\<^sub>D \<D>' \<longleftrightarrow> (\<exists> \<pi> . design_isomorphism (fst \<D>) (snd \<D>) (fst \<D>') (snd \<D>') \<pi>)"
 
 lemma isomorphic_designs_symmetric: "(\<V>, \<B>) \<cong>\<^sub>D (\<V>', \<B>') \<Longrightarrow> (\<V>', \<B>') \<cong>\<^sub>D (\<V>, \<B>)"

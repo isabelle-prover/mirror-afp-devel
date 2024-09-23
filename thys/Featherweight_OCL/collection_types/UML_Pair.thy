@@ -110,7 +110,7 @@ subsubsection\<open>Definition: Pair Constructor\<close>
 
 definition OclPair::"('\<AA>, '\<alpha>) val \<Rightarrow>
                      ('\<AA>, '\<beta>) val \<Rightarrow>
-                     ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair"  ("Pair{(_),(_)}")
+                     ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair"  (\<open>Pair{(_),(_)}\<close>)
 where     "Pair{X,Y} \<equiv> (\<lambda> \<tau>. if (\<upsilon> X) \<tau> = true \<tau> \<and> (\<upsilon> Y) \<tau> = true \<tau>
                               then Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>(X \<tau>, Y \<tau>)\<rfloor>\<rfloor>
                               else invalid \<tau>)"
@@ -123,7 +123,7 @@ interpretation OclPair : profile_bin\<^sub>v_\<^sub>v
 
 subsubsection\<open>Definition: First\<close>
 
-definition OclFirst::" ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair \<Rightarrow> ('\<AA>, '\<alpha>) val"  (" _ .First'(')")
+definition OclFirst::" ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair \<Rightarrow> ('\<AA>, '\<alpha>) val"  (\<open> _ .First'(')\<close>)
 where     "X .First() \<equiv> (\<lambda> \<tau>. if (\<delta> X) \<tau> = true \<tau>
                               then fst \<lceil>\<lceil>Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>)\<rceil>\<rceil>
                               else invalid \<tau>)"
@@ -134,7 +134,7 @@ interpretation OclFirst : profile_mono\<^sub>d OclFirst "\<lambda>x.  fst \<lcei
 
 subsubsection\<open>Definition: Second\<close>
                               
-definition OclSecond::" ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair \<Rightarrow> ('\<AA>, '\<beta>) val"  ("_ .Second'(')")
+definition OclSecond::" ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair \<Rightarrow> ('\<AA>, '\<beta>) val"  (\<open>_ .Second'(')\<close>)
 where     "X .Second() \<equiv> (\<lambda> \<tau>. if (\<delta> X) \<tau> = true \<tau>
                                then snd \<lceil>\<lceil>Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>)\<rceil>\<rceil>
                                else invalid \<tau>)"

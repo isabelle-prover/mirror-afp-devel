@@ -50,14 +50,14 @@ text\<open>
   does not matter.
 \<close>
 
-fun nxt :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" ("N")
+fun nxt :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (\<open>N\<close>)
 where 
    "nxt p [] = False"
 |  "nxt p (a # S) = (p S)"
 
 text\<open>Predicate $p$ holds at first position.\<close>
 
-fun atom :: "('\<alpha> \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" ("\<guillemotleft>_\<guillemotright>")
+fun atom :: "('\<alpha> \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (\<open>\<guillemotleft>_\<guillemotright>\<close>)
 where 
    "atom p [] = False"
 |  "atom p (a # S) = (p a)"
@@ -66,7 +66,7 @@ lemma holds_mono : "\<guillemotleft>q\<guillemotright> s \<Longrightarrow> \<gui
   by(cases "s",simp_all)
 
 
-fun always :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" ("\<box>")
+fun always :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (\<open>\<box>\<close>)
 where 
    "always p [] = True"
 |  "always p (a # S) = ((p (a # S)) \<and> always p S)"
@@ -78,7 +78,7 @@ text\<open>
 lemma always_is_listall : "(\<box> \<guillemotleft>p\<guillemotright>) (t) = list_all (p) (t)"
   by(induct "t", simp_all)
 
-fun eventually :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" ("\<diamondsuit>")
+fun eventually :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (\<open>\<diamondsuit>\<close>)
 where 
    "eventually p [] = False"
 |  "eventually p (a # S) = ((p (a # S)) \<or> eventually p S)"
@@ -123,7 +123,7 @@ lemma not_before_superfluous:
   done
     
 text\<open>General "before":\<close>
-fun until :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> ('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (infixl "U" 66)
+fun until :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> ('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (infixl \<open>U\<close> 66)
 where 
   "until p q [] = False"
 | "until p q (a # S) = (\<exists> s t. a # S= s @ t \<and> p s \<and>  q t)"

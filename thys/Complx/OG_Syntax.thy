@@ -23,9 +23,9 @@ fun com where "com (AnnCom p q) = q"
 lemmas ann.simps[oghoare_simps] com.simps[oghoare_simps]
 
 syntax
-  "_quote"     :: "'b \<Rightarrow> ('a \<Rightarrow> 'b)"                ("(\<guillemotleft>_\<guillemotright>)" [0] 1000)
-  "_antiquote" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"                ("\<acute>_" [1000] 1000)
-  "_Assert"    :: "'a \<Rightarrow> 'a set"                    ("(\<lbrace>_\<rbrace>)" [0] 1000)
+  "_quote"     :: "'b \<Rightarrow> ('a \<Rightarrow> 'b)"                (\<open>(\<guillemotleft>_\<guillemotright>)\<close> [0] 1000)
+  "_antiquote" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b"                (\<open>\<acute>_\<close> [1000] 1000)
+  "_Assert"    :: "'a \<Rightarrow> 'a set"                    (\<open>(\<lbrace>_\<rbrace>)\<close> [0] 1000)
 
 translations
   "\<lbrace>b\<rbrace>" \<rightharpoonup> "CONST Collect \<guillemotleft>b\<guillemotright>"
@@ -38,8 +38,8 @@ parse_translation \<open>
 \<close>
 
 syntax
-  "_fst" :: "'a \<times> 'b \<Rightarrow> 'a"  ("_\<^sub>," [60] 61)
-  "_snd" :: "'a \<times> 'b \<Rightarrow> 'b"  ("_\<^sub>." [60] 61)
+  "_fst" :: "'a \<times> 'b \<Rightarrow> 'a"  (\<open>_\<^sub>,\<close> [60] 61)
+  "_snd" :: "'a \<times> 'b \<Rightarrow> 'b"  (\<open>_\<^sub>.\<close> [60] 61)
 
 parse_translation \<open>
   let
@@ -58,8 +58,8 @@ text\<open>Syntax for commands and for assertions and boolean expressions in
  commands \<open>com\<close> and annotated commands \<open>ann_com\<close>.\<close>
 
 syntax
-  "_Annotation" :: "('s,'p,'f) ann_com \<Rightarrow> ('s, 'p, 'f) ann"  ("_\<^sub>?" [60] 61)
-  "_Command" :: "('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) com"  ("_\<^sub>!" [60] 61)
+  "_Annotation" :: "('s,'p,'f) ann_com \<Rightarrow> ('s, 'p, 'f) ann"  (\<open>_\<^sub>?\<close> [60] 61)
+  "_Command" :: "('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) com"  (\<open>_\<^sub>!\<close> [60] 61)
 
 parse_translation \<open>
   let
@@ -82,9 +82,9 @@ parse_translation \<open>
 
 syntax
   "_Seq"  :: "('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                   ("(_,,/ _)" [55, 56] 55)
+                   (\<open>(_,,/ _)\<close> [55, 56] 55)
   "_AnnSeq"  :: "('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                   ("(_;;//_)" [55, 56] 55)
+                   (\<open>(_;;//_)\<close> [55, 56] 55)
 
 translations
   "_Seq c1 c2" \<rightharpoonup> "CONST AnnCom (CONST AnnComp (c1\<^sub>?) (c2\<^sub>?)) (CONST Seq (c1\<^sub>!) (c2\<^sub>!))"
@@ -92,9 +92,9 @@ translations
 
 syntax
   "_Assign"    :: "idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
-                   ("(\<acute>_ :=/ _)" [70, 65] 61)
+                   (\<open>(\<acute>_ :=/ _)\<close> [70, 65] 61)
   "_AnnAssign" :: "'s assn \<Rightarrow> idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
-                   ("(_//\<acute>_ :=/ _)" [90,70,65] 61)
+                   (\<open>(_//\<acute>_ :=/ _)\<close> [90,70,65] 61)
 
 definition "FAKE_ANN \<equiv> UNIV"
 
@@ -111,9 +111,9 @@ abbreviation
 
 syntax
   "_Spec"      :: "idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
-                   ("(\<acute>_ :\<in>/ _)" [70, 65] 61)
+                   (\<open>(\<acute>_ :\<in>/ _)\<close> [70, 65] 61)
   "_AnnSpec"   :: "'a assn \<Rightarrow> idt \<Rightarrow> 'b \<Rightarrow> ('s,'p,'f) ann_com"
-                   ("(_//\<acute>_ :\<in>/ _)" [90,70,65] 61)
+                   (\<open>(_//\<acute>_ :\<in>/ _)\<close> [90,70,65] 61)
 
 translations
   "r \<acute>x :\<in> S" \<rightharpoonup> "CONST AnnCom (CONST AnnExpr r)
@@ -125,54 +125,54 @@ nonterminal grds and grd
 
 syntax
   "_AnnCond1"    :: "'s assn \<Rightarrow> 's bexp  \<Rightarrow> ('s,'p,'f) ann_com  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//IF _//(2THEN/ (_))//(2ELSE/ (_))//FI)"  [90,0,0,0] 61)
+                    (\<open>(_//IF _//(2THEN/ (_))//(2ELSE/ (_))//FI)\<close>  [90,0,0,0] 61)
   "_AnnCond2"    :: "'s assn \<Rightarrow> 's bexp  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//IF _//(2THEN/ (_))//FI)"  [90,0,0] 61)
+                    (\<open>(_//IF _//(2THEN/ (_))//FI)\<close>  [90,0,0] 61)
   "_AnnWhile"    :: "'s assn \<Rightarrow> 's bexp  \<Rightarrow> 's assn \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com" 
-                    ("(_//WHILE _/ INV _//(2DO/ (_))//OD)"  [90,0,0,0] 61)
+                    (\<open>(_//WHILE _/ INV _//(2DO/ (_))//OD)\<close>  [90,0,0,0] 61)
   "_AnnAwait"    :: "'s assn \<Rightarrow> 's bexp  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//AWAIT _/ (2THEN/ (_))/ END)"  [90,0,0] 61)
+                    (\<open>(_//AWAIT _/ (2THEN/ (_))/ END)\<close>  [90,0,0] 61)
   "_AnnAtom"     :: "'s assn  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//\<langle>_\<rangle>)" [90,0] 61)
+                    (\<open>(_//\<langle>_\<rangle>)\<close> [90,0] 61)
   "_AnnWait"     :: "'s assn \<Rightarrow> 's bexp \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//WAIT _/ END)" [90,0] 61)
+                    (\<open>(_//WAIT _/ END)\<close> [90,0] 61)
 
   "_Cond"        :: "'s bexp \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com" 
-                    ("(IF _//(2THEN/ (_))//(2ELSE/ (_))//FI)" [0, 0, 0] 61)
+                    (\<open>(IF _//(2THEN/ (_))//(2ELSE/ (_))//FI)\<close> [0, 0, 0] 61)
   "_Cond2"       :: "'s bexp \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(IF _//(2THEN/ (_))//FI)" [0,0] 56)
+                    (\<open>(IF _//(2THEN/ (_))//FI)\<close> [0,0] 56)
   "_While_inv"   :: "'s bexp \<Rightarrow> 's assn \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(WHILE _/ INV _//(2DO/ (_))//OD)"  [0, 0, 0] 61)
+                    (\<open>(WHILE _/ INV _//(2DO/ (_))//OD)\<close>  [0, 0, 0] 61)
   "_While"       :: "'s bexp \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(WHILE _//(2DO/ (_))//OD)"  [0, 0] 61)
+                    (\<open>(WHILE _//(2DO/ (_))//OD)\<close>  [0, 0] 61)
   "_Await"       :: "'s bexp  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(AWAIT _/ (2THEN/ (_))/ END)"  [0,0] 61)
+                    (\<open>(AWAIT _/ (2THEN/ (_))/ END)\<close>  [0,0] 61)
   "_Atom"        :: "('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(\<langle>_\<rangle>)" [0] 61)
+                    (\<open>(\<langle>_\<rangle>)\<close> [0] 61)
   "_Wait"        :: "'s bexp \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(WAIT _/ END)" [0] 61)
+                    (\<open>(WAIT _/ END)\<close> [0] 61)
   "_grd"         :: "'f \<Rightarrow> 's bexp \<Rightarrow> grd"
-                    ("'(_, _')" [1000] 1000)
-  "_last_grd"    :: "grd \<Rightarrow> grds"   ("_" 1000)
+                    (\<open>'(_, _')\<close> [1000] 1000)
+  "_last_grd"    :: "grd \<Rightarrow> grds"   (\<open>_\<close> 1000)
   "_grds"        :: "[grd, grds] \<Rightarrow> grds"
-                    ("(_,/ _)" [999,1000] 1000)
+                    (\<open>(_,/ _)\<close> [999,1000] 1000)
   "_guards"      :: "'s assn \<Rightarrow> grds  \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//(2_ \<longmapsto>/ (_)))" [90, 0, 56] 61)
+                    (\<open>(_//(2_ \<longmapsto>/ (_)))\<close> [90, 0, 56] 61)
   "_Throw"       :: "('s,'p,'f) ann_com"
-                    ("THROW" 61)
+                    (\<open>THROW\<close> 61)
   "_AnnThrow"    :: "'s assn \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_/ THROW)" [90] 61)
+                    (\<open>(_/ THROW)\<close> [90] 61)
   "_Try_Catch"   :: "('s,'p,'f) ann_com \<Rightarrow>('s,'p,'f) ann_com \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("((2TRY/ (_))//(2CATCH/ (_))/ END)"  [0,0] 71)
+                    (\<open>((2TRY/ (_))//(2CATCH/ (_))/ END)\<close>  [0,0] 71)
   "_AnnCallX"    :: "'s assn \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> 's assn  \<Rightarrow> 'p \<Rightarrow> nat \<Rightarrow> ('s \<Rightarrow> 's \<Rightarrow> 's) \<Rightarrow> ('s\<Rightarrow>'s\<Rightarrow>('s,'p,'f) com) \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//(2CALLX/ (_)//_/ _/ _//_/ _//_/ _//_/ _))"
+                    (\<open>(_//(2CALLX/ (_)//_/ _/ _//_/ _//_/ _//_/ _))\<close>
                       [90,1000,0,1000,0,1000,1000,0,0,0,0] 61)
   "_AnnSCall"    :: "'s assn \<Rightarrow> 'p \<Rightarrow> nat \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_//SCALL _/ _)" [90,0,0] 61)
+                    (\<open>(_//SCALL _/ _)\<close> [90,0,0] 61)
   "_Skip"        :: "('s,'p,'f) ann_com"
-                    ("SKIP" 61)
+                    (\<open>SKIP\<close> 61)
   "_AnnSkip"     :: "'s assn \<Rightarrow> ('s,'p,'f) ann_com"
-                    ("(_/ SKIP)" [90] 61)
+                    (\<open>(_/ SKIP)\<close> [90] 61)
 
 translations
   "r IF b THEN c1 ELSE c2 FI" \<rightharpoonup>
@@ -215,12 +215,12 @@ translations
 nonterminal prgs
 
 syntax
-  "_PAR" :: "prgs \<Rightarrow> 'a"              ("(COBEGIN//_//COEND)" [57] 56)
-  "_prg" :: "['a, 'a, 'a] \<Rightarrow> prgs"        ("(2  _//_,/ _)" [60, 90, 90] 57)
-  "_prgs" :: "['a, 'a, 'a, prgs] \<Rightarrow> prgs"  ("(2  _//_,/ _)//\<parallel>//_" [60,90,90,57] 57)
+  "_PAR" :: "prgs \<Rightarrow> 'a"              (\<open>(COBEGIN//_//COEND)\<close> [57] 56)
+  "_prg" :: "['a, 'a, 'a] \<Rightarrow> prgs"        (\<open>(2  _//_,/ _)\<close> [60, 90, 90] 57)
+  "_prgs" :: "['a, 'a, 'a, prgs] \<Rightarrow> prgs"  (\<open>(2  _//_,/ _)//\<parallel>//_\<close> [60,90,90,57] 57)
 
   "_prg_scheme" :: "['a, 'a, 'a, 'a, 'a, 'a] \<Rightarrow> prgs"  
-                  ("  (2SCHEME [_ \<le> _ < _]//_//_,/ _)" [0,0,0,60, 90,90] 57)
+                  (\<open>  (2SCHEME [_ \<le> _ < _]//_//_,/ _)\<close> [0,0,0,60, 90,90] 57)
 
 translations
   "_prg c q a" \<rightharpoonup> "([((c\<^sub>?), q, a)], [(c\<^sub>!)])"
@@ -232,11 +232,11 @@ translations
 syntax
   "_oghoare" :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set
               \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> bool"  
-    ("(4_),/ (4_)/ (|\<turnstile>\<^bsub>'/_\<^esub> (_//_, _))" [60,60,60,20,1000,1000]60)
+    (\<open>(4_),/ (4_)/ (|\<turnstile>\<^bsub>'/_\<^esub> (_//_, _))\<close> [60,60,60,20,1000,1000]60)
 
   "_oghoare_seq" :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set
               \<Rightarrow>'s assn \<Rightarrow> ('s,'p,'f) ann_com \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> bool"  
-    ("(4_),/ (4_)/ (|\<tturnstile>\<^bsub>'/_\<^esub> (_//_//_, _))" [60,60,60,1000,20,1000,1000]60)
+    (\<open>(4_),/ (4_)/ (|\<tturnstile>\<^bsub>'/_\<^esub> (_//_//_, _))\<close> [60,60,60,1000,20,1000,1000]60)
 
 translations
   "_oghoare \<Gamma> \<Theta> F c Q A" \<rightharpoonup> "\<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> (c\<^sub>?) (c\<^sub>!) Q, A"

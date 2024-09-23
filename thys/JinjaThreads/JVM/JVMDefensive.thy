@@ -168,7 +168,7 @@ inductive
   exec_1_d :: 
   "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state type_error
   \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action \<Rightarrow> ('addr, 'heap) jvm_state type_error \<Rightarrow> bool" 
-  ("_,_ \<turnstile> _ -_-jvmd\<rightarrow> _" [61,0,61,0,61] 60)
+  (\<open>_,_ \<turnstile> _ -_-jvmd\<rightarrow> _\<close> [61,0,61,0,61] 60)
   for P :: "'addr jvm_prog" and t :: 'thread_id
 where
   exec_1_d_ErrorI: "exec_d P t \<sigma> = TypeError \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -\<epsilon>-jvmd\<rightarrow> TypeError"

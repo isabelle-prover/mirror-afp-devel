@@ -37,7 +37,7 @@ locale counterex_reducing_inference_system = inference_system Inf + consequence_
   for Inf :: "'f inference set" +
   fixes
     I_of :: "'f set \<Rightarrow> 'f set" and
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50)
   assumes
     wfp_less: "wfp (\<prec>)" and
     Inf_counterex_reducing:
@@ -153,9 +153,9 @@ locale finitary_standard_formula_redundancy =
   consequence_relation Bot "(\<Turnstile>)"
   for
     Bot :: "'f set" and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) +
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) +
   fixes
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50)
   assumes
     transp_less: "transp (\<prec>)" and
     wfp_less: "wfp (\<prec>)"
@@ -305,8 +305,8 @@ locale calculus_with_finitary_standard_redundancy =
   for
     Inf :: "'f inference set" and
     Bot :: "'f set" and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50) +
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) and
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50) +
   assumes
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
@@ -390,9 +390,9 @@ locale standard_formula_redundancy =
   concl_compact_consequence_relation Bot "(\<Turnstile>)"
   for
     Bot :: "'f set" and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) +
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) +
   fixes
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50)
   assumes
     transp_less: "transp (\<prec>)" and
     wfp_less: "wfp (\<prec>)"
@@ -463,8 +463,8 @@ locale calculus_with_standard_redundancy =
   for
     Inf :: "'f inference set" and
     Bot :: "'f set" and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50) +
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) and
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50) +
   assumes
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Inf_reductive: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<prec> main_prem_of \<iota>"
@@ -544,9 +544,9 @@ end
 subsection \<open>Refutational Completeness\<close>
 
 locale calculus_with_standard_inference_redundancy = calculus Bot Inf "(\<Turnstile>)" Red_I Red_F
-  for Bot :: "'f set" and Inf and entails (infix "\<Turnstile>" 50) and Red_I and Red_F +
+  for Bot :: "'f set" and Inf and entails (infix \<open>\<Turnstile>\<close> 50) and Red_I and Red_F +
   fixes
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50)
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50)
   assumes
     Inf_has_prem: "\<iota> \<in> Inf \<Longrightarrow> prems_of \<iota> \<noteq> []" and
     Red_I_imp_redundant_infer: "\<iota> \<in> Red_I N \<Longrightarrow>
@@ -568,11 +568,11 @@ locale counterex_reducing_calculus_with_standard_inferance_redundancy =
   for
     Bot :: "'f set" and
     Inf :: "'f inference set" and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) and
     Red_I :: "'f set \<Rightarrow> 'f inference set" and
     Red_F :: "'f set \<Rightarrow> 'f set" and
     I_of :: "'f set \<Rightarrow> 'f set" and
-    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>" 50) +
+    less :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<close> 50) +
   assumes less_total: "\<And>C D. C \<noteq> D \<Longrightarrow> C \<prec> D \<or> D \<prec> C"
 begin
 

@@ -89,7 +89,7 @@ proof -
     proof -
       have [simp]: "z \<noteq> 1"
         using z 0 by (auto simp: S_def)
-      write eulerian_poly ("E")
+      write eulerian_poly (\<open>E\<close>)
       have "polylog (k - 1) z = z * (poly (E (Suc k')) z * (1 - z) powi (k - 2))"
         using 0 by (simp add: polylog_def k_eq nat_add_distrib algebra_simps)
       also have "\<dots> = z * poly (E (Suc k')) z / (1 - z) ^ (k' + 2)"

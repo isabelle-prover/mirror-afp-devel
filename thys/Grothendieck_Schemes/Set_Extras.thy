@@ -10,12 +10,12 @@ text \<open>Some new notation for built-in primitives\<close>
 
 section \<open>Sets\<close>
 
-abbreviation complement_in_of:: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" ("_\<setminus>_" [65,65]65)
+abbreviation complement_in_of:: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (\<open>_\<setminus>_\<close> [65,65]65)
   where "A \<setminus> B \<equiv> A-B"
 
 section \<open>Functions\<close>
 
-abbreviation preimage:: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> 'a set" ("_ \<^sup>\<inverse> _ _" [90,90,1000]90)
+abbreviation preimage:: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> 'a set" (\<open>_ \<^sup>\<inverse> _ _\<close> [90,90,1000]90)
   where "f\<^sup>\<inverse> X V \<equiv> (vimage f V) \<inter> X"
 
 lemma preimage_of_inter:
@@ -47,7 +47,7 @@ lemma inverse_map_identity [simp]:
   "inverse_map (identity S) S S = identity S"
   by (metis Id_compose compose_id_inv_into image_ident image_restrict_eq inv_into_funcset inverse_map_def restrict_extensional)
 
-abbreviation composing ("_ \<circ> _ \<down> _" [60,0,60]59)
+abbreviation composing (\<open>_ \<circ> _ \<down> _\<close> [60,0,60]59)
   where "g \<circ> f \<down> D \<equiv> compose D g f"
 
 lemma comp_maps:

@@ -156,7 +156,7 @@ lemma Abs_assn_eqI[intro?]:
   "(\<And>h. P h = Rep_assn Pr h) \<Longrightarrow> Pr = Abs_assn P"
   by (metis Rep_assn_inverse predicate1I xt1(5))+
 
-abbreviation models :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Turnstile>" 50) 
+abbreviation models :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) 
   where "h\<Turnstile>P \<equiv> Rep_assn P h"
 
 
@@ -168,7 +168,7 @@ subsubsection \<open>Empty Partial Heap\<close>
 text \<open>The empty partial heap satisfies some special properties.
   We set up a simplification that tries to rewrite it to the standard
   empty partial heap \<open>h\<^sub>\<bottom>\<close>\<close>
-abbreviation h_bot ("h\<^sub>\<bottom>") where "h\<^sub>\<bottom> \<equiv> (undefined,{})"
+abbreviation h_bot (\<open>h\<^sub>\<bottom>\<close>) where "h\<^sub>\<bottom> \<equiv> (undefined,{})"
 lemma mod_h_bot_indep: "(h,{})\<Turnstile>P \<longleftrightarrow> (h',{})\<Turnstile>P"
   by (metis mem_Collect_eq Rep_assn emptyE in_range_empty 
     proper_iff relH_def)
@@ -200,7 +200,7 @@ instantiation assn :: one begin
   instance ..
 end
 
-abbreviation one_assn::assn ("emp") where "one_assn \<equiv> 1"
+abbreviation one_assn::assn (\<open>emp\<close>) where "one_assn \<equiv> 1"
   
 instantiation assn :: times begin
   fun times_assn_raw :: "assn_raw \<Rightarrow> assn_raw \<Rightarrow> assn_raw" where
@@ -288,7 +288,7 @@ lemma wand_proper[simp, intro!]: "proper (wand_raw P Q)"
   done
 
 definition 
-  wand_assn :: "assn \<Rightarrow> assn \<Rightarrow> assn" (infixl "-*" 56)
+  wand_assn :: "assn \<Rightarrow> assn \<Rightarrow> assn" (infixl \<open>-*\<close> 56)
   where "P-*Q \<equiv> Abs_assn (wand_raw (Rep_assn P) (Rep_assn Q))"
 
 lemma wand_assnI: 
@@ -364,13 +364,13 @@ instantiation assn :: boolean_algebra begin
 end
 
 text \<open>We give the operations some more standard names\<close>
-abbreviation top_assn::assn ("true") where "top_assn \<equiv> top"
-abbreviation bot_assn::assn ("false") where "bot_assn \<equiv> bot"
-abbreviation sup_assn::"assn\<Rightarrow>assn\<Rightarrow>assn" (infixr "\<or>\<^sub>A" 61) 
+abbreviation top_assn::assn (\<open>true\<close>) where "top_assn \<equiv> top"
+abbreviation bot_assn::assn (\<open>false\<close>) where "bot_assn \<equiv> bot"
+abbreviation sup_assn::"assn\<Rightarrow>assn\<Rightarrow>assn" (infixr \<open>\<or>\<^sub>A\<close> 61) 
   where "sup_assn \<equiv> sup"
-abbreviation inf_assn::"assn\<Rightarrow>assn\<Rightarrow>assn" (infixr "\<and>\<^sub>A" 62) 
+abbreviation inf_assn::"assn\<Rightarrow>assn\<Rightarrow>assn" (infixr \<open>\<and>\<^sub>A\<close> 62) 
   where "inf_assn \<equiv> inf"
-abbreviation uminus_assn::"assn \<Rightarrow> assn" ("\<not>\<^sub>A _" [81] 80) 
+abbreviation uminus_assn::"assn \<Rightarrow> assn" (\<open>\<not>\<^sub>A _\<close> [81] 80) 
   where "uminus_assn \<equiv> uminus"
 
 text \<open>Now we prove some relations between the Boolean algebra operations
@@ -413,7 +413,7 @@ lemma assn_basic_inequalities[simp, intro!]:
   
   
 subsubsection \<open>Existential Quantification\<close>
-definition ex_assn :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder "\<exists>\<^sub>A" 11)
+definition ex_assn :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder \<open>\<exists>\<^sub>A\<close> 11)
   where "(\<exists>\<^sub>Ax. P x) \<equiv> Abs_assn (\<lambda>h. \<exists>x. h\<Turnstile>P x)"
 
 lemma ex_assn_proper[simp, intro!]: 
@@ -458,7 +458,7 @@ lemma ex_join_or: "(\<exists>\<^sub>Ax. P x \<or>\<^sub>A (\<exists>\<^sub>Ax. Q
 subsubsection \<open>Pure Assertions\<close>
 text \<open>Pure assertions do not depend on any heap content.\<close>
 fun pure_assn_raw where "pure_assn_raw b (h,as) \<longleftrightarrow> as={} \<and> b"
-definition pure_assn :: "bool \<Rightarrow> assn" ("\<up>") where
+definition pure_assn :: "bool \<Rightarrow> assn" (\<open>\<up>\<close>) where
   "\<up>b \<equiv> Abs_assn (pure_assn_raw b)"
 
 lemma pure_assn_proper[simp, intro!]: "proper (pure_assn_raw b)"
@@ -557,7 +557,7 @@ lemma sngr_assn_proper[simp, intro!]: "proper (sngr_assn_raw r x)"
   apply (auto simp add: in_range.simps dest: relH_in_rangeI)
   done
 
-definition sngr_assn :: "'a::heap ref \<Rightarrow> 'a \<Rightarrow> assn" (infix "\<mapsto>\<^sub>r" 82) 
+definition sngr_assn :: "'a::heap ref \<Rightarrow> 'a \<Rightarrow> assn" (infix \<open>\<mapsto>\<^sub>r\<close> 82) 
   where "r\<mapsto>\<^sub>rx \<equiv> Abs_assn (sngr_assn_raw r x)"
 
 fun snga_assn_raw :: "'a::heap array \<Rightarrow> 'a list \<Rightarrow> assn_raw" 
@@ -572,7 +572,7 @@ lemma snga_assn_proper[simp, intro!]: "proper (snga_assn_raw r x)"
   done
 
 definition 
-  snga_assn :: "'a::heap array \<Rightarrow> 'a list \<Rightarrow> assn" (infix "\<mapsto>\<^sub>a" 82)
+  snga_assn :: "'a::heap array \<Rightarrow> 'a list \<Rightarrow> assn" (infix \<open>\<mapsto>\<^sub>a\<close> 82)
   where "r\<mapsto>\<^sub>aa \<equiv> Abs_assn (snga_assn_raw r a)"
 
 text \<open>Two disjoint parts of the heap cannot be pointed to by the 
@@ -674,7 +674,7 @@ lemma mod_h_bot_iff[simp]:
   done
 
 subsection \<open>Entailment\<close>
-definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>A" 10)
+definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix \<open>\<Longrightarrow>\<^sub>A\<close> 10)
   where "P \<Longrightarrow>\<^sub>A Q \<equiv> \<forall>h. h\<Turnstile>P \<longrightarrow> h\<Turnstile>Q"
 
 lemma entailsI: 
@@ -834,7 +834,7 @@ lemma triv_exI[simp, intro!]: "Q x \<Longrightarrow>\<^sub>A \<exists>\<^sub>Ax.
     
 subsubsection \<open>Weak Entails\<close>    
 text \<open>Weakening of entails to allow arbitrary unspecified memory in conclusion\<close>
-definition entailst :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>t" 10)
+definition entailst :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix \<open>\<Longrightarrow>\<^sub>t\<close> 10)
   where "entailst A B \<equiv> A \<Longrightarrow>\<^sub>A B * true"
 
 lemma enttI: "A\<Longrightarrow>\<^sub>AB*true \<Longrightarrow> A\<Longrightarrow>\<^sub>tB" unfolding entailst_def .

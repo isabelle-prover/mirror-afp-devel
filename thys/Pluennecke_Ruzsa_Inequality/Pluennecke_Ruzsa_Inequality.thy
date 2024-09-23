@@ -15,20 +15,20 @@ theory Pluennecke_Ruzsa_Inequality
 
 begin
 
-notation plus (infixl "+" 65)
-notation minus (infixl "-" 65)
-notation uminus ("- _" [81] 80)
+notation plus (infixl \<open>+\<close> 65)
+notation minus (infixl \<open>-\<close> 65)
+notation uminus (\<open>- _\<close> [81] 80)
 
 subsection \<open>Key definitions (sumset, difference set) and basic lemmas \<close>
 
 text \<open>Working in an arbitrary Abelian group, with additive syntax\<close>
 
 locale additive_abelian_group = abelian_group G "(\<oplus>)" \<zero>
-  for G and addition (infixl "\<oplus>" 65)  and zero ("\<zero>") 
+  for G and addition (infixl \<open>\<oplus>\<close> 65)  and zero (\<open>\<zero>\<close>) 
 
 begin
 
-abbreviation G_minus:: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<ominus>" 70)
+abbreviation G_minus:: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<ominus>\<close> 70)
   where "x \<ominus> y \<equiv> x \<oplus> inverse y "
 
 lemma inverse_closed: "x \<in> G \<Longrightarrow> inverse x \<in> G"

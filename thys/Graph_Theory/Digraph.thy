@@ -118,13 +118,13 @@ lemma (in nomulti_digraph) inj_on_arc_to_ends:
 
 subsection \<open>Reachability\<close>
 
-abbreviation dominates :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<index> _" [100,100] 40) where
+abbreviation dominates :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<rightarrow>\<index> _\<close> [100,100] 40) where
   "dominates G u v \<equiv> (u,v) \<in> arcs_ends G"
 
-abbreviation reachable1 :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>+\<index> _" [100,100] 40) where
+abbreviation reachable1 :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^sup>+\<index> _\<close> [100,100] 40) where
   "reachable1 G u v \<equiv> (u,v) \<in> (arcs_ends G)^+"
 
-definition reachable :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^sup>*\<index> _" [100,100] 40) where
+definition reachable :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^sup>*\<index> _\<close> [100,100] 40) where
   "reachable G u v \<equiv> (u,v) \<in> rtrancl_on (verts G) (arcs_ends G)"
 
 lemma reachableE[elim]:

@@ -93,14 +93,14 @@ subsection Invariance
 
 definition invariant
   :: "('s, 'a) automaton \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> bool"
-  ("_ \<TTurnstile> (1'(_ \<rightarrow>')/ _)" [100, 0, 9] 8)
+  (\<open>_ \<TTurnstile> (1'(_ \<rightarrow>')/ _)\<close> [100, 0, 9] 8)
 where
   "(A \<TTurnstile> (I \<rightarrow>) P) = (\<forall>s\<in>reachable A I. P s)"
 
 abbreviation
   any_invariant
   :: "('s, 'a) automaton \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> bool"
-  ("_ \<TTurnstile> _" [100, 9] 8)
+  (\<open>_ \<TTurnstile> _\<close> [100, 9] 8)
 where
   "(A \<TTurnstile> P) \<equiv> (A \<TTurnstile> (TT \<rightarrow>) P)"
 
@@ -180,7 +180,7 @@ lemma invariant_weakenE [elim]:
 definition
   step_invariant
   :: "('s, 'a) automaton \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> (('s, 'a) transition \<Rightarrow> bool) \<Rightarrow> bool"
-  ("_ \<TTurnstile>\<^sub>A (1'(_ \<rightarrow>')/ _)" [100, 0, 0] 8)
+  (\<open>_ \<TTurnstile>\<^sub>A (1'(_ \<rightarrow>')/ _)\<close> [100, 0, 0] 8)
 where
   "(A \<TTurnstile>\<^sub>A (I \<rightarrow>) P) = (\<forall>a. I a \<longrightarrow> (\<forall>s\<in>reachable A I. (\<forall>s'.(s, a, s') \<in> trans A \<longrightarrow> P (s, a, s'))))"
 
@@ -192,7 +192,7 @@ lemma invariant_restrict_inD [dest]:
 abbreviation
   any_step_invariant
   :: "('s, 'a) automaton \<Rightarrow> (('s, 'a) transition \<Rightarrow> bool) \<Rightarrow> bool"
-  ("_ \<TTurnstile>\<^sub>A _" [100, 9] 8)
+  (\<open>_ \<TTurnstile>\<^sub>A _\<close> [100, 9] 8)
 where
   "(A \<TTurnstile>\<^sub>A P) \<equiv> (A \<TTurnstile>\<^sub>A (TT \<rightarrow>) P)"
 

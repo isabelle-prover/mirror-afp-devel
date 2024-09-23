@@ -5,7 +5,7 @@ theory Modulo_Divisibility
 begin
 
 text \<open> Divisibility is diophantine \<close>
-definition dvd ("DVD _ _" 1000) where "DVD Q R \<equiv> (BINARY (dvd) Q R)"
+definition dvd (\<open>DVD _ _\<close> 1000) where "DVD Q R \<equiv> (BINARY (dvd) Q R)"
 
 lemma dvd_repr:
   fixes a b :: nat
@@ -31,7 +31,7 @@ qed
 declare dvd_def[defs]
 
 (* Congruence is diophantine *)
-definition mod ("MOD _ _ _" 1000)
+definition mod (\<open>MOD _ _ _\<close> 1000)
   where "MOD A B C \<equiv> (TERNARY (\<lambda>a b c. a mod b = c mod b) A B C)"
 declare mod_def[defs]
 

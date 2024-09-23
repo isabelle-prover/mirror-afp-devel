@@ -8,7 +8,7 @@ begin
 subsection \<open>Smooth compatibility\<close>
 
 definition smooth_compat::"enat \<Rightarrow> ('a::topological_space, 'e::euclidean_space)chart\<Rightarrow>('a, 'e)chart\<Rightarrow>bool"
-  ("_-smooth'_compat" [1000])
+  (\<open>_-smooth'_compat\<close> [1000])
   where
   "smooth_compat k c1 c2 \<longleftrightarrow>
     (k-smooth_on (c1 ` (domain c1 \<inter> domain c2)) (c2 \<circ> inv_chart c1) \<and>

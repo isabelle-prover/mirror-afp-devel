@@ -15,11 +15,11 @@ and DA :: "('id, 'd::order) DomainAssignment"
 begin 
 
 abbreviation USdBname ::"'d \<Rightarrow> ('exp, 'id) MWLfCom Bisimulation_type"
-("\<approx>\<^bsub>_\<^esub>")
+(\<open>\<approx>\<^bsub>_\<^esub>\<close>)
 where "\<approx>\<^bsub>d\<^esub> \<equiv> USdB d" 
 
 abbreviation relatedbyUSdB :: "('exp,'id) MWLfCom list \<Rightarrow> 'd
-  \<Rightarrow> ('exp,'id) MWLfCom list \<Rightarrow> bool" (infixr "\<approx>\<^bsub>_\<^esub>" 65)
+  \<Rightarrow> ('exp,'id) MWLfCom list \<Rightarrow> bool" (infixr \<open>\<approx>\<^bsub>_\<^esub>\<close> 65)
 where "V \<approx>\<^bsub>d\<^esub> V' \<equiv> (V,V') \<in> USdB d"
 
 \<comment> \<open>define when two expressions are indistinguishable with respect to a domain d\<close>
@@ -29,7 +29,7 @@ where
   \<forall>m m'. ((m =\<^bsub>d\<^esub> m') \<longrightarrow> ((E e1 m) = (E e2 m')))"
 
 abbreviation d_indistinguishable' :: "'exp \<Rightarrow> 'd::order \<Rightarrow> 'exp \<Rightarrow> bool" 
-( "(_ \<equiv>\<^bsub>_\<^esub> _)" )
+( \<open>(_ \<equiv>\<^bsub>_\<^esub> _)\<close> )
 where
 "e1 \<equiv>\<^bsub>d\<^esub> e2 \<equiv> d_indistinguishable d e1 e2"
 

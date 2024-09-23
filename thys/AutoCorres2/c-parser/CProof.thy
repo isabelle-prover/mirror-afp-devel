@@ -54,17 +54,17 @@ setup \<open>
 
 (* Syntax for apply antiquotation parsing explicitly *)
 syntax
-  "_quote"  :: "'b => ('a => 'b)"  ("([.[_].])" [0] 1000)
+  "_quote"  :: "'b => ('a => 'b)"  (\<open>([.[_].])\<close> [0] 1000)
 
 (* Override assertion translation so we can apply the parse translations below
    and add \<star> syntax. *)
 syntax
   "_heap" :: "'b \<Rightarrow> ('a \<Rightarrow> 'b)"
-  "_heap_state" :: "'a" ("\<zeta>") (* fixme: horrible syntax *)
-  "_heap_stateOld" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" ("\<^bsup>_\<^esup>\<zeta>" [100] 100) (* fixme: horrible syntax *)
+  "_heap_state" :: "'a" (\<open>\<zeta>\<close>) (* fixme: horrible syntax *)
+  "_heap_stateOld" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>\<^bsup>_\<^esup>\<zeta>\<close> [100] 100) (* fixme: horrible syntax *)
 
-  "_derefCur" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" ("\<star>_" [100] 100)
-  "_derefOld" :: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" ("\<^bsup>_\<^esup>\<star>_" [100,100] 100)
+  "_derefCur" :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>\<star>_\<close> [100] 100)
+  "_derefOld" :: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>\<^bsup>_\<^esup>\<star>_\<close> [100,100] 100)
 
 translations
   "{|b|}" => "CONST Collect (_quote (_heap b))"
@@ -255,11 +255,11 @@ lemma c_guard_ptr_aligned_fl:
 
 (* fixme: make these abbreviations *)
 syntax
-  "_sep_map" :: "'a::c_type ptr \<Rightarrow> 'a \<Rightarrow> heap_assert" ("_ \<mapsto> _" [56,51] 56) (* fixme: clashes with map update *)
-  "_sep_map_any" :: "'a::c_type ptr \<Rightarrow> heap_assert" ("_ \<mapsto> -" [56] 56)
-  "_sep_map'" :: "'a::c_type ptr \<Rightarrow> 'a \<Rightarrow> heap_assert" ("_ \<hookrightarrow>  _" [56,51] 56)
-  "_sep_map'_any" :: "'a::c_type ptr \<Rightarrow> heap_assert" ("_ \<hookrightarrow> -" [56] 56)
-  "_tagd" :: "'a::c_type ptr \<Rightarrow> heap_assert" ("\<turnstile>\<^sub>s _" [99] 100)
+  "_sep_map" :: "'a::c_type ptr \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<mapsto> _\<close> [56,51] 56) (* fixme: clashes with map update *)
+  "_sep_map_any" :: "'a::c_type ptr \<Rightarrow> heap_assert" (\<open>_ \<mapsto> -\<close> [56] 56)
+  "_sep_map'" :: "'a::c_type ptr \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>  _\<close> [56,51] 56)
+  "_sep_map'_any" :: "'a::c_type ptr \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow> -\<close> [56] 56)
+  "_tagd" :: "'a::c_type ptr \<Rightarrow> heap_assert" (\<open>\<turnstile>\<^sub>s _\<close> [99] 100)
 
 translations
   "p \<mapsto> v" == "p \<mapsto>\<^sup>i\<^sub>(CONST c_guard) v"
@@ -300,8 +300,8 @@ lemma tagd_sep_false [simp]:
 (* Print translations for pointer dereferencing in program statements and
    expressions. *)
 syntax (output)
-  "_Deref" :: "'b \<Rightarrow> 'b" ("*_" [1000] 1000)
-  "_AssignH" :: "'b => 'b => ('a,'p,'f) com" ("(2*_ :==/ _)" [30, 30] 23)
+  "_Deref" :: "'b \<Rightarrow> 'b" (\<open>*_\<close> [1000] 1000)
+  "_AssignH" :: "'b => 'b => ('a,'p,'f) com" (\<open>(2*_ :==/ _)\<close> [30, 30] 23)
 
 print_translation \<open>
 let
@@ -333,7 +333,7 @@ let
 in [("sep_app",K sep_app_tr)] end
 \<close>
 
-syntax "_h_t_valid" :: "'a::c_type ptr \<Rightarrow> bool" ("\<Turnstile>\<^sub>t _" [99] 100)
+syntax "_h_t_valid" :: "'a::c_type ptr \<Rightarrow> bool" (\<open>\<Turnstile>\<^sub>t _\<close> [99] 100)
 
 (* will only work when globals record is defined
 term "\<lbrace> \<Turnstile>\<^sub>t bar \<rbrace>" *)
@@ -341,7 +341,7 @@ term "\<lbrace> \<Turnstile>\<^sub>t bar \<rbrace>" *)
 abbreviation "lift_t_c" :: "heap_mem \<times> heap_typ_desc \<Rightarrow> 'a::c_type typ_heap" where
   "lift_t_c s == lift_t c_guard s"
 
-syntax "_h_t_valid" :: "heap_typ_desc \<Rightarrow> 'a::c_type ptr \<Rightarrow> bool"  ("_ \<Turnstile>\<^sub>t _" [99,99] 100)
+syntax "_h_t_valid" :: "heap_typ_desc \<Rightarrow> 'a::c_type ptr \<Rightarrow> bool"  (\<open>_ \<Turnstile>\<^sub>t _\<close> [99,99] 100)
 translations
   "d \<Turnstile>\<^sub>t p" == "d,CONST c_guard \<Turnstile>\<^sub>t p"
 

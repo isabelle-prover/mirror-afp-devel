@@ -12,7 +12,7 @@ datatype pterm =
   Pconst name |
   Pvar name |
   Pabs "(term \<times> pterm) fset" |
-  Papp pterm pterm (infixl "$\<^sub>p" 70)
+  Papp pterm pterm (infixl \<open>$\<^sub>p\<close> 70)
 
 primrec sterm_to_pterm :: "sterm \<Rightarrow> pterm" where
 "sterm_to_pterm (Sconst name) = Pconst name" |
@@ -348,7 +348,7 @@ next
     done
 qed
 
-abbreviation Pabs_single ("\<Lambda>\<^sub>p _. _" [0, 50] 50) where
+abbreviation Pabs_single (\<open>\<Lambda>\<^sub>p _. _\<close> [0, 50] 50) where
 "Pabs_single x rhs \<equiv> Pabs {| (Free x, rhs) |}"
 
 lemma closed_except_simps:

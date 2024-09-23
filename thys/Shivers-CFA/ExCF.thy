@@ -19,7 +19,7 @@ definition "contour = (UNIV::label list set)"
 typedef contour = contour
   unfolding contour_def by auto
 
-definition initial_contour ("\<binit>")
+definition initial_contour (\<open>\<binit>\<close>)
   where "\<binit> = Abs_contour []"
 
 definition nb 
@@ -96,7 +96,7 @@ The evaluation function for values has only changed slightly: To avoid worrying 
 \<close>
 
 
-fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" ("\<A>")
+fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" (\<open>\<A>\<close>)
   where "\<A> (C _ i) \<beta> ve = DI i"
   |     "\<A> (P prim) \<beta> ve = DP prim"
   |     "\<A> (R _ var) \<beta> ve =
@@ -152,8 +152,8 @@ type_synonym fstate = "(d \<times> d list \<times> venv \<times> contour)"
 type_synonym cstate = "(call \<times> benv \<times> venv \<times> contour)"
 
 
-fixrec   evalF :: "fstate discr \<rightarrow> ans" ("\<F>")
-     and evalC :: "cstate discr \<rightarrow> ans" ("\<C>")
+fixrec   evalF :: "fstate discr \<rightarrow> ans" (\<open>\<F>\<close>)
+     and evalC :: "cstate discr \<rightarrow> ans" (\<open>\<C>\<close>)
   where "\<F>\<cdot>fstate = (case undiscr fstate of
              (DC (Lambda lab vs c, \<beta>), as, ve, b) \<Rightarrow>
                (if length vs = length as
@@ -228,7 +228,7 @@ text \<open>
 The exact semantics of a program again uses \<open>\<F>\<close> with properly initialized arguments. For the first two examples, we see that the function works as expected.
 \<close>
 
-definition evalCPS :: "prog \<Rightarrow> ans" ("\<PR>")
+definition evalCPS :: "prog \<Rightarrow> ans" (\<open>\<PR>\<close>)
   where "\<PR> l = (let ve = Map.empty;
                           \<beta> = Map.empty;
                           f = \<A> (L l) \<beta> ve

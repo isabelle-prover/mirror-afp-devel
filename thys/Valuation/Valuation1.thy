@@ -79,11 +79,11 @@ apply (simp add: of_nat_mult a_z_z)
 done
 
 definition
-  adiv :: "[ant, ant] \<Rightarrow> ant" (infixl "adiv" 200) where
+  adiv :: "[ant, ant] \<Rightarrow> ant" (infixl \<open>adiv\<close> 200) where
   "x adiv y = ant ((tna x) div (tna y))"
 
 definition
-  amod :: "[ant, ant] \<Rightarrow> ant" (infixl "amod" 200) where
+  amod :: "[ant, ant] \<Rightarrow> ant" (infixl \<open>amod\<close> 200) where
   "x amod y = ant ((tna x) mod (tna y))"
 
 lemma apos_amod_conj:"0 < ant b \<Longrightarrow>
@@ -485,16 +485,16 @@ by (cut_tac ASum_eqTr[of n f g], simp)
 
 definition
   Kronecker_delta :: "[nat, nat] \<Rightarrow> ant"
-    ("(\<delta>\<^bsub>_ _\<^esub>)" [70,71]70) where
+    (\<open>(\<delta>\<^bsub>_ _\<^esub>)\<close> [70,71]70) where
   "\<delta>\<^bsub>i j\<^esub> = (if i = j then 1 else 0)"
 
 definition
   K_gamma :: "[nat, nat] \<Rightarrow> int"
-    ("(\<gamma>\<^bsub>_ _\<^esub>)" [70,71]70) where
+    (\<open>(\<gamma>\<^bsub>_ _\<^esub>)\<close> [70,71]70) where
   "\<gamma>\<^bsub>i j\<^esub> = (if i = j then 0 else 1)"
 
 abbreviation
-  TRANSPOS  ("(\<tau>\<^bsub>_ _\<^esub>)" [90,91]90) where
+  TRANSPOS  (\<open>(\<tau>\<^bsub>_ _\<^esub>)\<close> [90,91]90) where
   "\<tau>\<^bsub>i j\<^esub> == transpos i j"
 
 lemma Kdelta_in_Zinf:"\<lbrakk>j \<le> (Suc n); k \<le> (Suc n)\<rbrakk>  \<Longrightarrow>
@@ -1364,7 +1364,7 @@ definition
                                           (** 0 \<le> a and a \<noteq> -\<infinity> **)
 
 abbreviation
-  RAPOW  ("(3_\<^bsup> _ _\<^esup>)" [62,62,63]62) where
+  RAPOW  (\<open>(3_\<^bsup> _ _\<^esup>)\<close> [62,62,63]62) where
   "I\<^bsup>R a\<^esup> == r_apow R I a"
 
 lemma (in Ring) ring_pow_apow:"ideal R I \<Longrightarrow>
@@ -3234,16 +3234,16 @@ section "Prime divisors"
 
 definition
   prime_divisor :: "[_, 'b \<Rightarrow> ant] \<Rightarrow>
-        ('b \<Rightarrow> ant) set"  ("(2P\<^bsub> _ _\<^esub>)" [96,97]96) where
+        ('b \<Rightarrow> ant) set"  (\<open>(2P\<^bsub> _ _\<^esub>)\<close> [96,97]96) where
  "P\<^bsub>K v\<^esub> = {v'. valuation K v' \<and> v_equiv K v v'}"
 
 definition
-  prime_divisors :: "_ \<Rightarrow> ('b \<Rightarrow> ant) set set" ("Pds\<index>" 96) where
+  prime_divisors :: "_ \<Rightarrow> ('b \<Rightarrow> ant) set set" (\<open>Pds\<index>\<close> 96) where
   "Pds\<^bsub>K\<^esub> = {P. \<exists>v. valuation K v \<and> P = P\<^bsub> K v\<^esub> }"
 
 definition
   normal_valuation_belonging_to_prime_divisor ::
-    "[_ ,  ('b \<Rightarrow> ant) set] \<Rightarrow> ('b \<Rightarrow> ant)"  ("(\<nu>\<^bsub>_ _\<^esub>)" [96,97]96) where
+    "[_ ,  ('b \<Rightarrow> ant) set] \<Rightarrow> ('b \<Rightarrow> ant)"  (\<open>(\<nu>\<^bsub>_ _\<^esub>)\<close> [96,97]96) where
   "\<nu>\<^bsub>K P\<^esub> = n_val K (SOME v. v \<in> P)"
 
 lemma (in Corps) val_in_P_valuation:"\<lbrakk>valuation K v; v' \<in> P\<^bsub>K v\<^esub>\<rbrakk> \<Longrightarrow>

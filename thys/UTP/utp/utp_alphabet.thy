@@ -33,7 +33,7 @@ text \<open> Alter an alphabet by application of a lens that demonstrates how th
   then it does not extend the alphabet. Nevertheless, it does have an effect because the type
   will be different which can be useful when converting predicates with equivalent alphabets. \<close>
 
-lift_definition aext :: "('a, '\<beta>) uexpr \<Rightarrow> ('\<beta>, '\<alpha>) lens \<Rightarrow> ('a, '\<alpha>) uexpr" (infixr "\<oplus>\<^sub>p" 95)
+lift_definition aext :: "('a, '\<beta>) uexpr \<Rightarrow> ('\<beta>, '\<alpha>) lens \<Rightarrow> ('a, '\<alpha>) uexpr" (infixr \<open>\<oplus>\<^sub>p\<close> 95)
 is "\<lambda> P x b. P (get\<^bsub>x\<^esub> b)" .
 
 update_uexpr_rep_eq_thms
@@ -168,7 +168,7 @@ text \<open> Restrict an alphabet by application of a lens that demonstrates how
   ($\beta$) injects into the larger alphabet ($\alpha$). Unlike extension, this operation
   can lose information if the expressions refers to variables in the larger alphabet. \<close>
 
-lift_definition arestr :: "('a, '\<alpha>) uexpr \<Rightarrow> ('\<beta>, '\<alpha>) lens \<Rightarrow> ('a, '\<beta>) uexpr" (infixr "\<restriction>\<^sub>e" 90)
+lift_definition arestr :: "('a, '\<alpha>) uexpr \<Rightarrow> ('\<beta>, '\<alpha>) lens \<Rightarrow> ('a, '\<beta>) uexpr" (infixr \<open>\<restriction>\<^sub>e\<close> 90)
 is "\<lambda> P x b. P (create\<^bsub>x\<^esub> b)" .
 
 update_uexpr_rep_eq_thms
@@ -249,7 +249,7 @@ definition upred_ares :: "'\<alpha> upred \<Rightarrow> ('\<beta> \<Longrightarr
 where [upred_defs]: "upred_ares P a = (P \<restriction>\<^sub>v a) \<restriction>\<^sub>e a"
     
 syntax
-  "_upred_ares" :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl "\<restriction>\<^sub>p" 90)
+  "_upred_ares" :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl \<open>\<restriction>\<^sub>p\<close> 90)
 
 syntax_consts
   "_upred_ares" == upred_ares
@@ -302,7 +302,7 @@ subsection \<open> Substitution Alphabet Extension \<close>
 
 text \<open> This allows us to extend the alphabet of a substitution, in a similar way to expressions. \<close>
   
-definition subst_ext :: "'\<alpha> usubst \<Rightarrow> ('\<alpha> \<Longrightarrow> '\<beta>) \<Rightarrow> '\<beta> usubst" (infix "\<oplus>\<^sub>s" 65) where
+definition subst_ext :: "'\<alpha> usubst \<Rightarrow> ('\<alpha> \<Longrightarrow> '\<beta>) \<Rightarrow> '\<beta> usubst" (infix \<open>\<oplus>\<^sub>s\<close> 65) where
 [upred_defs]: "\<sigma> \<oplus>\<^sub>s x = (\<lambda> s. put\<^bsub>x\<^esub> s (\<sigma> (get\<^bsub>x\<^esub> s)))"
 
 lemma id_subst_ext [usubst]:
@@ -329,7 +329,7 @@ subsection \<open> Substitution Alphabet Restriction \<close>
 
 text \<open> This allows us to reduce the alphabet of a substitution, in a similar way to expressions. \<close>
   
-definition subst_res :: "'\<alpha> usubst \<Rightarrow> ('\<beta> \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<beta> usubst" (infix "\<restriction>\<^sub>s" 65) where
+definition subst_res :: "'\<alpha> usubst \<Rightarrow> ('\<beta> \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<beta> usubst" (infix \<open>\<restriction>\<^sub>s\<close> 65) where
 [upred_defs]: "\<sigma> \<restriction>\<^sub>s x = (\<lambda> s. get\<^bsub>x\<^esub> (\<sigma> (create\<^bsub>x\<^esub> s)))"
 
 lemma id_subst_res [usubst]:

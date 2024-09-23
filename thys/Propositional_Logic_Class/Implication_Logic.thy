@@ -19,8 +19,8 @@ text \<open> Implication logic can be given by the a Hilbert-style  axiom system
        @{cite \<open>\S 1.3.9, pg. 33\<close> troelstraBasicProofTheory2000}. \<close>
 
 class implication_logic =
-  fixes deduction :: "'a \<Rightarrow> bool" ("\<turnstile> _" [60] 55)
-  fixes implication :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 70)
+  fixes deduction :: "'a \<Rightarrow> bool" (\<open>\<turnstile> _\<close> [60] 55)
+  fixes implication :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<rightarrow>\<close> 70)
   assumes axiom_k: "\<turnstile> \<phi> \<rightarrow> \<psi> \<rightarrow> \<phi>"
   assumes axiom_s: "\<turnstile> (\<phi> \<rightarrow> \<psi> \<rightarrow> \<chi>) \<rightarrow> (\<phi> \<rightarrow> \<psi>) \<rightarrow> \<phi> \<rightarrow> \<chi>"
   assumes modus_ponens: "\<turnstile> \<phi> \<rightarrow> \<psi> \<Longrightarrow> \<turnstile> \<phi> \<Longrightarrow> \<turnstile> \<psi>"
@@ -54,7 +54,7 @@ subsection \<open> List Implication \<close>
 text \<open> Implication given a list of assumptions can be expressed recursively \<close>
 
 primrec (in implication_logic)
-  list_implication :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a" (infix ":\<rightarrow>" 80) where
+  list_implication :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>:\<rightarrow>\<close> 80) where
     "[] :\<rightarrow> \<phi> = \<phi>"
   | "(\<psi> # \<Psi>) :\<rightarrow> \<phi> = \<psi> \<rightarrow> \<Psi> :\<rightarrow> \<phi>"
 
@@ -63,7 +63,7 @@ subsection \<open> Deduction From a List of Assumptions \label{sec:list-deductio
 text \<open> Deduction from a list of assumptions can be expressed in terms of
        @{term "(:\<rightarrow>)"}. \<close>
 
-definition (in implication_logic) list_deduction :: "'a list \<Rightarrow> 'a \<Rightarrow> bool" (infix ":\<turnstile>" 60)
+definition (in implication_logic) list_deduction :: "'a list \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>:\<turnstile>\<close> 60)
   where
     "\<Gamma> :\<turnstile> \<phi> \<equiv> \<turnstile> \<Gamma> :\<rightarrow> \<phi>"
 
@@ -412,7 +412,7 @@ text \<open> Just as deduction from a list \<^term>\<open>(:\<turnstile>)\<close
        terms of \<^term>\<open>(:\<rightarrow>)\<close>, deduction from a \<^emph>\<open>set\<close> of assumptions
        can be expressed in terms of \<^term>\<open>(:\<turnstile>)\<close>. \<close>
 
-definition (in implication_logic) set_deduction :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<tturnstile>" 60)
+definition (in implication_logic) set_deduction :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<tturnstile>\<close> 60)
   where
     "\<Gamma> \<tturnstile> \<phi> \<equiv> \<exists> \<Psi>. set \<Psi>  \<subseteq> \<Gamma> \<and> \<Psi> :\<turnstile> \<phi>"
 
@@ -634,7 +634,7 @@ text \<open> Since implication logic does not have \<^emph>\<open>falsum\<close>
        defined relative to a formula \<^term>\<open>\<phi>\<close>. \<close>
 
 definition (in implication_logic)
-  formula_consistent :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" ("_-consistent _" [100] 100)
+  formula_consistent :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" (\<open>_-consistent _\<close> [100] 100)
   where
     [simp]: "\<phi>-consistent \<Gamma> \<equiv> \<not> (\<Gamma> \<tturnstile> \<phi>)"
 
@@ -645,7 +645,7 @@ text \<open> Since consistency is defined relative to some \<^term>\<open>\<phi>
        classical logic when \<^term>\<open>\<phi>\<close> is \<^emph>\<open>falsum\<close>. \<close>
 
 definition (in implication_logic)
-  formula_maximally_consistent_set_def :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" ("_-MCS _" [100] 100)
+  formula_maximally_consistent_set_def :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" (\<open>_-MCS _\<close> [100] 100)
   where
     [simp]: "\<phi>-MCS \<Gamma> \<equiv> (\<phi>-consistent \<Gamma>) \<and> (\<forall> \<psi>. \<psi> \<in> \<Gamma> \<or> (\<psi> \<rightarrow> \<phi>) \<in> \<Gamma>)"
 

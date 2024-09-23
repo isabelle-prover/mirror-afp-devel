@@ -14,7 +14,7 @@ section \<open>Subtyping\<close>
 text \<open> Subtyping is defined on top of refinement constraint logic (RCL). 
 A subtyping check is converted into an RCL validity check. \<close>
 
-inductive subtype :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> bool"  ("_ ; _ ; _  \<turnstile> _ \<lesssim> _" [50, 50, 50] 50) where
+inductive subtype :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> bool"  (\<open>_ ; _ ; _  \<turnstile> _ \<lesssim> _\<close> [50, 50, 50] 50) where
   subtype_baseI: "\<lbrakk>  
    atom x \<sharp> (\<Theta>, \<B>, \<Gamma>, z,c,z',c') ; 
    \<Theta>; \<B>; \<Gamma> \<turnstile>\<^sub>w\<^sub>f  \<lbrace> z : b | c \<rbrace>;  
@@ -42,7 +42,7 @@ section \<open>Literals\<close>
 
 text \<open>The type synthesised has the constraint that z equates to the literal\<close>
 
-inductive infer_l  :: "l \<Rightarrow> \<tau> \<Rightarrow> bool" (" \<turnstile> _ \<Rightarrow> _" [50, 50] 50) where
+inductive infer_l  :: "l \<Rightarrow> \<tau> \<Rightarrow> bool" (\<open> \<turnstile> _ \<Rightarrow> _\<close> [50, 50] 50) where
   infer_trueI:   " \<turnstile> L_true  \<Rightarrow> \<lbrace> z : B_bool | [[z]\<^sup>v]\<^sup>c\<^sup>e ==  [[L_true]\<^sup>v]\<^sup>c\<^sup>e \<rbrace>"
 | infer_falseI: " \<turnstile> L_false \<Rightarrow> \<lbrace> z : B_bool | [[z]\<^sup>v]\<^sup>c\<^sup>e == [[L_false]\<^sup>v]\<^sup>c\<^sup>e \<rbrace>"
 | infer_natI:   " \<turnstile> L_num n \<Rightarrow> \<lbrace> z : B_int  | [[z]\<^sup>v]\<^sup>c\<^sup>e == [[L_num n]\<^sup>v]\<^sup>c\<^sup>e \<rbrace>"
@@ -81,7 +81,7 @@ qed
 
 section \<open>Values\<close>
 
-inductive infer_v :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> v \<Rightarrow> \<tau> \<Rightarrow> bool" (" _ ; _ ; _ \<turnstile> _ \<Rightarrow> _" [50, 50, 50] 50) where
+inductive infer_v :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> v \<Rightarrow> \<tau> \<Rightarrow> bool" (\<open> _ ; _ ; _ \<turnstile> _ \<Rightarrow> _\<close> [50, 50, 50] 50) where
 
 infer_v_varI: "\<lbrakk>
       \<Theta>; \<B> \<turnstile>\<^sub>w\<^sub>f \<Gamma> ; 
@@ -171,7 +171,7 @@ inductive_cases infer_v_elims[elim!]:
   "\<Theta>; \<B>; \<Gamma> \<turnstile> V_pair v1 v2 \<Rightarrow> (\<lbrace> z : [ b1 , b2 ]\<^sup>b |  [[z]\<^sup>v]\<^sup>c\<^sup>e == [[v1,v2]\<^sup>v]\<^sup>c\<^sup>e \<rbrace>) "
   "\<Theta>; \<B>; \<Gamma> \<turnstile> V_consp s dc b v  \<Rightarrow> \<tau> "
 
-inductive check_v :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> v \<Rightarrow> \<tau> \<Rightarrow> bool"  ("_ ; _ ; _  \<turnstile> _ \<Leftarrow> _" [50, 50, 50] 50) where
+inductive check_v :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> v \<Rightarrow> \<tau> \<Rightarrow> bool"  (\<open>_ ; _ ; _  \<turnstile> _ \<Leftarrow> _\<close> [50, 50, 50] 50) where
   check_v_subtypeI:  "\<lbrakk>  \<Theta>; \<B>; \<Gamma> \<turnstile> \<tau>1 \<lesssim> \<tau>2; \<Theta>; \<B>; \<Gamma> \<turnstile> v \<Rightarrow> \<tau>1 \<rbrakk> \<Longrightarrow> \<Theta>; \<B> ;  \<Gamma> \<turnstile>  v \<Leftarrow> \<tau>2"
 equivariance check_v
 nominal_inductive check_v  .
@@ -183,7 +183,7 @@ section \<open>Expressions\<close>
 
 text \<open> Type synthesis for expressions \<close>
 
-inductive infer_e :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> e \<Rightarrow> \<tau> \<Rightarrow> bool"  ("_ ; _ ; _ ; _ ; _  \<turnstile> _ \<Rightarrow> _" [50, 50, 50,50] 50) where
+inductive infer_e :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> e \<Rightarrow> \<tau> \<Rightarrow> bool"  (\<open>_ ; _ ; _ ; _ ; _  \<turnstile> _ \<Rightarrow> _\<close> [50, 50, 50,50] 50) where
 
 infer_e_valI:  "\<lbrakk>
          (\<Theta>; \<B>; \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Delta>) ; 
@@ -346,9 +346,9 @@ nominal_termination (eqvt)  by lexicographic_order
 
 section \<open>Statements\<close>
 
-inductive check_s ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> s \<Rightarrow> \<tau> \<Rightarrow> bool" (" _ ; _ ; _ ; _ ; _  \<turnstile> _ \<Leftarrow> _" [50, 50, 50,50,50] 50) and
-  check_branch_s ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta>  \<Rightarrow> tyid \<Rightarrow> string \<Rightarrow> \<tau> \<Rightarrow> v \<Rightarrow> branch_s \<Rightarrow> \<tau> \<Rightarrow> bool" (" _ ;  _ ; _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile> _ \<Leftarrow> _" [50, 50, 50,50,50] 50) and
-  check_branch_list ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta>  \<Rightarrow> tyid \<Rightarrow> (string * \<tau>) list \<Rightarrow> v \<Rightarrow> branch_list \<Rightarrow> \<tau> \<Rightarrow> bool" (" _ ;  _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile> _ \<Leftarrow> _" [50, 50, 50,50,50] 50) where 
+inductive check_s ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> s \<Rightarrow> \<tau> \<Rightarrow> bool" (\<open> _ ; _ ; _ ; _ ; _  \<turnstile> _ \<Leftarrow> _\<close> [50, 50, 50,50,50] 50) and
+  check_branch_s ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta>  \<Rightarrow> tyid \<Rightarrow> string \<Rightarrow> \<tau> \<Rightarrow> v \<Rightarrow> branch_s \<Rightarrow> \<tau> \<Rightarrow> bool" (\<open> _ ;  _ ; _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile> _ \<Leftarrow> _\<close> [50, 50, 50,50,50] 50) and
+  check_branch_list ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta>  \<Rightarrow> tyid \<Rightarrow> (string * \<tau>) list \<Rightarrow> v \<Rightarrow> branch_list \<Rightarrow> \<tau> \<Rightarrow> bool" (\<open> _ ;  _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile> _ \<Leftarrow> _\<close> [50, 50, 50,50,50] 50) where 
   check_valI:  "\<lbrakk> 
        \<Theta>; \<B>; \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Delta> ;   
        \<Theta> \<turnstile>\<^sub>w\<^sub>f \<Phi> ;
@@ -499,7 +499,7 @@ section \<open>Programs\<close>
 
 text \<open>Type check function bodies\<close>
 
-inductive check_funtyp :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow>  \<B> \<Rightarrow> fun_typ \<Rightarrow> bool" ( " _ ; _ ; _ \<turnstile> _ " ) where
+inductive check_funtyp :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow>  \<B> \<Rightarrow> fun_typ \<Rightarrow> bool" ( \<open> _ ; _ ; _ \<turnstile> _ \<close> ) where
   check_funtypI: "\<lbrakk>
   atom x \<sharp> (\<Theta>, \<Phi>, B , b );
   \<Theta>; \<Phi> ;  B ; ((x,b,c) #\<^sub>\<Gamma> GNil) ; []\<^sub>\<Delta> \<turnstile> s \<Leftarrow> \<tau>
@@ -518,7 +518,7 @@ next
   then show ?case by auto
 qed
 
-inductive check_funtypq :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> fun_typ_q \<Rightarrow> bool"  ( " _ ; _ \<turnstile> _ " ) where 
+inductive check_funtypq :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> fun_typ_q \<Rightarrow> bool"  ( \<open> _ ; _ \<turnstile> _ \<close> ) where 
   check_fundefq_simpleI: "\<lbrakk>
   \<Theta>; \<Phi> ; {||} \<turnstile> (AF_fun_typ x b c t s)
 \<rbrakk>  \<Longrightarrow> 
@@ -542,7 +542,7 @@ next
   then show ?case by auto
 qed
 
-inductive check_fundef :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> fun_def \<Rightarrow> bool" ( " _ ; _ \<turnstile> _ " ) where
+inductive check_fundef :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> fun_def \<Rightarrow> bool" ( \<open> _ ; _ \<turnstile> _ \<close> ) where
   check_fundefI: "\<lbrakk>
   \<Theta>; \<Phi> \<turnstile> ft 
 \<rbrakk>  \<Longrightarrow> 
@@ -575,7 +575,7 @@ nominal_function \<Delta>_of :: "var_def list \<Rightarrow> \<Delta>" where
   by (metis var_def.strong_exhaust)
 nominal_termination (eqvt) by lexicographic_order
 
-inductive check_prog :: "p \<Rightarrow> \<tau> \<Rightarrow> bool" ( "\<turnstile> _ \<Leftarrow> _")  where 
+inductive check_prog :: "p \<Rightarrow> \<tau> \<Rightarrow> bool" ( \<open>\<turnstile> _ \<Leftarrow> _\<close>)  where 
   "\<lbrakk>
    \<Theta>; \<Phi>; {||}; GNil ; \<Delta>_of \<G> \<turnstile> s \<Leftarrow> \<tau>
 \<rbrakk> \<Longrightarrow>  \<turnstile> (AP_prog \<Theta> \<Phi> \<G> s) \<Leftarrow> \<tau>"

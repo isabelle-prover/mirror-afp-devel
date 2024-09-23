@@ -11,7 +11,7 @@ context env begin
 definition
   "weakStatImp" :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>
                      ('b \<times> ('a, 'b, 'c) psi \<times> ('a, 'b, 'c) psi) set \<Rightarrow> 
-                     ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<lessapprox><_> _" [80, 80, 80, 80] 80)
+                     ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<lessapprox><_> _\<close> [80, 80, 80, 80] 80)
 where "\<Psi> \<rhd> P \<lessapprox><Rel> Q \<equiv> \<forall>\<Psi>'. \<exists>Q' Q''. \<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<and> insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q') \<Psi> \<and> \<Psi> \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'' \<and> (\<Psi> \<otimes> \<Psi>', P, Q'') \<in> Rel"
 
 lemma weakStatImpMonotonic:

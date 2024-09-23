@@ -34,7 +34,7 @@ subsection \<open>Shared state\<close>
 
 context includes \<I>.lifting lifting_syntax begin
 
-lift_definition plus_\<I> :: "('out, 'ret) \<I> \<Rightarrow> ('out', 'ret') \<I> \<Rightarrow> ('out + 'out', 'ret + 'ret') \<I>" (infix "\<oplus>\<^sub>\<I>" 500)
+lift_definition plus_\<I> :: "('out, 'ret) \<I> \<Rightarrow> ('out', 'ret') \<I> \<Rightarrow> ('out + 'out', 'ret + 'ret') \<I>" (infix \<open>\<oplus>\<^sub>\<I>\<close> 500)
 is "\<lambda>resp1 resp2. \<lambda>out. case out of Inl out' \<Rightarrow> Inl ` resp1 out' | Inr out' \<Rightarrow> Inr ` resp2 out'" .
 
 lemma plus_\<I>_sel [simp]:
@@ -116,7 +116,7 @@ by(cases lr) auto
 
 end
 
-notation plus_oracle (infix "\<oplus>\<^sub>O" 500)
+notation plus_oracle (infix \<open>\<oplus>\<^sub>O\<close> 500)
 
 context
   fixes left :: "('s, 'a, 'b) oracle'"
@@ -268,7 +268,7 @@ by(cases lr) auto
 
 end
 
-notation plus_oracle_stop (infix "\<oplus>\<^sub>O\<^sup>S" 500)
+notation plus_oracle_stop (infix \<open>\<oplus>\<^sub>O\<^sup>S\<close> 500)
 
 subsection \<open>Disjoint state\<close>
 
@@ -349,7 +349,7 @@ by(simp add: family_oracle_def split_beta)
 
 subsection \<open>State extension\<close>
 
-definition extend_state_oracle :: "('call, 'ret, 's) callee \<Rightarrow> ('call, 'ret, 's' \<times> 's) callee" ("\<dagger>_" [1000] 1000)
+definition extend_state_oracle :: "('call, 'ret, 's) callee \<Rightarrow> ('call, 'ret, 's' \<times> 's) callee" (\<open>\<dagger>_\<close> [1000] 1000)
 where "extend_state_oracle callee = (\<lambda>(s', s) x. map_spmf (\<lambda>(y, s). (y, (s', s))) (callee s x))"
 
 lemma extend_state_oracle_simps [simp]:
@@ -401,7 +401,7 @@ done
 
 end
 
-definition extend_state_oracle2 :: "('call, 'ret, 's) callee \<Rightarrow> ('call, 'ret, 's \<times> 's') callee" ("_\<dagger>" [1000] 1000)
+definition extend_state_oracle2 :: "('call, 'ret, 's) callee \<Rightarrow> ('call, 'ret, 's \<times> 's') callee" (\<open>_\<dagger>\<close> [1000] 1000)
   where "extend_state_oracle2 callee = (\<lambda>(s, s') x. map_spmf (\<lambda>(y, s). (y, (s, s'))) (callee s x))"
 
 lemma extend_state_oracle2_simps [simp]:

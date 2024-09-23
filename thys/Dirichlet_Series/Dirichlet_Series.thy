@@ -100,9 +100,9 @@ abbreviation fds_ind where "fds_ind P \<equiv> fds (ind P)"
 bundle fds_syntax
 begin
   
-notation fds_nth (infixl "$" 75)
-notation fds (binder "\<chi>" 10)
-notation dirichlet_prod (infixl "\<star>" 70)
+notation fds_nth (infixl \<open>$\<close> 75)
+notation fds (binder \<open>\<chi>\<close> 10)
+notation dirichlet_prod (infixl \<open>\<star>\<close> 70)
  
 end
 

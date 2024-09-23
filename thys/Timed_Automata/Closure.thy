@@ -91,7 +91,7 @@ lemma valid_regions_distinct_spec:
 unfolding \<R>_def using valid_regions_distinct
 by auto (drule valid_regions_distinct, assumption+, simp)+
 
-definition cla ("Closure\<^sub>\<alpha> _" [71] 71)
+definition cla (\<open>Closure\<^sub>\<alpha> _\<close> [71] 71)
 where
   "cla Z = \<Union> {R \<in> \<R>. R \<inter> Z \<noteq> {}}"
 
@@ -275,7 +275,7 @@ subsection \<open>Single step\<close>
 
 inductive step_z_alpha ::
   "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<alpha>(_)\<^esub> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<alpha>(_)\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   step_alpha: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<alpha>(a)\<^esub> \<langle>l', Closure\<^sub>\<alpha> Z'\<rangle>"
 
@@ -285,7 +285,7 @@ declare step_z_alpha.intros[intro]
 
 definition
   step_z_alpha' :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle> = (\<exists> Z' a. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l, Z'\<rangle> \<and> A \<turnstile> \<langle>l, Z'\<rangle> \<leadsto>\<^bsub>\<alpha>(\<upharpoonleft>a)\<^esub> \<langle>l', Z''\<rangle>)"
 
@@ -319,7 +319,7 @@ subsection \<open>Multi step\<close>
 
 abbreviation
   steps_z_alpha :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l', Z''\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle>)\<^sup>*\<^sup>* (l, Z) (l', Z'')"
 
@@ -768,7 +768,7 @@ subsection \<open>Single step\<close>
 
 inductive step_r ::
   "('a, 'c, t, 's) ta \<Rightarrow> _ \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_\<^esub> \<langle>_, _\<rangle>" [61,61,61,61,61] 61)
+(\<open>_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61,61] 61)
 where
   step_t_r:
   "A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l,R'\<rangle>" if
@@ -784,15 +784,15 @@ declare step_r.intros[intro]
 
 inductive step_r' ::
   "('a, 'c, t, 's) ta \<Rightarrow> _ \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>_ \<langle>_, _\<rangle>" [61,61,61,61,61] 61)
+(\<open>_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>_ \<langle>_, _\<rangle>\<close> [61,61,61,61,61] 61)
 where
   "A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto>\<^sub>a \<langle>l',R''\<rangle>" if "A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l,R'\<rangle>" "A,\<R> \<turnstile> \<langle>l,R'\<rangle> \<leadsto>\<^bsub>\<upharpoonleft>a\<^esub> \<langle>l', R''\<rangle>"
 
 lemmas \<R>_def' = meta_eq_to_obj_eq[OF \<R>_def]
 lemmas region_cover' = region_cover'[OF \<R>_def']
 
-abbreviation part'' ("[_]\<^sub>_" [61,61] 61) where "part'' u l1 \<equiv> part u (\<R> l1)"
-no_notation part ("[_]\<^sub>_" [61,61] 61)
+abbreviation part'' (\<open>[_]\<^sub>_\<close> [61,61] 61) where "part'' u l1 \<equiv> part u (\<R> l1)"
+no_notation part (\<open>[_]\<^sub>_\<close> [61,61] 61)
 
 lemma step_r_complete_aux:
   fixes R u r A l' g
@@ -942,7 +942,7 @@ lemma step_r'_sound:
 
 section \<open>A New Zone Semantics Abstracting with \<open>Closure\<^sub>\<alpha>\<^sub>,\<^sub>l\<close>\<close>
 
-definition cla ("Closure\<^sub>\<alpha>\<^sub>,\<^sub>_(_)" [71,71] 71)
+definition cla (\<open>Closure\<^sub>\<alpha>\<^sub>,\<^sub>_(_)\<close> [71,71] 71)
 where
   "cla l Z = \<Union> {R \<in> \<R> l. R \<inter> Z \<noteq> {}}"
 
@@ -950,7 +950,7 @@ subsection \<open>Single step\<close>
 
 inductive step_z_alpha ::
   "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<alpha>(_)\<^esub> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<alpha>(_)\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   step_alpha: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<alpha>(a)\<^esub> \<langle>l', Closure\<^sub>\<alpha>\<^sub>,\<^sub>l' Z'\<rangle>"
 
@@ -994,13 +994,13 @@ subsection \<open>Multi step\<close>
 
 definition
   step_z_alpha' :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle> = (\<exists> Z' a. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l, Z'\<rangle> \<and> A \<turnstile> \<langle>l, Z'\<rangle> \<leadsto>\<^bsub>\<alpha>(\<upharpoonleft>a)\<^esub> \<langle>l', Z''\<rangle>)"
 
 abbreviation
   steps_z_alpha :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l', Z''\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle>)\<^sup>*\<^sup>* (l, Z) (l', Z'')"
 

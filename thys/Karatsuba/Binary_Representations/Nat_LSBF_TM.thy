@@ -535,20 +535,20 @@ abbreviation shift_right_tm_flip where "shift_right_tm_flip xs n \<equiv> shift_
 
 bundle nat_lsbf_tm_syntax
 begin
-  notation add_nat_tm (infixl "+\<^sub>n\<^sub>t" 65)
-  notation compare_nat_tm (infixl "\<le>\<^sub>n\<^sub>t" 50)
-  notation subtract_nat_tm (infixl "-\<^sub>n\<^sub>t" 65)
-  notation grid_mul_nat_tm (infixl "*\<^sub>n\<^sub>t" 70)
-  notation shift_right_tm_flip (infixl ">>\<^sub>n\<^sub>t" 55)
+  notation add_nat_tm (infixl \<open>+\<^sub>n\<^sub>t\<close> 65)
+  notation compare_nat_tm (infixl \<open>\<le>\<^sub>n\<^sub>t\<close> 50)
+  notation subtract_nat_tm (infixl \<open>-\<^sub>n\<^sub>t\<close> 65)
+  notation grid_mul_nat_tm (infixl \<open>*\<^sub>n\<^sub>t\<close> 70)
+  notation shift_right_tm_flip (infixl \<open>>>\<^sub>n\<^sub>t\<close> 55)
 end
 
 bundle no_nat_lsbf_tm_syntax
 begin
-  no_notation add_nat_tm (infixl "+\<^sub>n\<^sub>t" 65)
-  no_notation compare_nat_tm (infixl "\<le>\<^sub>n\<^sub>t" 50)
-  no_notation subtract_nat_tm (infixl "-\<^sub>n\<^sub>t" 65)
-  no_notation grid_mul_nat_tm (infixl "*\<^sub>n\<^sub>t" 70)
-  no_notation shift_right_tm_flip (infixl ">>\<^sub>n\<^sub>t" 55)
+  no_notation add_nat_tm (infixl \<open>+\<^sub>n\<^sub>t\<close> 65)
+  no_notation compare_nat_tm (infixl \<open>\<le>\<^sub>n\<^sub>t\<close> 50)
+  no_notation subtract_nat_tm (infixl \<open>-\<^sub>n\<^sub>t\<close> 65)
+  no_notation grid_mul_nat_tm (infixl \<open>*\<^sub>n\<^sub>t\<close> 70)
+  no_notation shift_right_tm_flip (infixl \<open>>>\<^sub>n\<^sub>t\<close> 55)
 end
 
 unbundle nat_lsbf_tm_syntax

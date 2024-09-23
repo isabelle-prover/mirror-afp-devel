@@ -46,7 +46,7 @@ axiomatization  where select_increase: "(select v (increase v a s)) = a"
 
 text \<open>The $VAR-LIST$ function allows to retrieve a Circus variable from its name.\<close>
 
-syntax "_VAR_LIST" :: "id \<Rightarrow> ('a, 'r) var_list"  ("VAR'_LIST _")
+syntax "_VAR_LIST" :: "id \<Rightarrow> ('a, 'r) var_list"  (\<open>VAR'_LIST _\<close>)
 translations "VAR_LIST x" => "(x, _update_name x)"
 
 end

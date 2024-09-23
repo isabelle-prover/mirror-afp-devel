@@ -14,12 +14,12 @@ begin
 
 sublocale G: Subgraph_Node_Defs .
 
-no_notation E ("_ \<rightarrow> _" [100, 100] 40)
-notation G.E' ("_ \<rightarrow> _" [100, 100] 40)
-no_notation reaches ("_ \<rightarrow>* _" [100, 100] 40)
-notation G.G'.reaches ("_ \<rightarrow>* _" [100, 100] 40)
-no_notation reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40)
-notation G.G'.reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40)
+no_notation E (\<open>_ \<rightarrow> _\<close> [100, 100] 40)
+notation G.E' (\<open>_ \<rightarrow> _\<close> [100, 100] 40)
+no_notation reaches (\<open>_ \<rightarrow>* _\<close> [100, 100] 40)
+notation G.G'.reaches (\<open>_ \<rightarrow>* _\<close> [100, 100] 40)
+no_notation reaches1 (\<open>_ \<rightarrow>\<^sup>+ _\<close> [100, 100] 40)
+notation G.G'.reaches1 (\<open>_ \<rightarrow>\<^sup>+ _\<close> [100, 100] 40)
 
 text \<open>Plain set membership is also an option.\<close>
 definition "check_loop v ST = (\<exists> v' \<in> set ST. v' \<preceq> v)"

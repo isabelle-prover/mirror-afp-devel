@@ -647,7 +647,7 @@ lemma poly_zero_add: "poly_add zero_poly p = p" unfolding zero_poly_def using po
 lemma poly_zero_mult: "poly_mult zero_poly p = zero_poly" unfolding zero_poly_def using poly_mult.simps by auto
 
 text \<open>equality of polynomials\<close>
-definition eq_poly :: "('v :: linorder, 'a :: comm_semiring_1)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix "=p" 51)
+definition eq_poly :: "('v :: linorder, 'a :: comm_semiring_1)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix \<open>=p\<close> 51)
 where "p =p q \<equiv> \<forall> \<alpha>. eval_poly \<alpha> p = eval_poly \<alpha> q"
 
 lemma poly_one_mult: "poly_mult one_poly p =p p" 
@@ -898,7 +898,7 @@ subsection \<open>
 definition pos_assign :: "('v,'a :: ordered_semiring_0)assign \<Rightarrow> bool"
 where "pos_assign \<alpha> = (\<forall> x. \<alpha> x \<ge> 0)"
 
-definition poly_ge :: "('v :: linorder,'a :: poly_carrier)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix "\<ge>p" 51)
+definition poly_ge :: "('v :: linorder,'a :: poly_carrier)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix \<open>\<ge>p\<close> 51)
 where "p \<ge>p q = (\<forall> \<alpha>. pos_assign \<alpha> \<longrightarrow> eval_poly \<alpha> p \<ge> eval_poly \<alpha> q)"
 
 lemma poly_ge_refl[simp]: "p \<ge>p p"
@@ -958,7 +958,7 @@ using assms unfolding poly_ge_def zero_poly_def by (auto simp: times_left_mono)
 context poly_order_carrier
 begin
 
-definition poly_gt :: "('v :: linorder,'a)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix ">p" 51)
+definition poly_gt :: "('v :: linorder,'a)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix \<open>>p\<close> 51)
 where "p >p q = (\<forall> \<alpha>. pos_assign \<alpha> \<longrightarrow> eval_poly \<alpha> p \<succ> eval_poly \<alpha> q)"
 
 lemma poly_gt_imp_poly_ge: "p >p q \<Longrightarrow> p \<ge>p q" unfolding poly_ge_def poly_gt_def using gt_imp_ge by blast

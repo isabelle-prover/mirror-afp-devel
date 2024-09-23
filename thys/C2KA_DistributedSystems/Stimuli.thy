@@ -32,24 +32,24 @@ on stimuli to be consistent with~\<^cite>\<open>"Jaskolka2015ab"\<close>.
 \<close>
 
 class plus_ord =
-  fixes leq::"'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_/ \<le>\<^sub>\<S> _)"  [51, 51] 50)
-  fixes add::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<oplus>" 65)
+  fixes leq::"'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_/ \<le>\<^sub>\<S> _)\<close>  [51, 51] 50)
+  fixes add::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<oplus>\<close> 65)
   assumes leq_def: "x \<le>\<^sub>\<S> y \<longleftrightarrow> x \<oplus> y = y"
   and add_assoc: "(x \<oplus> y) \<oplus> z = x \<oplus> (y \<oplus> z)"
   and add_comm: "x \<oplus> y = y \<oplus> x"
 begin
 
 notation
-  leq  ("'(\<le>')") and
-  leq ("(_/ \<le>\<^sub>\<S> _)"  [51, 51] 50)
+  leq  (\<open>'(\<le>')\<close>) and
+  leq (\<open>(_/ \<le>\<^sub>\<S> _)\<close>  [51, 51] 50)
 
 end
 
 class stimuli = plus_ord +
-  fixes seq_comp::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<odot>" 70)
-  fixes neutral :: 'a ("\<nn>")
-  and deactivation :: 'a ("\<dd>")
-  and basic :: "'a set" ("\<S>\<^sub>a")
+  fixes seq_comp::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<odot>\<close> 70)
+  fixes neutral :: 'a (\<open>\<nn>\<close>)
+  and deactivation :: 'a (\<open>\<dd>\<close>)
+  and basic :: "'a set" (\<open>\<S>\<^sub>a\<close>)
   assumes stim_idem [simp]: "x \<oplus> x = x"
   and seq_nl [simp]: "\<nn> \<odot> x = x"
   and seq_nr [simp]: "x \<odot> \<nn> = x"

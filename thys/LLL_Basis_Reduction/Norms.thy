@@ -23,7 +23,7 @@ begin
 
 subsection \<open>L-\<open>\<infinity>\<close> Norms\<close>
 
-consts linf_norm :: "'a \<Rightarrow> 'b" ("\<parallel>(_)\<parallel>\<^sub>\<infinity>")
+consts linf_norm :: "'a \<Rightarrow> 'b" (\<open>\<parallel>(_)\<parallel>\<^sub>\<infinity>\<close>)
 
 definition linf_norm_vec where "linf_norm_vec v \<equiv> max_list (map abs (list_of_vec v) @ [0])"
 adhoc_overloading linf_norm linf_norm_vec
@@ -84,7 +84,7 @@ lemma linf_norm_poly_greater_0 [simp]:
 
 subsection \<open>Square Norms\<close>
 
-consts sq_norm :: "'a \<Rightarrow> 'b" ("\<parallel>(_)\<parallel>\<^sup>2")
+consts sq_norm :: "'a \<Rightarrow> 'b" (\<open>\<parallel>(_)\<parallel>\<^sup>2\<close>)
 
 abbreviation "sq_norm_conjugate x \<equiv> x * conjugate x"
 adhoc_overloading sq_norm sq_norm_conjugate

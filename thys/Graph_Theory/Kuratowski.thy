@@ -19,10 +19,10 @@ text \<open>
 
 subsection \<open>Public definitions\<close>
 
-definition complete_digraph :: "nat \<Rightarrow> ('a,'b) pre_digraph \<Rightarrow> bool" ("K\<^bsub>_\<^esub>") where
+definition complete_digraph :: "nat \<Rightarrow> ('a,'b) pre_digraph \<Rightarrow> bool" (\<open>K\<^bsub>_\<^esub>\<close>) where
   "complete_digraph n G \<equiv> graph G \<and> card (verts G) = n \<and> arcs_ends G = {(u,v). (u,v) \<in> verts G \<times> verts G \<and> u \<noteq> v}"
 
-definition complete_bipartite_digraph :: "nat \<Rightarrow> nat \<Rightarrow> ('a, 'b) pre_digraph \<Rightarrow> bool" ("K\<^bsub>_,_\<^esub>") where
+definition complete_bipartite_digraph :: "nat \<Rightarrow> nat \<Rightarrow> ('a, 'b) pre_digraph \<Rightarrow> bool" (\<open>K\<^bsub>_,_\<^esub>\<close>) where
   "complete_bipartite_digraph m n G \<equiv> graph G \<and> (\<exists>U V. verts G = U \<union> V \<and> U \<inter> V = {}
     \<and> card U = m \<and> card V = n \<and> arcs_ends G = U \<times> V \<union> V \<times> U)"
 

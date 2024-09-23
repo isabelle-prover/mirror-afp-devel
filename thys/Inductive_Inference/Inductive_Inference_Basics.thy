@@ -180,7 +180,7 @@ text \<open>Strategies receive prefixes in the form of encoded lists. The
 term ``prefix'' refers to both encoded and unencoded lists. We use the
 notation @{text "f \<triangleright> n"} for the prefix $f^n$.\<close>
 
-definition init :: "partial1 \<Rightarrow> nat \<Rightarrow> nat" (infix "\<triangleright>" 110) where
+definition init :: "partial1 \<Rightarrow> nat \<Rightarrow> nat" (infix \<open>\<triangleright>\<close> 110) where
   "f \<triangleright> n \<equiv> list_encode (prefix f n)"
 
 lemma init_neq_zero: "f \<triangleright> n \<noteq> 0"
@@ -305,7 +305,7 @@ qed
 text \<open>Some definitions make use of recursive predicates, that is,
 $01$-valued functions.\<close>
 
-definition RPred1 :: "partial1 set" ("\<R>\<^sub>0\<^sub>1") where
+definition RPred1 :: "partial1 set" (\<open>\<R>\<^sub>0\<^sub>1\<close>) where
   "\<R>\<^sub>0\<^sub>1 \<equiv> {f. f \<in> \<R> \<and> (\<forall>x. f x \<down>= 0 \<or> f x \<down>= 1)}"
 
 lemma RPred1_subseteq_R1: "\<R>\<^sub>0\<^sub>1 \<subseteq> \<R>"
@@ -424,7 +424,7 @@ lemma prenum_encode:
 
 text \<open>Prepending a list of numbers to a function:\<close>
 
-definition prepend :: "nat list \<Rightarrow> partial1 \<Rightarrow> partial1" (infixr "\<odot>" 64) where
+definition prepend :: "nat list \<Rightarrow> partial1 \<Rightarrow> partial1" (infixr \<open>\<odot>\<close> 64) where
   "vs \<odot> f \<equiv> \<lambda>x. if x < length vs then Some (vs ! x) else f (x - length vs)"
 
 lemma prepend [simp]:
@@ -557,10 +557,10 @@ proof
   qed
 qed
 
-abbreviation constant_divergent :: partial1 ("\<up>\<^sup>\<infinity>") where
+abbreviation constant_divergent :: partial1 (\<open>\<up>\<^sup>\<infinity>\<close>) where
   "\<up>\<^sup>\<infinity> \<equiv> \<lambda>_. None"
 
-abbreviation constant_zero :: partial1 ("0\<^sup>\<infinity>") where
+abbreviation constant_zero :: partial1 (\<open>0\<^sup>\<infinity>\<close>) where
   "0\<^sup>\<infinity> \<equiv> \<lambda>_. Some 0"
 
 lemma almost0_in_R1: "vs \<odot> 0\<^sup>\<infinity> \<in> \<R>"
@@ -570,7 +570,7 @@ text \<open>The class $U_0$ of all total recursive functions that are almost
 everywhere zero will be used several times to construct
 (counter-)examples.\<close>
 
-definition U0 :: "partial1 set" ("U\<^sub>0") where
+definition U0 :: "partial1 set" (\<open>U\<^sub>0\<close>) where
   "U\<^sub>0 \<equiv> {vs \<odot> 0\<^sup>\<infinity> |vs. vs \<in> UNIV}"
 
 text \<open>The class @{term U0} contains exactly the functions in the
@@ -659,7 +659,7 @@ sequence $(S(f^n))_{n\in\mathbb{N}}$ converges to an $i$ with $\psi_i = f$.
 Convergence for a sequence of natural numbers means that almost all elements
 are the same. We express this with the following notation.\<close>
 
-abbreviation Almost_All :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
+abbreviation Almost_All :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder \<open>\<forall>\<^sup>\<infinity>\<close> 10) where
   "\<forall>\<^sup>\<infinity>n. P n \<equiv> \<exists>n\<^sub>0. \<forall>n\<ge>n\<^sub>0. P n"
 
 definition learn_lim :: "partial2 \<Rightarrow> (partial1 set) \<Rightarrow> partial1 \<Rightarrow> bool" where
@@ -682,7 +682,7 @@ lemma learn_limI:
 definition LIM_wrt :: "partial2 \<Rightarrow> partial1 set set" where
   "LIM_wrt \<psi> \<equiv> {U. \<exists>s. learn_lim \<psi> U s}"
 
-definition Lim :: "partial1 set set" ("LIM") where
+definition Lim :: "partial1 set set" (\<open>LIM\<close>) where
   "LIM \<equiv> {U. \<exists>\<psi> s. learn_lim \<psi> U s}"
 
 text \<open>LIM is closed under the the subset relation.\<close>

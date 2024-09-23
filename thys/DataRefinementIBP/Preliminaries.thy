@@ -6,14 +6,14 @@ imports Main LatticeProperties.Complete_Lattice_Prop
 begin
 
 notation
-  less_eq (infix "\<sqsubseteq>" 50) and
-  less (infix "\<sqsubset>" 50) and
-  inf (infixl "\<sqinter>" 70) and
-  sup (infixl "\<squnion>" 65) and
-  top ("\<top>") and
-  bot ("\<bottom>") and
-  Inf ("\<Sqinter>_" [900] 900) and
-  Sup ("\<Squnion>_" [900] 900)
+  less_eq (infix \<open>\<sqsubseteq>\<close> 50) and
+  less (infix \<open>\<sqsubset>\<close> 50) and
+  inf (infixl \<open>\<sqinter>\<close> 70) and
+  sup (infixl \<open>\<squnion>\<close> 65) and
+  top (\<open>\<top>\<close>) and
+  bot (\<open>\<bottom>\<close>) and
+  Inf (\<open>\<Sqinter>_\<close> [900] 900) and
+  Sup (\<open>\<Squnion>_\<close> [900] 900)
 
 subsection \<open>Simplification Lemmas\<close>
 

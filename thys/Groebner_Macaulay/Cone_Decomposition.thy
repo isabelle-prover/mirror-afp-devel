@@ -24,7 +24,7 @@ end
 
 subsection \<open>Quotient Ideals\<close>
 
-definition quot_set :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a::semigroup_mult set" (infixl "\<div>" 55)
+definition quot_set :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a::semigroup_mult set" (infixl \<open>\<div>\<close> 55)
   where "quot_set A x = (*) x -` A"
 
 lemma quot_set_iff: "a \<in> A \<div> x \<longleftrightarrow> x * a \<in> A"
@@ -1169,7 +1169,7 @@ next
 qed
 
 definition pos_decomp :: "((('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<times> 'x set) list \<Rightarrow> ((('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<times> 'x set) list"
-    ("(_\<^sub>+)" [1000] 999)
+    (\<open>(_\<^sub>+)\<close> [1000] 999)
     where "pos_decomp ps = filter (\<lambda>p. snd p \<noteq> {}) ps"
 
 definition standard_decomp :: "nat \<Rightarrow> ((('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a::zero) \<times> 'x set) list \<Rightarrow> bool"

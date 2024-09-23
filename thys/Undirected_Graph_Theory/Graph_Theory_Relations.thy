@@ -57,7 +57,7 @@ This is a useful representation in some contexts - we use locales to enable the 
 results between the two representations, specifically the mutual sublocales approach \<close>
 
 locale graph_rel = 
-  fixes vertices :: "'a set" ("V")
+  fixes vertices :: "'a set" (\<open>V\<close>)
   fixes adj_rel :: "'a rel"
   assumes wf: "\<And> u v. (u, v) \<in> adj_rel \<Longrightarrow> u \<in> V \<and> v \<in> V"
 begin 

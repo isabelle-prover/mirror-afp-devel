@@ -265,7 +265,7 @@ lemma carrier_many_among[simp]: "carrier (many_among S) = S"
 
 subsubsection \<open>Intersection of two trees\<close>
 
-lift_definition intersect :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<inter>\<inter>" 80)
+lift_definition intersect :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl \<open>\<inter>\<inter>\<close> 80)
   is "(\<inter>)"
   by (auto simp add: downset_def)
 
@@ -279,7 +279,7 @@ lemma carrier_intersect: "carrier (t \<inter>\<inter> t') \<subseteq> carrier t 
 
 subsubsection \<open>Disjoint union of trees\<close>
 
-lift_definition either :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<oplus>\<oplus>" 80)
+lift_definition either :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl \<open>\<oplus>\<oplus>\<close> 80)
   is "(\<union>)"
   by (auto simp add: downset_def)
   
@@ -322,7 +322,7 @@ subsubsection \<open>Merging of trees\<close>
 lemma ex_ex_eq_hint: "(\<exists>x. (\<exists>xs ys. x = f xs ys \<and> P xs ys) \<and> Q x) \<longleftrightarrow> (\<exists>xs ys. Q (f xs ys) \<and> P xs ys)"
   by auto
 
-lift_definition both :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<otimes>\<otimes>" 86)
+lift_definition both :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl \<open>\<otimes>\<otimes>\<close> 86)
   is "\<lambda> xss yss . \<Union> {xs \<otimes> ys | xs ys. xs \<in> xss \<and> ys \<in> yss}"
   by (force simp: ex_ex_eq_hint dest: interleave_butlast)
 

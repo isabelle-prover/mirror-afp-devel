@@ -12,8 +12,8 @@ begin
 
 subsection \<open>Definitions: Labeled Strands and Constraints\<close>
 datatype 'l strand_label =
-  LabelN (the_LabelN: "'l") ("ln _")
-| LabelS ("\<star>")
+  LabelN (the_LabelN: "'l") (\<open>ln _\<close>)
+| LabelS (\<open>\<star>\<close>)
 
 text \<open>Labeled strands are strands whose steps are equipped with labels\<close>
 type_synonym ('a,'b,'c) labeled_strand_step = "'c strand_label \<times> ('a,'b) strand_step"
@@ -28,10 +28,10 @@ abbreviation proj_unl where "proj_unl n S \<equiv> unlabel (proj n S)"
 
 abbreviation wfrestrictedvars\<^sub>l\<^sub>s\<^sub>t where "wfrestrictedvars\<^sub>l\<^sub>s\<^sub>t S \<equiv> wfrestrictedvars\<^sub>s\<^sub>t (unlabel S)"
 
-abbreviation subst_apply_labeled_strand_step (infix "\<cdot>\<^sub>l\<^sub>s\<^sub>t\<^sub>p" 51) where
+abbreviation subst_apply_labeled_strand_step (infix \<open>\<cdot>\<^sub>l\<^sub>s\<^sub>t\<^sub>p\<close> 51) where
   "x \<cdot>\<^sub>l\<^sub>s\<^sub>t\<^sub>p \<theta> \<equiv> (case x of (l, s) \<Rightarrow> (l, s \<cdot>\<^sub>s\<^sub>t\<^sub>p \<theta>))"
 
-abbreviation subst_apply_labeled_strand (infix "\<cdot>\<^sub>l\<^sub>s\<^sub>t" 51) where
+abbreviation subst_apply_labeled_strand (infix \<open>\<cdot>\<^sub>l\<^sub>s\<^sub>t\<close> 51) where
   "S \<cdot>\<^sub>l\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>l\<^sub>s\<^sub>t\<^sub>p \<theta>) S"
 
 abbreviation trms\<^sub>l\<^sub>s\<^sub>t where "trms\<^sub>l\<^sub>s\<^sub>t S \<equiv> trms\<^sub>s\<^sub>t (unlabel S)"

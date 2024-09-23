@@ -12,7 +12,7 @@ subsubsection \<open> Function Spaces  \<close>
 definition exp_qbs_Mx :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> (real \<Rightarrow> 'a => 'b) set" where
 "exp_qbs_Mx X Y \<equiv> {g :: real \<Rightarrow> 'a \<Rightarrow> 'b. case_prod g \<in> \<real>\<^sub>Q \<Otimes>\<^sub>Q X \<rightarrow>\<^sub>Q Y} "
 
-definition exp_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) quasi_borel" (infixr "\<Rightarrow>\<^sub>Q" 61) where
+definition exp_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) quasi_borel" (infixr \<open>\<Rightarrow>\<^sub>Q\<close> 61) where
 "X \<Rightarrow>\<^sub>Q Y \<equiv> Abs_quasi_borel (X \<rightarrow>\<^sub>Q Y, exp_qbs_Mx X Y)"
 
 

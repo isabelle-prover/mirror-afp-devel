@@ -114,7 +114,7 @@ subsubsection"Cardinality"
 text \<open>The following is a generalization of the binomial coefficient to multisets. Sometimes it
 is called multiset coefficient. Here we call it "multichoose" \cite{stanleyenumerative}.\<close>
 
-definition multichoose:: "nat \<Rightarrow> nat \<Rightarrow> nat" (infixl "multichoose" 65) where
+definition multichoose:: "nat \<Rightarrow> nat \<Rightarrow> nat" (infixl \<open>multichoose\<close> 65) where
   "n multichoose k = (n + k -1) choose k"
 
 lemma weak_integer_composition_enum_zero: "length (weak_integer_composition_enum 0 (Suc n)) = 1"

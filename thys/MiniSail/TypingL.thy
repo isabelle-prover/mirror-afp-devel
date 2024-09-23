@@ -1820,7 +1820,7 @@ proof -
   ultimately show ?thesis using fresh_Pair by auto
 qed
 
-inductive check_e :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> e \<Rightarrow> \<tau> \<Rightarrow> bool"  (" _ ; _ ; _ ; _ ; _  \<turnstile> _ \<Leftarrow> _" [50, 50, 50] 50) where
+inductive check_e :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> e \<Rightarrow> \<tau> \<Rightarrow> bool"  (\<open> _ ; _ ; _ ; _ ; _  \<turnstile> _ \<Leftarrow> _\<close> [50, 50, 50] 50) where
   check_e_subtypeI: "\<lbrakk> infer_e T P B G D e \<tau>' ; subtype T B G \<tau>' \<tau> \<rbrakk> \<Longrightarrow> check_e T P B G D e \<tau>"
 equivariance check_e
 nominal_inductive check_e  .

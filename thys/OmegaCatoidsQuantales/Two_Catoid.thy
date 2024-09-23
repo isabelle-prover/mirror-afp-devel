@@ -17,7 +17,7 @@ we first need to make two copies of catoids for the 0-structure and 1-structure.
 subsection \<open>0-Structures and 1-structures.\<close>
 
 class multimagma0 = 
-  fixes mcomp0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" (infixl "\<odot>\<^sub>0" 70) 
+  fixes mcomp0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" (infixl \<open>\<odot>\<^sub>0\<close> 70) 
 
 begin 
 
@@ -25,7 +25,7 @@ sublocale mm0: multimagma mcomp0.
 
 abbreviation "\<Delta>\<^sub>0 \<equiv> mm0.\<Delta>"
 
-abbreviation conv0 :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "*\<^sub>0" 70) where
+abbreviation conv0 :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl \<open>*\<^sub>0\<close> 70) where
  "X *\<^sub>0 Y \<equiv> mm0.conv X Y"
 
 lemma "X *\<^sub>0 Y = (\<Union>x \<in> X. \<Union>y \<in> Y. x \<odot>\<^sub>0 y)"
@@ -34,7 +34,7 @@ lemma "X *\<^sub>0 Y = (\<Union>x \<in> X. \<Union>y \<in> Y. x \<odot>\<^sub>0 
 end
 
 class multimagma1 = 
-  fixes mcomp1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" (infixl "\<odot>\<^sub>1" 70) 
+  fixes mcomp1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" (infixl \<open>\<odot>\<^sub>1\<close> 70) 
 
 begin 
 
@@ -42,7 +42,7 @@ sublocale mm1: multimagma mcomp1.
 
 abbreviation "\<Delta>\<^sub>1 \<equiv> mm1.\<Delta>"
 
-abbreviation conv1 :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "*\<^sub>1" 70) where
+abbreviation conv1 :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl \<open>*\<^sub>1\<close> 70) where
   "X *\<^sub>1 Y \<equiv> mm1.conv X Y"
 
 end

@@ -36,7 +36,7 @@ lemma rtrancl_on_conv_ntrancl_onp: "(a,b) \<in> rtrancl_on F r \<longleftrightar
   by (metis ntrancl_onpD_rtrancl_on rtrancl_onE_ntrancl_onp)
 
 
-definition nreachable :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<^bsup>_\<^esup>\<index> _" [100,100] 40) where
+definition nreachable :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^bsup>_\<^esup>\<index> _\<close> [100,100] 40) where
   "nreachable G u n v \<equiv> ntrancl_onp (verts G) (arcs_ends G) n u v"
 
 context wf_digraph begin

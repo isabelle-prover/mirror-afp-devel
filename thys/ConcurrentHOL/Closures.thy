@@ -24,8 +24,8 @@ results.
 
 locale closure =
   ordering "(\<^bold>\<le>)" "(\<^bold><)" \<comment>\<open> We use a partial order as a preorder does not ensure that the closure is idempotent \<close>
-  for less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>\<le>" 50)
-     and less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold><" 50)
+  for less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold>\<le>\<close> 50)
+     and less :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold><\<close> 50)
 + fixes cl :: "'a \<Rightarrow> 'a"
   assumes cl: "x \<^bold>\<le> cl y \<longleftrightarrow> cl x \<^bold>\<le> cl y" \<comment>\<open> All-in-one non-strict Kuratowski axiom \<close>
 begin
@@ -106,14 +106,14 @@ subsection\<open> Complete lattices and algebraic closures\label{sec:closures-la
 locale closure_complete_lattice =
   complete_lattice "\<^bold>\<Sqinter>" "\<^bold>\<Squnion>" "(\<^bold>\<sqinter>)" "(\<^bold>\<le>)" "(\<^bold><)" "(\<^bold>\<squnion>)" "\<^bold>\<bottom>" "\<^bold>\<top>"
 + closure "(\<^bold>\<le>)" "(\<^bold><)" cl
-    for less_eqa :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<^bold>\<le>" 50)
-    and lessa (infix "\<^bold><" 50)
-    and infa (infixl "\<^bold>\<sqinter>" 70)
-    and supa (infixl "\<^bold>\<squnion>" 65)
-    and bota ("\<^bold>\<bottom>")
-    and topa ("\<^bold>\<top>")
-    and Inf ("\<^bold>\<Sqinter>")
-    and Sup ("\<^bold>\<Squnion>")
+    for less_eqa :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<^bold>\<le>\<close> 50)
+    and lessa (infix \<open>\<^bold><\<close> 50)
+    and infa (infixl \<open>\<^bold>\<sqinter>\<close> 70)
+    and supa (infixl \<open>\<^bold>\<squnion>\<close> 65)
+    and bota (\<open>\<^bold>\<bottom>\<close>)
+    and topa (\<open>\<^bold>\<top>\<close>)
+    and Inf (\<open>\<^bold>\<Sqinter>\<close>)
+    and Sup (\<open>\<^bold>\<Squnion>\<close>)
     and cl :: "'a \<Rightarrow> 'a"
 begin
 
@@ -711,8 +711,8 @@ it is not distributive.
 \<close>
 
 locale weak_kleene =
-  fixes unit :: "'a::complete_lattice" ("\<epsilon>")
-  fixes comp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<bullet>" 60)
+  fixes unit :: "'a::complete_lattice" (\<open>\<epsilon>\<close>)
+  fixes comp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<bullet>\<close> 60)
   assumes comp_assoc: "(x \<bullet> y) \<bullet> z = x \<bullet> (y \<bullet> z)"
   assumes weak_comp_unitL: "\<epsilon> \<le> x \<Longrightarrow> \<epsilon> \<bullet> x = x"
   assumes comp_unitR: "x \<bullet> \<epsilon> = x"

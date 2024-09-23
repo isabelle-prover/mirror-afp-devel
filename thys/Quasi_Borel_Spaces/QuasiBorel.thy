@@ -180,7 +180,7 @@ lemma qbs_eqI:
 
 
 subsubsection \<open> Morphism of Quasi-Borel Spaces \<close>
-definition qbs_morphism :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) set" (infixr "\<rightarrow>\<^sub>Q" 60) where 
+definition qbs_morphism :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<Rightarrow> 'b) set" (infixr \<open>\<rightarrow>\<^sub>Q\<close> 60) where 
   "X \<rightarrow>\<^sub>Q Y \<equiv> {f \<in> qbs_space X \<rightarrow> qbs_space Y. \<forall>\<alpha> \<in> qbs_Mx X. f \<circ> \<alpha> \<in> qbs_Mx Y}"
 
 lemma qbs_morphismI:
@@ -277,7 +277,7 @@ lemma empty_quasi_borel_iff:
   by(auto intro!: qbs_eqI)
 
 subsubsection \<open> Unit Space \<close>
-definition unit_quasi_borel :: "unit quasi_borel" ("1\<^sub>Q") where
+definition unit_quasi_borel :: "unit quasi_borel" (\<open>1\<^sub>Q\<close>) where
 "unit_quasi_borel \<equiv> Abs_quasi_borel (UNIV,UNIV)"
 
 lemma uqb_correct: "Rep_quasi_borel unit_quasi_borel = (UNIV,UNIV)"
@@ -294,7 +294,7 @@ lemma unit_quasi_borel_terminal:
  "\<exists>! f. f \<in> X \<rightarrow>\<^sub>Q unit_quasi_borel"
   by(fastforce simp: qbs_morphism_def)
 
-definition to_unit_quasi_borel :: "'a \<Rightarrow> unit" ("!\<^sub>Q") where
+definition to_unit_quasi_borel :: "'a \<Rightarrow> unit" (\<open>!\<^sub>Q\<close>) where
 "to_unit_quasi_borel \<equiv> (\<lambda>_.())"
 
 lemma to_unit_quasi_borel_morphism :

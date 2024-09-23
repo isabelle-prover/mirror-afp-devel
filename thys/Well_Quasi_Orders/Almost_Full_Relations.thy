@@ -18,7 +18,7 @@ using assms and mbs unfolding almost_full_on_def by blast
 (*TODO: move to Option.thy of Isabelle/HOL?*)
 subsection \<open>Adding a Bottom Element to a Set\<close>
 
-definition with_bot :: "'a set \<Rightarrow> 'a option set" ("_\<^sub>\<bottom>" [1000] 1000)
+definition with_bot :: "'a set \<Rightarrow> 'a option set" (\<open>_\<^sub>\<bottom>\<close> [1000] 1000)
 where
   "A\<^sub>\<bottom> = {None} \<union> Some ` A"
 

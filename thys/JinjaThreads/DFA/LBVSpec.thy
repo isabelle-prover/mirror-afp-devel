@@ -52,8 +52,8 @@ where
 
 
 locale lbv = Semilat +
-  fixes T :: "'a" ("\<top>") 
-  fixes B :: "'a" ("\<bottom>") 
+  fixes T :: "'a" (\<open>\<top>\<close>) 
+  fixes B :: "'a" (\<open>\<bottom>\<close>) 
   fixes step :: "'a step_type" 
   assumes top: "top r \<top>"
   assumes T_A: "\<top> \<in> A"

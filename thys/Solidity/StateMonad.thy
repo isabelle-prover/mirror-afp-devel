@@ -29,7 +29,7 @@ where "return a s = Normal (a, s)"
 fun throw :: "'e \<Rightarrow> ('a, 'e, 's) state_monad"
 where "throw e s = Exception e"
 
-fun bind :: "('a, 'e, 's) state_monad \<Rightarrow> ('a \<Rightarrow> ('b, 'e, 's) state_monad) \<Rightarrow> ('b, 'e, 's) state_monad" (infixl ">>=" 60)
+fun bind :: "('a, 'e, 's) state_monad \<Rightarrow> ('a \<Rightarrow> ('b, 'e, 's) state_monad) \<Rightarrow> ('b, 'e, 's) state_monad" (infixl \<open>>>=\<close> 60)
 where "bind f g s = (case f s of
                       Normal (a, s') \<Rightarrow> g a s'
                     | Exception e \<Rightarrow> Exception e)"
@@ -207,7 +207,7 @@ definition
   valid :: "('s \<Rightarrow> bool) \<Rightarrow> ('a,'e,'s) state_monad \<Rightarrow> 
              ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 
              ('e \<Rightarrow> bool) \<Rightarrow> bool" 
-  ("\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)")
+  (\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
 where
   "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,\<lbrace>E\<rbrace> \<equiv> \<forall>s. P s \<longrightarrow> (case f s of
                    Normal (r,s') \<Rightarrow> Q r s'

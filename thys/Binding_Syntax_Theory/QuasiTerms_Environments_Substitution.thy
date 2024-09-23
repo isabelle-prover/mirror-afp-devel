@@ -50,7 +50,7 @@ definition alphaEnv where
 
 abbreviation alphaEnv_abbrev ::
 "('index,'bindex,'varSort,'var,'opSym)qEnv \<Rightarrow>
- ('index,'bindex,'varSort,'var,'opSym)qEnv \<Rightarrow> bool" (infix "&=" 50)
+ ('index,'bindex,'varSort,'var,'opSym)qEnv \<Rightarrow> bool" (infix \<open>&=\<close> 50)
 where
 "rho &= rho' == (rho,rho') \<in> alphaEnv"
 
@@ -236,12 +236,12 @@ by(auto simp add: qTermQSwappedLess_def qTermLess_modulo_def
 
 abbreviation qPsubst_abbrev ::
 "('index,'bindex,'varSort,'var,'opSym)qTerm \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)qEnv \<Rightarrow>
- ('index,'bindex,'varSort,'var,'opSym)qTerm" ("_ #[[_]]")
+ ('index,'bindex,'varSort,'var,'opSym)qTerm" (\<open>_ #[[_]]\<close>)
 where "X #[[rho]] == qPsubst rho X"
 
 abbreviation qPsubstAbs_abbrev ::
 "('index,'bindex,'varSort,'var,'opSym)qAbs \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)qEnv \<Rightarrow>
- ('index,'bindex,'varSort,'var,'opSym)qAbs" ("_ $[[_]]")
+ ('index,'bindex,'varSort,'var,'opSym)qAbs" (\<open>_ $[[_]]\<close>)
 where "A $[[rho]] == qPsubstAbs rho A"
 
 lemma qPsubstAll_preserves_qGoodAll:

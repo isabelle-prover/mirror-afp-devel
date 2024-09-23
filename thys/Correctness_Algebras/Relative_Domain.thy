@@ -282,7 +282,7 @@ class relative_antidomain_semiring = idempotent_left_semiring + dom + Z + uminus
 begin
 
 notation
-  uminus ("a")
+  uminus (\<open>a\<close>)
 
 text \<open>Theorem 45.7\<close>
 

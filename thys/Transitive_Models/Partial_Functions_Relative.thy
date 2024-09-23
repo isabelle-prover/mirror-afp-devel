@@ -211,7 +211,7 @@ lemma FnleD[dest]:
   using assms unfolding Fnlerel_def Fnle_def FnleR_def Rrel_def
   by auto
 
-definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  ("_\<rightharpoonup>\<^bsup>_\<^esup>_")
+definition PFun_Space_Rel :: "[i,i\<Rightarrow>o, i] \<Rightarrow> i"  (\<open>_\<rightharpoonup>\<^bsup>_\<^esup>_\<close>)
   where "A \<rightharpoonup>\<^bsup>M\<^esup> B \<equiv> {f \<in> Pow(A\<times>B) . M(f) \<and> function(f)}"
 
 lemma (in M_library) PFun_Space_subset_Powrel :

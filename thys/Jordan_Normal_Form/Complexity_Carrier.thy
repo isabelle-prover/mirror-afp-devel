@@ -27,7 +27,7 @@ text \<open>For complexity analysis, we need a bounding function which tells us 
   when working with the reals or rational numbers.\<close>
 
 locale complexity_one_mono_ordered_semiring_1 = one_mono_ordered_semiring_1 default gt 
-  for gt :: "'a :: large_ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) and default :: 'a + 
+  for gt :: "'a :: large_ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50) and default :: 'a + 
   fixes bound :: "'a \<Rightarrow> nat"
   assumes bound_mono: "\<And> a b. a \<ge> b \<Longrightarrow> bound a \<ge> bound b"
    and bound_plus: "\<And> a b. bound (a + b) \<le> bound a + bound b" 

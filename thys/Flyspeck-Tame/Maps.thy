@@ -22,7 +22,7 @@ for empty :: "'m"
 and up :: "'a \<Rightarrow> 'b list \<Rightarrow> 'm \<Rightarrow> 'm"
 and map_of :: "'m \<Rightarrow> 'a \<Rightarrow> 'b list"
 and M :: "'m \<Rightarrow> bool"
-and qle :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<preceq>" 60)
+and qle :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 60)
 +
 fixes subsumed :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
 and I :: "'b \<Rightarrow> bool"

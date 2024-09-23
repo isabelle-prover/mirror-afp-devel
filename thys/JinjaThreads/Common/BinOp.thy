@@ -107,7 +107,7 @@ where
 text \<open>
   Division on @{typ "'a word"} is unsigned, but JLS specifies signed division.
 \<close>
-definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "sdiv" 70)
+definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl \<open>sdiv\<close> 70)
 where [code]:
   "x sdiv y =
    (let x' = sint x; y' = sint y;
@@ -115,7 +115,7 @@ where [code]:
         result = abs x' div abs y'
     in word_of_int (if negative then -result else result))"
 
-definition word_smod :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "smod" 70)
+definition word_smod :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl \<open>smod\<close> 70)
 where [code]:
   "x smod y =
    (let x' = sint x; y' = sint y;
@@ -314,7 +314,7 @@ end
 
 subsection \<open>Typing for binary operators\<close>
 
-inductive WT_binop :: "'m prog \<Rightarrow> ty \<Rightarrow> bop \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _\<guillemotleft>_\<guillemotright>_ :: _" [51,0,0,0,51] 50)
+inductive WT_binop :: "'m prog \<Rightarrow> ty \<Rightarrow> bop \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _\<guillemotleft>_\<guillemotright>_ :: _\<close> [51,0,0,0,51] 50)
 where
   WT_binop_Eq:
   "P \<turnstile> T1 \<le> T2 \<or> P \<turnstile> T2 \<le> T1 \<Longrightarrow> P \<turnstile> T1\<guillemotleft>Eq\<guillemotright>T2 :: Boolean"
@@ -412,7 +412,7 @@ lemma WT_binop_is_type:
   "\<lbrakk> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 :: T; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> is_type P T"
 by(cases bop) auto
 
-inductive WTrt_binop :: "'m prog \<Rightarrow> ty \<Rightarrow> bop \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _\<guillemotleft>_\<guillemotright>_ : _" [51,0,0,0,51] 50)
+inductive WTrt_binop :: "'m prog \<Rightarrow> ty \<Rightarrow> bop \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _\<guillemotleft>_\<guillemotright>_ : _\<close> [51,0,0,0,51] 50)
 where
   WTrt_binop_Eq:
   "P \<turnstile> T1\<guillemotleft>Eq\<guillemotright>T2 : Boolean"

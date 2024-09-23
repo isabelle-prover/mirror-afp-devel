@@ -36,7 +36,7 @@ We start with an unfold property, one inequality of the sliding rule and distrib
 \<close>
 
 class circ =
-  fixes circ :: "'a \<Rightarrow> 'a" ("_\<^sup>\<circ>" [100] 100)
+  fixes circ :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<circ>\<close> [100] 100)
 
 class left_conway_semiring = idempotent_left_semiring + circ +
   assumes circ_left_unfold: "1 \<squnion> x * x\<^sup>\<circ> = x\<^sup>\<circ>"

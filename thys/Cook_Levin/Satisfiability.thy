@@ -72,7 +72,7 @@ abbreviation satisfies_literal :: "assignment \<Rightarrow> literal \<Rightarrow
 definition satisfies_clause :: "assignment \<Rightarrow> clause \<Rightarrow> bool" where
   "satisfies_clause \<alpha> c \<equiv> \<exists>x\<in>set c. satisfies_literal \<alpha> x"
 
-definition satisfies :: "assignment \<Rightarrow> formula \<Rightarrow> bool" (infix "\<Turnstile>" 60) where
+definition satisfies :: "assignment \<Rightarrow> formula \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 60) where
   "\<alpha> \<Turnstile> \<phi> \<equiv> \<forall>c\<in>set \<phi>. satisfies_clause \<alpha> c"
 
 text \<open>

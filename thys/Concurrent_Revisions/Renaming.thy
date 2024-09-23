@@ -10,19 +10,19 @@ begin
 
 subsection Definitions
 
-abbreviation rename_val :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) val \<Rightarrow> ('r,'l,'v) val" ("\<R>\<^sub>V") where
+abbreviation rename_val :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) val \<Rightarrow> ('r,'l,'v) val" (\<open>\<R>\<^sub>V\<close>) where
   "\<R>\<^sub>V \<alpha> \<beta> v \<equiv> map_val \<alpha> \<beta> id v"
 
-abbreviation rename_expr :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) expr" ("\<R>\<^sub>E") where
+abbreviation rename_expr :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) expr" (\<open>\<R>\<^sub>E\<close>) where
   "\<R>\<^sub>E \<alpha> \<beta> e \<equiv> map_expr \<alpha> \<beta> id e"
 
-abbreviation rename_cntxt :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) cntxt \<Rightarrow> ('r,'l,'v) cntxt" ("\<R>\<^sub>C") where
+abbreviation rename_cntxt :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) cntxt \<Rightarrow> ('r,'l,'v) cntxt" (\<open>\<R>\<^sub>C\<close>) where
   "\<R>\<^sub>C \<alpha> \<beta> \<E> \<equiv> map_cntxt \<alpha> \<beta> id \<E>"
 
 definition is_store_renaming :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) store \<Rightarrow> ('r,'l,'v) store \<Rightarrow> bool" where 
   "is_store_renaming \<alpha> \<beta> \<sigma> \<sigma>' \<equiv> \<forall>l. case \<sigma> l of None \<Rightarrow> \<sigma>' (\<beta> l) = None | Some v \<Rightarrow> \<sigma>' (\<beta> l) = Some (\<R>\<^sub>V \<alpha> \<beta> v)"
 
-notation Option.bind (infixl "\<bind>" 80)
+notation Option.bind (infixl \<open>\<bind>\<close> 80)
 
 fun \<R>\<^sub>S :: "('r \<Rightarrow> 'r) \<Rightarrow> ('l \<Rightarrow> 'l) \<Rightarrow> ('r,'l,'v) store \<Rightarrow> ('r,'l,'v) store" where
   "\<R>\<^sub>S \<alpha> \<beta> \<sigma> l = \<sigma> (inv \<beta> l) \<bind> (\<lambda>v. Some (\<R>\<^sub>V \<alpha> \<beta> v))"
@@ -145,7 +145,7 @@ lemma \<R>\<^sub>G_inv [simp]: "\<lbrakk> bij \<alpha>; bij \<beta> \<rbrakk> \<
 
 subsubsection Equivalence
 
-definition eq_states :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" ("_ \<approx> _" [100, 100]) where
+definition eq_states :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (\<open>_ \<approx> _\<close> [100, 100]) where
   "s \<approx> s' \<equiv> \<exists>\<alpha> \<beta>. bij \<alpha> \<and> bij \<beta> \<and> \<R>\<^sub>G \<alpha> \<beta> s = s'"
 
 lemma eq_statesI [intro]:

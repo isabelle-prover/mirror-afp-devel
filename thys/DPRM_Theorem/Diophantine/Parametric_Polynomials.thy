@@ -24,9 +24,9 @@ datatype ppolynomial =
     Const nat |
     Param nat |
     Var   nat |
-    Sum  ppolynomial ppolynomial (infixl "\<^bold>+" 65) |
-    NatDiff ppolynomial ppolynomial (infixl "\<^bold>-" 65) |
-    Prod ppolynomial ppolynomial (infixl "\<^bold>*" 70)
+    Sum  ppolynomial ppolynomial (infixl \<open>\<^bold>+\<close> 65) |
+    NatDiff ppolynomial ppolynomial (infixl \<open>\<^bold>-\<close> 65) |
+    Prod ppolynomial ppolynomial (infixl \<open>\<^bold>*\<close> 70)
 
 fun ppeval :: "ppolynomial \<Rightarrow> assignment \<Rightarrow> assignment \<Rightarrow> nat"  where
     "ppeval (Const c) p v = c" |
@@ -37,7 +37,7 @@ fun ppeval :: "ppolynomial \<Rightarrow> assignment \<Rightarrow> assignment \<R
     "ppeval (D1 \<^bold>- D2) p v = (ppeval D1 p v) - (ppeval D2 p v)" |
     "ppeval (D1 \<^bold>* D2) p v = (ppeval D1 p v) * (ppeval D2 p v)"
 
-definition Sq_pp ("_ \<^bold>^\<^bold>2" [99] 75) where "Sq_pp P = P \<^bold>* P"
+definition Sq_pp (\<open>_ \<^bold>^\<^bold>2\<close> [99] 75) where "Sq_pp P = P \<^bold>* P"
 
 definition is_dioph_set :: "nat set \<Rightarrow> bool" where
     "is_dioph_set A = (\<exists>P1 P2::ppolynomial. \<forall>a. (a \<in> A)
@@ -46,9 +46,9 @@ definition is_dioph_set :: "nat set \<Rightarrow> bool" where
 datatype polynomial =
     Const nat |
     Param nat |
-    Sum  polynomial polynomial (infixl "[+]" 65) |
-    NatDiff polynomial polynomial (infixl "[-]" 65) |
-    Prod polynomial polynomial (infixl "[*]" 70)
+    Sum  polynomial polynomial (infixl \<open>[+]\<close> 65) |
+    NatDiff polynomial polynomial (infixl \<open>[-]\<close> 65) |
+    Prod polynomial polynomial (infixl \<open>[*]\<close> 70)
 
 fun peval :: "polynomial \<Rightarrow> assignment \<Rightarrow> nat"  where
     "peval (Const c) p = c" |
@@ -58,10 +58,10 @@ fun peval :: "polynomial \<Rightarrow> assignment \<Rightarrow> nat"  where
     "peval (NatDiff D1 D2) p = (peval D1 p) - (peval D2 p)" |
     "peval (Prod D1 D2) p = (peval D1 p) * (peval D2 p)"
 
-definition sq_p :: "polynomial \<Rightarrow> polynomial" ("_ [^2]" [99] 75) where "sq_p P = P [*] P"
+definition sq_p :: "polynomial \<Rightarrow> polynomial" (\<open>_ [^2]\<close> [99] 75) where "sq_p P = P [*] P"
 
-definition zero_p :: "polynomial" ("\<^bold>0") where "zero_p = Const 0"
-definition one_p :: "polynomial" ("\<^bold>1") where "one_p = Const 1"
+definition zero_p :: "polynomial" (\<open>\<^bold>0\<close>) where "zero_p = Const 0"
+definition one_p :: "polynomial" (\<open>\<^bold>1\<close>) where "one_p = Const 1"
 
 lemma sq_p_eval: "peval (P[^2]) p = (peval P p)^2"
   unfolding sq_p_def by (simp add: power2_eq_square)

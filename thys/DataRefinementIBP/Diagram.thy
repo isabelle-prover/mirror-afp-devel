@@ -249,13 +249,13 @@ The following definition introduces the concept of correct Hoare triples for dia
 \<close>
 
 definition (in DiagramTermination)
-  Hoare_dgr :: "('b \<Rightarrow> ('u::{complete_distrib_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" ("\<turnstile> (_){| _ |}(_) " 
+  Hoare_dgr :: "('b \<Rightarrow> ('u::{complete_distrib_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" (\<open>\<turnstile> (_){| _ |}(_) \<close> 
   [0,0,900] 900) where
   "\<turnstile> P {| D |} Q \<equiv> (\<exists> X . (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<and> 
        P = Sup (range X) \<and> Q = ((Sup (range  X)) \<sqinter> (-(grd (step D)))))"
 
 definition (in DiagramTermination)
-  Hoare_dgr1 :: "('b \<Rightarrow> ('u::{complete_distrib_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" ("\<turnstile>1 (_){| _ |}(_) " 
+  Hoare_dgr1 :: "('b \<Rightarrow> ('u::{complete_distrib_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" (\<open>\<turnstile>1 (_){| _ |}(_) \<close> 
   [0,0,900] 900) where
   "\<turnstile>1 P {| D |} Q \<equiv> (\<exists> X . (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<and> 
       P \<le> Sup (range X) \<and> ((Sup (range X)) \<sqinter> (-(grd (step D)))) \<le> Q)"

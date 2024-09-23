@@ -13,11 +13,11 @@ begin
 
 subsection\<open>The subclass relations\<close>
 
-inductive subcls1 :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71, 71, 71] 70)
+inductive subcls1 :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sup>1 _\<close> [71, 71, 71] 70)
   for P :: "'m prog"
 where subcls1I: "\<lbrakk> class P C = Some (D, rest); C \<noteq> Object \<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
 
-abbreviation subcls :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70)
+abbreviation subcls :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<preceq>\<^sup>* _\<close>  [71,71,71] 70)
 where "P \<turnstile> C \<preceq>\<^sup>* D \<equiv> (subcls1 P)\<^sup>*\<^sup>* C D"
 
 lemma subcls1D:
@@ -52,7 +52,7 @@ by(auto elim: converse_rtranclpE dest!: subcls1D simp add: is_class_def)
 
 subsection\<open>The subtype relations\<close>
 
-inductive widen :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
+inductive widen :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<le> _\<close>   [71,71,71] 70)
   for P :: "'m prog"
 where 
   widen_refl[iff]: "P \<turnstile> T \<le> T"
@@ -63,7 +63,7 @@ where
 | widen_array_array: "P \<turnstile> A \<le> B \<Longrightarrow> P \<turnstile> Array A \<le> Array B"
 
 abbreviation
-  widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70)
+  widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool" (\<open>_ \<turnstile> _ [\<le>] _\<close> [71,71,71] 70)
 where
   "P \<turnstile> Ts [\<le>] Ts' == list_all2 (widen P) Ts Ts'"
 
@@ -178,7 +178,7 @@ by(erule refTE)(auto simp add: widen_Class widen_Array)
 lemma refT_widen: "\<lbrakk> is_refT T; P \<turnstile> T \<le> U \<rbrakk> \<Longrightarrow> is_refT U"
 by(erule widen.cases) auto
 
-inductive is_lub :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> lub'((_,/ _)') = _" [51,51,51,51] 50)
+inductive is_lub :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> lub'((_,/ _)') = _\<close> [51,51,51,51] 50)
 for P :: "'m prog" and U :: ty and V :: ty and T ::  ty
 where 
   "\<lbrakk> P \<turnstile> U \<le> T; P \<turnstile> V \<le> T;
@@ -204,7 +204,7 @@ by(blast intro: is_lub.intros)
 subsection\<open>Method lookup\<close>
 
 inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm option) \<times> cname) \<Rightarrow> bool" 
-  ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
+  (\<open>_ \<turnstile> _ sees'_methods _\<close> [51,51,51] 50)
   for P :: "'m prog"
 where 
 sees_methods_Object:
@@ -276,7 +276,7 @@ next
 qed
 
 definition Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm option \<Rightarrow> cname \<Rightarrow> bool"
-            ("_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _" [51,51,51,51,51,51,51] 50)
+            (\<open>_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _\<close> [51,51,51,51,51,51,51] 50)
 where
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D  \<equiv>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm M = Some((Ts,T,m),D)"
@@ -287,10 +287,10 @@ text \<open>
 \<close>
 abbreviation (output)
   Method_native :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
-  ("_ \<turnstile> _ sees _: _\<rightarrow>_ = Native in _" [51,51,51,51,51,51] 50)
+  (\<open>_ \<turnstile> _ sees _: _\<rightarrow>_ = Native in _\<close> [51,51,51,51,51,51] 50)
 where "Method_native P C M Ts T D \<equiv> Method P C M Ts T Native D"
 
-definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
+definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" (\<open>_ \<turnstile> _ has _\<close> [51,0,51] 50)
 where
   "P \<turnstile> C has M \<equiv> \<exists>Ts T m D. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
 
@@ -337,7 +337,7 @@ by (auto simp add: is_class_def Method_def elim: Methods.cases)
 subsection\<open>Field lookup\<close>
 
 inductive Fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> (ty \<times> fmod)) list \<Rightarrow> bool"
-  ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
+  (\<open>_ \<turnstile> _ has'_fields _\<close> [51,51,51] 50)
   for P :: "'m prog"
 where 
   has_fields_rec:
@@ -427,7 +427,7 @@ using assms by cases auto
 
 definition
   has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> fmod \<Rightarrow> cname \<Rightarrow> bool"
-                   ("_ \<turnstile> _ has _:_ '(_') in _" [51,51,51,51,51,51] 50)
+                   (\<open>_ \<turnstile> _ has _:_ '(_') in _\<close> [51,51,51,51,51,51] 50)
 where
   "P \<turnstile> C has F:T (fm) in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some (T, fm)"
@@ -451,7 +451,7 @@ by(auto simp:has_field_def dest:has_fields_fun)
 
 definition
   sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> fmod \<Rightarrow> cname \<Rightarrow> bool"
-                  ("_ \<turnstile> _ sees _:_ '(_') in _" [51,51,51,51,51,51] 50)
+                  (\<open>_ \<turnstile> _ sees _:_ '(_') in _\<close> [51,51,51,51,51,51] 50)
 where
   "P \<turnstile> C sees F:T (fm) in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and>

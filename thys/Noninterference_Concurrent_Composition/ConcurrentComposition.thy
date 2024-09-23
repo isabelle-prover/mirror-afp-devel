@@ -94,7 +94,7 @@ indeed enjoy their respective characteristic properties as defined in \<^cite>\<
 definition future_divergences :: "'a process \<Rightarrow> 'a list \<Rightarrow> 'a list set" where
 "future_divergences P xs \<equiv> {ys. xs @ ys \<in> divergences P}"
 
-definition after :: "'a process \<Rightarrow> 'a list \<Rightarrow> 'a process" (infixl "\<setminus>" 64) where
+definition after :: "'a process \<Rightarrow> 'a list \<Rightarrow> 'a process" (infixl \<open>\<setminus>\<close> 64) where
 "P \<setminus> xs \<equiv> Abs_process (futures P xs, future_divergences P xs)"
 
 lemma process_rule_5_futures:
@@ -245,7 +245,7 @@ definition con_comp ::
 
 abbreviation con_comp_syntax ::
  "'a process \<Rightarrow> 'b process \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'c process"
- ("(_ \<parallel> _ <_, _>)" 55)
+ (\<open>(_ \<parallel> _ <_, _>)\<close> 55)
 where
 "P \<parallel> Q <p, q> \<equiv> con_comp P Q p q"
 

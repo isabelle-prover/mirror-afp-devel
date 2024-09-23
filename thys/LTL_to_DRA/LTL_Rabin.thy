@@ -311,7 +311,7 @@ context
     \<Sigma> :: "'a set set"
 begin
 
-fun product_initial_state :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b)" ("\<iota>\<^sub>\<times>")
+fun product_initial_state :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b)" (\<open>\<iota>\<^sub>\<times>\<close>)
 where
   "\<iota>\<^sub>\<times> K q\<^sub>m = (\<lambda>k. if k \<in> K then Some (q\<^sub>m k) else None)" 
 
@@ -335,7 +335,7 @@ lemma combine_pairs'_prop:
   "(\<forall>P \<in> \<P>. accepting_pair\<^sub>R \<delta> q\<^sub>0 P w) = accepting_pair\<^sub>G\<^sub>R \<delta> q\<^sub>0 (combine_pairs' \<P>) w"
   by auto
 
-fun ltl_FG_to_generalized_rabin :: "'a ltl \<Rightarrow> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat, 'a set) generalized_rabin_automaton" ("\<P>")
+fun ltl_FG_to_generalized_rabin :: "'a ltl \<Rightarrow> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat, 'a set) generalized_rabin_automaton" (\<open>\<P>\<close>)
 where
   "ltl_FG_to_generalized_rabin \<phi> = (
     \<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>)), 
@@ -598,7 +598,7 @@ where
   "rabin_pairs \<Sigma> \<phi> = {(M_fin \<pi> \<union> \<Union>{Acc_fin \<Sigma> \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}) 
     | \<pi>. dom \<pi> \<subseteq> \<^bold>G \<phi> \<and> (\<forall>\<chi> \<in> dom \<pi>. the (\<pi> \<chi>) < max_rank_of \<Sigma> \<chi>)}"
 
-fun ltl_to_generalized_rabin :: "'a set set \<Rightarrow> 'a ltl \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat), 'a set) generalized_rabin_automaton" ("\<A>")
+fun ltl_to_generalized_rabin :: "'a set set \<Rightarrow> 'a ltl \<Rightarrow> ('a ltl\<^sub>P \<times> ('a ltl \<rightharpoonup> 'a ltl\<^sub>P \<rightharpoonup> nat), 'a set) generalized_rabin_automaton" (\<open>\<A>\<close>)
 where
   "\<A> \<Sigma> \<phi> = (delta \<Sigma>, initial \<phi>, rabin_pairs \<Sigma> \<phi>)"
 

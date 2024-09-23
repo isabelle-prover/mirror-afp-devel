@@ -937,7 +937,7 @@ byte code verifier conformance. But we list it explicitly for convenience.
 \<close>
 
 inductive sem :: "jvmprog \<Rightarrow> callstack \<Rightarrow> state \<Rightarrow> callstack \<Rightarrow> state \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_,_\<rangle> \<Rightarrow> \<langle>_,_\<rangle>")
+(\<open>_ \<turnstile> \<langle>_,_\<rangle> \<Rightarrow> \<langle>_,_\<rangle>\<close>)
   where Step:
   "\<lbrakk> prog = (P,C0,Main);
   P,cs \<turnstile>\<^bsub>BV\<^esub> s \<surd>;

@@ -14,7 +14,7 @@ in the judgement otherwise, follwing \<^cite>\<open>"sestoft"\<close>.
 
 inductive
   reds :: "heap \<Rightarrow> exp \<Rightarrow> var list \<Rightarrow> heap \<Rightarrow> exp \<Rightarrow> bool"
-  ("_ : _ \<Down>\<^bsub>_\<^esub> _ : _" [50,50,50,50] 50)
+  (\<open>_ : _ \<Down>\<^bsub>_\<^esub> _ : _\<close> [50,50,50,50] 50)
 where
   Lambda:
     "\<Gamma> : (Lam [x]. e) \<Down>\<^bsub>L\<^esub> \<Gamma> : (Lam [x]. e)" 

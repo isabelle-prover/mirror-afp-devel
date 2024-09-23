@@ -41,10 +41,10 @@ lemma import_test:
   "-y * x \<le> x * -y \<Longrightarrow> -y * x\<^sup>\<circ> = -y * (-y * x)\<^sup>\<circ>"
   by (simp add: circ_import tests_dual.sub_bot_least)
 
-definition ite :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<lhd> _ \<rhd> _" [58,58,58] 57)
+definition ite :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_ \<lhd> _ \<rhd> _\<close> [58,58,58] 57)
   where "x \<lhd> p \<rhd> y \<equiv> p * x \<squnion> -p * y"
 
-definition it :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<rhd> _" [58,58] 57)
+definition it :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_ \<rhd> _\<close> [58,58] 57)
   where "p \<rhd> x \<equiv> p * x \<squnion> -p"
 
 (*

@@ -20,11 +20,11 @@ definition "M2L = Ex2 X (All1 x (In x X))"
 (*false in M2L, true in WS1S*)
 definition "\<Phi> = All1 x (Ex1 y (Lt x y))"
 
-abbreviation Globally ("\<box>_" [40] 40) where
+abbreviation Globally (\<open>\<box>_\<close> [40] 40) where
   "Globally P t ==  All1 z (Imp (Not (Lt t z)) (P z))"
-abbreviation Future ("\<diamond>_" [40] 40) where
+abbreviation Future (\<open>\<diamond>_\<close> [40] 40) where
   "Future P t == Ex1 z (And (Not (Lt t z)) (P z))"
-abbreviation IMP (infixr "\<rightarrow>" 50) where "IMP P1 P2 t == Imp (P1 t) (P2 t)"
+abbreviation IMP (infixr \<open>\<rightarrow>\<close> 50) where "IMP P1 P2 t == Imp (P1 t) (P2 t)"
 
 definition \<Psi> :: "nat \<Rightarrow> ws1s" where
   "\<Psi> n = All1 x

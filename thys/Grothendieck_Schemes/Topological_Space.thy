@@ -247,7 +247,7 @@ definition (in topological_space) nhds :: "'a \<Rightarrow> 'a filter"
   where "nhds a = (INF S\<in>{S. is_open S \<and> a \<in> S}. principal S)"
 
 abbreviation (in topological_space)
-  tendsto :: "('b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b filter \<Rightarrow> bool"  (infixr "\<longlongrightarrow>" 55)
+  tendsto :: "('b \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b filter \<Rightarrow> bool"  (infixr \<open>\<longlongrightarrow>\<close> 55)
   where "(f \<longlongrightarrow> l) F \<equiv> filterlim f (nhds l) F"
 
 definition (in t2_space) Lim :: "'f filter \<Rightarrow> ('f \<Rightarrow> 'a) \<Rightarrow> 'a"

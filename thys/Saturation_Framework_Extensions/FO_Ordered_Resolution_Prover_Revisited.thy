@@ -20,10 +20,10 @@ here using the saturation framework of Waldmann et al.\<close>
 
 subsection \<open>Setup\<close>
 
-no_notation true_lit (infix "\<Turnstile>l" 50)
-no_notation true_cls (infix "\<Turnstile>" 50)
-no_notation true_clss (infix "\<Turnstile>s" 50)
-no_notation true_cls_mset (infix "\<Turnstile>m" 50)
+no_notation true_lit (infix \<open>\<Turnstile>l\<close> 50)
+no_notation true_cls (infix \<open>\<Turnstile>\<close> 50)
+no_notation true_clss (infix \<open>\<Turnstile>s\<close> 50)
+no_notation true_cls_mset (infix \<open>\<Turnstile>m\<close> 50)
 
 hide_type (open) Inference_System.inference
 
@@ -56,8 +56,8 @@ subsection \<open>Ground Layer\<close>
 context FO_resolution_prover
 begin
 
-no_notation RP (infix "\<leadsto>" 50)
-notation RP (infix "\<leadsto>RP" 50)
+no_notation RP (infix \<open>\<leadsto>\<close> 50)
+notation RP (infix \<open>\<leadsto>RP\<close> 50)
 
 interpretation gr: ground_resolution_with_selection "S_M S M"
   using selection_axioms by unfold_locales (fact S_M_selects_subseteq S_M_selects_neg_lits)+
@@ -199,7 +199,7 @@ next
   qed (auto simp: \<G>_F_def ex_ground_subst)
 qed
 
-notation F.entails_\<G> (infix "\<TTurnstile>\<G>e" 50)
+notation F.entails_\<G> (infix \<open>\<TTurnstile>\<G>e\<close> 50)
 
 lemma F_entails_\<G>_iff: "N1 \<TTurnstile>\<G>e N2 \<longleftrightarrow> \<Union> (\<G>_F ` N1) \<TTurnstile>e \<Union> (\<G>_F ` N2)"
   unfolding F.entails_\<G>_def by simp
@@ -315,13 +315,13 @@ subsection \<open>Labeled First-Order or Given Clause Layer\<close>
 
 datatype label = New | Processed | Old
 
-abbreviation F_Equiv :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" (infix "\<doteq>" 50) where
+abbreviation F_Equiv :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) where
   "C \<doteq> D \<equiv> generalizes C D \<and> generalizes D C"
 
-abbreviation F_Prec :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) where
+abbreviation F_Prec :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) where
   "C \<prec>\<cdot> D \<equiv> strictly_generalizes C D"
 
-fun L_Prec :: "label \<Rightarrow> label \<Rightarrow> bool" (infix "\<sqsubset>l" 50) where
+fun L_Prec :: "label \<Rightarrow> label \<Rightarrow> bool" (infix \<open>\<sqsubset>l\<close> 50) where
   "Old \<sqsubset>l l \<longleftrightarrow> l \<noteq> Old"
 | "Processed \<sqsubset>l l \<longleftrightarrow> l = New"
 | "New \<sqsubset>l l \<longleftrightarrow> False"
@@ -378,10 +378,10 @@ next
     using L_Prec.simps(1) by blast
 qed (auto simp: F_Inf_have_prems)
 
-notation FL.Prec_FL (infix "\<sqsubset>" 50)
-notation FL.entails_\<G>_L (infix "\<TTurnstile>\<G>Le" 50)
-notation FL.derive (infix "\<rhd>L" 50)
-notation FL.step (infix "\<leadsto>GC" 50)
+notation FL.Prec_FL (infix \<open>\<sqsubset>\<close> 50)
+notation FL.entails_\<G>_L (infix \<open>\<TTurnstile>\<G>Le\<close> 50)
+notation FL.derive (infix \<open>\<rhd>L\<close> 50)
+notation FL.step (infix \<open>\<leadsto>GC\<close> 50)
 
 lemma FL_Red_F_eq:
   "FL.Red_F N =

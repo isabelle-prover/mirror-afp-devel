@@ -52,11 +52,11 @@ apply(case_tac b)
 apply (simp_all add:iprod_left_add_distrib)
 done
 
-fun mult_atom :: "real \<Rightarrow> atom \<Rightarrow> atom" (infix "*\<^sub>a" 70) where
+fun mult_atom :: "real \<Rightarrow> atom \<Rightarrow> atom" (infix \<open>*\<^sub>a\<close> 70) where
 "c *\<^sub>a Eq r cs = Eq (c*r) (c *\<^sub>s cs)" |
 "c *\<^sub>a Less r cs = (if c=0 then Eq 0 [] else Less (c*r) (c *\<^sub>s cs))"
 
-definition iprod_a :: "real list \<Rightarrow> atom list \<Rightarrow> atom" (infix "\<odot>\<^sub>a" 70)
+definition iprod_a :: "real list \<Rightarrow> atom list \<Rightarrow> atom" (infix \<open>\<odot>\<^sub>a\<close> 70)
 where "cs \<odot>\<^sub>a as = (\<Sum>(c,a) \<leftarrow> zip cs as. c *\<^sub>a a)"
 
 lemma iprod_a_Nil2[simp]: "cs \<odot>\<^sub>a [] = 0"

@@ -32,7 +32,7 @@ setup_lifting type_definition_fps
 
 declare fps_nth_inverse [simp]
 
-notation fps_nth (infixl "$" 75)
+notation fps_nth (infixl \<open>$\<close> 75)
 
 lemma expand_fps_eq: "p = q \<longleftrightarrow> (\<forall>n. p $ n = q $ n)"
 by (simp add: fps_nth_inject [symmetric] fun_eq_iff)

@@ -21,7 +21,7 @@ primrec lbl :: "'label operation \<Rightarrow> 'label list" where
 | "lbl (swap \<gamma>) = [\<gamma>]" 
 | "lbl (push \<gamma>  \<gamma>') = [\<gamma>, \<gamma>']"
 
-definition is_rule :: "'ctr_loc \<times> 'label \<Rightarrow> 'ctr_loc \<times> 'label operation \<Rightarrow> bool" (infix "\<hookrightarrow>" 80) where
+definition is_rule :: "'ctr_loc \<times> 'label \<Rightarrow> 'ctr_loc \<times> 'label operation \<Rightarrow> bool" (infix \<open>\<hookrightarrow>\<close> 80) where
   "p\<gamma> \<hookrightarrow> p'w \<equiv> (p\<gamma>,p'w) \<in> \<Delta>"
 
 inductive_set transition_rel :: "(('ctr_loc, 'label) conf \<times> unit \<times> ('ctr_loc, 'label) conf) set" where
@@ -30,8 +30,8 @@ inductive_set transition_rel :: "(('ctr_loc, 'label) conf \<times> unit \<times>
 
 interpretation LTS transition_rel .
 
-notation step_relp (infix "\<Rightarrow>" 80)
-notation step_starp (infix "\<Rightarrow>\<^sup>*" 80)
+notation step_relp (infix \<open>\<Rightarrow>\<close> 80)
+notation step_starp (infix \<open>\<Rightarrow>\<^sup>*\<close> 80)
 
 lemma step_relp_def2:
   "(p, \<gamma>w') \<Rightarrow> (p',ww') \<longleftrightarrow> (\<exists>\<gamma> w' w. \<gamma>w' = \<gamma>#w' \<and> ww' = (lbl w)@w' \<and> (p, \<gamma>) \<hookrightarrow> (p', w))"
@@ -126,8 +126,8 @@ definition isols :: "('ctr_loc, 'noninit, 'label) state set" where
   "isols = {q. is_Isolated q}"
 
 sublocale LTS transition_rel .
-notation step_relp (infix "\<Rightarrow>" 80)
-notation step_starp (infix "\<Rightarrow>\<^sup>*" 80)
+notation step_relp (infix \<open>\<Rightarrow>\<close> 80)
+notation step_starp (infix \<open>\<Rightarrow>\<^sup>*\<close> 80)
 
 definition accepts :: "(('ctr_loc, 'noninit, 'label) state, 'label) transition set \<Rightarrow> ('ctr_loc, 'label) conf \<Rightarrow> bool" where
   "accepts ts \<equiv> \<lambda>(p,w). (\<exists>q \<in> finals. (Init p,w,q) \<in> LTS.trans_star ts)"
@@ -2116,8 +2116,8 @@ subsection \<open>Intersection epsilon-Automata\<close>
 context PDS_with_P_automata begin
 
 interpretation LTS transition_rel .
-notation step_relp (infix "\<Rightarrow>" 80)
-notation step_starp (infix "\<Rightarrow>\<^sup>*" 80)
+notation step_relp (infix \<open>\<Rightarrow>\<close> 80)
+notation step_starp (infix \<open>\<Rightarrow>\<^sup>*\<close> 80)
 
 definition accepts_\<epsilon>_inters :: "(('ctr_loc, 'noninit, 'label) state * ('ctr_loc, 'noninit, 'label) state, 'label option) transition set \<Rightarrow> ('ctr_loc, 'label) conf \<Rightarrow> bool" where
   "accepts_\<epsilon>_inters ts \<equiv> \<lambda>(p,w). (\<exists>q1 \<in> finals. \<exists>q2 \<in> finals. ((Init p, Init p),w,(q1,q2)) \<in> LTS_\<epsilon>.trans_star_\<epsilon> ts)"

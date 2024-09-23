@@ -76,7 +76,7 @@ definition is_trans::"'s \<Rightarrow> 'a \<Rightarrow> ('s,'a)ioa \<Rightarrow>
   "is_trans s1 a A s2 \<equiv> (s1,a,s2) \<in> trans A"
 
 notation
-  is_trans  ("_ \<midarrow>_\<midarrow>_\<longrightarrow> _" [81,81,81,81] 100)
+  is_trans  (\<open>_ \<midarrow>_\<midarrow>_\<longrightarrow> _\<close> [81,81,81,81] 100)
 
 definition rename_set where
   "rename_set A ren \<equiv> {b. \<exists> x \<in> A . ren b = Some x}"
@@ -160,7 +160,7 @@ definition asig_comp::"('id, ('s,'a)ioa) family \<Rightarrow> 'a signature" wher
       outputs = \<Union>i\<in>(ids fam). out (memb fam i),
       internals = \<Union>i\<in>(ids fam). int (memb fam i) \<rparr>"
 
-definition par2 (infixr "\<parallel>" 10) where
+definition par2 (infixr \<open>\<parallel>\<close> 10) where
   "A \<parallel> B \<equiv>
       \<lparr>asig = asig_comp2 (asig A) (asig B),
        start = {pr. fst pr \<in> start A \<and> snd pr \<in> start B},
@@ -269,10 +269,10 @@ qed
 lemmas trace_simps = traces_def is_trace_of_def is_schedule_of_def filter_act_def is_exec_of_def
   trace_def schedule_def
 
-definition proj_trace::"'a trace \<Rightarrow> ('a signature) \<Rightarrow> 'a trace" (infixr "\<bar>" 12) where
+definition proj_trace::"'a trace \<Rightarrow> ('a signature) \<Rightarrow> 'a trace" (infixr \<open>\<bar>\<close> 12) where
   "proj_trace t sig \<equiv> filter (\<lambda> a . a \<in> actions sig) t"
 
-definition ioa_implements :: "('s1,'a)ioa \<Rightarrow> ('s2,'a)ioa \<Rightarrow> bool"   (infixr "=<|" 12) where
+definition ioa_implements :: "('s1,'a)ioa \<Rightarrow> ('s2,'a)ioa \<Rightarrow> bool"   (infixr \<open>=<|\<close> 12) where
   "A =<| B \<equiv> inp A = inp B \<and> out A = out B \<and> traces A \<subseteq> traces B"
 
 subsection \<open>Operations on Executions\<close>

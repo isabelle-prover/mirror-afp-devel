@@ -33,7 +33,7 @@ lemma (in ccompare) ID_ccompare:
   "\<And>c. ID ccompare = Some c \<Longrightarrow> class.linorder (le_of_comp c) (lt_of_comp c)"
   by (rule comparator.linorder[OF ID_ccompare'])
   
-syntax "_CCOMPARE" :: "type => logic"  ("(1CCOMPARE/(1'(_')))")
+syntax "_CCOMPARE" :: "type => logic"  (\<open>(1CCOMPARE/(1'(_')))\<close>)
 
 syntax_consts "_CCOMPARE" == ccompare
 

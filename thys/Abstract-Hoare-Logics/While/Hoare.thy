@@ -19,7 +19,7 @@ iff every (terminating) execution starting in a state satisfying \<open>P\<close
 ends up in a state satisfying \<open>Q\<close>:\<close>
 
 definition
- hoare_valid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
+ hoare_valid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" (\<open>\<Turnstile> {(1_)}/ (_)/ {(1_)}\<close> 50) where
  "\<Turnstile> {P}c{Q} \<longleftrightarrow> (\<forall>s t. s -c\<rightarrow> t \<longrightarrow> P s \<longrightarrow> Q t)"
 
 text\<open>\noindent
@@ -30,7 +30,7 @@ Provability in Hoare logic is indicated by \<open>\<turnstile>\<close> and defin
 inductively:\<close>
 
 inductive
-  hoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile> ({(1_)}/ (_)/ {(1_)})" 50)
+  hoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" (\<open>\<turnstile> ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
   (*<*)Do:(*>*)"\<turnstile> {\<lambda>s. \<forall>t \<in> f s. P t} Do f {P}"
 

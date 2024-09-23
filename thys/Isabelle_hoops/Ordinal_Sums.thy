@@ -12,13 +12,13 @@ begin
 subsection\<open>Tower of hoops\<close>
 
 locale tower_of_hoops =
-  fixes index_set :: "'b set" ("I")
-  fixes index_lesseq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<le>\<^sup>I" 60)
-  fixes index_less :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "<\<^sup>I" 60)
-  fixes universes :: "'b \<Rightarrow> ('a set)" ("UNI")
-  fixes multiplications :: "'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("MUL")
-  fixes implications :: "'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("IMP")
-  fixes sum_one :: 'a ("1\<^sup>S")
+  fixes index_set :: "'b set" (\<open>I\<close>)
+  fixes index_lesseq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<le>\<^sup>I\<close> 60)
+  fixes index_less :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open><\<^sup>I\<close> 60)
+  fixes universes :: "'b \<Rightarrow> ('a set)" (\<open>UNI\<close>)
+  fixes multiplications :: "'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>MUL\<close>)
+  fixes implications :: "'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>IMP\<close>)
+  fixes sum_one :: 'a (\<open>1\<^sup>S\<close>)
   assumes index_set_total_order: "total_poset_on I (\<le>\<^sup>I) (<\<^sup>I)"
   and almost_disjoint: "i \<in> I \<Longrightarrow> j \<in> I \<Longrightarrow> i \<noteq> j \<Longrightarrow> UNI i \<inter> UNI j = {1\<^sup>S}"
   and family_of_hoops: "i \<in> I \<Longrightarrow> hoop (UNI i) (MUL i) (IMP i) 1\<^sup>S"
@@ -28,28 +28,28 @@ sublocale total_poset_on "I" "(\<le>\<^sup>I)" "(<\<^sup>I)"
   using index_set_total_order by simp                   
 
 abbreviation (uni_i)
-  uni_i :: "['b] \<Rightarrow> ('a set)" ("(\<bbbA>(\<^sub>_))" [61] 60)
+  uni_i :: "['b] \<Rightarrow> ('a set)" (\<open>(\<bbbA>(\<^sub>_))\<close> [61] 60)
   where "\<bbbA>\<^sub>i \<equiv> UNI i"
 
 abbreviation (mult_i)
-  mult_i :: "['b] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("(*(\<^sup>_))" [61] 60)
+  mult_i :: "['b] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>(*(\<^sup>_))\<close> [61] 60)
   where "*\<^sup>i \<equiv> MUL i"
 
 abbreviation (imp_i)
-  imp_i :: "['b] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("(\<rightarrow>(\<^sup>_))" [61] 60)
+  imp_i :: "['b] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>(\<rightarrow>(\<^sup>_))\<close> [61] 60)
   where "\<rightarrow>\<^sup>i \<equiv> IMP i"
 
 abbreviation (mult_i_xy)
-  mult_i_xy :: "['a, 'b, 'a] \<Rightarrow> 'a"  ("((_)/ *(\<^sup>_) / (_))" [61, 50, 61] 60)
+  mult_i_xy :: "['a, 'b, 'a] \<Rightarrow> 'a"  (\<open>((_)/ *(\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x *\<^sup>i y \<equiv> MUL i x y"
 
 abbreviation (imp_i_xy)
-  imp_i_xy :: "['a, 'b, 'a] \<Rightarrow> 'a"  ("((_)/ \<rightarrow>(\<^sup>_) / (_))" [61, 50, 61] 60)
+  imp_i_xy :: "['a, 'b, 'a] \<Rightarrow> 'a"  (\<open>((_)/ \<rightarrow>(\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x \<rightarrow>\<^sup>i y \<equiv> IMP i x y"
 
 subsection\<open>Ordinal sum universe\<close>
 
-definition sum_univ :: "'a set" ("S")
+definition sum_univ :: "'a set" (\<open>S\<close>)
   where "S = {x. \<exists> i \<in> I. x \<in> \<bbbA>\<^sub>i}"
 
 lemma sum_one_closed [simp]: "1\<^sup>S \<in> S"
@@ -74,23 +74,23 @@ function floor :: "'a \<Rightarrow> 'b" where
 termination by lexicographic_order
 
 abbreviation (uni_floor)
-  uni_floor :: "['a] \<Rightarrow> ('a set)" ("(\<bbbA>\<^sub>f\<^sub>l\<^sub>o\<^sub>o\<^sub>r (\<^sub>_))" [61] 60)
+  uni_floor :: "['a] \<Rightarrow> ('a set)" (\<open>(\<bbbA>\<^sub>f\<^sub>l\<^sub>o\<^sub>o\<^sub>r (\<^sub>_))\<close> [61] 60)
   where "\<bbbA>\<^sub>f\<^sub>l\<^sub>o\<^sub>o\<^sub>r \<^sub>x \<equiv> UNI (floor x)"
 
 abbreviation (mult_floor)
-  mult_floor :: "['a] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)"  ("(*\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_))" [61] 60)
+  mult_floor :: "['a] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)"  (\<open>(*\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_))\<close> [61] 60)
   where "*\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r \<^sup>a \<equiv> MUL (floor a)"
 
 abbreviation (imp_floor)
-  imp_floor :: "['a] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)"  ("(\<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_))" [61] 60)
+  imp_floor :: "['a] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)"  (\<open>(\<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_))\<close> [61] 60)
   where "\<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r \<^sup>a \<equiv> IMP (floor a)"
 
 abbreviation (mult_floor_xy)
-  mult_floor_xy :: "['a, 'a, 'a] \<Rightarrow> 'a"  ("((_)/ *\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_) / (_))" [61, 50, 61] 60)
+  mult_floor_xy :: "['a, 'a, 'a] \<Rightarrow> 'a"  (\<open>((_)/ *\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x *\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r \<^sup>y z \<equiv> MUL (floor y) x z"
 
 abbreviation (imp_floor_xy)
-  imp_floor_xy :: "['a, 'a, 'a] \<Rightarrow> 'a"  ("((_)/ \<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_) / (_))" [61, 50, 61] 60)
+  imp_floor_xy :: "['a, 'a, 'a] \<Rightarrow> 'a"  (\<open>((_)/ \<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r (\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x \<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r \<^sup>y z \<equiv> IMP (floor y) x z"
 
 lemma floor_prop:
@@ -121,7 +121,7 @@ lemma floor_imp_closed:
 
 subsection\<open>Ordinal sum multiplication and implication\<close>
 
-function sum_mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "*\<^sup>S" 60) where
+function sum_mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>*\<^sup>S\<close> 60) where
   "x *\<^sup>S y = x *\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r \<^sup>x y" if  "x \<in> S-{1\<^sup>S}" "y \<in> S-{1\<^sup>S}" "floor x = floor y"
 | "x *\<^sup>S y = x" if "x \<in> S-{1\<^sup>S}" "y \<in> S-{1\<^sup>S}" "floor x <\<^sup>I floor y"
 | "x *\<^sup>S y = y" if "x \<in> S-{1\<^sup>S}" "y \<in> S-{1\<^sup>S}" "floor y <\<^sup>I floor x"
@@ -136,7 +136,7 @@ function sum_mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "*\<^sup>S" 6
   using floor_prop trichotomy by auto
 termination by lexicographic_order
 
-function sum_imp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<rightarrow>\<^sup>S" 60) where
+function sum_imp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<rightarrow>\<^sup>S\<close> 60) where
   "x \<rightarrow>\<^sup>S y = x \<rightarrow>\<^sup>f\<^sup>l\<^sup>o\<^sup>o\<^sup>r \<^sup>x y" if "x \<in> S-{1\<^sup>S}" "y \<in> S-{1\<^sup>S}" "floor x = floor y"
 | "x \<rightarrow>\<^sup>S y = 1\<^sup>S" if "x \<in> S-{1\<^sup>S}" "y \<in> S-{1\<^sup>S}" "floor x <\<^sup>I floor y"
 | "x \<rightarrow>\<^sup>S y = y" if "x \<in> S-{1\<^sup>S}" "y \<in> S-{1\<^sup>S}" "floor y <\<^sup>I floor x"

@@ -15,7 +15,7 @@ where
 monos monoAux
 
 abbreviation
-  strongBisimJudge (infixr "\<sim>" 65) where "P \<sim> Q \<equiv> (P, Q) \<in> bisim"
+  strongBisimJudge (infixr \<open>\<sim>\<close> 65) where "P \<sim> Q \<equiv> (P, Q) \<in> bisim"
 
 lemma monotonic': "mono(\<lambda>S. {(P, Q) |P Q. P \<leadsto>[S] Q \<and> Q \<leadsto>[S] P})"
 apply(rule monoI)

@@ -29,9 +29,9 @@ begin
 \<comment> \<open>Security typing rules for the language commands\<close>
 inductive
 ComSecTyping :: "('exp, 'id) MWLsCom \<Rightarrow> bool"
-  ("\<turnstile>\<^bsub>\<C>\<^esub> _")
+  (\<open>\<turnstile>\<^bsub>\<C>\<^esub> _\<close>)
 and ComSecTypingL :: "('exp,'id) MWLsCom list \<Rightarrow> bool"
-   ("\<turnstile>\<^bsub>\<V>\<^esub> _")
+   (\<open>\<turnstile>\<^bsub>\<V>\<^esub> _\<close>)
 where
 Skip: "\<turnstile>\<^bsub>\<C>\<^esub> skip\<^bsub>\<iota>\<^esub>" |
 Assign: "\<lbrakk> AssignSideCondition x e \<iota> \<rbrakk> \<Longrightarrow> \<turnstile>\<^bsub>\<C>\<^esub> x :=\<^bsub>\<iota>\<^esub> e" |

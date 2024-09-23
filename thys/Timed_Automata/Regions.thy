@@ -47,7 +47,7 @@ where
 
 text \<open>Defining the unique element of a partition that contains a valuation\<close>
 
-definition part ("[_]\<^sub>_" [61,61] 61) where "part v \<R> \<equiv> THE R. R \<in> \<R> \<and> v \<in> R"
+definition part (\<open>[_]\<^sub>_\<close> [61,61] 61) where "part v \<R> \<equiv> THE R. R \<in> \<R> \<and> v \<in> R"
 
 inductive_set Succ for \<R> R where
   "u \<in> R \<Longrightarrow> R \<in> \<R> \<Longrightarrow> R' \<in> \<R> \<Longrightarrow> t \<ge> 0 \<Longrightarrow> R' = [u \<oplus> t]\<^sub>\<R> \<Longrightarrow> R' \<in> Succ \<R> R"
@@ -1887,7 +1887,7 @@ qed
 
 section \<open>Compability With Clock Constraints\<close>
 
-definition ccval ("\<lbrace>_\<rbrace>" [100]) where "ccval cc \<equiv> {v. v \<turnstile> cc}"
+definition ccval (\<open>\<lbrace>_\<rbrace>\<close> [100]) where "ccval cc \<equiv> {v. v \<turnstile> cc}"
 
 definition acompatible
 where
@@ -2754,7 +2754,7 @@ subsection \<open>Single step\<close>
 
 inductive step_r ::
   "('a, 'c, t, 's) ta \<Rightarrow> ('c, t) zone set \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step_t_r:
   "\<lbrakk>\<R> = {region X I r |I r. valid_region X k I r}; valid_abstraction A X k; R \<in> \<R>; R' \<in> Succ \<R> R;
@@ -2896,7 +2896,7 @@ subsection \<open>Multi Step\<close>
 
 inductive
   steps_r :: "('a, 'c, t, 's) ta \<Rightarrow> ('c, t) zone set \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>* \<langle>_, _\<rangle>" [61,61,61,61,61,61] 61)
+(\<open>_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>* \<langle>_, _\<rangle>\<close> [61,61,61,61,61,61] 61)
 where
   refl: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l, R\<rangle>" |
   step: "A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l', R'\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l', R'\<rangle> \<leadsto> \<langle>l'', R''\<rangle> \<Longrightarrow> A,\<R> \<turnstile> \<langle>l, R\<rangle> \<leadsto>* \<langle>l'', R''\<rangle>"

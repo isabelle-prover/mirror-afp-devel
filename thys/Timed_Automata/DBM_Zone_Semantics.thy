@@ -4,7 +4,7 @@ theory DBM_Zone_Semantics
 imports TA_DBM_Operations
 begin
 
-no_notation infinity ("\<infinity>")
+no_notation infinity (\<open>\<infinity>\<close>)
 hide_const (open) D
 
 subsection \<open>Single Step\<close>
@@ -12,7 +12,7 @@ subsection \<open>Single Step\<close>
 inductive step_z_dbm ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> 't :: {linordered_cancel_ab_monoid_add,uminus} DBM
     \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> 't DBM \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_\<^esub> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step_t_z_dbm:
     "D_inv = abstr (inv_of A l) (\<lambda>i j. \<infinity>) v \<Longrightarrow> A \<turnstile> \<langle>l,D\<rangle> \<leadsto>\<^bsub>v,n,\<tau>\<^esub> \<langle>l,And (up D) D_inv\<rangle>" |

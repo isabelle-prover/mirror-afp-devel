@@ -111,10 +111,10 @@ fun is_final_dstate :: "'a dstate \<Rightarrow> bool" where
 
 declare is_final_dstate.simps [simp del]
 
-abbreviation rtrancl_weighted_RP (infix "\<leadsto>\<^sub>w\<^sup>*" 50) where
+abbreviation rtrancl_weighted_RP (infix \<open>\<leadsto>\<^sub>w\<^sup>*\<close> 50) where
   "(\<leadsto>\<^sub>w\<^sup>*) \<equiv> (\<leadsto>\<^sub>w)\<^sup>*\<^sup>*"
 
-abbreviation trancl_weighted_RP (infix "\<leadsto>\<^sub>w\<^sup>+" 50) where
+abbreviation trancl_weighted_RP (infix \<open>\<leadsto>\<^sub>w\<^sup>+\<close> 50) where
   "(\<leadsto>\<^sub>w\<^sup>+) \<equiv> (\<leadsto>\<^sub>w)\<^sup>+\<^sup>+"
 
 definition is_tautology :: "'a lclause \<Rightarrow> bool" where

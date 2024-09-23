@@ -28,10 +28,10 @@ datatype "term" =
   is_Fv: Fv variable "typ" |
   is_Bv: Bv nat |
   is_Abs: Abs "typ" "term" |
-  is_App: App "term" "term" (infixl "$" 100)
+  is_App: App "term" "term" (infixl \<open>$\<close> 100)
 
 abbreviation "mk_fun_typ S T \<equiv> Ty STR ''fun'' [S,T]" 
-notation mk_fun_typ (infixr "\<rightarrow>" 100)
+notation mk_fun_typ (infixr \<open>\<rightarrow>\<close> 100)
 
 text \<open>Collect variables in a term\<close>
 
@@ -59,14 +59,14 @@ fun tsubst :: "term \<Rightarrow> (variable \<Rightarrow> sort \<Rightarrow> typ
 
 text \<open>Typ of a term\<close>
 
-inductive has_typ1 :: "typ list \<Rightarrow> term \<Rightarrow> typ \<Rightarrow> bool" ("_ \<turnstile>\<^sub>\<tau> _ : _" [51, 51, 51] 51) where
+inductive has_typ1 :: "typ list \<Rightarrow> term \<Rightarrow> typ \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>\<tau> _ : _\<close> [51, 51, 51] 51) where
   "has_typ1 _ (Ct _ T) T"
 | "i < length Ts \<Longrightarrow> has_typ1 Ts (Bv i) (nth Ts i)"
 | "has_typ1 _ (Fv _ T) T"
 | "has_typ1 (T#Ts) t T' \<Longrightarrow> has_typ1 Ts (Abs T t) (T \<rightarrow> T')"
 | "has_typ1 Ts u U \<Longrightarrow> has_typ1 Ts t (U \<rightarrow> T) \<Longrightarrow>
       has_typ1 Ts (t $ u) T"
-definition has_typ :: "term \<Rightarrow> typ \<Rightarrow> bool" ("\<turnstile>\<^sub>\<tau> _ : _" [51, 51] 51) where "has_typ t T = has_typ1 [] t T"
+definition has_typ :: "term \<Rightarrow> typ \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>\<tau> _ : _\<close> [51, 51] 51) where "has_typ t T = has_typ1 [] t T"
 
 definition "typ_of t = (if \<exists>T . has_typ t T then Some (THE T . has_typ t T) else None)"
 
@@ -109,7 +109,7 @@ abbreviation "mk_eq t1 t2 \<equiv> Ct STR ''Pure.eq''
 (* Because mk_eq works only with closed terms *)
 abbreviation "mk_eq' ty t1 t2 \<equiv> Ct STR ''Pure.eq'' 
   (ty \<rightarrow> (ty \<rightarrow> propT)) $ t1 $ t2"
-abbreviation mk_imp :: "term \<Rightarrow> term \<Rightarrow> term"  (infixr "\<longmapsto>" 51) where 
+abbreviation mk_imp :: "term \<Rightarrow> term \<Rightarrow> term"  (infixr \<open>\<longmapsto>\<close> 51) where 
   "A \<longmapsto> B \<equiv> Ct STR ''Pure.imp'' (propT \<rightarrow> (propT \<rightarrow> propT)) $ A $ B"
 abbreviation "mk_all x ty t \<equiv>
   Ct STR ''Pure.all'' ((ty \<rightarrow> propT) \<rightarrow> propT) $ Abs_fv x ty t"
@@ -282,7 +282,7 @@ definition [simp]: "wf_inst \<Theta> \<rho> \<equiv>
 
 text\<open>Inference system\<close>
 
-inductive proves :: "theory \<Rightarrow> term set \<Rightarrow> term \<Rightarrow> bool" ("(_,_) \<turnstile> (_)" 50) for \<Theta> where
+inductive proves :: "theory \<Rightarrow> term set \<Rightarrow> term \<Rightarrow> bool" (\<open>(_,_) \<turnstile> (_)\<close> 50) for \<Theta> where
   axiom: "wf_theory \<Theta> \<Longrightarrow> A\<in>axioms \<Theta> \<Longrightarrow> wf_inst \<Theta> \<rho>
   \<Longrightarrow> \<Theta>, \<Gamma> \<turnstile> tsubst A \<rho>"
 | "assume": "wf_term (sig \<Theta>) A \<Longrightarrow> has_typ A propT \<Longrightarrow> A \<in> \<Gamma> \<Longrightarrow> \<Theta>,\<Gamma> \<turnstile> A"
@@ -307,7 +307,7 @@ inductive proves :: "theory \<Rightarrow> term set \<Rightarrow> term \<Rightarr
 
 text\<open>Ensure no garbage in \<open>\<Theta>,\<Gamma>\<close>\<close>
 
-definition proves' :: "theory \<Rightarrow> term set \<Rightarrow> term \<Rightarrow> bool" ("(_,_) \<tturnstile> (_)" 51) where
+definition proves' :: "theory \<Rightarrow> term set \<Rightarrow> term \<Rightarrow> bool" (\<open>(_,_) \<tturnstile> (_)\<close> 51) where
   "proves' \<Theta> \<Gamma> t \<equiv> wf_theory \<Theta> \<and> (\<forall>h \<in> \<Gamma> . wf_term (sig \<Theta>) h \<and> has_typ h propT) \<and> \<Theta>, \<Gamma> \<turnstile> t"
 
 hide_const (open) aT bT

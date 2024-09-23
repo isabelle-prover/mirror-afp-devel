@@ -59,10 +59,10 @@ lemma Mp_0[simp]: "Mp 0 = 0" unfolding Mp_def by auto
 lemma Mp_coeff: "coeff (Mp f) i = M (coeff f i)" unfolding Mp_def 
   by (simp add: M_def coeff_map_poly) 
 
-abbreviation eq_m :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" (infixl "=m" 50) where
+abbreviation eq_m :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" (infixl \<open>=m\<close> 50) where
   "f =m g \<equiv> (Mp f = Mp g)"
 
-notation eq_m (infixl "=m" 50)
+notation eq_m (infixl \<open>=m\<close> 50)
 
 abbreviation degree_m :: "int poly \<Rightarrow> nat" where 
   "degree_m f \<equiv> degree (Mp f)" 
@@ -99,9 +99,9 @@ lemma Mp_Mp[simp]: "Mp (Mp f) = Mp f" unfolding Mp_def
 lemma Mp_smult_m_0[simp]: "Mp (smult m f) = 0" 
   by (intro poly_eqI, auto simp: Mp_coeff, auto simp: M_def)
 
-definition dvdm :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" (infix "dvdm" 50) where
+definition dvdm :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" (infix \<open>dvdm\<close> 50) where
   "f dvdm g = (\<exists> h. g =m f * h)"
-notation dvdm (infix "dvdm" 50)
+notation dvdm (infix \<open>dvdm\<close> 50)
 
 
 lemma dvdmE:

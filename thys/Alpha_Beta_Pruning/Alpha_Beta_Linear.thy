@@ -8,8 +8,8 @@ begin
 section \<open>Classes\<close>
 
 notation
-  bot ("\<bottom>") and
-  top ("\<top>")
+  bot (\<open>\<bottom>\<close>) and
+  top (\<open>\<top>\<close>)
 
 class bounded_linorder = linorder + order_top + order_bot
 begin
@@ -292,10 +292,10 @@ abbreviation
  "knuth (a::_::linorder) b x y ==
   ((y \<le> a \<longrightarrow> x \<le> a) \<and> (a < y \<and> y < b \<longrightarrow> y = x) \<and> (b \<le> y \<longrightarrow> b \<le> x))"
 
-abbreviation knuth2 :: "('a::linorder) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<cong>/ _/ '(mod _,_'))" [51,51,0,0])
+abbreviation knuth2 :: "('a::linorder) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<cong>/ _/ '(mod _,_'))\<close> [51,51,0,0])
 where "knuth2 x y a b \<equiv> knuth a b x y"
 
-notation (latex output) knuth2 ("(_ \<cong>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
+notation (latex output) knuth2 (\<open>(_ \<cong>/ _/ '(\<^latex>\<open>\textup{mod}\<close> _,_'))\<close> [51,51,0,0])
 
 lemma knuth_bot_top: "knuth \<bottom> \<top> x y \<Longrightarrow> x = (y::_::bounded_linorder)"
 by (metis bot.extremum_uniqueI linorder_le_less_linear top.extremum_uniqueI)
@@ -379,10 +379,10 @@ abbreviation
  "fishburn (a::_::linorder) b v ab ==
   ((ab \<le> a \<longrightarrow> v \<le> ab) \<and> (a < ab \<and> ab < b \<longrightarrow> ab = v) \<and> (b \<le> ab \<longrightarrow> ab \<le> v))"
 
-abbreviation fishburn2 :: "('a::linorder) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<le>/ _/ '(mod _,_'))" [51,51,0,0])
+abbreviation fishburn2 :: "('a::linorder) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<le>/ _/ '(mod _,_'))\<close> [51,51,0,0])
 where "fishburn2 ab v a b \<equiv> fishburn a b v ab"
 
-notation (latex output) fishburn2 ("(_ \<le>/ _/ '(\<^latex>\<open>\\textup{mod}\<close> _,_'))" [51,51,0,0])
+notation (latex output) fishburn2 (\<open>(_ \<le>/ _/ '(\<^latex>\<open>\textup{mod}\<close> _,_'))\<close> [51,51,0,0])
 
 lemma fishburn_iff_min_max: "a < b \<Longrightarrow> fishburn a b v ab \<longleftrightarrow> min v b \<le> ab \<and> ab \<le> max v a"
 by (metis (full_types) le_max_iff_disj linorder_not_le min_le_iff_disj nle_le)

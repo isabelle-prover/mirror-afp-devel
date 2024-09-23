@@ -417,7 +417,7 @@ lemma lossless_parallel_resource:
 
 subsection \<open>Well-typing\<close>
 
-coinductive WT_resource :: "('a, 'b) \<I> \<Rightarrow> ('a, 'b) resource \<Rightarrow> bool" ("_ /\<turnstile>res _ \<surd>" [100, 0] 99)
+coinductive WT_resource :: "('a, 'b) \<I> \<Rightarrow> ('a, 'b) resource \<Rightarrow> bool" (\<open>_ /\<turnstile>res _ \<surd>\<close> [100, 0] 99)
   for \<I> where
     WT_resourceI: "\<I> \<turnstile>res res \<surd>"
   if "\<And>q r res'. \<lbrakk> q \<in> outs_\<I> \<I>; (r, res') \<in> set_spmf (run_resource res q) \<rbrakk> \<Longrightarrow> r \<in> responses_\<I> \<I> q \<and> \<I> \<turnstile>res res' \<surd>" 

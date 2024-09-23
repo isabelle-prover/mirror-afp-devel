@@ -24,24 +24,24 @@ text\<open>  We are currently contemplating a follow-up analysis of the philosop
   
 subsubsection \<open>General Definitions\<close>
                
-abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" ("E!") 
+abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" (\<open>E!\<close>) 
   where "E! x  \<equiv> \<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w" \<comment> \<open>existence predicate in object language\<close>
     
 lemma "E! x w \<longleftrightarrow> existsAt x w" 
   by simp \<comment> \<open>safety check: @{text "E!"} correctly matches its meta-logical counterpart\<close>
 
-consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>") \<comment> \<open>positiveness/perfection\<close>
+consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" (\<open>\<P>\<close>) \<comment> \<open>positiveness/perfection\<close>
   
 text\<open>  Definitions of God (later shown to be equivalent under axiom \emph{A1b}):  \<close>    
-abbreviation God::"\<up>\<langle>\<zero>\<rangle>" ("G") where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> Y x)"
-abbreviation God_star::"\<up>\<langle>\<zero>\<rangle>" ("G*") where "G* \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<leftrightarrow> Y x)"
+abbreviation God::"\<up>\<langle>\<zero>\<rangle>" (\<open>G\<close>) where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> Y x)"
+abbreviation God_star::"\<up>\<langle>\<zero>\<rangle>" (\<open>G*\<close>) where "G* \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<leftrightarrow> Y x)"
   
 text\<open>  Definitions needed to formalise \emph{A3}:  \<close>
-abbreviation appliesToPositiveProps::"\<up>\<langle>\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>\<rangle>" ("pos") where
+abbreviation appliesToPositiveProps::"\<up>\<langle>\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>\<rangle>" (\<open>pos\<close>) where
   "pos Z \<equiv>  \<^bold>\<forall>X. Z X \<^bold>\<rightarrow> \<P> X"  
-abbreviation intersectionOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>\<rangle>" ("intersec") where
+abbreviation intersectionOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>\<rangle>" (\<open>intersec\<close>) where
   "intersec X Z \<equiv>  \<^bold>\<box>(\<^bold>\<forall>x.(X x \<^bold>\<leftrightarrow> (\<^bold>\<forall>Y. (Z Y) \<^bold>\<rightarrow> (Y x))))" \<comment> \<open>quantifier is possibilist\<close>  
-abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix "\<Rrightarrow>" 60) where
+abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix \<open>\<Rrightarrow>\<close> 60) where
   "X \<Rrightarrow> Y \<equiv>  \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ez. X z \<^bold>\<rightarrow> Y z)"
 text\<open> \bigbreak \<close>
   

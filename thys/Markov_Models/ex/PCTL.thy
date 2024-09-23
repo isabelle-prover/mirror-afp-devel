@@ -155,9 +155,9 @@ datatype 's sform = "true"
                   | "Exp" "realrel" "real" "'s eform"
      and 's pform = "X" "'s sform"
                   | "U" "nat" "'s sform" "'s sform"
-                  | "UInfinity" "'s sform" "'s sform" ("U\<^sup>\<infinity>")
-     and 's eform = "Cumm" "nat" ("C\<^sup>\<le>")
-                  | "State" "nat" ("I\<^sup>=")
+                  | "UInfinity" "'s sform" "'s sform" (\<open>U\<^sup>\<infinity>\<close>)
+     and 's eform = "Cumm" "nat" (\<open>C\<^sup>\<le>\<close>)
+                  | "State" "nat" (\<open>I\<^sup>=\<close>)
                   | "Future" "'s sform"
 
 primrec bound_until where

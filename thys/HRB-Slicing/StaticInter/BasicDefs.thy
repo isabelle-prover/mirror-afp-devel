@@ -34,7 +34,7 @@ where "fun_upds f [] ys = f"
   | "fun_upds f xs [] = f"
   | "fun_upds f (x#xs) (y#ys) = (fun_upds f xs ys)(x := y)"
 
-notation fun_upds ("_'(_ /[:=]/ _')")
+notation fun_upds (\<open>_'(_ /[:=]/ _')\<close>)
 
 lemma fun_upds_nth:
   "\<lbrakk>i < length xs; length xs = length ys; distinct xs\<rbrakk>
@@ -125,12 +125,12 @@ text \<open>A state is a call stack of tuples, which consists of:
   \<open>transfer\<close> and \<open>pred\<close> in locale \<open>CFG\<close>.\<close>
 
 datatype (dead 'var, dead 'val, dead 'ret, dead 'pname) edge_kind =
-    UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  ("\<Up>_")
-  | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         ("'(_')\<^sub>\<surd>")
+    UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  (\<open>\<Up>_\<close>)
+  | PredicateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> bool"                         (\<open>'(_')\<^sub>\<surd>\<close>)
   | CallEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'ret" "'pname"  
-             "(('var \<rightharpoonup> 'val) \<rightharpoonup> 'val) list"                       ("_:_\<hookrightarrow>\<^bsub>_\<^esub>_" 70)
+             "(('var \<rightharpoonup> 'val) \<rightharpoonup> 'val) list"                       (\<open>_:_\<hookrightarrow>\<^bsub>_\<^esub>_\<close> 70)
   | ReturnEdge "('var \<rightharpoonup> 'val) \<times> 'ret \<Rightarrow> bool" "'pname" 
-               "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" ("_\<hookleftarrow>\<^bsub>_\<^esub>_" 70)
+               "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)" (\<open>_\<hookleftarrow>\<^bsub>_\<^esub>_\<close> 70)
 
 
 definition intra_kind :: "('var,'val,'ret,'pname) edge_kind \<Rightarrow> bool"

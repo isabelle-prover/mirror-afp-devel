@@ -8,7 +8,7 @@ begin
 
 subsection \<open>Number Partitions as @{typ "nat => nat"} Functions\<close>
 
-definition partitions :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> bool" (infix "partitions" 50)
+definition partitions :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> bool" (infix \<open>partitions\<close> 50)
 where
   "p partitions n = ((\<forall>i. p i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n) \<and> (\<Sum>i\<le>n. p i * i) = n)"
 

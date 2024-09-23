@@ -11,12 +11,12 @@ datatype 'a form = At "nat"
                  | Compound "'a" "'a form list"
                  | ff
 
-datatype 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype 'a sequent = Sequent "('a form) multiset" "('a form) multiset" (\<open> (_) \<Rightarrow>* (_)\<close> [6,6] 5)
 
-abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
+abbreviation multiset_abbrev (\<open>\<LM> _  \<RM>\<close> [75]75) where
    "\<LM> A \<RM> \<equiv> {# A #}"
 
-abbreviation multiset_empty ("\<Empt>" 75) where
+abbreviation multiset_empty (\<open>\<Empt>\<close> 75) where
   "\<Empt> \<equiv> {#}"
 
 (* We have that any step in a rule, be it a primitive rule or an instance of a rule in a derivation
@@ -27,10 +27,10 @@ type_synonym 'a rule = "'a sequent list * 'a sequent"
 type_synonym 'a deriv = "'a sequent * nat"
 
 abbreviation
-multiset_plus (infixl "\<oplus>" 80) where
+multiset_plus (infixl \<open>\<oplus>\<close> 80) where
    "(\<Gamma> :: 'a multiset) \<oplus> (A :: 'a) \<equiv> \<Gamma> + \<LM>A\<RM>"
 abbreviation
-multiset_minus (infixl "\<ominus>" 80) where
+multiset_minus (infixl \<open>\<ominus>\<close> 80) where
    "(\<Gamma> :: 'a multiset) \<ominus>  (A :: 'a) \<equiv> \<Gamma> - \<LM>A\<RM>" 
 
 consts
@@ -95,7 +95,7 @@ inductive_set "Ax" where
 inductive_set "upRules" where
    I[intro]: "\<lbrakk> mset c \<equiv> \<LM> Compound R Fs \<RM> ; ps \<noteq> [] \<rbrakk> \<Longrightarrow> (ps,c) \<in> upRules"
 
-inductive_set extRules :: "'a rule set \<Rightarrow> 'a rule set"  ("_*")
+inductive_set extRules :: "'a rule set \<Rightarrow> 'a rule set"  (\<open>_*\<close>)
   for R :: "'a rule set" 
   where
    I[intro]: "r \<in> R \<Longrightarrow> extendRule seq r \<in> R*"

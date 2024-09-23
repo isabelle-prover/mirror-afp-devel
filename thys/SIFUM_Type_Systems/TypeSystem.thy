@@ -26,16 +26,16 @@ begin
 
 (* Redefined since Isabelle does not seem to be able to reuse the abbreviation from the old locale *)
 abbreviation mm_equiv_abv2 :: "(_, _, _) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-(infix "\<approx>" 60)
+(infix \<open>\<approx>\<close> 60)
   where "mm_equiv_abv2 c c' \<equiv> mm_equiv_abv c c'"
 
 abbreviation eval_abv2 :: "(_, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>" 70)
+  (infixl \<open>\<leadsto>\<close> 70)
   where
   "x \<leadsto> y \<equiv> (x, y) \<in> eval\<^sub>w"
 
 abbreviation low_indistinguishable_abv :: "'Var Mds \<Rightarrow> ('Var, 'AExp, 'BExp) Stmt \<Rightarrow> (_, _, _) Stmt \<Rightarrow> bool"
-  ("_ \<sim>\<index> _" [100, 100] 80)
+  (\<open>_ \<sim>\<index> _\<close> [100, 100] 80)
   where
   "c \<sim>\<^bsub>mds\<^esub> c' \<equiv> low_indistinguishable mds c c'"
 
@@ -46,13 +46,13 @@ where "to_total \<Gamma> v \<equiv> if v \<in> dom \<Gamma> then the (\<Gamma> v
 definition max_dom :: "Sec set \<Rightarrow> Sec"
   where "max_dom xs \<equiv> if High \<in> xs then High else Low"
 
-inductive type_aexpr :: "'Var TyEnv \<Rightarrow> 'AExp \<Rightarrow> Type \<Rightarrow> bool" ("_ \<turnstile>\<^sub>a _ \<in> _" [120, 120, 120] 1000)
+inductive type_aexpr :: "'Var TyEnv \<Rightarrow> 'AExp \<Rightarrow> Type \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>a _ \<in> _\<close> [120, 120, 120] 1000)
   where
   type_aexpr [intro!]: "\<Gamma> \<turnstile>\<^sub>a e \<in> max_dom (image (\<lambda> x. to_total \<Gamma> x) (aexp_vars e))"
 
 inductive_cases type_aexpr_elim [elim]: "\<Gamma> \<turnstile>\<^sub>a e \<in> t"
 
-inductive type_bexpr :: "'Var TyEnv \<Rightarrow> 'BExp \<Rightarrow> Type \<Rightarrow> bool" ("_ \<turnstile>\<^sub>b _ \<in> _ " [120, 120, 120] 1000)
+inductive type_bexpr :: "'Var TyEnv \<Rightarrow> 'BExp \<Rightarrow> Type \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>b _ \<in> _ \<close> [120, 120, 120] 1000)
   where
   type_bexpr [intro!]: "\<Gamma> \<turnstile>\<^sub>b e \<in> max_dom (image (\<lambda> x. to_total \<Gamma> x) (bexp_vars e))"
 
@@ -72,16 +72,16 @@ fun add_anno_dom :: "'Var TyEnv \<Rightarrow> 'Var ModeUpd \<Rightarrow> 'Var se
   "add_anno_dom \<Gamma> (Rel v AsmNoWrite) = (if dma v = High then dom \<Gamma> - {v} else dom \<Gamma>)" |
   "add_anno_dom \<Gamma> (Rel v _) = dom \<Gamma>"
 
-definition add_anno :: "'Var TyEnv \<Rightarrow> 'Var ModeUpd \<Rightarrow> 'Var TyEnv" (infix "\<oplus>" 60)
+definition add_anno :: "'Var TyEnv \<Rightarrow> 'Var ModeUpd \<Rightarrow> 'Var TyEnv" (infix \<open>\<oplus>\<close> 60)
   where
   "\<Gamma> \<oplus> upd = ((\<lambda>x. Some (to_total \<Gamma> x)) |` add_anno_dom \<Gamma> upd)"
 
-definition context_le :: "'Var TyEnv \<Rightarrow> 'Var TyEnv \<Rightarrow> bool" (infixr "\<sqsubseteq>\<^sub>c" 100)
+definition context_le :: "'Var TyEnv \<Rightarrow> 'Var TyEnv \<Rightarrow> bool" (infixr \<open>\<sqsubseteq>\<^sub>c\<close> 100)
   where
   "\<Gamma> \<sqsubseteq>\<^sub>c \<Gamma>' \<equiv> (dom \<Gamma> = dom \<Gamma>') \<and> (\<forall> x \<in> dom \<Gamma>. the (\<Gamma> x) \<sqsubseteq> the (\<Gamma>' x))"
 
 inductive has_type :: "'Var TyEnv \<Rightarrow> ('Var, 'AExp, 'BExp) Stmt \<Rightarrow> 'Var TyEnv \<Rightarrow> bool"
-  ("\<turnstile> _ {_} _" [120, 120, 120] 1000)
+  (\<open>\<turnstile> _ {_} _\<close> [120, 120, 120] 1000)
   where
   stop_type [intro]: "\<turnstile> \<Gamma> {Stop} \<Gamma>" |
   skip_type [intro] : "\<turnstile> \<Gamma> {Skip} \<Gamma>" |
@@ -117,7 +117,7 @@ inductive_cases has_type_elim: "\<turnstile> \<Gamma> { c } \<Gamma>'"
 inductive_cases has_type_stop_elim: "\<turnstile> \<Gamma> { Stop } \<Gamma>'"
 
 definition tyenv_eq :: "'Var TyEnv \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> bool"
-  (infix "=\<index>" 60)
+  (infix \<open>=\<index>\<close> 60)
   where "mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2 \<equiv> \<forall> x. (to_total \<Gamma> x = Low \<longrightarrow> mem\<^sub>1 x = mem\<^sub>2 x)"
 
 lemma tyenv_eq_sym: "mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2 \<Longrightarrow> mem\<^sub>2 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>1"
@@ -129,7 +129,7 @@ inductive_set \<R>\<^sub>1 :: "'Var TyEnv \<Rightarrow> (('Var, 'AExp, 'BExp) St
   and \<R>\<^sub>1_abv :: "'Var TyEnv \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-  bool" ("_ \<R>\<^sup>1\<index> _" [120, 120] 1000)
+  bool" (\<open>_ \<R>\<^sup>1\<index> _\<close> [120, 120] 1000)
   for \<Gamma>' :: "'Var TyEnv"
   where
   "x \<R>\<^sup>1\<^bsub>\<Gamma>\<^esub> y \<equiv> (x, y) \<in> \<R>\<^sub>1 \<Gamma>" |
@@ -139,7 +139,7 @@ inductive_set \<R>\<^sub>2 :: "'Var TyEnv \<Rightarrow> (('Var, 'AExp, 'BExp) St
   and \<R>\<^sub>2_abv :: "'Var TyEnv \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-  bool" ("_ \<R>\<^sup>2\<index> _" [120, 120] 1000)
+  bool" (\<open>_ \<R>\<^sup>2\<index> _\<close> [120, 120] 1000)
   for \<Gamma>' :: "'Var TyEnv"
   where
   "x \<R>\<^sup>2\<^bsub>\<Gamma>\<^esub> y \<equiv> (x, y) \<in> \<R>\<^sub>2 \<Gamma>" |
@@ -151,7 +151,7 @@ inductive_set \<R>\<^sub>2 :: "'Var TyEnv \<Rightarrow> (('Var, 'AExp, 'BExp) St
 
 inductive \<R>\<^sub>3_aux :: "'Var TyEnv \<Rightarrow> (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
                  (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-                 bool" ("_ \<R>\<^sup>3\<index> _" [120, 120] 1000)
+                 bool" (\<open>_ \<R>\<^sup>3\<index> _\<close> [120, 120] 1000)
   and \<R>\<^sub>3 :: "'Var TyEnv \<Rightarrow> (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf rel"
   where
   "\<R>\<^sub>3 \<Gamma>' \<equiv> {(lc\<^sub>1, lc\<^sub>2). \<R>\<^sub>3_aux \<Gamma>' lc\<^sub>1 lc\<^sub>2}" |
@@ -176,7 +176,7 @@ inductive_set \<R> :: "'Var TyEnv \<Rightarrow>
   and \<R>_abv :: "'Var TyEnv \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-  bool" ("_ \<R>\<^sup>u\<index> _" [120, 120] 1000)
+  bool" (\<open>_ \<R>\<^sup>u\<index> _\<close> [120, 120] 1000)
   for \<Gamma> :: "'Var TyEnv"
   where
   "x \<R>\<^sup>u\<^bsub>\<Gamma>\<^esub> y \<equiv> (x, y) \<in> \<R> \<Gamma>" |
@@ -1231,7 +1231,7 @@ definition "\<Gamma>\<^sub>0" :: "'Var TyEnv"
 
 (* The typing relation for lists of commands ("thread pools"). *)
 inductive type_global :: "('Var, 'AExp, 'BExp) Stmt list \<Rightarrow> bool"
-  ("\<turnstile> _" [120] 1000)
+  (\<open>\<turnstile> _\<close> [120] 1000)
   where
   "\<lbrakk> list_all (\<lambda> c. \<turnstile> \<Gamma>\<^sub>0 { c } \<Gamma>\<^sub>0) cs ;
      \<forall> mem. sound_mode_use (add_initial_modes cs, mem) \<rbrakk> \<Longrightarrow>

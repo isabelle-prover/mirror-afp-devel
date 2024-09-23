@@ -140,7 +140,7 @@ subsubsection \<open>Simplification Lemmas\<close>
     
 subsection \<open>Hoare Triple with Time\<close>  
     
-  definition htt::"assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> nat\<Rightarrow> bool"("<_>/ _/ <_> T/[_]") where
+  definition htt::"assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> nat\<Rightarrow> bool"(\<open><_>/ _/ <_> T/[_]\<close>) where
   "htt P c Q t \<equiv> <P> c <Q> \<and> (\<forall>h as. (h,as) \<Turnstile> P \<longrightarrow> time c h \<le> t)" 
     
   lemma httI[intro?]: 

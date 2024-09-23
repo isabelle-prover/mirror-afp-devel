@@ -22,7 +22,7 @@ begin
   context monoidal_category
   begin
 
-    abbreviation \<iota>'  ("\<iota>\<^sup>-\<^sup>1")
+    abbreviation \<iota>'  (\<open>\<iota>\<^sup>-\<^sup>1\<close>)
     where "\<iota>' \<equiv> inv \<iota>"
 
   end
@@ -176,13 +176,13 @@ begin
       These have functorial properties which are encountered repeatedly.
     \<close>
 
-    definition UP  ("_\<^sup>\<up>" [100] 100)
+    definition UP  (\<open>_\<^sup>\<up>\<close> [100] 100)
     where "t\<^sup>\<up> \<equiv> if arr t then Curry[\<I>, dom t, cod t] (t \<cdot> \<l>[dom t]) else null"
 
     definition DN
     where "DN a b t  \<equiv> if arr t then Uncurry[a, b] t \<cdot> \<l>\<^sup>-\<^sup>1[a] else null"
 
-    abbreviation DN'  ("_\<^sup>\<down>[_, _]" [100] 99)
+    abbreviation DN'  (\<open>_\<^sup>\<down>[_, _]\<close> [100] 99)
     where "t\<^sup>\<down>[a, b] \<equiv> DN a b t"
 
     lemma UP_DN:
@@ -513,7 +513,7 @@ begin
       qed
     qed
 
-    abbreviation comp  (infixr "\<cdot>\<^sub>0" 55)
+    abbreviation comp  (infixr \<open>\<cdot>\<^sub>0\<close> 55)
     where "comp \<equiv> COMP"
 
     lemma hom_char:
@@ -553,8 +553,8 @@ begin
     sublocale A\<^sub>0: underlying_category C T \<alpha> \<iota> Obj\<^sub>A Hom\<^sub>A Id\<^sub>A Comp\<^sub>A ..
     sublocale B\<^sub>0: underlying_category C T \<alpha> \<iota> Obj\<^sub>B Hom\<^sub>B Id\<^sub>B Comp\<^sub>B ..
 
-    notation A\<^sub>0.comp  (infixr "\<cdot>\<^sub>A\<^sub>0" 55)
-    notation B\<^sub>0.comp  (infixr "\<cdot>\<^sub>B\<^sub>0" 55)
+    notation A\<^sub>0.comp  (infixr \<open>\<cdot>\<^sub>A\<^sub>0\<close> 55)
+    notation B\<^sub>0.comp  (infixr \<open>\<cdot>\<^sub>B\<^sub>0\<close> 55)
 
     definition map\<^sub>0
     where "map\<^sub>0 f = (if A\<^sub>0.arr f

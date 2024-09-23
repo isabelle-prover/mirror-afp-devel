@@ -772,7 +772,7 @@ text\<open>
 \<close>
 
 subsection\<open>Defining Continuous Functions and Basic Examples\<close>
-abbreviation Zp_constant_function ("\<cc>\<^bsub>Zp\<^esub>") where
+abbreviation Zp_constant_function (\<open>\<cc>\<^bsub>Zp\<^esub>\<close>) where
 "\<cc>\<^bsub>Zp\<^esub> a \<equiv> constant_function (carrier Zp) a"
 
 definition is_Zp_continuous ::"padic_int_fun \<Rightarrow> bool" where

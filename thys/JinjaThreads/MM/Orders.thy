@@ -28,7 +28,7 @@ where "total_onP A r \<equiv> total_on A {(x, y). r x y}"
 abbreviation irreflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "irreflP r == irrefl {(x, y). r x y}"
 
-definition irreflclp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_\<^sup>\<noteq>\<^sup>\<noteq>" [1000] 1000)
+definition irreflclp :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_\<^sup>\<noteq>\<^sup>\<noteq>\<close> [1000] 1000)
 where "r\<^sup>\<noteq>\<^sup>\<noteq> a b = (r a b \<and> a \<noteq> b)"
 
 definition porder_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -40,7 +40,7 @@ where "torder_on A r \<longleftrightarrow> porder_on A r \<and> total_onP A r"
 definition order_consistent :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "order_consistent r s \<longleftrightarrow> (\<forall>a a'. r a a' \<and> s a' a \<longrightarrow> a = a')"
 
-definition restrictP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "|`" 110)
+definition restrictP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>|`\<close> 110)
 where "(r |` A) a b \<longleftrightarrow> r a b \<and> a \<in> A \<and> b \<in> A"
 
 definition inv_imageP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool"

@@ -19,7 +19,7 @@ typedef ('a, 'b) ffun = "{f :: ('a, 'b) pfun. finite(pdom(f))}"
 
 setup_lifting type_definition_ffun
 
-lift_definition ffun_app :: "('a, 'b) ffun \<Rightarrow> 'a \<Rightarrow> 'b" ("_'(_')\<^sub>f" [999,0] 999) is "pfun_app" .
+lift_definition ffun_app :: "('a, 'b) ffun \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>_'(_')\<^sub>f\<close> [999,0] 999) is "pfun_app" .
 
 lift_definition ffun_upd :: "('a, 'b) ffun \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a, 'b) ffun" is "pfun_upd" by simp
 
@@ -27,14 +27,14 @@ lift_definition fdom :: "('a, 'b) ffun \<Rightarrow> 'a set" is pdom .
 
 lift_definition fran :: "('a, 'b) ffun \<Rightarrow> 'b set" is pran .
 
-lift_definition ffun_comp :: "('b, 'c) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> ('a, 'c) ffun" (infixl "\<circ>\<^sub>f" 55) is pfun_comp by auto
+lift_definition ffun_comp :: "('b, 'c) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> ('a, 'c) ffun" (infixl \<open>\<circ>\<^sub>f\<close> 55) is pfun_comp by auto
 
-lift_definition ffun_member :: "'a \<times> 'b \<Rightarrow> ('a, 'b) ffun \<Rightarrow> bool" (infix "\<in>\<^sub>f" 50) is "(\<in>\<^sub>p)" .
+lift_definition ffun_member :: "'a \<times> 'b \<Rightarrow> ('a, 'b) ffun \<Rightarrow> bool" (infix \<open>\<in>\<^sub>f\<close> 50) is "(\<in>\<^sub>p)" .
 
-lift_definition fdom_res :: "'a set \<Rightarrow> ('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun" (infixl "\<lhd>\<^sub>f" 85)
+lift_definition fdom_res :: "'a set \<Rightarrow> ('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun" (infixl \<open>\<lhd>\<^sub>f\<close> 85)
 is "pdom_res" by simp
 
-lift_definition fran_res :: "('a, 'b) ffun \<Rightarrow> 'b set \<Rightarrow> ('a, 'b) ffun" (infixl "\<rhd>\<^sub>f" 85)
+lift_definition fran_res :: "('a, 'b) ffun \<Rightarrow> 'b set \<Rightarrow> ('a, 'b) ffun" (infixl \<open>\<rhd>\<^sub>f\<close> 85)
 is pran_res by simp
 
 lift_definition ffun_graph :: "('a, 'b) ffun \<Rightarrow> ('a \<times> 'b) set" is pfun_graph .
@@ -49,7 +49,7 @@ lift_definition zero_ffun :: "('a, 'b) ffun" is "0" by simp
 instance ..
 end
 
-abbreviation fempty :: "('a, 'b) ffun" ("{}\<^sub>f")
+abbreviation fempty :: "('a, 'b) ffun" (\<open>{}\<^sub>f\<close>)
 where "fempty \<equiv> 0"
 
 instantiation ffun :: (type, type) plus
@@ -75,7 +75,7 @@ lift_definition inf_ffun :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightar
 instance ..
 end
 
-abbreviation ffun_inter :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun" (infixl "\<inter>\<^sub>f" 80)
+abbreviation ffun_inter :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun" (infixl \<open>\<inter>\<^sub>f\<close> 80)
 where "ffun_inter \<equiv> inf"
 
 instantiation ffun :: (type, type) order
@@ -88,10 +88,10 @@ instance
   by (intro_classes, (transfer, auto)+)
 end
 
-abbreviation ffun_subset :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> bool" (infix "\<subset>\<^sub>f" 50)
+abbreviation ffun_subset :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> bool" (infix \<open>\<subset>\<^sub>f\<close> 50)
 where "ffun_subset \<equiv> less"
 
-abbreviation ffun_subset_eq :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> bool" (infix "\<subseteq>\<^sub>f" 50)
+abbreviation ffun_subset_eq :: "('a, 'b) ffun \<Rightarrow> ('a, 'b) ffun \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>f\<close> 50)
 where "ffun_subset_eq \<equiv> less_eq"
 
 instance ffun :: (type, type) semilattice_inf
@@ -102,8 +102,8 @@ lemma ffun_subset_eq_least [simp]:
   by (transfer, auto)
 
 syntax
-  "_FfunUpd"  :: "[('a, 'b) ffun, maplets] => ('a, 'b) ffun" ("_'(_')\<^sub>f" [900,0]900)
-  "_Ffun"     :: "maplets => ('a, 'b) ffun"            ("(1{_}\<^sub>f)")
+  "_FfunUpd"  :: "[('a, 'b) ffun, maplets] => ('a, 'b) ffun" (\<open>_'(_')\<^sub>f\<close> [900,0]900)
+  "_Ffun"     :: "maplets => ('a, 'b) ffun"            (\<open>(1{_}\<^sub>f)\<close>)
 
 syntax_consts
   "_FfunUpd" "_Ffun" \<rightleftharpoons> ffun_upd

@@ -11,15 +11,15 @@ begin
 
 \<comment> \<open>The following infrastructure translates the generic @{datatype ltln} datatype to special structure used in this project\<close>
 
-abbreviation LTLRelease :: "'a ltl \<Rightarrow> 'a ltl \<Rightarrow> 'a ltl" ("_ R _" [87,87] 86)
+abbreviation LTLRelease :: "'a ltl \<Rightarrow> 'a ltl \<Rightarrow> 'a ltl" (\<open>_ R _\<close> [87,87] 86)
 where
   "\<phi> R \<psi> \<equiv> (G \<psi>) or (\<psi> U (\<phi> and \<psi>))"
 
-abbreviation LTLWeakUntil :: "'a ltl \<Rightarrow> 'a ltl \<Rightarrow> 'a ltl" ("_ W _" [87,87] 86)
+abbreviation LTLWeakUntil :: "'a ltl \<Rightarrow> 'a ltl \<Rightarrow> 'a ltl" (\<open>_ W _\<close> [87,87] 86)
 where
   "\<phi> W \<psi> \<equiv> (\<phi> U \<psi>) or (G \<phi>)"
 
-abbreviation LTLStrongRelease :: "'a ltl \<Rightarrow> 'a ltl \<Rightarrow> 'a ltl" ("_ M _" [87,87] 86)
+abbreviation LTLStrongRelease :: "'a ltl \<Rightarrow> 'a ltl \<Rightarrow> 'a ltl" (\<open>_ M _\<close> [87,87] 86)
 where
   "\<phi> M \<psi> \<equiv> \<psi> U (\<phi> and \<psi>)"
 

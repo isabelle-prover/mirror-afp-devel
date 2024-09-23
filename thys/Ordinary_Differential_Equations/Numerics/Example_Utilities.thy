@@ -994,7 +994,7 @@ lemma c1_info_of_appr_subsetI1:
 lemmas [simp] = compute_tdev
 
 syntax product_aforms::"(real aform) list \<Rightarrow> (real aform) list \<Rightarrow> (real aform) list"
-  (infixr "\<times>\<^sub>a" 70)
+  (infixr \<open>\<times>\<^sub>a\<close> 70)
 
 lemma matrix_inner_Basis_list:
   includes vec_syntax

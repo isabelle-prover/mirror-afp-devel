@@ -22,14 +22,14 @@ imports Aggregation_Algebras.M_Choose_Component Relational_Disjoint_Set_Forests.
 begin
 
 no_notation
-  uminus ("- _" [81] 80) and
-  minus_class.minus (infixl "-" 65)
+  uminus (\<open>- _\<close> [81] 80) and
+  minus_class.minus (infixl \<open>-\<close> 65)
 
-definition Z_matrix :: "('a::enum,'b::{bot,top}) square" ("mZero") where "mZero = (\<lambda>(i,j) . if i = hd enum_class.enum then top else bot)"
-definition S_matrix :: "('a::enum,'b::{bot,top}) square" ("msuccmod") where "msuccmod = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if (\<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k) \<or> (i = e ! minus_class.minus (length e) 1 \<and> j = hd e) then top else bot)"
-definition S'_matrix :: "('a::enum,'b::{bot,top}) square" ("msucc") where "msucc = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if \<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k then top else bot)"
-definition N_matrix :: "nat \<Rightarrow> ('a::enum,'b::{bot,top}) square" ("mnat") where "mnat n = (\<lambda>(i,j) . if i = enum_class.enum ! n then top else bot)"
-definition CP_matrix  :: "('a::enum,'b::{bot,uminus}) square \<Rightarrow> ('a,'b) square" ("mcp") where "mcp f = (\<lambda>(i,j) . if Some i = find (\<lambda>x . f (x,x) \<noteq> bot) enum_class.enum then uminus_class.uminus (uminus_class.uminus (f (i,j))) else bot)"
+definition Z_matrix :: "('a::enum,'b::{bot,top}) square" (\<open>mZero\<close>) where "mZero = (\<lambda>(i,j) . if i = hd enum_class.enum then top else bot)"
+definition S_matrix :: "('a::enum,'b::{bot,top}) square" (\<open>msuccmod\<close>) where "msuccmod = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if (\<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k) \<or> (i = e ! minus_class.minus (length e) 1 \<and> j = hd e) then top else bot)"
+definition S'_matrix :: "('a::enum,'b::{bot,top}) square" (\<open>msucc\<close>) where "msucc = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if \<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k then top else bot)"
+definition N_matrix :: "nat \<Rightarrow> ('a::enum,'b::{bot,top}) square" (\<open>mnat\<close>) where "mnat n = (\<lambda>(i,j) . if i = enum_class.enum ! n then top else bot)"
+definition CP_matrix  :: "('a::enum,'b::{bot,uminus}) square \<Rightarrow> ('a,'b) square" (\<open>mcp\<close>) where "mcp f = (\<lambda>(i,j) . if Some i = find (\<lambda>x . f (x,x) \<noteq> bot) enum_class.enum then uminus_class.uminus (uminus_class.uminus (f (i,j))) else bot)"
 
 lemma S'_matrix_S_matrix:
   "(msucc :: ('a::enum,'b::stone_relation_algebra) square) = msuccmod \<ominus> mZero\<^sup>t"
@@ -236,7 +236,7 @@ proof -
 qed
 
 syntax
-  "_sum_sup_monoid" :: "idt \<Rightarrow> nat \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>_<_ . _)" [0,51,10] 10)
+  "_sum_sup_monoid" :: "idt \<Rightarrow> nat \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" (\<open>(\<Squnion>_<_ . _)\<close> [0,51,10] 10)
 syntax_consts
   "_sum_sup_monoid" == sup_monoid.sum
 translations

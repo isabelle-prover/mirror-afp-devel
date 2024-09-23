@@ -11,13 +11,13 @@ function of type @{typ"'a \<Rightarrow> 'a list"}. Instead of defining the closu
 again it would have been simpler to take @{term"{(x,y) . y \<in> set(f x)}\<^sup>*"}.\<close>
 
 abbreviation (input)
-  in_set :: "'a \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> 'b \<Rightarrow> bool" ("_ [_]\<rightarrow> _" [55,0,55] 50) where
+  in_set :: "'a \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> 'b \<Rightarrow> bool" (\<open>_ [_]\<rightarrow> _\<close> [55,0,55] 50) where
   "g [succs]\<rightarrow> g' == g' \<in> set (succs g)"
 
 inductive_set
   RTranCl :: "('a \<Rightarrow> 'a list) \<Rightarrow> ('a * 'a) set"
   and in_RTranCl :: "'a \<Rightarrow> ('a \<Rightarrow> 'a list) \<Rightarrow> 'a \<Rightarrow> bool"
-    ("_ [_]\<rightarrow>* _" [55,0,55] 50)
+    (\<open>_ [_]\<rightarrow>* _\<close> [55,0,55] 50)
   for succs :: "'a \<Rightarrow> 'a list"
 where
   "g [succs]\<rightarrow>* g' \<equiv> (g,g') \<in> RTranCl succs"

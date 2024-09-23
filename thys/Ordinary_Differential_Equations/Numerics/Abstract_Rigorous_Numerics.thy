@@ -24,7 +24,7 @@ lemma sing_mem_listset_iff[simp]: "[b] \<in> listset ys \<longleftrightarrow> (\
   by (cases ys) (auto simp: set_Cons_def)
 
 
-no_notation (in autoref_syn) funcset (infixr "\<rightarrow>" 60)
+no_notation (in autoref_syn) funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 definition cfuncset where "cfuncset l u X = funcset {l .. u} X \<inter> Collect (continuous_on {l .. u})"
 lemma cfuncset_iff: "f \<in> cfuncset l u X \<longleftrightarrow> (\<forall>i\<in>{l .. u}. f i \<in> X) \<and> continuous_on {l .. u} f"

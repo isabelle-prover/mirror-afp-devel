@@ -809,7 +809,7 @@ lemma forces_nmem :
   "p forces\<^sub>a (t1 \<notin> t2) \<longleftrightarrow> forces_nmem'(\<bbbP>,leq,p,t1,t2)"
   unfolding forces_nmem_def forces_nmem'_def forces_mem_def by simp
 
-abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  ("_ \<tturnstile> _ _" [36,36,36] 60) where
+abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  (\<open>_ \<tturnstile> _ _\<close> [36,36,36] 60) where
   "p \<tturnstile> \<phi> env   \<equiv>   M, ([p,\<bbbP>,leq,\<one>] @ env) \<Turnstile> forces(\<phi>)"
 
 lemma sats_forces_Member :

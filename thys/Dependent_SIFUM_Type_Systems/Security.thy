@@ -22,12 +22,12 @@ definition apply_adaptation ::
 
 abbreviation apply_adaptation\<^sub>1 ::
   "('Var, 'Val) Mem \<Rightarrow> ('Var, 'Val) adaptation \<Rightarrow> ('Var, 'Val) Mem"
-  ("_ [\<parallel>\<^sub>1 _]" [900, 0] 1000)
+  (\<open>_ [\<parallel>\<^sub>1 _]\<close> [900, 0] 1000)
   where "mem [\<parallel>\<^sub>1 A] \<equiv> apply_adaptation True mem A"
 
 abbreviation apply_adaptation\<^sub>2 ::
   "('Var, 'Val) Mem \<Rightarrow> ('Var, 'Val) adaptation \<Rightarrow> ('Var, 'Val) Mem"
-  ("_ [\<parallel>\<^sub>2 _]" [900, 0] 1000)
+  (\<open>_ [\<parallel>\<^sub>2 _]\<close> [900, 0] 1000)
   where "mem [\<parallel>\<^sub>2 A] \<equiv> apply_adaptation False mem A"
 
 definition
@@ -40,18 +40,18 @@ context sifum_security_init begin
 subsection \<open>Evaluation of Concurrent Programs\<close>
 
 abbreviation eval_abv :: "('Com, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>" 70)
+  (infixl \<open>\<leadsto>\<close> 70)
 where
   "x \<leadsto> y \<equiv> (x, y) \<in> eval"
 
 abbreviation conf_abv :: "'Com \<Rightarrow> 'Var Mds \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> (_,_,_) LocalConf"
-  ("\<langle>_, _, _\<rangle>" [0, 0, 0] 1000)
+  (\<open>\<langle>_, _, _\<rangle>\<close> [0, 0, 0] 1000)
 where
   "\<langle> c, mds, mem \<rangle> \<equiv> ((c, mds), mem)"
 
 (* Labelled evaluation global configurations: *)
 inductive_set meval :: "((_,_,_) GlobalConf \<times> nat \<times> (_,_,_) GlobalConf) set"
-  and meval_abv :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> bool" ("_ \<leadsto>\<^bsub>_\<^esub> _" 70)
+  and meval_abv :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> bool" (\<open>_ \<leadsto>\<^bsub>_\<^esub> _\<close> 70)
 where
   "conf \<leadsto>\<^bsub>k\<^esub> conf' \<equiv> (conf, k, conf') \<in> meval" |
   meval_intro [iff]: "\<lbrakk> (cms ! n, mem) \<leadsto> (cm', mem'); n < length cms \<rbrakk> \<Longrightarrow>
@@ -60,7 +60,7 @@ where
 inductive_cases meval_elim [elim!]: "((cms, mem), k, (cms', mem')) \<in> meval"
 
 inductive neval :: "('Com, 'Var, 'Val) LocalConf \<Rightarrow> nat \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>\<^bsup>_\<^esup>" 70)
+  (infixl \<open>\<leadsto>\<^bsup>_\<^esup>\<close> 70)
 where
   neval_0: "x = y \<Longrightarrow> x \<leadsto>\<^bsup>0\<^esup> y" |
   neval_S_n: "x \<leadsto> y \<Longrightarrow> y \<leadsto>\<^bsup>n\<^esup> z \<Longrightarrow> x \<leadsto>\<^bsup>Suc n\<^esup> z"
@@ -106,7 +106,7 @@ where
   "meval_sched (n#ns) c c' = (\<exists> c''.  c \<leadsto>\<^bsub>n\<^esub> c'' \<and> meval_sched ns c'' c')"
 
 abbreviation
-  meval_sched_abv :: "(_,_,_) GlobalConf \<Rightarrow> nat list \<Rightarrow> (_,_,_) GlobalConf \<Rightarrow> bool" ("_ \<rightarrow>\<^bsub>_\<^esub> _" 70)
+  meval_sched_abv :: "(_,_,_) GlobalConf \<Rightarrow> nat list \<Rightarrow> (_,_,_) GlobalConf \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^bsub>_\<^esub> _\<close> 70)
 where
   "c \<rightarrow>\<^bsub>ns\<^esub> c' \<equiv> meval_sched ns c c'"
 
@@ -120,7 +120,7 @@ subsection \<open>Low-equivalence and Strong Low Bisimulations\<close>
 
 (* Low-equality between memory states: *)
 definition 
-  low_eq :: "('Var, 'Val) Mem \<Rightarrow> (_, _) Mem \<Rightarrow> bool" (infixl "=\<^sup>l" 80)
+  low_eq :: "('Var, 'Val) Mem \<Rightarrow> (_, _) Mem \<Rightarrow> bool" (infixl \<open>=\<^sup>l\<close> 80)
 where
   "mem\<^sub>1 =\<^sup>l mem\<^sub>2 \<equiv> (\<forall> x. dma mem\<^sub>1 x = Low \<longrightarrow> mem\<^sub>1 x = mem\<^sub>2 x)"
 
@@ -128,7 +128,7 @@ where
 (* Low-equality modulo a given mode state: *)
 definition 
   low_mds_eq :: "'Var Mds \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> (_, _) Mem \<Rightarrow> bool"
-  ("_ =\<index>\<^sup>l _" [100, 100] 80)
+  (\<open>_ =\<index>\<^sup>l _\<close> [100, 100] 80)
 where
   "(mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2) \<equiv> (\<forall> x. dma mem\<^sub>1 x = Low \<and> (x \<in> \<C> \<or> x \<notin> mds AsmNoReadOrWrite) \<longrightarrow> mem\<^sub>1 x = mem\<^sub>2 x)"
 
@@ -190,7 +190,7 @@ where
 
 inductive_set mm_equiv :: "(('Com, 'Var, 'Val) LocalConf) rel"
   and mm_equiv_abv :: "('Com, 'Var, 'Val) LocalConf \<Rightarrow> 
-  ('Com, 'Var, 'Val) LocalConf \<Rightarrow> bool" (infix "\<approx>" 60)
+  ('Com, 'Var, 'Val) LocalConf \<Rightarrow> bool" (infix \<open>\<approx>\<close> 60)
 where
   "mm_equiv_abv x y \<equiv> (x, y) \<in> mm_equiv" |
   mm_equiv_intro [iff]: "\<lbrakk> strong_low_bisim_mm \<R> ; (lc\<^sub>1, lc\<^sub>2) \<in> \<R> \<rbrakk> \<Longrightarrow> (lc\<^sub>1, lc\<^sub>2) \<in> mm_equiv"
@@ -198,7 +198,7 @@ where
 inductive_cases mm_equiv_elim [elim]: "\<langle> c\<^sub>1, mds, mem\<^sub>1 \<rangle> \<approx> \<langle> c\<^sub>2, mds, mem\<^sub>2 \<rangle>"
 
 definition low_indistinguishable :: "'Var Mds \<Rightarrow> 'Com \<Rightarrow> 'Com \<Rightarrow> bool"
-  ("_ \<sim>\<index> _" [100, 100] 80)
+  (\<open>_ \<sim>\<index> _\<close> [100, 100] 80)
 where 
   "c\<^sub>1 \<sim>\<^bsub>mds\<^esub> c\<^sub>2 = (\<forall> mem\<^sub>1 mem\<^sub>2. mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2 \<longrightarrow> \<langle> c\<^sub>1, mds, mem\<^sub>1 \<rangle> \<approx> \<langle> c\<^sub>2, mds, mem\<^sub>2 \<rangle>)"
 
@@ -255,7 +255,7 @@ where
                          Some v \<Rightarrow> v)"
 
 abbreviation 
-  subst_abv :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<Rightarrow> 'b)" ("_ [\<mapsto>_]" [900, 0] 1000)
+  subst_abv :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<Rightarrow> 'b)" (\<open>_ [\<mapsto>_]\<close> [900, 0] 1000)
 where
   "f [\<mapsto> \<sigma>] \<equiv> subst \<sigma> f"
 

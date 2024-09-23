@@ -23,7 +23,7 @@ locale lower_galois_connections
 begin
 
 definition
-  l_adjoint :: "('a::refinement_lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" ("_\<^sup>\<flat>" [201] 200)
+  l_adjoint :: "('a::refinement_lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" (\<open>_\<^sup>\<flat>\<close> [201] 200)
 where
   "(F\<^sup>\<flat>) x \<equiv> \<Sqinter>{y. x \<sqsubseteq> F y}"
 
@@ -114,7 +114,7 @@ locale upper_galois_connections
 begin
 
 definition
-  u_adjoint :: "('a::refinement_lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" ("_\<^sup>#" [201] 200)
+  u_adjoint :: "('a::refinement_lattice \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" (\<open>_\<^sup>#\<close> [201] 200)
 where
   "(F\<^sup>#) x \<equiv> \<Squnion>{y. F y \<sqsubseteq> x}"
 

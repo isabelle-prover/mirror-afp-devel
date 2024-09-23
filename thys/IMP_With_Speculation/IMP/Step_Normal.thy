@@ -11,13 +11,13 @@ begin
 context Prog 
 begin
 
-fun stepN :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix "\<rightarrow>N" 55)
+fun stepN :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix \<open>\<rightarrow>N\<close> 55)
 where
 "(cfg,ibT,ibUT,ls) \<rightarrow>N (cfg',ibT',ibUT',ls') =
  ((cfg,ibT,ibUT) \<rightarrow>B (cfg',ibT',ibUT') \<and> ls' = ls \<union> readLocs cfg)"
 
 abbreviation
-  stepsN :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix "\<rightarrow>N*" 55)
+  stepsN :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix \<open>\<rightarrow>N*\<close> 55)
   where "x \<rightarrow>N* y == star stepN x y"
 
 

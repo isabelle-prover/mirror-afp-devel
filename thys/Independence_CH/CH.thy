@@ -172,8 +172,8 @@ sublocale collapse_CH \<subseteq> forcing_notion "Coll" "Colleq" 0
 context collapse_CH
 begin
 
-notation Leq (infixl "\<preceq>" 50)
-notation Incompatible (infixl "\<bottom>" 50)
+notation Leq (infixl \<open>\<preceq>\<close> 50)
+notation Incompatible (infixl \<open>\<bottom>\<close> 50)
 
 abbreviation
   f_G :: "i" (\<open>f\<^bsub>G\<^esub>\<close>) where

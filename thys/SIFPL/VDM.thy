@@ -18,14 +18,14 @@ text\<open>Command $c$ satisfies assertion $A$ if all (terminating)
 operational behaviours are covered by the assertion.\<close>
 
 definition VDM_valid :: "IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
-                       (" \<Turnstile> _ : _ " [100,100] 100)
+                       (\<open> \<Turnstile> _ : _ \<close> [100,100] 100)
 where "\<Turnstile> c : A = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
 
 text\<open>A variation of this property for the height-indexed operational
 semantics,\ldots\<close>
 
 definition VDM_validn :: "nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
-                        (" \<Turnstile>\<^sub>_ _ : _ " [100,100,100] 100)
+                        (\<open> \<Turnstile>\<^sub>_ _ : _ \<close> [100,100,100] 100)
 where "\<Turnstile>\<^sub>n c : A = (\<forall> m . m \<le> n --> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) --> A s t))"
 
 text\<open>\ldots plus the obvious relationships.\<close>
@@ -51,13 +51,13 @@ represents an assumption for the unnamed procedure. In particular, a
 context is valid if each entry is satisfied by the method call
 instruction.\<close>
 
-definition Ctxt_valid :: "VDMAssn set \<Rightarrow> bool" (" \<Turnstile> _ " [100] 100)
+definition Ctxt_valid :: "VDMAssn set \<Rightarrow> bool" (\<open> \<Turnstile> _ \<close> [100] 100)
 where "\<Turnstile> G = (\<forall> A . A \<in> G \<longrightarrow> (\<Turnstile> Call : A))"
 
 text\<open>Again, a relativised sibling \ldots\<close>
 
 definition Ctxt_validn :: "nat \<Rightarrow> (VDMAssn set) \<Rightarrow> bool"
-                         (" \<Turnstile>\<^sub>_ _  " [100,100] 100)
+                         (\<open> \<Turnstile>\<^sub>_ _  \<close> [100,100] 100)
 where "\<Turnstile>\<^sub>n G = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> ( \<Turnstile>\<^sub>m Call : A)))"
 
 text\<open>satisfies the obvious properties.\<close>
@@ -85,14 +85,14 @@ text\<open>A judgement is valid if the validity of the context implies that
 of the commmand-assertion pair.\<close>
 
 definition valid :: "(VDMAssn set) \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
-                    ("_ \<Turnstile> _ : _ " [100,100,100] 100)
+                    (\<open>_ \<Turnstile> _ : _ \<close> [100,100,100] 100)
 where "G \<Turnstile> c : A = (\<Turnstile> G \<longrightarrow> \<Turnstile> c : A)"
 
 text\<open>And, again, a relatived notion of judgement validity.\<close>
 
 definition validn :: 
  "(VDMAssn set) \<Rightarrow> nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
-  ("_ \<Turnstile>\<^sub>_ _ : _" [100,100,100,100] 100)
+  (\<open>_ \<Turnstile>\<^sub>_ _ : _\<close> [100,100,100,100] 100)
 where "G \<Turnstile>\<^sub>n c : A = (\<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n c : A)"
 
 lemma validn_valid: "(\<forall> n . G \<Turnstile>\<^sub>n c : A) \<Longrightarrow> G \<Turnstile> c : A"
@@ -168,7 +168,7 @@ VDMConseq: "\<lbrakk> G \<rhd> c : A; \<forall> s t. A s t \<longrightarrow> B s
 
 abbreviation
   VDM_deriv :: "[VDMAssn set, IMP, VDMAssn] \<Rightarrow> bool"
-                ("_ \<rhd> _ : _" [100,100,100] 100)
+                (\<open>_ \<rhd> _ : _\<close> [100,100,100] 100)
 where "G \<rhd> c : A == (G,c,A) \<in> VDM_proof"
 
 text\<open>The while-rule is in fact inter-derivable with the following rule.\<close>

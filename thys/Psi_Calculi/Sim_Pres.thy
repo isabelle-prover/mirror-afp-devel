@@ -459,7 +459,7 @@ next
     ultimately show ?case by blast
   qed
 qed
-no_notation relcomp (infixr "O" 75)
+no_notation relcomp (infixr \<open>O\<close> 75)
 lemma bangPres:
   fixes \<Psi>   :: 'b
   and   P    :: "('a, 'b, 'c) psi"
@@ -664,7 +664,7 @@ proof(induct rule: simI[of _ _ _ _ "()"])
     ultimately show ?case by blast
   qed
 qed
-notation relcomp (infixr "O" 75)
+notation relcomp (infixr \<open>O\<close> 75)
 end
 
 end

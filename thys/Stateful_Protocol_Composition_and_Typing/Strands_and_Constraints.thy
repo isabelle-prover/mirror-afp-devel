@@ -9,7 +9,7 @@ imports Messages More_Unification Intruder_Deduction
 begin
 
 subsection \<open>Constraints, Strands and Related Definitions\<close>
-datatype poscheckvariant = Assign ("assign") | Check ("check")
+datatype poscheckvariant = Assign (\<open>assign\<close>) | Check (\<open>check\<close>)
 
 text \<open>
   A strand (or constraint) step is either a message transmission (either a message being sent \<open>Send\<close>
@@ -17,10 +17,10 @@ text \<open>
   either an "assignment" or just a check---or a negative check \<open>Inequality\<close>)
 \<close>
 datatype (funs\<^sub>s\<^sub>t\<^sub>p: 'a, vars\<^sub>s\<^sub>t\<^sub>p: 'b) strand_step =
-  Send       "('a,'b) term list" ("send\<langle>_\<rangle>\<^sub>s\<^sub>t" 80)
-| Receive    "('a,'b) term list" ("receive\<langle>_\<rangle>\<^sub>s\<^sub>t" 80)
-| Equality   poscheckvariant "('a,'b) term" "('a,'b) term" ("\<langle>_: _ \<doteq> _\<rangle>\<^sub>s\<^sub>t" [80,80])
-| Inequality (bvars\<^sub>s\<^sub>t\<^sub>p: "'b list") "(('a,'b) term \<times> ('a,'b) term) list" ("\<forall>_\<langle>\<or>\<noteq>: _\<rangle>\<^sub>s\<^sub>t" [80,80])
+  Send       "('a,'b) term list" (\<open>send\<langle>_\<rangle>\<^sub>s\<^sub>t\<close> 80)
+| Receive    "('a,'b) term list" (\<open>receive\<langle>_\<rangle>\<^sub>s\<^sub>t\<close> 80)
+| Equality   poscheckvariant "('a,'b) term" "('a,'b) term" (\<open>\<langle>_: _ \<doteq> _\<rangle>\<^sub>s\<^sub>t\<close> [80,80])
+| Inequality (bvars\<^sub>s\<^sub>t\<^sub>p: "'b list") "(('a,'b) term \<times> ('a,'b) term) list" (\<open>\<forall>_\<langle>\<or>\<noteq>: _\<rangle>\<^sub>s\<^sub>t\<close> [80,80])
 where
   "bvars\<^sub>s\<^sub>t\<^sub>p (Send _) = []"
 | "bvars\<^sub>s\<^sub>t\<^sub>p (Receive _) = []"
@@ -127,7 +127,7 @@ definition funs\<^sub>s\<^sub>t::"('a,'b) strand \<Rightarrow> 'a set" where
   "funs\<^sub>s\<^sub>t S \<equiv> \<Union>(set (map funs\<^sub>s\<^sub>t\<^sub>p S))"
 
 fun subst_apply_strand_step::"('a,'b) strand_step \<Rightarrow> ('a,'b) subst \<Rightarrow> ('a,'b) strand_step"
-  (infix "\<cdot>\<^sub>s\<^sub>t\<^sub>p" 51) where
+  (infix \<open>\<cdot>\<^sub>s\<^sub>t\<^sub>p\<close> 51) where
   "Send t \<cdot>\<^sub>s\<^sub>t\<^sub>p \<theta> = Send (t \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>)"
 | "Receive t \<cdot>\<^sub>s\<^sub>t\<^sub>p \<theta> = Receive (t \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>)"
 | "Equality a t t' \<cdot>\<^sub>s\<^sub>t\<^sub>p \<theta> = Equality a (t \<cdot> \<theta>) (t' \<cdot> \<theta>)"
@@ -135,7 +135,7 @@ fun subst_apply_strand_step::"('a,'b) strand_step \<Rightarrow> ('a,'b) subst \<
 
 text \<open>Substitution application for strands\<close>
 definition subst_apply_strand::"('a,'b) strand \<Rightarrow> ('a,'b) subst \<Rightarrow> ('a,'b) strand"
-  (infix "\<cdot>\<^sub>s\<^sub>t" 51) where
+  (infix \<open>\<cdot>\<^sub>s\<^sub>t\<close> 51) where
   "S \<cdot>\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>s\<^sub>t\<^sub>p \<theta>) S"
 
 text \<open>The semantics of inequality constraints\<close>
@@ -2181,7 +2181,7 @@ begin
 
 subsubsection \<open>Definitions\<close>
 text \<open>The constraint semantics in which the intruder is limited to composition only\<close>
-fun strand_sem_c::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool" ("\<lbrakk>_; _\<rbrakk>\<^sub>c")
+fun strand_sem_c::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool" (\<open>\<lbrakk>_; _\<rbrakk>\<^sub>c\<close>)
 where
   "\<lbrakk>M; []\<rbrakk>\<^sub>c = (\<lambda>\<I>. True)"
 | "\<lbrakk>M; Send ts#S\<rbrakk>\<^sub>c = (\<lambda>\<I>. (\<forall>t \<in> set ts. M \<turnstile>\<^sub>c t \<cdot> \<I>) \<and> \<lbrakk>M; S\<rbrakk>\<^sub>c \<I>)"
@@ -2189,11 +2189,11 @@ where
 | "\<lbrakk>M; Equality _ t t'#S\<rbrakk>\<^sub>c = (\<lambda>\<I>. t \<cdot> \<I> = t' \<cdot> \<I> \<and> \<lbrakk>M; S\<rbrakk>\<^sub>c \<I>)"
 | "\<lbrakk>M; Inequality X F#S\<rbrakk>\<^sub>c = (\<lambda>\<I>. ineq_model \<I> X F \<and> \<lbrakk>M; S\<rbrakk>\<^sub>c \<I>)"
 
-definition constr_sem_c ("_ \<Turnstile>\<^sub>c \<langle>_,_\<rangle>") where "\<I> \<Turnstile>\<^sub>c \<langle>S,\<theta>\<rangle> \<equiv> (\<theta> supports \<I> \<and> \<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>)"
-abbreviation constr_sem_c' ("_ \<Turnstile>\<^sub>c \<langle>_\<rangle>" 90) where "\<I> \<Turnstile>\<^sub>c \<langle>S\<rangle> \<equiv> \<I> \<Turnstile>\<^sub>c \<langle>S,Var\<rangle>"
+definition constr_sem_c (\<open>_ \<Turnstile>\<^sub>c \<langle>_,_\<rangle>\<close>) where "\<I> \<Turnstile>\<^sub>c \<langle>S,\<theta>\<rangle> \<equiv> (\<theta> supports \<I> \<and> \<lbrakk>{}; S\<rbrakk>\<^sub>c \<I>)"
+abbreviation constr_sem_c' (\<open>_ \<Turnstile>\<^sub>c \<langle>_\<rangle>\<close> 90) where "\<I> \<Turnstile>\<^sub>c \<langle>S\<rangle> \<equiv> \<I> \<Turnstile>\<^sub>c \<langle>S,Var\<rangle>"
 
 text \<open>The full constraint semantics\<close>
-fun strand_sem_d::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool" ("\<lbrakk>_; _\<rbrakk>\<^sub>d")
+fun strand_sem_d::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool" (\<open>\<lbrakk>_; _\<rbrakk>\<^sub>d\<close>)
 where
   "\<lbrakk>M; []\<rbrakk>\<^sub>d = (\<lambda>\<I>. True)"
 | "\<lbrakk>M; Send ts#S\<rbrakk>\<^sub>d = (\<lambda>\<I>. (\<forall>t \<in> set ts. M \<turnstile> t \<cdot> \<I>) \<and> \<lbrakk>M; S\<rbrakk>\<^sub>d \<I>)"
@@ -2201,8 +2201,8 @@ where
 | "\<lbrakk>M; Equality _ t t'#S\<rbrakk>\<^sub>d = (\<lambda>\<I>. t \<cdot> \<I> = t' \<cdot> \<I> \<and> \<lbrakk>M; S\<rbrakk>\<^sub>d \<I>)"
 | "\<lbrakk>M; Inequality X F#S\<rbrakk>\<^sub>d = (\<lambda>\<I>. ineq_model \<I> X F \<and> \<lbrakk>M; S\<rbrakk>\<^sub>d \<I>)"
 
-definition constr_sem_d ("_ \<Turnstile> \<langle>_,_\<rangle>") where "\<I> \<Turnstile> \<langle>S,\<theta>\<rangle> \<equiv> (\<theta> supports \<I> \<and> \<lbrakk>{}; S\<rbrakk>\<^sub>d \<I>)"
-abbreviation constr_sem_d' ("_ \<Turnstile> \<langle>_\<rangle>" 90) where "\<I> \<Turnstile> \<langle>S\<rangle> \<equiv> \<I> \<Turnstile> \<langle>S,Var\<rangle>"
+definition constr_sem_d (\<open>_ \<Turnstile> \<langle>_,_\<rangle>\<close>) where "\<I> \<Turnstile> \<langle>S,\<theta>\<rangle> \<equiv> (\<theta> supports \<I> \<and> \<lbrakk>{}; S\<rbrakk>\<^sub>d \<I>)"
+abbreviation constr_sem_d' (\<open>_ \<Turnstile> \<langle>_\<rangle>\<close> 90) where "\<I> \<Turnstile> \<langle>S\<rangle> \<equiv> \<I> \<Turnstile> \<langle>S,Var\<rangle>"
 
 lemmas strand_sem_induct = strand_sem_c.induct[case_names Nil ConsSnd ConsRcv ConsEq ConsIneq]
 
@@ -2801,7 +2801,7 @@ qed
 
 subsection \<open>Constraint Semantics (Alternative, Equivalent Version)\<close>
 text \<open>These are the constraint semantics used in the CSF 2017 paper\<close>
-fun strand_sem_c'::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool"  ("\<lbrakk>_; _\<rbrakk>\<^sub>c''") 
+fun strand_sem_c'::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool"  (\<open>\<lbrakk>_; _\<rbrakk>\<^sub>c''\<close>) 
   where
   "\<lbrakk>M; []\<rbrakk>\<^sub>c' = (\<lambda>\<I>. True)"
 | "\<lbrakk>M; Send ts#S\<rbrakk>\<^sub>c' = (\<lambda>\<I>. (\<forall>t \<in> set ts. M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile>\<^sub>c t \<cdot> \<I>) \<and> \<lbrakk>M; S\<rbrakk>\<^sub>c' \<I>)"
@@ -2809,7 +2809,7 @@ fun strand_sem_c'::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightar
 | "\<lbrakk>M; Equality _ t t'#S\<rbrakk>\<^sub>c' = (\<lambda>\<I>. t \<cdot> \<I> = t' \<cdot> \<I> \<and> \<lbrakk>M; S\<rbrakk>\<^sub>c' \<I>)"
 | "\<lbrakk>M; Inequality X F#S\<rbrakk>\<^sub>c' = (\<lambda>\<I>. ineq_model \<I> X F \<and> \<lbrakk>M; S\<rbrakk>\<^sub>c' \<I>)"
 
-fun strand_sem_d'::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool" ("\<lbrakk>_; _\<rbrakk>\<^sub>d''")
+fun strand_sem_d'::"('fun,'var) terms \<Rightarrow> ('fun,'var) strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool" (\<open>\<lbrakk>_; _\<rbrakk>\<^sub>d''\<close>)
 where
   "\<lbrakk>M; []\<rbrakk>\<^sub>d' = (\<lambda>\<I>. True)"
 | "\<lbrakk>M; Send ts#S\<rbrakk>\<^sub>d' = (\<lambda>\<I>. (\<forall>t \<in> set ts. M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> \<turnstile> t \<cdot> \<I>) \<and> \<lbrakk>M; S\<rbrakk>\<^sub>d' \<I>)"

@@ -228,7 +228,7 @@ definition hash_pro_pmf ::
   where "hash_pro_pmf k d S = map_pmf the (hash_pro_spmf k d S)"
 
 syntax
-  "_FLIPBIND"     :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow> 'b"  (infixr "=<<" 54)
+  "_FLIPBIND"     :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow> 'b"  (infixr \<open>=<<\<close> 54)
 
 syntax_consts
   "_FLIPBIND"       == Monad_Syntax.bind
@@ -489,24 +489,24 @@ end
 
 bundle pseudorandom_object_notation
 begin
-notation hash_pro ("\<H>")
-notation hash_pro_spmf ("\<H>\<^sub>S")
-notation hash_pro_pmf ("\<H>\<^sub>P")
-notation list_pro ("\<L>")
-notation nat_pro ("\<N>")
-notation geom_pro ("\<G>")
-notation prod_pro (infixr "\<times>\<^sub>P" 65)
+notation hash_pro (\<open>\<H>\<close>)
+notation hash_pro_spmf (\<open>\<H>\<^sub>S\<close>)
+notation hash_pro_pmf (\<open>\<H>\<^sub>P\<close>)
+notation list_pro (\<open>\<L>\<close>)
+notation nat_pro (\<open>\<N>\<close>)
+notation geom_pro (\<open>\<G>\<close>)
+notation prod_pro (infixr \<open>\<times>\<^sub>P\<close> 65)
 end
 
 bundle no_pseudorandom_object_notation
 begin
-no_notation hash_pro ("\<H>")
-no_notation hash_pro_spmf ("\<H>\<^sub>S")
-no_notation hash_pro_pmf ("\<H>\<^sub>P")
-no_notation list_pro ("\<L>")
-no_notation nat_pro ("\<N>")
-no_notation geom_pro ("\<G>")
-no_notation prod_pro (infixr "\<times>\<^sub>P" 65)
+no_notation hash_pro (\<open>\<H>\<close>)
+no_notation hash_pro_spmf (\<open>\<H>\<^sub>S\<close>)
+no_notation hash_pro_pmf (\<open>\<H>\<^sub>P\<close>)
+no_notation list_pro (\<open>\<L>\<close>)
+no_notation nat_pro (\<open>\<N>\<close>)
+no_notation geom_pro (\<open>\<G>\<close>)
+no_notation prod_pro (infixr \<open>\<times>\<^sub>P\<close> 65)
 end
 
 unbundle pseudorandom_object_notation

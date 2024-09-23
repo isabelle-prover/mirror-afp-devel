@@ -42,7 +42,7 @@ fun matches :: "('a, 'p) matcher \<Rightarrow> 'a match_expr \<Rightarrow> 'p \<
 
 
 inductive iptables_bigstep :: "'a ruleset \<Rightarrow> ('a, 'p) matcher \<Rightarrow> 'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool"
-  ("_,_,_\<turnstile> \<langle>_, _\<rangle> \<Rightarrow> _"  [60,60,60,20,98,98] 89)
+  (\<open>_,_,_\<turnstile> \<langle>_, _\<rangle> \<Rightarrow> _\<close>  [60,60,60,20,98,98] 89)
   for \<Gamma> and \<gamma> and p where
 skip:    "\<Gamma>,\<gamma>,p\<turnstile> \<langle>[], t\<rangle> \<Rightarrow> t" |
 accept:  "matches \<gamma> m p \<Longrightarrow> \<Gamma>,\<gamma>,p\<turnstile> \<langle>[Rule m Accept], Undecided\<rangle> \<Rightarrow> Decision FinalAllow" |
@@ -493,7 +493,7 @@ locale iptables_bigstep_fixedbackground =
   begin
 
   inductive iptables_bigstep' :: "'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool"
-    ("_\<turnstile>'' \<langle>_, _\<rangle> \<Rightarrow> _"  [60,20,98,98] 89)
+    (\<open>_\<turnstile>'' \<langle>_, _\<rangle> \<Rightarrow> _\<close>  [60,20,98,98] 89)
     for p where
   skip:    "p\<turnstile>' \<langle>[], t\<rangle> \<Rightarrow> t" |
   accept:  "matches \<gamma> m p \<Longrightarrow> p\<turnstile>' \<langle>[Rule m Accept], Undecided\<rangle> \<Rightarrow> Decision FinalAllow" |

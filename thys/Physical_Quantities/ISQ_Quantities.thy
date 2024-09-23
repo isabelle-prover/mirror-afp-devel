@@ -255,7 +255,7 @@ subsection \<open> Dimension Typed Quantities \<close>
 
 text \<open> We can now define the type of quantities with parametrised dimension types. \<close>
 
-typedef (overloaded) ('n, 'd::dim_type, 's::unit_system) QuantT ("_[_, _]" [999,0,0] 999) 
+typedef (overloaded) ('n, 'd::dim_type, 's::unit_system) QuantT (\<open>_[_, _]\<close> [999,0,0] 999) 
                      = "{x :: ('n, sdim, 's) Measurement_System. dim x = QD('d)}"
   morphisms fromQ toQ by (rule_tac x="\<lparr> mag = undefined, dim = QD('d), unit_sys = unit \<rparr>" in exI, simp)
 
@@ -278,7 +278,7 @@ definition coerceQuantT :: "'d\<^sub>2 itself \<Rightarrow> 'a['d\<^sub>1::dim_t
 [si_def]: "QD('d\<^sub>1) = QD('d\<^sub>2) \<Longrightarrow> coerceQuantT t x = (toQ (fromQ x))"
 
 syntax
-  "_QCOERCE" :: "type \<Rightarrow> logic \<Rightarrow> logic" ("QCOERCE[_]")
+  "_QCOERCE" :: "type \<Rightarrow> logic \<Rightarrow> logic" (\<open>QCOERCE[_]\<close>)
 
 syntax_consts
   "_QCOERCE" == coerceQuantT
@@ -292,10 +292,10 @@ text \<open> The standard HOL order \<^term>\<open>(\<le>)\<close> and equality 
   \<^typ>\<open>'a \<Rightarrow> 'a \<Rightarrow> bool\<close> and so they cannot compare values of different types. Consequently,
   we define a heterogeneous order and equivalence on typed quantities. \<close>
 
-lift_definition qless_eq :: "'n::order['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> bool" (infix "\<lesssim>\<^sub>Q" 50) 
+lift_definition qless_eq :: "'n::order['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> bool" (infix \<open>\<lesssim>\<^sub>Q\<close> 50) 
   is "(\<le>)" .
 
-lift_definition qequiv :: "'n['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> bool" (infix "\<cong>\<^sub>Q" 50) 
+lift_definition qequiv :: "'n['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> bool" (infix \<open>\<cong>\<^sub>Q\<close> 50) 
   is "(=)" .
 
 text \<open> These are both fundamentally the same as the usual order and equality relations, but they
@@ -350,33 +350,33 @@ text \<open> We define several operators on typed quantities. These variously co
   dimension type. Division is defined in terms of multiplication and inverse. \<close>
 
 lift_definition 
-  qtimes :: "('n::comm_ring_1)['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> 'n['a \<cdot>'b, 's]" (infixl "\<^bold>\<cdot>" 69) 
+  qtimes :: "('n::comm_ring_1)['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> 'n['a \<cdot>'b, 's]" (infixl \<open>\<^bold>\<cdot>\<close> 69) 
   is "(*)" by (simp add: dim_ty_sem_DimTimes_def times_Quantity_ext_def)
 
 lift_definition 
-  qinverse :: "('n::field)['a::dim_type, 's::unit_system] \<Rightarrow> 'n['a\<^sup>-\<^sup>1, 's]" ("(_\<^sup>-\<^sup>\<one>)" [999] 999) 
+  qinverse :: "('n::field)['a::dim_type, 's::unit_system] \<Rightarrow> 'n['a\<^sup>-\<^sup>1, 's]" (\<open>(_\<^sup>-\<^sup>\<one>)\<close> [999] 999) 
   is "inverse" by (simp add: inverse_Quantity_ext_def dim_ty_sem_DimInv_def)
 
 abbreviation (input)
-  qdivide :: "('n::field)['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> 'n['a/'b, 's]" (infixl "\<^bold>'/" 70) where
+  qdivide :: "('n::field)['a::dim_type, 's::unit_system] \<Rightarrow> 'n['b::dim_type, 's] \<Rightarrow> 'n['a/'b, 's]" (infixl \<open>\<^bold>'/\<close> 70) where
 "qdivide x y \<equiv> x \<^bold>\<cdot> y\<^sup>-\<^sup>\<one>"
 
 text \<open> We also provide some helpful notations for expressing heterogeneous powers. \<close>
 
-abbreviation qsq         ("(_)\<^sup>\<two>"  [999] 999) where "u\<^sup>\<two> \<equiv> u\<^bold>\<cdot>u"
-abbreviation qcube       ("(_)\<^sup>\<three>"  [999] 999) where "u\<^sup>\<three> \<equiv> u\<^bold>\<cdot>u\<^bold>\<cdot>u"
-abbreviation qquart      ("(_)\<^sup>\<four>"  [999] 999) where "u\<^sup>\<four> \<equiv> u\<^bold>\<cdot>u\<^bold>\<cdot>u\<^bold>\<cdot>u"
+abbreviation qsq         (\<open>(_)\<^sup>\<two>\<close>  [999] 999) where "u\<^sup>\<two> \<equiv> u\<^bold>\<cdot>u"
+abbreviation qcube       (\<open>(_)\<^sup>\<three>\<close>  [999] 999) where "u\<^sup>\<three> \<equiv> u\<^bold>\<cdot>u\<^bold>\<cdot>u"
+abbreviation qquart      (\<open>(_)\<^sup>\<four>\<close>  [999] 999) where "u\<^sup>\<four> \<equiv> u\<^bold>\<cdot>u\<^bold>\<cdot>u\<^bold>\<cdot>u"
 
-abbreviation qneq_sq     ("(_)\<^sup>-\<^sup>\<two>" [999] 999) where "u\<^sup>-\<^sup>\<two> \<equiv> (u\<^sup>\<two>)\<^sup>-\<^sup>\<one>"
-abbreviation qneq_cube   ("(_)\<^sup>-\<^sup>\<three>" [999] 999) where "u\<^sup>-\<^sup>\<three> \<equiv> (u\<^sup>\<three>)\<^sup>-\<^sup>\<one>"
-abbreviation qneq_quart  ("(_)\<^sup>-\<^sup>\<four>" [999] 999) where "u\<^sup>-\<^sup>\<four> \<equiv> (u\<^sup>\<three>)\<^sup>-\<^sup>\<one>"
+abbreviation qneq_sq     (\<open>(_)\<^sup>-\<^sup>\<two>\<close> [999] 999) where "u\<^sup>-\<^sup>\<two> \<equiv> (u\<^sup>\<two>)\<^sup>-\<^sup>\<one>"
+abbreviation qneq_cube   (\<open>(_)\<^sup>-\<^sup>\<three>\<close> [999] 999) where "u\<^sup>-\<^sup>\<three> \<equiv> (u\<^sup>\<three>)\<^sup>-\<^sup>\<one>"
+abbreviation qneq_quart  (\<open>(_)\<^sup>-\<^sup>\<four>\<close> [999] 999) where "u\<^sup>-\<^sup>\<four> \<equiv> (u\<^sup>\<three>)\<^sup>-\<^sup>\<one>"
 
 text \<open> Analogous to the \<^const>\<open>scaleR\<close> operator for vectors, we define the following scalar
   multiplication that scales an existing quantity by a numeric value. This operator is
   especially important for the representation of quantity values, which consist of a numeric
   value and a unit. \<close>
 
-lift_definition scaleQ :: "'a \<Rightarrow> 'a::comm_ring_1['d::dim_type, 's::unit_system] \<Rightarrow> 'a['d, 's]" (infixr "*\<^sub>Q" 63)
+lift_definition scaleQ :: "'a \<Rightarrow> 'a::comm_ring_1['d::dim_type, 's::unit_system] \<Rightarrow> 'a['d, 's]" (infixr \<open>*\<^sub>Q\<close> 63)
   is "\<lambda> r x. \<lparr> mag = r * mag x, dim = QD('d), unit_sys = unit \<rparr>" by simp
 
 text \<open> Finally, we instantiate the arithmetic types classes where possible. We do not instantiate
@@ -399,7 +399,7 @@ end
 text \<open> The following specialised one element has both magnitude and dimension 1: it is a 
   dimensionless quantity. \<close>
 
-abbreviation qone :: "'n::one[\<one>, 's::unit_system]" ("\<one>") where "qone \<equiv> 1"
+abbreviation qone :: "'n::one[\<one>, 's::unit_system]" (\<open>\<one>\<close>) where "qone \<equiv> 1"
 
 text \<open> Unlike for semantic quantities, the plus operator on typed quantities is total, since the
   type system ensures that the dimensions (and the dimension types) must be the same. \<close>

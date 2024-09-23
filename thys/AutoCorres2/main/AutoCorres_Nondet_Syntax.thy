@@ -10,7 +10,7 @@ hide_const L2Defs.gets_theE
 
 
 
-no_notation L1Valid.validE ("\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)")
+no_notation L1Valid.validE (\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
 hide_const L1Valid.validE
 
 
@@ -21,7 +21,7 @@ definition gets_theE ::
 section \<open>Legacy syntax layer to mimic the nondet monad\<close>
 
 abbreviation (input) bindE:: 
-  "('e,'a,'s) exn_monad \<Rightarrow> ('a \<Rightarrow> ('e, 'b, 's) exn_monad) \<Rightarrow> ('e, 'b, 's) exn_monad"  (infixl ">>=E" 60) where 
+  "('e,'a,'s) exn_monad \<Rightarrow> ('a \<Rightarrow> ('e, 'b, 's) exn_monad) \<Rightarrow> ('e, 'b, 's) exn_monad"  (infixl \<open>>>=E\<close> 60) where 
   "bindE \<equiv> bind"
 
 abbreviation (input) bind_nd:: 
@@ -65,13 +65,13 @@ abbreviation (input) whileLoopE::
 
 abbreviation (input) handleE':: 
   "('e, 'a, 's) exn_monad \<Rightarrow> ('e \<Rightarrow> ('f, 'a, 's) exn_monad) \<Rightarrow> ('f, 'a, 's) exn_monad" 
-  (infix "<handle2>" 10)
+  (infix \<open><handle2>\<close> 10)
   where
   "handleE' \<equiv> catch"
 
 abbreviation (input) handleE:: 
   "('e, 'a, 's) exn_monad \<Rightarrow> ('e \<Rightarrow> ('e, 'a, 's) exn_monad) \<Rightarrow> ('e, 'a, 's) exn_monad" 
-  (infix "<handle>" 10)
+  (infix \<open><handle>\<close> 10)
   where
   "handleE \<equiv> catch"
 
@@ -79,14 +79,14 @@ nonterminal
   dobinds and dobind and nobind
 
 syntax (input)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ <-/ _)" 10)
-  ""           :: "dobind => dobinds"                 ("_")
-  "_nobind"    :: "'a => dobind"                      ("_")
-  "_dobinds"   :: "[dobind, dobinds] => dobinds"      ("(_);//(_)")
+  "_dobind"    :: "[pttrn, 'a] => dobind"             (\<open>(_ \<leftarrow>/ _)\<close> 10)
+  "_dobind"    :: "[pttrn, 'a] => dobind"             (\<open>(_ <-/ _)\<close> 10)
+  ""           :: "dobind => dobinds"                 (\<open>_\<close>)
+  "_nobind"    :: "'a => dobind"                      (\<open>_\<close>)
+  "_dobinds"   :: "[dobind, dobinds] => dobinds"      (\<open>(_);//(_)\<close>)
 
-  "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
-  "_doE" :: "[dobinds, 'a] => 'a"  ("(doE ((_);//(_))//odE)" 100)
+  "_do"        :: "[dobinds, 'a] => 'a"               (\<open>(do ((_);//(_))//od)\<close> 100)
+  "_doE" :: "[dobinds, 'a] => 'a"  (\<open>(doE ((_);//(_))//odE)\<close> 100)
 
 syntax_consts
   "_do" \<rightleftharpoons> bind_nd and
@@ -105,7 +105,7 @@ term "doE x <- f; g x odE"
 term "do x <- f; g x od"
 
 syntax
-  "_doO" :: "[dobinds, 'a] => 'a"  ("(DO (_);//   (_)//OD)" 100)
+  "_doO" :: "[dobinds, 'a] => 'a"  (\<open>(DO (_);//   (_)//OD)\<close> 100)
 
 syntax_consts
   "_doO" == obind

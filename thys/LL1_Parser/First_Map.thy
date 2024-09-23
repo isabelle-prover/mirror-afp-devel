@@ -18,7 +18,7 @@ fun firstSym :: "('n, 't) symbol \<Rightarrow> ('n, 't) first_map \<Rightarrow> 
 | "firstSym (NT x) fi = findOrEmpty x fi"
 
 
-definition list_union :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixr "@@" 65) where
+definition list_union :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixr \<open>@@\<close> 65) where
   "list_union ls1 ls2 = ls1 @ (filter (\<lambda>x. x \<notin> set ls1) ls2)"
 
 lemma in_atleast1_list: "a \<in> set (ls1 @@ ls2) \<Longrightarrow> a \<in> set ls1 \<or> a \<in> set ls2"

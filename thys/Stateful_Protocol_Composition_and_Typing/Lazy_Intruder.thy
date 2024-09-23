@@ -16,9 +16,9 @@ text \<open>The lazy intruder constraint reduction system, defined as a relation
 inductive_set LI_rel::
     "((('fun,'var) strand \<times> (('fun,'var) subst)) \<times>
        ('fun,'var) strand \<times> (('fun,'var) subst)) set"
-  and LI_rel' (infix "\<leadsto>" 50)
-  and LI_rel_trancl (infix "\<leadsto>\<^sup>+" 50)
-  and LI_rel_rtrancl (infix "\<leadsto>\<^sup>*" 50)
+  and LI_rel' (infix \<open>\<leadsto>\<close> 50)
+  and LI_rel_trancl (infix \<open>\<leadsto>\<^sup>+\<close> 50)
+  and LI_rel_rtrancl (infix \<open>\<leadsto>\<^sup>*\<close> 50)
 where
   "A \<leadsto> B \<equiv> (A,B) \<in> LI_rel"
 | "A \<leadsto>\<^sup>+ B \<equiv> (A,B) \<in> LI_rel\<^sup>+"

@@ -11,7 +11,7 @@ Boolean algebras extended with such operators give us different sorts of topolog
 subsection \<open>Positive Conditions\<close>
 
 text\<open>Monotonicity (MONO).\<close>
-definition MONO::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("MONO")
+definition MONO::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>MONO\<close>)
   where "MONO \<phi> \<equiv> \<forall>A B. A \<^bold>\<le> B \<longrightarrow> \<phi> A \<^bold>\<le> \<phi> B"
 
 named_theorems cond (*to group together axiomatic conditions*)
@@ -22,9 +22,9 @@ lemma MONO_dual: "MONO \<phi> = MONO \<phi>\<^sup>d" by (smt (verit) BA_cp MONO_
 
 
 text\<open>Expansive/extensive (EXPN) and its dual contractive (CNTR).\<close>
-definition EXPN::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("EXPN")
+definition EXPN::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>EXPN\<close>)
   where "EXPN \<phi>  \<equiv> \<forall>A. A \<^bold>\<le> \<phi> A"
-definition CNTR::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("CNTR")
+definition CNTR::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>CNTR\<close>)
   where "CNTR \<phi> \<equiv> \<forall>A. \<phi> A \<^bold>\<le> A"
 
 declare EXPN_def[cond] CNTR_def[cond]
@@ -35,9 +35,9 @@ lemma EXPN_CNTR_dual2: "CNTR \<phi> = EXPN \<phi>\<^sup>d" by (simp add: EXPN_CN
 
 
 text\<open>Normality (NORM) and its dual (DNRM).\<close>
-definition NORM::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("NORM")
+definition NORM::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>NORM\<close>)
   where "NORM \<phi>  \<equiv> (\<phi> \<^bold>\<bottom>) \<^bold>= \<^bold>\<bottom>"
-definition DNRM::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("DNRM")
+definition DNRM::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>DNRM\<close>)
   where "DNRM \<phi> \<equiv> (\<phi> \<^bold>\<top>) \<^bold>= \<^bold>\<top>" 
 
 declare NORM_def[cond] DNRM_def[cond]
@@ -52,11 +52,11 @@ lemma CNTR_impl_NORM: "CNTR \<phi> \<longrightarrow> NORM \<phi>" by (simp add: 
 
 
 text\<open>Idempotence (IDEM).\<close>
-definition IDEM::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("IDEM") 
+definition IDEM::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>IDEM\<close>) 
   where "IDEM \<phi>  \<equiv> \<forall>A. \<phi>(\<phi> A) \<^bold>= (\<phi> A)"
-definition IDEM_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("IDEM\<^sup>a") 
+definition IDEM_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>IDEM\<^sup>a\<close>) 
   where "IDEM\<^sup>a \<phi> \<equiv> \<forall>A. \<phi>(\<phi> A) \<^bold>\<le> (\<phi> A)"
-definition IDEM_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("IDEM\<^sup>b") 
+definition IDEM_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>IDEM\<^sup>b\<close>) 
   where "IDEM\<^sup>b \<phi> \<equiv> \<forall>A.  (\<phi> A) \<^bold>\<le> \<phi>(\<phi> A)"
 
 declare IDEM_def[cond] IDEM_a_def[cond] IDEM_b_def[cond]
@@ -79,19 +79,19 @@ text\<open>Or having the property of collapsing the range and the set of fixed-p
 lemma IDEM_range_fp_char: "IDEM \<phi> = (\<lbrakk>\<phi> _\<rbrakk> = fp \<phi>)" unfolding cond range_def fixpoints_def by (metis setequ_ext)
 
 text\<open>Distribution over joins or additivity (ADDI).\<close>
-definition ADDI::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("ADDI")
+definition ADDI::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>ADDI\<close>)
   where "ADDI \<phi>   \<equiv> \<forall>A B. \<phi>(A \<^bold>\<or> B) \<^bold>= (\<phi> A) \<^bold>\<or> (\<phi> B)" 
-definition ADDI_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("ADDI\<^sup>a")
+definition ADDI_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>ADDI\<^sup>a\<close>)
   where "ADDI\<^sup>a \<phi> \<equiv> \<forall>A B. \<phi>(A \<^bold>\<or> B) \<^bold>\<le> (\<phi> A) \<^bold>\<or> (\<phi> B)"
-definition ADDI_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("ADDI\<^sup>b")
+definition ADDI_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>ADDI\<^sup>b\<close>)
   where "ADDI\<^sup>b \<phi> \<equiv> \<forall>A B.  (\<phi> A) \<^bold>\<or> (\<phi> B) \<^bold>\<le> \<phi>(A \<^bold>\<or> B)" 
 
 text\<open>Distribution over meets or multiplicativity (MULT).\<close>
-definition MULT::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("MULT") 
+definition MULT::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>MULT\<close>) 
   where "MULT \<phi>   \<equiv> \<forall>A B. \<phi>(A \<^bold>\<and> B) \<^bold>= (\<phi> A) \<^bold>\<and> (\<phi> B)" 
-definition MULT_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("MULT\<^sup>a")
+definition MULT_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>MULT\<^sup>a\<close>)
   where "MULT\<^sup>a \<phi> \<equiv> \<forall>A B. \<phi>(A \<^bold>\<and> B) \<^bold>\<le> (\<phi> A) \<^bold>\<and> (\<phi> B)" 
-definition MULT_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("MULT\<^sup>b")
+definition MULT_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>MULT\<^sup>b\<close>)
   where "MULT\<^sup>b \<phi> \<equiv> \<forall>A B. (\<phi> A) \<^bold>\<and> (\<phi> B) \<^bold>\<le> \<phi>(A \<^bold>\<and> B)"
 
 declare ADDI_def[cond] ADDI_a_def[cond] ADDI_b_def[cond]

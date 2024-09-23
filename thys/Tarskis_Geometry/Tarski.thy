@@ -15,7 +15,7 @@ text \<open>The axioms, and all theorems beginning with \emph{th}
   theorems in \<^cite>\<open>"schwabhauser"\<close>.\<close>
 
 locale tarski_first3 =
-  fixes C :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool"     ("_ _ \<congruent> _ _" [99,99,99,99] 50)
+  fixes C :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool"     (\<open>_ _ \<congruent> _ _\<close> [99,99,99,99] 50)
   assumes A1: "\<forall>a b. a b \<congruent> b a"
   and A2: "\<forall>a b p q r s. a b \<congruent> p q \<and> a b \<congruent> r s \<longrightarrow> p q \<congruent> r s"
   and A3: "\<forall>a b c. a b \<congruent> c c \<longrightarrow> a = b"
@@ -48,7 +48,7 @@ subsection "Semimetric spaces satisfy the first three axioms"
 
 context semimetric
 begin
-  definition smC :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool" ("_ _ \<congruent>\<^sub>s\<^sub>m _ _" [99,99,99,99] 50)
+  definition smC :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool" (\<open>_ _ \<congruent>\<^sub>s\<^sub>m _ _\<close> [99,99,99,99] 50)
     where [simp]: "a b \<congruent>\<^sub>s\<^sub>m c d \<equiv> dist a b = dist c d"
 end
 
@@ -63,7 +63,7 @@ subsection "Some consequences of the first three axioms"
 
 context tarski_first3
 begin
-  notation %invisible C ("_ _ \<equiv> _ _" [99,99,99,99] 50)
+  notation %invisible C (\<open>_ _ \<equiv> _ _\<close> [99,99,99,99] 50)
   lemma A1': "a b \<congruent> b a"
     by (simp add: A1)
 

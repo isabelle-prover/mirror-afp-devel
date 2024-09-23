@@ -13,13 +13,13 @@ subsection \<open>The Sandwich Natural Transformation\<close>
 
 locale Yoneda = "functor" + into_set +
   assumes "TERM (AA :: ('o,'a,'m)category_scheme)"
-  fixes sandwich :: "['o,'a,'o] \<Rightarrow> 'a set_arrow"  ("\<sigma>'(_,_')")
+  fixes sandwich :: "['o,'a,'o] \<Rightarrow> 'a set_arrow"  (\<open>\<sigma>'(_,_')\<close>)
   defines "sandwich A a \<equiv> (\<lambda>B\<in>Ob. \<lparr>
   set_dom=Hom A B,
   set_func=(\<lambda>f\<in>Hom A B. set_func (F\<^bsub>\<a>\<^esub> f) a),
   set_cod=F\<^bsub>\<o>\<^esub> B
   \<rparr>)"
-  fixes unsandwich :: "['o,'o \<Rightarrow> 'a set_arrow] \<Rightarrow> 'a" ("\<sigma>\<^sup>\<leftarrow>'(_,_')")
+  fixes unsandwich :: "['o,'o \<Rightarrow> 'a set_arrow] \<Rightarrow> 'a" (\<open>\<sigma>\<^sup>\<leftarrow>'(_,_')\<close>)
   defines "unsandwich A u \<equiv> set_func (u A) (Id A)"
 
 lemma (in Yoneda) F_into_set: 
@@ -335,7 +335,7 @@ definition
   "bij_on f A B \<longleftrightarrow> inj_on f A & surj_on f A B"
 
 definition
-  equinumerous :: "['a set, 'b set] \<Rightarrow> bool"  (infix "\<cong>" 40) where
+  equinumerous :: "['a set, 'b set] \<Rightarrow> bool"  (infix \<open>\<cong>\<close> 40) where
   "equinumerous A B \<longleftrightarrow> (\<exists>f. bij_betw f A B)"
 
 lemma bij_betw_eq:

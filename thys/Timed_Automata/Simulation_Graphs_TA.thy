@@ -7,7 +7,7 @@ section \<open>Instantiation of Simulation Locales\<close>
 inductive step_trans ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> (('c, 't) cconstraint \<times> 'a \<times> 'c list)
   \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile>\<^sub>t \<langle>_, _\<rangle> \<rightarrow>\<^bsub>_\<^esub> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile>\<^sub>t \<langle>_, _\<rangle> \<rightarrow>\<^bsub>_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "\<lbrakk>A \<turnstile> l \<longrightarrow>\<^bsup>g,a,r\<^esup> l'; u \<turnstile> g; u' \<turnstile> inv_of A l'; u' = [r \<rightarrow> 0]u\<rbrakk>
   \<Longrightarrow> (A \<turnstile>\<^sub>t \<langle>l, u\<rangle> \<rightarrow>\<^bsub>(g,a,r)\<^esub> \<langle>l', u'\<rangle>)"
@@ -15,14 +15,14 @@ where
 inductive step_trans' ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) cval \<Rightarrow> ('c, 't) cconstraint \<times> 'a \<times> 'c list
   \<Rightarrow> 's \<Rightarrow> ('c, 't) cval \<Rightarrow> bool"
-("_ \<turnstile>'' \<langle>_, _\<rangle> \<rightarrow>\<^bsup>_\<^esup> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_ \<turnstile>'' \<langle>_, _\<rangle> \<rightarrow>\<^bsup>_\<^esup> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step': "A \<turnstile> \<langle>l, u\<rangle> \<rightarrow>\<^bsup>d\<^esup> \<langle>l', u'\<rangle> \<Longrightarrow> A \<turnstile>\<^sub>t \<langle>l', u'\<rangle> \<rightarrow>\<^bsub>t\<^esub> \<langle>l'', u''\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l, u\<rangle> \<rightarrow>\<^bsup>t\<^esup> \<langle>l'', u''\<rangle>"
 
 inductive step_trans_z ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) zone
   \<Rightarrow> (('c, 't) cconstraint \<times> 'a \<times> 'c list) action \<Rightarrow> 's \<Rightarrow> ('c, 't) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step_trans_t_z:
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsup>\<tau>\<^esup> \<langle>l, Z\<^sup>\<up> \<inter> {u. u \<turnstile> inv_of A l}\<rangle>" |
@@ -33,7 +33,7 @@ where
 inductive step_trans_z' ::
   "('a, 'c, 't, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, ('t::time)) zone \<Rightarrow> (('c, 't) cconstraint \<times> 'a \<times> 'c list)
   \<Rightarrow> 's \<Rightarrow> ('c, 't) zone \<Rightarrow> bool"
-("_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step_trans_z':
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsup>\<tau>\<^esup> \<langle>l, Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z'\<rangle> \<leadsto>\<^bsup>\<upharpoonleft>t\<^esup> \<langle>l', Z''\<rangle> \<Longrightarrow> A \<turnstile>' \<langle>l, Z\<rangle> \<leadsto>\<^bsup>t\<^esup> \<langle>l', Z''\<rangle>"
@@ -133,7 +133,7 @@ begin
 inductive step_trans_r ::
   "('a, 'c, t, 's) ta \<Rightarrow> _ \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> (('c, t) cconstraint \<times> 'a \<times> 'c list) action
   \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>" [61,61,61,61,61] 61)
+(\<open>_,_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>\<close> [61,61,61,61,61] 61)
 where
   step_trans_t_r:
   "A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto>\<^bsup>\<tau>\<^esup> \<langle>l,R'\<rangle>" if
@@ -160,7 +160,7 @@ lemma step_r_step_trans_r_action:
 inductive step_trans_r' ::
   "('a, 'c, t, 's) ta \<Rightarrow> _ \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> ('c, t) cconstraint \<times> 'a \<times> 'c list
   \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_,_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>" [61,61,61,61,61] 61)
+(\<open>_,_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsup>_\<^esup> \<langle>_, _\<rangle>\<close> [61,61,61,61,61] 61)
 where
   "A,\<R> \<turnstile>' \<langle>l,R\<rangle> \<leadsto>\<^bsup>t\<^esup> \<langle>l',R''\<rangle>" if "A,\<R> \<turnstile> \<langle>l,R\<rangle> \<leadsto>\<^bsup>\<tau>\<^esup> \<langle>l,R'\<rangle>" "A,\<R> \<turnstile> \<langle>l,R'\<rangle> \<leadsto>\<^bsup>\<upharpoonleft>t\<^esup> \<langle>l', R''\<rangle>"
 
@@ -612,8 +612,8 @@ locale Regions_TA = Regions X _ _  k for X :: "'c set" and k :: "'s \<Rightarrow
 begin
 
 (* XXX Bundle this? *)
-no_notation Regions_Beta.part ("[_]\<^sub>_" [61,61] 61)
-notation part'' ("[_]\<^sub>_" [61,61] 61)
+no_notation Regions_Beta.part (\<open>[_]\<^sub>_\<close> [61,61] 61)
+notation part'' (\<open>[_]\<^sub>_\<close> [61,61] 61)
 
 (* XXX Move *)
 lemma step_z_beta'_state_set1:

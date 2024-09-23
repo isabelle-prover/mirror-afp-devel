@@ -57,36 +57,36 @@ text\<open>
 subsection\<open>The Core Policy Combinators: Allow and Deny Everything\<close>
 
 definition
-   deny_pfun    :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("AllD")
+   deny_pfun    :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" (\<open>AllD\<close>)
    where 
   "deny_pfun pf \<equiv> (\<lambda> x. case pf x of
                           \<lfloor>y\<rfloor> \<Rightarrow> \<lfloor>deny (y)\<rfloor>
                          |\<bottom> \<Rightarrow> \<bottom>)"
 
 definition
-   allow_pfun    :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ( "AllA")
+   allow_pfun    :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ( \<open>AllA\<close>)
    where 
   "allow_pfun pf \<equiv> (\<lambda> x. case pf x of
                           \<lfloor>y\<rfloor> \<Rightarrow> \<lfloor>allow (y)\<rfloor>
                          |\<bottom> \<Rightarrow> \<bottom>)"
 
 syntax
-  "_allow_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("A\<^sub>p")
+  "_allow_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" (\<open>A\<^sub>p\<close>)
 syntax_consts
   "_allow_pfun" \<rightleftharpoons> allow_pfun
 translations
   "A\<^sub>p f" \<rightleftharpoons> "AllA f"
 
 syntax
-  "_deny_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("D\<^sub>p")
+  "_deny_pfun"  :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" (\<open>D\<^sub>p\<close>)
 syntax_consts
   "_deny_pfun" \<rightleftharpoons> deny_pfun
 translations
   "D\<^sub>p f" \<rightleftharpoons> "AllD f"
 
 notation
-   "deny_pfun"  (binder "\<forall>D" 10) and
-   "allow_pfun" (binder "\<forall>A" 10)
+   "deny_pfun"  (binder \<open>\<forall>D\<close> 10) and
+   "allow_pfun" (binder \<open>\<forall>A\<close> 10)
 
 lemma AllD_norm[simp]: "deny_pfun (id o (\<lambda>x. \<lfloor>x\<rfloor>)) = (\<forall>Dx. \<lfloor>x\<rfloor>)"
   by(simp add:id_def comp_def)
@@ -119,26 +119,26 @@ lemma neq_Allow_Deny: "pf \<noteq> \<emptyset> \<Longrightarrow> (deny_pfun pf) 
 
 subsection\<open>Common Instances\<close>
 
-definition allow_all_fun :: "('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("A\<^sub>f")
+definition allow_all_fun :: "('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" (\<open>A\<^sub>f\<close>)
   where "allow_all_fun f =  allow_pfun (Some o f)"
 
-definition deny_all_fun :: "('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("D\<^sub>f")
+definition deny_all_fun :: "('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" (\<open>D\<^sub>f\<close>)
   where "deny_all_fun f \<equiv> deny_pfun (Some o f)"
 
 definition
-   deny_all_id   :: "'\<alpha> \<mapsto> '\<alpha>" ("D\<^sub>I") where 
+   deny_all_id   :: "'\<alpha> \<mapsto> '\<alpha>" (\<open>D\<^sub>I\<close>) where 
   "deny_all_id  \<equiv> deny_pfun (id o Some)"
 
 definition
-   allow_all_id    :: "'\<alpha> \<mapsto> '\<alpha>" ("A\<^sub>I") where
+   allow_all_id    :: "'\<alpha> \<mapsto> '\<alpha>" (\<open>A\<^sub>I\<close>) where
   "allow_all_id  \<equiv> allow_pfun (id o Some)"
 
 definition 
-  allow_all    :: "('\<alpha> \<mapsto> unit)"  ("A\<^sub>U") where 
+  allow_all    :: "('\<alpha> \<mapsto> unit)"  (\<open>A\<^sub>U\<close>) where 
   "allow_all p  = \<lfloor>allow ()\<rfloor>" 
 
 definition 
-  deny_all :: "('\<alpha> \<mapsto> unit)" ("D\<^sub>U") where
+  deny_all :: "('\<alpha> \<mapsto> unit)" (\<open>D\<^sub>U\<close>) where
   "deny_all p   = \<lfloor>deny ()\<rfloor>"              
 
 text\<open>... and resulting properties:\<close>
@@ -281,7 +281,7 @@ text\<open>
   The latter rule also applies to allow- and deny-override.
 \<close>
 
-definition dom_restrict :: "['\<alpha> set, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixr "\<triangleleft>" 55)
+definition dom_restrict :: "['\<alpha> set, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixr \<open>\<triangleleft>\<close> 55)
 where     "S \<triangleleft> p \<equiv> (\<lambda>x. if x \<in> S then p x else \<bottom>)"
 
 lemma dom_dom_restrict[simp] : "dom(S \<triangleleft> p) = S \<inter> dom p"
@@ -308,10 +308,10 @@ lemma dom_restrict_inter[simp] : "T \<triangleleft> S \<triangleleft> p = T \<in
       dest: neq_commute[THEN iffD1,THEN not_None_eq [THEN iffD1]])
   done
 
-definition ran_restrict :: "['\<alpha>\<mapsto>'\<beta>,'\<beta> decision set] \<Rightarrow> '\<alpha> \<mapsto>'\<beta>" (infixr "\<triangleright>" 55)
+definition ran_restrict :: "['\<alpha>\<mapsto>'\<beta>,'\<beta> decision set] \<Rightarrow> '\<alpha> \<mapsto>'\<beta>" (infixr \<open>\<triangleright>\<close> 55)
 where     "p \<triangleright> S \<equiv> (\<lambda>x. if p x \<in> (Some`S) then p x else \<bottom>)"
 
-definition ran_restrict2 :: "['\<alpha>\<mapsto>'\<beta>,'\<beta> decision set] \<Rightarrow> '\<alpha> \<mapsto>'\<beta>" (infixr "\<triangleright>2" 55)
+definition ran_restrict2 :: "['\<alpha>\<mapsto>'\<beta>,'\<beta> decision set] \<Rightarrow> '\<alpha> \<mapsto>'\<beta>" (infixr \<open>\<triangleright>2\<close> 55)
 where     "p \<triangleright>2 S \<equiv> (\<lambda>x. if (the (p x)) \<in> (S) then p x else \<bottom>)"
 
 lemma "ran_restrict = ran_restrict2"

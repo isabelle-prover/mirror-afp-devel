@@ -251,7 +251,7 @@ named_theorems rep_simps "Simplifications for representation functions"
 
 text\<open>Definitions of interval containment and word representation
 repe w r iff word w encodes real number r\<close>
-inductive repe ::"word \<Rightarrow> real \<Rightarrow> bool" (infix "\<equiv>\<^sub>E" 10)
+inductive repe ::"word \<Rightarrow> real \<Rightarrow> bool" (infix \<open>\<equiv>\<^sub>E\<close> 10)
 where 
   repPOS_INF:"r \<ge> real_of_int (sint POS_INF) \<Longrightarrow> repe POS_INF r" 
 | repNEG_INF:"r \<le> real_of_int (sint NEG_INF) \<Longrightarrow> repe NEG_INF r"
@@ -264,7 +264,7 @@ and repeNeg_simps[rep_simps]:"repe NEG_INF r"
 and repeInt_simps[rep_simps]:"repe w (sint w)"
 
 text\<open>repU w r if w represents an upper bound of r\<close>
-definition repU ::"word \<Rightarrow> real \<Rightarrow> bool" (infix "\<equiv>\<^sub>U" 10)
+definition repU ::"word \<Rightarrow> real \<Rightarrow> bool" (infix \<open>\<equiv>\<^sub>U\<close> 10)
 where "repU w r \<equiv> \<exists> r'. r' \<ge> r \<and> repe w r'"
 
 lemma repU_leq:"repU w r \<Longrightarrow> r' \<le> r \<Longrightarrow> repU w r'"
@@ -272,7 +272,7 @@ lemma repU_leq:"repU w r \<Longrightarrow> r' \<le> r \<Longrightarrow> repU w r
   using order_trans by auto
 
 text\<open>repU w r if w represents a lower bound of r\<close>
-definition repL ::"word \<Rightarrow> real \<Rightarrow> bool" (infix "\<equiv>\<^sub>L" 10)
+definition repL ::"word \<Rightarrow> real \<Rightarrow> bool" (infix \<open>\<equiv>\<^sub>L\<close> 10)
 where "repL w r \<equiv> \<exists> r'. r' \<le> r \<and> repe w r'"
 
 lemma repL_geq:"repL w r \<Longrightarrow> r' \<ge> r \<Longrightarrow> repL w r'"
@@ -280,7 +280,7 @@ lemma repL_geq:"repL w r \<Longrightarrow> r' \<ge> r \<Longrightarrow> repL w r
   using order_trans by auto
 
 text\<open>repP (l,u) r  iff l and u encode lower and upper bounds of r\<close>
-definition repP ::"word * word \<Rightarrow> real \<Rightarrow> bool" (infix "\<equiv>\<^sub>P" 10)
+definition repP ::"word * word \<Rightarrow> real \<Rightarrow> bool" (infix \<open>\<equiv>\<^sub>P\<close> 10)
 where "repP w r \<equiv> let (w1, w2) = w in repL w1 r \<and> repU w2 r" 
 
 

@@ -31,16 +31,16 @@ locale ordered_term =
     ord_term_lin: linorder ord_term ord_term_strict
       for pair_of_term::"'t \<Rightarrow> ('a::comm_powerprod \<times> 'k::{the_min,wellorder})"
       and term_of_pair::"('a \<times> 'k) \<Rightarrow> 't"
-      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<preceq>" 50)
-      and ord_strict (infixl "\<prec>" 50)
-      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<preceq>\<^sub>t" 50)
-      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<prec>\<^sub>t" 50) +
+      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 50)
+      and ord_strict (infixl \<open>\<prec>\<close> 50)
+      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<preceq>\<^sub>t\<close> 50)
+      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<prec>\<^sub>t\<close> 50) +
 		assumes splus_mono: "v \<preceq>\<^sub>t w \<Longrightarrow> t \<oplus> v \<preceq>\<^sub>t t \<oplus> w"
     assumes ord_termI: "pp_of_term v \<preceq> pp_of_term w \<Longrightarrow> component_of_term v \<le> component_of_term w \<Longrightarrow> v \<preceq>\<^sub>t w"
 begin
 
-abbreviation ord_term_conv (infixl "\<succeq>\<^sub>t" 50) where "ord_term_conv \<equiv> (\<preceq>\<^sub>t)\<inverse>\<inverse>"
-abbreviation ord_term_strict_conv (infixl "\<succ>\<^sub>t" 50) where "ord_term_strict_conv \<equiv> (\<prec>\<^sub>t)\<inverse>\<inverse>"
+abbreviation ord_term_conv (infixl \<open>\<succeq>\<^sub>t\<close> 50) where "ord_term_conv \<equiv> (\<preceq>\<^sub>t)\<inverse>\<inverse>"
+abbreviation ord_term_strict_conv (infixl \<open>\<succ>\<^sub>t\<close> 50) where "ord_term_strict_conv \<equiv> (\<prec>\<^sub>t)\<inverse>\<inverse>"
 
 text \<open>The definition of @{locale ordered_term} only covers TOP and POT orderings. 
   These two types of orderings are the only interesting ones.\<close>
@@ -1767,10 +1767,10 @@ qed
 
 subsection \<open>Order Relation on Polynomials\<close>
 
-definition ord_strict_p :: "('t \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" (infixl "\<prec>\<^sub>p" 50) where
+definition ord_strict_p :: "('t \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" (infixl \<open>\<prec>\<^sub>p\<close> 50) where
   "p \<prec>\<^sub>p q \<longleftrightarrow> (\<exists>v. lookup p v = 0 \<and> lookup q v \<noteq> 0 \<and> (\<forall>u. v \<prec>\<^sub>t u \<longrightarrow> lookup p u = lookup q u))"
 
-definition ord_p :: "('t \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" (infixl "\<preceq>\<^sub>p" 50) where
+definition ord_p :: "('t \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool" (infixl \<open>\<preceq>\<^sub>p\<close> 50) where
   "ord_p p q \<equiv> (p \<prec>\<^sub>p q \<or> p = q)"
 
 lemma ord_strict_pI:
@@ -2887,10 +2887,10 @@ locale gd_term =
     ordered_term pair_of_term term_of_pair ord ord_strict ord_term ord_term_strict
       for pair_of_term::"'t \<Rightarrow> ('a::graded_dickson_powerprod \<times> 'k::{the_min,wellorder})"
       and term_of_pair::"('a \<times> 'k) \<Rightarrow> 't"
-      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<preceq>" 50)
-      and ord_strict (infixl "\<prec>" 50)
-      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<preceq>\<^sub>t" 50)
-      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<prec>\<^sub>t" 50)
+      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 50)
+      and ord_strict (infixl \<open>\<prec>\<close> 50)
+      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<preceq>\<^sub>t\<close> 50)
+      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<prec>\<^sub>t\<close> 50)
 begin
 
 sublocale gd_powerprod ..
@@ -3657,10 +3657,10 @@ locale od_term =
     ordered_term pair_of_term term_of_pair ord ord_strict ord_term ord_term_strict
       for pair_of_term::"'t \<Rightarrow> ('a::dickson_powerprod \<times> 'k::{the_min,wellorder})"
       and term_of_pair::"('a \<times> 'k) \<Rightarrow> 't"
-      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<preceq>" 50)
-      and ord_strict (infixl "\<prec>" 50)
-      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<preceq>\<^sub>t" 50)
-      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<prec>\<^sub>t" 50)
+      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 50)
+      and ord_strict (infixl \<open>\<prec>\<close> 50)
+      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<preceq>\<^sub>t\<close> 50)
+      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<prec>\<^sub>t\<close> 50)
 begin
 
 sublocale gd_term ..

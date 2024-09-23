@@ -16,7 +16,7 @@ datatype
 \<comment> \<open>type inference rules\<close>
 inductive
   has_type :: "[ctxt, expr, typ] => bool"
-                  ("((_) \<turnstile>/ (_) :: (_))" [60,0,60] 60)
+                  (\<open>((_) \<turnstile>/ (_) :: (_))\<close> [60,0,60] 60)
 where
   VarI: "[| n < length A; t <| A!n |] ==> A \<turnstile> Var n :: t"
 | AbsI: "[| (mk_scheme t1)#A \<turnstile> e :: t2 |] ==> A \<turnstile> Abs e :: t1 -> t2"

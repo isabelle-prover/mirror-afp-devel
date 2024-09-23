@@ -407,7 +407,7 @@ lemma newton_step_closed:
   using  divide_closed unfolding newton_step_def 
   using f'a_closed f'a_nonzero fa_closed local.a_closed by blast
   
-fun newton_seq :: "padic_int_seq" ("ns") where
+fun newton_seq :: "padic_int_seq" (\<open>ns\<close>) where
 "newton_seq 0 = a"|
 "newton_seq (Suc n) = newton_step (newton_seq n)"
 
@@ -419,7 +419,7 @@ lemma hensel_factor_id:
         fa_closed hensel_hypothesis_weakened mult_comm 
   by auto
 
-definition hensel_factor ("t") where
+definition hensel_factor (\<open>t\<close>) where
 "hensel_factor = val_Zp (f\<bullet>a) - 2*(val_Zp (f'\<bullet>a))"
 
 lemma t_pos[simp]:

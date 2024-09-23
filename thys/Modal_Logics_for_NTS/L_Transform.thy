@@ -125,7 +125,7 @@ subsection \<open>Satisfaction\<close>
 context effect_nominal_ts
 begin
 
-  fun L_satisfies :: "('state,'effect) L_state \<Rightarrow> 'pred \<Rightarrow> bool" (infix "\<turnstile>\<^sub>L" 70) where
+  fun L_satisfies :: "('state,'effect) L_state \<Rightarrow> 'pred \<Rightarrow> bool" (infix \<open>\<turnstile>\<^sub>L\<close> 70) where
     "AC (_,_,P) \<turnstile>\<^sub>L \<phi> \<longleftrightarrow> P \<turnstile> \<phi>"
   | "EF _       \<turnstile>\<^sub>L \<phi> \<longleftrightarrow> False"
 
@@ -153,7 +153,7 @@ subsection \<open>Transitions\<close>
 context effect_nominal_ts
 begin
 
-  fun L_transition :: "('state,'effect) L_state \<Rightarrow> (('act,'effect) L_action, ('state,'effect) L_state) residual \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>L" 70) where
+  fun L_transition :: "('state,'effect) L_state \<Rightarrow> (('act,'effect) L_action, ('state,'effect) L_state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>L\<close> 70) where
     "AC (f,F,P) \<rightarrow>\<^sub>L \<alpha>P' \<longleftrightarrow> (\<exists>\<alpha> P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> \<alpha>P' = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle> \<and> bn \<alpha> \<sharp>* (F,f))" \<comment> \<open>note the freshness condition\<close>
   | "EF (F,P) \<rightarrow>\<^sub>L \<alpha>P' \<longleftrightarrow> (\<exists>f. f \<in>\<^sub>f\<^sub>s F \<and> \<alpha>P' = \<langle>Eff f, AC (f, F, \<langle>f\<rangle>P)\<rangle>)"
 
@@ -576,7 +576,7 @@ begin
   interpretation L_transform: nominal_ts "(\<turnstile>\<^sub>L)" "(\<rightarrow>\<^sub>L)"
   by unfold_locales (fact L_satisfies_eqvt, fact L_transition_eqvt)
 
-  notation L_transform.bisimilar (infix "\<sim>\<cdot>\<^sub>L" 100)
+  notation L_transform.bisimilar (infix \<open>\<sim>\<cdot>\<^sub>L\<close> 100)
 
   text \<open>$F/L$-bisimilarity is equivalent to bisimilarity in the $L$-transform.\<close>
 
@@ -773,16 +773,16 @@ cardinality assumptions provided by indexed nominal transition systems.\<close>
 
 locale L_transform_indexed_effect_nominal_ts = indexed_effect_nominal_ts L satisfies transition effect_apply
   for L :: "('act::bn) \<times> ('effect::fs) fs_set \<times> 'effect \<Rightarrow> 'effect fs_set" 
-  and satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
-  and transition :: "'state \<Rightarrow> ('act,'state) residual \<Rightarrow> bool" (infix "\<rightarrow>" 70)
-  and effect_apply :: "'effect \<Rightarrow> 'state \<Rightarrow> 'state" ("\<langle>_\<rangle>_" [0,101] 100) +
+  and satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 70)
+  and transition :: "'state \<Rightarrow> ('act,'state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<close> 70)
+  and effect_apply :: "'effect \<Rightarrow> 'state \<Rightarrow> 'state" (\<open>\<langle>_\<rangle>_\<close> [0,101] 100) +
   assumes card_idx_L_transform_state: "|UNIV::('state, 'effect) L_state set| <o |UNIV::'idx set|"
 begin
 
   interpretation L_transform: indexed_nominal_ts "(\<turnstile>\<^sub>L)" "(\<rightarrow>\<^sub>L)"
     by unfold_locales (fact L_satisfies_eqvt, fact L_transition_eqvt, fact card_idx_perm, fact card_idx_L_transform_state)
 
-  notation L_transform.bisimilar (infix "\<sim>\<cdot>\<^sub>L" 100)
+  notation L_transform.bisimilar (infix \<open>\<sim>\<cdot>\<^sub>L\<close> 100)
 
   theorem "EF (F,P) \<sim>\<cdot>\<^sub>L EF(F,Q) \<longrightarrow> P \<sim>\<cdot>[F] Q"
   proof

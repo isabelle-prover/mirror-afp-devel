@@ -5,8 +5,8 @@ theory Substitution
 begin 
 
 primrec
-  subst_trm :: "[trm, trm, nat] \<Rightarrow> trm"  ("_[_'/_]\<^sup>T" [300, 0, 0] 300) and
-  subst_cmd ::  "[cmd, trm, nat] \<Rightarrow> cmd" ("_[_'/_]\<^sup>C" [300, 0, 0] 300)
+  subst_trm :: "[trm, trm, nat] \<Rightarrow> trm"  (\<open>_[_'/_]\<^sup>T\<close> [300, 0, 0] 300) and
+  subst_cmd ::  "[cmd, trm, nat] \<Rightarrow> cmd" (\<open>_[_'/_]\<^sup>C\<close> [300, 0, 0] 300)
 where
     subst_LVar: "(`i)[s/k]\<^sup>T = 
           (if k < i then `(i-1) else if k = i then s else (`i))"
@@ -28,8 +28,8 @@ lemma ctxt_app_subst:
 text\<open>The structural substitution is based on Geuvers and al.~\<^cite>\<open>"DBLP:journals/apal/GeuversKM13"\<close>.\<close>
 
 primrec
-  struct_subst_trm :: "[trm, nat, nat, ctxt] \<Rightarrow> trm"  ("_[_=_ _]\<^sup>T" [300, 0, 0, 0] 300) and
-  struct_subst_cmd ::  "[cmd, nat, nat, ctxt] \<Rightarrow> cmd" ("_[_=_ _]\<^sup>C" [300, 0, 0, 0] 300)
+  struct_subst_trm :: "[trm, nat, nat, ctxt] \<Rightarrow> trm"  (\<open>_[_=_ _]\<^sup>T\<close> [300, 0, 0, 0] 300) and
+  struct_subst_cmd ::  "[cmd, nat, nat, ctxt] \<Rightarrow> cmd" (\<open>_[_=_ _]\<^sup>C\<close> [300, 0, 0, 0] 300)
 where
   struct_LVar: "(`i)[j=k E]\<^sup>T = (`i)" |
   struct_Lbd: "(\<lambda> T : t)[j=k E]\<^sup>T = (\<lambda> T : (t[j=k (liftL_ctxt E 0)]\<^sup>T))" |

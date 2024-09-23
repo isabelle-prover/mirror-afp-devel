@@ -3747,7 +3747,7 @@ fun is_io_reduction_state :: "('a,'b,'c) fsm \<Rightarrow> 'a \<Rightarrow> ('d,
 
 abbreviation(input) "is_io_reduction A B \<equiv> is_io_reduction_state A (initial A) B (initial B)" 
 notation 
-  is_io_reduction ("_ \<preceq> _")
+  is_io_reduction (\<open>_ \<preceq> _\<close>)
 
 
 fun is_io_reduction_state_on_inputs :: "('a,'b,'c) fsm \<Rightarrow> 'a \<Rightarrow> 'b list set \<Rightarrow> ('d,'b,'c) fsm \<Rightarrow> 'd \<Rightarrow> bool" where
@@ -3755,7 +3755,7 @@ fun is_io_reduction_state_on_inputs :: "('a,'b,'c) fsm \<Rightarrow> 'a \<Righta
 
 abbreviation(input) "is_io_reduction_on_inputs A U B \<equiv> is_io_reduction_state_on_inputs A (initial A) U B (initial B)" 
 notation 
-  is_io_reduction_on_inputs ("_ \<preceq>\<lbrakk>_\<rbrakk> _")
+  is_io_reduction_on_inputs (\<open>_ \<preceq>\<lbrakk>_\<rbrakk> _\<close>)
 
 
 

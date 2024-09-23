@@ -8,7 +8,7 @@ begin
 
 context env begin
 
-definition weakCongruence :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<doteq>\<^sub>c _" [70, 70] 65)
+definition weakCongruence :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<doteq>\<^sub>c _\<close> [70, 70] 65)
 where 
   "P \<doteq>\<^sub>c Q \<equiv> \<forall>\<Psi> \<sigma>. wellFormedSubst \<sigma> \<longrightarrow> \<Psi> \<rhd> P[<\<sigma>>] \<doteq> Q[<\<sigma>>]"
 

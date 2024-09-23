@@ -12,8 +12,8 @@ text \<open>
 datatype nterm =
   Nconst name |
   Nvar name |
-  Nabs name nterm ("\<Lambda>\<^sub>n _. _" [0, 50] 50) |
-  Napp nterm nterm (infixl "$\<^sub>n" 70)
+  Nabs name nterm (\<open>\<Lambda>\<^sub>n _. _\<close> [0, 50] 50) |
+  Napp nterm nterm (infixl \<open>$\<^sub>n\<close> 70)
 
 derive linorder nterm
 

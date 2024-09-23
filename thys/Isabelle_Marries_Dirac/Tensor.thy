@@ -23,7 +23,7 @@ vectors (resp. matrices) as formalized in [2].
 
 subsection \<open>The Kronecker Product of Complex Vectors\<close>
 
-definition tensor_vec:: "complex Matrix.vec \<Rightarrow> complex Matrix.vec \<Rightarrow> complex Matrix.vec" (infixl "\<otimes>" 63) 
+definition tensor_vec:: "complex Matrix.vec \<Rightarrow> complex Matrix.vec \<Rightarrow> complex Matrix.vec" (infixl \<open>\<otimes>\<close> 63) 
 where "tensor_vec u v \<equiv> vec_of_list (mult.vec_vec_Tensor (*) (list_of_vec u) (list_of_vec v))"
 
 subsection \<open>The Tensor Product of Complex Matrices\<close>
@@ -156,7 +156,7 @@ proof -
   ultimately show ?thesis by(simp add: vec_eq_iff u_def)
 qed
 
-definition tensor_mat:: "[complex Matrix.mat, complex Matrix.mat] \<Rightarrow> complex Matrix.mat" (infixl "\<Otimes>" 63) where 
+definition tensor_mat:: "[complex Matrix.mat, complex Matrix.mat] \<Rightarrow> complex Matrix.mat" (infixl \<open>\<Otimes>\<close> 63) where 
 "tensor_mat A B \<equiv> 
   mat_of_cols_list (dim_row A * dim_row B) (mult.Tensor (*) (mat_to_cols_list A) (mat_to_cols_list B))"
   

@@ -274,11 +274,11 @@ subsection \<open> Building block: Sums \<close>
 text \<open> We prove that we can lift the ADS construction through sums.\<close>
 
 type_synonym ('a\<^sub>h, 'b\<^sub>h) sum\<^sub>h = "'a\<^sub>h + 'b\<^sub>h"
-type_notation sum\<^sub>h (infixr "+\<^sub>h" 10)
+type_notation sum\<^sub>h (infixr \<open>+\<^sub>h\<close> 10)
 
 type_synonym ('a\<^sub>m, 'b\<^sub>m) sum\<^sub>m = "'a\<^sub>m + 'b\<^sub>m"
   \<comment> \<open>If a functor does not introduce blindable positions, then we don't need the type variable copies.\<close>
-type_notation sum\<^sub>m (infixr "+\<^sub>m" 10)
+type_notation sum\<^sub>m (infixr \<open>+\<^sub>m\<close> 10)
 
 (************************************************************)
 subsubsection \<open> Hashes \<close>
@@ -392,11 +392,11 @@ subsection \<open> Building Block: Products\<close>
 text \<open> We prove that we can lift the ADS construction through products.\<close>
 
 type_synonym ('a\<^sub>h, 'b\<^sub>h) prod\<^sub>h = "'a\<^sub>h \<times> 'b\<^sub>h"
-type_notation prod\<^sub>h ("(_ \<times>\<^sub>h/ _)" [21, 20] 20)
+type_notation prod\<^sub>h (\<open>(_ \<times>\<^sub>h/ _)\<close> [21, 20] 20)
 
 type_synonym ('a\<^sub>m, 'b\<^sub>m) prod\<^sub>m = "'a\<^sub>m \<times> 'b\<^sub>m"
   \<comment> \<open>If a functor does not introduce blindable positions, then we don't need the type variable copies.\<close>
-type_notation prod\<^sub>m ("(_ \<times>\<^sub>m/ _)" [21, 20] 20)
+type_notation prod\<^sub>m (\<open>(_ \<times>\<^sub>m/ _)\<close> [21, 20] 20)
 
 (************************************************************)
 subsubsection \<open> Hashes \<close>
@@ -848,10 +848,10 @@ subsection \<open>Building block: function space\<close>
 text \<open> We prove that we can lift the ADS construction through functions.\<close>
 
 type_synonym ('a, 'b\<^sub>h) fun\<^sub>h = "'a \<Rightarrow> 'b\<^sub>h"
-type_notation fun\<^sub>h (infixr "\<Rightarrow>\<^sub>h" 0)
+type_notation fun\<^sub>h (infixr \<open>\<Rightarrow>\<^sub>h\<close> 0)
 
 type_synonym ('a, 'b\<^sub>m) fun\<^sub>m = "'a \<Rightarrow> 'b\<^sub>m"
-type_notation fun\<^sub>m (infixr "\<Rightarrow>\<^sub>m" 0)
+type_notation fun\<^sub>m (infixr \<open>\<Rightarrow>\<^sub>m\<close> 0)
 
 (************************************************************)
 subsubsection \<open> Hashes \<close>

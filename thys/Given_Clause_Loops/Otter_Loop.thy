@@ -25,7 +25,7 @@ primrec nat_of_OL_label :: "OL_label \<Rightarrow> nat" where
 | "nat_of_OL_label YY = 1"
 | "nat_of_OL_label Active = 0"
 
-definition OL_Prec_L :: "OL_label \<Rightarrow> OL_label \<Rightarrow> bool" (infix "\<sqsubset>L" 50) where
+definition OL_Prec_L :: "OL_label \<Rightarrow> OL_label \<Rightarrow> bool" (infix \<open>\<sqsubset>L\<close> 50) where
   "OL_Prec_L l l' \<longleftrightarrow> nat_of_OL_label l < nat_of_OL_label l'"
 
 locale otter_loop = labeled_lifting_intersection Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
@@ -43,8 +43,8 @@ locale otter_loop = labeled_lifting_intersection Bot_F Inf_F Bot_G Q entails_q I
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
     and \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
   + fixes
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50)
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50)
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
     wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
@@ -86,7 +86,7 @@ sublocale gc?: given_clause Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q Red_F_
   apply (fact inf_have_prems)
   done
 
-notation gc.step (infix "\<leadsto>GC" 50)
+notation gc.step (infix \<open>\<leadsto>GC\<close> 50)
 
 
 subsection \<open>Basic Definitions and Lemmas\<close>
@@ -102,7 +102,7 @@ lemma state_alt_def:
    (\<lambda>C. (C, Active)) ` A"
   by auto
 
-inductive OL :: "('f \<times> OL_label) set \<Rightarrow> ('f \<times> OL_label) set \<Rightarrow> bool" (infix "\<leadsto>OL" 50) where
+inductive OL :: "('f \<times> OL_label) set \<Rightarrow> ('f \<times> OL_label) set \<Rightarrow> bool" (infix \<open>\<leadsto>OL\<close> 50) where
   choose_n: "C \<notin> N \<Longrightarrow> state (N \<union> {C}, {}, P, {}, A) \<leadsto>OL state (N, {C}, P, {}, A)"
 | delete_fwd: "C \<in> no_labels.Red_F (P \<union> A) \<or> (\<exists>C' \<in> P \<union> A. C' \<preceq>\<cdot> C) \<Longrightarrow>
     state (N, {C}, P, {}, A) \<leadsto>OL state (N, {}, P, {}, A)"

@@ -17,7 +17,7 @@ text \<open>The upcoming definition of symmetric modulo
   One limitation is that the symmetric modulo is only working properly,
   if the modulus is a positive number.\<close>
 
-definition sym_mod :: "int \<Rightarrow> int \<Rightarrow> int" (infixl "symmod" 70) where
+definition sym_mod :: "int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>symmod\<close> 70) where
   "sym_mod x y = poly_mod.inv_M y (x mod y)"
 
 lemma sym_mod_code[code]: "sym_mod x y = (let m = x mod y
@@ -77,7 +77,7 @@ lemma sym_mod_0_imp_dvd [dest!]:
   using pos_mod_bound [of b a] apply auto
   done
 
-definition sym_div :: "int \<Rightarrow> int \<Rightarrow> int" (infixl "symdiv" 70) where
+definition sym_div :: "int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>symdiv\<close> 70) where
   "sym_div x y = (let d = x div y; m = x mod y in 
        if m + m \<le> y then d else d + 1)"
 

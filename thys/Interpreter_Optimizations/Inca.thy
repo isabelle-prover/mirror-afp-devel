@@ -48,7 +48,7 @@ begin
 
 subsection \<open>Semantics\<close>
 
-inductive step (infix "\<rightarrow>" 55) where
+inductive step (infix \<open>\<rightarrow>\<close> 55) where
   step_push:
     "next_instr (F_get F) f l pc = Some (IPush d) \<Longrightarrow>
     State F H (Frame f l pc R \<Sigma> # st) \<rightarrow> State F H (Frame f l (Suc pc) R (d # \<Sigma>) # st)" |

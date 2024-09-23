@@ -242,7 +242,7 @@ setup \<open>Sign.parent_path\<close>
 
 paragraph\<open> \S4, Appendix C parametric specifications \<close>
 
-definition pag :: "('s rel \<Rightarrow> 's pred) \<Rightarrow> 's rel set \<Rightarrow> 's rel \<Rightarrow> ('s rel \<Rightarrow> 'v \<Rightarrow> 's pred) \<Rightarrow> (sequential, 's, 'v) spec" ("\<lbrace>_\<rbrace>, _/ \<turnstile>\<^sub>P _, \<lbrace>_\<rbrace>" [0,0,0,0] 100) where
+definition pag :: "('s rel \<Rightarrow> 's pred) \<Rightarrow> 's rel set \<Rightarrow> 's rel \<Rightarrow> ('s rel \<Rightarrow> 'v \<Rightarrow> 's pred) \<Rightarrow> (sequential, 's, 'v) spec" (\<open>\<lbrace>_\<rbrace>, _/ \<turnstile>\<^sub>P _, \<lbrace>_\<rbrace>\<close> [0,0,0,0] 100) where
   "\<lbrace>P\<rbrace>, As \<turnstile>\<^sub>P G, \<lbrace>Q\<rbrace> = (\<Sqinter>A\<in>As. \<lbrace>P A\<rbrace>, A \<turnstile> G, \<lbrace>Q A\<rbrace>)"
 
 setup \<open>Sign.mandatory_path "pag"\<close>

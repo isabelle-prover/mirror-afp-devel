@@ -20,7 +20,7 @@ A Herbrand interpretation is a set of ground atoms that are to be considered tru
 
 type_synonym 'a interp = "'a set"
 
-definition true_lit :: "'a interp \<Rightarrow> 'a literal \<Rightarrow> bool" (infix "\<Turnstile>l" 50) where
+definition true_lit :: "'a interp \<Rightarrow> 'a literal \<Rightarrow> bool" (infix \<open>\<Turnstile>l\<close> 50) where
   "I \<Turnstile>l L \<longleftrightarrow> (if is_pos L then (\<lambda>P. P) else Not) (atm_of L \<in> I)"
 
 lemma true_lit_simps[simp]:
@@ -31,7 +31,7 @@ lemma true_lit_simps[simp]:
 lemma true_lit_iff[iff]: "I \<Turnstile>l L \<longleftrightarrow> (\<exists>A. L = Pos A \<and> A \<in> I \<or> L = Neg A \<and> A \<notin> I)"
   by (cases L) simp+
 
-definition true_cls :: "'a interp \<Rightarrow> 'a clause \<Rightarrow> bool" (infix "\<Turnstile>" 50) where
+definition true_cls :: "'a interp \<Rightarrow> 'a clause \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) where
   "I \<Turnstile> C \<longleftrightarrow> (\<exists>L \<in># C. I \<Turnstile>l L)"
 
 lemma true_cls_empty[iff]: "\<not> I \<Turnstile> {#}"
@@ -68,7 +68,7 @@ lemma neg_literal_notin_imp_true_cls[intro]: "Neg A \<in># C \<Longrightarrow> A
 lemma pos_neg_in_imp_true: "Pos A \<in># C \<Longrightarrow> Neg A \<in># C \<Longrightarrow> I \<Turnstile> C"
   using true_cls_def by blast
 
-definition true_clss :: "'a interp \<Rightarrow> 'a clause set \<Rightarrow> bool" (infix "\<Turnstile>s" 50) where
+definition true_clss :: "'a interp \<Rightarrow> 'a clause set \<Rightarrow> bool" (infix \<open>\<Turnstile>s\<close> 50) where
   "I \<Turnstile>s CC \<longleftrightarrow> (\<forall>C \<in> CC. I \<Turnstile> C)"
 
 lemma true_clss_empty[iff]: "I \<Turnstile>s {}"
@@ -104,7 +104,7 @@ lemma satisfiable_antimono: "CC \<subseteq> DD \<Longrightarrow> satisfiable DD 
 lemma unsatisfiable_mono: "CC \<subseteq> DD \<Longrightarrow> \<not> satisfiable CC \<Longrightarrow> \<not> satisfiable DD"
   using satisfiable_antimono by blast
 
-definition true_cls_mset :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix "\<Turnstile>m" 50) where
+definition true_cls_mset :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix \<open>\<Turnstile>m\<close> 50) where
   "I \<Turnstile>m CC \<longleftrightarrow> (\<forall>C \<in># CC. I \<Turnstile> C)"
 
 lemma true_cls_mset_empty[iff]: "I \<Turnstile>m {#}"

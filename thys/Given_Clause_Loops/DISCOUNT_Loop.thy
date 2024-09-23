@@ -26,7 +26,7 @@ primrec nat_of_DL_label :: "DL_label \<Rightarrow> nat" where
 | "nat_of_DL_label YY = 1"
 | "nat_of_DL_label Active = 0"
 
-definition DL_Prec_L :: "DL_label \<Rightarrow> DL_label \<Rightarrow> bool" (infix "\<sqsubset>L" 50) where
+definition DL_Prec_L :: "DL_label \<Rightarrow> DL_label \<Rightarrow> bool" (infix \<open>\<sqsubset>L\<close> 50) where
   "DL_Prec_L l l' \<longleftrightarrow> nat_of_DL_label l < nat_of_DL_label l'"
 
 locale discount_loop = labeled_lifting_intersection Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
@@ -44,8 +44,8 @@ locale discount_loop = labeled_lifting_intersection Bot_F Inf_F Bot_G Q entails_
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
     and \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
   + fixes
-    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
-    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50)
+    Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
+    Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50)
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
     wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
@@ -88,14 +88,14 @@ sublocale lgc?: lazy_given_clause Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q 
   using static_ref_comp statically_complete_calculus.statically_complete apply fastforce
   done
 
-notation lgc.step (infix "\<leadsto>LGC" 50)
+notation lgc.step (infix \<open>\<leadsto>LGC\<close> 50)
 
 
 subsection \<open>Basic Definitions and Lemmas\<close>
 
-abbreviation c_dot_succ :: "'f \<Rightarrow> 'f \<Rightarrow> bool " (infix "\<cdot>\<succ>" 50) where
+abbreviation c_dot_succ :: "'f \<Rightarrow> 'f \<Rightarrow> bool " (infix \<open>\<cdot>\<succ>\<close> 50) where
   "C \<cdot>\<succ> C' \<equiv> C' \<prec>\<cdot> C"
-abbreviation sqsupset :: "DL_label \<Rightarrow> DL_label \<Rightarrow> bool" (infix "\<sqsupset>L" 50) where
+abbreviation sqsupset :: "DL_label \<Rightarrow> DL_label \<Rightarrow> bool" (infix \<open>\<sqsupset>L\<close> 50) where
   "l \<sqsupset>L l' \<equiv> l' \<sqsubset>L l"
 
 fun labeled_formulas_of :: " 'f set \<times> 'f set \<times> 'f set \<Rightarrow> ('f \<times> DL_label) set " where
@@ -118,7 +118,7 @@ lemma state_alt_def:
 
 inductive
   DL :: "'f inference set \<times> ('f \<times> DL_label) set \<Rightarrow> 'f inference set \<times> ('f \<times> DL_label) set \<Rightarrow> bool"
-  (infix "\<leadsto>DL" 50)
+  (infix \<open>\<leadsto>DL\<close> 50)
 where
   compute_infer: "\<iota> \<in> no_labels.Red_I (A \<union> {C}) \<Longrightarrow>
     state (T \<union> {\<iota>}, P, {}, A) \<leadsto>DL state (T, P, {C}, A)"

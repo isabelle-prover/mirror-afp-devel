@@ -50,7 +50,7 @@ reductions, which have already been presented in \secref{sec:evaluation} and
 \<close>
 
 inductive
-  eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<longmapsto>\<^sub>c" 50)
+  eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl \<open>\<longmapsto>\<^sub>c\<close> 50)
 where
   E_Ctxt: "t \<longmapsto>\<^sub>c t' \<Longrightarrow> E \<in> ctxt \<Longrightarrow> E t \<longmapsto>\<^sub>c E t'"
 | E_Abs: "v\<^sub>2 \<in> value \<Longrightarrow> (\<lambda>:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet> v\<^sub>2 \<longmapsto>\<^sub>c t\<^sub>1\<^sub>2[0 \<mapsto> v\<^sub>2]"

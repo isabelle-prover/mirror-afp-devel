@@ -84,7 +84,7 @@ lemma Abs_assn_inverse' [rewrite]: "proper y \<Longrightarrow> Rep_assn (Abs_ass
 
 lemma proper_Rep_assn [forward]: "proper (Rep_assn P)" using Rep_assn by auto
 
-definition models :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Turnstile>" 50) where [rewrite_bidir]:
+definition models :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) where [rewrite_bidir]:
   "h \<Turnstile> P \<longleftrightarrow> aseval (Rep_assn P) h"
 
 lemma models_in_range [resolve]: "pHeap h as \<Turnstile> P \<Longrightarrow> in_range (h,as)" by auto2
@@ -96,7 +96,7 @@ definition one_assn :: assn where [rewrite]:
   "1 \<equiv> Abs_assn (Assn (\<lambda>h. addrOf h = {}))"
 instance .. end
 
-abbreviation one_assn :: assn ("emp") where "one_assn \<equiv> 1"
+abbreviation one_assn :: assn (\<open>emp\<close>) where "one_assn \<equiv> 1"
 
 lemma one_assn_rule [rewrite]: "h \<Turnstile> emp \<longleftrightarrow> addrOf h = {}" by auto2
 setup \<open>del_prfstep_thm @{thm one_assn_def}\<close>
@@ -165,7 +165,7 @@ end
 
 subsubsection \<open>Existential Quantification\<close>
 
-definition ex_assn :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder "\<exists>\<^sub>A" 11) where [rewrite]:
+definition ex_assn :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder \<open>\<exists>\<^sub>A\<close> 11) where [rewrite]:
   "(\<exists>\<^sub>Ax. P x) = Abs_assn (Assn (\<lambda>h. \<exists>x. h \<Turnstile> P x))"
 
 lemma mod_ex_dist [rewrite]: "(h \<Turnstile> (\<exists>\<^sub>Ax. P x)) \<longleftrightarrow> (\<exists>x. h \<Turnstile> P x)" by auto2
@@ -184,7 +184,7 @@ lemma ex_distrib_star: "(\<exists>\<^sub>Ax. P x * Q) = (\<exists>\<^sub>Ax. P x
 
 subsubsection \<open>Pointers\<close>
 
-definition sngr_assn :: "'a::heap ref \<Rightarrow> 'a \<Rightarrow> assn" (infix "\<mapsto>\<^sub>r" 82) where [rewrite]:
+definition sngr_assn :: "'a::heap ref \<Rightarrow> 'a \<Rightarrow> assn" (infix \<open>\<mapsto>\<^sub>r\<close> 82) where [rewrite]:
   "r \<mapsto>\<^sub>r x = Abs_assn (Assn (
     \<lambda>h. Ref.get (heapOf h) r = x \<and> addrOf h = {addr_of_ref r} \<and> addr_of_ref r < lim (heapOf h)))"
 
@@ -192,7 +192,7 @@ lemma sngr_assn_rule [rewrite]:
   "pHeap h as \<Turnstile> r \<mapsto>\<^sub>r x \<longleftrightarrow> (Ref.get h r = x \<and> as = {addr_of_ref r} \<and> addr_of_ref r < lim h)" by auto2
 setup \<open>del_prfstep_thm @{thm sngr_assn_def}\<close>
 
-definition snga_assn :: "'a::heap array \<Rightarrow> 'a list \<Rightarrow> assn" (infix "\<mapsto>\<^sub>a" 82) where [rewrite]:
+definition snga_assn :: "'a::heap array \<Rightarrow> 'a list \<Rightarrow> assn" (infix \<open>\<mapsto>\<^sub>a\<close> 82) where [rewrite]:
   "r \<mapsto>\<^sub>a x = Abs_assn (Assn (
     \<lambda>h. Array.get (heapOf h) r = x \<and> addrOf h = {addr_of_array r} \<and> addr_of_array r < lim (heapOf h)))"
 
@@ -202,13 +202,13 @@ setup \<open>del_prfstep_thm @{thm snga_assn_def}\<close>
 
 subsubsection \<open>Pure Assertions\<close>
 
-definition pure_assn :: "bool \<Rightarrow> assn" ("\<up>") where [rewrite]:
+definition pure_assn :: "bool \<Rightarrow> assn" (\<open>\<up>\<close>) where [rewrite]:
   "\<up>b = Abs_assn (Assn (\<lambda>h. addrOf h = {} \<and> b))"
 
 lemma pure_assn_rule [rewrite]: "h \<Turnstile> \<up>b \<longleftrightarrow> (addrOf h = {} \<and> b)" by auto2
 setup \<open>del_prfstep_thm @{thm pure_assn_def}\<close>
 
-definition top_assn :: assn ("true") where [rewrite]:
+definition top_assn :: assn (\<open>true\<close>) where [rewrite]:
   "top_assn = Abs_assn (Assn in_range_assn)"
 
 lemma top_assn_rule [rewrite]: "pHeap h as \<Turnstile> true \<longleftrightarrow> in_range (h, as)" by auto2
@@ -218,7 +218,7 @@ setup \<open>del_prfstep_thm @{thm models_def}\<close>
 
 subsubsection \<open>Properties of assertions\<close>
 
-abbreviation bot_assn :: assn ("false") where "bot_assn \<equiv> \<up>False"
+abbreviation bot_assn :: assn (\<open>false\<close>) where "bot_assn \<equiv> \<up>False"
 
 lemma top_assn_reduce: "true * true = true"
 @proof
@@ -239,7 +239,7 @@ lemma pure_conj: "\<up>(P \<and> Q) = \<up>P * \<up>Q" by auto2
 
 subsubsection \<open>Entailment and its properties\<close>
 
-definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>A" 10) where [rewrite]:
+definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix \<open>\<Longrightarrow>\<^sub>A\<close> 10) where [rewrite]:
   "(P \<Longrightarrow>\<^sub>A Q) \<longleftrightarrow> (\<forall>h. h \<Turnstile> P \<longrightarrow> h \<Turnstile> Q)"
 
 lemma entails_triv: "A \<Longrightarrow>\<^sub>A A" by auto2
@@ -295,7 +295,7 @@ subsection \<open>Definition of hoare triple, and the frame rule.\<close>
 definition new_addrs :: "heap \<Rightarrow> addr set \<Rightarrow> heap \<Rightarrow> addr set" where [rewrite]:
   "new_addrs h as h' = as \<union> {a. lim h \<le> a \<and> a < lim h'}"
 
-definition hoare_triple :: "assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> bool" ("<_>/ _/ <_>") where [rewrite]:
+definition hoare_triple :: "assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> bool" (\<open><_>/ _/ <_>\<close>) where [rewrite]:
   "<P> c <Q> \<longleftrightarrow> (\<forall>h as \<sigma> r. pHeap h as \<Turnstile> P \<longrightarrow> run c (Some h) \<sigma> r \<longrightarrow>
     (\<sigma> \<noteq> None \<and> pHeap (the \<sigma>) (new_addrs h as (the \<sigma>)) \<Turnstile> Q r \<and> relH {a . a < lim h \<and> a \<notin> as} h (the \<sigma>) \<and>
      lim h \<le> lim (the \<sigma>)))"
@@ -307,7 +307,7 @@ lemma hoare_tripleD [forward]:
   by auto2
 setup \<open>del_prfstep_thm_eqforward @{thm hoare_triple_def}\<close>
 
-abbreviation hoare_triple' :: "assn \<Rightarrow> 'r Heap \<Rightarrow> ('r \<Rightarrow> assn) \<Rightarrow> bool" ("<_> _ <_>\<^sub>t") where
+abbreviation hoare_triple' :: "assn \<Rightarrow> 'r Heap \<Rightarrow> ('r \<Rightarrow> assn) \<Rightarrow> bool" (\<open><_> _ <_>\<^sub>t\<close>) where
   "<P> c <Q>\<^sub>t \<equiv> <P> c <\<lambda>r. Q r * true>"
 
 theorem frame_rule [backward]:
@@ -471,10 +471,10 @@ setup \<open>del_simple_datatype "pheap"\<close>
 subsection \<open>Definition of procedures\<close>
 
 text \<open>ASCII abbreviations for ML files.\<close>
-abbreviation (input) ex_assn_ascii :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder "EXA" 11)
+abbreviation (input) ex_assn_ascii :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder \<open>EXA\<close> 11)
   where "ex_assn_ascii \<equiv> ex_assn"
 
-abbreviation (input) models_ascii :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix "|=" 50)
+abbreviation (input) models_ascii :: "pheap \<Rightarrow> assn \<Rightarrow> bool" (infix \<open>|=\<close> 50)
   where "h |= P \<equiv> h \<Turnstile> P"
 
 ML_file "sep_util.ML"

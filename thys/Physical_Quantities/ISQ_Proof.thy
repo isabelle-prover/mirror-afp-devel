@@ -6,7 +6,7 @@ begin
 
 named_theorems si_transfer
 
-definition magQ :: "'a['u::dim_type, 's::unit_system] \<Rightarrow> 'a" ("\<lbrakk>_\<rbrakk>\<^sub>Q") where
+definition magQ :: "'a['u::dim_type, 's::unit_system] \<Rightarrow> 'a" (\<open>\<lbrakk>_\<rbrakk>\<^sub>Q\<close>) where
 [si_def]: "magQ x = mag (fromQ x)"
 
 definition dimQ :: "'a['u::dim_type, 's::unit_system] \<Rightarrow> Dimension" where

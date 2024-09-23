@@ -232,7 +232,7 @@ abbreviation false :: "'cmp bta"
 
 subsubsection "Implication"  
   
-definition imp :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<longrightarrow>\<^sup>b" 10)
+definition imp :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl \<open>\<longrightarrow>\<^sup>b\<close> 10)
   where "\<gamma> \<longrightarrow>\<^sup>b \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"
 
 lemma impI[intro!]:
@@ -304,7 +304,7 @@ qed
 
 subsubsection "Disjunction"  
     
-definition disj :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<or>\<^sup>b" 15)
+definition disj :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl \<open>\<or>\<^sup>b\<close> 15)
   where "\<gamma> \<or>\<^sup>b \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"
 
 lemma disjI[intro!]:
@@ -350,7 +350,7 @@ qed
 
 subsubsection "Conjunction"
   
-definition conj :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<and>\<^sup>b" 20)
+definition conj :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl \<open>\<and>\<^sup>b\<close> 20)
   where "\<gamma> \<and>\<^sup>b \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"
 
 lemma conjI[intro!]:
@@ -420,7 +420,7 @@ qed
 
 subsubsection "Negation"
   
-definition neg :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<not>\<^sup>b _" [19] 19)
+definition neg :: "('cmp bta) \<Rightarrow> ('cmp bta)" (\<open>\<not>\<^sup>b _\<close> [19] 19)
   where "\<not>\<^sup>b \<gamma> \<equiv> \<lambda> t n. \<not> \<gamma> t n"
     
 lemma negI[intro!]:
@@ -483,7 +483,7 @@ qed
 subsubsection "Quantifiers"
 
 definition all :: "('a \<Rightarrow> ('cmp bta))
-  \<Rightarrow> ('cmp bta)" (binder "\<forall>\<^sub>b" 10)
+  \<Rightarrow> ('cmp bta)" (binder \<open>\<forall>\<^sub>b\<close> 10)
   where "all P \<equiv> \<lambda>t n. (\<forall>y. (P y t n))"
 
 lemma allI[intro!]:
@@ -549,7 +549,7 @@ next
 qed
   
 definition ex :: "('a \<Rightarrow> ('cmp bta))
-  \<Rightarrow> ('cmp bta)" (binder "\<exists>\<^sub>b" 10)
+  \<Rightarrow> ('cmp bta)" (binder \<open>\<exists>\<^sub>b\<close> 10)
   where "ex P \<equiv> \<lambda>t n. (\<exists>y. (P y t n))"
     
 lemma exI[intro!]:
@@ -618,7 +618,7 @@ text \<open>
   First we provide rules for basic behavior assertions.
 \<close>
 
-definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ('cmp bta)" ("[_]\<^sub>b")
+definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ('cmp bta)" (\<open>[_]\<^sub>b\<close>)
   where "ba \<phi> \<equiv> \<lambda> t n. \<phi> (t n)"
   
 lemma baIA[intro]:
@@ -819,7 +819,7 @@ qed
     
 subsubsection "Next Operator"
 
-definition nxt :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<circle>\<^sub>b(_)" 24)
+definition nxt :: "('cmp bta) \<Rightarrow> ('cmp bta)" (\<open>\<circle>\<^sub>b(_)\<close> 24)
   where "\<circle>\<^sub>b(\<gamma>) \<equiv> \<lambda> t n. \<gamma> t (Suc n)"
 
 lemma nxtIA[intro]:
@@ -980,7 +980,7 @@ qed
 
 subsubsection "Eventually Operator"  
 
-definition evt :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<diamond>\<^sub>b(_)" 23)
+definition evt :: "('cmp bta) \<Rightarrow> ('cmp bta)" (\<open>\<diamond>\<^sub>b(_)\<close> 23)
   where "\<diamond>\<^sub>b(\<gamma>) \<equiv> \<lambda> t n. \<exists>n'\<ge>n. \<gamma> t n'"
 
 lemma evtIA[intro]:
@@ -1221,7 +1221,7 @@ qed
 
 subsubsection "Globally Operator"
 
-definition glob :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<box>\<^sub>b(_)" 22)
+definition glob :: "('cmp bta) \<Rightarrow> ('cmp bta)" (\<open>\<box>\<^sub>b(_)\<close> 22)
   where "\<box>\<^sub>b(\<gamma>) \<equiv> \<lambda> t n. \<forall>n'\<ge>n. \<gamma> t n'"
     
 lemma globIA[intro]:
@@ -1445,7 +1445,7 @@ qed
 
 subsubsection "Until Operator"
 
-definition until :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<UU>\<^sub>b" 21)
+definition until :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl \<open>\<UU>\<^sub>b\<close> 21)
   where "\<gamma>' \<UU>\<^sub>b \<gamma> \<equiv> \<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"
     
 lemma untilIA[intro]:
@@ -1943,7 +1943,7 @@ qed
   
 subsubsection "Weak Until"
 
-definition wuntil :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<WW>\<^sub>b" 20)
+definition wuntil :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl \<open>\<WW>\<^sub>b\<close> 20)
   where "\<gamma>' \<WW>\<^sub>b \<gamma> \<equiv> \<gamma>' \<UU>\<^sub>b \<gamma> \<or>\<^sup>b \<box>\<^sub>b(\<gamma>')"
 
 end

@@ -23,11 +23,11 @@ type_synonym ('s,'a) lookup = "'s \<Rightarrow> 'a option"
 
 text \<open>Similar to \<^const>\<open>map_option\<close> but the second function returns option as well\<close>
 definition
-  opt_map :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> ('s,'b) lookup" (infixl "|>" 54)
+  opt_map :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> ('s,'b) lookup" (infixl \<open>|>\<close> 54)
 where
   "f |> g \<equiv> \<lambda>s. case f s of None \<Rightarrow> None | Some x \<Rightarrow> g x"
 
-abbreviation opt_map_Some :: "('s \<rightharpoonup> 'a) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 's \<rightharpoonup> 'b" (infixl "||>" 54) where
+abbreviation opt_map_Some :: "('s \<rightharpoonup> 'a) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 's \<rightharpoonup> 'b" (infixl \<open>||>\<close> 54) where
   "f ||> g \<equiv> f |> (Some \<circ> g)"
 lemmas opt_map_Some_def = opt_map_def
 
@@ -60,7 +60,7 @@ lemma "\<lbrakk> (f |> g) x = None; g v = None \<rbrakk> \<Longrightarrow> f(x \
   by simp
 
 definition
-  obind :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> ('s,'b) lookup) \<Rightarrow> ('s,'b) lookup" (infixl "|>>" 53)
+  obind :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> ('s,'b) lookup) \<Rightarrow> ('s,'b) lookup" (infixl \<open>|>>\<close> 53)
 where
   "f |>> g \<equiv> \<lambda>s. case f s of None \<Rightarrow> None | Some x \<Rightarrow> g x s"
 

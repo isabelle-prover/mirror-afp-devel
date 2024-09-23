@@ -18,27 +18,27 @@ consts Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Right
 
 bundle Dep_Fun_Rel_syntax begin
 syntax
-  "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr "\<Rrightarrow>" 50)
+  "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr \<open>\<Rrightarrow>\<close> 50)
   "_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ _/ \<Colon>/ _') \<Rrightarrow> (_)" [51, 51, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow> (_)\<close> [51, 51, 50, 50] 50)
   "_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow> (_)" [51, 51, 50, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 51, 50, 50, 50] 50)
   "_Dep_Fun_Rel_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ :/ _') \<Rrightarrow> (_)" [51, 50, 50] 50)
+    (\<open>'(_/ :/ _') \<Rrightarrow> (_)\<close> [51, 50, 50] 50)
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ :/ _/ |/ _') \<Rrightarrow> (_)" [51, 50, 50, 50] 50)
+    (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
 bundle no_Dep_Fun_Rel_syntax begin
 no_syntax
-  "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr "\<Rrightarrow>" 50)
+  "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr \<open>\<Rrightarrow>\<close> 50)
   "_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ _/ \<Colon>/ _') \<Rrightarrow> (_)" [51, 51, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow> (_)\<close> [51, 51, 50, 50] 50)
   "_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow> (_)" [51, 51, 50, 50, 50] 50)
+    (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 51, 50, 50, 50] 50)
   "_Dep_Fun_Rel_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ :/ _') \<Rrightarrow> (_)" [51, 50, 50] 50)
+    (\<open>'(_/ :/ _') \<Rrightarrow> (_)\<close> [51, 50, 50] 50)
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
-    ("'(_/ :/ _/ |/ _') \<Rrightarrow> (_)" [51, 50, 50, 50] 50)
+    (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
 unbundle Dep_Fun_Rel_syntax
 syntax_consts

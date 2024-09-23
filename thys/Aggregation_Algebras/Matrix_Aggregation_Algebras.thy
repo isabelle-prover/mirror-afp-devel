@@ -26,8 +26,8 @@ imports Stone_Kleene_Relation_Algebras.Matrix_Kleene_Algebras Aggregation_Algebr
 begin
 
 no_notation
-  inf (infixl "\<sqinter>" 70)
-  and uminus ("- _" [81] 80)
+  inf (infixl \<open>\<sqinter>\<close> 70)
+  and uminus (\<open>- _\<close> [81] 80)
 
 subsection \<open>Aggregation Orders and Finite Sums\<close>
 
@@ -65,7 +65,7 @@ Finite sums are defined recursively using the binary aggregation and $\bot + \bo
 \<close>
 
 syntax
-  "_sum_ab_semigroup_add_0" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Sum>\<^sub>_ _)" [0,10] 10)
+  "_sum_ab_semigroup_add_0" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" (\<open>(\<Sum>\<^sub>_ _)\<close> [0,10] 10)
 
 syntax_consts
   "_sum_ab_semigroup_add_0" == ab_semigroup_add_0.sum_0
@@ -225,11 +225,11 @@ The first entry is determined by requiring an enumeration of indices.
 It does not have to be the first entry; any fixed location in the matrix would work as well.
 \<close>
 
-definition zero_matrix :: "('a,'b::{plus,bot}) square" ("mzero") where "mzero = (\<lambda>e . bot + bot)"
+definition zero_matrix :: "('a,'b::{plus,bot}) square" (\<open>mzero\<close>) where "mzero = (\<lambda>e . bot + bot)"
 
-definition plus_matrix :: "('a,'b::plus) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square" (infixl "\<oplus>\<^sub>M" 65) where "plus_matrix f g = (\<lambda>e . f e + g e)"
+definition plus_matrix :: "('a,'b::plus) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square" (infixl \<open>\<oplus>\<^sub>M\<close> 65) where "plus_matrix f g = (\<lambda>e . f e + g e)"
 
-definition sum_matrix :: "('a::enum,'b::{plus,bot}) square \<Rightarrow> ('a,'b) square" ("sum\<^sub>M _" [80] 80) where "sum_matrix f = (\<lambda>(i,j) . if i = hd enum_class.enum \<and> j = i then \<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l) else bot + bot)"
+definition sum_matrix :: "('a::enum,'b::{plus,bot}) square \<Rightarrow> ('a,'b) square" (\<open>sum\<^sub>M _\<close> [80] 80) where "sum_matrix f = (\<lambda>(i,j) . if i = hd enum_class.enum \<and> j = i then \<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l) else bot + bot)"
 
 text \<open>
 Basic properties of these operations are given in the following.
@@ -287,7 +287,7 @@ This does not require an enumeration of the indices.
 All results continue to hold using this alternative implementation.
 \<close>
 
-definition sum_matrix_2 :: "('a,'b::{plus,bot}) square \<Rightarrow> ('a,'b) square" ("sum2\<^sub>M _" [80] 80) where "sum_matrix_2 f = (\<lambda>e . \<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l))"
+definition sum_matrix_2 :: "('a,'b::{plus,bot}) square \<Rightarrow> ('a,'b) square" (\<open>sum2\<^sub>M _\<close> [80] 80) where "sum_matrix_2 f = (\<lambda>e . \<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l))"
 
 lemma sum_bot_2:
   "sum2\<^sub>M (mbot :: ('a,'b::aggregation_order) square) = mzero"
@@ -594,7 +594,7 @@ The result is returned as a regular matrix with $\top$ at that location and $\bo
 In the weighted-graph model, this represents a single unweighted edge of the graph.
 \<close>
 
-definition minarc_matrix :: "('a::enum,'b::{bot,ord,plus,top}) square \<Rightarrow> ('a,'b) square" ("minarc\<^sub>M _" [80] 80) where "minarc_matrix f = (\<lambda>e . if f e \<noteq> bot \<and> (\<forall>d . (f d \<noteq> bot \<longrightarrow> (f e + bot \<le> f d + bot \<and> (enum_lex_less d e \<longrightarrow> f e + bot \<noteq> f d + bot)))) then top else bot)"
+definition minarc_matrix :: "('a::enum,'b::{bot,ord,plus,top}) square \<Rightarrow> ('a,'b) square" (\<open>minarc\<^sub>M _\<close> [80] 80) where "minarc_matrix f = (\<lambda>e . if f e \<noteq> bot \<and> (\<forall>d . (f d \<noteq> bot \<longrightarrow> (f e + bot \<le> f d + bot \<and> (enum_lex_less d e \<longrightarrow> f e + bot \<noteq> f d + bot)))) then top else bot)"
 
 lemma minarc_at_most_one:
   fixes f :: "('a::enum,'b::{aggregation_order,top}) square"

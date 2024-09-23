@@ -227,7 +227,7 @@ definition "patCompleteAutomataTest = (checkSubset automataLeft automataRight)"
 end
 end
 
-definition string_append :: "String.literal \<Rightarrow> String.literal \<Rightarrow> String.literal" (infixr "+++" 65) where
+definition string_append :: "String.literal \<Rightarrow> String.literal \<Rightarrow> String.literal" (infixr \<open>+++\<close> 65) where
   "string_append s t = String.implode (String.explode s @ String.explode t)" 
 
 code_printing constant string_append \<rightharpoonup>

@@ -5,7 +5,7 @@ theory Fun4
 begin 
 
 subsection "Function definition and Boilerplate"
-no_notation bot ("\<bottom>")
+no_notation bot (\<open>\<bottom>\<close>)
 
 consts NN :: nat
 consts size_aa1 :: nat
@@ -111,31 +111,31 @@ interpretation Prog_Mispred_Init where
 
 (* Restoring the abbreviations: *)
 abbreviation
-  stepB_abbrev :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>B" 55)
+  stepB_abbrev :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>B\<close> 55)
   where "x \<rightarrow>B y == stepB x y"
 
 abbreviation
-  stepsB_abbrev :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>B*" 55)
+  stepsB_abbrev :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>B*\<close> 55)
   where "x \<rightarrow>B* y == star stepB x y"
 
 abbreviation
-  stepM_abbrev :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>M" 55)
+  stepM_abbrev :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>M\<close> 55)
   where "x \<rightarrow>M y == stepM x y"
 
 abbreviation
-  stepN_abbrev :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix "\<rightarrow>N" 55)
+  stepN_abbrev :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix \<open>\<rightarrow>N\<close> 55)
   where "x \<rightarrow>N y == stepN x y"
 
 abbreviation
-  stepsN_abbrev :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix "\<rightarrow>N*" 55)
+  stepsN_abbrev :: "config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> config \<times> val llist \<times> val llist \<times> loc set \<Rightarrow> bool" (infix \<open>\<rightarrow>N*\<close> 55)
   where "x \<rightarrow>N* y == star stepN x y"
 
 abbreviation
-  stepS_abbrev :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix "\<rightarrow>S" 55)
+  stepS_abbrev :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix \<open>\<rightarrow>S\<close> 55)
   where "x \<rightarrow>S y == stepS x y"
 
 abbreviation
-  stepsS_abbrev :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix "\<rightarrow>S*" 55)
+  stepsS_abbrev :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix \<open>\<rightarrow>S*\<close> 55)
   where "x \<rightarrow>S* y == star stepS x y"
 
 (* *)

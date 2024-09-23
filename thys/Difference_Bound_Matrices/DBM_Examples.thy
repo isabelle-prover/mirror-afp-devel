@@ -7,7 +7,7 @@ begin
 
 section \<open>Examples\<close>
 
-no_notation Ref.update ("_ := _" 62)
+no_notation Ref.update (\<open>_ := _\<close> 62)
 
 text \<open>Let us represent the zone \<open>y \<le> x \<and> x − y \<le> 2 \<and> y \<ge> 1\<close> as a DBM:\<close>
 definition test_dbm :: "int DBM'" where

@@ -987,7 +987,7 @@ definition "r_psi \<equiv>
 lemma r_psi_recfn: "recfn 2 r_psi"
   unfolding r_psi_def by simp
 
-abbreviation psi :: partial2 ("\<psi>") where
+abbreviation psi :: partial2 (\<open>\<psi>\<close>) where
   "\<psi> j x \<equiv> eval r_psi [j, x]"
 
 lemma psi_in_P2: "\<psi> \<in> \<P>\<^sup>2"

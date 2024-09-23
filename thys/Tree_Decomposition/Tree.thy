@@ -19,7 +19,7 @@ lemma unique_connecting_path: "\<lbrakk> v \<in> V; w \<in> V \<rbrakk> \<Longri
 text \<open>Let us define a function mapping pair of vertices to their unique connecting path.\<close>
 end \<comment> \<open>locale Tree\<close>
 definition unique_connecting_path :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a Walk"
-  (infix "\<leadsto>\<index>" 71) where "unique_connecting_path G v w \<equiv> THE xs. v \<leadsto>xs\<leadsto>\<^bsub>G\<^esub> w"
+  (infix \<open>\<leadsto>\<index>\<close> 71) where "unique_connecting_path G v w \<equiv> THE xs. v \<leadsto>xs\<leadsto>\<^bsub>G\<^esub> w"
 text \<open>We defined this outside the locale in order to be able to use the index in the shorthand
   syntax @{term "v \<leadsto>\<index> w"}.\<close>
 

@@ -13,7 +13,7 @@ text \<open>This entry stops at showing the correctness and complexity of the op
 
 text \<open>definition of conditional TBOUND relation  and setup\<close>
 
-definition cond_TBOUND::"assn \<Rightarrow> 'a Heap  \<Rightarrow> nat\<Rightarrow> bool"("\<section> _ \<section>/ TBOUND/ _ _") where
+definition cond_TBOUND::"assn \<Rightarrow> 'a Heap  \<Rightarrow> nat\<Rightarrow> bool"(\<open>\<section> _ \<section>/ TBOUND/ _ _\<close>) where
   "cond_TBOUND P c t \<equiv> (\<forall>h as. (h,as) \<Turnstile> P \<longrightarrow> time c h \<le> t)" 
 
 named_theorems cond_TBOUND  

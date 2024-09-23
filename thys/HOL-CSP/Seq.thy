@@ -52,7 +52,7 @@ subsection\<open>Definition\<close>
 abbreviation "div_seq P Q   \<equiv> {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tickFree t1 \<and> front_tickFree t2}
                             \<union> {t1 @ t2 |t1 t2. t1 @ [tick] \<in> \<T> P \<and> t2 \<in> \<D> Q}"
 
-lift_definition  Seq :: "['a process,'a process] \<Rightarrow> 'a process"  (infixl  "\<^bold>;" 74)  
+lift_definition  Seq :: "['a process,'a process] \<Rightarrow> 'a process"  (infixl  \<open>\<^bold>;\<close> 74)  
 is       "\<lambda>P Q. ({(t, X). (t, X \<union> {tick}) \<in> \<F> P \<and> tickFree t} \<union>
                  {(t, X). \<exists>t1 t2. t = t1 @ t2 \<and> t1 @ [tick] \<in> \<T> P \<and> (t2, X) \<in> \<F> Q} \<union>
                  {(t, X). t \<in> div_seq P Q},

@@ -10,8 +10,8 @@ type_synonym cnf = "clause set"
 datatype bexp
   = Var nat
   | not bexp
-  | Or bexp bexp (infixl "or" 110)
-  | And bexp bexp (infixl "and" 120)
+  | Or bexp bexp (infixl \<open>or\<close> 110)
+  | And bexp bexp (infixl \<open>and\<close> 120)
 
 declare [[coercion Var]] [[coercion_enabled]]
 
@@ -47,14 +47,14 @@ text \<open>Sanity check for correctness\<close>
 
 type_synonym env = "nat \<Rightarrow> bool"
 
-primrec eval_bexp :: "env \<Rightarrow> bexp \<Rightarrow> bool" ("_ \<Turnstile> _" [100, 100] 70)
+primrec eval_bexp :: "env \<Rightarrow> bexp \<Rightarrow> bool" (\<open>_ \<Turnstile> _\<close> [100, 100] 70)
 where
   "\<Phi> \<Turnstile> v \<longleftrightarrow> \<Phi> v"
 | "\<Phi> \<Turnstile> not b \<longleftrightarrow> \<not> \<Phi> \<Turnstile> b"
 | "\<Phi> \<Turnstile> b and b' \<longleftrightarrow> \<Phi> \<Turnstile> b \<and> \<Phi> \<Turnstile> b'"
 | "\<Phi> \<Turnstile> b or b' \<longleftrightarrow> \<Phi> \<Turnstile> b \<or> \<Phi> \<Turnstile> b'"
 
-definition eval_cnf :: "env \<Rightarrow> cnf \<Rightarrow> bool" ("_ \<turnstile> _" [100, 100] 70)
+definition eval_cnf :: "env \<Rightarrow> cnf \<Rightarrow> bool" (\<open>_ \<turnstile> _\<close> [100, 100] 70)
 where "\<Phi> \<turnstile> F \<longleftrightarrow> (\<forall>C \<in> F. \<exists>(n, b) \<in> C. \<Phi> n = b)"
 
 lemma cnf_correct: "\<Phi> \<turnstile> cnf b \<longleftrightarrow> \<Phi> \<Turnstile> b"

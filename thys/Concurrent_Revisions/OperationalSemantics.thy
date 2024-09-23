@@ -81,24 +81,24 @@ subsection \<open>Domain subsumption\<close>
 
 subsubsection Definitions
 
-definition domains_subsume :: "('r,'l,'v) local_state \<Rightarrow> bool" ("\<S>") where
+definition domains_subsume :: "('r,'l,'v) local_state \<Rightarrow> bool" (\<open>\<S>\<close>) where
   "\<S> ls = (LID\<^sub>L ls \<subseteq> doms ls)"
 
-definition domains_subsume_globally :: "('r,'l,'v) global_state \<Rightarrow> bool" ("\<S>\<^sub>G") where
+definition domains_subsume_globally :: "('r,'l,'v) global_state \<Rightarrow> bool" (\<open>\<S>\<^sub>G\<close>) where
   "\<S>\<^sub>G s = (\<forall>r ls. s r = Some ls \<longrightarrow> \<S> ls)"
 
 lemma domains_subsume_globallyI [intro]:
   "(\<And>r \<sigma> \<tau> e. s r = Some (\<sigma>,\<tau>,e) \<Longrightarrow> \<S> (\<sigma>,\<tau>,e)) \<Longrightarrow> domains_subsume_globally s"
   using domains_subsume_globally_def by auto
 
-definition subsumes_accessible :: "'r \<Rightarrow> 'r \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" ("\<A>") where
+definition subsumes_accessible :: "'r \<Rightarrow> 'r \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (\<open>\<A>\<close>) where
   "\<A> r\<^sub>1 r\<^sub>2 s = (r\<^sub>2 \<in> RID\<^sub>L (the (s r\<^sub>1)) \<longrightarrow> (LID\<^sub>S ((the (s r\<^sub>2))\<^sub>\<sigma>) \<subseteq> doms (the (s r\<^sub>1))))"
 
 lemma subsumes_accessibleI [intro]: 
   "(r\<^sub>2 \<in> RID\<^sub>L (the (s r\<^sub>1)) \<Longrightarrow> LID\<^sub>S ((the (s r\<^sub>2))\<^sub>\<sigma>) \<subseteq> doms (the (s r\<^sub>1))) \<Longrightarrow> \<A> r\<^sub>1 r\<^sub>2 s"
   using subsumes_accessible_def by auto
 
-definition subsumes_accessible_globally :: "('r,'l,'v) global_state \<Rightarrow> bool" ("\<A>\<^sub>G") where
+definition subsumes_accessible_globally :: "('r,'l,'v) global_state \<Rightarrow> bool" (\<open>\<A>\<^sub>G\<close>) where
   "\<A>\<^sub>G s = (\<forall>r\<^sub>1 r\<^sub>2. r\<^sub>1 \<in> dom s \<longrightarrow> r\<^sub>2 \<in> dom s \<longrightarrow> \<A> r\<^sub>1 r\<^sub>2 s)"
 
 lemma subsumes_accessible_globallyI [intro]:

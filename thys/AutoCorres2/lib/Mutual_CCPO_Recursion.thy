@@ -219,10 +219,10 @@ setup \<open>
     #> Mutual_CCPO_Rec.add_ccpo "gfp" Mutual_CCPO_Rec.synth_gfp)
   |> Context.theory_map \<close>
 
-no_notation top ("\<top>")
-no_notation bot ("\<bottom>")
-no_notation sup (infixl "\<squnion>" 65)
-no_notation inf (infixl "\<sqinter>" 70)
+no_notation top (\<open>\<top>\<close>)
+no_notation bot (\<open>\<bottom>\<close>)
+no_notation sup (infixl \<open>\<squnion>\<close> 65)
+no_notation inf (infixl \<open>\<sqinter>\<close> 70)
 
 hide_const (open) cont
 

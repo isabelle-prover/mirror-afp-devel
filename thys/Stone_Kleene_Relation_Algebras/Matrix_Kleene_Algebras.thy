@@ -34,7 +34,7 @@ In this section we develop a calculus of matrix restrictions.
 The restriction of a matrix to specific row and column indices is implemented by the following function, which keeps the size of the matrix and sets all unused entries to \<open>bot\<close>.
 \<close>
 
-definition restrict_matrix :: "'a list \<Rightarrow> ('a,'b::bot) square \<Rightarrow> 'a list \<Rightarrow> ('a,'b) square" ("_ \<langle>_\<rangle> _" [90,41,90] 91)
+definition restrict_matrix :: "'a list \<Rightarrow> ('a,'b::bot) square \<Rightarrow> 'a list \<Rightarrow> ('a,'b) square" (\<open>_ \<langle>_\<rangle> _\<close> [90,41,90] 91)
   where "restrict_matrix as f bs = (\<lambda>(i,j) . if List.member as i \<and> List.member bs j then f (i,j) else bot)"
 
 text \<open>
@@ -68,7 +68,7 @@ The Kleene star of the whole matrix is obtained by taking as indices all element
 This is conveniently supplied by the \<open>enum\<close> class.
 \<close>
 
-fun star_matrix :: "('a::enum,'b::{star,times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square" ("_\<^sup>\<odot>" [100] 100) where "star_matrix f = star_matrix' (enum_class.enum::'a list) f"
+fun star_matrix :: "('a::enum,'b::{star,times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square" (\<open>_\<^sup>\<odot>\<close> [100] 100) where "star_matrix f = star_matrix' (enum_class.enum::'a list) f"
 
 text \<open>
 The following lemmas deconstruct matrices with non-empty restrictions.

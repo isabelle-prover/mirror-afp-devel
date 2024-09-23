@@ -40,8 +40,8 @@ datatype local_expr =
 | Gid
 | Lid
 | eTrue
-| eConj local_expr local_expr  (infixl "\<and>*" 50)
-| eNot local_expr              ("\<not>*")
+| eConj local_expr local_expr  (infixl \<open>\<and>*\<close> 50)
+| eNot local_expr              (\<open>\<not>*\<close>)
 
 text \<open>Basic statements\<close>
 datatype basic_stmt =
@@ -52,7 +52,7 @@ datatype basic_stmt =
 text \<open>Statements\<close>
 datatype stmt =
   Basic basic_stmt
-| Seq stmt stmt (infixl ";;" 50)
+| Seq stmt stmt (infixl \<open>;;\<close> 50)
 | Local name stmt
 | If local_expr stmt stmt
 | While local_expr stmt

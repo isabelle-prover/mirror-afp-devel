@@ -122,7 +122,7 @@ lemma  "rat_poly.matrix_mult [[A,1],[0,A]] [[A,0],[0,A]] = [[A*A,A],[0,A*A]] "
 
 abbreviation 
    rat_polymat_tensor::"rat_poly mat \<Rightarrow> rat_poly mat \<Rightarrow> rat_poly mat" 
-                                                          (infixl "\<otimes>" 65) 
+                                                          (infixl \<open>\<otimes>\<close> 65) 
 where
 "rat_polymat_tensor p q \<equiv> rat_poly.Tensor p q"
 
@@ -1227,7 +1227,7 @@ proof-
             using 1 2 3 by (metis matrix_blockmat)
 qed
 
-abbreviation nat_mult::"nat \<Rightarrow> nat \<Rightarrow> nat"   (infixl "*n" 65)
+abbreviation nat_mult::"nat \<Rightarrow> nat \<Rightarrow> nat"   (infixl \<open>*n\<close> 65)
 where
 "nat_mult a b \<equiv> ((a::nat)*b)"
 

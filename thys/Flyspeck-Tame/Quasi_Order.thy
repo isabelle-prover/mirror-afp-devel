@@ -3,18 +3,18 @@ imports Main
 begin
 
 locale quasi_order =
-fixes qle :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 60)
+fixes qle :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 60)
 assumes qle_refl[iff]: "x \<preceq> x"
 and qle_trans: "x \<preceq> y \<Longrightarrow> y \<preceq> z \<Longrightarrow> x \<preceq> z"
 begin
 
-definition in_qle :: "'a \<Rightarrow> 'a set \<Rightarrow> bool"  (infix "\<in>\<^sub>\<preceq>" 60) where
+definition in_qle :: "'a \<Rightarrow> 'a set \<Rightarrow> bool"  (infix \<open>\<in>\<^sub>\<preceq>\<close> 60) where
  "x \<in>\<^sub>\<preceq> M \<equiv> \<exists>y \<in> M. x \<preceq> y"
 
-definition subseteq_qle :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<subseteq>\<^sub>\<preceq>" 60) where
+definition subseteq_qle :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>\<preceq>\<close> 60) where
  "M \<subseteq>\<^sub>\<preceq> N \<equiv> \<forall>x \<in> M. x \<in>\<^sub>\<preceq> N"
 
-definition seteq_qle :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "=\<^sub>\<preceq>" 60) where
+definition seteq_qle :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>=\<^sub>\<preceq>\<close> 60) where
  "M =\<^sub>\<preceq> N  \<equiv>  M \<subseteq>\<^sub>\<preceq> N \<and> N \<subseteq>\<^sub>\<preceq> M"
 
 lemmas "defs" = in_qle_def subseteq_qle_def seteq_qle_def

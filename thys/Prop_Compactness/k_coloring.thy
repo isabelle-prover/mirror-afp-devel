@@ -18,10 +18,10 @@ text\<open>This section formalizes de Bruijn-Erd\H{o}s k-coloring theorem for co
 
 type_synonym 'v digraph =  "('v set) \<times> (('v \<times> 'v) set)"
 
-abbreviation vert :: "'v digraph \<Rightarrow> 'v set"  ("V[_]" [80] 80) where
+abbreviation vert :: "'v digraph \<Rightarrow> 'v set"  (\<open>V[_]\<close> [80] 80) where
   "V[G]  \<equiv> fst G"
 
-abbreviation edge :: "'v digraph \<Rightarrow> ('v \<times> 'v) set" ("E[_]" [80] 80) where
+abbreviation edge :: "'v digraph \<Rightarrow> ('v \<times> 'v) set" (\<open>E[_]\<close> [80] 80) where
   "E[G] \<equiv> snd G"
 
 definition is_graph :: "'v digraph \<Rightarrow> bool" where

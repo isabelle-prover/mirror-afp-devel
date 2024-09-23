@@ -110,12 +110,12 @@ lemma lemma_2_4_6: "a r\<rightarrow> b \<le> (c r\<rightarrow> a) r\<rightarrow>
   by (rule pseudo_hoop_dual.lemma_2_4_5)
 
 primrec
-  imp_power_l:: "'a => nat \<Rightarrow> 'a \<Rightarrow> 'a" ("(_) l-(_)\<rightarrow> (_)" [65,0,65] 65) where 
+  imp_power_l:: "'a => nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>(_) l-(_)\<rightarrow> (_)\<close> [65,0,65] 65) where 
    "a l-0\<rightarrow> b = b" |
    "a l-(Suc n)\<rightarrow> b = (a l\<rightarrow> (a l-n\<rightarrow> b))"
 
 primrec
-  imp_power_r:: "'a => nat \<Rightarrow> 'a \<Rightarrow> 'a" ("(_) r-(_)\<rightarrow> (_)" [65,0,65] 65) where 
+  imp_power_r:: "'a => nat \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>(_) r-(_)\<rightarrow> (_)\<close> [65,0,65] 65) where 
    "a r-0\<rightarrow> b = b" |
    "a r-(Suc n)\<rightarrow> b = (a r\<rightarrow> (a r-n\<rightarrow> b))"
 
@@ -292,7 +292,7 @@ lemma lemma_2_8_i1:
   by (fact pseudo_hoop_dual.lemma_2_8_i)
 
 definition
-  times_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"  (infixl "**" 70) where
+  times_set :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"  (infixl \<open>**\<close> 70) where
   "(A ** B) = {a . \<exists> x \<in> A . \<exists> y \<in> B . a = x * y}"
 
 lemma times_set_assoc: "A ** (B ** C) = (A ** B) ** C"
@@ -314,7 +314,7 @@ lemma times_set_assoc: "A ** (B ** C) = (A ** B) ** C"
   by auto
 
 
-primrec power_set :: "'a set \<Rightarrow> nat \<Rightarrow> 'a set" (infixr "*^" 80) where
+primrec power_set :: "'a set \<Rightarrow> nat \<Rightarrow> 'a set" (infixr \<open>*^\<close> 80) where
     power_set_0: "(A *^ 0) = {1}"
   | power_set_Suc: "(A *^ (Suc n)) = (A ** (A *^ n))"
 
@@ -728,7 +728,7 @@ sublocale pseudo_hoop_algebra < bounded_semilattice_inf_top "(\<sqinter>)" "(\<l
   by unfold_locales simp
 
 definition (in pseudo_hoop_algebra)
-  sup1::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>1" 70) where 
+  sup1::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<squnion>1\<close> 70) where 
   "a \<squnion>1 b = ((a l\<rightarrow> b) r\<rightarrow> b) \<sqinter> ((b l\<rightarrow> a) r\<rightarrow> a)"
 
 sublocale pseudo_hoop_algebra < sup1: pseudo_hoop_sup1_algebra "(\<squnion>1)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
@@ -738,7 +738,7 @@ sublocale pseudo_hoop_algebra < sup1: pseudo_hoop_sup1_algebra "(\<squnion>1)" "
 
 
 definition (in pseudo_hoop_algebra)
-  sup2::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>2" 70) where 
+  sup2::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<squnion>2\<close> 70) where 
   "a \<squnion>2 b = ((a r\<rightarrow> b) l\<rightarrow> b) \<sqinter> ((b r\<rightarrow> a) l\<rightarrow> a)"
 
 sublocale pseudo_hoop_algebra < sup2: pseudo_hoop_sup2_algebra "(\<squnion>2)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"

@@ -26,7 +26,7 @@ where "augment f' \<equiv> \<lambda>(u, v).
     0"
 
 text \<open>We define a syntax similar to Cormen et el.:\<close>    
-abbreviation (input) augment_syntax (infix "\<up>" 55) 
+abbreviation (input) augment_syntax (infix \<open>\<up>\<close> 55) 
   where "\<And>f f'. f\<up>f' \<equiv> NFlow.augment c f f'"
 text \<open>such that we can write @{term [source] "f\<up>f'"} for the flow @{term f} 
   augmented by @{term f'}.\<close>

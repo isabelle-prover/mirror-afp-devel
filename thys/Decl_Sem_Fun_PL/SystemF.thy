@@ -8,14 +8,14 @@ subsection "Syntax and values"
   
 type_synonym name = nat
 
-datatype ty = TVar nat | TNat | Fun ty ty (infix "\<rightarrow>" 60) | Forall ty 
+datatype ty = TVar nat | TNat | Fun ty ty (infix \<open>\<rightarrow>\<close> 60) | Forall ty 
 
 datatype exp = EVar name | ENat nat | ELam ty exp | EApp exp exp
   | EAbs exp  | EInst exp ty | EFix ty exp 
 
 datatype val = VNat nat | Fun "(val \<times> val) fset" | Abs "val option" | Wrong
 
-fun val_le :: "val \<Rightarrow> val \<Rightarrow> bool" (infix "\<sqsubseteq>" 52) where
+fun val_le :: "val \<Rightarrow> val \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 52) where
   "(VNat n) \<sqsubseteq> (VNat n') = (n = n')" |
   "(Fun f) \<sqsubseteq> (Fun f') = (fset f \<subseteq> fset f')" |
   "(Abs None) \<sqsubseteq> (Abs None) = True" |
@@ -29,7 +29,7 @@ definition set_bind :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightar
   "set_bind m f \<equiv> { v. \<exists> v'. v' \<in> m \<and> v \<in> f v' }"
 declare set_bind_def[simp]
 
-syntax "_set_bind" :: "[pttrns,'a set,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
+syntax "_set_bind" :: "[pttrns,'a set,'b] \<Rightarrow> 'c" (\<open>(_ \<leftarrow> _;//_)\<close> 0)
 syntax_consts "_set_bind" \<rightleftharpoons> set_bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST set_bind E (\<lambda>P. F)"
 
@@ -37,7 +37,7 @@ definition errset_bind :: "val set \<Rightarrow> (val \<Rightarrow> val set) \<R
   "errset_bind m f \<equiv> { v. \<exists> v'. v' \<in> m \<and> v' \<noteq> Wrong \<and> v \<in> f v' } \<union> {v. v = Wrong \<and> Wrong \<in> m }"
 declare errset_bind_def[simp]
 
-syntax "_errset_bind" :: "[pttrns,val set,val] \<Rightarrow> 'c" ("(_ := _;//_)" 0)
+syntax "_errset_bind" :: "[pttrns,val set,val] \<Rightarrow> 'c" (\<open>(_ := _;//_)\<close> 0)
 syntax_consts "_errset_bind" \<rightleftharpoons> errset_bind
 translations "P := E; F" \<rightleftharpoons> "CONST errset_bind E (\<lambda>P. F)"
 
@@ -124,7 +124,7 @@ definition lookup :: "tyctx \<Rightarrow> nat \<Rightarrow> ty option" where
                     Some (shift k 0 (fst ((fst \<Gamma>)!n)))
                   else None)"
 
-inductive well_typed :: "tyctx \<Rightarrow> exp \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ : _" [55,55,55] 54) where
+inductive well_typed :: "tyctx \<Rightarrow> exp \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close> [55,55,55] 54) where
   wtnat[intro!]: "\<Gamma> \<turnstile> ENat n : TNat" |
   wtvar[intro!]: "\<lbrakk> lookup \<Gamma> n = Some \<tau> \<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> EVar n : \<tau>" |
   wtapp[intro!]: "\<lbrakk> \<Gamma> \<turnstile> e : \<sigma> \<rightarrow> \<tau>; \<Gamma> \<turnstile> e' : \<sigma> \<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> EApp e e' : \<tau>" |
@@ -133,7 +133,7 @@ inductive well_typed :: "tyctx \<Rightarrow> exp \<Rightarrow> ty \<Rightarrow> 
   wtabs[intro!]: "\<lbrakk> push_tyvar \<Gamma> \<turnstile> e : \<tau> \<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> EAbs e : Forall \<tau>" |
   wtinst[intro!]: "\<lbrakk> \<Gamma> \<turnstile> e : Forall \<tau> \<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> EInst e \<sigma> : (subst 0 \<sigma> \<tau>)"
 
-inductive wfenv :: "env \<Rightarrow> tyenv \<Rightarrow> tyctx \<Rightarrow> bool" ("\<turnstile> _,_ : _" [55,55,55] 54) where
+inductive wfenv :: "env \<Rightarrow> tyenv \<Rightarrow> tyctx \<Rightarrow> bool" (\<open>\<turnstile> _,_ : _\<close> [55,55,55] 54) where
   wfnil[intro!]: "\<turnstile> [],[] : ([],0)" |
   wfvbind[intro!]: "\<lbrakk> \<turnstile> \<rho>,\<eta> : \<Gamma>; v \<in> T \<tau> \<eta> \<rbrakk> \<Longrightarrow> \<turnstile>  (v#\<rho>),\<eta> : push_ty \<tau> \<Gamma>" |
   wftbind[intro!]: "\<lbrakk> \<turnstile> \<rho>,\<eta> : \<Gamma> \<rbrakk> \<Longrightarrow> \<turnstile> \<rho>, (V#\<eta>) : push_tyvar \<Gamma>"

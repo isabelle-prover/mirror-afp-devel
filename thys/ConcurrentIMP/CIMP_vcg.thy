@@ -586,7 +586,7 @@ inductive
         \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) state_pred
         \<Rightarrow> ('answer, 'location, 'question, 'state) com
         \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) state_pred
-        \<Rightarrow> bool" ("_, _, _ \<turnstile>/ \<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>" [11,0,0,0,0,0] 11)
+        \<Rightarrow> bool" (\<open>_, _, _ \<turnstile>/ \<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>\<close> [11,0,0,0,0,0] 11)
 where
   "\<lbrakk> \<And>aft' action' s ps' p's' l' \<beta> s' p'.
       \<lbrakk> pre s; (\<lbrace>l'\<rbrace> Response action', aft') \<in> fragments (coms p') {}; p \<noteq> p';
@@ -651,7 +651,7 @@ We abbreviate invariance with one-sided validity syntax.
 
 \<close>
 
-abbreviation valid_inv ("_, _, _ \<turnstile>/ \<lbrace>_\<rbrace>/ _" [11,0,0,0,0] 11) where
+abbreviation valid_inv (\<open>_, _, _ \<turnstile>/ \<lbrace>_\<rbrace>/ _\<close> [11,0,0,0,0] 11) where
   "coms, p, aft \<turnstile> \<lbrace>I\<rbrace> c \<equiv> coms, p, aft \<turnstile> \<lbrace>I\<rbrace> c \<lbrace>I\<rbrace>"
 
 inductive_cases vcg_inv:

@@ -171,7 +171,7 @@ lift_definition merge_part2 :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightar
 lift_definition merge_part3 :: "('a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('d, 'a) part \<Rightarrow> ('d, 'a) part \<Rightarrow> ('d, 'a) part \<Rightarrow> ('d, 'a) part" is merge_part3_raw
   by (rule wf_part_list_merge_part3_raw)
 
-definition proof_app :: "('n, 'd) proof \<Rightarrow> ('n, 'd) proof \<Rightarrow> ('n, 'd) proof" (infixl "\<oplus>" 65) where
+definition proof_app :: "('n, 'd) proof \<Rightarrow> ('n, 'd) proof \<Rightarrow> ('n, 'd) proof" (infixl \<open>\<oplus>\<close> 65) where
   "p \<oplus> q = (case (p, q) of
    (Inl (SHistorically i li sps), Inl q) \<Rightarrow> Inl (SHistorically (i+1) li (sps @ [q]))
  | (Inl (SAlways i hi sps), Inl q) \<Rightarrow> Inl (SAlways (i-1) hi (q # sps))

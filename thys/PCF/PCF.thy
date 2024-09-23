@@ -36,7 +36,7 @@ datatype expr =
   | App expr expr
   | AbsN var expr (* non-strict fns *)
   | AbsV var expr (* strict fns *)
-  | Diverge ("\<Omega>")
+  | Diverge (\<open>\<Omega>\<close>)
   | Fix var expr
   | tt
   | ff
@@ -203,7 +203,7 @@ where
 | "evalD (Pred e) = (\<Lambda> \<rho>. pred\<cdot>(evalD e\<cdot>\<rho>))"
 | "evalD (IsZero e) = (\<Lambda> \<rho>. isZero\<cdot>(evalD e\<cdot>\<rho>))"
 
-abbreviation eval' :: "expr \<Rightarrow> ValD Env \<Rightarrow> ValD" ("\<lbrakk>_\<rbrakk>_" [0,1000] 60) where
+abbreviation eval' :: "expr \<Rightarrow> ValD Env \<Rightarrow> ValD" (\<open>\<lbrakk>_\<rbrakk>_\<close> [0,1000] 60) where
   "eval' M \<rho> \<equiv> evalD M\<cdot>\<rho>"
 
 
@@ -571,7 +571,7 @@ if the first argument is @{term "\<bottom>"} and the second one is
 
 \<close>
 
-definition por :: "ValD \<Rightarrow> ValD \<Rightarrow> ValD" ("_ por _" [31,30] 30) where
+definition por :: "ValD \<Rightarrow> ValD \<Rightarrow> ValD" (\<open>_ por _\<close> [31,30] 30) where
   "x por y \<equiv>
      if x = ValTT then ValTT
        else if y = ValTT then ValTT

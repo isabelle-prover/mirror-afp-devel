@@ -4,8 +4,8 @@ theory Laws_Complement
   imports Laws Axioms_Complement
 begin
 
-notation comp_update (infixl "*\<^sub>u" 55)
-notation tensor_update (infixr "\<otimes>\<^sub>u" 70)
+notation comp_update (infixl \<open>*\<^sub>u\<close> 55)
+notation tensor_update (infixr \<open>\<otimes>\<^sub>u\<close> 70)
 
 definition \<open>complements F G \<longleftrightarrow> compatible F G \<and> iso_register (F;G)\<close>
 
@@ -352,7 +352,7 @@ text \<open>Adding support for \<^term>\<open>is_unit_register F\<close> and \<^
 lemmas [register_attribute_rule] = is_unit_register_def[THEN iffD1] complements_def[THEN iffD1]
 lemmas [register_attribute_rule_immediate] = asm_rl[of \<open>is_unit_register _\<close>]
 
-no_notation comp_update (infixl "*\<^sub>u" 55)
-no_notation tensor_update (infixr "\<otimes>\<^sub>u" 70)
+no_notation comp_update (infixl \<open>*\<^sub>u\<close> 55)
+no_notation tensor_update (infixr \<open>\<otimes>\<^sub>u\<close> 70)
 
 end

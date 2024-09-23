@@ -7,7 +7,7 @@ inductive interleave' :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<
   | "interleave' xs ys zs \<Longrightarrow>interleave' (x#xs) ys (x#zs)"
   | "interleave' xs ys zs \<Longrightarrow>interleave' xs (x#ys) (x#zs)"
 
-definition interleave :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list set" (infixr "\<otimes>" 64)
+definition interleave :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list set" (infixr \<open>\<otimes>\<close> 64)
   where "xs \<otimes> ys = Collect (interleave' xs ys)"
 lemma elim_interleave'[pred_set_conv]: "interleave' xs ys zs \<longleftrightarrow> zs \<in> xs \<otimes> ys" unfolding interleave_def by simp
 

@@ -27,16 +27,16 @@ datatype aexp = N int | V vname | VA avname aexp | Plus aexp aexp | Times aexp a
 and bexp = Bc bool | Not bexp | And bexp bexp | Less aexp aexp 
 
 text \<open>To enable reasoning about more subtle Spectre-like examples require the existence of trusted and untrusted I/O channels\<close>
-datatype trustStat = Trusted ("T")| Untrusted ("U")
+datatype trustStat = Trusted (\<open>T\<close>)| Untrusted (\<open>U\<close>)
 
 consts func :: "aexp \<times> aexp \<Rightarrow> val"
 
 text \<open>A little syntax magic to write larger states compactly:\<close>
 
-definition null_state ("<>") where
+definition null_state (\<open><>\<close>) where
   "null_state \<equiv> \<lambda>x. 0"
 syntax 
-  "_State" :: "updbinds => 'a" ("<_>")
+  "_State" :: "updbinds => 'a" (\<open><_>\<close>)
 translations
   "_State ms" == "_Update <> ms"
   "_State (_updbinds b bs)" <= "_Update (_State b) bs"
@@ -55,14 +55,14 @@ datatype (discs_sels) com =
         Start
       | Skip 
       
-      | getInput trustStat vname ("(Input _/ _)"  [0, 61] 61)
-      | Output trustStat aexp ("(Output _/ _)"  [0, 61] 61)
+      | getInput trustStat vname (\<open>(Input _/ _)\<close>  [0, 61] 61)
+      | Output trustStat aexp (\<open>(Output _/ _)\<close>  [0, 61] 61)
       | Fence
-      | Mask vname bexp aexp aexp ("M _/ I _/ T _/ E _" [1000, 61, 61, 61] 61)
+      | Mask vname bexp aexp aexp (\<open>M _/ I _/ T _/ E _\<close> [1000, 61, 61, 61] 61)
       | Jump nat 
-      | Assign vname aexp ("_ ::= _" [1000, 61] 61)
-      | ArrAssign avname aexp aexp ("_ [_] ::= _" [1000, 61] 61)
-      | IfJump bexp nat nat ("(IfJump _/ _/ _)"  [0, 0, 61] 61)
+      | Assign vname aexp (\<open>_ ::= _\<close> [1000, 61] 61)
+      | ArrAssign avname aexp aexp (\<open>_ [_] ::= _\<close> [1000, 61] 61)
+      | IfJump bexp nat nat (\<open>(IfJump _/ _/ _)\<close>  [0, 0, 61] 61)
   (* this indicates two program counters: where to jump if condition is true, 
    and where if condition is false *)
 

@@ -123,16 +123,16 @@ subsection \<open>Cut operators for sets/intervals\<close>
 
 subsubsection \<open>Definitions and basic lemmata for cut operators\<close>
 
-definition cut_le :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"   (infixl "\<down>\<le>" 100)
+definition cut_le :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"   (infixl \<open>\<down>\<le>\<close> 100)
   where "I \<down>\<le> t \<equiv> {x\<in>I. x \<le> t}"
 
-definition cut_less :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"  (infixl "\<down><" 100)
+definition cut_less :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"  (infixl \<open>\<down><\<close> 100)
   where "I \<down>< t \<equiv> {x\<in>I. x < t}"
 
-definition cut_ge :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"  (infixl "\<down>\<ge>" 100)
+definition cut_ge :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"  (infixl \<open>\<down>\<ge>\<close> 100)
   where "I \<down>\<ge> t \<equiv> {x\<in>I. t \<le> x}"
 
-definition cut_greater :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"  (infixl "\<down>>" 100)
+definition cut_greater :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"  (infixl \<open>\<down>>\<close> 100)
   where "I \<down>> t \<equiv> {x\<in>I. t < x}"
 
 lemmas i_cut_defs =

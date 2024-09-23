@@ -25,7 +25,7 @@ to implication. It turns out to have a very similar algebra, the rules of which 
 shortly.\<close>
 
 definition
-  refines :: "'s prog \<Rightarrow> 's prog \<Rightarrow> bool" (infix "\<sqsubseteq>" 70)
+  refines :: "'s prog \<Rightarrow> 's prog \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 70)
 where
   "prog \<sqsubseteq> prog' \<equiv> \<forall>P. sound P \<longrightarrow> wp prog P \<tturnstile> wp prog' P"
 
@@ -41,7 +41,7 @@ text \<open>The equivalence relation below will turn out to be that induced by r
 the application of @{term equiv_trans} to the weakest precondition.\<close>
 
 definition
-  pequiv :: "'s prog \<Rightarrow> 's prog \<Rightarrow> bool" (infix "\<simeq>" 70)
+  pequiv :: "'s prog \<Rightarrow> 's prog \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 70)
 where
   "prog \<simeq> prog' \<equiv> \<forall>P. sound P \<longrightarrow> wp prog P = wp prog' P"
 

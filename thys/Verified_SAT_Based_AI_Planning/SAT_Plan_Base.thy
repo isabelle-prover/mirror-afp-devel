@@ -11,17 +11,17 @@ begin
 
 \<comment> \<open> Hide constant and notation for \isaname{Orderings.bot_class.bot} (\<open>\<bottom>\<close>) to prevent warnings. \<close>
 hide_const (open) Orderings.bot_class.bot
-no_notation Orderings.bot_class.bot ("\<bottom>")
+no_notation Orderings.bot_class.bot (\<open>\<bottom>\<close>)
 
 \<comment> \<open> Hide constant and notation for \isaname{Transitive_Closure.trancl} (\<open>(_\<^sup>+)\<close>) to prevent
 warnings. \<close>
 hide_const (open) Transitive_Closure.trancl
-no_notation Transitive_Closure.trancl ("(_\<^sup>+)" [1000] 999)
+no_notation Transitive_Closure.trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
 
 \<comment> \<open> Hide constant and notation for \isaname{Relation.converse} (\<open>(_\<^sup>+)\<close>) to prevent
 warnings. \<close>
 hide_const (open) Relation.converse
-no_notation Relation.converse  ("(_\<inverse>)" [1000] 999)
+no_notation Relation.converse  (\<open>(_\<inverse>)\<close> [1000] 999)
 
 section "The Basic SATPlan Encoding"
 text \<open> We now move on to the formalization of the basic SATPlan encoding (see
@@ -72,7 +72,7 @@ Note that both functions construct a conjunction of clauses \<open>A \<^bold>\<o
 is easy to show that we can normalize to conjunctive normal form (CNF). \<close>
 
 definition  encode_initial_state
-  :: "'variable strips_problem \<Rightarrow> sat_plan_variable formula" ("\<Phi>\<^sub>I _" 99)
+  :: "'variable strips_problem \<Rightarrow> sat_plan_variable formula" (\<open>\<Phi>\<^sub>I _\<close> 99)
   where "encode_initial_state \<Pi>
     \<equiv> let I = initial_of \<Pi>
         ; vs = variables_of \<Pi>
@@ -80,7 +80,7 @@ definition  encode_initial_state
     (filter (\<lambda>v. I v \<noteq> None) vs))"
 
 definition  encode_goal_state
-  :: "'variable strips_problem \<Rightarrow> nat \<Rightarrow> sat_plan_variable formula" ("\<Phi>\<^sub>G _" 99)
+  :: "'variable strips_problem \<Rightarrow> nat \<Rightarrow> sat_plan_variable formula" (\<open>\<Phi>\<^sub>G _\<close> 99)
   where "encode_goal_state \<Pi> t
     \<equiv> let
       vs = variables_of \<Pi>
@@ -204,7 +204,7 @@ The functions \isaname{encode_operators} and \isaname{encode_all_frame_axioms}\f
 take care of mapping the operator precondition, effect and frame axiom encoding over all possible
 combinations of time point and operators resp. time points, variables, and operators. \<close>
 
-definition  encode_problem ("\<Phi> _ _" 99)
+definition  encode_problem (\<open>\<Phi> _ _\<close> 99)
   where "encode_problem \<Pi> t
     \<equiv> encode_initial_state \<Pi>
       \<^bold>\<and> (encode_operators \<Pi> t
@@ -243,7 +243,7 @@ definition  decode_plan
   :: "'variable strips_problem
     \<Rightarrow> sat_plan_variable valuation
     \<Rightarrow> nat
-    \<Rightarrow> 'variable strips_parallel_plan" ("\<Phi>\<inverse> _ _ _" 99)
+    \<Rightarrow> 'variable strips_parallel_plan" (\<open>\<Phi>\<inverse> _ _ _\<close> 99)
   where "decode_plan \<Pi> \<A> t \<equiv> map (decode_plan' \<Pi> \<A>) [0..<t]"
 
 text \<open> Similarly to the operator decoding, we can decode a state at time \<^term>\<open>k\<close> from a valuation
@@ -254,7 +254,7 @@ definition  decode_state_at
   :: "'variable strips_problem
     \<Rightarrow> sat_plan_variable valuation
     \<Rightarrow> nat
-    \<Rightarrow> 'variable strips_state" ("\<Phi>\<^sub>S\<inverse> _ _ _" 99)
+    \<Rightarrow> 'variable strips_state" (\<open>\<Phi>\<^sub>S\<inverse> _ _ _\<close> 99)
   where "decode_state_at \<Pi> \<A> k
     \<equiv> let
       vs = variables_of \<Pi>
@@ -264,7 +264,7 @@ definition  decode_state_at
 text \<open> We continue by setting up the \isaname{sat_plan} context for the proofs of soundness and
 completeness. \<close>
 
-definition encode_transitions ::"'variable strips_problem \<Rightarrow> nat \<Rightarrow> sat_plan_variable formula" ("\<Phi>\<^sub>T _ _" 99) where
+definition encode_transitions ::"'variable strips_problem \<Rightarrow> nat \<Rightarrow> sat_plan_variable formula" (\<open>\<Phi>\<^sub>T _ _\<close> 99) where
   "encode_transitions \<Pi> t
       \<equiv> SAT_Plan_Base.encode_operators \<Pi> t \<^bold>\<and>
         SAT_Plan_Base.encode_all_frame_axioms \<Pi> t"
@@ -3520,7 +3520,7 @@ value  "stop" (* Tell document preparation to stop collecting for the last tag *
 subsection "Completeness"
 
 (* TODO make abbreviation *)
-definition empty_valuation :: "sat_plan_variable valuation" ("\<A>\<^sub>0")
+definition empty_valuation :: "sat_plan_variable valuation" (\<open>\<A>\<^sub>0\<close>)
   where "empty_valuation \<equiv>  (\<lambda>_. False)"
 
 abbreviation valuation_for_state

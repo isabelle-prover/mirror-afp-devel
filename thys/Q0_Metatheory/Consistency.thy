@@ -18,7 +18,7 @@ subsection \<open>Existence of a standard model\<close>
 
 text \<open>We construct a standard model in which \<open>\<D> i\<close> is the set \<open>{0}\<close>:\<close>
 
-primrec singleton_standard_domain_family ("\<D>\<^sup>S") where
+primrec singleton_standard_domain_family (\<open>\<D>\<^sup>S\<close>) where
   "\<D>\<^sup>S i = 1" \<comment> \<open>i.e., \<^term>\<open>\<D>\<^sup>S i = set {0}\<close>\<close>
 | "\<D>\<^sup>S o = \<bool>"
 | "\<D>\<^sup>S (\<alpha>\<rightarrow>\<beta>) = \<D>\<^sup>S \<alpha> \<longmapsto> \<D>\<^sup>S \<beta>"
@@ -42,7 +42,7 @@ proof unfold_locales
     by (intro allI)
 qed simp_all
 
-definition singleton_standard_constant_denotation_function ("\<J>\<^sup>S") where
+definition singleton_standard_constant_denotation_function (\<open>\<J>\<^sup>S\<close>) where
   [simp]: "\<J>\<^sup>S k =
     (
       if
@@ -91,7 +91,7 @@ next
   qed
 qed
 
-fun singleton_standard_wff_denotation_function ("\<V>\<^sup>S") where
+fun singleton_standard_wff_denotation_function (\<open>\<V>\<^sup>S\<close>) where
   "\<V>\<^sup>S \<phi> (x\<^bsub>\<alpha>\<^esub>) = \<phi> (x, \<alpha>)"
 | "\<V>\<^sup>S \<phi> (\<lbrace>c\<rbrace>\<^bsub>\<alpha>\<^esub>) = \<J>\<^sup>S (c, \<alpha>)"
 | "\<V>\<^sup>S \<phi> (A \<sqdot> B) = (\<V>\<^sup>S \<phi> A) \<bullet> (\<V>\<^sup>S \<phi> B)"

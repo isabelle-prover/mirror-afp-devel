@@ -2,7 +2,7 @@ theory Sestoft
 imports SestoftConf
 begin
 
-inductive step :: "conf \<Rightarrow> conf \<Rightarrow> bool" (infix "\<Rightarrow>" 50) where
+inductive step :: "conf \<Rightarrow> conf \<Rightarrow> bool" (infix \<open>\<Rightarrow>\<close> 50) where
   app\<^sub>1:  "(\<Gamma>, App e x, S) \<Rightarrow> (\<Gamma>, e , Arg x # S)"
 | app\<^sub>2:  "(\<Gamma>, Lam [y]. e, Arg x # S) \<Rightarrow> (\<Gamma>, e[y ::= x] , S)"
 | var\<^sub>1:  "map_of \<Gamma> x = Some e \<Longrightarrow> (\<Gamma>, Var x, S) \<Rightarrow> (delete x \<Gamma>, e , Upd x # S)"
@@ -12,7 +12,7 @@ inductive step :: "conf \<Rightarrow> conf \<Rightarrow> bool" (infix "\<Rightar
 | if\<^sub>1:  "(\<Gamma>, scrut ? e1 : e2, S) \<Rightarrow> (\<Gamma>, scrut, Alts e1 e2 # S)"
 | if\<^sub>2:  "(\<Gamma>, Bool b, Alts e1 e2 # S) \<Rightarrow> (\<Gamma>, if b then e1 else e2, S)"
 
-abbreviation steps (infix "\<Rightarrow>\<^sup>*" 50) where "steps \<equiv> step\<^sup>*\<^sup>*"
+abbreviation steps (infix \<open>\<Rightarrow>\<^sup>*\<close> 50) where "steps \<equiv> step\<^sup>*\<^sup>*"
 
 lemma SmartLet_stepI:
    "atom ` domA \<Delta> \<sharp>* \<Gamma> \<Longrightarrow> atom ` domA \<Delta> \<sharp>* S \<Longrightarrow> (\<Gamma>, SmartLet \<Delta> e, S) \<Rightarrow>\<^sup>*  (\<Delta>@\<Gamma>, e , S)"

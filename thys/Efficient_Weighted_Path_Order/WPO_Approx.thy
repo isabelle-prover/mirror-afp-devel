@@ -19,7 +19,7 @@ definition compare_bools :: "bool \<times> bool \<Rightarrow> bool \<times> bool
   where
     "compare_bools p1 p2 \<longleftrightarrow> (fst p1 \<longrightarrow> fst p2) \<and> (snd p1 \<longrightarrow> snd p2)"
 
-notation compare_bools ("(_/ \<le>\<^sub>c\<^sub>b _)" [51, 51] 50)
+notation compare_bools (\<open>(_/ \<le>\<^sub>c\<^sub>b _)\<close> [51, 51] 50)
 
 lemma lex_ext_unbounded_cb:
   assumes "\<And> i. i < length xs \<Longrightarrow> i < length ys \<Longrightarrow> f (xs ! i) (ys ! i) \<le>\<^sub>c\<^sub>b g (xs ! i) (ys ! i)"

@@ -58,22 +58,22 @@ begin
 
 subsection \<open>Substitutions\<close>
 
-abbreviation subst_apply_list (infix "\<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t" 51) where
+abbreviation subst_apply_list (infix \<open>\<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t\<close> 51) where
   "T \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>t. t \<cdot> \<theta>) T"  
 
-abbreviation subst_apply_pair (infixl "\<cdot>\<^sub>p" 60) where
+abbreviation subst_apply_pair (infixl \<open>\<cdot>\<^sub>p\<close> 60) where
   "d \<cdot>\<^sub>p \<theta> \<equiv> (case d of (t,t') \<Rightarrow> (t \<cdot> \<theta>, t' \<cdot> \<theta>))"
 
-abbreviation subst_apply_pair_set (infixl "\<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t" 60) where
+abbreviation subst_apply_pair_set (infixl \<open>\<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t\<close> 60) where
   "M \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<theta> \<equiv> (\<lambda>d. d \<cdot>\<^sub>p \<theta>) ` M"
 
-definition subst_apply_pairs (infix "\<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s" 51) where
+definition subst_apply_pairs (infix \<open>\<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s\<close> 51) where
   "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s \<theta> \<equiv> map (\<lambda>f. f \<cdot>\<^sub>p \<theta>) F"
 
-abbreviation subst_more_general_than (infixl "\<preceq>\<^sub>\<circ>" 50) where
+abbreviation subst_more_general_than (infixl \<open>\<preceq>\<^sub>\<circ>\<close> 50) where
   "\<sigma> \<preceq>\<^sub>\<circ> \<theta> \<equiv> \<exists>\<gamma>. \<theta> = \<sigma> \<circ>\<^sub>s \<gamma>"
 
-abbreviation subst_support (infix "supports" 50) where
+abbreviation subst_support (infix \<open>supports\<close> 50) where
   "\<theta> supports \<delta> \<equiv> (\<forall>x. \<theta> x \<cdot> \<delta> = \<delta> x)"
 
 abbreviation rm_var where

@@ -130,21 +130,21 @@ ctr parametricity
 context ord_ow
 begin
 
-abbreviation lessThan :: "'ao \<Rightarrow> 'ao set" ("(1{..<\<^sub>o\<^sub>w_})") 
+abbreviation lessThan :: "'ao \<Rightarrow> 'ao set" (\<open>(1{..<\<^sub>o\<^sub>w_})\<close>) 
   where "{..<\<^sub>o\<^sub>w u} \<equiv> on U with (<\<^sub>o\<^sub>w) : {..<u}"
-abbreviation atMost :: "'ao \<Rightarrow> 'ao set" ("(1{..\<^sub>o\<^sub>w_})") 
+abbreviation atMost :: "'ao \<Rightarrow> 'ao set" (\<open>(1{..\<^sub>o\<^sub>w_})\<close>) 
   where "{..\<^sub>o\<^sub>w u} \<equiv> on U with (\<le>\<^sub>o\<^sub>w) : {..u}"
-abbreviation greaterThan :: "'ao \<Rightarrow> 'ao set" ("(1{_<\<^sub>o\<^sub>w..})")  
+abbreviation greaterThan :: "'ao \<Rightarrow> 'ao set" (\<open>(1{_<\<^sub>o\<^sub>w..})\<close>)  
   where "{l<\<^sub>o\<^sub>w..} \<equiv> on U with (<\<^sub>o\<^sub>w) : {l<..}"
-abbreviation atLeast :: "'ao \<Rightarrow> 'ao set" ("(1{_..\<^sub>o\<^sub>w})") 
+abbreviation atLeast :: "'ao \<Rightarrow> 'ao set" (\<open>(1{_..\<^sub>o\<^sub>w})\<close>) 
   where "atLeast l \<equiv> on U with (\<le>\<^sub>o\<^sub>w) : {l..}"
-abbreviation greaterThanLessThan :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" ("(1{_<\<^sub>o\<^sub>w..<\<^sub>o\<^sub>w_})")
+abbreviation greaterThanLessThan :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" (\<open>(1{_<\<^sub>o\<^sub>w..<\<^sub>o\<^sub>w_})\<close>)
   where "{l<\<^sub>o\<^sub>w..<\<^sub>o\<^sub>wu} \<equiv> on U with (<\<^sub>o\<^sub>w) : {l<..<u}"
-abbreviation atLeastLessThan :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" ("(1{_..<\<^sub>o\<^sub>w_})")
+abbreviation atLeastLessThan :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" (\<open>(1{_..<\<^sub>o\<^sub>w_})\<close>)
   where "{l..<\<^sub>o\<^sub>w u} \<equiv> on U with (\<le>\<^sub>o\<^sub>w) (<\<^sub>o\<^sub>w) : {l<..u}"
-abbreviation greaterThanAtMost :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" ("(1{_<\<^sub>o\<^sub>w.._})")
+abbreviation greaterThanAtMost :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" (\<open>(1{_<\<^sub>o\<^sub>w.._})\<close>)
   where "{l<\<^sub>o\<^sub>w..u}  \<equiv> on U with (\<le>\<^sub>o\<^sub>w) (<\<^sub>o\<^sub>w) : {l<..u}"
-abbreviation atLeastAtMost :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" ("(1{_..\<^sub>o\<^sub>w_})")
+abbreviation atLeastAtMost :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao set" (\<open>(1{_..\<^sub>o\<^sub>w_})\<close>)
   where "{l..\<^sub>o\<^sub>wu} \<equiv> on U with (\<le>\<^sub>o\<^sub>w) : {l..u}"
 abbreviation min :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao" where "min \<equiv> min.with (\<le>\<^sub>o\<^sub>w)"
 abbreviation max :: "'ao \<Rightarrow> 'ao \<Rightarrow> 'ao" where "max \<equiv> max.with (\<le>\<^sub>o\<^sub>w)"
@@ -154,23 +154,23 @@ end
 context ord_pair_ow
 begin
 
-notation ord\<^sub>1.lessThan ("(1{..<\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})") 
-notation ord\<^sub>1.atMost ("(1{..\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})") 
-notation ord\<^sub>1.greaterThan ("(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>1..})")  
-notation ord\<^sub>1.atLeast ("(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>1})") 
-notation ord\<^sub>1.greaterThanLessThan ("(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>1..<\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})")
-notation ord\<^sub>1.atLeastLessThan ("(1{_..<\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})")
-notation ord\<^sub>1.greaterThanAtMost ("(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>1.._})")
-notation ord\<^sub>1.atLeastAtMost ("(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})")
+notation ord\<^sub>1.lessThan (\<open>(1{..<\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})\<close>) 
+notation ord\<^sub>1.atMost (\<open>(1{..\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})\<close>) 
+notation ord\<^sub>1.greaterThan (\<open>(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>1..})\<close>)  
+notation ord\<^sub>1.atLeast (\<open>(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>1})\<close>) 
+notation ord\<^sub>1.greaterThanLessThan (\<open>(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>1..<\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})\<close>)
+notation ord\<^sub>1.atLeastLessThan (\<open>(1{_..<\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})\<close>)
+notation ord\<^sub>1.greaterThanAtMost (\<open>(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>1.._})\<close>)
+notation ord\<^sub>1.atLeastAtMost (\<open>(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>1_})\<close>)
 
-notation ord\<^sub>2.lessThan ("(1{..<\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})") 
-notation ord\<^sub>2.atMost ("(1{..\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})") 
-notation ord\<^sub>2.greaterThan ("(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>2..})")  
-notation ord\<^sub>2.atLeast ("(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>2})") 
-notation ord\<^sub>2.greaterThanLessThan ("(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>2..<\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})")
-notation ord\<^sub>2.atLeastLessThan ("(1{_..<\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})")
-notation ord\<^sub>2.greaterThanAtMost ("(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>2.._})")
-notation ord\<^sub>2.atLeastAtMost ("(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})")
+notation ord\<^sub>2.lessThan (\<open>(1{..<\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})\<close>) 
+notation ord\<^sub>2.atMost (\<open>(1{..\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})\<close>) 
+notation ord\<^sub>2.greaterThan (\<open>(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>2..})\<close>)  
+notation ord\<^sub>2.atLeast (\<open>(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>2})\<close>) 
+notation ord\<^sub>2.greaterThanLessThan (\<open>(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>2..<\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})\<close>)
+notation ord\<^sub>2.atLeastLessThan (\<open>(1{_..<\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})\<close>)
+notation ord\<^sub>2.greaterThanAtMost (\<open>(1{_<\<^sub>o\<^sub>w\<^sub>.\<^sub>2.._})\<close>)
+notation ord\<^sub>2.atLeastAtMost (\<open>(1{_..\<^sub>o\<^sub>w\<^sub>.\<^sub>2_})\<close>)
 
 end
 
@@ -183,19 +183,19 @@ subsubsection\<open>Definitions and common properties\<close>
 
 locale partial_preordering_ow =
   fixes U :: "'ao set"
-    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
+    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50)
   assumes refl: "a \<in> U \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w a"
     and trans: "\<lbrakk> a \<in> U; b \<in> U; c \<in> U; a \<^bold>\<le>\<^sub>o\<^sub>w b; b \<^bold>\<le>\<^sub>o\<^sub>w c \<rbrakk> \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w c"
 begin
 
-notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
+notation le (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50)
 
 end
 
 locale preordering_ow = partial_preordering_ow U le 
   for U :: "'ao set"
-    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50) +
-  fixes ls :: \<open>'ao \<Rightarrow> 'ao \<Rightarrow> bool\<close> (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+    and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50) +
+  fixes ls :: \<open>'ao \<Rightarrow> 'ao \<Rightarrow> bool\<close> (infix \<open>\<^bold><\<^sub>o\<^sub>w\<close> 50)
   assumes strict_iff_not: 
     "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> a \<^bold><\<^sub>o\<^sub>w b \<longleftrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w b \<and> \<not> b \<^bold>\<le>\<^sub>o\<^sub>w a"
 
@@ -675,14 +675,14 @@ subsection\<open>Partial orders\<close>
 subsubsection\<open>Definitions and common properties\<close>
 
 locale ordering_ow = partial_preordering_ow U le 
-  for U :: "'ao set" and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50) +
-  fixes ls :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+  for U :: "'ao set" and le :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50) +
+  fixes ls :: "'ao \<Rightarrow> 'ao \<Rightarrow> bool" (infix \<open>\<^bold><\<^sub>o\<^sub>w\<close> 50)
   assumes strict_iff_order: "\<lbrakk> a \<in> U; b \<in> U \<rbrakk> \<Longrightarrow> a \<^bold><\<^sub>o\<^sub>w b \<longleftrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w b \<and> a \<noteq> b"
     and antisym: "\<lbrakk> a \<in> U; b \<in> U; a \<^bold>\<le>\<^sub>o\<^sub>w b; b \<^bold>\<le>\<^sub>o\<^sub>w a \<rbrakk> \<Longrightarrow> a = b"
 begin
 
-notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
-  and ls (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+notation le (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50)
+  and ls (infix \<open>\<^bold><\<^sub>o\<^sub>w\<close> 50)
 
 sublocale preordering_ow U \<open>(\<^bold>\<le>\<^sub>o\<^sub>w)\<close> \<open>(\<^bold><\<^sub>o\<^sub>w)\<close>  
   using local.antisym strict_iff_order by unfold_locales blast
@@ -703,8 +703,8 @@ sublocale
   subgoal by (simp add: antisym)
   done
 
-no_notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
-  and ls (infix "\<^bold><\<^sub>o\<^sub>w" 50)
+no_notation le (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50)
+  and ls (infix \<open>\<^bold><\<^sub>o\<^sub>w\<close> 50)
 
 end
 
@@ -1360,12 +1360,12 @@ subsubsection\<open>Definitions and common properties\<close>
 
 locale ordering_top_ow = ordering_ow U le ls 
   for U :: "'ao set" and le ls  +
-  fixes top :: "'ao" ("\<^bold>\<top>\<^sub>o\<^sub>w")
+  fixes top :: "'ao" (\<open>\<^bold>\<top>\<^sub>o\<^sub>w\<close>)
   assumes top_closed[simp]: "\<^bold>\<top>\<^sub>o\<^sub>w \<in> U"
   assumes extremum[simp]: "a \<in> U \<Longrightarrow> a \<^bold>\<le>\<^sub>o\<^sub>w \<^bold>\<top>\<^sub>o\<^sub>w"
 begin
 
-notation top ("\<^bold>\<top>\<^sub>o\<^sub>w")
+notation top (\<open>\<^bold>\<top>\<^sub>o\<^sub>w\<close>)
 
 end
 
@@ -1398,9 +1398,9 @@ sublocale bot: ordering_top_ow U \<open>(\<ge>\<^sub>o\<^sub>w)\<close> \<open>(
   subgoal by (simp add: bot_least)
   done
 
-no_notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
-  and ls (infix "\<^bold><\<^sub>o\<^sub>w" 50)
-  and top ("\<^bold>\<top>\<^sub>o\<^sub>w")
+no_notation le (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50)
+  and ls (infix \<open>\<^bold><\<^sub>o\<^sub>w\<close> 50)
+  and top (\<open>\<^bold>\<top>\<^sub>o\<^sub>w\<close>)
 
 end
 
@@ -1444,9 +1444,9 @@ sublocale top: ordering_top_ow U \<open>(\<le>\<^sub>o\<^sub>w)\<close> \<open>(
   subgoal by (simp add: top_greatest)
   done
 
-no_notation le (infix "\<^bold>\<le>\<^sub>o\<^sub>w" 50)
-  and ls (infix "\<^bold><\<^sub>o\<^sub>w" 50)
-  and top ("\<^bold>\<top>\<^sub>o\<^sub>w")
+no_notation le (infix \<open>\<^bold>\<le>\<^sub>o\<^sub>w\<close> 50)
+  and ls (infix \<open>\<^bold><\<^sub>o\<^sub>w\<close> 50)
+  and top (\<open>\<^bold>\<top>\<^sub>o\<^sub>w\<close>)
 
 end
 

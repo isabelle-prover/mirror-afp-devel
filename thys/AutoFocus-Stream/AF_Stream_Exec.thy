@@ -680,11 +680,11 @@ definition ilist_Previous :: "'value ilist \<Rightarrow> 'value \<Rightarrow> na
     | Suc n' \<Rightarrow> f n'"
 
 abbreviation "list_Previous'" :: "'value list \<Rightarrow> 'value \<Rightarrow> nat \<Rightarrow> 'value"
-    ( "_\<^bsup>\<leftarrow>'' _\<^esup> _" [1000, 10, 100] 100)
+    ( \<open>_\<^bsup>\<leftarrow>'' _\<^esup> _\<close> [1000, 10, 100] 100)
   where "xs\<^bsup>\<leftarrow>' init\<^esup> n \<equiv> list_Previous xs init n"
 
 abbreviation "ilist_Previous'" :: "'value ilist \<Rightarrow> 'value \<Rightarrow> nat \<Rightarrow> 'value"
-    ( "_\<^bsup>\<leftarrow> _\<^esup> _" [1000, 10, 100] 100)
+    ( \<open>_\<^bsup>\<leftarrow> _\<^esup> _\<close> [1000, 10, 100] 100)
   where "f\<^bsup>\<leftarrow> init\<^esup> n \<equiv> ilist_Previous f init n"
 
 lemma list_Previous_nth: "xs\<^bsup>\<leftarrow>' init\<^esup> n = (case n of 0 \<Rightarrow> init | Suc n' \<Rightarrow> xs ! n')"

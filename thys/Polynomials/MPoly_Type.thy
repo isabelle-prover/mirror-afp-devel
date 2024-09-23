@@ -466,11 +466,11 @@ where
 (* the notion of degree resigns a main variable in multivariate polynomials;
    also, there are infinitely many tuples (a,q,r) such that a x = q y + r *)
 
-definition pdiv :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly)" (infixl "pdiv" 70)
+definition pdiv :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> ('a \<times> 'a mpoly)" (infixl \<open>pdiv\<close> 70)
 where
   "x pdiv y = (THE (a, q). \<exists>r. pseudo_divmod_rel a x y q r)"
 
-definition pmod :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "pmod" 70)
+definition pmod :: "'a::euclidean_ring mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl \<open>pmod\<close> 70)
 where
   "x pmod y = (THE r. \<exists>a q. pseudo_divmod_rel a x y q r)"
 

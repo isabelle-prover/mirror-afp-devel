@@ -16,25 +16,25 @@ begin
 
 subsection \<open> Extra syntax \<close>
 
-notation cempty ("{}\<^sub>c")
-notation cin (infix "\<in>\<^sub>c" 50)
-notation cUn (infixl "\<union>\<^sub>c" 65)
-notation cInt (infixl "\<inter>\<^sub>c" 70)
-notation cDiff (infixl "-\<^sub>c" 65)
-notation cUnion ("\<Union>\<^sub>c_" [900] 900)
-notation cimage (infixr "`\<^sub>c" 90)
+notation cempty (\<open>{}\<^sub>c\<close>)
+notation cin (infix \<open>\<in>\<^sub>c\<close> 50)
+notation cUn (infixl \<open>\<union>\<^sub>c\<close> 65)
+notation cInt (infixl \<open>\<inter>\<^sub>c\<close> 70)
+notation cDiff (infixl \<open>-\<^sub>c\<close> 65)
+notation cUnion (\<open>\<Union>\<^sub>c_\<close> [900] 900)
+notation cimage (infixr \<open>`\<^sub>c\<close> 90)
 
-abbreviation csubseteq :: "'a cset \<Rightarrow> 'a cset \<Rightarrow> bool" ("(_/ \<subseteq>\<^sub>c _)" [51, 51] 50)
+abbreviation csubseteq :: "'a cset \<Rightarrow> 'a cset \<Rightarrow> bool" (\<open>(_/ \<subseteq>\<^sub>c _)\<close> [51, 51] 50)
 where "A \<subseteq>\<^sub>c B \<equiv> A \<le> B"
 
-abbreviation csubset :: "'a cset \<Rightarrow> 'a cset \<Rightarrow> bool" ("(_/ \<subset>\<^sub>c _)" [51, 51] 50)
+abbreviation csubset :: "'a cset \<Rightarrow> 'a cset \<Rightarrow> bool" (\<open>(_/ \<subset>\<^sub>c _)\<close> [51, 51] 50)
 where "A \<subset>\<^sub>c B \<equiv> A < B"
 
 subsection \<open> Countable set functions \<close>
 
 setup_lifting type_definition_cset
 
-lift_definition cnin :: "'a \<Rightarrow> 'a cset \<Rightarrow> bool" (infix "\<notin>\<^sub>c" 50) is "(\<notin>)" .
+lift_definition cnin :: "'a \<Rightarrow> 'a cset \<Rightarrow> bool" (infix \<open>\<notin>\<^sub>c\<close> 50) is "(\<notin>)" .
 
 definition cBall :: "'a cset \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
 "cBall A P = (\<forall>x. x \<in>\<^sub>c A \<longrightarrow> P x)"
@@ -46,8 +46,8 @@ declare cBall_def [mono,simp]
 declare cBex_def [mono,simp]
 
 syntax
-  "_cBall" :: "pttrn => 'a cset => bool => bool" ("(3\<forall> _\<in>\<^sub>c_./ _)" [0, 0, 10] 10)
-  "_cBex"  :: "pttrn => 'a cset => bool => bool" ("(3\<exists> _\<in>\<^sub>c_./ _)" [0, 0, 10] 10)
+  "_cBall" :: "pttrn => 'a cset => bool => bool" (\<open>(3\<forall> _\<in>\<^sub>c_./ _)\<close> [0, 0, 10] 10)
+  "_cBex"  :: "pttrn => 'a cset => bool => bool" (\<open>(3\<exists> _\<in>\<^sub>c_./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_cBall" == cBall and
@@ -69,14 +69,14 @@ lemma cset_Coll_equiv: "cset_Coll A P = cset_Collect (\<lambda> x. x \<in>\<^sub
 declare cset_Collect_def [simp]
 
 syntax
-  "_cColl" :: "pttrn => bool => 'a cset" ("(1{_./ _}\<^sub>c)")
+  "_cColl" :: "pttrn => bool => 'a cset" (\<open>(1{_./ _}\<^sub>c)\<close>)
 syntax_consts
   "_cColl" \<rightleftharpoons> cset_Collect
 translations
   "{x . P}\<^sub>c" \<rightleftharpoons> "(CONST cset_Collect) (\<lambda> x . P)"
 
 syntax
-  "_cCollect" :: "pttrn => 'a cset => bool => 'a cset"    ("(1{_ \<in>\<^sub>c/ _./ _}\<^sub>c)")
+  "_cCollect" :: "pttrn => 'a cset => bool => 'a cset"    (\<open>(1{_ \<in>\<^sub>c/ _./ _}\<^sub>c)\<close>)
 syntax_consts
   "_cCollect" \<rightleftharpoons> cset_Coll
 translations
@@ -108,7 +108,7 @@ lemma countable_finite_power:
   "countable(A) \<Longrightarrow> countable {B. B \<subseteq> A \<and> finite(B)}"
   by (metis Collect_conj_eq Int_commute countable_Collect_finite_subset)
 
-lift_definition cInter :: "'a cset cset \<Rightarrow> 'a cset"  ("\<Inter>\<^sub>c_" [900] 900)
+lift_definition cInter :: "'a cset cset \<Rightarrow> 'a cset"  (\<open>\<Inter>\<^sub>c_\<close> [900] 900)
   is "\<lambda>A. if A = {} then {} else \<Inter> A"
   using countable_INT [of _ _ id] by auto
 

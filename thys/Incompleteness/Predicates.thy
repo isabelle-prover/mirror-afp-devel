@@ -6,7 +6,7 @@ begin
 
 section \<open>The Subset Relation\<close>
 
-nominal_function Subset :: "tm \<Rightarrow> tm \<Rightarrow> fm"   (infixr "SUBS" 150)
+nominal_function Subset :: "tm \<Rightarrow> tm \<Rightarrow> fm"   (infixr \<open>SUBS\<close> 150)
   where "atom z \<sharp> (t, u) \<Longrightarrow> t SUBS u = All2 z t ((Var z) IN u)"
   by (auto simp: eqvt_def Subset_graph_aux_def flip_fresh_fresh) (metis obtain_fresh)
 
@@ -717,7 +717,7 @@ lemma Zero_In_SUCC: "{OrdP k} \<turnstile> Zero IN SUCC k"
 
 section \<open>The predicate \<open>OrdNotEqP\<close>\<close>
 
-nominal_function OrdNotEqP :: "tm \<Rightarrow> tm \<Rightarrow> fm"  (infixr "NEQ" 150)
+nominal_function OrdNotEqP :: "tm \<Rightarrow> tm \<Rightarrow> fm"  (infixr \<open>NEQ\<close> 150)
   where "OrdNotEqP x y = OrdP x AND OrdP y AND (x IN y OR y IN x)"
   by (auto simp: eqvt_def OrdNotEqP_graph_aux_def)
 

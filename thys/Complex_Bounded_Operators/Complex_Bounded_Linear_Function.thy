@@ -22,7 +22,7 @@ unbundle lattice_syntax
 
 subsection \<open>Misc basic facts and declarations\<close>
 
-notation cblinfun_apply (infixr "*\<^sub>V" 70)
+notation cblinfun_apply (infixr \<open>*\<^sub>V\<close> 70)
 
 lemma id_cblinfun_apply[simp]: "id_cblinfun *\<^sub>V \<psi> = \<psi>"
   by simp
@@ -1125,7 +1125,7 @@ qed
 subsection \<open>Adjoint\<close>
 
 lift_definition
-  adj :: "'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner \<Rightarrow> 'b \<Rightarrow>\<^sub>C\<^sub>L 'a" ("_*" [99] 100)
+  adj :: "'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner \<Rightarrow> 'b \<Rightarrow>\<^sub>C\<^sub>L 'a" (\<open>_*\<close> [99] 100)
   is cadjoint by (fact cadjoint_bounded_clinear)
 
 definition selfadjoint :: \<open>('a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a) \<Rightarrow> bool\<close> where
@@ -1724,7 +1724,7 @@ However, $\sum_i e_i/i$ is not in \<^term>\<open>A ` S\<close> because its preim
 So \<^term>\<open>A ` S\<close> does not contain the whole space, hence it is not closed.\<close>
 
 lift_definition cblinfun_image :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector
-\<Rightarrow> 'a ccsubspace \<Rightarrow> 'b ccsubspace\<close>  (infixr "*\<^sub>S" 70)
+\<Rightarrow> 'a ccsubspace \<Rightarrow> 'b ccsubspace\<close>  (infixr \<open>*\<^sub>S\<close> 70)
   is "\<lambda>A S. closure (A ` S)"
   using  bounded_clinear_def closed_closure  closed_csubspace.intro
   by (simp add: bounded_clinear_def complex_vector.linear_subspace_image closure_is_closed_csubspace)
@@ -5112,19 +5112,19 @@ qed
 subsection \<open>Notation\<close>
 
 bundle cblinfun_notation begin
-notation cblinfun_compose (infixl "o\<^sub>C\<^sub>L" 67)
-notation cblinfun_apply (infixr "*\<^sub>V" 70)
-notation cblinfun_image (infixr "*\<^sub>S" 70)
-notation adj ("_*" [99] 100)
-type_notation cblinfun ("(_ \<Rightarrow>\<^sub>C\<^sub>L /_)" [22, 21] 21)
+notation cblinfun_compose (infixl \<open>o\<^sub>C\<^sub>L\<close> 67)
+notation cblinfun_apply (infixr \<open>*\<^sub>V\<close> 70)
+notation cblinfun_image (infixr \<open>*\<^sub>S\<close> 70)
+notation adj (\<open>_*\<close> [99] 100)
+type_notation cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21)
 end
 
 bundle no_cblinfun_notation begin
-no_notation cblinfun_compose (infixl "o\<^sub>C\<^sub>L" 67)
-no_notation cblinfun_apply (infixr "*\<^sub>V" 70)
-no_notation cblinfun_image (infixr "*\<^sub>S" 70)
-no_notation adj ("_*" [99] 100)
-no_type_notation cblinfun ("(_ \<Rightarrow>\<^sub>C\<^sub>L /_)" [22, 21] 21)
+no_notation cblinfun_compose (infixl \<open>o\<^sub>C\<^sub>L\<close> 67)
+no_notation cblinfun_apply (infixr \<open>*\<^sub>V\<close> 70)
+no_notation cblinfun_image (infixr \<open>*\<^sub>S\<close> 70)
+no_notation adj (\<open>_*\<close> [99] 100)
+no_type_notation cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21)
 end
 
 unbundle no_cblinfun_notation

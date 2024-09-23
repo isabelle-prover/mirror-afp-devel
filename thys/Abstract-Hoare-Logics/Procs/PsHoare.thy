@@ -11,19 +11,19 @@ type_synonym 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
 type_synonym 'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
 
 definition
- valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
+ valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>\<Turnstile> {(1_)}/ (_)/ {(1_)}\<close> 50) where
  "\<Turnstile> {P}c{Q} \<equiv> (\<forall>s t z. s -c\<rightarrow> t \<longrightarrow> P z s \<longrightarrow> Q z t)"
 
 definition
- valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50) where
+ valids :: "'a cntxt \<Rightarrow> bool" (\<open>|\<Turnstile> _\<close> 50) where
  "|\<Turnstile> D \<equiv> (\<forall>(P,c,Q) \<in> D. \<Turnstile> {P}c{Q})"
 
 definition
- nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50) where
+ nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>\<Turnstile>_ {(1_)}/ (_)/ {(1_)}\<close> 50) where
  "\<Turnstile>n {P}c{Q} \<equiv> (\<forall>s t z. s -c-n\<rightarrow> t \<longrightarrow> P z s \<longrightarrow> Q z t)"
 
 definition
- nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50) where
+ nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>|\<Turnstile>'__/ _\<close> 50) where
  "|\<Turnstile>_n C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q})"
 
 text\<open>We now need an additional notion of
@@ -34,11 +34,11 @@ of sets of Hoare triples we may think of conjunctions. We define both
 \<open>C |\<Turnstile> D\<close> and its relativized version:\<close>
 
 definition
- cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>/ _" 50) where
+ cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>_ |\<Turnstile>/ _\<close> 50) where
   "C |\<Turnstile> D \<longleftrightarrow> |\<Turnstile> C \<longrightarrow> |\<Turnstile> D"
 
 definition
- cnvalids :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>'__/ _" 50) where
+ cnvalids :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>_ |\<Turnstile>'__/ _\<close> 50) where
   "C |\<Turnstile>_n D \<longleftrightarrow> |\<Turnstile>_n C \<longrightarrow> |\<Turnstile>_n D"
 
 text\<open>Our Hoare logic now defines judgements of the form \<open>C \<tturnstile>
@@ -47,8 +47,8 @@ of Hoare triples; \<open>C \<turnstile> {P}c{Q}\<close> is simply an abbreviatio
 \<open>C \<tturnstile> {(P,c,Q)}\<close>.\<close>
 
 inductive
-  hoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ \<tturnstile>/ _" 50)
-  and hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
+  hoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>_ \<tturnstile>/ _\<close> 50)
+  and hoare3 :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
   "C \<turnstile> {P}c{Q}  \<equiv>  C \<tturnstile> {(P,c,Q)}"
 | Do:  "C \<turnstile> {\<lambda>z s. \<forall>t \<in> f s . P z t} Do f {P}"

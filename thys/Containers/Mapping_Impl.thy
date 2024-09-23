@@ -211,7 +211,7 @@ class mapping_impl =
   fixes mapping_impl :: "('a, mapping_impl) phantom"
 
 syntax (input)
-  "_MAPPING_IMPL" :: "type => logic"  ("(1MAPPING'_IMPL/(1'(_')))")
+  "_MAPPING_IMPL" :: "type => logic"  (\<open>(1MAPPING'_IMPL/(1'(_')))\<close>)
 
 syntax_consts
   "_MAPPING_IMPL" == mapping_impl

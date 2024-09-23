@@ -24,7 +24,7 @@ fun knapsack :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
     then knapsack i W
     else max (knapsack i W) (v (Suc i) + knapsack i (W - w (Suc i))))"
 
-no_notation fun_app_lifted (infixl "." 999)
+no_notation fun_app_lifted (infixl \<open>.\<close> 999)
 
 text \<open>
   The correctness proof closely follows Kleinberg \<open>&\<close> Tardos: "Algorithm Design",

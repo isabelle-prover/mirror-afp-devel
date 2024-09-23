@@ -135,7 +135,7 @@ qed
 
 
 abbreviation "member_option x ms \<equiv> (case ms of None \<Rightarrow> False | Some xs \<Rightarrow> x \<in> xs)"
-notation member_option ("(_\<in>\<^sub>o_)" [1000] 1000)
+notation member_option (\<open>(_\<in>\<^sub>o_)\<close> [1000] 1000)
 
 abbreviation(input) "lookup_with_default f d \<equiv> (\<lambda> x . case f x of None \<Rightarrow> d | Some xs \<Rightarrow> xs)"
 abbreviation(input) "m2f f \<equiv> lookup_with_default f {}" 

@@ -99,7 +99,7 @@ begin
 
 text \<open>Abbreviation to mirror mathematical notations \<close>
 
-abbreviation cond_prob_ev :: "'a set \<Rightarrow> 'a set \<Rightarrow> real" ("\<P>'(_ | _')")  where 
+abbreviation cond_prob_ev :: "'a set \<Rightarrow> 'a set \<Rightarrow> real" (\<open>\<P>'(_ | _')\<close>)  where 
 "\<P>(B | A) \<equiv>  \<P>(x in M. (x \<in> B) \<bar> (x \<in> A))"
 
 lemma cond_prob_inter: "\<P>(B | A) = \<P>(\<omega> in M. (\<omega> \<in> B \<inter> A)) / \<P>(\<omega> in M. (\<omega> \<in> A))"

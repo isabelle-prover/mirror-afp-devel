@@ -18,13 +18,13 @@ abbreviation multi_If :: "bool \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> '
 nonterminal if_clauses and if_clause
 
 syntax
-  "_if_block" :: "if_clauses \<Rightarrow> 'a" ("(1if _)" [12] 10)
-  "_if_clause"  :: "bool \<Rightarrow> 'a \<Rightarrow> if_clause" ("(2_ \<Rightarrow>/ _)" 13)
-  "_if_final" :: "'a \<Rightarrow> if_clauses" ("otherwise \<Rightarrow> _")
-  "_if_cons" :: "[if_clause, if_clauses] \<Rightarrow> if_clauses" ("_ /| _" [13, 12] 12)
+  "_if_block" :: "if_clauses \<Rightarrow> 'a" (\<open>(1if _)\<close> [12] 10)
+  "_if_clause"  :: "bool \<Rightarrow> 'a \<Rightarrow> if_clause" (\<open>(2_ \<Rightarrow>/ _)\<close> 13)
+  "_if_final" :: "'a \<Rightarrow> if_clauses" (\<open>otherwise \<Rightarrow> _\<close>)
+  "_if_cons" :: "[if_clause, if_clauses] \<Rightarrow> if_clauses" (\<open>_ /| _\<close> [13, 12] 12)
 
 syntax (ASCII)
-  "_if_clause" :: "[pttrn, 'a] \<Rightarrow> if_clause" ("(2_ =>/ _)" 13)
+  "_if_clause" :: "[pttrn, 'a] \<Rightarrow> if_clause" (\<open>(2_ =>/ _)\<close> 13)
 
 syntax_consts
   "_if_block" "_if_clause" "_if_final" "_if_cons" \<rightleftharpoons> multi_If

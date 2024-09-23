@@ -14,8 +14,8 @@ subsection \<open>Completeness Conditions\<close>
 
 text \<open>Order-theoretic completeness demands certain subsets of elements to admit suprema or infima.\<close>
 
-definition complete ("_-complete"[999]1000) where
- "\<C>-complete A (\<sqsubseteq>) \<equiv> \<forall>X \<subseteq> A. \<C> X (\<sqsubseteq>) \<longrightarrow> (\<exists>s. extreme_bound A (\<sqsubseteq>) X s)" for less_eq (infix "\<sqsubseteq>" 50)
+definition complete (\<open>_-complete\<close>[999]1000) where
+ "\<C>-complete A (\<sqsubseteq>) \<equiv> \<forall>X \<subseteq> A. \<C> X (\<sqsubseteq>) \<longrightarrow> (\<exists>s. extreme_bound A (\<sqsubseteq>) X s)" for less_eq (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemmas completeI = complete_def[unfolded atomize_eq, THEN iffD2, rule_format]
 lemmas completeD = complete_def[unfolded atomize_eq, THEN iffD1, rule_format]
@@ -25,7 +25,7 @@ lemma complete_cmono: "CC \<le> DD \<Longrightarrow> DD-complete \<le> CC-comple
   by (force simp: complete_def)
 
 lemma complete_subclass:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes "\<C>-complete A (\<sqsubseteq>)" and "\<forall>X \<subseteq> A. \<D> X (\<sqsubseteq>) \<longrightarrow> \<C> X (\<sqsubseteq>)"
   shows "\<D>-complete A (\<sqsubseteq>)"
   using assms by (auto simp: complete_def)
@@ -34,7 +34,7 @@ lemma complete_subclass:
 lemma complete_empty[simp]: "\<C>-complete {} r \<longleftrightarrow> \<not> \<C> {} r" by (auto simp: complete_def)
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 text\<open>Toppedness can be also seen as a completeness condition,
@@ -124,7 +124,7 @@ lemma pair_completeD:
 
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma pair_complete_imp_directed:
@@ -262,7 +262,7 @@ abbreviation "bounded_complete A \<equiv> (\<lambda>X r. \<exists>b\<in>A. bound
 subsection \<open>Relations between Completeness Conditions\<close>
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 interpretation less_eq_dualize.
@@ -345,7 +345,7 @@ subsection \<open>Duality of Completeness Conditions\<close>
 
 text \<open>Conditional completeness is symmetric.\<close>
 
-context fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+context fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 interpretation less_eq_dualize.
@@ -416,7 +416,7 @@ end
 
 text \<open>Completeness in intervals:\<close>
 lemma conditionally_complete_imp_complete_in_interval:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes comp: "conditionally_complete A (\<sqsubseteq>)" and aA: "a \<in> A" and bA: "b \<in> A"
     and aa: "a \<sqsubseteq> a" and ab: "a \<sqsubseteq> b"
   shows "\<top>-complete {x \<in> A. a \<sqsubseteq> x \<and> x \<sqsubseteq> b} (\<sqsubseteq>)"

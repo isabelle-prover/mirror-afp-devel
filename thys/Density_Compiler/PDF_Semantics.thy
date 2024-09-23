@@ -218,11 +218,11 @@ datatype pdf_operator = Fst | Snd | Add | Mult | Minus | Less | Equals | And | N
 datatype expr =
       Var vname
     | Val val
-    | LetVar expr expr ("LET _ IN _" [0, 60] 61)
-    | Operator pdf_operator expr (infixl "$$" 999)
-    | Pair expr expr  ("<_ ,  _>"  [0, 60] 1000)
+    | LetVar expr expr (\<open>LET _ IN _\<close> [0, 60] 61)
+    | Operator pdf_operator expr (infixl \<open>$$\<close> 999)
+    | Pair expr expr  (\<open><_ ,  _>\<close>  [0, 60] 1000)
     | Random pdf_dist expr
-    | IfThenElse expr expr expr ("IF _ THEN _ ELSE _" [0, 0, 70] 71)
+    | IfThenElse expr expr expr (\<open>IF _ THEN _ ELSE _\<close> [0, 0, 70] 71)
     | Fail pdf_type
 
 type_synonym tyenv = "vname \<Rightarrow> pdf_type"
@@ -405,10 +405,10 @@ primrec op_type :: "pdf_operator \<Rightarrow> pdf_type \<Rightarrow> pdf_type o
 
 subsection \<open>Semantics\<close>
 
-abbreviation (input) de_bruijn_insert (infixr "\<cdot>" 65) where
+abbreviation (input) de_bruijn_insert (infixr \<open>\<cdot>\<close> 65) where
   "de_bruijn_insert x f \<equiv> case_nat x f"
 
-inductive expr_typing :: "tyenv \<Rightarrow> expr \<Rightarrow> pdf_type \<Rightarrow> bool" ("(1_/ \<turnstile>/ (_ :/ _))" [50,0,50] 50) where
+inductive expr_typing :: "tyenv \<Rightarrow> expr \<Rightarrow> pdf_type \<Rightarrow> bool" (\<open>(1_/ \<turnstile>/ (_ :/ _))\<close> [50,0,50] 50) where
   et_var:  "\<Gamma> \<turnstile> Var x : \<Gamma> x"
 | et_val:  "\<Gamma> \<turnstile> Val v : val_type v"
 | et_let:  "\<Gamma> \<turnstile> e1 : t1 \<Longrightarrow> t1 \<cdot> \<Gamma> \<turnstile> e2 : t2 \<Longrightarrow> \<Gamma> \<turnstile> LetVar e1 e2 : t2"

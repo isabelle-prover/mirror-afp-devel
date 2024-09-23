@@ -13,7 +13,7 @@ definition
   "SepReplace(A,b,Q) \<equiv> {y . x\<in>A, y=b(x) \<and> Q(x)}"
 
 syntax
-  "_SepReplace"  :: "[i, pttrn, i, o] \<Rightarrow> i"  ("(1{_ ../ _ \<in> _, _})")
+  "_SepReplace"  :: "[i, pttrn, i, o] \<Rightarrow> i"  (\<open>(1{_ ../ _ \<in> _, _})\<close>)
 syntax_consts
   "_SepReplace" == SepReplace
 translations
@@ -553,7 +553,7 @@ lemma val_subset_domain_times_P: "val(F,\<tau>) \<subseteq> val(F,domain(\<tau>)
   by auto
 
 definition
-  GenExt :: "i\<Rightarrow>i"     ("M[_]")
+  GenExt :: "i\<Rightarrow>i"     (\<open>M[_]\<close>)
   where "GenExt(G)\<equiv> {val(G,\<tau>). \<tau> \<in> M}"
 
 

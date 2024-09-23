@@ -34,28 +34,28 @@ text \<open>In this section, we provide a formulation of LTL with explicit synta
 subsubsection \<open>Syntax\<close>
 
 datatype (atoms_ltlc: 'a) ltlc =
-    True_ltlc                               ("true\<^sub>c")
-  | False_ltlc                              ("false\<^sub>c")
-  | Prop_ltlc 'a                            ("prop\<^sub>c'(_')")
-  | Not_ltlc "'a ltlc"                      ("not\<^sub>c _" [85] 85)
-  | And_ltlc "'a ltlc" "'a ltlc"            ("_ and\<^sub>c _" [82,82] 81)
-  | Or_ltlc "'a ltlc" "'a ltlc"             ("_ or\<^sub>c _" [81,81] 80)
-  | Implies_ltlc "'a ltlc" "'a ltlc"        ("_ implies\<^sub>c _" [81,81] 80)
-  | Next_ltlc "'a ltlc"                     ("X\<^sub>c _" [88] 87)
-  | Final_ltlc "'a ltlc"                    ("F\<^sub>c _" [88] 87)
-  | Global_ltlc "'a ltlc"                   ("G\<^sub>c _" [88] 87)
-  | Until_ltlc "'a ltlc" "'a ltlc"          ("_ U\<^sub>c _" [84,84] 83)
-  | Release_ltlc "'a ltlc" "'a ltlc"        ("_ R\<^sub>c _" [84,84] 83)
-  | WeakUntil_ltlc "'a ltlc" "'a ltlc"      ("_ W\<^sub>c _" [84,84] 83)
-  | StrongRelease_ltlc "'a ltlc" "'a ltlc"  ("_ M\<^sub>c _" [84,84] 83)
+    True_ltlc                               (\<open>true\<^sub>c\<close>)
+  | False_ltlc                              (\<open>false\<^sub>c\<close>)
+  | Prop_ltlc 'a                            (\<open>prop\<^sub>c'(_')\<close>)
+  | Not_ltlc "'a ltlc"                      (\<open>not\<^sub>c _\<close> [85] 85)
+  | And_ltlc "'a ltlc" "'a ltlc"            (\<open>_ and\<^sub>c _\<close> [82,82] 81)
+  | Or_ltlc "'a ltlc" "'a ltlc"             (\<open>_ or\<^sub>c _\<close> [81,81] 80)
+  | Implies_ltlc "'a ltlc" "'a ltlc"        (\<open>_ implies\<^sub>c _\<close> [81,81] 80)
+  | Next_ltlc "'a ltlc"                     (\<open>X\<^sub>c _\<close> [88] 87)
+  | Final_ltlc "'a ltlc"                    (\<open>F\<^sub>c _\<close> [88] 87)
+  | Global_ltlc "'a ltlc"                   (\<open>G\<^sub>c _\<close> [88] 87)
+  | Until_ltlc "'a ltlc" "'a ltlc"          (\<open>_ U\<^sub>c _\<close> [84,84] 83)
+  | Release_ltlc "'a ltlc" "'a ltlc"        (\<open>_ R\<^sub>c _\<close> [84,84] 83)
+  | WeakUntil_ltlc "'a ltlc" "'a ltlc"      (\<open>_ W\<^sub>c _\<close> [84,84] 83)
+  | StrongRelease_ltlc "'a ltlc" "'a ltlc"  (\<open>_ M\<^sub>c _\<close> [84,84] 83)
 
-definition Iff_ltlc ("_ iff\<^sub>c _" [81,81] 80)
+definition Iff_ltlc (\<open>_ iff\<^sub>c _\<close> [81,81] 80)
 where
   "\<phi> iff\<^sub>c \<psi> \<equiv> (\<phi> implies\<^sub>c \<psi>) and\<^sub>c (\<psi> implies\<^sub>c \<phi>)"
 
 subsubsection \<open>Semantics\<close>
 
-primrec semantics_ltlc :: "['a set word, 'a ltlc] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>c _" [80,80] 80)
+primrec semantics_ltlc :: "['a set word, 'a ltlc] \<Rightarrow> bool" (\<open>_ \<Turnstile>\<^sub>c _\<close> [80,80] 80)
 where
   "\<xi> \<Turnstile>\<^sub>c true\<^sub>c = True"
 | "\<xi> \<Turnstile>\<^sub>c false\<^sub>c = False"
@@ -332,33 +332,33 @@ text \<open>We define a type of LTL formula in negation normal form (NNF).\<clos
 subsubsection \<open>Syntax\<close>
 
 datatype (atoms_ltln: 'a) ltln  =
-    True_ltln                               ("true\<^sub>n")
-  | False_ltln                              ("false\<^sub>n")
-  | Prop_ltln 'a                            ("prop\<^sub>n'(_')")
-  | Nprop_ltln 'a                           ("nprop\<^sub>n'(_')")
-  | And_ltln "'a ltln" "'a ltln"            ("_ and\<^sub>n _" [82,82] 81)
-  | Or_ltln "'a ltln" "'a ltln"             ("_ or\<^sub>n _" [84,84] 83)
-  | Next_ltln "'a ltln"                     ("X\<^sub>n _" [88] 87)
-  | Until_ltln "'a ltln" "'a ltln"          ("_ U\<^sub>n _" [84,84] 83)
-  | Release_ltln "'a ltln" "'a ltln"        ("_ R\<^sub>n _" [84,84] 83)
-  | WeakUntil_ltln "'a ltln" "'a ltln"      ("_ W\<^sub>n _" [84,84] 83)
-  | StrongRelease_ltln "'a ltln" "'a ltln"  ("_ M\<^sub>n _" [84,84] 83)
+    True_ltln                               (\<open>true\<^sub>n\<close>)
+  | False_ltln                              (\<open>false\<^sub>n\<close>)
+  | Prop_ltln 'a                            (\<open>prop\<^sub>n'(_')\<close>)
+  | Nprop_ltln 'a                           (\<open>nprop\<^sub>n'(_')\<close>)
+  | And_ltln "'a ltln" "'a ltln"            (\<open>_ and\<^sub>n _\<close> [82,82] 81)
+  | Or_ltln "'a ltln" "'a ltln"             (\<open>_ or\<^sub>n _\<close> [84,84] 83)
+  | Next_ltln "'a ltln"                     (\<open>X\<^sub>n _\<close> [88] 87)
+  | Until_ltln "'a ltln" "'a ltln"          (\<open>_ U\<^sub>n _\<close> [84,84] 83)
+  | Release_ltln "'a ltln" "'a ltln"        (\<open>_ R\<^sub>n _\<close> [84,84] 83)
+  | WeakUntil_ltln "'a ltln" "'a ltln"      (\<open>_ W\<^sub>n _\<close> [84,84] 83)
+  | StrongRelease_ltln "'a ltln" "'a ltln"  (\<open>_ M\<^sub>n _\<close> [84,84] 83)
 
-abbreviation finally\<^sub>n :: "'a ltln \<Rightarrow> 'a ltln" ("F\<^sub>n _" [88] 87)
+abbreviation finally\<^sub>n :: "'a ltln \<Rightarrow> 'a ltln" (\<open>F\<^sub>n _\<close> [88] 87)
 where
   "F\<^sub>n \<phi> \<equiv> true\<^sub>n U\<^sub>n \<phi>"
 
-notation (input) finally\<^sub>n ("\<diamondsuit>\<^sub>n _" [88] 87)
+notation (input) finally\<^sub>n (\<open>\<diamondsuit>\<^sub>n _\<close> [88] 87)
 
-abbreviation globally\<^sub>n :: "'a ltln \<Rightarrow> 'a ltln" ("G\<^sub>n _" [88] 87)
+abbreviation globally\<^sub>n :: "'a ltln \<Rightarrow> 'a ltln" (\<open>G\<^sub>n _\<close> [88] 87)
 where
   "G\<^sub>n \<phi> \<equiv> false\<^sub>n R\<^sub>n \<phi>"
 
-notation (input) globally\<^sub>n ("\<box>\<^sub>n _" [88] 87)
+notation (input) globally\<^sub>n (\<open>\<box>\<^sub>n _\<close> [88] 87)
 
 subsubsection \<open>Semantics\<close>
 
-primrec semantics_ltln :: "['a set word, 'a ltln] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>n _" [80,80] 80)
+primrec semantics_ltln :: "['a set word, 'a ltln] \<Rightarrow> bool" (\<open>_ \<Turnstile>\<^sub>n _\<close> [80,80] 80)
 where
   "\<xi> \<Turnstile>\<^sub>n true\<^sub>n = True"
 | "\<xi> \<Turnstile>\<^sub>n false\<^sub>n = False"
@@ -934,20 +934,20 @@ text \<open>Some algorithms do not handle the operators W and M,
 subsubsection \<open>Syntax\<close>
 
 datatype (atoms_ltlr: 'a) ltlr =
-    True_ltlr                               ("true\<^sub>r")
-  | False_ltlr                              ("false\<^sub>r")
-  | Prop_ltlr 'a                            ("prop\<^sub>r'(_')")
-  | Nprop_ltlr 'a                           ("nprop\<^sub>r'(_')")
-  | And_ltlr "'a ltlr" "'a ltlr"            ("_ and\<^sub>r _" [82,82] 81)
-  | Or_ltlr "'a ltlr" "'a ltlr"             ("_ or\<^sub>r _" [84,84] 83)
-  | Next_ltlr "'a ltlr"                     ("X\<^sub>r _" [88] 87)
-  | Until_ltlr "'a ltlr" "'a ltlr"          ("_ U\<^sub>r _" [84,84] 83)
-  | Release_ltlr "'a ltlr" "'a ltlr"        ("_ R\<^sub>r _" [84,84] 83)
+    True_ltlr                               (\<open>true\<^sub>r\<close>)
+  | False_ltlr                              (\<open>false\<^sub>r\<close>)
+  | Prop_ltlr 'a                            (\<open>prop\<^sub>r'(_')\<close>)
+  | Nprop_ltlr 'a                           (\<open>nprop\<^sub>r'(_')\<close>)
+  | And_ltlr "'a ltlr" "'a ltlr"            (\<open>_ and\<^sub>r _\<close> [82,82] 81)
+  | Or_ltlr "'a ltlr" "'a ltlr"             (\<open>_ or\<^sub>r _\<close> [84,84] 83)
+  | Next_ltlr "'a ltlr"                     (\<open>X\<^sub>r _\<close> [88] 87)
+  | Until_ltlr "'a ltlr" "'a ltlr"          (\<open>_ U\<^sub>r _\<close> [84,84] 83)
+  | Release_ltlr "'a ltlr" "'a ltlr"        (\<open>_ R\<^sub>r _\<close> [84,84] 83)
 
 
 subsubsection \<open>Semantics\<close>
 
-primrec semantics_ltlr :: "['a set word, 'a ltlr] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>r _" [80,80] 80)
+primrec semantics_ltlr :: "['a set word, 'a ltlr] \<Rightarrow> bool" (\<open>_ \<Turnstile>\<^sub>r _\<close> [80,80] 80)
 where
   "\<xi> \<Turnstile>\<^sub>r true\<^sub>r = True"
 | "\<xi> \<Turnstile>\<^sub>r false\<^sub>r = False"
@@ -1069,54 +1069,54 @@ text \<open>We define the syntax and semantics of propositional linear-time
 subsubsection \<open>Syntax\<close>
 
 datatype 'a pltl  =
-    False_ltlp                       ("false\<^sub>p")
-  | Atom_ltlp "'a \<Rightarrow> bool"           ("atom\<^sub>p'(_')")
-  | Implies_ltlp "'a pltl" "'a pltl" ("_ implies\<^sub>p _" [81,81] 80)
-  | Next_ltlp "'a pltl"              ("X\<^sub>p _" [88] 87)
-  | Until_ltlp "'a pltl" "'a pltl"   ("_ U\<^sub>p _" [84,84] 83)
+    False_ltlp                       (\<open>false\<^sub>p\<close>)
+  | Atom_ltlp "'a \<Rightarrow> bool"           (\<open>atom\<^sub>p'(_')\<close>)
+  | Implies_ltlp "'a pltl" "'a pltl" (\<open>_ implies\<^sub>p _\<close> [81,81] 80)
+  | Next_ltlp "'a pltl"              (\<open>X\<^sub>p _\<close> [88] 87)
+  | Until_ltlp "'a pltl" "'a pltl"   (\<open>_ U\<^sub>p _\<close> [84,84] 83)
 
 \<comment> \<open>Further connectives of PLTL can be defined in terms of the existing syntax.\<close>
 
-definition Not_ltlp ("not\<^sub>p _" [85] 85)
+definition Not_ltlp (\<open>not\<^sub>p _\<close> [85] 85)
 where
   "not\<^sub>p \<phi> \<equiv> \<phi> implies\<^sub>p false\<^sub>p"
 
-definition True_ltlp ("true\<^sub>p")
+definition True_ltlp (\<open>true\<^sub>p\<close>)
 where
   "true\<^sub>p \<equiv> not\<^sub>p false\<^sub>p"
 
-definition Or_ltlp ("_ or\<^sub>p _" [81,81] 80)
+definition Or_ltlp (\<open>_ or\<^sub>p _\<close> [81,81] 80)
 where
   "\<phi> or\<^sub>p \<psi> \<equiv> (not\<^sub>p \<phi>) implies\<^sub>p \<psi>"
 
-definition And_ltlp ("_ and\<^sub>p _" [82,82] 81)
+definition And_ltlp (\<open>_ and\<^sub>p _\<close> [82,82] 81)
 where
   "\<phi> and\<^sub>p \<psi> \<equiv> not\<^sub>p ((not\<^sub>p \<phi>) or\<^sub>p (not\<^sub>p \<psi>))"
 
-definition Eventually_ltlp ("F\<^sub>p _" [88] 87)
+definition Eventually_ltlp (\<open>F\<^sub>p _\<close> [88] 87)
 where
   "F\<^sub>p \<phi> \<equiv> true\<^sub>p U\<^sub>p \<phi>"
 
-definition Always_ltlp ("G\<^sub>p _" [88] 87)
+definition Always_ltlp (\<open>G\<^sub>p _\<close> [88] 87)
 where
   "G\<^sub>p \<phi> \<equiv> not\<^sub>p (F\<^sub>p (not\<^sub>p \<phi>))"
 
-definition Release_ltlp ("_ R\<^sub>p _" [84,84] 83)
+definition Release_ltlp (\<open>_ R\<^sub>p _\<close> [84,84] 83)
 where
   "\<phi> R\<^sub>p \<psi> \<equiv> not\<^sub>p ((not\<^sub>p \<phi>) U\<^sub>p (not\<^sub>p \<psi>))"
 
-definition WeakUntil_ltlp ("_ W\<^sub>p _" [84,84] 83)
+definition WeakUntil_ltlp (\<open>_ W\<^sub>p _\<close> [84,84] 83)
 where
   "\<phi> W\<^sub>p \<psi> \<equiv> \<psi> R\<^sub>p (\<phi> or\<^sub>p \<psi>)"
 
-definition StrongRelease_ltlp ("_ M\<^sub>p _" [84,84] 83)
+definition StrongRelease_ltlp (\<open>_ M\<^sub>p _\<close> [84,84] 83)
 where
   "\<phi> M\<^sub>p \<psi> \<equiv> \<psi> U\<^sub>p (\<phi> and\<^sub>p \<psi>)"
 
 
 subsubsection \<open>Semantics\<close>
 
-fun semantics_pltl :: "['a word, 'a pltl] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>p _" [80,80] 80)
+fun semantics_pltl :: "['a word, 'a pltl] \<Rightarrow> bool" (\<open>_ \<Turnstile>\<^sub>p _\<close> [80,80] 80)
 where
   "w \<Turnstile>\<^sub>p false\<^sub>p = False"
 | "w \<Turnstile>\<^sub>p atom\<^sub>p(p) = (p (w 0))"

@@ -7,7 +7,7 @@ imports
   Transition_Systems_and_Automata.Sequence
 begin
 
-  definition prefix_fininf :: "'a list \<Rightarrow> 'a stream \<Rightarrow> bool" (infix "\<le>\<^sub>F\<^sub>I" 50)
+  definition prefix_fininf :: "'a list \<Rightarrow> 'a stream \<Rightarrow> bool" (infix \<open>\<le>\<^sub>F\<^sub>I\<close> 50)
     where "u \<le>\<^sub>F\<^sub>I v \<equiv> \<exists> w. u @- w = v"
 
   lemma prefix_fininfI[intro]:

@@ -30,9 +30,9 @@ text\<open>The \emph{happens-before} relation, as introduced by \<^cite>\<open>"
      an old state to a new state, or fails.\<close>
 
 locale happens_before = preorder hb_weak hb
-  for hb_weak :: "'a \<Rightarrow> 'a \<Rightarrow> bool"  (infix "\<preceq>" 50)
-  and hb :: "'a \<Rightarrow> 'a \<Rightarrow> bool"       (infix "\<prec>" 50) +
-  fixes interp :: "'a \<Rightarrow> 'b \<rightharpoonup> 'b" ("\<langle>_\<rangle>" [0] 1000)
+  for hb_weak :: "'a \<Rightarrow> 'a \<Rightarrow> bool"  (infix \<open>\<preceq>\<close> 50)
+  and hb :: "'a \<Rightarrow> 'a \<Rightarrow> bool"       (infix \<open>\<prec>\<close> 50) +
+  fixes interp :: "'a \<Rightarrow> 'b \<rightharpoonup> 'b" (\<open>\<langle>_\<rangle>\<close> [0] 1000)
 begin
 
 (*************************************************************************)
@@ -43,7 +43,7 @@ text\<open>We say that two operations $x$ and $y$ are \emph{concurrent}, written
     $\isa{x} \mathbin{\isasymparallel} \isa{y}$, whenever one does not happen before the other:
     $\neg (\isa{x} \prec \isa{y})$ and $\neg (\isa{y} \prec \isa{x})$.\<close>
 
-definition concurrent :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<parallel>" 50) where
+definition concurrent :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<parallel>\<close> 50) where
   "s1 \<parallel> s2 \<equiv> \<not> (s1 \<prec> s2) \<and> \<not> (s2 \<prec> s1)"
 
 lemma concurrentI [intro!]: "\<not> (s1 \<prec> s2) \<Longrightarrow> \<not> (s2 \<prec> s1) \<Longrightarrow> s1 \<parallel> s2"

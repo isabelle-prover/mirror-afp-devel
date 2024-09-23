@@ -43,7 +43,7 @@ subsection "relational view"
 inductive exec_1 :: 
   "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state
   \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action \<Rightarrow> ('addr, 'heap) jvm_state \<Rightarrow> bool"
-  ("_,_ \<turnstile>/ _ -_-jvm\<rightarrow>/ _" [61,0,61,0,61] 60)
+  (\<open>_,_ \<turnstile>/ _ -_-jvm\<rightarrow>/ _\<close> [61,0,61,0,61] 60)
   for P :: "'addr jvm_prog" and t :: 'thread_id
 where
   exec_1I:

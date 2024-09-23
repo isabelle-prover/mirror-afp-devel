@@ -20,7 +20,7 @@ References:
 
 \<close>
 
-definition refinement :: "'s pred \<Rightarrow> ('a, 's, 'v) spec \<Rightarrow> ('a, 's, 'v) spec \<Rightarrow> ('v \<Rightarrow> 's pred) \<Rightarrow> ('a, 's, 'v) spec" ("\<lbrace>_\<rbrace>, _ \<tturnstile> _, \<lbrace>_\<rbrace>" [0,0,0,0] 100) where
+definition refinement :: "'s pred \<Rightarrow> ('a, 's, 'v) spec \<Rightarrow> ('a, 's, 'v) spec \<Rightarrow> ('v \<Rightarrow> 's pred) \<Rightarrow> ('a, 's, 'v) spec" (\<open>\<lbrace>_\<rbrace>, _ \<tturnstile> _, \<lbrace>_\<rbrace>\<close> [0,0,0,0] 100) where
   "\<lbrace>P\<rbrace>, A \<tturnstile> G, \<lbrace>Q\<rbrace> = spec.pre P \<sqinter> A \<^bold>\<longrightarrow>\<^sub>+ G \<sqinter> spec.post Q"
 
 text\<open>
@@ -754,7 +754,7 @@ abbreviation (input) guar :: "'s rel \<Rightarrow> (sequential, 's, 'v) spec" wh
 
 setup \<open>Sign.parent_path\<close>
 
-definition ag :: "'s pred \<Rightarrow> 's rel \<Rightarrow> 's rel \<Rightarrow> ('v \<Rightarrow> 's pred) \<Rightarrow> (sequential, 's, 'v) spec" ("\<lbrace>_\<rbrace>, _/ \<turnstile> _, \<lbrace>_\<rbrace>" [0,0,0,0] 100) where
+definition ag :: "'s pred \<Rightarrow> 's rel \<Rightarrow> 's rel \<Rightarrow> ('v \<Rightarrow> 's pred) \<Rightarrow> (sequential, 's, 'v) spec" (\<open>\<lbrace>_\<rbrace>, _/ \<turnstile> _, \<lbrace>_\<rbrace>\<close> [0,0,0,0] 100) where
   "\<lbrace>P\<rbrace>, A \<turnstile> G, \<lbrace>Q\<rbrace> = spec.pre P \<sqinter> ag.assm A \<^bold>\<longrightarrow>\<^sub>H ag.guar G \<sqinter> spec.post Q"
 
 setup \<open>Sign.mandatory_path "spec.invmap"\<close>

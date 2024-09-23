@@ -29,7 +29,7 @@ where
   \<comment> \<open>is compatible with the type at all successor instructions:\<close>
 definition
   wt_instr :: "['m prog,ty,nat,pc,ex_table,instr,pc,ty\<^sub>m] \<Rightarrow> bool"
-  ("_,_,_,_,_ \<turnstile> _,_ :: _" [60,0,0,0,0,0,0,61] 60)
+  (\<open>_,_,_,_,_ \<turnstile> _,_ :: _\<close> [60,0,0,0,0,0,0,61] 60)
 where
   "P,T,mxs,mpc,xt \<turnstile> i,pc :: \<tau>s \<equiv>
   app i P mxs T pc mpc xt (\<tau>s!pc) \<and> 
@@ -56,7 +56,7 @@ where
   (\<forall>pc < size is. P,T\<^sub>r,mxs,size is,xt \<turnstile> is!pc,pc :: \<tau>s)"
 
   \<comment> \<open>A program is welltyped if it is wellformed and all methods are welltyped\<close>
-definition  wf_jvm_prog_phi :: "ty\<^sub>P \<Rightarrow> jvm_prog \<Rightarrow> bool" ("wf'_jvm'_prog\<^bsub>_\<^esub>")
+definition  wf_jvm_prog_phi :: "ty\<^sub>P \<Rightarrow> jvm_prog \<Rightarrow> bool" (\<open>wf'_jvm'_prog\<^bsub>_\<^esub>\<close>)
 where
   "wf_jvm_prog\<^bsub>\<Phi>\<^esub> \<equiv>
     wf_prog (\<lambda>P C (M,b,Ts,T\<^sub>r,(mxs,mxl\<^sub>0,is,xt)). 

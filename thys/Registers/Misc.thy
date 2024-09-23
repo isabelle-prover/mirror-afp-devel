@@ -11,8 +11,8 @@ theory Misc
 begin
 
 \<comment> \<open>Remove notation that collides with the notation we use\<close>
-no_notation Order.top ("\<top>\<index>")
-no_notation m_inv ("inv\<index> _" [81] 80)
+no_notation Order.top (\<open>\<top>\<index>\<close>)
+no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
 unbundle no_vec_syntax
 unbundle no_inner_syntax
 
@@ -110,7 +110,7 @@ text \<open>We define the following abbreviations:
 \<^item> \<open>mutually f (x\<^sub>1,x\<^sub>2,\<dots>,x\<^sub>n)\<close> expands to the conjuction of all \<^term>\<open>f x\<^sub>i x\<^sub>j\<close> with \<^term>\<open>i\<noteq>j\<close>.
 \<^item> \<open>each f (x\<^sub>1,x\<^sub>2,\<dots>,x\<^sub>n)\<close> expands to the conjuction of all \<^term>\<open>f x\<^sub>i\<close>.\<close>
 
-syntax "_mutually" :: "'a \<Rightarrow> args \<Rightarrow> 'b" ("mutually _ '(_')")
+syntax "_mutually" :: "'a \<Rightarrow> args \<Rightarrow> 'b" (\<open>mutually _ '(_')\<close>)
 syntax "_mutually2" :: "'a \<Rightarrow> 'b \<Rightarrow> args \<Rightarrow> args \<Rightarrow> 'c"
 
 translations "mutually f (x)" => "CONST True"
@@ -119,7 +119,7 @@ translations "mutually f (_args x (_args x' xs))" => "_mutually2 f x (_args x' x
 translations "_mutually2 f x y zs" => "f x y \<and> f y x \<and> _mutually f zs"
 translations "_mutually2 f x (_args y ys) zs" => "f x y \<and> f y x \<and> _mutually2 f x ys zs"
 
-syntax "_each" :: "'a \<Rightarrow> args \<Rightarrow> 'b" ("each _ '(_')")
+syntax "_each" :: "'a \<Rightarrow> args \<Rightarrow> 'b" (\<open>each _ '(_')\<close>)
 translations "each f (x)" => "f x"
 translations "_each f (_args x xs)" => "f x \<and> _each f xs"
 

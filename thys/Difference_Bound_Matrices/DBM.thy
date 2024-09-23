@@ -16,7 +16,7 @@ text \<open>
   (or more precisely, the difference of values assigned to individual clocks by a valuation).
   The possible constraints are given by the following datatype:
 \<close>
-datatype 't DBMEntry = Le 't | Lt 't | INF ("\<infinity>")
+datatype 't DBMEntry = Le 't | Lt 't | INF (\<open>\<infinity>\<close>)
 
 text \<open>\noindent This yields a simple definition of DBMs:\<close>
 
@@ -90,7 +90,7 @@ where
   "dbm_entry_bound \<infinity> = 0"
 
 inductive dbm_lt :: "('t::linorder) DBMEntry \<Rightarrow> 't DBMEntry \<Rightarrow> bool"
-("_ \<prec> _" [51, 51] 50)
+(\<open>_ \<prec> _\<close> [51, 51] 50)
 where
   "dbm_lt (Lt _) \<infinity>" |
   "dbm_lt (Le _) \<infinity>" |
@@ -102,7 +102,7 @@ where
 declare dbm_lt.intros[intro]
 
 definition dbm_le :: "('t::linorder) DBMEntry \<Rightarrow> 't DBMEntry \<Rightarrow> bool"
-("_ \<preceq> _" [51, 51] 50)
+(\<open>_ \<preceq> _\<close> [51, 51] 50)
 where
   "dbm_le a b \<equiv> (a \<prec> b) \<or> a = b"
 
@@ -119,7 +119,7 @@ where
 
 abbreviation DBM_val_bounded_abbrev ::
   "('c, 't) cval \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> ('t::time) DBM \<Rightarrow> bool"
-("_ \<turnstile>\<^bsub>_,_\<^esub> _" [48, 48, 48, 48] 48)
+(\<open>_ \<turnstile>\<^bsub>_,_\<^esub> _\<close> [48, 48, 48, 48] 48)
 where
   "u \<turnstile>\<^bsub>v,n\<^esub> M \<equiv> DBM_val_bounded v u M n"
 
@@ -222,7 +222,7 @@ lemma not_dbm_le_lt_impl: "\<not> Le a \<prec> Lt b \<Longrightarrow> a \<ge> b"
 
 subsection \<open>Addition on DBM Entries\<close>
 
-fun dbm_add :: "('t::linordered_cancel_ab_semigroup_add) DBMEntry \<Rightarrow> 't DBMEntry \<Rightarrow> 't DBMEntry" (infixl "\<otimes>" 70)
+fun dbm_add :: "('t::linordered_cancel_ab_semigroup_add) DBMEntry \<Rightarrow> 't DBMEntry \<Rightarrow> 't DBMEntry" (infixl \<open>\<otimes>\<close> 70)
 where
   "dbm_add \<infinity>     _      = \<infinity>" |
   "dbm_add _      \<infinity>     = \<infinity>" |
@@ -519,7 +519,7 @@ next
   case 3 thus ?thesis by (cases b) auto
 qed
 
-no_notation dbm_add (infixl "\<otimes>" 70)
+no_notation dbm_add (infixl \<open>\<otimes>\<close> 70)
 
 lemma DBM_val_bounded_len_1'_aux:
   assumes "DBM_val_bounded v u m n" "v c \<le> n" "\<forall> k \<in> set vs. k > 0 \<and> k \<le> n \<and> (\<exists> c. v c = k)"

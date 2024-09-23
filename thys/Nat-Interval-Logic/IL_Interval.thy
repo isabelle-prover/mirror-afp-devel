@@ -22,13 +22,13 @@ type_synonym iT = "Time set"
 
 text \<open>Infinite interval starting at some natural @{term "n"}.\<close>
 definition 
-  iFROM :: "Time \<Rightarrow> iT" ("[_\<dots>]") (* [n, \<infinity>) *) 
+  iFROM :: "Time \<Rightarrow> iT" (\<open>[_\<dots>]\<close>) (* [n, \<infinity>) *) 
 where
   "[n\<dots>] \<equiv> {n..}"
 
 text \<open>Finite interval starting at @{term "0"} and ending at some natural @{term "n"}.\<close>
 definition
-  iTILL :: "Time \<Rightarrow> iT" ("[\<dots>_]") (* [0, n] *) (* Equivalent to [0\<dots>,n] *)
+  iTILL :: "Time \<Rightarrow> iT" (\<open>[\<dots>_]\<close>) (* [0, n] *) (* Equivalent to [0\<dots>,n] *)
 where
   "[\<dots>n] \<equiv> {..n}"
 
@@ -38,7 +38,7 @@ text \<open>
   @{term "d"} denotes the difference between left and right interval bound.
   The number of elements is @{term "d + 1"} so that an empty interval cannot be defined.\<close>
 definition
-  iIN   :: "Time \<Rightarrow> nat \<Rightarrow> iT" ( "[_\<dots>,_]") (* [n, n+d] *)
+  iIN   :: "Time \<Rightarrow> nat \<Rightarrow> iT" ( \<open>[_\<dots>,_]\<close>) (* [n, n+d] *)
 where
   "[n\<dots>,d] \<equiv> {n..n+d}"
 
@@ -49,7 +49,7 @@ text \<open>
   having the same division remainder modulo @{term "m"}
   as @{term "r"}, and beginning at @{term "n"}.\<close>
 definition
-  iMOD  :: "Time \<Rightarrow> nat \<Rightarrow> iT" ( "[ _, mod _ ]" ) 
+  iMOD  :: "Time \<Rightarrow> nat \<Rightarrow> iT" ( \<open>[ _, mod _ ]\<close> ) 
 where
   "[r, mod m] \<equiv> { x. x mod m = r mod m \<and> r \<le> x}" 
 
@@ -61,7 +61,7 @@ text \<open>
   and ending after @{term "c"} cycles at @{term "r + m * c"}.
   The number of elements is @{term "c + 1"} so that an empty interval cannot be defined.\<close>
 definition
-  iMODb :: "Time \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> iT" ( "[ _, mod _, _ ]" ) 
+  iMODb :: "Time \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> iT" ( \<open>[ _, mod _, _ ]\<close> ) 
 where
   "[r, mod m, c] \<equiv> { x. x mod m = r mod m \<and> r \<le> x \<and> x \<le> r + m * c}"
 

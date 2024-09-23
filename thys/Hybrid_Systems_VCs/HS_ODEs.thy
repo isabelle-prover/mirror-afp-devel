@@ -21,13 +21,13 @@ begin
 
 subsection \<open> Initial value problems and orbits \<close>
 
-notation image ("\<P>")
+notation image (\<open>\<P>\<close>)
 
 lemma image_le_pred[simp]: "(\<P> f A \<subseteq> {s. G s}) = (\<forall>x\<in>A. G (f x))"
   unfolding image_def by force
 
 definition ivp_sols :: "(real \<Rightarrow> 'a \<Rightarrow> ('a::real_normed_vector)) \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a \<Rightarrow> (real \<Rightarrow> 'a) set" ("Sols")
+  real \<Rightarrow> 'a \<Rightarrow> (real \<Rightarrow> 'a) set" (\<open>Sols\<close>)
   where "Sols f U S t\<^sub>0 s = {X \<in> U s \<rightarrow> S. (D X = (\<lambda>t. f t (X t)) on U s) \<and> X t\<^sub>0 = s \<and> t\<^sub>0 \<in> U s}"
 
 lemma ivp_solsI: 
@@ -51,7 +51,7 @@ lemma in_ivp_sols_subset:
 
 abbreviation "down U t \<equiv> {\<tau> \<in> U. \<tau> \<le> t}"
 
-definition g_orbit :: "(('a::ord) \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'b set" ("\<gamma>")
+definition g_orbit :: "(('a::ord) \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> 'b set" (\<open>\<gamma>\<close>)
   where "\<gamma> X G U = \<Union>{\<P> X (down U t) |t. \<P> X (down U t) \<subseteq> {s. G s}}"
 
 lemma g_orbit_eq: 
@@ -88,7 +88,7 @@ lemma "X \<in> Sols f U S t\<^sub>0 s \<Longrightarrow> \<gamma> X G (U s) \<sub
 lemma "g_orbital f G U S t\<^sub>0 s \<subseteq> g_orbital f (\<lambda>s. True) U S t\<^sub>0 s"
   unfolding g_orbital_eq by auto
 
-no_notation g_orbit ("\<gamma>")
+no_notation g_orbit (\<open>\<gamma>\<close>)
 
 
 subsection \<open> Differential Invariants \<close>
@@ -686,7 +686,7 @@ lemma g_orbital_collapses:
   apply (subst g_orbital_orbit[of _ _ "\<lambda>t. \<phi> t s"], simp_all add: assms g_orbit_eq)
   by (rule in_ivp_sols, simp_all add: assms)
 
-definition orbit :: "'a \<Rightarrow> 'a set" ("\<gamma>\<^sup>\<phi>")
+definition orbit :: "'a \<Rightarrow> 'a set" (\<open>\<gamma>\<^sup>\<phi>\<close>)
   where "\<gamma>\<^sup>\<phi> s = g_orbital (\<lambda>t. f) (\<lambda>s. True) (\<lambda>s. T) S 0 s"
 
 lemma orbit_eq: 

@@ -42,7 +42,7 @@ definition FOREACH_cond where "FOREACH_cond c \<equiv> (\<lambda>(xs,\<sigma>). 
 
 text \<open>Foreach with continuation condition, order and annotated invariant:\<close>
 
-definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FOREACHoci R \<Phi> S c f \<sigma>0 \<equiv> do {
+definition FOREACHoci (\<open>FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>\<close>) where "FOREACHoci R \<Phi> S c f \<sigma>0 \<equiv> do {
   ASSERT (finite S);
   xs \<leftarrow> SPEC (\<lambda>xs. distinct xs \<and> S = set xs \<and> sorted_wrt R xs);
   (_,\<sigma>) \<leftarrow> WHILEIT 
@@ -50,17 +50,17 @@ definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FORE
   RETURN \<sigma> }"
 
 text \<open>Foreach with continuation condition and annotated invariant:\<close>
-definition FOREACHci ("FOREACH\<^sub>C\<^bsup>_\<^esup>") where "FOREACHci \<equiv> FOREACHoci (\<lambda>_ _. True)"
+definition FOREACHci (\<open>FOREACH\<^sub>C\<^bsup>_\<^esup>\<close>) where "FOREACHci \<equiv> FOREACHoci (\<lambda>_ _. True)"
 
 text \<open>Foreach with continuation condition:\<close>
-definition FOREACHc ("FOREACH\<^sub>C") where "FOREACHc \<equiv> FOREACHci (\<lambda>_ _. True)"
+definition FOREACHc (\<open>FOREACH\<^sub>C\<close>) where "FOREACHc \<equiv> FOREACHci (\<lambda>_ _. True)"
 
 text \<open>Foreach with annotated invariant:\<close>
-definition FOREACHi ("FOREACH\<^bsup>_\<^esup>") where 
+definition FOREACHi (\<open>FOREACH\<^bsup>_\<^esup>\<close>) where 
   "FOREACHi \<Phi> S \<equiv> FOREACHci \<Phi> S (\<lambda>_. True)"
 
 text \<open>Foreach with annotated invariant and order:\<close>
-definition FOREACHoi ("FOREACH\<^sub>O\<^bsup>_,_\<^esup>") where 
+definition FOREACHoi (\<open>FOREACH\<^sub>O\<^bsup>_,_\<^esup>\<close>) where 
   "FOREACHoi R \<Phi> S \<equiv> FOREACHoci R \<Phi> S (\<lambda>_. True)"
 
 text \<open>Basic foreach\<close>

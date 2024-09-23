@@ -26,7 +26,7 @@ abbreviation value_to_sterm_rules :: "vrule list \<Rightarrow> srule list" where
 "value_to_sterm_rules \<equiv> map (map_prod id value_to_sterm)"
 
 inductive (in special_constants)
-  veval :: "(name \<times> value) list \<Rightarrow> (name, value) fmap \<Rightarrow> sterm \<Rightarrow> value \<Rightarrow> bool"  ("_, _/ \<turnstile>\<^sub>v/ _ \<down>/ _" [50,0,50] 50) for rs where
+  veval :: "(name \<times> value) list \<Rightarrow> (name, value) fmap \<Rightarrow> sterm \<Rightarrow> value \<Rightarrow> bool"  (\<open>_, _/ \<turnstile>\<^sub>v/ _ \<down>/ _\<close> [50,0,50] 50) for rs where
 const: "(name, rhs) \<in> set rs \<Longrightarrow> rs, \<Gamma> \<turnstile>\<^sub>v Sconst name \<down> rhs" |
 var: "fmlookup \<Gamma> name = Some val \<Longrightarrow> rs, \<Gamma> \<turnstile>\<^sub>v Svar name \<down> val" |
 abs: "rs, \<Gamma> \<turnstile>\<^sub>v Sabs cs \<down> Vabs cs \<Gamma>" |

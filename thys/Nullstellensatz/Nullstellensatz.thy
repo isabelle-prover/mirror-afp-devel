@@ -317,7 +317,7 @@ lemma variety_of_map_indets: "\<V> (map_indets f ` F) = (\<lambda>a. a \<circ> f
 
 subsection \<open>Radical Ideals\<close>
 
-definition radical :: "'a::monoid_mult set \<Rightarrow> 'a set" ("\<surd>(_)" [999] 999)
+definition radical :: "'a::monoid_mult set \<Rightarrow> 'a set" (\<open>\<surd>(_)\<close> [999] 999)
   where "radical F = {f. \<exists>m. f ^ m \<in> F}"
 
 lemma radicalI: "f ^ m \<in> F \<Longrightarrow> f \<in> \<surd>F"

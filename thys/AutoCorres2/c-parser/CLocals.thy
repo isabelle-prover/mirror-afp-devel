@@ -246,7 +246,7 @@ definition "global_exn_var_clocal = clocals_string_embedding ''global_exn_var''"
 
 bundle clocals_string_embedding
 begin
-notation clocals_string_embedding ("\<S>")
+notation clocals_string_embedding (\<open>\<S>\<close>)
 end
 
 ML \<open>
@@ -579,25 +579,25 @@ Attrib.setup \<^binding>\<open>unfold_locals\<close>
 nonterminal localsupdbinds and localsupdbind
 
 syntax
-  "_localsupdbind" :: "'a \<Rightarrow> 'a \<Rightarrow> localsupdbind"             ("(2_ :=\<^sub>\<L>/ _)")
-  ""         :: "localsupdbind \<Rightarrow> localsupdbinds"             ("_")
-  "_localsupdbinds":: "localsupdbind \<Rightarrow> localsupdbinds \<Rightarrow> localsupdbinds" ("_,/ _")
+  "_localsupdbind" :: "'a \<Rightarrow> 'a \<Rightarrow> localsupdbind"             (\<open>(2_ :=\<^sub>\<L>/ _)\<close>)
+  ""         :: "localsupdbind \<Rightarrow> localsupdbinds"             (\<open>_\<close>)
+  "_localsupdbinds":: "localsupdbind \<Rightarrow> localsupdbinds \<Rightarrow> localsupdbinds" (\<open>_,/ _\<close>)
 
 
 syntax
-  "_statespace_lookup" :: "locals \<Rightarrow> 'name \<Rightarrow> 'c"  ("_ \<cdot> _" [60, 60] 60)
+  "_statespace_lookup" :: "locals \<Rightarrow> 'name \<Rightarrow> 'c"  (\<open>_ \<cdot> _\<close> [60, 60] 60)
   "_statespace_locals_lookup" :: "('g, locals, 'e, 'x) state_scheme \<Rightarrow> 'name \<Rightarrow> 'c"
-    ("_ \<cdot>\<^sub>\<L> _" [60, 60] 60)
+    (\<open>_ \<cdot>\<^sub>\<L> _\<close> [60, 60] 60)
 
   "_statespace_update" :: "locals \<Rightarrow> 'name \<Rightarrow> ('c \<Rightarrow> 'c) \<Rightarrow> locals"
-  "_statespace_updates" :: "locals \<Rightarrow> updbinds \<Rightarrow> locals"  ("_\<langle>_\<rangle>" [900, 0] 900)
+  "_statespace_updates" :: "locals \<Rightarrow> updbinds \<Rightarrow> locals"  (\<open>_\<langle>_\<rangle>\<close> [900, 0] 900)
 
   "_statespace_locals_update" :: "('g, locals, 'e, 'x) state_scheme \<Rightarrow> 'name \<Rightarrow> ('c \<Rightarrow> 'c) \<Rightarrow> ('g, locals, 'e, 'x) state_scheme"
-  "_statespace_locals_updates" :: "locals \<Rightarrow> localsupdbinds \<Rightarrow> locals"  ("_\<langle>_\<rangle>" [900, 0] 900)
+  "_statespace_locals_updates" :: "locals \<Rightarrow> localsupdbinds \<Rightarrow> locals"  (\<open>_\<langle>_\<rangle>\<close> [900, 0] 900)
 
   "_statespace_locals_map" ::
   "'name \<Rightarrow> ('c \<Rightarrow> 'c) \<Rightarrow> ('g, locals, 'e, 'x) state_scheme \<Rightarrow> ('g, locals, 'e, 'x) state_scheme"
-  ("(2_:=\<^sub>\<L>/ _)" [1000, 1000] 1000)
+  (\<open>(2_:=\<^sub>\<L>/ _)\<close> [1000, 1000] 1000)
 
 translations
   "_statespace_updates f (_updbinds b bs)" ==

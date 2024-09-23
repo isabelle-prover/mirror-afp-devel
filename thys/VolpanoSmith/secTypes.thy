@@ -11,7 +11,7 @@ datatype secLevel = Low | High
 
 type_synonym typeEnv = "vname \<rightharpoonup> secLevel"
 
-inductive secExprTyping :: "typeEnv \<Rightarrow> expr \<Rightarrow> secLevel \<Rightarrow> bool" ("_ \<turnstile> _ : _")
+inductive secExprTyping :: "typeEnv \<Rightarrow> expr \<Rightarrow> secLevel \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close>)
 where typeVal:  "\<Gamma> \<turnstile> Val V : lev"
 
   | typeVar:    "\<Gamma> Vn = Some lev \<Longrightarrow> \<Gamma> \<turnstile> Var Vn : lev"
@@ -24,7 +24,7 @@ where typeVal:  "\<Gamma> \<turnstile> Val V : lev"
 
 
 
-inductive secComTyping :: "typeEnv \<Rightarrow> secLevel \<Rightarrow> com \<Rightarrow> bool" ("_,_ \<turnstile> _")
+inductive secComTyping :: "typeEnv \<Rightarrow> secLevel \<Rightarrow> com \<Rightarrow> bool" (\<open>_,_ \<turnstile> _\<close>)
 where typeSkip:  "\<Gamma>,T \<turnstile> Skip"
 
   | typeAssH:    "\<Gamma> V = Some High \<Longrightarrow> \<Gamma>,T \<turnstile> V := e"
@@ -251,7 +251,7 @@ text \<open>Low Equivalence is reflexive even if the involved states are undefin
   equivalence relation.\<close>
 
 
-definition lowEquiv :: "typeEnv \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool" ("_ \<turnstile> _ \<approx>\<^sub>L _")
+definition lowEquiv :: "typeEnv \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<approx>\<^sub>L _\<close>)
 where "\<Gamma> \<turnstile> s1 \<approx>\<^sub>L s2 \<equiv> \<forall>v\<in>dom \<Gamma>. \<Gamma> v = Some Low \<longrightarrow> (s1 v = s2 v)"
 
 

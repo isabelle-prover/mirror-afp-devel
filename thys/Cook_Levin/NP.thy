@@ -47,7 +47,7 @@ definition DTIME :: "(nat \<Rightarrow> nat) \<Rightarrow> language set" where
     big_oh T' T \<and>
     computes_in_time k M (characteristic L) T'}"
 
-definition complexity_class_P :: "language set" ("\<P>") where
+definition complexity_class_P :: "language set" (\<open>\<P>\<close>) where
   "\<P> \<equiv> \<Union>c\<in>{1..}. DTIME (\<lambda>n. n ^ c)"
 
 text \<open>
@@ -63,7 +63,7 @@ outputs $\bbbI$ on input $\langle x, u\rangle$ it is called a
 \emph{certificate} for $x$~\cite[Definition~2.1]{ccama}.
 \<close>
 
-definition complexity_class_NP :: "language set" ("\<N>\<P>") where
+definition complexity_class_NP :: "language set" (\<open>\<N>\<P>\<close>) where
   "\<N>\<P> \<equiv> {L. \<exists>k G M p T fverify.
     turing_machine k G M \<and>
     polynomial p \<and>
@@ -110,7 +110,7 @@ there is a polynomial-time computable function $f_\mathit{reduce}$ such that for
 $x$, $x\in L_1$ iff.\ $f_\mathit{reduce}(x) \in L_2$.
 \<close>
 
-definition reducible (infix "\<le>\<^sub>p" 50) where
+definition reducible (infix \<open>\<le>\<^sub>p\<close> 50) where
   "L\<^sub>1 \<le>\<^sub>p L\<^sub>2 \<equiv> \<exists>k G M T freduce.
     turing_machine k G M \<and>
     big_oh_poly T \<and>

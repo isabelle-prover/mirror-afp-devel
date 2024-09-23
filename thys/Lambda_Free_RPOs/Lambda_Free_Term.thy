@@ -21,7 +21,7 @@ subsection \<open>Precedence on Symbols\<close>
 
 locale gt_sym =
   fixes
-    gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50)
+    gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>>\<^sub>s\<close> 50)
   assumes
     gt_sym_irrefl: "\<not> f >\<^sub>s f" and
     gt_sym_trans: "h >\<^sub>s g \<Longrightarrow> g >\<^sub>s f \<Longrightarrow> h >\<^sub>s f" and
@@ -447,7 +447,7 @@ subsection \<open>Potential Heads of Ground Instances of Variables\<close>
 
 locale ground_heads = gt_sym "(>\<^sub>s)" + arity arity_sym arity_var
     for
-      gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix ">\<^sub>s" 50) and
+      gt_sym :: "'s \<Rightarrow> 's \<Rightarrow> bool" (infix \<open>>\<^sub>s\<close> 50) and
       arity_sym :: "'s \<Rightarrow> enat" and
       arity_var :: "'v \<Rightarrow> enat" +
   fixes
@@ -576,10 +576,10 @@ qed
 
 lemmas wary_grounding_\<rho> = strict_wary_grounding_\<rho>[THEN strict_imp_wary_subst]
 
-definition gt_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix ">\<^sub>h\<^sub>d" 50) where
+definition gt_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix \<open>>\<^sub>h\<^sub>d\<close> 50) where
   "\<xi> >\<^sub>h\<^sub>d \<zeta> \<longleftrightarrow> (\<forall>g \<in> ground_heads \<xi>. \<forall>f \<in> ground_heads \<zeta>. g >\<^sub>s f)"
 
-definition comp_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix "\<le>\<ge>\<^sub>h\<^sub>d" 50) where
+definition comp_hd :: "('s, 'v) hd \<Rightarrow> ('s, 'v) hd \<Rightarrow> bool" (infix \<open>\<le>\<ge>\<^sub>h\<^sub>d\<close> 50) where
   "\<xi> \<le>\<ge>\<^sub>h\<^sub>d \<zeta> \<longleftrightarrow> \<xi> = \<zeta> \<or> \<xi> >\<^sub>h\<^sub>d \<zeta> \<or> \<zeta> >\<^sub>h\<^sub>d \<xi>"
 
 lemma gt_hd_irrefl: "\<not> \<zeta> >\<^sub>h\<^sub>d \<zeta>"

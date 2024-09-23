@@ -40,7 +40,7 @@ definition listfun_comp :: "('a, 'b) listfun \<rightarrow> ('a, 'b) listfun \<ri
     Abs_listfun (\<Lambda> c n. listfun\<cdot>g\<cdot>c\<cdot>(listfun\<cdot>h\<cdot>c\<cdot>n), build\<cdot>g ++ build\<cdot>h))"
 
 abbreviation
-  listfun_comp_infix :: "('a, 'b) listfun \<Rightarrow> ('a, 'b) listfun \<Rightarrow> ('a, 'b) listfun" (infixl "\<circ>lf" 55)
+  listfun_comp_infix :: "('a, 'b) listfun \<Rightarrow> ('a, 'b) listfun \<Rightarrow> ('a, 'b) listfun" (infixl \<open>\<circ>lf\<close> 55)
   where
     "g \<circ>lf h \<equiv> listfun_comp\<cdot>g\<cdot>h"
 

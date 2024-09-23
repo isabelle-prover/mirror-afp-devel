@@ -8,7 +8,7 @@ begin
 
 consts congruenceSubst :: "(pi \<times> pi) set"
 
-definition weakCongruenceSubst (infixr "\<simeq>\<^sup>s" 65) where "P \<simeq>\<^sup>s Q \<equiv> \<forall>\<sigma>. P[<\<sigma>>] \<simeq> Q[<\<sigma>>]"
+definition weakCongruenceSubst (infixr \<open>\<simeq>\<^sup>s\<close> 65) where "P \<simeq>\<^sup>s Q \<equiv> \<forall>\<sigma>. P[<\<sigma>>] \<simeq> Q[<\<sigma>>]"
 
 lemma unfoldE:
   fixes P :: pi

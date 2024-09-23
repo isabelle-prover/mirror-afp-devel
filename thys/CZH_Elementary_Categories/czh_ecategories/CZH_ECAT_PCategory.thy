@@ -37,7 +37,7 @@ definition cat_prod :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
     ]\<^sub>\<circ>"
 
 syntax "_PCATEGORY" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" 
-  ("(3\<Prod>\<^sub>C_\<in>\<^sub>\<circ>_./ _)" [0, 0, 10] 10)
+  (\<open>(3\<Prod>\<^sub>C_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
 syntax_consts "_PCATEGORY" \<rightleftharpoons> cat_prod
 translations "\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>I. \<AA>" \<rightleftharpoons> "CONST cat_prod I (\<lambda>i. \<AA>)"
 
@@ -1713,7 +1713,7 @@ subsection\<open>Product of three categories\<close>
 
 subsubsection\<open>Definition and elementary properties.\<close>
 
-definition cat_prod_3 :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" ("(_ \<times>\<^sub>C\<^sub>3 _ \<times>\<^sub>C\<^sub>3 _)" [81, 81, 81] 80)
+definition cat_prod_3 :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(_ \<times>\<^sub>C\<^sub>3 _ \<times>\<^sub>C\<^sub>3 _)\<close> [81, 81, 81] 80)
   where "\<AA> \<times>\<^sub>C\<^sub>3 \<BB> \<times>\<^sub>C\<^sub>3 \<CC> = (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>3\<^sub>\<nat>. if3 \<AA> \<BB> \<CC> i)"
 
 abbreviation cat_pow_3 :: "V \<Rightarrow> V" (\<open>_^\<^sub>C\<^sub>3\<close> [81] 80)
@@ -2204,9 +2204,9 @@ definition bifunctor_proj_snd :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow
     (\<SS>\<^bsub>\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>2\<^sub>\<nat> -\<^sub>\<circ> set {0}. (i = 0 ? \<AA> : \<BB>),\<SS>\<lparr>HomCod\<rparr>\<^esub>(-,set {\<langle>0, a\<rangle>})) \<circ>\<^sub>C\<^sub>F
       cf_singleton (1\<^sub>\<nat>) \<BB>"
 
-abbreviation bcf_ObjMap_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl "\<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>O\<index>" 55)
+abbreviation bcf_ObjMap_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>O\<index>\<close> 55)
   where "a \<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>O\<^bsub>\<SS>\<^esub> b \<equiv> \<SS>\<lparr>ObjMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>"
-abbreviation bcf_ArrMap_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl "\<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<index>" 55)
+abbreviation bcf_ArrMap_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<index>\<close> 55)
   where "g \<otimes>\<^sub>H\<^sub>M\<^sub>.\<^sub>A\<^bsub>\<SS>\<^esub> f \<equiv> \<SS>\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet>"
 
 

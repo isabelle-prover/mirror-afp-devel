@@ -27,7 +27,7 @@ proof -
     by metis
 qed
 
-abbreviation contrasimulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<sqsubseteq>c  _" [60, 60] 65)
+abbreviation contrasimulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<sqsubseteq>c  _\<close> [60, 60] 65)
   where \<open>contrasimulated_by p q \<equiv> \<exists> R . contrasimulation R \<and> R p q\<close>
 
 lemma contrasim_preorder_is_contrasim:

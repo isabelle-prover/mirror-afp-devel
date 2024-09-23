@@ -317,7 +317,7 @@ next
 qed
 
 subsubsection \<open> Isolated Point \<close>    
-definition isolated_points_of :: "'a topology \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr "isolated'_points'_of" 80) where
+definition isolated_points_of :: "'a topology \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr \<open>isolated'_points'_of\<close> 80) where
 "X isolated_points_of A \<equiv> {x\<in>topspace X \<inter> A. x \<notin> X derived_set_of A}"
 
 lemma isolated_points_of_eq:
@@ -1907,7 +1907,7 @@ proof -
     by(auto intro!: measurable_isomorphic_map_byWitness[where g="f'\<circ>g'"])
 qed
 
-definition measurable_isomorphic::"['a measure, 'b measure] \<Rightarrow> bool" (infixr "measurable'_isomorphic" 50) where
+definition measurable_isomorphic::"['a measure, 'b measure] \<Rightarrow> bool" (infixr \<open>measurable'_isomorphic\<close> 50) where
 "M measurable_isomorphic N \<longleftrightarrow> (\<exists>f. measurable_isomorphic_map M N f)"
 
 lemma measurable_isomorphic_sets_cong:

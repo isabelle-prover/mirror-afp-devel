@@ -22,7 +22,7 @@ definition PreValid :: "('w::world) form \<Rightarrow> bool"
 where "PreValid A \<equiv> \<forall> w. w \<Turnstile> A"
 
 syntax
-  "_PreValid"      :: "lift \<Rightarrow> bool"     ("(|~ _)" 5)
+  "_PreValid"      :: "lift \<Rightarrow> bool"     (\<open>(|~ _)\<close> 5)
 
 translations
   "_PreValid"  \<rightleftharpoons> "CONST PreValid"

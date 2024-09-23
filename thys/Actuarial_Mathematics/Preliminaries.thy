@@ -3,7 +3,7 @@ theory Preliminaries
     "HOL-Probability.Probability"
 begin
 declare [[show_types]]
-notation powr (infixr ".^" 80)
+notation powr (infixr \<open>.^\<close> 80)
 
 section \<open>Preliminary Lemmas\<close>
 
@@ -2435,7 +2435,7 @@ proof
   finally show "emeasure ?rMa (space ?rMa) = 1" .
 qed
 
-definition cond_prob_space :: "'a measure \<Rightarrow> 'a set \<Rightarrow> 'a measure" (infix "\<downharpoonright>" 200)
+definition cond_prob_space :: "'a measure \<Rightarrow> 'a set \<Rightarrow> 'a measure" (infix \<open>\<downharpoonright>\<close> 200)
   where "M\<downharpoonright>A \<equiv> scale_measure (1 / emeasure M A) (restrict_space M A)"
 
 context prob_space

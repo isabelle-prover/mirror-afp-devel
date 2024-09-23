@@ -36,10 +36,10 @@ fun plus_trilean :: "trilean \<Rightarrow> trilean \<Rightarrow> trilean" where
   "plus_trilean _ true = true" |
   "plus_trilean false false = false"
 
-abbreviation maybe_and :: "trilean \<Rightarrow> trilean \<Rightarrow> trilean" (infixl "\<and>?" 70) where
+abbreviation maybe_and :: "trilean \<Rightarrow> trilean \<Rightarrow> trilean" (infixl \<open>\<and>?\<close> 70) where
   "maybe_and x y \<equiv> x * y"
 
-abbreviation maybe_or :: "trilean \<Rightarrow> trilean \<Rightarrow> trilean" (infixl "\<or>?" 65) where
+abbreviation maybe_or :: "trilean \<Rightarrow> trilean \<Rightarrow> trilean" (infixl \<open>\<or>?\<close> 65) where
   "maybe_or x y \<equiv> x + y"
 
 lemma plus_trilean_assoc:
@@ -181,7 +181,7 @@ instance
 end
 
 instantiation trilean :: uminus begin
-  fun maybe_not :: "trilean \<Rightarrow> trilean" ("\<not>? _" [60] 60) where
+  fun maybe_not :: "trilean \<Rightarrow> trilean" (\<open>\<not>? _\<close> [60] 60) where
     "\<not>? true = false" |
     "\<not>? false = true" |
     "\<not>? invalid = invalid"

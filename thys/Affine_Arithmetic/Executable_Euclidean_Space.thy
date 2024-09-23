@@ -735,8 +735,8 @@ subsection \<open>bounded linear functions\<close>
 
 locale blinfun_syntax
 begin
-no_notation vec_nth (infixl "$" 90)
-notation blinfun_apply (infixl "$" 999)
+no_notation vec_nth (infixl \<open>$\<close> 90)
+notation blinfun_apply (infixl \<open>$\<close> 999)
 end
 
 lemma bounded_linear_via_derivative:

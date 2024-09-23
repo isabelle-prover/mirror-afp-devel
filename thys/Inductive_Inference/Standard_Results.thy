@@ -1208,16 +1208,16 @@ lemma total1E [dest, simp]: "total1 f \<Longrightarrow> f x \<down>"
 lemma total2E [dest, simp]: "total2 f \<Longrightarrow> f x y \<down>"
   using total2_def by simp
 
-definition P1 :: "partial1 set" ("\<P>") where
+definition P1 :: "partial1 set" (\<open>\<P>\<close>) where
   "\<P> \<equiv> {\<lambda>x. eval r [x] |r. recfn 1 r}"
 
-definition P2 :: "partial2 set" ("\<P>\<^sup>2") where
+definition P2 :: "partial2 set" (\<open>\<P>\<^sup>2\<close>) where
   "\<P>\<^sup>2 \<equiv> {\<lambda>x y. eval r [x, y] |r. recfn 2 r}"
 
-definition R1 :: "partial1 set" ("\<R>") where
+definition R1 :: "partial1 set" (\<open>\<R>\<close>) where
   "\<R> \<equiv> {\<lambda>x. eval r [x] |r. recfn 1 r \<and> total r}"
 
-definition R2 :: "partial2 set" ("\<R>\<^sup>2") where
+definition R2 :: "partial2 set" (\<open>\<R>\<^sup>2\<close>) where
   "\<R>\<^sup>2 \<equiv> {\<lambda>x y. eval r [x, y] |r. recfn 2 r \<and> total r}"
 
 definition Prim1 :: "partial1 set" where
@@ -1520,7 +1520,7 @@ qed
 
 text \<open>Our standard Gödel numbering is based on @{term r_phi}:\<close>
 
-definition phi :: partial2 ("\<phi>") where
+definition phi :: partial2 (\<open>\<phi>\<close>) where
   "\<phi> i x \<equiv> eval r_phi [i, x]"
 
 lemma phi_in_P2: "\<phi> \<in> \<P>\<^sup>2"

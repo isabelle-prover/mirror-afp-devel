@@ -81,7 +81,7 @@ by (metis srewrite_stepI0)
 
 hide_fact srewrite_stepI0
 
-inductive srewrite :: "srule list \<Rightarrow> sterm \<Rightarrow> sterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>s/ _ \<longrightarrow>/ _" [50,0,50] 50) for rs where
+inductive srewrite :: "srule list \<Rightarrow> sterm \<Rightarrow> sterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>s/ _ \<longrightarrow>/ _\<close> [50,0,50] 50) for rs where
 step: "srewrite_step rs name rhs \<Longrightarrow> rs \<turnstile>\<^sub>s Sconst name \<longrightarrow> rhs" |
 beta: "rewrite_first cs t t' \<Longrightarrow> rs \<turnstile>\<^sub>s Sabs cs $\<^sub>s t \<longrightarrow> t'" |
 "fun": "rs \<turnstile>\<^sub>s t \<longrightarrow> t' \<Longrightarrow> rs \<turnstile>\<^sub>s t $\<^sub>s u \<longrightarrow> t' $\<^sub>s u" |
@@ -89,7 +89,7 @@ arg: "rs \<turnstile>\<^sub>s u \<longrightarrow> u' \<Longrightarrow> rs \<turn
 
 code_pred srewrite .
 
-abbreviation srewrite_rt :: "srule list \<Rightarrow> sterm \<Rightarrow> sterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>s/ _ \<longrightarrow>*/ _" [50,0,50] 50) where
+abbreviation srewrite_rt :: "srule list \<Rightarrow> sterm \<Rightarrow> sterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>s/ _ \<longrightarrow>*/ _\<close> [50,0,50] 50) where
 "srewrite_rt rs \<equiv> (srewrite rs)\<^sup>*\<^sup>*"
 
 global_interpretation srewrite: rewriting "srewrite rs" for rs

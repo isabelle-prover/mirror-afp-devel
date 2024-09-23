@@ -36,7 +36,7 @@ definition
  "PartNum = length o Rep_dataspace"
 
 definition
- PartDom :: "['d dataspace, nat] => ('d set)" (infixl "!D!" 101) where
+ PartDom :: "['d dataspace, nat] => ('d set)" (infixl \<open>!D!\<close> 101) where
  "PartDom d n = (Rep_dataspace d) ! n" 
 
 subsection \<open>Lemmas\<close>

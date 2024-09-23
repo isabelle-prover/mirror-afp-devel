@@ -33,10 +33,10 @@ definition qSwapInp where
 definition qSwapBinp where
 "qSwapBinp xs x y qbinp == lift (qSwapAbs xs x y) qbinp"
 
-abbreviation qSwapInp_abbrev ("_ %[[_ \<and> _]]'__" 200) where
+abbreviation qSwapInp_abbrev (\<open>_ %[[_ \<and> _]]'__\<close> 200) where
 "(qinp %[[z1 \<and> z2]]_zs) == qSwapInp zs z1 z2 qinp"
 
-abbreviation qSwapBinp_abbrev ("_ %%[[_ \<and> _]]'__" 200) where
+abbreviation qSwapBinp_abbrev (\<open>_ %%[[_ \<and> _]]'__\<close> 200) where
 "(qbinp %%[[z1 \<and> z2]]_zs) == qSwapBinp zs z1 z2 qbinp"
 
 lemma qSwap_qSwapInp:
@@ -60,10 +60,10 @@ definition qPsubstInp where
 definition qPsubstBinp where
 "qPsubstBinp qrho qbinp == lift (qPsubstAbs qrho) qbinp"
 
-abbreviation qPsubstInp_abbrev ("_ %[[_]]" 200)
+abbreviation qPsubstInp_abbrev (\<open>_ %[[_]]\<close> 200)
 where "(qinp %[[qrho]]) == qPsubstInp qrho qinp"
 
-abbreviation qPsubstBinp_abbrev ("_ %%[[_]]" 200)
+abbreviation qPsubstBinp_abbrev (\<open>_ %%[[_]]\<close> 200)
 where "(qbinp %%[[qrho]]) == qPsubstBinp qrho qbinp"
 
 lemma qPsubst_qPsubstInp:
@@ -158,10 +158,10 @@ definition alphaBinp where
 "alphaBinp ==
  {(qbinp,qbinp'). sameDom qbinp qbinp' \<and> liftAll2 (\<lambda>qA qA'. qA $= qA') qbinp qbinp'}"
 
-abbreviation alphaInp_abbrev (infix "%=" 50) where
+abbreviation alphaInp_abbrev (infix \<open>%=\<close> 50) where
 "qinp %= qinp' == (qinp,qinp') \<in> alphaInp"
 
-abbreviation alphaBinp_abbrev (infix "%%=" 50) where
+abbreviation alphaBinp_abbrev (infix \<open>%%=\<close> 50) where
 "qbinp %%= qbinp' == (qbinp,qbinp') \<in> alphaBinp"
 
 lemma alpha_alphaInp:
@@ -492,13 +492,13 @@ unfolding lift_comp comp_def by simp
 definition swap where
 "swap xs x y X = asTerm (qSwap xs x y (pick X))"
 
-abbreviation swap_abbrev ("_ #[_ \<and> _]'__" 200) where
+abbreviation swap_abbrev (\<open>_ #[_ \<and> _]'__\<close> 200) where
 "(X #[z1 \<and> z2]_zs) \<equiv> swap zs z1 z2 X"
 
 definition swapAbs where
 "swapAbs xs x y A = asAbs (qSwapAbs xs x y (pick A))"
 
-abbreviation swapAbs_abbrev ("_ $[_ \<and> _]'__" 200) where
+abbreviation swapAbs_abbrev (\<open>_ $[_ \<and> _]'__\<close> 200) where
 "(A $[z1 \<and> z2]_zs) \<equiv> swapAbs zs z1 z2 A"
 
 definition swapInp where
@@ -507,10 +507,10 @@ definition swapInp where
 definition swapBinp where
 "swapBinp xs x y binp \<equiv> lift (swapAbs xs x y) binp"
 
-abbreviation swapInp_abbrev ("_ %[_ \<and> _]'__" 200) where
+abbreviation swapInp_abbrev (\<open>_ %[_ \<and> _]'__\<close> 200) where
 "(inp %[z1 \<and> z2]_zs) \<equiv> swapInp zs z1 z2 inp"
 
-abbreviation swapBinp_abbrev ("_ %%[_ \<and> _]'__" 200) where
+abbreviation swapBinp_abbrev (\<open>_ %%[_ \<and> _]'__\<close> 200) where
 "(binp %%[z1 \<and> z2]_zs) \<equiv> swapBinp zs z1 z2 binp"
 
 definition swapEnvDom where
@@ -522,7 +522,7 @@ definition swapEnvIm where
 definition swapEnv where
 "swapEnv xs x y \<equiv> swapEnvIm xs x y o swapEnvDom xs x y"
 
-abbreviation swapEnv_abbrev ("_ &[_ \<and> _]'__" 200) where
+abbreviation swapEnv_abbrev (\<open>_ &[_ \<and> _]'__\<close> 200) where
 "(rho &[z1 \<and> z2]_zs) \<equiv> swapEnv zs z1 z2 rho"
 
 lemmas swapEnv_defs = swapEnv_def comp_def swapEnvDom_def swapEnvIm_def
@@ -555,13 +555,13 @@ rho xs x = None \<and> (\<forall> ys. liftAll (fresh xs x) (rho ys))"
 definition psubst where
 "psubst rho X \<equiv> asTerm(qPsubst (pickE rho) (pick X))"
 
-abbreviation psubst_abbrev ("_ #[_]") where
+abbreviation psubst_abbrev (\<open>_ #[_]\<close>) where
 "(X #[rho]) \<equiv> psubst rho X"
 
 definition psubstAbs where
 "psubstAbs rho A \<equiv> asAbs(qPsubstAbs (pickE rho) (pick A))"
 
-abbreviation psubstAbs_abbrev  ("_ $[_]") where
+abbreviation psubstAbs_abbrev  (\<open>_ $[_]\<close>) where
 "A $[rho] \<equiv> psubstAbs rho A"
 
 definition psubstInp where
@@ -570,10 +570,10 @@ definition psubstInp where
 definition psubstBinp where
 "psubstBinp rho binp \<equiv> lift (psubstAbs rho) binp"
 
-abbreviation psubstInp_abbrev  ("_ %[_]") where
+abbreviation psubstInp_abbrev  (\<open>_ %[_]\<close>) where
 "inp %[rho] \<equiv> psubstInp rho inp"
 
-abbreviation psubstBinp_abbrev  ("_ %%[_]") where
+abbreviation psubstBinp_abbrev  (\<open>_ %%[_]\<close>) where
 "binp %%[rho] \<equiv> psubstBinp rho binp"
 
 definition psubstEnv where
@@ -581,7 +581,7 @@ definition psubstEnv where
  \<lambda> xs x. case rho' xs x of None \<Rightarrow> rho xs x
                           |Some X \<Rightarrow> Some (X #[rho])"
 
-abbreviation psubstEnv_abbrev ("_ &[_]") where
+abbreviation psubstEnv_abbrev (\<open>_ &[_]\<close>) where
 "rho &[rho'] \<equiv> psubstEnv rho' rho"
 
 definition idEnv where
@@ -591,7 +591,7 @@ definition updEnv ::
 "('index,'bindex,'varSort,'var,'opSym)env \<Rightarrow>
  'var \<Rightarrow> ('index,'bindex,'varSort,'var,'opSym)term \<Rightarrow> 'varSort \<Rightarrow>
  ('index,'bindex,'varSort,'var,'opSym)env"
-("_ [_ \<leftarrow> _]'__" 200) where
+(\<open>_ [_ \<leftarrow> _]'__\<close> 200) where
 "(rho [x \<leftarrow> X]_xs) \<equiv> \<lambda> ys y. (if ys = xs \<and> y = x then Some X else rho ys y)"
 
 text\<open>(Unary) substitution:\<close>
@@ -599,13 +599,13 @@ text\<open>(Unary) substitution:\<close>
 definition subst where
 "subst xs X x \<equiv> psubst (idEnv [x \<leftarrow> X]_xs)"
 
-abbreviation subst_abbrev ("_ #[_ '/ _]'__" 200) where
+abbreviation subst_abbrev (\<open>_ #[_ '/ _]'__\<close> 200) where
 "(Y #[X / x]_xs) \<equiv> subst xs X x Y"
 
 definition substAbs where
 "substAbs xs X x \<equiv> psubstAbs (idEnv [x \<leftarrow> X]_xs)"
 
-abbreviation substAbs_abbrev ("_ $[_ '/ _]'__" 200) where
+abbreviation substAbs_abbrev (\<open>_ $[_ '/ _]'__\<close> 200) where
 "(A $[X / x]_xs) \<equiv> substAbs xs X x A"
 
 definition substInp where
@@ -614,10 +614,10 @@ definition substInp where
 definition substBinp where
 "substBinp xs X x \<equiv> psubstBinp (idEnv [x \<leftarrow> X]_xs)"
 
-abbreviation substInp_abbrev ("_ %[_ '/ _]'__" 200) where
+abbreviation substInp_abbrev (\<open>_ %[_ '/ _]'__\<close> 200) where
 "(inp %[X / x]_xs) \<equiv> substInp xs X x inp"
 
-abbreviation substBinp_abbrev ("_ %%[_ '/ _]'__" 200) where
+abbreviation substBinp_abbrev (\<open>_ %%[_ '/ _]'__\<close> 200) where
 "(binp %%[X / x]_xs) \<equiv> substBinp xs X x binp"
 
 theorem substInp_def2:
@@ -631,7 +631,7 @@ unfolding substBinp_def[abs_def] substAbs_def psubstBinp_def[abs_def] by simp
 definition substEnv where
 "substEnv xs X x \<equiv> psubstEnv (idEnv [x \<leftarrow> X]_xs)"
 
-abbreviation substEnv_abbrev ("_ &[_ '/ _]'__" 200) where
+abbreviation substEnv_abbrev (\<open>_ &[_ '/ _]'__\<close> 200) where
 "(Y &[X / x]_xs) \<equiv> substEnv xs X x Y"
 
 theorem substEnv_def2:
@@ -647,13 +647,13 @@ text\<open>Variable-for-variable substitution:\<close>
 definition vsubst where
 "vsubst ys y1 y2 \<equiv> subst ys (Var ys y1) y2"
 
-abbreviation vsubst_abbrev ("_ #[_ '/'/ _]'__" 200) where
+abbreviation vsubst_abbrev (\<open>_ #[_ '/'/ _]'__\<close> 200) where
 "(X #[y1 // y2]_ys) \<equiv> vsubst ys y1 y2 X"
 
 definition vsubstAbs where
 "vsubstAbs ys y1 y2 \<equiv> substAbs ys (Var ys y1) y2"
 
-abbreviation vsubstAbs_abbrev ("_ $[_ '/'/ _]'__" 200) where
+abbreviation vsubstAbs_abbrev (\<open>_ $[_ '/'/ _]'__\<close> 200) where
 "(A $[y1 // y2]_ys) \<equiv> vsubstAbs ys y1 y2 A"
 
 definition vsubstInp where
@@ -662,10 +662,10 @@ definition vsubstInp where
 definition vsubstBinp where
 "vsubstBinp ys y1 y2 \<equiv> substBinp ys (Var ys y1) y2"
 
-abbreviation vsubstInp_abbrev ("_ %[_ '/'/ _]'__" 200) where
+abbreviation vsubstInp_abbrev (\<open>_ %[_ '/'/ _]'__\<close> 200) where
 "(inp %[y1 // y2]_ys) \<equiv> vsubstInp ys y1 y2 inp"
 
-abbreviation vsubstBinp_abbrev ("_ %%[_ '/'/ _]'__" 200) where
+abbreviation vsubstBinp_abbrev (\<open>_ %%[_ '/'/ _]'__\<close> 200) where
 "(binp %%[y1 // y2]_ys) \<equiv> vsubstBinp ys y1 y2 binp"
 
 lemma vsubstInp_def2:
@@ -681,7 +681,7 @@ by(auto simp add: substBinp_def2)
 definition vsubstEnv where
 "vsubstEnv ys y1 y2 \<equiv> substEnv ys (Var ys y1) y2"
 
-abbreviation vsubstEnv_abbrev ("_ &[_ '/'/ _]'__" 200) where
+abbreviation vsubstEnv_abbrev (\<open>_ &[_ '/'/ _]'__\<close> 200) where
 "(rho &[y1 // y2]_ys) \<equiv> vsubstEnv ys y1 y2 rho"
 
 theorem vsubstEnv_def2:

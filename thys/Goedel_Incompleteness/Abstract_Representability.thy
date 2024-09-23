@@ -33,7 +33,7 @@ and eql cnj imp all exi
 and fls
 and num
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 +
 fixes N :: 'fmla
 assumes
@@ -195,7 +195,7 @@ and Var FvarsT substT Fvars subst
 and num
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 +
 fixes S :: 'fmla
 assumes
@@ -280,7 +280,7 @@ and Var FvarsT substT Fvars subst
 and num
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 +
 fixes S :: 'fmla
 assumes
@@ -370,7 +370,7 @@ and Var FvarsT substT Fvars subst
 and num
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and fls dsj
 and "proof" :: "'proof set" and prfOf
 and encPf

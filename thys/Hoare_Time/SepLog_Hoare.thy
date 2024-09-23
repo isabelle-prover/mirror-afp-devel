@@ -8,7 +8,7 @@ subsection "Definition of Validity"
 
 
 definition hoare3_valid :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>3 {(1_)}/ (_)/ { (1_)}" 50) where
+  (\<open>\<Turnstile>\<^sub>3 {(1_)}/ (_)/ { (1_)}\<close> 50) where
 "\<Turnstile>\<^sub>3 { P } c { Q }  \<longleftrightarrow>  
      (\<forall>ps n. P (ps,n)
      \<longrightarrow> (\<exists>ps' m. ((c,ps) \<Rightarrow>\<^sub>A m \<Down> ps')
@@ -41,7 +41,7 @@ qed
 subsection "Hoare Rules"    
      
 inductive
-  hoareT3 :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool" ("\<turnstile>\<^sub>3 ({(1_)}/ (_)/ { (1_)})" 50)
+  hoareT3 :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>3 ({(1_)}/ (_)/ { (1_)})\<close> 50)
 where
 
 Skip:  "\<turnstile>\<^sub>3 {$1} SKIP { $0}"  |
@@ -378,7 +378,7 @@ qed
 subsection \<open>Completeness\<close>
     
     
-definition wp3 :: "com \<Rightarrow> assn2 \<Rightarrow> assn2" ("wp\<^sub>3") where 
+definition wp3 :: "com \<Rightarrow> assn2 \<Rightarrow> assn2" (\<open>wp\<^sub>3\<close>) where 
 "wp\<^sub>3 c Q  =  (\<lambda>(s,n). \<exists>t m. n\<ge>m \<and> (c,s) \<Rightarrow>\<^sub>A m \<Down> t \<and> Q (t,n-m))" 
     
          
@@ -582,7 +582,7 @@ lemma "wp\<^sub>3 C (Q**(%_.True)) = F C Q"
 
                 
 definition hoareT3_validGC :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>G {(1_)}/ (_)/ { (1_)}" 50) where
+  (\<open>\<Turnstile>\<^sub>G {(1_)}/ (_)/ { (1_)}\<close> 50) where
 "\<Turnstile>\<^sub>G { P } c { Q }  \<longleftrightarrow> \<Turnstile>\<^sub>3 { P } c { Q ** (%_.True) }"                                                                                                  
   
 end

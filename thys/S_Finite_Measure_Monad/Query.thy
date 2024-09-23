@@ -9,10 +9,10 @@ theory Query
 begin
 
 declare [[coercion qbs_l]]
-abbreviation qbs_real :: "real quasi_borel"       ("\<real>\<^sub>Q") where "\<real>\<^sub>Q \<equiv> qbs_borel"
-abbreviation qbs_ennreal :: "ennreal quasi_borel" ("\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0") where "\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0 \<equiv> qbs_borel"
-abbreviation qbs_nat :: "nat quasi_borel"         ("\<nat>\<^sub>Q") where "\<nat>\<^sub>Q \<equiv> qbs_count_space UNIV"
-abbreviation qbs_bool :: "bool quasi_borel"       ("\<bool>\<^sub>Q") where "\<bool>\<^sub>Q \<equiv> count_space\<^sub>Q UNIV"
+abbreviation qbs_real :: "real quasi_borel"       (\<open>\<real>\<^sub>Q\<close>) where "\<real>\<^sub>Q \<equiv> qbs_borel"
+abbreviation qbs_ennreal :: "ennreal quasi_borel" (\<open>\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0\<close>) where "\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0 \<equiv> qbs_borel"
+abbreviation qbs_nat :: "nat quasi_borel"         (\<open>\<nat>\<^sub>Q\<close>) where "\<nat>\<^sub>Q \<equiv> qbs_count_space UNIV"
+abbreviation qbs_bool :: "bool quasi_borel"       (\<open>\<bool>\<^sub>Q\<close>) where "\<bool>\<^sub>Q \<equiv> count_space\<^sub>Q UNIV"
 
 
 definition query :: "['a qbs_measure, 'a \<Rightarrow> ennreal] \<Rightarrow> 'a qbs_measure" where

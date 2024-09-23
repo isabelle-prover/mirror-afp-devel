@@ -105,17 +105,17 @@ between all types.
 \label{subtype_relations_concrete_syntax}\<close>
 
 abbreviation
-  direct_subtype_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec>1 _" [71,71] 70)
+  direct_subtype_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" (\<open>_ \<prec>1 _\<close> [71,71] 70)
 where \<comment> \<open>direct subtype relation\<close>
   "A \<prec>1 B == (A,B) \<in> direct_subtype"
 
 abbreviation
-  widen_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<preceq> _" [71,71] 70)
+  widen_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" (\<open>_ \<preceq> _\<close> [71,71] 70)
 where \<comment> \<open>reflexive transitive closure of direct subtype relation\<close>
   "A \<preceq> B == (A,B) \<in> direct_subtype\<^sup>*"
 
 abbreviation
-  widen_strict_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec> _" [71,71] 70)
+  widen_strict_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" (\<open>_ \<prec> _\<close> [71,71] 70)
 where \<comment> \<open>transitive closure of direct subtype relation\<close>
   "A \<prec> B == (A,B) \<in> direct_subtype\<^sup>+"
 

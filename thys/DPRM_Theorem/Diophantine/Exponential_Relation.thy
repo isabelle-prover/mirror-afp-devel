@@ -70,7 +70,7 @@ next
   qed
 qed
 
-definition exp ("[_ = _ ^ _]" 1000)
+definition exp (\<open>[_ = _ ^ _]\<close> 1000)
   where "[Q = R ^ S] \<equiv> (TERNARY (\<lambda>a b c. a = b ^ c) Q R S)"
 
 lemma exp_dioph[dioph]:

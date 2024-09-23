@@ -295,10 +295,10 @@ text\<open>This section needs to be linked with domain semirings. We essentially
 prove the antidomain semiring axioms. Then we have the abstract properties at
 our disposition.\<close>
 
-definition antidom :: "'a \<Rightarrow> 'a" ("a")
+definition antidom :: "'a \<Rightarrow> 'a" (\<open>a\<close>)
   where "a x = 1' \<cdot> (-(x ; 1))"
 
-definition dom :: "'a \<Rightarrow> 'a" ("d")
+definition dom :: "'a \<Rightarrow> 'a" (\<open>d\<close>)
   where "d x = a (a x)"
 
 lemma antidom_test_comp [simp]: "a x = tc (x ; 1)"

@@ -38,7 +38,7 @@ text \<open>Now the foundations are laid for the definition of monotone
   convergence, a single overloaded operator is used.\<close>
 
 consts
-  mon_conv:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a::ord \<Rightarrow> bool" ("_\<up>_" [60,61] 60) 
+  mon_conv:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a::ord \<Rightarrow> bool" (\<open>_\<up>_\<close> [60,61] 60) 
 overloading
   mon_conv_real \<equiv> "mon_conv :: _ \<Rightarrow> real \<Rightarrow> bool"
   mon_conv_real_fun \<equiv> "mon_conv :: _ \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool"

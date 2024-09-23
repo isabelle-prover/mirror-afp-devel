@@ -7,13 +7,13 @@ imports "HOL-IMP.Com"
 begin
 
 datatype 'a acom =
-  SKIP 'a                           ("SKIP {_}" 61) |
-  Assign vname aexp 'a              ("(_ ::= _/ {_})" [1000, 61, 0] 61) |
-  Seq "('a acom)" "('a acom)"       ("_;;//_"  [60, 61] 60) |
+  SKIP 'a                           (\<open>SKIP {_}\<close> 61) |
+  Assign vname aexp 'a              (\<open>(_ ::= _/ {_})\<close> [1000, 61, 0] 61) |
+  Seq "('a acom)" "('a acom)"       (\<open>_;;//_\<close>  [60, 61] 60) |
   If bexp "('a acom)" "('a acom)" 'a
-    ("(IF _/ THEN _/ ELSE _//{_})"  [0, 0, 61, 0] 61) |
+    (\<open>(IF _/ THEN _/ ELSE _//{_})\<close>  [0, 0, 61, 0] 61) |
   While 'a bexp "('a acom)" 'a
-    ("({_}//WHILE _/ DO (_)//{_})"  [0, 0, 61, 0] 61)
+    (\<open>({_}//WHILE _/ DO (_)//{_})\<close>  [0, 0, 61, 0] 61)
 
 fun post :: "'a acom \<Rightarrow>'a" where
 "post (SKIP {P}) = P" |

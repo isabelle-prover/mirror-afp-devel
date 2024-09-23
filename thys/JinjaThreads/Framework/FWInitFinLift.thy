@@ -35,7 +35,7 @@ end
 
 context multithreaded_base begin
 
-inductive init_fin :: "('l,'t,status \<times> 'x,'m,'w,'o action) semantics" ("_ \<turnstile> _ -_\<rightarrow>i _" [50,0,0,51] 51)
+inductive init_fin :: "('l,'t,status \<times> 'x,'m,'w,'o action) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow>i _\<close> [50,0,0,51] 51)
 where
   NormalAction:
   "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> 

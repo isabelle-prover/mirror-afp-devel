@@ -9,8 +9,8 @@ begin
 
 hide_const (open) Resumption.Pause Monomorphic_Monad.Pause Monomorphic_Monad.Done
 
-no_notation Sublist.parallel (infixl "\<parallel>" 50)
-no_notation plus_oracle (infix "\<oplus>\<^sub>O" 500)
+no_notation Sublist.parallel (infixl \<open>\<parallel>\<close> 50)
+no_notation plus_oracle (infix \<open>\<oplus>\<^sub>O\<close> 500)
 
 
 section \<open>Diffie-Hellman construction\<close>

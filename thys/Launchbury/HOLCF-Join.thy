@@ -6,7 +6,7 @@ subsubsection \<open>Binary Joins and compatibility\<close>
 
 context cpo
 begin
-definition join :: "'a => 'a => 'a" (infixl "\<squnion>" 80) where
+definition join :: "'a => 'a => 'a" (infixl \<open>\<squnion>\<close> 80) where
   "x \<squnion> y = (if \<exists> z. {x, y} <<| z then lub {x, y} else x)"
 
 definition compatible :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

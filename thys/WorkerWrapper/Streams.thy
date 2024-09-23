@@ -22,7 +22,7 @@ subsection\<open>Streams.\<close>
 
 text\<open>The type of infinite streams.\<close>
 
-domain 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr "&&" 65)
+domain 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr \<open>&&\<close> 65)
 
 (*<*)
 lemma Stream_bisimI[intro]:
@@ -50,7 +50,7 @@ where
   "i_th\<cdot>(x && xs) = Nat_case\<cdot>x\<cdot>(i_th\<cdot>xs)"
 
 abbreviation
-  i_th_syn :: "'a Stream \<Rightarrow> Nat \<Rightarrow> 'a" (infixl "!!" 100) where
+  i_th_syn :: "'a Stream \<Rightarrow> Nat \<Rightarrow> 'a" (infixl \<open>!!\<close> 100) where
   "s !! i \<equiv> i_th\<cdot>s\<cdot>i"
 
 (*<*)

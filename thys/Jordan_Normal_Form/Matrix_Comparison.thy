@@ -23,7 +23,7 @@ begin
 
 context ord
 begin
-definition mat_ge :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" (infix "\<ge>\<^sub>m" 50) where
+definition mat_ge :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" (infix \<open>\<ge>\<^sub>m\<close> 50) where
   "A \<ge>\<^sub>m B = (\<forall> i < dim_row A. \<forall> j < dim_col A. A $$ (i,j) \<ge> B $$ (i,j))"
 
 lemma mat_geI[intro]: assumes "A \<in> carrier_mat nr nc" 
@@ -47,7 +47,7 @@ lemma mat_gtD[dest]: assumes "mat_gt gt sd A B"
   shows "A \<ge>\<^sub>m B" "\<exists> i < sd. \<exists> j < sd. gt (A $$ (i,j)) (B $$ (i,j))"
   using assms unfolding mat_gt_def by auto
 
-definition mat_max :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("max\<^sub>m") where
+definition mat_max :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>max\<^sub>m\<close>) where
   "max\<^sub>m A B = mat (dim_row A) (dim_col A) (\<lambda> ij. max (A $$ ij) (B $$ ij))"
 
 lemma mat_max_carrier[simp]:
@@ -63,7 +63,7 @@ lemma mat_max_index:
   shows "(mat_max A B) $$ (i,j) = max (A $$ (i,j)) (B $$ (i,j))"
   unfolding mat_max_def using index_mat assms by auto
 
-definition (in zero) mat_default :: "'a \<Rightarrow> nat \<Rightarrow> 'a mat" ("default\<^sub>m") where
+definition (in zero) mat_default :: "'a \<Rightarrow> nat \<Rightarrow> 'a mat" (\<open>default\<^sub>m\<close>) where
   "default\<^sub>m d n = mat n n (\<lambda> (i,j). if i = j then d else 0)"
 
 lemma mat_default_carrier[simp]: "default\<^sub>m d n \<in> carrier_mat n n"
@@ -351,7 +351,7 @@ end
 context SN_one_mono_ordered_semiring_1
 begin
 
-abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" ("(_ \<succ>\<^sub>m _ _ _)" [51,51,51,51] 50)
+abbreviation mat_s :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" (\<open>(_ \<succ>\<^sub>m _ _ _)\<close> [51,51,51,51] 50)
  where "A \<succ>\<^sub>m n sd B \<equiv> (A \<in> carrier_mat n n \<and> B \<in> carrier_mat n n \<and> B \<ge>\<^sub>m 0\<^sub>m n n \<and> mat_gt (\<succ>) sd A B)"
 
 lemma mat_gt_SN: assumes sd_n: "sd \<le> n" shows "SN {(m1,m2) . m1 \<succ>\<^sub>m n sd m2}"

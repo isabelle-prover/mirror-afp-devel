@@ -12,7 +12,7 @@ imports Preconditions
 begin
 
 class pre_post =
-  fixes pre_post :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<stileturn>" 55)
+  fixes pre_post :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<stileturn>\<close> 55)
 
 class pre_post_spec_greatest = bounded_idempotent_left_semiring + precondition + pre_post +
   assumes pre_post_galois: "-p \<le> x\<guillemotleft>-q \<longleftrightarrow> x \<le> -p\<stileturn>-q"

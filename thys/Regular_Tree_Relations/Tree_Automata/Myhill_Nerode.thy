@@ -13,7 +13,7 @@ locale myhill_nerode =
   fixes \<F> \<L> assumes term_subset: "\<L> \<subseteq> \<T>\<^sub>G \<F>"
 begin
 
-definition myhill ("_ \<equiv>\<^sub>\<L> _") where
+definition myhill (\<open>_ \<equiv>\<^sub>\<L> _\<close>) where
   "myhill s t \<equiv> s \<in> \<T>\<^sub>G \<F> \<and> t \<in> \<T>\<^sub>G \<F> \<and> (\<forall> C. C\<langle>s\<rangle>\<^sub>G \<in> \<L> \<and> C\<langle>t\<rangle>\<^sub>G \<in> \<L> \<or> C\<langle>s\<rangle>\<^sub>G \<notin> \<L> \<and> C\<langle>t\<rangle>\<^sub>G \<notin> \<L>)"
 
 lemma myhill_sound: "s \<equiv>\<^sub>\<L> t \<Longrightarrow> s \<in> \<T>\<^sub>G \<F>"  "s \<equiv>\<^sub>\<L> t \<Longrightarrow> t \<in> \<T>\<^sub>G \<F>"
@@ -29,7 +29,7 @@ lemma myhill_trans [trans]:
   "s \<equiv>\<^sub>\<L> t \<Longrightarrow> t \<equiv>\<^sub>\<L> u \<Longrightarrow> s \<equiv>\<^sub>\<L> u"
   unfolding myhill_def by auto
 
-abbreviation myhill_r ("MN\<^sub>\<L>") where
+abbreviation myhill_r (\<open>MN\<^sub>\<L>\<close>) where
   "myhill_r \<equiv> {(s, t) | s t. s \<equiv>\<^sub>\<L> t}"
 
 lemma myhill_equiv:

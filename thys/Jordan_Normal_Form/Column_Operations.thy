@@ -15,11 +15,11 @@ imports
   Gauss_Jordan_Elimination
 begin
 
-definition mat_multcol :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("multcol") where
+definition mat_multcol :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>multcol\<close>) where
   "multcol k a A = mat (dim_row A) (dim_col A) 
      (\<lambda> (i,j). if k = j then a * A $$ (i,j) else A $$ (i,j))"
 
-definition mat_swapcols :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("swapcols")where
+definition mat_swapcols :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>swapcols\<close>)where
   "swapcols k l A = mat (dim_row A) (dim_col A) 
     (\<lambda> (i,j). if k = j then A $$ (i,l) else if l = j then A $$ (i,k) else A $$ (i,j))"
 
@@ -27,7 +27,7 @@ definition mat_addcol_vec :: "nat \<Rightarrow> 'a :: plus vec \<Rightarrow> 'a 
   "mat_addcol_vec k v A = mat (dim_row A) (dim_col A) 
     (\<lambda> (i,j). if k = j then v $ i + A $$ (i,j) else A $$ (i,j))"
 
-definition mat_addcol :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("addcol") where
+definition mat_addcol :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (\<open>addcol\<close>) where
   "addcol a k l A = mat (dim_row A) (dim_col A) 
     (\<lambda> (i,j). if k = j then a * A $$ (i,l) + A $$ (i,j) else A $$ (i,j))"
 

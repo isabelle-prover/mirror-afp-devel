@@ -7,34 +7,34 @@ begin
 subsection \<open>Notation\<close>
 hide_const (open) Resumption.Pause Monomorphic_Monad.Pause Monomorphic_Monad.Done
 
-no_notation Sublist.parallel (infixl "\<parallel>" 50)
-no_notation plus_oracle (infix "\<oplus>\<^sub>O" 500)
+no_notation Sublist.parallel (infixl \<open>\<parallel>\<close> 50)
+no_notation plus_oracle (infix \<open>\<oplus>\<^sub>O\<close> 500)
 
-notation Resource ("\<section>R\<section>")
-notation Converter ("\<section>C\<section>")
+notation Resource (\<open>\<section>R\<section>\<close>)
+notation Converter (\<open>\<section>C\<section>\<close>)
 
 alias RES = resource_of_oracle
 alias CNV = converter_of_callee
 
 alias id_intercept = "id_oracle"
-notation id_oracle ("1\<^sub>I")
+notation id_oracle (\<open>1\<^sub>I\<close>)
 
-notation plus_oracle (infixr "\<oplus>\<^sub>O" 504)
-notation parallel_oracle (infixr "\<ddagger>\<^sub>O" 504)
+notation plus_oracle (infixr \<open>\<oplus>\<^sub>O\<close> 504)
+notation parallel_oracle (infixr \<open>\<ddagger>\<^sub>O\<close> 504)
 
-notation plus_intercept (infixr "\<oplus>\<^sub>I" 504)
-notation parallel_intercept (infixr "\<ddagger>\<^sub>I" 504)
+notation plus_intercept (infixr \<open>\<oplus>\<^sub>I\<close> 504)
+notation parallel_intercept (infixr \<open>\<ddagger>\<^sub>I\<close> 504)
 
-notation parallel_resource (infixr "\<parallel>" 501) 
+notation parallel_resource (infixr \<open>\<parallel>\<close> 501) 
 
-notation parallel_converter (infixr "|\<^sub>\<propto>" 501)
-notation parallel_converter2 (infixr "|\<^sub>=" 501)
-notation comp_converter (infixr "\<odot>" 502)
+notation parallel_converter (infixr \<open>|\<^sub>\<propto>\<close> 501)
+notation parallel_converter2 (infixr \<open>|\<^sub>=\<close> 501)
+notation comp_converter (infixr \<open>\<odot>\<close> 502)
 
-notation fail_converter ("\<bottom>\<^sub>C")
-notation id_converter ("1\<^sub>C")
+notation fail_converter (\<open>\<bottom>\<^sub>C\<close>)
+notation id_converter (\<open>1\<^sub>C\<close>)
 
-notation "attach" (infixr "\<rhd>" 500)
+notation "attach" (infixr \<open>\<rhd>\<close> 500)
 
 subsection \<open>Wiring primitives\<close>
 
@@ -339,7 +339,7 @@ proof cases
   finally show ?thesis .
 qed
 
-definition comp_wiring :: "('a, 'b, 'c, 'd) wiring \<Rightarrow> ('c, 'd, 'e, 'f) wiring \<Rightarrow> ('a, 'b, 'e, 'f) wiring" (infixl "\<circ>\<^sub>w" 55)
+definition comp_wiring :: "('a, 'b, 'c, 'd) wiring \<Rightarrow> ('c, 'd, 'e, 'f) wiring \<Rightarrow> ('a, 'b, 'e, 'f) wiring" (infixl \<open>\<circ>\<^sub>w\<close> 55)
   where "comp_wiring = (\<lambda>(f, g) (f', g'). (f' \<circ> f, g \<circ> g'))"
 
 lemma comp_wiring_simps: "comp_wiring (f, g) (f', g') = (f' \<circ> f, g \<circ> g')"
@@ -369,7 +369,7 @@ qed
 
 definition parallel2_wiring
   :: "('a, 'b, 'c, 'd) wiring \<Rightarrow> ('a', 'b', 'c', 'd') wiring
-   \<Rightarrow> ('a + 'a', 'b + 'b', 'c + 'c', 'd + 'd') wiring" (infix "|\<^sub>w" 501) where
+   \<Rightarrow> ('a + 'a', 'b + 'b', 'c + 'c', 'd + 'd') wiring" (infix \<open>|\<^sub>w\<close> 501) where
   "parallel2_wiring = (\<lambda>(f, g) (f', g'). (map_sum f f', map_sum g g'))"
 
 lemma parallel2_wiring_simps:

@@ -16,7 +16,7 @@ text \<open>To define the compress and decompress functions,
   representative is as small as possible.\<close>
 
 definition mod_plus_minus :: "int \<Rightarrow> int \<Rightarrow> int" 
-  (infixl "mod+-" 70) where
+  (infixl \<open>mod+-\<close> 70) where
 "m mod+- b = 
   (if m mod b > \<lfloor>b/2\<rfloor> then m mod b - b else m mod b)"
 

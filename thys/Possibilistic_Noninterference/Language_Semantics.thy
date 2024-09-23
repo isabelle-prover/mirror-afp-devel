@@ -8,13 +8,13 @@ subsection \<open>Syntax and operational semantics\<close>
 datatype ('test,'atom) com = 
   Atm 'atom | 
   Seq "('test,'atom) com" "('test,'atom) com" 
-    ("_ ;; _"  [60, 61] 60) |
+    (\<open>_ ;; _\<close>  [60, 61] 60) |
   If 'test "('test,'atom) com" "('test,'atom) com" 
-    ("(if _/ then _/ else _)"  [0, 0, 61] 61) |
+    (\<open>(if _/ then _/ else _)\<close>  [0, 0, 61] 61) |
   While 'test "('test,'atom) com" 
-    ("(while _/ do _)"  [0, 61] 61) |
+    (\<open>(while _/ do _)\<close>  [0, 61] 61) |
   Par "('test,'atom) com" "('test,'atom) com" 
-    ("_ | _"  [60, 61] 60)
+    (\<open>_ | _\<close>  [60, 61] 60)
   
 locale PL = 
 fixes 
@@ -36,7 +36,7 @@ text\<open>Conventions and notations:
 
 inductive transT :: 
 "(('test,'atom)com * 'state) \<Rightarrow> 'state \<Rightarrow> bool"
-(infix "\<rightarrow>t" 55)
+(infix \<open>\<rightarrow>t\<close> 55)
 where
   Atm[simp]: 
 "(Atm atm, s) \<rightarrow>t aval atm s"
@@ -49,10 +49,10 @@ lemmas trans_WhileFalse = WhileFalse
 (* The RT-closure of \<rightarrow>c is inlined since later versions of \<rightarrow>c may refer to it. *)
 inductive transC :: 
 "(('test,'atom)com * 'state) \<Rightarrow> (('test,'atom)com * 'state) \<Rightarrow> bool"
-(infix "\<rightarrow>c" 55)
+(infix \<open>\<rightarrow>c\<close> 55)
 and MtransC :: 
 "(('test,'atom)com * 'state) \<Rightarrow> (('test,'atom)com * 'state) \<Rightarrow> bool"
-(infix "\<rightarrow>*c" 55)
+(infix \<open>\<rightarrow>*c\<close> 55)
 where
   SeqC[simp]:
 "(c1, s) \<rightarrow>c (c1', s') \<Longrightarrow> (c1 ;; c2, s) \<rightarrow>c (c1' ;; c2, s')" 
@@ -95,7 +95,7 @@ lemmas MtransC_induct_temp = transC_MtransC.inducts(2)[split_format(complete)]
 
 inductive MtransT :: 
 "(('test,'atom)com * 'state) \<Rightarrow> 'state \<Rightarrow> bool"
-(infix "\<rightarrow>*t" 55)
+(infix \<open>\<rightarrow>*t\<close> 55)
 where
   StepT:
 "\<lbrakk>cf \<rightarrow>*c cf'; cf' \<rightarrow>t s''\<rbrakk> \<Longrightarrow> cf \<rightarrow>*t s''"

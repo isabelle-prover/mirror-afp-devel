@@ -8,7 +8,7 @@ begin
 text \<open>Simple games are games where player0 wins all infinite plays.\<close>
 locale simple_game =
 fixes
-  game_move :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<longmapsto>\<heartsuit> _" [70, 70] 80) and
+  game_move :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<longmapsto>\<heartsuit> _\<close> [70, 70] 80) and
   player0_position :: \<open>'s \<Rightarrow> bool\<close>
 begin
 

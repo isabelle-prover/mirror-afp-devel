@@ -45,18 +45,18 @@ by(simp add: support_def fun_upd_other fun_eq_iff)
 subsection "Validity"
   
 abbreviation state_subst :: "state \<Rightarrow> aexp \<Rightarrow> vname \<Rightarrow> state"
-  ("_[_'/_]" [1000,0,0] 999)
+  (\<open>_[_'/_]\<close> [1000,0,0] 999)
 where "s[a/x] == s(x := aval a s)"
 
 definition hoare1_valid :: "assn2 \<Rightarrow> com \<Rightarrow> tbd \<Rightarrow> assn2 \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>1 {(1_)}/ (_)/ { _ \<Down>(1_)}" 50) where
+  (\<open>\<Turnstile>\<^sub>1 {(1_)}/ (_)/ { _ \<Down>(1_)}\<close> 50) where
 "\<Turnstile>\<^sub>1 {P} c {q \<Down> Q}  \<longleftrightarrow>  (\<exists>k>0. (\<forall>l s. P l s \<longrightarrow> (\<exists>t p. ((c,s) \<Rightarrow> p \<Down> t) \<and>  p \<le> k * (q s) \<and> Q l t)))"
 
 
 subsection "Hoare rules"
   
 inductive
-  hoare1 :: "assn2 \<Rightarrow> com \<Rightarrow> tbd \<Rightarrow> assn2 \<Rightarrow> bool" ("\<turnstile>\<^sub>1 ({(1_)}/ (_)/ { _ \<Down> (1_)})" 50)
+  hoare1 :: "assn2 \<Rightarrow> com \<Rightarrow> tbd \<Rightarrow> assn2 \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>1 ({(1_)}/ (_)/ { _ \<Down> (1_)})\<close> 50)
 where
 
 Skip:  "\<turnstile>\<^sub>1 {P} SKIP { (%s. Suc 0) \<Down> P}"  |
@@ -311,7 +311,7 @@ qed
 
 subsection "Completeness"
 
-definition wp1 :: "com \<Rightarrow> assn2 \<Rightarrow> assn2" ("wp\<^sub>1") where
+definition wp1 :: "com \<Rightarrow> assn2 \<Rightarrow> assn2" (\<open>wp\<^sub>1\<close>) where
 "wp\<^sub>1 c Q  =  (\<lambda>l s. \<exists>t p. (c,s) \<Rightarrow> p \<Down> t \<and> Q l t)"
  
 

@@ -12,10 +12,10 @@ theory Term_Implication
 begin
 
 subsection \<open>Single Term Implications\<close>
-definition timpl_apply_term ("\<langle>_ --\<guillemotright> _\<rangle>\<langle>_\<rangle>") where
+definition timpl_apply_term (\<open>\<langle>_ --\<guillemotright> _\<rangle>\<langle>_\<rangle>\<close>) where
   "\<langle>a --\<guillemotright> b\<rangle>\<langle>t\<rangle> \<equiv> term_variants ((\<lambda>_. [])(Abs a := [Abs b])) t"
 
-definition timpl_apply_terms ("\<langle>_ --\<guillemotright> _\<rangle>\<langle>_\<rangle>\<^sub>s\<^sub>e\<^sub>t") where
+definition timpl_apply_terms (\<open>\<langle>_ --\<guillemotright> _\<rangle>\<langle>_\<rangle>\<^sub>s\<^sub>e\<^sub>t\<close>) where
   "\<langle>a --\<guillemotright> b\<rangle>\<langle>M\<rangle>\<^sub>s\<^sub>e\<^sub>t \<equiv> \<Union>((set o timpl_apply_term a b) ` M)"
 
 lemma timpl_apply_Fun:

@@ -5,7 +5,7 @@ imports
   "HOL-Cardinals.Bounded_Set"
 begin
 
-typedef ('a, 'k) nebset ("_ set![_]" [22, 21] 21) =
+typedef ('a, 'k) nebset (\<open>_ set![_]\<close> [22, 21] 21) =
   "{A :: 'a set. A \<noteq> {} \<and> |A| <o natLeq +c |UNIV :: 'k set|}"
   morphisms set_nebset Abs_nebset
   apply (rule exI[of _ "{undefined}"], simp)

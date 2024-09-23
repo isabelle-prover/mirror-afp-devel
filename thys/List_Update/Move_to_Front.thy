@@ -507,7 +507,7 @@ by (induction n) (simp_all)
 lemma dperm_inv: "dist_perm (s_A n) (s_mtf n)"
 by (metis dist_s_mtf dist_s_A set_s_mtf set_s_A)
 
-definition Phi :: "nat \<Rightarrow> int" ("\<Phi>") where
+definition Phi :: "nat \<Rightarrow> int" (\<open>\<Phi>\<close>) where
 "Phi n = card(Inv (s_A n) (s_mtf n))"
 
 lemma phi0: "Phi 0 = 0"

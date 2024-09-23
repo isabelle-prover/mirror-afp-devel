@@ -55,20 +55,20 @@ begin
   subsection \<open>Syntax Sugar\<close>
   locale Refine_Monadic_Syntax begin
   
-    notation SPEC (binder "spec " 10)
-    notation ASSERT ("assert")
-    notation RETURN ("return")
-    notation FOREACH ("foreach")
-    notation WHILE ("while")
-    notation WHILET ("while\<^sub>T")
-    notation WHILEI ("while\<^bsup>_\<^esup>")
-    notation WHILET ("while\<^sub>T")
-    notation WHILEIT ("while\<^sub>T\<^bsup>_\<^esup>")
+    notation SPEC (binder \<open>spec \<close> 10)
+    notation ASSERT (\<open>assert\<close>)
+    notation RETURN (\<open>return\<close>)
+    notation FOREACH (\<open>foreach\<close>)
+    notation WHILE (\<open>while\<close>)
+    notation WHILET (\<open>while\<^sub>T\<close>)
+    notation WHILEI (\<open>while\<^bsup>_\<^esup>\<close>)
+    notation WHILET (\<open>while\<^sub>T\<close>)
+    notation WHILEIT (\<open>while\<^sub>T\<^bsup>_\<^esup>\<close>)
 
-    notation RECT (binder "rec\<^sub>T " 10)
-    notation REC (binder "rec " 10)
+    notation RECT (binder \<open>rec\<^sub>T \<close> 10)
+    notation REC (binder \<open>rec \<close> 10)
 
-    notation SELECT (binder "select " 10)
+    notation SELECT (binder \<open>select \<close> 10)
       
   end
     

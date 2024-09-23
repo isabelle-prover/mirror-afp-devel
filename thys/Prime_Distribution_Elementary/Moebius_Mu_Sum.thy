@@ -281,7 +281,7 @@ proof -
   define C where [simp]: "C = (euler_mascheroni :: real)"
   define f :: "nat \<Rightarrow> real" where "f = (\<lambda>n. \<sigma> n - ln n - 2 * C)"
   define F where [simp]: "F = sum_upto f"
-  write moebius_mu ("\<mu>")
+  write moebius_mu (\<open>\<mu>\<close>)
 
   \<comment> \<open>The proof is based on the fact that $\psi(x)-x$ can be approximated fairly well by
       the Dirichlet product $\sum_{n\leq x} \sum_{d\mid n} \mu(d) f(n/d)$:\<close>

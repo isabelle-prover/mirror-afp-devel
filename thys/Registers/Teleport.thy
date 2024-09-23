@@ -14,8 +14,8 @@ hide_type (open) Finite_Cartesian_Product.vec
 hide_const (open) Finite_Cartesian_Product.mat
 hide_const (open) Finite_Cartesian_Product.row
 hide_const (open) Finite_Cartesian_Product.column
-no_notation Group.mult (infixl "\<otimes>\<index>" 70)
-no_notation Order.top ("\<top>\<index>")
+no_notation Group.mult (infixl \<open>\<otimes>\<index>\<close> 70)
+no_notation Order.top (\<open>\<top>\<index>\<close>)
 unbundle no_vec_syntax
 unbundle no_inner_syntax
 

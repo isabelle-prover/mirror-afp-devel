@@ -8,12 +8,12 @@ begin
 
 subsection \<open>Datatype definitions\<close>
 
-domain Unit ("\<langle>\<rangle>") = Unit ("\<langle>\<rangle>")
+domain Unit (\<open>\<langle>\<rangle>\<close>) = Unit (\<open>\<langle>\<rangle>\<close>)
 
-domain ('a, 'b) Tuple2 ("\<langle>_, _\<rangle>") =
-  Tuple2 (lazy fst :: "'a") (lazy snd :: "'b") ("\<langle>_, _\<rangle>")
+domain ('a, 'b) Tuple2 (\<open>\<langle>_, _\<rangle>\<close>) =
+  Tuple2 (lazy fst :: "'a") (lazy snd :: "'b") (\<open>\<langle>_, _\<rangle>\<close>)
 
-notation Tuple2 ("\<langle>,\<rangle>")
+notation Tuple2 (\<open>\<langle>,\<rangle>\<close>)
 
 fixrec uncurry :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> \<langle>'a, 'b\<rangle> \<rightarrow> 'c"
   where "uncurry\<cdot>f\<cdot>p = f\<cdot>(fst\<cdot>p)\<cdot>(snd\<cdot>p)"
@@ -21,10 +21,10 @@ fixrec uncurry :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> \<langle
 fixrec curry :: "(\<langle>'a, 'b\<rangle>  \<rightarrow> 'c) \<rightarrow> 'a \<rightarrow> 'b \<rightarrow> 'c"
   where "curry\<cdot>f\<cdot>a\<cdot>b = f\<cdot>\<langle>a, b\<rangle>"
 
-domain ('a, 'b, 'c) Tuple3 ("\<langle>_, _, _\<rangle>") =
-  Tuple3 (lazy "'a") (lazy "'b") (lazy "'c") ("\<langle>_, _, _\<rangle>")
+domain ('a, 'b, 'c) Tuple3 (\<open>\<langle>_, _, _\<rangle>\<close>) =
+  Tuple3 (lazy "'a") (lazy "'b") (lazy "'c") (\<open>\<langle>_, _, _\<rangle>\<close>)
 
-notation Tuple3 ("\<langle>,,\<rangle>")
+notation Tuple3 (\<open>\<langle>,,\<rangle>\<close>)
 
 subsection \<open>Type class instances\<close>
 

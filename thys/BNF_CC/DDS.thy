@@ -218,7 +218,7 @@ definition even_psum_nat :: "(nat, bool) dds" where
 
 subsection \<open>Composition\<close>
 
-primcorec compose :: "('a, 'b) dds \<Rightarrow> ('b, 'c) dds \<Rightarrow> ('a, 'c) dds" (infixl "\<bullet>" 120) where
+primcorec compose :: "('a, 'b) dds \<Rightarrow> ('b, 'c) dds \<Rightarrow> ('a, 'c) dds" (infixl \<open>\<bullet>\<close> 120) where
   "run (S1 \<bullet> S2) = (\<lambda>a. let (b, S1') = run S1 a; (c, S2') = run S2 b in (c, S1' \<bullet> S2'))"
 
 lemma compose_parametric [transfer_rule]:
@@ -255,7 +255,7 @@ lemma compose_map2: "S1 \<bullet> map_dds f g S2 = map_dds id g (map_dds id f S1
   apply(simp add: rel_fun_def Grp_apply)
   done
 
-primcorec parallel :: "('a, 'b) dds \<Rightarrow> ('c, 'd) dds \<Rightarrow> ('a + 'c, 'b + 'd) dds" (infixr "\<parallel>" 130) where
+primcorec parallel :: "('a, 'b) dds \<Rightarrow> ('c, 'd) dds \<Rightarrow> ('a + 'c, 'b + 'd) dds" (infixr \<open>\<parallel>\<close> 130) where
   "run (S1 \<parallel> S2) = (\<lambda>x. case x of
      Inl a \<Rightarrow> let (b, S1') = run S1 a in (Inl b, S1' \<parallel> S2)
    | Inr c \<Rightarrow> let (d, S2') = run S2 c in (Inr d, S1 \<parallel> S2'))"

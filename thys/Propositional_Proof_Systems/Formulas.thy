@@ -5,15 +5,15 @@ imports Main "HOL-Library.Countable"
 begin
 
 (* unrelated, but I need this in too many places. *)
-notation insert ("_ \<triangleright> _" [56,55] 55)
+notation insert (\<open>_ \<triangleright> _\<close> [56,55] 55)
 
 datatype (atoms: 'a) formula = 
     Atom 'a
-  | Bot                              ("\<bottom>")  
-  | Not "'a formula"                 ("\<^bold>\<not>")
-  | And "'a formula" "'a formula"    (infix "\<^bold>\<and>" 68)
-  | Or "'a formula" "'a formula"     (infix "\<^bold>\<or>" 68)
-  | Imp "'a formula" "'a formula"    (infixr "\<^bold>\<rightarrow>" 68)
+  | Bot                              (\<open>\<bottom>\<close>)  
+  | Not "'a formula"                 (\<open>\<^bold>\<not>\<close>)
+  | And "'a formula" "'a formula"    (infix \<open>\<^bold>\<and>\<close> 68)
+  | Or "'a formula" "'a formula"     (infix \<open>\<^bold>\<or>\<close> 68)
+  | Imp "'a formula" "'a formula"    (infixr \<open>\<^bold>\<rightarrow>\<close> 68)
 (* In a standard Isabelle/jEdit config, bold can be done with C-e rightarrow.
    I learned that way too late. *)
 (* I'm not sure I'm happy about the definition of what is an atom.
@@ -54,18 +54,18 @@ lemma length_subformulae: "length (subformulae F) = size F" by(induction F; simp
 
 subsection\<open>Derived Connectives\<close>
     
-definition Top ("\<top>") where
+definition Top (\<open>\<top>\<close>) where
 "\<top> \<equiv> \<bottom> \<^bold>\<rightarrow> \<bottom>"
 lemma top_atoms_simp[simp]: "atoms \<top> = {}" unfolding Top_def by simp
 
-primrec BigAnd :: "'a formula list \<Rightarrow> 'a formula" ("\<^bold>\<And>_") where
+primrec BigAnd :: "'a formula list \<Rightarrow> 'a formula" (\<open>\<^bold>\<And>_\<close>) where
 "\<^bold>\<And>Nil = (\<^bold>\<not>\<bottom>)" \<comment> \<open>essentially, it doesn't matter what I use here. But since I want to use this in CNFs, implication is not a nice thing to have.\<close> |
 "\<^bold>\<And>(F#Fs) = F \<^bold>\<and> \<^bold>\<And>Fs"
 
 lemma atoms_BigAnd[simp]: "atoms (\<^bold>\<And>Fs) = \<Union>(atoms ` set Fs)"
   by(induction Fs; simp)
 
-primrec BigOr :: "'a formula list \<Rightarrow> 'a formula" ("\<^bold>\<Or>_") where
+primrec BigOr :: "'a formula list \<Rightarrow> 'a formula" (\<open>\<^bold>\<Or>_\<close>) where
 "\<^bold>\<Or>Nil = \<bottom>" |
 "\<^bold>\<Or>(F#Fs) = F \<^bold>\<or> \<^bold>\<Or>Fs"
 

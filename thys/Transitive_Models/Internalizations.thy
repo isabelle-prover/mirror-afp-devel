@@ -41,45 +41,45 @@ lemma (in M_basic) choice_ax_abs :
 txt\<open>Setting up notation for internalized formulas\<close>
 
 abbreviation
-  dec10  :: i   ("10") where "10 \<equiv> succ(9)"
+  dec10  :: i   (\<open>10\<close>) where "10 \<equiv> succ(9)"
 abbreviation
-  dec11  :: i   ("11") where "11 \<equiv> succ(10)"
+  dec11  :: i   (\<open>11\<close>) where "11 \<equiv> succ(10)"
 abbreviation
-  dec12  :: i   ("12") where "12 \<equiv> succ(11)"
+  dec12  :: i   (\<open>12\<close>) where "12 \<equiv> succ(11)"
 abbreviation
-  dec13  :: i   ("13") where "13 \<equiv> succ(12)"
+  dec13  :: i   (\<open>13\<close>) where "13 \<equiv> succ(12)"
 abbreviation
-  dec14  :: i   ("14") where "14 \<equiv> succ(13)"
+  dec14  :: i   (\<open>14\<close>) where "14 \<equiv> succ(13)"
 abbreviation
-  dec15  :: i   ("15") where "15 \<equiv> succ(14)"
+  dec15  :: i   (\<open>15\<close>) where "15 \<equiv> succ(14)"
 abbreviation
-  dec16  :: i   ("16") where "16 \<equiv> succ(15)"
+  dec16  :: i   (\<open>16\<close>) where "16 \<equiv> succ(15)"
 abbreviation
-  dec17  :: i   ("17") where "17 \<equiv> succ(16)"
+  dec17  :: i   (\<open>17\<close>) where "17 \<equiv> succ(16)"
 abbreviation
-  dec18  :: i   ("18") where "18 \<equiv> succ(17)"
+  dec18  :: i   (\<open>18\<close>) where "18 \<equiv> succ(17)"
 abbreviation
-  dec19  :: i   ("19") where "19 \<equiv> succ(18)"
+  dec19  :: i   (\<open>19\<close>) where "19 \<equiv> succ(18)"
 abbreviation
-  dec20  :: i   ("20") where "20 \<equiv> succ(19)"
+  dec20  :: i   (\<open>20\<close>) where "20 \<equiv> succ(19)"
 abbreviation
-  dec21  :: i   ("21") where "21 \<equiv> succ(20)"
+  dec21  :: i   (\<open>21\<close>) where "21 \<equiv> succ(20)"
 abbreviation
-  dec22  :: i   ("22") where "22 \<equiv> succ(21)"
+  dec22  :: i   (\<open>22\<close>) where "22 \<equiv> succ(21)"
 abbreviation
-  dec23  :: i   ("23") where "23 \<equiv> succ(22)"
+  dec23  :: i   (\<open>23\<close>) where "23 \<equiv> succ(22)"
 abbreviation
-  dec24  :: i   ("24") where "24 \<equiv> succ(23)"
+  dec24  :: i   (\<open>24\<close>) where "24 \<equiv> succ(23)"
 abbreviation
-  dec25  :: i   ("25") where "25 \<equiv> succ(24)"
+  dec25  :: i   (\<open>25\<close>) where "25 \<equiv> succ(24)"
 abbreviation
-  dec26  :: i   ("26") where "26 \<equiv> succ(25)"
+  dec26  :: i   (\<open>26\<close>) where "26 \<equiv> succ(25)"
 abbreviation
-  dec27  :: i   ("27") where "27 \<equiv> succ(26)"
+  dec27  :: i   (\<open>27\<close>) where "27 \<equiv> succ(26)"
 abbreviation
-  dec28  :: i   ("28") where "28 \<equiv> succ(27)"
+  dec28  :: i   (\<open>28\<close>) where "28 \<equiv> succ(27)"
 abbreviation
-  dec29  :: i   ("29") where "29 \<equiv> succ(28)"
+  dec29  :: i   (\<open>29\<close>) where "29 \<equiv> succ(28)"
 
 notation Member (\<open>\<cdot>_ \<in>/ _\<cdot>\<close>)
 notation Equal (\<open>\<cdot>_ =/ _\<cdot>\<close>)

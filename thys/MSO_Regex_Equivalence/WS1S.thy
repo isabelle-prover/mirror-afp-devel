@@ -298,7 +298,7 @@ fun wf_interp_for_formula :: "'a interp \<Rightarrow> 'a formula \<Rightarrow> b
      (\<forall>n \<in> FOV \<phi>. case I ! n of Inl _ \<Rightarrow> True | _ \<Rightarrow> False) \<and>
      (\<forall>n \<in> SOV \<phi>. case I ! n of Inl _ \<Rightarrow> False | Inr _ \<Rightarrow> True))"
 
-fun satisfies :: "'a interp \<Rightarrow> 'a formula \<Rightarrow> bool" (infix "\<Turnstile>" 50) where
+fun satisfies :: "'a interp \<Rightarrow> 'a formula \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) where
   "(w, I) \<Turnstile> FQ a m = ((case I ! m of Inl p \<Rightarrow> if p < length w then w ! p else any) = a)"
 | "(w, I) \<Turnstile> FLess m1 m2 = ((case I ! m1 of Inl p \<Rightarrow> p) < (case I ! m2 of Inl p \<Rightarrow> p))"
 | "(w, I) \<Turnstile> FIn m M = ((case I ! m of Inl p \<Rightarrow> p) \<in> (case I ! M of Inr P \<Rightarrow> P))"

@@ -6,7 +6,7 @@ begin
 
   hide_type (open) List_Seg.node    
     
-  notation Heap_Monad.return ("return")
+  notation Heap_Monad.return (\<open>return\<close>)
 
 (* Refinement Framework VCG control:
   Idea: Put a frame around stuff in the program where the VCG shall not look into

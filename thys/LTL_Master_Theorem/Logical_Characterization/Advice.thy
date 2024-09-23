@@ -14,7 +14,7 @@ begin
 
 subsection \<open>The GF and FG Advice Functions\<close>
 
-fun GF_advice :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" ("_[_]\<^sub>\<nu>" [90,60] 89)
+fun GF_advice :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" (\<open>_[_]\<^sub>\<nu>\<close> [90,60] 89)
   where
   "(X\<^sub>n \<psi>)[X]\<^sub>\<nu> = X\<^sub>n (\<psi>[X]\<^sub>\<nu>)"
 | "(\<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2)[X]\<^sub>\<nu> = (\<psi>\<^sub>1[X]\<^sub>\<nu>) and\<^sub>n (\<psi>\<^sub>2[X]\<^sub>\<nu>)"
@@ -25,7 +25,7 @@ fun GF_advice :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" ("_[_
 | "(\<psi>\<^sub>1 M\<^sub>n \<psi>\<^sub>2)[X]\<^sub>\<nu> = (if (\<psi>\<^sub>1 M\<^sub>n \<psi>\<^sub>2) \<in> X then (\<psi>\<^sub>1[X]\<^sub>\<nu>) R\<^sub>n (\<psi>\<^sub>2[X]\<^sub>\<nu>) else false\<^sub>n)"
 | "\<phi>[_]\<^sub>\<nu> = \<phi>"
 
-fun FG_advice :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" ("_[_]\<^sub>\<mu>" [90,60] 89)
+fun FG_advice :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" (\<open>_[_]\<^sub>\<mu>\<close> [90,60] 89)
 where
   "(X\<^sub>n \<psi>)[Y]\<^sub>\<mu> = X\<^sub>n (\<psi>[Y]\<^sub>\<mu>)"
 | "(\<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2)[Y]\<^sub>\<mu> = (\<psi>\<^sub>1[Y]\<^sub>\<mu>) and\<^sub>n (\<psi>\<^sub>2[Y]\<^sub>\<mu>)"

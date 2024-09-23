@@ -19,7 +19,7 @@ primrec bound_scheme_inst :: "[nat => type_scheme, type_scheme] => type_scheme" 
 | "bound_scheme_inst S (BVar n) = (S n)"
 | "bound_scheme_inst S (sch1 =-> sch2) = ((bound_scheme_inst S sch1) =-> (bound_scheme_inst S sch2))"
   
-definition is_bound_typ_instance :: "[typ, type_scheme] => bool"  (infixr "<|" 70) where
+definition is_bound_typ_instance :: "[typ, type_scheme] => bool"  (infixr \<open><|\<close> 70) where
   is_bound_typ_instance: "t <| sch = (\<exists>S. t = (bound_typ_inst S sch))"
 
 instantiation type_scheme :: ord

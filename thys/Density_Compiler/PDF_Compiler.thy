@@ -13,7 +13,7 @@ imports PDF_Compiler_Pred PDF_Target_Density_Contexts
 begin
 
 inductive expr_has_density_cexpr :: "cdens_ctxt \<Rightarrow> expr \<Rightarrow> cexpr \<Rightarrow> bool"
-      ("(1_/ \<turnstile>\<^sub>c/ (_ \<Rightarrow>/ _))" [50,0,50] 50) where
+      (\<open>(1_/ \<turnstile>\<^sub>c/ (_ \<Rightarrow>/ _))\<close> [50,0,50] 50) where
 (*  edc_equiv:  "cexpr_equiv f1 f2 \<Longrightarrow> \<Gamma> \<turnstile> e : t \<Longrightarrow> is_density_expr (vs,vs',\<Gamma>,\<delta>) t f2 \<Longrightarrow>
                        (vs, vs', \<Gamma>, \<delta>)  \<turnstile>\<^sub>c e \<Rightarrow> f1 \<Longrightarrow> (vs, vs', \<Gamma>, \<delta>)  \<turnstile>\<^sub>c e \<Rightarrow> f2"*)
   edc_val:     "countable_type (val_type v) \<Longrightarrow>
@@ -1356,7 +1356,7 @@ proof-
        (insert vars, auto split: nat.split)
 qed
 
-inductive expr_compiles_to :: "expr \<Rightarrow> pdf_type \<Rightarrow> cexpr \<Rightarrow> bool" ("_ : _ \<Rightarrow>\<^sub>c _" [10,0,10] 10)
+inductive expr_compiles_to :: "expr \<Rightarrow> pdf_type \<Rightarrow> cexpr \<Rightarrow> bool" (\<open>_ : _ \<Rightarrow>\<^sub>c _\<close> [10,0,10] 10)
   for e t f where
   "(\<lambda>_. UNIT) \<turnstile> e : t \<Longrightarrow> free_vars e = {} \<Longrightarrow>
       ([], [], \<lambda>_. UNIT, CReal 1) \<turnstile>\<^sub>c e \<Rightarrow> f \<Longrightarrow>

@@ -17,7 +17,7 @@ datatype ('id, 'v) operation =
   Insert "('id, 'v) elt" "'id option" |
   Delete "'id"
 
-fun interpret_opers :: "('id::linorder, 'v) operation \<Rightarrow> ('id, 'v) elt list \<rightharpoonup> ('id, 'v) elt list" ("\<langle>_\<rangle>" [0] 1000) where
+fun interpret_opers :: "('id::linorder, 'v) operation \<Rightarrow> ('id, 'v) elt list \<rightharpoonup> ('id, 'v) elt list" (\<open>\<langle>_\<rangle>\<close> [0] 1000) where
   "interpret_opers (Insert e n) xs  = insert xs e n" |
   "interpret_opers (Delete n)   xs  = delete xs n"
 

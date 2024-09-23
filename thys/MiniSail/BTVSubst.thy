@@ -8,7 +8,7 @@ chapter \<open>Basic Type Variable Substitution\<close>
 section \<open>Class\<close>
 
 class has_subst_b = fs +
-  fixes subst_b :: "'a::fs \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> 'a::fs" ("_[_::=_]\<^sub>b" [1000,50,50] 1000)
+  fixes subst_b :: "'a::fs \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> 'a::fs" (\<open>_[_::=_]\<^sub>b\<close> [1000,50,50] 1000)
 
 assumes fresh_subst_if:  "j \<sharp> (t[i::=x]\<^sub>b )  \<longleftrightarrow> (atom i \<sharp> t \<and> j \<sharp> t) \<or> (j \<sharp> x \<and> (j \<sharp> t \<or> j = atom i))" 
   and    forget_subst[simp]:  "atom a \<sharp> tm \<Longrightarrow> tm[a::=x]\<^sub>b  = tm"
@@ -85,7 +85,7 @@ nominal_function subst_bb :: "b \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> b
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_bb_abbrev :: "b \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> b" ("_[_::=_]\<^sub>b\<^sub>b" [1000,50,50] 1000)
+  subst_bb_abbrev :: "b \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> b" (\<open>_[_::=_]\<^sub>b\<^sub>b\<close> [1000,50,50] 1000)
   where 
     "b[bv::=b']\<^sub>b\<^sub>b  \<equiv> subst_bb b bv b' " 
 
@@ -205,7 +205,7 @@ nominal_function subst_vb :: "v \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> v
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_vb_abbrev :: "v \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> v" ("_[_::=_]\<^sub>v\<^sub>b" [1000,50,50] 500)
+  subst_vb_abbrev :: "v \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> v" (\<open>_[_::=_]\<^sub>v\<^sub>b\<close> [1000,50,50] 500)
   where 
     "e[bv::=b]\<^sub>v\<^sub>b  \<equiv> subst_vb e bv b" 
 
@@ -293,7 +293,7 @@ nominal_function subst_ceb :: "ce \<Rightarrow> bv \<Rightarrow> b \<Rightarrow>
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_ceb_abbrev :: "ce \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> ce" ("_[_::=_]\<^sub>c\<^sub>e\<^sub>b" [1000,50,50] 500)
+  subst_ceb_abbrev :: "ce \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> ce" (\<open>_[_::=_]\<^sub>c\<^sub>e\<^sub>b\<close> [1000,50,50] 500)
   where 
     "ce[bv::=b]\<^sub>c\<^sub>e\<^sub>b  \<equiv> subst_ceb ce bv b" 
 
@@ -406,7 +406,7 @@ nominal_function subst_cb :: "c \<Rightarrow> bv \<Rightarrow> b  \<Rightarrow> 
 nominal_termination (eqvt)  by lexicographic_order
 
 abbreviation 
-  subst_cb_abbrev :: "c \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> c" ("_[_::=_]\<^sub>c\<^sub>b" [1000,50,50] 500)
+  subst_cb_abbrev :: "c \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> c" (\<open>_[_::=_]\<^sub>c\<^sub>b\<close> [1000,50,50] 500)
   where 
     "c[bv::=b]\<^sub>c\<^sub>b  \<equiv> subst_cb c bv b" 
 
@@ -498,7 +498,7 @@ qed
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_tb_abbrev :: "\<tau> \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> \<tau>" ("_[_::=_]\<^sub>\<tau>\<^sub>b" [1000,50,50] 1000)
+  subst_tb_abbrev :: "\<tau> \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> \<tau>" (\<open>_[_::=_]\<^sub>\<tau>\<^sub>b\<close> [1000,50,50] 1000)
   where 
     "t[bv::=b']\<^sub>\<tau>\<^sub>b  \<equiv> subst_tb t bv b' " 
 
@@ -607,7 +607,7 @@ nominal_function subst_eb :: "e \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> e
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_eb_abbrev :: "e \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> e" ("_[_::=_]\<^sub>e\<^sub>b" [1000,50,50] 500)
+  subst_eb_abbrev :: "e \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> e" (\<open>_[_::=_]\<^sub>e\<^sub>b\<close> [1000,50,50] 500)
   where 
     "e[bv::=b]\<^sub>e\<^sub>b  \<equiv> subst_eb e bv b" 
 
@@ -778,7 +778,7 @@ qed
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_sb_abbrev :: "s \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> s" ("_[_::=_]\<^sub>s\<^sub>b" [1000,50,50] 1000)
+  subst_sb_abbrev :: "s \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> s" (\<open>_[_::=_]\<^sub>s\<^sub>b\<close> [1000,50,50] 1000)
   where 
     "b[bv::=b']\<^sub>s\<^sub>b  \<equiv> subst_sb b bv b'" 
 
@@ -1256,7 +1256,7 @@ nominal_function subst_gb :: "\<Gamma> \<Rightarrow> bv \<Rightarrow> b \<Righta
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_gb_abbrev :: "\<Gamma> \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> \<Gamma>" ("_[_::=_]\<^sub>\<Gamma>\<^sub>b" [1000,50,50] 1000)
+  subst_gb_abbrev :: "\<Gamma> \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> \<Gamma>" (\<open>_[_::=_]\<^sub>\<Gamma>\<^sub>b\<close> [1000,50,50] 1000)
   where 
     "g[bv::=b']\<^sub>\<Gamma>\<^sub>b  \<equiv> subst_gb g bv b'" 
 
@@ -1374,7 +1374,7 @@ nominal_function subst_db :: "\<Delta> \<Rightarrow> bv \<Rightarrow> b \<Righta
 nominal_termination (eqvt) by lexicographic_order
 
 abbreviation 
-  subst_db_abbrev :: "\<Delta> \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> \<Delta>" ("_[_::=_]\<^sub>\<Delta>\<^sub>b" [1000,50,50] 1000)
+  subst_db_abbrev :: "\<Delta> \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> \<Delta>" (\<open>_[_::=_]\<^sub>\<Delta>\<^sub>b\<close> [1000,50,50] 1000)
   where 
     "\<Delta>[bv::=b]\<^sub>\<Delta>\<^sub>b  \<equiv> subst_db \<Delta> bv b" 
 

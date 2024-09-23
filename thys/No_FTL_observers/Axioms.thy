@@ -15,7 +15,7 @@ record Body =
 class WorldView = SpaceTime +
 fixes
   (* Worldview relation *)
-  W :: "Body \<Rightarrow> Body \<Rightarrow> 'a Point \<Rightarrow> bool" ("_ sees _ at _")
+  W :: "Body \<Rightarrow> Body \<Rightarrow> 'a Point \<Rightarrow> bool" (\<open>_ sees _ at _\<close>)
 and
   (* Worldview transformation *)
   wvt :: "Body \<Rightarrow> Body \<Rightarrow> 'a Point \<Rightarrow> 'a Point"

@@ -42,7 +42,7 @@ definition checkmem :: "'param \<Rightarrow> ('mem, 'result) state \<Rightarrow>
 
 abbreviation checkmem_eq ::
   "('param \<Rightarrow> ('mem, 'result) state) \<Rightarrow> 'param \<Rightarrow> ('mem, 'result) state \<Rightarrow> bool"
-  ("_$ _ =CHECKMEM= _" [1000,51] 51) where
+  (\<open>_$ _ =CHECKMEM= _\<close> [1000,51] 51) where
   "(dp\<^sub>T$ param =CHECKMEM= calc) \<equiv> (dp\<^sub>T param = checkmem param calc)"
 term 0 (**)
 
@@ -97,7 +97,7 @@ definition cmem :: "'mem \<Rightarrow> bool" where
 definition crel_vs :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> ('mem, 'b) state \<Rightarrow> bool" where
   "crel_vs R v s \<equiv> \<forall>M. cmem M \<and> P M \<longrightarrow> (case State_Monad.run_state s M of (v', M') \<Rightarrow> R v v' \<and> cmem M' \<and> P M')"
   
-abbreviation rel_fun_lifted :: "('a \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c ==_\<Longrightarrow> 'd) \<Rightarrow> bool" (infixr "===>\<^sub>T" 55) where
+abbreviation rel_fun_lifted :: "('a \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c ==_\<Longrightarrow> 'd) \<Rightarrow> bool" (infixr \<open>===>\<^sub>T\<close> 55) where
   "rel_fun_lifted R R' \<equiv> R ===> crel_vs R'"
 term 0 (**)
 

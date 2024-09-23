@@ -8,26 +8,26 @@ theory PsHoareTotal imports PsHoare PsTermi begin
 subsection\<open>Hoare logic for total correctness\<close>
 
 definition
- tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
+ tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}\<close> 50) where
     "\<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> \<Turnstile> {P}c{Q} \<and> (\<forall>z s. P z s \<longrightarrow> c\<down>s)"
 
 definition
- valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile>\<^sub>t _" 50) where
+ valids :: "'a cntxt \<Rightarrow> bool" (\<open>|\<Turnstile>\<^sub>t _\<close> 50) where
  "|\<Turnstile>\<^sub>t D \<longleftrightarrow> (\<forall>(P,c,Q) \<in> D. \<Turnstile>\<^sub>t {P}c{Q})"
 
 definition
  ctvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-            ("(_ /\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_))}" 50) where
+            (\<open>(_ /\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_))}\<close> 50) where
  "C \<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> |\<Turnstile>\<^sub>t C \<longrightarrow>  \<Turnstile>\<^sub>t {P}c{Q}"
 
 definition
- cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>\<^sub>t/ _" 50) where
+ cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>_ |\<Turnstile>\<^sub>t/ _\<close> 50) where
   "C |\<Turnstile>\<^sub>t D \<longleftrightarrow> |\<Turnstile>\<^sub>t C \<longrightarrow> |\<Turnstile>\<^sub>t D"
 
 inductive
-  thoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("(_ |\<turnstile>\<^sub>t/ _)" 50)
+  thoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>(_ |\<turnstile>\<^sub>t/ _)\<close> 50)
   and thoare' :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool"
-    ("(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))" [50,0,0,0] 50)
+    (\<open>(_ \<turnstile>\<^sub>t/ ({(1_)}/ (_)/ {(1_)}))\<close> [50,0,0,0] 50)
 where
  "C \<turnstile>\<^sub>t {P}c{Q}  \<equiv>  C |\<turnstile>\<^sub>t {(P,c,Q)}"
 | Do: "C \<turnstile>\<^sub>t {\<lambda>z s. (\<forall>t \<in> f s . P z t) \<and> f s \<noteq> {}} Do f {P}"
@@ -212,7 +212,7 @@ done
 
 inductive_set
   exec1 :: "((com list \<times> state) \<times> (com list \<times> state))set"
-  and exec1' :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"  ("_ \<rightarrow> _" [81,81] 100)
+  and exec1' :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"  (\<open>_ \<rightarrow> _\<close> [81,81] 100)
 where
   "cs0 \<rightarrow> cs1 \<equiv> (cs0,cs1) : exec1"
 
@@ -231,7 +231,7 @@ where
 | Local[iff]: "((LOCAL f;c;g)#cs,s) \<rightarrow> (c # Do(\<lambda>t. {g s t})#cs, f s)"
 
 abbreviation
-  exectr :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"  ("_ \<rightarrow>\<^sup>* _" [81,81] 100)
+  exectr :: "(com list \<times> state) \<Rightarrow> (com list \<times> state) \<Rightarrow> bool"  (\<open>_ \<rightarrow>\<^sup>* _\<close> [81,81] 100)
   where "cs0 \<rightarrow>\<^sup>* cs1 \<equiv> (cs0,cs1) : exec1^*"
 
 inductive_cases exec1E[elim!]:
@@ -272,7 +272,7 @@ apply(blast intro: rtrancl_trans)
 done
 
 inductive
-  execs :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"  ("_/ =_\<Rightarrow>/ _" [50,0,50] 50)
+  execs :: "state \<Rightarrow> com list \<Rightarrow> state \<Rightarrow> bool"  (\<open>_/ =_\<Rightarrow>/ _\<close> [50,0,50] 50)
 where
   "s =[]\<Rightarrow> s"
 | "s -c\<rightarrow> t \<Longrightarrow> t =cs\<Rightarrow> u \<Longrightarrow> s =c#cs\<Rightarrow> u"
@@ -297,7 +297,7 @@ done
 theorem exec1s_impl_exec: "([c],s) \<rightarrow>\<^sup>* ([],t) \<Longrightarrow> s -c\<rightarrow> t"
 by(blast dest: exec1s_impl_execs)
 
-primrec termis :: "com list \<Rightarrow> state \<Rightarrow> bool" (infixl "\<Down>" 60) where
+primrec termis :: "com list \<Rightarrow> state \<Rightarrow> bool" (infixl \<open>\<Down>\<close> 60) where
   "[]\<Down>s = True"
 | "c#cs \<Down> s = (c\<down>s \<and> (\<forall>t. s -c\<rightarrow> t \<longrightarrow> cs\<Down>t))"
 

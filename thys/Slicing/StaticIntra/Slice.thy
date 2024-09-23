@@ -8,7 +8,7 @@ locale BackwardSlice =
   CFG_wf sourcenode targetnode kind valid_edge Entry Def Use state_val
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val" +
   fixes backward_slice :: "'node set \<Rightarrow> 'node set"
   assumes valid_nodes:"n \<in> backward_slice S \<Longrightarrow> valid_node n"
@@ -426,7 +426,7 @@ subsection \<open>Observable and silent moves\<close>
 
 inductive silent_move :: 
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge \<Rightarrow> 
-  'node \<Rightarrow> 'state \<Rightarrow> bool" ("_,_ \<turnstile> '(_,_') -_\<rightarrow>\<^sub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51) 
+  'node \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_,_ \<turnstile> '(_,_') -_\<rightarrow>\<^sub>\<tau> '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
  
   where silent_moveI:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; sourcenode a \<notin> backward_slice S; 
@@ -436,7 +436,7 @@ inductive silent_move ::
 
 inductive silent_moves :: 
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge list \<Rightarrow> 
-  'node \<Rightarrow> 'state \<Rightarrow> bool" ("_,_ \<turnstile> '(_,_') =_\<Rightarrow>\<^sub>\<tau> '(_,_')" [51,50,0,0,50,0,0] 51)
+  'node \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_,_ \<turnstile> '(_,_') =_\<Rightarrow>\<^sub>\<tau> '(_,_')\<close> [51,50,0,0,50,0,0] 51)
 
   where silent_moves_Nil: "S,f \<turnstile> (n,s) =[]\<Rightarrow>\<^sub>\<tau> (n,s)"
 
@@ -579,7 +579,7 @@ qed
 
 inductive observable_move ::
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge \<Rightarrow> 
-  'node \<Rightarrow> 'state \<Rightarrow> bool" ("_,_ \<turnstile> '(_,_') -_\<rightarrow> '(_,_')" [51,50,0,0,50,0,0] 51) 
+  'node \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_,_ \<turnstile> '(_,_') -_\<rightarrow> '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
  
   where observable_moveI:
   "\<lbrakk>pred (f a) s; transfer (f a) s = s'; sourcenode a \<in> backward_slice S; 
@@ -589,7 +589,7 @@ inductive observable_move ::
 
 inductive observable_moves :: 
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge list \<Rightarrow> 
-  'node \<Rightarrow> 'state \<Rightarrow> bool" ("_,_ \<turnstile> '(_,_') =_\<Rightarrow> '(_,_')" [51,50,0,0,50,0,0] 51) 
+  'node \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_,_ \<turnstile> '(_,_') =_\<Rightarrow> '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
 
   where observable_moves_snoc:
   "\<lbrakk>S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s'); S,f \<turnstile> (n',s') -a\<rightarrow> (n'',s'')\<rbrakk> 
@@ -652,7 +652,7 @@ qed
 
 subsection \<open>Relevant variables\<close>
 
-inductive_set relevant_vars :: "'node set \<Rightarrow> 'node \<Rightarrow> 'var set" ("rv _")
+inductive_set relevant_vars :: "'node set \<Rightarrow> 'node \<Rightarrow> 'var set" (\<open>rv _\<close>)
 for S :: "'node set" and n :: "'node"
 
 where rvI:
@@ -1223,7 +1223,7 @@ subsection \<open>@{term "n -as\<rightarrow>* n'"} and transitive closure of
 
 inductive trans_observable_moves :: 
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge list \<Rightarrow> 
-  'node \<Rightarrow> 'state \<Rightarrow> bool" ("_,_ \<turnstile> '(_,_') =_\<Rightarrow>* '(_,_')" [51,50,0,0,50,0,0] 51) 
+  'node \<Rightarrow> 'state \<Rightarrow> bool" (\<open>_,_ \<turnstile> '(_,_') =_\<Rightarrow>* '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
 
 where tom_Nil:
   "S,f \<turnstile> (n,s) =[]\<Rightarrow>* (n,s)"
@@ -1833,12 +1833,12 @@ locale BackwardSlice_wf =
   CFG_semantics_wf sourcenode targetnode kind valid_edge Entry sem identifies
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
   and backward_slice :: "'node set \<Rightarrow> 'node set" 
   and sem :: "'com \<Rightarrow> 'state \<Rightarrow> 'com \<Rightarrow> 'state \<Rightarrow> bool" 
-    ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
-  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51, 0] 80)
+    (\<open>((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81)
+  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" (\<open>_ \<triangleq> _\<close> [51, 0] 80)
 
 begin
 

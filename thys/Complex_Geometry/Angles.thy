@@ -13,7 +13,7 @@ subsubsection \<open>Oriented angle\<close>
 (* ---------------------------------------------------------------------------- *)
 
 text \<open>Oriented angle between two vectors (it is always in the interval $(-\pi, \pi]$).\<close>
-definition ang_vec ("\<angle>") where
+definition ang_vec (\<open>\<angle>\<close>) where
   [simp]: "\<angle> z1 z2 \<equiv> \<downharpoonright>Arg z2 - Arg z1\<downharpoonleft>"
 
 lemma ang_vec_bounded:
@@ -168,7 +168,7 @@ subsubsection \<open>Unoriented angle\<close>
 (* ---------------------------------------------------------------------------- *)
 
 text \<open>Convex unoriented angle between two vectors (it is always in the interval $[0, pi]$).\<close>
-definition ang_vec_c ("\<angle>c") where
+definition ang_vec_c (\<open>\<angle>c\<close>) where
   [simp]:"\<angle>c z1 z2 \<equiv> abs (\<angle> z1 z2)"
 
 lemma ang_vec_c_sym:
@@ -210,7 +210,7 @@ We will use this to measure angle between two circles, since it can always be ac
 definition acute_ang where
   [simp]: "acute_ang \<alpha> = (if \<alpha> > pi / 2 then pi - \<alpha> else \<alpha>)"
 
-definition ang_vec_a ("\<angle>a") where
+definition ang_vec_a (\<open>\<angle>a\<close>) where
   [simp]: "\<angle>a z1 z2 \<equiv> acute_ang (\<angle>c z1 z2)"
 
 lemma ang_vec_a_sym:

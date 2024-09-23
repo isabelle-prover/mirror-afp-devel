@@ -48,7 +48,7 @@ text \<open>
 (* Workaround for bug in Haskell-code generator: Type variables have to be 
   lower-case *)
 (* datatype ('Q,'L) ta_rule = RULE 'Q 'L "'Q list" ("_ \<rightarrow> _ _") *)
-datatype ('q,'l) ta_rule = RULE 'q 'l "'q list" ("_ \<rightarrow> _ _")
+datatype ('q,'l) ta_rule = RULE 'q 'l "'q list" (\<open>_ \<rightarrow> _ _\<close>)
 
 record ('Q,'L) tree_automaton_rec =
   ta_initial :: "'Q set"

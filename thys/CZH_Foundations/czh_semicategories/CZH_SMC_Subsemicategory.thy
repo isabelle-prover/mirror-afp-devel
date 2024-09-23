@@ -32,7 +32,7 @@ locale subsemicategory =
     and subsmc_Comp[smc_sub_fw_cs_intros]: 
       "\<lbrakk> g : b \<mapsto>\<^bsub>\<BB>\<^esub> c; f : a \<mapsto>\<^bsub>\<BB>\<^esub> b \<rbrakk> \<Longrightarrow> g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
 
-abbreviation is_subsemicategory ("(_/ \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<index> _)" [51, 51] 50)
+abbreviation is_subsemicategory (\<open>(_/ \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> subsemicategory \<alpha> \<BB> \<CC>"
 
 lemmas [smc_sub_fw_cs_intros] = subsemicategory.subsmc_Comp
@@ -345,7 +345,7 @@ text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 locale fl_subsemicategory = subsemicategory +
   assumes fl_subsemicategory_fl_subdigraph: "smc_dg \<BB> \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> smc_dg \<CC>"
 
-abbreviation is_fl_subsemicategory ("(_/ \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)" [51, 51] 50)
+abbreviation is_fl_subsemicategory (\<open>(_/ \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> fl_subsemicategory \<alpha> \<BB> \<CC>"
 
 
@@ -392,7 +392,7 @@ See \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 locale wide_subsemicategory = subsemicategory +
   assumes wide_subsmc_wide_subdigraph: "smc_dg \<BB> \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<alpha>\<^esub> smc_dg \<CC>"
 
-abbreviation is_wide_subsemicategory ("(_/ \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<index> _)" [51, 51] 50)
+abbreviation is_wide_subsemicategory (\<open>(_/ \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> wide_subsemicategory \<alpha> \<BB> \<CC>"
 
 

@@ -70,56 +70,56 @@ locale substitution_ops =
     comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's"
 begin
 
-abbreviation subst_atm_abbrev :: "'a \<Rightarrow> 's \<Rightarrow> 'a" (infixl "\<cdot>a" 67) where
+abbreviation subst_atm_abbrev :: "'a \<Rightarrow> 's \<Rightarrow> 'a" (infixl \<open>\<cdot>a\<close> 67) where
   "subst_atm_abbrev \<equiv> subst_atm"
 
-abbreviation comp_subst_abbrev :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<odot>" 67) where
+abbreviation comp_subst_abbrev :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<odot>\<close> 67) where
   "comp_subst_abbrev \<equiv> comp_subst"
 
-definition comp_substs :: "'s list \<Rightarrow> 's list \<Rightarrow> 's list" (infixl "\<odot>s" 67) where
+definition comp_substs :: "'s list \<Rightarrow> 's list \<Rightarrow> 's list" (infixl \<open>\<odot>s\<close> 67) where
   "\<sigma>s \<odot>s \<tau>s = map2 comp_subst \<sigma>s \<tau>s"
 
-definition subst_atms :: "'a set \<Rightarrow> 's \<Rightarrow> 'a set" (infixl "\<cdot>as" 67) where
+definition subst_atms :: "'a set \<Rightarrow> 's \<Rightarrow> 'a set" (infixl \<open>\<cdot>as\<close> 67) where
   "AA \<cdot>as \<sigma> = (\<lambda>A. A \<cdot>a \<sigma>) ` AA"
 
-definition subst_atmss :: "'a set set \<Rightarrow> 's \<Rightarrow> 'a set set" (infixl "\<cdot>ass" 67) where
+definition subst_atmss :: "'a set set \<Rightarrow> 's \<Rightarrow> 'a set set" (infixl \<open>\<cdot>ass\<close> 67) where
   "AAA \<cdot>ass \<sigma> = (\<lambda>AA. AA \<cdot>as \<sigma>) ` AAA"
 
-definition subst_atm_list :: "'a list \<Rightarrow> 's \<Rightarrow> 'a list" (infixl "\<cdot>al" 67) where
+definition subst_atm_list :: "'a list \<Rightarrow> 's \<Rightarrow> 'a list" (infixl \<open>\<cdot>al\<close> 67) where
   "As \<cdot>al \<sigma> = map (\<lambda>A. A \<cdot>a \<sigma>) As"
 
-definition subst_atm_mset :: "'a multiset \<Rightarrow> 's \<Rightarrow> 'a multiset" (infixl "\<cdot>am" 67) where
+definition subst_atm_mset :: "'a multiset \<Rightarrow> 's \<Rightarrow> 'a multiset" (infixl \<open>\<cdot>am\<close> 67) where
   "AA \<cdot>am \<sigma> = image_mset (\<lambda>A. A \<cdot>a \<sigma>) AA"
 
 definition
-  subst_atm_mset_list :: "'a multiset list \<Rightarrow> 's \<Rightarrow> 'a multiset list" (infixl "\<cdot>aml" 67)
+  subst_atm_mset_list :: "'a multiset list \<Rightarrow> 's \<Rightarrow> 'a multiset list" (infixl \<open>\<cdot>aml\<close> 67)
 where
   "AAA \<cdot>aml \<sigma> = map (\<lambda>AA. AA \<cdot>am \<sigma>) AAA"
 
 definition
-  subst_atm_mset_lists :: "'a multiset list \<Rightarrow> 's list \<Rightarrow> 'a multiset list" (infixl "\<cdot>\<cdot>aml" 67)
+  subst_atm_mset_lists :: "'a multiset list \<Rightarrow> 's list \<Rightarrow> 'a multiset list" (infixl \<open>\<cdot>\<cdot>aml\<close> 67)
 where
   "AAs \<cdot>\<cdot>aml \<sigma>s = map2 (\<cdot>am) AAs \<sigma>s"
 
-definition subst_lit :: "'a literal \<Rightarrow> 's \<Rightarrow> 'a literal" (infixl "\<cdot>l" 67) where
+definition subst_lit :: "'a literal \<Rightarrow> 's \<Rightarrow> 'a literal" (infixl \<open>\<cdot>l\<close> 67) where
   "L \<cdot>l \<sigma> = map_literal (\<lambda>A. A \<cdot>a \<sigma>) L"
 
 lemma atm_of_subst_lit[simp]: "atm_of (L \<cdot>l \<sigma>) = atm_of L \<cdot>a \<sigma>"
   unfolding subst_lit_def by (cases L) simp+
 
-definition subst_cls :: "'a clause \<Rightarrow> 's \<Rightarrow> 'a clause" (infixl "\<cdot>" 67) where
+definition subst_cls :: "'a clause \<Rightarrow> 's \<Rightarrow> 'a clause" (infixl \<open>\<cdot>\<close> 67) where
   "AA \<cdot> \<sigma> = image_mset (\<lambda>A. A \<cdot>l \<sigma>) AA"
 
-definition subst_clss :: "'a clause set \<Rightarrow> 's \<Rightarrow> 'a clause set" (infixl "\<cdot>cs" 67) where
+definition subst_clss :: "'a clause set \<Rightarrow> 's \<Rightarrow> 'a clause set" (infixl \<open>\<cdot>cs\<close> 67) where
   "AA \<cdot>cs \<sigma> = (\<lambda>A. A \<cdot> \<sigma>) ` AA"
 
-definition subst_cls_list :: "'a clause list \<Rightarrow> 's \<Rightarrow> 'a clause list" (infixl "\<cdot>cl" 67) where
+definition subst_cls_list :: "'a clause list \<Rightarrow> 's \<Rightarrow> 'a clause list" (infixl \<open>\<cdot>cl\<close> 67) where
   "Cs \<cdot>cl \<sigma> = map (\<lambda>A. A \<cdot> \<sigma>) Cs"
 
-definition subst_cls_lists :: "'a clause list \<Rightarrow> 's list \<Rightarrow> 'a clause list" (infixl "\<cdot>\<cdot>cl" 67) where
+definition subst_cls_lists :: "'a clause list \<Rightarrow> 's list \<Rightarrow> 'a clause list" (infixl \<open>\<cdot>\<cdot>cl\<close> 67) where
   "Cs \<cdot>\<cdot>cl \<sigma>s = map2 (\<cdot>) Cs \<sigma>s"
 
-definition subst_cls_mset :: "'a clause multiset \<Rightarrow> 's \<Rightarrow> 'a clause multiset" (infixl "\<cdot>cm" 67) where
+definition subst_cls_mset :: "'a clause multiset \<Rightarrow> 's \<Rightarrow> 'a clause multiset" (infixl \<open>\<cdot>cm\<close> 67) where
   "CC \<cdot>cm \<sigma> = image_mset (\<lambda>A. A \<cdot> \<sigma>) CC"
 
 lemma subst_cls_add_mset[simp]: "add_mset L C \<cdot> \<sigma> = add_mset (L \<cdot>l \<sigma>) (C \<cdot> \<sigma>)"

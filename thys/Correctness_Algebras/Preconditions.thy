@@ -12,7 +12,7 @@ imports Tests
 begin
 
 class pre =
-  fixes pre :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<guillemotleft>" 55)
+  fixes pre :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<guillemotleft>\<close> 55)
 
 class precondition = tests + pre +
   assumes pre_closed: "x\<guillemotleft>-q = --(x\<guillemotleft>-q)"

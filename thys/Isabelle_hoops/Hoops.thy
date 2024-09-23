@@ -11,10 +11,10 @@ begin
 subsection\<open>Definitions\<close>
 
 locale hoop =
-  fixes universe :: "'a set" ("A")
-  and multiplication :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "*\<^sup>A" 60)
-  and implication :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<rightarrow>\<^sup>A" 60)
-  and one :: 'a ("1\<^sup>A")
+  fixes universe :: "'a set" (\<open>A\<close>)
+  and multiplication :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>*\<^sup>A\<close> 60)
+  and implication :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<rightarrow>\<^sup>A\<close> 60)
+  and one :: 'a (\<open>1\<^sup>A\<close>)
   assumes mult_closed: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x *\<^sup>A y \<in> A"
   and imp_closed: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<rightarrow>\<^sup>A y \<in> A"
   and one_closed [simp]: "1\<^sup>A \<in> A"
@@ -27,16 +27,16 @@ locale hoop =
                     x \<rightarrow>\<^sup>A (y \<rightarrow>\<^sup>A z) = (x *\<^sup>A y) \<rightarrow>\<^sup>A z"
 begin
 
-definition hoop_order :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<le>\<^sup>A" 60)
+definition hoop_order :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<le>\<^sup>A\<close> 60)
   where "x \<le>\<^sup>A y \<equiv> (x \<rightarrow>\<^sup>A y = 1\<^sup>A)" 
 
-definition hoop_order_strict :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "<\<^sup>A" 60)
+definition hoop_order_strict :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open><\<^sup>A\<close> 60)
   where "x <\<^sup>A y \<equiv> (x \<le>\<^sup>A y \<and> x \<noteq> y)"
 
-definition hoop_inf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<and>\<^sup>A" 60)
+definition hoop_inf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<and>\<^sup>A\<close> 60)
   where "x \<and>\<^sup>A y = x *\<^sup>A (x \<rightarrow>\<^sup>A y)"
 
-definition hoop_pseudo_sup :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<or>\<^sup>*\<^sup>A" 60)
+definition hoop_pseudo_sup :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<or>\<^sup>*\<^sup>A\<close> 60)
   where "x \<or>\<^sup>*\<^sup>A y = ((x \<rightarrow>\<^sup>A y) \<rightarrow>\<^sup>A y) \<and>\<^sup>A ((y \<rightarrow>\<^sup>A x) \<rightarrow>\<^sup>A x)" 
 
 end
@@ -45,7 +45,7 @@ locale wajsberg_hoop = hoop +
   assumes T: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> (x \<rightarrow>\<^sup>A y) \<rightarrow>\<^sup>A y = (y \<rightarrow>\<^sup>A x) \<rightarrow>\<^sup>A x"
 begin
 
-definition wajsberg_hoop_sup :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<or>\<^sup>A" 60)
+definition wajsberg_hoop_sup :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<or>\<^sup>A\<close> 60)
   where "x \<or>\<^sup>A y = (x \<rightarrow>\<^sup>A y) \<rightarrow>\<^sup>A y"
 
 end

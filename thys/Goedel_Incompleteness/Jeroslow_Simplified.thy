@@ -38,7 +38,7 @@ and eql cnj imp all exi
 and fls
 and num
 and prv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and Ops and tenc
 +
 fixes F :: "('trm \<Rightarrow> 'trm) set"
@@ -135,7 +135,7 @@ and eql cnj imp all exi
 and fls
 and num
 and prv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and Ops and tenc
 and P
 and F encF N ssap

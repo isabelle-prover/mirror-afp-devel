@@ -103,16 +103,16 @@ by(simp add: ID_def)
 text \<open>lexicographic order on pairs\<close>
 
 context
-  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>a" 50) 
-  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>a" 50) 
-  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>b" 50) 
-  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>b" 50) 
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<^sub>a\<close> 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<^sub>a\<close> 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<^sub>b\<close> 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<sqsubset>\<^sub>b\<close> 50) 
 begin
 
-definition less_eq_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+definition less_eq_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 where "less_eq_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^sub>a y1 \<or> x1 \<sqsubseteq>\<^sub>a y1 \<and> x2 \<sqsubseteq>\<^sub>b y2)"
 
-definition less_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+definition less_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where "less_prod = (\<lambda>(x1, x2) (y1, y2). x1 \<sqsubset>\<^sub>a y1 \<or> x1 \<sqsubseteq>\<^sub>a y1 \<and> x2 \<sqsubset>\<^sub>b y2)"
 
 lemma less_eq_prod_simps [simp]:
@@ -126,18 +126,18 @@ by(simp add: less_prod_def)
 end
 
 context
-  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>a" 50) 
-  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>a" 50) 
-  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>b" 50) 
-  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>b" 50) 
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<^sub>a\<close> 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<^sub>a\<close> 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<^sub>b\<close> 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<sqsubset>\<^sub>b\<close> 50) 
   assumes lin_a: "class.linorder leq_a less_a" 
   and lin_b: "class.linorder leq_b less_b"
 begin
 
-abbreviation (input) less_eq_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+abbreviation (input) less_eq_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 where "less_eq_prod' \<equiv> less_eq_prod leq_a less_a leq_b"
 
-abbreviation (input) less_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+abbreviation (input) less_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where "less_prod' \<equiv> less_prod leq_a less_a less_b"
 
 lemma linorder_prod:

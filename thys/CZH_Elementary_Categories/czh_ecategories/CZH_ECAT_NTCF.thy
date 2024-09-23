@@ -1157,7 +1157,7 @@ subsection\<open>Composition of a natural transformation and a functor\<close>
 
 subsubsection\<open>Definition and elementary properties\<close>
 
-abbreviation (input) ntcf_cf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F" 55)
+abbreviation (input) ntcf_cf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F\<close> 55)
   where "ntcf_cf_comp \<equiv> tdghm_dghm_comp"
 
 
@@ -1338,7 +1338,7 @@ subsection\<open>Composition of a functor and a natural transformation\<close>
 
 subsubsection\<open>Definition and elementary properties\<close>
 
-abbreviation (input) cf_ntcf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F" 55)
+abbreviation (input) cf_ntcf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<close> 55)
   where "cf_ntcf_comp \<equiv> dghm_tdghm_comp"
 
 
@@ -2439,7 +2439,7 @@ locale iso_functor =
   fixes \<alpha> \<FF> \<GG>
   assumes iso_cf_is_iso_ntcf: "\<exists>\<AA> \<BB> \<NN>. \<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
 
-notation iso_functor (infixl "\<approx>\<^sub>C\<^sub>F\<index>" 50)
+notation iso_functor (infixl \<open>\<approx>\<^sub>C\<^sub>F\<index>\<close> 50)
 
 
 text\<open>Rules.\<close>

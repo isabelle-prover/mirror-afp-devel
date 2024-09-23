@@ -146,7 +146,7 @@ definition mapCollect :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> (
   where "mapCollect f m = {f k v | k v . m k = Some v}"
 
 syntax
-  "_MapCollect" :: "'c \<Rightarrow> pttrn => pttrn \<Rightarrow> 'a \<rightharpoonup> 'b => 'c set"    ("(1{_ |/_/\<mapsto>/_/\<in>/_/})")
+  "_MapCollect" :: "'c \<Rightarrow> pttrn => pttrn \<Rightarrow> 'a \<rightharpoonup> 'b => 'c set"    (\<open>(1{_ |/_/\<mapsto>/_/\<in>/_/})\<close>)
 syntax_consts
   "_MapCollect" == mapCollect
 translations
@@ -191,7 +191,7 @@ definition mapCollectFilter :: "('a \<Rightarrow> 'b \<Rightarrow> (bool \<times
   where "mapCollectFilter f m = {snd (f k v) | k v . m k = Some v \<and> fst (f k v)}"
 
 syntax
-  "_MapCollectFilter" :: "'c \<Rightarrow> pttrn \<Rightarrow> pttrn \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool \<Rightarrow> 'c set"    ("(1{_ |/_/\<mapsto>/_/\<in>/_/./ _})")
+  "_MapCollectFilter" :: "'c \<Rightarrow> pttrn \<Rightarrow> pttrn \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool \<Rightarrow> 'c set"    (\<open>(1{_ |/_/\<mapsto>/_/\<in>/_/./ _})\<close>)
 syntax_consts
   "_MapCollectFilter" == mapCollectFilter
 translations

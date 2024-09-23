@@ -44,7 +44,7 @@ where
     \<and> vDecided v c')"
 
 abbreviation pSilentDecisionValues ::
-  "'p \<Rightarrow> ('p, 'v, 's) configuration \<Rightarrow> bool set" ("val[_,_]")
+  "'p \<Rightarrow> ('p, 'v, 's) configuration \<Rightarrow> bool set" (\<open>val[_,_]\<close>)
 where 
   "val[p, c] \<equiv> {v. pSilDecVal v p c}"
 

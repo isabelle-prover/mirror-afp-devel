@@ -2200,7 +2200,7 @@ subsection \<open>Relation \<open>red_supset\<close>\<close>
 text \<open>The following relation is needed for proving the termination of Buchberger's algorithm (i.\,e.
   function \<open>gb_schema_aux\<close>).\<close>
 
-definition red_supset::"('t \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> bool" (infixl "\<sqsupset>p" 50)
+definition red_supset::"('t \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> bool" (infixl \<open>\<sqsupset>p\<close> 50)
   where "red_supset A B \<equiv> (\<exists>p. is_red A p \<and> \<not> is_red B p) \<and> (\<forall>p. is_red B p \<longrightarrow> is_red A p)"
 
 lemma red_supsetE:

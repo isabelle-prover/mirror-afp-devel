@@ -183,7 +183,7 @@ AOT_define CorrelatesEOneToOne :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarro
                                \<forall>u ([F]u \<rightarrow> \<exists>!v([G]v & [R]uv)) &
                                \<forall>v ([G]v \<rightarrow> \<exists>!u([F]u & [R]uv))\<close>
 
-AOT_define EquinumerousE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<approx>\<^sub>E" 50)
+AOT_define EquinumerousE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<approx>\<^sub>E\<close> 50)
   "equi:3": \<open>F \<approx>\<^sub>E G \<equiv>\<^sub>d\<^sub>f \<exists>R (R |: F \<^sub>1\<^sub>-\<^sub>1\<longleftrightarrow>\<^sub>E G)\<close>
 
 text\<open>Note: not explicitly in PLM.\<close>
@@ -426,20 +426,20 @@ next
   AOT_thus \<open>F \<approx>\<^sub>E G\<close> using "eq-part:1" "\<equiv>E" by blast
 qed
 
-AOT_define MapsE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> ("_ |: _ \<longrightarrow>E _")
+AOT_define MapsE :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ \<longrightarrow>E _\<close>)
   "equi-rem:1":
   \<open>R |: F \<longrightarrow>E G \<equiv>\<^sub>d\<^sub>f R\<down> & F\<down> & G\<down> & \<forall>u ([F]u \<rightarrow> \<exists>!v ([G]v & [R]uv))\<close>
 
-AOT_define MapsEOneToOne :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> ("_ |: _ \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>E _")
+AOT_define MapsEOneToOne :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>E _\<close>)
   "equi-rem:2":
   \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>E G \<equiv>\<^sub>d\<^sub>f
       R |: F \<longrightarrow>E G & \<forall>t\<forall>u\<forall>v (([F]t & [F]u & [G]v) \<rightarrow> ([R]tv & [R]uv \<rightarrow> t =\<^sub>E u))\<close>
 
-AOT_define MapsEOnto :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> ("_ |: _ \<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE _")
+AOT_define MapsEOnto :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ \<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE _\<close>)
   "equi-rem:3":
   \<open>R |: F \<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE G \<equiv>\<^sub>d\<^sub>f R |: F \<longrightarrow>E G & \<forall>v ([G]v \<rightarrow> \<exists>u ([F]u & [R]uv))\<close>
 
-AOT_define MapsEOneToOneOnto :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> ("_ |: _ \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE _")
+AOT_define MapsEOneToOneOnto :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>_ |: _ \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE _\<close>)
   "equi-rem:4":
   \<open>R |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE G \<equiv>\<^sub>d\<^sub>f R |: F \<^sub>1\<^sub>-\<^sub>1\<longrightarrow>E G & R |: F \<longrightarrow>\<^sub>o\<^sub>n\<^sub>t\<^sub>oE G\<close>
 
@@ -759,7 +759,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2); rule "raa-cor:2")
 qed
 
 
-AOT_define FminusU :: \<open>\<Pi> \<Rightarrow> \<tau> \<Rightarrow> \<Pi>\<close> ("_\<^sup>-\<^sup>_")
+AOT_define FminusU :: \<open>\<Pi> \<Rightarrow> \<tau> \<Rightarrow> \<Pi>\<close> (\<open>_\<^sup>-\<^sup>_\<close>)
   "F-u": \<open>[F]\<^sup>-\<^sup>x =\<^sub>d\<^sub>f [\<lambda>z [F]z & z \<noteq>\<^sub>E x]\<close>
 
 text\<open>Note: not explicitly in PLM.\<close>
@@ -3371,7 +3371,7 @@ AOT_register_variable_names
 AOT_define IdentityRestrictedToDomain :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> (\<open>'(=\<^sub>_')\<close>)
   "id-d-R": \<open>(=\<^sub>\<R>) =\<^sub>d\<^sub>f [\<lambda>xy \<exists>z ([\<R>]xz & [\<R>]yz)]\<close>
 
-syntax "_AOT_id_d_R_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> ("(_ =\<^sub>_/ _)" [50, 51, 51] 50)
+syntax "_AOT_id_d_R_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (\<open>(_ =\<^sub>_/ _)\<close> [50, 51, 51] 50)
 translations
   "_AOT_id_d_R_infix \<kappa> \<Pi> \<kappa>'" ==
   "CONST AOT_exe (CONST IdentityRestrictedToDomain \<Pi>) (\<kappa>,\<kappa>')"
@@ -5431,7 +5431,7 @@ proof -
     using m_is_n "rule=E" by fast
 qed
 
-AOT_define Numeral1 :: \<open>\<kappa>\<^sub>s\<close> ("1")
+AOT_define Numeral1 :: \<open>\<kappa>\<^sub>s\<close> (\<open>1\<close>)
   "numerals:1": \<open>1 =\<^sub>d\<^sub>f 0\<^bold>'\<close>
 
 AOT_theorem "prec-facts:1": \<open>[\<bbbP>]0 1\<close>

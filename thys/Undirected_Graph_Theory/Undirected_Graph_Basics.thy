@@ -211,8 +211,8 @@ text \<open> A generic incidence set system re-labeled to graph notation, where 
 All the definitions here do not need the "edge" size to be constrained to make sense. \<close>
 
 locale graph_system = 
-  fixes vertices :: "'a set" ("V")
-  fixes edges :: "'a edge set" ("E")
+  fixes vertices :: "'a set" (\<open>V\<close>)
+  fixes edges :: "'a edge set" (\<open>E\<close>)
   assumes wellformed: "e \<in> E \<Longrightarrow> e \<subseteq> V"
 begin
 

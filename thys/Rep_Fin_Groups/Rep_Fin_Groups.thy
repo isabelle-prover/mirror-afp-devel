@@ -343,7 +343,7 @@ lemma supp_diff_subset_union_supp :
   unfolding supp_def
   by        auto
 
-abbreviation restrict0 :: "('a\<Rightarrow>'b::zero) \<Rightarrow> 'a set \<Rightarrow> ('a\<Rightarrow>'b)" (infix "\<down>" 70)
+abbreviation restrict0 :: "('a\<Rightarrow>'b::zero) \<Rightarrow> 'a set \<Rightarrow> ('a\<Rightarrow>'b)" (infix \<open>\<down>\<close> 70)
   where "restrict0 f A \<equiv> (\<lambda>a. if a \<in> A then f a else 0)"
 
 lemma supp_restrict0 : "supp (f\<down>A) \<subseteq> A"
@@ -502,7 +502,7 @@ subsubsection \<open>Delta (impulse) functions\<close>
 text \<open>The notation is set up in the order output-input so that later when these are used to define
         the group ring RG, it will be in order ring-element-group-element.\<close>
 
-definition deltafun :: "'b::zero \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'b)" (infix "\<delta>" 70)
+definition deltafun :: "'b::zero \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'b)" (infix \<open>\<delta>\<close> 70)
   where "b \<delta> a = (\<lambda>x. if x = a then b else 0)"
 
 lemma deltafun_apply_eq : "(b \<delta> a) a = b"
@@ -1057,7 +1057,7 @@ instance aezfun :: (ring_1, group_add) ring_1 ..
 
 subsubsection \<open>Transfer facts\<close>
 
-abbreviation aezdeltafun :: "'b::zero \<Rightarrow> 'a \<Rightarrow> ('b,'a) aezfun" (infix "\<delta>\<delta>" 70)
+abbreviation aezdeltafun :: "'b::zero \<Rightarrow> 'a \<Rightarrow> ('b,'a) aezfun" (infix \<open>\<delta>\<delta>\<close> 70)
   where "b \<delta>\<delta> a \<equiv> Abs_aezfun (b \<delta> a)"
 
 lemma aezdeltafun : "aezfun (b \<delta>\<delta> a) = b \<delta> a"
@@ -1513,14 +1513,14 @@ text\<open>Some syntactic sugar for \<open>inner_dirsum\<close>, borrowed from t
 
 syntax 
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b"
-  ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
+  (\<open>(3\<Oplus>_\<leftarrow>_. _)\<close> [0, 51, 10] 10)
 syntax_consts
   "_inner_dirsum" == inner_dirsum
 translations \<comment> \<open>Beware of argument permutation!\<close>
   "\<Oplus>M\<leftarrow>Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"
 
 abbreviation inner_dirsum_double ::
-  "'a::monoid_add set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr "\<oplus>" 70)
+  "'a::monoid_add set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr \<open>\<oplus>\<close> 70)
   where "inner_dirsum_double A B \<equiv> inner_dirsum [A,B]"
 
 lemma inner_dirsumI :
@@ -2594,15 +2594,15 @@ qed
 subsubsection \<open>Element decomposition and projection\<close>
 
 definition inner_dirsum_el_decomp ::
-  "'g::ab_group_add set list \<Rightarrow> ('g \<Rightarrow> 'g list)" ("\<Oplus>_\<leftarrow>")
+  "'g::ab_group_add set list \<Rightarrow> ('g \<Rightarrow> 'g list)" (\<open>\<Oplus>_\<leftarrow>\<close>)
   where "\<Oplus>Gs\<leftarrow> = (\<lambda>x. if x \<in> (\<Oplus>G\<leftarrow>Gs. G)
               then THE gs. gs \<in> listset Gs \<and> x = sum_list gs else [])"
 
 abbreviation inner_dirsum_el_decomp_double ::
-  "'g::ab_group_add set \<Rightarrow> 'g set \<Rightarrow> ('g \<Rightarrow> 'g list)" ("_\<oplus>_\<leftarrow>") where "G\<oplus>H\<leftarrow> \<equiv> \<Oplus>[G,H]\<leftarrow>"
+  "'g::ab_group_add set \<Rightarrow> 'g set \<Rightarrow> ('g \<Rightarrow> 'g list)" (\<open>_\<oplus>_\<leftarrow>\<close>) where "G\<oplus>H\<leftarrow> \<equiv> \<Oplus>[G,H]\<leftarrow>"
 
 abbreviation inner_dirsum_el_decomp_nth ::
-  "'g::ab_group_add set list \<Rightarrow> nat \<Rightarrow> ('g \<Rightarrow> 'g)" ("\<Oplus>_\<down>_")
+  "'g::ab_group_add set list \<Rightarrow> nat \<Rightarrow> ('g \<Rightarrow> 'g)" (\<open>\<Oplus>_\<down>_\<close>)
   where "\<Oplus>Gs\<down>n \<equiv> restrict0 (\<lambda>x. (\<Oplus>Gs\<leftarrow>x)!n) (\<Oplus>G\<leftarrow>Gs. G)"
 
 lemma AbGroup_inner_dirsum_el_decompI :
@@ -2999,11 +2999,11 @@ subsection \<open>Locales and basic facts\<close>
 subsubsection \<open>Locales\<close>
 
 locale scalar_mult =
-  fixes smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  fixes smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
 
 locale R_scalar_mult = scalar_mult smult + Ring1 R
   for R     :: "'r::ring_1 set"
-  and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
 
 lemma (in scalar_mult) R_scalar_mult : "R_scalar_mult UNIV"
   using full_Ring1 R_scalar_mult.intro by fast
@@ -3012,7 +3012,7 @@ lemma (in R_scalar_mult) Ring1 : "Ring1 R" ..
 
 locale RModule = R_scalars?: R_scalar_mult R smult + VecGroup?: Group M
   for R     :: "'r::ring_1 set"
-  and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and M     :: "'m set"
 + assumes smult_closed : "\<lbrakk> r \<in> R; m \<in> M \<rbrakk> \<Longrightarrow> r \<cdot> m \<in> M"
   and smult_distrib_left  [simp] : "\<lbrakk> r \<in> R; m \<in> M; n \<in> M \<rbrakk>
@@ -3026,7 +3026,7 @@ locale RModule = R_scalars?: R_scalar_mult R smult + VecGroup?: Group M
 lemmas RModuleI = RModule.intro[OF R_scalar_mult.intro]
 
 locale Module = RModule UNIV smult M
-  for smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  for smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and M     :: "'m set"
 
 lemmas ModuleI = RModuleI[of UNIV, OF full_Ring1, THEN Module.intro]
@@ -3034,7 +3034,7 @@ lemmas ModuleI = RModuleI[of UNIV, OF full_Ring1, THEN Module.intro]
 subsubsection \<open>Basic facts\<close>
 
 lemma trivial_RModule :
-  fixes   smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)  
+  fixes   smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)  
   assumes "Ring1 R" "\<forall>r\<in>R. smult r (0::'m::ab_group_add) = 0"
   shows   "RModule R smult (0::'m set)"
 proof (rule RModuleI, rule assms(1), rule trivial_Group, unfold_locales)
@@ -3267,7 +3267,7 @@ subsubsection \<open>Linear combinations: \<open>lincomb\<close>\<close>
 context scalar_mult
 begin
 
-definition lincomb :: "'r list \<Rightarrow> 'm list \<Rightarrow> 'm" (infix "\<bullet>\<cdot>" 70)
+definition lincomb :: "'r list \<Rightarrow> 'm list \<Rightarrow> 'm" (infix \<open>\<bullet>\<cdot>\<close> 70)
   where "rs \<bullet>\<cdot> ms = (\<Sum>(r,m)\<leftarrow>zip rs ms. r \<cdot> m)"
 
 text \<open>Note: \<open>zip\<close> will truncate if lengths of coefficient and vector lists differ.\<close>
@@ -4277,13 +4277,13 @@ locale RModuleHom = Domain?: RModule R smult M
 + Codomain?: scalar_mult smult'
 + GroupHom?: GroupHom M T
   for R      :: "'r::ring_1 set"
-  and smult  :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  and smult  :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and M      :: "'m set"
-  and smult' :: "'r \<Rightarrow> 'n::ab_group_add \<Rightarrow> 'n" (infixr "\<star>" 70)
+  and smult' :: "'r \<Rightarrow> 'n::ab_group_add \<Rightarrow> 'n" (infixr \<open>\<star>\<close> 70)
   and T      :: "'m \<Rightarrow> 'n"
 + assumes R_map: "\<And>r m. r \<in> R \<Longrightarrow> m \<in> M \<Longrightarrow> T (r \<cdot> m) = r \<star> T m"
 
-abbreviation (in RModuleHom) lincomb' :: "'r list \<Rightarrow> 'n list \<Rightarrow> 'n" (infix "\<bullet>\<star>" 70)
+abbreviation (in RModuleHom) lincomb' :: "'r list \<Rightarrow> 'n list \<Rightarrow> 'n" (infix \<open>\<bullet>\<star>\<close> 70)
   where "lincomb' \<equiv> Codomain.lincomb"
 
 lemma (in RModule) RModuleHomI :
@@ -4297,15 +4297,15 @@ lemma (in RModule) RModuleHomI :
 
 locale RModuleEnd = RModuleHom R smult M smult T
   for R     :: "'r::ring_1 set"
-  and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and M     :: "'m set"
   and T     :: "'m \<Rightarrow> 'm"
 + assumes endomorph: "ImG \<subseteq> M"
 
 locale ModuleHom = RModuleHom UNIV smult M smult' T
-  for smult  :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  for smult  :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and M      :: "'m set"
-  and smult' :: "'r \<Rightarrow> 'n::ab_group_add \<Rightarrow> 'n" (infixr "\<star>" 70)
+  and smult' :: "'r \<Rightarrow> 'n::ab_group_add \<Rightarrow> 'n" (infixr \<open>\<star>\<close> 70)
   and T      :: "'m \<Rightarrow> 'n"
 
 lemmas (in ModuleHom) hom = hom
@@ -4313,15 +4313,15 @@ lemmas (in ModuleHom) hom = hom
 lemmas (in Module) ModuleHomI = RModuleHomI[THEN ModuleHom.intro]
 
 locale ModuleEnd = ModuleHom smult M smult T
-  for smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  for smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and M     :: "'m set" and T :: "'m \<Rightarrow> 'm"
 + assumes endomorph: "ImG \<subseteq> M"
 
 locale RModuleIso = RModuleHom R smult M smult' T
   for   R      :: "'r::ring_1 set"
-  and   smult  :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  and   smult  :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   and   M      :: "'m set"
-  and   smult' :: "'r \<Rightarrow> 'n::ab_group_add \<Rightarrow> 'n" (infixr "\<star>" 70)
+  and   smult' :: "'r \<Rightarrow> 'n::ab_group_add \<Rightarrow> 'n" (infixr \<open>\<star>\<close> 70)
   and   T      :: "'m \<Rightarrow> 'n"
 + fixes N      :: "'n set"
   assumes bijective: "bij_betw T M N"
@@ -4462,7 +4462,7 @@ qed
 end (* context RModuleHom *)
 
 lemma RSubmodule_eigenspace :
-  fixes   smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
+  fixes   smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr \<open>\<cdot>\<close> 70)
   assumes RModHom: "RModuleHom R smult M smult T"
   and     r: "r \<in> R" "\<And>s m. s \<in> R \<Longrightarrow> m \<in> M \<Longrightarrow> s \<cdot> r \<cdot> m = r \<cdot> s \<cdot> m"
   defines E: "E \<equiv> {m \<in> M. T m = r \<cdot> m}"
@@ -4617,12 +4617,12 @@ subsection \<open>Locales and basic facts\<close>
 text \<open>Here we don't care about being able to switch scalars.\<close>
 
 locale fscalar_mult = scalar_mult smult
-  for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
 
 abbreviation (in fscalar_mult) "findim \<equiv> fingen"
 
 locale VectorSpace = Module smult V
-  for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and V     :: "'v set"
 
 lemmas VectorSpaceI = ModuleI[THEN VectorSpace.intro]
@@ -5176,9 +5176,9 @@ subsection \<open>Vector space homomorphisms\<close>
 subsubsection \<open>Locales\<close>
 
 locale VectorSpaceHom = ModuleHom smult V smult' T
-  for smult  :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  for smult  :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and V      :: "'v set"
-  and smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+  and smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   and T      :: "'v \<Rightarrow> 'w"
 
 sublocale VectorSpaceHom < VectorSpace ..
@@ -5195,7 +5195,7 @@ lemma (in VectorSpace) VectorSpaceHomI_fromaxioms :
   by      unfold_locales
 
 locale VectorSpaceEnd = VectorSpaceHom smult V smult T
-  for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and V     :: "'v set"
   and T     :: "'v \<Rightarrow> 'v"
 + assumes endomorph: "ImG \<subseteq> V"
@@ -5215,9 +5215,9 @@ lemma (in VectorSpaceEnd) ModuleEnd : "ModuleEnd smult V T"
   using endomorph ModuleEnd.intro by unfold_locales
 
 locale VectorSpaceIso = VectorSpaceHom smult V smult' T
-  for   smult  :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  for   smult  :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and   V      :: "'v set"
-  and   smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+  and   smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   and   T      :: "'v \<Rightarrow> 'w"
 + fixes W      :: "'w set"
   assumes bijective: "bij_betw T V W"
@@ -5310,8 +5310,8 @@ qed
 end (* context VectorSpaceHom *)
 
 lemma (in VectorSpace) basis_im_defines_hom :
-  fixes   smult'   :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     lincomb' :: "'f list \<Rightarrow> 'w list \<Rightarrow> 'w" (infixr "\<bullet>\<star>" 70)
+  fixes   smult'   :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     lincomb' :: "'f list \<Rightarrow> 'w list \<Rightarrow> 'w" (infixr \<open>\<bullet>\<star>\<close> 70)
   defines lincomb'  : "lincomb' \<equiv> scalar_mult.lincomb smult'"
   assumes VSpW      : "VectorSpace smult' W"
   and     basisV    : "basis_for V vs"
@@ -5394,7 +5394,7 @@ context VectorSpace
 begin
 
 lemma VectorSpaceHomSet_is_fmaps_in_GroupHomSet :
-  fixes smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+  fixes smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   shows "VectorSpaceHomSet smult V smult' W
               = (GroupHomSet V W) \<inter> {T. \<forall>a. \<forall>v\<in>V. T (a \<cdot> v) = a \<star> (T v)}"
 proof
@@ -5423,7 +5423,7 @@ proof
 qed
 
 lemma Group_VectorSpaceHomSet :
-  fixes   smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+  fixes   smult' :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   assumes "VectorSpace smult' W"
   shows   "Group (VectorSpaceHomSet smult V smult' W)"
 proof
@@ -5457,8 +5457,8 @@ next
 qed
 
 lemma VectorSpace_VectorSpaceHomSet :
-  fixes   smult'    :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     hom_smult :: "'f \<Rightarrow> ('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)" (infixr "\<star>\<cdot>" 70)
+  fixes   smult'    :: "'f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     hom_smult :: "'f \<Rightarrow> ('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)" (infixr \<open>\<star>\<cdot>\<close> 70)
   defines hom_smult: "hom_smult \<equiv> \<lambda>a T v. a \<star> T v"
   assumes VSpW: "VectorSpace smult' W"
   shows   "VectorSpace hom_smult (VectorSpaceHomSet smult V smult' W)"
@@ -5551,11 +5551,11 @@ lemmas VectorSpaceEnd_inner_dirsum_el_decomp_nth =
     THEN ModuleEnd_over_field_is_VectorSpaceEnd
   ]
 
-abbreviation end_smult :: "'f \<Rightarrow> ('v \<Rightarrow> 'v) \<Rightarrow> ('v \<Rightarrow> 'v)" (infixr "\<cdot>\<cdot>" 70) 
+abbreviation end_smult :: "'f \<Rightarrow> ('v \<Rightarrow> 'v) \<Rightarrow> ('v \<Rightarrow> 'v)" (infixr \<open>\<cdot>\<cdot>\<close> 70) 
   where "a \<cdot>\<cdot> T \<equiv> (\<lambda>v. a \<cdot> T v)"
 
 abbreviation end_lincomb
-  :: "'f list \<Rightarrow> (('v \<Rightarrow> 'v) list) \<Rightarrow> ('v \<Rightarrow> 'v)" (infixr "\<bullet>\<cdot>\<cdot>" 70)
+  :: "'f list \<Rightarrow> (('v \<Rightarrow> 'v) list) \<Rightarrow> ('v \<Rightarrow> 'v)" (infixr \<open>\<bullet>\<cdot>\<cdot>\<close> 70)
   where "end_lincomb \<equiv> scalar_mult.lincomb end_smult"
 
 lemma end_smult0: "a \<cdot>\<cdot> 0 = 0"
@@ -6069,16 +6069,16 @@ subsection \<open>Almost-everywhere-zero functions as scalars\<close>
 
 locale aezfun_scalar_mult = scalar_mult smult
   for smult ::
-    "('r::ring_1, 'g::group_add) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+    "('r::ring_1, 'g::group_add) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
 begin
 
-definition fsmult :: "'r \<Rightarrow> 'v \<Rightarrow> 'v" (infixr "\<sharp>\<cdot>" 70) where "a \<sharp>\<cdot> v \<equiv> (a \<delta>\<delta> 0) \<cdot> v"
-abbreviation flincomb :: "'r list \<Rightarrow> 'v list \<Rightarrow> 'v" (infixr "\<bullet>\<sharp>\<cdot>" 70)
+definition fsmult :: "'r \<Rightarrow> 'v \<Rightarrow> 'v" (infixr \<open>\<sharp>\<cdot>\<close> 70) where "a \<sharp>\<cdot> v \<equiv> (a \<delta>\<delta> 0) \<cdot> v"
+abbreviation flincomb :: "'r list \<Rightarrow> 'v list \<Rightarrow> 'v" (infixr \<open>\<bullet>\<sharp>\<cdot>\<close> 70)
   where "as \<bullet>\<sharp>\<cdot> vs \<equiv> scalar_mult.lincomb fsmult as vs"
 abbreviation f_lin_independent :: "'v list \<Rightarrow> bool"
   where "f_lin_independent \<equiv> scalar_mult.lin_independent fsmult"
 abbreviation fSpan :: "'v list \<Rightarrow> 'v set" where "fSpan \<equiv> scalar_mult.Span fsmult"
-definition Gmult :: "'g \<Rightarrow> 'v \<Rightarrow> 'v" (infixr "*\<cdot>" 70) where "g *\<cdot> v \<equiv> (1 \<delta>\<delta> g) \<cdot> v"
+definition Gmult :: "'g \<Rightarrow> 'v \<Rightarrow> 'v" (infixr \<open>*\<cdot>\<close> 70) where "g *\<cdot> v \<equiv> (1 \<delta>\<delta> g) \<cdot> v"
 
 lemmas R_scalar_mult = R_scalar_mult
 
@@ -6123,7 +6123,7 @@ subsection \<open>Locale and basic facts\<close>
 locale FGModule = ActingGroup?: Group G
 + FGMod?: RModule ActingGroup.group_ring smult V
   for G     :: "'g::group_add set"
-  and smult :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  and smult :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and V     :: "'v set"
 
 sublocale FGModule < aezfun_scalar_mult proof- qed
@@ -6373,9 +6373,9 @@ subsubsection \<open>Locales\<close>
 locale FGModuleHom = ActingGroup?: Group G
 + RModHom?: RModuleHom ActingGroup.group_ring smult V smult' T
   for G      :: "'g::group_add set"
-  and smult  :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  and smult  :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and V      :: "'v set"
-  and smult' :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+  and smult' :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   and T      :: "'v \<Rightarrow> 'w"
 
 sublocale FGModuleHom < FGModule ..
@@ -6390,16 +6390,16 @@ lemma (in FGModule) FGModuleHomI_fromaxioms :
 locale FGModuleEnd = FGModuleHom G smult V smult T
   for G     :: "'g::group_add set"
   and FG    :: "('f::field,'g) aezfun set"
-  and smult :: "('f, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  and smult :: "('f, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and V     :: "'v set"
   and T     :: "'v \<Rightarrow> 'v"
 + assumes endomorph: "ImG \<subseteq> V"
 
 locale FGModuleIso = FGModuleHom G smult V smult' T
   for   G      :: "'g::group_add set"
-  and   smult  :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  and   smult  :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   and   V      :: "'v set"
-  and   smult' :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+  and   smult' :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   and   T      :: "'v \<Rightarrow> 'w"
 + fixes W      :: "'w set"
   assumes bijective: "bij_betw T V W"
@@ -6427,9 +6427,9 @@ proof (rule FGModuleHom.intro)
 qed (unfold_locales)
 
 lemma VecHom_GMap_is_FGModuleHom :
-  fixes   smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70)
-  and     Gmult'  :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "*\<star>" 70)
+  fixes   smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70)
+  and     Gmult'  :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>*\<star>\<close> 70)
   defines fsmult': "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
   and     Gmult' : "Gmult' \<equiv> aezfun_scalar_mult.Gmult smult'"
   assumes hom  : "VectorSpaceHom fsmult V fsmult' T"
@@ -6469,10 +6469,10 @@ proof
 qed
 
 lemma VecHom_GMap_on_fbasis_is_FGModuleHom :
-  fixes   smult'    :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     fsmult'   :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70)
-  and     Gmult'    :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "*\<star>" 70)
-  and     flincomb' :: "'f list \<Rightarrow> 'w list \<Rightarrow> 'w" (infixr "\<bullet>\<sharp>\<star>" 70)
+  fixes   smult'    :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     fsmult'   :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70)
+  and     Gmult'    :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>*\<star>\<close> 70)
+  and     flincomb' :: "'f list \<Rightarrow> 'w list \<Rightarrow> 'w" (infixr \<open>\<bullet>\<sharp>\<star>\<close> 70)
   defines fsmult'    : "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
   and     Gmult'     : "Gmult' \<equiv> aezfun_scalar_mult.Gmult smult'"
   and     flincomb'  : "flincomb' \<equiv> aezfun_scalar_mult.flincomb smult'"
@@ -6514,9 +6514,9 @@ end (* context FGModule *)
 context FGModuleHom
 begin
 
-abbreviation fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70) 
+abbreviation fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70) 
   where "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
-abbreviation Gmult' :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "*\<star>" 70)
+abbreviation Gmult' :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>*\<star>\<close> 70)
   where "Gmult' \<equiv> aezfun_scalar_mult.Gmult smult'"
 
 lemmas supp                     = supp
@@ -6604,7 +6604,7 @@ end (* context FGModuleHom *)
 lemma GSubspace_eigenspace :
   fixes   e     :: "'f::field"
   and     E     :: "'v::ab_group_add set"
-  and     smult :: "('f::field, 'g::group_add) aezfun \<Rightarrow> 'v \<Rightarrow> 'v" (infixr "\<cdot>" 70)
+  and     smult :: "('f::field, 'g::group_add) aezfun \<Rightarrow> 'v \<Rightarrow> 'v" (infixr \<open>\<cdot>\<close> 70)
   assumes FGModHom: "FGModuleHom G smult V smult T"
   defines E       : "E \<equiv> {v \<in> V. T v = aezfun_scalar_mult.fsmult smult e v}"
   shows   "FGModule.GSubspace G smult V E"
@@ -6816,9 +6816,9 @@ context FGModule
 begin
 
 lemma FGModuleHomSet_is_Gmaps_in_VectorSpaceHomSet :
-  fixes   smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70)
-  and     Gmult'  :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "*\<star>" 70)
+  fixes   smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70)
+  and     Gmult'  :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>*\<star>\<close> 70)
   defines fsmult'  : "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
   and     Gmult'   : "Gmult' \<equiv> aezfun_scalar_mult.Gmult smult'"
   assumes FGModW   : "FGModule G smult' W"
@@ -6860,9 +6860,9 @@ proof
 qed
 
 lemma Group_FGModuleHomSet :
-  fixes   smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70)
-  and     Gmult'  :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "*\<star>" 70)
+  fixes   smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     fsmult' :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70)
+  and     Gmult'  :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>*\<star>\<close> 70)
   defines fsmult'  : "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
   and     Gmult'   : "Gmult' \<equiv> aezfun_scalar_mult.Gmult smult'"
   assumes FGModW   : "FGModule G smult' W"
@@ -6907,10 +6907,10 @@ next
 qed
 
 lemma Subspace_FGModuleHomSet :
-  fixes   smult'     :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     fsmult'    :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70)
-  and     Gmult'     :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "*\<star>" 70)
-  and     hom_fsmult :: "'f \<Rightarrow> ('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)" (infixr "\<sharp>\<star>\<cdot>" 70)
+  fixes   smult'     :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     fsmult'    :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70)
+  and     Gmult'     :: "'g \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>*\<star>\<close> 70)
+  and     hom_fsmult :: "'f \<Rightarrow> ('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)" (infixr \<open>\<sharp>\<star>\<cdot>\<close> 70)
   defines fsmult'     : "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
   and     Gmult'      : "Gmult' \<equiv> aezfun_scalar_mult.Gmult smult'"
   defines hom_fsmult  : "hom_fsmult \<equiv> \<lambda>a T v. a \<sharp>\<star> T v"
@@ -6945,9 +6945,9 @@ next
 qed
 
 lemma VectorSpace_FGModuleHomSet :
-  fixes   smult'     :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
-  and     fsmult'    :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr "\<sharp>\<star>" 70)
-  and     hom_fsmult :: "'f \<Rightarrow> ('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)" (infixr "\<sharp>\<star>\<cdot>" 70)
+  fixes   smult'     :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
+  and     fsmult'    :: "'f \<Rightarrow> 'w \<Rightarrow> 'w" (infixr \<open>\<sharp>\<star>\<close> 70)
+  and     hom_fsmult :: "'f \<Rightarrow> ('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)" (infixr \<open>\<sharp>\<star>\<cdot>\<close> 70)
   defines "fsmult' \<equiv> aezfun_scalar_mult.fsmult smult'"
   defines "hom_fsmult \<equiv> \<lambda>a T v. a \<sharp>\<star> T v"
   assumes "FGModule G smult' W"
@@ -7136,7 +7136,7 @@ context Ring1
 begin
 
 definition rightreg_scalar_mult :: 
-  "'r::ring_1 \<Rightarrow> ('r \<Rightarrow> 'm::ab_group_add) \<Rightarrow> ('r \<Rightarrow> 'm)" (infixr "\<currency>" 70)
+  "'r::ring_1 \<Rightarrow> ('r \<Rightarrow> 'm::ab_group_add) \<Rightarrow> ('r \<Rightarrow> 'm)" (infixr \<open>\<currency>\<close> 70)
   where "rightreg_scalar_mult r f = (\<lambda>x. if x \<in> R then f (x*r) else 0)"
 
 lemma rightreg_scalar_multD1 : "x \<in> R \<Longrightarrow> (r \<currency> f) x = f (x*r)"
@@ -7240,10 +7240,10 @@ locale InducedFHModule = Supgroup?: Group H
   for   H       :: "'g::group_add set"
   and   G       :: "'g set"
   and   FG      :: "('f::field, 'g) aezfun set"
-  and   smult   :: "('f, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl "\<cdot>" 70)
+  and   smult   :: "('f, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl \<open>\<cdot>\<close> 70)
   and   V       :: "'v set"
   and   rrsmult :: "('f,'g) aezfun \<Rightarrow> (('f,'g) aezfun \<Rightarrow> 'v) \<Rightarrow> (('f,'g) aezfun \<Rightarrow> 'v)"
-                                                                                    (infixl "\<currency>" 70)
+                                                                                    (infixl \<open>\<currency>\<close> 70)
 + fixes FH      :: "('f, 'g) aezfun set"
   and   indV    :: "(('f, 'g) aezfun \<Rightarrow> 'v) set"
   defines FH      : "FH \<equiv> Supgroup.group_ring"
@@ -7253,13 +7253,13 @@ locale InducedFHModule = Supgroup?: Group H
 begin
 
 abbreviation indfsmult ::
-  "'f \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v)" (infixl "\<currency>\<currency>" 70)
+  "'f \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v)" (infixl \<open>\<currency>\<currency>\<close> 70)
   where "indfsmult \<equiv> induced_smult.fsmult"
 abbreviation indflincomb ::
-  "'f list \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v) list \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v)" (infixl "\<bullet>\<currency>\<currency>" 70)
+  "'f list \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v) list \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v)" (infixl \<open>\<bullet>\<currency>\<currency>\<close> 70)
   where "indflincomb \<equiv> induced_smult.flincomb"
 abbreviation Hmult ::
-  "'g \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v)" (infixl "*\<currency>" 70)
+  "'g \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> (('f, 'g) aezfun \<Rightarrow> 'v)" (infixl \<open>*\<currency>\<close> 70)
   where "Hmult \<equiv> induced_smult.Gmult"
 
 lemma Ring1_FH : "Ring1 FH" using FH Supgroup.Ring1_RG by fast
@@ -7551,7 +7551,7 @@ text \<open>
 
 locale FinGroupRepresentation = FGModule G smult V
   for G     :: "'g::group_add set"
-  and smult :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl "\<cdot>" 70)
+  and smult :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl \<open>\<cdot>\<close> 70)
   and V     :: "'v set"
 +
   assumes good_char: "of_nat (card G) \<noteq> (0::'f)"
@@ -8548,10 +8548,10 @@ locale InducedFinGroupRepresentation = Supgroup?: Group H
 + induced_smult?: aezfun_scalar_mult rrsmult
   for   H       :: "'g::group_add set"
   and   G       :: "'g set"
-  and   smult   :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl "\<cdot>" 70)
+  and   smult   :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl \<open>\<cdot>\<close> 70)
   and   V       :: "'v set"
   and   rrsmult :: "('f,'g) aezfun \<Rightarrow> (('f,'g) aezfun \<Rightarrow>'v)
-                          \<Rightarrow> (('f,'g) aezfun \<Rightarrow>'v)" (infixl "\<currency>" 70)
+                          \<Rightarrow> (('f,'g) aezfun \<Rightarrow>'v)" (infixl \<open>\<currency>\<close> 70)
 + fixes FH      :: "('f, 'g) aezfun set"
   and   indV    :: "(('f, 'g) aezfun \<Rightarrow> 'v) set"
   defines FH            : "FH \<equiv> Supgroup.group_ring"
@@ -8929,26 +8929,26 @@ locale FrobeniusReciprocity
 + HRep?: FinGroupRepresentation H smult' W
   for H       :: "'g::group_add set"
   and G       :: "'g set"
-  and smult   :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl "\<cdot>" 70)
+  and smult   :: "('f::field, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixl \<open>\<cdot>\<close> 70)
   and V       :: "'v set"
   and rrsmult :: "('f,'g) aezfun \<Rightarrow> (('f,'g) aezfun \<Rightarrow> 'v)
-                        \<Rightarrow> (('f,'g) aezfun \<Rightarrow> 'v)" (infixl "\<currency>" 70)
-  and smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr "\<star>" 70)
+                        \<Rightarrow> (('f,'g) aezfun \<Rightarrow> 'v)" (infixl \<open>\<currency>\<close> 70)
+  and smult'  :: "('f, 'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w" (infixr \<open>\<star>\<close> 70)
   and W       :: "'w set"
 begin
 
-abbreviation fsmult'   :: "'f \<Rightarrow> 'w \<Rightarrow> 'w"           (infixr "\<sharp>\<star>" 70)
+abbreviation fsmult'   :: "'f \<Rightarrow> 'w \<Rightarrow> 'w"           (infixr \<open>\<sharp>\<star>\<close> 70)
   where "fsmult' \<equiv> HRep.fsmult"
-abbreviation flincomb' :: "'f list \<Rightarrow> 'w list \<Rightarrow> 'w" (infixr "\<bullet>\<sharp>\<star>" 70) 
+abbreviation flincomb' :: "'f list \<Rightarrow> 'w list \<Rightarrow> 'w" (infixr \<open>\<bullet>\<sharp>\<star>\<close> 70) 
   where "flincomb' \<equiv> HRep.flincomb"
-abbreviation Hmult'    :: "'g \<Rightarrow> 'w \<Rightarrow> 'w"           (infixr "*\<star>" 70)
+abbreviation Hmult'    :: "'g \<Rightarrow> 'w \<Rightarrow> 'w"           (infixr \<open>*\<star>\<close> 70)
   where "Hmult' \<equiv> HRep.Gmult"
 
 definition Tsmult1 :: 
-  "'f \<Rightarrow> ((('f, 'g) aezfun \<Rightarrow> 'v)\<Rightarrow>'w) \<Rightarrow> ((('f, 'g) aezfun \<Rightarrow> 'v)\<Rightarrow>'w)" (infixr "\<star>\<currency>" 70)
+  "'f \<Rightarrow> ((('f, 'g) aezfun \<Rightarrow> 'v)\<Rightarrow>'w) \<Rightarrow> ((('f, 'g) aezfun \<Rightarrow> 'v)\<Rightarrow>'w)" (infixr \<open>\<star>\<currency>\<close> 70)
   where "Tsmult1 \<equiv> \<lambda>a T. \<lambda>f. a \<sharp>\<star> (T f)"
 
-definition Tsmult2 :: "'f \<Rightarrow> ('v\<Rightarrow>'w) \<Rightarrow> ('v\<Rightarrow>'w)" (infixr "\<star>\<cdot>" 70) 
+definition Tsmult2 :: "'f \<Rightarrow> ('v\<Rightarrow>'w) \<Rightarrow> ('v\<Rightarrow>'w)" (infixr \<open>\<star>\<cdot>\<close> 70) 
   where "Tsmult2 \<equiv> \<lambda>a T. \<lambda>v. a \<sharp>\<star> (T v)"
 
 lemma FHModuleW : "FGModule H (\<star>) W" ..

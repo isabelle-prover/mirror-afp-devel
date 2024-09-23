@@ -6,8 +6,8 @@ theory Elementary_Logic
     Propositional_Wff
 begin
 
-no_notation funcset (infixr "\<rightarrow>" 60)
-notation funcset (infixr "\<Zpfun>" 60)
+no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+notation funcset (infixr \<open>\<Zpfun>\<close> 60)
 
 subsection \<open>Proposition 5200\<close>
 
@@ -4261,7 +4261,7 @@ proof -
 qed
 
 syntax
-  "_HypDer" :: "form \<Rightarrow> form set \<Rightarrow> form \<Rightarrow> bool" ("_,_ \<turnstile> _" [50, 50, 50] 50)
+  "_HypDer" :: "form \<Rightarrow> form set \<Rightarrow> form \<Rightarrow> bool" (\<open>_,_ \<turnstile> _\<close> [50, 50, 50] 50)
 syntax_consts
   "_HypDer" \<rightleftharpoons> is_derivable_from_hyps
 translations

@@ -116,7 +116,7 @@ lemma image_mset_eq_imp_set_eq:
   
   
 subsection \<open>Equal on Set\<close>
-definition eq_on :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> bool" ("_ = _ on _" [50,50,50] 50)
+definition eq_on :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> bool" (\<open>_ = _ on _\<close> [50,50,50] 50)
   where "s=t on X \<longleftrightarrow> (\<forall>x\<in>X. s x = t x)"
   
 lemma eq_on_subst_same: 

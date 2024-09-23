@@ -181,13 +181,13 @@ primrec state_update
         let new = (\<lambda> a' . take_byte (unat (a' - a)) val) in
          \<sigma>\<lparr>mem := override_on (mem \<sigma>) new (region_addresses a si)\<rparr>)"
 
-abbreviation RegUpdateSyntax ("_ :=\<^sub>r _" 30)
+abbreviation RegUpdateSyntax (\<open>_ :=\<^sub>r _\<close> 30)
   where "RegUpdateSyntax reg val \<equiv> RegUpdate reg val"
-abbreviation MemUpdateSyntax ("\<lbrakk>_,_\<rbrakk> :=\<^sub>m _" 30)
+abbreviation MemUpdateSyntax (\<open>\<lbrakk>_,_\<rbrakk> :=\<^sub>m _\<close> 30)
   where "MemUpdateSyntax a si val \<equiv> MemUpdate a si val"
-abbreviation FlagUpdateSyntax ("setFlags")
+abbreviation FlagUpdateSyntax (\<open>setFlags\<close>)
   where "FlagUpdateSyntax val \<equiv> FlagUpdate val"
-abbreviation RipUpdateSyntax ("setRip")
+abbreviation RipUpdateSyntax (\<open>setRip\<close>)
   where "RipUpdateSyntax val \<equiv> RipUpdate val"
 
 text \<open>Executes a write to a register in terms of the tiny deeply embedded language above.\<close>
@@ -208,31 +208,31 @@ datatype Operand =
   | Mem  nat    "64 word"   string    "string"      nat
       \<comment> \<open>size   offset      base-reg  index-reg    scale\<close>
 
-abbreviation mem_op_no_offset_no_index :: "string \<Rightarrow> (64 word \<times> string \<times> string \<times> nat)" ("[_]\<^sub>1" 40)
+abbreviation mem_op_no_offset_no_index :: "string \<Rightarrow> (64 word \<times> string \<times> string \<times> nat)" (\<open>[_]\<^sub>1\<close> 40)
   where "mem_op_no_offset_no_index r \<equiv> (0,r,[],0)"
 
-abbreviation mem_op_no_index :: "64 word \<Rightarrow> string \<Rightarrow> (64 word \<times> string \<times> string \<times> nat)" ("[_ + _]\<^sub>2" 40)
+abbreviation mem_op_no_index :: "64 word \<Rightarrow> string \<Rightarrow> (64 word \<times> string \<times> string \<times> nat)" (\<open>[_ + _]\<^sub>2\<close> 40)
   where "mem_op_no_index offset r \<equiv> (offset,r,[],0)"
 
-abbreviation mem_op :: "64 word \<Rightarrow> string \<Rightarrow> string \<Rightarrow> nat \<Rightarrow> (64 word \<times> string \<times> string \<times> nat)" ("[_ + _ + _ * _]\<^sub>3" 40)
+abbreviation mem_op :: "64 word \<Rightarrow> string \<Rightarrow> string \<Rightarrow> nat \<Rightarrow> (64 word \<times> string \<times> string \<times> nat)" (\<open>[_ + _ + _ * _]\<^sub>3\<close> 40)
   where "mem_op offset r index scale\<equiv> (offset,r,index,scale)"
 
-definition ymm_ptr ("YMMWORD PTR _")
+definition ymm_ptr (\<open>YMMWORD PTR _\<close>)
   where "YMMWORD PTR x \<equiv> case x of (offset,base,index,scale) \<Rightarrow> Mem 32 offset base index scale"
 
-definition xmm_ptr ("XMMWORD PTR _")
+definition xmm_ptr (\<open>XMMWORD PTR _\<close>)
   where "XMMWORD PTR x \<equiv> case x of (offset,base,index,scale) \<Rightarrow> Mem 16 offset base index scale"
 
-definition qword_ptr ("QWORD PTR _")
+definition qword_ptr (\<open>QWORD PTR _\<close>)
   where "QWORD PTR x \<equiv> case x of (offset,base,index,scale) \<Rightarrow> Mem 8 offset base index scale"
 
-definition dword_ptr ("DWORD PTR _")
+definition dword_ptr (\<open>DWORD PTR _\<close>)
   where "DWORD PTR x \<equiv> case x of (offset,base,index,scale) \<Rightarrow> Mem 4 offset base index scale"
 
-definition word_ptr ("WORD PTR _")
+definition word_ptr (\<open>WORD PTR _\<close>)
   where "WORD PTR x \<equiv> case x of (offset,base,index,scale) \<Rightarrow> Mem 2 offset base index scale"
 
-definition byte_ptr ("BYTE PTR _")
+definition byte_ptr (\<open>BYTE PTR _\<close>)
   where "BYTE PTR x \<equiv> case x of (offset,base,index,scale) \<Rightarrow> Mem 1 offset base index scale"
 
 
@@ -258,7 +258,7 @@ primrec operand_read :: "state \<Rightarrow> Operand \<Rightarrow> 256 word"
       )"
 
 
-primrec state_with_updates :: "state \<Rightarrow> StateUpdate list \<Rightarrow> state" (infixl "with" 66)
+primrec state_with_updates :: "state \<Rightarrow> StateUpdate list \<Rightarrow> state" (infixl \<open>with\<close> 66)
   where
     "\<sigma> with [] = \<sigma>"
   | "(\<sigma> with (f#fs)) = state_update f (\<sigma> with fs)"

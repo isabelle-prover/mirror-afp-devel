@@ -33,7 +33,7 @@ declare List.member_def[simp] list_all_iff[simp] list_ex_iff[simp]
 
 subsubsection\<open>\<open>length\<close>\<close>
 
-notation length  ("|_|")
+notation length  (\<open>|_|\<close>)
 
 lemma length3D: "|xs| = 3 \<Longrightarrow> \<exists>x y z. xs = [x, y, z]"
 apply (cases xs) apply simp
@@ -116,7 +116,7 @@ lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
 subsubsection \<open>@{const concat}\<close>
 
 syntax
-  "_concat" :: "idt \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
+  "_concat" :: "idt \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (\<open>\<Squnion>\<^bsub>_\<in> _\<^esub> _\<close> 10)
 syntax_consts
   "_concat" == concat
 translations
@@ -128,7 +128,7 @@ subsubsection \<open>List product\<close>
 definition listProd1 :: "'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" where
  "listProd1 a bs \<equiv> [(a,b). b <- bs]"
 
-definition listProd :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" (infix "\<times>" 50) where
+definition listProd :: "'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" (infix \<open>\<times>\<close> 50) where
  "as \<times> bs \<equiv> \<Squnion>\<^bsub>a \<in> as\<^esub> listProd1 a bs"
 
 lemma(*<*)[simp]: (*>*) "set (xs \<times> ys) = (set xs) \<times> (set ys)" 

@@ -21,13 +21,13 @@ locale labeled_tiebreaker_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
     Bot_G :: "'g set" and
-    entails_G :: "'g set \<Rightarrow> 'g set \<Rightarrow> bool"  (infix "\<Turnstile>G" 50) and
+    entails_G :: "'g set \<Rightarrow> 'g set \<Rightarrow> bool"  (infix \<open>\<Turnstile>G\<close> 50) and
     Inf_G :: "'g inference set" and
     Red_I_G :: "'g set \<Rightarrow> 'g inference set" and
     Red_F_G :: "'g set \<Rightarrow> 'g set" and
     \<G>_F :: "'f \<Rightarrow> 'g set" and
     \<G>_I :: "'f inference \<Rightarrow> 'g inference set option" and
-    Prec_F :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+    Prec_F :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
   + fixes
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   assumes
@@ -76,7 +76,7 @@ qed
  *   "\<lambda>g Cl Cl'. False"
  *   by unfold_locales simp+ *)
 
-notation entails_\<G> (infix "\<Turnstile>\<G>L" 50)
+notation entails_\<G> (infix \<open>\<Turnstile>\<G>L\<close> 50)
 
 (* lem:labeled-consequence *)
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<G> fst ` NL2"
@@ -268,9 +268,9 @@ lemma in_Inf_FL_imp_to_F_in_Inf_F: "\<iota> \<in> Inf_FL \<Longrightarrow> to_F 
 lemma in_Inf_from_imp_to_F_in_Inf_from: "\<iota> \<in> Inf_from N \<Longrightarrow> to_F \<iota> \<in> no_labels.Inf_from (fst ` N)"
   unfolding Inf_from_def no_labels.Inf_from_def to_F_def by (auto intro: Inf_FL_to_Inf_F)
 
-notation no_labels.entails_\<G> (infix "\<Turnstile>\<inter>\<G>" 50)
+notation no_labels.entails_\<G> (infix \<open>\<Turnstile>\<inter>\<G>\<close> 50)
 
-abbreviation entails_\<G>_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>L" 50) where
+abbreviation entails_\<G>_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<inter>\<G>L\<close> 50) where
   "(\<Turnstile>\<inter>\<G>L) \<equiv> entails"
 
 lemmas entails_\<G>_L_def = entails_def

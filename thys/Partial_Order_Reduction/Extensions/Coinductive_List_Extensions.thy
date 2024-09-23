@@ -37,13 +37,13 @@ begin
 
   abbreviation "linfinite w \<equiv> \<not> lfinite w"
 
-  notation LNil ("<>")
-  notation LCons (infixr "%" 65)
-  notation lzip (infixr "\<bar>\<bar>" 51)
-  notation lappend (infixr "$" 65)
-  notation lnth (infixl "?!" 100)
+  notation LNil (\<open><>\<close>)
+  notation LCons (infixr \<open>%\<close> 65)
+  notation lzip (infixr \<open>\<bar>\<bar>\<close> 51)
+  notation lappend (infixr \<open>$\<close> 65)
+  notation lnth (infixl \<open>?!\<close> 100)
 
-  syntax "_llist" :: "args \<Rightarrow> 'a llist" ("<_>")
+  syntax "_llist" :: "args \<Rightarrow> 'a llist" (\<open><_>\<close>)
   syntax_consts "_llist" \<rightleftharpoons> LCons
   translations
     "<a, x>" \<rightleftharpoons> "a % <x>"

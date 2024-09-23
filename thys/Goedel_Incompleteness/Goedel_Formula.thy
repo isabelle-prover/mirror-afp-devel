@@ -37,7 +37,7 @@ and Var num FvarsT substT Fvars subst
 and eql cnj imp all exi
 and fls
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and P
 begin
@@ -91,7 +91,7 @@ and Var FvarsT substT Fvars subst num
 and eql cnj imp all exi
 and fls
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and dsj
 and "proof" :: "'proof set" and prfOf encPf

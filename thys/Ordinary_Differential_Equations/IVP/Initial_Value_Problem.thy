@@ -13,7 +13,7 @@ lemma clamp_ge[simp]: "a \<le> b \<Longrightarrow> b \<le> x \<Longrightarrow> c
   by (force simp: clamp_def eucl_le[where 'a='a] not_le not_less  intro!: euclidean_eqI[where 'a='a])
 
 abbreviation cfuncset :: "'a::topological_space set \<Rightarrow> 'b::metric_space set \<Rightarrow> ('a \<Rightarrow>\<^sub>C 'b) set"
-  (infixr "\<rightarrow>\<^sub>C" 60)
+  (infixr \<open>\<rightarrow>\<^sub>C\<close> 60)
   where "A \<rightarrow>\<^sub>C B \<equiv> PiC A (\<lambda>_. B)"
 
 lemma closed_segment_translation_zero: "z \<in> {z + a--z + b} \<longleftrightarrow> 0 \<in> {a -- b}"
@@ -22,7 +22,7 @@ lemma closed_segment_translation_zero: "z \<in> {z + a--z + b} \<longleftrightar
 lemma closed_segment_subset_interval: "is_interval T \<Longrightarrow> a \<in> T \<Longrightarrow> b \<in> T \<Longrightarrow> closed_segment a b \<subseteq> T"
   by (rule closed_segment_subset) (auto intro!: closed_segment_subset is_interval_convex)
 
-definition half_open_segment::"'a::real_vector \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1{_--<_})")
+definition half_open_segment::"'a::real_vector \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>(1{_--<_})\<close>)
   where "half_open_segment a b = {a -- b} - {b}"
 
 lemma half_open_segment_real:
@@ -152,7 +152,7 @@ subsection \<open>Solutions of IVPs \label{sec:solutions}\<close>
 
 definition
   solves_ode :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> bool"
-  (infix "(solves'_ode)" 50)
+  (infix \<open>(solves'_ode)\<close> 50)
 where
   "(y solves_ode f) T X \<longleftrightarrow> (y has_vderiv_on (\<lambda>t. f t (y t))) T \<and> y \<in> T \<rightarrow> X"
 
@@ -282,7 +282,7 @@ subsection \<open>unique solution with initial value\<close>
 
 definition
   usolves_ode_from :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> bool"
-  ("((_) usolves'_ode (_) from (_))" [10, 10, 10] 10)
+  (\<open>((_) usolves'_ode (_) from (_))\<close> [10, 10, 10] 10)
   \<comment> \<open>TODO: no idea about mixfix and precedences, check this!\<close>
 where
   "(y usolves_ode f from t0) T X \<longleftrightarrow> (y solves_ode f) T X \<and> t0 \<in> T \<and> is_interval T \<and>

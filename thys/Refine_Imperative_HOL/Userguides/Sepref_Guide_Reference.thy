@@ -905,7 +905,7 @@ sepref_decl_intf ('a,'b) i_my_intf is "'a*'a \<Rightarrow> 'b option"
   Note: For HOL, the interface type is just an arbitrary new type, which is 
     not related to he corresponding HOL type.\<close>
 
-sepref_decl_intf ('a,'b) i_my_intf2 (infix "*\<rightarrow>\<^sub>i" 0) is "'a*'a \<Rightarrow> 'b option"
+sepref_decl_intf ('a,'b) i_my_intf2 (infix \<open>*\<rightarrow>\<^sub>i\<close> 0) is "'a*'a \<Rightarrow> 'b option"
 \<comment> \<open>There is also a version that declares infix-syntax for the interface type.
   In this case we have @{typ "'a *\<rightarrow>\<^sub>i 'b"}. @{typ "'a\<rightharpoonup>'b"}
   Be aware of syntax space pollution, as the syntax for interface types and 

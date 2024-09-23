@@ -66,9 +66,9 @@ text \<open> The object \textit{time-theory} is a new namespace that contains bo
   Since the theory forms a complete lattice, we obtain a top element, bottom element, and a
   least fixed-point constructor. We give all of these some intuitive syntax. \<close>
 
-notation time_theory.utp_top ("\<top>\<^sub>t")
-notation time_theory.utp_bottom ("\<bottom>\<^sub>t")
-notation time_theory.utp_lfp ("\<mu>\<^sub>t")
+notation time_theory.utp_top (\<open>\<top>\<^sub>t\<close>)
+notation time_theory.utp_bottom (\<open>\<bottom>\<^sub>t\<close>)
+notation time_theory.utp_lfp (\<open>\<mu>\<^sub>t\<close>)
 
 text \<open> Below is a selection of theorems that have been exported by the locale interpretation. \<close>
 

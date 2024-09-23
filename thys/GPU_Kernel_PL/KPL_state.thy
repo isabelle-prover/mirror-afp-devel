@@ -20,7 +20,7 @@ abbreviation "LID \<equiv> Inr False"
 
 text \<open>Group state\<close>
 record group_state = 
-  thread_states :: "lid \<rightharpoonup> thread_state" ("_ \<^sub>t\<^sub>s" [1000] 1000)
+  thread_states :: "lid \<rightharpoonup> thread_state" (\<open>_ \<^sub>t\<^sub>s\<close> [1000] 1000)
   R_group :: "(lid \<times> nat) set"
   W_group :: "(lid \<times> nat) set"
 

@@ -17,7 +17,7 @@ definition satisfies_dleq :: "(int,'v) assign \<Rightarrow> 'v dleq \<Rightarrow
 definition satisfies_dlineq :: "(int,'v) assign \<Rightarrow> 'v dlineq \<Rightarrow> bool" where
   "satisfies_dlineq \<alpha> p = (eval_l \<alpha> p \<le> 0)" 
 
-abbreviation satisfies_eq_ineqs :: "(int,'v) assign \<Rightarrow> 'v dleq set \<Rightarrow> 'v dlineq set \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>d\<^sub>i\<^sub>o '(_,_')") where
+abbreviation satisfies_eq_ineqs :: "(int,'v) assign \<Rightarrow> 'v dleq set \<Rightarrow> 'v dlineq set \<Rightarrow> bool" (\<open>_ \<Turnstile>\<^sub>d\<^sub>i\<^sub>o '(_,_')\<close>) where
   "satisfies_eq_ineqs \<alpha> eqs ineqs \<equiv> Ball eqs (satisfies_dleq \<alpha>) \<and> Ball ineqs (satisfies_dlineq \<alpha>)" 
  
 definition trivial_ineq :: "(int,'v :: linorder)lpoly \<Rightarrow> bool option" where

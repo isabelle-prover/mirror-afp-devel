@@ -32,7 +32,7 @@ by (auto dest: real_root_mult_exp_cancel2 [of _ 1])
 text\<open>Definition of rational exponents,\<close>
 
 definition
-  powrat  :: "[real,rat] => real"     (infixr "pow\<^sub>\<rat>" 80) where
+  powrat  :: "[real,rat] => real"     (infixr \<open>pow\<^sub>\<rat>\<close> 80) where
   "x pow\<^sub>\<rat> r = (if r > 0 
                then root (nat (snd(quotient_of r))) 
                           (x ^ (nat (fst(quotient_of r))))

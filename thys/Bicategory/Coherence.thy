@@ -91,7 +91,7 @@ begin
   locale bicategorical_language =
     category V +
     horizontal_homs V src trg
-    for V :: "'a comp"                       (infixr "\<cdot>" 55)
+    for V :: "'a comp"                       (infixr \<open>\<cdot>\<close> 55)
     and src :: "'a \<Rightarrow> 'a"
     and trg :: "'a \<Rightarrow> 'a"
   begin
@@ -102,16 +102,16 @@ begin
     \<close>
 
     datatype (discs_sels) 't "term" =
-      Prim\<^sub>0 't                             ("\<^bold>\<langle>_\<^bold>\<rangle>\<^sub>0")
-    | Prim 't                              ("\<^bold>\<langle>_\<^bold>\<rangle>")
-    | Hcomp "'t term" "'t term"            (infixr "\<^bold>\<star>" 53)
-    | Vcomp "'t term" "'t term"            (infixr "\<^bold>\<cdot>" 55)
-    | Lunit "'t term"                      ("\<^bold>\<l>\<^bold>[_\<^bold>]")
-    | Lunit' "'t term"                     ("\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]")
-    | Runit "'t term"                      ("\<^bold>\<r>\<^bold>[_\<^bold>]")
-    | Runit' "'t term"                     ("\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]")
-    | Assoc "'t term" "'t term" "'t term"  ("\<^bold>\<a>\<^bold>[_, _, _\<^bold>]")
-    | Assoc' "'t term" "'t term" "'t term" ("\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[_, _, _\<^bold>]")
+      Prim\<^sub>0 't                             (\<open>\<^bold>\<langle>_\<^bold>\<rangle>\<^sub>0\<close>)
+    | Prim 't                              (\<open>\<^bold>\<langle>_\<^bold>\<rangle>\<close>)
+    | Hcomp "'t term" "'t term"            (infixr \<open>\<^bold>\<star>\<close> 53)
+    | Vcomp "'t term" "'t term"            (infixr \<open>\<^bold>\<cdot>\<close> 55)
+    | Lunit "'t term"                      (\<open>\<^bold>\<l>\<^bold>[_\<^bold>]\<close>)
+    | Lunit' "'t term"                     (\<open>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]\<close>)
+    | Runit "'t term"                      (\<open>\<^bold>\<r>\<^bold>[_\<^bold>]\<close>)
+    | Runit' "'t term"                     (\<open>\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]\<close>)
+    | Assoc "'t term" "'t term" "'t term"  (\<open>\<^bold>\<a>\<^bold>[_, _, _\<^bold>]\<close>)
+    | Assoc' "'t term" "'t term" "'t term" (\<open>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[_, _, _\<^bold>]\<close>)
 
     text \<open>
       We define formal domain, codomain, source, and target functions on terms.
@@ -606,7 +606,7 @@ begin
       If such terms are regarded as lists, this is just (typed) list concatenation.
     \<close>
 
-    fun HcompNml  (infixr "\<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor>" 53)
+    fun HcompNml  (infixr \<open>\<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor>\<close> 53)
     where "\<^bold>\<langle>\<nu>\<^bold>\<rangle>\<^sub>0 \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u = u"
         | "t \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<langle>\<mu>\<^bold>\<rangle>\<^sub>0 = t"
         | "\<^bold>\<langle>\<nu>\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u = \<^bold>\<langle>\<nu>\<^bold>\<rangle> \<^bold>\<star> u"
@@ -1038,7 +1038,7 @@ begin
        by ``pushing the composition down'' to arrows of @{text V}.
     \<close>
 
-    fun VcompNml :: "'a term \<Rightarrow> 'a term \<Rightarrow> 'a term"  (infixr "\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>" 55)
+    fun VcompNml :: "'a term \<Rightarrow> 'a term \<Rightarrow> 'a term"  (infixr \<open>\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>\<close> 55)
     where "\<^bold>\<langle>\<nu>\<^bold>\<rangle>\<^sub>0 \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u = u"
         | "\<^bold>\<langle>\<nu>\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<langle>\<mu>\<^bold>\<rangle> = \<^bold>\<langle>\<nu> \<cdot> \<mu>\<^bold>\<rangle>"
         | "(u \<^bold>\<star> v) \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> (w \<^bold>\<star> x) = (u \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> w \<^bold>\<star> v \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> x)"
@@ -1521,7 +1521,7 @@ begin
       The following function reduces a formal arrow to normal form.
     \<close>
 
-    fun Nmlize :: "'a term \<Rightarrow> 'a term"   ("\<^bold>\<lfloor>_\<^bold>\<rfloor>")
+    fun Nmlize :: "'a term \<Rightarrow> 'a term"   (\<open>\<^bold>\<lfloor>_\<^bold>\<rfloor>\<close>)
     where "\<^bold>\<lfloor>\<^bold>\<langle>\<mu>\<^bold>\<rangle>\<^sub>0\<^bold>\<rfloor> = \<^bold>\<langle>\<mu>\<^bold>\<rangle>\<^sub>0"
         | "\<^bold>\<lfloor>\<^bold>\<langle>\<mu>\<^bold>\<rangle>\<^bold>\<rfloor> = \<^bold>\<langle>\<mu>\<^bold>\<rangle>"
         | "\<^bold>\<lfloor>t \<^bold>\<star> u\<^bold>\<rfloor> = \<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>"
@@ -1850,7 +1850,7 @@ begin
       \<open>f \<^bold>\<Down> g \<in> Hom (f \<^bold>\<star> g) \<^bold>\<lfloor>f \<^bold>\<star> g\<^bold>\<rfloor>\<close>.
     \<close>
 
-    fun red2                       (infixr "\<^bold>\<Down>" 53)
+    fun red2                       (infixr \<open>\<^bold>\<Down>\<close> 53)
     where "\<^bold>\<langle>b\<^bold>\<rangle>\<^sub>0 \<^bold>\<Down> u = \<^bold>\<l>\<^bold>[u\<^bold>]"
         | "\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<Down> \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 = \<^bold>\<r>\<^bold>[\<^bold>\<langle>f\<^bold>\<rangle>\<^bold>]"
         | "\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<Down> u = \<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> u"
@@ -1858,7 +1858,7 @@ begin
         | "(t \<^bold>\<star> u) \<^bold>\<Down> v = (t \<^bold>\<Down> \<^bold>\<lfloor>u \<^bold>\<star> v\<^bold>\<rfloor>) \<^bold>\<cdot> (t \<^bold>\<star> (u \<^bold>\<Down> v)) \<^bold>\<cdot> \<^bold>\<a>\<^bold>[t, u, v\<^bold>]"
         | "t \<^bold>\<Down> u = undefined"
 
-    fun red                         ("_\<^bold>\<down>" [56] 56)
+    fun red                         (\<open>_\<^bold>\<down>\<close> [56] 56)
     where "\<^bold>\<langle>f\<^bold>\<rangle>\<^sub>0\<^bold>\<down> = \<^bold>\<langle>f\<^bold>\<rangle>\<^sub>0"
         | "\<^bold>\<langle>f\<^bold>\<rangle>\<^bold>\<down> = \<^bold>\<langle>f\<^bold>\<rangle>"
         | "(t \<^bold>\<star> u)\<^bold>\<down> = (if Nml (t \<^bold>\<star> u) then t \<^bold>\<star> u else (\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>u\<^bold>\<rfloor>) \<^bold>\<cdot> (t\<^bold>\<down> \<^bold>\<star> u\<^bold>\<down>))"
@@ -2121,13 +2121,13 @@ begin
     bicategorical_language C src\<^sub>C trg\<^sub>C +
     bicategory V H \<a> \<i> src trg +
     E: "functor" C V E
-    for C :: "'c comp"                   (infixr "\<cdot>\<^sub>C" 55)
+    for C :: "'c comp"                   (infixr \<open>\<cdot>\<^sub>C\<close> 55)
     and src\<^sub>C :: "'c \<Rightarrow> 'c"
     and trg\<^sub>C :: "'c \<Rightarrow> 'c"
-    and V :: "'b comp"                   (infixr "\<cdot>" 55)
-    and H :: "'b comp"                   (infixr "\<star>" 53)
-    and \<a> :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"       ("\<a>[_, _, _]")
-    and \<i> :: "'b \<Rightarrow> 'b"                   ("\<i>[_]")
+    and V :: "'b comp"                   (infixr \<open>\<cdot>\<close> 55)
+    and H :: "'b comp"                   (infixr \<open>\<star>\<close> 53)
+    and \<a> :: "'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'b"       (\<open>\<a>[_, _, _]\<close>)
+    and \<i> :: "'b \<Rightarrow> 'b"                   (\<open>\<i>[_]\<close>)
     and src :: "'b \<Rightarrow> 'b"
     and trg :: "'b \<Rightarrow> 'b"
     and E :: "'c \<Rightarrow> 'b" +
@@ -2136,13 +2136,13 @@ begin
   begin
 
     (* TODO: Figure out why this notation has to be reinstated. *)
-    notation Nmlize  ("\<^bold>\<lfloor>_\<^bold>\<rfloor>")
-    notation HcompNml    (infixr "\<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor>" 53)
-    notation VcompNml    (infixr "\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>" 55)
-    notation red          ("_\<^bold>\<down>" [56] 56)
-    notation red2         (infixr "\<^bold>\<Down>" 53)
+    notation Nmlize  (\<open>\<^bold>\<lfloor>_\<^bold>\<rfloor>\<close>)
+    notation HcompNml    (infixr \<open>\<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor>\<close> 53)
+    notation VcompNml    (infixr \<open>\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>\<close> 55)
+    notation red          (\<open>_\<^bold>\<down>\<close> [56] 56)
+    notation red2         (infixr \<open>\<^bold>\<Down>\<close> 53)
 
-    primrec eval :: "'c term \<Rightarrow> 'b"    ("\<lbrace>_\<rbrace>")
+    primrec eval :: "'c term \<Rightarrow> 'b"    (\<open>\<lbrace>_\<rbrace>\<close>)
     where "\<lbrace>\<^bold>\<langle>f\<^bold>\<rangle>\<^sub>0\<rbrace> = E f"
         | "\<lbrace>\<^bold>\<langle>f\<^bold>\<rangle>\<rbrace> = E f"
         | "\<lbrace>t \<^bold>\<star> u\<rbrace> = \<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace>"
@@ -2867,8 +2867,8 @@ begin
       using src.is_extensional trg.is_extensional
       by (unfold_locales, auto)
 
-    notation eval ("\<lbrace>_\<rbrace>")
-    notation Nmlize ("\<^bold>\<lfloor>_\<^bold>\<rfloor>")
+    notation eval (\<open>\<lbrace>_\<rbrace>\<close>)
+    notation Nmlize (\<open>\<^bold>\<lfloor>_\<^bold>\<rfloor>\<close>)
 
   end
 

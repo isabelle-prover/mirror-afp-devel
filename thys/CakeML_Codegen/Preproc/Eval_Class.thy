@@ -8,16 +8,16 @@ imports
   "Dict_Construction.Dict_Construction"
 begin
 
-no_notation Mpat_Antiquot.mpaq_App (infixl "$$" 900)
+no_notation Mpat_Antiquot.mpaq_App (infixl \<open>$$\<close> 900)
 hide_const (open) Strong_Term.wellformed
 declare Strong_Term.wellformed_term_def[simp del]
 
 class evaluate =
-  fixes eval :: "rule fset \<Rightarrow> term \<Rightarrow> 'a \<Rightarrow> bool" ("_/ \<turnstile>/ (_ \<approx>/ _)" [50,0,50] 50)
+  fixes eval :: "rule fset \<Rightarrow> term \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_/ \<turnstile>/ (_ \<approx>/ _)\<close> [50,0,50] 50)
   assumes eval_wellformed: "rs \<turnstile> t \<approx> a \<Longrightarrow> wellformed t"
 begin
 
-definition eval' :: "rule fset \<Rightarrow> term \<Rightarrow> 'a \<Rightarrow> bool" ("_/ \<turnstile>/ (_ \<down>/ _)" [50,0,50] 50) where
+definition eval' :: "rule fset \<Rightarrow> term \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_/ \<turnstile>/ (_ \<down>/ _)\<close> [50,0,50] 50) where
 "rs \<turnstile> t \<down> a \<longleftrightarrow> wellformed t \<and> (\<exists>t'. rs \<turnstile> t \<longrightarrow>* t' \<and> rs \<turnstile> t' \<approx> a)"
 
 lemma eval'I[intro]:

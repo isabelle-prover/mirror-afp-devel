@@ -12,7 +12,7 @@ begin
 
 inductive_set
   widen1 :: "'a prog \<Rightarrow> (ty \<times> ty) set"
-  and widen1_syntax :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ <\<^sup>1 _" [71,71,71] 70)
+  and widen1_syntax :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ <\<^sup>1 _\<close> [71,71,71] 70)
   for P :: "'a prog"
 where
   "P \<turnstile> C <\<^sup>1 D \<equiv> (C, D) \<in> widen1 P"
@@ -35,10 +35,10 @@ where
 | widen1_Array_Array:
   "\<lbrakk> P \<turnstile> T <\<^sup>1 U; \<not> is_NT_Array T \<rbrakk> \<Longrightarrow> P \<turnstile> Array T <\<^sup>1 Array U"
 
-abbreviation widen1_trancl :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ <\<^sup>+ _" [71,71,71] 70) where
+abbreviation widen1_trancl :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ <\<^sup>+ _\<close> [71,71,71] 70) where
   "P \<turnstile> T <\<^sup>+ U \<equiv> (T, U) \<in> trancl (widen1 P)"
 
-abbreviation widen1_rtrancl :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ <\<^sup>* _" [71,71,71] 70) where
+abbreviation widen1_rtrancl :: "'a prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ <\<^sup>* _\<close> [71,71,71] 70) where
   "P \<turnstile> T <\<^sup>* U \<equiv> (T, U) \<in> rtrancl (widen1 P)"
 
 inductive_simps widen1_simps1 [simp]:

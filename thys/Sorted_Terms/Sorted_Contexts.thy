@@ -30,7 +30,7 @@ inductive has_type_context :: "('f,'s) ssig \<Rightarrow> ('v \<rightharpoonup> 
 
 hide_fact (open) Hole More
 
-abbreviation has_type_context' ("((_) :\<^sub>c/ (_) \<rightarrow> (_) in/ \<T>'(_,_'))" [50,61,51,51,51]50)
+abbreviation has_type_context' (\<open>((_) :\<^sub>c/ (_) \<rightarrow> (_) in/ \<T>'(_,_'))\<close> [50,61,51,51,51]50)
   where "C :\<^sub>c \<sigma> \<rightarrow> \<tau> in \<T>(F,V) \<equiv> has_type_context F V \<sigma> C \<tau>"
 
 lemma hastype_context_apply:

@@ -6,9 +6,9 @@ begin
 
 datatype relation =
   NARY "nat list \<Rightarrow> bool" "polynomial list"
-    | AND relation relation (infixl "[\<and>]" 35)
-    | OR  relation relation (infixl "[\<or>]" 30)
-    | EXIST_LIST nat relation ("[\<exists>_] _" 10)
+    | AND relation relation (infixl \<open>[\<and>]\<close> 35)
+    | OR  relation relation (infixl \<open>[\<or>]\<close> 30)
+    | EXIST_LIST nat relation (\<open>[\<exists>_] _\<close> 10)
 
 fun eval :: "relation \<Rightarrow> assignment \<Rightarrow> bool" where
   "eval (NARY R PL) a = R (map (\<lambda>P. peval P a) PL)"
@@ -43,13 +43,13 @@ definition QUATERNARY :: "(nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow>
                         \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> relation" where
   "QUATERNARY R P\<^sub>1 P\<^sub>2 P\<^sub>3 P\<^sub>4 = NARY (\<lambda>l. R (l!0) (l!1) (l!2) (l!3)) [P\<^sub>1, P\<^sub>2, P\<^sub>3, P\<^sub>4]"
 
-definition EXIST :: "relation \<Rightarrow> relation" ("[\<exists>] _" 10) where
+definition EXIST :: "relation \<Rightarrow> relation" (\<open>[\<exists>] _\<close> 10) where
   "([\<exists>] D) = ([\<exists>1] D)"
 
 definition TRUE where "TRUE = UNARY ((=) 0) (Const 0)"
 
 text \<open>Bounded constant all quantifier (i.e. recursive conjunction)\<close>
-fun ALLC_LIST :: "nat list \<Rightarrow> (nat \<Rightarrow> relation) \<Rightarrow> relation" ("[\<forall> in _] _") where
+fun ALLC_LIST :: "nat list \<Rightarrow> (nat \<Rightarrow> relation) \<Rightarrow> relation" (\<open>[\<forall> in _] _\<close>) where
   "[\<forall> in []] DF = TRUE" |
   "[\<forall> in (l # ls)] DF = (DF l [\<and>] [\<forall> in ls] DF)"
 
@@ -59,7 +59,7 @@ lemma ALLC_LIST_eval_list_all: "eval ([\<forall> in L] DF) a = list_all (\<lambd
 lemma ALLC_LIST_eval:  "eval ([\<forall> in L] DF) a = (\<forall>k<length L. eval (DF (L!k)) a)"
   by (simp add: ALLC_LIST_eval_list_all list_all_length)
 
-definition ALLC :: "nat \<Rightarrow> (nat \<Rightarrow> relation) \<Rightarrow> relation" ("[\<forall><_] _") where
+definition ALLC :: "nat \<Rightarrow> (nat \<Rightarrow> relation) \<Rightarrow> relation" (\<open>[\<forall><_] _\<close>) where
   "[\<forall><n] D \<equiv> [\<forall> in [0..<n]] D"
 
 lemma ALLC_eval: "eval ([\<forall><n] DF) a = (\<forall>k<n. eval (DF k) a)"
@@ -193,11 +193,11 @@ qed
 
 
 (* Some basic relations are diophantine *)
-definition eq (infix "[=]" 50) where "eq Q R \<equiv> BINARY (=) Q R"
-definition lt (infix "[<]" 50) where "lt Q R \<equiv> BINARY (<) Q R"
-definition le (infix "[\<le>]" 50) where "le Q R \<equiv> Q [<] R [\<or>] Q [=] R"
-definition gt (infix "[>]" 50) where "gt Q R \<equiv> R [<] Q"
-definition ge (infix "[\<ge>]" 50) where "ge Q R \<equiv> Q [>] R [\<or>] Q [=] R"
+definition eq (infix \<open>[=]\<close> 50) where "eq Q R \<equiv> BINARY (=) Q R"
+definition lt (infix \<open>[<]\<close> 50) where "lt Q R \<equiv> BINARY (<) Q R"
+definition le (infix \<open>[\<le>]\<close> 50) where "le Q R \<equiv> Q [<] R [\<or>] Q [=] R"
+definition gt (infix \<open>[>]\<close> 50) where "gt Q R \<equiv> R [<] Q"
+definition ge (infix \<open>[\<ge>]\<close> 50) where "ge Q R \<equiv> Q [>] R [\<or>] Q [=] R"
 
 named_theorems defs
 lemmas [defs] = zero_p_def one_p_def eq_def lt_def le_def gt_def ge_def LARY_eval
@@ -222,7 +222,7 @@ lemma lt_dioph[dioph]: "is_dioph_rel (Q [<] R)"
   using convert_eval BINARY_def apply (auto simp: lt_def)
   by (metis add.commute add.right_neutral less_natE)
 
-definition zero ("[0=] _" [60] 60) where[defs]: "zero Q \<equiv> \<^bold>0 [=] Q"
+definition zero (\<open>[0=] _\<close> [60] 60) where[defs]: "zero Q \<equiv> \<^bold>0 [=] Q"
 lemma zero_dioph[dioph]: "is_dioph_rel ([0=] Q)"
   unfolding zero_def by (auto simp: eq_dioph)
 

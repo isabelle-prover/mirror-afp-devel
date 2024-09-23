@@ -11,9 +11,9 @@ begin
 abbreviation "a_bot \<equiv> A_Lbl S_Bot"
 abbreviation "a_top \<equiv> A_Lbl S_Top"
 abbreviation "a_idt \<equiv> A_Lbl S_Idt"
-notation a_bot ("\<bottom>")
-notation a_top ("\<top>")
-notation a_idt ("\<one>")
+notation a_bot (\<open>\<bottom>\<close>)
+notation a_top (\<open>\<top>\<close>)
+notation a_idt (\<open>\<one>\<close>)
                                        
 type_synonym 'v std_term = "'v Standard_Constant allegorical_term"
 type_synonym 'v std_sentence = "'v std_term \<times> 'v std_term"

@@ -43,7 +43,7 @@ qed
 
 subsection \<open>Observable set of standard control dependence is at most a singleton\<close>
 
-definition SDG_to_CFG_set :: "'node SDG_node set \<Rightarrow> 'node set" ("\<lfloor>_\<rfloor>\<^bsub>CFG\<^esub>")
+definition SDG_to_CFG_set :: "'node SDG_node set \<Rightarrow> 'node set" (\<open>\<lfloor>_\<rfloor>\<^bsub>CFG\<^esub>\<close>)
   where "\<lfloor>S\<rfloor>\<^bsub>CFG\<^esub> \<equiv> {m. CFG_node m \<in> S}"
 
 

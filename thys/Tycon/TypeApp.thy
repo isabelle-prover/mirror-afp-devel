@@ -26,7 +26,7 @@ it is inhabited by a single value, written @{term "TYPE('a)"}. We
 define the syntax \<open>TC('a)\<close> to abbreviate \<open>tc
 TYPE('a)\<close>. \medskip\<close>
 
-syntax  "_TC" :: "type \<Rightarrow> logic"  ("(1TC/(1'(_')))")
+syntax  "_TC" :: "type \<Rightarrow> logic"  (\<open>(1TC/(1'(_')))\<close>)
 
 syntax_consts "_TC" \<rightleftharpoons> tc
 
@@ -54,7 +54,7 @@ text \<open>We define the infix syntax \<open>'a\<cdot>'t\<close> for the type \
 type syntax, we have used postfix order for type application: type
 argument on the left, type constructor on the right. \medskip\<close>
 
-type_notation app ("(_\<cdot>_)" [999,1000] 999)
+type_notation app (\<open>(_\<cdot>_)\<close> [999,1000] 999)
 
 text \<open>The \<open>domaindef\<close> command generates the theorem \<open>DEFL_app\<close>: @{thm DEFL_app [where 'a="'a::domain" and 't="'t::tycon"]},
 which we can use to derive other useful lemmas. \medskip\<close>

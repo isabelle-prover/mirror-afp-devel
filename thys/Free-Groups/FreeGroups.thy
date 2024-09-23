@@ -136,7 +136,7 @@ Finally, we can define the Free Group over a set of generators, and show that it
 is indeed a group.
 \<close>
 
-definition free_group :: "'a set => ((bool * 'a) list) monoid" ("\<F>\<index>")
+definition free_group :: "'a set => ((bool * 'a) list) monoid" (\<open>\<F>\<index>\<close>)
 where 
   "\<F>\<^bsub>gens\<^esub> \<equiv> \<lparr>
      carrier = {l\<in>lists (UNIV \<times> gens). canceled l },
@@ -230,7 +230,7 @@ text \<open>Free Groups are important due to their universal property: Every map
 the set of generators to another group can be extended uniquely to an
 homomorphism from the Free Group.\<close>
 
-definition insert ("\<iota>")
+definition insert (\<open>\<iota>\<close>)
   where "\<iota> g = [(False, g)]"
 
 lemma insert_closed:
