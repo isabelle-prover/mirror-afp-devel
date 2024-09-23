@@ -12,7 +12,7 @@ begin
 
 no_notation
   minus (infixl \<open>-\<close> 65) and
-  trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
+  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
 
 context p_algebra
 begin

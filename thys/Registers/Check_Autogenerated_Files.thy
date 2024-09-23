@@ -20,12 +20,12 @@ let
     end
 in
   check "Source" "Axioms_Classical.thy" "f4a0dac97bed23ec5b7c4cbf779f8eb2a12aa488";
-  check "Source" "Axioms_Quantum.thy" "b1ac4a827c2b943202c03611176d3c723119d8e1";
-  check "Source" "Laws.thy" "69af9fbe716d0f2a8a3d076e76cfac467d3b85e7";
-  check "Source" "Laws_Complement.thy" "6065101853fa432ca4bd6fd3113315e856e21ecb";
-  check "Generated" "Laws_Classical.thy" "5d72e496fdbf182770dd6db9b8f36d9eead8a966";
-  check "Generated" "Laws_Complement_Quantum.thy" "c58ba1680287643d1c3f9b2b97d9784db8e1dd84";
-  check "Generated" "Laws_Quantum.thy" "cbc500287329e0d0a5156881638e95bbc8e26306"
+  check "Source" "Axioms_Quantum.thy" "f21c8ed01ee254e4ded662dc84e493829463e701";
+  check "Source" "Laws.thy" "affe8ae1e4e797f1e268b87178b0c2fe8a99a934";
+  check "Source" "Laws_Complement.thy" "70f024eda3537a80716edaa1d921a5c1caf921bc";
+  check "Generated" "Laws_Classical.thy" "f5cc591ca5561c4bc3479bd663be27cdc2c78aea";
+  check "Generated" "Laws_Complement_Quantum.thy" "4f53b2cbf551073cdeab7aceaa2b67612e4644ec";
+  check "Generated" "Laws_Quantum.thy" "212c1c3d56ec9d74c1715dd1a7b9528ec0ecfd91"
 end
 \<close>
 

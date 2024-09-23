@@ -31,7 +31,7 @@ no_notation
 
 no_notation
   Set.member  (\<open>(:)\<close>) and
-  Set.member  (\<open>(_/ : _)\<close> [51, 51] 50)
+  Set.member  (\<open>(\<open>notation=\<open>infix :\<close>\<close>_/ : _)\<close> [51, 51] 50)
 
 no_translations
   "[x, xs]" == "x # [xs]"
@@ -50,10 +50,9 @@ no_translations
   "[x<-xs . P]" == "CONST List.filter (%x. P) xs"
 
 no_syntax (ASCII)
-  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" (\<open>(1[_<-_./ _])\<close>)
-
+  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list"  (\<open>(\<open>indent=1 notation=\<open>mixfix filter\<close>\<close>[_<-_./ _])\<close>)
 no_syntax
-  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" (\<open>(1[_\<leftarrow>_ ./ _])\<close>)
+  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list"  (\<open>(\<open>indent=1 notation=\<open>mixfix filter\<close>\<close>[_\<leftarrow>_ ./ _])\<close>)
 
 text \<open>Declarations that belong in HOLCF/Tr.thy:\<close>
 

@@ -18,7 +18,7 @@ imports Relation_Algebra.Relation_Algebra_RTC Relation_Algebra.Relation_Algebra_
 begin
 
 no_notation
-  trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
+  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
 
 context relation_algebra
 begin

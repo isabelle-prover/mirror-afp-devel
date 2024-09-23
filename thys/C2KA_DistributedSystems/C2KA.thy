@@ -33,7 +33,7 @@ begin
 
 no_notation
 comp (infixl \<open>\<circ>\<close> 55)
-and rtrancl (\<open>(_\<^sup>*)\<close> [1000] 999)
+and rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
 
 text \<open>
 The locale \emph{c2ka} contains an axiomatisation of \CCKAabbrv  and some basic theorems relying on the 

@@ -32,7 +32,7 @@ class left_kleene_algebra = idempotent_left_semiring + star +
 begin
 
 no_notation
-  trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
+  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
 
 abbreviation tc (\<open>_\<^sup>+\<close> [100] 100) where "tc x \<equiv> x * x\<^sup>\<star>"
 

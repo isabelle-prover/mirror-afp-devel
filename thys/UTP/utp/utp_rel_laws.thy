@@ -794,7 +794,7 @@ update_uexpr_rep_eq_thms
 
 subsection \<open> Kleene Plus \<close>
 
-purge_notation trancl (\<open>(_\<^sup>+)\<close> [1000] 999)
+purge_notation trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
 
 definition uplus :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (\<open>_\<^sup>+\<close> [999] 999) where
 [upred_defs]: "P\<^sup>+ = P ;; P\<^sup>\<star>"

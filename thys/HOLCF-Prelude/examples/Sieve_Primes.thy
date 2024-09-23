@@ -30,7 +30,7 @@ no_notation
 
 no_notation
   Set.member  (\<open>(:)\<close>) and
-  Set.member  (\<open>(_/ : _)\<close> [51, 51] 50)
+  Set.member  (\<open>(\<open>notation=\<open>infix :\<close>\<close>_/ : _)\<close> [51, 51] 50)
 
 text \<open>This is the implementation. We also need a modulus operator.\<close>
 fixrec sieve :: "[Integer] \<rightarrow> [Integer]" where

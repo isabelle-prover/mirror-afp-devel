@@ -19,7 +19,7 @@ text \<open>
 no_notation 
   plus (infixl \<open>+\<close> 65) and 
   less_eq  (\<open>'(\<le>')\<close>) and
-  less_eq  (\<open>(_/ \<le> _)\<close>  [51, 51] 50)
+  less_eq  (\<open>(\<open>notation=\<open>infix \<le>\<close>\<close>_/ \<le> _)\<close>  [51, 51] 50)
 
 notation comp (infixl \<open>\<cdot>\<close> 55)
 

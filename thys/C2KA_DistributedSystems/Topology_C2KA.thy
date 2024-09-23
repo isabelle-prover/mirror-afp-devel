@@ -39,7 +39,7 @@ begin
 
 no_notation
 comp (infixl \<open>\<circ>\<close> 55)
-and rtrancl (\<open>(_\<^sup>*)\<close> [1000] 999)
+and rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
 
 text \<open>
 The locale \emph{topology-c2ka} extends the axiomatisation of \emph{c2ka} to support the notions of topology. 

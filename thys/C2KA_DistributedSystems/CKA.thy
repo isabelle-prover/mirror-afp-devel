@@ -24,7 +24,7 @@ theory CKA
 begin
 
 no_notation
-rtrancl (\<open>(_\<^sup>*)\<close> [1000] 999)
+rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
 
 notation
 times (infixl \<open>*\<close> 70)

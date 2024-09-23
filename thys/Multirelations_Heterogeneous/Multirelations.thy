@@ -5762,7 +5762,7 @@ lemma edia_left_dist_oU:
 
 subsection \<open>Goldblatt's axioms with star\<close>
 
-no_notation rtrancl (\<open>(_\<^sup>*)\<close> [1000] 999)
+no_notation rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
 notation star (\<open>_\<^sup>*\<close> [1000] 999)
 
 lemma star_induct_1:

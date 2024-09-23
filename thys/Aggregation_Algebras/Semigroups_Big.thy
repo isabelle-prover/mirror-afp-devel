@@ -519,7 +519,7 @@ end
 
 
 subsection \<open>Generalized summation over a set\<close>
-
+text \<open>Instead of @{term"\<Sum>x\<in>{x. P}. e"} we introduce the shorter \<open>\<Sum>x|P. e\<close>.\<close>
 no_notation Sum (\<open>\<Sum>\<close>)
 
 class ab_semigroup_add_0 = zero + ab_semigroup_add +
@@ -546,23 +546,33 @@ end
 
 text \<open>Now: lots of fancy syntax. First, @{term "sum_0 (\<lambda>x. e) A"} is written \<open>\<Sum>x\<in>A. e\<close>.\<close>
 
+no_syntax (ASCII)
+  "_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(\<open>indent=3 notation=\<open>binder SUM\<close>\<close>SUM (_/:_)./ _)\<close> [0, 51, 10] 10)
+no_syntax
+  "_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(\<open>indent=2 notation=\<open>binder \<Sum>\<close>\<close>\<Sum>(_/\<in>_)./ _)\<close> [0, 51, 10] 10)
+
 syntax (ASCII)
-  "_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(3SUM (_/:_)./ _)\<close> [0, 51, 10] 10)
+  "_sum0" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(\<open>indent=3 notation=\<open>binder SUM\<close>\<close>SUM (_/:_)./ _)\<close> [0, 51, 10] 10)
 syntax
-  "_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(2\<Sum>(_/\<in>_)./ _)\<close> [0, 51, 10] 10)
+  "_sum0" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(\<open>indent=2 notation=\<open>binder \<Sum>\<close>\<close>\<Sum>(_/\<in>_)./ _)\<close> [0, 51, 10] 10)
 syntax_consts
-  "_sum" \<rightleftharpoons> sum_0
+  "_sum0" \<rightleftharpoons> sum_0
 translations \<comment> \<open>Beware of argument permutation!\<close>
   "\<Sum>i\<in>A. b" \<rightleftharpoons> "CONST sum_0 (\<lambda>i. b) A"
 
 text \<open>Instead of @{term"\<Sum>x\<in>{x. P}. e"} we introduce the shorter \<open>\<Sum>x|P. e\<close>.\<close>
 
+no_syntax (ASCII)
+  "_qsum" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(\<open>indent=3 notation=\<open>binder SUM Collect\<close>\<close>SUM _ |/ _./ _)\<close> [0, 0, 10] 10)
+no_syntax
+  "_qsum" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(\<open>indent=2 notation=\<open>binder \<Sum> Collect\<close>\<close>\<Sum>_ | (_)./ _)\<close> [0, 0, 10] 10)
+
 syntax (ASCII)
-  "_qsum" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(3SUM _ |/ _./ _)\<close> [0, 0, 10] 10)
+  "_qsum0" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(\<open>indent=3 notation=\<open>binder SUM Collect\<close>\<close>SUM _ |/ _./ _)\<close> [0, 0, 10] 10)
 syntax
-  "_qsum" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(2\<Sum>_ | (_)./ _)\<close> [0, 0, 10] 10)
+  "_qsum0" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>(\<open>indent=2 notation=\<open>binder \<Sum> Collect\<close>\<close>\<Sum>_ | (_)./ _)\<close> [0, 0, 10] 10)
 syntax_consts
-  "_qsum" \<rightleftharpoons> sum_0
+  "_qsum0" \<rightleftharpoons> sum_0
 translations
   "\<Sum>x|P. t" => "CONST sum_0 (\<lambda>x. t) {x. P}"
 

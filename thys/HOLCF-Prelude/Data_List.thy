@@ -12,7 +12,7 @@ begin
 
 no_notation (ASCII)
   Set.member  (\<open>'(:')\<close>) and
-  Set.member  (\<open>(_/ : _)\<close> [51, 51] 50)
+  Set.member  (\<open>(\<open>notation=\<open>infix :\<close>\<close>_/ : _)\<close> [51, 51] 50)
 
 subsection \<open>Datatype definition\<close>
 
