@@ -3505,13 +3505,13 @@ lemma transaction_decl_fresh_renaming_substs_vars_disj:
     and "range_vars (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) \<subseteq> range_vars \<alpha>" (is ?E3)
 proof -
   note 0 = transaction_renaming_subst_vars_disj[OF \<alpha>]
-
+  define \<theta> where "\<theta> = \<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>"
   show ?A
   proof (cases "fv\<^sub>s\<^sub>e\<^sub>t ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) ` (\<Union>(vars_transaction ` set P))) = {}")
     case False
     hence "\<forall>x \<in> (\<Union>(vars_transaction ` set P)). (\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x = \<alpha> x \<or> fv ((\<xi> \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<alpha>) x) = {}"
       using transaction_decl_fresh_renaming_substs_range''[OF \<xi> \<sigma> \<alpha>] by auto
-    thus ?thesis using 0(1) by force
+    thus ?thesis using 0(1) unfolding \<theta>_def[symmetric] by force
   qed blast
   thus "?B' \<Longrightarrow> ?B" by auto
 
