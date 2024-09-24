@@ -921,7 +921,7 @@ proof -
   {
     fix f ss s
     assume "f : ss \<rightarrow> s in C"
-    hence "((f,ss),s) \<in> set Cs" unfolding C_Cs by (auto dest!: hastype_in_ssigD map_of_SomeD)
+    hence "((f,ss),s) \<in> set Cs" unfolding C_Cs by (auto dest!: fun_hastypeD map_of_SomeD)
     from C[OF this] have "insert s (set ss) \<subseteq> S" "length ss \<le> m" by auto
   } note Cons = this
   {
@@ -936,14 +936,14 @@ proof -
   proof (intro allI impI)
     fix f ss s s'
     assume "f : ss \<rightarrow> s in C" and "s' \<in> set ss" 
-    hence "s' \<in> S" using Cons(1)[of f ss s] by (auto simp: hastype_in_ssig_def)
+    hence "s' \<in> S" using Cons(1)[of f ss s] by auto
     from S[OF this] show "\<exists>t. t : s' in \<T>(C,EMPTYn)" by auto
   qed
   from compute_inf_sorts[OF En C_Cs this dist] inf_sort
   have inf_sort: "inf_sort s = (\<not> bdd_above (size ` {t. t : s in \<T>(C,EMPTYn)}))" for s unfolding inf_sort by auto
   have Cl: "set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}" for s
     unfolding Cl set_map o_def C_Cs using dist
-    by (force simp: hastype_in_ssig_def)
+    by (force simp: fun_hastype_def)
   interpret pattern_completeness_context_with_assms
     apply unfold_locales
     subgoal by (rule S(1))

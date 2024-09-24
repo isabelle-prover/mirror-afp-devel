@@ -39,7 +39,7 @@ lemma hastype_context_apply:
   using assms
 proof induct
   case (More f \<sigma>b \<rho> \<sigma>a \<tau> bef C aft)
-  show ?case unfolding ctxt_apply_term.simps
+  show ?case unfolding intp_actxt.simps
   proof (intro Fun_hastypeI[OF More(1)])
     show "bef @ C\<langle>t\<rangle> # aft :\<^sub>l \<sigma>b @ \<rho> # \<sigma>a in \<T>(F,V)" 
       using More(2,5) More(4)[OF More(6)]

@@ -176,7 +176,7 @@ proof -
     then have "q \<in> ?LS" using reach
     proof (induct C arbitrary: q r)
       case (More f ss C ts)
-      from iffD1 ta_der_Fun[THEN iffD1, OF More(4)[unfolded ctxt_apply_term.simps]] obtain ps p where
+      from iffD1 ta_der_Fun[THEN iffD1, OF More(4)[unfolded intp_actxt.simps]] obtain ps p where
         inv: "f ps \<rightarrow> p |\<in>| rules \<A>" "p = r \<or> (p, r) |\<in>| (eps \<A>)|\<^sup>+|" "length ps = length (ss @ C\<langle>Var q\<rangle> # ts)"
              "ps ! length ss |\<in>| ta_der \<A> C\<langle>Var q\<rangle>"
         by (auto simp: nth_append_Cons split: if_splits)

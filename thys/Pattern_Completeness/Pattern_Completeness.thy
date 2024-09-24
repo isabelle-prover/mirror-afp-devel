@@ -81,7 +81,7 @@ proof -
       assume pat: "pat \<in> set pats" and subst: "?cg_subst (set S) ?C \<sigma>"
       from pat[unfolded pats_def] obtain f ss s where pat: "pat = Fun f (map Var (zip [0..<length ss] ss))" 
         and inDs: "((f,ss),s) \<in> set D" by auto
-      from dist(2) inDs have f: "f : ss \<rightarrow> s in ?D" unfolding hastype_in_ssig_def by simp
+      from dist(2) inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
       {
         fix i
         assume i: "i < length ss" 
@@ -102,7 +102,7 @@ proof -
       assume f: "f : ss \<rightarrow> s in ?D" and ts: "ts :\<^sub>l ss in \<T>(?C,\<emptyset>)" 
       from ts have len: "length ts = length ss" by (metis list_all2_lengthD)
       define pat where "pat = Fun f (map Var (zip [0..<length ss] ss))"
-      from f have "((f,ss),s) \<in> set D" unfolding hastype_in_ssig_def by (metis map_of_SomeD)
+      from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
       hence pat: "pat \<in> set pats" unfolding pat_def pats_def by force
       define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
         (SOME t. t : s in \<T>(?C,?EMPTY)))" for x
@@ -208,7 +208,7 @@ proof -
     assume patL: "patL \<in> set pats" and subst: "?cg_subst (set S) ?C \<sigma>" and R: ?R
     from patL[unfolded pats_def] obtain f ss s where patL: "patL = term_and_args f (map Var (zip [0..<length ss] ss))" 
       and inDs: "((f,ss),s) \<in> set D" by auto
-    from dist(2) inDs have f: "f : ss \<rightarrow> s in ?D" unfolding hastype_in_ssig_def by simp
+    from dist(2) inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
     {
       fix i
       assume i: "i < length ss" 
@@ -229,7 +229,7 @@ proof -
     assume f: "f : ss \<rightarrow> s in ?D" and ts: "ts :\<^sub>l ss in \<T>(?C,\<emptyset>)" and L: ?L
     from ts have len: "length ts = length ss" by (metis list_all2_lengthD)
     define patL where "patL = term_and_args f (map Var (zip [0..<length ss] ss))" 
-    from f have "((f,ss),s) \<in> set D" unfolding hastype_in_ssig_def by (metis map_of_SomeD)
+    from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
     hence patL: "patL \<in> set pats" unfolding patL_def pats_def by force
     define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
       (SOME t. t : s in \<T>(?C,?EMPTY)))" for x
@@ -316,7 +316,7 @@ proof (standard, rule strong_quasi_reducible_imp_quasi_reducible[OF pat_complete
       next
         case (Fun f ls)
         from tp[unfolded match this, simplified] obtain ss where "f : ss \<rightarrow> s in C" 
-          by (meson Fun_hastype hastype_def hastype_in_ssig_def)
+          by (meson Fun_hastype hastype_def fun_hastype_def)
         with assms[OF l Fun, of ss s] show ?thesis by auto
       qed
     qed

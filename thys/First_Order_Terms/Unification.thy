@@ -575,7 +575,7 @@ proof (rule inj_onI)
     using ComplD[OF x_in] ComplD[OF y_in]
     by (simp_all add: \<tau>_def)
   with \<open>\<mu> x = \<mu> y\<close> show "x = y"
-    by (simp add: subst_compose_def)
+    by (simp add: eval_subst_def)
 qed
 
 lemma imgu_subst_domain_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
@@ -680,7 +680,7 @@ proof (rule Set.subsetI)
         using \<open>y \<notin> Evars\<close> dom_\<tau>
         by (auto simp add: subst_domain_def)
       thus ?thesis
-        unfolding subst_compose_def vars_term_subst_apply_term UN_iff
+        unfolding eval_subst_def vars_term_subst_apply_term UN_iff
         using y_in by force
     qed
     ultimately show False
@@ -797,7 +797,7 @@ proof -
     show "\<sigma> = ?tau1 \<circ>\<^sub>s \<gamma>"
     proof (rule ext)
       fix x
-      have "(?tau1 \<circ>\<^sub>s \<gamma>) x = \<gamma> (vu x)" using fun_cong[OF gamma_mu, of "vu x"] by (simp add: subst_compose_def)
+      have "(?tau1 \<circ>\<^sub>s \<gamma>) x = \<gamma> (vu x)" using fun_cong[OF gamma_mu, of "vu x"] by (simp add: eval_subst_def)
       also have "... = \<sigma> x" unfolding gamma by simp
       finally show "\<sigma> x = (?tau1 \<circ>\<^sub>s \<gamma>) x" by simp
     qed
@@ -805,7 +805,7 @@ proof -
     show "\<tau> = ?tau2 \<circ>\<^sub>s \<gamma>"
     proof (rule ext)
       fix x
-      have "(?tau2 \<circ>\<^sub>s \<gamma>) x = \<gamma> (wu x)" using fun_cong[OF gamma_mu, of "wu x"] by (simp add: subst_compose_def)
+      have "(?tau2 \<circ>\<^sub>s \<gamma>) x = \<gamma> (wu x)" using fun_cong[OF gamma_mu, of "wu x"] by (simp add: eval_subst_def)
       also have "... = \<tau> x" unfolding gamma using vwu by auto
       finally show "\<tau> x = (?tau2 \<circ>\<^sub>s \<gamma>) x" by simp
     qed
@@ -857,7 +857,7 @@ proof -
   {
     fix \<mu> :: "('f,'v,'v+'v)gsubst" and \<tau> :: "('f,'v + 'v)subst"
     have "?m' (\<mu> \<circ>\<^sub>s \<tau>) = \<mu> \<circ>\<^sub>s ?m' \<tau>"
-      by (rule ext, unfold subst_compose_def, simp add: map_vars_term_subst)
+      by (rule ext, unfold eval_subst_def, simp add: map_vars_term_subst)
   } note id' = this
   from arg_cong[OF \<sigma>, of ?m', unfolded id id'] have \<sigma>: "\<sigma> = \<mu>1 \<circ>\<^sub>s ?m' \<tau>" .
   from arg_cong[OF \<delta>, of ?m', unfolded id id'] have \<delta>: "\<delta> = \<mu>2 \<circ>\<^sub>s ?m' \<tau>" .

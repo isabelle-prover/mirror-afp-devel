@@ -35,30 +35,41 @@ that assigns an output sort to the pair of a function symbol and a list of input
 
 type_synonym ('f,'s) ssig = "'f \<times> 's list \<rightharpoonup> 's"
 
-definition hastype_in_ssig :: "'f \<Rightarrow> 's list \<Rightarrow> 's \<Rightarrow> ('f,'s) ssig \<Rightarrow> bool"
-  ("_ : _ \<rightarrow> _ in _" [50,61,61,50]50)
-  where "f : \<sigma>s \<rightarrow> \<tau> in F \<equiv> F (f,\<sigma>s) = Some \<tau>"
+definition fun_hastype :: "'f \<Rightarrow> 's \<Rightarrow> 't \<Rightarrow> ('f \<times> 's \<rightharpoonup> 't) \<Rightarrow> bool"
+  ("(_ : /_ /\<rightarrow> /_ in/ _)" [50,61,61,50]50)
+  where "f : \<sigma> \<rightarrow> \<tau> in F \<equiv> F (f,\<sigma>) = Some \<tau>"
 
-lemmas hastype_in_ssigI = hastype_in_ssig_def[unfolded atomize_eq, THEN iffD2]
-lemmas hastype_in_ssigD = hastype_in_ssig_def[unfolded atomize_eq, THEN iffD1]
+lemmas fun_hastypeI = fun_hastype_def[unfolded atomize_eq, THEN iffD2]
+lemmas fun_hastypeD = fun_hastype_def[unfolded atomize_eq, THEN iffD1]
 
-lemma hastype_in_ssig_imp_dom:
-  assumes "f : \<sigma>s \<rightarrow> \<tau> in F" shows "(f,\<sigma>s) \<in> dom F"
-  using assms by (auto simp: hastype_in_ssig_def domIff)
+lemma fun_hastype_imp_dom[simp]:
+  assumes "f : \<sigma> \<rightarrow> \<tau> in F" shows "(f,\<sigma>) \<in> dom F"
+  using assms by (auto simp: fun_hastype_def domIff)
 
-lemma has_same_type_ssig:
-  assumes "f : \<sigma>s \<rightarrow> \<tau> in F" and "f : \<sigma>s \<rightarrow> \<tau>' in F" shows "\<tau> = \<tau>'"
-  using assms by (auto simp: hastype_in_ssig_def)
+lemma in_dom_fun_hastypeE:
+  assumes "(f,\<sigma>) \<in> dom F" and "\<And>\<tau>. f : \<sigma> \<rightarrow> \<tau> in F \<Longrightarrow> thesis" shows thesis
+  using assms by (auto simp: fun_hastype_def dom_def)
 
-lemma hastype_restrict_ssig: "f : \<sigma>s \<rightarrow> \<tau> in F |` S \<longleftrightarrow> (f,\<sigma>s) \<in> S \<and> f : \<sigma>s \<rightarrow> \<tau> in F"
-  by (auto simp: restrict_map_def hastype_in_ssig_def)
+lemma fun_has_same_type:
+  assumes "f : \<sigma> \<rightarrow> \<tau> in F" and "f : \<sigma> \<rightarrow> \<tau>' in F" shows "\<tau> = \<tau>'"
+  using assms by (auto simp: fun_hastype_def)
 
-lemma subssigI: assumes "\<And>f \<sigma>s \<tau>. f : \<sigma>s \<rightarrow> \<tau> in F \<Longrightarrow> f : \<sigma>s \<rightarrow> \<tau> in F'"
+lemma fun_hastype_empty[simp]: "\<not> f : \<sigma> \<rightarrow> \<tau> in \<emptyset>"
+  by (auto simp: fun_hastype_def)
+
+lemma fun_hastype_upd: "f : \<sigma> \<rightarrow> \<tau> in F((f',\<sigma>') \<mapsto> \<tau>') \<longleftrightarrow>
+  (if f = f' \<and> \<sigma> = \<sigma>' then \<tau> = \<tau>' else f : \<sigma> \<rightarrow> \<tau> in F)"
+  by (auto simp: fun_hastype_def)
+
+lemma fun_hastype_restrict: "f : \<sigma> \<rightarrow> \<tau> in F |` S \<longleftrightarrow> (f,\<sigma>) \<in> S \<and> f : \<sigma> \<rightarrow> \<tau> in F"
+  by (auto simp: restrict_map_def fun_hastype_def)
+
+lemma subssigI: assumes "\<And>f \<sigma> \<tau>. f : \<sigma> \<rightarrow> \<tau> in F \<Longrightarrow> f : \<sigma> \<rightarrow> \<tau> in F'"
   shows "F \<subseteq>\<^sub>m F'"
-  using assms by (auto simp: map_le_def hastype_in_ssig_def dom_def)
+  using assms by (auto simp: map_le_def fun_hastype_def dom_def)
 
-lemma subssigD: assumes FF: "F \<subseteq>\<^sub>m F'" and "f : \<sigma>s \<rightarrow> \<tau> in F" shows "f : \<sigma>s \<rightarrow> \<tau> in F'"
-  using assms by (auto simp: map_le_def hastype_in_ssig_def dom_def)
+lemma subssigD: assumes FF: "F \<subseteq>\<^sub>m F'" and "f : \<sigma> \<rightarrow> \<tau> in F" shows "f : \<sigma> \<rightarrow> \<tau> in F'"
+  using assms by (auto simp: map_le_def fun_hastype_def dom_def)
 
 text \<open>The sorted set of terms:\<close>
 
@@ -73,7 +84,7 @@ lemma Var_hastype[simp]: "Var v : \<sigma> in \<T>(F,V) \<longleftrightarrow> v 
 lemma Fun_hastype:
   "Fun f ss : \<tau> in \<T>(F,V) \<longleftrightarrow> (\<exists>\<sigma>s. f : \<sigma>s \<rightarrow> \<tau> in F \<and> ss :\<^sub>l \<sigma>s in \<T>(F,V))"
   apply (unfold hastype_list_iff_those)
-  by (auto simp: hastype_in_ssig_def hastype_def split:option.split_asm)
+  by (auto simp: fun_hastype_def hastype_def split:option.split_asm)
 
 lemma Fun_in_dom_imp_arg_in_dom: "Fun f ss \<in> dom \<T>(F,V) \<Longrightarrow> s \<in> set ss \<Longrightarrow> s \<in> dom \<T>(F,V)"
   by (auto simp: in_dom_iff_ex_type Fun_hastype list_all2_conv_all_nth in_set_conv_nth)
@@ -504,7 +515,7 @@ proof
           show "tt ! i : \<tau>s ! i in \<T>(F,A)" by auto
         qed
       qed
-      with ff2 Fun IH.hyps(1) show "\<sigma> = \<tau>" by (auto simp: hastype_in_ssig_def)
+      with ff2 Fun IH.hyps(1) show "\<sigma> = \<tau>" by (auto simp: fun_hastype_def)
     qed
   qed
 qed
@@ -591,7 +602,7 @@ definition unisorted_sig :: "('f\<times>nat) set \<Rightarrow> ('f,unit) ssig"
   where "unisorted_sig F \<equiv> \<lambda>(f,\<sigma>s). if (f, length \<sigma>s) \<in> F then Some () else None"
 
 lemma in_unisorted_sig[simp]: "f : \<sigma>s \<rightarrow> \<tau> in unisorted_sig F \<longleftrightarrow> (f,length \<sigma>s) \<in> F"
-  by (auto simp: unisorted_sig_def hastype_in_ssig_def)
+  by (auto simp: unisorted_sig_def fun_hastype_def)
 
 inductive_set uTerm ("\<TT>'(_,_')" [1,1]1000) for F V where
   "Var v \<in> \<TT>(F,V)" if "v \<in> V"

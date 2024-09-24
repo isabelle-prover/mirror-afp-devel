@@ -131,24 +131,32 @@ type_synonym ('f, 'v) subst  = "('f, 'v, 'v) gsubst"
 abbreviation subst_apply_term :: "('f, 'v) term \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term"  (infixl "\<cdot>" 67)
   where "subst_apply_term \<equiv> eval_term Fun"
 
-definition
+definition eval_subst ("_\<lbrakk>_\<rbrakk>\<^sub>s _" [999,1,100]100) where
+  "(I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>) \<equiv> \<lambda>x. I\<lbrakk>\<theta> x\<rbrakk>\<alpha>"
+
+lemma eval_subst: "I\<lbrakk>s\<cdot>\<theta>\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk> I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>"
+  apply (induct s) by (auto simp: eval_subst_def cong:map_cong)
+
+abbreviation
   subst_compose :: "('f, 'u, 'v) gsubst \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'u, 'w) gsubst"
   (infixl "\<circ>\<^sub>s" 75)
   where
-    "\<sigma> \<circ>\<^sub>s \<tau> = (\<lambda>x. (\<sigma> x) \<cdot> \<tau>)"
+    "\<sigma> \<circ>\<^sub>s \<theta> \<equiv> Fun\<lbrakk>\<sigma>\<rbrakk>\<^sub>s \<theta>"
+
+lemmas subst_compose_def = eval_subst_def[of Fun]
 
 lemma subst_subst_compose [simp]:
   "t \<cdot> (\<sigma> \<circ>\<^sub>s \<tau>) = t \<cdot> \<sigma> \<cdot> \<tau>"
-  by (induct t) (simp_all add: subst_compose_def)
+  by (induct t) (simp_all add: eval_subst_def)
 
 lemma subst_compose_assoc:
   "\<sigma> \<circ>\<^sub>s \<tau> \<circ>\<^sub>s \<mu> = \<sigma> \<circ>\<^sub>s (\<tau> \<circ>\<^sub>s \<mu>)"
 proof (rule ext)
   fix x show "(\<sigma> \<circ>\<^sub>s \<tau> \<circ>\<^sub>s \<mu>) x = (\<sigma> \<circ>\<^sub>s (\<tau> \<circ>\<^sub>s \<mu>)) x"
   proof -
-    have "(\<sigma> \<circ>\<^sub>s \<tau> \<circ>\<^sub>s \<mu>) x = \<sigma>(x) \<cdot> \<tau> \<cdot> \<mu>" by (simp add: subst_compose_def)
+    have "(\<sigma> \<circ>\<^sub>s \<tau> \<circ>\<^sub>s \<mu>) x = \<sigma>(x) \<cdot> \<tau> \<cdot> \<mu>" by (simp add: eval_subst_def)
     also have "\<dots> = \<sigma>(x) \<cdot> (\<tau> \<circ>\<^sub>s \<mu>)" by simp
-    finally show ?thesis by (simp add: subst_compose_def)
+    finally show ?thesis by (simp add: eval_subst_def)
   qed
 qed
 
@@ -160,7 +168,8 @@ proof (induct t)
 qed simp
 
 interpretation subst_monoid_mult: monoid_mult "Var" "(\<circ>\<^sub>s)"
-  by (unfold_locales) (simp add: subst_compose_assoc, simp_all add: subst_compose_def)
+  by (unfold_locales)
+  (simp add: subst_compose_assoc, simp_all add: eval_subst_def)
 
 lemma term_subst_eq:
   assumes "\<And>x. x \<in> vars_term t \<Longrightarrow> \<sigma> x = \<tau> x"
@@ -285,7 +294,7 @@ proof -
   hence "\<forall>x. (Var \<circ> (inv \<rho>' \<circ> \<rho>')) x = Var x"
     by metis
   hence "\<forall>x. ((Var \<circ> \<rho>') \<circ>\<^sub>s (Var \<circ> (inv \<rho>'))) x = Var x"
-    unfolding subst_compose_def by auto
+    unfolding eval_subst_def by auto
   thus "\<rho> \<circ>\<^sub>s (Var \<circ> (inv \<rho>')) = Var"
     using \<rho>_def by auto
 qed
@@ -316,10 +325,10 @@ proof
   proof (cases)
     assume "y \<in> subst_domain \<sigma>" and "x \<in> vars_term ((\<sigma> \<circ>\<^sub>s \<tau>) y)"
     moreover then obtain v where "v \<in> vars_term (\<sigma> y)"
-      and "x \<in> vars_term (\<tau> v)" by (auto simp: subst_compose_def vars_term_subst)
+      and "x \<in> vars_term (\<tau> v)" by (auto simp:  eval_subst_def vars_term_subst)
     ultimately show ?thesis
       by (cases "v \<in> subst_domain \<tau>") (auto simp: range_vars_def subst_domain_def)
-  qed (auto simp: range_vars_def subst_compose_def subst_domain_def)
+  qed (auto simp: range_vars_def  eval_subst_def subst_domain_def)
 qed
 
 definition "subst x t = Var (x := t)"
@@ -374,7 +383,7 @@ abbreviation
     "T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma> \<equiv> (\<lambda>t. t \<cdot> \<sigma>) ` T"
 
 text \<open>Composition of substitutions\<close>
-lemma subst_compose: "(\<sigma> \<circ>\<^sub>s \<tau>) x = \<sigma> x \<cdot> \<tau>" by (auto simp: subst_compose_def)
+lemma subst_compose: "(\<sigma> \<circ>\<^sub>s \<tau>) x = \<sigma> x \<cdot> \<tau>" by (auto simp: eval_subst_def)
 
 lemmas subst_subst = subst_subst_compose [symmetric]
 
@@ -387,7 +396,7 @@ lemma subst_domain_subst_compose:
   "subst_domain (\<sigma> \<circ>\<^sub>s \<tau>) =
     (subst_domain \<sigma> - {x. \<exists>y. \<sigma> x = Var y \<and> \<tau> y = Var x}) \<union>
     (subst_domain \<tau> - subst_domain \<sigma>)"
-  by (auto simp: subst_domain_def subst_compose_def elim: subst_apply_eq_Var)
+  by (auto simp: subst_domain_def eval_subst_def elim: subst_apply_eq_Var)
 
 
 text \<open>A substitution is idempotent iff the variables in its range are disjoint from its domain.
@@ -396,7 +405,7 @@ lemma subst_idemp_iff:
   "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma> \<longleftrightarrow> subst_domain \<sigma> \<inter> range_vars \<sigma> = {}"
 proof
   assume "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma>"
-  then have "\<And>x. \<sigma> x \<cdot> \<sigma> = \<sigma> x \<cdot> Var" by simp (metis subst_compose_def)
+  then have "\<And>x. \<sigma> x \<cdot> \<sigma> = \<sigma> x \<cdot> Var" by simp (metis eval_subst_def)
   then have *: "\<And>x. \<forall>y\<in>vars_term (\<sigma> x). \<sigma> y = Var y"
     unfolding term_subst_eq_conv by simp
   { fix x y
@@ -415,7 +424,7 @@ next
     with * [of y x] show "\<sigma> y = Var y" by auto
   qed
   then show "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma>"
-    by (simp add: subst_compose_def term_subst_eq_conv [symmetric])
+    by (simp add: eval_subst_def term_subst_eq_conv [symmetric])
 qed
 
 lemma subst_compose_apply_eq_apply_lhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
@@ -433,7 +442,7 @@ proof (cases "\<sigma> x")
     moreover from \<open>x \<notin> subst_domain \<delta>\<close> have "\<delta> x = Var x"
       by (simp add: disjoint_iff subst_domain_def)
     ultimately show ?thesis
-      by (simp add: subst_compose_def)
+      by (simp add: eval_subst_def)
   next
     case False
     have "y \<in> range_vars \<sigma>"
@@ -449,7 +458,7 @@ proof (cases "\<sigma> x")
       using \<open>range_vars \<sigma> \<inter> subst_domain \<delta> = {}\<close>
       by (simp add: disjoint_iff)
     with Var show ?thesis
-      unfolding subst_compose_def
+      unfolding eval_subst_def
       by (simp add: subst_domain_def)
   qed
 next
@@ -463,7 +472,7 @@ next
     using \<open>range_vars \<sigma> \<inter> subst_domain \<delta> = {}\<close>
     by (simp add: disjoint_iff subst_domain_def)
   from this[unfolded subst_apply_term_empty] Fun show ?thesis
-    by (simp add: subst_compose_def)
+    by (simp add: eval_subst_def)
 qed
 
 lemma subst_apply_term_subst_apply_term_eq_subst_apply_term_lhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
@@ -526,7 +535,7 @@ lemma finite_subst_domain_subst:
 
 lemma subst_domain_compose:
   "subst_domain (\<sigma> \<circ>\<^sub>s \<tau>) \<subseteq> subst_domain \<sigma> \<union> subst_domain \<tau>"
-  by (auto simp: subst_domain_def subst_compose_def)
+  by (auto simp: subst_domain_def eval_subst_def)
 
 lemma vars_term_disjoint_imp_unifier:
   fixes \<sigma> :: "('f, 'v, 'w) gsubst"
@@ -647,7 +656,7 @@ proof (intro term_subst_eq ballI)
     by (metis image_eqI)
 
   have "(\<rho> \<circ>\<^sub>s rename_subst_domain \<rho> \<sigma>) x = \<rho> x \<cdot> rename_subst_domain \<rho> \<sigma>"
-    by (simp add: subst_compose_def)
+    by (simp add: eval_subst_def)
   also have "\<dots> = rename_subst_domain \<rho> \<sigma> x'"
     using \<rho>_x by simp
   also have "\<dots> = \<sigma> (the_inv \<rho> (Var x'))"
@@ -673,7 +682,7 @@ definition rename_subst_domain_range where \<^marker>\<open>contributor \<open>M
 lemma rename_subst_domain_range_Var_lhs[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "rename_subst_domain_range Var \<sigma> = \<sigma>"
   by (rule ext) (simp add: rename_subst_domain_range_def inj_image_mem_iff the_inv_f_f
-      subst_domain_def subst_compose_def)
+      subst_domain_def eval_subst_def)
 
 lemma rename_subst_domain_range_Var_rhs[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "rename_subst_domain_range \<rho> Var = Var"
@@ -696,7 +705,7 @@ proof (rule ext)
     hence "Var x' \<in> \<rho> ` subst_domain \<sigma>"
       using \<open>\<rho> x = Var x'\<close> by (metis imageI)
     thus ?thesis
-      by (simp add: \<open>\<rho> x = Var x'\<close> rename_subst_domain_range_def subst_compose_def inv_\<rho>_x')
+      by (simp add: \<open>\<rho> x = Var x'\<close> rename_subst_domain_range_def eval_subst_def inv_\<rho>_x')
   next
     case False
     hence "Var x' \<notin> \<rho> ` subst_domain \<sigma>"
@@ -708,7 +717,7 @@ proof (rule ext)
         unfolding inj_image_mem_iff[OF \<open>inj \<rho>\<close>] .
     qed
     with False \<open>\<rho> x = Var x'\<close> show ?thesis
-      by (simp add: subst_compose_def subst_domain_def rename_subst_domain_range_def)
+      by (simp add: eval_subst_def subst_domain_def rename_subst_domain_range_def)
   qed
 qed
 

@@ -579,7 +579,7 @@ next
         and \<sigma>x: "\<sigma> x = Fun f ts" 
         by (induct, auto simp: EMPTY_def)
       from f have f: "f : \<sigma>s \<rightarrow> snd x in C" 
-        by (meson hastype_in_ssig_def)
+        by (meson fun_hastype_def)
       let ?l = "length ts" 
       from args have len: "length \<sigma>s = ?l"
         by (simp add: list_all2_lengthD)
@@ -656,7 +656,7 @@ next
         assume cg: "cg_subst \<sigma>"
         define \<sigma>' where "\<sigma>' = \<sigma>(x := Fun f (map \<sigma> ?xs))" 
         from C_sub_S[OF f] have sortsS: "set sorts \<subseteq> S" by auto
-        from f have f: "f : sorts \<rightarrow> snd x in C" by (simp add: hastype_in_ssig_def)
+        from f have f: "f : sorts \<rightarrow> snd x in C" by (simp add: fun_hastype_def)
         hence "Fun f (map \<sigma> ?xs) : snd x in \<T>(C,EMPTY)" 
         proof (rule Fun_hastypeI)
           show "map \<sigma> ?xs :\<^sub>l sorts in \<T>(C,EMPTY)" 

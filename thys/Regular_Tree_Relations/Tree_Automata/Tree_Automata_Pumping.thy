@@ -61,7 +61,7 @@ lemma empty_ctxt_power [simp]:
 lemma ctxt_comp_not_hole:
   assumes "C \<noteq> \<box>" and "n \<noteq> 0"
   shows "C^n \<noteq> \<box>"
-  using assms by (induct n arbitrary: C) (auto elim!: ctxt_compose.elims)
+  using assms by (induct n arbitrary: C) (auto simp: ctxt_comp_lhs_not_hole)
 
 lemma ctxt_comp_n_suc [simp]:
   shows "(C^(Suc n))\<langle>t\<rangle> = (C^n)\<langle>C\<langle>t\<rangle>\<rangle>"
@@ -259,7 +259,7 @@ lemma derivation_ctxt_terms_pos_nt_empty:
   assumes "p \<in> poss t" and "derivation_ctxt (terms_pos t p) Cs" and "C \<in> set Cs"
   shows "C \<noteq> \<box>"
   using assms by (auto simp: in_set_conv_nth)
-    (metis Suc_mono assms(2) ctxt_apply_term.simps(1) distinct_terms_pos lessI less_SucI less_irrefl_nat nth_eq_iff_index_eq)
+    (metis Suc_mono assms(2) intp_actxt.simps(1) distinct_terms_pos lessI less_SucI less_irrefl_nat nth_eq_iff_index_eq)
 
 lemma derivation_ctxt_terms_pos_sub_list_nt_empty:
   assumes "p \<in> poss t" and "derivation_ctxt (terms_pos t p) Cs"

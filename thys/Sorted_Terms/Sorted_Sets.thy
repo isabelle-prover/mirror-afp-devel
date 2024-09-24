@@ -514,6 +514,11 @@ text \<open>The partial version of @{term The} operator.\<close>
 
 definition "safe_The P \<equiv> if \<exists>!x. P x then Some (The P) else None"
 
+lemma safe_The_cong[cong]:
+  assumes eq: "\<And>x. P x \<longleftrightarrow> Q x"
+  shows "safe_The P = safe_The Q"
+  using ext[of P Q, OF eq] by simp
+
 lemma safe_The_eq_Some: "safe_The P = Some x \<longleftrightarrow> P x \<and> (\<forall>x'. P x' \<longrightarrow> x' = x)"
   apply (unfold safe_The_def)
   apply (cases "\<exists>!x. P x")

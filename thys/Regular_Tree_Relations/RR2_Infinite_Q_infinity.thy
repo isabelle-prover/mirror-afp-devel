@@ -142,8 +142,8 @@ proof (induct)
   then show ?case
     apply (rule_tac x = "ss2" in exI, rule_tac x = "ts2" in exI, rule_tac x = "f2" in exI,
         rule_tac x = "C2 \<circ>\<^sub>c (More (None, Some f1) ss1 C1 ts1)" in exI)
-    apply (auto simp del: ctxt_apply_term.simps)
-    apply (metis Subterm_and_Context.ctxt_ctxt_compose ctxt_compose.simps(2) ta_der_ctxt)
+    apply (auto simp del: intp_actxt.simps)
+    apply (metis Subterm_and_Context.ctxt_ctxt_compose actxt_compose.simps(2) ta_der_ctxt)
     done
 next
   case (rule f qs q i)
@@ -224,7 +224,7 @@ proof -
     by blast
   obtain C2 where
     closing_ctxt: "C2 \<noteq> \<box>" "ground_ctxt C2" "fst (root_ctxt C2) = None" and cl_reach: "q |\<in>| ta_der \<A> C2\<langle>Var p\<rangle>"
-    by (metis (full_types) Q_inf_reach_state_rule[OF cycle(2) assms(2)] ctxt.distinct(1) fst_conv root_ctxt.simps(1))
+    by (metis (full_types) Q_inf_reach_state_rule[OF cycle(2) assms(2)] actxt.distinct(1) fst_conv root_ctxt.simps(1))
   from assms(2) obtain t where t: "p |\<in>| ta_der \<A> t" and gr_t: "ground t"
     by (meson Q_inf_states_ta_states(1) cycle(1) fsubsetD ta_reachableE)
   let ?terms = "\<lambda> n. (C ^ Suc n)\<langle>t\<rangle>" let ?S = "{?terms n | n. p |\<in>| ta_der \<A> (?terms n) \<and> ground (?terms n)}"
@@ -424,7 +424,8 @@ proof -
   from ta_der_to_ta_strict[OF _ gr(1)] loop obtain q' where
     to_strict: "(p = q' \<or> (p, q') |\<in>| (eps \<A>)|\<^sup>+|) \<and> p |\<in>| ta_der_strict \<A> C2\<langle>Var q'\<rangle>" by fastforce
   have *: "\<exists> C. C2 = map_funs_ctxt lift_None_Some C \<and> C \<noteq> \<box>" using ctxt(1, 2)
-    by (auto simp flip: ctxt(3)) (smt ctxt.simps(8) map_funs_term_ctxt_decomp map_term_of_gterm)
+    apply (auto simp flip: ctxt(3)) 
+    by (smt (verit, ccfv_threshold) map_ctxt.simps(1) map_funs_term_ctxt_decomp map_term_of_gterm)
   then have q_p: "(q', p) \<in> Q_inf \<A>" using to_strict ta_der_Q_inf[of p \<A> _  q'] ctxt
     by auto
   then have cycle: "(q', q') \<in> Q_inf \<A>" using to_strict by (auto intro: Q_inf_ta_eps_Q_inf)
@@ -437,7 +438,7 @@ proof -
     obtain q'' where r: "p = q'' \<or> (p, q'') |\<in>| (eps \<A>)|\<^sup>+|" "q |\<in>| ta_der_strict \<A> C\<langle>Var q''\<rangle>"
       using ta_der_to_ta_strict[OF conjunct2[OF conjunct2[OF loop]] gr(2)] by auto
     then have "(q'', q) \<in>  Q_inf \<A>" using ta_der_Q_inf[of q \<A> _  q''] ctxt False
-      by auto (smt (z3) ctxt.simps(8) map_funs_term_ctxt_decomp map_term_of_gterm)+
+      by auto (metis (mono_tags, lifting) map_ctxt.simps(1) map_funs_term_ctxt_decomp map_term_of_gterm)+
     then show ?thesis using r(1) cycle q_p
       by (auto simp: Q_inf_ta_eps_Q_inf intro!: exI[of _ q'])
          (meson Q_inf.trans Q_inf_ta_eps_Q_inf)+   

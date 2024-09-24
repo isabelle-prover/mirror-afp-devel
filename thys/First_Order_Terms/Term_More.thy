@@ -48,19 +48,19 @@ end
 
 text \<open>@{class "showl"}-Instance for Contexts\<close>
 
-fun showsl_ctxt' :: "('f \<Rightarrow> showsl) \<Rightarrow> ('v \<Rightarrow> showsl) \<Rightarrow> ('f, 'v) ctxt \<Rightarrow> showsl" where
-  "showsl_ctxt' fun var (Hole) = showsl_lit (STR ''[]'')"
-| "showsl_ctxt' fun var (More f ss1 D ss2) = (
+fun showsl_actxt' :: "('f \<Rightarrow> showsl) \<Rightarrow> ('a \<Rightarrow> showsl) \<Rightarrow> ('f, 'a) actxt \<Rightarrow> showsl" where
+  "showsl_actxt' fun arg (Hole) = showsl_lit (STR ''[]'')"
+| "showsl_actxt' fun arg (More f ss1 D ss2) = (
     fun f \<circ> showsl (STR ''('') \<circ>
-    showsl_list_gen (showsl_term' fun var) (STR '''') (STR '''') (STR '', '') (STR '', '') ss1 \<circ>
-    showsl_ctxt' fun var D \<circ>
-    showsl_list_gen (showsl_term' fun var) (STR '')'') (STR '', '') (STR '', '') (STR '')'') ss2
+    showsl_list_gen arg (STR '''') (STR '''') (STR '', '') (STR '', '') ss1 \<circ>
+    showsl_actxt' fun arg D \<circ>
+    showsl_list_gen arg (STR '')'') (STR '', '') (STR '', '') (STR '')'') ss2
   )"
 
-instantiation ctxt :: (showl,showl)showl
+instantiation actxt :: (showl,showl)showl
 begin
-definition "showsl (t :: ('a,'b)ctxt) = showsl_ctxt' showsl showsl t"
-definition "showsl_list (xs :: ('a,'b)ctxt list) = default_showsl_list showsl xs"
+definition "showsl (t :: ('a,'b)actxt) = showsl_actxt' showsl showsl t"
+definition "showsl_list (xs :: ('a,'b)actxt list) = default_showsl_list showsl xs"
 instance ..
 end
 
@@ -300,7 +300,7 @@ next
     unfolding id_take_nth_drop[OF \<open>i < length ss\<close>, symmetric] ..
   have "s|_ (i#p) = u|_p" unfolding \<open>s = Fun f ss\<close> using \<open>u = ss!i\<close> by simp
   have "?E\<langle>s|_(i#p)\<rangle> = s"
-    unfolding ctxt_apply_term.simps \<open>s|_(i#p) = u|_p\<close> \<open>?ss = ss\<close> unfolding \<open>s = Fun f ss\<close> ..
+    unfolding intp_actxt.simps \<open>s|_(i#p) = u|_p\<close> \<open>?ss = ss\<close> unfolding \<open>s = Fun f ss\<close> ..
   then show ?case by best
 qed
 
@@ -498,9 +498,9 @@ next
   assume "\<sigma> = Var" then show "subst_domain \<sigma> = {}" by simp
 qed
 
-lemma subst_compose_Var[simp]: "\<sigma> \<circ>\<^sub>s Var = \<sigma>" by (simp add: subst_compose_def)
+lemma subst_compose_Var[simp]: "\<sigma> \<circ>\<^sub>s Var = \<sigma>" by (simp add: eval_subst_def)
 
-lemma Var_subst_compose[simp]: "Var \<circ>\<^sub>s \<sigma> = \<sigma>" by (simp add: subst_compose_def)
+lemma Var_subst_compose[simp]: "Var \<circ>\<^sub>s \<sigma> = \<sigma>" by (simp add: eval_subst_def)
 
 text \<open>We use the same logical constant as for the power operations on
 functions and relations, in order to share their syntax.\<close>
@@ -528,7 +528,7 @@ lemma subst_pow_mult: "((\<sigma> :: ('f,'v)subst)^^ n) ^^ m = \<sigma> ^^ (n * 
 
 lemma subst_domain_pow: "subst_domain (\<sigma> ^^ n) \<subseteq> subst_domain \<sigma>"
   unfolding subst_domain_def
-  by (induct n, auto simp: subst_compose_def)
+  by (induct n, auto simp: eval_subst_def)
 
 lemma subt_at_Cons_distr [simp]:
   assumes "i # p \<in> poss t" and "p \<noteq> []" (*avoid simplifier loop*)
@@ -778,7 +778,7 @@ proof (induct n arbitrary: t)
     assume "x \<in> \<Union>(vars_term ` (\<sigma> ^^ Suc n) ` vars_term t)"
     then obtain y u where 1: "y \<in> vars_term t" "u = (\<sigma> ^^ Suc n) y" "x \<in> vars_term u"
       by auto
-    from 1(2) have "u = \<sigma> y \<cdot> \<sigma> ^^ n" by (auto simp: subst_compose_def)
+    from 1(2) have "u = \<sigma> y \<cdot> \<sigma> ^^ n" by (auto simp: eval_subst_def)
     from 1(3)[unfolded this, unfolded vars_term_subst]
     have "x \<in> \<Union>(vars_term ` (\<sigma> ^^ n) ` vars_term (\<sigma> y))" .
     with Suc[of "\<sigma> y"] have x: "x \<in> ?R (\<sigma> y)" by auto
@@ -880,7 +880,7 @@ proof -
         fix f
         assume "f \<in> \<Union> ?L"
         then obtain x where "f \<in> funas_term ((\<sigma> ^^ Suc n) x)" by auto
-        then have "f \<in> funas_term (\<sigma> x \<cdot> \<sigma> ^^ n)" by (auto simp: subst_compose_def)
+        then have "f \<in> funas_term (\<sigma> x \<cdot> \<sigma> ^^ n)" by (auto simp: eval_subst_def)
         from this[unfolded funas_term_subst]
         show "f \<in> ?R" using Suc[of "vars_term (\<sigma> x)"]
           unfolding subst_range.simps subst_domain_def by (cases "\<sigma> x = Var x", auto)
@@ -1065,7 +1065,8 @@ proof -
 qed
 
 abbreviation "map_funs_term f \<equiv> term.map_term f (\<lambda>x. x)"
-abbreviation "map_funs_ctxt f \<equiv> ctxt.map_ctxt f (\<lambda>x. x)"
+
+abbreviation "map_funs_ctxt f \<equiv> map_ctxt f (\<lambda>x. x)"
 
 lemma funs_term_map_funs_term_id: "(\<And> f. f \<in> funs_term t \<Longrightarrow> h f = f) \<Longrightarrow> map_funs_term h t = t"
 proof (induct t)
@@ -1125,7 +1126,7 @@ qed
 
 lemma map_funs_term_ctxt_distrib [simp]:
   "map_funs_term fg (C\<langle>t\<rangle>) = (map_funs_ctxt fg C)\<langle>map_funs_term fg t\<rangle>"
-  by  (induct C) (auto)
+  by (induct C) auto
 
 text \<open>mapping function symbols (w)ith (a)rities taken into account (wa)\<close>
 
@@ -1314,7 +1315,7 @@ definition subst_fun_range :: "('f, 'v, 'w) gsubst \<Rightarrow> 'w set"
 lemma subst_variants_imp_is_Var:
   assumes "\<sigma> \<circ>\<^sub>s \<sigma>' = \<tau>" and "\<tau> \<circ>\<^sub>s \<tau>' = \<sigma>"
   shows "\<forall>x\<in>subst_fun_range \<sigma>. is_Var (\<sigma>' x)"
-  using assms by (auto simp: subst_compose_def subst_fun_range_def) (metis variants_imp_is_Var)
+  using assms by (auto simp: eval_subst_def subst_fun_range_def) (metis variants_imp_is_Var)
 
 lemma variants_imp_image_vars_term_eq:
   assumes "s \<cdot> \<sigma> = t" and "t \<cdot> \<tau> = s"
@@ -1405,7 +1406,7 @@ proof -
       fix x
       assume "x \<in> vars_term t"
       with t have x: "x \<in> V" unfolding V by auto
-      show "(\<sigma> \<circ>\<^sub>s \<tau>) x = Var x" unfolding \<sigma> \<tau> subst_compose_def
+      show "(\<sigma> \<circ>\<^sub>s \<tau>) x = Var x" unfolding \<sigma> \<tau> eval_subst_def
           eval_term.simps term.simps
         by (rule rev[OF refl x])
     qed
@@ -1632,7 +1633,7 @@ proof
     unfolding subst_restrict_def by (cases "x \<in> V") auto
 qed
 
-abbreviation "map_vars_ctxt f \<equiv> ctxt.map_ctxt (\<lambda>x. x) f"
+abbreviation "map_vars_ctxt f \<equiv> map_ctxt (\<lambda>x. x) f"
 
 lemma map_vars_term_ctxt_commute:
   "map_vars_term m (c\<langle>t\<rangle>) = (map_vars_ctxt m c)\<langle>map_vars_term m t\<rangle>"
@@ -1947,7 +1948,7 @@ lemma possc_subst_not_possc_not_poss:
 proof-
   from n obtain u where a:"p \<notin> poss C\<langle>u\<rangle>" unfolding possc_def by auto
   from possc_not_below_hole_pos[OF y] have b:"\<not> (hole_pos C <\<^sub>p p)"
-    unfolding hole_pos_subst[of C \<sigma>] by auto
+    unfolding hole_pos_subst by auto
   from n a have c:"\<not> (p \<le>\<^sub>p hole_pos C)" unfolding less_pos_def using less_eq_hole_pos_in_possc by blast
   with pos_cases b have "p \<bottom> hole_pos C" by blast
   with par_hole_pos_in_possc[OF parallel_pos_sym[OF this]] n show "p \<notin> poss (C\<langle>t\<rangle>)" by fast
@@ -2182,10 +2183,10 @@ proof
   proof (cases)
     assume "y \<in> subst_domain \<sigma>" and "x \<in> vars_term ((\<sigma> \<circ>\<^sub>s \<tau>) y)"
     moreover then obtain v where "v \<in> vars_term (\<sigma> y)"
-      and "x \<in> vars_term (\<tau> v)" by (auto simp: subst_compose_def vars_term_subst)
+      and "x \<in> vars_term (\<tau> v)" by (auto simp: eval_subst_def vars_term_subst)
     ultimately show ?thesis
       by (cases "v \<in> subst_domain \<tau>") (auto simp: range_vars_def subst_domain_def)
-  qed (auto simp: range_vars_def subst_compose_def subst_domain_def)
+  qed (auto simp: range_vars_def eval_subst_def subst_domain_def)
 qed
 
 text \<open>
@@ -2196,7 +2197,7 @@ lemma subst_idemp_iff:
   "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma> \<longleftrightarrow> subst_domain \<sigma> \<inter> range_vars \<sigma> = {}"
 proof
   assume "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma>"
-  then have "\<And>x. \<sigma> x \<cdot> \<sigma> = \<sigma> x \<cdot> Var" by simp (metis subst_compose_def)
+  then have "\<And>x. \<sigma> x \<cdot> \<sigma> = \<sigma> x \<cdot> Var" by simp (metis eval_subst_def)
   then have *: "\<And>x. \<forall>y\<in>vars_term (\<sigma> x). \<sigma> y = Var y"
     unfolding term_subst_eq_conv by simp
   { fix x y
@@ -2215,7 +2216,7 @@ next
     with * [of y x] show "\<sigma> y = Var y" by auto
   qed
   then show "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma>"
-    by (simp add: subst_compose_def term_subst_eq_conv [symmetric])
+    by (simp add: eval_subst_def term_subst_eq_conv [symmetric])
 qed
 
 definition subst_compose' :: "('f, 'v) subst \<Rightarrow> ('f, 'v) subst \<Rightarrow> ('f, 'v) subst" where
@@ -2232,15 +2233,15 @@ proof
     with assms have nmem: "x \<notin> vars_subst \<tau>" by auto
     then have nmem: "x \<notin> subst_domain \<tau>" unfolding vars_subst_def by auto
     then have id: "\<tau> x = Var x" unfolding subst_domain_def by auto
-    have "?l x = \<sigma> x \<cdot> \<tau>" unfolding subst_compose_def by simp
-    also have  "... = ?r x" unfolding subst_compose'_def subst_compose_def using True unfolding id by simp
+    have "?l x = \<sigma> x \<cdot> \<tau>" unfolding eval_subst_def by simp
+    also have  "... = ?r x" unfolding subst_compose'_def eval_subst_def using True unfolding id by simp
     finally show ?thesis .
   next
     case False
-    then have l: "?l x = \<tau> x \<cdot> Var" unfolding subst_domain_def subst_compose_def by auto
+    then have l: "?l x = \<tau> x \<cdot> Var" unfolding subst_domain_def eval_subst_def by auto
     let ?\<sigma>\<tau> = "(\<lambda> x. if x \<in> subst_domain \<sigma> then \<sigma> x \<cdot> \<tau> else Var x)"
     have r: "?r x = \<tau> x \<cdot> ?\<sigma>\<tau>"
-      unfolding subst_compose'_def subst_compose_def ..
+      unfolding subst_compose'_def eval_subst_def ..
     show "?l x = ?r x" unfolding l r
     proof (rule term_subst_eq)
       fix y
@@ -2376,7 +2377,7 @@ proof
   from this[unfolded vars_subst_def subst_range.simps]
   obtain y where "y \<in> subst_domain (\<sigma> \<circ>\<^sub>s \<tau>) \<and> (x = y \<or> x \<in> vars_term ((\<sigma> \<circ>\<^sub>s \<tau>) y))" by blast
   with subst_domain_compose[of \<sigma> \<tau>] have y: "y \<in> subst_domain \<sigma> \<union> subst_domain \<tau>" and disj:
-    "x = y \<or> (x \<noteq> y \<and> x \<in> vars_term (\<sigma> y \<cdot> \<tau>))" unfolding subst_compose_def by auto
+    "x = y \<or> (x \<noteq> y \<and> x \<in> vars_term (\<sigma> y \<cdot> \<tau>))" unfolding eval_subst_def by auto
   from disj
   show "x \<in> vars_subst \<sigma> \<union> vars_subst \<tau>"
   proof
@@ -2418,11 +2419,11 @@ proof
   show "?l z = ?r z"
   proof (cases "z = x")
     case True
-    with xx show ?thesis by (simp add: subst_compose_def)
+    with xx show ?thesis by (simp add: eval_subst_def)
   next
     case False
-    then have "?r z = \<sigma> z \<cdot> \<tau>" unfolding subst_compose_def by auto
-    also have "... = ?l z" unfolding subst_compose_def
+    then have "?r z = \<sigma> z \<cdot> \<tau>" unfolding eval_subst_def by auto
+    also have "... = ?l z" unfolding eval_subst_def
     proof (rule term_subst_eq)
       fix y
       assume "y \<in> vars_term (\<sigma> z)"
@@ -2436,7 +2437,7 @@ qed
 lemma subst_variants_imp_eq:
   assumes "\<sigma> \<circ>\<^sub>s \<sigma>' = \<tau>" and "\<tau> \<circ>\<^sub>s \<tau>' = \<sigma>"
   shows "\<And>x. \<sigma> x \<cdot> \<sigma>' = \<tau> x" "\<And>x. \<tau> x \<cdot> \<tau>' = \<sigma> x"
-  using assms by (metis subst_compose_def)+
+  using assms by (metis eval_subst_def)+
 
 lemma poss_subst_choice: assumes "p \<in> poss (t \<cdot> \<sigma>)" shows
   "p \<in> poss t \<and> is_Fun (t |_ p) \<or>
@@ -2857,7 +2858,7 @@ lemma ctxt_comp_equals:
   from Cons(3) obtain g ts where t:"t = Fun g ts" and p':"p \<in> poss (ts!i)"
     using args_poss by blast 
   from Cons(1)[OF p p'] Cons(4) show ?case 
-    unfolding s t ctxt_of_pos_term.simps ctxt_compose.simps by simp
+    unfolding s t ctxt_of_pos_term.simps by simp
 qed simp
 
 lemma ctxt_subst_comp_pos:

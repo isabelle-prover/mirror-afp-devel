@@ -250,7 +250,7 @@ next
     proof (cases "Var x \<in> \<rho> ` subst_domain \<mu>")
       case True
       hence "(rename_subst_domain_range \<rho> \<mu> \<circ>\<^sub>s \<upsilon>) x = (\<mu> \<circ>\<^sub>s \<rho> \<circ>\<^sub>s \<upsilon>) (the_inv \<rho> (Var x))"
-        by (simp add: rename_subst_domain_range_def subst_compose_def)
+        by (simp add: rename_subst_domain_range_def eval_subst_def)
       also have "\<dots> = (\<rho> \<circ>\<^sub>s \<upsilon>) (the_inv \<rho> (Var x))"
         by (simp add: \<mu>_\<rho>_\<upsilon>)
       also have "\<dots> = (\<rho> (the_inv \<rho> (Var x))) \<cdot> \<upsilon>"

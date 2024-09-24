@@ -61,7 +61,7 @@ proof -
       then obtain f args where "((f,args),\<tau>) \<in> set rem_ls" and args: "set args \<subseteq> ne" using part by auto
       with rem_ls have "((f,args),\<tau>) \<in> set Cs" by auto
       with assms have "C (f,args) = Some \<tau>" by auto
-      hence fC: "f : args \<rightarrow> \<tau> in C" by (simp add: hastype_in_ssig_def)
+      hence fC: "f : args \<rightarrow> \<tau> in C" by (simp add: fun_hastype_def)
       from args ne have "\<forall> tau. \<exists> t. tau \<in> set args \<longrightarrow> t : tau in ?TC" by auto
       from choice[OF this] obtain ts where "\<And> tau. tau \<in> set args \<Longrightarrow> ts tau : tau in ?TC" by auto
       hence "Fun f (map ts args) : \<tau> in ?TC" 
@@ -97,7 +97,7 @@ proof -
         thus False 
         proof (induct t \<tau>)
           case (Fun f ts \<tau>s \<tau>)
-          from Fun(1) have "C (f,\<tau>s) = Some \<tau>" by (simp add: hastype_in_ssig_def)
+          from Fun(1) have "C (f,\<tau>s) = Some \<tau>" by (simp add: fun_hastype_def)
           with assms(2) have mem: "((f,\<tau>s),\<tau>) \<in> set Cs" by (meson map_of_SomeD)
           from Fun(3) have \<tau>s: "set \<tau>s \<subseteq> ne" by (induct, auto)
           from rem_ls mem Fun(4) have "((f,\<tau>s),\<tau>) \<in> set rem_ls" by auto
@@ -178,7 +178,7 @@ proof (induct m_inf ls rule: compute_inf_main.induct)
       from inhabitet[rule_format, OF inCs] obtain f \<sigma>s where "(f,\<sigma>s) \<in> set cs" by (cases cs,auto )
       with inCs have "((f,\<sigma>s),\<tau>) \<in> set Cs'" unfolding Cs' by auto
       hence fC: "f : \<sigma>s \<rightarrow> \<tau> in C" using dist(2) unfolding C_Cs
-        by (meson hastype_in_ssig_def map_of_is_SomeI)
+        by (meson fun_hastype_def map_of_is_SomeI)
       hence "\<forall>\<sigma>. \<exists> t. \<sigma> \<in> set \<sigma>s \<longrightarrow> t : \<sigma> in \<T>(C,E)" using arg_types_inhabitet[rule_format, of f \<sigma>s \<tau>] by auto
       from choice[OF this] obtain t where "\<sigma> \<in> set \<sigma>s \<Longrightarrow> t \<sigma> : \<sigma> in \<T>(C,E)" for \<sigma> by auto
       hence "Fun f (map t \<sigma>s) : \<tau> in \<T>(C,E)" using list_all2_conv_all_nth 
@@ -211,7 +211,7 @@ proof (induct m_inf ls rule: compute_inf_main.induct)
         obtain \<sigma>s where f: "f : \<sigma>s \<rightarrow> \<tau> in C" and args: "ts :\<^sub>l \<sigma>s in \<T>(C,E)" by auto
         from part[simplified] asm 1(3) obtain cs where inCs: "(\<tau>,cs) \<in> set Cs" and crit: "crit (\<tau>,cs)" by auto
         {
-          from f[unfolded hastype_in_ssig_def C_Cs]
+          from f[unfolded fun_hastype_def C_Cs]
           have "map_of Cs' (f, \<sigma>s) = Some \<tau>" by auto
           hence "((f,\<sigma>s), \<tau>) \<in> set Cs'" by (metis map_of_SomeD)
           from this[unfolded Cs', simplified] obtain cs' where 2: "(\<tau>,cs') \<in> set Cs" and mem: "(f,\<sigma>s) \<in> set cs'" by auto
@@ -294,7 +294,7 @@ proof (induct m_inf ls rule: compute_inf_main.induct)
         from mem 1(2-) have "(\<tau>,cs) \<in> set Cs" by auto
         with * have "((c,\<tau>s),\<tau>) \<in> set Cs'" unfolding Cs' by force
         with dist(2) have "map_of Cs' ((c,\<tau>s)) = Some \<tau>" by simp
-        from this[folded C_Cs] have c: "c : \<tau>s \<rightarrow> \<tau> in C" unfolding hastype_in_ssig_def .
+        from this[folded C_Cs] have c: "c : \<tau>s \<rightarrow> \<tau> in C" unfolding fun_hastype_def .
         from arg_types_inhabitet this have "\<forall> \<sigma>. \<exists> t. \<sigma> \<in> set \<tau>s \<longrightarrow> t : \<sigma> in \<T>(C,E)" by auto
         from choice[OF this] obtain t where "\<And> \<sigma>. \<sigma> \<in> set \<tau>s \<Longrightarrow> t \<sigma> : \<sigma> in \<T>(C,E)" by auto
         hence list: "map t \<tau>s :\<^sub>l \<tau>s in \<T>(C,E)" by (simp add: list_all2_conv_all_nth)
@@ -380,7 +380,7 @@ proof -
         hence False using diff unfolding E
         proof induct
           case (Fun f ss \<sigma>s \<tau>)
-          from Fun(1,4) show False unfolding hastype_in_ssig_def by auto
+          from Fun(1,4) show False unfolding fun_hastype_def by auto
         qed auto
       }
       hence id: "{t. t : \<tau> in \<T>(C,E)} = {}" by auto

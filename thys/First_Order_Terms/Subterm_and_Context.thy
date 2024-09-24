@@ -367,19 +367,79 @@ lemma subterm_induct:
 
 subsection \<open>Contexts\<close>
 
+text \<open>An \<^emph>\<open>abstract context\<close> is ... \<close>
+
+datatype ('f,'a) actxt =
+  Hole ("\<box>") | More 'f "'a list" "('f,'a) actxt" "'a list"
+
 text \<open>A \<^emph>\<open>context\<close> is a term containing exactly one \<^emph>\<open>hole\<close>.\<close>
-datatype (funs_ctxt: 'f, vars_ctxt: 'v) ctxt =
-  Hole ("\<box>") |
-  More 'f "('f, 'v) term list" "('f, 'v) ctxt" "('f, 'v) term list"
+
+type_synonym ('f,'v) ctxt = "('f,('f,'v) term) actxt"
+
+fun map_ctxt where
+  "map_ctxt f v \<box> = \<box>"
+| "map_ctxt f v (More g ls C rs) =
+  More (f g) (map (map_term f v) ls) (map_ctxt f v C) (map (map_term f v) rs)"
+
+fun vars_ctxt where
+  "vars_ctxt \<box> = {}"
+| "vars_ctxt (More f ls C rs) =
+  \<Union>(vars_term ` set ls) \<union> vars_ctxt C \<union> \<Union>(vars_term ` set rs)"
+
+fun funs_ctxt where
+  "funs_ctxt \<box> = {}"
+| "funs_ctxt (More f ls C rs) =
+  insert f (\<Union>(funs_term ` set ls) \<union> funs_ctxt C \<union> \<Union>(funs_term ` set rs))"
+
+text \<open>
+  Interpretation of abstract context.
+\<close>
+
+primrec intp_actxt ("(1_\<langle>_;/_\<rangle>)"[999,0,0]100) where
+  "I\<langle>Hole;a\<rangle> = a"
+| "I\<langle>More f ls C rs;a\<rangle> = I f (ls @ I\<langle>C;a\<rangle> # rs)"
 
 text \<open>
   We also say that we apply a context~@{term C} to a term~@{term t} when we
   replace the hole in a @{term C} by @{term t}.
 \<close>
-fun ctxt_apply_term :: "('f, 'v) ctxt \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term" ("_\<langle>_\<rangle>" [1000, 0] 1000)
-  where
-    "\<box>\<langle>s\<rangle> = s" |
-    "(More f ss1 C ss2)\<langle>s\<rangle> = Fun f (ss1 @ C\<langle>s\<rangle> # ss2)"
+
+abbreviation ctxt_apply_term ("_\<langle>_\<rangle>" [1000, 0] 1000) where
+  "C\<langle>s\<rangle> \<equiv> Fun\<langle>C;s\<rangle>"
+
+primrec actxt_compose (infixl "\<circ>\<^sub>c" 75) where
+  "Hole \<circ>\<^sub>c D = D"
+| "More f ls C rs \<circ>\<^sub>c D = More f ls (C \<circ>\<^sub>c D) rs"
+
+lemma intp_actxt_compose: "I\<langle>C \<circ>\<^sub>c D;a\<rangle> = I\<langle>C;I\<langle>D;a\<rangle>\<rangle>"
+  by (induct C, auto)
+
+thm intp_actxt_compose[of Fun]
+abbreviation "map_args_actxt \<equiv> map_actxt (\<lambda>x. x)"
+
+abbreviation eval_ctxt ("(1_\<lbrakk>_\<rbrakk>\<^sub>c/ _)"[999,1,100]100) where
+  "I\<lbrakk>C\<rbrakk>\<^sub>c \<alpha> \<equiv> map_args_actxt (\<lambda>t. I\<lbrakk>t\<rbrakk>\<alpha>) C"
+
+lemma eval_ctxt_simps:
+  "I\<lbrakk>\<box>\<rbrakk>\<^sub>c \<alpha> = \<box>"
+  "I\<lbrakk>More f ls C rs\<rbrakk>\<^sub>c \<alpha> = More f [I\<lbrakk>l\<rbrakk>\<alpha>. l \<leftarrow> ls] (I\<lbrakk>C\<rbrakk>\<^sub>c \<alpha>) [I\<lbrakk>r\<rbrakk>\<alpha>. r \<leftarrow> rs]"
+  using actxt.map.
+
+lemma eval_ctxt: "I\<lbrakk>C\<langle>s\<rangle>\<rbrakk>\<alpha> = I\<langle>I\<lbrakk>C\<rbrakk>\<^sub>c \<alpha>; I\<lbrakk>s\<rbrakk>\<alpha>\<rangle>"
+  by (induct C, auto)
+
+text \<open>Applying substitutions to contexts.\<close>
+
+abbreviation subst_apply_actxt (infixl "\<cdot>\<^sub>c" 67) where
+  "C \<cdot>\<^sub>c \<theta> \<equiv> map_args_actxt (\<lambda>t. t \<cdot> \<theta>) C"
+
+lemma apply_ctxt_Var[simp]: "C \<cdot>\<^sub>c Var = C"
+  by (simp add: actxt.map_id0[unfolded id_def])
+
+lemma eval_subst_ctxt: "I\<lbrakk>C \<cdot>\<^sub>c \<theta>\<rbrakk>\<^sub>c \<rho> = I\<lbrakk>C\<rbrakk>\<^sub>c I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<rho>"
+  apply (induct C) by (auto simp: eval_subst[symmetric])
+
+lemmas ctxt_subst_subst = eval_subst_ctxt[of Fun]
 
 lemma ctxt_eq [simp]:
   "(C\<langle>s\<rangle> = C\<langle>t\<rangle>) = (s = t)" by (induct C) auto
@@ -390,47 +450,40 @@ lemma size_ctxt: "size t \<le> size (C\<langle>t\<rangle>)"
 lemma size_ne_ctxt: "C \<noteq> \<box> \<Longrightarrow> size t < size (C\<langle>t\<rangle>)"
   by (induct C) force+
 
-fun ctxt_compose :: "('f, 'v) ctxt \<Rightarrow> ('f, 'v) ctxt \<Rightarrow> ('f, 'v) ctxt" (infixl "\<circ>\<^sub>c" 75)
-  where
-    "\<box> \<circ>\<^sub>c D = D" |
-    "(More f ss1 C ss2) \<circ>\<^sub>c D = More f ss1 (C \<circ>\<^sub>c D) ss2"
-
 interpretation ctxt_monoid_mult: monoid_mult "\<box>" "(\<circ>\<^sub>c)"
 proof
-  fix C D E :: "('f, 'v) ctxt"
+  fix C D E :: "('f, 'b) actxt"
   show "C \<circ>\<^sub>c D \<circ>\<^sub>c E = C \<circ>\<^sub>c (D \<circ>\<^sub>c E)" by (induct C) simp_all
   show "\<box> \<circ>\<^sub>c C = C" by simp
   show "C \<circ>\<^sub>c \<box> = C" by (induct C) simp_all
 qed
 
-instantiation ctxt :: (type, type) monoid_mult
+instantiation actxt :: (type, type) monoid_mult
 begin
 definition [simp]: "1 = \<box>"
 definition [simp]: "(*) = (\<circ>\<^sub>c)"
 instance by (intro_classes) (simp_all add: ac_simps)
 end
 
-lemma ctxt_ctxt_compose [simp]: "(C \<circ>\<^sub>c D)\<langle>t\<rangle> = C\<langle>D\<langle>t\<rangle>\<rangle>" by (induct C) simp_all
+lemmas ctxt_ctxt_compose[simp] = intp_actxt_compose[of Fun]
 
 lemmas ctxt_ctxt = ctxt_ctxt_compose [symmetric]
 
-text \<open>Applying substitutions to contexts.\<close>
-fun subst_apply_ctxt :: "('f, 'v) ctxt \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) ctxt" (infixl "\<cdot>\<^sub>c" 67)
-  where
-    "\<box> \<cdot>\<^sub>c \<sigma> = \<box>" |
-    "(More f ss1 D ss2) \<cdot>\<^sub>c \<sigma> = More f (map (\<lambda>t. t \<cdot> \<sigma>) ss1) (D \<cdot>\<^sub>c \<sigma>) (map (\<lambda>t. t \<cdot> \<sigma>) ss2)"
+lemmas subst_apply_term_ctxt_apply_distrib [simp] = eval_ctxt[of Fun]
 
-lemma subst_apply_term_ctxt_apply_distrib [simp]:
-  "C\<langle>t\<rangle> \<cdot> \<mu> = (C \<cdot>\<^sub>c \<mu>)\<langle>t \<cdot> \<mu>\<rangle>"
+lemma eval_ctxt_compose_distrib:
+  "I\<lbrakk>C \<circ>\<^sub>c D\<rbrakk>\<^sub>c \<sigma> = (I\<lbrakk>C\<rbrakk>\<^sub>c \<sigma>) \<circ>\<^sub>c (I\<lbrakk>D\<rbrakk>\<^sub>c \<sigma>)"
   by (induct C) auto
 
-lemma subst_compose_ctxt_compose_distrib [simp]:
-  "(C \<circ>\<^sub>c D) \<cdot>\<^sub>c \<sigma> = (C \<cdot>\<^sub>c \<sigma>) \<circ>\<^sub>c (D \<cdot>\<^sub>c \<sigma>)"
-  by (induct C) auto
+lemmas subst_compose_ctxt_compose_distrib [simp] =
+  eval_ctxt_compose_distrib[of Fun]
 
-lemma ctxt_compose_subst_compose_distrib [simp]:
-  "C \<cdot>\<^sub>c (\<sigma> \<circ>\<^sub>s \<tau>) = (C \<cdot>\<^sub>c \<sigma>) \<cdot>\<^sub>c \<tau>"
-  by (induct C) (auto)
+lemma eval_ctxt_eval_subst:
+  "I\<lbrakk>C\<rbrakk>\<^sub>c (I\<lbrakk>\<sigma>\<rbrakk>\<^sub>s \<tau>) = I\<lbrakk>C \<cdot>\<^sub>c \<sigma>\<rbrakk>\<^sub>c \<tau>"
+  by (induct C) (auto simp: eval_ctxt eval_subst eval_ctxt_compose_distrib)
+
+lemmas ctxt_compose_subst_compose_distrib [simp] =
+  eval_ctxt_eval_subst[of Fun]
 
 
 subsection \<open>The Connection between Contexts and the Superterm Relation\<close>

@@ -18,7 +18,7 @@ derive (eq) ceq FSet_Lex_Wrapper
 derive (no) cenum ta_rule
 derive (no) cenum FSet_Lex_Wrapper
 derive ccompare ta_rule
-derive (eq) ceq "term" ctxt
+derive (eq) ceq "term" actxt
 derive (no) cenum "term"
 derive (rbt) set_impl fset FSet_Lex_Wrapper ta_rule "term"
 

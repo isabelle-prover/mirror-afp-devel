@@ -301,7 +301,7 @@ proof
   fix x
   show "((Var \<circ> g) \<circ>\<^sub>s (Var \<circ> inv g)) x = Var x"
     using assms
-    apply (auto simp: subst_compose_def)
+    apply (auto simp: eval_subst_def)
     by (metis UNIV_I bij_is_inj inv_into_f_f)
 qed
 
