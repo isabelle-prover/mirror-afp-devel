@@ -17,7 +17,7 @@ inductive_set (in encoding) indRelR
   encR: "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelR"
 
 abbreviation (in encoding) indRelRinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>R _" [75, 75] 80)
+    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>R _\<close> [75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>R Q \<equiv> (P, Q) \<in> indRelR"
 
@@ -30,7 +30,7 @@ inductive_set (in encoding) indRelRPO
   trans:  "\<lbrakk>(P, Q) \<in> indRelRPO; (Q, R) \<in> indRelRPO\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelRPO"
 
 abbreviation (in encoding) indRelRPOinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R _" [75, 75] 80)
+    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R _\<close> [75, 75] 80)
   where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R Q \<equiv> (P, Q) \<in> indRelRPO"
 
@@ -508,7 +508,7 @@ inductive_set (in encoding) indRelL
   encL: "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelL"
 
 abbreviation (in encoding) indRelLinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>L _" [75, 75] 80)
+    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>L _\<close> [75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>L Q \<equiv> (P, Q) \<in> indRelL"
 
@@ -521,7 +521,7 @@ inductive_set (in encoding) indRelLPO
   trans:  "\<lbrakk>(P, Q) \<in> indRelLPO; (Q, R) \<in> indRelLPO\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelLPO"
 
 abbreviation (in encoding) indRelLPOinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L _" [75, 75] 80)
+    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L _\<close> [75, 75] 80)
   where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L Q \<equiv> (P, Q) \<in> indRelLPO"
 
@@ -1006,7 +1006,7 @@ inductive_set (in encoding) indRel
   encL: "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRel"
 
 abbreviation (in encoding) indRelInfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<R>\<lbrakk>\<cdot>\<rbrakk> _" [75, 75] 80)
+    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk> _\<close> [75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk> Q \<equiv> (P, Q) \<in> indRel"
 
@@ -1024,7 +1024,7 @@ inductive_set (in encoding) indRelEQ
   trans:  "\<lbrakk>(P, Q) \<in> indRelEQ; (Q, R) \<in> indRelEQ\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelEQ"
 
 abbreviation (in encoding) indRelEQinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<sim>\<lbrakk>\<cdot>\<rbrakk> _" [75, 75] 80)
+    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk> _\<close> [75, 75] 80)
   where
   "P \<sim>\<lbrakk>\<cdot>\<rbrakk> Q \<equiv> (P, Q) \<in> indRelEQ"
 
@@ -1382,7 +1382,7 @@ inductive_set (in encoding) indRelRT
 
 abbreviation (in encoding) indRelRTinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>RT<_> _" [75, 75, 75] 80)
+       (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>RT<_> _\<close> [75, 75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q \<equiv> (P, Q) \<in> indRelRT TRel"
 
@@ -1397,7 +1397,7 @@ inductive_set (in encoding) indRelRTPO
 
 abbreviation (in encoding) indRelRTPOinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       ("_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<_> _" [75, 75, 75] 80)
+       (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<_> _\<close> [75, 75, 75] 80)
   where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q \<equiv> (P, Q) \<in> indRelRTPO TRel"
 
@@ -1634,7 +1634,7 @@ inductive_set (in encoding) indRelLT
 
 abbreviation (in encoding) indRelLTinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>LT<_> _" [75, 75, 75] 80)
+       (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>LT<_> _\<close> [75, 75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> Q \<equiv> (P, Q) \<in> indRelLT TRel"
 
@@ -1649,7 +1649,7 @@ inductive_set (in encoding) indRelLTPO
 
 abbreviation (in encoding) indRelLTPOinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       ("_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<_> _" [75, 75, 75] 80)
+       (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<_> _\<close> [75, 75, 75] 80)
   where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> Q \<equiv> (P, Q) \<in> indRelLTPO TRel"
 
@@ -1735,7 +1735,7 @@ inductive_set (in encoding) indRelT
 
 abbreviation (in encoding) indRelTinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>T<_> _" [75, 75, 75] 80)
+       (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>T<_> _\<close> [75, 75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q \<equiv> (P, Q) \<in> indRelT TRel"
 
@@ -1764,7 +1764,7 @@ inductive_set (in encoding) indRelTEQ
 
 abbreviation (in encoding) indRelTEQinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       ("_ \<sim>\<lbrakk>\<cdot>\<rbrakk>T<_> _" [75, 75, 75] 80)
+       (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk>T<_> _\<close> [75, 75, 75] 80)
   where
   "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q \<equiv> (P, Q) \<in> indRelTEQ TRel"
 
@@ -4049,7 +4049,7 @@ inductive_set (in encoding) indRelRST
 
 abbreviation (in encoding) indRelRSTinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _" [75, 75, 75, 75] 80)
+        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelRST SRel TRel"
 
@@ -4067,7 +4067,7 @@ inductive_set (in encoding) indRelRSTPO
 
 abbreviation (in encoding) indRelRSTPOinfix ::
     "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-     \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _" [75, 75, 75, 75] 80)
+     \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelRSTPO SRel TRel"
 
@@ -4173,7 +4173,7 @@ inductive_set (in encoding) indRelLST
 
 abbreviation (in encoding) indRelLSTinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<R>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _" [75, 75, 75, 75] 80)
+        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelLST SRel TRel"
 
@@ -4191,7 +4191,7 @@ inductive_set (in encoding) indRelLSTPO
 
 abbreviation (in encoding) indRelLSTPOinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _" [75, 75, 75, 75] 80)
+        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelLSTPO SRel TRel"
 
@@ -4298,7 +4298,7 @@ inductive_set (in encoding) indRelST
 
 abbreviation (in encoding) indRelSTinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<R>\<lbrakk>\<cdot>\<rbrakk><_,_> _" [75, 75, 75, 75] 80)
+        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk><_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q \<equiv> (P, Q) \<in> indRelST SRel TRel"
 
@@ -4351,7 +4351,7 @@ inductive_set (in encoding) indRelSTEQ
 
 abbreviation (in encoding) indRelSTEQinfix
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<sim>\<lbrakk>\<cdot>\<rbrakk><_,_> _" [75, 75, 75, 75] 80)
+        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk><_,_> _\<close> [75, 75, 75, 75] 80)
   where
   "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q \<equiv> (P, Q) \<in> indRelSTEQ SRel TRel"
 

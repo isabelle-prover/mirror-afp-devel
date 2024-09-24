@@ -200,7 +200,7 @@ definition
                \<Rightarrow> ip
                \<Rightarrow> ('s2, 'm seq_action) automaton
                \<Rightarrow> ((ip \<Rightarrow> 's) \<times> 's1 \<times> 's2, 'm seq_action) automaton"
-  ("(_ \<langle>\<langle>\<^bsub>_\<^esub> _)" [102, 0, 103] 102)
+  (\<open>(_ \<langle>\<langle>\<^bsub>_\<^esub> _)\<close> [102, 0, 103] 102)
 where
   "s \<langle>\<langle>\<^bsub>i\<^esub> t \<equiv> \<lparr> init = extg ` (init s \<times> init t), trans = oparp_sos i (trans s) (trans t) \<rparr>"
 
@@ -287,7 +287,7 @@ definition
                  \<Rightarrow> ((ip \<Rightarrow> 's) \<times> 'l, 'm seq_action) automaton
                  \<Rightarrow> ip set
                  \<Rightarrow> ((ip \<Rightarrow> 's) \<times> 'l net_state, 'm node_action) automaton"
-    ("(\<langle>_ : (_) : _\<rangle>\<^sub>o)" [0, 0, 0] 104)
+    (\<open>(\<langle>_ : (_) : _\<rangle>\<^sub>o)\<close> [0, 0, 0] 104)
 where
   "\<langle>i : onp : R\<^sub>i\<rangle>\<^sub>o \<equiv> \<lparr> init = {(\<sigma>, NodeS i s R\<^sub>i)|\<sigma> s. (\<sigma>, s) \<in> init onp},
                       trans = onode_sos (trans onp) \<rparr>"

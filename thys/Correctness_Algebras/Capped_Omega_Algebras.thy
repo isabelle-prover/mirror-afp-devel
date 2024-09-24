@@ -12,7 +12,7 @@ imports Omega_Algebras
 begin
 
 class capped_omega =
-  fixes capped_omega :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("_\<^sup>\<omega>\<^sub>_" [100,100] 100)
+  fixes capped_omega :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_\<^sup>\<omega>\<^sub>_\<close> [100,100] 100)
 
 class capped_omega_algebra = bounded_left_zero_kleene_algebra + bounded_distrib_lattice + capped_omega +
   assumes capped_omega_unfold: "y\<^sup>\<omega>\<^sub>v = y * y\<^sup>\<omega>\<^sub>v \<sqinter> v"
@@ -21,7 +21,7 @@ class capped_omega_algebra = bounded_left_zero_kleene_algebra + bounded_distrib_
 text \<open>AACP Theorem 6.1\<close>
 
 notation
-  top ("\<top>")
+  top (\<open>\<top>\<close>)
 
 sublocale capped_omega_algebra < capped: bounded_left_zero_omega_algebra where omega = "(\<lambda>y . y\<^sup>\<omega>\<^sub>\<top>)"
   apply unfold_locales

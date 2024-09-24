@@ -314,7 +314,7 @@ qed
 
 subsubsection \<open>\<open>diff_list\<close> and \<open>insert_list\<close>\<close>
 
-definition diff_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl "--" 65)
+definition diff_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl \<open>--\<close> 65)
   where "diff_list xs ys = fold removeAll ys xs"
 
 lemma set_diff_list: "set (xs -- ys) = set xs - set ys"

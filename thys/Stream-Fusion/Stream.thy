@@ -122,7 +122,7 @@ declare stream.simps [simp del]
 subsection \<open>Bisimilarity relation on streams\<close>
 
 definition
-  bisimilar :: "('a, 's) Stream \<Rightarrow> ('a, 't) Stream \<Rightarrow> bool" (infix "\<approx>" 50)
+  bisimilar :: "('a, 's) Stream \<Rightarrow> ('a, 't) Stream \<Rightarrow> bool" (infix \<open>\<approx>\<close> 50)
 where
   "a \<approx> b \<longleftrightarrow> unstream\<cdot>a = unstream\<cdot>b \<and> a \<noteq> \<bottom> \<and> b \<noteq> \<bottom>"
 

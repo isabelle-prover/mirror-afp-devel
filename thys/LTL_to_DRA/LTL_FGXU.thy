@@ -14,21 +14,21 @@ text \<open>Inspired/Based on schimpf/LTL\<close>
 subsection \<open>Syntax\<close>
 
 datatype (vars: 'a) ltl  =
-    LTLTrue                       ("true")
-  | LTLFalse                      ("false")
-  | LTLProp 'a                    ("p'(_')")
-  | LTLPropNeg 'a                 ("np'(_')" [86] 85)
-  | LTLAnd "'a ltl" "'a ltl"      ("_ and _" [83,83] 82)
-  | LTLOr "'a ltl" "'a ltl"       ("_ or _" [82,82] 81)
-  | LTLNext "'a ltl"              ("X _" [88] 87)
-  | LTLGlobal (theG: "'a ltl")    ("G _" [85] 84)
-  | LTLFinal "'a ltl"             ("F _" [84] 83)
-  | LTLUntil "'a ltl" "'a ltl"    ("_ U _" [87,87] 86)
+    LTLTrue                       (\<open>true\<close>)
+  | LTLFalse                      (\<open>false\<close>)
+  | LTLProp 'a                    (\<open>p'(_')\<close>)
+  | LTLPropNeg 'a                 (\<open>np'(_')\<close> [86] 85)
+  | LTLAnd "'a ltl" "'a ltl"      (\<open>_ and _\<close> [83,83] 82)
+  | LTLOr "'a ltl" "'a ltl"       (\<open>_ or _\<close> [82,82] 81)
+  | LTLNext "'a ltl"              (\<open>X _\<close> [88] 87)
+  | LTLGlobal (theG: "'a ltl")    (\<open>G _\<close> [85] 84)
+  | LTLFinal "'a ltl"             (\<open>F _\<close> [84] 83)
+  | LTLUntil "'a ltl" "'a ltl"    (\<open>_ U _\<close> [87,87] 86)
 
 
 subsection \<open>Semantics\<close>
 
-fun ltl_semantics :: "['a set word, 'a ltl] \<Rightarrow> bool" (infix "\<Turnstile>" 80)
+fun ltl_semantics :: "['a set word, 'a ltl] \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 80)
 where
   "w \<Turnstile> true = True"
 | "w \<Turnstile> false = False"
@@ -41,7 +41,7 @@ where
 | "w \<Turnstile> F \<phi> = (\<exists>k. suffix k w \<Turnstile> \<phi>)"
 | "w \<Turnstile> \<phi> U \<psi> = (\<exists>k. suffix k w \<Turnstile> \<psi> \<and> (\<forall>j < k. suffix j w \<Turnstile> \<phi>))"
 
-fun ltl_prop_entailment :: "['a ltl set, 'a ltl] \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>P" 80)
+fun ltl_prop_entailment :: "['a ltl set, 'a ltl] \<Rightarrow> bool" (infix \<open>\<Turnstile>\<^sub>P\<close> 80)
 where
   "\<A> \<Turnstile>\<^sub>P true = True"
 | "\<A> \<Turnstile>\<^sub>P false = False"
@@ -344,7 +344,7 @@ subsubsection \<open>G-Subformulae\<close>
 
 text \<open>Notation for paper: mathds{G}\<close>
 
-fun G_nested_propos :: "'a ltl \<Rightarrow>'a ltl set" ("\<^bold>G")
+fun G_nested_propos :: "'a ltl \<Rightarrow>'a ltl set" (\<open>\<^bold>G\<close>)
 where
   "\<^bold>G (\<phi> and \<psi>) = \<^bold>G \<phi> \<union> \<^bold>G \<psi>"
 | "\<^bold>G (\<phi> or \<psi>) = \<^bold>G \<phi> \<union> \<^bold>G \<psi>"
@@ -387,11 +387,11 @@ lemma \<G>_properties:
 
 subsection \<open>Propositional Implication and Equivalence\<close>
 
-definition ltl_prop_implies :: "['a ltl, 'a ltl] \<Rightarrow> bool" (infix "\<longrightarrow>\<^sub>P" 75)
+definition ltl_prop_implies :: "['a ltl, 'a ltl] \<Rightarrow> bool" (infix \<open>\<longrightarrow>\<^sub>P\<close> 75)
 where
   "\<phi> \<longrightarrow>\<^sub>P \<psi> \<equiv> \<forall>\<A>. \<A> \<Turnstile>\<^sub>P \<phi> \<longrightarrow> \<A> \<Turnstile>\<^sub>P \<psi>"
 
-definition ltl_prop_equiv :: "['a ltl, 'a ltl] \<Rightarrow> bool" (infix "\<equiv>\<^sub>P" 75)
+definition ltl_prop_equiv :: "['a ltl, 'a ltl] \<Rightarrow> bool" (infix \<open>\<equiv>\<^sub>P\<close> 75)
 where
   "\<phi> \<equiv>\<^sub>P \<psi> \<equiv> \<forall>\<A>. \<A> \<Turnstile>\<^sub>P \<phi> \<longleftrightarrow> \<A> \<Turnstile>\<^sub>P \<psi>"
 
@@ -431,10 +431,10 @@ end
 lemma ltl\<^sub>P_abs_rep: "Abs (Rep \<phi>) = \<phi>"
   by (meson Quotient3_abs_rep Quotient3_ltl_prop_equiv_quotient)
 
-lift_definition ltl_prop_entails_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<Turnstile>\<^sub>P _") is "(\<Turnstile>\<^sub>P)"
+lift_definition ltl_prop_entails_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" (\<open>_ \<up>\<Turnstile>\<^sub>P _\<close>) is "(\<Turnstile>\<^sub>P)"
   by (simp add: ltl_prop_equiv_def)
 
-lift_definition ltl_prop_implies_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<longrightarrow>\<^sub>P _") is "(\<longrightarrow>\<^sub>P)"
+lift_definition ltl_prop_implies_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" (\<open>_ \<up>\<longrightarrow>\<^sub>P _\<close>) is "(\<longrightarrow>\<^sub>P)"
   by (simp add: ltl_prop_equiv_def ltl_prop_implies_def)
 
 subsubsection \<open>Propositional Equivalence implies LTL Equivalence\<close>
@@ -540,10 +540,10 @@ lemma And_append:
 
 subsubsection \<open>Lifted Variant\<close>
 
-lift_definition and_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("_ \<up>and _") is "\<lambda>x y. x and y"
+lift_definition and_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" (\<open>_ \<up>and _\<close>) is "\<lambda>x y. x and y"
   unfolding ltl_prop_equiv_def by simp
 
-fun And_abs :: "'a ltl\<^sub>P list \<Rightarrow> 'a ltl\<^sub>P" ("\<up>And")
+fun And_abs :: "'a ltl\<^sub>P list \<Rightarrow> 'a ltl\<^sub>P" (\<open>\<up>And\<close>)
 where
   "\<up>And xs = foldl and_abs (Abs true) xs"
 
@@ -671,7 +671,7 @@ lemma eval\<^sub>G_respectfulness_generalized:
   "(\<And>\<A>. (\<And>x. x \<in> S \<Longrightarrow> \<A> \<Turnstile>\<^sub>P x) \<Longrightarrow> \<A> \<Turnstile>\<^sub>P y) \<Longrightarrow> (\<And>x. x \<in> S \<Longrightarrow> \<A> \<Turnstile>\<^sub>P eval\<^sub>G P x) \<Longrightarrow> \<A> \<Turnstile>\<^sub>P eval\<^sub>G P y"
   using subst_respects_ltl_prop_entailment_generalized[of S y \<A>] eval\<^sub>G_subst[of P] by metis
 
-lift_definition eval\<^sub>G_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>eval\<^sub>G") is eval\<^sub>G
+lift_definition eval\<^sub>G_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" (\<open>\<up>eval\<^sub>G\<close>) is eval\<^sub>G
   by (insert eval\<^sub>G_respectfulness(2))
 
 subsection \<open>Finite Quotient Set\<close>

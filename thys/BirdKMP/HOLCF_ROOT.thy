@@ -116,7 +116,7 @@ by (clarsimp simp: cfun_eq_iff prod_cont_iff)
 definition convol :: "('a::cpo \<rightarrow> 'b::cpo) \<rightarrow> ('a \<rightarrow> 'c::cpo) \<rightarrow> 'a \<rightarrow> 'b \<times> 'c" where
   "convol = (\<Lambda> f g x. (f\<cdot>x, g\<cdot>x))"
 
-abbreviation convol_syn :: "('a::cpo \<rightarrow> 'b::cpo) \<Rightarrow> ('a \<rightarrow> 'c::cpo) \<Rightarrow> 'a \<rightarrow> 'b \<times> 'c" (infix "&&" 65) where
+abbreviation convol_syn :: "('a::cpo \<rightarrow> 'b::cpo) \<Rightarrow> ('a \<rightarrow> 'c::cpo) \<Rightarrow> 'a \<rightarrow> 'b \<times> 'c" (infix \<open>&&\<close> 65) where
   "f && g \<equiv> convol\<cdot>f\<cdot>g"
 
 lemma convol_strict[simp]:
@@ -129,7 +129,7 @@ unfolding convol_def by simp
 definition map_prod :: "('a::cpo \<rightarrow> 'c::cpo) \<rightarrow> ('b::cpo \<rightarrow> 'd) \<rightarrow> 'a \<times> 'b \<rightarrow> 'c \<times> 'd" where
   "map_prod = (\<Lambda> f g (x, y). (f\<cdot>x, g\<cdot>y))"
 
-abbreviation map_prod_syn :: "('a \<rightarrow> 'c) \<Rightarrow> ('b \<rightarrow> 'd) \<Rightarrow> 'a \<times> 'b \<rightarrow> 'c \<times> 'd" (infix "**" 65) where
+abbreviation map_prod_syn :: "('a \<rightarrow> 'c) \<Rightarrow> ('b \<rightarrow> 'd) \<Rightarrow> 'a \<times> 'b \<rightarrow> 'c \<times> 'd" (infix \<open>**\<close> 65) where
   "f ** g \<equiv> map_prod\<cdot>f\<cdot>g"
 
 lemma map_prod_cfcomp[simp]: "(f ** m) oo (g ** n) = (f oo g) ** (m oo n)"
@@ -253,12 +253,12 @@ definition
 nonterminal recbinds and recbindt and recbind
 
 syntax
-  "_recbind"  :: "logic \<Rightarrow> logic \<Rightarrow> recbind"         ("(2_ =/ _)" 10)
-  ""          :: "recbind \<Rightarrow> recbindt"               ("_")
-  "_recbindt" :: "recbind \<Rightarrow> recbindt \<Rightarrow> recbindt"   ("_,/ _")
-  ""          :: "recbindt \<Rightarrow> recbinds"              ("_")
-  "_recbinds" :: "recbindt \<Rightarrow> recbinds \<Rightarrow> recbinds"  ("_;/ _")
-  "_Letrec"   :: "recbinds \<Rightarrow> logic \<Rightarrow> logic"        ("(Letrec (_)/ in (_))" 10)
+  "_recbind"  :: "logic \<Rightarrow> logic \<Rightarrow> recbind"         (\<open>(2_ =/ _)\<close> 10)
+  ""          :: "recbind \<Rightarrow> recbindt"               (\<open>_\<close>)
+  "_recbindt" :: "recbind \<Rightarrow> recbindt \<Rightarrow> recbindt"   (\<open>_,/ _\<close>)
+  ""          :: "recbindt \<Rightarrow> recbinds"              (\<open>_\<close>)
+  "_recbinds" :: "recbindt \<Rightarrow> recbinds \<Rightarrow> recbinds"  (\<open>_;/ _\<close>)
+  "_Letrec"   :: "recbinds \<Rightarrow> logic \<Rightarrow> logic"        (\<open>(Letrec (_)/ in (_))\<close> 10)
 
 syntax_consts
   "_recbind" "_recbindt" "_recbinds" "_Letrec" == CLetrec

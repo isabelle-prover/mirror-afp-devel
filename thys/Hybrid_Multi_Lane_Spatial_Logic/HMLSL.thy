@@ -48,35 +48,35 @@ text\<open>
 The first-order operators are direct translations into HOL operators.
 \<close>
 
-abbreviation mtrue  :: "\<sigma>" ("\<^bold>\<top>")
+abbreviation mtrue  :: "\<sigma>" (\<open>\<^bold>\<top>\<close>)
   where "\<^bold>\<top> \<equiv> \<lambda> ts w. True" 
-abbreviation mfalse :: "\<sigma>" ("\<^bold>\<bottom>") 
+abbreviation mfalse :: "\<sigma>" (\<open>\<^bold>\<bottom>\<close>) 
   where "\<^bold>\<bottom> \<equiv> \<lambda> ts w. False"   
-abbreviation mnot   :: "\<sigma>\<Rightarrow>\<sigma>" ("\<^bold>\<not>_"[52]53)
+abbreviation mnot   :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>\<^bold>\<not>_\<close>[52]53)
   where "\<^bold>\<not>\<phi> \<equiv> \<lambda> ts w. \<not>\<phi>(ts)(w)" 
-abbreviation mnegpred :: "(cars\<Rightarrow>\<sigma>)\<Rightarrow>(cars\<Rightarrow>\<sigma>)" ("\<^sup>\<not>_"[52]53) 
+abbreviation mnegpred :: "(cars\<Rightarrow>\<sigma>)\<Rightarrow>(cars\<Rightarrow>\<sigma>)" (\<open>\<^sup>\<not>_\<close>[52]53) 
   where "\<^sup>\<not>\<Phi> \<equiv> \<lambda>x.\<lambda> ts w. \<not>\<Phi>(x)(ts)(w)"   
-abbreviation mand   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<and>"51)
+abbreviation mand   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<and>\<close>51)
   where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda> ts w. \<phi>(ts)(w)\<and>\<psi>(ts)(w)"   
-abbreviation mor    :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infix "\<^bold>\<or>"50 )
+abbreviation mor    :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infix \<open>\<^bold>\<or>\<close>50 )
   where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda> ts w. \<phi>(ts)(w)\<or>\<psi>(ts)(w)"   
-abbreviation mimp   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<rightarrow>"49) 
+abbreviation mimp   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<rightarrow>\<close>49) 
   where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda> ts w. \<phi>(ts)(w)\<longrightarrow>\<psi>(ts)(w)"  
-abbreviation mequ   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<leftrightarrow>"48)
+abbreviation mequ   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<leftrightarrow>\<close>48)
   where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda> ts w. \<phi>(ts)(w)\<longleftrightarrow>\<psi>(ts)(w)"  
-abbreviation mforall   :: "('a\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" ("\<^bold>\<forall>")      
+abbreviation mforall   :: "('a\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" (\<open>\<^bold>\<forall>\<close>)      
   where "\<^bold>\<forall>\<Phi> \<equiv> \<lambda> ts w.\<forall>x. \<Phi>(x)(ts)(w)"
-abbreviation mforallB  :: "('a\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" (binder"\<^bold>\<forall>"[8]9)
+abbreviation mforallB  :: "('a\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" (binder\<open>\<^bold>\<forall>\<close>[8]9)
   where "\<^bold>\<forall>x. \<phi>(x) \<equiv> \<^bold>\<forall>\<phi>"   
-abbreviation mexists   :: "('a\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" ("\<^bold>\<exists>") 
+abbreviation mexists   :: "('a\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" (\<open>\<^bold>\<exists>\<close>) 
   where "\<^bold>\<exists>\<Phi> \<equiv> \<lambda> ts w.\<exists>x. \<Phi>(x)(ts)(w)"
-abbreviation mexistsB  :: "(('a)\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" (binder"\<^bold>\<exists>"[8]9)
+abbreviation mexistsB  :: "(('a)\<Rightarrow>\<sigma>)\<Rightarrow>\<sigma>" (binder\<open>\<^bold>\<exists>\<close>[8]9)
   where "\<^bold>\<exists>x. \<phi>(x) \<equiv> \<^bold>\<exists>\<phi>"   
-abbreviation meq    :: "'a\<Rightarrow>'a\<Rightarrow>\<sigma>" (infixr"\<^bold>="60) \<comment> \<open>Equality\<close>  
+abbreviation meq    :: "'a\<Rightarrow>'a\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>=\<close>60) \<comment> \<open>Equality\<close>  
   where "x\<^bold>=y \<equiv> \<lambda> ts w. x = y"
-abbreviation mgeq :: "('a::ord) \<Rightarrow> 'a \<Rightarrow> \<sigma>" (infix "\<^bold>\<ge>" 60)
+abbreviation mgeq :: "('a::ord) \<Rightarrow> 'a \<Rightarrow> \<sigma>" (infix \<open>\<^bold>\<ge>\<close> 60)
   where "x \<^bold>\<ge> y \<equiv> \<lambda> ts w. x \<ge> y" 
-abbreviation mge ::"('a::ord) \<Rightarrow> 'a \<Rightarrow> \<sigma>" (infix "\<^bold>>" 60)
+abbreviation mge ::"('a::ord) \<Rightarrow> 'a \<Rightarrow> \<sigma>" (infix \<open>\<^bold>>\<close> 60)
   where "x \<^bold>> y \<equiv> \<lambda> ts w. x > y"
 
 text\<open>
@@ -84,20 +84,20 @@ For the spatial modalities, we use the chopping operations
 defined on views. Observe that our chop modalities are existential.
 \<close>
 
-abbreviation hchop   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr "\<^bold>\<frown>" 53)
+abbreviation hchop   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr \<open>\<^bold>\<frown>\<close> 53)
   where "\<phi> \<^bold>\<frown> \<psi> \<equiv> \<lambda> ts w.\<exists>v u. (w=v\<parallel>u) \<and> \<phi>(ts)(v)\<and>\<psi>(ts)(u)"
-abbreviation vchop   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr "\<^bold>\<smile>" 53)
+abbreviation vchop   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr \<open>\<^bold>\<smile>\<close> 53)
   where "\<phi> \<^bold>\<smile> \<psi> \<equiv> \<lambda> ts w.\<exists>v u. (w=v--u) \<and> \<phi>(ts)(v) \<and> \<psi>(ts)(u)"
-abbreviation somewhere ::"\<sigma>\<Rightarrow>\<sigma>" ( "\<^bold>\<langle>_\<^bold>\<rangle> " 55)
+abbreviation somewhere ::"\<sigma>\<Rightarrow>\<sigma>" ( \<open>\<^bold>\<langle>_\<^bold>\<rangle> \<close> 55)
   where "\<^bold>\<langle>\<phi>\<^bold>\<rangle> \<equiv> \<^bold>\<top> \<^bold>\<frown> (\<^bold>\<top>\<^bold>\<smile>\<phi> \<^bold>\<smile>\<^bold>\<top>)\<^bold>\<frown>\<^bold>\<top>"
-abbreviation everywhere::"\<sigma>\<Rightarrow>\<sigma>" ("\<^bold>[_\<^bold>]" 55)
+abbreviation everywhere::"\<sigma>\<Rightarrow>\<sigma>" (\<open>\<^bold>[_\<^bold>]\<close> 55)
   where "\<^bold>[\<phi>\<^bold>] \<equiv> \<^bold>\<not>\<^bold>\<langle>\<^bold>\<not>\<phi>\<^bold>\<rangle>"
 
 text\<open>
 To change the perspective of a view, we use 
 an operator in the fashion of Hybrid Logic.
 \<close>
-abbreviation at :: "cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma> " ("\<^bold>@ _ _" 56)
+abbreviation at :: "cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma> " (\<open>\<^bold>@ _ _\<close> 56)
   where "\<^bold>@c \<phi> \<equiv> \<lambda>ts w .  \<forall>v'. (w=c>v') \<longrightarrow> \<phi>(ts)(v')"
 
 text\<open>
@@ -107,17 +107,17 @@ are given by the different types of transitions between
 traffic snapshots.
 \<close>
 
-abbreviation res_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" ("\<^bold>\<box>r'(_') _" 55)
+abbreviation res_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (\<open>\<^bold>\<box>r'(_') _\<close> 55)
   where "\<^bold>\<box>r(c) \<phi> \<equiv> \<lambda> ts w. \<forall>ts'. (ts\<^bold>\<midarrow>r(c)\<^bold>\<rightarrow>ts') \<longrightarrow> \<phi>(ts')(w)" 
-abbreviation clm_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" ("\<^bold>\<box>c'(_') _" 55)
+abbreviation clm_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (\<open>\<^bold>\<box>c'(_') _\<close> 55)
   where "\<^bold>\<box>c(c) \<phi> \<equiv> \<lambda> ts w. \<forall>ts' n. (ts\<^bold>\<midarrow>c(c,n)\<^bold>\<rightarrow>ts') \<longrightarrow> \<phi>(ts')(w)"
-abbreviation wdres_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" ("\<^bold>\<box>wdr'(_') _" 55)
+abbreviation wdres_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (\<open>\<^bold>\<box>wdr'(_') _\<close> 55)
   where "\<^bold>\<box>wdr(c) \<phi> \<equiv> \<lambda> ts w. \<forall>ts' n. (ts\<^bold>\<midarrow>wdr(c,n)\<^bold>\<rightarrow>ts') \<longrightarrow> \<phi>(ts')(w)"
-abbreviation wdclm_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" ("\<^bold>\<box>wdc'(_') _" 55)
+abbreviation wdclm_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (\<open>\<^bold>\<box>wdc'(_') _\<close> 55)
   where "\<^bold>\<box>wdc(c) \<phi> \<equiv> \<lambda> ts w. \<forall>ts'. (ts\<^bold>\<midarrow>wdc(c)\<^bold>\<rightarrow>ts') \<longrightarrow> \<phi>(ts')(w)"
-abbreviation time_box::"\<sigma> \<Rightarrow> \<sigma>" ("\<^bold>\<box>\<^bold>\<tau> _" 55) 
+abbreviation time_box::"\<sigma> \<Rightarrow> \<sigma>" (\<open>\<^bold>\<box>\<^bold>\<tau> _\<close> 55) 
   where "\<^bold>\<box>\<^bold>\<tau> \<phi> \<equiv> \<lambda>ts w. \<forall>ts'. (ts\<^bold>\<leadsto>ts') \<longrightarrow> \<phi>(ts')(move ts ts' w)" 
-abbreviation globally::"\<sigma> \<Rightarrow> \<sigma>" ("\<^bold>G _" 55)
+abbreviation globally::"\<sigma> \<Rightarrow> \<sigma>" (\<open>\<^bold>G _\<close> 55)
   where "\<^bold>G \<phi> \<equiv> \<lambda>ts w. \<forall>ts'. (ts \<^bold>\<Rightarrow> ts') \<longrightarrow> \<phi>(ts')(move ts ts' w)"
 
 
@@ -127,17 +127,17 @@ and free space are direct translations of the original
 definitions of MLSL \<^cite>\<open>"Hilscher2011"\<close> into the Isabelle implementation.
 \<close>
 
-abbreviation re:: "cars \<Rightarrow> \<sigma>" ("re'(_')" 70)
+abbreviation re:: "cars \<Rightarrow> \<sigma>" (\<open>re'(_')\<close> 70)
   where 
     "re(c) \<equiv> \<lambda> ts v. \<parallel>ext v\<parallel>> 0 \<and> len v ts c = ext v \<and> 
                       restrict v (res ts) c = lan v \<and> |lan v|=1" 
 
-abbreviation cl:: "cars \<Rightarrow> \<sigma>" ("cl'(_')" 70)
+abbreviation cl:: "cars \<Rightarrow> \<sigma>" (\<open>cl'(_')\<close> 70)
   where 
     "cl(c) \<equiv> \<lambda> ts v. \<parallel>ext v\<parallel>> 0 \<and> len v ts c = ext v \<and> 
                       restrict v (clm ts) c = lan v \<and> |lan v| = 1" 
 
-abbreviation free:: "\<sigma>" ("free")
+abbreviation free:: "\<sigma>" (\<open>free\<close>)
   where 
     "free \<equiv> \<lambda> ts v. \<parallel>ext v\<parallel> > 0 \<and> |lan v| = 1 \<and>
                   (\<forall>c.  \<parallel>len v ts c\<parallel> = 0 \<or> 
@@ -151,22 +151,22 @@ to connect the atomic formulas for reservations and claims
 with the atom denoting free space \<^cite>\<open>"Linker2015a"\<close>.
 \<close>
 
-abbreviation width_eq::"nat \<Rightarrow> \<sigma>" ("\<^bold>\<omega> = _ " 60)
+abbreviation width_eq::"nat \<Rightarrow> \<sigma>" (\<open>\<^bold>\<omega> = _ \<close> 60)
   where "\<^bold>\<omega> = n \<equiv> \<lambda>  ts v. |lan v| = n"  
 
-abbreviation width_geq::"nat \<Rightarrow> \<sigma>" ("\<^bold>\<omega> \<ge> _" 60)
+abbreviation width_geq::"nat \<Rightarrow> \<sigma>" (\<open>\<^bold>\<omega> \<ge> _\<close> 60)
   where "\<^bold>\<omega> \<ge> n \<equiv> \<lambda>  ts v. |lan v| \<ge> n" 
 
-abbreviation width_ge::"nat \<Rightarrow> \<sigma>" ("\<^bold>\<omega> > _" 60)
+abbreviation width_ge::"nat \<Rightarrow> \<sigma>" (\<open>\<^bold>\<omega> > _\<close> 60)
   where "\<^bold>\<omega> > n \<equiv> (\<^bold>\<omega> = n+1) \<^bold>\<smile> \<^bold>\<top>"
 
-abbreviation length_eq::"real \<Rightarrow> \<sigma>" ("\<^bold>\<l> = _ " 60)
+abbreviation length_eq::"real \<Rightarrow> \<sigma>" (\<open>\<^bold>\<l> = _ \<close> 60)
   where "\<^bold>\<l> = r \<equiv> \<lambda> ts v. \<parallel>ext v\<parallel> = r"
 
-abbreviation length_ge:: "real \<Rightarrow> \<sigma>" ("\<^bold>\<l> > _" 60)
+abbreviation length_ge:: "real \<Rightarrow> \<sigma>" (\<open>\<^bold>\<l> > _\<close> 60)
   where "\<^bold>\<l> > r \<equiv> \<lambda> ts v. \<parallel>ext v\<parallel> > r"
 
-abbreviation length_geq::"real \<Rightarrow> \<sigma>" ("\<^bold>\<l> \<ge> _" 60)
+abbreviation length_geq::"real \<Rightarrow> \<sigma>" (\<open>\<^bold>\<l> \<ge> _\<close> 60)
   where "\<^bold>\<l> \<ge> r \<equiv> (\<^bold>\<l> = r) \<^bold>\<or> (\<^bold>\<l> > r)"
 
 text\<open>
@@ -176,10 +176,10 @@ the former gives a nice way to express theorems,
 the latter is useful within proofs.
 \<close>
 
-abbreviation valid :: "\<sigma> \<Rightarrow> bool" ("\<Turnstile> _" 10 )
+abbreviation valid :: "\<sigma> \<Rightarrow> bool" (\<open>\<Turnstile> _\<close> 10 )
   where "\<Turnstile> \<phi> \<equiv>  \<forall>ts. \<forall>v. \<phi>(ts)(v)"
 
-abbreviation satisfies::" traffic \<Rightarrow> view \<Rightarrow> \<sigma> \<Rightarrow> bool" ("_ , _ \<Turnstile> _" 10)
+abbreviation satisfies::" traffic \<Rightarrow> view \<Rightarrow> \<sigma> \<Rightarrow> bool" (\<open>_ , _ \<Turnstile> _\<close> 10)
   where "ts,v \<Turnstile> \<phi> \<equiv> \<phi>(ts)(v)"
 
 subsection \<open>Theorems about Basic HMLSL\<close>

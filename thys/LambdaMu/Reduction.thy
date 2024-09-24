@@ -4,8 +4,8 @@ theory Reduction
   imports Substitution
 begin
 
-inductive red_term :: "[trm, trm] \<Rightarrow> bool"  (infixl "\<longlonglongrightarrow>" 50) 
-      and red_cmd :: "[cmd, cmd] \<Rightarrow> bool"  (infixl "\<^sub>C\<longlonglongrightarrow>" 50)
+inductive red_term :: "[trm, trm] \<Rightarrow> bool"  (infixl \<open>\<longlonglongrightarrow>\<close> 50) 
+      and red_cmd :: "[cmd, cmd] \<Rightarrow> bool"  (infixl \<open>\<^sub>C\<longlonglongrightarrow>\<close> 50)
 where
   beta   [intro]: "(\<lambda> T : t)\<degree>r \<longlonglongrightarrow> t[r/0]\<^sup>T" |
   struct [intro]: "(\<mu> (T1\<rightarrow>T2) : c)\<degree>s \<longlonglongrightarrow> \<mu> T2 : (c[0 = 0 (\<diamond> \<^sup>\<bullet> (liftM_trm s 0))]\<^sup>C)" |
@@ -27,14 +27,14 @@ inductive_cases redE [elim]:
 
 text\<open>Reflexive transitive closure\<close>
 
-inductive beta_rtc_term :: "[trm, trm] \<Rightarrow> bool"  (infixl "\<longlonglongrightarrow>\<^sup>*" 50) where
+inductive beta_rtc_term :: "[trm, trm] \<Rightarrow> bool"  (infixl \<open>\<longlonglongrightarrow>\<^sup>*\<close> 50) where
   refl_term [iff]: "s \<longlonglongrightarrow>\<^sup>* s" |
   step_term: "\<lbrakk>s \<longlonglongrightarrow> t; t \<longlonglongrightarrow>\<^sup>* u\<rbrakk> \<Longrightarrow> s \<longlonglongrightarrow>\<^sup>* u"
 
 lemma step_term2: "\<lbrakk>s \<longlonglongrightarrow>\<^sup>* t; t \<longlonglongrightarrow> u\<rbrakk> \<Longrightarrow> s \<longlonglongrightarrow>\<^sup>* u"
   by (induct rule: beta_rtc_term.induct) (auto intro: step_term)
 
-inductive beta_rtc_command :: "[cmd, cmd] \<Rightarrow> bool"  (infixl "\<^sub>C\<longlonglongrightarrow>\<^sup>*" 50) where
+inductive beta_rtc_command :: "[cmd, cmd] \<Rightarrow> bool"  (infixl \<open>\<^sub>C\<longlonglongrightarrow>\<^sup>*\<close> 50) where
   refl_command [iff]: "c \<^sub>C\<longlonglongrightarrow>\<^sup>* c" |
   step_command: "c \<^sub>C\<longlonglongrightarrow> d \<Longrightarrow> d \<^sub>C\<longlonglongrightarrow>\<^sup>* e \<Longrightarrow> c \<^sub>C\<longlonglongrightarrow>\<^sup>* e"
 

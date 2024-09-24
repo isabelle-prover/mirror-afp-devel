@@ -8,12 +8,12 @@ section \<open>Second direction of MN: \<open>regular language \<Rightarrow> fin
 subsection \<open>Tagging functions\<close>
 
 definition 
-   tag_eq :: "('a list \<Rightarrow> 'b) \<Rightarrow> ('a list \<times> 'a list) set" ("=_=")
+   tag_eq :: "('a list \<Rightarrow> 'b) \<Rightarrow> ('a list \<times> 'a list) set" (\<open>=_=\<close>)
 where
    "=tag= \<equiv> {(x, y). tag x = tag y}"
 
 abbreviation
-   tag_eq_applied :: "'a list \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> bool" ("_ =_= _")
+   tag_eq_applied :: "'a list \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ =_= _\<close>)
 where
    "x =tag= y \<equiv> (x, y) \<in> =tag="
 

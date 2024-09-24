@@ -1159,12 +1159,12 @@ definition (*The upper closure?*)
   "upclose f g = (\<lambda>t. max (f t) (g t))" 
 
 primrec
-  mon_upclose_help :: "nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" ("muh") where
+  mon_upclose_help :: "nat \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" (\<open>muh\<close>) where
   "muh 0 u m = u m 0"
 | "muh (Suc n) u m = upclose (u m (Suc n)) (muh n u m)" 
 
 definition
-  mon_upclose (*See Bauer p. 68*) :: "(nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" ("mu") where
+  mon_upclose (*See Bauer p. 68*) :: "(nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> ('a \<Rightarrow> real)" (\<open>mu\<close>) where
   "mu u m = muh m u m"
 
 lemma sf_norm_help:
@@ -1896,7 +1896,7 @@ definition
   (\<exists>x. x \<in> nnfis (pp f) M) \<and> (\<exists>y. y \<in> nnfis (np f) M)"
 
 definition
-  integral:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real" ("\<integral> _ \<partial>_"(*<*)[60,61] 110(*>*)) where
+  integral:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real" (\<open>\<integral> _ \<partial>_\<close>(*<*)[60,61] 110(*>*)) where
   "integrable f M \<Longrightarrow> \<integral> f \<partial>M = (THE i. i \<in> nnfis (pp f) M) -
   (THE j. j \<in> nnfis (np f) M)" 
 

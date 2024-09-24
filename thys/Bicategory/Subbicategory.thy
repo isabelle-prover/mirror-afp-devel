@@ -26,10 +26,10 @@ begin
   locale subbicategory =
     B: bicategory V H \<a>\<^sub>B \<i> src\<^sub>B trg\<^sub>B +
     subcategory V Arr
-  for V :: "'a comp"                 (infixr "\<cdot>\<^sub>B" 55)
-  and H :: "'a comp"                 (infixr "\<star>\<^sub>B" 55)
-  and \<a>\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    ("\<a>\<^sub>B[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and H :: "'a comp"                 (infixr \<open>\<star>\<^sub>B\<close> 55)
+  and \<a>\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    (\<open>\<a>\<^sub>B[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src\<^sub>B :: "'a \<Rightarrow> 'a"
   and trg\<^sub>B :: "'a \<Rightarrow> 'a"
   and Arr :: "'a \<Rightarrow> bool" +
@@ -46,11 +46,11 @@ begin
   and runit'_closed: "\<lbrakk> Arr f; B.ide f \<rbrakk> \<Longrightarrow> Arr (B.inv (B.\<rr> f))"
   begin
 
-    notation B.in_hom           ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>B _\<guillemotright>")
+    notation B.in_hom           (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
-    notation comp               (infixr "\<cdot>" 55)
+    notation comp               (infixr \<open>\<cdot>\<close> 55)
 
-    definition hcomp            (infixr "\<star>" 53)
+    definition hcomp            (infixr \<open>\<star>\<close> 53)
     where "g \<star> f = (if arr f \<and> arr g \<and> trg\<^sub>B f = src\<^sub>B g then g \<star>\<^sub>B f else null)"
 
     definition src
@@ -785,10 +785,10 @@ begin
   locale subbicategory_at_object =
     B: bicategory V H \<a>\<^sub>B \<i> src\<^sub>B trg\<^sub>B +
     subbicategory V H \<a>\<^sub>B \<i> src\<^sub>B trg\<^sub>B \<open>\<lambda>\<mu>. B.arr \<mu> \<and> src\<^sub>B \<mu> = a \<and> trg\<^sub>B \<mu> = a\<close>
-  for V :: "'a comp"                 (infixr "\<cdot>\<^sub>B" 55)
-  and H :: "'a comp"                 (infixr "\<star>\<^sub>B" 55)
-  and \<a>\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    ("\<a>\<^sub>B[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and H :: "'a comp"                 (infixr \<open>\<star>\<^sub>B\<close> 55)
+  and \<a>\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    (\<open>\<a>\<^sub>B[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src\<^sub>B :: "'a \<Rightarrow> 'a"
   and trg\<^sub>B :: "'a \<Rightarrow> 'a"
   and a :: "'a"
@@ -800,7 +800,7 @@ begin
   and \<omega>_is_iso: "B.iso \<omega>"
   begin
 
-    notation hcomp  (infixr "\<star>" 53)
+    notation hcomp  (infixr \<open>\<star>\<close> 53)
 
     lemma arr_simps:
     assumes "arr \<mu>"

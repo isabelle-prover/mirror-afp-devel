@@ -19,8 +19,8 @@ theory Cblinfun_Code
     Cblinfun_Matrix Containers.Set_Impl Jordan_Normal_Form.Matrix_Kernel
 begin
 
-no_notation "Lattice.meet" (infixl "\<sqinter>\<index>" 70)
-no_notation "Lattice.join" (infixl "\<squnion>\<index>" 65)
+no_notation "Lattice.meet" (infixl \<open>\<sqinter>\<index>\<close> 70)
+no_notation "Lattice.join" (infixl \<open>\<squnion>\<index>\<close> 65)
 hide_const (open) Coset.kernel
 hide_const (open) Matrix_Kernel.kernel
 hide_const (open) Order.bottom Order.top

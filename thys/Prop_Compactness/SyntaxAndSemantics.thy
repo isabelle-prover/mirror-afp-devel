@@ -15,10 +15,10 @@ datatype 'b formula =
     FF
   | TT
   | atom 'b                 (* ("P_" [1000]) *)
-  | Negation "'b formula"                   ("\<not>.(_)" [110] 110)
-  | Conjunction "'b formula" "'b formula"     (infixl "\<and>."  109)
-  | Disjunction "'b formula" "'b formula"     (infixl "\<or>."  108)
-  | Implication "'b formula" "'b formula"   (infixl "\<rightarrow>." 100)
+  | Negation "'b formula"                   (\<open>\<not>.(_)\<close> [110] 110)
+  | Conjunction "'b formula" "'b formula"     (infixl \<open>\<and>.\<close>  109)
+  | Disjunction "'b formula" "'b formula"     (infixl \<open>\<or>.\<close>  108)
+  | Implication "'b formula" "'b formula"   (infixl \<open>\<rightarrow>.\<close> 100)
 
 
 lemma "(\<not>.\<not>. Atom P \<rightarrow>. Atom Q  \<rightarrow>. Atom R) = 
@@ -160,7 +160,7 @@ qed
 (*>*)
 
 
-definition model :: "('b \<Rightarrow> v_truth) \<Rightarrow> 'b formula set \<Rightarrow> bool" ("_ model _" [80,80] 80) where
+definition model :: "('b \<Rightarrow> v_truth) \<Rightarrow> 'b formula set \<Rightarrow> bool" (\<open>_ model _\<close> [80,80] 80) where
  "I model S \<equiv> (\<forall>F \<in> S. t_v_evaluation I F = Ttrue)"
 
 
@@ -193,7 +193,7 @@ qed
 (*>*)
 
   
-definition consequence :: "'b formula set \<Rightarrow> 'b formula \<Rightarrow> bool" ("_ \<Turnstile> _" [80,80] 80) where
+definition consequence :: "'b formula set \<Rightarrow> 'b formula \<Rightarrow> bool" (\<open>_ \<Turnstile> _\<close> [80,80] 80) where
  "S \<Turnstile> F \<equiv> (\<forall>I. I model S \<longrightarrow> t_v_evaluation I F = Ttrue)"
 
 

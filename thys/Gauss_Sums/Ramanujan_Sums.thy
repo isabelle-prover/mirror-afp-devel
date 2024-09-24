@@ -17,7 +17,7 @@ subsection \<open>Basic sums\<close>
 definition ramanujan_sum :: "nat \<Rightarrow> nat \<Rightarrow> complex"
   where "ramanujan_sum k n = (\<Sum>m | m \<in> {1..k} \<and> coprime m k. unity_root k (m*n))"
 
-notation ramanujan_sum ("c")
+notation ramanujan_sum (\<open>c\<close>)
 
 lemma ramanujan_sum_0_n [simp]: "c 0 n = 0"
   unfolding ramanujan_sum_def by simp
@@ -166,7 +166,7 @@ subsection \<open>Generalised sums\<close>
 definition gen_ramanujan_sum :: "(nat \<Rightarrow> complex) \<Rightarrow> (nat \<Rightarrow> complex) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> complex" where
   "gen_ramanujan_sum f g = (\<lambda>k n. \<Sum>d | d dvd gcd n k. f d * g (k div d))"
 
-notation gen_ramanujan_sum ("s")
+notation gen_ramanujan_sum (\<open>s\<close>)
 
 lemma gen_ramanujan_sum_k_1: "s f g k 1 = f 1 * g k"
   unfolding gen_ramanujan_sum_def by auto
@@ -797,7 +797,7 @@ proof -
   finally show ?thesis .
 qed
 
-no_notation ramanujan_sum ("c")
-no_notation gen_ramanujan_sum ("s")
+no_notation ramanujan_sum (\<open>c\<close>)
+no_notation gen_ramanujan_sum (\<open>s\<close>)
 
 end

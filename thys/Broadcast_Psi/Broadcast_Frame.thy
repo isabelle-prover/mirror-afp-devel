@@ -3,13 +3,13 @@ theory Broadcast_Frame
 begin
 
 locale assertionAux = Frame.assertionAux SCompose SImp SBottom SChanEq
-  for SCompose :: "'b::fs_name \<Rightarrow> 'b \<Rightarrow> 'b"     (infixr "\<otimes>" 80)
-  and SImp :: "'b \<Rightarrow> 'c::fs_name \<Rightarrow> bool"       ("_ \<turnstile> _" [70, 70] 70)
-  and SBottom :: 'b                             ("\<bottom>" 90)
-  and SChanEq :: "('a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c)"    ("_ \<leftrightarrow> _" [80, 80] 80)
+  for SCompose :: "'b::fs_name \<Rightarrow> 'b \<Rightarrow> 'b"     (infixr \<open>\<otimes>\<close> 80)
+  and SImp :: "'b \<Rightarrow> 'c::fs_name \<Rightarrow> bool"       (\<open>_ \<turnstile> _\<close> [70, 70] 70)
+  and SBottom :: 'b                             (\<open>\<bottom>\<close> 90)
+  and SChanEq :: "('a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c)"    (\<open>_ \<leftrightarrow> _\<close> [80, 80] 80)
   +
-  fixes SOutCon  :: "'a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c"   ("_ \<preceq> _" [80, 80] 80)
-    and SInCon   :: "'a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c"   ("_ \<succeq> _" [80, 80] 80)
+  fixes SOutCon  :: "'a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c"   (\<open>_ \<preceq> _\<close> [80, 80] 80)
+    and SInCon   :: "'a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c"   (\<open>_ \<succeq> _\<close> [80, 80] 80)
 
 assumes statEqvt'''[eqvt]: "\<And>p::name prm. p \<bullet> (M \<preceq> N) = (p \<bullet> M) \<preceq> (p \<bullet> N)"
   and   statEqvt''''[eqvt]: "\<And>p::name prm. p \<bullet> (M \<succeq> N) = (p \<bullet> M) \<succeq> (p \<bullet> N)"
@@ -149,8 +149,8 @@ locale assertion = assertionAux SCompose SImp SBottom SChanEq SOutCon SInCon + a
 
 begin
 
-notation SOutCon ("_ \<preceq> _" [90, 90] 90)
-notation SInCon ("_ \<succeq> _" [90, 90] 90)
+notation SOutCon (\<open>_ \<preceq> _\<close> [90, 90] 90)
+notation SInCon (\<open>_ \<succeq> _\<close> [90, 90] 90)
 
 end
 

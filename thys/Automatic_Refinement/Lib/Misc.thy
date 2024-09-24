@@ -644,12 +644,12 @@ lemma comp_cong_left: "x = y \<Longrightarrow> x o f = y o f" by (simp)
 lemma fun_comp_eq_conv: "f o g = fg \<longleftrightarrow> (\<forall>x. f (g x) = fg x)"
   by auto
 
-abbreviation comp2 (infixl "oo" 55) where "f oo g \<equiv> \<lambda>x. f o (g x)"
-abbreviation comp3 (infixl "ooo" 55) where "f ooo g \<equiv> \<lambda>x. f oo (g x)"
+abbreviation comp2 (infixl \<open>oo\<close> 55) where "f oo g \<equiv> \<lambda>x. f o (g x)"
+abbreviation comp3 (infixl \<open>ooo\<close> 55) where "f ooo g \<equiv> \<lambda>x. f oo (g x)"
 
 notation
-  comp2  (infixl "\<circ>\<circ>" 55) and
-  comp3  (infixl "\<circ>\<circ>\<circ>" 55)
+  comp2  (infixl \<open>\<circ>\<circ>\<close> 55) and
+  comp3  (infixl \<open>\<circ>\<circ>\<circ>\<close> 55)
 
 definition [code_unfold, simp]: "swap_args2 f x y \<equiv> f y x"
   
@@ -1028,7 +1028,7 @@ lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Lon
 
 subsubsection \<open>Image under function\<close>
 
-notation image_mset (infixr "`#" 90)
+notation image_mset (infixr \<open>`#\<close> 90)
 
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   by (induct P) (force elim!: mset_un_single_un_cases)+

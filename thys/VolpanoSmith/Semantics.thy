@@ -24,7 +24,7 @@ datatype bop = Eq | And | Less | Add | Sub     \<comment> \<open>names of binary
 datatype expr
   = Val val                                          \<comment> \<open>value\<close>
   | Var vname                                        \<comment> \<open>local variable\<close>
-  | BinOp expr bop expr    ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)  \<comment> \<open>binary operation\<close>
+  | BinOp expr bop expr    (\<open>_ \<guillemotleft>_\<guillemotright> _\<close> [80,0,81] 80)  \<comment> \<open>binary operation\<close>
 
 
 text \<open>Note: we assume that only type correct expressions are regarded
@@ -43,10 +43,10 @@ where "binop Eq v\<^sub>1 v\<^sub>2               = Some(Bool(v\<^sub>1 = v\<^su
 
 datatype com
   = Skip
-  | LAss vname expr        ("_:=_" [70,70] 70)  \<comment> \<open>local assignment\<close>
-  | Seq com com            ("_;;/ _" [61,60] 60)
-  | Cond expr com com      ("if '(_') _/ else _" [80,79,79] 70)
-  | While expr com         ("while '(_') _" [80,79] 70)
+  | LAss vname expr        (\<open>_:=_\<close> [70,70] 70)  \<comment> \<open>local assignment\<close>
+  | Seq com com            (\<open>_;;/ _\<close> [61,60] 60)
+  | Cond expr com com      (\<open>if '(_') _/ else _\<close> [80,79,79] 70)
+  | While expr com         (\<open>while '(_') _\<close> [80,79] 70)
 
 
 fun fv :: "expr \<Rightarrow> vname set" \<comment> \<open>free variables in an expression\<close>
@@ -64,7 +64,7 @@ type_synonym state = "vname \<rightharpoonup> val"
 text \<open>\<open>interpret\<close> silently assumes type correct expressions, 
   i.e. no expression evaluates to None\<close>
 
-fun "interpret" :: "expr \<Rightarrow> state \<Rightarrow> val option" ("\<lbrakk>_\<rbrakk>_")
+fun "interpret" :: "expr \<Rightarrow> state \<Rightarrow> val option" (\<open>\<lbrakk>_\<rbrakk>_\<close>)
 where Val: "\<lbrakk>Val v\<rbrakk> s = Some v"
   | Var: "\<lbrakk>Var V\<rbrakk> s = s V"
   | BinOp: "\<lbrakk>e\<^sub>1\<guillemotleft>bop\<guillemotright>e\<^sub>2\<rbrakk> s = (case \<lbrakk>e\<^sub>1\<rbrakk> s of None \<Rightarrow> None
@@ -75,7 +75,7 @@ subsection \<open>Small Step Semantics\<close>
 
 inductive red :: "com * state \<Rightarrow> com * state \<Rightarrow> bool"
 and red' :: "com \<Rightarrow> state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"
-   ("((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
+   (\<open>((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81)
 where
   "\<langle>c1,s1\<rangle> \<rightarrow> \<langle>c2,s2\<rangle> == red (c1,s1) (c2,s2)" |
   RedLAss:
@@ -102,7 +102,7 @@ where
 lemmas red_induct = red.induct[split_format (complete)]
 
 abbreviation reds ::"com \<Rightarrow> state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool" 
-   ("((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81) where
+   (\<open>((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81) where
   "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle> ==  red\<^sup>*\<^sup>* (c,s) (c',s')"
 
 lemma Skip_reds:
@@ -196,7 +196,7 @@ by(induct c=="while (b) com" s rule:converse_rtranclp_induct2)(auto elim:red.cas
 
 
 inductive red_n :: "com \<Rightarrow> state \<Rightarrow> nat \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"
-   ("((1\<langle>_,/_\<rangle>) \<rightarrow>\<^bsup>_\<^esup> (1\<langle>_,/_\<rangle>))" [0,0,0,0,0] 81)
+   (\<open>((1\<langle>_,/_\<rangle>) \<rightarrow>\<^bsup>_\<^esup> (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0,0] 81)
 where red_n_Base: "\<langle>c,s\<rangle> \<rightarrow>\<^bsup>0\<^esup> \<langle>c,s\<rangle>"
      | red_n_Rec: "\<lbrakk>\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s''\<rangle>; \<langle>c'',s''\<rangle> \<rightarrow>\<^bsup>n\<^esup> \<langle>c',s'\<rangle>\<rbrakk> \<Longrightarrow> \<langle>c,s\<rangle> \<rightarrow>\<^bsup>Suc n\<^esup> \<langle>c',s'\<rangle>"
 

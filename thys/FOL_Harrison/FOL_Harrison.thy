@@ -205,7 +205,7 @@ where
 
 subsection \<open>Definition of proof system\<close>
 
-inductive OK :: "fol fm \<Rightarrow> bool" ("\<turnstile> _" 0)
+inductive OK :: "fol fm \<Rightarrow> bool" (\<open>\<turnstile> _\<close> 0)
 where
   modusponens:
                     "\<turnstile> concl s \<Longrightarrow> \<turnstile> concl s' \<Longrightarrow> \<turnstile> concl (modusponens s s')" |

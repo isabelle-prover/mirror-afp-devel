@@ -17,7 +17,7 @@ text \<open>
 declare [[show_sorts]]
 
 text \<open>Remove existing notation for quotient as it interferes with the rely quotient\<close>
-no_notation Equiv_Relations.quotient  (infixl "'/'/" 90)
+no_notation Equiv_Relations.quotient  (infixl \<open>'/'/\<close> 90)
 
 class refinement_lattice = complete_distrib_lattice
 begin
@@ -25,12 +25,12 @@ begin
 text \<open>The refinement lattice infimum corresponds to non-deterministic choice for commands.\<close>
 
 abbreviation
-  refine :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  refine :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 where
   "c \<sqsubseteq> d \<equiv> less_eq c d"
 
 abbreviation
-  refine_strict :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+  refine_strict :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where
   "c \<sqsubset> d \<equiv> less c d"
 

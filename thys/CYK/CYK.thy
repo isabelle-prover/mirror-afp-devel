@@ -31,7 +31,7 @@ datatype ('n, 't) RHS = Branch 'n 'n
 type_synonym ('n, 't) CNG = "('n \<times> ('n, 't) RHS) list"
 
 text "Abbreviating the list append symbol for better readability"
-abbreviation list_append :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixr "\<cdot>" 65)
+abbreviation list_append :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixr \<open>\<cdot>\<close> 65)
 where "xs \<cdot> ys \<equiv> xs @ ys"
 
 
@@ -53,17 +53,17 @@ where "DSTEP G = {(l \<cdot> [Inl N] \<cdot> r, x) | l N r rhs x. (N, rhs) \<in>
                                        Branch A B \<Rightarrow> x = l \<cdot> [Inl A, Inl B] \<cdot> r
                                      | Leaf t \<Rightarrow> x = l \<cdot> [Inr t] \<cdot> r)}"
 
-abbreviation DSTEP'  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" ("_ -_\<rightarrow> _" [60, 61, 60] 61) 
+abbreviation DSTEP'  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" (\<open>_ -_\<rightarrow> _\<close> [60, 61, 60] 61) 
 where "w -G\<rightarrow> w' \<equiv> (w, w') \<in> DSTEP G"
 
-abbreviation DSTEP_reflc  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" ("_ -_\<rightarrow>\<^sup>= _" [60, 61, 60] 61) 
+abbreviation DSTEP_reflc  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" (\<open>_ -_\<rightarrow>\<^sup>= _\<close> [60, 61, 60] 61) 
 where "w -G\<rightarrow>\<^sup>= w' \<equiv> (w, w') \<in> (DSTEP G)\<^sup>="
 
-abbreviation DSTEP_transc  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" ("_ -_\<rightarrow>\<^sup>+ _" [60, 61, 60] 61) 
+abbreviation DSTEP_transc  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" (\<open>_ -_\<rightarrow>\<^sup>+ _\<close> [60, 61, 60] 61) 
 where "w -G\<rightarrow>\<^sup>+ w' \<equiv> (w, w') \<in> (DSTEP G)\<^sup>+"
 
 
-abbreviation DSTEP_rtransc  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" ("_ -_\<rightarrow>\<^sup>* _" [60, 61, 60] 61) 
+abbreviation DSTEP_rtransc  :: "('n, 't) word_form \<Rightarrow> ('n, 't) CNG \<Rightarrow> ('n, 't) word_form \<Rightarrow> bool" (\<open>_ -_\<rightarrow>\<^sup>* _\<close> [60, 61, 60] 61) 
 where "w -G\<rightarrow>\<^sup>* w' \<equiv> (w, w') \<in> (DSTEP G)\<^sup>*"
 
 

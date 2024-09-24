@@ -9,9 +9,9 @@ begin
 
 
 
-no_notation bot ("\<bottom>")
+no_notation bot (\<open>\<bottom>\<close>)
 (* This will be used for non-informative entities, e.g., a noninformative output: *)
-abbreviation noninform ("\<bottom>") where "\<bottom> \<equiv> undefined"
+abbreviation noninform (\<open>\<bottom>\<close>) where "\<bottom> \<equiv> undefined"
 
 
 (* Avoid splitting the quantifiers over product types into two quantifiers *)

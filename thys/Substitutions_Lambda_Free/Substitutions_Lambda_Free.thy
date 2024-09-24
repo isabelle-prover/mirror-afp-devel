@@ -4,7 +4,7 @@ theory Substitutions_Lambda_Free
 begin
 
 no_notation (latex)
-  Cons  ("_ \<cdot>/ _" [66,65] 65)
+  Cons  (\<open>_ \<cdot>/ _\<close> [66,65] 65)
 
 declare [[syntax_ambiguity_warning = false, names_short = true]]
 (*>*)

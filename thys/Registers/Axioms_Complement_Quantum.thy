@@ -4,8 +4,8 @@ theory Axioms_Complement_Quantum
   imports Laws_Quantum Finite_Tensor_Product Quantum_Extra
 begin
 
-no_notation m_inv ("inv\<index> _" [81] 80)
-no_notation Lattice.join (infixl "\<squnion>\<index>" 65)
+no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
+no_notation Lattice.join (infixl \<open>\<squnion>\<index>\<close> 65)
 
 typedef ('a::finite,'b::finite) complement_domain = \<open>{..< if CARD('b) div CARD('a) \<noteq> 0 then CARD('b) div CARD('a) else 1}\<close>
   by auto

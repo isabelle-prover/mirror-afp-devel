@@ -68,9 +68,9 @@ declare [[syntax_ambiguity_warning = false]]
 abbreviation (output)
 "isize xs \<equiv> int (length xs)"
 
-notation isize ("size")
+notation isize (\<open>size\<close>)
 
-primrec (nonexhaustive) inth :: "'a list \<Rightarrow> int \<Rightarrow> 'a" (infixl "!!" 100) where
+primrec (nonexhaustive) inth :: "'a list \<Rightarrow> int \<Rightarrow> 'a" (infixl \<open>!!\<close> 100) where
 "(x # xs) !! i = (if i = 0 then x else xs !! (i - 1))"
 
 lemma inth_append [simp]:
@@ -149,15 +149,15 @@ fun iexec :: "instr \<Rightarrow> config \<Rightarrow> config" where
   JMPGE n \<Rightarrow> (if hd2 stk \<ge> hd stk then i + 1 + n else i + 1, s, tl2 stk))"
 
 inductive iexec_pred :: "instr \<times> config \<Rightarrow> config \<Rightarrow> bool"
-  (infix "\<mapsto>" 55) where
+  (infix \<open>\<mapsto>\<close> 55) where
 "(ins, cf) \<mapsto> iexec ins cf"
 
 definition exec1 :: "instr list \<Rightarrow> config \<Rightarrow> config \<Rightarrow> bool"
-  ("(_/ \<turnstile>/ _/ \<rightarrow>/ _)" 55) where
+  (\<open>(_/ \<turnstile>/ _/ \<rightarrow>/ _)\<close> 55) where
 "P \<turnstile> cf \<rightarrow> cf' \<equiv> (P !! fst cf, cf) \<mapsto> cf' \<and> 0 \<le> fst cf \<and> fst cf < size P"
 
 abbreviation exec :: "instr list \<Rightarrow> config \<Rightarrow> config \<Rightarrow> bool"
-  ("(_/ \<turnstile>/ _/ \<rightarrow>*/ _)" 55) where
+  (\<open>(_/ \<turnstile>/ _/ \<rightarrow>*/ _)\<close> 55) where
 "exec P \<equiv> star (exec1 P)"
 
 
@@ -363,18 +363,18 @@ fun m_iexec :: "m_instr \<Rightarrow> m_config \<Rightarrow> m_config" where
   M_JMPGE n \<Rightarrow>
     (if ms (1 - sp) \<ge> ms (-sp) then i + 1 + n else i + 1, ms, sp - 2))"
 
-fun m_config_equiv :: "m_config \<Rightarrow> m_config \<Rightarrow> bool" (infix "\<cong>" 55) where
+fun m_config_equiv :: "m_config \<Rightarrow> m_config \<Rightarrow> bool" (infix \<open>\<cong>\<close> 55) where
 "(i, ms, sp) \<cong> (i', ms', sp') =
   (i = i' \<and> sp = sp' \<and> (\<forall>a \<ge> -sp. ms a = ms' a))"
 
 definition m_exec1 :: "m_instr list \<Rightarrow> m_config \<Rightarrow> m_config \<Rightarrow> bool"
-  ("(_/ \<^bold>\<turnstile>/ _/ \<^bold>\<rightarrow>/ _)" [59, 0, 59] 60) where
+  (\<open>(_/ \<^bold>\<turnstile>/ _/ \<^bold>\<rightarrow>/ _)\<close> [59, 0, 59] 60) where
 "MP \<^bold>\<turnstile> mcf \<^bold>\<rightarrow> mcf' \<equiv>
   mcf' \<cong> m_iexec (MP !! fst mcf) mcf \<and> 0 \<le> fst mcf \<and> fst mcf < size MP \<and>
     m_msp (MP !! fst mcf) \<le> snd (snd mcf)"
 
 abbreviation m_exec :: "m_instr list \<Rightarrow> m_config \<Rightarrow> m_config \<Rightarrow> bool"
-  ("(_/ \<^bold>\<turnstile>/ _/ \<^bold>\<rightarrow>\<^bold>*/ _)" [59, 0, 59] 60) where
+  (\<open>(_/ \<^bold>\<turnstile>/ _/ \<^bold>\<rightarrow>\<^bold>*/ _)\<close> [59, 0, 59] 60) where
 "m_exec MP \<equiv> star (m_exec1 MP)"
 
 text \<open>

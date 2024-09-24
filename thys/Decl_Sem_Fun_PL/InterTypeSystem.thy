@@ -5,10 +5,10 @@ theory InterTypeSystem
 begin
 
 datatype ty = TNat nat | TFun funty
-    and funty = TArrow ty ty (infix "\<rightarrow>" 55) | TInt funty funty (infix "\<sqinter>" 56) | TTop ("\<top>")
+    and funty = TArrow ty ty (infix \<open>\<rightarrow>\<close> 55) | TInt funty funty (infix \<open>\<sqinter>\<close> 56) | TTop (\<open>\<top>\<close>)
 
-inductive subtype :: "ty \<Rightarrow> ty \<Rightarrow> bool" (infix "<:" 52) 
-  and fsubtype :: "funty \<Rightarrow> funty \<Rightarrow> bool" (infix "<::" 52) where
+inductive subtype :: "ty \<Rightarrow> ty \<Rightarrow> bool" (infix \<open><:\<close> 52) 
+  and fsubtype :: "funty \<Rightarrow> funty \<Rightarrow> bool" (infix \<open><::\<close> 52) where
   sub_refl: "A <: A" |
   sub_funty[intro!]: "f1 <:: f2 \<Longrightarrow> TFun f1 <: TFun f2" | 
   sub_fun[intro!]: "\<lbrakk> T1 <: T1'; T1' <: T1; T2 <: T2'; T2' <: T2 \<rbrakk> \<Longrightarrow> (T1\<rightarrow>T2) <:: (T1'\<rightarrow>T2')" |
@@ -20,14 +20,14 @@ inductive subtype :: "ty \<Rightarrow> ty \<Rightarrow> bool" (infix "<:" 52)
   fsub_refl[intro!]: "T <:: T" |
   sub_trans[trans]: "\<lbrakk> T1 <:: T2; T2 <:: T3 \<rbrakk> \<Longrightarrow> T1 <:: T3"
 
-definition ty_eq  :: "ty \<Rightarrow> ty \<Rightarrow> bool" (infix "\<approx>" 50) where
+definition ty_eq  :: "ty \<Rightarrow> ty \<Rightarrow> bool" (infix \<open>\<approx>\<close> 50) where
   "A \<approx> B \<equiv> A <: B \<and> B <: A"
-definition fty_eq :: "funty \<Rightarrow> funty \<Rightarrow> bool" (infix "\<simeq>" 50) where
+definition fty_eq :: "funty \<Rightarrow> funty \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 50) where
   "F1 \<simeq> F2 \<equiv> F1 <:: F2 \<and> F2 <:: F1"
   
 type_synonym tyenv = "(name \<times> ty) list"
 
-inductive wt :: "tyenv \<Rightarrow> exp \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ : _" [51,51,51] 51) where
+inductive wt :: "tyenv \<Rightarrow> exp \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close> [51,51,51] 51) where
   wt_var[intro!]: "lookup \<Gamma> x = Some T \<Longrightarrow> \<Gamma> \<turnstile> EVar x : T" |
   wt_nat[intro!]: "\<Gamma> \<turnstile> ENat n : TNat n" |
   wt_lam[intro!]: "\<lbrakk> (x,A)#\<Gamma> \<turnstile> e : B \<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> ELam x e : TFun (A \<rightarrow> B)" |

@@ -99,7 +99,7 @@ lemma disj_four_cases:
 
 text \<open>The unitary transform @{term U\<^sub>f}.\<close>
 
-definition (in jozsa) jozsa_transform:: "complex Matrix.mat" ("U\<^sub>f") where 
+definition (in jozsa) jozsa_transform:: "complex Matrix.mat" (\<open>U\<^sub>f\<close>) where 
 "U\<^sub>f \<equiv> Matrix.mat (2^(n+1)) (2^(n+1)) (\<lambda>(i,j). 
   if i = j then (1-f(i div 2)) else 
     if i = j + 1 \<and> odd i then f(i div 2) else
@@ -442,7 +442,7 @@ qed
 
 text \<open>N-fold application of the tensor product\<close>
 
-fun iter_tensor:: "complex Matrix.mat \<Rightarrow> nat \<Rightarrow> complex Matrix.mat" ("_ \<otimes>\<^bsup>_\<^esup>" 75)  where
+fun iter_tensor:: "complex Matrix.mat \<Rightarrow> nat \<Rightarrow> complex Matrix.mat" (\<open>_ \<otimes>\<^bsup>_\<^esup>\<close> 75)  where
   "A \<otimes>\<^bsup>(Suc 0)\<^esup> = A"  
 | "A \<otimes>\<^bsup>(Suc k)\<^esup> = A \<Otimes> (A \<otimes>\<^bsup>k\<^esup>)"
 
@@ -808,7 +808,7 @@ lemma (in jozsa) \<psi>\<^sub>2_is_state:
 
 text \<open>@{text "H^\<^sub>\<otimes> n"} is the result of taking the nth tensor product of H\<close>
 
-abbreviation iter_tensor_of_H_rep:: "nat \<Rightarrow> complex Matrix.mat" ("H^\<^sub>\<otimes> _") where
+abbreviation iter_tensor_of_H_rep:: "nat \<Rightarrow> complex Matrix.mat" (\<open>H^\<^sub>\<otimes> _\<close>) where
 "iter_tensor_of_H_rep n \<equiv> Matrix.mat (2^n) (2^n) (\<lambda>(i,j).(-1)^(i \<cdot>\<^bsub>n\<^esub> j)/(sqrt 2)^n)"
 
 lemma tensor_of_H_values [simp]:
@@ -946,7 +946,7 @@ qed
 
 text \<open>@{text "HId^\<^sub>\<otimes> 1"} is the result of taking the tensor product of the nth tensor of H and Id 1 \<close>
 
-abbreviation tensor_of_H_tensor_Id:: "nat \<Rightarrow> complex Matrix.mat" ("HId^\<^sub>\<otimes> _") where
+abbreviation tensor_of_H_tensor_Id:: "nat \<Rightarrow> complex Matrix.mat" (\<open>HId^\<^sub>\<otimes> _\<close>) where
 "tensor_of_H_tensor_Id n \<equiv> Matrix.mat (2^(n+1)) (2^(n+1)) (\<lambda>(i,j).
   if (i mod 2 = j mod 2) then (-1)^((i div 2) \<cdot>\<^bsub>n\<^esub> (j div 2))/(sqrt 2)^n else 0)"
 

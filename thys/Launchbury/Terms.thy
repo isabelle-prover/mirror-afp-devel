@@ -19,18 +19,18 @@ nominal_datatype exp =
   Var var
 | App exp var
 | LetA as::assn body::exp binds "bn as" in body as
-| Lam x::var body::exp binds x in body  ("Lam [_]. _" [100, 100] 100)
+| Lam x::var body::exp binds x in body  (\<open>Lam [_]. _\<close> [100, 100] 100)
 | Bool bool
-| IfThenElse exp exp exp  ("((_)/ ? (_)/ : (_))" [0, 0, 10] 10)
+| IfThenElse exp exp exp  (\<open>((_)/ ? (_)/ : (_))\<close> [0, 0, 10] 10)
 and assn =
   ANil | ACons var exp assn
 binder
   bn :: "assn \<Rightarrow> atom list"
 where "bn ANil = []" | "bn (ACons x t as) = (atom x) # (bn as)"
 
-notation (latex output) Terms.Var ("_")
-notation (latex output) Terms.App ("_ _")
-notation (latex output) Terms.Lam ("\<lambda>_. _"  [100, 100] 100)
+notation (latex output) Terms.Var (\<open>_\<close>)
+notation (latex output) Terms.App (\<open>_ _\<close>)
+notation (latex output) Terms.Lam (\<open>\<lambda>_. _\<close>  [100, 100] 100)
 
 type_synonym heap = "(var \<times> exp) list"
 
@@ -134,10 +134,10 @@ hide_const HOL.Let
 definition Let :: "heap \<Rightarrow> exp \<Rightarrow> exp"
   where "Let \<Gamma> e = LetA (heapToAssn \<Gamma>) e"
 
-notation (latex output) Let ("\<^latex>\<open>\\textrm{\\textsf{let}}\<close> _ \<^latex>\<open>\\textrm{\\textsf{in}}\<close> _")
+notation (latex output) Let (\<open>\<^latex>\<open>\textrm{\textsf{let}}\<close> _ \<^latex>\<open>\textrm{\textsf{in}}\<close> _\<close>)
 
 abbreviation
-  LetBe :: "var\<Rightarrow>exp\<Rightarrow>exp\<Rightarrow>exp" ("let _ be _ in _ " [100,100,100] 100)
+  LetBe :: "var\<Rightarrow>exp\<Rightarrow>exp\<Rightarrow>exp" (\<open>let _ be _ in _ \<close> [100,100,100] 100)
 where
   "let x be t1 in t2 \<equiv> Let [(x,t1)] t2"
 

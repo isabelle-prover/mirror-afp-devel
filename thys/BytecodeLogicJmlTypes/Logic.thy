@@ -180,11 +180,11 @@ inductive_set SP_Judgement ::
 and
  SP_Deriv :: "CTXT => Assn => Class => Method => Label => 
               Post => Inv => bool"
-  ("_ \<rhd> \<lbrace> _ \<rbrace> _,_,_ \<lbrace> _ \<rbrace> _" [100,100,100,100,100,100,100] 50)
+  (\<open>_ \<rhd> \<lbrace> _ \<rbrace> _,_,_ \<lbrace> _ \<rbrace> _\<close> [100,100,100,100,100,100,100] 50)
 and
  SP_Assum :: "CTXT => Assn => Class => Method => Label => 
               Post => Inv => bool"
-   ("_ \<rhd> \<langle> _ \<rangle> _,_,_ \<langle> _ \<rangle> _" [100,100,100,100,100,100,100] 50)
+   (\<open>_ \<rhd> \<langle> _ \<rangle> _,_,_ \<langle> _ \<rangle> _\<close> [100,100,100,100,100,100,100] 50)
 where
  "G \<rhd> \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I == (False, G, C, m, l, A, B, I):SP_Judgement"
 |

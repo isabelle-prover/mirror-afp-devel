@@ -118,8 +118,8 @@ begin
     VxV: product_category V V +
     VoV: subcategory VxV.comp \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star> snd \<mu>\<nu> \<noteq> null\<close> +
     "functor" VoV.comp V \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star> snd \<mu>\<nu>\<close>
-  for V :: "'a comp"         (infixr "\<cdot>" 55)
-  and H :: "'a comp"         (infixr "\<star>" 53) +
+  for V :: "'a comp"         (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a comp"         (infixr \<open>\<star>\<close> 53) +
   assumes left_connected: "seq \<nu> \<nu>' \<Longrightarrow> \<nu> \<star> \<mu> \<noteq> null \<longleftrightarrow> \<nu>' \<star> \<mu> \<noteq> null"
   and right_connected: "seq \<mu> \<mu>' \<Longrightarrow> \<nu> \<star> \<mu> \<noteq> null \<longleftrightarrow> \<nu> \<star> \<mu>' \<noteq> null"
   and match_1: "\<lbrakk> \<nu> \<star> \<mu> \<noteq> null; (\<nu> \<star> \<mu>) \<star> \<tau> \<noteq> null \<rbrakk> \<Longrightarrow> \<mu> \<star> \<tau> \<noteq> null"
@@ -146,8 +146,8 @@ begin
       introduced subsequently.
     \<close>
 
-    no_notation in_hom      ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation in_hom         ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
+    no_notation in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation in_hom         (\<open>\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>\<close>)
 
     lemma is_partial_magma:
     shows "partial_magma H"
@@ -407,16 +407,16 @@ begin
   locale left_hom =
     weak_composition V H +
     S: subcategory V \<open>left \<omega>\<close>
-  for V :: "'a comp"        (infixr "\<cdot>" 55)
-  and H :: "'a comp"        (infixr "\<star>" 53)
+  for V :: "'a comp"        (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a comp"        (infixr \<open>\<star>\<close> 53)
   and \<omega> :: 'a +
   assumes arr_\<omega>: "arr \<omega>"
   begin
 
-    no_notation in_hom      ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation in_hom         ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
-    notation S.comp         (infixr "\<cdot>\<^sub>S" 55)
-    notation S.in_hom       ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
+    no_notation in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation in_hom         (\<open>\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>\<close>)
+    notation S.comp         (infixr \<open>\<cdot>\<^sub>S\<close> 55)
+    notation S.in_hom       (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     lemma right_hcomp_closed:
     assumes "\<guillemotleft>\<mu> : x \<Rightarrow>\<^sub>S y\<guillemotright>" and "\<guillemotleft>\<nu> : c \<Rightarrow> d\<guillemotright>" and "\<mu> \<star> \<nu> \<noteq> null"
@@ -466,16 +466,16 @@ begin
   locale right_hom =
     weak_composition V H +
     S: subcategory V \<open>right \<omega>\<close>
-  for V :: "'a comp"        (infixr "\<cdot>" 55)
-  and H :: "'a comp"        (infixr "\<star>" 53)
+  for V :: "'a comp"        (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a comp"        (infixr \<open>\<star>\<close> 53)
   and \<omega> :: 'a +
   assumes arr_\<omega>: "arr \<omega>"
   begin
 
-    no_notation in_hom      ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation in_hom         ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
-    notation S.comp         (infixr "\<cdot>\<^sub>S" 55)
-    notation S.in_hom       ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
+    no_notation in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation in_hom         (\<open>\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>\<close>)
+    notation S.comp         (infixr \<open>\<cdot>\<^sub>S\<close> 55)
+    notation S.in_hom       (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     lemma left_hcomp_closed:
     assumes "\<guillemotleft>\<mu> : x \<Rightarrow>\<^sub>S y\<guillemotright>" and "\<guillemotleft>\<nu> : c \<Rightarrow> d\<guillemotright>" and "\<nu> \<star> \<mu> \<noteq> null"
@@ -653,7 +653,7 @@ begin
     shows "weak_unit b \<longleftrightarrow> b \<in> targets b"
       using weak_unit_self_composable by auto
 
-    abbreviation (input) in_hhom\<^sub>W\<^sub>C  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>W\<^sub>C _\<guillemotright>")
+    abbreviation (input) in_hhom\<^sub>W\<^sub>C  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>W\<^sub>C _\<guillemotright>\<close>)
     where "in_hhom\<^sub>W\<^sub>C \<mu> f g \<equiv> arr \<mu> \<and> f \<in> sources \<mu> \<and> g \<in> targets \<mu>"
 
     lemma sources_hcomp:
@@ -890,7 +890,7 @@ begin
 
   locale associative_weak_composition =
     weak_composition +
-  fixes \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    ("\<a>[_, _, _]")
+  fixes \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    (\<open>\<a>[_, _, _]\<close>)
   assumes assoc_in_vhom\<^sub>A\<^sub>W\<^sub>C:
            "\<lbrakk> ide f; ide g; ide h; f \<star> g \<noteq> null; g \<star> h \<noteq> null \<rbrakk> \<Longrightarrow>
               \<guillemotleft>\<a>[f, g, h] : (f \<star> g) \<star> h \<Rightarrow> f \<star> g \<star> h\<guillemotright>"
@@ -1008,9 +1008,9 @@ begin
   locale right_hom_with_unit =
     associative_weak_composition V H \<a> +
     right_hom V H a
-  for V :: "'a comp"                  (infixr "\<cdot>" 55)
-  and H :: "'a comp"                  (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      ("\<a>[_, _, _]")
+  for V :: "'a comp"                  (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a comp"                  (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      (\<open>\<a>[_, _, _]\<close>)
   and \<iota> :: 'a
   and a :: 'a +
   assumes weak_unit_a: "weak_unit a"
@@ -1030,7 +1030,7 @@ begin
     shows "fully_faithful_functor S.comp S.comp R"
       ..
 
-    definition runit  ("\<r>[_]")
+    definition runit  (\<open>\<r>[_]\<close>)
     where "runit f \<equiv> THE \<mu>. \<guillemotleft>\<mu> : R f \<Rightarrow>\<^sub>S f\<guillemotright> \<and> R \<mu> = (f \<star> \<iota>) \<cdot>\<^sub>S \<a>[f, a, a]"
 
     lemma iso_unit:
@@ -1241,9 +1241,9 @@ begin
   locale left_hom_with_unit =
     associative_weak_composition V H \<a> +
     left_hom V H b
-  for V :: "'a comp"                  (infixr "\<cdot>" 55)
-  and H :: "'a comp"                  (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      ("\<a>[_, _, _]")
+  for V :: "'a comp"                  (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a comp"                  (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      (\<open>\<a>[_, _, _]\<close>)
   and \<iota> :: 'a
   and b :: 'a +
   assumes weak_unit_b: "weak_unit b"
@@ -1263,7 +1263,7 @@ begin
     shows "fully_faithful_functor S.comp S.comp L"
       ..
 
-    definition lunit  ("\<l>[_]")
+    definition lunit  (\<open>\<l>[_]\<close>)
     where "lunit f \<equiv> THE \<mu>. \<guillemotleft>\<mu> : L f \<Rightarrow>\<^sub>S f\<guillemotright> \<and> L \<mu> = (\<iota> \<star> f) \<cdot>\<^sub>S (inv \<a>[b, b, f])"
 
     lemma iso_unit:
@@ -1951,7 +1951,7 @@ begin
     category V +
     src: endofunctor V src +
     trg: endofunctor V trg
-  for V :: "'a comp"      (infixr "\<cdot>" 55)
+  for V :: "'a comp"      (infixr \<open>\<cdot>\<close> 55)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a" +
   assumes ide_src [simp]: "arr \<mu> \<Longrightarrow> ide (src \<mu>)"
@@ -1962,8 +1962,8 @@ begin
   and src_trg [simp]: "arr \<mu> \<Longrightarrow> src (trg \<mu>) = trg \<mu>"
   begin
 
-    no_notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation in_hom           ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
+    no_notation in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation in_hom           (\<open>\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>\<close>)
 
     text \<open>
       We define an \emph{object} to be an arrow that is its own source
@@ -2012,7 +2012,7 @@ begin
     shows "obj (trg \<mu>)"
       using assms objI_trg by auto
 
-    definition in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    definition in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
     where "in_hhom \<mu> a b \<equiv> arr \<mu> \<and> src \<mu> = a \<and> trg \<mu> = b"
 
     abbreviation hhom
@@ -2532,10 +2532,10 @@ begin
   locale prebicategory_with_units =
     prebicategory V H \<a> +
     weak_composition V H
-  for V :: "'a comp"                  (infixr "\<cdot>" 55)
-  and H :: "'a comp"                  (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                  ("\<i>[_]") +
+  for V :: "'a comp"                  (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a comp"                  (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                  (\<open>\<i>[_]\<close>) +
   assumes unit_in_vhom\<^sub>P\<^sub>B\<^sub>U: "weak_unit a \<Longrightarrow> \<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
   and iso_unit\<^sub>P\<^sub>B\<^sub>U: "weak_unit a \<Longrightarrow> iso \<i>[a]"
   begin
@@ -2584,15 +2584,15 @@ begin
   locale horizontal_composition =
     horizontal_homs V src trg +
     H: "functor" VV.comp V \<open>\<lambda>\<mu>\<nu>. H (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
-  for V :: "'a comp"          (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr "\<star>" 53)
+  for V :: "'a comp"          (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr \<open>\<star>\<close> 53)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a" +
   assumes src_hcomp: "arr (\<mu> \<star> \<nu>) \<Longrightarrow> src (\<mu> \<star> \<nu>) = src \<nu>"
   and trg_hcomp: "arr (\<mu> \<star> \<nu>) \<Longrightarrow> trg (\<mu> \<star> \<nu>) = trg \<mu>"
   begin
     (* TODO: Why does this get re-introduced? *)
-    no_notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    no_notation in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     text \<open>
       \<open>H\<close> is a partial composition, which shares its null with \<open>V\<close>.

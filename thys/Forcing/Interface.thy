@@ -14,26 +14,26 @@ theory Interface
 begin
 
 syntax
-  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" [36,36,36] 60)
+  "_sats"  :: "[i, i, i] \<Rightarrow> o"  (\<open>(_, _ \<Turnstile> _)\<close> [36,36,36] 60)
 syntax_consts
   "_sats" \<rightleftharpoons> sats
 translations
   "(M,env \<Turnstile> \<phi>)" \<rightleftharpoons> "CONST sats(M,\<phi>,env)"
 
 abbreviation
-  dec10  :: i   ("10") where "10 \<equiv> succ(9)"
+  dec10  :: i   (\<open>10\<close>) where "10 \<equiv> succ(9)"
 
 abbreviation
-  dec11  :: i   ("11") where "11 \<equiv> succ(10)"
+  dec11  :: i   (\<open>11\<close>) where "11 \<equiv> succ(10)"
 
 abbreviation
-  dec12  :: i   ("12") where "12 \<equiv> succ(11)"
+  dec12  :: i   (\<open>12\<close>) where "12 \<equiv> succ(11)"
 
 abbreviation
-  dec13  :: i   ("13") where "13 \<equiv> succ(12)"
+  dec13  :: i   (\<open>13\<close>) where "13 \<equiv> succ(12)"
 
 abbreviation
-  dec14  :: i   ("14") where "14 \<equiv> succ(13)"
+  dec14  :: i   (\<open>14\<close>) where "14 \<equiv> succ(13)"
 
 
 definition

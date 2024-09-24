@@ -4,7 +4,7 @@ begin
 
 type_synonym 'form entailment = "('form fset \<times> 'form)"
 
-abbreviation entails :: "'form fset \<Rightarrow> 'form \<Rightarrow> 'form entailment" (infix "\<turnstile>" 50)
+abbreviation entails :: "'form fset \<Rightarrow> 'form \<Rightarrow> 'form entailment" (infix \<open>\<turnstile>\<close> 50)
   where "a \<turnstile> c \<equiv> (a, c)"
 
 fun add_ctxt :: "'form fset \<Rightarrow> 'form entailment \<Rightarrow> 'form entailment" where

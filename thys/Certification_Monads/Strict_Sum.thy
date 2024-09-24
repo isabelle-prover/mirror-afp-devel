@@ -12,7 +12,7 @@ imports
   Partial_Function_MR.Partial_Function_MR
 begin
 
-datatype (dead 'e, 'a) sum_bot (infixr "+\<^sub>\<bottom>" 10) = Bottom | Left 'e | Right 'a for map: sum_bot_map
+datatype (dead 'e, 'a) sum_bot (infixr \<open>+\<^sub>\<bottom>\<close> 10) = Bottom | Left 'e | Right 'a for map: sum_bot_map
 
 
 subsection \<open>Setup for Partial Functions\<close>

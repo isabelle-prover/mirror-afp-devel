@@ -10,7 +10,7 @@ subsection \<open>Vector derivative on a set\<close>
 
 definition
   has_vderiv_on :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> bool"
-  (infix "(has'_vderiv'_on)" 50)
+  (infix \<open>(has'_vderiv'_on)\<close> 50)
 where
   "(f has_vderiv_on f') S \<longleftrightarrow> (\<forall>x \<in> S. (f has_vector_derivative f' x) (at x within S))"
 

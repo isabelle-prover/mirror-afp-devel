@@ -474,7 +474,7 @@ end
 subsection \<open>Well-typing\<close>
 
 coinductive WT_converter :: "('a, 'b) \<I> \<Rightarrow> ('out, 'in) \<I> \<Rightarrow> ('a, 'b, 'out, 'in) converter \<Rightarrow> bool"
-  ("_,/ _ \<turnstile>\<^sub>C/ _ \<surd>" [100, 0, 0] 99)
+  (\<open>_,/ _ \<turnstile>\<^sub>C/ _ \<surd>\<close> [100, 0, 0] 99)
   for \<I> \<I>' where
     WT_converterI: "\<I>, \<I>' \<turnstile>\<^sub>C conv \<surd>" if
     "\<And>q. q \<in> outs_\<I> \<I> \<Longrightarrow> \<I>' \<turnstile>g run_converter conv q \<surd>"

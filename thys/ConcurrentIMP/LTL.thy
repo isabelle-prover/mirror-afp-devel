@@ -25,29 +25,29 @@ ignore the system, i.e. to state rules as temporally valid
 
 \<close>
 
-definition state_prop :: "('a \<Rightarrow> bool) \<Rightarrow> 'a seq_pred" ("\<lceil>_\<rceil>") where
+definition state_prop :: "('a \<Rightarrow> bool) \<Rightarrow> 'a seq_pred" (\<open>\<lceil>_\<rceil>\<close>) where
   "\<lceil>P\<rceil> = (\<lambda>\<sigma>. P (\<sigma> 0))"
 
-definition "next" :: "'a seq_pred \<Rightarrow> 'a seq_pred" ("\<circle>_" [80] 80) where
+definition "next" :: "'a seq_pred \<Rightarrow> 'a seq_pred" (\<open>\<circle>_\<close> [80] 80) where
   "(\<circle>P) = (\<lambda>\<sigma>. P (\<sigma> |\<^sub>s 1))"
 
-definition always :: "'a seq_pred \<Rightarrow> 'a seq_pred" ("\<box>_" [80] 80) where
+definition always :: "'a seq_pred \<Rightarrow> 'a seq_pred" (\<open>\<box>_\<close> [80] 80) where
   "(\<box>P) = (\<lambda>\<sigma>. \<forall>i. P (\<sigma> |\<^sub>s i))"
 
-definition until :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr "\<U>" 30) where (* FIXME priority, binds tighter than \<^bold>\<longrightarrow> *)
+definition until :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr \<open>\<U>\<close> 30) where (* FIXME priority, binds tighter than \<^bold>\<longrightarrow> *)
   "(P \<U> Q) = (\<lambda>\<sigma>. \<exists>i. Q (\<sigma> |\<^sub>s i) \<and> (\<forall>k<i. P (\<sigma> |\<^sub>s k)))"
 
-definition eventually :: "'a seq_pred \<Rightarrow> 'a seq_pred" ("\<diamond>_" [80] 80) where (* FIXME priority, consider making an abbreviation *)
+definition eventually :: "'a seq_pred \<Rightarrow> 'a seq_pred" (\<open>\<diamond>_\<close> [80] 80) where (* FIXME priority, consider making an abbreviation *)
   "(\<diamond>P) = (\<langle>True\<rangle> \<U> P)"
 
-definition release :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr "\<R>" 30) where (* FIXME priority, dual of Until *)
+definition release :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr \<open>\<R>\<close> 30) where (* FIXME priority, dual of Until *)
   "(P \<R> Q) = (\<^bold>\<not>(\<^bold>\<not>P \<U> \<^bold>\<not>Q))"
 
-definition unless :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr "\<W>" 30) where (* FIXME priority, aka weak until *)
+definition unless :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr \<open>\<W>\<close> 30) where (* FIXME priority, aka weak until *)
   "(P \<W> Q) = ((P \<U> Q) \<^bold>\<or> \<box>P)"
 
 abbreviation (input)
-  pred_always_imp_syn :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr "\<^bold>\<hookrightarrow>" 25) where
+  pred_always_imp_syn :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr \<open>\<^bold>\<hookrightarrow>\<close> 25) where
   "P \<^bold>\<hookrightarrow> Q \<equiv> \<box>(P \<^bold>\<longrightarrow> Q)"
 
 lemmas defs =
@@ -418,7 +418,7 @@ The leads-to-via connective is similar to the ``ensures'' modality of \<^citet>\
 \<close>
 
 abbreviation (input)
-  leads_to :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr "\<^bold>\<leadsto>" 25) where (* FIXME priority *)
+  leads_to :: "'a seq_pred \<Rightarrow> 'a seq_pred \<Rightarrow> 'a seq_pred" (infixr \<open>\<^bold>\<leadsto>\<close> 25) where (* FIXME priority *)
   "P \<^bold>\<leadsto> Q \<equiv> P \<^bold>\<hookrightarrow> \<diamond>Q"
 
 lemma leads_to_refl:

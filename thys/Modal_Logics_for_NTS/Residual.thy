@@ -98,7 +98,7 @@ by (metis residual.abs_eq_iff residual_abs_rep permute_residual.abs_eq)
 
 subsection \<open>Notation for pairs as residuals\<close>
 
-abbreviation abs_residual_pair :: "'act::bn \<Rightarrow> 'state::pt \<Rightarrow> ('act,'state) residual" ("\<langle>_,_\<rangle>" [0,0] 1000)
+abbreviation abs_residual_pair :: "'act::bn \<Rightarrow> 'state::pt \<Rightarrow> ('act,'state) residual" (\<open>\<langle>_,_\<rangle>\<close> [0,0] 1000)
 where
   "\<langle>\<alpha>,P\<rangle> == abs_residual (\<alpha>,P)"
 

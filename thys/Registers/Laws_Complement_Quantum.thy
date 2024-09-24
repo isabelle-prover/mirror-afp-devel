@@ -9,8 +9,8 @@ theory Laws_Complement_Quantum
   imports Laws_Quantum Axioms_Complement_Quantum
 begin
 
-notation cblinfun_compose (infixl "*\<^sub>u" 55)
-notation tensor_op (infixr "\<otimes>\<^sub>u" 70)
+notation cblinfun_compose (infixl \<open>*\<^sub>u\<close> 55)
+notation tensor_op (infixr \<open>\<otimes>\<^sub>u\<close> 70)
 
 definition \<open>complements F G \<longleftrightarrow> compatible F G \<and> iso_register (F;G)\<close>
 
@@ -357,7 +357,7 @@ text \<open>Adding support for \<^term>\<open>is_unit_register F\<close> and \<^
 lemmas [register_attribute_rule] = is_unit_register_def[THEN iffD1] complements_def[THEN iffD1]
 lemmas [register_attribute_rule_immediate] = asm_rl[of \<open>is_unit_register _\<close>]
 
-no_notation cblinfun_compose (infixl "*\<^sub>u" 55)
-no_notation tensor_op (infixr "\<otimes>\<^sub>u" 70)
+no_notation cblinfun_compose (infixl \<open>*\<^sub>u\<close> 55)
+no_notation tensor_op (infixr \<open>\<otimes>\<^sub>u\<close> 70)
 
 end

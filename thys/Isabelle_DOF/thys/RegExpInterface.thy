@@ -41,15 +41,15 @@ text\<open> The implementation of the monitoring concept follows the following d
 
 section\<open>Monitor Syntax over RegExp - constructs\<close>
 
-notation Star  ("\<lbrace>(_)\<rbrace>\<^sup>*" [0]100)
-notation Plus  (infixr "||" 55)
-notation Times (infixr "~~" 60)
-notation Atom  ("\<lfloor>_\<rfloor>" 65)
+notation Star  (\<open>\<lbrace>(_)\<rbrace>\<^sup>*\<close> [0]100)
+notation Plus  (infixr \<open>||\<close> 55)
+notation Times (infixr \<open>~~\<close> 60)
+notation Atom  (\<open>\<lfloor>_\<rfloor>\<close> 65)
 
-definition rep1 :: "'a rexp \<Rightarrow> 'a rexp" ("\<lbrace>(_)\<rbrace>\<^sup>+")
+definition rep1 :: "'a rexp \<Rightarrow> 'a rexp" (\<open>\<lbrace>(_)\<rbrace>\<^sup>+\<close>)
   where "\<lbrace>A\<rbrace>\<^sup>+ \<equiv>  A ~~ \<lbrace>A\<rbrace>\<^sup>*"
     
-definition opt :: "'a rexp \<Rightarrow> 'a rexp" ("\<lbrakk>(_)\<rbrakk>")
+definition opt :: "'a rexp \<Rightarrow> 'a rexp" (\<open>\<lbrakk>(_)\<rbrakk>\<close>)
    where "\<lbrakk>A\<rbrakk> \<equiv>  A || One"
 
 value "Star (Conc(Alt (Atom(CHR ''a'')) (Atom(CHR ''b''))) (Atom(CHR ''c'')))"
@@ -302,12 +302,12 @@ lemma mono_rep1_star':"L\<^sub>s\<^sub>u\<^sub>b (a) \<subseteq> L\<^sub>s\<^sub
   using mono_Star' rep1_star_incl' by blast
 
 
-no_notation Star  ("\<lbrace>(_)\<rbrace>\<^sup>*" [0]100)
-no_notation Plus  (infixr "||" 55)
-no_notation Times (infixr "~~" 60)
-no_notation Atom  ("\<lfloor>_\<rfloor>" 65)
-no_notation rep1 ("\<lbrace>(_)\<rbrace>\<^sup>+")
-no_notation opt  ("\<lbrakk>(_)\<rbrakk>")
+no_notation Star  (\<open>\<lbrace>(_)\<rbrace>\<^sup>*\<close> [0]100)
+no_notation Plus  (infixr \<open>||\<close> 55)
+no_notation Times (infixr \<open>~~\<close> 60)
+no_notation Atom  (\<open>\<lfloor>_\<rfloor>\<close> 65)
+no_notation rep1 (\<open>\<lbrace>(_)\<rbrace>\<^sup>+\<close>)
+no_notation opt  (\<open>\<lbrakk>(_)\<rbrakk>\<close>)
 
 ML\<open>
 structure RegExpInterface_Notations =

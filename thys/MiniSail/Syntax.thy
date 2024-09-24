@@ -25,7 +25,7 @@ type_synonym tyid = string
 text \<open>Basic types. Types without refinement constraints\<close>
 nominal_datatype "b" =  
   B_int | B_bool | B_id tyid 
-| B_pair b b  ("[ _ , _ ]\<^sup>b")
+| B_pair b b  (\<open>[ _ , _ ]\<^sup>b\<close>)
 | B_unit | B_bitvec | B_var bv
 | B_app tyid b
 
@@ -39,70 +39,70 @@ text  \<open> Values. We include a type identifier, tyid, in the literal for con
 to make typing and well-formedness checking easier \<close>
 
 nominal_datatype "v" = 
-  V_lit "l"        ( "[ _ ]\<^sup>v")
-  | V_var "x"        ( "[ _ ]\<^sup>v")
-  | V_pair "v" "v"   ( "[ _ , _ ]\<^sup>v")
+  V_lit "l"        ( \<open>[ _ ]\<^sup>v\<close>)
+  | V_var "x"        ( \<open>[ _ ]\<^sup>v\<close>)
+  | V_pair "v" "v"   ( \<open>[ _ , _ ]\<^sup>v\<close>)
   | V_cons tyid dc "v" 
   | V_consp tyid dc b "v" 
 
 text \<open> Binary Operations \<close>
-nominal_datatype "opp" = Plus ( "plus") | LEq ("leq") | Eq ("eq")
+nominal_datatype "opp" = Plus ( \<open>plus\<close>) | LEq (\<open>leq\<close>) | Eq (\<open>eq\<close>)
 
 text \<open> Expressions \<close>
 nominal_datatype "e" = 
-  AE_val "v"           ( "[ _ ]\<^sup>e"       )
-  | AE_app "f" "v"       ( "[ _ ( _ ) ]\<^sup>e" )
-  | AE_appP  "f" "b" "v" ( "[_ [ _ ] ( _ )]\<^sup>e" )
-  | AE_op "opp" "v" "v"  ( "[ _ _ _ ]\<^sup>e"  )
-  | AE_concat v v        ( "[ _ @@ _ ]\<^sup>e" )
-  | AE_fst "v"           ( "[#1_ ]\<^sup>e"    )
-  | AE_snd "v"           ( "[#2_ ]\<^sup>e"     )
-  | AE_mvar "u"          ( "[ _ ]\<^sup>e"      )
-  | AE_len "v"           ( "[| _ |]\<^sup>e"    )
-  | AE_split "v" "v"     ( "[ _ / _ ]\<^sup>e"  )
+  AE_val "v"           ( \<open>[ _ ]\<^sup>e\<close>       )
+  | AE_app "f" "v"       ( \<open>[ _ ( _ ) ]\<^sup>e\<close> )
+  | AE_appP  "f" "b" "v" ( \<open>[_ [ _ ] ( _ )]\<^sup>e\<close> )
+  | AE_op "opp" "v" "v"  ( \<open>[ _ _ _ ]\<^sup>e\<close>  )
+  | AE_concat v v        ( \<open>[ _ @@ _ ]\<^sup>e\<close> )
+  | AE_fst "v"           ( \<open>[#1_ ]\<^sup>e\<close>    )
+  | AE_snd "v"           ( \<open>[#2_ ]\<^sup>e\<close>     )
+  | AE_mvar "u"          ( \<open>[ _ ]\<^sup>e\<close>      )
+  | AE_len "v"           ( \<open>[| _ |]\<^sup>e\<close>    )
+  | AE_split "v" "v"     ( \<open>[ _ / _ ]\<^sup>e\<close>  )
 
 text \<open> Expressions for constraints\<close>
 nominal_datatype "ce" = 
-  CE_val "v"           ( "[ _ ]\<^sup>c\<^sup>e"      )
-  | CE_op "opp" "ce" "ce"  ( "[ _ _ _ ]\<^sup>c\<^sup>e"  )
-  | CE_concat ce ce        ( "[ _ @@ _ ]\<^sup>c\<^sup>e" )
-  | CE_fst "ce"           ( "[#1_]\<^sup>c\<^sup>e"      )
-  | CE_snd "ce"           ( "[#2_]\<^sup>c\<^sup>e"      )
-  | CE_len "ce"           ( "[| _ |]\<^sup>c\<^sup>e"    )
+  CE_val "v"           ( \<open>[ _ ]\<^sup>c\<^sup>e\<close>      )
+  | CE_op "opp" "ce" "ce"  ( \<open>[ _ _ _ ]\<^sup>c\<^sup>e\<close>  )
+  | CE_concat ce ce        ( \<open>[ _ @@ _ ]\<^sup>c\<^sup>e\<close> )
+  | CE_fst "ce"           ( \<open>[#1_]\<^sup>c\<^sup>e\<close>      )
+  | CE_snd "ce"           ( \<open>[#2_]\<^sup>c\<^sup>e\<close>      )
+  | CE_len "ce"           ( \<open>[| _ |]\<^sup>c\<^sup>e\<close>    )
 
 text  \<open> Constraints \<close>
 nominal_datatype "c" = 
-  C_true          ( "TRUE" [] 50 )
-  | C_false         ( "FALSE" [] 50 )
-  | C_conj "c" "c"  ("_  AND  _ " [50, 50] 50) 
-  | C_disj "c" "c"  ("_ OR _ " [50,50] 50)
-  | C_not "c"       ( "\<not> _ " [] 50 )
-  | C_imp "c" "c"   ("_  IMP  _ " [50, 50] 50) 
-  | C_eq "ce" "ce"  ("_  ==  _ " [50, 50] 50) 
+  C_true          ( \<open>TRUE\<close> [] 50 )
+  | C_false         ( \<open>FALSE\<close> [] 50 )
+  | C_conj "c" "c"  (\<open>_  AND  _ \<close> [50, 50] 50) 
+  | C_disj "c" "c"  (\<open>_ OR _ \<close> [50,50] 50)
+  | C_not "c"       ( \<open>\<not> _ \<close> [] 50 )
+  | C_imp "c" "c"   (\<open>_  IMP  _ \<close> [50, 50] 50) 
+  | C_eq "ce" "ce"  (\<open>_  ==  _ \<close> [50, 50] 50) 
 
 text  \<open> Refined types \<close>
 nominal_datatype "\<tau>" = 
-  T_refined_type  x::x b c::c   binds x in c   ("\<lbrace> _ : _  | _ \<rbrace>" [50, 50] 1000)
+  T_refined_type  x::x b c::c   binds x in c   (\<open>\<lbrace> _ : _  | _ \<rbrace>\<close> [50, 50] 1000)
 
 text \<open> Statements \<close>
 
 nominal_datatype 
   s = 
-  AS_val v                             ( "[_]\<^sup>s")                  
-  | AS_let x::x  e s::s binds x in s     ( "(LET _ = _ IN _)")
-  | AS_let2 x::x \<tau>  s s::s binds x in s  ( "(LET _ : _ = _ IN _)")
-  | AS_if v s s                          ( "(IF _ THEN _ ELSE _)" [0, 61, 0] 61)
-  | AS_var u::u \<tau> v s::s  binds u in s   ( "(VAR _ : _ = _ IN _)")
-  | AS_assign u  v                       ( "(_ ::= _)")
-  | AS_match v branch_list               ( "(MATCH _ WITH { _ })")
-  | AS_while s s                         ( "(WHILE _ DO { _ } )" [0, 0] 61)     
-  | AS_seq s s                           ( "( _ ;; _ )"  [1000, 61] 61)
-  | AS_assert c s                        ( "(ASSERT _ IN _ )" )
+  AS_val v                             ( \<open>[_]\<^sup>s\<close>)                  
+  | AS_let x::x  e s::s binds x in s     ( \<open>(LET _ = _ IN _)\<close>)
+  | AS_let2 x::x \<tau>  s s::s binds x in s  ( \<open>(LET _ : _ = _ IN _)\<close>)
+  | AS_if v s s                          ( \<open>(IF _ THEN _ ELSE _)\<close> [0, 61, 0] 61)
+  | AS_var u::u \<tau> v s::s  binds u in s   ( \<open>(VAR _ : _ = _ IN _)\<close>)
+  | AS_assign u  v                       ( \<open>(_ ::= _)\<close>)
+  | AS_match v branch_list               ( \<open>(MATCH _ WITH { _ })\<close>)
+  | AS_while s s                         ( \<open>(WHILE _ DO { _ } )\<close> [0, 0] 61)     
+  | AS_seq s s                           ( \<open>( _ ;; _ )\<close>  [1000, 61] 61)
+  | AS_assert c s                        ( \<open>(ASSERT _ IN _ )\<close> )
     and branch_s = 
-    AS_branch dc x::x s::s binds x in s  ( "( _ _ \<Rightarrow> _ )")   
+    AS_branch dc x::x s::s binds x in s  ( \<open>( _ _ \<Rightarrow> _ )\<close>)   
     and branch_list = 
-    AS_final  branch_s                   ( "{ _ }" )
-  | AS_cons  branch_s branch_list        ( "( _ | _  )")
+    AS_final  branch_s                   ( \<open>{ _ }\<close> )
+  | AS_cons  branch_s branch_list        ( \<open>( _ | _  )\<close>)
 
 text \<open> Function and union type definitions \<close>
 
@@ -128,7 +128,7 @@ nominal_datatype "var_def" =  AV_def u \<tau> v
 
 text  \<open> Programs \<close> 
 nominal_datatype "p" = 
-  AP_prog "type_def list" "fun_def list" "var_def list" "s" ("PROG _ _ _ _")
+  AP_prog "type_def list" "fun_def list" "var_def list" "s" (\<open>PROG _ _ _ _\<close>)
 
 declare l.supp [simp] v.supp [simp]  e.supp [simp] s_branch_s_branch_list.supp [simp]  \<tau>.supp [simp] c.supp [simp] b.supp[simp]
 
@@ -654,11 +654,11 @@ type_synonym \<B> = "bv fset"
 
 datatype \<Gamma> = 
   GNil
-  | GCons "x*b*c" \<Gamma>  (infixr "#\<^sub>\<Gamma>" 65)
+  | GCons "x*b*c" \<Gamma>  (infixr \<open>#\<^sub>\<Gamma>\<close> 65)
 
 datatype \<Delta> = 
-  DNil  ("[]\<^sub>\<Delta>")
-  | DCons "u*\<tau>" \<Delta>  (infixr "#\<^sub>\<Delta>" 65)
+  DNil  (\<open>[]\<^sub>\<Delta>\<close>)
+  | DCons "u*\<tau>" \<Delta>  (infixr \<open>#\<^sub>\<Delta>\<close> 65)
 
 subsection \<open>Functions and Lemmas\<close>
 
@@ -785,7 +785,7 @@ nominal_function toSet :: "\<Gamma> \<Rightarrow> (x*b*c) set" where
 nominal_termination (eqvt)
   by lexicographic_order
 
-nominal_function append_g :: "\<Gamma> \<Rightarrow> \<Gamma> \<Rightarrow> \<Gamma>" (infixr "@" 65) where
+nominal_function append_g :: "\<Gamma> \<Rightarrow> \<Gamma> \<Rightarrow> \<Gamma>" (infixr \<open>@\<close> 65) where
   "append_g GNil g = g"
 | "append_g (xbc #\<^sub>\<Gamma> g1) g2 = (xbc #\<^sub>\<Gamma> (g1@g2))"
        apply (auto,simp add: eqvt_def append_g_graph_aux_def )
@@ -1025,7 +1025,7 @@ nominal_function lookup :: "\<Gamma> \<Rightarrow> x \<Rightarrow> (b*c) option"
   by (auto,simp add: eqvt_def lookup_graph_aux_def, metis neq_GNil_conv surj_pair)
 nominal_termination (eqvt) by lexicographic_order
 
-nominal_function replace_in_g :: "\<Gamma> \<Rightarrow> x \<Rightarrow> c \<Rightarrow> \<Gamma>"  ("_[_\<longmapsto>_]" [1000,0,0] 200) where
+nominal_function replace_in_g :: "\<Gamma> \<Rightarrow> x \<Rightarrow> c \<Rightarrow> \<Gamma>"  (\<open>_[_\<longmapsto>_]\<close> [1000,0,0] 200) where
   "replace_in_g GNil _ _ = GNil"
 | "replace_in_g ((x,b,c)#\<^sub>\<Gamma>G) x' c' = (if x=x' then ((x,b,c')#\<^sub>\<Gamma>G) else (x,b,c)#\<^sub>\<Gamma>(replace_in_g G x' c'))"
        apply(auto,simp add: eqvt_def replace_in_g_graph_aux_def)

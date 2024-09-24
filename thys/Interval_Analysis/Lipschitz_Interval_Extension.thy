@@ -51,10 +51,10 @@ definition lipschitzI_on\<^marker>\<open>tag important\<close> :: "'a::{zero,min
 text \<open>The definition @{term "lipschitzI_on"} refers to definition 6.1 in\<^cite>\<open>"moore.ea:introduction:2009"\<close>\<close>
 
 bundle lipschitzI_syntax begin
-notation\<^marker>\<open>tag important\<close> lipschitzI_on ("_-lipschitzI'_on" [1000])
+notation\<^marker>\<open>tag important\<close> lipschitzI_on (\<open>_-lipschitzI'_on\<close> [1000])
 end
 bundle no_lipschitzI_syntax begin
-no_notation lipschitzI_on ("_-lipschitzI'_on" [1000])
+no_notation lipschitzI_on (\<open>_-lipschitzI'_on\<close> [1000])
 end
 
 unbundle lipschitzI_syntax

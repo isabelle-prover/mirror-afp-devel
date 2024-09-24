@@ -37,10 +37,10 @@ The main result is the ultrafilter lemma.
 context ord
 begin
 
-abbreviation down :: "'a \<Rightarrow> 'a set" ("\<down>_" [81] 80)
+abbreviation down :: "'a \<Rightarrow> 'a set" (\<open>\<down>_\<close> [81] 80)
   where "\<down>x \<equiv> { y . y \<le> x }"
 
-abbreviation down_set :: "'a set \<Rightarrow> 'a set" ("\<Down>_" [81] 80)
+abbreviation down_set :: "'a set \<Rightarrow> 'a set" (\<open>\<Down>_\<close> [81] 80)
   where "\<Down>X \<equiv> { y . \<exists>x\<in>X . y \<le> x }"
 
 abbreviation is_down_set :: "'a set \<Rightarrow> bool"
@@ -49,10 +49,10 @@ abbreviation is_down_set :: "'a set \<Rightarrow> bool"
 abbreviation is_principal_down :: "'a set \<Rightarrow> bool"
   where "is_principal_down X \<equiv> \<exists>x . X = \<down>x"
 
-abbreviation up :: "'a \<Rightarrow> 'a set" ("\<up>_" [81] 80)
+abbreviation up :: "'a \<Rightarrow> 'a set" (\<open>\<up>_\<close> [81] 80)
   where "\<up>x \<equiv> { y . x \<le> y }"
 
-abbreviation up_set :: "'a set \<Rightarrow> 'a set" ("\<Up>_" [81] 80)
+abbreviation up_set :: "'a set \<Rightarrow> 'a set" (\<open>\<Up>_\<close> [81] 80)
   where "\<Up>X \<equiv> { y . \<exists>x\<in>X . x \<le> y }"
 
 abbreviation is_up_set :: "'a set \<Rightarrow> bool"

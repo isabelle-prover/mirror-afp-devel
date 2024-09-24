@@ -38,7 +38,7 @@ and dsj
 and num
 and prv bprv
 and isTrue
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and "proof" :: "'proof set" and prfOf
 and encPf Pf
 begin
@@ -148,7 +148,7 @@ and eql cnj imp all exi
 and fls
 and dsj
 and num
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and prv bprv
 and P
 and isTrue
@@ -403,7 +403,7 @@ and eql cnj imp all exi
 and fls
 and dsj
 and num
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and prv bprv
 and P
 and isTrue

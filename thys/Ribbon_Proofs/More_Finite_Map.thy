@@ -10,7 +10,7 @@ lemma fdisjoint_iff: "A |\<inter>| B = {||} \<longleftrightarrow> (\<forall>x. x
 unbundle lifting_syntax
 unbundle fmap.lifting
 
-type_notation fmap (infix "\<rightharpoonup>\<^sub>f" 9)
+type_notation fmap (infix \<open>\<rightharpoonup>\<^sub>f\<close> 9)
 
 
 subsection \<open>Difference\<close>
@@ -21,7 +21,7 @@ where
   "map_diff f ks = restrict_map f (- fset ks)"
 
 lift_definition
-  fmap_diff :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k fset \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" (infix "\<ominus>" 110)
+  fmap_diff :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k fset \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" (infix \<open>\<ominus>\<close> 110)
 is "map_diff"
 by (auto simp add: map_diff_def)
 
@@ -41,7 +41,7 @@ lemma dom_make_map:
 by (metis domIff make_map_def not_Some_eq set_eqI)
 
 lift_definition
-  make_fmap :: "'k fset \<Rightarrow> 'v \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" ("[ _ |=> _ ]")
+  make_fmap :: "'k fset \<Rightarrow> 'v \<Rightarrow> ('k \<rightharpoonup>\<^sub>f 'v)" (\<open>[ _ |=> _ ]\<close>)
 is "make_map" parametric make_map_transfer
 by (unfold make_map_def dom_def, auto)
 

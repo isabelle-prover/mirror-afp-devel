@@ -22,7 +22,7 @@ type_synonym ('var, 'val) exp = "('var, 'val) pstate \<Rightarrow> 'val"
 
 datatype ('var, 'val) stmt = 
   Assign 'var "('var, 'val) exp"
-  | Seq "('var, 'val) stmt" "('var, 'val) stmt"  (infixl ";;" 60)
+  | Seq "('var, 'val) stmt" "('var, 'val) stmt"  (infixl \<open>;;\<close> 60)
   | If "('var, 'val) stmt" "('var, 'val) stmt"                    \<comment>\<open>Non-deterministic choice\<close>
   | Skip
   | Havoc 'var                                                    \<comment>\<open>Non-deterministic assignment\<close>
@@ -34,7 +34,7 @@ subsection Semantics
 text \<open>Figure 2\<close>
 
 inductive single_sem :: "('var, 'val) stmt \<Rightarrow> ('var, 'val) pstate \<Rightarrow> ('var, 'val) pstate \<Rightarrow> bool"
-  ("\<langle>_, _\<rangle> \<rightarrow> _" [51,0] 81)
+  (\<open>\<langle>_, _\<rangle> \<rightarrow> _\<close> [51,0] 81)
   where
   SemSkip: "\<langle>Skip, \<sigma>\<rangle> \<rightarrow> \<sigma>"
 | SemAssign: "\<langle>Assign var e, \<sigma>\<rangle> \<rightarrow> \<sigma>(var := (e \<sigma>))"

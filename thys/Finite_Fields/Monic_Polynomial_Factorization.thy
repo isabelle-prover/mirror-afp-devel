@@ -35,7 +35,7 @@ proof -
     using finite_subset by auto
 qed
 
-definition pmult :: "_ \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> nat" ("pmult\<index>")
+definition pmult :: "_ \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> nat" (\<open>pmult\<index>\<close>)
   where "pmult\<^bsub>R\<^esub> d p = multiplicity (mult_of (poly_ring R)) d p"
 
 definition monic_poly :: "_ \<Rightarrow> 'a list \<Rightarrow> bool"

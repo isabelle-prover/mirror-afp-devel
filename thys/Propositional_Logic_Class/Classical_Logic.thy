@@ -14,7 +14,7 @@ text \<open> Classical propositional logic can be given by the following
        extended with \<^emph>\<open>falsum\<close> and double negation. \<close>
 
 class classical_logic = implication_logic +
-  fixes falsum :: "'a" ("\<bottom>")
+  fixes falsum :: "'a" (\<open>\<bottom>\<close>)
   assumes double_negation: "\<turnstile> (((\<phi> \<rightarrow> \<bottom>) \<rightarrow> \<bottom>) \<rightarrow> \<phi>)"
 
 text \<open> In some cases it is useful to assume consistency as an axiom: \<close>
@@ -164,7 +164,7 @@ definition (in classical_logic)
     [simp]: "consistent \<Gamma> \<equiv> \<bottom>-consistent \<Gamma>"
 
 definition (in classical_logic)
-  maximally_consistent_set :: "'a set \<Rightarrow> bool" ("MCS") where
+  maximally_consistent_set :: "'a set \<Rightarrow> bool" (\<open>MCS\<close>) where
     [simp]: "MCS \<Gamma> \<equiv> \<bottom>-MCS \<Gamma>"
 
 lemma (in classical_logic)

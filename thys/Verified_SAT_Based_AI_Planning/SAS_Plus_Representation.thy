@@ -18,13 +18,13 @@ record  ('variable, 'domain) sas_plus_operator =
   effect_of :: "('variable, 'domain) assignment list" 
 
 record  ('variable, 'domain) sas_plus_problem =
-  variables_of :: "'variable list" ("(_\<^sub>\<V>\<^sub>+)" [1000] 999)
-  operators_of :: "('variable, 'domain) sas_plus_operator list" ("(_\<^sub>\<O>\<^sub>+)" [1000] 999)
-  initial_of :: "('variable, 'domain) state" ("(_\<^sub>I\<^sub>+)" [1000] 999)
-  goal_of :: "('variable, 'domain) state" ("(_\<^sub>G\<^sub>+)" [1000] 999)
+  variables_of :: "'variable list" (\<open>(_\<^sub>\<V>\<^sub>+)\<close> [1000] 999)
+  operators_of :: "('variable, 'domain) sas_plus_operator list" (\<open>(_\<^sub>\<O>\<^sub>+)\<close> [1000] 999)
+  initial_of :: "('variable, 'domain) state" (\<open>(_\<^sub>I\<^sub>+)\<close> [1000] 999)
+  goal_of :: "('variable, 'domain) state" (\<open>(_\<^sub>G\<^sub>+)\<close> [1000] 999)
   range_of :: "'variable \<rightharpoonup> 'domain list"
 
-definition range_of':: "('variable, 'domain) sas_plus_problem \<Rightarrow> 'variable \<Rightarrow> 'domain set"  ("\<R>\<^sub>+ _ _" 52)
+definition range_of':: "('variable, 'domain) sas_plus_problem \<Rightarrow> 'variable \<Rightarrow> 'domain set"  (\<open>\<R>\<^sub>+ _ _\<close> 52)
   where
   "range_of' \<Psi> v \<equiv>
      (case sas_plus_problem.range_of \<Psi> v of None \<Rightarrow> {} 
@@ -45,7 +45,7 @@ type_synonym  ('variable, 'domain) sas_plus_parallel_plan
   = "('variable, 'domain) sas_plus_operator list list"
 
 abbreviation  empty_operator 
-  :: "('variable, 'domain) sas_plus_operator" ("\<rho>")
+  :: "('variable, 'domain) sas_plus_operator" (\<open>\<rho>\<close>)
   where "empty_operator \<equiv> \<lparr> precondition_of = [], effect_of = [] \<rparr>" 
 
 definition is_valid_operator_sas_plus
@@ -86,7 +86,7 @@ definition is_operator_applicable_in
 definition execute_operator_sas_plus
   :: "('variable, 'domain) state 
     \<Rightarrow> ('variable, 'domain) sas_plus_operator
-    \<Rightarrow> ('variable, 'domain) state" (infixl "\<then>\<^sub>+" 52)
+    \<Rightarrow> ('variable, 'domain) state" (infixl \<open>\<then>\<^sub>+\<close> 52)
   where "execute_operator_sas_plus s op \<equiv> s ++ map_of (effect_of op)"
 
 \<comment> \<open> Set up simp rules to keep use of local parameters transparent within proofs (i.e. 

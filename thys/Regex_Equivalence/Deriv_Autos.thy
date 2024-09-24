@@ -166,7 +166,7 @@ proof (unfold_locales, goal_cases)
   then show ?case by (rule finite_surj[OF iffD2[OF finite_Pow_iff finite_pderivs_lang_UNIV]])
 qed simp_all
 
-definition str_eq :: "'a lang => ('a list \<times> 'a list) set" ("\<approx>_" [100] 100)
+definition str_eq :: "'a lang => ('a list \<times> 'a list) set" (\<open>\<approx>_\<close> [100] 100)
 where "\<approx>A \<equiv> {(x, y).  (\<forall>z. x @ z \<in> A \<longleftrightarrow> y @ z \<in> A)}"
 
 lemma str_eq_alt: "\<approx>A = {(x, y). fold Deriv x A = fold Deriv y A}"

@@ -16,14 +16,14 @@ declare [[syntax_ambiguity_warning = false]]
 type_synonym heap = "(nat \<Rightarrow> nat option)"
 
 (* This syntax isn't ideal, but this is what is used in the original *)
-definition maps_to:: "nat \<Rightarrow> nat \<Rightarrow> heap \<Rightarrow> bool" ("_ \<mapsto> _" [56,51] 56)
+definition maps_to:: "nat \<Rightarrow> nat \<Rightarrow> heap \<Rightarrow> bool" (\<open>_ \<mapsto> _\<close> [56,51] 56)
   where "x \<mapsto> y \<equiv> \<lambda>h. h = [x \<mapsto> y]"
 
 (* If you don't mind syntax ambiguity: *)
-notation pred_ex  (binder "\<exists>" 10)
+notation pred_ex  (binder \<open>\<exists>\<close> 10)
 
 (* could be generated automatically *)
-definition maps_to_ex :: "nat \<Rightarrow> heap \<Rightarrow> bool" ("_ \<mapsto> -" [56] 56)
+definition maps_to_ex :: "nat \<Rightarrow> heap \<Rightarrow> bool" (\<open>_ \<mapsto> -\<close> [56] 56)
   where "x \<mapsto> - \<equiv> \<exists>y. x \<mapsto> y"
 
 

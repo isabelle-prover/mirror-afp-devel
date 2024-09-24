@@ -17,8 +17,8 @@ lemma monadic_WHILEIT_unfold:
   apply refine_mono
   by simp
 
-no_notation Ref.lookup ("!_" 61)
-no_notation Ref.update ("_ := _" 62)
+no_notation Ref.lookup (\<open>!_\<close> 61)
+no_notation Ref.update (\<open>_ := _\<close> 62)
 
 subsection \<open>Specialized Rules for Foreach-Loops\<close>
 lemma nfoldli_upt_rule:
@@ -65,22 +65,22 @@ subsection \<open>Improved Do-Notation for the \<open>nres\<close>-Monad\<close>
 
 abbreviation (do_notation) bind_doN where "bind_doN \<equiv> Refine_Basic.bind"
 
-notation (output) bind_doN (infixl "\<bind>" 54)
-notation (ASCII output) bind_doN (infixl ">>=" 54)
+notation (output) bind_doN (infixl \<open>\<bind>\<close> 54)
+notation (ASCII output) bind_doN (infixl \<open>>>=\<close> 54)
 
 nonterminal doN_binds and doN_bind
 syntax
-  "_doN_block" :: "doN_binds \<Rightarrow> 'a" ("doN {//(2  _)//}" [12] 62)
-  "_doN_bind"  :: "[pttrn, 'a] \<Rightarrow> doN_bind" ("(2_ \<leftarrow>/ _)" 13)
-  "_doN_let" :: "[pttrn, 'a] \<Rightarrow> doN_bind" ("(2let _ =/ _)" [1000, 13] 13)
-  "_doN_then" :: "'a \<Rightarrow> doN_bind" ("_" [14] 13)
-  "_doN_final" :: "'a \<Rightarrow> doN_binds" ("_")
-  "_doN_cons" :: "[doN_bind, doN_binds] \<Rightarrow> doN_binds" ("_;//_" [13, 12] 12)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl "\<then>" 54)
+  "_doN_block" :: "doN_binds \<Rightarrow> 'a" (\<open>doN {//(2  _)//}\<close> [12] 62)
+  "_doN_bind"  :: "[pttrn, 'a] \<Rightarrow> doN_bind" (\<open>(2_ \<leftarrow>/ _)\<close> 13)
+  "_doN_let" :: "[pttrn, 'a] \<Rightarrow> doN_bind" (\<open>(2let _ =/ _)\<close> [1000, 13] 13)
+  "_doN_then" :: "'a \<Rightarrow> doN_bind" (\<open>_\<close> [14] 13)
+  "_doN_final" :: "'a \<Rightarrow> doN_binds" (\<open>_\<close>)
+  "_doN_cons" :: "[doN_bind, doN_binds] \<Rightarrow> doN_binds" (\<open>_;//_\<close> [13, 12] 12)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl \<open>\<then>\<close> 54)
 
 syntax (ASCII)
-  "_doN_bind" :: "[pttrn, 'a] \<Rightarrow> doN_bind" ("(2_ <-/ _)" 13)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl ">>" 54)
+  "_doN_bind" :: "[pttrn, 'a] \<Rightarrow> doN_bind" (\<open>(2_ <-/ _)\<close> 13)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl \<open>>>\<close> 54)
 
 syntax_consts
   "_doN_block" "_doN_bind" "_doN_cons" "_thenM" \<rightleftharpoons> bind_doE and

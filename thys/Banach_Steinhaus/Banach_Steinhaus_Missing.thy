@@ -19,22 +19,22 @@ text \<open>
 
 text\<open>Notation for the norm\<close>
 bundle notation_norm begin
-notation norm ("\<parallel>_\<parallel>")
+notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
 bundle no_notation_norm begin
-no_notation norm ("\<parallel>_\<parallel>")
+no_notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
 unbundle notation_norm
 
 text\<open>Notation for apply bilinear function\<close>
 bundle notation_blinfun_apply begin
-notation blinfun_apply (infixr "*\<^sub>v" 70)
+notation blinfun_apply (infixr \<open>*\<^sub>v\<close> 70)
 end
 
 bundle no_notation_blinfun_apply begin
-no_notation blinfun_apply (infixr "*\<^sub>v" 70)
+no_notation blinfun_apply (infixr \<open>*\<^sub>v\<close> 70)
 end
 
 unbundle notation_blinfun_apply

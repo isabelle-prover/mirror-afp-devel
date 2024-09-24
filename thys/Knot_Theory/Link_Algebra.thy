@@ -4,7 +4,7 @@ theory Link_Algebra
 imports Tangles Tangle_Algebra Tangle_Moves
 begin
 
-inductive Tangle_Equivalence :: "wall \<Rightarrow> wall  \<Rightarrow> bool"   (infixl "~" 64)
+inductive Tangle_Equivalence :: "wall \<Rightarrow> wall  \<Rightarrow> bool"   (infixl \<open>~\<close> 64)
 where
   refl [intro!, Pure.intro!, simp]: " a ~  a"
  |equality [Pure.intro]: "linkrel a b \<Longrightarrow>  a ~ b"
@@ -22,7 +22,7 @@ where
  \<and>(is_tangle_diagram C)\<and>(is_tangle_diagram D) \<Longrightarrow>((A::wall) \<otimes> B) ~ (C \<otimes> D)" 
 
 
-inductive Framed_Tangle_Equivalence :: "wall \<Rightarrow> wall  \<Rightarrow> bool"   (infixl "~f" 64)
+inductive Framed_Tangle_Equivalence :: "wall \<Rightarrow> wall  \<Rightarrow> bool"   (infixl \<open>~f\<close> 64)
 where
   refl [intro!, Pure.intro!, simp]: " a ~f  a"
  |equality [Pure.intro]: "framed_linkrel a b \<Longrightarrow>  a ~f b"
@@ -41,13 +41,13 @@ where
 
 
 definition Tangle_Diagram_Equivalence::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> bool" 
- (infixl "~T" 64)
+ (infixl \<open>~T\<close> 64)
 where
 "Tangle_Diagram_Equivalence T1 T2 \<equiv> 
 (Rep_Tangle_Diagram T1) ~ (Rep_Tangle_Diagram T2)"
 
 definition Link_Diagram_Equivalence::"Link_Diagram \<Rightarrow> Link_Diagram \<Rightarrow> bool" 
- (infixl "~L" 64)
+ (infixl \<open>~L\<close> 64)
 where
 "Link_Diagram_Equivalence T1 T2 \<equiv> (Rep_Link_Diagram T1) ~ (Rep_Link_Diagram T2)"
 
@@ -86,14 +86,14 @@ proof (rule equivpI)
 qed
 
 definition Framed_Tangle_Diagram_Equivalence::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> bool" 
- (infixl "~T" 64)
+ (infixl \<open>~T\<close> 64)
 where
 "Framed_Tangle_Diagram_Equivalence T1 T2 
           \<equiv> (Rep_Tangle_Diagram T1) ~ (Rep_Tangle_Diagram T2)"
 
 
 definition Framed_Link_Diagram_Equivalence::"Link_Diagram \<Rightarrow> Link_Diagram \<Rightarrow> bool" 
- (infixl "~L" 64)
+ (infixl \<open>~L\<close> 64)
 where
 "Framed_Link_Diagram_Equivalence T1 T2 
        \<equiv> (Rep_Link_Diagram T1) ~ (Rep_Link_Diagram T2)"

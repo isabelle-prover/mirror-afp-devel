@@ -22,7 +22,7 @@ text \<open>
 
 subsubsection \<open>Facets\<close>
 
-definition facetrel :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<lhd>" 60)
+definition facetrel :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<lhd>\<close> 60)
   where "y \<lhd> x \<equiv> \<exists>v. v \<notin> y \<and> x = insert v y"
 
 lemma facetrelI: "v \<notin> y \<Longrightarrow> x = insert v y \<Longrightarrow> y \<lhd> x"
@@ -77,7 +77,7 @@ qed
 
 subsubsection \<open>Adjacency\<close>
 
-definition adjacent :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sim>" 70)
+definition adjacent :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sim>\<close> 70)
   where "x \<sim> y \<equiv> \<exists>z. z\<lhd>x \<and> z\<lhd>y"
 
 lemma adjacentI: "z\<lhd>x \<Longrightarrow> z\<lhd>y \<Longrightarrow> x \<sim> y"
@@ -665,8 +665,8 @@ text \<open>
 \<close>
 
 locale ComplexLikePoset = ordering less_eq less
-  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)
-  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold><"  50)
+  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix \<open>\<^bold>\<le>\<close>  50)
+  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix \<open>\<^bold><\<close>  50)
 + fixes   P :: "'a set"
   assumes below_in_P_simplex_like: "x\<in>P \<Longrightarrow> simplex_like (P.\<^bold>\<le>x)"
   and     P_has_bottom           : "has_bottom P"

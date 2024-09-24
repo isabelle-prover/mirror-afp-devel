@@ -33,18 +33,18 @@ lemmas restrict_def = RelationOperators.restrict_def
 subsection \<open>Facts and notations about relations, sets and functions.\<close>
 
 (* We use as alternative notation for paste instead of +* also +< and overload this with the next definition *)
-notation paste (infix "+<" 75)
+notation paste (infix \<open>+<\<close> 75)
 
 text \<open>\<open>+<\<close> abbreviation permits to shorten the notation for altering a function f in a single point by giving a pair (a, b) so that the new function has value b with argument a.\<close>
 
 abbreviation singlepaste
   where "singlepaste f pair == f +* {(fst pair, snd pair)}"
-  notation singlepaste (infix "+<" 75)
+  notation singlepaste (infix \<open>+<\<close> 75)
 (* Type of g in f +< g should avoid ambiguities *)
 
 text \<open>\<open>--\<close> abbreviation permits to shorten the notation for considering a function outside a single point.\<close>
 
-abbreviation singleoutside (infix "--" 75)
+abbreviation singleoutside (infix \<open>--\<close> 75)
   where "f -- x \<equiv> f outside {x}"
 
 text \<open>Turns a HOL function into a set-theoretical function\<close>
@@ -71,7 +71,7 @@ text \<open>update behaves like P +* Q (paste), but without enlarging P's Domain
 
 definition update 
   where "update P Q = P +* (Q || (Domain P))"
-  notation update (infix "+^" 75)
+  notation update (infix \<open>+^\<close> 75)
 
 (* The operator runiqer will make out of an arbitrary relation a function by making a choice to all those elements in the domain for which the value is not unique by applying the axiom of choice. *)
 definition runiqer  :: "('a \<times> 'b) set => ('a \<times> 'b) set"
@@ -108,7 +108,7 @@ lemma domainOfGraph:
 
 (* The following definition gives the image of a relation R for a fixed element x. It is equivalent to eval_rel for right unique R, but more general since it determines values even when R is not right unique. *)
 abbreviation "eval_rel2 (R::('a \<times> ('b set)) set) (x::'a) == \<Union> (R``{x})"
-  notation eval_rel2 (infix ",,," 75)
+  notation eval_rel2 (infix \<open>,,,\<close> 75)
 
 lemma imageEquivalence: 
   assumes "runiq (f::(('a \<times> ('b set)) set))" "x \<in> Domain f" 
@@ -783,11 +783,11 @@ abbreviation
 
 abbreviation 
   "Chi X Y == (Y \<times> {0::nat}) +* (X \<times> {1})"
-  notation Chi (infix "<||" 80)
+  notation Chi (infix \<open><||\<close> 80)
 
 abbreviation 
   "chii X Y == toFunction (X <|| Y)"
-  notation chii (infix "<|" 80)
+  notation chii (infix \<open><|\<close> 80)
 
 (* X is a set and chi X is a function that returns 1 for elements X and 0 else. *)
 abbreviation 
@@ -1036,7 +1036,7 @@ subsection \<open>A more computable version of @{term toFunction}.\<close>
 abbreviation "toFunctionWithFallback R fallback == 
               (% x. if (R``{x} = {R,,x}) then (R,,x) else fallback)"
 notation 
-  toFunctionWithFallback (infix "Else" 75)
+  toFunctionWithFallback (infix \<open>Else\<close> 75)
 
 abbreviation sum' where
   "sum' R X == sum (R Else 0) X"

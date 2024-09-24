@@ -119,7 +119,7 @@ begin
 
     interpretation bicategorical_language ..
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     lemma ide_eval_Can:
     assumes "Can t"
@@ -249,21 +249,21 @@ begin
 
   locale strictified_bicategory =
     B: bicategory V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
-  for V\<^sub>B :: "'a comp"                  (infixr "\<cdot>\<^sub>B" 55)
-  and H\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"           (infixr "\<star>\<^sub>B" 53)
-  and \<a>\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      ("\<a>\<^sub>B[_, _, _]")
-  and \<i>\<^sub>B :: "'a \<Rightarrow> 'a"                  ("\<i>\<^sub>B[_]")
+  for V\<^sub>B :: "'a comp"                  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and H\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"           (infixr \<open>\<star>\<^sub>B\<close> 53)
+  and \<a>\<^sub>B :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"      (\<open>\<a>\<^sub>B[_, _, _]\<close>)
+  and \<i>\<^sub>B :: "'a \<Rightarrow> 'a"                  (\<open>\<i>\<^sub>B[_]\<close>)
   and src\<^sub>B :: "'a \<Rightarrow> 'a"
   and trg\<^sub>B :: "'a \<Rightarrow> 'a"
   begin
 
     sublocale E: self_evaluation_map V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B ..
 
-    notation B.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
-    notation B.in_hom  ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>B _\<guillemotright>")
+    notation B.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
+    notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
-    notation E.eval ("\<lbrace>_\<rbrace>")
-    notation E.Nmlize ("\<^bold>\<lfloor>_\<^bold>\<rfloor>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
+    notation E.Nmlize (\<open>\<^bold>\<lfloor>_\<^bold>\<rfloor>\<close>)
 
     text \<open>
       The following gives the construction of a bicategory whose arrows are triples \<open>(A, B, \<mu>)\<close>,
@@ -305,7 +305,7 @@ begin
     shows "concrete_category IDE HOM EVAL (\<lambda>_ _ _ \<mu> \<nu>. \<mu> \<cdot>\<^sub>B \<nu>)"
       ..
 
-    abbreviation vcomp     (infixr "\<cdot>" 55)
+    abbreviation vcomp     (infixr \<open>\<cdot>\<close> 55)
     where "vcomp \<equiv> COMP"
 
     lemma arr_char:
@@ -419,9 +419,9 @@ begin
       using src_def trg_def Cod_in_Obj Map_in_Hom E.Obj_implies_Ide
       by unfold_locales auto
 
-    notation in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
-    definition hcomp    (infixr "\<star>" 53)
+    definition hcomp    (infixr \<open>\<star>\<close> 53)
     where "\<mu> \<star> \<nu> \<equiv> if arr \<mu> \<and> arr \<nu> \<and> src \<mu> = trg \<nu>
                    then MkArr (Dom \<mu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom \<nu>) (Cod \<mu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod \<nu>)
                               (B.can (Cod \<mu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod \<nu>) (Cod \<mu> \<^bold>\<star> Cod \<nu>) \<cdot>\<^sub>B
@@ -2246,7 +2246,7 @@ begin
     shows "fully_faithful_functor V\<^sub>B vcomp UP"
       ..
 
-    no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")   (* Inherited from functor, I think. *)
+    no_notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)   (* Inherited from functor, I think. *)
 
     lemma Map_reflects_hhom:
     assumes "B.obj a" and "B.obj b" and "ide g"
@@ -2659,7 +2659,7 @@ begin
         apply auto
       by blast
 
-    no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    no_notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
     lemma cmp\<^sub>D\<^sub>N_in_hom [intro]:
     assumes "arr (fst \<mu>\<nu>)" and "arr (snd \<mu>\<nu>)" and "src (fst \<mu>\<nu>) = trg (snd \<mu>\<nu>)"
@@ -3082,7 +3082,7 @@ begin
       apply unfold_locales
       by (metis (no_types, lifting) Cod_dom Dom_cod MkArr_Map)
 
-    no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    no_notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
     lemma DN_UP:
     assumes "B.arr \<mu>"
@@ -3732,10 +3732,10 @@ begin
 
     interpretation S: strictified_bicategory V H \<a> \<i> src trg ..
 
-    notation S.vcomp  (infixr "\<cdot>\<^sub>S" 55)
-    notation S.hcomp  (infixr "\<star>\<^sub>S" 53)
-    notation S.in_hom  ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
-    notation S.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
+    notation S.vcomp  (infixr \<open>\<cdot>\<^sub>S\<close> 55)
+    notation S.hcomp  (infixr \<open>\<star>\<^sub>S\<close> 53)
+    notation S.in_hom  (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>\<close>)
+    notation S.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     interpretation UP: equivalence_pseudofunctor V H \<a> \<i> src trg
                           S.vcomp S.hcomp S.\<a> S.\<i> S.src S.trg S.UP S.cmp\<^sub>U\<^sub>P

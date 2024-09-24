@@ -446,7 +446,7 @@ begin
   lemma injh: "inj_on h (UNIV//R)"
     using h bij_betw_imp_inj_on by blast
 
-  definition hinv ("h\<^sup>-\<^sup>1") where "h\<^sup>-\<^sup>1 \<equiv> inv_into (UNIV//R) h"
+  definition hinv (\<open>h\<^sup>-\<^sup>1\<close>) where "h\<^sup>-\<^sup>1 \<equiv> inv_into (UNIV//R) h"
 
   lemma finix: "finite (UNIV//R)"
     using h bij_betw_finite finite_hfset by blast

@@ -18,11 +18,11 @@ record ('o1,'a1,'o2,'a2) "functor" =
   am :: "'a1 \<Rightarrow> 'a2"
 
 abbreviation
-  om_syn  ("_ \<^bsub>\<o>\<^esub>" [81]) where
+  om_syn  (\<open>_ \<^bsub>\<o>\<^esub>\<close> [81]) where
   "F\<^bsub>\<o>\<^esub> \<equiv> om F"
 
 abbreviation
-  am_syn  ("_ \<^bsub>\<a>\<^esub>" [81]) where
+  am_syn  (\<open>_ \<^bsub>\<a>\<^esub>\<close> [81]) where
   "F\<^bsub>\<a>\<^esub> \<equiv> am F"
 
 locale two_cats = AA?: category AA + BB?: category BB
@@ -58,7 +58,7 @@ end
 text \<open>This gives us nicer notation for asserting that things are functors.\<close>
 
 abbreviation
-  Functor  ("Functor _ : _ \<longrightarrow> _" [81]) where
+  Functor  (\<open>Functor _ : _ \<longrightarrow> _\<close> [81]) where
   "Functor F : AA \<longrightarrow> BB \<equiv> functor AA BB F"
 
 

@@ -29,7 +29,7 @@ locale nrules = constants C_info "heads_of rs" for C_info and rs :: "nrule fset"
 
 subsection \<open>Matching and rewriting\<close>
 
-inductive nrewrite :: "nrule fset \<Rightarrow> nterm \<Rightarrow> nterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>n/ _ \<longrightarrow>/ _" [50,0,50] 50) for rs where
+inductive nrewrite :: "nrule fset \<Rightarrow> nterm \<Rightarrow> nterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>n/ _ \<longrightarrow>/ _\<close> [50,0,50] 50) for rs where
 step: "r |\<in>| rs \<Longrightarrow> r \<turnstile> t \<rightarrow> u \<Longrightarrow> rs \<turnstile>\<^sub>n t \<longrightarrow> u" |
 beta: "rs \<turnstile>\<^sub>n ((\<Lambda>\<^sub>n x. t) $\<^sub>n t') \<longrightarrow> subst t (fmap_of_list [(x, t')])" |
 "fun": "rs \<turnstile>\<^sub>n t \<longrightarrow> t' \<Longrightarrow> rs \<turnstile>\<^sub>n t $\<^sub>n u \<longrightarrow> t' $\<^sub>n u" |
@@ -38,7 +38,7 @@ arg: "rs \<turnstile>\<^sub>n u \<longrightarrow> u' \<Longrightarrow> rs \<turn
 global_interpretation nrewrite: rewriting "nrewrite rs" for rs
 by standard (auto intro: nrewrite.intros simp: app_nterm_def)+
 
-abbreviation nrewrite_rt :: "nrule fset \<Rightarrow> nterm \<Rightarrow> nterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>n/ _ \<longrightarrow>*/ _" [50,0,50] 50) where
+abbreviation nrewrite_rt :: "nrule fset \<Rightarrow> nterm \<Rightarrow> nterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>n/ _ \<longrightarrow>*/ _\<close> [50,0,50] 50) where
 "nrewrite_rt rs \<equiv> (nrewrite rs)\<^sup>*\<^sup>*"
 
 lemma (in nrules) nrewrite_closed:

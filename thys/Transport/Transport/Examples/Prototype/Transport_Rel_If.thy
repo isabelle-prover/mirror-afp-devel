@@ -172,8 +172,8 @@ locale transport_Dep_Fun_Rel_no_dep_fun =
   and r2 :: "'b2 \<Rightarrow> 'b1"
 begin
 
-notation t2.unit ("\<eta>\<^sub>2")
-notation t2.counit ("\<epsilon>\<^sub>2")
+notation t2.unit (\<open>\<eta>\<^sub>2\<close>)
+notation t2.counit (\<open>\<epsilon>\<^sub>2\<close>)
 
 abbreviation "L \<equiv> tdfr.L"
 abbreviation "R \<equiv> tdfr.R"
@@ -181,14 +181,14 @@ abbreviation "R \<equiv> tdfr.R"
 abbreviation "l \<equiv> tdfr.l"
 abbreviation "r \<equiv> tdfr.r"
 
-notation tdfr.L (infix "\<le>\<^bsub>L\<^esub>" 50)
-notation tdfr.R (infix "\<le>\<^bsub>R\<^esub>" 50)
+notation tdfr.L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
+notation tdfr.R (infix \<open>\<le>\<^bsub>R\<^esub>\<close> 50)
 
-notation tdfr.ge_left (infix "\<ge>\<^bsub>L\<^esub>" 50)
-notation tdfr.ge_right (infix "\<ge>\<^bsub>R\<^esub>" 50)
+notation tdfr.ge_left (infix \<open>\<ge>\<^bsub>L\<^esub>\<close> 50)
+notation tdfr.ge_right (infix \<open>\<ge>\<^bsub>R\<^esub>\<close> 50)
 
-notation tdfr.unit ("\<eta>")
-notation tdfr.counit ("\<epsilon>")
+notation tdfr.unit (\<open>\<eta>\<close>)
+notation tdfr.counit (\<open>\<epsilon>\<close>)
 
 theorem partial_equivalence_rel_equivalenceI:
   assumes per_equiv1: "((\<le>\<^bsub>L1\<^esub>) \<equiv>\<^bsub>PER\<^esub> (\<le>\<^bsub>R1\<^esub>)) l1 r1"

@@ -25,14 +25,14 @@ begin
     VV: fibered_product_rts resid resid resid H.dom H.cod +
     H: simulation VV.resid resid
           \<open>\<lambda>t. if VV.arr t then hcomp (fst t) (snd t) else V.null\<close>
-  for resid :: "'a resid"  (infix "\\" 70)
-  and hcomp :: "'a comp"   (infixr "\<star>" 53) +
+  for resid :: "'a resid"  (infix \<open>\\<close> 70)
+  and hcomp :: "'a comp"   (infixr \<open>\<star>\<close> 53) +
   assumes null_coincidence [simp]: "H.null = V.null"
   and arr_coincidence [simp]: "H.arr = V.arr"
   and src_dom [simp]: "V.src (H.dom t) = H.dom t"
   begin
 
-    notation H.in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation H.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     abbreviation null
     where "null \<equiv> V.null"
@@ -410,7 +410,7 @@ begin
       a transformation \<open>HOM\<^sup>\<rightarrow> a t\<close> from \<open>HOM a (H.dom t)\<close> to \<open>HOM a (H.cod t)\<close>.
     \<close>
 
-    abbreviation cov_HOM  ("HOM\<^sup>\<rightarrow>")
+    abbreviation cov_HOM  (\<open>HOM\<^sup>\<rightarrow>\<close>)
     where "HOM\<^sup>\<rightarrow> a t \<equiv>
            (\<lambda>x. if residuation.arr (HOM a (dom t)) x then t \<star> x else null)"
 
@@ -758,7 +758,7 @@ begin
       because the contravariant version is not used in an essential way in this article.
     \<close>
 
-    abbreviation cnt_HOM  ("HOM\<^sup>\<leftarrow>")
+    abbreviation cnt_HOM  (\<open>HOM\<^sup>\<leftarrow>\<close>)
     where "HOM\<^sup>\<leftarrow> c t \<equiv>
            (\<lambda>x. if residuation.arr (HOM (cod t) c) x then x \<star> t else null)"
 
@@ -918,15 +918,15 @@ begin
     B: rts_category resid\<^sub>B comp\<^sub>B +
     "functor" comp\<^sub>A comp\<^sub>B F +
     simulation resid\<^sub>A resid\<^sub>B F
-  for resid\<^sub>A :: "'a resid"  (infix "\\\<^sub>A" 70)
-  and comp\<^sub>A :: "'a comp"    (infixr "\<star>\<^sub>A" 53)
-  and resid\<^sub>B :: "'b resid"  (infix "\\\<^sub>B" 70)
-  and comp\<^sub>B :: "'b comp"    (infixr "\<star>\<^sub>B" 53)
+  for resid\<^sub>A :: "'a resid"  (infix \<open>\\<^sub>A\<close> 70)
+  and comp\<^sub>A :: "'a comp"    (infixr \<open>\<star>\<^sub>A\<close> 53)
+  and resid\<^sub>B :: "'b resid"  (infix \<open>\\<^sub>B\<close> 70)
+  and comp\<^sub>B :: "'b comp"    (infixr \<open>\<star>\<^sub>B\<close> 53)
   and F :: "'a \<Rightarrow> 'b"
   begin
 
-    notation A.V.con  (infix "\<frown>\<^sub>A" 50)
-    notation B.V.con  (infix "\<frown>\<^sub>B" 50)
+    notation A.V.con  (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation B.V.con  (infix \<open>\<frown>\<^sub>B\<close> 50)
 
     lemma is_invertible_simulation_if:
     assumes "invertible_functor comp\<^sub>A comp\<^sub>B F"

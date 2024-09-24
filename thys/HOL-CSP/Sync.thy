@@ -111,7 +111,7 @@ lemma sym : "setinterleaving(s, X, t)= setinterleaving(t, X, s)"
 
  
 
-abbreviation "setinterleaves_syntax"  ("_ setinterleaves '(()'(_, _')(), _')" [60,0,0,0]70)
+abbreviation "setinterleaves_syntax"  (\<open>_ setinterleaves '(()'(_, _')(), _')\<close> [60,0,0,0]70)
   where      "u setinterleaves ((s, t), X) == (u \<in> setinterleaving(s, X, t))"
 
  
@@ -820,7 +820,7 @@ qed
 
 subsection\<open>The Sync Operator Definition\<close>
 
-lift_definition Sync :: "['a process,'a set,'a process] => 'a process"    ("(3(_ \<lbrakk>_\<rbrakk>/ _))" [64,0,65] 64)  
+lift_definition Sync :: "['a process,'a set,'a process] => 'a process"    (\<open>(3(_ \<lbrakk>_\<rbrakk>/ _))\<close> [64,0,65] 64)  
   is "\<lambda>P A Q. ({(s,R).\<exists> t u X Y. (t,X) \<in> \<F> P \<and> (u,Y) \<in> \<F> Q \<and> 
                                  (s setinterleaves ((t,u),(ev`A) \<union> {tick})) \<and> 
                                  R = (X \<union> Y) \<inter> ((ev`A) \<union> {tick}) \<union> X \<inter> Y}    \<union> 
@@ -1052,10 +1052,10 @@ lemma
   
 subsection\<open>Syntax for Interleave and Parallel Operator \<close>
 
-abbreviation Inter_syntax  ("(_|||_)" [72,73] 72)
+abbreviation Inter_syntax  (\<open>(_|||_)\<close> [72,73] 72)
   where "P ||| Q \<equiv> (P \<lbrakk> {} \<rbrakk> Q)"
 
-abbreviation Par_syntax  ("(_||_)" [74,75] 74)
+abbreviation Par_syntax  (\<open>(_||_)\<close> [74,75] 74)
   where "P || Q  \<equiv> (P \<lbrakk> UNIV \<rbrakk> Q)"
 
 subsection\<open> Continuity Rule \<close>

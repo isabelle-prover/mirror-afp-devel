@@ -35,7 +35,7 @@ lemma square_rat_code[code abstract]: "quotient_of (square_rat x) = (case quotie
   by (cases "quotient_of x", auto)
 
 
-definition scalar_prod_int_rat :: "int vec \<Rightarrow> rat vec \<Rightarrow> rat" (infix "\<bullet>i" 70) where
+definition scalar_prod_int_rat :: "int vec \<Rightarrow> rat vec \<Rightarrow> rat" (infix \<open>\<bullet>i\<close> 70) where
   "x \<bullet>i y = (y \<bullet> map_vec rat_of_int x)"
 
 lemma scalar_prod_int_rat_code[code]: "v \<bullet>i w = (\<Sum>i = 0..<dim_vec v. int_times_rat (v $ i) (w $ i))"  

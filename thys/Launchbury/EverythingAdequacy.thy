@@ -15,14 +15,14 @@ translations
 translations
   "a" <= "CONST image (CONST atom) a"
 
-abbreviation map_of_syntax :: "'a::type \<Rightarrow> 'b::type \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> bool" ("'(_, _') \<in> _") 
+abbreviation map_of_syntax :: "'a::type \<Rightarrow> 'b::type \<Rightarrow> ('a \<times> 'b) list \<Rightarrow> bool" (\<open>'(_, _') \<in> _\<close>) 
   where "map_of_syntax x e \<Gamma> \<equiv> map_of \<Gamma> x = Some e"
 
-abbreviation delete_syntax :: "heap \<Rightarrow> var \<Rightarrow> heap" ("_\\_") 
+abbreviation delete_syntax :: "heap \<Rightarrow> var \<Rightarrow> heap" (\<open>_\_\<close>) 
   where "delete_syntax \<Gamma> x \<equiv> delete x \<Gamma>"
 
-notation (latex output) domA ("\<^latex>\<open>\\textrm{\\textsf{dom}}\<close> _")
-notation (latex output) bn ("\<^latex>\<open>\\textrm{\\textsf{dom}}\<close> _")
+notation (latex output) domA (\<open>\<^latex>\<open>\textrm{\textsf{dom}}\<close> _\<close>)
+notation (latex output) bn (\<open>\<^latex>\<open>\textrm{\textsf{dom}}\<close> _\<close>)
 
 declare [[names_short]]
 declare [[show_question_marks = false]]

@@ -14,7 +14,7 @@ locale reduced_calculus = calculus Bot Inf entails Red_I Red_F
   for
     Bot :: "'f set" and
     Inf :: \<open>'f inference set\<close> and
-    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
+    entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 50) and
     Red_I :: "'f set \<Rightarrow> 'f inference set" and
     Red_F :: "'f set \<Rightarrow> 'f set"
  + assumes

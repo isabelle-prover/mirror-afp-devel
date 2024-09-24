@@ -49,7 +49,7 @@ imports "../basic_types/UML_Void"
         "../basic_types/UML_Real"
 begin
 
-no_notation None ("\<bottom>")
+no_notation None (\<open>\<bottom>\<close>)
 section\<open>Collection Type Set: Operations \label{formal-set}\<close>
 
 subsection\<open>As a Motivation for the (infinite) Type Construction: Type-Extensions as Sets 
@@ -312,7 +312,7 @@ interpretation  StrictRefEq\<^sub>S\<^sub>e\<^sub>t : profile_bin\<^sub>S\<^sub>
 
 
 subsection\<open>Constants: mtSet\<close>
-definition mtSet::"('\<AA>,'\<alpha>::null) Set"  ("Set{}")
+definition mtSet::"('\<AA>,'\<alpha>::null) Set"  (\<open>Set{}\<close>)
 where     "Set{} \<equiv> (\<lambda> \<tau>.  Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>{}::'\<alpha> set\<rfloor>\<rfloor> )"
 
 
@@ -343,7 +343,7 @@ definition OclIncluding   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>) v
 where     "OclIncluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                     then Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>  \<union> {y \<tau>} \<rfloor>\<rfloor>
                                     else invalid \<tau> )"
-notation   OclIncluding   ("_->including\<^sub>S\<^sub>e\<^sub>t'(_')")
+notation   OclIncluding   (\<open>_->including\<^sub>S\<^sub>e\<^sub>t'(_')\<close>)
 
 interpretation OclIncluding : profile_bin\<^sub>d_\<^sub>v OclIncluding "\<lambda>x y. Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> \<union> {y}\<rfloor>\<rfloor>"
 proof -  
@@ -367,7 +367,7 @@ proof -
 qed
 
 syntax
-  "_OclFinset" :: "args => ('\<AA>,'a::null) Set"    ("Set{(_)}")
+  "_OclFinset" :: "args => ('\<AA>,'a::null) Set"    (\<open>Set{(_)}\<close>)
 syntax_consts
   "_OclFinset" == OclIncluding
 translations
@@ -381,7 +381,7 @@ definition OclExcluding   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>) v
 where     "OclExcluding x y = (\<lambda> \<tau>.  if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                      then Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> - {y \<tau>} \<rfloor>\<rfloor>
                                      else \<bottom> )"
-notation   OclExcluding   ("_->excluding\<^sub>S\<^sub>e\<^sub>t'(_')")
+notation   OclExcluding   (\<open>_->excluding\<^sub>S\<^sub>e\<^sub>t'(_')\<close>)
 
 
 lemma OclExcluding_inv: "(x:: Set('b::{null})) \<noteq> \<bottom> \<Longrightarrow> x \<noteq> null \<Longrightarrow>  y \<noteq> \<bottom>  \<Longrightarrow>
@@ -417,7 +417,7 @@ definition OclIncludes   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>) va
 where     "OclIncludes x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                      then \<lfloor>\<lfloor>(y \<tau>) \<in> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> \<rfloor>\<rfloor>
                                      else \<bottom>  )"
-notation   OclIncludes    ("_->includes\<^sub>S\<^sub>e\<^sub>t'(_')" (*[66,65]65*))
+notation   OclIncludes    (\<open>_->includes\<^sub>S\<^sub>e\<^sub>t'(_')\<close> (*[66,65]65*))
 
 interpretation OclIncludes : profile_bin\<^sub>d_\<^sub>v OclIncludes "\<lambda>x y. \<lfloor>\<lfloor>y \<in> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil>\<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclIncludes_def bot_option_def null_option_def invalid_def)
@@ -427,7 +427,7 @@ subsection\<open>Definition: Excludes\<close>
 
 definition OclExcludes   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>) val] \<Rightarrow> '\<AA> Boolean"
 where     "OclExcludes x y = (not(OclIncludes x y))"
-notation   OclExcludes    ("_->excludes\<^sub>S\<^sub>e\<^sub>t'(_')" (*[66,65]65*))
+notation   OclExcludes    (\<open>_->excludes\<^sub>S\<^sub>e\<^sub>t'(_')\<close> (*[66,65]65*))
 
 text\<open>The case of the size definition is somewhat special, we admit
 explicitly in Featherweight OCL the possibility of infinite sets. For
@@ -444,7 +444,7 @@ where     "OclSize x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \
                              then \<lfloor>\<lfloor> int(card \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>) \<rfloor>\<rfloor>
                              else \<bottom> )"
 notation  (* standard ascii syntax *)
-           OclSize        ("_->size\<^sub>S\<^sub>e\<^sub>t'(')" (*[66]*))
+           OclSize        (\<open>_->size\<^sub>S\<^sub>e\<^sub>t'(')\<close> (*[66]*))
 
 text\<open>The following definition follows the requirement of the
 standard to treat null as neutral element of sets. It is
@@ -459,7 +459,7 @@ subsection\<open>Definition: IsEmpty\<close>
 
 definition OclIsEmpty   :: "('\<AA>,'\<alpha>::null) Set \<Rightarrow> '\<AA> Boolean"
 where     "OclIsEmpty x =  ((\<upsilon> x and not (\<delta> x)) or ((OclSize x) \<doteq> \<zero>))"
-notation   OclIsEmpty     ("_->isEmpty\<^sub>S\<^sub>e\<^sub>t'(')" (*[66]*))
+notation   OclIsEmpty     (\<open>_->isEmpty\<^sub>S\<^sub>e\<^sub>t'(')\<close> (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
@@ -468,7 +468,7 @@ subsection\<open>Definition: NotEmpty\<close>
 
 definition OclNotEmpty   :: "('\<AA>,'\<alpha>::null) Set \<Rightarrow> '\<AA> Boolean"
 where     "OclNotEmpty x =  not(OclIsEmpty x)"
-notation   OclNotEmpty    ("_->notEmpty\<^sub>S\<^sub>e\<^sub>t'(')" (*[66]*))
+notation   OclNotEmpty    (\<open>_->notEmpty\<^sub>S\<^sub>e\<^sub>t'(')\<close> (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
@@ -481,7 +481,7 @@ where     "OclANY x = (\<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau>
                                  then SOME y. y \<in> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>
                                  else null \<tau>
                             else \<bottom> )"
-notation   OclANY   ("_->any\<^sub>S\<^sub>e\<^sub>t'(')")
+notation   OclANY   (\<open>_->any\<^sub>S\<^sub>e\<^sub>t'(')\<close>)
 
 (*TODO Locale - Equivalent*)  
 
@@ -508,7 +508,7 @@ where     "OclForall S P = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<ta
                                                 else true \<tau>
                                  else \<bottom>)"
 syntax
-  "_OclForallSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->forAll\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+  "_OclForallSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->forAll\<^sub>S\<^sub>e\<^sub>t'(_|_')\<close>)
 syntax_consts
   "_OclForallSet" == UML_Set.OclForall
 translations
@@ -523,7 +523,7 @@ definition OclExists     :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>)val
 where     "OclExists S P = not(UML_Set.OclForall S (\<lambda> X. not (P X)))"
 
 syntax
-  "_OclExistSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->exists\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+  "_OclExistSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->exists\<^sub>S\<^sub>e\<^sub>t'(_|_')\<close>)
 syntax_consts
   "_OclExistSet" == UML_Set.OclExists
 translations
@@ -540,7 +540,7 @@ where "OclIterate S A F = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<tau
                                   else \<bottom>)"
 syntax
   "_OclIterateSet"  :: "[('\<AA>,'\<alpha>::null) Set, idt, idt, '\<alpha>, '\<beta>] => ('\<AA>,'\<gamma>)val"
-                        ("_ ->iterate\<^sub>S\<^sub>e\<^sub>t'(_;_=_ | _')" (*[71,100,70]50*))
+                        (\<open>_ ->iterate\<^sub>S\<^sub>e\<^sub>t'(_;_=_ | _')\<close> (*[71,100,70]50*))
 syntax_consts
   "_OclIterateSet" == OclIterate
 translations
@@ -557,7 +557,7 @@ where "OclSelect S P = (\<lambda>\<tau>. if (\<delta> S) \<tau> = true \<tau>
                                    else Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>{x\<in>\<lceil>\<lceil> Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil>. P (\<lambda>_. x) \<tau> \<noteq> false \<tau>}\<rfloor>\<rfloor>
                               else invalid \<tau>)"
 syntax
-  "_OclSelectSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->select\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+  "_OclSelectSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->select\<^sub>S\<^sub>e\<^sub>t'(_|_')\<close>)
 syntax_consts
   "_OclSelectSet" == OclSelect
 translations
@@ -570,7 +570,7 @@ subsection\<open>Definition: Reject\<close>
 definition OclReject :: "[('\<AA>,'\<alpha>::null)Set,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> ('\<AA>,'\<alpha>::null)Set"
 where "OclReject S P = OclSelect S (not o P)"
 syntax
-  "_OclRejectSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->reject\<^sub>S\<^sub>e\<^sub>t'(_|_')")
+  "_OclRejectSet" :: "[('\<AA>,'\<alpha>::null) Set,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->reject\<^sub>S\<^sub>e\<^sub>t'(_|_')\<close>)
 syntax_consts
   "_OclRejectSet" == OclReject
 translations
@@ -584,7 +584,7 @@ definition OclIncludesAll   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>)
 where     "OclIncludesAll x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                                         then \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil> \<subseteq> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> \<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation   OclIncludesAll ("_->includesAll\<^sub>S\<^sub>e\<^sub>t'(_')" (*[66,65]65*))
+notation   OclIncludesAll (\<open>_->includesAll\<^sub>S\<^sub>e\<^sub>t'(_')\<close> (*[66,65]65*))
 
 interpretation OclIncludesAll : profile_bin\<^sub>d_\<^sub>d OclIncludesAll "\<lambda>x y. \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e y\<rceil>\<rceil> \<subseteq> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil>\<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclIncludesAll_def bot_option_def null_option_def invalid_def)
@@ -595,7 +595,7 @@ definition OclExcludesAll   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>)
 where     "OclExcludesAll x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                                         then \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil> \<inter> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> = {} \<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation  OclExcludesAll ("_->excludesAll\<^sub>S\<^sub>e\<^sub>t'(_')" (*[66,65]65*))
+notation  OclExcludesAll (\<open>_->excludesAll\<^sub>S\<^sub>e\<^sub>t'(_')\<close> (*[66,65]65*))
 
 interpretation OclExcludesAll : profile_bin\<^sub>d_\<^sub>d OclExcludesAll "\<lambda>x y. \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e y\<rceil>\<rceil> \<inter> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> = {}\<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclExcludesAll_def bot_option_def null_option_def invalid_def)
@@ -606,7 +606,7 @@ definition OclUnion   :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>) Set] 
 where     "OclUnion x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                                         then Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil> \<union> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> \<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation   OclUnion       ("_->union\<^sub>S\<^sub>e\<^sub>t'(_')"          (*[66,65]65*))
+notation   OclUnion       (\<open>_->union\<^sub>S\<^sub>e\<^sub>t'(_')\<close>          (*[66,65]65*))
 
 lemma OclUnion_inv: "(x:: Set('b::{null})) \<noteq> \<bottom> \<Longrightarrow> x \<noteq> null \<Longrightarrow>  y \<noteq> \<bottom>  \<Longrightarrow> y \<noteq> null \<Longrightarrow>
            \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e y\<rceil>\<rceil> \<union> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil>\<rfloor>\<rfloor> \<in> {X. X = bot \<or> X = null \<or> (\<forall>x\<in>\<lceil>\<lceil>X\<rceil>\<rceil>. x \<noteq> bot)}"
@@ -646,7 +646,7 @@ where     "OclIntersection x y = (\<lambda> \<tau>.  if (\<delta> x) \<tau> = tr
                                         then Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil> 
                                                          \<inter> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil>\<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation   OclIntersection("_->intersection\<^sub>S\<^sub>e\<^sub>t'(_')"   (*[71,70]70*))
+notation   OclIntersection(\<open>_->intersection\<^sub>S\<^sub>e\<^sub>t'(_')\<close>   (*[71,70]70*))
 
 lemma OclIntersection_inv: "(x:: Set('b::{null})) \<noteq> \<bottom> \<Longrightarrow> x \<noteq> null \<Longrightarrow>  y \<noteq> \<bottom>  \<Longrightarrow> y \<noteq> null \<Longrightarrow>
            \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e y\<rceil>\<rceil> \<inter> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil>\<rfloor>\<rfloor> \<in> {X. X = bot \<or> X = null \<or> (\<forall>x\<in>\<lceil>\<lceil>X\<rceil>\<rceil>. x \<noteq> bot)}"
@@ -685,8 +685,8 @@ consts (* abstract set collection operations *)
     OclCount       :: "[('\<AA>,'\<alpha>::null) Set,('\<AA>,'\<alpha>) Set] \<Rightarrow> '\<AA> Integer"
     OclSum         :: " ('\<AA>,'\<alpha>::null) Set \<Rightarrow> '\<AA> Integer"
   
-notation  OclCount       ("_->count\<^sub>S\<^sub>e\<^sub>t'(_')" (*[66,65]65*))
-notation  OclSum         ("_->sum\<^sub>S\<^sub>e\<^sub>t'(')" (*[66]*))
+notation  OclCount       (\<open>_->count\<^sub>S\<^sub>e\<^sub>t'(_')\<close> (*[66,65]65*))
+notation  OclSum         (\<open>_->sum\<^sub>S\<^sub>e\<^sub>t'(')\<close> (*[66]*))
 
 subsection\<open>Logical Properties\<close>
 

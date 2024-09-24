@@ -21,7 +21,7 @@ typedef (overloaded) 'a::"{zero, linorder}" pos = "{x::'a. x \<ge> 0}"
   done
 
 syntax
-  "_type_pos" :: "type \<Rightarrow> type" ("_\<^sup>+" [999] 999)
+  "_type_pos" :: "type \<Rightarrow> type" (\<open>_\<^sup>+\<close> [999] 999)
 
 syntax_types
   "_type_pos" == pos

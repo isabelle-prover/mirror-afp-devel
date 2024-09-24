@@ -5,8 +5,8 @@ imports
   "../ODE_Auxiliarities"
 begin
 
-no_notation vec_nth (infixl "$" 90)
-notation blinfun_apply (infixl "$" 999)
+no_notation vec_nth (infixl \<open>$\<close> 90)
+notation blinfun_apply (infixl \<open>$\<close> 999)
 
 lemma
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
@@ -604,7 +604,7 @@ qed
 end
 
 no_notation
-  blinfun_apply (infixl "$" 999)
-notation vec_nth (infixl "$" 90)
+  blinfun_apply (infixl \<open>$\<close> 999)
+notation vec_nth (infixl \<open>$\<close> 90)
 
 end

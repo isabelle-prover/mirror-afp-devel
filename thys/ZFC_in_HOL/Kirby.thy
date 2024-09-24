@@ -419,7 +419,7 @@ lemma one_plus_\<omega>_equals_\<omega> [simp]: "1 + \<omega> = \<omega>"
 
 subsubsection \<open>Cancellation / set subtraction\<close>
 
-definition vle :: "V \<Rightarrow> V \<Rightarrow> bool" (infix "\<unlhd>" 50)
+definition vle :: "V \<Rightarrow> V \<Rightarrow> bool" (infix \<open>\<unlhd>\<close> 50)
   where "x \<unlhd> y \<equiv> \<exists>z::V. x+z = y"
 
 lemma vle_refl [iff]: "x \<unlhd> x"

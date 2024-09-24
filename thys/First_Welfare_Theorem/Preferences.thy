@@ -29,17 +29,17 @@ locale preference =
 context preference
 begin
 
-no_notation eqpoll (infixl "\<approx>" 50)
+no_notation eqpoll (infixl \<open>\<approx>\<close> 50)
 
-abbreviation geq ("_ \<succeq> _" [51,51] 60)
+abbreviation geq (\<open>_ \<succeq> _\<close> [51,51] 60)
   where
     "x \<succeq> y \<equiv> x \<succeq>[relation] y"
 
-abbreviation str_gr ("_ \<succ> _" [51,51] 60)
+abbreviation str_gr (\<open>_ \<succ> _\<close> [51,51] 60)
   where
     "x \<succ> y \<equiv> x \<succeq> y \<and> \<not>y \<succeq> x"
 
-abbreviation indiff ("_ \<approx> _" [51,51] 60)
+abbreviation indiff (\<open>_ \<approx> _\<close> [51,51] 60)
   where
     "x \<approx> y \<equiv> x \<succeq> y \<and> y \<succeq> x"
 

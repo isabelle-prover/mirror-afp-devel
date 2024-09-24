@@ -128,7 +128,7 @@ subsubsection \<open>Restricting functions with domain C\<close>
 fixrec C_restr :: "C \<rightarrow> (C \<rightarrow> 'a::pcpo) \<rightarrow> (C \<rightarrow> 'a)"
   where "C_restr\<cdot>r\<cdot>f\<cdot>r' = (f\<cdot>(r \<sqinter> r'))" 
 
-abbreviation C_restr_syn :: "(C \<rightarrow> 'a::pcpo) \<Rightarrow> C \<Rightarrow> (C \<rightarrow> 'a)" ( "_|\<^bsub>_\<^esub>" [111,110] 110)
+abbreviation C_restr_syn :: "(C \<rightarrow> 'a::pcpo) \<Rightarrow> C \<Rightarrow> (C \<rightarrow> 'a)" ( \<open>_|\<^bsub>_\<^esub>\<close> [111,110] 110)
   where "f|\<^bsub>r\<^esub> \<equiv> C_restr\<cdot>r\<cdot>f"
 
 lemma [simp]: "\<bottom>|\<^bsub>r\<^esub> = \<bottom>" by fixrec_simp
@@ -208,7 +208,7 @@ subsubsection \<open>Restricting maps of C-ranged functions\<close>
 definition env_C_restr :: "C \<rightarrow> ('var::type \<Rightarrow> (C \<rightarrow> 'a::pcpo)) \<rightarrow> ('var \<Rightarrow> (C \<rightarrow> 'a))" where
   "env_C_restr = (\<Lambda> r f.  cfun_comp\<cdot>(C_restr\<cdot>r)\<cdot>f)"
 
-abbreviation env_C_restr_syn :: "('var::type \<Rightarrow> (C \<rightarrow> 'a::pcpo)) \<Rightarrow> C \<Rightarrow>  ('var \<Rightarrow> (C \<rightarrow> 'a))" ( "_|\<^sup>\<circ>\<^bsub>_\<^esub>" [111,110] 110)
+abbreviation env_C_restr_syn :: "('var::type \<Rightarrow> (C \<rightarrow> 'a::pcpo)) \<Rightarrow> C \<Rightarrow>  ('var \<Rightarrow> (C \<rightarrow> 'a))" ( \<open>_|\<^sup>\<circ>\<^bsub>_\<^esub>\<close> [111,110] 110)
   where "f|\<^sup>\<circ>\<^bsub>r\<^esub> \<equiv> env_C_restr\<cdot>r\<cdot>f"
 
 

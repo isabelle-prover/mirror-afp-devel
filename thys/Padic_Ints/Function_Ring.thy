@@ -110,7 +110,7 @@ sublocale field_functions < cring_functions
   apply (simp add: cring_functions_axioms)
   by (simp add: F_def)
 
-abbreviation(input) ring_function_ring:: "('a, 'b) ring_scheme \<Rightarrow> ('a, 'a \<Rightarrow> 'a) module" ("Fun") where
+abbreviation(input) ring_function_ring:: "('a, 'b) ring_scheme \<Rightarrow> ('a, 'a \<Rightarrow> 'a) module" (\<open>Fun\<close>) where
 "ring_function_ring R \<equiv> function_ring (carrier R) R"
 
 
@@ -765,7 +765,7 @@ lemma(in U_function_ring) ring_function_ring_comp:
    apply (simp add: assms(1) assms(2) function_ring_car_closed)
      by (meson compose_extensional extensional_arb)
   
-abbreviation(in U_function_ring)(input) ring_const ("\<cc>\<index>") where
+abbreviation(in U_function_ring)(input) ring_const (\<open>\<cc>\<index>\<close>) where
 "ring_const \<equiv> constant_function (carrier R)"
 
 lemma(in ring_functions) function_nat_pow_eval:
@@ -980,7 +980,7 @@ end
     (**************************************************************************************************)
     (**************************************************************************************************)
 
-definition nat_seqs ("_\<^bsup>\<omega>\<^esup>")where
+definition nat_seqs (\<open>_\<^bsup>\<omega>\<^esup>\<close>)where
 "nat_seqs R \<equiv> function_ring (UNIV::nat set) R"
  
 abbreviation(input) closed_seqs where

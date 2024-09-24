@@ -8,7 +8,7 @@ begin
 
 subsection \<open>Iterated Function Update\<close>
 
-abbreviation fun_upds ("_[_ :=\<^sup>* _]" [90, 0, 0] 91) where
+abbreviation fun_upds (\<open>_[_ :=\<^sup>* _]\<close> [90, 0, 0] 91) where
   "f[xs :=\<^sup>* ys] \<equiv> fold (\<lambda>(x, y) f. f(x := y)) (zip xs ys) f"
 
 fun restrict where

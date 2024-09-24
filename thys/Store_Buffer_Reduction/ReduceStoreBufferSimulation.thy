@@ -217,7 +217,7 @@ qed
 inductive 
   sim_config:: "('p,'p store_buffer,bool,owns,rels) thread_config list \<times> memory \<times> shared \<Rightarrow> 
                 ('p, unit,bool,owns,rels) thread_config list \<times> memory \<times> shared  \<Rightarrow> bool" 
- ("_ \<sim> _" [60,60] 100)
+ (\<open>_ \<sim> _\<close> [60,60] 100)
 where
   "\<lbrakk>m = flush_all_until_volatile_write ts\<^sub>s\<^sub>b m\<^sub>s\<^sub>b;
     \<S> = share_all_until_volatile_write ts\<^sub>s\<^sub>b \<S>\<^sub>s\<^sub>b;
@@ -241,7 +241,7 @@ text \<open>The machine without
 history only stores writes in the store-buffer.\<close>
 inductive sim_history_config:: 
  "('p,'p store_buffer,'dirty,'owns,'rels) thread_config list \<Rightarrow> ('p,'p store_buffer,bool,owns,rels) thread_config list \<Rightarrow> bool" 
-  ("_ \<sim>\<^sub>h _ " [60,60] 100)
+  (\<open>_ \<sim>\<^sub>h _ \<close> [60,60] 100)
 where
   "\<lbrakk>length ts = length ts\<^sub>h; 
     \<forall>i < length ts. 
@@ -15942,7 +15942,7 @@ qed
 
 inductive sim_direct_config:: 
  "('p,'p store_buffer,'dirty,'owns,'rels) thread_config list \<Rightarrow> ('p,unit,bool,'owns','rels') thread_config list \<Rightarrow> bool" 
-  ("_ \<sim>\<^sub>d _ " [60,60] 100)
+  (\<open>_ \<sim>\<^sub>d _ \<close> [60,60] 100)
 where
   "\<lbrakk>length ts = length ts\<^sub>d; 
     \<forall>i < length ts. 

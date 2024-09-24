@@ -2,6 +2,7 @@
  * Copyright Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
+Proofs tidied by LCP, 2024-09
  *)
 
 section \<open>Misc word operations\<close>
@@ -780,9 +781,11 @@ lemma mask_range_to_bl:
   "is_aligned (ptr :: 'a :: len word) bits
    \<Longrightarrow> mask_range ptr bits
         = {x. take (LENGTH('a) - bits) (to_bl x) = take (LENGTH('a) - bits) (to_bl ptr)}"
-  apply (erule is_aligned_get_word_bits)
-  using mask_range_to_bl' 
-  by (force simp: power_overflow mask_eq_decr_exp)+
+  apply (frule is_aligned_get_word_bits, assumption)
+  using mask_range_to_bl'
+   apply blast 
+  using power_overflow mask_eq_decr_exp
+  by (smt (verit, del_insts) Collect_cong Collect_mem_eq diff_is_0_eq' is_aligned_beyond_length is_aligned_neg_mask2 linorder_not_le mask_range_to_bl' neg_mask_in_mask_range take0)
 
 lemma aligned_mask_range_cases:
   "\<lbrakk> is_aligned (p :: 'a :: len word) n; is_aligned (p' :: 'a :: len word) n' \<rbrakk>

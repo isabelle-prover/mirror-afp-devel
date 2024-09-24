@@ -12,7 +12,7 @@ theory Action
 begin
 
 locale action = group +
-  fixes act :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infixl "<o" 69)
+  fixes act :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infixl \<open><o\<close> 69)
   assumes id_act [simp]: "b <o \<one> = b"
   and act_act':
   "g \<in> carrier G \<and> h \<in> carrier G \<longrightarrow> (b <o g) <o h = b <o (g \<otimes> h)"

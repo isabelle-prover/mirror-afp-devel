@@ -235,7 +235,7 @@ SCF_R4: "\<lbrakk>(xs, X) \<in> seq_comp_failures P Q; (xs, Y) \<in> seq_comp_fa
   (xs, X \<union> Y) \<in> seq_comp_failures P Q"
 
 definition seq_comp ::
- "'a option process \<Rightarrow> 'a option process \<Rightarrow> 'a option process" (infixl ";" 60)
+ "'a option process \<Rightarrow> 'a option process \<Rightarrow> 'a option process" (infixl \<open>;\<close> 60)
 where
 "P ; Q \<equiv> Abs_process (seq_comp_failures P Q, {})"
 

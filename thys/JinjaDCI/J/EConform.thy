@@ -186,11 +186,11 @@ subsection "Indicator boolean conformance"
 \<comment> \<open> checks that the given expression, indicator boolean pair is allowed in small-step
   (i.e., if @{term b} is True, then @{term e} is an initialization-calling expression to
   a class that is marked either @{term Processing} or @{term Done}) \<close>
-definition bconf :: "'m prog \<Rightarrow> sheap \<Rightarrow> 'a exp \<Rightarrow> bool \<Rightarrow> bool"  ("_,_ \<turnstile>\<^sub>b '(_,_') \<surd>" [51,51,0,0] 50)
+definition bconf :: "'m prog \<Rightarrow> sheap \<Rightarrow> 'a exp \<Rightarrow> bool \<Rightarrow> bool"  (\<open>_,_ \<turnstile>\<^sub>b '(_,_') \<surd>\<close> [51,51,0,0] 50)
 where
   "P,sh \<turnstile>\<^sub>b (e,b) \<surd>  \<equiv> b \<longrightarrow> (\<exists>C. icheck P C (ss_exp e) \<and> initPD sh C)"
 
-definition bconfs :: "'m prog \<Rightarrow> sheap \<Rightarrow> 'a exp list \<Rightarrow> bool \<Rightarrow> bool"  ("_,_ \<turnstile>\<^sub>b '(_,_') \<surd>" [51,51,0,0] 50)
+definition bconfs :: "'m prog \<Rightarrow> sheap \<Rightarrow> 'a exp list \<Rightarrow> bool \<Rightarrow> bool"  (\<open>_,_ \<turnstile>\<^sub>b '(_,_') \<surd>\<close> [51,51,0,0] 50)
 where
   "P,sh \<turnstile>\<^sub>b (es,b) \<surd>  \<equiv> b \<longrightarrow> (\<exists>C. (icheck P C (the(ss_exps es))
                            \<and> (curr_inits P es = Some C) \<and> initPD sh C))"

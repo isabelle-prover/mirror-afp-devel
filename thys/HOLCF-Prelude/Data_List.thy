@@ -11,14 +11,14 @@ theory Data_List
 begin
 
 no_notation (ASCII)
-  Set.member  ("'(:')") and
-  Set.member  ("(_/ : _)" [51, 51] 50)
+  Set.member  (\<open>'(:')\<close>) and
+  Set.member  (\<open>(\<open>notation=\<open>infix :\<close>\<close>_/ : _)\<close> [51, 51] 50)
 
 subsection \<open>Datatype definition\<close>
 
-domain 'a list ("[_]") =
-  Nil ("[]") |
-  Cons (lazy head :: 'a) (lazy tail :: "['a]") (infixr ":" 65)
+domain 'a list (\<open>[_]\<close>) =
+  Nil (\<open>[]\<close>) |
+  Cons (lazy head :: 'a) (lazy tail :: "['a]") (infixr \<open>:\<close> 65)
 (*FIXME: We need to standardize a mapping from Haskell fixities
 (0 to 9) to Isabelle ones (between 50 and 100).*)
 
@@ -26,18 +26,18 @@ domain 'a list ("[_]") =
 subsubsection \<open>Section syntax for @{const Cons}\<close>
 
 syntax
-  "_Cons_section" :: "'a \<rightarrow> ['a] \<rightarrow> ['a]" ("'(:')")
-  "_Cons_section_left" :: "'a \<Rightarrow> ['a] \<rightarrow> ['a]" ("'(_:')")
+  "_Cons_section" :: "'a \<rightarrow> ['a] \<rightarrow> ['a]" (\<open>'(:')\<close>)
+  "_Cons_section_left" :: "'a \<Rightarrow> ['a] \<rightarrow> ['a]" (\<open>'(_:')\<close>)
 syntax_consts
   "_Cons_section_left" == Cons
 translations
   "(x:)" == "(CONST Rep_cfun) (CONST Cons) x"
 
-abbreviation Cons_section_right :: "['a] \<Rightarrow> 'a \<rightarrow> ['a]" ("'(:_')") where
+abbreviation Cons_section_right :: "['a] \<Rightarrow> 'a \<rightarrow> ['a]" (\<open>'(:_')\<close>) where
   "(:xs) \<equiv> \<Lambda> x. x:xs"
 
 syntax
-  "_lazy_list" :: "args \<Rightarrow> ['a]" ("[(_)]")
+  "_lazy_list" :: "args \<Rightarrow> ['a]" (\<open>[(_)]\<close>)
 syntax_consts
   "_lazy_list" == Cons
 translations
@@ -217,7 +217,7 @@ fixrec nth :: "['a] \<rightarrow> Integer \<rightarrow> 'a" where
 (* bh: Perhaps we should rename this to 'index',
 to match the standard Haskell function named 'genericIndex'. *)
 
-abbreviation nth_syn :: "['a] \<Rightarrow> Integer \<Rightarrow> 'a" (infixl "!!" 100) where
+abbreviation nth_syn :: "['a] \<Rightarrow> Integer \<Rightarrow> 'a" (infixl \<open>!!\<close> 100) where
   "xs !! n \<equiv> nth\<cdot>xs\<cdot>n"
 
 definition partition :: "('a \<rightarrow> tr) \<rightarrow> ['a] \<rightarrow> \<langle>['a], ['a]\<rangle>" where
@@ -255,7 +255,7 @@ fixrec append :: "['a] \<rightarrow> ['a] \<rightarrow> ['a]" where
   "append\<cdot>[]\<cdot>ys = ys" |
   "append\<cdot>(x : xs)\<cdot>ys = x : append\<cdot>xs\<cdot>ys"
 
-abbreviation append_syn :: "['a] \<Rightarrow> ['a] \<Rightarrow> ['a]" (infixr "++" 65) where
+abbreviation append_syn :: "['a] \<Rightarrow> ['a] \<Rightarrow> ['a]" (infixr \<open>++\<close> 65) where
   "xs ++ ys \<equiv> append\<cdot>xs\<cdot>ys"
 
 definition concat :: "[['a]] \<rightarrow> ['a]" where
@@ -353,10 +353,10 @@ definition enumFromTo :: "'a \<rightarrow> 'a \<rightarrow> ['a]" where
 
 end
 
-abbreviation enumFrom_To_syn :: "'a::Enum \<Rightarrow> 'a \<Rightarrow> ['a]" ("(1[_../_])") where
+abbreviation enumFrom_To_syn :: "'a::Enum \<Rightarrow> 'a \<Rightarrow> ['a]" (\<open>(1[_../_])\<close>) where
   "[m..n] \<equiv> enumFromTo\<cdot>m\<cdot>n"
 
-abbreviation enumFrom_syn :: "'a::Enum \<Rightarrow> ['a]" ("(1[_..])") where
+abbreviation enumFrom_syn :: "'a::Enum \<Rightarrow> ['a]" (\<open>(1[_..])\<close>) where
   "[n..] \<equiv> enumFrom\<cdot>n"
 
 instantiation Integer :: Enum
@@ -409,7 +409,7 @@ fixrec diff :: "['a::Eq] \<rightarrow> ['a] \<rightarrow> ['a]" where
   "diff\<cdot>xs\<cdot>[] = xs" |
   "diff\<cdot>xs\<cdot>(y : ys) = diff\<cdot>(delete\<cdot>y\<cdot>xs)\<cdot>ys"
 
-abbreviation diff_syn :: "['a::Eq] \<Rightarrow> ['a] \<Rightarrow> ['a]" (infixl "\\\\" 70) where
+abbreviation diff_syn :: "['a::Eq] \<Rightarrow> ['a] \<Rightarrow> ['a]" (infixl \<open>\\\<close> 70) where
   "xs \\\\ ys \<equiv> diff\<cdot>xs\<cdot>ys"
 
 
@@ -1482,7 +1482,7 @@ proof -
        (rename_tac a b, case_tac "P\<cdot>a", simp add: findIndices_def, simp_all add: 3)
 qed
 
-abbreviation cfun_image :: "('a \<rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set" (infixr "`\<cdot>" 90) where
+abbreviation cfun_image :: "('a \<rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set" (infixr \<open>`\<cdot>\<close> 90) where
   "f `\<cdot> A \<equiv> Rep_cfun f ` A"
 
 lemma set_map:

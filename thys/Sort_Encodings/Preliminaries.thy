@@ -29,7 +29,7 @@ unfolding pick_def by (metis someI_ex)
 
 lemma pick_NE[simp]: "X \<noteq> {} \<Longrightarrow> pick X \<in> X" by auto
 
-definition sappend (infix "@@" 60) where
+definition sappend (infix \<open>@@\<close> 60) where
 "Al @@ Bl = {al @ bl | al bl. al \<in> Al \<and> bl \<in> Bl}"
 
 lemma sappend_NE[simp]: "A @@ B \<noteq> {} \<longleftrightarrow> A \<noteq> {} \<and> B \<noteq> {}"

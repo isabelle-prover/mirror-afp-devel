@@ -66,7 +66,7 @@ Changing the precedence of the unary complement allows us to write terms like \<
 context sup
 begin
 
-notation sup (infixl "\<squnion>" 65)
+notation sup (infixl \<open>\<squnion>\<close> 65)
 
 definition additive :: "('a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "additive f \<equiv> \<forall>x y . f (x \<squnion> y) = f x \<squnion> f y"
@@ -76,16 +76,16 @@ end
 context inf
 begin
 
-notation inf (infixl "\<sqinter>" 67)
+notation inf (infixl \<open>\<sqinter>\<close> 67)
 
 end
 
 context uminus
 begin
 
-no_notation uminus ("- _" [81] 80)
+no_notation uminus (\<open>- _\<close> [81] 80)
 
-notation uminus ("- _" [80] 80)
+notation uminus (\<open>- _\<close> [80] 80)
 
 end
 
@@ -106,7 +106,7 @@ definition isotone :: "('a \<Rightarrow> 'a) \<Rightarrow> bool"
 definition galois :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "galois l u \<equiv> \<forall>x y . l x \<le> y \<longleftrightarrow> x \<le> u y"
 
-definition lifted_less_eq :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool" ("(_ \<le>\<le> _)" [51, 51] 50)
+definition lifted_less_eq :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool" (\<open>(_ \<le>\<le> _)\<close> [51, 51] 50)
   where "f \<le>\<le> g \<equiv> \<forall>x . f x \<le> g x"
 
 end

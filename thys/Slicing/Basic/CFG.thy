@@ -9,7 +9,7 @@ locale CFG =
   fixes targetnode :: "'edge \<Rightarrow> 'node"
   fixes kind :: "'edge \<Rightarrow> 'state edge_kind"
   fixes valid_edge :: "'edge \<Rightarrow> bool"
-  fixes Entry::"'node" ("'('_Entry'_')")
+  fixes Entry::"'node" (\<open>'('_Entry'_')\<close>)
   assumes Entry_target [dest]: "\<lbrakk>valid_edge a; targetnode a = (_Entry_)\<rbrakk> \<Longrightarrow> False"
   and edge_det: 
   "\<lbrakk>valid_edge a; valid_edge a'; sourcenode a = sourcenode a'; 
@@ -31,7 +31,7 @@ lemma [simp]: "valid_edge a \<Longrightarrow> valid_node (targetnode a)"
 subsection \<open>CFG paths and lemmas\<close>
 
 inductive path :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
-  ("_ -_\<rightarrow>* _" [51,0,0] 80)
+  (\<open>_ -_\<rightarrow>* _\<close> [51,0,0] 80)
 where 
   empty_path:"valid_node n \<Longrightarrow> n -[]\<rightarrow>* n"
 

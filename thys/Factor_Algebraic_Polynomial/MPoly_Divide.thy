@@ -127,7 +127,7 @@ text \<open>
   divide the dividend, it returns \<^const>\<open>None\<close>.
 \<close>
 
-definition divide_option :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> 'a option"  (infixl "div?" 70) where
+definition divide_option :: "'a :: idom_divide \<Rightarrow> 'a \<Rightarrow> 'a option"  (infixl \<open>div?\<close> 70) where
   "divide_option p q = (if q dvd p then Some (p div q) else None)"
 
 text \<open>

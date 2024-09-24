@@ -31,7 +31,7 @@ definition ncols :: "'a^'columns^'rows => nat"
   where "ncols A = CARD('columns)"
   
 definition matrix_scalar_mult :: "'a::ab_semigroup_mult => 'a ^'n^'m => 'a ^'n^'m"
-    (infixl "*k" 70)
+    (infixl \<open>*k\<close> 70)
   where "k *k A \<equiv> (\<chi> i j. k * A $ i $ j)"
 
 subsection\<open>Basic properties about matrices\<close>

@@ -78,20 +78,20 @@ text\<open>
 
 datatype '\<alpha> decision = allow '\<alpha> | deny '\<alpha>
 
-type_synonym ('\<alpha>,'\<beta>) policy = "'\<alpha>  \<rightharpoonup> '\<beta> decision" (infixr "|->" 0)
+type_synonym ('\<alpha>,'\<beta>) policy = "'\<alpha>  \<rightharpoonup> '\<beta> decision" (infixr \<open>|->\<close> 0)
 
 text\<open>In the following, we introduce a number of shortcuts and alternative notations.
 The type of policies is represented as:\<close>
 
 translations (type)        "'\<alpha> |-> '\<beta>" <= (type) "'\<alpha>  \<rightharpoonup> '\<beta> decision"
-type_notation "policy" (infixr "\<mapsto>" 0) 
+type_notation "policy" (infixr \<open>\<mapsto>\<close> 0) 
 
 text\<open>... allowing the notation @{typ "'\<alpha> \<mapsto> '\<beta>"}  for the policy type and the
 alternative notations for @{term None} and @{term Some} of the \HOL library 
 @{typ "'\<alpha> option"} type:\<close>
 
-notation    "None" ("\<bottom>")
-notation    "Some" ("\<lfloor>_\<rfloor>" 80)
+notation    "None" (\<open>\<bottom>\<close>)
+notation    "Some" (\<open>\<lfloor>_\<rfloor>\<close> 80)
 
 text\<open>Thus, the range of a policy may consist of @{term "\<lfloor>accept x\<rfloor>"} data,
   of @{term "\<lfloor>deny x\<rfloor>"} data, as well as @{term "\<bottom>"} modeling the undefinedness
@@ -123,13 +123,13 @@ text\<open>
 nonterminal policylets and policylet
 
 syntax
-  "_policylet1"  :: "['a, 'a] => policylet"                 ("_ /\<mapsto>\<^sub>+/ _")
-  "_policylet2"  :: "['a, 'a] => policylet"                 ("_ /\<mapsto>\<^sub>-/ _")
-  ""             :: "policylet => policylets"               ("_")
-  "_Maplets"     :: "[policylet, policylets] => policylets" ("_,/ _")
-  "_Maplets"     :: "[policylet, policylets] => policylets" ("_,/ _")
-   "_MapUpd"      :: "['a |-> 'b, policylets] => 'a |-> 'b"  ("_/'(_')" [900,0]900)
-  "_emptypolicy" :: "'a |-> 'b"                             ("\<emptyset>")
+  "_policylet1"  :: "['a, 'a] => policylet"                 (\<open>_ /\<mapsto>\<^sub>+/ _\<close>)
+  "_policylet2"  :: "['a, 'a] => policylet"                 (\<open>_ /\<mapsto>\<^sub>-/ _\<close>)
+  ""             :: "policylet => policylets"               (\<open>_\<close>)
+  "_Maplets"     :: "[policylet, policylets] => policylets" (\<open>_,/ _\<close>)
+  "_Maplets"     :: "[policylet, policylets] => policylets" (\<open>_,/ _\<close>)
+   "_MapUpd"      :: "['a |-> 'b, policylets] => 'a |-> 'b"  (\<open>_/'(_')\<close> [900,0]900)
+  "_emptypolicy" :: "'a |-> 'b"                             (\<open>\<emptyset>\<close>)
 
 syntax_consts
   "_policylet1" \<rightleftharpoons> allow and
@@ -183,7 +183,7 @@ text\<open>
 \<close>
 
 syntax
-  "_policyoverride"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>" 100)
+  "_policyoverride"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl \<open>\<Oplus>\<close> 100)
 syntax_consts
   "_policyoverride" \<rightleftharpoons> map_add
 translations
@@ -208,7 +208,7 @@ text\<open>
   an allow of wins over a deny. For override\_D, the situation is dual. 
 \<close>
 
-definition override_A :: "['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixl "++'_A" 100) 
+definition override_A :: "['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixl \<open>++'_A\<close> 100) 
 where  "m2 ++_A m1 = 
           (\<lambda>x. (case m1 x of 
                  \<lfloor>allow a\<rfloor> \<Rightarrow>  \<lfloor>allow a\<rfloor>
@@ -218,7 +218,7 @@ where  "m2 ++_A m1 =
            )"
 
 syntax
-  "_policyoverride_A"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>\<^sub>A" 100)
+  "_policyoverride_A"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl \<open>\<Oplus>\<^sub>A\<close> 100)
 syntax_consts
   "_policyoverride_A" \<rightleftharpoons> override_A
 translations
@@ -244,7 +244,7 @@ lemma empty_override_A[simp]: "\<emptyset> \<Oplus>\<^sub>A p = p"
 lemma override_A_assoc: "p1 \<Oplus>\<^sub>A (p2 \<Oplus>\<^sub>A p3) = (p1 \<Oplus>\<^sub>A p2) \<Oplus>\<^sub>A p3" 
   by (rule ext, simp add: override_A_def split: decision.splits  option.splits)
 
-definition override_D :: "['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixl "++'_D" 100) 
+definition override_D :: "['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixl \<open>++'_D\<close> 100) 
 where "m1 ++_D m2 = 
           (\<lambda>x. case m2 x of 
                 \<lfloor>deny a\<rfloor> \<Rightarrow> \<lfloor>deny a\<rfloor>
@@ -254,7 +254,7 @@ where "m1 ++_D m2 =
            )"
  
 syntax
-  "_policyoverride_D"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>\<^sub>D" 100)
+  "_policyoverride_D"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl \<open>\<Oplus>\<^sub>D\<close> 100)
 syntax_consts
   "_policyoverride_D" \<rightleftharpoons> override_D
 translations
@@ -289,7 +289,7 @@ text\<open>
   An analogous for the range of a policy is defined as follows: 
 \<close>
 
-definition policy_range_comp :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>"   (infixl "o'_f" 55) 
+definition policy_range_comp :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>"   (infixl \<open>o'_f\<close> 55) 
 where
   "f o_f p = (\<lambda>x. case p x of
                      \<lfloor>allow y\<rfloor> \<Rightarrow> \<lfloor>allow (f y)\<rfloor>
@@ -297,7 +297,7 @@ where
                    | \<bottom> \<Rightarrow> \<bottom>)"
 
 syntax
-  "_policy_range_comp" :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>" (infixl "o\<^sub>f" 55)
+  "_policy_range_comp" :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>" (infixl \<open>o\<^sub>f\<close> 55)
 syntax_consts
   "_policy_range_comp" \<rightleftharpoons> policy_range_comp
 translations
@@ -315,7 +315,7 @@ text\<open>
 \<close>
 
 definition range_split :: "[('\<beta>\<Rightarrow>'\<gamma>)\<times>('\<beta>\<Rightarrow>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"
-                          (infixr "\<nabla>" 100)
+                          (infixr \<open>\<nabla>\<close> 100)
 where "(P) \<nabla> p = (\<lambda>x. case p x of 
                           \<lfloor>allow y\<rfloor> \<Rightarrow> \<lfloor>allow ((fst P) y)\<rfloor>
                         | \<lfloor>deny y\<rfloor>  \<Rightarrow> \<lfloor>deny ((snd P) y)\<rfloor> 
@@ -386,19 +386,19 @@ text \<open>
   on the input instead of the output. 
 \<close>
 
-definition dom_split2a :: "[('\<alpha> \<rightharpoonup> '\<gamma>) \<times> ('\<alpha> \<rightharpoonup>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"         (infixr "\<Delta>a" 100)
+definition dom_split2a :: "[('\<alpha> \<rightharpoonup> '\<gamma>) \<times> ('\<alpha> \<rightharpoonup>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"         (infixr \<open>\<Delta>a\<close> 100)
 where "P \<Delta>a p = (\<lambda>x. case p x of 
                           \<lfloor>allow y\<rfloor> \<Rightarrow> \<lfloor>allow (the ((fst P) x))\<rfloor>
                         | \<lfloor>deny y\<rfloor>  \<Rightarrow>  \<lfloor>deny (the ((snd P) x))\<rfloor> 
                         | \<bottom>        \<Rightarrow> \<bottom>)"
 
-definition dom_split2 :: "[('\<alpha> \<Rightarrow> '\<gamma>) \<times> ('\<alpha> \<Rightarrow>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"          (infixr "\<Delta>" 100)
+definition dom_split2 :: "[('\<alpha> \<Rightarrow> '\<gamma>) \<times> ('\<alpha> \<Rightarrow>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"          (infixr \<open>\<Delta>\<close> 100)
 where "P \<Delta> p = (\<lambda>x. case p x of 
                           \<lfloor>allow y\<rfloor> \<Rightarrow> \<lfloor>allow ((fst P) x)\<rfloor>
                         | \<lfloor>deny y\<rfloor>  \<Rightarrow>  \<lfloor>deny ((snd P) x)\<rfloor>
                         | \<bottom>        \<Rightarrow> \<bottom>)"
 
-definition range_split2 :: "[('\<alpha> \<Rightarrow> '\<gamma>) \<times> ('\<alpha> \<Rightarrow>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> ('\<beta> \<times>'\<gamma>)" (infixr "\<nabla>2" 100)
+definition range_split2 :: "[('\<alpha> \<Rightarrow> '\<gamma>) \<times> ('\<alpha> \<Rightarrow>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> ('\<beta> \<times>'\<gamma>)" (infixr \<open>\<nabla>2\<close> 100)
 where "P \<nabla>2 p = (\<lambda>x. case p x of 
                           \<lfloor>allow y\<rfloor> \<Rightarrow> \<lfloor>allow (y,(fst P) x)\<rfloor>
                         | \<lfloor>deny y\<rfloor>  \<Rightarrow> \<lfloor>deny (y,(snd P) x)\<rfloor> 

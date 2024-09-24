@@ -11,9 +11,9 @@ begin
 
 declare [[coercion qbs_l]]
 
-abbreviation real_quasi_borel :: "real quasi_borel" ("\<real>\<^sub>Q") where
+abbreviation real_quasi_borel :: "real quasi_borel" (\<open>\<real>\<^sub>Q\<close>) where
 "real_quasi_borel \<equiv> qbs_borel"
-abbreviation nat_quasi_borel :: "nat quasi_borel" ("\<nat>\<^sub>Q") where
+abbreviation nat_quasi_borel :: "nat quasi_borel" (\<open>\<nat>\<^sub>Q\<close>) where
 "nat_quasi_borel \<equiv> qbs_count_space UNIV"
 
 

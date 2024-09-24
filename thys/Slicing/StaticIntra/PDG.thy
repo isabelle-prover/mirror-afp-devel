@@ -11,11 +11,11 @@ locale PDG =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and Exit :: "'node" ("'('_Exit'_')") +
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>) +
   fixes control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-("_ controls _ " [51,0])
+(\<open>_ controls _ \<close> [51,0])
   assumes Exit_not_control_dependent:"n controls n' \<Longrightarrow> n' \<noteq> (_Exit_)"
   assumes control_dependence_path:
   "n controls n' 
@@ -25,9 +25,9 @@ begin
 
 
 inductive cdep_edge :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
-    ("_ \<longrightarrow>\<^sub>c\<^sub>d _" [51,0] 80)
+    (\<open>_ \<longrightarrow>\<^sub>c\<^sub>d _\<close> [51,0] 80)
   and ddep_edge :: "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> bool"
-    ("_ -_\<rightarrow>\<^sub>d\<^sub>d _" [51,0,0] 80)
+    (\<open>_ -_\<rightarrow>\<^sub>d\<^sub>d _\<close> [51,0,0] 80)
   and PDG_edge :: "'node \<Rightarrow> 'var option \<Rightarrow> 'node \<Rightarrow> bool"
 
 where
@@ -44,7 +44,7 @@ where
 
 
 inductive PDG_path :: "'node \<Rightarrow> 'node \<Rightarrow> bool"
-("_ \<longrightarrow>\<^sub>d* _" [51,0] 80) 
+(\<open>_ \<longrightarrow>\<^sub>d* _\<close> [51,0] 80) 
 
 where PDG_path_Nil:
   "valid_node n \<Longrightarrow> n \<longrightarrow>\<^sub>d* n"
@@ -166,9 +166,9 @@ locale StandardControlDependencePDG =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and Exit :: "'node" ("'('_Exit'_')")
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>)
 
 begin
 
@@ -201,7 +201,7 @@ lemmas PDG_path_not_inner = PDG.PDG_path_not_inner[OF PDG_scd]
 lemmas PDG_path_Exit = PDG.PDG_path_Exit[OF PDG_scd]
 
 
-definition PDG_BS_s :: "'node set \<Rightarrow> 'node set" ("PDG'_BS")
+definition PDG_BS_s :: "'node set \<Rightarrow> 'node set" (\<open>PDG'_BS\<close>)
   where "PDG_BS S \<equiv> 
   PDG.PDG_BS sourcenode targetnode valid_edge Def Use standard_control_dependence S"
 
@@ -223,9 +223,9 @@ locale WeakControlDependencePDG =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
-  and Exit :: "'node" ("'('_Exit'_')")
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>)
 
 begin
 
@@ -257,7 +257,7 @@ lemmas PDG_path_not_inner = PDG.PDG_path_not_inner[OF PDG_wcd]
 lemmas PDG_path_Exit = PDG.PDG_path_Exit[OF PDG_wcd]
 
 
-definition PDG_BS_w :: "'node set \<Rightarrow> 'node set" ("PDG'_BS")
+definition PDG_BS_w :: "'node set \<Rightarrow> 'node set" (\<open>PDG'_BS\<close>)
   where "PDG_BS S \<equiv> 
   PDG.PDG_BS sourcenode targetnode valid_edge Def Use weak_control_dependence S"
 

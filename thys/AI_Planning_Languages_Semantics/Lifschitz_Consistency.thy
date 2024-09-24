@@ -30,7 +30,7 @@ context ast_domain begin
     by (auto simp: close_eq_def)
 
 
-  abbreviation entail_eq :: "state \<Rightarrow> object atom formula \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>=" 55)
+  abbreviation entail_eq :: "state \<Rightarrow> object atom formula \<Rightarrow> bool" (infix \<open>\<Turnstile>\<^sub>=\<close> 55)
     where "entail_eq s f \<equiv> close_eq s \<Turnstile> f"
 
 

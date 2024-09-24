@@ -23,7 +23,7 @@ definition "tick v = TM v 1"
 
 definition "return v = TM v 0"
 
-abbreviation eqtick :: "'a tm \<Rightarrow> 'a tm \<Rightarrow> bool" (infix "=1" 50) where
+abbreviation eqtick :: "'a tm \<Rightarrow> 'a tm \<Rightarrow> bool" (infix \<open>=1\<close> 50) where
  "eqtick l r \<equiv> (l = (r \<bind> tick))"
 
 (* warning: bind_tm is not a constant on purpose, does not work if it is: *)

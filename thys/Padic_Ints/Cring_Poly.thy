@@ -1930,7 +1930,7 @@ section\<open>Polynomial Substitution\<close>
 definition compose where
 "compose R f g = eval R (UP R) (to_polynomial R) g f"
 
-abbreviation(in UP_cring)(input) sub  (infixl "of" 70) where
+abbreviation(in UP_cring)(input) sub  (infixl \<open>of\<close> 70) where
 "sub f g \<equiv> compose R f g"
 
 definition rev_compose  where
@@ -3208,7 +3208,7 @@ lemma taylor_expansion_ring_hom:
   unfolding rev_compose_def compose_def 
   using X_plus_closed assms by auto 
 
-notation  taylor ("T\<^bsub>_\<^esub>")
+notation  taylor (\<open>T\<^bsub>_\<^esub>\<close>)
 
 lemma(in UP_cring) taylor_closed:
   assumes "f \<in> carrier P"
@@ -3585,7 +3585,7 @@ lemma zcf_poly_shift:
   unfolding zcf_def using poly_shift_monom poly_shift_degree_zero
   by (simp add: poly_shift_def)
 
-fun poly_shift_iter ("shift") where
+fun poly_shift_iter (\<open>shift\<close>) where
 Base:"poly_shift_iter 0 f = f"|
 Step:"poly_shift_iter (Suc n) f = poly_shift (poly_shift_iter n f)"
 

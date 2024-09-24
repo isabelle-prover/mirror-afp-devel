@@ -32,7 +32,7 @@ translations
   (type) "'c class" <= (type) "String.literal \<times> fdecl list \<times> ('c mdecl) list"
   (type) "'c cdecl" <= (type) "String.literal \<times> ('c class)"
 
-notation (input) None ("Native")
+notation (input) None (\<open>Native\<close>)
 
 primrec "classes" :: "'m prog \<Rightarrow> 'm cdecl list"
 where

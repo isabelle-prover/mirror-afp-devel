@@ -549,7 +549,7 @@ lemma cantor_inj: "f \<notin> inj(Pow(A),A)"
   using inj_imp_surj[OF _ Pow_bottom] cantor_surj by blast
 
 definition
-  cexp :: "[i,i] \<Rightarrow> i" ("_\<^bsup>\<up>_\<^esup>" [76,1] 75) where
+  cexp :: "[i,i] \<Rightarrow> i" (\<open>_\<^bsup>\<up>_\<^esup>\<close> [76,1] 75) where
   "\<kappa>\<^bsup>\<up>\<nu>\<^esup> \<equiv> |\<nu> \<rightarrow> \<kappa>|"
 
 lemma Card_cexp: "Card(\<kappa>\<^bsup>\<up>\<nu>\<^esup>)"

@@ -835,7 +835,7 @@ proof (rule ccontr)
   moreover from q have "q \<noteq> 0" "q \<noteq> 1" by auto
   ultimately have "q > 2" by auto
 
-  write lucas_lehmer_ring ("R")
+  write lucas_lehmer_ring (\<open>R\<close>)
   define S where "S = lucas_lehmer_ring_mod q"
   define S' where "S' = units_of S"
   define \<phi> where "\<phi> = lucas_lehmer_hom q"
@@ -954,7 +954,7 @@ text \<open>
 theorem (in mersenne_prime) lucas_lehmer_necessary:
   "(2 ^ p - 1) dvd gen_lucas_lehmer_sequence 4 (p - 2)"
 proof -
-  write lucas_lehmer_ring ("R")
+  write lucas_lehmer_ring (\<open>R\<close>)
   define S where "S = lucas_lehmer_ring_mod M"
   define S' where "S' = units_of S"
   define \<phi> where "\<phi> = lucas_lehmer_hom M"

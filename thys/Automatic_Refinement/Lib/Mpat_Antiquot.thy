@@ -7,12 +7,12 @@ typedecl term_struct
 typedecl typ_struct
 typedecl sort
 
-definition mpaq_AS_PAT :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "AS\<^sub>p" 900)
+definition mpaq_AS_PAT :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>AS\<^sub>p\<close> 900)
   where "a AS\<^sub>p s \<equiv> a"
 
 definition mpaq_STRUCT :: "term_struct \<Rightarrow> 'a" where "mpaq_STRUCT _ = undefined"
 
-abbreviation mpaq_AS_STRUCT :: "'a \<Rightarrow> term_struct \<Rightarrow> 'a" (infixl "AS\<^sub>s" 900)
+abbreviation mpaq_AS_STRUCT :: "'a \<Rightarrow> term_struct \<Rightarrow> 'a" (infixl \<open>AS\<^sub>s\<close> 900)
   where "a AS\<^sub>s s \<equiv> a AS\<^sub>p mpaq_STRUCT s"
 
 consts
@@ -21,7 +21,7 @@ consts
   mpaq_Var :: "string*nat \<Rightarrow> typ_struct \<Rightarrow> term_struct"
   mpaq_Bound :: "nat \<Rightarrow> term_struct"
   mpaq_Abs :: "string \<Rightarrow> typ_struct \<Rightarrow> term_struct \<Rightarrow> term_struct"
-  mpaq_App :: "term_struct \<Rightarrow> term_struct \<Rightarrow> term_struct" (infixl "$$" 900)
+  mpaq_App :: "term_struct \<Rightarrow> term_struct \<Rightarrow> term_struct" (infixl \<open>$$\<close> 900)
 
 consts
   mpaq_TFree :: "string \<Rightarrow> sort \<Rightarrow> typ_struct"

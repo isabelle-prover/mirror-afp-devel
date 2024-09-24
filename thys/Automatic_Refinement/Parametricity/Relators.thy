@@ -38,7 +38,7 @@ definition relAPP
   :: "(('c1\<times>'a1) set \<Rightarrow> _) \<Rightarrow> ('c1\<times>'a1) set \<Rightarrow> _" 
   where "relAPP f x \<equiv> f x"
 
-syntax "_rel_APP" :: "args \<Rightarrow> 'a \<Rightarrow> 'b" ("\<langle>_\<rangle>_" [0,900] 900)
+syntax "_rel_APP" :: "args \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>\<langle>_\<rangle>_\<close> [0,900] 900)
 
 syntax_consts "_rel_APP" == relAPP
 
@@ -63,7 +63,7 @@ subsection \<open>Basic HOL Relators\<close>
 subsubsection \<open>Function\<close>
 definition fun_rel where 
   fun_rel_def_internal: "fun_rel A B \<equiv> { (f,f'). \<forall>(a,a')\<in>A. (f a, f' a')\<in>B }"
-abbreviation fun_rel_syn (infixr "\<rightarrow>" 60) where "A\<rightarrow>B \<equiv> \<langle>A,B\<rangle>fun_rel"
+abbreviation fun_rel_syn (infixr \<open>\<rightarrow>\<close> 60) where "A\<rightarrow>B \<equiv> \<langle>A,B\<rangle>fun_rel"
 
 lemma fun_rel_def[refine_rel_defs]: 
   "A\<rightarrow>B \<equiv> { (f,f'). \<forall>(a,a')\<in>A. (f a, f' a')\<in>B }"
@@ -114,7 +114,7 @@ definition prod_rel where
   prod_rel_def_internal: "prod_rel R1 R2 
     \<equiv> { ((a,b),(a',b')) . (a,a')\<in>R1 \<and> (b,b')\<in>R2 }"
 
-abbreviation prod_rel_syn (infixr "\<times>\<^sub>r" 70) where "a\<times>\<^sub>rb \<equiv> \<langle>a,b\<rangle>prod_rel" 
+abbreviation prod_rel_syn (infixr \<open>\<times>\<^sub>r\<close> 70) where "a\<times>\<^sub>rb \<equiv> \<langle>a,b\<rangle>prod_rel" 
 
 lemma prod_rel_def[refine_rel_defs]: 
   "(\<langle>R1,R2\<rangle>prod_rel) \<equiv> { ((a,b),(a',b')) . (a,a')\<in>R1 \<and> (b,b')\<in>R2 }"

@@ -14,11 +14,11 @@ text \<open>
 \<close>
 
 locale seq =
-  fixes seq :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a" (infixl ";" 90)
+  fixes seq :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>;\<close> 90)
   assumes seq_bot [simp]: "\<bottom> ; c = \<bottom>"   (* 35 *)
 
 locale nil =
-  fixes nil :: "'a::refinement_lattice" ("nil")
+  fixes nil :: "'a::refinement_lattice" (\<open>nil\<close>)
 
 text \<open>
   The monoid axioms imply ``;'' is associative and has identity nil.
@@ -89,15 +89,15 @@ proof -
     by simp
 qed
 
-primrec seq_power :: "'a \<Rightarrow> nat \<Rightarrow> 'a" (infixr "\<^sup>;^" 80) where
+primrec seq_power :: "'a \<Rightarrow> nat \<Rightarrow> 'a" (infixr \<open>\<^sup>;^\<close> 80) where
     seq_power_0: "a \<^sup>;^ 0 = nil"
   | seq_power_Suc: "a \<^sup>;^ Suc n = a ; (a \<^sup>;^ n)"
 
 notation (latex output)
-  seq_power ("(_\<^bsup>_\<^esup>)" [1000] 1000)
+  seq_power (\<open>(_\<^bsup>_\<^esup>)\<close> [1000] 1000)
 
 notation (HTML output)
-  seq_power ("(_\<^bsup>_\<^esup>)" [1000] 1000)
+  seq_power (\<open>(_\<^bsup>_\<^esup>)\<close> [1000] 1000)
 
 
 lemma seq_power_front: "(a \<^sup>;^ n) ; a = a ; (a \<^sup>;^ n)"

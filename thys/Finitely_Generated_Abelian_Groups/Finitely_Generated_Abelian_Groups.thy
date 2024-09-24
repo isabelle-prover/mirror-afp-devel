@@ -8,7 +8,7 @@ theory Finitely_Generated_Abelian_Groups
   imports DirProds Group_Relations
 begin
 
-notation integer_mod_group ("Z")
+notation integer_mod_group (\<open>Z\<close>)
 
 locale fin_gen_comm_group = comm_group +
   fixes gen :: "'a set"
@@ -979,6 +979,6 @@ proof -
   with ns show ?thesis using that by blast
 qed
 
-no_notation integer_mod_group ("Z")
+no_notation integer_mod_group (\<open>Z\<close>)
 
 end

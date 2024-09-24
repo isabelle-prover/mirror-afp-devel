@@ -389,7 +389,7 @@ qed
 
 
 definition regular_graph :: "real \<Rightarrow> uvert set set \<Rightarrow> ugraph \<Rightarrow> bool"  
-           ("_-regular'_graph" [999]1000)
+           (\<open>_-regular'_graph\<close> [999]1000)
   where "\<epsilon>-regular_graph P G \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> \<epsilon>-regular_pair R S G" for \<epsilon>::real
 
 text \<open>A minimum density, but empty edge sets are excluded.\<close>

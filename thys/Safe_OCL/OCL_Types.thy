@@ -19,8 +19,8 @@ type_synonym telem = String.literal
 
 datatype (plugins del: size) 'a type =
   OclSuper
-| Required "'a basic_type" ("_[1]" [1000] 1000)
-| Optional "'a basic_type" ("_[?]" [1000] 1000)
+| Required "'a basic_type" (\<open>_[1]\<close> [1000] 1000)
+| Optional "'a basic_type" (\<open>_[?]\<close> [1000] 1000)
 | Collection "'a type"
 | Set "'a type"
 | OrderedSet "'a type"
@@ -58,7 +58,7 @@ instance ..
 
 end
 
-inductive subtype :: "'a::order type \<Rightarrow> 'a type \<Rightarrow> bool" (infix "\<sqsubset>" 65) where
+inductive subtype :: "'a::order type \<Rightarrow> 'a type \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 65) where
   "\<tau> \<sqsubset>\<^sub>B \<sigma> \<Longrightarrow> \<tau>[1] \<sqsubset> \<sigma>[1]"
 | "\<tau> \<sqsubset>\<^sub>B \<sigma> \<Longrightarrow> \<tau>[?] \<sqsubset> \<sigma>[?]"
 | "\<tau>[1] \<sqsubset> \<tau>[?]"
@@ -808,7 +808,7 @@ end
 
 section \<open>Helper Relations\<close>
 
-abbreviation between ("_/ = _\<midarrow>_"  [51, 51, 51] 50) where
+abbreviation between (\<open>_/ = _\<midarrow>_\<close>  [51, 51, 51] 50) where
   "x = y\<midarrow>z \<equiv> y \<le> x \<and> x \<le> z"
 
 inductive element_type where

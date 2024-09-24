@@ -378,7 +378,7 @@ qed
 
 end
 
-fun rgraph_isomorph :: "'a rpregraph \<Rightarrow> 'b rpregraph \<Rightarrow> bool" (infix "\<simeq>\<^sub>r" 50) where
+fun rgraph_isomorph :: "'a rpregraph \<Rightarrow> 'b rpregraph \<Rightarrow> bool" (infix \<open>\<simeq>\<^sub>r\<close> 50) where
   "(V\<^sub>G,E\<^sub>G,r\<^sub>G) \<simeq>\<^sub>r (V\<^sub>H,E\<^sub>H,r\<^sub>H) \<longleftrightarrow> (\<exists>f. rgraph_isomorphism V\<^sub>G E\<^sub>G r\<^sub>G V\<^sub>H E\<^sub>H r\<^sub>H f)"
 
 lemma (in rgraph) rgraph_isomorphism_id: "rgraph_isomorphism V E r V E r id"

@@ -8,8 +8,8 @@ theory Set_Theory imports "HOL-Library.FuncSet" begin
 hide_const map
 hide_const partition
 
-no_notation divide (infixl "'/" 70)
-no_notation inverse_divide (infixl "'/" 70)
+no_notation divide (infixl \<open>'/\<close> 70)
+no_notation inverse_divide (infixl \<open>'/\<close> 70)
 
 text \<open>
   Each statement in the formal text is annotated with the location of the originating statement
@@ -383,7 +383,7 @@ sublocale equivalence \<subseteq> partition S Partition
 
 text \<open>Unfortunately only effective on input\<close>
 text \<open>p 12, ll 18--20\<close>
-notation equivalence.Partition (infixl "'/" 75)
+notation equivalence.Partition (infixl \<open>'/\<close> 75)
 
 context equivalence begin
 
@@ -406,7 +406,7 @@ text \<open>p 12, ll 25--26\<close>
 locale fiber_relation_notation = fixes S :: "'a set" begin
 
 text \<open>p 12, ll 25--26\<close>
-definition Fiber_Relation ("E'(_')") where "Fiber_Relation \<alpha> = {(x, y). x \<in> S \<and> y \<in> S \<and> \<alpha> x = \<alpha> y}"
+definition Fiber_Relation (\<open>E'(_')\<close>) where "Fiber_Relation \<alpha> = {(x, y). x \<in> S \<and> y \<in> S \<and> \<alpha> x = \<alpha> y}"
 
 end (* fiber_relation_notation *)
 

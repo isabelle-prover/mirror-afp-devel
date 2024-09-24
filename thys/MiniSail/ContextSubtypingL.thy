@@ -24,7 +24,7 @@ nominal_function replace_in_g_many :: "\<Gamma> \<Rightarrow> (x*c) list \<Right
   by(auto,simp add: eqvt_def replace_in_g_many_graph_aux_def)
 nominal_termination (eqvt)  by lexicographic_order
 
-inductive replace_in_g_subtyped :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> (x*c) list \<Rightarrow> \<Gamma> \<Rightarrow> bool" (" _ ; _  \<turnstile> _ \<langle> _ \<rangle> \<leadsto> _" [100,50,50] 50) where
+inductive replace_in_g_subtyped :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> (x*c) list \<Rightarrow> \<Gamma> \<Rightarrow> bool" (\<open> _ ; _  \<turnstile> _ \<langle> _ \<rangle> \<leadsto> _\<close> [100,50,50] 50) where
   replace_in_g_subtyped_nilI: "\<Theta>; \<B> \<turnstile> G \<langle> [] \<rangle> \<leadsto> G"
 | replace_in_g_subtyped_consI:  "\<lbrakk> 
        Some (b,c') = lookup G x ; 

@@ -11,10 +11,10 @@ interpretation semantic_domain
   "\<Lambda> scrut v1 v2 r. CB_project\<cdot>(scrut\<cdot>r)\<cdot>(v1\<cdot>r)\<cdot>(v2\<cdot>r)"
   "C_case".
 
-notation ESem_syn ("\<N>\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>"  [60,60] 60)
-notation EvalHeapSem_syn  ("\<^bold>\<N>\<lbrakk> _ \<^bold>\<rbrakk>\<^bsub>_\<^esub>"  [0,0] 110)
-notation HSem_syn ("\<N>\<lbrace>_\<rbrace>_"  [60,60] 60)
-notation AHSem_bot ("\<N>\<lbrace>_\<rbrace>"  [60] 60)
+notation ESem_syn (\<open>\<N>\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>\<close>  [60,60] 60)
+notation EvalHeapSem_syn  (\<open>\<^bold>\<N>\<lbrakk> _ \<^bold>\<rbrakk>\<^bsub>_\<^esub>\<close>  [0,0] 110)
+notation HSem_syn (\<open>\<N>\<lbrace>_\<rbrace>_\<close>  [60,60] 60)
+notation AHSem_bot (\<open>\<N>\<lbrace>_\<rbrace>\<close>  [60] 60)
 
 text \<open>
 Here we re-state the simplification rules, cleaned up by beta-reducing the locale parameters.

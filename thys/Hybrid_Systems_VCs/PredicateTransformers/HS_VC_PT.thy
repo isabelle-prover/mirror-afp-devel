@@ -16,17 +16,17 @@ theory HS_VC_PT
                         
 begin
 
-no_notation bres (infixr "\<rightarrow>" 60)
-        and dagger ("_\<^sup>\<dagger>" [101] 100)
-        and "Relation.relcomp" (infixl ";" 75) 
-        and eta ("\<eta>")
-        and kcomp (infixl "\<circ>\<^sub>K" 75)
+no_notation bres (infixr \<open>\<rightarrow>\<close> 60)
+        and dagger (\<open>_\<^sup>\<dagger>\<close> [101] 100)
+        and "Relation.relcomp" (infixl \<open>;\<close> 75) 
+        and eta (\<open>\<eta>\<close>)
+        and kcomp (infixl \<open>\<circ>\<^sub>K\<close> 75)
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-notation eta ("skip")
-     and kcomp (infixl ";" 75)
-     and g_orbital ("(1x\<acute>=_ & _ on _ _ @ _)")
+notation eta (\<open>skip\<close>)
+     and kcomp (infixl \<open>;\<close> 75)
+     and g_orbital (\<open>(1x\<acute>=_ & _ on _ _ @ _)\<close>)
 
 
 subsection \<open>Verification of regular programs\<close>
@@ -58,7 +58,7 @@ lemma ffb_skip[simp]: "fb\<^sub>\<F> skip S = S"
 
 \<comment> \<open> Tests \<close>
 
-definition test :: "'a pred \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1\<questiondown>_?)")
+definition test :: "'a pred \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>(1\<questiondown>_?)\<close>)
   where "\<questiondown>P? = (\<lambda>s. {x. x = s \<and> P x})"
 
 lemma ffb_test[simp]: "fb\<^sub>\<F> \<questiondown>P? Q = {s. P s \<longrightarrow> s \<in> Q}"
@@ -66,7 +66,7 @@ lemma ffb_test[simp]: "fb\<^sub>\<F> \<questiondown>P? Q = {s. P s \<longrightar
 
 \<comment> \<open> Assignments \<close>
 
-definition assign :: "'n \<Rightarrow> ('a^'n \<Rightarrow> 'a) \<Rightarrow> ('a^'n) \<Rightarrow> ('a^'n) set" ("(2_ ::= _)" [70, 65] 61) 
+definition assign :: "'n \<Rightarrow> ('a^'n \<Rightarrow> 'a) \<Rightarrow> ('a^'n) \<Rightarrow> ('a^'n) set" (\<open>(2_ ::= _)\<close> [70, 65] 61) 
   where "(x ::= e) = (\<lambda>s. {vec_upd s x (e s)})" 
 
 lemma ffb_assign[simp]: "fb\<^sub>\<F> (x ::= e) Q = {s. (\<chi> j. ((($) s)(x := (e s))) j) \<in> Q}"
@@ -74,7 +74,7 @@ lemma ffb_assign[simp]: "fb\<^sub>\<F> (x ::= e) Q = {s. (\<chi> j. ((($) s)(x :
 
 \<comment> \<open> Nondeterministic assignments \<close>
 
-definition nondet_assign :: "'n \<Rightarrow> 'a^'n \<Rightarrow> ('a^'n) set" ("(2_ ::= ? )" [70] 61)
+definition nondet_assign :: "'n \<Rightarrow> 'a^'n \<Rightarrow> ('a^'n) set" (\<open>(2_ ::= ? )\<close> [70] 61)
   where "(x ::= ?) = (\<lambda>s. {(vec_upd s x k)|k. True})"
 
 lemma fbox_nondet_assign[simp]: "fb\<^sub>\<F> (x ::= ?) P = {s. \<forall>k. (\<chi> j. if j = x then k else s$j) \<in> P}"
@@ -103,7 +103,7 @@ lemma hoare_kcomp:
 \<comment> \<open> Conditional statement \<close>
 
 definition ifthenelse :: "'a pred \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set)"
-  ("IF _ THEN _ ELSE _" [64,64,64] 63) where 
+  (\<open>IF _ THEN _ ELSE _\<close> [64,64,64] 63) where 
   "IF P THEN X ELSE Y = (\<lambda> x. if P x then X x else Y x)"
 
 lemma ffb_if_then_else[simp]:
@@ -143,7 +143,7 @@ proof-
   finally show ?thesis .
 qed
 
-definition loopi :: "('a \<Rightarrow> 'a set) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> 'a set)" ("LOOP _ INV _ " [64,64] 63)
+definition loopi :: "('a \<Rightarrow> 'a set) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> 'a set)" (\<open>LOOP _ INV _ \<close> [64,64] 63)
   where "LOOP F INV I \<equiv> (kstar F)"
 
 lemma change_loopI: "LOOP X INV G = LOOP X INV I"
@@ -161,7 +161,7 @@ subsection \<open>Verification of hybrid programs\<close>
 
 text \<open>Verification by providing evolution\<close>
 
-definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> ('b \<Rightarrow> 'b set)" ("EVOL")
+definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> ('b \<Rightarrow> 'b set)" (\<open>EVOL\<close>)
   where "EVOL \<phi> G U = (\<lambda>s. g_orbit (\<lambda>t. \<phi> t s) G (U s))"
 
 lemma fbox_g_evol[simp]: 
@@ -208,7 +208,7 @@ end
 text \<open> Verification with differential invariants \<close>
 
 definition g_ode_inv :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> 'a set)" ("(1x\<acute>=_ & _ on _ _ @ _ DINV _ )") 
+  real \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> 'a set)" (\<open>(1x\<acute>=_ & _ on _ _ @ _ DINV _ )\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0 DINV I) = (x\<acute>= f & G on U S @ t\<^sub>0)"
 
 lemma ffb_g_orbital_guard: 
@@ -272,10 +272,10 @@ subsection \<open> Derivation of the rules of dL \<close>
 text\<open> We derive domain specific rules of differential dynamic logic (dL). First we present a 
 generalised version, then we show the rules as instances of the general ones.\<close>
 
-abbreviation g_dl_orbit ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1x\<acute>=_ & _)") 
+abbreviation g_dl_orbit ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>(1x\<acute>=_ & _)\<close>) 
   where "(x\<acute>=f & G) \<equiv> (x\<acute>=(\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0)"
 
-abbreviation g_dl_ode_inv ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1x\<acute>=_ & _ DINV _)") 
+abbreviation g_dl_ode_inv ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>(1x\<acute>=_ & _ DINV _)\<close>) 
   where "(x\<acute>=f & G DINV I) \<equiv> (x\<acute>=(\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0 DINV I)"
 
 lemma diff_solve_axiom1: 

@@ -245,7 +245,7 @@ text \<open>The system states and their transition relation are defined as a cla
 syntactic infix notation @{text \<open>I \<rightarrow>\<^sub>i I'\<close>} to denote that system state @{text \<open>I\<close>} and @{text \<open>I'\<close>} 
 are in this relation over an arbitrary (polymorphic) type @{text \<open>'a\<close>}.\<close>
 class state =
-  fixes state_transition :: "['a :: type, 'a] \<Rightarrow> bool"  (infixr "\<rightarrow>\<^sub>i" 50)
+  fixes state_transition :: "['a :: type, 'a] \<Rightarrow> bool"  (infixr \<open>\<rightarrow>\<^sub>i\<close> 50)
 
 text \<open>The above class definition lifts Kripke structures and CTL to a general level. 
 The definition of the inductive relation is given by a set of specific rules which are, 
@@ -282,10 +282,10 @@ text \<open>The formal Isabelle definition of what it means that formula f holds
 in a Kripke structure M can be stated as: the initial states of the Kripke 
 structure init M need to be contained in the set of all states states M that 
 imply f.\<close>
-definition check ("_ \<turnstile> _" 50)
+definition check (\<open>_ \<turnstile> _\<close> 50)
  where "M \<turnstile> f \<equiv> (init M) \<subseteq> {s \<in> (states M). s \<in> f }"
 
-definition state_transition_refl (infixr "\<rightarrow>\<^sub>i*" 50)
+definition state_transition_refl (infixr \<open>\<rightarrow>\<^sub>i*\<close> 50)
 where "s \<rightarrow>\<^sub>i* s' \<equiv> ((s,s') \<in> {(x,y). state_transition x y}\<^sup>*)"
   
 subsection \<open>Lemmas for CTL operators\<close>

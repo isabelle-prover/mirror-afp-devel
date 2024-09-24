@@ -228,7 +228,7 @@ lemma gpos_append_gposs:
 
 text \<open>Replace terms at position\<close>
 
-fun replace_gterm_at ("_[_ \<leftarrow> _]\<^sub>G" [1000, 0, 0] 1000) where
+fun replace_gterm_at (\<open>_[_ \<leftarrow> _]\<^sub>G\<close> [1000, 0, 0] 1000) where
   "replace_gterm_at s [] t = t"
 | "replace_gterm_at (GFun f ts) (i # ps) t =
     (if i < length ts then GFun f (ts[i:=(replace_gterm_at (ts ! i) ps t)]) else GFun f ts)"

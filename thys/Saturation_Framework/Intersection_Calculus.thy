@@ -70,7 +70,7 @@ next
     proof
       fix qi
       assume qi_in: "qi \<in> Q"
-      define entails_qi (infix "\<Turnstile>qi" 50) where "entails_qi = entails_q qi"
+      define entails_qi (infix \<open>\<Turnstile>qi\<close> 50) where "entails_qi = entails_q qi"
       have cons_rel_qi: "consequence_relation Bot entails_qi"
         unfolding entails_qi_def using qi_in all_red_crit calculus.axioms(1) by blast
       define Red_F_qi where "Red_F_qi = Red_F_q qi"

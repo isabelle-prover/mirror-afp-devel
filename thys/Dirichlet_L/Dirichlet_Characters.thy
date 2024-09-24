@@ -50,7 +50,7 @@ lemma mod_in_totatives: "n > 1 \<Longrightarrow> a mod n \<in> totatives n \<lon
 
 bundle dcharacter_syntax
 begin
-notation principal_dchar ("\<chi>\<^sub>0\<index>")
+notation principal_dchar (\<open>\<chi>\<^sub>0\<index>\<close>)
 end
 
 locale residues_nat =

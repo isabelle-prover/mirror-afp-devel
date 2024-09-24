@@ -95,7 +95,7 @@ definition lift_nat :: "(nat \<Rightarrow> nat) \<Rightarrow> int \<Rightarrow> 
 where
   "lift_nat f = int \<circ> f \<circ> nat"
 
-definition \<Sigma>_nat :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" ("\<Sigma>\<^sub>\<nat>")
+definition \<Sigma>_nat :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" (\<open>\<Sigma>\<^sub>\<nat>\<close>)
 where
   [summation]: "\<Sigma>\<^sub>\<nat> f m n = nat (\<Sigma> (lift_nat f) (int m) (int n))"  
 

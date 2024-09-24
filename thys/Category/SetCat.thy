@@ -27,7 +27,7 @@ definition
   "set_id U = (\<lambda>s\<in>Pow U. \<lparr>set_dom=s, set_func=\<lambda>x\<in>s. x, set_cod=s\<rparr>)"
 
 definition
-  set_comp :: "['c set_arrow, 'c set_arrow] \<Rightarrow> 'c set_arrow"  (infix "\<odot>" 70) where
+  set_comp :: "['c set_arrow, 'c set_arrow] \<Rightarrow> 'c set_arrow"  (infix \<open>\<odot>\<close> 70) where
   "set_comp g f =
   \<lparr>
     set_dom = set_dom f, 

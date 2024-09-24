@@ -14,8 +14,8 @@ for semilattices and lattices
 \<close>
 
 notation 
-   inf (infixl "\<sqinter>" 70) and
-   sup (infixl "\<squnion>" 65)
+   inf (infixl \<open>\<sqinter>\<close> 70) and
+   sup (infixl \<open>\<squnion>\<close> 65)
 
 context semilattice_inf begin
 lemma [simp]: "(x \<sqinter> y) \<sqinter> z \<le> x"

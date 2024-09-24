@@ -84,13 +84,13 @@ begin
   locale binary_product_diagram =
     J: binary_product_shape +
     C: category C
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and a0 :: 'c
   and a1 :: 'c +
   assumes is_discrete: "C.ide a0 \<and> C.ide a1"
   begin
 
-    notation J.comp      (infixr "\<cdot>\<^sub>J" 55)
+    notation J.comp      (infixr \<open>\<cdot>\<^sub>J\<close> 55)
 
     fun map
     where "map J.FF = a0"
@@ -225,7 +225,7 @@ begin
     C: category C +
     D: binary_product_diagram C f0 f1 +
     limit_cone J.comp C D.map \<open>C.dom p0\<close> \<open>D.mkCone p0 p1\<close>
-  for C :: "'c comp"      (infixr "\<cdot>" 55)
+  for C :: "'c comp"      (infixr \<open>\<cdot>\<close> 55)
   and f0 :: 'c
   and f1 :: 'c
   and p0 :: 'c
@@ -474,9 +474,9 @@ begin
 
   locale elementary_category_with_binary_products =
     category C
-  for C :: "'a comp"                             (infixr "\<cdot>" 55)
-  and pr0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"                    ("\<pp>\<^sub>0[_, _]")
-  and pr1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"                    ("\<pp>\<^sub>1[_, _]") +
+  for C :: "'a comp"                             (infixr \<open>\<cdot>\<close> 55)
+  and pr0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"                    (\<open>\<pp>\<^sub>0[_, _]\<close>)
+  and pr1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"                    (\<open>\<pp>\<^sub>1[_, _]\<close>) +
   assumes span_pr: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> span \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
   and cod_pr0: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> cod \<pp>\<^sub>0[a, b] = b"
   and cod_pr1: "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> cod \<pp>\<^sub>1[a, b] = a"
@@ -498,7 +498,7 @@ begin
       is induced by a span.
     \<close>
 
-    definition tuple         ("\<langle>_, _\<rangle>")
+    definition tuple         (\<open>\<langle>_, _\<rangle>\<close>)
     where "\<langle>f, g\<rangle> \<equiv> if span f g then
                       THE l. \<pp>\<^sub>1[cod f, cod g] \<cdot> l = f \<and> \<pp>\<^sub>0[cod f, cod g] \<cdot> l = g
                     else null"
@@ -511,7 +511,7 @@ begin
       separate preliminary notation just for the product of objects.
     \<close>
     (* TODO: I want to use \<times> but it has already been commandeered for product types. *)
-    definition prod         (infixr "\<otimes>" 51)
+    definition prod         (infixr \<open>\<otimes>\<close> 51)
     where "f \<otimes> g \<equiv> \<langle>f \<cdot> \<pp>\<^sub>1[dom f, dom g], g \<cdot> \<pp>\<^sub>0[dom f, dom g]\<rangle>"
 
     lemma seq_pr_tuple:
@@ -743,12 +743,12 @@ begin
   context category_with_binary_products
   begin
 
-    definition some_pr1  ("\<pp>\<^sub>1\<^sup>?[_, _]")
+    definition some_pr1  (\<open>\<pp>\<^sub>1\<^sup>?[_, _]\<close>)
     where "some_pr1 a b \<equiv> if ide a \<and> ide b then
                              fst (SOME x. has_as_binary_product a b (fst x) (snd x))
                            else null"
 
-    definition some_pr0  ("\<pp>\<^sub>0\<^sup>?[_, _]")
+    definition some_pr0  (\<open>\<pp>\<^sub>0\<^sup>?[_, _]\<close>)
     where "some_pr0 a b \<equiv> if ide a \<and> ide b then
                              snd (SOME x. has_as_binary_product a b (fst x) (snd x))
                            else null"
@@ -818,7 +818,7 @@ begin
     shows "elementary_category_with_binary_products C some_pr0 some_pr1"
       ..
 
-    abbreviation some_prod    (infixr "\<otimes>\<^sup>?" 51)
+    abbreviation some_prod    (infixr \<open>\<otimes>\<^sup>?\<close> 51)
     where "some_prod \<equiv> prod"
 
   end
@@ -968,7 +968,7 @@ begin
     and "\<pp>\<^sub>1[c, d] \<cdot> (f \<otimes> g) = f \<cdot> \<pp>\<^sub>1[a, b]"
       using assms prod_def by fastforce+
 
-    abbreviation dup ("\<d>[_]")
+    abbreviation dup (\<open>\<d>[_]\<close>)
     where "\<d>[f] \<equiv> \<langle>f, f\<rangle>"
 
     lemma dup_in_hom [intro, simp]:
@@ -1008,10 +1008,10 @@ begin
     shows "(f \<otimes> g) \<cdot> \<d>[dom f] = \<langle>f, g\<rangle>"
       using assms prod_tuple comp_arr_dom by simp
 
-    definition assoc ("\<a>[_, _, _]")
+    definition assoc (\<open>\<a>[_, _, _]\<close>)
     where "\<a>[a, b, c] \<equiv> \<langle>\<pp>\<^sub>1[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<langle>\<pp>\<^sub>0[a, b] \<cdot> \<pp>\<^sub>1[a \<otimes> b, c], \<pp>\<^sub>0[a \<otimes> b, c]\<rangle>\<rangle>"
 
-    definition assoc' ("\<a>\<^sup>-\<^sup>1[_, _, _]")
+    definition assoc' (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
     where "\<a>\<^sup>-\<^sup>1[a, b, c] \<equiv> \<langle>\<langle>\<pp>\<^sub>1[a, b \<otimes> c], \<pp>\<^sub>1[b, c] \<cdot> \<pp>\<^sub>0[a, b \<otimes> c]\<rangle>, \<pp>\<^sub>0[b, c] \<cdot> \<pp>\<^sub>0[a, b \<otimes> c]\<rangle>"
 
     lemma assoc_in_hom [intro]:
@@ -1263,7 +1263,7 @@ begin
     shows "natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha>"
       ..
 
-    definition sym ("\<s>[_, _]")
+    definition sym (\<open>\<s>[_, _]\<close>)
     where "\<s>[a1, a0] \<equiv> if ide a0 \<and> ide a1 then \<langle>\<pp>\<^sub>0[a1, a0], \<pp>\<^sub>1[a1, a0]\<rangle> else null"
 
     lemma sym_in_hom [intro]:
@@ -1466,9 +1466,9 @@ begin
 
   locale elementary_category_with_terminal_object =
     category C
-  for C :: "'a comp"                              (infixr "\<cdot>" 55)
-  and one :: "'a"                                 ("\<one>")
-  and trm :: "'a \<Rightarrow> 'a"                           ("\<t>[_]") +
+  for C :: "'a comp"                              (infixr \<open>\<cdot>\<close> 55)
+  and one :: "'a"                                 (\<open>\<one>\<close>)
+  and trm :: "'a \<Rightarrow> 'a"                           (\<open>\<t>[_]\<close>) +
   assumes ide_one: "ide \<one>"
   and trm_in_hom [intro, simp]: "ide a \<Longrightarrow> \<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
   and trm_eqI: "\<lbrakk> ide a; \<guillemotleft>f : a \<rightarrow> \<one>\<guillemotright> \<rbrakk> \<Longrightarrow> f = \<t>[a]"
@@ -1528,10 +1528,10 @@ begin
   context category_with_terminal_object
   begin
 
-    definition some_terminal ("\<one>\<^sup>?")
+    definition some_terminal (\<open>\<one>\<^sup>?\<close>)
     where "some_terminal \<equiv> SOME t. terminal t"
 
-    definition "some_terminator" ("\<t>\<^sup>?[_]")
+    definition "some_terminator" (\<open>\<t>\<^sup>?[_]\<close>)
     where "\<t>\<^sup>?[f] \<equiv> if arr f then THE t. \<guillemotleft>t : dom f \<rightarrow> \<one>\<^sup>?\<guillemotright> else null"
 
     lemma terminal_some_terminal [intro]:
@@ -1726,16 +1726,16 @@ subsection "Monoidal Structure"
       using assms unit_is_terminal_arr terminal_arr_unique ide_one
       by (simp add: unit_eq_trm)
 
-    abbreviation runit ("\<r>[_]")
+    abbreviation runit (\<open>\<r>[_]\<close>)
     where "\<r>[a] \<equiv> \<pp>\<^sub>1[a, \<one>]"
 
-    abbreviation runit' ("\<r>\<^sup>-\<^sup>1[_]")
+    abbreviation runit' (\<open>\<r>\<^sup>-\<^sup>1[_]\<close>)
     where "\<r>\<^sup>-\<^sup>1[a] \<equiv> \<langle>a, \<t>[a]\<rangle>"
 
-    abbreviation lunit ("\<l>[_]")
+    abbreviation lunit (\<open>\<l>[_]\<close>)
     where "\<l>[a] \<equiv> \<pp>\<^sub>0[\<one>, a]"
 
-    abbreviation lunit' ("\<l>\<^sup>-\<^sup>1[_]")
+    abbreviation lunit' (\<open>\<l>\<^sup>-\<^sup>1[_]\<close>)
     where "\<l>\<^sup>-\<^sup>1[a] \<equiv> \<langle>\<t>[a], a\<rangle>"
 
     lemma runit_in_hom:

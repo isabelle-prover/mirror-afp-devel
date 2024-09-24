@@ -39,7 +39,7 @@ locale subdigraph = sdg: digraph \<alpha> \<BB> + dg: digraph \<alpha> \<CC> for
     and subdg_is_arr_vsubset[dg_sub_fw_cs_intros]: 
       "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b \<Longrightarrow> f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
 
-abbreviation is_subdigraph ("(_/ \<subseteq>\<^sub>D\<^sub>G\<index> _)" [51, 51] 50)
+abbreviation is_subdigraph (\<open>(_/ \<subseteq>\<^sub>D\<^sub>G\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> subdigraph \<alpha> \<BB> \<CC>"
 
 lemmas [dg_sub_fw_cs_intros] = 
@@ -273,7 +273,7 @@ text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 locale fl_subdigraph = subdigraph + 
   assumes fl_subdg_is_fl_dghm_inc: "dghm_inc \<BB> \<CC> : \<BB> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> \<CC>" 
 
-abbreviation is_fl_subdigraph ("(_/ \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)" [51, 51] 50)
+abbreviation is_fl_subdigraph (\<open>(_/ \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> fl_subdigraph \<alpha> \<BB> \<CC>"
 
 sublocale fl_subdigraph \<subseteq> inc: is_fl_dghm \<alpha> \<BB> \<CC> \<open>dghm_inc \<BB> \<CC>\<close>
@@ -338,7 +338,7 @@ See \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 locale wide_subdigraph = subdigraph +
   assumes wide_subdg_Obj[dg_sub_bw_cs_intros]: "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr> \<Longrightarrow> a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
 
-abbreviation is_wide_subdigraph ("(_/ \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<index> _)" [51, 51] 50)
+abbreviation is_wide_subdigraph (\<open>(_/ \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<index> _)\<close> [51, 51] 50)
   where "\<BB> \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>w\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<alpha>\<^esub> \<CC> \<equiv> wide_subdigraph \<alpha> \<BB> \<CC>"
 
 lemmas [dg_sub_bw_cs_intros] = wide_subdigraph.wide_subdg_Obj

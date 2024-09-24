@@ -8,19 +8,19 @@ subsection \<open>The pre-RDR locale contains definitions later used in the RDR 
   to state the properties of RDRs\<close>
 
 locale pre_RDR = Sequences +
-  fixes \<delta>::"'a \<Rightarrow> ('b \<times> 'c) \<Rightarrow> 'a" (infix "\<bullet>" 65)
+  fixes \<delta>::"'a \<Rightarrow> ('b \<times> 'c) \<Rightarrow> 'a" (infix \<open>\<bullet>\<close> 65)
   and \<gamma>::"'a \<Rightarrow> ('b \<times> 'c) \<Rightarrow> 'd"
-  and bot::'a ("\<bottom>")
+  and bot::'a (\<open>\<bottom>\<close>)
 begin
 
-fun exec::"'a \<Rightarrow> ('b\<times>'c)list \<Rightarrow> 'a" (infix "\<star>" 65) where 
+fun exec::"'a \<Rightarrow> ('b\<times>'c)list \<Rightarrow> 'a" (infix \<open>\<star>\<close> 65) where 
   "exec s Nil = s"
 | "exec s (rs#r) = (exec s rs) \<bullet> r"
 
-definition less_eq (infix "\<preceq>" 50) where
+definition less_eq (infix \<open>\<preceq>\<close> 50) where
   "less_eq s s' \<equiv> \<exists> rs . s' = (s\<star>rs)"
 
-definition less (infix "\<prec>" 50) where
+definition less (infix \<open>\<prec>\<close> 50) where
   "less s s' \<equiv> less_eq s s' \<and> s \<noteq> s'"
 
 definition is_lb where
@@ -32,7 +32,7 @@ definition is_glb where
 definition contains where
   "contains s r \<equiv> \<exists> rs . r \<in> set rs \<and> s = (\<bottom> \<star> rs)"
 
-definition inf  (infix "\<sqinter>" 65) where
+definition inf  (infix \<open>\<sqinter>\<close> 65) where
   "inf s1 s2 \<equiv> THE s . is_glb s s1 s2"
 
 subsection \<open>Useful Lemmas in the pre-RDR locale\<close>
@@ -149,7 +149,7 @@ next
   by (metis inf_glb local.antisym local.refl pre_RDR.is_glb_def pre_RDR.is_lb_def pre_RDR.less_def)
 qed
 
-notation F ("\<Sqinter> _" [99])
+notation F (\<open>\<Sqinter> _\<close> [99])
 
 subsection \<open>Some useful lemmas\<close>
 

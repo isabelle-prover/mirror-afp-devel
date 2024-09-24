@@ -6,7 +6,7 @@ theory Weak_Early_Semantics
   imports Weak_Early_Step_Semantics
 begin
 
-definition weakFreeTransition :: "pi \<Rightarrow> freeRes \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sup>^_ \<prec> _" [80, 80, 80] 80) 
+definition weakFreeTransition :: "pi \<Rightarrow> freeRes \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sup>^_ \<prec> _\<close> [80, 80, 80] 80) 
   where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<equiv> P \<Longrightarrow>\<alpha> \<prec> P' \<or> (\<alpha> = \<tau> \<and> P = P')"
 
 lemma weakTransitionI:

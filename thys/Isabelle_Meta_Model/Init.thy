@@ -49,7 +49,7 @@ text\<open>The following types will allow to delay all concatenations on @{typ "
      until we reach the end. As optimization, we also consider the use of @{typ String.literal}
      besides @{typ "integer list"}.\<close>
 
-type_notation natural ("nat")
+type_notation natural (\<open>nat\<close>)
 definition "Succ x = x + 1"
 
 datatype string\<^sub>b\<^sub>a\<^sub>s\<^sub>e = ST String.literal
@@ -62,16 +62,16 @@ datatype abr_string = (* NOTE operations in this datatype must not decrease the 
                       SS_base string\<^sub>b\<^sub>a\<^sub>s\<^sub>e
                     | String_concatWith abr_string "abr_string list"
 
-syntax "_string1" :: "_ \<Rightarrow> abr_string" ("\<langle>(_)\<rangle>")
+syntax "_string1" :: "_ \<Rightarrow> abr_string" (\<open>\<langle>(_)\<rangle>\<close>)
 translations "\<langle>x\<rangle>" \<rightleftharpoons> "CONST SS_base (CONST ST x)"
 
-syntax "_string3" :: "_ \<Rightarrow> abr_string" ("\<lless>(_)\<ggreater>")
+syntax "_string3" :: "_ \<Rightarrow> abr_string" (\<open>\<lless>(_)\<ggreater>\<close>)
 translations "\<lless>x\<ggreater>" \<rightleftharpoons> "CONST SS_base (CONST ST' x)"
 
-syntax "_integer1" :: "_ \<Rightarrow> abr_string" ("\<degree>(_)\<degree>")
+syntax "_integer1" :: "_ \<Rightarrow> abr_string" (\<open>\<degree>(_)\<degree>\<close>)
 translations "\<degree>x\<degree>" \<rightleftharpoons> "CONST SS_base (CONST ST' ((CONST Cons) x (CONST Nil)))"
 
-type_notation abr_string ("string")
+type_notation abr_string (\<open>string\<close>)
 
 section\<open>Basic Extension of the Standard Library\<close>
 
@@ -177,7 +177,7 @@ fun map_find_aux where
 definition "map_find = map_find_aux []"
 
 end
-notation L.append (infixr "@@@@" 65)
+notation L.append (infixr \<open>@@@@\<close> 65)
 
 lemmas [code] =
   \<comment> \<open>def\<close>
@@ -207,7 +207,7 @@ lemmas [code] =
 
 subsection\<open>Operations on Char\<close>
 
-definition ascii_of_literal ("INT") where
+definition ascii_of_literal (\<open>INT\<close>) where
           "ascii_of_literal = hd o String.asciis_of_literal"
 
 definition "(integer_escape :: integer) = 0x09"
@@ -216,7 +216,7 @@ definition "ST0_base c = ST' [c]"
 
 subsection\<open>Operations on String (I)\<close>
 
-notation "String.asciis_of_literal" ("INTS")
+notation "String.asciis_of_literal" (\<open>INTS\<close>)
 
 locale S
 locale String
@@ -224,7 +224,7 @@ locale String\<^sub>b\<^sub>a\<^sub>s\<^sub>e
 
 definition (in S) "flatten = String_concatWith \<open>\<close>"
 definition (in String) "flatten a b = S.flatten [a, b]"
-notation String.flatten (infixr "@@" 65)
+notation String.flatten (infixr \<open>@@\<close> 65)
 definition (in String) "make n c = \<lless>L.map (\<lambda>_. c) (L.upto 1 n)\<ggreater>"
 definition (in String\<^sub>b\<^sub>a\<^sub>s\<^sub>e) "map_gen replace g = (\<lambda> ST s \<Rightarrow> replace \<open>\<close> (Some s) \<open>\<close>
                                                 | ST' s \<Rightarrow> S.flatten (L.map g s))"
@@ -257,7 +257,7 @@ definition (in String\<^sub>b\<^sub>a\<^sub>s\<^sub>e) "is_empty = (\<lambda> ST
 fun (in String) is_empty where
    "is_empty e = (\<lambda> SS_base s \<Rightarrow> String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.is_empty s | String_concatWith _ l \<Rightarrow> list_all is_empty l) e"
 definition (in String) "equal s1 s2 = (to_list s1 = to_list s2)"
-notation String.equal (infixl "\<triangleq>" 50)
+notation String.equal (infixl \<open>\<triangleq>\<close> 50)
 definition (in String) "assoc x l = L.assoc (to_list x) (L.map (map_prod String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.to_list id) l)"
 definition (in String) "member l x = List.member (L.map String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.to_list l) (to_list x)"
 definition (in String\<^sub>b\<^sub>a\<^sub>s\<^sub>e) "flatten l = String.to_String\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S.flatten (L.map to_String l))"

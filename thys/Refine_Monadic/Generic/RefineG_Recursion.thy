@@ -85,7 +85,7 @@ lemma trimonoI':
 
 definition REC where "REC B x \<equiv> 
   if (trimono B) then (lfp B x) else (top::'a::complete_lattice)"
-definition RECT ("REC\<^sub>T") where "RECT B x \<equiv> 
+definition RECT (\<open>REC\<^sub>T\<close>) where "RECT B x \<equiv> 
   if (trimono B) then (flatf_gfp B x) else (top::'a::complete_lattice)"
 
 lemma RECT_gfp_def: "RECT B x = 

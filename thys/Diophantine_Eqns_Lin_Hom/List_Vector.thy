@@ -54,7 +54,7 @@ lemma nonzero_append [simp]:
 
 subsection \<open>The Inner Product\<close>
 
-definition dotprod :: "nat list \<Rightarrow> nat list \<Rightarrow> nat" (infixl "\<bullet>" 70)
+definition dotprod :: "nat list \<Rightarrow> nat list \<Rightarrow> nat" (infixl \<open>\<bullet>\<close> 70)
   where
     "xs \<bullet> ys = (\<Sum>i<min (length xs) (length ys). xs ! i * ys ! i)"
 
@@ -175,11 +175,11 @@ qed
 
 subsection \<open>The Pointwise Order on Vectors\<close>
 
-definition  less_eq :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" ("_/ \<le>\<^sub>v _" [51, 51] 50)
+definition  less_eq :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" (\<open>_/ \<le>\<^sub>v _\<close> [51, 51] 50)
   where
     "xs \<le>\<^sub>v ys \<longleftrightarrow> length xs = length ys \<and> (\<forall>i<length xs. xs ! i \<le> ys ! i)"
 
-definition less :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" ("_/ <\<^sub>v _" [51, 51] 50)
+definition less :: "nat list \<Rightarrow> nat list \<Rightarrow> bool" (\<open>_/ <\<^sub>v _\<close> [51, 51] 50)
   where
     "xs <\<^sub>v ys \<longleftrightarrow> xs \<le>\<^sub>v ys \<and> \<not> ys \<le>\<^sub>v xs"
 
@@ -475,7 +475,7 @@ qed
 
 subsection \<open>Pointwise Subtraction\<close>
 
-definition vdiff :: "nat list \<Rightarrow> nat list \<Rightarrow> nat list" (infixl "-\<^sub>v" 65)
+definition vdiff :: "nat list \<Rightarrow> nat list \<Rightarrow> nat list" (infixl \<open>-\<^sub>v\<close> 65)
   where
     "w -\<^sub>v v = map (\<lambda>i. w ! i - v ! i) [0 ..< length w]"
 
@@ -560,11 +560,11 @@ lemma mods_with_vec_2:
 
 subsection \<open>The Lexicographic Order on Vectors\<close>
 
-abbreviation lex_less_than ("_/ <\<^sub>l\<^sub>e\<^sub>x _" [51, 51] 50)
+abbreviation lex_less_than (\<open>_/ <\<^sub>l\<^sub>e\<^sub>x _\<close> [51, 51] 50)
   where
     "xs <\<^sub>l\<^sub>e\<^sub>x ys \<equiv> (xs, ys) \<in> lex less_than"
 
-definition rlex (infix "<\<^sub>r\<^sub>l\<^sub>e\<^sub>x" 50)
+definition rlex (infix \<open><\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<close> 50)
   where
     "xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x ys \<longleftrightarrow> rev xs <\<^sub>l\<^sub>e\<^sub>x rev ys"
 

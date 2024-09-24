@@ -37,7 +37,7 @@ definition smc_prod :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
     ]\<^sub>\<circ>"
 
 syntax "_PSEMICATEGORY" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" 
-  ("(3\<Prod>\<^sub>S\<^sub>M\<^sub>C_\<in>\<^sub>\<circ>_./ _)" [0, 0, 10] 10)
+  (\<open>(3\<Prod>\<^sub>S\<^sub>M\<^sub>C_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
 syntax_consts "_PSEMICATEGORY" \<rightleftharpoons> smc_prod
 translations "\<Prod>\<^sub>S\<^sub>M\<^sub>Ci\<in>\<^sub>\<circ>I. \<AA>" \<rightleftharpoons> "CONST smc_prod I (\<lambda>i. \<AA>)"
 
@@ -1617,7 +1617,7 @@ subsection\<open>Product of three semicategories\<close>
 subsubsection\<open>Definition and elementary properties.\<close>
 
 definition smc_prod_3 :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
-  ("(_ \<times>\<^sub>S\<^sub>M\<^sub>C\<^sub>3 _ \<times>\<^sub>S\<^sub>M\<^sub>C\<^sub>3 _)" [81, 81, 81] 80)
+  (\<open>(_ \<times>\<^sub>S\<^sub>M\<^sub>C\<^sub>3 _ \<times>\<^sub>S\<^sub>M\<^sub>C\<^sub>3 _)\<close> [81, 81, 81] 80)
   where "\<AA> \<times>\<^sub>S\<^sub>M\<^sub>C\<^sub>3 \<BB> \<times>\<^sub>S\<^sub>M\<^sub>C\<^sub>3 \<CC> = (\<Prod>\<^sub>S\<^sub>M\<^sub>Ci\<in>\<^sub>\<circ>3\<^sub>\<nat>. if3 \<AA> \<BB> \<CC> i)"
 
 

@@ -38,7 +38,7 @@ lemma nameTermFreshChain[simp]:
   shows "xvec \<sharp>* (nameTerm x) = x \<sharp> xvec"
 by(induct xvec) auto
 
-definition tauPrefix :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi" ("\<tau>._" [85] 85)
+definition tauPrefix :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi" (\<open>\<tau>._\<close> [85] 85)
   where "tauPrefix P \<equiv> THE P'. \<exists>x::name. x \<sharp> P \<and> P' = \<lparr>\<nu>x\<rparr>(((nameTerm x)\<lparr>\<lambda>*([]) (nameTerm x)\<rparr>.\<zero>) \<parallel> ((nameTerm x)\<langle>(nameTerm x)\<rangle>.P))"
 
 lemma tauActionUnfold:

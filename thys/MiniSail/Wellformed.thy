@@ -17,15 +17,15 @@ named_theorems ms_wb "Facts for helping with well-sortedness"
 
 section \<open>Definitions\<close>
 
-inductive wfV :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> v \<Rightarrow> b \<Rightarrow> bool" (" _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ " [50,50,50] 50)  and
-  wfC :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> c \<Rightarrow> bool" (" _ ; _ ; _   \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50)  and         
-  wfG :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> bool" (" _ ; _  \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50) and
-  wfT :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<tau> \<Rightarrow> bool" (" _ ; _ ; _   \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50)  and
-  wfTs :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> (string*\<tau>) list \<Rightarrow> bool" (" _ ; _  ; _ \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50)  and 
-  wfTh :: "\<Theta> \<Rightarrow> bool" ("   \<turnstile>\<^sub>w\<^sub>f _ " [50] 50)  and
-  wfB :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> b \<Rightarrow> bool" (" _ ; _  \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50) and
-  wfCE :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> ce \<Rightarrow> b \<Rightarrow> bool" ("  _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ " [50,50,50] 50) and
-  wfTD :: "\<Theta> \<Rightarrow> type_def \<Rightarrow> bool" (" _ \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50)          
+inductive wfV :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> v \<Rightarrow> b \<Rightarrow> bool" (\<open> _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ \<close> [50,50,50] 50)  and
+  wfC :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> c \<Rightarrow> bool" (\<open> _ ; _ ; _   \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50)  and         
+  wfG :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> bool" (\<open> _ ; _  \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50) and
+  wfT :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<tau> \<Rightarrow> bool" (\<open> _ ; _ ; _   \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50)  and
+  wfTs :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> (string*\<tau>) list \<Rightarrow> bool" (\<open> _ ; _  ; _ \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50)  and 
+  wfTh :: "\<Theta> \<Rightarrow> bool" (\<open>   \<turnstile>\<^sub>w\<^sub>f _ \<close> [50] 50)  and
+  wfB :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> b \<Rightarrow> bool" (\<open> _ ; _  \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50) and
+  wfCE :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> ce \<Rightarrow> b \<Rightarrow> bool" (\<open>  _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ \<close> [50,50,50] 50) and
+  wfTD :: "\<Theta> \<Rightarrow> type_def \<Rightarrow> bool" (\<open> _ \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50)          
   where
 
 wfB_intI:  "\<turnstile>\<^sub>w\<^sub>f \<Theta> \<Longrightarrow> \<Theta>; \<B> \<turnstile>\<^sub>w\<^sub>f B_int" 
@@ -248,14 +248,14 @@ next
 qed
 
 inductive 
-  wfE :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> e \<Rightarrow> b \<Rightarrow> bool" (" _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ " [50,50,50] 50)  and
-  wfS :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> s \<Rightarrow> b \<Rightarrow> bool" (" _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ " [50,50,50] 50)  and
-  wfCS :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow>  tyid \<Rightarrow> string \<Rightarrow> \<tau> \<Rightarrow> branch_s \<Rightarrow> b \<Rightarrow> bool" (" _ ; _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ " [50,50,50,50,50] 50)  and
-  wfCSS :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow>  tyid \<Rightarrow> (string * \<tau>) list \<Rightarrow> branch_list \<Rightarrow> b \<Rightarrow> bool" (" _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ " [50,50,50,50,50] 50)  and       
-  wfPhi :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> bool" (" _  \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50)  and
-  wfD :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> bool" (" _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ " [50,50] 50) and       
-  wfFTQ :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> fun_typ_q \<Rightarrow> bool"  (" _  ; _ \<turnstile>\<^sub>w\<^sub>f _ " [50] 50) and
-  wfFT :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> fun_typ \<Rightarrow> bool"  (" _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ " [50] 50)  where
+  wfE :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> e \<Rightarrow> b \<Rightarrow> bool" (\<open> _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ \<close> [50,50,50] 50)  and
+  wfS :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> s \<Rightarrow> b \<Rightarrow> bool" (\<open> _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ \<close> [50,50,50] 50)  and
+  wfCS :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow>  tyid \<Rightarrow> string \<Rightarrow> \<tau> \<Rightarrow> branch_s \<Rightarrow> b \<Rightarrow> bool" (\<open> _ ; _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ \<close> [50,50,50,50,50] 50)  and
+  wfCSS :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow>  tyid \<Rightarrow> (string * \<tau>) list \<Rightarrow> branch_list \<Rightarrow> b \<Rightarrow> bool" (\<open> _ ; _ ; _ ; _ ; _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ : _ \<close> [50,50,50,50,50] 50)  and       
+  wfPhi :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> bool" (\<open> _  \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50)  and
+  wfD :: "\<Theta> \<Rightarrow> \<B> \<Rightarrow> \<Gamma> \<Rightarrow> \<Delta> \<Rightarrow> bool" (\<open> _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ \<close> [50,50] 50) and       
+  wfFTQ :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> fun_typ_q \<Rightarrow> bool"  (\<open> _  ; _ \<turnstile>\<^sub>w\<^sub>f _ \<close> [50] 50) and
+  wfFT :: "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<B> \<Rightarrow> fun_typ \<Rightarrow> bool"  (\<open> _ ; _ ; _ \<turnstile>\<^sub>w\<^sub>f _ \<close> [50] 50)  where
 
 wfE_valI : "\<lbrakk>
    \<Theta> \<turnstile>\<^sub>w\<^sub>f \<Phi>; 

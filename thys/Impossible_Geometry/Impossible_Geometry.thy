@@ -263,7 +263,7 @@ datatype expr = Const rat | Negation expr | Inverse expr | Addition expr expr | 
 text \<open>The function @{term "translation"} translates a given
 expression into its equivalent real.\<close>
 
-fun translation :: "expr => real" ("(2\<lbrace>_\<rbrace>)")
+fun translation :: "expr => real" (\<open>(2\<lbrace>_\<rbrace>)\<close>)
   where
   "translation (Const x) = of_rat x"|
   "translation (Negation e) = - translation e"|

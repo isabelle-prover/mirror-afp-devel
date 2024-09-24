@@ -91,7 +91,7 @@ proof-
 qed
 
 (* Notation for being a member in a list:  *)
-abbreviation lmember ("(_/ \<in>\<in> _)" [50, 51] 50) where "x \<in>\<in> xs \<equiv> x \<in> set xs"
+abbreviation lmember (\<open>(_/ \<in>\<in> _)\<close> [50, 51] 50) where "x \<in>\<in> xs \<equiv> x \<in> set xs"
 
 (* Mapping elements to lists followed by concatenation: *)
 abbreviation  cmap :: "('b \<Rightarrow> 'a list) \<Rightarrow> 'b list \<Rightarrow> 'a list" where 

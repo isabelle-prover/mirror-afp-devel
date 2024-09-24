@@ -78,7 +78,7 @@ definition
   where
    "tm_step0_rel tp = {(c1, c2) . step0 c1 tp = c2}"
 
-abbreviation tm_step0_rel_aux :: "[config, tprog0, config] \<Rightarrow> bool"   ("((1_)/ \<Turnstile>\<langle>(_)\<rangle>\<Midarrow>/ (1_))" 50)
+abbreviation tm_step0_rel_aux :: "[config, tprog0, config] \<Rightarrow> bool"   (\<open>((1_)/ \<Turnstile>\<langle>(_)\<rangle>\<Midarrow>/ (1_))\<close> 50)
   where
             "tm_step0_rel_aux c1 tp c2  \<equiv> (c1,c2) \<in> tm_step0_rel tp" 
 
@@ -91,7 +91,7 @@ definition tm_steps0_rel :: "tprog0 \<Rightarrow> ((config \<times> config) set)
   where
    "tm_steps0_rel tp = rtrancl (tm_step0_rel tp)"
 
-abbreviation tm_steps0_rel_aux :: "[config, tprog0, config] \<Rightarrow> bool"   ("((1_)/ \<Turnstile>\<langle>(_)\<rangle>\<Midarrow>\<^sup>*/ (1_))" 50)
+abbreviation tm_steps0_rel_aux :: "[config, tprog0, config] \<Rightarrow> bool"   (\<open>((1_)/ \<Turnstile>\<langle>(_)\<rangle>\<Midarrow>\<^sup>*/ (1_))\<close> 50)
   where
             "tm_steps0_rel_aux c1 tp c2  \<equiv> (c1,c2) \<in> tm_steps0_rel tp" 
 

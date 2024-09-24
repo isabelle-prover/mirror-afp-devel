@@ -35,7 +35,7 @@ definition subst :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<Rightarrow> '
                          None \<Rightarrow> mem x |
                          Some v \<Rightarrow> v)"
 
-abbreviation subst_abv :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<Rightarrow> 'b)" ("_ [\<mapsto>_]" [900, 0] 1000)
+abbreviation subst_abv :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<Rightarrow> 'b)" (\<open>_ [\<mapsto>_]\<close> [900, 0] 1000)
   where
   "f [\<mapsto> \<sigma>] \<equiv> subst \<sigma> f"
 
@@ -208,7 +208,7 @@ proof -
     by (metis len modes_eq sound_modes_no_read)
 qed
 
-definition func_le :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infixl "\<preceq>" 60)
+definition func_le :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 60)
   where "f \<preceq> g = (\<forall> x \<in> dom f. f x = g x)"
 
 fun change_respecting ::
@@ -718,12 +718,12 @@ definition apply_adaptation ::
 
 abbreviation apply_adaptation\<^sub>1 ::
   "('Var, 'Val) Mem \<Rightarrow> ('Var, 'Val) adaptation \<Rightarrow> ('Var, 'Val) Mem"
-  ("_ [\<parallel>\<^sub>1 _]" [900, 0] 1000)
+  (\<open>_ [\<parallel>\<^sub>1 _]\<close> [900, 0] 1000)
   where "mem [\<parallel>\<^sub>1 A] \<equiv> apply_adaptation True mem A"
 
 abbreviation apply_adaptation\<^sub>2 ::
   "('Var, 'Val) Mem \<Rightarrow> ('Var, 'Val) adaptation \<Rightarrow> ('Var, 'Val) Mem"
-  ("_ [\<parallel>\<^sub>2 _]" [900, 0] 1000)
+  (\<open>_ [\<parallel>\<^sub>2 _]\<close> [900, 0] 1000)
   where "mem [\<parallel>\<^sub>2 A] \<equiv> apply_adaptation False mem A"
 
 definition restrict_total :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'a \<rightharpoonup> 'b" (*infix "|'" 60*)

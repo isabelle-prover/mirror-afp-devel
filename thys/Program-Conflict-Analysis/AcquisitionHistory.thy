@@ -40,7 +40,7 @@ subsection "Interleavability"
 text \<open>Two acquisition histories @{term h1} and @{term h2} are considered interleavable, iff there is no conflicting pair of monitors @{term m1} and @{term m2}, 
   where a pair of monitors @{term m1} and @{term m2} is called {\em conflicting} iff @{term m1} is used in @{term h2} after entering @{term m2} and, vice versa, @{term m2} is used in @{term h1} after entering @{term m1}.\<close>  
 definition
-  ah_il :: "('m \<Rightarrow> 'm set) \<Rightarrow> ('m \<Rightarrow> 'm set) \<Rightarrow> bool" (infix "[*]" 65) 
+  ah_il :: "('m \<Rightarrow> 'm set) \<Rightarrow> ('m \<Rightarrow> 'm set) \<Rightarrow> bool" (infix \<open>[*]\<close> 65) 
   where
   "h1 [*] h2 == \<not>(\<exists>m1 m2. m1\<in>h2 m2 \<and> m2 \<in> h1 m1)"
 

@@ -75,7 +75,7 @@ locale fifo_otter_loop =
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) +
   fixes
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
     wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
     transp_Prec_S: "transp (\<prec>S)" and

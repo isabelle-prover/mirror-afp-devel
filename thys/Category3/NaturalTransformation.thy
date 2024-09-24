@@ -38,8 +38,8 @@ begin
     B: category B + 
     F: "functor" A B F +
     G: "functor" A B G
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
@@ -149,8 +149,8 @@ begin
     B: category B + 
     F: "functor" A B F +
     G: "functor" A B G
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and t :: "'a \<Rightarrow> 'b" +
@@ -224,8 +224,8 @@ begin
     B: category B +
     F: constant_functor A B "B.dom g" +
     G: constant_functor A B "B.cod g"
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and g :: 'b +
   assumes value_is_arr: "B.arr g"
   begin
@@ -288,8 +288,8 @@ begin
     H: "functor" A B H +
     \<sigma>: natural_transformation A B F G \<sigma> +
     \<tau>: natural_transformation A B G H \<tau>
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and H :: "'a \<Rightarrow> 'b"
@@ -417,8 +417,8 @@ begin
 \<close>
 
   locale natural_isomorphism = natural_transformation A B F G \<tau>
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
@@ -473,10 +473,10 @@ begin
       using \<phi> by auto
     interpret \<phi>.F: full_functor A B F
       using assms by auto
-    write A (infixr "\<cdot>\<^sub>A" 55)
-    write B (infixr "\<cdot>\<^sub>B" 55)
-    write \<phi>.A.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
-    write \<phi>.B.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    write A (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+    write B (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    write \<phi>.A.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>\<close>)
+    write \<phi>.B.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
     show "full_functor A B G"
     proof
       fix a a' g
@@ -523,8 +523,8 @@ begin
     F: "functor" A B F +
     G: "functor" A B G +
     \<tau>: natural_isomorphism A B F G \<tau>
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b"
@@ -592,8 +592,8 @@ begin
     G: "functor" A B G +
     \<tau>: natural_transformation A B F G \<tau> +
     \<tau>': natural_transformation A B G F \<tau>'
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b"

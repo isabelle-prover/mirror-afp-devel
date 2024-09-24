@@ -249,10 +249,10 @@ begin
 
 subclass residuated_lgroupoid ..
 
-definition conjugate_l :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<lhd>" 60) where
+definition conjugate_l :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<lhd>\<close> 60) where
   "x \<lhd> y \<equiv> -(-x \<leftarrow> y)"
 
-definition conjugate_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<rhd>" 60) where
+definition conjugate_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<rhd>\<close> 60) where
   "x \<rhd> y \<equiv> -(x \<rightarrow> -y)"
   
 lemma residual_conjugate_r: "x \<rightarrow> y = -(x \<rhd> -y)"

@@ -30,10 +30,10 @@ text \<open>Operation-tag, Autoref does not look beyond this\<close>
 definition OP where [simp, autoref_tag_defs]: "OP x \<equiv> x"
 
 text \<open>Protected function application\<close>
-definition APP (infixl "$" 900) where [simp, autoref_tag_defs]: "f$a \<equiv> f a"
+definition APP (infixl \<open>$\<close> 900) where [simp, autoref_tag_defs]: "f$a \<equiv> f a"
 
 text \<open>Protected abstraction\<close>
-abbreviation ABS :: "('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'b" (binder "\<lambda>''" 10)
+abbreviation ABS :: "('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'b" (binder \<open>\<lambda>''\<close> 10)
   where "ABS f \<equiv> PROTECT (\<lambda>x. PROTECT (f x))"
 
 
@@ -43,12 +43,12 @@ lemma ABS_eta: "\<lambda>'x. (f$x) \<equiv> f" by simp
 text \<open>This tag is used to highlight failures during operation 
   identification\<close>
 definition "ID_FAIL x \<equiv> x"
-notation (output) ID_FAIL ("FAIL *** _ ***")
+notation (output) ID_FAIL (\<open>FAIL *** _ ***\<close>)
 
 
 text \<open>Relator annotation\<close>
 consts rel_annot :: "('c\<times>'a) set \<Rightarrow> annot"
-abbreviation rel_ANNOT :: "'a \<Rightarrow> ('c \<times> 'a) set \<Rightarrow> 'a" (infix ":::" 10)
+abbreviation rel_ANNOT :: "'a \<Rightarrow> ('c \<times> 'a) set \<Rightarrow> 'a" (infix \<open>:::\<close> 10)
   where "t:::R \<equiv> ANNOT t (rel_annot R)"
 
 lemma rel_ANNOT_eq: "t \<equiv> t:::R" by simp
@@ -56,7 +56,7 @@ lemma rel_ANNOT_eq: "t \<equiv> t:::R" by simp
 text \<open>Indirect annotation\<close>
 typedecl rel_name
 consts ind_annot :: "rel_name \<Rightarrow> annot"
-abbreviation ind_ANNOT :: "'a \<Rightarrow> rel_name \<Rightarrow> 'a" (infix "::#" 10)
+abbreviation ind_ANNOT :: "'a \<Rightarrow> rel_name \<Rightarrow> 'a" (infix \<open>::#\<close> 10)
   where "t::#s \<equiv> ANNOT t (ind_annot s)"
 
 

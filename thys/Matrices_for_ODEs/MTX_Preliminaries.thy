@@ -18,7 +18,7 @@ subsection \<open> Syntax \<close>
 abbreviation "\<e> k \<equiv> axis k 1"
 
 syntax
-  "_ivl_integral" :: "real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> pttrn \<Rightarrow> bool" ("(3\<integral>\<^sub>_\<^sup>_ (_)\<partial>/_)" [0, 0, 10] 10)
+  "_ivl_integral" :: "real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> pttrn \<Rightarrow> bool" (\<open>(3\<integral>\<^sub>_\<^sup>_ (_)\<partial>/_)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_ivl_integral" \<rightleftharpoons> ivl_integral
@@ -26,7 +26,7 @@ syntax_consts
 translations
   "\<integral>\<^sub>a\<^sup>b f \<partial>x" \<rightleftharpoons> "CONST ivl_integral a b (\<lambda>x. f)"
 
-notation matrix_inv ("_\<^sup>-\<^sup>1" [90])
+notation matrix_inv (\<open>_\<^sup>-\<^sup>1\<close> [90])
 
 abbreviation "entries (A::'a^'n^'m) \<equiv> {A $ i $ j | i j. i \<in> UNIV \<and> j \<in> UNIV}"
 
@@ -313,7 +313,7 @@ lemma matrix_inv_mat_1: "(mat (1::'a::division_ring))\<^sup>-\<^sup>1 = mat 1"
 lemma invertible_mat_1: "invertible (mat (1::'a::division_ring))"
   by simp
 
-definition similar_matrix :: "('a::semiring_1)^'m^'m \<Rightarrow> ('a::semiring_1)^'n^'n \<Rightarrow> bool" (infixr "\<sim>" 25)
+definition similar_matrix :: "('a::semiring_1)^'m^'m \<Rightarrow> ('a::semiring_1)^'n^'n \<Rightarrow> bool" (infixr \<open>\<sim>\<close> 25)
   where "similar_matrix A B \<longleftrightarrow> (\<exists> P. invertible P \<and> A = P\<^sup>-\<^sup>1 ** B ** P)"
 
 lemma similar_matrix_refl[simp]: "A \<sim> A" for A :: "'a::division_ring^'n^'n"
@@ -399,8 +399,8 @@ proof(unfold similar_matrix_def)
     using compow_similar_diag_mat_eq by blast
 qed
 
-no_notation matrix_inv ("_\<^sup>-\<^sup>1" [90])
-        and similar_matrix (infixr "\<sim>" 25)
+no_notation matrix_inv (\<open>_\<^sup>-\<^sup>1\<close> [90])
+        and similar_matrix (infixr \<open>\<sim>\<close> 25)
 
 
 end

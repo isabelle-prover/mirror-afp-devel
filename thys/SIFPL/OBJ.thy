@@ -187,7 +187,7 @@ SemSkip: "s=t \<Longrightarrow> (s,Skip,1, t):Semn"
 | SemCall: "\<lbrakk> (s,body,n, t):Semn\<rbrakk> \<Longrightarrow> (s,Call,n+1, t):Semn"
 
 abbreviation
-  SemN  :: "[State, OBJ, nat, State] \<Rightarrow> bool"   (" _ , _ \<rightarrow>\<^sub>_  _ ")
+  SemN  :: "[State, OBJ, nat, State] \<Rightarrow> bool"   (\<open> _ , _ \<rightarrow>\<^sub>_  _ \<close>)
 where
 "s,c \<rightarrow>\<^sub>n t == (s,c,n,t) : Semn"
 
@@ -195,7 +195,7 @@ text\<open>Often, the height index does not matter, so we define a notion
 hiding it.\<close>
 
 definition
-Sem :: "[State, OBJ, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
+Sem :: "[State, OBJ, State] \<Rightarrow> bool" (\<open>_ , _ \<Down> _ \<close> 1000)
 where "s,c \<Down> t = (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
 
 inductive_cases Sem_eval_cases: 

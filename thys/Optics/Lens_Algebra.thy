@@ -19,7 +19,7 @@ text \<open>
   Lens composition, illustrated in Figure~\ref{fig:Comp}, constructs a lens by composing the source 
   of one lens with the view of another.\<close>
 
-definition lens_comp :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> ('a \<Longrightarrow> 'c)" (infixl ";\<^sub>L" 80) where
+definition lens_comp :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> ('a \<Longrightarrow> 'c)" (infixl \<open>;\<^sub>L\<close> 80) where
 [lens_defs]: "lens_comp Y X = \<lparr> lens_get = get\<^bsub>Y\<^esub> \<circ> lens_get X
                               , lens_put = (\<lambda> \<sigma> v. lens_put X \<sigma> (lens_put Y (lens_get X \<sigma>) v)) \<rparr>"
 
@@ -35,24 +35,24 @@ text \<open>
   Lens plus, as illustrated in Figure~\ref{fig:Sum} parallel composes two independent lenses, 
   resulting in a lens whose view is the product of the two underlying lens views.\<close>
 
-definition lens_plus :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> 'a \<times> 'b \<Longrightarrow> 'c" (infixr "+\<^sub>L" 75) where
+definition lens_plus :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> 'a \<times> 'b \<Longrightarrow> 'c" (infixr \<open>+\<^sub>L\<close> 75) where
 [lens_defs]: "X +\<^sub>L Y = \<lparr> lens_get = (\<lambda> \<sigma>. (lens_get X \<sigma>, lens_get Y \<sigma>))
                        , lens_put = (\<lambda> \<sigma> (u, v). lens_put X (lens_put Y \<sigma> v) u) \<rparr>"
 
 text \<open>The product functor lens similarly parallel composes two lenses, but in this case the lenses
   have different sources and so the resulting source is also a product.\<close>
 
-definition lens_prod :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'd) \<Rightarrow> ('a \<times> 'b \<Longrightarrow> 'c \<times> 'd)" (infixr "\<times>\<^sub>L" 85) where
+definition lens_prod :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'd) \<Rightarrow> ('a \<times> 'b \<Longrightarrow> 'c \<times> 'd)" (infixr \<open>\<times>\<^sub>L\<close> 85) where
 [lens_defs]: "lens_prod X Y = \<lparr> lens_get = map_prod get\<^bsub>X\<^esub> get\<^bsub>Y\<^esub>
                               , lens_put = \<lambda> (u, v) (x, y). (put\<^bsub>X\<^esub> u x, put\<^bsub>Y\<^esub> v y) \<rparr>"
 
 text \<open>The $\lfst$ and $\lsnd$ lenses project the first and second elements, respectively, of a
   product source type.\<close>
 
-definition fst_lens :: "'a \<Longrightarrow> 'a \<times> 'b" ("fst\<^sub>L") where
+definition fst_lens :: "'a \<Longrightarrow> 'a \<times> 'b" (\<open>fst\<^sub>L\<close>) where
 [lens_defs]: "fst\<^sub>L = \<lparr> lens_get = fst, lens_put = (\<lambda> (\<sigma>, \<rho>) u. (u, \<rho>)) \<rparr>"
 
-definition snd_lens :: "'b \<Longrightarrow> 'a \<times> 'b" ("snd\<^sub>L") where
+definition snd_lens :: "'b \<Longrightarrow> 'a \<times> 'b" (\<open>snd\<^sub>L\<close>) where
 [lens_defs]: "snd\<^sub>L = \<lparr> lens_get = snd, lens_put = (\<lambda> (\<sigma>, \<rho>) u. (\<sigma>, u)) \<rparr>"
 
 lemma get_fst_lens [simp]: "get\<^bsub>fst\<^sub>L\<^esub> (x, y) = x"
@@ -63,30 +63,30 @@ lemma get_snd_lens [simp]: "get\<^bsub>snd\<^sub>L\<^esub> (x, y) = y"
 
 text \<open>The swap lens is a bijective lens which swaps over the elements of the product source type.\<close>
 
-abbreviation swap_lens :: "'a \<times> 'b \<Longrightarrow> 'b \<times> 'a" ("swap\<^sub>L") where
+abbreviation swap_lens :: "'a \<times> 'b \<Longrightarrow> 'b \<times> 'a" (\<open>swap\<^sub>L\<close>) where
 "swap\<^sub>L \<equiv> snd\<^sub>L +\<^sub>L fst\<^sub>L"
 
 text \<open>The zero lens is an ineffectual lens whose view is a unit type. This means the zero lens
   cannot distinguish or change the source type.\<close>
 
-definition zero_lens :: "unit \<Longrightarrow> 'a" ("0\<^sub>L") where
+definition zero_lens :: "unit \<Longrightarrow> 'a" (\<open>0\<^sub>L\<close>) where
 [lens_defs]: "0\<^sub>L = \<lparr> lens_get = (\<lambda> _. ()), lens_put = (\<lambda> \<sigma> x. \<sigma>) \<rparr>"
 
 text \<open>The identity lens is a bijective lens where the source and view type are the same.\<close>
 
-definition id_lens :: "'a \<Longrightarrow> 'a" ("1\<^sub>L") where
+definition id_lens :: "'a \<Longrightarrow> 'a" (\<open>1\<^sub>L\<close>) where
 [lens_defs]: "1\<^sub>L = \<lparr> lens_get = id, lens_put = (\<lambda> _. id) \<rparr>"
 
 text \<open>The quotient operator $X \lquot Y$ shortens lens $X$ by cutting off $Y$ from the end. It is
   thus the dual of the composition operator.\<close>
 
-definition lens_quotient :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> 'a \<Longrightarrow> 'b" (infixr "'/\<^sub>L" 90) where
+definition lens_quotient :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> 'a \<Longrightarrow> 'b" (infixr \<open>'/\<^sub>L\<close> 90) where
 [lens_defs]: "X /\<^sub>L Y = \<lparr> lens_get = \<lambda> \<sigma>. get\<^bsub>X\<^esub> (create\<^bsub>Y\<^esub> \<sigma>)
                        , lens_put = \<lambda> \<sigma> v. get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> (create\<^bsub>Y\<^esub> \<sigma>) v) \<rparr>"
 
 text \<open>Lens inverse take a bijective lens and swaps the source and view types.\<close>
 
-definition lens_inv :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'a)" ("inv\<^sub>L") where
+definition lens_inv :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'a)" (\<open>inv\<^sub>L\<close>) where
 [lens_defs]: "lens_inv x = \<lparr> lens_get = create\<^bsub>x\<^esub>, lens_put = \<lambda> \<sigma>. get\<^bsub>x\<^esub> \<rparr>"
 
 subsection \<open>Closure Poperties\<close>

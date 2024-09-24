@@ -19,10 +19,10 @@ subsection \<open> Verification in AKA \<close>
 text \<open>Here we derive verification components with weakest liberal preconditions based on 
 antidomain Kleene algebra \<close>
 
-no_notation Range_Semiring.antirange_semiring_class.ars_r ("r")
-        and HOL.If ("(if (_)/ then (_)/ else (_))" [0, 0, 10] 10)
+no_notation Range_Semiring.antirange_semiring_class.ars_r (\<open>r\<close>)
+        and HOL.If (\<open>(if (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
 
-notation zero_class.zero ("0")
+notation zero_class.zero (\<open>0\<close>)
 
 context antidomain_kleene_algebra
 begin
@@ -54,7 +54,7 @@ lemma le_fbox_choice_iff: "d p \<le> |x + y]q \<longleftrightarrow> (d p \<le> |
 
 \<comment> \<open> Conditional statement \<close> (* by Victor Gomes, Georg Struth *)
 
-definition aka_cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _" [64,64,64] 63) 
+definition aka_cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _\<close> [64,64,64] 63) 
   where "if p then x else y = d p \<cdot> x + ad p \<cdot> y"
 
 lemma fbox_export1: "ad p + |x] q = |d p \<cdot> x] q"
@@ -84,7 +84,7 @@ qed
 
 \<comment> \<open> While loop \<close> (* by Victor Gomes, Georg Struth *)
 
-definition aka_whilei :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ inv _" [64,64,64] 63) where
+definition aka_whilei :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ inv _\<close> [64,64,64] 63) where
   "while t do x inv i  = (d t \<cdot> x)\<^sup>\<star> \<cdot> ad t"
 
 lemma fbox_frame: "d p \<cdot> x \<le> x \<cdot> d p \<Longrightarrow> d q \<le> |x] r \<Longrightarrow> d p \<cdot> d q \<le> |x] (d p \<cdot> d r)"    
@@ -144,7 +144,7 @@ lemma fbox_whilei_break:
 
 \<comment> \<open> Finite iteration \<close>
 
-definition aka_loopi :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("loop _ inv _ " [64,64] 63)
+definition aka_loopi :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>loop _ inv _ \<close> [64,64] 63)
   where "loop x inv i = x\<^sup>\<star>"
 
 lemma "d p \<le> |x] p \<Longrightarrow> d p \<le> |x\<^sup>\<star>] p"

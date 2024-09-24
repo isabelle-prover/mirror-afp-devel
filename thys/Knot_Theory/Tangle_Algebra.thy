@@ -21,7 +21,7 @@ lemma codomain_make_vert:"codomain_block (make_vert_block n) = int n"
 
   
 (*we defined the tensor of wall as described in the standard tangle algebra*)
-fun tensor::"wall => wall => wall" (infixr "\<otimes>" 65)
+fun tensor::"wall => wall => wall" (infixr \<open>\<otimes>\<close> 65)
 where
 1:"tensor (basic x) (basic y) = (basic (x \<otimes> y))"
 |2:"tensor (x*xs) (basic y) = (
@@ -52,7 +52,7 @@ lemma Nil_right_tensor:"(basic ([])) \<otimes> xs = xs"
 
 text\<open>The definition of tensors is extended to diagrams by using the 
 following function\<close>
-definition tensor_Tangle ::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> Tangle_Diagram" (infixl "\<otimes>" 65)
+definition tensor_Tangle ::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> Tangle_Diagram" (infixl \<open>\<otimes>\<close> 65)
 where
 "tensor_Tangle x y = Abs_Tangle_Diagram ((Rep_Tangle_Diagram x) \<otimes> (Rep_Tangle_Diagram y))" 
 
@@ -628,7 +628,7 @@ theorem tensor_preserves_is_tangle:
   using assms  is_tangle_diagramness by auto
 
 definition Tensor_Tangle::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> Tangle_Diagram" 
-          (infixl "\<circ>" 65)
+          (infixl \<open>\<circ>\<close> 65)
  where
 "Tensor_Tangle x y = 
      Abs_Tangle_Diagram ((Rep_Tangle_Diagram x) \<otimes> (Rep_Tangle_Diagram y))"

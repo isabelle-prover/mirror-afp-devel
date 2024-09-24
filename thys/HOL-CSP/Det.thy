@@ -50,7 +50,7 @@ begin
 
 subsection\<open>The Det Operator Definition\<close>
 lift_definition
-        Det      :: "['\<alpha> process,'\<alpha> process] \<Rightarrow> '\<alpha> process"   (infixl "[+]" 79)
+        Det      :: "['\<alpha> process,'\<alpha> process] \<Rightarrow> '\<alpha> process"   (infixl \<open>[+]\<close> 79)
         is   "\<lambda>P Q. (  {(s,X). s = [] \<and> (s,X) \<in> \<F> P \<inter> \<F> Q}
                      \<union> {(s,X). s \<noteq> [] \<and> (s,X) \<in> \<F> P \<union> \<F> Q}
                      \<union> {(s,X). s = [] \<and> s \<in> \<D> P \<union> \<D> Q}
@@ -96,7 +96,7 @@ proof -
 qed
 
 notation
-  Det (infixl "\<box>" 79)
+  Det (infixl \<open>\<box>\<close> 79)
 
 term \<open>(A \<box> B) \<box> D' = C\<close>
 

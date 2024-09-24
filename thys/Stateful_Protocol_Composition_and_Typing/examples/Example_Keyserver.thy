@@ -14,7 +14,7 @@ declare [[code_timing]]
 
 subsection \<open>Setup\<close>
 subsubsection \<open>Datatypes and functions setup\<close>
-datatype ex_lbl = Label1 ("\<one>") | Label2 ("\<two>")
+datatype ex_lbl = Label1 (\<open>\<one>\<close>) | Label2 (\<open>\<two>\<close>)
 
 datatype ex_atom =
   Agent | Value | Attack | PrivFunSec

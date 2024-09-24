@@ -11,34 +11,34 @@ text \<open> The following syntactic representation can apply at both the type a
 nonterminal si
 
 syntax
-  "_si_metre"    :: "si" ("m")
-  "_si_kilogram" :: "si" ("kg")
-  "_si_second"   :: "si" ("s")
-  "_si_ampere"   :: "si" ("A")
-  "_si_kelvin"   :: "si" ("K")
-  "_si_mole"     :: "si" ("mol")
-  "_si_candela"  :: "si" ("cd")
+  "_si_metre"    :: "si" (\<open>m\<close>)
+  "_si_kilogram" :: "si" (\<open>kg\<close>)
+  "_si_second"   :: "si" (\<open>s\<close>)
+  "_si_ampere"   :: "si" (\<open>A\<close>)
+  "_si_kelvin"   :: "si" (\<open>K\<close>)
+  "_si_mole"     :: "si" (\<open>mol\<close>)
+  "_si_candela"  :: "si" (\<open>cd\<close>)
 
-  "_si_square"      :: "si \<Rightarrow> si" ("(_)\<^sup>2" [999] 999)
-  "_si_cube"        :: "si \<Rightarrow> si" ("(_)\<^sup>3" [999] 999)
-  "_si_quart"       :: "si \<Rightarrow> si" ("(_)\<^sup>4" [999] 999)
+  "_si_square"      :: "si \<Rightarrow> si" (\<open>(_)\<^sup>2\<close> [999] 999)
+  "_si_cube"        :: "si \<Rightarrow> si" (\<open>(_)\<^sup>3\<close> [999] 999)
+  "_si_quart"       :: "si \<Rightarrow> si" (\<open>(_)\<^sup>4\<close> [999] 999)
 
-  "_si_inverse"     :: "si \<Rightarrow> si" ("(_\<^sup>-\<^sup>1)" [999] 999)
-  "_si_invsquare"   :: "si \<Rightarrow> si" ("(_)\<^sup>-\<^sup>2" [999] 999)
-  "_si_invcube"     :: "si \<Rightarrow> si" ("(_)\<^sup>-\<^sup>3" [999] 999)
-  "_si_invquart"    :: "si \<Rightarrow> si" ("(_)\<^sup>-\<^sup>4" [999] 999)
+  "_si_inverse"     :: "si \<Rightarrow> si" (\<open>(_\<^sup>-\<^sup>1)\<close> [999] 999)
+  "_si_invsquare"   :: "si \<Rightarrow> si" (\<open>(_)\<^sup>-\<^sup>2\<close> [999] 999)
+  "_si_invcube"     :: "si \<Rightarrow> si" (\<open>(_)\<^sup>-\<^sup>3\<close> [999] 999)
+  "_si_invquart"    :: "si \<Rightarrow> si" (\<open>(_)\<^sup>-\<^sup>4\<close> [999] 999)
 
-  "_si_times"    :: "si \<Rightarrow> si \<Rightarrow> si" (infixl "\<cdot>" 70)
+  "_si_times"    :: "si \<Rightarrow> si \<Rightarrow> si" (infixl \<open>\<cdot>\<close> 70)
 
 subsection \<open> Type Notation \<close>
 
 text \<open> Pretty notation for SI units at the type level. \<close>
 
-no_type_notation SIUnitT ("_[_]" [999,0] 999)
+no_type_notation SIUnitT (\<open>_[_]\<close> [999,0] 999)
 
 syntax
-  "_si_unit"        :: "type \<Rightarrow> si \<Rightarrow> type" ("_[_]" [999,0] 999)
-  "_si_print"       :: "type \<Rightarrow> si" ("SIPRINT'(_')")
+  "_si_unit"        :: "type \<Rightarrow> si \<Rightarrow> type" (\<open>_[_]\<close> [999,0] 999)
+  "_si_print"       :: "type \<Rightarrow> si" (\<open>SIPRINT'(_')\<close>)
 
 translations
   (type) "'a[SIPRINT('d)]" == (type) "'a['d, SI]"
@@ -78,8 +78,8 @@ text \<open> Pretty notation for SI units at the type level. Currently, it is no
 definition "SIQ n u = n *\<^sub>Q u"
 
 syntax
-  "_si_term"        :: "si \<Rightarrow> logic" ("SI'(_')")
-  "_siq_term"       :: "logic \<Rightarrow> si \<Rightarrow> logic" ("SI[_, _]")
+  "_si_term"        :: "si \<Rightarrow> logic" (\<open>SI'(_')\<close>)
+  "_siq_term"       :: "logic \<Rightarrow> si \<Rightarrow> logic" (\<open>SI[_, _]\<close>)
   "_siq_print"      :: "logic \<Rightarrow> si"
 
 translations

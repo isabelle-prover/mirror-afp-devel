@@ -35,16 +35,16 @@ class Quantities = linordered_field
 begin
 
 
-abbreviation inRangeOO :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ < _ < _") 
+abbreviation inRangeOO :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ < _ < _\<close>) 
   where "(a < b < c) \<equiv> (a < b) \<and> (b < c)"
 
-abbreviation inRangeOC :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ < _ \<le> _") 
+abbreviation inRangeOC :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ < _ \<le> _\<close>) 
   where "(a < b \<le> c) \<equiv> (a < b) \<and> (b \<le> c)"
 
-abbreviation inRangeCO :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<le> _ < _") 
+abbreviation inRangeCO :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<le> _ < _\<close>) 
   where "(a \<le> b < c) \<equiv> (a \<le> b) \<and> (b < c)"
 
-abbreviation inRangeCC :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<le> _ \<le> _") 
+abbreviation inRangeCC :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<le> _ \<le> _\<close>) 
   where "(a \<le> b \<le> c) \<equiv> (a \<le> b) \<and> (b \<le> c)"
 
 

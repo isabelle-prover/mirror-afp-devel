@@ -82,7 +82,7 @@ lemma CallRule:
 
 definition map_ann_hoare :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set
               \<Rightarrow> ('s, 'p, 'f) ann_triple list \<Rightarrow> ('s,'p,'f) com list \<Rightarrow> bool"
-    ("(4_,_/[\<tturnstile>]\<^bsub>'/_ \<^esub>(_/ (_)))" [60,60,60,1000,20]60) where
+    (\<open>(4_,_/[\<tturnstile>]\<^bsub>'/_ \<^esub>(_/ (_)))\<close> [60,60,60,1000,20]60) where
   "\<Gamma>, \<Theta> [\<tturnstile>]\<^bsub>/F\<^esub> Ps Ts \<equiv> \<forall>i < length Ts. \<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> (pres (Ps!i)) (Ts!i) (postcond (Ps!i)), (abrcond (Ps!i))"
 
 lemma MapAnnEmpty: "\<Gamma>, \<Theta> [\<tturnstile>]\<^bsub>/F\<^esub> [] []"

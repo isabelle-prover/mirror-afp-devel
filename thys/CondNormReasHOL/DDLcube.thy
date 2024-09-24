@@ -16,45 +16,45 @@ type_synonym \<alpha> = "i\<Rightarrow>\<sigma>"  \<comment>\<open>Type of bette
 type_synonym \<tau> = "\<sigma>\<Rightarrow>\<sigma>"
 
 consts aw::i  \<comment>\<open>Actual world\<close>
-abbreviation etrue  :: "\<sigma>" ("\<^bold>\<top>") where "\<^bold>\<top> \<equiv> \<lambda>w. True" 
-abbreviation efalse :: "\<sigma>" ("\<^bold>\<bottom>")  where "\<^bold>\<bottom> \<equiv> \<lambda>w. False"   
-abbreviation enot :: "\<sigma>\<Rightarrow>\<sigma>" ("\<^bold>\<not>_"[52]53)  where "\<^bold>\<not>\<phi> \<equiv> \<lambda>w. \<not>\<phi>(w)" 
-abbreviation eand :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<and>"51) where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<and>\<psi>(w)"   
-abbreviation eor  :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<or>"50) where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<or>\<psi>(w)"   
-abbreviation eimpf :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<rightarrow>"49) where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<longrightarrow>\<psi>(w)"  
-abbreviation eimpb :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<leftarrow>"49) where "\<phi>\<^bold>\<leftarrow>\<psi> \<equiv> \<lambda>w. \<psi>(w)\<longrightarrow>\<phi>(w)"  
-abbreviation eequ :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr"\<^bold>\<leftrightarrow>"48) where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<longleftrightarrow>\<psi>(w)" 
+abbreviation etrue  :: "\<sigma>" (\<open>\<^bold>\<top>\<close>) where "\<^bold>\<top> \<equiv> \<lambda>w. True" 
+abbreviation efalse :: "\<sigma>" (\<open>\<^bold>\<bottom>\<close>)  where "\<^bold>\<bottom> \<equiv> \<lambda>w. False"   
+abbreviation enot :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>\<^bold>\<not>_\<close>[52]53)  where "\<^bold>\<not>\<phi> \<equiv> \<lambda>w. \<not>\<phi>(w)" 
+abbreviation eand :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<and>\<close>51) where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<and>\<psi>(w)"   
+abbreviation eor  :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<or>\<close>50) where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<or>\<psi>(w)"   
+abbreviation eimpf :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<rightarrow>\<close>49) where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<longrightarrow>\<psi>(w)"  
+abbreviation eimpb :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<leftarrow>\<close>49) where "\<phi>\<^bold>\<leftarrow>\<psi> \<equiv> \<lambda>w. \<psi>(w)\<longrightarrow>\<phi>(w)"  
+abbreviation eequ :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr\<open>\<^bold>\<leftrightarrow>\<close>48) where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda>w. \<phi>(w)\<longleftrightarrow>\<psi>(w)" 
 
-abbreviation ebox :: "\<sigma>\<Rightarrow>\<sigma>" ("\<box>") where "\<box>\<phi> \<equiv> \<lambda>w. \<forall>v. \<phi>(v)"  
-abbreviation ddediomond  :: "\<sigma>\<Rightarrow>\<sigma>" ("\<diamond>") where "\<diamond>\<phi> \<equiv> \<lambda>w. \<exists>v. \<phi>(v)"
+abbreviation ebox :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>\<box>\<close>) where "\<box>\<phi> \<equiv> \<lambda>w. \<forall>v. \<phi>(v)"  
+abbreviation ddediomond  :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>\<diamond>\<close>) where "\<diamond>\<phi> \<equiv> \<lambda>w. \<exists>v. \<phi>(v)"
 
-abbreviation evalid :: "\<sigma>\<Rightarrow>bool" ("\<lfloor>_\<rfloor>"[8]109)  \<comment>\<open>Global validity\<close>
+abbreviation evalid :: "\<sigma>\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<close>[8]109)  \<comment>\<open>Global validity\<close>
   where "\<lfloor>p\<rfloor> \<equiv> \<forall>w. p w"
-abbreviation ecjactual :: "\<sigma>\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sub>l"[7]105)  \<comment>\<open>Local validity --- in world aw\<close>
+abbreviation ecjactual :: "\<sigma>\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<^sub>l\<close>[7]105)  \<comment>\<open>Local validity --- in world aw\<close>
   where "\<lfloor>p\<rfloor>\<^sub>l \<equiv> p(aw)"
 
-consts r :: "\<alpha>" (infixr "\<^bold>r" 70)  \<comment>\<open>Betterness relation\<close>
+consts r :: "\<alpha>" (infixr \<open>\<^bold>r\<close> 70)  \<comment>\<open>Betterness relation\<close>
 
-abbreviation esubset :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>bool" (infix "\<^bold>\<subseteq>" 53)
+abbreviation esubset :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>bool" (infix \<open>\<^bold>\<subseteq>\<close> 53)
   where "\<phi> \<^bold>\<subseteq> \<psi> \<equiv> \<forall>x. \<phi> x \<longrightarrow> \<psi> x"
 
   text \<open>We introduce the opt and max rules. These express two candidate truth-conditions for
 conditional obligation and permission.\<close>
 
-abbreviation eopt  :: "\<sigma>\<Rightarrow>\<sigma>" ("opt<_>")  \<comment>\<open>opt rule\<close>
+abbreviation eopt  :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>opt<_>\<close>)  \<comment>\<open>opt rule\<close>
   where "opt<\<phi>> \<equiv> (\<lambda>v. ( (\<phi>)(v) \<and> (\<forall>x. ((\<phi>)(x) \<longrightarrow> v \<^bold>r x) )) )" 
-abbreviation econdopt :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" ("\<odot><_|_>")
+abbreviation econdopt :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (\<open>\<odot><_|_>\<close>)
   where "\<odot><\<psi>|\<phi>> \<equiv>  \<lambda>w. opt<\<phi>> \<^bold>\<subseteq> \<psi>"
-abbreviation eperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" ("\<P><_|_>") 
+abbreviation eperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (\<open>\<P><_|_>\<close>) 
   where "\<P><\<psi>|\<phi>> \<equiv> \<^bold>\<not>\<odot><\<^bold>\<not>\<psi>|\<phi>>" \<comment>\<open>permission is the dual of obligation\<close>
 
-abbreviation emax  :: "\<sigma>\<Rightarrow>\<sigma>" ("max<_>")  \<comment>\<open>max rule\<close>
+abbreviation emax  :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>max<_>\<close>)  \<comment>\<open>max rule\<close>
   where "max<\<phi>> \<equiv> (\<lambda>v. ( (\<phi>)(v) \<and> (\<forall>x. ((\<phi>)(x) \<longrightarrow> (x \<^bold>r v \<longrightarrow>  v \<^bold>r x)) )) )" 
-abbreviation econd  :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" ("\<circle><_|_>")
+abbreviation econd  :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (\<open>\<circle><_|_>\<close>)
   where "\<circle><\<psi>|\<phi>> \<equiv>  \<lambda>w. max<\<phi>> \<^bold>\<subseteq> \<psi>"
-abbreviation euncobl :: "\<sigma>\<Rightarrow>\<sigma>" ("\<^bold>\<circle><_>")   
+abbreviation euncobl :: "\<sigma>\<Rightarrow>\<sigma>" (\<open>\<^bold>\<circle><_>\<close>)   
   where "\<^bold>\<circle><\<phi>> \<equiv> \<circle><\<phi>|\<^bold>\<top>>" 
-abbreviation ddeperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" ("P<_|_>") 
+abbreviation ddeperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (\<open>P<_|_>\<close>) 
   where "P<\<psi>|\<phi>> \<equiv>\<^bold>\<not>\<circle><\<^bold>\<not>\<psi>|\<phi>>"
 
   text \<open>A first consistency check is performed.\<close>
@@ -71,18 +71,18 @@ lemma "\<odot><\<psi>|\<phi>> \<equiv> \<circle><\<psi>|\<phi>>"
 
   text \<open>David Lewis's truth conditions for the deontic modalities are introduced.\<close>
 
-abbreviation lewcond :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>"  ("\<circ><_|_>")
+abbreviation lewcond :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>"  (\<open>\<circ><_|_>\<close>)
   where "\<circ><\<psi>|\<phi>> \<equiv> \<lambda>v. (\<not>(\<exists>x. (\<phi>)(x))\<or>  
         (\<exists>x. ((\<phi>)(x)\<and>(\<psi>)(x) \<and> (\<forall>y. ((y \<^bold>r x) \<longrightarrow> (\<phi>)(y)\<longrightarrow>(\<psi>)(y))))))"
-abbreviation lewperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" ("\<integral><_|_>") 
+abbreviation lewperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (\<open>\<integral><_|_>\<close>) 
   where "\<integral><\<psi>|\<phi>> \<equiv>\<^bold>\<not>\<circ><\<^bold>\<not>\<psi>|\<phi>>"
 
   text \<open>Kratzer's truth conditions for the deontic modalities are introduced.\<close>
 
-abbreviation kratcond :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>"  ("\<ominus><_|_>")
+abbreviation kratcond :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>"  (\<open>\<ominus><_|_>\<close>)
   where "\<ominus><\<psi>|\<phi>> \<equiv> \<lambda>v. ((\<forall>x. ((\<phi>)(x) \<longrightarrow> 
      (\<exists>y. ((\<phi>)(y)\<and>(y \<^bold>r x) \<and> ((\<forall>z. ((z \<^bold>r y) \<longrightarrow> (\<phi>)(z) \<longrightarrow> (\<psi>)(z)))))))))"
-abbreviation kratperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" ("\<times><_|_>") 
+abbreviation kratperm :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (\<open>\<times><_|_>\<close>) 
   where "\<times><\<psi>|\<phi>> \<equiv>\<^bold>\<not>\<ominus><\<^bold>\<not>\<psi>|\<phi>>"
 
 

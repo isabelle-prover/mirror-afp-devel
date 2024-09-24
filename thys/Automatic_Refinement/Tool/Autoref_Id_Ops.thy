@@ -16,7 +16,7 @@ definition intfAPP
   :: "(interface \<Rightarrow> _) \<Rightarrow> interface \<Rightarrow> _" 
   where "intfAPP f x \<equiv> f x"
 
-syntax "_intf_APP" :: "args \<Rightarrow> 'a \<Rightarrow> 'b" ("\<langle>_\<rangle>\<^sub>i_" [0,900] 900)
+syntax "_intf_APP" :: "args \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>\<langle>_\<rangle>\<^sub>i_\<close> [0,900] 900)
 
 syntax_consts "_intf_APP" == intfAPP
 
@@ -27,16 +27,16 @@ translations
 consts
   i_fun :: "interface \<Rightarrow> interface \<Rightarrow> interface" 
 
-abbreviation i_fun_app (infixr "\<rightarrow>\<^sub>i" 60) where "i1\<rightarrow>\<^sub>ii2 \<equiv> \<langle>i1,i2\<rangle>\<^sub>ii_fun"
+abbreviation i_fun_app (infixr \<open>\<rightarrow>\<^sub>i\<close> 60) where "i1\<rightarrow>\<^sub>ii2 \<equiv> \<langle>i1,i2\<rangle>\<^sub>ii_fun"
 
 consts 
   i_annot :: "interface \<Rightarrow> annot"
 
-abbreviation i_ANNOT :: "'a \<Rightarrow> interface \<Rightarrow> 'a" (infixr ":::\<^sub>i" 10) where
+abbreviation i_ANNOT :: "'a \<Rightarrow> interface \<Rightarrow> 'a" (infixr \<open>:::\<^sub>i\<close> 10) where
   "t:::\<^sub>iI \<equiv> ANNOT t (i_annot I)"
 
 text \<open>Declaration of interface-type for constant\<close>
-definition CONST_INTF :: "'a \<Rightarrow> interface \<Rightarrow> bool" (infixr "::\<^sub>i" 10)
+definition CONST_INTF :: "'a \<Rightarrow> interface \<Rightarrow> bool" (infixr \<open>::\<^sub>i\<close> 10)
   where [simp]: "c::\<^sub>i I \<equiv> True"
 
 
@@ -99,7 +99,7 @@ lemma ID_init:
 lemma itypeI: "(c::'t) ::\<^sub>i I" by simp
 
 consts depth_limit_dummy :: 'a
-notation (output) depth_limit_dummy ("\<dots>")
+notation (output) depth_limit_dummy (\<open>\<dots>\<close>)
 
 ML \<open>
   fun limit_depth _ (t as Const _) = t
@@ -526,7 +526,7 @@ ML \<open>
 setup Autoref_Id_Ops.setup
 
 
-definition IND_FACT :: "rel_name \<Rightarrow> ('c \<times> 'a) set \<Rightarrow> bool" ("#_=_" 10)
+definition IND_FACT :: "rel_name \<Rightarrow> ('c \<times> 'a) set \<Rightarrow> bool" (\<open>#_=_\<close> 10)
   where [simp]: "#name=R \<equiv> True"
 
 lemma REL_INDIRECT: "#name=R" by simp

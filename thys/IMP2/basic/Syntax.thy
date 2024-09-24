@@ -107,14 +107,14 @@ begin
   text \<open>The commands come with a minimal concrete syntax, which is compatible 
     to the syntax of \<open>IMP\<close>.\<close>
   
-  notation AssignIdx      ("_[_] ::= _" [1000, 0, 61] 61)
-  notation ArrayCpy       ("_[] ::= _" [1000, 1000] 61)
-  notation ArrayClear     ("CLEAR _[]" [1000] 61)
+  notation AssignIdx      (\<open>_[_] ::= _\<close> [1000, 0, 61] 61)
+  notation ArrayCpy       (\<open>_[] ::= _\<close> [1000, 1000] 61)
+  notation ArrayClear     (\<open>CLEAR _[]\<close> [1000] 61)
   
-  notation Seq            ("_;;/ _"  [61, 60] 60)
-  notation If             ("(IF _/ THEN _/ ELSE _)"  [0, 0, 61] 61)
-  notation While          ("(WHILE _/ DO _)"  [0, 61] 61)
-  notation Scope          ("SCOPE _" [61] 61)
+  notation Seq            (\<open>_;;/ _\<close>  [61, 60] 60)
+  notation If             (\<open>(IF _/ THEN _/ ELSE _)\<close>  [0, 0, 61] 61)
+  notation While          (\<open>(WHILE _/ DO _)\<close>  [0, 61] 61)
+  notation Scope          (\<open>SCOPE _\<close> [61] 61)
         
         
   subsection \<open>Program\<close>                
@@ -127,7 +127,7 @@ begin
   \<close>
   
   abbreviation "V x \<equiv> Vidx x (N 0)"  
-  abbreviation Assign ("_ ::= _" [1000, 61] 61) 
+  abbreviation Assign (\<open>_ ::= _\<close> [1000, 61] 61) 
     where "x ::= a \<equiv> (x[N 0] ::= a)"
         
    

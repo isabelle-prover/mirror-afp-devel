@@ -341,7 +341,7 @@ qed (cases x, auto simp: norm_complex_def complex_of_real_def)
 hide_fact (open) Matrix.vec_eq_iff
 
 no_notation
-  vec_index (infixl "$" 100)
+  vec_index (infixl \<open>$\<close> 100)
 
 lemma spectral_radius_ev:
   "\<exists> ev v. eigen_vector A v ev \<and> norm ev = spectral_radius A"

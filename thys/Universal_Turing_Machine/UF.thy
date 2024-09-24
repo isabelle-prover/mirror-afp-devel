@@ -1550,7 +1550,7 @@ definition rec_fac :: "recf"
 text \<open>
   Formal specification of factorization.
 \<close>
-fun fac :: "nat \<Rightarrow> nat"  ("_!" [100] 99)
+fun fac :: "nat \<Rightarrow> nat"  (\<open>_!\<close> [100] 99)
   where
     "fac 0 = 1" |
     "fac (Suc x) = (Suc x) * fac x"

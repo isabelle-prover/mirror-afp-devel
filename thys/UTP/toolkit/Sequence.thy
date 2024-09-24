@@ -23,7 +23,7 @@ setup_lifting type_definition_seq
 definition ssubstr :: "nat \<Rightarrow> nat \<Rightarrow> 'a seq \<Rightarrow> 'a list" where
 "ssubstr i j xs = map (Rep_seq xs) [i ..< j]"
 
-lift_definition nth_seq :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a" (infixl "!\<^sub>s" 100)
+lift_definition nth_seq :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a" (infixl \<open>!\<^sub>s\<close> 100)
 is "\<lambda> f i. f i" .
 
 abbreviation sinit :: "nat \<Rightarrow> 'a seq \<Rightarrow> 'a list" where

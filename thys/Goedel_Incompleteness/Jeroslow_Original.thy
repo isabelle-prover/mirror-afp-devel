@@ -53,7 +53,7 @@ and fls
 and dsj
 and num
 and prv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 +
 fixes F :: "('trm \<Rightarrow> 'trm) set"
   and encF :: "('trm \<Rightarrow> 'trm) \<Rightarrow> 'fmla"
@@ -175,7 +175,7 @@ and fls
 and dsj
 and num
 and prv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and P
 and F encF N ssap
 +

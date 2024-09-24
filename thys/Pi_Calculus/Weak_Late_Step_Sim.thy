@@ -16,7 +16,7 @@ definition weakStepSimAux :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow
                            (\<forall>Q' a x. (Q \<longmapsto>a<x> \<prec> Q'  \<and> x \<sharp> P) \<longrightarrow> (\<exists>P''. \<forall>u. \<exists>P'. P \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel)) \<and>
                            (\<forall>Q' \<alpha>. Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> (\<exists>P'. P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel))"
 
-definition weakStepSim :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" ("_ \<leadsto><_> _" [80, 80, 80] 80) where
+definition weakStepSim :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<leadsto><_> _\<close> [80, 80, 80] 80) where
   "P \<leadsto><Rel> Q \<equiv> (\<forall>Rs. Q \<longmapsto> Rs \<longrightarrow> weakStepSimAct P Rs P Rel)"
 
 lemmas weakStepSimDef = weakStepSimAct_def weakStepSim_def

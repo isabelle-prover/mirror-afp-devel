@@ -34,32 +34,32 @@ lemma fCollect_cong: "(\<And>x. P x = Q x) \<Longrightarrow> fCollect P = fColle
 end
 
 syntax
-  "_fColl" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a set"    ("(1{|_./ _|})")
+  "_fColl" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a set"    (\<open>(1{|_./ _|})\<close>)
 syntax_consts
   "_fColl" \<rightleftharpoons> fCollect
 translations
   "{|x. P|}" \<rightleftharpoons> "CONST fCollect (\<lambda>x. P)"
 
 syntax (ASCII)
-  "_fCollect" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> 'a set"  ("(1{(_/|:| _)./ _})")
+  "_fCollect" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> 'a set"  (\<open>(1{(_/|:| _)./ _})\<close>)
 syntax
-  "_fCollect" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> 'a set"  ("(1{(_/ |\<in>| _)./ _})")
+  "_fCollect" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> 'a set"  (\<open>(1{(_/ |\<in>| _)./ _})\<close>)
 syntax_consts
   "_fCollect" \<rightleftharpoons> fCollect
 translations
   "{p|:|A. P}" \<rightharpoonup> "CONST fCollect (\<lambda>p. p |\<in>| A \<and> P)"
 
 syntax (ASCII)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3ALL (_/|:|_)./ _)" [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX (_/|:|_)./ _)" [0, 0, 10] 10)
+  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3ALL (_/|:|_)./ _)\<close> [0, 0, 10] 10)
+  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3EX (_/|:|_)./ _)\<close> [0, 0, 10] 10)
 
 syntax (input)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3! (_/|:|_)./ _)" [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3? (_/|:|_)./ _)" [0, 0, 10] 10)
+  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3! (_/|:|_)./ _)\<close> [0, 0, 10] 10)
+  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3? (_/|:|_)./ _)\<close> [0, 0, 10] 10)
 
 syntax
-  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
+  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<forall>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
+  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_fBall" \<rightleftharpoons> fBall and
@@ -70,16 +70,16 @@ translations
   "\<exists>x|\<in>|A. P" \<rightleftharpoons> "CONST fBex A (\<lambda>x. P)"
 
 syntax (ASCII output)
-  "_setlessfAll" :: "[idt, 'a, bool] \<Rightarrow> bool"  ("(3ALL _|<|_./ _)"  [0, 0, 10] 10)
-  "_setlessfEx"  :: "[idt, 'a, bool] \<Rightarrow> bool"  ("(3EX _|<|_./ _)"  [0, 0, 10] 10)
-  "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"  ("(3ALL _|<=|_./ _)" [0, 0, 10] 10)
-  "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"  ("(3EX _|<=|_./ _)" [0, 0, 10] 10)
+  "_setlessfAll" :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3ALL _|<|_./ _)\<close>  [0, 0, 10] 10)
+  "_setlessfEx"  :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3EX _|<|_./ _)\<close>  [0, 0, 10] 10)
+  "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3ALL _|<=|_./ _)\<close> [0, 0, 10] 10)
+  "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3EX _|<=|_./ _)\<close> [0, 0, 10] 10)
 
 syntax
-  "_setlessfAll" :: "[idt, 'a, bool] \<Rightarrow> bool"   ("(3\<forall>_|\<subset>|_./ _)"  [0, 0, 10] 10)
-  "_setlessfEx"  :: "[idt, 'a, bool] \<Rightarrow> bool"   ("(3\<exists>_|\<subset>|_./ _)"  [0, 0, 10] 10)
-  "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"   ("(3\<forall>_|\<subseteq>|_./ _)" [0, 0, 10] 10)
-  "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"   ("(3\<exists>_|\<subseteq>|_./ _)" [0, 0, 10] 10)
+  "_setlessfAll" :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<forall>_|\<subset>|_./ _)\<close>  [0, 0, 10] 10)
+  "_setlessfEx"  :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<exists>_|\<subset>|_./ _)\<close>  [0, 0, 10] 10)
+  "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<forall>_|\<subseteq>|_./ _)\<close> [0, 0, 10] 10)
+  "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<exists>_|\<subseteq>|_./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_setlessfAll" "_setlefAll" \<rightleftharpoons> All and
@@ -92,7 +92,7 @@ translations
  "\<exists>A|\<subseteq>|B. P" \<rightharpoonup> "\<exists>A. A |\<subseteq>| B \<and> P"
 
 syntax
-  "_fSetcompr" :: "'a \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a fset"    ("(1{|_ |/_./ _|})")
+  "_fSetcompr" :: "'a \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a fset"    (\<open>(1{|_ |/_./ _|})\<close>)
 
 syntax_consts
   "_fSetcompr" \<rightleftharpoons> fCollect
@@ -154,14 +154,14 @@ let
 \<close>
 
 syntax
-  "_fSigma" :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> 'b fset \<Rightarrow> ('a \<times> 'b) set"  ("(3fSIGMA _|:|_./ _)" [0, 0, 10] 10)
+  "_fSigma" :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> 'b fset \<Rightarrow> ('a \<times> 'b) set"  (\<open>(3fSIGMA _|:|_./ _)\<close> [0, 0, 10] 10)
 syntax_consts
   "_fSigma" \<rightleftharpoons> fSigma
 translations
   "fSIGMA x|:|A. B" \<rightleftharpoons> "CONST fSigma A (\<lambda>x. B)"
 
 notation
-  ffUnion ("|\<Union>|")
+  ffUnion (\<open>|\<Union>|\<close>)
 
 context
 includes fset.lifting
@@ -218,7 +218,7 @@ lemmas fset_list_fsubset_eq_nth_conv = set_list_subset_eq_nth_conv[Transfer.tran
 lemmas mem_idx_fset_sound = mem_idx_sound[Transfer.transferred]
 \<comment> \<open>Dealing with fset products\<close>
 
-abbreviation fTimes :: "'a fset \<Rightarrow> 'b fset \<Rightarrow> ('a \<times> 'b) fset"  (infixr "|\<times>|" 80)
+abbreviation fTimes :: "'a fset \<Rightarrow> 'b fset \<Rightarrow> ('a \<times> 'b) fset"  (infixr \<open>|\<times>|\<close> 80)
   where "A |\<times>| B \<equiv> fSigma A (\<lambda>_. B)"
 
 lemma fSigma_repeq:
@@ -283,7 +283,7 @@ lemmas fimage_split_eq_Sigma = image_split_eq_Sigma[Transfer.transferred]
 
 \<comment> \<open>Dealing with transitive closure\<close>
 
-lift_definition ftrancl :: "('a \<times> 'a) fset \<Rightarrow> ('a \<times> 'a) fset"  ("(_|\<^sup>+|)" [1000] 999) is trancl
+lift_definition ftrancl :: "('a \<times> 'a) fset \<Rightarrow> ('a \<times> 'a) fset"  (\<open>(_|\<^sup>+|)\<close> [1000] 999) is trancl
   by auto
 
 lemmas fr_into_trancl [intro, Pure.intro] = r_into_trancl[Transfer.transferred]
@@ -355,7 +355,7 @@ lemmas fId_on_iff = Id_on_iff [Transfer.transferred]
 lemmas fId_on_fsubset_fTimes = Id_on_subset_Times [Transfer.transferred]
 
 (* Converse*)
-lift_definition fconverse :: "('a \<times> 'b) fset \<Rightarrow> ('b \<times> 'a) fset"  ("(_|\<inverse>|)" [1000] 999) is converse by auto
+lift_definition fconverse :: "('a \<times> 'b) fset \<Rightarrow> ('b \<times> 'a) fset"  (\<open>(_|\<inverse>|)\<close> [1000] 999) is converse by auto
 
 lemmas fconverseI [sym] = converseI [Transfer.transferred]
 lemmas fconverseD [sym] = converseD [Transfer.transferred]
@@ -390,7 +390,7 @@ lemma finj_Some:
 
 (* Image *)
 
-lift_definition fImage :: "('a \<times> 'b) fset \<Rightarrow> 'a fset \<Rightarrow> 'b fset" (infixr "|``|" 90) is Image
+lift_definition fImage :: "('a \<times> 'b) fset \<Rightarrow> 'a fset \<Rightarrow> 'b fset" (infixr \<open>|``|\<close> 90) is Image
   using finite_Image by force
 
 lemmas fImage_iff = Image_iff[Transfer.transferred]
@@ -459,7 +459,7 @@ lemma finite_ntrancl:
 lift_definition nftrancl :: "nat \<Rightarrow> ('a \<times> 'a) fset \<Rightarrow> ('a \<times> 'a) fset" is ntrancl
   by (intro finite_ntrancl) simp
 
-lift_definition frelcomp :: "('a \<times> 'b) fset \<Rightarrow> ('b \<times> 'c) fset \<Rightarrow> ('a \<times> 'c) fset" (infixr "|O|" 75) is relcomp
+lift_definition frelcomp :: "('a \<times> 'b) fset \<Rightarrow> ('b \<times> 'c) fset \<Rightarrow> ('a \<times> 'c) fset" (infixr \<open>|O|\<close> 75) is relcomp
   by (intro finite_relcomp) simp
 
 lemmas frelcompE[elim!] = relcompE[Transfer.transferred]

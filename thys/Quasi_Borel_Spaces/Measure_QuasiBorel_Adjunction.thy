@@ -272,13 +272,13 @@ abbreviation "qbs_borel \<equiv> measure_to_qbs borel"
 
 declare [[coercion measure_to_qbs]]
 
-abbreviation real_quasi_borel :: "real quasi_borel" ("\<real>\<^sub>Q") where
+abbreviation real_quasi_borel :: "real quasi_borel" (\<open>\<real>\<^sub>Q\<close>) where
 "real_quasi_borel \<equiv> qbs_borel"
-abbreviation nat_quasi_borel :: "nat quasi_borel" ("\<nat>\<^sub>Q") where
+abbreviation nat_quasi_borel :: "nat quasi_borel" (\<open>\<nat>\<^sub>Q\<close>) where
 "nat_quasi_borel \<equiv> qbs_borel"
-abbreviation ennreal_quasi_borel :: "ennreal quasi_borel" ("\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0") where
+abbreviation ennreal_quasi_borel :: "ennreal quasi_borel" (\<open>\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0\<close>) where
 "ennreal_quasi_borel \<equiv> qbs_borel"
-abbreviation bool_quasi_borel :: "bool quasi_borel" ("\<bool>\<^sub>Q") where
+abbreviation bool_quasi_borel :: "bool quasi_borel" (\<open>\<bool>\<^sub>Q\<close>) where
 "bool_quasi_borel \<equiv> qbs_borel"
 
 

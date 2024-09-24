@@ -158,7 +158,7 @@ next
     by(cases (no_simp))(assumption|erule (3) evals.that[OF refl])+
 qed
 
-notation execute ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ \<langle>'_, '_\<rangle>)" [51,0,0] 81)
+notation execute (\<open>_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ \<langle>'_, '_\<rangle>)\<close> [51,0,0] 81)
 
 definition "test1 = [] \<turnstile> \<langle>testExpr1,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 definition "test2 = [] \<turnstile> \<langle>testExpr2,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"

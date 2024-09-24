@@ -224,13 +224,13 @@ lemma sdim_enum [simp]:
 
 type_synonym Dimension = "(int, sdim) dimvec"
 
-abbreviation LengthBD      ("\<^bold>L") where "\<^bold>L \<equiv> mk_BaseDim Length"
-abbreviation MassBD        ("\<^bold>M") where "\<^bold>M \<equiv> mk_BaseDim Mass"
-abbreviation TimeBD        ("\<^bold>T") where "\<^bold>T \<equiv> mk_BaseDim Time"
-abbreviation CurrentBD     ("\<^bold>I") where "\<^bold>I \<equiv> mk_BaseDim Current"
-abbreviation TemperatureBD ("\<^bold>\<Theta>") where "\<^bold>\<Theta> \<equiv> mk_BaseDim Temperature"
-abbreviation AmountBD      ("\<^bold>N") where "\<^bold>N \<equiv> mk_BaseDim Amount"
-abbreviation IntensityBD   ("\<^bold>J") where "\<^bold>J \<equiv> mk_BaseDim Intensity"
+abbreviation LengthBD      (\<open>\<^bold>L\<close>) where "\<^bold>L \<equiv> mk_BaseDim Length"
+abbreviation MassBD        (\<open>\<^bold>M\<close>) where "\<^bold>M \<equiv> mk_BaseDim Mass"
+abbreviation TimeBD        (\<open>\<^bold>T\<close>) where "\<^bold>T \<equiv> mk_BaseDim Time"
+abbreviation CurrentBD     (\<open>\<^bold>I\<close>) where "\<^bold>I \<equiv> mk_BaseDim Current"
+abbreviation TemperatureBD (\<open>\<^bold>\<Theta>\<close>) where "\<^bold>\<Theta> \<equiv> mk_BaseDim Temperature"
+abbreviation AmountBD      (\<open>\<^bold>N\<close>) where "\<^bold>N \<equiv> mk_BaseDim Amount"
+abbreviation IntensityBD   (\<open>\<^bold>J\<close>) where "\<^bold>J \<equiv> mk_BaseDim Intensity"
 
 abbreviation "BaseDimensions \<equiv> {\<^bold>L, \<^bold>M, \<^bold>T, \<^bold>I, \<^bold>\<Theta>, \<^bold>N, \<^bold>J}"
 
@@ -279,7 +279,7 @@ class dim_type = unitary +
   fixes   dim_ty_sem :: "'a itself \<Rightarrow> Dimension"
 
 syntax
-  "_QD" :: "type \<Rightarrow> logic" ("QD'(_')")
+  "_QD" :: "type \<Rightarrow> logic" (\<open>QD'(_')\<close>)
 
 syntax_consts
   "_QD" == dim_ty_sem
@@ -318,7 +318,7 @@ type_synonym I = Current
 type_synonym \<Theta> = Temperature
 type_synonym N = Amount
 type_synonym J = Intensity
-type_notation NoDimension ("\<one>")
+type_notation NoDimension (\<open>\<one>\<close>)
 
 translations
   (type) "M" <= (type) "Mass"
@@ -393,7 +393,7 @@ text\<open> Dimension type expressions can be constructed by multiplication and 
   the base dimension types), the definitions of the type constructors for inner product and inverse is 
   straightforward. \<close>
 
-typedef ('a::dim_type, 'b::dim_type) DimTimes (infixl "\<cdot>" 69) = "UNIV :: unit set" ..
+typedef ('a::dim_type, 'b::dim_type) DimTimes (infixl \<open>\<cdot>\<close> 69) = "UNIV :: unit set" ..
 setup_lifting type_definition_DimTimes
 
 text \<open> The type \<^typ>\<open>('a,'b) DimTimes\<close> is parameterised by two types, \<^typ>\<open>'a\<close> and \<^typ>\<open>'b\<close> that must
@@ -412,7 +412,7 @@ end
 text \<open> Similarly, we define inversion of dimension types and prove that dimension types are 
   closed under this. \<close>
 
-typedef 'a DimInv ("(_\<^sup>-\<^sup>1)" [999] 999) = "UNIV :: unit set" ..
+typedef 'a DimInv (\<open>(_\<^sup>-\<^sup>1)\<close> [999] 999) = "UNIV :: unit set" ..
 setup_lifting type_definition_DimInv
 instantiation DimInv :: (dim_type) dim_type
 begin
@@ -425,16 +425,16 @@ subsubsection \<open> Dimension Type Syntax \<close>
 
 text \<open> A division is expressed, as usual, by multiplication with an inverted dimension. \<close>
 
-type_synonym ('a, 'b) DimDiv = "'a \<cdot> ('b\<^sup>-\<^sup>1)" (infixl "'/" 69)
+type_synonym ('a, 'b) DimDiv = "'a \<cdot> ('b\<^sup>-\<^sup>1)" (infixl \<open>'/\<close> 69)
 
 text \<open> A number of further type synonyms allow for more compact notation: \<close>
 
-type_synonym 'a DimSquare = "'a \<cdot> 'a" ("(_)\<^sup>2" [999] 999)
-type_synonym 'a DimCube = "'a \<cdot> 'a \<cdot> 'a" ("(_)\<^sup>3" [999] 999)
-type_synonym 'a DimQuart = "'a \<cdot> 'a \<cdot> 'a \<cdot> 'a" ("(_)\<^sup>4" [999] 999)
-type_synonym 'a DimInvSquare = "('a\<^sup>2)\<^sup>-\<^sup>1" ("(_)\<^sup>-\<^sup>2" [999] 999)
-type_synonym 'a DimInvCube = "('a\<^sup>3)\<^sup>-\<^sup>1" ("(_)\<^sup>-\<^sup>3" [999] 999)
-type_synonym 'a DimInvQuart = "('a\<^sup>4)\<^sup>-\<^sup>1" ("(_)\<^sup>-\<^sup>4" [999] 999)
+type_synonym 'a DimSquare = "'a \<cdot> 'a" (\<open>(_)\<^sup>2\<close> [999] 999)
+type_synonym 'a DimCube = "'a \<cdot> 'a \<cdot> 'a" (\<open>(_)\<^sup>3\<close> [999] 999)
+type_synonym 'a DimQuart = "'a \<cdot> 'a \<cdot> 'a \<cdot> 'a" (\<open>(_)\<^sup>4\<close> [999] 999)
+type_synonym 'a DimInvSquare = "('a\<^sup>2)\<^sup>-\<^sup>1" (\<open>(_)\<^sup>-\<^sup>2\<close> [999] 999)
+type_synonym 'a DimInvCube = "('a\<^sup>3)\<^sup>-\<^sup>1" (\<open>(_)\<^sup>-\<^sup>3\<close> [999] 999)
+type_synonym 'a DimInvQuart = "('a\<^sup>4)\<^sup>-\<^sup>1" (\<open>(_)\<^sup>-\<^sup>4\<close> [999] 999)
 
 translations (type) "'a\<^sup>-\<^sup>2" <= (type) "('a\<^sup>2)\<^sup>-\<^sup>1"
 translations (type) "'a\<^sup>-\<^sup>3" <= (type) "('a\<^sup>3)\<^sup>-\<^sup>1"

@@ -10,7 +10,7 @@ begin
 
 definition "galois_prop \<equiv> ((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) \<sqinter> ((\<le>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>R\<^esub>))"
 
-notation galois_prop.galois_prop (infix "\<unlhd>" 50)
+notation galois_prop.galois_prop (infix \<open>\<unlhd>\<close> 50)
 
 lemma galois_propI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>R\<^esub>)) l r"

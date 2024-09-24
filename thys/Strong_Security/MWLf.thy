@@ -10,21 +10,21 @@ begin
 
 \<comment> \<open>Commands for the multi-threaded while language with fork (to instantiate 'com)\<close>
 datatype ('exp, 'id) MWLfCom 
-  = Skip ("skip")
+  = Skip (\<open>skip\<close>)
   | Assign "'id" "'exp" 
-       ("_:=_" [70,70] 70)
+       (\<open>_:=_\<close> [70,70] 70)
 
   | Seq "('exp, 'id) MWLfCom" "('exp, 'id) MWLfCom" 
-       ("_;_" [61,60] 60)
+       (\<open>_;_\<close> [61,60] 60)
  
   | If_Else "'exp" "('exp, 'id) MWLfCom" "('exp, 'id) MWLfCom"
-       ("if _ then _ else _ fi" [80,79,79] 70)
+       (\<open>if _ then _ else _ fi\<close> [80,79,79] 70)
 
   | While_Do "'exp" "('exp, 'id) MWLfCom" 
-       ("while _ do _ od" [80,79] 70)
+       (\<open>while _ do _ od\<close> [80,79] 70)
 
   | Fork "('exp, 'id) MWLfCom" "(('exp, 'id) MWLfCom) list"
-       ("fork _ _" [70,70] 70)
+       (\<open>fork _ _\<close> [70,70] 70)
 
 \<comment> \<open>SEMANTICS\<close>
 
@@ -37,7 +37,7 @@ begin
 inductive_set 
 MWLfSteps_det :: "('exp, 'id, 'val, ('exp, 'id) MWLfCom) TSteps"
 and MWLfSteps_det' :: "('exp, 'id, 'val, ('exp, 'id) MWLfCom) TSteps_curry"
-  ("(1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0] 81)
+  (\<open>(1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0] 81)
 where
 "\<langle>c1,m1\<rangle> \<rightarrow> \<langle>c2,m2\<rangle> \<equiv> ((c1,m1),(c2,m2)) \<in> MWLfSteps_det" |
 skip: "\<langle>skip,m\<rangle> \<rightarrow> \<langle>[],m\<rangle>" |
@@ -66,7 +66,7 @@ inductive_cases MWLfSteps_det_cases:
 inductive_set
 MWLfSteps_ndet :: "('exp, 'id, 'val, ('exp,'id) MWLfCom) TPSteps"
 and MWLfSteps_ndet' :: "('exp, 'id, 'val, ('exp,'id) MWLfCom) TPSteps_curry"
-("(1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0] 81)
+(\<open>(1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0] 81)
 where
 "\<langle>V1,m1\<rangle> \<Rightarrow> \<langle>V2,m2\<rangle> \<equiv> ((V1,m1),(V2,m2)) \<in> MWLfSteps_ndet" |
 "\<langle>ci,m\<rangle> \<rightarrow> \<langle>c,m'\<rangle> \<Longrightarrow> \<langle>Vf @ [ci] @ Va,m\<rangle> \<Rightarrow> \<langle>Vf @ c @ Va,m'\<rangle>"

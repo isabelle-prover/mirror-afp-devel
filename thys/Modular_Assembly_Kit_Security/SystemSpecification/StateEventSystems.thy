@@ -13,37 +13,37 @@ record ('s, 'e) SES_rec =
 
 (* syntax abbreviations for SES_rec *)
 abbreviation SESrecSSES :: "('s, 'e) SES_rec \<Rightarrow> 's set"
-("S\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>S\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "S\<^bsub>SES\<^esub> \<equiv> (S_SES SES)"
 
 abbreviation SESrecs0SES :: "('s, 'e) SES_rec \<Rightarrow> 's"
-("s0\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>s0\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "s0\<^bsub>SES\<^esub> \<equiv> (s0_SES SES)"
 
 abbreviation SESrecESES :: "('s, 'e) SES_rec \<Rightarrow> 'e set"
-("E\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>E\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "E\<^bsub>SES\<^esub> \<equiv> (E_SES SES)"
 
 abbreviation SESrecISES :: "('s, 'e) SES_rec \<Rightarrow> 'e set"
-("I\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>I\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "I\<^bsub>SES\<^esub> \<equiv> (I_SES SES)"
 
 abbreviation SESrecOSES :: "('s, 'e) SES_rec \<Rightarrow> 'e set"
-("O\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>O\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "O\<^bsub>SES\<^esub> \<equiv> (O_SES SES)"
 
 abbreviation SESrecTSES :: "('s, 'e) SES_rec \<Rightarrow> ('s \<Rightarrow> 'e \<rightharpoonup> 's)"
-("T\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>T\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "T\<^bsub>SES\<^esub> \<equiv> (T_SES SES)"
 
 abbreviation TSESpred :: "'s \<Rightarrow> 'e \<Rightarrow> ('s, 'e) SES_rec \<Rightarrow> 's \<Rightarrow> bool"
-("_ _\<longrightarrow>\<^bsub>_\<^esub> _" [100,100,100,100] 100)
+(\<open>_ _\<longrightarrow>\<^bsub>_\<^esub> _\<close> [100,100,100,100] 100)
 where
 "s e\<longrightarrow>\<^bsub>SES\<^esub> s' \<equiv> (T\<^bsub>SES\<^esub> s e = Some s')"
 
@@ -89,7 +89,7 @@ path_nonempt: "path SES s1 (e # t) =
   else None)" 
 
 abbreviation pathpred :: "'s \<Rightarrow> 'e list \<Rightarrow> ('s, 'e) SES_rec \<Rightarrow> 's \<Rightarrow> bool"
-("_ _\<Longrightarrow>\<^bsub>_\<^esub> _" [100, 100, 100, 100] 100)
+(\<open>_ _\<Longrightarrow>\<^bsub>_\<^esub> _\<close> [100, 100, 100, 100] 100)
 where
 "s t\<Longrightarrow>\<^bsub>SES\<^esub> s' \<equiv> path SES s t = Some s'"
 

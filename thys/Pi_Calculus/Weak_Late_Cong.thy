@@ -8,7 +8,7 @@ begin
 
 definition congruence :: "(pi \<times> pi) set" where 
   "congruence \<equiv> {(P, Q) |P Q. P \<leadsto><weakBisim> Q \<and> Q \<leadsto><weakBisim> P}"
-abbreviation congruenceJudge (infixr "\<simeq>" 65) where "P \<simeq> Q \<equiv> (P, Q) \<in> congruence"
+abbreviation congruenceJudge (infixr \<open>\<simeq>\<close> 65) where "P \<simeq> Q \<equiv> (P, Q) \<in> congruence"
 
 lemma unfoldE:
   fixes P :: pi

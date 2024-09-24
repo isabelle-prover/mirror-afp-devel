@@ -14,7 +14,7 @@ where
   step: "\<lbrakk>P \<leadsto><weakBisim> Q; (Q, P) \<in> weakBisim\<rbrakk> \<Longrightarrow> (P, Q) \<in> weakBisim"
 monos monoAux
 
-abbreviation weakEarlyBisimJudge (infixr "\<approx>" 65) where "P \<approx> Q \<equiv> (P, Q) \<in> weakBisim"
+abbreviation weakEarlyBisimJudge (infixr \<open>\<approx>\<close> 65) where "P \<approx> Q \<equiv> (P, Q) \<in> weakBisim"
 
 lemma weakBisimCoinductAux[case_names weakBisim, case_conclusion weakBisim step, consumes 1]:
   assumes p: "(P, Q) \<in> X"

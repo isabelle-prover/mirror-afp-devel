@@ -24,7 +24,7 @@ associativity and contains a left and right identity\<close>
 
 locale mult = 
  fixes id::"'a"
- fixes f::" 'a \<Rightarrow> 'a \<Rightarrow> 'a " (infixl "*" 60)
+ fixes f::" 'a \<Rightarrow> 'a \<Rightarrow> 'a " (infixl \<open>*\<close> 60)
  assumes comm:" f a  b = f b  a "
  assumes assoc:" (f (f a b) c) = (f a (f b c))"
  assumes left_id:" f id x = x"
@@ -258,7 +258,7 @@ qed
 
 text\<open>Tensor is the tensor product of matrices\<close>
 
-primrec Tensor::" 'a mat \<Rightarrow> 'a mat \<Rightarrow>'a mat" (infixl "\<otimes>" 63)
+primrec Tensor::" 'a mat \<Rightarrow> 'a mat \<Rightarrow>'a mat" (infixl \<open>\<otimes>\<close> 63)
 where
 "Tensor [] xs = []"|
 "Tensor (x#xs) ys = (vec_mat_Tensor x ys)@(Tensor xs ys)"
@@ -756,7 +756,7 @@ theorem effective_well_defined_Tensor:
  using well_defined_Tensor assms by auto
 
 
-definition natmod::"nat \<Rightarrow> nat \<Rightarrow> nat" (infixl "nmod" 50)
+definition natmod::"nat \<Rightarrow> nat \<Rightarrow> nat" (infixl \<open>nmod\<close> 50)
 where
  "natmod x y = nat ((int x) mod (int y))"
 
@@ -2854,7 +2854,7 @@ subsection\<open>Associativity and Distributive properties\<close>
 locale plus_mult = 
  mult + 
  fixes zer::"'a"
- fixes g::" 'a \<Rightarrow> 'a \<Rightarrow> 'a " (infixl "+" 60)
+ fixes g::" 'a \<Rightarrow> 'a \<Rightarrow> 'a " (infixl \<open>+\<close> 60)
  fixes inver::"'a \<Rightarrow>  'a"
  assumes plus_comm:" g a  b = g b a "
  assumes plus_assoc:" (g (g a b) c) = (g a (g b c))"
@@ -2880,7 +2880,7 @@ lemma fixes M1 M2 M3
 text\<open>matrix$\_$mult refers to multiplication of matrices in the locale 
 plus\_mult\<close>
 
-abbreviation matrix_mult::"'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixl "\<circ>" 65)
+abbreviation matrix_mult::"'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixl \<open>\<circ>\<close> 65)
  where
 "matrix_mult M1 M2 \<equiv> (mat_multI zer g f (row_length M1) M1 M2)"
 

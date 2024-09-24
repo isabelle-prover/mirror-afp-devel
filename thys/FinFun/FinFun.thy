@@ -76,7 +76,7 @@ subsection \<open>The finfun type\<close>
 
 definition "finfun = {f::'a\<Rightarrow>'b. \<exists>b. finite {a. f a \<noteq> b}}"
 
-typedef ('a,'b) finfun  ("(_ \<Rightarrow>f /_)" [22, 21] 21) = "finfun :: ('a => 'b) set"
+typedef ('a,'b) finfun  (\<open>(_ \<Rightarrow>f /_)\<close> [22, 21] 21) = "finfun :: ('a => 'b) set"
   morphisms finfun_apply Abs_finfun
 proof -
   have "\<exists>f. finite {x. f x \<noteq> undefined}"
@@ -86,7 +86,7 @@ proof -
   then show ?thesis unfolding finfun_def by auto
 qed
 
-type_notation finfun ("(_ \<Rightarrow>f /_)" [22, 21] 21)
+type_notation finfun (\<open>(_ \<Rightarrow>f /_)\<close> [22, 21] 21)
 
 setup_lifting type_definition_finfun
 
@@ -278,10 +278,10 @@ qed
 
 subsection \<open>Kernel functions for type @{typ "'a \<Rightarrow>f 'b"}\<close>
 
-lift_definition finfun_const :: "'b \<Rightarrow> 'a \<Rightarrow>f 'b" ("K$/ _" [0] 1)
+lift_definition finfun_const :: "'b \<Rightarrow> 'a \<Rightarrow>f 'b" (\<open>K$/ _\<close> [0] 1)
 is "\<lambda> b x. b" by (rule const_finfun)
 
-lift_definition finfun_update :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>f 'b" ("_'(_ $:= _')" [1000,0,0] 1000) is "fun_upd"
+lift_definition finfun_update :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow>f 'b" (\<open>_'(_ $:= _')\<close> [1000,0,0] 1000) is "fun_upd"
 by (simp add: fun_upd_finfun)
 
 lemma finfun_update_twist: "a \<noteq> a' \<Longrightarrow> f(a $:= b)(a' $:= b') = f(a' $:= b')(a $:= b)"
@@ -856,7 +856,7 @@ qed
 
 subsection \<open>Function application\<close>
 
-notation finfun_apply (infixl "$" 999)
+notation finfun_apply (infixl \<open>$\<close> 999)
 
 interpretation finfun_apply_aux: finfun_rec_wf_aux "\<lambda>b. b" "\<lambda>a' b c. if (a = a') then b else c"
 by(unfold_locales) auto
@@ -914,11 +914,11 @@ by(auto simp add: expand_finfun_eq fun_eq_iff finfun_upd_apply)
 
 subsection \<open>Function composition\<close>
 
-definition finfun_comp :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow>f 'a \<Rightarrow> 'c \<Rightarrow>f 'b"  (infixr "\<circ>$" 55)
+definition finfun_comp :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow>f 'a \<Rightarrow> 'c \<Rightarrow>f 'b"  (infixr \<open>\<circ>$\<close> 55)
 where [code del]: "g \<circ>$ f  = finfun_rec (\<lambda>b. (K$ g b)) (\<lambda>a b c. c(a $:= g b)) f"
 
 notation (ASCII)
-  finfun_comp (infixr "o$" 55)
+  finfun_comp (infixr \<open>o$\<close> 55)
 
 interpretation finfun_comp_aux: finfun_rec_wf_aux "(\<lambda>b. (K$ g b))" "(\<lambda>a b c. c(a $:= g b))"
 by(unfold_locales)(auto simp add: finfun_upd_apply intro: finfun_ext)
@@ -976,11 +976,11 @@ proof -
   thus ?thesis by(auto simp add: fun_eq_iff)
 qed
 
-definition finfun_comp2 :: "'b \<Rightarrow>f 'c \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow>f 'c"  (infixr "$\<circ>" 55)
+definition finfun_comp2 :: "'b \<Rightarrow>f 'c \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow>f 'c"  (infixr \<open>$\<circ>\<close> 55)
 where [code del]: "g $\<circ> f = Abs_finfun (($) g \<circ> f)"
 
 notation (ASCII)
-  finfun_comp2  (infixr "$o" 55)
+  finfun_comp2  (infixr \<open>$o\<close> 55)
 
 lemma finfun_comp2_const [code, simp]: "finfun_comp2 (K$ c) f = (K$ c)"
   including finfun
@@ -1046,7 +1046,7 @@ by(simp add: finfun_Ex_def)
 
 subsection \<open>A diagonal operator for FinFuns\<close>
 
-definition finfun_Diag :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow>f 'c \<Rightarrow> 'a \<Rightarrow>f ('b \<times> 'c)" ("(1'($_,/ _$'))" [0, 0] 1000)
+definition finfun_Diag :: "'a \<Rightarrow>f 'b \<Rightarrow> 'a \<Rightarrow>f 'c \<Rightarrow> 'a \<Rightarrow>f ('b \<times> 'c)" (\<open>(1'($_,/ _$'))\<close> [0, 0] 1000)
 where [code del]: "($f, g$) = finfun_rec (\<lambda>b. Pair b \<circ>$ g) (\<lambda>a b c. c(a $:= (b, g $ a))) f"
 
 interpretation finfun_Diag_aux: finfun_rec_wf_aux "\<lambda>b. Pair b \<circ>$ g" "\<lambda>a b c. c(a $:= (b, g $ a))"
@@ -1540,19 +1540,19 @@ subsubsection \<open>Bundles for concrete syntax\<close>
 bundle finfun_syntax
 begin
 
-type_notation finfun ("(_ \<Rightarrow>f /_)" [22, 21] 21)
+type_notation finfun (\<open>(_ \<Rightarrow>f /_)\<close> [22, 21] 21)
 
 notation
-  finfun_const ("K$/ _" [0] 1) and
-  finfun_update ("_'(_ $:= _')" [1000, 0, 0] 1000) and
-  finfun_apply (infixl "$" 999) and
-  finfun_comp (infixr "\<circ>$" 55) and
-  finfun_comp2 (infixr "$\<circ>" 55) and
-  finfun_Diag ("(1'($_,/ _$'))" [0, 0] 1000)
+  finfun_const (\<open>K$/ _\<close> [0] 1) and
+  finfun_update (\<open>_'(_ $:= _')\<close> [1000, 0, 0] 1000) and
+  finfun_apply (infixl \<open>$\<close> 999) and
+  finfun_comp (infixr \<open>\<circ>$\<close> 55) and
+  finfun_comp2 (infixr \<open>$\<circ>\<close> 55) and
+  finfun_Diag (\<open>(1'($_,/ _$'))\<close> [0, 0] 1000)
 
 notation (ASCII)
-  finfun_comp (infixr "o$" 55) and
-  finfun_comp2 (infixr "$o" 55)
+  finfun_comp (infixr \<open>o$\<close> 55) and
+  finfun_comp2 (infixr \<open>$o\<close> 55)
 
 end
 
@@ -1561,19 +1561,19 @@ bundle no_finfun_syntax
 begin
 
 no_type_notation
-  finfun ("(_ \<Rightarrow>f /_)" [22, 21] 21)
+  finfun (\<open>(_ \<Rightarrow>f /_)\<close> [22, 21] 21)
 
 no_notation
-  finfun_const ("K$/ _" [0] 1) and
-  finfun_update ("_'(_ $:= _')" [1000, 0, 0] 1000) and
-  finfun_apply (infixl "$" 999) and
-  finfun_comp (infixr "\<circ>$" 55) and
-  finfun_comp2 (infixr "$\<circ>" 55) and
-  finfun_Diag ("(1'($_,/ _$'))" [0, 0] 1000)
+  finfun_const (\<open>K$/ _\<close> [0] 1) and
+  finfun_update (\<open>_'(_ $:= _')\<close> [1000, 0, 0] 1000) and
+  finfun_apply (infixl \<open>$\<close> 999) and
+  finfun_comp (infixr \<open>\<circ>$\<close> 55) and
+  finfun_comp2 (infixr \<open>$\<circ>\<close> 55) and
+  finfun_Diag (\<open>(1'($_,/ _$'))\<close> [0, 0] 1000)
 
 no_notation (ASCII) 
-  finfun_comp (infixr "o$" 55) and
-  finfun_comp2 (infixr "$o" 55)
+  finfun_comp (infixr \<open>o$\<close> 55) and
+  finfun_comp2 (infixr \<open>$o\<close> 55)
 
 end
 

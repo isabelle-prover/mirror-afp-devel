@@ -47,7 +47,7 @@ definition
  "DataSpace = snd o Rep_data"
 
 definition
- DataPart :: "['d data, nat] => 'd" ("(_ !P!/ _)" [10,11]10) where
+ DataPart :: "['d data, nat] => 'd" (\<open>(_ !P!/ _)\<close> [10,11]10) where
  "DataPart d n = (DataValue d) ! n"
 
 lemma Rep_data_tuple:
@@ -150,7 +150,7 @@ definition
  "OptionOverride P = (if (fst P) = None then (snd P) else (the (fst P)))"
 
 definition
-  DataOverride :: "['d pdata, 'd data] => 'd data" ("(_ [D+]/ _)" [10,11]10) where
+  DataOverride :: "['d pdata, 'd data] => 'd data" (\<open>(_ [D+]/ _)\<close> [10,11]10) where
  "DataOverride D1 D2 =
                 (let
                     (L1,DP1) = Rep_pdata D1;

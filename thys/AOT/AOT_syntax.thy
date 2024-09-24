@@ -27,15 +27,15 @@ section\<open>Approximation of the Syntax of PLM\<close>
 
 locale AOT_meta_syntax
 begin
-notation AOT_model_valid_in ("\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]")
-notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
-notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
+notation AOT_model_valid_in (\<open>\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]\<close>)
+notation AOT_model_axiom (\<open>\<^bold>\<box>\<^bold>[_\<^bold>]\<close>)
+notation AOT_model_act_axiom (\<open>\<^bold>\<A>\<^bold>[_\<^bold>]\<close>)
 end
 locale AOT_no_meta_syntax
 begin
-no_notation AOT_model_valid_in ("\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]")
-no_notation AOT_model_axiom ("\<^bold>\<box>\<^bold>[_\<^bold>]")
-no_notation AOT_model_act_axiom ("\<^bold>\<A>\<^bold>[_\<^bold>]")
+no_notation AOT_model_valid_in (\<open>\<^bold>[_ \<^bold>\<Turnstile> _\<^bold>]\<close>)
+no_notation AOT_model_axiom (\<open>\<^bold>\<box>\<^bold>[_\<^bold>]\<close>)
+no_notation AOT_model_act_axiom (\<open>\<^bold>\<A>\<^bold>[_\<^bold>]\<close>)
 end
 
 consts AOT_denotes :: \<open>'a::AOT_Term \<Rightarrow> \<o>\<close>
@@ -55,21 +55,21 @@ nonterminal \<kappa>\<^sub>s and \<Pi> and \<Pi>0 and \<alpha> and exe_arg and e
         and lambda_args and desc and free_var and free_vars
         and AOT_props and AOT_premises and AOT_world_relative_prop
 
-syntax "_AOT_process_frees" :: \<open>\<phi> \<Rightarrow> \<phi>'\<close> ("_")
+syntax "_AOT_process_frees" :: \<open>\<phi> \<Rightarrow> \<phi>'\<close> (\<open>_\<close>)
        "_AOT_verbatim" :: \<open>any \<Rightarrow> \<phi>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
        "_AOT_verbatim" :: \<open>any \<Rightarrow> \<tau>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
        "_AOT_quoted" :: \<open>\<phi>' \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
        "_AOT_quoted" :: \<open>\<tau>' \<Rightarrow> any\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
        "" :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>'(_')\<close>)
-       "_AOT_process_frees" :: \<open>\<tau> \<Rightarrow> \<tau>'\<close> ("_")
-       "" :: \<open>\<kappa>\<^sub>s \<Rightarrow> \<tau>\<close> ("_")
-       "" :: \<open>\<Pi> \<Rightarrow> \<tau>\<close> ("_")
-       "" :: \<open>\<phi> \<Rightarrow> \<tau>\<close> ("'(_')")
-       "_AOT_term_var" :: \<open>id_position \<Rightarrow> \<tau>\<close> ("_")
-       "_AOT_term_var" :: \<open>id_position \<Rightarrow> \<phi>\<close> ("_")
-       "_AOT_exe_vars" :: \<open>id_position \<Rightarrow> exe_arg\<close> ("_")
-       "_AOT_lambda_vars" :: \<open>id_position \<Rightarrow> lambda_args\<close> ("_")
-       "_AOT_var" :: \<open>id_position \<Rightarrow> \<alpha>\<close> ("_")
+       "_AOT_process_frees" :: \<open>\<tau> \<Rightarrow> \<tau>'\<close> (\<open>_\<close>)
+       "" :: \<open>\<kappa>\<^sub>s \<Rightarrow> \<tau>\<close> (\<open>_\<close>)
+       "" :: \<open>\<Pi> \<Rightarrow> \<tau>\<close> (\<open>_\<close>)
+       "" :: \<open>\<phi> \<Rightarrow> \<tau>\<close> (\<open>'(_')\<close>)
+       "_AOT_term_var" :: \<open>id_position \<Rightarrow> \<tau>\<close> (\<open>_\<close>)
+       "_AOT_term_var" :: \<open>id_position \<Rightarrow> \<phi>\<close> (\<open>_\<close>)
+       "_AOT_exe_vars" :: \<open>id_position \<Rightarrow> exe_arg\<close> (\<open>_\<close>)
+       "_AOT_lambda_vars" :: \<open>id_position \<Rightarrow> lambda_args\<close> (\<open>_\<close>)
+       "_AOT_var" :: \<open>id_position \<Rightarrow> \<alpha>\<close> (\<open>_\<close>)
        "_AOT_vars" :: \<open>id_position \<Rightarrow> any\<close>
        "_AOT_verbatim" :: \<open>any \<Rightarrow> \<alpha>\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
        "_AOT_valid" :: \<open>w \<Rightarrow> \<phi>' \<Rightarrow> bool\<close> (\<open>[_ \<Turnstile> _]\<close>)
@@ -88,39 +88,39 @@ syntax (output)
             :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<forall>_...\<forall>_'(_')\<close> [1,40])
 syntax
        "_AOT_eq" :: \<open>[\<tau>, \<tau>] \<Rightarrow> \<phi>\<close> (infixl \<open>=\<close> 50)
-       "_AOT_desc" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> desc\<close> ("\<^bold>\<iota>__" [1,1000])
-       "" :: \<open>desc \<Rightarrow> \<kappa>\<^sub>s\<close> ("_")
+       "_AOT_desc" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> desc\<close> (\<open>\<^bold>\<iota>__\<close> [1,1000])
+       "" :: \<open>desc \<Rightarrow> \<kappa>\<^sub>s\<close> (\<open>_\<close>)
        "_AOT_lambda" :: \<open>lambda_args \<Rightarrow> \<phi> \<Rightarrow> \<Pi>\<close> (\<open>[\<lambda>_ _]\<close>)
-       "_explicitRelation" :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> ("[_]")
-       "" :: \<open>\<kappa>\<^sub>s \<Rightarrow> exe_arg\<close> ("_")
-       "" :: \<open>exe_arg \<Rightarrow> exe_args\<close> ("_")
-       "_AOT_exe_args" :: \<open>exe_arg \<Rightarrow> exe_args \<Rightarrow> exe_args\<close> ("__")
-       "_AOT_exe_arg_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> exe_arg\<close> ("_..._")
+       "_explicitRelation" :: \<open>\<tau> \<Rightarrow> \<Pi>\<close> (\<open>[_]\<close>)
+       "" :: \<open>\<kappa>\<^sub>s \<Rightarrow> exe_arg\<close> (\<open>_\<close>)
+       "" :: \<open>exe_arg \<Rightarrow> exe_args\<close> (\<open>_\<close>)
+       "_AOT_exe_args" :: \<open>exe_arg \<Rightarrow> exe_args \<Rightarrow> exe_args\<close> (\<open>__\<close>)
+       "_AOT_exe_arg_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> exe_arg\<close> (\<open>_..._\<close>)
        "_AOT_lambda_arg_ellipse"
-            :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> lambda_args\<close> ("_..._")
-       "_AOT_term_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<tau>\<close> ("_..._")
+            :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> lambda_args\<close> (\<open>_..._\<close>)
+       "_AOT_term_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> \<tau>\<close> (\<open>_..._\<close>)
        "_AOT_exe" :: \<open>\<Pi> \<Rightarrow> exe_args \<Rightarrow> \<phi>\<close> (\<open>__\<close>)
        "_AOT_enc" :: \<open>exe_args \<Rightarrow> \<Pi> \<Rightarrow> \<phi>\<close> (\<open>__\<close>)
        "_AOT_lambda0" :: \<open>\<phi> \<Rightarrow> \<Pi>0\<close> (\<open>[\<lambda> _]\<close>)
-       "" :: \<open>\<Pi>0 \<Rightarrow> \<phi>\<close> ("_")
-       "" :: \<open>\<Pi>0 \<Rightarrow> \<tau>\<close> ("_")
+       "" :: \<open>\<Pi>0 \<Rightarrow> \<phi>\<close> (\<open>_\<close>)
+       "" :: \<open>\<Pi>0 \<Rightarrow> \<tau>\<close> (\<open>_\<close>)
        "_AOT_concrete" :: \<open>\<Pi>\<close> (\<open>E!\<close>)
-       "" :: \<open>any \<Rightarrow> exe_arg\<close> ("\<guillemotleft>_\<guillemotright>")
-       "" :: \<open>desc \<Rightarrow> free_var\<close> ("_")
-       "" :: \<open>\<Pi> \<Rightarrow> free_var\<close> ("_")
-       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<phi>\<close> ("_'{_'}")
-       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<tau>\<close> ("_'{_'}")
-       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
-       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_'{_'}")
-       "_AOT_term_var" :: \<open>id_position \<Rightarrow> free_var\<close> ("_")
-       "" :: \<open>any \<Rightarrow> free_var\<close> ("\<guillemotleft>_\<guillemotright>")
-       "" :: \<open>free_var \<Rightarrow> free_vars\<close> ("_")
-       "_AOT_args" :: \<open>free_var \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> ("_,_")
-       "_AOT_free_var_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> free_var\<close> ("_..._")
+       "" :: \<open>any \<Rightarrow> exe_arg\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+       "" :: \<open>desc \<Rightarrow> free_var\<close> (\<open>_\<close>)
+       "" :: \<open>\<Pi> \<Rightarrow> free_var\<close> (\<open>_\<close>)
+       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<phi>\<close> (\<open>_'{_'}\<close>)
+       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> \<tau>\<close> (\<open>_'{_'}\<close>)
+       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> (\<open>_'{_'}\<close>)
+       "_AOT_appl" :: \<open>id_position \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> (\<open>_'{_'}\<close>)
+       "_AOT_term_var" :: \<open>id_position \<Rightarrow> free_var\<close> (\<open>_\<close>)
+       "" :: \<open>any \<Rightarrow> free_var\<close> (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+       "" :: \<open>free_var \<Rightarrow> free_vars\<close> (\<open>_\<close>)
+       "_AOT_args" :: \<open>free_var \<Rightarrow> free_vars \<Rightarrow> free_vars\<close> (\<open>_,_\<close>)
+       "_AOT_free_var_ellipse" :: \<open>id_position \<Rightarrow> id_position \<Rightarrow> free_var\<close> (\<open>_..._\<close>)
 syntax "_AOT_premises"
             :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_premises \<Rightarrow> AOT_premises\<close> (infixr \<open>,\<close> 3)
-       "_AOT_world_relative_prop" :: "\<phi> \<Rightarrow> AOT_world_relative_prop" ("_")
-       "" :: "AOT_world_relative_prop \<Rightarrow> AOT_premises" ("_")
+       "_AOT_world_relative_prop" :: "\<phi> \<Rightarrow> AOT_world_relative_prop" (\<open>_\<close>)
+       "" :: "AOT_world_relative_prop \<Rightarrow> AOT_premises" (\<open>_\<close>)
        "_AOT_prop" :: \<open>AOT_world_relative_prop \<Rightarrow> AOT_prop\<close> (\<open>_\<close>)
        "" :: \<open>AOT_prop \<Rightarrow> AOT_props\<close> (\<open>_\<close>)
        "_AOT_derivable" :: "AOT_premises \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop" (infixl \<open>\<^bold>\<turnstile>\<close> 2)
@@ -135,7 +135,7 @@ syntax "_AOT_premises"
        "_AOT_id_def" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> AOT_prop\<close> (infixl \<open>=\<^sub>d\<^sub>f\<close> 3)
        "_AOT_for_arbitrary"
             :: \<open>id_position \<Rightarrow> AOT_prop \<Rightarrow> AOT_prop\<close> (\<open>for arbitrary _: _\<close> [1000,1] 1)
-syntax (output) "_lambda_args" :: \<open>any \<Rightarrow> patterns \<Rightarrow> patterns\<close> ("__")
+syntax (output) "_lambda_args" :: \<open>any \<Rightarrow> patterns \<Rightarrow> patterns\<close> (\<open>__\<close>)
 
 translations
   "[w \<Turnstile> \<phi>]" => "CONST AOT_model_valid_in w \<phi>"
@@ -282,8 +282,8 @@ parse_ast_translation\<open>
 \<close>
 
 syntax (output)
-  "_AOT_individual_term" :: \<open>'a \<Rightarrow> tuple_args\<close> ("_")
-  "_AOT_individual_terms" :: \<open>tuple_args \<Rightarrow> tuple_args \<Rightarrow> tuple_args\<close> ("__")
+  "_AOT_individual_term" :: \<open>'a \<Rightarrow> tuple_args\<close> (\<open>_\<close>)
+  "_AOT_individual_terms" :: \<open>tuple_args \<Rightarrow> tuple_args \<Rightarrow> tuple_args\<close> (\<open>__\<close>)
   "_AOT_relation_term" :: \<open>'a \<Rightarrow> \<Pi>\<close>
   "_AOT_any_term" :: \<open>'a \<Rightarrow> \<tau>\<close>
 
@@ -314,14 +314,14 @@ declare "AOT_dia"[AOT del, AOT_defs del]
 
 context AOT_meta_syntax
 begin
-notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
+notation AOT_dia (\<open>\<^bold>\<diamond>_\<close> [49] 54)
 notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
 notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
 notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_dia ("\<^bold>\<diamond>_" [49] 54)
+no_notation AOT_dia (\<open>\<^bold>\<diamond>_\<close> [49] 54)
 no_notation AOT_conj (infixl \<open>\<^bold>&\<close> 35)
 no_notation AOT_disj (infixl \<open>\<^bold>\<or>\<close> 35)
 no_notation AOT_equiv (infixl \<open>\<^bold>\<equiv>\<close> 20)
@@ -366,7 +366,7 @@ parse_ast_translation\<open>[
 
 AOT_define AOT_exists :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> \<open>\<guillemotleft>AOT_exists \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<not>\<forall>\<alpha> \<not>\<phi>{\<alpha>}\<close>
 declare AOT_exists[AOT del, AOT_defs del]
-syntax "_AOT_exists" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>_ _" [1,40])
+syntax "_AOT_exists" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>_ _\<close> [1,40])
 
 AOT_syntax_print_translations
   "_AOT_exists \<alpha> \<phi>" <= "CONST AOT_exists (_abs \<alpha> \<phi>)"
@@ -379,11 +379,11 @@ parse_ast_translation\<open>
 
 context AOT_meta_syntax
 begin
-notation AOT_exists (binder "\<^bold>\<exists>" 8)
+notation AOT_exists (binder \<open>\<^bold>\<exists>\<close> 8)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_exists (binder "\<^bold>\<exists>" 8)
+no_notation AOT_exists (binder \<open>\<^bold>\<exists>\<close> 8)
 end
 
 
@@ -407,8 +407,8 @@ print_translation\<open>AOT_syntax_print_translations [
 
 
 
-syntax "_AOT_DDDOT" :: "\<phi>" ("...")
-syntax "_AOT_DDDOT" :: "\<phi>" ("\<dots>")
+syntax "_AOT_DDDOT" :: "\<phi>" (\<open>...\<close>)
+syntax "_AOT_DDDOT" :: "\<phi>" (\<open>\<dots>\<close>)
 parse_translation\<open>[(\<^syntax_const>\<open>_AOT_DDDOT\<close>, parseDDOT)]\<close>
 
 print_translation\<open>AOT_syntax_print_translations
@@ -514,39 +514,39 @@ end
 
 context AOT_meta_syntax
 begin
-notation AOT_denotes ("_\<^bold>\<down>")
-notation AOT_imp (infixl "\<^bold>\<rightarrow>" 25)
-notation AOT_not ("\<^bold>\<not>_" [50] 50)
-notation AOT_box ("\<^bold>\<box>_" [49] 54)
-notation AOT_act ("\<^bold>\<A>_" [49] 54)
-notation AOT_forall (binder "\<^bold>\<forall>" 8)
-notation AOT_eq (infixl "\<^bold>=" 50)
-notation AOT_desc (binder "\<^bold>\<iota>" 100)
-notation AOT_lambda (binder "\<^bold>\<lambda>" 100)
-notation AOT_lambda0 ("\<^bold>[\<^bold>\<lambda> _\<^bold>]")
-notation AOT_exe ("\<^bold>\<lparr>_,_\<^bold>\<rparr>")
-notation AOT_model_equiv_def (infixl "\<^bold>\<equiv>\<^sub>d\<^sub>f" 10)
-notation AOT_model_id_def (infixl "\<^bold>=\<^sub>d\<^sub>f" 10)
-notation AOT_term_of_var ("\<^bold>\<langle>_\<^bold>\<rangle>")
-notation AOT_concrete ("\<^bold>E\<^bold>!")
+notation AOT_denotes (\<open>_\<^bold>\<down>\<close>)
+notation AOT_imp (infixl \<open>\<^bold>\<rightarrow>\<close> 25)
+notation AOT_not (\<open>\<^bold>\<not>_\<close> [50] 50)
+notation AOT_box (\<open>\<^bold>\<box>_\<close> [49] 54)
+notation AOT_act (\<open>\<^bold>\<A>_\<close> [49] 54)
+notation AOT_forall (binder \<open>\<^bold>\<forall>\<close> 8)
+notation AOT_eq (infixl \<open>\<^bold>=\<close> 50)
+notation AOT_desc (binder \<open>\<^bold>\<iota>\<close> 100)
+notation AOT_lambda (binder \<open>\<^bold>\<lambda>\<close> 100)
+notation AOT_lambda0 (\<open>\<^bold>[\<^bold>\<lambda> _\<^bold>]\<close>)
+notation AOT_exe (\<open>\<^bold>\<lparr>_,_\<^bold>\<rparr>\<close>)
+notation AOT_model_equiv_def (infixl \<open>\<^bold>\<equiv>\<^sub>d\<^sub>f\<close> 10)
+notation AOT_model_id_def (infixl \<open>\<^bold>=\<^sub>d\<^sub>f\<close> 10)
+notation AOT_term_of_var (\<open>\<^bold>\<langle>_\<^bold>\<rangle>\<close>)
+notation AOT_concrete (\<open>\<^bold>E\<^bold>!\<close>)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_denotes ("_\<^bold>\<down>")
-no_notation AOT_imp (infixl "\<^bold>\<rightarrow>" 25)
-no_notation AOT_not ("\<^bold>\<not>_" [50] 50)
-no_notation AOT_box ("\<^bold>\<box>_" [49] 54)
-no_notation AOT_act ("\<^bold>\<A>_" [49] 54)
-no_notation AOT_forall (binder "\<^bold>\<forall>" 8)
-no_notation AOT_eq (infixl "\<^bold>=" 50)
-no_notation AOT_desc (binder "\<^bold>\<iota>" 100)
-no_notation AOT_lambda (binder "\<^bold>\<lambda>" 100)
-no_notation AOT_lambda0 ("\<^bold>[\<^bold>\<lambda> _\<^bold>]")
-no_notation AOT_exe ("\<^bold>\<lparr>_,_\<^bold>\<rparr>")
-no_notation AOT_model_equiv_def (infixl "\<^bold>\<equiv>\<^sub>d\<^sub>f" 10)
-no_notation AOT_model_id_def (infixl "\<^bold>=\<^sub>d\<^sub>f" 10)
-no_notation AOT_term_of_var ("\<^bold>\<langle>_\<^bold>\<rangle>")
-no_notation AOT_concrete ("\<^bold>E\<^bold>!")
+no_notation AOT_denotes (\<open>_\<^bold>\<down>\<close>)
+no_notation AOT_imp (infixl \<open>\<^bold>\<rightarrow>\<close> 25)
+no_notation AOT_not (\<open>\<^bold>\<not>_\<close> [50] 50)
+no_notation AOT_box (\<open>\<^bold>\<box>_\<close> [49] 54)
+no_notation AOT_act (\<open>\<^bold>\<A>_\<close> [49] 54)
+no_notation AOT_forall (binder \<open>\<^bold>\<forall>\<close> 8)
+no_notation AOT_eq (infixl \<open>\<^bold>=\<close> 50)
+no_notation AOT_desc (binder \<open>\<^bold>\<iota>\<close> 100)
+no_notation AOT_lambda (binder \<open>\<^bold>\<lambda>\<close> 100)
+no_notation AOT_lambda0 (\<open>\<^bold>[\<^bold>\<lambda> _\<^bold>]\<close>)
+no_notation AOT_exe (\<open>\<^bold>\<lparr>_,_\<^bold>\<rparr>\<close>)
+no_notation AOT_model_equiv_def (infixl \<open>\<^bold>\<equiv>\<^sub>d\<^sub>f\<close> 10)
+no_notation AOT_model_id_def (infixl \<open>\<^bold>=\<^sub>d\<^sub>f\<close> 10)
+no_notation AOT_term_of_var (\<open>\<^bold>\<langle>_\<^bold>\<rangle>\<close>)
+no_notation AOT_concrete (\<open>\<^bold>E\<^bold>!\<close>)
 end
 
 bundle AOT_syntax

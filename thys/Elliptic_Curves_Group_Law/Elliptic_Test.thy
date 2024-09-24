@@ -8,16 +8,16 @@ begin
 
 subsection \<open>Specialized Definitions for Prime Fields\<close>
 
-definition mmult :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" (infixl "**\<index>" 70)
+definition mmult :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>**\<index>\<close> 70)
 where "x **\<^bsub>m\<^esub> y = x * y mod m"
 
-definition madd :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" (infixl "++\<index>" 65)
+definition madd :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>++\<index>\<close> 65)
 where "x ++\<^bsub>m\<^esub> y = (x + y) mod m"
 
-definition msub :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" (infixl "--\<index>" 65)
+definition msub :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" (infixl \<open>--\<index>\<close> 65)
 where "x --\<^bsub>m\<^esub> y = (x - y) mod m"
 
-definition mpow :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" (infixr "^^^\<index>" 80)
+definition mpow :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> int" (infixr \<open>^^^\<index>\<close> 80)
 where "x ^^^\<^bsub>m\<^esub> n = x ^ n mod m"
 
 lemma (in residues) res_of_natural_eq: "\<guillemotleft>n\<guillemotright>\<^sub>\<nat> = int n mod m"

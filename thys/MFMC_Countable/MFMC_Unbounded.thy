@@ -13,7 +13,7 @@ subsection \<open>More about waves\<close>
 lemma SINK_plus_current: "SINK (plus_current f g) = SINK f \<inter> SINK g"
 by(auto simp add: SINK.simps set_eq_iff d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 add_eq_0_iff_both_eq_0)
 
-abbreviation plus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current \<Rightarrow> 'v current" ("_ \<frown>\<index> _" [66, 66] 65)
+abbreviation plus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current \<Rightarrow> 'v current" (\<open>_ \<frown>\<index> _\<close> [66, 66] 65)
 where "plus_web \<Gamma> f g \<equiv> plus_current f (g \<upharpoonleft> \<Gamma> / f)"
 
 lemma d_OUT_plus_web:
@@ -314,7 +314,7 @@ proof -
 
   from f have f': "current \<Gamma> f" by(rule current_weight_mono)(auto intro: diff_le_self_ennreal)
 
-  write Some ("\<langle>_\<rangle>")
+  write Some (\<open>\<langle>_\<rangle>\<close>)
 
   define edge'
     where "edge' xo yo =
@@ -1075,7 +1075,7 @@ lemma unhinder_bipartite:
   and b_V: "b \<in> \<^bold>V"
   shows "\<exists>h'. current \<Gamma> h' \<and> wave \<Gamma> h' \<and> B \<Gamma> \<inter> \<^bold>V \<subseteq> SAT \<Gamma> h'"
 proof -
-  write Inner ("\<langle>_\<rangle>")
+  write Inner (\<open>\<langle>_\<rangle>\<close>)
   define edge'
     where "edge' xo yo =
       (case (xo, yo) of

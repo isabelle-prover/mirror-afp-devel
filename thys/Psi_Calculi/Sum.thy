@@ -9,7 +9,7 @@ begin
 context env
 begin
 
-abbreviation sumAssertJudge ("_ \<oplus>\<^sub>_ _" [150, 50, 50] 150) 
+abbreviation sumAssertJudge (\<open>_ \<oplus>\<^sub>_ _\<close> [150, 50, 50] 150) 
   where "(P::('a, 'b, 'c) psi) \<oplus>\<^sub>\<phi> Q \<equiv> Cases [(\<phi>, P), (\<phi>, Q)]"
 
 lemma SumAssert1:
@@ -98,8 +98,8 @@ locale sum = env +
   and     TopSubst[simp]: "substCond T xvec Tvec = T"
 begin
 
-abbreviation topJudge ("\<top>" 150) where "\<top> \<equiv> T"
-abbreviation sumJudge (infixr "\<oplus>" 80) where "P \<oplus> Q \<equiv> P \<oplus>\<^sub>\<top> Q"
+abbreviation topJudge (\<open>\<top>\<close> 150) where "\<top> \<equiv> T"
+abbreviation sumJudge (infixr \<open>\<oplus>\<close> 80) where "P \<oplus> Q \<equiv> P \<oplus>\<^sub>\<top> Q"
 
 lemma topSeqSubst[simp]:
   shows "(substCond.seqSubst T \<sigma>) = T"

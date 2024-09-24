@@ -62,9 +62,9 @@ lists. We then define sum and product operations over these lists.\<close>
 
 subsubsection \<open>Sum and product definitions\<close>
 
-notation (input) sum_list ("\<Sum>:_" [999] 998)
+notation (input) sum_list (\<open>\<Sum>:_\<close> [999] 998)
 
-notation (input) prod_list ("\<Prod>:_" [999] 998)
+notation (input) prod_list (\<open>\<Prod>:_\<close> [999] 998)
 
 subsubsection \<open>Properties of sum and product\<close>
 

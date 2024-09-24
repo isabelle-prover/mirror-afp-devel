@@ -51,7 +51,7 @@ proof-
   qed
 qed
 
-definition masking ("_ [\<preceq>] _" 60)
+definition masking (\<open>_ [\<preceq>] _\<close> 60)
   where "P [\<preceq>] Q \<equiv> (BINARY (\<lambda>a b. a \<preceq> b) P Q)"
 
 lemma masking_dioph[dioph]:

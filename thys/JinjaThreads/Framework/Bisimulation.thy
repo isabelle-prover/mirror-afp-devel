@@ -14,28 +14,28 @@ type_synonym ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"
 subsection \<open>Strong bisimulation\<close>
 
 locale bisimulation_base = r1: trsys trsys1 + r2: trsys trsys2
-  for trsys1 :: "('s1, 'tl1) trsys" ("_/ -1-_\<rightarrow>/ _" [50,0,50] 60)
-  and trsys2 :: "('s2, 'tl2) trsys" ("_/ -2-_\<rightarrow>/ _" [50,0,50] 60) +
-  fixes bisim :: "('s1, 's2) bisim" ("_/ \<approx> _" [50, 50] 60)
-  and tlsim :: "('tl1, 'tl2) bisim" ("_/ \<sim> _" [50, 50] 60)
+  for trsys1 :: "('s1, 'tl1) trsys" (\<open>_/ -1-_\<rightarrow>/ _\<close> [50,0,50] 60)
+  and trsys2 :: "('s2, 'tl2) trsys" (\<open>_/ -2-_\<rightarrow>/ _\<close> [50,0,50] 60) +
+  fixes bisim :: "('s1, 's2) bisim" (\<open>_/ \<approx> _\<close> [50, 50] 60)
+  and tlsim :: "('tl1, 'tl2) bisim" (\<open>_/ \<sim> _\<close> [50, 50] 60)
 begin
 
 notation
-  r1.Trsys ("_/ -1-_\<rightarrow>*/ _" [50,0,50] 60) and
-  r2.Trsys ("_/ -2-_\<rightarrow>*/ _" [50,0,50] 60)
+  r1.Trsys (\<open>_/ -1-_\<rightarrow>*/ _\<close> [50,0,50] 60) and
+  r2.Trsys (\<open>_/ -2-_\<rightarrow>*/ _\<close> [50,0,50] 60)
 
 notation
-  r1.inf_step ("_ -1-_\<rightarrow>* \<infinity>" [50, 0] 80) and
-  r2.inf_step ("_ -2-_\<rightarrow>* \<infinity>" [50, 0] 80)
+  r1.inf_step (\<open>_ -1-_\<rightarrow>* \<infinity>\<close> [50, 0] 80) and
+  r2.inf_step (\<open>_ -2-_\<rightarrow>* \<infinity>\<close> [50, 0] 80)
 
 notation
-  r1.inf_step_table ("_ -1-_\<rightarrow>*t \<infinity>" [50, 0] 80) and
-  r2.inf_step_table ("_ -2-_\<rightarrow>*t \<infinity>" [50, 0] 80)
+  r1.inf_step_table (\<open>_ -1-_\<rightarrow>*t \<infinity>\<close> [50, 0] 80) and
+  r2.inf_step_table (\<open>_ -2-_\<rightarrow>*t \<infinity>\<close> [50, 0] 80)
 
-abbreviation Tlsim :: "('tl1 list, 'tl2 list) bisim" ("_/ [\<sim>] _" [50, 50] 60)
+abbreviation Tlsim :: "('tl1 list, 'tl2 list) bisim" (\<open>_/ [\<sim>] _\<close> [50, 50] 60)
 where "Tlsim tl1 tl2 \<equiv> list_all2 tlsim tl1 tl2"
 
-abbreviation Tlsiml :: "('tl1 llist, 'tl2 llist) bisim" ("_/ [[\<sim>]] _" [50, 50] 60)
+abbreviation Tlsiml :: "('tl1 llist, 'tl2 llist) bisim" (\<open>_/ [[\<sim>]] _\<close> [50, 50] 60)
 where "Tlsiml tl1 tl2 \<equiv> llist_all2 tlsim tl1 tl2"
 
 end
@@ -258,36 +258,36 @@ locale delay_bisimulation_base =
 begin
 
 notation
-  trsys1.silent_move ("_/ -\<tau>1\<rightarrow> _" [50, 50] 60) and
-  trsys2.silent_move ("_/ -\<tau>2\<rightarrow> _" [50, 50] 60)
+  trsys1.silent_move (\<open>_/ -\<tau>1\<rightarrow> _\<close> [50, 50] 60) and
+  trsys2.silent_move (\<open>_/ -\<tau>2\<rightarrow> _\<close> [50, 50] 60)
 
 notation
-  trsys1.silent_moves ("_/ -\<tau>1\<rightarrow>* _" [50, 50] 60) and
-  trsys2.silent_moves ("_/ -\<tau>2\<rightarrow>* _" [50, 50] 60)
+  trsys1.silent_moves (\<open>_/ -\<tau>1\<rightarrow>* _\<close> [50, 50] 60) and
+  trsys2.silent_moves (\<open>_/ -\<tau>2\<rightarrow>* _\<close> [50, 50] 60)
 
 notation
-  trsys1.silent_movet ("_/ -\<tau>1\<rightarrow>+ _" [50, 50] 60) and
-  trsys2.silent_movet ("_/ -\<tau>2\<rightarrow>+ _" [50, 50] 60)
+  trsys1.silent_movet (\<open>_/ -\<tau>1\<rightarrow>+ _\<close> [50, 50] 60) and
+  trsys2.silent_movet (\<open>_/ -\<tau>2\<rightarrow>+ _\<close> [50, 50] 60)
 
 notation
-  trsys1.\<tau>rtrancl3p ("_ -\<tau>1-_\<rightarrow>* _" [50, 0, 50] 60) and
-  trsys2.\<tau>rtrancl3p ("_ -\<tau>2-_\<rightarrow>* _" [50, 0, 50] 60)
+  trsys1.\<tau>rtrancl3p (\<open>_ -\<tau>1-_\<rightarrow>* _\<close> [50, 0, 50] 60) and
+  trsys2.\<tau>rtrancl3p (\<open>_ -\<tau>2-_\<rightarrow>* _\<close> [50, 0, 50] 60)
 
 notation
-  trsys1.\<tau>inf_step ("_ -\<tau>1-_\<rightarrow>* \<infinity>" [50, 0] 80) and
-  trsys2.\<tau>inf_step ("_ -\<tau>2-_\<rightarrow>* \<infinity>" [50, 0] 80)
+  trsys1.\<tau>inf_step (\<open>_ -\<tau>1-_\<rightarrow>* \<infinity>\<close> [50, 0] 80) and
+  trsys2.\<tau>inf_step (\<open>_ -\<tau>2-_\<rightarrow>* \<infinity>\<close> [50, 0] 80)
 
 notation
-  trsys1.\<tau>diverge ("_ -\<tau>1\<rightarrow> \<infinity>" [50] 80) and
-  trsys2.\<tau>diverge ("_ -\<tau>2\<rightarrow> \<infinity>" [50] 80)
+  trsys1.\<tau>diverge (\<open>_ -\<tau>1\<rightarrow> \<infinity>\<close> [50] 80) and
+  trsys2.\<tau>diverge (\<open>_ -\<tau>2\<rightarrow> \<infinity>\<close> [50] 80)
 
 notation
-  trsys1.\<tau>inf_step_table ("_ -\<tau>1-_\<rightarrow>*t \<infinity>" [50, 0] 80) and
-  trsys2.\<tau>inf_step_table ("_ -\<tau>2-_\<rightarrow>*t \<infinity>" [50, 0] 80)
+  trsys1.\<tau>inf_step_table (\<open>_ -\<tau>1-_\<rightarrow>*t \<infinity>\<close> [50, 0] 80) and
+  trsys2.\<tau>inf_step_table (\<open>_ -\<tau>2-_\<rightarrow>*t \<infinity>\<close> [50, 0] 80)
 
 notation
-  trsys1.\<tau>Runs ("_ \<Down>1 _" [50, 50] 51) and
-  trsys2.\<tau>Runs ("_ \<Down>2 _" [50, 50] 51)
+  trsys1.\<tau>Runs (\<open>_ \<Down>1 _\<close> [50, 50] 51) and
+  trsys2.\<tau>Runs (\<open>_ \<Down>2 _\<close> [50, 50] 51)
 
 lemma simulation_silent1I':
   assumes "\<exists>s2'. (if \<mu>1 s1' s1 then trsys2.silent_moves else trsys2.silent_movet) s2 s2' \<and> s1' \<approx> s2'"
@@ -1138,7 +1138,7 @@ by(rule delay_bisimulation_final_base)
 
 subsection \<open>Transitivity for bisimulations\<close>
 
-definition bisim_compose :: "('s1, 's2) bisim \<Rightarrow> ('s2, 's3) bisim \<Rightarrow> ('s1, 's3) bisim" (infixr "\<circ>\<^sub>B" 60)
+definition bisim_compose :: "('s1, 's2) bisim \<Rightarrow> ('s2, 's3) bisim \<Rightarrow> ('s1, 's3) bisim" (infixr \<open>\<circ>\<^sub>B\<close> 60)
 where "(bisim1 \<circ>\<^sub>B bisim2) s1 s3 \<equiv> \<exists>s2. bisim1 s1 s2 \<and> bisim2 s2 s3"
 
 lemma bisim_composeI [intro]:

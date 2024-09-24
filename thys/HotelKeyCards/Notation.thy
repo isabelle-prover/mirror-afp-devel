@@ -8,7 +8,7 @@ imports "HOL-Library.LaTeXsugar"
 begin
 
 abbreviation
- "SomeFloor" ("(\<lfloor>_\<rfloor>)") where "\<lfloor>x\<rfloor> \<equiv> Some x"
+ "SomeFloor" (\<open>(\<lfloor>_\<rfloor>)\<close>) where "\<lfloor>x\<rfloor> \<equiv> Some x"
 (*>*)
 
 subsection\<open>Notation\<close>

@@ -159,7 +159,7 @@ lemma finite_poss [simp]:
   by (subst poss_simps [symmetric]) (metis finite_Un finite_fun_poss finite_var_poss)
 
 text \<open>The subterm of a term~@{text s} at position~@{text p} is defined as follows:\<close>
-fun subt_at :: "('f, 'v) term \<Rightarrow> pos \<Rightarrow> ('f, 'v) term" (infixl "|'_" 67)
+fun subt_at :: "('f, 'v) term \<Rightarrow> pos \<Rightarrow> ('f, 'v) term" (infixl \<open>|'_\<close> 67)
   where
     "s |_ [] = s" |
     "Fun f ss |_ (i # p) = (ss ! i) |_ p"
@@ -473,7 +473,7 @@ text \<open>Restrict a substitution to a set of variables.\<close>
 
 definition
   subst_restrict :: "('f, 'v) subst \<Rightarrow> 'v set \<Rightarrow> ('f, 'v) subst"
-  (infix "|s" 67)
+  (infix \<open>|s\<close> 67)
   where
     "\<sigma> |s V = (\<lambda>x. if x \<in> V then \<sigma>(x) else Var x)"
 
@@ -704,7 +704,7 @@ proof (induct t)
 qed simp
 
 inductive
-  subst_instance :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" ("(_/ \<preceq> _)" [56, 56] 55)
+  subst_instance :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" (\<open>(_/ \<preceq> _)\<close> [56, 56] 55)
   where
     subst_instanceI [intro]:
     "s \<cdot> \<sigma> = t \<Longrightarrow> s \<preceq> t"
@@ -2009,7 +2009,7 @@ fun instance_term :: "('f, 'v) term \<Rightarrow> ('f set, 'v) term \<Rightarrow
     f \<in> fs \<and> length ts = length ss \<and> (\<forall>i<length ts. instance_term (ts ! i) (ss ! i))" |
     "instance_term _ _ = False"
 
-fun subt_at_ctxt :: "('f, 'v) ctxt \<Rightarrow> pos \<Rightarrow> ('f, 'v) ctxt" (infixl "|'_c" 67)
+fun subt_at_ctxt :: "('f, 'v) ctxt \<Rightarrow> pos \<Rightarrow> ('f, 'v) ctxt" (infixl \<open>|'_c\<close> 67)
   where
     "C |_c [] = C" |
     "More f bef C aft |_c (i#p) = C |_c p"
@@ -2074,7 +2074,7 @@ hide_const suptcp
 abbreviation suptc_pred where "suptc_pred C t \<equiv> (C, t) \<in> suptc"
 
 notation
-  suptc_pred ("(_/ \<rhd>c _)" [56, 56] 55)
+  suptc_pred (\<open>(_/ \<rhd>c _)\<close> [56, 56] 55)
 
 lemma suptc_subst: "C \<rhd>c s \<Longrightarrow> C \<cdot>\<^sub>c \<sigma> \<rhd>c s \<cdot> \<sigma>"
 proof (induct rule: suptc.induct)

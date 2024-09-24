@@ -16,9 +16,9 @@ subsection \<open>Indexed catoids.\<close>
 text \<open>We add an index to the operations of catoids.\<close>
 
 class imultimagma = 
-  fixes imcomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a set" ("_\<odot> \<^bsub>_\<^esub> _" [70,70,70]70) 
+  fixes imcomp :: "'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>_\<odot> \<^bsub>_\<^esub> _\<close> [70,70,70]70) 
 
-definition (in imultimagma) iconv  :: "'a set \<Rightarrow> nat \<Rightarrow> 'a set \<Rightarrow> 'a set" ("_\<star>\<^bsub>_\<^esub>_"[70,70,70]70) where
+definition (in imultimagma) iconv  :: "'a set \<Rightarrow> nat \<Rightarrow> 'a set \<Rightarrow> 'a set" (\<open>_\<star>\<^bsub>_\<^esub>_\<close>[70,70,70]70) where
   "X \<star>\<^bsub>i\<^esub> Y = (\<Union>x \<in> X. \<Union>y \<in> Y. x \<odot>\<^bsub>i\<^esub> y)"
 
 class imultisemigroup = imultimagma +

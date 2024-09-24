@@ -103,7 +103,7 @@ definition polysizes :: "nat \<Rightarrow> graph \<Rightarrow> nat list" where
     let lb = squanderLowerBound g in
     [n \<leftarrow> [3 ..< Suc(maxGon p)]. lb + \<d> n < squanderTarget]"
 
-definition next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_tame0\<^bsub>_\<^esub>") where
+definition next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" (\<open>next'_tame0\<^bsub>_\<^esub>\<close>) where
 "next_tame0\<^bsub>p\<^esub> g \<equiv>
      let fs = nonFinals g in
      if fs = [] then []

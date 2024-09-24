@@ -138,7 +138,7 @@ consts
 
 bundle applicative_syntax
 begin
-  notation ap (infixl "\<diamondop>" 70)
+  notation ap (infixl \<open>\<diamondop>\<close> 70)
 end
 
 hide_const (open) ap

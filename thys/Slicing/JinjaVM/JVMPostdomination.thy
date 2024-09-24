@@ -351,7 +351,7 @@ qed
 
 
 abbreviation lift_to_cfg_wf_prog :: "(jvmprog \<Rightarrow> 'a) \<Rightarrow> (cfg_wf_prog \<Rightarrow> 'a)"
-  ("_\<^bsub>CFG\<^esub>")
+  (\<open>_\<^bsub>CFG\<^esub>\<close>)
   where "f\<^bsub>CFG\<^esub> \<equiv> (\<lambda>P. f (Rep_cfg_wf_prog P))"
 
 section \<open>Interpretation of the \<open>Postdomination\<close> locale\<close>

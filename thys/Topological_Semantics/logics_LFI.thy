@@ -23,7 +23,7 @@ text\<open>Let us recall that:\<close>
 lemma expn_cntr: "EXPN \<C> = CNTR \<B>" by (metis EXPN_CNTR_dual2 EXPN_fp ofp_comm_dc1)
 
 text\<open>For LFIs we use the negation previously defined as @{text "\<C>\<^sup>d\<^sup>- = \<B>\<^sup>f\<^sup>p"}.\<close>
-abbreviation neg ("\<^bold>\<not>_"[70]71) where "neg \<equiv> \<B>\<^sup>f\<^sup>p"
+abbreviation neg (\<open>\<^bold>\<not>_\<close>[70]71) where "neg \<equiv> \<B>\<^sup>f\<^sup>p"
 
 text\<open>In terms of the border operator the negation looks as follows (under appropriate assumptions):\<close>
 lemma neg_char: "CNTR \<B> \<Longrightarrow> \<^bold>\<not>A = (\<^bold>\<midarrow>A \<^bold>\<or> \<B> A)" unfolding conn by (metis CNTR_def dimpl_def op_fixpoint_def subset_def)
@@ -36,13 +36,13 @@ lemma "[a, \<^bold>\<not>a \<turnstile>\<^sub>g \<^bold>\<not>b]" nitpick oops \
 
 text\<open>We define two pairs of in/consistency operators and show how they relate to each other.
 Using LFIs terminology, the minimal logic so encoded corresponds to RmbC + 'ciw' axiom.\<close>
-abbreviation op_inc_a::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<bullet>\<^sup>A_" [57]58) (* \<bullet> as truth-glut *)
+abbreviation op_inc_a::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<bullet>\<^sup>A_\<close> [57]58) (* \<bullet> as truth-glut *)
   where "\<bullet>\<^sup>AA \<equiv> A \<^bold>\<and> \<^bold>\<not>A"
-abbreviation op_con_a::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<circ>\<^sup>A_" [57]58) 
+abbreviation op_con_a::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<circ>\<^sup>A_\<close> [57]58) 
   where "\<circ>\<^sup>AA \<equiv> \<^bold>\<midarrow>\<bullet>\<^sup>AA"
-abbreviation op_inc_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<bullet>\<^sup>B_" [57]58) (* \<bullet> as border *)
+abbreviation op_inc_b::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<bullet>\<^sup>B_\<close> [57]58) (* \<bullet> as border *)
   where "\<bullet>\<^sup>BA \<equiv> \<B> A"
-abbreviation op_con_b::"w \<sigma> \<Rightarrow> w \<sigma>" ("\<circ>\<^sup>B_" [57]58) 
+abbreviation op_con_b::"w \<sigma> \<Rightarrow> w \<sigma>" (\<open>\<circ>\<^sup>B_\<close> [57]58) 
   where "\<circ>\<^sup>BA \<equiv> \<B>\<^sup>- A"
 
 text\<open>Observe that assumming CNTR for border we are allowed to exchange A and B variants.\<close>

@@ -30,11 +30,11 @@ type_synonym pref = "alt \<Rightarrow> real"
 type_synonym prof = "indi \<Rightarrow> pref"
 
 definition
- top :: "pref \<Rightarrow> alt \<Rightarrow> bool" (infixr "<\<cdot>" 60) where
+ top :: "pref \<Rightarrow> alt \<Rightarrow> bool" (infixr \<open><\<cdot>\<close> 60) where
 "p <\<cdot> b  \<equiv>  \<forall>a. a \<noteq> b \<longrightarrow> p a < p b"
 
 definition
- bot :: "alt \<Rightarrow> pref \<Rightarrow> bool" (infixr "\<cdot><" 60) where
+ bot :: "alt \<Rightarrow> pref \<Rightarrow> bool" (infixr \<open>\<cdot><\<close> 60) where
 "b \<cdot>< p  \<equiv>  \<forall>a. a \<noteq> b \<longrightarrow> p b < p a"
 
 definition
@@ -147,13 +147,13 @@ begin
 lemmas IIA' = IIA[THEN iffD1]
 
 definition
- dictates :: "indi \<Rightarrow> alt \<Rightarrow> alt \<Rightarrow> bool" ("_ dictates _ < _") where
+ dictates :: "indi \<Rightarrow> alt \<Rightarrow> alt \<Rightarrow> bool" (\<open>_ dictates _ < _\<close>) where
 "(i dictates a < b)  \<equiv>  \<forall>P. P i a < P i b \<longrightarrow> F P a < F P b"
 definition
- dictates2 :: "indi \<Rightarrow> alt \<Rightarrow> alt \<Rightarrow> bool" ("_ dictates _,_") where
+ dictates2 :: "indi \<Rightarrow> alt \<Rightarrow> alt \<Rightarrow> bool" (\<open>_ dictates _,_\<close>) where
 "(i dictates a,b)  \<equiv>  (i dictates a < b) \<and> (i dictates b < a)"
 definition
- dictatesx:: "indi \<Rightarrow> alt \<Rightarrow> bool" ("_ dictates'_except _") where
+ dictatesx:: "indi \<Rightarrow> alt \<Rightarrow> bool" (\<open>_ dictates'_except _\<close>) where
 "(i dictates_except c)  \<equiv>  \<forall>a b. c \<notin> {a,b} \<longrightarrow> (i dictates a<b)"
 definition
  dictator :: "indi \<Rightarrow> bool" where

@@ -120,16 +120,16 @@ declare "identity:1"[AOT_defs] "identity:2"[AOT_defs] "identity:3[2]"[AOT_defs]
         "identity:3[3]"[AOT_defs] "identity:3[4]"[AOT_defs] "identity:3"[AOT_defs]
         "identity:4"[AOT_defs]
 
-AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>" 50)
+AOT_define AOT_nonidentical :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<noteq>\<close> 50)
   "=-infix": \<open>\<tau> \<noteq> \<sigma> \<equiv>\<^sub>d\<^sub>f \<not>(\<tau> = \<sigma>)\<close>
 
 context AOT_meta_syntax
 begin
-notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
+notation AOT_nonidentical (infixl \<open>\<^bold>\<noteq>\<close> 50)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_nonidentical (infixl "\<^bold>\<noteq>" 50)
+no_notation AOT_nonidentical (infixl \<open>\<^bold>\<noteq>\<close> 50)
 end
 
 

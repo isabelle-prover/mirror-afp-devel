@@ -11,21 +11,21 @@ imports Kleene_Algebra.Dioid
 begin
 
 no_notation
-  times (infixl "\<cdot>" 70)
+  times (infixl \<open>\<cdot>\<close> 70)
 
 subsection \<open>C-Monoids\<close>
 
 text \<open>We start with the c-monoid axioms. These can be found in Section~4 of~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 class proto_monoid = 
-  fixes s_id :: "'a" ("1\<^sub>\<sigma>")
-  and s_prod :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl "\<cdot>" 80) 
+  fixes s_id :: "'a" (\<open>1\<^sub>\<sigma>\<close>)
+  and s_prod :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl \<open>\<cdot>\<close> 80) 
   assumes s_prod_idl [simp]: "1\<^sub>\<sigma> \<cdot> x = x"
   and  s_prod_idr [simp]: "x \<cdot> 1\<^sub>\<sigma>  = x"
 
 class proto_bi_monoid = proto_monoid +
-  fixes c_id :: "'a" ("1\<^sub>\<pi>")
-  and c_prod :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl "\<parallel>" 80) 
+  fixes c_id :: "'a" (\<open>1\<^sub>\<pi>\<close>)
+  and c_prod :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl \<open>\<parallel>\<close> 80) 
   assumes c_prod_idl [simp]: "1\<^sub>\<pi> \<parallel> x = x"
   and c_prod_assoc: "(x \<parallel> y) \<parallel> z = x \<parallel> (y \<parallel> z)"
   and c_prod_comm: "x \<parallel> y = y \<parallel> x" 
@@ -487,7 +487,7 @@ text \<open>We can now define c-lattices and prove the results from Section 7 in
 
 class pbl_monoid = proto_trioid +
   fixes U :: 'a
-  fixes meet :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<sqinter>" 70)
+  fixes meet :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<sqinter>\<close> 70)
   assumes U_def: "x \<le> U"
   and meet_assoc: "(x \<sqinter> y) \<sqinter> z = x \<sqinter> (y \<sqinter> z)"
   and meet_comm: "x \<sqinter> y = y \<sqinter> x"
@@ -1341,10 +1341,10 @@ subsection \<open>Terminal and Nonterminal Elements\<close>
 text \<open>Now we define the projection functions on terminals and nonterminal parts and verify the properties
 of Section 11 in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
-definition tau :: "'a \<Rightarrow> 'a" ("\<tau>") where 
+definition tau :: "'a \<Rightarrow> 'a" (\<open>\<tau>\<close>) where 
   "\<tau> x = x \<cdot> 0"
 
-definition nu :: "'a \<Rightarrow> 'a" ("\<nu>") where 
+definition nu :: "'a \<Rightarrow> 'a" (\<open>\<nu>\<close>) where 
   "\<nu> x = x \<sqinter> nc"
 
 text \<open>Lemma 11.1.\<close>
@@ -2000,7 +2000,7 @@ subsection \<open>C-Nabla Algebras\<close>
 text \<open>Nabla-algebras provide yet another way of formalising non-terminating behaviour in Section 13.\<close>
 
 class c_nabla_algebra = c_omega_algebra + 
-  fixes nabla :: "'a \<Rightarrow> 'a" ("\<nabla>")
+  fixes nabla :: "'a \<Rightarrow> 'a" (\<open>\<nabla>\<close>)
   assumes nabla_unfold: "\<nabla>  x \<le> d (x \<cdot> \<nabla> x)"
   and nabla_coinduct: "d y \<le> d (x \<cdot> y) \<Longrightarrow> d y \<le> \<nabla> x"
 

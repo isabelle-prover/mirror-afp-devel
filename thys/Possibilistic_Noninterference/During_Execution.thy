@@ -21,10 +21,10 @@ locale PL_Indis = PL tval aval
 context PL_Indis 
 begin 
 
-abbreviation indisAbbrev (infix "\<approx>" 50)
+abbreviation indisAbbrev (infix \<open>\<approx>\<close> 50)
 where "s1 \<approx> s2 \<equiv> (s1,s2) \<in> indis"
 
-definition indisE (infix "\<approx>e" 50) where 
+definition indisE (infix \<open>\<approx>e\<close> 50) where 
 "se1 \<approx>e se2 \<equiv> 
  case (se1,se2) of 
    (Inl s1, Inl s2) \<Rightarrow> s1 \<approx> s2
@@ -632,12 +632,12 @@ ZObis_def ZObisT_def
 Wbis_def WbisT_def 
 BisT_def
 
-abbreviation Sbis_abbrev (infix "\<approx>s" 55) where "c1 \<approx>s c2 \<equiv> (c1,c2) \<in> Sbis"
-abbreviation ZObis_abbrev (infix "\<approx>01" 55) where "c1 \<approx>01 c2 \<equiv> (c1,c2) \<in> ZObis"
-abbreviation ZObisT_abbrev (infix "\<approx>01T" 55) where "c1 \<approx>01T c2 \<equiv> (c1,c2) \<in> ZObisT"
-abbreviation Wbis_abbrev (infix "\<approx>w" 55) where "c1 \<approx>w c2 \<equiv> (c1,c2) \<in> Wbis"
-abbreviation WbisT_abbrev (infix "\<approx>wT" 55) where "c1 \<approx>wT c2 \<equiv> (c1,c2) \<in> WbisT"
-abbreviation BisT_abbrev (infix "\<approx>T" 55) where "c1 \<approx>T c2 \<equiv> (c1,c2) \<in> BisT"
+abbreviation Sbis_abbrev (infix \<open>\<approx>s\<close> 55) where "c1 \<approx>s c2 \<equiv> (c1,c2) \<in> Sbis"
+abbreviation ZObis_abbrev (infix \<open>\<approx>01\<close> 55) where "c1 \<approx>01 c2 \<equiv> (c1,c2) \<in> ZObis"
+abbreviation ZObisT_abbrev (infix \<open>\<approx>01T\<close> 55) where "c1 \<approx>01T c2 \<equiv> (c1,c2) \<in> ZObisT"
+abbreviation Wbis_abbrev (infix \<open>\<approx>w\<close> 55) where "c1 \<approx>w c2 \<equiv> (c1,c2) \<in> Wbis"
+abbreviation WbisT_abbrev (infix \<open>\<approx>wT\<close> 55) where "c1 \<approx>wT c2 \<equiv> (c1,c2) \<in> WbisT"
+abbreviation BisT_abbrev (infix \<open>\<approx>T\<close> 55) where "c1 \<approx>T c2 \<equiv> (c1,c2) \<in> BisT"
 
 
 lemma mono_Retr:

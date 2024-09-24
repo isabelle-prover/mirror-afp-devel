@@ -11,7 +11,7 @@ begin
 subsection "Orderings"
 
 class preord =
-fixes le :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+fixes le :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 assumes le_refl[simp]: "x \<sqsubseteq> x"
 and le_trans: "x \<sqsubseteq> y \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<sqsubseteq> z"
 begin
@@ -34,8 +34,8 @@ needed because we never compare elements for equality but only for \<open>\<sqsu
 \<close>
 
 class SL_top = preord +
-fixes join :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>" 65)
-fixes Top :: "'a" ("\<top>")
+fixes join :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<squnion>\<close> 65)
+fixes Top :: "'a" (\<open>\<top>\<close>)
 assumes join_ge1 [simp]: "x \<sqsubseteq> x \<squnion> y"
 and join_ge2 [simp]: "y \<sqsubseteq> x \<squnion> y"
 and join_least: "x \<sqsubseteq> z \<Longrightarrow> y \<sqsubseteq> z \<Longrightarrow> x \<squnion> y \<sqsubseteq> z"
@@ -163,7 +163,7 @@ qed
 
 end
 
-definition bot_acom :: "com \<Rightarrow> ('a::SL_top)option acom" ("\<bottom>\<^sub>c") where
+definition bot_acom :: "com \<Rightarrow> ('a::SL_top)option acom" (\<open>\<bottom>\<^sub>c\<close>) where
 "\<bottom>\<^sub>c = anno None"
 
 lemma strip_bot_acom[simp]: "strip(\<bottom>\<^sub>c c) = c"

@@ -4,10 +4,10 @@ theory SimplifiedOntologicalArgument imports
   HOML
 begin
 text \<open>Positive properties:\<close>
-consts posProp::"\<gamma>\<Rightarrow>\<sigma>" ("\<P>")
+consts posProp::"\<gamma>\<Rightarrow>\<sigma>" (\<open>\<P>\<close>)
 
 text \<open>An entity x is God-like if it possesses all positive properties.\<close>
-definition G ("\<G>") where "\<G>(x) \<equiv> \<^bold>\<forall>\<Phi>.(\<P>(\<Phi>) \<^bold>\<rightarrow> \<Phi>(x))"
+definition G (\<open>\<G>\<close>) where "\<G>(x) \<equiv> \<^bold>\<forall>\<Phi>.(\<P>(\<Phi>) \<^bold>\<rightarrow> \<Phi>(x))"
 
 text \<open>The axiom's of the simplified variant are presented next; these axioms are further motivated in \<^cite>\<open>"C85" and "J52"\<close>).\<close> 
 text \<open>Self-difference is not a positive property (possible alternative: 

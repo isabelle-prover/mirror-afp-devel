@@ -125,7 +125,7 @@ declare of_nat_diff [simp]
 
 (* Haskellish names/syntax *)
 notation (input)
-  bit ("testBit")
+  bit (\<open>testBit\<close>)
 
 lemmas cast_simps = cast_simps ucast_down_bl
 

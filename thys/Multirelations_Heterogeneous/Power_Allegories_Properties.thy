@@ -8,7 +8,7 @@ begin
 
 subsection \<open>Power transpose, epsilon, epsiloff\<close>
 
-definition Lambda :: "('a,'b) rel \<Rightarrow> ('a,'b set) rel" ("\<Lambda>") where
+definition Lambda :: "('a,'b) rel \<Rightarrow> ('a,'b set) rel" (\<open>\<Lambda>\<close>) where
   "\<Lambda> R = {(a,B) |a B. B = {b. (a,b) \<in> R}}"
 
 definition epsilon :: "('a,'a set) rel" where
@@ -16,7 +16,7 @@ definition epsilon :: "('a,'a set) rel" where
 
 definition "epsiloff = {(A,a). a \<in> A}"
 
-definition alpha :: "('a,'b set) rel \<Rightarrow> ('a,'b) rel" ("\<alpha>") where
+definition alpha :: "('a,'b set) rel \<Rightarrow> ('a,'b) rel" (\<open>\<alpha>\<close>) where
   "\<alpha> R = R ; epsiloff"
 
 text \<open>alpha can be seen as a relational approximation of a multirelation.
@@ -104,7 +104,7 @@ lemma alpha_inf_pres: "\<alpha> {(a,A). \<exists>B C. A = B \<inter> C \<and> (a
 
 subsection \<open>Relational image functor\<close>
 
-definition pow :: "('a, 'b) rel \<Rightarrow> ('a set, 'b set) rel" ("\<P>") where
+definition pow :: "('a, 'b) rel \<Rightarrow> ('a set, 'b set) rel" (\<open>\<P>\<close>) where
   "\<P> R = \<Lambda> (epsiloff ; R)"
 
 lemma pow_set: "\<P> R = {(A,B). B = Image R A}"
@@ -146,10 +146,10 @@ lemma lambda_alpha_idem [simp]: "\<Lambda> (\<alpha> (\<Lambda> (\<alpha> R))) =
 
 subsection \<open>Unit and multiplication of powerset monad\<close>
 
-definition eta :: "('a,'a set) rel" ("\<eta>") where
+definition eta :: "('a,'a set) rel" (\<open>\<eta>\<close>) where
   "\<eta> = \<Lambda> Id"
 
-definition mu :: "('a set set, 'a set) rel" ("\<mu>") where
+definition mu :: "('a set set, 'a set) rel" (\<open>\<mu>\<close>) where
   "\<mu> = pow epsiloff"
 
 lemma eta_set: "\<eta> = {(a,{a}) |a. True}"
@@ -275,7 +275,7 @@ lemma Image_epsiloff [simp]: "Image epsiloff \<circ> (\<lambda>x. {x}) = id"
 
 subsection \<open>Subset relation\<close>
 
-definition Omega :: "('a set, 'a set) rel" ("\<Omega>") where
+definition Omega :: "('a set, 'a set) rel" (\<open>\<Omega>\<close>) where
   "\<Omega> = epsilon \<setminus> epsilon"
 
 lemma Omega_set: "\<Omega> = {(A,B). A \<subseteq> B}"
@@ -323,7 +323,7 @@ lemma pow_semicomm: "((P,Q) \<in> \<P> R ; \<Omega>) = (\<Delta> P ; R \<subsete
 
 subsection \<open>Complementation relation\<close>
 
-definition Compl :: "('a set,'a set) rel" ("\<C>") where
+definition Compl :: "('a set,'a set) rel" (\<open>\<C>\<close>) where
   "\<C> = epsilon \<div> -epsilon"
 
 lemma Compl_set: "\<C> = {(A,-A) |A. True}"
@@ -375,10 +375,10 @@ qed
 
 subsection \<open>Kleisli lifting and Kleisli composition\<close>
 
-definition klift :: "('a,'b set) rel \<Rightarrow> ('a set,'b set) rel" ("_\<^sub>\<P>" [1000] 999) where
+definition klift :: "('a,'b set) rel \<Rightarrow> ('a set,'b set) rel" (\<open>_\<^sub>\<P>\<close> [1000] 999) where
   "(R)\<^sub>\<P> = \<P> (\<alpha> R)"
 
-definition kcomp :: "('a,'b set) rel \<Rightarrow> ('b,'c set) rel \<Rightarrow> ('a,'c set) rel" (infixl "\<cdot>\<^sub>\<P>" 70) where
+definition kcomp :: "('a,'b set) rel \<Rightarrow> ('b,'c set) rel \<Rightarrow> ('a,'c set) rel" (infixl \<open>\<cdot>\<^sub>\<P>\<close> 70) where
   "R \<cdot>\<^sub>\<P> S = R ; (S)\<^sub>\<P>"
 
 lemma klift_var: "(R)\<^sub>\<P> = \<Lambda> (epsiloff ; R ; epsiloff)"

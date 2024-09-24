@@ -62,7 +62,7 @@ begin
   type_synonym 'a resid = "'a \<Rightarrow> 'a \<Rightarrow> 'a"
 
   locale residuation = partial_magma resid
-  for resid :: "'a resid" (infix "\\" 70) +
+  for resid :: "'a resid" (infix \<open>\\<close> 70) +
   assumes con_sym_ax: "t \\ u \<noteq> null \<Longrightarrow> u \\ t \<noteq> null"
   and con_imp_arr_resid: "t \\ u \<noteq> null \<Longrightarrow> (t \\ u) \\ (t \\ u) \<noteq> null"
   and cube_ax: "(v \\ t) \\ (u \\ t) \<noteq> null \<Longrightarrow> (v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
@@ -83,7 +83,7 @@ begin
       It is convenient to make this a definition, with associated notation.
     \<close>
 
-    definition con  (infix "\<frown>" 50)
+    definition con  (infix \<open>\<frown>\<close> 50)
     where "t \<frown> u \<equiv> t \\ u \<noteq> null"
 
     lemma conI [intro]:
@@ -457,7 +457,7 @@ begin
       \<open>t \ u\<close> is an identity.
     \<close>
 
-    abbreviation prfx  (infix "\<lesssim>" 50)
+    abbreviation prfx  (infix \<open>\<lesssim>\<close> 50)
     where "t \<lesssim> u \<equiv> ide (t \\ u)"
 
     lemma prfxE:
@@ -491,7 +491,7 @@ begin
       The equivalence \<open>\<sim>\<close> associated with \<open>\<lesssim>\<close> is substitutive with respect to residuation.
     \<close>
 
-    abbreviation cong  (infix "\<sim>" 50)
+    abbreviation cong  (infix \<open>\<sim>\<close> 50)
     where "t \<sim> u \<equiv> t \<lesssim> u \<and> u \<lesssim> t"
 
     lemma congE:
@@ -1178,7 +1178,7 @@ begin
       seems more natural.
     \<close>
 
-    definition comp  (infixr "\<cdot>" 55)
+    definition comp  (infixr \<open>\<cdot>\<close> 55)
     where "t \<cdot> u \<equiv> if composable t u then THE v. composite_of t u v else null"
 
     lemma comp_is_composite_of:
@@ -1337,7 +1337,7 @@ begin
     shows "v = v'"
       using assms join_of_def composite_of_unique by blast
 
-    definition join  (infix "\<squnion>" 52)
+    definition join  (infix \<open>\<squnion>\<close> 52)
     where "t \<squnion> u \<equiv> if joinable t u then THE v. join_of t u v else null"
 
     lemma join_is_join_of:
@@ -1919,21 +1919,21 @@ begin
   locale simulation =
     A: rts A +
     B: rts B
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'a \<Rightarrow> 'b" +
   assumes extensional: "\<not> A.arr t \<Longrightarrow> F t = B.null"
   and preserves_con [simp]: "A.con t u \<Longrightarrow> B.con (F t) (F u)"
   and preserves_resid [simp]: "A.con t u \<Longrightarrow> F (t \\\<^sub>A u) = F t \\\<^sub>B F u"
   begin
 
-    notation A.con     (infix "\<frown>\<^sub>A" 50)
-    notation A.prfx    (infix "\<lesssim>\<^sub>A" 50)
-    notation A.cong    (infix "\<sim>\<^sub>A" 50)
+    notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx    (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation A.cong    (infix \<open>\<sim>\<^sub>A\<close> 50)
 
-    notation B.con     (infix "\<frown>\<^sub>B" 50)
-    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
-    notation B.cong    (infix "\<sim>\<^sub>B" 50)
+    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
+    notation B.cong    (infix \<open>\<sim>\<^sub>B\<close> 50)
 
     lemma preserves_reflects_arr [iff]:
     shows "B.arr (F t) \<longleftrightarrow> A.arr t"
@@ -2059,8 +2059,8 @@ begin
     B: extensional_rts B
   begin
 
-    notation B.comp  (infixr "\<cdot>\<^sub>B" 55)
-    notation B.join  (infix "\<squnion>\<^sub>B" 52)
+    notation B.comp  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.join  (infix \<open>\<squnion>\<^sub>B\<close> 52)
 
     lemma preserves_comp:
     assumes "A.composite_of t u v"
@@ -2083,8 +2083,8 @@ begin
     A: extensional_rts A
   begin
 
-    notation A.comp  (infixr "\<cdot>\<^sub>A" 55)
-    notation A.join  (infix "\<squnion>\<^sub>A" 52)
+    notation A.comp  (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+    notation A.join  (infix \<open>\<squnion>\<^sub>A\<close> 52)
 
     lemma preserves_src [simp]:
     shows "B.src (F t) = F (A.src t)"
@@ -2139,8 +2139,8 @@ begin
     B: weakly_extensional_rts B +
     F: simulation A B F +
     G: simulation A B G
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
@@ -2152,11 +2152,11 @@ begin
   and naturality3: "A.arr f \<Longrightarrow> B.join_of (\<tau> (A.src f)) (F f) (\<tau> f)"
   begin
 
-    notation A.con     (infix "\<frown>\<^sub>A" 50)
-    notation A.prfx    (infix "\<lesssim>\<^sub>A" 50)
+    notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx    (infix \<open>\<lesssim>\<^sub>A\<close> 50)
 
-    notation B.con     (infix "\<frown>\<^sub>B" 50)
-    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
+    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
 
     lemma naturality1:
     shows "\<tau> (A.src f) \\\<^sub>B F f = \<tau> (A.trg f)"
@@ -2277,7 +2277,7 @@ begin
       normal sub-RTS.
     \<close>
 
-    abbreviation Cong\<^sub>0  (infix "\<approx>\<^sub>0" 50)
+    abbreviation Cong\<^sub>0  (infix \<open>\<approx>\<^sub>0\<close> 50)
     where "t \<approx>\<^sub>0 t' \<equiv> t \\ t' \<in> \<NN> \<and> t' \\ t \<in> \<NN>"
 
     lemma Cong\<^sub>0_reflexive:
@@ -2448,7 +2448,7 @@ begin
       We use semi-congruence to define a coarser relation as follows.
     \<close>
 
-    definition Cong  (infix "\<approx>" 50)
+    definition Cong  (infix \<open>\<approx>\<close> 50)
     where "Cong t t' \<equiv> \<exists>u u'. u \<in> \<NN> \<and> u' \<in> \<NN> \<and> t \\ u \<approx>\<^sub>0 t' \\ u'"
 
     lemma CongI [intro]:
@@ -2719,7 +2719,7 @@ begin
       Here we develop some notions relating to the congruence classes of \<open>\<approx>\<close>.
     \<close>
 
-    definition Cong_class ("\<lbrace>_\<rbrace>")
+    definition Cong_class (\<open>\<lbrace>_\<rbrace>\<close>)
     where "Cong_class t \<equiv> {t'. t \<approx> t'}"
 
     definition is_Cong_class
@@ -3201,7 +3201,7 @@ begin
     N: coherent_normal_sub_rts
   begin
 
-    definition Resid  (infix "\<lbrace>\\\<rbrace>" 70)
+    definition Resid  (infix \<open>\<lbrace>\\<rbrace>\<close> 70)
     where "\<T> \<lbrace>\\\<rbrace> \<U> \<equiv>
            if N.is_Cong_class \<T> \<and> N.is_Cong_class \<U> \<and> (\<exists>t u. t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u)
            then N.Cong_class
@@ -3230,7 +3230,7 @@ begin
       by (meson N.Cong_class_membs_are_Cong N.Cong_class_eqI N.Cong_subst(2)
           R.coinitial_iff R.con_imp_coinitial)
 
-    abbreviation Con  (infix "\<lbrace>\<frown>\<rbrace>" 50)
+    abbreviation Con  (infix \<open>\<lbrace>\<frown>\<rbrace>\<close> 50)
     where "\<T> \<lbrace>\<frown>\<rbrace> \<U> \<equiv> \<T> \<lbrace>\\\<rbrace> \<U> \<noteq> {}"
 
     lemma Con_char:
@@ -4302,7 +4302,7 @@ begin
       The following defines residuation of a single transition along a path, yielding a transition.
     \<close>
 
-    fun Resid1x  (infix "\<^sup>1\\\<^sup>*" 70)
+    fun Resid1x  (infix \<open>\<^sup>1\\<^sup>*\<close> 70)
     where "t \<^sup>1\\\<^sup>* [] = R.null"
         | "t \<^sup>1\\\<^sup>* [u] = t \\ u"
         | "t \<^sup>1\\\<^sup>* (u # U) = (t \\ u) \<^sup>1\\\<^sup>* U"
@@ -4311,7 +4311,7 @@ begin
       Next, we have residuation of a path along a single transition, yielding a path.
     \<close>
 
-    fun Residx1  (infix "\<^sup>*\\\<^sup>1" 70)
+    fun Residx1  (infix \<open>\<^sup>*\\<^sup>1\<close> 70)
     where "[] \<^sup>*\\\<^sup>1 u = []"
         | "[t] \<^sup>*\\\<^sup>1 u = (if t \<frown> u then [t \\ u] else [])"
         | "(t # T) \<^sup>*\\\<^sup>1 u =
@@ -4321,7 +4321,7 @@ begin
       Finally, residuation of a path along a path, yielding a path.
     \<close>
 
-    function (sequential) Resid  (infix "\<^sup>*\\\<^sup>*" 70)
+    function (sequential) Resid  (infix \<open>\<^sup>*\\<^sup>*\<close> 70)
     where "[] \<^sup>*\\\<^sup>* _ = []"
         | "_ \<^sup>*\\\<^sup>* [] = []"
         | "[t] \<^sup>*\\\<^sup>* [u] = (if t \<frown> u then [t \\ u] else [])"
@@ -4410,7 +4410,7 @@ begin
      * definition needs to be unwound.  It is not clear how valuable it might
      * end up being to have this as a definition.
      *)
-    abbreviation Con  (infix "\<^sup>*\<frown>\<^sup>*" 50)
+    abbreviation Con  (infix \<open>\<^sup>*\<frown>\<^sup>*\<close> 50)
     where "T \<^sup>*\<frown>\<^sup>* U \<equiv> T \<^sup>*\\\<^sup>* U \<noteq> []"
 
     lemma Con_sym1:
@@ -6025,8 +6025,8 @@ begin
     shows "rts Resid"
       ..
 
-    notation cong  (infix "\<^sup>*\<sim>\<^sup>*" 50)
-    notation prfx  (infix "\<^sup>*\<lesssim>\<^sup>*" 50)
+    notation cong  (infix \<open>\<^sup>*\<sim>\<^sup>*\<close> 50)
+    notation prfx  (infix \<open>\<^sup>*\<lesssim>\<^sup>*\<close> 50)
 
     lemma sources_char\<^sub>P:
     shows "sources T = {A. Ide A \<and> Arr T \<and> Srcs A = Srcs T}"
@@ -7155,8 +7155,8 @@ begin
             Con_implies_Arr(2) Con_sym Cube(1)
       by (metis Arr.simps(1) mem_Collect_eq)
 
-    notation Cong\<^sub>0  (infix "\<approx>\<^sup>*\<^sub>0" 50)
-    notation Cong  (infix "\<approx>\<^sup>*" 50)
+    notation Cong\<^sub>0  (infix \<open>\<approx>\<^sup>*\<^sub>0\<close> 50)
+    notation Cong  (infix \<open>\<approx>\<^sup>*\<close> 50)
 
     (*
      * TODO: Leave these for now -- they still seem a little difficult to prove
@@ -7252,8 +7252,8 @@ begin
 
     sublocale paths_in_rts_with_normal resid \<NN> ..
 
-    notation Cong\<^sub>0  (infix "\<approx>\<^sup>*\<^sub>0" 50)
-    notation Cong  (infix "\<approx>\<^sup>*" 50)
+    notation Cong\<^sub>0  (infix \<open>\<approx>\<^sup>*\<^sub>0\<close> 50)
+    notation Cong  (infix \<open>\<approx>\<^sup>*\<close> 50)
 
     text \<open>
       Since composites of normal transitions are assumed to exist, normal paths can be
@@ -7776,21 +7776,21 @@ begin
     sublocale P: paths_in_rts_with_coherent_normal R \<open>Collect R.ide\<close> ..
     sublocale Q: quotient_by_coherent_normal P.Resid \<open>Collect P.NPath\<close> ..
 
-    definition resid    (infix "\<lbrace>\<^sup>*\\\<^sup>*\<rbrace>" 70)
+    definition resid    (infix \<open>\<lbrace>\<^sup>*\\<^sup>*\<rbrace>\<close> 70)
     where "resid \<equiv> Q.Resid"
 
     sublocale extensional_rts resid
       unfolding resid_def
       using Q.extensional_rts_axioms by simp
 
-    notation con      (infix "\<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace>" 50)
-    notation prfx     (infix "\<lbrace>\<^sup>*\<lesssim>\<^sup>*\<rbrace>" 50)
+    notation con      (infix \<open>\<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace>\<close> 50)
+    notation prfx     (infix \<open>\<lbrace>\<^sup>*\<lesssim>\<^sup>*\<rbrace>\<close> 50)
 
-    notation P.Resid  (infix "\<^sup>*\\\<^sup>*" 70)
-    notation P.Con    (infix "\<^sup>*\<frown>\<^sup>*" 50)
-    notation P.Cong   (infix "\<^sup>*\<approx>\<^sup>*" 50)
-    notation P.Cong\<^sub>0  (infix "\<^sup>*\<approx>\<^sub>0\<^sup>*" 50)
-    notation P.Cong_class ("\<lbrace>_\<rbrace>")
+    notation P.Resid  (infix \<open>\<^sup>*\\<^sup>*\<close> 70)
+    notation P.Con    (infix \<open>\<^sup>*\<frown>\<^sup>*\<close> 50)
+    notation P.Cong   (infix \<open>\<^sup>*\<approx>\<^sup>*\<close> 50)
+    notation P.Cong\<^sub>0  (infix \<open>\<^sup>*\<approx>\<^sub>0\<^sup>*\<close> 50)
+    notation P.Cong_class (\<open>\<lbrace>_\<rbrace>\<close>)
 
     lemma NPath_char:
     shows "P.NPath T \<longleftrightarrow> P.Ide T"
@@ -8237,7 +8237,7 @@ begin
 
     sublocale P: paths_in_weakly_extensional_rts R ..
 
-    notation comp (infixr "\<lbrace>\<^sup>*\<cdot>\<^sup>*\<rbrace>" 55)
+    notation comp (infixr \<open>\<lbrace>\<^sup>*\<cdot>\<^sup>*\<rbrace>\<close> 55)
 
     text \<open>
       When applied to an extensional RTS, the composite completion construction does not
@@ -8273,17 +8273,17 @@ begin
     B: extensional_rts_with_composites B +
     F: simulation A B F +
     paths_in_rts A
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'a \<Rightarrow> 'b"
   begin
 
-    notation Resid    (infix "\<^sup>*\\\<^sub>A\<^sup>*" 70)
-    notation Resid1x  (infix "\<^sup>1\\\<^sub>A\<^sup>*" 70)
-    notation Residx1  (infix "\<^sup>*\\\<^sub>A\<^sup>1" 70)
-    notation Con      (infix "\<^sup>*\<frown>\<^sub>A\<^sup>*" 70)
-    notation B.comp   (infixr "\<cdot>\<^sub>B" 55)
-    notation B.con    (infix "\<frown>\<^sub>B" 50)
+    notation Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
+    notation Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
+    notation Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
+    notation Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
+    notation B.comp   (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.con    (infix \<open>\<frown>\<^sub>B\<close> 50)
 
     fun map
     where "map [] = B.null"
@@ -8664,17 +8664,17 @@ begin
     B: extensional_rts_with_composites B +
     F: simulation A B F +
     composite_completion A
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'a \<Rightarrow> 'b"
   begin
 
-    notation P.Resid    (infix "\<^sup>*\\\<^sub>A\<^sup>*" 70)
-    notation P.Resid1x  (infix "\<^sup>1\\\<^sub>A\<^sup>*" 70)
-    notation P.Residx1  (infix "\<^sup>*\\\<^sub>A\<^sup>1" 70)
-    notation P.Con      (infix "\<^sup>*\<frown>\<^sub>A\<^sup>*" 70)
-    notation B.comp     (infixr "\<cdot>\<^sub>B" 55)
-    notation B.con      (infix "\<frown>\<^sub>B" 50)
+    notation P.Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
+    notation P.Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
+    notation P.Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
+    notation P.Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
+    notation B.comp     (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.con      (infix \<open>\<frown>\<^sub>B\<close> 50)
 
     interpretation F_ext: extension_to_paths A B F ..
 
@@ -8771,17 +8771,17 @@ begin
   locale product_rts =
     A: rts A +
     B: rts B
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   begin
 
-    notation A.con     (infix "\<frown>\<^sub>A" 50)
-    notation A.prfx    (infix "\<lesssim>\<^sub>A" 50)
-    notation A.cong    (infix "\<sim>\<^sub>A" 50)
+    notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx    (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation A.cong    (infix \<open>\<sim>\<^sub>A\<close> 50)
 
-    notation B.con     (infix "\<frown>\<^sub>B" 50)
-    notation B.prfx    (infix "\<lesssim>\<^sub>B" 50)
-    notation B.cong    (infix "\<sim>\<^sub>B" 50)
+    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
+    notation B.cong    (infix \<open>\<sim>\<^sub>B\<close> 50)
 
     type_synonym ('c, 'd) arr = "'c * 'd"
 
@@ -8793,7 +8793,7 @@ begin
                         then (fst t \\\<^sub>A fst u, snd t \\\<^sub>B snd u)
                         else Null)"
 
-    notation resid      (infix "\\" 70)
+    notation resid      (infix \<open>\\<close> 70)
 
     sublocale partial_magma resid
       by unfold_locales
@@ -8837,7 +8837,7 @@ begin
     shows "residuation resid"
       ..
 
-    notation con     (infix "\<frown>" 50)
+    notation con     (infix \<open>\<frown>\<close> 50)
 
     lemma arr_char [iff]:
     shows "arr t \<longleftrightarrow> A.arr (fst t) \<and> B.arr (snd t)"
@@ -8904,8 +8904,8 @@ begin
     shows "rts resid"
       ..
 
-    notation prfx    (infix "\<lesssim>" 50)
-    notation cong    (infix "\<sim>" 50)
+    notation prfx    (infix \<open>\<lesssim>\<close> 50)
+    notation cong    (infix \<open>\<sim>\<close> 50)
 
     lemma sources_char:
     shows "sources t = A.sources (fst t) \<times> B.sources (snd t)"
@@ -9032,10 +9032,10 @@ begin
     B1xB0: product_rts B1 B0 +
     F1: simulation A1 B1 F1 +
     F0: simulation A0 B0 F0
-  for A1 :: "'a1 resid"      (infix "\\\<^sub>A\<^sub>1" 70)
-  and A0 :: "'a0 resid"      (infix "\\\<^sub>A\<^sub>0" 70)
-  and B1 :: "'b1 resid"      (infix "\\\<^sub>B\<^sub>1" 70)
-  and B0 :: "'b0 resid"      (infix "\\\<^sub>B\<^sub>0" 70)
+  for A1 :: "'a1 resid"      (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
+  and A0 :: "'a0 resid"      (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
+  and B1 :: "'b1 resid"      (infix \<open>\\<^sub>B\<^sub>1\<close> 70)
+  and B0 :: "'b0 resid"      (infix \<open>\\<^sub>B\<^sub>0\<close> 70)
   and F1 :: "'a1 \<Rightarrow> 'b1"
   and F0 :: "'a0 \<Rightarrow> 'b0"
   begin
@@ -9074,9 +9074,9 @@ begin
     A: product_rts A1 A0 +
     B: rts B +
     simulation A.resid B F
-  for A1 :: "'a1 resid"    (infix "\\\<^sub>A\<^sub>1" 70)
-  and A0 :: "'a0 resid"    (infix "\\\<^sub>A\<^sub>0" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A1 :: "'a1 resid"    (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
+  and A0 :: "'a0 resid"    (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'a1 * 'a0 \<Rightarrow> 'b"
   begin
 
@@ -9112,18 +9112,18 @@ begin
 
   locale sub_rts =
     R: rts R
-  for R :: "'a resid"      (infix "\\\<^sub>R" 70)
+  for R :: "'a resid"      (infix \<open>\\<^sub>R\<close> 70)
   and Arr :: "'a \<Rightarrow> bool" +
   assumes inclusion: "Arr t \<Longrightarrow> R.arr t"
   and sources_closed: "Arr t \<Longrightarrow> R.sources t \<subseteq> Collect Arr"
   and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
   begin
 
-    notation R.con     (infix "\<frown>\<^sub>R" 50)
-    notation R.prfx    (infix "\<lesssim>\<^sub>R" 50)
-    notation R.cong    (infix "\<sim>\<^sub>R" 50)
+    notation R.con     (infix \<open>\<frown>\<^sub>R\<close> 50)
+    notation R.prfx    (infix \<open>\<lesssim>\<^sub>R\<close> 50)
+    notation R.cong    (infix \<open>\<sim>\<^sub>R\<close> 50)
 
-    definition resid  (infix "\\" 70)
+    definition resid  (infix \<open>\\<close> 70)
     where "t \\ u \<equiv> (if Arr t \<and> Arr u \<and> t \<frown>\<^sub>R u then t \\\<^sub>R u else R.null)"
 
     sublocale partial_magma resid
@@ -9153,7 +9153,7 @@ begin
     shows "residuation resid"
       ..
 
-    notation con     (infix "\<frown>" 50)
+    notation con     (infix \<open>\<frown>\<close> 50)
 
     lemma arr_char [iff]:
     shows "arr t \<longleftrightarrow> Arr t"
@@ -9196,8 +9196,8 @@ begin
     shows "rts resid"
       ..
 
-    notation prfx    (infix "\<lesssim>" 50)
-    notation cong    (infix "\<sim>" 50)
+    notation prfx    (infix \<open>\<lesssim>\<close> 50)
+    notation cong    (infix \<open>\<sim>\<close> 50)
 
     lemma sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
     shows "sources t = {a. Arr t \<and> a \<in> R.sources t}"

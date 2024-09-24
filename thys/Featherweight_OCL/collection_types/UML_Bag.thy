@@ -49,14 +49,14 @@ imports "../basic_types/UML_Void"
         "../basic_types/UML_Real"
 begin
 
-no_notation None ("\<bottom>")
+no_notation None (\<open>\<bottom>\<close>)
 section\<open>Collection Type Bag: Operations\<close>
 
 definition "Rep_Bag_base' x = {(x0, y). y < \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> x0 }"
 definition "Rep_Bag_base x \<tau> = {(x0, y). y < \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> x0 }"
 definition "Rep_Set_base x \<tau> = fst ` {(x0, y). y < \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> x0 }"
 
-definition ApproxEq (infixl "\<cong>" 30)
+definition ApproxEq (infixl \<open>\<cong>\<close> 30)
 where     "X \<cong> Y \<equiv>  \<lambda> \<tau>. \<lfloor>\<lfloor>Rep_Set_base X \<tau> = Rep_Set_base Y \<tau> \<rfloor>\<rfloor>"
 
 
@@ -306,7 +306,7 @@ interpretation  StrictRefEq\<^sub>B\<^sub>a\<^sub>g : profile_bin\<^sub>S\<^sub>
 
 
 subsection\<open>Constants: mtBag\<close>
-definition mtBag::"('\<AA>,'\<alpha>::null) Bag"  ("Bag{}")
+definition mtBag::"('\<AA>,'\<alpha>::null) Bag"  (\<open>Bag{}\<close>)
 where     "Bag{} \<equiv> (\<lambda> \<tau>.  Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>_. 0::nat\<rfloor>\<rfloor> )"
 
 
@@ -343,7 +343,7 @@ where     "OclIncluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \
                                                       ((y \<tau>):=\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e(x \<tau>)\<rceil>\<rceil>(y \<tau>)+1) 
                                                     \<rfloor>\<rfloor>
                                     else invalid \<tau> )"
-notation   OclIncluding   ("_->including\<^sub>B\<^sub>a\<^sub>g'(_')")
+notation   OclIncluding   (\<open>_->including\<^sub>B\<^sub>a\<^sub>g'(_')\<close>)
 
 interpretation OclIncluding : profile_bin\<^sub>d_\<^sub>v OclIncluding "\<lambda>x y. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> 
                                                       (y := \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> y + 1)\<rfloor>\<rfloor>"
@@ -359,7 +359,7 @@ proof -
 qed
 
 syntax
-  "_OclFinbag" :: "args => ('\<AA>,'a::null) Bag"    ("Bag{(_)}")
+  "_OclFinbag" :: "args => ('\<AA>,'a::null) Bag"    (\<open>Bag{(_)}\<close>)
 syntax_consts
   "_OclFinbag" == OclIncluding
 translations
@@ -373,7 +373,7 @@ definition OclExcluding   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) v
 where     "OclExcluding x y = (\<lambda> \<tau>.  if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                      then Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> ((y \<tau>):=0::nat) \<rfloor>\<rfloor>
                                      else invalid \<tau> )"
-notation   OclExcluding   ("_->excluding\<^sub>B\<^sub>a\<^sub>g'(_')")
+notation   OclExcluding   (\<open>_->excluding\<^sub>B\<^sub>a\<^sub>g'(_')\<close>)
 
 interpretation OclExcluding: profile_bin\<^sub>d_\<^sub>v OclExcluding  
                             "\<lambda>x y. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e(x)\<rceil>\<rceil>(y:=0::nat)\<rfloor>\<rfloor>"
@@ -394,7 +394,7 @@ definition OclIncludes   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) va
 where     "OclIncludes x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                      then \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> (y \<tau>) > 0 \<rfloor>\<rfloor>
                                      else \<bottom>  )"
-notation   OclIncludes    ("_->includes\<^sub>B\<^sub>a\<^sub>g'(_')" (*[66,65]65*))
+notation   OclIncludes    (\<open>_->includes\<^sub>B\<^sub>a\<^sub>g'(_')\<close> (*[66,65]65*))
 
 interpretation OclIncludes : profile_bin\<^sub>d_\<^sub>v OclIncludes "\<lambda>x y. \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> y > 0 \<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclIncludes_def bot_option_def null_option_def invalid_def)
@@ -403,7 +403,7 @@ subsection\<open>Definition: Excludes\<close>
 
 definition OclExcludes   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] \<Rightarrow> '\<AA> Boolean"
 where     "OclExcludes x y = (not(OclIncludes x y))"
-notation   OclExcludes    ("_->excludes\<^sub>B\<^sub>a\<^sub>g'(_')" (*[66,65]65*))
+notation   OclExcludes    (\<open>_->excludes\<^sub>B\<^sub>a\<^sub>g'(_')\<close> (*[66,65]65*))
 
 text\<open>The case of the size definition is somewhat special, we admit
 explicitly in Featherweight OCL the possibility of infinite bags. For
@@ -420,7 +420,7 @@ where     "OclSize x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \
                              then \<lfloor>\<lfloor> int (card (Rep_Bag_base x \<tau>)) \<rfloor>\<rfloor>
                              else \<bottom> )"
 notation  (* standard ascii syntax *)
-           OclSize        ("_->size\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
+           OclSize        (\<open>_->size\<^sub>B\<^sub>a\<^sub>g'(')\<close> (*[66]*))
 
 text\<open>The following definition follows the requirement of the
 standard to treat null as neutral element of bags. It is
@@ -435,7 +435,7 @@ subsection\<open>Definition: IsEmpty\<close>
 
 definition OclIsEmpty   :: "('\<AA>,'\<alpha>::null) Bag \<Rightarrow> '\<AA> Boolean"
 where     "OclIsEmpty x =  ((\<upsilon> x and not (\<delta> x)) or ((OclSize x) \<doteq> \<zero>))"
-notation   OclIsEmpty     ("_->isEmpty\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
+notation   OclIsEmpty     (\<open>_->isEmpty\<^sub>B\<^sub>a\<^sub>g'(')\<close> (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
@@ -443,7 +443,7 @@ subsection\<open>Definition: NotEmpty\<close>
 
 definition OclNotEmpty   :: "('\<AA>,'\<alpha>::null) Bag \<Rightarrow> '\<AA> Boolean"
 where     "OclNotEmpty x =  not(OclIsEmpty x)"
-notation   OclNotEmpty    ("_->notEmpty\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
+notation   OclNotEmpty    (\<open>_->notEmpty\<^sub>B\<^sub>a\<^sub>g'(')\<close> (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
@@ -456,7 +456,7 @@ where     "OclANY x = (\<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau>
                                  then SOME y. y \<in> (Rep_Set_base x \<tau>)
                                  else null \<tau>
                             else \<bottom> )"
-notation   OclANY   ("_->any\<^sub>B\<^sub>a\<^sub>g'(')")
+notation   OclANY   (\<open>_->any\<^sub>B\<^sub>a\<^sub>g'(')\<close>)
 
 (*TODO Locale - Equivalent*)  
 
@@ -481,7 +481,7 @@ where     "OclForall S P = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<ta
                                                 else true \<tau>
                                  else \<bottom>)"
 syntax
-  "_OclForallBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->forAll\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+  "_OclForallBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->forAll\<^sub>B\<^sub>a\<^sub>g'(_|_')\<close>)
 syntax_consts
   "_OclForallBag" == UML_Bag.OclForall
 translations
@@ -496,7 +496,7 @@ definition OclExists     :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>)val
 where     "OclExists S P = not(UML_Bag.OclForall S (\<lambda> X. not (P X)))"
 
 syntax
-  "_OclExistBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->exists\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+  "_OclExistBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->exists\<^sub>B\<^sub>a\<^sub>g'(_|_')\<close>)
 syntax_consts
   "_OclExistBag" == UML_Bag.OclExists
 translations
@@ -513,7 +513,7 @@ where     "OclIterate S A F = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \
                                     else \<bottom>)"
 syntax
   "_OclIterateBag"  :: "[('\<AA>,'\<alpha>::null) Bag, idt, idt, '\<alpha>, '\<beta>] => ('\<AA>,'\<gamma>)val"
-                        ("_ ->iterate\<^sub>B\<^sub>a\<^sub>g'(_;_=_ | _')" (*[71,100,70]50*))
+                        (\<open>_ ->iterate\<^sub>B\<^sub>a\<^sub>g'(_;_=_ | _')\<close> (*[71,100,70]50*))
 syntax_consts
   "_OclIterateBag" == OclIterate
 translations
@@ -536,7 +536,7 @@ where "OclSelect S P = (\<lambda>\<tau>. if (\<delta> S) \<tau> = true \<tau>
                                             n\<rfloor>\<rfloor>
                               else invalid \<tau>)"
 syntax
-  "_OclSelectBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->select\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+  "_OclSelectBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->select\<^sub>B\<^sub>a\<^sub>g'(_|_')\<close>)
 syntax_consts
   "_OclSelectBag" == OclSelect
 translations
@@ -549,7 +549,7 @@ subsection\<open>Definition: Reject\<close>
 definition OclReject :: "[('\<AA>,'\<alpha>::null)Bag,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> ('\<AA>,'\<alpha>::null)Bag"
 where "OclReject S P = OclSelect S (not o P)"
 syntax
-  "_OclRejectBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    ("(_)->reject\<^sub>B\<^sub>a\<^sub>g'(_|_')")
+  "_OclRejectBag" :: "[('\<AA>,'\<alpha>::null) Bag,id,('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"    (\<open>(_)->reject\<^sub>B\<^sub>a\<^sub>g'(_|_')\<close>)
 syntax_consts
   "_OclRejectBag" == OclReject
 translations
@@ -563,7 +563,7 @@ definition OclIncludesAll   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>)
 where     "OclIncludesAll x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                                         then \<lfloor>\<lfloor>Rep_Bag_base y \<tau> \<subseteq> Rep_Bag_base x \<tau> \<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation   OclIncludesAll ("_->includesAll\<^sub>B\<^sub>a\<^sub>g'(_')" (*[66,65]65*))
+notation   OclIncludesAll (\<open>_->includesAll\<^sub>B\<^sub>a\<^sub>g'(_')\<close> (*[66,65]65*))
 
 interpretation OclIncludesAll : profile_bin\<^sub>d_\<^sub>d OclIncludesAll "\<lambda>x y. \<lfloor>\<lfloor>Rep_Bag_base' y \<subseteq> Rep_Bag_base' x \<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclIncludesAll_def bot_option_def null_option_def invalid_def
@@ -575,7 +575,7 @@ definition OclExcludesAll   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>)
 where     "OclExcludesAll x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                                         then \<lfloor>\<lfloor>Rep_Bag_base y \<tau> \<inter> Rep_Bag_base x \<tau> = {} \<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation  OclExcludesAll ("_->excludesAll\<^sub>B\<^sub>a\<^sub>g'(_')" (*[66,65]65*))
+notation  OclExcludesAll (\<open>_->excludesAll\<^sub>B\<^sub>a\<^sub>g'(_')\<close> (*[66,65]65*))
 
 interpretation OclExcludesAll : profile_bin\<^sub>d_\<^sub>d OclExcludesAll "\<lambda>x y. \<lfloor>\<lfloor>Rep_Bag_base' y \<inter> Rep_Bag_base' x = {} \<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclExcludesAll_def bot_option_def null_option_def invalid_def
@@ -588,7 +588,7 @@ where     "OclUnion x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau
                                 then Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lambda> X. \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> X + 
                                                        \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil> X\<rfloor>\<rfloor>
                                 else invalid \<tau> )"
-notation   OclUnion       ("_->union\<^sub>B\<^sub>a\<^sub>g'(_')"          (*[66,65]65*))
+notation   OclUnion       (\<open>_->union\<^sub>B\<^sub>a\<^sub>g'(_')\<close>          (*[66,65]65*))
 
 interpretation OclUnion : 
                profile_bin\<^sub>d_\<^sub>d OclUnion "\<lambda>x y. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lambda> X. \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> X + 
@@ -611,7 +611,7 @@ where     "OclIntersection x y = (\<lambda> \<tau>.  if (\<delta> x) \<tau> = tr
                                         then Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor> \<lambda> X. min (\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> X) 
                                                        (\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (y \<tau>)\<rceil>\<rceil> X)\<rfloor>\<rfloor>
                                         else \<bottom>  )"
-notation   OclIntersection("_->intersection\<^sub>B\<^sub>a\<^sub>g'(_')"   (*[71,70]70*))
+notation   OclIntersection(\<open>_->intersection\<^sub>B\<^sub>a\<^sub>g'(_')\<close>   (*[71,70]70*))
 
 interpretation OclIntersection : 
                profile_bin\<^sub>d_\<^sub>d OclIntersection "\<lambda>x y. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lambda> X. min (\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> X) 
@@ -634,7 +634,7 @@ definition OclCount   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] 
 where     "OclCount x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                              then  \<lfloor>\<lfloor>int(\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> (y \<tau>))\<rfloor>\<rfloor> 
                              else invalid \<tau> )"
-notation   OclCount ("_->count\<^sub>B\<^sub>a\<^sub>g'(_')"  (*[66,65]65*))
+notation   OclCount (\<open>_->count\<^sub>B\<^sub>a\<^sub>g'(_')\<close>  (*[66,65]65*))
 
 interpretation OclCount : profile_bin\<^sub>d_\<^sub>d OclCount "\<lambda>x y. \<lfloor>\<lfloor>int(\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> y)\<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclCount_def bot_option_def null_option_def)
@@ -644,7 +644,7 @@ subsection\<open>Definition (future operators)\<close>
 consts (* abstract bag collection operations *)
     OclSum         :: " ('\<AA>,'\<alpha>::null) Bag \<Rightarrow> '\<AA> Integer"
   
-notation  OclSum         ("_->sum\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
+notation  OclSum         (\<open>_->sum\<^sub>B\<^sub>a\<^sub>g'(')\<close> (*[66]*))
 
 subsection\<open>Logical Properties\<close>
 

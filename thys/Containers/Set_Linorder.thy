@@ -91,10 +91,10 @@ subsubsection \<open>A lexicographic-style order on finite subsets\<close>
 
 context ord begin
 
-definition set_less_aux :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sqsubset>''" 50)
+definition set_less_aux :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sqsubset>''\<close> 50)
 where "A \<sqsubset>' B \<longleftrightarrow> finite A \<and> finite B \<and> (\<exists>y \<in> B - A. \<forall>z \<in> (A - B) \<union> (B - A). y \<le> z \<and> (z \<le> y \<longrightarrow> y = z))"
 
-definition set_less_eq_aux :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sqsubseteq>''" 50)
+definition set_less_eq_aux :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sqsubseteq>''\<close> 50)
 where "A \<sqsubseteq>' B \<longleftrightarrow> A \<in> infinite_complement_partition \<and> A = B \<or> A \<sqsubset>' B"
 
 lemma set_less_aux_irrefl [iff]: "\<not> A \<sqsubset>' A"
@@ -363,7 +363,7 @@ subsubsection \<open>Extending @{term set_less_eq_aux} to have @{term "{}"} as l
 
 context ord begin
 
-definition set_less_eq_aux' :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sqsubseteq>''''" 50)
+definition set_less_eq_aux' :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sqsubseteq>''''\<close> 50)
 where "A \<sqsubseteq>'' B \<longleftrightarrow> A \<sqsubseteq>' B \<or> A = {} \<and> B \<in> infinite_complement_partition"
 
 lemma set_less_eq_aux'_refl:
@@ -396,7 +396,7 @@ subsubsection \<open>Extend @{term set_less_eq_aux'} to a total order on @{term 
 
 context ord begin
 
-definition set_less_eq_aux'' :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sqsubseteq>''''''" 50)
+definition set_less_eq_aux'' :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sqsubseteq>''''''\<close> 50)
 where "set_less_eq_aux'' =
   (SOME sleq. 
     (linear_order_on UNIV {(a, b). a \<le> b} \<longrightarrow> linear_order_on infinite_complement_partition {(A, B). sleq A B}) \<and> order_consistent {(A, B). A \<sqsubseteq>'' B} {(A, B). sleq A B})"
@@ -499,13 +499,13 @@ subsubsection \<open>Extend @{term set_less_eq_aux''} to cofinite sets\<close>
 
 context ord begin
 
-definition set_less_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+definition set_less_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 where 
   "A \<sqsubseteq> B \<longleftrightarrow> 
   (if A \<in> infinite_complement_partition then A \<sqsubseteq>''' B \<or> B \<notin> infinite_complement_partition
    else B \<notin> infinite_complement_partition \<and> - B \<sqsubseteq>''' - A)"
 
-definition set_less :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+definition set_less :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where "A \<sqsubset> B \<longleftrightarrow> A \<sqsubseteq> B \<and> \<not> B \<sqsubseteq> A"
 
 lemma set_less_eq_def2:
@@ -2469,12 +2469,12 @@ subsection \<open>Drop notation\<close>
 
 context ord begin
 
-no_notation set_less_aux (infix "\<sqsubset>''" 50)
-  and set_less_eq_aux (infix "\<sqsubseteq>''" 50)
-  and set_less_eq_aux' (infix "\<sqsubseteq>''''" 50)
-  and set_less_eq_aux'' (infix "\<sqsubseteq>''''''" 50)
-  and set_less_eq (infix "\<sqsubseteq>" 50)
-  and set_less (infix "\<sqsubset>" 50)
+no_notation set_less_aux (infix \<open>\<sqsubset>''\<close> 50)
+  and set_less_eq_aux (infix \<open>\<sqsubseteq>''\<close> 50)
+  and set_less_eq_aux' (infix \<open>\<sqsubseteq>''''\<close> 50)
+  and set_less_eq_aux'' (infix \<open>\<sqsubseteq>''''''\<close> 50)
+  and set_less_eq (infix \<open>\<sqsubseteq>\<close> 50)
+  and set_less (infix \<open>\<sqsubset>\<close> 50)
 
 end
 

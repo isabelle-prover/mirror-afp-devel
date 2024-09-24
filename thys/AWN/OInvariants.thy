@@ -149,7 +149,7 @@ definition oinvariant
   :: "('g \<times> 'l, 'a) automaton
       \<Rightarrow> ('g \<Rightarrow> 'g \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('g \<Rightarrow> 'g \<Rightarrow> bool)
       \<Rightarrow> (('g \<times> 'l) \<Rightarrow> bool) \<Rightarrow> bool"
-  ("_ \<Turnstile> (1'((1_),/ (1_) \<rightarrow>')/ _)" [100, 0, 0, 9] 8)
+  (\<open>_ \<Turnstile> (1'((1_),/ (1_) \<rightarrow>')/ _)\<close> [100, 0, 0, 9] 8)
 where
   "(A \<Turnstile> (S, U \<rightarrow>) P) = (\<forall>s\<in>oreachable A S U. P s)"
 
@@ -446,7 +446,7 @@ definition
   :: "('g \<times> 'l, 'a) automaton
       \<Rightarrow> ('g \<Rightarrow> 'g \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('g \<Rightarrow> 'g \<Rightarrow> bool)
       \<Rightarrow> (('g \<times> 'l, 'a) transition \<Rightarrow> bool) \<Rightarrow> bool"
-  ("_ \<Turnstile>\<^sub>A (1'((1_),/ (1_) \<rightarrow>')/ _)" [100, 0, 0, 9] 8)
+  (\<open>_ \<Turnstile>\<^sub>A (1'((1_),/ (1_) \<rightarrow>')/ _)\<close> [100, 0, 0, 9] 8)
 where
   "(A \<Turnstile>\<^sub>A (S, U \<rightarrow>) P) =
      (\<forall>s\<in>oreachable A S U. (\<forall>a s'. (s, a, s') \<in> trans A \<and> S (fst s) (fst s') a \<longrightarrow> P (s, a, s')))"

@@ -37,7 +37,7 @@ text \<open>
 \<close>
 
 primrec
-  nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" ("_\<langle>_\<rangle>\<^sub>l" [90, 0] 91)
+  nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" (\<open>_\<langle>_\<rangle>\<^sub>l\<close> [90, 0] 91)
 where
   "[]\<langle>i\<rangle>\<^sub>l = None"
 | "(x # xs)\<langle>i\<rangle>\<^sub>l = (case i of 0 \<Rightarrow> Some x | Suc j \<Rightarrow> xs \<langle>j\<rangle>\<^sub>l)"
@@ -557,7 +557,7 @@ definition uncurry :: "('a \<Rightarrow> 'b \<Rightarrow>  'c) \<Rightarrow> ('a
 [simp]: "uncurry f = (\<lambda>(x, y). f x y)"
 
 definition dist_concat ::
-  "'a list set \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<^sup>\<frown>" 100) where
+  "'a list set \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr \<open>\<^sup>\<frown>\<close> 100) where
 "dist_concat ls1 ls2 = (uncurry (@) ` (ls1 \<times> ls2))"
 
 lemma dist_concat_left_empty [simp]:
@@ -574,15 +574,15 @@ lemma dist_concat_insert [simp]:
 
 subsection \<open> List Domain and Range \<close>
 
-abbreviation seq_dom :: "'a list \<Rightarrow> nat set" ("dom\<^sub>l") where
+abbreviation seq_dom :: "'a list \<Rightarrow> nat set" (\<open>dom\<^sub>l\<close>) where
 "seq_dom xs \<equiv> {0..<length xs}"
 
-abbreviation seq_ran :: "'a list \<Rightarrow> 'a set" ("ran\<^sub>l") where
+abbreviation seq_ran :: "'a list \<Rightarrow> 'a set" (\<open>ran\<^sub>l\<close>) where
 "seq_ran xs \<equiv> set xs"
 
 subsection \<open> Extracting List Elements \<close>
 
-definition seq_extract :: "nat set \<Rightarrow> 'a list \<Rightarrow> 'a list" (infix "\<upharpoonleft>\<^sub>l" 80) where
+definition seq_extract :: "nat set \<Rightarrow> 'a list \<Rightarrow> 'a list" (infix \<open>\<upharpoonleft>\<^sub>l\<close> 80) where
 "seq_extract A xs = nths xs A"
 
 lemma seq_extract_Nil [simp]: "A \<upharpoonleft>\<^sub>l [] = []"
@@ -702,7 +702,7 @@ qed
 
 subsection \<open> Filtering a list according to a set \<close>
 
-definition seq_filter :: "'a list \<Rightarrow> 'a set \<Rightarrow> 'a list" (infix "\<restriction>\<^sub>l" 80) where
+definition seq_filter :: "'a list \<Rightarrow> 'a set \<Rightarrow> 'a list" (infix \<open>\<restriction>\<^sub>l\<close> 80) where
 "seq_filter xs A = filter (\<lambda> x. x \<in> A) xs"
 
 lemma seq_filter_Cons_in [simp]: 

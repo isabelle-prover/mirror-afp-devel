@@ -36,7 +36,7 @@ that assigns an output sort to the pair of a function symbol and a list of input
 type_synonym ('f,'s) ssig = "'f \<times> 's list \<rightharpoonup> 's"
 
 definition fun_hastype :: "'f \<Rightarrow> 's \<Rightarrow> 't \<Rightarrow> ('f \<times> 's \<rightharpoonup> 't) \<Rightarrow> bool"
-  ("(_ : /_ /\<rightarrow> /_ in/ _)" [50,61,61,50]50)
+  (\<open>(_ : /_ /\<rightarrow> /_ in/ _)\<close> [50,61,61,50]50)
   where "f : \<sigma> \<rightarrow> \<tau> in F \<equiv> F (f,\<sigma>) = Some \<tau>"
 
 lemmas fun_hastypeI = fun_hastype_def[unfolded atomize_eq, THEN iffD2]
@@ -73,7 +73,7 @@ lemma subssigD: assumes FF: "F \<subseteq>\<^sub>m F'" and "f : \<sigma> \<right
 
 text \<open>The sorted set of terms:\<close>
 
-primrec Term ("\<T>'(_,_')") where
+primrec Term (\<open>\<T>'(_,_')\<close>) where
   "\<T>(F,V) (Var v) = V v"
 | "\<T>(F,V) (Fun f ss) =
   (case those (map \<T>(F,V) ss) of None \<Rightarrow> None | Some \<sigma>s \<Rightarrow> F (f,\<sigma>s))"
@@ -604,7 +604,7 @@ definition unisorted_sig :: "('f\<times>nat) set \<Rightarrow> ('f,unit) ssig"
 lemma in_unisorted_sig[simp]: "f : \<sigma>s \<rightarrow> \<tau> in unisorted_sig F \<longleftrightarrow> (f,length \<sigma>s) \<in> F"
   by (auto simp: unisorted_sig_def fun_hastype_def)
 
-inductive_set uTerm ("\<TT>'(_,_')" [1,1]1000) for F V where
+inductive_set uTerm (\<open>\<TT>'(_,_')\<close> [1,1]1000) for F V where
   "Var v \<in> \<TT>(F,V)" if "v \<in> V"
 | "\<forall>s \<in> set ss. s \<in> \<TT>(F,V) \<Longrightarrow> Fun f ss \<in> \<TT>(F,V)" if "(f,length ss) \<in> F"
 

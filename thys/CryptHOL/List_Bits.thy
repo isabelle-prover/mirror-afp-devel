@@ -5,7 +5,7 @@ subsection \<open>Exclusive or on lists\<close>
 
 theory List_Bits imports Misc_CryptHOL begin
 
-definition xor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a :: {uminus,inf,sup}" (infixr "\<oplus>" 67)
+definition xor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a :: {uminus,inf,sup}" (infixr \<open>\<oplus>\<close> 67)
 where "x \<oplus> y = inf (sup x y) (- (inf x y))"
 
 lemma xor_bool_def [iff]: fixes x y :: bool shows "x \<oplus> y \<longleftrightarrow> x \<noteq> y"
@@ -47,7 +47,7 @@ by(metis xor_left_commute xor_inverse xor_bot)
 lemmas xor_ac = xor_assoc xor_commute xor_left_commute
 
 
-definition xor_list :: "'a :: {uminus,inf,sup} list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixr "[\<oplus>]" 67)
+definition xor_list :: "'a :: {uminus,inf,sup} list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixr \<open>[\<oplus>]\<close> 67)
 where "xor_list xs ys = map (case_prod (\<oplus>)) (zip xs ys)"
 
 lemma xor_list_unfold:

@@ -412,7 +412,7 @@ definition joinable :: "'a vwalk \<Rightarrow> 'a vwalk \<Rightarrow> bool" wher
   "joinable p q \<equiv> last p = hd q \<and> p \<noteq> [] \<and> q \<noteq> []"
 
 definition vwalk_join :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-  (infixr "\<oplus>" 65) where
+  (infixr \<open>\<oplus>\<close> 65) where
   "p \<oplus> q \<equiv> p @ tl q"
 
 lemma joinable_Nil_l_iff[simp]: "joinable [] p = False"

@@ -408,11 +408,11 @@ end
 
 
 subsection\<open>Register Parse Translations\<close>
-syntax "_tvars_wildcard" :: "type \<Rightarrow> type" ("'('_') _") 
-syntax "_tvars_wildcard_retval" :: "type \<Rightarrow> type \<Rightarrow> type" ("'('_, _') _")
-syntax "_tvars_wildcard_sort" :: "sort \<Rightarrow> type \<Rightarrow> type" ("'('_::_') _")
-syntax "_tvars_wildcard_right" :: "type \<Rightarrow> type" ("_ '_..")
-syntax "_tvars_wildcard_left" :: "type \<Rightarrow> type" ("_ ..'_")
+syntax "_tvars_wildcard" :: "type \<Rightarrow> type" (\<open>'('_') _\<close>) 
+syntax "_tvars_wildcard_retval" :: "type \<Rightarrow> type \<Rightarrow> type" (\<open>'('_, _') _\<close>)
+syntax "_tvars_wildcard_sort" :: "sort \<Rightarrow> type \<Rightarrow> type" (\<open>'('_::_') _\<close>)
+syntax "_tvars_wildcard_right" :: "type \<Rightarrow> type" (\<open>_ '_..\<close>)
+syntax "_tvars_wildcard_left" :: "type \<Rightarrow> type" (\<open>_ ..'_\<close>)
 
 parse_ast_translation\<open>
   [

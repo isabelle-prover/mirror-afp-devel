@@ -13,7 +13,7 @@ text \<open>We define a group design to have an additional paramater $G$ which i
 set $V$. This is not defined in the handbook, but is a precursor to GDD's without index constraints\<close>
 
 locale group_design = proper_design + 
-  fixes groups :: "'a set set" ("\<G>")
+  fixes groups :: "'a set set" (\<open>\<G>\<close>)
   assumes group_partitions: "partition_on \<V> \<G>"
   assumes groups_size: "card \<G> > 1" 
 begin
@@ -229,7 +229,7 @@ end
 subsubsection \<open>Uniform Group designs\<close>
 text \<open>A group design requiring all groups are the same size\<close>
 locale uniform_group_design = group_design + 
-  fixes u_group_size :: nat ("\<m>")
+  fixes u_group_size :: nat (\<open>\<m>\<close>)
   assumes uniform_groups: "G \<in> \<G> \<Longrightarrow> card G = \<m>"
 
 begin
@@ -270,7 +270,7 @@ Each pair of elements must occur either \Lambda times if in diff groups, or 0 ti
 group\<close>
 
 locale GDD = group_design + 
-  fixes index :: int ("\<Lambda>")
+  fixes index :: int (\<open>\<Lambda>\<close>)
   assumes index_ge_1: "\<Lambda> \<ge> 1"
   assumes index_together: "G \<in> \<G> \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> G \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<B> index {x, y} = 0"
   assumes index_distinct: "G1 \<in> \<G> \<Longrightarrow> G2 \<in> \<G> \<Longrightarrow> G1 \<noteq> G2 \<Longrightarrow> x \<in> G1 \<Longrightarrow> y \<in> G2 \<Longrightarrow> 
@@ -390,10 +390,10 @@ sublocale k_\<Lambda>_GDD \<subseteq> K_\<Lambda>_GDD \<V> \<B> "{\<k>}" \<G> \<
   by (unfold_locales)
 
 locale K_GDD = K_\<Lambda>_GDD \<V> \<B> \<K> \<G> 1 
-  for point_set ("\<V>") and block_collection ("\<B>") and sizes ("\<K>") and groups ("\<G>")
+  for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) and sizes (\<open>\<K>\<close>) and groups (\<open>\<G>\<close>)
 
 locale k_GDD = k_\<Lambda>_GDD \<V> \<B> \<k> \<G> 1 
-  for point_set ("\<V>") and block_collection ("\<B>") and u_block_size ("\<k>") and groups ("\<G>")
+  for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) and u_block_size (\<open>\<k>\<close>) and groups (\<open>\<G>\<close>)
 
 sublocale k_GDD \<subseteq> K_GDD \<V> \<B> "{\<k>}" \<G>
   by (unfold_locales)

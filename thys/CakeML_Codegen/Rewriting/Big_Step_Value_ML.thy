@@ -9,7 +9,7 @@ definition mk_rec_env :: "(name, sclauses) fmap \<Rightarrow> (name, value) fmap
 
 context special_constants begin
 
-inductive veval' :: "(name, value) fmap \<Rightarrow> sterm \<Rightarrow> value \<Rightarrow> bool"  ("_/ \<turnstile>\<^sub>v/ _ \<down>/ _" [50,0,50] 50) where
+inductive veval' :: "(name, value) fmap \<Rightarrow> sterm \<Rightarrow> value \<Rightarrow> bool"  (\<open>_/ \<turnstile>\<^sub>v/ _ \<down>/ _\<close> [50,0,50] 50) where
 const: "name |\<notin>| C \<Longrightarrow> fmlookup \<Gamma> name = Some val \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>v Sconst name \<down> val" |
 var: "fmlookup \<Gamma> name = Some val \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>v Svar name \<down> val" |
 abs: "\<Gamma> \<turnstile>\<^sub>v Sabs cs \<down> Vabs cs \<Gamma>" |
@@ -572,7 +572,7 @@ text \<open>
 
 (* FIXME move into locale *)
 
-coinductive vrelated :: "value \<Rightarrow> value \<Rightarrow> bool" ("\<turnstile>\<^sub>v/ _ \<approx> _" [0, 50] 50) where
+coinductive vrelated :: "value \<Rightarrow> value \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>v/ _ \<approx> _\<close> [0, 50] 50) where
 constr: "list_all2 vrelated ts us \<Longrightarrow> \<turnstile>\<^sub>v Vconstr name ts \<approx> Vconstr name us" |
 abs:
   "fmrel_on_fset (frees (Sabs cs)) vrelated \<Gamma>\<^sub>1 \<Gamma>\<^sub>2 \<Longrightarrow>

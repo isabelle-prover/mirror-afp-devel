@@ -157,7 +157,7 @@ lemma currentD_SAT:
   shows "x \<in> SAT \<Gamma> f \<longleftrightarrow> x \<in> A \<Gamma> \<or> d_IN f x = weight \<Gamma> x"
 using currentD_weight_IN[OF assms, of x] by(auto simp add: SAT.simps)
 
-abbreviation terminal :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v set" ("TER\<index>")
+abbreviation terminal :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v set" (\<open>TER\<index>\<close>)
 where "terminal \<Gamma> f \<equiv> SAT \<Gamma> f \<inter> SINK f"
 
 subsection \<open>Separation\<close>
@@ -194,7 +194,7 @@ definition essential :: "('v, 'more) graph_scheme \<Rightarrow> 'v set \<Rightar
 where \<comment> \<open>Should we allow only simple paths here?\<close>
   "\<And>B. essential G B S x \<longleftrightarrow> (\<exists>p. \<exists>y\<in>B. path G x p y \<and> (x \<noteq> y \<longrightarrow> (\<forall>z\<in>set p. z = x \<or> z \<notin> S)))"
 
-abbreviation essential_web :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" ("\<E>\<index>")
+abbreviation essential_web :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" (\<open>\<E>\<index>\<close>)
 where "essential_web \<Gamma> S \<equiv> {x\<in>S. essential \<Gamma> (B \<Gamma>) S x}"
 
 lemma essential_weight_update [simp]:
@@ -257,10 +257,10 @@ qed
 definition roofed_gen :: "('v, 'more) graph_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set \<Rightarrow> 'v set"
 where roofed_def: "\<And>B. roofed_gen G B S = {x. \<forall>p. \<forall>y\<in>B. path G x p y \<longrightarrow> (\<exists>z\<in>set p. z \<in> S) \<or> x \<in> S}"
 
-abbreviation roofed :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" ("RF\<index>")
+abbreviation roofed :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" (\<open>RF\<index>\<close>)
 where "roofed \<Gamma> \<equiv> roofed_gen \<Gamma> (B \<Gamma>)"
 
-abbreviation roofed_network :: "('v, 'more) network_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" ("RF\<^sup>N\<index>")
+abbreviation roofed_network :: "('v, 'more) network_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" (\<open>RF\<^sup>N\<index>\<close>)
 where "roofed_network \<Delta> \<equiv> roofed_gen \<Delta> {sink \<Delta>}"
 
 lemma roofedI [intro?]:
@@ -417,7 +417,7 @@ proof
   qed
 qed(blast intro: roofed_greaterI separating_weakening)
 
-definition roofed_circ :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" ("RF\<^sup>\<circ>\<index>")
+definition roofed_circ :: "('v, 'more) web_scheme \<Rightarrow> 'v set \<Rightarrow> 'v set" (\<open>RF\<^sup>\<circ>\<index>\<close>)
 where "roofed_circ \<Gamma> S = roofed \<Gamma> S - \<E>\<^bsub>\<Gamma>\<^esub> S"
 
 lemma roofed_circI: fixes \<Gamma> (structure) shows
@@ -1245,7 +1245,7 @@ using assms by(induction)(auto intro: rtrancl_path.intros simp add: roofed_circ_
 definition restrict_current :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current \<Rightarrow> 'v current"
 where "restrict_current \<Gamma> f g = (\<lambda>(x, y). g (x, y) * indicator (- RF\<^sup>\<circ>\<^bsub>\<Gamma>\<^esub> (TER\<^bsub>\<Gamma>\<^esub> f)) x * indicator (- RF\<^bsub>\<Gamma>\<^esub> (TER\<^bsub>\<Gamma>\<^esub> f)) y)"
 
-abbreviation restrict_curr :: "'v current \<Rightarrow> ('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current" ("_ \<upharpoonleft> _ '/ _" [100, 0, 100] 100)
+abbreviation restrict_curr :: "'v current \<Rightarrow> ('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current" (\<open>_ \<upharpoonleft> _ '/ _\<close> [100, 0, 100] 100)
 where "restrict_curr g \<Gamma> f \<equiv> restrict_current \<Gamma> f g"
 
 lemma restrict_current_simps [simp]: fixes \<Gamma> (structure) shows
@@ -1865,7 +1865,7 @@ end
 
 subsection \<open>Subtraction of a wave\<close>
 
-definition minus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme" (infixl "\<ominus>" 65) \<comment> \<open>Definition 6.6\<close>
+definition minus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme" (infixl \<open>\<ominus>\<close> 65) \<comment> \<open>Definition 6.6\<close>
 where "\<Gamma> \<ominus> f = \<Gamma>\<lparr>weight := \<lambda>x. if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT f x else weight \<Gamma> x + d_OUT f x - d_IN f x\<rparr>"
 
 lemma minus_web_sel [simp]:

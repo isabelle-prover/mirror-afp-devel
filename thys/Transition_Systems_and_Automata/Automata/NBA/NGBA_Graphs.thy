@@ -6,7 +6,7 @@ imports
   CAVA_Automata.Automata_Impl
 begin
 
-  no_notation build (infixr "##" 65)
+  no_notation build (infixr \<open>##\<close> 65)
 
   subsection \<open>Regular Graphs\<close>
 

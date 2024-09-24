@@ -6,7 +6,7 @@ begin
 
 subsection "Reverse substitution preserves denotation"
   
-fun join :: "val \<Rightarrow> val \<Rightarrow> val option" (infix "\<squnion>" 60) where
+fun join :: "val \<Rightarrow> val \<Rightarrow> val option" (infix \<open>\<squnion>\<close> 60) where
   "(VNat n) \<squnion> (VNat n') = (if n = n' then Some (VNat n) else None)" |
   "(VFun f) \<squnion> (VFun f') = Some (VFun (f |\<union>| f'))" |
   "v \<squnion> v' = None"

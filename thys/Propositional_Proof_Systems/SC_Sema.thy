@@ -4,11 +4,11 @@ theory SC_Sema
 imports SC Sema
 begin
 
-definition sequent_semantics :: "'a valuation \<Rightarrow> 'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" ("(_ \<Turnstile> (_ \<Rightarrow>/ _))" [53, 53,53] 53) where
+definition sequent_semantics :: "'a valuation \<Rightarrow> 'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" (\<open>(_ \<Turnstile> (_ \<Rightarrow>/ _))\<close> [53, 53,53] 53) where
 "\<A> \<Turnstile> \<Gamma> \<Rightarrow> \<Delta> \<equiv> (\<forall>\<gamma> \<in># \<Gamma>. \<A> \<Turnstile> \<gamma>) \<longrightarrow> (\<exists>\<delta> \<in># \<Delta>. \<A> \<Turnstile> \<delta>)"
-abbreviation sequent_valid :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" ("(\<Turnstile> (_ \<Rightarrow>/ _))" [53,53] 53) where
+abbreviation sequent_valid :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" (\<open>(\<Turnstile> (_ \<Rightarrow>/ _))\<close> [53,53] 53) where
 "\<Turnstile> \<Gamma> \<Rightarrow> \<Delta> \<equiv> \<forall>A. A \<Turnstile> \<Gamma> \<Rightarrow> \<Delta>"
-abbreviation sequent_nonvalid :: "'a valuation \<Rightarrow> 'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" ("(_ \<not>\<Turnstile> (_ \<Rightarrow>/ _))" [53, 53,53] 53) where
+abbreviation sequent_nonvalid :: "'a valuation \<Rightarrow> 'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" (\<open>(_ \<not>\<Turnstile> (_ \<Rightarrow>/ _))\<close> [53, 53,53] 53) where
 "\<A> \<not>\<Turnstile> \<Gamma> \<Rightarrow> \<Delta> \<equiv> \<not>\<A>\<Turnstile> \<Gamma> \<Rightarrow> \<Delta>"
 
 lemma sequent_intuitonistic_semantics: "\<Turnstile> \<Gamma> \<Rightarrow> {#\<delta>#} \<longleftrightarrow> set_mset \<Gamma> \<TTurnstile> \<delta>"

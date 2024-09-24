@@ -84,11 +84,11 @@ long as it takes a list of assembly instructions as input instead of a specific 
 \null
 \<close>
 
-fun execl :: "instr list \<Rightarrow> config list \<Rightarrow> bool" (infix "\<Turnstile>" 55) where
+fun execl :: "instr list \<Rightarrow> config list \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 55) where
 "P \<Turnstile> cf # cf' # cfs = (P \<turnstile> cf \<rightarrow> cf' \<and> P \<Turnstile> cf' # cfs)" |
 "P \<Turnstile> _ = True"
 
-definition execl_all :: "instr list \<Rightarrow> config list \<Rightarrow> bool" ("(_/ \<Turnstile>/ _\<box>)" 55) where
+definition execl_all :: "instr list \<Rightarrow> config list \<Rightarrow> bool" (\<open>(_/ \<Turnstile>/ _\<box>)\<close> 55) where
 "P \<Turnstile> cfs\<box> \<equiv> P \<Turnstile> cfs \<and> cfs \<noteq> [] \<and>
   fst (cfs ! 0) = 0 \<and> fst (cfs ! (length cfs - 1)) \<notin> {0..<size P}"
 

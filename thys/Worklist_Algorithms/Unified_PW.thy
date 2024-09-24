@@ -93,7 +93,7 @@ begin
     where "subsumed_elem a M \<equiv> \<exists> a'. a' \<in> M \<and> a \<preceq> a'"
 
   notation
-    subsumed_elem  ("(_/ \<in>'' _)" [51, 51] 50)
+    subsumed_elem  (\<open>(_/ \<in>'' _)\<close> [51, 51] 50)
 
     definition "pw_inv_frontier' passed wait =
       (\<forall> a. a \<in> passed \<longrightarrow>

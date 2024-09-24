@@ -29,12 +29,12 @@ begin
   locale functor_category =
     A: category A +
     B: category B
-  for A :: "'a comp"     (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"     (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"     (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"     (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   begin
 
-    notation A.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
-    notation B.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    notation A.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>\<close>)
+    notation B.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
     type_synonym ('aa, 'bb) arr = "('aa \<Rightarrow> 'bb, 'aa \<Rightarrow> 'bb) concrete_category.arr"
 
@@ -69,9 +69,9 @@ begin
              (\<lambda>F G H \<tau> \<sigma>. vertical_composite.map A B \<sigma> \<tau>)"
       ..
 
-    abbreviation comp      (infixr "\<cdot>" 55)
+    abbreviation comp      (infixr \<open>\<cdot>\<close> 55)
     where "comp \<equiv> COMP"
-    notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma is_category:
     shows "category comp"
@@ -212,14 +212,14 @@ begin
     B: category B +
     A_B: functor_category A B +
     A_BxA: product_category A_B.comp A
-  for A :: "'a comp"          (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"          (infixr "\<cdot>\<^sub>B" 55)
+  for A :: "'a comp"          (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"          (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   begin
 
-    notation A_B.comp         (infixr "\<cdot>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]" 55)
-    notation A_BxA.comp       (infixr "\<cdot>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A" 55)
-    notation A_B.in_hom       ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>")
-    notation A_BxA.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A _\<guillemotright>")
+    notation A_B.comp         (infixr \<open>\<cdot>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<close> 55)
+    notation A_BxA.comp       (infixr \<open>\<cdot>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<close> 55)
+    notation A_B.in_hom       (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>\<close>)
+    notation A_BxA.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A _\<guillemotright>\<close>)
 
     definition map
     where "map Fg \<equiv> if A_BxA.arr Fg then A_B.Map (fst Fg) (snd Fg) else B.null"
@@ -298,9 +298,9 @@ begin
   A1: category A1 +
   A2: category A2 +
   B: category B
-  for A1 :: "'a1 comp"           (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"           (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
-  and B :: "'b comp"             (infixr "\<cdot>\<^sub>B" 55)
+  for A1 :: "'a1 comp"           (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"           (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
+  and B :: "'b comp"             (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   begin
 
     interpretation A1xA2: product_category A1 A2 ..
@@ -308,12 +308,12 @@ begin
     interpretation A2_BxA2: product_category A2_B.comp A2 ..
     interpretation E: evaluation_functor A2 B ..
 
-    notation A1xA2.comp          (infixr "\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation A2_B.comp           (infixr "\<cdot>\<^sub>[\<^sub>A\<^sub>2,\<^sub>B\<^sub>]" 55)
-    notation A2_BxA2.comp        (infixr "\<cdot>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation A1xA2.in_hom        ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
-    notation A2_B.in_hom         ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>")
-    notation A2_BxA2.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
+    notation A1xA2.comp          (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation A2_B.comp           (infixr \<open>\<cdot>\<^sub>[\<^sub>A\<^sub>2,\<^sub>B\<^sub>]\<close> 55)
+    notation A2_BxA2.comp        (infixr \<open>\<cdot>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation A1xA2.in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
+    notation A2_B.in_hom         (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>\<close>)
+    notation A2_BxA2.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
 
     text\<open>
       A proper definition for @{term curry} requires that it be parametrized by
@@ -728,16 +728,16 @@ begin
      A1xA2: product_category A1 A2 +
      A2_B: functor_category A2 B +
      F: binary_functor A1 A2 B F
-  for A1 :: "'a1 comp"         (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"         (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
-  and B :: "'b comp"           (infixr "\<cdot>\<^sub>B" 55)
+  for A1 :: "'a1 comp"         (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"         (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
+  and B :: "'b comp"           (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a1 * 'a2 \<Rightarrow> 'b"
   begin
 
-    notation A1xA2.comp        (infixr "\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation A2_B.comp         (infixr "\<cdot>\<^sub>[\<^sub>A\<^sub>2,\<^sub>B\<^sub>]" 55)
-    notation A1xA2.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
-    notation A2_B.in_hom       ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>")
+    notation A1xA2.comp        (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation A2_B.comp         (infixr \<open>\<cdot>\<^sub>[\<^sub>A\<^sub>2,\<^sub>B\<^sub>]\<close> 55)
+    notation A1xA2.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
+    notation A2_B.in_hom       (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>\<close>)
 
     definition map
     where "map \<equiv> curry F F F"
@@ -764,16 +764,16 @@ begin
      currying A2 A1 B +
      F: binary_functor A1 A2 B F +
      A1_B: functor_category A1 B
-  for A1 :: "'a1 comp"         (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"         (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
-  and B :: "'b comp"           (infixr "\<cdot>\<^sub>B" 55)
+  for A1 :: "'a1 comp"         (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"         (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
+  and B :: "'b comp"           (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a1 * 'a2 \<Rightarrow> 'b"
   begin
 
-    notation A1xA2.comp        (infixr "\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation A1_B.comp         (infixr "\<cdot>\<^sub>[\<^sub>A\<^sub>1,\<^sub>B\<^sub>]" 55)
-    notation A1xA2.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
-    notation A1_B.in_hom       ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>1\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>")
+    notation A1xA2.comp        (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation A1_B.comp         (infixr \<open>\<cdot>\<^sub>[\<^sub>A\<^sub>1,\<^sub>B\<^sub>]\<close> 55)
+    notation A1xA2.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
+    notation A1_B.in_hom       (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>1\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>\<close>)
 
     definition map
     where "map \<equiv> curry F.sym F.sym F.sym"

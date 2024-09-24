@@ -197,8 +197,8 @@ two operations to declare and to provide two overloading definitions for the two
 section\<open>OclAsType\<close>
 subsection\<open>Definition\<close>
 
-consts OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> OclAny" ("(_) .oclAsType'(OclAny')")
-consts OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Person" ("(_) .oclAsType'(Person')")
+consts OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> OclAny" (\<open>(_) .oclAsType'(OclAny')\<close>)
+consts OclAsType\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Person" (\<open>(_) .oclAsType'(Person')\<close>)
 
 definition "OclAsType\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y_\<AA> = (\<lambda>u. \<lfloor>case u of in\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y a \<Rightarrow> a
                                             | in\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n (mk\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n oid a b) \<Rightarrow> mk\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y oid \<lfloor>(a,b)\<rfloor>\<rfloor>)"
@@ -300,8 +300,8 @@ section\<open>OclIsTypeOf\<close>
 
 subsection\<open>Definition\<close>
 
-consts OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsTypeOf'(OclAny')")
-consts OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsTypeOf'(Person')")
+consts OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> Boolean" (\<open>(_).oclIsTypeOf'(OclAny')\<close>)
+consts OclIsTypeOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Boolean" (\<open>(_).oclIsTypeOf'(Person')\<close>)
 
 overloading OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y \<equiv> "OclIsTypeOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: OclAny \<Rightarrow> Boolean"
 begin
@@ -495,8 +495,8 @@ by simp
 section\<open>OclIsKindOf\<close>
 subsection\<open>Definition\<close>
 
-consts OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsKindOf'(OclAny')")
-consts OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Boolean" ("(_).oclIsKindOf'(Person')")
+consts OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: "'\<alpha> \<Rightarrow> Boolean" (\<open>(_).oclIsKindOf'(OclAny')\<close>)
+consts OclIsKindOf\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n :: "'\<alpha> \<Rightarrow> Boolean" (\<open>(_).oclIsKindOf'(Person')\<close>)
 
 overloading OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y \<equiv> "OclIsKindOf\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y :: OclAny \<Rightarrow> Boolean"
 begin
@@ -824,37 +824,37 @@ definition "in_post_state = snd"
 
 definition "reconst_basetype = (\<lambda> convert x. convert x)"
 
-definition dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y> :: "OclAny \<Rightarrow> _"  ("(1(_).any)" 50)
+definition dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y> :: "OclAny \<Rightarrow> _"  (\<open>(1(_).any)\<close> 50)
   where "(X).any = eval_extract X
                      (deref_oid\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y in_post_state
                        (select\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>
                          reconst_basetype))"
 
-definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> :: "Person \<Rightarrow> Person"  ("(1(_).boss)" 50)
+definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S> :: "Person \<Rightarrow> Person"  (\<open>(1(_).boss)\<close> 50)
   where "(X).boss = eval_extract X
                       (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_post_state
                         (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>
                           (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_post_state)))"
 
-definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y> :: "Person \<Rightarrow> Integer"  ("(1(_).salary)" 50)
+definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y> :: "Person \<Rightarrow> Integer"  (\<open>(1(_).salary)\<close> 50)
   where "(X).salary = eval_extract X
                         (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_post_state
                           (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>
                             reconst_basetype))"
 
-definition dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre :: "OclAny \<Rightarrow> _"  ("(1(_).any@pre)" 50)
+definition dot\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>_at_pre :: "OclAny \<Rightarrow> _"  (\<open>(1(_).any@pre)\<close> 50)
   where "(X).any@pre = eval_extract X
                          (deref_oid\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y in_pre_state
                            (select\<^sub>O\<^sub>c\<^sub>l\<^sub>A\<^sub>n\<^sub>y\<A>\<N>\<Y>
                              reconst_basetype))"
 
-definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre:: "Person \<Rightarrow> Person"  ("(1(_).boss@pre)" 50)
+definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>_at_pre:: "Person \<Rightarrow> Person"  (\<open>(1(_).boss@pre)\<close> 50)
   where "(X).boss@pre = eval_extract X
                           (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_pre_state
                             (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<B>\<O>\<S>\<S>
                               (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_pre_state)))"
 
-definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre:: "Person \<Rightarrow> Integer"  ("(1(_).salary@pre)" 50)
+definition dot\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>_at_pre:: "Person \<Rightarrow> Integer"  (\<open>(1(_).salary@pre)\<close> 50)
   where "(X).salary@pre = eval_extract X
                             (deref_oid\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n in_pre_state
                               (select\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<S>\<A>\<L>\<A>\<R>\<Y>
@@ -982,14 +982,14 @@ The example we are defining in this section comes from the figure~\ref{fig:edm1_
 
 text_raw\<open>\isatagafp\<close>
 
-definition OclInt1000 ("\<one>\<zero>\<zero>\<zero>") where "OclInt1000 = (\<lambda> _ . \<lfloor>\<lfloor>1000\<rfloor>\<rfloor>)"
-definition OclInt1200 ("\<one>\<two>\<zero>\<zero>") where "OclInt1200 = (\<lambda> _ . \<lfloor>\<lfloor>1200\<rfloor>\<rfloor>)"
-definition OclInt1300 ("\<one>\<three>\<zero>\<zero>") where "OclInt1300 = (\<lambda> _ . \<lfloor>\<lfloor>1300\<rfloor>\<rfloor>)"
-definition OclInt1800 ("\<one>\<eight>\<zero>\<zero>") where "OclInt1800 = (\<lambda> _ . \<lfloor>\<lfloor>1800\<rfloor>\<rfloor>)"
-definition OclInt2600 ("\<two>\<six>\<zero>\<zero>") where "OclInt2600 = (\<lambda> _ . \<lfloor>\<lfloor>2600\<rfloor>\<rfloor>)"
-definition OclInt2900 ("\<two>\<nine>\<zero>\<zero>") where "OclInt2900 = (\<lambda> _ . \<lfloor>\<lfloor>2900\<rfloor>\<rfloor>)"
-definition OclInt3200 ("\<three>\<two>\<zero>\<zero>") where "OclInt3200 = (\<lambda> _ . \<lfloor>\<lfloor>3200\<rfloor>\<rfloor>)"
-definition OclInt3500 ("\<three>\<five>\<zero>\<zero>") where "OclInt3500 = (\<lambda> _ . \<lfloor>\<lfloor>3500\<rfloor>\<rfloor>)"
+definition OclInt1000 (\<open>\<one>\<zero>\<zero>\<zero>\<close>) where "OclInt1000 = (\<lambda> _ . \<lfloor>\<lfloor>1000\<rfloor>\<rfloor>)"
+definition OclInt1200 (\<open>\<one>\<two>\<zero>\<zero>\<close>) where "OclInt1200 = (\<lambda> _ . \<lfloor>\<lfloor>1200\<rfloor>\<rfloor>)"
+definition OclInt1300 (\<open>\<one>\<three>\<zero>\<zero>\<close>) where "OclInt1300 = (\<lambda> _ . \<lfloor>\<lfloor>1300\<rfloor>\<rfloor>)"
+definition OclInt1800 (\<open>\<one>\<eight>\<zero>\<zero>\<close>) where "OclInt1800 = (\<lambda> _ . \<lfloor>\<lfloor>1800\<rfloor>\<rfloor>)"
+definition OclInt2600 (\<open>\<two>\<six>\<zero>\<zero>\<close>) where "OclInt2600 = (\<lambda> _ . \<lfloor>\<lfloor>2600\<rfloor>\<rfloor>)"
+definition OclInt2900 (\<open>\<two>\<nine>\<zero>\<zero>\<close>) where "OclInt2900 = (\<lambda> _ . \<lfloor>\<lfloor>2900\<rfloor>\<rfloor>)"
+definition OclInt3200 (\<open>\<three>\<two>\<zero>\<zero>\<close>) where "OclInt3200 = (\<lambda> _ . \<lfloor>\<lfloor>3200\<rfloor>\<rfloor>)"
+definition OclInt3500 (\<open>\<three>\<five>\<zero>\<zero>\<close>) where "OclInt3500 = (\<lambda> _ . \<lfloor>\<lfloor>3500\<rfloor>\<rfloor>)"
 
 definition "oid0 \<equiv> 0"
 definition "oid1 \<equiv> 1"

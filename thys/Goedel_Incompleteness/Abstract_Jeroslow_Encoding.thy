@@ -26,7 +26,7 @@ and num
 fixes
 (*************************************)
 (* Numeric formulas are assumed to be encoded as numerals: *)
-enc :: "'fmla \<Rightarrow> 'trm" ("\<langle>_\<rangle>")
+enc :: "'fmla \<Rightarrow> 'trm" (\<open>\<langle>_\<rangle>\<close>)
 assumes
 enc[simp,intro!]: "\<And> \<phi>. \<phi> \<in> fmla \<Longrightarrow> enc \<phi> \<in> num"
 begin
@@ -51,7 +51,7 @@ for
 var :: "'var set" and trm :: "'trm set" and fmla :: "'fmla set"
 and Var FvarsT substT Fvars subst
 and num
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 +
 \<comment> \<open>Abstract (unspeficied) notion of unary "computable" function
 between numerals, which are encoded as numerals. They
@@ -95,7 +95,7 @@ and num
 fixes
 Ops ::  "('trm \<Rightarrow> 'trm) set"
 and
-enc :: "('trm \<Rightarrow> 'trm) \<Rightarrow> 'trm" ("\<langle>_\<rangle>")
+enc :: "('trm \<Rightarrow> 'trm) \<Rightarrow> 'trm" (\<open>\<langle>_\<rangle>\<close>)
 assumes
 Ops[simp,intro!]: "\<And>f t. f \<in> Ops \<Longrightarrow> t \<in> trm \<Longrightarrow> f t \<in> trm"
 and
@@ -129,7 +129,7 @@ and Var FvarsT substT Fvars subst
 and num
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 +
 fixes P :: 'fmla
 assumes

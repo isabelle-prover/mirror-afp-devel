@@ -190,7 +190,7 @@ onto_morphism (acm) to elsevier
 text\<open>Here is a more basic, but equivalent definition for the other way round:\<close>
 
 definition elsevier_to_acm_morphism :: "elsevier_org \<Rightarrow> acm_org"
-          ("_ \<langle>acm\<rangle>\<^sub>e\<^sub>l\<^sub>s\<^sub>e\<^sub>v\<^sub>i\<^sub>e\<^sub>r" [1000]999)
+          (\<open>_ \<langle>acm\<rangle>\<^sub>e\<^sub>l\<^sub>s\<^sub>e\<^sub>v\<^sub>i\<^sub>e\<^sub>r\<close> [1000]999)
           where "\<sigma> \<langle>acm\<rangle>\<^sub>e\<^sub>l\<^sub>s\<^sub>e\<^sub>v\<^sub>i\<^sub>e\<^sub>r = \<lparr> acm_org.tag_attribute = 1::int,
                                    acm_org.position = ''no position'',
                                    acm_org.institution = organization \<sigma>,
@@ -318,19 +318,19 @@ the presentation of them) is very different. Besides, morphisms functions can be
 (\<^ie> surjective), ``embedding'' (\<^ie> injective) or even ``one-to-one'' ((\<^ie> bijective).\<close>
 
 definition Item_to_Resource_morphism :: "Item \<Rightarrow> Resource"
-          ("_ \<langle>Resource\<rangle>\<^sub>I\<^sub>t\<^sub>e\<^sub>m" [1000]999)
+          (\<open>_ \<langle>Resource\<rangle>\<^sub>I\<^sub>t\<^sub>e\<^sub>m\<close> [1000]999)
           where "  \<sigma> \<langle>Resource\<rangle>\<^sub>I\<^sub>t\<^sub>e\<^sub>m = 
                                    \<lparr> Resource.tag_attribute = 1::int ,
                                     Resource.name = name \<sigma> \<rparr>" 
 
 definition Product_to_Resource_morphism :: "Product \<Rightarrow> Resource"
-           ("_ \<langle>Resource\<rangle>\<^sub>P\<^sub>r\<^sub>o\<^sub>d\<^sub>u\<^sub>c\<^sub>t" [1000]999)
+           (\<open>_ \<langle>Resource\<rangle>\<^sub>P\<^sub>r\<^sub>o\<^sub>d\<^sub>u\<^sub>c\<^sub>t\<close> [1000]999)
            where "  \<sigma> \<langle>Resource\<rangle>\<^sub>P\<^sub>r\<^sub>o\<^sub>d\<^sub>u\<^sub>c\<^sub>t = 
                                 \<lparr> Resource.tag_attribute = 2::int ,
                                   Resource.name = name \<sigma> \<rparr>" 
 
 definition Computer_Software_to_Software_morphism :: "Computer_Software \<Rightarrow> Software" 
-             ("_ \<langle>Software\<rangle>\<^sub>S\<^sub>o\<^sub>f\<^sub>t\<^sub>C\<^sub>m\<^sub>p" [1000]999)
+             (\<open>_ \<langle>Software\<rangle>\<^sub>S\<^sub>o\<^sub>f\<^sub>t\<^sub>C\<^sub>m\<^sub>p\<close> [1000]999)
              where "\<sigma> \<langle>Software\<rangle>\<^sub>S\<^sub>o\<^sub>f\<^sub>t\<^sub>C\<^sub>m\<^sub>p = 
                                 \<lparr> Resource.tag_attribute = 3::int ,
                                   Resource.name = name \<sigma> ,
@@ -339,7 +339,7 @@ definition Computer_Software_to_Software_morphism :: "Computer_Software \<Righta
                                   Software.version = version \<sigma> \<rparr>"
 
 definition Electronic_Component_to_Component_morphism :: "Electronic_Component \<Rightarrow> Component" 
-             ("_ \<langle>Component\<rangle>\<^sub>E\<^sub>l\<^sub>e\<^sub>c\<^sub>C\<^sub>m\<^sub>p" [1000]999)
+             (\<open>_ \<langle>Component\<rangle>\<^sub>E\<^sub>l\<^sub>e\<^sub>c\<^sub>C\<^sub>m\<^sub>p\<close> [1000]999)
              where "\<sigma> \<langle>Component\<rangle>\<^sub>E\<^sub>l\<^sub>e\<^sub>c\<^sub>C\<^sub>m\<^sub>p = 
                                 \<lparr> Resource.tag_attribute = 4::int ,
                                   Resource.name = name \<sigma> ,
@@ -348,7 +348,7 @@ definition Electronic_Component_to_Component_morphism :: "Electronic_Component \
                                   Component.mass = mass  \<sigma> \<rparr>"
 
 definition Monitor_to_Hardware_morphism :: "Monitor \<Rightarrow> Hardware"
-           ("_ \<langle>Hardware\<rangle>\<^sub>C\<^sub>o\<^sub>m\<^sub>p\<^sub>u\<^sub>t\<^sub>e\<^sub>r\<^sub>H\<^sub>a\<^sub>r\<^sub>d\<^sub>w\<^sub>a\<^sub>r\<^sub>e" [1000]999)
+           (\<open>_ \<langle>Hardware\<rangle>\<^sub>C\<^sub>o\<^sub>m\<^sub>p\<^sub>u\<^sub>t\<^sub>e\<^sub>r\<^sub>H\<^sub>a\<^sub>r\<^sub>d\<^sub>w\<^sub>a\<^sub>r\<^sub>e\<close> [1000]999)
            where "\<sigma> \<langle>Hardware\<rangle>\<^sub>C\<^sub>o\<^sub>m\<^sub>p\<^sub>u\<^sub>t\<^sub>e\<^sub>r\<^sub>H\<^sub>a\<^sub>r\<^sub>d\<^sub>w\<^sub>a\<^sub>r\<^sub>e =
                   \<lparr>  Resource.tag_attribute = 5::int ,
                      Resource.name = name \<sigma> ,
@@ -390,10 +390,10 @@ subsection\<open>Proving Monitor-Refinements\<close>
 
 (*<*)
 (* switch on regexp syntax *)
-notation Star  ("\<lbrace>(_)\<rbrace>\<^sup>*" [0]100)
-notation Plus  (infixr "||" 55)
-notation Times (infixr "~~" 60)
-notation Atom  ("\<lfloor>_\<rfloor>" 65)
+notation Star  (\<open>\<lbrace>(_)\<rbrace>\<^sup>*\<close> [0]100)
+notation Plus  (infixr \<open>||\<close> 55)
+notation Times (infixr \<open>~~\<close> 60)
+notation Atom  (\<open>\<lfloor>_\<rfloor>\<close> 65)
 (*>*)
 
 
@@ -442,10 +442,10 @@ of the above language refinement is quasi automatic. This proof is also part of
 (*<*)
 
 (* switch off regexp syntax *)
-no_notation Star  ("\<lbrace>(_)\<rbrace>\<^sup>*" [0]100)
-no_notation Plus  (infixr "||" 55)
-no_notation Times (infixr "~~" 60)
-no_notation Atom  ("\<lfloor>_\<rfloor>" 65)
+no_notation Star  (\<open>\<lbrace>(_)\<rbrace>\<^sup>*\<close> [0]100)
+no_notation Plus  (infixr \<open>||\<close> 55)
+no_notation Times (infixr \<open>~~\<close> 60)
+no_notation Atom  (\<open>\<lfloor>_\<rfloor>\<close> 65)
 
 end
 (*>*) 

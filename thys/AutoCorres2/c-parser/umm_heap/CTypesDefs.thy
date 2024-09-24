@@ -435,7 +435,7 @@ where
   "field_size t n \<equiv> size_td (the (field_ti t n))"
 
 definition (in c_type)
-  field_lvalue :: "'a ptr \<Rightarrow> qualified_field_name \<Rightarrow> addr" ("&'(_\<rightarrow>_')")
+  field_lvalue :: "'a ptr \<Rightarrow> qualified_field_name \<Rightarrow> addr" (\<open>&'(_\<rightarrow>_')\<close>)
 where
   "&(p\<rightarrow>f) \<equiv> ptr_val (p::'a ptr) + of_nat (field_offset TYPE('a) f)"
 
@@ -459,7 +459,7 @@ definition (in c_type) zero ::"'a" where
 hide_const (open) zero \<comment> \<open>mandatory qualifier: \<^const>\<open>c_type_class.zero\<close>\<close>
 
 syntax
-  "_zero" :: "type \<Rightarrow> logic" ("(1ZERO/(1'(_')))")
+  "_zero" :: "type \<Rightarrow> logic" (\<open>(1ZERO/(1'(_')))\<close>)
 syntax_consts
   "_zero" == c_type_class.zero
 translations
@@ -556,7 +556,7 @@ lemma (in c_type) align_td_wo_align_le_align_of:
   by (simp add: align_of_def)
 
 definition (in c_type)
-  ptr_add :: "'a ptr \<Rightarrow> int \<Rightarrow> 'a ptr" (infixl "+\<^sub>p" 65)
+  ptr_add :: "'a ptr \<Rightarrow> int \<Rightarrow> 'a ptr" (infixl \<open>+\<^sub>p\<close> 65)
 where
   "ptr_add (a :: 'a ptr) w \<equiv>
      Ptr (ptr_val a + of_int w * of_nat (size_of (TYPE('a))))"
@@ -567,7 +567,7 @@ lemma (in c_type) ptr_add_def':
   by (cases p, auto simp: ptr_add_def scast_id)
 
 definition (in c_type)
-  ptr_sub :: "'a ptr \<Rightarrow> 'a ptr \<Rightarrow> addr_bitsize signed word" (infixl "-\<^sub>p" 65)
+  ptr_sub :: "'a ptr \<Rightarrow> 'a ptr \<Rightarrow> addr_bitsize signed word" (infixl \<open>-\<^sub>p\<close> 65)
 where
   "ptr_sub (a :: 'a ptr) p \<equiv>
      ucast (ptr_val a - ptr_val p) div of_nat (size_of (TYPE('a)))"

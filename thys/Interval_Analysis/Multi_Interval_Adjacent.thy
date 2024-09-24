@@ -370,7 +370,7 @@ end
 
 subsection \<open>Membership\<close>
 
-abbreviation (in preorder) in_minterval_adj ("(_/ \<in>\<^sub>a\<^sub>d\<^sub>j _)" [51, 51] 50)
+abbreviation (in preorder) in_minterval_adj (\<open>(_/ \<in>\<^sub>a\<^sub>d\<^sub>j _)\<close> [51, 51] 50)
   where "in_minterval_adj x X \<equiv> x \<in> set_of_adj X"
 
 lemma in_minterval_adj_to_minterval_adj[intro!]: "a \<in>\<^sub>a\<^sub>d\<^sub>j minterval_adj_of a"

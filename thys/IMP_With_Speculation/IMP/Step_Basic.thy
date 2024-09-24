@@ -48,7 +48,7 @@ The semantics operate on input streams and memories which are consumed and updat
 This emulates standard (and expected) execution of the commands defined. Since no speculation is captured in this basic semantics, the Fence command the same as SKIP\<close>
 
 inductive
-stepB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>B" 55)
+stepB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>B\<close> 55)
 where
 Seq_Start_Skip_Fence: 
 "pc < endPC \<Longrightarrow> prog!pc \<in> {Start, Skip, Fence} \<Longrightarrow> 
@@ -124,7 +124,7 @@ lemmas stepB_induct = stepB.induct[split_format(complete)]
 (* thm stepB_induct *)
 
 abbreviation
-  stepsB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>B*" 55)
+  stepsB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>B*\<close> 55)
   where "x \<rightarrow>B* y == star stepB x y"
 
 declare stepB.intros[simp,intro]

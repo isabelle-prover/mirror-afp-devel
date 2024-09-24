@@ -15,9 +15,9 @@ HOL, prefixed with \<open>s\<close>.
 
 \<close>
 
-domain 'a slist ("[:_:]") =
-  snil ("[::]")
-| scons (shead :: "'a") (stail :: "'a slist") (infixr ":#" 65)
+domain 'a slist (\<open>[:_:]\<close>) =
+  snil (\<open>[::]\<close>)
+| scons (shead :: "'a") (stail :: "'a slist") (infixr \<open>:#\<close> 65)
 
 lemma scons_strict[simp]: "scons\<cdot>\<bottom> = \<bottom>"
 by (clarsimp simp: cfun_eq_iff)
@@ -59,18 +59,18 @@ Section syntax for @{const \<open>scons\<close>} ala Haskell.
 \<close>
 
 syntax
-  "_scons_section" :: "'a \<rightarrow> [:'a:] \<rightarrow> [:'a:]" ("'(:#')")
-  "_scons_section_left" :: "'a \<Rightarrow> [:'a:] \<rightarrow> [:'a:]" ("'(_:#')")
+  "_scons_section" :: "'a \<rightarrow> [:'a:] \<rightarrow> [:'a:]" (\<open>'(:#')\<close>)
+  "_scons_section_left" :: "'a \<Rightarrow> [:'a:] \<rightarrow> [:'a:]" (\<open>'(_:#')\<close>)
 syntax_consts
   "_scons_section_left" == scons
 translations
   "(x:#)" == "(CONST Rep_cfun) (CONST scons) x"
 
-abbreviation scons_section_right :: "[:'a:] \<Rightarrow> 'a \<rightarrow> [:'a:]" ("'(:#_')") where
+abbreviation scons_section_right :: "[:'a:] \<Rightarrow> 'a \<rightarrow> [:'a:]" (\<open>'(:#_')\<close>) where
   "(:#xs) \<equiv> \<Lambda> x. x :# xs"
 
 syntax
-  "_strict_list" :: "args \<Rightarrow> [:'a:]" ("[:(_):]")
+  "_strict_list" :: "args \<Rightarrow> [:'a:]" (\<open>[:(_):]\<close>)
 syntax_consts
   "_strict_list" == scons
 translations
@@ -310,7 +310,7 @@ fixrec sappend :: "[:'a:] \<rightarrow> [:'a:] \<rightarrow> [:'a:]" where
   "sappend\<cdot>[::]\<cdot>ys = ys"
 | "\<lbrakk>x \<noteq> \<bottom>; xs \<noteq> \<bottom>\<rbrakk> \<Longrightarrow> sappend\<cdot>(x :# xs)\<cdot>ys = x :# sappend\<cdot>xs\<cdot>ys"
 
-abbreviation sappend_syn :: "'a slist \<Rightarrow> 'a slist \<Rightarrow> 'a slist" (infixr ":@" 65) where
+abbreviation sappend_syn :: "'a slist \<Rightarrow> 'a slist \<Rightarrow> 'a slist" (infixr \<open>:@\<close> 65) where
   "xs :@ ys \<equiv> sappend\<cdot>xs\<cdot>ys"
 
 lemma sappend_strict[simp]: "sappend\<cdot>\<bottom> = \<bottom>"

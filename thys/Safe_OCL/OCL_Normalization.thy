@@ -84,9 +84,9 @@ definition "new_vname \<equiv> String.implode \<circ> string_of_nat \<circ> fcar
 
 inductive normalize
     :: "('a :: ocl_object_model) type env \<Rightarrow> 'a expr \<Rightarrow> 'a expr \<Rightarrow> bool"
-    ("_ \<turnstile> _ \<Rrightarrow>/ _" [51,51,51] 50) and
-    normalize_call ("_ \<turnstile>\<^sub>C _ \<Rrightarrow>/ _" [51,51,51] 50) and
-    normalize_expr_list ("_ \<turnstile>\<^sub>L _ \<Rrightarrow>/ _" [51,51,51] 50)
+    (\<open>_ \<turnstile> _ \<Rrightarrow>/ _\<close> [51,51,51] 50) and
+    normalize_call (\<open>_ \<turnstile>\<^sub>C _ \<Rrightarrow>/ _\<close> [51,51,51] 50) and
+    normalize_expr_list (\<open>_ \<turnstile>\<^sub>L _ \<Rrightarrow>/ _\<close> [51,51,51] 50)
     where
  LiteralN:
   "\<Gamma> \<turnstile> Literal a \<Rrightarrow> Literal a"
@@ -412,7 +412,7 @@ section \<open>Normalized Expressions Typing\<close>
 text \<open>
   Here is the final typing rules.\<close>
 
-inductive nf_typing ("(1_/ \<turnstile>/ (_ :/ _))" [51,51,51] 50) where
+inductive nf_typing (\<open>(1_/ \<turnstile>/ (_ :/ _))\<close> [51,51,51] 50) where
   "\<Gamma> \<turnstile> expr \<Rrightarrow> expr\<^sub>N \<Longrightarrow>
    \<Gamma> \<turnstile>\<^sub>E expr\<^sub>N : \<tau> \<Longrightarrow>
    \<Gamma> \<turnstile> expr : \<tau>"

@@ -45,9 +45,9 @@ Lsuc :: "(Label set) \<Rightarrow> Label \<Rightarrow> Label"
 Lmin :: "(Label set) \<Rightarrow> Label"
 Lmax :: "(Label set) \<Rightarrow> Label"
 
-definition Llt :: "[Label, Label] \<Rightarrow> bool" (infixl "<" 50) where
+definition Llt :: "[Label, Label] \<Rightarrow> bool" (infixl \<open><\<close> 50) where
   "Llt a b == Rep_Label a < Rep_Label b"
-definition Lle :: "[Label, Label] \<Rightarrow> bool" (infixl "\<le>" 50) where
+definition Lle :: "[Label, Label] \<Rightarrow> bool" (infixl \<open>\<le>\<close> 50) where
   "Lle a b == Rep_Label a \<le> Rep_Label b"
 
 definition Ltake_eq :: "[Label set, (Label \<rightharpoonup> 'a),  (Label \<rightharpoonup> 'a)] \<Rightarrow> bool"
@@ -253,7 +253,7 @@ lemma FV_option_lem: "\<forall>l\<in>dom f. FV (the(f l)) = FVoption (f l)"
 subsubsection \<open>Term opening\<close>
 primrec
   sopen        :: "[nat, sterm, sterm, sterm] \<Rightarrow> sterm" 
-  ("{_ \<rightarrow> [_,_]} _" [0, 0, 0, 300] 300)
+  (\<open>{_ \<rightarrow> [_,_]} _\<close> [0, 0, 0, 300] 300)
 and
   sopen_option :: "[nat, sterm, sterm, sterm option] \<Rightarrow> sterm option"
 where
@@ -267,7 +267,7 @@ where
 | sopen_None: "sopen_option k s p None = None"
 | sopen_Some: "sopen_option k s p (Some t) = Some ({k \<rightarrow> [s,p]}t)"
 
-definition openz :: "[sterm, sterm, sterm] \<Rightarrow> sterm" ("(_)\<^bsup>[_,_]\<^esup>" [50, 0, 0] 50) where
+definition openz :: "[sterm, sterm, sterm] \<Rightarrow> sterm" (\<open>(_)\<^bsup>[_,_]\<^esup>\<close> [50, 0, 0] 50) where
  "t\<^bsup>[s,p]\<^esup> = {0 \<rightarrow> [s,p]}t"
 
 lemma sopen_eq_Fvar:
@@ -672,7 +672,7 @@ qed
 subsubsection \<open>Variable closing\<close>
 primrec
  sclose        :: "[nat, fVariable, fVariable, sterm] \<Rightarrow> sterm" 
- ("{_ \<leftarrow> [_,_]} _" [0, 0, 0, 300] 300)
+ (\<open>{_ \<leftarrow> [_,_]} _\<close> [0, 0, 0, 300] 300)
 and
  sclose_option :: "[nat, fVariable, fVariable, sterm option] \<Rightarrow> sterm option"
 where
@@ -687,7 +687,7 @@ where
 | sclose_None: "sclose_option k s p None = None"
 | sclose_Some: "sclose_option k s p (Some t) = Some ({k \<leftarrow> [s,p]}t)"
 
-definition closez :: "[fVariable, fVariable, sterm] \<Rightarrow> sterm" ("\<sigma>[_,_] _" [0, 0, 300]) where
+definition closez :: "[fVariable, fVariable, sterm] \<Rightarrow> sterm" (\<open>\<sigma>[_,_] _\<close> [0, 0, 300]) where
  "\<sigma>[s,p] t = {0 \<leftarrow> [s,p]}t"
 
 lemma dom_scloseoption_lem[simp]: "dom (\<lambda>l. sclose_option k s t (f l)) = dom f"
@@ -760,7 +760,7 @@ lemma Param_not_in_closed[simp]: "pa \<notin> FV ({n \<leftarrow> [sa,pa]} t)"
 subsubsection \<open>Substitution\<close>
 primrec
  ssubst        :: "[fVariable, sterm, sterm] \<Rightarrow> sterm" 
- ("[_ \<rightarrow> _] _" [0, 0, 300] 300)
+ (\<open>[_ \<rightarrow> _] _\<close> [0, 0, 300] 300)
 and
  ssubst_option :: "[fVariable, sterm, sterm option] \<Rightarrow> sterm option"
 where
@@ -1688,7 +1688,7 @@ proof -
 qed
 
 subsection \<open>Beta-reduction\<close>
-inductive beta :: "[sterm, sterm] \<Rightarrow> bool" (infixl "\<rightarrow>\<^sub>\<beta>" 50)
+inductive beta :: "[sterm, sterm] \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<^sub>\<beta>\<close> 50)
 where
   beta[simp, intro!]      : 
   "\<lbrakk> l \<in> dom f; lc (Obj f T); lc a \<rbrakk> \<Longrightarrow> Call (Obj f T) l a \<rightarrow>\<^sub>\<beta> (the (f l)\<^bsup>[(Obj f T), a]\<^esup>)"
@@ -1713,14 +1713,14 @@ inductive_cases beta_cases [elim!]:
   "Obj s T  \<rightarrow>\<^sub>\<beta> t"
 
 abbreviation
-  beta_reds :: "[sterm, sterm] => bool"  (infixl "->>" 50) where
+  beta_reds :: "[sterm, sterm] => bool"  (infixl \<open>->>\<close> 50) where
   "s ->> t == beta^** s t"
 abbreviation
-  beta_ascii :: "[sterm, sterm] => bool"  (infixl "->" 50) where
+  beta_ascii :: "[sterm, sterm] => bool"  (infixl \<open>->\<close> 50) where
   "s -> t == beta s t"
 
 notation (latex)
-  beta_reds (infixl "\<rightarrow>\<^sub>\<beta>\<^sup>*" 50)
+  beta_reds (infixl \<open>\<rightarrow>\<^sub>\<beta>\<^sup>*\<close> 50)
 
 lemma beta_induct[consumes 1, 
   case_names CallL CallR UpdL UpdR Upd Obj beta Bnd]:

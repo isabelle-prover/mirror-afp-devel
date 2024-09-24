@@ -8,11 +8,11 @@ begin
 
 text \<open> Here we define the usual connectives for classical logic. \<close>
 
-no_notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+no_notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 section \<open> Verum \<close>
 
-definition (in classical_logic) verum :: "'a" ("\<top>")
+definition (in classical_logic) verum :: "'a" (\<open>\<top>\<close>)
   where
     "\<top> = \<bottom> \<rightarrow> \<bottom>"
 
@@ -30,12 +30,12 @@ lemma (in classical_logic) verum_embedding [simp]:
 section \<open> Conjunction \<close>
 
 definition (in classical_logic)
-  conjunction :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<sqinter>" 67)
+  conjunction :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<sqinter>\<close> 67)
   where
     "\<phi> \<sqinter> \<psi> = (\<phi> \<rightarrow> \<psi> \<rightarrow> \<bottom>) \<rightarrow> \<bottom>"
 
 primrec (in classical_logic)
-  arbitrary_conjunction :: "'a list \<Rightarrow> 'a" ("\<Sqinter>")
+  arbitrary_conjunction :: "'a list \<Rightarrow> 'a" (\<open>\<Sqinter>\<close>)
   where
      "\<Sqinter> [] = \<top>"
   |  "\<Sqinter> (\<phi> # \<Phi>) = \<phi> \<sqinter> \<Sqinter> \<Phi>"
@@ -81,7 +81,7 @@ lemma conjunction_semantics [simp]:
 
 section \<open> Biconditional \<close>
 
-definition (in classical_logic) biconditional :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr "\<leftrightarrow>" 75)
+definition (in classical_logic) biconditional :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr \<open>\<leftrightarrow>\<close> 75)
   where
     "\<phi> \<leftrightarrow> \<psi> = (\<phi> \<rightarrow> \<psi>) \<sqinter> (\<psi> \<rightarrow> \<phi>)"
 
@@ -109,7 +109,7 @@ lemma biconditional_semantics [simp]:
 
 section \<open> Negation \<close>
 
-definition (in classical_logic) negation :: "'a \<Rightarrow> 'a"  ("\<sim>")
+definition (in classical_logic) negation :: "'a \<Rightarrow> 'a"  (\<open>\<sim>\<close>)
   where
     "\<sim> \<phi> = \<phi> \<rightarrow> \<bottom>"
 
@@ -136,11 +136,11 @@ lemma negation_semantics [simp]:
 
 section \<open> Disjunction \<close>
 
-definition (in classical_logic) disjunction :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr "\<squnion>" 67)
+definition (in classical_logic) disjunction :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr \<open>\<squnion>\<close> 67)
   where
     "\<phi> \<squnion> \<psi> = (\<phi> \<rightarrow> \<bottom>) \<rightarrow> \<psi>"
 
-primrec (in classical_logic) arbitrary_disjunction :: "'a list \<Rightarrow> 'a" ("\<Squnion>")
+primrec (in classical_logic) arbitrary_disjunction :: "'a list \<Rightarrow> 'a" (\<open>\<Squnion>\<close>)
   where
      "\<Squnion> [] = \<bottom>"
   |  "\<Squnion> (\<phi> # \<Phi>) = \<phi> \<squnion> \<Squnion> \<Phi>"
@@ -194,14 +194,14 @@ lemma disjunction_semantics [simp]:
 
 section \<open> Mutual Exclusion \<close>
 
-primrec (in classical_logic) exclusive :: "'a list \<Rightarrow> 'a" ("\<Coprod>")
+primrec (in classical_logic) exclusive :: "'a list \<Rightarrow> 'a" (\<open>\<Coprod>\<close>)
   where
       "\<Coprod> [] = \<top>"
     | "\<Coprod> (\<phi> # \<Phi>) = \<sim> (\<phi> \<sqinter> \<Squnion> \<Phi>) \<sqinter> \<Coprod> \<Phi>"
 
 section \<open> Subtraction \<close>
 
-definition (in classical_logic) subtraction :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<setminus>" 69)
+definition (in classical_logic) subtraction :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<setminus>\<close> 69)
   where "\<phi> \<setminus> \<psi> = \<phi> \<sqinter> \<sim> \<psi>"
 
 lemma (in classical_logic) subtraction_embedding [simp]:
@@ -211,7 +211,7 @@ lemma (in classical_logic) subtraction_embedding [simp]:
 
 section \<open> Negated Lists \<close>
 
-definition (in classical_logic) map_negation :: "'a list \<Rightarrow> 'a list" ("\<^bold>\<sim>")
+definition (in classical_logic) map_negation :: "'a list \<Rightarrow> 'a list" (\<open>\<^bold>\<sim>\<close>)
   where [simp]: "\<^bold>\<sim> \<Phi> \<equiv> map \<sim> \<Phi>"
 
 section \<open> Common (\& Uncommon) Identities \<close>
@@ -1303,6 +1303,6 @@ next
   ultimately show ?case by meson
 qed
 
-notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 end

@@ -14,16 +14,16 @@ text \<open>We create two regular algebra models due to Pratt~\<^cite>\<open>"Pr
         distinguish K1 algebras from K1l and K1r algebras.\<close>
 
 datatype pratt1 = 
-  P1Bot ("\<bottom>\<^sub>1") |
-  P1Nat nat ("[_]\<^sub>1") | 
-  P1Infty ("\<infinity>\<^sub>1") |
-  P1Top ("\<top>\<^sub>1")
+  P1Bot (\<open>\<bottom>\<^sub>1\<close>) |
+  P1Nat nat (\<open>[_]\<^sub>1\<close>) | 
+  P1Infty (\<open>\<infinity>\<^sub>1\<close>) |
+  P1Top (\<open>\<top>\<^sub>1\<close>)
 
 datatype pratt2 = 
-  P2Bot ("\<bottom>\<^sub>2") |
-  P2Nat nat ("[_]\<^sub>2") | 
-  P2Infty ("\<infinity>\<^sub>2") |
-  P2Top ("\<top>\<^sub>2")
+  P2Bot (\<open>\<bottom>\<^sub>2\<close>) |
+  P2Nat nat (\<open>[_]\<^sub>2\<close>) | 
+  P2Infty (\<open>\<infinity>\<^sub>2\<close>) |
+  P2Top (\<open>\<top>\<^sub>2\<close>)
 
 fun pratt1_max where
   "pratt1_max [x]\<^sub>1 [y]\<^sub>1 = [max x y]\<^sub>1" |
@@ -35,7 +35,7 @@ fun pratt1_max where
   "pratt1_max \<top>\<^sub>1 x = \<top>\<^sub>1" |
   "pratt1_max x \<top>\<^sub>1 = \<top>\<^sub>1"
 
-fun pratt1_plus :: "pratt1 \<Rightarrow> pratt1 \<Rightarrow> pratt1" (infixl "+\<^sub>1" 65) where
+fun pratt1_plus :: "pratt1 \<Rightarrow> pratt1 \<Rightarrow> pratt1" (infixl \<open>+\<^sub>1\<close> 65) where
   "[x]\<^sub>1 +\<^sub>1 [y]\<^sub>1 = [x + y]\<^sub>1" |
   "\<bottom>\<^sub>1 +\<^sub>1 x = \<bottom>\<^sub>1" |
   "x +\<^sub>1 \<bottom>\<^sub>1 = \<bottom>\<^sub>1" |
@@ -81,7 +81,7 @@ fun pratt2_max where
   "pratt2_max \<top>\<^sub>2 x = \<top>\<^sub>2" |
   "pratt2_max x \<top>\<^sub>2 = \<top>\<^sub>2"
 
-fun pratt2_plus :: "pratt2 \<Rightarrow> pratt2 \<Rightarrow> pratt2" (infixl "+\<^sub>2" 65) where
+fun pratt2_plus :: "pratt2 \<Rightarrow> pratt2 \<Rightarrow> pratt2" (infixl \<open>+\<^sub>2\<close> 65) where
   "[x]\<^sub>2 +\<^sub>2 [y]\<^sub>2 = [x + y]\<^sub>2" |
   "\<bottom>\<^sub>2 +\<^sub>2 x = \<bottom>\<^sub>2" |
   "x +\<^sub>2 \<bottom>\<^sub>2 = \<bottom>\<^sub>2" |

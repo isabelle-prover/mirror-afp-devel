@@ -16,9 +16,9 @@ thm saturn_fw_def
 text\<open>The Firewall\<close>
 
 text\<open>Infix pretty-printing for @{const MatchAnd} and @{const MatchNot}.\<close>
-abbreviation MatchAndInfix :: "'a match_expr \<Rightarrow> 'a match_expr \<Rightarrow> 'a match_expr" (infixr "MATCHAND" 65) where
+abbreviation MatchAndInfix :: "'a match_expr \<Rightarrow> 'a match_expr \<Rightarrow> 'a match_expr" (infixr \<open>MATCHAND\<close> 65) where
   "MatchAndInfix m1 m2 \<equiv> MatchAnd m1 m2"
-abbreviation MatchNotPrefix :: "'a match_expr \<Rightarrow> 'a match_expr" ("\<not> \<langle>_\<rangle>" 66) where
+abbreviation MatchNotPrefix :: "'a match_expr \<Rightarrow> 'a match_expr" (\<open>\<not> \<langle>_\<rangle>\<close> 66) where
   "MatchNotPrefix m \<equiv> MatchNot m"
 (*This syntax can be pretty confusing when mixing it with other theories. Do not use outside this example!*)
 

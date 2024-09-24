@@ -31,14 +31,14 @@ qualified abbreviation "dec l \<equiv> sub l 1"
 end
 
 bundle lens_state_notation begin
-  notation zoom (infixr "\<rhd>" 80)
-  notation modify (infix "%=" 80)
-  notation assign (infix ".=" 80)
-  notation Lens_State.add (infix "+=" 80)
-  notation Lens_State.sub (infix "-=" 80)
-  notation Lens_State.mul (infix "*=" 80)
-  notation Lens_State.inc ("_ ++")
-  notation Lens_State.dec ("_ --")
+  notation zoom (infixr \<open>\<rhd>\<close> 80)
+  notation modify (infix \<open>%=\<close> 80)
+  notation assign (infix \<open>.=\<close> 80)
+  notation Lens_State.add (infix \<open>+=\<close> 80)
+  notation Lens_State.sub (infix \<open>-=\<close> 80)
+  notation Lens_State.mul (infix \<open>*=\<close> 80)
+  notation Lens_State.inc (\<open>_ ++\<close>)
+  notation Lens_State.dec (\<open>_ --\<close>)
 end
 
 context includes lens_state_notation begin

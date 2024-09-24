@@ -225,7 +225,7 @@ lemma VLambda_vconst_on: "(\<lambda>a\<in>\<^sub>\<circ>A. c) = vconst_on A c" b
 
 subsubsection\<open>Composition\<close>
 
-definition vcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixr "\<circ>\<^sub>\<circ>" 75)
+definition vcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<circ>\<^sub>\<circ>\<close> 75)
   where "r \<circ>\<^sub>\<circ> s = set {\<langle>a, c\<rangle> | a c. \<exists>b. \<langle>a, b\<rangle> \<in>\<^sub>\<circ> s \<and> \<langle>b, c\<rangle> \<in>\<^sub>\<circ> r}"
 notation vcomp (infixr \<open>\<circ>\<^sub>\<circ>\<close> 75)
 

@@ -35,7 +35,7 @@ lemma first_ind_nth:
 subsection \<open> Enumeration Indices \<close>
 
 syntax
-  "_ENUM" :: "type \<Rightarrow> logic" ("ENUM'(_')")
+  "_ENUM" :: "type \<Rightarrow> logic" (\<open>ENUM'(_')\<close>)
 
 syntax_consts
   "_ENUM" == Enum.enum

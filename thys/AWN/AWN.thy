@@ -45,51 +45,51 @@ datatype (dead 's, dead 'm, dead 'p, 'l) seqp =
 
 syntax
   "_guard"    :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(\<open>unbreakable\<close>\<langle>_\<rangle>)//_" [0, 60] 60)
+                 (\<open>(\<open>unbreakable\<close>\<langle>_\<rangle>)//_\<close> [0, 60] 60)
   "_lguard"   :: "['a, 'a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("{_}(\<open>unbreakable\<close>\<langle>_\<rangle>)//_" [0, 0, 60] 60)
+                 (\<open>{_}(\<open>unbreakable\<close>\<langle>_\<rangle>)//_\<close> [0, 0, 60] 60)
   "_ifguard"  :: "[pttrn, bool,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(\<open>unbreakable\<close>\<langle>_. _\<rangle>)//_" [0, 0, 60] 60)
+                 (\<open>(\<open>unbreakable\<close>\<langle>_. _\<rangle>)//_\<close> [0, 0, 60] 60)
 
   "_bassign"  :: "[pttrn, 'a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(\<open>unbreakable\<close>\<lbrakk>_. _\<rbrakk>)//_" [0, 0, 60] 60)
+                 (\<open>(\<open>unbreakable\<close>\<lbrakk>_. _\<rbrakk>)//_\<close> [0, 0, 60] 60)
   "_lbassign" :: "['a, pttrn, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("{_}(\<open>unbreakable\<close>\<lbrakk>_. _\<rbrakk>)//_" [0, 0, 0, 60] 60)
+                 (\<open>{_}(\<open>unbreakable\<close>\<lbrakk>_. _\<rbrakk>)//_\<close> [0, 0, 0, 60] 60)
 
   "_assign"  :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("((\<open>unbreakable\<close>\<lbrakk>_\<rbrakk>))//_" [0, 60] 60)
+                 (\<open>((\<open>unbreakable\<close>\<lbrakk>_\<rbrakk>))//_\<close> [0, 60] 60)
   "_lassign" :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("({_}(\<open>unbreakable\<close>\<lbrakk>_\<rbrakk>))//_" [0, 0, 60] 60)
+                 (\<open>({_}(\<open>unbreakable\<close>\<lbrakk>_\<rbrakk>))//_\<close> [0, 0, 60] 60)
 
   "_unicast"  :: "['a, 'a,  ('s, 'm, 'p, unit) seqp,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(3unicast'((1(3_),/ (3_))') .//(_)/ (2\<triangleright> _))" [0, 0, 60, 60] 60)
+                 (\<open>(3unicast'((1(3_),/ (3_))') .//(_)/ (2\<triangleright> _))\<close> [0, 0, 60, 60] 60)
   "_lunicast" :: "['a, 'a, 'a, ('s, 'm, 'p, 'a) seqp, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("(3{_}unicast'((1(3_),/ (3_))') .//(_)/ (2\<triangleright> _))" [0, 0, 0, 60, 60] 60)
+                 (\<open>(3{_}unicast'((1(3_),/ (3_))') .//(_)/ (2\<triangleright> _))\<close> [0, 0, 0, 60, 60] 60)
 
   "_bcast"    :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(3broadcast'((1(_))') .)//_" [0, 60] 60)
+                 (\<open>(3broadcast'((1(_))') .)//_\<close> [0, 60] 60)
   "_lbcast"   :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("(3{_}broadcast'((1(_))') .)//_" [0, 0, 60] 60)
+                 (\<open>(3{_}broadcast'((1(_))') .)//_\<close> [0, 0, 60] 60)
 
   "_gcast"    :: "['a, 'a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(3groupcast'((1(_),/ (_))') .)//_" [0, 0, 60] 60)
+                 (\<open>(3groupcast'((1(_),/ (_))') .)//_\<close> [0, 0, 60] 60)
   "_lgcast"   :: "['a, 'a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("(3{_}groupcast'((1(_),/ (_))') .)//_" [0, 0, 0, 60] 60)
+                 (\<open>(3{_}groupcast'((1(_),/ (_))') .)//_\<close> [0, 0, 0, 60] 60)
 
   "_send"     :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(3send'((_)') .)//_" [0, 60] 60)
+                 (\<open>(3send'((_)') .)//_\<close> [0, 60] 60)
   "_lsend"    :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("(3{_}send'((_)') .)//_" [0, 0, 60] 60)
+                 (\<open>(3{_}send'((_)') .)//_\<close> [0, 0, 60] 60)
 
   "_deliver"  :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(3deliver'((_)') .)//_" [0, 60] 60)
+                 (\<open>(3deliver'((_)') .)//_\<close> [0, 60] 60)
   "_ldeliver" :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("(3{_}deliver'((_)') .)//_" [0, 0, 60] 60)
+                 (\<open>(3{_}deliver'((_)') .)//_\<close> [0, 0, 60] 60)
 
   "_receive"  :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(3receive'((_)') .)//_" [0, 60] 60)
+                 (\<open>(3receive'((_)') .)//_\<close> [0, 60] 60)
   "_lreceive" :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("(3{_}receive'((_)') .)//_" [0, 0, 60] 60)
+                 (\<open>(3{_}receive'((_)') .)//_\<close> [0, 0, 60] 60)
 
 syntax_consts
   "_guard" "_lguard" "_ifguard" \<rightleftharpoons> GUARD and
@@ -130,8 +130,8 @@ translations
   "_receive fmsg p"    \<rightleftharpoons> "CONST RECEIVE () fmsg p"
   "_lreceive l fmsg p" \<rightleftharpoons> "CONST RECEIVE l fmsg p"
 
-notation "CHOICE" ("((_)//\<oplus>//(_))" [56, 55] 55)
-     and "CALL"   ("(3call'((3_)'))" [0] 60)
+notation "CHOICE" (\<open>((_)//\<oplus>//(_))\<close> [56, 55] 55)
+     and "CALL"   (\<open>(3call'((3_)'))\<close> [0] 60)
 
 definition not_call :: "('s, 'm, 'p, 'l) seqp \<Rightarrow> bool"
 where "not_call p \<equiv> \<forall>pn. p \<noteq> call(pn)"
@@ -245,7 +245,7 @@ text \<open>
 \<close>
 
 class tau =
-  fixes tau :: "'a" ("\<tau>")
+  fixes tau :: "'a" (\<open>\<tau>\<close>)
 
 subsubsection "Sequential Actions (and related predicates)"
 
@@ -253,11 +253,11 @@ datatype 'm seq_action =
     broadcast 'm
   | groupcast "ip set" 'm
   | unicast ip 'm
-  | notunicast ip           ("\<not>unicast _" [1000] 60)
+  | notunicast ip           (\<open>\<not>unicast _\<close> [1000] 60)
   | send 'm
   | deliver data
   | receive 'm
-  | seq_tau                 ("\<tau>\<^sub>s")
+  | seq_tau                 (\<open>\<tau>\<^sub>s\<close>)
 
 instantiation "seq_action" :: (type) tau
 begin
@@ -356,13 +356,13 @@ type_synonym ('s, 'm, 'p, 'l) seqp_env = "'p \<Rightarrow> ('s, 'm, 'p, 'l) seqp
 subsubsection "Node Actions (and related predicates)"
 
 datatype 'm node_action =
-    node_cast "ip set" 'm             ("_:*cast'(_')"       [200, 200] 200)                                                 
-  | node_deliver ip data              ("_:deliver'(_')"     [200, 200] 200)
-  | node_arrive "ip set" "ip set" 'm  ("_\<not>_:arrive'(_')"    [200, 200, 200] 200)
-  | node_connect ip ip                ("connect'(_, _')"    [200, 200] 200)
-  | node_disconnect ip ip             ("disconnect'(_, _')" [200, 200] 200)
-  | node_newpkt ip data ip            ("_:newpkt'(_, _')"   [200, 200, 200] 200)
-  | node_tau                          ("\<tau>\<^sub>n")
+    node_cast "ip set" 'm             (\<open>_:*cast'(_')\<close>       [200, 200] 200)                                                 
+  | node_deliver ip data              (\<open>_:deliver'(_')\<close>     [200, 200] 200)
+  | node_arrive "ip set" "ip set" 'm  (\<open>_\<not>_:arrive'(_')\<close>    [200, 200, 200] 200)
+  | node_connect ip ip                (\<open>connect'(_, _')\<close>    [200, 200] 200)
+  | node_disconnect ip ip             (\<open>disconnect'(_, _')\<close> [200, 200] 200)
+  | node_newpkt ip data ip            (\<open>_:newpkt'(_, _')\<close>   [200, 200, 200] 200)
+  | node_tau                          (\<open>\<tau>\<^sub>n\<close>)
 
 instantiation "node_action" :: (type) tau
 begin
@@ -420,8 +420,8 @@ lemma castmsg_simps[simp]:
 subsection "Networks"
 
 datatype net_tree =
-    Node ip "ip set"          ("\<langle>_; _\<rangle>")
-  | Subnet net_tree net_tree  (infixl "\<parallel>" 90)
+    Node ip "ip set"          (\<open>\<langle>_; _\<rangle>\<close>)
+  | Subnet net_tree net_tree  (infixl \<open>\<parallel>\<close> 90)
 
 declare net_tree.induct [[induct del]]
 lemmas net_tree_induct [induct type: net_tree] = net_tree.induct [rename_abs i R p1 p2]

@@ -94,7 +94,7 @@ abbreviation mexecT_syntax1 ::
   "'addr jvm_prog \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state
   \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action
   \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state \<Rightarrow> bool"
-  ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub> _" [50,0,0,0,50] 80)
+  (\<open>_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub> _\<close> [50,0,0,0,50] 80)
 where
   "mexecT_syntax1 P s t ta s' \<equiv> mexecT P s (t, ta) s'"
 
@@ -103,7 +103,7 @@ abbreviation mExecT_syntax1 ::
   "'addr jvm_prog \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state
   \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id, 'heap) jvm_thread_action) list
   \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state \<Rightarrow> bool"
-  ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub>* _" [50,0,0,50] 80)
+  (\<open>_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvm\<^esub>* _\<close> [50,0,0,50] 80)
 where
   "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s' \<equiv> exec_mthr.RedT P s ttas s'"
 
@@ -145,7 +145,7 @@ abbreviation mexecdT_syntax1 ::
   "'addr jvm_prog \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state
   \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'thread_id, 'heap) jvm_thread_action
   \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state \<Rightarrow> bool"
-  ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub> _" [50,0,0,0,50] 80)
+  (\<open>_ \<turnstile> _ -_\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub> _\<close> [50,0,0,0,50] 80)
 where
   "mexecdT_syntax1 P s t ta s' \<equiv> mexecdT P s (t, ta) s'"
 
@@ -153,7 +153,7 @@ abbreviation mExecdT_syntax1 ::
   "'addr jvm_prog \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state
   \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id, 'heap) jvm_thread_action) list
   \<Rightarrow> ('addr,'thread_id,'addr jvm_thread_state,'heap,'addr) state \<Rightarrow> bool"
-  ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub>* _" [50,0,0,50] 80)
+  (\<open>_ \<turnstile> _ -\<triangleright>_\<rightarrow>\<^bsub>jvmd\<^esub>* _\<close> [50,0,0,50] 80)
 where
   "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s' \<equiv> execd_mthr.RedT P s ttas s'"
 

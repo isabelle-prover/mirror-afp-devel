@@ -14,7 +14,7 @@ consts
   uwp :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" 
 
 syntax
-  "_uwp" :: "logic \<Rightarrow> uexp \<Rightarrow> logic" (infix "wp" 60)
+  "_uwp" :: "logic \<Rightarrow> uexp \<Rightarrow> logic" (infix \<open>wp\<close> 60)
 
 syntax_consts
   "_uwp" == uwp

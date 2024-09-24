@@ -9,7 +9,7 @@ subsection \<open>Sub-lens Relation\<close>
 text \<open>A lens $X$ is a sub-lens of $Y$ if there is a well-behaved lens $Z$ such that $X = Z \lcomp Y$,
   or in other words if $X$ can be expressed purely in terms of $Y$.\<close>
 
-definition sublens :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<subseteq>\<^sub>L" 55) where
+definition sublens :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>L\<close> 55) where
 [lens_defs]: "sublens X Y = (\<exists> Z :: ('a, 'b) lens. vwb_lens Z \<and> X = Z ;\<^sub>L Y)"
 
 text \<open>Various lens classes are downward closed under the sublens relation.\<close>
@@ -94,7 +94,7 @@ text \<open>Using our preorder, we can also derive an equivalence on lenses as f
   view types are different, so long as the source types are the same. We show that it is reflexive, 
   symmetric, and transitive. \<close>
     
-definition lens_equiv :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<approx>\<^sub>L" 51) where
+definition lens_equiv :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix \<open>\<approx>\<^sub>L\<close> 51) where
 [lens_defs]: "lens_equiv X Y = (X \<subseteq>\<^sub>L Y \<and> Y \<subseteq>\<^sub>L X)"
 
 lemma lens_equivI [intro]:
@@ -590,7 +590,7 @@ subsection \<open> Alternative Sublens Characterisation \<close>
 
 text \<open> The following definition is equivalent to the above when the two lenses are very well behaved. \<close>
 
-definition sublens' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<subseteq>\<^sub>L''" 55) where
+definition sublens' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>L''\<close> 55) where
 [lens_defs]: "sublens' X Y = (\<forall> s\<^sub>1 s\<^sub>2 s\<^sub>3. s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on Y \<oplus>\<^sub>L s\<^sub>3 on X = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 \<oplus>\<^sub>L s\<^sub>3 on X on Y)"
 
 text \<open> We next prove some characteristic properties of our alternative definition of sublens. \<close>
@@ -660,7 +660,7 @@ lemma lens_quotient_bij: "\<lbrakk> vwb_lens x; vwb_lens y; y \<approx>\<^sub>L 
 
 subsection \<open> Alternative Equivalence Characterisation \<close>
 
-definition lens_equiv' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<approx>\<^sub>L''" 51) where
+definition lens_equiv' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix \<open>\<approx>\<^sub>L''\<close> 51) where
 [lens_defs]: "lens_equiv' X Y = (\<forall> s\<^sub>1 s\<^sub>2. (s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on X = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on Y))"
 
 lemma lens_equiv_iff_lens_equiv':

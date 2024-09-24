@@ -13,16 +13,16 @@ in the previous section.
 \<close>
 
 class dual = 
-  fixes dual::"'a \<Rightarrow> 'a" ("_ ^ o" [81] 80)
+  fixes dual::"'a \<Rightarrow> 'a" (\<open>_ ^ o\<close> [81] 80)
 
 class omega = 
-  fixes omega::"'a \<Rightarrow> 'a" ("_ ^ \<omega>" [81] 80)
+  fixes omega::"'a \<Rightarrow> 'a" (\<open>_ ^ \<omega>\<close> [81] 80)
 
 class star = 
-  fixes star::"'a \<Rightarrow> 'a" ("(_ ^ *)" [81] 80)
+  fixes star::"'a \<Rightarrow> 'a" (\<open>(_ ^ *)\<close> [81] 80)
 
 class dual_star = 
-  fixes dual_star::"'a \<Rightarrow> 'a" ("(_ ^ \<otimes>)" [81] 80)
+  fixes dual_star::"'a \<Rightarrow> 'a" (\<open>(_ ^ \<otimes>)\<close> [81] 80)
 
 class mbt_algebra = monoid_mult + dual + omega + distrib_lattice + order_top + order_bot + star + dual_star +
   assumes

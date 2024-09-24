@@ -35,7 +35,7 @@ lemma length_adjust [simp]:
 
 (* composition of two Turing machines *)
 fun
-  seq_tm :: "instr list \<Rightarrow> instr list \<Rightarrow> instr list" (infixl "|+|" 60)
+  seq_tm :: "instr list \<Rightarrow> instr list \<Rightarrow> instr list" (infixl \<open>|+|\<close> 60)
   where
     "seq_tm p1 p2 = ((adjust0 p1) @ (shift p2 (length p1 div 2)))"
 

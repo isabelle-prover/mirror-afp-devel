@@ -38,10 +38,10 @@ sublocale relation_algebra < n_algebra_apx where sup = sup and bot = bot and top
   using n_less_eq_char by force
 
 no_notation
-  inverse_divide (infixl "'/" 70)
+  inverse_divide (infixl \<open>'/\<close> 70)
 
 notation
-  divide (infixl "'/" 70)
+  divide (infixl \<open>'/\<close> 70)
 
 class left_residuated_relation_algebra = relation_algebra + inverse +
   assumes lres_def: "x / y = -(-x * y\<^sup>T)"

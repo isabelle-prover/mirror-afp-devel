@@ -16,7 +16,7 @@ begin
 
 \<comment> \<open>NOTE  hide 'Map.map\_add' because of conflicting notation with 'FactoredSystemLib.map\_add\_ltr'.\<close>
 hide_const (open) Map.map_add
-no_notation Map.map_add (infixl "++" 100)
+no_notation Map.map_add (infixl \<open>++\<close> 100)
 
 
 section "System Abstraction"

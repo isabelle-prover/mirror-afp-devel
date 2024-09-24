@@ -68,9 +68,9 @@ subsection\<open>Basic String Constants\<close>
 text\<open>Although the remaining part of this library reasons about
 integers abstractly, we provide here as example some convenient shortcuts.\<close>
 
-definition OclStringa ::"('\<AA>)String" ("\<a>")    where      "\<a> = (\<lambda> _ . \<lfloor>\<lfloor>''a''\<rfloor>\<rfloor>)"
-definition OclStringb ::"('\<AA>)String" ("\<b>")    where      "\<b> = (\<lambda> _ . \<lfloor>\<lfloor>''b''\<rfloor>\<rfloor>)"
-definition OclStringc ::"('\<AA>)String" ("\<c>")    where      "\<c> = (\<lambda> _ . \<lfloor>\<lfloor>''c''\<rfloor>\<rfloor>)"
+definition OclStringa ::"('\<AA>)String" (\<open>\<a>\<close>)    where      "\<a> = (\<lambda> _ . \<lfloor>\<lfloor>''a''\<rfloor>\<rfloor>)"
+definition OclStringb ::"('\<AA>)String" (\<open>\<b>\<close>)    where      "\<b> = (\<lambda> _ . \<lfloor>\<lfloor>''b''\<rfloor>\<rfloor>)"
+definition OclStringc ::"('\<AA>)String" (\<open>\<c>\<close>)    where      "\<c> = (\<lambda> _ . \<lfloor>\<lfloor>''c''\<rfloor>\<rfloor>)"
 text\<open>Etc.\<close>
 text_raw\<open>\isatagafp\<close>
 
@@ -102,7 +102,7 @@ technical reasons; these operators are heavily overloaded in the HOL library
 that a further overloading would lead to heavy technical buzz in this
 document.
 \<close>
-definition OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g ::"('\<AA>)String \<Rightarrow> ('\<AA>)String \<Rightarrow> ('\<AA>)String" (infix "+\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g" 40)
+definition OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g ::"('\<AA>)String \<Rightarrow> ('\<AA>)String \<Rightarrow> ('\<AA>)String" (infix \<open>+\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g\<close> 40)
 where "x +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then \<lfloor>\<lfloor>concat [\<lceil>\<lceil>x \<tau>\<rceil>\<rceil>, \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>]\<rfloor>\<rfloor>
                        else invalid \<tau> "

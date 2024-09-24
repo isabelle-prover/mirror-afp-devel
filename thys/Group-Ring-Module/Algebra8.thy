@@ -2290,7 +2290,7 @@ definition
   "mProject R I A j = (\<lambda>f\<in>carr_prodag I A. f j)"
 
 abbreviation
-  PRODMODULES  ("(3m\<Pi>\<^bsub>_ _\<^esub> _)" [72,72,73]72) where
+  PRODMODULES  (\<open>(3m\<Pi>\<^bsub>_ _\<^esub> _)\<close> [72,72,73]72) where
   "m\<Pi>\<^bsub>R I\<^esub> A == prodM R I A"
 
 lemma (in Ring) prodM_carr:"\<lbrakk>\<forall>i\<in>I. (R module (M i))\<rbrakk> \<Longrightarrow> 
@@ -2467,7 +2467,7 @@ definition
      zero = prod_zero I A, sprod = prodM_sprod R I A\<rparr>"  
 
 abbreviation
-  DSUMMOD  ("(3\<^bsub>_\<^esub>\<Sigma>\<^sub>d\<^bsub>_\<^esub> _)" [72,72,73]72) where
+  DSUMMOD  (\<open>(3\<^bsub>_\<^esub>\<Sigma>\<^sub>d\<^bsub>_\<^esub> _)\<close> [72,72,73]72) where
   "\<^bsub>R\<^esub>\<Sigma>\<^sub>d\<^bsub>I\<^esub> A == dsumM R I A"
 
 lemma (in Ring) dsumM_carr:"carrier (dsumM R I M) = carr_dsumag I M"
@@ -2674,7 +2674,7 @@ done
   
 definition
   ringModule :: "('r, 'b) Ring_scheme \<Rightarrow> ('r, 'r) Module"
-                ("(M\<^bsub>_\<^esub>)" [998]999) where
+                (\<open>(M\<^bsub>_\<^esub>)\<close> [998]999) where
   "M\<^bsub>R\<^esub> = \<lparr>carrier = carrier R, pop = pop R, mop = mop R,
         zero = zero R, sprod = tp R\<rparr>" 
 

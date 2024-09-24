@@ -354,7 +354,7 @@ proof(rule subsetI)
       (auto simp add: supp_fin_insert[OF pt_name_inst, OF at_name_inst, OF fs_name_inst])
 qed
 
-abbreviation mem_def :: "'a \<Rightarrow> 'a list \<Rightarrow> bool" ("_ mem _" [80, 80] 80)  where
+abbreviation mem_def :: "'a \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ mem _\<close> [80, 80] 80)  where
   "x mem xs \<equiv> x \<in> set xs"
 
 lemma memFresh:
@@ -842,10 +842,10 @@ lemma composePermEqvt[eqvt]:
 by(induct xvec yvec rule: composePerm.induct) auto
 
 abbreviation
-  composePermJudge ("[_ _] \<bullet>\<^sub>v _" [80, 80, 80] 80) where "[xvec yvec] \<bullet>\<^sub>v p \<equiv> (composePerm xvec yvec) \<bullet> p"
+  composePermJudge (\<open>[_ _] \<bullet>\<^sub>v _\<close> [80, 80, 80] 80) where "[xvec yvec] \<bullet>\<^sub>v p \<equiv> (composePerm xvec yvec) \<bullet> p"
 
 abbreviation
-  composePermInvJudge ("[_ _]\<^sup>- \<bullet>\<^sub>v _" [80, 80, 80] 80) where "[xvec yvec]\<^sup>- \<bullet>\<^sub>v p \<equiv> (rev (composePerm xvec yvec)) \<bullet> p"
+  composePermInvJudge (\<open>[_ _]\<^sup>- \<bullet>\<^sub>v _\<close> [80, 80, 80] 80) where "[xvec yvec]\<^sup>- \<bullet>\<^sub>v p \<equiv> (rev (composePerm xvec yvec)) \<bullet> p"
 
 lemma permChainSimps[simp]:
   fixes xvec :: "name list"

@@ -8,7 +8,7 @@ begin
 
 subsection \<open>Missing Lemmas\<close>
 
-no_notation disj  (infixr "|" 30)
+no_notation disj  (infixr \<open>|\<close> 30)
 
 lemma Sup_funpow_mono:
   fixes f :: "'a :: complete_lattice \<Rightarrow> 'a"
@@ -35,11 +35,11 @@ text \<open>As we cannot formalize transfinite sequences directly, we take the f
 We just use @{term A} as the index set, and instead of the ordering on ordinals,
 we take the well-order that is chosen by the cardinality library to denote @{term "|A|"}.\<close>
 
-definition well_order_of ("('(\<preceq>\<^bsub>_\<^esub>'))" [0]1000) where "(\<preceq>\<^bsub>A\<^esub>) x y \<equiv> (x,y) \<in> |A|"
+definition well_order_of (\<open>('(\<preceq>\<^bsub>_\<^esub>'))\<close> [0]1000) where "(\<preceq>\<^bsub>A\<^esub>) x y \<equiv> (x,y) \<in> |A|"
 
-abbreviation well_order_le ("_ \<preceq>\<^bsub>_\<^esub> _" [51,0,51]50) where "x \<preceq>\<^bsub>A\<^esub> y \<equiv> (\<preceq>\<^bsub>A\<^esub>) x y"
+abbreviation well_order_le (\<open>_ \<preceq>\<^bsub>_\<^esub> _\<close> [51,0,51]50) where "x \<preceq>\<^bsub>A\<^esub> y \<equiv> (\<preceq>\<^bsub>A\<^esub>) x y"
 
-abbreviation well_order_less ("_ \<prec>\<^bsub>_\<^esub> _" [51,0,51]50) where "x \<prec>\<^bsub>A\<^esub> y \<equiv> asympartp (\<preceq>\<^bsub>A\<^esub>) x y"
+abbreviation well_order_less (\<open>_ \<prec>\<^bsub>_\<^esub> _\<close> [51,0,51]50) where "x \<prec>\<^bsub>A\<^esub> y \<equiv> asympartp (\<preceq>\<^bsub>A\<^esub>) x y"
 
 lemmas well_order_ofI = well_order_of_def[unfolded atomize_eq, THEN iffD2]
 lemmas well_order_ofD = well_order_of_def[unfolded atomize_eq, THEN iffD1]
@@ -64,7 +64,7 @@ following three conditions:
 \end{itemize}
 The following serves the purpose.\<close>
 
-definition Pre ("_\<^sub>\<prec>" [1000]1000) where "A\<^sub>\<prec> a \<equiv> {b \<in> A. b \<prec>\<^bsub>A\<^esub> a}"
+definition Pre (\<open>_\<^sub>\<prec>\<close> [1000]1000) where "A\<^sub>\<prec> a \<equiv> {b \<in> A. b \<prec>\<^bsub>A\<^esub> a}"
 
 lemma Pre_eq_underS: "A\<^sub>\<prec> a = underS |A| a"
   by (auto simp: Pre_def underS_def well_order_ofD carrier well_order_of.antisym dest!: well_order_ofI)
@@ -189,7 +189,7 @@ lemma Fn_mono1: "i \<le> j \<Longrightarrow> (F ^^ i) X \<subseteq> (F ^^ j) X" 
 
 text \<open>We take the $\omega$-iteration of the monotone function @{term F}, namely:\<close>
 
-definition Flim ("F\<^sup>\<omega>") where "F\<^sup>\<omega> X \<equiv> \<Union>i. (F ^^ i) X"
+definition Flim (\<open>F\<^sup>\<omega>\<close>) where "F\<^sup>\<omega> X \<equiv> \<Union>i. (F ^^ i) X"
 
 lemma Flim_mono: "mono F\<^sup>\<omega>"
 proof-
@@ -478,7 +478,7 @@ section \<open>Directed Completeness and Scott-Continuity\<close>
 abbreviation "nonempty A \<equiv> if A = {} then \<bottom> else \<top>"
 
 lemma (in quasi_ordered_set) directed_completeness_lemma:
-  fixes leB (infix "\<unlhd>" 50)
+  fixes leB (infix \<open>\<unlhd>\<close> 50)
   assumes comp: "(nonempty \<sqinter> well_related_set)-complete A (\<sqsubseteq>)" and dir: "directed_set D (\<sqsubseteq>)" and DA: "D \<subseteq> A"
   shows "\<exists>s. extreme_bound A (\<sqsubseteq>) D s"
     and "well_related_set-continuous A (\<sqsubseteq>) B (\<unlhd>) f \<Longrightarrow>
@@ -634,7 +634,7 @@ text \<open>The next Theorem corresponds to Corollary 3 of \cite{markowsky76} wi
 $B$ and without antisymmetry on the domain $A$.\<close>
 
 theorem (in quasi_ordered_set)
-  fixes leB (infix "\<unlhd>" 50)
+  fixes leB (infix \<open>\<unlhd>\<close> 50)
   assumes comp: "(nonempty \<sqinter> well_related_set)-complete A (\<sqsubseteq>)"
   shows "well_related_set-continuous A (\<sqsubseteq>) B (\<unlhd>) f \<longleftrightarrow> directed_set-continuous A (\<sqsubseteq>) B (\<unlhd>) f"
     (is "?l \<longleftrightarrow> ?r")

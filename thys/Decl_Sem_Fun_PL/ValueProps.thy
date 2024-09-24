@@ -74,10 +74,10 @@ proposition val_le_refl[simp]: fixes v::val shows "v \<sqsubseteq> v" using val_
     
 lemma fun_le_refl[simp]: fixes t::func shows "t \<lesssim> t" using val_fun_le_refl by auto
     
-definition val_eq :: "val \<Rightarrow> val \<Rightarrow> bool" (infix "\<sim>" 52) where
+definition val_eq :: "val \<Rightarrow> val \<Rightarrow> bool" (infix \<open>\<sim>\<close> 52) where
   "val_eq v1 v2 \<equiv> (v1 \<sqsubseteq> v2 \<and> v2 \<sqsubseteq> v1)"
   
-definition fun_eq :: "func \<Rightarrow> func \<Rightarrow> bool" (infix "\<sim>" 52) where
+definition fun_eq :: "func \<Rightarrow> func \<Rightarrow> bool" (infix \<open>\<sim>\<close> 52) where
   "fun_eq t1 t2 \<equiv> (t1 \<lesssim> t2 \<and> t2 \<lesssim> t1)" 
 
 lemma vfun_eq[intro!]: "t \<sim> t' \<Longrightarrow> VFun t \<sim> VFun t'"

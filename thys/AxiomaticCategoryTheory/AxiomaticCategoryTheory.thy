@@ -37,19 +37,19 @@ text\<open>We introduce a shallow semantical embedding of free logic \cite{R58} 
      consider this an optional condition.\<close>
 
  typedecl i \<comment> \<open>Type for individuals\<close>
- consts fExistence:: "i\<Rightarrow>bool" ("E") \<comment> \<open>Existence/definedness predicate in free logic\<close>
+ consts fExistence:: "i\<Rightarrow>bool" (\<open>E\<close>) \<comment> \<open>Existence/definedness predicate in free logic\<close>
 
- abbreviation fNot   ("\<^bold>\<not>")               where "\<^bold>\<not>\<phi> \<equiv> \<not>\<phi>"
- abbreviation fImpl  (infixr "\<^bold>\<rightarrow>" 13)  where "\<phi> \<^bold>\<rightarrow> \<psi> \<equiv> \<phi> \<longrightarrow> \<psi>"
- abbreviation fId     (infixr "\<^bold>=" 25)   where "l \<^bold>= r \<equiv> l = r"
- abbreviation fAll    ("\<^bold>\<forall>")               where "\<^bold>\<forall>\<Phi> \<equiv> \<forall>x. E x \<longrightarrow> \<Phi> x"
- abbreviation fAllBi (binder "\<^bold>\<forall>" [8]9) where "\<^bold>\<forall>x. \<phi> x \<equiv> \<^bold>\<forall>\<phi>"
- abbreviation fOr    (infixr "\<^bold>\<or>" 21)     where "\<phi> \<^bold>\<or> \<psi> \<equiv> (\<^bold>\<not>\<phi>) \<^bold>\<rightarrow> \<psi>"
- abbreviation fAnd   (infixr "\<^bold>\<and>" 22)     where "\<phi> \<^bold>\<and> \<psi> \<equiv> \<^bold>\<not>(\<^bold>\<not>\<phi> \<^bold>\<or> \<^bold>\<not>\<psi>)"
- abbreviation fImpli (infixr "\<^bold>\<leftarrow>" 13)    where "\<phi> \<^bold>\<leftarrow> \<psi> \<equiv> \<psi> \<^bold>\<rightarrow> \<phi>"
- abbreviation fEquiv (infixr "\<^bold>\<leftrightarrow>" 15)    where "\<phi> \<^bold>\<leftrightarrow> \<psi> \<equiv> (\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<and> (\<psi> \<^bold>\<rightarrow> \<phi>)"
- abbreviation fEx     ("\<^bold>\<exists>")                 where "\<^bold>\<exists>\<Phi> \<equiv> \<^bold>\<not>(\<^bold>\<forall>(\<lambda>y. \<^bold>\<not>(\<Phi> y)))"
- abbreviation fExiBi (binder "\<^bold>\<exists>" [8]9)  where "\<^bold>\<exists>x. \<phi> x \<equiv> \<^bold>\<exists>\<phi>"
+ abbreviation fNot   (\<open>\<^bold>\<not>\<close>)               where "\<^bold>\<not>\<phi> \<equiv> \<not>\<phi>"
+ abbreviation fImpl  (infixr \<open>\<^bold>\<rightarrow>\<close> 13)  where "\<phi> \<^bold>\<rightarrow> \<psi> \<equiv> \<phi> \<longrightarrow> \<psi>"
+ abbreviation fId     (infixr \<open>\<^bold>=\<close> 25)   where "l \<^bold>= r \<equiv> l = r"
+ abbreviation fAll    (\<open>\<^bold>\<forall>\<close>)               where "\<^bold>\<forall>\<Phi> \<equiv> \<forall>x. E x \<longrightarrow> \<Phi> x"
+ abbreviation fAllBi (binder \<open>\<^bold>\<forall>\<close> [8]9) where "\<^bold>\<forall>x. \<phi> x \<equiv> \<^bold>\<forall>\<phi>"
+ abbreviation fOr    (infixr \<open>\<^bold>\<or>\<close> 21)     where "\<phi> \<^bold>\<or> \<psi> \<equiv> (\<^bold>\<not>\<phi>) \<^bold>\<rightarrow> \<psi>"
+ abbreviation fAnd   (infixr \<open>\<^bold>\<and>\<close> 22)     where "\<phi> \<^bold>\<and> \<psi> \<equiv> \<^bold>\<not>(\<^bold>\<not>\<phi> \<^bold>\<or> \<^bold>\<not>\<psi>)"
+ abbreviation fImpli (infixr \<open>\<^bold>\<leftarrow>\<close> 13)    where "\<phi> \<^bold>\<leftarrow> \<psi> \<equiv> \<psi> \<^bold>\<rightarrow> \<phi>"
+ abbreviation fEquiv (infixr \<open>\<^bold>\<leftrightarrow>\<close> 15)    where "\<phi> \<^bold>\<leftrightarrow> \<psi> \<equiv> (\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<and> (\<psi> \<^bold>\<rightarrow> \<phi>)"
+ abbreviation fEx     (\<open>\<^bold>\<exists>\<close>)                 where "\<^bold>\<exists>\<Phi> \<equiv> \<^bold>\<not>(\<^bold>\<forall>(\<lambda>y. \<^bold>\<not>(\<Phi> y)))"
+ abbreviation fExiBi (binder \<open>\<^bold>\<exists>\<close> [8]9)  where "\<^bold>\<exists>x. \<phi> x \<equiv> \<^bold>\<exists>\<phi>"
 
 
 
@@ -63,14 +63,14 @@ For composition we assume set-theoretical composition here (i.e., functional
 composition from right to left). \label{IDMcL}\<close>
 
  consts
-  domain:: "i\<Rightarrow>i" ("dom _" [108] 109)
-  codomain:: "i\<Rightarrow>i" ("cod _" [110] 111)
-  composition:: "i\<Rightarrow>i\<Rightarrow>i" (infix "\<cdot>" 110)
+  domain:: "i\<Rightarrow>i" (\<open>dom _\<close> [108] 109)
+  codomain:: "i\<Rightarrow>i" (\<open>cod _\<close> [110] 111)
+  composition:: "i\<Rightarrow>i\<Rightarrow>i" (infix \<open>\<cdot>\<close> 110)
 
  \<comment> \<open>Kleene Equality\<close>
- abbreviation KlEq (infixr "\<cong>" 56) where "x \<cong> y \<equiv> (E x \<^bold>\<or> E y) \<^bold>\<rightarrow> x \<^bold>= y"
+ abbreviation KlEq (infixr \<open>\<cong>\<close> 56) where "x \<cong> y \<equiv> (E x \<^bold>\<or> E y) \<^bold>\<rightarrow> x \<^bold>= y"
  \<comment> \<open>Existing Identity\<close>
- abbreviation ExId (infixr "\<simeq>" 56) where "x \<simeq> y \<equiv> (E x \<^bold>\<and> E y \<^bold>\<and> x \<^bold>= y)"
+ abbreviation ExId (infixr \<open>\<simeq>\<close> 56) where "x \<simeq> y \<equiv> (E x \<^bold>\<and> E y \<^bold>\<and> x \<^bold>= y)"
 
  \<comment> \<open>Identity-morphism: see also p.~4. of \cite{FreydScedrov90}.\<close>
  abbreviation "ID i \<equiv> (\<^bold>\<forall>x. E(i\<cdot>x) \<^bold>\<rightarrow> i\<cdot>x \<cong> x) \<^bold>\<and> (\<^bold>\<forall>x. E(x\<cdot>i) \<^bold>\<rightarrow> x\<cdot>i \<cong> x)"
@@ -422,9 +422,9 @@ text\<open>The axioms by Freyd and Scedrov in their original notation, without t
 
  locale AxiomsSet7orig =
   fixes
-   source:: "i\<Rightarrow>i" ("\<box>_" [108] 109) and
-   target:: "i\<Rightarrow>i" ("_\<box>" [110] 111) and
-   compositionF:: "i\<Rightarrow>i\<Rightarrow>i" (infix "\<^bold>\<cdot>" 110)
+   source:: "i\<Rightarrow>i" (\<open>\<box>_\<close> [108] 109) and
+   target:: "i\<Rightarrow>i" (\<open>_\<box>\<close> [110] 111) and
+   compositionF:: "i\<Rightarrow>i\<Rightarrow>i" (infix \<open>\<^bold>\<cdot>\<close> 110)
   assumes
     A1: "E(x\<^bold>\<cdot>y) \<^bold>\<leftrightarrow> (x\<box> \<cong> \<box>y)" and
    A2a: "((\<box>x)\<box>) \<cong> \<box>x" and

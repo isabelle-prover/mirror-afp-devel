@@ -115,8 +115,8 @@ position.
 \<close>
 
 primrec
-  substt :: \<open>'a term \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term\<close> ("_[_'/_]" [300, 0, 0] 300) and
-  substts :: \<open>'a term list \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term list\<close> ("_[_'/_]" [300, 0, 0] 300) where
+  substt :: \<open>'a term \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term\<close> (\<open>_[_'/_]\<close> [300, 0, 0] 300) and
+  substts :: \<open>'a term list \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> 'a term list\<close> (\<open>_[_'/_]\<close> [300, 0, 0] 300) where
   \<open>(Var i)[s/k] = (if k < i then Var (i - 1) else if i = k then s else Var i)\<close>
 | \<open>(App a ts)[s/k] = App a (ts[s/k])\<close>
 | \<open>[][s/k] = []\<close>
@@ -131,7 +131,7 @@ primrec
 | \<open>liftts (t # ts) = liftt t # liftts ts\<close>
 
 primrec subst :: \<open>('a, 'b) form \<Rightarrow> 'a term \<Rightarrow> nat \<Rightarrow> ('a, 'b) form\<close>
-  ("_[_'/_]" [300, 0, 0] 300) where
+  (\<open>_[_'/_]\<close> [300, 0, 0] 300) where
   \<open>FF[s/k] = FF\<close>
 | \<open>TT[s/k] = TT\<close>
 | \<open>(Pred b ts)[s/k] = Pred b (ts[s/k])\<close>
@@ -280,7 +280,7 @@ values of variables with indices greater or equal than \<open>i\<close> are shif
 position up.
 \<close>
 
-definition shift :: \<open>(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a\<close> ("_\<langle>_:_\<rangle>" [90, 0, 0] 91) where
+definition shift :: \<open>(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a\<close> (\<open>_\<langle>_:_\<rangle>\<close> [90, 0, 0] 91) where
   \<open>e\<langle>i:a\<rangle> = (\<lambda>j. if j < i then e j else if j = i then a else e (j - 1))\<close>
 
 lemma shift_eq [simp]: \<open>i = j \<Longrightarrow> (e\<langle>i:T\<rangle>) j = T\<close>
@@ -327,7 +327,7 @@ function and predicate symbols, respectively.
 \<close>
 
 definition model :: \<open>(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c list \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'c list \<Rightarrow> bool) \<Rightarrow>
-    ('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool\<close> ("_,_,_,_ \<Turnstile> _" [50,50] 50) where
+    ('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool\<close> (\<open>_,_,_,_ \<Turnstile> _\<close> [50,50] 50) where
   \<open>(e,f,g,ps \<Turnstile> p) = (list_all (eval e f g) ps \<longrightarrow> eval e f g p)\<close>
 
 text \<open>
@@ -394,7 +394,7 @@ We now introduce a natural deduction proof calculus for first order logic.
 The derivability judgement \<open>G \<turnstile> a\<close> is defined as an inductive predicate.
 \<close>
 
-inductive deriv :: \<open>('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool\<close> ("_ \<turnstile> _" [50,50] 50) where
+inductive deriv :: \<open>('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool\<close> (\<open>_ \<turnstile> _\<close> [50,50] 50) where
   Assum: \<open>a \<in> set G \<Longrightarrow> G \<turnstile> a\<close>
 | TTI: \<open>G \<turnstile> TT\<close>
 | FFE: \<open>G \<turnstile> FF \<Longrightarrow> G \<turnstile> a\<close>

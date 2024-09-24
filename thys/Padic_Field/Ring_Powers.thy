@@ -26,7 +26,7 @@ fun R_list :: "nat \<Rightarrow> ('a, 'b) ring_scheme \<Rightarrow> (('a, 'b) ri
 
 text\<open>Cartesian powers of a ring\<close>
 
-definition cartesian_power :: "('a, 'b) ring_scheme \<Rightarrow> nat \<Rightarrow> ('a list) ring" ("_\<^bsup>_\<^esup>" 80) where
+definition cartesian_power :: "('a, 'b) ring_scheme \<Rightarrow> nat \<Rightarrow> ('a list) ring" (\<open>_\<^bsup>_\<^esup>\<close> 80) where
 "R\<^bsup>n\<^esup> \<equiv> RDirProd_list (R_list n R)"
 
 lemma R_list_length: 
@@ -683,7 +683,7 @@ qed
       (**********************************************************************)
       (**********************************************************************)
 
-definition(in ring) ring_pow_proj ::  "nat  \<Rightarrow> (nat set) \<Rightarrow>  ('a list)  \<Rightarrow> ('a list) " ("\<pi>\<^bsub>_, _\<^esub>")  where
+definition(in ring) ring_pow_proj ::  "nat  \<Rightarrow> (nat set) \<Rightarrow>  ('a list)  \<Rightarrow> ('a list) " (\<open>\<pi>\<^bsub>_, _\<^esub>\<close>)  where
 "ring_pow_proj n S \<equiv> restrict (project_at_indices S) (carrier (R\<^bsup>n\<^esup>))"
 
 text\<open>The projection at an arbitrary index set\<close>
@@ -719,7 +719,7 @@ text\<open>
   Note that this product isn't completely arbitrary because the entries of the factor of \<open>A\<close> 
   still occurs in ascending order.\<close>
 
-definition twisted_cartesian_product ("Prod\<^bsub>_, _\<^esub>") where
+definition twisted_cartesian_product (\<open>Prod\<^bsub>_, _\<^esub>\<close>) where
 "twisted_cartesian_product S S' A B = {a . length a = card S + card S' \<and> \<pi>\<^bsub>S\<^esub> a \<in> A \<and> \<pi>\<^bsub>S'\<^esub> a \<in> B}"
 
 lemma twisted_cartesian_product_mem_length:
@@ -1406,7 +1406,7 @@ lemma ring_pow_comp_inv:
   by (simp add: ring_pow_comp_def assms double_diff)
 
 text\<open>The function ring defined on the powers of a ring:\<close>
-abbreviation(input) ring_pow_function_ring ("Fun\<^bsub>_\<^esub> _") where
+abbreviation(input) ring_pow_function_ring (\<open>Fun\<^bsub>_\<^esub> _\<close>) where
 "ring_pow_function_ring n R \<equiv> function_ring (carrier (R\<^bsup>n\<^esup>)) R"
 
 text \<open>
@@ -1614,7 +1614,7 @@ proof-
   qed
 qed
 
-abbreviation variable ("\<vv>\<^bsub>_\<^esub>") where
+abbreviation variable (\<open>\<vv>\<^bsub>_\<^esub>\<close>) where
 "variable n i \<equiv> var R n i"
 
 end
@@ -1778,7 +1778,7 @@ locale cring_coord_rings = UP_cring +
 text\<open>coordinate polynomial ring in n variables over a commutative ring\<close>
 
 definition coord_ring :: "('a, 'b) ring_scheme \<Rightarrow> nat \<Rightarrow> ('a, ('a, nat) mvar_poly) module"
- ("_ [\<X>\<^bsub>_\<^esub>]" 80) where "R[\<X>\<^bsub>n\<^esub>] \<equiv> Pring R {..< n::nat}"
+ (\<open>_ [\<X>\<^bsub>_\<^esub>]\<close> 80) where "R[\<X>\<^bsub>n\<^esub>] \<equiv> Pring R {..< n::nat}"
 
 sublocale cring_coord_rings < cring_functions R "carrier (R\<^bsup>n\<^esup>)" "Fun\<^bsub>n\<^esub> R"
   unfolding cring_functions_def ring_functions_def  
@@ -2195,7 +2195,7 @@ subsection\<open>Algebraic Sets in Cartesian Powers\<close>
   (**********************************************************************)
   (**********************************************************************)
 definition zero_set  :: "('a, 'b) ring_scheme \<Rightarrow> nat \<Rightarrow> ('a, nat) mvar_poly \<Rightarrow> 'a list set"
- ("V\<index>") where
+ (\<open>V\<index>\<close>) where
 "zero_set R n p =  {a \<in> carrier (R\<^bsup>n\<^esup>). eval_at_point R a p =\<zero>\<^bsub>R\<^esub>}"
 
 context cring_coord_rings
@@ -6890,10 +6890,10 @@ text\<open>
   with the set \texttt{carrier }$(R^n)$, and a version of the complement of a set which takes the
   comeplement relative to \texttt{carrier }$(R^n)$. These will have to be defined in parametrized 
   families, with one such object for each natural number $n$.\<close>
-definition evimage (infixr "\<inverse>\<index>" 90) where
+definition evimage (infixr \<open>\<inverse>\<index>\<close> 90) where
 "evimage n f S = ((f -` S) \<inter> carrier (R\<^bsup>n\<^esup>))"
 
-definition euminus_set :: "nat \<Rightarrow> 'a list set \<Rightarrow> 'a list set" ("_ \<^sup>c\<index>" 70) where
+definition euminus_set :: "nat \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (\<open>_ \<^sup>c\<index>\<close> 70) where
 "S\<^sup>c\<^bsub>n\<^esub> = carrier (R\<^bsup>n\<^esup>) - S"
 
 lemma extensional_vimage_closed:

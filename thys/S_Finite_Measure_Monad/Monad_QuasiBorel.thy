@@ -183,7 +183,7 @@ interpretation qbs_measure : quot_type "qbs_s_finite_eq" "Abs_qbs_measure" "Rep_
   by(simp add: quot_type_def equivp_implies_part_equivp qbs_measure_equivp Rep_qbs_measure_inverse Rep_qbs_measure_inject) blast
 
 syntax
- "_qbs_measure" :: "'a quasi_borel \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real measure \<Rightarrow> 'a qbs_measure" ("\<lbrakk>_,/ _,/ _\<rbrakk>\<^sub>s\<^sub>f\<^sub>i\<^sub>n")
+ "_qbs_measure" :: "'a quasi_borel \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real measure \<Rightarrow> 'a qbs_measure" (\<open>\<lbrakk>_,/ _,/ _\<rbrakk>\<^sub>s\<^sub>f\<^sub>i\<^sub>n\<close>)
 syntax_consts
  "_qbs_measure" \<rightleftharpoons> qbs_measure
 translations
@@ -1703,7 +1703,7 @@ is "\<lambda>(X,\<alpha>,\<mu>). almost_everywhere (distr \<mu> (qbs_to_measure 
   by(auto simp: qbs_s_finite_eq_def) metis
 
 syntax
-  "_qbs_almost_everywhere" :: "pttrn \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> bool" ("AE\<^sub>Q _ in _. _" [0,0,10] 10)
+  "_qbs_almost_everywhere" :: "pttrn \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> bool" (\<open>AE\<^sub>Q _ in _. _\<close> [0,0,10] 10)
 
 syntax_consts
   "_qbs_almost_everywhere" \<rightleftharpoons> qbs_almost_everywhere
@@ -1807,7 +1807,7 @@ is "\<lambda>p f. if f \<in> (fst p) \<rightarrow>\<^sub>Q qbs_borel then (\<int
   using qbs_s_finite_eq_dest(3) qbs_s_finite_eq_1_imp_2 by fastforce
 
 syntax
-  "_qbs_nn_integral" :: "pttrn \<Rightarrow> ennreal \<Rightarrow> 'a qbs_measure \<Rightarrow> ennreal" ("\<integral>\<^sup>+\<^sub>Q((2 _./ _)/ \<partial>_)" [60,61] 110)
+  "_qbs_nn_integral" :: "pttrn \<Rightarrow> ennreal \<Rightarrow> 'a qbs_measure \<Rightarrow> ennreal" (\<open>\<integral>\<^sup>+\<^sub>Q((2 _./ _)/ \<partial>_)\<close> [60,61] 110)
 
 syntax_consts
   "_qbs_nn_integral" \<rightleftharpoons> qbs_nn_integral
@@ -1816,7 +1816,7 @@ translations
   "\<integral>\<^sup>+\<^sub>Q x. f \<partial>p" \<rightleftharpoons> "CONST qbs_nn_integral p (\<lambda>x. f)"
 
 syntax
-  "_qbs_integral" :: "pttrn \<Rightarrow> _ \<Rightarrow> 'a qbs_measure \<Rightarrow> _" ("\<integral>\<^sub>Q((2 _./ _)/ \<partial>_)" [60,61] 110)
+  "_qbs_integral" :: "pttrn \<Rightarrow> _ \<Rightarrow> 'a qbs_measure \<Rightarrow> _" (\<open>\<integral>\<^sub>Q((2 _./ _)/ \<partial>_)\<close> [60,61] 110)
 
 syntax_consts
   "_qbs_integral" \<rightleftharpoons> qbs_integral
@@ -2426,7 +2426,7 @@ proof -
 qed
 
 subsubsection \<open> Binary Product Measures\<close>
-definition qbs_pair_measure :: "['a qbs_measure, 'b qbs_measure] \<Rightarrow> ('a \<times> 'b) qbs_measure" (infix "\<Otimes>\<^sub>Q\<^sub>m\<^sub>e\<^sub>s" 80) where
+definition qbs_pair_measure :: "['a qbs_measure, 'b qbs_measure] \<Rightarrow> ('a \<times> 'b) qbs_measure" (infix \<open>\<Otimes>\<^sub>Q\<^sub>m\<^sub>e\<^sub>s\<close> 80) where
 qbs_pair_measure_def':"qbs_pair_measure p q \<equiv> (p \<bind> (\<lambda>x. q \<bind> (\<lambda>y. return_qbs (qbs_space_of p \<Otimes>\<^sub>Q qbs_space_of q) (x, y))))"
 
 
@@ -3249,7 +3249,7 @@ definition PiQ_measure :: "['a set, 'a \<Rightarrow> 'b qbs_measure] \<Rightarro
                         else qbs_null_measure (\<Pi>\<^sub>Q i\<in>I. qbs_space_of (si i)))"
 
 syntax
-  "_PiQ_measure" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a qbs_measure \<Rightarrow> ('i => 'a) qbs_measure"  ("(3\<Pi>\<^sub>Q\<^sub>m\<^sub>e\<^sub>a\<^sub>s _\<in>_./ _)"  10)
+  "_PiQ_measure" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a qbs_measure \<Rightarrow> ('i => 'a) qbs_measure"  (\<open>(3\<Pi>\<^sub>Q\<^sub>m\<^sub>e\<^sub>a\<^sub>s _\<in>_./ _)\<close>  10)
 syntax_consts
   "_PiQ_measure" == PiQ_measure
 translations
@@ -3339,7 +3339,7 @@ end
 end
 subsection \<open>Measures\<close>
 subsubsection \<open> The Lebesgue Measure \<close>
-definition lborel_qbs ("lborel\<^sub>Q") where "lborel_qbs \<equiv> qbs_l_inverse lborel"
+definition lborel_qbs (\<open>lborel\<^sub>Q\<close>) where "lborel_qbs \<equiv> qbs_l_inverse lborel"
 
 lemma lborel_qbs_qbs[qbs]: "lborel_qbs \<in> qbs_space (monadM_qbs qbs_borel)"
   by(auto simp: lborel_qbs_def measure_to_qbs_cong_sets[OF sets_lborel,symmetric] intro!: standard_borel_ne.qbs_l_inverse_in_space_monadM lborel.s_finite_measure_axioms)

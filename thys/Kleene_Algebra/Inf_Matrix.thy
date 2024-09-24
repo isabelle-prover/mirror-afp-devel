@@ -23,13 +23,13 @@ but simpler.\<close>
 
 type_synonym ('a, 'b, 'c) matrix = "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
-definition mat_one :: "('a, 'a, 'c::dioid_one_zero) matrix" ("\<epsilon>") where
+definition mat_one :: "('a, 'a, 'c::dioid_one_zero) matrix" (\<open>\<epsilon>\<close>) where
   "\<epsilon> i j \<equiv> (if (i = j) then 1 else 0)"
 
-definition mat_zero :: "('a, 'b, 'c::dioid_one_zero) matrix" ("\<delta>") where
+definition mat_zero :: "('a, 'b, 'c::dioid_one_zero) matrix" (\<open>\<delta>\<close>) where
   "\<delta> \<equiv> \<lambda>j i. 0"
 
-definition mat_add :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a, 'b, 'c) matrix \<Rightarrow> ('a, 'b, 'c) matrix" (infixl "\<oplus>" 70) where
+definition mat_add :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a, 'b, 'c) matrix \<Rightarrow> ('a, 'b, 'c) matrix" (infixl \<open>\<oplus>\<close> 70) where
   "(f \<oplus> g)  \<equiv> \<lambda>i j. (f i j) + (g i j)"
 
 lemma mat_add_assoc: "(f \<oplus> g) \<oplus> h =  f \<oplus> (g \<oplus> h)"
@@ -47,7 +47,7 @@ lemma mat_zerol[simp]: "f \<oplus> \<delta> = f"
 lemma mat_zeror[simp]: "\<delta> \<oplus> f = f"
   by (auto simp add: mat_add_def mat_zero_def)
 
-definition mat_mult :: "('a, 'k::finite, 'c::dioid_one_zero) matrix \<Rightarrow> ('k, 'b, 'c) matrix \<Rightarrow> ('a, 'b, 'c) matrix" (infixl "\<otimes>" 60) where
+definition mat_mult :: "('a, 'k::finite, 'c::dioid_one_zero) matrix \<Rightarrow> ('k, 'b, 'c) matrix \<Rightarrow> ('a, 'b, 'c) matrix" (infixl \<open>\<otimes>\<close> 60) where
   "(f \<otimes> g) i j  \<equiv> \<Sum> {(f i k) \<cdot> (g k j) | k. k \<in> UNIV}"
 
 lemma mat_annil[simp]: "\<delta> \<otimes> f = \<delta>"

@@ -65,7 +65,7 @@ end
 subsection \<open>Resolvable Design Locale\<close>
 text \<open>A resolvable design is one with a resolution P\<close>
 locale resolvable_design = design + 
-  fixes partition :: "'a set multiset multiset" ("\<P>")
+  fixes partition :: "'a set multiset multiset" (\<open>\<P>\<close>)
   assumes resolvable: "resolution \<P>"
 begin
 

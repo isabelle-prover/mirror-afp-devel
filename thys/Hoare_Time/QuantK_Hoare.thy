@@ -14,10 +14,10 @@ type_synonym qassn = "state \<Rightarrow> enat" (* time bound *)
 text \<open>The support of an assn2\<close>
  
 abbreviation state_subst :: "state \<Rightarrow> aexp \<Rightarrow> vname \<Rightarrow> state"
-  ("_[_'/_]" [1000,0,0] 999)
+  (\<open>_[_'/_]\<close> [1000,0,0] 999)
 where "s[a/x] == s(x := aval a s)"
 
-fun emb :: "bool \<Rightarrow> enat" ("\<up>") where
+fun emb :: "bool \<Rightarrow> enat" (\<open>\<up>\<close>) where
    "emb False = \<infinity>"
  | "emb True = 0"
   
@@ -25,14 +25,14 @@ subsection "Definition of Validity"
   
 (* this definition refines the normal Hoare Triple Validity *)
 definition hoare2o_valid :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>2\<^sub>'' {(1_)}/ (_)/ {(1_)}" 50) where
+  (\<open>\<Turnstile>\<^sub>2\<^sub>'' {(1_)}/ (_)/ {(1_)}\<close> 50) where
 "\<Turnstile>\<^sub>2\<^sub>' {P} c {Q}  \<longleftrightarrow>  (\<exists>k>0. (\<forall>s.  P s < \<infinity> \<longrightarrow> (\<exists>t p. ((c,s) \<Rightarrow> p \<Down> t) \<and> enat k * P s \<ge> p + enat k * Q t)))"
 
 
 subsection "Hoare Rules"
 
 inductive
-  hoareQ :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" ("\<turnstile>\<^sub>2\<^sub>'' ({(1_)}/ (_)/ {(1_)})" 50)
+  hoareQ :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>2\<^sub>'' ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
 
 Skip:  "\<turnstile>\<^sub>2\<^sub>' {%s. eSuc (P s)} SKIP {P}"  |
@@ -59,7 +59,7 @@ lemma const: "\<lbrakk> \<turnstile>\<^sub>2\<^sub>' {\<lambda>s. enat k * P s}c
   apply(rule conseq) by auto
 
 inductive
-  hoareQ' :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" ("\<turnstile>\<^sub>Z ({(1_)}/ (_)/ {(1_)})" 50)
+  hoareQ' :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>Z ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
 
 ZSkip:  "\<turnstile>\<^sub>Z {%s. eSuc (P s)} SKIP {P}"  |
@@ -417,7 +417,7 @@ The completeness proof proceeds along the same lines as the one for partial
 correctness. First we have to strengthen our notion of weakest precondition
 to take termination into account:\<close>
 
-definition wpQ :: "com \<Rightarrow> qassn \<Rightarrow> qassn" ("wp\<^sub>Q") where
+definition wpQ :: "com \<Rightarrow> qassn \<Rightarrow> qassn" (\<open>wp\<^sub>Q\<close>) where
 "wp\<^sub>Q c Q  =  (\<lambda>s. (if (\<exists>t p. (c,s) \<Rightarrow> p \<Down> t \<and> Q t < \<infinity>)  then enat (THE p. \<exists>t. (c,s) \<Rightarrow> p \<Down> t) + Q (THE t. \<exists>p. (c,s) \<Rightarrow> p \<Down> t) else \<infinity>))"
   
 lemma wpQ_skip[simp]: "wp\<^sub>Q SKIP Q = (%s. eSuc (Q s))"

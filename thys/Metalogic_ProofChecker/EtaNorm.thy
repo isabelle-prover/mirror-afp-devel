@@ -6,7 +6,7 @@ begin
 (* Again from Lambda calculus from @{dir "~~/src/HOL/Proofs/Lambda"} and modified*)
 
 inductive
-  eta :: "term \<Rightarrow> term \<Rightarrow> bool"  (infixl "\<rightarrow>\<^sub>\<eta>" 50)
+  eta :: "term \<Rightarrow> term \<Rightarrow> bool"  (infixl \<open>\<rightarrow>\<^sub>\<eta>\<close> 50)
 where
     eta [simp, intro]: "\<not> is_dependent s \<Longrightarrow> Abs T (s $ Bv 0) \<rightarrow>\<^sub>\<eta> decr 0 s"
   | appL [simp, intro]: "s \<rightarrow>\<^sub>\<eta> t \<Longrightarrow> s $ u \<rightarrow>\<^sub>\<eta> t $ u"
@@ -14,11 +14,11 @@ where
   | abs [simp, intro]: "s \<rightarrow>\<^sub>\<eta> t \<Longrightarrow> Abs T s \<rightarrow>\<^sub>\<eta> Abs T t"
 
 abbreviation
-  eta_reds :: "term \<Rightarrow> term \<Rightarrow> bool"   (infixl "\<rightarrow>\<^sub>\<eta>\<^sup>*" 50) where
+  eta_reds :: "term \<Rightarrow> term \<Rightarrow> bool"   (infixl \<open>\<rightarrow>\<^sub>\<eta>\<^sup>*\<close> 50) where
   "s \<rightarrow>\<^sub>\<eta>\<^sup>* t \<equiv> eta\<^sup>*\<^sup>* s t"
 
 abbreviation
-  eta_red0 :: "term \<Rightarrow> term \<Rightarrow> bool"   (infixl "\<rightarrow>\<^sub>\<eta>\<^sup>=" 50) where
+  eta_red0 :: "term \<Rightarrow> term \<Rightarrow> bool"   (infixl \<open>\<rightarrow>\<^sub>\<eta>\<^sup>=\<close> 50) where
   "s \<rightarrow>\<^sub>\<eta>\<^sup>= t \<equiv> eta\<^sup>=\<^sup>= s t"
 
 inductive_cases eta_cases [elim!]:

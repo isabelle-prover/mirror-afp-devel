@@ -35,12 +35,12 @@ datatype ('a, 'c) trm =
 \<comment> \<open>and a function \<open>'c \<Rightarrow> ('a, 'c) trm\<close> (where \<open>'c\<close> is a finite type) which specifies one\<close>
 \<comment> \<open>argument of the function for each element of type \<open>'c\<close>. To simulate a function with\<close>
 \<comment> \<open>less than \<open>'c\<close> arguments, set the remaining arguments to a constant, such as \<open>Const 0\<close>\<close>
-| Function 'a "'c \<Rightarrow> ('a, 'c) trm" ("$f")
+| Function 'a "'c \<Rightarrow> ('a, 'c) trm" (\<open>$f\<close>)
 | Plus "('a, 'c) trm" "('a, 'c) trm"
 | Times "('a, 'c) trm" "('a, 'c) trm"
 \<comment> \<open>A (real-valued) variable standing for a differential, such as \<open>x'\<close>, given meaning by the state\<close>
 \<comment> \<open>and modified by programs.\<close>
-| DiffVar 'c ("$''")
+| DiffVar 'c (\<open>$''\<close>)
 \<comment> \<open>The differential of an arbitrary term \<open>(\<theta>)'\<close>\<close>
 | Differential "('a, 'c) trm"
 
@@ -56,43 +56,43 @@ OVar 'c
 
 datatype ('a, 'b, 'c) hp =
 \<comment> \<open>Variables standing for programs, given meaning by the interpretation.\<close>
-  Pvar 'c                           ("$\<alpha>")
+  Pvar 'c                           (\<open>$\<alpha>\<close>)
 \<comment> \<open>Assignment to a real-valued variable \<open>x := \<theta>\<close>\<close>
-| Assign 'c "('a, 'c) trm"                (infixr ":=" 10)
+| Assign 'c "('a, 'c) trm"                (infixr \<open>:=\<close> 10)
 \<comment> \<open>Assignment to a differential variable\<close>
 | DiffAssign 'c "('a, 'c) trm"
 \<comment> \<open>Program \<open>?\<phi>\<close> succeeds iff \<open>\<phi>\<close> holds in current state.\<close>
-| Test "('a, 'b, 'c) formula"                 ("?")
+| Test "('a, 'b, 'c) formula"                 (\<open>?\<close>)
 \<comment> \<open>An ODE program is an ODE system with some evolution domain.\<close>
 | EvolveODE "('a, 'c) ODE" "('a, 'b, 'c) formula"
 \<comment> \<open>Non-deterministic choice between two programs \<open>a\<close> and \<open>b\<close>\<close>
-| Choice "('a, 'b, 'c) hp" "('a, 'b, 'c) hp"            (infixl "\<union>\<union>" 10)
+| Choice "('a, 'b, 'c) hp" "('a, 'b, 'c) hp"            (infixl \<open>\<union>\<union>\<close> 10)
 \<comment> \<open>Sequential composition of two programs \<open>a\<close> and \<open>b\<close>\<close>
-| Sequence "('a, 'b, 'c) hp"  "('a, 'b, 'c) hp"         (infixr ";;" 8)
+| Sequence "('a, 'b, 'c) hp"  "('a, 'b, 'c) hp"         (infixr \<open>;;\<close> 8)
 \<comment> \<open>Nondeterministic repetition of a program \<open>a\<close>, zero or more times.\<close>
-| Loop "('a, 'b, 'c) hp"                      ("_**")
+| Loop "('a, 'b, 'c) hp"                      (\<open>_**\<close>)
 
 and ('a, 'b, 'c) formula =
   Geq "('a, 'c) trm" "('a, 'c) trm"
-| Prop 'c "'c \<Rightarrow> ('a, 'c) trm"      ("$\<phi>")
-| Not "('a, 'b, 'c) formula"            ("!")
-| And "('a, 'b, 'c) formula" "('a, 'b, 'c) formula"    (infixl "&&" 8)
+| Prop 'c "'c \<Rightarrow> ('a, 'c) trm"      (\<open>$\<phi>\<close>)
+| Not "('a, 'b, 'c) formula"            (\<open>!\<close>)
+| And "('a, 'b, 'c) formula" "('a, 'b, 'c) formula"    (infixl \<open>&&\<close> 8)
 | Exists 'c "('a, 'b, 'c) formula"
 \<comment> \<open>\<open>\<langle>\<alpha>\<rangle>\<phi>\<close> iff exists run of \<open>\<alpha>\<close> where \<open>\<phi>\<close> is true in end state\<close>
-| Diamond "('a, 'b, 'c) hp" "('a, 'b, 'c) formula"         ("(\<langle> _ \<rangle> _)" 10)
+| Diamond "('a, 'b, 'c) hp" "('a, 'b, 'c) formula"         (\<open>(\<langle> _ \<rangle> _)\<close> 10)
 \<comment> \<open>Contexts \<open>C\<close> are symbols standing for functions from (the semantics of) formulas to\<close>
 \<comment> \<open>(the semantics of) formulas, thus \<open>C(\<phi>)\<close> is another formula. While not necessary\<close>
 \<comment> \<open>in terms of expressiveness, contexts allow for more efficient reasoning principles.\<close>
 | InContext 'b "('a, 'b, 'c) formula"
     
 \<comment> \<open>Derived forms\<close>
-definition Or :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixl "||" 7)
+definition Or :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixl \<open>||\<close> 7)
 where "Or P Q = Not (And (Not P) (Not Q))"
 
-definition Implies :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixr "\<rightarrow>" 10)
+definition Implies :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixr \<open>\<rightarrow>\<close> 10)
 where "Implies P Q = Or Q (Not P)"
 
-definition Equiv :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixl "\<leftrightarrow>" 10)
+definition Equiv :: "('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (infixl \<open>\<leftrightarrow>\<close> 10)
 where "Equiv P Q = Or (And P Q) (And (Not P) (Not Q))"
 
 definition Forall :: "'c \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula"
@@ -104,7 +104,7 @@ where "Equals \<theta> \<theta>' = ((Geq \<theta> \<theta>') && (Geq \<theta>' \
 definition Greater :: "('a, 'c) trm \<Rightarrow> ('a, 'c) trm \<Rightarrow> ('a, 'b, 'c) formula"
 where "Greater \<theta> \<theta>' = ((Geq \<theta> \<theta>') && (Not (Geq \<theta>' \<theta>)))"
   
-definition Box :: "('a, 'b, 'c) hp \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" ("([[_]]_)" 10)
+definition Box :: "('a, 'b, 'c) hp \<Rightarrow> ('a, 'b, 'c) formula \<Rightarrow> ('a, 'b, 'c) formula" (\<open>([[_]]_)\<close> 10)
 where "Box \<alpha> P = Not (Diamond \<alpha> (Not P))"
   
 definition TT ::"('a,'b,'c) formula" 
@@ -159,7 +159,7 @@ lemma [expr_diseq]:"p \<noteq> InContext C p" by(induction p, auto)
 \<comment> \<open>because predicates depend only on their arguments (which might then indirectly depend on the state).\<close>
 \<comment> \<open>We encode a predicational as a context applied to a formula whose truth value is constant with\<close>
 \<comment> \<open>respect to the state (specifically, always true)\<close>
-fun Predicational :: "'b \<Rightarrow> ('a, 'b, 'c) formula" ("Pc")
+fun Predicational :: "'b \<Rightarrow> ('a, 'b, 'c) formula" (\<open>Pc\<close>)
 where "Predicational P = InContext P (Geq (Const 0) (Const 0))"
 
 \<comment> \<open>Abbreviations for common syntactic constructs in order to make axiom definitions, etc. more\<close>

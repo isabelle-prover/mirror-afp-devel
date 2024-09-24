@@ -89,7 +89,7 @@ type_synonym stmt_config = "stmt \<times> nat"
 consts isTrue:: "val \<Rightarrow> bool"
 
 inductive stmt_step:: "tmps \<Rightarrow> stmt_config  \<Rightarrow> stmt_config \<times> instrs  \<Rightarrow> bool" 
-  ("_\<turnstile> _ \<rightarrow>\<^sub>s _" [60,60,60] 100)
+  (\<open>_\<turnstile> _ \<rightarrow>\<^sub>s _\<close> [60,60,60] 100)
 for \<theta>
 where
 
@@ -1198,13 +1198,13 @@ interpretation store_buffer_history:
 
 abbreviation direct_pimp_step:: 
   "(stmt_config,unit,bool,owns,rels,shared) global_config \<Rightarrow> (stmt_config,unit,bool,owns,rels,shared) global_config \<Rightarrow> bool" 
-  ("_ \<Rightarrow>\<^sub>d\<^sub>p _" [60,60] 100)
+  (\<open>_ \<Rightarrow>\<^sub>d\<^sub>p _\<close> [60,60] 100)
 where
 "c \<Rightarrow>\<^sub>d\<^sub>p d \<equiv> direct.concurrent_step c d"
 
 abbreviation direct_pimp_steps:: 
   "(stmt_config,unit,bool,owns,rels,shared) global_config \<Rightarrow> (stmt_config,unit,bool,owns,rels,shared) global_config \<Rightarrow> bool" 
-  ("_ \<Rightarrow>\<^sub>d\<^sub>p\<^sup>* _" [60,60] 100)
+  (\<open>_ \<Rightarrow>\<^sub>d\<^sub>p\<^sup>* _\<close> [60,60] 100)
 where
 "direct_pimp_steps == direct_pimp_step^**"
 

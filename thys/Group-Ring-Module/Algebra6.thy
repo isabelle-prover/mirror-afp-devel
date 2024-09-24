@@ -1345,7 +1345,7 @@ definition
   polyn_Hom :: "[('a, 'm) Ring_scheme, ('a, 'm1) Ring_scheme, 'a,
               ('b, 'n) Ring_scheme, ('b, 'n1) Ring_scheme, 'b] \<Rightarrow>
               ('a \<Rightarrow> 'b) set"
-            ("(pHom _ _ _, _ _ _)" [67,67,67,67,67,68]67) where
+            (\<open>(pHom _ _ _, _ _ _)\<close> [67,67,67,67,67,68]67) where
   "pHom R S X, A B Y = {f. f \<in> rHom R A \<and> f`(carrier S) \<subseteq> carrier B \<and> 
                           f X = Y}"  (* Hom from a polynomial ring to
                                         a polynomial ring *)
@@ -4674,7 +4674,7 @@ done
 definition
   Hensel_next :: "[('a, 'b) Ring_scheme, ('a, 'c) Ring_scheme, 'a, 'a,
  ('a set, 'm) Ring_scheme, 'a set,'a, nat] \<Rightarrow> ('a \<times> 'a) \<Rightarrow> ('a \<times> 'a)"
-     ("(9Hen\<^bsub> _ _ _ _ _ _ _\<^esub> _ _)"  [67,67,67,67,67,67,67,68]67) where
+     (\<open>(9Hen\<^bsub> _ _ _ _ _ _ _\<^esub> _ _)\<close>  [67,67,67,67,67,67,67,68]67) where
 
  "Hen\<^bsub>R S X t R' Y f \<^esub> m gh = (SOME gh1. 
       gh1 \<in> carrier R \<times> carrier R \<and>
@@ -4764,7 +4764,7 @@ done
 primrec
   Hensel_pair :: "[('a, 'b) Ring_scheme, ('a, 'c) Ring_scheme, 'a, 'a,
     ('a set, 'm) Ring_scheme, 'a set, 'a, 'a, 'a, nat] \<Rightarrow> ('a \<times> 'a)"
-      ("(10Hpr\<^bsub> _ _ _ _ _ _ _ _ _\<^esub> _)"  [67,67,67,67,67,67,67,67,67,68]67)
+      (\<open>(10Hpr\<^bsub> _ _ _ _ _ _ _ _ _\<^esub> _)\<close>  [67,67,67,67,67,67,67,67,67,68]67)
 where
   Hpr_0: "Hpr\<^bsub>R S X t R' Y f g h\<^esub> 0 = (g, h)"
 | Hpr_Suc: "Hpr\<^bsub>R S X t R' Y f g h\<^esub> (Suc m) = 

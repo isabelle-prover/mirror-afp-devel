@@ -33,7 +33,7 @@ where
 monos monoCoinduct
 
 abbreviation
-  bisimJudge ("_ \<sim> _" [70, 70] 65) where "P \<sim> Q \<equiv> (P, Q) \<in> bisim"
+  bisimJudge (\<open>_ \<sim> _\<close> [70, 70] 65) where "P \<sim> Q \<equiv> (P, Q) \<in> bisim"
 
 lemma bisimCoinductAux[consumes 1]:
   fixes P :: "ccs"

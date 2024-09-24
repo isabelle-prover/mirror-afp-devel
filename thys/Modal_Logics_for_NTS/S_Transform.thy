@@ -84,7 +84,7 @@ begin
   instead. However, it is clear from the following definition of the satisfaction relation that the
   single element of this type is not actually used in any meaningful way.\<close>
 
-  definition S_satisfies :: "'state \<Rightarrow> unit \<Rightarrow> bool" (infix "\<turnstile>\<^sub>S" 70) where
+  definition S_satisfies :: "'state \<Rightarrow> unit \<Rightarrow> bool" (infix \<open>\<turnstile>\<^sub>S\<close> 70) where
     "P \<turnstile>\<^sub>S \<phi> \<longleftrightarrow> False"
 
   lemma S_satisfies_eqvt: assumes "P \<turnstile>\<^sub>S \<phi>" shows "(p \<bullet> P) \<turnstile>\<^sub>S (p \<bullet> \<phi>)"
@@ -98,7 +98,7 @@ subsection \<open>Transitions\<close>
 context nominal_ts
 begin
 
-  inductive S_transition :: "'state \<Rightarrow> (('act,'pred) S_action, 'state) residual \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>S" 70) where
+  inductive S_transition :: "'state \<Rightarrow> (('act,'pred) S_action, 'state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>S\<close> 70) where
     Act: "P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<Longrightarrow> P \<rightarrow>\<^sub>S \<langle>Act \<alpha>,P'\<rangle>"
   | Pred: "P \<turnstile> \<phi> \<Longrightarrow> P \<rightarrow>\<^sub>S \<langle>Pred \<phi>,P\<rangle>"
 
@@ -152,9 +152,9 @@ begin
   interpretation S_transform: nominal_ts "(\<turnstile>\<^sub>S)" "(\<rightarrow>\<^sub>S)"
   by unfold_locales (fact S_satisfies_eqvt, fact S_transition_eqvt)
 
-  no_notation S_satisfies (infix "\<turnstile>\<^sub>S" 70) \<comment> \<open>denotes @{const S_transform.S_satisfies} instead\<close>
+  no_notation S_satisfies (infix \<open>\<turnstile>\<^sub>S\<close> 70) \<comment> \<open>denotes @{const S_transform.S_satisfies} instead\<close>
 
-  notation S_transform.bisimilar (infix "\<sim>\<cdot>\<^sub>S" 100)
+  notation S_transform.bisimilar (infix \<open>\<sim>\<cdot>\<^sub>S\<close> 100)
 
   text \<open>Bisimilarity is equivalent to bisimilarity in the $S$-transform.\<close>
 
@@ -320,17 +320,17 @@ begin
       using weakly_bisimilar_def by blast
   qed
 
-  notation S_satisfies (infix "\<turnstile>\<^sub>S" 70)
+  notation S_satisfies (infix \<open>\<turnstile>\<^sub>S\<close> 70)
 
   interpretation S_transform: weak_nominal_ts "(\<turnstile>\<^sub>S)" "(\<rightarrow>\<^sub>S)" "Act \<tau>"
   by unfold_locales (fact S_satisfies_eqvt, fact S_transition_eqvt, simp add: tau_eqvt)
 
-  no_notation S_satisfies (infix "\<turnstile>\<^sub>S" 70) \<comment> \<open>denotes @{const S_transform.S_satisfies} instead\<close>
+  no_notation S_satisfies (infix \<open>\<turnstile>\<^sub>S\<close> 70) \<comment> \<open>denotes @{const S_transform.S_satisfies} instead\<close>
 
-  notation S_transform.tau_transition (infix "\<Rightarrow>\<^sub>S" 70)
-  notation S_transform.observable_transition ("_/ \<Rightarrow>{_}\<^sub>S/ _" [70, 70, 71] 71)
-  notation S_transform.weak_transition ("_/ \<Rightarrow>\<langle>_\<rangle>\<^sub>S/ _" [70, 70, 71] 71)
-  notation S_transform.weakly_bisimilar (infix "\<approx>\<cdot>\<^sub>S" 100)
+  notation S_transform.tau_transition (infix \<open>\<Rightarrow>\<^sub>S\<close> 70)
+  notation S_transform.observable_transition (\<open>_/ \<Rightarrow>{_}\<^sub>S/ _\<close> [70, 70, 71] 71)
+  notation S_transform.weak_transition (\<open>_/ \<Rightarrow>\<langle>_\<rangle>\<^sub>S/ _\<close> [70, 70, 71] 71)
+  notation S_transform.weakly_bisimilar (infix \<open>\<approx>\<cdot>\<^sub>S\<close> 100)
 
   lemma S_transform_tau_transition_iff: "P \<Rightarrow>\<^sub>S P' \<longleftrightarrow> P \<Rightarrow> P'"
   proof
@@ -642,12 +642,12 @@ begin
   lemma valid_Conj_bempty [simp]: "P \<Turnstile> Conj bempty"
   by (simp add: bempty.rep_eq eqvtI supp_fun_eqvt)
 
-  notation S_satisfies (infix "\<turnstile>\<^sub>S" 70)
+  notation S_satisfies (infix \<open>\<turnstile>\<^sub>S\<close> 70)
 
   interpretation S_transform: nominal_ts "(\<turnstile>\<^sub>S)" "(\<rightarrow>\<^sub>S)"
   by unfold_locales (fact S_satisfies_eqvt, fact S_transition_eqvt)
 
-  notation S_transform.valid (infix "\<Turnstile>\<^sub>S" 70)
+  notation S_transform.valid (infix \<open>\<Turnstile>\<^sub>S\<close> 70)
 
   text \<open>The $S$-transform preserves satisfaction of formulas in the following sense:\<close>
 
@@ -738,7 +738,7 @@ begin
   interpretation S_transform: indexed_nominal_ts "(\<turnstile>\<^sub>S)" "(\<rightarrow>\<^sub>S)"
     by unfold_locales (fact S_satisfies_eqvt, fact S_transition_eqvt, fact card_idx_perm, fact card_idx_state)
 
-  notation S_transform.bisimilar (infix "\<sim>\<cdot>\<^sub>S" 100)
+  notation S_transform.bisimilar (infix \<open>\<sim>\<cdot>\<^sub>S\<close> 100)
 
   theorem "P \<sim>\<cdot>\<^sub>S Q \<longrightarrow> P \<sim>\<cdot> Q"
   proof
@@ -759,13 +759,13 @@ subsection \<open>Translation of weak formulas into formulas without predicates\
 context indexed_weak_nominal_ts
 begin
 
-  notation S_satisfies (infix "\<turnstile>\<^sub>S" 70)
+  notation S_satisfies (infix \<open>\<turnstile>\<^sub>S\<close> 70)
 
   interpretation S_transform: indexed_weak_nominal_ts "S_action.Act \<tau>" "(\<turnstile>\<^sub>S)" "(\<rightarrow>\<^sub>S)"
     by unfold_locales (fact S_satisfies_eqvt, fact S_transition_eqvt, simp add: tau_eqvt, fact card_idx_perm, fact card_idx_state, fact card_idx_nat)
 
-  notation S_transform.valid (infix "\<Turnstile>\<^sub>S" 70)
-  notation S_transform.weakly_bisimilar (infix "\<approx>\<cdot>\<^sub>S" 100)
+  notation S_transform.valid (infix \<open>\<Turnstile>\<^sub>S\<close> 70)
+  notation S_transform.weakly_bisimilar (infix \<open>\<approx>\<cdot>\<^sub>S\<close> 100)
 
   text \<open>The $S$-transform of a weak formula is not necessarily a weak formula. However, the image of
     all weak formulas under the $S$-transform is adequate for weak bisimilarity.\<close>

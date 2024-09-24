@@ -100,7 +100,7 @@ text \<open>
   a shorter syntax.
 \<close>
 
-abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
+abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder \<open>\<forall>\<^sup>\<infinity>\<close> 10) where
   "evseq P \<equiv> eventually P sequentially"
 
 lemma LIMSEQ_neg_powr:

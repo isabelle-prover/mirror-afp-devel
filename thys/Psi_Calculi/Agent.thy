@@ -7,25 +7,25 @@ theory Agent
 begin
 
 nominal_datatype ('term, 'assertion, 'condition) psi = 
-  PsiNil ("\<zero>" 190)
+  PsiNil (\<open>\<zero>\<close> 190)
 
 
-| Output "'term::fs_name" 'term "('term, 'assertion::fs_name, 'condition::fs_name) psi"    ("_\<langle>_\<rangle>._" [120, 120, 110] 110)
-| Input 'term "('term, 'assertion, 'condition) input"                                      ("_\<lparr>_" [120, 120] 110)
-| Case "(('term, 'assertion, 'condition) psiCase)"                                         ("Case _" [120] 120)
-| Par "('term, 'assertion, 'condition) psi" "('term, 'assertion, 'condition) psi"          (infixl "\<parallel>" 90)
-| Res "\<guillemotleft>name\<guillemotright>(('term, 'assertion, 'condition) psi)"                                        ("\<lparr>\<nu>_\<rparr>_" [120, 120] 110)
-| Assert 'assertion                                                                        ("\<lbrace>_\<rbrace>" [120] 120)
-| Bang "('term, 'assertion, 'condition) psi"                                               ("!_" [110] 110)
+| Output "'term::fs_name" 'term "('term, 'assertion::fs_name, 'condition::fs_name) psi"    (\<open>_\<langle>_\<rangle>._\<close> [120, 120, 110] 110)
+| Input 'term "('term, 'assertion, 'condition) input"                                      (\<open>_\<lparr>_\<close> [120, 120] 110)
+| Case "(('term, 'assertion, 'condition) psiCase)"                                         (\<open>Case _\<close> [120] 120)
+| Par "('term, 'assertion, 'condition) psi" "('term, 'assertion, 'condition) psi"          (infixl \<open>\<parallel>\<close> 90)
+| Res "\<guillemotleft>name\<guillemotright>(('term, 'assertion, 'condition) psi)"                                        (\<open>\<lparr>\<nu>_\<rparr>_\<close> [120, 120] 110)
+| Assert 'assertion                                                                        (\<open>\<lbrace>_\<rbrace>\<close> [120] 120)
+| Bang "('term, 'assertion, 'condition) psi"                                               (\<open>!_\<close> [110] 110)
 
 and ('term, 'assertion, 'condition) input = 
-  Trm 'term "(('term, 'assertion, 'condition) psi)"                                        ("\<rparr>_._" [130, 130] 130)
-| Bind "\<guillemotleft>name\<guillemotright>(('term, 'assertion, 'condition) input)"                                     ("\<nu>__" [120, 120] 120)
+  Trm 'term "(('term, 'assertion, 'condition) psi)"                                        (\<open>\<rparr>_._\<close> [130, 130] 130)
+| Bind "\<guillemotleft>name\<guillemotright>(('term, 'assertion, 'condition) input)"                                     (\<open>\<nu>__\<close> [120, 120] 120)
 
 and ('term, 'assertion, 'condition) psiCase = 
-  EmptyCase                                                                                ("\<bottom>\<^sub>c" 120)
+  EmptyCase                                                                                (\<open>\<bottom>\<^sub>c\<close> 120)
 | Cond 'condition "(('term, 'assertion, 'condition) psi)"
-                  "(('term, 'assertion, 'condition) psiCase)"                              ("\<box> _ \<Rightarrow> _ _ " [120, 120, 120] 120)
+                  "(('term, 'assertion, 'condition) psiCase)"                              (\<open>\<box> _ \<Rightarrow> _ _ \<close> [120, 120, 120] 120)
 
 lemma psiFreshSet[simp]:
   fixes X :: "name set"
@@ -103,13 +103,13 @@ lemma psiCasesFreshChain[simp]:
 by(auto simp add: fresh_star_def)
 
 abbreviation
-  psiCasesJudge ("Cases _" [80] 80) where "Cases Cs \<equiv> Case(psiCases Cs)"
+  psiCasesJudge (\<open>Cases _\<close> [80] 80) where "Cases Cs \<equiv> Case(psiCases Cs)"
 
 primrec resChain :: "name list \<Rightarrow> ('a::fs_name, 'b::fs_name, 'c::fs_name) psi \<Rightarrow> ('a, 'b, 'c) psi" where
   base: "resChain [] P = P"
 | step: "resChain (x#xs) P = \<lparr>\<nu>x\<rparr>(resChain xs P)"
 
-notation resChain ("\<lparr>\<nu>*_\<rparr>_" [80, 80] 80)
+notation resChain (\<open>\<lparr>\<nu>*_\<rparr>_\<close> [80, 80] 80)
 
 lemma resChainEqvt[eqvt]:
   fixes perm :: "name prm"
@@ -201,7 +201,7 @@ primrec inputChain :: "name list \<Rightarrow> 'a::fs_name \<Rightarrow> ('a, 'b
 | step: "inputChain (x#xs) N P = \<nu> x (inputChain xs N P)"
 
 abbreviation
-  inputChainJudge ("_\<lparr>\<lambda>*_ _\<rparr>._" [80, 80, 80, 80] 80) where "M\<lparr>\<lambda>*xvec N\<rparr>.P \<equiv> M\<lparr>(inputChain xvec N P)"
+  inputChainJudge (\<open>_\<lparr>\<lambda>*_ _\<rparr>._\<close> [80, 80, 80, 80] 80) where "M\<lparr>\<lambda>*xvec N\<rparr>.P \<equiv> M\<lparr>(inputChain xvec N P)"
 
 lemma inputChainEqvt[eqvt]:
   fixes p    :: "name prm"
@@ -862,7 +862,7 @@ lemma guardedSubst[simp]:
 using assms
 by(nominal_induct P and I and C avoiding: xvec Tvec rule: psi_input_psiCase.strong_inducts) auto
 
-definition seqSubs :: "('a, 'b, 'c) psi \<Rightarrow> (name list \<times> 'a list) list \<Rightarrow> ('a, 'b, 'c) psi" ("_[<_>]" [80, 80] 130)
+definition seqSubs :: "('a, 'b, 'c) psi \<Rightarrow> (name list \<times> 'a list) list \<Rightarrow> ('a, 'b, 'c) psi" (\<open>_[<_>]\<close> [80, 80] 130)
   where "P[<\<sigma>>] \<equiv> foldl (\<lambda>Q. \<lambda>(xvec, Tvec). subs Q xvec Tvec) P \<sigma>"
 
 definition seqSubs' :: "('a, 'b, 'c) input \<Rightarrow> (name list \<times> 'a list) list \<Rightarrow> ('a, 'b, 'c) input" 

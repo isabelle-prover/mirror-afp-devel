@@ -36,16 +36,16 @@ locale NonInterferenceInterGraph =
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>)  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
-  and Exit::"'node"  ("'('_Exit'_')") 
+  and Exit::"'node"  (\<open>'('_Exit'_')\<close>) 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list" +
   fixes H :: "'var set"
   fixes L :: "'var set"
-  fixes High :: "'node"  ("'('_High'_')")
-  fixes Low :: "'node"   ("'('_Low'_')")
+  fixes High :: "'node"  (\<open>'('_High'_')\<close>)
+  fixes Low :: "'node"   (\<open>'('_Low'_')\<close>)
   assumes Entry_edge_Exit_or_High:
   "\<lbrakk>valid_edge a; sourcenode a = (_Entry_)\<rbrakk> 
     \<Longrightarrow> targetnode a = (_Exit_) \<or> targetnode a = (_High_)"
@@ -188,7 +188,7 @@ the relation \<open>\<approx>\<^sub>L\<close>:
 \<close>
 
 definition lowEquivalence :: "('var \<rightharpoonup> 'val) list \<Rightarrow> ('var \<rightharpoonup> 'val) list \<Rightarrow> bool" 
-(infixl "\<approx>\<^sub>L" 50)
+(infixl \<open>\<approx>\<^sub>L\<close> 50)
   where "s \<approx>\<^sub>L s' \<equiv> \<forall>V \<in> L. hd s V = hd s' V"
 
 text \<open>The following lemmas connect low equivalent states with
@@ -1351,17 +1351,17 @@ locale NonInterferenceInter =
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>)  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
-  and Exit::"'node"  ("'('_Exit'_')") 
+  and Exit::"'node"  (\<open>'('_Exit'_')\<close>) 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list"
   and sem :: "'com \<Rightarrow> ('var \<rightharpoonup> 'val) list \<Rightarrow> 'com \<Rightarrow> ('var \<rightharpoonup> 'val) list \<Rightarrow> bool" 
-    ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
-  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51,0] 80)
+    (\<open>((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81)
+  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" (\<open>_ \<triangleq> _\<close> [51,0] 80)
   and H :: "'var set" and L :: "'var set" 
-  and High :: "'node"  ("'('_High'_')") and Low :: "'node" ("'('_Low'_')") +
+  and High :: "'node"  (\<open>'('_High'_')\<close>) and Low :: "'node" (\<open>'('_Low'_')\<close>) +
   fixes final :: "'com \<Rightarrow> bool"
   assumes final_edge_Low: "\<lbrakk>final c; n \<triangleq> c\<rbrakk> 
     \<Longrightarrow> \<exists>a. valid_edge a \<and> sourcenode a = n \<and> targetnode a = (_Low_) \<and> kind a = \<Up>id"

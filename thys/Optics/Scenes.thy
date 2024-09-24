@@ -17,7 +17,7 @@ text \<open> Overriding functions provide an abstract way of replacing a region 
   with the corresponding region of another source. \<close>
 
 locale overrider =
-  fixes F  :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<triangleright>" 65)
+  fixes F  :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<triangleright>\<close> 65)
   assumes 
     ovr_overshadow_left: "x \<triangleright> y \<triangleright> z = x \<triangleright> z" and
     ovr_overshadow_right: "x \<triangleright> (y \<triangleright> z) = x \<triangleright> z"
@@ -77,10 +77,10 @@ lemma region_coregion_Id:
 lemma state_eq_iff: "idem_scene S \<Longrightarrow> x = y \<longleftrightarrow> (x, y) \<in> region S \<and> (x, y) \<in> coregion S"
   by (metis IntE IntI pair_in_Id_conv region_coregion_Id)
 
-lift_definition scene_override :: "'a \<Rightarrow> 'a \<Rightarrow> ('a scene) \<Rightarrow> 'a" ("_ \<oplus>\<^sub>S _ on _" [95,0,96] 95)
+lift_definition scene_override :: "'a \<Rightarrow> 'a \<Rightarrow> ('a scene) \<Rightarrow> 'a" (\<open>_ \<oplus>\<^sub>S _ on _\<close> [95,0,96] 95)
 is "\<lambda> s\<^sub>1 s\<^sub>2 F. F s\<^sub>1 s\<^sub>2" .
 
-abbreviation (input) scene_copy :: "'a scene \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a)" ("cp\<^bsub>_\<^esub>") where
+abbreviation (input) scene_copy :: "'a scene \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a)" (\<open>cp\<^bsub>_\<^esub>\<close>) where
 "cp\<^bsub>A\<^esub> s \<equiv> (\<lambda> s'. s' \<oplus>\<^sub>S s on A)"
 
 lemma scene_override_idem [simp]: "idem_scene X \<Longrightarrow> s \<oplus>\<^sub>S s on X = s"
@@ -94,14 +94,14 @@ lemma scene_override_overshadow_right [simp]:
   "S\<^sub>1 \<oplus>\<^sub>S (S\<^sub>2 \<oplus>\<^sub>S S\<^sub>3 on X) on X = S\<^sub>1 \<oplus>\<^sub>S S\<^sub>3 on X"
   by (transfer, simp)
 
-definition scene_equiv :: "'a \<Rightarrow> 'a \<Rightarrow> ('a scene) \<Rightarrow> bool" ("_ \<approx>\<^sub>S _ on _" [65,0,66] 65) where
+definition scene_equiv :: "'a \<Rightarrow> 'a \<Rightarrow> ('a scene) \<Rightarrow> bool" (\<open>_ \<approx>\<^sub>S _ on _\<close> [65,0,66] 65) where
 [lens_defs]: "S\<^sub>1 \<approx>\<^sub>S S\<^sub>2 on X = (S\<^sub>1 \<oplus>\<^sub>S S\<^sub>2 on X = S\<^sub>1)"
 
 lemma scene_equiv_region: "idem_scene X \<Longrightarrow> region X = {(S\<^sub>1, S\<^sub>2). S\<^sub>1 \<approx>\<^sub>S S\<^sub>2 on X}"
   by (simp add: lens_defs, transfer, auto)
      (metis idem_overrider.ovr_idem, metis overrider.ovr_overshadow_right)
 
-lift_definition scene_indep :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix "\<bowtie>\<^sub>S" 50)
+lift_definition scene_indep :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix \<open>\<bowtie>\<^sub>S\<close> 50)
 is "\<lambda> F G. (\<forall> s\<^sub>1 s\<^sub>2 s\<^sub>3. G (F s\<^sub>1 s\<^sub>2) s\<^sub>3 = F (G s\<^sub>1 s\<^sub>3) s\<^sub>2)" .
 
 lemma scene_indep_override:
@@ -119,7 +119,7 @@ lemma scene_indep_sym:
 text \<open> Compatibility is a weaker notion than independence; the scenes can overlap but they must
   agree when they do. \<close>
 
-lift_definition scene_compat :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix "##\<^sub>S" 50)
+lift_definition scene_compat :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix \<open>##\<^sub>S\<close> 50)
 is "\<lambda> F G. (\<forall> s\<^sub>1 s\<^sub>2. G (F s\<^sub>1 s\<^sub>2) s\<^sub>2 = F (G s\<^sub>1 s\<^sub>2) s\<^sub>2)" .
 
 lemma scene_compat_copy:
@@ -157,16 +157,16 @@ begin
   instance ..
 end
 
-abbreviation union_scene :: "'s scene \<Rightarrow> 's scene \<Rightarrow> 's scene" (infixl "\<squnion>\<^sub>S" 65)
+abbreviation union_scene :: "'s scene \<Rightarrow> 's scene \<Rightarrow> 's scene" (infixl \<open>\<squnion>\<^sub>S\<close> 65)
 where "union_scene \<equiv> sup"
 
-abbreviation inter_scene :: "'s scene \<Rightarrow> 's scene \<Rightarrow> 's scene" (infixl "\<sqinter>\<^sub>S" 70)
+abbreviation inter_scene :: "'s scene \<Rightarrow> 's scene \<Rightarrow> 's scene" (infixl \<open>\<sqinter>\<^sub>S\<close> 70)
 where "inter_scene \<equiv> inf"
 
-abbreviation top_scene :: "'s scene" ("\<top>\<^sub>S")
+abbreviation top_scene :: "'s scene" (\<open>\<top>\<^sub>S\<close>)
 where "top_scene \<equiv> top"
 
-abbreviation bot_scene :: "'s scene" ("\<bottom>\<^sub>S")
+abbreviation bot_scene :: "'s scene" (\<open>\<bottom>\<^sub>S\<close>)
 where "bot_scene \<equiv> bot"
 
 instantiation scene :: (type) "minus"
@@ -332,7 +332,7 @@ begin
 instance ..
 end
 
-abbreviation subscene :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix "\<subseteq>\<^sub>S" 55)
+abbreviation subscene :: "'a scene \<Rightarrow> 'a scene \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>S\<close> 55)
 where "subscene X Y \<equiv> X \<le> Y"
 
 lemma subscene_refl: "X \<subseteq>\<^sub>S X"
@@ -385,7 +385,7 @@ lemma scene_le_iff_indep_inv:
   "A \<bowtie>\<^sub>S - B \<longleftrightarrow> A \<le> B"
   by (auto simp add: less_eq_scene_def scene_indep_override scene_override_commute)
 
-lift_definition scene_comp :: "'a scene \<Rightarrow> ('a \<Longrightarrow> 'b) \<Rightarrow> 'b scene" (infixl ";\<^sub>S" 80)
+lift_definition scene_comp :: "'a scene \<Rightarrow> ('a \<Longrightarrow> 'b) \<Rightarrow> 'b scene" (infixl \<open>;\<^sub>S\<close> 80)
 is "\<lambda> S X a b. if (vwb_lens X) then put\<^bsub>X\<^esub> a (S (get\<^bsub>X\<^esub> a) (get\<^bsub>X\<^esub> b)) else a"
   by (unfold_locales, auto)
 
@@ -411,7 +411,7 @@ lemma scene_comp_assoc: "\<lbrakk> vwb_lens X; vwb_lens Y \<rbrakk> \<Longrighta
   by (transfer, auto simp add: lens_comp_def fun_eq_iff)
      (metis comp_vwb_lens lens_comp_def)
 
-lift_definition scene_quotient :: "'b scene \<Rightarrow> ('a \<Longrightarrow> 'b) \<Rightarrow> 'a scene" (infixl "'/\<^sub>S" 80)
+lift_definition scene_quotient :: "'b scene \<Rightarrow> ('a \<Longrightarrow> 'b) \<Rightarrow> 'a scene" (infixl \<open>'/\<^sub>S\<close> 80)
 is "\<lambda> S X a b. if (vwb_lens X \<and> (\<forall>s\<^sub>1 s\<^sub>2 s\<^sub>3. S (s\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> s\<^sub>2) s\<^sub>3 = s\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> S s\<^sub>2 s\<^sub>3)) then get\<^bsub>X\<^esub> (S (create\<^bsub>X\<^esub> a) (create\<^bsub>X\<^esub> b)) else a"
   by (unfold_locales, auto simp add: lens_create_def lens_override_def)
      (metis (no_types, lifting) overrider.ovr_overshadow_right)
@@ -436,7 +436,7 @@ subsection \<open> Linking Scenes and Lenses \<close>
 
 text \<open> The following function extracts a scene from a very well behaved lens \<close>
 
-lift_definition lens_scene :: "('v \<Longrightarrow> 's) \<Rightarrow> 's scene" ("\<lbrakk>_\<rbrakk>\<^sub>\<sim>") is
+lift_definition lens_scene :: "('v \<Longrightarrow> 's) \<Rightarrow> 's scene" (\<open>\<lbrakk>_\<rbrakk>\<^sub>\<sim>\<close>) is
 "\<lambda> X s\<^sub>1 s\<^sub>2. if (mwb_lens X) then s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on X else s\<^sub>1"
   by (unfold_locales, auto simp add: lens_override_def)
 
@@ -585,7 +585,7 @@ lemma lens_scene_top_iff_bij_lens: "mwb_lens x \<Longrightarrow> \<lbrakk>x\<rbr
 
 subsection \<open> Function Domain Scene \<close>
 
-lift_definition fun_dom_scene :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::two) scene" ("fds") is
+lift_definition fun_dom_scene :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::two) scene" (\<open>fds\<close>) is
 "\<lambda> A f g. override_on f g A" by (unfold_locales, simp_all add: override_on_def fun_eq_iff)
 
 lemma fun_dom_scene_empty: "fds({}) = \<bottom>\<^sub>S"

@@ -32,14 +32,14 @@ type_synonym m = "cwo"      \<comment> \<open>  we use the letter 'm' for charac
 subsection \<open>Semantic Characterisation of DDL\<close> (*cf. original Carmo and Jones Paper @{cite "CJDDL"} p.290ff*)
 
 subsubsection \<open>Basic Set Operations\<close>
-abbreviation subset::"wo\<Rightarrow>wo\<Rightarrow>bool" (infix "\<sqsubseteq>" 46) where "\<alpha> \<sqsubseteq> \<beta> \<equiv> \<forall>w. \<alpha> w  \<longrightarrow> \<beta> w"
-abbreviation intersection::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr "\<sqinter>" 48) where "\<alpha> \<sqinter> \<beta> \<equiv> \<lambda>x. \<alpha> x \<and> \<beta> x"
-abbreviation union::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr "\<squnion>" 48) where "\<alpha> \<squnion> \<beta> \<equiv> \<lambda>x. \<alpha> x \<or> \<beta> x"
-abbreviation complement::"wo\<Rightarrow>wo" ("\<sim>_"[45]46) where "\<sim>\<alpha> \<equiv> \<lambda>x. \<not>\<alpha> x"
-abbreviation instantiated::"wo\<Rightarrow>bool" ("\<I>_"[45]46) where "\<I> \<phi> \<equiv> \<exists>x. \<phi> x"
-abbreviation setEq::"wo\<Rightarrow>wo\<Rightarrow>bool" (infix "=\<^sub>s" 46) where "\<alpha> =\<^sub>s \<beta> \<equiv> \<forall>x. \<alpha> x \<longleftrightarrow> \<beta> x"
-abbreviation univSet :: "wo" ("\<top>") where "\<top> \<equiv> \<lambda>w. True"
-abbreviation emptySet :: "wo" ("\<bottom>") where "\<bottom> \<equiv> \<lambda>w. False"
+abbreviation subset::"wo\<Rightarrow>wo\<Rightarrow>bool" (infix \<open>\<sqsubseteq>\<close> 46) where "\<alpha> \<sqsubseteq> \<beta> \<equiv> \<forall>w. \<alpha> w  \<longrightarrow> \<beta> w"
+abbreviation intersection::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr \<open>\<sqinter>\<close> 48) where "\<alpha> \<sqinter> \<beta> \<equiv> \<lambda>x. \<alpha> x \<and> \<beta> x"
+abbreviation union::"wo\<Rightarrow>wo\<Rightarrow>wo" (infixr \<open>\<squnion>\<close> 48) where "\<alpha> \<squnion> \<beta> \<equiv> \<lambda>x. \<alpha> x \<or> \<beta> x"
+abbreviation complement::"wo\<Rightarrow>wo" (\<open>\<sim>_\<close>[45]46) where "\<sim>\<alpha> \<equiv> \<lambda>x. \<not>\<alpha> x"
+abbreviation instantiated::"wo\<Rightarrow>bool" (\<open>\<I>_\<close>[45]46) where "\<I> \<phi> \<equiv> \<exists>x. \<phi> x"
+abbreviation setEq::"wo\<Rightarrow>wo\<Rightarrow>bool" (infix \<open>=\<^sub>s\<close> 46) where "\<alpha> =\<^sub>s \<beta> \<equiv> \<forall>x. \<alpha> x \<longleftrightarrow> \<beta> x"
+abbreviation univSet :: "wo" (\<open>\<top>\<close>) where "\<top> \<equiv> \<lambda>w. True"
+abbreviation emptySet :: "wo" (\<open>\<bottom>\<close>) where "\<bottom> \<equiv> \<lambda>w. False"
 
 subsubsection \<open>Set-Theoretic Conditions for DDL\<close>
 
@@ -77,28 +77,28 @@ lemma "ob A B \<longleftrightarrow>  (\<I>(A \<sqinter> B) \<and> (\<forall>X. X
 subsection \<open>(Shallow) Semantic Embedding of DDL\<close>
 
 subsubsection \<open>Basic Propositional Logic\<close>
-abbreviation pand::"m\<Rightarrow>m\<Rightarrow>m" (infixr"\<^bold>\<and>" 51) where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<and>(\<psi> c w)"
-abbreviation por::"m\<Rightarrow>m\<Rightarrow>m" (infixr"\<^bold>\<or>" 50) where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<or>(\<psi> c w)"
-abbreviation pimp::"m\<Rightarrow>m\<Rightarrow>m" (infix"\<^bold>\<rightarrow>" 49) where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<longrightarrow>(\<psi> c w)"
-abbreviation pequ::"m\<Rightarrow>m\<Rightarrow>m" (infix"\<^bold>\<leftrightarrow>" 48) where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<longleftrightarrow>(\<psi> c w)"
-abbreviation pnot::"m\<Rightarrow>m" ("\<^bold>\<not>_" [52]53) where "\<^bold>\<not>\<phi> \<equiv> \<lambda>c w. \<not>(\<phi> c w)"
+abbreviation pand::"m\<Rightarrow>m\<Rightarrow>m" (infixr\<open>\<^bold>\<and>\<close> 51) where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<and>(\<psi> c w)"
+abbreviation por::"m\<Rightarrow>m\<Rightarrow>m" (infixr\<open>\<^bold>\<or>\<close> 50) where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<or>(\<psi> c w)"
+abbreviation pimp::"m\<Rightarrow>m\<Rightarrow>m" (infix\<open>\<^bold>\<rightarrow>\<close> 49) where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<longrightarrow>(\<psi> c w)"
+abbreviation pequ::"m\<Rightarrow>m\<Rightarrow>m" (infix\<open>\<^bold>\<leftrightarrow>\<close> 48) where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda>c w. (\<phi> c w)\<longleftrightarrow>(\<psi> c w)"
+abbreviation pnot::"m\<Rightarrow>m" (\<open>\<^bold>\<not>_\<close> [52]53) where "\<^bold>\<not>\<phi> \<equiv> \<lambda>c w. \<not>(\<phi> c w)"
 
 subsubsection \<open>Modal Operators\<close>
-abbreviation cjboxa :: "m\<Rightarrow>m" ("\<^bold>\<box>\<^sub>a_" [52]53) where "\<^bold>\<box>\<^sub>a\<phi> \<equiv> \<lambda>c w. \<forall>v. (av w) v \<longrightarrow> (\<phi> c v)"
-abbreviation cjdiaa :: "m\<Rightarrow>m" ("\<^bold>\<diamond>\<^sub>a_" [52]53) where "\<^bold>\<diamond>\<^sub>a\<phi> \<equiv> \<lambda>c w. \<exists>v. (av w) v \<and> (\<phi> c v)"
-abbreviation cjboxp :: "m\<Rightarrow>m" ("\<^bold>\<box>\<^sub>p_" [52]53) where "\<^bold>\<box>\<^sub>p\<phi> \<equiv> \<lambda>c w. \<forall>v. (pv w) v \<longrightarrow> (\<phi> c v)"
-abbreviation cjdiap :: "m\<Rightarrow>m" ("\<^bold>\<diamond>\<^sub>p_" [52]53) where "\<^bold>\<diamond>\<^sub>p\<phi> \<equiv> \<lambda>c w. \<exists>v. (pv w) v \<and> (\<phi> c v)"
-abbreviation cjtaut :: "m" ("\<^bold>\<top>") where "\<^bold>\<top> \<equiv> \<lambda>c w. True"
-abbreviation cjcontr :: "m" ("\<^bold>\<bottom>") where "\<^bold>\<bottom> \<equiv> \<lambda>c w. False"
+abbreviation cjboxa :: "m\<Rightarrow>m" (\<open>\<^bold>\<box>\<^sub>a_\<close> [52]53) where "\<^bold>\<box>\<^sub>a\<phi> \<equiv> \<lambda>c w. \<forall>v. (av w) v \<longrightarrow> (\<phi> c v)"
+abbreviation cjdiaa :: "m\<Rightarrow>m" (\<open>\<^bold>\<diamond>\<^sub>a_\<close> [52]53) where "\<^bold>\<diamond>\<^sub>a\<phi> \<equiv> \<lambda>c w. \<exists>v. (av w) v \<and> (\<phi> c v)"
+abbreviation cjboxp :: "m\<Rightarrow>m" (\<open>\<^bold>\<box>\<^sub>p_\<close> [52]53) where "\<^bold>\<box>\<^sub>p\<phi> \<equiv> \<lambda>c w. \<forall>v. (pv w) v \<longrightarrow> (\<phi> c v)"
+abbreviation cjdiap :: "m\<Rightarrow>m" (\<open>\<^bold>\<diamond>\<^sub>p_\<close> [52]53) where "\<^bold>\<diamond>\<^sub>p\<phi> \<equiv> \<lambda>c w. \<exists>v. (pv w) v \<and> (\<phi> c v)"
+abbreviation cjtaut :: "m" (\<open>\<^bold>\<top>\<close>) where "\<^bold>\<top> \<equiv> \<lambda>c w. True"
+abbreviation cjcontr :: "m" (\<open>\<^bold>\<bottom>\<close>) where "\<^bold>\<bottom> \<equiv> \<lambda>c w. False"
 
 subsubsection \<open>Deontic Operators\<close>
-abbreviation cjod :: "m\<Rightarrow>m\<Rightarrow>m" ("\<^bold>O\<langle>_|_\<rangle>"54) where "\<^bold>O\<langle>\<phi>|\<sigma>\<rangle> \<equiv> \<lambda>c w. ob (\<sigma> c) (\<phi> c)"
-abbreviation cjoa :: "m\<Rightarrow>m" ("\<^bold>O\<^sub>a_" [53]54) where "\<^bold>O\<^sub>a\<phi> \<equiv> \<lambda>c w. (ob (av w)) (\<phi> c) \<and> (\<exists>x. (av w) x \<and> \<not>(\<phi> c x))"
-abbreviation cjop :: "m\<Rightarrow>m" ("\<^bold>O\<^sub>i_" [53]54) where "\<^bold>O\<^sub>i\<phi> \<equiv> \<lambda>c w. (ob (pv w)) (\<phi> c) \<and> (\<exists>x. (pv w) x \<and> \<not>(\<phi> c x))"
+abbreviation cjod :: "m\<Rightarrow>m\<Rightarrow>m" (\<open>\<^bold>O\<langle>_|_\<rangle>\<close>54) where "\<^bold>O\<langle>\<phi>|\<sigma>\<rangle> \<equiv> \<lambda>c w. ob (\<sigma> c) (\<phi> c)"
+abbreviation cjoa :: "m\<Rightarrow>m" (\<open>\<^bold>O\<^sub>a_\<close> [53]54) where "\<^bold>O\<^sub>a\<phi> \<equiv> \<lambda>c w. (ob (av w)) (\<phi> c) \<and> (\<exists>x. (av w) x \<and> \<not>(\<phi> c x))"
+abbreviation cjop :: "m\<Rightarrow>m" (\<open>\<^bold>O\<^sub>i_\<close> [53]54) where "\<^bold>O\<^sub>i\<phi> \<equiv> \<lambda>c w. (ob (pv w)) (\<phi> c) \<and> (\<exists>x. (pv w) x \<and> \<not>(\<phi> c x))"
 
 subsubsection \<open>Logical Validity (Classical)\<close>
-abbreviation modvalidctx :: "m\<Rightarrow>c\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sup>M") where "\<lfloor>\<phi>\<rfloor>\<^sup>M \<equiv> \<lambda>c. \<forall>w. \<phi> c w" \<comment> \<open> context-dependent modal validity \<close>
-abbreviation modvalid :: "m\<Rightarrow>bool" ("\<lfloor>_\<rfloor>") where "\<lfloor>\<phi>\<rfloor> \<equiv> \<forall>c. \<lfloor>\<phi>\<rfloor>\<^sup>M c" \<comment> \<open> general modal validity (modally valid in each context) \<close>
+abbreviation modvalidctx :: "m\<Rightarrow>c\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<^sup>M\<close>) where "\<lfloor>\<phi>\<rfloor>\<^sup>M \<equiv> \<lambda>c. \<forall>w. \<phi> c w" \<comment> \<open> context-dependent modal validity \<close>
+abbreviation modvalid :: "m\<Rightarrow>bool" (\<open>\<lfloor>_\<rfloor>\<close>) where "\<lfloor>\<phi>\<rfloor> \<equiv> \<forall>c. \<lfloor>\<phi>\<rfloor>\<^sup>M c" \<comment> \<open> general modal validity (modally valid in each context) \<close>
 
 (*
 If we introduce the alternative definition of logical validity below (from Kaplan's LD) instead of the previous one,
@@ -122,8 +122,8 @@ lemma NecDDLp:  "\<lfloor>A\<rfloor> \<Longrightarrow> \<lfloor>\<^bold>\<box>\<
 
 subsubsection \<open>Lemmas for Semantic Conditions\<close> (* extracted from Benzmüller et al. paper @{cite "BenzmuellerDDL"}*)
 
-abbreviation mboxS5 :: "m\<Rightarrow>m" ("\<^bold>\<box>\<^sup>S\<^sup>5_" [52]53) where "\<^bold>\<box>\<^sup>S\<^sup>5\<phi> \<equiv> \<lambda>c w. \<forall>v. \<phi> c v"
-abbreviation mdiaS5 :: "m\<Rightarrow>m" ("\<^bold>\<diamond>\<^sup>S\<^sup>5_" [52]53) where "\<^bold>\<diamond>\<^sup>S\<^sup>5\<phi> \<equiv> \<lambda>c w. \<exists>v. \<phi> c v"
+abbreviation mboxS5 :: "m\<Rightarrow>m" (\<open>\<^bold>\<box>\<^sup>S\<^sup>5_\<close> [52]53) where "\<^bold>\<box>\<^sup>S\<^sup>5\<phi> \<equiv> \<lambda>c w. \<forall>v. \<phi> c v"
+abbreviation mdiaS5 :: "m\<Rightarrow>m" (\<open>\<^bold>\<diamond>\<^sup>S\<^sup>5_\<close> [52]53) where "\<^bold>\<diamond>\<^sup>S\<^sup>5\<phi> \<equiv> \<lambda>c w. \<exists>v. \<phi> c v"
 
 lemma C_2: "\<lfloor>\<^bold>O\<langle>A | B\<rangle> \<^bold>\<rightarrow> \<^bold>\<diamond>\<^sup>S\<^sup>5(B \<^bold>\<and> A)\<rfloor>" by (simp add: sem_5ab)
 lemma C_3:  "\<lfloor>((\<^bold>\<diamond>\<^sup>S\<^sup>5(A \<^bold>\<and> B \<^bold>\<and> C)) \<^bold>\<and> \<^bold>O\<langle>B|A\<rangle> \<^bold>\<and> \<^bold>O\<langle>C|A\<rangle>) \<^bold>\<rightarrow> \<^bold>O\<langle>(B \<^bold>\<and> C)| A\<rangle>\<rfloor>" by (simp add: sem_5c)

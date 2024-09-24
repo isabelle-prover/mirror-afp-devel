@@ -479,7 +479,7 @@ context qmpt begin
 text \<open>One is all the time lead to take the preimages of sets, and restrict them to
 \verb+space M+ where the dynamics is living. We introduce a shortcut for this notion.\<close>
 
-definition vimage_restr :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr "--`" 90)
+definition vimage_restr :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixr \<open>--`\<close> 90)
 where
   "f --` A \<equiv> f-` (A \<inter> space M) \<inter> space M"
 

@@ -271,7 +271,7 @@ lemma get_common_denominator:
   using Q\<^sub>p_def assms(1) assms(2) common_denominator[of x y]
   by blast  
 
-abbreviation fract :: "_ \<Rightarrow> _ \<Rightarrow> _" (infixl "\<div>" 50) where
+abbreviation fract :: "_ \<Rightarrow> _ \<Rightarrow> _" (infixl \<open>\<div>\<close> 50) where
 "(fract a b) \<equiv> (a \<otimes> (inv\<^bsub>Q\<^sub>p\<^esub> b))"
 
 text\<open>fract generalizes frac\<close>

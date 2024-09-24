@@ -201,7 +201,7 @@ fun string_of_term ctxt env binders t =
   |> Syntax.string_of_term ctxt
 
 fun bname binders = fst o fst o nth binders
-fun bnames binders is = map (bname binders) is |> space_implode " "
+fun bnames binders is = map (bname binders) is |> implode_space
 
 fun proj_fail ctxt (env, binders, F, _, is, t) reason =
   @{log Logger.DEBUG} ctxt (fn _ =>

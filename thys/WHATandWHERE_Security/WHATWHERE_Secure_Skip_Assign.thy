@@ -10,7 +10,7 @@ context WHATWHERE_Secure_Programs
 begin
 
 abbreviation NextMem' 
-("\<lbrakk>_\<rbrakk>'(_')")
+(\<open>\<lbrakk>_\<rbrakk>'(_')\<close>)
 where
 "\<lbrakk>c\<rbrakk>(m) \<equiv> NextMem c m"
 
@@ -21,7 +21,7 @@ where
   \<longrightarrow> ((E e1 m) = (E e2 m')))"
 
 abbreviation d_indistinguishable' :: "'exp \<Rightarrow> 'd::order \<Rightarrow> 'exp \<Rightarrow> bool" 
-( "(_ \<equiv>\<^bsub>_\<^esub> _)" )
+( \<open>(_ \<equiv>\<^bsub>_\<^esub> _)\<close> )
 where
 "e1 \<equiv>\<^bsub>d\<^esub> e2 \<equiv> d_indistinguishable d e1 e2"
 
@@ -45,7 +45,7 @@ where
 
 abbreviation dH_indistinguishable' :: "'exp \<Rightarrow> 'd 
   \<Rightarrow> ('d, 'exp) Hatches \<Rightarrow> 'exp \<Rightarrow> bool" 
-( "(_ \<equiv>\<^bsub>_,_\<^esub> _)" )
+( \<open>(_ \<equiv>\<^bsub>_,_\<^esub> _)\<close> )
 where
 "e1 \<equiv>\<^bsub>d,H\<^esub> e2 \<equiv> dH_indistinguishable d H e1 e2"
 

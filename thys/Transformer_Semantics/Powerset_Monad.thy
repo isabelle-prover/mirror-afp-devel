@@ -12,8 +12,8 @@ imports "Order_Lattice_Props.Order_Lattice_Props"
 
 begin          
 
-notation relcomp (infixl ";" 75) 
-  and image ("\<P>")
+notation relcomp (infixl \<open>;\<close> 75) 
+  and image (\<open>\<P>\<close>)
 
 subsection \<open>The Powerset Monad\<close>
 
@@ -28,10 +28,10 @@ lemma P_func2: "\<P> id = id"
 text \<open>Isabelle' type systems doesn't allow formalising arbitrary monads, but instances such as the powerset monad
 can still be developed.\<close>
 
-abbreviation eta :: "'a \<Rightarrow> 'a set" ("\<eta>") where
+abbreviation eta :: "'a \<Rightarrow> 'a set" (\<open>\<eta>\<close>) where
   "\<eta> \<equiv> (\<lambda>x. {x})"
 
-abbreviation mu :: "'a set set \<Rightarrow> 'a set" ("\<mu>") where
+abbreviation mu :: "'a set set \<Rightarrow> 'a set" (\<open>\<mu>\<close>) where
   "\<mu> \<equiv> Union"
 
 text \<open>$\eta$ and $\mu$ are natural transformations.\<close>
@@ -61,13 +61,13 @@ subsection \<open>Kleisli Category of the Powerset Monad\<close>
 text \<open>Next I define the Kleisli composition and Kleisli lifting (Kleisli extension) of Kleisli arrows. 
 The Kleisli lifting turns Kleisli arrows into forward predicate transformers.\<close>
 
-definition kcomp :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('b \<Rightarrow> 'c set) \<Rightarrow> ('a  \<Rightarrow> 'c set)" (infixl "\<circ>\<^sub>K" 75) where
+definition kcomp :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('b \<Rightarrow> 'c set) \<Rightarrow> ('a  \<Rightarrow> 'c set)" (infixl \<open>\<circ>\<^sub>K\<close> 75) where
   "f \<circ>\<^sub>K g = \<mu> \<circ> \<P> g \<circ> f"     
 
 lemma kcomp_prop: "(f \<circ>\<^sub>K g) x = (\<Squnion>y \<in> f x. g y)"
   by (simp add: kcomp_def)
 
-definition klift :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> 'b set" ("_\<^sup>\<dagger>" [101] 100) where
+definition klift :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> 'b set" (\<open>_\<^sup>\<dagger>\<close> [101] 100) where
   "f\<^sup>\<dagger> = \<mu> \<circ> \<P> f"
 
 lemma klift_prop: "(f\<^sup>\<dagger>) X = (\<Squnion>x \<in> X. f x)" 
@@ -116,7 +116,7 @@ text \<open>It is well known that the Eilenberg-Moore algebras of the powerset m
 
 text \<open>First I verify that every complete lattice with structure map Sup satisfies the laws of Eilenberg-Moore algebras.\<close>
 
-notation Sup ("\<sigma>")
+notation Sup (\<open>\<sigma>\<close>)
 
 lemma em_assoc [simp]: "\<sigma> \<circ> \<P> (\<sigma>::'a::complete_lattice set \<Rightarrow> 'a) = \<sigma> \<circ> \<mu>"
   apply (standard, rule antisym)
@@ -206,7 +206,7 @@ sublocale smap_Sup_lat: Sup_lattice smap sleq sle
 
 text \<open>Hence every complete lattice is an Eilenberg-Moore algebra of $\mathcal{P}$.\<close>
 
-no_notation Sup ("\<sigma>")
+no_notation Sup (\<open>\<sigma>\<close>)
 
 end
 
@@ -219,15 +219,15 @@ arrows isn't. Ideally one should therefore use the isomorphism to transport theo
 I spell out the isomorphisms and prove that the full quantalic structure, that is, complete lattices plus compositions, 
 is preserved by the isomorphisms.\<close>
 
-abbreviation kzero :: "'a \<Rightarrow> 'b set" ("\<zeta>") where
+abbreviation kzero :: "'a \<Rightarrow> 'b set" (\<open>\<zeta>\<close>) where
   "\<zeta> \<equiv> (\<lambda>x::'a. {})"
 
 text \<open>First I define the morphisms. The second one is nothing but the graph of a function.\<close>
 
-definition r2f :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b set" ("\<F>") where
+definition r2f :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>\<F>\<close>) where
   "\<F> R = Image R \<circ> \<eta>" 
 
-definition f2r :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<times> 'b) set" ("\<R>") where
+definition f2r :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<times> 'b) set" (\<open>\<R>\<close>) where
   "\<R> f = {(x,y). y \<in> f x}"
 
 text \<open>The functors form a bijective pair.\<close>
@@ -396,9 +396,9 @@ subsection \<open>The opposite Kleisli Category\<close>
 text \<open>Opposition is funtamental for categories; yet hard to realise in Isabelle in general. Due to the access to relations,
 the Kleisli category of the powerset functor is an exception.\<close>
 
-notation converse ("\<smile>")
+notation converse (\<open>\<smile>\<close>)
 
-definition kop :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'b \<Rightarrow> 'a set" ("op\<^sub>K") where
+definition kop :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'b \<Rightarrow> 'a set" (\<open>op\<^sub>K\<close>) where
   "op\<^sub>K = \<F> \<circ> (\<smile>) \<circ> \<R>"
 
 text \<open>Kop is a contravariant functor.\<close>

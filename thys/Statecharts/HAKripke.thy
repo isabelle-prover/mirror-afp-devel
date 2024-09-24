@@ -37,7 +37,7 @@ definition
 
 definition
    eval_ctl_HA :: "[('s,'e,'d)hierauto, ('s,'e,'d)hactl]
-                   => bool"  ("_ |=H= _" [92,91]90) where
+                   => bool"  (\<open>_ |=H= _\<close> [92,91]90) where
 
    "eval_ctl_HA a f = ((HA2Kripke a), (InitStatus a) |=c= f)"
 

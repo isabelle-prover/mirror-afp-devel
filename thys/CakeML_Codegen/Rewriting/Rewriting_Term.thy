@@ -10,7 +10,7 @@ subsection \<open>Matching and rewriting\<close>
 
 type_synonym rule = "term \<times> term"
 
-inductive rewrite :: "rule fset \<Rightarrow> term \<Rightarrow> term \<Rightarrow> bool" ("_/ \<turnstile>/ _ \<longrightarrow>/ _" [50,0,50] 50) for rs where
+inductive rewrite :: "rule fset \<Rightarrow> term \<Rightarrow> term \<Rightarrow> bool" (\<open>_/ \<turnstile>/ _ \<longrightarrow>/ _\<close> [50,0,50] 50) for rs where
 step: "r |\<in>| rs \<Longrightarrow> r \<turnstile> t \<rightarrow> u \<Longrightarrow> rs \<turnstile> t \<longrightarrow> u" |
 beta: "rs \<turnstile> (\<Lambda> t $ t') \<longrightarrow> t [t']\<^sub>\<beta>" |
 "fun": "rs \<turnstile> t \<longrightarrow> t'\<Longrightarrow> rs \<turnstile> t $ u \<longrightarrow> t' $ u" |
@@ -19,7 +19,7 @@ arg: "rs \<turnstile> u \<longrightarrow> u'\<Longrightarrow> rs \<turnstile> t 
 global_interpretation rewrite: rewriting "rewrite rs" for rs
 by standard (auto intro: rewrite.intros simp: app_term_def)+
 
-abbreviation rewrite_rt :: "rule fset \<Rightarrow> term \<Rightarrow> term \<Rightarrow> bool" ("_/ \<turnstile>/ _ \<longrightarrow>*/ _" [50,0,50] 50) where
+abbreviation rewrite_rt :: "rule fset \<Rightarrow> term \<Rightarrow> term \<Rightarrow> bool" (\<open>_/ \<turnstile>/ _ \<longrightarrow>*/ _\<close> [50,0,50] 50) where
 "rewrite_rt rs \<equiv> (rewrite rs)\<^sup>*\<^sup>*"
 
 lemma rewrite_beta_alt: "t [t']\<^sub>\<beta> = u \<Longrightarrow> wellformed t' \<Longrightarrow> rs \<turnstile> (\<Lambda> t $ t') \<longrightarrow> u"

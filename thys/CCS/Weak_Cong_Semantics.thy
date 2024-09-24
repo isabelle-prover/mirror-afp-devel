@@ -6,7 +6,7 @@ theory Weak_Cong_Semantics
   imports Tau_Chain
 begin
 
-definition weakCongTrans :: "ccs \<Rightarrow> act \<Rightarrow> ccs \<Rightarrow> bool" ("_ \<Longrightarrow>_ \<prec> _" [80, 80, 80] 80)
+definition weakCongTrans :: "ccs \<Rightarrow> act \<Rightarrow> ccs \<Rightarrow> bool" (\<open>_ \<Longrightarrow>_ \<prec> _\<close> [80, 80, 80] 80)
   where "P \<Longrightarrow>\<alpha> \<prec> P' \<equiv> \<exists>P'' P'''. P \<Longrightarrow>\<^sub>\<tau> P'' \<and> P'' \<longmapsto>\<alpha> \<prec> P''' \<and> P''' \<Longrightarrow>\<^sub>\<tau> P'"
 
 lemma weakCongTransE:

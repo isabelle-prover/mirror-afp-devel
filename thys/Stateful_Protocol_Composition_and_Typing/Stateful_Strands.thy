@@ -11,18 +11,18 @@ begin
 
 subsection \<open>Stateful Constraints\<close>
 datatype (funs\<^sub>s\<^sub>s\<^sub>t\<^sub>p: 'a, vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p: 'b) stateful_strand_step = 
-  Send (the_msgs: "('a,'b) term list") ("send\<langle>_\<rangle>" 80)
-| Receive (the_msgs: "('a,'b) term list") ("receive\<langle>_\<rangle>" 80)
+  Send (the_msgs: "('a,'b) term list") (\<open>send\<langle>_\<rangle>\<close> 80)
+| Receive (the_msgs: "('a,'b) term list") (\<open>receive\<langle>_\<rangle>\<close> 80)
 | Equality (the_check: poscheckvariant) (the_lhs: "('a,'b) term") (the_rhs: "('a,'b) term")
-    ("\<langle>_: _ \<doteq> _\<rangle>" [80,80])
-| Insert (the_elem_term: "('a,'b) term") (the_set_term: "('a,'b) term") ("insert\<langle>_,_\<rangle>" 80)
-| Delete (the_elem_term: "('a,'b) term") (the_set_term: "('a,'b) term") ("delete\<langle>_,_\<rangle>" 80)
+    (\<open>\<langle>_: _ \<doteq> _\<rangle>\<close> [80,80])
+| Insert (the_elem_term: "('a,'b) term") (the_set_term: "('a,'b) term") (\<open>insert\<langle>_,_\<rangle>\<close> 80)
+| Delete (the_elem_term: "('a,'b) term") (the_set_term: "('a,'b) term") (\<open>delete\<langle>_,_\<rangle>\<close> 80)
 | InSet (the_check: poscheckvariant) (the_elem_term: "('a,'b) term") (the_set_term: "('a,'b) term")
-    ("\<langle>_: _ \<in> _\<rangle>" [80,80])
+    (\<open>\<langle>_: _ \<in> _\<rangle>\<close> [80,80])
 | NegChecks (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p: "'b list")
     (the_eqs: "(('a,'b) term \<times> ('a,'b) term) list")
     (the_ins: "(('a,'b) term \<times> ('a,'b) term) list")
-    ("\<forall>_\<langle>\<or>\<noteq>: _ \<or>\<notin>: _\<rangle>" [80,80])
+    (\<open>\<forall>_\<langle>\<or>\<noteq>: _ \<or>\<notin>: _\<rangle>\<close> [80,80])
 where
   "bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (Send _) = []"
 | "bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (Receive _) = []"
@@ -47,33 +47,33 @@ abbreviation
 abbreviation
   "is_Update x \<equiv> is_Insert x \<or> is_Delete x"
 
-abbreviation InSet_select ("select\<langle>_,_\<rangle>") where "select\<langle>t,s\<rangle> \<equiv> InSet Assign t s"
-abbreviation InSet_check ("\<langle>_ in _\<rangle>") where "\<langle>t in s\<rangle> \<equiv> InSet Check t s"
-abbreviation Equality_assign ("\<langle>_ := _\<rangle>") where "\<langle>t := s\<rangle> \<equiv> Equality Assign t s"
-abbreviation Equality_check ("\<langle>_ == _\<rangle>") where "\<langle>t == s\<rangle> \<equiv> Equality Check t s"
+abbreviation InSet_select (\<open>select\<langle>_,_\<rangle>\<close>) where "select\<langle>t,s\<rangle> \<equiv> InSet Assign t s"
+abbreviation InSet_check (\<open>\<langle>_ in _\<rangle>\<close>) where "\<langle>t in s\<rangle> \<equiv> InSet Check t s"
+abbreviation Equality_assign (\<open>\<langle>_ := _\<rangle>\<close>) where "\<langle>t := s\<rangle> \<equiv> Equality Assign t s"
+abbreviation Equality_check (\<open>\<langle>_ == _\<rangle>\<close>) where "\<langle>t == s\<rangle> \<equiv> Equality Check t s"
 
-abbreviation NegChecks_Inequality1 ("\<langle>_ != _\<rangle>") where
+abbreviation NegChecks_Inequality1 (\<open>\<langle>_ != _\<rangle>\<close>) where
   "\<langle>t != s\<rangle> \<equiv> NegChecks [] [(t,s)] []"
 
-abbreviation NegChecks_Inequality2 ("\<forall>_\<langle>_ != _\<rangle>") where
+abbreviation NegChecks_Inequality2 (\<open>\<forall>_\<langle>_ != _\<rangle>\<close>) where
   "\<forall>x\<langle>t != s\<rangle> \<equiv> NegChecks [x] [(t,s)] []"
 
-abbreviation NegChecks_Inequality3 ("\<forall>_,_\<langle>_ != _\<rangle>") where
+abbreviation NegChecks_Inequality3 (\<open>\<forall>_,_\<langle>_ != _\<rangle>\<close>) where
   "\<forall>x,y\<langle>t != s\<rangle> \<equiv> NegChecks [x,y] [(t,s)] []"
 
-abbreviation NegChecks_Inequality4 ("\<forall>_,_,_\<langle>_ != _\<rangle>") where
+abbreviation NegChecks_Inequality4 (\<open>\<forall>_,_,_\<langle>_ != _\<rangle>\<close>) where
   "\<forall>x,y,z\<langle>t != s\<rangle> \<equiv> NegChecks [x,y,z] [(t,s)] []"
 
-abbreviation NegChecks_NotInSet1 ("\<langle>_ not in _\<rangle>") where
+abbreviation NegChecks_NotInSet1 (\<open>\<langle>_ not in _\<rangle>\<close>) where
   "\<langle>t not in s\<rangle> \<equiv> NegChecks [] [] [(t,s)]"
 
-abbreviation NegChecks_NotInSet2 ("\<forall>_\<langle>_ not in _\<rangle>") where
+abbreviation NegChecks_NotInSet2 (\<open>\<forall>_\<langle>_ not in _\<rangle>\<close>) where
   "\<forall>x\<langle>t not in s\<rangle> \<equiv> NegChecks [x] [] [(t,s)]"
 
-abbreviation NegChecks_NotInSet3 ("\<forall>_,_\<langle>_ not in _\<rangle>") where
+abbreviation NegChecks_NotInSet3 (\<open>\<forall>_,_\<langle>_ not in _\<rangle>\<close>) where
   "\<forall>x,y\<langle>t not in s\<rangle> \<equiv> NegChecks [x,y] [] [(t,s)]"
 
-abbreviation NegChecks_NotInSet4 ("\<forall>_,_,_\<langle>_ not in _\<rangle>") where
+abbreviation NegChecks_NotInSet4 (\<open>\<forall>_,_,_\<langle>_ not in _\<rangle>\<close>) where
   "\<forall>x,y,z\<langle>t not in s\<rangle> \<equiv> NegChecks [x,y,z] [] [(t,s)]"
 
 fun trms\<^sub>s\<^sub>s\<^sub>t\<^sub>p where
@@ -173,7 +173,7 @@ abbreviation "wf\<^sub>s\<^sub>s\<^sub>t S \<equiv> wf'\<^sub>s\<^sub>s\<^sub>t 
 
 fun subst_apply_stateful_strand_step::
   "('a,'b) stateful_strand_step \<Rightarrow> ('a,'b) subst \<Rightarrow> ('a,'b) stateful_strand_step"
-  (infix "\<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p" 51) where
+  (infix \<open>\<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p\<close> 51) where
   "send\<langle>ts\<rangle> \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta> = send\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>"
 | "receive\<langle>ts\<rangle> \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta> = receive\<langle>ts \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<theta>\<rangle>"
 | "\<langle>a: t \<doteq> s\<rangle> \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta> = \<langle>a: (t \<cdot> \<theta>) \<doteq> (s \<cdot> \<theta>)\<rangle>"
@@ -184,7 +184,7 @@ fun subst_apply_stateful_strand_step::
 
 definition subst_apply_stateful_strand::
   "('a,'b) stateful_strand \<Rightarrow> ('a,'b) subst \<Rightarrow> ('a,'b) stateful_strand"
-  (infix "\<cdot>\<^sub>s\<^sub>s\<^sub>t" 51) where
+  (infix \<open>\<cdot>\<^sub>s\<^sub>s\<^sub>t\<close> 51) where
   "S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) S"
 
 fun dbupd\<^sub>s\<^sub>s\<^sub>t::"('f,'v) stateful_strand \<Rightarrow> ('f,'v) subst \<Rightarrow> ('f,'v) dbstate \<Rightarrow> ('f,'v) dbstate"
@@ -1944,7 +1944,7 @@ definition negchecks_model where
 
 fun strand_sem_stateful::
   "('fun,'var) terms \<Rightarrow> ('fun,'var) dbstate \<Rightarrow> ('fun,'var) stateful_strand \<Rightarrow> ('fun,'var) subst \<Rightarrow> bool"
-  ("\<lbrakk>_; _; _\<rbrakk>\<^sub>s")
+  (\<open>\<lbrakk>_; _; _\<rbrakk>\<^sub>s\<close>)
 where
   "\<lbrakk>M; D; []\<rbrakk>\<^sub>s = (\<lambda>\<I>. True)"
 | "\<lbrakk>M; D; Send ts#S\<rbrakk>\<^sub>s = (\<lambda>\<I>. (\<forall>t \<in> set ts. M \<turnstile> t \<cdot> \<I>) \<and> \<lbrakk>M; D; S\<rbrakk>\<^sub>s \<I>)"
@@ -1960,7 +1960,7 @@ lemmas strand_sem_stateful_induct =
   strand_sem_stateful.induct[case_names Nil ConsSnd ConsRcv ConsEq
                                         ConsIns ConsDel ConsIn ConsNegChecks]
 
-abbreviation constr_sem_stateful (infix "\<Turnstile>\<^sub>s" 91) where "\<I> \<Turnstile>\<^sub>s A \<equiv> \<lbrakk>{}; {}; A\<rbrakk>\<^sub>s \<I>"
+abbreviation constr_sem_stateful (infix \<open>\<Turnstile>\<^sub>s\<close> 91) where "\<I> \<Turnstile>\<^sub>s A \<equiv> \<lbrakk>{}; {}; A\<rbrakk>\<^sub>s \<I>"
 
 lemma stateful_strand_sem_NegChecks_no_bvars:
   "\<lbrakk>M; D; [\<langle>t not in s\<rangle>]\<rbrakk>\<^sub>s \<I> \<longleftrightarrow> (t \<cdot> \<I>, s \<cdot> \<I>) \<notin> D"

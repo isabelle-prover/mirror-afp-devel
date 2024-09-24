@@ -1178,7 +1178,7 @@ done
 
 subsection \<open>\<open>inext_nth\<close> and \<open>iprev_nth\<close> -- nth element of a natural set\<close>
 
-primrec inext_nth :: "nat set \<Rightarrow> nat \<Rightarrow> nat"   ("(_ \<rightarrow> _)" [100, 100] 60)
+primrec inext_nth :: "nat set \<Rightarrow> nat \<Rightarrow> nat"   (\<open>(_ \<rightarrow> _)\<close> [100, 100] 60)
 where
   "I \<rightarrow> 0 = iMin I"
 | "I \<rightarrow> Suc n = inext (inext_nth I n) I"
@@ -1602,7 +1602,7 @@ lemma cut_le_inext_nth_card_if: "
 by (simp add: cut_le_inext_nth_card_eq1 cut_le_inext_nth_card_eq2)
 
 
-primrec iprev_nth :: "nat set \<Rightarrow> nat \<Rightarrow> nat"  ("(_ \<leftarrow> _)" [100, 100] 60)
+primrec iprev_nth :: "nat set \<Rightarrow> nat \<Rightarrow> nat"  (\<open>(_ \<leftarrow> _)\<close> [100, 100] 60)
 where
   "I \<leftarrow> 0 = Max I"
 | "I \<leftarrow> Suc n = iprev (iprev_nth I n) I"

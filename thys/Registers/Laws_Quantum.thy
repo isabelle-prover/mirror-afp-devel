@@ -10,9 +10,9 @@ theory Laws_Quantum
 begin
 
 text \<open>This notation is only used inside this file\<close>
-notation cblinfun_compose (infixl "*\<^sub>u" 55)
-notation tensor_op (infixr "\<otimes>\<^sub>u" 70)
-notation register_pair ("'(_;_')")
+notation cblinfun_compose (infixl \<open>*\<^sub>u\<close> 55)
+notation tensor_op (infixr \<open>\<otimes>\<^sub>u\<close> 70)
+notation register_pair (\<open>'(_;_')\<close>)
 
 subsection \<open>Elementary facts\<close>
 
@@ -64,7 +64,7 @@ lemma register_tensor_id_update[simp]:
 
 subsection \<open>Tensor product of registers\<close>
 
-definition register_tensor  (infixr "\<otimes>\<^sub>r" 70) where
+definition register_tensor  (infixr \<open>\<otimes>\<^sub>r\<close> 70) where
   "register_tensor F G = register_pair (\<lambda>a. tensor_op (F a) id_cblinfun) (\<lambda>b. tensor_op id_cblinfun (G b))"
 
 lemma register_tensor_is_register: 
@@ -803,17 +803,17 @@ end
 
 subsection \<open>Notation\<close>
 
-no_notation cblinfun_compose (infixl "*\<^sub>u" 55)
-no_notation tensor_op (infixr "\<otimes>\<^sub>u" 70)
+no_notation cblinfun_compose (infixl \<open>*\<^sub>u\<close> 55)
+no_notation tensor_op (infixr \<open>\<otimes>\<^sub>u\<close> 70)
 
 bundle register_notation begin
-notation register_tensor (infixr "\<otimes>\<^sub>r" 70)
-notation register_pair ("'(_;_')")
+notation register_tensor (infixr \<open>\<otimes>\<^sub>r\<close> 70)
+notation register_pair (\<open>'(_;_')\<close>)
 end
 
 bundle no_register_notation begin
-no_notation register_tensor (infixr "\<otimes>\<^sub>r" 70)
-no_notation register_pair ("'(_;_')")
+no_notation register_tensor (infixr \<open>\<otimes>\<^sub>r\<close> 70)
+no_notation register_pair (\<open>'(_;_')\<close>)
 end
 
 end

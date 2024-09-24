@@ -115,50 +115,50 @@ definition wellformed_transaction where
 
 type_synonym ('a,'b,'c,'d) prot = "('a,'b,'c,'d) prot_transaction list"
 
-abbreviation Var_Value_term ("\<langle>_: value\<rangle>\<^sub>v") where
+abbreviation Var_Value_term (\<open>\<langle>_: value\<rangle>\<^sub>v\<close>) where
   "\<langle>n: value\<rangle>\<^sub>v \<equiv> Var (Var Value, n)::('a,'b,'c,'d) prot_term"
 
-abbreviation Var_SetType_term ("\<langle>_: SetType\<rangle>\<^sub>v") where
+abbreviation Var_SetType_term (\<open>\<langle>_: SetType\<rangle>\<^sub>v\<close>) where
   "\<langle>n: SetType\<rangle>\<^sub>v \<equiv> Var (Var SetType, n)::('a,'b,'c,'d) prot_term"
 
-abbreviation Var_AttackType_term ("\<langle>_: AttackType\<rangle>\<^sub>v") where
+abbreviation Var_AttackType_term (\<open>\<langle>_: AttackType\<rangle>\<^sub>v\<close>) where
   "\<langle>n: AttackType\<rangle>\<^sub>v \<equiv> Var (Var AttackType, n)::('a,'b,'c,'d) prot_term"
 
-abbreviation Var_Atom_term ("\<langle>_: _\<rangle>\<^sub>v") where
+abbreviation Var_Atom_term (\<open>\<langle>_: _\<rangle>\<^sub>v\<close>) where
   "\<langle>n: a\<rangle>\<^sub>v \<equiv> Var (Var (Atom a), n)::('a,'b,'c,'d) prot_term"
 
-abbreviation Var_Comp_Fu_term ("\<langle>_: _\<langle>_\<rangle>\<rangle>\<^sub>v") where
+abbreviation Var_Comp_Fu_term (\<open>\<langle>_: _\<langle>_\<rangle>\<rangle>\<^sub>v\<close>) where
   "\<langle>n: f\<langle>T\<rangle>\<rangle>\<^sub>v \<equiv> Var (Fun (Fu f) T, n)::('a,'b,'c,'d) prot_term"
 
-abbreviation TAtom_Atom_term ("\<langle>_\<rangle>\<^sub>\<tau>\<^sub>a") where
+abbreviation TAtom_Atom_term (\<open>\<langle>_\<rangle>\<^sub>\<tau>\<^sub>a\<close>) where
   "\<langle>a\<rangle>\<^sub>\<tau>\<^sub>a \<equiv> Var (Atom a)::('a,'b,'c,'d) prot_term_type"
 
-abbreviation TComp_Fu_term ("\<langle>_ _\<rangle>\<^sub>\<tau>") where
+abbreviation TComp_Fu_term (\<open>\<langle>_ _\<rangle>\<^sub>\<tau>\<close>) where
   "\<langle>f T\<rangle>\<^sub>\<tau> \<equiv> Fun (Fu f) T::('a,'b,'c,'d) prot_term_type"
 
-abbreviation Fun_Fu_term ("\<langle>_ _\<rangle>\<^sub>t") where
+abbreviation Fun_Fu_term (\<open>\<langle>_ _\<rangle>\<^sub>t\<close>) where
   "\<langle>f T\<rangle>\<^sub>t \<equiv> Fun (Fu f) T::('a,'b,'c,'d) prot_term"
 
-abbreviation Fun_Fu_const_term ("\<langle>_\<rangle>\<^sub>c") where
+abbreviation Fun_Fu_const_term (\<open>\<langle>_\<rangle>\<^sub>c\<close>) where
   "\<langle>c\<rangle>\<^sub>c \<equiv> Fun (Fu c) []::('a,'b,'c,'d) prot_term"
 
-abbreviation Fun_Set_const_term ("\<langle>_\<rangle>\<^sub>s") where
+abbreviation Fun_Set_const_term (\<open>\<langle>_\<rangle>\<^sub>s\<close>) where
   "\<langle>f\<rangle>\<^sub>s \<equiv> Fun (Set f) []::('a,'b,'c,'d) prot_term"
 
-abbreviation Fun_Set_composed_term ("\<langle>_\<langle>_\<rangle>\<rangle>\<^sub>s") where
+abbreviation Fun_Set_composed_term (\<open>\<langle>_\<langle>_\<rangle>\<rangle>\<^sub>s\<close>) where
   "\<langle>f\<langle>T\<rangle>\<rangle>\<^sub>s \<equiv> Fun (Set f) T::('a,'b,'c,'d) prot_term"
 
-abbreviation Fun_Abs_const_term ("\<langle>_\<rangle>\<^sub>a\<^sub>b\<^sub>s") where
+abbreviation Fun_Abs_const_term (\<open>\<langle>_\<rangle>\<^sub>a\<^sub>b\<^sub>s\<close>) where
   "\<langle>a\<rangle>\<^sub>a\<^sub>b\<^sub>s \<equiv> Fun (Abs a) []::('a,'b,'c,'d) prot_term"
 
-abbreviation Fun_Attack_const_term ("attack\<langle>_\<rangle>") where
+abbreviation Fun_Attack_const_term (\<open>attack\<langle>_\<rangle>\<close>) where
   "attack\<langle>n\<rangle> \<equiv> Fun (Attack n) []::('a,'b,'c,'d) prot_term"
 
-abbreviation prot_transaction1 ("transaction\<^sub>1 _ _ new _ _ _") where
+abbreviation prot_transaction1 (\<open>transaction\<^sub>1 _ _ new _ _ _\<close>) where
   "transaction\<^sub>1 (S1::('a,'b,'c,'d) prot_strand) S2 new (B::('a,'b,'c,'d) prot_term list) S3 S4
   \<equiv> Transaction (\<lambda>(). []) (map the_Var B) S1 S2 S3 S4"
 
-abbreviation prot_transaction2 ("transaction\<^sub>2 _ _  _ _") where
+abbreviation prot_transaction2 (\<open>transaction\<^sub>2 _ _  _ _\<close>) where
   "transaction\<^sub>2 (S1::('a,'b,'c,'d) prot_strand) S2 S3 S4
   \<equiv> Transaction (\<lambda>(). []) [] S1 S2 S3 S4"
 

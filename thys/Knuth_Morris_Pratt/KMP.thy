@@ -4,7 +4,7 @@ theory KMP
 begin
 
 declare len_greater_imp_nonempty[simp del] min_absorb2[simp]
-no_notation Ref.update ("_ := _" 62)
+no_notation Ref.update (\<open>_ := _\<close> 62)
 
 section\<open>Specification\<close>text_raw\<open>\label{sec:spec}\<close>
 

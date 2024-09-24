@@ -20,7 +20,7 @@ axiomatization
   Emp :: "assertion"
 
 axiomatization
-  Star :: "assertion \<Rightarrow> assertion \<Rightarrow> assertion" (infixr "\<star>" 55)
+  Star :: "assertion \<Rightarrow> assertion \<Rightarrow> assertion" (infixr \<open>\<star>\<close> 55)
 where
   star_comm: "p \<star> q = q \<star> p" and 
   star_assoc: "(p \<star> q) \<star> r = p \<star> (q \<star> r)" and 
@@ -58,7 +58,7 @@ axiomatization
   Skip :: "command"
 
 axiomatization
-  Seq :: "command \<Rightarrow> command \<Rightarrow> command" (infixr ";;" 55)
+  Seq :: "command \<Rightarrow> command \<Rightarrow> command" (infixr \<open>;;\<close> 55)
 where seq_assoc: "c1 ;; (c2 ;; c3) = (c1 ;; c2) ;; c3"
   and seq_skip: "c ;; Skip = c"
   and skip_seq: "Skip ;; c = c"

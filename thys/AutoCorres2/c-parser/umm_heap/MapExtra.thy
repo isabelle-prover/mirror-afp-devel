@@ -43,13 +43,13 @@ text \<open>---------------------------------------\<close>
 text \<open>Map intersection: set of all keys for which the maps agree.\<close>
 
 definition
-  map_inter :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> 'a set" (infixl "\<inter>\<^sub>m" 70) where
+  map_inter :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> 'a set" (infixl \<open>\<inter>\<^sub>m\<close> 70) where
   "m\<^sub>1 \<inter>\<^sub>m m\<^sub>2 \<equiv> {x \<in> dom m\<^sub>1. m\<^sub>1 x = m\<^sub>2 x}"
 
 text \<open>Map restriction via domain subtraction\<close>
 
 definition
-  sub_restrict_map :: "('a \<rightharpoonup> 'b) => 'a set => ('a \<rightharpoonup> 'b)" (infixl "`-"  110)
+  sub_restrict_map :: "('a \<rightharpoonup> 'b) => 'a set => ('a \<rightharpoonup> 'b)" (infixl \<open>`-\<close>  110)
   where
   "m `- S \<equiv> (\<lambda>x. if x \<in> S then None else m x)"
 
@@ -227,7 +227,7 @@ section \<open>Definitions\<close>
 text \<open>Map disjuction\<close>
 
 definition
-  map_disj :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infix "\<bottom>" 51) where
+  map_disj :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infix \<open>\<bottom>\<close> 51) where
   "h\<^sub>0 \<bottom> h\<^sub>1 \<equiv> dom h\<^sub>0 \<inter> dom h\<^sub>1 = {}"
 
 declare None_not_eq [simp]

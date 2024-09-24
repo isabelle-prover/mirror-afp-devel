@@ -25,12 +25,12 @@ where
 
 abbreviation
   lesubprod :: "'a \<times> 'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
-    ("(_ /\<sqsubseteq>'(_,_') _)" [50, 0, 0, 51] 50) where
+    (\<open>(_ /\<sqsubseteq>'(_,_') _)\<close> [50, 0, 0, 51] 50) where
   "p \<sqsubseteq>(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 
 (*<*)
 notation
-  lesubprod  ("(_ /<='(_,_') _)" [50, 0, 0, 51] 50)
+  lesubprod  (\<open>(_ /<='(_,_') _)\<close> [50, 0, 0, 51] 50)
 (*>*)
 
 lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^sub>A,r\<^sub>B) y = le r\<^sub>A r\<^sub>B x y"

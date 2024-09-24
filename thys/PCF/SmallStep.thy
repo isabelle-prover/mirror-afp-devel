@@ -29,7 +29,7 @@ this relation deterministic. Eases the normalization proof.
 \<close>
 
 inductive
-  reduction :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<rightarrow>\<^sub>v _" [50, 50] 50)
+  reduction :: "db \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^sub>v _\<close> [50, 50] 50)
 where
   betaN: "DBApp (DBAbsN u) v \<rightarrow>\<^sub>v u<v/0>"
 | betaV: "val v \<Longrightarrow> DBApp (DBAbsV u) v \<rightarrow>\<^sub>v u<v/0>"
@@ -44,7 +44,7 @@ where
 | "0 < n \<Longrightarrow> DBIsZero (DBNum n) \<rightarrow>\<^sub>v DBff"
 
 abbreviation \<comment> \<open>The transitive, reflexive closure of the reduction relation.\<close>
-  reduction_trc :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<rightarrow>\<^sub>v\<^sup>* _" [100, 100] 100)
+  reduction_trc :: "db \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^sub>v\<^sup>* _\<close> [100, 100] 100)
 where
   "reduction_trc \<equiv> rtranclp reduction"
 

@@ -157,7 +157,7 @@ qed
 (*defining compose for diagrams*)
 
 definition compose_Tangle::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> Tangle_Diagram" 
-                                                                     (infixl "\<circ>" 65)
+                                                                     (infixl \<open>\<circ>\<close> 65)
  where
 "compose_Tangle x y = Abs_Tangle_Diagram 
                                   ((Rep_Tangle_Diagram x) \<circ> (Rep_Tangle_Diagram y))"

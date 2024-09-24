@@ -164,8 +164,8 @@ begin
     type_synonym 'a arr =
       "('a resid, ('a, 'a) exponential_rts.arr) concrete_rts_category.arr"
 
-    notation resid  (infix "\\" 70)
-    notation hcomp  (infixr "\<star>" 53)
+    notation resid  (infix \<open>\\<close> 70)
+    notation hcomp  (infixr \<open>\<star>\<close> 53)
 
     text\<open>
       The mapping @{term Trn} that takes arrow \<open>t \<in> H.hom a b\<close> to the underlying transition of the
@@ -219,10 +219,10 @@ begin
         using a b AB.small smaller_than_small small_image_iff inj_Trn by metis
     qed
 
-    abbreviation sta_in_hom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>s\<^sub>t\<^sub>a _\<guillemotright>")
+    abbreviation sta_in_hom   (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>s\<^sub>t\<^sub>a _\<guillemotright>\<close>)
     where "sta_in_hom f a b \<equiv> H.in_hom f a b \<and> sta f"
 
-    abbreviation trn_to   ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
+    abbreviation trn_to   (\<open>\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>\<close>)
     where "trn_to t f g \<equiv> arr t \<and> src t = f \<and> trg t = g"
 
     definition mkarr :: "'A resid \<Rightarrow> 'A resid \<Rightarrow>
@@ -781,7 +781,7 @@ begin
     sublocale One: one_arr_rts arr_type ..
     interpretation I\<^sub>1: identity_simulation One.resid ..
 
-    abbreviation one  ("\<^bold>\<one>")
+    abbreviation one  (\<open>\<^bold>\<one>\<close>)
     where "one \<equiv> mkobj One.resid"
 
     lemma obj_one:
@@ -1029,14 +1029,14 @@ begin
 
     sublocale One: one_arr_rts arr_type ..
 
-    definition one  ("\<^bold>\<one>")
+    definition one  (\<open>\<^bold>\<one>\<close>)
     where "one \<equiv> terminal_object_in_rtscat.one"
 
     definition trm
     where "trm = terminal_object_in_rtscat.trm"
 
     interpretation Trm: terminal_object_in_rtscat ..
-    no_notation Trm.one  ("\<^bold>\<one>")
+    no_notation Trm.one  (\<open>\<^bold>\<one>\<close>)
 
     lemma obj_one [intro, simp]:
     shows "obj one"
@@ -1604,7 +1604,7 @@ begin
   and obj_b: "obj b"
   begin
 
-    notation hcomp  (infixr "\<star>" 53)
+    notation hcomp  (infixr \<open>\<star>\<close> 53)
 
     interpretation A: extensional_rts \<open>Dom a\<close>
       using obj_a bij_mkobj obj_char by blast
@@ -2569,10 +2569,10 @@ begin
       using extends_to_elementary_category_with_binary_products by blast
 
     (* TODO: Why don't these get pulled in automatically? *)
-    notation p\<^sub>0      ("\<pp>\<^sub>0[_, _]")
-    notation p\<^sub>1      ("\<pp>\<^sub>1[_, _]")
-    notation tuple   ("\<langle>_, _\<rangle>")
-    notation prod    (infixr "\<otimes>" 51)
+    notation p\<^sub>0      (\<open>\<pp>\<^sub>0[_, _]\<close>)
+    notation p\<^sub>1      (\<open>\<pp>\<^sub>1[_, _]\<close>)
+    notation tuple   (\<open>\<langle>_, _\<rangle>\<close>)
+    notation prod    (infixr \<open>\<otimes>\<close> 51)
 
     (* TODO: I don't really want to have to bother with this. *)
     lemma prod_eq:
@@ -2874,11 +2874,11 @@ begin
     sublocale elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
       using extends_to_elementary_category_with_binary_products by blast
 
-    notation hcomp  (infixr "\<star>" 53)
-    notation p\<^sub>0      ("\<pp>\<^sub>0[_, _]")
-    notation p\<^sub>1      ("\<pp>\<^sub>1[_, _]")
-    notation tuple   ("\<langle>_, _\<rangle>")
-    notation prod    (infixr "\<otimes>" 51)
+    notation hcomp  (infixr \<open>\<star>\<close> 53)
+    notation p\<^sub>0      (\<open>\<pp>\<^sub>0[_, _]\<close>)
+    notation p\<^sub>1      (\<open>\<pp>\<^sub>1[_, _]\<close>)
+    notation tuple   (\<open>\<langle>_, _\<rangle>\<close>)
+    notation prod    (infixr \<open>\<otimes>\<close> 51)
 
     sublocale B: extensional_rts \<open>Dom b\<close>
       using obj_b bij_mkobj obj_char by blast
@@ -3069,7 +3069,7 @@ begin
     interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
       using extends_to_elementary_category_with_binary_products by blast
 
-    notation prod    (infixr "\<otimes>" 51)
+    notation prod    (infixr \<open>\<otimes>\<close> 51)
 
     definition exp
     where "exp b c \<equiv> exponential_in_rtscat.exp b c"
@@ -4364,11 +4364,11 @@ begin
     interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
       using extends_to_elementary_category_with_binary_products by blast
 
-    notation hcomp  (infixr "\<star>" 53)
-    notation p\<^sub>0      ("\<pp>\<^sub>0[_, _]")
-    notation p\<^sub>1      ("\<pp>\<^sub>1[_, _]")
-    notation tuple   ("\<langle>_, _\<rangle>")
-    notation prod    (infixr "\<otimes>" 51)
+    notation hcomp  (infixr \<open>\<star>\<close> 53)
+    notation p\<^sub>0      (\<open>\<pp>\<^sub>0[_, _]\<close>)
+    notation p\<^sub>1      (\<open>\<pp>\<^sub>1[_, _]\<close>)
+    notation tuple   (\<open>\<langle>_, _\<rangle>\<close>)
+    notation prod    (infixr \<open>\<otimes>\<close> 51)
 
     definition curry :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A arr"
     where "curry \<equiv> currying_in_rtscat.curry"
@@ -4552,7 +4552,7 @@ begin
     interpretation elementary_category_with_binary_products hcomp p\<^sub>0 p\<^sub>1
       using extends_to_elementary_category_with_binary_products by blast
 
-    notation prod    (infixr "\<otimes>" 51)
+    notation prod    (infixr \<open>\<otimes>\<close> 51)
 
     interpretation elementary_cartesian_closed_category
                      hcomp p\<^sub>0 p\<^sub>1 one trm exp eval curry

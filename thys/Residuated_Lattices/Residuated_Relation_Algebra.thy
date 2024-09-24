@@ -16,16 +16,16 @@ text \<open>
 \<close>
 
 notation
-  times (infixl "\<cdot>" 70)
-  and plus (infixl "+" 65)
-  and Groups.zero_class.zero ("0")
-  and Groups.one_class.one ("1")
+  times (infixl \<open>\<cdot>\<close> 70)
+  and plus (infixl \<open>+\<close> 65)
+  and Groups.zero_class.zero (\<open>0\<close>)
+  and Groups.one_class.one (\<open>1\<close>)
 
 no_notation
-  inf (infixl "\<cdot>" 70)
-  and sup (infixl "+" 65)
-  and bot ("0")
-  and top ("1")
+  inf (infixl \<open>\<cdot>\<close> 70)
+  and sup (infixl \<open>+\<close> 65)
+  and bot (\<open>0\<close>)
+  and top (\<open>1\<close>)
 
 end
 

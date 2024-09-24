@@ -304,7 +304,7 @@ end
 context order
 begin
 definition
-  closed_interval::"'a\<Rightarrow>'a\<Rightarrow>'a set" ("|[ _ , _ ]|" [0, 0] 900) where
+  closed_interval::"'a\<Rightarrow>'a\<Rightarrow>'a set" (\<open>|[ _ , _ ]|\<close> [0, 0] 900) where
   "closed_interval a b = {c . a \<le> c \<and> c \<le> b}"
 
 definition
@@ -332,7 +332,7 @@ lemma minus_subgroup: "A \<in> subgroup \<Longrightarrow> -a \<in> A \<Longright
 
 
 definition
-  add_set:: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "+++" 70) where
+  add_set:: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl \<open>+++\<close> 70) where
   "add_set A B = {c . \<exists> a \<in> A .\<exists> b \<in> B . c = a + b}"
 
 definition

@@ -8,7 +8,7 @@ begin
   
 locale lts =
 fixes
-  trans :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<longmapsto>_  _" [70, 70, 70] 80)
+  trans :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<longmapsto>_  _\<close> [70, 70, 70] 80)
 
 begin
 
@@ -17,7 +17,7 @@ abbreviation step_pred :: \<open>'s \<Rightarrow> ('a \<Rightarrow> bool) \<Righ
   \<open>step_pred p af q \<equiv> \<exists> a. af a \<and> trans p a q\<close>
 
 inductive steps :: \<open>'s \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> bool\<close>
-     ("_ \<longmapsto>* _  _" [70, 70, 70] 80)
+     (\<open>_ \<longmapsto>* _  _\<close> [70, 70, 70] 80)
 where
   refl: \<open>p \<longmapsto>* A p\<close> | step: \<open>p \<longmapsto>* A q1 \<Longrightarrow> q1 \<longmapsto>a q \<Longrightarrow> A a \<Longrightarrow> (p \<longmapsto>* A q)\<close>
 

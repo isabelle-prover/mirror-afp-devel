@@ -394,7 +394,7 @@ text \<open>
   Starting from the 0-vector produce \<open>u\<close>s by iteratively
   incrementing with respect to \<open>y\<close>.
 \<close>
-definition huets_us :: "nat list \<Rightarrow> nat \<Rightarrow> nat list" ("\<^bold>u" 1000)
+definition huets_us :: "nat list \<Rightarrow> nat \<Rightarrow> nat list" (\<open>\<^bold>u\<close> 1000)
   where
     "\<^bold>u y i = ((inc y 0) ^^ Suc i) (zeroes (length y))"
 

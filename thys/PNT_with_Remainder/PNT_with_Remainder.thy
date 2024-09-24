@@ -8,7 +8,7 @@ unbundle pnt_notation
 
 section \<open>Estimation of the order of $\frac{\zeta'(s)}{\zeta(s)}$\<close>
 
-notation primes_psi ("\<psi>")
+notation primes_psi (\<open>\<psi>\<close>)
 
 lemma zeta_div_bound':
   assumes "1 + exp (- 4 * ln (14 + 4 * t)) \<le> \<sigma>"
@@ -422,7 +422,7 @@ locale prime_number_theorem =
   fixes c \<epsilon> :: real
   assumes Hc: "0 < c" and Hc': "c * c < 2 * C\<^sub>4" and H\<epsilon>: "0 < \<epsilon>" "2 * \<epsilon> < c"
 begin
-notation primes_psi ("\<psi>")
+notation primes_psi (\<open>\<psi>\<close>)
 definition H where "H x \<equiv> exp (c / 2 * (ln x) powr (1 / 2))" for x :: real
 definition T where "T x \<equiv> exp (c * (ln x) powr (1 / 2))" for x :: real
 definition a where "a x \<equiv> 1 - C\<^sub>4 / (c * (ln x) powr (1 / 2))" for x :: real
@@ -1100,7 +1100,7 @@ proof -
        (rule landau_o.big_trans)
 qed
 
-no_notation primes_psi ("\<psi>")
+no_notation primes_psi (\<open>\<psi>\<close>)
 end
 
 unbundle prime_counting_notation

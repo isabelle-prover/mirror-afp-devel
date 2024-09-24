@@ -5,7 +5,7 @@ imports
   Basic_Extensions
 begin
 
-  abbreviation rev_lex_prod (infixr "<*rlex*>" 80)
+  abbreviation rev_lex_prod (infixr \<open><*rlex*>\<close> 80)
     where "r\<^sub>1 <*rlex*> r\<^sub>2 \<equiv> inv_image (r\<^sub>2 <*lex*> r\<^sub>1) swap"
 
   lemmas sym_rtranclp[intro] = sym_rtrancl[to_pred]

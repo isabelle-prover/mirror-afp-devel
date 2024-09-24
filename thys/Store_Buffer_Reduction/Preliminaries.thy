@@ -7,7 +7,7 @@ begin
 record foorecord = fld\<^sub>1 :: nat fld\<^sub>2 ::nat
 datatype foodatatype = Foo
 notation (latex output)
-Foo ("\<^latex>\<open>\\constructor{Foo}\<close>")
+Foo (\<open>\<^latex>\<open>\constructor{Foo}\<close>\<close>)
 
 (* TODO:
 setup {*add_constructor_syntax "latex" "Preliminaries.foodatatype" *}

@@ -21,12 +21,12 @@ begin
 text\<open>This first part changes some of the facts from the AFP KAT theories. It should be added to KAT in the next AFP version. 
 Currently these facts provide an interface between the KAT theories and the verification component.\<close>
 
-no_notation if_then_else ("if _ then _ else _ fi" [64,64,64] 63)
-no_notation while ("while _ do _ od" [64,64] 63)
-no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
+no_notation if_then_else (\<open>if _ then _ else _ fi\<close> [64,64,64] 63)
+no_notation while (\<open>while _ do _ od\<close> [64,64] 63)
+no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
 
-notation relcomp (infixl ";" 70)               
-notation p2r ("\<lceil>_\<rceil>")
+notation relcomp (infixl \<open>;\<close> 70)               
+notation p2r (\<open>\<lceil>_\<rceil>\<close>)
 
 context kat 
 begin
@@ -44,13 +44,13 @@ lemma H_var2: "H p x q \<longleftrightarrow> t p \<cdot> x = t p \<cdot> x \<cdo
 
 subsubsection \<open>Syntax for Conditionals and Loops\<close>
 
-definition ifthenelse :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
+definition ifthenelse :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _ fi\<close> [64,64,64] 63) where
   "if p then x else y fi = (t p \<cdot> x + n p \<cdot> y)"
 
-definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [64,64] 63) where
+definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ od\<close> [64,64] 63) where
   "while b do x od = (t b \<cdot> x)\<^sup>\<star> \<cdot> n b"
 
-definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _ od" [64,64,64] 63) where
+definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ inv _ do _ od\<close> [64,64,64] 63) where
   "while p inv i do x od = while p do x od"
 
 subsubsection \<open>Propositional Hoare Logic\<close>
@@ -146,7 +146,7 @@ lemma Id_p2r_simp [simp]: "Id \<inter> (- Id \<union> \<lceil>P\<rceil>) = \<lce
 
 text \<open>Next we derive the assignment command and assignment rules.\<close>
 
-definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" ("_ ::= _" [70, 65] 61) where 
+definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" (\<open>_ ::= _\<close> [70, 65] 61) where 
   "v ::= e = {(s,s (v := e s)) |s. True}"
 
 lemma H_assign_prop: "\<lceil>\<lambda>s. P (s (v := e s))\<rceil> ; (v ::= e) = (v ::= e) ; \<lceil>P\<rceil>"
@@ -190,16 +190,16 @@ lemma sH_H: "rel_kat.H \<lceil>P\<rceil> X \<lceil>Q\<rceil> \<longleftrightarro
 
 text \<open>Finally we provide additional syntax for specifications and commands.\<close>
  
-abbreviation H_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" ("PRE _ _ POST _" [64,64,64] 63) where
+abbreviation H_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" (\<open>PRE _ _ POST _\<close> [64,64,64] 63) where
   "PRE P X POST Q \<equiv> rel_kat.H \<lceil>P\<rceil> X \<lceil>Q\<rceil>"
 
-abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("IF _ THEN _ ELSE _ FI" [64,64,64] 63) where
+abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63) where
   "IF P THEN X ELSE Y FI \<equiv> rel_kat.ifthenelse \<lceil>P\<rceil> X Y"
 
-abbreviation while_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ DO _ OD" [64,64] 63) where
+abbreviation while_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>WHILE _ DO _ OD\<close> [64,64] 63) where
   "WHILE P  DO X OD \<equiv> rel_kat.while \<lceil>P\<rceil> X"
 
-abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
+abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>WHILE _ INV _ DO _ OD\<close> [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> rel_kat.while_inv \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
 lemma H_cond_iff2[simp]: "PRE p (IF r THEN x ELSE y FI) POST q \<longleftrightarrow> (PRE (p \<sqinter> r) x POST q) \<and> (PRE (p \<sqinter> - r) y POST q)"

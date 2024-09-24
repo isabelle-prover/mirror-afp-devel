@@ -39,14 +39,14 @@ where "first s \<equiv> s 0"
 definition second :: "('a seq) \<Rightarrow> 'a"
 where "second s \<equiv> s 1"
 
-definition suffix :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" (infixl "|\<^sub>s" 60)
+definition suffix :: "'a seq \<Rightarrow> nat \<Rightarrow> 'a seq" (infixl \<open>|\<^sub>s\<close> 60)
 where "s |\<^sub>s i \<equiv> \<lambda> n. s (n+i)"
 
 definition tail :: "'a seq \<Rightarrow> 'a seq"
 where "tail s \<equiv> s |\<^sub>s 1"
 
 definition
- app :: "'a \<Rightarrow> ('a seq) \<Rightarrow> ('a seq)" (infixl "##" 60)
+ app :: "'a \<Rightarrow> ('a seq) \<Rightarrow> ('a seq)" (infixl \<open>##\<close> 60)
 where
  "s ## \<sigma>  \<equiv> \<lambda> n. if n=0 then s else \<sigma> (n - 1)"
 
@@ -241,7 +241,7 @@ fun "next" :: "nat \<Rightarrow> ('a seq) \<Rightarrow> ('a seq)" where
   "next 0 = id"
 | "next (Suc n) = nextsuffix o (next n)"
 
-definition collapse :: "('a seq) \<Rightarrow> ('a seq)" ("\<natural>")
+definition collapse :: "('a seq) \<Rightarrow> ('a seq)" (\<open>\<natural>\<close>)
 where "\<natural> s \<equiv> \<lambda> n. (next n s) 0"
 
 text \<open>
@@ -520,7 +520,7 @@ text\<open>
   is mechanised as:
 \<close>
 
-definition seqsimilar :: "('a seq) \<Rightarrow> ('a seq) \<Rightarrow> bool" (infixl "\<approx>" 50)
+definition seqsimilar :: "('a seq) \<Rightarrow> ('a seq) \<Rightarrow> bool" (infixl \<open>\<approx>\<close> 50)
 where "\<sigma> \<approx> \<tau> \<equiv> (\<natural> \<sigma>) = (\<natural> \<tau>)"
 
 subsubsection "Properties of @{term seqsimilar}"

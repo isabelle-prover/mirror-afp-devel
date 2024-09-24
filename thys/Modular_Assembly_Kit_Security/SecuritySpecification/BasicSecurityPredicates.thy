@@ -258,17 +258,17 @@ record 'e Gamma =
 
 (* syntax abbreviations for Gamma *)
 abbreviation GammaNabla :: "'e Gamma \<Rightarrow> 'e set"
-("\<nabla>\<^bsub>_\<^esub>" [100] 1000)
+(\<open>\<nabla>\<^bsub>_\<^esub>\<close> [100] 1000)
 where
 "\<nabla>\<^bsub>\<Gamma>\<^esub> \<equiv> (Nabla \<Gamma>)"
 
 abbreviation GammaDelta :: "'e Gamma \<Rightarrow> 'e set"
-("\<Delta>\<^bsub>_\<^esub>" [100] 1000)
+(\<open>\<Delta>\<^bsub>_\<^esub>\<close> [100] 1000)
 where
 "\<Delta>\<^bsub>\<Gamma>\<^esub> \<equiv> (Delta \<Gamma>)"
 
 abbreviation GammaUpsilon :: "'e Gamma \<Rightarrow> 'e set"
-("\<Upsilon>\<^bsub>_\<^esub>" [100] 1000)
+(\<open>\<Upsilon>\<^bsub>_\<^esub>\<close> [100] 1000)
 where
 "\<Upsilon>\<^bsub>\<Gamma>\<^esub> \<equiv> (Upsilon \<Gamma>)"
 

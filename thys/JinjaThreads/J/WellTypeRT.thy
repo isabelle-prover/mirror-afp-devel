@@ -136,12 +136,12 @@ inductive WTrt :: "'addr J_prog \<Rightarrow> 'heap \<Rightarrow> env \<Rightarr
 | WTrtCons: "\<lbrakk> WTrt P h E e T; WTrts P h E es Ts \<rbrakk> \<Longrightarrow> WTrts P h E (e # es) (T # Ts)"
 
 abbreviation
-  WTrt_syntax :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
+  WTrt_syntax :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" (\<open>_,_,_ \<turnstile> _ : _\<close>   [51,51,51]50)
 where
   "P,E,h \<turnstile> e : T \<equiv> WTrt P h E e T"
 
 abbreviation
-  WTrts_syntax :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_,_ \<turnstile> _ [:] _"   [51,51,51]50)
+  WTrts_syntax :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'heap \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" (\<open>_,_,_ \<turnstile> _ [:] _\<close>   [51,51,51]50)
 where
   "P,E,h \<turnstile> es [:] Ts \<equiv> WTrts P h E es Ts"
 

@@ -11,11 +11,11 @@ text \<open>Prisms are like lenses, but they act on sum types rather than produc
   for more information.\<close>
 
 record ('v, 's) prism =
-  prism_match :: "'s \<Rightarrow> 'v option" ("match\<index>")
-  prism_build :: "'v \<Rightarrow> 's" ("build\<index>")
+  prism_match :: "'s \<Rightarrow> 'v option" (\<open>match\<index>\<close>)
+  prism_build :: "'v \<Rightarrow> 's" (\<open>build\<index>\<close>)
 
 type_notation
-  prism (infixr "\<Longrightarrow>\<^sub>\<triangle>" 0)
+  prism (infixr \<open>\<Longrightarrow>\<^sub>\<triangle>\<close> 0)
 
 locale wb_prism =
   fixes x :: "'v \<Longrightarrow>\<^sub>\<triangle> 's" (structure)
@@ -43,7 +43,7 @@ text \<open> The relation states that two prisms construct disjoint elements of 
   can occur, for example, when the two prisms characterise different constructors of an
   algebraic datatype. \<close>
 
-definition prism_diff :: "('a \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> ('b \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> bool" (infix "\<nabla>" 50) where
+definition prism_diff :: "('a \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> ('b \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> bool" (infix \<open>\<nabla>\<close> 50) where
 [lens_defs]: "prism_diff X Y = (range build\<^bsub>X\<^esub> \<inter> range build\<^bsub>Y\<^esub> = {})"
 
 lemma prism_diff_intro:
@@ -64,7 +64,7 @@ lemma prism_diff_build_match: "\<lbrakk> wb_prism X; X \<nabla> Y \<rbrakk> \<Lo
 
 subsection \<open> Canonical prisms \<close>
 
-definition prism_id :: "('a \<Longrightarrow>\<^sub>\<triangle> 'a)" ("1\<^sub>\<triangle>") where
+definition prism_id :: "('a \<Longrightarrow>\<^sub>\<triangle> 'a)" (\<open>1\<^sub>\<triangle>\<close>) where
 [lens_defs]: "prism_id = \<lparr> prism_match = Some, prism_build = id \<rparr>"
 
 lemma wb_prism_id: "wb_prism 1\<^sub>\<triangle>"
@@ -75,7 +75,7 @@ lemma prism_id_never_diff: "\<not> 1\<^sub>\<triangle> \<nabla> X"
 
 subsection \<open> Summation \<close>
 
-definition prism_plus :: "('a \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> ('b \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> 'a + 'b \<Longrightarrow>\<^sub>\<triangle> 's" (infixl "+\<^sub>\<triangle>" 85) 
+definition prism_plus :: "('a \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> ('b \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> 'a + 'b \<Longrightarrow>\<^sub>\<triangle> 's" (infixl \<open>+\<^sub>\<triangle>\<close> 85) 
   where
 [lens_defs]: "X +\<^sub>\<triangle> Y = \<lparr> prism_match = (\<lambda> s. case (match\<^bsub>X\<^esub> s, match\<^bsub>Y\<^esub> s) of
                                  (Some u, _) \<Rightarrow> Some (Inl u) |
@@ -112,10 +112,10 @@ lemma Ball_Sum_iff: "(\<forall>x\<in>A<+>B. P x) \<longleftrightarrow> (\<forall
 
 subsection \<open> Instances \<close>
 
-definition prism_suml :: "('a, 'a + 'b) prism" ("Inl\<^sub>\<triangle>") where
+definition prism_suml :: "('a, 'a + 'b) prism" (\<open>Inl\<^sub>\<triangle>\<close>) where
 [lens_defs]: "prism_suml = \<lparr> prism_match = (\<lambda> v. case v of Inl x \<Rightarrow> Some x | _ \<Rightarrow> None), prism_build = Inl \<rparr>"
 
-definition prism_sumr :: "('b, 'a + 'b) prism" ("Inr\<^sub>\<triangle>") where
+definition prism_sumr :: "('b, 'a + 'b) prism" (\<open>Inr\<^sub>\<triangle>\<close>) where
 [lens_defs]: "prism_sumr = \<lparr> prism_match = (\<lambda> v. case v of Inr x \<Rightarrow> Some x | _ \<Rightarrow> None), prism_build = Inr \<rparr>"
 
 lemma wb_prim_suml [simp]: "wb_prism Inl\<^sub>\<triangle>"

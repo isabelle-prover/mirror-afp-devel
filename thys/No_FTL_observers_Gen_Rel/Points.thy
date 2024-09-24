@@ -59,38 +59,38 @@ class Points = Quantities
 begin
 
 (* Translations *)
-abbreviation moveBy :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Point" ("_ \<oplus> _") where
+abbreviation moveBy :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Point" (\<open>_ \<oplus> _\<close>) where
 "(p \<oplus> q) \<equiv> \<lparr> tval = tval p + tval q,
            xval = xval p + xval q,
            yval = yval p + yval q,
            zval = zval p + zval q \<rparr>"
 
 
-abbreviation movebackBy :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Point" ("_ \<ominus> _") where
+abbreviation movebackBy :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Point" (\<open>_ \<ominus> _\<close>) where
 "(p \<ominus> q)  \<equiv> \<lparr> tval = tval p - tval q,
            xval = xval p - xval q,
            yval = yval p - yval q,
            zval = zval p - zval q \<rparr>"
 
   
-abbreviation sMoveBy :: "'a Space \<Rightarrow> 'a Space \<Rightarrow> 'a Space" ("_ \<oplus>s _") where
+abbreviation sMoveBy :: "'a Space \<Rightarrow> 'a Space \<Rightarrow> 'a Space" (\<open>_ \<oplus>s _\<close>) where
 "(p \<oplus>s q) \<equiv> \<lparr> svalx = svalx p + svalx q,
               svaly = svaly p + svaly q,
               svalz = svalz p + svalz q \<rparr>"
   
 
-abbreviation sMovebackBy :: "'a Space \<Rightarrow> 'a Space \<Rightarrow> 'a Space" ("_ \<ominus>s _") where
+abbreviation sMovebackBy :: "'a Space \<Rightarrow> 'a Space \<Rightarrow> 'a Space" (\<open>_ \<ominus>s _\<close>) where
 "(p \<ominus>s q) \<equiv> \<lparr> svalx = svalx p - svalx q,
               svaly = svaly p - svaly q,
               svalz = svalz p - svalz q \<rparr>"
   
 
 (* Scaling *)
-abbreviation scaleBy :: "'a \<Rightarrow> 'a Point \<Rightarrow> 'a Point" ("_ \<otimes> _")  where
+abbreviation scaleBy :: "'a \<Rightarrow> 'a Point \<Rightarrow> 'a Point" (\<open>_ \<otimes> _\<close>)  where
   "scaleBy a p \<equiv> \<lparr> tval = a*tval p, xval = a*xval p,
                    yval = a*yval p, zval = a*zval p\<rparr>"
 
-abbreviation sScaleBy :: "'a \<Rightarrow> 'a Space \<Rightarrow> 'a Space"  (" _ \<otimes>s _") where
+abbreviation sScaleBy :: "'a \<Rightarrow> 'a Space \<Rightarrow> 'a Space"  (\<open> _ \<otimes>s _\<close>) where
   "sScaleBy a p \<equiv> \<lparr> svalx = a*svalx p,
                    svaly = a*svaly p, 
                    svalz = a*svalz p\<rparr>"
@@ -146,7 +146,7 @@ abbreviation sSep2 :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a" where
              + sqr (yval p - yval q)
              + sqr (zval p - zval q)" 
 
-abbreviation mNorm2 :: "'a Point \<Rightarrow> 'a" ("\<parallel> _ \<parallel>m")
+abbreviation mNorm2 :: "'a Point \<Rightarrow> 'a" (\<open>\<parallel> _ \<parallel>m\<close>)
   where "\<parallel> p \<parallel>m \<equiv> sqr (tval p) - sNorm2 (sComponent p)"
 
 subsection \<open> Topological concepts \<close>
@@ -156,7 +156,7 @@ affine approximation later, so here we define open balls and accumulation points
 
 (* Open balls in Q^4 and accumulation points *)
 abbreviation inBall :: "'a Point \<Rightarrow> 'a \<Rightarrow> 'a Point \<Rightarrow> bool"
-("_ within _ of _")
+(\<open>_ within _ of _\<close>)
 where "inBall q \<epsilon> p \<equiv> sep2 q p < sqr \<epsilon>"
 
 abbreviation ball :: "'a Point \<Rightarrow> 'a \<Rightarrow> 'a Point set"
@@ -200,7 +200,7 @@ fun drtn :: "'a Point set \<Rightarrow> 'a Point set"
 abbreviation parallelLines :: "'a Point set \<Rightarrow> 'a Point set  \<Rightarrow> bool"
   where "parallelLines l1 l2 \<equiv> (drtn l1) \<inter> (drtn l2) \<noteq> {}"
 
-abbreviation parallel :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (" _ \<parallel> _ ")
+abbreviation parallel :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (\<open> _ \<parallel> _ \<close>)
   where "parallel p q \<equiv> (\<exists> \<alpha> \<noteq> 0 . p = (\<alpha> \<otimes> q))"
 
 text \<open>The "slope" of a line can be either finite or infinite. We will often

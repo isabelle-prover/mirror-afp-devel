@@ -55,17 +55,17 @@ adhoc_overloading Monad_Syntax.bind bind
 
 definition 
   execute :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> ('e + 'result \<times> 'heap)" 
-  ("((_)/ \<turnstile> (_))" [51, 52] 55)
+  (\<open>((_)/ \<turnstile> (_))\<close> [51, 52] 55)
   where
     "execute h p = (the_prog p) h"
 
 definition 
   returns_result :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> 'result \<Rightarrow> bool" 
-  ("((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>r (_))" [60, 35, 61] 65)
+  (\<open>((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>r (_))\<close> [60, 35, 61] 65)
   where
     "returns_result h p r \<longleftrightarrow> (case h \<turnstile> p of Inr (r', _) \<Rightarrow> r = r' | Inl _ \<Rightarrow> False)"
 
-fun select_result ("|(_)|\<^sub>r")
+fun select_result (\<open>|(_)|\<^sub>r\<close>)
   where
     "select_result (Inr (r, _)) = r"
   | "select_result (Inl _) = undefined"
@@ -75,11 +75,11 @@ lemma returns_result_eq [elim]: "h \<turnstile> f \<rightarrow>\<^sub>r y \<Long
 
 definition 
   returns_heap :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> 'heap \<Rightarrow> bool" 
-  ("((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>h (_))" [60, 35, 61] 65)
+  (\<open>((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>h (_))\<close> [60, 35, 61] 65)
   where
     "returns_heap h p h' \<longleftrightarrow> (case h \<turnstile> p of Inr (_ , h'') \<Rightarrow> h' = h'' | Inl _ \<Rightarrow> False)"
 
-fun select_heap ("|(_)|\<^sub>h")
+fun select_heap (\<open>|(_)|\<^sub>h\<close>)
   where
     "select_heap (Inr ( _, h)) = h"
   | "select_heap (Inl _) = undefined"
@@ -89,7 +89,7 @@ lemma returns_heap_eq [elim]: "h \<turnstile> f \<rightarrow>\<^sub>h h' \<Longr
 
 definition 
   returns_result_heap :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> 'result \<Rightarrow> 'heap \<Rightarrow> bool" 
-  ("((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>r (_) \<rightarrow>\<^sub>h (_))" [60, 35, 61, 62] 65)
+  (\<open>((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>r (_) \<rightarrow>\<^sub>h (_))\<close> [60, 35, 61, 62] 65)
   where
     "returns_result_heap h p r h' \<longleftrightarrow> h \<turnstile> p \<rightarrow>\<^sub>r r \<and> h \<turnstile> p \<rightarrow>\<^sub>h h'"
 
@@ -97,18 +97,18 @@ lemma return_result_heap_code [code]:
   "returns_result_heap h p r h' \<longleftrightarrow> (case h \<turnstile> p of Inr (r', h'') \<Rightarrow> r = r' \<and> h' = h'' | Inl _ \<Rightarrow> False)"
   by(auto simp add: returns_result_heap_def returns_result_def returns_heap_def split: sum.splits)
 
-fun select_result_heap ("|(_)|\<^sub>r\<^sub>h")
+fun select_result_heap (\<open>|(_)|\<^sub>r\<^sub>h\<close>)
   where
     "select_result_heap (Inr (r, h)) = (r, h)"
   | "select_result_heap (Inl _) = undefined"
 
 definition 
   returns_error :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> 'e \<Rightarrow> bool" 
-  ("((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>e (_))" [60, 35, 61] 65)
+  (\<open>((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>e (_))\<close> [60, 35, 61] 65)
   where
     "returns_error h p e = (case h \<turnstile> p of Inr _ \<Rightarrow> False | Inl e' \<Rightarrow> e = e')"
 
-definition is_OK :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> bool" ("((_)/ \<turnstile> ok (_))" [75, 75])
+definition is_OK :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> bool" (\<open>((_)/ \<turnstile> ok (_))\<close> [75, 75])
   where
     "is_OK h p = (case h \<turnstile> p of Inr _ \<Rightarrow> True | Inl _ \<Rightarrow> False)"
 

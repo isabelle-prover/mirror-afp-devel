@@ -92,7 +92,7 @@ the equation becomes
 We define the power-set relative for a function together with some properties.
 \<close>
 
-definition powerset_lift :: "('a::cpo \<rightarrow> 'b::type set) \<Rightarrow> 'a set \<rightarrow> 'b set" ("\<^ps>")
+definition powerset_lift :: "('a::cpo \<rightarrow> 'b::type set) \<Rightarrow> 'a set \<rightarrow> 'b set" (\<open>\<^ps>\<close>)
   where "\<^ps>f = (\<Lambda> S. (\<Union>y\<in>S . f\<cdot>y))"
 
 lemma powerset_lift_singleton[simp]:

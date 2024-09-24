@@ -99,7 +99,7 @@ states of @{term "c\<^sub>2"} is a subset of the set of states of @{term "c\<^su
 
 
 definition subsums :: 
-  "('v,'d) conf \<Rightarrow> ('v,'d) conf \<Rightarrow> bool" (infixl "\<sqsubseteq>" 55) 
+  "('v,'d) conf \<Rightarrow> ('v,'d) conf \<Rightarrow> bool" (infixl \<open>\<sqsubseteq>\<close> 55) 
 where     
   "c\<^sub>2 \<sqsubseteq> c\<^sub>1 \<equiv> (states c\<^sub>2 \<subseteq> states c\<^sub>1)"
 
@@ -195,7 +195,7 @@ This is equivalent to say that this expression holds for any state of this confi
 
 
 abbreviation entails :: 
-  "('v,'d) conf \<Rightarrow> ('v,'d) bexp \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>c" 55) 
+  "('v,'d) conf \<Rightarrow> ('v,'d) bexp \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>c\<close> 55) 
 where
   "c \<Turnstile>\<^sub>c \<phi> \<equiv> sem c \<Turnstile>\<^sub>B \<phi>"
 

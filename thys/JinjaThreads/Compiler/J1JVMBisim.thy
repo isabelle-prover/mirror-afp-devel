@@ -86,12 +86,12 @@ inductive bisim1 ::
   and bisim1_syntax :: 
   "'m prog \<Rightarrow> 'addr expr1 \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1)
   \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
-  ("_,_,_ \<turnstile> _ \<leftrightarrow> _" [50, 0, 0, 0, 50] 100)
+  (\<open>_,_,_ \<turnstile> _ \<leftrightarrow> _\<close> [50, 0, 0, 0, 50] 100)
 
   and bisims1_syntax :: 
   "'m prog \<Rightarrow> 'addr expr1 list \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr locals1)
   \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
-  ("_,_,_ \<turnstile> _ [\<leftrightarrow>] _" [50, 0, 0, 0, 50] 100)
+  (\<open>_,_,_ \<turnstile> _ [\<leftrightarrow>] _\<close> [50, 0, 0, 0, 50] 100)
   for P :: "'m prog" and  h :: 'heap
 where
   "P, e, h \<turnstile> exs \<leftrightarrow> s \<equiv> bisim1 P h e exs s"
@@ -520,12 +520,12 @@ inductive bisim1' ::
   and bisim1'_syntax :: 
   "'m prog \<Rightarrow> 'addr expr1 \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 \<times> 'addr locals1) 
   \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
-  ("_,_,_,_ \<turnstile>'' _ \<leftrightarrow> _" [50, 0, 0, 0, 0, 50] 100)
+  (\<open>_,_,_,_ \<turnstile>'' _ \<leftrightarrow> _\<close> [50, 0, 0, 0, 0, 50] 100)
 
   and bisims1'_syntax :: 
   "'m prog \<Rightarrow> 'addr expr1 list \<Rightarrow> nat \<Rightarrow> 'heap \<Rightarrow> ('addr expr1 list \<times> 'addr val list) 
   \<Rightarrow> ('addr val list \<times> 'addr val list \<times> pc \<times> 'addr option) \<Rightarrow> bool"
-  ("_,_,_,_ \<turnstile>'' _ [\<leftrightarrow>] _" [50, 0, 0, 0, 0, 50] 100)
+  (\<open>_,_,_,_ \<turnstile>'' _ [\<leftrightarrow>] _\<close> [50, 0, 0, 0, 0, 50] 100)
   for P :: "'m prog" and  h :: 'heap
 where
   "P, e, n, h \<turnstile>' exs \<leftrightarrow> s \<equiv> bisim1' P h e n exs s"

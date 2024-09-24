@@ -10,7 +10,7 @@ text \<open>Datatype for quantum programs\<close>
 datatype com = 
   SKIP
 | Utrans "complex mat"
-| Seq com com  ("_;;/ _" [60, 61] 60)
+| Seq com com  (\<open>_;;/ _\<close> [60, 61] 60)
 | Measure nat "nat \<Rightarrow> complex mat" "com list" 
 | While "nat \<Rightarrow> complex mat" com 
 

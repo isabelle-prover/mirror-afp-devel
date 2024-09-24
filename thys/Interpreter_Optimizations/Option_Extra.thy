@@ -2,7 +2,7 @@ theory Option_Extra
   imports Main
 begin
 
-fun ap_option (infixl "\<diamondop>" 60) where
+fun ap_option (infixl \<open>\<diamondop>\<close> 60) where
   "(Some f) \<diamondop> (Some x) = Some (f x)" |
   "_ \<diamondop> _ = None"
 

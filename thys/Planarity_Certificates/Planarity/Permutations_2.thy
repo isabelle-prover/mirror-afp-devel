@@ -7,7 +7,7 @@ begin
 
 section \<open>More\<close>
 
-abbreviation funswapid :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<rightleftharpoons>\<^sub>F" 90) where
+abbreviation funswapid :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<rightleftharpoons>\<^sub>F\<close> 90) where
   "x \<rightleftharpoons>\<^sub>F y \<equiv> transpose x y"
 
 lemma in_funswapid_image_iff: "x \<in> (a \<rightleftharpoons>\<^sub>F b) ` S \<longleftrightarrow> (a \<rightleftharpoons>\<^sub>F b) x \<in> S"

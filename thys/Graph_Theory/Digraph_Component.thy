@@ -445,7 +445,7 @@ proof -
 qed
 
 text \<open>Computes the subgraph of @{term G} induced by @{term vs}\<close>
-definition induce_subgraph :: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> ('a,'b) pre_digraph" (infix "\<restriction>" 67) where
+definition induce_subgraph :: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> ('a,'b) pre_digraph" (infix \<open>\<restriction>\<close> 67) where
   "G \<restriction> vs = \<lparr> verts = vs, arcs = {e \<in> arcs G. tail G e \<in> vs \<and> head G e \<in> vs},
     tail = tail G, head = head G \<rparr>"
 

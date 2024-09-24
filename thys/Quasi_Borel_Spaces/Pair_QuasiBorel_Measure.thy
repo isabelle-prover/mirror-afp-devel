@@ -16,7 +16,7 @@ definition qbs_prob_pair_measure_t :: "['a qbs_prob_t, 'b qbs_prob_t] \<Rightarr
                                      (Y,\<beta>,\<nu>) = q in
                                  (X \<Otimes>\<^sub>Q Y, map_prod \<alpha> \<beta> \<circ> real_real.g, distr (\<mu> \<Otimes>\<^sub>M \<nu>) real_borel real_real.f))"
 
-lift_definition qbs_prob_pair_measure :: "['a qbs_prob_space, 'b qbs_prob_space] \<Rightarrow> ('a \<times> 'b) qbs_prob_space" (infix "\<Otimes>\<^sub>Q\<^sub>m\<^sub>e\<^sub>s" 80)
+lift_definition qbs_prob_pair_measure :: "['a qbs_prob_space, 'b qbs_prob_space] \<Rightarrow> ('a \<times> 'b) qbs_prob_space" (infix \<open>\<Otimes>\<^sub>Q\<^sub>m\<^sub>e\<^sub>s\<close> 80)
 is qbs_prob_pair_measure_t
   unfolding qbs_prob_pair_measure_t_def
 proof auto

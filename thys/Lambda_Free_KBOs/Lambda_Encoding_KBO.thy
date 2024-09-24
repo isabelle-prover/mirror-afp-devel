@@ -20,10 +20,10 @@ locale kbo_lambda_encoding = kbo_basic _ _ _ _ "\<lambda>_ :: 'v. UNIV :: 's set
     wt_db_db: "wt_sym (db j) = wt_sym (db i)"
 begin
 
-notation gt (infix ">\<^sub>t" 50)
-notation gt_hd (infix ">\<^sub>h\<^sub>d" 50)
+notation gt (infix \<open>>\<^sub>t\<close> 50)
+notation gt_hd (infix \<open>>\<^sub>h\<^sub>d\<close> 50)
 
-abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix "\<ge>\<^sub>t" 50) where
+abbreviation ge :: "('s, 'v) tm \<Rightarrow> ('s, 'v) tm \<Rightarrow> bool" (infix \<open>\<ge>\<^sub>t\<close> 50) where
   "t \<ge>\<^sub>t s \<equiv> t >\<^sub>t s \<or> t = s"
 
 lemma wary_raw_db_subst: "wary_subst (raw_db_subst i x)"

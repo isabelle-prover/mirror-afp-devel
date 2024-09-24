@@ -30,7 +30,7 @@ typ "('addr,'thread_id,'heap) external_thread_action"
 
 subsection \<open>Typing of external calls\<close>
 
-inductive external_WT_defs :: "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool" ("(_\<bullet>_'(_')) :: _" [50, 0, 0, 50] 60)
+inductive external_WT_defs :: "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool" (\<open>(_\<bullet>_'(_')) :: _\<close> [50, 0, 0, 50] 60)
 where
   "Thread\<bullet>start([]) :: Void"
 | "Thread\<bullet>join([]) :: Void"
@@ -69,7 +69,7 @@ lemma is_nativeD: "is_native P hT M \<Longrightarrow> \<exists>Ts T D. P \<turns
 by(simp add: is_native.simps)
 
 inductive (in heap_base) external_WT' :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ty \<Rightarrow> bool"
-  ("_,_ \<turnstile> (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
+  (\<open>_,_ \<turnstile> (_\<bullet>_'(_')) : _\<close> [50,0,0,0,50] 60)
 for P :: "'m prog" and h :: 'heap and a :: 'addr and M :: mname and vs :: "'addr val list" and U :: ty
 where 
   "\<lbrakk> typeof_addr h a = \<lfloor>hT\<rfloor>; map typeof\<^bsub>h\<^esub> vs = map Some Ts; P \<turnstile> class_type_of hT sees M:Ts'\<rightarrow>U = Native in D; 
@@ -161,7 +161,7 @@ inductive red_external ::
   and red_external_syntax :: 
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'heap 
   \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> 'addr extCallRet \<Rightarrow> 'heap \<Rightarrow> bool"
-  ("_,_ \<turnstile> (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)" [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
+  (\<open>_,_ \<turnstile> (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)\<close> [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
 for P :: "'m prog" and t :: 'thread_id and h :: 'heap and a :: 'addr
 where
   "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<equiv> red_external P t h a M vs ta va h'"

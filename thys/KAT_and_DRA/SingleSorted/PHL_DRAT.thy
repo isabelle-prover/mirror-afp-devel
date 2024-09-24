@@ -14,9 +14,9 @@ sublocale drat < phl: at_it_pre_dioid where alpha = t and tau = t and it = stron
 context drat
 begin
 
-no_notation while ("while _ do _ od" [64,64] 63)
+no_notation while (\<open>while _ do _ od\<close> [64,64] 63)
 
-abbreviation while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [64,64] 63) where
+abbreviation while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ od\<close> [64,64] 63) where
   "while b do x od \<equiv> (b \<cdot> x)\<^sup>\<infinity> \<cdot> !b"
 
 lemma  phl_n_while: 

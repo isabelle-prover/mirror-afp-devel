@@ -6,7 +6,7 @@ theory Weak_Semantics
   imports Weak_Cong_Semantics
 begin
 
-definition weakTrans :: "ccs \<Rightarrow> act \<Rightarrow> ccs \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sup>^_ \<prec> _" [80, 80, 80] 80)
+definition weakTrans :: "ccs \<Rightarrow> act \<Rightarrow> ccs \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sup>^_ \<prec> _\<close> [80, 80, 80] 80)
   where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<equiv> P \<Longrightarrow>\<alpha> \<prec> P' \<or> (\<alpha> = \<tau> \<and> P = P')"
 
 lemma weakEmptyTrans[simp]:

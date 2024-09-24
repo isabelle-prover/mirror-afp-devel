@@ -13,14 +13,14 @@ part of the textbook by Fitting (pp. 169-171). \<close>
   
 subsection \<open>General Definitions\<close>
  
-abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" ("E!") 
+abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" (\<open>E!\<close>) 
   where "E! x  \<equiv> \<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w"
   
-consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>")
+consts positiveProperty::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>\<rangle>" (\<open>\<P>\<close>)
   
-abbreviation God::"\<up>\<langle>\<zero>\<rangle>" ("G\<^sup>A") where "G\<^sup>A \<equiv> \<lambda>x. \<^bold>\<forall>Y. (\<P> Y) \<^bold>\<leftrightarrow> \<^bold>\<box>(Y x)"
+abbreviation God::"\<up>\<langle>\<zero>\<rangle>" (\<open>G\<^sup>A\<close>) where "G\<^sup>A \<equiv> \<lambda>x. \<^bold>\<forall>Y. (\<P> Y) \<^bold>\<leftrightarrow> \<^bold>\<box>(Y x)"
   
-abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix "\<Rrightarrow>" 60) where
+abbreviation Entailment::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<up>\<langle>\<zero>\<rangle>\<rangle>" (infix \<open>\<Rrightarrow>\<close> 60) where
   "X \<Rrightarrow> Y \<equiv>  \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ez. X z \<^bold>\<rightarrow> Y z)"
   
 subsection \<open>Part I - God's Existence is Possible\<close>  
@@ -61,12 +61,12 @@ lemma "\<lfloor>rigidPred \<P>\<rfloor>"
   using A4a A4b by blast \<comment> \<open>@{text "\<P>"} is therefore rigid in a \emph{B} logic\<close>
 
 text\<open>  Essence, Anderson Version (Definition 11.34) \<close>
-abbreviation essenceOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" ("\<E>\<^sup>A") where
+abbreviation essenceOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" (\<open>\<E>\<^sup>A\<close>) where
   "\<E>\<^sup>A Y x \<equiv> (\<^bold>\<forall>Z. \<^bold>\<box>(Z x) \<^bold>\<leftrightarrow> Y \<Rrightarrow> Z)"
 
       
 text\<open>  Necessary Existence, Anderson Version (Definition 11.35)  \<close>  
-abbreviation necessaryExistencePred::"\<up>\<langle>\<zero>\<rangle>" ("NE\<^sup>A") 
+abbreviation necessaryExistencePred::"\<up>\<langle>\<zero>\<rangle>" (\<open>NE\<^sup>A\<close>) 
   where "NE\<^sup>A x  \<equiv> (\<lambda>w. (\<^bold>\<forall>Y.  \<E>\<^sup>A Y x \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<exists>\<^sup>E Y) w)"
     
 text\<open>  Theorem 11.36 - If g is God-like, then the property of being God-like is the essence of g. \<close>

@@ -1423,7 +1423,7 @@ by(cases b) simp_all
 lemma pred_gpv_assert [simp]: "pred_gpv P Q (assert_gpv b) = (b \<longrightarrow> P ())"
 by(cases b) simp_all
 
-primcorec try_gpv :: "('a, 'call, 'ret) gpv \<Rightarrow> ('a, 'call, 'ret) gpv \<Rightarrow> ('a, 'call, 'ret) gpv" ("TRY _ ELSE _" [0,60] 59)
+primcorec try_gpv :: "('a, 'call, 'ret) gpv \<Rightarrow> ('a, 'call, 'ret) gpv \<Rightarrow> ('a, 'call, 'ret) gpv" (\<open>TRY _ ELSE _\<close> [0,60] 59)
 where
   "the_gpv (TRY gpv ELSE gpv') = 
    map_spmf (map_generat id id (\<lambda>c input. case c input of Inl gpv \<Rightarrow> try_gpv gpv gpv' | Inr gpv' \<Rightarrow> gpv'))
@@ -2582,7 +2582,7 @@ lemma pred_gpv'_mono' [mono]:
 
 subsubsection \<open>Type judgements\<close>
 
-coinductive WT_gpv :: "('out, 'in) \<I> \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool" ("((_)/ \<turnstile>g (_) \<surd>)" [100, 0] 99)
+coinductive WT_gpv :: "('out, 'in) \<I> \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool" (\<open>((_)/ \<turnstile>g (_) \<surd>)\<close> [100, 0] 99)
   for \<Gamma>
 where
   "(\<And>out c. IO out c \<in> set_spmf gpv \<Longrightarrow> out \<in> outs_\<I> \<Gamma> \<and> (\<forall>input\<in>responses_\<I> \<Gamma> out. \<Gamma> \<turnstile>g c input \<surd>))
@@ -5107,7 +5107,7 @@ by(rule pred_spmf_exec_gpv) simp_all
 
 end
 
-inductive WT_callee :: "('call, 'ret) \<I> \<Rightarrow> ('call \<Rightarrow> ('ret \<times> 's) spmf) \<Rightarrow> bool" ("(_) \<turnstile>c/ (_) \<surd>" [100, 0] 99)
+inductive WT_callee :: "('call, 'ret) \<I> \<Rightarrow> ('call \<Rightarrow> ('ret \<times> 's) spmf) \<Rightarrow> bool" (\<open>(_) \<turnstile>c/ (_) \<surd>\<close> [100, 0] 99)
   for \<I> callee
 where
   WT_callee:

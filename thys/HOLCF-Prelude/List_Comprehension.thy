@@ -5,17 +5,17 @@ theory List_Comprehension
 begin
 
 no_notation
-  disj (infixr "|" 30)
+  disj (infixr \<open>|\<close> 30)
 
 nonterminal llc_qual and llc_quals
 
 syntax
-  "_llc" :: "'a \<Rightarrow> llc_qual \<Rightarrow> llc_quals \<Rightarrow> ['a]" ("[_ | __")
-  "_llc_gen" :: "'a \<Rightarrow> ['a] \<Rightarrow> llc_qual" ("_ <- _")
-  "_llc_guard" :: "tr \<Rightarrow> llc_qual" ("_")
-  "_llc_let" :: "letbinds \<Rightarrow> llc_qual" ("let _")
-  "_llc_quals" :: "llc_qual \<Rightarrow> llc_quals \<Rightarrow> llc_quals" (", __")
-  "_llc_end" :: "llc_quals" ("]")
+  "_llc" :: "'a \<Rightarrow> llc_qual \<Rightarrow> llc_quals \<Rightarrow> ['a]" (\<open>[_ | __\<close>)
+  "_llc_gen" :: "'a \<Rightarrow> ['a] \<Rightarrow> llc_qual" (\<open>_ <- _\<close>)
+  "_llc_guard" :: "tr \<Rightarrow> llc_qual" (\<open>_\<close>)
+  "_llc_let" :: "letbinds \<Rightarrow> llc_qual" (\<open>let _\<close>)
+  "_llc_quals" :: "llc_qual \<Rightarrow> llc_quals \<Rightarrow> llc_quals" (\<open>, __\<close>)
+  "_llc_end" :: "llc_quals" (\<open>]\<close>)
   "_llc_abs" :: "'a \<Rightarrow> ['a] \<Rightarrow> ['a]"
 
 translations

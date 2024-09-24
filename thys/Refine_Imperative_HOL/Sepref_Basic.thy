@@ -8,8 +8,8 @@ imports
   "Lib/Structured_Apply"
   Sepref_Id_Op
 begin
-no_notation i_ANNOT (infixr ":::\<^sub>i" 10)
-no_notation CONST_INTF (infixr "::\<^sub>i" 10)
+no_notation i_ANNOT (infixr \<open>:::\<^sub>i\<close> 10)
+no_notation CONST_INTF (infixr \<open>::\<^sub>i\<close> 10)
 
 text \<open>
   In this theory, we define the basic concept of refinement 
@@ -316,7 +316,7 @@ definition prod_assn :: "('a1\<Rightarrow>'c1\<Rightarrow>assn) \<Rightarrow> ('
   "prod_assn P1 P2 a c \<equiv> case (a,c) of ((a1,a2),(c1,c2)) \<Rightarrow>
   P1 a1 c1 * P2 a2 c2"
 
-notation prod_assn (infixr "\<times>\<^sub>a" 70)
+notation prod_assn (infixr \<open>\<times>\<^sub>a\<close> 70)
   
 lemma prod_assn_pure_conv[simp]: "prod_assn (pure R1) (pure R2) = pure (R1 \<times>\<^sub>r R2)"
   by (auto simp: pure_def prod_assn_def intro!: ext)

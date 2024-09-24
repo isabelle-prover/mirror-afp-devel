@@ -18,7 +18,7 @@ begin
 
 subsection\<open>Kleisli arrow composition\<close>
 
-definition kleisli :: "('b \<Rightarrow> 'b option) \<Rightarrow> ('b \<Rightarrow> 'b option) \<Rightarrow> ('b \<Rightarrow> 'b option)" (infixr "\<rhd>" 65) where
+definition kleisli :: "('b \<Rightarrow> 'b option) \<Rightarrow> ('b \<Rightarrow> 'b option) \<Rightarrow> ('b \<Rightarrow> 'b option)" (infixr \<open>\<rhd>\<close> 65) where
   "f \<rhd> g \<equiv> \<lambda>x. (f x \<bind> (\<lambda>y. g y))"
 
 lemma kleisli_comm_cong:

@@ -140,19 +140,19 @@ end
 
 locale multithreaded_base = final_thread +
   constrains final :: "'x \<Rightarrow> bool" 
-  fixes r :: "('l,'t,'x,'m,'w,'o) semantics" ("_ \<turnstile> _ -_\<rightarrow> _" [50,0,0,50] 80)
+  fixes r :: "('l,'t,'x,'m,'w,'o) semantics" (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close> [50,0,0,50] 80)
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
 begin
 
 abbreviation
   r_syntax :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool"
-              ("_ \<turnstile> \<langle>_, _\<rangle> -_\<rightarrow> \<langle>_, _\<rangle>" [50,0,0,0,0,0] 80)
+              (\<open>_ \<turnstile> \<langle>_, _\<rangle> -_\<rightarrow> \<langle>_, _\<rangle>\<close> [50,0,0,0,0,0] 80)
 where
   "t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<equiv> t \<turnstile> (x, m) -ta\<rightarrow> (x', m')"
 
 inductive
   redT :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<times> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> bool" and
-  redT_syntax1 :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> bool" ("_ -_\<triangleright>_\<rightarrow> _" [50,0,0,50] 80)
+  redT_syntax1 :: "('l,'t,'x,'m,'w) state \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> bool" (\<open>_ -_\<triangleright>_\<rightarrow> _\<close> [50,0,0,50] 80)
 where
   "s -t\<triangleright>ta\<rightarrow> s' \<equiv> redT s (t, ta) s'"
 
@@ -173,7 +173,7 @@ abbreviation
   redT_syntax2 :: "('l,'t) locks \<Rightarrow> ('l,'t,'x) thread_info \<times> 'm \<Rightarrow> ('w,'t) wait_sets \<Rightarrow> 't interrupts
                    \<Rightarrow> 't \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action
                    \<Rightarrow> ('l,'t) locks \<Rightarrow> ('l,'t,'x) thread_info \<times> 'm \<Rightarrow> ('w,'t) wait_sets \<Rightarrow> 't interrupts \<Rightarrow> bool"
-                  ("\<langle>_, _, _, _\<rangle> -_\<triangleright>_\<rightarrow> \<langle>_, _, _, _\<rangle>" [0,0,0,0,0,0,0,0,0] 80)
+                  (\<open>\<langle>_, _, _, _\<rangle> -_\<triangleright>_\<rightarrow> \<langle>_, _, _, _\<rangle>\<close> [0,0,0,0,0,0,0,0,0] 80)
 where
   "\<langle>ls, tsm, ws, is\<rangle> -t\<triangleright>ta\<rightarrow> \<langle>ls', tsm', ws', is'\<rangle> \<equiv> (ls, tsm, ws, is) -t\<triangleright>ta\<rightarrow> (ls', tsm', ws', is')"
 
@@ -210,7 +210,7 @@ qed
 
 definition
   RedT :: "('l,'t,'x,'m,'w) state \<Rightarrow> ('t \<times> ('l,'t,'x,'m,'w,'o) thread_action) list \<Rightarrow> ('l,'t,'x,'m,'w) state \<Rightarrow> bool"
-          ("_ -\<triangleright>_\<rightarrow>* _" [50,0,50] 80)
+          (\<open>_ -\<triangleright>_\<rightarrow>* _\<close> [50,0,50] 80)
 where
   "RedT \<equiv> rtrancl3p redT"
 

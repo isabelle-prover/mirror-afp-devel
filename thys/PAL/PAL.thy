@@ -45,27 +45,27 @@ definition tc::"\<alpha>\<Rightarrow>\<alpha>"
   where "tc R \<equiv> \<lambda>x y.\<forall>Q. transitive Q \<longrightarrow> (sub_rel R Q \<longrightarrow> Q x y)"
 
 text \<open>Logical connectives for PAL\<close>
-abbreviation patom::"\<sigma>\<Rightarrow>\<tau>" ("\<^sup>A_"[79]80) 
+abbreviation patom::"\<sigma>\<Rightarrow>\<tau>" (\<open>\<^sup>A_\<close>[79]80) 
   where "\<^sup>Ap \<equiv> \<lambda>W w. W w \<and> p w"
-abbreviation ptop::"\<tau>" ("\<^bold>\<top>") 
+abbreviation ptop::"\<tau>" (\<open>\<^bold>\<top>\<close>) 
   where "\<^bold>\<top> \<equiv> \<lambda>W w. True" 
-abbreviation pneg::"\<tau>\<Rightarrow>\<tau>" ("\<^bold>\<not>_"[52]53) 
+abbreviation pneg::"\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>\<not>_\<close>[52]53) 
   where "\<^bold>\<not>\<phi> \<equiv> \<lambda>W w. \<not>(\<phi> W w)" 
-abbreviation pand::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr"\<^bold>\<and>"51) 
+abbreviation pand::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr\<open>\<^bold>\<and>\<close>51) 
   where "\<phi>\<^bold>\<and>\<psi> \<equiv> \<lambda>W w. (\<phi> W w) \<and> (\<psi> W w)"   
-abbreviation por::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr"\<^bold>\<or>"50) 
+abbreviation por::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr\<open>\<^bold>\<or>\<close>50) 
   where "\<phi>\<^bold>\<or>\<psi> \<equiv> \<lambda>W w. (\<phi> W w) \<or> (\<psi> W w)"   
-abbreviation pimp::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr"\<^bold>\<rightarrow>"49) 
+abbreviation pimp::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr\<open>\<^bold>\<rightarrow>\<close>49) 
   where "\<phi>\<^bold>\<rightarrow>\<psi> \<equiv> \<lambda>W w. (\<phi> W w) \<longrightarrow> (\<psi> W w)"  
-abbreviation pequ::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr"\<^bold>\<leftrightarrow>"48) 
+abbreviation pequ::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (infixr\<open>\<^bold>\<leftrightarrow>\<close>48) 
   where "\<phi>\<^bold>\<leftrightarrow>\<psi> \<equiv> \<lambda>W w. (\<phi> W w) \<longleftrightarrow> (\<psi> W w)"
-abbreviation pknow::"\<alpha>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>K_ _") 
+abbreviation pknow::"\<alpha>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>K_ _\<close>) 
   where "\<^bold>K r \<phi> \<equiv> \<lambda>W w.\<forall>v. (W v \<and> r w v) \<longrightarrow> (\<phi> W v)"
-abbreviation ppal::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>[\<^bold>!_\<^bold>]_") 
+abbreviation ppal::"\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>[\<^bold>!_\<^bold>]_\<close>) 
   where "\<^bold>[\<^bold>!\<phi>\<^bold>]\<psi> \<equiv> \<lambda>W w. (\<phi> W w) \<longrightarrow> (\<psi> (\<lambda>z. W z \<and> \<phi> W z) w)"
 
 text \<open>Glogal validity of PAL formulas\<close>
-abbreviation pvalid::"\<tau> \<Rightarrow> bool" ("\<^bold>\<lfloor>_\<^bold>\<rfloor>"[7]8) 
+abbreviation pvalid::"\<tau> \<Rightarrow> bool" (\<open>\<^bold>\<lfloor>_\<^bold>\<rfloor>\<close>[7]8) 
   where "\<^bold>\<lfloor>\<phi>\<^bold>\<rfloor> \<equiv> \<forall>W.\<forall>w. W w \<longrightarrow> \<phi> W w"
 
 text \<open>Introducing agent knowledge (K), mutual knowledge (E), distributed knowledge (D) and common knowledge (C).\<close>
@@ -73,15 +73,15 @@ abbreviation EVR::"\<rho>\<Rightarrow>\<alpha>"
   where "EVR G \<equiv> big_union_rel G"
 abbreviation DIS::"\<rho>\<Rightarrow>\<alpha>" 
   where "DIS G \<equiv> big_intersection_rel G"
-abbreviation agttknows::"\<alpha>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>K\<^sub>_ _") 
+abbreviation agttknows::"\<alpha>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>K\<^sub>_ _\<close>) 
   where "\<^bold>K\<^sub>r \<phi> \<equiv>  \<^bold>K r \<phi>" 
-abbreviation evrknows::"\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>E\<^sub>_ _") 
+abbreviation evrknows::"\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>E\<^sub>_ _\<close>) 
   where "\<^bold>E\<^sub>G \<phi> \<equiv>  \<^bold>K (EVR G) \<phi>"
-abbreviation disknows :: "\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>D\<^sub>_ _") 
+abbreviation disknows :: "\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>D\<^sub>_ _\<close>) 
   where "\<^bold>D\<^sub>G \<phi> \<equiv> \<^bold>K (DIS G) \<phi>"
-abbreviation prck::"\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>C\<^sub>_\<^bold>\<lparr>_\<^bold>|_\<^bold>\<rparr>")
+abbreviation prck::"\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>C\<^sub>_\<^bold>\<lparr>_\<^bold>|_\<^bold>\<rparr>\<close>)
   where "\<^bold>C\<^sub>G\<^bold>\<lparr>\<phi>\<^bold>|\<psi>\<^bold>\<rparr> \<equiv> \<lambda>W w. \<forall>v. (tc (intersection_rel (EVR G) (\<lambda>u v. W v \<and> \<phi> W v)) w v) \<longrightarrow> (\<psi> W v)"
-abbreviation pcmn::"\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" ("\<^bold>C\<^sub>_ _") 
+abbreviation pcmn::"\<rho>\<Rightarrow>\<tau>\<Rightarrow>\<tau>" (\<open>\<^bold>C\<^sub>_ _\<close>) 
   where "\<^bold>C\<^sub>G \<phi> \<equiv>  \<^bold>C\<^sub>G\<^bold>\<lparr>\<^bold>\<top>\<^bold>|\<phi>\<^bold>\<rparr>"
 
 text \<open>Postulating S5 principles for the agent's accessibility relations.\<close>
@@ -105,7 +105,7 @@ section \<open>Automating the Wise Men Puzzle\<close>
 
 text \<open>Agents are modeled as accessibility relations.\<close>
 consts a::"\<alpha>" b::"\<alpha>" c::"\<alpha>" 
-abbreviation  Agent::"\<alpha>\<Rightarrow>bool" ("\<A>") where "\<A> x \<equiv> x = a \<or> x = b \<or> x = c"
+abbreviation  Agent::"\<alpha>\<Rightarrow>bool" (\<open>\<A>\<close>) where "\<A> x \<equiv> x = a \<or> x = b \<or> x = c"
 axiomatization where  group_S5: "S5Agents \<A>"
 
 text \<open>Common knowledge: At least one of a, b and c has a white spot.\<close>

@@ -122,7 +122,7 @@ end (* Subsumption Graph Pre Nodes *)
 
 locale Leadsto_Search_Space =
   A: Search_Space'_finite E a\<^sub>0 _ "(\<preceq>)" empty
-  for E a\<^sub>0 empty and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 50)
+  for E a\<^sub>0 empty and subsumes :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50)
   +
   fixes P Q :: "'a \<Rightarrow> bool"
   assumes P_mono: "a \<preceq> a' \<Longrightarrow> \<not> empty a \<Longrightarrow> P a \<Longrightarrow> P a'"

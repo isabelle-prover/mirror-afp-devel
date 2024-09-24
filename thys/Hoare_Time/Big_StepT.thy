@@ -4,7 +4,7 @@ theory Big_StepT imports Big_Step begin
 subsection "Big-Step with Time Semantics of Commands"
 
 inductive
-  big_step_t :: "com \<times> state \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"  ("_ \<Rightarrow> _ \<Down> _" 55)
+  big_step_t :: "com \<times> state \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"  (\<open>_ \<Rightarrow> _ \<Down> _\<close> 55)
 where
 Skip: "(SKIP,s) \<Rightarrow> Suc 0 \<Down> s" |
 Assign: "(x ::= a,s) \<Rightarrow> Suc 0 \<Down> s(x := aval a s)" |
@@ -176,9 +176,9 @@ lemma bigstep_det: "(c1, s) \<Rightarrow> p1 \<Down> t1 \<Longrightarrow> (c1, s
 lemma bigstep_progress: "(c, s) \<Rightarrow> p \<Down> t \<Longrightarrow> p > 0"
 apply(induct rule: big_step_t.induct, auto) done
 
-abbreviation terminates ("\<down>") where "terminates cs \<equiv> (\<exists>n a. (cs \<Rightarrow> n \<Down> a))"
-abbreviation thestate ("\<down>\<^sub>s") where "thestate cs \<equiv> (THE a. \<exists>n. (cs \<Rightarrow> n \<Down> a))" 
-abbreviation thetime ("\<down>\<^sub>t") where "thetime cs \<equiv> (THE n. \<exists>a. (cs \<Rightarrow> n \<Down> a))"  
+abbreviation terminates (\<open>\<down>\<close>) where "terminates cs \<equiv> (\<exists>n a. (cs \<Rightarrow> n \<Down> a))"
+abbreviation thestate (\<open>\<down>\<^sub>s\<close>) where "thestate cs \<equiv> (THE a. \<exists>n. (cs \<Rightarrow> n \<Down> a))" 
+abbreviation thetime (\<open>\<down>\<^sub>t\<close>) where "thetime cs \<equiv> (THE n. \<exists>a. (cs \<Rightarrow> n \<Down> a))"  
             
   
 lemma bigstepT_the_cost: "(c, s) \<Rightarrow> t \<Down> s' \<Longrightarrow> \<down>\<^sub>t(c, s) = t"

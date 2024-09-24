@@ -259,11 +259,11 @@ definition
   "ODnums = {X. \<exists>S. Worder S \<and> X = ordinal_number S}"
 
 definition
-  ODord :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix "\<sqsubset>" 60) where
+  ODord :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 60) where
   "X \<sqsubset> Y \<longleftrightarrow> (\<exists>x \<in> X. \<exists>y \<in> Y. (\<exists>c\<in>carrier y. ord_equiv x (Iod y (segment y c))))"
 
 definition
-  ODord_le :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix "\<sqsubseteq>" 60) where
+  ODord_le :: "['a Order set, 'a Order set] \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 60) where
   "X \<sqsubseteq> Y \<longleftrightarrow> X = Y \<or> ODord X Y"
 
 definition
@@ -1534,7 +1534,7 @@ definition
 
 definition
   upper_bound :: "[_, 'a set, 'a] \<Rightarrow> bool"
-    ("(3ub\<index>/ _/ _)" [100,101]100) where
+    (\<open>(3ub\<index>/ _/ _)\<close> [100,101]100) where
   "ub\<^bsub>D\<^esub> S b \<longleftrightarrow> b \<in> carrier D \<and> (\<forall>s\<in>S. s \<preceq>\<^bsub>D\<^esub> b)" 
 
 definition
@@ -1542,7 +1542,7 @@ definition
   "inductive_set D \<longleftrightarrow> (\<forall>C. (Chain D C \<longrightarrow> (\<exists>b. ub\<^bsub>D\<^esub> C b)))"
 
 definition
-  maximal_element :: "[_, 'a] \<Rightarrow> bool"  ("(maximal\<index>/ _)" [101]100) where
+  maximal_element :: "[_, 'a] \<Rightarrow> bool"  (\<open>(maximal\<index>/ _)\<close> [101]100) where
   "maximal\<^bsub>D\<^esub> m \<longleftrightarrow> m \<in> carrier D \<and> (\<forall>b\<in>carrier D. m \<preceq>\<^bsub>D\<^esub> b \<longrightarrow> m = b)"
 
 definition
@@ -3452,7 +3452,7 @@ definition
 
 definition
   family_Torder::" _  \<Rightarrow> ('a set) Order"
-    ("(fTo _)" [999]1000) where
+    (\<open>(fTo _)\<close> [999]1000) where
   "fTo D = \<lparr>carrier = Chains D , rel = {Z. Z \<in> (Chains D) \<times> (Chains D) \<and> (fst Z) \<subseteq> (snd Z)}\<rparr>"
 
 lemma (in Order) Chain_mem_fTo:"Chain D C \<Longrightarrow> C \<in> carrier (fTo D)"
@@ -3818,9 +3818,9 @@ chapter "Group Theory. Focused on Jordan Hoelder theorem"
 section "Definition of a Group"
 
 record 'a Group = "'a carrier" + 
-  top      :: "['a, 'a ] \<Rightarrow> 'a" (infixl "\<cdot>\<index>" 70)
-  iop      :: "'a  \<Rightarrow>  'a" ("\<rho>\<index> _" [81] 80)
-  one     :: "'a"   ("\<one>\<index>") 
+  top      :: "['a, 'a ] \<Rightarrow> 'a" (infixl \<open>\<cdot>\<index>\<close> 70)
+  iop      :: "'a  \<Rightarrow>  'a" (\<open>\<rho>\<index> _\<close> [81] 80)
+  one     :: "'a"   (\<open>\<one>\<index>\<close>) 
 
 locale Group =
  fixes G (structure)
@@ -4084,29 +4084,29 @@ by (rule mult_closed,
 section "Subgroups"
 
 definition
-  sg ::"[_ , 'a set ] \<Rightarrow> bool"  ("_ \<guillemotright> _ " [60, 61]60) where
+  sg ::"[_ , 'a set ] \<Rightarrow> bool"  (\<open>_ \<guillemotright> _ \<close> [60, 61]60) where
   "G \<guillemotright> H \<longleftrightarrow> H \<noteq> {} \<and> H \<subseteq> carrier G \<and> (\<forall>a \<in> H. \<forall>b \<in> H. a \<cdot>\<^bsub>G\<^esub> (\<rho>\<^bsub>G\<^esub> b) \<in> H)" 
  
  (** SG is a set satisfying the condition above. In math textbooks this is 
   called a subgroup and it is also taken as a group with induced structure.**)
 
 definition
-   Gp :: "_ \<Rightarrow> 'a set \<Rightarrow> _"        ("(\<natural>\<index>_)" 70) where
+   Gp :: "_ \<Rightarrow> 'a set \<Rightarrow> _"        (\<open>(\<natural>\<index>_)\<close> 70) where
    "\<natural>\<^bsub>G\<^esub>H \<equiv> G \<lparr> carrier := H, top := top G, iop := iop G, one := one G\<rparr>"     
 
   (** Gp G H is a group with carrier H, where H is sg **)
 
 
 definition
-  rcs :: "[_ , 'a set, 'a] \<Rightarrow> 'a set" (infix "\<bullet>\<index>" 70) where
+  rcs :: "[_ , 'a set, 'a] \<Rightarrow> 'a set" (infix \<open>\<bullet>\<index>\<close> 70) where
   "H \<bullet>\<^bsub>G\<^esub> a = {b. \<exists> h \<in> H. h \<cdot>\<^bsub>G\<^esub> a = b}"
 
 definition
-  lcs :: "[_ , 'a, 'a set] \<Rightarrow> 'a set" (infix "\<diamondsuit>\<index>" 70) where
+  lcs :: "[_ , 'a, 'a set] \<Rightarrow> 'a set" (infix \<open>\<diamondsuit>\<index>\<close> 70) where
   "a \<diamondsuit>\<^bsub>G\<^esub> H = {b. \<exists> h \<in> H. a \<cdot>\<^bsub>G\<^esub> h = b}" 
 
 definition
-  nsg :: "_ \<Rightarrow> 'a set \<Rightarrow> bool"    ("_ \<triangleright> _" [60,61]60) where
+  nsg :: "_ \<Rightarrow> 'a set \<Rightarrow> bool"    (\<open>_ \<triangleright> _\<close> [60,61]60) where
   "G \<triangleright> H \<longleftrightarrow> G \<guillemotright> H \<and> (\<forall>x \<in> carrier G. H \<bullet>\<^bsub>G\<^esub> x = x \<diamondsuit>\<^bsub>G\<^esub> H)" 
 
 definition
@@ -4278,11 +4278,11 @@ definition
   Pj :: "[_ , 'a set] \<Rightarrow>  ( 'a => 'a set)" where
   "Pj G H = (\<lambda>x \<in> carrier G. H \<bullet>\<^bsub>G\<^esub> x)"        
 
-no_notation inverse_divide (infixl "'/" 70)
+no_notation inverse_divide (infixl \<open>'/\<close> 70)
 
 abbreviation
   QGRP :: "([('a, 'more) Group_scheme, 'a set] => ('a set) Group)"
-    (infixl "'/" 70) where
+    (infixl \<open>'/\<close> 70) where
   "G / H == Qg G H"
   
 
@@ -4305,23 +4305,23 @@ definition
 
 abbreviation
   GKER :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 'a \<Rightarrow> 'b ] \<Rightarrow> 'a set"
-    ("(3gker\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+    (\<open>(3gker\<^bsub>_,_\<^esub> _)\<close> [88,88,89]88) where
   "gker\<^bsub>G,F\<^esub> f == gkernel G F f"
 
 definition
   gsurjec :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
-             'a \<Rightarrow> 'b] \<Rightarrow> bool"  ("(3gsurj\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+             'a \<Rightarrow> 'b] \<Rightarrow> bool"  (\<open>(3gsurj\<^bsub>_,_\<^esub> _)\<close> [88,88,89]88) where
   "gsurj\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> gHom F G \<and> surj_to f (carrier F) (carrier G)" 
 
 
 definition
   ginjec :: "[('a, 'more) Group_scheme, ('b, 'more1) Group_scheme, 
-             'a \<Rightarrow> 'b]  \<Rightarrow> bool"    ("(3ginj\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+             'a \<Rightarrow> 'b]  \<Rightarrow> bool"    (\<open>(3ginj\<^bsub>_,_\<^esub> _)\<close> [88,88,89]88) where
   "ginj\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> gHom F G \<and> inj_on f (carrier F)"
 
 definition
   gbijec :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme, 'a \<Rightarrow> 'b]
-             \<Rightarrow> bool"       ("(3gbij\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+             \<Rightarrow> bool"       (\<open>(3gbij\<^bsub>_,_\<^esub> _)\<close> [88,88,89]88) where
   "gbij\<^bsub>F,G\<^esub> f \<longleftrightarrow> gsurj\<^bsub>F,G\<^esub> f \<and> ginj\<^bsub>F,G\<^esub> f"
 
 definition
@@ -4334,12 +4334,12 @@ definition
 
 definition
   isomorphic :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme]
-                         \<Rightarrow> bool"   (infix "\<cong>" 100) where
+                         \<Rightarrow> bool"   (infix \<open>\<cong>\<close> 100) where
   "F \<cong> G \<longleftrightarrow> (\<exists>f. gbij\<^bsub>F,G\<^esub> f)"
 
 definition
   constghom :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme] 
-                           \<Rightarrow> ('a \<Rightarrow> 'b)"  ("('1'\<^bsub>_,_\<^esub>)" [88,89]88) where
+                           \<Rightarrow> ('a \<Rightarrow> 'b)"  (\<open>('1'\<^bsub>_,_\<^esub>)\<close> [88,89]88) where
   "1\<^bsub>F,G\<^esub> = (\<lambda>x\<in>carrier F. \<one>\<^bsub>G\<^esub>)" 
 
 definition
@@ -4348,7 +4348,7 @@ definition
 
 abbreviation
   GCOMP :: "['b \<Rightarrow> 'c, ('a, 'm) Group_scheme, 'a \<Rightarrow> 'b] \<Rightarrow> 'a \<Rightarrow> 'c"
-    ("(3_ \<circ>\<^bsub>_\<^esub> _)" [88, 88, 89]88) where
+    (\<open>(3_ \<circ>\<^bsub>_\<^esub> _)\<close> [88, 88, 89]88) where
   "g \<circ>\<^bsub>F\<^esub> f == cmpghom F g f"
 
 lemma Group_Ugp:"Ugp G \<Longrightarrow> Group G"
@@ -4394,7 +4394,7 @@ definition
   
 abbreviation
   GIMAGE :: "[('a, 'm) Group_scheme, ('b, 'm1) Group_scheme,
-        'a \<Rightarrow> 'b ] \<Rightarrow> ('b, 'm1) Group_scheme"    ("(3Img\<^bsub>_,_\<^esub> _)" [88,88,89]88) where
+        'a \<Rightarrow> 'b ] \<Rightarrow> ('b, 'm1) Group_scheme"    (\<open>(3Img\<^bsub>_,_\<^esub> _)\<close> [88,88,89]88) where
   "Img\<^bsub>F,G\<^esub> f == Gimage F G f"
 
 lemma (in Group) Group_Gp:"G \<guillemotright> H \<Longrightarrow> Group (\<natural> H)" 

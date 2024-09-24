@@ -84,7 +84,7 @@ begin (* locally disable syntax for set product, to avoid warnings *)
 text \<open>Note: in total there exist 480 equivalent  multiplication tables for the definition,
  the following is based on the one most widely used: \<close>
 
-definition cross7 :: "[real^7, real^7] \<Rightarrow> real^7"  (infixr "\<times>\<^sub>7" 80)
+definition cross7 :: "[real^7, real^7] \<Rightarrow> real^7"  (infixr \<open>\<times>\<^sub>7\<close> 80)
   where "a \<times>\<^sub>7 b \<equiv>
     vector [a$2 * b$4 - a$4 * b$2 +  a$3 * b$7 - a$7 * b$3  +  a$5 * b$6 - a$6 * b$5 ,
             a$3 * b$5 - a$5 * b$3 +  a$4 * b$1 - a$1 * b$4  +  a$6 * b$7 - a$7 * b$6 ,
@@ -97,13 +97,13 @@ definition cross7 :: "[real^7, real^7] \<Rightarrow> real^7"  (infixr "\<times>\
 end
 
 bundle cross7_syntax begin
-notation cross7 (infixr "\<times>\<^sub>7" 80)
-no_notation Product_Type.Times (infixr "\<times>\<^sub>7" 80)
+notation cross7 (infixr \<open>\<times>\<^sub>7\<close> 80)
+no_notation Product_Type.Times (infixr \<open>\<times>\<^sub>7\<close> 80)
 end
 
 bundle no_cross7_syntax begin
-no_notation cross7 (infixr "\<times>\<^sub>7" 80)
-notation Product_Type.Times (infixr "\<times>\<^sub>7" 80)
+no_notation cross7 (infixr \<open>\<times>\<^sub>7\<close> 80)
+notation Product_Type.Times (infixr \<open>\<times>\<^sub>7\<close> 80)
 end
 
 unbundle cross7_syntax

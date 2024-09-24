@@ -107,7 +107,7 @@ halting state of the first machine becomes the start state of the second
 machine.
 \<close>
 
-definition turing_machine_sequential :: "machine \<Rightarrow> machine \<Rightarrow> machine" (infixl ";;" 55) where
+definition turing_machine_sequential :: "machine \<Rightarrow> machine \<Rightarrow> machine" (infixl \<open>;;\<close> 55) where
   "M1 ;; M2 \<equiv> M1 @ (relocate (length M1) M2)"
 
 text \<open>
@@ -420,7 +420,7 @@ lemma transits_jump:
   using transits_def sem_jump exe_def by auto
 
 definition turing_machine_branch :: "(symbol list \<Rightarrow> bool) \<Rightarrow> machine \<Rightarrow> machine \<Rightarrow> machine"
-  ("IF _ THEN _ ELSE _ ENDIF" 60)
+  (\<open>IF _ THEN _ ELSE _ ENDIF\<close> 60)
 where
   "IF cond THEN M1 ELSE M2 ENDIF \<equiv>
     [cmd_jump cond 1 (length M1 + 2)] @
@@ -666,7 +666,7 @@ cases, however, this TM is empty.
 \<close>
 
 definition turing_machine_loop :: "machine \<Rightarrow> (symbol list \<Rightarrow> bool) \<Rightarrow> machine \<Rightarrow> machine"
-  ("WHILE _ ; _ DO _ DONE" 60)
+  (\<open>WHILE _ ; _ DO _ DONE\<close> 60)
 where
   "WHILE M1 ; cond DO M2 DONE \<equiv>
     M1 @

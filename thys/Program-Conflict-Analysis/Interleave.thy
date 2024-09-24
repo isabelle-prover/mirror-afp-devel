@@ -21,16 +21,16 @@ subsection "Definitions"
 
 subsubsection "Prepend and concatenate lifted to sets"
 
-definition list_set_cons :: "'a \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<cdot>" 65)
+definition list_set_cons :: "'a \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr \<open>\<cdot>\<close> 65)
   where [simp]: "a\<cdot>S = (#) a ` S"
 
-definition list_set_append :: "'a list \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr "\<odot>" 65)
+definition list_set_append :: "'a list \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixr \<open>\<odot>\<close> 65)
   where [simp]: "a\<odot>S = (@) a ` S"
 
 subsubsection "The interleaving operator"
 
 function
-  interleave :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list set" (infixr "\<otimes>" 64)
+  interleave :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list set" (infixr \<open>\<otimes>\<close> 64)
 where
   "[]\<otimes>b = {b}"
   | "a\<otimes>[] = {a}"

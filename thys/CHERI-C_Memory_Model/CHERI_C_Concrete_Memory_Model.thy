@@ -52,7 +52,7 @@ type_synonym cap = "block capability"
 
 text \<open>Because \texttt{sizeof} depends on the architecture, it shall be given via the memory model. We also
       use uncompressed capabilities.\<close>
-definition sizeof :: "cctype \<Rightarrow> nat" ("|_|\<^sub>\<tau>")
+definition sizeof :: "cctype \<Rightarrow> nat" (\<open>|_|\<^sub>\<tau>\<close>)
   where
   "sizeof \<tau> \<equiv> case \<tau> of
      Uint8  \<Rightarrow> 1
@@ -416,7 +416,7 @@ instance ..
 end
 
 text \<open>Section 4.5 of CHERI C/C++ Programming Guide defines what a \texttt{NULL} capability is~\cite{watson_cc_2019}.\<close>
-definition null_capability :: "cap" ("NULL")
+definition null_capability :: "cap" (\<open>NULL\<close>)
   where
   "NULL \<equiv> 0"
 
@@ -476,7 +476,7 @@ abbreviation cap_offset :: "nat \<Rightarrow> nat"
   "cap_offset p \<equiv> if p mod |Cap|\<^sub>\<tau> = 0 then p else p - p mod |Cap|\<^sub>\<tau>"
 
 text \<open>We state the well-formedness property $\mathcal{W}^\mathcal{C}_f$ stated in the paper~\cite{park_2022}.\<close>
-definition wellformed :: "(block, t) mapping \<Rightarrow> bool" ("\<W>\<^sub>\<ff>/(_/)")
+definition wellformed :: "(block, t) mapping \<Rightarrow> bool" (\<open>\<W>\<^sub>\<ff>/(_/)\<close>)
   where
   "\<W>\<^sub>\<ff>(h) \<equiv> 
      \<forall> b obj. Mapping.lookup h b = Some (Map obj) 

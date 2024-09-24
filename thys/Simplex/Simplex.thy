@@ -45,7 +45,7 @@ abbreviation (input) flat_list :: "('i \<times> 'a) list \<Rightarrow> 'a list" 
   "flat_list xs \<equiv> map snd xs"
 
 primrec
-  satisfies_constraint :: "'a :: lrv valuation \<Rightarrow> constraint \<Rightarrow> bool"  (infixl "\<Turnstile>\<^sub>c" 100) where
+  satisfies_constraint :: "'a :: lrv valuation \<Rightarrow> constraint \<Rightarrow> bool"  (infixl \<open>\<Turnstile>\<^sub>c\<close> 100) where
   "v \<Turnstile>\<^sub>c (LT l r) \<longleftrightarrow> (l\<lbrace>v\<rbrace>) < r *R 1"
 | "v \<Turnstile>\<^sub>c GT l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) > r *R 1"
 | "v \<Turnstile>\<^sub>c LEQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) \<le> r *R 1"
@@ -53,7 +53,7 @@ primrec
 | "v \<Turnstile>\<^sub>c EQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) = r *R 1"
 
 
-abbreviation satisfies_constraints :: "rat valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>c\<^sub>s" 100) where
+abbreviation satisfies_constraints :: "rat valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>c\<^sub>s\<close> 100) where
   "v \<Turnstile>\<^sub>c\<^sub>s cs \<equiv> \<forall> c \<in> cs. v \<Turnstile>\<^sub>c c"
 
 lemma unsat_mono: assumes "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s cs)"
@@ -61,7 +61,7 @@ lemma unsat_mono: assumes "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s c
 shows "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s ds)"
   using assms by auto
 
-fun i_satisfies_cs (infixl "\<Turnstile>\<^sub>i\<^sub>c\<^sub>s" 100) where
+fun i_satisfies_cs (infixl \<open>\<Turnstile>\<^sub>i\<^sub>c\<^sub>s\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>c\<^sub>s restrict_to I cs"
 
 definition distinct_indices :: "('i \<times> 'c) list \<Rightarrow> bool" where
@@ -109,7 +109,7 @@ lemmas look_upd_simps[simp] = look_upd Mapping.lookup_empty
 definition map2fun:: "(var, 'a :: zero) mapping \<Rightarrow> var \<Rightarrow> 'a" where
   "map2fun v \<equiv> \<lambda>x. case look v x of None \<Rightarrow> 0 | Some y \<Rightarrow> y"
 syntax
-  "_map2fun" :: "(var, 'a) mapping \<Rightarrow> var \<Rightarrow> 'a"  ("\<langle>_\<rangle>")
+  "_map2fun" :: "(var, 'a) mapping \<Rightarrow> var \<Rightarrow> 'a"  (\<open>\<langle>_\<rangle>\<close>)
 syntax_consts
   "_map2fun" == map2fun
 translations
@@ -165,14 +165,14 @@ datatype 'a ns_constraint = LEQ_ns linear_poly 'a    |    GEQ_ns linear_poly 'a
 
 type_synonym ('i,'a) i_ns_constraint = "'i \<times> 'a ns_constraint"
 
-primrec satisfiable_ns_constraint :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>n\<^sub>s" 100) where
+primrec satisfiable_ns_constraint :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>n\<^sub>s\<close> 100) where
   "v \<Turnstile>\<^sub>n\<^sub>s LEQ_ns l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<le> r"
 | "v \<Turnstile>\<^sub>n\<^sub>s GEQ_ns l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<ge> r"
 
-abbreviation satisfies_ns_constraints :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>n\<^sub>s\<^sub>s " 100) where
+abbreviation satisfies_ns_constraints :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>n\<^sub>s\<^sub>s \<close> 100) where
   "v \<Turnstile>\<^sub>n\<^sub>s\<^sub>s cs \<equiv> \<forall> c \<in> cs. v \<Turnstile>\<^sub>n\<^sub>s c"
 
-fun i_satisfies_ns_constraints :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) i_ns_constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s " 100) where
+fun i_satisfies_ns_constraints :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) i_ns_constraint set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s \<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>n\<^sub>s\<^sub>s restrict_to I cs"
 
 lemma i_satisfies_ns_constraints_mono:
@@ -269,7 +269,7 @@ abbreviation rvars_eq :: "eq \<Rightarrow> var set" where
   "rvars_eq eq \<equiv> vars (rhs eq)"
 
 
-definition satisfies_eq :: "'a::rational_vector valuation \<Rightarrow> eq \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>e" 100) where
+definition satisfies_eq :: "'a::rational_vector valuation \<Rightarrow> eq \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>e\<close> 100) where
   "v \<Turnstile>\<^sub>e eq \<equiv> v (lhs eq) = (rhs eq)\<lbrace>v\<rbrace>"
 
 lemma satisfies_eq_iff: "v \<Turnstile>\<^sub>e (x, p) \<equiv> v x = p\<lbrace>v\<rbrace>"
@@ -280,7 +280,7 @@ lemma satisfies_eq_iff: "v \<Turnstile>\<^sub>e (x, p) \<equiv> v x = p\<lbrace>
 type_synonym tableau ="eq list"
 
 
-definition satisfies_tableau ::"'a::rational_vector valuation \<Rightarrow> tableau \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>t" 100) where
+definition satisfies_tableau ::"'a::rational_vector valuation \<Rightarrow> tableau \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>t\<close> 100) where
   "v \<Turnstile>\<^sub>t t \<equiv> \<forall> e \<in> set t. v \<Turnstile>\<^sub>e e"
 
 
@@ -295,7 +295,7 @@ To observe the problem with 0 as rhs, consider the tableau $x = 0$ in combinatio
 with atom $(A: x \leq 0)$ where then $(B: x \geq 1)$ is asserted.
 In this case, the unsat core would be computed as $\{A,B\}$, although already $\{B\}$ is unsatisfiable.\<close>
 
-definition normalized_tableau :: "tableau \<Rightarrow> bool" ("\<triangle>") where
+definition normalized_tableau :: "tableau \<Rightarrow> bool" (\<open>\<triangle>\<close>) where
   "normalized_tableau t \<equiv> distinct (map lhs t) \<and> lvars t \<inter> rvars t = {} \<and> 0 \<notin> rhs ` set t"
 
 text\<open>Equations are of the form \<open>x = p\<close>, where \<open>x\<close> is
@@ -479,18 +479,18 @@ primrec atom_const::"'a atom \<Rightarrow> 'a" where
   "atom_const (Leq var a) = a"
 | "atom_const (Geq var a) = a"
 
-primrec satisfies_atom :: "'a::linorder valuation \<Rightarrow> 'a atom \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a" 100) where
+primrec satisfies_atom :: "'a::linorder valuation \<Rightarrow> 'a atom \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>a\<close> 100) where
   "v \<Turnstile>\<^sub>a Leq x c \<longleftrightarrow> v x \<le> c"    |    "v \<Turnstile>\<^sub>a Geq x c \<longleftrightarrow> v x \<ge> c"
 
-definition satisfies_atom_set :: "'a::linorder valuation \<Rightarrow> 'a atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a\<^sub>s" 100) where
+definition satisfies_atom_set :: "'a::linorder valuation \<Rightarrow> 'a atom set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>a\<^sub>s\<close> 100) where
   "v \<Turnstile>\<^sub>a\<^sub>s as \<equiv> \<forall> a \<in> as. v \<Turnstile>\<^sub>a a"
 
-definition satisfies_atom' :: "'a::linorder valuation \<Rightarrow> 'a atom \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a\<^sub>e" 100) where
+definition satisfies_atom' :: "'a::linorder valuation \<Rightarrow> 'a atom \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>a\<^sub>e\<close> 100) where
   "v \<Turnstile>\<^sub>a\<^sub>e a \<longleftrightarrow> v (atom_var a) = atom_const a"
 
 lemma satisfies_atom'_stronger: "v \<Turnstile>\<^sub>a\<^sub>e a \<Longrightarrow> v \<Turnstile>\<^sub>a a" by (cases a, auto simp: satisfies_atom'_def)
 
-abbreviation satisfies_atom_set' :: "'a::linorder valuation \<Rightarrow> 'a atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a\<^sub>e\<^sub>s" 100) where
+abbreviation satisfies_atom_set' :: "'a::linorder valuation \<Rightarrow> 'a atom set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>a\<^sub>e\<^sub>s\<close> 100) where
   "v \<Turnstile>\<^sub>a\<^sub>e\<^sub>s as \<equiv> \<forall> a \<in> as. v \<Turnstile>\<^sub>a\<^sub>e a"
 
 lemma satisfies_atom_set'_stronger: "v \<Turnstile>\<^sub>a\<^sub>e\<^sub>s as \<Longrightarrow> v \<Turnstile>\<^sub>a\<^sub>s as" 
@@ -500,10 +500,10 @@ text \<open>There is also the indexed variant of an atom\<close>
 
 type_synonym ('i,'a) i_atom = "'i \<times> 'a atom"
 
-fun i_satisfies_atom_set :: "'i set \<times> 'a::linorder valuation \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>a\<^sub>s" 100) where
+fun i_satisfies_atom_set :: "'i set \<times> 'a::linorder valuation \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>a\<^sub>s\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as \<longleftrightarrow> v \<Turnstile>\<^sub>a\<^sub>s restrict_to I as"
 
-fun i_satisfies_atom_set' :: "'i set \<times> 'a::linorder valuation \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s" 100) where
+fun i_satisfies_atom_set' :: "'i set \<times> 'a::linorder valuation \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as \<longleftrightarrow> v \<Turnstile>\<^sub>a\<^sub>e\<^sub>s restrict_to I as"
 
 lemma i_satisfies_atom_set'_stronger: "Iv \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as \<Longrightarrow> Iv \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as" 
@@ -691,39 +691,39 @@ is reflected in the semantics:
 
 abbreviation (input) le where
   "le lt x y \<equiv> lt x y \<or> x = y"
-definition geub ("\<unrhd>\<^sub>u\<^sub>b") where
+definition geub (\<open>\<unrhd>\<^sub>u\<^sub>b\<close>) where
   "\<unrhd>\<^sub>u\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> False | Some b' \<Rightarrow> le lt b' c"
-definition gtub ("\<rhd>\<^sub>u\<^sub>b") where
+definition gtub (\<open>\<rhd>\<^sub>u\<^sub>b\<close>) where
   "\<rhd>\<^sub>u\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> False | Some b' \<Rightarrow> lt b' c"
-definition leub ("\<unlhd>\<^sub>u\<^sub>b") where
+definition leub (\<open>\<unlhd>\<^sub>u\<^sub>b\<close>) where
   "\<unlhd>\<^sub>u\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> True | Some b' \<Rightarrow> le lt c b'"
-definition ltub ("\<lhd>\<^sub>u\<^sub>b") where
+definition ltub (\<open>\<lhd>\<^sub>u\<^sub>b\<close>) where
   "\<lhd>\<^sub>u\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> True | Some b' \<Rightarrow> lt c b'"
-definition lelb ("\<unlhd>\<^sub>l\<^sub>b") where
+definition lelb (\<open>\<unlhd>\<^sub>l\<^sub>b\<close>) where
   "\<unlhd>\<^sub>l\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> False | Some b' \<Rightarrow> le lt c b'"
-definition ltlb ("\<lhd>\<^sub>l\<^sub>b") where
+definition ltlb (\<open>\<lhd>\<^sub>l\<^sub>b\<close>) where
   "\<lhd>\<^sub>l\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> False | Some b' \<Rightarrow> lt c b'"
-definition gelb ("\<unrhd>\<^sub>l\<^sub>b") where
+definition gelb (\<open>\<unrhd>\<^sub>l\<^sub>b\<close>) where
   "\<unrhd>\<^sub>l\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> True | Some b' \<Rightarrow> le lt b' c"
-definition gtlb ("\<rhd>\<^sub>l\<^sub>b") where
+definition gtlb (\<open>\<rhd>\<^sub>l\<^sub>b\<close>) where
   "\<rhd>\<^sub>l\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> True | Some b' \<Rightarrow> lt b' c"
 
 
-definition ge_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<ge>\<^sub>u\<^sub>b" 100) where
+definition ge_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open>\<ge>\<^sub>u\<^sub>b\<close> 100) where
   "c \<ge>\<^sub>u\<^sub>b b = \<unrhd>\<^sub>u\<^sub>b (<) c b"
-definition gt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl ">\<^sub>u\<^sub>b" 100) where
+definition gt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open>>\<^sub>u\<^sub>b\<close> 100) where
   "c >\<^sub>u\<^sub>b b = \<rhd>\<^sub>u\<^sub>b (<) c b"
-definition le_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<le>\<^sub>u\<^sub>b" 100) where
+definition le_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open>\<le>\<^sub>u\<^sub>b\<close> 100) where
   "c \<le>\<^sub>u\<^sub>b b = \<unlhd>\<^sub>u\<^sub>b (<) c b"
-definition lt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "<\<^sub>u\<^sub>b" 100) where
+definition lt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open><\<^sub>u\<^sub>b\<close> 100) where
   "c <\<^sub>u\<^sub>b b = \<lhd>\<^sub>u\<^sub>b (<) c b"
-definition le_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<le>\<^sub>l\<^sub>b" 100) where
+definition le_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open>\<le>\<^sub>l\<^sub>b\<close> 100) where
   "c \<le>\<^sub>l\<^sub>b b = \<unlhd>\<^sub>l\<^sub>b (<) c b"
-definition lt_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "<\<^sub>l\<^sub>b" 100) where
+definition lt_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open><\<^sub>l\<^sub>b\<close> 100) where
   "c <\<^sub>l\<^sub>b b = \<lhd>\<^sub>l\<^sub>b (<) c b"
-definition ge_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<ge>\<^sub>l\<^sub>b" 100) where
+definition ge_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open>\<ge>\<^sub>l\<^sub>b\<close> 100) where
   "c \<ge>\<^sub>l\<^sub>b b = \<unrhd>\<^sub>l\<^sub>b (<) c b"
-definition gt_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl ">\<^sub>l\<^sub>b" 100) where
+definition gt_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl \<open>>\<^sub>l\<^sub>b\<close> 100) where
   "c >\<^sub>l\<^sub>b b = \<rhd>\<^sub>l\<^sub>b (<) c b"
 
 
@@ -804,7 +804,7 @@ lemma bounds_compare_Some [simp]:
 fun in_bounds where
   "in_bounds x v (lb, ub) = (v x \<ge>\<^sub>l\<^sub>b lb x \<and> v x \<le>\<^sub>u\<^sub>b ub x)"
 
-fun satisfies_bounds :: "'a::linorder valuation \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>b" 100) where
+fun satisfies_bounds :: "'a::linorder valuation \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>b\<close> 100) where
   "v \<Turnstile>\<^sub>b b \<longleftrightarrow> (\<forall> x. in_bounds x v b)"
 declare satisfies_bounds.simps [simp del]
 
@@ -821,7 +821,7 @@ lemma not_in_bounds:
   using neg_bounds_compare(2)[of "v x" "ub x"]
   by auto
 
-fun atoms_equiv_bounds :: "'a::linorder atom set \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> bool" (infixl "\<doteq>" 100) where
+fun atoms_equiv_bounds :: "'a::linorder atom set \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> bool" (infixl \<open>\<doteq>\<close> 100) where
   "as \<doteq> (lb, ub) \<longleftrightarrow> (\<forall> v. v \<Turnstile>\<^sub>a\<^sub>s as \<longleftrightarrow> v \<Turnstile>\<^sub>b (lb, ub))"
 declare atoms_equiv_bounds.simps [simp del]
 
@@ -864,40 +864,40 @@ datatype ('i,'a) state = State
   (\<U>: bool)
   (\<U>\<^sub>c: "'i list option")
 
-definition indexl :: "('i,'a) state \<Rightarrow> 'i bound_index" ("\<I>\<^sub>l") where
+definition indexl :: "('i,'a) state \<Rightarrow> 'i bound_index" (\<open>\<I>\<^sub>l\<close>) where
   "\<I>\<^sub>l s = (fst o the) o look (\<B>\<^sub>i\<^sub>l s)"
 
-definition boundsl :: "('i,'a) state \<Rightarrow> 'a bounds" ("\<B>\<^sub>l") where
+definition boundsl :: "('i,'a) state \<Rightarrow> 'a bounds" (\<open>\<B>\<^sub>l\<close>) where
   "\<B>\<^sub>l s = map_option snd o look (\<B>\<^sub>i\<^sub>l s)"
 
-definition indexu :: "('i,'a) state \<Rightarrow> 'i bound_index" ("\<I>\<^sub>u") where
+definition indexu :: "('i,'a) state \<Rightarrow> 'i bound_index" (\<open>\<I>\<^sub>u\<close>) where
   "\<I>\<^sub>u s = (fst o the) o look (\<B>\<^sub>i\<^sub>u s)"
 
-definition boundsu :: "('i,'a) state \<Rightarrow> 'a bounds" ("\<B>\<^sub>u") where
+definition boundsu :: "('i,'a) state \<Rightarrow> 'a bounds" (\<open>\<B>\<^sub>u\<close>) where
   "\<B>\<^sub>u s = map_option snd o look (\<B>\<^sub>i\<^sub>u s)"
 
-abbreviation BoundsIndicesMap ("\<B>\<^sub>i") where  "\<B>\<^sub>i s \<equiv> (\<B>\<^sub>i\<^sub>l s, \<B>\<^sub>i\<^sub>u s)"
-abbreviation Bounds :: "('i,'a) state \<Rightarrow> 'a bounds \<times> 'a bounds" ("\<B>") where  "\<B> s \<equiv> (\<B>\<^sub>l s, \<B>\<^sub>u s)"
-abbreviation Indices :: "('i,'a) state \<Rightarrow> 'i bound_index \<times> 'i bound_index" ("\<I>") where  "\<I> s \<equiv> (\<I>\<^sub>l s, \<I>\<^sub>u s)"
-abbreviation BoundsIndices :: "('i,'a) state \<Rightarrow> ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index)" ("\<B>\<I>")
+abbreviation BoundsIndicesMap (\<open>\<B>\<^sub>i\<close>) where  "\<B>\<^sub>i s \<equiv> (\<B>\<^sub>i\<^sub>l s, \<B>\<^sub>i\<^sub>u s)"
+abbreviation Bounds :: "('i,'a) state \<Rightarrow> 'a bounds \<times> 'a bounds" (\<open>\<B>\<close>) where  "\<B> s \<equiv> (\<B>\<^sub>l s, \<B>\<^sub>u s)"
+abbreviation Indices :: "('i,'a) state \<Rightarrow> 'i bound_index \<times> 'i bound_index" (\<open>\<I>\<close>) where  "\<I> s \<equiv> (\<I>\<^sub>l s, \<I>\<^sub>u s)"
+abbreviation BoundsIndices :: "('i,'a) state \<Rightarrow> ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index)" (\<open>\<B>\<I>\<close>)
   where  "\<B>\<I> s \<equiv> (\<B> s, \<I> s)"
 
 fun satisfies_bounds_index :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('a bounds \<times> 'a bounds) \<times>
-  ('i bound_index \<times> 'i bound_index) \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>b" 100) where
+  ('i bound_index \<times> 'i bound_index) \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>b\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>b ((BL,BU),(IL,IU)) \<longleftrightarrow> (
      (\<forall> x c. BL x = Some c \<longrightarrow> IL x \<in> I \<longrightarrow> v x \<ge> c)
    \<and> (\<forall> x c. BU x = Some c \<longrightarrow> IU x \<in> I \<longrightarrow> v x \<le> c))"
 declare satisfies_bounds_index.simps[simp del]
 
 fun satisfies_bounds_index' :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('a bounds \<times> 'a bounds) \<times>
-  ('i bound_index \<times> 'i bound_index) \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>b\<^sub>e" 100) where
+  ('i bound_index \<times> 'i bound_index) \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>b\<^sub>e\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>b\<^sub>e ((BL,BU),(IL,IU)) \<longleftrightarrow> (
      (\<forall> x c. BL x = Some c \<longrightarrow> IL x \<in> I \<longrightarrow> v x = c)
    \<and> (\<forall> x c. BU x = Some c \<longrightarrow> IU x \<in> I \<longrightarrow> v x = c))"
 declare satisfies_bounds_index'.simps[simp del]
 
 fun atoms_imply_bounds_index :: "('i,'a::lrv) i_atom set \<Rightarrow> ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index)
-  \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i" 100) where
+  \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<close> 100) where
   "as \<Turnstile>\<^sub>i bi \<longleftrightarrow> (\<forall> I v. (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as \<longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>b bi)"
 declare atoms_imply_bounds_index.simps[simp del]
 
@@ -907,17 +907,17 @@ lemma i_satisfies_atom_set_mono: "as \<subseteq> as' \<Longrightarrow> v \<Turns
 lemma atoms_imply_bounds_index_mono: "as \<subseteq> as' \<Longrightarrow> as \<Turnstile>\<^sub>i bi \<Longrightarrow> as' \<Turnstile>\<^sub>i bi"
   unfolding atoms_imply_bounds_index.simps using i_satisfies_atom_set_mono by blast
 
-definition satisfies_state :: "'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>s" 100) where
+definition satisfies_state :: "'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>s\<close> 100) where
   "v \<Turnstile>\<^sub>s s \<equiv> v \<Turnstile>\<^sub>b \<B> s \<and> v \<Turnstile>\<^sub>t \<T> s"
 
-definition curr_val_satisfies_state :: "('i,'a::lrv) state \<Rightarrow> bool" ("\<Turnstile>") where
+definition curr_val_satisfies_state :: "('i,'a::lrv) state \<Rightarrow> bool" (\<open>\<Turnstile>\<close>) where
   "\<Turnstile> s \<equiv> \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>s s"
 
-fun satisfies_state_index :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>s" 100) where
+fun satisfies_state_index :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>s\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>s s \<longleftrightarrow> (v \<Turnstile>\<^sub>t \<T> s \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s)"
 declare satisfies_state_index.simps[simp del]
 
-fun satisfies_state_index' :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>s\<^sub>e" 100) where
+fun satisfies_state_index' :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>i\<^sub>s\<^sub>e\<close> 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>s\<^sub>e s \<longleftrightarrow> (v \<Turnstile>\<^sub>t \<T> s \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>b\<^sub>e \<B>\<I> s)"
 declare satisfies_state_index'.simps[simp del]
 
@@ -998,7 +998,7 @@ qed
 lemma unsat_state_core_unsat: "unsat_state_core s \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>s s)"
   unfolding unsat_state_core_def using state_satisfies_index by blast
 
-definition tableau_valuated ("\<nabla>") where
+definition tableau_valuated (\<open>\<nabla>\<close>) where
   "\<nabla> s \<equiv> \<forall> x \<in> tvars (\<T> s). Mapping.lookup (\<V> s) x \<noteq> None"
 
 definition index_valid where
@@ -1495,7 +1495,7 @@ fun satisfies_bounds_set  :: "'a::linorder valuation \<Rightarrow> 'a bounds \<t
   "satisfies_bounds_set v (lb, ub) S \<longleftrightarrow> (\<forall> x \<in> S. in_bounds x v (lb, ub))"
 declare satisfies_bounds_set.simps [simp del]
 syntax
-  "_satisfies_bounds_set" :: "(var \<Rightarrow> 'a::linorder) \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> var set \<Rightarrow> bool"    ("_ \<Turnstile>\<^sub>b _ \<parallel>/ _")
+  "_satisfies_bounds_set" :: "(var \<Rightarrow> 'a::linorder) \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> var set \<Rightarrow> bool"    (\<open>_ \<Turnstile>\<^sub>b _ \<parallel>/ _\<close>)
 syntax_consts
   "_satisfies_bounds_set" == satisfies_bounds_set
 translations
@@ -1505,14 +1505,14 @@ lemma satisfies_bounds_set_iff:
   by (simp add: satisfies_bounds_set.simps)
 
 
-definition curr_val_satisfies_no_lhs ("\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s") where
+definition curr_val_satisfies_no_lhs (\<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s\<close>) where
   "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s \<equiv> \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t (\<T> s) \<and> (\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>b (\<B> s) \<parallel> (- lvars (\<T> s)))"
 lemma satisfies_satisfies_no_lhs:
   "\<Turnstile> s \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"
   by (simp add: curr_val_satisfies_state_def satisfies_state_def curr_val_satisfies_no_lhs_def satisfies_bounds.simps satisfies_bounds_set.simps)
 
 
-definition bounds_consistent :: "('i,'a::linorder) state \<Rightarrow> bool" ("\<diamond>") where
+definition bounds_consistent :: "('i,'a::linorder) state \<Rightarrow> bool" (\<open>\<diamond>\<close>) where
   "\<diamond> s \<equiv>
    \<forall> x. if \<B>\<^sub>l s x = None \<or> \<B>\<^sub>u s x = None then True else the (\<B>\<^sub>l s x) \<le> the (\<B>\<^sub>u s x)"
 
@@ -3310,7 +3310,7 @@ lemma rvars_pivot_eq:
 end
 
 
-abbreviation doublesub (" _ \<subseteq>s _ \<subseteq>s _" [50,51,51] 50) where
+abbreviation doublesub (\<open> _ \<subseteq>s _ \<subseteq>s _\<close> [50,51,51] 50) where
   "doublesub a b c \<equiv> a \<subseteq> b \<and> b \<subseteq> c"
 
 
@@ -4001,22 +4001,22 @@ abbreviation gt_state' where
   min_rvar_incdec dir s x\<^sub>i = Inr x\<^sub>j \<and>
   s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s"
 
-definition gt_state :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<succ>\<^sub>x" 100) where
+definition gt_state :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<succ>\<^sub>x\<close> 100) where
   "s \<succ>\<^sub>x s' \<equiv>
    \<exists> x\<^sub>i x\<^sub>j l\<^sub>i.
      let dir = if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive else Negative in
      gt_state' dir s s' x\<^sub>i x\<^sub>j l\<^sub>i"
 
-abbreviation succ :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<succ>" 100) where
+abbreviation succ :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<succ>\<close> 100) where
   "s \<succ> s' \<equiv> \<triangle> (\<T> s) \<and> \<diamond> s \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s \<and> \<nabla> s \<and> s \<succ>\<^sub>x s' \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s"
 
 abbreviation succ_rel :: "('i,'a) state rel" where
   "succ_rel \<equiv> {(s, s'). s \<succ> s'}"
 
-abbreviation succ_rel_trancl :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<succ>\<^sup>+" 100) where
+abbreviation succ_rel_trancl :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<succ>\<^sup>+\<close> 100) where
   "s \<succ>\<^sup>+ s' \<equiv> (s, s') \<in> succ_rel\<^sup>+"
 
-abbreviation succ_rel_rtrancl :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<succ>\<^sup>*" 100) where
+abbreviation succ_rel_rtrancl :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl \<open>\<succ>\<^sup>*\<close> 100) where
   "s \<succ>\<^sup>* s' \<equiv> (s, s') \<in> succ_rel\<^sup>*"
 
 lemma succ_vars:

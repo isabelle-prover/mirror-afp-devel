@@ -205,11 +205,11 @@ lemma rel_upd2: "(a,b)  \<notin> rel r \<Longrightarrow> (a,b) \<in> rel (r(q:=t
 
 definition \<comment> \<open>Restriction of a relation\<close>
   restr :: "('a ptr \<times> 'a ptr) set \<Rightarrow> ('a ptr \<Rightarrow> bool) \<Rightarrow> ('a ptr \<times> 'a ptr) set"
-           ("(_/ | _)" [50, 51] 50)
+           (\<open>(_/ | _)\<close> [50, 51] 50)
   where
   "restr r m = {(x,y). (x,y) \<in> r \<and> \<not> m x}"
 
-no_notation disj (infixr "|" 30) \<comment> \<open>Avoid syntax conflict with restr\<close>
+no_notation disj (infixr \<open>|\<close> 30) \<comment> \<open>Avoid syntax conflict with restr\<close>
 
 text \<open>Rewrite rules for the restriction of a relation\<close>
 

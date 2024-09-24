@@ -18,7 +18,7 @@ by(simp add: collect_locks_def)
 
 context multithreaded_base begin
 
-definition must_sync :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>" [50, 0,0] 81) where
+definition must_sync :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool" (\<open>_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>\<close> [50, 0,0] 81) where
   "t \<turnstile> \<langle>x, m\<rangle> \<wrong> \<longleftrightarrow> (\<exists>ta x' m' s. t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> shr s = m \<and> actions_ok s t ta)"
 
 lemma must_sync_def2:
@@ -33,7 +33,7 @@ lemma must_syncE:
   "\<lbrakk> t \<turnstile> \<langle>x, m\<rangle> \<wrong>; \<And>ta x' m' s. \<lbrakk> t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>; actions_ok s t ta; m = shr s \<rbrakk> \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
 by(fastforce simp only: must_sync_def)
 
-definition can_sync :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l + 't + 't) set \<Rightarrow> bool" ("_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>" [50,0,0,0] 81) where
+definition can_sync :: "'t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> ('l + 't + 't) set \<Rightarrow> bool" (\<open>_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>\<close> [50,0,0,0] 81) where
   "t \<turnstile> \<langle>x, m\<rangle> LT \<wrong> \<equiv> \<exists>ta x' m'. t \<turnstile> \<langle>x, m\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> (LT = collect_waits ta)"
 
 lemma can_syncI:

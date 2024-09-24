@@ -138,13 +138,13 @@ text \<open>
   their own. Schutz's notation is: $Q(b,\emptyset)$.
 \<close>
 
-definition unreachable_subset :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" ("unreach-on _ from _" [100, 100]) where
+definition unreachable_subset :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>unreach-on _ from _\<close> [100, 100]) where
   "unreach-on Q from b \<equiv> {x\<in>Q. Q \<in> \<P> \<and> b \<in> \<E> \<and> b \<notin> Q \<and> \<not>(path_ex b x)}"
 
 
 section "Primitives: Kinematic Triangle"
 
-definition kinematic_triangle :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("\<triangle> _ _ _" [100, 100, 100] 100) where
+definition kinematic_triangle :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>\<triangle> _ _ _\<close> [100, 100, 100] 100) where
     "kinematic_triangle a b c \<equiv>
        a \<in> \<E> \<and> b \<in> \<E> \<and> c \<in> \<E> \<and> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c
        \<and> (\<exists>Q\<in>\<P>. \<exists>R\<in>\<P>. Q \<noteq> R \<and> (\<exists>S\<in>\<P>. Q \<noteq> S \<and> R \<noteq> S
@@ -423,7 +423,7 @@ text \<open>
 definition n_SPRAY_basis :: "nat \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool"  where
   "n_SPRAY_basis n S x \<equiv> S\<subseteq>SPRAY x \<and> card S = (Suc n) \<and> indep_set S \<and> (\<forall>P\<in>SPRAY x. dep_path P S)"
 
-definition n_SPRAY ("_-SPRAY _" [100,100]) where
+definition n_SPRAY (\<open>_-SPRAY _\<close> [100,100]) where
   "n-SPRAY x \<equiv> \<exists>S\<subseteq>SPRAY x. card S = (Suc n) \<and> indep_set S \<and> (\<forall>P\<in>SPRAY x. dep_path P S)"
 
 abbreviation "three_SPRAY x \<equiv> 3-SPRAY x"
@@ -497,7 +497,7 @@ text \<open>
 \<close>
 
 locale MinkowskiBetweenness = MinkowskiPrimitive +
-  fixes betw :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_;_;_]")
+  fixes betw :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_;_;_]\<close>)
       (* O1 *) (*notice this is not only for events, but all things with same data type*)
   assumes abc_ex_path: "[a;b;c] \<Longrightarrow> \<exists>Q\<in>\<P>. a \<in> Q \<and> b \<in> Q \<and> c \<in> Q"
       (* O2 *)
@@ -572,7 +572,7 @@ section "Betweenness: Unreachable Subset Via a Path"
 definition unreachable_subset_via :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a set" where
   "unreachable_subset_via Q Qa R x \<equiv> {Qy. [x;Qy;Qa] \<and> (\<exists>Rw\<in>R. Qa \<in> unreach-on Q from Rw \<and> Qy \<in> unreach-on Q from Rw)}"
 
-definition unreachable_subset_via_notation ("unreach-via _ on _ from _ to _" [100, 100, 100, 100] 100)
+definition unreachable_subset_via_notation (\<open>unreach-via _ on _ from _ to _\<close> [100, 100, 100, 100] 100)
   where "unreach-via P on Q from a to x \<equiv> unreachable_subset_via Q a P x"
 
 
@@ -688,7 +688,7 @@ lemma short_ch_ord_in:
 
 text \<open>Does this restrict chains to lie on paths? Proven in \<open>TemporalOrderingOnPath\<close>'s Interlude!\<close>
 
-definition ch_by_ord ("[_\<leadsto>_]") where
+definition ch_by_ord (\<open>[_\<leadsto>_]\<close>) where
   "[f\<leadsto>X] \<equiv> short_ch_by_ord f X \<or> local_long_ch_by_ord f X"
 
 definition ch :: "'a set \<Rightarrow> bool" where "ch X \<equiv> \<exists>f. [f\<leadsto>X]"
@@ -722,7 +722,7 @@ lemma infinite_chain_alt[chain_alts]:
   "infinite_chain f Q \<longleftrightarrow> infinite Q \<and> local_ordering f betw Q"
   unfolding chain_defs by fastforce
 
-definition infinite_chain_with :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> bool" ("[_\<leadsto>_|_ ..]") where
+definition infinite_chain_with :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_\<leadsto>_|_ ..]\<close>) where
   "infinite_chain_with f Q x \<equiv> infinite_chain f Q \<and> f 0 = x"
 
 declare infinite_chain_with_def [chain_defs]
@@ -738,7 +738,7 @@ declare finite_chain_def [chain_defs]
 lemma finite_chain_alt[chain_alts]: "finite_chain f Q \<longleftrightarrow> short_ch_by_ord f Q \<or> (finite Q \<and> local_long_ch_by_ord f Q)"
   unfolding chain_defs by auto
 
-definition finite_chain_with :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_\<leadsto>_|_ .. _]") where
+definition finite_chain_with :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_\<leadsto>_|_ .. _]\<close>) where
   "[f\<leadsto>Q|x..y] \<equiv> finite_chain f Q \<and> f 0 = x \<and> f (card Q - 1) = y"
 
 declare finite_chain_with_def [chain_defs]
@@ -760,7 +760,7 @@ lemma finite_chain_with_cases:
   using assms finite_chain_with_alt by (meson local_long_ch_by_ord_def)
 
 
-definition finite_long_chain_with:: "(nat\<Rightarrow>'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_\<leadsto>_|_.._.._]")
+definition finite_long_chain_with:: "(nat\<Rightarrow>'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>[_\<leadsto>_|_.._.._]\<close>)
   where "[f\<leadsto>Q|x..y..z] \<equiv> [f\<leadsto>Q|x..z] \<and> x\<noteq>y \<and> y\<noteq>z \<and> y\<in>Q"
 
 declare finite_long_chain_with_def [chain_defs]
@@ -1158,7 +1158,7 @@ lemma unreach_empty_on_same_path:
   unfolding unreachable_subset_via_notation_def unreachable_subset_via_def unreachable_subset_def
   by (simp add: assms(3))
 
-definition unreachable_subset_via_notation_2 ("unreach-via _ on _ from _" [100, 100, 100] 100)
+definition unreachable_subset_via_notation_2 (\<open>unreach-via _ on _ from _\<close> [100, 100, 100] 100)
   where "unreach-via P on Q from a \<equiv> unreachable_subset_via Q a P (THE x. x\<in>Q\<inter>P)"
 
 lemma unreach_via_for_crossing_paths:

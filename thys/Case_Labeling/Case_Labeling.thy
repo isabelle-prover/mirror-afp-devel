@@ -84,10 +84,10 @@ text \<open>
 
 locale Labeling_Syntax begin
   abbreviation VAR where "VAR \<equiv> Case_Labeling.VAR"
-  abbreviation VC ("V\<langle>(2_,_:/ _)\<rangle>") where "VC bl ct  \<equiv> Case_Labeling.VC (bl # ct)"
-  abbreviation CTXT ("C\<langle>(2_,_,_:/ _\<rangle>)") where "CTXT \<equiv> Case_Labeling.CTXT"
-  abbreviation BIND ("B\<langle>(2_,_:/ _\<rangle>)") where "BIND \<equiv> Case_Labeling.BIND"
-  abbreviation HIER ("H\<langle>(2_:/ _\<rangle>)") where "HIER \<equiv> Case_Labeling.HIER"
+  abbreviation VC (\<open>V\<langle>(2_,_:/ _)\<rangle>\<close>) where "VC bl ct  \<equiv> Case_Labeling.VC (bl # ct)"
+  abbreviation CTXT (\<open>C\<langle>(2_,_,_:/ _\<rangle>)\<close>) where "CTXT \<equiv> Case_Labeling.CTXT"
+  abbreviation BIND (\<open>B\<langle>(2_,_:/ _\<rangle>)\<close>) where "BIND \<equiv> Case_Labeling.BIND"
+  abbreviation HIER (\<open>H\<langle>(2_:/ _\<rangle>)\<close>) where "HIER \<equiv> Case_Labeling.HIER"
   abbreviation SPLIT where "SPLIT \<equiv> Case_Labeling.SPLIT"
 end
 

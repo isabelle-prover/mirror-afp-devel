@@ -43,14 +43,14 @@ preconditions.\<close>
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-notation fbox ("wp")
+notation fbox (\<open>wp\<close>)
 
-no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
-        and Relation.relcomp (infixl ";" 75)
-        and Range_Semiring.antirange_semiring_class.ars_r ("r")
-        and antidomain_semiringl.ads_d ("d")
+no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
+        and Relation.relcomp (infixl \<open>;\<close> 75)
+        and Range_Semiring.antirange_semiring_class.ars_r (\<open>r\<close>)
+        and antidomain_semiringl.ads_d (\<open>d\<close>)
 
-abbreviation p2ndf :: "'a pred \<Rightarrow> 'a nd_fun" ("(1\<lceil>_\<rceil>)")
+abbreviation p2ndf :: "'a pred \<Rightarrow> 'a nd_fun" (\<open>(1\<lceil>_\<rceil>)\<close>)
   where "\<lceil>Q\<rceil> \<equiv> (\<lambda> x::'a. {s::'a. s = x \<and> Q s})\<^sup>\<bullet>"
 
 lemma p2ndf_simps[simp]: 
@@ -81,7 +81,7 @@ lemma wp_test[simp]: "wp \<lceil>P\<rceil> \<lceil>Q\<rceil> = \<lceil>\<lambda>
 
 \<comment> \<open> Assignments \<close>
 
-definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) nd_fun" ("(2_ ::= _)" [70, 65] 61) 
+definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) nd_fun" (\<open>(2_ ::= _)\<close> [70, 65] 61) 
   where "(x ::= e) = (\<lambda>s. {vec_upd s x (e s)})\<^sup>\<bullet>" 
 
 lemma wp_assign[simp]: "wp (x ::= e) \<lceil>Q\<rceil> = \<lceil>\<lambda>s. Q (\<chi> j. ((($) s)(x := (e s))) j)\<rceil>"
@@ -89,7 +89,7 @@ lemma wp_assign[simp]: "wp (x ::= e) \<lceil>Q\<rceil> = \<lceil>\<lambda>s. Q (
 
 \<comment> \<open> Nondeterministic assignments \<close>
 
-definition nondet_assign :: "'b \<Rightarrow> ('a^'b) nd_fun" ("(2_ ::= ? )" [70] 61)
+definition nondet_assign :: "'b \<Rightarrow> ('a^'b) nd_fun" (\<open>(2_ ::= ? )\<close> [70] 61)
   where "(x ::= ?) = (\<lambda>s. {(vec_upd s x k)|k. True})\<^sup>\<bullet>"
 
 lemma wp_nondet_assign[simp]: "wp (x ::= ?) \<lceil>P\<rceil> = \<lceil>\<lambda>s. \<forall>k. P (\<chi> j. ((($) s)(x := k)) j)\<rceil>"
@@ -103,17 +103,17 @@ lemma le_wp_choice_iff: "\<lceil>P\<rceil> \<le> wp (X + Y) \<lceil>Q\<rceil> \<
 
 \<comment> \<open> Sequential composition \<close>
 
-abbreviation seq_comp :: "'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (infixl ";" 75)
+abbreviation seq_comp :: "'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (infixl \<open>;\<close> 75)
   where "f ; g \<equiv> f \<cdot> g"
 
 \<comment> \<open> Conditional statement \<close>
 
-abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" ("IF _ THEN _ ELSE _" [64,64] 63) 
+abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (\<open>IF _ THEN _ ELSE _\<close> [64,64] 63) 
   where "IF P THEN X ELSE Y \<equiv> aka_cond \<lceil>P\<rceil> X Y"
 
 \<comment> \<open> Finite iteration \<close>
 
-abbreviation loopi_sugar :: "'a nd_fun \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("LOOP _ INV _ " [64,64] 63)
+abbreviation loopi_sugar :: "'a nd_fun \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>LOOP _ INV _ \<close> [64,64] 63)
   where "LOOP R INV I \<equiv> aka_loopi R \<lceil>I\<rceil>"
 
 lemma change_loopI: "LOOP X INV G = LOOP X INV I"
@@ -131,7 +131,7 @@ subsubsection \<open> Evolution commands \<close>
 
 text  \<open>Verification by providing evolution\<close>
 
-definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b nd_fun" ("EVOL")
+definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b nd_fun" (\<open>EVOL\<close>)
   where "EVOL \<phi> G T = (\<lambda>s. g_orbit (\<lambda>t. \<phi> t s) G (T s))\<^sup>\<bullet>"
 
 lemma wp_g_dyn[simp]: 
@@ -142,7 +142,7 @@ lemma wp_g_dyn[simp]:
 text \<open>Verification by providing solutions\<close>
 
 definition g_ode ::"(real \<Rightarrow> ('a::banach) \<Rightarrow> 'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a nd_fun" ("(1x\<acute>= _ & _ on _ _ @ _)") 
+  real \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>= _ & _ on _ _ @ _)\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0) \<equiv> (\<lambda> s. g_orbital f G U S t\<^sub>0 s)\<^sup>\<bullet>"
 
 lemma wp_g_orbital: "wp (x\<acute>= f & G on U S @ t\<^sub>0) \<lceil>Q\<rceil>= 
@@ -181,7 +181,7 @@ end
 text \<open> Verification with differential invariants \<close>
 
 definition g_ode_inv :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("(1x\<acute>=_ & _ on _ _ @ _ DINV _ )") 
+  real \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>=_ & _ on _ _ @ _ DINV _ )\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0 DINV I) = (x\<acute>= f & G on U S @ t\<^sub>0)"
 
 lemma wp_g_orbital_guard: 
@@ -242,10 +242,10 @@ subsubsection \<open> Derivation of the rules of dL \<close>
 text \<open> We derive rules of differential dynamic logic (dL). This allows the components to reason 
 in the style of that logic. \<close>
 
-abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("(1x\<acute>=_ & _)") 
+abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>=_ & _)\<close>) 
   where "(x\<acute>= f & G) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0)"
 
-abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("(1x\<acute>=_ & _ DINV _)") 
+abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>=_ & _ DINV _)\<close>) 
   where "(x\<acute>= f & G DINV I) \<equiv> (x\<acute>=(\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0 DINV I)"
 
 lemma diff_solve_axiom1: 

@@ -86,7 +86,7 @@ abbreviation
   mredT_syntax1 :: "'addr J_prog \<Rightarrow> ('addr,'thread_id,'addr expr \<times> 'addr locals,'heap,'addr) state
                   \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'thread_id, 'addr expr \<times> 'addr locals,'heap) Jinja_thread_action
                   \<Rightarrow> ('addr,'thread_id,'addr expr \<times> 'addr locals,'heap,'addr) state \<Rightarrow> bool"
-                    ("_ \<turnstile> _ -_\<triangleright>_\<rightarrow> _" [50,0,0,0,50] 80)
+                    (\<open>_ \<turnstile> _ -_\<triangleright>_\<rightarrow> _\<close> [50,0,0,0,50] 80)
 where
   "mredT_syntax1 P s t ta s' \<equiv> mredT P s (t, ta) s'"
 
@@ -96,7 +96,7 @@ abbreviation
   \<Rightarrow> ('addr,'thread_id,'addr expr \<times> 'addr locals,'heap,'addr) state
   \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id, 'addr expr \<times> 'addr locals,'heap) Jinja_thread_action) list
   \<Rightarrow> ('addr,'thread_id,'addr expr \<times> 'addr locals,'heap,'addr) state \<Rightarrow> bool"
-  ("_ \<turnstile> _ -\<triangleright>_\<rightarrow>* _" [50,0,0,50] 80)
+  (\<open>_ \<turnstile> _ -\<triangleright>_\<rightarrow>* _\<close> [50,0,0,50] 80)
 where
   "P \<turnstile> s -\<triangleright>ttas\<rightarrow>* s' \<equiv> red_mthr.RedT P s ttas s'"
 

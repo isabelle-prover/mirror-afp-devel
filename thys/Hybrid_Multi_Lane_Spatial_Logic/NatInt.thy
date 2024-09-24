@@ -175,17 +175,17 @@ end
   
 context nat_int 
 begin
-abbreviation subseteq :: "nat_int \<Rightarrow> nat_int\<Rightarrow> bool" (infix "\<sqsubseteq>" 30)
+abbreviation subseteq :: "nat_int \<Rightarrow> nat_int\<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 30)
   where  "i \<sqsubseteq> j == i \<le> j "
-abbreviation empty :: "nat_int" ("\<emptyset>")
+abbreviation empty :: "nat_int" (\<open>\<emptyset>\<close>)
   where "\<emptyset> \<equiv> bot"
     
-notation inf (infix "\<sqinter>" 70)
+notation inf (infix \<open>\<sqinter>\<close> 70)
 
 
 text \<open>The union of two intervals is only defined, if it is also
 a discrete interval.\<close>
-definition union :: "nat_int \<Rightarrow> nat_int \<Rightarrow> nat_int" (infix "\<squnion>" 65)
+definition union :: "nat_int \<Rightarrow> nat_int \<Rightarrow> nat_int" (infix \<open>\<squnion>\<close> 65)
   where "i \<squnion> j = Abs_nat_int (Rep_nat_int i \<union> Rep_nat_int j)"
 
 text \<open>Non-empty intervals contain a minimal and maximal element. 
@@ -207,19 +207,19 @@ definition minimum :: "nat_int \<Rightarrow> nat"
 definition consec:: "nat_int\<Rightarrow>nat_int \<Rightarrow> bool" 
   where "consec i j \<equiv> (i\<noteq>\<emptyset> \<and> j \<noteq> \<emptyset> \<and> (maximum(i)+1 = minimum j))"
     
-definition N_Chop :: "nat_int \<Rightarrow> nat_int \<Rightarrow> nat_int \<Rightarrow> bool" ("N'_Chop'(_,_,_')" 51)
+definition N_Chop :: "nat_int \<Rightarrow> nat_int \<Rightarrow> nat_int \<Rightarrow> bool" (\<open>N'_Chop'(_,_,_')\<close> 51)
   where nchop_def :
     "N_Chop(i,j,k) \<equiv> (i =  j \<squnion> k   \<and> (j = \<emptyset> \<or>  k = \<emptyset> \<or> consec j k))"
 
-lift_definition card' ::"nat_int \<Rightarrow> nat"  ( "|_|" 70) is card .
+lift_definition card' ::"nat_int \<Rightarrow> nat"  ( \<open>|_|\<close> 70) is card .
 
 
 text\<open>For convenience, we also lift the membership relation and its negation
 to discrete intervals.\<close>
 
-lift_definition el::"nat \<Rightarrow> nat_int \<Rightarrow> bool" (infix "\<^bold>\<in>" 50) is "Set.member" .
+lift_definition el::"nat \<Rightarrow> nat_int \<Rightarrow> bool" (infix \<open>\<^bold>\<in>\<close> 50) is "Set.member" .
 
-lift_definition not_in ::"nat \<Rightarrow> nat_int \<Rightarrow> bool" (infix "\<^bold>\<notin>" 40)  is Set.not_member . 
+lift_definition not_in ::"nat \<Rightarrow> nat_int \<Rightarrow> bool" (infix \<open>\<^bold>\<notin>\<close> 40)  is Set.not_member . 
 end
   
 lemmas[simp] = nat_int.el.rep_eq nat_int.not_in.rep_eq nat_int.card'.rep_eq

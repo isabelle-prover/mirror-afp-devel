@@ -44,7 +44,7 @@ global_interpretation FSM : transition_system_initial
 
 abbreviation "size_FSM M \<equiv> card (nodes M)" 
 notation 
-  size_FSM ("(|_|)")
+  size_FSM (\<open>(|_|)\<close>)
 
 subsection \<open> Language \<close>
 
@@ -70,7 +70,7 @@ lemma trace_alt_def: "trace r p = smap snd r"
 
 
 definition language_state :: "('in, 'out, 'state) FSM \<Rightarrow> 'state 
-                              \<Rightarrow> ('in \<times> 'out) list set" ("LS") 
+                              \<Rightarrow> ('in \<times> 'out) list set" (\<open>LS\<close>) 
   where
   "language_state M q \<equiv> {map fst r |r . path M r q}"
 
@@ -1204,7 +1204,7 @@ An FSM is a reduction of another, if its language is a subset of the language of
 
 
 fun io_reduction :: "('in, 'out, 'state) FSM \<Rightarrow> ('in, 'out, 'state) FSM 
-                      \<Rightarrow> bool" (infix "\<preceq>" 200) 
+                      \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 200) 
   where 
   "M1 \<preceq> M2 = (LS M1 (initial M1) \<subseteq> LS M2 (initial M2))"
 
@@ -1254,7 +1254,7 @@ fun language_state_for_input ::
 
 fun language_state_for_inputs  :: 
   "('in, 'out, 'state) FSM \<Rightarrow> 'state \<Rightarrow> 'in list set \<Rightarrow> ('in \<times> 'out) list set" 
-    ("(LS\<^sub>i\<^sub>n _ _ _)" [1000,1000,1000]) where
+    (\<open>(LS\<^sub>i\<^sub>n _ _ _)\<close> [1000,1000,1000]) where
   "language_state_for_inputs  M q ISeqs = {(xs || ys) | xs ys . (xs \<in> ISeqs 
                                                                   \<and> length xs = length ys 
                                                                   \<and> (xs || ys) \<in> LS M q)}"
@@ -1263,9 +1263,9 @@ abbreviation "L\<^sub>i\<^sub>n M TS \<equiv> LS\<^sub>i\<^sub>n M (initial M) T
 
 abbreviation  "io_reduction_on M1 TS M2 \<equiv> (L\<^sub>i\<^sub>n M1 TS \<subseteq> L\<^sub>i\<^sub>n M2 TS)" 
 notation 
-  io_reduction_on ("(_ \<preceq>\<lbrakk>_\<rbrakk> _)" [1000,0,0] 61)
+  io_reduction_on (\<open>(_ \<preceq>\<lbrakk>_\<rbrakk> _)\<close> [1000,0,0] 61)
 notation  (latex output)
-  io_reduction_on ("(_ \<preceq>\<^bsub>_\<^esub> _)" [1000,0,0] 61)
+  io_reduction_on (\<open>(_ \<preceq>\<^bsub>_\<^esub> _)\<close> [1000,0,0] 61)
 
 
 lemma language_state_for_input_alt_def :

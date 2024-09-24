@@ -16,11 +16,11 @@ subsection \<open>Constants \label{sec:TameConstants}\<close>
 definition squanderTarget :: "nat" where
  "squanderTarget \<equiv> 15410" 
 
-definition excessTCount :: "nat" (*<*) ("\<a>")(*>*)where
+definition excessTCount :: "nat" (*<*) (\<open>\<a>\<close>)(*>*)where
 
  "\<a> \<equiv> 6295"
 
-definition squanderVertex :: "nat \<Rightarrow> nat \<Rightarrow> nat" (*<*)("\<b>")(*>*)where
+definition squanderVertex :: "nat \<Rightarrow> nat \<Rightarrow> nat" (*<*)(\<open>\<b>\<close>)(*>*)where
 
  "\<b> p q \<equiv> if p = 0 \<and> q = 3 then 6177 
      else if p = 0 \<and> q = 4 then  9696
@@ -39,7 +39,7 @@ definition squanderVertex :: "nat \<Rightarrow> nat \<Rightarrow> nat" (*<*)("\<
      else if p = 7 \<and> q = 0 then 14493 
      else squanderTarget"
 
-definition squanderFace :: "nat \<Rightarrow> nat" (*<*)("\<d>")(*>*)where
+definition squanderFace :: "nat \<Rightarrow> nat" (*<*)(\<open>\<d>\<close>)(*>*)where
 
  "\<d> n \<equiv> if n = 3 then 0
      else if n = 4 then 2058

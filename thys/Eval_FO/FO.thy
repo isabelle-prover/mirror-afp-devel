@@ -30,11 +30,11 @@ fun fv_fo_terms_list_rec :: "('a fo_term) list \<Rightarrow> nat list" where
 definition fv_fo_terms_list :: "('a fo_term) list \<Rightarrow> nat list" where
   "fv_fo_terms_list ts = remdups_adj (sort (fv_fo_terms_list_rec ts))"
 
-fun eval_term :: "'a val \<Rightarrow> 'a fo_term \<Rightarrow> 'a" (infix "\<cdot>" 60) where
+fun eval_term :: "'a val \<Rightarrow> 'a fo_term \<Rightarrow> 'a" (infix \<open>\<cdot>\<close> 60) where
   "eval_term \<sigma> (Const c) = c"
 | "eval_term \<sigma> (Var n) = \<sigma> n"
 
-definition eval_terms :: "'a val \<Rightarrow> ('a fo_term) list \<Rightarrow> 'a list" (infix "\<odot>" 60) where
+definition eval_terms :: "'a val \<Rightarrow> ('a fo_term) list \<Rightarrow> 'a list" (infix \<open>\<odot>\<close> 60) where
   "eval_terms \<sigma> ts = map (eval_term \<sigma>) ts"
 
 lemma finite_set_fo_term: "finite (set_fo_term t)"

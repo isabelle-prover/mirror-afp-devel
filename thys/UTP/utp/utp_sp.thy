@@ -16,7 +16,7 @@ named_theorems sp
 method sp_tac = (simp add: sp)
 
 consts
-  usp :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infix "sp" 60)
+  usp :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infix \<open>sp\<close> 60)
   
 definition sp_upred :: "'\<alpha> cond \<Rightarrow> ('\<alpha>, '\<beta>) urel \<Rightarrow> '\<beta> cond" where
 "sp_upred p Q = \<lfloor>(\<lceil>p\<rceil>\<^sub>> ;; Q) :: ('\<alpha>, '\<beta>) urel\<rfloor>\<^sub>>"

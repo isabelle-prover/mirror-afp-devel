@@ -20,7 +20,7 @@ definition preprm_compose :: "'a preprm \<Rightarrow> 'a preprm \<Rightarrow> 'a
 definition preprm_unit :: "'a \<Rightarrow> 'a \<Rightarrow> 'a preprm" where
   "preprm_unit a b \<equiv> [(a, b)]"
 
-definition preprm_ext :: "'a preprm \<Rightarrow> 'a preprm \<Rightarrow> bool" (infix "=p" 100) where
+definition preprm_ext :: "'a preprm \<Rightarrow> 'a preprm \<Rightarrow> bool" (infix \<open>=p\<close> 100) where
   "\<pi> =p \<sigma> \<equiv> \<forall>x. preprm_apply \<pi> x = preprm_apply \<sigma> x"
 
 definition preprm_inv :: "'a preprm \<Rightarrow> 'a preprm" where
@@ -278,17 +278,17 @@ proof(rule equivpI)
   show "transp preprm_ext" using preprm_ext_transp.
 qed
 
-lift_definition prm_id :: "'a prm" ("\<epsilon>") is preprm_id.
+lift_definition prm_id :: "'a prm" (\<open>\<epsilon>\<close>) is preprm_id.
 
-lift_definition prm_apply :: "'a prm \<Rightarrow> 'a \<Rightarrow> 'a" (infix "$" 140) is preprm_apply
+lift_definition prm_apply :: "'a prm \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>$\<close> 140) is preprm_apply
 unfolding preprm_ext_def
 using preprm_apply.simps by auto
 
-lift_definition prm_compose :: "'a prm \<Rightarrow> 'a prm \<Rightarrow> 'a prm" (infixr "\<diamondop>" 145) is preprm_compose
+lift_definition prm_compose :: "'a prm \<Rightarrow> 'a prm \<Rightarrow> 'a prm" (infixr \<open>\<diamondop>\<close> 145) is preprm_compose
 unfolding preprm_ext_def
 by(simp only: preprm_apply_composition, simp)
 
-lift_definition prm_unit :: "'a \<Rightarrow> 'a \<Rightarrow> 'a prm" ("[_ \<leftrightarrow> _]") is preprm_unit.
+lift_definition prm_unit :: "'a \<Rightarrow> 'a \<Rightarrow> 'a prm" (\<open>[_ \<leftrightarrow> _]\<close>) is preprm_unit.
 
 lift_definition prm_inv :: "'a prm \<Rightarrow> 'a prm" is preprm_inv
 using preprm_inv_ext.
@@ -356,7 +356,7 @@ proof -
   ultimately show "semigroup (\<diamondop>) \<and> (\<forall>a. \<epsilon> \<diamondop> a = a) \<and> (\<forall>a. prm_inv a \<diamondop> a = \<epsilon>)" by blast
 qed
 
-definition prm_set :: "'a prm \<Rightarrow> 'a set \<Rightarrow> 'a set" (infix "{$}" 140) where
+definition prm_set :: "'a prm \<Rightarrow> 'a set \<Rightarrow> 'a set" (infix \<open>{$}\<close> 140) where
   "prm_set \<pi> S \<equiv> image (prm_apply \<pi>) S"
 
 lemma prm_set_apply_compose:
@@ -466,7 +466,7 @@ lemma prm_set_distributes_difference:
   shows "\<pi> {$} (S - T) = (\<pi> {$} S) - (\<pi> {$} T)"
 unfolding prm_set_def using prm_apply_injective image_set_diff by metis
 
-definition prm_disagreement :: "'a prm \<Rightarrow> 'a prm \<Rightarrow> 'a set" ("ds") where
+definition prm_disagreement :: "'a prm \<Rightarrow> 'a prm \<Rightarrow> 'a set" (\<open>ds\<close>) where
   "prm_disagreement \<pi> \<sigma> \<equiv> {x. \<pi> $ x \<noteq> \<sigma> $ x}"
 
 lemma prm_disagreement_ext:

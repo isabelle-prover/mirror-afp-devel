@@ -20,12 +20,12 @@ This functor maps sets to their mus and functions to their Kleisli liftings. But
 I model it as a backward diamond operator in the sense of dynamic logic. It corresponds to a strongest postcondition 
 operator. In the parlance of program semantics, this is an embedding of state into prediate transformers.\<close>
 
-notation klift ("bd\<^sub>\<F>")
+notation klift (\<open>bd\<^sub>\<F>\<close>)
 
 text \<open>bd stands for backward diamond, the index indicates the setting of Kleisli arrows or nondeterministic 
 functions. ifbd is its inverse.\<close>
 
-abbreviation ifbd :: "('a set \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> 'b set" ("bd\<^sup>-\<^sub>\<F>") where 
+abbreviation ifbd :: "('a set \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>bd\<^sup>-\<^sub>\<F>\<close>) where 
   "bd\<^sup>-\<^sub>\<F> \<equiv> (\<lambda>\<phi>. \<phi> \<circ> \<eta>)"
 
 lemma fbd_set: "bd\<^sub>\<F> f X = {y. \<exists>x. y \<in> f x \<and> x \<in> X}"
@@ -158,10 +158,10 @@ to define backward diamonds from relations, by composing isomorphisms. It follow
 (under relational composition, the identity relation and Sups) are isomorphic to the Sup-quantales of predicate transformers.
 Once again, Infs are not preserved.\<close>
 
-definition rbd :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set"  ("bd\<^sub>\<R>") where
+definition rbd :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set"  (\<open>bd\<^sub>\<R>\<close>) where
   "bd\<^sub>\<R> = bd\<^sub>\<F> \<circ> \<F>"
 
-definition irbd :: "('a set \<Rightarrow> 'b set) \<Rightarrow> ('a \<times> 'b) set"  ("bd\<^sup>-\<^sub>\<R>") where
+definition irbd :: "('a set \<Rightarrow> 'b set) \<Rightarrow> ('a \<times> 'b) set"  (\<open>bd\<^sup>-\<^sub>\<R>\<close>) where
   "bd\<^sup>-\<^sub>\<R> = \<R> \<circ> bd\<^sup>-\<^sub>\<F>"
 
 lemma rbd_Im: "bd\<^sub>\<R> = (``)"
@@ -274,7 +274,7 @@ Kleisli arrows are mapped to the opposite of the Eilenberg-Moore category, that 
 It follows that the Inf-quantale structure is preserved. Modelling opposition is based on the fact 
 that Kleisli arrows can be swapped by going through relations.\<close>
 
-definition ffb :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'b set \<Rightarrow> 'a set" ("fb\<^sub>\<F>") where
+definition ffb :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'b set \<Rightarrow> 'a set" (\<open>fb\<^sub>\<F>\<close>) where
   "fb\<^sub>\<F> = \<partial>\<^sub>F \<circ> bd\<^sub>\<F> \<circ> op\<^sub>K" 
 
 text \<open>Here, $\partial_F$ is map-dual, which amounts to De Morgan duality. Hence the forward box operator is
@@ -292,7 +292,7 @@ lemma ffb_fbd_dual: "\<partial> \<circ> fb\<^sub>\<F> f = bd\<^sub>\<F> (op\<^su
 
 text \<open>I give a set-theoretic definition of iffb, because the algebraic one below depends on Inf-preservation.\<close>
 
-definition iffb :: "('b set \<Rightarrow> 'a set) \<Rightarrow> 'a \<Rightarrow> 'b set" ("fb\<^sup>-\<^sub>\<F>") where
+definition iffb :: "('b set \<Rightarrow> 'a set) \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>fb\<^sup>-\<^sub>\<F>\<close>) where
   "fb\<^sup>-\<^sub>\<F> \<phi> = (\<lambda>x. \<Inter>{X. x \<in> \<phi> X})"
 
 lemma ffb_set: "fb\<^sub>\<F> f = (\<lambda>Y. {x. f x \<subseteq> Y})" 
@@ -488,10 +488,10 @@ subsection \<open>Forward Box Operators from Relations\<close>
 text \<open>Once again one can compose isomorphisms, linking weakest liberal preconditions with relational semantics.
 The isomorphism obtained should by now be obvious.\<close>
 
-definition rfb :: "('a \<times> 'b) set \<Rightarrow> 'b set \<Rightarrow> 'a set"  ("fb\<^sub>\<R>") where
+definition rfb :: "('a \<times> 'b) set \<Rightarrow> 'b set \<Rightarrow> 'a set"  (\<open>fb\<^sub>\<R>\<close>) where
   "fb\<^sub>\<R> = fb\<^sub>\<F> \<circ> \<F>"
 
-definition irfb :: "('b set \<Rightarrow> 'a set) \<Rightarrow> ('a \<times> 'b) set" ("fb\<^sup>-\<^sub>\<R>") where
+definition irfb :: "('b set \<Rightarrow> 'a set) \<Rightarrow> ('a \<times> 'b) set" (\<open>fb\<^sup>-\<^sub>\<R>\<close>) where
   "fb\<^sup>-\<^sub>\<R> = \<R> \<circ> fb\<^sup>-\<^sub>\<F>"
 
 lemma rfb_rbd_dual: "fb\<^sub>\<R> R = \<partial>\<^sub>F (bd\<^sub>\<R> (R\<inverse>))" 
@@ -659,30 +659,30 @@ Most properties are not repeated, only some symmetries and dualities are spelled
 text \<open>First, forward diamond operators are introduced, from state transformers and relations; together
 with their inverses.\<close>
 
-definition ffd :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'b set \<Rightarrow> 'a set" ("fd\<^sub>\<F>") where 
+definition ffd :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'b set \<Rightarrow> 'a set" (\<open>fd\<^sub>\<F>\<close>) where 
   "fd\<^sub>\<F> = bd\<^sub>\<F> \<circ> op\<^sub>K"
 
-definition iffd :: "('b set \<Rightarrow> 'a set) \<Rightarrow> 'a \<Rightarrow> 'b set" ("fd\<^sup>-\<^sub>\<F>") where 
+definition iffd :: "('b set \<Rightarrow> 'a set) \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>fd\<^sup>-\<^sub>\<F>\<close>) where 
   "fd\<^sup>-\<^sub>\<F> = op\<^sub>K \<circ> bd\<^sup>-\<^sub>\<F>"
 
-definition rfd :: "('a \<times> 'b) set \<Rightarrow> 'b set \<Rightarrow> 'a set" ("fd\<^sub>\<R>") where 
+definition rfd :: "('a \<times> 'b) set \<Rightarrow> 'b set \<Rightarrow> 'a set" (\<open>fd\<^sub>\<R>\<close>) where 
   "fd\<^sub>\<R> = fd\<^sub>\<F> \<circ> \<F>"
 
-definition irfd :: "('b set \<Rightarrow> 'a set) \<Rightarrow> ('a \<times> 'b) set" ("fd\<^sup>-\<^sub>\<R>") where 
+definition irfd :: "('b set \<Rightarrow> 'a set) \<Rightarrow> ('a \<times> 'b) set" (\<open>fd\<^sup>-\<^sub>\<R>\<close>) where 
   "fd\<^sup>-\<^sub>\<R> = \<R> \<circ> fd\<^sup>-\<^sub>\<F>"
 
 text \<open>Second, I introduce forward boxes and their inverses.\<close>
 
-definition fbb :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> 'b set" ("bb\<^sub>\<F>") where 
+definition fbb :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a set \<Rightarrow> 'b set" (\<open>bb\<^sub>\<F>\<close>) where 
   "bb\<^sub>\<F> = fb\<^sub>\<F> \<circ> op\<^sub>K"
 
-definition ifbb :: "('a  set \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> 'b set" ("bb\<^sup>-\<^sub>\<F>") where 
+definition ifbb :: "('a  set \<Rightarrow> 'b set) \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>bb\<^sup>-\<^sub>\<F>\<close>) where 
  "bb\<^sup>-\<^sub>\<F> = op\<^sub>K \<circ> fb\<^sup>-\<^sub>\<F>"
 
-definition rbb :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set" ("bb\<^sub>\<R>") where 
+definition rbb :: "('a \<times> 'b) set \<Rightarrow> 'a set \<Rightarrow> 'b set" (\<open>bb\<^sub>\<R>\<close>) where 
   "bb\<^sub>\<R> = bb\<^sub>\<F> \<circ> \<F>"
 
-definition irbb :: "('a  set \<Rightarrow> 'b set) \<Rightarrow> ('a \<times> 'b) set" ("bb\<^sup>-\<^sub>\<R>") where 
+definition irbb :: "('a  set \<Rightarrow> 'b set) \<Rightarrow> ('a \<times> 'b) set" (\<open>bb\<^sup>-\<^sub>\<R>\<close>) where 
   "bb\<^sup>-\<^sub>\<R> = \<R> \<circ> bb\<^sup>-\<^sub>\<F>"
 
 text \<open>Forward and backward operators of the same type (box or diamond) are related by opposition.\<close>

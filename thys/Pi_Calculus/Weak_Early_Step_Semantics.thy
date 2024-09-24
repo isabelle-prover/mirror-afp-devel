@@ -116,10 +116,10 @@ lemma tauChainSupportDerivative:
 using assms
 by(induct rule: tauChainInduct) (auto dest: tauSupportDerivative)
 
-definition outputTransition :: "pi \<Rightarrow> name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>_<\<nu>_> \<prec> _" [80, 80, 80, 80] 80)
+definition outputTransition :: "pi \<Rightarrow> name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>_<\<nu>_> \<prec> _\<close> [80, 80, 80, 80] 80)
   where "P \<Longrightarrow>a<\<nu>x> \<prec> P' \<equiv> \<exists>P''' P''. P \<Longrightarrow>\<^sub>\<tau> P''' \<and> P''' \<longmapsto>a<\<nu>x> \<prec> P'' \<and> P'' \<Longrightarrow>\<^sub>\<tau> P'"
 
-definition freeTransition :: "pi \<Rightarrow> freeRes\<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>_ \<prec> _" [80, 80, 80] 80)
+definition freeTransition :: "pi \<Rightarrow> freeRes\<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>_ \<prec> _\<close> [80, 80, 80] 80)
   where "P \<Longrightarrow>\<alpha> \<prec> P' \<equiv> \<exists>P''' P''. P \<Longrightarrow>\<^sub>\<tau> P''' \<and> P''' \<longmapsto>\<alpha> \<prec> P'' \<and> P'' \<Longrightarrow>\<^sub>\<tau> P'"
 
 lemma transitionI:

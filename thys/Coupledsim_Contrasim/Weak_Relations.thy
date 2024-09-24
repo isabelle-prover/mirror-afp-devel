@@ -22,7 +22,7 @@ text \<open>Note: Isabelle won't finish the proofs needed for the introduction o
   @{text \<open>\<Rightarrow>^^\<close>} as a barrier. There is no mathematical purpose in this.\<close>
 
 definition weak_step_tau2 :: \<open>'s \<Rightarrow> 'a \<Rightarrow> 's \<Rightarrow> bool\<close>
-    ("_ \<Rightarrow>^^ _  _" [70, 70, 70] 80)
+    (\<open>_ \<Rightarrow>^^ _  _\<close> [70, 70, 70] 80)
 where [simp]:
   \<open>(p \<Rightarrow>^^ a q) \<equiv> p \<Rightarrow>^a q\<close>
 
@@ -40,7 +40,7 @@ shows
   \<open>p \<longmapsto>a p' \<Longrightarrow>  tau a \<Longrightarrow> (\<exists> q'. R p' q' \<and> (q \<longmapsto>* tau q'))\<close>
   using assms unfolding weak_simulation_def by (blast+)
 
-abbreviation weakly_simulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<sqsubseteq>ws  _" [60, 60] 65)
+abbreviation weakly_simulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<sqsubseteq>ws  _\<close> [60, 60] 65)
   where \<open>weakly_simulated_by p q \<equiv> \<exists> R . weak_simulation R \<and> R p q\<close>
 
 lemma weaksim_greatest:
@@ -478,7 +478,7 @@ where
   \<open>trace_inclusion R  \<equiv> \<forall> p q p' A . (\<forall> a \<in> set(A). a \<noteq> \<tau>) 
   \<and> R p q \<and> p \<Rightarrow>$ A p' \<longrightarrow> (\<exists> q'. q \<Rightarrow>$ A q')\<close>
 
-abbreviation weakly_trace_included_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<sqsubseteq>T  _" [60, 60] 65)
+abbreviation weakly_trace_included_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<sqsubseteq>T  _\<close> [60, 60] 65)
   where \<open>weakly_trace_included_by p q \<equiv> \<exists> R . trace_inclusion R \<and> R p q\<close>
 
 lemma weak_trace_inlcusion_greatest:

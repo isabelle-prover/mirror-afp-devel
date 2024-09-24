@@ -6,7 +6,7 @@ theory Strong_Early_Sim
   imports Early_Semantics Rel
 begin
 
-definition "strongSimEarly" :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" ("_ \<leadsto>[_] _" [80, 80, 80] 80) where
+definition "strongSimEarly" :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<leadsto>[_] _\<close> [80, 80, 80] 80) where
   "P \<leadsto>[Rel] Q \<equiv> (\<forall>a y Q'. Q \<longmapsto>a<\<nu>y> \<prec> Q' \<longrightarrow> y \<sharp> P \<longrightarrow> (\<exists>P'. P \<longmapsto>a<\<nu>y> \<prec> P' \<and> (P', Q') \<in> Rel)) \<and>
                  (\<forall>\<alpha> Q'. Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel))"
 

@@ -280,7 +280,7 @@ lemma sum_count_vec_subset:  "finite A \<Longrightarrow> set\<^sub>v v \<subsete
 
 text \<open>An abbreviation for checking if an element is in a vector \<close>
 
-abbreviation vec_contains :: "'a \<Rightarrow> 'a vec \<Rightarrow> bool" (infix "\<in>$" 50)where 
+abbreviation vec_contains :: "'a \<Rightarrow> 'a vec \<Rightarrow> bool" (infix \<open>\<in>$\<close> 50)where 
 "a \<in>$ v \<equiv> a \<in> set\<^sub>v v"
 
 lemma vec_set_mset_contains_iff: "a \<in>$ v \<longleftrightarrow> a \<in># vec_mset v"
@@ -331,7 +331,7 @@ lemma vec_contains_img: "a \<in>$ v \<Longrightarrow> f a \<in>$ (map_vec f v)"
 text \<open> The existing vector library contains the identity and zero vectors, but no definition 
 of a vector where all elements are 1, as defined below \<close>
 
-definition all_ones_vec ::  "nat \<Rightarrow> 'a :: {zero,one} vec" ("u\<^sub>v") where
+definition all_ones_vec ::  "nat \<Rightarrow> 'a :: {zero,one} vec" (\<open>u\<^sub>v\<close>) where
   "u\<^sub>v n \<equiv> vec n (\<lambda> i. 1)"
 
 lemma dim_vec_all_ones[simp]: "dim_vec (u\<^sub>v n) = n"
@@ -415,7 +415,7 @@ subsection \<open>Matrix Extras\<close>
 text \<open>As with vectors, the all ones mat definition defines the concept of a matrix where all 
 elements are 1 \<close>
 
-definition all_ones_mat :: "nat \<Rightarrow> 'a :: {zero,one} mat" ("J\<^sub>m") where
+definition all_ones_mat :: "nat \<Rightarrow> 'a :: {zero,one} mat" (\<open>J\<^sub>m\<close>) where
   "J\<^sub>m n \<equiv> mat n n (\<lambda> (i,j). 1)"
 
 lemma all_ones_mat_index[simp]: "i < dim_row (J\<^sub>m n) \<Longrightarrow> j < dim_col (J\<^sub>m n) \<Longrightarrow> J\<^sub>m n $$ (i, j)= 1"

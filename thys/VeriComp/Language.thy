@@ -22,7 +22,7 @@ The set of initial states of the transition system is implicitly defined by the 
 
 subsection \<open>Program behaviour\<close>
 
-definition prog_behaves :: "'prog \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix "\<Down>" 50) where
+definition prog_behaves :: "'prog \<Rightarrow> 'state behaviour \<Rightarrow> bool" (infix \<open>\<Down>\<close> 50) where
   "prog_behaves = load OO state_behaves"
 
 text \<open>If both the @{term load} and @{term step} relations are deterministic, then so is the behaviour of a program.\<close>

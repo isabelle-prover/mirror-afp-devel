@@ -82,11 +82,11 @@ lemma forall_finite_index:
 
 section \<open>Finite Cartesian Products\<close>
 
-typedef ('a,'n::finite) array ("_[_]" [30,0] 31) = "UNIV :: ('n => 'a) set"
+typedef ('a,'n::finite) array (\<open>_[_]\<close> [30,0] 31) = "UNIV :: ('n => 'a) set"
   by simp
 setup_lifting type_definition_array
 
-lift_definition index :: "('a,'n::finite) array \<Rightarrow> nat \<Rightarrow> 'a" ("_.[_]" [900,0] 901) is
+lift_definition index :: "('a,'n::finite) array \<Rightarrow> nat \<Rightarrow> 'a" (\<open>_.[_]\<close> [900,0] 901) is
   "\<lambda>f i. f (finite_index i)".
  
 lemma index_legacy_def: "index x i = Rep_array x (finite_index i)"
@@ -105,7 +105,7 @@ lemma array_ext:
   shows "(\<And>i. i < CARD('n) \<Longrightarrow> x.[i] = y.[i]) \<Longrightarrow> x = y"
   by (simp add: array_index_eq)
 
-definition FCP :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a['b::finite]" (binder "ARRAY " 10) where
+definition FCP :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a['b::finite]" (binder \<open>ARRAY \<close> 10) where
   "FCP \<equiv> \<lambda>g. SOME a. \<forall>i. i < CARD('b) \<longrightarrow> a.[i] = g i"
 
 definition update :: "'a['n::finite] \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a['n]" where

@@ -9,7 +9,7 @@ hide_const monoid
 hide_const group
 hide_const inverse
 
-no_notation quotient (infixl "'/'/" 90)
+no_notation quotient (infixl \<open>'/'/\<close> 90)
 
 
 section \<open>Monoids and Groups\<close>
@@ -19,7 +19,7 @@ subsection \<open>Monoids of Transformations and Abstract Monoids\<close>
 text \<open>Def 1.1\<close>
 text \<open>p 28, ll 28--30\<close>
 locale monoid =
-  fixes M and composition (infixl "\<cdot>" 70) and unit ("\<one>")
+  fixes M and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
   assumes composition_closed [intro, simp]: "\<lbrakk> a \<in> M; b \<in> M \<rbrakk> \<Longrightarrow> a \<cdot> b \<in> M"
     and unit_closed [intro, simp]: "\<one> \<in> M"
     and associative [intro]: "\<lbrakk> a \<in> M; b \<in> M; c \<in> M \<rbrakk> \<Longrightarrow> (a \<cdot> b) \<cdot> c = a \<cdot> (b \<cdot> c)"
@@ -28,7 +28,7 @@ locale monoid =
 
 text \<open>p 29, ll 27--28\<close>
 locale submonoid = monoid M "(\<cdot>)" \<one>
-  for N and M and composition (infixl "\<cdot>" 70) and unit ("\<one>") +
+  for N and M and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>) +
   assumes subset: "N \<subseteq> M"
     and sub_composition_closed: "\<lbrakk> a \<in> N; b \<in> N \<rbrakk> \<Longrightarrow> a \<cdot> b \<in> N"
     and sub_unit_closed: "\<one> \<in> N"
@@ -183,12 +183,12 @@ end (* submonoid *)
 text \<open>Def 1.2\<close>
 text \<open>p 31, ll 9--10\<close>
 locale group =
-  monoid G "(\<cdot>)" \<one> for G and composition (infixl "\<cdot>" 70) and unit ("\<one>") +
+  monoid G "(\<cdot>)" \<one> for G and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>) +
   assumes invertible [simp, intro]: "u \<in> G \<Longrightarrow> invertible u"
 
 text \<open>p 31, ll 11--12\<close>
 locale subgroup = submonoid G M "(\<cdot>)" \<one> + sub: group G "(\<cdot>)" \<one>
-  for G and M and composition (infixl "\<cdot>" 70) and unit ("\<one>")
+  for G and M and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
 begin
 
 text \<open>Reasoning about @{term invertible} and @{term inverse} in subgroups.\<close>
@@ -365,21 +365,21 @@ text \<open>Def 1.3\<close>
 text \<open>p 37, ll 7--11\<close>
 locale monoid_isomorphism =
   bijective_map \<eta> M M' +  source: monoid M "(\<cdot>)" \<one> + target: monoid M' "(\<cdot>')" "\<one>'"
-  for \<eta> and M and composition (infixl "\<cdot>" 70) and unit ("\<one>")
-    and M' and composition' (infixl "\<cdot>''" 70) and unit' ("\<one>''") +
+  for \<eta> and M and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
+    and M' and composition' (infixl \<open>\<cdot>''\<close> 70) and unit' (\<open>\<one>''\<close>) +
   assumes commutes_with_composition: "\<lbrakk> x \<in> M; y \<in> M \<rbrakk> \<Longrightarrow> \<eta> x \<cdot>' \<eta> y = \<eta> (x \<cdot> y)"
     and commutes_with_unit: "\<eta> \<one> = \<one>'"
 
 text \<open>p 37, l 10\<close>
-definition isomorphic_as_monoids (infixl "\<cong>\<^sub>M" 50)
+definition isomorphic_as_monoids (infixl \<open>\<cong>\<^sub>M\<close> 50)
   where "\<M> \<cong>\<^sub>M \<M>' \<longleftrightarrow> (let (M, composition, unit) = \<M>; (M', composition', unit') = \<M>' in
   (\<exists>\<eta>. monoid_isomorphism \<eta> M composition unit M' composition' unit'))"
 
 text \<open>p 37, ll 11--12\<close>
 locale monoid_isomorphism' =
   bijective_map \<eta> M M' +  source: monoid M "(\<cdot>)" \<one> + target: monoid M' "(\<cdot>')" "\<one>'"
-  for \<eta> and M and composition (infixl "\<cdot>" 70) and unit ("\<one>")
-    and M' and composition' (infixl "\<cdot>''" 70) and unit' ("\<one>''") +
+  for \<eta> and M and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
+    and M' and composition' (infixl \<open>\<cdot>''\<close> 70) and unit' (\<open>\<one>''\<close>) +
   assumes commutes_with_composition: "\<lbrakk> x \<in> M; y \<in> M \<rbrakk> \<Longrightarrow> \<eta> x \<cdot>' \<eta> y = \<eta> (x \<cdot> y)"
 
 text \<open>p 37, ll 11--12\<close>
@@ -424,7 +424,7 @@ locale left_translations_of_monoid = monoid begin
 *)
 
 text \<open>p 38, ll 5--7\<close>
-definition translation ("'(_')\<^sub>L") where "translation = (\<lambda>a \<in> M. \<lambda>x \<in> M. a \<cdot> x)"
+definition translation (\<open>'(_')\<^sub>L\<close>) where "translation = (\<lambda>a \<in> M. \<lambda>x \<in> M. a \<cdot> x)"
 
 text \<open>p 38, ll 5--7\<close>
 lemma translation_map [intro, simp]:
@@ -516,7 +516,7 @@ text \<open>p 38, ll 17--18\<close>
 sublocale left_translations_of_monoid where M = G ..
 
 text \<open>p 38, ll 17--18\<close>
-notation translation ("'(_')\<^sub>L")
+notation translation (\<open>'(_')\<^sub>L\<close>)
 
 text \<open>
   The group of left translations is a subgroup of the symmetric group,
@@ -574,7 +574,7 @@ text \<open>p 39, ll 9--10\<close>
 locale right_translations_of_group = group begin
 
 text \<open>p 39, ll 9--10\<close>
-definition translation ("'(_')\<^sub>R") where "translation = (\<lambda>a \<in> G. \<lambda>x \<in> G. x \<cdot> a)"
+definition translation (\<open>'(_')\<^sub>R\<close>) where "translation = (\<lambda>a \<in> G. \<lambda>x \<in> G. x \<cdot> a)"
 
 text \<open>p 39, ll 9--10\<close>
 abbreviation "Translations \<equiv> translation ` G"
@@ -782,14 +782,14 @@ text \<open>
   definitions are pulled out of @{text subgroup_of_group} to a context where @{text H} is not a parameter.
 \<close>
 text \<open>p 52, l 20\<close>
-locale coset_notation = fixes composition (infixl "\<cdot>" 70)  begin
+locale coset_notation = fixes composition (infixl \<open>\<cdot>\<close> 70)  begin
 
 text \<open>Equation 23\<close>
 text \<open>p 52, l 20\<close>
-definition Right_Coset (infixl "|\<cdot>" 70) where "H |\<cdot> x = {h \<cdot> x | h. h \<in> H}"
+definition Right_Coset (infixl \<open>|\<cdot>\<close> 70) where "H |\<cdot> x = {h \<cdot> x | h. h \<in> H}"
 
 text \<open>p 53, ll 8--9\<close>
-definition Left_Coset (infixl "\<cdot>|" 70) where "x \<cdot>| H = {x \<cdot> h | h. h \<in> H}"
+definition Left_Coset (infixl \<open>\<cdot>|\<close> 70) where "x \<cdot>| H = {x \<cdot> h | h. h \<in> H}"
 
 text \<open>p 52, l 20\<close>
 lemma Right_Coset_memI [intro]:
@@ -815,7 +815,7 @@ end (* coset_notation *)
 
 text \<open>p 52, l 12\<close>
 locale subgroup_of_group = subgroup H G "(\<cdot>)" \<one> + coset_notation "(\<cdot>)" + group G "(\<cdot>)" \<one>
-  for H and G and composition (infixl "\<cdot>" 70) and unit ("\<one>")
+  for H and G and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
 begin
 
 text \<open>p 52, ll 12--14\<close>
@@ -985,7 +985,7 @@ theorem Class_cong:
   by (simp add: Class_equivalence cong)
 
 text \<open>p 54, ll 28--30\<close>
-definition quotient_composition (infixl "[\<cdot>]" 70)
+definition quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
   where "quotient_composition = (\<lambda>A \<in> M / E. \<lambda>B \<in> M / E. THE C. \<exists>a \<in> A. \<exists>b \<in> B. C = Class (a \<cdot> b))"
 
 text \<open>p 54, ll 28--30\<close>
@@ -1008,7 +1008,7 @@ text \<open>p 55, ll 16--17\<close>
 locale group_congruence = group + monoid_congruence where M = G begin
 
 text \<open>p 55, ll 16--17\<close>
-notation quotient_composition (infixl "[\<cdot>]" 70)
+notation quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>p 55, l 18\<close>
 theorem Class_right_inverse:
@@ -1039,7 +1039,7 @@ end (* group_congruence *)
 text \<open>Def 1.5\<close>
 text \<open>p 55, ll 22--25\<close>
 locale normal_subgroup =
-  subgroup_of_group K G "(\<cdot>)" \<one> for K and G and composition (infixl "\<cdot>" 70) and unit ("\<one>") +
+  subgroup_of_group K G "(\<cdot>)" \<one> for K and G and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>) +
   assumes normal: "\<lbrakk> g \<in> G; k \<in> K \<rbrakk> \<Longrightarrow> inverse g \<cdot> k \<cdot> g \<in> K"
 
 text \<open>Lemmas from the proof of Thm 1.6\<close>
@@ -1256,7 +1256,7 @@ context group begin
 
 text \<open>Pulled out of @{locale normal_subgroup} to achieve standard notation.\<close>
 text \<open>p 56, ll 31--32\<close>
-abbreviation Factor_Group (infixl "'/'/" 75)
+abbreviation Factor_Group (infixl \<open>'/'/\<close> 75)
   where "S // K \<equiv> S / (normal_subgroup.Congruence K G (\<cdot>) \<one>)"
 
 end (* group *)
@@ -1297,7 +1297,7 @@ end (* normal_subgroup *)
 
 text \<open>p 57, ll 4--5\<close>
 locale subgroup_of_abelian_group = subgroup_of_group H G "(\<cdot>)" \<one> + abelian_group G "(\<cdot>)" \<one>
-  for H and G and composition (infixl "\<cdot>" 70) and unit ("\<one>")
+  for H and G and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
 
 text \<open>p 57, ll 4--5\<close>
 sublocale subgroup_of_abelian_group \<subseteq> normal_subgroup H G "(\<cdot>)" \<one>
@@ -1310,8 +1310,8 @@ text \<open>Def 1.6\<close>
 text \<open>p 58, l 33; p 59, ll 1--2\<close>
 locale monoid_homomorphism =
   map \<eta> M M'+  source: monoid M "(\<cdot>)" \<one> + target: monoid M' "(\<cdot>')" "\<one>'"
-  for \<eta> and M and composition (infixl "\<cdot>" 70) and unit ("\<one>")
-    and M' and composition' (infixl "\<cdot>''" 70) and unit' ("\<one>''") +
+  for \<eta> and M and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
+    and M' and composition' (infixl \<open>\<cdot>''\<close> 70) and unit' (\<open>\<one>''\<close>) +
   assumes commutes_with_composition: "\<lbrakk> x \<in> M; y \<in> M \<rbrakk> \<Longrightarrow> \<eta> (x \<cdot> y) = \<eta> x \<cdot>' \<eta> y"
     and commutes_with_unit: "\<eta> \<one> = \<one>'"
 begin
@@ -1319,10 +1319,10 @@ begin
 text \<open>Jacobson notes that @{thm [source] commutes_with_unit} is not necessary for groups, but doesn't make use of that later.\<close>
 
 text \<open>p 58, l 33; p 59, ll 1--2\<close>
-notation source.invertible ("invertible _" [100] 100)
-notation source.inverse ("inverse _" [100] 100)
-notation target.invertible ("invertible'' _" [100] 100)
-notation target.inverse ("inverse'' _" [100] 100)
+notation source.invertible (\<open>invertible _\<close> [100] 100)
+notation source.inverse (\<open>inverse _\<close> [100] 100)
+notation target.invertible (\<open>invertible'' _\<close> [100] 100)
+notation target.inverse (\<open>inverse'' _\<close> [100] 100)
 
 end (* monoid_homomorphism *)
 
@@ -1376,7 +1376,7 @@ locale monoid_homomorphism_fundamental = monoid_homomorphism begin
 
 text \<open>p 61, ll 17--18\<close>
 sublocale fiber_relation \<eta> M M' ..
-notation Fiber_Relation ("E'(_')")
+notation Fiber_Relation (\<open>E'(_')\<close>)
 
 text \<open>p 61, ll 6--7, 18--20\<close>
 sublocale monoid_congruence where E = "E(\<eta>)"
@@ -1391,7 +1391,7 @@ text \<open>
 \<close>
 
 text \<open>p 61, l 20\<close>
-notation quotient_composition (infixl "[\<cdot>]" 70)
+notation quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>p 61, ll 7--8, 22--25\<close>
 sublocale induced: monoid_homomorphism induced "M / E(\<eta>)" "([\<cdot>])" "Class \<one>" "M'" "(\<cdot>')" "\<one>'"
@@ -1412,8 +1412,8 @@ text \<open>p 62, ll 12--13\<close>
 locale group_homomorphism =
   monoid_homomorphism \<eta> G "(\<cdot>)" \<one> G' "(\<cdot>')" "\<one>'" +
   source: group G "(\<cdot>)" \<one> + target: group G' "(\<cdot>')" "\<one>'"
-  for \<eta> and G and composition (infixl "\<cdot>" 70) and unit ("\<one>")
-    and G' and composition' (infixl "\<cdot>''" 70) and unit' ("\<one>''")
+  for \<eta> and G and composition (infixl \<open>\<cdot>\<close> 70) and unit (\<open>\<one>\<close>)
+    and G' and composition' (infixl \<open>\<cdot>''\<close> 70) and unit' (\<open>\<one>''\<close>)
 begin
 
 text \<open>p 62, l 13\<close>
@@ -1486,7 +1486,7 @@ locale normal_subgroup_in_kernel =
 begin
 
 text \<open>p 62, l 21\<close>
-notation contained.quotient_composition (infixl "[\<cdot>]" 70)
+notation contained.quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>"homomorphism onto @{term "G // L"}"\<close>
 text \<open>p 62, ll 23--24\<close>
@@ -1626,7 +1626,7 @@ text \<open>p 63, l 1\<close>
 locale group_homomorphism_fundamental = group_homomorphism begin
 
 text \<open>p 63, l 1\<close>
-notation kernel.quotient_composition (infixl "[\<cdot>]" 70)
+notation kernel.quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>p 63, l 1\<close>
 sublocale normal_subgroup_in_kernel where L = Ker by unfold_locales rule
@@ -1654,7 +1654,7 @@ lemma inverse_group_isomorphism:
 end (* group_isomorphism *)
 
 text \<open>p 63, l 6\<close>
-definition isomorphic_as_groups (infixl "\<cong>\<^sub>G" 50)
+definition isomorphic_as_groups (infixl \<open>\<cong>\<^sub>G\<close> 50)
   where "\<G> \<cong>\<^sub>G \<G>' \<longleftrightarrow> (let (G, composition, unit) = \<G>; (G', composition', unit') = \<G>' in
   (\<exists>\<eta>. group_isomorphism \<eta> G composition unit G' composition' unit'))"
 

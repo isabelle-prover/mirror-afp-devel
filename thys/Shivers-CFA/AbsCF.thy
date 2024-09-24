@@ -15,8 +15,8 @@ We want to leave the exact choice of the finite contour set open for now. Theref
 \<close>
 
 class contour = finite +
-  fixes nb_a :: "'a \<Rightarrow> label \<Rightarrow> 'a" ("\<anb>")
-    and a_initial_contour :: 'a ("\<abinit>")
+  fixes nb_a :: "'a \<Rightarrow> label \<Rightarrow> 'a" (\<open>\<anb>\<close>)
+    and a_initial_contour :: 'a (\<open>\<abinit>\<close>)
 
 instantiation unit :: contour
 begin
@@ -31,23 +31,23 @@ Analogous to the previous section, we define types for binding environments, clo
 The abstract variable environment is a partial map to sets in Shivers' dissertation. As he does not need to distinguish between a key not in the map and a key mapped to the empty set, this presentation is redundant. Therefore, I encoded this as a function from keys to sets of values. The theory @{theory "Shivers-CFA.SetMap"} contains functions and lemmas to work with such maps, symbolized by an appended dot (e.g. \<open>{}.\<close>, \<open>\<union>.\<close>).
 \<close>
 
-type_synonym 'c a_benv = "label \<rightharpoonup> 'c" ("_ \<abenv>" [1000])
-type_synonym 'c a_closure = "lambda \<times> 'c \<abenv>" ("_ \<aclosure>" [1000])
+type_synonym 'c a_benv = "label \<rightharpoonup> 'c" (\<open>_ \<abenv>\<close> [1000])
+type_synonym 'c a_closure = "lambda \<times> 'c \<abenv>" (\<open>_ \<aclosure>\<close> [1000])
 
-datatype 'c proc ("_ \<aproc>" [1000])
+datatype 'c proc (\<open>_ \<aproc>\<close> [1000])
   = PC "'c \<aclosure>"
   | PP prim
   | AStop
 
-type_synonym 'c a_d = "'c \<aproc> set" ("_ \<ad>" [1000])
+type_synonym 'c a_d = "'c \<aproc> set" (\<open>_ \<ad>\<close> [1000])
 
-type_synonym 'c a_venv = "var \<times> 'c \<Rightarrow> 'c \<ad>" ("_ \<avenv>" [1000])
+type_synonym 'c a_venv = "var \<times> 'c \<Rightarrow> 'c \<ad>" (\<open>_ \<avenv>\<close> [1000])
 
 text \<open>
 The evaluation function now ignores constants and returns singletons for primitive operations and lambda expressions.
 \<close>
 
-fun evalV_a :: "val \<Rightarrow> 'c \<abenv> \<Rightarrow> 'c \<avenv> \<Rightarrow> 'c \<ad>" ("\<aA>")
+fun evalV_a :: "val \<Rightarrow> 'c \<abenv> \<Rightarrow> 'c \<avenv> \<Rightarrow> 'c \<ad>" (\<open>\<aA>\<close>)
   where "\<aA> (C _ i) \<beta> ve = {}"
   |     "\<aA> (P prim) \<beta> ve = {PP prim}"
   |     "\<aA> (R _ var) \<beta> ve =
@@ -60,11 +60,11 @@ text \<open>
 The types of the calculated graph, the arguments to \<open>\<aF>\<close> and \<open>\<aC>\<close> resemble closely the types in the exact case, with each type replaced by its abstract counterpart.
 \<close>
 
-type_synonym 'c a_ccache = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>) set" ("_ \<accache>" [1000])
-type_synonym 'c a_ans = "'c \<accache>" ("_ \<aans>" [1000])
+type_synonym 'c a_ccache = "((label \<times> 'c \<abenv>) \<times> 'c \<aproc>) set" (\<open>_ \<accache>\<close> [1000])
+type_synonym 'c a_ans = "'c \<accache>" (\<open>_ \<aans>\<close> [1000])
 
-type_synonym 'c a_fstate = "('c \<aproc> \<times> 'c \<ad> list \<times> 'c \<avenv> \<times> 'c)" ("_ \<afstate>" [1000])
-type_synonym 'c a_cstate = "(call \<times> 'c \<abenv> \<times> 'c \<avenv> \<times> 'c)" ("_ \<acstate>" [1000])
+type_synonym 'c a_fstate = "('c \<aproc> \<times> 'c \<ad> list \<times> 'c \<avenv> \<times> 'c)" (\<open>_ \<afstate>\<close> [1000])
+type_synonym 'c a_cstate = "(call \<times> 'c \<abenv> \<times> 'c \<avenv> \<times> 'c)" (\<open>_ \<acstate>\<close> [1000])
 
 text \<open>
 And yet again, cont2cont results need to be shown for our custom data types.
@@ -102,8 +102,8 @@ text \<open>
 We can now define the abstract nonstandard semantics, based on the equations in Figure 4.5 and 4.6 of Shivers' dissertation. In the \<open>AStop\<close> case, \<open>{}\<close> is returned, while for wrong arguments, \<open>\<bottom>\<close> is returned. Both actually represent the same value, the empty set, so this is just a aesthetic difference.
 \<close>
 
-fixrec   a_evalF :: "'c::contour \<afstate> discr \<rightarrow> 'c \<aans>" ("\<aF>")
-     and a_evalC :: "'c::contour \<acstate> discr \<rightarrow> 'c \<aans>" ("\<aC>")
+fixrec   a_evalF :: "'c::contour \<afstate> discr \<rightarrow> 'c \<aans>" (\<open>\<aF>\<close>)
+     and a_evalC :: "'c::contour \<acstate> discr \<rightarrow> 'c \<aans>" (\<open>\<aC>\<close>)
   where "\<aF>\<cdot>fstate = (case undiscr fstate of
              (PC (Lambda lab vs c, \<beta>), as, ve, b) \<Rightarrow>
                (if length vs = length as
@@ -177,7 +177,7 @@ text \<open>
 Not surprisingly, the abstract semantics of a whole program is defined using \<open>\<aF>\<close> with suitably initialized arguments. The function \<open>the_elem\<close> extracts a value from a singleton set. This works because we know that \<open>\<aA>\<close> returns such a set when given a lambda expression.
 \<close>
 
-definition evalCPS_a :: "prog \<Rightarrow> ('c::contour) \<aans>" ("\<aPR>")
+definition evalCPS_a :: "prog \<Rightarrow> ('c::contour) \<aans>" (\<open>\<aPR>\<close>)
   where "\<aPR> l = (let ve = {}.;
                           \<beta> = Map.empty;
                           f = \<aA> (L l) \<beta> ve

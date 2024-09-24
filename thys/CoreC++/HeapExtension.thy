@@ -19,7 +19,7 @@ begin
 
 subsection \<open>The Heap Extension\<close>
 
-definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50) where
+definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" (\<open>_ \<unlhd> _\<close> [51,51] 50) where
   "h \<unlhd> h'  \<equiv>  \<forall>a C S. h a = Some(C,S) \<longrightarrow> (\<exists>S'. h' a = Some(C,S'))"
 
 lemma hextI: "\<forall>a C S. h a = Some(C,S) \<longrightarrow> (\<exists>S'. h' a = Some(C,S')) \<Longrightarrow> h \<unlhd> h'"

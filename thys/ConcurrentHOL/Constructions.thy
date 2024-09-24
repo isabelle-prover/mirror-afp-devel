@@ -2016,7 +2016,7 @@ TODO:
 
 \<close>
 
-definition inhabits :: "('a, 's, 'w) spec \<Rightarrow> 's \<Rightarrow> ('a \<times> 's) list \<Rightarrow> ('a, 's, 'w) spec \<Rightarrow> bool" ("_/ -_, _\<rightarrow>/ _" [50, 0, 0, 50] 50) where
+definition inhabits :: "('a, 's, 'w) spec \<Rightarrow> 's \<Rightarrow> ('a \<times> 's) list \<Rightarrow> ('a, 's, 'w) spec \<Rightarrow> bool" (\<open>_/ -_, _\<rightarrow>/ _\<close> [50, 0, 0, 50] 50) where
   "S -s, xs\<rightarrow> T \<longleftrightarrow> \<lblot>s, xs, Some ()\<rblot> \<then> T \<le> S"
 
 setup \<open>Sign.mandatory_path "inhabits"\<close>

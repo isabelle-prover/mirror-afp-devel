@@ -81,7 +81,7 @@ subsection "Spans"
     C: category C +
     dom: span_in_category C \<open>Dom \<mu>\<close> +
     cod: span_in_category C \<open>Cod \<mu>\<close>
-  for C :: "'a comp"  (infixr "\<cdot>" 55)
+  for C :: "'a comp"  (infixr \<open>\<cdot>\<close> 55)
   and \<mu> :: "'a arrow_of_spans_data" (structure) +
   assumes chine_in_hom [intro]: "\<guillemotleft>Chn \<mu> : dom.apex \<rightarrow> cod.apex\<guillemotright>"
   and leg0_commutes [simp]: "cod.leg0 \<cdot> Chn \<mu> = dom.leg0"
@@ -170,7 +170,7 @@ subsection "Spans"
                        then \<lparr>Chn = Chn \<nu> \<cdot> Chn \<mu>, Dom = Dom \<mu>, Cod = Cod \<nu>\<rparr>
                        else Null"
 
-    notation vcomp        (infixr "\<bullet>" 55)
+    notation vcomp        (infixr \<open>\<bullet>\<close> 55)
 
     (*
      * TODO: The reason why the this and the subsequent category interpretation are declared
@@ -761,7 +761,7 @@ $$\xymatrix{
                        else
                           null"
 
-    notation hcomp        (infixr "\<star>" 53)
+    notation hcomp        (infixr \<open>\<star>\<close> 53)
 
     lemma chine_hcomp_props:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
@@ -1572,7 +1572,7 @@ $$\xymatrix{
     shows "equivalence_functor vcomp vcomp R"
       ..
 
-    definition unit  ("\<i>[_]")
+    definition unit  (\<open>\<i>[_]\<close>)
     where "\<i>[a] \<equiv> \<lparr>Chn = \<p>\<^sub>0[Chn a, Chn a], Dom = Dom (a \<star> a), Cod = Cod a\<rparr>"
 
     lemma unit_in_hom [intro]:
@@ -2938,7 +2938,7 @@ $$\xymatrix{
       qed
     qed
 
-    definition assoc  ("\<a>[_, _, _]")
+    definition assoc  (\<open>\<a>[_, _, _]\<close>)
     where "assoc \<equiv> \<lambda>\<mu> \<nu> \<pi>. \<alpha>.map (\<mu>, \<nu>, \<pi>)"
 
     abbreviation (input) \<alpha>\<^sub>S\<^sub>B
@@ -3636,15 +3636,15 @@ $$\xymatrix{
 
   subsection "Miscellaneous Formulas"
 
-    no_notation in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation in_hom       ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
+    no_notation in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation in_hom       (\<open>\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>\<close>)
 
-    notation lunit        ("\<l>[_]")
-    notation runit        ("\<r>[_]")
-    notation lunit'       ("\<l>\<^sup>-\<^sup>1[_]")
-    notation runit'       ("\<r>\<^sup>-\<^sup>1[_]")
-    notation assoc        ("\<a>[_, _, _]")
-    notation \<a>'           ("\<a>\<^sup>-\<^sup>1[_, _, _]")
+    notation lunit        (\<open>\<l>[_]\<close>)
+    notation runit        (\<open>\<r>[_]\<close>)
+    notation lunit'       (\<open>\<l>\<^sup>-\<^sup>1[_]\<close>)
+    notation runit'       (\<open>\<r>\<^sup>-\<^sup>1[_]\<close>)
+    notation assoc        (\<open>\<a>[_, _, _]\<close>)
+    notation \<a>'           (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
 
     lemma \<alpha>'_ide:
     assumes "ide f" and "ide g" and "ide h"
@@ -4019,9 +4019,9 @@ $$\xymatrix{
   locale adjunction_data_in_span_bicategory =
      span_bicategory C prj0 prj1 +
      adjunction_data_in_bicategory vcomp hcomp assoc unit src trg f g \<eta> \<epsilon>
-  for C :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"         (infixr "\<cdot>" 55)
-  and prj0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"      ("\<p>\<^sub>0[_, _]")
-  and prj1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"      ("\<p>\<^sub>1[_, _]")
+  for C :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"         (infixr \<open>\<cdot>\<close> 55)
+  and prj0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"      (\<open>\<p>\<^sub>0[_, _]\<close>)
+  and prj1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"      (\<open>\<p>\<^sub>1[_, _]\<close>)
   and f :: "'a arrow_of_spans_data"
   and g :: "'a arrow_of_spans_data"
   and \<eta> :: "'a arrow_of_spans_data"

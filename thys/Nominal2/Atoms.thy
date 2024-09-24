@@ -98,7 +98,7 @@ section \<open>An example for multiple-sort atoms\<close>
 
 datatype ty =
   TVar string
-| Fun ty ty ("_ \<rightarrow> _")
+| Fun ty ty (\<open>_ \<rightarrow> _\<close>)
 
 primrec
   sort_of_ty::"ty \<Rightarrow> atom_sort"

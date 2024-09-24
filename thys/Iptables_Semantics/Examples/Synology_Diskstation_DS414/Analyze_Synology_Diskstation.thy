@@ -19,9 +19,9 @@ text\<open>we removed the established,related rule\<close>
             (Match (Extra (''state RELATED,ESTABLISHED'')))))) (action.Accept)) (the (firewall_chains ''INPUT'')))"
 
 text\<open>Infix pretty-printing for @{const MatchAnd} and @{const MatchNot}.\<close>
-abbreviation MatchAndInfix :: "'a match_expr \<Rightarrow> 'a match_expr \<Rightarrow> 'a match_expr" (infixr "MATCHAND" 65) where
+abbreviation MatchAndInfix :: "'a match_expr \<Rightarrow> 'a match_expr \<Rightarrow> 'a match_expr" (infixr \<open>MATCHAND\<close> 65) where
   "MatchAndInfix m1 m2 \<equiv> MatchAnd m1 m2"
-abbreviation MatchNotPrefix :: "'a match_expr \<Rightarrow> 'a match_expr" ("\<not> \<langle>_\<rangle>" 66) where
+abbreviation MatchNotPrefix :: "'a match_expr \<Rightarrow> 'a match_expr" (\<open>\<not> \<langle>_\<rangle>\<close> 66) where
   "MatchNotPrefix m \<equiv> MatchNot m"
 (*abbreviation MatchPrefix :: "'a \<Rightarrow> 'a match_expr" ("\<lozenge> _" 67) where (*This is too slow*)
   "MatchPrefix m \<equiv> Match m"*)

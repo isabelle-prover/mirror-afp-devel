@@ -573,7 +573,7 @@ qed(auto simp:hyperset_defs)
 
 text\<open> Combining conformance of heap, static heap, and local variables: \<close>
 
-definition sconf :: "J_prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"   ("_,_ \<turnstile> _ \<surd>"   [51,51,51]50)
+definition sconf :: "J_prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"   (\<open>_,_ \<turnstile> _ \<surd>\<close>   [51,51,51]50)
 where
   "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l,sh) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>) E \<and> P,h \<turnstile>\<^sub>s sh \<surd>"
 
@@ -1315,7 +1315,7 @@ subsection "The final polish"
 
 text\<open> The above preservation lemmas are now combined and packed nicely. \<close>
 
-definition wf_config :: "J_prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"   ("_,_,_ \<turnstile> _ : _ \<surd>"   [51,0,0,0,0]50)
+definition wf_config :: "J_prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool"   (\<open>_,_,_ \<turnstile> _ : _ \<surd>\<close>   [51,0,0,0,0]50)
 where
   "P,E,s \<turnstile> e:T \<surd>  \<equiv>  P,E \<turnstile> s \<surd> \<and> iconf (shp s) e \<and> P,E,hp s,shp s \<turnstile> e:T"
 

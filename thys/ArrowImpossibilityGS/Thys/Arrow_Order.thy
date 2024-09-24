@@ -113,7 +113,7 @@ done
 
 declare [[simp_depth_limit = 50]]
 
-abbreviation lessLin :: "alt \<Rightarrow> pref \<Rightarrow> alt \<Rightarrow> bool" ("(_ <\<^bsub>_\<^esub> _)" [51, 51] 50)
+abbreviation lessLin :: "alt \<Rightarrow> pref \<Rightarrow> alt \<Rightarrow> bool" (\<open>(_ <\<^bsub>_\<^esub> _)\<close> [51, 51] 50)
 where "a <\<^bsub>L\<^esub> b == (a,b) : L"
 
 definition "Prof = I \<rightarrow> Lin"

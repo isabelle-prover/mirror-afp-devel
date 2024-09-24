@@ -11,7 +11,7 @@ subsection\<open>The CFG for every procedure\<close>
 
 subsubsection \<open>Definition of \<open>\<oplus>\<close>\<close>
 
-fun label_incr :: "label \<Rightarrow> nat \<Rightarrow> label" ("_ \<oplus> _" 60)
+fun label_incr :: "label \<Rightarrow> nat \<Rightarrow> label" (\<open>_ \<oplus> _\<close> 60)
 where "(Label l) \<oplus> i = Label (l + i)"
   | "Entry \<oplus> i       = Entry"
   | "Exit \<oplus> i        = Exit"
@@ -72,7 +72,7 @@ datatype p_edge_kind =
 type_synonym p_edge = "(label \<times> p_edge_kind \<times> label)"
 
 inductive Proc_CFG :: "cmd \<Rightarrow> label \<Rightarrow> p_edge_kind \<Rightarrow> label \<Rightarrow> bool"
-("_ \<turnstile> _ -_\<rightarrow>\<^sub>p _")
+(\<open>_ \<turnstile> _ -_\<rightarrow>\<^sub>p _\<close>)
 where
 
   Proc_CFG_Entry_Exit:
@@ -1233,7 +1233,7 @@ fun get_proc :: "node \<Rightarrow> pname"
 
 inductive PCFG :: 
   "cmd \<Rightarrow> procs \<Rightarrow> node \<Rightarrow> (vname,val,node,pname) edge_kind \<Rightarrow> node \<Rightarrow> bool" 
-("_,_ \<turnstile> _ -_\<rightarrow> _" [51,51,0,0,0] 81)
+(\<open>_,_ \<turnstile> _ -_\<rightarrow> _\<close> [51,51,0,0,0] 81)
 for prog::cmd and procs::procs
 where
 

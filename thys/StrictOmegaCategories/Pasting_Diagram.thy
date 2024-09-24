@@ -15,7 +15,7 @@ datatype tree = Node (subtrees: "tree list") \<comment> \<open>\cite[p. 268]{Lei
 abbreviation Leaf :: tree where
 "Leaf \<equiv> Node []"
 
-fun subtree :: "tree \<Rightarrow> nat list \<Rightarrow> tree" ("_ !t _" [59,60]59) where
+fun subtree :: "tree \<Rightarrow> nat list \<Rightarrow> tree" (\<open>_ !t _\<close> [59,60]59) where
 "t !t [] = t" |
 "t !t (i#xs) = subtrees (t !t xs) ! i"
 

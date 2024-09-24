@@ -183,7 +183,7 @@ setup \<open>Sign.parent_path\<close>
 
 setup \<open>Sign.mandatory_path "spec"\<close>
 
-lift_definition "next_imp" :: "('a, 's, 'v) spec \<Rightarrow> ('a, 's, 'v) spec \<Rightarrow> ('a, 's, 'v) spec" (infixr "\<^bold>\<longrightarrow>\<^sub>+" 61) is
+lift_definition "next_imp" :: "('a, 's, 'v) spec \<Rightarrow> ('a, 's, 'v) spec \<Rightarrow> ('a, 's, 'v) spec" (infixr \<open>\<^bold>\<longrightarrow>\<^sub>+\<close> 61) is
   "Next_Imp.next_imp"
 by (simp add: next_imp.downwards_imp raw.spec.closed.downwards_closed raw.spec.closed.downwards_imp)
 

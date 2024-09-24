@@ -7,7 +7,7 @@ theory PsTermi imports PsLang begin
 subsection\<open>Termination\<close>
 
 inductive
-  termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50)
+  termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl \<open>\<down>\<close> 50)
 where
     Do[iff]: "f s \<noteq> {} \<Longrightarrow> Do f \<down> s"
   | Semi[intro!]:   "\<lbrakk> c1 \<down> s0; \<And>s1. s0 -c1\<rightarrow> s1 \<Longrightarrow> c2 \<down> s1 \<rbrakk>

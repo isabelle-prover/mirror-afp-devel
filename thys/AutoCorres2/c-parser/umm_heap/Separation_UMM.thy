@@ -15,7 +15,7 @@ begin
 type_synonym ('a,'b) map_assert = "('a \<rightharpoonup> 'b) \<Rightarrow> bool"
 type_synonym heap_assert = "(addr \<times> s_heap_index,s_heap_value) map_assert"
 
-definition sep_emp :: "('a,'b) map_assert" ("\<box>") where
+definition sep_emp :: "('a,'b) map_assert" (\<open>\<box>\<close>) where
   "sep_emp \<equiv> (=) Map.empty"
 
 definition sep_true :: "('a,'b) map_assert" where
@@ -25,12 +25,12 @@ definition sep_false :: "('a,'b) map_assert" where
   "sep_false \<equiv> \<lambda>s. False"
 
 definition
-  sep_conj :: "('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert" (infixr "\<and>\<^sup>*" 35)
+  sep_conj :: "('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert" (infixr \<open>\<and>\<^sup>*\<close> 35)
 where
   "P \<and>\<^sup>* Q \<equiv> \<lambda>s. \<exists>s\<^sub>0 s\<^sub>1. s\<^sub>0 \<bottom> s\<^sub>1 \<and> s = s\<^sub>1 ++ s\<^sub>0 \<and> P s\<^sub>0 \<and> Q s\<^sub>1"
 
 definition
-  sep_impl :: "('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert" (infixr "\<longrightarrow>\<^sup>*" 25)
+  sep_impl :: "('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert \<Rightarrow> ('a,'b) map_assert" (infixr \<open>\<longrightarrow>\<^sup>*\<close> 25)
 where
   "x \<longrightarrow>\<^sup>* y \<equiv> \<lambda>s. \<forall>s'. s \<bottom> s' \<and> x s' \<longrightarrow> y (s ++ s')"
 
@@ -49,39 +49,39 @@ text \<open>
 \<close>
 
 definition
-  sep_map :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" ("_ \<mapsto>\<^bsub>_\<^esub> _" [56,0,51] 56)
+  sep_map :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<mapsto>\<^bsub>_\<^esub> _\<close> [56,0,51] 56)
 where
   "p \<mapsto>\<^bsub>g\<^esub> v \<equiv> \<lambda>s. lift_typ_heap g s p = Some v \<and> dom s = s_footprint p \<and> wf_heap_val s"
 
 notation (input)
-  sep_map ("_ \<mapsto>\<^sub>_ _" [56,1000,51] 56)
+  sep_map (\<open>_ \<mapsto>\<^sub>_ _\<close> [56,1000,51] 56)
 
 definition
-  sep_map_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert" ("_ \<mapsto>\<^bsub>_\<^esub> -" [56,0] 56)
+  sep_map_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert" (\<open>_ \<mapsto>\<^bsub>_\<^esub> -\<close> [56,0] 56)
 where
   "p \<mapsto>\<^bsub>g\<^esub> - \<equiv> \<lambda>s. \<exists>v. (p \<mapsto>\<^sub>g v) s"
 
 notation (input)
-  sep_map_any ("_ \<mapsto>\<^sub>_ -" [56,0] 56)
+  sep_map_any (\<open>_ \<mapsto>\<^sub>_ -\<close> [56,0] 56)
 
 definition
-  sep_map' :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" ("_ \<hookrightarrow>\<^bsub>_\<^esub> _" [56,0,51] 56)
+  sep_map' :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>\<^bsub>_\<^esub> _\<close> [56,0,51] 56)
 where
   "p \<hookrightarrow>\<^bsub>g\<^esub> v \<equiv> (p \<mapsto>\<^bsub>g\<^esub> v) \<and>\<^sup>* sep_true"
 
 notation (input)
-  sep_map' ("_ \<hookrightarrow>\<^sub>_ _" [56,1000,51] 56)
+  sep_map' (\<open>_ \<hookrightarrow>\<^sub>_ _\<close> [56,1000,51] 56)
 
 definition
-  sep_map'_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard  \<Rightarrow> heap_assert" ("_ \<hookrightarrow>\<^bsub>_\<^esub> -" [56,0] 56)
+  sep_map'_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard  \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>\<^bsub>_\<^esub> -\<close> [56,0] 56)
 where
   "p \<hookrightarrow>\<^bsub>g\<^esub> - \<equiv> \<lambda>s. \<exists>x. (p \<hookrightarrow>\<^sub>g x) s"
 
 notation (input)
-  sep_map'_any ("_ \<hookrightarrow>\<^sub>_ -" [56,0] 56)
+  sep_map'_any (\<open>_ \<hookrightarrow>\<^sub>_ -\<close> [56,0] 56)
 
 syntax
-  "_sep_assert" :: "bool \<Rightarrow> heap_state \<Rightarrow> bool" ("'(_')\<^bsup>sep\<^esup>" [0] 100)
+  "_sep_assert" :: "bool \<Rightarrow> heap_state \<Rightarrow> bool" (\<open>'(_')\<^bsup>sep\<^esup>\<close> [0] 100)
 
 
 text \<open>----\<close>

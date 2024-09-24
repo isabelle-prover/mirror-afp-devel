@@ -1206,7 +1206,7 @@ all choice functions that satisfy @{const "iia"} and @{const
 
 \<close>
 
-abbreviation nth_mod :: "'a list \<Rightarrow> nat \<Rightarrow> 'a" (infixl "!%" 100) where
+abbreviation nth_mod :: "'a list \<Rightarrow> nat \<Rightarrow> 'a" (infixl \<open>!%\<close> 100) where
   "xs !% i \<equiv> xs ! (i mod length xs)"
 
 definition mwc_sarp :: "'a cfun \<Rightarrow> bool" where

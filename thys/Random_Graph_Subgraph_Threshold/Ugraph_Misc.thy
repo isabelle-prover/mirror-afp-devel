@@ -174,7 +174,7 @@ by (metis card_image subset_inj_on)
 lemma image_comp_cong: "(\<And>a. a \<in> A \<Longrightarrow> f a = f (g a)) \<Longrightarrow> f ` A = f ` (g ` A)"
   by auto
 
-abbreviation less_fun :: "(nat \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> bool" (infix "\<lless>" 50) where
+abbreviation less_fun :: "(nat \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> bool" (infix \<open>\<lless>\<close> 50) where
 "f \<lless> g \<equiv> (\<lambda>n. f n / g n) \<longlonglongrightarrow> 0"
 
 context

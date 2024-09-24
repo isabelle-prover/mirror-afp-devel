@@ -25,14 +25,14 @@ datatype ('a, 'b, 'c, 'd) assertion =
 type_synonym 'a command = "('a \<times> 'a option) set"
 
 locale pre_logic =
-    fixes plus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a option" (infixl "\<oplus>" 63)
+    fixes plus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a option" (infixl \<open>\<oplus>\<close> 63)
 
 begin
 
-definition compatible :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "##" 60) where
+definition compatible :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>##\<close> 60) where
   "a ## b \<longleftrightarrow> a \<oplus> b \<noteq> None"
 
-definition larger :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<succeq>" 55) where
+definition larger :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<succeq>\<close> 55) where
   "a \<succeq> b \<longleftrightarrow> (\<exists>c. Some a = b \<oplus> c)"
 
 end
@@ -43,7 +43,7 @@ text \<open>The following locale captures the state model described in Section 2
 
 locale logic = pre_logic +
 
-  fixes mult :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<odot>" 64)
+  fixes mult :: "'b \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<odot>\<close> 64)
 
   fixes smult :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
   fixes sadd :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"
@@ -76,7 +76,7 @@ begin
 
 text \<open>The validity of assertions corresponds to Figure 3 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
-fun sat :: "'a \<Rightarrow> ('d \<Rightarrow> 'c) \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" ("_, _, _ \<Turnstile> _" [51, 65, 68, 66] 50) where
+fun sat :: "'a \<Rightarrow> ('d \<Rightarrow> 'c) \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" (\<open>_, _, _ \<Turnstile> _\<close> [51, 65, 68, 66] 50) where
   "\<sigma>, s, \<Delta> \<Turnstile> Mult p A \<longleftrightarrow> (\<exists>a. \<sigma> = p \<odot> a \<and> a, s, \<Delta> \<Turnstile> A)"
 | "\<sigma>, s, \<Delta> \<Turnstile> Star A B \<longleftrightarrow> (\<exists>a b. Some \<sigma> = a \<oplus> b \<and> a, s, \<Delta> \<Turnstile> A \<and> b, s, \<Delta> \<Turnstile> B)"
 | "\<sigma>, s, \<Delta> \<Turnstile> Wand A B \<longleftrightarrow> (\<forall>a \<sigma>'. a, s, \<Delta> \<Turnstile> A \<and> Some \<sigma>' = \<sigma> \<oplus> a \<longrightarrow> \<sigma>', s, \<Delta> \<Turnstile> B)"
@@ -96,10 +96,10 @@ fun sat :: "'a \<Rightarrow> ('d \<Rightarrow> 'c) \<Rightarrow> ('d, 'c, 'a) in
 definition intuitionistic :: "('d \<Rightarrow> 'c) \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" where
   "intuitionistic s \<Delta> A \<longleftrightarrow> (\<forall>a b. a \<succeq> b \<and> b, s, \<Delta> \<Turnstile> A \<longrightarrow> a, s, \<Delta> \<Turnstile> A)"
 
-definition entails :: "('a, 'b, 'c, 'd) assertion \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" ("_, _ \<turnstile> _" [63, 66, 68] 52) where
+definition entails :: "('a, 'b, 'c, 'd) assertion \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" (\<open>_, _ \<turnstile> _\<close> [63, 66, 68] 52) where
   "A, \<Delta> \<turnstile> B \<longleftrightarrow> (\<forall>\<sigma> s. \<sigma>, s, \<Delta> \<Turnstile> A \<longrightarrow> \<sigma>, s, \<Delta> \<Turnstile> B)"
 
-definition equivalent :: "('a, 'b, 'c, 'd) assertion \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" ("_, _ \<equiv> _" [63, 66, 68] 52) where
+definition equivalent :: "('a, 'b, 'c, 'd) assertion \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" (\<open>_, _ \<equiv> _\<close> [63, 66, 68] 52) where
   "A, \<Delta> \<equiv> B \<longleftrightarrow> (A, \<Delta> \<turnstile> B \<and> B, \<Delta> \<turnstile> A)"
 
 definition pure :: "('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" where

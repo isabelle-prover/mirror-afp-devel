@@ -606,10 +606,10 @@ $$
     tabulation_data V H \<a> \<iota> src trg r \<rho> f g +
     uw\<theta>: uw\<theta> V H \<a> \<iota> src trg r \<rho> f g u w \<theta> +
     uw'\<theta>': uw\<theta> V H \<a> \<iota> src trg r \<rho> f g u w' \<theta>'
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<iota> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<iota> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -699,7 +699,7 @@ $$
     \<close>
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     lemma satisfies_T0:
     shows "is_left_adjoint f"
@@ -1295,7 +1295,7 @@ $$
   begin
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     text \<open>
       The following is CKS Proposition 1(d), with the statement refined to incorporate

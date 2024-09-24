@@ -27,10 +27,10 @@ locale pre_arrow_debreu_model =
   fixes consumption_set :: "'a set"
   fixes agents :: "'i set"
   fixes firms :: "'f set"
-  fixes \<E> :: "'i \<Rightarrow> 'a"  ("\<E>[_]")
-  fixes Pref :: "'i \<Rightarrow> 'a relation" ("Pr[_]")
-  fixes U :: "'i \<Rightarrow> 'a \<Rightarrow> real" ("U[_]")
-  fixes \<Theta> :: "'i \<Rightarrow> 'f \<Rightarrow> real"  ("\<Theta>[_,_]")
+  fixes \<E> :: "'i \<Rightarrow> 'a"  (\<open>\<E>[_]\<close>)
+  fixes Pref :: "'i \<Rightarrow> 'a relation" (\<open>Pr[_]\<close>)
+  fixes U :: "'i \<Rightarrow> 'a \<Rightarrow> real" (\<open>U[_]\<close>)
+  fixes \<Theta> :: "'i \<Rightarrow> 'f \<Rightarrow> real"  (\<open>\<Theta>[_,_]\<close>)
   assumes cons_set_props: "pre_arrow_debreu_consumption_set consumption_set"
   assumes agent_props: "i \<in> agents \<Longrightarrow> eucl_ordinal_utility consumption_set (Pr[i]) (U[i])"
   assumes firms_comp_owned: "j \<in> firms \<Longrightarrow> (\<Sum>i\<in>agents. \<Theta>[i,j]) = 1"

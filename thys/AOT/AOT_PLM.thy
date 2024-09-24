@@ -1621,8 +1621,8 @@ AOT_theorem "term-out:4":
 (* TODO: Provide a nicer mechanism for introducing custom binders. *)
 AOT_define AOT_exists_unique :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> "uniqueness:1":
   \<open>\<guillemotleft>AOT_exists_unique \<phi>\<guillemotright> \<equiv>\<^sub>d\<^sub>f \<exists>\<alpha> (\<phi>{\<alpha>} & \<forall>\<beta> (\<phi>{\<beta>} \<rightarrow> \<beta> = \<alpha>))\<close>
-syntax (input) "_AOT_exists_unique" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>!_ _" [1,40])
-syntax (output) "_AOT_exists_unique" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> ("\<exists>!_'(_')" [1,40])
+syntax (input) "_AOT_exists_unique" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>!_ _\<close> [1,40])
+syntax (output) "_AOT_exists_unique" :: \<open>\<alpha> \<Rightarrow> \<phi> \<Rightarrow> \<phi>\<close> (\<open>\<exists>!_'(_')\<close> [1,40])
 AOT_syntax_print_translations
   "_AOT_exists_unique \<tau> \<phi>" <= "CONST AOT_exists_unique (_abs \<tau> \<phi>)"
 syntax
@@ -1651,11 +1651,11 @@ print_translation\<open>AOT_syntax_print_translations [
 
 context AOT_meta_syntax
 begin
-notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
+notation AOT_exists_unique (binder \<open>\<^bold>\<exists>\<^bold>!\<close> 20)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_exists_unique (binder "\<^bold>\<exists>\<^bold>!" 20)
+no_notation AOT_exists_unique (binder \<open>\<^bold>\<exists>\<^bold>!\<close> 20)
 end
 
 AOT_theorem "uniqueness:2": \<open>\<exists>!\<alpha> \<phi>{\<alpha>} \<equiv> \<exists>\<alpha>\<forall>\<beta>(\<phi>{\<beta>} \<equiv> \<beta> = \<alpha>)\<close>
@@ -1776,7 +1776,7 @@ declare arbitrary_actualization.cases[AOT]
         arbitrary_actualization.simps[AOT]
         arbitrary_actualization.intros[AOT]
 syntax arbitrary_actualization :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightarrow> AOT_prop\<close>
-  ("ARBITRARY'_ACTUALIZATION'(_,_')")
+  (\<open>ARBITRARY'_ACTUALIZATION'(_,_')\<close>)
 
 notepad
 begin
@@ -4846,14 +4846,14 @@ AOT_theorem "pos-not-equiv-ne:4[zero]": \<open>(\<not>(\<phi>{p} \<equiv> \<phi>
   using "\<rightarrow>I" "pos-not-equiv-ne:2[zero]"[THEN "\<rightarrow>E"]
         "T\<diamond>"[THEN "\<rightarrow>E"] by blast
 
-AOT_define relation_negation :: "\<Pi> \<Rightarrow> \<Pi>" ("_\<^sup>-")
+AOT_define relation_negation :: "\<Pi> \<Rightarrow> \<Pi>" (\<open>_\<^sup>-\<close>)
   "df-relation-negation": "[F]\<^sup>- =\<^sub>d\<^sub>f [\<lambda>x\<^sub>1...x\<^sub>n \<not>[F]x\<^sub>1...x\<^sub>n]"
 
 nonterminal \<phi>neg
-syntax "" :: "\<phi>neg \<Rightarrow> \<tau>" ("_")
-syntax "" :: "\<phi>neg \<Rightarrow> \<phi>" ("'(_')")
+syntax "" :: "\<phi>neg \<Rightarrow> \<tau>" (\<open>_\<close>)
+syntax "" :: "\<phi>neg \<Rightarrow> \<phi>" (\<open>'(_')\<close>)
 
-AOT_define relation_negation_0 :: \<open>\<phi> \<Rightarrow> \<phi>neg\<close> ("'(_')\<^sup>-")
+AOT_define relation_negation_0 :: \<open>\<phi> \<Rightarrow> \<phi>neg\<close> (\<open>'(_')\<^sup>-\<close>)
   "df-relation-negation[zero]": "(p)\<^sup>- =\<^sub>d\<^sub>f [\<lambda> \<not>p]"
 
 AOT_theorem "rel-neg-T:1": \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<not>[\<Pi>]x\<^sub>1...x\<^sub>n]\<down>\<close>
@@ -4968,35 +4968,35 @@ proof(rule "\<rightarrow>I")
     using "thm-relation-negation:7" id_sym id_trans by metis
 qed
 
-AOT_define Necessary :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Necessary'(_')")
+AOT_define Necessary :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Necessary'(_')\<close>)
   "contingent-properties:1":
   \<open>Necessary([F]) \<equiv>\<^sub>d\<^sub>f \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]x\<^sub>1...x\<^sub>n\<close>
 
-AOT_define Necessary0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("Necessary0'(_')")
+AOT_define Necessary0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>Necessary0'(_')\<close>)
   "contingent-properties:1[zero]":
   \<open>Necessary0(p) \<equiv>\<^sub>d\<^sub>f \<box>p\<close>
 
-AOT_define Impossible :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Impossible'(_')")
+AOT_define Impossible :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Impossible'(_')\<close>)
   "contingent-properties:2":
   \<open>Impossible([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<not>[F]x\<^sub>1...x\<^sub>n\<close>
 
-AOT_define Impossible0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("Impossible0'(_')")
+AOT_define Impossible0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>Impossible0'(_')\<close>)
   "contingent-properties:2[zero]":
   \<open>Impossible0(p) \<equiv>\<^sub>d\<^sub>f \<box>\<not>p\<close>
 
-AOT_define NonContingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("NonContingent'(_')")
+AOT_define NonContingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>NonContingent'(_')\<close>)
   "contingent-properties:3":
   \<open>NonContingent([F]) \<equiv>\<^sub>d\<^sub>f Necessary([F]) \<or> Impossible([F])\<close>
 
-AOT_define NonContingent0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("NonContingent0'(_')")
+AOT_define NonContingent0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>NonContingent0'(_')\<close>)
   "contingent-properties:3[zero]":
   \<open>NonContingent0(p) \<equiv>\<^sub>d\<^sub>f Necessary0(p) \<or> Impossible0(p)\<close>
 
-AOT_define Contingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Contingent'(_')")
+AOT_define Contingent :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Contingent'(_')\<close>)
   "contingent-properties:4":
   \<open>Contingent([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<not>(Necessary([F]) \<or> Impossible([F]))\<close>
 
-AOT_define Contingent0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("Contingent0'(_')")
+AOT_define Contingent0 :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>Contingent0'(_')\<close>)
   "contingent-properties:4[zero]":
   \<open>Contingent0(p) \<equiv>\<^sub>d\<^sub>f \<not>(Necessary0(p) \<or> Impossible0(p))\<close>
 
@@ -5165,7 +5165,7 @@ proof -
   finally show ?thesis.
 qed
 
-AOT_define concrete_if_concrete :: \<open>\<Pi>\<close> ("L")
+AOT_define concrete_if_concrete :: \<open>\<Pi>\<close> (\<open>L\<close>)
   L_def: \<open>L =\<^sub>d\<^sub>f [\<lambda>x E!x \<rightarrow> E!x]\<close>
 
 AOT_theorem "thm-noncont-e-e:1": \<open>Necessary(L)\<close>
@@ -5566,7 +5566,7 @@ proof -
   finally show ?thesis.
 qed
 
-AOT_define noncontingent_prop :: \<open>\<phi>\<close> ("p\<^sub>0")
+AOT_define noncontingent_prop :: \<open>\<phi>\<close> (\<open>p\<^sub>0\<close>)
   p\<^sub>0_def: "(p\<^sub>0) =\<^sub>d\<^sub>f (\<forall>x (E!x \<rightarrow> E!x))"
 
 AOT_theorem "thm-noncont-propos:1":  \<open>Necessary0((p\<^sub>0))\<close>
@@ -5665,7 +5665,7 @@ proof -
   thus ?thesis using "\<exists>I" by fast
 qed
 
-AOT_define contingent_prop :: \<phi> ("q\<^sub>0")
+AOT_define contingent_prop :: \<phi> (\<open>q\<^sub>0\<close>)
   q\<^sub>0_def: \<open>(q\<^sub>0) =\<^sub>d\<^sub>f (\<exists>x (E!x & \<not>\<^bold>\<A>E!x))\<close>
 
 AOT_theorem q\<^sub>0_prop: \<open>\<diamond>q\<^sub>0 & \<diamond>\<not>q\<^sub>0\<close>
@@ -5813,10 +5813,10 @@ proof -
           "\<forall>E"(1)[rotated, OF "log-prop-prop:2"] by fast
 qed
 
-AOT_define ContingentlyTrue :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyTrue'(_')")
+AOT_define ContingentlyTrue :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>ContingentlyTrue'(_')\<close>)
   "cont-tf:1": \<open>ContingentlyTrue(p) \<equiv>\<^sub>d\<^sub>f p & \<diamond>\<not>p\<close>
 
-AOT_define ContingentlyFalse :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("ContingentlyFalse'(_')")
+AOT_define ContingentlyFalse :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>ContingentlyFalse'(_')\<close>)
   "cont-tf:2": \<open>ContingentlyFalse(p) \<equiv>\<^sub>d\<^sub>f \<not>p & \<diamond>p\<close>
 
 AOT_theorem "cont-true-cont:1":
@@ -6903,7 +6903,7 @@ proof -
     using "cont-nec-fact2:2" by blast
 qed
 
-AOT_define necessary_or_contingently_false :: \<open>\<phi> \<Rightarrow> \<phi>\<close> ("\<^bold>\<Delta>_" [49] 54)
+AOT_define necessary_or_contingently_false :: \<open>\<phi> \<Rightarrow> \<phi>\<close> (\<open>\<^bold>\<Delta>_\<close> [49] 54)
   \<open>\<^bold>\<Delta>p \<equiv>\<^sub>d\<^sub>f \<box>p \<or> (\<not>\<^bold>\<A>p & \<diamond>p)\<close>
 
 AOT_theorem sixteen:
@@ -7578,10 +7578,10 @@ proof(rule "raa-cor:2")
               "modus-tollens:1" "oa-contingent:2" "raa-cor:3")
 qed
 
-AOT_define eq_E :: \<open>\<Pi>\<close> ("'(=\<^sub>E')")
+AOT_define eq_E :: \<open>\<Pi>\<close> (\<open>'(=\<^sub>E')\<close>)
   "=E": \<open>(=\<^sub>E) =\<^sub>d\<^sub>f [\<lambda>xy O!x & O!y & \<box>\<forall>F ([F]x \<equiv> [F]y)]\<close>
 
-syntax "_AOT_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "=\<^sub>E" 50)
+syntax "_AOT_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>=\<^sub>E\<close> 50)
 translations
   "_AOT_eq_E_infix \<kappa> \<kappa>'" == "CONST AOT_exe (CONST eq_E) (CONST Pair \<kappa> \<kappa>')"
 print_translation\<open>
@@ -7640,10 +7640,10 @@ AOT_theorem "id-nec3:2": \<open>\<diamond>(x =\<^sub>E y) \<equiv> x =\<^sub>E y
 AOT_theorem "id-nec3:3": \<open>\<diamond>(x =\<^sub>E y) \<equiv> \<box>(x =\<^sub>E y)\<close>
   by (meson "id-nec3:1" "id-nec3:2" "\<equiv>E"(5))
 
-syntax "_AOT_non_eq_E" :: \<open>\<Pi>\<close> ("'(\<noteq>\<^sub>E')")
+syntax "_AOT_non_eq_E" :: \<open>\<Pi>\<close> (\<open>'(\<noteq>\<^sub>E')\<close>)
 translations
   (\<Pi>) "(\<noteq>\<^sub>E)" == (\<Pi>) "(=\<^sub>E)\<^sup>-"
-syntax "_AOT_non_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl "\<noteq>\<^sub>E" 50)
+syntax "_AOT_non_eq_E_infix" :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>\<close> (infixl \<open>\<noteq>\<^sub>E\<close> 50)
 translations
  "_AOT_non_eq_E_infix \<kappa> \<kappa>'" ==
  "CONST AOT_exe (CONST relation_negation (CONST eq_E)) (CONST Pair \<kappa> \<kappa>')"
@@ -8106,7 +8106,7 @@ qed
 
 definition rigid_condition where
   \<open>rigid_condition \<phi> \<equiv> \<forall>v . [v \<Turnstile> \<forall>\<alpha> (\<phi>{\<alpha>} \<rightarrow> \<box>\<phi>{\<alpha>})]\<close>
-syntax rigid_condition :: \<open>id_position \<Rightarrow> AOT_prop\<close> ("RIGID'_CONDITION'(_')")
+syntax rigid_condition :: \<open>id_position \<Rightarrow> AOT_prop\<close> (\<open>RIGID'_CONDITION'(_')\<close>)
 
 AOT_theorem "strict-can:1[E]":
   assumes \<open>RIGID_CONDITION(\<phi>)\<close>
@@ -8173,10 +8173,10 @@ AOT_theorem "box-phi-a:3":
           THEN "\<forall>E"(2)[where \<beta>=F], THEN RN]]
     "\<equiv>E"(5) by blast
 
-AOT_define Null :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Null'(_')") 
+AOT_define Null :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Null'(_')\<close>) 
   "df-null-uni:1": \<open>Null(x) \<equiv>\<^sub>d\<^sub>f A!x & \<not>\<exists>F x[F]\<close>
 
-AOT_define Universal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> ("Universal'(_')")
+AOT_define Universal :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<open>Universal'(_')\<close>)
   "df-null-uni:2": \<open>Universal(x) \<equiv>\<^sub>d\<^sub>f A!x & \<forall>F x[F]\<close>
 
 AOT_theorem "null-uni-uniq:1": \<open>\<exists>!x Null(x)\<close>
@@ -8861,7 +8861,7 @@ proof(rule "\<rightarrow>I")
     by (AOT_subst \<open>Propositional([F])\<close> \<open>\<exists>p (F = [\<lambda>y p])\<close>) auto
 qed
 
-AOT_define indicriminate :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> ("Indiscriminate'(_')")
+AOT_define indicriminate :: \<open>\<Pi> \<Rightarrow> \<phi>\<close> (\<open>Indiscriminate'(_')\<close>)
   "prop-indis": \<open>Indiscriminate([F]) \<equiv>\<^sub>d\<^sub>f F\<down> & \<box>(\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close>
 
 AOT_theorem "prop-in-thm": \<open>Propositional([\<Pi>]) \<rightarrow> Indiscriminate([\<Pi>])\<close>

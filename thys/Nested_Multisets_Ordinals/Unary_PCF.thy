@@ -25,9 +25,9 @@ lemma infinite_cartesian_productI1: "infinite A \<Longrightarrow> B \<noteq> {} 
 
 subsection \<open>Types\<close>
 
-datatype type = \<B> ("\<B>") | Fun type type (infixr "\<rightarrow>" 65)
+datatype type = \<B> (\<open>\<B>\<close>) | Fun type type (infixr \<open>\<rightarrow>\<close> 65)
 
-definition mk_fun  (infixr "\<rightarrow>\<rightarrow>" 65) where
+definition mk_fun  (infixr \<open>\<rightarrow>\<rightarrow>\<close> 65) where
   "Ts \<rightarrow>\<rightarrow> T = fold (\<rightarrow>) (rev Ts) T"
 
 primrec dest_fun where
@@ -69,16 +69,16 @@ subsection \<open>Terms\<close>
 type_synonym name = string
 type_synonym idx = nat
 datatype expr =
-    Var "name * type" ("\<langle>_\<rangle>") | Bound idx | B bool
-  | Seq expr expr  (infixr "?" 75) | App expr expr (infixl "\<cdot>" 75)
-  | Abs type expr ("\<Lambda>\<langle>_\<rangle> _" [100, 100] 800)
+    Var "name * type" (\<open>\<langle>_\<rangle>\<close>) | Bound idx | B bool
+  | Seq expr expr  (infixr \<open>?\<close> 75) | App expr expr (infixl \<open>\<cdot>\<close> 75)
+  | Abs type expr (\<open>\<Lambda>\<langle>_\<rangle> _\<close> [100, 100] 800)
 
 declare [[coercion_enabled]]
 declare [[coercion B]]
 declare [[coercion Bound]]
 
-notation (output) B ("_")
-notation (output) Bound ("_")
+notation (output) B (\<open>_\<close>)
+notation (output) Bound (\<open>_\<close>)
 
 primrec "open" :: "idx \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr" where
   "open i t (j :: idx) = (if i = j then t else j)"
@@ -176,7 +176,7 @@ end
 lemma close_Var_inj: "lc t \<Longrightarrow> lc u \<Longrightarrow> close_Var i xT t = close_Var i xT u \<Longrightarrow> t = u"
   by (metis open_Var_close_Var)
 
-primrec Apps (infixl "\<bullet>" 75) where
+primrec Apps (infixl \<open>\<bullet>\<close> 75) where
   "f \<bullet> [] = f"
 | "f \<bullet> (x # xs) = f \<cdot> x \<bullet> xs"
 
@@ -343,7 +343,7 @@ qed
 
 subsection \<open>Typing\<close>
 
-inductive welltyped :: "expr \<Rightarrow> type \<Rightarrow> bool" (infix ":::" 60) where
+inductive welltyped :: "expr \<Rightarrow> type \<Rightarrow> bool" (infix \<open>:::\<close> 60) where
   welltyped_Var[intro!]: "\<langle>(x, T)\<rangle> ::: T"
 | welltyped_B[intro!]: "(b :: bool) ::: \<B>"
 | welltyped_Seq[intro!]: "e1 ::: \<B> \<Longrightarrow> e2 ::: \<B> \<Longrightarrow> e1 ? e2 ::: \<B>"
@@ -436,7 +436,7 @@ lemma welltyped_constant[simp]: "constant T ::: \<B> \<rightarrow> T"
 definition nth_drop where
   "nth_drop i xs \<equiv> take i xs @ drop (Suc i) xs"
 
-definition nth_arg (infixl "!-" 100) where
+definition nth_arg (infixl \<open>!-\<close> 100) where
   "nth_arg T i \<equiv> nth (dest_fun T) i"
 
 abbreviation ar where
@@ -461,10 +461,10 @@ theorem \<pi>_induct[rotated -2, consumes 2, case_names 0 Suc]:
 definition \<epsilon> :: "type \<Rightarrow> nat \<Rightarrow> type" where
   "\<epsilon> T i = \<pi> T i 0 \<rightarrow> map (\<pi> T i o Suc) [0 ..< ar (T!-i)] \<rightarrow>\<rightarrow> T"
 
-definition Abss ("\<Lambda>[_] _" [100, 100] 800) where
+definition Abss (\<open>\<Lambda>[_] _\<close> [100, 100] 800) where
   "\<Lambda>[xTs] b = fold (\<lambda>xT t. \<Lambda>\<langle>snd xT\<rangle> close0_Var xT t) (rev xTs) b"
 
-definition Seqs (infixr "??" 75) where
+definition Seqs (infixr \<open>??\<close> 75) where
   "ts ?? t = fold (\<lambda>u t. u ? t) (rev ts) t"
 
 definition "variant k base = base @ replicate k CHR ''*''"

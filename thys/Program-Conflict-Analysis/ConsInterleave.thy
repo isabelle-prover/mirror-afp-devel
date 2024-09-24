@@ -35,7 +35,7 @@ lemma mon_pl_set: "mon_pl w = \<Union>{ fst e \<union> snd e | e. e\<in>set w }"
 
 fun
   cil :: "'a list \<Rightarrow> ('a \<Rightarrow> ('m set \<times> 'm set)) \<Rightarrow> 'a list \<Rightarrow> 'a list set" 
-    ("_ \<otimes>\<^bsub>_\<^esub> _" [64,64,64] 64) where
+    (\<open>_ \<otimes>\<^bsub>_\<^esub> _\<close> [64,64,64] 64) where
   \<comment> \<open>Interleaving with the empty word results in the empty word\<close>
   "[] \<otimes>\<^bsub>\<alpha> \<^esub> w = {w}" 
   | "w \<otimes>\<^bsub>\<alpha>\<^esub> [] = {w}"

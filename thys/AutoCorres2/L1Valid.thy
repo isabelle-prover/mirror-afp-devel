@@ -17,7 +17,7 @@ definition
   validE :: "('s \<Rightarrow> bool) \<Rightarrow> ('e, 'a, 's) exn_monad \<Rightarrow>
              ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow>
              ('e \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool"
-("\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)")
+(\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
 where
   "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,\<lbrace>E\<rbrace> \<equiv> \<forall>s. P s \<longrightarrow> f \<bullet> s ?\<lbrace> \<lambda>v s. case v of Result r \<Rightarrow> Q r s | Exn e \<Rightarrow> E e s \<rbrace>"
 

@@ -17,9 +17,9 @@ begin
   context category
   begin
 
-    notation isomorphic (infix "\<cong>" 50)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
-    definition iso_class ("\<lbrakk>_\<rbrakk>")
+    definition iso_class (\<open>\<lbrakk>_\<rbrakk>\<close>)
     where "iso_class f \<equiv> {f'. f \<cong> f'}"
 
     definition is_iso_class

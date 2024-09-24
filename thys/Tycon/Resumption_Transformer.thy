@@ -157,7 +157,7 @@ by fixrec_simp
 lemma zipRT_strict2 [simp]: "zipRT\<cdot>f\<cdot>r\<cdot>\<bottom> = \<bottom>"
 by (fixrec_simp, cases r, simp_all)
 
-abbreviation apR (infixl "\<diamondop>" 70)
+abbreviation apR (infixl \<open>\<diamondop>\<close> 70)
   where "a \<diamondop> b \<equiv> zipRT\<cdot>ID\<cdot>a\<cdot>b"
 
 text \<open>Proofs that \<open>zipRT\<close> satisfies the applicative functor laws:\<close>

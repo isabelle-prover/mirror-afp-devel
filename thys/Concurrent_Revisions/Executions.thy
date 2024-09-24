@@ -16,10 +16,10 @@ subsection \<open>Generalizing the original transition\<close>
 
 subsubsection Definition
 
-definition steps :: "('r,'l,'v) global_state rel" ("[\<leadsto>]") where
+definition steps :: "('r,'l,'v) global_state rel" (\<open>[\<leadsto>]\<close>) where
   "steps = { (s,s') | s s'. \<exists>r. revision_step r s s' }"
 
-abbreviation valid_step :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (infix "\<leadsto>" 60) where
+abbreviation valid_step :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (infix \<open>\<leadsto>\<close> 60) where
   "s \<leadsto> s' \<equiv> (s,s') \<in> [\<leadsto>]"
 
 lemma valid_stepI [intro]:
@@ -32,10 +32,10 @@ lemma valid_stepE [dest]:
 
 subsubsection Closures
 
-abbreviation refl_trans_step_rel :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool"(infix "\<leadsto>\<^sup>*" 60) where
+abbreviation refl_trans_step_rel :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool"(infix \<open>\<leadsto>\<^sup>*\<close> 60) where
   "s \<leadsto>\<^sup>* s' \<equiv> (s,s') \<in> [\<leadsto>]\<^sup>*"
 
-abbreviation refl_step_rel :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (infix "\<leadsto>\<^sup>=" 60) where
+abbreviation refl_step_rel :: "('r,'l,'v) global_state \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (infix \<open>\<leadsto>\<^sup>=\<close> 60) where
   "s \<leadsto>\<^sup>= s' \<equiv> (s,s') \<in> [\<leadsto>]\<^sup>="
 
 lemma refl_rewritesI [intro]: "s \<leadsto> s' \<Longrightarrow> s \<leadsto>\<^sup>= s'" by blast
@@ -60,7 +60,7 @@ definition maximal_execution :: "('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) global
 definition reachable :: "('r,'l,'v) global_state \<Rightarrow> bool" where
   "reachable s \<equiv> \<exists>e s'. execution e s' s"
 
-definition terminates_in :: "('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (infix "\<down>" 60) where
+definition terminates_in :: "('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) global_state \<Rightarrow> bool" (infix \<open>\<down>\<close> 60) where
   "e \<down> s' \<equiv> \<exists>s. maximal_execution e s s'"
 
 subsection Invariants

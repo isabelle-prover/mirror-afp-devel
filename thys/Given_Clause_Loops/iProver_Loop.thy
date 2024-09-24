@@ -19,7 +19,7 @@ begin
 
 subsection \<open>Definition\<close>
 
-inductive IL :: "('f \<times> OL_label) set \<Rightarrow> ('f \<times> OL_label) set \<Rightarrow> bool" (infix "\<leadsto>IL" 50)
+inductive IL :: "('f \<times> OL_label) set \<Rightarrow> ('f \<times> OL_label) set \<Rightarrow> bool" (infix \<open>\<leadsto>IL\<close> 50)
 where
   ol: "St \<leadsto>OL St' \<Longrightarrow> St \<leadsto>IL St'"
 | red_by_children: "C \<in> no_labels.Red_F (A \<union> M) \<or> (M = {C'} \<and> C' \<prec>\<cdot> C) \<Longrightarrow>

@@ -103,7 +103,7 @@ proof -
 qed
 
 definition state_equations_relation :: "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial list
-    \<Rightarrow> polynomial list \<Rightarrow> relation" ("[STATE] _ _ _ _ _")where
+    \<Rightarrow> polynomial list \<Rightarrow> relation" (\<open>[STATE] _ _ _ _ _\<close>)where
   "[STATE] b e q z s \<equiv> LARY (\<lambda>ll. rm_eq_fixes.state_equations p (ll!0!0) (ll!0!1) (ll!0!2) 
                                                           (nth (ll!1)) (nth (ll!2))) 
                         [[b, e, q], z, s]"

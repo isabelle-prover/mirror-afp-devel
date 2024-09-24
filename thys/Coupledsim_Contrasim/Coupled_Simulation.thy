@@ -21,10 +21,10 @@ where
         (\<exists> q'. R p' q' \<and> q \<Rightarrow>^a q')) \<and>
       (\<exists> q'. q \<longmapsto>*tau q' \<and> R q' p)\<close>
 
-abbreviation coupled_simulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<sqsubseteq>cs  _" [60, 60] 65)
+abbreviation coupled_simulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<sqsubseteq>cs  _\<close> [60, 60] 65)
   where \<open>coupled_simulated_by p q \<equiv> \<exists> R . coupled_simulation R \<and> R p q\<close>
     
-abbreviation coupled_similar :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<equiv>cs  _" [60, 60] 65)
+abbreviation coupled_similar :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<equiv>cs  _\<close> [60, 60] 65)
   where \<open>coupled_similar p q \<equiv> p \<sqsubseteq>cs q \<and> q \<sqsubseteq>cs p\<close>
 
 text \<open>We call \<open>\<sqsubseteq>cs\<close> "coupled simulation preorder" and \<open>\<equiv>cs\<close> coupled similarity.\<close>
@@ -932,11 +932,11 @@ where
   \<and> (\<forall> p q . R1 p q \<longrightarrow> stable_state p \<longrightarrow> R2 p q)
   \<and> (\<forall> p q . R2 p q \<longrightarrow> stable_state q \<longrightarrow> R1 p q)\<close>
 
-abbreviation s_coupled_simulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<sqsubseteq>scs  _" [60, 60] 65)
+abbreviation s_coupled_simulated_by :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<sqsubseteq>scs  _\<close> [60, 60] 65)
   where \<open>s_coupled_simulated_by p q \<equiv>
     \<exists> R1 R2 . s_coupled_simulation_san12 R1 R2 \<and> R1 p q\<close>
     
-abbreviation s_coupled_similar :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> ("_ \<equiv>scs  _" [60, 60] 65)
+abbreviation s_coupled_similar :: \<open>'s \<Rightarrow> 's \<Rightarrow> bool\<close> (\<open>_ \<equiv>scs  _\<close> [60, 60] 65)
   where \<open>s_coupled_similar p q \<equiv>
     \<exists> R1 R2 . s_coupled_simulation_san12 R1 R2 \<and> R1 p q \<and> R2 p q\<close>
 
@@ -1149,7 +1149,7 @@ text \<open>The following example shows that a system might be related by s-coup
 datatype ex_state = a0 | a1 | a2 | a3 | b0 | b1 | b2 
   
 locale ex_lts = lts_tau trans \<tau>
-  for trans :: \<open>ex_state \<Rightarrow> nat \<Rightarrow> ex_state \<Rightarrow> bool\<close> ("_ \<longmapsto>_  _" [70, 70, 70] 80) and \<tau> +
+  for trans :: \<open>ex_state \<Rightarrow> nat \<Rightarrow> ex_state \<Rightarrow> bool\<close> (\<open>_ \<longmapsto>_  _\<close> [70, 70, 70] 80) and \<tau> +
   assumes
     sys:
   \<open>trans = (\<lambda> p act q .

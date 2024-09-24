@@ -147,10 +147,10 @@ lemma
     and minus_id[simp]: "- id = Not"
 by fastforce+
 
-definition boolean_implication :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<^bold>\<longrightarrow>\<^sub>B" 60) where
+definition boolean_implication :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<^bold>\<longrightarrow>\<^sub>B\<close> 60) where
   "x \<^bold>\<longrightarrow>\<^sub>B y = -x \<squnion> y"
 
-definition boolean_eq :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<^bold>\<longleftrightarrow>\<^sub>B" 60) where
+definition boolean_eq :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<^bold>\<longleftrightarrow>\<^sub>B\<close> 60) where
   "x \<^bold>\<longleftrightarrow>\<^sub>B y = x \<^bold>\<longrightarrow>\<^sub>B y \<sqinter> y \<^bold>\<longrightarrow>\<^sub>B x"
 
 setup \<open>Sign.mandatory_path "boolean_implication"\<close>

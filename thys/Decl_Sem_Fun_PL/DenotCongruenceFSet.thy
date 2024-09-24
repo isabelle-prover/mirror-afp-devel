@@ -154,7 +154,7 @@ proof
   qed
 qed
 
-definition ctx_equiv :: "exp \<Rightarrow> exp \<Rightarrow> bool" (infix "\<simeq>" 51) where
+definition ctx_equiv :: "exp \<Rightarrow> exp \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 51) where
 "e \<simeq> e' \<equiv> \<forall> C ob. FV (plug C e) = {} \<and> FV (plug C e') = {} \<longrightarrow>
    run (plug C e) ob = run (plug C e') ob" 
 

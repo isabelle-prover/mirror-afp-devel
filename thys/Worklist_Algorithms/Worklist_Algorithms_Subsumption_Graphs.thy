@@ -100,7 +100,7 @@ qed
 subsection \<open>Definitions\<close>
 
 locale Subsumption_Graph_Pre_Defs =
-  ord less_eq less for less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>" 50) and less (infix "\<prec>" 50) +
+  ord less_eq less for less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) and less (infix \<open>\<prec>\<close> 50) +
   fixes E ::  "'a \<Rightarrow> 'a \<Rightarrow> bool" \<comment> \<open>The full edge set\<close>
 begin
 
@@ -129,18 +129,18 @@ sublocale G: Graph_Start_Defs RE s\<^sub>0 .
 
 sublocale G': Graph_Start_Defs "\<lambda> x y. RE x y \<or> (x \<prec> y \<and> G.reachable y)" s\<^sub>0 .
 
-abbreviation G'_E    ("_ \<rightarrow>\<^sub>G\<^sub>' _" [100, 100] 40) where
+abbreviation G'_E    (\<open>_ \<rightarrow>\<^sub>G\<^sub>' _\<close> [100, 100] 40) where
   "G'_E x y \<equiv> RE x y \<or> (x \<prec> y \<and> G.reachable y)"
 
-notation RE          ("_ \<rightarrow>\<^sub>G _"   [100, 100] 40)
+notation RE          (\<open>_ \<rightarrow>\<^sub>G _\<close>   [100, 100] 40)
 
-notation G.reaches   ("_ \<rightarrow>\<^sub>G* _"  [100, 100] 40)
+notation G.reaches   (\<open>_ \<rightarrow>\<^sub>G* _\<close>  [100, 100] 40)
 
-notation G.reaches1  ("_ \<rightarrow>\<^sub>G\<^sup>+ _"  [100, 100] 40)
+notation G.reaches1  (\<open>_ \<rightarrow>\<^sub>G\<^sup>+ _\<close>  [100, 100] 40)
 
-notation G'.reaches  ("_ \<rightarrow>\<^sub>G*'' _" [100, 100] 40)
+notation G'.reaches  (\<open>_ \<rightarrow>\<^sub>G*'' _\<close> [100, 100] 40)
 
-notation G'.reaches1 ("_ \<rightarrow>\<^sub>G\<^sup>+'' _" [100, 100] 40)
+notation G'.reaches1 (\<open>_ \<rightarrow>\<^sub>G\<^sup>+'' _\<close> [100, 100] 40)
 
 end (* Subsumption Graph Defs *)
 
@@ -208,7 +208,7 @@ qed (use subgraph in \<open>auto intro: finite_reachable mono\<close>)
 end (* Reachability Compatible Subsumption Graph View *)
 
 locale Subsumption_Graph_Closure_View_Defs =
-  ord less_eq less for less_eq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<preceq>" 50) and less (infix "\<prec>" 50) +
+  ord less_eq less for less_eq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) and less (infix \<open>\<prec>\<close> 50) +
   fixes E ::  "'a \<Rightarrow> 'a \<Rightarrow> bool" \<comment> \<open>The full edge set\<close>
     and s\<^sub>0 :: 'a                 \<comment> \<open>Start state\<close>
   fixes RE :: "'a \<Rightarrow> 'a \<Rightarrow> bool" \<comment> \<open>Subgraph of the graph given by the full edge set\<close>

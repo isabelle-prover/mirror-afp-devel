@@ -16,20 +16,20 @@ text \<open> We define operators for converting an expression to and from a rela
   @{typ "'\<alpha>"}, into a product alphabet @{typ "'\<alpha> \<times> '\<beta>"}. This allows us to deal with expressions
   which refer only to undashed variables, and use the type-system to ensure this. \<close>
 
-abbreviation lift_pre :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha> \<times> '\<beta>) uexpr" ("\<lceil>_\<rceil>\<^sub><")
+abbreviation lift_pre :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a, '\<alpha> \<times> '\<beta>) uexpr" (\<open>\<lceil>_\<rceil>\<^sub><\<close>)
 where "\<lceil>P\<rceil>\<^sub>< \<equiv> P \<oplus>\<^sub>p fst\<^sub>L"
 
-abbreviation drop_pre :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" ("\<lfloor>_\<rfloor>\<^sub><")
+abbreviation drop_pre :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('a, '\<alpha>) uexpr" (\<open>\<lfloor>_\<rfloor>\<^sub><\<close>)
 where "\<lfloor>P\<rfloor>\<^sub>< \<equiv> P \<restriction>\<^sub>e fst\<^sub>L"
 
 text \<open> The following two functions lift and drop an expression, respectively, whose alphabet is 
   @{typ "'\<beta>"}, into a product alphabet @{typ "'\<alpha> \<times> '\<beta>"}. This allows us to deal with expressions
   which refer only to dashed variables. \<close>
   
-abbreviation lift_post :: "('a, '\<beta>) uexpr \<Rightarrow> ('a, '\<alpha> \<times> '\<beta>) uexpr" ("\<lceil>_\<rceil>\<^sub>>")
+abbreviation lift_post :: "('a, '\<beta>) uexpr \<Rightarrow> ('a, '\<alpha> \<times> '\<beta>) uexpr" (\<open>\<lceil>_\<rceil>\<^sub>>\<close>)
 where "\<lceil>P\<rceil>\<^sub>> \<equiv> P \<oplus>\<^sub>p snd\<^sub>L"
 
-abbreviation drop_post :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('a, '\<beta>) uexpr" ("\<lfloor>_\<rfloor>\<^sub>>")
+abbreviation drop_post :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('a, '\<beta>) uexpr" (\<open>\<lfloor>_\<rfloor>\<^sub>>\<close>)
 where "\<lfloor>P\<rfloor>\<^sub>> \<equiv> P \<restriction>\<^sub>e snd\<^sub>L"
   
 subsection \<open> Lifting Laws \<close>

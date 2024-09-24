@@ -21,9 +21,9 @@ constants are being used. To alleviate this problem, we define special
 input and output syntax to indicate the types. \medskip\<close>
 
 syntax
-  "_emb" :: "type \<Rightarrow> logic" ("(1EMB/(1'(_')))")
-  "_prj" :: "type \<Rightarrow> logic" ("(1PRJ/(1'(_')))")
-  "_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1COERCE/(1'(_,/ _')))")
+  "_emb" :: "type \<Rightarrow> logic" (\<open>(1EMB/(1'(_')))\<close>)
+  "_prj" :: "type \<Rightarrow> logic" (\<open>(1PRJ/(1'(_')))\<close>)
+  "_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1COERCE/(1'(_,/ _')))\<close>)
 
 syntax_consts
   "_emb" \<rightleftharpoons> emb and

@@ -14,7 +14,7 @@ type_synonym '\<alpha> health = "'\<alpha> upred \<Rightarrow> '\<alpha> upred"
 
 text \<open> A predicate $P$ is healthy, under healthiness function $H$, if $P$ is a fixed-point of $H$. \<close>
 
-definition Healthy :: "'\<alpha> upred \<Rightarrow> '\<alpha> health \<Rightarrow> bool" (infix "is" 30)
+definition Healthy :: "'\<alpha> upred \<Rightarrow> '\<alpha> health \<Rightarrow> bool" (infix \<open>is\<close> 30)
 where "P is H \<equiv> (H P = P)"
 
 lemma Healthy_def': "P is H \<longleftrightarrow> (H P = P)"
@@ -28,7 +28,7 @@ lemma Healthy_intro: "H(P) = P \<Longrightarrow> P is H"
     
 declare Healthy_def' [upred_defs]
 
-abbreviation Healthy_carrier :: "'\<alpha> health \<Rightarrow> '\<alpha> upred set" ("\<lbrakk>_\<rbrakk>\<^sub>H")
+abbreviation Healthy_carrier :: "'\<alpha> health \<Rightarrow> '\<alpha> upred set" (\<open>\<lbrakk>_\<rbrakk>\<^sub>H\<close>)
 where "\<lbrakk>H\<rbrakk>\<^sub>H \<equiv> {P. P is H}"
 
 lemma Healthy_carrier_image:

@@ -22,7 +22,7 @@ where
 text \<open>Plus-combination for a set of regular expressions\<close>
 
 abbreviation
-  Setalt :: "'a rexp set \<Rightarrow> 'a rexp" ("\<Uplus>_" [1000] 999) 
+  Setalt :: "'a rexp set \<Rightarrow> 'a rexp" (\<open>\<Uplus>_\<close> [1000] 999) 
 where
   "\<Uplus>A \<equiv> folds Plus Zero A"
 

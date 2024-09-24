@@ -9,7 +9,7 @@ subsection \<open>interval integral\<close>
 
 definition has_ivl_integral ::
     "(real \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'b \<Rightarrow> real \<Rightarrow> real \<Rightarrow> bool"\<comment> \<open>TODO: generalize?\<close>
-  (infixr "has'_ivl'_integral" 46)
+  (infixr \<open>has'_ivl'_integral\<close> 46)
   where "(f has_ivl_integral y) a b \<longleftrightarrow> (if a \<le> b then (f has_integral y) {a .. b} else (f has_integral - y) {b .. a})"
 
 definition ivl_integral::"real \<Rightarrow> real \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> 'a::real_normed_vector"

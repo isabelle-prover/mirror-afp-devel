@@ -35,7 +35,7 @@ lemma map_of_map_apsnd: "map_of (map (apsnd t) M) = map_option t \<circ> (map_of
   by(unfold fun_eq_iff comp_def; induction M; simp)
     
 
-definition biimp (infix "\<^bold>\<leftrightarrow>" 67) where "F \<^bold>\<leftrightarrow> G \<equiv> (F \<^bold>\<rightarrow> G) \<^bold>\<and> (G \<^bold>\<rightarrow> F)"
+definition biimp (infix \<open>\<^bold>\<leftrightarrow>\<close> 67) where "F \<^bold>\<leftrightarrow> G \<equiv> (F \<^bold>\<rightarrow> G) \<^bold>\<and> (G \<^bold>\<rightarrow> F)"
 lemma atoms_biimp[simp]: "atoms (F \<^bold>\<leftrightarrow> G) = atoms F \<union> atoms G"
   unfolding biimp_def by auto
 lemma biimp_size[simp]: "size (F \<^bold>\<leftrightarrow> G) = (2 * (size F + size G)) + 3"

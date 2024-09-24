@@ -217,8 +217,8 @@ ML \<open> structure IMP_Annotations
 subsection \<open>Hoare Triple Syntax\<close>
   
 (* In-Term notation for Hoare Triples*)   
-syntax "_Htriple" :: "cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> logic" ("\<^htriple>_ _ _")
-syntax "_Htriple_Partial" :: "cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> logic" ("\<^htriple_partial>_ _ _")
+syntax "_Htriple" :: "cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> logic" (\<open>\<^htriple>_ _ _\<close>)
+syntax "_Htriple_Partial" :: "cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> cartouche_position \<Rightarrow> logic" (\<open>\<^htriple_partial>_ _ _\<close>)
 
 
 ML \<open> structure VCG_Htriple_Syntax 

@@ -15,7 +15,7 @@ text \<open>
   an operation for possibly infinite iteration.
 \<close>
 class dra = kleene_algebra_zerol +
-  fixes strong_iteration :: "'a \<Rightarrow> 'a" ("_\<^sup>\<infinity>" [101] 100)
+  fixes strong_iteration :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<infinity>\<close> [101] 100)
   assumes iteration_unfoldl [simp] : "1 + x \<cdot> x\<^sup>\<infinity> = x\<^sup>\<infinity>"
   and coinduction: "y \<le> z + x \<cdot> y \<longrightarrow> y \<le> x\<^sup>\<infinity> \<cdot> z"
   and isolation [simp]: "x\<^sup>\<star> + x\<^sup>\<infinity> \<cdot> 0 = x\<^sup>\<infinity>"
@@ -23,7 +23,7 @@ begin
 
 text \<open>$\top$ is an abort statement, defined as an infinite skip. It is the maximal element of any DRA.\<close>
 
-abbreviation top_elem :: "'a" ("\<top>") where "\<top> \<equiv> 1\<^sup>\<infinity>"
+abbreviation top_elem :: "'a" (\<open>\<top>\<close>) where "\<top> \<equiv> 1\<^sup>\<infinity>"
 
 text \<open>Simple/basic lemmas about the iteration operator\<close>
 

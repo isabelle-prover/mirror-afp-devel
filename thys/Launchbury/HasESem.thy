@@ -9,7 +9,7 @@ A local to work abstract in the expression type and semantics.
 locale has_ESem =
   fixes ESem :: "'exp::pt \<Rightarrow> ('var::at_base \<Rightarrow> 'value) \<rightarrow> 'value::{pure,pcpo}" 
 begin
-  abbreviation ESem_syn ("\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>"  [0,0] 110) where "\<lbrakk>e\<rbrakk>\<^bsub>\<rho>\<^esub> \<equiv> ESem e \<cdot> \<rho>"
+  abbreviation ESem_syn (\<open>\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>\<close>  [0,0] 110) where "\<lbrakk>e\<rbrakk>\<^bsub>\<rho>\<^esub> \<equiv> ESem e \<cdot> \<rho>"
 end
 
 locale has_ignore_fresh_ESem = has_ESem +

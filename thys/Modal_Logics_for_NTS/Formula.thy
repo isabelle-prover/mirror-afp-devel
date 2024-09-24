@@ -231,7 +231,7 @@ fun alpha_Tree_termination :: "('a, 'b, 'c) Tree \<times> ('a, 'b, 'c) Tree \<Ri
 text \<open>Here it comes \ldots\<close>
 
 function (sequential)
-  alpha_Tree :: "('idx,'pred::pt,'act::bn) Tree \<Rightarrow> ('idx,'pred,'act) Tree \<Rightarrow> bool" (infix "=\<^sub>\<alpha>" 50) where
+  alpha_Tree :: "('idx,'pred::pt,'act::bn) Tree \<Rightarrow> ('idx,'pred,'act) Tree \<Rightarrow> bool" (infix \<open>=\<^sub>\<alpha>\<close> 50) where
 \<comment> \<open>@{const alpha_Tree}\<close>
   alpha_tConj: "tConj tset1 =\<^sub>\<alpha> tConj tset2 \<longleftrightarrow> rel_bset alpha_Tree tset1 tset2"
 | alpha_tNot: "tNot t1 =\<^sub>\<alpha> tNot t2 \<longleftrightarrow> t1 =\<^sub>\<alpha> t2"

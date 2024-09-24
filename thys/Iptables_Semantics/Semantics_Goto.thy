@@ -67,7 +67,7 @@ begin
       "no_matching_Goto \<gamma> p (_#rs) \<longleftrightarrow> no_matching_Goto \<gamma> p rs"
     
     inductive iptables_goto_bigstep :: "'a ruleset \<Rightarrow> ('a, 'p) matcher \<Rightarrow> 'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool"
-      ("_,_,_\<turnstile>\<^sub>g \<langle>_, _\<rangle> \<Rightarrow> _"  [60,60,60,20,98,98] 89)
+      (\<open>_,_,_\<turnstile>\<^sub>g \<langle>_, _\<rangle> \<Rightarrow> _\<close>  [60,60,60,20,98,98] 89)
       for \<Gamma> and \<gamma> and p where
     skip:    "\<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>[], t\<rangle> \<Rightarrow> t" |
     accept:  "matches \<gamma> m p \<Longrightarrow> \<Gamma>,\<gamma>,p\<turnstile>\<^sub>g \<langle>[Rule m Accept], Undecided\<rangle> \<Rightarrow> Decision FinalAllow" |

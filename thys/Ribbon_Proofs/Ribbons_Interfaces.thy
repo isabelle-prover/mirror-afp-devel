@@ -19,8 +19,8 @@ subsection \<open>Syntax of interfaces\<close>
 
 datatype conc_interface =
   Ribbon_conc "assertion"
-| HComp_int_conc "conc_interface" "conc_interface" (infix "\<otimes>\<^sub>c" 50)
-| Emp_int_conc ("\<epsilon>\<^sub>c")
+| HComp_int_conc "conc_interface" "conc_interface" (infix \<open>\<otimes>\<^sub>c\<close> 50)
+| Emp_int_conc (\<open>\<epsilon>\<^sub>c\<close>)
 | Exists_int_conc "string" "conc_interface"
 
 text \<open>We define an equivalence on interfaces. The first three rules make this 
@@ -29,7 +29,7 @@ text \<open>We define an equivalence on interfaces. The first three rules make t
   The final two make @{term "\<epsilon>\<^sub>c"} the left and right unit of @{term "(\<otimes>\<^sub>c)"}. 
 \<close>
 inductive
-  equiv_int :: "conc_interface \<Rightarrow> conc_interface \<Rightarrow> bool" (infix "\<simeq>" 45)
+  equiv_int :: "conc_interface \<Rightarrow> conc_interface \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 45)
 where
   refl: "P \<simeq> P"
 | sym: "P \<simeq> Q \<Longrightarrow> Q \<simeq> P"
@@ -59,7 +59,7 @@ is "Ribbon_conc" .
 
 
 lift_definition
-  Emp_int :: "interface" ("\<epsilon>")
+  Emp_int :: "interface" (\<open>\<epsilon>\<close>)
 is "\<epsilon>\<^sub>c" .
 
 lift_definition
@@ -68,7 +68,7 @@ is "Exists_int_conc"
 by (rule equiv_int.cong_exists)
 
 lift_definition
-  HComp_int :: "interface \<Rightarrow> interface \<Rightarrow> interface" (infix "\<otimes>" 50)
+  HComp_int :: "interface \<Rightarrow> interface \<Rightarrow> interface" (infix \<open>\<otimes>\<close> 50)
 is "HComp_int_conc" by (rule equiv_int_cong_hcomp)
 
 lemma hcomp_comm: 
@@ -99,7 +99,7 @@ where
 
 syntax "iter_hcomp_syntax" :: 
   "'a \<Rightarrow> ('a fset) \<Rightarrow> ('a \<Rightarrow> interface) \<Rightarrow> interface"
-      ("(\<Otimes>_|\<in>|_. _)" [0,0,10] 10)
+      (\<open>(\<Otimes>_|\<in>|_. _)\<close> [0,0,10] 10)
 syntax_consts "iter_hcomp_syntax" == iter_hcomp  
 translations "\<Otimes>x|\<in>|M. e" == "CONST iter_hcomp M (\<lambda>x. e)"
 

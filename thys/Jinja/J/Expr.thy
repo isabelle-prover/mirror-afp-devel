@@ -15,18 +15,18 @@ datatype 'a exp
   = new cname      \<comment> \<open>class instance creation\<close>
   | Cast cname "('a exp)"      \<comment> \<open>type cast\<close>
   | Val val      \<comment> \<open>value\<close>
-  | BinOp "('a exp)" bop "('a exp)"     ("_ \<guillemotleft>_\<guillemotright> _" [80,0,81] 80)      \<comment> \<open>binary operation\<close>
+  | BinOp "('a exp)" bop "('a exp)"     (\<open>_ \<guillemotleft>_\<guillemotright> _\<close> [80,0,81] 80)      \<comment> \<open>binary operation\<close>
   | Var 'a                                               \<comment> \<open>local variable (incl. parameter)\<close>
-  | LAss 'a "('a exp)"     ("_:=_" [90,90]90)                    \<comment> \<open>local assignment\<close>
-  | FAcc "('a exp)" vname cname     ("_\<bullet>_{_}" [10,90,99]90)      \<comment> \<open>field access\<close>
-  | FAss "('a exp)" vname cname "('a exp)"     ("_\<bullet>_{_} := _" [10,90,99,90]90)      \<comment> \<open>field assignment\<close>
-  | Call "('a exp)" mname "('a exp list)"     ("_\<bullet>_'(_')" [90,99,0] 90)            \<comment> \<open>method call\<close>
-  | Block 'a ty "('a exp)"     ("'{_:_; _}")
-  | Seq "('a exp)" "('a exp)"     ("_;;/ _"             [61,60]60)
-  | Cond "('a exp)" "('a exp)" "('a exp)"     ("if '(_') _/ else _" [80,79,79]70)
-  | While "('a exp)" "('a exp)"     ("while '(_') _"     [80,79]70)
+  | LAss 'a "('a exp)"     (\<open>_:=_\<close> [90,90]90)                    \<comment> \<open>local assignment\<close>
+  | FAcc "('a exp)" vname cname     (\<open>_\<bullet>_{_}\<close> [10,90,99]90)      \<comment> \<open>field access\<close>
+  | FAss "('a exp)" vname cname "('a exp)"     (\<open>_\<bullet>_{_} := _\<close> [10,90,99,90]90)      \<comment> \<open>field assignment\<close>
+  | Call "('a exp)" mname "('a exp list)"     (\<open>_\<bullet>_'(_')\<close> [90,99,0] 90)            \<comment> \<open>method call\<close>
+  | Block 'a ty "('a exp)"     (\<open>'{_:_; _}\<close>)
+  | Seq "('a exp)" "('a exp)"     (\<open>_;;/ _\<close>             [61,60]60)
+  | Cond "('a exp)" "('a exp)" "('a exp)"     (\<open>if '(_') _/ else _\<close> [80,79,79]70)
+  | While "('a exp)" "('a exp)"     (\<open>while '(_') _\<close>     [80,79]70)
   | throw "('a exp)"
-  | TryCatch "('a exp)" cname 'a "('a exp)"     ("try _/ catch'(_ _') _"  [0,99,80,79] 70)
+  | TryCatch "('a exp)" cname 'a "('a exp)"     (\<open>try _/ catch'(_ _') _\<close>  [0,99,80,79] 70)
 
 type_synonym
   expr = "vname exp"            \<comment> \<open>Jinja expression\<close>
@@ -50,7 +50,7 @@ lemma [simp]:
 subsection "Syntactic sugar"
 
 abbreviation (input)
-  InitBlock:: "'a \<Rightarrow> ty \<Rightarrow> 'a exp \<Rightarrow> 'a exp \<Rightarrow> 'a exp"   ("(1'{_:_ := _;/ _})") where
+  InitBlock:: "'a \<Rightarrow> ty \<Rightarrow> 'a exp \<Rightarrow> 'a exp \<Rightarrow> 'a exp"   (\<open>(1'{_:_ := _;/ _})\<close>) where
   "InitBlock V T e1 e2 == {V:T; V := e1;; e2}"
 
 abbreviation unit where "unit == Val Unit"

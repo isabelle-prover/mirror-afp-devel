@@ -17,8 +17,8 @@ text\<open>
 (* TODO: why is this needed again here? The syntax should already
          have been disabled in TAO_Semantics. *)
 (* disable list syntax [] to replace it with truth evaluation *)
-(*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" ("[(_)]") (*>*) 
-(*<*) no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" ("[(_)]") (*>*) 
+(*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
+(*<*) no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
 
 locale Axioms
 begin
@@ -33,7 +33,7 @@ text\<open>
 \end{remark}
 \<close>
 
-  definition axiom :: "\<o>\<Rightarrow>bool" ("[[_]]") where "axiom \<equiv> \<lambda> \<phi> . \<forall> v . [\<phi> in v]"
+  definition axiom :: "\<o>\<Rightarrow>bool" (\<open>[[_]]\<close>) where "axiom \<equiv> \<lambda> \<phi> . \<forall> v . [\<phi> in v]"
 
   method axiom_meta_solver = ((((unfold axiom_def)?, rule allI) | (unfold actual_validity_def)?), meta_solver,
                               (simp | (auto; fail))?)

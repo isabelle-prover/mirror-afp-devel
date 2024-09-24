@@ -8,7 +8,7 @@ theory Cyclic_Group imports
 begin
 
 record 'a cyclic_group = "'a monoid" + 
-  generator :: 'a ("\<^bold>g\<index>")
+  generator :: 'a (\<open>\<^bold>g\<index>\<close>)
 
 locale cyclic_group = group G
   for G :: "('a, 'b) cyclic_group_scheme" (structure)

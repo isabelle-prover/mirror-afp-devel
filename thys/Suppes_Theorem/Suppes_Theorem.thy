@@ -4,7 +4,7 @@ theory Suppes_Theorem
   imports Probability_Logic
 begin
 
-no_notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+no_notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 text \<open> An elementary completeness theorem for inequalities for probability logic
        is due to Patrick Suppes @{cite suppesProbabilisticInferenceConcept1966}. \<close>
@@ -592,6 +592,6 @@ proof -
   ultimately show ?thesis by metis
 qed
 
-notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 end

@@ -16,7 +16,7 @@ text \<open>
   This theory is not intended to be included in own developments.
 \<close>
 
-no_notation map_add (infixl "++" 100)
+no_notation map_add (infixl \<open>++\<close> 100)
 
 section "Total implies Partial"
 

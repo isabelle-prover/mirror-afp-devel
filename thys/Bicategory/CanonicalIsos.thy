@@ -21,7 +21,7 @@ begin
 
     interpretation bicategorical_language ..
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     text \<open>
       The next definition defines \<open>can u t\<close>, which denotes the unique canonical isomorphism

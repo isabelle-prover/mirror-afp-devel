@@ -198,12 +198,12 @@ text \<open>
 type_synonym matrix = "fraction \<times> fraction"
 type_synonym vector = fraction
 
-definition times_matrix :: "matrix \<Rightarrow> matrix \<Rightarrow> matrix" (infixl "\<otimes>" 70)
+definition times_matrix :: "matrix \<Rightarrow> matrix \<Rightarrow> matrix" (infixl \<open>\<otimes>\<close> 70)
 where "times_matrix = (\<lambda>((a, c), (b, d)) ((a', c'), (b', d')).
        ((a * a' + b * c', c * a' + d * c'),
         (a * b' + b * d', c * b' + d * d')))"
 
-definition times_vector :: "matrix \<Rightarrow> vector \<Rightarrow> vector" (infixr "\<odot>" 70)
+definition times_vector :: "matrix \<Rightarrow> vector \<Rightarrow> vector" (infixr \<open>\<odot>\<close> 70)
 where "times_vector = (\<lambda>((a, c), (b, d)) (a', c'). (a * a' + b * c', c * a' + d * c'))"
 
 context begin
@@ -486,8 +486,8 @@ by(simp add: stern_brocot_recurse_iterate stern_brocot_iterate)
 
 end
 
-no_notation times_matrix (infixl "\<otimes>" 70)
-  and times_vector (infixl "\<odot>" 70)
+no_notation times_matrix (infixl \<open>\<otimes>\<close> 70)
+  and times_vector (infixl \<open>\<odot>\<close> 70)
 
 section \<open>Linearising the Stern-Brocot Tree\<close>
 

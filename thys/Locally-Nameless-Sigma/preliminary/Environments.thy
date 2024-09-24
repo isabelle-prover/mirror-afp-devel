@@ -15,7 +15,7 @@ datatype 'a environment =
 (* Adding an entry to an environment. Overwriting an entry switches to the error state*)
 primrec
   add :: "('a environment) \<Rightarrow> string \<Rightarrow> 'a \<Rightarrow> 'a environment"    
-  ("_\<lparr>_:_\<rparr>" [90, 0, 0] 91)
+  (\<open>_\<lparr>_:_\<rparr>\<close> [90, 0, 0] 91)
 where
   add_def: "(Env e)\<lparr>x:a\<rparr> = 
      (if (x \<notin> dom e) then (Env (e(x \<mapsto> a))) else Malformed)" 
@@ -30,7 +30,7 @@ where
 
 (* Retrieving an entry from an environment *)
 primrec
-  env_get :: "('a environment) \<Rightarrow> string  \<Rightarrow> 'a option" ("_!_")
+  env_get :: "('a environment) \<Rightarrow> string  \<Rightarrow> 'a option" (\<open>_!_\<close>)
 where
   env_get_def: "env_get (Env e) x = e x " 
 | env_get_mal: "env_get (Malformed) x = None " 
@@ -355,7 +355,7 @@ proof -
 qed
 
 fun
-   env_app :: "('a environment) \<Rightarrow>  ('a environment) \<Rightarrow> ('a environment)" ("_+_")
+   env_app :: "('a environment) \<Rightarrow>  ('a environment) \<Rightarrow> ('a environment)" (\<open>_+_\<close>)
 where
   "env_app (Env a) (Env b) = 
   (if (ok (Env a) \<and> ok (Env b) \<and> env_dom (Env b) \<inter> env_dom (Env a) = {}) 

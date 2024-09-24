@@ -15,7 +15,7 @@ section \<open>Combinatory Logic has the Church-Rosser property\<close>
 theory CL_Z imports Z
 begin
 
-datatype CL = S | K | I | App CL CL ("` _ _" [999, 999] 999)
+datatype CL = S | K | I | App CL CL (\<open>` _ _\<close> [999, 999] 999)
 
 inductive_set red :: "CL rel" where
   L: "(t, t') \<in> red \<Longrightarrow> (` t u, ` t' u) \<in> red"

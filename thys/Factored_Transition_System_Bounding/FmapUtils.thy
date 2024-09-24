@@ -10,7 +10,7 @@ to replace the recurring proofs steps using 'by (simp add: fmfilter\_alt\_defs(4
 
 \<comment> \<open>NOTE hide the '++' operator from 'Map' to prevent warnings.\<close>
 hide_const (open) Map.map_add
-no_notation Map.map_add (infixl "++" 100)
+no_notation Map.map_add (infixl \<open>++\<close> 100)
 
 \<comment> \<open>TODO more explicit proof.\<close>
 lemma IN_FDOM_DRESTRICT_DIFF:

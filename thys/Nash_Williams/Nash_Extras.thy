@@ -5,7 +5,7 @@ theory Nash_Extras
 
 begin
 
-definition less_sets :: "['a::order set, 'a::order set] \<Rightarrow> bool" (infixr "\<lless>" 50)
+definition less_sets :: "['a::order set, 'a::order set] \<Rightarrow> bool" (infixr \<open>\<lless>\<close> 50)
     where "A \<lless> B \<equiv> \<forall>x\<in>A. \<forall>y\<in>B. x < y"
 
 lemma less_sets_empty[iff]: "S \<lless> {}" "{} \<lless> T"

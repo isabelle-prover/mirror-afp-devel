@@ -384,7 +384,7 @@ definition
  (** I is the index set **)
 
 abbreviation
-  PRODRING  ("(r\<Pi>\<^bsub>_\<^esub>/ _)" [72,73]72) where
+  PRODRING  (\<open>(r\<Pi>\<^bsub>_\<^esub>/ _)\<close> [72,73]72) where
   "r\<Pi>\<^bsub>I\<^esub> A == prodrg I A"
 
 definition
@@ -418,7 +418,7 @@ definition
 
 definition
   Prod2Rg :: "[('a, 'm) Ring_scheme, ('a, 'm) Ring_scheme]
-              \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl "\<Oplus>\<^sub>r" 80) where
+              \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl \<open>\<Oplus>\<^sub>r\<close> 80) where
   "A1 \<Oplus>\<^sub>r A2 = prodrg {0, Suc 0} (prodB1 A1 A2)"
 
 text \<open>Don't try \<open>(Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n))\<close>\<close>
@@ -1606,7 +1606,7 @@ definition
   "ideal_quotient R A B = {x| x. x \<in> carrier R \<and> (\<forall>b\<in>B. x \<cdot>\<^sub>r\<^bsub>R\<^esub> b \<in> A)}"
 
 abbreviation
-  IDEALQT  ("(3_/ \<dagger>\<^sub>_/ _)" [82,82,83]82) where
+  IDEALQT  (\<open>(3_/ \<dagger>\<^sub>_/ _)\<close> [82,82,83]82) where
   "A \<dagger>\<^sub>R B == ideal_quotient R A B"
 
 
@@ -3982,7 +3982,7 @@ definition
   "sp_cf S a c = (fst c, \<lambda>j. a \<cdot>\<^sub>r\<^bsub>S\<^esub> ((snd c) j))" (* scalar times cf *)
 
 definition
-  special_cf :: "('a, 'm) Ring_scheme \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" ("C\<^sub>0") where
+  special_cf :: "('a, 'm) Ring_scheme \<Rightarrow> nat \<times> (nat \<Rightarrow> 'a)" (\<open>C\<^sub>0\<close>) where
   "C\<^sub>0 S = (0, \<lambda>j. 1\<^sub>r\<^bsub>S\<^esub>)"
 
 lemma (in PolynRg) special_cf_pol_coeff:"pol_coeff S (C\<^sub>0 S)"  

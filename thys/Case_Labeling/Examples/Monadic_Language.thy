@@ -20,7 +20,7 @@ ML \<open>
 
 text \<open>This language is inspired by the languages used in AutoCorres \<^cite>\<open>greenaway_bridging_2012\<close>\<close>
 
-consts bind :: "'a option \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> 'b option" (infixr "|>>" 4)
+consts bind :: "'a option \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> 'b option" (infixr \<open>|>>\<close> 4)
 consts return :: "'a \<Rightarrow> 'a option"
 consts while :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a option) \<Rightarrow> ('a \<Rightarrow> 'a option)"
 consts valid :: "bool \<Rightarrow> 'a option \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"

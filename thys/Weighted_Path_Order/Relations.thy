@@ -258,7 +258,7 @@ lemma lcr_minus:
 
 text \<open>Notations\<close>
 
-notation restrict (infixl "\<restriction>" 80)
+notation restrict (infixl \<open>\<restriction>\<close> 80)
 
 lemma mem_restrictI[intro!]: assumes "x \<in> X" "y \<in> X" "(x,y) \<in> R" shows "(x,y) \<in> R \<restriction> X"
   using assms unfolding restrict_def by auto

@@ -20,12 +20,12 @@ typedef (overloaded) 'a :: order antichain =
 
 setup_lifting type_definition_antichain
 
-lift_definition member_antichain :: "'a :: order \<Rightarrow> 'a antichain \<Rightarrow> bool" ("(_/ \<in>\<^sub>A _)" [51, 51] 50) is "Set.member" .
+lift_definition member_antichain :: "'a :: order \<Rightarrow> 'a antichain \<Rightarrow> bool" (\<open>(_/ \<in>\<^sub>A _)\<close> [51, 51] 50) is "Set.member" .
 
-abbreviation not_member_antichain :: "'a :: order \<Rightarrow> 'a antichain \<Rightarrow> bool" ("(_/ \<notin>\<^sub>A _)" [51, 51] 50) where
+abbreviation not_member_antichain :: "'a :: order \<Rightarrow> 'a antichain \<Rightarrow> bool" (\<open>(_/ \<notin>\<^sub>A _)\<close> [51, 51] 50) where
   "x \<notin>\<^sub>A A \<equiv> \<not> x \<in>\<^sub>A A"
 
-lift_definition empty_antichain :: "'a :: order antichain" ("{}\<^sub>A") is "{}" by simp
+lift_definition empty_antichain :: "'a :: order antichain" (\<open>{}\<^sub>A\<close>) is "{}" by simp
 
 lemma mem_antichain_nonempty[simp]: "s \<in>\<^sub>A A \<Longrightarrow> A \<noteq> {}\<^sub>A"
   by transfer auto
@@ -95,9 +95,9 @@ lift_definition filter_antichain :: "('a :: order \<Rightarrow> bool) \<Rightarr
   by (auto simp: incomparable_def)
 
 syntax (ASCII)
-  "_ACCollect" :: "pttrn \<Rightarrow> 'a :: order antichain \<Rightarrow> bool \<Rightarrow> 'a antichain" ("(1{_ :\<^sub>A _./ _})")
+  "_ACCollect" :: "pttrn \<Rightarrow> 'a :: order antichain \<Rightarrow> bool \<Rightarrow> 'a antichain" (\<open>(1{_ :\<^sub>A _./ _})\<close>)
 syntax
-  "_ACCollect" :: "pttrn \<Rightarrow> 'a :: order antichain \<Rightarrow> bool \<Rightarrow> 'a antichain" ("(1{_ \<in>\<^sub>A _./ _})")
+  "_ACCollect" :: "pttrn \<Rightarrow> 'a :: order antichain \<Rightarrow> bool \<Rightarrow> 'a antichain" (\<open>(1{_ \<in>\<^sub>A _./ _})\<close>)
 syntax_consts
   "_ACCollect" == filter_antichain
 translations

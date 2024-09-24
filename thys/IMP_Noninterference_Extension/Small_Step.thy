@@ -75,13 +75,13 @@ declare [[syntax_ambiguity_warning = false]]
 
 datatype com =
   SKIP |
-  Assign vname aexp  ("_ ::= _" [1000, 61] 70) |
-  Input vname  ("(IN _)" [61] 70) |
-  Output vname  ("(OUT _)" [61] 70) |
-  Seq com com  ("_;;/ _" [61, 61] 70) |
-  Or com com  ("(_ OR _)" [61, 61] 70) |
-  If bexp com com  ("(IF _/ THEN _/ ELSE _)" [0, 0, 61] 70) |
-  While bexp com  ("(WHILE _/ DO _)" [0, 61] 70)
+  Assign vname aexp  (\<open>_ ::= _\<close> [1000, 61] 70) |
+  Input vname  (\<open>(IN _)\<close> [61] 70) |
+  Output vname  (\<open>(OUT _)\<close> [61] 70) |
+  Seq com com  (\<open>_;;/ _\<close> [61, 61] 70) |
+  Or com com  (\<open>(_ OR _)\<close> [61, 61] 70) |
+  If bexp com com  (\<open>(IF _/ THEN _/ ELSE _)\<close> [0, 0, 61] 70) |
+  While bexp com  (\<open>(WHILE _/ DO _)\<close> [0, 61] 70)
 
 
 subsection "Extended big-step semantics"
@@ -123,7 +123,7 @@ type_synonym stage = "state \<times> stream \<times> inputs \<times> outputs"
 
 
 inductive big_step :: "com \<times> stage \<Rightarrow> stage \<Rightarrow> bool"
-  (infix "\<Rightarrow>" 55) where
+  (infix \<open>\<Rightarrow>\<close> 55) where
 Skip:
  "(SKIP, p) \<Rightarrow> p" |
 Assign:
@@ -186,7 +186,7 @@ accordingly.
 \<close>
 
 inductive small_step :: "com \<times> stage \<Rightarrow> com \<times> stage \<Rightarrow> bool"
-  (infix "\<rightarrow>" 55) where
+  (infix \<open>\<rightarrow>\<close> 55) where
 Assign:
  "(x ::= a, s, p) \<rightarrow> (SKIP, s(x := aval a s), p)" |
 Input:
@@ -232,12 +232,12 @@ inductive_cases whileE [elim]: "(WHILE b DO c, p) \<rightarrow> cf"
 
 
 abbreviation small_steps :: "com \<times> stage \<Rightarrow> com \<times> stage \<Rightarrow> bool"
-  (infix "\<rightarrow>*" 55) where
+  (infix \<open>\<rightarrow>*\<close> 55) where
 "cf \<rightarrow>* cf' \<equiv> star small_step cf cf'"
 
 function small_stepsl ::
  "com \<times> stage \<Rightarrow> (com \<times> stage) list \<Rightarrow> com \<times> stage \<Rightarrow> bool"
-  ("(_ \<rightarrow>*'{_'} _)" [51, 51] 55)
+  (\<open>(_ \<rightarrow>*'{_'} _)\<close> [51, 51] 55)
 where
 "cf \<rightarrow>*{[]} cf' = (cf = cf')" |
 "cf \<rightarrow>*{cfs @ [cf']} cf'' = (cf \<rightarrow>*{cfs} cf' \<and> cf' \<rightarrow> cf'')"

@@ -2,6 +2,7 @@
  * Copyright Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
+Proofs tidied by LCP, 2024-09
  *)
 
 section \<open>Lemmas on words\<close>
@@ -1350,7 +1351,7 @@ lemma word_eq_iff: "x = y \<longleftrightarrow> (\<forall>n<LENGTH('a). bit x n 
   for x y :: "'a::len word"
   using bit_word_eqI by blast
 
-lemma word_eqI: "(\<And>n. n < size u \<longrightarrow> bit u n = bit v n) \<Longrightarrow> u = v"
+lemma word_eqI: "(\<And>n. n < size u \<Longrightarrow> bit u n = bit v n) \<Longrightarrow> u = v"
   for u :: "'a::len word"
   by (simp add: word_size word_eq_iff)
 

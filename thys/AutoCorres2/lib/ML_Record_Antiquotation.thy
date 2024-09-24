@@ -93,7 +93,7 @@ fun parse_record_declaration s =
     fun remove p s
       = String.explode s |> filter_out p |> String.implode
 
-    val normalize_spaces = space_implode " " o white_space_explode;
+    val normalize_spaces = implode_space o white_space_explode;
 
     val remove_delimiter = remove (fn c => member (op =) ["{","(", "}",")",";"] (str c))
     val trim = remove (fn c => str c = " ")
@@ -102,13 +102,13 @@ fun parse_record_declaration s =
       let 
         val (first, rest) = s |> white_space_explode |> split_first
       in
-        if first = word then space_implode " " rest else error ("expecting '" ^ word ^ "'")
+        if first = word then implode_space rest else error ("expecting '" ^ word ^ "'")
       end
 
     val [lhs, rhs] = s |> remove_comments |> normalize_spaces |> space_explode "=" |> map normalize_spaces
 
-    fun split_first_word s = s |> white_space_explode |> split_first ||> space_implode " "
-    fun split_last_word s  = s |> white_space_explode |> split_last  |>> space_implode " "
+    fun split_first_word s = s |> white_space_explode |> split_first ||> implode_space
+    fun split_last_word s  = s |> white_space_explode |> split_last  |>> implode_space
 
     fun split_type s = 
       let

@@ -8,7 +8,7 @@ theory DirProds
   imports Finite_Product_Extend Group_Hom Finite_And_Cyclic_Groups
 begin
 
-notation integer_mod_group ("Z")
+notation integer_mod_group (\<open>Z\<close>)
 
 text \<open>The direct group product is defined component-wise and provided in an indexed way.\<close>
 
@@ -654,6 +654,6 @@ proof (intro is_isoI isoI)
   qed
 qed
 
-no_notation integer_mod_group ("Z")
+no_notation integer_mod_group (\<open>Z\<close>)
 
 end

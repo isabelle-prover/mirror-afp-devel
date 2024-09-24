@@ -15,15 +15,15 @@ text \<open> We will overload the square order relation with refinement and also
   we will turn off these notations. \<close>
 
 purge_notation
-  Order.le (infixl "\<sqsubseteq>\<index>" 50) and
-  Lattice.sup ("\<Squnion>\<index>_" [90] 90) and
-  Lattice.inf ("\<Sqinter>\<index>_" [90] 90) and
-  Lattice.join (infixl "\<squnion>\<index>" 65) and
-  Lattice.meet (infixl "\<sqinter>\<index>" 70) and
-  Set.member ("op :") and
-  Set.member ("(_/ : _)" [51, 51] 50) and
-  disj  (infixr "|" 30) and
-  conj  (infixr "&" 35)
+  Order.le (infixl \<open>\<sqsubseteq>\<index>\<close> 50) and
+  Lattice.sup (\<open>\<Squnion>\<index>_\<close> [90] 90) and
+  Lattice.inf (\<open>\<Sqinter>\<index>_\<close> [90] 90) and
+  Lattice.join (infixl \<open>\<squnion>\<index>\<close> 65) and
+  Lattice.meet (infixl \<open>\<sqinter>\<index>\<close> 70) and
+  Set.member (\<open>op :\<close>) and
+  Set.member (\<open>(_/ : _)\<close> [51, 51] 50) and
+  disj  (infixr \<open>|\<close> 30) and
+  conj  (infixr \<open>&\<close> 35)
 
 declare fst_vwb_lens [simp]
 declare snd_vwb_lens [simp]
@@ -57,7 +57,7 @@ text \<open> Variables can also be used to effectively define sets of variables.
   the universal alphabet ($\Sigma$) to be the bijective lens @{term "1\<^sub>L"}. This characterises
   the whole of the source type, and thus is effectively the set of all alphabet variables. \<close>
 
-abbreviation (input) univ_alpha :: "('\<alpha> \<Longrightarrow> '\<alpha>)" ("\<Sigma>") where
+abbreviation (input) univ_alpha :: "('\<alpha> \<Longrightarrow> '\<alpha>)" (\<open>\<Sigma>\<close>) where
 "univ_alpha \<equiv> 1\<^sub>L"
 
 text \<open> The next construct is vacuous and simply exists to help the parser distinguish predicate
@@ -213,11 +213,11 @@ text \<open> These non-terminals correspond to the following syntactic entities.
   syntax constructors. \<close>
    
 syntax \<comment> \<open> Identifiers \<close>
-  "_svid"         :: "id \<Rightarrow> svid" ("_" [999] 999)
-  "_svid_unit"    :: "svid \<Rightarrow> svids" ("_")
-  "_svid_list"    :: "svid \<Rightarrow> svids \<Rightarrow> svids" ("_,/ _")
-  "_svid_alpha"   :: "svid" ("\<^bold>v")
-  "_svid_dot"     :: "svid \<Rightarrow> svid \<Rightarrow> svid" ("_:_" [998,999] 998)
+  "_svid"         :: "id \<Rightarrow> svid" (\<open>_\<close> [999] 999)
+  "_svid_unit"    :: "svid \<Rightarrow> svids" (\<open>_\<close>)
+  "_svid_list"    :: "svid \<Rightarrow> svids \<Rightarrow> svids" (\<open>_,/ _\<close>)
+  "_svid_alpha"   :: "svid" (\<open>\<^bold>v\<close>)
+  "_svid_dot"     :: "svid \<Rightarrow> svid \<Rightarrow> svid" (\<open>_:_\<close> [998,999] 998)
   "_mk_svid_list" :: "svids \<Rightarrow> logic" \<comment> \<open> Helper function for summing a list of identifiers \<close>
 
 text \<open> A variable identifier can either be a HOL identifier, the complete set of variables in the
@@ -225,9 +225,9 @@ text \<open> A variable identifier can either be a HOL identifier, the complete 
   corresponds to a sort of qualification. The final option is effectively a lens composition. \<close>
   
 syntax \<comment> \<open> Decorations \<close>
-  "_spvar"       :: "svid \<Rightarrow> svar" ("&_" [990] 990)
-  "_sinvar"      :: "svid \<Rightarrow> svar" ("$_" [990] 990)
-  "_soutvar"     :: "svid \<Rightarrow> svar" ("$_\<acute>" [990] 990)
+  "_spvar"       :: "svid \<Rightarrow> svar" (\<open>&_\<close> [990] 990)
+  "_sinvar"      :: "svid \<Rightarrow> svar" (\<open>$_\<close> [990] 990)
+  "_soutvar"     :: "svid \<Rightarrow> svar" (\<open>$_\<acute>\<close> [990] 990)
 
 text \<open> A variable can be decorated with an ampersand, to indicate it is a predicate variable, with 
   a dollar to indicate its an unprimed relational variable, or a dollar and ``acute'' symbol to 
@@ -235,16 +235,16 @@ text \<open> A variable can be decorated with an ampersand, to indicate it is a 
   decorations can be and are added later. \<close>
   
 syntax \<comment> \<open> Variable sets \<close>
-  "_salphaid"    :: "svid \<Rightarrow> salpha" ("_" [990] 990)
-  "_salphavar"   :: "svar \<Rightarrow> salpha" ("_" [990] 990)
-  "_salphaparen" :: "salpha \<Rightarrow> salpha" ("'(_')")
-  "_salphacomp"  :: "salpha \<Rightarrow> salpha \<Rightarrow> salpha" (infixr ";" 75)
-  "_salphaprod"  :: "salpha \<Rightarrow> salpha \<Rightarrow> salpha" (infixr "\<times>" 85)
-  "_salpha_all"  :: "salpha" ("\<Sigma>")
-  "_salpha_none" :: "salpha" ("\<emptyset>")
-  "_svar_nil"    :: "svar \<Rightarrow> svars" ("_")
-  "_svar_cons"   :: "svar \<Rightarrow> svars \<Rightarrow> svars" ("_,/ _")
-  "_salphaset"   :: "svars \<Rightarrow> salpha" ("{_}")
+  "_salphaid"    :: "svid \<Rightarrow> salpha" (\<open>_\<close> [990] 990)
+  "_salphavar"   :: "svar \<Rightarrow> salpha" (\<open>_\<close> [990] 990)
+  "_salphaparen" :: "salpha \<Rightarrow> salpha" (\<open>'(_')\<close>)
+  "_salphacomp"  :: "salpha \<Rightarrow> salpha \<Rightarrow> salpha" (infixr \<open>;\<close> 75)
+  "_salphaprod"  :: "salpha \<Rightarrow> salpha \<Rightarrow> salpha" (infixr \<open>\<times>\<close> 85)
+  "_salpha_all"  :: "salpha" (\<open>\<Sigma>\<close>)
+  "_salpha_none" :: "salpha" (\<open>\<emptyset>\<close>)
+  "_svar_nil"    :: "svar \<Rightarrow> svars" (\<open>_\<close>)
+  "_svar_cons"   :: "svar \<Rightarrow> svars \<Rightarrow> svars" (\<open>_,/ _\<close>)
+  "_salphaset"   :: "svars \<Rightarrow> salpha" (\<open>{_}\<close>)
   "_salphamk"    :: "logic \<Rightarrow> salpha"
 
 text \<open> The terminals of an alphabet are either HOL identifiers or UTP variable identifiers. 
@@ -252,8 +252,8 @@ text \<open> The terminals of an alphabet are either HOL identifiers or UTP vari
   a semi-colon or by a set-style construction $\{a,b,c\}$ with a list of UTP variables. \<close>
 
 syntax \<comment> \<open> Quotations \<close>
-  "_ualpha_set"  :: "svars \<Rightarrow> logic" ("{_}\<^sub>\<alpha>")  
-  "_svar"        :: "svar \<Rightarrow> logic" ("'(_')\<^sub>v")
+  "_ualpha_set"  :: "svars \<Rightarrow> logic" (\<open>{_}\<^sub>\<alpha>\<close>)  
+  "_svar"        :: "svar \<Rightarrow> logic" (\<open>'(_')\<^sub>v\<close>)
   
 text \<open> For various reasons, the syntax constructors above all yield specific grammar categories and
   will not parser at the HOL top level (basically this is to do with us wanting to reuse the syntax

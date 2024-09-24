@@ -3,7 +3,7 @@ theory Sep_Algebra_Add
     Product_Separation_Algebra
 begin
 
-definition puree :: "bool \<Rightarrow> 'h::sep_algebra \<Rightarrow> bool" ("\<up>") where "puree P \<equiv> \<lambda>h. h=0 \<and> P"
+definition puree :: "bool \<Rightarrow> 'h::sep_algebra \<Rightarrow> bool" (\<open>\<up>\<close>) where "puree P \<equiv> \<lambda>h. h=0 \<and> P"
 
 lemma puree_alt: "\<up>\<Phi> = (\<langle>\<Phi>\<rangle> and \<box>)"
   by (auto simp: puree_def sep_empty_def)

@@ -6,7 +6,7 @@ begin
 
   subsection \<open>Zipping Lists\<close>
 
-  notation zip (infixr "||" 51)
+  notation zip (infixr \<open>||\<close> 51)
 
   lemmas [simp] = zip_map_fst_snd
 
@@ -76,7 +76,7 @@ begin
 
   subsection \<open>Zipping Streams\<close>
 
-  notation szip (infixr "|||" 51)
+  notation szip (infixr \<open>|||\<close> 51)
 
   lemmas [simp] = szip_unfold
 

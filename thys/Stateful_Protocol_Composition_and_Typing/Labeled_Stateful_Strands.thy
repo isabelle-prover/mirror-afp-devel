@@ -10,10 +10,10 @@ begin
 
 subsection \<open>Definitions\<close>
 text\<open>Syntax for stateful strand labels\<close>
-abbreviation Star_step ("\<langle>\<star>, _\<rangle>") where
+abbreviation Star_step (\<open>\<langle>\<star>, _\<rangle>\<close>) where
   "\<langle>\<star>, (s::('a,'b) stateful_strand_step)\<rangle> \<equiv> (\<star>, s)"
 
-abbreviation LabelN_step ("\<langle>_, _\<rangle>") where
+abbreviation LabelN_step (\<open>\<langle>_, _\<rangle>\<close>) where
   "\<langle>(l::'a), (s::('b,'c) stateful_strand_step)\<rangle> \<equiv> (ln l, s)"
 
 
@@ -39,12 +39,12 @@ text\<open>Substitution application\<close>
 fun subst_apply_labeled_stateful_strand_step::
   "('a,'b,'c) labeled_stateful_strand_step \<Rightarrow> ('a,'b) subst \<Rightarrow>
    ('a,'b,'c) labeled_stateful_strand_step"
-  (infix "\<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p" 51) where
+  (infix \<open>\<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p\<close> 51) where
   "(l,s) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>  = (l,s \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)"
 
 definition subst_apply_labeled_stateful_strand::
   "('a,'b,'c) labeled_stateful_strand \<Rightarrow> ('a,'b) subst \<Rightarrow> ('a,'b,'c) labeled_stateful_strand"
-  (infix "\<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t" 51) where
+  (infix \<open>\<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<close> 51) where
   "S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta> \<equiv> map (\<lambda>x. x \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) S"
 
 text\<open>Definitions lifted from stateful strands\<close>

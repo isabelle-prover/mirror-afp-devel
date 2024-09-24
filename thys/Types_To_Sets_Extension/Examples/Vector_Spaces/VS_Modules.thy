@@ -18,7 +18,7 @@ locale module_with = ab_group_add plus\<^sub>M zero\<^sub>M minus\<^sub>M uminus
     and zero\<^sub>M (\<open>0\<^sub>M\<close>)
     and minus\<^sub>M (infixl \<open>-\<^sub>M\<close> 65)
     and uminus\<^sub>M (\<open>-\<^sub>M _\<close> [81] 80) +
-  fixes scale :: "['cr1::comm_ring_1, 'm] \<Rightarrow> 'm" (infixr "*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h" 75)
+  fixes scale :: "['cr1::comm_ring_1, 'm] \<Rightarrow> 'm" (infixr \<open>*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h\<close> 75)
   assumes scale_right_distrib[algebra_simps]: 
     "a *s\<^sub>w\<^sub>i\<^sub>t\<^sub>h (x +\<^sub>M y) = a *s\<^sub>w\<^sub>i\<^sub>t\<^sub>h x +\<^sub>M a *s\<^sub>w\<^sub>i\<^sub>t\<^sub>h y"
     and scale_left_distrib[algebra_simps]:
@@ -212,7 +212,7 @@ locale module_ow = ab_group_add_ow U\<^sub>M plus\<^sub>M zero\<^sub>M minus\<^s
     and zero\<^sub>M (\<open>0\<^sub>M\<close>)
     and minus\<^sub>M (infixl \<open>-\<^sub>M\<close> 65)
     and uminus\<^sub>M (\<open>-\<^sub>M _\<close> [81] 80) +
-  fixes scale :: "['cr1::comm_ring_1, 'm] \<Rightarrow> 'm" (infixr "*s\<^sub>M" 75)
+  fixes scale :: "['cr1::comm_ring_1, 'm] \<Rightarrow> 'm" (infixr \<open>*s\<^sub>M\<close> 75)
   assumes scale_closed[simp, intro]: "x \<in> U\<^sub>M \<Longrightarrow> a *s\<^sub>M x \<in> U\<^sub>M"
     and scale_right_distrib[algebra_simps]: 
     "\<lbrakk> x \<in> U\<^sub>M; y \<in> U\<^sub>M \<rbrakk> \<Longrightarrow> a *s\<^sub>M (x +\<^sub>M y) = a *s\<^sub>M x +\<^sub>M a *s\<^sub>M y"
@@ -483,7 +483,7 @@ subsubsection\<open>Definitions and common properties\<close>
 
 locale module_on =
   fixes U\<^sub>M
-    and scale :: "'a::comm_ring_1 \<Rightarrow> 'b::ab_group_add \<Rightarrow> 'b" (infixr "*s" 75)
+    and scale :: "'a::comm_ring_1 \<Rightarrow> 'b::ab_group_add \<Rightarrow> 'b" (infixr \<open>*s\<close> 75)
   assumes scale_right_distrib_on[algebra_simps]: 
       "\<lbrakk> x \<in> U\<^sub>M; y \<in> U\<^sub>M \<rbrakk> \<Longrightarrow> a *s (x + y) = a *s x + a *s y"
     and scale_left_distrib_on[algebra_simps]: 

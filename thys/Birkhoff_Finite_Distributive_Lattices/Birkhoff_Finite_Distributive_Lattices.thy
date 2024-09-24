@@ -201,10 +201,10 @@ next
   thus "\<alpha> = \<beta>" by auto
 qed
 
-definition (in bounded_lattice_bot) atomic_elements ("\<A>") where
+definition (in bounded_lattice_bot) atomic_elements (\<open>\<A>\<close>) where
   "\<A> \<equiv> {a . atomic a}"
 
-definition (in bounded_lattice_bot) join_irreducible_elements ("\<J>") where
+definition (in bounded_lattice_bot) join_irreducible_elements (\<open>\<J>\<close>) where
   "\<J> \<equiv> {a . join_irreducible a}"
 
 section \<open> Birkhoff's Representation Theorem For Finite Distributive Lattices \label{section:birkhoffs-theorem} \<close>
@@ -357,7 +357,7 @@ proof (rule ccontr)
 qed
 
 definition (in bounded_lattice_bot)
-  join_irreducibles_embedding :: "'a \<Rightarrow> 'a set" ("\<lbrace> _ \<rbrace>" [50]) where
+  join_irreducibles_embedding :: "'a \<Rightarrow> 'a set" (\<open>\<lbrace> _ \<rbrace>\<close> [50]) where
   "\<lbrace> x \<rbrace> \<equiv> {a \<in> \<J>. a \<le> x}"
 
 text \<open> We can now show every element is exactly the suprema of the 
@@ -407,7 +407,7 @@ text \<open> Just as \<open>x = \<Squnion> \<lbrace> x \<rbrace>\<close>, the re
        and \<open>\<lambda> S. \<Squnion> S\<close> are inverses where \<open>S \<in> \<O>\<J>\<close>, the set of downsets
        in \<open>Pow \<J>\<close>. \<close>
 
-definition (in bounded_lattice_bot) down_irreducibles ("\<O>\<J>") where
+definition (in bounded_lattice_bot) down_irreducibles (\<open>\<O>\<J>\<close>) where
   "\<O>\<J> \<equiv> { S \<in> Pow \<J> . (\<exists> x . S = \<lbrace> x \<rbrace>) }"
 
 lemma (in finite_distrib_lattice) join_irreducible_embedding_sup_ident:

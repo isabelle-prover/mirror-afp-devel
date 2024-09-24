@@ -104,10 +104,10 @@ derive linorder list
 derive linorder presb
 type_synonym formula = "(presb, unit) aformula"
 
-lift_definition assigns :: "nat \<Rightarrow> interp \<Rightarrow> unit \<Rightarrow> value" ("_\<^bsup>_\<^esup>_" [900, 999, 999] 999) is
+lift_definition assigns :: "nat \<Rightarrow> interp \<Rightarrow> unit \<Rightarrow> value" (\<open>_\<^bsup>_\<^esup>_\<close> [900, 999, 999] 999) is
   "\<lambda>n (_, I) _. if n < length I then I ! n else 0" .
 
-lift_definition nvars :: "interp \<Rightarrow> nat" ("#\<^sub>V _" [1000] 900) is
+lift_definition nvars :: "interp \<Rightarrow> nat" (\<open>#\<^sub>V _\<close> [1000] 900) is
   "\<lambda>(_, I). length I" .
 
 lift_definition Length :: "interp \<Rightarrow> nat" is "\<lambda>(n, _). n" .
@@ -345,11 +345,11 @@ lemma wf0_decr0[Presb_simps]:
 lemma lformula0_decr0[Presb_simps]: "lformula0 a \<Longrightarrow> lformula0 (decr0 k l a)"
   by (induct a) (auto elim: lformula0.cases intro: lformula0.intros)
 
-abbreviation sat0_syn (infix "\<Turnstile>0" 65) where
+abbreviation sat0_syn (infix \<open>\<Turnstile>0\<close> 65) where
  "sat0_syn \<equiv> satisfies0"
-abbreviation sat_syn (infix "\<Turnstile>" 65) where
+abbreviation sat_syn (infix \<open>\<Turnstile>\<close> 65) where
  "sat_syn \<equiv> Formula_Operations.satisfies Extend Length satisfies0"
-abbreviation sat_bounded_syn (infix "\<Turnstile>\<^sub>b" 65) where
+abbreviation sat_bounded_syn (infix \<open>\<Turnstile>\<^sub>b\<close> 65) where
  "sat_bounded_syn \<equiv> Formula_Operations.satisfies_bounded Extend Length len satisfies0"
 
 lemma scalar_product_Nil[simp]: "scalar_product [] xs = 0"

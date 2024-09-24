@@ -21,39 +21,38 @@ hide_const (open)
   List.partition List.replicate List.set List.take List.upto List.zip
   Orderings.less Product_Type.fst Product_Type.snd
 
-no_notation Map.map_add (infixl "++" 100)
+no_notation Map.map_add (infixl \<open>++\<close> 100)
 
-no_notation List.upto ("(1[_../_])")
-
-no_notation
-  Rings.divide (infixl "div" 70) and
-  Rings.modulo (infixl "mod" 70)
+no_notation List.upto (\<open>(1[_../_])\<close>)
 
 no_notation
-  Set.member  ("(:)") and
-  Set.member  ("(_/ : _)" [51, 51] 50)
+  Rings.divide (infixl \<open>div\<close> 70) and
+  Rings.modulo (infixl \<open>mod\<close> 70)
+
+no_notation
+  Set.member  (\<open>(:)\<close>) and
+  Set.member  (\<open>(\<open>notation=\<open>infix :\<close>\<close>_/ : _)\<close> [51, 51] 50)
 
 no_translations
   "[x, xs]" == "x # [xs]"
   "[x]" == "x # []"
 
 no_syntax
-  "_list" :: "list_args \<Rightarrow> 'a List.list"    ("[(_)]")
+  "_list" :: "list_args \<Rightarrow> 'a List.list"    (\<open>[(_)]\<close>)
 
 no_notation
-  List.Nil ("[]")
+  List.Nil (\<open>[]\<close>)
 
-no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("([_]/ => _)" [0, 0] 0)
-no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" ("([_]/ \<Rightarrow> _)" [0, 0] 0)
+no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" (\<open>(\<open>notation=\<open>infix =>\<close>\<close>[_]/ => _)\<close> [0, 0] 0)
+no_syntax "_bracket" :: "types \<Rightarrow> type \<Rightarrow> type" (\<open>(\<open>notation=\<open>infix \<Rightarrow>\<close>\<close>[_]/ \<Rightarrow> _)\<close> [0, 0] 0)
 
 no_translations
   "[x<-xs . P]" == "CONST List.filter (%x. P) xs"
 
 no_syntax (ASCII)
-  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" ("(1[_<-_./ _])")
-
+  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list"  (\<open>(\<open>indent=1 notation=\<open>mixfix filter\<close>\<close>[_<-_./ _])\<close>)
 no_syntax
-  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list" ("(1[_\<leftarrow>_ ./ _])")
+  "_filter" :: "pttrn \<Rightarrow> 'a List.list \<Rightarrow> bool \<Rightarrow> 'a List.list"  (\<open>(\<open>indent=1 notation=\<open>mixfix filter\<close>\<close>[_\<leftarrow>_ ./ _])\<close>)
 
 text \<open>Declarations that belong in HOLCF/Tr.thy:\<close>
 

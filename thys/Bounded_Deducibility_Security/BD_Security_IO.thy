@@ -7,7 +7,7 @@ begin
 (*>*)
 
 
-no_notation relcomp (infixr "O" 75)
+no_notation relcomp (infixr \<open>O\<close> 75)
 
 abbreviation never :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where "never U \<equiv> list_all (\<lambda> a. \<not> U a)"
 

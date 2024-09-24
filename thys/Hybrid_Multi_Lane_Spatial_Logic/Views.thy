@@ -69,14 +69,14 @@ end
 locale view
 begin
 
-notation nat_int.maximum ("maximum")
-notation nat_int.minimum ("minimum")
-notation nat_int.consec ("consec")
+notation nat_int.maximum (\<open>maximum\<close>)
+notation nat_int.minimum (\<open>minimum\<close>)
+notation nat_int.consec (\<open>consec\<close>)
 
 text\<open>We lift the chopping relations from discrete and continuous intervals
 to views, and introduce new notation for these relations.\<close> 
 
-definition       hchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow> bool" ("_=_\<parallel>_")
+definition       hchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow> bool" (\<open>_=_\<parallel>_\<close>)
   where "(v=u\<parallel>w) == real_int.R_Chop(ext v)(ext u)(ext w) \<and> 
                     lan v=lan u \<and> 
                     lan v=lan w \<and> 
@@ -84,7 +84,7 @@ definition       hchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightar
                     own v = own w \<and> 
                     more v = more w \<and>
                     more v = more u  "
-definition   vchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow> bool" ("_=_--_")
+definition   vchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow> bool" (\<open>_=_--_\<close>)
   where "(v=u--w) == nat_int.N_Chop(lan v)(lan u)( lan w) \<and> 
                      ext v = ext u \<and> 
                      ext v = ext w \<and> 
@@ -96,7 +96,7 @@ definition   vchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow>
 text\<open>We can also switch the perspective of a view to the car \(c\). That is,
 we substitute \(c\) for the original owner of the view.\<close>
 
-definition switch :: "view \<Rightarrow> cars \<Rightarrow> view \<Rightarrow> bool" ("_ = _ > _")
+definition switch :: "view \<Rightarrow> cars \<Rightarrow> view \<Rightarrow> bool" (\<open>_ = _ > _\<close>)
   where   "  (v=c>w) == ext v = ext w \<and> 
                         lan v = lan w \<and>  
                         own w = c \<and> 

@@ -8,22 +8,22 @@ begin
 bundle HOL_ascii_syntax
 begin
 notation (ASCII)
-  Not ("~ _" [40] 40) and
-  conj (infixr "&" 35) and
-  disj (infixr "|" 30) and
-  implies (infixr "-->" 25) and
-  not_equal (infixl "~=" 50)
-syntax "_Let" :: "[letbinds, 'a] \<Rightarrow> 'a" ("(let (_)/ in (_))" 10)
+  Not (\<open>~ _\<close> [40] 40) and
+  conj (infixr \<open>&\<close> 35) and
+  disj (infixr \<open>|\<close> 30) and
+  implies (infixr \<open>-->\<close> 25) and
+  not_equal (infixl \<open>~=\<close> 50)
+syntax "_Let" :: "[letbinds, 'a] \<Rightarrow> 'a" (\<open>(let (_)/ in (_))\<close> 10)
 end
 bundle no_HOL_ascii_syntax
 begin
 no_notation (ASCII)
-  Not ("~ _" [40] 40) and
-  conj (infixr "&" 35) and
-  disj (infixr "|" 30) and
-  implies (infixr "-->" 25) and
-  not_equal (infixl "~=" 50)
-no_syntax "_Let" :: "[letbinds, 'a] \<Rightarrow> 'a" ("(let (_)/ in (_))" 10)
+  Not (\<open>~ _\<close> [40] 40) and
+  conj (infixr \<open>&\<close> 35) and
+  disj (infixr \<open>|\<close> 30) and
+  implies (infixr \<open>-->\<close> 25) and
+  not_equal (infixl \<open>~=\<close> 50)
+no_syntax "_Let" :: "[letbinds, 'a] \<Rightarrow> 'a" (\<open>(let (_)/ in (_))\<close> 10)
 end
 
 

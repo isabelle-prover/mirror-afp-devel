@@ -9,16 +9,16 @@ definition mbox :: "'a \<Rightarrow> 'a" where
 definition mbox0 :: "'a \<Rightarrow> 'a" where
 "mbox0 x = x"
 
-notation (latex) mbox ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\<close>" [999] 999)
+notation (latex) mbox (\<open>\<^latex>\<open>\mbox{\<close>_\<^latex>\<open>}\<close>\<close> [999] 999)
 
-notation (latex) mbox0 ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\<close>" [0] 999)
+notation (latex) mbox0 (\<open>\<^latex>\<open>\mbox{\<close>_\<^latex>\<open>}\<close>\<close> [0] 999)
 
 (* Parenthesize conjunctions to the left; otherwise, if a larger conjunction needs a line break,
 the pretty printer will put the first few conjuncts on separate lines until the rest fits. *)
 syntax (output)
-  "_conjL" :: "bool \<Rightarrow> bool \<Rightarrow> bool" (infixl "\<and>" 35)
+  "_conjL" :: "bool \<Rightarrow> bool \<Rightarrow> bool" (infixl \<open>\<and>\<close> 35)
 syntax (latex output)
-  "_conjL" :: "bool \<Rightarrow> bool \<Rightarrow> bool" (infixl "\<and>" 35)
+  "_conjL" :: "bool \<Rightarrow> bool \<Rightarrow> bool" (infixl \<open>\<and>\<close> 35)
 translations
   "_conjL P Q" <= "P \<and> Q" 
   "_conjL (_conjL P Q) R" <= "_conjL P (_conjL Q R)"
@@ -27,47 +27,47 @@ on separate lines. However, it appears beneficial in the majority of cases *)
 
 (* For manual regrouping with invisible blocks: *)
 definition BLOCK where [simp]: "BLOCK x = x"
-notation (output) BLOCK ("_")
+notation (output) BLOCK (\<open>_\<close>)
 
 (* Forced parentheses *)
 definition parens where
   "parens x = x"
 
-notation (output) parens ("\<^bold>'(_\<^bold>')")
+notation (output) parens (\<open>\<^bold>'(_\<^bold>')\<close>)
 
 notation (latex output) parens
-  ("'(_')")
+  (\<open>'(_')\<close>)
 
 no_notation (output)
-  HOL.eq (infix "=" 50)
+  HOL.eq (infix \<open>=\<close> 50)
 
 notation (output)
-  HOL.eq ("(_/ = _)" [51,51] 50)
+  HOL.eq (\<open>(_/ = _)\<close> [51,51] 50)
 
 notation (latex output)
-  If  ("(\<^latex>\<open>\\isakeyword{\<close>if\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\\isakeyword{\<close>then\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\\isakeyword{\<close>else\<^latex>\<open>}\<close> (_))" 10)
+  If  (\<open>(\<^latex>\<open>\isakeyword{\<close>if\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\isakeyword{\<close>then\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\isakeyword{\<close>else\<^latex>\<open>}\<close> (_))\<close> 10)
 
 syntax (latex output)
 
   "_Let"        :: "[letbinds, 'a] => 'a"
-  ("(\<^latex>\<open>\\isakeyword{\<close>let\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\\isakeyword{\<close>in\<^latex>\<open>}\<close> (_))" 10)
+  (\<open>(\<^latex>\<open>\isakeyword{\<close>let\<^latex>\<open>}\<close> (_)/ \<^latex>\<open>\isakeyword{\<close>in\<^latex>\<open>}\<close> (_))\<close> 10)
 
   "_case_syntax":: "['a, cases_syn] => 'b"
-  ("(\<^latex>\<open>\\isakeyword{\<close>case\<^latex>\<open>}\<close> _ \<^latex>\<open>\\isakeyword{\<close>of\<^latex>\<open>}\<close>/ _)" 10)
+  (\<open>(\<^latex>\<open>\isakeyword{\<close>case\<^latex>\<open>}\<close> _ \<^latex>\<open>\isakeyword{\<close>of\<^latex>\<open>}\<close>/ _)\<close> 10)
 
 syntax (let_break output)
 
-  "_binds" :: "[letbind, letbinds] \<Rightarrow> letbinds"  ("_;//_")
+  "_binds" :: "[letbind, letbinds] \<Rightarrow> letbinds"  (\<open>_;//_\<close>)
 
 syntax (case_break output)
 
-  "_case2" :: "[case_syn, cases_syn] \<Rightarrow> cases_syn"  ("_ |//_")
+  "_case2" :: "[case_syn, cases_syn] \<Rightarrow> cases_syn"  (\<open>_ |//_\<close>)
 
   "_case_syntax":: "['a, cases_syn] => 'b"
-  ("(\<^latex>\<open>\\isakeyword{\<close>case\<^latex>\<open>}\<close> _ \<^latex>\<open>\\isakeyword{\<close>of\<^latex>\<open>}\<close>//_)" 10)
+  (\<open>(\<^latex>\<open>\isakeyword{\<close>case\<^latex>\<open>}\<close> _ \<^latex>\<open>\isakeyword{\<close>of\<^latex>\<open>}\<close>//_)\<close> 10)
 
 abbreviation (iffSpace)
-  iffSpace :: "[bool, bool] => bool"  (infixr "\<^latex>\<open>\\ \<close>\<longleftrightarrow>\<^latex>\<open>\\ \<close>" 25)
+  iffSpace :: "[bool, bool] => bool"  (infixr \<open>\<^latex>\<open>\ \<close>\<longleftrightarrow>\<^latex>\<open>\ \<close>\<close> 25)
 where
   "iffSpace A B == A = B"
 
@@ -89,7 +89,7 @@ Term_Style.setup @{binding dummy_pats} (Scan.succeed (K dummy_pats_style))
 
 (* Dummy vars on lhs in case expressions: *)
 syntax (output)
-  "_case1'" :: "['a, 'b] \<Rightarrow> case_syn"  ("(2_ \<Rightarrow>/ _)" 10)
+  "_case1'" :: "['a, 'b] \<Rightarrow> case_syn"  (\<open>(2_ \<Rightarrow>/ _)\<close> 10)
 
 print_ast_translation \<open>
   let

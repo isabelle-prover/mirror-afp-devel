@@ -37,13 +37,13 @@ abbreviation
              \<Rightarrow> ('answer, 'location, 'question, 'state) com
              \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) state_pred \<Rightarrow> bool" where
   "valid_syn P c Q \<equiv> coms, p, aft \<turnstile> \<lbrace>P\<rbrace> c \<lbrace>Q\<rbrace>"
-notation valid_syn ("\<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>")
+notation valid_syn (\<open>\<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>\<close>)
 
 abbreviation
   valid_inv_syn :: "('answer, 'location, 'proc, 'question, 'state) state_pred
                   \<Rightarrow> ('answer, 'location, 'question, 'state) com \<Rightarrow> bool" where
   "valid_inv_syn P c \<equiv> \<lbrace>P\<rbrace> c \<lbrace>P\<rbrace>"
-notation valid_inv_syn ("\<lbrace>_\<rbrace>/ _")
+notation valid_inv_syn (\<open>\<lbrace>_\<rbrace>/ _\<close>)
 
 lemma vcg_True:
   "\<lbrace>P\<rbrace> c \<lbrace>\<langle>True\<rangle>\<rbrace>"
@@ -219,7 +219,7 @@ apply (rename_tac P)
 apply (rule_tac f="\<lambda>s. f s\<down>" and P="\<lambda>fs s. P fs (g s)" for g in vcg_lift_comp; simp)
 done
 
-no_notation valid_syn ("\<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>")
+no_notation valid_syn (\<open>\<lbrace>_\<rbrace>/ _/ \<lbrace>_\<rbrace>\<close>)
 
 end
 

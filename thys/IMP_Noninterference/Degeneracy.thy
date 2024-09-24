@@ -175,17 +175,17 @@ begin
 interpretation noninterf "\<lambda>s. (\<le>)" sec "{}"
 by (unfold_locales, simp)
 
-notation interf_set  ("(_: _ \<leadsto> _)" [51, 51, 51] 50)
-notation univ_states_if  ("(Univ? _ _)" [51, 75] 75)
-notation atyping  ("(_ \<Turnstile> _ '(\<subseteq> _'))" [51, 51] 50)
-notation btyping2_aux  ("(\<TTurnstile> _ '(\<subseteq> _, _'))" [51] 55)
-notation btyping2  ("(\<Turnstile> _ '(\<subseteq> _, _'))" [51] 55)
-notation ctyping1  ("(\<turnstile> _ '(\<subseteq> _, _'))" [51] 55)
-notation ctyping2  ("(_ \<Turnstile> _ '(\<subseteq> _, _'))" [51, 51] 55)
+notation interf_set  (\<open>(_: _ \<leadsto> _)\<close> [51, 51, 51] 50)
+notation univ_states_if  (\<open>(Univ? _ _)\<close> [51, 75] 75)
+notation atyping  (\<open>(_ \<Turnstile> _ '(\<subseteq> _'))\<close> [51, 51] 50)
+notation btyping2_aux  (\<open>(\<TTurnstile> _ '(\<subseteq> _, _'))\<close> [51] 55)
+notation btyping2  (\<open>(\<Turnstile> _ '(\<subseteq> _, _'))\<close> [51] 55)
+notation ctyping1  (\<open>(\<turnstile> _ '(\<subseteq> _, _'))\<close> [51] 55)
+notation ctyping2  (\<open>(_ \<Turnstile> _ '(\<subseteq> _, _'))\<close> [51, 51] 55)
 
 
 abbreviation eq_le_ext :: "state \<Rightarrow> state \<Rightarrow> level \<Rightarrow> bool"
-  ("(_ = _ '(\<^bold>\<le> _'))" [51, 51, 0] 50) where
+  (\<open>(_ = _ '(\<^bold>\<le> _'))\<close> [51, 51, 0] 50) where
 "s = t (\<^bold>\<le> l) \<equiv> s = t (\<le> l) \<and> (\<exists>x :: vname. sec x \<le> l)"
 
 definition secure :: "com \<Rightarrow> bool" where

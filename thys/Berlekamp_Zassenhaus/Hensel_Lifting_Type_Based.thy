@@ -78,10 +78,10 @@ lemma of_nat_zero:
   shows "(of_nat n :: 'a mod_ring) = 0"
   apply (transfer fixing: n) using assms by (presburger)
 
-abbreviation rebase :: "'a :: nontriv mod_ring \<Rightarrow> 'b :: nontriv mod_ring "("@_" [100]100)
+abbreviation rebase :: "'a :: nontriv mod_ring \<Rightarrow> 'b :: nontriv mod_ring "(\<open>@_\<close> [100]100)
   where "@x \<equiv> of_int (to_int_mod_ring x)"
 
-abbreviation rebase_poly :: "'a :: nontriv mod_ring poly \<Rightarrow> 'b :: nontriv mod_ring poly" ("#_" [100]100)
+abbreviation rebase_poly :: "'a :: nontriv mod_ring poly \<Rightarrow> 'b :: nontriv mod_ring poly" (\<open>#_\<close> [100]100)
   where "#x \<equiv> of_int_poly (to_int_poly x)"
 
 lemma rebase_self [simp]:

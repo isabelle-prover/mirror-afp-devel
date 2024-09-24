@@ -7,7 +7,7 @@ type_synonym 'a valuation = "'a \<Rightarrow> bool"
 text\<open>The implicit statement here is that an assignment or valuation is always defined on all atoms (because HOL is a total logic).
 Thus, there are no unsuitable assignments.\<close>
 
-primrec formula_semantics :: "'a valuation \<Rightarrow> 'a formula \<Rightarrow> bool" (infix "\<Turnstile>" 51) where
+primrec formula_semantics :: "'a valuation \<Rightarrow> 'a formula \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 51) where
 "\<A> \<Turnstile> Atom k = \<A> k" |
 "_ \<Turnstile> \<bottom> = False" |
 "\<A> \<Turnstile> Not F = (\<not> \<A> \<Turnstile> F)" |
@@ -15,7 +15,7 @@ primrec formula_semantics :: "'a valuation \<Rightarrow> 'a formula \<Rightarrow
 "\<A> \<Turnstile> Or F G = (\<A> \<Turnstile> F \<or> \<A> \<Turnstile> G)" |
 "\<A> \<Turnstile> Imp F G = (\<A> \<Turnstile> F \<longrightarrow> \<A> \<Turnstile> G)"
 
-abbreviation valid ("\<Turnstile> _" 51) where
+abbreviation valid (\<open>\<Turnstile> _\<close> 51) where
 "\<Turnstile> F \<equiv> \<forall>A. A \<Turnstile> F"
 
 lemma irrelevant_atom[simp]: "A \<notin> atoms F \<Longrightarrow> (\<A>(A := V)) \<Turnstile> F \<longleftrightarrow> \<A> \<Turnstile> F"
@@ -61,7 +61,7 @@ private lemma "A \<Turnstile> F \<longleftrightarrow> formula_semantics_tt A F"
   by(induction F; simp split: prod.splits bool.splits)
 end
 
-definition entailment :: "'a formula set \<Rightarrow> 'a formula \<Rightarrow> bool" ("(_ \<TTurnstile>/ _)" (* \TTurnstile *) [53,53] 53) where
+definition entailment :: "'a formula set \<Rightarrow> 'a formula \<Rightarrow> bool" (\<open>(_ \<TTurnstile>/ _)\<close> (* \TTurnstile *) [53,53] 53) where
 "\<Gamma> \<TTurnstile> F \<equiv> (\<forall>\<A>. ((\<forall>G \<in> \<Gamma>. \<A> \<Turnstile> G) \<longrightarrow> (\<A> \<Turnstile> F)))"
 text\<open>We write entailment differently than semantics (\<open>\<Turnstile>\<close> vs. \<open>\<TTurnstile>\<close>).
 For humans, it is usually pretty clear what is meant in a specific situation, 

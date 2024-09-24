@@ -6,18 +6,18 @@ begin
 nitpick_params[box=false, user_axioms=true, show_all, expect=genuine, format = 3,  atoms e = a b c d]
 sledgehammer_params[verbose=true]
   
-consts isActualized::"e\<Rightarrow>wo" (infix "actualizedAt" 70)
+consts isActualized::"e\<Rightarrow>wo" (infix \<open>actualizedAt\<close> 70)
   
-abbreviation forallAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" ("\<^bold>\<forall>\<^sup>A")
+abbreviation forallAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" (\<open>\<^bold>\<forall>\<^sup>A\<close>)
   where "\<^bold>\<forall>\<^sup>A\<Phi> \<equiv> \<lambda>w.\<forall>x. (x actualizedAt w)\<longrightarrow>(\<Phi> x w)"
-abbreviation existsAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" ("\<^bold>\<exists>\<^sup>A")
+abbreviation existsAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" (\<open>\<^bold>\<exists>\<^sup>A\<close>)
   where "\<^bold>\<exists>\<^sup>A\<Phi> \<equiv> \<lambda>w.\<exists>x. (x actualizedAt w) \<and> (\<Phi> x w)"
-abbreviation mforallActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder"\<^bold>\<forall>\<^sup>A"[8]9)
+abbreviation mforallActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder\<open>\<^bold>\<forall>\<^sup>A\<close>[8]9)
   where "\<^bold>\<forall>\<^sup>Ax. (\<phi> x) \<equiv> \<^bold>\<forall>\<^sup>A\<phi>"
-abbreviation mexistsActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder"\<^bold>\<exists>\<^sup>A"[8]9)
+abbreviation mexistsActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder\<open>\<^bold>\<exists>\<^sup>A\<close>[8]9)
   where "\<^bold>\<exists>\<^sup>Ax. (\<phi> x) \<equiv> \<^bold>\<exists>\<^sup>A\<phi>"
   
-definition Existence::"e\<Rightarrow>wo" ("E!") where "E! x  \<equiv> \<^bold>\<exists>\<^sup>Ay. y\<^bold>\<approx>x"
+definition Existence::"e\<Rightarrow>wo" (\<open>E!\<close>) where "E! x  \<equiv> \<^bold>\<exists>\<^sup>Ay. y\<^bold>\<approx>x"
 definition Necessary::"e\<Rightarrow>wo" where "Necessary x \<equiv>  \<^bold>\<box>E! x"
 definition Contingent::"e\<Rightarrow>wo" where "Contingent x \<equiv>  \<^bold>\<diamond>E! x \<^bold>\<and> \<^bold>\<not>(Necessary x)"
   
@@ -26,7 +26,7 @@ abbreviation Abstract::"e\<Rightarrow>wo" where "Abstract x \<equiv>  \<^bold>\<
   
 abbreviation Godlike::"e\<Rightarrow>wo"  where "Godlike x \<equiv> Necessary x \<^bold>\<and> Concrete x"
   
-consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix "dependsOn" 100)
+consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>dependsOn\<close> 100)
 definition Dependent::"e\<Rightarrow>wo" where "Dependent x \<equiv> \<^bold>\<exists>\<^sup>Ay. x dependsOn y"
 abbreviation Independent::"e\<Rightarrow>wo" where "Independent x  \<equiv> \<^bold>\<not>(Dependent x)"  
   
@@ -67,7 +67,7 @@ text\<open>\noindent{As a side note, we can also prove that the original premise
 directly follows from D5 by redefining metaphysical explanation
 as the inverse relation of ontological dependence.}\<close>
     
-abbreviation explanation::"(e\<Rightarrow>e\<Rightarrow>wo)" (infix "explains"(*<*)100(*>*))
+abbreviation explanation::"(e\<Rightarrow>e\<Rightarrow>wo)" (infix \<open>explains\<close>(*<*)100(*>*))
   where "y explains x \<equiv> x dependsOn y"
     
 lemma P5: "\<lfloor>\<^bold>\<not>(\<^bold>\<exists>\<^sup>Ax. \<^bold>\<exists>\<^sup>Ay. Contingent y \<^bold>\<and> Necessary x \<^bold>\<and> y explains x)\<rfloor>"

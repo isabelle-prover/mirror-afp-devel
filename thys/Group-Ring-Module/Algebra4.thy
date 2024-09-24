@@ -31,9 +31,9 @@ begin
 section "Abelian groups"
 
 record 'a aGroup = "'a carrier" +
-  pop      :: "['a, 'a ] \<Rightarrow> 'a"  (infixl "\<plusminus>\<index>" 62)
-  mop      :: "'a  \<Rightarrow> 'a"        ("(-\<^sub>a\<index> _)" [64]63 )
-  zero     :: "'a"               ("\<zero>\<index>")
+  pop      :: "['a, 'a ] \<Rightarrow> 'a"  (infixl \<open>\<plusminus>\<index>\<close> 62)
+  mop      :: "'a  \<Rightarrow> 'a"        (\<open>(-\<^sub>a\<index> _)\<close> [64]63 )
+  zero     :: "'a"               (\<open>\<zero>\<index>\<close>)
 
 locale aGroup =
   fixes A (structure)
@@ -65,11 +65,11 @@ definition
          mop = \<lambda>X. (c_iop (b_ag A) H X), zero = H \<rparr>"
 
 definition
-  ag_idmap :: "_ \<Rightarrow> ('a \<Rightarrow> 'a)"  ("(aI\<^bsub>_\<^esub>)") where
+  ag_idmap :: "_ \<Rightarrow> ('a \<Rightarrow> 'a)"  (\<open>(aI\<^bsub>_\<^esub>)\<close>) where
   "aI\<^bsub>A\<^esub> = (\<lambda>x\<in>carrier A. x)"
 
 abbreviation
-  ASubG :: "[('a, 'more) aGroup_scheme, 'a set] => bool"   (infixl "+>" 58) where
+  ASubG :: "[('a, 'more) aGroup_scheme, 'a set] => bool"   (infixl \<open>+>\<close> 58) where
   "A +> H == asubGroup A H"
 
 definition
@@ -498,27 +498,27 @@ definition
 
 definition
   ker :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme] \<Rightarrow> ('a \<Rightarrow> 'b)
-        \<Rightarrow> 'a set" ("(3ker\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+        \<Rightarrow> 'a set" (\<open>(3ker\<^bsub>_,_\<^esub> _)\<close> [82,82,83]82) where
   "ker\<^bsub>F,G\<^esub> f = {a. a \<in> carrier F \<and> f a = (\<zero>\<^bsub>G\<^esub>)}"
 
 definition
  injec :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> bool"             ("(3injec\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+            \<Rightarrow> bool"             (\<open>(3injec\<^bsub>_,_\<^esub> _)\<close> [82,82,83]82) where
   "injec\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> aHom F G \<and> ker\<^bsub>F,G\<^esub> f = {\<zero>\<^bsub>F\<^esub>}"
 
 definition
   surjec :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> bool"             ("(3surjec\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+            \<Rightarrow> bool"             (\<open>(3surjec\<^bsub>_,_\<^esub> _)\<close> [82,82,83]82) where
   "surjec\<^bsub>F,G\<^esub> f \<longleftrightarrow> f \<in> aHom F G \<and> surj_to f (carrier F) (carrier G)"
 
 definition
   bijec :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> bool"             ("(3bijec\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+            \<Rightarrow> bool"             (\<open>(3bijec\<^bsub>_,_\<^esub> _)\<close> [82,82,83]82) where
   "bijec\<^bsub>F,G\<^esub> f \<longleftrightarrow> injec\<^bsub>F,G\<^esub> f \<and> surjec\<^bsub>F,G\<^esub> f"
 
 definition
   ainvf :: "[('a, 'm) aGroup_scheme, ('b, 'm1) aGroup_scheme, 'a \<Rightarrow> 'b]
-            \<Rightarrow> ('b \<Rightarrow> 'a)"             ("(3ainvf\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+            \<Rightarrow> ('b \<Rightarrow> 'a)"             (\<open>(3ainvf\<^bsub>_,_\<^esub> _)\<close> [82,82,83]82) where
   "ainvf\<^bsub>F,G\<^esub> f = invfun (carrier F) (carrier G) f"
 
 lemma aHom_mem:"\<lbrakk>aGroup F; aGroup G; f \<in> aHom F G; a \<in> carrier F\<rbrakk> \<Longrightarrow>
@@ -820,7 +820,7 @@ done
 
 definition
   aimg :: "[('b, 'm1) aGroup_scheme, _, 'b \<Rightarrow> 'a]
-            \<Rightarrow> 'a aGroup"  ("(3aimg\<^bsub>_,_\<^esub> _)" [82,82,83]82) where
+            \<Rightarrow> 'a aGroup"  (\<open>(3aimg\<^bsub>_,_\<^esub> _)\<close> [82,82,83]82) where
   "aimg\<^bsub>F,A\<^esub> f = A \<lparr> carrier := f ` (carrier F), pop := pop A, mop := mop A,
                   zero := zero A\<rparr>"
 
@@ -847,7 +847,7 @@ subsection "Quotient abelian group"
 
 definition
   ar_coset :: "['a, _ , 'a set] \<Rightarrow> 'a set" (** a_rcs **)
-     ("(3_ \<uplus>\<^bsub>_\<^esub> _)" [66,66,67]66) where
+     (\<open>(3_ \<uplus>\<^bsub>_\<^esub> _)\<close> [66,66,67]66) where
   "ar_coset a A H = H \<bullet>\<^bsub>(b_ag A)\<^esub> a"
 
 definition
@@ -859,7 +859,7 @@ definition
   "aset_sum A H K = s_top (b_ag A) H K"
 
 abbreviation
-  ASBOP1  (infix "\<minusplus>\<index>" 60) where
+  ASBOP1  (infix \<open>\<minusplus>\<index>\<close> 60) where
   "H \<minusplus>\<^bsub>A\<^esub> K == aset_sum A H K"
 
 lemma (in aGroup) ag_a_in_ar_cos:"\<lbrakk>A +> H; a \<in> carrier A\<rbrakk> \<Longrightarrow> a \<in> a \<uplus>\<^bsub>A\<^esub> H"
@@ -996,7 +996,7 @@ definition
   "rind_hom A B f = (\<lambda>X\<in>(set_ar_cos A (ker\<^bsub>A,B\<^esub> f)). f (SOME x. x \<in> X))"
 
 abbreviation
-  RIND_HOM  ("(3_\<degree>\<^bsub>_,_\<^esub>)" [82,82,83]82)  where
+  RIND_HOM  (\<open>(3_\<degree>\<^bsub>_,_\<^esub>)\<close> [82,82,83]82)  where
   "f\<degree>\<^bsub>F,G\<^esub> == rind_hom F G f"
                                                           (* tOp \<rightarrow> pOp *)
 
@@ -1034,11 +1034,11 @@ definition
 
 definition
   PRoject :: "['i set, 'i \<Rightarrow> ('a, 'more) aGroup_scheme, 'i]
-                   \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a" ("(3\<pi>\<^bsub>_,_,_\<^esub>)" [82,82,83]82) where
+                   \<Rightarrow> ('i \<Rightarrow> 'a) \<Rightarrow> 'a" (\<open>(3\<pi>\<^bsub>_,_,_\<^esub>)\<close> [82,82,83]82) where
   "PRoject I A x = (\<lambda>f \<in> carr_prodag I A. f x)"
 
 abbreviation
-  PRODag  ("(a\<Pi>\<^bsub>_\<^esub> _)" [72,73]72) where
+  PRODag  (\<open>(a\<Pi>\<^bsub>_\<^esub> _)\<close> [72,73]72) where
   "a\<Pi>\<^bsub>I\<^esub> A == prodag I A"
 
 lemma prodag_comp_i:"\<lbrakk>a \<in> carr_prodag I A; i \<in> I\<rbrakk> \<Longrightarrow> (a i) \<in> carrier (A i)"
@@ -1431,7 +1431,7 @@ definition
   "dProj I A x = (\<lambda>f\<in>carr_dsumag I A. f x)"
 
 abbreviation
-  DSUMag  ("(a\<Oplus>\<^bsub>_\<^esub> _)" [72,73]72) where
+  DSUMag  (\<open>(a\<Oplus>\<^bsub>_\<^esub> _)\<close> [72,73]72) where
   "a\<Oplus>\<^bsub>I\<^esub> A == dsumag I A"
 
 lemma dsum_pOp_func:"\<forall>k\<in>I. aGroup (A k) \<Longrightarrow>
@@ -2081,8 +2081,8 @@ chapter "Ring theory"
 section "Definition of a ring and an ideal"
 
 record 'a Ring = "'a aGroup" +
-  tp ::  "['a, 'a ] \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>r\<index>" 70)
-  un :: "'a"   ("1\<^sub>r\<index>")
+  tp ::  "['a, 'a ] \<Rightarrow> 'a" (infixl \<open>\<cdot>\<^sub>r\<index>\<close> 70)
+  un :: "'a"   (\<open>1\<^sub>r\<index>\<close>)
 
 locale Ring =
  fixes R (structure)
@@ -2131,22 +2131,22 @@ where
 
 abbreviation
   NSCAL :: "[nat, ('a, 'more) Ring_scheme, 'a] \<Rightarrow> 'a"
-    ("(3 _ \<times>\<^bsub>_\<^esub> _)" [75,75,76]75) where
+    (\<open>(3 _ \<times>\<^bsub>_\<^esub> _)\<close> [75,75,76]75) where
   "n \<times>\<^bsub>R\<^esub> x == nscal R x n"
 
 abbreviation
   NPOW :: "['a, ('a, 'more) Ring_scheme, nat] \<Rightarrow>  'a"
-    ("(3_^\<^bsup>_ _\<^esup>)" [77,77,78]77) where
+    (\<open>(3_^\<^bsup>_ _\<^esup>)\<close> [77,77,78]77) where
   "a^\<^bsup>R n\<^esup> == npow R a n"
 
 abbreviation
   SUM :: "('a, 'more) aGroup_scheme => (nat => 'a) => nat => 'a"
-    ("(3\<Sigma>\<^sub>e _ _ _)" [85,85,86]85) where
+    (\<open>(3\<Sigma>\<^sub>e _ _ _)\<close> [85,85,86]85) where
   "\<Sigma>\<^sub>e G f n == nsum G f n"
 
 abbreviation
   NPROD :: "[('a, 'm) Ring_scheme, nat, nat \<Rightarrow> 'a] \<Rightarrow> 'a"
-    ("(3e\<Pi>\<^bsub>_,_\<^esub> _)" [98,98,99]98) where
+    (\<open>(3e\<Pi>\<^bsub>_,_\<^esub> _)\<close> [98,98,99]98) where
   "e\<Pi>\<^bsub>R,n\<^esub> f == nprod R f n"
 
 definition
@@ -2156,7 +2156,7 @@ definition
 
 abbreviation
   FSUM :: "[('a, 'more) aGroup_scheme, (nat \<Rightarrow> 'a), nat, nat] \<Rightarrow> 'a"
-    ("(4\<Sigma>\<^sub>f _ _ _ _)" [85,85,85,86]85) where
+    (\<open>(4\<Sigma>\<^sub>f _ _ _ _)\<close> [85,85,85,86]85) where
   "\<Sigma>\<^sub>f G f n m == fSum G f n m"
 
 lemma (in aGroup) nsum_zeroGTr:"(\<forall>j \<le> n. f j = \<zero>) \<longrightarrow> nsum A f n = \<zero>"
@@ -3258,7 +3258,7 @@ definition
 
 definition
   r_isom :: "[('a, 'm) Ring_scheme, ('b, 'm1) Ring_scheme] \<Rightarrow> bool"
-                       (infixr "\<cong>\<^sub>r" 100) where
+                       (infixr \<open>\<cong>\<^sub>r\<close> 100) where
   "r_isom R R' \<longleftrightarrow> (\<exists>f\<in>rHom R R'. bijec\<^bsub>R,R'\<^esub> f)"
 
 definition
@@ -3679,7 +3679,7 @@ apply (frule ideal_subset1[of "I"], frule ideal_subset1[of "J"])
 done
 
 definition
-  ideal_prod::"[_, 'a set, 'a set] \<Rightarrow> 'a set" (infix "\<diamondsuit>\<^sub>r\<index>" 90 ) where
+  ideal_prod::"[_, 'a set, 'a set] \<Rightarrow> 'a set" (infix \<open>\<diamondsuit>\<^sub>r\<index>\<close> 90 ) where
   "ideal_prod R I J == \<Inter> {L. ideal R L \<and>
                               {x.(\<exists>i\<in>I. \<exists>j\<in>J. x = i \<cdot>\<^sub>r\<^bsub>R\<^esub> j)} \<subseteq> L}"
 
@@ -3768,7 +3768,7 @@ apply (cut_tac ring_is_ag,
 done
 
 definition
-  Rxa :: "[_, 'a ] \<Rightarrow> 'a set" (infixl "\<diamondsuit>\<^sub>p" 200)  where
+  Rxa :: "[_, 'a ] \<Rightarrow> 'a set" (infixl \<open>\<diamondsuit>\<^sub>p\<close> 200)  where
   "Rxa R a = {x. \<exists>r\<in>carrier R. x = (r \<cdot>\<^sub>r\<^bsub>R\<^esub> a)}"
 
 lemma (in Ring) a_in_principal:"a \<in> carrier R \<Longrightarrow> a \<in> Rxa R a"
@@ -4373,7 +4373,7 @@ definition
     un = 1\<^sub>r\<^bsub>R\<^esub> \<uplus>\<^bsub>R\<^esub> I\<rparr>"
 
 abbreviation
-  QRING  (infixl "'/\<^sub>r" 200) where
+  QRING  (infixl \<open>'/\<^sub>r\<close> 200) where
   "R /\<^sub>r I == qring R I"
 
 lemma (in Ring) carrier_qring:"ideal R I \<Longrightarrow>
@@ -5337,12 +5337,12 @@ where
                           (ideal_n_prod R n J) \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> (J (Suc n))"
 
 abbreviation
-  IDNPROD  ("(3i\<Pi>\<^bsub>_,_\<^esub> _)" [98,98,99]98) where
+  IDNPROD  (\<open>(3i\<Pi>\<^bsub>_,_\<^esub> _)\<close> [98,98,99]98) where
   "i\<Pi>\<^bsub>R,n\<^esub> J == ideal_n_prod R n J"
 
 primrec
   ideal_pow :: "['a set, ('a, 'more) Ring_scheme, nat] \<Rightarrow> 'a set"
-               ("(3_/ \<^bsup>\<diamondsuit>_ _\<^esup>)" [120,120,121]120)
+               (\<open>(3_/ \<^bsup>\<diamondsuit>_ _\<^esup>)\<close> [120,120,121]120)
 where
   ip0:  "I \<^bsup>\<diamondsuit>R 0\<^esup> = carrier R"
 | ipSuc:  "I \<^bsup>\<diamondsuit>R (Suc n)\<^esup> = I \<diamondsuit>\<^sub>r\<^bsub>R\<^esub> (I \<^bsup>\<diamondsuit>R n\<^esup>)"
@@ -6027,11 +6027,11 @@ definition
     (if 0 \<le> n then npow K x (nat n) else npow K (invf K x) (nat (- n)))"
 
 abbreviation
-  NPOWF ::  "['a, _, int] \<Rightarrow>  'a"  ("(3_\<^bsub>_\<^esub>\<^bsup>_\<^esup>)" [77,77,78]77) where
+  NPOWF ::  "['a, _, int] \<Rightarrow>  'a"  (\<open>(3_\<^bsub>_\<^esub>\<^bsup>_\<^esup>)\<close> [77,77,78]77) where
   "a\<^bsub>K\<^esub>\<^bsup>n\<^esup> == npowf K a n"
 
 abbreviation
-  IOP :: "['a, _] \<Rightarrow> 'a" ("(_\<^bsup>\<hyphen> _\<^esup>)" [87,88]87) where
+  IOP :: "['a, _] \<Rightarrow> 'a" (\<open>(_\<^bsup>\<hyphen> _\<^esup>)\<close> [87,88]87) where
   "a\<^bsup>\<hyphen>K\<^esup> == invf K a"
 
 lemma (in Idomain) idom_is_ring: "Ring R" ..

@@ -14,10 +14,10 @@ begin
 
 text \<open>A pattern completeness decision procedure for a set of lhss\<close>
 
-definition basic_terms :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('v \<rightharpoonup> 's) \<Rightarrow> ('f,'v)term set" ("\<B>'(_,_,_')") where
+definition basic_terms :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('v \<rightharpoonup> 's) \<Rightarrow> ('f,'v)term set" (\<open>\<B>'(_,_,_')\<close>) where
   "\<B>(C,D,V) = { Fun f ts | f ss s ts . f : ss \<rightarrow> s in D \<and> ts :\<^sub>l ss in \<T>(C,V)}" 
 
-definition matches :: "('f,'v)term \<Rightarrow> ('f,'v)term \<Rightarrow> bool" (infix "matches" 50) where
+definition matches :: "('f,'v)term \<Rightarrow> ('f,'v)term \<Rightarrow> bool" (infix \<open>matches\<close> 50) where
   "l matches t = (\<exists> \<sigma>. t = l \<cdot> \<sigma>)"
 
 definition pat_complete_lhss :: "('f,'s)ssig \<Rightarrow> ('f,'s)ssig \<Rightarrow> ('f,'v)term set \<Rightarrow> bool" where

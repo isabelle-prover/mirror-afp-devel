@@ -21,7 +21,7 @@ begin
 lemma add_iso_r: "y \<le> z \<Longrightarrow> x + y \<le> x + z"
     using local.join.sup_mono by blast
 
-notation power ("_\<^bsup>_\<^esup>" [101,50] 100) 
+notation power (\<open>_\<^bsup>_\<^esup>\<close> [101,50] 100) 
 
 lemma power_subdist: "x\<^bsup>n\<^esup> \<le> (x + y)\<^bsup>n\<^esup>"
   apply (induct n)
@@ -36,7 +36,7 @@ lemma power_inductl_var: "x \<cdot> y \<le> y \<Longrightarrow> x\<^bsup>n\<^esu
 lemma power_inductr_var: "y \<cdot> x \<le> y \<Longrightarrow> y \<cdot> x\<^bsup>n\<^esup> \<le> y"
   by (induct n, metis eq_refl mult_oner power.simps(1), metis mult.assoc mult_isor order_refl order_trans power.simps(2) power_commutes)
 
-definition powsum :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("_\<^bsub>_\<^esub>\<^bsup>_\<^esup>" [101,50,50] 100) where
+definition powsum :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  (\<open>_\<^bsub>_\<^esub>\<^bsup>_\<^esup>\<close> [101,50,50] 100) where
   "powsum x m n = sum ((^) x) {m..n + m}"
 
 lemmas powsum_simps = powsum_def atLeastAtMostSuc_conv numerals

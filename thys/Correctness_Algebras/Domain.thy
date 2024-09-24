@@ -186,7 +186,7 @@ subclass tests
 text \<open>Many lemmas in this class are taken from Georg Struth's theories.\<close>
 
 notation
-  uminus ("a")
+  uminus (\<open>a\<close>)
 
 lemma a_greatest_left_absorber:
   "a(x) * y = bot \<longleftrightarrow> a(x) \<le> a(y)"

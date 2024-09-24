@@ -10,7 +10,7 @@ instantiation tensor:: (ring) semigroup_mult
 begin
   definition tensor_prod_def:"A * B = tensor_from_vec (dims A @ dims B) (concat (map (\<lambda>a. vec_smult a (vec B)) (vec A)))"
 
-  abbreviation tensor_prod_otimes :: "'a tensor \<Rightarrow> 'a tensor \<Rightarrow> 'a tensor" (infixl "\<otimes>" 70)
+  abbreviation tensor_prod_otimes :: "'a tensor \<Rightarrow> 'a tensor \<Rightarrow> 'a tensor" (infixl \<open>\<otimes>\<close> 70)
     where "A \<otimes> B \<equiv> A * B"
 
 

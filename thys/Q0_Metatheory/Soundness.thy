@@ -6,8 +6,8 @@ theory Soundness
     Semantics
 begin
 
-no_notation funcset (infixr "\<rightarrow>" 60)
-notation funcset (infixr "\<Zpfun>" 60)
+no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+notation funcset (infixr \<open>\<Zpfun>\<close> 60)
 
 subsection \<open>Proposition 5400\<close>
 

@@ -9,7 +9,7 @@ theory Expr
 imports Update
 begin
 
-no_notation not ("NOT")
+no_notation not (\<open>NOT\<close>)
 
 datatype ('s,'e)expr = true
                         | In 's
@@ -128,7 +128,7 @@ definition
 
 definition
    eval :: "[('s set * 'e set * 'd data), ('s,'e,'d)label] => bool"
-                                                       ("_ |= _" [91,90]90) where
+                                                       (\<open>_ |= _\<close> [91,90]90) where
   "eval scd l = (let (s,e,d) = scd
                  in
                     ((eval_expr (s,e) (expr l)) \<and> ((guard l) d)))"

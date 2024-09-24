@@ -14,7 +14,7 @@ nominal_datatype 'a prefix =
 context tau
 begin
 
-nominal_primrec bindPrefix :: "'a prefix \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi"  ("_\<cdot>_" [100, 100] 100)
+nominal_primrec bindPrefix :: "'a prefix \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi"  (\<open>_\<cdot>_\<close> [100, 100] 100)
 where
   "bindPrefix (pInput M xvec N) P = M\<lparr>\<lambda>*xvec N\<rparr>.P"
 | "bindPrefix (pOutput M N) P = M\<langle>N\<rangle>.P"

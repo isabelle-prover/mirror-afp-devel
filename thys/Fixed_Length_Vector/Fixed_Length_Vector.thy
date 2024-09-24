@@ -196,7 +196,7 @@ typedef ('a, 'b) vec = "{xs. length xs = CARD('b)} :: 'a list set"
 
 declare vec.list_of_vec_inverse[simp]
 
-type_notation vec (infixl "^" 15)
+type_notation vec (infixl \<open>^\<close> 15)
 
 setup_lifting type_definition_vec
 
@@ -257,7 +257,7 @@ section \<open>Indexing\<close>
 
 lift_definition nth_vec' :: \<open>'a ^ 'b \<Rightarrow> nat \<Rightarrow> 'a\<close> is nth .
 
-lift_definition nth_vec :: \<open>'a ^ 'b \<Rightarrow> 'b :: index1 \<Rightarrow> 'a\<close> (infixl "$" 90)
+lift_definition nth_vec :: \<open>'a ^ 'b \<Rightarrow> 'b :: index1 \<Rightarrow> 'a\<close> (infixl \<open>$\<close> 90)
   \<comment> \<open>We fix this to \<^class>\<open>index1\<close> because indexing a unit vector makes no sense.\<close>
   is \<open>\<lambda>xs. nth xs \<circ> from_index\<close> .
 
@@ -269,7 +269,7 @@ text \<open>
   \<^const>\<open>indexes\<close>.
 \<close>
 
-lift_definition vec_lambda :: \<open>('b :: index \<Rightarrow> 'a) \<Rightarrow> 'a ^ 'b\<close> (binder "\<chi>" 10)
+lift_definition vec_lambda :: \<open>('b :: index \<Rightarrow> 'a) \<Rightarrow> 'a ^ 'b\<close> (binder \<open>\<chi>\<close> 10)
   is \<open>\<lambda>f. map f indexes\<close> by simp
 
 lemma vec_lambda_nth[simp]: \<open>vec_lambda f $ i = f i\<close>
@@ -550,18 +550,18 @@ lifting_forget vec.lifting
 
 bundle vec_syntax begin
 type_notation
-  vec (infixl "^" 15)
+  vec (infixl \<open>^\<close> 15)
 notation
-  nth_vec (infixl "$" 90) and
-  vec_lambda (binder "\<chi>" 10)
+  nth_vec (infixl \<open>$\<close> 90) and
+  vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
 bundle no_vec_syntax begin
 no_type_notation
-  vec (infixl "^" 15)
+  vec (infixl \<open>^\<close> 15)
 no_notation
-  nth_vec (infixl "$" 90) and
-  vec_lambda (binder "\<chi>" 10)
+  nth_vec (infixl \<open>$\<close> 90) and
+  vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
 unbundle no_vec_syntax

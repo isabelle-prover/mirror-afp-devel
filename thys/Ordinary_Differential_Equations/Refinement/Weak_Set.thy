@@ -736,7 +736,7 @@ lemma op_wset_isEmpty_list_wset_rel[autoref_rules]:
   by (auto simp: nres_rel_def list_wset_rel_def set_rel_def br_def)
 
 
-definition WEAK_ALL:: "('a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> bool nres) \<Rightarrow> bool nres" ("WEAK'_ALL\<^bsup>_\<^esup>") where
+definition WEAK_ALL:: "('a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> bool nres) \<Rightarrow> bool nres" (\<open>WEAK'_ALL\<^bsup>_\<^esup>\<close>) where
   "WEAK_ALL I X P = do {
     (_, b) \<leftarrow> WHILE\<^bsup>\<lambda>(Y, b). b \<longrightarrow> (\<forall>x \<in> X - Y. I x)\<^esup> (\<lambda>(X, b). b \<and> X \<noteq> {}) (\<lambda>(X, b). do {
       ASSERT (X \<noteq> {});
@@ -765,7 +765,7 @@ schematic_goal WEAK_ALL_transfer_nres:
 concrete_definition dWEAK_ALL for xs f uses WEAK_ALL_transfer_nres
 lemmas [refine_transfer] = dWEAK_ALL.refine
 
-definition WEAK_EX:: "('a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> bool nres) \<Rightarrow> bool nres" ("WEAK'_EX\<^bsup>_\<^esup>") where
+definition WEAK_EX:: "('a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> bool nres) \<Rightarrow> bool nres" (\<open>WEAK'_EX\<^bsup>_\<^esup>\<close>) where
   "WEAK_EX I X P = do {
     (_, b) \<leftarrow> WHILE\<^bsup>\<lambda>(Y, b). Y \<subseteq> X \<and> (b \<longrightarrow> (\<exists>x \<in> X. I x))\<^esup> (\<lambda>(X, b). \<not>b \<and> X \<noteq> {}) (\<lambda>(X, b). do {
       ASSERT (X \<noteq> {});

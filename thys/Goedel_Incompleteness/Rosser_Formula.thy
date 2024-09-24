@@ -52,7 +52,7 @@ HBL1
     and prv bprv
     and Lq
     and dsj
-    and enc ("\<langle>_\<rangle>")
+    and enc (\<open>\<langle>_\<rangle>\<close>)
     and N S P
 
 
@@ -103,7 +103,7 @@ CleanRepr_Proofs
     and prv bprv
     and Lq
     and dsj and "proof" :: "'proof set" and prfOf
-    and enc ("\<langle>_\<rangle>")
+    and enc (\<open>\<langle>_\<rangle>\<close>)
     and N
     and S
     and encPf Pf

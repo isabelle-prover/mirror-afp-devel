@@ -58,7 +58,7 @@ record tg = \<comment> \<open>global types\<close>
   tg_t :: t
 
 datatype \<comment> \<open>function types\<close>
-  tf = Tf "t list" "t list" ("_ '_> _" 60)
+  tf = Tf "t list" "t list" (\<open>_ '_> _\<close> 60)
 
 (* TYPING *)
 record t_context =
@@ -136,7 +136,7 @@ datatype \<comment> \<open>basic instructions\<close>
     | Store t "tp option" a off
     | Current_memory
     | Grow_memory
-    | EConst v ("C _" 60)
+    | EConst v (\<open>C _\<close> 60)
     | Unop_i t unop_i
     | Unop_f t unop_f
     | Binop_i t binop_i
@@ -171,7 +171,7 @@ record s = \<comment> \<open>store\<close>
   globs :: "global list"
 
 datatype e = \<comment> \<open>administrative instruction\<close>
-  Basic b_e ("$_" 60)
+  Basic b_e (\<open>$_\<close> 60)
   | Trap
   | Callcl cl
   | Label nat "e list" "e list"

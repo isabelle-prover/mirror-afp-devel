@@ -388,10 +388,10 @@ text \<open>
   a list of sets.
 \<close>
 
-abbreviation setsetmapim :: "('a\<Rightarrow>'b) \<Rightarrow> 'a set set \<Rightarrow> 'b set set" (infix "\<turnstile>" 70)
+abbreviation setsetmapim :: "('a\<Rightarrow>'b) \<Rightarrow> 'a set set \<Rightarrow> 'b set set" (infix \<open>\<turnstile>\<close> 70)
   where "f\<turnstile>X \<equiv> ((`) f) ` X"
 
-abbreviation setlistmapim :: "('a\<Rightarrow>'b) \<Rightarrow> 'a set list \<Rightarrow> 'b set list" (infix "\<Turnstile>" 70)
+abbreviation setlistmapim :: "('a\<Rightarrow>'b) \<Rightarrow> 'a set list \<Rightarrow> 'b set list" (infix \<open>\<Turnstile>\<close> 70)
   where "f\<Turnstile>Xs \<equiv> map ((`) f) Xs"
 
 lemma setsetmapim_comp: "(f\<circ>g)\<turnstile>A = f\<turnstile>(g\<turnstile>A)"
@@ -972,10 +972,10 @@ subsubsection \<open>Morphisms of posets\<close>
 locale OrderingSetMap =
   domain  : ordering less_eq less
 + codomain: ordering less_eq' less' 
-  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)
-  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold><"  50)
-  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold>\<le>*" 50)
-  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold><*" 50)
+  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix \<open>\<^bold>\<le>\<close>  50)
+  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix \<open>\<^bold><\<close>  50)
+  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix \<open>\<^bold>\<le>*\<close> 50)
+  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix \<open>\<^bold><*\<close> 50)
 + fixes P :: "'a set"
   and   f :: "'a\<Rightarrow>'b"
   assumes ordsetmap: "a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> a \<^bold>\<le> b \<Longrightarrow> f a \<^bold>\<le>* f b"
@@ -997,10 +997,10 @@ lemma subset: "Q\<subseteq>P \<Longrightarrow> OrderingSetMap (\<^bold>\<le>) (\
 end (* context OrderingSetMap *)
 
 locale OrderingSetIso = OrderingSetMap less_eq less less_eq' less' P f
-  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)
-  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold><"  50)
-  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold>\<le>*" 50)
-  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold><*" 50)
+  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix \<open>\<^bold>\<le>\<close>  50)
+  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix \<open>\<^bold><\<close>  50)
+  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix \<open>\<^bold>\<le>*\<close> 50)
+  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix \<open>\<^bold><*\<close> 50)
   and P :: "'a set"
   and f :: "'a\<Rightarrow>'b"
 + assumes inj               : "inj_on f P"
@@ -1308,10 +1308,10 @@ lemma (in OrderingSetIso) pullback_pseudominimal_in:
 
 subsubsection \<open>Set of elements below another\<close>
 
-abbreviation (in ordering) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix ".\<^bold>\<le>" 70)
+abbreviation (in ordering) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix \<open>.\<^bold>\<le>\<close> 70)
   where "P.\<^bold>\<le>x \<equiv> {y\<in>P. y\<^bold>\<le>x}"
 
-abbreviation (in ord) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix ".\<le>" 70)
+abbreviation (in ord) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix \<open>.\<le>\<close> 70)
   where "P.\<le>x \<equiv> {y\<in>P. y\<le>x}"
 
 context ordering
@@ -1670,7 +1670,7 @@ abbreviation "supset_simplex_like     \<equiv> ordering.simplex_like     (\<sups
 abbreviation "supset_pseudominimal_in \<equiv>
                 ordering.pseudominimal_in (\<supseteq>) (\<supset>)"
 
-abbreviation supset_below_in :: "'a set set \<Rightarrow> 'a set \<Rightarrow> 'a set set" (infix ".\<supseteq>" 70)
+abbreviation supset_below_in :: "'a set set \<Rightarrow> 'a set \<Rightarrow> 'a set set" (infix \<open>.\<supseteq>\<close> 70)
   where "P.\<supseteq>A \<equiv> ordering.below_in (\<supseteq>) P A"
 
 lemma supset_poset: "ordering (\<supseteq>) (\<supset>)" ..

@@ -8,9 +8,9 @@ from~\cite{DBLP:journals/afp/Bengtson12}.\<close>
 context env begin
 
 abbreviation
-  bisimSubstJudge ("_ \<rhd> _ \<sim>\<^sub>s _" [70, 70, 70] 65) where "\<Psi> \<rhd> P \<sim>\<^sub>s Q \<equiv> (\<Psi>, P, Q) \<in> closeSubst bisim"
+  bisimSubstJudge (\<open>_ \<rhd> _ \<sim>\<^sub>s _\<close> [70, 70, 70] 65) where "\<Psi> \<rhd> P \<sim>\<^sub>s Q \<equiv> (\<Psi>, P, Q) \<in> closeSubst bisim"
 abbreviation
-  bisimSubstNilJudge ("_ \<sim>\<^sub>s _" [70, 70] 65) where "P \<sim>\<^sub>s Q \<equiv> SBottom' \<rhd> P \<sim>\<^sub>s Q"
+  bisimSubstNilJudge (\<open>_ \<sim>\<^sub>s _\<close> [70, 70] 65) where "P \<sim>\<^sub>s Q \<equiv> SBottom' \<rhd> P \<sim>\<^sub>s Q"
 
 lemmas bisimSubstClosed[eqvt] = closeSubstClosed[OF bisimEqvt]
 lemmas bisimSubstEqvt[simp] = closeSubstEqvt[OF bisimEqvt]
@@ -430,7 +430,7 @@ shows "x \<sharp> P[<\<sigma>>]"
   using assms
   by(induct \<sigma> arbitrary: P, auto) (blast dest: subst2)
 
-notation substTerm.seqSubst ("_[<_>]" [100, 100] 100)
+notation substTerm.seqSubst (\<open>_[<_>]\<close> [100, 100] 100)
 
 lemma bisimSubstScopeExt:
   fixes \<Psi> :: 'b

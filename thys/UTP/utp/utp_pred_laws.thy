@@ -902,7 +902,7 @@ subsection \<open> Refinement By Observation \<close>
     
 text \<open> Function to obtain the set of observations of a predicate \<close>
     
-definition obs_upred :: "'\<alpha> upred \<Rightarrow> '\<alpha> set" ("\<lbrakk>_\<rbrakk>\<^sub>o")
+definition obs_upred :: "'\<alpha> upred \<Rightarrow> '\<alpha> set" (\<open>\<lbrakk>_\<rbrakk>\<^sub>o\<close>)
 where [upred_defs]: "\<lbrakk>P\<rbrakk>\<^sub>o = {b. \<lbrakk>P\<rbrakk>\<^sub>eb}"
     
 lemma obs_upred_refine_iff: 

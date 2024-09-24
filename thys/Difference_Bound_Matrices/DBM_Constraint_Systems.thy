@@ -54,23 +54,23 @@ datatype ('x, 'v) constr =
 
 type_synonym ('x, 'v) cs = "('x, 'v) constr set"
 
-inductive entry_sem ("_ \<Turnstile>\<^sub>e _" [62, 62] 62) where
+inductive entry_sem (\<open>_ \<Turnstile>\<^sub>e _\<close> [62, 62] 62) where
   "v \<Turnstile>\<^sub>e Lt x" if "v < x" |
   "v \<Turnstile>\<^sub>e Le x" if "v \<le> x" |
   "v \<Turnstile>\<^sub>e \<infinity>"
 
-inductive constr_sem ("_ \<Turnstile>\<^sub>c _" [62, 62] 62) where
+inductive constr_sem (\<open>_ \<Turnstile>\<^sub>c _\<close> [62, 62] 62) where
   "u \<Turnstile>\<^sub>c Lower x e" if "- u x \<Turnstile>\<^sub>e e" |
   "u \<Turnstile>\<^sub>c Upper x e" if   "u x \<Turnstile>\<^sub>e e" |
   "u \<Turnstile>\<^sub>c Diff x y e" if "u x - u y \<Turnstile>\<^sub>e e"
 
-definition cs_sem ("_ \<Turnstile>\<^sub>c\<^sub>s _" [62, 62] 62) where
+definition cs_sem (\<open>_ \<Turnstile>\<^sub>c\<^sub>s _\<close> [62, 62] 62) where
   "u \<Turnstile>\<^sub>c\<^sub>s cs \<longleftrightarrow> (\<forall>c \<in> cs. u \<Turnstile>\<^sub>c c)"
 
-definition cs_models ("_ \<Turnstile> _" [62, 62] 62) where
+definition cs_models (\<open>_ \<Turnstile> _\<close> [62, 62] 62) where
   "cs \<Turnstile> c \<equiv> \<forall>u. u \<Turnstile>\<^sub>c\<^sub>s cs \<longrightarrow> u \<Turnstile>\<^sub>c c"
 
-definition cs_equiv ("_ \<equiv>\<^sub>c\<^sub>s _" [62, 62] 62) where
+definition cs_equiv (\<open>_ \<equiv>\<^sub>c\<^sub>s _\<close> [62, 62] 62) where
   "cs \<equiv>\<^sub>c\<^sub>s cs' \<equiv> \<forall>u. u \<Turnstile>\<^sub>c\<^sub>s cs \<longleftrightarrow> u \<Turnstile>\<^sub>c\<^sub>s cs'"
 
 definition

@@ -241,9 +241,9 @@ text \<open>We now lift the fusion product to a complex product on sets of
 traces. This operation is total.\<close>
 
 no_notation
-  times (infixl "\<cdot>" 70)
+  times (infixl \<open>\<cdot>\<close> 70)
 
-definition t_prod :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" (infixl "\<cdot>" 70)
+definition t_prod :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" (infixl \<open>\<cdot>\<close> 70)
 where "X \<cdot> Y = {t_fusion u v| u v. u \<in> X \<and> v \<in> Y \<and> last u = first v}"
 
 text \<open>Next we define the empty set of traces and the set of traces
@@ -282,7 +282,7 @@ apply (metis last_append append_assoc)
 done
 
 no_notation
-  t_prod (infixl "\<cdot>" 70)
+  t_prod (infixl \<open>\<cdot>\<close> 70)
 
 
 subsection \<open>The Path Diod\<close>
@@ -355,9 +355,9 @@ abbreviation p_filter :: "'a path \<Rightarrow> 'a path \<Rightarrow> bool" wher
 "p_filter ps qs \<equiv> ((ps = [] \<and> qs = []) \<or> (ps \<noteq> [] \<and> qs \<noteq> [] \<and> (List.last ps) = hd qs))"
 
 no_notation
-  times (infixl "\<cdot>" 70)
+  times (infixl \<open>\<cdot>\<close> 70)
 
-definition p_prod :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a path set" (infixl "\<cdot>" 70)
+definition p_prod :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a path set" (infixl \<open>\<cdot>\<close> 70)
 where "X \<cdot> Y = {rs . \<exists>ps \<in> X. \<exists>qs \<in> Y. rs = p_fusion ps qs \<and> p_filter ps qs}"
 
 lemma p_prod_iff:
@@ -465,7 +465,7 @@ proof
 qed
 
 no_notation
-  p_prod (infixl "\<cdot>" 70)
+  p_prod (infixl \<open>\<cdot>\<close> 70)
 
 
 subsection \<open>Path Models without the Empty Path\<close>
@@ -517,7 +517,7 @@ lemma pp_fusion_assoc [simp]:
 text \<open>We now lift the path fusion product to a complex product on
 sets of paths. This operation is total.\<close>
 
-definition pp_prod :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" (infixl "\<cdot>" 70)
+definition pp_prod :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" (infixl \<open>\<cdot>\<close> 70)
   where "X\<cdot>Y = {pp_fusion u v| u v. u \<in> X \<and> v \<in> Y \<and> pp_last u = pp_first v}"
 
 text \<open>Next we define the set of paths of length one as the
@@ -565,7 +565,7 @@ proof
 qed
 
 no_notation
-  pp_prod (infixl "\<cdot>" 70)
+  pp_prod (infixl \<open>\<cdot>\<close> 70)
 
 subsection \<open>The Distributive Lattice Dioid\<close>
 

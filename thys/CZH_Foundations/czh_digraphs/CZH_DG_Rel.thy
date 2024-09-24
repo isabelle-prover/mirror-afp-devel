@@ -373,7 +373,7 @@ The operation is meant to be used almost exclusively as part of
 the dagger functor for \<open>Rel\<close>.
 \<close>
 
-definition converse_Rel :: "V \<Rightarrow> V" ("(_\<inverse>\<^sub>R\<^sub>e\<^sub>l)" [1000] 999)
+definition converse_Rel :: "V \<Rightarrow> V" (\<open>(_\<inverse>\<^sub>R\<^sub>e\<^sub>l)\<close> [1000] 999)
   where "converse_Rel T = [(T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ>, T\<lparr>ArrCod\<rparr>, T\<lparr>ArrDom\<rparr>]\<^sub>\<circ>"
 
 lemma converse_Rel_components:

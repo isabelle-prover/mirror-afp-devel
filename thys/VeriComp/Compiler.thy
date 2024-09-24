@@ -4,7 +4,7 @@ theory Compiler
   imports Language Simulation
 begin
 
-definition option_comp :: "('a \<Rightarrow> 'b option) \<Rightarrow> ('c \<Rightarrow> 'a option) \<Rightarrow> 'c \<Rightarrow> 'b option" (infix "\<Lleftarrow>" 50) where
+definition option_comp :: "('a \<Rightarrow> 'b option) \<Rightarrow> ('c \<Rightarrow> 'a option) \<Rightarrow> 'c \<Rightarrow> 'b option" (infix \<open>\<Lleftarrow>\<close> 50) where
   "(f \<Lleftarrow> g) x \<equiv> Option.bind (g x) f"
 
 context

@@ -30,7 +30,7 @@ end
 
 
 syntax
-  "_Ucast" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1UCAST/(1'(_ \<rightarrow> _')))")
+  "_Ucast" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1UCAST/(1'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Ucast" == ucast
 translations
@@ -40,7 +40,7 @@ typed_print_translation
 
 
 syntax
-  "_Scast" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1SCAST/(1'(_ \<rightarrow> _')))")
+  "_Scast" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1SCAST/(1'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Scast" == scast
 translations
@@ -50,7 +50,7 @@ typed_print_translation
 
 
 syntax
-  "_Revcast" :: "type \<Rightarrow> type \<Rightarrow> logic" ("(1REVCAST/(1'(_ \<rightarrow> _')))")
+  "_Revcast" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1REVCAST/(1'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Revcast" == revcast
 translations

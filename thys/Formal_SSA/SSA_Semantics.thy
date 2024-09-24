@@ -17,7 +17,7 @@ begin
   where
     "step g m s v \<equiv> if v \<in> oldDefs g m then Some m else s v"
 
-  inductive bs :: "'g \<Rightarrow> 'node list \<Rightarrow> ('node, 'var) state \<Rightarrow> bool" ("_ \<turnstile> _\<Down>_" [50, 50, 50] 50)
+  inductive bs :: "'g \<Rightarrow> 'node list \<Rightarrow> ('node, 'var) state \<Rightarrow> bool" (\<open>_ \<turnstile> _\<Down>_\<close> [50, 50, 50] 50)
   where
     "g \<turnstile> Entry g-ns\<rightarrow>last ns \<Longrightarrow> g \<turnstile> ns\<Down>(fold (step g) ns Map.empty)"
 
@@ -33,7 +33,7 @@ begin
           Some phiParams \<Rightarrow> s (phiParams ! i)
         | None \<Rightarrow> s v"
 
-  inductive ssaBS :: "'g \<Rightarrow> 'node list \<Rightarrow> ('node, 'val) state \<Rightarrow> bool" ("_ \<turnstile> _\<Down>\<^sub>s _" [50, 50, 50] 50)
+  inductive ssaBS :: "'g \<Rightarrow> 'node list \<Rightarrow> ('node, 'val) state \<Rightarrow> bool" (\<open>_ \<turnstile> _\<Down>\<^sub>s _\<close> [50, 50, 50] 50)
   for
     g :: 'g
   where

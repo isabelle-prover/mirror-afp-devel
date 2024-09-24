@@ -8,15 +8,15 @@ begin
 
 context env begin
 
-abbreviation tauChain :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<Longrightarrow>\<^sup>^\<^sub>\<tau> _" [80, 80, 80] 80)
+abbreviation tauChain :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<Longrightarrow>\<^sup>^\<^sub>\<tau> _\<close> [80, 80, 80] 80)
 where "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P' \<equiv> (P, P') \<in> {(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}^*"
 
-abbreviation tauStepChain :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<Longrightarrow>\<^sub>\<tau> _" [80, 80, 80] 80)
+abbreviation tauStepChain :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<Longrightarrow>\<^sub>\<tau> _\<close> [80, 80, 80] 80)
 where "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P' \<equiv> (P, P') \<in> {(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}^+"
 
-abbreviation tauContextChain :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sup>^\<^sub>\<tau> _" [80, 80] 80)
+abbreviation tauContextChain :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sup>^\<^sub>\<tau> _\<close> [80, 80] 80)
 where "P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P' \<equiv> \<one> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'"
-abbreviation tauContextStepChain :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>\<tau> _" [80, 80] 80)
+abbreviation tauContextStepChain :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sub>\<tau> _\<close> [80, 80] 80)
 where "P \<Longrightarrow>\<^sub>\<tau> P' \<equiv> \<one> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'"
 
 lemmas tauChainInduct[consumes 1, case_names TauBase TauStep] = rtrancl.induct[of _ _ "{(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}", simplified] for \<Psi>
@@ -323,7 +323,7 @@ lemma tauChainStatEq:
 using assms
 by(auto simp add: rtrancl_eq_or_trancl intro: tauStepChainStatEq)
 
-definition weakTransition :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>  ('a, 'b, 'c) psi \<Rightarrow> 'a action \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ : _ \<rhd> _ \<Longrightarrow>_ \<prec> _" [80, 80, 80, 80, 80] 80)
+definition weakTransition :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow>  ('a, 'b, 'c) psi \<Rightarrow> 'a action \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ : _ \<rhd> _ \<Longrightarrow>_ \<prec> _\<close> [80, 80, 80, 80, 80] 80)
 where
   "\<Psi> : Q \<rhd> P \<Longrightarrow>\<alpha> \<prec> P' \<equiv> \<exists>P''. \<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'' \<and> (insertAssertion (extractFrame Q) \<Psi>) \<hookrightarrow>\<^sub>F (insertAssertion (extractFrame P'') \<Psi>) \<and>
                                           \<Psi> \<rhd> P'' \<longmapsto>\<alpha> \<prec> P'"

@@ -234,7 +234,7 @@ let
   val oldctxt = ctxt
   val (thm, ctxt) = Local_Theory.background_theory_result (fn lthy => let
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
-        Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
+        Sign.syntax_global true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
         add_AOT_print_rule true [
           (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
@@ -305,7 +305,7 @@ let
        in thm RS spec' end
      fun remove_alls frees (thy, thm) = (thy, fold (inst_all thy) frees thm)
      val lthy = lthy |> Sign.add_consts [(bnd,const_typ,Mixfix.NoSyn)] |>
-        Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
+        Sign.syntax_global true Syntax.mode_default [(bnd_str,syn_typ,mx)] |>
         add_AOT_print_rule true [
           (Ast.Constant bnd_str, Ast.Constant (Lexicon.mark_const const_name))
         ]
@@ -325,7 +325,7 @@ fun AOT_define (((bnd,str,mx),(thmbind,thmattrs)),defprop) ctxt =
     (* Add a generic constant and the requested syntax to a temporary context. *)
     val thy = Proof_Context.theory_of ctxt
     val thy' = Sign.add_consts [(bnd, @{typ 'a}, Mixfix.NoSyn)] thy
-    val thy' = Sign.syntax true Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
+    val thy' = Sign.syntax_global true Syntax.mode_default [(bnd_str,syn_typ,mx)] thy'
     (* Try to parse the definition using the temporary context. *)
     val trm = AOT_check_prop @{nonterminal AOT_prop}
       (Proof_Context.init_global thy') defprop

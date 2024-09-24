@@ -12,7 +12,7 @@ definition set_bind :: "'a M \<Rightarrow> ('a \<Rightarrow> 'b M) \<Rightarrow>
   "set_bind m f \<equiv> { v. \<exists> v'. v' \<in> m \<and> v \<in> f v' }"
 declare set_bind_def[simp]
 
-syntax "_set_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" ("(_ \<leftarrow> _;//_)" 0)
+syntax "_set_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" (\<open>(_ \<leftarrow> _;//_)\<close> 0)
 syntax_consts "_set_bind" \<rightleftharpoons> set_bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST set_bind E (\<lambda>P. F)"
 
@@ -24,7 +24,7 @@ definition zero :: "'a M" where
   "zero \<equiv> {}"
 declare zero_def[simp]
 
-no_notation "binomial" (infix "choose" 64)
+no_notation "binomial" (infix \<open>choose\<close> 64)
 
 definition choose :: "'a set \<Rightarrow> 'a M" where
   "choose S \<equiv> S"

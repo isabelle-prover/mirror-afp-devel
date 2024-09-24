@@ -7,16 +7,16 @@ theory Semantics
     Boolean_Algebra
 begin
 
-no_notation funcset (infixr "\<rightarrow>" 60)
-notation funcset (infixr "\<Zpfun>" 60)
+no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+notation funcset (infixr \<open>\<Zpfun>\<close> 60)
 
-abbreviation vfuncset :: "V \<Rightarrow> V \<Rightarrow> V" (infixr "\<longmapsto>" 60) where
+abbreviation vfuncset :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<longmapsto>\<close> 60) where
   "A \<longmapsto> B \<equiv> VPi A (\<lambda>_. B)"
 
-notation app (infixl "\<bullet>" 300)
+notation app (infixl \<open>\<bullet>\<close> 300)
 
 syntax
-  "_vlambda" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" ("(3\<^bold>\<lambda>_\<^bold>:_ \<^bold>./ _)" [0, 0, 3] 3)
+  "_vlambda" :: "pttrn \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V" (\<open>(3\<^bold>\<lambda>_\<^bold>:_ \<^bold>./ _)\<close> [0, 0, 3] 3)
 syntax_consts
   "_vlambda" \<rightleftharpoons> VLambda
 translations
@@ -53,7 +53,7 @@ lemma app_is_domain_respecting:
 
 text \<open>One-element function on @{term \<open>\<D> \<alpha>\<close>}:\<close>
 
-definition one_element_function :: "V \<Rightarrow> type \<Rightarrow> V" ("{_}\<^bsub>_\<^esub>" [901, 0] 900) where
+definition one_element_function :: "V \<Rightarrow> type \<Rightarrow> V" (\<open>{_}\<^bsub>_\<^esub>\<close> [901, 0] 900) where
   [simp]: "{x}\<^bsub>\<alpha>\<^esub> = (\<^bold>\<lambda>y \<^bold>: \<D> \<alpha>\<^bold>. bool_to_V (y = x))"
 
 lemma one_element_function_is_domain_respecting:
@@ -78,7 +78,7 @@ lemma one_element_function_uniqueness:
 
 text \<open>Identity relation on @{term \<open>\<D> \<alpha>\<close>}:\<close>
 
-definition identity_relation :: "type \<Rightarrow> V" ("q\<^bsub>_\<^esub>" [0] 100) where
+definition identity_relation :: "type \<Rightarrow> V" (\<open>q\<^bsub>_\<^esub>\<close> [0] 100) where
   [simp]: "q\<^bsub>\<alpha>\<^esub> = (\<^bold>\<lambda>x \<^bold>: \<D> \<alpha>\<^bold>. {x}\<^bsub>\<alpha>\<^esub>)"
 
 lemma identity_relation_is_domain_respecting:
@@ -103,10 +103,10 @@ definition is_assignment :: "(var \<Rightarrow> V) \<Rightarrow> bool" where
 
 end
 
-abbreviation one_element_function_in ("{_}\<^bsub>_\<^esub>\<^bsup>_\<^esup>" [901, 0, 0] 900) where
+abbreviation one_element_function_in (\<open>{_}\<^bsub>_\<^esub>\<^bsup>_\<^esup>\<close> [901, 0, 0] 900) where
   "{x}\<^bsub>\<alpha>\<^esub>\<^bsup>\<D>\<^esup> \<equiv> frame.one_element_function \<D> x \<alpha>"
 
-abbreviation identity_relation_in ("q\<^bsub>_\<^esub>\<^bsup>_\<^esup>" [0, 0] 100) where
+abbreviation identity_relation_in (\<open>q\<^bsub>_\<^esub>\<^bsup>_\<^esup>\<close> [0, 0] 100) where
   "q\<^bsub>\<alpha>\<^esub>\<^bsup>\<D>\<^esup> \<equiv> frame.identity_relation \<D> \<alpha>"
 
 text \<open>
@@ -114,7 +114,7 @@ text \<open>
   \<open>v\<close>:
 \<close>
 
-definition is_variant_of :: "(var \<Rightarrow> V) \<Rightarrow> var \<Rightarrow> (var \<Rightarrow> V) \<Rightarrow> bool" ("_ \<sim>\<^bsub>_\<^esub> _" [51, 0, 51] 50) where
+definition is_variant_of :: "(var \<Rightarrow> V) \<Rightarrow> var \<Rightarrow> (var \<Rightarrow> V) \<Rightarrow> bool" (\<open>_ \<sim>\<^bsub>_\<^esub> _\<close> [51, 0, 51] 50) where
   [iff]: "\<psi> \<sim>\<^bsub>v\<^esub> \<phi> \<longleftrightarrow> (\<forall>v'. v' \<noteq> v \<longrightarrow> \<psi> v' = \<phi> v')"
 
 subsection \<open>Pre-models (interpretations)\<close>
@@ -293,25 +293,25 @@ lemma standard_model_is_general_model:
 
 subsection \<open>Validity\<close>
 
-abbreviation is_assignment_into_frame ("_ \<leadsto> _" [51, 51] 50) where
+abbreviation is_assignment_into_frame (\<open>_ \<leadsto> _\<close> [51, 51] 50) where
   "\<phi> \<leadsto> \<D> \<equiv> frame.is_assignment \<D> \<phi>"
 
-abbreviation is_assignment_into_model ("_ \<leadsto>\<^sub>M _" [51, 51] 50) where
+abbreviation is_assignment_into_model (\<open>_ \<leadsto>\<^sub>M _\<close> [51, 51] 50) where
   "\<phi> \<leadsto>\<^sub>M \<M> \<equiv> (case \<M> of (\<D>, \<J>, \<V>) \<Rightarrow> \<phi> \<leadsto> \<D>)"
 
-abbreviation satisfies ("_ \<Turnstile>\<^bsub>_\<^esub> _" [50, 50, 50] 50) where
+abbreviation satisfies (\<open>_ \<Turnstile>\<^bsub>_\<^esub> _\<close> [50, 50, 50] 50) where
   "\<M> \<Turnstile>\<^bsub>\<phi>\<^esub> A \<equiv> case \<M> of (\<D>, \<J>, \<V>) \<Rightarrow> \<V> \<phi> A = \<^bold>T"
 
 abbreviation is_satisfiable_in where
   "is_satisfiable_in A \<M> \<equiv> \<exists>\<phi>. \<phi> \<leadsto>\<^sub>M \<M> \<and> \<M> \<Turnstile>\<^bsub>\<phi>\<^esub> A"
 
-abbreviation is_valid_in ("_ \<Turnstile> _" [50, 50] 50) where
+abbreviation is_valid_in (\<open>_ \<Turnstile> _\<close> [50, 50] 50) where
   "\<M> \<Turnstile> A \<equiv> \<forall>\<phi>. \<phi> \<leadsto>\<^sub>M \<M> \<longrightarrow> \<M> \<Turnstile>\<^bsub>\<phi>\<^esub> A"
 
-abbreviation is_valid_in_the_general_sense ("\<Turnstile> _" [50] 50) where
+abbreviation is_valid_in_the_general_sense (\<open>\<Turnstile> _\<close> [50] 50) where
   "\<Turnstile> A \<equiv> \<forall>\<M>. is_general_model \<M> \<longrightarrow> \<M> \<Turnstile> A"
 
-abbreviation is_valid_in_the_standard_sense ("\<Turnstile>\<^sub>S _" [50] 50) where
+abbreviation is_valid_in_the_standard_sense (\<open>\<Turnstile>\<^sub>S _\<close> [50] 50) where
   "\<Turnstile>\<^sub>S A \<equiv> \<forall>\<M>. is_standard_model \<M> \<longrightarrow> \<M> \<Turnstile> A"
 
 abbreviation is_true_sentence_in where

@@ -42,7 +42,7 @@ abbreviation \<PP>
 where
   "\<PP> \<phi> \<G> w i \<equiv> \<exists>j. \<G> \<Turnstile>\<^sub>P af\<^sub>G \<phi> (w [i \<rightarrow> j])"
 
-definition almost_all_eventually_provable :: "'a ltl \<Rightarrow> 'a ltl set \<Rightarrow> 'a set word \<Rightarrow> bool" ("\<PP>\<^sub>\<infinity>") 
+definition almost_all_eventually_provable :: "'a ltl \<Rightarrow> 'a ltl set \<Rightarrow> 'a set word \<Rightarrow> bool" (\<open>\<PP>\<^sub>\<infinity>\<close>) 
 where
   "\<PP>\<^sub>\<infinity> \<phi> \<G> w \<equiv> \<forall>\<^sub>\<infinity>i. \<PP> \<phi> \<G> w i"
 

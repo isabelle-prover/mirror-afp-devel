@@ -15,7 +15,7 @@ abbreviation (input) LBL where
 abbreviation (input) TO where
   "TO \<equiv> \<lambda>(s, l, t). t"
 
-notation subseq (infix "\<preceq>" 50)
+notation subseq (infix \<open>\<preceq>\<close> 50)
 
 locale graph =
   fixes weights :: "'vtx :: finite \<Rightarrow> 'vtx \<Rightarrow> 'lbl :: {order, monoid_add} antichain"

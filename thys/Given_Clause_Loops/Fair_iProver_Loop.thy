@@ -26,7 +26,7 @@ begin
 
 subsection \<open>Basic Definition\<close>
 
-inductive fair_IL :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix "\<leadsto>ILf" 50) where
+inductive fair_IL :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix \<open>\<leadsto>ILf\<close> 50) where
   ol: "St \<leadsto>OLf St' \<Longrightarrow> St \<leadsto>ILf St'"
 | red_by_children: "C \<in> no_labels.Red_F (fset A \<union> fset M) \<or> fset M = {C'} \<and> C' \<prec>\<cdot> C \<Longrightarrow>
   ({||}, None, P, Some C, A) \<leadsto>ILf (M, None, P, None, A)"
@@ -153,13 +153,13 @@ fun mset_of_fstate :: "('p, 'f) OLf_state \<Rightarrow> 'f multiset" where
    mset_set (fset N) + mset_set (set_option X) + mset_set (elems P) + mset_set (set_option Y) +
    mset_set (fset A)"
 
-abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> bool" (infix "\<prec>\<prec>S" 50) where
+abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> bool" (infix \<open>\<prec>\<prec>S\<close> 50) where
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
   using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
 
-definition Less1_state :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix "\<sqsubset>1" 50) where
+definition Less1_state :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>1\<close> 50) where
   "St' \<sqsubset>1 St \<longleftrightarrow>
    mset_of_fstate St' \<prec>\<prec>S mset_of_fstate St
    \<or> (mset_of_fstate St' = mset_of_fstate St
@@ -186,7 +186,7 @@ proof -
     unfolding wfp_def Less1_state_alt_def using wf_app[of _ ?triple_of] wf_lex_prod by blast
 qed
 
-definition Less2_state :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix "\<sqsubset>2" 50) where
+definition Less2_state :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>2\<close> 50) where
   "St' \<sqsubset>2 St \<equiv>
    mset_set (set_option (yy_of St')) \<prec>\<prec>S mset_set (set_option (yy_of St))
    \<or> (mset_set (set_option (yy_of St')) = mset_set (set_option (yy_of St))

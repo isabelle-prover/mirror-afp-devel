@@ -12,10 +12,10 @@ imports Complete_Tests Preconditions
 begin
 
 class ite =
-  fixes ite :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<lhd> _ \<rhd> _" [58,58,58] 57)
+  fixes ite :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_ \<lhd> _ \<rhd> _\<close> [58,58,58] 57)
 
 class hoare_triple =
-  fixes hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<lbrace> _ \<rbrace> _" [54,54,54] 53)
+  fixes hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<lbrace> _ \<rbrace> _\<close> [54,54,54] 53)
 
 class ifthenelse = precondition + ite +
   assumes ite_pre: "x\<lhd>-p\<rhd>y\<guillemotleft>-q = -p*(x\<guillemotleft>-q) \<squnion> --p*(y\<guillemotleft>-q)"
@@ -494,7 +494,7 @@ proof -
     by (smt assms(2-4) tests_dual.antisymmetric pre_closed pre_expression_test t_sum2_test t_sum2_below_w test_pre)
 qed
 
-inductive derived_hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<lparr> _ \<rparr> _" [54,54,54] 53)
+inductive derived_hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<lparr> _ \<rparr> _\<close> [54,54,54] 53)
   where atom_trip:  "p \<in> Pre_expression \<Longrightarrow> x \<in> Atomic_program \<Longrightarrow> x\<guillemotleft>p\<lparr>x\<rparr>p"
       | seq_trip:   "p\<lparr>x\<rparr>q \<and> q\<lparr>y\<rparr>r \<Longrightarrow> p\<lparr>x*y\<rparr>r"
       | cond_trip:  "p \<in> Test_expression \<Longrightarrow> q \<in> Pre_expression \<Longrightarrow> p*q\<lparr>x\<rparr>r \<and> -p*q\<lparr>y\<rparr>r \<Longrightarrow> q\<lparr>x\<lhd>p\<rhd>y\<rparr>r"
@@ -518,7 +518,7 @@ lemma cons_post_trip:
   "q \<in> Pre_expression \<Longrightarrow> r \<in> Pre_expression \<Longrightarrow> p\<lparr>y\<rparr>q*r \<longrightarrow> p\<lparr>y\<rparr>r"
   by (metis cons_trip derived_type pre_expression_test tests_dual.sba_dual.reflexive tests_dual.upper_bound_right)
 
-definition valid_hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<langle> _ \<rangle> _" [54,54,54] 53)
+definition valid_hoare_triple :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<langle> _ \<rangle> _\<close> [54,54,54] 53)
   where "p\<langle>x\<rangle>q \<equiv> (p \<in> Pre_expression \<and> q \<in> Pre_expression \<and> x \<in> While_program \<and> p \<le> x\<guillemotleft>q)"
 
 end

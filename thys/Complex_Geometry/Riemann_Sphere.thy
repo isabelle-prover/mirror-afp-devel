@@ -353,7 +353,7 @@ d)$ give the same plane iff they are proportional.\<close>
 
 type_synonym R4 = "real \<times> real \<times> real \<times> real"
 
-fun mult_sv :: "real \<Rightarrow> R4 \<Rightarrow> R4" (infixl "*\<^sub>s\<^sub>v\<^sub>4" 100) where
+fun mult_sv :: "real \<Rightarrow> R4 \<Rightarrow> R4" (infixl \<open>*\<^sub>s\<^sub>v\<^sub>4\<close> 100) where
   "k *\<^sub>s\<^sub>v\<^sub>4 (a, b, c, d) = (k*a, k*b, k*c, k*d)"
 
 abbreviation plane_vectors where

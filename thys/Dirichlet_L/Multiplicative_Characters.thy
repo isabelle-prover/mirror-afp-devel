@@ -9,7 +9,7 @@ theory Multiplicative_Characters
   "Finitely_Generated_Abelian_Groups.Finitely_Generated_Abelian_Groups"
 begin
 
-notation integer_mod_group ("Z")
+notation integer_mod_group (\<open>Z\<close>)
 
 subsection \<open>Definition of characters\<close>
 
@@ -48,7 +48,7 @@ lemma eval_inv_character: "inv_character \<chi> j = cnj (\<chi> j)"
 
 bundle character_syntax
 begin
-notation principal_char ("\<chi>\<^sub>0\<index>")
+notation principal_char (\<open>\<chi>\<^sub>0\<index>\<close>)
 end
 
 locale character = finite_comm_group +
@@ -1663,5 +1663,5 @@ qed
 
 end
 
-no_notation integer_mod_group ("Z")
+no_notation integer_mod_group (\<open>Z\<close>)
 end

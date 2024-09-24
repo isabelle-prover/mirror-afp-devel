@@ -2061,7 +2061,7 @@ inductive trans_observable_moves ::
   "'node SDG_node set \<Rightarrow> ('edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind) \<Rightarrow> 'node list \<Rightarrow> 
    (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> 'edge list \<Rightarrow> 'node list \<Rightarrow> 
   (('var \<rightharpoonup> 'val) \<times> 'ret) list \<Rightarrow> bool"
-("_,_ \<turnstile> '(_,_') =_\<Rightarrow>* '(_,_')" [51,50,0,0,50,0,0] 51) 
+(\<open>_,_ \<turnstile> '(_,_') =_\<Rightarrow>* '(_,_')\<close> [51,50,0,0,50,0,0] 51) 
 
 where tom_Nil:
   "length ms = length s \<Longrightarrow> S,f \<turnstile> (ms,s) =[]\<Rightarrow>* (ms,s)"
@@ -3430,15 +3430,15 @@ locale SemanticsProperty = SDG sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>)  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname"
-  and Exit::"'node"  ("'('_Exit'_')") 
+  and Exit::"'node"  (\<open>'('_Exit'_')\<close>) 
   and Def :: "'node \<Rightarrow> 'var set" and Use :: "'node \<Rightarrow> 'var set"
   and ParamDefs :: "'node \<Rightarrow> 'var list" and ParamUses :: "'node \<Rightarrow> 'var set list"
   and sem :: "'com \<Rightarrow> ('var \<rightharpoonup> 'val) list \<Rightarrow> 'com \<Rightarrow> ('var \<rightharpoonup> 'val) list \<Rightarrow> bool" 
-    ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
-  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51,0] 80)
+    (\<open>((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81)
+  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" (\<open>_ \<triangleq> _\<close> [51,0] 80)
 begin
 
 

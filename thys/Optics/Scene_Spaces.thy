@@ -6,7 +6,7 @@ begin
 
 subsection \<open> Preliminaries \<close>
 
-abbreviation foldr_scene :: "'a scene list \<Rightarrow> 'a scene" ("\<Squnion>\<^sub>S") where
+abbreviation foldr_scene :: "'a scene list \<Rightarrow> 'a scene" (\<open>\<Squnion>\<^sub>S\<close>) where
 "foldr_scene as \<equiv> foldr (\<squnion>\<^sub>S) as \<bottom>\<^sub>S"
 
 lemma pairwise_indep_then_compat [simp]: "pairwise (\<bowtie>\<^sub>S) A \<Longrightarrow> pairwise (##\<^sub>S) A"

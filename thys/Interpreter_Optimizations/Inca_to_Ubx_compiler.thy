@@ -243,7 +243,7 @@ context
   fixes load_oracle :: "nat \<Rightarrow> type option"
 begin
 
-definition orelse :: "'a option \<Rightarrow> 'a option \<Rightarrow> 'a option"  (infixr "orelse" 55) where
+definition orelse :: "'a option \<Rightarrow> 'a option \<Rightarrow> 'a option"  (infixr \<open>orelse\<close> 55) where
   "x orelse y = (case x of Some x' \<Rightarrow> Some x' | None \<Rightarrow> y)"
 
 lemma None_orelse[simp]: "None orelse y = y"

@@ -68,7 +68,7 @@ text \<open>
   parallel composition operators. For each of them, we prove several properties. 
 \<close>
 
-definition prod_orA ::"['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)"  (infixr "\<Otimes>\<^sub>\<or>\<^sub>A" 55)
+definition prod_orA ::"['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)"  (infixr \<open>\<Otimes>\<^sub>\<or>\<^sub>A\<close> 55)
   where "p1 \<Otimes>\<^sub>\<or>\<^sub>A p2 =
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor> \<Rightarrow>(case p2 y of 
@@ -100,7 +100,7 @@ lemma prod_orA_quasi_commute: "p2 \<Otimes>\<^sub>\<or>\<^sub>A p1 = (((\<lambda
   apply (simp split: option.splits decision.splits)
   done
 
-definition prod_orD ::"['\<alpha> \<mapsto> '\<beta>, '\<gamma> \<mapsto>   '\<delta>] \<Rightarrow>  ('\<alpha> \<times> '\<gamma> \<mapsto>  '\<beta> \<times> '\<delta> )" (infixr "\<Otimes>\<^sub>\<or>\<^sub>D" 55)
+definition prod_orD ::"['\<alpha> \<mapsto> '\<beta>, '\<gamma> \<mapsto>   '\<delta>] \<Rightarrow>  ('\<alpha> \<times> '\<gamma> \<mapsto>  '\<beta> \<times> '\<delta> )" (infixr \<open>\<Otimes>\<^sub>\<or>\<^sub>D\<close> 55)
 where "p1 \<Otimes>\<^sub>\<or>\<^sub>D p2 =
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor> \<Rightarrow>(case p2 y of 
@@ -136,7 +136,7 @@ text\<open>
   The following two combinators are by definition non-commutative, but still strict. 
 \<close>
   
-definition prod_1 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr "\<Otimes>\<^sub>1" 55)
+definition prod_1 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr \<open>\<Otimes>\<^sub>1\<close> 55)
   where "p1 \<Otimes>\<^sub>1 p2 \<equiv>
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor>\<Rightarrow>(case p2 y of 
@@ -161,7 +161,7 @@ lemma mt_prod_1[simp]:"\<emptyset> \<Otimes>\<^sub>1 p = \<emptyset>"
   apply (simp add: prod_1_def)
   done
     
-definition prod_2 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr "\<Otimes>\<^sub>2" 55)
+definition prod_2 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr \<open>\<Otimes>\<^sub>2\<close> 55)
   where "p1 \<Otimes>\<^sub>2 p2 \<equiv>
        (\<lambda>(x,y). (case p1 x of
              \<lfloor>allow d1\<rfloor> \<Rightarrow>(case p2 y of 
@@ -186,7 +186,7 @@ lemma mt_prod_2[simp]:"\<emptyset> \<Otimes>\<^sub>2 p = \<emptyset>"
   apply (simp add: prod_2_def)
   done
     
-definition prod_1_id ::"['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<gamma>] \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>\<times>'\<gamma>)" (infixr "\<Otimes>\<^sub>1\<^sub>I" 55)
+definition prod_1_id ::"['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<gamma>] \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>\<times>'\<gamma>)" (infixr \<open>\<Otimes>\<^sub>1\<^sub>I\<close> 55)
   where "p \<Otimes>\<^sub>1\<^sub>I q = (p \<Otimes>\<^sub>1 q) o (\<lambda>x. (x,x))"
     
 lemma prod_1_id_mt[simp]:"p \<Otimes>\<^sub>1\<^sub>I \<emptyset> = \<emptyset>"
@@ -199,7 +199,7 @@ lemma mt_prod_1_id[simp]:"\<emptyset> \<Otimes>\<^sub>1\<^sub>I p = \<emptyset>"
   apply (simp add: prod_1_id_def prod_1_def)
   done
     
-definition prod_2_id ::"['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<gamma>] \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>\<times>'\<gamma>)" (infixr "\<Otimes>\<^sub>2\<^sub>I" 55)
+definition prod_2_id ::"['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<gamma>] \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>\<times>'\<gamma>)" (infixr \<open>\<Otimes>\<^sub>2\<^sub>I\<close> 55)
   where"p \<Otimes>\<^sub>2\<^sub>I q = (p \<Otimes>\<^sub>2 q) o (\<lambda>x. (x,x))"
     
 lemma prod_2_id_mt[simp]:"p \<Otimes>\<^sub>2\<^sub>I \<emptyset> = \<emptyset>"
@@ -219,14 +219,14 @@ text \<open>
 \<close>
   
 definition parallel_map :: "('\<alpha> \<rightharpoonup> '\<beta>) \<Rightarrow> ('\<delta> \<rightharpoonup> '\<gamma>) \<Rightarrow> 
-                            ('\<alpha> \<times> '\<delta>  \<rightharpoonup> '\<beta> \<times> '\<gamma>)" (infixr "\<Otimes>\<^sub>M" 60) 
+                            ('\<alpha> \<times> '\<delta>  \<rightharpoonup> '\<beta> \<times> '\<gamma>)" (infixr \<open>\<Otimes>\<^sub>M\<close> 60) 
   where  "p1 \<Otimes>\<^sub>M p2 = (\<lambda> (x,y). case p1 x of \<lfloor>d1\<rfloor> \<Rightarrow>
                               (case p2 y of \<lfloor>d2\<rfloor> \<Rightarrow> \<lfloor>(d1,d2)\<rfloor>
                                                 | \<bottom> \<Rightarrow> \<bottom>)
                                       | \<bottom> \<Rightarrow> \<bottom>)"
 
 definition parallel_st :: "('i \<times> '\<sigma> \<rightharpoonup> '\<sigma>) \<Rightarrow> ('i \<times> '\<sigma>' \<rightharpoonup> '\<sigma>') \<Rightarrow> 
-                            ('i \<times> '\<sigma> \<times> '\<sigma>' \<rightharpoonup> '\<sigma> \<times> '\<sigma>')" (infixr "\<Otimes>\<^sub>S" 60) 
+                            ('i \<times> '\<sigma> \<times> '\<sigma>' \<rightharpoonup> '\<sigma> \<times> '\<sigma>')" (infixr \<open>\<Otimes>\<^sub>S\<close> 60) 
 where
    "p1 \<Otimes>\<^sub>S p2 = (p1 \<Otimes>\<^sub>M p2) o (\<lambda> (a,b,c). ((a,b),a,c))"
 
@@ -238,7 +238,7 @@ text\<open>
 \<close>
 
 definition comp_ran_split :: "[('\<alpha> \<rightharpoonup> '\<gamma>) \<times> ('\<alpha> \<rightharpoonup>'\<gamma>), 'd \<mapsto> '\<beta>] \<Rightarrow> ('d \<times> '\<alpha>) \<mapsto> ('\<beta> \<times> '\<gamma>)"
-                          (infixr "\<Otimes>\<^sub>\<nabla>" 100)
+                          (infixr \<open>\<Otimes>\<^sub>\<nabla>\<close> 100)
 where "P \<Otimes>\<^sub>\<nabla> p \<equiv> \<lambda>x. case p (fst x) of 
                           \<lfloor>allow y\<rfloor> \<Rightarrow> (case ((fst P) (snd x)) of \<bottom> \<Rightarrow> \<bottom> | \<lfloor>z\<rfloor> \<Rightarrow> \<lfloor>allow (y,z)\<rfloor>)
                         | \<lfloor>deny y\<rfloor> \<Rightarrow>  (case ((snd P) (snd x)) of \<bottom> \<Rightarrow> \<bottom> | \<lfloor>z\<rfloor> \<Rightarrow> \<lfloor>deny (y,z)\<rfloor>)

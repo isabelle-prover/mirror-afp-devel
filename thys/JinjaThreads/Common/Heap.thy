@@ -44,7 +44,7 @@ locale heap_base =
   and heap_write :: "'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> 'addr val \<Rightarrow> 'heap \<Rightarrow> bool"
 begin
 
-fun typeof_h :: "'heap \<Rightarrow> 'addr val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
+fun typeof_h :: "'heap \<Rightarrow> 'addr val \<Rightarrow> ty option"  (\<open>typeof\<^bsub>_\<^esub>\<close>)
 where
   "typeof\<^bsub>h\<^esub> (Addr a) = map_option ty_of_htype (typeof_addr h a)"
 | "typeof\<^bsub>h\<^esub>  v = typeof v"
@@ -52,7 +52,7 @@ where
 definition cname_of :: "'heap \<Rightarrow> 'addr \<Rightarrow> cname"
 where "cname_of h a = the_Class (ty_of_htype (the (typeof_addr h a)))"
 
-definition hext :: "'heap \<Rightarrow> 'heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
+definition hext :: "'heap \<Rightarrow> 'heap \<Rightarrow> bool" (\<open>_ \<unlhd> _\<close> [51,51] 50)
 where
   "h \<unlhd> h' \<equiv> typeof_addr h \<subseteq>\<^sub>m typeof_addr h'"
 
@@ -61,7 +61,7 @@ context
 begin
 
 inductive addr_loc_type :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool"
-  ("_,_ \<turnstile> _@_ : _" [50, 50, 50, 50, 50] 51)
+  (\<open>_,_ \<turnstile> _@_ : _\<close> [50, 50, 50, 50, 50] 51)
 for P :: "'m prog" and h :: 'heap and a :: 'addr
 where
   addr_loc_type_field:

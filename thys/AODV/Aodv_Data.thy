@@ -42,22 +42,22 @@ text \<open>
 
 type_synonym r = "sqn \<times> k \<times> f \<times> nat \<times> ip \<times> ip set"
 
-definition proj2 :: "r \<Rightarrow> sqn" ("\<pi>\<^sub>2")
+definition proj2 :: "r \<Rightarrow> sqn" (\<open>\<pi>\<^sub>2\<close>)
   where "\<pi>\<^sub>2 \<equiv> \<lambda>(dsn, _, _, _, _, _). dsn"
 
-definition proj3 :: "r \<Rightarrow> k" ("\<pi>\<^sub>3")
+definition proj3 :: "r \<Rightarrow> k" (\<open>\<pi>\<^sub>3\<close>)
   where "\<pi>\<^sub>3 \<equiv> \<lambda>(_, dsk, _, _, _, _). dsk"
 
-definition proj4 :: "r \<Rightarrow> f" ("\<pi>\<^sub>4")
+definition proj4 :: "r \<Rightarrow> f" (\<open>\<pi>\<^sub>4\<close>)
   where "\<pi>\<^sub>4 \<equiv> \<lambda>(_, _, flag, _, _, _). flag"
 
-definition proj5 :: "r \<Rightarrow> nat" ("\<pi>\<^sub>5")
+definition proj5 :: "r \<Rightarrow> nat" (\<open>\<pi>\<^sub>5\<close>)
   where "\<pi>\<^sub>5 \<equiv> \<lambda>(_, _, _, hops, _, _). hops"
 
-definition proj6 :: "r \<Rightarrow> ip" ("\<pi>\<^sub>6")
+definition proj6 :: "r \<Rightarrow> ip" (\<open>\<pi>\<^sub>6\<close>)
   where "\<pi>\<^sub>6 \<equiv> \<lambda>(_, _, _, _, nhip, _). nhip"
 
-definition proj7 :: "r \<Rightarrow> ip set" ("\<pi>\<^sub>7")
+definition proj7 :: "r \<Rightarrow> ip set" (\<open>\<pi>\<^sub>7\<close>)
   where "\<pi>\<^sub>7 \<equiv> \<lambda>(_, _, _, _, _, pre). pre"
 
 lemma projs [simp]:
@@ -88,7 +88,7 @@ text \<open>Routing tables map ip addresses to route entries.\<close>
 type_synonym rt = "ip \<rightharpoonup> r"
 
 syntax
-  "_Sigma_route" :: "rt \<Rightarrow> ip \<rightharpoonup> r"  ("\<sigma>\<^bsub>route\<^esub>'(_, _')")
+  "_Sigma_route" :: "rt \<Rightarrow> ip \<rightharpoonup> r"  (\<open>\<sigma>\<^bsub>route\<^esub>'(_, _')\<close>)
 
 translations
  "\<sigma>\<^bsub>route\<^esub>(rt, dip)" => "rt dip" 
@@ -932,7 +932,7 @@ text \<open>Functions for sending data packets.\<close>
 
 type_synonym store = "ip \<rightharpoonup> (p \<times> data list)"
 
-definition sigma_queue :: "store \<Rightarrow> ip \<Rightarrow> data list"    ("\<sigma>\<^bsub>queue\<^esub>'(_, _')")
+definition sigma_queue :: "store \<Rightarrow> ip \<Rightarrow> data list"    (\<open>\<sigma>\<^bsub>queue\<^esub>'(_, _')\<close>)
   where "\<sigma>\<^bsub>queue\<^esub>(store, dip) \<equiv> case store dip of None \<Rightarrow> [] | Some (p, q) \<Rightarrow> q"
 
 definition qD :: "store \<Rightarrow> ip set"
@@ -954,7 +954,7 @@ definition drop :: "ip \<Rightarrow> store \<rightharpoonup> store"
     map_option (\<lambda>(p, q). if tl q = [] then store (dip := None)
                                       else store (dip \<mapsto> (p, tl q))) (store dip)"
 
-definition sigma_p_flag :: "store \<Rightarrow> ip \<rightharpoonup> p" ("\<sigma>\<^bsub>p-flag\<^esub>'(_, _')")
+definition sigma_p_flag :: "store \<Rightarrow> ip \<rightharpoonup> p" (\<open>\<sigma>\<^bsub>p-flag\<^esub>'(_, _')\<close>)
   where "\<sigma>\<^bsub>p-flag\<^esub>(store, dip) \<equiv> map_option fst (store dip)"
 
 definition unsetRRF :: "store \<Rightarrow> ip \<Rightarrow> store"

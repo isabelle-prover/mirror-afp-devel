@@ -23,7 +23,7 @@ keywords
 begin
 
 no_syntax  "_Lab":: "'a bexp \<Rightarrow> ('a,'p,'f) com \<Rightarrow> bdy"
-            ("_\<bullet>/_" [1000,71] 81) \<comment> \<open>avoid syntax conflict with \<^term>\<open>runs_to f s Q\<close>\<close>
+            (\<open>_\<bullet>/_\<close> [1000,71] 81) \<comment> \<open>avoid syntax conflict with \<^term>\<open>runs_to f s Q\<close>\<close>
 
 (* Remove various rules from the default simpset that don't really help. *)
 declare word_neq_0_conv [simp del]

@@ -47,11 +47,11 @@ definition cast_ok :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarr
 where
   "cast_ok P C h v  \<equiv>  v = Null \<or> P \<turnstile> cname_of h (the_Addr v) \<preceq>\<^sup>* C"
 
-definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
+definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" (\<open>_ \<unlhd> _\<close> [51,51] 50)
 where
   "h \<unlhd> h'  \<equiv>  \<forall>a C fs. h a = Some(C,fs) \<longrightarrow> (\<exists>fs'. h' a = Some(C,fs'))"
 
-primrec typeof_h :: "heap \<Rightarrow> val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
+primrec typeof_h :: "heap \<Rightarrow> val \<Rightarrow> ty option"  (\<open>typeof\<^bsub>_\<^esub>\<close>)
 where
   "typeof\<^bsub>h\<^esub>  Unit    = Some Void"
 | "typeof\<^bsub>h\<^esub>  Null    = Some NT"

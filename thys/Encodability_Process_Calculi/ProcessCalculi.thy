@@ -18,7 +18,7 @@ record 'proc processCalculus =
 text \<open>A pair of the reduction relation is called a (reduction) step.\<close>
 
 abbreviation step :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> 'proc \<Rightarrow> bool"
-    ("_ \<longmapsto>_ _" [70, 70, 70] 80)
+    (\<open>_ \<longmapsto>_ _\<close> [70, 70, 70] 80)
   where
   "P \<longmapsto>Cal Q \<equiv> Reductions Cal P Q"
 
@@ -26,14 +26,14 @@ text \<open>We use * to indicate the reflexive and transitive closure of the red
 
 primrec nSteps
   :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> nat \<Rightarrow> 'proc \<Rightarrow> bool"
-    ("_ \<longmapsto>_\<^bsup>_\<^esup> _" [70, 70, 70, 70] 80)
+    (\<open>_ \<longmapsto>_\<^bsup>_\<^esup> _\<close> [70, 70, 70, 70] 80)
   where
   "P \<longmapsto>Cal\<^bsup>0\<^esup> Q     = (P = Q)" |
   "P \<longmapsto>Cal\<^bsup>Suc n\<^esup> Q = (\<exists>P'. P \<longmapsto>Cal\<^bsup>n\<^esup> P' \<and> P' \<longmapsto>Cal Q)"
 
 definition steps
   :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> 'proc \<Rightarrow> bool"
-    ("_ \<longmapsto>_* _" [70, 70, 70] 80)
+    (\<open>_ \<longmapsto>_* _\<close> [70, 70, 70] 80)
   where
   "P \<longmapsto>Cal* Q \<equiv> \<exists>n. P \<longmapsto>Cal\<^bsup>n\<^esup> Q"
 
@@ -41,7 +41,7 @@ text \<open>A process is divergent, if it can perform an infinite sequence of st
 
 definition divergent
   :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
-    ("_ \<longmapsto>_\<omega>" [70, 70] 80)
+    (\<open>_ \<longmapsto>_\<omega>\<close> [70, 70] 80)
   where
   "P \<longmapsto>(Cal)\<omega> \<equiv> \<forall>P'. P \<longmapsto>Cal* P' \<longrightarrow> (\<exists>P''. P' \<longmapsto>Cal P'')"
 
@@ -125,11 +125,11 @@ text \<open>We assume a predicate that tests terms for some kind of observables.
 
 record ('proc, 'barbs) calculusWithBarbs =
   Calculus :: "'proc processCalculus"
-  HasBarb  :: "'proc \<Rightarrow> 'barbs \<Rightarrow> bool" ("_\<down>_" [70, 70] 80)
+  HasBarb  :: "'proc \<Rightarrow> 'barbs \<Rightarrow> bool" (\<open>_\<down>_\<close> [70, 70] 80)
 
 abbreviation hasBarb
   :: "'proc \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs \<Rightarrow> bool"
-    ("_\<down><_>_" [70, 70, 70] 80)
+    (\<open>_\<down><_>_\<close> [70, 70, 70] 80)
   where
   "P\<down><CWB>a \<equiv> HasBarb CWB P a"
 
@@ -137,7 +137,7 @@ text \<open>A term reaches a barb if it can evolve to a term that has this barb.
 
 abbreviation reachesBarb
   :: "'proc \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs \<Rightarrow> bool"
-    ("_\<Down><_>_" [70, 70, 70] 80)
+    (\<open>_\<Down><_>_\<close> [70, 70, 70] 80)
   where
   "P\<Down><CWB>a \<equiv> \<exists>P'. P \<longmapsto>(Calculus CWB)* P' \<and> P'\<down><CWB>a"
 

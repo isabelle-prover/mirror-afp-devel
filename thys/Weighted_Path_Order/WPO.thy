@@ -59,8 +59,8 @@ fun wpo :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool \<times
 
 declare wpo.simps [simp del]
 
-abbreviation wpo_s (infix "\<succ>" 50) where "s \<succ> t \<equiv> fst (wpo s t)"
-abbreviation wpo_ns (infix "\<succeq>" 50) where "s \<succeq> t \<equiv> snd (wpo s t)"
+abbreviation wpo_s (infix \<open>\<succ>\<close> 50) where "s \<succ> t \<equiv> fst (wpo s t)"
+abbreviation wpo_ns (infix \<open>\<succeq>\<close> 50) where "s \<succeq> t \<equiv> snd (wpo s t)"
 
 abbreviation "WPO_S \<equiv> {(s,t). s \<succ> t}"
 abbreviation "WPO_NS \<equiv> {(s,t). s \<succeq> t}"

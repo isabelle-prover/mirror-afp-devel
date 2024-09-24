@@ -9,11 +9,11 @@ theory Errorable
   imports Main
 begin
 
-notation bot ("\<bottom>")
+notation bot (\<open>\<bottom>\<close>)
 
-typedef 'a errorable ("_\<^sub>\<bottom>" [21] 21) = "UNIV :: 'a option set" ..
+typedef 'a errorable (\<open>_\<^sub>\<bottom>\<close> [21] 21) = "UNIV :: 'a option set" ..
 
-definition errorable :: "'a \<Rightarrow> 'a errorable" ("_\<^sub>\<bottom>" [1000] 1000) where
+definition errorable :: "'a \<Rightarrow> 'a errorable" (\<open>_\<^sub>\<bottom>\<close> [1000] 1000) where
   "errorable x = Abs_errorable (Some x)"
 
 instantiation errorable :: (type) bot

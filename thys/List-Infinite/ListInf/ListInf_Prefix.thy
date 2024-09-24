@@ -323,7 +323,7 @@ done
 
 subsection \<open>Prefix infimum\<close>
 
-definition inf_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixl "\<sqinter>" 70)
+definition inf_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixl \<open>\<sqinter>\<close> 70)
   where "xs \<sqinter> ys \<equiv> xs \<down> (inf_prefix_length xs ys)"
 
 lemma length_inf_prefix: "length (xs \<sqinter> ys) = inf_prefix_length xs ys"
@@ -426,7 +426,7 @@ done
 
 subsection \<open>Prefices for infinite lists\<close>
 
-definition iprefix :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> bool"  (infixl "\<sqsubseteq>" 50)
+definition iprefix :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> bool"  (infixl \<open>\<sqsubseteq>\<close> 50)
   where "xs \<sqsubseteq> f \<equiv> \<exists>g. f = xs \<frown> g"
 
 lemma iprefix_eq_iprefix_take: "(xs \<sqsubseteq> f) = (f \<Down> length xs = xs)"

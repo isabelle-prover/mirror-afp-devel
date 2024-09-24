@@ -26,9 +26,9 @@ text \<open>
 To have our presentation closer to \<^cite>\<open>"functionspaces"\<close>, we introduce some notation:
 \<close>
 
-notation Value_take ("\<psi>\<^sup>D\<^bsub>_\<^esub>")
-notation C_to_CValue_take ("\<psi>\<^sup>A\<^bsub>_\<^esub>")
-notation CValue_take ("\<psi>\<^sup>E\<^bsub>_\<^esub>")
+notation Value_take (\<open>\<psi>\<^sup>D\<^bsub>_\<^esub>\<close>)
+notation C_to_CValue_take (\<open>\<psi>\<^sup>A\<^bsub>_\<^esub>\<close>)
+notation CValue_take (\<open>\<psi>\<^sup>E\<^bsub>_\<^esub>\<close>)
 
 subsubsection \<open>A note about section 2.3\<close>
 
@@ -159,7 +159,7 @@ fun similar' where
  "similar' (Suc n) = similar'_step (similar' n)"
 declare similar'.simps[simp del]
 
-abbreviation similar'_syn  ("_ \<triangleleft>\<triangleright>\<^bsub>_\<^esub> _" [50,50,50] 50)
+abbreviation similar'_syn  (\<open>_ \<triangleleft>\<triangleright>\<^bsub>_\<^esub> _\<close> [50,50,50] 50)
   where "similar'_syn x n y \<equiv> similar' n x y"
 
 lemma similar'_botI[intro!,simp]: "\<bottom> \<triangleleft>\<triangleright>\<^bsub>n\<^esub> \<bottom>"
@@ -334,7 +334,7 @@ text \<open>
 This is the goal of the theory: A relation between @{typ Value} and @{typ CValue}.
 \<close>
 
-definition similar :: "Value \<Rightarrow> CValue \<Rightarrow> bool" (infix "\<triangleleft>\<triangleright>" 50) where
+definition similar :: "Value \<Rightarrow> CValue \<Rightarrow> bool" (infix \<open>\<triangleleft>\<triangleright>\<close> 50) where
   "x \<triangleleft>\<triangleright> y \<longleftrightarrow> (\<forall>n. \<psi>\<^sup>D\<^bsub>n\<^esub>\<cdot>x \<triangleleft>\<triangleright>\<^bsub>n\<^esub> \<psi>\<^sup>E\<^bsub>n\<^esub>\<cdot>y)"
 
 lemma similarI:
@@ -520,7 +520,7 @@ by (metis assms similar_FnD)
 
 subsubsection \<open>The similarity relation lifted pointwise to functions.\<close>
 
-abbreviation fun_similar :: "('a::type \<Rightarrow> Value) \<Rightarrow> ('a \<Rightarrow> (C \<rightarrow> CValue)) \<Rightarrow> bool"  (infix "\<triangleleft>\<triangleright>\<^sup>*" 50) where
+abbreviation fun_similar :: "('a::type \<Rightarrow> Value) \<Rightarrow> ('a \<Rightarrow> (C \<rightarrow> CValue)) \<Rightarrow> bool"  (infix \<open>\<triangleleft>\<triangleright>\<^sup>*\<close> 50) where
   "fun_similar \<equiv> pointwise (\<lambda>x y. x \<triangleleft>\<triangleright> y\<cdot>C\<^sup>\<infinity>)"
 
 lemma fun_similar_fmap_bottom[simp]: "\<bottom> \<triangleleft>\<triangleright>\<^sup>* \<bottom>"

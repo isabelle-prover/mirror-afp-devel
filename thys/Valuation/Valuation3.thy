@@ -22,7 +22,7 @@ text\<open>In this section we formalize "completion" of the ground field K\<clos
 
 definition
   limit :: "[_, 'b \<Rightarrow> ant, nat \<Rightarrow> 'b, 'b]
-           \<Rightarrow> bool" ("(4lim\<^bsub> _ _ \<^esub>_ _)" [90,90,90,91]90) where
+           \<Rightarrow> bool" (\<open>(4lim\<^bsub> _ _ \<^esub>_ _)\<close> [90,90,90,91]90) where
   "lim\<^bsub>K v\<^esub> f b \<longleftrightarrow> (\<forall>N. \<exists>M. (\<forall>n. M < n \<longrightarrow> 
                 ((f n) \<plusminus>\<^bsub>K\<^esub> (-\<^sub>a\<^bsub>K\<^esub> b)) \<in> (vp K v)\<^bsup> (Vr K v) (an N)\<^esup>))"
 
@@ -790,14 +790,14 @@ done
 
 definition
   Cauchy_seq :: "[_ , 'b \<Rightarrow> ant, nat \<Rightarrow> 'b]
-           \<Rightarrow> bool" ("(3Cauchy\<^bsub> _ _ \<^esub>_)" [90,90,91]90) where
+           \<Rightarrow> bool" (\<open>(3Cauchy\<^bsub> _ _ \<^esub>_)\<close> [90,90,91]90) where
   "Cauchy\<^bsub>K v\<^esub> f \<longleftrightarrow> (\<forall>n. (f n) \<in> carrier K) \<and> (
   \<forall>N. \<exists>M. (\<forall>n m. M < n \<and> M < m \<longrightarrow> 
                 ((f n) \<plusminus>\<^bsub>K\<^esub> (-\<^sub>a\<^bsub>K\<^esub> (f m))) \<in> (vp K v)\<^bsup>(Vr K v) (an N)\<^esup>))"
 
 definition
   v_complete :: "['b \<Rightarrow> ant, _] \<Rightarrow> bool"
-                    ("(2Complete\<^bsub>_\<^esub> _)"  [90,91]90) where
+                    (\<open>(2Complete\<^bsub>_\<^esub> _)\<close>  [90,91]90) where
   "Complete\<^bsub>v\<^esub> K \<longleftrightarrow> (\<forall>f. (Cauchy\<^bsub>K v\<^esub> f) \<longrightarrow> 
                            (\<exists>b. b \<in> (carrier K) \<and> lim\<^bsub>K v\<^esub> f b))"
 
@@ -932,7 +932,7 @@ definition
 
 definition
   v_completion :: "['b \<Rightarrow> ant, 'b \<Rightarrow> ant, _, ('b, 'm) Ring_scheme] \<Rightarrow> bool" 
-               ("(4Completion\<^bsub>_ _\<^esub> _ _)" [90,90,90,91]90) where
+               (\<open>(4Completion\<^bsub>_ _\<^esub> _ _)\<close> [90,90,90,91]90) where
   "Completion\<^bsub>v v'\<^esub> K K' \<longleftrightarrow> subfield K K' \<and>
       Complete\<^bsub>v'\<^esub> K' \<and> (\<forall>x \<in> carrier K. v x = v' x) \<and>
       (\<forall>x \<in> carrier K'. (\<exists>f. Cauchy\<^bsub>K v\<^esub> f \<and> lim\<^bsub>K' v'\<^esub> f x))"
@@ -1511,7 +1511,7 @@ definition
 primrec 
   partial_sum :: "[('b, 'm) Ring_scheme, 'b, 'b \<Rightarrow> ant, 'b] 
                                    \<Rightarrow> nat \<Rightarrow> 'b"
-        ("(5psum\<^bsub> _ _ _ _\<^esub> _)" [96,96,96,96,97]96)
+        (\<open>(5psum\<^bsub> _ _ _ _\<^esub> _)\<close> [96,96,96,96,97]96)
 where
   psum_0: "psum\<^bsub> K x v t\<^esub> 0 = (csrp_fn (Vr K v) (vp K v) 
      (pj (Vr K v) (vp K v) (x \<cdot>\<^sub>r\<^bsub>K\<^esub> t\<^bsub>K\<^esub>\<^bsup>-(tna (v x))\<^esup>))) \<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>(tna (v x))\<^esup>)"
@@ -1523,7 +1523,7 @@ where
 definition
   expand_coeff :: "[_ , 'b \<Rightarrow> ant, 'b, 'b] 
                       \<Rightarrow> nat \<Rightarrow> 'b"
-                   ("(5ecf\<^bsub>_ _ _ _\<^esub> _)" [96,96,96,96,97]96) where
+                   (\<open>(5ecf\<^bsub>_ _ _ _\<^esub> _)\<close> [96,96,96,96,97]96) where
   "ecf\<^bsub>K v t x\<^esub> n = (if n = 0 then  csrp_fn (Vr K v) (vp K v) 
      (pj (Vr K v) (vp K v) (x \<cdot>\<^sub>r\<^bsub>K\<^esub> t\<^bsub>K\<^esub>\<^bsup>(-(tna (v x)))\<^esup>))
      else csrp_fn (Vr K v) (vp K v) (pj (Vr K v) 
@@ -1532,7 +1532,7 @@ definition
 definition
   expand_term :: "[_, 'b \<Rightarrow> ant, 'b, 'b] 
                       \<Rightarrow> nat \<Rightarrow> 'b"
-                   ("(5etm\<^bsub> _ _ _ _\<^esub> _)" [96,96,96,96,97]96) where
+                   (\<open>(5etm\<^bsub> _ _ _ _\<^esub> _)\<close> [96,96,96,96,97]96) where
         
   "etm\<^bsub>K v t x\<^esub> n = (ecf\<^bsub>K v t x\<^esub> n)\<cdot>\<^sub>r\<^bsub>K\<^esub> (t\<^bsub>K\<^esub>\<^bsup>(tna (v x) + int n)\<^esup>)"
 
@@ -1967,7 +1967,7 @@ subsection "Hensel's theorem"
 definition
 (*** Cauchy sequence of polynomials in (Vr K v)[X] ***)
   pol_Cauchy_seq :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, 
-         nat \<Rightarrow> 'b] \<Rightarrow> bool" ("(5PCauchy\<^bsub> _ _ _ _ \<^esub>_)" [90,90,90,90,91]90) where
+         nat \<Rightarrow> 'b] \<Rightarrow> bool" (\<open>(5PCauchy\<^bsub> _ _ _ _ \<^esub>_)\<close> [90,90,90,90,91]90) where
   "PCauchy\<^bsub>R X K v\<^esub> F \<longleftrightarrow> (\<forall>n. (F n) \<in> carrier R) \<and> 
     (\<exists>d. (\<forall>n. deg R (Vr K v) X (F n) \<le> (an d))) \<and>
     (\<forall>N. \<exists>M. (\<forall>n m. M < n \<and> M < m \<longrightarrow>  
@@ -1976,7 +1976,7 @@ definition
 definition
   pol_limit :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, 
              nat \<Rightarrow> 'b, 'b] \<Rightarrow> bool" 
-             ("(6Plimit\<^bsub> _ _ _ _ \<^esub>_ _)" [90,90,90,90,90,91]90) where
+             (\<open>(6Plimit\<^bsub> _ _ _ _ \<^esub>_ _)\<close> [90,90,90,90,90,91]90) where
   "Plimit\<^bsub>R X K v\<^esub> F p \<longleftrightarrow> (\<forall>n. (F n) \<in> carrier R) \<and> 
     (\<forall>N. \<exists>M. (\<forall>m. M < m \<longrightarrow>  
         P_mod R (Vr K v) X ((vp K v)\<^bsup>(Vr K v) (an N)\<^esup>) ((F m) \<plusminus>\<^bsub>R\<^esub> -\<^sub>a\<^bsub>R\<^esub> p)))"
@@ -1984,7 +1984,7 @@ definition
 definition
   Pseql :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, nat, 
              nat \<Rightarrow> 'b] \<Rightarrow> nat \<Rightarrow> 'b" 
-            ("(6Pseql\<^bsub>_  _ _ _ _ \<^esub>_)" [90,90,90,90,90,91]90) where
+            (\<open>(6Pseql\<^bsub>_  _ _ _ _ \<^esub>_)\<close> [90,90,90,90,90,91]90) where
   "Pseql\<^bsub>R X K v d\<^esub> F = (\<lambda>n. (ldeg_p R (Vr K v) X d (F n)))"
 
    (** deg R (Vr K v) X (F n) \<le> an (Suc d) **)
@@ -1992,7 +1992,7 @@ definition
 definition
   Pseqh :: "[('b, 'm) Ring_scheme, 'b, _, 'b \<Rightarrow> ant, nat, nat \<Rightarrow> 'b] \<Rightarrow>  
         nat \<Rightarrow> 'b" 
-           ("(6Pseqh\<^bsub> _ _ _ _ _ \<^esub>_)" [90,90,90,90,90,91]90) where
+           (\<open>(6Pseqh\<^bsub> _ _ _ _ _ \<^esub>_)\<close> [90,90,90,90,90,91]90) where
   "Pseqh\<^bsub>R X K v d\<^esub> F = (\<lambda>n. (hdeg_p R (Vr K v) X (Suc d) (F n)))"
 
     (** deg R (Vr K v) X (F n) \<le> an (Suc d) **)
@@ -3111,12 +3111,12 @@ done
        (** Hfst K v R X t S Y f g h m**)
 definition
   Hfst :: "[_, 'b \<Rightarrow> ant, ('b, 'm1) Ring_scheme, 'b,'b, ('b set, 'm2) Ring_scheme, 'b set, 'b, 'b, 'b, nat] \<Rightarrow> 'b" 
-        ("(11Hfst\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)" [67,67,67,67,67,67,67,67,67,67,68]67) where
+        (\<open>(11Hfst\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)\<close> [67,67,67,67,67,67,67,67,67,67,68]67) where
   "Hfst\<^bsub>K v R X t S Y f g h\<^esub> m = fst (Hpr\<^bsub>R (Vr K v) X t S Y f g h\<^esub> m)"
 
 definition
   Hsnd :: "[_, 'b \<Rightarrow> ant, ('b, 'm1) Ring_scheme, 'b,'b, ('b set, 'm2) Ring_scheme, 'b set, 'b, 'b, 'b, nat] \<Rightarrow> 'b" 
-        ("(11Hsnd\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)" [67,67,67,67,67,67,67,67,67,67,68]67) where
+        (\<open>(11Hsnd\<^bsub> _ _ _ _ _ _ _ _ _ _\<^esub> _)\<close> [67,67,67,67,67,67,67,67,67,67,68]67) where
  
   "Hsnd\<^bsub>K v R X t S Y f g h\<^esub> m = snd (Hpr\<^bsub>R (Vr K v) X t S Y f g h\<^esub> m)"
 

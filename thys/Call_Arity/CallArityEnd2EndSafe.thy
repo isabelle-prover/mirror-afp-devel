@@ -7,7 +7,7 @@ begin
 sublocale CoCallImplSafe.
 sublocale CallArityEnd2End.
 
-abbreviation transform_syn' ("\<T>\<^bsub>_\<^esub>") where "\<T>\<^bsub>a\<^esub> \<equiv> transform a"
+abbreviation transform_syn' (\<open>\<T>\<^bsub>_\<^esub>\<close>) where "\<T>\<^bsub>a\<^esub> \<equiv> transform a"
 
 lemma end2end:
   "c \<Rightarrow>\<^sup>* c' \<Longrightarrow>

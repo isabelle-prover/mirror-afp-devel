@@ -17,11 +17,11 @@ subsection\<open>Verification Component for Backward Reasoning\<close>
 text \<open>This component supports the verification of simple while programs
 in a partial correctness setting.\<close>
 
-no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
-no_notation Archimedean_Field.floor ("\<lfloor>_\<rfloor>")
+no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
+no_notation Archimedean_Field.floor (\<open>\<lfloor>_\<rfloor>\<close>)
 
-notation p2r ("\<lceil>_\<rceil>")
-notation r2p ("\<lfloor>_\<rfloor>")
+notation p2r (\<open>\<lceil>_\<rceil>\<close>)
+notation r2p (\<open>\<lfloor>_\<rfloor>\<close>)
 
 context antidomain_kleene_algebra
 begin
@@ -33,13 +33,13 @@ lemma fbox_shunt: "d p \<cdot> d q \<le> |x] t \<longleftrightarrow> d p \<le> a
 
 subsubsection \<open>Syntax for Conditionals and Loops\<close>
 
-definition cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
+definition cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _ fi\<close> [64,64,64] 63) where
   "if p then x else y fi = d p \<cdot> x + ad p \<cdot> y"
 
-definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [64,64] 63) where
+definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ od\<close> [64,64] 63) where
   "while p do x od = (d p \<cdot> x)\<^sup>\<star> \<cdot> ad p"
 
-definition whilei :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _ od" [64,64,64] 63) where
+definition whilei :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ inv _ do _ od\<close> [64,64,64] 63) where
   "while p inv i do x od = while p do x od"
 
 subsubsection \<open>Basic Weakest (Liberal) Precondition Calculus\<close>
@@ -165,10 +165,10 @@ subsubsection \<open>Store and Assignment\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
-notation rel_antidomain_kleene_algebra.fbox ("wp")
-and rel_antidomain_kleene_algebra.fdia ("relfdia")
+notation rel_antidomain_kleene_algebra.fbox (\<open>wp\<close>)
+and rel_antidomain_kleene_algebra.fdia (\<open>relfdia\<close>)
 
-definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" ("_ ::= _" [70, 65] 61) where 
+definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" (\<open>_ ::= _\<close> [70, 65] 61) where 
    "v ::= e = {(s,s (v := e s)) |s. True}"
 
 lemma assign_prop: "\<lceil>\<lambda>s. P (s (v := e s))\<rceil> ; (v ::= e) = (v ::= e) ; \<lceil>P\<rceil>"
@@ -185,15 +185,15 @@ lemma wp_assign_det: "wp (v ::= e) \<lceil>Q\<rceil> = relfdia (v ::= e) \<lceil
  
 subsubsection \<open>Simplifications\<close>
 
-notation rel_antidomain_kleene_algebra.ads_d ("rdom")
+notation rel_antidomain_kleene_algebra.ads_d (\<open>rdom\<close>)
 
-abbreviation spec_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" ("PRE _ _ POST _" [64,64,64] 63) where
+abbreviation spec_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" (\<open>PRE _ _ POST _\<close> [64,64,64] 63) where
   "PRE P X POST Q \<equiv> rdom \<lceil>P\<rceil> \<subseteq> wp X \<lceil>Q\<rceil>"
 
-abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("IF _ THEN _ ELSE _ FI" [64,64,64] 63) where
+abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63) where
   "IF P THEN X ELSE Y FI \<equiv> rel_antidomain_kleene_algebra.cond \<lceil>P\<rceil> X Y"
 
-abbreviation whilei_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
+abbreviation whilei_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>WHILE _ INV _ DO _ OD\<close> [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> rel_antidomain_kleene_algebra.whilei \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
 lemma d_p2r [simp]: "rdom \<lceil>P\<rceil> = \<lceil>P\<rceil>"

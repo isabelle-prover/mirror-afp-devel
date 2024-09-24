@@ -472,7 +472,7 @@ lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
 
 text\<open>Satisfaction of a set of sentences\<close>
 definition
-  satT :: "[i,i] \<Rightarrow> o"  ("_ \<Turnstile> _" [36,36] 60) where
+  satT :: "[i,i] \<Rightarrow> o"  (\<open>_ \<Turnstile> _\<close> [36,36] 60) where
   "A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. (A,[] \<Turnstile> \<phi>)"
 
 lemma satTI [intro!]:

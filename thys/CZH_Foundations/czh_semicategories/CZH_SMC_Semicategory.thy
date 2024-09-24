@@ -70,7 +70,7 @@ the arrows are meant to be specified explicitly using the predicate
 definition Comp :: V
   where [dg_field_simps]: "Comp = 4\<^sub>\<nat>"
 
-abbreviation Comp_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl "\<circ>\<^sub>A\<index>" 55)
+abbreviation Comp_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>A\<index>\<close> 55)
   where "Comp_app \<CC> a b \<equiv> \<CC>\<lparr>Comp\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>"
 
 definition composable_arrs :: "V \<Rightarrow> V"

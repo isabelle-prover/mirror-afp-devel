@@ -67,6 +67,6 @@ ML \<open>
   end;
 \<close>
 
-syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> _"  ("_")
+syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> _"  (\<open>_\<close>)
 
 end

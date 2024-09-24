@@ -50,20 +50,20 @@ subsection \<open>Definitions\<close>
 
 text \<open>Two elements are \emph{joinable} (and then have in the joinability relation)
 w.r.t.\ @{term "A"}, iff they have a common reduct.\<close>
-definition join :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<down>)" [1000] 999) where
+definition join :: "'a rel \<Rightarrow> 'a rel"  (\<open>(_\<^sup>\<down>)\<close> [1000] 999) where
   "A\<^sup>\<down> = A\<^sup>* O (A\<inverse>)\<^sup>*"
 
 text \<open>Two elements are \emph{meetable} (and then have in the meetability relation)
 w.r.t.\ @{term "A"}, iff they have a common ancestor.\<close>
-definition meet :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<up>)" [1000] 999) where
+definition meet :: "'a rel \<Rightarrow> 'a rel"  (\<open>(_\<^sup>\<up>)\<close> [1000] 999) where
   "A\<^sup>\<up> = (A\<inverse>)\<^sup>* O A\<^sup>*"
 
 text \<open>The \emph{symmetric closure} of a relation allows steps in both directions.\<close>
-abbreviation symcl :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<leftrightarrow>)" [1000] 999) where
+abbreviation symcl :: "'a rel \<Rightarrow> 'a rel"  (\<open>(_\<^sup>\<leftrightarrow>)\<close> [1000] 999) where
   "A\<^sup>\<leftrightarrow> \<equiv> A \<union> A\<inverse>"
 
 text \<open>A \emph{conversion} is a (possibly empty) sequence of steps in the symmetric closure.\<close>
-definition conversion :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<leftrightarrow>\<^sup>*)" [1000] 999) where
+definition conversion :: "'a rel \<Rightarrow> 'a rel"  (\<open>(_\<^sup>\<leftrightarrow>\<^sup>*)\<close> [1000] 999) where
   "A\<^sup>\<leftrightarrow>\<^sup>* = (A\<^sup>\<leftrightarrow>)\<^sup>*"
 
 text \<open>The set of \emph{normal forms} of an ARS constitutes all the elements that do
@@ -71,13 +71,13 @@ not have any successors.\<close>
 definition NF :: "'a rel \<Rightarrow> 'a set" where
   "NF A = {a. A `` {a} = {}}"
 
-definition normalizability :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>!)" [1000] 999) where
+definition normalizability :: "'a rel \<Rightarrow> 'a rel"  (\<open>(_\<^sup>!)\<close> [1000] 999) where
   "A\<^sup>! = {(a, b). (a, b) \<in> A\<^sup>* \<and> b \<in> NF A}"
 
 notation (ASCII)
-  symcl  ("(_^<->)" [1000] 999) and
-  conversion  ("(_^<->*)" [1000] 999) and
-  normalizability  ("(_^!)" [1000] 999)
+  symcl  (\<open>(_^<->)\<close> [1000] 999) and
+  conversion  (\<open>(_^<->*)\<close> [1000] 999) and
+  normalizability  (\<open>(_^!)\<close> [1000] 999)
 
 lemma symcl_converse:
   "(A\<^sup>\<leftrightarrow>)\<inverse> = A\<^sup>\<leftrightarrow>" by auto
@@ -888,7 +888,7 @@ proof - {
 } then show ?thesis by auto
 qed
 
-definition diamond :: "'a rel \<Rightarrow> bool" ("\<diamond>") where
+definition diamond :: "'a rel \<Rightarrow> bool" (\<open>\<diamond>\<close>) where
   "\<diamond> r \<longleftrightarrow> (r\<inverse> O r) \<subseteq> (r O r\<inverse>)"
 
 lemma diamond_I [intro]: "(r\<inverse> O r) \<subseteq> (r O r\<inverse>) \<Longrightarrow> \<diamond> r" unfolding diamond_def by simp
@@ -2241,7 +2241,7 @@ lemma the_NF_conv:
 end
 
 
-definition weak_diamond :: "'a rel \<Rightarrow> bool" ("w\<diamond>") where
+definition weak_diamond :: "'a rel \<Rightarrow> bool" (\<open>w\<diamond>\<close>) where
   "w\<diamond> r \<longleftrightarrow> (r\<inverse> O r) - Id \<subseteq> (r O r\<inverse>)"
 
 lemma weak_diamond_imp_CR:

@@ -1,7 +1,7 @@
 theory Wasm imports Wasm_Base_Defs begin
 
 (* TYPING RELATION *)
-inductive b_e_typing :: "[t_context, b_e list, tf] \<Rightarrow> bool" ("_ \<turnstile> _ : _" 60) where
+inductive b_e_typing :: "[t_context, b_e list, tf] \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close> 60) where
   \<comment> \<open>\<open>num ops\<close>\<close>
   const:"\<C> \<turnstile> [C v]         : ([]    _> [(typeof v)])"
 | unop_i:"is_int_t t   \<Longrightarrow> \<C> \<turnstile> [Unop_i t _]  : ([t]   _> [t])"
@@ -68,8 +68,8 @@ inductive cl_typing :: "[s_context, cl, tf] \<Rightarrow> bool" where
 |  "cl_typing \<S> (Func_host tf h) tf"
 
 (* lifting the b_e_typing relation to the administrative operators *)
-inductive e_typing :: "[s_context, t_context, e list, tf] \<Rightarrow> bool" ("_\<bullet>_ \<turnstile> _ : _" 60)
-and       s_typing :: "[s_context, (t list) option, nat, v list, e list, t list] \<Rightarrow> bool" ("_\<bullet>_ \<tturnstile>'_ _ _;_ : _" 60) where
+inductive e_typing :: "[s_context, t_context, e list, tf] \<Rightarrow> bool" (\<open>_\<bullet>_ \<turnstile> _ : _\<close> 60)
+and       s_typing :: "[s_context, (t list) option, nat, v list, e list, t list] \<Rightarrow> bool" (\<open>_\<bullet>_ \<tturnstile>'_ _ _;_ : _\<close> 60) where
 (* section: e_typing *)
   (* lifting *)
   "\<C> \<turnstile> b_es : tf \<Longrightarrow> \<S>\<bullet>\<C> \<turnstile> $*b_es : tf"
@@ -106,12 +106,12 @@ definition "mem_agree bs m = (\<lambda> bs m. m \<le> mem_size bs) bs m"
 inductive store_typing :: "[s, s_context] \<Rightarrow> bool" where
   "\<lbrakk>\<S> = \<lparr>s_inst = \<C>s, s_funcs = tfs, s_tab = ns, s_mem = ms, s_globs = tgs\<rparr>; list_all2 (inst_typing \<S>) insts \<C>s; list_all2 (cl_typing \<S>) fs tfs; list_all (tab_agree \<S>) (concat tclss); list_all2 (\<lambda> tcls n. n \<le> length tcls) tclss ns; list_all2 mem_agree bss ms; list_all2 glob_agree gs tgs\<rbrakk> \<Longrightarrow> store_typing \<lparr>s.inst = insts, s.funcs = fs, s.tab = tclss, s.mem = bss, s.globs = gs\<rparr> \<S>"
 
-inductive config_typing :: "[nat, s, v list, e list, t list] \<Rightarrow> bool" ("\<turnstile>'_ _ _;_;_ : _" 60) where
+inductive config_typing :: "[nat, s, v list, e list, t list] \<Rightarrow> bool" (\<open>\<turnstile>'_ _ _;_;_ : _\<close> 60) where
   "\<lbrakk>store_typing s \<S>; \<S>\<bullet>None \<tturnstile>_i vs;es : ts\<rbrakk> \<Longrightarrow> \<turnstile>_i s;vs;es : ts"
 
 (* REDUCTION RELATION *)
 
-inductive reduce_simple :: "[e list, e list] \<Rightarrow> bool" ("\<lparr>_\<rparr> \<leadsto> \<lparr>_\<rparr>" 60) where
+inductive reduce_simple :: "[e list, e list] \<Rightarrow> bool" (\<open>\<lparr>_\<rparr> \<leadsto> \<lparr>_\<rparr>\<close> 60) where
   \<comment> \<open>\<open>integer unary ops\<close>\<close>
   unop_i32:"\<lparr>[$C (ConstInt32 c), $(Unop_i T_i32 iop)]\<rparr> \<leadsto> \<lparr>[$C (ConstInt32 (app_unop_i iop c))]\<rparr>"
 | unop_i64:"\<lparr>[$C (ConstInt64 c), $(Unop_i T_i64 iop)]\<rparr> \<leadsto> \<lparr>[$C (ConstInt64 (app_unop_i iop c))]\<rparr>"
@@ -181,7 +181,7 @@ inductive reduce_simple :: "[e list, e list] \<Rightarrow> bool" ("\<lparr>_\<rp
 | trap:"\<lbrakk>es \<noteq> [Trap]; Lfilled 0 lholed [Trap] es\<rbrakk> \<Longrightarrow> \<lparr>es\<rparr> \<leadsto> \<lparr>[Trap]\<rparr>"
 
 (* full reduction rule *)
-inductive reduce :: "[s, v list, e list, nat, s, v list, e list] \<Rightarrow> bool" ("\<lparr>_;_;_\<rparr> \<leadsto>'_ _ \<lparr>_;_;_\<rparr>" 60) where
+inductive reduce :: "[s, v list, e list, nat, s, v list, e list] \<Rightarrow> bool" (\<open>\<lparr>_;_;_\<rparr> \<leadsto>'_ _ \<lparr>_;_;_\<rparr>\<close> 60) where
   \<comment> \<open>\<open>lifting basic reduction\<close>\<close>
   basic:"\<lparr>e\<rparr> \<leadsto> \<lparr>e'\<rparr> \<Longrightarrow> \<lparr>s;vs;e\<rparr> \<leadsto>_i \<lparr>s;vs;e'\<rparr>"
   \<comment> \<open>\<open>call\<close>\<close>

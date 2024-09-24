@@ -18,8 +18,8 @@ begin
 subsection\<open>Preliminaries\<close>
 
 notation
-  LCons  (infixr "##" 65) and
-  lappend  (infixr "@@" 65)
+  LCons  (infixr \<open>##\<close> 65) and
+  lappend  (infixr \<open>@@\<close> 65)
 
 translations
   "case p of XCONST LNil \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightleftharpoons> "CONST case_llist a (\<lambda>x l. b) p"
@@ -31,14 +31,14 @@ lemmas llistE = llist.exhaust
 subsection\<open>Finite and infinite llists over an alphabet\<close>
 
 inductive_set
-  finlsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<star>)" [1000] 999)
+  finlsts :: "'a set \<Rightarrow> 'a llist set" (\<open>(_\<^sup>\<star>)\<close> [1000] 999)
   for A :: "'a set"
 where
   LNil_fin [iff]: "LNil \<in>  A\<^sup>\<star>"
 | LCons_fin [intro!]: "\<lbrakk> l \<in> A\<^sup>\<star>; a \<in> A \<rbrakk> \<Longrightarrow>  a ## l \<in> A\<^sup>\<star>"
 
 coinductive_set
-  alllsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<infinity>)" [1000] 999)
+  alllsts :: "'a set \<Rightarrow> 'a llist set" (\<open>(_\<^sup>\<infinity>)\<close> [1000] 999)
   for A :: "'a set"
 where
   LNil_all [iff]: "LNil \<in> A\<^sup>\<infinity>"
@@ -46,13 +46,13 @@ where
 
 declare alllsts.cases [case_names LNil LCons, cases set: alllsts]
 
-definition inflsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<omega>)" [1000] 999)
+definition inflsts :: "'a set \<Rightarrow> 'a llist set"  (\<open>(_\<^sup>\<omega>)\<close> [1000] 999)
 where "A\<^sup>\<omega> \<equiv>  A\<^sup>\<infinity> - UNIV\<^sup>\<star>"
 
-definition fpslsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<clubsuit>)" [1000] 999)
+definition fpslsts :: "'a set \<Rightarrow> 'a llist set"  (\<open>(_\<^sup>\<clubsuit>)\<close> [1000] 999)
 where "A\<^sup>\<clubsuit> \<equiv> A\<^sup>\<star> - {LNil}"
 
-definition poslsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<spadesuit>)" [1000] 999)
+definition poslsts :: "'a set \<Rightarrow> 'a llist set"  (\<open>(_\<^sup>\<spadesuit>)\<close> [1000] 999)
 where "A\<^sup>\<spadesuit> \<equiv> A\<^sup>\<infinity> - {LNil}"
 
 
@@ -409,17 +409,17 @@ qed
 
 subsection\<open>Length, indexing, prefixes, and suffixes of llists\<close>
 
-primrec ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix "!!" 100)
+primrec ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix \<open>!!\<close> 100)
 where
   "l!!0 = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> Some x)"
 | "l!!(Suc i) = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> xs!!i)"
 
-primrec ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"  (infixl "\<down>" 110)
+primrec ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"  (infixl \<open>\<down>\<close> 110)
 where
   "l \<down> 0     = LNil"
 | "l \<down> Suc i = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> x ## ltake xs i)"
 
-primrec ldrop :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"  (infixl "\<up>" 110)
+primrec ldrop :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"  (infixl \<open>\<up>\<close> 110)
 where
   "l \<up> 0     = l"
 | "l \<up> Suc i = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> ldrop xs i)"

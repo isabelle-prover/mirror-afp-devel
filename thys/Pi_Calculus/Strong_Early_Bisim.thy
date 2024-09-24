@@ -14,7 +14,7 @@ where
   step: "\<lbrakk>P \<leadsto>[bisim] Q; (Q, P) \<in> bisim\<rbrakk> \<Longrightarrow> (P, Q) \<in> bisim"
 monos monoAux
 
-abbreviation strongBisimJudge (infixr "\<sim>" 65) where "P \<sim> Q \<equiv> (P, Q) \<in> bisim"
+abbreviation strongBisimJudge (infixr \<open>\<sim>\<close> 65) where "P \<sim> Q \<equiv> (P, Q) \<in> bisim"
 
 
 lemma bisimCoinductAux[case_names bisim, case_conclusion StrongBisim step, consumes 1]:

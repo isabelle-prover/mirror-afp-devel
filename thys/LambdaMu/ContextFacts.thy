@@ -10,7 +10,7 @@ text\<open>Naturally, we may wonder when instantiating the hole in a context is 
     To assess this, we define a typing judgement for contexts.\<close>
 
 inductive typing_ctxt :: "(nat \<Rightarrow> type) \<Rightarrow> (nat \<Rightarrow> type) \<Rightarrow> ctxt \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"
-                         ("_ , _ \<turnstile>\<^sub>c\<^sub>t\<^sub>x\<^sub>t _ : _ \<Leftarrow> _" [50, 50, 50, 50, 50] 50)
+                         (\<open>_ , _ \<turnstile>\<^sub>c\<^sub>t\<^sub>x\<^sub>t _ : _ \<Leftarrow> _\<close> [50, 50, 50, 50, 50] 50)
 where
   type_ctxtEmpty [intro!]: "\<Gamma>, \<Delta> \<turnstile>\<^sub>c\<^sub>t\<^sub>x\<^sub>t \<diamond> : T \<Leftarrow> T" |
   type_ctxtApp   [intro!]: "\<lbrakk> \<Gamma>, \<Delta> \<turnstile>\<^sub>c\<^sub>t\<^sub>x\<^sub>t E : (T1\<rightarrow>T2) \<Leftarrow> U; \<Gamma>, \<Delta> \<turnstile>\<^sub>T t : T1 \<rbrakk> \<Longrightarrow> \<Gamma>, \<Delta> \<turnstile>\<^sub>c\<^sub>t\<^sub>x\<^sub>t (E \<^sup>\<bullet> t) : T2 \<Leftarrow> U"

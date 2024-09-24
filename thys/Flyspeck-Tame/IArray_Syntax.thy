@@ -22,11 +22,11 @@ definition tabulate3 :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow>
   "tabulate3 l m n f \<equiv> IArray.of_fun (\<lambda>i. IArray.of_fun (\<lambda>j. IArray.of_fun (\<lambda>k. f i j k) n) m) l"
 
 syntax 
- "_tabulate" :: "'a \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> 'a iarray"  ("(\<lbrakk>_. _ < _\<rbrakk>)") 
+ "_tabulate" :: "'a \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> 'a iarray"  (\<open>(\<lbrakk>_. _ < _\<rbrakk>)\<close>) 
  "_tabulate2" :: "'a \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> 'a iarray"
-   ("(\<lbrakk>_. _ < _, _ < _\<rbrakk>)")
+   (\<open>(\<lbrakk>_. _ < _, _ < _\<rbrakk>)\<close>)
  "_tabulate3" :: "'a \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> pttrn \<Rightarrow> nat \<Rightarrow> 'a iarray"
-   ("(\<lbrakk>_. _ < _, _ < _, _ < _ \<rbrakk>)")
+   (\<open>(\<lbrakk>_. _ < _, _ < _, _ < _ \<rbrakk>)\<close>)
 
 syntax_consts
   "_tabulate" == tabulate and
@@ -41,15 +41,15 @@ translations
 
 subsection \<open>Access\<close>
 
-abbreviation sub1_syntax :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_\<rbrakk>)" [1000] 999)
+abbreviation sub1_syntax :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a"  (\<open>(_\<lbrakk>_\<rbrakk>)\<close> [1000] 999)
 where
   "a\<lbrakk>n\<rbrakk> \<equiv> IArray.sub a n"
 
-abbreviation sub2_syntax :: "'a iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_,_\<rbrakk>)" [1000] 999)
+abbreviation sub2_syntax :: "'a iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  (\<open>(_\<lbrakk>_,_\<rbrakk>)\<close> [1000] 999)
 where
   "as\<lbrakk>m, n\<rbrakk> \<equiv> IArray.sub (IArray.sub as m) n"
 
-abbreviation sub3_syntax :: "'a iarray iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_,_,_\<rbrakk>)" [1000] 999)
+abbreviation sub3_syntax :: "'a iarray iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  (\<open>(_\<lbrakk>_,_,_\<rbrakk>)\<close> [1000] 999)
 where
   "as\<lbrakk>l, m, n\<rbrakk> \<equiv> IArray.sub (IArray.sub (IArray.sub as l) m) n"
 

@@ -26,7 +26,7 @@ begin
     assumes Null_not_in_Obj: "Null \<notin> Obj"
   begin
 
-    definition comp :: "'a comp"      (infixr "\<cdot>" 55)
+    definition comp :: "'a comp"      (infixr \<open>\<cdot>\<close> 55)
     where "y \<cdot> x \<equiv> (if x \<in> Obj \<and> x = y then x else Null)"
 
     interpretation partial_composition comp

@@ -268,7 +268,7 @@ qed
 lemma group_prod_space [simp]: "topspace (prod_topology T T) = (carrier G) \<times> (carrier G)"
   by auto
 
-no_notation eq_closure_of ("closure'_of\<index>")
+no_notation eq_closure_of (\<open>closure'_of\<index>\<close>)
 
 lemma subgroup_closure:
   assumes H_subgroup: "subgroup H G"

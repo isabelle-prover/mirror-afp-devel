@@ -28,7 +28,7 @@ text \<open>
 type_synonym 'a multiset = "'a \<Rightarrow> nat"
 
 abbreviation mElem ::
-  "'a \<Rightarrow> 'a multiset \<Rightarrow> bool" ("_ \<in># _" 60)
+  "'a \<Rightarrow> 'a multiset \<Rightarrow> bool" (\<open>_ \<in># _\<close> 60)
 where 
   "mElem a ms \<equiv> 0 < ms a"
 
@@ -39,7 +39,7 @@ text \<open>
 \<close>
 
 abbreviation mUnion ::
-  "'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" ("_ \<union># _" 70)
+  "'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" (\<open>_ \<union># _\<close> 70)
 where
   "mUnion msA msB v \<equiv> msA v + msB v"
 
@@ -47,12 +47,12 @@ text \<open>
   Correspondingly the subtraction is defined and the commutative law holds.
 \<close>
 abbreviation mRm ::
-  "'a multiset \<Rightarrow> 'a \<Rightarrow> 'a multiset" ("_ -# _" 65)
+  "'a multiset \<Rightarrow> 'a \<Rightarrow> 'a multiset" (\<open>_ -# _\<close> 65)
 where
   "mRm ms rm v \<equiv> if v = rm then ms v - 1 else ms v"
 
 abbreviation mSingleton ::
-  "'a \<Rightarrow> 'a multiset"          ("{# _ }")
+  "'a \<Rightarrow> 'a multiset"          (\<open>{# _ }\<close>)
 where
   "mSingleton a v \<equiv> if a = v then 1 else 0"
 

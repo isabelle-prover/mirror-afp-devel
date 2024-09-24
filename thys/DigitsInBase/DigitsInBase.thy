@@ -50,7 +50,7 @@ lemma product_seq_eventually_zero:
 abbreviation upper_sum
   where "upper_sum seq n \<equiv> \<Sum>i. seq (i + n)"
 syntax
-  "_from_sum" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Sum>_\<ge>_./ _)" [0,0,10] 10)
+  "_from_sum" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Sum>_\<ge>_./ _)\<close> [0,0,10] 10)
 syntax_consts
   "_from_sum" == upper_sum
 translations
@@ -552,7 +552,7 @@ Notation, definitions, and lemmas in this section typically start with the prefi
 ``little endian'') to distinguish them from the big endian versions in the next section.
 \<close>
 
-fun LEeval_as_base ("_\<^bsub>LEbase _\<^esub>" [65, 65] 70)
+fun LEeval_as_base (\<open>_\<^bsub>LEbase _\<^esub>\<close> [65, 65] 70)
   where "[] \<^bsub>LEbase b\<^esub> = 0"
   | "(d # d_list) \<^bsub>LEbase b\<^esub>  = d + b * (d_list\<^bsub>LEbase b\<^esub>)"
 
@@ -738,7 +738,7 @@ section\<open>Big Endian notation\<close>
 text\<open>In this section the desired representation of natural numbers, as finite lists of digits
 with the highest place on the left, is finally realized.\<close>
 
-definition BEeval_as_base ("_\<^bsub>base _\<^esub>" [65, 65] 70)
+definition BEeval_as_base (\<open>_\<^bsub>base _\<^esub>\<close> [65, 65] 70)
   where [simp]: "D\<^bsub>base b\<^esub> = (rev D)\<^bsub>LEbase b\<^esub>"
 
 corollary shows "[4, 2]\<^bsub>base 5\<^esub> = (22::nat)"

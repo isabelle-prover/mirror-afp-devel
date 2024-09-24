@@ -379,7 +379,7 @@ lemma Q\<^sub>L_eq_\<delta>\<^sub>L:
 
 subsection \<open>Product of DTS\<close> 
 
-fun simple_product :: "('a, 'c) DTS \<Rightarrow> ('b, 'c) DTS \<Rightarrow> ('a \<times> 'b, 'c) DTS" ("_ \<times> _")
+fun simple_product :: "('a, 'c) DTS \<Rightarrow> ('b, 'c) DTS \<Rightarrow> ('a \<times> 'b, 'c) DTS" (\<open>_ \<times> _\<close>)
 where
   "\<delta>\<^sub>1 \<times> \<delta>\<^sub>2 = (\<lambda>(q\<^sub>1, q\<^sub>2) \<nu>. (\<delta>\<^sub>1 q\<^sub>1 \<nu>, \<delta>\<^sub>2 q\<^sub>2 \<nu>))"  
 
@@ -404,7 +404,7 @@ qed
 
 subsection \<open>(Generalised) Product of DTS\<close>
 
-fun product :: "('a \<Rightarrow> ('b, 'c) DTS) \<Rightarrow> ('a \<rightharpoonup> 'b, 'c) DTS" ("\<Delta>\<^sub>\<times>")
+fun product :: "('a \<Rightarrow> ('b, 'c) DTS) \<Rightarrow> ('a \<rightharpoonup> 'b, 'c) DTS" (\<open>\<Delta>\<^sub>\<times>\<close>)
 where
   "\<Delta>\<^sub>\<times> \<delta>\<^sub>m = (\<lambda>q \<nu>. (\<lambda>x. case q x of None \<Rightarrow> None | Some y \<Rightarrow> Some (\<delta>\<^sub>m x y \<nu>)))"  
 
@@ -609,19 +609,19 @@ qed
 
 subsection \<open>Product Construction Helper Functions and Lemmas\<close>
 
-fun embed_transition :: "'a \<Rightarrow> ('b, 'c) transition \<Rightarrow> ('a \<rightharpoonup> 'b, 'c) transition set" ("\<upharpoonleft>\<^sub>_")
+fun embed_transition :: "'a \<Rightarrow> ('b, 'c) transition \<Rightarrow> ('a \<rightharpoonup> 'b, 'c) transition set" (\<open>\<upharpoonleft>\<^sub>_\<close>)
 where
   "\<upharpoonleft>\<^sub>x (q, \<nu>, q') = {(m, \<nu>, m') | m m'. m x = Some q \<and> m' x = Some q'}"
 
-fun project_transition :: "'a \<Rightarrow> ('a \<rightharpoonup> 'b, 'c) transition \<Rightarrow> ('b, 'c) transition" ("\<downharpoonleft>\<^sub>_")
+fun project_transition :: "'a \<Rightarrow> ('a \<rightharpoonup> 'b, 'c) transition \<Rightarrow> ('b, 'c) transition" (\<open>\<downharpoonleft>\<^sub>_\<close>)
 where
   "\<downharpoonleft>\<^sub>x (m, \<nu>, m') = (the (m x), \<nu>, the (m' x))"
 
-fun embed_pair :: "'a \<Rightarrow> (('b, 'c) transition set \<times> ('b, 'c) transition set) \<Rightarrow> (('a \<rightharpoonup> 'b, 'c) transition set \<times> ('a \<rightharpoonup> 'b, 'c) transition set)" ("\<^bold>\<upharpoonleft>\<^sub>_")
+fun embed_pair :: "'a \<Rightarrow> (('b, 'c) transition set \<times> ('b, 'c) transition set) \<Rightarrow> (('a \<rightharpoonup> 'b, 'c) transition set \<times> ('a \<rightharpoonup> 'b, 'c) transition set)" (\<open>\<^bold>\<upharpoonleft>\<^sub>_\<close>)
 where
   "\<^bold>\<upharpoonleft>\<^sub>x (S, S') = (\<Union>(\<upharpoonleft>\<^sub>x ` S), \<Union>(\<upharpoonleft>\<^sub>x ` S'))" 
 
-fun project_pair :: "'a \<Rightarrow> (('a \<rightharpoonup> 'b, 'c) transition set \<times> ('a \<rightharpoonup> 'b, 'c) transition set) \<Rightarrow> (('b, 'c) transition set \<times> ('b, 'c) transition set)" ("\<^bold>\<downharpoonleft>\<^sub>_")
+fun project_pair :: "'a \<Rightarrow> (('a \<rightharpoonup> 'b, 'c) transition set \<times> ('a \<rightharpoonup> 'b, 'c) transition set) \<Rightarrow> (('b, 'c) transition set \<times> ('b, 'c) transition set)" (\<open>\<^bold>\<downharpoonleft>\<^sub>_\<close>)
 where
   "\<^bold>\<downharpoonleft>\<^sub>x (S, S') = (\<downharpoonleft>\<^sub>x ` S, \<downharpoonleft>\<^sub>x ` S')" 
 
@@ -810,7 +810,7 @@ end
 
 subsection \<open>Lift to Mapping\<close>
 
-lift_definition product_abs :: "('a \<Rightarrow> ('b, 'c) DTS) \<Rightarrow> (('a, 'b) mapping, 'c) DTS" ("\<up>\<Delta>\<^sub>\<times>") is product 
+lift_definition product_abs :: "('a \<Rightarrow> ('b, 'c) DTS) \<Rightarrow> (('a, 'b) mapping, 'c) DTS" (\<open>\<up>\<Delta>\<^sub>\<times>\<close>) is product 
   parametric product_parametric .
 
 lemma product_abs_run_None:

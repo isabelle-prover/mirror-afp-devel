@@ -153,7 +153,7 @@ lemma nsqn_invalidate_other [simp]:
 subsection "Comparing routes "
 
 definition
-  fresher :: "r \<Rightarrow> r \<Rightarrow> bool" ("(_/ \<sqsubseteq> _)"  [51, 51] 50)
+  fresher :: "r \<Rightarrow> r \<Rightarrow> bool" (\<open>(_/ \<sqsubseteq> _)\<close>  [51, 51] 50)
 where
   "fresher r r' \<equiv> ((nsqn\<^sub>r r < nsqn\<^sub>r r') \<or> (nsqn\<^sub>r r  = nsqn\<^sub>r r' \<and> \<pi>\<^sub>5(r) \<ge> \<pi>\<^sub>5(r')))"
 
@@ -207,7 +207,7 @@ where
   "rt_fresher \<equiv> \<lambda>dip rt rt'. (the (\<sigma>\<^bsub>route\<^esub>(rt, dip))) \<sqsubseteq> (the (\<sigma>\<^bsub>route\<^esub>(rt', dip)))"
 
 abbreviation
-   rt_fresher_syn :: "rt \<Rightarrow> ip \<Rightarrow> rt \<Rightarrow> bool" ("(_/ \<sqsubseteq>\<^bsub>_\<^esub> _)"  [51, 999, 51] 50)
+   rt_fresher_syn :: "rt \<Rightarrow> ip \<Rightarrow> rt \<Rightarrow> bool" (\<open>(_/ \<sqsubseteq>\<^bsub>_\<^esub> _)\<close>  [51, 999, 51] 50)
 where
   "rt1 \<sqsubseteq>\<^bsub>i\<^esub> rt2 \<equiv> rt_fresher i rt1 rt2"
 
@@ -279,7 +279,7 @@ where
   "rt_fresh_as \<equiv> \<lambda>dip rt1 rt2. (rt1 \<sqsubseteq>\<^bsub>dip\<^esub> rt2) \<and> (rt2 \<sqsubseteq>\<^bsub>dip\<^esub> rt1)"
 
 abbreviation
-   rt_fresh_as_syn :: "rt \<Rightarrow> ip \<Rightarrow> rt \<Rightarrow> bool" ("(_/ \<approx>\<^bsub>_\<^esub> _)"  [51, 999, 51] 50)
+   rt_fresh_as_syn :: "rt \<Rightarrow> ip \<Rightarrow> rt \<Rightarrow> bool" (\<open>(_/ \<approx>\<^bsub>_\<^esub> _)\<close>  [51, 999, 51] 50)
 where
   "rt1 \<approx>\<^bsub>i\<^esub> rt2 \<equiv> rt_fresh_as i rt1 rt2"
 
@@ -548,7 +548,7 @@ where
   "rt_strictly_fresher \<equiv> \<lambda>dip rt1 rt2. (rt1 \<sqsubseteq>\<^bsub>dip\<^esub> rt2) \<and> \<not>(rt1 \<approx>\<^bsub>dip\<^esub> rt2)"
 
 abbreviation
-   rt_strictly_fresher_syn :: "rt \<Rightarrow> ip \<Rightarrow> rt \<Rightarrow> bool" ("(_/ \<sqsubset>\<^bsub>_\<^esub> _)"  [51, 999, 51] 50)
+   rt_strictly_fresher_syn :: "rt \<Rightarrow> ip \<Rightarrow> rt \<Rightarrow> bool" (\<open>(_/ \<sqsubset>\<^bsub>_\<^esub> _)\<close>  [51, 999, 51] 50)
 where
   "rt1 \<sqsubset>\<^bsub>i\<^esub> rt2 \<equiv> rt_strictly_fresher i rt1 rt2"
 

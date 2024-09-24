@@ -8,7 +8,7 @@ begin
 
 consts weakBisimSubst :: "(pi \<times> pi) set"
 abbreviation
-  weakBisimSubstJudge (infixr "\<approx>\<^sup>s" 65) where "P \<approx>\<^sup>s Q \<equiv> (P, Q) \<in> (substClosed weakBisim)"
+  weakBisimSubstJudge (infixr \<open>\<approx>\<^sup>s\<close> 65) where "P \<approx>\<^sup>s Q \<equiv> (P, Q) \<in> (substClosed weakBisim)"
 
 lemma congBisim:
   fixes P :: pi

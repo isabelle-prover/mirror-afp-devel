@@ -37,7 +37,7 @@ lemma zl_state_alt_def:
 
 inductive
   ZL :: "'f inference set \<times> ('f \<times> DL_label) set \<Rightarrow> 'f inference set \<times> ('f \<times> DL_label) set \<Rightarrow> bool"
-  (infix "\<leadsto>ZL" 50)
+  (infix \<open>\<leadsto>ZL\<close> 50)
 where
   compute_infer: "\<iota>0 \<in> no_labels.Red_I (A \<union> {C}) \<Longrightarrow>
     zl_state (T + {#LCons \<iota>0 \<iota>s#}, D, P, {}, A) \<leadsto>ZL zl_state (T + {#\<iota>s#}, D \<union> {\<iota>0}, P \<union> {C}, {}, A)"

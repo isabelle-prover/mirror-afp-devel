@@ -46,10 +46,10 @@ lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
 
 subsection \<open>Abbreviations for list order\<close>
 
-abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<preceq>" 50) where
+abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix \<open>\<preceq>\<close> 50) where
   "(\<preceq>) \<equiv> (\<le>)"
 
-abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<prec>" 50) where
+abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix \<open>\<prec>\<close> 50) where
   "(\<prec>) \<equiv> (<)"
 
 
@@ -418,7 +418,7 @@ lemma mset_le_subtract_add_mset_left: "add_mset x B \<subseteq># (X::'a multiset
 
 subsubsection \<open>Image under function\<close>
 
-notation image_mset (infixr "`#" 90)
+notation image_mset (infixr \<open>`#\<close> 90)
 
 lemma mset_map_single_rightE[consumes 1, case_names orig]: "\<lbrakk>f `# P = {#y#}; !!x. \<lbrakk> P={#x#}; f x = y \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   by (cases P) auto

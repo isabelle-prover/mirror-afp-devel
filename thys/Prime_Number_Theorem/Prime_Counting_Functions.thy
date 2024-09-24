@@ -126,20 +126,20 @@ text \<open>
 bundle prime_counting_notation
 begin
 
-notation primes_pi    ("\<pi>")
-notation primes_theta ("\<theta>")
-notation primes_psi   ("\<psi>")
-notation primes_M     ("\<MM>")
+notation primes_pi    (\<open>\<pi>\<close>)
+notation primes_theta (\<open>\<theta>\<close>)
+notation primes_psi   (\<open>\<psi>\<close>)
+notation primes_M     (\<open>\<MM>\<close>)
 
 end
 
 bundle no_prime_counting_notation
 begin
 
-no_notation primes_pi    ("\<pi>")
-no_notation primes_theta ("\<theta>")
-no_notation primes_psi   ("\<psi>")
-no_notation primes_M     ("\<MM>")
+no_notation primes_pi    (\<open>\<pi>\<close>)
+no_notation primes_theta (\<open>\<theta>\<close>)
+no_notation primes_psi   (\<open>\<psi>\<close>)
+no_notation primes_M     (\<open>\<MM>\<close>)
 
 end
 

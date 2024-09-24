@@ -73,7 +73,7 @@ text \<open>
    $>$ where $x > y = x \geq y + \delta$ for some parameter $\delta$
 \<close>
 locale order_pair = 
-  fixes gt :: "'a :: {non_strict_order,zero} \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50)
+  fixes gt :: "'a :: {non_strict_order,zero} \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50)
   and default :: "'a"
   assumes compat[trans]: "\<lbrakk>x \<ge> y; y \<succ> z\<rbrakk> \<Longrightarrow> x \<succ> z"
   and compat2[trans]: "\<lbrakk>x \<succ> y; y \<ge> z\<rbrakk> \<Longrightarrow> x \<succ> z"
@@ -85,7 +85,7 @@ lemma gt_trans[trans]: "\<lbrakk>x \<succ> y; y \<succ> z\<rbrakk> \<Longrightar
 end
 
 locale one_mono_ordered_semiring_1 = order_pair gt 
-  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) + 
+  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50) + 
   assumes plus_gt_left_mono: "x \<succ> y \<Longrightarrow> x + z \<succ> y + z"
   and default_gt_zero: "default \<succ> 0"
 begin
@@ -105,7 +105,7 @@ locale SN_strict_mono_ordered_semiring_1 = SN_one_mono_ordered_semiring_1 +
   assumes mono: "\<lbrakk>mono x; y \<succ> z; x \<ge> 0\<rbrakk> \<Longrightarrow> x * y \<succ> x * z" 
 
 locale both_mono_ordered_semiring_1 = order_pair gt 
-  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) +
+  for gt :: "'a :: ordered_semiring_1 \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50) +
   fixes arc_pos :: "'a \<Rightarrow> bool" 
   assumes plus_gt_both_mono: "\<lbrakk>x \<succ> y; z \<succ> u\<rbrakk> \<Longrightarrow> x + z \<succ> y + u"
   and times_gt_left_mono: "x \<succ> y \<Longrightarrow> x * z \<succ> y * z" 
@@ -143,7 +143,7 @@ locale weak_SN_both_mono_ordered_semiring_1 =
 class poly_carrier = ordered_semiring_1 + comm_semiring_1 
 
 locale poly_order_carrier = SN_one_mono_ordered_semiring_1 default gt 
-  for default :: "'a :: poly_carrier" and gt (infix "\<succ>" 50) +
+  for default :: "'a :: poly_carrier" and gt (infix \<open>\<succ>\<close> 50) +
   fixes power_mono :: "bool"
   and   discrete :: "bool"
   assumes times_gt_mono: "\<lbrakk>y \<succ> z; x \<ge> 1\<rbrakk> \<Longrightarrow> y * x \<succ> z * x"

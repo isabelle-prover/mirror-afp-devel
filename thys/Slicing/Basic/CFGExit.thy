@@ -5,8 +5,8 @@ subsection \<open>Adds an exit node to the abstract CFG\<close>
 locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") + 
-  fixes Exit::"'node"  ("'('_Exit'_')")
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) + 
+  fixes Exit::"'node"  (\<open>'('_Exit'_')\<close>)
   assumes Exit_source [dest]: "\<lbrakk>valid_edge a; sourcenode a = (_Exit_)\<rbrakk> \<Longrightarrow> False"
   and Entry_Exit_edge: "\<exists>a. valid_edge a \<and> sourcenode a = (_Entry_) \<and>
     targetnode a = (_Exit_) \<and> kind a = (\<lambda>s. False)\<^sub>\<surd>"

@@ -4,7 +4,7 @@ theory BitVector imports Main begin
 
 type_synonym bit_vector = "bool list"
 
-fun bv_leqs :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" ("_ \<preceq>\<^sub>b _" 99)
+fun bv_leqs :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" (\<open>_ \<preceq>\<^sub>b _\<close> 99)
   where bv_Nils:"[] \<preceq>\<^sub>b [] = True"
   | bv_Cons:"(x#xs) \<preceq>\<^sub>b (y#ys) = ((x \<longrightarrow> y) \<and> xs \<preceq>\<^sub>b ys)"
   | bv_rest:"xs \<preceq>\<^sub>b ys = False"
@@ -99,7 +99,7 @@ lemma bv_leqs_antisym:"\<lbrakk>xs \<preceq>\<^sub>b ys; ys \<preceq>\<^sub>b xs
   by(induct xs ys rule:bv_leqs.induct)auto
 
 
-definition bv_less :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" ("_ \<prec>\<^sub>b _" 99)
+definition bv_less :: "bit_vector \<Rightarrow> bit_vector \<Rightarrow> bool" (\<open>_ \<prec>\<^sub>b _\<close> 99)
   where "xs \<prec>\<^sub>b ys \<equiv> xs \<preceq>\<^sub>b ys \<and> xs \<noteq> ys"
 
 

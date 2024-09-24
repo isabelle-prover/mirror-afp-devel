@@ -23,7 +23,7 @@ definition E :: "real pmf \<Rightarrow> real"  where
 translations
   "\<integral> x. f \<partial>M" <= "CONST lebesgue_integral M (\<lambda>x. f)"
 
-notation (latex output) E  ("E[_]" [1] 100)
+notation (latex output) E  (\<open>E[_]\<close> [1] 100)
 
 lemma E_const[simp]: "E (return_pmf a) = a"
 unfolding E_def

@@ -4,7 +4,7 @@ theory RelationalSemFSet
   imports Lambda ValuesFSet
 begin
   
-inductive rel_sem :: "env \<Rightarrow> exp \<Rightarrow> val \<Rightarrow> bool" ("_ \<turnstile> _ \<Rightarrow> _" [52,52,52] 51) where
+inductive rel_sem :: "env \<Rightarrow> exp \<Rightarrow> val \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<Rightarrow> _\<close> [52,52,52] 51) where
   rnat[intro!]: "\<rho> \<turnstile> ENat n \<Rightarrow> VNat n" |
   rprim[intro!]: "\<lbrakk> \<rho> \<turnstile> e1 \<Rightarrow> VNat n1; \<rho> \<turnstile> e2 \<Rightarrow> VNat n2 \<rbrakk> \<Longrightarrow> \<rho> \<turnstile> EPrim f e1 e2 \<Rightarrow> VNat (f n1 n2)" |
   rvar[intro!]: "\<lbrakk> lookup \<rho> x = Some v'; v \<sqsubseteq> v' \<rbrakk> \<Longrightarrow> \<rho> \<turnstile> EVar x \<Rightarrow> v" |

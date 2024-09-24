@@ -104,11 +104,11 @@ begin
       constructors.
     \<close>
 
-    notation Nil  ("\<^bold>\<sharp>")
-    notation Var  ("\<^bold>\<guillemotleft>_\<^bold>\<guillemotright>")
-    notation Lam  ("\<^bold>\<lambda>\<^bold>[_\<^bold>]")
-    notation App  (infixl "\<^bold>\<circ>" 55)
-    notation Beta ("(\<^bold>\<lambda>\<^bold>[_\<^bold>] \<^bold>\<Zspot> _)" [55, 56] 55)
+    notation Nil  (\<open>\<^bold>\<sharp>\<close>)
+    notation Var  (\<open>\<^bold>\<guillemotleft>_\<^bold>\<guillemotright>\<close>)
+    notation Lam  (\<open>\<^bold>\<lambda>\<^bold>[_\<^bold>]\<close>)
+    notation App  (infixl \<open>\<^bold>\<circ>\<close> 55)
+    notation Beta (\<open>(\<^bold>\<lambda>\<^bold>[_\<^bold>] \<^bold>\<Zspot> _)\<close> [55, 56] 55)
 
     text \<open>
       The following function computes the set of free variables of a term.
@@ -563,7 +563,7 @@ begin
       This definition has also benefited from the presentation in \<^cite>\<open>"huet-residual-theory"\<close>.
     \<close>
 
-    fun resid  (infix "\\" 70)
+    fun resid  (infix \<open>\\<close> 70)
     where "\<^bold>\<guillemotleft>i\<^bold>\<guillemotright> \\ \<^bold>\<guillemotleft>i'\<^bold>\<guillemotright> = (if i = i' then \<^bold>\<guillemotleft>i\<^bold>\<guillemotright> else \<^bold>\<sharp>)"
         | "\<^bold>\<lambda>\<^bold>[t\<^bold>] \\ \<^bold>\<lambda>\<^bold>[t'\<^bold>] = (if t \\ t' = \<^bold>\<sharp> then \<^bold>\<sharp> else \<^bold>\<lambda>\<^bold>[t \\ t'\<^bold>])"
         | "(t \<^bold>\<circ> u) \\ (t'\<^bold>\<circ> u') = (if t \\ t' = \<^bold>\<sharp> \<or> u \\ u' = \<^bold>\<sharp> then \<^bold>\<sharp> else (t \\ t') \<^bold>\<circ> (u \\ u'))"
@@ -576,7 +576,7 @@ begin
       Terms t and u are \emph{consistent} if residuation is defined for them.
     \<close>
 
-    abbreviation Con  (infix "\<frown>" 50)
+    abbreviation Con  (infix \<open>\<frown>\<close> 50)
     where "Con t u \<equiv> resid t u \<noteq> \<^bold>\<sharp>"
 
     lemma ConE [elim]:
@@ -1116,7 +1116,7 @@ begin
       by metis+
 
     (* TODO: Try to understand when notation is and is not inherited. *)
-    notation resid  (infix "\\" 70)
+    notation resid  (infix \<open>\\<close> 70)
 
     lemma resid_is_residuation:
     shows "residuation resid"
@@ -1299,8 +1299,8 @@ begin
     shows "targets (subst t u) = {subst (Trg t) (Trg u)}"
       using assms targets_char\<^sub>\<Lambda> Arr_Subst arr_char by simp
 
-    notation prfx  (infix "\<lesssim>" 50)
-    notation cong  (infix "\<sim>" 50)
+    notation prfx  (infix \<open>\<lesssim>\<close> 50)
+    notation cong  (infix \<open>\<sim>\<close> 50)
 
     lemma prfx_char [iff]:
     shows "t \<lesssim> u \<longleftrightarrow> Ide (t \\ u)"
@@ -1401,7 +1401,7 @@ begin
       of marked redexes.
     \<close>
 
-    fun Join  (infix "\<squnion>" 52)
+    fun Join  (infix \<open>\<squnion>\<close> 52)
     where "\<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<squnion> \<^bold>\<guillemotleft>x'\<^bold>\<guillemotright> = (if x = x' then \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> else \<^bold>\<sharp>)"
         | "\<^bold>\<lambda>\<^bold>[t\<^bold>] \<squnion> \<^bold>\<lambda>\<^bold>[t'\<^bold>] = \<^bold>\<lambda>\<^bold>[t \<squnion> t'\<^bold>]"
         | "\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<circ> u \<squnion> \<^bold>\<lambda>\<^bold>[t'\<^bold>] \<^bold>\<Zspot> u' = \<^bold>\<lambda>\<^bold>[(t \<squnion> t')\<^bold>] \<^bold>\<Zspot> (u \<squnion> u')"
@@ -1822,17 +1822,17 @@ begin
             paths_in_confluent_rts.intro
       by blast
 
-    notation \<Lambda>.resid  (infix "\\" 70)
-    notation \<Lambda>.con    (infix "\<frown>" 50)
-    notation \<Lambda>.prfx   (infix "\<lesssim>" 50)
-    notation \<Lambda>.cong   (infix "\<sim>" 50)
+    notation \<Lambda>.resid  (infix \<open>\\<close> 70)
+    notation \<Lambda>.con    (infix \<open>\<frown>\<close> 50)
+    notation \<Lambda>.prfx   (infix \<open>\<lesssim>\<close> 50)
+    notation \<Lambda>.cong   (infix \<open>\<sim>\<close> 50)
 
-    notation Resid    (infix "\<^sup>*\\\<^sup>*" 70)
-    notation Resid1x  (infix "\<^sup>1\\\<^sup>*" 70)
-    notation Residx1  (infix "\<^sup>*\\\<^sup>1" 70)
-    notation con      (infix "\<^sup>*\<frown>\<^sup>*" 50)
-    notation prfx     (infix "\<^sup>*\<lesssim>\<^sup>*" 50)
-    notation cong     (infix "\<^sup>*\<sim>\<^sup>*" 50)
+    notation Resid    (infix \<open>\<^sup>*\\<^sup>*\<close> 70)
+    notation Resid1x  (infix \<open>\<^sup>1\\<^sup>*\<close> 70)
+    notation Residx1  (infix \<open>\<^sup>*\\<^sup>1\<close> 70)
+    notation con      (infix \<open>\<^sup>*\<frown>\<^sup>*\<close> 50)
+    notation prfx     (infix \<open>\<^sup>*\<lesssim>\<^sup>*\<close> 50)
+    notation cong     (infix \<open>\<^sup>*\<sim>\<^sup>*\<close> 50)
 
     lemma red_iff:
     shows "\<Lambda>.red a b \<longleftrightarrow> (\<exists>T. Arr T \<and> Src T = a \<and> Trg T = b)"
@@ -3188,7 +3188,7 @@ begin
       where \<open>u\<close> contains \<open>\<^bold>\<lambda>\<^bold>[t1\<^bold>] \<^bold>\<circ> t2\<close>.
     \<close>
 
-    fun subs  (infix "\<sqsubseteq>" 50)
+    fun subs  (infix \<open>\<sqsubseteq>\<close> 50)
     where "\<^bold>\<guillemotleft>i\<^bold>\<guillemotright> \<sqsubseteq> \<^bold>\<guillemotleft>i'\<^bold>\<guillemotright> \<longleftrightarrow> i = i'"
         | "\<^bold>\<lambda>\<^bold>[t\<^bold>] \<sqsubseteq> \<^bold>\<lambda>\<^bold>[t'\<^bold>] \<longleftrightarrow> t \<sqsubseteq> t'"
         | "t \<^bold>\<circ> u \<sqsubseteq> t' \<^bold>\<circ> u' \<longleftrightarrow> t \<sqsubseteq> t' \<and> u \<sqsubseteq> u'"

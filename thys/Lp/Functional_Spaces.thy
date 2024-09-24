@@ -621,10 +621,10 @@ abbreviation quasinorm_subset_eq :: "('a::real_vector) quasinorm \<Rightarrow> '
   where "quasinorm_subset_eq \<equiv> less_eq"
 
 notation
-  quasinorm_subset ("'(\<subset>\<^sub>N')") and
-  quasinorm_subset ("(_/ \<subset>\<^sub>N _)" [51, 51] 50) and
-  quasinorm_subset_eq ("'(\<subseteq>\<^sub>N')") and
-  quasinorm_subset_eq ("(_/ \<subseteq>\<^sub>N _)" [51, 51] 50)
+  quasinorm_subset (\<open>'(\<subset>\<^sub>N')\<close>) and
+  quasinorm_subset (\<open>(_/ \<subset>\<^sub>N _)\<close> [51, 51] 50) and
+  quasinorm_subset_eq (\<open>'(\<subseteq>\<^sub>N')\<close>) and
+  quasinorm_subset_eq (\<open>(_/ \<subseteq>\<^sub>N _)\<close> [51, 51] 50)
 
 
 lemma quasinorm_subsetD:
@@ -703,7 +703,7 @@ equivalence between norms. This is not equality, so we do not have a true order,
 this is handy, and not standard in a preorder in Isabelle. The file Library/Preorder.thy defines
 such an equivalence relation, but including it breaks some proofs so we go the naive way.\<close>
 
-definition quasinorm_equivalent::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> bool" (infix "=\<^sub>N" 60)
+definition quasinorm_equivalent::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> bool" (infix \<open>=\<^sub>N\<close> 60)
   where "quasinorm_equivalent N1 N2 = ((N1 \<subseteq>\<^sub>N N2) \<and> (N2 \<subseteq>\<^sub>N N1))"
 
 lemma quasinorm_equivalent_sym [sym]:
@@ -723,7 +723,7 @@ In terms of the order introduced above, this corresponds to the minimum and the 
 More important, these are the first two examples of interpolation spaces between two
 functional spaces, and they are central as all the other ones are built using them.\<close>
 
-definition quasinorm_intersection::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> 'a quasinorm" (infix "\<inter>\<^sub>N" 70)
+definition quasinorm_intersection::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> 'a quasinorm" (infix \<open>\<inter>\<^sub>N\<close> 70)
   where "quasinorm_intersection N1 N2 = quasinorm_of (max (defect N1) (defect N2), \<lambda>f. eNorm N1 f + eNorm N2 f)"
 
 lemma quasinorm_intersection:
@@ -788,7 +788,7 @@ unfolding quasinorm_equivalent_def by (meson order_trans quasinorm_intersection_
 
 
 
-definition quasinorm_sum::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> 'a quasinorm" (infix "+\<^sub>N" 70)
+definition quasinorm_sum::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> 'a quasinorm" (infix \<open>+\<^sub>N\<close> 70)
   where "quasinorm_sum N1 N2 = quasinorm_of (max (defect N1) (defect N2), \<lambda>f. Inf {eNorm N1 f1 + eNorm N2 f2| f1 f2. f = f1 + f2})"
 
 lemma quasinorm_sum:

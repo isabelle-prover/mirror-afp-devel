@@ -62,7 +62,7 @@ definition
 
 abbreviation
   S_TOP :: "[('a, 'm) Group_scheme, 'a set, 'a set] \<Rightarrow> 'a set"
-    ("(3_ \<diamondop>\<index> _)" [66,67]66) where
+    (\<open>(3_ \<diamondop>\<index> _)\<close> [66,67]66) where
   "H \<diamondop>\<^bsub>G\<^esub> K == s_top G H K" 
 
 lemma (in Group) s_top_induced:"\<lbrakk>G \<guillemotright> L; H \<subseteq> L; K \<subseteq> L\<rbrakk> \<Longrightarrow> 
@@ -922,11 +922,11 @@ apply (simp add:Pi_def mult_closed)
 done
 
 abbreviation
-  IDMAP ("(I\<^bsub>_\<^esub>)" [999]1000) where
+  IDMAP (\<open>(I\<^bsub>_\<^esub>)\<close> [999]1000) where
    "I\<^bsub>F\<^esub> == idmap (carrier F)"
 
 abbreviation
-  INVFUN ("(3Ifn _ _ _)" [88,88,89]88) where
+  INVFUN (\<open>(3Ifn _ _ _)\<close> [88,88,89]88) where
   "Ifn F G f == invfun (carrier F) (carrier G) f"
 
 lemma IdTr1:"\<lbrakk>Group F; x \<in> carrier F\<rbrakk> \<Longrightarrow> (I\<^bsub>F\<^esub>) x = x"
@@ -1300,7 +1300,7 @@ definition
 
 abbreviation
   INDUCED_GHOM :: "['a \<Rightarrow> 'b, ('a, 'm) Group_scheme, ('b, 'm1) Group_scheme]
-    \<Rightarrow>  ('a set  \<Rightarrow> 'b )" ("(3_\<dieresis>\<^bsub>_,_\<^esub>)" [82,82,83]82) where
+    \<Rightarrow>  ('a set  \<Rightarrow> 'b )" (\<open>(3_\<dieresis>\<^bsub>_,_\<^esub>)\<close> [82,82,83]82) where
   "f\<dieresis>\<^bsub>F,G\<^esub> == induced_ghom F G f"
 
 lemma induced_ghom_someTr:"\<lbrakk>Group F; Group G; f \<in> gHom F G; 
@@ -1451,7 +1451,7 @@ subsection "Homomorphism therems"
 definition
   iota :: "('a, 'm) Group_scheme \<Rightarrow> ('a \<Rightarrow> 'a)"  
 (* should be used exclusively as an inclusion map *)
-          ("(\<iota>\<^bsub>_\<^esub>)" [1000]999) where
+          (\<open>(\<iota>\<^bsub>_\<^esub>)\<close> [1000]999) where
   "\<iota>\<^bsub>F\<^esub> = (\<lambda>x \<in> carrier F. x)"
 
 lemma iotahomTr0:"\<lbrakk>Group G; G \<guillemotright> H; h \<in> H \<rbrakk> \<Longrightarrow> (\<iota>\<^bsub>(Gp G H)\<^esub>) h = h"
@@ -1643,7 +1643,7 @@ definition
   
 abbreviation
   QP :: "[_, 'a set, 'a set] \<Rightarrow> ('a set \<Rightarrow> 'a set)"
-    ("(3Qm\<^bsub>_ _,_\<^esub>)" [82,82,83]82) where
+    (\<open>(3Qm\<^bsub>_ _,_\<^esub>)\<close> [82,82,83]82) where
   "Qm\<^bsub>G H,N\<^esub> == Qmp G H N"
 
  (* "\<lbrakk> Group G; G \<triangleright> H; G \<triangleright> N; H \<subseteq> N \<rbrakk> \<Longrightarrow>

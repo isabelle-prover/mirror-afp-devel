@@ -95,7 +95,7 @@ begin
 
   locale partial_composition =
     partial_magma C
-  for C :: "'a comp" (infixr "\<cdot>" 55)
+  for C :: "'a comp" (infixr \<open>\<cdot>\<close> 55)
   begin
 
     text \<open>
@@ -162,7 +162,7 @@ begin
       extra work.  We choose @{term "in_hom"} as the more fundamental notion.
 \<close>
 
-    definition in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    definition in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
     where "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<equiv> a \<in> domains f \<and> b \<in> codomains f"
 
     abbreviation hom

@@ -20,7 +20,7 @@ definition copair_qbs_Mx :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> (rea
           g = (\<lambda>r::real. (if (r \<in> S) then Inl (\<alpha>1 r) else Inr (\<alpha>2 r)))))}"
 
 
-definition copair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a + 'b) quasi_borel" (infixr "<+>\<^sub>Q" 65) where
+definition copair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a + 'b) quasi_borel" (infixr \<open><+>\<^sub>Q\<close> 65) where
 "copair_qbs X Y \<equiv> Abs_quasi_borel (qbs_space X <+> qbs_space Y, copair_qbs_Mx X Y)"
 
 

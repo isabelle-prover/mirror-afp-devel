@@ -7,7 +7,7 @@ imports
   "Automatic_Refinement.Misc"
   "Automatic_Refinement.Refine_Util"
 begin
-no_notation insert ("_ \<triangleright> _" [56,55] 55)
+no_notation insert (\<open>_ \<triangleright> _\<close> [56,55] 55)
 
 subsection \<open>Utility Functions\<close>
 definition "index_by f l \<equiv> map_of (map (\<lambda>x. (f x,x)) l)"
@@ -160,7 +160,7 @@ subsection \<open>Closed-World Assumption, Equality, and Negation\<close>
     by (metis atom.exhaust)
 
 
-  abbreviation cw_entailment (infix "\<^sup>c\<TTurnstile>\<^sub>=" 53) where
+  abbreviation cw_entailment (infix \<open>\<^sup>c\<TTurnstile>\<^sub>=\<close> 53) where
     "M \<^sup>c\<TTurnstile>\<^sub>= \<phi> \<equiv> close_world M \<TTurnstile> \<phi>"
 
 

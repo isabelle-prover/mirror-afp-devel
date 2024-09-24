@@ -3,12 +3,12 @@ theory Initial_Literals_Generalize_Learned_Literals
 begin
 
 syntax (input)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      ("(3! (_/|:|_)./ _)" [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      ("(3? (_/|:|_)./ _)" [0, 0, 10] 10)
+  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3! (_/|:|_)./ _)\<close> [0, 0, 10] 10)
+  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3? (_/|:|_)./ _)\<close> [0, 0, 10] 10)
 
 syntax
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>(_/|\<in>|_)./ _)" [0, 0, 10] 10)
+  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<forall>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
+  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_fBall" \<rightleftharpoons> fBall and

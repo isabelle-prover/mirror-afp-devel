@@ -246,15 +246,15 @@ lemmas [code] =
   RBTS.fold_def
   RBTS.entries_def
 
-syntax "_rbt_lookup" :: "_ \<Rightarrow> _" ("lookup") translations "lookup" \<rightleftharpoons> "CONST RBTS.lookup"
-syntax "_rbt_insert" :: "_ \<Rightarrow> _" ("insert") translations "insert" \<rightleftharpoons> "CONST RBTS.insert"
-syntax "_rbt_map_entry" :: "_ \<Rightarrow> _" ("map'_entry") translations "map_entry" \<rightleftharpoons> "CONST RBTS.map_entry"
-syntax "_rbt_modify_def" :: "_ \<Rightarrow> _" ("modify'_def") translations "modify_def" \<rightleftharpoons> "CONST RBTS.modify_def"
-syntax "_rbt_keys" :: "_ \<Rightarrow> _" ("keys") translations "keys" \<rightleftharpoons> "CONST RBTS.keys"
-syntax "_rbt_lookup2" :: "_ \<Rightarrow> _" ("lookup2") translations "lookup2" \<rightleftharpoons> "CONST RBTS.lookup2"
-syntax "_rbt_insert2" :: "_ \<Rightarrow> _" ("insert2") translations "insert2" \<rightleftharpoons> "CONST RBTS.insert2"
-syntax "_rbt_fold" :: "_ \<Rightarrow> _" ("fold") translations "fold" \<rightleftharpoons> "CONST RBTS.fold"
-syntax "_rbt_entries" :: "_ \<Rightarrow> _" ("entries") translations "entries" \<rightleftharpoons> "CONST RBTS.entries"
+syntax "_rbt_lookup" :: "_ \<Rightarrow> _" (\<open>lookup\<close>) translations "lookup" \<rightleftharpoons> "CONST RBTS.lookup"
+syntax "_rbt_insert" :: "_ \<Rightarrow> _" (\<open>insert\<close>) translations "insert" \<rightleftharpoons> "CONST RBTS.insert"
+syntax "_rbt_map_entry" :: "_ \<Rightarrow> _" (\<open>map'_entry\<close>) translations "map_entry" \<rightleftharpoons> "CONST RBTS.map_entry"
+syntax "_rbt_modify_def" :: "_ \<Rightarrow> _" (\<open>modify'_def\<close>) translations "modify_def" \<rightleftharpoons> "CONST RBTS.modify_def"
+syntax "_rbt_keys" :: "_ \<Rightarrow> _" (\<open>keys\<close>) translations "keys" \<rightleftharpoons> "CONST RBTS.keys"
+syntax "_rbt_lookup2" :: "_ \<Rightarrow> _" (\<open>lookup2\<close>) translations "lookup2" \<rightleftharpoons> "CONST RBTS.lookup2"
+syntax "_rbt_insert2" :: "_ \<Rightarrow> _" (\<open>insert2\<close>) translations "insert2" \<rightleftharpoons> "CONST RBTS.insert2"
+syntax "_rbt_fold" :: "_ \<Rightarrow> _" (\<open>fold\<close>) translations "fold" \<rightleftharpoons> "CONST RBTS.fold"
+syntax "_rbt_entries" :: "_ \<Rightarrow> _" (\<open>entries\<close>) translations "entries" \<rightleftharpoons> "CONST RBTS.entries"
 
 function (sequential) class_unflat_aux where
 (* (* FIXME replace with this simplified form *)

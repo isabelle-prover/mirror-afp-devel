@@ -76,7 +76,7 @@ next
     by(cases (no_simp))(assumption|erule (2) WTs.that[OF refl])+
 qed
 
-notation infer_type ("_,_ \<turnstile> _ :: '_" [51,51,51]100)
+notation infer_type (\<open>_,_ \<turnstile> _ :: '_\<close> [51,51,51]100)
 
 definition test1 where "test1 = [],Map.empty \<turnstile> testExpr1 :: _"
 definition test2 where "test2 = [], Map.empty  \<turnstile> testExpr2 :: _"

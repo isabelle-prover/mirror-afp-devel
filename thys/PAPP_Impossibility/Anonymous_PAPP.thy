@@ -89,7 +89,7 @@ text \<open>
 
   This relation is a reflexive, transitive, and total.
 \<close>
-definition committee_preference :: "'a set \<Rightarrow> 'a multiset relation" ("Comm") where
+definition committee_preference :: "'a set \<Rightarrow> 'a multiset relation" (\<open>Comm\<close>) where
   "W1 \<preceq>[Comm(A)] W2 \<longleftrightarrow> size {# x\<in>#W1. x \<in> A #} \<le> size {# x\<in>#W2. x \<in> A #}"
 
 lemma not_strict_Comm [simp]: "\<not>(W1 \<prec>[Comm(A)] W2) \<longleftrightarrow> W1 \<succeq>[Comm(A)] W2"

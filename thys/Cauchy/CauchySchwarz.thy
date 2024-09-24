@@ -58,7 +58,7 @@ define some accessor functions and appropriate notation.\<close>
 type_synonym vector = "(nat\<Rightarrow>real) * nat"
 
 definition
-  ith :: "vector \<Rightarrow> nat \<Rightarrow> real" ("((_)\<^bsub>_\<^esub>)" [80,100] 100) where
+  ith :: "vector \<Rightarrow> nat \<Rightarrow> real" (\<open>((_)\<^bsub>_\<^esub>)\<close> [80,100] 100) where
   "ith v i = fst v i"
 
 definition
@@ -73,11 +73,11 @@ subsubsection \<open>Dot and Norm\<close>
 text \<open>We now define the dot product and norm operations.\<close>
 
 definition
-  dot :: "vector \<Rightarrow> vector \<Rightarrow> real" (infixr "\<cdot>" 60) where
+  dot :: "vector \<Rightarrow> vector \<Rightarrow> real" (infixr \<open>\<cdot>\<close> 60) where
   "dot a b = (\<Sum>j\<in>{1..(vlen a)}. a\<^bsub>j\<^esub>*b\<^bsub>j\<^esub>)"
 
 definition
-  norm :: "vector \<Rightarrow> real"                  ("\<parallel>_\<parallel>" 100) where
+  norm :: "vector \<Rightarrow> real"                  (\<open>\<parallel>_\<parallel>\<close> 100) where
   "norm v = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2)"
 
 text \<open>Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt

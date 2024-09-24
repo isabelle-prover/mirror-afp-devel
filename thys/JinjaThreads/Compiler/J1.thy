@@ -44,11 +44,11 @@ where
 inductive red1 :: 
   "bool \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 \<Rightarrow> 'heap \<times> 'addr locals1 
   \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> 'addr expr1 \<Rightarrow> 'heap \<times> 'addr locals1 \<Rightarrow> bool"
-  ("_,_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0,0] 81)
+  (\<open>_,_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [51,51,0,0,0,0,0,0] 81)
   and reds1 ::
   "bool \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr expr1 list \<Rightarrow> 'heap \<times> 'addr locals1
   \<Rightarrow> ('addr, 'thread_id, 'heap) external_thread_action \<Rightarrow> 'addr expr1 list \<Rightarrow> 'heap \<times> 'addr locals1 \<Rightarrow> bool"
-  ("_,_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,51,0,0,0,0,0,0] 81)
+  (\<open>_,_,_ \<turnstile>1 ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))\<close> [51,51,0,0,0,0,0,0] 81)
 for uf :: bool and P :: "'addr J1_prog" and t :: 'thread_id
 where
   Red1New:
@@ -375,7 +375,7 @@ inductive Red1 ::
   "bool \<Rightarrow> 'addr J1_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> 'heap
   \<Rightarrow> ('addr, 'thread_id, 'heap) J1_thread_action
   \<Rightarrow> ('addr expr1 \<times> 'addr locals1) \<Rightarrow> ('addr expr1 \<times> 'addr locals1) list \<Rightarrow> 'heap \<Rightarrow> bool"
-  ("_,_,_ \<turnstile>1 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))" [51,51,0,0,0,0,0,0,0,0] 81)
+  (\<open>_,_,_ \<turnstile>1 ((1\<langle>_'/_,/_\<rangle>) -_\<rightarrow>/ (1\<langle>_'/_,/_\<rangle>))\<close> [51,51,0,0,0,0,0,0,0,0] 81)
 for uf :: bool and P :: "'addr J1_prog" and t :: 'thread_id
 where
 

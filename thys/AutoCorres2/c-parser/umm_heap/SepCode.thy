@@ -19,7 +19,7 @@ where
   "singleton_t p v \<equiv> lift_state (heap_update p v (\<lambda>x. 0), (ptr_retyp p empty_htd))"
 
 definition
-  tagd :: "'a ptr_guard \<Rightarrow> 'a::c_type ptr \<Rightarrow> heap_assert" (infix "\<turnstile>\<^sub>s" 100)
+  tagd :: "'a ptr_guard \<Rightarrow> 'a::c_type ptr \<Rightarrow> heap_assert" (infix \<open>\<turnstile>\<^sub>s\<close> 100)
 where
   "g \<turnstile>\<^sub>s p \<equiv> \<lambda>s. s,g \<Turnstile>\<^sub>s p \<and> dom s = s_footprint p"
 
@@ -40,14 +40,14 @@ definition fields :: "'a::c_type itself \<Rightarrow> qualified_field_name set" 
 
 definition
   mfs_sep_map :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> qualified_field_name set \<Rightarrow> 'a \<Rightarrow> heap_assert"
-  ("_ \<mapsto>\<^bsub>_\<^esub>\<^bsup>_\<^esup> _" [56,0,0,51] 56)
+  (\<open>_ \<mapsto>\<^bsub>_\<^esub>\<^bsup>_\<^esup> _\<close> [56,0,0,51] 56)
 where
   "p \<mapsto>\<^bsub>g\<^esub>\<^bsup>F\<^esup> v \<equiv> \<lambda>s. lift_typ_heap g (singleton_t p v ++ s) p = Some v \<and>
       F \<subseteq> fields TYPE('a) \<and>
       dom s = s_footprint p - fs_footprint p F \<and> wf_heap_val s"
 
 notation (input)
-  mfs_sep_map ("_ \<mapsto>\<^sub>_\<^sup>_ _" [56,0,1000,51] 56)
+  mfs_sep_map (\<open>_ \<mapsto>\<^sub>_\<^sup>_ _\<close> [56,0,1000,51] 56)
 
 definition
   disjoint_fn :: "qualified_field_name \<Rightarrow> qualified_field_name set \<Rightarrow> bool"

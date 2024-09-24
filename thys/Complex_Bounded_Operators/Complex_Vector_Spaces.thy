@@ -27,7 +27,7 @@ theory Complex_Vector_Spaces
 begin
 
 bundle notation_norm begin
-notation norm ("\<parallel>_\<parallel>")
+notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
 unbundle lattice_syntax
@@ -888,7 +888,7 @@ qed
 locale bounded_sesquilinear =
   fixes
     prod :: "'a::complex_normed_vector \<Rightarrow> 'b::complex_normed_vector \<Rightarrow> 'c::complex_normed_vector"
-      (infixl "**" 70)
+      (infixl \<open>**\<close> 70)
   assumes add_left: "prod (a + a') b = prod a b + prod a' b"
     and add_right: "prod a (b + b') = prod a b + prod a b'"
     and scaleC_left: "prod (r *\<^sub>C a) b = (cnj r) *\<^sub>C (prod a b)"
@@ -2692,7 +2692,7 @@ subsection \<open>Closed sums\<close>
 definition closed_sum:: \<open>'a::{semigroup_add,topological_space} set \<Rightarrow> 'a set \<Rightarrow> 'a set\<close> where
   \<open>closed_sum A B = closure (A + B)\<close>
 
-notation closed_sum (infixl "+\<^sub>M" 65)
+notation closed_sum (infixl \<open>+\<^sub>M\<close> 65)
 
 lemma closed_sum_comm: \<open>A +\<^sub>M B = B +\<^sub>M A\<close> for A B :: "_::ab_semigroup_add"
   by (simp add: add.commute closed_sum_def)

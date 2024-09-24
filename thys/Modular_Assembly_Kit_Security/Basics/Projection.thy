@@ -3,7 +3,7 @@ imports Main
 begin
 
 (* Projection of an event list onto a subset of the events *)
-definition projection:: "'e list \<Rightarrow> 'e set \<Rightarrow> 'e list" (infixl "\<upharpoonleft>" 100)
+definition projection:: "'e list \<Rightarrow> 'e set \<Rightarrow> 'e list" (infixl \<open>\<upharpoonleft>\<close> 100)
 where
 "l \<upharpoonleft> E \<equiv> filter (\<lambda>x . x \<in> E) l"
 

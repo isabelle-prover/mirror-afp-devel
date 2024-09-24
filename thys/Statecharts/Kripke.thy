@@ -77,7 +77,7 @@ datatype ('s,'a) ctl =  Atom "'a"
 
 
 primrec
-   eval_ctl :: "[('s,'a) kripke, 's, ('s,'a) ctl] => bool"  ("_,_ |=c= _" [92,91,90]90) 
+   eval_ctl :: "[('s,'a) kripke, 's, ('s,'a) ctl] => bool"  (\<open>_,_ |=c= _\<close> [92,91,90]90) 
    where
      "(M,S |=c= (Atom P))        = (P \<in> the ((LabelFun M) S))"
    | "(M,S |=c= (AND F1 F2))     = ((M,S |=c= F1) \<and> (M,S |=c= F2))"

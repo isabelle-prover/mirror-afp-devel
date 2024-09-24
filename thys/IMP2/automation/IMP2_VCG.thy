@@ -34,7 +34,7 @@ subsection \<open>Preprocessing\<close>
     complete isar case setup from such annotations. 
     We should adapt (at least parts of) this idea!
   *)
-  definition GOAL_INDICATION :: "'a \<Rightarrow> bool" ("\<paragraph>_" [1000])
+  definition GOAL_INDICATION :: "'a \<Rightarrow> bool" (\<open>\<paragraph>_\<close> [1000])
     where "GOAL_INDICATION _ \<equiv> True"
   
   lemma move_goal_indication_to_front[simp, named_ss vcg_bb]: 

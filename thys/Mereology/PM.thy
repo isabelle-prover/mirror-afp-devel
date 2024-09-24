@@ -20,16 +20,16 @@ text \<open> We will use the following notation throughout.\footnote{See \<^cite
 for a helpful comparison of alternative notations.} \<close>
 
 typedecl i
-consts part :: "i \<Rightarrow> i \<Rightarrow> bool" ("P")
-consts overlap :: "i \<Rightarrow> i \<Rightarrow> bool" ("O")
-consts proper_part :: "i \<Rightarrow> i \<Rightarrow> bool" ("PP")
-consts sum :: "i \<Rightarrow> i \<Rightarrow> i" (infix "\<oplus>" 52)
-consts product :: "i \<Rightarrow> i \<Rightarrow> i" (infix "\<otimes>" 53)
-consts difference :: "i \<Rightarrow> i \<Rightarrow> i" (infix "\<ominus>" 51)
-consts complement:: "i \<Rightarrow> i" ("\<midarrow>")
-consts universe :: "i" ("u")
-consts general_sum :: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder "\<sigma>" 9)
-consts general_product :: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder "\<pi>" [8] 9)
+consts part :: "i \<Rightarrow> i \<Rightarrow> bool" (\<open>P\<close>)
+consts overlap :: "i \<Rightarrow> i \<Rightarrow> bool" (\<open>O\<close>)
+consts proper_part :: "i \<Rightarrow> i \<Rightarrow> bool" (\<open>PP\<close>)
+consts sum :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<oplus>\<close> 52)
+consts product :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<otimes>\<close> 53)
+consts difference :: "i \<Rightarrow> i \<Rightarrow> i" (infix \<open>\<ominus>\<close> 51)
+consts complement:: "i \<Rightarrow> i" (\<open>\<midarrow>\<close>)
+consts universe :: "i" (\<open>u\<close>)
+consts general_sum :: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder \<open>\<sigma>\<close> 9)
+consts general_product :: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder \<open>\<pi>\<close> [8] 9)
 
 section \<open> Premereology \<close>
 

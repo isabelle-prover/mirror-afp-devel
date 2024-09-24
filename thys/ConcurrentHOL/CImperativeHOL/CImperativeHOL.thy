@@ -34,10 +34,10 @@ setup \<open>Sign.mandatory_path "Ref"\<close>
 definition ref :: "'a::heap.rep \<Rightarrow> 'a ref imp" where
   "ref v = prog.action {(r, s, s'). (r, s') \<in> Ref.alloc v s}"
 
-definition lookup :: "'a::heap.rep ref \<Rightarrow> 'a imp" ("!_" 61) where
+definition lookup :: "'a::heap.rep ref \<Rightarrow> 'a imp" (\<open>!_\<close> 61) where
   "lookup r = prog.read (Ref.get r)"
 
-definition update :: "'a ref \<Rightarrow> 'a::heap.rep \<Rightarrow> unit imp" ("_ := _" 62) where
+definition update :: "'a ref \<Rightarrow> 'a::heap.rep \<Rightarrow> unit imp" (\<open>_ := _\<close> 62) where
   "update r v = prog.write (Ref.set r v)"
 
 setup \<open>Sign.parent_path\<close>

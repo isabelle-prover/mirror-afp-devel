@@ -7,10 +7,10 @@ imports Abs_Int2_ivl
 begin
 
 class WN = SL_top +
-fixes widen :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<nabla>" 65)
+fixes widen :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<nabla>\<close> 65)
 assumes widen1: "x \<sqsubseteq> x \<nabla> y"
 assumes widen2: "y \<sqsubseteq> x \<nabla> y"
-fixes narrow :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<triangle>" 65)
+fixes narrow :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<triangle>\<close> 65)
 assumes narrow1: "y \<sqsubseteq> x \<Longrightarrow> y \<sqsubseteq> x \<triangle> y"
 assumes narrow2: "y \<sqsubseteq> x \<Longrightarrow> x \<triangle> y \<sqsubseteq> x"
 
@@ -113,10 +113,10 @@ fun map2_acom :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a acom \
 "map2_acom f ({a1} WHILE b DO c {a2}) ({a3} WHILE b' DO c' {a4}) =
   ({f a1 a3} WHILE b DO map2_acom f c c' {f a2 a4})"
 
-abbreviation widen_acom :: "('a::WN)acom \<Rightarrow> 'a acom \<Rightarrow> 'a acom" (infix "\<nabla>\<^sub>c" 65)
+abbreviation widen_acom :: "('a::WN)acom \<Rightarrow> 'a acom \<Rightarrow> 'a acom" (infix \<open>\<nabla>\<^sub>c\<close> 65)
 where "widen_acom == map2_acom (\<nabla>)"
 
-abbreviation narrow_acom :: "('a::WN)acom \<Rightarrow> 'a acom \<Rightarrow> 'a acom" (infix "\<triangle>\<^sub>c" 65)
+abbreviation narrow_acom :: "('a::WN)acom \<Rightarrow> 'a acom \<Rightarrow> 'a acom" (infix \<open>\<triangle>\<^sub>c\<close> 65)
 where "narrow_acom == map2_acom (\<triangle>)"
 
 lemma widen1_acom: "strip c = strip c' \<Longrightarrow> c \<sqsubseteq> c \<nabla>\<^sub>c c'"

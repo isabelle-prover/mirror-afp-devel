@@ -223,7 +223,7 @@ where
  | "labelfrom n nn (call(fargs)) = (nn - 1, call(fargs))"
 
 datatype 'pn label =
-    LABEL 'pn int  ("_-:_" [1000, 1000] 999)
+    LABEL 'pn int  (\<open>_-:_\<close> [1000, 1000] 999)
 
 instantiation "label" :: (ord) ord
 begin

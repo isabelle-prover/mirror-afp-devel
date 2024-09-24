@@ -9,9 +9,9 @@ begin
 context env begin
 
 abbreviation
-  weakBisimSubstJudge ("_ \<rhd> _ \<approx>\<^sub>s _" [70, 70, 70] 65) where "\<Psi> \<rhd> P \<approx>\<^sub>s Q \<equiv> (\<Psi>, P, Q) \<in> closeSubst weakBisim"
+  weakBisimSubstJudge (\<open>_ \<rhd> _ \<approx>\<^sub>s _\<close> [70, 70, 70] 65) where "\<Psi> \<rhd> P \<approx>\<^sub>s Q \<equiv> (\<Psi>, P, Q) \<in> closeSubst weakBisim"
 abbreviation
-  weakBisimSubstNilJudge ("_ \<approx>\<^sub>s _" [70, 70] 65) where "P \<approx>\<^sub>s Q \<equiv> \<one> \<rhd> P \<approx>\<^sub>s Q"
+  weakBisimSubstNilJudge (\<open>_ \<approx>\<^sub>s _\<close> [70, 70] 65) where "P \<approx>\<^sub>s Q \<equiv> \<one> \<rhd> P \<approx>\<^sub>s Q"
 
 lemmas weakBisimSubstClosed[eqvt] = closeSubstClosed[OF weakBisimEqvt]
 lemmas weakBisimEqvt[simp] = closeSubstEqvt[OF weakBisimEqvt]

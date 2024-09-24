@@ -57,10 +57,10 @@ lemma in_alpha_out_indep [simp]:
 
 text \<open> The following two functions lift a predicate substitution to a relational one. \<close>
     
-abbreviation usubst_rel_lift :: "'\<alpha> usubst \<Rightarrow> ('\<alpha> \<times> '\<beta>) usubst" ("\<lceil>_\<rceil>\<^sub>s") where
+abbreviation usubst_rel_lift :: "'\<alpha> usubst \<Rightarrow> ('\<alpha> \<times> '\<beta>) usubst" (\<open>\<lceil>_\<rceil>\<^sub>s\<close>) where
 "\<lceil>\<sigma>\<rceil>\<^sub>s \<equiv> \<sigma> \<oplus>\<^sub>s in\<alpha>"
 
-abbreviation usubst_rel_drop :: "('\<alpha> \<times> '\<alpha>) usubst \<Rightarrow> '\<alpha> usubst" ("\<lfloor>_\<rfloor>\<^sub>s") where
+abbreviation usubst_rel_drop :: "('\<alpha> \<times> '\<alpha>) usubst \<Rightarrow> '\<alpha> usubst" (\<open>\<lfloor>_\<rfloor>\<^sub>s\<close>) where
 "\<lfloor>\<sigma>\<rfloor>\<^sub>s \<equiv> \<sigma> \<restriction>\<^sub>s in\<alpha>"
     
 text \<open> The alphabet of a relation then consists wholly of the input and output portions. \<close>
@@ -87,21 +87,21 @@ text \<open> We set up some overloaded constants for sequential composition and 
   we want to overload their definitions later. \<close>
   
 consts
-  useq     :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr ";;" 61)
-  uassigns :: "'a usubst \<Rightarrow> 'b" ("\<langle>_\<rangle>\<^sub>a")
-  uskip    :: "'a" ("II")
+  useq     :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>;;\<close> 61)
+  uassigns :: "'a usubst \<Rightarrow> 'b" (\<open>\<langle>_\<rangle>\<^sub>a\<close>)
+  uskip    :: "'a" (\<open>II\<close>)
   
 text \<open> We define a specialised version of the conditional where the condition can refer only to
   undashed variables, as is usually the case in programs, but not universally in UTP models. 
   We implement this by lifting the condition predicate into the relational state-space with
   construction @{term "\<lceil>b\<rceil>\<^sub><"}. \<close>
   
-definition lift_rcond ("\<lceil>_\<rceil>\<^sub>\<leftarrow>") where
+definition lift_rcond (\<open>\<lceil>_\<rceil>\<^sub>\<leftarrow>\<close>) where
 [upred_defs]: "\<lceil>b\<rceil>\<^sub>\<leftarrow> = \<lceil>b\<rceil>\<^sub><"
     
 abbreviation 
   rcond :: "('\<alpha>, '\<beta>) urel \<Rightarrow> '\<alpha> cond \<Rightarrow> ('\<alpha>, '\<beta>) urel \<Rightarrow> ('\<alpha>, '\<beta>) urel"
-  ("(3_ \<triangleleft> _ \<triangleright>\<^sub>r/ _)" [52,0,53] 52)
+  (\<open>(3_ \<triangleleft> _ \<triangleright>\<^sub>r/ _)\<close> [52,0,53] 52)
   where "(P \<triangleleft> b \<triangleright>\<^sub>r Q) \<equiv> (P \<triangleleft> \<lceil>b\<rceil>\<^sub>\<leftarrow> \<triangleright> Q)"
     
 text \<open> Sequential composition is heterogeneous, and simply requires that the output alphabet
@@ -118,19 +118,19 @@ adhoc_overloading
 text \<open> We also set up a homogeneous sequential composition operator, and versions of @{term true}
   and @{term false} that are explicitly typed by a homogeneous alphabet. \<close>
 
-abbreviation seqh :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (infixr ";;\<^sub>h" 61) where
+abbreviation seqh :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (infixr \<open>;;\<^sub>h\<close> 61) where
 "seqh P Q \<equiv> (P ;; Q)"
 
-abbreviation truer :: "'\<alpha> hrel" ("true\<^sub>h") where
+abbreviation truer :: "'\<alpha> hrel" (\<open>true\<^sub>h\<close>) where
 "truer \<equiv> true"
 
-abbreviation falser :: "'\<alpha> hrel" ("false\<^sub>h") where
+abbreviation falser :: "'\<alpha> hrel" (\<open>false\<^sub>h\<close>) where
 "falser \<equiv> false"
   
 text \<open> We define the relational converse operator as an alphabet extrusion on the bijective
   lens @{term swap\<^sub>L} that swaps the elements of the product state-space. \<close>
     
-abbreviation conv_r :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('a, '\<beta> \<times> '\<alpha>) uexpr" ("_\<^sup>-" [999] 999)
+abbreviation conv_r :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('a, '\<beta> \<times> '\<alpha>) uexpr" (\<open>_\<^sup>-\<close> [999] 999)
 where "conv_r e \<equiv> e \<oplus>\<^sub>p swap\<^sub>L"
 
 text \<open> Assignment is defined using substitutions, where latter defines what each variable should
@@ -183,7 +183,7 @@ definition skip_ra :: "('\<beta>, '\<alpha>) lens \<Rightarrow>'\<alpha> hrel" w
 
 text \<open> Similarly, we define the alphabetised assignment operator. \<close>
 
-definition assigns_ra :: "'\<alpha> usubst \<Rightarrow> ('\<beta>, '\<alpha>) lens \<Rightarrow> '\<alpha> hrel" ("\<langle>_\<rangle>\<^bsub>_\<^esub>") where
+definition assigns_ra :: "'\<alpha> usubst \<Rightarrow> ('\<beta>, '\<alpha>) lens \<Rightarrow> '\<alpha> hrel" (\<open>\<langle>_\<rangle>\<^bsub>_\<^esub>\<close>) where
 "\<langle>\<sigma>\<rangle>\<^bsub>a\<^esub> = (\<lceil>\<sigma>\<rceil>\<^sub>s \<dagger> skip_ra a)"
 
 text \<open> Assumptions ($c^{\top}$) and assertions ($c_{\bot}$) are encoded as conditionals. An assumption
@@ -224,15 +224,15 @@ definition while_vrt ::
 [urel_defs]: "while_vrt b p v S = while_bot b S"
 
 syntax
-  "_uassume"        :: "uexp \<Rightarrow> logic" ("[_]\<^sup>\<top>")
-  "_uassume"        :: "uexp \<Rightarrow> logic" ("?[_]")
-  "_uassert"        :: "uexp \<Rightarrow> logic" ("{_}\<^sub>\<bottom>")
-  "_uwhile"         :: "uexp \<Rightarrow> logic \<Rightarrow> logic" ("while\<^sup>\<top> _ do _ od")
-  "_uwhile_top"     :: "uexp \<Rightarrow> logic \<Rightarrow> logic" ("while _ do _ od")
-  "_uwhile_bot"     :: "uexp \<Rightarrow> logic \<Rightarrow> logic" ("while\<^sub>\<bottom> _ do _ od")
-  "_uwhile_inv"     :: "uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" ("while _ invr _ do _ od")
-  "_uwhile_inv_bot" :: "uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" ("while\<^sub>\<bottom> _ invr _ do _ od" 71)
-  "_uwhile_vrt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" ("while _ invr _ vrt _ do _ od")
+  "_uassume"        :: "uexp \<Rightarrow> logic" (\<open>[_]\<^sup>\<top>\<close>)
+  "_uassume"        :: "uexp \<Rightarrow> logic" (\<open>?[_]\<close>)
+  "_uassert"        :: "uexp \<Rightarrow> logic" (\<open>{_}\<^sub>\<bottom>\<close>)
+  "_uwhile"         :: "uexp \<Rightarrow> logic \<Rightarrow> logic" (\<open>while\<^sup>\<top> _ do _ od\<close>)
+  "_uwhile_top"     :: "uexp \<Rightarrow> logic \<Rightarrow> logic" (\<open>while _ do _ od\<close>)
+  "_uwhile_bot"     :: "uexp \<Rightarrow> logic \<Rightarrow> logic" (\<open>while\<^sub>\<bottom> _ do _ od\<close>)
+  "_uwhile_inv"     :: "uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" (\<open>while _ invr _ do _ od\<close>)
+  "_uwhile_inv_bot" :: "uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" (\<open>while\<^sub>\<bottom> _ invr _ do _ od\<close> 71)
+  "_uwhile_vrt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> logic \<Rightarrow> logic" (\<open>while _ invr _ vrt _ do _ od\<close>)
 
 syntax_consts
   "_uassume" == rassume and
@@ -256,7 +256,7 @@ translations
 text \<open> We implement a poor man's version of alphabet restriction that hides a variable within 
   a relation. \<close>
 
-definition rel_var_res :: "'\<alpha> hrel \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel" (infix "\<restriction>\<^sub>\<alpha>" 80) where
+definition rel_var_res :: "'\<alpha> hrel \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel" (infix \<open>\<restriction>\<^sub>\<alpha>\<close> 80) where
 [urel_defs]: "P \<restriction>\<^sub>\<alpha> x = (\<exists> $x \<bullet> \<exists> $x\<acute> \<bullet> P)"
 
 text \<open> Alphabet extension and restriction add additional variables by the given lens in both
@@ -296,30 +296,30 @@ subsection \<open> Syntax Translations \<close>
     
 syntax
   \<comment> \<open> Alternative traditional conditional syntax \<close>
-  "_utp_if" :: "uexp \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("(if\<^sub>u (_)/ then (_)/ else (_))" [0, 0, 71] 71)
+  "_utp_if" :: "uexp \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>(if\<^sub>u (_)/ then (_)/ else (_))\<close> [0, 0, 71] 71)
   \<comment> \<open> Iterated sequential composition \<close>
-  "_seqr_iter" :: "pttrn \<Rightarrow> 'a list \<Rightarrow> '\<sigma> hrel \<Rightarrow> '\<sigma> hrel" ("(3;; _ : _ \<bullet>/ _)" [0, 0, 10] 10)
+  "_seqr_iter" :: "pttrn \<Rightarrow> 'a list \<Rightarrow> '\<sigma> hrel \<Rightarrow> '\<sigma> hrel" (\<open>(3;; _ : _ \<bullet>/ _)\<close> [0, 0, 10] 10)
   \<comment> \<open> Single and multiple assignement \<close>
-  "_assignment"     :: "svids \<Rightarrow> uexprs \<Rightarrow> '\<alpha> hrel"  ("'(_') := '(_')")  
-  "_assignment"     :: "svids \<Rightarrow> uexprs \<Rightarrow> '\<alpha> hrel"  (infixr ":=" 62)
+  "_assignment"     :: "svids \<Rightarrow> uexprs \<Rightarrow> '\<alpha> hrel"  (\<open>'(_') := '(_')\<close>)  
+  "_assignment"     :: "svids \<Rightarrow> uexprs \<Rightarrow> '\<alpha> hrel"  (infixr \<open>:=\<close> 62)
   \<comment> \<open> Non-deterministic assignment \<close>
-  "_nd_assign" :: "svids \<Rightarrow> logic" ("_ := *" [62] 62)
+  "_nd_assign" :: "svids \<Rightarrow> logic" (\<open>_ := *\<close> [62] 62)
   \<comment> \<open> Substitution constructor \<close>
   "_mk_usubst"      :: "svids \<Rightarrow> uexprs \<Rightarrow> '\<alpha> usubst"
   \<comment> \<open> Alphabetised skip \<close>
-  "_skip_ra"        :: "salpha \<Rightarrow> logic" ("II\<^bsub>_\<^esub>")
+  "_skip_ra"        :: "salpha \<Rightarrow> logic" (\<open>II\<^bsub>_\<^esub>\<close>)
   \<comment> \<open> Frame \<close>
-  "_frame"          :: "salpha \<Rightarrow> logic \<Rightarrow> logic" ("_:[_]" [99,0] 100)
+  "_frame"          :: "salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>_:[_]\<close> [99,0] 100)
   \<comment> \<open> Antiframe \<close>
-  "_antiframe"      :: "salpha \<Rightarrow> logic \<Rightarrow> logic" ("_:\<lbrakk>_\<rbrakk>" [79,0] 80)
+  "_antiframe"      :: "salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>_:\<lbrakk>_\<rbrakk>\<close> [79,0] 80)
   \<comment> \<open> Relational Alphabet Extension \<close>
-  "_rel_aext"  :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl "\<oplus>\<^sub>r" 90)
+  "_rel_aext"  :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl \<open>\<oplus>\<^sub>r\<close> 90)
   \<comment> \<open> Relational Alphabet Restriction \<close>
-  "_rel_ares"  :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl "\<restriction>\<^sub>r" 90)
+  "_rel_ares"  :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl \<open>\<restriction>\<^sub>r\<close> 90)
   \<comment> \<open> Frame Extension \<close>
-  "_rel_frext" :: "salpha \<Rightarrow> logic \<Rightarrow> logic" ("_:[_]\<^sup>+" [99,0] 100)
+  "_rel_frext" :: "salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>_:[_]\<^sup>+\<close> [99,0] 100)
   \<comment> \<open> Nameset \<close>
-  "_nameset"        :: "salpha \<Rightarrow> logic \<Rightarrow> logic" ("ns _ \<bullet> _" [0,999] 999)
+  "_nameset"        :: "salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>ns _ \<bullet> _\<close> [0,999] 999)
 
 translations
   "_utp_if b P Q" => "P \<triangleleft> b \<triangleright>\<^sub>r Q"
@@ -737,7 +737,7 @@ qed
 lemma seqr_RID_closed [closure]: "\<lbrakk> vwb_lens x; P is RID(x); Q is RID(x) \<rbrakk> \<Longrightarrow> P ;; Q is RID(x)"
   by (metis Healthy_def RID_seq_right)
   
-definition unrest_relation :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel \<Rightarrow> bool" (infix "\<sharp>\<sharp>" 20)
+definition unrest_relation :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel \<Rightarrow> bool" (infix \<open>\<sharp>\<sharp>\<close> 20)
 where "(x \<sharp>\<sharp> P) \<longleftrightarrow> (P is RID(x))"
 
 declare unrest_relation_def [urel_defs]

@@ -5,7 +5,7 @@ begin
 subsection \<open>Quantifiers (restricted and unrestricted)\<close>
 
 text\<open>Introduce pedagogically convenient notation.\<close>
-notation HOL.All ("\<Pi>") notation HOL.Ex ("\<Sigma>")
+notation HOL.All (\<open>\<Pi>\<close>) notation HOL.Ex (\<open>\<Sigma>\<close>)
 
 text\<open>Let us recall that in HOL we have: \<close>
 lemma "(\<forall>x. P) = \<Pi>(\<lambda>x. P)" by simp
@@ -13,13 +13,13 @@ lemma "(\<exists>x. P) = \<Sigma>(\<lambda>x. P)" by simp
 lemma "\<Sigma> = (\<lambda>P. \<not>\<Pi>(\<lambda>x. \<not>P x))" by simp
 
 text\<open>We can introduce their respective 'w-type-lifted variants as follows: \<close>
-definition mforall::"('i\<Rightarrow>'w \<sigma>)\<Rightarrow>'w \<sigma>" ("\<^bold>\<Pi>_")
+definition mforall::"('i\<Rightarrow>'w \<sigma>)\<Rightarrow>'w \<sigma>" (\<open>\<^bold>\<Pi>_\<close>)
   where "\<^bold>\<Pi>\<phi> \<equiv> \<lambda>w. \<forall>X. \<phi> X w"
-definition mexists::"('i\<Rightarrow>'w \<sigma>)\<Rightarrow>'w \<sigma>" ("\<^bold>\<Sigma>_") 
+definition mexists::"('i\<Rightarrow>'w \<sigma>)\<Rightarrow>'w \<sigma>" (\<open>\<^bold>\<Sigma>_\<close>) 
   where "\<^bold>\<Sigma>\<phi> \<equiv> \<lambda>w. \<exists>X. \<phi> X w"
 
 text\<open>To improve readability, we introduce for them standard binder notation.\<close>
-notation mforall (binder "\<^bold>\<forall>" [48]49)  notation mexists (binder "\<^bold>\<exists>" [48]49) 
+notation mforall (binder \<open>\<^bold>\<forall>\<close> [48]49)  notation mexists (binder \<open>\<^bold>\<exists>\<close> [48]49) 
 
 text\<open>And thus we obtain the 'w-type-lifted variant of the standard (variable-binding) quantifiers.\<close>
 lemma "(\<^bold>\<forall>X. \<phi>) = \<^bold>\<Pi>(\<lambda>X. \<phi>)" by (simp add: mforall_def)
@@ -40,9 +40,9 @@ lemma mexistsb_char: "(\<^bold>\<exists>X. \<phi>) = \<^bold>\<Or>\<lbrakk>(\<la
 text\<open>We now consider quantification restricted over constant and varying domains.\<close>
 
 text\<open>Constant domains: first generalization of quantifiers above (e.g. free logic).\<close>
-definition mforall_const::"'i \<sigma> \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" ("\<^bold>\<Pi>[_]_") 
+definition mforall_const::"'i \<sigma> \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<Pi>[_]_\<close>) 
   where "\<^bold>\<Pi>[D]\<phi> \<equiv> \<lambda>w. \<forall>X. (D X) \<longrightarrow> (\<phi> X) w" 
-definition mexists_const::"'i \<sigma> \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" ("\<^bold>\<Sigma>[_]_") 
+definition mexists_const::"'i \<sigma> \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<Sigma>[_]_\<close>) 
   where "\<^bold>\<Sigma>[D]\<phi> \<equiv> \<lambda>w. \<exists>X. (D X)  \<and>  (\<phi> X) w"
 
 (*Alas! the convenient binder notation cannot be easily introduced for restricted quantifiers.*)
@@ -63,9 +63,9 @@ lemma mexists_comp: "\<^bold>\<Sigma>(\<phi>\<circ>\<psi>) = \<^bold>\<Sigma>[\<
 
 text\<open>Varying domains: we can also restrict quantifiers by taking a 'functional domain' as additional parameter.
 The latter is a set-valued mapping each element 'i to a set of points (e.g. where it 'exists').\<close>
-definition mforall_var::"('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" ("\<^bold>\<Pi>{_}_") 
+definition mforall_var::"('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<Pi>{_}_\<close>) 
   where "\<^bold>\<Pi>{\<psi>}\<phi> \<equiv> \<lambda>w. \<forall>X. (\<psi> X) w \<longrightarrow> (\<phi> X) w" 
-definition mexists_var::"('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" ("\<^bold>\<Sigma>{_}_") 
+definition mexists_var::"('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> ('i \<Rightarrow> 'w \<sigma>) \<Rightarrow> 'w \<sigma>" (\<open>\<^bold>\<Sigma>{_}_\<close>) 
   where "\<^bold>\<Sigma>{\<psi>}\<phi> \<equiv> \<lambda>w. \<exists>X. (\<psi> X) w  \<and>  (\<phi> X) w"
 
 text\<open>Varying-domain quantification generalizes its constant-domain counterpart.\<close>

@@ -191,7 +191,7 @@ qed (use CARD_a nat_int in \<open>auto simp add: omega_properties mu_properties\
 text \<open>Multiplication in of polynomials in $R_q$ is a negacyclic convolution 
 (because we factored by $x^n + 1$, thus $x^n\equiv -1 \mod x^n+1$).
 This is the reason why we needed to adapt the exponent in the NTT.\<close>
-definition qr_mult_coeffs :: "'a qr \<Rightarrow> 'a qr \<Rightarrow> 'a qr" (infixl "\<star>" 70) where
+definition qr_mult_coeffs :: "'a qr \<Rightarrow> 'a qr \<Rightarrow> 'a qr" (infixl \<open>\<star>\<close> 70) where
   "qr_mult_coeffs f g = to_qr (map2_poly (*) (of_qr f) (of_qr g))"
  
 

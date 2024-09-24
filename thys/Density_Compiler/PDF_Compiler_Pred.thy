@@ -21,7 +21,7 @@ text \<open>
 \<close>
 
 inductive expr_has_density :: "dens_ctxt \<Rightarrow> expr \<Rightarrow> (state \<Rightarrow> val \<Rightarrow> ennreal) \<Rightarrow> bool"
-              ("(1_ \<turnstile>\<^sub>d/ (_ \<Rightarrow>/ _))" [50,0,50] 50) where
+              (\<open>(1_ \<turnstile>\<^sub>d/ (_ \<Rightarrow>/ _))\<close> [50,0,50] 50) where
   hd_AE:   "\<lbrakk>(V,V',\<Gamma>,\<delta>) \<turnstile>\<^sub>d e \<Rightarrow> f; \<Gamma> \<turnstile> e : t;
              \<And>\<rho>. \<rho> \<in> space (state_measure V' \<Gamma>) \<Longrightarrow>
                      AE x in stock_measure t. f \<rho> x = f' \<rho> x;

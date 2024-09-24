@@ -388,19 +388,19 @@ qed
 
 subsubsection \<open>First Order Terms And Abstract Substitution\<close>
 
-no_notation subst_apply_term (infixl "\<cdot>" 67)
-no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)
+no_notation subst_apply_term (infixl \<open>\<cdot>\<close> 67)
+no_notation subst_compose (infixl \<open>\<circ>\<^sub>s\<close> 75)
 
 global_interpretation substitution_ops subst_apply_term Var subst_compose .
 
-notation subst_atm_abbrev (infixl "\<cdot>a" 67)
-notation subst_atm_list (infixl "\<cdot>al" 67)
-notation subst_lit (infixl "\<cdot>l" 67)
-notation subst_cls (infixl "\<cdot>" 67)
-notation subst_clss (infixl "\<cdot>cs" 67)
-notation subst_cls_list (infixl "\<cdot>cl" 67)
-notation subst_cls_lists (infixl "\<cdot>\<cdot>cl" 67)
-notation comp_subst_abbrev (infixl "\<odot>" 67)
+notation subst_atm_abbrev (infixl \<open>\<cdot>a\<close> 67)
+notation subst_atm_list (infixl \<open>\<cdot>al\<close> 67)
+notation subst_lit (infixl \<open>\<cdot>l\<close> 67)
+notation subst_cls (infixl \<open>\<cdot>\<close> 67)
+notation subst_clss (infixl \<open>\<cdot>cs\<close> 67)
+notation subst_cls_list (infixl \<open>\<cdot>cl\<close> 67)
+notation subst_cls_lists (infixl \<open>\<cdot>\<cdot>cl\<close> 67)
+notation comp_subst_abbrev (infixl \<open>\<odot>\<close> 67)
 
 abbreviation vars_lit :: "('f, 'v) Term.term literal \<Rightarrow> 'v set" where
   "vars_lit L \<equiv> vars_term (atm_of L)"
@@ -1413,12 +1413,12 @@ section \<open>SCL(FOL) Calculus\<close>
 
 locale scl_fol_calculus = renaming_apart renaming_vars
   for renaming_vars :: "'v set \<Rightarrow> 'v \<Rightarrow> 'v" +
-  fixes less_B :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" (infix "\<prec>\<^sub>B" 50)
+  fixes less_B :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" (infix \<open>\<prec>\<^sub>B\<close> 50)
   assumes
     finite_less_B: "\<And>\<beta>. finite {x. x \<prec>\<^sub>B \<beta>}"
 begin
 
-abbreviation lesseq_B (infix "\<preceq>\<^sub>B" 50) where
+abbreviation lesseq_B (infix \<open>\<preceq>\<^sub>B\<close> 50) where
   "lesseq_B \<equiv> (\<prec>\<^sub>B)\<^sup>=\<^sup>="
 
 subsection \<open>Lemmas About @{term less_B}\<close>
@@ -3923,7 +3923,7 @@ section \<open>Soundness\<close>
 
 subsection \<open>Sound Trail\<close>
 
-abbreviation entails_\<G> (infix "\<TTurnstile>\<G>e" 50) where
+abbreviation entails_\<G> (infix \<open>\<TTurnstile>\<G>e\<close> 50) where
   "entails_\<G> N U \<equiv> grounding_of_clss N \<TTurnstile>e grounding_of_clss U"
 
 definition sound_trail where

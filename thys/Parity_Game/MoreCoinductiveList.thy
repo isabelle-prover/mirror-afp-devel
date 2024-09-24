@@ -162,6 +162,6 @@ subsection \<open>Notation\<close>
 
 text \<open>We introduce the notation \$ to denote @{term "lnth"}.\<close>
 
-notation lnth (infix "$" 61)
+notation lnth (infix \<open>$\<close> 61)
 
 end

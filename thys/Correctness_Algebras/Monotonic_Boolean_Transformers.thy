@@ -11,8 +11,8 @@ imports MonoBoolTranAlgebra.Assertion_Algebra Base
 
 begin
 
-no_notation inf (infixl "\<sqinter>" 70)
-no_notation uminus ("- _" [81] 80)
+no_notation inf (infixl \<open>\<sqinter>\<close> 70)
+no_notation uminus (\<open>- _\<close> [81] 80)
 
 context mbt_algebra
 begin
@@ -166,7 +166,7 @@ lemma wpb_le_assumption:
   "x \<in> assumption \<Longrightarrow> x * y = y \<Longrightarrow> x \<le> wpb y"
   by (metis assumption_prop bot_least le_comp sup_commute sup_right_isotone mult_assoc wpb_def)
 
-definition dual_omega :: "'a \<Rightarrow> 'a" ("(_ ^ \<mho>)" [81] 80)
+definition dual_omega :: "'a \<Rightarrow> 'a" (\<open>(_ ^ \<mho>)\<close> [81] 80)
   where "(x ^ \<mho>) \<equiv> (((x ^ o) ^ \<omega>) ^ o)"
 
 lemma dual_omega_fix:

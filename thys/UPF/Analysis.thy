@@ -75,7 +75,7 @@ lemma strictly_more_vs_more: "strictly_more_defined p q \<Longrightarrow> more_d
   by auto
 
 text\<open>Policy p is more permissive than q:\<close>
-definition more_permissive :: "('a \<mapsto> 'b) \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow> bool"  (infixl "\<sqsubseteq>\<^sub>A" 60)
+definition more_permissive :: "('a \<mapsto> 'b) \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow> bool"  (infixl \<open>\<sqsubseteq>\<^sub>A\<close> 60)
 where " p \<sqsubseteq>\<^sub>A q =  (\<forall> x. (case q x of \<lfloor>allow y\<rfloor> \<Rightarrow> (\<exists> z. (p x = \<lfloor>allow z\<rfloor>))
                                    | \<lfloor>deny y\<rfloor>  \<Rightarrow> True
                                    | \<bottom>        \<Rightarrow> True))" 
@@ -98,7 +98,7 @@ lemma more_permissive_trans : "p \<sqsubseteq>\<^sub>A p' \<Longrightarrow> p' \
   done 
 
 text\<open>Policy p is more rejective than q:\<close>
-definition more_rejective :: "('a \<mapsto> 'b) \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow> bool" (infixl "\<sqsubseteq>\<^sub>D" 60)
+definition more_rejective :: "('a \<mapsto> 'b) \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow> bool" (infixl \<open>\<sqsubseteq>\<^sub>D\<close> 60)
   where " p \<sqsubseteq>\<^sub>D q = (\<forall> x. (case q x of \<lfloor>deny y\<rfloor>  \<Rightarrow> (\<exists> z. (p x = \<lfloor>deny z\<rfloor>))
                                   | \<lfloor>allow y\<rfloor> \<Rightarrow> True
                                   | \<bottom>        \<Rightarrow> True))" 
@@ -134,7 +134,7 @@ subsection\<open>Combined Data-Policy Refinement\<close>
   
 definition policy_refinement :: 
   "('a \<mapsto> 'b) \<Rightarrow> ('a' \<Rightarrow> 'a) \<Rightarrow>('b' \<Rightarrow> 'b) \<Rightarrow> ('a' \<mapsto> 'b') \<Rightarrow> bool" 
-  ("_ \<sqsubseteq>\<^bsub>_\<^esub>\<^sub>,\<^bsub>_\<^esub> _" [50,50,50,50]50)
+  (\<open>_ \<sqsubseteq>\<^bsub>_\<^esub>\<^sub>,\<^bsub>_\<^esub> _\<close> [50,50,50,50]50)
   where     "p \<sqsubseteq>\<^bsub>abs\<^sub>a\<^esub>\<^sub>,\<^bsub>abs\<^sub>b\<^esub> q \<equiv> 
               (\<forall> a. case p a of 
                       \<bottom> \<Rightarrow> True
@@ -171,7 +171,7 @@ theorem polref_trans:
 subsection \<open>Equivalence of Policies\<close>
 subsubsection\<open>Equivalence over domain D\<close>
   
-definition p_eq_dom :: "('a \<mapsto> 'b) \<Rightarrow> 'a set \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow>bool" ("_ \<approx>\<^bsub>_\<^esub> _" [60,60,60]60)
+definition p_eq_dom :: "('a \<mapsto> 'b) \<Rightarrow> 'a set \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow>bool" (\<open>_ \<approx>\<^bsub>_\<^esub> _\<close> [60,60,60]60)
   where     "p \<approx>\<^bsub>D\<^esub> q  = (\<forall>x\<in>D. p x = q x)"
     
 text\<open>p and q have no conflicts\<close>

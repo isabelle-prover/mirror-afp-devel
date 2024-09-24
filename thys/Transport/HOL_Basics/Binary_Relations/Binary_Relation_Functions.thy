@@ -127,8 +127,8 @@ subsubsection \<open>Composition\<close>
 
 consts rel_comp :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
-bundle rel_comp_syntax begin notation rel_comp (infixl "\<circ>\<circ>" 55) end
-bundle no_rel_comp_syntax begin no_notation rel_comp (infixl "\<circ>\<circ>" 55) end
+bundle rel_comp_syntax begin notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55) end
+bundle no_rel_comp_syntax begin no_notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55) end
 unbundle rel_comp_syntax
 
 definition "rel_comp_rel R S x y \<equiv> \<exists>z. R x z \<and> S z y"
@@ -168,8 +168,8 @@ subsubsection \<open>Inverse\<close>
 
 consts rel_inv :: "'a \<Rightarrow> 'b"
 
-bundle rel_inv_syntax begin notation rel_inv ("(_\<inverse>)" [1000]) end
-bundle no_rel_inv_syntax begin no_notation rel_inv ("(_\<inverse>)" [1000]) end
+bundle rel_inv_syntax begin notation rel_inv (\<open>(_\<inverse>)\<close> [1000]) end
+bundle no_rel_inv_syntax begin no_notation rel_inv (\<open>(_\<inverse>)\<close> [1000]) end
 unbundle rel_inv_syntax
 
 definition rel_inv_rel :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
@@ -217,8 +217,8 @@ subsubsection \<open>Restrictions\<close>
 
 consts rel_if :: "bool \<Rightarrow> 'a \<Rightarrow> 'a"
 
-bundle rel_if_syntax begin notation (output) rel_if (infixl "\<longrightarrow>" 50) end
-bundle no_rel_if_syntax begin no_notation (output) rel_if (infixl "\<longrightarrow>" 50) end
+bundle rel_if_syntax begin notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50) end
+bundle no_rel_if_syntax begin no_notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50) end
 unbundle rel_if_syntax
 
 definition "rel_if_rel B R x y \<equiv> B \<longrightarrow> R x y"
@@ -256,15 +256,15 @@ consts rel_restrict :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
 
 bundle rel_restrict_syntax
 begin
-notation rel_restrict_left ("(_)\<restriction>(\<^bsub>_\<^esub>)" [1000])
-notation rel_restrict_right ("(_)\<upharpoonleft>(\<^bsub>_\<^esub>)" [1000])
-notation rel_restrict ("(_)\<up>(\<^bsub>_\<^esub>)" [1000])
+notation rel_restrict_left (\<open>(_)\<restriction>(\<^bsub>_\<^esub>)\<close> [1000])
+notation rel_restrict_right (\<open>(_)\<upharpoonleft>(\<^bsub>_\<^esub>)\<close> [1000])
+notation rel_restrict (\<open>(_)\<up>(\<^bsub>_\<^esub>)\<close> [1000])
 end
 bundle no_rel_restrict_syntax
 begin
-no_notation rel_restrict_left ("(_)\<restriction>(\<^bsub>_\<^esub>)" [1000])
-no_notation rel_restrict_right ("(_)\<upharpoonleft>(\<^bsub>_\<^esub>)" [1000])
-no_notation rel_restrict ("(_)\<up>(\<^bsub>_\<^esub>)" [1000])
+no_notation rel_restrict_left (\<open>(_)\<restriction>(\<^bsub>_\<^esub>)\<close> [1000])
+no_notation rel_restrict_right (\<open>(_)\<upharpoonleft>(\<^bsub>_\<^esub>)\<close> [1000])
+no_notation rel_restrict (\<open>(_)\<up>(\<^bsub>_\<^esub>)\<close> [1000])
 end
 unbundle rel_restrict_syntax
 

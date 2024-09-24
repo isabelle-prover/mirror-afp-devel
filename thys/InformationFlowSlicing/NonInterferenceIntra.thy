@@ -37,14 +37,14 @@ locale NonInterferenceIntraGraph =
   CFGExit_wf sourcenode targetnode kind valid_edge Entry Def Use state_val Exit
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
   and backward_slice :: "'node set \<Rightarrow> 'node set" 
-  and Exit :: "'node" ("'('_Exit'_')") +
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>) +
   fixes H :: "'var set"
   fixes L :: "'var set"
-  fixes High :: "'node"  ("'('_High'_')")
-  fixes Low :: "'node"   ("'('_Low'_')")
+  fixes High :: "'node"  (\<open>'('_High'_')\<close>)
+  fixes Low :: "'node"   (\<open>'('_Low'_')\<close>)
   assumes Entry_edge_Exit_or_High:
   "\<lbrakk>valid_edge a; sourcenode a = (_Entry_)\<rbrakk> 
     \<Longrightarrow> targetnode a = (_Exit_) \<or> targetnode a = (_High_)"
@@ -153,7 +153,7 @@ in our case the \<open>L\<close>-variables. If two states agree in the values of
 the relation \<open>\<approx>\<^sub>L\<close>:
 \<close>
 
-definition lowEquivalence :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infixl "\<approx>\<^sub>L" 50)
+definition lowEquivalence :: "'state \<Rightarrow> 'state \<Rightarrow> bool" (infixl \<open>\<approx>\<^sub>L\<close> 50)
   where "s \<approx>\<^sub>L s' \<equiv> \<forall>V \<in> L. state_val s V = state_val s' V"
 
 text \<open>The following lemmas connect low equivalent states with
@@ -472,15 +472,15 @@ locale NonInterferenceIntra =
     backward_slice sem identifies
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") and Def :: "'node \<Rightarrow> 'var set"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) and Def :: "'node \<Rightarrow> 'var set"
   and Use :: "'node \<Rightarrow> 'var set" and state_val :: "'state \<Rightarrow> 'var \<Rightarrow> 'val"
   and backward_slice :: "'node set \<Rightarrow> 'node set"
   and sem :: "'com \<Rightarrow> 'state \<Rightarrow> 'com \<Rightarrow> 'state \<Rightarrow> bool" 
-    ("((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
-  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" ("_ \<triangleq> _" [51, 0] 80)
-  and Exit :: "'node" ("'('_Exit'_')")
+    (\<open>((1\<langle>_,/_\<rangle>) \<Rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81)
+  and identifies :: "'node \<Rightarrow> 'com \<Rightarrow> bool" (\<open>_ \<triangleq> _\<close> [51, 0] 80)
+  and Exit :: "'node" (\<open>'('_Exit'_')\<close>)
   and H :: "'var set" and L :: "'var set" 
-  and High :: "'node"  ("'('_High'_')") and Low :: "'node"   ("'('_Low'_')") +
+  and High :: "'node"  (\<open>'('_High'_')\<close>) and Low :: "'node"   (\<open>'('_Low'_')\<close>) +
   fixes final :: "'com \<Rightarrow> bool"
   assumes final_edge_Low: "\<lbrakk>final c; n \<triangleq> c\<rbrakk> 
   \<Longrightarrow> \<exists>a. valid_edge a \<and> sourcenode a = n \<and> targetnode a = (_Low_) \<and> kind a = \<Up>id"

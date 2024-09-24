@@ -16,8 +16,8 @@ hide_const (open) det transpose row trace adjugate
 hide_fact (open) det_def transpose_def row_def row_transpose trace_def adjugate_def
 
 hide_const (open) "XX" "CC" charpoly poly_mat
-no_notation Cayley_Hamilton.XX ("\<^bold>X")
-no_notation Cayley_Hamilton.CC ("\<^bold>C")
+no_notation Cayley_Hamilton.XX (\<open>\<^bold>X\<close>)
+no_notation Cayley_Hamilton.CC (\<open>\<^bold>C\<close>)
 hide_fact (open) charpoly_def poly_mat_def
 
 type_synonym ('a, 'n) square_matrix = "(('a, 'n) vec, 'n) vec"
@@ -44,21 +44,21 @@ definition cofac :: "('a,'b)square_matrix \<Rightarrow> 'a::comm_ring_1^'b^'b" w
 definition "adjugate A \<equiv> transpose (cofac A)"
 
 text \<open>Just for convenience, I'll define scalar multiplication as well, much like in \<open>Cayley_Hamilton\<close>.\<close>
-definition smult_mat :: "'a::times \<Rightarrow> 'a^'n^'m \<Rightarrow> 'a^'n^'m" (infixr "*\<^sub>s" 75) where
+definition smult_mat :: "'a::times \<Rightarrow> 'a^'n^'m \<Rightarrow> 'a^'n^'m" (infixr \<open>*\<^sub>s\<close> 75) where
   "s *\<^sub>s M \<equiv> \<chi> i j. s*M$i$j"
 
 lemma smult_map: "smult_mat s = map_matrix (\<lambda>x. s*x)"
   unfolding smult_mat_def map_matrix_def by auto
 
-abbreviation XX ("\<^bold>X") where "\<^bold>X \<equiv> mat X"
-abbreviation CC ("\<^bold>C") where "\<^bold>C \<equiv> map_matrix C"
+abbreviation XX (\<open>\<^bold>X\<close>) where "\<^bold>X \<equiv> mat X"
+abbreviation CC (\<open>\<^bold>C\<close>) where "\<^bold>C \<equiv> map_matrix C"
 
 definition "charpoly A = det (\<^bold>X - \<^bold>C A)"
 
 text \<open>Since multiplication \<^term>\<open>times\<close> is already defined element-wise, so is exponentiation.
   Not useful for our purposes - define exponentiation based on \<^term>\<open>matrix_matrix_mult\<close> instead.\<close>
 
-primrec power_mat :: "'a::{semiring_1}^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n"  (infixr "*^" 80)
+primrec power_mat :: "'a::{semiring_1}^'n^'n \<Rightarrow> nat \<Rightarrow> 'a^'n^'n"  (infixr \<open>*^\<close> 80)
   where
     power_0: "a *^ 0 = mat 1"
   | power_Suc: "a *^ Suc n = a ** a *^ n"
@@ -108,11 +108,11 @@ end
 subsection \<open>Notation bundles\<close>
 bundle transfer_CH_matrix_syntax
 begin
-  notation EQ (infix "\<cong>" 80)
+  notation EQ (infix \<open>\<cong>\<close> 80)
 end
   
 bundle no_transfer_CH_matrix_syntax begin
-  no_notation EQ (infix "\<cong>" 80)
+  no_notation EQ (infix \<open>\<cong>\<close> 80)
 end
 
 subsection \<open>Transfer rules\<close>

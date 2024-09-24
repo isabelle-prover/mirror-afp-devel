@@ -725,7 +725,7 @@ possibly for the leftmost cell. In keeping with funny names, we call such tapes
 @{term onesie} tapes.
 \<close>
 
-definition onesie :: "symbol \<Rightarrow> tape" ("\<lceil>_\<rceil>") where
+definition onesie :: "symbol \<Rightarrow> tape" (\<open>\<lceil>_\<rceil>\<close>) where
   "\<lceil>h\<rceil> \<equiv> (\<lambda>x. if x = 0 then h else \<box>, 0)"
 
 lemma onesie_1: "\<lceil>\<triangleright>\<rceil> = (\<lfloor>[]\<rfloor>, 0)"

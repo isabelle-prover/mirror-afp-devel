@@ -575,7 +575,7 @@ done
  
 definition
   module_iota :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme] \<Rightarrow>
-                'a \<Rightarrow> 'a"  ("(m\<iota>\<^bsub>_\<^esub> _)" [92, 93]92) where
+                'a \<Rightarrow> 'a"  (\<open>(m\<iota>\<^bsub>_\<^esub> _)\<close> [92, 93]92) where
   "m\<iota>\<^bsub>R\<^esub> M = (\<lambda>x\<in>carrier M. x)"
 
 lemma (in Ring) short_exact_sequence:"\<lbrakk>R module M; submodule R M N; 
@@ -885,7 +885,7 @@ section "Tensor product"
 
 definition
   prod_carr :: "[('a, 'r, 'm) Module_scheme, ('b, 'r, 'm) Module_scheme]
-   \<Rightarrow> ('a * 'b) set" (infixl "\<times>\<^sub>c" 100) where
+   \<Rightarrow> ('a * 'b) set" (infixl \<open>\<times>\<^sub>c\<close> 100) where
   "M \<times>\<^sub>c N = carrier M \<times> carrier N"
 
 definition
@@ -1178,7 +1178,7 @@ definition (* for abelian groups, modules *)
   "bpp f a b = f a b"
 
 definition
-  ipp :: "['a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"  ("(\<^sub>_-/ _)" [64,65]64) where
+  ipp :: "['a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"  (\<open>(\<^sub>_-/ _)\<close> [64,65]64) where
   "\<^sub>i- a == i a"
 
 definition (* for modules *)
@@ -1187,12 +1187,12 @@ definition (* for modules *)
 
 abbreviation
   BOP :: "['a, 'a \<Rightarrow> 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
-    ("(3_/ \<^sub>_+/ _)" [62,62,63]62) where
+    (\<open>(3_/ \<^sub>_+/ _)\<close> [62,62,63]62) where
   "a \<^sub>f+ b == bpp f a b"
 
 abbreviation
   SOP :: "['r, 'r \<Rightarrow> 'a \<Rightarrow> 'a, 'a] \<Rightarrow> 'a"
-    ("(3_/ \<^sub>_\<cdot> _)" [68,68,69]68) where
+    (\<open>(3_/ \<^sub>_\<cdot> _)\<close> [68,68,69]68) where
   "r \<^sub>s\<cdot> a == sop s r a"
 
 definition
@@ -2192,7 +2192,7 @@ definition
         else (THE x. x \<in> (add_set f {\<^sub>i- a} (nat (- n - 1))))))"
 
 abbreviation
-  FGELEMSNGLE  ("(5_\<Odot>_\<^bsub>_,_,_\<^esub>)" [99,98,98,98,98]99) where
+  FGELEMSNGLE  (\<open>(5_\<Odot>_\<^bsub>_,_,_\<^esub>)\<close> [99,98,98,98,98]99) where
   "n\<Odot>a\<^bsub>f,i,z\<^esub> == fg_elem_single f i a z n"
 
 lemma  single_addition_pm_mem:"\<lbrakk>assoc_bpp (aug_pm_set z i {a}) f; 
@@ -2617,7 +2617,7 @@ definition
                       else (aSum A (nat (- n)) (-\<^sub>a\<^bsub>A\<^esub> x)))"
 
 abbreviation
-  SPRODNA  ("(3_\<triangleright>_\<^bsub>_\<^esub>)" [95,95,96]95) where
+  SPRODNA  (\<open>(3_\<triangleright>_\<^bsub>_\<^esub>)\<close> [95,95,96]95) where
   "n\<triangleright>a\<^bsub>A\<^esub> == sprod_n_a A n a"
 
 lemma (in aGroup) asum_mem:"a \<in> carrier A \<Longrightarrow> aSum A n a \<in> carrier A"
@@ -3846,7 +3846,7 @@ definition
            (carrier M1) \<inter> (carrier M2) = {\<zero>\<^bsub>M\<^esub>}"
 
 abbreviation
-  DS2  ("(4_/ \<Oplus>\<^bsub>_,_\<^esub> _)" [92,93,92,92]92) where
+  DS2  (\<open>(4_/ \<Oplus>\<^bsub>_,_\<^esub> _)\<close> [92,93,92,92]92) where
   "M1 \<Oplus>\<^bsub>R,M\<^esub> M2 == ds2 R M M1 M2"
 
 lemma (in Ring) ds2_commute:"\<lbrakk>R module M1; R module M2; R module M; 
@@ -4196,7 +4196,7 @@ subsection "Existence of the tensor product"
 definition
   fm_gen_by_prod :: "[('r, 'm) Ring_scheme, (('a * 'b), 'r, 'm1) Module_scheme,
       ('a, 'r, 'm1) Module_scheme, ('b, 'r, 'm1) Module_scheme] \<Rightarrow> bool"
-    ("(4FM\<^bsub>_\<^esub>/ _ _ _)" [100,100,101]100) where
+    (\<open>(4FM\<^bsub>_\<^esub>/ _ _ _)\<close> [100,100,101]100) where
   "FM\<^bsub>R\<^esub> P M N \<longleftrightarrow> R module P \<and> free_generator R P (M \<times>\<^sub>c N)"
 
 lemma (in Ring) free_gen_gen:"FM\<^bsub>R\<^esub> P M N \<Longrightarrow> generator R P (M \<times>\<^sub>c N)"  
@@ -4264,7 +4264,7 @@ done
 definition
   Least_submodule :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme,
                        'a set] \<Rightarrow> 'a set"
-         ("(3LSM\<^bsub>_\<^esub>/ _/ _)" [100,100,101]100) where
+         (\<open>(3LSM\<^bsub>_\<^esub>/ _/ _)\<close> [100,100,101]100) where
   "LSM\<^bsub>R\<^esub> M T = \<Inter>{N. submodule R M N \<and> T \<subseteq> N}" 
 
 lemma (in Ring) LSM_mem:"\<lbrakk>R module M; T \<subseteq> carrier M; t \<in> T\<rbrakk> \<Longrightarrow> 
@@ -4384,7 +4384,7 @@ definition
   tensor_relations1 :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
        ('b, 'r, 'm1) Module_scheme, (('a * 'b), 'r, 'm1) Module_scheme] \<Rightarrow> 
        ('a * 'b) set"
-       ("(4TR1/ _/ _/ _/ _)" [100,100,100,101]100) where
+       (\<open>(4TR1/ _/ _/ _/ _)\<close> [100,100,100,101]100) where
   "TR1 R M N MN = {x. \<exists>m1\<in>carrier M. \<exists>m2\<in>carrier M. \<exists>n\<in>carrier N.
        x = (m1 \<plusminus>\<^bsub>M\<^esub> m2, n) \<plusminus>\<^bsub>MN\<^esub> (-\<^sub>a\<^bsub>MN\<^esub> ((m1, n) \<plusminus>\<^bsub>MN\<^esub> (m2, n)))}"
 
@@ -4392,7 +4392,7 @@ definition
   tensor_relations2 :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
       ('b, 'r, 'm1) Module_scheme, (('a * 'b), 'r, 'm1) Module_scheme] \<Rightarrow>
        ('a * 'b) set"
-       ("(4TR2/ _/ _/ _/ _)" [100,100,100, 101]100) where
+       (\<open>(4TR2/ _/ _/ _/ _)\<close> [100,100,100, 101]100) where
    "TR2 R M N MN = {x. \<exists>m\<in>carrier M. \<exists>n1\<in>carrier N. \<exists>n2\<in>carrier N.
             x = (m, n1 \<plusminus>\<^bsub>N\<^esub> n2) \<plusminus>\<^bsub>MN\<^esub> (-\<^sub>a\<^bsub>MN\<^esub> ((m, n1) \<plusminus>\<^bsub>MN\<^esub> (m, n2)))}"
 
@@ -4400,7 +4400,7 @@ definition
   tensor_relations3 :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
       ('b, 'r, 'm1) Module_scheme, (('a * 'b), 'r, 'm1) Module_scheme] \<Rightarrow> 
       ('a * 'b ) set"
-       ("(4TR3/ _/ _/ _/ _)" [100,100,100,101]100) where
+       (\<open>(4TR3/ _/ _/ _/ _)\<close> [100,100,100,101]100) where
   "TR3 R M N P = {x. \<exists>m\<in>carrier M. \<exists>n\<in>carrier N. \<exists> a\<in>carrier R.
         x = (a \<cdot>\<^sub>s\<^bsub>M\<^esub> m, n) \<plusminus>\<^bsub>P\<^esub> (-\<^sub>a\<^bsub>P\<^esub> (a \<cdot>\<^sub>s\<^bsub>P\<^esub> (m, n)))}"
 
@@ -4408,7 +4408,7 @@ definition
   tensor_relations4 :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
     ('b, 'r, 'm1) Module_scheme, (('a * 'b), 'r, 'm1) Module_scheme] \<Rightarrow>
     ('a * 'b) set"
-                  ("(4TR4/ _/ _/ _/ _)" [100,100,100,101]100) where
+                  (\<open>(4TR4/ _/ _/ _/ _)\<close> [100,100,100,101]100) where
   "TR4 R M N MN = {x. \<exists>m\<in>carrier M. \<exists>n\<in>carrier N. \<exists> a\<in>carrier R.
   x = (m, a \<cdot>\<^sub>s\<^bsub>N\<^esub> n) \<plusminus>\<^bsub>MN\<^esub> (-\<^sub>a\<^bsub>MN\<^esub> (a \<cdot>\<^sub>s\<^bsub> MN\<^esub> (m, n)))}"
 
@@ -4416,7 +4416,7 @@ definition
   tensor_relations :: "[('r, 'm) Ring_scheme, ('a, 'r, 'm1) Module_scheme, 
     ('b, 'r, 'm1) Module_scheme, (('a * 'b), 'r, 'm1) Module_scheme] \<Rightarrow>
     ('a * 'b) set"
-                   ("(4TR\<^bsub>_\<^esub> _/ _/ _)" [100,100,101]100) where
+                   (\<open>(4TR\<^bsub>_\<^esub> _/ _/ _)\<close> [100,100,101]100) where
   "TR\<^bsub>R\<^esub> M N MN = LSM\<^bsub>R\<^esub> MN ((TR1 R M N MN) \<union> (TR2 R M N MN) \<union> 
                                      (TR3 R M N MN) \<union> (TR4 R M N MN))"
 
@@ -4427,7 +4427,7 @@ definition
   "tensor_product R M N MN = MN /\<^sub>m (TR\<^bsub>R\<^esub> M N MN)" 
 
 abbreviation
-  TENSORPROD  ("(4_/ \<^bsub>_\<^esub>\<Otimes>\<^bsub>_\<^esub>/ _)" [92,92,92,93]92) where
+  TENSORPROD  (\<open>(4_/ \<^bsub>_\<^esub>\<Otimes>\<^bsub>_\<^esub>/ _)\<close> [92,92,92,93]92) where
   "M \<^bsub>P\<^esub>\<Otimes>\<^bsub>R\<^esub> N == tensor_product R M N P"
 
 lemma (in Ring) mem_cartesian:"\<lbrakk>R module M; R module N; m \<in> carrier M;
@@ -4842,7 +4842,7 @@ definition
   "tensor_elem R P M N m n = tnm R P M N (m, n)" 
 
 abbreviation
-  TNSELEM  ("(6_ \<^bsub>_,_\<^esub>\<otimes>\<^bsub>_,_\<^esub>/ _)" [100,100,100,100,100,101]101) where
+  TNSELEM  (\<open>(6_ \<^bsub>_,_\<^esub>\<otimes>\<^bsub>_,_\<^esub>/ _)\<close> [100,100,100,100,100,101]101) where
   "m \<^bsub>R,P\<^esub>\<otimes>\<^bsub>M,N\<^esub> n == tensor_elem R P M N m n"
   
 lemma (in Ring) tensor_univ_propTr:"\<lbrakk>R module M; R module N; FM\<^bsub>R\<^esub> P M N; 

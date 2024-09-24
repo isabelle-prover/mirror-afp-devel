@@ -734,11 +734,11 @@ AOT_syntax_print_translations
 
 context AOT_meta_syntax
 begin
-notation AOT_enc ("\<^bold>\<lbrace>_,_\<^bold>\<rbrace>")
+notation AOT_enc (\<open>\<^bold>\<lbrace>_,_\<^bold>\<rbrace>\<close>)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_enc ("\<^bold>\<lbrace>_,_\<^bold>\<rbrace>")
+no_notation AOT_enc (\<open>\<^bold>\<lbrace>_,_\<^bold>\<rbrace>\<close>)
 end
 
 text\<open>Unary encoding additionally has to satisfy the axioms of unary encoding and
@@ -1296,7 +1296,7 @@ lemma AOT_sem_cqt_2:
   by (metis AOT_instance_of_cqt_2_def AOT_model_lambda_denotes AOT_sem_denotes)
 
 syntax AOT_instance_of_cqt_2 :: \<open>id_position \<Rightarrow> AOT_prop\<close>
-  ("INSTANCE'_OF'_CQT'_2'(_')")
+  (\<open>INSTANCE'_OF'_CQT'_2'(_')\<close>)
 
 text\<open>Prove introduction rules for the predicates that match the natural language
      restrictions of the axiom.\<close>
@@ -1536,13 +1536,13 @@ declare AOT_abstract[AOT del, AOT_defs del]
 
 context AOT_meta_syntax
 begin
-notation AOT_ordinary ("\<^bold>O\<^bold>!")
-notation AOT_abstract ("\<^bold>A\<^bold>!")
+notation AOT_ordinary (\<open>\<^bold>O\<^bold>!\<close>)
+notation AOT_abstract (\<open>\<^bold>A\<^bold>!\<close>)
 end
 context AOT_no_meta_syntax
 begin
-no_notation AOT_ordinary ("\<^bold>O\<^bold>!")
-no_notation AOT_abstract ("\<^bold>A\<^bold>!")
+no_notation AOT_ordinary (\<open>\<^bold>O\<^bold>!\<close>)
+no_notation AOT_abstract (\<open>\<^bold>A\<^bold>!\<close>)
 end
 
 no_translations

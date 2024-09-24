@@ -12,10 +12,10 @@ begin
 subsection \<open>General definitions\<close>
 
 abbreviation "array \<equiv> new_array"
-abbreviation length_array :: "'a array \<Rightarrow> nat" ("\<parallel>_\<parallel>") 
+abbreviation length_array :: "'a array \<Rightarrow> nat" (\<open>\<parallel>_\<parallel>\<close>) 
     where "length_array \<equiv> array_length"
-notation array_get (infixl "!!" 100)
-notation array_set ("_[_ ::= _]" [1000,0,0] 900)
+notation array_get (infixl \<open>!!\<close> 100)
+notation array_set (\<open>_[_ ::= _]\<close> [1000,0,0] 900)
 
 definition matches :: "'a array \<Rightarrow> nat \<Rightarrow> 'a array \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
   where "matches a i b j n = (i+n \<le> \<parallel>a\<parallel> \<and> j+n \<le> \<parallel>b\<parallel> 

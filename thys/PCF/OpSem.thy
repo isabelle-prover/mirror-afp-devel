@@ -82,7 +82,7 @@ where
 | "lift x k = x"
 
 fun
-  subst :: "db \<Rightarrow> db \<Rightarrow> var \<Rightarrow> db"  ("_<_'/_>" [300, 0, 0] 300)
+  subst :: "db \<Rightarrow> db \<Rightarrow> var \<Rightarrow> db"  (\<open>_<_'/_>\<close> [300, 0, 0] 300)
 where
   subst_Var: "(DBVar i)<s/k> =
       (if k < i then DBVar (i - 1) else if i = k then s else DBVar i)"
@@ -635,7 +635,7 @@ where
 | v_AbsV[intro]: "val (DBAbsV e)"
 
 inductive
-  evalOP :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<Down> _" [50,50] 50)
+  evalOP :: "db \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<Down> _\<close> [50,50] 50)
 where
   evalOP_AppN[intro]:  "\<lbrakk> P \<Down> DBAbsN M; M<Q/0> \<Down> V \<rbrakk> \<Longrightarrow> DBApp P Q \<Down> V" (* Non-strict application *)
 | evalOP_AppV[intro]:  "\<lbrakk> P \<Down> DBAbsV M; Q \<Down> q; M<q/0> \<Down> V \<rbrakk> \<Longrightarrow> DBApp P Q \<Down> V" (* Strict application *)
@@ -987,7 +987,7 @@ interpretation ca: DomSolSyn ca_lr ValD_copy_rec
   apply (erule (1) min_inv_ca_lr)
   done
 
-definition ca_lr_syn :: "ValD \<Rightarrow> db \<Rightarrow> bool" ("_ \<triangleleft> _" [80,80] 80) where
+definition ca_lr_syn :: "ValD \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<triangleleft> _\<close> [80,80] 80) where
   "d \<triangleleft> P \<equiv> (d, P) \<in> { (x, unProg Y) |x Y. (x, Y) \<in> unsynlr ca.delta }"
 (*<*)
 
@@ -1383,7 +1383,7 @@ an adequate treatment.
 
 \<close>
 
-definition ctxt_sub :: "db \<Rightarrow> db \<Rightarrow> db" ("(_<_>)" [300, 0] 300) where
+definition ctxt_sub :: "db \<Rightarrow> db \<Rightarrow> db" (\<open>(_<_>)\<close> [300, 0] 300) where
   "C<e> \<equiv> closing_subst C (\<lambda>_. e) 0"
 (*<*)
 
@@ -1408,7 +1408,7 @@ don't distinguish between strict and non-strict abstractions.
 \<close>
 
 inductive
-  have_the_same_form :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<sim> _" [50,50] 50)
+  have_the_same_form :: "db \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<sim> _\<close> [50,50] 50)
 where
   "DBAbsN e \<sim> DBAbsN e'"
 | "DBAbsN e \<sim> DBAbsV e'"
@@ -1460,7 +1460,7 @@ programs.
 \<close>
 
 definition
-  refines :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<unlhd> _" [50,50] 50)
+  refines :: "db \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<unlhd> _\<close> [50,50] 50)
 where
   "e1 \<unlhd> e2 \<equiv> \<forall>C. \<exists>V1. C<e1> \<Down> V1 \<longrightarrow> (\<exists>V2. C<e2> \<Down> V2 \<and> V1 \<sim> V2)"
 
@@ -1471,7 +1471,7 @@ Contextually-equivalent programs refine each other.
 \<close>
 
 definition
-  contextually_equivalent :: "db \<Rightarrow> db \<Rightarrow> bool" ("_ \<approx> _")
+  contextually_equivalent :: "db \<Rightarrow> db \<Rightarrow> bool" (\<open>_ \<approx> _\<close>)
 where
   "e1 \<approx> e2 \<equiv> e1 \<unlhd> e2 \<and> e2 \<unlhd> e1"
 (*<*)

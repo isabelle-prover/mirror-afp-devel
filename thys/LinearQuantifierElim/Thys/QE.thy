@@ -10,7 +10,7 @@ text\<open>\noindent
 The generic, i.e.\ theory-independent part of quantifier elimination.
 Both DNF and an NNF-based procedures are defined and proved correct.\<close>
 
-notation (input) Collect ("|_|")
+notation (input) Collect (\<open>|_|\<close>)
 
 subsection\<open>No Equality\<close>
 

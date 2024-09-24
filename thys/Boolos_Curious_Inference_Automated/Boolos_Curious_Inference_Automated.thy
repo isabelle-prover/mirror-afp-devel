@@ -9,10 +9,10 @@ typedecl i
 
 text \<open>The signature for BCP consists of four uninterpreted constant symbols.\<close>
 consts
- e :: "i" ("\<^bold>e")  \<comment>\<open>one\<close>
- s :: "i\<Rightarrow>i" ("\<^bold>s_")  \<comment>\<open>successor function\<close>
- f :: "i\<Rightarrow>i\<Rightarrow>i" ("\<^bold>f__")  \<comment>\<open>binary function; axiomatised below as Ackermann function\<close>
- d :: "i\<Rightarrow>bool" ("\<^bold>d_")  \<comment>\<open>arbitrary uninterpreted unary predicate\<close>
+ e :: "i" (\<open>\<^bold>e\<close>)  \<comment>\<open>one\<close>
+ s :: "i\<Rightarrow>i" (\<open>\<^bold>s_\<close>)  \<comment>\<open>successor function\<close>
+ f :: "i\<Rightarrow>i\<Rightarrow>i" (\<open>\<^bold>f__\<close>)  \<comment>\<open>binary function; axiomatised below as Ackermann function\<close>
+ d :: "i\<Rightarrow>bool" (\<open>\<^bold>d_\<close>)  \<comment>\<open>arbitrary uninterpreted unary predicate\<close>
 
 
 text \<open>Axioms @{term "A1"}-@{term "A3"} model the Ackermann function and Axioms @{term "A4"} and @{term "A5"}
@@ -41,8 +41,8 @@ and only if  @{term "X"} is `inductive' over  @{term "e"} and  @{term "s"}.
 over  @{term "e"} and  @{term "s"}.
 Note that the symbols @{term "ind"} and @{term "p"} do not occur in the BCP problem
 statement.\<close>
-definition ind ("\<^bold>i\<^bold>n\<^bold>d_") where "ind \<equiv> \<lambda>X. X\<^bold>e \<and> (\<forall>x. X x \<longrightarrow> X \<^bold>sx)"
-definition p ("\<^bold>p_") where "p \<equiv> \<lambda>x y. (\<lambda>z::i. (\<forall>X. \<^bold>i\<^bold>n\<^bold>d X \<longrightarrow> X z)) \<^bold>f x y"
+definition ind (\<open>\<^bold>i\<^bold>n\<^bold>d_\<close>) where "ind \<equiv> \<lambda>X. X\<^bold>e \<and> (\<forall>x. X x \<longrightarrow> X \<^bold>sx)"
+definition p (\<open>\<^bold>p_\<close>) where "p \<equiv> \<lambda>x y. (\<lambda>z::i. (\<forall>X. \<^bold>i\<^bold>n\<^bold>d X \<longrightarrow> X z)) \<^bold>f x y"
 
 text \<open>Using these definitions, state-of-art higher-order ATPs integrated with Isabelle/HOL can now fully
 automatically prove Boolos' Curious Problem:\<close>
@@ -69,7 +69,7 @@ and Leo-II (@{term "remote_leo2"}) @{cite Leo2}.\<close>
 
 section \<open>Automated Proof: Using a Single Definition\<close>
 
-definition p' ("\<^bold>p'_") where
+definition p' (\<open>\<^bold>p'_\<close>) where
   "p' \<equiv> \<lambda>x y. (\<lambda>z::i. (\<forall>X. (X\<^bold>e \<and> (\<forall>x. X x \<longrightarrow> X \<^bold>sx)) \<longrightarrow> X z)) \<^bold>f x y"
 
 theorem "\<^bold>d\<^bold>f\<^bold>s\<^bold>s\<^bold>s\<^bold>s\<^bold>e\<^bold>s\<^bold>s\<^bold>s\<^bold>s\<^bold>e"  \<comment>\<open>@{term "sledgehammer (A1 A2 A3 A4 A5 p'_def)"}\<close>  (*

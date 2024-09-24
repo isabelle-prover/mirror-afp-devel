@@ -108,11 +108,11 @@ lemma ccField_nil[simp]: "ccField \<bottom> = {}"
   by transfer auto
 
 lift_definition
-  inCC :: "var \<Rightarrow> var \<Rightarrow> CoCalls \<Rightarrow> bool" ("_--_\<in>_" [1000, 1000, 900] 900)
+  inCC :: "var \<Rightarrow> var \<Rightarrow> CoCalls \<Rightarrow> bool" (\<open>_--_\<in>_\<close> [1000, 1000, 900] 900)
   is "\<lambda> x y s. (x,y) \<in> s".
 
 abbreviation
-  notInCC :: "var \<Rightarrow> var \<Rightarrow> CoCalls \<Rightarrow> bool" ("_--_\<notin>_" [1000, 1000, 900] 900)
+  notInCC :: "var \<Rightarrow> var \<Rightarrow> CoCalls \<Rightarrow> bool" (\<open>_--_\<notin>_\<close> [1000, 1000, 900] 900)
   where "x--y\<notin>S \<equiv> \<not> x--y\<in>S"
 
 lemma notInCC_bot[simp]: "x--y\<in>\<bottom> \<longleftrightarrow> False"
@@ -149,7 +149,7 @@ lift_definition cc_delete :: "var \<Rightarrow> CoCalls \<Rightarrow> CoCalls"
 lemma ccField_cc_delete: "ccField (cc_delete x S) \<subseteq> ccField S - {x}"
   by transfer (auto simp add: Field_def )
 
-lift_definition ccProd :: "var set \<Rightarrow> var set \<Rightarrow> CoCalls" (infixr "G\<times>" 90)
+lift_definition ccProd :: "var set \<Rightarrow> var set \<Rightarrow> CoCalls" (infixr \<open>G\<times>\<close> 90)
   is "\<lambda> S1 S2. S1 \<times> S2 \<union> S2 \<times> S1"
   by (auto intro!: symI elim: symE)
 
@@ -198,7 +198,7 @@ lift_definition cc_restr :: "var set \<Rightarrow> CoCalls \<Rightarrow> CoCalls
   is "\<lambda> S. Set.filter (\<lambda> (x,y) . x \<in> S \<and> y \<in> S)"
   by (auto intro!: symI elim: symE)
 
-abbreviation cc_restr_sym (infixl "G|`"  110) where "G G|` S \<equiv> cc_restr S G"
+abbreviation cc_restr_sym (infixl \<open>G|`\<close>  110) where "G G|` S \<equiv> cc_restr S G"
 
 lemma elem_cc_restr[simp]: "x--y\<in>(G G|` S) = (x--y\<in>G \<and> x \<in> S \<and> y \<in> S)"
   by transfer auto
@@ -280,7 +280,7 @@ lemma ccProd_below_cc_restr:
 lemma cc_restr_eq_subset: "S \<subseteq> S' \<Longrightarrow> cc_restr S' G = cc_restr S' G2 \<Longrightarrow> cc_restr S G = cc_restr S G2"
   by transfer' (auto simp add: Set.filter_def)
  
-definition ccSquare ("_\<^sup>2" [80] 80)
+definition ccSquare (\<open>_\<^sup>2\<close> [80] 80)
   where "S\<^sup>2 = ccProd S S"
 
 lemma ccField_ccSquare[simp]: "ccField (S\<^sup>2) = S"

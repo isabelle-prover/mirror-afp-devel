@@ -7,11 +7,11 @@ theory Simplex_Algebra
 begin
 
 class scaleRat =
-  fixes scaleRat :: "rat \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "*R" 75)
+  fixes scaleRat :: "rat \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>*R\<close> 75)
 begin
 
 abbreviation
-  divideRat :: "'a \<Rightarrow> rat \<Rightarrow> 'a" (infixl "'/R" 70)
+  divideRat :: "'a \<Rightarrow> rat \<Rightarrow> 'a" (infixl \<open>'/R\<close> 70)
   where
     "x /R r == scaleRat (inverse r) x"
 end

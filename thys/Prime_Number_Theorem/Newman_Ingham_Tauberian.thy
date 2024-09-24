@@ -188,7 +188,7 @@ proof -
   \<comment> \<open>We get a bound on our coefficients and call it \<open>C\<close>.\<close>
   obtain C where C: "C \<ge> 1" "\<And>n. norm (fds_nth F n) \<le> C"
     using natfun_bigo_1E[OF coeff_bound, where lb = 1] by blast
-  write contour_integral ("\<ointegral>[_]")
+  write contour_integral (\<open>\<ointegral>[_]\<close>)
 
   \<comment> \<open>We show convergence directly by showing that the difference between the 
       partial sums and the limit vanishes.\<close>

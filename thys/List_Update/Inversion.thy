@@ -7,7 +7,7 @@ begin
 abbreviation "dist_perm xs ys \<equiv> distinct xs \<and> distinct ys \<and> set xs = set ys"
 
 definition before_in :: "'a \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> bool"
-  ("(_ </ _/ in _)" [55,55,55] 55) where
+  (\<open>(_ </ _/ in _)\<close> [55,55,55] 55) where
 "x < y in xs = (index xs x < index xs y \<and> y \<in> set xs)"
 
 definition Inv :: "'a list \<Rightarrow> 'a list \<Rightarrow> ('a * 'a) set" where

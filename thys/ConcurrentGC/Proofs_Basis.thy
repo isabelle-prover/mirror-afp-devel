@@ -140,10 +140,10 @@ abbreviation "is_mw_fA w \<equiv> \<exists>fl. w = mw_fA fl"
 abbreviation "is_mw_fM w \<equiv> \<exists>fl. w = mw_fM fl"
 abbreviation "is_mw_Phase w \<equiv> \<exists>ph. w = mw_Phase ph"
 
-abbreviation (input) pred_in_W :: "'ref \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "in'_W" 50) where
+abbreviation (input) pred_in_W :: "'ref \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>in'_W\<close> 50) where
   "r in_W p \<equiv> \<lambda>s. r \<in> W (s p)"
 
-abbreviation (input) pred_in_ghost_honorary_grey :: "'ref \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "in'_ghost'_honorary'_grey" 50) where
+abbreviation (input) pred_in_ghost_honorary_grey :: "'ref \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>in'_ghost'_honorary'_grey\<close> 50) where
   "r in_ghost_honorary_grey p \<equiv> \<lambda>s. r \<in> ghost_honorary_grey (s p)"
 
 abbreviation "gc_cas_mark s \<equiv> cas_mark (s gc)"
@@ -248,7 +248,7 @@ abbreviation (input) valid_ref :: "'ref \<Rightarrow> ('field, 'mut, 'payload, '
 definition valid_null_ref :: "'ref option \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" where
   "valid_null_ref r \<equiv> case r of None \<Rightarrow> \<langle>True\<rangle> | Some r' \<Rightarrow> valid_ref r'"
 
-abbreviation pred_points_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "points'_to" 51) where
+abbreviation pred_points_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>points'_to\<close> 51) where
   "x points_to y \<equiv> \<lambda>s. obj_at (\<lambda>obj. y \<in> ran (obj_fields obj)) x s"
 
 text\<open>
@@ -258,7 +258,7 @@ reachability through the heap.
 
 \<close>
 
-definition reaches :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "reaches" 51) where
+definition reaches :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>reaches\<close> 51) where
   "x reaches y = (\<lambda>s. (\<lambda>x y. (x points_to y) s)\<^sup>*\<^sup>* x y)"
 
 text\<open>

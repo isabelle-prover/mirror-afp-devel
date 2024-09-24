@@ -32,15 +32,15 @@ definition derives :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a list \<Righ
   "derives \<G> u v \<equiv> ((u, v) \<in> derivations \<G>)"
 
 syntax
-  "derives1" :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<turnstile> _ \<Rightarrow> _" [1000,0,0] 1000)
+  "derives1" :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<Rightarrow> _\<close> [1000,0,0] 1000)
 
 syntax
-  "derives" :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<turnstile> _ \<Rightarrow>\<^sup>* _" [1000,0,0] 1000)
+  "derives" :: "'a cfg \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<Rightarrow>\<^sup>* _\<close> [1000,0,0] 1000)
 
 notation (latex output)
-  derives1 ("_ \<turnstile> _ \<Rightarrow> _" [1000,0,0] 1000)
+  derives1 (\<open>_ \<turnstile> _ \<Rightarrow> _\<close> [1000,0,0] 1000)
 
 notation (latex output)
-  derives ("_ \<turnstile> _ \<^latex>\<open>\\ensuremath{\\Rightarrow^{\\ast}}\<close> _" [1000,0,0] 1000)
+  derives (\<open>_ \<turnstile> _ \<^latex>\<open>\ensuremath{\Rightarrow^{\ast}}\<close> _\<close> [1000,0,0] 1000)
 
 end

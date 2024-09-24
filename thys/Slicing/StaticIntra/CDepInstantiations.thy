@@ -14,7 +14,7 @@ lemma Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS S) \<Longrightarrow>
   by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:if_split_asm)
 
 
-abbreviation PDG_path' :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ \<longrightarrow>\<^sub>d* _" [51,0] 80)
+abbreviation PDG_path' :: "'node \<Rightarrow> 'node \<Rightarrow> bool" (\<open>_ \<longrightarrow>\<^sub>d* _\<close> [51,0] 80)
   where "n \<longrightarrow>\<^sub>d* n' \<equiv> PDG.PDG_path sourcenode targetnode valid_edge Def Use
   standard_control_dependence n n'"
 

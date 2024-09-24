@@ -9,14 +9,14 @@ definition fun_app_lifted :: "('M,'a \<Rightarrow> ('M, 'b) state) state \<Right
 
 bundle state_monad_syntax begin
 
-notation fun_app_lifted (infixl "." 999)
-type_synonym ('a,'M,'b) fun_lifted = "'a \<Rightarrow> ('M,'b) state" ("_ ==_\<Longrightarrow> _" [3,1000,2] 2)
-type_synonym ('a,'b) dpfun = "'a ==('a\<rightharpoonup>'b)\<Longrightarrow> 'b" (infixr "\<Rightarrow>\<^sub>T" 2)
-type_notation state ("[_| _]")
+notation fun_app_lifted (infixl \<open>.\<close> 999)
+type_synonym ('a,'M,'b) fun_lifted = "'a \<Rightarrow> ('M,'b) state" (\<open>_ ==_\<Longrightarrow> _\<close> [3,1000,2] 2)
+type_synonym ('a,'b) dpfun = "'a ==('a\<rightharpoonup>'b)\<Longrightarrow> 'b" (infixr \<open>\<Rightarrow>\<^sub>T\<close> 2)
+type_notation state (\<open>[_| _]\<close>)
 
-notation State_Monad.return ("\<langle>_\<rangle>")
-notation (ASCII) State_Monad.return ("(#_#)")
-notation Transfer.Rel ("Rel")
+notation State_Monad.return (\<open>\<langle>_\<rangle>\<close>)
+notation (ASCII) State_Monad.return (\<open>(#_#)\<close>)
+notation Transfer.Rel (\<open>Rel\<close>)
 
 end
 

@@ -14,7 +14,7 @@ begin
   definition weakly_logically_equivalent :: "'state \<Rightarrow> 'state \<Rightarrow> bool" where
     "weakly_logically_equivalent P Q \<equiv> (\<forall>x::('idx,'pred,'act) formula. weak_formula x \<longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x)"
 
-  notation weakly_logically_equivalent (infix "\<equiv>\<cdot>" 50)
+  notation weakly_logically_equivalent (infix \<open>\<equiv>\<cdot>\<close> 50)
 
   lemma weakly_logically_equivalent_eqvt:
     assumes "P \<equiv>\<cdot> Q" shows "p \<bullet> P \<equiv>\<cdot> p \<bullet> Q"

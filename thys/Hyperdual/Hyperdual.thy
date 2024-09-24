@@ -202,7 +202,7 @@ lemma of_comp_times:
 
 text\<open>Hyperdual scaling is multiplying each component by a factor from the component type.\<close>
 (* Named scaleH for hyperdual like scaleR is for real *)
-primcorec scaleH :: "('a :: times) \<Rightarrow> 'a hyperdual \<Rightarrow> 'a hyperdual"  (infixr "*\<^sub>H" 75)
+primcorec scaleH :: "('a :: times) \<Rightarrow> 'a hyperdual \<Rightarrow> 'a hyperdual"  (infixr \<open>*\<^sub>H\<close> 75)
   where
     "Base (f *\<^sub>H x) = f * Base x"
   | "Eps1 (f *\<^sub>H x) = f * Eps1 x"

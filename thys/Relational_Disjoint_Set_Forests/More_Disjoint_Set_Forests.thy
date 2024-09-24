@@ -536,7 +536,7 @@ It is made explicit so that the invariant can refer to it.
 \<close>
 
 syntax
-  "_Foreach" :: "idt \<Rightarrow> idt \<Rightarrow> 'assn \<Rightarrow> 'com \<Rightarrow> 'com"  ("(1FOREACH _/ USING _/ INV {_} //DO _ /OD)" [0,0,0,0] 61)
+  "_Foreach" :: "idt \<Rightarrow> idt \<Rightarrow> 'assn \<Rightarrow> 'com \<Rightarrow> 'com"  (\<open>(1FOREACH _/ USING _/ INV {_} //DO _ /OD)\<close> [0,0,0,0] 61)
 translations "FOREACH x USING h INV { i } DO c OD" =>
   "h := CONST top;
    WHILE h \<noteq> CONST bot
@@ -2463,7 +2463,7 @@ qed
 end
 
 syntax
-  "_Cond1" :: "'bexp \<Rightarrow> 'com \<Rightarrow> 'com"  ("(1IF _/ THEN _/ FI)" [0,0] 61)
+  "_Cond1" :: "'bexp \<Rightarrow> 'com \<Rightarrow> 'com"  (\<open>(1IF _/ THEN _/ FI)\<close> [0,0] 61)
 translations "IF b THEN c FI" == "IF b THEN c ELSE SKIP FI"
 
 context skra_peano_3

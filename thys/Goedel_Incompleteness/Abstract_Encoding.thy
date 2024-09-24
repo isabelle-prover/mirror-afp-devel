@@ -17,7 +17,7 @@ var :: "'var set" and trm :: "'trm set" and fmla :: "'fmla set"
 and Var FvarsT substT Fvars subst
 and num
 +
-fixes enc :: "'fmla \<Rightarrow> 'trm" ("\<langle>_\<rangle>")
+fixes enc :: "'fmla \<Rightarrow> 'trm" (\<open>\<langle>_\<rangle>\<close>)
 assumes
 enc[simp,intro!]: "\<And> \<phi>. \<phi> \<in> fmla \<Longrightarrow> enc \<phi> \<in> num"
 begin
@@ -48,7 +48,7 @@ and Var FvarsT substT Fvars subst
 and num
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and fls dsj
 and "proof" :: "'proof set" and prfOf
 +

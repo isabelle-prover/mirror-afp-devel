@@ -17,10 +17,10 @@ be extended to n-structures and omega-structures.\<close>
 subsection \<open>Copies for 0-structures\<close>
 
 class comp0_op =
-  fixes comp0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>0" 70)
+  fixes comp0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<cdot>\<^sub>0\<close> 70)
 
 class id0_op =
-  fixes id0 :: "'a" ("1\<^sub>0")
+  fixes id0 :: "'a" (\<open>1\<^sub>0\<close>)
 
 class star0_op =
   fixes star0 :: "'a \<Rightarrow> 'a"
@@ -118,10 +118,10 @@ sublocale modal_kleene_algebra0 \<subseteq> mka0dual: modal_kleene_algebra0 _ _ 
 subsection \<open>Copies for 1-structures\<close>
 
 class comp1_op =
-  fixes comp1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<cdot>\<^sub>1" 70)
+  fixes comp1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<cdot>\<^sub>1\<close> 70)
 
 class id1_op =
-  fixes id1 :: "'a" ("1\<^sub>1")
+  fixes id1 :: "'a" (\<open>1\<^sub>1\<close>)
 
 class star1_op =
   fixes star1 :: "'a \<Rightarrow> 'a"

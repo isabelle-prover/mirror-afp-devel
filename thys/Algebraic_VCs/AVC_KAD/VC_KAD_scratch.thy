@@ -15,7 +15,7 @@ begin
 
 subsubsection \<open>KAD: Definitions and Basic Properties\<close>
 
-notation times (infixl "\<cdot>" 70)
+notation times (infixl \<open>\<cdot>\<close> 70)
 
 class plus_ord = plus + ord +
   assumes less_eq_def: "x \<le> y \<longleftrightarrow> x + y = y"
@@ -55,7 +55,7 @@ lemma add_lub: "x + y \<le> z \<longleftrightarrow> x \<le> z \<and> y \<le> z"
 end
 
 class kleene_algebra  = dioid +
-  fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [101] 100)
+  fixes star :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>\<star>\<close> [101] 100)
   assumes star_unfoldl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"  
   and star_unfoldr: "1 + x\<^sup>\<star> \<cdot> x \<le> x\<^sup>\<star>"
   and star_inductl: "z + x \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
@@ -77,14 +77,14 @@ qed
 end
 
 class antidomain_kleene_algebra = kleene_algebra + 
-  fixes ad :: "'a \<Rightarrow> 'a" ("ad")
+  fixes ad :: "'a \<Rightarrow> 'a" (\<open>ad\<close>)
   assumes as1 [simp]: "ad x \<cdot> x = 0"
   and as2 [simp]: "ad (x \<cdot> y) + ad (x \<cdot> ad (ad y)) = ad (x \<cdot> ad (ad y))"
   and as3 [simp]: "ad (ad x) + ad x = 1"
 
 begin
 
-definition dom_op :: "'a \<Rightarrow> 'a" ("d") where
+definition dom_op :: "'a \<Rightarrow> 'a" (\<open>d\<close>) where
   "d x = ad (ad x)"
 
 lemma a_subid_aux: "ad x \<cdot> y \<le> y"
@@ -219,13 +219,13 @@ qed
 
 subsubsection \<open>wp Calculus\<close>
 
-definition if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
+definition if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _ fi\<close> [64,64,64] 63) where
   "if p then x else y fi = d p \<cdot> x + ad p \<cdot> y"
 
-definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [64,64] 63) where
+definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ od\<close> [64,64] 63) where
   "while p do x od = (d p \<cdot> x)\<^sup>\<star> \<cdot> ad p"
 
-definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _ od" [64,64,64] 63) where
+definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ inv _ do _ od\<close> [64,64,64] 63) where
   "while p inv i do x od = while p do x od"
 
 definition wp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" where
@@ -303,7 +303,7 @@ end
 
 subsubsection \<open>Soundness and Relation KAD\<close>
 
-notation relcomp (infixl ";" 70)
+notation relcomp (infixl \<open>;\<close> 70)
 
 interpretation rel_d: dioid Id "{}" "(\<union>)" "(;)" "(\<subseteq>)" "(\<subset>)"
   by (standard, auto)
@@ -347,7 +347,7 @@ subsubsection \<open>Embedding Predicates in Relations\<close>
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-abbreviation p2r :: "'a pred \<Rightarrow> 'a rel" ("\<lceil>_\<rceil>") where
+abbreviation p2r :: "'a pred \<Rightarrow> 'a rel" (\<open>\<lceil>_\<rceil>\<close>) where
   "\<lceil>P\<rceil> \<equiv> {(s,s) |s. P s}"
 
 lemma d_p2r [simp]: "rel_aka.dom_op \<lceil>P\<rceil> = \<lceil>P\<rceil>"
@@ -369,19 +369,19 @@ subsubsection \<open>Store and Assignment\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
-definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" ("_ ::= _" [70, 65] 61) where 
+definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" (\<open>_ ::= _\<close> [70, 65] 61) where 
   "v ::= e = {(s,s (v := e s)) |s. True}"
 
 lemma wp_assign [simp]: "rel_aka.wp (v ::= e) \<lceil>Q\<rceil> = \<lceil>\<lambda>s. Q (s (v := e s))\<rceil>"
   by (auto simp: rel_aka.wp_def gets_def rel_ad_def)
 
-abbreviation spec_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" ("PRE _ _ POST _" [64,64,64] 63) where
+abbreviation spec_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" (\<open>PRE _ _ POST _\<close> [64,64,64] 63) where
   "PRE P X POST Q \<equiv> rel_aka.dom_op \<lceil>P\<rceil> \<subseteq> rel_aka.wp X \<lceil>Q\<rceil>"
 
-abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("IF _ THEN _ ELSE _ FI" [64,64,64] 63) where
+abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>IF _ THEN _ ELSE _ FI\<close> [64,64,64] 63) where
   "IF P THEN X ELSE Y FI \<equiv> rel_aka.if_then_else \<lceil>P\<rceil> X Y"
 
-abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
+abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" (\<open>WHILE _ INV _ DO _ OD\<close> [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> rel_aka.while_inv \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
 subsubsection \<open>Verification Example\<close>

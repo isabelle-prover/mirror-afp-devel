@@ -5,7 +5,7 @@ theory Alpha_Sequence
 begin
 
 text \<open>The alpha function is diophantine\<close>
-definition alpha ("[_ = \<alpha> _ _]" 1000)
+definition alpha (\<open>[_ = \<alpha> _ _]\<close> 1000)
   where "[X = \<alpha> B N] \<equiv> (TERNARY (\<lambda>b n x. b > 3 \<and> x = Exp_Matrices.\<alpha> b n) B N X)"
 
 lemma alpha_dioph[dioph]:

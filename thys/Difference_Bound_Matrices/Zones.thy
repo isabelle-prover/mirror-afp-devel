@@ -7,12 +7,12 @@ type_synonym ('c, 't) zone = "('c, 't) cval set"
 
 type_synonym ('c, 't) cval = "'c \<Rightarrow> 't"
 
-definition cval_add :: "('c,'t) cval \<Rightarrow> 't::plus \<Rightarrow> ('c,'t) cval" (infixr "\<oplus>" 64)
+definition cval_add :: "('c,'t) cval \<Rightarrow> 't::plus \<Rightarrow> ('c,'t) cval" (infixr \<open>\<oplus>\<close> 64)
 where
   "u \<oplus> d = (\<lambda> x. u x + d)"
 
 definition zone_delay :: "('c, ('t::time)) zone \<Rightarrow> ('c, 't) zone"
-("_\<^sup>\<up>" [71] 71)
+(\<open>_\<^sup>\<up>\<close> [71] 71)
 where
   "Z\<^sup>\<up> = {u \<oplus> d|u d. u \<in> Z \<and> d \<ge> (0::'t)}"
 
@@ -22,12 +22,12 @@ where
   "clock_set (c#cs) t u = (clock_set cs t u)(c:=t)"
 
 abbreviation clock_set_abbrv :: "'c list \<Rightarrow> 't::time \<Rightarrow> ('c,'t) cval \<Rightarrow> ('c,'t) cval"
-("[_\<rightarrow>_]_" [65,65,65] 65)
+(\<open>[_\<rightarrow>_]_\<close> [65,65,65] 65)
 where
   "[r \<rightarrow> t]u \<equiv> clock_set r t u"
 
 definition zone_set :: "('c, 't::time) zone \<Rightarrow> 'c list \<Rightarrow> ('c, 't) zone"
-("_\<^bsub>_ \<rightarrow> 0\<^esub>" [71] 71)
+(\<open>_\<^bsub>_ \<rightarrow> 0\<^esub>\<close> [71] 71)
 where
   "zone_set Z r = {[r \<rightarrow> (0::'t)]u | u . u \<in> Z}"
 
@@ -40,7 +40,7 @@ lemma clock_set_id[simp]:
   using that by (induction r) auto
 
 definition DBM_zone_repr :: "('t::time) DBM \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> ('c, 't :: time) zone"
-("[_]\<^bsub>_,_\<^esub>" [72,72,72] 72)
+(\<open>[_]\<^bsub>_,_\<^esub>\<close> [72,72,72] 72)
 where
   "[M]\<^bsub>v,n\<^esub> = {u . DBM_val_bounded v u M n}"
 

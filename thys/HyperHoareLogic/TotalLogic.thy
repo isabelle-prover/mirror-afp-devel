@@ -4,7 +4,7 @@ begin
 
 section \<open>Terminating Hyper-Triples\<close>
 
-definition total_hyper_triple ("\<Turnstile>TERM {_} _ {_}" [51,0,0] 81) where
+definition total_hyper_triple (\<open>\<Turnstile>TERM {_} _ {_}\<close> [51,0,0] 81) where
   "\<Turnstile>TERM {P} C {Q} \<longleftrightarrow> ( \<Turnstile> {P} C {Q} \<and> (\<forall>S. P S \<longrightarrow> (\<forall>\<phi> \<in> S. \<exists>\<sigma>'. single_sem C (snd \<phi>) \<sigma>' )))"
 
 lemma total_hyper_triple_equiv:

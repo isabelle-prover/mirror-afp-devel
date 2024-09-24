@@ -7,8 +7,8 @@ theory KanckosLethenNo2Possibilist imports
   BaseDefs
 begin  
 text\<open>Axioms of Version No. 2 \<^cite>\<open>"KanckosLethen19"\<close>.\<close>
-abbreviation delta ("\<Delta>") where "\<Delta> A \<equiv> \<lambda>x.(\<^bold>\<forall>\<psi>. ((A \<psi>) \<^bold>\<rightarrow> (\<psi> x)))"
-abbreviation N ("\<N>") where "\<N> \<phi> \<equiv> \<lambda>x.(\<^bold>\<box>(\<phi> x))"
+abbreviation delta (\<open>\<Delta>\<close>) where "\<Delta> A \<equiv> \<lambda>x.(\<^bold>\<forall>\<psi>. ((A \<psi>) \<^bold>\<rightarrow> (\<psi> x)))"
+abbreviation N (\<open>\<N>\<close>) where "\<N> \<phi> \<equiv> \<lambda>x.(\<^bold>\<box>(\<phi> x))"
 
 axiomatization where 
   Axiom1: "\<lfloor>\<^bold>\<forall>\<phi> \<psi>.(((\<P> \<phi>) \<^bold>\<and> (\<^bold>\<box>(\<^bold>\<forall>x. ((\<phi> x) \<^bold>\<rightarrow> (\<psi> x))))) \<^bold>\<rightarrow> (\<P> \<psi>))\<rfloor>" and \<comment>\<open>The \<open>\<^bold>\<box>\<close> can be omitted here; the proofs still work.\<close> 
@@ -74,9 +74,9 @@ lemma A2': "\<lfloor>\<^bold>\<forall>X Y.(((\<P> X) \<^bold>\<and> ((X\<^bold>\
 lemma A3:  "\<lfloor>\<^bold>\<forall>\<Z>.((\<P>\<o>\<s> \<Z>) \<^bold>\<rightarrow> (\<^bold>\<forall>X.((X\<Sqinter>\<Z>) \<^bold>\<rightarrow> (\<P> X))))\<rfloor>" nitpick oops  \<comment>\<open>Countermodel\<close>
 
 text\<open>Possibilist version of the axioms.\<close>
-abbreviation a ("_\<^bold>\<sqsubseteq>\<^sup>p_") where "X\<^bold>\<sqsubseteq>\<^sup>pY \<equiv> \<^bold>\<forall>z.((X z) \<^bold>\<rightarrow> (Y z))"
-abbreviation b ("_\<Rrightarrow>\<^sup>p_") where "X\<Rrightarrow>\<^sup>pY \<equiv> \<^bold>\<box>(X\<^bold>\<sqsubseteq>\<^sup>pY)"
-abbreviation d ("_\<Sqinter>\<^sup>p_") where "X\<Sqinter>\<^sup>p\<Z> \<equiv> \<^bold>\<box>(\<^bold>\<forall>u.((X u) \<^bold>\<leftrightarrow> (\<^bold>\<forall>Y.((\<Z> Y) \<^bold>\<rightarrow> (Y u)))))"
+abbreviation a (\<open>_\<^bold>\<sqsubseteq>\<^sup>p_\<close>) where "X\<^bold>\<sqsubseteq>\<^sup>pY \<equiv> \<^bold>\<forall>z.((X z) \<^bold>\<rightarrow> (Y z))"
+abbreviation b (\<open>_\<Rrightarrow>\<^sup>p_\<close>) where "X\<Rrightarrow>\<^sup>pY \<equiv> \<^bold>\<box>(X\<^bold>\<sqsubseteq>\<^sup>pY)"
+abbreviation d (\<open>_\<Sqinter>\<^sup>p_\<close>) where "X\<Sqinter>\<^sup>p\<Z> \<equiv> \<^bold>\<box>(\<^bold>\<forall>u.((X u) \<^bold>\<leftrightarrow> (\<^bold>\<forall>Y.((\<Z> Y) \<^bold>\<rightarrow> (Y u)))))"
 
 lemma A1'P: "\<lfloor>\<^bold>\<not>(\<P>(\<lambda>x.(x\<^bold>\<noteq>x)))\<rfloor>" using Theorem9 by blast
 lemma A2'P: "\<lfloor>\<^bold>\<forall>X Y.(((\<P> X) \<^bold>\<and> ((X\<^bold>\<sqsubseteq>\<^sup>pY)\<^bold>\<or>(X\<Rrightarrow>\<^sup>pY))) \<^bold>\<rightarrow> (\<P> Y))\<rfloor>" oops \<comment>\<open>no answer, yet by sledgehammer and nitpick\<close>

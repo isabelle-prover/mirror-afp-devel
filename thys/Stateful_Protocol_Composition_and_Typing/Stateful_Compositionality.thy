@@ -370,7 +370,7 @@ definition par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
 definition declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
   "declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I> \<equiv> {s. \<Union>{set ts | ts. \<langle>\<star>, receive\<langle>ts\<rangle>\<rangle> \<in> set (\<A> \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<I>)} \<turnstile> s}"
 
-definition strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t ("_ leaks _ under _") where
+definition strand_leaks\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<open>_ leaks _ under _\<close>) where
   "(\<A>::('fun,'var,'lbl) labeled_stateful_strand) leaks Secrets under \<I> \<equiv>
     (\<exists>t \<in> Secrets - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>. \<exists>n. \<I> \<Turnstile>\<^sub>s (proj_unl n \<A>@[send\<langle>[t]\<rangle>]))"
 

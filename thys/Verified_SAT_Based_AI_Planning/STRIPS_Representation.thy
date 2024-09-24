@@ -43,10 +43,10 @@ text \<open> Similar to the operator definition, we use a record to represent ST
 fields for the variables, operators, as well as the initial and goal state. \<close>
 
 record  ('variable) strips_problem =
-  variables_of :: "'variable list" ("(_\<^sub>\<V>)" [1000] 999)
-  operators_of :: "'variable strips_operator list" ("(_\<^sub>\<O>)" [1000] 999)
-  initial_of :: "'variable strips_state" ("(_\<^sub>I)" [1000] 999)
-  goal_of :: "'variable strips_state" ("(_\<^sub>G)" [1000] 999)
+  variables_of :: "'variable list" (\<open>(_\<^sub>\<V>)\<close> [1000] 999)
+  operators_of :: "'variable strips_operator list" (\<open>(_\<^sub>\<O>)\<close> [1000] 999)
+  initial_of :: "'variable strips_state" (\<open>(_\<^sub>I)\<close> [1000] 999)
+  goal_of :: "'variable strips_state" (\<open>(_\<^sub>G)\<close> [1000] 999)
 
 value  "stop" (* Tell document preparation to stop collecting for the last tag *)
 (*<*)
@@ -121,7 +121,7 @@ assignments. }\<close>
 definition  execute_operator
   :: "'variable strips_state 
     \<Rightarrow> 'variable strips_operator 
-    \<Rightarrow> 'variable strips_state" (infixl "\<then>" 52)
+    \<Rightarrow> 'variable strips_state" (infixl \<open>\<then>\<close> 52)
   where "execute_operator s op
     \<equiv> s ++ map_of (effect_to_assignments op)"
 

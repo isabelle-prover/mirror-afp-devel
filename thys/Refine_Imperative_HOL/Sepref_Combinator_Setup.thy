@@ -141,7 +141,7 @@ end
 
 subsection \<open>Rewriting Inferred Interface Types\<close>
 definition map_type_eq :: "'a itself \<Rightarrow> 'b itself \<Rightarrow> bool" 
-  (infixr "\<rightarrow>\<^sub>n\<^sub>t" 60)
+  (infixr \<open>\<rightarrow>\<^sub>n\<^sub>t\<close> 60)
   where [simp]: "map_type_eq _ _ \<equiv> True"
 lemma map_type_eqI: "map_type_eq L R" by auto
 

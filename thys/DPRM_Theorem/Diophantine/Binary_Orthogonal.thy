@@ -116,7 +116,7 @@ next
   then show "?P" using ortho_mult_equiv by blast
 qed
 
-definition orthogonal (infix "[\<bottom>]" 50)
+definition orthogonal (infix \<open>[\<bottom>]\<close> 50)
   where "P [\<bottom>] Q \<equiv> (BINARY (\<lambda>a b. a \<bottom> b) P Q)"
 
 lemma orthogonal_dioph[dioph]:

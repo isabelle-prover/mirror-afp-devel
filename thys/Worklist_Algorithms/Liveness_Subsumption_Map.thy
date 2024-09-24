@@ -7,7 +7,7 @@ begin
 locale Liveness_Search_Space_Key_Defs =
   Liveness_Search_Space_Defs E for E :: "'v \<Rightarrow> 'v \<Rightarrow> bool" +
   fixes key :: "'v \<Rightarrow> 'k"
-  fixes subsumes' :: "'v \<Rightarrow> 'v \<Rightarrow> bool" (infix "\<unlhd>" 50)
+  fixes subsumes' :: "'v \<Rightarrow> 'v \<Rightarrow> bool" (infix \<open>\<unlhd>\<close> 50)
 begin
 
 sublocale Search_Space_Key_Defs .

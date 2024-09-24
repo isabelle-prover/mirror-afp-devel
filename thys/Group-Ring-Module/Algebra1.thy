@@ -501,7 +501,7 @@ definition
   "invfun A B (f :: 'a \<Rightarrow> 'b) = (\<lambda>y\<in>B.(SOME x. (x \<in> A \<and> f x = y)))"
 
 abbreviation
-  INVFUN :: "['a \<Rightarrow> 'b, 'b set, 'a set] \<Rightarrow> ('b \<Rightarrow> 'a)"  ("(3_\<inverse>\<^bsub>_,_\<^esub>)" [82,82,83]82) where
+  INVFUN :: "['a \<Rightarrow> 'b, 'b set, 'a set] \<Rightarrow> ('b \<Rightarrow> 'a)"  (\<open>(3_\<inverse>\<^bsub>_,_\<^esub>)\<close> [82,82,83]82) where
   "f\<inverse>\<^bsub>B,A\<^esub> == invfun A B f"
 
 lemma eq_fun:"\<lbrakk> f \<in> A \<rightarrow> B; f = g \<rbrakk> \<Longrightarrow> g \<in> A \<rightarrow> B"
@@ -1991,7 +1991,7 @@ instance ..
 end
 
 definition
-  inf_ant :: ant  ("\<infinity>") where
+  inf_ant :: ant  (\<open>\<infinity>\<close>) where
   "\<infinity> = Abs_Ainteg((0,1))"
 
 definition
@@ -2463,11 +2463,11 @@ apply ((erule disjE)+, (erule exE)+, simp add:a_zpz,
 done
 
 definition
-  aug_inf :: "ant set"  ("Z\<^sub>\<infinity>") where
+  aug_inf :: "ant set"  (\<open>Z\<^sub>\<infinity>\<close>) where
   "Z\<^sub>\<infinity> = {(z::ant). z \<noteq> -\<infinity> }"
 
 definition
-  aug_minf :: "ant set"  ("Z\<^sub>-\<^sub>\<infinity>") where
+  aug_minf :: "ant set"  (\<open>Z\<^sub>-\<^sub>\<infinity>\<close>) where
   "Z\<^sub>-\<^sub>\<infinity> = {(z::ant). z \<noteq> \<infinity> }"
 
 lemma z_in_aug_inf:"ant z \<in> Z\<^sub>\<infinity>"
@@ -2803,7 +2803,7 @@ by (simp add:ant_0[THEN sym] a_z_z)
 
 
 definition
-  asprod :: "[int, ant] \<Rightarrow> ant" (infixl "*\<^sub>a" 200) where
+  asprod :: "[int, ant] \<Rightarrow> ant" (infixl \<open>*\<^sub>a\<close> 200) where
   "m *\<^sub>a x ==
   if x = \<infinity> then (if 0 < m then \<infinity> else (if m < 0 then -\<infinity> else
                  if m = 0 then 0 else undefined))
@@ -4615,11 +4615,11 @@ locale Order =
 (* print_locale Order *)
 
 definition
-  ole :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix "\<preceq>\<index>" 60) where
+  ole :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix \<open>\<preceq>\<index>\<close> 60) where
   "a \<preceq>\<^bsub>D\<^esub> b \<longleftrightarrow> (a, b) \<in> rel D"
 
 definition
-  oless :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix "\<prec>\<index>" 60) where
+  oless :: "_ \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"    (infix \<open>\<prec>\<index>\<close> 60) where
   "a \<prec>\<^bsub>D\<^esub> b \<equiv> a \<preceq>\<^bsub>D\<^esub> b \<and> a \<noteq> b"
 
 
@@ -4978,7 +4978,7 @@ done
 subsection \<open>Two ordered sets\<close>
 
 definition
-  Order_Pow :: "'a set \<Rightarrow> 'a set Order"    ("(po _)" [999] 1000) where
+  Order_Pow :: "'a set \<Rightarrow> 'a set Order"    (\<open>(po _)\<close> [999] 1000) where
   "po A =
     \<lparr>carrier = Pow A,
       rel = {(X, Y). X \<in> Pow A \<and> Y \<in> Pow A \<and> X \<subseteq> Y}\<rparr>"
@@ -6785,7 +6785,7 @@ by (frule Worder.Order[of "E"],
        rule ord_isom_segment_segment[of "E" "f" "a"], assumption+)
 
 definition
-  Tw :: "[_ , ('b, 'm1) Order_scheme] \<Rightarrow> 'a \<Rightarrow> 'b"  ("(2Tw\<^bsub>_,_\<^esub>)" [60,61]60) where
+  Tw :: "[_ , ('b, 'm1) Order_scheme] \<Rightarrow> 'a \<Rightarrow> 'b"  (\<open>(2Tw\<^bsub>_,_\<^esub>)\<close> [60,61]60) where
   "Tw\<^bsub>D,T\<^esub> = (\<lambda>a\<in> carrier D. SOME x. x\<in>carrier T \<and>
     ord_equiv (Iod D (segment D a)) (Iod T (segment T x)))"
 

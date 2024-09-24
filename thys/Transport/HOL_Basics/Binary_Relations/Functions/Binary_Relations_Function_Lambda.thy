@@ -12,12 +12,12 @@ adhoc_overloading rel_lambda rel_lambda_pred
 bundle rel_lambda_syntax
 begin
 syntax
-  "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
+  "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>(2\<lambda>_ : _./ _)\<close> 60)
 end
 bundle no_rel_lambda_syntax
 begin
 no_syntax
-  "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" ("(2\<lambda>_ : _./ _)" 60)
+  "_rel_lambda"  :: "pttrns \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>(2\<lambda>_ : _./ _)\<close> 60)
 end
 unbundle rel_lambda_syntax
 syntax_consts

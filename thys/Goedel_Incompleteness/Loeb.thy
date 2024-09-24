@@ -30,7 +30,7 @@ var :: "'var set" and trm :: "'trm set" and fmla :: "'fmla set"
 and Var num FvarsT substT Fvars subst
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and P
 begin

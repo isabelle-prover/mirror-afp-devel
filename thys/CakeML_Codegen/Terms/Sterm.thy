@@ -8,13 +8,13 @@ datatype sterm =
   Sconst name |
   Svar name |
   Sabs (clauses: "(term \<times> sterm) list") |
-  Sapp sterm sterm (infixl "$\<^sub>s" 70)
+  Sapp sterm sterm (infixl \<open>$\<^sub>s\<close> 70)
 
 datatype_compat sterm
 
 derive linorder sterm
 
-abbreviation Sabs_single ("\<Lambda>\<^sub>s _. _" [0, 50] 50) where
+abbreviation Sabs_single (\<open>\<Lambda>\<^sub>s _. _\<close> [0, 50] 50) where
 "Sabs_single x rhs \<equiv> Sabs [(Free x, rhs)]"
 
 type_synonym sclauses = "(term \<times> sterm) list"

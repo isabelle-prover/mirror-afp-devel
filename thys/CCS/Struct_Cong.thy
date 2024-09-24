@@ -6,7 +6,7 @@ theory Struct_Cong
   imports Agent
 begin
 
-inductive structCong :: "ccs \<Rightarrow> ccs \<Rightarrow> bool" ("_ \<equiv>\<^sub>s _")
+inductive structCong :: "ccs \<Rightarrow> ccs \<Rightarrow> bool" (\<open>_ \<equiv>\<^sub>s _\<close>)
   where
   Refl: "P \<equiv>\<^sub>s P"
 | Sym: "P \<equiv>\<^sub>s Q \<Longrightarrow> Q \<equiv>\<^sub>s P"

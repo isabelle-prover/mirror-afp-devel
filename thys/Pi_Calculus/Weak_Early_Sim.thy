@@ -6,7 +6,7 @@ theory Weak_Early_Sim
   imports Weak_Early_Semantics Strong_Early_Sim_Pres
 begin
 
-definition weakSimulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" ("_ \<leadsto><_> _" [80, 80, 80] 80)
+definition weakSimulation :: "pi \<Rightarrow> (pi \<times> pi) set \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<leadsto><_> _\<close> [80, 80, 80] 80)
   where "P \<leadsto><Rel> Q \<equiv> (\<forall>a x Q'. Q \<longmapsto>a<\<nu>x> \<prec> Q' \<and> x \<sharp> P \<longrightarrow> (\<exists>P'. P \<Longrightarrow>a<\<nu>x> \<prec> P' \<and> (P', Q') \<in> Rel)) \<and>
                        (\<forall>\<alpha> Q'. Q \<longmapsto>\<alpha> \<prec> Q' \<longrightarrow> (\<exists>P'. P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel))"
 

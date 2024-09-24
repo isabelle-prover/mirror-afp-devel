@@ -5,7 +5,7 @@ theory Misc imports
 begin
 
 text \<open>A handy abbreviation when working with maps\<close>
-abbreviation make_map :: "'a set \<Rightarrow> 'b \<Rightarrow> ('a \<rightharpoonup> 'b)" ("[ _ |=> _ ]")
+abbreviation make_map :: "'a set \<Rightarrow> 'b \<Rightarrow> ('a \<rightharpoonup> 'b)" (\<open>[ _ |=> _ ]\<close>)
 where
   "[ks |=> v] \<equiv> \<lambda>k. if k \<in> ks then Some v else None"
 

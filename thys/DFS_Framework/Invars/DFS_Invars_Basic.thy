@@ -16,8 +16,8 @@ abbreviation "the_finished s v \<equiv> the (finished s v)"
 locale timing_syntax
 begin
   (* Timing related syntax shortcuts *) 
-  notation the_discovered ("\<delta>")
-  notation the_finished ("\<phi>")
+  notation the_discovered (\<open>\<delta>\<close>)
+  notation the_finished (\<open>\<phi>\<close>)
 end
 
 context param_DFS begin context begin interpretation timing_syntax .

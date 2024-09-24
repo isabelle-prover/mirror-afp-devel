@@ -11,13 +11,13 @@ imports
 begin
 
 no_notation
-  minus (infixl "-" 65) and
-  trancl ("(_\<^sup>+)" [1000] 999)
+  minus (infixl \<open>-\<close> 65) and
+  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
 
 context p_algebra
 begin
 
-abbreviation minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "-" 65)
+abbreviation minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>-\<close> 65)
   where "x - y \<equiv> x \<sqinter> -y"
 
 end
@@ -52,10 +52,10 @@ The read operation uses double brackets to avoid ambiguity with list syntax.
 The remainder of this section shows basic properties of these operations.
 \<close>
 
-abbreviation rel_update :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("(_[_\<longmapsto>_])" [70, 65, 65] 61)
+abbreviation rel_update :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>(_[_\<longmapsto>_])\<close> [70, 65, 65] 61)
   where "x[y\<longmapsto>z] \<equiv> (y \<sqinter> z\<^sup>T) \<squnion> (-y \<sqinter> x)"
 
-abbreviation rel_access :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("(2_[[_]])" [70, 65] 65)
+abbreviation rel_access :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>(2_[[_]])\<close> [70, 65] 65)
   where "x[[y]] \<equiv> x\<^sup>T * y"
 
 lemma update_univalent:
@@ -846,7 +846,7 @@ Updating the value at a given array index means updating the whole array.
 \<close>
 
 syntax
-  "_rel_update" :: "idt \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b com" ("(2_[_] :=/ _)" [70, 65, 65] 61)
+  "_rel_update" :: "idt \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b com" (\<open>(2_[_] :=/ _)\<close> [70, 65, 65] 61)
 
 translations
   "x[y] := z" => "(x := (y \<sqinter> z\<^sup>T) \<squnion> (CONST uminus y \<sqinter> x))"
@@ -859,7 +859,7 @@ class finite_regular_p_algebra = p_algebra +
   assumes finite_regular: "finite { x . regular x }"
 begin
 
-abbreviation card_down_regular :: "'a \<Rightarrow> nat" ("_\<down>" [100] 100)
+abbreviation card_down_regular :: "'a \<Rightarrow> nat" (\<open>_\<down>\<close> [100] 100)
   where "x\<down> \<equiv> card { z . regular z \<and> z \<le> x }"
 
 end

@@ -134,21 +134,21 @@ qed
 
 subsection \<open>Relations\<close>
 
-locale relation = fixes r::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>" 50)
+locale relation = fixes r::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<close> 50)
 begin
 
-abbreviation rtc::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>\<^sup>*" 50)
+abbreviation rtc::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<^sup>*\<close> 50)
   where "rtc a b \<equiv> r\<^sup>*\<^sup>* a b"
 
-abbreviation sc::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<leftrightarrow>" 50)
+abbreviation sc::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<leftrightarrow>\<close> 50)
   where "sc a b \<equiv> a \<rightarrow> b \<or> b \<rightarrow> a"
 
 definition is_final::"'a \<Rightarrow> bool" where
   "is_final a \<equiv> \<not> (\<exists>b. r a b)"
 
-definition srtc::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<leftrightarrow>\<^sup>*" 50) where
+definition srtc::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<leftrightarrow>\<^sup>*\<close> 50) where
   "srtc a b \<equiv> sc\<^sup>*\<^sup>* a b"
-definition cs::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<down>\<^sup>*" 50) where
+definition cs::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<down>\<^sup>*\<close> 50) where
   "cs a b \<equiv> (\<exists>s. (a \<rightarrow>\<^sup>* s) \<and> (b \<rightarrow>\<^sup>* s))"
 
 definition is_confluent_on :: "'a set \<Rightarrow> bool"

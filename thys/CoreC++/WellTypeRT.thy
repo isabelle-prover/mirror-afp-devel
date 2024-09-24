@@ -12,7 +12,7 @@ theory WellTypeRT imports WellType begin
 
 subsection \<open>Run time types\<close>
 
-primrec typeof_h :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty option" ("_ \<turnstile> typeof\<^bsub>_\<^esub>") where
+primrec typeof_h :: "prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty option" (\<open>_ \<turnstile> typeof\<^bsub>_\<^esub>\<close>) where
   "P \<turnstile> typeof\<^bsub>h\<^esub> Unit     = Some Void"
 | "P \<turnstile> typeof\<^bsub>h\<^esub> Null     = Some NT"
 | "P \<turnstile> typeof\<^bsub>h\<^esub> (Bool b) = Some Boolean"
@@ -47,9 +47,9 @@ subsection \<open>The rules\<close>
 
 inductive
   WTrt :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
-        ("_,_,_ \<turnstile> _ : _"   [51,51,51]50)
+        (\<open>_,_,_ \<turnstile> _ : _\<close>   [51,51,51]50)
   and WTrts :: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
-        ("_,_,_ \<turnstile> _ [:] _" [51,51,51]50)
+        (\<open>_,_,_ \<turnstile> _ [:] _\<close> [51,51,51]50)
   for P :: prog
 where
   

@@ -17,7 +17,7 @@ data type of association lists.\<close>
 
 type_synonym ('a,'b) AssList = "('a \<times> 'b) list"
 
-primrec lookup::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('b option)" ("_\<down>_" [90,0] 90)
+primrec lookup::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('b option)" (\<open>_\<down>_\<close> [90,0] 90)
 where
 "lookup [] l = None" |
 "lookup (h # t) l = (if fst h = l then Some(snd h) else lookup t l)"
@@ -78,7 +78,7 @@ done
 (*>*)
 
 definition upd::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a, 'b) AssList"
-         ("_[_\<mapsto>_]" [1000,0,0] 1000)
+         (\<open>_[_\<mapsto>_]\<close> [1000,0,0] 1000)
 where "upd L a b = (a,b) # (delete L a)"
 (*<*)
 lemma AL_update1: "(L::('a, 'b) AssList)[a\<mapsto>b]\<down>a = Some b"
@@ -118,7 +118,7 @@ where "contained L M = (\<forall> a b . L\<down>a = Some b \<longrightarrow> M\<
 
 text\<open>The following operation defined the cardinality of a map.\<close>
 
-fun AL_Size :: "('a, 'b) AssList \<Rightarrow> nat"  ("|_|" [1000] 1000) where
+fun AL_Size :: "('a, 'b) AssList \<Rightarrow> nat"  (\<open>|_|\<close> [1000] 1000) where
   "AL_Size [] = 0"
 | "AL_Size (h # t) = Suc (AL_Size (delete t (fst h)))"
 

@@ -39,9 +39,9 @@ where
 lemmas alphas = alpha_set.simps alpha_res.simps alpha_lst.simps
 
 notation
-  alpha_set ("_ \<approx>set _ _ _ _" [100, 100, 100, 100, 100] 100) and
-  alpha_res ("_ \<approx>res _ _ _ _" [100, 100, 100, 100, 100] 100) and
-  alpha_lst ("_ \<approx>lst _ _ _ _" [100, 100, 100, 100, 100] 100)
+  alpha_set (\<open>_ \<approx>set _ _ _ _\<close> [100, 100, 100, 100, 100] 100) and
+  alpha_res (\<open>_ \<approx>res _ _ _ _\<close> [100, 100, 100, 100, 100] 100) and
+  alpha_lst (\<open>_ \<approx>lst _ _ _ _\<close> [100, 100, 100, 100, 100] 100)
 
 section \<open>Mono\<close>
 
@@ -178,9 +178,9 @@ where
   "alpha_abs_res (bs, x) (cs, y) \<longleftrightarrow> (\<exists>p. (bs, x) \<approx>res ((=)) supp p (cs, y))"
 
 notation
-  alpha_abs_set (infix "\<approx>abs'_set" 50) and
-  alpha_abs_lst (infix "\<approx>abs'_lst" 50) and
-  alpha_abs_res (infix "\<approx>abs'_res" 50)
+  alpha_abs_set (infix \<open>\<approx>abs'_set\<close> 50) and
+  alpha_abs_lst (infix \<open>\<approx>abs'_lst\<close> 50) and
+  alpha_abs_res (infix \<open>\<approx>abs'_res\<close> 50)
 
 lemmas alphas_abs = alpha_abs_set.simps alpha_abs_res.simps alpha_abs_lst.simps
 
@@ -454,21 +454,21 @@ quotient_type
   by (auto intro: alphas_abs_sym alphas_abs_refl alphas_abs_trans simp only:)
 
 quotient_definition
-  Abs_set ("[_]set. _" [60, 60] 60)
+  Abs_set (\<open>[_]set. _\<close> [60, 60] 60)
 where
   "Abs_set::atom set \<Rightarrow> ('a::pt) \<Rightarrow> 'a abs_set"
 is
   "Pair::atom set \<Rightarrow> ('a::pt) \<Rightarrow> (atom set \<times> 'a)" .
 
 quotient_definition
-  Abs_res ("[_]res. _" [60, 60] 60)
+  Abs_res (\<open>[_]res. _\<close> [60, 60] 60)
 where
   "Abs_res::atom set \<Rightarrow> ('a::pt) \<Rightarrow> 'a abs_res"
 is
   "Pair::atom set \<Rightarrow> ('a::pt) \<Rightarrow> (atom set \<times> 'a)" .
 
 quotient_definition
-  Abs_lst ("[_]lst. _" [60, 60] 60)
+  Abs_lst (\<open>[_]lst. _\<close> [60, 60] 60)
 where
   "Abs_lst::atom list \<Rightarrow> ('a::pt) \<Rightarrow> 'a abs_lst"
 is

@@ -6,9 +6,9 @@ theory Quantum_Extra
     Quantum
 begin
 
-no_notation meet (infixl "\<sqinter>\<index>" 70)
-no_notation Group.mult (infixl "\<otimes>\<index>" 70)
-no_notation Order.top ("\<top>\<index>")
+no_notation meet (infixl \<open>\<sqinter>\<index>\<close> 70)
+no_notation Group.mult (infixl \<open>\<otimes>\<index>\<close> 70)
+no_notation Order.top (\<open>\<top>\<index>\<close>)
 unbundle lattice_syntax
 unbundle register_notation
 unbundle cblinfun_notation

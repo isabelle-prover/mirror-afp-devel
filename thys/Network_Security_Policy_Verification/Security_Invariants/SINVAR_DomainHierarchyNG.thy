@@ -9,7 +9,7 @@ subsection\<open>SecurityInvariant DomainHierarchyNG\<close>
 subsubsection \<open>Datatype Domain Hierarchy\<close>
 
   text\<open>A fully qualified domain name for an entity in a tree-like hierarchy\<close>
-    datatype domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
+    datatype domainNameDept =  Dept "string" domainNameDept (infixr \<open>--\<close> 65) |
                                Leaf \<comment> \<open>leaf of the tree, end of all domainNames\<close>
     
     text \<open>Example: the CoffeeMachine of I8\<close>
@@ -437,7 +437,7 @@ subsubsection \<open>Datatype Domain Hierarchy\<close>
   datatype domainNameTrust = DN "(domainNameDept \<times> nat)" | Unassigned
 
     (*transitivity only if trustA \<ge> trust C*)
-    fun leq_domainNameTrust :: "domainNameTrust \<Rightarrow> domainNameTrust \<Rightarrow> bool" (infixr "\<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t" 65)  where 
+    fun leq_domainNameTrust :: "domainNameTrust \<Rightarrow> domainNameTrust \<Rightarrow> bool" (infixr \<open>\<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t\<close> 65)  where 
       "leq_domainNameTrust Unassigned _ = True" |
       "leq_domainNameTrust _ Unassigned = False" |
       "leq_domainNameTrust (DN (dnA, trustA)) (DN (dnB, trustB)) = (dnA \<le> (domainNameChop dnB trustB))"

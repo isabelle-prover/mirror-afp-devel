@@ -11,8 +11,8 @@ theory Partial_Semigroups
 
 begin
   
-notation times (infixl "\<cdot>" 70) 
-  and times (infixl "\<oplus>" 70) 
+notation times (infixl \<open>\<cdot>\<close> 70) 
+  and times (infixl \<open>\<oplus>\<close> 70) 
   
 
 subsection \<open>Partial Semigroups\<close>
@@ -58,22 +58,22 @@ subsection \<open>Green's Preorders and Green's Relations\<close>
 text \<open>We define the standard Green's preorders and Green's relations. They are usually defined on monoids. 
   On (partial) semigroups, we only obtain transitive relations.\<close>
 
-definition gR_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>\<^sub>R" 50) where
+definition gR_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>R\<close> 50) where
   "x \<preceq>\<^sub>R y = (\<exists>z. D x z \<and> x \<cdot> z = y)"
 
-definition strict_gR_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<prec>\<^sub>R" 50) where
+definition strict_gR_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<prec>\<^sub>R\<close> 50) where
   "x \<prec>\<^sub>R y = (x \<preceq>\<^sub>R y \<and> \<not> y \<preceq>\<^sub>R x)"
   
-definition gL_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>\<^sub>L" 50) where
+definition gL_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>L\<close> 50) where
   "x \<preceq>\<^sub>L y = (\<exists>z. D z x \<and> z \<cdot> x = y)"
 
-definition strict_gL_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<prec>\<^sub>L" 50) where
+definition strict_gL_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<prec>\<^sub>L\<close> 50) where
   "x \<prec>\<^sub>L y = (x \<preceq>\<^sub>L y \<and> \<not> y \<preceq>\<^sub>L x)"
   
-definition gH_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>\<^sub>H" 50) where
+definition gH_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>H\<close> 50) where
   "x \<preceq>\<^sub>H y = (x \<preceq>\<^sub>L y \<and> x \<preceq>\<^sub>R y)"
 
-definition gJ_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<preceq>\<^sub>J" 50) where
+definition gJ_rel :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>J\<close> 50) where
   "x \<preceq>\<^sub>J y = (\<exists>v w. D v x \<and> D (v \<cdot> x) w \<and> (v \<cdot> x) \<cdot> w = y)"
   
 definition "gR x y = (x \<preceq>\<^sub>R y \<and> y \<preceq>\<^sub>R x)" 
@@ -84,7 +84,7 @@ definition "gH x y = (x \<preceq>\<^sub>H y \<and> y \<preceq>\<^sub>H x)"
 
 definition "gJ x y = (x \<preceq>\<^sub>J y \<and> y \<preceq>\<^sub>J x)"  
   
-definition gR_downset :: "'a \<Rightarrow> 'a set" ("_\<down>" [100]100) where
+definition gR_downset :: "'a \<Rightarrow> 'a set" (\<open>_\<down>\<close> [100]100) where
   "x\<down> \<equiv> {y. y \<preceq>\<^sub>R x}"
   
 text \<open>The following counterexample rules out reflexivity.\<close>
@@ -547,7 +547,7 @@ but we do not pursue this at the moment.\<close>
   
 locale partial_sg_laction = 
   fixes Dla :: "'a::partial_semigroup \<Rightarrow> 'b \<Rightarrow> bool"
-  and act :: "'a::partial_semigroup \<Rightarrow> 'b \<Rightarrow> 'b" ("\<alpha>") 
+  and act :: "'a::partial_semigroup \<Rightarrow> 'b \<Rightarrow> 'b" (\<open>\<alpha>\<close>) 
   assumes act_assocD: "D x y \<and> Dla (x \<cdot> y) p \<longleftrightarrow> Dla y p \<and> Dla x (\<alpha> y p)"
   and act_assoc: "D x y \<and> Dla (x \<cdot> y) p \<Longrightarrow> \<alpha> (x \<cdot> y) p = \<alpha> x (\<alpha> y p)"
   

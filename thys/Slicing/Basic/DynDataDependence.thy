@@ -5,7 +5,7 @@ theory DynDataDependence imports CFG_wf begin
 context CFG_wf begin 
 
 definition dyn_data_dependence :: 
-  "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" ("_ influences _ in _ via _" [51,0,0])
+  "'node \<Rightarrow> 'var \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" (\<open>_ influences _ in _ via _\<close> [51,0,0])
 where "n influences V in n' via as \<equiv>
     ((V \<in> Def n) \<and> (V \<in> Use n') \<and> (n -as\<rightarrow>* n') \<and> 
      (\<exists>a' as'. (as = a'#as') \<and> (\<forall>n'' \<in> set (sourcenodes as'). V \<notin> Def n'')))"

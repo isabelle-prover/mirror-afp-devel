@@ -27,12 +27,12 @@ qed simp
 subsection \<open>Utilities for finite maps\<close>
 
 no_syntax
-  "_fmaplet" :: "['a, 'a] \<Rightarrow> fmaplet" ("_ /$$:=/ _")
-  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet" ("_ /[$$:=]/ _")
+  "_fmaplet" :: "['a, 'a] \<Rightarrow> fmaplet" (\<open>_ /$$:=/ _\<close>)
+  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet" (\<open>_ /[$$:=]/ _\<close>)
 
 syntax
-  "_fmaplet" :: "['a, 'a] \<Rightarrow> fmaplet" ("_ /\<Zinj>/ _")
-  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet" ("_ /[\<Zinj>]/ _")
+  "_fmaplet" :: "['a, 'a] \<Rightarrow> fmaplet" (\<open>_ /\<Zinj>/ _\<close>)
+  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet" (\<open>_ /[\<Zinj>]/ _\<close>)
 
 lemma fmdom'_fmap_of_list [simp]:
   shows "fmdom' (fmap_of_list ps) = lset (map fst ps)"

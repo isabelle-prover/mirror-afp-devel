@@ -50,7 +50,7 @@ subsection \<open>Embedding of Syntactic Ordinals into Huffman's Ordinals\<close
 abbreviation \<omega>\<^sub>h :: hmultiset where
   "\<omega>\<^sub>h \<equiv> Syntactic_Ordinal.\<omega>"
 
-abbreviation \<omega>\<^sub>h_exp :: "hmultiset \<Rightarrow> hmultiset" ("\<omega>\<^sub>h^") where
+abbreviation \<omega>\<^sub>h_exp :: "hmultiset \<Rightarrow> hmultiset" (\<open>\<omega>\<^sub>h^\<close>) where
   "\<omega>\<^sub>h^ \<equiv> Syntactic_Ordinal.\<omega>_exp"
 
 primrec ordinal_of_hmset :: "hmultiset \<Rightarrow> ordinal" where

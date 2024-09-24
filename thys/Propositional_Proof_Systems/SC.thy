@@ -5,10 +5,10 @@ theory SC
 imports Formulas "HOL-Library.Multiset"
 begin
 
-abbreviation msins ("_, _" [56,56] 56) where "x,M == add_mset x M"  
+abbreviation msins (\<open>_, _\<close> [56,56] 56) where "x,M == add_mset x M"  
 
 text\<open>We do not formalize the concept of sequents, only that of sequent calculus derivations.\<close>
-inductive SCp :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" ("(_ \<Rightarrow>/ _)" [53] 53) where
+inductive SCp :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> bool" (\<open>(_ \<Rightarrow>/ _)\<close> [53] 53) where
 BotL: "\<bottom> \<in># \<Gamma> \<Longrightarrow> \<Gamma>\<Rightarrow>\<Delta>" |
 Ax: "Atom k \<in># \<Gamma> \<Longrightarrow> Atom k \<in># \<Delta> \<Longrightarrow> \<Gamma>\<Rightarrow>\<Delta>" |
 NotL: "\<Gamma> \<Rightarrow> F,\<Delta> \<Longrightarrow> Not F, \<Gamma> \<Rightarrow> \<Delta>" |

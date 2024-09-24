@@ -1790,7 +1790,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-definition prod_of_aforms (infixr "\<times>\<^sub>a" 80)
+definition prod_of_aforms (infixr \<open>\<times>\<^sub>a\<close> 80)
   where "prod_of_aforms x y = ((fst x, fst y), prod_of_pdevs (snd x) (snd y))"
 
 

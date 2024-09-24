@@ -154,7 +154,7 @@ attribute_setup bounded_sesquilinear =
 
 subsection \<open>Type of complex bounded linear functions\<close>
 
-typedef\<^marker>\<open>tag important\<close> (overloaded) ('a, 'b) cblinfun ("(_ \<Rightarrow>\<^sub>C\<^sub>L /_)" [22, 21] 21) =
+typedef\<^marker>\<open>tag important\<close> (overloaded) ('a, 'b) cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21) =
   "{f::'a::complex_normed_vector\<Rightarrow>'b::complex_normed_vector. bounded_clinear f}"
   morphisms cblinfun_apply CBlinfun
   by (blast intro: bounded_linear_intros)
@@ -747,7 +747,7 @@ lemma norm_cblinfun_id_le:
 lift_definition cblinfun_compose::
   "'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector \<Rightarrow>
     'c::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'a \<Rightarrow>
-    'c \<Rightarrow>\<^sub>C\<^sub>L 'b" (infixl "o\<^sub>C\<^sub>L" 67) is "(o)"
+    'c \<Rightarrow>\<^sub>C\<^sub>L 'b" (infixl \<open>o\<^sub>C\<^sub>L\<close> 67) is "(o)"
   (* Difference from Real_Vector_Spaces: Priority of o\<^sub>C\<^sub>L is 55 there.
      But we want "a - b o\<^sub>C\<^sub>L c" to parse as "a - (b o\<^sub>C\<^sub>L c)". *)
   parametric comp_transfer

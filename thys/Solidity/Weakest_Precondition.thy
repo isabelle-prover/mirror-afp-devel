@@ -61,7 +61,7 @@ subsection \<open>Hoare Triples\<close>
 type_synonym State_Predicate = "Accounts \<times> Stack \<times> MemoryT \<times> (Address \<Rightarrow> StorageT) \<Rightarrow> bool"
 
 definition validS :: "State_Predicate \<Rightarrow> (unit, Ex ,State) state_monad \<Rightarrow> State_Predicate \<Rightarrow> (Ex \<Rightarrow> bool) \<Rightarrow> bool" 
-  ("\<lbrace>_\<rbrace>\<^sub>S/ _ /(\<lbrace>_\<rbrace>\<^sub>S,/ \<lbrace>_\<rbrace>\<^sub>S)")
+  (\<open>\<lbrace>_\<rbrace>\<^sub>S/ _ /(\<lbrace>_\<rbrace>\<^sub>S,/ \<lbrace>_\<rbrace>\<^sub>S)\<close>)
 where
   "\<lbrace>P\<rbrace>\<^sub>S f \<lbrace>Q\<rbrace>\<^sub>S,\<lbrace>E\<rbrace>\<^sub>S \<equiv>
      \<forall>st. P (accounts st, stack st, memory st, storage st)

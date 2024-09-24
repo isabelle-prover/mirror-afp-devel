@@ -12,8 +12,8 @@ setup_lifting type_definition_blinop
 lift_definition blinop_apply::"('a::real_normed_vector) blinop \<Rightarrow> 'a \<Rightarrow> 'a" is blinfun_apply .
 lift_definition Blinop::"('a::real_normed_vector \<Rightarrow> 'a) \<Rightarrow> 'a blinop" is Blinfun .
 
-no_notation vec_nth (infixl "$" 90)
-notation blinop_apply (infixl "$" 999)
+no_notation vec_nth (infixl \<open>$\<close> 90)
+notation blinop_apply (infixl \<open>$\<close> 999)
 declare [[coercion "blinop_apply :: ('a::real_normed_vector) blinop \<Rightarrow> 'a \<Rightarrow> 'a"]]
 
 instantiation blinop :: (real_normed_vector) real_normed_vector
@@ -117,7 +117,7 @@ lemmas bounded_bilinear_bounded_uniform_limit_intros[uniform_limit_intros] =
   bounded_linear.uniform_limit[OF bounded_linear_apply_blinop]
 
 no_notation
-  blinop_apply (infixl "$" 999)
-notation vec_nth (infixl "$" 90)
+  blinop_apply (infixl \<open>$\<close> 999)
+notation vec_nth (infixl \<open>$\<close> 90)
 
 end

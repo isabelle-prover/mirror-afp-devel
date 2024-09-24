@@ -37,9 +37,9 @@ begin
 context 
 begin
 
-notation U ("U[_]")
-notation Pref ("Pr[_]")
-notation \<E> ("\<E>[_]")
+notation U (\<open>U[_]\<close>)
+notation Pref (\<open>Pr[_]\<close>)
+notation \<E> (\<open>\<E>[_]\<close>)
 
 lemma base_pref_is_ord_eucl_rpr: "i \<in> agents \<Longrightarrow> rational_preference consumption_set Pr[i]"
   by (meson exchange_economy.agent_props exchange_economy_axioms

@@ -48,28 +48,28 @@ abbreviation (input) "subt_pred s t \<equiv> supt_pred t s"
 abbreviation (input) "subteq_pred s t \<equiv> supteq_pred t s"
 
 notation
-  supt ("{\<rhd>}") and
-  supt_pred ("(_/ \<rhd> _)" [56, 56] 55) and
-  subt_pred (infix "\<lhd>" 55) and
-  supteq ("{\<unrhd>}") and
-  supteq_pred ("(_/ \<unrhd> _)" [56, 56] 55) and
-  subteq_pred (infix "\<unlhd>" 55)
+  supt (\<open>{\<rhd>}\<close>) and
+  supt_pred (\<open>(_/ \<rhd> _)\<close> [56, 56] 55) and
+  subt_pred (infix \<open>\<lhd>\<close> 55) and
+  supteq (\<open>{\<unrhd>}\<close>) and
+  supteq_pred (\<open>(_/ \<unrhd> _)\<close> [56, 56] 55) and
+  subteq_pred (infix \<open>\<unlhd>\<close> 55)
 
-abbreviation subt ("{\<lhd>}") where "{\<lhd>} \<equiv> {\<rhd>}\<inverse>"
-abbreviation subteq ("{\<unlhd>}") where "{\<unlhd>} \<equiv> {\<unrhd>}\<inverse>"
+abbreviation subt (\<open>{\<lhd>}\<close>) where "{\<lhd>} \<equiv> {\<rhd>}\<inverse>"
+abbreviation subteq (\<open>{\<unlhd>}\<close>) where "{\<unlhd>} \<equiv> {\<unrhd>}\<inverse>"
 
 text \<open>Quantifier syntax.\<close>
 
 syntax
-  "_All_supteq" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<forall>_\<unrhd>_./ _)" [0, 0, 10] 10)
-  "_Ex_supteq" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<exists>_\<unrhd>_./ _)" [0, 0, 10] 10)
-  "_All_supt" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<forall>_\<rhd>_./ _)" [0, 0, 10] 10)
-  "_Ex_supt" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<exists>_\<rhd>_./ _)" [0, 0, 10] 10)
+  "_All_supteq" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<forall>_\<unrhd>_./ _)\<close> [0, 0, 10] 10)
+  "_Ex_supteq" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<exists>_\<unrhd>_./ _)\<close> [0, 0, 10] 10)
+  "_All_supt" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<forall>_\<rhd>_./ _)\<close> [0, 0, 10] 10)
+  "_Ex_supt" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<exists>_\<rhd>_./ _)\<close> [0, 0, 10] 10)
 
-"_All_subteq" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<forall>_\<unlhd>_./ _)" [0, 0, 10] 10)
-"_Ex_subteq" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<exists>_\<unlhd>_./ _)" [0, 0, 10] 10)
-"_All_subt" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<forall>_\<lhd>_./ _)" [0, 0, 10] 10)
-"_Ex_subt" :: "[idt, 'a, bool] \<Rightarrow> bool" ("(3\<exists>_\<lhd>_./ _)" [0, 0, 10] 10)
+"_All_subteq" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<forall>_\<unlhd>_./ _)\<close> [0, 0, 10] 10)
+"_Ex_subteq" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<exists>_\<unlhd>_./ _)\<close> [0, 0, 10] 10)
+"_All_subt" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<forall>_\<lhd>_./ _)\<close> [0, 0, 10] 10)
+"_Ex_subt" :: "[idt, 'a, bool] \<Rightarrow> bool" (\<open>(3\<exists>_\<lhd>_./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_All_supteq" "_All_supt" "_All_subteq" "_All_subt" \<rightleftharpoons> All and
@@ -367,12 +367,13 @@ lemma subterm_induct:
 
 subsection \<open>Contexts\<close>
 
-text \<open>An \<^emph>\<open>abstract context\<close> is ... \<close>
+text \<open>A \<^emph>\<open>context\<close> is a term containing exactly one \<^emph>\<open>hole\<close>.\<close>
+
+text \<open>We generalize contexts to \<^emph>\<open>abstract contexts\<close> so
+that arguments can be arbitrary elements.\<close>
 
 datatype ('f,'a) actxt =
-  Hole ("\<box>") | More 'f "'a list" "('f,'a) actxt" "'a list"
-
-text \<open>A \<^emph>\<open>context\<close> is a term containing exactly one \<^emph>\<open>hole\<close>.\<close>
+  Hole (\<open>\<box>\<close>) | More 'f "'a list" "('f,'a) actxt" "'a list"
 
 type_synonym ('f,'v) ctxt = "('f,('f,'v) term) actxt"
 
@@ -404,10 +405,10 @@ text \<open>
   replace the hole in a @{term C} by @{term t}.
 \<close>
 
-abbreviation ctxt_apply_term ("_\<langle>_\<rangle>" [1000, 0] 1000) where
+abbreviation ctxt_apply_term (\<open>_\<langle>_\<rangle>\<close> [1000, 0] 1000) where
   "C\<langle>s\<rangle> \<equiv> Fun\<langle>C;s\<rangle>"
 
-primrec actxt_compose (infixl "\<circ>\<^sub>c" 75) where
+primrec actxt_compose (infixl \<open>\<circ>\<^sub>c\<close> 75) where
   "Hole \<circ>\<^sub>c D = D"
 | "More f ls C rs \<circ>\<^sub>c D = More f ls (C \<circ>\<^sub>c D) rs"
 
@@ -417,7 +418,7 @@ lemma intp_actxt_compose: "I\<langle>C \<circ>\<^sub>c D;a\<rangle> = I\<langle>
 thm intp_actxt_compose[of Fun]
 abbreviation "map_args_actxt \<equiv> map_actxt (\<lambda>x. x)"
 
-abbreviation eval_ctxt ("(1_\<lbrakk>_\<rbrakk>\<^sub>c/ _)"[999,1,100]100) where
+abbreviation eval_ctxt (\<open>(1_\<lbrakk>_\<rbrakk>\<^sub>c/ _)\<close>[999,1,100]100) where
   "I\<lbrakk>C\<rbrakk>\<^sub>c \<alpha> \<equiv> map_args_actxt (\<lambda>t. I\<lbrakk>t\<rbrakk>\<alpha>) C"
 
 lemma eval_ctxt_simps:
@@ -430,7 +431,7 @@ lemma eval_ctxt: "I\<lbrakk>C\<langle>s\<rangle>\<rbrakk>\<alpha> = I\<langle>I\
 
 text \<open>Applying substitutions to contexts.\<close>
 
-abbreviation subst_apply_actxt (infixl "\<cdot>\<^sub>c" 67) where
+abbreviation subst_apply_actxt (infixl \<open>\<cdot>\<^sub>c\<close> 67) where
   "C \<cdot>\<^sub>c \<theta> \<equiv> map_args_actxt (\<lambda>t. t \<cdot> \<theta>) C"
 
 lemma apply_ctxt_Var[simp]: "C \<cdot>\<^sub>c Var = C"

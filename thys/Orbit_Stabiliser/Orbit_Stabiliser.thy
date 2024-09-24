@@ -39,7 +39,7 @@ text \<open>
 \<close>
 
 locale orbit_stabiliser = group +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infixl "\<odot>" 51)
+  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infixl \<open>\<odot>\<close> 51)
   assumes id_act [simp]: "\<one> \<odot> x = x"
     and compat_act:
     "g \<in> carrier G \<and> h \<in> carrier G \<longrightarrow> g \<odot> (h \<odot> x) = (g \<otimes> h) \<odot> x"

@@ -14,7 +14,7 @@ begin
 text \<open>All categories considered in this component are single-set categories.\<close>
 
 class connection_ops = 
-  fixes connection :: "nat \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Gamma>")
+  fixes connection :: "nat \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<Gamma>\<close>)
 
 abbreviation (in connection_ops) "\<Gamma>\<Gamma> i \<alpha> \<equiv> image (\<Gamma> i \<alpha>)"
 

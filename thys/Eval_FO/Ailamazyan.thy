@@ -53,12 +53,12 @@ lemma card_SP_d: "card (SP \<phi>) \<le> d \<phi>"
   using dual_order.trans
   by (induction \<phi> rule: SP.induct) (fastforce simp: card_Diff1_le finite_SP)+
 
-fun eval_eterm :: "('a + 'c) val \<Rightarrow> 'a fo_term \<Rightarrow> 'a + 'c" (infix "\<cdot>e" 60) where
+fun eval_eterm :: "('a + 'c) val \<Rightarrow> 'a fo_term \<Rightarrow> 'a + 'c" (infix \<open>\<cdot>e\<close> 60) where
   "eval_eterm \<sigma> (Const c) = Inl c"
 | "eval_eterm \<sigma> (Var n) = \<sigma> n"
 
 definition eval_eterms :: "('a + 'c) val \<Rightarrow> ('a fo_term) list \<Rightarrow>
-  ('a + 'c) list" (infix "\<odot>e" 60) where
+  ('a + 'c) list" (infix \<open>\<odot>e\<close> 60) where
   "eval_eterms \<sigma> ts = map (eval_eterm \<sigma>) ts"
 
 lemma eval_eterm_cong: "(\<And>n. n \<in> fv_fo_term_set t \<Longrightarrow> \<sigma> n = \<sigma>' n) \<Longrightarrow>

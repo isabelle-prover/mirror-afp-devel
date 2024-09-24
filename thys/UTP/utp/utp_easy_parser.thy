@@ -17,20 +17,20 @@ text \<open> The following theory provides an easy to use expression parser that
 \<close>
 
 purge_syntax
-  "_uexp_l"  :: "logic \<Rightarrow> uexp" ("_" [64] 64)
+  "_uexp_l"  :: "logic \<Rightarrow> uexp" (\<open>_\<close> [64] 64)
 
 subsection \<open> Expression Operators \<close>
 
 syntax
-  "_ue_quote" :: "uexp \<Rightarrow> logic" ("'(_')\<^sub>e")
-  "_ue_tuple" :: "uexprs \<Rightarrow> uexp" ("'(_')")
-  "_ue_lit"   :: "logic \<Rightarrow> uexp" ("\<guillemotleft>_\<guillemotright>")
-  "_ue_var"   :: "svid \<Rightarrow> uexp" ("_")
-  "_ue_eq"    :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix "=" 150)
-  "_ue_uop"   :: "id   \<Rightarrow> uexp \<Rightarrow> uexp" ("_'(_')" [999,0] 999)
-  "_ue_bop"   :: "id   \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("_'(_, _')" [999,0,0] 999)
-  "_ue_trop"  :: "id   \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("_'(_, _, _')" [999,0,0,0] 999)
-  "_ue_apply" :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("_[_]" [999] 999)
+  "_ue_quote" :: "uexp \<Rightarrow> logic" (\<open>'(_')\<^sub>e\<close>)
+  "_ue_tuple" :: "uexprs \<Rightarrow> uexp" (\<open>'(_')\<close>)
+  "_ue_lit"   :: "logic \<Rightarrow> uexp" (\<open>\<guillemotleft>_\<guillemotright>\<close>)
+  "_ue_var"   :: "svid \<Rightarrow> uexp" (\<open>_\<close>)
+  "_ue_eq"    :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open>=\<close> 150)
+  "_ue_uop"   :: "id   \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>_'(_')\<close> [999,0] 999)
+  "_ue_bop"   :: "id   \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>_'(_, _')\<close> [999,0,0] 999)
+  "_ue_trop"  :: "id   \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>_'(_, _, _')\<close> [999,0,0,0] 999)
+  "_ue_apply" :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>_[_]\<close> [999] 999)
 
 translations
   "_ue_quote e" => "e"
@@ -48,15 +48,15 @@ translations
 subsection \<open> Predicate Operators \<close>
 
 syntax
-  "_ue_true"  :: "uexp" ("true")
-  "_ue_false" :: "uexp" ("false")
-  "_ue_not"   :: "uexp \<Rightarrow> uexp" ("\<not> _" [40] 40)
-  "_ue_conj"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr "\<and>" 135)
-  "_ue_disj"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr "\<or>" 130)
-  "_ue_impl"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr "\<Rightarrow>" 125)
-  "_ue_iff"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr "\<Rightarrow>" 125)
-  "_ue_mem"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("(_/ \<in> _)" [151, 151] 150)
-  "_ue_nmem"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("(_/ \<notin> _)" [151, 151] 150)
+  "_ue_true"  :: "uexp" (\<open>true\<close>)
+  "_ue_false" :: "uexp" (\<open>false\<close>)
+  "_ue_not"   :: "uexp \<Rightarrow> uexp" (\<open>\<not> _\<close> [40] 40)
+  "_ue_conj"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr \<open>\<and>\<close> 135)
+  "_ue_disj"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr \<open>\<or>\<close> 130)
+  "_ue_impl"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr \<open>\<Rightarrow>\<close> 125)
+  "_ue_iff"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr \<open>\<Rightarrow>\<close> 125)
+  "_ue_mem"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>(_/ \<in> _)\<close> [151, 151] 150)
+  "_ue_nmem"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>(_/ \<notin> _)\<close> [151, 151] 150)
 
 translations
   "_ue_true" => "CONST true_upred"
@@ -72,20 +72,20 @@ translations
 subsection \<open> Arithmetic Operators \<close>
 
 syntax
-  "_ue_num"    :: "num_const \<Rightarrow> uexp" ("_")
-  "_ue_size"   :: "uexp \<Rightarrow> uexp" ("#_" [999] 999)
-  "_ue_eq"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix "=" 150)
-  "_ue_le"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix "\<le>" 150)
-  "_ue_lt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix "<" 150)
-  "_ue_ge"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix "\<ge>" 150)
-  "_ue_gt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix ">" 150)
-  "_ue_zero"   :: "uexp" ("0")
-  "_ue_one"    :: "uexp" ("1")
-  "_ue_plus"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl "+" 165)
-  "_ue_uminus" :: "uexp \<Rightarrow> uexp" ("- _" [181] 180)
-  "_ue_minus"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl "-" 165)
-  "_ue_times"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl "*" 170)
-  "_ue_div"    :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl "div" 170)
+  "_ue_num"    :: "num_const \<Rightarrow> uexp" (\<open>_\<close>)
+  "_ue_size"   :: "uexp \<Rightarrow> uexp" (\<open>#_\<close> [999] 999)
+  "_ue_eq"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open>=\<close> 150)
+  "_ue_le"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open>\<le>\<close> 150)
+  "_ue_lt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open><\<close> 150)
+  "_ue_ge"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open>\<ge>\<close> 150)
+  "_ue_gt"     :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open>>\<close> 150)
+  "_ue_zero"   :: "uexp" (\<open>0\<close>)
+  "_ue_one"    :: "uexp" (\<open>1\<close>)
+  "_ue_plus"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl \<open>+\<close> 165)
+  "_ue_uminus" :: "uexp \<Rightarrow> uexp" (\<open>- _\<close> [181] 180)
+  "_ue_minus"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl \<open>-\<close> 165)
+  "_ue_times"  :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl \<open>*\<close> 170)
+  "_ue_div"    :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixl \<open>div\<close> 170)
 
 translations
   "_ue_num x"    => "_Numeral x"
@@ -105,10 +105,10 @@ translations
 subsection \<open> Sets \<close>
 
 syntax
-  "_ue_empset"          :: "uexp" ("{}")
-  "_ue_setprod"         :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr "\<times>" 80)
-  "_ue_atLeastAtMost"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("(1{_.._})")
-  "_ue_atLeastLessThan" :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" ("(1{_..<_})")
+  "_ue_empset"          :: "uexp" (\<open>{}\<close>)
+  "_ue_setprod"         :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (infixr \<open>\<times>\<close> 80)
+  "_ue_atLeastAtMost"   :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>(1{_.._})\<close>)
+  "_ue_atLeastLessThan" :: "uexp \<Rightarrow> uexp \<Rightarrow> uexp" (\<open>(1{_..<_})\<close>)
 
 translations
   "_ue_empset" => "{}\<^sub>u"
@@ -119,9 +119,9 @@ translations
 subsection \<open> Imperative Program Syntax \<close>
 
 syntax
-  "_ue_if_then"    :: "uexp \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("if _ then _ else _ fi")
-  "_ue_hoare"      :: "uexp \<Rightarrow> logic \<Rightarrow> uexp \<Rightarrow> logic" ("{{_}} / _ / {{_}}")
-  "_ue_wp"         :: "logic \<Rightarrow> uexp \<Rightarrow> uexp" (infix "wp" 60)
+  "_ue_if_then"    :: "uexp \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>if _ then _ else _ fi\<close>)
+  "_ue_hoare"      :: "uexp \<Rightarrow> logic \<Rightarrow> uexp \<Rightarrow> logic" (\<open>{{_}} / _ / {{_}}\<close>)
+  "_ue_wp"         :: "logic \<Rightarrow> uexp \<Rightarrow> uexp" (infix \<open>wp\<close> 60)
 
 translations
   "_ue_if_then b P Q" => "P \<triangleleft> b \<triangleright>\<^sub>r Q"

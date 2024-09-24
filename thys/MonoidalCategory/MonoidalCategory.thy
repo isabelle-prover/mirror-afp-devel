@@ -73,7 +73,7 @@ begin
     \<alpha>: natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha> +
     L: equivalence_functor C C "\<lambda>f. T (cod \<iota>, f)" +
     R: equivalence_functor C C "\<lambda>f. T (f, cod \<iota>)"
-  for C :: "'a comp"       (infixr "\<cdot>" 55)
+  for C :: "'a comp"       (infixr \<open>\<cdot>\<close> 55)
   and T :: "'a * 'a \<Rightarrow> 'a"
   and \<alpha> :: "'a * 'a * 'a \<Rightarrow> 'a"
   and \<iota> :: 'a +
@@ -92,7 +92,7 @@ begin
       to be a binary functor requires that it take a pair as its argument.
 \<close>
 
-    abbreviation unity :: 'a ("\<I>")
+    abbreviation unity :: 'a (\<open>\<I>\<close>)
     where "unity \<equiv> cod \<iota>"
 
     abbreviation L :: "'a \<Rightarrow> 'a"
@@ -101,10 +101,10 @@ begin
     abbreviation R :: "'a \<Rightarrow> 'a"
     where "R f \<equiv> T (f, \<I>)"
 
-    abbreviation tensor      (infixr "\<otimes>" 53)
+    abbreviation tensor      (infixr \<open>\<otimes>\<close> 53)
     where "f \<otimes> g \<equiv> T (f, g)"
 
-    abbreviation assoc       ("\<a>[_, _, _]")
+    abbreviation assoc       (\<open>\<a>[_, _, _]\<close>)
     where "\<a>[a, b, c] \<equiv> \<alpha> (a, b, c)"
 
     text\<open>
@@ -114,10 +114,10 @@ begin
       unitors when applied to identities; that is, their components as natural transformations.
 \<close>
 
-    definition lunit ("\<l>[_]")
+    definition lunit (\<open>\<l>[_]\<close>)
     where "lunit a \<equiv> THE f. \<guillemotleft>f : \<I> \<otimes> a \<rightarrow> a\<guillemotright> \<and> \<I> \<otimes> f = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
 
-    definition runit ("\<r>[_]")
+    definition runit (\<open>\<r>[_]\<close>)
     where "runit a \<equiv> THE f. \<guillemotleft>f : a \<otimes> \<I> \<rightarrow> a\<guillemotright> \<and> f \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"
 
     text\<open>
@@ -503,7 +503,7 @@ begin
     abbreviation \<alpha>'
     where "\<alpha>' \<equiv> \<alpha>'.map"
 
-    abbreviation assoc' ("\<a>\<^sup>-\<^sup>1[_, _, _]")
+    abbreviation assoc' (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
     where "\<a>\<^sup>-\<^sup>1[a, b, c] \<equiv> inv \<a>[a, b, c]"
 
     lemma \<alpha>'_ide_simp:
@@ -556,7 +556,7 @@ begin
     abbreviation \<ll>'
     where "\<ll>' \<equiv> \<ll>'.map"
 
-    abbreviation lunit'                ("\<l>\<^sup>-\<^sup>1[_]")
+    abbreviation lunit'                (\<open>\<l>\<^sup>-\<^sup>1[_]\<close>)
     where "\<l>\<^sup>-\<^sup>1[a] \<equiv> inv \<l>[a]"
 
     lemma \<ll>'_ide_simp:
@@ -593,7 +593,7 @@ begin
     abbreviation \<rho>'
     where "\<rho>' \<equiv> \<rho>'.map"
 
-    abbreviation runit' ("\<r>\<^sup>-\<^sup>1[_]")
+    abbreviation runit' (\<open>\<r>\<^sup>-\<^sup>1[_]\<close>)
     where "\<r>\<^sup>-\<^sup>1[a] \<equiv> inv \<r>[a]"
 
     lemma \<rho>'_ide_simp:
@@ -999,26 +999,26 @@ $$\xymatrix{
   locale monoidal_category_with_alternate_unit =
     monoidal_category C T \<alpha> \<iota> +
     C\<^sub>1: monoidal_category C T \<alpha> \<iota>\<^sub>1
-  for C :: "'a comp"      (infixr "\<cdot>" 55)
+  for C :: "'a comp"      (infixr \<open>\<cdot>\<close> 55)
   and T :: "'a * 'a \<Rightarrow> 'a"
   and \<alpha> :: "'a * 'a * 'a \<Rightarrow> 'a"
   and \<iota> :: 'a
   and \<iota>\<^sub>1 :: 'a
   begin
 
-    no_notation C\<^sub>1.tensor (infixr "\<otimes>" 53)
-    no_notation C\<^sub>1.unity  ("\<I>")
-    no_notation C\<^sub>1.lunit  ("\<l>[_]")
-    no_notation C\<^sub>1.runit  ("\<r>[_]")
-    no_notation C\<^sub>1.assoc  ("\<a>[_, _, _]")
-    no_notation C\<^sub>1.assoc' ("\<a>\<^sup>-\<^sup>1[_, _, _]")
+    no_notation C\<^sub>1.tensor (infixr \<open>\<otimes>\<close> 53)
+    no_notation C\<^sub>1.unity  (\<open>\<I>\<close>)
+    no_notation C\<^sub>1.lunit  (\<open>\<l>[_]\<close>)
+    no_notation C\<^sub>1.runit  (\<open>\<r>[_]\<close>)
+    no_notation C\<^sub>1.assoc  (\<open>\<a>[_, _, _]\<close>)
+    no_notation C\<^sub>1.assoc' (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
 
-    notation C\<^sub>1.tensor    (infixr "\<otimes>\<^sub>1" 53)
-    notation C\<^sub>1.unity     ("\<I>\<^sub>1")
-    notation C\<^sub>1.lunit     ("\<l>\<^sub>1[_]")
-    notation C\<^sub>1.runit     ("\<r>\<^sub>1[_]")
-    notation C\<^sub>1.assoc     ("\<a>\<^sub>1[_, _, _]")
-    notation C\<^sub>1.assoc'    ("\<a>\<^sub>1\<^sup>-\<^sup>1[_, _, _]")
+    notation C\<^sub>1.tensor    (infixr \<open>\<otimes>\<^sub>1\<close> 53)
+    notation C\<^sub>1.unity     (\<open>\<I>\<^sub>1\<close>)
+    notation C\<^sub>1.lunit     (\<open>\<l>\<^sub>1[_]\<close>)
+    notation C\<^sub>1.runit     (\<open>\<r>\<^sub>1[_]\<close>)
+    notation C\<^sub>1.assoc     (\<open>\<a>\<^sub>1[_, _, _]\<close>)
+    notation C\<^sub>1.assoc'    (\<open>\<a>\<^sub>1\<^sup>-\<^sup>1[_, _, _]\<close>)
 
     definition i
     where "i \<equiv> \<l>[\<I>\<^sub>1] \<cdot> inv \<r>\<^sub>1[\<I>]"
@@ -1236,12 +1236,12 @@ $$\xymatrix{
 
   locale elementary_monoidal_category =
     category C
-  for C :: "'a comp"                  (infixr "\<cdot>" 55)
-  and tensor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"       (infixr "\<otimes>" 53)
-  and unity :: 'a                      ("\<I>")
-  and lunit :: "'a \<Rightarrow> 'a"              ("\<l>[_]")
-  and runit :: "'a \<Rightarrow> 'a"              ("\<r>[_]")
-  and assoc :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("\<a>[_, _, _]") +
+  for C :: "'a comp"                  (infixr \<open>\<cdot>\<close> 55)
+  and tensor :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"       (infixr \<open>\<otimes>\<close> 53)
+  and unity :: 'a                      (\<open>\<I>\<close>)
+  and lunit :: "'a \<Rightarrow> 'a"              (\<open>\<l>[_]\<close>)
+  and runit :: "'a \<Rightarrow> 'a"              (\<open>\<r>[_]\<close>)
+  and assoc :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>\<a>[_, _, _]\<close>) +
   assumes ide_unity [simp]: "ide \<I>"
   and iso_lunit: "ide a \<Longrightarrow> iso \<l>[a]"
   and iso_runit: "ide a \<Longrightarrow> iso \<r>[a]"
@@ -1624,7 +1624,7 @@ $$\xymatrix{
       
   locale opposite_monoidal_category =
     C: monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>
-  for C :: "'a comp"      (infixr "\<cdot>" 55)
+  for C :: "'a comp"      (infixr \<open>\<cdot>\<close> 55)
   and T\<^sub>C :: "'a * 'a \<Rightarrow> 'a"
   and \<alpha>\<^sub>C :: "'a * 'a * 'a \<Rightarrow> 'a"
   and \<iota> :: 'a
@@ -1727,7 +1727,7 @@ $$\xymatrix{
     shows "monoidal_category comp T M.\<alpha>' (M.inv \<iota>)"
       ..
 
-    no_notation comp  (infixr "\<cdot>" 55)
+    no_notation comp  (infixr \<open>\<cdot>\<close> 55)
 
     lemma assoc_char:
     assumes "ide a" and "ide b" and "ide c"
@@ -1800,20 +1800,20 @@ $$\xymatrix{
 
   locale monoidal_language =
     C: category C
-    for C :: "'a comp"                     (infixr "\<cdot>" 55)
+    for C :: "'a comp"                     (infixr \<open>\<cdot>\<close> 55)
   begin
 
     datatype (discs_sels) 't "term" =
-      Prim 't                              ("\<^bold>\<langle>_\<^bold>\<rangle>")
-    | Unity                                ("\<^bold>\<I>")
-    | Tensor "'t term" "'t term"           (infixr "\<^bold>\<otimes>" 53)
-    | Comp "'t term" "'t term"             (infixr "\<^bold>\<cdot>" 55)
-    | Lunit "'t term"                      ("\<^bold>\<l>\<^bold>[_\<^bold>]")
-    | Lunit' "'t term"                     ("\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]")
-    | Runit "'t term"                      ("\<^bold>\<r>\<^bold>[_\<^bold>]")
-    | Runit' "'t term"                     ("\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]")
-    | Assoc "'t term" "'t term" "'t term"  ("\<^bold>\<a>\<^bold>[_, _, _\<^bold>]")
-    | Assoc' "'t term" "'t term" "'t term" ("\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[_, _, _\<^bold>]")
+      Prim 't                              (\<open>\<^bold>\<langle>_\<^bold>\<rangle>\<close>)
+    | Unity                                (\<open>\<^bold>\<I>\<close>)
+    | Tensor "'t term" "'t term"           (infixr \<open>\<^bold>\<otimes>\<close> 53)
+    | Comp "'t term" "'t term"             (infixr \<open>\<^bold>\<cdot>\<close> 55)
+    | Lunit "'t term"                      (\<open>\<^bold>\<l>\<^bold>[_\<^bold>]\<close>)
+    | Lunit' "'t term"                     (\<open>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]\<close>)
+    | Runit "'t term"                      (\<open>\<^bold>\<r>\<^bold>[_\<^bold>]\<close>)
+    | Runit' "'t term"                     (\<open>\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[_\<^bold>]\<close>)
+    | Assoc "'t term" "'t term" "'t term"  (\<open>\<^bold>\<a>\<^bold>[_, _, _\<^bold>]\<close>)
+    | Assoc' "'t term" "'t term" "'t term" (\<open>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[_, _, _\<^bold>]\<close>)
 
     lemma not_is_Tensor_Unity:
     shows "\<not> is_Tensor Unity"
@@ -2093,7 +2093,7 @@ $$\xymatrix{
       diagonal matrix.
 \<close>
 
-    fun TensorDiag      (infixr "\<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor>" 53)
+    fun TensorDiag      (infixr \<open>\<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor>\<close> 53)
     where "\<^bold>\<I> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u = u"
         | "t \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<I> = t"
         | "\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u = \<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<otimes> u"
@@ -2359,7 +2359,7 @@ $$\xymatrix{
       by ``pushing the composition down'' to arrows of \<open>C\<close>.
 \<close>
 
-    fun CompDiag :: "'a term \<Rightarrow> 'a term \<Rightarrow> 'a term"      (infixr "\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>" 55)
+    fun CompDiag :: "'a term \<Rightarrow> 'a term \<Rightarrow> 'a term"      (infixr \<open>\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>\<close> 55)
     where "\<^bold>\<I> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u = u"
         | "\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<langle>g\<^bold>\<rangle> = \<^bold>\<langle>f \<cdot> g\<^bold>\<rangle>"
         | "(u \<^bold>\<otimes> v) \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> (w \<^bold>\<otimes> x) = (u \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> w \<^bold>\<otimes> v \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> x)"
@@ -2782,7 +2782,7 @@ $$\xymatrix{
       The precise relationship between a term and its diagonalization is developed below.
 \<close>
 
-    fun Diagonalize :: "'a term \<Rightarrow> 'a term"   ("\<^bold>\<lfloor>_\<^bold>\<rfloor>")
+    fun Diagonalize :: "'a term \<Rightarrow> 'a term"   (\<open>\<^bold>\<lfloor>_\<^bold>\<rfloor>\<close>)
     where "\<^bold>\<lfloor>\<^bold>\<langle>f\<^bold>\<rangle>\<^bold>\<rfloor> = \<^bold>\<langle>f\<^bold>\<rangle>"
         | "\<^bold>\<lfloor>\<^bold>\<I>\<^bold>\<rfloor> = \<^bold>\<I>"
         | "\<^bold>\<lfloor>t \<^bold>\<otimes> u\<^bold>\<rfloor> = \<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>"
@@ -2994,7 +2994,7 @@ $$\xymatrix{
       from @{term a} to @{term "\<^bold>\<lfloor>a\<^bold>\<rfloor>"}.
 \<close>
 
-    fun red2                       (infixr "\<^bold>\<Down>" 53)
+    fun red2                       (infixr \<open>\<^bold>\<Down>\<close> 53)
     where "\<^bold>\<I> \<^bold>\<Down> a = \<^bold>\<l>\<^bold>[a\<^bold>]"
         | "\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<Down> \<^bold>\<I> = \<^bold>\<r>\<^bold>[\<^bold>\<langle>f\<^bold>\<rangle>\<^bold>]"
         | "\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<Down> a = \<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<otimes> a"
@@ -3002,7 +3002,7 @@ $$\xymatrix{
         | "(a \<^bold>\<otimes> b) \<^bold>\<Down> c = (a \<^bold>\<Down> \<^bold>\<lfloor>b \<^bold>\<otimes> c\<^bold>\<rfloor>) \<^bold>\<cdot> (a \<^bold>\<otimes> (b \<^bold>\<Down> c)) \<^bold>\<cdot> \<^bold>\<a>\<^bold>[a, b, c\<^bold>]"
         | "a \<^bold>\<Down> b = undefined"
 
-    fun red                         ("_\<^bold>\<down>" [56] 56)
+    fun red                         (\<open>_\<^bold>\<down>\<close> [56] 56)
     where "\<^bold>\<I>\<^bold>\<down> = \<^bold>\<I>"
         | "\<^bold>\<langle>f\<^bold>\<rangle>\<^bold>\<down> = \<^bold>\<langle>f\<^bold>\<rangle>"
         | "(a \<^bold>\<otimes> b)\<^bold>\<down> = (if Diag (a \<^bold>\<otimes> b) then a \<^bold>\<otimes> b else (\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>) \<^bold>\<cdot> (a\<^bold>\<down> \<^bold>\<otimes> b\<^bold>\<down>))"
@@ -3201,24 +3201,24 @@ $$\xymatrix{
     monoidal_language C +
     monoidal_category D T \<alpha> \<iota> +
     V: "functor" C D V
-  for C :: "'c comp"                  (infixr "\<cdot>\<^sub>C" 55)
-  and D :: "'d comp"                  (infixr "\<cdot>" 55)
+  for C :: "'c comp"                  (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+  and D :: "'d comp"                  (infixr \<open>\<cdot>\<close> 55)
   and T :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha> :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota> :: 'd
   and V :: "'c \<Rightarrow> 'd"
   begin
 
-    no_notation C.in_hom               ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    no_notation C.in_hom               (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
-    notation unity                     ("\<I>")
-    notation runit                     ("\<r>[_]")
-    notation lunit                     ("\<l>[_]")
-    notation assoc'                    ("\<a>\<^sup>-\<^sup>1[_, _, _]")
-    notation runit'                    ("\<r>\<^sup>-\<^sup>1[_]")
-    notation lunit'                    ("\<l>\<^sup>-\<^sup>1[_]")
+    notation unity                     (\<open>\<I>\<close>)
+    notation runit                     (\<open>\<r>[_]\<close>)
+    notation lunit                     (\<open>\<l>[_]\<close>)
+    notation assoc'                    (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
+    notation runit'                    (\<open>\<r>\<^sup>-\<^sup>1[_]\<close>)
+    notation lunit'                    (\<open>\<l>\<^sup>-\<^sup>1[_]\<close>)
 
-    primrec eval :: "'c term \<Rightarrow> 'd"    ("\<lbrace>_\<rbrace>")
+    primrec eval :: "'c term \<Rightarrow> 'd"    (\<open>\<lbrace>_\<rbrace>\<close>)
     where "\<lbrace>\<^bold>\<langle>f\<^bold>\<rangle>\<rbrace> = V f"
         | "\<lbrace>\<^bold>\<I>\<rbrace> = \<I>"
         | "\<lbrace>t \<^bold>\<otimes> u\<rbrace> = \<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>"

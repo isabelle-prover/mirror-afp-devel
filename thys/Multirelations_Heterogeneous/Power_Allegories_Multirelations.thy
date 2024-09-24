@@ -20,7 +20,7 @@ lemma alpha_pid [simp]: "\<alpha> p_id = {}"
 
 subsection \<open>Peleg lifting\<close>
 
-definition plift :: "('a,'b) mrel \<Rightarrow> ('a set,'b set) rel" ("_\<^sub>*" [1000] 999) where
+definition plift :: "('a,'b) mrel \<Rightarrow> ('a set,'b set) rel" (\<open>_\<^sub>*\<close> [1000] 999) where
   "R\<^sub>* = {(A,B). \<exists>f. (\<forall>a \<in> A. (a,f(a)) \<in> R) \<and> B = \<Union>(f ` A)}"
 
 lemma pcomp_plift: "R \<cdot> S = R ; S\<^sub>*"

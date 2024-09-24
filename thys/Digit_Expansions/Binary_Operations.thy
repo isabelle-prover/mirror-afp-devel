@@ -6,7 +6,7 @@ section \<open>Digit-wise Operations\<close>
 
 subsection \<open>Binary AND\<close>
 
-fun bitAND_nat :: "nat \<Rightarrow> nat \<Rightarrow> nat" (infix "&&" 64) where
+fun bitAND_nat :: "nat \<Rightarrow> nat \<Rightarrow> nat" (infix \<open>&&\<close> 64) where
   "0 && _ = 0" |
   "m && n = 2 * ((m div 2) && (n div 2)) + (m mod 2) * (n mod 2)"
 
@@ -127,7 +127,7 @@ text \<open>cf. \<^cite>\<open>h10lecturenotes\<close> section 2.6.1 on "Binary 
 text \<open>The following definition differs slightly from the one in the paper. However, we later prove the 
      equivalence of the two definitions.\<close>
 
-fun orthogonal :: "nat => nat => bool" (infix "\<bottom>" 49) where
+fun orthogonal :: "nat => nat => bool" (infix \<open>\<bottom>\<close> 49) where
   "(orthogonal a b) = (a && b = 0)"
 
 lemma ortho_mult_equiv: "a \<bottom> b \<longleftrightarrow> (\<forall>k. (nth_bit a k) * (nth_bit b k) = 0)" (is "?P \<longleftrightarrow> ?Q")
@@ -281,7 +281,7 @@ lemma bitwise_leq: "(\<forall>k. a \<exclamdown> k \<le>  b \<exclamdown> k) \<l
 text \<open>cf. \<^cite>\<open>h10lecturenotes\<close> section 2.6.2 on "Binary Masking"\<close>
 text \<open>Again, the equivalence to the definition there will be proved in a later lemma.\<close>
 
-fun masks :: "nat => nat => bool" (infix "\<preceq>" 49) where
+fun masks :: "nat => nat => bool" (infix \<open>\<preceq>\<close> 49) where
   "masks 0 _ = True" |
   "masks a b = ((a div 2 \<preceq> b div 2) \<and> (a mod 2 \<le> b mod 2))"
 

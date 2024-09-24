@@ -66,28 +66,28 @@ locale FWbisimulation_base =
   r1: multithreaded_base final1 r1 convert_RA +
   r2: multithreaded_base final2 r2 convert_RA 
   for final1 :: "'x1 \<Rightarrow> bool"
-  and r1 :: "('l,'t,'x1,'m1,'w,'o) semantics" ("_ \<turnstile> _ -1-_\<rightarrow> _" [50, 0, 0, 50] 80)
+  and r1 :: "('l,'t,'x1,'m1,'w,'o) semantics" (\<open>_ \<turnstile> _ -1-_\<rightarrow> _\<close> [50, 0, 0, 50] 80)
   and final2 :: "'x2 \<Rightarrow> bool"
-  and r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" ("_ \<turnstile> _ -2-_\<rightarrow> _" [50, 0, 0, 50] 80) 
+  and r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" (\<open>_ \<turnstile> _ -2-_\<rightarrow> _\<close> [50, 0, 0, 50] 80) 
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
   +
-  fixes bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" ("_ \<turnstile> _/ \<approx> _" [50, 50, 50] 60)
-  and bisim_wait :: "('x1, 'x2) bisim" ("_/ \<approx>w _" [50, 50] 60)
+  fixes bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" (\<open>_ \<turnstile> _/ \<approx> _\<close> [50, 50, 50] 60)
+  and bisim_wait :: "('x1, 'x2) bisim" (\<open>_/ \<approx>w _\<close> [50, 50] 60)
 begin
 
-notation r1.redT_syntax1 ("_ -1-_\<triangleright>_\<rightarrow> _" [50,0,0,50] 80)
-notation r2.redT_syntax1 ("_ -2-_\<triangleright>_\<rightarrow> _" [50,0,0,50] 80)
+notation r1.redT_syntax1 (\<open>_ -1-_\<triangleright>_\<rightarrow> _\<close> [50,0,0,50] 80)
+notation r2.redT_syntax1 (\<open>_ -2-_\<triangleright>_\<rightarrow> _\<close> [50,0,0,50] 80)
 
-notation r1.RedT ("_ -1-\<triangleright>_\<rightarrow>* _" [50,0,50] 80)
-notation r2.RedT ("_ -2-\<triangleright>_\<rightarrow>* _" [50,0,50] 80)
+notation r1.RedT (\<open>_ -1-\<triangleright>_\<rightarrow>* _\<close> [50,0,50] 80)
+notation r2.RedT (\<open>_ -2-\<triangleright>_\<rightarrow>* _\<close> [50,0,50] 80)
 
-notation r1.must_sync ("_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>1" [50,0,0] 81)
-notation r2.must_sync ("_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>2" [50,0,0] 81)
+notation r1.must_sync (\<open>_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>1\<close> [50,0,0] 81)
+notation r2.must_sync (\<open>_ \<turnstile> \<langle>_,/ _\<rangle>/ \<wrong>2\<close> [50,0,0] 81)
 
-notation r1.can_sync  ("_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>1" [50,0,0,0] 81)
-notation r2.can_sync  ("_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>2" [50,0,0,0] 81)
+notation r1.can_sync  (\<open>_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>1\<close> [50,0,0,0] 81)
+notation r2.can_sync  (\<open>_ \<turnstile> \<langle>_,/ _\<rangle>/ _/ \<wrong>2\<close> [50,0,0,0] 81)
 
-abbreviation ta_bisim_bisim_syntax ("_/ \<sim>m _" [50, 50] 60)
+abbreviation ta_bisim_bisim_syntax (\<open>_/ \<sim>m _\<close> [50, 50] 60)
 where "ta1 \<sim>m ta2 \<equiv> ta_bisim bisim ta1 ta2"
 
 definition tbisim :: "bool \<Rightarrow> 't \<Rightarrow> ('x1 \<times> 'l released_locks) option \<Rightarrow> 'm1 \<Rightarrow> ('x2 \<times> 'l released_locks) option \<Rightarrow> 'm2 \<Rightarrow> bool" where
@@ -110,7 +110,7 @@ lemma tbisim_cases[consumes 1, case_names None Some]:
 using assms
 by(auto simp add: tbisim_def)
 
-definition mbisim :: "(('l,'t,'x1,'m1,'w) state, ('l,'t,'x2,'m2,'w) state) bisim" ("_ \<approx>m _" [50, 50] 60)
+definition mbisim :: "(('l,'t,'x1,'m1,'w) state, ('l,'t,'x2,'m2,'w) state) bisim" (\<open>_ \<approx>m _\<close> [50, 50] 60)
 where
   "s1 \<approx>m s2 \<equiv> 
   finite (dom (thr s1)) \<and> locks s1 = locks s2 \<and> wset s1 = wset s2 \<and> wset_thread_ok (wset s1) (thr s1) \<and>
@@ -190,7 +190,7 @@ by(frule mbisim_finite1)(simp add: mbisim_dom_eq)
 
 definition mta_bisim :: "('t \<times> ('l,'t,'x1,'m1,'w,'o) thread_action,
                        't \<times> ('l,'t,'x2,'m2,'w,'o) thread_action) bisim"
-  ("_/ \<sim>T _" [50, 50] 60)
+  (\<open>_/ \<sim>T _\<close> [50, 50] 60)
 where "tta1 \<sim>T tta2 \<equiv> fst tta1 = fst tta2 \<and> snd tta1 \<sim>m snd tta2"
 
 lemma mta_bisim_conv [simp]: "(t, ta1) \<sim>T (t', ta2) \<longleftrightarrow> t = t' \<and> ta1 \<sim>m ta2"
@@ -362,10 +362,10 @@ locale FWdelay_bisimulation_base =
   FWbisimulation_base _ _ _ r2 convert_RA bisim bisim_wait +
   r1: \<tau>multithreaded final1 r1 convert_RA \<tau>move1 +
   r2: \<tau>multithreaded final2 r2 convert_RA \<tau>move2 
-  for r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" ("_ \<turnstile> _ -2-_\<rightarrow> _" [50,0,0,50] 80)
+  for r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" (\<open>_ \<turnstile> _ -2-_\<rightarrow> _\<close> [50,0,0,50] 80)
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
-  and bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" ("_ \<turnstile> _/ \<approx> _" [50, 50, 50] 60)
-  and bisim_wait :: "('x1, 'x2) bisim" ("_/ \<approx>w _" [50, 50] 60)
+  and bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" (\<open>_ \<turnstile> _/ \<approx> _\<close> [50, 50, 50] 60)
+  and bisim_wait :: "('x1, 'x2) bisim" (\<open>_/ \<approx>w _\<close> [50, 50] 60)
   and \<tau>move1 :: "('l,'t,'x1,'m1,'w,'o) \<tau>moves"
   and \<tau>move2 :: "('l,'t,'x2,'m2,'w,'o) \<tau>moves"
 begin
@@ -1642,9 +1642,9 @@ subsection \<open>Strong bisimulation as corollary\<close>
 locale FWbisimulation = FWbisimulation_base _ _ _ r2 convert_RA bisim "\<lambda>x1 x2. True" +
   r1: multithreaded final1 r1 convert_RA +
   r2: multithreaded final2 r2 convert_RA
-  for r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" ("_ \<turnstile> _ -2-_\<rightarrow> _" [50,0,0,50] 80)
+  for r2 :: "('l,'t,'x2,'m2,'w,'o) semantics" (\<open>_ \<turnstile> _ -2-_\<rightarrow> _\<close> [50,0,0,50] 80)
   and convert_RA :: "'l released_locks \<Rightarrow> 'o list"
-  and bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" ("_ \<turnstile> _/ \<approx> _" [50, 50, 50] 60) +
+  and bisim :: "'t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim" (\<open>_ \<turnstile> _/ \<approx> _\<close> [50, 50, 50] 60) +
   assumes bisimulation_locale: "bisimulation (r1 t) (r2 t) (bisim t) (ta_bisim bisim)"
   and bisim_final: "t \<turnstile> (x1, m1) \<approx> (x2, m2) \<Longrightarrow> final1 x1 \<longleftrightarrow> final2 x2"
   and bisim_inv_red_other:
@@ -1719,7 +1719,7 @@ text \<open>
   The notation for mbisim is lost because @{term "bisim_wait"} is instantiated to @{term "\<lambda>x1 x2. True"}.
   This reintroduces the syntax, but it does not work for output mode. This would require a new abbreviation.
 \<close>
-notation mbisim ("_ \<approx>m _" [50, 50] 60)
+notation mbisim (\<open>_ \<approx>m _\<close> [50, 50] 60)
 
 theorem mbisim_bisimulation:
   "bisimulation r1.redT r2.redT mbisim mta_bisim"

@@ -12,7 +12,7 @@ It is a fairly straightforward adaptation of the analogous algorithm
 by Loos and Weispfenning for linear arithmetic described in
 \S\ref{sec:lin-inf}.\<close>
 
-fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub>+") where
+fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" (\<open>asubst\<^sub>+\<close>) where
 "asubst_peps k (Less 0 0) = FalseF" |
 "asubst_peps k (Less 0 (Suc j)) = Atom(Less k j)" |
 "asubst_peps k (Less (Suc i) 0) = (if i=k then TrueF
@@ -23,7 +23,7 @@ fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub
 "asubst_peps k (Eq _ 0) = FalseF" |
 "asubst_peps k (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" ("subst\<^sub>+") where
+abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" (\<open>subst\<^sub>+\<close>) where
 "subst\<^sub>+ \<phi> k \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>+ k) \<phi>"
 
 definition "nolb \<phi> xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB \<phi> xs)"

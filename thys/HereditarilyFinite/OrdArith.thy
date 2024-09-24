@@ -9,7 +9,7 @@ text \<open>Source: Laurence Kirby, Addition and multiplication of sets
       @{url "http://faculty.baruch.cuny.edu/lkirby/mlqarticlejan2007.pdf"}\<close>
 
 definition
-  hadd      :: "hf \<Rightarrow> hf \<Rightarrow> hf"           (infixl "@+" 65)  where
+  hadd      :: "hf \<Rightarrow> hf \<Rightarrow> hf"           (infixl \<open>@+\<close> 65)  where
     "hadd x \<equiv> hmemrec (\<lambda>f z. x \<squnion> RepFun z f)"
 
 lemma hadd: "x @+ y = x \<squnion> RepFun y (\<lambda>z. x @+ z)"

@@ -25,11 +25,11 @@ qed
 hide_const Phi E
 
 abbreviation rep_jvmprog_jvm_prog :: "wf_jvmprog \<Rightarrow> jvm_prog"
-("_\<^bsub>wf\<^esub>")
+(\<open>_\<^bsub>wf\<^esub>\<close>)
   where "P\<^bsub>wf\<^esub> \<equiv> fst(Rep_wf_jvmprog(P))"
 
 abbreviation rep_jvmprog_phi :: "wf_jvmprog \<Rightarrow> ty\<^sub>P"
-("_\<^bsub>\<Phi>\<^esub>")
+(\<open>_\<^bsub>\<Phi>\<^esub>\<close>)
   where "P\<^bsub>\<Phi>\<^esub> \<equiv> snd(Rep_wf_jvmprog(P))"
 
 lemma wf_jvmprog_is_wf: "wf_jvm_prog\<^bsub>P\<^bsub>\<Phi>\<^esub>\<^esub> (P\<^bsub>wf\<^esub>)"
@@ -267,7 +267,7 @@ subsubsection \<open>State Conformance\<close>
 text \<open>Now we lift byte code verifier conformance to our state representation\<close>
 
 definition bv_conform :: "wf_jvmprog \<Rightarrow> callstack \<Rightarrow> state \<Rightarrow> bool"
-  ("_,_ \<turnstile>\<^bsub>BV\<^esub> _ \<surd>")
+  (\<open>_,_ \<turnstile>\<^bsub>BV\<^esub> _ \<surd>\<close>)
 where "P,cs \<turnstile>\<^bsub>BV\<^esub> s \<surd> \<equiv> correct_state (P\<^bsub>wf\<^esub>) (P\<^bsub>\<Phi>\<^esub>) (state_to_jvm_state P cs s)"
 
 
@@ -477,12 +477,12 @@ where the target of the instruction is determined (the second callstack)
 and the flag is set to whether an exception is thrown or not.
 \<close>
 datatype j_node =
-   Entry  ("'('_Entry'_')")
- | Node "callstack" "(callstack \<times> bool) option" ("'('_ _,_ '_')")
+   Entry  (\<open>'('_Entry'_')\<close>)
+ | Node "callstack" "(callstack \<times> bool) option" (\<open>'('_ _,_ '_')\<close>)
 
 text \<open>The empty callstack indicates the exit node\<close>
 
-abbreviation j_node_Exit :: "j_node" ("'('_Exit'_')")
+abbreviation j_node_Exit :: "j_node" (\<open>'('_Exit'_')\<close>)
 where "j_node_Exit \<equiv> (_ [],None _)"
 
 text \<open>An edge is a triple, consisting of two nodes and the edge kind\<close>
@@ -503,7 +503,7 @@ requirements to the nodes.
 \<close>
 
 inductive JVM_CFG :: "jvmprog \<Rightarrow> j_node \<Rightarrow> state edge_kind \<Rightarrow> j_node \<Rightarrow> bool"
-  ("_ \<turnstile> _ -_\<rightarrow> _")
+  (\<open>_ \<turnstile> _ -_\<rightarrow> _\<close>)
 where
   JCFG_EntryExit:
   "prog \<turnstile> (_Entry_) -(\<lambda>s. False)\<^sub>\<surd>\<rightarrow> (_Exit_)"

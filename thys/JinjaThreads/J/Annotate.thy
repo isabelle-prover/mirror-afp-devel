@@ -10,19 +10,19 @@ imports
 begin
 
 abbreviation (output)
-  unanFAcc :: "'addr expr \<Rightarrow> vname \<Rightarrow> 'addr expr" ("(_\<bullet>_)" [10,10] 90)
+  unanFAcc :: "'addr expr \<Rightarrow> vname \<Rightarrow> 'addr expr" (\<open>(_\<bullet>_)\<close> [10,10] 90)
 where
   "unanFAcc e F \<equiv> FAcc e F (STR '''')"
 
 abbreviation (output)
-  unanFAss :: "'addr expr \<Rightarrow> vname \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr" ("(_\<bullet>_ := _)" [10,0,90] 90)
+  unanFAss :: "'addr expr \<Rightarrow> vname \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr" (\<open>(_\<bullet>_ := _)\<close> [10,0,90] 90)
 where
   "unanFAss e F e' \<equiv> FAss e F (STR '''') e'"
 
 definition array_length_field_name :: vname
 where "array_length_field_name = STR ''length''"
 
-notation (output) array_length_field_name ("length")
+notation (output) array_length_field_name (\<open>length\<close>)
 
 definition super :: vname
 where "super = STR ''super''"
@@ -31,9 +31,9 @@ lemma super_neq_this [simp]: "super \<noteq> this" "this \<noteq> super"
 by(simp_all add: this_def super_def)
 
 inductive Anno :: "(ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool) \<Rightarrow> 'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool" 
-  ("_,_,_ \<turnstile> _ \<leadsto> _"   [51,51,0,0,51]50)
+  (\<open>_,_,_ \<turnstile> _ \<leadsto> _\<close>   [51,51,0,0,51]50)
   and Annos :: "(ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool) \<Rightarrow> 'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr list \<Rightarrow> bool"
-  ("_,_,_ \<turnstile> _ [\<leadsto>] _" [51,51,0,0,51]50)
+  (\<open>_,_,_ \<turnstile> _ [\<leadsto>] _\<close> [51,51,0,0,51]50)
 for is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" and P :: "'addr J_prog"
 where
   AnnoNew: "is_lub,P,E \<turnstile> new C \<leadsto> new C"
@@ -146,16 +146,16 @@ inductive_cases Annos_cases [elim!]:
   "is_lub',P,E \<turnstile> [] [\<leadsto>] es'"
   "is_lub',P,E \<turnstile> e # es [\<leadsto>] es'"
 
-abbreviation Anno' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<leadsto> _"   [51,0,0,51]50)
+abbreviation Anno' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool"  (\<open>_,_ \<turnstile> _ \<leadsto> _\<close>   [51,0,0,51]50)
 where "Anno' P \<equiv> Anno (TypeRel.is_lub P) P"
 
-abbreviation Annos' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr list \<Rightarrow> bool"  ("_,_ \<turnstile> _ [\<leadsto>] _" [51,0,0,51]50)
+abbreviation Annos' :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr list \<Rightarrow> bool"  (\<open>_,_ \<turnstile> _ [\<leadsto>] _\<close> [51,0,0,51]50)
 where "Annos' P \<equiv> Annos (TypeRel.is_lub P) P"
 
 definition annotate :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr"
 where "annotate P E e = THE_default e (\<lambda>e'. P,E \<turnstile> e \<leadsto> e')"
 
-lemma fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile> lub'((_,/ _)') = _" [51,51,51] 50)
+lemma fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>\<turnstile> lub'((_,/ _)') = _\<close> [51,51,51] 50)
   assumes is_lub_unique: "\<And>T1 T2 T3 T4. \<lbrakk> \<turnstile> lub(T1, T2) = T3; \<turnstile> lub(T1, T2) = T4 \<rbrakk> \<Longrightarrow> T3 = T4"
   shows Anno_fun: "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e'; is_lub,P,E \<turnstile> e \<leadsto> e'' \<rbrakk> \<Longrightarrow> e' = e''"
   and Annos_fun: "\<lbrakk> is_lub,P,E \<turnstile> es [\<leadsto>] es'; is_lub,P,E \<turnstile> es [\<leadsto>] es'' \<rbrakk> \<Longrightarrow> es' = es''"
@@ -230,10 +230,10 @@ qed(fastforce dest: sees_field_fun)+
 
 subsection \<open>Code generation\<close>
 
-definition Anno_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool" ("_,_ \<turnstile> _ \<leadsto>'' _"   [51,0,0,51]50)
+definition Anno_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool" (\<open>_,_ \<turnstile> _ \<leadsto>'' _\<close>   [51,0,0,51]50)
 where "Anno_code P = Anno (is_lub_sup P) P"
 
-definition Annos_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr list \<Rightarrow> bool" ("_,_ \<turnstile> _ [\<leadsto>''] _" [51,0,0,51]50)
+definition Annos_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr list \<Rightarrow> bool" (\<open>_,_ \<turnstile> _ [\<leadsto>''] _\<close> [51,0,0,51]50)
 where "Annos_code P = Annos (is_lub_sup P) P"
 
 primrec block_types :: "('a, 'b, 'addr) exp \<Rightarrow> ty list" 
@@ -266,8 +266,8 @@ where
 | "blocks_types [] = []"
 | "blocks_types (e#es) = block_types e @ blocks_types es"
 
-lemma fixes is_lub1 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile>1 lub'((_,/ _)') = _" [51,51,51] 50)
-  and is_lub2 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("\<turnstile>2 lub'((_,/ _)') = _" [51,51,51] 50)
+lemma fixes is_lub1 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>\<turnstile>1 lub'((_,/ _)') = _\<close> [51,51,51] 50)
+  and is_lub2 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>\<turnstile>2 lub'((_,/ _)') = _\<close> [51,51,51] 50)
   assumes wf: "wf_prog wf_md P"
   and is_lub1_into_is_lub2: "\<And>T1 T2 T3. \<lbrakk> \<turnstile>1 lub(T1, T2) = T3; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> \<turnstile>2 lub(T1, T2) = T3"
   and is_lub2_is_type: "\<And>T1 T2 T3. \<lbrakk> \<turnstile>2 lub(T1, T2) = T3; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> is_type P T3"

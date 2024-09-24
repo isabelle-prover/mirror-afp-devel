@@ -17,14 +17,14 @@ interpretation jmm: heap'
   for P
 by(rule heap'.intro)(unfold jmm_typeof_addr'_conv_jmm_typeof_addr, unfold_locales)
 
-abbreviation jmm_addr_loc_type' :: "'m prog \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile>jmm _@_ : _" [50, 50, 50, 50] 51)
+abbreviation jmm_addr_loc_type' :: "'m prog \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile>jmm _@_ : _\<close> [50, 50, 50, 50] 51)
   where "jmm_addr_loc_type' P \<equiv> jmm.addr_loc_type TYPE('m) P P"
 
 lemma jmm_addr_loc_type_conv_jmm_addr_loc_type' [simp, heap_independent]:
   "jmm_addr_loc_type P h = jmm_addr_loc_type' P"
 by(metis jmm_typeof_addr'_conv_jmm_typeof_addr heap_base'.addr_loc_type_conv_addr_loc_type)
 
-abbreviation jmm_conf' :: "'m prog \<Rightarrow> addr val \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile>jmm _ :\<le> _"  [51,51,51] 50)
+abbreviation jmm_conf' :: "'m prog \<Rightarrow> addr val \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile>jmm _ :\<le> _\<close>  [51,51,51] 50)
   where "jmm_conf' P \<equiv> jmm.conf TYPE('m) P P"
 
 lemma jmm_conf_conv_jmm_conf' [simp, heap_independent]:

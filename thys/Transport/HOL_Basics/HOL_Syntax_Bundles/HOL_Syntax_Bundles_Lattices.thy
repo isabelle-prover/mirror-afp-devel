@@ -8,18 +8,18 @@ begin
 bundle lattice_syntax \<comment> \<open>copied from theory Main\<close>
 begin
 notation
-  bot ("\<bottom>")
-  and top ("\<top>")
-  and inf (infixl "\<sqinter>" 70)
-  and sup (infixl "\<squnion>" 65)
+  bot (\<open>\<bottom>\<close>)
+  and top (\<open>\<top>\<close>)
+  and inf (infixl \<open>\<sqinter>\<close> 70)
+  and sup (infixl \<open>\<squnion>\<close> 65)
 end
 bundle no_lattice_syntax
 begin
 no_notation
-  bot ("\<bottom>")
-  and top ("\<top>")
-  and inf (infixl "\<sqinter>" 70)
-  and sup (infixl "\<squnion>" 65)
+  bot (\<open>\<bottom>\<close>)
+  and top (\<open>\<top>\<close>)
+  and inf (infixl \<open>\<sqinter>\<close> 70)
+  and sup (infixl \<open>\<squnion>\<close> 65)
 end
 
 unbundle lattice_syntax

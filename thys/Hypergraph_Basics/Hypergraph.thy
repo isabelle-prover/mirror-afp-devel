@@ -46,7 +46,7 @@ abbreviation hyp_verts :: "'a hyp_graph \<Rightarrow> 'a set" where
   "hyp_verts H \<equiv> fst H"
 
 locale hypersystem = incidence_system "vertices :: 'a set" "edges :: 'a hyp_edge multiset" 
-  for "vertices" ("\<V>") and "edges" ("E") 
+  for "vertices" (\<open>\<V>\<close>) and "edges" (\<open>E\<close>) 
 
 begin
 

@@ -43,7 +43,7 @@ typedef 'a vec = "{(n, mk_vec n f) | n f :: nat \<Rightarrow> 'a. True}"
 setup_lifting type_definition_vec
 
 lift_definition dim_vec :: "'a vec \<Rightarrow> nat" is fst .
-lift_definition vec_index :: "'a vec \<Rightarrow> (nat \<Rightarrow> 'a)" (infixl "$" 100) is snd .
+lift_definition vec_index :: "'a vec \<Rightarrow> (nat \<Rightarrow> 'a)" (infixl \<open>$\<close> 100) is snd .
 lift_definition vec :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a vec"
   is "\<lambda> n f. (n, mk_vec n f)" by auto
 
@@ -87,7 +87,7 @@ instance ..
 end
 
 definition
-  zero_vec :: "nat \<Rightarrow> 'a :: zero vec" ("0\<^sub>v")
+  zero_vec :: "nat \<Rightarrow> 'a :: zero vec" (\<open>0\<^sub>v\<close>)
   where "0\<^sub>v n \<equiv> vec n (\<lambda> i. 0)"
 
 lemma zero_carrier_vec[simp]: "0\<^sub>v n \<in> carrier_vec n"
@@ -205,10 +205,10 @@ definition uminus_vec :: "'a :: uminus vec \<Rightarrow> 'a vec" where
 instance ..
 end
 
-definition smult_vec :: "'a :: times \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl "\<cdot>\<^sub>v" 70)
+definition smult_vec :: "'a :: times \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl \<open>\<cdot>\<^sub>v\<close> 70)
   where "a \<cdot>\<^sub>v v \<equiv> vec (dim_vec v) (\<lambda> i. a * v $ i)"
 
-definition scalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: semiring_0" (infix "\<bullet>" 70)
+definition scalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: semiring_0" (infix \<open>\<bullet>\<close> 70)
   where "v \<bullet> w \<equiv> \<Sum> i \<in> {0 ..< dim_vec w}. v $ i * w $ i"
 
 definition monoid_vec :: "'a itself \<Rightarrow> nat \<Rightarrow> ('a :: monoid_add vec) monoid" where
@@ -501,10 +501,10 @@ setup_lifting type_definition_mat
 
 lift_definition dim_row :: "'a mat \<Rightarrow> nat" is fst .
 lift_definition dim_col :: "'a mat \<Rightarrow> nat" is "fst o snd" .
-lift_definition index_mat :: "'a mat \<Rightarrow> (nat \<times> nat \<Rightarrow> 'a)" (infixl "$$" 100) is "snd o snd" .
+lift_definition index_mat :: "'a mat \<Rightarrow> (nat \<times> nat \<Rightarrow> 'a)" (infixl \<open>$$\<close> 100) is "snd o snd" .
 lift_definition mat :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat \<Rightarrow> 'a) \<Rightarrow> 'a mat"
   is "\<lambda> nr nc f. (nr, nc, mk_mat nr nc f)" by auto
-lift_definition mat_of_row_fun :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a vec) \<Rightarrow> 'a mat" ("mat\<^sub>r")
+lift_definition mat_of_row_fun :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a vec) \<Rightarrow> 'a mat" (\<open>mat\<^sub>r\<close>)
   is "\<lambda> nr nc f. (nr, nc, mk_mat nr nc (\<lambda> (i,j). f i $ j))" by auto
 
 definition mat_to_list :: "'a mat \<Rightarrow> 'a list list" where
@@ -702,10 +702,10 @@ end
 definition map_mat :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a mat \<Rightarrow> 'b mat" where
   "map_mat f A \<equiv> mat (dim_row A) (dim_col A) (\<lambda> ij. f (A $$ ij))"
 
-definition smult_mat :: "'a :: times \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixl "\<cdot>\<^sub>m" 70)
+definition smult_mat :: "'a :: times \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixl \<open>\<cdot>\<^sub>m\<close> 70)
   where "a \<cdot>\<^sub>m A \<equiv> map_mat (\<lambda> b. a * b) A"
 
-definition zero_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: zero mat" ("0\<^sub>m") where
+definition zero_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: zero mat" (\<open>0\<^sub>m\<close>) where
   "0\<^sub>m nr nc \<equiv> mat nr nc (\<lambda> ij. 0)"
 
 lemma elements_0_mat [simp]: "elements_mat (0\<^sub>m nr nc) \<subseteq> {0}"
@@ -714,7 +714,7 @@ lemma elements_0_mat [simp]: "elements_mat (0\<^sub>m nr nc) \<subseteq> {0}"
 definition transpose_mat :: "'a mat \<Rightarrow> 'a mat" where
   "transpose_mat A \<equiv> mat (dim_col A) (dim_row A) (\<lambda> (i,j). A $$ (j,i))"
 
-definition one_mat :: "nat \<Rightarrow> 'a :: {zero,one} mat" ("1\<^sub>m") where
+definition one_mat :: "nat \<Rightarrow> 'a :: {zero,one} mat" (\<open>1\<^sub>m\<close>) where
   "1\<^sub>m n \<equiv> mat n n (\<lambda> (i,j). if i = j then 1 else 0)"
 
 instantiation mat :: (uminus) uminus
@@ -738,7 +738,7 @@ definition times_mat :: "'a :: semiring_0 mat \<Rightarrow> 'a mat \<Rightarrow>
 instance ..
 end
 
-definition mult_mat_vec :: "'a :: semiring_0 mat \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl "*\<^sub>v" 70)
+definition mult_mat_vec :: "'a :: semiring_0 mat \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixl \<open>*\<^sub>v\<close> 70)
   where "A *\<^sub>v v \<equiv> vec (dim_row A) (\<lambda> i. row A i \<bullet> v)"
 
 definition inverts_mat :: "'a :: semiring_1 mat \<Rightarrow> 'a mat \<Rightarrow> bool" where
@@ -1309,7 +1309,7 @@ lemma similar_matI: assumes "{A,B,P,Q} \<subseteq> carrier_mat n n" "P * Q = 1\<
   shows "similar_mat A B" unfolding similar_mat_def
   by (rule exI[of _ P], rule exI[of _ Q], unfold similar_mat_wit_def Let_def, insert assms, auto)
 
-fun pow_mat :: "'a :: semiring_1 mat \<Rightarrow> nat \<Rightarrow> 'a mat" (infixr "^\<^sub>m" 75) where
+fun pow_mat :: "'a :: semiring_1 mat \<Rightarrow> nat \<Rightarrow> 'a mat" (infixr \<open>^\<^sub>m\<close> 75) where
   "A ^\<^sub>m 0 = 1\<^sub>m (dim_row A)"
 | "A ^\<^sub>m (Suc k) = A ^\<^sub>m k * A"
 
@@ -1374,10 +1374,10 @@ qed
 
 subsection \<open>Update Operators\<close>
 
-definition update_vec :: "'a vec \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a vec" ("_ |\<^sub>v _ \<mapsto> _" [60,61,62] 60)
+definition update_vec :: "'a vec \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a vec" (\<open>_ |\<^sub>v _ \<mapsto> _\<close> [60,61,62] 60)
   where "v |\<^sub>v i \<mapsto> a = vec (dim_vec v) (\<lambda>i'. if i' = i then a else v $ i')"
 
-definition update_mat :: "'a mat \<Rightarrow> nat \<times> nat \<Rightarrow> 'a \<Rightarrow> 'a mat" ("_ |\<^sub>m _ \<mapsto> _" [60,61,62] 60)
+definition update_mat :: "'a mat \<Rightarrow> nat \<times> nat \<Rightarrow> 'a \<Rightarrow> 'a mat" (\<open>_ |\<^sub>m _ \<mapsto> _\<close> [60,61,62] 60)
   where "A |\<^sub>m ij \<mapsto> a = mat (dim_row A) (dim_col A) (\<lambda>ij'. if ij' = ij then a else A $$ ij')"
 
 lemma dim_update_vec[simp]:
@@ -1407,7 +1407,7 @@ lemma index_update_mat2[simp]:
 
 subsection \<open>Block Vectors and Matrices\<close>
 
-definition append_vec :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixr "@\<^sub>v" 65) where
+definition append_vec :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a vec" (infixr \<open>@\<^sub>v\<close> 65) where
   "v @\<^sub>v w \<equiv> let n = dim_vec v; m = dim_vec w in
     vec (n + m) (\<lambda> i. if i < n then v $ i else w $ (i - n))"
 
@@ -1587,7 +1587,7 @@ proof -
     by (intro eq_matI, insert c1 c2, auto)
 qed
 
-definition append_rows :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixr "@\<^sub>r" 65)where
+definition append_rows :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixr \<open>@\<^sub>r\<close> 65)where
   "A @\<^sub>r B = four_block_mat A (0\<^sub>m (dim_row A) 0) B (0\<^sub>m (dim_row B) 0)" 
 
 lemma carrier_append_rows[simp,intro]: "A \<in> carrier_mat nr1 nc \<Longrightarrow> B \<in> carrier_mat nr2 nc \<Longrightarrow>
@@ -2363,10 +2363,10 @@ subsection\<open>Homomorphism properties\<close>
 
 context semiring_hom
 begin
-abbreviation mat_hom :: "'a mat \<Rightarrow> 'b mat" ("mat\<^sub>h")
+abbreviation mat_hom :: "'a mat \<Rightarrow> 'b mat" (\<open>mat\<^sub>h\<close>)
   where "mat\<^sub>h \<equiv> map_mat hom"
 
-abbreviation vec_hom :: "'a vec \<Rightarrow> 'b vec" ("vec\<^sub>h")
+abbreviation vec_hom :: "'a vec \<Rightarrow> 'b vec" (\<open>vec\<^sub>h\<close>)
   where "vec\<^sub>h \<equiv> map_vec hom"
 
 lemma vec_hom_zero: "vec\<^sub>h (0\<^sub>v n) = 0\<^sub>v n"
@@ -2735,7 +2735,7 @@ qed simp
 lemma vec_carrier_vec[simp]: "vec n f \<in> carrier_vec m \<longleftrightarrow> n = m"
   unfolding carrier_vec_def by auto
 
-notation transpose_mat ("(_\<^sup>T)" [1000])
+notation transpose_mat (\<open>(_\<^sup>T)\<close> [1000])
 
 lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T" by auto
 
@@ -2879,7 +2879,7 @@ lemma list_of_vec_map: "list_of_vec xs = map (($) xs) [0..<dim_vec xs]" by trans
 
 definition "component_mult v w = vec (min (dim_vec v) (dim_vec w)) (\<lambda>i. v $ i * w $ i)"
 
-definition vec_set::"'a vec \<Rightarrow> 'a set" ("set\<^sub>v")
+definition vec_set::"'a vec \<Rightarrow> 'a set" (\<open>set\<^sub>v\<close>)
   where "vec_set v = vec_index v ` {..<dim_vec v}"
 
 lemma vec_set_map[simp]: "set\<^sub>v (map_vec f v) = f ` set\<^sub>v v" 
@@ -2988,7 +2988,7 @@ next
     by (cases v, auto dest: carrier_vecD simp:conjugate_dist_add conjugate_dist_mul)
 qed 
 
-abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_ring" (infix "\<bullet>c" 70)
+abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_ring" (infix \<open>\<bullet>c\<close> 70)
   where "(\<bullet>c) \<equiv> \<lambda>v w. v \<bullet> conjugate w"
 
 lemma conjugate_conjugate_sprod[simp]:

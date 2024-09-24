@@ -4,7 +4,7 @@ imports Formulas
 begin
 
 text\<open>We can define Hilbert Calculus as the modus ponens closure over a set of axioms:\<close>
-inductive HC :: "'a formula  set \<Rightarrow> 'a formula \<Rightarrow> bool" (infix "\<turnstile>\<^sub>H" 30) for \<Gamma> :: "'a formula set" where
+inductive HC :: "'a formula  set \<Rightarrow> 'a formula \<Rightarrow> bool" (infix \<open>\<turnstile>\<^sub>H\<close> 30) for \<Gamma> :: "'a formula set" where
 Ax: "F \<in> \<Gamma> \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>H F" |
 MP: "\<Gamma> \<turnstile>\<^sub>H F \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>H F \<^bold>\<rightarrow> G \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>H G"
 text\<open>.\<close>

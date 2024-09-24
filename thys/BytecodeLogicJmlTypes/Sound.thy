@@ -62,7 +62,7 @@ definition valid::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
 
 abbreviation valid_syntax :: "Assn \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> 
                     Label \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" 
-       (" \<Turnstile> \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _" [200,200,200,200,200,200] 200)
+       (\<open> \<Turnstile> \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _\<close> [200,200,200,200,200,200] 200)
 where "valid_syntax A C m l B I == valid C m l A B I"
 
 text\<open>This notion of validity extends that of Bannwart-M\"uller by
@@ -130,7 +130,7 @@ definition validn::
 
 abbreviation validn_syntax :: "nat \<Rightarrow> Assn \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow>
                      Label \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" 
-("\<Turnstile>\<^sub>_ \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _ " [200,200,200,200,200,200,200] 200)
+(\<open>\<Turnstile>\<^sub>_ \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _ \<close> [200,200,200,200,200,200,200] 200)
 where "validn_syntax K A C m l B I == validn K C m l A B I"
 
 definition G_validn::"nat \<Rightarrow> CTXT \<Rightarrow> bool" where

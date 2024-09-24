@@ -6,23 +6,23 @@ unbundle pnt_notation
 
 definition has_subsum where "has_subsum f S x \<equiv> (\<lambda>n. if n \<in> S then f n else 0) sums x"
 definition subsum where "subsum f S \<equiv> \<Sum>n. if n \<in> S then f n else 0"
-definition subsummable (infix "subsummable" 50)
+definition subsummable (infix \<open>subsummable\<close> 50)
   where "f subsummable S \<equiv> summable (\<lambda>n. if n \<in> S then f n else 0)"
 
 syntax "_subsum" :: "pttrn \<Rightarrow> nat set \<Rightarrow> 'a \<Rightarrow> 'a"
-  ("(2\<Sum>`_ \<in> (_)./ _)" [0, 0, 10] 10)
+  (\<open>(2\<Sum>`_ \<in> (_)./ _)\<close> [0, 0, 10] 10)
 syntax_consts "_subsum" == subsum
 translations
   "\<Sum>` x\<in>S. t" => "CONST subsum (\<lambda>x. t) S"
 
 syntax "_subsum_prop" :: "pttrn \<Rightarrow> bool \<Rightarrow> 'a \<Rightarrow> 'a"
-  ("(2\<Sum>`_ | (_)./ _)" [0, 0, 10] 10)
+  (\<open>(2\<Sum>`_ | (_)./ _)\<close> [0, 0, 10] 10)
 syntax_consts "_subsum_prop" == subsum
 translations
   "\<Sum>` x|P. t" => "CONST subsum (\<lambda>x. t) {x. P}"
 
 syntax "_subsum_ge" :: "pttrn \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a"
-  ("(2\<Sum>`_ \<ge> _./ _)" [0, 0, 10] 10)
+  (\<open>(2\<Sum>`_ \<ge> _./ _)\<close> [0, 0, 10] 10)
 syntax_consts "_subsum_ge" == subsum
 translations
   "\<Sum>` x\<ge>n. t" => "CONST subsum (\<lambda>x. t) {n..}"

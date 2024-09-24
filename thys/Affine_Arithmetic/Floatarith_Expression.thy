@@ -125,7 +125,7 @@ lemma interpret_floatarith_norm[simp]:
   apply (rule sum_list_nth_eqI)
   by (auto simp: in_set_zip eucl_of_list_inner)
 
-notation floatarith.Power (infixr "^\<^sub>e" 80)
+notation floatarith.Power (infixr \<open>^\<^sub>e\<close> 80)
 
 subsection \<open>Constant Folding\<close>
 

@@ -12,7 +12,7 @@ theory Mixed_Integer_Solutions
 begin
 
 
-definition less_vec :: "'a vec \<Rightarrow> ('a :: ord) vec \<Rightarrow> bool" (infix "<\<^sub>v" 50) where
+definition less_vec :: "'a vec \<Rightarrow> ('a :: ord) vec \<Rightarrow> bool" (infix \<open><\<^sub>v\<close> 50) where
   "v <\<^sub>v w = (dim_vec v = dim_vec w \<and> (\<forall> i < dim_vec w. v $ i < w $ i))"
 
 lemma less_vecD: assumes "v <\<^sub>v w" and "w \<in> carrier_vec n"

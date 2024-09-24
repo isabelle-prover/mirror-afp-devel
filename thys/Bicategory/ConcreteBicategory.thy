@@ -1145,7 +1145,7 @@ begin
         by (cases fgh) simp
     qed
 
-    definition \<a>  ("\<a>[_,_,_]")
+    definition \<a>  (\<open>\<a>[_,_,_]\<close>)
     where "\<a> f g h == \<alpha>\<^sub>0.map (f, g, h)"
 
     lemma \<a>_simp_ide:
@@ -1413,7 +1413,7 @@ begin
       The unit isomorphisms are defined in terms of the specified function \<open>Unit\<close>.
     \<close>
 
-    definition \<i>  ("\<i>[_]")
+    definition \<i>  (\<open>\<i>[_]\<close>)
     where "\<i>[a] \<equiv> MkCell (Src a) (Src a) (Unit (Src a))"
 
     lemma \<i>_simps [simp]:

@@ -18,8 +18,8 @@ of the base point set. Alternatively, an incidence system can be looked at as th
 and an incidence relation which indicates if they are in the same block\<close>
 
 locale incidence_system = 
-  fixes point_set :: "'a set" ("\<V>")
-  fixes block_collection :: "'a set multiset" ("\<B>")
+  fixes point_set :: "'a set" (\<open>\<V>\<close>)
+  fixes block_collection :: "'a set multiset" (\<open>\<B>\<close>)
   assumes wellformed: "b \<in># \<B> \<Longrightarrow> b \<subseteq> \<V>"
 begin
 
@@ -158,7 +158,7 @@ subsubsection \<open>Replication Number\<close>
 
 text \<open>The replication number for a point is the number of blocks that point is incident with\<close>
 
-definition point_replication_number :: "'a set multiset \<Rightarrow> 'a \<Rightarrow> nat" (infix "rep" 75) where
+definition point_replication_number :: "'a set multiset \<Rightarrow> 'a \<Rightarrow> nat" (infix \<open>rep\<close> 75) where
 "B rep x \<equiv> size {#b \<in># B . x \<in> b#}"
 
 lemma max_point_rep: "B rep x \<le> size B"
@@ -215,7 +215,7 @@ subsubsection \<open>Point Index\<close>
 
 text \<open>The point index of a subset of points in a design, is the number of times those points 
 occur together in a block of the design\<close>
-definition points_index :: "'a set multiset \<Rightarrow> 'a set \<Rightarrow> nat" (infix "index" 75) where
+definition points_index :: "'a set multiset \<Rightarrow> 'a set \<Rightarrow> nat" (infix \<open>index\<close> 75) where
 "B index ps \<equiv> size {#b \<in># B . ps \<subseteq> b#}"
 
 lemma points_index_empty [simp]: "{#} index ps = 0"
@@ -356,7 +356,7 @@ subsubsection \<open>Intersection Number\<close>
 
 text \<open>The intersection number of two blocks is the size of the intersection of those blocks. i.e. 
 the number of points which occur in both blocks\<close>
-definition intersection_number :: "'a set \<Rightarrow> 'a set \<Rightarrow> nat" (infix "|\<inter>|" 70) where
+definition intersection_number :: "'a set \<Rightarrow> 'a set \<Rightarrow> nat" (infix \<open>|\<inter>|\<close> 70) where
 "b1 |\<inter>| b2 \<equiv> card (b1 \<inter> b2)"
 
 lemma intersection_num_non_neg: "b1 |\<inter>| b2 \<ge> 0"
@@ -373,7 +373,7 @@ lemma intersect_num_commute: "b1 |\<inter>| b2 = b2 |\<inter>| b1"
 definition n_intersect_number :: "'a set \<Rightarrow> nat\<Rightarrow> 'a set \<Rightarrow> nat" where
 "n_intersect_number b1 n b2 \<equiv> card { x \<in> Pow (b1 \<inter> b2) . card x = n}"
 
-notation n_intersect_number ("(_ |\<inter>|\<^sub>_ _)" [52, 51, 52] 50)
+notation n_intersect_number (\<open>(_ |\<inter>|\<^sub>_ _)\<close> [52, 51, 52] 50)
 
 lemma n_intersect_num_subset_def: "b1 |\<inter>|\<^sub>n b2 = card {x . x \<subseteq> b1 \<inter> b2 \<and> card x = n}"
   using n_intersect_number_def by auto
@@ -496,10 +496,10 @@ begin
 
 text \<open>The complement of a block are all the points in the design not in that block. 
 The complement of a design is therefore the original point sets, and set of all block complements\<close>
-definition block_complement:: "'a set \<Rightarrow> 'a set" ("_\<^sup>c" [56] 55) where
+definition block_complement:: "'a set \<Rightarrow> 'a set" (\<open>_\<^sup>c\<close> [56] 55) where
 "block_complement b \<equiv> \<V> - b"
 
-definition complement_blocks :: "'a set multiset" ("(\<B>\<^sup>C)")where
+definition complement_blocks :: "'a set multiset" (\<open>(\<B>\<^sup>C)\<close>)where
 "complement_blocks \<equiv> {# bl\<^sup>c . bl \<in># \<B> #}" 
 
 lemma block_complement_elem_iff: 

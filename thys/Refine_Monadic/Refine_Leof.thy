@@ -6,7 +6,7 @@ begin
   text \<open>A predicate that states refinement or that the LHS fails.\<close>
 
 
-  definition le_or_fail :: "'a nres \<Rightarrow> 'a nres \<Rightarrow> bool" (infix "\<le>\<^sub>n" 50) where
+  definition le_or_fail :: "'a nres \<Rightarrow> 'a nres \<Rightarrow> bool" (infix \<open>\<le>\<^sub>n\<close> 50) where
     "m \<le>\<^sub>n m' \<equiv> nofail m \<longrightarrow> m \<le> m'"
 
   lemma leofI[intro?]: 

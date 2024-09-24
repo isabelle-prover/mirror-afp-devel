@@ -205,7 +205,7 @@ instance
 
 end
 
-consts vec_dot :: "'a \<Rightarrow> 'a \<Rightarrow> int" ("<_ | _>" 65)
+consts vec_dot :: "'a \<Rightarrow> 'a \<Rightarrow> int" (\<open><_ | _>\<close> 65)
 
 definition vec2_dot :: "vec2 \<Rightarrow> vec2 \<Rightarrow> int" where
 "vec2_dot v1 v2 = vec2\<^sub>1 v1 * vec2\<^sub>1 v2 + vec2\<^sub>2 v1 * vec2\<^sub>2 v2"
@@ -237,7 +237,7 @@ lemma vec3_dot_zero_right [simp]:
   shows "<v | 0> = 0"
   unfolding vec3_dot_def zero_vec3_def by auto
 
-consts mat_app :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infixr "$" 65)
+consts mat_app :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infixr \<open>$\<close> 65)
 
 definition mat2_app :: "mat2 \<Rightarrow> vec2 \<Rightarrow> vec2" where
 "mat2_app m v =
@@ -328,7 +328,7 @@ definition mat3_sym :: "mat3 \<Rightarrow> bool" where
 
 adhoc_overloading mat_sym mat3_sym
 
-consts mat_transpose :: "'a \<Rightarrow> 'a" ("_\<^sup>T" [91] 90)
+consts mat_transpose :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>T\<close> [91] 90)
 
 definition mat2_transpose :: "mat2 \<Rightarrow> mat2" where
 "mat2_transpose m =
@@ -425,7 +425,7 @@ lemma mat3_det_tranpose [simp]:
   shows "mat_det (m\<^sup>T) = mat_det m"
   unfolding mat3_det_def mat3_transpose_def by auto
 
-consts mat_inverse :: "'a \<Rightarrow> 'a" ("_\<^sup>-\<^sup>1" [91] 90)
+consts mat_inverse :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>-\<^sup>1\<close> [91] 90)
 
 definition mat2_inverse :: "mat2 \<Rightarrow> mat2" where
 "mat2_inverse m =

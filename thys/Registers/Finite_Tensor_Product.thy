@@ -7,9 +7,9 @@ begin
 declare cblinfun.scaleC_right[simp]
 
 unbundle cblinfun_notation
-no_notation m_inv ("inv\<index> _" [81] 80)
+no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
 
-lift_definition tensor_ell2 :: \<open>'a::finite ell2 \<Rightarrow> 'b::finite ell2 \<Rightarrow> ('a\<times>'b) ell2\<close> (infixr "\<otimes>\<^sub>s" 70) is
+lift_definition tensor_ell2 :: \<open>'a::finite ell2 \<Rightarrow> 'b::finite ell2 \<Rightarrow> ('a\<times>'b) ell2\<close> (infixr \<open>\<otimes>\<^sub>s\<close> 70) is
   \<open>\<lambda>\<psi> \<phi> (i,j). \<psi> i * \<phi> j\<close>
   by simp
 
@@ -46,7 +46,7 @@ lemma tensor_ell2_ket[simp]: "tensor_ell2 (ket i) (ket j) = ket (i,j)"
 
 
 definition tensor_op :: \<open>('a ell2, 'b::finite ell2) cblinfun \<Rightarrow> ('c ell2, 'd::finite ell2) cblinfun
-      \<Rightarrow> (('a\<times>'c) ell2, ('b\<times>'d) ell2) cblinfun\<close> (infixr "\<otimes>\<^sub>o" 70) where
+      \<Rightarrow> (('a\<times>'c) ell2, ('b\<times>'d) ell2) cblinfun\<close> (infixr \<open>\<otimes>\<^sub>o\<close> 70) where
   \<open>tensor_op M N = (SOME P. \<forall>a c. P *\<^sub>V (ket (a,c))
       = tensor_ell2 (M *\<^sub>V ket a) (N *\<^sub>V ket c))\<close>
 

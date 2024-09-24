@@ -294,7 +294,7 @@ lemma hom_max_list_commute:
 
 
 (*Efficient rev [i..<j]*)
-primrec rev_upt :: "nat \<Rightarrow> nat \<Rightarrow> nat list" ("(1[_>.._])") where
+primrec rev_upt :: "nat \<Rightarrow> nat \<Rightarrow> nat list" (\<open>(1[_>.._])\<close>) where
 rev_upt_0: "[0>..j] = []" |
 rev_upt_Suc: "[(Suc i)>..j] = (if i \<ge> j then i # [i>..j] else [])"
 

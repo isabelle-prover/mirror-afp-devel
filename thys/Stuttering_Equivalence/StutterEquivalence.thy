@@ -10,7 +10,7 @@ text \<open>
   of their maximally reduced versions.
 \<close>
 
-definition stutter_equiv  (infix "\<approx>" 50) where
+definition stutter_equiv  (infix \<open>\<approx>\<close> 50) where
   "\<sigma> \<approx> \<tau> \<equiv> \<natural>\<sigma> = \<natural>\<tau>"
 
 text \<open>
@@ -91,7 +91,7 @@ proof -
     by (simp add: stutter_reduced_0)
 qed
 
-abbreviation suffix_notation ("_ [_..]")
+abbreviation suffix_notation (\<open>_ [_..]\<close>)
 where
   "suffix_notation w k \<equiv> suffix k w"
 

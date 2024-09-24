@@ -7,7 +7,7 @@ subsection \<open>Well-formedness of the abstract CFG\<close>
 locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> 'state edge_kind" and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')") +
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>) +
   fixes Def::"'node \<Rightarrow> 'var set"
   fixes Use::"'node \<Rightarrow> 'var set"
   fixes state_val::"'state \<Rightarrow> 'var \<Rightarrow> 'val"

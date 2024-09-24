@@ -294,7 +294,7 @@ begin
     obtains f where "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f"
       using assms isomorphic_def by meson
 
-    definition iso_in_hom  ("\<guillemotleft>_ : _ \<cong> _\<guillemotright>")
+    definition iso_in_hom  (\<open>\<guillemotleft>_ : _ \<cong> _\<guillemotright>\<close>)
     where "iso_in_hom f a b \<equiv> \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> iso f"
 
     lemma iso_in_homI [intro]:

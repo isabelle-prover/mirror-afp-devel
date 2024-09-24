@@ -8,21 +8,21 @@ theory Finite_Map_Ext
   imports "HOL-Library.Finite_Map"
 begin
 
-type_notation fmap ("(_ \<rightharpoonup>\<^sub>f /_)" [22, 21] 21)
+type_notation fmap (\<open>(_ \<rightharpoonup>\<^sub>f /_)\<close> [22, 21] 21)
 
 nonterminal fmaplets and fmaplet
 
 syntax
-  "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"              ("_ /\<mapsto>\<^sub>f/ _")
-  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"              ("_ /[\<mapsto>\<^sub>f]/ _")
-  ""          :: "fmaplet \<Rightarrow> fmaplets"              ("_")
-  "_FMaplets" :: "[fmaplet, fmaplets] \<Rightarrow> fmaplets"  ("_,/ _")
-  "_FMapUpd"  :: "['a \<rightharpoonup> 'b, fmaplets] \<Rightarrow> 'a \<rightharpoonup> 'b" ("_/'(_')" [900, 0] 900)
-  "_FMap"     :: "fmaplets \<Rightarrow> 'a \<rightharpoonup> 'b"             ("(1[_])")
+  "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"              (\<open>_ /\<mapsto>\<^sub>f/ _\<close>)
+  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"              (\<open>_ /[\<mapsto>\<^sub>f]/ _\<close>)
+  ""          :: "fmaplet \<Rightarrow> fmaplets"              (\<open>_\<close>)
+  "_FMaplets" :: "[fmaplet, fmaplets] \<Rightarrow> fmaplets"  (\<open>_,/ _\<close>)
+  "_FMapUpd"  :: "['a \<rightharpoonup> 'b, fmaplets] \<Rightarrow> 'a \<rightharpoonup> 'b" (\<open>_/'(_')\<close> [900, 0] 900)
+  "_FMap"     :: "fmaplets \<Rightarrow> 'a \<rightharpoonup> 'b"             (\<open>(1[_])\<close>)
 
 syntax (ASCII)
-  "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"              ("_ /|->f/ _")
-  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"              ("_ /[|->f]/ _")
+  "_fmaplet"  :: "['a, 'a] \<Rightarrow> fmaplet"              (\<open>_ /|->f/ _\<close>)
+  "_fmaplets" :: "['a, 'a] \<Rightarrow> fmaplet"              (\<open>_ /[|->f]/ _\<close>)
 
 syntax_consts
   "_fmaplet" "_fmaplets" "_FMaplets" "_FMapUpd" "_FMap" \<rightleftharpoons> fmupd

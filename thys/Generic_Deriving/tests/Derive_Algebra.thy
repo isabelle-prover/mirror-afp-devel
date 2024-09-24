@@ -5,11 +5,11 @@ imports Main "../Derive" Derive_Datatypes
 begin
 
 class semigroup = 
-  fixes mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<otimes>" 70)
+  fixes mult :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<otimes>\<close> 70)
 (*  assumes assoc: "(x \<otimes> y) \<otimes> z = x \<otimes> (y \<otimes> z)" *)
     
 class monoidl = semigroup +
-fixes neutral :: 'a ("\<one>")
+fixes neutral :: 'a (\<open>\<one>\<close>)
 (* assumes neutl : "\<one> \<otimes> x = x" *)    
   
 class group = monoidl +

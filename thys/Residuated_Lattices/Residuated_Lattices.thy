@@ -8,7 +8,7 @@ theory Residuated_Lattices
 begin
 
 notation
-  times (infixl "\<cdot>" 70)
+  times (infixl \<open>\<cdot>\<close> 70)
   
 unbundle lattice_syntax
 
@@ -321,10 +321,10 @@ text \<open>
 \<close>
 
 class residual_r_op =
-  fixes residual_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60)
+  fixes residual_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<rightarrow>\<close> 60)
 
 class residual_l_op =
-  fixes residual_l :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leftarrow>" 60)
+  fixes residual_l :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<leftarrow>\<close> 60)
   
 class residuated_pogroupoid = order + times + residual_l_op + residual_r_op +
   assumes resl_galois: "x \<le> z \<leftarrow> y \<longleftrightarrow> x \<cdot> y \<le> z"

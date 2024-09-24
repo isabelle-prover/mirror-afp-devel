@@ -80,7 +80,7 @@ definition univ :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a set \<Rightarrow> 'b
 where "univ f X == f (SOME x. x \<in> X)"
 
 definition quotientP ::
-"('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a set \<Rightarrow> bool)"  (infixl "'/'/'/" 90)
+"('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a set \<Rightarrow> bool)"  (infixl \<open>'/'/'/\<close> 90)
 where "P /// \<phi> \<equiv> S2P ((Collect P) // (P2R \<phi>))"
 
 lemma proj_preserves:
@@ -166,7 +166,7 @@ by (metis assms equivP_pick_iff mem_Collect_eq)
 definition congruentP where
 "congruentP \<phi> f \<equiv> \<forall> x y. \<phi> x y \<longrightarrow> f x = f y"
 
-abbreviation RESPECTS_P (infixr "respectsP" 80) where
+abbreviation RESPECTS_P (infixr \<open>respectsP\<close> 80) where
 "f respectsP r == congruentP r f"
 
 lemma congruent_P2R: "congruent (P2R \<phi>) f = congruentP \<phi> f"

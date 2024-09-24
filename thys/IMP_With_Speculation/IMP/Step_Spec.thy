@@ -25,7 +25,7 @@ begin
 subsection "Mispredicting Step"
 text "stepM simply goes the other way than stepB at branches"
 inductive
-stepM :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>M" 55)
+stepM :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>M\<close> 55)
 where
 IfTrue[intro]: 
 "pc < endPC \<Longrightarrow> prog!pc = IfJump b pc1 pc2 \<Longrightarrow> 
@@ -148,7 +148,7 @@ text \<open>The speculative semantics is more involved than both the normal and 
 \item Spec Resolve: If the resolve predicate is true, resolution occurs for one speculation level. In contrast to Fences, resolve does not necessarily kill all speculation levels, but allows resolution one level at a time
 \end{itemize}\<close>
 inductive
-stepS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix "\<rightarrow>S" 55)
+stepS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix \<open>\<rightarrow>S\<close> 55)
 where 
 nonspec_normal: 
 "cfgs = [] \<Longrightarrow>  
@@ -382,7 +382,7 @@ apply safe apply(cases rule: stepS_cases, auto)
   using finalB_endPC finalB_imp_finalM by blast
 
 abbreviation
-  stepsS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix "\<rightarrow>S*" 55)
+  stepsS :: "configS \<Rightarrow> configS \<Rightarrow> bool" (infix \<open>\<rightarrow>S*\<close> 55)
   where "x \<rightarrow>S* y \<equiv> star stepS x y"
 
 definition "finalS = final stepS"

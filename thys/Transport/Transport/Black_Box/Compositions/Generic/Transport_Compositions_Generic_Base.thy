@@ -26,40 +26,40 @@ cover quite general cases.
 
 Explanations and intuition about the construction can be found in \<^cite>\<open>"transport"\<close>.\<close>
 
-notation L1 (infix "\<le>\<^bsub>L1\<^esub>" 50)
-notation R1 (infix "\<le>\<^bsub>R1\<^esub>" 50)
-notation L2 (infix "\<le>\<^bsub>L2\<^esub>" 50)
-notation R2 (infix "\<le>\<^bsub>R2\<^esub>" 50)
+notation L1 (infix \<open>\<le>\<^bsub>L1\<^esub>\<close> 50)
+notation R1 (infix \<open>\<le>\<^bsub>R1\<^esub>\<close> 50)
+notation L2 (infix \<open>\<le>\<^bsub>L2\<^esub>\<close> 50)
+notation R2 (infix \<open>\<le>\<^bsub>R2\<^esub>\<close> 50)
 
-notation t1.ge_left (infix "\<ge>\<^bsub>L1\<^esub>" 50)
-notation t1.ge_right (infix "\<ge>\<^bsub>R1\<^esub>" 50)
-notation t2.ge_left (infix "\<ge>\<^bsub>L2\<^esub>" 50)
-notation t2.ge_right (infix "\<ge>\<^bsub>R2\<^esub>" 50)
+notation t1.ge_left (infix \<open>\<ge>\<^bsub>L1\<^esub>\<close> 50)
+notation t1.ge_right (infix \<open>\<ge>\<^bsub>R1\<^esub>\<close> 50)
+notation t2.ge_left (infix \<open>\<ge>\<^bsub>L2\<^esub>\<close> 50)
+notation t2.ge_right (infix \<open>\<ge>\<^bsub>R2\<^esub>\<close> 50)
 
-notation t1.left_Galois (infix "\<^bsub>L1\<^esub>\<lessapprox>" 50)
-notation t1.right_Galois (infix "\<^bsub>R1\<^esub>\<lessapprox>" 50)
-notation t2.left_Galois (infix "\<^bsub>L2\<^esub>\<lessapprox>" 50)
-notation t2.right_Galois (infix "\<^bsub>R2\<^esub>\<lessapprox>" 50)
+notation t1.left_Galois (infix \<open>\<^bsub>L1\<^esub>\<lessapprox>\<close> 50)
+notation t1.right_Galois (infix \<open>\<^bsub>R1\<^esub>\<lessapprox>\<close> 50)
+notation t2.left_Galois (infix \<open>\<^bsub>L2\<^esub>\<lessapprox>\<close> 50)
+notation t2.right_Galois (infix \<open>\<^bsub>R2\<^esub>\<lessapprox>\<close> 50)
 
-notation t1.ge_Galois_left (infix "\<greaterapprox>\<^bsub>L1\<^esub>" 50)
-notation t1.ge_Galois_right (infix "\<greaterapprox>\<^bsub>R1\<^esub>" 50)
-notation t2.ge_Galois_left (infix "\<greaterapprox>\<^bsub>L2\<^esub>" 50)
-notation t2.ge_Galois_right (infix "\<greaterapprox>\<^bsub>R2\<^esub>" 50)
+notation t1.ge_Galois_left (infix \<open>\<greaterapprox>\<^bsub>L1\<^esub>\<close> 50)
+notation t1.ge_Galois_right (infix \<open>\<greaterapprox>\<^bsub>R1\<^esub>\<close> 50)
+notation t2.ge_Galois_left (infix \<open>\<greaterapprox>\<^bsub>L2\<^esub>\<close> 50)
+notation t2.ge_Galois_right (infix \<open>\<greaterapprox>\<^bsub>R2\<^esub>\<close> 50)
 
-notation t1.right_ge_Galois (infix "\<^bsub>R1\<^esub>\<greaterapprox>" 50)
-notation t1.Galois_right (infix "\<lessapprox>\<^bsub>R1\<^esub>" 50)
-notation t2.right_ge_Galois (infix "\<^bsub>R2\<^esub>\<greaterapprox>" 50)
-notation t2.Galois_right (infix "\<lessapprox>\<^bsub>R2\<^esub>" 50)
+notation t1.right_ge_Galois (infix \<open>\<^bsub>R1\<^esub>\<greaterapprox>\<close> 50)
+notation t1.Galois_right (infix \<open>\<lessapprox>\<^bsub>R1\<^esub>\<close> 50)
+notation t2.right_ge_Galois (infix \<open>\<^bsub>R2\<^esub>\<greaterapprox>\<close> 50)
+notation t2.Galois_right (infix \<open>\<lessapprox>\<^bsub>R2\<^esub>\<close> 50)
 
-notation t1.left_ge_Galois (infix "\<^bsub>L1\<^esub>\<greaterapprox>" 50)
-notation t1.Galois_left (infix "\<lessapprox>\<^bsub>L1\<^esub>" 50)
-notation t2.left_ge_Galois (infix "\<^bsub>L2\<^esub>\<greaterapprox>" 50)
-notation t2.Galois_left (infix "\<lessapprox>\<^bsub>L2\<^esub>" 50)
+notation t1.left_ge_Galois (infix \<open>\<^bsub>L1\<^esub>\<greaterapprox>\<close> 50)
+notation t1.Galois_left (infix \<open>\<lessapprox>\<^bsub>L1\<^esub>\<close> 50)
+notation t2.left_ge_Galois (infix \<open>\<^bsub>L2\<^esub>\<greaterapprox>\<close> 50)
+notation t2.Galois_left (infix \<open>\<lessapprox>\<^bsub>L2\<^esub>\<close> 50)
 
-notation t1.unit ("\<eta>\<^sub>1")
-notation t1.counit ("\<epsilon>\<^sub>1")
-notation t2.unit ("\<eta>\<^sub>2")
-notation t2.counit ("\<epsilon>\<^sub>2")
+notation t1.unit (\<open>\<eta>\<^sub>1\<close>)
+notation t1.counit (\<open>\<epsilon>\<^sub>1\<close>)
+notation t2.unit (\<open>\<eta>\<^sub>2\<close>)
+notation t2.counit (\<open>\<epsilon>\<^sub>2\<close>)
 
 definition "L \<equiv> (\<^bsub>L1\<^esub>\<lessapprox>) \<circ>\<circ> (\<le>\<^bsub>L2\<^esub>) \<circ>\<circ> (\<^bsub>R1\<^esub>\<lessapprox>)"
 
@@ -99,8 +99,8 @@ sublocale transport L R l r .
 
 (*FIXME: somehow the notation for the fixed parameters L and R, defined in
 Order_Functions_Base.thy, is lost. We hence re-declare it here.*)
-notation L (infix "\<le>\<^bsub>L\<^esub>" 50)
-notation R (infix "\<le>\<^bsub>R\<^esub>" 50)
+notation L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
+notation R (infix \<open>\<le>\<^bsub>R\<^esub>\<close> 50)
 
 lemma left_relI [intro]:
   assumes "x \<^bsub>L1\<^esub>\<lessapprox> y"

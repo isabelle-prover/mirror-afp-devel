@@ -895,12 +895,12 @@ I do not know if such a choice is always possible -- such a choice of geodesics 
 called a geodesic bicombing.
 We also write \verb+{x--y}+ for \verb+{x--UNIV--y}+.\<close>
 
-definition some_geodesic_segment_between::"'a::metric_space \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1{_--_--_})")
+definition some_geodesic_segment_between::"'a::metric_space \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>(1{_--_--_})\<close>)
   where "some_geodesic_segment_between = (SOME f. \<forall> x y S. f x S y = f y S x
     \<and> (if (\<exists>G. geodesic_segment_between G x y \<and> G \<subseteq> S) then (geodesic_segment_between (f x S y) x y \<and> (f x S y \<subseteq> S))
         else f x S y = {x, y}))"
 
-abbreviation some_geodesic_segment_between_UNIV::"'a::metric_space \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1{_--_})")
+abbreviation some_geodesic_segment_between_UNIV::"'a::metric_space \<Rightarrow> 'a \<Rightarrow> 'a set" (\<open>(1{_--_})\<close>)
   where "some_geodesic_segment_between_UNIV x y \<equiv> {x--UNIV--y}"
 
 text \<open>We prove that there is such a choice of geodesics, compatible with direction reversal. What
@@ -1565,12 +1565,12 @@ is the only case of interest (any two bounded sets are quasi-isometric), we inco
 this requirement in the definition.\<close>
 
 definition quasi_isometry_on::"real \<Rightarrow> real \<Rightarrow> ('a::metric_space) set \<Rightarrow> ('a \<Rightarrow> ('b::metric_space)) \<Rightarrow> bool"
-  ("_ _ -quasi'_isometry'_on" [1000, 999])
+  (\<open>_ _ -quasi'_isometry'_on\<close> [1000, 999])
   where "lambda C-quasi_isometry_on X f = ((lambda \<ge> 1) \<and> (C \<ge> 0) \<and>
     (\<forall>x \<in> X. \<forall>y \<in> X. (dist (f x) (f y) \<le> lambda * dist x y + C \<and> dist (f x) (f y) \<ge> (1/lambda) * dist x y - C)))"
 
 abbreviation quasi_isometry :: "real \<Rightarrow> real \<Rightarrow> ('a::metric_space \<Rightarrow> 'b::metric_space) \<Rightarrow> bool"
-  ("_ _ -quasi'_isometry" [1000, 999])
+  (\<open>_ _ -quasi'_isometry\<close> [1000, 999])
   where "quasi_isometry lambda C f \<equiv> lambda C-quasi_isometry_on UNIV f"
 
 subsection \<open>Basic properties of quasi-isometries\<close>
@@ -1757,7 +1757,7 @@ whose (quasi)-inverse (which is non-unique) is given by the function integer par
 formalized in the next definition.\<close>
 
 definition quasi_isometry_between::"real \<Rightarrow> real \<Rightarrow> ('a::metric_space) set \<Rightarrow> ('b::metric_space) set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
-  ("_ _ -quasi'_isometry'_between" [1000, 999])
+  (\<open>_ _ -quasi'_isometry'_between\<close> [1000, 999])
   where "lambda C-quasi_isometry_between X Y f = ((lambda C-quasi_isometry_on X f) \<and> (f`X \<subseteq> Y) \<and> (\<forall>y\<in>Y. \<exists>x\<in>X. dist (f x) y \<le> C))"
 
 definition quasi_isometric::"('a::metric_space) set \<Rightarrow> ('b::metric_space) set \<Rightarrow> bool"

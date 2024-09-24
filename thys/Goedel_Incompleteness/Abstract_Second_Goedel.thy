@@ -30,7 +30,7 @@ and Var FvarsT substT Fvars subst
 and num
 and eql cnj imp all exi
 and prv bprv
-and enc ("\<langle>_\<rangle>")
+and enc (\<open>\<langle>_\<rangle>\<close>)
 and S
 and P
 and fls

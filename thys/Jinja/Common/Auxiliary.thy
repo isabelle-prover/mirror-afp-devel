@@ -19,7 +19,7 @@ lemma Suc_add_max_le[simp]:
 (*<*)by arith(*>*)
 
 
-notation Some  ("(\<lfloor>_\<rfloor>)")
+notation Some  (\<open>(\<lfloor>_\<rfloor>)\<close>)
 
 (*<*)
 declare

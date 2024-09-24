@@ -19,25 +19,25 @@ context sifum_modes
 begin
 
 abbreviation eval_abv_modes :: "(_, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
-  (infixl "\<leadsto>" 70)
+  (infixl \<open>\<leadsto>\<close> 70)
   where
   "x \<leadsto> y \<equiv> (x, y) \<in> eval\<^sub>w"
 
 fun update_annos :: "'Var Mds \<Rightarrow> 'Var ModeUpd list \<Rightarrow> 'Var Mds"
-(infix "\<oplus>" 140)
+(infix \<open>\<oplus>\<close> 140)
   where
   "update_annos mds [] = mds" |
   "update_annos mds (a # as) = update_annos (update_modes a mds) as"
 
 fun annotate :: "('Var, 'AExp, 'BExp) Stmt \<Rightarrow> 'Var ModeUpd list \<Rightarrow> ('Var, 'AExp, 'BExp) Stmt"
-(infix "\<otimes>" 140)
+(infix \<open>\<otimes>\<close> 140)
   where
   "annotate c [] = c" |
   "annotate c (a # as) = (annotate c as)@[a]"
 
 inductive mode_type :: "'Var Mds \<Rightarrow>
   ('Var, 'AExp, 'BExp) Stmt \<Rightarrow>
-  'Var Mds \<Rightarrow> bool" ("\<turnstile> _ { _ } _")
+  'Var Mds \<Rightarrow> bool" (\<open>\<turnstile> _ { _ } _\<close>)
   where
   skip: "\<turnstile> mds { Skip \<otimes> annos } (mds \<oplus> annos)" |
   assign: "\<lbrakk> x \<notin> mds GuarNoWrite ; aexp_vars e \<inter> mds GuarNoRead = {} \<rbrakk> \<Longrightarrow>

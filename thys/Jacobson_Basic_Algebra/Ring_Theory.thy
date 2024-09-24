@@ -5,10 +5,10 @@
 
 theory Ring_Theory imports Group_Theory begin
 
-no_notation plus (infixl "+" 65)
-no_notation minus (infixl "-" 65)
-no_notation uminus ("- _" [81] 80)
-no_notation quotient (infixl "'/'/" 90)
+no_notation plus (infixl \<open>+\<close> 65)
+no_notation minus (infixl \<open>-\<close> 65)
+no_notation uminus (\<open>- _\<close> [81] 80)
+no_notation quotient (infixl \<open>'/'/\<close> 90)
 
 
 section \<open>Rings\<close>
@@ -18,21 +18,21 @@ subsection \<open>Definition and Elementary Properties\<close>
 text \<open>Def 2.1\<close>
 text \<open>p 86, ll 20--28\<close>
 locale ring = additive: abelian_group R "(+)" \<zero> + multiplicative: monoid R "(\<cdot>)" \<one>
-  for R and addition (infixl "+" 65) and multiplication (infixl "\<cdot>" 70) and zero ("\<zero>") and unit ("\<one>") +
+  for R and addition (infixl \<open>+\<close> 65) and multiplication (infixl \<open>\<cdot>\<close> 70) and zero (\<open>\<zero>\<close>) and unit (\<open>\<one>\<close>) +
   assumes distributive: "\<lbrakk> a \<in> R; b \<in> R; c \<in> R \<rbrakk> \<Longrightarrow> a \<cdot> (b + c) = a \<cdot> b + a \<cdot> c"
     "\<lbrakk> a \<in> R; b \<in> R; c \<in> R \<rbrakk> \<Longrightarrow> (b + c) \<cdot> a = b \<cdot> a + c \<cdot> a"
 begin
 
 text \<open>p 86, ll 20--28\<close>
-notation additive.inverse ("- _" [66] 65)
-abbreviation subtraction (infixl "-" 65) where "a - b \<equiv> a + (- b)"  (* or, alternatively, a definition *)
+notation additive.inverse (\<open>- _\<close> [66] 65)
+abbreviation subtraction (infixl \<open>-\<close> 65) where "a - b \<equiv> a + (- b)"  (* or, alternatively, a definition *)
 
 end (* ring *)
 
 text \<open>p 87, ll 10--12\<close>
 locale subring =
   additive: subgroup S R "(+)" \<zero> + multiplicative: submonoid S R "(\<cdot>)" \<one>
-  for S and R and addition (infixl "+" 65) and multiplication (infixl "\<cdot>" 70) and zero ("\<zero>") and unit ("\<one>")
+  for S and R and addition (infixl \<open>+\<close> 65) and multiplication (infixl \<open>\<cdot>\<close> 70) and zero (\<open>\<zero>\<close>) and unit (\<open>\<one>\<close>)
 
 context ring begin
 
@@ -91,9 +91,9 @@ locale ring_congruence = ring +
 begin
 
 text \<open>p 101, ll 2--5\<close>
-notation additive.quotient_composition (infixl "[+]" 65)
-notation additive.quotient.inverse ("[-] _" [66] 65)
-notation multiplicative.quotient_composition (infixl "[\<cdot>]" 70)
+notation additive.quotient_composition (infixl \<open>[+]\<close> 65)
+notation additive.quotient.inverse (\<open>[-] _\<close> [66] 65)
+notation multiplicative.quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>p 101, ll 5--11\<close>
 sublocale quotient: ring "R / E" "([+])" "([\<cdot>])" "additive.Class \<zero>" "additive.Class \<one>"
@@ -106,7 +106,7 @@ end (* ring_congruence *)
 text \<open>p 101, ll 12--13\<close>
 locale subgroup_of_additive_group_of_ring =
   additive: subgroup I R "(+)" \<zero> + ring R "(+)" "(\<cdot>)" \<zero> \<one>
-  for I and R and addition (infixl "+" 65) and multiplication (infixl "\<cdot>" 70) and zero ("\<zero>") and unit ("\<one>")
+  for I and R and addition (infixl \<open>+\<close> 65) and multiplication (infixl \<open>\<cdot>\<close> 70) and zero (\<open>\<zero>\<close>) and unit (\<open>\<one>\<close>)
 begin
 
 text \<open>p 101, ll 13--14\<close>
@@ -143,7 +143,7 @@ proof -
 qed
 
 text \<open>p 101, l 14\<close>
-notation additive.Left_Coset (infixl "+|" 65)
+notation additive.Left_Coset (infixl \<open>+|\<close> 65)
 
 end (* subgroup_of_additive_group_of_ring *)
 
@@ -207,7 +207,7 @@ context ring begin
 
 text \<open>Pulled out of @{locale ideal} to achieve standard notation.\<close>
 text \<open>p 101, ll 24--26\<close>
-abbreviation Quotient_Ring (infixl "'/'/" 75)
+abbreviation Quotient_Ring (infixl \<open>'/'/\<close> 75)
   where "S // I \<equiv> S / (subgroup_of_additive_group_of_ring.Ring_Congruence I R (+) \<zero>)"
 
 end (* ring *)
@@ -247,8 +247,8 @@ locale ring_homomorphism =
   additive: group_homomorphism \<eta> R "(+)" \<zero> R' "(+')" "\<zero>'" +
   multiplicative: monoid_homomorphism \<eta> R "(\<cdot>)" \<one> R' "(\<cdot>')" "\<one>'"
   for \<eta>
-    and R and addition (infixl "+" 65) and multiplication (infixl "\<cdot>" 70) and zero ("\<zero>") and unit ("\<one>")
-    and R' and addition' (infixl "+''" 65) and multiplication' (infixl "\<cdot>''" 70) and zero' ("\<zero>''") and unit' ("\<one>''")
+    and R and addition (infixl \<open>+\<close> 65) and multiplication (infixl \<open>\<cdot>\<close> 70) and zero (\<open>\<zero>\<close>) and unit (\<open>\<one>\<close>)
+    and R' and addition' (infixl \<open>+''\<close> 65) and multiplication' (infixl \<open>\<cdot>''\<close> 70) and zero' (\<open>\<zero>''\<close>) and unit' (\<open>\<one>''\<close>)
 
 text \<open>p 106, l 17\<close>
 locale ring_epimorphism = ring_homomorphism + surjective_map \<eta> R R'
@@ -297,8 +297,8 @@ locale ideal_in_kernel =
 begin
 
 text \<open>p 106, ll 26--27\<close>
-notation contained.additive.quotient_composition (infixl "[+]" 65)
-notation contained.multiplicative.quotient_composition (infixl "[\<cdot>]" 70)
+notation contained.additive.quotient_composition (infixl \<open>[+]\<close> 65)
+notation contained.multiplicative.quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>Provides @{text additive.induced}, which Jacobson calls $\bar{\eta}$.\<close>
 text \<open>p 106, l 30\<close>
@@ -327,8 +327,8 @@ text \<open>p 107, l 6\<close>
 locale ring_homomorphism_fundamental = ring_homomorphism begin
 
 text \<open>p 107, l 6\<close>
-notation kernel.additive.quotient_composition (infixl "[+]" 65)
-notation kernel.multiplicative.quotient_composition (infixl "[\<cdot>]" 70)
+notation kernel.additive.quotient_composition (infixl \<open>[+]\<close> 65)
+notation kernel.multiplicative.quotient_composition (infixl \<open>[\<cdot>]\<close> 70)
 
 text \<open>p 107, l 6\<close>
 sublocale ideal_in_kernel where I = additive.Ker by unfold_locales rule
@@ -368,7 +368,7 @@ lemma inverse_ring_isomorphism:
 end (* ring_isomorphsim *)
 
 text \<open>p 107, l 11\<close>
-definition isomorphic_as_rings (infixl "\<cong>\<^sub>R" 50)
+definition isomorphic_as_rings (infixl \<open>\<cong>\<^sub>R\<close> 50)
   where "\<R> \<cong>\<^sub>R \<R>' \<longleftrightarrow> (let (R, addition, multiplication, zero, unit) = \<R>; (R', addition', multiplication', zero', unit') = \<R>' in
   (\<exists>\<eta>. ring_isomorphism \<eta> R addition multiplication zero unit R' addition' multiplication' zero' unit'))"
 

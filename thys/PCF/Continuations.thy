@@ -650,10 +650,10 @@ observation type being rich enough.
 context at_least_two_elements
 begin
 
-abbreviation mrel ("\<eta>: _ \<mapsto> _" [50, 51] 50) where
+abbreviation mrel (\<open>\<eta>: _ \<mapsto> _\<close> [50, 51] 50) where
   "\<eta>: x \<mapsto> x' \<equiv> (x, x') \<in> unlr (fst F.delta)"
 
-abbreviation vrel ("\<theta>: _ \<mapsto> _" [50, 51] 50) where
+abbreviation vrel (\<open>\<theta>: _ \<mapsto> _\<close> [50, 51] 50) where
   "\<theta>: y \<mapsto> y' \<equiv> (y, y') \<in> unlr (snd F.delta)"
 (*<*)
 lemma F_bottom_triv [intro, simp]:

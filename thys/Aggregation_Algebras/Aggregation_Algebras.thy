@@ -30,7 +30,7 @@ context sup
 begin
 
 no_notation
-  sup (infixl "+" 65)
+  sup (infixl \<open>+\<close> 65)
 
 end
 
@@ -38,7 +38,7 @@ context plus
 begin
 
 notation
-  plus (infixl "+" 65)
+  plus (infixl \<open>+\<close> 65)
 
 end
 

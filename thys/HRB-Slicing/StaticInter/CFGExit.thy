@@ -7,10 +7,10 @@ locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
   and kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind" 
   and valid_edge :: "'edge \<Rightarrow> bool"
-  and Entry :: "'node" ("'('_Entry'_')")  and get_proc :: "'node \<Rightarrow> 'pname"
+  and Entry :: "'node" (\<open>'('_Entry'_')\<close>)  and get_proc :: "'node \<Rightarrow> 'pname"
   and get_return_edges :: "'edge \<Rightarrow> 'edge set"
   and procs :: "('pname \<times> 'var list \<times> 'var list) list" and Main :: "'pname" +
-  fixes Exit::"'node"  ("'('_Exit'_')")
+  fixes Exit::"'node"  (\<open>'('_Exit'_')\<close>)
   assumes Exit_source [dest]: "\<lbrakk>valid_edge a; sourcenode a = (_Exit_)\<rbrakk> \<Longrightarrow> False"
   and get_proc_Exit:"get_proc (_Exit_) = Main"
   and Exit_no_return_target:

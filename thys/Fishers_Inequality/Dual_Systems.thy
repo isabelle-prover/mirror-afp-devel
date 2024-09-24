@@ -26,7 +26,7 @@ lemma dual_blocks_wf: "b \<in># dual_blocks V Bs \<Longrightarrow> b \<subseteq>
 context ordered_incidence_system
 begin
 
-definition dual_blocks_ordered :: "nat set list" ("\<B>s*") where
+definition dual_blocks_ordered :: "nat set list" (\<open>\<B>s*\<close>) where
 "dual_blocks_ordered \<equiv> map (\<lambda> x . {y . y < length \<B>s \<and> x \<in> \<B>s ! y}) \<V>s"
 
 lemma dual_blocks_ordered_eq: "dual_blocks \<V> \<B>s= mset (\<B>s*)"

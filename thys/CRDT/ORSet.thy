@@ -22,7 +22,7 @@ type_synonym ('id, 'a) state = "'a \<Rightarrow> 'id set"
 definition op_elem :: "('id, 'a) operation \<Rightarrow> 'a" where
   "op_elem oper \<equiv> case oper of Add i e \<Rightarrow> e | Rem is e \<Rightarrow> e"
 
-definition interpret_op :: "('id, 'a) operation \<Rightarrow> ('id, 'a) state \<rightharpoonup> ('id, 'a) state" ("\<langle>_\<rangle>" [0] 1000) where
+definition interpret_op :: "('id, 'a) operation \<Rightarrow> ('id, 'a) state \<rightharpoonup> ('id, 'a) state" (\<open>\<langle>_\<rangle>\<close> [0] 1000) where
   "interpret_op oper state \<equiv>
      let before = state (op_elem oper);
          after  = case oper of Add i e \<Rightarrow> before \<union> {i} | Rem is e \<Rightarrow> before - is

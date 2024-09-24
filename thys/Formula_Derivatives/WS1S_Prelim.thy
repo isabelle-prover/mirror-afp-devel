@@ -89,10 +89,10 @@ typedef interp =
 
 setup_lifting type_definition_interp
 
-lift_definition assigns :: "nat \<Rightarrow> interp \<Rightarrow> order \<Rightarrow> nat fset" ("_\<^bsup>_\<^esup>_" [900, 999, 999] 999)
+lift_definition assigns :: "nat \<Rightarrow> interp \<Rightarrow> order \<Rightarrow> nat fset" (\<open>_\<^bsup>_\<^esup>_\<close> [900, 999, 999] 999)
   is "\<lambda>n (_, I1, I2) ord. case ord of FO \<Rightarrow> if n < length I1 then I1 ! n else {||}
     | SO \<Rightarrow> if n < length I2 then I2 ! n else {||}" .
-lift_definition nvars :: "interp \<Rightarrow> idx" ("#\<^sub>V _" [1000] 900)
+lift_definition nvars :: "interp \<Rightarrow> idx" (\<open>#\<^sub>V _\<close> [1000] 900)
   is "\<lambda>(_, I1, I2). (length I1, length I2)" .
 lift_definition Length :: "interp \<Rightarrow> nat"
   is "\<lambda>(n, _, _). n" .

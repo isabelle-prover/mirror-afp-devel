@@ -74,18 +74,18 @@ fairness assertions.
 type_synonym 's bexp = "'s \<Rightarrow> bool"
 
 datatype ('answer, 'location, 'question, 'state) com
-  = Request  "'location" "'state \<Rightarrow> 'question" "'answer \<Rightarrow> 'state \<Rightarrow> 'state set"        ("\<lbrace>_\<rbrace> Request _ _"  [0, 70, 70] 71)
-  | Response "'location" "'question \<Rightarrow> 'state \<Rightarrow> ('state \<times> 'answer) set"               ("\<lbrace>_\<rbrace> Response _"  [0, 70] 71)
-  | LocalOp  "'location" "'state \<Rightarrow> 'state set"                                       ("\<lbrace>_\<rbrace> LocalOp _" [0, 70] 71)
-  | Cond1    "'location" "'state bexp" "('answer, 'location, 'question, 'state) com" ("\<lbrace>_\<rbrace> IF _ THEN _ FI" [0, 0, 0] 71)
+  = Request  "'location" "'state \<Rightarrow> 'question" "'answer \<Rightarrow> 'state \<Rightarrow> 'state set"        (\<open>\<lbrace>_\<rbrace> Request _ _\<close>  [0, 70, 70] 71)
+  | Response "'location" "'question \<Rightarrow> 'state \<Rightarrow> ('state \<times> 'answer) set"               (\<open>\<lbrace>_\<rbrace> Response _\<close>  [0, 70] 71)
+  | LocalOp  "'location" "'state \<Rightarrow> 'state set"                                       (\<open>\<lbrace>_\<rbrace> LocalOp _\<close> [0, 70] 71)
+  | Cond1    "'location" "'state bexp" "('answer, 'location, 'question, 'state) com" (\<open>\<lbrace>_\<rbrace> IF _ THEN _ FI\<close> [0, 0, 0] 71)
   | Cond2    "'location" "'state bexp" "('answer, 'location, 'question, 'state) com"
-                           "('answer, 'location, 'question, 'state) com"             ("\<lbrace>_\<rbrace> IF _/ THEN _/ ELSE _/ FI"  [0, 0, 0, 0] 71)
-  | Loop     "('answer, 'location, 'question, 'state) com"                           ("LOOP DO _/ OD"  [0] 71)
-  | While    "'location" "'state bexp" "('answer, 'location, 'question, 'state) com" ("\<lbrace>_\<rbrace> WHILE _/ DO _/ OD"  [0, 0, 0] 71)
+                           "('answer, 'location, 'question, 'state) com"             (\<open>\<lbrace>_\<rbrace> IF _/ THEN _/ ELSE _/ FI\<close>  [0, 0, 0, 0] 71)
+  | Loop     "('answer, 'location, 'question, 'state) com"                           (\<open>LOOP DO _/ OD\<close>  [0] 71)
+  | While    "'location" "'state bexp" "('answer, 'location, 'question, 'state) com" (\<open>\<lbrace>_\<rbrace> WHILE _/ DO _/ OD\<close>  [0, 0, 0] 71)
   | Seq      "('answer, 'location, 'question, 'state) com"
-              "('answer, 'location, 'question, 'state) com"                           (infixr ";;" 69)
+              "('answer, 'location, 'question, 'state) com"                           (infixr \<open>;;\<close> 69)
   | Choose   "('answer, 'location, 'question, 'state) com"
-              "('answer, 'location, 'question, 'state) com"                           (infixl "\<oplus>" 68)
+              "('answer, 'location, 'question, 'state) com"                           (infixl \<open>\<oplus>\<close> 68)
 
 text\<open>
 
@@ -119,18 +119,18 @@ distribution.
 
 \<close>
 
-abbreviation SKIP_syn ("\<lbrace>_\<rbrace>/ SKIP" [0] 71) where
+abbreviation SKIP_syn (\<open>\<lbrace>_\<rbrace>/ SKIP\<close> [0] 71) where
   "\<lbrace>l\<rbrace> SKIP \<equiv> \<lbrace>l\<rbrace> LocalOp (\<lambda>s. {s})"
 
 abbreviation (input) DetLocalOp :: "'location \<Rightarrow> ('state \<Rightarrow> 'state)
-                                  \<Rightarrow> ('answer, 'location, 'question, 'state) com" ("\<lbrace>_\<rbrace> \<lfloor>_\<rfloor>" [0, 0] 71) where
+                                  \<Rightarrow> ('answer, 'location, 'question, 'state) com" (\<open>\<lbrace>_\<rbrace> \<lfloor>_\<rfloor>\<close> [0, 0] 71) where
   "\<lbrace>l\<rbrace> \<lfloor>f\<rfloor> \<equiv> \<lbrace>l\<rbrace> LocalOp (\<lambda>s. {f s})"
 
 syntax
-  "_quote"        :: "'b \<Rightarrow> ('a \<Rightarrow> 'b)" ("\<guillemotleft>_\<guillemotright>" [0] 1000)
-  "_antiquote"    :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" ("\<acute>_" [1000] 1000)
-  "_Assign"       :: "'location \<Rightarrow> idt \<Rightarrow> 'b \<Rightarrow> ('answer, 'location, 'question, 'state) com" ("(\<lbrace>_\<rbrace> \<acute>_ :=/ _)" [0, 0, 70] 71)
-  "_NonDetAssign" :: "'location \<Rightarrow> idt \<Rightarrow> 'b set \<Rightarrow> ('answer, 'location, 'question, 'state) com" ("(\<lbrace>_\<rbrace> \<acute>_ :\<in>/ _)" [0, 0, 70] 71)
+  "_quote"        :: "'b \<Rightarrow> ('a \<Rightarrow> 'b)" (\<open>\<guillemotleft>_\<guillemotright>\<close> [0] 1000)
+  "_antiquote"    :: "('a \<Rightarrow> 'b) \<Rightarrow> 'b" (\<open>\<acute>_\<close> [1000] 1000)
+  "_Assign"       :: "'location \<Rightarrow> idt \<Rightarrow> 'b \<Rightarrow> ('answer, 'location, 'question, 'state) com" (\<open>(\<lbrace>_\<rbrace> \<acute>_ :=/ _)\<close> [0, 0, 70] 71)
+  "_NonDetAssign" :: "'location \<Rightarrow> idt \<Rightarrow> 'b set \<Rightarrow> ('answer, 'location, 'question, 'state) com" (\<open>(\<lbrace>_\<rbrace> \<acute>_ :\<in>/ _)\<close> [0, 0, 70] 71)
 
 abbreviation (input) NonDetAssign :: "'location \<Rightarrow> (('val \<Rightarrow> 'val) \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> ('state \<Rightarrow> 'val set)
                                    \<Rightarrow> ('answer, 'location, 'question, 'state) com" where
@@ -169,9 +169,9 @@ by defining the type of externally-visible behaviour:
 \<close>
 
 datatype ('answer, 'question) seq_label
-  = sl_Internal ("\<tau>")
-  | sl_Send 'question 'answer ("\<guillemotleft>_, _\<guillemotright>")
-  | sl_Receive 'question 'answer ("\<guillemotright>_, _\<guillemotleft>")
+  = sl_Internal (\<open>\<tau>\<close>)
+  | sl_Send 'question 'answer (\<open>\<guillemotleft>_, _\<guillemotright>\<close>)
+  | sl_Receive 'question 'answer (\<open>\<guillemotright>_, _\<guillemotleft>\<close>)
 
 text\<open>
 
@@ -194,7 +194,7 @@ type_synonym ('answer, 'location, 'question, 'state) local_state
 inductive
   small_step :: "('answer, 'location, 'question, 'state) local_state
                \<Rightarrow> ('answer, 'question) seq_label
-               \<Rightarrow> ('answer, 'location, 'question, 'state) local_state \<Rightarrow> bool" ("_ \<rightarrow>\<^bsub>_\<^esub> _" [55, 0, 56] 55)
+               \<Rightarrow> ('answer, 'location, 'question, 'state) local_state \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^bsub>_\<^esub> _\<close> [55, 0, 56] 55)
 where
   "\<lbrakk> \<alpha> = action s; s' \<in> val \<beta> s \<rbrakk> \<Longrightarrow> (\<lbrace>l\<rbrace> Request action val # cs, _, s) \<rightarrow>\<^bsub>\<guillemotleft>\<alpha>, \<beta>\<guillemotright>\<^esub> (cs, Some l, s')"
 | "(s', \<beta>) \<in> action \<alpha> s \<Longrightarrow> (\<lbrace>l\<rbrace> Response action # cs, _, s) \<rightarrow>\<^bsub>\<guillemotright>\<alpha>, \<beta>\<guillemotleft>\<^esub> (cs, Some l, s')"
@@ -321,7 +321,7 @@ type_synonym ('proc, 'state) local_state_pred
   = "('proc, 'state) local_states \<Rightarrow> bool"
 
 definition LST :: "('answer, 'location, 'proc, 'question, 'state) system_state
-                 \<Rightarrow> ('proc, 'state) local_states" ("_\<down>" [1000] 1000) where
+                 \<Rightarrow> ('proc, 'state) local_states" (\<open>_\<down>\<close> [1000] 1000) where
   "s\<down> = cLST \<circ> GST s"
 
 abbreviation (input) LSTP :: "('proc, 'state) local_state_pred
@@ -469,7 +469,7 @@ where
 
 definition \<comment>\<open> state-based invariants only \<close>
   prerun_valid :: "('answer, 'location, 'proc, 'question, 'state, 'ext) pre_system_ext
-                   \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) state_pred \<Rightarrow> bool" ("_ \<Turnstile>\<^bsub>pre\<^esub> _" [11, 0] 11) (* FIXME priorities *)
+                   \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) state_pred \<Rightarrow> bool" (\<open>_ \<Turnstile>\<^bsub>pre\<^esub> _\<close> [11, 0] 11) (* FIXME priorities *)
 where
   "(sys \<Turnstile>\<^bsub>pre\<^esub> \<phi>) \<longleftrightarrow> (\<forall>\<sigma>. prerun sys \<sigma> \<longrightarrow> (\<box>\<lceil>\<phi>\<rceil>) \<sigma>)"
 
@@ -492,7 +492,7 @@ where
 
 definition
   valid :: "('answer, 'location, 'proc, 'question, 'state) system
-                   \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) system_state seq_pred \<Rightarrow> bool" ("_ \<Turnstile> _" [11, 0] 11) (* FIXME priorities *)
+                   \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) system_state seq_pred \<Rightarrow> bool" (\<open>_ \<Turnstile> _\<close> [11, 0] 11) (* FIXME priorities *)
 where
   "(sys \<Turnstile> \<phi>) \<longleftrightarrow> (\<forall>\<sigma>. run sys \<sigma> \<longrightarrow> \<phi> \<sigma>)"
 (*<*)

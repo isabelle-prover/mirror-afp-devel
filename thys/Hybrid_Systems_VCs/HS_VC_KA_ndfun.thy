@@ -16,8 +16,8 @@ theory HS_VC_KA_ndfun
 
 begin
 
-notation Abs_nd_fun ("_\<^sup>\<bullet>" [101] 100) 
-     and Rep_nd_fun ("_\<^sub>\<bullet>" [101] 100)
+notation Abs_nd_fun (\<open>_\<^sup>\<bullet>\<close> [101] 100) 
+     and Rep_nd_fun (\<open>_\<^sub>\<bullet>\<close> [101] 100)
 
 declare Abs_nd_fun_inverse [simp]
 

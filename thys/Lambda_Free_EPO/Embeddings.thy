@@ -94,7 +94,7 @@ lemma emb_step_at_is_App:"emb_step_at p d u \<noteq> u \<Longrightarrow> is_App 
 
 text \<open>Definition of an embedding step without using positions.\<close>
 
-inductive emb_step (infix "\<rightarrow>\<^sub>e\<^sub>m\<^sub>b" 50) where 
+inductive emb_step (infix \<open>\<rightarrow>\<^sub>e\<^sub>m\<^sub>b\<close> 50) where 
   left: "(App t1 t2) \<rightarrow>\<^sub>e\<^sub>m\<^sub>b t1" |
   right: "(App t1 t2) \<rightarrow>\<^sub>e\<^sub>m\<^sub>b t2" |
   context_left: "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> (App t u) \<rightarrow>\<^sub>e\<^sub>m\<^sub>b (App s u)" |
@@ -228,11 +228,11 @@ fun emb_at :: "(dir list \<times> dir) list \<Rightarrow> ('s, 'v) tm  \<Rightar
 
 text \<open>Definition of an embedding without using positions:\<close>
 
-inductive emb (infix "\<unrhd>\<^sub>e\<^sub>m\<^sub>b" 50) where
+inductive emb (infix \<open>\<unrhd>\<^sub>e\<^sub>m\<^sub>b\<close> 50) where
   refl: "t \<unrhd>\<^sub>e\<^sub>m\<^sub>b t" |
   step: "t \<unrhd>\<^sub>e\<^sub>m\<^sub>b u \<Longrightarrow> u \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s"
 
-abbreviation emb_neq (infix "\<rhd>\<^sub>e\<^sub>m\<^sub>b" 50) where "emb_neq t s \<equiv> t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s \<and> t \<noteq> s"
+abbreviation emb_neq (infix \<open>\<rhd>\<^sub>e\<^sub>m\<^sub>b\<close> 50) where "emb_neq t s \<equiv> t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s \<and> t \<noteq> s"
 
 text \<open>The two definitions coincide:\<close>
 

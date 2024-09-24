@@ -23,7 +23,7 @@ where
 
 abbreviation d_equal' :: "('id, 'val) State 
   \<Rightarrow> 'd::order \<Rightarrow> ('id, 'val) State \<Rightarrow> bool" 
-( "(_ =\<^bsub>_\<^esub> _)" )
+( \<open>(_ =\<^bsub>_\<^esub> _)\<close> )
 where
 "m =\<^bsub>d\<^esub> m' \<equiv> d_equal d m m'"
 
@@ -34,14 +34,14 @@ by (simp add: d_equal_def)
 
 
 abbreviation SRabbr :: "('exp, 'id, 'val, 'com) TLSteps_curry"
-("(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)" [0,0,0,0,0] 81)
+(\<open>(1\<langle>_,/_\<rangle>) \<rightarrow>\<lhd>_\<rhd>/ (1\<langle>_,/_\<rangle>)\<close> [0,0,0,0,0] 81)
 where
 "\<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle> \<equiv> ((c,m),\<alpha>,(p,m')) \<in> SR"
 
 
 \<comment> \<open>function for obtaining the unique memory (state) after one step for a command and a memory (state)\<close>
 definition NextMem :: "'com \<Rightarrow> ('id, 'val) State \<Rightarrow> ('id, 'val) State"
-( "\<lbrakk>_\<rbrakk>'(_')" )
+( \<open>\<lbrakk>_\<rbrakk>'(_')\<close> )
 where
 "\<lbrakk>c\<rbrakk>(m) \<equiv> (THE m'. (\<exists>p \<alpha>. \<langle>c,m\<rangle> \<rightarrow>\<lhd>\<alpha>\<rhd> \<langle>p,m'\<rangle>))"
 
@@ -64,7 +64,7 @@ where
 
 abbreviation dH_equal' :: "('id, 'val) State \<Rightarrow> 'd \<Rightarrow> ('d, 'exp) Hatches
   \<Rightarrow> ('id, 'val) State \<Rightarrow> bool"
-( "(_ \<sim>\<^bsub>_,_\<^esub> _)" )
+( \<open>(_ \<sim>\<^bsub>_,_\<^esub> _)\<close> )
 where
 "m \<sim>\<^bsub>d,H\<^esub> m' \<equiv> dH_equal d H m m'"
 

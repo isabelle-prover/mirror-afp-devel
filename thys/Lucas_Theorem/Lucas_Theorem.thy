@@ -7,7 +7,7 @@ theory Lucas_Theorem
   imports Main "HOL-Computational_Algebra.Computational_Algebra"
 begin
 
-notation fps_nth (infixl "$" 75)
+notation fps_nth (infixl \<open>$\<close> 75)
 
 section \<open>Extensions on Formal Power Series (FPS) Library\<close>
 

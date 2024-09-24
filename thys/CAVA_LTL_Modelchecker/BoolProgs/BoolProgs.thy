@@ -99,11 +99,11 @@ datatype
 
 locale BoolProg_Syntax begin
   notation 
-        Assign       ("_ ::= _" [999, 61] 61)
-    and Seq          ("_;/ _"  [60, 61] 60)
-    and GC           ("IF _ FI")
-    and IfTE         ("(IF _/ THEN _/ ELSE _)"  [0, 61, 61] 61)
-    and While        ("(WHILE _/ DO _)"  [0, 61] 61)
+        Assign       (\<open>_ ::= _\<close> [999, 61] 61)
+    and Seq          (\<open>_;/ _\<close>  [60, 61] 60)
+    and GC           (\<open>IF _ FI\<close>)
+    and IfTE         (\<open>(IF _/ THEN _/ ELSE _)\<close>  [0, 61, 61] 61)
+    and While        (\<open>(WHILE _/ DO _)\<close>  [0, 61] 61)
 end
 
 context begin interpretation BoolProg_Syntax .

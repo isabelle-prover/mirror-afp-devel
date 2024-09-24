@@ -31,24 +31,24 @@ Here we define the general predication i.e. predications are defined as relation
 This has the benefit that individual predication can also be expressed as set membership (e.g. see
 the lemma SocratesMortal). \<close>
 
-definition universal_affirmation :: "'a set  \<Rightarrow>'a set  \<Rightarrow> bool"  (infixr "Q" 80)
+definition universal_affirmation :: "'a set  \<Rightarrow>'a set  \<Rightarrow> bool"  (infixr \<open>Q\<close> 80)
   where "A Q B \<equiv> \<forall> b \<in> B . b \<in> A " 
 
-definition universal_denial ::  "'a set  \<Rightarrow>'a set   \<Rightarrow> bool"  (infixr "E" 80)
+definition universal_denial ::  "'a set  \<Rightarrow>'a set   \<Rightarrow> bool"  (infixr \<open>E\<close> 80)
   where "A E B \<equiv> \<forall> b \<in> B. ( b \<notin> A)  "
 
-definition particular_affirmation ::  " 'a set  \<Rightarrow>'a set  \<Rightarrow> bool"  (infixr "I" 80)
+definition particular_affirmation ::  " 'a set  \<Rightarrow>'a set  \<Rightarrow> bool"  (infixr \<open>I\<close> 80)
   where "A I B \<equiv> \<exists> b \<in> B. ( b \<in> A) "
 
-definition particular_denial ::  "'a set  \<Rightarrow>'a set \<Rightarrow> bool"  (infixr "Z" 80)
+definition particular_denial ::  "'a set  \<Rightarrow>'a set \<Rightarrow> bool"  (infixr \<open>Z\<close> 80)
   where "A Z B \<equiv> \<exists> b \<in> B. ( b \<notin> A) "
 
 text\<open> The above four definitions are known as the "square of opposition".\<close>
 
-definition indefinite_affirmation ::  " 'a set \<Rightarrow>'a set \<Rightarrow> bool"  (infixr "QI" 80)
+definition indefinite_affirmation ::  " 'a set \<Rightarrow>'a set \<Rightarrow> bool"  (infixr \<open>QI\<close> 80)
   where "A QI B \<equiv>(( \<forall> b \<in> B. (b \<in> A)) \<or>  (\<exists> b \<in> B. (b \<in> A))) "
 
-definition indefinite_denial ::  "'a set  \<Rightarrow>'a set \<Rightarrow> bool"  (infixr "EZ" 80)
+definition indefinite_denial ::  "'a set  \<Rightarrow>'a set \<Rightarrow> bool"  (infixr \<open>EZ\<close> 80)
   where "A EZ  B \<equiv> (( \<forall> b \<in> B. (b \<notin> A)) \<or> (\<exists> b \<in> B. (b \<notin> A)))  "
 
 lemma aristo_conversion1 : 

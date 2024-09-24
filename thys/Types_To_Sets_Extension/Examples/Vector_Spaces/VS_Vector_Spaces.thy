@@ -16,7 +16,7 @@ locale vector_space_with = ab_group_add plus\<^sub>V\<^sub>S zero\<^sub>V\<^sub>
     and zero\<^sub>V\<^sub>S (\<open>0\<^sub>V\<^sub>S\<close>)
     and minus\<^sub>V\<^sub>S (infixl \<open>-\<^sub>V\<^sub>S\<close> 65)
     and uminus\<^sub>V\<^sub>S (\<open>-\<^sub>V\<^sub>S _\<close> [81] 80) +
-  fixes scale :: "['f::field, 'vs] \<Rightarrow> 'vs" (infixr "*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h" 75)
+  fixes scale :: "['f::field, 'vs] \<Rightarrow> 'vs" (infixr \<open>*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h\<close> 75)
   assumes scale_right_distrib[algebra_simps]: 
     "a *s\<^sub>w\<^sub>i\<^sub>t\<^sub>h (x +\<^sub>V\<^sub>S y) = a *s\<^sub>w\<^sub>i\<^sub>t\<^sub>h x +\<^sub>V\<^sub>S a *s\<^sub>w\<^sub>i\<^sub>t\<^sub>h y"
     and scale_left_distrib[algebra_simps]:
@@ -29,7 +29,7 @@ notation plus\<^sub>V\<^sub>S (infixl \<open>+\<^sub>V\<^sub>S\<close> 65)
   and zero\<^sub>V\<^sub>S (\<open>0\<^sub>V\<^sub>S\<close>)
   and minus\<^sub>V\<^sub>S (infixl \<open>-\<^sub>V\<^sub>S\<close> 65)
   and uminus\<^sub>V\<^sub>S (\<open>-\<^sub>V\<^sub>S _\<close> [81] 80)
-  and scale (infixr "*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h" 75)
+  and scale (infixr \<open>*s\<^sub>w\<^sub>i\<^sub>t\<^sub>h\<close> 75)
   
 end
 
@@ -198,7 +198,7 @@ locale vector_space_ow = ab_group_add_ow U\<^sub>V\<^sub>S plus\<^sub>V\<^sub>S 
     and zero\<^sub>V\<^sub>S (\<open>0\<^sub>V\<^sub>S\<close>)
     and minus\<^sub>V\<^sub>S (infixl \<open>-\<^sub>V\<^sub>S\<close> 65)
     and uminus\<^sub>V\<^sub>S (\<open>-\<^sub>V\<^sub>S _\<close> [81] 80) +
-  fixes scale :: "['f::field, 'vs] \<Rightarrow> 'vs" (infixr "*s\<^sub>o\<^sub>w" 75)
+  fixes scale :: "['f::field, 'vs] \<Rightarrow> 'vs" (infixr \<open>*s\<^sub>o\<^sub>w\<close> 75)
   assumes scale_closed[simp, intro]: "x \<in> U\<^sub>V\<^sub>S \<Longrightarrow> a *s\<^sub>o\<^sub>w x \<in> U\<^sub>V\<^sub>S"
     and scale_right_distrib[algebra_simps]: 
     "\<lbrakk> x \<in> U\<^sub>V\<^sub>S; y \<in> U\<^sub>V\<^sub>S \<rbrakk> \<Longrightarrow> a *s\<^sub>o\<^sub>w (x +\<^sub>V\<^sub>S y) = a *s\<^sub>o\<^sub>w x +\<^sub>V\<^sub>S a *s\<^sub>o\<^sub>w y"
@@ -297,7 +297,7 @@ locale finite_dimensional_vector_space_ow =
     and zero\<^sub>V\<^sub>S (\<open>0\<^sub>V\<^sub>S\<close>)
     and minus\<^sub>V\<^sub>S (infixl \<open>-\<^sub>V\<^sub>S\<close> 65)
     and uminus\<^sub>V\<^sub>S (\<open>-\<^sub>V\<^sub>S _\<close> [81] 80) 
-    and scale :: "['f::field, 'vs] \<Rightarrow> 'vs" (infixr "*s\<^sub>o\<^sub>w" 75) +
+    and scale :: "['f::field, 'vs] \<Rightarrow> 'vs" (infixr \<open>*s\<^sub>o\<^sub>w\<close> 75) +
   fixes basis :: "'vs set"
   assumes basis_closed: "basis \<subseteq> U\<^sub>V\<^sub>S"
     and finite_basis: "finite basis"
@@ -630,10 +630,10 @@ lemma finite_dimensional_vector_space_pair_with_transfer[transfer_rule]:
 subsection\<open>\<open>vector_space_on\<close>\<close>
 
 locale vector_space_on = module_on U\<^sub>V\<^sub>S scale
-  for U\<^sub>V\<^sub>S and scale :: "'a::field \<Rightarrow> 'b::ab_group_add \<Rightarrow> 'b" (infixr "*s" 75)
+  for U\<^sub>V\<^sub>S and scale :: "'a::field \<Rightarrow> 'b::ab_group_add \<Rightarrow> 'b" (infixr \<open>*s\<close> 75)
 begin
 
-notation scale (infixr "*s" 75)
+notation scale (infixr \<open>*s\<close> 75)
 
 sublocale implicit\<^sub>V\<^sub>S: vector_space_ow U\<^sub>V\<^sub>S \<open>(+)\<close> 0 \<open>(-)\<close> uminus scale
   by unfold_locales 

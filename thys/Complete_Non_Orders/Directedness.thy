@@ -5,7 +5,7 @@ begin
 text \<open>Directed sets:\<close>
 
 locale directed =
-  fixes A and less_eq (infix "\<sqsubseteq>" 50)
+  fixes A and less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes pair_bounded: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> \<exists>z \<in> A. x \<sqsubseteq> z \<and> y \<sqsubseteq> z"
 
 lemmas directedI[intro] = directed.intro
@@ -13,7 +13,7 @@ lemmas directedI[intro] = directed.intro
 lemmas directedD = directed_def[unfolded atomize_eq, THEN iffD1, rule_format]
 
 context
-  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma directedE:
@@ -63,7 +63,7 @@ qed
 lemmas(in connex) directed = directed_axioms
 
 lemma monotone_directed_image:
-  fixes ir (infix "\<preceq>" 50) and r (infix "\<sqsubseteq>" 50)
+  fixes ir (infix \<open>\<preceq>\<close> 50) and r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f" and dir: "directed I (\<preceq>)"
   shows "directed (f ` I) (\<sqsubseteq>)"
 proof (rule directedI, safe)
@@ -75,24 +75,24 @@ qed
 
 
 definition "directed_set A (\<sqsubseteq>) \<equiv> \<forall>X \<subseteq> A. finite X \<longrightarrow> (\<exists>b \<in> A. bound X (\<sqsubseteq>) b)"
-  for less_eq (infix "\<sqsubseteq>" 50)
+  for less_eq (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemmas directed_setI = directed_set_def[unfolded atomize_eq, THEN iffD2, rule_format]
 lemmas directed_setD = directed_set_def[unfolded atomize_eq, THEN iffD1, rule_format]
 
 lemma directed_imp_nonempty:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   shows "directed_set A (\<sqsubseteq>) \<Longrightarrow> A \<noteq> {}"
   by (auto simp: directed_set_def)
 
 lemma directedD2:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes dir: "directed_set A (\<sqsubseteq>)" and xA: "x \<in> A" and yA: "y \<in> A"
   shows "\<exists>z \<in> A. x \<sqsubseteq> z \<and> y \<sqsubseteq> z"
   using directed_setD[OF dir, of "{x,y}"] xA yA by auto
 
 lemma monotone_directed_set_image:
-  fixes ir (infix "\<preceq>" 50) and r (infix "\<sqsubseteq>" 50)
+  fixes ir (infix \<open>\<preceq>\<close> 50) and r (infix \<open>\<sqsubseteq>\<close> 50)
   assumes mono: "monotone_on I (\<preceq>) (\<sqsubseteq>) f" and dir: "directed_set I (\<preceq>)"
   shows "directed_set (f ` I) (\<sqsubseteq>)"
 proof (rule directed_setI)
@@ -107,7 +107,7 @@ qed
 
 
 lemma directed_set_iff_extremed:
-  fixes less_eq (infix "\<sqsubseteq>" 50)
+  fixes less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes Dfin: "finite D"
   shows "directed_set D (\<sqsubseteq>) \<longleftrightarrow> extremed D (\<sqsubseteq>)"
 proof (intro iffI directed_setI conjI)
@@ -199,7 +199,7 @@ proof (intro directed_setI)
 qed
 
 lemma prod_directed:
-  fixes leA (infix "\<sqsubseteq>\<^sub>A" 50) and leB (infix "\<sqsubseteq>\<^sub>B" 50)
+  fixes leA (infix \<open>\<sqsubseteq>\<^sub>A\<close> 50) and leB (infix \<open>\<sqsubseteq>\<^sub>B\<close> 50)
   assumes dir: "directed X (rel_prod (\<sqsubseteq>\<^sub>A) (\<sqsubseteq>\<^sub>B))"
   shows "directed (fst ` X) (\<sqsubseteq>\<^sub>A)" and "directed (snd ` X) (\<sqsubseteq>\<^sub>B)"
 proof (safe intro!: directedI)

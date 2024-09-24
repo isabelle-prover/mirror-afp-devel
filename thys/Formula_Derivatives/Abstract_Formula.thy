@@ -110,7 +110,7 @@ lemma juncts_singleton:
 lemma nonempty_juncts_list: "conjuncts_list \<phi> \<noteq> []" "disjuncts_list \<phi> \<noteq> []"
   using nonempty_juncts[of \<phi>] by (auto simp: Suc_le_eq juncts_eq_set_juncts_list)
 
-primrec norm_ACI ("\<langle>_\<rangle>") where
+primrec norm_ACI (\<open>\<langle>_\<rangle>\<close>) where
   "\<langle>FBool b\<rangle> = FBool b"
 | "\<langle>FBase a\<rangle> = FBase a"
 | "\<langle>FNot \<phi>\<rangle> = FNot \<langle>\<phi>\<rangle>"
@@ -229,8 +229,8 @@ locale Formula_Operations =
   and LESS :: "'k \<Rightarrow> nat \<Rightarrow> 'n \<Rightarrow> bool"
 
   (* Interpratations *)
-  and assigns :: "nat \<Rightarrow> 'i \<Rightarrow> 'k \<Rightarrow> 'v" ("_\<^bsup>_\<^esup>_" [900, 999, 999] 999)
-  and nvars :: "'i \<Rightarrow> 'n" ("#\<^sub>V _" [1000] 900)
+  and assigns :: "nat \<Rightarrow> 'i \<Rightarrow> 'k \<Rightarrow> 'v" (\<open>_\<^bsup>_\<^esup>_\<close> [900, 999, 999] 999)
+  and nvars :: "'i \<Rightarrow> 'n" (\<open>#\<^sub>V _\<close> [1000] 900)
   and Extend :: "'k \<Rightarrow> nat \<Rightarrow> 'i \<Rightarrow> 'v \<Rightarrow> 'i"
   and CONS :: "'x \<Rightarrow> 'i \<Rightarrow> 'i"
   and SNOC :: "'x \<Rightarrow> 'i \<Rightarrow> 'i"
@@ -260,7 +260,7 @@ locale Formula_Operations =
   and find0 :: "'k \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> bool"
   and wf0 :: "'n \<Rightarrow> 'a \<Rightarrow> bool"
   and decr0 :: "'k \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a"
-  and satisfies0 :: "'i \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>0" 50)
+  and satisfies0 :: "'i \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<Turnstile>\<^sub>0\<close> 50)
   and nullable0 :: "'a \<Rightarrow> bool"
   and lderiv0 :: "'x \<Rightarrow> 'a \<Rightarrow> ('a, 'k) aformula"
   and rderiv0 :: "'x \<Rightarrow> 'a \<Rightarrow> ('a, 'k) aformula"
@@ -322,10 +322,10 @@ primrec satisfies_gen :: "('k \<Rightarrow> 'v \<Rightarrow> nat \<Rightarrow> b
 | "satisfies_gen r \<AA> (FEx k \<phi>) = (\<exists>P. r k P (Length \<AA>) \<and> satisfies_gen r (Extend k 0 \<AA> P) \<phi>)"
 | "satisfies_gen r \<AA> (FAll k \<phi>) = (\<forall>P. r k P (Length \<AA>) \<longrightarrow> satisfies_gen r (Extend k 0 \<AA> P) \<phi>)"
 
-abbreviation satisfies (infix "\<Turnstile>" 50) where
+abbreviation satisfies (infix \<open>\<Turnstile>\<close> 50) where
   "\<AA> \<Turnstile> \<phi> \<equiv> satisfies_gen (\<lambda>_ _ _. True) \<AA> \<phi>"
 
-abbreviation satisfies_bounded (infix "\<Turnstile>\<^sub>b" 50) where
+abbreviation satisfies_bounded (infix \<open>\<Turnstile>\<^sub>b\<close> 50) where
   "\<AA> \<Turnstile>\<^sub>b \<phi> \<equiv> satisfies_gen (\<lambda>_ P n. len P \<le> n) \<AA> \<phi>"
 
 abbreviation sat_vars_gen where

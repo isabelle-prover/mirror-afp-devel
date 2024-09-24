@@ -206,7 +206,7 @@ where
          | _ \<Rightarrow> undefined)
    | _ \<Rightarrow> undefined)"
 
-definition action_order :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_ \<turnstile> _ \<le>a _" [51,0,50] 50)
+definition action_order :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<le>a _\<close> [51,0,50] 50)
 where
   "E \<turnstile> a \<le>a a' \<longleftrightarrow>
    a \<in> actions E \<and> a' \<in> actions E \<and> 
@@ -214,14 +214,14 @@ where
     then is_new_action (action_obs E a') \<longrightarrow> a \<le> a'
     else \<not> is_new_action (action_obs E a') \<and> a \<le> a')"
 
-definition program_order :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" ("_ \<turnstile> _ \<le>po _" [51,0,50] 50)
+definition program_order :: "('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<le>po _\<close> [51,0,50] 50)
 where
   "E \<turnstile> a \<le>po a' \<longleftrightarrow> E \<turnstile> a \<le>a a' \<and> action_tid E a = action_tid E a'"
 
 inductive synchronizes_with :: 
   "'m prog 
   \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) \<Rightarrow> ('thread_id \<times> ('addr, 'thread_id) obs_event action) \<Rightarrow> bool" 
-  ("_ \<turnstile> _ \<leadsto>sw _" [51, 51, 51] 50)
+  (\<open>_ \<turnstile> _ \<leadsto>sw _\<close> [51, 51, 51] 50)
   for P :: "'m prog"
 where
   ThreadStart: "P \<turnstile> (t, NormalAction (ThreadStart t')) \<leadsto>sw (t', InitialThreadAction)"
@@ -239,13 +239,13 @@ where
 
 definition sync_order :: 
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
-  ("_,_ \<turnstile> _ \<le>so _" [51,0,0,50] 50)
+  (\<open>_,_ \<turnstile> _ \<le>so _\<close> [51,0,0,50] 50)
 where
   "P,E \<turnstile> a \<le>so a' \<longleftrightarrow> a \<in> sactions P E \<and> a' \<in> sactions P E \<and> E \<turnstile> a \<le>a a'"
 
 definition sync_with :: 
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
-  ("_,_ \<turnstile> _ \<le>sw _" [51, 0, 0, 50] 50)
+  (\<open>_,_ \<turnstile> _ \<le>sw _\<close> [51, 0, 0, 50] 50)
 where
   "P,E \<turnstile> a \<le>sw a' \<longleftrightarrow>
    P,E \<turnstile> a \<le>so a' \<and> P \<turnstile> (action_tid E a, action_obs E a) \<leadsto>sw (action_tid E a', action_obs E a')"
@@ -255,7 +255,7 @@ where "po_sw P E a a' \<longleftrightarrow> E \<turnstile> a \<le>po a' \<or> P,
 
 abbreviation happens_before :: 
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
-  ("_,_ \<turnstile> _ \<le>hb _" [51, 0, 0, 50] 50)
+  (\<open>_,_ \<turnstile> _ \<le>hb _\<close> [51, 0, 0, 50] 50)
 where "happens_before P E \<equiv> (po_sw P E)^++"
 
 type_synonym write_seen = "JMM_action \<Rightarrow> JMM_action"
@@ -276,11 +276,11 @@ where
   (\<forall>a \<in> actions E. \<not> is_new_action (action_obs E a) \<longrightarrow> 
      (\<exists>i. i \<le> a \<and> action_obs E i = InitialThreadAction \<and> action_tid E i = action_tid E a))"
 
-primrec wf_exec :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> bool" ("_ \<turnstile> _ \<surd>" [51, 50] 51)
+primrec wf_exec :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<surd>\<close> [51, 50] 51)
 where "P \<turnstile> (E, ws) \<surd> \<longleftrightarrow> is_write_seen P E ws \<and> thread_start_actions_ok E"
 
 inductive most_recent_write_for :: "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool"
-  ("_,_ \<turnstile> _ \<leadsto>mrw _" [50, 0, 51] 51)
+  (\<open>_,_ \<turnstile> _ \<leadsto>mrw _\<close> [50, 0, 51] 51)
 for P :: "'m prog" and E :: "('addr, 'thread_id) execution" and ra :: JMM_action and wa :: JMM_action
 where
   "\<lbrakk> ra \<in> read_actions E; adal \<in> action_loc P E ra; E \<turnstile> wa \<le>a ra;
@@ -880,7 +880,7 @@ text \<open>Similar actions differ only in the values written/read.\<close>
 
 inductive sim_action :: 
   "('addr, 'thread_id) obs_event action \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool" 
-  ("_ \<approx> _" [50, 50] 51)
+  (\<open>_ \<approx> _\<close> [50, 50] 51)
 where
   InitialThreadAction: "InitialThreadAction \<approx> InitialThreadAction"
 | ThreadFinishAction: "ThreadFinishAction \<approx> ThreadFinishAction"
@@ -895,7 +895,7 @@ where
 | ObsInterrupt: "NormalAction (ObsInterrupt t) \<approx> NormalAction (ObsInterrupt t)"
 | ObsInterrupted: "NormalAction (ObsInterrupted t) \<approx> NormalAction (ObsInterrupted t)"
 
-definition sim_actions :: "('addr, 'thread_id) execution \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> bool" ("_ [\<approx>] _" [51, 50] 51)
+definition sim_actions :: "('addr, 'thread_id) execution \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> bool" (\<open>_ [\<approx>] _\<close> [51, 50] 51)
 where "sim_actions = llist_all2 (\<lambda>(t, a) (t', a'). t = t' \<and> a \<approx> a')"
 
 lemma sim_action_refl [intro!, simp]:
@@ -1174,7 +1174,7 @@ text \<open>
 
 primrec is_justified_by ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> ('addr, 'thread_id) justification \<Rightarrow> bool" 
-  ("_ \<turnstile> _ justified'_by _" [51, 50, 50] 50)
+  (\<open>_ \<turnstile> _ justified'_by _\<close> [51, 50, 50] 50)
 where
   "P \<turnstile> (E, ws) justified_by J \<longleftrightarrow>
    is_commit_sequence E J \<and>
@@ -1198,7 +1198,7 @@ text \<open>
 \<close>
 primrec is_weakly_justified_by ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> ('addr, 'thread_id) justification \<Rightarrow> bool" 
-  ("_ \<turnstile> _ weakly'_justified'_by _" [51, 50, 50] 50)
+  (\<open>_ \<turnstile> _ weakly'_justified'_by _\<close> [51, 50, 50] 50)
 where
   "P \<turnstile> (E, ws) weakly_justified_by J \<longleftrightarrow>
    is_commit_sequence E J \<and>
@@ -1233,7 +1233,7 @@ text \<open>
 
 definition non_volatile_conflict ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<Rightarrow> JMM_action \<Rightarrow> JMM_action \<Rightarrow> bool" 
-  ("_,_ \<turnstile>/(_)\<dagger>(_)" [51,50,50,50] 51)
+  (\<open>_,_ \<turnstile>/(_)\<dagger>(_)\<close> [51,50,50,50] 51)
 where 
   "P,E \<turnstile> a \<dagger> a' \<longleftrightarrow>
    (a \<in> read_actions E \<and> a' \<in> write_actions E \<or>

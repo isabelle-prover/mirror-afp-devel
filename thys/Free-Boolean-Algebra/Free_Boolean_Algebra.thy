@@ -10,10 +10,10 @@ begin
 
 (*<*)
 notation
-  bot ("\<bottom>") and
-  top ("\<top>") and
-  inf  (infixl "\<sqinter>" 70) and
-  sup  (infixl "\<squnion>" 65)
+  bot (\<open>\<bottom>\<close>) and
+  top (\<open>\<top>\<close>) and
+  inf  (infixl \<open>\<sqinter>\<close> 70) and
+  sup  (infixl \<open>\<squnion>\<close> 65)
 
 lemma sup_conv_inf:
   fixes x y :: "'a::boolean_algebra"

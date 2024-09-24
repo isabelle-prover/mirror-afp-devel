@@ -443,7 +443,7 @@ another semiring (or dioid), called its \emph{dual} or
 \emph{opposite}.
 \<close>
 
-definition (in times) opp_mult (infixl "\<odot>" 70)
+definition (in times) opp_mult (infixl \<open>\<odot>\<close> 70)
   where "x \<odot> y \<equiv> y \<cdot> x"
 
 lemma (in semiring_1) dual_semiring_1:

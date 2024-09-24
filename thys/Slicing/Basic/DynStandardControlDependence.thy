@@ -6,7 +6,7 @@ context Postdomination begin
 
 definition
   dyn_standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool"
-  ("_ controls\<^sub>s _ via _" [51,0,0])
+  (\<open>_ controls\<^sub>s _ via _\<close> [51,0,0])
 where dyn_standard_control_dependence_def:"n controls\<^sub>s n' via as \<equiv> 
     (\<exists>a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
                    (n' postdominates (targetnode a)) \<and>

@@ -64,13 +64,13 @@ text \<open>The following four functions use "promise sets", named $M$ or $N$, t
   respectively. In general the obtained formulas are not  equivalent, but under some conditions 
   (as outlined below) they are.\<close>
 
-no_notation FG_advice ("_[_]\<^sub>\<mu>" [90,60] 89)
-no_notation GF_advice ("_[_]\<^sub>\<nu>" [90,60] 89)
+no_notation FG_advice (\<open>_[_]\<^sub>\<mu>\<close> [90,60] 89)
+no_notation GF_advice (\<open>_[_]\<^sub>\<nu>\<close> [90,60] 89)
 
-notation FG_advice ("_[_]\<^sub>\<Sigma>\<^sub>1" [90,60] 89)
-notation GF_advice ("_[_]\<^sub>\<Pi>\<^sub>1" [90,60] 89)
+notation FG_advice (\<open>_[_]\<^sub>\<Sigma>\<^sub>1\<close> [90,60] 89)
+notation GF_advice (\<open>_[_]\<^sub>\<Pi>\<^sub>1\<close> [90,60] 89)
 
-fun flatten_sigma_2:: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" ("_[_]\<^sub>\<Sigma>\<^sub>2")
+fun flatten_sigma_2:: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" (\<open>_[_]\<^sub>\<Sigma>\<^sub>2\<close>)
 where
   "(\<phi> U\<^sub>n \<psi>)[M]\<^sub>\<Sigma>\<^sub>2 = (\<phi>[M]\<^sub>\<Sigma>\<^sub>2) U\<^sub>n (\<psi>[M]\<^sub>\<Sigma>\<^sub>2)"
 | "(\<phi> W\<^sub>n \<psi>)[M]\<^sub>\<Sigma>\<^sub>2 = (\<phi>[M]\<^sub>\<Sigma>\<^sub>2) U\<^sub>n ((\<psi>[M]\<^sub>\<Sigma>\<^sub>2) or\<^sub>n (G\<^sub>n \<phi>[M]\<^sub>\<Pi>\<^sub>1))"
@@ -81,7 +81,7 @@ where
 | "(X\<^sub>n \<phi>)[M]\<^sub>\<Sigma>\<^sub>2 = X\<^sub>n (\<phi>[M]\<^sub>\<Sigma>\<^sub>2)"
 | "\<phi>[M]\<^sub>\<Sigma>\<^sub>2 = \<phi>"
 
-fun flatten_pi_2 :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" ("_[_]\<^sub>\<Pi>\<^sub>2")
+fun flatten_pi_2 :: "'a ltln \<Rightarrow> 'a ltln set \<Rightarrow> 'a ltln" (\<open>_[_]\<^sub>\<Pi>\<^sub>2\<close>)
 where
   "(\<phi> W\<^sub>n \<psi>)[N]\<^sub>\<Pi>\<^sub>2 = (\<phi>[N]\<^sub>\<Pi>\<^sub>2) W\<^sub>n (\<psi>[N]\<^sub>\<Pi>\<^sub>2)"
 | "(\<phi> U\<^sub>n \<psi>)[N]\<^sub>\<Pi>\<^sub>2 = (\<phi>[N]\<^sub>\<Pi>\<^sub>2 and\<^sub>n (F\<^sub>n \<psi>[N]\<^sub>\<Sigma>\<^sub>1)) W\<^sub>n (\<psi>[N]\<^sub>\<Pi>\<^sub>2)"

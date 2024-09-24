@@ -66,13 +66,13 @@ unifying framework.\<close>
 text \<open>We would prefer a notation that is more similar to our articles, that is, $f\ast_R g$, but we don' know how we could 
 index an infix operator by a variable in Isabelle.\<close>
 
-definition bmod_comp :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd::proto_near_quantale) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a \<Rightarrow> 'd" ("\<otimes>") where 
+definition bmod_comp :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd::proto_near_quantale) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a \<Rightarrow> 'd" (\<open>\<otimes>\<close>) where 
   "\<otimes> R f g x = \<Squnion>{f y \<cdot> g z |y z. R x y z}"
 
-definition bmod_bres :: "('c \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd::proto_near_quantale) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a \<Rightarrow> 'd" ("\<lhd>") where 
+definition bmod_bres :: "('c \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd::proto_near_quantale) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a \<Rightarrow> 'd" (\<open>\<lhd>\<close>) where 
   "\<lhd> R f g x = \<Sqinter>{(f y) \<rightarrow> (g z) |y z. R z y x}"
 
-definition bmod_fres :: "('b \<Rightarrow> 'a \<Rightarrow> 'c \<Rightarrow> bool)  \<Rightarrow> ('b \<Rightarrow> 'd::proto_near_quantale) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a \<Rightarrow> 'd" ("\<rhd>")where 
+definition bmod_fres :: "('b \<Rightarrow> 'a \<Rightarrow> 'c \<Rightarrow> bool)  \<Rightarrow> ('b \<Rightarrow> 'd::proto_near_quantale) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> 'a \<Rightarrow> 'd" (\<open>\<rhd>\<close>)where 
   "\<rhd> R f g x = \<Sqinter>{(f y) \<leftarrow> (g z) |y z. R y x z}"
 
 lemma bmod_un_rel: "\<otimes> (R \<squnion> S) = \<otimes> R \<squnion> \<otimes> S"
@@ -196,7 +196,7 @@ class rel_magma =
 
 begin
   
-definition times_rel_fun :: "('a \<Rightarrow> 'b::proto_near_quantale) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infix "\<star>" 70) where
+definition times_rel_fun :: "('a \<Rightarrow> 'b::proto_near_quantale) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (infix \<open>\<star>\<close> 70) where
   "f \<star> g = \<otimes> \<rho> f g"
   
 lemma rel_fun_Sup_distl_weak: 
@@ -288,7 +288,7 @@ begin
 lemma xi_prop: "e1 \<in> \<xi> \<Longrightarrow> e2 \<in> \<xi> \<Longrightarrow> e1 \<noteq> e2 \<Longrightarrow> \<not> \<rho> x e1 e2 \<and> \<not> \<rho> x e2 e1"
   using unitl_eq unitr_eq by blast
 
-definition pid :: "'a  \<Rightarrow> 'b::unital_weak_quantale" ("\<delta>") where
+definition pid :: "'a  \<Rightarrow> 'b::unital_weak_quantale" (\<open>\<delta>\<close>) where
   "\<delta> x = (if x \<in> \<xi> then 1 else \<bottom>)"
   
 text \<open>Due to the absence of right annihilation, the right unit law fails for functions into weak quantales.\<close>

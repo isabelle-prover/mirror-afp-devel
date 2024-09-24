@@ -416,7 +416,7 @@ subsection \<open>Standard Expectations\<close>
 text_raw \<open>\label{s:standard}\<close>
 
 definition
-  embed_bool :: "('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> real" ("\<guillemotleft> _ \<guillemotright>" 1000)
+  embed_bool :: "('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> real" (\<open>\<guillemotleft> _ \<guillemotright>\<close> 1000)
 where
   "\<guillemotleft>P\<guillemotright> \<equiv> (\<lambda>s. if P s then 1 else 0)"
 
@@ -478,7 +478,7 @@ lemma embed_o[simp]:
 text \<open>Negating a predicate has the expected effect in its
 embedding as an expectation:\<close>
 
-definition negate :: "('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> bool" ("\<N>")
+definition negate :: "('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> bool" (\<open>\<N>\<close>)
 where     "negate P = (\<lambda>s. \<not> P s)"
 
 lemma negateI:
@@ -519,7 +519,7 @@ text_raw \<open>\label{s:entailment}\<close>
 text \<open>Entailment on expectations is a generalisation of that on predicates, and is defined by
 pointwise comparison:\<close>
 
-abbreviation entails :: "('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> bool" ("_ \<tturnstile> _" 50)
+abbreviation entails :: "('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> bool" (\<open>_ \<tturnstile> _\<close> 50)
 where "P \<tturnstile> Q \<equiv> P \<le> Q"
 
 lemma entailsI[intro]:
@@ -552,12 +552,12 @@ lemma entails_implies:
 subsection \<open>Expectation Conjunction\<close>
 
 definition
-  pconj :: "real \<Rightarrow> real \<Rightarrow>  real" (infixl ".&" 71)
+  pconj :: "real \<Rightarrow> real \<Rightarrow>  real" (infixl \<open>.&\<close> 71)
 where
   "p .& q \<equiv> p + q \<ominus> 1"
 
 definition
-  exp_conj :: "('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)" (infixl "&&" 71)
+  exp_conj :: "('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)" (infixl \<open>&&\<close> 71)
 where "a && b \<equiv> \<lambda>s. (a s .& b s)"
 
 text \<open>Expectation conjunction likewise generalises (boolean) predicate conjunction. We show that

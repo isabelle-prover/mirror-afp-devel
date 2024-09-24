@@ -64,7 +64,7 @@ subsection \<open>Logarithm derivatives\<close>
 
 definition "logderiv f x \<equiv> deriv f x / f x"
 definition log_differentiable
-  (infixr "(log'_differentiable)" 50)
+  (infixr \<open>(log'_differentiable)\<close> 50)
 where
   "f log_differentiable x \<equiv> (f field_differentiable (at x)) \<and> f x \<noteq> 0"
 

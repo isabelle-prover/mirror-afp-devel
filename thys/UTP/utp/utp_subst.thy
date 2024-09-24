@@ -15,7 +15,7 @@ text \<open> Variable substitution, like unrestriction, will be characterised se
   set of theorems to represent laws. \<close>
 
 consts
-  usubst :: "'s \<Rightarrow> 'a \<Rightarrow> 'b" (infixr "\<dagger>" 80)
+  usubst :: "'s \<Rightarrow> 'a \<Rightarrow> 'b" (infixr \<open>\<dagger>\<close> 80)
 
 named_theorems usubst
 
@@ -60,7 +60,7 @@ adhoc_overloading
 text \<open> The next function looks up the expression associated with a variable in a substitution
   by use of the \emph{get} lens function. \<close>
 
-lift_definition usubst_lookup :: "('\<alpha>,'\<beta>) psubst \<Rightarrow> ('a \<Longrightarrow> '\<beta>) \<Rightarrow> ('a, '\<alpha>) uexpr" ("\<langle>_\<rangle>\<^sub>s")
+lift_definition usubst_lookup :: "('\<alpha>,'\<beta>) psubst \<Rightarrow> ('a \<Longrightarrow> '\<beta>) \<Rightarrow> ('a, '\<alpha>) uexpr" (\<open>\<langle>_\<rangle>\<^sub>s\<close>)
 is "\<lambda> \<sigma> x b. get\<^bsub>x\<^esub> (\<sigma> b)" .
 
 text \<open> Substitutions also exhibit a natural notion of unrestriction which states that $\sigma$
@@ -77,7 +77,7 @@ text \<open> A conditional substitution deterministically picks one of the two s
   Booolean expression which is evaluated on the present state-space. It is analogous to a functional
   if-then-else. \<close>
   
-definition cond_subst :: "'\<alpha> usubst \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> '\<alpha> usubst \<Rightarrow> '\<alpha> usubst" ("(3_ \<triangleleft> _ \<triangleright>\<^sub>s/ _)" [52,0,53] 52) where
+definition cond_subst :: "'\<alpha> usubst \<Rightarrow> (bool, '\<alpha>) uexpr \<Rightarrow> '\<alpha> usubst \<Rightarrow> '\<alpha> usubst" (\<open>(3_ \<triangleleft> _ \<triangleright>\<^sub>s/ _)\<close> [52,0,53] 52) where
 "cond_subst \<sigma> b \<rho> = (\<lambda> s. if \<lbrakk>b\<rbrakk>\<^sub>e s then \<sigma>(s) else \<rho>(s))"
   
 text \<open> Parallel substitutions allow us to divide the state space into three segments using two
@@ -104,19 +104,19 @@ text \<open> We support two kinds of syntax for substitutions, one where we cons
 nonterminal smaplet and smaplets and uexp and uexprs and salphas
 
 syntax
-  "_smaplet"  :: "[salpha, 'a] => smaplet"             ("_ /\<mapsto>\<^sub>s/ _")
-  ""          :: "smaplet => smaplets"            ("_")
-  "_SMaplets" :: "[smaplet, smaplets] => smaplets" ("_,/ _")
-  "_SubstUpd" :: "['m usubst, smaplets] => 'm usubst" ("_/'(_')" [900,0] 900)
-  "_Subst"    :: "smaplets => 'a \<rightharpoonup> 'b"            ("(1[_])")
+  "_smaplet"  :: "[salpha, 'a] => smaplet"             (\<open>_ /\<mapsto>\<^sub>s/ _\<close>)
+  ""          :: "smaplet => smaplets"            (\<open>_\<close>)
+  "_SMaplets" :: "[smaplet, smaplets] => smaplets" (\<open>_,/ _\<close>)
+  "_SubstUpd" :: "['m usubst, smaplets] => 'm usubst" (\<open>_/'(_')\<close> [900,0] 900)
+  "_Subst"    :: "smaplets => 'a \<rightharpoonup> 'b"            (\<open>(1[_])\<close>)
   "_psubst"  :: "[logic, svars, uexprs] \<Rightarrow> logic"
-  "_subst"   :: "logic \<Rightarrow> uexprs \<Rightarrow> salphas \<Rightarrow> logic" ("(_\<lbrakk>_'/_\<rbrakk>)" [990,0,0] 991)
-  "_uexp_l"  :: "logic \<Rightarrow> uexp" ("_" [64] 64)
-  "_uexprs"  :: "[uexp, uexprs] => uexprs" ("_,/ _")
-  ""         :: "uexp => uexprs" ("_")
-  "_salphas" :: "[salpha, salphas] => salphas" ("_,/ _")
-  ""         :: "salpha => salphas" ("_")
-  "_par_subst" :: "logic \<Rightarrow> salpha \<Rightarrow> salpha \<Rightarrow> logic \<Rightarrow> logic" ("_ [_|_]\<^sub>s _" [100,0,0,101] 101)
+  "_subst"   :: "logic \<Rightarrow> uexprs \<Rightarrow> salphas \<Rightarrow> logic" (\<open>(_\<lbrakk>_'/_\<rbrakk>)\<close> [990,0,0] 991)
+  "_uexp_l"  :: "logic \<Rightarrow> uexp" (\<open>_\<close> [64] 64)
+  "_uexprs"  :: "[uexp, uexprs] => uexprs" (\<open>_,/ _\<close>)
+  ""         :: "uexp => uexprs" (\<open>_\<close>)
+  "_salphas" :: "[salpha, salphas] => salphas" (\<open>_,/ _\<close>)
+  ""         :: "salpha => salphas" (\<open>_\<close>)
+  "_par_subst" :: "logic \<Rightarrow> salpha \<Rightarrow> salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>_ [_|_]\<^sub>s _\<close> [100,0,0,101] 101)
     
 translations
   "_SubstUpd m (_SMaplets xy ms)"     == "_SubstUpd (_SubstUpd m xy) ms"
@@ -138,7 +138,7 @@ text \<open> Thus we can write things like @{term "\<sigma>(x \<mapsto>\<^sub>s 
 
   We can now express deletion of a substitution maplet. \<close>
 
-definition subst_del :: "'\<alpha> usubst \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> usubst" (infix "-\<^sub>s" 85) where
+definition subst_del :: "'\<alpha> usubst \<Rightarrow> ('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> usubst" (infix \<open>-\<^sub>s\<close> 85) where
 "subst_del \<sigma> x = \<sigma>(x \<mapsto>\<^sub>s &x)"
 
 subsection \<open> Substitution Application Laws \<close>

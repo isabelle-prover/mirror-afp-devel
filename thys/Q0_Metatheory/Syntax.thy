@@ -9,9 +9,9 @@ begin
 subsection \<open>Type symbols\<close>
 
 datatype type =
-  TInd ("i")
-| TBool ("o")
-| TFun type type (infixr "\<rightarrow>" 101)
+  TInd (\<open>i\<close>)
+| TBool (\<open>o\<close>)
+| TFun type type (infixr \<open>\<rightarrow>\<close> 101)
 
 primrec type_size :: "type \<Rightarrow> nat" where
   "type_size i = 1"
@@ -130,13 +130,13 @@ subsection \<open>Formulas\<close>
 datatype form =
   FVar var
 | FCon con
-| FApp form form (infixl "\<sqdot>" 200)
+| FApp form form (infixl \<open>\<sqdot>\<close> 200)
 | FAbs var form
 
 syntax
-  "_FVar" :: "nat \<Rightarrow> type \<Rightarrow> form" ("_\<^bsub>_\<^esub>" [899, 0] 900)
-  "_FCon" :: "nat \<Rightarrow> type \<Rightarrow> form" ("\<lbrace>_\<rbrace>\<^bsub>_\<^esub>" [899, 0] 900)
-  "_FAbs" :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" ("(4\<lambda>_\<^bsub>_\<^esub>./ _)" [0, 0, 104] 104)
+  "_FVar" :: "nat \<Rightarrow> type \<Rightarrow> form" (\<open>_\<^bsub>_\<^esub>\<close> [899, 0] 900)
+  "_FCon" :: "nat \<Rightarrow> type \<Rightarrow> form" (\<open>\<lbrace>_\<rbrace>\<^bsub>_\<^esub>\<close> [899, 0] 900)
+  "_FAbs" :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" (\<open>(4\<lambda>_\<^bsub>_\<^esub>./ _)\<close> [0, 0, 104] 104)
 syntax_consts
   "_FVar" \<rightleftharpoons> FVar and
   "_FCon" \<rightleftharpoons> FCon and
@@ -150,12 +150,12 @@ subsection \<open>Generalized operators\<close>
 
 text \<open>Generalized application. We define \<open>\<sqdot>\<^sup>\<Q>\<^sub>\<star> A [B\<^sub>1, B\<^sub>2, \<dots>, B\<^sub>n]\<close> as \<open>A \<sqdot> B\<^sub>1 \<sqdot> B\<^sub>2 \<sqdot> \<cdots> \<sqdot> B\<^sub>n\<close>:\<close>
 
-definition generalized_app :: "form \<Rightarrow> form list \<Rightarrow> form" ("\<sqdot>\<^sup>\<Q>\<^sub>\<star> _ _" [241, 241] 241) where
+definition generalized_app :: "form \<Rightarrow> form list \<Rightarrow> form" (\<open>\<sqdot>\<^sup>\<Q>\<^sub>\<star> _ _\<close> [241, 241] 241) where
   [simp]: "\<sqdot>\<^sup>\<Q>\<^sub>\<star> A Bs = foldl (\<sqdot>) A Bs"
 
 text \<open>Generalized abstraction. We define \<open>\<lambda>\<^sup>\<Q>\<^sub>\<star> [x\<^sub>1, \<dots>, x\<^sub>n] A\<close> as \<open>\<lambda>x\<^sub>1. \<cdots> \<lambda>x\<^sub>n. A\<close>:\<close>
 
-definition generalized_abs :: "var list \<Rightarrow> form \<Rightarrow> form" ("\<lambda>\<^sup>\<Q>\<^sub>\<star> _ _" [141, 141] 141) where
+definition generalized_abs :: "var list \<Rightarrow> form \<Rightarrow> form" (\<open>\<lambda>\<^sup>\<Q>\<^sub>\<star> _ _\<close> [141, 141] 141) where
   [simp]: "\<lambda>\<^sup>\<Q>\<^sub>\<star> vs A = foldr (\<lambda>(x, \<alpha>) B. \<lambda>x\<^bsub>\<alpha>\<^esub>. B) vs A"
 
 fun form_size :: "form \<Rightarrow> nat" where
@@ -178,7 +178,7 @@ fun subforms :: "form \<Rightarrow> form set" where
 | "subforms (A \<sqdot> B) = {A, B}"
 | "subforms (\<lambda>x\<^bsub>\<alpha>\<^esub>. A) = {A}"
 
-datatype direction = Left ("\<guillemotleft>") | Right ("\<guillemotright>")
+datatype direction = Left (\<open>\<guillemotleft>\<close>) | Right (\<open>\<guillemotright>\<close>)
 type_synonym position = "direction list"
 
 fun positions :: "form \<Rightarrow> position set" where
@@ -198,7 +198,7 @@ fun subform_at :: "form \<Rightarrow> position \<rightharpoonup> form" where
 | "subform_at (\<lambda>x\<^bsub>\<alpha>\<^esub>. A) (\<guillemotleft> # p) = subform_at A p"
 | "subform_at _ _ = None"
 
-fun is_subform_at :: "form \<Rightarrow> position \<Rightarrow> form \<Rightarrow> bool" ("(_ \<preceq>\<^bsub>_\<^esub>/ _)" [51,0,51] 50) where
+fun is_subform_at :: "form \<Rightarrow> position \<Rightarrow> form \<Rightarrow> bool" (\<open>(_ \<preceq>\<^bsub>_\<^esub>/ _)\<close> [51,0,51] 50) where
   "is_subform_at A [] A' = (A = A')"
 | "is_subform_at C (\<guillemotleft> # p) (A \<sqdot> B) = is_subform_at C p A"
 | "is_subform_at C (\<guillemotright> # p) (A \<sqdot> B) = is_subform_at C p B"
@@ -371,7 +371,7 @@ proof -
     using subform_size_decrease by simp
 qed
 
-definition is_subform :: "form \<Rightarrow> form \<Rightarrow> bool" (infix "\<preceq>" 50) where
+definition is_subform :: "form \<Rightarrow> form \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) where
   [simp]: "A \<preceq> B = (\<exists>p. A \<preceq>\<^bsub>p\<^esub> B)"
 
 instantiation form :: ord
@@ -1584,7 +1584,7 @@ subsection \<open>Replacement of subformulas\<close>
 
 inductive
   is_replacement_at :: "form \<Rightarrow> position \<Rightarrow> form \<Rightarrow> form \<Rightarrow> bool"
-  ("(4_\<lblot>_ \<leftarrow> _\<rblot> \<rhd> _)" [1000, 0, 0, 0] 900)
+  (\<open>(4_\<lblot>_ \<leftarrow> _\<rblot> \<rhd> _)\<close> [1000, 0, 0, 0] 900)
 where
   pos_found: "A\<lblot>p \<leftarrow> C\<rblot> \<rhd> C'" if "p = []" and "C = C'"
 | replace_left_app: "(G \<sqdot> H)\<lblot>\<guillemotleft> # p \<leftarrow> C\<rblot> \<rhd> (G' \<sqdot> H)" if "p \<in> positions G" and "G\<lblot>p \<leftarrow> C\<rblot> \<rhd> G'"
@@ -1795,10 +1795,10 @@ definition Q_constant_of_type :: "type \<Rightarrow> con" where
 definition iota_constant :: con where
   [simp]: "iota_constant \<equiv> (\<cc>\<^sub>\<iota>, (i\<rightarrow>o)\<rightarrow>i)"
 
-definition Q :: "type \<Rightarrow> form" ("Q\<^bsub>_\<^esub>") where
+definition Q :: "type \<Rightarrow> form" (\<open>Q\<^bsub>_\<^esub>\<close>) where
   [simp]: "Q\<^bsub>\<alpha>\<^esub> = FCon (Q_constant_of_type \<alpha>)"
 
-definition iota :: form ("\<iota>") where
+definition iota :: form (\<open>\<iota>\<close>) where
   [simp]: "\<iota> = FCon iota_constant"
 
 definition is_Q_constant_of_type :: "con \<Rightarrow> type \<Rightarrow> bool" where
@@ -1822,27 +1822,27 @@ lemma constant_cases[case_names non_logical Q_constant \<iota>_constant, cases t
 
 subsection \<open>Definitions and abbreviations\<close>
 
-definition equality_of_type :: "form \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" ("(_ =\<^bsub>_\<^esub>/ _)" [103, 0, 103] 102) where
+definition equality_of_type :: "form \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" (\<open>(_ =\<^bsub>_\<^esub>/ _)\<close> [103, 0, 103] 102) where
   [simp]: "A =\<^bsub>\<alpha>\<^esub> B = Q\<^bsub>\<alpha>\<^esub> \<sqdot> A \<sqdot> B"
 
-definition equivalence :: "form \<Rightarrow> form \<Rightarrow> form" (infixl "\<equiv>\<^sup>\<Q>" 102) where
+definition equivalence :: "form \<Rightarrow> form \<Rightarrow> form" (infixl \<open>\<equiv>\<^sup>\<Q>\<close> 102) where
   [simp]: "A \<equiv>\<^sup>\<Q> B = A =\<^bsub>o\<^esub> B" \<comment> \<open>more modular than the definition in \<^cite>\<open>"andrews:2002"\<close>\<close>
 
-definition true :: form ("T\<^bsub>o\<^esub>") where
+definition true :: form (\<open>T\<^bsub>o\<^esub>\<close>) where
   [simp]: "T\<^bsub>o\<^esub> = Q\<^bsub>o\<^esub> =\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> Q\<^bsub>o\<^esub>"
 
-definition false :: form ("F\<^bsub>o\<^esub>") where
+definition false :: form (\<open>F\<^bsub>o\<^esub>\<close>) where
   [simp]: "F\<^bsub>o\<^esub> = \<lambda>\<xx>\<^bsub>o\<^esub>. T\<^bsub>o\<^esub> =\<^bsub>o\<rightarrow>o\<^esub> \<lambda>\<xx>\<^bsub>o\<^esub>. \<xx>\<^bsub>o\<^esub>"
 
-definition PI :: "type \<Rightarrow> form" ("\<Prod>\<^bsub>_\<^esub>") where
+definition PI :: "type \<Rightarrow> form" (\<open>\<Prod>\<^bsub>_\<^esub>\<close>) where
   [simp]: "\<Prod>\<^bsub>\<alpha>\<^esub> = Q\<^bsub>\<alpha>\<rightarrow>o\<^esub> \<sqdot> (\<lambda>\<xx>\<^bsub>\<alpha>\<^esub>. T\<^bsub>o\<^esub>)"
 
-definition forall :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" ("(4\<forall>_\<^bsub>_\<^esub>./ _)" [0, 0, 141] 141) where
+definition forall :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" (\<open>(4\<forall>_\<^bsub>_\<^esub>./ _)\<close> [0, 0, 141] 141) where
   [simp]: "\<forall>x\<^bsub>\<alpha>\<^esub>. A = \<Prod>\<^bsub>\<alpha>\<^esub> \<sqdot> (\<lambda>x\<^bsub>\<alpha>\<^esub>. A)"
 
 text \<open>Generalized universal quantification. We define \<open>\<forall>\<^sup>\<Q>\<^sub>\<star> [x\<^sub>1, \<dots>, x\<^sub>n] A\<close> as \<open>\<forall>x\<^sub>1. \<cdots> \<forall>x\<^sub>n. A\<close>:\<close>
 
-definition generalized_forall :: "var list \<Rightarrow> form \<Rightarrow> form" ("\<forall>\<^sup>\<Q>\<^sub>\<star> _ _" [141, 141] 141) where
+definition generalized_forall :: "var list \<Rightarrow> form \<Rightarrow> form" (\<open>\<forall>\<^sup>\<Q>\<^sub>\<star> _ _\<close> [141, 141] 141) where
   [simp]: "\<forall>\<^sup>\<Q>\<^sub>\<star> vs A = foldr (\<lambda>(x, \<alpha>) B. \<forall>x\<^bsub>\<alpha>\<^esub>. B) vs A"
 
 lemma innermost_subform_in_generalized_forall:
@@ -1891,30 +1891,30 @@ lemma false_is_forall:
   shows "F\<^bsub>o\<^esub> = \<forall>\<xx>\<^bsub>o\<^esub>. \<xx>\<^bsub>o\<^esub>"
   unfolding false_def and forall_def and PI_def and equality_of_type_def ..
 
-definition conj_fun :: form ("\<and>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>") where
+definition conj_fun :: form (\<open>\<and>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>\<close>) where
   [simp]: "\<and>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> =
     \<lambda>\<xx>\<^bsub>o\<^esub>. \<lambda>\<yy>\<^bsub>o\<^esub>.
     (
       (\<lambda>\<gg>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>. \<gg>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> \<sqdot> T\<^bsub>o\<^esub> \<sqdot> T\<^bsub>o\<^esub>) =\<^bsub>(o\<rightarrow>o\<rightarrow>o)\<rightarrow>o\<^esub> (\<lambda>\<gg>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>. \<gg>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> \<sqdot> \<xx>\<^bsub>o\<^esub> \<sqdot> \<yy>\<^bsub>o\<^esub>)
     )"
 
-definition conj_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl "\<and>\<^sup>\<Q>" 131) where
+definition conj_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl \<open>\<and>\<^sup>\<Q>\<close> 131) where
   [simp]: "A \<and>\<^sup>\<Q> B = \<and>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> \<sqdot> A \<sqdot> B"
 
 text \<open>Generalized conjunction. We define \<open>\<and>\<^sup>\<Q>\<^sub>\<star> [A\<^sub>1, \<dots>, A\<^sub>n]\<close> as \<open>A\<^sub>1 \<and>\<^sup>\<Q> (\<cdots> \<and>\<^sup>\<Q> (A\<^sub>n\<^sub>-\<^sub>1 \<and>\<^sup>\<Q> A\<^sub>n) \<cdots>)\<close>:\<close>
 
-definition generalized_conj_op :: "form list \<Rightarrow> form" ("\<and>\<^sup>\<Q>\<^sub>\<star> _" [0] 131) where
+definition generalized_conj_op :: "form list \<Rightarrow> form" (\<open>\<and>\<^sup>\<Q>\<^sub>\<star> _\<close> [0] 131) where
   [simp]: "\<and>\<^sup>\<Q>\<^sub>\<star> As = foldr1 (\<and>\<^sup>\<Q>) As"
 
-definition imp_fun :: form ("\<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>") where \<comment> \<open>\<open>\<equiv>\<close> used instead of \<open>=\<close>, see \<^cite>\<open>"andrews:2002"\<close>\<close>
+definition imp_fun :: form (\<open>\<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>\<close>) where \<comment> \<open>\<open>\<equiv>\<close> used instead of \<open>=\<close>, see \<^cite>\<open>"andrews:2002"\<close>\<close>
   [simp]: "\<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> = \<lambda>\<xx>\<^bsub>o\<^esub>. \<lambda>\<yy>\<^bsub>o\<^esub>. (\<xx>\<^bsub>o\<^esub> \<equiv>\<^sup>\<Q> \<xx>\<^bsub>o\<^esub> \<and>\<^sup>\<Q> \<yy>\<^bsub>o\<^esub>)"
 
-definition imp_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl "\<supset>\<^sup>\<Q>" 111) where
+definition imp_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl \<open>\<supset>\<^sup>\<Q>\<close> 111) where
   [simp]: "A \<supset>\<^sup>\<Q> B = \<supset>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> \<sqdot> A \<sqdot> B"
 
 text \<open>Generalized implication. We define \<open>[A\<^sub>1, \<dots>, A\<^sub>n] \<supset>\<^sup>\<Q>\<^sub>\<star> B\<close> as \<open>A\<^sub>1 \<supset>\<^sup>\<Q> (\<cdots> \<supset>\<^sup>\<Q> (A\<^sub>n \<supset>\<^sup>\<Q> B) \<cdots>)\<close>:\<close>
 
-definition generalized_imp_op :: "form list \<Rightarrow> form \<Rightarrow> form" (infixl "\<supset>\<^sup>\<Q>\<^sub>\<star>" 111) where
+definition generalized_imp_op :: "form list \<Rightarrow> form \<Rightarrow> form" (infixl \<open>\<supset>\<^sup>\<Q>\<^sub>\<star>\<close> 111) where
   [simp]: "As \<supset>\<^sup>\<Q>\<^sub>\<star> B = foldr (\<supset>\<^sup>\<Q>) As B"
 
 text \<open>
@@ -1922,23 +1922,23 @@ text \<open>
   same formula, namely \<open>Q\<^bsub>o\<^esub> \<sqdot> F\<^bsub>o\<^esub> \<sqdot> A\<close>:
 \<close>
 
-definition neg :: "form \<Rightarrow> form" ("\<sim>\<^sup>\<Q> _" [141] 141) where
+definition neg :: "form \<Rightarrow> form" (\<open>\<sim>\<^sup>\<Q> _\<close> [141] 141) where
   [simp]: "\<sim>\<^sup>\<Q> A = Q\<^bsub>o\<^esub> \<sqdot> F\<^bsub>o\<^esub> \<sqdot> A"
 
-definition disj_fun :: form ("\<or>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>") where
+definition disj_fun :: form (\<open>\<or>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub>\<close>) where
   [simp]: "\<or>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> = \<lambda>\<xx>\<^bsub>o\<^esub>. \<lambda>\<yy>\<^bsub>o\<^esub>. \<sim>\<^sup>\<Q> (\<sim>\<^sup>\<Q> \<xx>\<^bsub>o\<^esub> \<and>\<^sup>\<Q> \<sim>\<^sup>\<Q> \<yy>\<^bsub>o\<^esub>)"
 
-definition disj_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl "\<or>\<^sup>\<Q>" 126) where
+definition disj_op :: "form \<Rightarrow> form \<Rightarrow> form" (infixl \<open>\<or>\<^sup>\<Q>\<close> 126) where
   [simp]: "A \<or>\<^sup>\<Q> B = \<or>\<^bsub>o\<rightarrow>o\<rightarrow>o\<^esub> \<sqdot> A \<sqdot> B"
 
-definition exists :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" ("(4\<exists>_\<^bsub>_\<^esub>./ _)" [0, 0, 141] 141) where
+definition exists :: "nat \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" (\<open>(4\<exists>_\<^bsub>_\<^esub>./ _)\<close> [0, 0, 141] 141) where
   [simp]: "\<exists>x\<^bsub>\<alpha>\<^esub>. A = \<sim>\<^sup>\<Q> (\<forall>x\<^bsub>\<alpha>\<^esub>. \<sim>\<^sup>\<Q> A)"
 
 lemma exists_fv:
   shows "free_vars (\<exists>x\<^bsub>\<alpha>\<^esub>. A) = free_vars A - {(x, \<alpha>)}"
   by simp
 
-definition inequality_of_type :: "form \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" ("(_ \<noteq>\<^bsub>_\<^esub>/ _)" [103, 0, 103] 102) where
+definition inequality_of_type :: "form \<Rightarrow> type \<Rightarrow> form \<Rightarrow> form" (\<open>(_ \<noteq>\<^bsub>_\<^esub>/ _)\<close> [103, 0, 103] 102) where
   [simp]: "A \<noteq>\<^bsub>\<alpha>\<^esub> B = \<sim>\<^sup>\<Q> (A =\<^bsub>\<alpha>\<^esub> B)"
 
 subsection \<open>Well-formed formulas\<close>
@@ -1949,7 +1949,7 @@ inductive is_wff_of_type :: "type \<Rightarrow> form \<Rightarrow> bool" where
 | app_is_wff: "is_wff_of_type \<beta> (A \<sqdot> B)" if "is_wff_of_type (\<alpha>\<rightarrow>\<beta>) A" and "is_wff_of_type \<alpha> B"
 | abs_is_wff: "is_wff_of_type (\<alpha>\<rightarrow>\<beta>) (\<lambda>x\<^bsub>\<alpha>\<^esub>. A)" if "is_wff_of_type \<beta> A"
 
-definition wffs_of_type :: "type \<Rightarrow> form set" ("wffs\<^bsub>_\<^esub>" [0]) where
+definition wffs_of_type :: "type \<Rightarrow> form set" (\<open>wffs\<^bsub>_\<^esub>\<close> [0]) where
   "wffs\<^bsub>\<alpha>\<^esub> = {f :: form. is_wff_of_type \<alpha> f}"
 
 abbreviation wffs :: "form set" where
@@ -2407,7 +2407,7 @@ type_synonym substitution = "(var, form) fmap"
 definition is_substitution :: "substitution \<Rightarrow> bool" where
   [iff]: "is_substitution \<theta> \<longleftrightarrow> (\<forall>(x, \<alpha>) \<in> fmdom' \<theta>. \<theta> $$! (x, \<alpha>) \<in> wffs\<^bsub>\<alpha>\<^esub>)"
 
-fun substitute :: "substitution \<Rightarrow> form \<Rightarrow> form" ("\<^bold>S _ _" [51, 51]) where
+fun substitute :: "substitution \<Rightarrow> form \<Rightarrow> form" (\<open>\<^bold>S _ _\<close> [51, 51]) where
   "\<^bold>S \<theta> (x\<^bsub>\<alpha>\<^esub>) = (case \<theta> $$ (x, \<alpha>) of None \<Rightarrow> x\<^bsub>\<alpha>\<^esub> | Some A \<Rightarrow> A)"
 | "\<^bold>S \<theta> (\<lbrace>c\<rbrace>\<^bsub>\<alpha>\<^esub>) = \<lbrace>c\<rbrace>\<^bsub>\<alpha>\<^esub>"
 | "\<^bold>S \<theta> (A \<sqdot> B) = (\<^bold>S \<theta> A) \<sqdot> (\<^bold>S \<theta> B)"

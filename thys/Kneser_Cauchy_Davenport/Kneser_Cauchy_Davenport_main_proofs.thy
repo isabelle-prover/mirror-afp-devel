@@ -40,8 +40,8 @@ proof-
     proof(induction n arbitrary : G "(\<oplus>)" \<zero> rule: nat_less_induct)
       fix n 
       fix A B G :: "'a set"
-      fix add (infixl "[\<oplus>]" 65)
-      fix zero ("[\<zero>]")
+      fix add (infixl \<open>[\<oplus>]\<close> 65)
+      fix zero (\<open>[\<zero>]\<close>)
       assume hind: "\<forall>m<n. \<forall>x xa xb :: 'a set. \<forall> xc xd. 
         additive_abelian_group xb xc xd \<longrightarrow> x \<subseteq> xb \<longrightarrow>
         xa \<subseteq> xb \<longrightarrow> finite x \<longrightarrow> finite xa \<longrightarrow> x \<noteq> {} \<longrightarrow> xa \<noteq> {} \<longrightarrow>

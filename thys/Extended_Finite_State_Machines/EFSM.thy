@@ -23,7 +23,7 @@ type_synonym execution = "action list"
 type_synonym observation = "outputs list"
 type_synonym transition_matrix = "((cfstate \<times> cfstate) \<times> transition) fset"
 
-no_notation relcomp (infixr "O" 75) and comp (infixl "o" 55)
+no_notation relcomp (infixr \<open>O\<close> 75) and comp (infixl \<open>o\<close> 55)
 
 type_synonym event = "(label \<times> inputs \<times> value list)"
 type_synonym trace = "event list"

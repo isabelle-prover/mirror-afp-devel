@@ -60,7 +60,7 @@ section\<open>Miscellaneous Stuff\<close>
 
 subsection\<open>Definition: asBoolean\<close>
 
-definition OclAsBoolean\<^sub>I\<^sub>n\<^sub>t  :: "('\<AA>) Integer \<Rightarrow> ('\<AA>) Boolean" ("(_)->oclAsType\<^sub>I\<^sub>n\<^sub>t'(Boolean')")
+definition OclAsBoolean\<^sub>I\<^sub>n\<^sub>t  :: "('\<AA>) Integer \<Rightarrow> ('\<AA>) Boolean" (\<open>(_)->oclAsType\<^sub>I\<^sub>n\<^sub>t'(Boolean')\<close>)
 where     "OclAsBoolean\<^sub>I\<^sub>n\<^sub>t X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
                               then \<lfloor>\<lfloor>\<lceil>\<lceil>X \<tau>\<rceil>\<rceil> \<noteq> 0\<rfloor>\<rfloor>
                               else invalid \<tau>)"
@@ -68,7 +68,7 @@ where     "OclAsBoolean\<^sub>I\<^sub>n\<^sub>t X = (\<lambda>\<tau>. if (\<delt
 interpretation OclAsBoolean\<^sub>I\<^sub>n\<^sub>t : profile_mono\<^sub>d OclAsBoolean\<^sub>I\<^sub>n\<^sub>t "\<lambda>x. \<lfloor>\<lfloor>\<lceil>\<lceil>x\<rceil>\<rceil> \<noteq> 0\<rfloor>\<rfloor>"
                                 by unfold_locales (auto simp: OclAsBoolean\<^sub>I\<^sub>n\<^sub>t_def bot_option_def)
 
-definition OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l  :: "('\<AA>) Real \<Rightarrow> ('\<AA>) Boolean" ("(_)->oclAsType\<^sub>R\<^sub>e\<^sub>a\<^sub>l'(Boolean')")
+definition OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l  :: "('\<AA>) Real \<Rightarrow> ('\<AA>) Boolean" (\<open>(_)->oclAsType\<^sub>R\<^sub>e\<^sub>a\<^sub>l'(Boolean')\<close>)
 where     "OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
                               then \<lfloor>\<lfloor>\<lceil>\<lceil>X \<tau>\<rceil>\<rceil> \<noteq> 0\<rfloor>\<rfloor>
                               else invalid \<tau>)"
@@ -78,7 +78,7 @@ interpretation OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_mono\<^sub
 
 subsection\<open>Definition: asInteger\<close>
 
-definition OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l  :: "('\<AA>) Real \<Rightarrow> ('\<AA>) Integer" ("(_)->oclAsType\<^sub>R\<^sub>e\<^sub>a\<^sub>l'(Integer')")
+definition OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l  :: "('\<AA>) Real \<Rightarrow> ('\<AA>) Integer" (\<open>(_)->oclAsType\<^sub>R\<^sub>e\<^sub>a\<^sub>l'(Integer')\<close>)
 where     "OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
                               then \<lfloor>\<lfloor>floor \<lceil>\<lceil>X \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor>
                               else invalid \<tau>)"
@@ -88,7 +88,7 @@ interpretation OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_mono\<^sub
 
 subsection\<open>Definition: asReal\<close>
 
-definition OclAsReal\<^sub>I\<^sub>n\<^sub>t  :: "('\<AA>) Integer \<Rightarrow> ('\<AA>) Real" ("(_)->oclAsType\<^sub>I\<^sub>n\<^sub>t'(Real')")
+definition OclAsReal\<^sub>I\<^sub>n\<^sub>t  :: "('\<AA>) Integer \<Rightarrow> ('\<AA>) Real" (\<open>(_)->oclAsType\<^sub>I\<^sub>n\<^sub>t'(Real')\<close>)
 where     "OclAsReal\<^sub>I\<^sub>n\<^sub>t X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
                               then \<lfloor>\<lfloor>real_of_int \<lceil>\<lceil>X \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor>
                               else invalid \<tau>)"
@@ -105,20 +105,20 @@ lemma Integer_subtype_of_Real:
 
 subsection\<open>Definition: asPair\<close>
 
-definition OclAsPair\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" ("(_)->asPair\<^sub>S\<^sub>e\<^sub>q'(')")
+definition OclAsPair\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" (\<open>(_)->asPair\<^sub>S\<^sub>e\<^sub>q'(')\<close>)
 where     "OclAsPair\<^sub>S\<^sub>e\<^sub>q S = (if S->size\<^sub>S\<^sub>e\<^sub>q() \<doteq> \<two>
                             then Pair{S->at\<^sub>S\<^sub>e\<^sub>q(\<zero>),S->at\<^sub>S\<^sub>e\<^sub>q(\<one>)}
                             else invalid
                             endif)"
 
-definition OclAsPair\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" ("(_)->asPair\<^sub>S\<^sub>e\<^sub>t'(')")
+definition OclAsPair\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" (\<open>(_)->asPair\<^sub>S\<^sub>e\<^sub>t'(')\<close>)
 where     "OclAsPair\<^sub>S\<^sub>e\<^sub>t S = (if S->size\<^sub>S\<^sub>e\<^sub>t() \<doteq> \<two>
                             then let v = S->any\<^sub>S\<^sub>e\<^sub>t() in
                                  Pair{v,S->excluding\<^sub>S\<^sub>e\<^sub>t(v)->any\<^sub>S\<^sub>e\<^sub>t()}
                             else invalid
                             endif)"
 
-definition OclAsPair\<^sub>B\<^sub>a\<^sub>g   :: "[('\<AA>,'\<alpha>::null)Bag]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" ("(_)->asPair\<^sub>B\<^sub>a\<^sub>g'(')")
+definition OclAsPair\<^sub>B\<^sub>a\<^sub>g   :: "[('\<AA>,'\<alpha>::null)Bag]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" (\<open>(_)->asPair\<^sub>B\<^sub>a\<^sub>g'(')\<close>)
 where     "OclAsPair\<^sub>B\<^sub>a\<^sub>g S = (if S->size\<^sub>B\<^sub>a\<^sub>g() \<doteq> \<two>
                             then let v = S->any\<^sub>B\<^sub>a\<^sub>g() in
                                  Pair{v,S->excluding\<^sub>B\<^sub>a\<^sub>g(v)->any\<^sub>B\<^sub>a\<^sub>g()}
@@ -127,13 +127,13 @@ where     "OclAsPair\<^sub>B\<^sub>a\<^sub>g S = (if S->size\<^sub>B\<^sub>a\<^s
 
 subsection\<open>Definition: asSet\<close>
 
-definition OclAsSet\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Set" ("(_)->asSet\<^sub>S\<^sub>e\<^sub>q'(')")
+definition OclAsSet\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Set" (\<open>(_)->asSet\<^sub>S\<^sub>e\<^sub>q'(')\<close>)
 where     "OclAsSet\<^sub>S\<^sub>e\<^sub>q S = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Set{} | x ->including\<^sub>S\<^sub>e\<^sub>t(b)))"
 
-definition OclAsSet\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Set" ("(_)->asSet\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')")
+definition OclAsSet\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Set" (\<open>(_)->asSet\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')\<close>)
 where     "OclAsSet\<^sub>P\<^sub>a\<^sub>i\<^sub>r S = Set{S .First(), S .Second()}"
 
-definition OclAsSet\<^sub>B\<^sub>a\<^sub>g   :: "('\<AA>,'\<alpha>::null) Bag\<Rightarrow>('\<AA>,'\<alpha>)Set" ("(_)->asSet\<^sub>B\<^sub>a\<^sub>g'(')")
+definition OclAsSet\<^sub>B\<^sub>a\<^sub>g   :: "('\<AA>,'\<alpha>::null) Bag\<Rightarrow>('\<AA>,'\<alpha>)Set" (\<open>(_)->asSet\<^sub>B\<^sub>a\<^sub>g'(')\<close>)
 where     "OclAsSet\<^sub>B\<^sub>a\<^sub>g S =  (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<tau> 
                                  then Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e\<lfloor>\<lfloor> Rep_Set_base S \<tau> \<rfloor>\<rfloor> 
                                  else if (\<upsilon> S) \<tau> = true \<tau> then null \<tau> 
@@ -141,28 +141,28 @@ where     "OclAsSet\<^sub>B\<^sub>a\<^sub>g S =  (\<lambda> \<tau>. if (\<delta>
 
 subsection\<open>Definition: asSequence\<close>
 
-definition OclAsSeq\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" ("(_)->asSequence\<^sub>S\<^sub>e\<^sub>t'(')")
+definition OclAsSeq\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" (\<open>(_)->asSequence\<^sub>S\<^sub>e\<^sub>t'(')\<close>)
 where     "OclAsSeq\<^sub>S\<^sub>e\<^sub>t S = (S->iterate\<^sub>S\<^sub>e\<^sub>t(b; x = Sequence{} | x ->including\<^sub>S\<^sub>e\<^sub>q(b)))"
 
-definition OclAsSeq\<^sub>B\<^sub>a\<^sub>g   :: "[('\<AA>,'\<alpha>::null)Bag]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" ("(_)->asSequence\<^sub>B\<^sub>a\<^sub>g'(')")
+definition OclAsSeq\<^sub>B\<^sub>a\<^sub>g   :: "[('\<AA>,'\<alpha>::null)Bag]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" (\<open>(_)->asSequence\<^sub>B\<^sub>a\<^sub>g'(')\<close>)
 where     "OclAsSeq\<^sub>B\<^sub>a\<^sub>g S = (S->iterate\<^sub>B\<^sub>a\<^sub>g(b; x = Sequence{} | x ->including\<^sub>S\<^sub>e\<^sub>q(b)))"
 
-definition OclAsSeq\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" ("(_)->asSequence\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')")
+definition OclAsSeq\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" (\<open>(_)->asSequence\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')\<close>)
 where     "OclAsSeq\<^sub>P\<^sub>a\<^sub>i\<^sub>r S = Sequence{S .First(), S .Second()}"
 
 subsection\<open>Definition: asBag\<close>
 
-definition OclAsBag\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>S\<^sub>e\<^sub>q'(')")
+definition OclAsBag\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Bag" (\<open>(_)->asBag\<^sub>S\<^sub>e\<^sub>q'(')\<close>)
 where     "OclAsBag\<^sub>S\<^sub>e\<^sub>q S = (\<lambda>\<tau>. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>s. if list_ex ((=) s) \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> then 1 else 0\<rfloor>\<rfloor>)"
 
-definition OclAsBag\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>S\<^sub>e\<^sub>t'(')")
+definition OclAsBag\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>)Bag" (\<open>(_)->asBag\<^sub>S\<^sub>e\<^sub>t'(')\<close>)
 where     "OclAsBag\<^sub>S\<^sub>e\<^sub>t S = (\<lambda>\<tau>. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>s. if s \<in> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> then 1 else 0\<rfloor>\<rfloor>)"
 
 lemma assumes "\<tau> \<Turnstile> \<delta> (S ->size\<^sub>S\<^sub>e\<^sub>t())" (* S is finite *)
       shows "OclAsBag\<^sub>S\<^sub>e\<^sub>t S = (S->iterate\<^sub>S\<^sub>e\<^sub>t(b; x = Bag{} | x ->including\<^sub>B\<^sub>a\<^sub>g(b)))"
 oops
 
-definition OclAsBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')")
+definition OclAsBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Bag" (\<open>(_)->asBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')\<close>)
 where     "OclAsBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r S = Bag{S .First(), S .Second()}"
 
 text_raw\<open>\isatagafp\<close>

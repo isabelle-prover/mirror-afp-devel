@@ -13,7 +13,7 @@ text \<open>
 \<close>
 
 locale chaos =
-  fixes chaos :: "'a::refinement_lattice"    ("chaos") 
+  fixes chaos :: "'a::refinement_lattice"    (\<open>chaos\<close>) 
 (*
 The weak conjunction operator uses a special symbol: double intersection.
 To see this symbol in your Isabelle PIDE, install DejaVu Sans fonts
@@ -26,7 +26,7 @@ and add the following line to ~/.isabelle/Isabelle2015/etc/symbols
 Note: if the symbol is rendering correctly, you do not need to do anything.
 *)
 locale conj =
-  fixes conj :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a"   (infixl "\<iinter>" 80)
+  fixes conj :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a"   (infixl \<open>\<iinter>\<close> 80)
   assumes conj_bot_right: "c \<iinter> \<bottom> = \<bottom>"
 
 text \<open>

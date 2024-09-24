@@ -35,7 +35,7 @@ definition poly :: "('a,'b) idx_ring_scheme \<Rightarrow> 'a list idx_ring"
     idx_zero = [],
     idx_one = [idx_one E] \<rparr>"
 
-definition poly_var :: "('a,'b) idx_ring_scheme \<Rightarrow> 'a list"  ("X\<^sub>C\<index>")
+definition poly_var :: "('a,'b) idx_ring_scheme \<Rightarrow> 'a list"  (\<open>X\<^sub>C\<index>\<close>)
   where "poly_var E = [idx_one E, idx_zero E]"
 
 lemma poly_var: "poly_var R = X\<^bsub>ring_of R\<^esub>"

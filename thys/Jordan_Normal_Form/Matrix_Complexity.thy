@@ -17,10 +17,10 @@ begin
 subsection \<open>Locales for Carriers of Matrix Interpretations and Polynomial Orders\<close>
 
 locale matrix_carrier = SN_one_mono_ordered_semiring_1 d gt
-  for gt :: "'a :: {show,ordered_semiring_1} \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) and d :: "'a"
+  for gt :: "'a :: {show,ordered_semiring_1} \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50) and d :: "'a"
 
 locale mono_matrix_carrier = complexity_one_mono_ordered_semiring_1 gt d bound
-  for gt :: "'a :: {show,large_real_ordered_semiring_1} \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<succ>" 50) and d :: 'a
+  for gt :: "'a :: {show,large_real_ordered_semiring_1} \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<succ>\<close> 50) and d :: 'a
   and bound :: "'a \<Rightarrow> nat" 
 + fixes mono :: "'a \<Rightarrow> bool"
   assumes mono: "\<And> x y z. mono x \<Longrightarrow> y \<succ> z \<Longrightarrow> x \<ge> 0 \<Longrightarrow> x * y \<succ> x * z"

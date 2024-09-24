@@ -14,7 +14,7 @@ begin
 unbundle cardinal_syntax
 
 ML \<open>open Ctr_Sugar_Util\<close>
-notation BNF_Def.convol ("<_ , _>")
+notation BNF_Def.convol (\<open><_ , _>\<close>)
 
 text \<open>
 \begin{tabular}{rcl}

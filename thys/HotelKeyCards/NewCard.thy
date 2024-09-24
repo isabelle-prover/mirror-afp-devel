@@ -14,7 +14,7 @@ imports Main
 begin
 
 abbreviation
- "SomeFloor" ("(\<lfloor>_\<rfloor>)") where "\<lfloor>x\<rfloor> \<equiv> Some x"
+ "SomeFloor" (\<open>(\<lfloor>_\<rfloor>)\<close>) where "\<lfloor>x\<rfloor> \<equiv> Some x"
 
 declare if_split_asm[split]
 

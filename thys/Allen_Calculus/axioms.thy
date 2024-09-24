@@ -24,7 +24,7 @@ text\<open>We define a class interval whose assumptions are (i) properties of re
 
 class interval =
  fixes
-  meets::"'a \<Rightarrow> 'a \<Rightarrow> bool"  (infixl "\<parallel>" 60) and
+  meets::"'a \<Rightarrow> 'a \<Rightarrow> bool"  (infixl \<open>\<parallel>\<close> 60) and
   \<I>::"'a \<Rightarrow> bool"
  assumes
   meets_atrans:"\<lbrakk>(p\<parallel>q);(q\<parallel>r)\<rbrakk> \<Longrightarrow> \<not>(p\<parallel>r)" and

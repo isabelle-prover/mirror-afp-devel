@@ -13,7 +13,7 @@ is "\<lambda> F v b. F (v b) b" .
 update_uexpr_rep_eq_thms \<comment> \<open> Reread @{text rep_eq} theorems. \<close>
     
 syntax
-  "_msubst"   :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" ("(_\<lbrakk>_\<rightarrow>_\<rbrakk>)" [990,0,0] 991)
+  "_msubst"   :: "logic \<Rightarrow> pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>(_\<lbrakk>_\<rightarrow>_\<rbrakk>)\<close> [990,0,0] 991)
 
 syntax_consts
   "_msubst" == msubst

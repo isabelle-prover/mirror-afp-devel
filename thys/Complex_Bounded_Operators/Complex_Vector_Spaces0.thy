@@ -13,11 +13,11 @@ begin
 subsection \<open>Complex vector spaces\<close>
 
 class scaleC = scaleR +
-  fixes scaleC :: "complex \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "*\<^sub>C" 75)
+  fixes scaleC :: "complex \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>*\<^sub>C\<close> 75)
   assumes scaleR_scaleC: "scaleR r = scaleC (complex_of_real r)"
 begin
 
-abbreviation divideC :: "'a \<Rightarrow> complex \<Rightarrow> 'a"  (infixl "'/\<^sub>C" 70)
+abbreviation divideC :: "'a \<Rightarrow> complex \<Rightarrow> 'a"  (infixl \<open>'/\<^sub>C\<close> 70)
   where "x /\<^sub>C c \<equiv> inverse c *\<^sub>C x"
 
 end
@@ -447,7 +447,7 @@ lemma scaleC_times [simp]:
 
 subsection \<open>The Set of Real Numbers\<close>
 
-definition Complexs :: "'a::complex_algebra_1 set"  ("\<complex>")
+definition Complexs :: "'a::complex_algebra_1 set"  (\<open>\<complex>\<close>)
   where "\<complex> = range of_complex"
 
 lemma Complexs_of_complex [simp]: "of_complex r \<in> \<complex>"
@@ -1148,7 +1148,7 @@ lemma bounded_clinear_intro:
 
 locale bounded_cbilinear =
   fixes prod :: "'a::complex_normed_vector \<Rightarrow> 'b::complex_normed_vector \<Rightarrow> 'c::complex_normed_vector"
-    (infixl "**" 70)
+    (infixl \<open>**\<close> 70)
   assumes add_left: "prod (a + a') b = prod a b + prod a' b"
     and add_right: "prod a (b + b') = prod a b + prod a b'"
     and scaleC_left: "prod (scaleC r a) b = scaleC r (prod a b)"

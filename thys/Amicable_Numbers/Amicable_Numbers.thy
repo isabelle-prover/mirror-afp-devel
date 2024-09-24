@@ -65,7 +65,7 @@ section\<open>Amicable Numbers\<close>
 
 subsection\<open>Preliminaries\<close>
 
-definition divisor :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr "divisor" 80)
+definition divisor :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr \<open>divisor\<close> 80)
   where "n divisor m \<equiv>(n \<ge> 1 \<and> n \<le> m \<and> n dvd m)"
 
 definition divisor_set: "divisor_set m = {n. n divisor m}"
@@ -73,7 +73,7 @@ definition divisor_set: "divisor_set m = {n. n divisor m}"
 lemma def_equiv_divisor_set: "divisor_set (n::nat) = set(divisors_nat n)"
   using  divisors_nat_def divisors_nat divisor_set divisor_def by auto
 
-definition proper_divisor :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr "properdiv" 80)
+definition proper_divisor :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr \<open>properdiv\<close> 80)
   where "n properdiv m \<equiv>(n \<ge> 1 \<and> n < m \<and> n dvd m)"
 
 definition properdiv_set: "properdiv_set m = {n. n properdiv m}"
@@ -303,7 +303,7 @@ lemma perfect_Esigma:
 
 subsection\<open>Amicable Numbers; definitions, some lemmas and examples\<close>
 
-definition Amicable_pair :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr "Amic" 80)
+definition Amicable_pair :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr \<open>Amic\<close> 80)
   where "m Amic n \<equiv> ((m = aliquot_sum n) \<and> (n = aliquot_sum m)) "
 
 lemma Amicable_pair_sym: fixes m::nat and n ::nat
@@ -627,7 +627,7 @@ subsubsection\<open>Betrothed (Quasi-Amicable) Pairs\<close>
 
 text\<open>We refer to the definition in \<^cite>\<open>"betrothedwiki"\<close>:\<close>
 
-definition QuasiAmicable_pair :: "nat \<Rightarrow> nat \<Rightarrow> bool"  (infixr "QAmic" 80)
+definition QuasiAmicable_pair :: "nat \<Rightarrow> nat \<Rightarrow> bool"  (infixr \<open>QAmic\<close> 80)
   where "m QAmic n \<longleftrightarrow> (m + 1 = aliquot_sum n) \<and> (n + 1 = aliquot_sum m)"
 
 lemma QuasiAmicable_pair_sym :
@@ -658,7 +658,7 @@ qed
 
 subsubsection\<open>Breeders\<close>
 
-definition breeder_pair :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr "breeder" 80)
+definition breeder_pair :: "nat \<Rightarrow>nat \<Rightarrow> bool"  (infixr \<open>breeder\<close> 80)
   where "m breeder n \<equiv> (\<exists>x\<in>\<nat>. x > 0 \<and> Esigma m = m + n*x \<and> Esigma m = (Esigma n)*(x+1))"
 
 lemma breederAmic:
@@ -1487,7 +1487,7 @@ proof-
     using Amicable_pair_equiv_def_conv prime_ge_1_nat by force 
 qed
 
-no_notation divisor (infixr "divisor" 80)
+no_notation divisor (infixr \<open>divisor\<close> 80)
 
 
 section\<open>Acknowledgements\<close>

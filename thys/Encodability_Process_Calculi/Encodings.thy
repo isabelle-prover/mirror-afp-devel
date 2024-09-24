@@ -42,29 +42,29 @@ locale encoding =
     and Enc    :: "'procS \<Rightarrow> 'procT"
 begin
 
-abbreviation enc :: "'procS \<Rightarrow> 'procT" ("\<lbrakk>_\<rbrakk>" [65] 70) where
+abbreviation enc :: "'procS \<Rightarrow> 'procT" (\<open>\<lbrakk>_\<rbrakk>\<close> [65] 70) where
   "\<lbrakk>S\<rbrakk> \<equiv> Enc S"
 
-abbreviation isSource :: "('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<in> ProcS" [70] 80) where
+abbreviation isSource :: "('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<in> ProcS\<close> [70] 80) where
   "P \<in> ProcS \<equiv> (\<exists>S. P = SourceTerm S)"
 
-abbreviation isTarget :: "('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<in> ProcT" [70] 80) where
+abbreviation isTarget :: "('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<in> ProcT\<close> [70] 80) where
   "P \<in> ProcT \<equiv> (\<exists>T. P = TargetTerm T)"
 
 abbreviation getSource
-    :: "'procS \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<in>S _" [70, 70] 80)
+    :: "'procS \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<in>S _\<close> [70, 70] 80)
   where
   "S \<in>S P \<equiv> (P = SourceTerm S)"
 
 abbreviation getTarget
-    :: "'procT \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<in>T _" [70, 70] 80)
+    :: "'procT \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<in>T _\<close> [70, 70] 80)
   where
   "T \<in>T P \<equiv> (P = TargetTerm T)"
 
 text \<open>A step of a term in Proc is either a source term step or a target term step.\<close>
 
 abbreviation stepST
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<longmapsto>ST _" [70, 70] 80)
+    :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<longmapsto>ST _\<close> [70, 70] 80)
   where
   "P \<longmapsto>ST P' \<equiv>
    (\<exists>S S'. S \<in>S P \<and> S' \<in>S P' \<and> S \<longmapsto>Source S') \<or> (\<exists>T T'. T \<in>T P \<and> T' \<in>T P' \<and> T \<longmapsto>Target T')"
@@ -94,7 +94,7 @@ text \<open>A sequence of steps of a term in Proc is either a sequence of source
         sequence of target term steps.\<close>
 
 abbreviation stepsST
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<longmapsto>ST* _" [70, 70] 80)
+    :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<longmapsto>ST* _\<close> [70, 70] 80)
   where
   "P \<longmapsto>ST* P' \<equiv>
    (\<exists>S S'. S \<in>S P \<and> S' \<in>S P' \<and> S \<longmapsto>Source* S') \<or> (\<exists>T T'. T \<in>T P \<and> T' \<in>T P' \<and> T \<longmapsto>Target* T')"
@@ -274,7 +274,7 @@ qed
 text \<open>A divergent term of Proc is either a divergent source term or a divergent target term.\<close>
 
 abbreviation divergentST
-    :: "('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<longmapsto>ST\<omega>" [70] 80)
+    :: "('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<longmapsto>ST\<omega>\<close> [70] 80)
   where
   "P \<longmapsto>ST\<omega> \<equiv> (\<exists>S. S \<in>S P \<and> S \<longmapsto>(Source)\<omega>) \<or> (\<exists>T. T \<in>T P \<and> T \<longmapsto>(Target)\<omega>)"
 
@@ -363,7 +363,7 @@ text \<open>We say a term P of Proc has some barbs a if either P is a source ter
         might have in common.\<close>
 
 abbreviation hasBarbST
-    :: "('procS, 'procT) Proc \<Rightarrow> 'barbs \<Rightarrow> bool" ("_\<down>._" [70, 70] 80)
+    :: "('procS, 'procT) Proc \<Rightarrow> 'barbs \<Rightarrow> bool" (\<open>_\<down>._\<close> [70, 70] 80)
   where
   "P\<down>.a \<equiv> (\<exists>S. S \<in>S P \<and> S\<down><SWB>a) \<or> (\<exists>T. T \<in>T P \<and> T\<down><TWB>a)"
 
@@ -411,7 +411,7 @@ text \<open>A term P of Proc reaches a barb a if either P is a source term that 
         target term that reaches a.\<close>
 
 abbreviation reachesBarbST
-    :: "('procS, 'procT) Proc \<Rightarrow> 'barbs \<Rightarrow> bool" ("_\<Down>._" [70, 70] 80)
+    :: "('procS, 'procT) Proc \<Rightarrow> 'barbs \<Rightarrow> bool" (\<open>_\<Down>._\<close> [70, 70] 80)
   where
   "P\<Down>.a \<equiv> (\<exists>S. S \<in>S P \<and> S\<Down><SWB>a) \<or> (\<exists>T. T \<in>T P \<and> T\<Down><TWB>a)"
 

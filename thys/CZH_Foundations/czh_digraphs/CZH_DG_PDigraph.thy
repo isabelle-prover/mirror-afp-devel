@@ -2103,7 +2103,7 @@ end
 subsection\<open>Product of three digraphs\<close>
 (*TODO: find a way to generalize to the product of n digraphs*)
 
-definition dg_prod_3 :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" ("(_ \<times>\<^sub>D\<^sub>G\<^sub>3 _ \<times>\<^sub>D\<^sub>G\<^sub>3 _)" [81, 81, 81] 80)
+definition dg_prod_3 :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(_ \<times>\<^sub>D\<^sub>G\<^sub>3 _ \<times>\<^sub>D\<^sub>G\<^sub>3 _)\<close> [81, 81, 81] 80)
   where "\<AA> \<times>\<^sub>D\<^sub>G\<^sub>3 \<BB> \<times>\<^sub>D\<^sub>G\<^sub>3 \<CC> = (\<Prod>\<^sub>D\<^sub>Gi\<in>\<^sub>\<circ>3\<^sub>\<nat>. if3 \<AA> \<BB> \<CC> i)"
 
 

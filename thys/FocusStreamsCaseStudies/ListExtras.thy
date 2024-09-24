@@ -16,7 +16,7 @@ where
  "disjoint x y \<equiv>  (set x) \<inter> (set y) = {}"
 
 primrec
-  mem ::  "'a \<Rightarrow> 'a list \<Rightarrow> bool" (infixr "mem" 65)
+  mem ::  "'a \<Rightarrow> 'a list \<Rightarrow> bool" (infixr \<open>mem\<close> 65)
 where
   "x mem [] = False" |
   "x mem (y # l) = ((x = y) \<or> (x mem l))"

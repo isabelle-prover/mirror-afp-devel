@@ -37,8 +37,8 @@ The ltr semantics are also reflected in [Abdulaziz et al., Definition 2, p.9].
 \<comment> \<open>NOTE hide `Map.map\_add` to free the operator symbol `++` and redefine it to reflect HOL4 map 
 addition semantics.\<close>
 hide_const (open) Map.map_add
-no_notation Map.map_add (infixl "++" 100)
-definition fmap_add_ltr :: "('a, 'b) fmap \<Rightarrow> ('a, 'b) fmap \<Rightarrow> ('a, 'b) fmap" (infixl "++" 100) where 
+no_notation Map.map_add (infixl \<open>++\<close> 100)
+definition fmap_add_ltr :: "('a, 'b) fmap \<Rightarrow> ('a, 'b) fmap \<Rightarrow> ('a, 'b) fmap" (infixl \<open>++\<close> 100) where 
   "m1 ++ m2 \<equiv> m2 ++\<^sub>f m1"  
 
 

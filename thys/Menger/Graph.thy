@@ -11,9 +11,9 @@ type_synonym 'a Edge = "'a \<times> 'a"
 type_synonym 'a Walk = "'a list"
 
 record 'a Graph =
-  verts :: "'a set" ("V\<index>")
-  arcs :: "'a Edge set" ("E\<index>")
-abbreviation is_arc :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>\<index>" 60) where
+  verts :: "'a set" (\<open>V\<index>\<close>)
+  arcs :: "'a Edge set" (\<open>E\<index>\<close>)
+abbreviation is_arc :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<index>\<close> 60) where
   "v \<rightarrow>\<^bsub>G\<^esub> w \<equiv> (v,w) \<in> E\<^bsub>G\<^esub>"
 
 text \<open>
@@ -119,7 +119,7 @@ end \<comment> \<open>context Digraph\<close>
 text \<open>We introduce shorthand notation for a path connecting two vertices.\<close>
 
 definition path_from_to :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a Walk \<Rightarrow> 'a \<Rightarrow> bool"
-  ("_ \<leadsto>_\<leadsto>\<index> _" [71, 71, 71] 70) where
+  (\<open>_ \<leadsto>_\<leadsto>\<index> _\<close> [71, 71, 71] 70) where
   "path_from_to G v xs w \<equiv> Digraph.path G xs \<and> xs \<noteq> Nil \<and> hd xs = v \<and> last xs = w"
 
 context Digraph begin

@@ -7,7 +7,7 @@ context begin
 (* the first thing (I think) we have to do is alter the Seq rule / merge it with NoMatch.
  Its properties make it hard to work with\<dots> *)
 private inductive iptables_bigstep_ns :: "'a ruleset \<Rightarrow> ('a, 'p) matcher \<Rightarrow> 'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool"
-  ("_,_,_\<turnstile> \<langle>_, _\<rangle> \<Rightarrow>\<^sub>s _"  [60,60,60,20,98,98] 89)
+  (\<open>_,_,_\<turnstile> \<langle>_, _\<rangle> \<Rightarrow>\<^sub>s _\<close>  [60,60,60,20,98,98] 89)
   for \<Gamma> and \<gamma> and p where
 skip:    "\<Gamma>,\<gamma>,p\<turnstile> \<langle>[], t\<rangle> \<Rightarrow>\<^sub>s t" |
 accept:  "matches \<gamma> m p \<Longrightarrow> \<Gamma>,\<gamma>,p\<turnstile> \<langle>Rule m Accept # rs, Undecided\<rangle> \<Rightarrow>\<^sub>s Decision FinalAllow" |
@@ -78,7 +78,7 @@ private lemma b: "\<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Righ
   done
     
 private inductive iptables_bigstep_nz :: "'a ruleset \<Rightarrow> ('a, 'p) matcher \<Rightarrow> 'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> bool"
-  ("_,_,_\<turnstile> _ \<Rightarrow>\<^sub>z _"  [60,60,60,20,98] 89)
+  (\<open>_,_,_\<turnstile> _ \<Rightarrow>\<^sub>z _\<close>  [60,60,60,20,98] 89)
   for \<Gamma> and \<gamma> and p where
 skip:    "\<Gamma>,\<gamma>,p \<turnstile> []  \<Rightarrow>\<^sub>z Undecided" |
 accept:  "matches \<gamma> m p \<Longrightarrow> \<Gamma>,\<gamma>,p\<turnstile> Rule m Accept # rs \<Rightarrow>\<^sub>z Decision FinalAllow" |
@@ -103,7 +103,7 @@ private lemma d: "\<Gamma>,\<gamma>,p\<turnstile> \<langle>rs, s\<rangle> \<Righ
   by(induction rule: iptables_bigstep_ns.induct; simp add: iptables_bigstep_nz.intros)
     
 inductive iptables_bigstep_r :: "'a ruleset \<Rightarrow> ('a, 'p) matcher \<Rightarrow> 'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> bool"
-  ("_,_,_\<turnstile> _ \<Rightarrow>\<^sub>r _"  [60,60,60,20,98] 89)
+  (\<open>_,_,_\<turnstile> _ \<Rightarrow>\<^sub>r _\<close>  [60,60,60,20,98] 89)
   for \<Gamma> and \<gamma> and p where
 skip:    "\<Gamma>,\<gamma>,p \<turnstile> []  \<Rightarrow>\<^sub>r Undecided" |
 accept:  "matches \<gamma> m p \<Longrightarrow> \<Gamma>,\<gamma>,p\<turnstile> Rule m Accept # rs \<Rightarrow>\<^sub>r Decision FinalAllow" |

@@ -173,13 +173,13 @@ definition tabulate2 :: "nat => nat => (nat => nat => 'a) => 'a iarray iarray"
 definition transpose_iarray :: "'a iarray iarray => 'a iarray iarray"
   where "transpose_iarray A =  tabulate2 (ncols_iarray A) (nrows_iarray A) (\<lambda>a b. A!!b!!a)"
 
-definition matrix_matrix_mult_iarray :: "'a::{times, comm_monoid_add} iarray iarray => 'a iarray iarray => 'a iarray iarray"  (infixl "**i" 70)
+definition matrix_matrix_mult_iarray :: "'a::{times, comm_monoid_add} iarray iarray => 'a iarray iarray => 'a iarray iarray"  (infixl \<open>**i\<close> 70)
   where "A **i B = tabulate2 (nrows_iarray A) (ncols_iarray B) (\<lambda>i j. sum (\<lambda>k. ((A!!i)!!k) * ((B!!k)!!j)) {0..<ncols_iarray A})"
 
-definition matrix_vector_mult_iarray :: "'a::{semiring_1} iarray iarray => 'a iarray => 'a iarray" (infixl "*iv" 70)
+definition matrix_vector_mult_iarray :: "'a::{semiring_1} iarray iarray => 'a iarray => 'a iarray" (infixl \<open>*iv\<close> 70)
   where "A *iv x = IArray.of_fun (\<lambda>i. sum (\<lambda>j. ((A!!i)!!j) * (x!!j)) {0..<IArray.length x}) (nrows_iarray A)"
 
-definition vector_matrix_mult_iarray :: "'a::{semiring_1} iarray => 'a iarray iarray => 'a iarray" (infixl "v*i" 70)
+definition vector_matrix_mult_iarray :: "'a::{semiring_1} iarray => 'a iarray iarray => 'a iarray" (infixl \<open>v*i\<close> 70)
   where "x v*i A = IArray.of_fun (\<lambda>j. sum (\<lambda>i. ((A!!i)!!j) * (x!!i)) {0..<IArray.length x}) (ncols_iarray A)"
 
 definition mat_iarray :: "'a::{zero} => nat => 'a iarray iarray"

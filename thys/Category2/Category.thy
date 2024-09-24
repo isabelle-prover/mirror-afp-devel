@@ -9,19 +9,19 @@ imports "HOL-Library.FuncSet"
 begin
 
 record ('o,'m) Category = 
-  Obj :: "'o set" ("obj\<index>" 70) 
-  Mor :: "'m set" ("mor\<index>" 70)
-  Dom :: "'m \<Rightarrow> 'o" ("dom\<index> _" [80] 70)
-  Cod :: "'m \<Rightarrow> 'o" ("cod\<index> _" [80] 70)
-  Id  :: "'o \<Rightarrow> 'm" ("id\<index> _" [80] 75)
-  Comp :: "'m \<Rightarrow> 'm \<Rightarrow> 'm" (infixl ";;\<index>" 70)
+  Obj :: "'o set" (\<open>obj\<index>\<close> 70) 
+  Mor :: "'m set" (\<open>mor\<index>\<close> 70)
+  Dom :: "'m \<Rightarrow> 'o" (\<open>dom\<index> _\<close> [80] 70)
+  Cod :: "'m \<Rightarrow> 'o" (\<open>cod\<index> _\<close> [80] 70)
+  Id  :: "'o \<Rightarrow> 'm" (\<open>id\<index> _\<close> [80] 75)
+  Comp :: "'m \<Rightarrow> 'm \<Rightarrow> 'm" (infixl \<open>;;\<index>\<close> 70)
 
 definition
-  MapsTo :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'o \<Rightarrow> 'o \<Rightarrow> bool" ("_ maps\<index> _ to _" [60, 60, 60] 65) where
+  MapsTo :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'o \<Rightarrow> 'o \<Rightarrow> bool" (\<open>_ maps\<index> _ to _\<close> [60, 60, 60] 65) where
   "MapsTo CC f X Y \<equiv> f \<in> Mor CC \<and> Dom CC f = X \<and> Cod CC f = Y"
 
 definition
-  CompDefined :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'm \<Rightarrow> bool" (infixl "\<approx>>\<index>" 65) where
+  CompDefined :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'm \<Rightarrow> bool" (infixl \<open>\<approx>>\<index>\<close> 65) where
   "CompDefined CC f g \<equiv> f \<in> Mor CC \<and> g \<in> Mor CC \<and> Cod CC f = Dom CC g"
 
 locale ExtCategory = 
@@ -221,11 +221,11 @@ proof(rule LeftRightInvUniq [of "id X" "id X" \<iota> ])
 qed
   
 definition
-  inverse_rel :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'm \<Rightarrow> bool" ("cinv\<index> _ _" 60) where
+  inverse_rel :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'm \<Rightarrow> bool" (\<open>cinv\<index> _ _\<close> 60) where
   "inverse_rel C f g \<equiv> (f \<approx>>\<^bsub>C\<^esub> g) \<and> (f ;;\<^bsub>C\<^esub> g) = (id\<^bsub>C\<^esub> (dom\<^bsub>C\<^esub> f)) \<and> (g ;;\<^bsub>C\<^esub> f) = (id\<^bsub>C\<^esub> (cod\<^bsub>C\<^esub> f))"
 
 definition 
-  isomorphism :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> bool" ("ciso\<index> _" [70]) where
+  isomorphism :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> bool" (\<open>ciso\<index> _\<close> [70]) where
   "isomorphism C f \<equiv> \<exists> g . inverse_rel C f g"
 
 lemma (in Category) Inverse_relI: "\<lbrakk>f \<approx>> g ; f ;; g = id (dom f) ; g ;; f = id (cod f)\<rbrakk> \<Longrightarrow> (cinv f g)"
@@ -278,7 +278,7 @@ proof(rule Inverse_relI)
 qed
     
 definition
-  inverse :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'm" ("Cinv\<index> _" [70]) where
+  inverse :: "('o,'m,'a) Category_scheme \<Rightarrow> 'm \<Rightarrow> 'm" (\<open>Cinv\<index> _\<close> [70]) where
   "inverse C f \<equiv> THE g . inverse_rel C f g"
 
 lemma (in Category) inv2Inv:
@@ -414,7 +414,7 @@ apply (simp add: UnitCategory_def, rule MakeCat)
 by (unfold_locales, auto simp add: UnitCategory_def)
 
 definition 
-  OppositeCategory :: "('o,'m,'a) Category_scheme \<Rightarrow> ('o,'m,'a) Category_scheme" ("Op _" [65] 65) where
+  OppositeCategory :: "('o,'m,'a) Category_scheme \<Rightarrow> ('o,'m,'a) Category_scheme" (\<open>Op _\<close> [65] 65) where
   "OppositeCategory C \<equiv> \<lparr>
       Obj = Obj C , 
       Mor = Mor C , 

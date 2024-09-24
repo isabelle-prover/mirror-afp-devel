@@ -24,9 +24,9 @@ where
 monos monoCoinduct
 
 abbreviation
-  bisimJudge ("_ \<rhd> _ \<sim> _" [70, 70, 70] 65) where "\<Psi> \<rhd> P \<sim> Q \<equiv> (\<Psi>, P, Q) \<in> bisim"
+  bisimJudge (\<open>_ \<rhd> _ \<sim> _\<close> [70, 70, 70] 65) where "\<Psi> \<rhd> P \<sim> Q \<equiv> (\<Psi>, P, Q) \<in> bisim"
 abbreviation
-  bisimNilJudge ("_ \<sim> _" [70, 70] 65) where "P \<sim> Q \<equiv> SBottom' \<rhd> P \<sim> Q"
+  bisimNilJudge (\<open>_ \<sim> _\<close> [70, 70] 65) where "P \<sim> Q \<equiv> SBottom' \<rhd> P \<sim> Q"
 
 lemma bisimCoinductAux[consumes 1]:
   fixes F :: 'b

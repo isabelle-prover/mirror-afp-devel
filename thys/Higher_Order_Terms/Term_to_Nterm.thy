@@ -19,7 +19,7 @@ app: "alpha_equiv env n1 n2 \<Longrightarrow> alpha_equiv env m1 m2 \<Longrighta
 
 code_pred alpha_equiv .
 
-abbreviation alpha_eq :: "nterm \<Rightarrow> nterm \<Rightarrow> bool" (infixl "\<approx>\<^sub>\<alpha>" 50) where
+abbreviation alpha_eq :: "nterm \<Rightarrow> nterm \<Rightarrow> bool" (infixl \<open>\<approx>\<^sub>\<alpha>\<close> 50) where
 "alpha_eq n1 n2 \<equiv> alpha_equiv fmempty n1 n2"
 
 lemma alpha_equiv_refl[intro?]:

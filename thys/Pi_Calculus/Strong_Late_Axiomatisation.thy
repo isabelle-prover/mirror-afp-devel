@@ -94,7 +94,7 @@ proof -
   qed
 qed
 
-inductive equiv :: "pi \<Rightarrow> pi \<Rightarrow> bool" (infixr "\<equiv>\<^sub>e" 80)
+inductive equiv :: "pi \<Rightarrow> pi \<Rightarrow> bool" (infixr \<open>\<equiv>\<^sub>e\<close> 80)
 where
   Refl:              "P \<equiv>\<^sub>e P"
 | Sym:               "P \<equiv>\<^sub>e Q \<Longrightarrow> Q \<equiv>\<^sub>e P"

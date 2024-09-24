@@ -48,9 +48,9 @@ begin
        apply blast
       by (metis IntD2 compose_assoc)
 
-    abbreviation comp :: "'e setcat.arr comp"     (infixr "\<cdot>" 55)
+    abbreviation comp :: "'e setcat.arr comp"     (infixr \<open>\<cdot>\<close> 55)
     where "comp \<equiv> S.COMP"
-    notation S.in_hom                               ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation S.in_hom                               (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma is_category:
     shows "category comp"

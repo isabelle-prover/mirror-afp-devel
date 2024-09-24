@@ -22,14 +22,14 @@ definition HF :: "hf set \<Rightarrow> hf"
 definition hinsert :: "hf \<Rightarrow> hf \<Rightarrow> hf"
   where "hinsert a b = HF (insert a (hfset b))"
 
-definition hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"  (infixl "\<^bold>\<in>" 50)
+definition hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"  (infixl \<open>\<^bold>\<in>\<close> 50)
   where "hmem a b \<longleftrightarrow> a \<in> hfset b"
   
-abbreviation not_hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"  (infixl "\<^bold>\<notin>" 50)
+abbreviation not_hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"  (infixl \<open>\<^bold>\<notin>\<close> 50)
   where "a \<^bold>\<notin> b \<equiv> \<not> a \<^bold>\<in> b"
 
 notation (ASCII)
-  hmem (infixl "<:" 50)
+  hmem (infixl \<open><:\<close> 50)
 
 instantiation hf :: zero
 begin
@@ -43,13 +43,13 @@ lemma Abs_hf_0 [simp]: "Abs_hf 0 = 0"
 
 text \<open>HF Set enumerations\<close>
 
-abbreviation inserthf :: "hf \<Rightarrow> hf \<Rightarrow> hf"  (infixl "\<triangleleft>" 60)
+abbreviation inserthf :: "hf \<Rightarrow> hf \<Rightarrow> hf"  (infixl \<open>\<triangleleft>\<close> 60)
   where "y \<triangleleft> x \<equiv> hinsert x y"
 
 syntax (ASCII)
-  "_HFinset" :: "args \<Rightarrow> hf"      ("{|(_)|}")
+  "_HFinset" :: "args \<Rightarrow> hf"      (\<open>{|(_)|}\<close>)
 syntax
-  "_HFinset" :: "args \<Rightarrow> hf"      ("\<lbrace>_\<rbrace>")
+  "_HFinset" :: "args \<Rightarrow> hf"      (\<open>\<lbrace>_\<rbrace>\<close>)
 syntax_consts
   "_HFinset" \<rightleftharpoons> inserthf
 translations
@@ -173,13 +173,13 @@ text \<open>Ordered Pairs, from ZF/ZF.thy\<close>
 
 nonterminal hfs
 syntax (ASCII)
-  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("<(_,/ _)>")
-  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("<_,/ _>")
+  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              (\<open><(_,/ _)>\<close>)
+  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   (\<open><_,/ _>\<close>)
 syntax
-  ""          :: "hf \<Rightarrow> hfs"                    ("_")
-  "_Enum"     :: "[hf, hfs] \<Rightarrow> hfs"             ("_,/ _")
-  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("\<langle>(_,/ _)\<rangle>")
-  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>_,/ _\<rangle>")
+  ""          :: "hf \<Rightarrow> hfs"                    (\<open>_\<close>)
+  "_Enum"     :: "[hf, hfs] \<Rightarrow> hfs"             (\<open>_,/ _\<close>)
+  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              (\<open>\<langle>(_,/ _)\<rangle>\<close>)
+  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   (\<open>\<langle>_,/ _\<rangle>\<close>)
 syntax_consts
   "_Enum" "_Tuple" \<rightleftharpoons> hpair and
   "_hpattern" \<rightleftharpoons> hsplit
@@ -246,9 +246,9 @@ definition HCollect :: "(hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> h
   where "HCollect P A = (THE z. \<forall>u. u \<^bold>\<in> z = (P u \<and> u \<^bold>\<in> A))"
 
 syntax (ASCII)
-  "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    ("(1\<lbrace>_ <:/ _./ _\<rbrace>)")
+  "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    (\<open>(1\<lbrace>_ <:/ _./ _\<rbrace>)\<close>)
 syntax
-  "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    ("(1\<lbrace>_ \<^bold>\<in>/ _./ _\<rbrace>)")
+  "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    (\<open>(1\<lbrace>_ \<^bold>\<in>/ _./ _\<rbrace>)\<close>)
 syntax_consts
   "_HCollect" \<rightleftharpoons> HCollect
 translations
@@ -280,7 +280,7 @@ begin
   instance ..
 end
 
-abbreviation hunion :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl "\<squnion>" 65) where
+abbreviation hunion :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl \<open>\<squnion>\<close> 65) where
   "hunion \<equiv> sup"
 
 lemma hunion_iff [iff]: "hmem x (a \<squnion> b) \<longleftrightarrow> x \<^bold>\<in> a \<or> x \<^bold>\<in> b"
@@ -289,7 +289,7 @@ lemma hunion_iff [iff]: "hmem x (a \<squnion> b) \<longleftrightarrow> x \<^bold
   apply (rule theI2, auto simp: hf_ext)
   done
 
-definition HUnion :: "hf \<Rightarrow> hf"        ("\<Squnion>_" [900] 900)
+definition HUnion :: "hf \<Rightarrow> hf"        (\<open>\<Squnion>_\<close> [900] 900)
   where "HUnion A = (THE z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> (\<exists>y. y \<^bold>\<in> A \<and> u \<^bold>\<in> y))"
 
 lemma HUnion_iff [iff]: "hmem x (\<Squnion> A) \<longleftrightarrow> (\<exists>y. y \<^bold>\<in> A \<and> x \<^bold>\<in> y)"
@@ -316,13 +316,13 @@ begin
   instance ..
 end
 
-abbreviation hinter :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl "\<sqinter>" 70) where
+abbreviation hinter :: "hf \<Rightarrow> hf \<Rightarrow> hf" (infixl \<open>\<sqinter>\<close> 70) where
   "hinter \<equiv> inf"
 
 lemma hinter_iff [iff]: "hmem u (x \<sqinter> y) \<longleftrightarrow> u \<^bold>\<in> x \<and> u \<^bold>\<in> y"
   by (metis HCollect_iff inf_hf_def)
 
-definition HInter :: "hf \<Rightarrow> hf"           ("\<Sqinter>_" [900] 900)
+definition HInter :: "hf \<Rightarrow> hf"           (\<open>\<Sqinter>_\<close> [900] 900)
   where "HInter(A) = \<lbrace>x \<^bold>\<in> HUnion(A). \<forall>y. y \<^bold>\<in> A \<longrightarrow> x \<^bold>\<in> y\<rbrace>"
 
 lemma HInter_hempty [iff]: "\<Sqinter> 0 = 0"
@@ -387,15 +387,15 @@ definition RepFun :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
 
 
 syntax (ASCII)
-  "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" ("(1{|_ ./ _<: _, _|})")
-  "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1{|_ ./ _<: _|})" [51,0,51])
-  "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3INT _<:_./ _)" 10)
-  "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3UN _<:_./ _)" 10)
+  "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" (\<open>(1{|_ ./ _<: _, _|})\<close>)
+  "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          (\<open>(1{|_ ./ _<: _|})\<close> [51,0,51])
+  "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          (\<open>(3INT _<:_./ _)\<close> 10)
+  "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          (\<open>(3UN _<:_./ _)\<close> 10)
 syntax
-  "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" ("(1\<lbrace>_ ./ _ \<^bold>\<in> _, _\<rbrace>)")
-  "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1\<lbrace>_ ./ _ \<^bold>\<in> _\<rbrace>)" [51,0,51])
-  "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Sqinter>_\<^bold>\<in>_./ _)" 10)
-  "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Squnion>_\<^bold>\<in>_./ _)" 10)
+  "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" (\<open>(1\<lbrace>_ ./ _ \<^bold>\<in> _, _\<rbrace>)\<close>)
+  "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          (\<open>(1\<lbrace>_ ./ _ \<^bold>\<in> _\<rbrace>)\<close> [51,0,51])
+  "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          (\<open>(3\<Sqinter>_\<^bold>\<in>_./ _)\<close> 10)
+  "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          (\<open>(3\<Squnion>_\<^bold>\<in>_./ _)\<close> 10)
 syntax_consts
   "_HReplace" \<rightleftharpoons> Replace and
   "_HRepFun" \<rightleftharpoons> RepFun and
@@ -705,13 +705,13 @@ definition HBex :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool"
   "HBex A P \<longleftrightarrow> (\<exists>x. x \<^bold>\<in> A \<and> P x)"   \<comment> \<open>bounded existential quantifiers\<close>
 
 syntax (ASCII)
-  "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3ALL _<:_./ _)" [0, 0, 10] 10)
-  "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX _<:_./ _)"  [0, 0, 10] 10)
-  "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX! _<:_./ _)" [0, 0, 10] 10)
+  "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3ALL _<:_./ _)\<close> [0, 0, 10] 10)
+  "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3EX _<:_./ _)\<close>  [0, 0, 10] 10)
+  "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3EX! _<:_./ _)\<close> [0, 0, 10] 10)
 syntax
-  "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
-  "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
-  "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>!_\<^bold>\<in>_./ _)" [0, 0, 10] 10)
+  "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<forall>_\<^bold>\<in>_./ _)\<close>  [0, 0, 10] 10)
+  "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>_\<^bold>\<in>_./ _)\<close>  [0, 0, 10] 10)
+  "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>!_\<^bold>\<in>_./ _)\<close> [0, 0, 10] 10)
 syntax_consts
   "_HBall" \<rightleftharpoons> HBall and
   "_HBex" \<rightleftharpoons> HBex and
@@ -900,13 +900,13 @@ definition HPi :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
 
 
 syntax (ASCII)
-  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3PROD _<:_./ _)" 10)
-  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3SUM _<:_./ _)" 10)
-  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3lam _<:_./ _)" 10)
+  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        (\<open>(3PROD _<:_./ _)\<close> 10)
+  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        (\<open>(3SUM _<:_./ _)\<close> 10)
+  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        (\<open>(3lam _<:_./ _)\<close> 10)
 syntax
-  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Prod>_\<^bold>\<in>_./ _)" 10)
-  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sum>_\<^bold>\<in>_./ _)" 10)
-  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
+  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        (\<open>(3\<Prod>_\<^bold>\<in>_./ _)\<close> 10)
+  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        (\<open>(3\<Sum>_\<^bold>\<in>_./ _)\<close> 10)
+  "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        (\<open>(3\<lambda>_\<^bold>\<in>_./ _)\<close> 10)
 syntax_consts
   "_PROD" \<rightleftharpoons> HPi and
   "_SUM" \<rightleftharpoons> HSigma and

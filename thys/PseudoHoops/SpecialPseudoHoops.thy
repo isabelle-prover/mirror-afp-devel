@@ -532,7 +532,7 @@ class bounded_basic_pseudo_hoop_algebra = zero_one + basic_pseudo_hoop_algebra +
   assumes zero_smallest [simp]: "0 \<le> a"
 
 class inf_a = 
-  fixes inf_a :: "'a => 'a => 'a" (infixl "\<sqinter>1" 65)
+  fixes inf_a :: "'a => 'a => 'a" (infixl \<open>\<sqinter>1\<close> 65)
 
 class pseudo_bl_algebra = zero + sup + inf + monoid_mult + ord + left_imp + right_imp +
   assumes  bounded_lattice: "class.bounded_lattice inf (\<le>) (<) sup 0 1"

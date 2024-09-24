@@ -145,7 +145,7 @@ begin
   begin
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     text \<open>
       Just as for an ordinary adjunction between categories, an adjunction in a bicategory
@@ -732,7 +732,7 @@ begin
   begin
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     definition adjoint_pair
     where "adjoint_pair f g \<equiv> \<exists>\<eta> \<epsilon>. adjunction_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>"
@@ -1745,10 +1745,10 @@ begin
     strict_bicategory V H \<a> \<i> src trg +
     fg: adjunction_in_strict_bicategory V H \<a> \<i> src trg f g \<zeta> \<xi> +
     hk: adjunction_in_strict_bicategory V H \<a> \<i> src trg h k \<sigma> \<tau>
-  for V :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"        (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"        (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"              ("\<i>[_]")
+  for V :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"        (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"        (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"              (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and f :: "'a"
@@ -1941,10 +1941,10 @@ begin
 
     interpretation S: strictified_bicategory V H \<a> \<i> src trg ..
 
-    notation S.vcomp  (infixr "\<cdot>\<^sub>S" 55)
-    notation S.hcomp  (infixr "\<star>\<^sub>S" 53)
-    notation S.in_hom  ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
-    notation S.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
+    notation S.vcomp  (infixr \<open>\<cdot>\<^sub>S\<close> 55)
+    notation S.hcomp  (infixr \<open>\<star>\<^sub>S\<close> 53)
+    notation S.in_hom  (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>\<close>)
+    notation S.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     interpretation UP: fully_faithful_functor V S.vcomp S.UP
       using S.UP_is_fully_faithful_functor by auto
@@ -2016,9 +2016,9 @@ begin
   begin
 
     (* Global notation is evil! *)
-    no_notation Transitive_Closure.rtrancl  ("(_\<^sup>*)" [1000] 999)
+    no_notation Transitive_Closure.rtrancl  (\<open>(_\<^sup>*)\<close> [1000] 999)
 
-    definition some_right_adjoint  ("_\<^sup>*" [1000] 1000)
+    definition some_right_adjoint  (\<open>_\<^sup>*\<close> [1000] 1000)
     where "f\<^sup>* \<equiv> SOME g. adjoint_pair f g"
 
     definition some_unit
@@ -2167,7 +2167,7 @@ begin
   context strict_bicategory
   begin
 
-    notation isomorphic  (infix "\<cong>" 50)
+    notation isomorphic  (infix \<open>\<cong>\<close> 50)
 
     lemma equivalence_refines_to_adjoint_equivalence:
     assumes "equivalence_map f" and "\<guillemotleft>g : trg f \<rightarrow> src f\<guillemotright>" and "ide g"
@@ -2503,10 +2503,10 @@ begin
 
     interpretation S: strictified_bicategory V H \<a> \<i> src trg ..
 
-    notation S.vcomp  (infixr "\<cdot>\<^sub>S" 55)
-    notation S.hcomp  (infixr "\<star>\<^sub>S" 53)
-    notation S.in_hom  ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
-    notation S.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
+    notation S.vcomp  (infixr \<open>\<cdot>\<^sub>S\<close> 55)
+    notation S.hcomp  (infixr \<open>\<star>\<^sub>S\<close> 53)
+    notation S.in_hom  (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>\<close>)
+    notation S.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     interpretation UP: fully_faithful_functor V S.vcomp S.UP
       using S.UP_is_fully_faithful_functor by auto
@@ -3124,10 +3124,10 @@ begin
 
     interpretation S: strictified_bicategory V H \<a> \<i> src trg ..
 
-    notation S.vcomp  (infixr "\<cdot>\<^sub>S" 55)
-    notation S.hcomp  (infixr "\<star>\<^sub>S" 53)
-    notation S.in_hom  ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>")
-    notation S.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
+    notation S.vcomp  (infixr \<open>\<cdot>\<^sub>S\<close> 55)
+    notation S.hcomp  (infixr \<open>\<star>\<^sub>S\<close> 53)
+    notation S.in_hom  (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>S _\<guillemotright>\<close>)
+    notation S.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>\<close>)
 
     interpretation UP: equivalence_pseudofunctor V H \<a> \<i> src trg
                           S.vcomp S.hcomp S.\<a> S.\<i> S.src S.trg S.UP S.cmp\<^sub>U\<^sub>P

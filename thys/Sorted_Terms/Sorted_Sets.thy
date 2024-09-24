@@ -158,15 +158,15 @@ declare domIff[iff del]
 text \<open>We view sorted sets just as partial maps from elements to their sorts.
 We just introduce the following notation:\<close>
 
-definition hastype ("((_) :/ (_) in/ (_))" [50,61,51]50)
+definition hastype (\<open>((_) :/ (_) in/ (_))\<close> [50,61,51]50)
   where "a : \<sigma> in A \<equiv> A a = Some \<sigma>"
 
 abbreviation "all_hastype \<sigma> A P \<equiv> \<forall>a. a : \<sigma> in A \<longrightarrow> P a"
 abbreviation "ex_hastype \<sigma> A P \<equiv> \<exists>a. a : \<sigma> in A \<and> P a"
 
 syntax
-  all_hastype :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<forall>_ :/ _ in/ _./ _" [50,51,51,10]10)
-  ex_hastype :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<exists>_ :/ _ in/ _./ _" [50,51,51,10]10)
+  all_hastype :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<forall>_ :/ _ in/ _./ _\<close> [50,51,51,10]10)
+  ex_hastype :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<exists>_ :/ _ in/ _./ _\<close> [50,51,51,10]10)
 
 syntax_consts
   all_hastype \<rightleftharpoons> all_hastype and
@@ -203,7 +203,7 @@ lemma nex_hastype_iff: "(\<nexists>\<sigma>. a : \<sigma> in A) \<longleftrighta
 lemma all_dom_iff_all_hastype: "(\<forall>x \<in> dom A. P x) \<longleftrightarrow> (\<forall>x \<sigma>. x : \<sigma> in A \<longrightarrow> P x)"
   by (simp add: all_dom hastype_def)
 
-abbreviation hastype_list ("((_) :\<^sub>l/ (_) in/ (_))" [50,61,51]50)
+abbreviation hastype_list (\<open>((_) :\<^sub>l/ (_) in/ (_))\<close> [50,61,51]50)
   where "as :\<^sub>l \<sigma>s in A \<equiv> list_all2 (\<lambda>a \<sigma>. a : \<sigma> in A) as \<sigma>s" 
 
 lemma has_same_type_list:
@@ -306,7 +306,7 @@ lemmas hastype_in_safe_nthE = safe_nth_eq_SomeE[folded hastype_def]
 
 lemma hastype_in_o[simp]: "a : \<sigma> in A \<circ> f \<longleftrightarrow> f a : \<sigma> in A" by (simp add: hastype_def)
 
-definition o_sset (infix "\<circ>s" 55) where
+definition o_sset (infix \<open>\<circ>s\<close> 55) where
   "f \<circ>s A \<equiv> map_option f \<circ> A"
 
 lemma hastype_in_o_sset: "a : \<sigma>' in f \<circ>s A \<longleftrightarrow> (\<exists>\<sigma>. a : \<sigma> in A \<and> \<sigma>' = f \<sigma>)"
@@ -339,7 +339,7 @@ lemma dom_o_sset[simp]: "dom (f \<circ>s A) = dom A"
 lemma safe_nth_map: "safe_nth (map f as) = f \<circ>s safe_nth as"
   by (auto simp: safe_nth o_sset_def)
 
-notation Map.empty ("\<emptyset>")
+notation Map.empty (\<open>\<emptyset>\<close>)
 lemma safe_nth_Nil[simp]: "safe_nth [] = \<emptyset>" by auto
 
 lemma o_sset_empty[simp]: "f \<circ>s \<emptyset> = \<emptyset>" by (auto simp: o_sset_def)
@@ -410,14 +410,14 @@ lemma in_dom: "a \<in> dom A \<Longrightarrow> f a \<in> dom B" by (auto elim!: 
 
 end
 
-notation sorted_map ("_ :\<^sub>s(/ _ \<rightarrow>/ _)" [50,51,51]50)
+notation sorted_map (\<open>_ :\<^sub>s(/ _ \<rightarrow>/ _)\<close> [50,51,51]50)
 
 abbreviation "all_sorted_map A B P \<equiv> \<forall>f. f :\<^sub>s A \<rightarrow> B \<longrightarrow> P f"
 abbreviation "ex_sorted_map A B P \<equiv> \<exists>f. f :\<^sub>s A \<rightarrow> B \<and> P f"
 
 syntax
-  all_sorted_map :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<forall>_ :\<^sub>s(/ _ \<rightarrow>/ _)./ _" [50,51,51,10]10)
-  ex_sorted_map :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<exists>_ :\<^sub>s(/ _ \<rightarrow>/ _)./ _" [50,51,51,10]10)
+  all_sorted_map :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<forall>_ :\<^sub>s(/ _ \<rightarrow>/ _)./ _\<close> [50,51,51,10]10)
+  ex_sorted_map :: "'pttrn \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<exists>_ :\<^sub>s(/ _ \<rightarrow>/ _)./ _\<close> [50,51,51,10]10)
 
 translations
   "\<forall>f :\<^sub>s A \<rightarrow> B. e" \<rightleftharpoons> "CONST all_sorted_map A B (\<lambda>f. e)"
@@ -531,7 +531,7 @@ lemma safe_The_eq_None: "safe_The P = None \<longleftrightarrow> \<not>(\<exists
 lemma safe_The_False[simp]: "safe_The (\<lambda>x. False) = None"
   by (auto simp: safe_The_def)
 
-definition sorted_image :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 's) \<Rightarrow> 'b \<rightharpoonup> 's" (infixr "`\<^sup>s" 90) where
+definition sorted_image :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<rightharpoonup> 's) \<Rightarrow> 'b \<rightharpoonup> 's" (infixr \<open>`\<^sup>s\<close> 90) where
   "(f `\<^sup>s A) b \<equiv> safe_The (\<lambda>\<sigma>. \<exists>a : \<sigma> in A. f a = b)"
 
 lemma hastype_in_imageE:
@@ -644,8 +644,8 @@ proof-
     by (auto intro!: sset_eqI f'.hastype_in_imageI f.hastype_in_imageI elim!: hastype_in_imageE simp: inj)
 qed
 
-definition sorted_Imagep (infixr "``\<^sup>s" 90)
-  where "((\<sqsubseteq>) ``\<^sup>s A) b \<equiv> safe_The (\<lambda>\<sigma>. \<exists>a : \<sigma> in A. a \<sqsubseteq> b)" for r (infix "\<sqsubseteq>" 50)
+definition sorted_Imagep (infixr \<open>``\<^sup>s\<close> 90)
+  where "((\<sqsubseteq>) ``\<^sup>s A) b \<equiv> safe_The (\<lambda>\<sigma>. \<exists>a : \<sigma> in A. a \<sqsubseteq> b)" for r (infix \<open>\<sqsubseteq>\<close> 50)
 
 lemma untyped_hastypeE: "A a = None \<Longrightarrow> a : \<sigma> in A \<Longrightarrow> thesis"
   by (auto simp: hastype_def)

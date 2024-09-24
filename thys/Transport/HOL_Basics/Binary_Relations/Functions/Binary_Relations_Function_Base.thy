@@ -14,14 +14,14 @@ consts rel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 bundle rel_mono_wrt_syntax
 begin
 syntax
-  "_rel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("(_) \<rightarrow> (_)" [41, 40] 40)
-  "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow> (_)" [41, 41, 40] 40)
+  "_rel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>(_) \<rightarrow> (_)\<close> [41, 40] 40)
+  "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow> (_)\<close> [41, 41, 40] 40)
 end
 bundle no_rel_mono_wrt_syntax
 begin
 no_syntax
-  "_rel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("(_) \<rightarrow> (_)" [41, 40] 40)
-  "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" ("'(_/ :/ _') \<rightarrow> (_)" [41, 41, 40] 40)
+  "_rel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>(_) \<rightarrow> (_)\<close> [41, 40] 40)
+  "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow> (_)\<close> [41, 41, 40] 40)
 end
 unbundle rel_mono_wrt_syntax
 syntax_consts

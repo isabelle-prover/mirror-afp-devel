@@ -12,8 +12,8 @@ begin
 text \<open>We define a class of pre-dioids with notions of assertions, tests and iteration. The above rules of PHL are derivable in that class.\<close>
 
 class at_pre_dioid = pre_dioid_one +
-  fixes alpha :: "'a \<Rightarrow> 'a" ("\<alpha>")
-  and tau :: "'a \<Rightarrow> 'a" ("\<tau>")
+  fixes alpha :: "'a \<Rightarrow> 'a" (\<open>\<alpha>\<close>)
+  and tau :: "'a \<Rightarrow> 'a" (\<open>\<tau>\<close>)
   assumes at_pres: "\<alpha> x \<cdot> \<tau> y \<le> \<tau> y \<cdot> \<alpha> x \<cdot> \<tau> y"
   and as_left_supdistl: "\<alpha> x \<cdot> (y + z) \<le> \<alpha> x \<cdot> y + \<alpha> x \<cdot> z"
 
@@ -77,7 +77,7 @@ sublocale kat_zerol < phl: at_it_pre_dioid where alpha = t and tau = t and it = 
 
 context test_pre_dioid_zerol begin
 
-abbreviation if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
+abbreviation if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>if _ then _ else _ fi\<close> [64,64,64] 63) where
   "if p then x else y fi \<equiv> (p \<cdot> x + !p \<cdot> y)"
  
 lemma phl_n_cond: 
@@ -146,7 +146,7 @@ end
 context kat_zerol
 begin
 
-abbreviation while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [64,64] 63) where
+abbreviation while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>while _ do _ od\<close> [64,64] 63) where
   "while b do x od \<equiv> (b \<cdot> x)\<^sup>\<star> \<cdot> !b"
 
 lemma  phl_n_while: 
@@ -181,7 +181,7 @@ lemma (in kat) "test p \<Longrightarrow> test q \<Longrightarrow>  p \<cdot> x \
 
 text \<open>The following facts should be moved. They show that the rules of Hoare logic based on Tarlecki triples are invertible.\<close>
 
-abbreviation (in near_dioid) tt :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("\<lparr>_\<rparr>_\<lparr>_\<rparr>") where
+abbreviation (in near_dioid) tt :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>\<lparr>_\<rparr>_\<lparr>_\<rparr>\<close>) where
   "\<lparr>x\<rparr> y \<lparr>z\<rparr> \<equiv> x \<cdot> y \<le> z" 
 
 lemma (in near_dioid_one) tt_skip: "\<lparr>p\<rparr> 1 \<lparr>p\<rparr>"

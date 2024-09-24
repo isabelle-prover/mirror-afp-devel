@@ -103,7 +103,7 @@ qed
 locale traffic
 begin   
 
-notation nat_int.consec ("consec")
+notation nat_int.consec (\<open>consec\<close>)
 
 text\<open>For brevity, we define names for the different functions
 within a traffic snapshot.\<close>
@@ -259,7 +259,7 @@ for several cars to change their properties, several transitions have to be take
 \<close>
   
 definition create_claim ::
-  "traffic\<Rightarrow>cars\<Rightarrow>nat\<Rightarrow>traffic\<Rightarrow>bool" ("_ \<^bold>\<midarrow>c'( _, _ ') \<^bold>\<rightarrow> _" 27)
+  "traffic\<Rightarrow>cars\<Rightarrow>nat\<Rightarrow>traffic\<Rightarrow>bool" (\<open>_ \<^bold>\<midarrow>c'( _, _ ') \<^bold>\<rightarrow> _\<close> 27)
 where "  (ts \<^bold>\<midarrow>c(c,n)\<^bold>\<rightarrow> ts')  == (pos ts') = (pos ts) 
                                 \<and> (res ts') = (res ts)
                                 \<and> (dyn ts') = (dyn ts)
@@ -271,7 +271,7 @@ where "  (ts \<^bold>\<midarrow>c(c,n)\<^bold>\<rightarrow> ts')  == (pos ts') =
                                 \<and> (clm ts') = (clm ts)(c:=Abs_nat_int {n})"
 
 definition withdraw_claim ::
-  "traffic\<Rightarrow>cars \<Rightarrow>traffic\<Rightarrow>bool" ("_ \<^bold>\<midarrow>wdc'( _ ') \<^bold>\<rightarrow> _" 27)
+  "traffic\<Rightarrow>cars \<Rightarrow>traffic\<Rightarrow>bool" (\<open>_ \<^bold>\<midarrow>wdc'( _ ') \<^bold>\<rightarrow> _\<close> 27)
 where "  (ts \<^bold>\<midarrow>wdc(c)\<^bold>\<rightarrow> ts')  == (pos ts') = (pos ts) 
                                 \<and> (res ts') = (res ts)
                                 \<and> (dyn ts') = (dyn ts)
@@ -281,7 +281,7 @@ where "  (ts \<^bold>\<midarrow>wdc(c)\<^bold>\<rightarrow> ts')  == (pos ts') =
 
 
 definition create_reservation ::
-  "traffic\<Rightarrow>cars\<Rightarrow>traffic\<Rightarrow>bool" ("_ \<^bold>\<midarrow>r'( _ ') \<^bold>\<rightarrow> _" 27)
+  "traffic\<Rightarrow>cars\<Rightarrow>traffic\<Rightarrow>bool" (\<open>_ \<^bold>\<midarrow>r'( _ ') \<^bold>\<rightarrow> _\<close> 27)
 where "  (ts \<^bold>\<midarrow>r(c)\<^bold>\<rightarrow> ts')  == (pos ts') = (pos ts) 
                                 \<and> (res ts') = (res ts)(c:=( (res ts c)\<squnion> (clm ts c) ))
                                 \<and> (dyn ts') = (dyn ts)
@@ -290,7 +290,7 @@ where "  (ts \<^bold>\<midarrow>r(c)\<^bold>\<rightarrow> ts')  == (pos ts') = (
                                 \<and> (braking_distance ts') = (braking_distance ts)"
 
 definition withdraw_reservation ::
-  "traffic\<Rightarrow>cars\<Rightarrow>nat\<Rightarrow>traffic\<Rightarrow> bool" ("_ \<^bold>\<midarrow>wdr'( _, _ ') \<^bold>\<rightarrow> _" 27)
+  "traffic\<Rightarrow>cars\<Rightarrow>nat\<Rightarrow>traffic\<Rightarrow> bool" (\<open>_ \<^bold>\<midarrow>wdr'( _, _ ') \<^bold>\<rightarrow> _\<close> 27)
 where "  (ts \<^bold>\<midarrow>wdr(c,n)\<^bold>\<rightarrow> ts')  == (pos ts') = (pos ts) 
                                 \<and> (res ts') = (res ts)(c:= Abs_nat_int{n} )
                                 \<and> (dyn ts') = (dyn ts)
@@ -319,7 +319,7 @@ it would have to reset its dynamics, until time may pass again.
 \<close>
 
 definition change_dyn::
-  "traffic\<Rightarrow>cars\<Rightarrow>(real\<Rightarrow>real)\<Rightarrow>traffic\<Rightarrow> bool" (" _ \<^bold>\<midarrow> dyn'(_,_') \<^bold>\<rightarrow> _" 27)
+  "traffic\<Rightarrow>cars\<Rightarrow>(real\<Rightarrow>real)\<Rightarrow>traffic\<Rightarrow> bool" (\<open> _ \<^bold>\<midarrow> dyn'(_,_') \<^bold>\<rightarrow> _\<close> 27)
 where "(ts \<^bold>\<midarrow>dyn(c, f)\<^bold>\<rightarrow> ts') == (pos ts' = pos ts) 
                               \<and> (res ts' = res ts)
                               \<and> (clm ts' = clm ts)
@@ -328,7 +328,7 @@ where "(ts \<^bold>\<midarrow>dyn(c, f)\<^bold>\<rightarrow> ts') == (pos ts' = 
 
 
 definition drive::
-  "traffic\<Rightarrow>real\<Rightarrow>traffic\<Rightarrow>bool" (" _ \<^bold>\<midarrow> _ \<^bold>\<rightarrow> _" 27)
+  "traffic\<Rightarrow>real\<Rightarrow>traffic\<Rightarrow>bool" (\<open> _ \<^bold>\<midarrow> _ \<^bold>\<rightarrow> _\<close> 27)
 where "(ts \<^bold>\<midarrow> x \<^bold>\<rightarrow> ts') == (\<forall>c. (pos ts' c = (pos ts c) + (dyn ts c x))) 
                               \<and> (\<forall> c y. 0 \<le> y \<and> y \<le> x \<longrightarrow> dyn ts c y \<ge> 0)  
                               \<and> (res ts' = res ts)
@@ -344,7 +344,7 @@ This fits to the level of abstraction by hiding the dynamics completely
 inside of the model.
 \<close>
 
-inductive evolve::"traffic \<Rightarrow> traffic \<Rightarrow> bool" ("_ \<^bold>\<leadsto> _")
+inductive evolve::"traffic \<Rightarrow> traffic \<Rightarrow> bool" (\<open>_ \<^bold>\<leadsto> _\<close>)
 where refl : "ts \<^bold>\<leadsto> ts" |
  change: "\<exists>c. \<exists>f. (ts \<^bold>\<midarrow>dyn(c,f)\<^bold>\<rightarrow>ts') \<Longrightarrow> ts' \<^bold>\<leadsto> ts'' \<Longrightarrow> ts \<^bold>\<leadsto> ts''" |
  drive:  "\<exists>x. x \<ge> 0 \<and>  ( ts \<^bold>\<midarrow>x\<^bold>\<rightarrow> ts') \<Longrightarrow> ts' \<^bold>\<leadsto> ts''    \<Longrightarrow> ts \<^bold>\<leadsto> ts''" 
@@ -367,7 +367,7 @@ A traffic snapshot \(ts^\prime\) is reachable from \(ts\) via an abstract transi
 if there is an arbitrary sequence of transitions from \(ts\) to \(ts^\prime\).
 \<close>
  
-inductive abstract::"traffic \<Rightarrow> traffic \<Rightarrow> bool"  ("_ \<^bold>\<Rightarrow> _") for ts
+inductive abstract::"traffic \<Rightarrow> traffic \<Rightarrow> bool"  (\<open>_ \<^bold>\<Rightarrow> _\<close>) for ts
 where refl: "(ts \<^bold>\<Rightarrow> ts)" |
   evolve:"  ts \<^bold>\<Rightarrow> ts' \<Longrightarrow> ts' \<^bold>\<leadsto> ts''   \<Longrightarrow> ts \<^bold>\<Rightarrow> ts''" |
   cr_clm:" ts \<^bold>\<Rightarrow> ts' \<Longrightarrow>\<exists>c. \<exists> n.  (ts' \<^bold>\<midarrow>c(c,n)\<^bold>\<rightarrow> ts'')     \<Longrightarrow> ts \<^bold>\<Rightarrow> ts''" |

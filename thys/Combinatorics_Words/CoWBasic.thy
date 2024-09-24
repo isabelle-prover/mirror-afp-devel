@@ -29,7 +29,7 @@ text\<open>First, we introduce elementary definitions and notations.\<close>
 text\<open>The concatenation @{term append} of two finite lists/words is the very basic operation in Combinatorics on Words, its notation is usually omitted.
 In this field, a common notation for this operation is $\cdot$, which we use and add here.\<close>
 
-notation append (infixr "\<cdot>" 65)
+notation append (infixr \<open>\<cdot>\<close> 65)
 
 lemmas rassoc = append_assoc
 lemmas lassoc = append_assoc[symmetric]
@@ -38,16 +38,16 @@ text\<open>We add a common notation for the length of a given word $|w|$.\<close
 
 
 notation
-  length  ("\<^bold>|_\<^bold>|") \<comment> \<open>note that it's bold |\<close>
+  length  (\<open>\<^bold>|_\<^bold>|\<close>) \<comment> \<open>note that it's bold |\<close>
 notation (latex output)
-  length  ("\<^latex>\<open>\\ensuremath{\\left| \<close>_\<^latex>\<open>\\right|}\<close>")
-notation longest_common_prefix  (infixr "\<and>\<^sub>p" 61) \<comment> \<open>provided by Sublist.thy\<close>
+  length  (\<open>\<^latex>\<open>\ensuremath{\left| \<close>_\<^latex>\<open>\right|}\<close>\<close>)
+notation longest_common_prefix  (infixr \<open>\<and>\<^sub>p\<close> 61) \<comment> \<open>provided by Sublist.thy\<close>
 
 subsection \<open>Empty and nonempty word\<close>
 
 text\<open>As the word of length zero @{term Nil} or @{term "[]"} will be used often, we adopt its frequent notation $\varepsilon $ in this formalization.\<close>
 
-notation Nil ("\<epsilon>")
+notation Nil (\<open>\<epsilon>\<close>)
 
 
 named_theorems emp_simps
@@ -59,8 +59,8 @@ text\<open>The property of being a prefix shall be frequently used, and we give 
 Analogously, we introduce shorthand notations for non-empty prefix and strict prefix, and continue with suffixes and factors.
 \<close>
 
-notation prefix (infixl "\<le>p" 50)
-notation (latex output) prefix  ("\<le>\<^sub>p")
+notation prefix (infixl \<open>\<le>p\<close> 50)
+notation (latex output) prefix  (\<open>\<le>\<^sub>p\<close>)
 
 lemmas prefI'[intro] = prefixI
 
@@ -70,7 +70,7 @@ lemma prefI[intro]: "p \<cdot> s = w \<Longrightarrow> p \<le>p w"
 lemma prefD: "u \<le>p v \<Longrightarrow> \<exists> z. v = u \<cdot> z"
   unfolding prefix_def.
 
-definition prefix_comparable :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl "\<bowtie>" 50)
+definition prefix_comparable :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl \<open>\<bowtie>\<close> 50)
   where "(prefix_comparable u v) \<equiv> u \<le>p v \<or> v \<le>p u"
 
 lemma pref_compI1: "u \<le>p v  \<Longrightarrow> u \<bowtie> v"
@@ -87,8 +87,8 @@ lemma pref_compI[intro]: "u \<le>p v \<or> v \<le>p u \<Longrightarrow> u \<bowt
   by simp
 
 
-definition nonempty_prefix (infixl "\<le>np" 50) where nonempty_prefix_def[simp]:  "u \<le>np v \<equiv> u \<noteq> \<epsilon> \<and> u \<le>p v"
-notation (latex output) nonempty_prefix  ("\<le>\<^bsub>np\<^esub>" 50)
+definition nonempty_prefix (infixl \<open>\<le>np\<close> 50) where nonempty_prefix_def[simp]:  "u \<le>np v \<equiv> u \<noteq> \<epsilon> \<and> u \<le>p v"
+notation (latex output) nonempty_prefix  (\<open>\<le>\<^bsub>np\<^esub>\<close> 50)
 
 lemma npI[intro]: "u \<noteq> \<epsilon> \<Longrightarrow> u \<le>p v \<Longrightarrow> u \<le>np v"
   by auto
@@ -102,8 +102,8 @@ lemma npD: "u \<le>np v \<Longrightarrow> u \<le>p v"
 lemma npD': "u \<le>np v \<Longrightarrow> u \<noteq> \<epsilon>"
   by simp
 
-notation strict_prefix (infixl "<p" 50)
-notation (latex output) strict_prefix  ("<\<^sub>p")
+notation strict_prefix (infixl \<open><p\<close> 50)
+notation (latex output) strict_prefix  (\<open><\<^sub>p\<close>)
 lemmas [simp] = strict_prefix_def
 
 interpretation lcp: semilattice_order "(\<and>\<^sub>p)" prefix strict_prefix
@@ -146,8 +146,8 @@ lemma spref_exE[elim?]: assumes "u <p v" obtains z where "u \<cdot> z = v" and "
 
 subsection \<open>Suffix\<close>
 
-notation suffix (infixl "\<le>s" 50)
-notation (latex output) suffix ("\<le>\<^sub>s")
+notation suffix (infixl \<open>\<le>s\<close> 50)
+notation (latex output) suffix (\<open>\<le>\<^sub>s\<close>)
 
 lemma sufI[intro]: "p \<cdot> s = w \<Longrightarrow> s \<le>s w"
   by (auto simp add: suffix_def)
@@ -156,8 +156,8 @@ lemma sufD[elim]: "u \<le>s v \<Longrightarrow> \<exists> z. z \<cdot> u = v"
   by (auto simp add: suffix_def)
 
 
-notation strict_suffix (infixl "<s" 50)
-notation (latex output) strict_suffix  ("<\<^sub>s")
+notation strict_suffix (infixl \<open><s\<close> 50)
+notation (latex output) strict_suffix  (\<open><\<^sub>s\<close>)
 lemmas [simp] = strict_suffix_def
 
 lemmas [intro] = suffix_order.le_neq_trans
@@ -182,7 +182,7 @@ lemma ssufD[elim]: "u <s v \<Longrightarrow> u \<le>s v \<and> u \<noteq> v"
 lemmas ssufD1[elim] = suffix_order.strict_implies_order and
   ssufD2[elim] = suffix_order.less_imp_neq
 
-definition suffix_comparable :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl "\<bowtie>\<^sub>s" 50)
+definition suffix_comparable :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infixl \<open>\<bowtie>\<^sub>s\<close> 50)
   where "(suffix_comparable u v) \<longleftrightarrow> (rev u) \<bowtie> (rev v)"
 
 lemma suf_compI1[intro]: "u \<le>s v \<Longrightarrow> u \<bowtie>\<^sub>s v"
@@ -191,8 +191,8 @@ lemma suf_compI1[intro]: "u \<le>s v \<Longrightarrow> u \<bowtie>\<^sub>s v"
 lemma suf_compI2[intro]: "v \<le>s u \<Longrightarrow> u \<bowtie>\<^sub>s v"
   by (simp add: pref_compI suffix_comparable_def suffix_to_prefix)
 
-definition nonempty_suffix (infixl "\<le>ns" 60) where nonempty_suffix_def[simp]:  "u \<le>ns v \<equiv> u \<noteq> \<epsilon> \<and> u \<le>s v"
-notation (latex output) nonempty_suffix  ("\<le>\<^bsub>ns\<^esub>" 50)
+definition nonempty_suffix (infixl \<open>\<le>ns\<close> 60) where nonempty_suffix_def[simp]:  "u \<le>ns v \<equiv> u \<noteq> \<epsilon> \<and> u \<le>s v"
+notation (latex output) nonempty_suffix  (\<open>\<le>\<^bsub>ns\<^esub>\<close> 50)
 
 lemma nsI[intro]: "u \<noteq> \<epsilon> \<Longrightarrow> u \<le>s v \<Longrightarrow> u \<le>ns v"
   by auto
@@ -212,17 +212,17 @@ text\<open>A @{term sublist} of some word is in Combinatorics of Words called a 
 We adopt a common shorthand notation for the property of being a factor, strict factor and nonempty factor (the latter we also define).\<close>
 
 
-notation sublist (infixl "\<le>f" 50)
-notation (latex output) sublist ("\<le>\<^sub>f")
+notation sublist (infixl \<open>\<le>f\<close> 50)
+notation (latex output) sublist (\<open>\<le>\<^sub>f\<close>)
 lemmas fac_def = sublist_def
 
 
-notation strict_sublist (infixl "<f" 50)
-notation (latex output) strict_sublist ("<\<^bsub>f\<^esub>")
+notation strict_sublist (infixl \<open><f\<close> 50)
+notation (latex output) strict_sublist (\<open><\<^bsub>f\<^esub>\<close>)
 lemmas strict_factor_def[simp] = strict_sublist_def
 
-definition nonempty_factor (infixl "\<le>nf" 60) where nonempty_factor_def[simp]:  "u \<le>nf v \<equiv> u \<noteq> \<epsilon> \<and> (\<exists> p s. p\<cdot>u\<cdot>s = v)"
-notation (latex output) nonempty_factor ("\<le>\<^bsub>nf\<^esub>")
+definition nonempty_factor (infixl \<open>\<le>nf\<close> 60) where nonempty_factor_def[simp]:  "u \<le>nf v \<equiv> u \<noteq> \<epsilon> \<and> (\<exists> p s. p\<cdot>u\<cdot>s = v)"
+notation (latex output) nonempty_factor (\<open>\<le>\<^bsub>nf\<^esub>\<close>)
 
 lemmas facI = sublist_appendI
 
@@ -1330,16 +1330,16 @@ section "Left and Right Quotient"
 
 text\<open>A useful function of left quotient is given. Note that the function is sometimes undefined.\<close>
 
-definition left_quotient:: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"   ("(_\<inverse>\<^sup>>)(_)" [75,74] 74)
+definition left_quotient:: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"   (\<open>(_\<inverse>\<^sup>>)(_)\<close> [75,74] 74)
   where  "left_quotient u v  = drop \<^bold>|u\<^bold>| v"
-notation (latex output) left_quotient  ("\<^latex>\<open>\\ensuremath{ {\<close>_ \<^latex>\<open>}^{-1} \\cdot {\<close> _ \<^latex>\<open>}}\<close>")
+notation (latex output) left_quotient  (\<open>\<^latex>\<open>\ensuremath{ {\<close>_ \<^latex>\<open>}^{-1} \cdot {\<close> _ \<^latex>\<open>}}\<close>\<close>)
 
 
 text\<open>Analogously, we define the right quotient.\<close>
 
-definition right_quotient :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  ("(_)(\<^sup><\<inverse>_) " [76,77] 76)
+definition right_quotient :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (\<open>(_)(\<^sup><\<inverse>_) \<close> [76,77] 76)
   where "right_quotient u v  = rev ((rev v)\<inverse>\<^sup>>(rev u))"
-notation (latex output) right_quotient ("\<^latex>\<open>\\ensuremath{ {\<close>_ \<^latex>\<open>} \\cdot {\<close> _ \<^latex>\<open>}^{-1}}\<close>")
+notation (latex output) right_quotient (\<open>\<^latex>\<open>\ensuremath{ {\<close>_ \<^latex>\<open>} \cdot {\<close> _ \<^latex>\<open>}^{-1}}\<close>\<close>)
 
 lemmas lq_def = left_quotient_def and
        rq_def = right_quotient_def
@@ -1970,7 +1970,7 @@ lemmas  scomp_per_partes = comp_per_partes[reversed]
 
 subsection \<open>Longest common suffix\<close>
 
-definition longest_common_suffix ("_ \<and>\<^sub>s _ " [61,62] 64)
+definition longest_common_suffix (\<open>_ \<and>\<^sub>s _ \<close> [61,62] 64)
   where
     "longest_common_suffix u v \<equiv> rev (rev u \<and>\<^sub>p rev v)"
 
@@ -2230,7 +2230,7 @@ We thus interpret words as @{term monoid_mult} and adopt a notation for the word
 \<close>
 
 
-primrec list_power :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixr "\<^sup>@" 80)
+primrec list_power :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixr \<open>\<^sup>@\<close> 80)
   where
     pow_0: "u \<^sup>@ 0 = \<epsilon>"
   | pow_Suc: "u \<^sup>@ Suc n = u \<cdot> u \<^sup>@ n"
@@ -3048,11 +3048,11 @@ qed
 
 section \<open>Root\<close>
 
-definition root :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<in> _*" [51,51] 60 )
+definition root :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<in> _*\<close> [51,51] 60 )
   where  "u \<in> r* =  (\<exists> k. r\<^sup>@k = u)"
-notation (latex output) root ("_ \<in> _\<^sup>*")
+notation (latex output) root (\<open>_ \<in> _\<^sup>*\<close>)
 
-abbreviation not_root :: "['a list, 'a list] \<Rightarrow> bool"  ("_ \<notin> _*" [51,51] 60 )
+abbreviation not_root :: "['a list, 'a list] \<Rightarrow> bool"  (\<open>_ \<notin> _*\<close> [51,51] 60 )
   where "u \<notin> r* \<equiv> \<not> (u \<in> r*)"
 
 text\<open>Empty word has all roots, including the empty root.\<close>
@@ -4208,7 +4208,7 @@ section "Border"
 text\<open>A non-empty word  $x \neq w$ is a \emph{border} of a word $w$ if it is both its prefix and suffix. This elementary property captures how much the word $w$ overlaps
 with itself, and it is in the obvious way related to a period of $w$. However, in many cases it is much easier to reason about borders than about periods.\<close>
 
-definition border :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<le>b _" [51,51] 60 )
+definition border :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (\<open>_ \<le>b _\<close> [51,51] 60 )
   where [simp]: "border x w = (x \<le>p w \<and> x \<le>s w \<and> x \<noteq> w \<and> x \<noteq> \<epsilon>)"
 
 definition bordered :: "'a list \<Rightarrow> bool"
@@ -4569,7 +4569,7 @@ subsection \<open>The shortest period\<close>
 (* TODO define min_period first, then use it here
   SH: prazdne slovo bude mit nedefinovanou periodu
 *)
-definition min_period_root :: "'a list \<Rightarrow> 'a list" ("\<pi>") where
+definition min_period_root :: "'a list \<Rightarrow> 'a list" (\<open>\<pi>\<close>) where
   "min_period_root w = take (LEAST n. period w n) w"
 
 definition min_period :: "'a list \<Rightarrow> nat" where
@@ -4848,10 +4848,10 @@ Such a word is primitive, and it is the primitive root of $w$.\<close>
 
 
 
-definition primitive_root :: "'a list \<Rightarrow> 'a list" ("\<rho>") where
+definition primitive_root :: "'a list \<Rightarrow> 'a list" (\<open>\<rho>\<close>) where
   "primitive_root x = (if x \<noteq> \<epsilon> then (THE r. primitive r \<and> (\<exists> k. x = r\<^sup>@k)) else \<epsilon>)"
 
-definition primitive_root_exp :: "'a list \<Rightarrow> nat" ("e\<^sub>\<rho>") where
+definition primitive_root_exp :: "'a list \<Rightarrow> nat" (\<open>e\<^sub>\<rho>\<close>) where
  "primitive_root_exp x = (if x \<noteq> \<epsilon> then (THE k. x = (\<rho> x)\<^sup>@k) else 0)"
 
 
@@ -5281,7 +5281,7 @@ xz = zy.
 \]
 \<close>
 
-definition conjugate (infix "\<sim>" 51)
+definition conjugate (infix \<open>\<sim>\<close> 51)
   where "u \<sim> v \<equiv> \<exists>r s. r \<cdot> s = u \<and> s \<cdot> r = v"
 
 lemma conjugE [elim]:

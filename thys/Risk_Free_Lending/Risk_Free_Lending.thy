@@ -48,8 +48,8 @@ text \<open>The type definition for \<^typ>\<open>account\<close> automatically 
       of \<^term>\<open>Abs_account\<close>. For convenience we introduce the following
       shorthand notation:\<close>
 
-notation Rep_account ("\<pi>")
-notation Abs_account ("\<iota>")
+notation Rep_account (\<open>\<pi>\<close>)
+notation Abs_account (\<open>\<iota>\<close>)
 
 text \<open>Accounts form an Abelian group. \<^emph>\<open>Summing\<close> accounts will be helpful in
       expressing how all credited and debited loans can cancel across a
@@ -1663,7 +1663,7 @@ text \<open>In order to express \<^term>\<open>bulk_update_account\<close> using
       formulation, we first demonstrate how to \<^emph>\<open>decompose\<close> an account
       into a summation of credited and debited loans for different periods.\<close>
 
-definition loan :: "nat \<Rightarrow> real \<Rightarrow> account" ("\<delta>")
+definition loan :: "nat \<Rightarrow> real \<Rightarrow> account" (\<open>\<delta>\<close>)
   where
     "\<delta> n x = \<iota> (\<lambda> m . if n = m then x else 0)"
 

@@ -27,62 +27,62 @@ where "true \<equiv> \<lambda>A. True"
 definition  false::"'\<alpha> predicate"
 where "false \<equiv> \<lambda>A. False"
 
-definition  not::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate" ("\<not> _" [40] 40)
+definition  not::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (\<open>\<not> _\<close> [40] 40)
 where "\<not> P  \<equiv> \<lambda>A. \<not> (P A)"
 
-definition  conj::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr "\<and>" 35)
+definition  conj::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr \<open>\<and>\<close> 35)
 where "P \<and> Q \<equiv> \<lambda>A. P A \<and> Q A"
 
-definition disj::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr "\<or>" 30)
+definition disj::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr \<open>\<or>\<close> 30)
 where "P \<or> Q \<equiv> \<lambda>A. P A \<or> Q A"
 
-definition impl::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr "\<longrightarrow>" 25)
+definition impl::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr \<open>\<longrightarrow>\<close> 25)
 where "P \<longrightarrow> Q \<equiv> \<lambda>A. P A \<longrightarrow> Q A"
 
-definition iff::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr "\<longleftrightarrow>" 25)
+definition iff::"'\<alpha> predicate \<Rightarrow> '\<alpha> predicate \<Rightarrow> '\<alpha> predicate" (infixr \<open>\<longleftrightarrow>\<close> 25)
 where "P \<longleftrightarrow> Q \<equiv> \<lambda>A. P A \<longleftrightarrow> Q A"
 
-definition ex::"['\<beta> \<Rightarrow>'\<alpha> predicate] \<Rightarrow> '\<alpha> predicate" (binder "\<^bold>\<exists>" 10)
+definition ex::"['\<beta> \<Rightarrow>'\<alpha> predicate] \<Rightarrow> '\<alpha> predicate" (binder \<open>\<^bold>\<exists>\<close> 10)
 where "\<^bold>\<exists>x. P x \<equiv> \<lambda>A. \<exists> x. (P x) A"
 
-definition all::"['\<beta> \<Rightarrow>'\<alpha> predicate] \<Rightarrow> '\<alpha> predicate" (binder "\<^bold>\<forall>" 10)
+definition all::"['\<beta> \<Rightarrow>'\<alpha> predicate] \<Rightarrow> '\<alpha> predicate" (binder \<open>\<^bold>\<forall>\<close> 10)
 where "\<^bold>\<forall>x. P x \<equiv> \<lambda> A. \<forall>x. (P x) A"
 
 type_synonym '\<alpha> condition = "('\<alpha> \<times> '\<alpha>) \<Rightarrow> bool"
 type_synonym '\<alpha> relation  = "('\<alpha> \<times> '\<alpha>) \<Rightarrow> bool"
 
 definition cond::"'\<alpha> relation \<Rightarrow> '\<alpha> condition \<Rightarrow> '\<alpha> relation \<Rightarrow> '\<alpha> relation" 
-                                                          ("(3_ \<triangleleft> _ \<triangleright> / _)" [14,0,15] 14)
+                                                          (\<open>(3_ \<triangleleft> _ \<triangleright> / _)\<close> [14,0,15] 14)
 where " (P \<triangleleft> b \<triangleright> Q) \<equiv> (b \<and> P) \<or> ((\<not> b) \<and> Q)"
 
 definition comp::"(('\<alpha> \<times> '\<beta>) \<Rightarrow> bool) \<Rightarrow> (('\<beta> \<times> '\<gamma>) \<Rightarrow> bool) \<Rightarrow> ('\<alpha> \<times> '\<gamma>) \<Rightarrow> bool" 
-                                                                          (infixr ";;" 25)
+                                                                          (infixr \<open>;;\<close> 25)
 where "P ;; Q \<equiv> \<lambda>r. r : ({p. P p} O {q. Q q})"
 
 definition Assign::"('a, 'b) var \<Rightarrow> 'a \<Rightarrow> 'b relation" 
   where "Assign x a \<equiv> \<lambda>(A, A'). A' = (assign x a) A"
 
 syntax
-  "_assignment" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  ("_ :== _")
+  "_assignment" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  (\<open>_ :== _\<close>)
 translations
   "y :== vv"   => "CONST Assign (VAR y) vv"
 
-abbreviation (input) closure::"'\<alpha> predicate \<Rightarrow> bool" ("[_]")
+abbreviation (input) closure::"'\<alpha> predicate \<Rightarrow> bool" (\<open>[_]\<close>)
 where "[ P ] \<equiv> \<forall> A. P A"
 
-abbreviation (input) ndet::"'\<alpha> relation \<Rightarrow> '\<alpha> relation \<Rightarrow> '\<alpha> relation" ("(_ \<sqinter> _)")
+abbreviation (input) ndet::"'\<alpha> relation \<Rightarrow> '\<alpha> relation \<Rightarrow> '\<alpha> relation" (\<open>(_ \<sqinter> _)\<close>)
 where "P \<sqinter> Q \<equiv> P \<or> Q"
 
-abbreviation (input) join::"'\<alpha> relation \<Rightarrow> '\<alpha> relation \<Rightarrow> '\<alpha> relation" ("(_ \<squnion> _)")
+abbreviation (input) join::"'\<alpha> relation \<Rightarrow> '\<alpha> relation \<Rightarrow> '\<alpha> relation" (\<open>(_ \<squnion> _)\<close>)
 where "P \<squnion> Q \<equiv> P \<and> Q"
 
-abbreviation (input) ndetS::"'\<alpha> relation set \<Rightarrow> '\<alpha> relation" ("(\<Sqinter> _)")
+abbreviation (input) ndetS::"'\<alpha> relation set \<Rightarrow> '\<alpha> relation" (\<open>(\<Sqinter> _)\<close>)
 where "\<Sqinter> S \<equiv> \<lambda>A. A \<in> \<Union>{{p. P p} | P. P \<in> S}"
 
-abbreviation (input) conjS::"'\<alpha> relation set \<Rightarrow> '\<alpha> relation" ("(\<Squnion> _)")
+abbreviation (input) conjS::"'\<alpha> relation set \<Rightarrow> '\<alpha> relation" (\<open>(\<Squnion> _)\<close>)
 where "\<Squnion> S \<equiv> \<lambda>A. A \<in> \<Inter>{{p. P p} | P. P \<in> S}"
 
-abbreviation (input) skip_r::"'\<alpha> relation" ("\<Pi>r")
+abbreviation (input) skip_r::"'\<alpha> relation" (\<open>\<Pi>r\<close>)
 where "\<Pi>r \<equiv> \<lambda> (A, A') . A = A'"
 
 abbreviation (input) Bot::"'\<alpha> relation"

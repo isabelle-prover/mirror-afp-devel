@@ -11,8 +11,8 @@ text \<open>An (@{typ 'a}, @{typ 'c}) chain is a sequence of alternating
   and for conducting the proof of soundness.\<close>
 
 datatype ('a,'c) chain = 
-  cNil "'a"                         ("\<lbrace> _ \<rbrace>")
-| cCons "'a" "'c" "('a,'c) chain"   ("\<lbrace> _ \<rbrace> \<cdot> _ \<cdot> _" [0,0,0] 60) 
+  cNil "'a"                         (\<open>\<lbrace> _ \<rbrace>\<close>)
+| cCons "'a" "'c" "('a,'c) chain"   (\<open>\<lbrace> _ \<rbrace> \<cdot> _ \<cdot> _\<close> [0,0,0] 60) 
 
 text \<open>For example, @{term "\<lbrace> a \<rbrace> \<cdot> proof \<cdot> \<lbrace> chain \<rbrace> \<cdot> might \<cdot> \<lbrace> look \<rbrace> \<cdot> 
   like \<cdot> \<lbrace> this \<rbrace>"}.\<close>

@@ -39,8 +39,8 @@ abbreviation Abstract::"e\<Rightarrow>wo" where "Abstract x \<equiv>  \<^bold>\<
   
 abbreviation Godlike::"e\<Rightarrow>w\<Rightarrow>bool" where "Godlike x\<equiv> Necessary x \<^bold>\<and> Concrete x" 
         
-consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix "dependsOn"(*<*)100(*>*))
-abbreviation explanation::"(e\<Rightarrow>e\<Rightarrow>wo)" (infix "explains"(*<*)100(*>*))
+consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>dependsOn\<close>(*<*)100(*>*))
+abbreviation explanation::"(e\<Rightarrow>e\<Rightarrow>wo)" (infix \<open>explains\<close>(*<*)100(*>*))
   where "y explains x \<equiv> x dependsOn y"
 
 text\<open>\noindent{As shown below, we can even define the "dependent" predicate as \emph{primitive},

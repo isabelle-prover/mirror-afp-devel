@@ -12,7 +12,7 @@ begin
 
 subsection \<open>Language Model of Salomaa Algebra\<close>
 
-abbreviation w_length :: "'a list \<Rightarrow> nat" ( "|_|")
+abbreviation w_length :: "'a list \<Rightarrow> nat" ( \<open>|_|\<close>)
   where "|x| \<equiv> length x"
 
 definition l_ewp :: "'a lan \<Rightarrow> bool" where
@@ -223,12 +223,12 @@ qed
 subsection \<open>Regular Language Model of Salomaa Algebra\<close>
 
 notation
-  Atom ("\<langle>_\<rangle>") and
-  Plus (infixl "+\<^sub>r" 65) and
-  Times (infixl "\<cdot>\<^sub>r" 70) and
-  Star ("_\<^sup>\<star>\<^sub>r" [101] 100) and
-  Zero ("0\<^sub>r") and
-  One ("1\<^sub>r")
+  Atom (\<open>\<langle>_\<rangle>\<close>) and
+  Plus (infixl \<open>+\<^sub>r\<close> 65) and
+  Times (infixl \<open>\<cdot>\<^sub>r\<close> 70) and
+  Star (\<open>_\<^sup>\<star>\<^sub>r\<close> [101] 100) and
+  Zero (\<open>0\<^sub>r\<close>) and
+  One (\<open>1\<^sub>r\<close>)
 
 fun rexp_ewp :: "'a rexp \<Rightarrow> bool" where
   "rexp_ewp 0\<^sub>r = False" |
@@ -245,7 +245,7 @@ lift_definition r_ewp :: "'a reg_lan \<Rightarrow> bool" is "l_ewp" .
 lift_definition r_lang :: "'a rexp \<Rightarrow> 'a reg_lan"  is "lang"
   by (simp)
 
-abbreviation r_sim :: "'a rexp \<Rightarrow> 'a rexp \<Rightarrow> bool" (infix "\<sim>" 50) where
+abbreviation r_sim :: "'a rexp \<Rightarrow> 'a rexp \<Rightarrow> bool" (infix \<open>\<sim>\<close> 50) where
   "p \<sim> q \<equiv> r_lang p = r_lang q"
 
 declare Rep_reg_lan [simp]

@@ -85,7 +85,7 @@ where
 
 text \<open>Defining the unique element of a partition that contains a valuation\<close>
 
-definition part ("[_]\<^sub>_" [61,61] 61) where "part v \<R> \<equiv> THE R. R \<in> \<R> \<and> v \<in> R"
+definition part (\<open>[_]\<^sub>_\<close> [61,61] 61) where "part v \<R> \<equiv> THE R. R \<in> \<R> \<and> v \<in> R"
 
 text \<open>
   First we need to show that the set of regions is a partition of the set of all clock

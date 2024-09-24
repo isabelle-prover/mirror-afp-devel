@@ -8,11 +8,11 @@ text \<open>In this Section, we formalize Scott continuity and $\omega$-continui
 We then prove that a Scott continuous map is $\omega$-continuous and that an $\omega$-continuous 
 map is ``nearly'' monotone.\<close>
 
-definition continuous ("_-continuous" [1000]1000) where
+definition continuous (\<open>_-continuous\<close> [1000]1000) where
   "\<C>-continuous A (\<sqsubseteq>) B (\<unlhd>) f \<equiv>
    f ` A \<subseteq> B \<and>
    (\<forall>X s. \<C> X (\<sqsubseteq>) \<longrightarrow> X \<noteq> {} \<longrightarrow> X \<subseteq> A \<longrightarrow> extreme_bound A (\<sqsubseteq>) X s \<longrightarrow> extreme_bound B (\<unlhd>) (f`X) (f s))"
-  for leA (infix "\<sqsubseteq>" 50) and leB (infix "\<unlhd>" 50)
+  for leA (infix \<open>\<sqsubseteq>\<close> 50) and leB (infix \<open>\<unlhd>\<close> 50)
 
 lemmas continuousI[intro?] =
   continuous_def[unfolded atomize_eq, THEN iffD2, unfolded conj_imp_eq_imp_imp, rule_format]
@@ -21,14 +21,14 @@ lemmas continuousE =
   continuous_def[unfolded atomize_eq, THEN iffD1, elim_format, unfolded conj_imp_eq_imp_imp, rule_format]
 
 lemma
-  fixes prec_eq (infix "\<preceq>" 50) and less_eq (infix "\<sqsubseteq>" 50)
+  fixes prec_eq (infix \<open>\<preceq>\<close> 50) and less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes "\<C>-continuous I (\<preceq>) A (\<sqsubseteq>) f"
   shows continuous_carrierD[dest]: "f ` I \<subseteq> A"
     and continuousD: "\<C> X (\<preceq>) \<Longrightarrow> X \<noteq> {} \<Longrightarrow> X \<subseteq> I \<Longrightarrow> extreme_bound I (\<preceq>) X b \<Longrightarrow> extreme_bound A (\<sqsubseteq>) (f ` X) (f b)"
   using assms by (auto elim!: continuousE)
 
 lemma continuous_comp:
-  fixes leA (infix "\<sqsubseteq>\<^sub>A" 50) and leB (infix "\<sqsubseteq>\<^sub>B" 50) and leC (infix "\<sqsubseteq>\<^sub>C" 50)
+  fixes leA (infix \<open>\<sqsubseteq>\<^sub>A\<close> 50) and leB (infix \<open>\<sqsubseteq>\<^sub>B\<close> 50) and leC (infix \<open>\<sqsubseteq>\<^sub>C\<close> 50)
   assumes KfL: "\<forall>X \<subseteq> A. \<K> X (\<sqsubseteq>\<^sub>A) \<longrightarrow> \<L> (f ` X) (\<sqsubseteq>\<^sub>B)"
   assumes f: "\<K>-continuous A (\<sqsubseteq>\<^sub>A) B (\<sqsubseteq>\<^sub>B) f" and g: "\<L>-continuous B (\<sqsubseteq>\<^sub>B) C (\<sqsubseteq>\<^sub>C) g"
   shows "\<K>-continuous A (\<sqsubseteq>\<^sub>A) C (\<sqsubseteq>\<^sub>C) (g \<circ> f)"
@@ -48,18 +48,18 @@ proof -
 qed
 
 lemma continuous_comp_top:
-  fixes leA (infix "\<sqsubseteq>\<^sub>A" 50) and leB (infix "\<sqsubseteq>\<^sub>B" 50) and leC (infix "\<sqsubseteq>\<^sub>C" 50)
+  fixes leA (infix \<open>\<sqsubseteq>\<^sub>A\<close> 50) and leB (infix \<open>\<sqsubseteq>\<^sub>B\<close> 50) and leC (infix \<open>\<sqsubseteq>\<^sub>C\<close> 50)
   assumes f: "\<K>-continuous A (\<sqsubseteq>\<^sub>A) B (\<sqsubseteq>\<^sub>B) f" and g: "\<top>-continuous B (\<sqsubseteq>\<^sub>B) C (\<sqsubseteq>\<^sub>C) g"
   shows "\<K>-continuous A (\<sqsubseteq>\<^sub>A) C (\<sqsubseteq>\<^sub>C) (g \<circ> f)"
   by (rule continuous_comp[OF _ f g], auto)
 
 lemma id_continuous:
-  fixes leA (infix "\<sqsubseteq>\<^sub>A" 50)
+  fixes leA (infix \<open>\<sqsubseteq>\<^sub>A\<close> 50)
   shows "\<K>-continuous A (\<sqsubseteq>\<^sub>A) A (\<sqsubseteq>\<^sub>A) (\<lambda>x. x)"
   by (auto intro: continuousI)
 
 lemma cst_continuous:
-  fixes leA (infix "\<sqsubseteq>\<^sub>A" 50) and leB (infix "\<sqsubseteq>\<^sub>B" 50)
+  fixes leA (infix \<open>\<sqsubseteq>\<^sub>A\<close> 50) and leB (infix \<open>\<sqsubseteq>\<^sub>B\<close> 50)
   assumes "b \<in> B" and bb: "b \<sqsubseteq>\<^sub>B b"
   shows "\<K>-continuous A (\<sqsubseteq>\<^sub>A) B (\<sqsubseteq>\<^sub>B) (\<lambda>x. b)"
   apply (intro continuousI)
@@ -70,7 +70,7 @@ lemma cst_continuous:
 lemma continuous_cmono:
   assumes CD: "\<C> \<le> \<D>" shows "\<D>-continuous \<le> \<C>-continuous"
 proof (safe intro!: le_funI le_boolI)
-  fix I A f and prec_eq (infix "\<preceq>" 50) and less_eq (infix "\<sqsubseteq>" 50)
+  fix I A f and prec_eq (infix \<open>\<preceq>\<close> 50) and less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assume cont: "\<D>-continuous I (\<preceq>) A (\<sqsubseteq>) f"
   show "\<C>-continuous I (\<preceq>) A (\<sqsubseteq>) f"
   proof (rule continuousI)
@@ -83,7 +83,7 @@ proof (safe intro!: le_funI le_boolI)
 qed
 
 context
-  fixes prec_eq :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix "\<preceq>" 50) and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes prec_eq :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 begin
 
 lemma continuous_subclass:
@@ -104,10 +104,10 @@ lemma well_continuous_imp_omega_continous:
 end
 
 abbreviation "scott_continuous I (\<preceq>) \<equiv> directed_set-continuous I (\<preceq>)"
-  for prec_eq (infix "\<preceq>" 50)
+  for prec_eq (infix \<open>\<preceq>\<close> 50)
 
 lemma scott_continuous_imp_well_continuous:
-  fixes prec_eq :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix "\<preceq>" 50) and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+  fixes prec_eq :: "'i \<Rightarrow> 'i \<Rightarrow> bool" (infix \<open>\<preceq>\<close> 50) and less_eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
   assumes cont: "scott_continuous I (\<preceq>) A (\<sqsubseteq>) f"
   shows "well_related_set-continuous I (\<preceq>) A (\<sqsubseteq>) f"
   by (rule continuous_subclass[OF _ cont], auto simp: well_related_set.directed_set)
@@ -119,7 +119,7 @@ lemmas scott_continuous_imp_omega_continuous =
 subsubsection \<open>Continuity implies monotonicity\<close>
 
 lemma continuous_imp_mono_refl:
-  fixes prec_eq (infix "\<preceq>" 50) and less_eq (infix "\<sqsubseteq>" 50)
+  fixes prec_eq (infix \<open>\<preceq>\<close> 50) and less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes cont: "\<C>-continuous I (\<preceq>) A (\<sqsubseteq>) f" and xyC: "\<C> {x,y} (\<preceq>)"
     and xy: "x \<preceq> y" and yy: "y \<preceq> y"
     and x: "x \<in> I" and y: "y \<in> I"
@@ -134,7 +134,7 @@ proof-
 qed
 
 lemma omega_continuous_imp_mono_refl:
-  fixes prec_eq (infix "\<preceq>" 50) and less_eq (infix "\<sqsubseteq>" 50)
+  fixes prec_eq (infix \<open>\<preceq>\<close> 50) and less_eq (infix \<open>\<sqsubseteq>\<close> 50)
   assumes cont: "omega_chain-continuous I (\<preceq>) A (\<sqsubseteq>) f"
     and xx: "x \<preceq> x" and xy: "x \<preceq> y" and yy: "y \<preceq> y"
     and x: "x \<in> I" and y: "y \<in> I"
@@ -145,7 +145,7 @@ lemma omega_continuous_imp_mono_refl:
 context reflexive begin
 
 lemma continuous_imp_monotone_on:
-  fixes leB (infix "\<unlhd>" 50)
+  fixes leB (infix \<open>\<unlhd>\<close> 50)
   assumes cont: "\<C>-continuous A (\<sqsubseteq>) B (\<unlhd>) f"
     and II: "\<forall>i \<in> A. \<forall> j \<in> A. i \<sqsubseteq> j \<longrightarrow> \<C> {i,j} (\<sqsubseteq>)"
   shows "monotone_on A (\<sqsubseteq>) (\<unlhd>) f"
@@ -156,7 +156,7 @@ proof-
 qed
 
 lemma well_complete_imp_monotone_on:
-  fixes leB (infix "\<unlhd>" 50)
+  fixes leB (infix \<open>\<unlhd>\<close> 50)
   assumes cont: "well_related_set-continuous A (\<sqsubseteq>) B (\<unlhd>) f"
   shows "monotone_on A (\<sqsubseteq>) (\<unlhd>) f"                       
   by (auto intro!: continuous_imp_monotone_on cont pair_well_related)

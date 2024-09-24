@@ -8,7 +8,7 @@ theory Coproduct_Measure
 begin
 
 section \<open> Binary Coproduct Measures \<close>
-definition copair_measure :: "['a measure, 'b measure] \<Rightarrow> ('a + 'b) measure" (infixr "\<Oplus>\<^sub>M" 65) where
+definition copair_measure :: "['a measure, 'b measure] \<Rightarrow> ('a + 'b) measure" (infixr \<open>\<Oplus>\<^sub>M\<close> 65) where
 "M \<Oplus>\<^sub>M N = measure_of (space M <+> space N)
                       ({Inl ` A |A. A \<in> sets M} \<union> {Inr ` A|A. A \<in> sets N})
                       (\<lambda>A. emeasure M (Inl -` A) + emeasure N (Inr -` A))"
@@ -429,7 +429,7 @@ definition coPiM :: "['i set, 'i \<Rightarrow> 'a measure] \<Rightarrow> ('i \<t
                 (\<lambda>A. (\<Sum>\<^sub>\<infinity>i\<in>I. emeasure (Mi i) (Pair i -` A)))"
 
 syntax
- "_coPiM" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a measure \<Rightarrow> ('i \<times> 'a) measure" ("(3\<amalg>\<^sub>M _\<in>_./ _)"  10)
+ "_coPiM" :: "pttrn \<Rightarrow> 'i set \<Rightarrow> 'a measure \<Rightarrow> ('i \<times> 'a) measure" (\<open>(3\<amalg>\<^sub>M _\<in>_./ _)\<close>  10)
 translations
  "\<amalg>\<^sub>M x\<in>I. M" \<rightleftharpoons> "CONST coPiM I (\<lambda>x. M)"
 

@@ -17,7 +17,7 @@ theory Expander_Graphs_Strongly_Explicit
 begin
 
 unbundle intro_cong_syntax
-no_notation Digraph.dominates ("_ \<rightarrow>\<index> _" [100,100] 40)
+no_notation Digraph.dominates (\<open>_ \<rightarrow>\<index> _\<close> [100,100] 40)
 
 record strongly_explicit_expander =
   see_size :: nat

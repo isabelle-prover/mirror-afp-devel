@@ -80,20 +80,20 @@ text \<open>
                    F.right_map F.right_cmp
       using E'.equivalence_pseudofunctor_left by simp
 
-    write V\<^sub>C          (infixr "\<cdot>\<^sub>C" 55)
-    write V\<^sub>D          (infixr "\<cdot>\<^sub>D" 55)
-    write H\<^sub>C          (infixr "\<star>\<^sub>C" 53)
-    write H\<^sub>D          (infixr "\<star>\<^sub>D" 53)
-    write \<a>\<^sub>C          ("\<a>\<^sub>C[_, _, _]")
-    write \<a>\<^sub>D          ("\<a>\<^sub>D[_, _, _]")
-    write C.in_hhom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    write C.in_hom    ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>C _\<guillemotright>")
-    write D.in_hhom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
-    write D.in_hom    ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>D _\<guillemotright>")
-    write C.isomorphic (infix "\<cong>\<^sub>C" 50)
-    write D.isomorphic (infix "\<cong>\<^sub>D" 50)
-    write C.some_right_adjoint ("_\<^sup>*\<^sup>C" [1000] 1000)
-    write D.some_right_adjoint ("_\<^sup>*\<^sup>D" [1000] 1000)
+    write V\<^sub>C          (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    write V\<^sub>D          (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    write H\<^sub>C          (infixr \<open>\<star>\<^sub>C\<close> 53)
+    write H\<^sub>D          (infixr \<open>\<star>\<^sub>D\<close> 53)
+    write \<a>\<^sub>C          (\<open>\<a>\<^sub>C[_, _, _]\<close>)
+    write \<a>\<^sub>D          (\<open>\<a>\<^sub>D[_, _, _]\<close>)
+    write C.in_hhom   (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    write C.in_hom    (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    write D.in_hhom   (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
+    write D.in_hom    (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>D _\<guillemotright>\<close>)
+    write C.isomorphic (infix \<open>\<cong>\<^sub>C\<close> 50)
+    write D.isomorphic (infix \<open>\<cong>\<^sub>D\<close> 50)
+    write C.some_right_adjoint (\<open>_\<^sup>*\<^sup>C\<close> [1000] 1000)
+    write D.some_right_adjoint (\<open>_\<^sup>*\<^sup>D\<close> [1000] 1000)
 
     show "bicategory_of_spans V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D"
     proof
@@ -341,9 +341,9 @@ text \<open>
   locale identity_arrow_in_span_bicategory =  (* 20 sec *)
     span_bicategory C prj0 prj1 +
     r: identity_arrow_of_spans C r
-    for C :: "'a comp"   (infixr "\<cdot>" 55)
-    and prj0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("\<p>\<^sub>0[_, _]")
-    and prj1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("\<p>\<^sub>1[_, _]")
+    for C :: "'a comp"   (infixr \<open>\<cdot>\<close> 55)
+    and prj0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>\<p>\<^sub>0[_, _]\<close>)
+    and prj1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>\<p>\<^sub>1[_, _]\<close>)
     and r :: "'a arrow_of_spans_data"
   begin
     text \<open>
@@ -1809,8 +1809,8 @@ $$
   begin
 
     interpretation chosen_right_adjoints vcomp hcomp assoc unit src trg ..
-    notation some_right_adjoint  ("_\<^sup>*" [1000] 1000)  (* TODO: Why is this needed? *)
-    notation isomorphic  (infix "\<cong>" 50)
+    notation some_right_adjoint  (\<open>_\<^sup>*\<close> [1000] 1000)  (* TODO: Why is this needed? *)
+    notation isomorphic  (infix \<open>\<cong>\<close> 50)
 
     text \<open>
       \<open>Span(C)\<close> is a bicategory of spans.
@@ -2089,7 +2089,7 @@ $$
   context bicategory_of_spans
   begin
 
-    notation isomorphic  (infix "\<cong>" 50)
+    notation isomorphic  (infix \<open>\<cong>\<close> 50)
 
     text \<open>
       The following is a convenience version of \<open>BS2\<close> that gives us what we generally want:
@@ -2350,8 +2350,8 @@ $$
   context bicategory_of_spans
   begin
 
-    notation isomorphic  (infix "\<cong>" 50)
-    notation iso_class ("\<lbrakk>_\<rbrakk>")
+    notation isomorphic  (infix \<open>\<cong>\<close> 50)
+    notation iso_class (\<open>\<lbrakk>_\<rbrakk>\<close>)
 
     text \<open>
       We will ultimately need to have chosen a specific tabulation for each 1-cell.
@@ -2703,10 +2703,10 @@ $$
     bicategory_of_spans V H \<a> \<i> src trg +
     r: span_of_maps V H \<a> \<i> src trg r\<^sub>0 r\<^sub>1 +
     s: span_of_maps V H \<a> \<i> src trg s\<^sub>0 s\<^sub>1
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"    (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r\<^sub>0 :: 'a
@@ -2719,7 +2719,7 @@ $$
   and leg1_iso: "\<exists>\<nu>. \<guillemotleft>\<nu> : r\<^sub>1 \<Rightarrow> s\<^sub>1 \<star> w\<guillemotright> \<and> iso \<nu>"
   begin
 
-    notation isomorphic  (infix "\<cong>" 50)
+    notation isomorphic  (infix \<open>\<cong>\<close> 50)
 
     lemma composite_leg1_is_map:
     shows "is_left_adjoint (s\<^sub>1 \<star> w)"
@@ -2834,10 +2834,10 @@ $$
     bicategory_of_spans V H \<a> \<i> src trg +
     arrow_of_spans_of_maps V H \<a> \<i> src trg r\<^sub>0 r\<^sub>1 s\<^sub>0 s\<^sub>1 w +
     \<sigma>: tabulation_data V H \<a> \<i> src trg s \<sigma> s\<^sub>0 s\<^sub>1
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r\<^sub>0 :: 'a
@@ -2863,10 +2863,10 @@ $$
   locale tabulation_in_maps =
     span_of_maps V H \<a> \<i> src trg s\<^sub>0 s\<^sub>1 +
     tabulation V H \<a> \<i> src trg s \<sigma> s\<^sub>0 s\<^sub>1
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and s :: 'a
@@ -2899,10 +2899,10 @@ $$
       using h_is_map k_is_map cospan left_adjoint_is_ide
       by unfold_locales auto
 
-    notation isomorphic  (infix "\<cong>" 50)
+    notation isomorphic  (infix \<open>\<cong>\<close> 50)
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     interpretation h: map_in_bicategory V H \<a> \<i> src trg h
       using h_is_map by unfold_locales auto
@@ -3670,10 +3670,10 @@ $$
     bicategory_of_spans V H \<a> \<i> src trg +
     \<rho>: tabulation_in_maps V H \<a> \<i> src trg r \<rho> r\<^sub>0 r\<^sub>1 +
     \<sigma>: tabulation_in_maps V H \<a> \<i> src trg s \<sigma> s\<^sub>0 s\<^sub>1
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -3752,7 +3752,7 @@ $$
       In the subsequent proof we will use coherence to shortcut a few of the calculations.
     \<close>
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     text \<open>
       The following is applied twice in the proof of property \<open>T2\<close> for the composite
@@ -5121,12 +5121,12 @@ $$
     B: bicategory_of_spans
   begin
 
-    no_notation B.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
-    notation B.in_hhom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
-    notation B.in_hom  ("\<guillemotleft>_ : _ \<Rightarrow>\<^sub>B _\<guillemotright>")
-    notation B.isomorphic  (infix "\<cong>\<^sub>B" 50)
-    notation B.iso_class  ("\<lbrakk>_\<rbrakk>\<^sub>B")
+    no_notation B.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    no_notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
+    notation B.in_hhom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
+    notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<Rightarrow>\<^sub>B _\<guillemotright>\<close>)
+    notation B.isomorphic  (infix \<open>\<cong>\<^sub>B\<close> 50)
+    notation B.iso_class  (\<open>\<lbrakk>_\<rbrakk>\<^sub>B\<close>)
 
     text \<open>
       I attempted to modularize the construction here, by refactoring ``classifying category''
@@ -5554,10 +5554,10 @@ $$
      sublocale concrete_category \<open>Collect B.obj\<close> Hom B.iso_class \<open>\<lambda>_ _ _. Comp\<close>
        using is_concrete_category by simp
 
-     abbreviation comp  (infixr "\<odot>" 55)
+     abbreviation comp  (infixr \<open>\<odot>\<close> 55)
      where "comp \<equiv> COMP"
-     notation in_hom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-     no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+     notation in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+     no_notation B.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>\<close>)
 
      lemma Map_memb_in_hhom:
      assumes "\<guillemotleft>F : A \<rightarrow> B\<guillemotright>" and "f \<in> Map F"
@@ -5828,7 +5828,7 @@ $$
        The following mapping takes a map in \<open>B\<close> to the corresponding arrow of \<open>Maps(B)\<close>.
      \<close>
 
-     abbreviation CLS  ("\<lbrakk>\<lbrakk>_\<rbrakk>\<rbrakk>")
+     abbreviation CLS  (\<open>\<lbrakk>\<lbrakk>_\<rbrakk>\<rbrakk>\<close>)
      where "\<lbrakk>\<lbrakk>f\<rbrakk>\<rbrakk> \<equiv> MkArr (src f) (trg f) \<lbrakk>f\<rbrakk>\<^sub>B"
 
      lemma ide_CLS_obj:
@@ -6460,7 +6460,7 @@ $$
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
     interpretation Span: span_bicategory Maps.comp Maps.PRJ\<^sub>0 Maps.PRJ\<^sub>1 ..
 
-    notation isomorphic (infix "\<cong>" 50)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     text \<open>
       A 1-cell \<open>r\<close> in a bicategory of spans is a map if and only if the ``input leg''
@@ -6589,10 +6589,10 @@ $$
     bicategory_of_spans V H \<a> \<i> src trg +
     \<rho>: tabulation_in_maps V H \<a> \<i> src trg r \<rho> r\<^sub>0 r\<^sub>1 +
     \<sigma>: tabulation_in_maps V H \<a> \<i> src trg s \<sigma> s\<^sub>0 s\<^sub>1
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -6937,10 +6937,10 @@ $$
     bicategory_of_spans V H \<a> \<i> src trg +
     r: identity_in_bicategory_of_spans V H \<a> \<i> src trg r +
     s: identity_in_bicategory_of_spans V H \<a> \<i> src trg s
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -7035,10 +7035,10 @@ $$
     \<tau>: tabulation_in_maps V H \<a> \<i> src trg t \<tau> t\<^sub>0 t\<^sub>1 +
     \<mu>: arrow_of_tabulations_in_maps V H \<a> \<i> src trg r \<rho> r\<^sub>0 r\<^sub>1 s \<sigma> s\<^sub>0 s\<^sub>1 \<mu> +
     \<pi>: arrow_of_tabulations_in_maps V H \<a> \<i> src trg s \<sigma> s\<^sub>0 s\<^sub>1 t \<tau> t\<^sub>0 t\<^sub>1 \<pi>
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -7072,7 +7072,7 @@ $$
 $$
     \<close>
 
-    notation isomorphic (infix "\<cong>" 50)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     interpretation arrow_of_tabulations_in_maps V H \<a> \<i> src trg r \<rho> r\<^sub>0 r\<^sub>1 t \<tau> t\<^sub>0 t\<^sub>1 \<open>\<pi> \<cdot> \<mu>\<close>
       using \<mu>.in_hom \<pi>.in_hom by (unfold_locales, blast)
@@ -7245,10 +7245,10 @@ $$
     \<tau>\<mu>: composite_tabulation_in_maps V H \<a> \<i> src trg t \<tau> t\<^sub>0 t\<^sub>1 u \<mu> u\<^sub>0 u\<^sub>1 +
     \<omega>: arrow_of_tabulations_in_maps V H \<a> \<i> src trg r \<rho> r\<^sub>0 r\<^sub>1 t \<tau> t\<^sub>0 t\<^sub>1 \<omega> +
     \<chi>: arrow_of_tabulations_in_maps V H \<a> \<i> src trg s \<sigma> s\<^sub>0 s\<^sub>1 u \<mu> u\<^sub>0 u\<^sub>1 \<chi>
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -7291,7 +7291,7 @@ $$
 $$
     \<close>
 
-    notation isomorphic (infix "\<cong>" 50)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     interpretation arrow_of_tabulations_in_maps V H \<a> \<i> src trg
                      \<open>r \<star> s\<close> \<rho>\<sigma>.tab \<open>s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0\<close> \<open>r\<^sub>1 \<star> \<rho>\<sigma>.p\<^sub>1\<close>
@@ -7311,7 +7311,7 @@ $$
       using is_arrow_of_tabulations_in_maps by simp
 
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
-    notation Maps.comp  (infixr "\<odot>" 55)
+    notation Maps.comp  (infixr \<open>\<odot>\<close> 55)
 
     interpretation r\<^sub>0s\<^sub>1: cospan_of_maps_in_bicategory_of_spans \<open>(\<cdot>)\<close> \<open>(\<star>)\<close> \<a> \<i> src trg s\<^sub>1 r\<^sub>0
       using \<rho>.leg0_is_map \<sigma>.leg1_is_map \<rho>\<sigma>.composable apply unfold_locales by auto
@@ -7329,9 +7329,9 @@ $$
       using t\<^sub>0u\<^sub>1.is_arrow_of_tabulations_in_maps by simp
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
-    no_notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    no_notation in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     text \<open>
       The following lemma states that the rectangular faces of the ``top prism'' commute
@@ -8433,11 +8433,11 @@ $$
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
     interpretation Span: span_bicategory Maps.comp Maps.PRJ\<^sub>0 Maps.PRJ\<^sub>1 ..
 
-    no_notation Fun.comp (infixl "\<circ>" 55)
-    notation Span.vcomp (infixr "\<bullet>" 55)
-    notation Span.hcomp (infixr "\<circ>" 53)
-    notation Maps.comp  (infixr "\<odot>" 55)
-    notation isomorphic (infix "\<cong>" 50)
+    no_notation Fun.comp (infixl \<open>\<circ>\<close> 55)
+    notation Span.vcomp (infixr \<open>\<bullet>\<close> 55)
+    notation Span.hcomp (infixr \<open>\<circ>\<close> 53)
+    notation Maps.comp  (infixr \<open>\<odot>\<close> 55)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     definition spn
     where "spn \<mu> \<equiv>
@@ -9182,10 +9182,10 @@ $$
     bicategory_of_spans V H \<a> \<i> src trg +
     r: identity_in_bicategory_of_spans V H \<a> \<i> src trg r +
     s: identity_in_bicategory_of_spans V H \<a> \<i> src trg s
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and r :: 'a
@@ -9193,7 +9193,7 @@ $$
   assumes composable: "src r = trg s"
   begin
 
-    notation isomorphic (infix "\<cong>" 50)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     interpretation r: arrow_in_bicategory_of_spans V H \<a> \<i> src trg r r r
       by unfold_locales auto
@@ -9275,10 +9275,10 @@ $$
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
     interpretation Span: span_bicategory Maps.comp Maps.PRJ\<^sub>0 Maps.PRJ\<^sub>1 ..
 
-    no_notation Fun.comp (infixl "\<circ>" 55)
-    notation Span.vcomp (infixr "\<bullet>" 55)
-    notation Span.hcomp (infixr "\<circ>" 53)
-    notation Maps.comp (infixr "\<odot>" 55)
+    no_notation Fun.comp (infixl \<open>\<circ>\<close> 55)
+    notation Span.vcomp (infixr \<open>\<bullet>\<close> 55)
+    notation Span.hcomp (infixr \<open>\<circ>\<close> 53)
+    notation Maps.comp (infixr \<open>\<odot>\<close> 55)
 
     interpretation SPN: "functor" V Span.vcomp SPN
       using SPN_is_functor by simp
@@ -9581,11 +9581,11 @@ $$
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
     interpretation Span: span_bicategory Maps.comp Maps.PRJ\<^sub>0 Maps.PRJ\<^sub>1 ..
 
-    no_notation Fun.comp (infixl "\<circ>" 55)
-    notation Span.vcomp (infixr "\<bullet>" 55)
-    notation Span.hcomp (infixr "\<circ>" 53)
-    notation Maps.comp (infixr "\<odot>" 55)
-    notation isomorphic (infix "\<cong>" 50)
+    no_notation Fun.comp (infixl \<open>\<circ>\<close> 55)
+    notation Span.vcomp (infixr \<open>\<bullet>\<close> 55)
+    notation Span.hcomp (infixr \<open>\<circ>\<close> 53)
+    notation Maps.comp (infixr \<open>\<odot>\<close> 55)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     interpretation SPN: "functor" V Span.vcomp SPN
       using SPN_is_functor by simp
@@ -10359,10 +10359,10 @@ $$
     f: identity_in_bicategory_of_spans V H \<a> \<i> src trg f +
     g: identity_in_bicategory_of_spans V H \<a> \<i> src trg g +
     h: identity_in_bicategory_of_spans V H \<a> \<i> src trg h
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a"
   and f :: 'a
@@ -10380,16 +10380,16 @@ $$
       using h.is_arrow_of_tabulations_in_maps by simp
 
     interpretation E: self_evaluation_map V H \<a> \<i> src trg ..
-    notation E.eval ("\<lbrace>_\<rbrace>")
+    notation E.eval (\<open>\<lbrace>_\<rbrace>\<close>)
 
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
     interpretation Span: span_bicategory Maps.comp Maps.PRJ\<^sub>0 Maps.PRJ\<^sub>1 ..
 
-    no_notation Fun.comp (infixl "\<circ>" 55)
-    notation Span.vcomp (infixr "\<bullet>" 55)
-    notation Span.hcomp (infixr "\<circ>" 53)
-    notation Maps.comp (infixr "\<odot>" 55)
-    notation isomorphic (infix "\<cong>" 50)
+    no_notation Fun.comp (infixl \<open>\<circ>\<close> 55)
+    notation Span.vcomp (infixr \<open>\<bullet>\<close> 55)
+    notation Span.hcomp (infixr \<open>\<circ>\<close> 53)
+    notation Maps.comp (infixr \<open>\<odot>\<close> 55)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     interpretation SPN: "functor" V Span.vcomp SPN
       using SPN_is_functor by simp
@@ -13952,11 +13952,11 @@ $$
     interpretation Maps: maps_category V H \<a> \<i> src trg ..
     interpretation Span: span_bicategory Maps.comp Maps.PRJ\<^sub>0 Maps.PRJ\<^sub>1 ..
 
-    no_notation Fun.comp (infixl "\<circ>" 55)
-    notation Span.vcomp (infixr "\<bullet>" 55)
-    notation Span.hcomp (infixr "\<circ>" 53)
-    notation Maps.comp (infixr "\<odot>" 55)
-    notation isomorphic (infix "\<cong>" 50)
+    no_notation Fun.comp (infixl \<open>\<circ>\<close> 55)
+    notation Span.vcomp (infixr \<open>\<bullet>\<close> 55)
+    notation Span.hcomp (infixr \<open>\<circ>\<close> 53)
+    notation Maps.comp (infixr \<open>\<odot>\<close> 55)
+    notation isomorphic (infix \<open>\<cong>\<close> 50)
 
     interpretation SPN: "functor" V Span.vcomp SPN
       using SPN_is_functor by simp

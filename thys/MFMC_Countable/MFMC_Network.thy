@@ -9,13 +9,13 @@ type_synonym 'v edge = "'v \<times> 'v"
 record 'v graph =
   edge :: "'v \<Rightarrow> 'v \<Rightarrow> bool"
 
-abbreviation edges :: "('v, 'more) graph_scheme \<Rightarrow> 'v edge set" ("\<^bold>E\<index>")
+abbreviation edges :: "('v, 'more) graph_scheme \<Rightarrow> 'v edge set" (\<open>\<^bold>E\<index>\<close>)
 where "\<^bold>E\<^bsub>G\<^esub> \<equiv> {(x, y). edge G x y}"
 
-definition outgoing :: "('v, 'more) graph_scheme \<Rightarrow> 'v \<Rightarrow> 'v set" ("\<^bold>O\<^bold>U\<^bold>T\<index>")
+definition outgoing :: "('v, 'more) graph_scheme \<Rightarrow> 'v \<Rightarrow> 'v set" (\<open>\<^bold>O\<^bold>U\<^bold>T\<index>\<close>)
 where "\<^bold>O\<^bold>U\<^bold>T\<^bsub>G\<^esub> x = {y. (x, y) \<in> \<^bold>E\<^bsub>G\<^esub>}"
 
-definition incoming :: "('v, 'more) graph_scheme \<Rightarrow> 'v \<Rightarrow> 'v set" ("\<^bold>I\<^bold>N\<index>")
+definition incoming :: "('v, 'more) graph_scheme \<Rightarrow> 'v \<Rightarrow> 'v set" (\<open>\<^bold>I\<^bold>N\<index>\<close>)
 where "\<^bold>I\<^bold>N\<^bsub>G\<^esub> y = {x. (x, y) \<in> \<^bold>E\<^bsub>G\<^esub>}"
 
 text \<open>
@@ -34,7 +34,7 @@ lemma vertexI:
   and vertexI2: "edge \<Gamma> x y \<Longrightarrow> vertex \<Gamma> y"
 by(auto simp add: vertex_def)
 
-abbreviation vertices :: "('v, 'more) graph_scheme \<Rightarrow> 'v set" ("\<^bold>V\<index>")
+abbreviation vertices :: "('v, 'more) graph_scheme \<Rightarrow> 'v set" (\<open>\<^bold>V\<index>\<close>)
 where "\<^bold>V\<^bsub>G\<^esub> \<equiv> Collect (vertex G)"
 
 lemma "\<^bold>V_def": "\<^bold>V\<^bsub>G\<^esub> = fst ` \<^bold>E\<^bsub>G\<^esub> \<union> snd ` \<^bold>E\<^bsub>G\<^esub>"

@@ -140,12 +140,12 @@ lemma map_graph_comp: "map_graph (g \<circ>\<^sub>m f) = (map_graph f) O (map_gr
 
 subsection \<open> Map Application \<close>
 
-definition map_apply :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" ("_'(_')\<^sub>m" [999,0] 999) where
+definition map_apply :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>_'(_')\<^sub>m\<close> [999,0] 999) where
 "map_apply = (\<lambda> f x. the (f x))"
 
 subsection \<open> Map Membership \<close>
 
-fun map_member :: "'a \<times> 'b \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infix "\<in>\<^sub>m" 50) where
+fun map_member :: "'a \<times> 'b \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infix \<open>\<in>\<^sub>m\<close> 50) where
 "(k, v) \<in>\<^sub>m m \<longleftrightarrow> m(k) = Some(v)"
 
 lemma map_ext:
@@ -186,7 +186,7 @@ lemma countable_preimage:
 
 subsection \<open> Minus operation for maps \<close>
 
-definition map_minus :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b)" (infixl "--" 100)
+definition map_minus :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b)" (infixl \<open>--\<close> 100)
 where "map_minus f g = (\<lambda> x. if (f x = g x) then None else f x)"
 
 lemma map_minus_apply [simp]: "y \<in> dom(f -- g) \<Longrightarrow> (f -- g)(y)\<^sub>m = f(y)\<^sub>m"
@@ -233,7 +233,7 @@ subsection \<open> Range Restriction \<close>
 
 text \<open>A range restriction operator; only domain restriction is provided in HOL.\<close>
 
-definition ran_restrict_map :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'b set \<Rightarrow> 'a \<rightharpoonup> 'b" ("_\<upharpoonleft>\<^bsub>_\<^esub>" [111,110] 110) where
+definition ran_restrict_map :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'b set \<Rightarrow> 'a \<rightharpoonup> 'b" (\<open>_\<upharpoonleft>\<^bsub>_\<^esub>\<close> [111,110] 110) where
 "ran_restrict_map f B = (\<lambda>x. do { v <- f(x); if (v \<in> B) then Some(v) else None })"
 
 lemma ran_restrict_empty [simp]: "f\<upharpoonleft>\<^bsub>{}\<^esub> = Map.empty"
@@ -663,7 +663,7 @@ lemma map_comp_apply [simp]: "(f \<circ>\<^sub>m g) x = g(x) >>= f"
 
 subsection \<open> Merging of compatible maps \<close>
 
-definition comp_map :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infixl "\<parallel>\<^sub>m" 60) where
+definition comp_map :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b) \<Rightarrow> bool" (infixl \<open>\<parallel>\<^sub>m\<close> 60) where
 "comp_map f g = (\<forall> x \<in> dom(f) \<inter> dom(g). the(f(x)) = the(g(x)))"
 
 lemma comp_map_unit: "Map.empty \<parallel>\<^sub>m f"
@@ -732,7 +732,7 @@ subsection \<open> Map Comprehension \<close>
 text \<open> Map comprehension simply converts a relation built through set comprehension into a map. \<close>
 
 syntax
-  "_Mapcompr" :: "'a \<Rightarrow> 'b \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a \<rightharpoonup> 'b"    ("(1[_ \<mapsto> _ |/_./ _])")
+  "_Mapcompr" :: "'a \<Rightarrow> 'b \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a \<rightharpoonup> 'b"    (\<open>(1[_ \<mapsto> _ |/_./ _])\<close>)
 syntax_consts
   "_Mapcompr" == graph_map
 translations

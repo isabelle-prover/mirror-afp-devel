@@ -164,7 +164,7 @@ proof (rule set_eqI)
 qed
 
 lemma language_coinduct:
-fixes R (infixl "\<sim>" 50)
+fixes R (infixl \<open>\<sim>\<close> 50)
 assumes "\<And>K L. K \<sim> L \<Longrightarrow> K \<subseteq> lists S \<and> L \<subseteq> lists S"
 assumes "K \<sim> L"
 assumes "\<And>K L. K \<sim> L \<Longrightarrow> ([] \<in> K \<longleftrightarrow> [] \<in> L)"

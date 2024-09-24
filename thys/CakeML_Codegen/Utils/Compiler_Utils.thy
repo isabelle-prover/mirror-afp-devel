@@ -7,7 +7,7 @@ begin
 
 section \<open>Miscellaneous\<close>
 
-notation undefined ("\<^undefined>")
+notation undefined (\<open>\<^undefined>\<close>)
 
 lemma distinct_sorted_list_of_fset[simp, intro]: "distinct (sorted_list_of_fset S)"
 including fset.lifting

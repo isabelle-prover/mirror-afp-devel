@@ -9,17 +9,17 @@ imports Category Universe
 begin
 
 record ('t,'f) Signature = 
-  BaseTypes :: "'t set" ("Ty\<index>")
-  BaseFunctions :: "'f set" ("Fn\<index>")
-  SigDom :: "'f \<Rightarrow> 't" ("sDom\<index>")
-  SigCod :: "'f \<Rightarrow> 't" ("sCod\<index>")
+  BaseTypes :: "'t set" (\<open>Ty\<index>\<close>)
+  BaseFunctions :: "'f set" (\<open>Fn\<index>\<close>)
+  SigDom :: "'f \<Rightarrow> 't" (\<open>sDom\<index>\<close>)
+  SigCod :: "'f \<Rightarrow> 't" (\<open>sCod\<index>\<close>)
 
 locale Signature = 
   fixes S :: "('t,'f) Signature" (structure)
   assumes Domt: "f \<in> Fn \<Longrightarrow> sDom f \<in> Ty"
   and     Codt: "f \<in> Fn \<Longrightarrow> sCod f \<in> Ty"
 
-definition funsignature_abbrev ("_ \<in> Sig _ : _ \<rightarrow> _" ) where
+definition funsignature_abbrev (\<open>_ \<in> Sig _ : _ \<rightarrow> _\<close> ) where
   "f \<in> Sig S : A \<rightarrow> B \<equiv> f \<in> (BaseFunctions S) \<and> A \<in> (BaseTypes S) \<and> B \<in> (BaseTypes S) \<and> 
                         (SigDom S f) = A \<and> (SigCod S f) = B \<and> Signature S"
 
@@ -28,12 +28,12 @@ lemma funsignature_abbrevE[elim]:
                         (SigDom S f) = A ; (SigCod S f) = B ; Signature S\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
 by (simp add: funsignature_abbrev_def)
 
-datatype ('t,'f) Expression = ExprVar ("Vx") | ExprApp 'f "('t,'f) Expression" ("_ E@ _")
-datatype ('t,'f) Language = Type 't ("\<turnstile> _ Type") | Term 't "('t,'f) Expression" 't ("Vx : _ \<turnstile> _ : _") | 
-                            Equation 't "('t,'f) Expression" "('t,'f) Expression" 't ("Vx : _ \<turnstile> _\<equiv>_ : _")
+datatype ('t,'f) Expression = ExprVar (\<open>Vx\<close>) | ExprApp 'f "('t,'f) Expression" (\<open>_ E@ _\<close>)
+datatype ('t,'f) Language = Type 't (\<open>\<turnstile> _ Type\<close>) | Term 't "('t,'f) Expression" 't (\<open>Vx : _ \<turnstile> _ : _\<close>) | 
+                            Equation 't "('t,'f) Expression" "('t,'f) Expression" 't (\<open>Vx : _ \<turnstile> _\<equiv>_ : _\<close>)
 
 inductive
-  WellDefined :: "('t,'f) Signature \<Rightarrow> ('t,'f) Language \<Rightarrow> bool" ("Sig _ \<triangleright> _") where
+  WellDefined :: "('t,'f) Signature \<Rightarrow> ('t,'f) Language \<Rightarrow> bool" (\<open>Sig _ \<triangleright> _\<close>) where
     WellDefinedTy: "A \<in> BaseTypes S \<Longrightarrow> Sig S \<triangleright> \<turnstile> A Type"
   | WellDefinedVar: "Sig S \<triangleright> \<turnstile> A Type \<Longrightarrow> Sig S \<triangleright> (Vx : A  \<turnstile> Vx : A)" 
   | WellDefinedFn: "\<lbrakk>Sig S \<triangleright> (Vx : A  \<turnstile> e : B)  ; f \<in> Sig S : B \<rightarrow> C\<rbrakk> \<Longrightarrow> Sig S \<triangleright> (Vx : A  \<turnstile> (f E@ e) : C)"
@@ -74,10 +74,10 @@ qed
 datatype ('o,'m) IType = IObj 'o | IMor 'm | IBool bool
 
 record ('t,'f,'o,'m) Interpretation = 
-  ISignature :: "('t,'f) Signature" ("iS\<index>")
-  ICategory  :: "('o,'m) Category"  ("iC\<index>")
-  ITypes     :: "'t \<Rightarrow> 'o" ("Ty\<lbrakk>_\<rbrakk>\<index>")
-  IFunctions :: "'f \<Rightarrow> 'm" ("Fn\<lbrakk>_\<rbrakk>\<index>")
+  ISignature :: "('t,'f) Signature" (\<open>iS\<index>\<close>)
+  ICategory  :: "('o,'m) Category"  (\<open>iC\<index>\<close>)
+  ITypes     :: "'t \<Rightarrow> 'o" (\<open>Ty\<lbrakk>_\<rbrakk>\<index>\<close>)
+  IFunctions :: "'f \<Rightarrow> 'm" (\<open>Fn\<lbrakk>_\<rbrakk>\<index>\<close>)
 
 locale Interpretation = 
   fixes I :: "('t,'f,'o,'m) Interpretation" (structure)
@@ -86,7 +86,7 @@ locale Interpretation =
   and     It  : "A \<in> BaseTypes iS \<Longrightarrow> Ty\<lbrakk>A\<rbrakk> \<in> Obj iC"
   and     If  : "(f \<in> Sig iS : A \<rightarrow> B) \<Longrightarrow> Fn\<lbrakk>f\<rbrakk> maps\<^bsub>iC\<^esub> Ty\<lbrakk>A\<rbrakk> to Ty\<lbrakk>B\<rbrakk>"
 
-inductive Interp  ("L\<lbrakk>_\<rbrakk>\<index> \<rightarrow> _") where
+inductive Interp  (\<open>L\<lbrakk>_\<rbrakk>\<index> \<rightarrow> _\<close>) where
     InterpTy: "Sig iS\<^bsub>I\<^esub> \<triangleright> \<turnstile> A Type \<Longrightarrow> 
                        L\<lbrakk>\<turnstile> A Type\<rbrakk>\<^bsub>I\<^esub> \<rightarrow> (IObj Ty\<lbrakk>A\<rbrakk>\<^bsub>I\<^esub>)"
   | InterpVar: "L\<lbrakk>\<turnstile> A Type\<rbrakk>\<^bsub>I\<^esub> \<rightarrow> (IObj c) \<Longrightarrow> 
@@ -234,14 +234,14 @@ qed
 
 record ('t,'f) Axioms = 
   aAxioms :: "('t,'f) Language set" 
-  aSignature :: "('t,'f) Signature" ("aS\<index>")
+  aSignature :: "('t,'f) Signature" (\<open>aS\<index>\<close>)
 
 locale Axioms = 
   fixes Ax :: "('t,'f) Axioms" (structure)
   assumes AxT: "(aAxioms Ax) \<subseteq> {(Vx : A \<turnstile> e1 \<equiv> e2 : B) | A B e1 e2 . Sig (aSignature Ax) \<triangleright> (Vx : A \<turnstile> e1 \<equiv> e2 : B)}"
   assumes AxSig: "Signature (aSignature Ax)"
 
-primrec Subst :: "('t,'f) Expression \<Rightarrow> ('t,'f) Expression \<Rightarrow> ('t,'f) Expression" ("sub _ in _" [81,81] 81) where
+primrec Subst :: "('t,'f) Expression \<Rightarrow> ('t,'f) Expression \<Rightarrow> ('t,'f) Expression" (\<open>sub _ in _\<close> [81,81] 81) where
   "(sub e in Vx) = e" | "sub e in (f E@ d) = (f E@ (sub e in d))"
 
 lemma SubstXinE: "(sub Vx in e) = e"
@@ -589,7 +589,7 @@ proof-
   thus ?thesis using m2ZFinj_on[of T] inv_into_f_f zfax by (simp add:  ZF2m_def )
 qed
 
-definition TermEquivCl ("[_,_,_]\<index>") where "[A,e,B]\<^bsub>T\<^esub> \<equiv> m2ZF (TermEquivCl' T A e B)"
+definition TermEquivCl (\<open>[_,_,_]\<index>\<close>) where "[A,e,B]\<^bsub>T\<^esub> \<equiv> m2ZF (TermEquivCl' T A e B)"
 
 definition "CLDomain T \<equiv> TDomain o ZF2m T"
 definition "CLCodomain T \<equiv> TCodomain o ZF2m T"

@@ -23,13 +23,13 @@ fun hole_pos where
   "hole_pos \<box> = []"
 | "hole_pos (More f ss D ts) = length ss # hole_pos D"
 
-definition position_less_eq (infixl "\<le>\<^sub>p" 67) where
+definition position_less_eq (infixl \<open>\<le>\<^sub>p\<close> 67) where
   "p \<le>\<^sub>p q \<longleftrightarrow> (\<exists> r. p @ r = q)"
 
-abbreviation position_less (infixl "<\<^sub>p" 67) where
+abbreviation position_less (infixl \<open><\<^sub>p\<close> 67) where
   "p <\<^sub>p q \<equiv> p \<noteq> q \<and> p \<le>\<^sub>p q"
 
-definition position_par  (infixl "\<bottom>" 67) where
+definition position_par  (infixl \<open>\<bottom>\<close> 67) where
   "p \<bottom> q \<longleftrightarrow> \<not> (p \<le>\<^sub>p q) \<and> \<not> (q \<le>\<^sub>p p)"
 
 fun remove_prefix where
@@ -37,10 +37,10 @@ fun remove_prefix where
 | "remove_prefix [] ys = Some ys"
 | "remove_prefix xs [] = None"
 
-definition pos_diff  (infixl "-\<^sub>p" 67) where
+definition pos_diff  (infixl \<open>-\<^sub>p\<close> 67) where
   "p -\<^sub>p q = the (remove_prefix q p)"
 
-fun subt_at :: "('f, 'v) term \<Rightarrow> pos \<Rightarrow> ('f, 'v) term" (infixl "|'_" 67) where
+fun subt_at :: "('f, 'v) term \<Rightarrow> pos \<Rightarrow> ('f, 'v) term" (infixl \<open>|'_\<close> 67) where
   "s |_ [] = s"
 | "Fun f ss |_ (i # p) = (ss ! i) |_ p"
 | "Var x |_ _ = undefined"
@@ -50,7 +50,7 @@ fun ctxt_at_pos where
 | "ctxt_at_pos (Fun f ss) (i # p) = More f (take i ss) (ctxt_at_pos (ss ! i) p) (drop (Suc i) ss)"
 | "ctxt_at_pos (Var x) _ = undefined"
 
-fun replace_term_at ("_[_ \<leftarrow> _]" [1000, 0, 0] 1000) where
+fun replace_term_at (\<open>_[_ \<leftarrow> _]\<close> [1000, 0, 0] 1000) where
   "replace_term_at s [] t = t"
 | "replace_term_at (Var x) ps t = (Var x)"
 | "replace_term_at (Fun f ts) (i # ps) t =

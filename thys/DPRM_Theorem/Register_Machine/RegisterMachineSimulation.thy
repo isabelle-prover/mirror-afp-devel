@@ -14,33 +14,33 @@ definition "ZLe c p b q l = (\<Sum>t = 0..q. b^t * Z c p l t)"
 fun sum_radd :: "program \<Rightarrow> register \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> nat"
   where "sum_radd p l f = (\<Sum>k = 0..length p-1. if isadd (p!k) \<and> l = modifies (p!k) then f k else 0)"
 
-abbreviation sum_radd_abbrev ("\<Sum>R+ _ _ _" [999, 999, 999] 1000)
+abbreviation sum_radd_abbrev (\<open>\<Sum>R+ _ _ _\<close> [999, 999, 999] 1000)
   where "(\<Sum>R+ p l f) \<equiv> (sum_radd p l f)"
 
 fun sum_rsub :: "program \<Rightarrow> register \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> nat"
   where "sum_rsub p l f = (\<Sum>k = 0..length p-1. if issub (p!k) \<and> l = modifies (p!k) then f k else 0)"
 
-abbreviation sum_rsub_abbrev ("\<Sum>R- _ _ _ " [999, 999, 999] 1000)
+abbreviation sum_rsub_abbrev (\<open>\<Sum>R- _ _ _ \<close> [999, 999, 999] 1000)
   where "(\<Sum>R- p l f) \<equiv> (sum_rsub p l f)"
 
 (* Note: different naming convention for sums compared to original paper *)
 fun sum_sadd :: "program \<Rightarrow> state \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> nat"
   where "sum_sadd p d f = (\<Sum>k = 0..length p-1. if isadd (p!k) \<and> d = goes_to (p!k) then f k else 0)"
 
-abbreviation sum_sadd_abbrev ("\<Sum>S+ _ _ _ " [999, 999, 999] 1000)
+abbreviation sum_sadd_abbrev (\<open>\<Sum>S+ _ _ _ \<close> [999, 999, 999] 1000)
   where "(\<Sum>S+ p d f) \<equiv> (sum_sadd p d f)"
 
 (* careful: f needs be passed the program so that z l t can be properly called with l = modifies (p!k) *)
 fun sum_ssub_nzero :: "program \<Rightarrow> state \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> nat"
   where "sum_ssub_nzero p d f = (\<Sum>k = 0..length p-1. if issub (p!k) \<and> d = goes_to (p!k) then f k else 0)"
 
-abbreviation sum_ssub_nzero_abbrev ("\<Sum>S- _ _ _ " [999, 999, 999] 1000)
+abbreviation sum_ssub_nzero_abbrev (\<open>\<Sum>S- _ _ _ \<close> [999, 999, 999] 1000)
   where "(\<Sum>S- p d f) \<equiv> (sum_ssub_nzero p d f)"
 
 fun sum_ssub_zero :: "program \<Rightarrow> state \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> nat"
   where "sum_ssub_zero p d f = (\<Sum>k = 0..length p-1. if issub (p!k) \<and> d = goes_to_alt (p!k) then f k else 0)"
 
-abbreviation sum_ssub_zero_abbrev ("\<Sum>S0 _ _ _ " [999, 999, 999] 1000)
+abbreviation sum_ssub_zero_abbrev (\<open>\<Sum>S0 _ _ _ \<close> [999, 999, 999] 1000)
   where "(\<Sum>S0 p d f) \<equiv> (sum_ssub_zero p d f)"
 
 declare sum_radd.simps[simp del]

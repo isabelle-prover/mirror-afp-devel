@@ -12,7 +12,7 @@ Now that we have termination, we can define
 total validity, \<open>\<Turnstile>\<^sub>t\<close>, as partial validity and guaranteed termination:\<close>
 
 definition
- hoare_tvalid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
+ hoare_tvalid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" (\<open>\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}\<close> 50) where
   "\<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> \<Turnstile> {P}c{Q} \<and> (\<forall>s. P s \<longrightarrow> c\<down>s)"
 
 text\<open>Proveability of Hoare triples in the proof system for total
@@ -22,7 +22,7 @@ inductively. The rules for \<open>\<turnstile>\<^sub>t\<close> differ from those
 @{term While}-rule.\<close>
 
 inductive
-  thoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})" 50)
+  thoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" (\<open>\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
   Do:  "\<turnstile>\<^sub>t {\<lambda>s. (\<forall>t \<in> f s. P t) \<and> f s \<noteq> {}} Do f {P}"
 | Semi: "\<lbrakk> \<turnstile>\<^sub>t {P}c{Q}; \<turnstile>\<^sub>t {Q}d{R} \<rbrakk> \<Longrightarrow> \<turnstile>\<^sub>t {P} c;d {R}"
@@ -109,7 +109,7 @@ correctness. First we have to strengthen our notion of weakest precondition
 to take termination into account:\<close>
 
 definition
- wpt :: "com \<Rightarrow> assn \<Rightarrow> assn" ("wp\<^sub>t") where
+ wpt :: "com \<Rightarrow> assn \<Rightarrow> assn" (\<open>wp\<^sub>t\<close>) where
   "wp\<^sub>t c Q = (\<lambda>s. wp c Q s \<and> c\<down>s)"
 
 lemmas wp_defs = wp_def wpt_def

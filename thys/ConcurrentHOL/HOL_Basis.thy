@@ -18,16 +18,16 @@ hide_const (open) BNF_Cardinal_Order_Relation.stable
 hide_const (open) Topological_Spaces.incseq
 hide_const (open) Topological_Spaces.decseq
 
-no_notation Binomial.binomial (infixl "choose" 65)
-no_notation Sublist.parallel (infixl "\<parallel>" 50)
+no_notation Binomial.binomial (infixl \<open>choose\<close> 65)
+no_notation Sublist.parallel (infixl \<open>\<parallel>\<close> 50)
 
-consts parallel :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<parallel>" 53) \<comment>\<open> for adhoc overloading \<close>
+consts parallel :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<parallel>\<close> 53) \<comment>\<open> for adhoc overloading \<close>
 
 consts Parallel :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'b" \<comment>\<open> for adhoc overloading \<close>
 
 syntax
-  "_PAR1"     :: "pttrns \<Rightarrow> 'a set \<Rightarrow> 'b"                    ("(3\<Parallel>_./ _)" [0, 10] 10)
-  "_PAR"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"               ("(3\<Parallel>_\<in>_./ _)" [0, 0, 10] 10)
+  "_PAR1"     :: "pttrns \<Rightarrow> 'a set \<Rightarrow> 'b"                    (\<open>(3\<Parallel>_./ _)\<close> [0, 10] 10)
+  "_PAR"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"               (\<open>(3\<Parallel>_\<in>_./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_PAR1" "_PAR" \<rightleftharpoons> Parallel
@@ -850,7 +850,7 @@ unfolding inv_image_def by fast
 
 subsection\<open> Identity relation under a projection\label{sec:id_on_proj} \<close>
 
-definition Id_on_proj :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a rel" ("Id\<^bsub>_\<^esub>") where
+definition Id_on_proj :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a rel" (\<open>Id\<^bsub>_\<^esub>\<close>) where
   "Id\<^bsub>f\<^esub> = {(s, s'). f s = f s'}"
 
 lemma member_Id_on_proj[simp]:
@@ -897,7 +897,7 @@ by (fastforce simp: Id_on_proj_def)
 
 subsection\<open> Ordering under a projection \<close>
 
-definition less_eq_on_proj :: "('s \<Rightarrow> 'a::ord) \<Rightarrow> 's rel" ("\<^bold>\<le>\<^bsub>_\<^esub>") where
+definition less_eq_on_proj :: "('s \<Rightarrow> 'a::ord) \<Rightarrow> 's rel" (\<open>\<^bold>\<le>\<^bsub>_\<^esub>\<close>) where
   "\<^bold>\<le>\<^bsub>f\<^esub> = {(s, s'). f s' \<le> f s}"
 
 lemma less_eq_on_proj[simp]:
@@ -1022,7 +1022,7 @@ A set version of \<^const>\<open>rel_prod\<close> and corresponding projections.
 
 \<close>
 
-definition relprod :: "('a \<times> 'b) set \<Rightarrow> ('c \<times> 'd) set \<Rightarrow> (('a \<times> 'c) \<times> ('b \<times> 'd)) set" (infixr "\<times>\<^sub>R" 75) where
+definition relprod :: "('a \<times> 'b) set \<Rightarrow> ('c \<times> 'd) set \<Rightarrow> (('a \<times> 'c) \<times> ('b \<times> 'd)) set" (infixr \<open>\<times>\<^sub>R\<close> 75) where
   "relprod P Q = {((a, c), (b, d)) |a b c d. (a, b) \<in> P \<and> (c, d) \<in> Q}"
 
 definition relfst :: "(('a \<times> 'c) \<times> ('b \<times> 'd)) set \<Rightarrow> ('a \<times> 'b) set" where

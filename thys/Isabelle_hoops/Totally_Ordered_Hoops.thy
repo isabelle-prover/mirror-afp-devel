@@ -10,17 +10,17 @@ locale totally_ordered_hoop = hoop +
   assumes total_order: "x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x \<le>\<^sup>A y \<or> y \<le>\<^sup>A x "
 begin
 
-function fixed_points :: "'a \<Rightarrow> 'a set" ("F") where
+function fixed_points :: "'a \<Rightarrow> 'a set" (\<open>F\<close>) where
   "F a = {b \<in> A-{1\<^sup>A}. a \<rightarrow>\<^sup>A b = b}" if "a \<in> A-{1\<^sup>A}"
 | "F a = {1\<^sup>A}" if "a = 1\<^sup>A" 
 | "F a = undefined" if "a \<notin> A"
   by auto
 termination by lexicographic_order 
 
-definition rel_F :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sim>F" 60)
+definition rel_F :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sim>F\<close> 60)
   where "x \<sim>F y \<equiv> \<forall> z \<in> A. (x \<rightarrow>\<^sup>A z = z) \<longleftrightarrow> (y \<rightarrow>\<^sup>A z = z)" 
 
-definition rel_F_canonical_map :: "'a \<Rightarrow> 'a set" ("\<pi>")
+definition rel_F_canonical_map :: "'a \<Rightarrow> 'a set" (\<open>\<pi>\<close>)
   where "\<pi> x = {b \<in> A. x \<sim>F b}"
 
 end
@@ -950,7 +950,7 @@ begin
 
 subsubsection\<open>Definition of index set @{text "I"}\<close>
 
-definition index_set :: "('a set) set" ("I")
+definition index_set :: "('a set) set" (\<open>I\<close>)
   where "I = {y. (\<exists> x \<in> A. \<pi> x = y)}"
 
 lemma indexes_subsets: 
@@ -1006,13 +1006,13 @@ subsubsection\<open>Definition of total partial order over @{term I}\<close>
 
 text\<open>Since each equivalence class is convex, @{term hoop_order} induces a total order on @{term I}.\<close>
 
-function index_order :: "('a set) \<Rightarrow> ('a set) \<Rightarrow> bool" (infix "\<le>\<^sup>I" 60) where
+function index_order :: "('a set) \<Rightarrow> ('a set) \<Rightarrow> bool" (infix \<open>\<le>\<^sup>I\<close> 60) where
   "x \<le>\<^sup>I y = ((x = y) \<or> (\<forall> v \<in> x. \<forall> w \<in> y. v \<le>\<^sup>A w))" if "x \<in> I" "y \<in> I"
 | "x \<le>\<^sup>I y = undefined" if "x \<notin> I \<or> y \<notin> I"
   by auto
 termination by lexicographic_order
 
-definition index_order_strict (infix "<\<^sup>I" 60)
+definition index_order_strict (infix \<open><\<^sup>I\<close> 60)
   where "x <\<^sup>I y = (x \<le>\<^sup>I y \<and> x \<noteq> y)"
 
 lemma index_ord_reflex: 
@@ -1196,19 +1196,19 @@ qed
 
 subsubsection\<open>Definition of universes\<close>
 
-definition universes :: "'a set \<Rightarrow> 'a set" ("UNI\<^sub>A")
+definition universes :: "'a set \<Rightarrow> 'a set" (\<open>UNI\<^sub>A\<close>)
   where "UNI\<^sub>A x = x \<union> {1\<^sup>A}"
 
 abbreviation (uniA_i)
-  uniA_i :: "['a set] \<Rightarrow> ('a set)" ("(\<bbbA>(\<^sub>_))" [61] 60)
+  uniA_i :: "['a set] \<Rightarrow> ('a set)" (\<open>(\<bbbA>(\<^sub>_))\<close> [61] 60)
   where "\<bbbA>\<^sub>i \<equiv> UNI\<^sub>A i"
 
 abbreviation (uniA_pi)
-  uniA_pi :: "['a] \<Rightarrow> ('a set)" ("(\<bbbA>\<^sub>\<pi> (\<^sub>_))" [61] 60)
+  uniA_pi :: "['a] \<Rightarrow> ('a set)" (\<open>(\<bbbA>\<^sub>\<pi> (\<^sub>_))\<close> [61] 60)
   where "\<bbbA>\<^sub>\<pi>\<^sub>x \<equiv> UNI\<^sub>A (\<pi> x)"
 
 abbreviation (uniA_pi_one)
-  uniA_pi_one :: "'a set" ("(\<bbbA>\<^sub>\<pi>\<^sub>1\<^sub>A)" 60)
+  uniA_pi_one :: "'a set" (\<open>(\<bbbA>\<^sub>\<pi>\<^sub>1\<^sub>A)\<close> 60)
   where "\<bbbA>\<^sub>\<pi>\<^sub>1\<^sub>A \<equiv> UNI\<^sub>A (\<pi> 1\<^sup>A)"
 
 lemma universes_subsets: 
@@ -1464,33 +1464,33 @@ qed
 
 subsubsection\<open>Definition of multiplications, implications and one\<close>
 
-definition mult_map :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("MUL\<^sub>A")
+definition mult_map :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>MUL\<^sub>A\<close>)
   where "MUL\<^sub>A x = (*\<^sup>A)"
 
-definition imp_map :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("IMP\<^sub>A")
+definition imp_map :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>IMP\<^sub>A\<close>)
   where "IMP\<^sub>A x = (\<rightarrow>\<^sup>A)"
 
-definition sum_one :: "'a" ("1\<^sup>S")
+definition sum_one :: "'a" (\<open>1\<^sup>S\<close>)
   where "1\<^sup>S = 1\<^sup>A"
 
 abbreviation (multA_i)
-  multA_i :: "['a set] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)"  ("(*(\<^sup>_))" [50] 60)
+  multA_i :: "['a set] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)"  (\<open>(*(\<^sup>_))\<close> [50] 60)
   where "*\<^sup>i \<equiv> MUL\<^sub>A i"
 
 abbreviation (impA_i)
-  impA_i:: "['a set] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" ("(\<rightarrow>(\<^sup>_))" [50] 60)
+  impA_i:: "['a set] \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a)" (\<open>(\<rightarrow>(\<^sup>_))\<close> [50] 60)
   where "\<rightarrow>\<^sup>i \<equiv> IMP\<^sub>A i"
 
 abbreviation (multA_i_xy)
-  multA_i_xy :: "['a, 'a set, 'a] \<Rightarrow> 'a" ("((_)/ *(\<^sup>_) / (_))" [61, 50, 61] 60)
+  multA_i_xy :: "['a, 'a set, 'a] \<Rightarrow> 'a" (\<open>((_)/ *(\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x *\<^sup>i y \<equiv> MUL\<^sub>A i x y"
 
 abbreviation (impA_i_xy)
-  impA_i_xy :: "['a, 'a set, 'a] \<Rightarrow> 'a" ("((_)/ \<rightarrow>(\<^sup>_) / (_))" [61, 50, 61] 60)
+  impA_i_xy :: "['a, 'a set, 'a] \<Rightarrow> 'a" (\<open>((_)/ \<rightarrow>(\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x \<rightarrow>\<^sup>i y \<equiv> IMP\<^sub>A i x y"
 
 abbreviation (ord_i_xy)
-  ord_i_xy :: "['a, 'a set, 'a] \<Rightarrow> bool" ("((_)/ \<le>(\<^sup>_) / (_))" [61, 50, 61] 60)
+  ord_i_xy :: "['a, 'a set, 'a] \<Rightarrow> bool" (\<open>((_)/ \<le>(\<^sup>_) / (_))\<close> [61, 50, 61] 60)
   where "x \<le>\<^sup>i y \<equiv> hoop.hoop_order (IMP\<^sub>A i) 1\<^sup>S x y"
 
 subsubsection\<open>Main result\<close>

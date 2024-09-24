@@ -33,22 +33,22 @@ text\<open>Our statement language is nondeterministic first-order regular progra
 
 Our assertion language are the formulas of first-order dynamic logic\<close>
 datatype prog =
-  Assign fin_string "trm"     (infixr ":=" 10)
+  Assign fin_string "trm"     (infixr \<open>:=\<close> 10)
 | AssignAny fin_string                
-| Test "formula"              ("?")
-| Choice "prog" "prog"        (infixl "\<union>\<union>" 10)
-| Sequence "prog"  "prog"     (infixr ";;" 8)
-| Loop "prog"                 ("_**")
+| Test "formula"              (\<open>?\<close>)
+| Choice "prog" "prog"        (infixl \<open>\<union>\<union>\<close> 10)
+| Sequence "prog"  "prog"     (infixr \<open>;;\<close> 8)
+| Loop "prog"                 (\<open>_**\<close>)
 
 and formula =
   Geq "trm" "trm"
-| Not "formula"                        ("!")
-| And "formula" "formula"              (infixl "&&" 8)
+| Not "formula"                        (\<open>!\<close>)
+| And "formula" "formula"              (infixl \<open>&&\<close> 8)
 | Exists fin_string "formula"
-| Diamond "prog" "formula"               ("(\<langle> _ \<rangle> _)" 10)
+| Diamond "prog" "formula"               (\<open>(\<langle> _ \<rangle> _)\<close> 10)
     
 text\<open>Derived forms\<close>
-definition Or :: "formula \<Rightarrow> formula \<Rightarrow> formula" (infixl "||" 7)
+definition Or :: "formula \<Rightarrow> formula \<Rightarrow> formula" (infixl \<open>||\<close> 7)
 where or_simp[simp]:"Or P Q = Not (And (Not P) (Not Q))"
 
 definition Equals :: "trm \<Rightarrow> trm \<Rightarrow> formula"
@@ -72,7 +72,7 @@ definition wstate::"wstate \<Rightarrow> prop"
 where wstate_def[simp]:"wstate \<nu> \<equiv> (\<And>i. word (\<nu> (Inl i)) \<and> word (\<nu> (Inr i)))"
 
 text\<open>Interpretation of a term in a state\<close>
-inductive rtsem :: "trm \<Rightarrow> rstate \<Rightarrow> real  \<Rightarrow> bool"  ("([_]_ \<down> _)" 10)
+inductive rtsem :: "trm \<Rightarrow> rstate \<Rightarrow> real  \<Rightarrow> bool"  (\<open>([_]_ \<down> _)\<close> 10)
   where 
   rtsem_Const:"Rep_bword w \<equiv>\<^sub>E r \<Longrightarrow> ([Const w]\<nu> \<down> r)"
 | rtsem_Var:"([Var x]\<nu> \<down> \<nu> x)"
@@ -93,14 +93,14 @@ and rtsem_Min_simps[simp] : "([Min \<theta>\<^sub>1 \<theta>\<^sub>2] \<nu> \<do
 and rtsem_Abs_simps[simp] : "([Abs \<theta>] \<nu> \<down> r)"
 and rtsem_Neg_simps[simp] : "([Neg \<theta>] \<nu> \<down> r)"
 
-definition set_less :: "real set \<Rightarrow> real set \<Rightarrow> bool" (infix "<\<^sub>S" 10)
+definition set_less :: "real set \<Rightarrow> real set \<Rightarrow> bool" (infix \<open><\<^sub>S\<close> 10)
 where "set_less A B \<equiv> (\<forall> x y. x \<in> A \<and> y \<in> B \<longrightarrow> x < y)"
 
-definition set_geq :: "real set \<Rightarrow> real set \<Rightarrow> bool" (infix "\<ge>\<^sub>S" 10)
+definition set_geq :: "real set \<Rightarrow> real set \<Rightarrow> bool" (infix \<open>\<ge>\<^sub>S\<close> 10)
 where "set_geq A B \<equiv> (\<forall> x y. x \<in> A \<and> y \<in> B \<longrightarrow> x \<ge> y)"
 
 text\<open>Interpretation of an assertion in a state\<close>
-inductive rfsem :: "formula \<Rightarrow> rstate \<Rightarrow> bool \<Rightarrow> bool" ("([_]_) \<downharpoonright> _" 20)
+inductive rfsem :: "formula \<Rightarrow> rstate \<Rightarrow> bool \<Rightarrow> bool" (\<open>([_]_) \<downharpoonright> _\<close> 20)
 where 
   rGreaterT:"\<lbrakk>([\<theta>\<^sub>1]\<nu> \<down> r1); ([\<theta>\<^sub>2]\<nu> \<down> r2)\<rbrakk> \<Longrightarrow> r1 > r2 \<Longrightarrow> ([Greater \<theta>\<^sub>1 \<theta>\<^sub>2] \<nu> \<downharpoonright> True)"
 | rGreaterF:"\<lbrakk>([\<theta>\<^sub>1]\<nu> \<down> r1); ([\<theta>\<^sub>2]\<nu> \<down> r2)\<rbrakk> \<Longrightarrow> r2 \<ge> r1 \<Longrightarrow> ([Greater \<theta>\<^sub>1 \<theta>\<^sub>2] \<nu> \<downharpoonright> False)"
@@ -126,7 +126,7 @@ and rfsem_Or_simps[simp]: "([(Or \<phi> \<psi>)]\<nu> \<downharpoonright> b)"
 and rfsem_Not_simps[simp]: "([Not \<phi>]\<nu> \<downharpoonright> b)"
 
 text\<open>Interpretation of a program is a transition relation on states\<close>
-inductive rpsem :: "prog \<Rightarrow> rstate \<Rightarrow>  rstate \<Rightarrow> bool" ("([_]_) \<downharpoonleft> _" 20)
+inductive rpsem :: "prog \<Rightarrow> rstate \<Rightarrow>  rstate \<Rightarrow> bool" (\<open>([_]_) \<downharpoonleft> _\<close> 20)
 where
   rTest[simp]:"\<lbrakk>([\<phi>]\<nu> \<downharpoonright> True); \<nu> = \<omega>\<rbrakk> \<Longrightarrow> ([? \<phi>]\<nu> \<downharpoonleft> \<omega>)"
 | rSeq[simp]:"\<lbrakk>([\<alpha>]\<nu> \<downharpoonleft> \<mu>); ([\<beta>]\<mu> \<downharpoonleft> \<omega>)\<rbrakk> \<Longrightarrow> ([\<alpha>;; \<beta>]\<nu> \<downharpoonleft> \<omega>)"
@@ -141,7 +141,7 @@ and rpsem_Assign_simps[simp]: "([Assign x \<theta>]\<nu> \<downharpoonleft> b)"
 and rpsem_Choice_simps[simp]: "([Choice \<alpha> \<beta>]\<nu> \<downharpoonleft> b)"
 
 text\<open>Upper bound of arbitrary term\<close>
-fun wtsemU :: "trm \<Rightarrow> wstate \<Rightarrow>  word * word " ("([_]<>_)" 20)
+fun wtsemU :: "trm \<Rightarrow> wstate \<Rightarrow>  word * word " (\<open>([_]<>_)\<close> 20)
 where "([Const r]<>\<nu>) = (Rep_bword r::word, Rep_bword r)"
 | wVarU:"([Var x]<>\<nu>) = (\<nu> (Inl x), \<nu> (Inr x))"
 | wPlusU:"([Plus \<theta>\<^sub>1 \<theta>\<^sub>2]<> \<nu>) = 
@@ -167,7 +167,7 @@ where "([Const r]<>\<nu>) = (Rep_bword r::word, Rep_bword r)"
   (let (l1, u1) = [\<theta>\<^sub>1]<> \<nu> in 
   (wmax l1 (wneg u1), wmax u1 (wneg l1)))"
 
-inductive wfsem :: "formula \<Rightarrow> wstate \<Rightarrow> bool \<Rightarrow> bool" ("([[_]]_ \<down> _)" 20)
+inductive wfsem :: "formula \<Rightarrow> wstate \<Rightarrow> bool \<Rightarrow> bool" (\<open>([[_]]_ \<down> _)\<close> 20)
 where 
   wGreaterT:"wgreater (fst ([\<theta>\<^sub>1]<>\<nu>)) (snd ([\<theta>\<^sub>2]<>\<nu>)) \<Longrightarrow>  ([[(Greater \<theta>\<^sub>1 \<theta>\<^sub>2)]]\<nu> \<down> True)"
 | wGreaterF:"wgeq (fst ([\<theta>\<^sub>2]<>\<nu>)) (snd ([\<theta>\<^sub>1]<>\<nu>)) \<Longrightarrow>  ([[(Greater \<theta>\<^sub>1 \<theta>\<^sub>2)]]\<nu> \<down> False)"
@@ -196,7 +196,7 @@ and wfsem_Not_simps[simp]: "([[Not \<phi>]]\<nu> \<down> b)"
 and wfsem_Equals_simps[simp]: "([[Equals \<theta>\<^sub>1 \<theta>\<^sub>2]]\<nu> \<down> b)"
 
 text\<open>Program semantics\<close>
-inductive wpsem :: "prog \<Rightarrow>  wstate \<Rightarrow> wstate \<Rightarrow> bool" ("([[_]]_ \<down> _)" 20)
+inductive wpsem :: "prog \<Rightarrow>  wstate \<Rightarrow> wstate \<Rightarrow> bool" (\<open>([[_]]_ \<down> _)\<close> 20)
 where
   wTest:"([[\<phi>]]\<nu> \<down> True) \<Longrightarrow> \<nu> = \<omega> \<Longrightarrow> ([[? \<phi>]] \<nu> \<down> \<omega>)"
 | wSeq:"([[\<alpha>]]\<nu> \<down> \<mu>) \<Longrightarrow> ([[\<beta>]] \<mu> \<down> \<omega>) \<Longrightarrow> ([[\<alpha>;; \<beta>]] \<nu> \<down> \<omega>)"
@@ -214,7 +214,7 @@ lemmas real_max_mono =  Lattices.linorder_class.max.mono
 lemmas real_minus_le_minus = Groups.ordered_ab_group_add_class.neg_le_iff_le
 
 text\<open>Interval state consists of upper and lower bounds for each real variable\<close>
-inductive represents_state::"wstate \<Rightarrow> rstate \<Rightarrow> bool" (infix "REP" 10)
+inductive represents_state::"wstate \<Rightarrow> rstate \<Rightarrow> bool" (infix \<open>REP\<close> 10)
 where REPI:"(\<And>x. (\<nu> (Inl x) \<equiv>\<^sub>L \<nu>' x) \<and> (\<nu> (Inr x) \<equiv>\<^sub>U \<nu>' x)) \<Longrightarrow> (\<nu> REP \<nu>')"
 
 inductive_simps repstate_simps:"\<nu> REP \<nu>'"

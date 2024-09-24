@@ -42,7 +42,7 @@ locale fair_otter_loop =
     remove :: "'f \<Rightarrow> 'p \<Rightarrow> 'p" and
     felems :: "'p \<Rightarrow> 'f fset" +
   fixes
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
     wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
     transp_Prec_S: "transp (\<prec>S)" and
@@ -114,7 +114,7 @@ qed
 fun state_union :: "'f set \<times> 'f set \<times> 'f set \<times> 'f set \<times> 'f set \<Rightarrow> 'f set" where
   "state_union (N, X, P, Y, A) = N \<union> X \<union> P \<union> Y \<union> A"
 
-inductive fair_OL :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix "\<leadsto>OLf" 50) where
+inductive fair_OL :: "('p, 'f) OLf_state \<Rightarrow> ('p, 'f) OLf_state \<Rightarrow> bool" (infix \<open>\<leadsto>OLf\<close> 50) where
   choose_n: "C |\<notin>| N \<Longrightarrow> (N |\<union>| {|C|}, None, P, None, A) \<leadsto>OLf (N, Some C, P, None, A)"
 | delete_fwd: "C \<in> no_labels.Red_F (elems P \<union> fset A) \<or> (\<exists>C' \<in> elems P \<union> fset A. C' \<preceq>\<cdot> C) \<Longrightarrow>
     (N, Some C, P, None, A) \<leadsto>OLf (N, None, P, None, A)"

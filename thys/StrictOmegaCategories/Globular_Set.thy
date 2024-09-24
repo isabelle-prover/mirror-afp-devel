@@ -11,7 +11,7 @@ lemma PiE_imp_Pi: "f \<in> A \<rightarrow>\<^sub>E B \<Longrightarrow> f \<in> A
 lemma PiE_iff': "f \<in> A \<rightarrow>\<^sub>E B = (f \<in> A \<rightarrow> B \<and> f \<in> extensional A)"
   by (simp add: PiE_iff Pi_iff)
 
-abbreviation composing ("_ \<circ> _ \<down> _" [60,0,60]59)
+abbreviation composing (\<open>_ \<circ> _ \<down> _\<close> [60,0,60]59)
   where "g \<circ> f \<down> D \<equiv> compose D g f"
 
 lemma compose_PiE: "f \<in> A \<rightarrow> B \<Longrightarrow> g \<in> B \<rightarrow> C \<Longrightarrow> g \<circ> f \<down> A \<in> A \<rightarrow>\<^sub>E C"

@@ -12,10 +12,10 @@ fun slice :: "'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list"
 | "slice (x#xs) (Suc a) (Suc b) = slice xs a b"
 
 syntax
-  slice :: "'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list" ("_\<^bsub>_'/_\<^esub>" [1000,0,0] 1000)
+  slice :: "'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list" (\<open>_\<^bsub>_'/_\<^esub>\<close> [1000,0,0] 1000)
 
 notation (latex output)
-  "slice" ("_\<^bsub>_'/_\<^esub>" [1000,0,0] 1000)
+  "slice" (\<open>_\<^bsub>_'/_\<^esub>\<close> [1000,0,0] 1000)
 
 lemma slice_drop_take:
   "slice xs a b = drop a (take b xs)"

@@ -35,8 +35,8 @@ proof unfold_locales
         traffic.psGeZero traffic.sdGeZero)
 qed        
   
-notation regular_sensors.space ("space")
-notation regular_sensors.len ("len")
+notation regular_sensors.space (\<open>space\<close>)
+notation regular_sensors.len (\<open>len\<close>)
 
 text\<open>
 Similar to the situation with perfect sensors, we can show that the perceived length of a car

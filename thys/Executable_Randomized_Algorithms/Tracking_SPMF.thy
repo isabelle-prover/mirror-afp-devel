@@ -56,12 +56,12 @@ definition ord_tspmf :: "'a tspmf \<Rightarrow> 'a tspmf \<Rightarrow> bool" whe
 
 bundle ord_tspmf_notation
 begin
-  notation ord_tspmf  ("(_/ \<le>\<^sub>R _)"  [51, 51] 50)
+  notation ord_tspmf  (\<open>(_/ \<le>\<^sub>R _)\<close>  [51, 51] 50)
 end
 
 bundle no_ord_tspmf_notation
 begin
-  no_notation ord_tspmf  ("(_/ \<le>\<^sub>R _)"  [51, 51] 50)
+  no_notation ord_tspmf  (\<open>(_/ \<le>\<^sub>R _)\<close>  [51, 51] 50)
 end
 
 unbundle ord_tspmf_notation

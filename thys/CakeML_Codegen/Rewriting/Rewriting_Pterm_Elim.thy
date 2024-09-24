@@ -681,7 +681,7 @@ subsubsection \<open>Matching and rewriting\<close>
 definition irewrite_step :: "name \<Rightarrow> term list \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> pterm option" where
 "irewrite_step name pats rhs t = map_option (subst rhs) (match (name $$ pats) t)"
 
-abbreviation irewrite_step' :: "name \<Rightarrow> term list \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" ("_, _, _ \<turnstile>\<^sub>i/ _ \<rightarrow>/ _" [50,0,50] 50) where
+abbreviation irewrite_step' :: "name \<Rightarrow> term list \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_, _, _ \<turnstile>\<^sub>i/ _ \<rightarrow>/ _\<close> [50,0,50] 50) where
 "name, pats, rhs \<turnstile>\<^sub>i t \<rightarrow> u \<equiv> irewrite_step name pats rhs t = Some u"
 
 lemma irewrite_stepI:
@@ -689,7 +689,7 @@ lemma irewrite_stepI:
   shows "name, pats, rhs \<turnstile>\<^sub>i t \<rightarrow> u"
 using assms unfolding irewrite_step_def by simp
 
-inductive irewrite :: "irule_set \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>i/ _ \<longrightarrow>/ _" [50,0,50] 50) for irs where
+inductive irewrite :: "irule_set \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>i/ _ \<longrightarrow>/ _\<close> [50,0,50] 50) for irs where
 step: "\<lbrakk> (name, rs) |\<in>| irs; (pats, rhs) |\<in>| rs; name, pats, rhs \<turnstile>\<^sub>i t \<rightarrow> t' \<rbrakk> \<Longrightarrow> irs \<turnstile>\<^sub>i t \<longrightarrow> t'" |
 beta: "\<lbrakk> c |\<in>| cs; c \<turnstile> t \<rightarrow> t' \<rbrakk> \<Longrightarrow> irs \<turnstile>\<^sub>i Pabs cs $\<^sub>p t \<longrightarrow> t'" |
 "fun": "irs \<turnstile>\<^sub>i t \<longrightarrow> t' \<Longrightarrow> irs \<turnstile>\<^sub>i t $\<^sub>p u \<longrightarrow> t' $\<^sub>p u" |
@@ -698,7 +698,7 @@ arg: "irs \<turnstile>\<^sub>i u \<longrightarrow> u' \<Longrightarrow> irs \<tu
 global_interpretation irewrite: rewriting "irewrite rs" for rs
 by standard (auto intro: irewrite.intros simp: app_pterm_def)+
 
-abbreviation irewrite_rt :: "irule_set \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" ("_/ \<turnstile>\<^sub>i/ _ \<longrightarrow>*/ _" [50,0,50] 50) where
+abbreviation irewrite_rt :: "irule_set \<Rightarrow> pterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_/ \<turnstile>\<^sub>i/ _ \<longrightarrow>*/ _\<close> [50,0,50] 50) where
 "irewrite_rt rs \<equiv> (irewrite rs)\<^sup>*\<^sup>*"
 
 lemma (in irules) irewrite_closed:
@@ -752,7 +752,7 @@ using assms by induction (auto intro: irewrite_closed)
 
 subsubsection \<open>Correctness of translation\<close>
 
-abbreviation irelated :: "nterm \<Rightarrow> pterm \<Rightarrow> bool" ("_ \<approx>\<^sub>i _" [0,50] 50) where
+abbreviation irelated :: "nterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_ \<approx>\<^sub>i _\<close> [0,50] 50) where
 "n \<approx>\<^sub>i p \<equiv> nterm_to_pterm n = p"
 
 global_interpretation irelated: term_struct_rel_strong irelated
@@ -1034,7 +1034,7 @@ abbreviation irules_deferred_matches :: "pterm list \<Rightarrow> irules \<Right
 
 context irules begin
 
-inductive prelated :: "pterm \<Rightarrow> pterm \<Rightarrow> bool" ("_ \<approx>\<^sub>p _" [0,50] 50) where
+inductive prelated :: "pterm \<Rightarrow> pterm \<Rightarrow> bool" (\<open>_ \<approx>\<^sub>p _\<close> [0,50] 50) where
 const: "Pconst x \<approx>\<^sub>p Pconst x" |
 var: "Pvar x \<approx>\<^sub>p Pvar x" |
 app: "t\<^sub>1 \<approx>\<^sub>p u\<^sub>1 \<Longrightarrow> t\<^sub>2 \<approx>\<^sub>p u\<^sub>2 \<Longrightarrow> t\<^sub>1 $\<^sub>p t\<^sub>2 \<approx>\<^sub>p u\<^sub>1 $\<^sub>p u\<^sub>2" |

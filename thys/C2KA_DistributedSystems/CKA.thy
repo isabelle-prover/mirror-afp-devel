@@ -24,12 +24,12 @@ theory CKA
 begin
 
 no_notation
-rtrancl ("(_\<^sup>*)" [1000] 999)
+rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
 
 notation
-times (infixl "*" 70)
-and less_eq  ("'(\<le>\<^sub>\<K>')") 
-and less_eq  ("(_/ \<le>\<^sub>\<K> _)"  [51, 51] 50)
+times (infixl \<open>*\<close> 70)
+and less_eq  (\<open>'(\<le>\<^sub>\<K>')\<close>) 
+and less_eq  (\<open>(_/ \<le>\<^sub>\<K> _)\<close>  [51, 51] 50)
 
 text \<open>
 The class \emph{cka} contains an axiomatisation of Concurrent Kleene Algebras and a selection of useful theorems.\<close>
@@ -57,15 +57,15 @@ class dioid = semiring + one + zero + join_semilattice +
   and annir [simp]: "x * 0 = 0"
 
 class kleene_algebra = dioid + 
-  fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>*" [101] 100)
+  fixes star :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>*\<close> [101] 100)
   assumes star_unfoldl: "1 + x * x\<^sup>* \<le>\<^sub>\<K> x\<^sup>*"  
   and star_unfoldr: "1 + x\<^sup>* * x \<le>\<^sub>\<K> x\<^sup>*"
   and star_inductl: "z + x * y \<le>\<^sub>\<K> y \<Longrightarrow> x\<^sup>* * z \<le>\<^sub>\<K> y"
   and star_inductr: "z + y * x \<le>\<^sub>\<K> y \<Longrightarrow> z * x\<^sup>* \<le>\<^sub>\<K> y"
 
 class cka = kleene_algebra +
-  fixes seq :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl ";" 70)
-  and seqstar :: "'a \<Rightarrow> 'a" ("_\<^sup>;" [101] 100)
+  fixes seq :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>;\<close> 70)
+  and seqstar :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>;\<close> [101] 100)
   assumes seq_assoc: "x ; (y ; z) = (x ; y) ; z"
   and seq_rident [simp]: "x ; 1 = x"
   and seq_lident [simp]: "1 ; x = x"

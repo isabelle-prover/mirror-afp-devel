@@ -11,7 +11,7 @@ begin
 
 subsection\<open>The forcing relation in context\<close>
 
-abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  ("_ \<tturnstile> _ _" [36,36,36] 60) where
+abbreviation Forces :: "[i, i, i] \<Rightarrow> o"  (\<open>_ \<tturnstile> _ _\<close> [36,36,36] 60) where
   "p \<tturnstile> \<phi> env   \<equiv>   M, ([p,P,leq,one] @ env) \<Turnstile> forces(\<phi>)"
 
 lemma Collect_forces :

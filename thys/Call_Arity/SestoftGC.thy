@@ -2,7 +2,7 @@ theory SestoftGC
 imports Sestoft 
 begin
 
-inductive gc_step :: "conf \<Rightarrow> conf \<Rightarrow> bool" (infix "\<Rightarrow>\<^sub>G" 50) where
+inductive gc_step :: "conf \<Rightarrow> conf \<Rightarrow> bool" (infix \<open>\<Rightarrow>\<^sub>G\<close> 50) where
   normal:  "c \<Rightarrow> c' \<Longrightarrow> c \<Rightarrow>\<^sub>G c'"
 | dropUpd: "(\<Gamma>, e, Upd x # S) \<Rightarrow>\<^sub>G (\<Gamma>, e, S @ [Dummy x])"
 (*
@@ -13,7 +13,7 @@ lemmas gc_step_intros[intro] =
   normal[OF step.intros(1)] normal[OF step.intros(2)] normal[OF step.intros(3)]
   normal[OF step.intros(4)] normal[OF step.intros(5)]  dropUpd
 
-abbreviation gc_steps (infix "\<Rightarrow>\<^sub>G\<^sup>*" 50) where "gc_steps \<equiv> gc_step\<^sup>*\<^sup>*"
+abbreviation gc_steps (infix \<open>\<Rightarrow>\<^sub>G\<^sup>*\<close> 50) where "gc_steps \<equiv> gc_step\<^sup>*\<^sup>*"
 lemmas converse_rtranclp_into_rtranclp[of gc_step, OF _ r_into_rtranclp, trans]
 
 lemma var_onceI:

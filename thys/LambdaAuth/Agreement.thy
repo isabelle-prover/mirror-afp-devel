@@ -9,7 +9,7 @@ theory Agreement
 begin
 (*>*)
 
-inductive agree :: "tyenv \<Rightarrow> term \<Rightarrow> term \<Rightarrow> term \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _, _, _ : _" [150,0,0,0,150] 149) where
+inductive agree :: "tyenv \<Rightarrow> term \<Rightarrow> term \<Rightarrow> term \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _, _, _ : _\<close> [150,0,0,0,150] 149) where
   a_Unit: "\<Gamma> \<turnstile> Unit, Unit, Unit : One" |
   a_Var: "\<Gamma> $$ x = Some \<tau>
     \<Longrightarrow> \<Gamma> \<turnstile> Var x, Var x, Var x : \<tau>" |

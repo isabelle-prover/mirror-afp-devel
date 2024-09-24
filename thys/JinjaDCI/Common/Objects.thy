@@ -72,11 +72,11 @@ definition cast_ok :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarr
 where
   "cast_ok P C h v  \<equiv>  v = Null \<or> P \<turnstile> cname_of h (the_Addr v) \<preceq>\<^sup>* C"
 
-definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" ("_ \<unlhd> _" [51,51] 50)
+definition hext :: "heap \<Rightarrow> heap \<Rightarrow> bool" (\<open>_ \<unlhd> _\<close> [51,51] 50)
 where
   "h \<unlhd> h'  \<equiv>  \<forall>a C fs. h a = Some(C,fs) \<longrightarrow> (\<exists>fs'. h' a = Some(C,fs'))"
 
-primrec typeof_h :: "heap \<Rightarrow> val \<Rightarrow> ty option"  ("typeof\<^bsub>_\<^esub>")
+primrec typeof_h :: "heap \<Rightarrow> val \<Rightarrow> ty option"  (\<open>typeof\<^bsub>_\<^esub>\<close>)
 where
   "typeof\<^bsub>h\<^esub>  Unit    = Some Void"
 | "typeof\<^bsub>h\<^esub>  Null    = Some NT"
@@ -155,7 +155,7 @@ datatype init_state = Done | Processing | Prepared | Error
 	\<comment> \<open>@{term Prepared} = uninitialized and not currently being initialized\<close>
 	\<comment> \<open>@{term Error} = previous initialization attempt resulted in erroneous state\<close>
 
-inductive iprog :: "init_state \<Rightarrow> init_state \<Rightarrow> bool" ("_ \<le>\<^sub>i _" [51,51] 50)
+inductive iprog :: "init_state \<Rightarrow> init_state \<Rightarrow> bool" (\<open>_ \<le>\<^sub>i _\<close> [51,51] 50)
 where
   [simp]: "Prepared \<le>\<^sub>i i"
 | [simp]: "Processing \<le>\<^sub>i Done"
@@ -185,7 +185,7 @@ type_synonym
 translations
  (type) "sheap" <= (type) "char list \<Rightarrow> (sfields \<times> init_state) option"
 
-definition shext :: "sheap \<Rightarrow> sheap \<Rightarrow> bool" ("_ \<unlhd>\<^sub>s _" [51,51] 50)
+definition shext :: "sheap \<Rightarrow> sheap \<Rightarrow> bool" (\<open>_ \<unlhd>\<^sub>s _\<close> [51,51] 50)
 where
   "sh \<unlhd>\<^sub>s sh'  \<equiv>  \<forall>C sfs i. sh C = Some(sfs,i) \<longrightarrow> (\<exists>sfs' i'. sh' C = Some(sfs',i') \<and> i \<le>\<^sub>i i')"
 

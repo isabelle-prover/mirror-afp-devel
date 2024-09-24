@@ -5,7 +5,7 @@ begin
 (* 
   Prefixes and Prefix Closure of traces 
 *)
-definition prefix :: "'e list \<Rightarrow> 'e list \<Rightarrow> bool" (infixl "\<preceq>" 100)
+definition prefix :: "'e list \<Rightarrow> 'e list \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 100)
 where
 "(l1 \<preceq> l2) \<equiv> (\<exists>l3. l1 @ l3 = l2)" 
 

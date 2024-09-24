@@ -86,7 +86,7 @@ lemmas [code] =
 
 section\<open>Miscellaneous: Garbage Collection of Notations\<close>
 
-no_type_notation natural ("nat")
-no_type_notation abr_string ("string")
+no_type_notation natural (\<open>nat\<close>)
+no_type_notation abr_string (\<open>string\<close>)
 
 end

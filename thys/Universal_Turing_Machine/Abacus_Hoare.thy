@@ -14,11 +14,11 @@ begin
 type_synonym abc_assert = "nat list \<Rightarrow> bool"
 
 definition 
-  assert_imp :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" ("_ \<mapsto> _" [0, 0] 100)
+  assert_imp :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" (\<open>_ \<mapsto> _\<close> [0, 0] 100)
   where
     "assert_imp P Q \<equiv> \<forall>xs. P xs \<longrightarrow> Q xs"
 
-fun abc_holds_for :: "(nat list \<Rightarrow> bool) \<Rightarrow> (nat \<times> nat list) \<Rightarrow> bool" ("_ abc'_holds'_for _" [100, 99] 100)
+fun abc_holds_for :: "(nat list \<Rightarrow> bool) \<Rightarrow> (nat \<times> nat list) \<Rightarrow> bool" (\<open>_ abc'_holds'_for _\<close> [100, 99] 100)
   where
     "P abc_holds_for (s, lm) = P lm"  
 
@@ -84,7 +84,7 @@ lemma "\<lbrakk> length p \<noteq> 0; abc_out_of_prog cf p \<rbrakk> \<Longright
 (* END SPIKE: added by FABR *)
 
 definition 
-  abc_Hoare_halt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> abc_assert \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)" 50)
+  abc_Hoare_halt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> abc_assert \<Rightarrow> bool" (\<open>(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)\<close> 50)
   where
     "abc_Hoare_halt P p Q \<equiv> \<forall>lm. P lm \<longrightarrow> (\<exists>n. abc_final (abc_steps_l (0, lm) p n) p \<and> Q abc_holds_for (abc_steps_l (0, lm) p n))"
 
@@ -245,7 +245,7 @@ qed
 (* END Added by FABR for clarification and presentation in classes *)
 
 definition
-  abc_Hoare_unhalt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)) \<up>" 50)
+  abc_Hoare_unhalt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> bool" (\<open>(\<lbrace>(1_)\<rbrace>/ (_)) \<up>\<close> 50)
   where
     "abc_Hoare_unhalt P p \<equiv> \<forall>args. P args \<longrightarrow> (\<forall>n. abc_notfinal (abc_steps_l (0, args) p n) p)"
 
@@ -266,7 +266,7 @@ fun abc_shift :: "abc_inst list \<Rightarrow> nat \<Rightarrow> abc_inst list"
     "abc_shift xs n = map (\<lambda> x. abc_inst_shift x n) xs" 
 
 fun abc_comp :: "abc_inst list \<Rightarrow> abc_inst list \<Rightarrow> 
-                           abc_inst list" (infixl "[+]" 99)
+                           abc_inst list" (infixl \<open>[+]\<close> 99)
   where
     "abc_comp al bl = (let al_len = length al in 
                            al @ abc_shift bl al_len)"

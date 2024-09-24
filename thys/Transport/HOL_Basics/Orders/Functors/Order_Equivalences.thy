@@ -16,7 +16,7 @@ definition "order_equivalence \<equiv>
   rel_equivalence_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>) \<eta> \<and>
   rel_equivalence_on (in_field (\<le>\<^bsub>R\<^esub>)) (\<le>\<^bsub>R\<^esub>) \<epsilon>"
 
-notation order_functors.order_equivalence (infix "\<equiv>\<^sub>o" 50)
+notation order_functors.order_equivalence (infix \<open>\<equiv>\<^sub>o\<close> 50)
 
 lemma order_equivalenceI [intro]:
   assumes "((\<le>\<^bsub>L\<^esub>) \<Rightarrow> (\<le>\<^bsub>R\<^esub>)) l"

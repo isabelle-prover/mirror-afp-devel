@@ -8,28 +8,28 @@ theory SetCat
 imports Functors Universe
 begin
 
-notation Elem (infixl "|\<in>|" 70)
-notation HOLZF.subset (infixl "|\<subseteq>|" 71)
-notation CartProd (infixl "|\<times>|" 75)
+notation Elem (infixl \<open>|\<in>|\<close> 70)
+notation HOLZF.subset (infixl \<open>|\<subseteq>|\<close> 71)
+notation CartProd (infixl \<open>|\<times>|\<close> 75)
 
 definition 
   ZFfun :: "ZF \<Rightarrow> ZF \<Rightarrow> (ZF \<Rightarrow> ZF) \<Rightarrow> ZF" where
   "ZFfun d r f \<equiv> Opair (Opair d r) (Lambda d f)"
 
 definition
-  ZFfunDom :: "ZF \<Rightarrow> ZF" ("|dom|_" [72] 72) where
+  ZFfunDom :: "ZF \<Rightarrow> ZF" (\<open>|dom|_\<close> [72] 72) where
   "ZFfunDom f \<equiv> Fst (Fst f)"
 
 definition
-  ZFfunCod :: "ZF \<Rightarrow> ZF" ("|cod|_" [72] 72) where
+  ZFfunCod :: "ZF \<Rightarrow> ZF" (\<open>|cod|_\<close> [72] 72) where
   "ZFfunCod f \<equiv> Snd (Fst f)"
 
 definition
-  ZFfunApp :: "ZF \<Rightarrow> ZF \<Rightarrow> ZF" (infixl "|@|" 73) where
+  ZFfunApp :: "ZF \<Rightarrow> ZF \<Rightarrow> ZF" (infixl \<open>|@|\<close> 73) where
   "ZFfunApp f x \<equiv> app (Snd f) x"
 
 definition 
-  ZFfunComp :: "ZF \<Rightarrow> ZF \<Rightarrow> ZF" (infixl "|o|" 72) where
+  ZFfunComp :: "ZF \<Rightarrow> ZF \<Rightarrow> ZF" (infixl \<open>|o|\<close> 72) where
   "ZFfunComp f g \<equiv> ZFfun ( |dom| f) ( |cod| g) (\<lambda>x. g |@| (f |@| x))"
 
 definition 
@@ -369,17 +369,17 @@ qed
 
 (*Locally Small Category has an injective map from the morphisms to ZF*)
 record ('o,'m) LSCategory = "('o,'m) Category" +
-  mor2ZF :: "'m \<Rightarrow> ZF" ("m2z\<index>_" [70] 70)
+  mor2ZF :: "'m \<Rightarrow> ZF" (\<open>m2z\<index>_\<close> [70] 70)
 
 definition 
-  ZF2mor ("z2m\<index>_" [70] 70) where
+  ZF2mor (\<open>z2m\<index>_\<close> [70] 70) where
   "ZF2mor C f \<equiv> THE m . m \<in> mor\<^bsub>C\<^esub> \<and> m2z\<^bsub>C\<^esub> m = f"
 
 definition
   "HOMCollection C X Y \<equiv> {m2z\<^bsub>C\<^esub> f | f . f maps\<^bsub>C\<^esub> X to Y}"
 
 definition
-  HomSet ("Hom\<index> _ _" [65, 65] 65)  where
+  HomSet (\<open>Hom\<index> _ _\<close> [65, 65] 65)  where
   "HomSet C X Y \<equiv> implode (HOMCollection C X Y)"
 
 locale LSCategory = Category +
@@ -393,19 +393,19 @@ lemma [elim]: "\<lbrakk>LSCategory C ;
 by(simp add: LSCategory_def LSCategory_axioms_def)
 
 definition
-  HomFtorMap :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'o \<Rightarrow> 'm \<Rightarrow> ZF" ("Hom\<index>[_,_]" [65,65] 65) where
+  HomFtorMap :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'o \<Rightarrow> 'm \<Rightarrow> ZF" (\<open>Hom\<index>[_,_]\<close> [65,65] 65) where
   "HomFtorMap C X g \<equiv> ZFfun (Hom\<^bsub>C\<^esub> X (dom\<^bsub>C\<^esub> g)) (Hom\<^bsub>C\<^esub> X (cod\<^bsub>C\<^esub> g)) (\<lambda> f . m2z\<^bsub>C\<^esub> ((z2m\<^bsub>C\<^esub> f) ;;\<^bsub>C\<^esub> g))"
 
 definition 
   HomFtor' :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'o \<Rightarrow> 
-      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" ("HomP\<index>[_,\<midarrow>]" [65] 65) where
+      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" (\<open>HomP\<index>[_,\<midarrow>]\<close> [65] 65) where
   "HomFtor' C X \<equiv> \<lparr>
         CatDom = C, 
         CatCod = SET ,
         MapM   = \<lambda> g . Hom\<^bsub>C\<^esub>[X,g]
   \<rparr>"
 
-definition HomFtor ("Hom\<index>[_,\<midarrow>]" [65] 65) where "HomFtor C X \<equiv> MakeFtor (HomFtor' C X)"
+definition HomFtor (\<open>Hom\<index>[_,\<midarrow>]\<close> [65] 65) where "HomFtor C X \<equiv> MakeFtor (HomFtor' C X)"
 
 lemma [simp]: "LSCategory C \<Longrightarrow> Category C"
   by (simp add: LSCategory_def)
@@ -707,19 +707,19 @@ proof-
 qed
 
 definition
-  HomFtorMapContra :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'm \<Rightarrow> 'o \<Rightarrow> ZF" ("HomC\<index>[_,_]" [65,65] 65) where
+  HomFtorMapContra :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'm \<Rightarrow> 'o \<Rightarrow> ZF" (\<open>HomC\<index>[_,_]\<close> [65,65] 65) where
   "HomFtorMapContra C g X \<equiv> ZFfun (Hom\<^bsub>C\<^esub> (cod\<^bsub>C\<^esub> g) X) (Hom\<^bsub>C\<^esub> (dom\<^bsub>C\<^esub> g) X) (\<lambda> f . m2z\<^bsub>C\<^esub> (g ;;\<^bsub>C\<^esub> (z2m\<^bsub>C\<^esub> f)))"
 
 definition 
   HomFtorContra' :: "('o,'m,'a) LSCategory_scheme \<Rightarrow> 'o \<Rightarrow> 
-      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" ("HomP\<index>[\<midarrow>,_]" [65] 65) where
+      ('o,ZF,'m,ZF,\<lparr>mor2ZF :: 'm \<Rightarrow> ZF, \<dots> :: 'a\<rparr>,unit) Functor" (\<open>HomP\<index>[\<midarrow>,_]\<close> [65] 65) where
   "HomFtorContra' C X \<equiv> \<lparr>
         CatDom = (Op C), 
         CatCod = SET ,
         MapM   = \<lambda> g . HomC\<^bsub>C\<^esub>[g,X]
   \<rparr>"
 
-definition HomFtorContra ("Hom\<index>[\<midarrow>,_]" [65] 65) where "HomFtorContra C X \<equiv> MakeFtor(HomFtorContra' C X)"
+definition HomFtorContra (\<open>Hom\<index>[\<midarrow>,_]\<close> [65] 65) where "HomFtorContra C X \<equiv> MakeFtor(HomFtorContra' C X)"
 
 lemma HomContraAt: "x |\<in>| (Hom\<^bsub>C \<^esub>(cod\<^bsub>C\<^esub> f) X) \<Longrightarrow> (HomC\<^bsub>C\<^esub>[f,X]) |@| x = m2z\<^bsub>C\<^esub> (f ;;\<^bsub>C\<^esub> (z2m\<^bsub>C\<^esub> x))"
   by (simp add: HomFtorMapContra_def ZFfunApp)

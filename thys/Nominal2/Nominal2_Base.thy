@@ -200,7 +200,7 @@ end
 section \<open>Implementation of swappings\<close>
 
 definition
-  swap :: "atom \<Rightarrow> atom \<Rightarrow> perm" ("'(_ \<rightleftharpoons> _')")
+  swap :: "atom \<Rightarrow> atom \<Rightarrow> perm" (\<open>'(_ \<rightleftharpoons> _')\<close>)
 where
   "(a \<rightleftharpoons> b) =
     Abs_perm (if sort_of a = sort_of b
@@ -268,7 +268,7 @@ text \<open>
 \<close>
 
 class pt =
-  fixes permute :: "perm \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<bullet> _" [76, 75] 75)
+  fixes permute :: "perm \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>_ \<bullet> _\<close> [76, 75] 75)
   assumes permute_zero [simp]: "0 \<bullet> x = x"
   assumes permute_plus [simp]: "(p + q) \<bullet> x = p \<bullet> (q \<bullet> x)"
 begin
@@ -1243,7 +1243,7 @@ where
   "supp x = {a. infinite {b. (a \<rightleftharpoons> b) \<bullet> x \<noteq> x}}"
 
 definition
-  fresh :: "atom \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<sharp> _" [55, 55] 55)
+  fresh :: "atom \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<sharp> _\<close> [55, 55] 55)
 where
   "a \<sharp> x \<equiv> a \<notin> supp x"
 
@@ -1321,7 +1321,7 @@ qed
 section \<open>supports\<close>
 
 definition
-  supports :: "atom set \<Rightarrow> 'a::pt \<Rightarrow> bool" (infixl "supports" 80)
+  supports :: "atom set \<Rightarrow> 'a::pt \<Rightarrow> bool" (infixl \<open>supports\<close> 80)
 where
   "S supports x \<equiv> \<forall>a b. (a \<notin> S \<and> b \<notin> S \<longrightarrow> (a \<rightleftharpoons> b) \<bullet> x = x)"
 
@@ -2304,7 +2304,7 @@ text \<open>The fresh-star generalisation of fresh is used in strong
   induction principles.\<close>
 
 definition
-  fresh_star :: "atom set \<Rightarrow> 'a::pt \<Rightarrow> bool" ("_ \<sharp>* _" [80,80] 80)
+  fresh_star :: "atom set \<Rightarrow> 'a::pt \<Rightarrow> bool" (\<open>_ \<sharp>* _\<close> [80,80] 80)
 where
   "as \<sharp>* x \<equiv> \<forall>a \<in> as. a \<sharp> x"
 
@@ -3061,7 +3061,7 @@ by (simp add: fresh_def supp_perm)
 section \<open>Infrastructure for concrete atom types\<close>
 
 definition
-  flip :: "'a::at_base \<Rightarrow> 'a \<Rightarrow> perm" ("'(_ \<leftrightarrow> _')")
+  flip :: "'a::at_base \<Rightarrow> 'a \<Rightarrow> perm" (\<open>'(_ \<leftrightarrow> _')\<close>)
 where
   "(a \<leftrightarrow> b) = (atom a \<rightleftharpoons> atom b)"
 
@@ -3133,7 +3133,7 @@ lemma flip_at_simps [simp]:
 subsection \<open>Syntax for coercing at-elements to the atom-type\<close>
 
 syntax
-  "_atom_constrain" :: "logic \<Rightarrow> type \<Rightarrow> logic" ("_:::_" [4, 0] 3)
+  "_atom_constrain" :: "logic \<Rightarrow> type \<Rightarrow> logic" (\<open>_:::_\<close> [4, 0] 3)
 
 syntax_consts
   "_atom_constrain" == atom
@@ -3384,7 +3384,7 @@ lemma Fresh_supports:
   apply (simp add: Fresh_eqvt [OF a] swap_fresh_fresh)
   done
 
-notation Fresh (binder "FRESH " 10)
+notation Fresh (binder \<open>FRESH \<close> 10)
 
 lemma FRESH_f_iff:
   fixes P :: "'a::at \<Rightarrow> 'b::pure"

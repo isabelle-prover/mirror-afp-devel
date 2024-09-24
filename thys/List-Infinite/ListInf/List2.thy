@@ -16,9 +16,9 @@ text \<open>
   The abbreviations resemble to the operator symbols used later
   for take and drop operators on infinite lists in ListInf.\<close>
 
-abbreviation f_take' :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl "\<down>" 100)
+abbreviation f_take' :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl \<open>\<down>\<close> 100)
   where "xs \<down> n \<equiv> take n xs"
-abbreviation f_drop' :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl "\<up>" 100)
+abbreviation f_drop' :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl \<open>\<up>\<close> 100)
   where "xs \<up> n \<equiv> drop n xs"
 
 lemma append_eq_Cons: "[x] @ xs = x # xs"
@@ -136,7 +136,7 @@ apply simp
 done
 
 
-abbreviation replicate' :: "'a \<Rightarrow> nat \<Rightarrow> 'a list"  ("_\<^bsup>_\<^esup>" [1000,65])
+abbreviation replicate' :: "'a \<Rightarrow> nat \<Rightarrow> 'a list"  (\<open>_\<^bsup>_\<^esup>\<close> [1000,65])
   where "x\<^bsup>n\<^esup> \<equiv> replicate n x"
 
 lemma replicate_snoc: "x\<^bsup>n\<^esup> @ [x] = x\<^bsup>Suc n\<^esup>"
@@ -832,7 +832,7 @@ by (simp add: sublist_list_if_sublist_list_eq[symmetric] set_sublist_list_if_eq_
 
 subsubsection \<open>Natural set images with lists\<close>
 
-definition f_image :: "'a list \<Rightarrow> nat set \<Rightarrow> 'a set"    (infixr "`\<^sup>f" 90)
+definition f_image :: "'a list \<Rightarrow> nat set \<Rightarrow> 'a set"    (infixr \<open>`\<^sup>f\<close> 90)
   where "xs `\<^sup>f A \<equiv> {y. \<exists>n\<in>A. n < length xs \<and> y = xs ! n}"
 
 abbreviation f_range :: "'a list \<Rightarrow> 'a set"

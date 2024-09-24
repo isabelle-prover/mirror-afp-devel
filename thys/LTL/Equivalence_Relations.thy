@@ -12,7 +12,7 @@ begin
 
 subsection \<open>Language Equivalence\<close>
 
-definition ltl_lang_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>\<^sub>L" 75)
+definition ltl_lang_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<sim>\<^sub>L\<close> 75)
 where
   "\<phi> \<sim>\<^sub>L \<psi> \<equiv> \<forall>w. w \<Turnstile>\<^sub>n \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<psi>"
 
@@ -42,7 +42,7 @@ lemma ltl_lang_equiv_or_const[intro, simp]:
 
 subsection \<open>Propositional Equivalence\<close>
 
-fun ltl_prop_entailment :: "'a ltln set \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>P" 80)
+fun ltl_prop_entailment :: "'a ltln set \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<Turnstile>\<^sub>P\<close> 80)
 where
   "\<A> \<Turnstile>\<^sub>P true\<^sub>n = True"
 | "\<A> \<Turnstile>\<^sub>P false\<^sub>n = False"
@@ -58,11 +58,11 @@ lemma ltl_models_equiv_prop_entailment:
   "w \<Turnstile>\<^sub>n \<phi> \<longleftrightarrow> {\<psi>. w \<Turnstile>\<^sub>n \<psi>} \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
 
-definition ltl_prop_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>\<^sub>P" 75)
+definition ltl_prop_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<sim>\<^sub>P\<close> 75)
 where
   "\<phi> \<sim>\<^sub>P \<psi> \<equiv> \<forall>\<A>. \<A> \<Turnstile>\<^sub>P \<phi> \<longleftrightarrow> \<A> \<Turnstile>\<^sub>P \<psi>"
 
-definition ltl_prop_implies :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<longrightarrow>\<^sub>P" 75)
+definition ltl_prop_implies :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<longrightarrow>\<^sub>P\<close> 75)
 where
   "\<phi> \<longrightarrow>\<^sub>P \<psi> \<equiv> \<forall>\<A>. \<A> \<Turnstile>\<^sub>P \<phi> \<longrightarrow> \<A> \<Turnstile>\<^sub>P \<psi>"
 
@@ -154,7 +154,7 @@ lemma eval_prop_entailment:
   "eval \<phi> = No \<longleftrightarrow> \<not> UNIV \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
 
-definition ltl_const_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>\<^sub>C" 75)
+definition ltl_const_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<sim>\<^sub>C\<close> 75)
 where
   "\<phi> \<sim>\<^sub>C \<psi> \<equiv> \<phi> = \<psi> \<or> (eval \<phi> = eval \<psi> \<and> eval \<psi> \<noteq> Maybe)"
 
@@ -511,7 +511,7 @@ subsection \<open>Order of Equivalence Relations\<close>
 
 locale ltl_equivalence =
   fixes
-    eq :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>" 75)
+    eq :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<sim>\<close> 75)
   assumes
     eq_equivp: "equivp (\<sim>)"
   and

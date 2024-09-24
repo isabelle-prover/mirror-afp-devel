@@ -13,9 +13,9 @@ named_theorems neg (*to group together definitions for properties of negations*)
 subsubsection \<open>Principles of excluded middle, contradiction and explosion\<close>
 
 text\<open>TND: tertium non datur, aka. law of excluded middle (resp. strong, weak, minimal).\<close>
-abbreviation pTND  ("TND\<^sup>_  _") where "TND\<^sup>a  \<eta> \<equiv>         [\<turnstile> a \<^bold>\<or> \<eta> a]"
-abbreviation pTNDw ("TNDw\<^sup>_ _") where "TNDw\<^sup>a \<eta> \<equiv> \<forall>b. [\<eta> b \<turnstile> a, \<eta> a]"
-abbreviation pTNDm ("TNDm\<^sup>_ _") where "TNDm\<^sup>a \<eta> \<equiv>     [\<eta> \<^bold>\<bottom> \<turnstile> a, \<eta> a]"
+abbreviation pTND  (\<open>TND\<^sup>_  _\<close>) where "TND\<^sup>a  \<eta> \<equiv>         [\<turnstile> a \<^bold>\<or> \<eta> a]"
+abbreviation pTNDw (\<open>TNDw\<^sup>_ _\<close>) where "TNDw\<^sup>a \<eta> \<equiv> \<forall>b. [\<eta> b \<turnstile> a, \<eta> a]"
+abbreviation pTNDm (\<open>TNDm\<^sup>_ _\<close>) where "TNDm\<^sup>a \<eta> \<equiv>     [\<eta> \<^bold>\<bottom> \<turnstile> a, \<eta> a]"
 definition TND ::"'w \<Omega>" where "TND  \<eta> \<equiv> \<forall>\<phi>. TND\<^sup>\<phi>  \<eta>"
 definition TNDw::"'w \<Omega>" where "TNDw \<eta> \<equiv> \<forall>\<phi>. TNDw\<^sup>\<phi> \<eta>"
 definition TNDm::"'w \<Omega>" where "TNDm \<eta> \<equiv> \<forall>\<phi>. TNDm\<^sup>\<phi> \<eta>"
@@ -28,9 +28,9 @@ lemma "TNDw \<eta> \<Longrightarrow> TNDm \<eta>" unfolding neg by simp
 lemma "TNDm \<eta> \<Longrightarrow> TNDw \<eta>" nitpick oops \<comment>\<open> counterexample \<close>
 
 text\<open>ECQ: ex contradictione (sequitur) quodlibet (variants: strong, weak, minimal).\<close>
-abbreviation pECQ  ("ECQ\<^sup>_ _")  where "ECQ\<^sup>a  \<eta> \<equiv>     [a, \<eta> a \<turnstile> \<^bold>\<bottom>]"
-abbreviation pECQw ("ECQw\<^sup>_ _") where "ECQw\<^sup>a \<eta> \<equiv> \<forall>b. [a, \<eta> a \<turnstile> \<eta> b]"
-abbreviation pECQm ("ECQm\<^sup>_ _") where "ECQm\<^sup>a \<eta> \<equiv>     [a, \<eta> a \<turnstile> \<eta> \<^bold>\<top>]"
+abbreviation pECQ  (\<open>ECQ\<^sup>_ _\<close>)  where "ECQ\<^sup>a  \<eta> \<equiv>     [a, \<eta> a \<turnstile> \<^bold>\<bottom>]"
+abbreviation pECQw (\<open>ECQw\<^sup>_ _\<close>) where "ECQw\<^sup>a \<eta> \<equiv> \<forall>b. [a, \<eta> a \<turnstile> \<eta> b]"
+abbreviation pECQm (\<open>ECQm\<^sup>_ _\<close>) where "ECQm\<^sup>a \<eta> \<equiv>     [a, \<eta> a \<turnstile> \<eta> \<^bold>\<top>]"
 definition ECQ ::"'w \<Omega>" where  "ECQ \<eta> \<equiv> \<forall>a. ECQ\<^sup>a  \<eta>"
 definition ECQw::"'w \<Omega>" where "ECQw \<eta> \<equiv> \<forall>a. ECQw\<^sup>a \<eta>"
 definition ECQm::"'w \<Omega>" where "ECQm \<eta> \<equiv> \<forall>a. ECQm\<^sup>a \<eta>"
@@ -43,7 +43,7 @@ lemma "ECQw \<eta> \<Longrightarrow> ECQm \<eta>" unfolding neg by simp
 lemma "ECQm \<eta> \<Longrightarrow> ECQw \<eta>" nitpick oops \<comment>\<open> counterexample \<close>
 
 text\<open>LNC: law of non-contradiction.\<close>
-abbreviation pLNC  ("LNC\<^sup>_ _")  where "LNC\<^sup>a \<eta> \<equiv> [\<turnstile> \<eta>(a \<^bold>\<and> \<eta> a)]"
+abbreviation pLNC  (\<open>LNC\<^sup>_ _\<close>)  where "LNC\<^sup>a \<eta> \<equiv> [\<turnstile> \<eta>(a \<^bold>\<and> \<eta> a)]"
 definition LNC::"'w \<Omega>" where "LNC \<eta> \<equiv> \<forall>a. LNC\<^sup>a \<eta>"
 declare LNC_def[neg]
 
@@ -56,9 +56,9 @@ subsubsection \<open>Contraposition rules\<close>
 
 text\<open>CoP: contraposition (weak 'rule-like' variants).
 Variant 0 is antitonicity (ANTI). Variants 1-3 are stronger.\<close>
-abbreviation pCoP1 ("CoP1\<^sup>_\<^sup>_ _") where "CoP1\<^sup>a\<^sup>b \<eta> \<equiv> [a \<turnstile> \<eta> b] \<longrightarrow> [b \<turnstile> \<eta> a]"
-abbreviation pCoP2 ("CoP2\<^sup>_\<^sup>_ _") where "CoP2\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> b] \<longrightarrow> [\<eta> b \<turnstile> a]"
-abbreviation pCoP3 ("CoP3\<^sup>_\<^sup>_ _") where "CoP3\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> \<eta> b] \<longrightarrow> [b \<turnstile> a]"
+abbreviation pCoP1 (\<open>CoP1\<^sup>_\<^sup>_ _\<close>) where "CoP1\<^sup>a\<^sup>b \<eta> \<equiv> [a \<turnstile> \<eta> b] \<longrightarrow> [b \<turnstile> \<eta> a]"
+abbreviation pCoP2 (\<open>CoP2\<^sup>_\<^sup>_ _\<close>) where "CoP2\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> b] \<longrightarrow> [\<eta> b \<turnstile> a]"
+abbreviation pCoP3 (\<open>CoP3\<^sup>_\<^sup>_ _\<close>) where "CoP3\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> \<eta> b] \<longrightarrow> [b \<turnstile> a]"
 
 abbreviation CoP0 ::"'w \<Omega>" where "CoP0  \<eta> \<equiv> ANTI \<eta>"
 definition   CoP1 ::"'w \<Omega>" where "CoP1  \<eta> \<equiv> \<forall>a b. CoP1\<^sup>a\<^sup>b \<eta>"
@@ -85,10 +85,10 @@ lemma "CoP1 \<eta> \<Longrightarrow> CoP2 \<eta> \<Longrightarrow> TNDm \<eta>" 
 subsubsection \<open>Modus tollens rules\<close>
 
 text\<open>MT: modus (tollendo) tollens (weak 'rule-like' variants).\<close>
-abbreviation pMT0 ("MT0\<^sup>_\<^sup>_ _") where "MT0\<^sup>a\<^sup>b \<eta> \<equiv> [a \<turnstile> b] \<and> [\<turnstile> \<eta> b] \<longrightarrow> [\<turnstile> \<eta> a]"
-abbreviation pMT1 ("MT1\<^sup>_\<^sup>_ _") where "MT1\<^sup>a\<^sup>b \<eta> \<equiv> [a \<turnstile> \<eta> b] \<and> [\<turnstile> b] \<longrightarrow> [\<turnstile> \<eta> a]"
-abbreviation pMT2 ("MT2\<^sup>_\<^sup>_ _") where "MT2\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> b] \<and> [\<turnstile> \<eta> b] \<longrightarrow> [\<turnstile> a]"
-abbreviation pMT3 ("MT3\<^sup>_\<^sup>_ _") where "MT3\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> \<eta> b] \<and> [\<turnstile> b] \<longrightarrow> [\<turnstile> a]"
+abbreviation pMT0 (\<open>MT0\<^sup>_\<^sup>_ _\<close>) where "MT0\<^sup>a\<^sup>b \<eta> \<equiv> [a \<turnstile> b] \<and> [\<turnstile> \<eta> b] \<longrightarrow> [\<turnstile> \<eta> a]"
+abbreviation pMT1 (\<open>MT1\<^sup>_\<^sup>_ _\<close>) where "MT1\<^sup>a\<^sup>b \<eta> \<equiv> [a \<turnstile> \<eta> b] \<and> [\<turnstile> b] \<longrightarrow> [\<turnstile> \<eta> a]"
+abbreviation pMT2 (\<open>MT2\<^sup>_\<^sup>_ _\<close>) where "MT2\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> b] \<and> [\<turnstile> \<eta> b] \<longrightarrow> [\<turnstile> a]"
+abbreviation pMT3 (\<open>MT3\<^sup>_\<^sup>_ _\<close>) where "MT3\<^sup>a\<^sup>b \<eta> \<equiv> [\<eta> a \<turnstile> \<eta> b] \<and> [\<turnstile> b] \<longrightarrow> [\<turnstile> a]"
 definition MT0::"'w \<Omega>" where "MT0 \<eta> \<equiv> \<forall>a b. MT0\<^sup>a\<^sup>b \<eta>"
 definition MT1::"'w \<Omega>" where "MT1 \<eta> \<equiv> \<forall>a b. MT1\<^sup>a\<^sup>b \<eta>"
 definition MT2::"'w \<Omega>" where "MT2 \<eta> \<equiv> \<forall>a b. MT2\<^sup>a\<^sup>b \<eta>"
@@ -110,8 +110,8 @@ lemma MT123: "MT1 \<eta> \<Longrightarrow> MT2 \<eta> \<Longrightarrow> MT3 \<et
 subsubsection \<open>Double negation introduction and elimination\<close>
 
 text\<open>DNI/DNE: double negation introduction/elimination (strong 'axiom-like' variants).\<close>
-abbreviation pDNI ("DNI\<^sup>_ _") where "DNI\<^sup>a \<eta> \<equiv> [a \<turnstile> \<eta>(\<eta> a)]"
-abbreviation pDNE ("DNE\<^sup>_ _") where "DNE\<^sup>a \<eta> \<equiv> [\<eta>(\<eta> a) \<turnstile> a]"
+abbreviation pDNI (\<open>DNI\<^sup>_ _\<close>) where "DNI\<^sup>a \<eta> \<equiv> [a \<turnstile> \<eta>(\<eta> a)]"
+abbreviation pDNE (\<open>DNE\<^sup>_ _\<close>) where "DNE\<^sup>a \<eta> \<equiv> [\<eta>(\<eta> a) \<turnstile> a]"
 definition DNI::"'w \<Omega>" where "DNI \<eta> \<equiv> \<forall>a. DNI\<^sup>a \<eta>"
 definition DNE::"'w \<Omega>" where "DNE \<eta> \<equiv> \<forall>a. DNE\<^sup>a \<eta>"
 declare DNI_def[neg] DNE_def[neg]
@@ -132,8 +132,8 @@ lemma "DNI \<eta> \<Longrightarrow> DNE \<eta> \<Longrightarrow> MT2 \<eta>" nit
 lemma "DNI \<eta> \<Longrightarrow> DNE \<eta> \<Longrightarrow> MT3 \<eta>" nitpick oops \<comment>\<open> counterexample \<close>
 
 text\<open>DNI/DNE: double negation introduction/elimination (weak 'rule-like' variants).\<close>
-abbreviation prDNI ("rDNI\<^sup>_ _") where "rDNI\<^sup>a \<eta> \<equiv> [\<turnstile> a] \<longrightarrow> [\<turnstile> \<eta>(\<eta> a)]"
-abbreviation prDNE ("rDNE\<^sup>_ _") where "rDNE\<^sup>a \<eta> \<equiv> [\<turnstile> \<eta>(\<eta> a)] \<longrightarrow> [\<turnstile> a]"
+abbreviation prDNI (\<open>rDNI\<^sup>_ _\<close>) where "rDNI\<^sup>a \<eta> \<equiv> [\<turnstile> a] \<longrightarrow> [\<turnstile> \<eta>(\<eta> a)]"
+abbreviation prDNE (\<open>rDNE\<^sup>_ _\<close>) where "rDNE\<^sup>a \<eta> \<equiv> [\<turnstile> \<eta>(\<eta> a)] \<longrightarrow> [\<turnstile> a]"
 definition rDNI::"'w \<Omega>" where "rDNI \<eta> \<equiv> \<forall>a. rDNI\<^sup>a \<eta>"
 definition rDNE::"'w \<Omega>" where "rDNE \<eta> \<equiv> \<forall>a. rDNE\<^sup>a \<eta>"
 declare rDNI_def[neg] rDNE_def[neg]
@@ -182,10 +182,10 @@ subsubsection \<open>Strong contraposition (axiom-like)\<close>
 text\<open>Observe that the definitions below take implication as an additional parameter: @{text "\<iota>"}.\<close>
 
 text\<open>lCoP: (local) contraposition (strong 'axiom-like' variants, using local consequence).\<close>
-abbreviation plCoP0 ("lCoP0\<^sup>_\<^sup>_ _ _") where "lCoP0\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b \<turnstile> \<iota> (\<eta> b) (\<eta> a)]"
-abbreviation plCoP1 ("lCoP1\<^sup>_\<^sup>_ _ _") where "lCoP1\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a (\<eta> b) \<turnstile> \<iota> b (\<eta> a)]"
-abbreviation plCoP2 ("lCoP2\<^sup>_\<^sup>_ _ _") where "lCoP2\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) b \<turnstile> \<iota> (\<eta> b) a]"
-abbreviation plCoP3 ("lCoP3\<^sup>_\<^sup>_ _ _") where "lCoP3\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) (\<eta> b) \<turnstile> \<iota> b a]"
+abbreviation plCoP0 (\<open>lCoP0\<^sup>_\<^sup>_ _ _\<close>) where "lCoP0\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b \<turnstile> \<iota> (\<eta> b) (\<eta> a)]"
+abbreviation plCoP1 (\<open>lCoP1\<^sup>_\<^sup>_ _ _\<close>) where "lCoP1\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a (\<eta> b) \<turnstile> \<iota> b (\<eta> a)]"
+abbreviation plCoP2 (\<open>lCoP2\<^sup>_\<^sup>_ _ _\<close>) where "lCoP2\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) b \<turnstile> \<iota> (\<eta> b) a]"
+abbreviation plCoP3 (\<open>lCoP3\<^sup>_\<^sup>_ _ _\<close>) where "lCoP3\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) (\<eta> b) \<turnstile> \<iota> b a]"
 definition lCoP0::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>"  where "lCoP0  \<iota> \<eta> \<equiv> \<forall>a b. lCoP0\<^sup>a\<^sup>b \<iota> \<eta>"
 definition lCoP1::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>"  where "lCoP1  \<iota> \<eta> \<equiv> \<forall>a b. lCoP1\<^sup>a\<^sup>b \<iota> \<eta>"
 definition lCoP2::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>"  where "lCoP2  \<iota> \<eta> \<equiv> \<forall>a b. lCoP2\<^sup>a\<^sup>b \<iota> \<eta>"
@@ -222,10 +222,10 @@ lemma "ECQ \<eta> \<Longrightarrow> lCoP2(\<^bold>\<rightarrow>) \<eta>" nitpick
 subsubsection \<open>Local modus tollens axioms\<close>
 
 text\<open>lMT: (local) Modus tollens (strong, 'axiom-like' variants, using local consequence).\<close>
-abbreviation plMT0 ("lMT0\<^sup>_\<^sup>_ _ _") where "lMT0\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b, \<eta> b \<turnstile> \<eta> a]"
-abbreviation plMT1 ("lMT1\<^sup>_\<^sup>_ _ _") where "lMT1\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a (\<eta> b), b \<turnstile> \<eta> a]"
-abbreviation plMT2 ("lMT2\<^sup>_\<^sup>_ _ _") where "lMT2\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) b, \<eta> b \<turnstile> a]"
-abbreviation plMT3 ("lMT3\<^sup>_\<^sup>_ _ _") where "lMT3\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) (\<eta> b), b \<turnstile> a]"
+abbreviation plMT0 (\<open>lMT0\<^sup>_\<^sup>_ _ _\<close>) where "lMT0\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b, \<eta> b \<turnstile> \<eta> a]"
+abbreviation plMT1 (\<open>lMT1\<^sup>_\<^sup>_ _ _\<close>) where "lMT1\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a (\<eta> b), b \<turnstile> \<eta> a]"
+abbreviation plMT2 (\<open>lMT2\<^sup>_\<^sup>_ _ _\<close>) where "lMT2\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) b, \<eta> b \<turnstile> a]"
+abbreviation plMT3 (\<open>lMT3\<^sup>_\<^sup>_ _ _\<close>) where "lMT3\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) (\<eta> b), b \<turnstile> a]"
 definition lMT0::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>" where "lMT0 \<iota> \<eta> \<equiv> \<forall>a b. lMT0\<^sup>a\<^sup>b \<iota> \<eta>"
 definition lMT1::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>" where "lMT1 \<iota> \<eta> \<equiv> \<forall>a b. lMT1\<^sup>a\<^sup>b \<iota> \<eta>"
 definition lMT2::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>" where "lMT2 \<iota> \<eta> \<equiv> \<forall>a b. lMT2\<^sup>a\<^sup>b \<iota> \<eta>"
@@ -244,10 +244,10 @@ lemma "lMT3(\<^bold>\<rightarrow>) \<eta> = lCoP3(\<^bold>\<rightarrow>) \<eta>"
 subsubsection \<open>Disjunctive syllogism\<close>
 
 text\<open>DS: disjunctive syllogism.\<close>
-abbreviation pDS1 ("DS1\<^sup>_\<^sup>_ _ _") where "DS1\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [a \<^bold>\<or> b \<turnstile> \<iota> (\<eta> a) b]"
-abbreviation pDS2 ("DS2\<^sup>_\<^sup>_ _ _") where "DS2\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) b \<turnstile> a \<^bold>\<or> b]"
-abbreviation pDS3 ("DS3\<^sup>_\<^sup>_ _ _") where "DS3\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<eta> a \<^bold>\<or> b \<turnstile> \<iota> a b]"
-abbreviation pDS4 ("DS4\<^sup>_\<^sup>_ _ _") where "DS4\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b \<turnstile> \<eta> a \<^bold>\<or> b]"
+abbreviation pDS1 (\<open>DS1\<^sup>_\<^sup>_ _ _\<close>) where "DS1\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [a \<^bold>\<or> b \<turnstile> \<iota> (\<eta> a) b]"
+abbreviation pDS2 (\<open>DS2\<^sup>_\<^sup>_ _ _\<close>) where "DS2\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> (\<eta> a) b \<turnstile> a \<^bold>\<or> b]"
+abbreviation pDS3 (\<open>DS3\<^sup>_\<^sup>_ _ _\<close>) where "DS3\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<eta> a \<^bold>\<or> b \<turnstile> \<iota> a b]"
+abbreviation pDS4 (\<open>DS4\<^sup>_\<^sup>_ _ _\<close>) where "DS4\<^sup>a\<^sup>b \<iota> \<eta> \<equiv> [\<iota> a b \<turnstile> \<eta> a \<^bold>\<or> b]"
 definition DS1::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>" where "DS1 \<iota> \<eta> \<equiv> \<forall>a b. DS1\<^sup>a\<^sup>b \<iota> \<eta>"
 definition DS2::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>" where "DS2 \<iota> \<eta> \<equiv> \<forall>a b. DS2\<^sup>a\<^sup>b \<iota> \<eta>"
 definition DS3::"('w \<sigma>\<Rightarrow>'w \<sigma>\<Rightarrow>'w \<sigma>) \<Rightarrow> 'w \<Omega>" where "DS3 \<iota> \<eta> \<equiv> \<forall>a b. DS3\<^sup>a\<^sup>b \<iota> \<eta>"

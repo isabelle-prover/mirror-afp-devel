@@ -21,7 +21,7 @@ text \<open>Duality is such a fundamental concept in order and lattice theory th
 for these objects, as in this section.\<close>
 
 class dual =
-  fixes dual :: "'a \<Rightarrow> 'a" ("\<partial>")
+  fixes dual :: "'a \<Rightarrow> 'a" (\<open>\<partial>\<close>)
   assumes inj_dual: "inj \<partial>"
   and invol_dual [simp]: "\<partial> \<circ> \<partial> = id"
 
@@ -63,7 +63,7 @@ text \<open>In boolean algebras, duality is of course De Morgan duality and can 
 sublocale boolean_algebra \<subseteq> ba_dual: dual "uminus"  
   by (unfold_locales, simp_all add: inj_def)
 
-definition map_dual:: "('a \<Rightarrow> 'b) \<Rightarrow> 'a::dual \<Rightarrow> 'b::dual" ("\<partial>\<^sub>F") where 
+definition map_dual:: "('a \<Rightarrow> 'b) \<Rightarrow> 'a::dual \<Rightarrow> 'b::dual" (\<open>\<partial>\<^sub>F\<close>) where 
   "\<partial>\<^sub>F f = \<partial> \<circ> f \<circ> \<partial>"  
 
 lemma map_dual_func1: "\<partial>\<^sub>F (f \<circ> g) = \<partial>\<^sub>F f \<circ> \<partial>\<^sub>F g"

@@ -14,7 +14,7 @@ begin
 abbreviation canon_ang_P where
  "canon_ang_P \<alpha> \<alpha>' \<equiv> (-pi < \<alpha>' \<and> \<alpha>' \<le> pi) \<and> (\<exists> k::int. \<alpha> - \<alpha>' = 2*k*pi)"
 
-definition canon_ang :: "real \<Rightarrow> real" ("\<downharpoonright>_\<downharpoonleft>") where
+definition canon_ang :: "real \<Rightarrow> real" (\<open>\<downharpoonright>_\<downharpoonleft>\<close>) where
   "\<downharpoonright>\<alpha>\<downharpoonleft> = (THE \<alpha>'. canon_ang_P \<alpha> \<alpha>')"
 
 text \<open>There is a canonical angle for every angle.\<close>

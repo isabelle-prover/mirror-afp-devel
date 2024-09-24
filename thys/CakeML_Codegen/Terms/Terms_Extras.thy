@@ -7,7 +7,7 @@ imports
   "Dict_Construction.Dict_Construction"
 begin
 
-no_notation Mpat_Antiquot.mpaq_App (infixl "$$" 900)
+no_notation Mpat_Antiquot.mpaq_App (infixl \<open>$$\<close> 900)
 
 ML_file "hol_term.ML"
 

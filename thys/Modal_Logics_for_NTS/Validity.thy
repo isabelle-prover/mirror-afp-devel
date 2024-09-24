@@ -284,7 +284,7 @@ begin
 
   subsection \<open>Validity for infinitary formulas\<close>
 
-  lift_definition valid :: "'state \<Rightarrow> ('idx,'pred,'act) formula \<Rightarrow> bool" (infix "\<Turnstile>" 70) is
+  lift_definition valid :: "'state \<Rightarrow> ('idx,'pred,'act) formula \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 70) is
     valid_Tree\<^sub>\<alpha>
   .
 

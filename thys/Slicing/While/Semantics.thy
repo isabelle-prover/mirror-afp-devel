@@ -7,7 +7,7 @@ subsection \<open>Small Step Semantics\<close>
 
 inductive red :: "cmd * state \<Rightarrow> cmd * state \<Rightarrow> bool"
 and red' :: "cmd \<Rightarrow> state \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> bool"
-  ("((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81)
+  (\<open>((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81)
 where
    "\<langle>c,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle> == red (c,s) (c',s')"
   | RedLAss:
@@ -34,14 +34,14 @@ where
 lemmas red_induct = red.induct[split_format (complete)]
 
 abbreviation reds ::"cmd \<Rightarrow> state \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> bool" 
-   ("((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [0,0,0,0] 81) where
+   (\<open>((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))\<close> [0,0,0,0] 81) where
   "\<langle>c,s\<rangle> \<rightarrow>* \<langle>c',s'\<rangle> == red\<^sup>*\<^sup>* (c,s) (c',s')"
 
 
 subsection\<open>Label Semantics\<close>
 
 inductive step :: "cmd \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> nat \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> nat \<Rightarrow> bool"
-   ("(_ \<turnstile> (1\<langle>_,/_,/_\<rangle>) \<leadsto>/ (1\<langle>_,/_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
+   (\<open>(_ \<turnstile> (1\<langle>_,/_,/_\<rangle>) \<leadsto>/ (1\<langle>_,/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81)
 where
 
 StepLAss:
@@ -108,7 +108,7 @@ qed (auto intro:num_inner_nodes_gr_0)
 
 
 abbreviation steps :: "cmd \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> nat \<Rightarrow> cmd \<Rightarrow> state \<Rightarrow> nat \<Rightarrow> bool"
-   ("(_ \<turnstile> (1\<langle>_,/_,/_\<rangle>) \<leadsto>*/ (1\<langle>_,/_,/_\<rangle>))" [51,0,0,0,0,0,0] 81) where 
+   (\<open>(_ \<turnstile> (1\<langle>_,/_,/_\<rangle>) \<leadsto>*/ (1\<langle>_,/_,/_\<rangle>))\<close> [51,0,0,0,0,0,0] 81) where 
   "prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto>* \<langle>c',s',l'\<rangle> == 
      (\<lambda>(c,s,l) (c',s',l'). prog \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c',s',l'\<rangle>)\<^sup>*\<^sup>* (c,s,l) (c',s',l')"
 

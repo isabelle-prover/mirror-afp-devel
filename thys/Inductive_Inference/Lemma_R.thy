@@ -680,7 +680,7 @@ recursive functions $f$ where $f(0)$ or $f(1)$ is a Gödel number of $f$ can
 be consistently learned in the limit, but not by a total strategy. This implies
 that Lemma~R does not hold for CONS.\<close>
 
-definition V01 :: "partial1 set" ("V\<^sub>0\<^sub>1") where
+definition V01 :: "partial1 set" (\<open>V\<^sub>0\<^sub>1\<close>) where
   "V\<^sub>0\<^sub>1 = {f. f \<in> \<R> \<and> (\<phi> (the (f 0)) = f \<or> \<phi> (the (f 1)) = f)}"
 
 
@@ -1796,7 +1796,7 @@ lemma r_sv01_recfn: "recfn 1 r_sv01"
   unfolding r_sv01_def using r_auxhyp_prim r_inconsist_recfn r_amalgamate_recfn
   by (simp add: Let_def)
 
-definition sv01 :: partial1 ("s\<^bsub>01\<^esub>")where
+definition sv01 :: partial1 (\<open>s\<^bsub>01\<^esub>\<close>)where
   "sv01 e \<equiv> eval r_sv01 [e]"
 
 lemma sv01_in_P1: "s\<^bsub>01\<^esub> \<in> \<P>"

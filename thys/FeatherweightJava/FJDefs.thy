@@ -90,7 +90,7 @@ closure of the immediate subexpression relation.
 
 inductive_set
   isubexprs :: "(exp * exp) set" 
-  and isubexprs' :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> isubexprs'(_')" [80,80] 80)
+  and isubexprs' :: "[exp,exp] \<Rightarrow> bool"  (\<open>_ \<in> isubexprs'(_')\<close> [80,80] 80)
 where
   "e' \<in> isubexprs(e) \<equiv> (e',e) \<in> isubexprs"
 | se_field    : "e \<in> isubexprs(FieldProj e fi)"
@@ -100,7 +100,7 @@ where
 | se_cast     : "e \<in> isubexprs(Cast C e)"
 
 abbreviation
-  subexprs :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> subexprs'(_')" [80,80] 80)  where
+  subexprs :: "[exp,exp] \<Rightarrow> bool"  (\<open>_ \<in> subexprs'(_')\<close> [80,80] 80)  where
   "e' \<in> subexprs(e) \<equiv> (e',e) \<in> isubexprs^*"
 
 subsection \<open>Values\<close>
@@ -110,8 +110,8 @@ text\<open>A {\em value} is an expression of the form $\mathtt{new}\
 of values.\<close>
 
 inductive
-  vals :: "[exp list] \<Rightarrow> bool" ("vals'(_')" [80] 80)
-  and val :: "[exp] \<Rightarrow> bool" ("val'(_')" [80] 80)
+  vals :: "[exp list] \<Rightarrow> bool" (\<open>vals'(_')\<close> [80] 80)
+  and val :: "[exp] \<Rightarrow> bool" (\<open>val'(_')\<close> [80] 80)
 where
    vals_nil : "vals([])"
  | vals_cons : "\<lbrakk> val(vh); vals(vt) \<rbrakk> \<Longrightarrow> vals((vh # vt))"
@@ -141,12 +141,12 @@ primrec substs :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp \<Rightarro
 
 abbreviation
   substs_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp] \<Rightarrow> exp"
-    ("'(_'/_')_" [80,80,80] 80) where
+    (\<open>'(_'/_')_\<close> [80,80,80] 80) where
   "(ds/xs)e \<equiv> substs (map_upds Map.empty xs ds) e"
 
 abbreviation
   subst_list_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp list] \<Rightarrow> exp list"
-    ("'[_'/_']_" [80,80,80] 80) where
+    (\<open>'[_'/_']_\<close> [80,80,80] 80) where
   "[ds/xs]es \<equiv> map (substs (map_upds Map.empty xs ds)) es"
 
 
@@ -192,18 +192,18 @@ classes, written $\mathit{CT} \vdash\mathtt{+} \mathit{Cs} \mathtt{\lt:}
 \mathit{Ds}$.\<close>
 
 inductive
-  subtyping :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [80,80,80] 80)
+  subtyping :: "[classTable, className, className] \<Rightarrow> bool"  (\<open>_ \<turnstile> _ <: _\<close> [80,80,80] 80)
 where
   s_refl  :  "CT \<turnstile> C <: C"
 | s_trans : "\<lbrakk> CT \<turnstile> C <: D; CT \<turnstile> D <: E \<rbrakk> \<Longrightarrow> CT \<turnstile> C <: E"
 | s_super : "\<lbrakk> CT(C) = Some(CDef); cSuper CDef = D \<rbrakk> \<Longrightarrow> CT \<turnstile> C <: D"
 
 abbreviation
-  neg_subtyping :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ \<not><: _" [80,80,80] 80)
+  neg_subtyping :: "[classTable, className, className] \<Rightarrow> bool"  (\<open>_ \<turnstile> _ \<not><: _\<close> [80,80,80] 80)
   where "CT \<turnstile> S \<not><: T \<equiv> \<not> CT \<turnstile> S <: T"
 
 inductive
-  subtypings :: "[classTable, className list, className list] \<Rightarrow> bool"  ("_ \<turnstile>+ _ <: _" [80,80,80] 80)
+  subtypings :: "[classTable, className list, className list] \<Rightarrow> bool"  (\<open>_ \<turnstile>+ _ <: _\<close> [80,80,80] 80)
 where
   ss_nil  : "CT \<turnstile>+ [] <: []"
 | ss_cons : "\<lbrakk> CT \<turnstile> C0 <: D0; CT \<turnstile>+ Cs <: Ds \<rbrakk> \<Longrightarrow> CT \<turnstile>+ (C0 # Cs) <: (D0 # Ds)"
@@ -216,7 +216,7 @@ to $C$ when $\mathit{Cf}$ is the list of fields declared directly or
 indirectly (i.e., by a superclass) in $C$.\<close>
 
 inductive
-  fields :: "[classTable, className, varDef list] \<Rightarrow> bool" ("fields'(_,_') = _" [80,80,80] 80)
+  fields :: "[classTable, className, varDef list] \<Rightarrow> bool" (\<open>fields'(_,_') = _\<close> [80,80,80] 80)
 where
   f_obj: 
   "fields(CT,Object) = []"
@@ -235,7 +235,7 @@ type of $m$ from $C$'s superclass.
 \<close>
 
 inductive
-  mtype :: "[classTable, methodName, className, className list, className] \<Rightarrow> bool" ("mtype'(_,_,_') = _ \<rightarrow> _" [80,80,80,80] 80)
+  mtype :: "[classTable, methodName, className, className list, className] \<Rightarrow> bool" (\<open>mtype'(_,_,_') = _ \<rightarrow> _\<close> [80,80,80,80] 80)
 where
   mt_class: 
   "\<lbrakk> CT(C) = Some(CDef);
@@ -263,7 +263,7 @@ from $C$'s superclass.
 \<close>
 
 inductive
-  mbody :: "[classTable, methodName, className, varName list, exp] \<Rightarrow> bool" ("mbody'(_,_,_') = _ . _" [80,80,80,80] 80)
+  mbody :: "[classTable, methodName, className, varName list, exp] \<Rightarrow> bool" (\<open>mbody'(_,_,_') = _ . _\<close> [80,80,80,80] 80)
 where
   mb_class: 
   "\<lbrakk> CT(C) = Some(CDef);
@@ -291,8 +291,8 @@ to lists of types.
 \<close>
 
 inductive
-  typings :: "[classTable, varCtx, exp list, className list] \<Rightarrow> bool" ("_;_ \<turnstile>+ _ : _" [80,80,80,80] 80)
-  and typing :: "[classTable, varCtx, exp, className] \<Rightarrow> bool" ("_;_ \<turnstile> _ : _" [80,80,80,80] 80)
+  typings :: "[classTable, varCtx, exp list, className list] \<Rightarrow> bool" (\<open>_;_ \<turnstile>+ _ : _\<close> [80,80,80,80] 80)
+  and typing :: "[classTable, varCtx, exp, className] \<Rightarrow> bool" (\<open>_;_ \<turnstile> _ : _\<close> [80,80,80,80] 80)
 where
   ts_nil : "CT;\<Gamma> \<turnstile>+ [] : []"
 
@@ -396,7 +396,7 @@ if its body is well-typed and it has the same type (i.e., overrides)
 any method with the same name declared in the superclass of $C$.\<close>
 
 inductive
-  method_typing :: "[classTable, methodDef, className] \<Rightarrow> bool" ("_ \<turnstile> _ OK IN _" [80,80,80] 80)
+  method_typing :: "[classTable, methodDef, className] \<Rightarrow> bool" (\<open>_ \<turnstile> _ OK IN _\<close> [80,80,80] 80)
 where
 m_typing:
   "\<lbrakk> CT(C) = Some(CDef);
@@ -414,7 +414,7 @@ m_typing:
   \<Longrightarrow> CT \<turnstile> mDef OK IN C"
 
 inductive
-  method_typings :: "[classTable, methodDef list, className] \<Rightarrow> bool" ("_ \<turnstile>+ _ OK IN _" [80,80,80] 80)
+  method_typings :: "[classTable, methodDef list, className] \<Rightarrow> bool" (\<open>_ \<turnstile>+ _ OK IN _\<close> [80,80,80] 80)
 where
   ms_nil : 
   "CT \<turnstile>+ [] OK IN C"
@@ -432,7 +432,7 @@ $\mathit{CT}\vdash \mathit{cd} \texttt{OK}$ if its constructor
 initializes each field, and all of its methods are well-typed.\<close>
 
 inductive
-  class_typing :: "[classTable, classDef] \<Rightarrow> bool" ("_ \<turnstile> _ OK" [80,80] 80)
+  class_typing :: "[classTable, classDef] \<Rightarrow> bool" (\<open>_ \<turnstile> _ OK\<close> [80,80] 80)
 where
 t_class: "\<lbrakk> cName CDef = C;            
             cSuper CDef = D;
@@ -453,7 +453,7 @@ text \<open>A class table is well-typed, written $\mathit{CT}\
 to by $\mathit{CT}$ is is well-typed and has name $C$.\<close>
 
 inductive
-  ct_typing :: "classTable \<Rightarrow> bool" ("_ OK" 80)
+  ct_typing :: "classTable \<Rightarrow> bool" (\<open>_ OK\<close> 80)
 where
 ct_all_ok: 
   "\<lbrakk> Object \<notin> dom(CT); 
@@ -467,7 +467,7 @@ written $\mathit{CT} \vdash e \rightarrow e'$ and $\mathit{CT} \vdash
 e \rightarrow^* e'$ respectively.\<close>
 
 inductive
-  reduction :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow> _" [80,80,80] 80)
+  reduction :: "[classTable, exp, exp] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<rightarrow> _\<close> [80,80,80] 80)
 where
 
   r_field: 
@@ -505,7 +505,7 @@ where
   \<Longrightarrow> CT \<turnstile> Cast C e0 \<rightarrow> Cast C e0'"
 
 inductive
-  reductions :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow>* _" [80,80,80] 80)
+  reductions :: "[classTable, exp, exp] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<rightarrow>* _\<close> [80,80,80] 80)
 where
   rs_refl: "CT \<turnstile> e \<rightarrow>* e" 
 | rs_trans: "\<lbrakk> CT \<turnstile> e \<rightarrow> e'; CT \<turnstile> e' \<rightarrow>* e'' \<rbrakk> \<Longrightarrow>  CT \<turnstile> e \<rightarrow>* e''"

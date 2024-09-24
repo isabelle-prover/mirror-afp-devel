@@ -21,7 +21,7 @@ type_synonym ('s,'a) lookup = "'s \<Rightarrow> 'a option"
 
 text \<open>Similar to map_option but the second function returns option as well\<close>
 definition
-  opt_map :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> ('s,'b) lookup" (infixl "|>" 54)
+  opt_map :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> ('s,'b) lookup" (infixl \<open>|>\<close> 54)
 where
   "f |> g \<equiv> \<lambda>s. case f s of None \<Rightarrow> None | Some x \<Rightarrow> g x"
 
@@ -39,7 +39,7 @@ lemma opt_mapE:
 
 
 definition
-  obind :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> ('s,'b) lookup) \<Rightarrow> ('s,'b) lookup" (infixl "|>>" 53)
+  obind :: "('s,'a) lookup \<Rightarrow> ('a \<Rightarrow> ('s,'b) lookup) \<Rightarrow> ('s,'b) lookup" (infixl \<open>|>>\<close> 53)
 where
   "f |>> g \<equiv> \<lambda>s. case f s of None \<Rightarrow> None | Some x \<Rightarrow> g x s"
 

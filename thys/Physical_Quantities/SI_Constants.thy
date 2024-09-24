@@ -37,32 +37,32 @@ default_sort field_char_0
 
 text \<open> Hyperfine transition frequency of frequency of Cs \<close>
 
-abbreviation caesium_frequency:: "'a[T\<^sup>-\<^sup>1,SI]" ("\<Delta>v\<^sub>C\<^sub>s") where
+abbreviation caesium_frequency:: "'a[T\<^sup>-\<^sup>1,SI]" (\<open>\<Delta>v\<^sub>C\<^sub>s\<close>) where
   "caesium_frequency \<equiv> 9192631770 *\<^sub>Q hertz"
 
 text \<open> Speed of light in vacuum \<close>
 
-abbreviation speed_of_light :: "'a[L \<cdot> T\<^sup>-\<^sup>1,SI]" ("\<^bold>c") where
+abbreviation speed_of_light :: "'a[L \<cdot> T\<^sup>-\<^sup>1,SI]" (\<open>\<^bold>c\<close>) where
   "speed_of_light \<equiv> 299792458 *\<^sub>Q (metre\<^bold>\<cdot>second\<^sup>-\<^sup>\<one>)"
 
 text \<open> Planck constant \<close>
 
-abbreviation Planck :: "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>2 \<cdot> T,SI]" ("\<^bold>h") where
+abbreviation Planck :: "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>2 \<cdot> T,SI]" (\<open>\<^bold>h\<close>) where
   "Planck \<equiv> (6.62607015 \<cdot> 1/(10^34)) *\<^sub>Q (joule\<^bold>\<cdot>second)"
 
 text \<open> Elementary charge \<close>
 
-abbreviation elementary_charge :: "'a[I \<cdot> T,SI]" ("\<^bold>e") where
+abbreviation elementary_charge :: "'a[I \<cdot> T,SI]" (\<open>\<^bold>e\<close>) where
   "elementary_charge \<equiv> (1.602176634 \<cdot> 1/(10^19)) *\<^sub>Q coulomb"
 
 text \<open> The Boltzmann constant \<close>
 
-abbreviation Boltzmann :: "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>2 \<cdot> \<Theta>\<^sup>-\<^sup>1,SI]" ("\<^bold>k") where
+abbreviation Boltzmann :: "'a[M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>2 \<cdot> \<Theta>\<^sup>-\<^sup>1,SI]" (\<open>\<^bold>k\<close>) where
   "Boltzmann \<equiv> (1.380649\<cdot>1/(10^23)) *\<^sub>Q (joule \<^bold>/ kelvin)"
 
 text \<open> The Avogadro number \<close>
 
-abbreviation Avogadro :: "'a[N\<^sup>-\<^sup>1,SI]" ("N\<^sub>A") where
+abbreviation Avogadro :: "'a[N\<^sup>-\<^sup>1,SI]" (\<open>N\<^sub>A\<close>) where
 "Avogadro \<equiv> 6.02214076\<cdot>(10^23) *\<^sub>Q (mole\<^sup>-\<^sup>\<one>)"
 
 abbreviation max_luminous_frequency :: "'a[T\<^sup>-\<^sup>1,SI]" where
@@ -70,7 +70,7 @@ abbreviation max_luminous_frequency :: "'a[T\<^sup>-\<^sup>1,SI]" where
 
 text \<open> The luminous efficacy of monochromatic radiation of frequency \<^const>\<open>max_luminous_frequency\<close>. \<close>
 
-abbreviation luminous_efficacy :: "'a[J \<cdot> (L\<^sup>2 \<cdot> L\<^sup>-\<^sup>2) \<cdot> (M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>3)\<^sup>-\<^sup>1,SI]" ("K\<^sub>c\<^sub>d") where
+abbreviation luminous_efficacy :: "'a[J \<cdot> (L\<^sup>2 \<cdot> L\<^sup>-\<^sup>2) \<cdot> (M \<cdot> L\<^sup>2 \<cdot> T\<^sup>-\<^sup>3)\<^sup>-\<^sup>1,SI]" (\<open>K\<^sub>c\<^sub>d\<close>) where
 "luminous_efficacy \<equiv> 683 *\<^sub>Q (lumen\<^bold>/watt)"
 
 subsection \<open> Checking Foundational Equations of the SI System \<close>

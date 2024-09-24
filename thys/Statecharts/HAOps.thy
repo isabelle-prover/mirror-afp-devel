@@ -98,7 +98,7 @@ subsection "Extending a Composition Function by a SA"
 definition
   FAddSA :: "[('s \<rightharpoonup> (('s,'e,'d)seqauto) set), 's * ('s,'e,'d)seqauto]
              => ('s \<rightharpoonup> (('s,'e,'d)seqauto) set)"
-           ("(_ [f+]/ _)" [10,11]10) where
+           (\<open>(_ [f+]/ _)\<close> [10,11]10) where
   "FAddSA G SSA = (let  (S,SA) = SSA
                    in
                      (if ((S \<in> dom G) \<and> (S \<notin> States SA)) then
@@ -505,7 +505,7 @@ subsection \<open>Extending a HA by a SA (\<open>AddSA\<close>)\<close>
 definition
   AddSA :: "[('s,'e,'d)hierauto, 's * ('s,'e,'d)seqauto]
              => ('s,'e,'d)hierauto"
-           ("(_ [++]/ _)" [10,11]10) where
+           (\<open>(_ [++]/ _)\<close> [10,11]10) where
   "AddSA HA SSA = (let (S,SA) = SSA;
                         DNew = HAInitValue HA;
                         FNew = insert SA (SAs HA);
@@ -517,7 +517,7 @@ definition
 definition
   AddHA :: "[('s,'e,'d)hierauto, 's * ('s,'e,'d)hierauto]
              => ('s,'e,'d)hierauto"
-           ("(_ [**]/ _)" [10,11]10) where
+           (\<open>(_ [**]/ _)\<close> [10,11]10) where
   "AddHA HA1 SHA =
             (let (S,HA2)     = SHA;
                  (D1,F1,E1,G1) = Rep_hierauto (HA1 [++] (S,HARoot HA2));

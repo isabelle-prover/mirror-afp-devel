@@ -156,7 +156,7 @@ definition gmctxt_closing where
   "gmctxt_closing C D \<longleftrightarrow> less_eq_gmctxt C D \<and> ghole_poss D \<subseteq> ghole_poss C"
 
 
-inductive eq_gfill ("(_/ =\<^sub>G\<^sub>f _)" [51, 51] 50) where
+inductive eq_gfill (\<open>(_/ =\<^sub>G\<^sub>f _)\<close> [51, 51] 50) where
   eqfI [intro]: "t = fill_gholes D ss \<Longrightarrow> num_gholes D = length ss \<Longrightarrow> t =\<^sub>G\<^sub>f (D, ss)"
 
 subsubsection \<open>Conversions from and to ground multihole contexts\<close>

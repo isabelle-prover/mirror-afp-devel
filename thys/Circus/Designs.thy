@@ -20,10 +20,10 @@ record alpha_d = ok::bool
 type_synonym '\<alpha> alphabet_d  = "'\<alpha> alpha_d_scheme alphabet"
 type_synonym '\<alpha> relation_d = "'\<alpha> alphabet_d relation"
 
-definition design::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d" ("'(_ \<turnstile> _')")
+definition design::"'\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d \<Rightarrow> '\<alpha> relation_d" (\<open>'(_ \<turnstile> _')\<close>)
 where " (P \<turnstile> Q) \<equiv> \<lambda> (A, A') .  (ok A \<and> P (A,A')) \<longrightarrow> (ok A' \<and> Q (A,A'))"
 
-definition skip_d :: "'\<alpha> relation_d" ("\<Pi>d")
+definition skip_d :: "'\<alpha> relation_d" (\<open>\<Pi>d\<close>)
 where "\<Pi>d \<equiv> (true \<turnstile> \<Pi>r)"
 
 definition J
@@ -32,7 +32,7 @@ where "J  \<equiv>  \<lambda> (A, A') . (ok A  \<longrightarrow>  ok A') \<and> 
 type_synonym '\<alpha> Healthiness_condition = "'\<alpha> relation \<Rightarrow> '\<alpha> relation"
 
 definition 
-Healthy::"'\<alpha> relation \<Rightarrow> '\<alpha> Healthiness_condition \<Rightarrow> bool" ("_ is _ healthy")
+Healthy::"'\<alpha> relation \<Rightarrow> '\<alpha> Healthiness_condition \<Rightarrow> bool" (\<open>_ is _ healthy\<close>)
 where "P is H healthy \<equiv> (P = H P)"
 
 lemma Healthy_def': "P is H healthy = (H P = P)"

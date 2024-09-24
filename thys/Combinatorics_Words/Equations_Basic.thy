@@ -22,7 +22,7 @@ text
 
 section \<open>Factor interpretation\<close>
 
-definition factor_interpretation :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list list \<Rightarrow> bool" ("_ _ _ \<sim>\<^sub>\<I> _" [51,51,51,51] 60)
+definition factor_interpretation :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list list \<Rightarrow> bool" (\<open>_ _ _ \<sim>\<^sub>\<I> _\<close> [51,51,51,51] 60)
   where "factor_interpretation p u s ws = (p <p hd ws \<and> s <s last ws \<and> p \<cdot> u \<cdot> s = concat ws)"
 
 
@@ -248,7 +248,7 @@ next
     by simp
 qed
 
-definition disjoint_interpretation :: "'a list \<Rightarrow> 'a list list \<Rightarrow> 'a list \<Rightarrow> 'a list list \<Rightarrow> bool" ("_ _ _ \<sim>\<^sub>\<D> _" [51,51,51,51] 60)
+definition disjoint_interpretation :: "'a list \<Rightarrow> 'a list list \<Rightarrow> 'a list \<Rightarrow> 'a list list \<Rightarrow> bool" (\<open>_ _ _ \<sim>\<^sub>\<D> _\<close> [51,51,51,51] 60)
   where "p us s \<sim>\<^sub>\<D> ws \<equiv> p (concat us) s \<sim>\<^sub>\<I> ws \<and>
                                              (\<forall> u v. u \<le>p us \<and> v \<le>p ws \<longrightarrow> p \<cdot> concat u \<noteq> concat v)"
 
@@ -550,9 +550,9 @@ proof (rule ccontr)
   assume "u \<cdot> v \<noteq> v \<cdot> u"
   then interpret binary_code u v
     by unfold_locales
-  write bin_code_lcp ("\<alpha>") and
-    bin_code_mismatch_fst ("c\<^sub>0") and
-    bin_code_mismatch_snd ("c\<^sub>1")
+  write bin_code_lcp (\<open>\<alpha>\<close>) and
+    bin_code_mismatch_fst (\<open>c\<^sub>0\<close>) and
+    bin_code_mismatch_snd (\<open>c\<^sub>1\<close>)
   have "\<^bold>|\<alpha>\<^bold>| < \<^bold>|v \<cdot> s\<^bold>|"
     using \<open>\<^bold>|u\<^bold>| \<le> \<^bold>|s\<^bold>|\<close> bin_lcp_short by force
   show False

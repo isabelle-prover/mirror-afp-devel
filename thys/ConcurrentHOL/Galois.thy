@@ -28,10 +28,10 @@ just assume (unconditional) completeness.
 locale galois =
   orda: ordering less_eqa lessa
 + ordb: ordering less_eqb lessb
-    for less_eqa (infix "\<le>\<^sub>a" 50)
-    and lessa (infix "<\<^sub>a" 50)
-    and less_eqb (infix "\<le>\<^sub>b" 50)
-    and lessb (infix "<\<^sub>b" 50)
+    for less_eqa (infix \<open>\<le>\<^sub>a\<close> 50)
+    and lessa (infix \<open><\<^sub>a\<close> 50)
+    and less_eqb (infix \<open>\<le>\<^sub>b\<close> 50)
+    and lessb (infix \<open><\<^sub>b\<close> 50)
 + fixes lower :: "'a \<Rightarrow> 'b"
   fixes upper :: "'b \<Rightarrow> 'a"
   assumes galois: "lower x \<le>\<^sub>b y \<longleftrightarrow> x \<le>\<^sub>a upper y"
@@ -57,8 +57,8 @@ lemma lower_upper_contractive:
 using galois orda.refl by blast
 
 lemma comp_galois: \<comment>\<open> \<^citet>\<open>\<open>Lemma~19\<close> in "Backhouse:2000"\<close>. Observe that the roles of upper and lower have swapped. \<close>
-  fixes less_eqc :: "'c \<Rightarrow> 'c \<Rightarrow> bool" (infix "\<le>\<^sub>c" 50)
-  fixes lessc :: "'c \<Rightarrow> 'c \<Rightarrow> bool" (infix "<\<^sub>c" 50)
+  fixes less_eqc :: "'c \<Rightarrow> 'c \<Rightarrow> bool" (infix \<open>\<le>\<^sub>c\<close> 50)
+  fixes lessc :: "'c \<Rightarrow> 'c \<Rightarrow> bool" (infix \<open><\<^sub>c\<close> 50)
   fixes h :: "'a \<Rightarrow> 'c"
   fixes k :: "'b \<Rightarrow> 'c"
   assumes "partial_preordering (\<le>\<^sub>c)"
@@ -144,8 +144,8 @@ end
 setup \<open>Sign.mandatory_path "galois"\<close>
 
 lemma axioms_alt:
-  fixes less_eqa (infix "\<le>\<^sub>a" 50)
-  fixes less_eqb (infix "\<le>\<^sub>b" 50)
+  fixes less_eqa (infix \<open>\<le>\<^sub>a\<close> 50)
+  fixes less_eqb (infix \<open>\<le>\<^sub>b\<close> 50)
   fixes lower :: "'a \<Rightarrow> 'b"
   fixes upper :: "'b \<Rightarrow> 'a"
   assumes oa: "ordering less_eqa lessa"
@@ -170,19 +170,19 @@ locale complete_lattice =
   cla: complete_lattice "Inf\<^sub>a" "Sup\<^sub>a" "(\<sqinter>\<^sub>a)" "(\<le>\<^sub>a)" "(<\<^sub>a)" "(\<squnion>\<^sub>a)" "\<bottom>\<^sub>a" "\<top>\<^sub>a"
 + clb: complete_lattice "Inf\<^sub>b" "Sup\<^sub>b" "(\<sqinter>\<^sub>b)" "(\<le>\<^sub>b)" "(<\<^sub>b)" "(\<squnion>\<^sub>b)" "\<bottom>\<^sub>b" "\<top>\<^sub>b"
 + galois "(\<le>\<^sub>a)" "(<\<^sub>a)" "(\<le>\<^sub>b)" "(<\<^sub>b)" lower upper
-    for less_eqa :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<le>\<^sub>a" 50)
-    and lessa (infix "<\<^sub>a" 50)
-    and infa (infixl "\<sqinter>\<^sub>a" 70)
-    and supa (infixl "\<squnion>\<^sub>a" 65)
-    and bota ("\<bottom>\<^sub>a")
-    and topa ("\<top>\<^sub>a")
+    for less_eqa :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<le>\<^sub>a\<close> 50)
+    and lessa (infix \<open><\<^sub>a\<close> 50)
+    and infa (infixl \<open>\<sqinter>\<^sub>a\<close> 70)
+    and supa (infixl \<open>\<squnion>\<^sub>a\<close> 65)
+    and bota (\<open>\<bottom>\<^sub>a\<close>)
+    and topa (\<open>\<top>\<^sub>a\<close>)
     and Inf\<^sub>a Sup\<^sub>a
-    and less_eqb :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<le>\<^sub>b" 50)
-    and lessb (infix "<\<^sub>b" 50)
-    and infb (infixl "\<sqinter>\<^sub>b" 70)
-    and supb (infixl "\<squnion>\<^sub>b" 65)
-    and botb ("\<bottom>\<^sub>b")
-    and topb ("\<top>\<^sub>b")
+    and less_eqb :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<le>\<^sub>b\<close> 50)
+    and lessb (infix \<open><\<^sub>b\<close> 50)
+    and infb (infixl \<open>\<sqinter>\<^sub>b\<close> 70)
+    and supb (infixl \<open>\<squnion>\<^sub>b\<close> 65)
+    and botb (\<open>\<bottom>\<^sub>b\<close>)
+    and topb (\<open>\<top>\<^sub>b\<close>)
     and Inf\<^sub>b Sup\<^sub>b
     and lower :: "'a \<Rightarrow> 'b"
     and upper :: "'b \<Rightarrow> 'a"

@@ -369,11 +369,11 @@ attribute_setup refine_vcg_def =
   \<open>Scan.succeed (Thm.declaration_attribute (fn A =>
     Refine.vcg.add_thm ((A RS @{thm eq_refl}) RS @{thm order.trans})))\<close>
 
-definition comp2 (infixl "o2" 55) where "comp2 f g x y \<equiv> f (g x y)"
-definition comp3 (infixl "o3" 55) where "comp3 f g x y z \<equiv> f (g x y z)"
-definition comp4 (infixl "o4" 55) where "comp4 f g w x y z \<equiv> f (g w x y z)"
-definition comp5 (infixl "o5" 55) where "comp5 f g w x y z a \<equiv> f (g w x y z a)"
-definition comp6 (infixl "o6" 55) where "comp6 f g w x y z a b \<equiv> f (g w x y z a b)"
+definition comp2 (infixl \<open>o2\<close> 55) where "comp2 f g x y \<equiv> f (g x y)"
+definition comp3 (infixl \<open>o3\<close> 55) where "comp3 f g x y z \<equiv> f (g x y z)"
+definition comp4 (infixl \<open>o4\<close> 55) where "comp4 f g w x y z \<equiv> f (g w x y z)"
+definition comp5 (infixl \<open>o5\<close> 55) where "comp5 f g w x y z a \<equiv> f (g w x y z a)"
+definition comp6 (infixl \<open>o6\<close> 55) where "comp6 f g w x y z a b \<equiv> f (g w x y z a b)"
 lemmas comps =
   comp_def[abs_def]
   comp2_def[abs_def]
@@ -389,13 +389,13 @@ lemma [autoref_op_pat_def]: "x \<equiv> Autoref_Tagging.OP x"
 end
 
 bundle autoref_syntax begin
-no_notation vec_nth (infixl "$" 90)
-no_notation funcset (infixr "\<rightarrow>" 60)
-notation Autoref_Tagging.APP (infixl "$" 900)
-notation rel_ANNOT (infix ":::" 10)
-notation ind_ANNOT (infix "::#" 10)
-notation "Autoref_Tagging.OP" ("OP")
-notation Autoref_Tagging.ABS (binder "\<lambda>''" 10)
+no_notation vec_nth (infixl \<open>$\<close> 90)
+no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+notation Autoref_Tagging.APP (infixl \<open>$\<close> 900)
+notation rel_ANNOT (infix \<open>:::\<close> 10)
+notation ind_ANNOT (infix \<open>::#\<close> 10)
+notation "Autoref_Tagging.OP" (\<open>OP\<close>)
+notation Autoref_Tagging.ABS (binder \<open>\<lambda>''\<close> 10)
 end
 
 definition "THE_NRES = case_option SUCCEED RETURN"

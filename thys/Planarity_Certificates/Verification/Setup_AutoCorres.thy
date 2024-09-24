@@ -66,7 +66,7 @@ method branch_casify = ((rule Initial_Label, branch_l; (rule DC_final)?), casify
 subsection \<open>Labelled VCG theorems for the option monad\<close>
 
 definition
-  lpred_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr "land" 35)
+  lpred_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr \<open>land\<close> 35)
 where
   "lpred_conj P Q \<equiv> \<lambda>x. P x \<and> Q x"
 

@@ -3,10 +3,10 @@ imports Main
 begin
 
 locale traces = 
-  fixes step :: "'c => 'c => bool"  (infix "\<Rightarrow>" 50) 
+  fixes step :: "'c => 'c => bool"  (infix \<open>\<Rightarrow>\<close> 50) 
 begin
 
-abbreviation steps (infix "\<Rightarrow>\<^sup>*" 50) where "steps \<equiv> step\<^sup>*\<^sup>*"
+abbreviation steps (infix \<open>\<Rightarrow>\<^sup>*\<close> 50) where "steps \<equiv> step\<^sup>*\<^sup>*"
 
 inductive trace :: "'c \<Rightarrow> 'c list \<Rightarrow> 'c \<Rightarrow> bool"  where
   trace_nil[iff]: "trace final [] final"
@@ -75,7 +75,7 @@ lemma trace_nil[simp]: "trace c [] c' \<longleftrightarrow> c = c'"
   
 end
 
-definition extends :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix "\<lesssim>" 50) where
+definition extends :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" (infix \<open>\<lesssim>\<close> 50) where
   "S \<lesssim> S' = (\<exists> S''. S' = S'' @ S)"
 
 lemma extends_refl[simp]: "S \<lesssim> S" unfolding extends_def by auto

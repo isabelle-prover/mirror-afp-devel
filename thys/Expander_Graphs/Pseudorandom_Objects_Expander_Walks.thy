@@ -298,12 +298,12 @@ end
 
 bundle expander_pseudorandom_object_notation
 begin
-notation expander_pro ("\<E>")
+notation expander_pro (\<open>\<E>\<close>)
 end
 
 bundle no_expander_pseudorandom_object_notation
 begin
-no_notation expander_pro ("\<E>")
+no_notation expander_pro (\<open>\<E>\<close>)
 end
 
 unbundle expander_pseudorandom_object_notation

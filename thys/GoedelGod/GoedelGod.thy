@@ -47,7 +47,7 @@ text \<open>The types \<open>i\<close> for possible worlds and $\mu$ for individ
 
 text \<open>Possible worlds are connected by an accessibility relation \<open>r\<close>.\<close> 
 
-  consts r :: "i \<Rightarrow> i \<Rightarrow> bool" (infixr "r" 70)    \<comment> \<open>accessibility relation r\<close>   
+  consts r :: "i \<Rightarrow> i \<Rightarrow> bool" (infixr \<open>r\<close> 70)    \<comment> \<open>accessibility relation r\<close>   
 
 text \<open>QML formulas are translated as HOL terms of type @{typ "i \<Rightarrow> bool"}. 
 This type is abbreviated as \<open>\<sigma>\<close>.\<close>
@@ -63,21 +63,21 @@ Other connectives can be introduced analogously. We exemplarily do this for \<op
 operators \<open>\<box>\<close> and \<open>\<diamond>\<close>  are introduced. Definitions could be used instead of 
 abbreviations.\<close>
 
-  abbreviation mnot :: "\<sigma> \<Rightarrow> \<sigma>" ("m\<not>") where "m\<not> \<phi> \<equiv> (\<lambda>w. \<not> \<phi> w)"    
-  abbreviation mand :: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr "m\<and>" 65) where "\<phi> m\<and> \<psi> \<equiv> (\<lambda>w. \<phi> w \<and> \<psi> w)"   
-  abbreviation mor :: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr "m\<or>" 70) where "\<phi> m\<or> \<psi> \<equiv> (\<lambda>w. \<phi> w \<or> \<psi> w)"   
-  abbreviation mimplies :: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr "m\<rightarrow>" 74) where "\<phi> m\<rightarrow> \<psi> \<equiv> (\<lambda>w. \<phi> w \<longrightarrow> \<psi> w)"  
-  abbreviation mequiv:: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr "m\<equiv>" 76) where "\<phi> m\<equiv> \<psi> \<equiv> (\<lambda>w. \<phi> w \<longleftrightarrow> \<psi> w)"  
-  abbreviation mforall :: "('a \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" ("\<forall>") where "\<forall> \<Phi> \<equiv> (\<lambda>w. \<forall>x. \<Phi> x w)"   
-  abbreviation mexists :: "('a \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" ("\<exists>") where "\<exists> \<Phi> \<equiv> (\<lambda>w. \<exists>x. \<Phi> x w)"
-  abbreviation mLeibeq :: "\<mu> \<Rightarrow> \<mu> \<Rightarrow> \<sigma>" (infixr "mL=" 90) where "x mL= y \<equiv> \<forall>(\<lambda>\<phi>. (\<phi> x m\<rightarrow> \<phi> y))"
-  abbreviation mbox :: "\<sigma> \<Rightarrow> \<sigma>" ("\<box>") where "\<box> \<phi> \<equiv> (\<lambda>w. \<forall>v.  w r v \<longrightarrow> \<phi> v)"
-  abbreviation mdia :: "\<sigma> \<Rightarrow> \<sigma>" ("\<diamond>") where "\<diamond> \<phi> \<equiv> (\<lambda>w. \<exists>v. w r v \<and> \<phi> v)" 
+  abbreviation mnot :: "\<sigma> \<Rightarrow> \<sigma>" (\<open>m\<not>\<close>) where "m\<not> \<phi> \<equiv> (\<lambda>w. \<not> \<phi> w)"    
+  abbreviation mand :: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr \<open>m\<and>\<close> 65) where "\<phi> m\<and> \<psi> \<equiv> (\<lambda>w. \<phi> w \<and> \<psi> w)"   
+  abbreviation mor :: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr \<open>m\<or>\<close> 70) where "\<phi> m\<or> \<psi> \<equiv> (\<lambda>w. \<phi> w \<or> \<psi> w)"   
+  abbreviation mimplies :: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr \<open>m\<rightarrow>\<close> 74) where "\<phi> m\<rightarrow> \<psi> \<equiv> (\<lambda>w. \<phi> w \<longrightarrow> \<psi> w)"  
+  abbreviation mequiv:: "\<sigma> \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" (infixr \<open>m\<equiv>\<close> 76) where "\<phi> m\<equiv> \<psi> \<equiv> (\<lambda>w. \<phi> w \<longleftrightarrow> \<psi> w)"  
+  abbreviation mforall :: "('a \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" (\<open>\<forall>\<close>) where "\<forall> \<Phi> \<equiv> (\<lambda>w. \<forall>x. \<Phi> x w)"   
+  abbreviation mexists :: "('a \<Rightarrow> \<sigma>) \<Rightarrow> \<sigma>" (\<open>\<exists>\<close>) where "\<exists> \<Phi> \<equiv> (\<lambda>w. \<exists>x. \<Phi> x w)"
+  abbreviation mLeibeq :: "\<mu> \<Rightarrow> \<mu> \<Rightarrow> \<sigma>" (infixr \<open>mL=\<close> 90) where "x mL= y \<equiv> \<forall>(\<lambda>\<phi>. (\<phi> x m\<rightarrow> \<phi> y))"
+  abbreviation mbox :: "\<sigma> \<Rightarrow> \<sigma>" (\<open>\<box>\<close>) where "\<box> \<phi> \<equiv> (\<lambda>w. \<forall>v.  w r v \<longrightarrow> \<phi> v)"
+  abbreviation mdia :: "\<sigma> \<Rightarrow> \<sigma>" (\<open>\<diamond>\<close>) where "\<diamond> \<phi> \<equiv> (\<lambda>w. \<exists>v. w r v \<and> \<phi> v)" 
   
 text \<open>For grounding lifted formulas, the meta-predicate \<open>valid\<close> is introduced.\<close>
 
-  (*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" ("[(_)]") (*>*) 
-  abbreviation valid :: "\<sigma> \<Rightarrow> bool" ("[_]") where "[p] \<equiv> \<forall>w. p w"
+  (*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
+  abbreviation valid :: "\<sigma> \<Rightarrow> bool" (\<open>[_]\<close>) where "[p] \<equiv> \<forall>w. p w"
   
 section \<open>G\"odel's Ontological Argument\<close>  
   
@@ -130,7 +130,7 @@ text \<open>Symbol \<open>ess\<close> for `Essence' is introduced and defined as
 $$\ess{\phi}{x} \biimp \phi(x) \wedge \all \psi (\psi(x) \imp \nec \all y (\phi(y) 
 \imp \psi(y)))$$ (An \emph{essence} of an individual is a property possessed by it and necessarily implying any of its properties).\<close>
 
-  definition ess :: "(\<mu> \<Rightarrow> \<sigma>) \<Rightarrow> \<mu> \<Rightarrow> \<sigma>" (infixr "ess" 85) where
+  definition ess :: "(\<mu> \<Rightarrow> \<sigma>) \<Rightarrow> \<mu> \<Rightarrow> \<sigma>" (infixr \<open>ess\<close> 85) where
     "\<Phi> ess x = \<Phi> x m\<and> \<forall>(\<lambda>\<Psi>. \<Psi> x m\<rightarrow> \<box> (\<forall>(\<lambda>y. \<Phi> y m\<rightarrow> \<Psi> y)))"
 
 text \<open>Next, Sledgehammer and Metis prove theorem \<open>T2\<close>: $\all x [G(x) \imp \ess{G}{x}]$ \\

@@ -9,8 +9,8 @@ text \<open>The definition of formulas is parametric in the index type, but from
 with a fixed (sufficiently large) index type.\<close>
 
 locale indexed_nominal_ts = nominal_ts satisfies transition
-  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix "\<turnstile>" 70)
-  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix "\<rightarrow>" 70) +
+  for satisfies :: "'state::fs \<Rightarrow> 'pred::fs \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 70)
+  and transition :: "'state \<Rightarrow> ('act::bn,'state) residual \<Rightarrow> bool" (infix \<open>\<rightarrow>\<close> 70) +
   assumes card_idx_perm: "|UNIV::perm set| <o |UNIV::'idx set|"
       and card_idx_state: "|UNIV::'state set| <o |UNIV::'idx set|"
 begin
@@ -18,7 +18,7 @@ begin
   definition logically_equivalent :: "'state \<Rightarrow> 'state \<Rightarrow> bool" where
     "logically_equivalent P Q \<equiv> (\<forall>x::('idx,'pred,'act) formula. P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x)"
 
-  notation logically_equivalent (infix "=\<cdot>" 50)
+  notation logically_equivalent (infix \<open>=\<cdot>\<close> 50)
 
   lemma logically_equivalent_eqvt:
     assumes "P =\<cdot> Q" shows "p \<bullet> P =\<cdot> p \<bullet> Q"

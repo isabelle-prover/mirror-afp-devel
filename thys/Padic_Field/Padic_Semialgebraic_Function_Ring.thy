@@ -269,7 +269,7 @@ proof fix x
   by (simp add: assms local.function_ring_not_car)
 qed
 
-abbreviation(input) Qp_const ("\<cc>\<^bsub>_\<^esub>_") where
+abbreviation(input) Qp_const (\<open>\<cc>\<^bsub>_\<^esub>_\<close>) where
 "Qp_const n c \<equiv> constant_function (carrier (Q\<^sub>p\<^bsup>n\<^esup>)) c"
 
 lemma Qp_constE:
@@ -5616,7 +5616,7 @@ lemma Qp_ev_hom_constant:
   using constant_function_closed assms  apply blast
   by (metis Qp_constE Qp_ev_hom_ev assms eval_at_point_const)
 
-notation  Qp.variable ("\<vv>\<^bsub>_, _\<^esub>")
+notation  Qp.variable (\<open>\<vv>\<^bsub>_, _\<^esub>\<close>)
 
 lemma Qp_ev_hom_pvar:
   assumes "i < n"

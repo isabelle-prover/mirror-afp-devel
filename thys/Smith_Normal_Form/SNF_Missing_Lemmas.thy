@@ -484,7 +484,7 @@ shows "(\<forall>i j. i<m \<and> j<n \<longrightarrow> x dvd (P*A*Q)$$(i,j))"
   by (meson P A Q dvd_elements_mult_matrix_right mult_carrier_mat)
 
 
-definition append_cols :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixr "@\<^sub>c" 65)where
+definition append_cols :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixr \<open>@\<^sub>c\<close> 65)where
   "A @\<^sub>c B = four_block_mat A B (0\<^sub>m 0 (dim_col A)) (0\<^sub>m 0 (dim_col B))"
 
 lemma append_cols_carrier[simp,intro]:

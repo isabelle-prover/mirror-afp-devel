@@ -715,7 +715,7 @@ using assms proof (induct cs)
     by cases auto
 qed auto
 
-inductive erelated :: "value \<Rightarrow> value \<Rightarrow> bool" ("_ \<approx>\<^sub>e _") where
+inductive erelated :: "value \<Rightarrow> value \<Rightarrow> bool" (\<open>_ \<approx>\<^sub>e _\<close>) where
 constr: "list_all2 erelated ts us \<Longrightarrow> Vconstr name ts \<approx>\<^sub>e Vconstr name us" |
 abs: "fmrel_on_fset (ids (Sabs cs)) erelated \<Gamma>\<^sub>1 \<Gamma>\<^sub>2 \<Longrightarrow> Vabs cs \<Gamma>\<^sub>1 \<approx>\<^sub>e Vabs cs \<Gamma>\<^sub>2" |
 rec_abs:

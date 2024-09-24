@@ -25,11 +25,11 @@ subsection\<open>Could-result-in Relation\<close>
 
 context dataflow_topology begin
 
-definition cri_less_eq :: "('loc \<times> 't) \<Rightarrow> ('loc \<times> 't) \<Rightarrow> bool" ("_\<le>\<^sub>p_" [51,51] 50) where
+definition cri_less_eq :: "('loc \<times> 't) \<Rightarrow> ('loc \<times> 't) \<Rightarrow> bool" (\<open>_\<le>\<^sub>p_\<close> [51,51] 50) where
   "cri_less_eq =
     (\<lambda>(loc1,t1) (loc2,t2). (\<exists>s. s \<in>\<^sub>A path_summary loc1 loc2 \<and> results_in t1 s \<le> t2))"
 
-definition cri_less :: "('loc \<times> 't) \<Rightarrow> ('loc \<times> 't) \<Rightarrow> bool" ("_<\<^sub>p_" [51,51] 50) where
+definition cri_less :: "('loc \<times> 't) \<Rightarrow> ('loc \<times> 't) \<Rightarrow> bool" (\<open>_<\<^sub>p_\<close> [51,51] 50) where
   "cri_less x y = (x \<le>\<^sub>p y \<and> x \<noteq> y)"
 
 lemma cri_asym1: "x <\<^sub>p y \<longrightarrow> \<not> y <\<^sub>p x"

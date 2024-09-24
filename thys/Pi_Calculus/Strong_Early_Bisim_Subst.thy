@@ -6,7 +6,7 @@ theory Strong_Early_Bisim_Subst
   imports Strong_Early_Bisim
 begin
 
-abbreviation StrongCongEarlyJudge (infixr "\<sim>\<^sup>s" 65) where   "P \<sim>\<^sup>s Q \<equiv> (P, Q) \<in> (substClosed bisim)"
+abbreviation StrongCongEarlyJudge (infixr \<open>\<sim>\<^sup>s\<close> 65) where   "P \<sim>\<^sup>s Q \<equiv> (P, Q) \<in> (substClosed bisim)"
 
 lemma congBisim:
   fixes P :: pi

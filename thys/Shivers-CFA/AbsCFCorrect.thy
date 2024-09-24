@@ -37,7 +37,7 @@ Unfortunately, this does not work well in our case: There are eight \<open>abs_<
 Therefore, we use a module by Christian Sternagel and Alexander Krauss for ad-hoc overloading, where the choice of the concrete function is done at parse time and immediately. This is used in the following to set up the the symbol \<open>|_|\<close> for the family of abstraction functions.
 \<close>
 
-consts abs :: "'a \<Rightarrow> 'b" ("|_|")
+consts abs :: "'a \<Rightarrow> 'b" (\<open>|_|\<close>)
 
 adhoc_overloading
   abs abs_cnt
@@ -121,7 +121,7 @@ text \<open>
 The family of relations defined here capture the notion of safe approximation.
 \<close>
 
-consts approx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<lessapprox> _")
+consts approx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>_ \<lessapprox> _\<close>)
 
 definition venv_approx :: "'c \<avenv> \<Rightarrow>'c \<avenv> \<Rightarrow> bool"
   where "venv_approx = smap_less"

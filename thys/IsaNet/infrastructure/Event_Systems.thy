@@ -26,7 +26,7 @@ begin
 
 record ('e, 's) ES =
   init :: "'s \<Rightarrow> bool"
-  trans :: "'s \<Rightarrow> 'e \<Rightarrow> 's \<Rightarrow> bool"   ("(4_: _\<midarrow>_\<rightarrow> _)" [50, 50, 50] 90)
+  trans :: "'s \<Rightarrow> 'e \<Rightarrow> 's \<Rightarrow> bool"   (\<open>(4_: _\<midarrow>_\<rightarrow> _)\<close> [50, 50, 50] 90)
 
 
 (********************************************************************************)
@@ -84,7 +84,7 @@ subsection \<open>Traces\<close>
 type_synonym 'e trace = "'e list"
 
 inductive
-  trace :: "('e, 's) ES \<Rightarrow> 's \<Rightarrow> 'e trace \<Rightarrow> 's \<Rightarrow> bool"  ("(4_: _ \<midarrow>\<langle>_\<rangle>\<rightarrow> _)" [50, 50, 50] 90)  
+  trace :: "('e, 's) ES \<Rightarrow> 's \<Rightarrow> 'e trace \<Rightarrow> 's \<Rightarrow> bool"  (\<open>(4_: _ \<midarrow>\<langle>_\<rangle>\<rightarrow> _)\<close> [50, 50, 50] 90)  
   for E s 
   where
     trace_nil [simp,intro!]: 
@@ -208,7 +208,7 @@ lemma traces_nil [simp, intro!]: "init E s \<Longrightarrow> [] \<in> traces E"
 text\<open>We now define a trace property satisfaction relation: an event system satisfies a property 
 @{term "\<phi>"}, if its traces are contained in @{term \<phi>}.\<close>
 
-definition trace_property :: "('e, 's) ES \<Rightarrow> 'e trace set \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>E\<^sub>S" 90) where 
+definition trace_property :: "('e, 's) ES \<Rightarrow> 'e trace set \<Rightarrow> bool" (infix \<open>\<Turnstile>\<^sub>E\<^sub>S\<close> 90) where 
   "E \<Turnstile>\<^sub>E\<^sub>S \<phi> \<longleftrightarrow> traces E \<subseteq> \<phi>" 
 
 lemmas trace_propertyI = trace_property_def [THEN iffD2, OF subsetI, rule_format]
@@ -263,7 +263,7 @@ coinductive
 
 abbreviation 
   simS :: "('e, 's ) ES \<Rightarrow> ('f, 't ) ES \<Rightarrow> 's \<Rightarrow> ('e \<Rightarrow> 'f) \<Rightarrow> 't \<Rightarrow> bool" 
-          ("(5_,_: _ \<sqsubseteq>\<^sub>_ _)" [50, 50, 50, 60, 50] 90) 
+          (\<open>(5_,_: _ \<sqsubseteq>\<^sub>_ _)\<close> [50, 50, 50, 60, 50] 90) 
 where
   "simS E F s \<pi> t \<equiv> sim E F \<pi> s t"
 
@@ -330,7 +330,7 @@ subsubsection \<open>Simulation for event systems\<close>
 (********************************************************************************)
 
 definition 
-  sim_ES :: "('e, 's ) ES \<Rightarrow> ('e \<Rightarrow> 'f) \<Rightarrow> ('f, 't ) ES \<Rightarrow> bool"  ("(3_ \<sqsubseteq>\<^sub>_ _)" [50, 60, 50] 95) 
+  sim_ES :: "('e, 's ) ES \<Rightarrow> ('e \<Rightarrow> 'f) \<Rightarrow> ('f, 't ) ES \<Rightarrow> bool"  (\<open>(3_ \<sqsubseteq>\<^sub>_ _)\<close> [50, 60, 50] 95) 
 where 
   "E \<sqsubseteq>\<^sub>\<pi> F \<longleftrightarrow> (\<exists>R. 
      (\<forall>s0. init E s0 \<longrightarrow> (\<exists>t0. init F t0 \<and> R s0 t0)) \<and>

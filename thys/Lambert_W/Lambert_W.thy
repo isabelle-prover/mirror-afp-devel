@@ -1075,7 +1075,7 @@ lemma has_field_derivative_Lambert_W [derivative_intros]:
   assumes x: "x > -exp (-1)"
   shows   "(Lambert_W has_real_derivative inverse (x + exp (Lambert_W x))) (at x within A)"
 proof -
-  write Lambert_W ("W")
+  write Lambert_W (\<open>W\<close>)
   from x have "W x > W (-exp (-1))"
     by (subst Lambert_W_less_iff) auto
   hence "W x > -1" by simp
@@ -1103,7 +1103,7 @@ lemma has_field_derivative_Lambert_W' [derivative_intros]:
   assumes x: "x \<in> {-exp (-1)<..<0}"
   shows   "(Lambert_W' has_real_derivative inverse (x + exp (Lambert_W' x))) (at x within A)"
 proof -
-  write Lambert_W' ("W")
+  write Lambert_W' (\<open>W\<close>)
   from x have "W x < W (-exp (-1))"
     by (subst Lambert_W'_less_iff) auto
   hence "W x < -1" by simp

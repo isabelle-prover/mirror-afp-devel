@@ -8,18 +8,18 @@ text\<open>We define and interrelate infinitary variants for some previously int
  axiomatic conditions on operators.\<close>
 
 text\<open>Distribution over infinite joins (suprema) or infinite additivity (iADDI).\<close>
-definition iADDI::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("iADDI")
+definition iADDI::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>iADDI\<close>)
   where "iADDI \<phi>   \<equiv> \<forall>S. \<phi>(\<^bold>\<Or>S) \<^bold>= \<^bold>\<Or>\<lbrakk>\<phi> S\<rbrakk>" 
-definition iADDI_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("iADDI\<^sup>a")
+definition iADDI_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>iADDI\<^sup>a\<close>)
   where "iADDI\<^sup>a \<phi> \<equiv> \<forall>S. \<phi>(\<^bold>\<Or>S) \<^bold>\<le> \<^bold>\<Or>\<lbrakk>\<phi> S\<rbrakk>" 
-definition iADDI_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("iADDI\<^sup>b")
+definition iADDI_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>iADDI\<^sup>b\<close>)
   where "iADDI\<^sup>b \<phi> \<equiv> \<forall>S. \<^bold>\<Or>\<lbrakk>\<phi> S\<rbrakk> \<^bold>\<le> \<phi>(\<^bold>\<Or>S)"
 text\<open>Distribution over infinite meets (infima) or infinite multiplicativity (iMULT).\<close>
-definition iMULT::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("iMULT")
+definition iMULT::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>iMULT\<close>)
   where "iMULT \<phi>   \<equiv> \<forall>S. \<phi>(\<^bold>\<And>S) \<^bold>= \<^bold>\<And>\<lbrakk>\<phi> S\<rbrakk>" 
-definition iMULT_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("iMULT\<^sup>a")
+definition iMULT_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>iMULT\<^sup>a\<close>)
   where "iMULT\<^sup>a \<phi> \<equiv> \<forall>S. \<phi>(\<^bold>\<And>S) \<^bold>\<le> \<^bold>\<And>\<lbrakk>\<phi> S\<rbrakk>"
-definition iMULT_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("iMULT\<^sup>b")
+definition iMULT_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>iMULT\<^sup>b\<close>)
   where "iMULT\<^sup>b \<phi> \<equiv> \<forall>S. \<^bold>\<And>\<lbrakk>\<phi> S\<rbrakk> \<^bold>\<le> \<phi>(\<^bold>\<And>S)"
 
 declare iADDI_def[cond] iADDI_a_def[cond] iADDI_b_def[cond]
@@ -148,9 +148,9 @@ We will still call (generalized) closure/interior-like operations as such (for l
 We explore minimal conditions under which some relevant results for the semantics of modal logic obtain.\<close>
 
 text\<open>Closure/interior(-like) operators can be derived from an arbitrary relation (as in modal logic).\<close>
-definition Cl_rel::"('w \<Rightarrow> 'w \<Rightarrow> bool) \<Rightarrow> ('w \<sigma> \<Rightarrow> 'w \<sigma>)" ("\<C>[_]") 
+definition Cl_rel::"('w \<Rightarrow> 'w \<Rightarrow> bool) \<Rightarrow> ('w \<sigma> \<Rightarrow> 'w \<sigma>)" (\<open>\<C>[_]\<close>) 
   where "\<C>[R] \<equiv> \<lambda>A. \<lambda>w. \<exists>v. R w v \<and> A v"
-definition Int_rel::"('w \<Rightarrow> 'w \<Rightarrow> bool) \<Rightarrow> ('w \<sigma> \<Rightarrow> 'w \<sigma>)" ("\<I>[_]") 
+definition Int_rel::"('w \<Rightarrow> 'w \<Rightarrow> bool) \<Rightarrow> ('w \<sigma> \<Rightarrow> 'w \<sigma>)" (\<open>\<I>[_]\<close>) 
   where "\<I>[R] \<equiv> \<lambda>A. \<lambda>w. \<forall>v. R w v \<longrightarrow> A v"
 
 text\<open>Duality between interior and closure follows directly:\<close>
@@ -175,7 +175,7 @@ qed
 
 
 text\<open>A reachability (specialization) relation (preorder) can be derived from a given operation (intended as a closure-like operation).\<close>
-definition \<R>::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> ('w \<Rightarrow> 'w \<Rightarrow> bool)" ("\<R>[_]") 
+definition \<R>::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> ('w \<Rightarrow> 'w \<Rightarrow> bool)" (\<open>\<R>[_]\<close>) 
   where "\<R>[\<phi>] \<equiv> \<lambda>w v. \<phi> (\<lambda>x. x = v) w"
 
 text\<open>Preorder properties of the reachability relation follow from the corresponding operation's conditions.\<close>

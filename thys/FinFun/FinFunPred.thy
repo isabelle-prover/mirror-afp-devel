@@ -103,7 +103,7 @@ text \<open>
   Replicate predicate operations for FinFuns
 \<close>
 
-abbreviation finfun_empty :: "'a pred\<^sub>f" ("{}\<^sub>f")
+abbreviation finfun_empty :: "'a pred\<^sub>f" (\<open>{}\<^sub>f\<close>)
 where "{}\<^sub>f \<equiv> bot"
 
 abbreviation finfun_UNIV :: "'a pred\<^sub>f" 

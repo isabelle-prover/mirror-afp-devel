@@ -50,8 +50,8 @@ text \<open>Set membership.\<close>
 lift_definition member_fs_set :: "'a::pt \<Rightarrow> 'a fs_set \<Rightarrow> bool" is "(\<in>)" .
 
 notation
-  member_fs_set ("'(\<in>\<^sub>f\<^sub>s')") and
-  member_fs_set ("(_/ \<in>\<^sub>f\<^sub>s _)" [51, 51] 50)
+  member_fs_set (\<open>'(\<in>\<^sub>f\<^sub>s')\<close>) and
+  member_fs_set (\<open>(_/ \<in>\<^sub>f\<^sub>s _)\<close> [51, 51] 50)
 
 lemma member_fs_set_permute_iff [simp]: "p \<bullet> x \<in>\<^sub>f\<^sub>s p \<bullet> X \<longleftrightarrow> x \<in>\<^sub>f\<^sub>s X"
 by transfer (simp add: mem_permute_iff)

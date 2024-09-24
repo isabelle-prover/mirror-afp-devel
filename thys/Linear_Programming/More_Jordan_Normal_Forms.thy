@@ -119,7 +119,7 @@ qed
 
 section \<open> Vectors \<close>
 
-abbreviation singletonV ("[_]\<^sub>v" ) where "singletonV e \<equiv> (vec 1 (\<lambda>i. e))"
+abbreviation singletonV (\<open>[_]\<^sub>v\<close> ) where "singletonV e \<equiv> (vec 1 (\<lambda>i. e))"
 
 lemma elem_in_singleton [simp]: "[a]\<^sub>v $ 0 = a"
   by simp

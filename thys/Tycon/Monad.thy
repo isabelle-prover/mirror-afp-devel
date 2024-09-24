@@ -51,7 +51,7 @@ definition return :: "'a \<rightarrow> 'a\<cdot>'m::monad"
 definition bind :: "'a\<cdot>'m::monad \<rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<rightarrow> 'b\<cdot>'m"
   where "bind = coerce\<cdot>(bindU :: udom\<cdot>'m \<rightarrow> _)"
 
-abbreviation bind_syn :: "'a\<cdot>'m::monad \<Rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<Rightarrow> 'b\<cdot>'m" (infixl "\<bind>" 55)
+abbreviation bind_syn :: "'a\<cdot>'m::monad \<Rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<Rightarrow> 'b\<cdot>'m" (infixl \<open>\<bind>\<close> 55)
   where "m \<bind> f \<equiv> bind\<cdot>m\<cdot>f"
 
 subsection \<open>Naturality of bind and return\<close>

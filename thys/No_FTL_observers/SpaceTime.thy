@@ -76,37 +76,37 @@ class Quantities = linordered_field
 class Vectors = Quantities
 begin
 
-  abbreviation  vecZero :: "'a Vector" ("0") where
+  abbreviation  vecZero :: "'a Vector" (\<open>0\<close>) where
     "vecZero \<equiv> \<lparr> tdir = (0::'a), xdir = 0, ydir = 0, zdir = 0 \<rparr>"
 
-  fun vecPlus :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a Vector" (infixr "\<oplus>" 100) where
+  fun vecPlus :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a Vector" (infixr \<open>\<oplus>\<close> 100) where
     "vecPlus u v = \<lparr> tdir = tdir u + tdir v, xdir = xdir u + xdir v, 
                      ydir = ydir u + ydir v, zdir = zdir u + zdir v \<rparr>"
 
-  fun vecMinus :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a Vector" (infixr "\<ominus>" 100) where
+  fun vecMinus :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a Vector" (infixr \<open>\<ominus>\<close> 100) where
     "vecMinus u v = \<lparr> tdir = tdir u - tdir v, xdir = xdir u - xdir v, 
                       ydir = ydir u - ydir v, zdir = zdir u - zdir v \<rparr>"
 
-  fun vecNegate :: "'a Vector \<Rightarrow> 'a Vector" ("~ _") where
+  fun vecNegate :: "'a Vector \<Rightarrow> 'a Vector" (\<open>~ _\<close>) where
     "vecNegate u = \<lparr> tdir = uminus (tdir u), xdir = uminus (xdir u), 
                      ydir = uminus (ydir u), zdir = uminus (zdir u) \<rparr>"
 
-  fun innerProd :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a" (infix "dot" 50) where
+  fun innerProd :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a" (infix \<open>dot\<close> 50) where
     "innerProd u v = (tdir u * tdir v) + (xdir u * xdir v) + 
                      (ydir u * ydir v) + (zdir u * zdir v)"
 
   fun sqrlen :: "'a Vector \<Rightarrow> 'a"  where "sqrlen u = (u dot u)"
 
-  fun minkowskiProd :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a" (infix "mdot" 50) where
+  fun minkowskiProd :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> 'a" (infix \<open>mdot\<close> 50) where
     "minkowskiProd u v = (tdir u * tdir v) 
                        -  ((xdir u * xdir v) + (ydir u * ydir v) + (zdir u * zdir v))"
 
   fun mSqrLen :: "'a Vector \<Rightarrow>  'a"  where "mSqrLen u = (u mdot u)"
 
-  fun vecScale  :: "'a \<Rightarrow> 'a Vector \<Rightarrow> 'a Vector" (infix "**" 200)  where
+  fun vecScale  :: "'a \<Rightarrow> 'a Vector \<Rightarrow> 'a Vector" (infix \<open>**\<close> 200)  where
     "vecScale k u = \<lparr> tdir = k * tdir u, xdir = k * xdir u, ydir = k * ydir u, zdir = k * zdir u \<rparr>"
 
-  fun orthogonal :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> bool" (infix "\<bottom>" 150) where
+  fun orthogonal :: "'a Vector \<Rightarrow> 'a Vector \<Rightarrow> bool" (infix \<open>\<bottom>\<close> 150) where
     "orthogonal u v = (u dot v = 0)"
 
 (*
@@ -227,12 +227,12 @@ begin
   abbreviation origin :: "'a Point" where 
     "origin \<equiv> \<lparr> tval = 0, xval = 0, yval = 0, zval = 0 \<rparr>"
 
-  fun vectorJoining :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Vector" ("from _ to _") where
+  fun vectorJoining :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Vector" (\<open>from _ to _\<close>) where
     "vectorJoining p q
       = \<lparr> tdir = tval q - tval p, xdir = xval q - xval p, 
           ydir = yval q - yval p, zdir = zval q - zval p \<rparr>"
 
-  fun moveBy :: "'a Point \<Rightarrow> 'a Vector \<Rightarrow> 'a Point" (infixl "\<leadsto>" 100) where
+  fun moveBy :: "'a Point \<Rightarrow> 'a Vector \<Rightarrow> 'a Point" (infixl \<open>\<leadsto>\<close> 100) where
     "moveBy p u 
       = \<lparr> tval = tval p + tdir u, xval = xval p + xdir u, 
           yval = yval p + ydir u, zval = zval p + zdir u \<rparr>"
@@ -240,13 +240,13 @@ begin
   fun positionVector :: "'a Point \<Rightarrow> 'a Vector" where
     "positionVector p = \<lparr> tdir = tval p, xdir = xval p, ydir = yval p, zdir = zval p \<rparr>"
 
-  fun before :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (infixr "\<lesssim>" 100) where
+  fun before :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (infixr \<open>\<lesssim>\<close> 100) where
     "before p q = (tval p < tval q)"
 
-  fun after :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (infixr "\<greatersim>" 100) where
+  fun after :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (infixr \<open>\<greatersim>\<close> 100) where
     "after p q = (tval p > tval q)"
 
-  fun sametime :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (infixr "\<approx>" 100) where
+  fun sametime :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> bool" (infixr \<open>\<approx>\<close> 100) where
     "sametime p q = (tval p = tval q)"
 
   lemma lemFromToTo: 
@@ -293,10 +293,10 @@ begin
   fun mkLine :: "'a Point => 'a Vector \<Rightarrow> 'a Line" where
     "mkLine b d = \<lparr> basepoint = b, direction = d \<rparr>"
 
-  fun lineJoining :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Line" ("line joining _ to _") where
+  fun lineJoining :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a Line" (\<open>line joining _ to _\<close>) where
     "lineJoining p q = \<lparr> basepoint = p, direction = from p to q \<rparr>"
 
-  fun parallel :: "'a Line \<Rightarrow> 'a Line \<Rightarrow> bool" ("_ \<parallel> ") where
+  fun parallel :: "'a Line \<Rightarrow> 'a Line \<Rightarrow> bool" (\<open>_ \<parallel> \<close>) where
     "parallel lineA lineB = ((direction lineA = vecZero) \<or> (direction lineB = vecZero) 
                                    \<or> (\<exists>k.(k \<noteq> (0::'a) \<and> direction lineB = k**direction lineA)))"
 

@@ -16,7 +16,7 @@ subsubsection \<open>Basic definitions\<close>
 
 datatype 'a itrm =
     Opaque 'a | Pure dB
-  | IAp "'a itrm" "'a itrm" (infixl "\<diamondop>" 150)
+  | IAp "'a itrm" "'a itrm" (infixl \<open>\<diamondop>\<close> 150)
 
 primrec opaque :: "'a itrm \<Rightarrow> 'a list"
 where
@@ -45,7 +45,7 @@ by (blast intro: ap_cong)
 text \<open>Idiomatic terms are \emph{similar} iff they have the same structure, and all contained
   lambda terms are equivalent.\<close>
 
-abbreviation similar :: "'a itrm \<Rightarrow> 'a itrm \<Rightarrow> bool" (infixl "\<cong>" 50)
+abbreviation similar :: "'a itrm \<Rightarrow> 'a itrm \<Rightarrow> bool" (infixl \<open>\<cong>\<close> 50)
 where "x \<cong> y \<equiv> itrm_cong (\<lambda>_ _. False) x y"
 
 lemma pure_similarE:
@@ -102,7 +102,7 @@ where
   | idiom_hom: "idiom_rule (Pure f \<diamondop> Pure x) (Pure (f \<degree> x))"
   | idiom_xchng: "idiom_rule (f \<diamondop> Pure x) (Pure (\<T> \<degree> x) \<diamondop> f)"
 
-abbreviation itrm_equiv :: "'a itrm \<Rightarrow> 'a itrm \<Rightarrow> bool" (infixl "\<simeq>" 50)
+abbreviation itrm_equiv :: "'a itrm \<Rightarrow> 'a itrm \<Rightarrow> bool" (infixl \<open>\<simeq>\<close> 50)
 where "x \<simeq> y \<equiv> itrm_cong idiom_rule x y"
 
 lemma idiom_rule_into_equiv: "idiom_rule x y \<Longrightarrow> x \<simeq> y" ..
@@ -130,7 +130,7 @@ begin
 
 definition "idiom_ext_rule = sup idiom_rule extra_rule"
 
-abbreviation itrm_ext_equiv :: "'a itrm \<Rightarrow> 'a itrm \<Rightarrow> bool" (infixl "\<simeq>\<^sup>+" 50)
+abbreviation itrm_ext_equiv :: "'a itrm \<Rightarrow> 'a itrm \<Rightarrow> bool" (infixl \<open>\<simeq>\<^sup>+\<close> 50)
 where "x \<simeq>\<^sup>+ y \<equiv> itrm_cong idiom_ext_rule x y"
 
 lemma equiv_into_ext_equiv: "x \<simeq> y \<Longrightarrow> x \<simeq>\<^sup>+ y"

@@ -738,7 +738,7 @@ proof -
 qed
 
 abbreviation
-  mutual_information_Pow_CP ("\<I>'(_ ; _')") where
+  mutual_information_Pow_CP (\<open>\<I>'(_ ; _')\<close>) where
   "\<I>(X ; Y) \<equiv> hC.mutual_information 2 (count_space (X`space hC)) (count_space (Y`space hC)) X Y"
 
 lemma simple_functionI:

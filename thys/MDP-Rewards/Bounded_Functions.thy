@@ -13,7 +13,7 @@ subsection \<open>Definition\<close>
 
 definition\<^marker>\<open>tag important\<close> "bfun = {f. bounded (range f)}"
 
-typedef (overloaded) ('a, 'b) bfun ("(_ \<Rightarrow>\<^sub>b _)" [22] 21) =
+typedef (overloaded) ('a, 'b) bfun (\<open>(_ \<Rightarrow>\<^sub>b _)\<close> [22] 21) =
   "bfun::('a \<Rightarrow> 'b :: metric_space) set"
   morphisms apply_bfun Bfun
   by (fastforce simp: bounded_def bfun_def)

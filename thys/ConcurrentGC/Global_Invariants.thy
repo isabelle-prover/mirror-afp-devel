@@ -48,7 +48,7 @@ preserves the \emph{strong tricolour-invariant}:
 
 \<close>
 
-abbreviation points_to_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "points'_to'_white" 51) where
+abbreviation points_to_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>points'_to'_white\<close> 51) where
   "x points_to_white y \<equiv> x points_to y \<^bold>\<and> white y"
 
 definition strong_tricolour_inv :: "('field, 'mut, 'payload, 'ref) lsts_pred" where
@@ -64,10 +64,10 @@ that protects the unexplored object.
 
 \<close>
 
-definition has_white_path_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "has'_white'_path'_to" 51) where
+definition has_white_path_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>has'_white'_path'_to\<close> 51) where
   "x has_white_path_to y = (\<lambda>s. (\<lambda>x y. (x points_to_white y) s)\<^sup>*\<^sup>* x y)"
 
-definition grey_protects_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix "grey'_protects'_white" 51) where
+definition grey_protects_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) lsts_pred" (infix \<open>grey'_protects'_white\<close> 51) where
   "g grey_protects_white w = (grey g \<^bold>\<and> g has_white_path_to w)"
 
 definition weak_tricolour_inv :: "('field, 'mut, 'payload, 'ref) lsts_pred" where

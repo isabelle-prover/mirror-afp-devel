@@ -15,14 +15,14 @@ begin
 class Vectors = Norms
 begin
 
-fun dot :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a" ("_ \<odot> _")
+fun dot :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a" (\<open>_ \<odot> _\<close>)
   where "dot u v = (tval u)*(tval v) + (xval u)*(xval v) +
                      (yval u)*(yval v) + (zval u)*(zval v)"
 
-fun sdot :: "'a Space \<Rightarrow> 'a Space \<Rightarrow> 'a" ("_ \<odot>s _")
+fun sdot :: "'a Space \<Rightarrow> 'a Space \<Rightarrow> 'a" (\<open>_ \<odot>s _\<close>)
   where "sdot u v = (svalx u)*(svalx v) + (svaly u)*(svaly v) + (svalz u)*(svalz v)"
 
-fun mdot :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a" ("_ \<odot>m _ ")
+fun mdot :: "'a Point \<Rightarrow> 'a Point \<Rightarrow> 'a" (\<open>_ \<odot>m _ \<close>)
   where "mdot u v = (tval u)*(tval v) - ((sComponent u) \<odot>s (sComponent v))"
 
 abbreviation timelike :: "'a Point \<Rightarrow> bool"

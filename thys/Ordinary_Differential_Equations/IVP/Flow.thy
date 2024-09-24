@@ -15,7 +15,7 @@ subsection \<open>simp rules for integrability (TODO: move)\<close>
 lemma blinfun_ext: "x = y \<longleftrightarrow> (\<forall>i. blinfun_apply x i = blinfun_apply y i)"
   by transfer auto
 
-notation id_blinfun ("1\<^sub>L")
+notation id_blinfun (\<open>1\<^sub>L\<close>)
 
 lemma blinfun_inverse_left:
   fixes f::"'a::euclidean_space \<Rightarrow>\<^sub>L 'a" and f'

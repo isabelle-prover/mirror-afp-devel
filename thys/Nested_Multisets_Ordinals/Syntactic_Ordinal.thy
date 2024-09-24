@@ -17,7 +17,7 @@ subsection \<open>Natural (Hessenberg) Product\<close>
 instantiation hmultiset :: comm_semiring_1
 begin
 
-abbreviation \<omega>_exp :: "hmultiset \<Rightarrow> hmultiset" ("\<omega>^") where
+abbreviation \<omega>_exp :: "hmultiset \<Rightarrow> hmultiset" (\<open>\<omega>^\<close>) where
   "\<omega>^ \<equiv> \<lambda>m. HMSet {#m#}"
 
 definition one_hmultiset :: hmultiset where

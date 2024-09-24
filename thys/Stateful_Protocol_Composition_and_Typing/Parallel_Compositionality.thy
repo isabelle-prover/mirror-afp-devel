@@ -57,7 +57,7 @@ definition strand_leaks\<^sub>l\<^sub>s\<^sub>t where
 subsection \<open>Definitions: GSMP-Restricted Intruder Deduction Variant\<close>
 definition intruder_deduct_hom::
   "('fun,'var) terms \<Rightarrow> ('fun,'var,'lbl) labeled_strand \<Rightarrow> ('fun,'var) term \<Rightarrow> bool"
-  ("\<langle>_;_\<rangle> \<turnstile>\<^sub>G\<^sub>S\<^sub>M\<^sub>P _" 50)
+  (\<open>\<langle>_;_\<rangle> \<turnstile>\<^sub>G\<^sub>S\<^sub>M\<^sub>P _\<close> 50)
 where
   "\<langle>M; \<A>\<rangle> \<turnstile>\<^sub>G\<^sub>S\<^sub>M\<^sub>P t \<equiv> \<langle>M; \<lambda>t. t \<in> GSMP (trms\<^sub>l\<^sub>s\<^sub>t \<A>)\<rangle> \<turnstile>\<^sub>r t"
 
@@ -356,7 +356,7 @@ private abbreviation homogeneous\<^sub>l\<^sub>s\<^sub>t where
 
 private definition intruder_deduct_hom'::
   "('fun,'var) terms \<Rightarrow> ('fun,'var,'lbl) labeled_strand \<Rightarrow> ('fun,'var) terms \<Rightarrow> ('fun,'var) term
-  \<Rightarrow> bool" ("\<langle>_;_;_\<rangle> \<turnstile>\<^sub>h\<^sub>o\<^sub>m _" 50)
+  \<Rightarrow> bool" (\<open>\<langle>_;_;_\<rangle> \<turnstile>\<^sub>h\<^sub>o\<^sub>m _\<close> 50)
 where
   "\<langle>M; \<A>; Sec\<rangle> \<turnstile>\<^sub>h\<^sub>o\<^sub>m t \<equiv> \<langle>M; \<lambda>t. homogeneous\<^sub>l\<^sub>s\<^sub>t t \<A> Sec \<and> t \<in> GSMP (trms\<^sub>l\<^sub>s\<^sub>t \<A>)\<rangle> \<turnstile>\<^sub>r t"
 

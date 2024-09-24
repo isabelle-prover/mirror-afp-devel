@@ -125,9 +125,9 @@ begin
 
   locale elementary_category_with_bounded_pushouts =
     category C
-  for C :: "'a comp"            (infixr "\<cdot>" 55)
-  and inj0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   ("\<i>\<^sub>0[_, _]")
-  and inj1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   ("\<i>\<^sub>1[_, _]") +
+  for C :: "'a comp"            (infixr \<open>\<cdot>\<close> 55)
+  and inj0 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (\<open>\<i>\<^sub>0[_, _]\<close>)
+  and inj1 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (\<open>\<i>\<^sub>1[_, _]\<close>) +
   assumes inj0_ext: "\<not> bounded_span h k \<Longrightarrow> \<i>\<^sub>0[h, k] = null"
   and inj1_ext: "\<not> bounded_span h k \<Longrightarrow> \<i>\<^sub>1[h, k] = null"
   and pushout_commutes [intro]:

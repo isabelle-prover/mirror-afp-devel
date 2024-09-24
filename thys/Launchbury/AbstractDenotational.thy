@@ -91,10 +91,10 @@ nominal_termination (in semantic_domain) (no_eqvt) by lexicographic_order
 
 sublocale has_ESem ESem.
 
-notation ESem_syn ("\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>"  [60,60] 60)
-notation EvalHeapSem_syn  ("\<^bold>\<lbrakk> _ \<^bold>\<rbrakk>\<^bsub>_\<^esub>"  [0,0] 110)
-notation HSem_syn ("\<lbrace>_\<rbrace>_"  [60,60] 60)
-abbreviation AHSem_bot ("\<lbrace>_\<rbrace>"  [60] 60) where "\<lbrace>\<Gamma>\<rbrace> \<equiv> \<lbrace>\<Gamma>\<rbrace>\<bottom>"
+notation ESem_syn (\<open>\<lbrakk> _ \<rbrakk>\<^bsub>_\<^esub>\<close>  [60,60] 60)
+notation EvalHeapSem_syn  (\<open>\<^bold>\<lbrakk> _ \<^bold>\<rbrakk>\<^bsub>_\<^esub>\<close>  [0,0] 110)
+notation HSem_syn (\<open>\<lbrace>_\<rbrace>_\<close>  [60,60] 60)
+abbreviation AHSem_bot (\<open>\<lbrace>_\<rbrace>\<close>  [60] 60) where "\<lbrace>\<Gamma>\<rbrace> \<equiv> \<lbrace>\<Gamma>\<rbrace>\<bottom>"
 
 end
 end

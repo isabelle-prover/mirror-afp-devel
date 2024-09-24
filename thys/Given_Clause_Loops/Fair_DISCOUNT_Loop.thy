@@ -54,7 +54,7 @@ locale fair_discount_loop =
     remove :: "'f passive_elem \<Rightarrow> 'p \<Rightarrow> 'p" and
     felems :: "'p \<Rightarrow> 'f passive_elem fset" +
   fixes
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
     wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
     transp_Prec_S: "transp (\<prec>S)" and
@@ -208,7 +208,7 @@ qed
 fun formulas_union :: "'f set \<times> 'f set \<times> 'f set \<Rightarrow> 'f set" where
   "formulas_union (P, Y, A) = P \<union> Y \<union> A"
 
-inductive fair_DL :: "('p, 'f) DLf_state \<Rightarrow> ('p, 'f) DLf_state \<Rightarrow> bool" (infix "\<leadsto>DLf" 50) where
+inductive fair_DL :: "('p, 'f) DLf_state \<Rightarrow> ('p, 'f) DLf_state \<Rightarrow> bool" (infix \<open>\<leadsto>DLf\<close> 50) where
   compute_infer: "P \<noteq> empty \<Longrightarrow> select P = Passive_Inference \<iota> \<Longrightarrow>
     \<iota> \<in> no_labels.Red_I (fset A \<union> {C}) \<Longrightarrow>
     (P, None, A) \<leadsto>DLf (remove (select P) P, Some C, A)"
@@ -464,13 +464,13 @@ fun mset_of_fstate :: "('p, 'f) DLf_state \<Rightarrow> 'f multiset" where
    image_mset concl_of (mset_set (passive_inferences_of P)) + mset_set (passive_formulas_of P) +
    mset_set (set_option Y) + mset_set (fset A)"
 
-abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> bool" (infix "\<prec>\<prec>S" 50) where
+abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> bool" (infix \<open>\<prec>\<prec>S\<close> 50) where
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
   using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
 
-definition Less_state :: "('p, 'f) DLf_state \<Rightarrow> ('p, 'f) DLf_state \<Rightarrow> bool" (infix "\<sqsubset>" 50) where
+definition Less_state :: "('p, 'f) DLf_state \<Rightarrow> ('p, 'f) DLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50) where
   "St' \<sqsubset> St \<longleftrightarrow>
    (yy_of St' = None \<and> yy_of St \<noteq> None)
    \<or> ((yy_of St' = None \<longleftrightarrow> yy_of St = None) \<and> mset_of_fstate St' \<prec>\<prec>S mset_of_fstate St)"
@@ -921,7 +921,7 @@ locale fifo_discount_loop =
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<doteq>\<close> 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>\<cdot>\<close> 50) +
   fixes
-    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>S" 50)
+    Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
     wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
     transp_Prec_S: "transp (\<prec>S)" and

@@ -13,10 +13,10 @@ text \<open>
   multiplication, but it is compatible with addition.
 \<close>
 
-definition less_eq_complex_lex (infix "\<le>\<^sub>\<complex>" 50)  where
+definition less_eq_complex_lex (infix \<open>\<le>\<^sub>\<complex>\<close> 50)  where
   "less_eq_complex_lex x y \<longleftrightarrow> Re x < Re y \<or> Re x = Re y \<and> Im x \<le> Im y"
 
-definition less_complex_lex (infix "<\<^sub>\<complex>" 50) where
+definition less_complex_lex (infix \<open><\<^sub>\<complex>\<close> 50) where
   "less_complex_lex x y \<longleftrightarrow> Re x < Re y \<or> Re x = Re y \<and> Im x < Im y"
 
 interpretation complex_lex:

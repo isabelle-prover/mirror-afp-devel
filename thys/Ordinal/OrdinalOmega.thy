@@ -63,7 +63,7 @@ lemma le_ordinal_of_nat:
 subsection \<open>Omega, the least limit ordinal\<close>
 
 definition
-  omega :: "ordinal"  ("\<omega>") where
+  omega :: "ordinal"  (\<open>\<omega>\<close>) where
   "omega = oLimit ordinal_of_nat"
 
 lemma less_omegaD: "x < \<omega> \<Longrightarrow> \<exists>n. x = ordinal_of_nat n"
@@ -415,7 +415,7 @@ qed
 
 subsection \<open>Epsilon 0\<close>
 
-definition epsilon0 :: ordinal  ("\<epsilon>\<^sub>0") where
+definition epsilon0 :: ordinal  (\<open>\<epsilon>\<^sub>0\<close>) where
   "epsilon0 = oFix ((**) \<omega>) 0"
 
 lemma less_omega_exp: "x < \<epsilon>\<^sub>0 \<Longrightarrow> x < \<omega> ** x"

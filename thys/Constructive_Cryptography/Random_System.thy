@@ -12,7 +12,7 @@ definition trace_callee_eq :: "('a, 'b, 's1) callee \<Rightarrow> ('a, 'b, 's2) 
   (\<forall>xs. set xs \<subseteq> A \<times> UNIV \<longrightarrow> (\<forall>x \<in> A. trace_callee callee1 p xs x = trace_callee callee2 q xs x))"
 
 abbreviation trace_callee_eq' :: "'a set \<Rightarrow> ('a, 'b, 's1) callee \<Rightarrow> 's1 \<Rightarrow> ('a, 'b, 's2) callee \<Rightarrow> 's2 \<Rightarrow> bool"
-  ("_ \<turnstile>\<^sub>C/ (_'((_)')) \<approx>/ (_'((_)'))" [90, 0, 0, 0, 0] 91)
+  (\<open>_ \<turnstile>\<^sub>C/ (_'((_)')) \<approx>/ (_'((_)'))\<close> [90, 0, 0, 0, 0] 91)
   where "trace_callee_eq' A callee1 s1 callee2 s2 \<equiv> trace_callee_eq callee1 callee2 A (return_spmf s1) (return_spmf s2)"
 
 lemma trace_callee_eqI:
@@ -229,7 +229,7 @@ lemma trace_callee_eq'_run_gpv:
 abbreviation trace_eq :: "'a set \<Rightarrow> ('a, 'b) resource spmf \<Rightarrow> ('a, 'b) resource spmf \<Rightarrow> bool" where
   "trace_eq \<equiv> trace_callee_eq run_resource run_resource"
 
-abbreviation trace_eq' :: "'a set \<Rightarrow> ('a, 'b) resource \<Rightarrow> ('a, 'b) resource \<Rightarrow> bool" ("(_) \<turnstile>\<^sub>R/ (_)/ \<approx> (_)" [90, 90, 90] 91) where
+abbreviation trace_eq' :: "'a set \<Rightarrow> ('a, 'b) resource \<Rightarrow> ('a, 'b) resource \<Rightarrow> bool" (\<open>(_) \<turnstile>\<^sub>R/ (_)/ \<approx> (_)\<close> [90, 90, 90] 91) where
   "A \<turnstile>\<^sub>R res \<approx> res' \<equiv> trace_eq A (return_spmf res) (return_spmf res')"
 
 lemma trace_callee_resource_of_oracle2:

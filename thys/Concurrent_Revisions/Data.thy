@@ -11,7 +11,7 @@ subsection \<open>Function notations\<close>
 abbreviation \<epsilon> :: "'a \<rightharpoonup> 'b" where
   "\<epsilon> \<equiv> \<lambda>x. None"
 
-fun combine :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a  \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b)" ("_;;_" 20) where
+fun combine :: "('a \<rightharpoonup> 'b) \<Rightarrow> ('a  \<rightharpoonup> 'b) \<Rightarrow> ('a \<rightharpoonup> 'b)" (\<open>_;;_\<close> 20) where
   "(f ;; g) x = (if g x = None then f x else g x)"
 
 lemma dom_combination_dom_union: "dom (\<tau>;;\<tau>') = dom \<tau> \<union> dom \<tau>'"
@@ -38,7 +38,7 @@ and (RID\<^sub>E: 'r, LID\<^sub>E: 'l,'v) expr =
 | Rjoin "('r,'l,'v) expr"
 
 datatype (RID\<^sub>C: 'r, LID\<^sub>C: 'l,'v) cntxt = 
-  Hole ("\<box>")
+  Hole (\<open>\<box>\<close>)
 | ApplyL\<^sub>\<E> "('r,'l,'v) cntxt" "('r,'l,'v) expr" 
 | ApplyR\<^sub>\<E> "('r,'l,'v) val" "('r,'l,'v) cntxt"
 | Ite\<^sub>\<E> "('r,'l,'v) cntxt" "('r,'l,'v) expr" "('r,'l,'v) expr"
@@ -50,7 +50,7 @@ datatype (RID\<^sub>C: 'r, LID\<^sub>C: 'l,'v) cntxt =
 
 subsection \<open>Plugging and decomposing\<close>
 
-fun plug :: "('r,'l,'v) cntxt \<Rightarrow> ('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) expr" (infix "\<lhd>" 60) where
+fun plug :: "('r,'l,'v) cntxt \<Rightarrow> ('r,'l,'v) expr \<Rightarrow> ('r,'l,'v) expr" (infix \<open>\<lhd>\<close> 60) where
   "\<box> \<lhd> e = e"
 | "ApplyL\<^sub>\<E> \<E> e1 \<lhd> e = Apply (\<E> \<lhd> e) e1"
 | "ApplyR\<^sub>\<E> val \<E> \<lhd> e = Apply (VE val) (\<E> \<lhd> e)"
@@ -144,13 +144,13 @@ type_synonym ('r,'l,'v) global_state = "'r \<rightharpoonup> ('r,'l,'v) local_st
 fun doms :: "('r,'l,'v) local_state \<Rightarrow> 'l set" where
   "doms (\<sigma>,\<tau>,e) = dom \<sigma> \<union> dom \<tau>"
 
-fun LID_snapshot :: "('r,'l,'v) local_state \<Rightarrow> ('r,'l,'v) store" ("_\<^sub>\<sigma>" 200) where
+fun LID_snapshot :: "('r,'l,'v) local_state \<Rightarrow> ('r,'l,'v) store" (\<open>_\<^sub>\<sigma>\<close> 200) where
   "LID_snapshot (\<sigma>,\<tau>,e) = \<sigma>"
 
-fun LID_local_store :: "('r,'l,'v) local_state \<Rightarrow> ('r,'l,'v) store" ("_\<^sub>\<tau>" 200) where
+fun LID_local_store :: "('r,'l,'v) local_state \<Rightarrow> ('r,'l,'v) store" (\<open>_\<^sub>\<tau>\<close> 200) where
   "LID_local_store (\<sigma>,\<tau>,e) = \<tau>"
 
-fun LID_expression :: "('r,'l,'v) local_state \<Rightarrow> ('r,'l,'v) expr" ("_\<^sub>e" 200) where
+fun LID_expression :: "('r,'l,'v) local_state \<Rightarrow> ('r,'l,'v) expr" (\<open>_\<^sub>e\<close> 200) where
   "LID_expression (\<sigma>,\<tau>,e) = e"
 
 end

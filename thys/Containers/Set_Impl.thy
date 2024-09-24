@@ -1862,7 +1862,7 @@ class set_impl =
   fixes set_impl :: "('a, set_impl) phantom"
 
 syntax (input)
-  "_SET_IMPL" :: "type => logic"  ("(1SET'_IMPL/(1'(_')))")
+  "_SET_IMPL" :: "type => logic"  (\<open>(1SET'_IMPL/(1'(_')))\<close>)
 
 syntax_consts
   "_SET_IMPL" == set_impl

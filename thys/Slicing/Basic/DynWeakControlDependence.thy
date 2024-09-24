@@ -6,7 +6,7 @@ context StrongPostdomination begin
 
 definition
   dyn_weak_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'edge list \<Rightarrow> bool" 
-  ("_ weakly controls _ via _" [51,0,0])
+  (\<open>_ weakly controls _ via _\<close> [51,0,0])
 where dyn_weak_control_dependence_def:"n weakly controls n' via as \<equiv> 
     (\<exists>a a' as'. (as = a#as') \<and> (n' \<notin> set(sourcenodes as)) \<and> (n -as\<rightarrow>* n') \<and>
                    (n' strongly-postdominates (targetnode a)) \<and>

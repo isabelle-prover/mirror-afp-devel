@@ -1423,7 +1423,7 @@ lemma inline_right_gpv_merge_exception_converter:
 subsection \<open>@{theory Constructive_Cryptography.Wiring}\<close>
 
 abbreviation (input) 
-  id_wiring :: "('a, 'b, 'a, 'b) wiring" ("1\<^sub>w")
+  id_wiring :: "('a, 'b, 'a, 'b) wiring" (\<open>1\<^sub>w\<close>)
   where
     "id_wiring \<equiv> (id, id)"
 

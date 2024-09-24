@@ -12,13 +12,13 @@ begin
 
 subsection \<open>Syntax\<close>
 
-datatype 'var ModeUpd = Acq "'var" Mode (infix "+=\<^sub>m" 75)
-  | Rel "'var" Mode (infix "-=\<^sub>m" 75)
+datatype 'var ModeUpd = Acq "'var" Mode (infix \<open>+=\<^sub>m\<close> 75)
+  | Rel "'var" Mode (infix \<open>-=\<^sub>m\<close> 75)
 
-datatype ('var, 'aexp, 'bexp) Stmt = Assign "'var" "'aexp" (infix "\<leftarrow>" 130)
+datatype ('var, 'aexp, 'bexp) Stmt = Assign "'var" "'aexp" (infix \<open>\<leftarrow>\<close> 130)
   | Skip
-  | ModeDecl "('var, 'aexp, 'bexp) Stmt" "'var ModeUpd" ("_@[_]" [0, 0] 150)
-  | Seq "('var, 'aexp, 'bexp) Stmt" "('var, 'aexp, 'bexp) Stmt" (infixr ";;" 150)
+  | ModeDecl "('var, 'aexp, 'bexp) Stmt" "'var ModeUpd" (\<open>_@[_]\<close> [0, 0] 150)
+  | Seq "('var, 'aexp, 'bexp) Stmt" "('var, 'aexp, 'bexp) Stmt" (infixr \<open>;;\<close> 150)
   | If "'bexp" "('var, 'aexp, 'bexp) Stmt" "('var, 'aexp, 'bexp) Stmt"
   | While "'bexp" "('var, 'aexp, 'bexp) Stmt"
   | Await "'bexp" "('var, 'aexp, 'bexp) Stmt"
@@ -48,23 +48,23 @@ begin
 (* To make the examples look a bit nicer in the PDF. *)
 
 notation (latex output)
-  Seq ("_; _" 60)
+  Seq (\<open>_; _\<close> 60)
 
 notation (Rule output)
-  Seq ("_ ; _" 60)
+  Seq (\<open>_ ; _\<close> 60)
 
 notation (Rule output)
-  If ("if _ then _ else _ fi" 50)
+  If (\<open>if _ then _ else _ fi\<close> 50)
 
 notation (Rule output)
-  While ("while _ do _ done")
+  While (\<open>while _ do _ done\<close>)
 
 notation (Rule output)
-  Await ("await _ do _ done")
+  Await (\<open>await _ do _ done\<close>)
 
 abbreviation conf\<^sub>w_abv :: "('Var, 'AExp, 'BExp) Stmt \<Rightarrow>
   'Var Mds \<Rightarrow> ('Var, 'Val) Mem \<Rightarrow> (_,_,_) LocalConf"
-  ("\<langle>_, _, _\<rangle>\<^sub>w" [0, 120, 120] 100)
+  (\<open>\<langle>_, _, _\<rangle>\<^sub>w\<close> [0, 120, 120] 100)
   where
   "\<langle> c, mds, mem \<rangle>\<^sub>w \<equiv> ((c, mds), mem)"
 
@@ -88,7 +88,7 @@ fun updated_mode :: "'Var ModeUpd \<Rightarrow> Mode"
 inductive_set eval\<^sub>w_simple :: "(('Var, 'AExp, 'BExp) Stmt \<times> ('Var, 'Val) Mem) rel"
 and eval\<^sub>w_simple_abv :: "(('Var, 'AExp, 'BExp) Stmt \<times> ('Var, 'Val) Mem) \<Rightarrow>
   ('Var, 'AExp, 'BExp) Stmt \<times> ('Var, 'Val) Mem \<Rightarrow> bool"
-  (infixr "\<leadsto>\<^sub>s" 60)
+  (infixr \<open>\<leadsto>\<^sub>s\<close> 60)
   where
   "c \<leadsto>\<^sub>s c' \<equiv> (c, c') \<in> eval\<^sub>w_simple" |
   assign: "((x \<leftarrow> e, mem), (Stop, mem (x := eval\<^sub>A mem e))) \<in> eval\<^sub>w_simple" |
@@ -147,7 +147,7 @@ inductive is_final :: "('Var, 'AExp, 'BExp) Stmt \<Rightarrow> bool" where
 inductive_set eval\<^sub>w :: "(('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf rel"
 and eval\<^sub>w_abv :: "(('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
                   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow> bool"
-  (infixr "\<leadsto>\<^sub>w" 60)
+  (infixr \<open>\<leadsto>\<^sub>w\<close> 60)
 where
   "c \<leadsto>\<^sub>w c' \<equiv> (c, c') \<in> eval\<^sub>w" |
   unannotated: "\<lbrakk> (c, mem) \<leadsto>\<^sub>s (c', mem') \<rbrakk>
@@ -163,7 +163,7 @@ where
 
 abbreviation eval\<^sub>w_plus :: "
   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow>
-                  (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow> bool" ("_ \<leadsto>\<^sub>w\<^sup>+ _") where
+                  (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow> bool" (\<open>_ \<leadsto>\<^sub>w\<^sup>+ _\<close>) where
 "ctx \<leadsto>\<^sub>w\<^sup>+ ctx' \<equiv> (ctx, ctx') \<in> eval\<^sub>w\<^sup>+"
   
 subsection \<open>Semantic Properties\<close>

@@ -9,7 +9,7 @@ imports
   Nested_Multisets_Ordinals.Duplicate_Free_Multiset
 begin
 
-notation image_mset (infixr "`#" 90)
+notation image_mset (infixr \<open>`#\<close> 90)
 
 section \<open>Finite maps and multisets\<close>
 

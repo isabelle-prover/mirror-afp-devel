@@ -560,7 +560,7 @@ is qbs_prob_t_integral
   by(auto simp add: qbs_prob_eq_equiv12 qbs_prob_t_integral_def qbs_prob_eq2_def)
 
 syntax
-  "_qbs_prob_ennintegral" :: "pttrn \<Rightarrow> ennreal \<Rightarrow> 'a qbs_prob_space \<Rightarrow> ennreal" ("\<integral>\<^sup>+\<^sub>Q((2 _./ _)/ \<partial>_)" [60,61] 110)
+  "_qbs_prob_ennintegral" :: "pttrn \<Rightarrow> ennreal \<Rightarrow> 'a qbs_prob_space \<Rightarrow> ennreal" (\<open>\<integral>\<^sup>+\<^sub>Q((2 _./ _)/ \<partial>_)\<close> [60,61] 110)
 
 syntax_consts
   "_qbs_prob_ennintegral" \<rightleftharpoons> qbs_prob_ennintegral
@@ -569,7 +569,7 @@ translations
  "\<integral>\<^sup>+\<^sub>Q x. f \<partial>p" \<rightleftharpoons> "CONST qbs_prob_ennintegral p (\<lambda>x. f)"
 
 syntax
-  "_qbs_prob_integral" :: "pttrn \<Rightarrow> real \<Rightarrow> 'a qbs_prob_space \<Rightarrow> real" ("\<integral>\<^sub>Q((2 _./ _)/ \<partial>_)" [60,61] 110)
+  "_qbs_prob_integral" :: "pttrn \<Rightarrow> real \<Rightarrow> 'a qbs_prob_space \<Rightarrow> real" (\<open>\<integral>\<^sub>Q((2 _./ _)/ \<partial>_)\<close> [60,61] 110)
 
 syntax_consts
   "_qbs_prob_integral" \<rightleftharpoons> qbs_prob_integral

@@ -62,21 +62,21 @@ adhoc_overloading
 subsection \<open> Syntax Translations \<close>
 
 syntax
-  "_uundef"     :: "logic" ("\<bottom>\<^sub>u")
-  "_umap_empty" :: "logic" ("[]\<^sub>u")
-  "_uapply"     :: "('a \<Rightarrow> 'b, '\<alpha>) uexpr \<Rightarrow> utuple_args \<Rightarrow> ('b, '\<alpha>) uexpr" ("_'(_')\<^sub>a" [999,0] 999)
-  "_umaplet"    :: "[logic, logic] => umaplet" ("_ /\<mapsto>/ _")
-  ""            :: "umaplet => umaplets"             ("_")
-  "_UMaplets"   :: "[umaplet, umaplets] => umaplets" ("_,/ _")
-  "_UMapUpd"    :: "[logic, umaplets] => logic" ("_/'(_')\<^sub>u" [900,0] 900)
-  "_UMap"       :: "umaplets => logic" ("(1[_]\<^sub>u)")
-  "_ucard"      :: "logic \<Rightarrow> logic" ("#\<^sub>u'(_')")
-  "_udom"       :: "logic \<Rightarrow> logic" ("dom\<^sub>u'(_')")
-  "_uran"       :: "logic \<Rightarrow> logic" ("ran\<^sub>u'(_')")
-  "_usum"       :: "logic \<Rightarrow> logic" ("sum\<^sub>u'(_')")
-  "_udom_res"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl "\<lhd>\<^sub>u" 85)
-  "_uran_res"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl "\<rhd>\<^sub>u" 85)
-  "_uentries"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" ("entr\<^sub>u'(_,_')")
+  "_uundef"     :: "logic" (\<open>\<bottom>\<^sub>u\<close>)
+  "_umap_empty" :: "logic" (\<open>[]\<^sub>u\<close>)
+  "_uapply"     :: "('a \<Rightarrow> 'b, '\<alpha>) uexpr \<Rightarrow> utuple_args \<Rightarrow> ('b, '\<alpha>) uexpr" (\<open>_'(_')\<^sub>a\<close> [999,0] 999)
+  "_umaplet"    :: "[logic, logic] => umaplet" (\<open>_ /\<mapsto>/ _\<close>)
+  ""            :: "umaplet => umaplets"             (\<open>_\<close>)
+  "_UMaplets"   :: "[umaplet, umaplets] => umaplets" (\<open>_,/ _\<close>)
+  "_UMapUpd"    :: "[logic, umaplets] => logic" (\<open>_/'(_')\<^sub>u\<close> [900,0] 900)
+  "_UMap"       :: "umaplets => logic" (\<open>(1[_]\<^sub>u)\<close>)
+  "_ucard"      :: "logic \<Rightarrow> logic" (\<open>#\<^sub>u'(_')\<close>)
+  "_udom"       :: "logic \<Rightarrow> logic" (\<open>dom\<^sub>u'(_')\<close>)
+  "_uran"       :: "logic \<Rightarrow> logic" (\<open>ran\<^sub>u'(_')\<close>)
+  "_usum"       :: "logic \<Rightarrow> logic" (\<open>sum\<^sub>u'(_')\<close>)
+  "_udom_res"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl \<open>\<lhd>\<^sub>u\<close> 85)
+  "_uran_res"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl \<open>\<rhd>\<^sub>u\<close> 85)
+  "_uentries"   :: "logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>entr\<^sub>u'(_,_')\<close>)
 
 translations
   \<comment> \<open> Pretty printing for adhoc-overloaded constructs \<close>
@@ -138,7 +138,7 @@ subsection \<open> Indexed Assignment \<close>
 
 syntax
   \<comment> \<open> Indexed assignment \<close>
-  "_assignment_upd" :: "svid \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> logic" ("(_[_] :=/ _)" [63, 0, 0] 62)
+  "_assignment_upd" :: "svid \<Rightarrow> uexp \<Rightarrow> uexp \<Rightarrow> logic" (\<open>(_[_] :=/ _)\<close> [63, 0, 0] 62)
 
 translations
   \<comment> \<open> Indexed assignment uses the overloaded collection update function \emph{uupd}. \<close>

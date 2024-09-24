@@ -978,7 +978,7 @@ lemma
   shows   bst_mrbst_inter_diff: "bst t'"
     and   set_mrbst_inter_diff: "set_tree t' = setop (set_tree t1) (set_tree t2)"
 proof -
-  write setop (infixl "\<diamondop>" 80)
+  write setop (infixl \<open>\<diamondop>\<close> 80)
   have "bst t' \<and> set_tree t' = set_tree t1 \<diamondop> set_tree t2"
   using assms(2-)
   proof (induction t1 arbitrary: t2 t')
@@ -1021,7 +1021,7 @@ theorem mrbst_inter_diff_correct:
   using assms(2-)
 proof (induction A arbitrary: B rule: finite_psubset_induct)
   case (psubset A B)
-  write setop (infixl "\<diamondop>" 80)
+  write setop (infixl \<open>\<diamondop>\<close> 80)
   include monad_normalisation
   show ?case
   proof (cases "A = {}")

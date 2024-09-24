@@ -14,14 +14,14 @@ subsection\<open>The subclass relations\<close>
 
 inductive_set
   subcls1 :: "'m prog \<Rightarrow> (cname \<times> cname) set"
-  and subcls1' :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71,71,71] 70)
+  and subcls1' :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sup>1 _\<close> [71,71,71] 70)
   for P :: "'m prog"
 where
   "P \<turnstile> C  \<prec>\<^sup>1 D \<equiv> (C,D) \<in> subcls1 P"
 | subcls1I: "\<lbrakk>class P C = Some (D,rest); C \<noteq> Object\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
 
 abbreviation
-  subcls  :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70)
+  subcls  :: "'m prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<preceq>\<^sup>* _\<close>  [71,71,71] 70)
   where "P \<turnstile> C  \<preceq>\<^sup>*  D \<equiv> (C,D) \<in> (subcls1 P)\<^sup>*"
 
 lemma subcls1D: "P \<turnstile> C \<prec>\<^sup>1 D \<Longrightarrow> C \<noteq> Object \<and> (\<exists>fs ms. class P C = Some (D,fs,ms))"
@@ -78,7 +78,7 @@ done
 subsection\<open>The subtype relations\<close>
 
 inductive
-  widen   :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
+  widen   :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<le> _\<close>   [71,71,71] 70)
   for P :: "'m prog"
 where
   widen_refl[iff]: "P \<turnstile> T \<le> T"
@@ -87,7 +87,7 @@ where
 
 abbreviation
   widens :: "'m prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool"
-    ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70) where
+    (\<open>_ \<turnstile> _ [\<le>] _\<close> [71,71,71] 70) where
   "widens P Ts Ts' \<equiv> list_all2 (widen P) Ts Ts'"
 
 lemma [iff]: "(P \<turnstile> T \<le> Void) = (T = Void)"
@@ -163,7 +163,7 @@ subsection\<open>Method lookup\<close>
 
 inductive
   Methods :: "['m prog, cname, mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname] \<Rightarrow> bool"
-                    ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
+                    (\<open>_ \<turnstile> _ sees'_methods _\<close> [51,51,51] 50)
   for P :: "'m prog"
 where
   sees_methods_Object:
@@ -269,12 +269,12 @@ qed
 
 
 definition Method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'm \<Rightarrow> cname \<Rightarrow> bool"
-            ("_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _" [51,51,51,51,51,51,51] 50)
+            (\<open>_ \<turnstile> _ sees _: _\<rightarrow>_ = _ in _\<close> [51,51,51,51,51,51,51] 50)
 where
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D  \<equiv>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm M = Some((Ts,T,m),D)"
 
-definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" ("_ \<turnstile> _ has _" [51,0,51] 50)
+definition has_method :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> bool" (\<open>_ \<turnstile> _ has _\<close> [51,0,51] 50)
 where
   "P \<turnstile> C has M \<equiv> \<exists>Ts T m D. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D"
 
@@ -330,7 +330,7 @@ subsection\<open>Field lookup\<close>
 
 inductive
   Fields :: "['m prog, cname, ((vname \<times> cname) \<times> ty) list] \<Rightarrow> bool"
-                  ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
+                  (\<open>_ \<turnstile> _ has'_fields _\<close> [51,51,51] 50)
   for P :: "'m prog"
 where
   has_fields_rec:
@@ -470,7 +470,7 @@ qed
 
 (* FIXME why is Field not displayed correctly? TypeRel qualifier seems to confuse printer*)
 definition has_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
-                   ("_ \<turnstile> _ has _:_ in _" [51,51,51,51,51] 50)
+                   (\<open>_ \<turnstile> _ has _:_ in _\<close> [51,51,51,51,51] 50)
 where
   "P \<turnstile> C has F:T in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and> map_of FDTs (F,D) = Some T"
@@ -491,7 +491,7 @@ qed
 
 
 definition sees_field :: "'m prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
-                  ("_ \<turnstile> _ sees _:_ in _" [51,51,51,51,51] 50)
+                  (\<open>_ \<turnstile> _ sees _:_ in _\<close> [51,51,51,51,51] 50)
 where
   "P \<turnstile> C sees F:T in D  \<equiv>
   \<exists>FDTs. P \<turnstile> C has_fields FDTs \<and>

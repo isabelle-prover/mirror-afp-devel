@@ -19,7 +19,7 @@ begin
 class Norms = Points + AxEField
 begin
 
-abbreviation norm :: "'a Point \<Rightarrow> 'a" ("\<parallel> _ \<parallel>") 
+abbreviation norm :: "'a Point \<Rightarrow> 'a" (\<open>\<parallel> _ \<parallel>\<close>) 
   where "norm p \<equiv> sqrt (norm2 p)"
 
 (* spatial norms *)

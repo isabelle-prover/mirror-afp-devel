@@ -74,7 +74,7 @@ the existence of a timelike curve from one location to another.
 
 
 locale ReachabilitySpace = 
-  fixes   reachable :: "'location \<Rightarrow> 'location \<Rightarrow> bool" ("_ \<leadsto> _")
+  fixes   reachable :: "'location \<Rightarrow> 'location \<Rightarrow> bool" (\<open>_ \<leadsto> _\<close>)
 begin
 end
 

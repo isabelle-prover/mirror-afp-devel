@@ -8,19 +8,19 @@ text\<open>We define and interrelate infinitary variants for some previously int
  axiomatic conditions on operators.\<close>
 
 text\<open>Anti-distribution over infinite joins (suprema) or infinite anti-additivity (inADDI).\<close>
-definition inADDI::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("inADDI")
+definition inADDI::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>inADDI\<close>)
   where "inADDI \<phi>  \<equiv> \<forall>S. \<phi>(\<^bold>\<Or>S) \<^bold>= \<^bold>\<And>\<lbrakk>\<phi> S\<rbrakk>" 
-definition inADDI_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("inADDI\<^sup>a")
+definition inADDI_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>inADDI\<^sup>a\<close>)
   where "inADDI\<^sup>a \<phi> \<equiv> \<forall>S. \<^bold>\<And>\<lbrakk>\<phi> S\<rbrakk> \<^bold>\<le> \<phi>(\<^bold>\<Or>S)  " 
-definition inADDI_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("inADDI\<^sup>b")
+definition inADDI_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>inADDI\<^sup>b\<close>)
   where "inADDI\<^sup>b \<phi> \<equiv> \<forall>S. \<phi>(\<^bold>\<Or>S) \<^bold>\<le> \<^bold>\<And>\<lbrakk>\<phi> S\<rbrakk>"
 
 text\<open>Anti-distribution over infinite meets (infima) or infinite anti-multiplicativity (inMULT).\<close>
-definition inMULT::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("inMULT")
+definition inMULT::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>inMULT\<close>)
   where "inMULT \<phi>  \<equiv> \<forall>S. \<phi>(\<^bold>\<And>S) \<^bold>= \<^bold>\<Or>\<lbrakk>\<phi> S\<rbrakk>" 
-definition inMULT_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("inMULT\<^sup>a")
+definition inMULT_a::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>inMULT\<^sup>a\<close>)
   where "inMULT\<^sup>a \<phi> \<equiv> \<forall>S. \<^bold>\<Or>\<lbrakk>\<phi> S\<rbrakk> \<^bold>\<le> \<phi>(\<^bold>\<And>S)"
-definition inMULT_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" ("inMULT\<^sup>b")
+definition inMULT_b::"('w \<sigma> \<Rightarrow> 'w \<sigma>) \<Rightarrow> bool" (\<open>inMULT\<^sup>b\<close>)
   where "inMULT\<^sup>b \<phi> \<equiv> \<forall>S. \<phi>(\<^bold>\<And>S) \<^bold>\<le> \<^bold>\<Or>\<lbrakk>\<phi> S\<rbrakk>"
 
 declare inADDI_def[cond] inADDI_a_def[cond] inADDI_b_def[cond]

@@ -10,7 +10,7 @@ theory BetaNorm
   imports Term
 begin                             
 
-inductive beta :: "term \<Rightarrow> term \<Rightarrow> bool"  (infixl "\<rightarrow>\<^sub>\<beta>" 50)
+inductive beta :: "term \<Rightarrow> term \<Rightarrow> bool"  (infixl \<open>\<rightarrow>\<^sub>\<beta>\<close> 50)
   where
     beta [simp, intro!]: "Abs T s $ t \<rightarrow>\<^sub>\<beta> subst_bv2 s 0 t"
   | appL [simp, intro!]: "s \<rightarrow>\<^sub>\<beta> t \<Longrightarrow> s $ u \<rightarrow>\<^sub>\<beta> t $ u"
@@ -18,7 +18,7 @@ inductive beta :: "term \<Rightarrow> term \<Rightarrow> bool"  (infixl "\<right
   | abs [simp, intro!]: "s \<rightarrow>\<^sub>\<beta> t \<Longrightarrow> Abs T s \<rightarrow>\<^sub>\<beta> Abs T t"
 
 abbreviation
-  beta_reds :: "term \<Rightarrow> term \<Rightarrow> bool" (infixl "\<rightarrow>\<^sub>\<beta>\<^sup>*" 50) where
+  beta_reds :: "term \<Rightarrow> term \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<^sub>\<beta>\<^sup>*\<close> 50) where
   "s \<rightarrow>\<^sub>\<beta>\<^sup>* t == beta\<^sup>*\<^sup>* s t"
 
 inductive_cases beta_cases [elim!]:

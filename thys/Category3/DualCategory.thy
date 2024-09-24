@@ -21,10 +21,10 @@ begin
     
   locale dual_category =
     C: category C
-  for C :: "'a comp"     (infixr "\<cdot>" 55)
+  for C :: "'a comp"     (infixr \<open>\<cdot>\<close> 55)
   begin
 
-    definition comp      (infixr "\<cdot>\<^sup>o\<^sup>p" 55)
+    definition comp      (infixr \<open>\<cdot>\<^sup>o\<^sup>p\<close> 55)
     where "g \<cdot>\<^sup>o\<^sup>p f \<equiv> f \<cdot> g"
 
     lemma comp_char [simp]:
@@ -34,7 +34,7 @@ begin
     interpretation partial_composition comp
       apply unfold_locales using comp_def C.ex_un_null by metis
 
-    notation in_hom ("\<guillemotleft>_ : _ \<leftarrow> _\<guillemotright>")
+    notation in_hom (\<open>\<guillemotleft>_ : _ \<leftarrow> _\<guillemotright>\<close>)
 
     lemma null_char [simp]:
     shows "null = C.null"

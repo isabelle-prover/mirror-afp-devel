@@ -17,9 +17,9 @@ definition restrict :: "['a => 'b, 'a set] => ('a => 'b)" where
  "restrict f A = (%x. if x : A then f x else (@ y. True))"
 
 syntax (ASCII)
-  "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  ("(3%_:_./ _)" [0, 0, 3] 3)
+  "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  (\<open>(3%_:_./ _)\<close> [0, 0, 3] 3)
 syntax
-  "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  ("(3\<lambda>_\<in>_./ _)" [0, 0, 3] 3)
+  "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  (\<open>(3\<lambda>_\<in>_./ _)\<close> [0, 0, 3] 3)
 syntax_consts
   "_lambda_in" == restrict
 translations

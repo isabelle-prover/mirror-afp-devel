@@ -345,7 +345,7 @@ definition is_n_edge_colourable :: "nat \<Rightarrow> bool" where
 definition all_n_vertex_colourings :: "nat \<Rightarrow> ('a \<Rightarrow> colour) set" where
 "all_n_vertex_colourings n \<equiv> {f . vertex_colouring f n}"
 
-notation all_n_vertex_colourings ("(\<C>\<^sup>_)" [502] 500)
+notation all_n_vertex_colourings (\<open>(\<C>\<^sup>_)\<close> [502] 500)
 
 lemma all_n_vertex_colourings_alt: "\<C>\<^sup>n = \<V> \<rightarrow>\<^sub>E {0..<n}"
   unfolding all_n_vertex_colourings_def by auto

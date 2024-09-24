@@ -28,16 +28,16 @@ subsection\<open>Further notation\<close>
 
 subsubsection\<open>Set membership\<close>
 
-abbreviation vmember :: "V \<Rightarrow> V \<Rightarrow> bool" ("(_/ \<in>\<^sub>\<circ> _)" [51, 51] 50) 
+abbreviation vmember :: "V \<Rightarrow> V \<Rightarrow> bool" (\<open>(_/ \<in>\<^sub>\<circ> _)\<close> [51, 51] 50) 
   where "vmember x A \<equiv> (x \<in> elts A)"
-notation vmember ("'(\<in>\<^sub>\<circ>')")
-  and vmember ("(_/ \<in>\<^sub>\<circ> _)" [51, 51] 50)
+notation vmember (\<open>'(\<in>\<^sub>\<circ>')\<close>)
+  and vmember (\<open>(_/ \<in>\<^sub>\<circ> _)\<close> [51, 51] 50)
 
-abbreviation not_vmember :: "V \<Rightarrow> V \<Rightarrow> bool" ("(_/ \<notin>\<^sub>\<circ> _)" [51, 51] 50) 
+abbreviation not_vmember :: "V \<Rightarrow> V \<Rightarrow> bool" (\<open>(_/ \<notin>\<^sub>\<circ> _)\<close> [51, 51] 50) 
   where "not_vmember x A \<equiv> (x \<notin> elts A)" 
 notation
-  not_vmember ("'(\<notin>\<^sub>\<circ>')") and
-  not_vmember ("(_/ \<notin>\<^sub>\<circ> _)" [51, 51] 50)
+  not_vmember (\<open>'(\<notin>\<^sub>\<circ>')\<close>) and
+  not_vmember (\<open>(_/ \<notin>\<^sub>\<circ> _)\<close> [51, 51] 50)
 
 
 subsubsection\<open>Subsets\<close>
@@ -47,18 +47,18 @@ abbreviation vsubset :: "V \<Rightarrow> V \<Rightarrow> bool"
 abbreviation vsubset_eq :: "V \<Rightarrow> V \<Rightarrow> bool"
   where "vsubset_eq \<equiv> less_eq"
 
-notation vsubset ("'(\<subset>\<^sub>\<circ>')") 
-  and vsubset ("(_/ \<subset>\<^sub>\<circ> _)" [51, 51] 50) 
-  and vsubset_eq ("'(\<subseteq>\<^sub>\<circ>')") 
-  and vsubset_eq ("(_/ \<subseteq>\<^sub>\<circ> _)" [51, 51] 50)
+notation vsubset (\<open>'(\<subset>\<^sub>\<circ>')\<close>) 
+  and vsubset (\<open>(_/ \<subset>\<^sub>\<circ> _)\<close> [51, 51] 50) 
+  and vsubset_eq (\<open>'(\<subseteq>\<^sub>\<circ>')\<close>) 
+  and vsubset_eq (\<open>(_/ \<subseteq>\<^sub>\<circ> _)\<close> [51, 51] 50)
 
 
 subsubsection\<open>Ball\<close>
 
 syntax
-  "_VBall" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>(_/\<in>\<^sub>\<circ>_)./ _)" [0, 0, 10] 10)
-  "_VBex" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>(_/\<in>\<^sub>\<circ>_)./ _)" [0, 0, 10] 10)
-  "_VBex1" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>!(_/\<in>\<^sub>\<circ>_)./ _)" [0, 0, 10] 10)
+  "_VBall" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<forall>(_/\<in>\<^sub>\<circ>_)./ _)\<close> [0, 0, 10] 10)
+  "_VBex" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<exists>(_/\<in>\<^sub>\<circ>_)./ _)\<close> [0, 0, 10] 10)
+  "_VBex1" :: "pttrn \<Rightarrow> V \<Rightarrow> bool \<Rightarrow> bool" (\<open>(3\<exists>!(_/\<in>\<^sub>\<circ>_)./ _)\<close> [0, 0, 10] 10)
 
 syntax_consts
   "_VBall" \<rightleftharpoons> Ball and
@@ -83,13 +83,13 @@ translations "\<lambda>x\<in>\<^sub>\<circ>A. f" \<rightleftharpoons> "CONST VLa
 
 subsubsection\<open>Intersection and union\<close>
 
-abbreviation vintersection :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<inter>\<^sub>\<circ>" 70)
+abbreviation vintersection :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<inter>\<^sub>\<circ>\<close> 70)
   where "(\<inter>\<^sub>\<circ>) \<equiv> (\<sqinter>)"
-notation vintersection (infixl "\<inter>\<^sub>\<circ>" 70)
+notation vintersection (infixl \<open>\<inter>\<^sub>\<circ>\<close> 70)
 
-abbreviation vunion :: "V \<Rightarrow> V \<Rightarrow> V"  (infixl "\<union>\<^sub>\<circ>" 65)
+abbreviation vunion :: "V \<Rightarrow> V \<Rightarrow> V"  (infixl \<open>\<union>\<^sub>\<circ>\<close> 65)
   where "vunion \<equiv> sup"
-notation vunion (infixl "\<union>\<^sub>\<circ>" 65)
+notation vunion (infixl \<open>\<union>\<^sub>\<circ>\<close> 65)
 
 abbreviation VInter :: "V \<Rightarrow> V" (\<open>\<Inter>\<^sub>\<circ>\<close>)
   where "\<Inter>\<^sub>\<circ> A \<equiv> \<Sqinter> (elts A)"
@@ -103,7 +103,7 @@ notation VUnion (\<open>\<Union>\<^sub>\<circ>\<close>)
 subsubsection\<open>Miscellaneous\<close>
 
 notation app (\<open>_\<lparr>_\<rparr>\<close> [999, 50] 999)
-notation vtimes (infixr "\<times>\<^sub>\<circ>" 80)
+notation vtimes (infixr \<open>\<times>\<^sub>\<circ>\<close> 80)
 
 
 
@@ -533,7 +533,7 @@ subsection\<open>Set difference\<close>
 
 definition vdiff :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>-\<^sub>\<circ>\<close> 65) 
   where "A -\<^sub>\<circ> B = set {x. x \<in>\<^sub>\<circ> A \<and> x \<notin>\<^sub>\<circ> B}"
-notation vdiff (infixl "-\<^sub>\<circ>" 65)
+notation vdiff (infixl \<open>-\<^sub>\<circ>\<close> 65)
 
 lemma small_set_vdiff[simp]: "small {x. x \<in>\<^sub>\<circ> A \<and> x \<notin>\<^sub>\<circ> B}" 
   by (rule down[of _ A]) simp

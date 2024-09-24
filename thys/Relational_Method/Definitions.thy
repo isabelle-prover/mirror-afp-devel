@@ -495,7 +495,7 @@ datatype msg =
   Agent agent_id |
   Pwd agent_id |
   Key key |
-  Mult key_id key_id (infixl "\<otimes>" 70) |
+  Mult key_id key_id (infixl \<open>\<otimes>\<close> 70) |
   Hash msg |
   Crypt key msg |
   MPair msg msg |
@@ -503,8 +503,8 @@ datatype msg =
   Log msg
 
 syntax
-  "_MPair"  :: "['a, args] \<Rightarrow> 'a * 'b"  ("(2\<lbrace>_,/ _\<rbrace>)")
-  "_IDInfo" :: "[agent_id, msg] \<Rightarrow> msg"      ("(2\<langle>_,/ _\<rangle>)")
+  "_MPair"  :: "['a, args] \<Rightarrow> 'a * 'b"  (\<open>(2\<lbrace>_,/ _\<rbrace>)\<close>)
+  "_IDInfo" :: "[agent_id, msg] \<Rightarrow> msg"      (\<open>(2\<langle>_,/ _\<rangle>)\<close>)
 syntax_consts
   "_MPair" \<rightleftharpoons> MPair and
   "_IDInfo" \<rightleftharpoons> IDInfo
@@ -865,10 +865,10 @@ definition rel :: "(state \<times> state) set" where
   rel_enc \<union> rel_sep \<union> rel_con \<union> rel_id_agent \<union> rel_id_invk \<union> rel_id_sesk \<union>
   rel_id_fact \<union> rel_id_mult \<union> rel_id_hash \<union> rel_id_crypt \<union> rel_id_sep \<union> rel_id_con"
 
-abbreviation in_rel :: "state \<Rightarrow> state \<Rightarrow> bool" (infix "\<turnstile>" 60) where
+abbreviation in_rel :: "state \<Rightarrow> state \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 60) where
 "s \<turnstile> s' \<equiv> (s, s') \<in> rel"
 
-abbreviation in_rel_rtrancl :: "state \<Rightarrow> state \<Rightarrow> bool" (infix "\<Turnstile>" 60) where
+abbreviation in_rel_rtrancl :: "state \<Rightarrow> state \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 60) where
 "s \<Turnstile> s' \<equiv> (s, s') \<in> rel\<^sup>*"
 
 end

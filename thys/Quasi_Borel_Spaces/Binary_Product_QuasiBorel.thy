@@ -12,7 +12,7 @@ subsubsection \<open> Binary Product Spaces \<close>
 definition pair_qbs_Mx :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> (real => 'a \<times> 'b) set" where
 "pair_qbs_Mx X Y \<equiv> {f. fst \<circ> f \<in> qbs_Mx X \<and> snd \<circ> f \<in> qbs_Mx Y}"
 
-definition pair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<times> 'b) quasi_borel" (infixr "\<Otimes>\<^sub>Q" 80) where
+definition pair_qbs :: "['a quasi_borel, 'b quasi_borel] \<Rightarrow> ('a \<times> 'b) quasi_borel" (infixr \<open>\<Otimes>\<^sub>Q\<close> 80) where
 "pair_qbs X Y = Abs_quasi_borel (qbs_space X \<times> qbs_space Y, pair_qbs_Mx X Y)"
 
 

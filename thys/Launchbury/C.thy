@@ -13,11 +13,11 @@ domain C = C (lazy "C")
 lemma below_C: "x \<sqsubseteq> C\<cdot>x"
   by (induct x) auto
 
-definition Cinf ("C\<^sup>\<infinity>") where "C\<^sup>\<infinity> = fix\<cdot>C"
+definition Cinf (\<open>C\<^sup>\<infinity>\<close>) where "C\<^sup>\<infinity> = fix\<cdot>C"
 
 lemma C_Cinf[simp]: "C\<cdot>C\<^sup>\<infinity> = C\<^sup>\<infinity>" unfolding Cinf_def by (rule fix_eq[symmetric])
 
-abbreviation Cpow ("C\<^bsup>_\<^esup>") where "C\<^bsup>n\<^esup> \<equiv> iterate n\<cdot>C\<cdot>\<bottom>"
+abbreviation Cpow (\<open>C\<^bsup>_\<^esup>\<close>) where "C\<^bsup>n\<^esup> \<equiv> iterate n\<cdot>C\<cdot>\<bottom>"
 
 lemma C_below_C[simp]: "(C\<^bsup>i\<^esup> \<sqsubseteq> C\<^bsup>j\<^esup>) \<longleftrightarrow> i \<le> j"
   apply (induction i arbitrary: j)

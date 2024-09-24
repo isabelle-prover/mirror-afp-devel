@@ -31,13 +31,13 @@ scenarios.
 
 abbreviation
   rcv_syn :: "'location \<Rightarrow> 'channel \<Rightarrow> ('val \<Rightarrow> 'state \<Rightarrow> 'state)
-           \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" ("\<lbrace>_\<rbrace>/ _\<triangleright>_" [0,0,81] 81)
+           \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" (\<open>\<lbrace>_\<rbrace>/ _\<triangleright>_\<close> [0,0,81] 81)
 where
   "\<lbrace>l\<rbrace> ch\<triangleright>f \<equiv> \<lbrace>l\<rbrace> Response (\<lambda>q s. if fst q = ch then {(f (snd q) s, ())} else {})"
 
 abbreviation
   snd_syn :: "'location \<Rightarrow> 'channel \<Rightarrow> ('state \<Rightarrow> 'val)
-          \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" ("\<lbrace>_\<rbrace>/ _\<triangleleft>_" [0,0,81] 81)
+          \<Rightarrow> (unit, 'location, 'channel \<times> 'val, 'state) com" (\<open>\<lbrace>_\<rbrace>/ _\<triangleleft>_\<close> [0,0,81] 81)
 where
   "\<lbrace>l\<rbrace> ch\<triangleleft>f \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (ch, f s)) (\<lambda>ans s. {s})"
 
@@ -96,7 +96,7 @@ so we can establish \<open>Etern_pred\<close>.
 \<close>
 
 abbreviation
-  filter_on_channel :: "ex_chname \<Rightarrow> ex_state \<Rightarrow> ex_val list" ("\<downharpoonright>_" [100] 101)
+  filter_on_channel :: "ex_chname \<Rightarrow> ex_state \<Rightarrow> ex_val list" (\<open>\<downharpoonright>_\<close> [100] 101)
 where
   "\<downharpoonright>ch \<equiv> map (snd \<circ> fst) \<circ> filter ((=) ch \<circ> fst \<circ> fst) \<circ> HST"
 

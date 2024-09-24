@@ -60,7 +60,7 @@ text \<open>
 \<close>
 definition
   bind :: "('s, 'a) nondet_monad \<Rightarrow> ('a \<Rightarrow> ('s, 'b) nondet_monad) \<Rightarrow> 
-           ('s, 'b) nondet_monad" (infixl ">>=" 60)
+           ('s, 'b) nondet_monad" (infixl \<open>>>=\<close> 60)
   where
   "bind f g \<equiv> \<lambda>s. (\<Union>(fst ` case_prod g ` fst (f s)),
                    True \<in> snd ` case_prod g ` fst (f s) \<or> snd (f s))"
@@ -70,7 +70,7 @@ text \<open>
 \<close>
 abbreviation(input)
   bind_rev :: "('c \<Rightarrow> ('a, 'b) nondet_monad) \<Rightarrow> ('a, 'c) nondet_monad \<Rightarrow> 
-               ('a, 'b) nondet_monad" (infixl "=<<" 60) where 
+               ('a, 'b) nondet_monad" (infixl \<open>=<<\<close> 60) where 
   "g =<< f \<equiv> f >>= g"
 
 text \<open>
@@ -104,7 +104,7 @@ definition
 definition
   alternative :: "('s,'a) nondet_monad \<Rightarrow> ('s,'a) nondet_monad \<Rightarrow> 
                   ('s,'a) nondet_monad" 
-  (infixl "\<sqinter>" 20)
+  (infixl \<open>\<sqinter>\<close> 20)
 where
   "f \<sqinter> g \<equiv> \<lambda>s. (fst (f s) \<union> fst (g s), snd (f s) \<or> snd (g s))"
 
@@ -198,7 +198,7 @@ where
   "condition P L R \<equiv> \<lambda>s. if (P s) then (L s) else (R s)"
 
 notation (output)
-  condition  ("(condition (_)//  (_)//  (_))" [1000,1000,1000] 1000)
+  condition  (\<open>(condition (_)//  (_)//  (_))\<close> [1000,1000,1000] 1000)
 
 text \<open>
 Apply an option valued function to the current state, fail 
@@ -293,7 +293,7 @@ text \<open>
 definition
   bindE :: "('s, 'e + 'a) nondet_monad \<Rightarrow> 
             ('a \<Rightarrow> ('s, 'e + 'b) nondet_monad) \<Rightarrow> 
-            ('s, 'e + 'b) nondet_monad"  (infixl ">>=E" 60)
+            ('s, 'e + 'b) nondet_monad"  (infixl \<open>>>=E\<close> 60)
 where
   "bindE f g \<equiv> bind f (lift g)"
 
@@ -404,14 +404,14 @@ nonterminal
   dobinds and dobind and nobind
 
 syntax (ASCII)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ <-/ _)" 10)
+  "_dobind"    :: "[pttrn, 'a] => dobind"             (\<open>(_ <-/ _)\<close> 10)
 syntax
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
-  ""           :: "dobind => dobinds"                 ("_")
-  "_nobind"    :: "'a => dobind"                      ("_")
-  "_dobinds"   :: "[dobind, dobinds] => dobinds"      ("(_);//(_)")
+  "_dobind"    :: "[pttrn, 'a] => dobind"             (\<open>(_ \<leftarrow>/ _)\<close> 10)
+  ""           :: "dobind => dobinds"                 (\<open>_\<close>)
+  "_nobind"    :: "'a => dobind"                      (\<open>_\<close>)
+  "_dobinds"   :: "[dobind, dobinds] => dobinds"      (\<open>(_);//(_)\<close>)
 
-  "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
+  "_do"        :: "[dobinds, 'a] => 'a"               (\<open>(do ((_);//(_))//od)\<close> 100)
 syntax_consts
   "_do" == bind
 translations
@@ -446,7 +446,7 @@ text \<open>
 \<close>
 
 syntax
-  "_doE" :: "[dobinds, 'a] => 'a"  ("(doE ((_);//(_))//odE)" 100)
+  "_doE" :: "[dobinds, 'a] => 'a"  (\<open>(doE ((_);//(_))//odE)\<close> 100)
 
 syntax_consts
   "_doE" == bindE
@@ -588,7 +588,7 @@ text \<open>
 definition
   catch :: "('s, 'e + 'a) nondet_monad \<Rightarrow>
             ('e \<Rightarrow> ('s, 'a) nondet_monad) \<Rightarrow>
-            ('s, 'a) nondet_monad" (infix "<catch>" 10)
+            ('s, 'a) nondet_monad" (infix \<open><catch>\<close> 10)
 where
   "f <catch> handler \<equiv>
      do x \<leftarrow> f;
@@ -605,7 +605,7 @@ text \<open>
 definition
   handleE' :: "('s, 'e1 + 'a) nondet_monad \<Rightarrow>
                ('e1 \<Rightarrow> ('s, 'e2 + 'a) nondet_monad) \<Rightarrow>
-               ('s, 'e2 + 'a) nondet_monad" (infix "<handle2>" 10)
+               ('s, 'e2 + 'a) nondet_monad" (infix \<open><handle2>\<close> 10)
 where
   "f <handle2> handler \<equiv>
    do
@@ -623,7 +623,7 @@ text \<open>
 definition
   handleE :: "('s, 'x + 'a) nondet_monad \<Rightarrow> 
               ('x \<Rightarrow> ('s, 'x + 'a) nondet_monad) \<Rightarrow> 
-              ('s, 'x + 'a) nondet_monad" (infix "<handle>" 10)
+              ('s, 'x + 'a) nondet_monad" (infix \<open><handle>\<close> 10)
 where
   "handleE \<equiv> handleE'"
 
@@ -637,7 +637,7 @@ definition
                    ('e \<Rightarrow> ('s, 'ee + 'b) nondet_monad) \<Rightarrow>
                    ('a \<Rightarrow> ('s, 'ee + 'b) nondet_monad) \<Rightarrow>
                    ('s, 'ee + 'b) nondet_monad"
-  ("_ <handle> _ <else> _" 10)
+  (\<open>_ <handle> _ <else> _\<close> 10)
 where
   "f <handle> handler <else> continue \<equiv>
    do v \<leftarrow> f;
@@ -685,7 +685,7 @@ definition
         (Some (r, s), None) \<in> whileLoop_results C B \<or> (\<not> whileLoop_terminates C B r s)))"
 
 notation (output)
-  whileLoop  ("(whileLoop (_)//  (_))" [1000, 1000] 1000)
+  whileLoop  (\<open>(whileLoop (_)//  (_))\<close> [1000, 1000] 1000)
 
 definition
   whileLoopE :: "('r \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> ('r \<Rightarrow> ('s, 'e + 'r) nondet_monad)
@@ -695,7 +695,7 @@ where
       \<lambda>r. whileLoop (\<lambda>r s. (case r of Inr v \<Rightarrow> C v s | _ \<Rightarrow> False)) (lift body) (Inr r)"
 
 notation (output)
-  whileLoopE  ("(whileLoopE (_)//  (_))" [1000, 1000] 1000)
+  whileLoopE  (\<open>(whileLoopE (_)//  (_))\<close> [1000, 1000] 1000)
 
 section "Hoare Logic"
 
@@ -722,7 +722,7 @@ text \<open>This section defines a Hoare logic for partial correctness for
 \<close>
 definition
   valid :: "('s \<Rightarrow> bool) \<Rightarrow> ('s,'a) nondet_monad \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool" 
-  ("\<lbrace>_\<rbrace>/ _ /\<lbrace>_\<rbrace>")
+  (\<open>\<lbrace>_\<rbrace>/ _ /\<lbrace>_\<rbrace>\<close>)
 where
   "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace> \<equiv> \<forall>s. P s \<longrightarrow> (\<forall>(r,s') \<in> fst (f s). Q r s')"
 
@@ -735,7 +735,7 @@ definition
   validE :: "('s \<Rightarrow> bool) \<Rightarrow> ('s, 'a + 'b) nondet_monad \<Rightarrow> 
              ('b \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 
              ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool" 
-("\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)")
+(\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
 where
   "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,\<lbrace>E\<rbrace> \<equiv> \<lbrace>P\<rbrace> f \<lbrace> \<lambda>v s. case v of Inr r \<Rightarrow> Q r s | Inl e \<Rightarrow> E e s \<rbrace>"
 
@@ -747,37 +747,37 @@ text \<open>
 definition
   validE_R :: "('s \<Rightarrow> bool) \<Rightarrow> ('s, 'e + 'a) nondet_monad \<Rightarrow> 
                ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool"
-   ("\<lbrace>_\<rbrace>/ _ /\<lbrace>_\<rbrace>, -")
+   (\<open>\<lbrace>_\<rbrace>/ _ /\<lbrace>_\<rbrace>, -\<close>)
 where
  "\<lbrace>P\<rbrace> f \<lbrace>Q\<rbrace>,- \<equiv> validE P f Q (\<lambda>x y. True)"
 
 definition
   validE_E :: "('s \<Rightarrow> bool) \<Rightarrow>  ('s, 'e + 'a) nondet_monad \<Rightarrow> 
                ('e \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool"
-   ("\<lbrace>_\<rbrace>/ _ /-, \<lbrace>_\<rbrace>")
+   (\<open>\<lbrace>_\<rbrace>/ _ /-, \<lbrace>_\<rbrace>\<close>)
 where
  "\<lbrace>P\<rbrace> f -,\<lbrace>Q\<rbrace> \<equiv> validE P f (\<lambda>x y. True) Q"
 
 
 text \<open>Abbreviations for trivial preconditions:\<close>
 abbreviation(input)
-  top :: "'a \<Rightarrow> bool" ("\<top>")
+  top :: "'a \<Rightarrow> bool" (\<open>\<top>\<close>)
 where
   "\<top> \<equiv> \<lambda>_. True"
 
 abbreviation(input)
-  bottom :: "'a \<Rightarrow> bool" ("\<bottom>")
+  bottom :: "'a \<Rightarrow> bool" (\<open>\<bottom>\<close>)
 where
   "\<bottom> \<equiv> \<lambda>_. False"
 
 text \<open>Abbreviations for trivial postconditions (taking two arguments):\<close>
 abbreviation(input)
-  toptop :: "'a \<Rightarrow> 'b \<Rightarrow> bool" ("\<top>\<top>")
+  toptop :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (\<open>\<top>\<top>\<close>)
 where
  "\<top>\<top> \<equiv> \<lambda>_ _. True"
 
 abbreviation(input)
-  botbot :: "'a \<Rightarrow> 'b \<Rightarrow> bool" ("\<bottom>\<bottom>")
+  botbot :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (\<open>\<bottom>\<bottom>\<close>)
 where
  "\<bottom>\<bottom> \<equiv> \<lambda>_ _. False"
 
@@ -788,13 +788,13 @@ text \<open>
 \<close>
 definition
   bipred_conj :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool)" 
-  (infixl "And" 96)
+  (infixl \<open>And\<close> 96)
 where
   "bipred_conj P Q \<equiv> \<lambda>x y. P x y \<and> Q x y"
 
 definition
   bipred_disj :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool)" 
-  (infixl "Or" 91)
+  (infixl \<open>Or\<close> 91)
 where
   "bipred_disj P Q \<equiv> \<lambda>x y. P x y \<or> Q x y"
 
@@ -838,7 +838,7 @@ text \<open>
 
 definition
   validNF ::"('s \<Rightarrow> bool) \<Rightarrow> ('s,'a) nondet_monad \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool"
-      ("\<lbrace>_\<rbrace>/ _ /\<lbrace>_\<rbrace>!")
+      (\<open>\<lbrace>_\<rbrace>/ _ /\<lbrace>_\<rbrace>!\<close>)
 where
   "validNF P f Q \<equiv> valid P f Q \<and> no_fail P f"
 
@@ -846,7 +846,7 @@ definition
   validE_NF :: "('s \<Rightarrow> bool) \<Rightarrow> ('s, 'a + 'b) nondet_monad \<Rightarrow>
              ('b \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow>
              ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> bool"
-  ("\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>!)")
+  (\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>!)\<close>)
 where
   "validE_NF P f Q E \<equiv> validE P f Q E \<and> no_fail P f"
 

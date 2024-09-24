@@ -48,13 +48,13 @@ interpretation real_int_class?: real_int .
 context real_int
 begin
   
-definition length :: "real_int \<Rightarrow> real" ("\<parallel>_\<parallel>" 70)
+definition length :: "real_int \<Rightarrow> real" (\<open>\<parallel>_\<parallel>\<close> 70)
   where "\<parallel>r\<parallel> \<equiv> right r - left r"
 
-definition shift::"real_int \<Rightarrow> real \<Rightarrow> real_int" (" shift _ _")
+definition shift::"real_int \<Rightarrow> real \<Rightarrow> real_int" (\<open> shift _ _\<close>)
   where "(shift r x) = Abs_real_int(left r +x, right r +x)"
 
-definition R_Chop :: "real_int \<Rightarrow> real_int \<Rightarrow> real_int \<Rightarrow> bool" ("R'_Chop'(_,_,_')" 51)
+definition R_Chop :: "real_int \<Rightarrow> real_int \<Rightarrow> real_int \<Rightarrow> bool" (\<open>R'_Chop'(_,_,_')\<close> 51)
   where rchop_def :
     "R_Chop(r,s,t) ==  left r  = left s \<and> right s = left t \<and> right r =  right t"
         

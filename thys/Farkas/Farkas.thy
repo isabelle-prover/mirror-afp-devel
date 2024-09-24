@@ -72,7 +72,7 @@ instance proof
 qed
 end 
 
-primrec satisfiable_le_constraint :: "'a::lrv valuation \<Rightarrow> 'a le_constraint \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>l\<^sub>e" 100) where
+primrec satisfiable_le_constraint :: "'a::lrv valuation \<Rightarrow> 'a le_constraint \<Rightarrow> bool" (infixl \<open>\<Turnstile>\<^sub>l\<^sub>e\<close> 100) where
   "(v \<Turnstile>\<^sub>l\<^sub>e (Le_Constraint rel l r)) \<longleftrightarrow> (rel_of rel (l\<lbrace>v\<rbrace>) r)"
 
 lemma satisfies_zero_le_constraint: "v \<Turnstile>\<^sub>l\<^sub>e 0"
@@ -204,7 +204,7 @@ text \<open>We first prove that if the check-function detects a conflict, then
   Farkas coefficients do exist for the tableau and atom set for which the
   conflict is detected.\<close>
 
-definition bound_atoms :: "('i, 'a) state \<Rightarrow> 'a atom set" ("\<B>\<^sub>A") where
+definition bound_atoms :: "('i, 'a) state \<Rightarrow> 'a atom set" (\<open>\<B>\<^sub>A\<close>) where
   "bound_atoms s = (\<lambda>(v,x). Geq v x) ` (set_of_map (\<B>\<^sub>l s)) \<union> 
                    (\<lambda>(v,x). Leq v x) ` (set_of_map (\<B>\<^sub>u s))"
 

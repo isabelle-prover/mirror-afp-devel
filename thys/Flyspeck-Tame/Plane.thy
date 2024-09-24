@@ -53,13 +53,13 @@ definition generatePolygon :: "nat \<Rightarrow> vertex \<Rightarrow> face \<Rig
      vertexLists = [indexToVertexList f v is. is \<leftarrow> enumeration] in
      [subdivFace g f vs. vs \<leftarrow> vertexLists]"
 
-definition next_plane0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("next'_plane0\<^bsub>_\<^esub>") where
+definition next_plane0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" (\<open>next'_plane0\<^bsub>_\<^esub>\<close>) where
  "next_plane0\<^bsub>p\<^esub> g \<equiv>
      if final g then [] 
      else \<Squnion>\<^bsub>f\<in>nonFinals g\<^esub> \<Squnion>\<^bsub>v\<in>vertices f\<^esub> \<Squnion>\<^bsub>i\<in>[3..<Suc(maxGon p)]\<^esub> generatePolygon i v f g"
 
 
-definition Seed :: "nat \<Rightarrow> graph" ("Seed\<^bsub>_\<^esub>") where
+definition Seed :: "nat \<Rightarrow> graph" (\<open>Seed\<^bsub>_\<^esub>\<close>) where
   "Seed\<^bsub>p\<^esub> \<equiv> graph(maxGon p)"
 
 lemma Seed_not_final[iff]: "\<not> final (Seed p)"

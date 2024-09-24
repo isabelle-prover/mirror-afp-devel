@@ -134,7 +134,7 @@ definition eqBut where
 definition updVal ::
 "('varSort,'var,'sTerm)val \<Rightarrow>
  'var \<Rightarrow> 'sTerm \<Rightarrow> 'varSort \<Rightarrow>
- ('varSort,'var,'sTerm)val" ("_ '(_ := _')'__" 200)
+ ('varSort,'var,'sTerm)val" (\<open>_ '(_ := _')'__\<close> 200)
 where
 "(val (x := sX)_xs) \<equiv>
  \<lambda> ys y. (if ys = xs \<and> y = x then sX else val ys y)"
@@ -145,7 +145,7 @@ definition swapVal ::
 where
 "swapVal zs z1 z2 val \<equiv> \<lambda>xs x. val xs (x @xs[z1 \<and> z2]_zs) "
 
-abbreviation swapVal_abbrev ("_ ^[_ \<and> _]'__" 200) where
+abbreviation swapVal_abbrev (\<open>_ ^[_ \<and> _]'__\<close> 200) where
 "val ^[z1 \<and> z2]_zs \<equiv> swapVal zs z1 z2 val"
 
 definition sWlsVal where

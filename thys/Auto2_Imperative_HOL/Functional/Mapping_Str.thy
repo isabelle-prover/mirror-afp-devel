@@ -16,7 +16,7 @@ text \<open>
 
 datatype ('a, 'b) map = Map "'a \<Rightarrow> 'b option"
 
-fun meval :: "('a, 'b) map \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>" [90]) where
+fun meval :: "('a, 'b) map \<Rightarrow> 'a \<Rightarrow> 'b option" (\<open>_\<langle>_\<rangle>\<close> [90]) where
   "(Map f) \<langle>h\<rangle> = f h"
 setup \<open>add_rewrite_rule @{thm meval.simps}\<close>
 
@@ -28,7 +28,7 @@ definition empty_map :: "('a, 'b) map" where
   "empty_map = Map (\<lambda>x. None)"
 setup \<open>add_rewrite_rule @{thm empty_map_def}\<close>
 
-definition update_map :: "('a, 'b) map \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a ,'b) map" (" _ { _ \<rightarrow> _ }" [89,90,90] 90) where
+definition update_map :: "('a, 'b) map \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> ('a ,'b) map" (\<open> _ { _ \<rightarrow> _ }\<close> [89,90,90] 90) where
   "M {k \<rightarrow> v} = Map (\<lambda>x. if x = k then Some v else M\<langle>x\<rangle>)"
 setup \<open>add_rewrite_rule @{thm update_map_def}\<close>
 

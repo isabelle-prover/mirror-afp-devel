@@ -1909,7 +1909,7 @@ locale iso_digraph =
   fixes \<alpha> \<AA> \<BB> :: V
   assumes iso_digraph_is_iso_dghm: "\<exists>\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
 
-notation iso_digraph (infixl "\<approx>\<^sub>D\<^sub>G\<index>" 50)
+notation iso_digraph (infixl \<open>\<approx>\<^sub>D\<^sub>G\<index>\<close> 50)
 
 sublocale iso_digraph \<subseteq> HomDom: digraph \<alpha> \<AA> + HomCod: digraph \<alpha> \<BB>
   using iso_digraph_is_iso_dghm by auto

@@ -309,11 +309,11 @@ begin
 
 abbreviation lock_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" where
   "lock_syn l \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (p, ro_Lock)) (\<lambda>_ s. {s})"
-notation lock_syn ("\<lbrace>_\<rbrace> lock")
+notation lock_syn (\<open>\<lbrace>_\<rbrace> lock\<close>)
 
 abbreviation unlock_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" where
   "unlock_syn l \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (p, ro_Unlock)) (\<lambda>_ s. {s})"
-notation unlock_syn ("\<lbrace>_\<rbrace> unlock")
+notation unlock_syn (\<open>\<lbrace>_\<rbrace> unlock\<close>)
 
 abbreviation
   load_mark_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref)
@@ -322,29 +322,29 @@ abbreviation
                  \<Rightarrow> ('field, 'mut, 'payload, 'ref) local_state) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com"
 where
   "load_mark_syn l r upd \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (p, LoadMark (r s))) (\<lambda>mv s. { upd \<langle>m\<rangle> s |m. mv = mv_Mark m })"
-notation load_mark_syn ("\<lbrace>_\<rbrace> load'_mark")
+notation load_mark_syn (\<open>\<lbrace>_\<rbrace> load'_mark\<close>)
 
 abbreviation load_fM_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" where
   "load_fM_syn l \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (p, ro_Load mr_fM)) (\<lambda>mv s. { s\<lparr>fM := m\<rparr> |m. mv = mv_Mark (Some m) })"
-notation load_fM_syn ("\<lbrace>_\<rbrace> load'_fM")
+notation load_fM_syn (\<open>\<lbrace>_\<rbrace> load'_fM\<close>)
 
 abbreviation
   load_phase :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com"
 where
   "load_phase l \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (p, LoadPhase)) (\<lambda>mv s. { s\<lparr>phase := ph\<rparr> |ph. mv = mv_Phase ph })"
-notation load_phase ("\<lbrace>_\<rbrace> load'_phase")
+notation load_phase (\<open>\<lbrace>_\<rbrace> load'_phase\<close>)
 
 abbreviation
   store_mark_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref) \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> bool) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com"
 where
   "store_mark_syn l r fl \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (p, StoreMark (r s) (fl s))) (\<lambda>_ s. { s\<lparr> ghost_honorary_grey := {r s} \<rparr> })"
-notation store_mark_syn ("\<lbrace>_\<rbrace> store'_mark")
+notation store_mark_syn (\<open>\<lbrace>_\<rbrace> store'_mark\<close>)
 
 abbreviation
   add_to_W_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com"
 where
   "add_to_W_syn l r \<equiv> \<lbrace>l\<rbrace> \<lfloor>\<lambda>s. s\<lparr> W := W s \<union> {r s}, ghost_honorary_grey := {} \<rparr>\<rfloor>"
-notation add_to_W_syn ("\<lbrace>_\<rbrace> add'_to'_W")
+notation add_to_W_syn (\<open>\<lbrace>_\<rbrace> add'_to'_W\<close>)
 
 text\<open>
 
@@ -477,27 +477,27 @@ Again we could make these subject to TSO, but that would be over specification.
 context mut_m
 begin
 
-abbreviation mark_object_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> mark'_object" [0] 71) where
+abbreviation mark_object_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> mark'_object\<close> [0] 71) where
   "\<lbrace>l\<rbrace> mark_object \<equiv> mark_object_fn (mutator m) l"
 
-abbreviation mfence_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> MFENCE" [0] 71) where
+abbreviation mfence_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> MFENCE\<close> [0] 71) where
   "\<lbrace>l\<rbrace> MFENCE \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, ro_MFENCE)) (\<lambda>_ s. {s})"
 
-abbreviation hs_load_pending_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> hs'_load'_pending'_" [0] 71) where
+abbreviation hs_load_pending_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> hs'_load'_pending'_\<close> [0] 71) where
   "\<lbrace>l\<rbrace> hs_load_pending_ \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, ro_hs_mut_load_pending)) (\<lambda>mv s. { s\<lparr> mutator_hs_pending := b \<rparr> |b. mv = mv_Bool b })"
 
-abbreviation hs_load_type_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> hs'_load'_type" [0] 71) where
+abbreviation hs_load_type_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> hs'_load'_type\<close> [0] 71) where
   "\<lbrace>l\<rbrace> hs_load_type \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, ro_hs_mut_load_type)) (\<lambda>mv s. { s\<lparr> hs_type := ht \<rparr> |ht. mv = mv_hs_type ht})"
 
-abbreviation hs_noop_done_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> hs'_noop'_done'_") where
+abbreviation hs_noop_done_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> hs'_noop'_done'_\<close>) where
   "\<lbrace>l\<rbrace> hs_noop_done_ \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, ro_hs_mut_done {}))
                                    (\<lambda>_ s. {s\<lparr> ghost_hs_phase := hs_step (ghost_hs_phase s) \<rparr>})"
 
-abbreviation hs_get_roots_done_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref set) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> hs'_get'_roots'_done'_")  where
+abbreviation hs_get_roots_done_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref set) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> hs'_get'_roots'_done'_\<close>)  where
   "\<lbrace>l\<rbrace> hs_get_roots_done_ wl \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, ro_hs_mut_done (wl s)))
                                            (\<lambda>_ s. {s\<lparr> W := {}, ghost_hs_phase := hs_step (ghost_hs_phase s) \<rparr>})"
 
-abbreviation hs_get_work_done_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref set) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> hs'_get'_work'_done")  where
+abbreviation hs_get_work_done_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref set) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> hs'_get'_work'_done\<close>)  where
   "\<lbrace>l\<rbrace> hs_get_work_done wl \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, ro_hs_mut_done (wl s)))
                                          (\<lambda>_ s. {s\<lparr> W := {} \<rparr>})"
 
@@ -539,21 +539,21 @@ The garbage collector's side of the interface.
 context gc
 begin
 
-abbreviation set_hs_type :: "location \<Rightarrow> hs_type \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> set'_hs'_type")  where
+abbreviation set_hs_type :: "location \<Rightarrow> hs_type \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> set'_hs'_type\<close>)  where
   "\<lbrace>l\<rbrace> set_hs_type ht \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, ro_hs_gc_store_type ht)) (\<lambda>_ s. {s})"
 
-abbreviation set_hs_pending :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'mut) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> set'_hs'_pending")  where
+abbreviation set_hs_pending :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'mut) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> set'_hs'_pending\<close>)  where
   "\<lbrace>l\<rbrace> set_hs_pending m \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, ro_hs_gc_store_pending (m s))) (\<lambda>_ s. {s})"
 
-abbreviation load_W :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> load'_W") where
+abbreviation load_W :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> load'_W\<close>) where
   "\<lbrace>l\<rbrace> load_W \<equiv> \<lbrace>l @ ''_load_W''\<rbrace> Request (\<lambda>s. (gc, ro_hs_gc_load_W))
                                           (\<lambda>resp s. {s\<lparr>W := W'\<rparr> |W'. resp = mv_Refs W'})"
 
-abbreviation mfence :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> MFENCE")  where
+abbreviation mfence :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> MFENCE\<close>)  where
   "\<lbrace>l\<rbrace> MFENCE \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, ro_MFENCE)) (\<lambda>_ s. {s})"
 
 definition
-  handshake_init :: "location \<Rightarrow> hs_type \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> handshake'_init")
+  handshake_init :: "location \<Rightarrow> hs_type \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> handshake'_init\<close>)
 where
   "\<lbrace>l\<rbrace> handshake_init req =
      \<lbrace>l @ ''_init_type''\<rbrace> set_hs_type req ;;
@@ -565,7 +565,7 @@ where
      OD"
 
 definition
-  handshake_done :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> handshake'_done")
+  handshake_done :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> handshake'_done\<close>)
 where
   "\<lbrace>l\<rbrace> handshake_done =
      \<lbrace>l @ ''_done_muts''\<rbrace> \<acute>muts := UNIV ;;
@@ -577,7 +577,7 @@ where
      OD"
 
 definition
-  handshake_noop :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> handshake'_noop")
+  handshake_noop :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> handshake'_noop\<close>)
 where
   "\<lbrace>l\<rbrace> handshake_noop =
          \<lbrace>l @ ''_mfence''\<rbrace> MFENCE ;;
@@ -585,7 +585,7 @@ where
          \<lbrace>l\<rbrace> handshake_done"
 
 definition
-  handshake_get_roots :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> handshake'_get'_roots")
+  handshake_get_roots :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> handshake'_get'_roots\<close>)
 where
   "\<lbrace>l\<rbrace> handshake_get_roots =
          \<lbrace>l\<rbrace> handshake_init ht_GetRoots ;;
@@ -593,7 +593,7 @@ where
          \<lbrace>l\<rbrace> load_W"
 
 definition
-  handshake_get_work :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> handshake'_get'_work")
+  handshake_get_work :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> handshake'_get'_work\<close>)
 where
   "\<lbrace>l\<rbrace> handshake_get_work =
          \<lbrace>l\<rbrace> handshake_init ht_GetWork ;;
@@ -848,7 +848,7 @@ abbreviation
   mut_deref :: "location
           \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref)
           \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'field)
-          \<Rightarrow> (('ref option \<Rightarrow> 'ref option) \<Rightarrow> ('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> ('field, 'mut, 'payload, 'ref) local_state) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> deref")
+          \<Rightarrow> (('ref option \<Rightarrow> 'ref option) \<Rightarrow> ('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> ('field, 'mut, 'payload, 'ref) local_state) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> deref\<close>)
 where
   "\<lbrace>l\<rbrace> deref r f upd \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, LoadRef (r s) (f s)))
                                    (\<lambda>mv s. { upd \<langle>opt_r'\<rangle> (s\<lparr>ghost_honorary_root := set_option opt_r'\<rparr>) |opt_r'. mv = mv_Ref opt_r' })"
@@ -869,7 +869,7 @@ abbreviation
               \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref)
               \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'field)
               \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref option)
-              \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> store'_ref")
+              \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> store'_ref\<close>)
 where
   "\<lbrace>l\<rbrace> store_ref r f r' \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (mutator m, StoreRef (r s) (f s) (r' s))) (\<lambda>_ s. {s\<lparr>ghost_honorary_root := {}\<rparr>})"
 
@@ -969,8 +969,8 @@ where
   "gc_load_mark l r upd \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, LoadMark (r s))) (\<lambda>mv s. { upd \<langle>m\<rangle> s |m. mv = mv_Mark m })"
 
 syntax
-  "_gc_fassign" :: "location \<Rightarrow> idt \<Rightarrow> 'ref \<Rightarrow> 'field \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> \<acute>_ := \<acute>_ \<rightarrow> _" [0, 0, 0, 70] 71)
-  "_gc_massign" :: "location \<Rightarrow> idt \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> \<acute>_ := \<acute>_ \<rightarrow> flag" [0, 0, 0] 71)
+  "_gc_fassign" :: "location \<Rightarrow> idt \<Rightarrow> 'ref \<Rightarrow> 'field \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> \<acute>_ := \<acute>_ \<rightarrow> _\<close> [0, 0, 0, 70] 71)
+  "_gc_massign" :: "location \<Rightarrow> idt \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> \<acute>_ := \<acute>_ \<rightarrow> flag\<close> [0, 0, 0] 71)
 syntax_consts
   "_gc_fassign" \<rightleftharpoons> gc_deref and
   "_gc_massign" \<rightleftharpoons> gc_load_mark
@@ -981,22 +981,22 @@ translations
 context gc
 begin
 
-abbreviation store_fA_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> gc_mark) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> store'_fA") where
+abbreviation store_fA_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> gc_mark) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> store'_fA\<close>) where
   "\<lbrace>l\<rbrace> store_fA f \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, StorefA (f s))) (\<lambda>_ s. {s})"
 
-abbreviation load_fM_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> load'_fM") where
+abbreviation load_fM_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> load'_fM\<close>) where
   "\<lbrace>l\<rbrace> load_fM \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, LoadfM)) (\<lambda>mv s. { s\<lparr>fM := m\<rparr> |m. mv = mv_Mark (Some m) })"
 
-abbreviation store_fM_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> store'_fM") where
+abbreviation store_fM_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> store'_fM\<close>) where
   "\<lbrace>l\<rbrace> store_fM \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, StorefM (fM s))) (\<lambda>_ s. {s})"
 
-abbreviation store_phase_syn :: "location \<Rightarrow> gc_phase \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> store'_phase") where
+abbreviation store_phase_syn :: "location \<Rightarrow> gc_phase \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> store'_phase\<close>) where
   "\<lbrace>l\<rbrace> store_phase ph \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, StorePhase ph)) (\<lambda>_ s. {s\<lparr> phase := ph \<rparr>})"
 
-abbreviation mark_object_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> mark'_object") where
+abbreviation mark_object_syn :: "location \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> mark'_object\<close>) where
   "\<lbrace>l\<rbrace> mark_object \<equiv> mark_object_fn gc l"
 
-abbreviation free_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" ("\<lbrace>_\<rbrace> free") where
+abbreviation free_syn :: "location \<Rightarrow> (('field, 'mut, 'payload, 'ref) local_state \<Rightarrow> 'ref) \<Rightarrow> ('field, 'mut, 'payload, 'ref) gc_com" (\<open>\<lbrace>_\<rbrace> free\<close>) where
   "\<lbrace>l\<rbrace> free r \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, ro_Free (r s))) (\<lambda>_ s. {s})"
 
 text\<open>

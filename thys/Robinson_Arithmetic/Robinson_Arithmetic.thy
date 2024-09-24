@@ -22,8 +22,8 @@ subsection \<open>The datatypes\<close>
 nominal_datatype trm = zer | Var name | suc trm | pls trm trm | tms trm trm
 
 nominal_datatype fmla =
-    eql trm trm     (infixr "EQ" 150)
-  | dsj fmla fmla   (infixr "OR" 130)
+    eql trm trm     (infixr \<open>EQ\<close> 150)
+  | dsj fmla fmla   (infixr \<open>OR\<close> 130)
   | neg fmla
   | exi x::name f::fmla binds x in f
 
@@ -66,7 +66,7 @@ lemma subst_trm_commute2 [simp]:
 lemma repeat_subst_trm [simp]: "subst i u (subst i t trm) = subst i (subst i u t) trm"
   by (induct trm rule: trm.induct) auto
 
-nominal_function  subst_fmla :: "fmla \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> fmla" ("_'(_::=_')" [1000, 0, 0] 200)
+nominal_function  subst_fmla :: "fmla \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> fmla" (\<open>_'(_::=_')\<close> [1000, 0, 0] 200)
   where
     eql:   "(eql t u)(i::=x)   = eql  (subst i x t) (subst i x u)"
   | dsj: "(dsj A B)(i::=x) = dsj (A(i::=x)) (B(i::=x))"
@@ -222,7 +222,7 @@ lemma eval_subst_fmla: "eval_fmla e (fmla(i::= t)) =
 
 subsection \<open>Derived logical connectives\<close>
 
-abbreviation imp :: "fmla \<Rightarrow> fmla \<Rightarrow> fmla"   (infixr "IMP" 125)
+abbreviation imp :: "fmla \<Rightarrow> fmla \<Rightarrow> fmla"   (infixr \<open>IMP\<close> 125)
   where "imp A B \<equiv> dsj (neg A) B"
 
 abbreviation all :: "name \<Rightarrow> fmla \<Rightarrow> fmla"
@@ -230,7 +230,7 @@ abbreviation all :: "name \<Rightarrow> fmla \<Rightarrow> fmla"
 
 subsubsection \<open>Conjunction\<close>
 
-definition cnj :: "fmla \<Rightarrow> fmla \<Rightarrow> fmla"   (infixr "AND" 135)
+definition cnj :: "fmla \<Rightarrow> fmla \<Rightarrow> fmla"   (infixr \<open>AND\<close> 135)
   where "cnj A B \<equiv> neg (dsj (neg A) (neg B))"
 
 lemma cnj_eqvt [eqvt]: "p \<bullet> (A AND B) = (p \<bullet> A) AND (p \<bullet> B)"
@@ -256,7 +256,7 @@ lemma eval_fmla_cnj [simp]: "eval_fmla e (cnj A B) \<longleftrightarrow> (eval_f
 
 subsubsection \<open>If and only if\<close>
 
-definition Iff :: "fmla \<Rightarrow> fmla \<Rightarrow> fmla"   (infixr "IFF" 125)
+definition Iff :: "fmla \<Rightarrow> fmla \<Rightarrow> fmla"   (infixr \<open>IFF\<close> 125)
   where "Iff A B = cnj (imp A B) (imp B A)"
 
 lemma Iff_eqvt [eqvt]: "p \<bullet> (A IFF B) = (p \<bullet> A) IFF (p \<bullet> B)"
@@ -393,7 +393,7 @@ definition "Q_axioms \<equiv>
 
 subsection \<open>The proof system\<close>
 
-inductive nprv :: "fmla set \<Rightarrow> fmla \<Rightarrow> bool" (infixl "\<turnstile>" 55)
+inductive nprv :: "fmla set \<Rightarrow> fmla \<Rightarrow> bool" (infixl \<open>\<turnstile>\<close> 55)
   where
     Hyp:    "A \<in> H \<Longrightarrow> H \<turnstile> A"
   | Q:  "A \<in> Q_axioms \<Longrightarrow> H \<turnstile> A"

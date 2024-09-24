@@ -92,7 +92,7 @@ end (* context deutsch *)
 
 text \<open>The Deutsch's Transform @{text U\<^sub>f}.\<close>
 
-definition (in deutsch) deutsch_transform:: "complex Matrix.mat" ("U\<^sub>f") where 
+definition (in deutsch) deutsch_transform:: "complex Matrix.mat" (\<open>U\<^sub>f\<close>) where 
 "U\<^sub>f \<equiv> mat_of_cols_list 4 [[1 - f(0), f(0), 0, 0],
                           [f(0), 1 - f(0), 0, 0],
                           [0, 0, 1 - f(1), f(1)],

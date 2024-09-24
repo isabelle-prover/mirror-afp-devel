@@ -17,9 +17,9 @@ section "Datatype of a binary alphabet"
 
 text\<open>Basic elements for construction of binary words.\<close>
 
-type_notation Enum.finite_2 ("binA")
-notation finite_2.a\<^sub>1 ("bina")
-notation finite_2.a\<^sub>2 ("binb")
+type_notation Enum.finite_2 (\<open>binA\<close>)
+notation finite_2.a\<^sub>1 (\<open>bina\<close>)
+notation finite_2.a\<^sub>2 (\<open>binb\<close>)
 
 lemmas bin_distinct = Enum.finite_2.distinct
 lemmas bin_exhaust = Enum.finite_2.exhaust
@@ -28,10 +28,10 @@ lemmas bin_UNIV = Enum.UNIV_finite_2
 lemmas bin_eq_neq_iff = Enum.neq_finite_2_a\<^sub>2_iff
 lemmas bin_eq_neq_iff' = Enum.neq_finite_2_a\<^sub>1_iff
 
-abbreviation bin_word_a  :: "binA list" ("\<aa>") where
+abbreviation bin_word_a  :: "binA list" (\<open>\<aa>\<close>) where
   "bin_word_a \<equiv> [bina]"
 
-abbreviation bin_word_b :: "binA list" ("\<bb>") where
+abbreviation bin_word_b :: "binA list" (\<open>\<bb>\<close>) where
   "bin_word_b \<equiv> [binb]"
 
 abbreviation binUNIV :: "binA set" where "binUNIV \<equiv> UNIV"
@@ -553,14 +553,14 @@ sublocale swap: binary_code "f \<bb>" "f \<aa>"
 sublocale binary_code "f \<aa>" "f \<bb>"
   using swap.bin_code_swap.
 
-notation bin_code_lcp ("\<alpha>") and
-         bin_code_lcs ("\<beta>") and
-         bin_code_mismatch_fst ("c\<^sub>0") and
-         bin_code_mismatch_snd ("c\<^sub>1")
+notation bin_code_lcp (\<open>\<alpha>\<close>) and
+         bin_code_lcs (\<open>\<beta>\<close>) and
+         bin_code_mismatch_fst (\<open>c\<^sub>0\<close>) and
+         bin_code_mismatch_snd (\<open>c\<^sub>1\<close>)
 term "bin_lcp (f \<aa>) (f \<bb>)"
-abbreviation bin_morph_mismatch ("\<cc>")
+abbreviation bin_morph_mismatch (\<open>\<cc>\<close>)
   where "bin_morph_mismatch a \<equiv> bin_mismatch (f[a]) (f[1-a])"
-abbreviation bin_morph_mismatch_suf ("\<dd>")
+abbreviation bin_morph_mismatch_suf (\<open>\<dd>\<close>)
   where "bin_morph_mismatch_suf a \<equiv> bin_mismatch_suf (f[1-a]) (f[a])"
 
 lemma bin_lcp_def': "\<alpha> =  f ([a] \<cdot> [1-a]) \<and>\<^sub>p f ([1-a] \<cdot> [a])"
@@ -1114,7 +1114,7 @@ context binary_code_morphism
 
 begin
 
-definition  marked_version ("f\<^sub>m") where "f\<^sub>m = (\<lambda> w. \<alpha>\<inverse>\<^sup>>(f w \<cdot> \<alpha>))"
+definition  marked_version (\<open>f\<^sub>m\<close>) where "f\<^sub>m = (\<lambda> w. \<alpha>\<inverse>\<^sup>>(f w \<cdot> \<alpha>))"
 
 lemma marked_version_conjugates: "\<alpha> \<cdot> f\<^sub>m w = f w \<cdot> \<alpha>"
   unfolding marked_version_def using lq_pref[OF bin_lcp_pref_all, of w].
@@ -1325,10 +1325,10 @@ locale  two_binary_code_morphisms =
 
 begin
 
-notation  h.bin_code_lcp ("\<alpha>\<^sub>h")
-notation  g.bin_code_lcp ("\<alpha>\<^sub>g")
-notation "g.marked_version" ("g\<^sub>m")
-notation "h.marked_version" ("h\<^sub>m")
+notation  h.bin_code_lcp (\<open>\<alpha>\<^sub>h\<close>)
+notation  g.bin_code_lcp (\<open>\<alpha>\<^sub>g\<close>)
+notation "g.marked_version" (\<open>g\<^sub>m\<close>)
+notation "h.marked_version" (\<open>h\<^sub>m\<close>)
 
 sublocale gm: marked_binary_morphism g\<^sub>m
   by (simp add: g.marked_version_marked_morph marked_binary_morphism.intro)
@@ -1457,7 +1457,7 @@ lemma  alphas_pref: "\<alpha>\<^sub>h \<le>p \<alpha>\<^sub>g"
   using alphas_pref[OF alphas_len] coin_ex by force
 
 definition \<alpha> where "\<alpha> \<equiv> \<alpha>\<^sub>h\<inverse>\<^sup>>\<alpha>\<^sub>g"
-definition critical_overflow ("\<c>") where "critical_overflow \<equiv> \<alpha>\<^sub>g\<^sup><\<inverse>\<alpha>\<^sub>h"
+definition critical_overflow (\<open>\<c>\<close>) where "critical_overflow \<equiv> \<alpha>\<^sub>g\<^sup><\<inverse>\<alpha>\<^sub>h"
 
 lemma lcp_diff: "\<alpha>\<^sub>h \<cdot> \<alpha> = \<alpha>\<^sub>g"
   unfolding \<alpha>_def lq_pref using lq_pref[OF alphas_pref].

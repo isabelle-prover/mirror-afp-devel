@@ -223,7 +223,7 @@ fun map_ugraph :: "(nat \<Rightarrow> nat) \<Rightarrow> ugraph \<Rightarrow> ug
 definition isomorphism :: "ugraph \<Rightarrow> ugraph \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> bool" where
 "isomorphism G\<^sub>1 G\<^sub>2 f \<equiv> bij_betw f (uverts G\<^sub>1) (uverts G\<^sub>2) \<and> G\<^sub>2 = map_ugraph f G\<^sub>1"
 
-abbreviation isomorphic :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" ("_ \<simeq> _") where
+abbreviation isomorphic :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" (\<open>_ \<simeq> _\<close>) where
 "G\<^sub>1 \<simeq> G\<^sub>2 \<equiv> uwellformed G\<^sub>1 \<and> uwellformed G\<^sub>2 \<and> (\<exists>f. isomorphism G\<^sub>1 G\<^sub>2 f)"
 
 lemma map_ugraph_id: "map_ugraph id = id"
@@ -375,7 +375,7 @@ fixed other graph. For example, saying that a graph contains a triangle usually 
 contains \emph{any} triangle, not the specific triangle with the nodes $1$, $2$ and $3$. Hence, such
 a graph would have a triangle as an isomorphic subgraph.\<close>
 
-definition subgraph_isomorphic :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" ("_ \<sqsubseteq> _") where
+definition subgraph_isomorphic :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" (\<open>_ \<sqsubseteq> _\<close>) where
 "G' \<sqsubseteq> G \<equiv> uwellformed G \<and> (\<exists>G''. G' \<simeq> G'' \<and> subgraph G'' G)"
 
 lemma subgraph_is_subgraph_isomorphic: "\<lbrakk> uwellformed G'; uwellformed G; subgraph G' G \<rbrakk> \<Longrightarrow> G' \<sqsubseteq> G"

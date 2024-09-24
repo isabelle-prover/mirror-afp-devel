@@ -1182,7 +1182,7 @@ qed
 
 
 abbreviation lift_to_cfg_wf_prog :: "(jvm_method \<Rightarrow> 'a) \<Rightarrow> (cfg_wf_prog \<Rightarrow> 'a)"
-  ("_\<^bsub>CFG\<^esub>")
+  (\<open>_\<^bsub>CFG\<^esub>\<close>)
   where "f\<^bsub>CFG\<^esub> \<equiv> (\<lambda>P. f (Rep_cfg_wf_prog P))"
 
 lemma valid_edge_CFG_def: "valid_edge\<^bsub>CFG\<^esub> P = valid_edge (fst\<^bsub>CFG\<^esub> P, fst (snd\<^bsub>CFG\<^esub> P), snd (snd\<^bsub>CFG\<^esub> P))"

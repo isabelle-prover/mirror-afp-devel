@@ -34,15 +34,15 @@ type_synonym edge = "node fset \<times> command_gadget \<times> node fset"
 
 text \<open>Projecting components from a graph\<close>
 
-fun vertices :: "diagram \<Rightarrow> node fset" ("_^V" [1000] 1000)
+fun vertices :: "diagram \<Rightarrow> node fset" (\<open>_^V\<close> [1000] 1000)
 where "(Graph V \<Lambda> E)^V = V"
 
 term "this (is^V) = (a test)^V"
 
-fun labelling :: "diagram \<Rightarrow> labelling" ("_^\<Lambda>" [1000] 1000)
+fun labelling :: "diagram \<Rightarrow> labelling" (\<open>_^\<Lambda>\<close> [1000] 1000)
 where "(Graph V \<Lambda> E)^\<Lambda> = \<Lambda>"
 
-fun edges :: "diagram \<Rightarrow> edge list" ("_^E" [1000] 1000)
+fun edges :: "diagram \<Rightarrow> edge list" (\<open>_^E\<close> [1000] 1000)
 where "(Graph V \<Lambda> E)^E = E"
 
 subsection \<open>Well formedness of graphical diagrams\<close>

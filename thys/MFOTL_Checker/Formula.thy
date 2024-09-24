@@ -15,31 +15,31 @@ type_synonym ('n, 'a) trace = "('n \<times> 'a list) trace"
 type_synonym ('n, 'a) env = "'n \<Rightarrow> 'a"
 type_synonym ('n, 'a) envset = "'n \<Rightarrow> 'a set"
 
-datatype (fv_trm: 'n, 'a) trm = is_Var: Var 'n ("\<^bold>v") | is_Const: Const 'a ("\<^bold>c")
+datatype (fv_trm: 'n, 'a) trm = is_Var: Var 'n (\<open>\<^bold>v\<close>) | is_Const: Const 'a (\<open>\<^bold>c\<close>)
 
 lemma in_fv_trm_conv: "x \<in> fv_trm t \<longleftrightarrow> t = \<^bold>v x"
   by (cases t) auto
 
 datatype ('n, 'a) formula = 
-  TT                                            ("\<top>")
-| FF                                            ("\<bottom>")
-| Eq_Const 'n 'a                                ("_ \<^bold>\<approx> _" [85, 85] 85)
-| Pred 'n "('n, 'a) trm list"                   ("_ \<dagger> _" [85, 85] 85)
-| Neg "('n, 'a) formula"                        ("\<not>\<^sub>F _" [82] 82)
-| Or "('n, 'a) formula" "('n, 'a) formula"      (infixr "\<or>\<^sub>F" 80)
-| And "('n, 'a) formula" "('n, 'a) formula"     (infixr "\<and>\<^sub>F" 80)
-| Imp "('n, 'a) formula" "('n, 'a) formula"     (infixr "\<longrightarrow>\<^sub>F" 79)
-| Iff "('n, 'a) formula" "('n, 'a) formula"     (infixr "\<longleftrightarrow>\<^sub>F" 79)
-| Exists "'n" "('n, 'a) formula"                ("\<exists>\<^sub>F_. _" [70,70] 70)
-| Forall "'n" "('n, 'a) formula"                ("\<forall>\<^sub>F_. _" [70,70] 70)
-| Prev \<I> "('n, 'a) formula"                     ("\<^bold>Y _ _" [1000, 65] 65)
-| Next \<I> "('n, 'a) formula"                     ("\<^bold>X _ _" [1000, 65] 65)
-| Once \<I> "('n, 'a) formula"                     ("\<^bold>P _ _" [1000, 65] 65)
-| Historically \<I> "('n, 'a) formula"             ("\<^bold>H _ _" [1000, 65] 65)
-| Eventually \<I> "('n, 'a) formula"               ("\<^bold>F _ _" [1000, 65] 65)
-| Always \<I> "('n, 'a) formula"                   ("\<^bold>G _ _" [1000, 65] 65)
-| Since "('n, 'a) formula" \<I> "('n, 'a) formula" ("_ \<^bold>S _ _" [60,1000,60] 60)
-| Until "('n, 'a) formula" \<I> "('n, 'a) formula" ("_ \<^bold>U _ _" [60,1000,60] 60)
+  TT                                            (\<open>\<top>\<close>)
+| FF                                            (\<open>\<bottom>\<close>)
+| Eq_Const 'n 'a                                (\<open>_ \<^bold>\<approx> _\<close> [85, 85] 85)
+| Pred 'n "('n, 'a) trm list"                   (\<open>_ \<dagger> _\<close> [85, 85] 85)
+| Neg "('n, 'a) formula"                        (\<open>\<not>\<^sub>F _\<close> [82] 82)
+| Or "('n, 'a) formula" "('n, 'a) formula"      (infixr \<open>\<or>\<^sub>F\<close> 80)
+| And "('n, 'a) formula" "('n, 'a) formula"     (infixr \<open>\<and>\<^sub>F\<close> 80)
+| Imp "('n, 'a) formula" "('n, 'a) formula"     (infixr \<open>\<longrightarrow>\<^sub>F\<close> 79)
+| Iff "('n, 'a) formula" "('n, 'a) formula"     (infixr \<open>\<longleftrightarrow>\<^sub>F\<close> 79)
+| Exists "'n" "('n, 'a) formula"                (\<open>\<exists>\<^sub>F_. _\<close> [70,70] 70)
+| Forall "'n" "('n, 'a) formula"                (\<open>\<forall>\<^sub>F_. _\<close> [70,70] 70)
+| Prev \<I> "('n, 'a) formula"                     (\<open>\<^bold>Y _ _\<close> [1000, 65] 65)
+| Next \<I> "('n, 'a) formula"                     (\<open>\<^bold>X _ _\<close> [1000, 65] 65)
+| Once \<I> "('n, 'a) formula"                     (\<open>\<^bold>P _ _\<close> [1000, 65] 65)
+| Historically \<I> "('n, 'a) formula"             (\<open>\<^bold>H _ _\<close> [1000, 65] 65)
+| Eventually \<I> "('n, 'a) formula"               (\<open>\<^bold>F _ _\<close> [1000, 65] 65)
+| Always \<I> "('n, 'a) formula"                   (\<open>\<^bold>G _ _\<close> [1000, 65] 65)
+| Since "('n, 'a) formula" \<I> "('n, 'a) formula" (\<open>_ \<^bold>S _ _\<close> [60,1000,60] 60)
+| Until "('n, 'a) formula" \<I> "('n, 'a) formula" (\<open>_ \<^bold>U _ _\<close> [60,1000,60] 60)
 
 primrec fv :: "('n, 'a) formula \<Rightarrow> 'n set" where
   "fv (r \<dagger> ts) = \<Union> (fv_trm ` set ts)"
@@ -120,14 +120,14 @@ fun future_bounded :: "('n, 'a) formula \<Rightarrow> bool" where
 
 subsection \<open>Semantics\<close>
 
-primrec eval_trm :: "('n, 'a) env \<Rightarrow> ('n, 'a) trm \<Rightarrow> 'a"("_\<lbrakk>_\<rbrakk>" [70,89] 89) where
+primrec eval_trm :: "('n, 'a) env \<Rightarrow> ('n, 'a) trm \<Rightarrow> 'a"(\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89) where
   "eval_trm v (\<^bold>v x) = v x"
 | "eval_trm v (\<^bold>c x) = x"
 
 lemma eval_trm_fv_cong: "\<forall>x\<in>fv_trm t. v x = v' x \<Longrightarrow> v\<lbrakk>t\<rbrakk> = v'\<lbrakk>t\<rbrakk>"
   by (induction t) simp_all
 
-definition eval_trms :: "('n, 'a) env \<Rightarrow> ('n, 'a) trm list \<Rightarrow> 'a list" ("_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>" [70,89] 89) where
+definition eval_trms :: "('n, 'a) env \<Rightarrow> ('n, 'a) trm list \<Rightarrow> 'a list" (\<open>_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<close> [70,89] 89) where
   "eval_trms v ts = map (eval_trm v) ts"
 
 lemma eval_trms_fv_cong: 
@@ -136,11 +136,11 @@ lemma eval_trms_fv_cong:
   by (auto simp: eval_trms_def)
 
 (* vs :: "'a envset" is used whenever we define executable functions *)
-primrec eval_trm_set :: "('n, 'a) envset \<Rightarrow> ('n, 'a) trm \<Rightarrow> ('n, 'a) trm \<times> 'a set"("_\<lbrace>_\<rbrace>" [70,89] 89) where
+primrec eval_trm_set :: "('n, 'a) envset \<Rightarrow> ('n, 'a) trm \<Rightarrow> ('n, 'a) trm \<times> 'a set"(\<open>_\<lbrace>_\<rbrace>\<close> [70,89] 89) where
   "eval_trm_set vs (\<^bold>v x) = (\<^bold>v x, vs x)"
 | "eval_trm_set vs (\<^bold>c x) = (\<^bold>c x, {x})"
 
-definition eval_trms_set :: "('n, 'a) envset \<Rightarrow> ('n, 'a) trm list \<Rightarrow> (('n, 'a) trm \<times> 'a set) list" ("_\<^bold>\<lbrace>_\<^bold>\<rbrace>" [70,89] 89)
+definition eval_trms_set :: "('n, 'a) envset \<Rightarrow> ('n, 'a) trm list \<Rightarrow> (('n, 'a) trm \<times> 'a set) list" (\<open>_\<^bold>\<lbrace>_\<^bold>\<rbrace>\<close> [70,89] 89)
   where "eval_trms_set vs ts = map (eval_trm_set vs) ts"
 
 lemma eval_trms_set_Nil: "vs\<^bold>\<lbrace>[]\<^bold>\<rbrace> = []"
@@ -150,7 +150,7 @@ lemma eval_trms_set_Cons:
   "vs\<^bold>\<lbrace>(t # ts)\<^bold>\<rbrace> = vs\<lbrace>t\<rbrace> # vs\<^bold>\<lbrace>ts\<^bold>\<rbrace>"
   by (simp add: eval_trms_set_def)
 
-primrec sat :: "('n, 'a) trace \<Rightarrow> ('n, 'a) env \<Rightarrow> nat \<Rightarrow> ('n, 'a) formula \<Rightarrow> bool" ("\<langle>_, _, _\<rangle> \<Turnstile> _" [56, 56, 56, 56] 55) where
+primrec sat :: "('n, 'a) trace \<Rightarrow> ('n, 'a) env \<Rightarrow> nat \<Rightarrow> ('n, 'a) formula \<Rightarrow> bool" (\<open>\<langle>_, _, _\<rangle> \<Turnstile> _\<close> [56, 56, 56, 56] 55) where
   "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<top> = True"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<bottom> = False"
 | "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> r \<dagger> ts = ((r, v\<^bold>\<lbrakk>ts\<^bold>\<rbrakk>) \<in> \<Gamma> \<sigma> i)"
@@ -296,70 +296,70 @@ lemma sat_Always_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>G I
 bundle MFOTL_no_notation begin
 
 text \<open> For bold font, type ``backslash'' followed by the word ``bold''  \<close>
-no_notation Var ("\<^bold>v")
-     and Const ("\<^bold>c")
+no_notation Var (\<open>\<^bold>v\<close>)
+     and Const (\<open>\<^bold>c\<close>)
 
 text \<open> For subscripts type ``backslash'' followed by ``sub''  \<close>
-no_notation TT ("\<top>")
-     and FF ("\<bottom>")
-     and Pred ("_ \<dagger> _" [85, 85] 85)
-     and Eq_Const ("_ \<^bold>\<approx> _" [85, 85] 85)
-     and Neg ("\<not>\<^sub>F _" [82] 82)
-     and And (infixr "\<and>\<^sub>F" 80)
-     and Or (infixr "\<or>\<^sub>F" 80)
-     and Imp (infixr "\<longrightarrow>\<^sub>F" 79)
-     and Iff (infixr "\<longleftrightarrow>\<^sub>F" 79)
-     and Exists ("\<exists>\<^sub>F_. _" [70,70] 70)
-     and Forall ("\<forall>\<^sub>F_. _" [70,70] 70)
-     and Prev ("\<^bold>Y _ _" [1000, 65] 65)
-     and Next ("\<^bold>X _ _" [1000, 65] 65)
-     and Once ("\<^bold>P _ _" [1000, 65] 65)
-     and Eventually ("\<^bold>F _ _" [1000, 65] 65)
-     and Historically ("\<^bold>H _ _" [1000, 65] 65)
-     and Always ("\<^bold>G _ _" [1000, 65] 65)
-     and Since ("_ \<^bold>S _ _" [60,1000,60] 60)
-     and Until ("_ \<^bold>U _ _" [60,1000,60] 60)
+no_notation TT (\<open>\<top>\<close>)
+     and FF (\<open>\<bottom>\<close>)
+     and Pred (\<open>_ \<dagger> _\<close> [85, 85] 85)
+     and Eq_Const (\<open>_ \<^bold>\<approx> _\<close> [85, 85] 85)
+     and Neg (\<open>\<not>\<^sub>F _\<close> [82] 82)
+     and And (infixr \<open>\<and>\<^sub>F\<close> 80)
+     and Or (infixr \<open>\<or>\<^sub>F\<close> 80)
+     and Imp (infixr \<open>\<longrightarrow>\<^sub>F\<close> 79)
+     and Iff (infixr \<open>\<longleftrightarrow>\<^sub>F\<close> 79)
+     and Exists (\<open>\<exists>\<^sub>F_. _\<close> [70,70] 70)
+     and Forall (\<open>\<forall>\<^sub>F_. _\<close> [70,70] 70)
+     and Prev (\<open>\<^bold>Y _ _\<close> [1000, 65] 65)
+     and Next (\<open>\<^bold>X _ _\<close> [1000, 65] 65)
+     and Once (\<open>\<^bold>P _ _\<close> [1000, 65] 65)
+     and Eventually (\<open>\<^bold>F _ _\<close> [1000, 65] 65)
+     and Historically (\<open>\<^bold>H _ _\<close> [1000, 65] 65)
+     and Always (\<open>\<^bold>G _ _\<close> [1000, 65] 65)
+     and Since (\<open>_ \<^bold>S _ _\<close> [60,1000,60] 60)
+     and Until (\<open>_ \<^bold>U _ _\<close> [60,1000,60] 60)
 
-no_notation eval_trm ("_\<lbrakk>_\<rbrakk>" [70,89] 89)
-     and eval_trms ("_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>" [70,89] 89)
-     and eval_trm_set ("_\<lbrace>_\<rbrace>" [70,89] 89)
-     and eval_trms_set ("_\<^bold>\<lbrace>_\<^bold>\<rbrace>" [70,89] 89)
-     and sat ("\<langle>_, _, _\<rangle> \<Turnstile> _" [56, 56, 56, 56] 55)
-     and Interval.interval ("\<^bold>[_,_\<^bold>]")
+no_notation eval_trm (\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89)
+     and eval_trms (\<open>_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<close> [70,89] 89)
+     and eval_trm_set (\<open>_\<lbrace>_\<rbrace>\<close> [70,89] 89)
+     and eval_trms_set (\<open>_\<^bold>\<lbrace>_\<^bold>\<rbrace>\<close> [70,89] 89)
+     and sat (\<open>\<langle>_, _, _\<rangle> \<Turnstile> _\<close> [56, 56, 56, 56] 55)
+     and Interval.interval (\<open>\<^bold>[_,_\<^bold>]\<close>)
 
 end
 
 bundle MFOTL_notation begin
 
-notation Var ("\<^bold>v")
-     and Const ("\<^bold>c")
+notation Var (\<open>\<^bold>v\<close>)
+     and Const (\<open>\<^bold>c\<close>)
 
-notation TT ("\<top>")
-     and FF ("\<bottom>")
-     and Pred ("_ \<dagger> _" [85, 85] 85)
-     and Eq_Const ("_ \<^bold>\<approx> _" [85, 85] 85)
-     and Neg ("\<not>\<^sub>F _" [82] 82)
-     and And (infixr "\<and>\<^sub>F" 80)
-     and Or (infixr "\<or>\<^sub>F" 80)
-     and Imp (infixr "\<longrightarrow>\<^sub>F" 79)
-     and Iff (infixr "\<longleftrightarrow>\<^sub>F" 79)
-     and Exists ("\<exists>\<^sub>F_. _" [70,70] 70)
-     and Forall ("\<forall>\<^sub>F_. _" [70,70] 70)
-     and Prev ("\<^bold>Y _ _" [1000, 65] 65)
-     and Next ("\<^bold>X _ _" [1000, 65] 65)
-     and Once ("\<^bold>P _ _" [1000, 65] 65)
-     and Eventually ("\<^bold>F _ _" [1000, 65] 65)
-     and Historically ("\<^bold>H _ _" [1000, 65] 65)
-     and Always ("\<^bold>G _ _" [1000, 65] 65)
-     and Since ("_ \<^bold>S _ _" [60,1000,60] 60)
-     and Until ("_ \<^bold>U _ _" [60,1000,60] 60)
+notation TT (\<open>\<top>\<close>)
+     and FF (\<open>\<bottom>\<close>)
+     and Pred (\<open>_ \<dagger> _\<close> [85, 85] 85)
+     and Eq_Const (\<open>_ \<^bold>\<approx> _\<close> [85, 85] 85)
+     and Neg (\<open>\<not>\<^sub>F _\<close> [82] 82)
+     and And (infixr \<open>\<and>\<^sub>F\<close> 80)
+     and Or (infixr \<open>\<or>\<^sub>F\<close> 80)
+     and Imp (infixr \<open>\<longrightarrow>\<^sub>F\<close> 79)
+     and Iff (infixr \<open>\<longleftrightarrow>\<^sub>F\<close> 79)
+     and Exists (\<open>\<exists>\<^sub>F_. _\<close> [70,70] 70)
+     and Forall (\<open>\<forall>\<^sub>F_. _\<close> [70,70] 70)
+     and Prev (\<open>\<^bold>Y _ _\<close> [1000, 65] 65)
+     and Next (\<open>\<^bold>X _ _\<close> [1000, 65] 65)
+     and Once (\<open>\<^bold>P _ _\<close> [1000, 65] 65)
+     and Eventually (\<open>\<^bold>F _ _\<close> [1000, 65] 65)
+     and Historically (\<open>\<^bold>H _ _\<close> [1000, 65] 65)
+     and Always (\<open>\<^bold>G _ _\<close> [1000, 65] 65)
+     and Since (\<open>_ \<^bold>S _ _\<close> [60,1000,60] 60)
+     and Until (\<open>_ \<^bold>U _ _\<close> [60,1000,60] 60)
 
-notation eval_trm ("_\<lbrakk>_\<rbrakk>" [70,89] 89)
-     and eval_trms ("_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>" [70,89] 89)
-     and eval_trm_set ("_\<lbrace>_\<rbrace>" [70,89] 89)
-     and eval_trms_set ("_\<^bold>\<lbrace>_\<^bold>\<rbrace>" [70,89] 89)
-     and sat ("\<langle>_, _, _\<rangle> \<Turnstile> _" [56, 56, 56, 56] 55)
-     and Interval.interval ("\<^bold>[_,_\<^bold>]")
+notation eval_trm (\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89)
+     and eval_trms (\<open>_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<close> [70,89] 89)
+     and eval_trm_set (\<open>_\<lbrace>_\<rbrace>\<close> [70,89] 89)
+     and eval_trms_set (\<open>_\<^bold>\<lbrace>_\<^bold>\<rbrace>\<close> [70,89] 89)
+     and sat (\<open>\<langle>_, _, _\<rangle> \<Turnstile> _\<close> [56, 56, 56, 56] 55)
+     and Interval.interval (\<open>\<^bold>[_,_\<^bold>]\<close>)
 
 end
 

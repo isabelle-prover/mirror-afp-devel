@@ -561,7 +561,7 @@ subsection \<open>Parser for IMP Programs\<close>
 
   
   
-  syntax "_Imp" :: "cartouche_position \<Rightarrow> logic" ("\<^imp>_")
+  syntax "_Imp" :: "cartouche_position \<Rightarrow> logic" (\<open>\<^imp>_\<close>)
 
   parse_translation \<open>
     [(@{syntax_const "_Imp"}, IMP_Parser.cartouche_tr)]

@@ -25,10 +25,10 @@ begin
          \<open>\<lambda>\<mu>\<nu>\<tau>. \<a> (fst \<mu>\<nu>\<tau>) (fst (snd \<mu>\<nu>\<tau>)) (snd (snd \<mu>\<nu>\<tau>))\<close> +
     L: fully_faithful_functor V V L +
     R: fully_faithful_functor V V R
-  for V :: "'a comp"                 (infixr "\<cdot>" 55)
-  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr "\<star>" 53)
-  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     ("\<a>[_, _, _]")
-  and \<i> :: "'a \<Rightarrow> 'a"                 ("\<i>[_]")
+  for V :: "'a comp"                 (infixr \<open>\<cdot>\<close> 55)
+  and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"          (infixr \<open>\<star>\<close> 53)
+  and \<a> :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"     (\<open>\<a>[_, _, _]\<close>)
+  and \<i> :: "'a \<Rightarrow> 'a"                 (\<open>\<i>[_]\<close>)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a" +
   assumes unit_in_vhom: "obj a \<Longrightarrow> \<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
@@ -348,7 +348,7 @@ begin
     prebicategory_with_homs
   begin
 
-    no_notation in_hom                ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    no_notation in_hom                (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     text \<open>
       The next definitions extend the left and right unitors that were defined locally with
@@ -356,10 +356,10 @@ begin
       source and target for each arrow.
     \<close>
 
-    definition lunit  ("\<l>[_]")
+    definition lunit  (\<open>\<l>[_]\<close>)
     where "lunit f \<equiv> left_hom_with_unit.lunit V H \<a> \<i>[trg f] (trg f) f"
 
-    definition runit  ("\<r>[_]")
+    definition runit  (\<open>\<r>[_]\<close>)
     where "runit f \<equiv> right_hom_with_unit.runit V H \<a> \<i>[src f] (src f) f"
 
     lemma lunit_in_hom:
@@ -695,7 +695,7 @@ begin
     qed
 
     (* TODO: Figure out how this got reinstated. *)
-    no_notation in_hom      ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    no_notation in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma natural_isomorphism_\<alpha>:
     shows "natural_isomorphism VVV.comp V HoHV HoVH
@@ -869,7 +869,7 @@ begin
   begin
 
     (* TODO: Why does this get re-introduced? *)
-    no_notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    no_notation in_hom        (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     interpretation \<alpha>': inverse_transformation VVV.comp V HoHV HoVH
                          \<open>\<lambda>\<mu>\<nu>\<tau>. \<a> (fst \<mu>\<nu>\<tau>) (fst (snd \<mu>\<nu>\<tau>)) (snd (snd \<mu>\<nu>\<tau>))\<close> ..
@@ -877,7 +877,7 @@ begin
     abbreviation \<alpha>'
     where "\<alpha>' \<equiv> \<alpha>'.map"
 
-    definition \<a>'  ("\<a>\<^sup>-\<^sup>1[_, _, _]")
+    definition \<a>'  (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
     where "\<a>\<^sup>-\<^sup>1[\<mu>, \<nu>, \<tau>] \<equiv> \<alpha>'.map (\<mu>, \<nu>, \<tau>)"
 
     lemma assoc'_in_hom':
@@ -1590,16 +1590,16 @@ begin
     shows "prebicategory_with_homs_and_units V H \<a> \<i>' src trg"
       ..
 
-    definition lunit                 ("\<l>[_]")
+    definition lunit                 (\<open>\<l>[_]\<close>)
     where "\<l>[a] \<equiv> PB.lunit a"
 
-    definition runit                 ("\<r>[_]")
+    definition runit                 (\<open>\<r>[_]\<close>)
     where "\<r>[a] \<equiv> PB.runit a"
 
-    abbreviation lunit'              ("\<l>\<^sup>-\<^sup>1[_]")
+    abbreviation lunit'              (\<open>\<l>\<^sup>-\<^sup>1[_]\<close>)
     where "\<l>\<^sup>-\<^sup>1[a] \<equiv> inv \<l>[a]"
 
-    abbreviation runit'              ("\<r>\<^sup>-\<^sup>1[_]")
+    abbreviation runit'              (\<open>\<r>\<^sup>-\<^sup>1[_]\<close>)
     where "\<r>\<^sup>-\<^sup>1[a] \<equiv> inv \<r>[a]"
 
     text \<open>

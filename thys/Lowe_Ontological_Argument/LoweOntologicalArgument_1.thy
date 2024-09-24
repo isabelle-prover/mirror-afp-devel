@@ -92,17 +92,17 @@ Note that the type \emph{e} characterizes the domain of all beings (existing and
 the type \emph{wo} (which is an abbreviation for \<open>w\<Rightarrow>bool\<close>) characterizes sets of worlds.
 The term "isActualized" thus relates beings to worlds.}\<close>
   
-consts isActualized::"e\<Rightarrow>wo" (infix "actualizedAt"(*<*)70(*>*))
+consts isActualized::"e\<Rightarrow>wo" (infix \<open>actualizedAt\<close>(*<*)70(*>*))
   
-abbreviation forallAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" ("\<^bold>\<forall>\<^sup>A")
+abbreviation forallAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" (\<open>\<^bold>\<forall>\<^sup>A\<close>)
   where "\<^bold>\<forall>\<^sup>A\<Phi> \<equiv> \<lambda>w.\<forall>x. (x actualizedAt w)\<longrightarrow>(\<Phi> x w)"
-abbreviation existsAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" ("\<^bold>\<exists>\<^sup>A")
+abbreviation existsAct::"(e\<Rightarrow>wo)\<Rightarrow>wo" (\<open>\<^bold>\<exists>\<^sup>A\<close>)
   where "\<^bold>\<exists>\<^sup>A\<Phi> \<equiv> \<lambda>w.\<exists>x. (x actualizedAt w) \<and> (\<Phi> x w)"
     
 text\<open>\noindent{We also define the corresponding binder syntax below.}\<close>
-abbreviation mforallActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder"\<^bold>\<forall>\<^sup>A"[8]9)
+abbreviation mforallActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder\<open>\<^bold>\<forall>\<^sup>A\<close>[8]9)
   where "\<^bold>\<forall>\<^sup>Ax. (\<phi> x) \<equiv> \<^bold>\<forall>\<^sup>A\<phi>"
-abbreviation mexistsActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder"\<^bold>\<exists>\<^sup>A"[8]9)
+abbreviation mexistsActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder\<open>\<^bold>\<exists>\<^sup>A\<close>[8]9)
   where "\<^bold>\<exists>\<^sup>Ax. (\<phi> x) \<equiv> \<^bold>\<exists>\<^sup>A\<phi>"
     
 text\<open>\noindent{We use Isabelle's Nitpick tool \<^cite>\<open>"Nitpick"\<close> to verify that actualist quantification validates
@@ -119,7 +119,7 @@ text\<open>\noindent{With actualist quantification in place we can:
 (iii) formalize contingency as existing possibly but not necessarily.
 }\<close>
 
-definition Existence::"e\<Rightarrow>wo" ("E!") where "E! x  \<equiv> \<^bold>\<exists>\<^sup>Ay. y \<^bold>\<approx> x"
+definition Existence::"e\<Rightarrow>wo" (\<open>E!\<close>) where "E! x  \<equiv> \<^bold>\<exists>\<^sup>Ay. y \<^bold>\<approx> x"
   
 definition Necessary::"e\<Rightarrow>wo" where "Necessary x \<equiv>  \<^bold>\<box>E! x"
 definition Contingent::"e\<Rightarrow>wo" where "Contingent x\<equiv> \<^bold>\<diamond>E! x \<^bold>\<and> \<^bold>\<not>Necessary x"
@@ -167,7 +167,7 @@ and a relation "depends (for its existence) on", which has been called
 Following our linguistic intuitions concerning their interrelation, we start by proposing
 the following formalization:}\<close>
   
-consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix "dependsOn"(*<*)100(*>*))
+consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>dependsOn\<close>(*<*)100(*>*))
 definition Dependent::"e\<Rightarrow>wo" where "Dependent x \<equiv> \<^bold>\<exists>\<^sup>Ay. x dependsOn y"
 abbreviation Independent::"e\<Rightarrow>wo" where "Independent x  \<equiv> \<^bold>\<not>(Dependent x)"
   
@@ -202,7 +202,7 @@ for expressions of the form: "the entity X explains the existence of Y" and
 These expressions rely on a single binary relation, which will initially be taken as \emph{primitive}.
 This relation has been called \emph{metaphysical explanation} by Lowe.}\<close>
     
-consts explanation::"e\<Rightarrow>e\<Rightarrow>wo" (infix "explains"(*<*)100(*>*))
+consts explanation::"e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>explains\<close>(*<*)100(*>*))
 definition Explained::"e\<Rightarrow>wo" where "Explained x \<equiv> \<^bold>\<exists>\<^sup>Ay. y explains x"
 
 axiomatization where

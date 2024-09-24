@@ -45,7 +45,7 @@ we need the Borel-\<sigma>-Algebra on the Reals*)
   sufficient, but we use all real u for simplicity!*)
 
 definition
-  Borelsets:: "real set set" ("\<bool>") where
+  Borelsets:: "real set set" (\<open>\<bool>\<close>) where
   "\<bool> = sigma {S. \<exists>u. S={..u}}"
 
 definition
@@ -83,11 +83,11 @@ time to define them*)
 
 definition
   distribution:: 
-  "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> (real set \<Rightarrow> real)" ("law") where
+  "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> (real set \<Rightarrow> real)" (\<open>law\<close>) where
   "f \<in> rv M \<Longrightarrow> law M f \<equiv> (measure M) \<circ> (vimage f)"
 
 definition
-  characteristic_function:: "'a set \<Rightarrow> ('a \<Rightarrow> real)" ("\<chi> _"(*<*)[1000](*>*)) where
+  characteristic_function:: "'a set \<Rightarrow> ('a \<Rightarrow> real)" (\<open>\<chi> _\<close>(*<*)[1000](*>*)) where
   "\<chi> A x \<equiv> if x \<in> A then 1 else 0" 
 
 lemma char_empty: "\<chi> {} = (\<lambda>t. 0)"
@@ -731,11 +731,11 @@ definition
   "nonnegative f \<longleftrightarrow> (\<forall>x. 0 \<le> f x)"
 
 definition
-  positive_part:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("pp") where
+  positive_part:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> ('a \<Rightarrow> 'b)" (\<open>pp\<close>) where
   "pp f x = (if 0\<le>f(x) then f x else 0)"
 
 definition
-  negative_part:: "('a \<Rightarrow> ('b::{ord,zero,uminus,minus})) \<Rightarrow> ('a \<Rightarrow> 'b)" ("np") where
+  negative_part:: "('a \<Rightarrow> ('b::{ord,zero,uminus,minus})) \<Rightarrow> ('a \<Rightarrow> 'b)" (\<open>np\<close>) where
   "np f x = (if 0\<le>f(x) then 0 else -f(x))"
   (*useful lemmata about positive and negative parts*)
 lemma f_plus_minus: "((f x)::real) = pp f x - np f x" 

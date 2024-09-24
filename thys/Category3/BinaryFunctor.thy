@@ -20,14 +20,14 @@ begin
     B: category B +
     A1xA2: product_category A1 A2 +
     "functor" A1xA2.comp B F
-  for A1 :: "'a1 comp"     (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"     (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
-  and B :: "'b comp"       (infixr "\<cdot>\<^sub>B" 55)
+  for A1 :: "'a1 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
+  and B :: "'b comp"       (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a1 * 'a2 \<Rightarrow> 'b"
   begin
 
-    notation A1.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1 _\<guillemotright>")
-    notation A2.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>2 _\<guillemotright>")
+    notation A1.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1 _\<guillemotright>\<close>)
+    notation A2.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
 
   end
 
@@ -44,22 +44,22 @@ begin
     F2: "functor" A2 B2 F2 +
     A1xA2: product_category A1 A2 +
     B1xB2: product_category B1 B2
-  for A1 :: "'a1 comp"     (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"     (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
-  and B1 :: "'b1 comp"     (infixr "\<cdot>\<^sub>B\<^sub>1" 55)
-  and B2 :: "'b2 comp"     (infixr "\<cdot>\<^sub>B\<^sub>2" 55)
+  for A1 :: "'a1 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
+  and B1 :: "'b1 comp"     (infixr \<open>\<cdot>\<^sub>B\<^sub>1\<close> 55)
+  and B2 :: "'b2 comp"     (infixr \<open>\<cdot>\<^sub>B\<^sub>2\<close> 55)
   and F1 :: "'a1 \<Rightarrow> 'b1"
   and F2 :: "'a2 \<Rightarrow> 'b2"
   begin
 
-    notation A1xA2.comp    (infixr "\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation B1xB2.comp    (infixr "\<cdot>\<^sub>B\<^sub>1\<^sub>x\<^sub>B\<^sub>2" 55)
-    notation A1.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1 _\<guillemotright>")
-    notation A2.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>2 _\<guillemotright>")
-    notation B1.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B\<^sub>1 _\<guillemotright>")
-    notation B2.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B\<^sub>2 _\<guillemotright>")
-    notation A1xA2.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
-    notation B1xB2.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B\<^sub>1\<^sub>x\<^sub>B\<^sub>2 _\<guillemotright>")
+    notation A1xA2.comp    (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation B1xB2.comp    (infixr \<open>\<cdot>\<^sub>B\<^sub>1\<^sub>x\<^sub>B\<^sub>2\<close> 55)
+    notation A1.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1 _\<guillemotright>\<close>)
+    notation A2.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
+    notation B1.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B\<^sub>1 _\<guillemotright>\<close>)
+    notation B2.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B\<^sub>2 _\<guillemotright>\<close>)
+    notation A1xA2.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
+    notation B1xB2.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>B\<^sub>1\<^sub>x\<^sub>B\<^sub>2 _\<guillemotright>\<close>)
 
     definition map
     where "map f = (if A1.arr (fst f) \<and> A2.arr (snd f)
@@ -95,7 +95,7 @@ begin
     CC: product_category C C +
     CCC: product_category C CC.comp +
     binary_functor C C C T
-  for C :: "'a comp"      (infixr "\<cdot>" 55)
+  for C :: "'a comp"      (infixr \<open>\<cdot>\<close> 55)
   and T :: "'a * 'a \<Rightarrow> 'a"
   begin
 
@@ -153,14 +153,14 @@ begin
   A2: category A2 +
   A1xA2: product_category A1 A2 +
   A2xA1: product_category A2 A1
-  for A1 :: "'a1 comp"     (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"     (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
+  for A1 :: "'a1 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
   begin
 
-    notation A1xA2.comp    (infixr "\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation A2xA1.comp    (infixr "\<cdot>\<^sub>A\<^sub>2\<^sub>x\<^sub>A\<^sub>1" 55)
-    notation A1xA2.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
-    notation A2xA1.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>2\<^sub>x\<^sub>A\<^sub>1 _\<guillemotright>")
+    notation A1xA2.comp    (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation A2xA1.comp    (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<^sub>x\<^sub>A\<^sub>1\<close> 55)
+    notation A1xA2.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
+    notation A2xA1.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>2\<^sub>x\<^sub>A\<^sub>1 _\<guillemotright>\<close>)
 
     definition map :: "'a1 * 'a2 \<Rightarrow> 'a2 * 'a1"
     where "map f = (if A1xA2.arr f then (snd f, fst f) else A2xA1.null)"
@@ -326,16 +326,16 @@ begin
     F: binary_functor A1 A2 B F +
     G: binary_functor A1 A2 B G +
     natural_transformation A1xA2.comp B F G \<tau>
-  for A1 :: "'a1 comp"     (infixr "\<cdot>\<^sub>A\<^sub>1" 55)
-  and A2 :: "'a2 comp"     (infixr "\<cdot>\<^sub>A\<^sub>2" 55)
-  and B :: "'b comp"       (infixr "\<cdot>\<^sub>B" 55)
+  for A1 :: "'a1 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<close> 55)
+  and A2 :: "'a2 comp"     (infixr \<open>\<cdot>\<^sub>A\<^sub>2\<close> 55)
+  and B :: "'b comp"       (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a1 * 'a2 \<Rightarrow> 'b"
   and G :: "'a1 * 'a2 \<Rightarrow> 'b"
   and \<tau> :: "'a1 * 'a2 \<Rightarrow> 'b"
   begin
 
-    notation A1xA2.comp    (infixr "\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2" 55)
-    notation A1xA2.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
+    notation A1xA2.comp    (infixr \<open>\<cdot>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2\<close> 55)
+    notation A1xA2.in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>\<close>)
 
     lemma fixing_ide_gives_natural_transformation_1:
     assumes "A1.ide a1"

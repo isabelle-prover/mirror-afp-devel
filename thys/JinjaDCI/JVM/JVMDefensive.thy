@@ -151,7 +151,7 @@ definition exec_d :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state o
 inductive_set
   exec_1_d :: "jvm_prog \<Rightarrow> (jvm_state type_error \<times> jvm_state type_error) set" 
   and exec_1_d' :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
-                   ("_ \<turnstile> _ -jvmd\<rightarrow>\<^sub>1 _" [61,61,61]60)
+                   (\<open>_ \<turnstile> _ -jvmd\<rightarrow>\<^sub>1 _\<close> [61,61,61]60)
   for P :: jvm_prog
 where
   "P \<turnstile> \<sigma> -jvmd\<rightarrow>\<^sub>1 \<sigma>' \<equiv> (\<sigma>,\<sigma>') \<in> exec_1_d P"
@@ -160,11 +160,11 @@ where
 
 \<comment> \<open>reflexive transitive closure:\<close>
 definition exec_all_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
-    ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60) where
+    (\<open>_ \<turnstile> _ -jvmd\<rightarrow> _\<close> [61,61,61]60) where
   exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"
 
 notation (ASCII)
-  "exec_all_d"  ("_ |- _ -jvmd-> _" [61,61,61]60)
+  "exec_all_d"  (\<open>_ |- _ -jvmd-> _\<close> [61,61,61]60)
 
 lemma exec_1_d_eq:
   "exec_1_d P = {(s,t). \<exists>\<sigma>. s = Normal \<sigma> \<and> t = TypeError \<and> exec_d P \<sigma> = TypeError} \<union> 

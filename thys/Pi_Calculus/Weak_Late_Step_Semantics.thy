@@ -6,14 +6,14 @@ theory Weak_Late_Step_Semantics
   imports Late_Tau_Chain
 begin
 
-definition inputTransition :: "pi \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>l_ in _\<rightarrow>_<_> \<prec> _" [80, 80, 80, 80, 80] 80)
+definition inputTransition :: "pi \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> name \<Rightarrow> name \<Rightarrow> pi \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sub>l_ in _\<rightarrow>_<_> \<prec> _\<close> [80, 80, 80, 80, 80] 80)
 where "P \<Longrightarrow>\<^sub>lu in P'' \<rightarrow>a<x> \<prec> P' \<equiv> \<exists>P'''. P \<Longrightarrow>\<^sub>\<tau> P''' \<and> P''' \<longmapsto>a<x> \<prec> P'' \<and> P''[x::=u] \<Longrightarrow>\<^sub>\<tau> P'"
 
 definition transition :: "(pi \<times> Late_Semantics.residual) set" where
   "transition \<equiv> {x. \<exists>P P' \<alpha> P'' P'''. P \<Longrightarrow>\<^sub>\<tau> P' \<and> P' \<longmapsto>\<alpha> \<prec> P'' \<and> P'' \<Longrightarrow>\<^sub>\<tau> P''' \<and> x = (P, \<alpha> \<prec> P''')}  \<union>
                 {x. \<exists>P P' a y P'' P'''. P \<Longrightarrow>\<^sub>\<tau> P' \<and> (P' \<longmapsto>(a<\<nu>y> \<prec> P'')) \<and> P'' \<Longrightarrow>\<^sub>\<tau> P''' \<and> x = (P, (a<\<nu>y> \<prec> P'''))}"
 
-abbreviation weakTransition_judge :: "pi \<Rightarrow> Late_Semantics.residual \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>l _" [80, 80] 80)
+abbreviation weakTransition_judge :: "pi \<Rightarrow> Late_Semantics.residual \<Rightarrow> bool" (\<open>_ \<Longrightarrow>\<^sub>l _\<close> [80, 80] 80)
   where "P \<Longrightarrow>\<^sub>l Rs \<equiv> (P, Rs) \<in> transition"
 
 lemma weakNonInput[dest]:

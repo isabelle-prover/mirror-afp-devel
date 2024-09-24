@@ -830,7 +830,7 @@ Many properties can already be shown if the underlying structure is just a semil
 \<close>
 
 class implies =
-  fixes implies :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leadsto>" 65)
+  fixes implies :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<leadsto>\<close> 65)
 
 class heyting_semilattice = semilattice_inf + implies +
   assumes implies_galois: "x \<sqinter> y \<le> z \<longleftrightarrow> x \<le> y \<leadsto> z"

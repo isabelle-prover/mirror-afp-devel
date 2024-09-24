@@ -41,7 +41,7 @@ qed
 
 lemma length_vec_smult: "length (vec_smult \<alpha> v) = length v" unfolding vec_smult_def by simp
 
-definition smult::"'a::ring \<Rightarrow> 'a tensor \<Rightarrow> 'a tensor" (infixl "\<cdot>" 70) where
+definition smult::"'a::ring \<Rightarrow> 'a tensor \<Rightarrow> 'a tensor" (infixl \<open>\<cdot>\<close> 70) where
 "smult \<alpha> A = (tensor_from_vec (dims A) (vec_smult \<alpha> (vec A)))"
 
 

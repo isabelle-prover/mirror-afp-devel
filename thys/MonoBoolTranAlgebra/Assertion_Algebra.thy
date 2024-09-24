@@ -18,7 +18,7 @@ typedef (overloaded) ('a::mbt_algebra) Assertion = "assertion::'a set"
   by (unfold assertion_def, simp)
 
 definition
-  assert :: "'a::mbt_algebra Assertion \<Rightarrow> 'a"  ("{\<cdot> _ }" [0] 1000) where
+  assert :: "'a::mbt_algebra Assertion \<Rightarrow> 'a"  (\<open>{\<cdot> _ }\<close> [0] 1000) where
   "{\<cdot>p} =  Rep_Assertion p"
 
 definition 

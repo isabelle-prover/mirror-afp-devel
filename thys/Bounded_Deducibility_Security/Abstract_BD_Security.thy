@@ -8,7 +8,7 @@ section \<open>BD Security\<close>
 
 subsection \<open>Abstract definition\<close>
 
-no_notation relcomp (infixr "O" 75)
+no_notation relcomp (infixr \<open>O\<close> 75)
 
 locale Abstract_BD_Security =
  fixes

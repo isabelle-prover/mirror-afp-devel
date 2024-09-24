@@ -14,7 +14,7 @@ locale Consensus
 \<comment> \<open>To avoid name clashes\<close>
 begin
 
-fun \<delta>::"val option \<Rightarrow> (proc \<times> val) \<Rightarrow> val option" (infix "\<bullet>" 65) where
+fun \<delta>::"val option \<Rightarrow> (proc \<times> val) \<Rightarrow> val option" (infix \<open>\<bullet>\<close> 65) where
   "\<delta> None r = Some (snd r)"
 | "\<delta> (Some v) r = Some v"
 
@@ -23,9 +23,9 @@ fun \<gamma>::"val option \<Rightarrow> (proc \<times> val) \<Rightarrow> val" w
 | "\<gamma> (Some v) r = v"
 
 interpretation pre_RDR \<delta> \<gamma> None .
-notation exec (infix "\<star>" 65)
-notation less_eq (infix "\<preceq>" 50 )
-notation None ("\<bottom>")
+notation exec (infix \<open>\<star>\<close> 65)
+notation less_eq (infix \<open>\<preceq>\<close> 50 )
+notation None (\<open>\<bottom>\<close>)
 
 lemma single_use:
   fixes r rs

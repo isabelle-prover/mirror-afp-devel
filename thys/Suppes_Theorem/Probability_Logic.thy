@@ -7,7 +7,7 @@ theory Probability_Logic
     "HOL-Library.Countable"
 begin
 
-no_notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+no_notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 section \<open> Definition of Probability Logic \label{sec:definition-of-probability-logic} \<close>
 
@@ -523,6 +523,6 @@ proof -
     by simp
 qed
 
-notation FuncSet.funcset (infixr "\<rightarrow>" 60)
+notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
 
 end

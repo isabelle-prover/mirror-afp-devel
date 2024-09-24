@@ -24,7 +24,7 @@ where
 | "af_letter (F \<phi>) \<nu> = (F \<phi>) or (af_letter \<phi> \<nu>)"
 | "af_letter (\<phi> U \<psi>) \<nu> = (\<phi> U \<psi> and (af_letter \<phi> \<nu>)) or (af_letter \<psi> \<nu>)"
 
-abbreviation af :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af")
+abbreviation af :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" (\<open>af\<close>)
 where
   "af \<phi> w \<equiv> foldl af_letter \<phi> w"
 
@@ -508,11 +508,11 @@ fun af_G_letter_opt
 where
   "af_G_letter_opt \<phi> \<nu> = Unf\<^sub>G (step \<phi> \<nu>)"
 
-abbreviation af_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af\<^sub>\<UU>")
+abbreviation af_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" (\<open>af\<^sub>\<UU>\<close>)
 where
   "af\<^sub>\<UU> \<phi> w \<equiv> (foldl af_letter_opt \<phi> w)"
 
-abbreviation af_G_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" ("af\<^sub>G\<^sub>\<UU>")
+abbreviation af_G_opt :: "'a ltl \<Rightarrow> 'a set list \<Rightarrow> 'a ltl" (\<open>af\<^sub>G\<^sub>\<UU>\<close>)
 where
   "af\<^sub>G\<^sub>\<UU> \<phi> w \<equiv> (foldl af_G_letter_opt \<phi> w)"
 
@@ -568,38 +568,38 @@ text \<open>Lift functions and bind to new names\<close>
 interpretation af_abs: lift_ltl_transformer af_letter
   using lift_ltl_transformer_def af_respectfulness af_nested_propos by blast
 
-definition af_letter_abs ("\<up>af")
+definition af_letter_abs (\<open>\<up>af\<close>)
 where
   "\<up>af \<equiv> af_abs.f_abs"
 
 interpretation af_G_abs: lift_ltl_transformer af_G_letter
   using lift_ltl_transformer_def af_G_respectfulness af_G_nested_propos by blast
 
-definition af_G_letter_abs ("\<up>af\<^sub>G")
+definition af_G_letter_abs (\<open>\<up>af\<^sub>G\<close>)
 where
   "\<up>af\<^sub>G \<equiv> af_G_abs.f_abs"
 
 interpretation af_abs_opt: lift_ltl_transformer af_letter_opt
   using lift_ltl_transformer_def respectfulness nested_propos by blast
 
-definition af_letter_abs_opt ("\<up>af\<^sub>\<UU>")
+definition af_letter_abs_opt (\<open>\<up>af\<^sub>\<UU>\<close>)
 where
   "\<up>af\<^sub>\<UU> \<equiv> af_abs_opt.f_abs"
 
 interpretation af_G_abs_opt: lift_ltl_transformer af_G_letter_opt
   using lift_ltl_transformer_def respectfulness nested_propos by blast
 
-definition af_G_letter_abs_opt ("\<up>af\<^sub>G\<^sub>\<UU>")
+definition af_G_letter_abs_opt (\<open>\<up>af\<^sub>G\<^sub>\<UU>\<close>)
 where
   "\<up>af\<^sub>G\<^sub>\<UU> \<equiv> af_G_abs_opt.f_abs"
 
-lift_definition step_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a set \<Rightarrow> 'a ltl\<^sub>P" ("\<up>step") is step
+lift_definition step_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a set \<Rightarrow> 'a ltl\<^sub>P" (\<open>\<up>step\<close>) is step
   by (insert respectfulness)
 
-lift_definition Unf_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>Unf") is Unf
+lift_definition Unf_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" (\<open>\<up>Unf\<close>) is Unf
   by (insert respectfulness)
 
-lift_definition Unf\<^sub>G_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" ("\<up>Unf\<^sub>G") is Unf\<^sub>G
+lift_definition Unf\<^sub>G_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P" (\<open>\<up>Unf\<^sub>G\<close>) is Unf\<^sub>G
   by (insert respectfulness)
 
 subsubsection \<open>Properties\<close>

@@ -50,11 +50,11 @@ proof -
 
   define sum_ssub_nzero_param_of_state where
     "sum_ssub_nzero_param_of_state \<equiv> (\<lambda>d. Param (d - Suc 0))"
-  write sum_ssub_nzero_param_of_state ("\<Sum>S-'_Param _")
+  write sum_ssub_nzero_param_of_state (\<open>\<Sum>S-'_Param _\<close>)
 
   define sum_ssub_zero_param_of_state where
     "sum_ssub_zero_param_of_state \<equiv> (\<lambda>d. Param (m + d - Suc 0))"
-  write sum_ssub_zero_param_of_state ("\<Sum>S0'_Param _")
+  write sum_ssub_zero_param_of_state (\<open>\<Sum>S0'_Param _\<close>)
 
   define param_is_sum_ssub_nzero_term where 
     "param_is_sum_ssub_nzero_term \<equiv> (\<lambda>d::nat. [(\<Sum>S-_Param d) = \<Sum>S- d (s' && z0)])"

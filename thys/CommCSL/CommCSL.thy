@@ -31,7 +31,7 @@ datatype ('i, 'a, 'v) assertion =
   Bool bexp
   | Emp
   | And "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"
-  | Star "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"    ("_ * _" 70)
+  | Star "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"    (\<open>_ * _\<close> 70)
   | Low bexp
   | LowExp exp
 
@@ -59,7 +59,7 @@ inductive PRE_shared_simpler :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Righ
 definition PRE_unique :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> bool" where
   "PRE_unique upre uargs uargs' \<longleftrightarrow> length uargs = length uargs' \<and> (\<forall>i. i \<ge> 0 \<and> i < length uargs' \<longrightarrow> upre (uargs ! i) (uargs' ! i))"
 
-fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" ("_, _ \<Turnstile> _" [51, 65, 66] 50) where
+fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" (\<open>_, _ \<Turnstile> _\<close> [51, 65, 66] 50) where
   "(s, _), (s', _)  \<Turnstile> Bool b \<longleftrightarrow> bdenot b s \<and> bdenot b s'"
 | "(_, h), (_, h') \<Turnstile> Emp \<longleftrightarrow> dom (get_fh h) = {} \<and> dom (get_fh h') = {}"
 | "\<sigma>, \<sigma>' \<Turnstile> And A B \<longleftrightarrow> \<sigma>, \<sigma>' \<Turnstile> A \<and> \<sigma>, \<sigma>' \<Turnstile> B"
@@ -739,7 +739,7 @@ definition all_axioms :: "('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 
 subsection \<open>Rules of the Logic\<close>
 
 inductive CommCSL :: "('i, 'a, nat) cont \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> cmd \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool"
-   ("_ \<turnstile> {_} _ {_}" [51,0,0] 81) where
+   (\<open>_ \<turnstile> {_} _ {_}\<close> [51,0,0] 81) where
   RuleSkip: "\<Delta> \<turnstile> {P} Cskip {P}"
 | RuleAssign: "\<lbrakk> \<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> x \<notin> fvA (invariant \<Gamma>) ; collect_existentials P \<inter> fvE E = {} \<rbrakk> \<Longrightarrow> \<Delta> \<turnstile> {subA x E P} Cassign x E {P} "
 | RuleNew: "\<lbrakk> x \<notin> fvE E; \<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> x \<notin> fvA (invariant \<Gamma>) \<and> view_function_of_inv \<Gamma> \<rbrakk> \<Longrightarrow> \<Delta> \<turnstile> {Emp} Calloc x E {PointsTo (Evar x) pwrite E}"

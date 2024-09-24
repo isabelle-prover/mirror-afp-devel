@@ -109,7 +109,7 @@ subsection\<open>Validity and Definedness\<close>
 text\<open>However, this has also the consequence that core concepts like definedness,
 validity and even cp have to be redefined on this type class:\<close>
 
-definition valid :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" ("\<upsilon> _" [100]100)
+definition valid :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" (\<open>\<upsilon> _\<close> [100]100)
 where   "\<upsilon> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau> then false \<tau> else true \<tau>"
 
 lemma valid1[simp]: "\<upsilon> invalid = false"
@@ -129,7 +129,7 @@ lemma cp_valid: "(\<upsilon> X) \<tau> = (\<upsilon> (\<lambda> _. X \<tau>)) \<
 by(simp add: valid_def)
 text_raw\<open>\endisatagafp\<close>
 
-definition defined :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" ("\<delta> _" [100]100)
+definition defined :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" (\<open>\<delta> _\<close> [100]100)
 where   "\<delta> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau>  \<or> X \<tau> = null \<tau> then false \<tau> else true \<tau>"
 
 text\<open>The generalized definitions of invalid and definedness have the same
@@ -307,7 +307,7 @@ text\<open>
   equality is simply polymorphic in Featherweight OCL, \ie, is
   defined identical for all types in OCL and HOL.
 \<close>
-definition StrongEq::"['\<AA> st \<Rightarrow> '\<alpha>,'\<AA> st \<Rightarrow> '\<alpha>] \<Rightarrow> ('\<AA>)Boolean"  (infixl "\<triangleq>" 30)
+definition StrongEq::"['\<AA> st \<Rightarrow> '\<alpha>,'\<AA> st \<Rightarrow> '\<alpha>] \<Rightarrow> ('\<AA>)Boolean"  (infixl \<open>\<triangleq>\<close> 30)
 where     "X \<triangleq> Y \<equiv>  \<lambda> \<tau>. \<lfloor>\<lfloor>X \<tau> = Y \<tau> \<rfloor>\<rfloor>"
 
 text\<open>
@@ -400,7 +400,7 @@ text\<open>
 \<close>
 
 
-definition OclNot :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean" ("not")
+definition OclNot :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean" (\<open>not\<close>)
 where     "not X \<equiv>  \<lambda> \<tau> . case X \<tau> of
                                \<bottom>     \<Rightarrow> \<bottom>
                            | \<lfloor> \<bottom> \<rfloor>   \<Rightarrow> \<lfloor> \<bottom> \<rfloor>
@@ -434,7 +434,7 @@ lemma OclNot_not[simp]: "not (not X) = X"
 lemma OclNot_inject: "\<And> x y. not x = not y \<Longrightarrow> x = y"
   by(subst OclNot_not[THEN sym], simp)
 
-definition OclAnd :: "[('\<AA>)Boolean, ('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean" (infixl "and" 30)
+definition OclAnd :: "[('\<AA>)Boolean, ('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean" (infixl \<open>and\<close> 30)
 where     "X and Y \<equiv>  (\<lambda> \<tau> . case X \<tau> of
                           \<lfloor>\<lfloor>False\<rfloor>\<rfloor> \<Rightarrow>               \<lfloor>\<lfloor>False\<rfloor>\<rfloor>
                         | \<bottom>        \<Rightarrow> (case Y \<tau> of
@@ -482,10 +482,10 @@ lemma textbook_OclAnd:
                         | \<lfloor>\<lfloor>False\<rfloor>\<rfloor> \<Rightarrow>  \<lfloor>\<lfloor> False \<rfloor>\<rfloor>)"
 by(simp add: OclAnd_def Sem_def split: option.split bool.split)
 
-definition OclOr :: "[('\<AA>)Boolean, ('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean"            (infixl "or" 25)
+definition OclOr :: "[('\<AA>)Boolean, ('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean"            (infixl \<open>or\<close> 25)
 where    "X or Y \<equiv> not(not X and not Y)"
 
-definition OclImplies :: "[('\<AA>)Boolean, ('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean"       (infixl "implies" 25)
+definition OclImplies :: "[('\<AA>)Boolean, ('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean"       (infixl \<open>implies\<close> 25)
 where    "X implies Y \<equiv> not X or Y"
 
 lemma cp_OclAnd:"(X and Y) \<tau> = ((\<lambda> _. X \<tau>) and (\<lambda> _. Y \<tau>)) \<tau>"
@@ -687,10 +687,10 @@ lemma OclImplies_false1[simp]:"(false implies X) = true"
 
 subsection\<open>A Standard Logical Calculus for OCL\<close>
 
-definition OclValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_)/ \<Turnstile> (_))" 50)
+definition OclValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" (\<open>(1(_)/ \<Turnstile> (_))\<close> 50)
 where     "\<tau> \<Turnstile> P \<equiv> ((P \<tau>) = true \<tau>)"
 
-syntax OclNonValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_)/ |\<noteq> (_))" 50)
+syntax OclNonValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" (\<open>(1(_)/ |\<noteq> (_))\<close> 50)
 syntax_consts OclNonValid == Not
 translations "\<tau> |\<noteq> P" == "\<not>(\<tau> \<Turnstile> P)" 
 
@@ -1075,7 +1075,7 @@ text_raw\<open>\endisatagafp\<close>
 subsection\<open>OCL's if then else endif\<close>
 
 definition OclIf :: "[('\<AA>)Boolean , ('\<AA>,'\<alpha>::null) val, ('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) val"
-                     ("if (_) then (_) else (_) endif" [10,10,10]50)
+                     (\<open>if (_) then (_) else (_) endif\<close> [10,10,10]50)
 where "(if C then B\<^sub>1 else B\<^sub>2 endif) = (\<lambda> \<tau>. if (\<delta> C) \<tau> = true \<tau>
                                            then (if (C \<tau>) = true \<tau>
                                                 then B\<^sub>1 \<tau>
@@ -1146,12 +1146,12 @@ text\<open>
   as an \emph{overloaded} concept and will handle it for
   each type instance individually.
 \<close>
-consts StrictRefEq :: "[('\<AA>,'a)val,('\<AA>,'a)val] \<Rightarrow> ('\<AA>)Boolean" (infixl "\<doteq>" 30)
+consts StrictRefEq :: "[('\<AA>,'a)val,('\<AA>,'a)val] \<Rightarrow> ('\<AA>)Boolean" (infixl \<open>\<doteq>\<close> 30)
 
 text\<open>with {term "not"} we can express the notation:\<close>
 
 syntax
-  "notequal"        :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean"   (infix "<>" 40)
+  "notequal"        :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean"   (infix \<open><>\<close> 40)
 syntax_consts
   notequal == OclNot
 translations
@@ -1358,6 +1358,6 @@ lemmas const_ss = const_bot const_null  const_invalid  const_false  const_true  
 
 text\<open>Miscellaneous: Overloading the syntax of ``bottom''\<close>
 
-notation bot ("\<bottom>")
+notation bot (\<open>\<bottom>\<close>)
 
 end

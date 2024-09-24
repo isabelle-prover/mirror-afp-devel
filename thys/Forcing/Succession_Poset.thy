@@ -11,7 +11,7 @@ text\<open>We implement the poset for adding one Cohen real, the set
 $2^{<\omega}$ of of finite binary sequences.\<close>
 
 definition
-  seqspace :: "i \<Rightarrow> i" ("_^<\<omega>" [100]100) where
+  seqspace :: "i \<Rightarrow> i" (\<open>_^<\<omega>\<close> [100]100) where
   "seqspace(B) \<equiv> \<Union>n\<in>nat. (n\<rightarrow>B)"
 
 lemma seqspaceI[intro]: "n\<in>nat \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>seqspace(B)"
@@ -196,10 +196,10 @@ interpretation forcing_notion "2^<\<omega>" "seqle" "0"
   using preorder_on_seqle zero_seqle_max zero_in_seqspace 
   by unfold_locales simp_all
 
-abbreviation SEQle :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>s" 50)
+abbreviation SEQle :: "[i, i] \<Rightarrow> o"  (infixl \<open>\<preceq>s\<close> 50)
   where "x \<preceq>s y \<equiv> Leq(x,y)"
 
-abbreviation SEQIncompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>s" 50)
+abbreviation SEQIncompatible :: "[i, i] \<Rightarrow> o"  (infixl \<open>\<bottom>s\<close> 50)
   where "x \<bottom>s y \<equiv> Incompatible(x,y)"
 
 lemma seqspace_separative:

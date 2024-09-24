@@ -2,7 +2,7 @@ theory Approx_Beta
   imports DBM_Zone_Semantics Regions_Beta Closure
 begin
 
-no_notation infinity ("\<infinity>")
+no_notation infinity (\<open>\<infinity>\<close>)
 
 chapter \<open>Correctness of \<open>\<beta>\<close>-approximation from \<open>\<alpha>\<close>-regions\<close>
 
@@ -2041,7 +2041,7 @@ subsection \<open>Single Step\<close>
 
 inductive step_z_beta ::
   "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<beta>(_)\<^esub> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<beta>(_)\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   step_beta: "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>a\<^esub> \<langle>l', Z'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<beta>(a)\<^esub> \<langle>l', Approx\<^sub>\<beta> l' Z'\<rangle>"
 
@@ -2148,13 +2148,13 @@ subsection \<open>Multi step\<close>
 
 definition
   step_z_beta' :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta> \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta> \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle> = (\<exists> Z' a. A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^bsub>\<tau>\<^esub> \<langle>l, Z'\<rangle> \<and> A \<turnstile> \<langle>l, Z'\<rangle> \<leadsto>\<^bsub>\<beta>(\<upharpoonleft>a)\<^esub> \<langle>l', Z''\<rangle>)"
 
 abbreviation
   steps_z_beta :: "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> 's \<Rightarrow> ('c, t) zone \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>_, _\<rangle>" [61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta>* \<langle>l', Z''\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<beta> \<langle>l', Z''\<rangle>)\<^sup>*\<^sup>* (l, Z) (l', Z'')"
 

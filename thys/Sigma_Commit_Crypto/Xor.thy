@@ -5,10 +5,10 @@ begin
 
 (* disable lattice syntax for type class lattices *)
 no_notation
-  bot_class.bot ("\<bottom>") and
-  top_class.top ("\<top>") and 
-  inf  (infixl "\<sqinter>" 70) and
-  sup  (infixl "\<squnion>" 65) 
+  bot_class.bot (\<open>\<bottom>\<close>) and
+  top_class.top (\<open>\<top>\<close>) and 
+  inf  (infixl \<open>\<sqinter>\<close> 70) and
+  sup  (infixl \<open>\<squnion>\<close> 65) 
 
 context bounded_lattice begin
 
@@ -54,9 +54,9 @@ lemmas join_ac = join_assoc join_comm join_leftcomm
 end
 
 record 'a boolean_algebra = "'a gorder" +
-  compl :: "'a \<Rightarrow> 'a" ("\<^bold>-\<index>" 1000)
+  compl :: "'a \<Rightarrow> 'a" (\<open>\<^bold>-\<index>\<close> 1000)
 
-definition xor :: "('a, 'b) boolean_algebra_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<oplus>\<index>" 100) where
+definition xor :: "('a, 'b) boolean_algebra_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<oplus>\<index>\<close> 100) where
   "x \<oplus> y = (x \<squnion> y) \<sqinter> (\<^bold>- (x \<sqinter> y))" for L (structure)
 
 locale boolean_algebra = bounded_lattice L

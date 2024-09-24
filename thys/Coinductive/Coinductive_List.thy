@@ -412,7 +412,7 @@ by(blast dest: split_llist_first)
 
 subsection \<open>The prefix ordering on lazy lists: @{term "lprefix"}\<close>
 
-coinductive lprefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool" (infix "\<sqsubseteq>" 65)
+coinductive lprefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 65)
 where
   LNil_lprefix [simp, intro!]: "LNil \<sqsubseteq> xs"
 | Le_LCons: "xs \<sqsubseteq> ys \<Longrightarrow> LCons x xs \<sqsubseteq> LCons x ys"
@@ -5278,6 +5278,6 @@ by (simp add: llist_all2_rsp rel_fun_def)
 
 end
 
-no_notation lprefix (infix "\<sqsubseteq>" 65)
+no_notation lprefix (infix \<open>\<sqsubseteq>\<close> 65)
 
 end

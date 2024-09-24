@@ -17,11 +17,11 @@ fun subterms::"('a,'b) term \<Rightarrow> ('a,'b) terms" where
   "subterms (Var x) = {Var x}"
 | "subterms (Fun f T) = {Fun f T} \<union> (\<Union>t \<in> set T. subterms t)"
 
-abbreviation subtermeq (infix "\<sqsubseteq>" 50) where "t' \<sqsubseteq> t \<equiv> (t' \<in> subterms t)"
-abbreviation subterm (infix "\<sqsubset>" 50) where "t' \<sqsubset> t \<equiv> (t' \<sqsubseteq> t \<and> t' \<noteq> t)"
+abbreviation subtermeq (infix \<open>\<sqsubseteq>\<close> 50) where "t' \<sqsubseteq> t \<equiv> (t' \<in> subterms t)"
+abbreviation subterm (infix \<open>\<sqsubset>\<close> 50) where "t' \<sqsubset> t \<equiv> (t' \<sqsubseteq> t \<and> t' \<noteq> t)"
 
 abbreviation "subterms\<^sub>s\<^sub>e\<^sub>t M \<equiv> \<Union>(subterms ` M)"
-abbreviation subtermeqset (infix "\<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t" 50) where "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<equiv> (t \<in> subterms\<^sub>s\<^sub>e\<^sub>t M)"
+abbreviation subtermeqset (infix \<open>\<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t\<close> 50) where "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<equiv> (t \<in> subterms\<^sub>s\<^sub>e\<^sub>t M)"
 
 abbreviation fv where "fv \<equiv> vars_term"
 lemmas fv_simps = term.simps(17,18)

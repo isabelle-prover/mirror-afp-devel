@@ -15,7 +15,7 @@ text \<open>
   but we will always use it that way (in fact, in our case \<open>x\<close> will always be a rational integer).
 \<close>
 
-definition alg_dvd :: "'a :: field \<Rightarrow> 'a \<Rightarrow> bool" (infix "alg'_dvd" 50) where
+definition alg_dvd :: "'a :: field \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>alg'_dvd\<close> 50) where
   "x alg_dvd y \<longleftrightarrow> (x = 0 \<longrightarrow> y = 0) \<and> algebraic_int (y / x)"
 
 lemma alg_dvd_imp_algebraic_int:

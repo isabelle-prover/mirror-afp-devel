@@ -6,7 +6,7 @@ begin
 text\<open>Resolution is different from the other proof systems:
   its derivations do not represent proofs in the way the other systems do.
   Rather, they represent invariant additions (under satisfiability) to set of clauses.\<close>
-inductive Resolution :: "'a literal set set \<Rightarrow> 'a literal set \<Rightarrow> bool" ("_ \<turnstile> _" [30] 28) where
+inductive Resolution :: "'a literal set set \<Rightarrow> 'a literal set \<Rightarrow> bool" (\<open>_ \<turnstile> _\<close> [30] 28) where
 Ass: "C \<in> S \<Longrightarrow> S \<turnstile> C" |
 R: "S \<turnstile> C \<Longrightarrow> S \<turnstile> D \<Longrightarrow> k\<^sup>+ \<in> C \<Longrightarrow> k\<inverse> \<in> D \<Longrightarrow> S \<turnstile> (C - {k\<^sup>+}) \<union> (D - {k\<inverse>})"
 text\<open>The problematic part of this formulation is that we can't talk about a "Resolution Refutation" in an inductive manner. 

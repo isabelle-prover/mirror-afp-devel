@@ -10,7 +10,7 @@ begin
 
 subsection \<open>Auxiliary stuff\<close>
 
-definition restrict :: "('a \<times> 'a) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set" (infixl "\<upharpoonleft>" 60)
+definition restrict :: "('a \<times> 'a) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set" (infixl \<open>\<upharpoonleft>\<close> 60)
 where "R \<upharpoonleft> A = {(a, b) \<in> R. b \<in> A}"
 
 lemma in_restrict [iff]: "(a, b) \<in> R \<upharpoonleft> A \<longleftrightarrow> (a, b) \<in> R \<and> b \<in> A"

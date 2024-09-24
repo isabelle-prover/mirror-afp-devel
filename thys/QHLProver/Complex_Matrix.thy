@@ -1948,7 +1948,7 @@ lemma positive_scale:
 
 subsection \<open>L\"{o}wner partial order\<close>
 
-definition lowner_le :: "complex mat \<Rightarrow> complex mat \<Rightarrow> bool"  (infix "\<le>\<^sub>L" 50) where
+definition lowner_le :: "complex mat \<Rightarrow> complex mat \<Rightarrow> bool"  (infix \<open>\<le>\<^sub>L\<close> 50) where
   "A \<le>\<^sub>L B \<longleftrightarrow> dim_row A = dim_row B \<and> dim_col A = dim_col B \<and> positive (B - A)"
 
 lemma lowner_le_refl:

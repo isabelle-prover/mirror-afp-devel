@@ -11,7 +11,7 @@ subsection \<open>Syntax\<close>
 
 datatype type = 
      Iota
-    | Fun type type (infixr "\<rightarrow>" 200)
+    | Fun type type (infixr \<open>\<rightarrow>\<close> 200)
 
 text\<open>To deal with $\alpha$-equivalence, we use De Bruijn's nameless representation wherein each bound
      variable is represented by a natural number, its index, that denotes the number of binders
@@ -20,18 +20,18 @@ text\<open>To deal with $\alpha$-equivalence, we use De Bruijn's nameless repres
      any abstractions.\<close>
   
 datatype trm =
-      LVar nat    ("`_" [100] 100)
-    | Lbd type trm ("\<lambda>_:_" [0, 60] 60)
-    | App trm trm (infix "\<degree>" 60)
-    | Mu type cmd ("\<mu>_:_" [0, 60] 60)
+      LVar nat    (\<open>`_\<close> [100] 100)
+    | Lbd type trm (\<open>\<lambda>_:_\<close> [0, 60] 60)
+    | App trm trm (infix \<open>\<degree>\<close> 60)
+    | Mu type cmd (\<open>\<mu>_:_\<close> [0, 60] 60)
 and cmd = 
-      MVar nat trm ("<_>_" [0, 60] 60)
+      MVar nat trm (\<open><_>_\<close> [0, 60] 60)
       
 datatype ctxt = 
-  ContextEmpty ("\<diamond>") |
-  ContextApp ctxt trm (infixl "\<^sup>\<bullet>" 75)
+  ContextEmpty (\<open>\<diamond>\<close>) |
+  ContextApp ctxt trm (infixl \<open>\<^sup>\<bullet>\<close> 75)
   
-primrec ctxt_app :: "ctxt \<Rightarrow> ctxt \<Rightarrow> ctxt" (infix "." 60) where
+primrec ctxt_app :: "ctxt \<Rightarrow> ctxt \<Rightarrow> ctxt" (infix \<open>.\<close> 60) where
   "\<diamond> . F = F" |
   "(E \<^sup>\<bullet> t) . F = (E . F) \<^sup>\<bullet> t"
   

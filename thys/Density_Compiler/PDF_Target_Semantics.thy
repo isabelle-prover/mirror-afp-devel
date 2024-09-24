@@ -14,23 +14,23 @@ begin
 datatype cexpr =
     CVar vname
   | CVal val
-  | CPair cexpr cexpr ("<_, _>\<^sub>c" [0, 0] 1000)
-  | COperator pdf_operator cexpr (infixl "$$\<^sub>c" 999)
-  | CIf cexpr cexpr cexpr ("IF\<^sub>c _ THEN _ ELSE _" [0, 0, 10] 10)
-  | CIntegral cexpr pdf_type ("\<integral>\<^sub>c _ \<partial>_" [61] 110)
+  | CPair cexpr cexpr (\<open><_, _>\<^sub>c\<close> [0, 0] 1000)
+  | COperator pdf_operator cexpr (infixl \<open>$$\<^sub>c\<close> 999)
+  | CIf cexpr cexpr cexpr (\<open>IF\<^sub>c _ THEN _ ELSE _\<close> [0, 0, 10] 10)
+  | CIntegral cexpr pdf_type (\<open>\<integral>\<^sub>c _ \<partial>_\<close> [61] 110)
 
-abbreviation (input) cexpr_fun :: "(cexpr \<Rightarrow> cexpr) \<Rightarrow> cexpr" (binder "\<lambda>\<^sub>c" 10) where
+abbreviation (input) cexpr_fun :: "(cexpr \<Rightarrow> cexpr) \<Rightarrow> cexpr" (binder \<open>\<lambda>\<^sub>c\<close> 10) where
   "cexpr_fun f \<equiv> f (CVar 0)"
-abbreviation cexpr_Add (infixl "+\<^sub>c" 65) where
+abbreviation cexpr_Add (infixl \<open>+\<^sub>c\<close> 65) where
   "cexpr_Add a b \<equiv> Add $$\<^sub>c <a, b>\<^sub>c"
-abbreviation cexpr_Minus ("-\<^sub>c _" [81] 80) where
+abbreviation cexpr_Minus (\<open>-\<^sub>c _\<close> [81] 80) where
   "cexpr_Minus a \<equiv> Minus $$\<^sub>c a"
-abbreviation cexpr_Sub (infixl "-\<^sub>c" 65) where
+abbreviation cexpr_Sub (infixl \<open>-\<^sub>c\<close> 65) where
   "cexpr_Sub a b \<equiv> a +\<^sub>c -\<^sub>cb"
-abbreviation cexpr_Mult (infixl "*\<^sub>c" 70) where
+abbreviation cexpr_Mult (infixl \<open>*\<^sub>c\<close> 70) where
   "cexpr_Mult a b \<equiv> Mult $$\<^sub>c <a, b>\<^sub>c"
 abbreviation "inverse\<^sub>c e \<equiv>Inverse $$\<^sub>c e"
-abbreviation cexpr_Div (infixl "'/\<^sub>c" 70) where
+abbreviation cexpr_Div (infixl \<open>'/\<^sub>c\<close> 70) where
   "cexpr_Div a b \<equiv> a *\<^sub>c inverse\<^sub>c b"
 abbreviation "fact\<^sub>c e \<equiv> Fact $$\<^sub>c e"
 abbreviation "sqrt\<^sub>c e \<equiv> Sqrt $$\<^sub>c e"
@@ -38,21 +38,21 @@ abbreviation "exp\<^sub>c e \<equiv> Exp $$\<^sub>c e"
 abbreviation "ln\<^sub>c e \<equiv> Ln $$\<^sub>c e"
 abbreviation "fst\<^sub>c e \<equiv> Fst $$\<^sub>c e"
 abbreviation "snd\<^sub>c e \<equiv> Snd $$\<^sub>c e"
-abbreviation cexpr_Pow (infixl "^\<^sub>c" 75) where
+abbreviation cexpr_Pow (infixl \<open>^\<^sub>c\<close> 75) where
   "cexpr_Pow a b \<equiv> Pow $$\<^sub>c <a, b>\<^sub>c"
-abbreviation cexpr_And (infixl "\<and>\<^sub>c" 35) where
+abbreviation cexpr_And (infixl \<open>\<and>\<^sub>c\<close> 35) where
   "cexpr_And a b \<equiv> And $$\<^sub>c <a, b>\<^sub>c"
-abbreviation cexpr_Or (infixl "\<or>\<^sub>c" 30) where
+abbreviation cexpr_Or (infixl \<open>\<or>\<^sub>c\<close> 30) where
   "cexpr_Or a b \<equiv> Or $$\<^sub>c <a, b>\<^sub>c"
-abbreviation cexpr_Not ("\<not>\<^sub>c _" [40] 40) where
+abbreviation cexpr_Not (\<open>\<not>\<^sub>c _\<close> [40] 40) where
   "cexpr_Not a \<equiv> Not $$\<^sub>c a"
-abbreviation cexpr_Equals (infixl "=\<^sub>c" 70) where
+abbreviation cexpr_Equals (infixl \<open>=\<^sub>c\<close> 70) where
   "cexpr_Equals a b \<equiv> Equals $$\<^sub>c <a, b>\<^sub>c"
-abbreviation cexpr_Less (infixl "<\<^sub>c" 70) where
+abbreviation cexpr_Less (infixl \<open><\<^sub>c\<close> 70) where
   "cexpr_Less a b \<equiv> Less $$\<^sub>c <a, b>\<^sub>c"
-abbreviation cexpr_LessEq (infixl "\<le>\<^sub>c" 70) where
+abbreviation cexpr_LessEq (infixl \<open>\<le>\<^sub>c\<close> 70) where
   "cexpr_LessEq a b \<equiv> a =\<^sub>c b \<or>\<^sub>c a <\<^sub>c b"
-abbreviation cexpr_RealCast ("\<langle>_\<rangle>\<^sub>c" [0] 90) where
+abbreviation cexpr_RealCast (\<open>\<langle>_\<rangle>\<^sub>c\<close> [0] 90) where
   "cexpr_RealCast a \<equiv> Cast REAL $$\<^sub>c a"
 abbreviation CReal where
   "CReal x \<equiv> CVal (RealVal x)"
@@ -76,7 +76,7 @@ primrec free_vars_cexpr :: "cexpr \<Rightarrow> vname set" where
 instance ..
 end
 
-inductive cexpr_typing :: "tyenv \<Rightarrow> cexpr \<Rightarrow> pdf_type \<Rightarrow> bool" ("(1_/ \<turnstile>\<^sub>c/ (_ :/ _))" [50,0,50] 50) where
+inductive cexpr_typing :: "tyenv \<Rightarrow> cexpr \<Rightarrow> pdf_type \<Rightarrow> bool" (\<open>(1_/ \<turnstile>\<^sub>c/ (_ :/ _))\<close> [50,0,50] 50) where
   cet_val:    "\<Gamma> \<turnstile>\<^sub>c CVal v: val_type v"
 | cet_var:    "\<Gamma> \<turnstile>\<^sub>c CVar x : \<Gamma> x"
 | cet_pair:   "\<Gamma> \<turnstile>\<^sub>c e1 : t1 \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c e2 : t2 \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c <e1, e2>\<^sub>c : PRODUCT t1 t2"
@@ -463,7 +463,7 @@ proof (induction e' arbitrary: x e \<sigma>)
   thus ?case by (auto intro!: integral_cong simp: CIntegral.IH simp del: fun_upd_apply)
 qed (simp_all add: insert_var_def)
 
-definition cexpr_comp (infixl "\<circ>\<^sub>c" 55) where
+definition cexpr_comp (infixl \<open>\<circ>\<^sub>c\<close> 55) where
   "cexpr_comp b a \<equiv> cexpr_comp_aux 0 a b"
 
 lemma cexpr_typing_cexpr_comp_aux:

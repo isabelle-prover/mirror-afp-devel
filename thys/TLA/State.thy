@@ -51,8 +51,8 @@ definition stvars    :: "'a statefun \<Rightarrow> bool"
 where basevars_def:  "stvars \<equiv> surj" 
 
 syntax
-  "PRED"    :: "lift \<Rightarrow> 'a"                          ("PRED _")
-  "_stvars" :: "lift \<Rightarrow> bool"                        ("basevars _")
+  "PRED"    :: "lift \<Rightarrow> 'a"                          (\<open>PRED _\<close>)
+  "_stvars" :: "lift \<Rightarrow> bool"                        (\<open>basevars _\<close>)
 
 translations
   "PRED P"   \<rightharpoonup>  "(P::state => _)"
@@ -172,12 +172,12 @@ text\<open>
 \<close>
 
 consts
-  EEx        :: "('a statefun \<Rightarrow> temporal) \<Rightarrow> temporal"       (binder "Eex " 10)
-  AAll       :: "('a statefun \<Rightarrow> temporal) \<Rightarrow> temporal"       (binder "Aall " 10)
+  EEx        :: "('a statefun \<Rightarrow> temporal) \<Rightarrow> temporal"       (binder \<open>Eex \<close> 10)
+  AAll       :: "('a statefun \<Rightarrow> temporal) \<Rightarrow> temporal"       (binder \<open>Aall \<close> 10)
 
 syntax
-  "_EEx"     :: "[idts, lift] => lift"                ("(3\<exists>\<exists> _./ _)" [0,10] 10)
-  "_AAll"    :: "[idts, lift] => lift"                ("(3\<forall>\<forall> _./ _)" [0,10] 10)
+  "_EEx"     :: "[idts, lift] => lift"                (\<open>(3\<exists>\<exists> _./ _)\<close> [0,10] 10)
+  "_AAll"    :: "[idts, lift] => lift"                (\<open>(3\<forall>\<forall> _./ _)\<close> [0,10] 10)
 translations
   "_EEx v A"  ==   "Eex v. A"
   "_AAll v A" ==   "Aall v. A"

@@ -578,7 +578,7 @@ subsection\<open>Composition of covariant functors\<close>
 
 subsubsection\<open>Definition and elementary properties\<close>
 
-abbreviation (input) cf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<circ>\<^sub>C\<^sub>F" 55)
+abbreviation (input) cf_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>C\<^sub>F\<close> 55)
   where "cf_comp \<equiv> dghm_comp"
 
 
@@ -807,7 +807,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>See section 1.2 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
-definition cf_cn_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<^sub>C\<^sub>F\<circ>" 55)
+definition cf_cn_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<^sub>C\<^sub>F\<circ>\<close> 55)
   where "\<GG> \<^sub>C\<^sub>F\<circ> \<FF> =
     [
       \<GG>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>,
@@ -2176,7 +2176,7 @@ text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>)
 locale iso_category = L: category \<alpha> \<AA> + R: category \<alpha> \<BB> for \<alpha> \<AA> \<BB> +
   assumes iso_cat_is_iso_functor: "\<exists>\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
 
-notation iso_category (infixl "\<approx>\<^sub>C\<index>" 50)
+notation iso_category (infixl \<open>\<approx>\<^sub>C\<index>\<close> 50)
 
 
 text\<open>Rules.\<close>

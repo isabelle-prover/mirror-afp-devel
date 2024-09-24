@@ -539,10 +539,10 @@ by transfer simp
 
 
 lift_definition eval' :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state' \<Rightarrow> expr \<Rightarrow> state' \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>''/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+          (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>''/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81)
   is eval .
 lift_definition evals' :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state' \<Rightarrow> expr list \<Rightarrow> state' \<Rightarrow> bool"
-           ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<Rightarrow>'']/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+           (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<Rightarrow>'']/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81)
   is evals .
 
 lemma New':

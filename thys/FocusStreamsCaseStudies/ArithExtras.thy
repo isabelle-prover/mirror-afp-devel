@@ -12,7 +12,7 @@ imports Main
 begin 
 
 datatype natInf = Fin nat 
-                | Infty                     ("\<infinity>")
+                | Infty                     (\<open>\<infinity>\<close>)
 primrec
 nat2inat :: "nat list \<Rightarrow> natInf list"
 where

@@ -1138,10 +1138,10 @@ definition ref :: "'a::heap.rep \<Rightarrow> 'a ref tso" where
   "ref v = tso.action (\<lambda>wb. {(r, [heap.Write (ref.addr_of r) 0 (heap.rep.to v)], s, s')
                             |r s s' v'. (r, s') \<in> Ref.alloc v' s})"
 
-definition lookup :: "'a::heap.rep ref \<Rightarrow> 'a tso" ("!_" 61) where
+definition lookup :: "'a::heap.rep ref \<Rightarrow> 'a tso" (\<open>!_\<close> 61) where
   "lookup r = tso.read (Ref.get r)"
 
-definition update :: "'a ref \<Rightarrow> 'a::heap.rep \<Rightarrow> unit tso" ("_ := _" 62) where
+definition update :: "'a ref \<Rightarrow> 'a::heap.rep \<Rightarrow> unit tso" (\<open>_ := _\<close> 62) where
   "update r v = tso.write \<langle>heap.Write (ref.addr_of r) 0 (heap.rep.to v)\<rangle>"
 
 declare tso.Ref.ref_def[code del]

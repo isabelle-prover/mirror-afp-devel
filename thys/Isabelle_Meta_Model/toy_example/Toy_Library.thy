@@ -45,17 +45,17 @@ theory Toy_Library
 imports Main
 begin
 
-type_notation option ("\<langle>_\<rangle>\<^sub>\<bottom>") (* NOTE: "_\<^sub>\<bottom>" also works *)
-notation Some ("\<lfloor>(_)\<rfloor>")
+type_notation option (\<open>\<langle>_\<rangle>\<^sub>\<bottom>\<close>) (* NOTE: "_\<^sub>\<bottom>" also works *)
+notation Some (\<open>\<lfloor>(_)\<rfloor>\<close>)
 
-fun    drop :: "'\<alpha> option \<Rightarrow> '\<alpha>" ("\<lceil>(_)\<rceil>")
+fun    drop :: "'\<alpha> option \<Rightarrow> '\<alpha>" (\<open>\<lceil>(_)\<rceil>\<close>)
 where  drop_lift[simp]: "\<lceil>\<lfloor>v\<rfloor>\<rceil> = v"
 
 
 type_synonym oid = nat
 
 type_synonym '\<alpha> val' = "unit \<Rightarrow> '\<alpha>"
-type_notation val' ("\<cdot>(_)")
+type_notation val' (\<open>\<cdot>(_)\<close>)
 
 record ('\<AA>)state =
              heap   :: "oid \<rightharpoonup> '\<AA> "

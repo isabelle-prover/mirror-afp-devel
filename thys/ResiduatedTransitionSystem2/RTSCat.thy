@@ -34,14 +34,14 @@ begin
 
     type_synonym 'a arr = "'a rtscatx.arr"
 
-    definition comp :: "'A arr comp"  (infixr "\<cdot>" 53)
+    definition comp :: "'A arr comp"  (infixr \<open>\<cdot>\<close> 53)
     where "comp \<equiv> subcategory.comp RTSx.hcomp RTSx.sta"
 
     sublocale category comp
       unfolding comp_def
       using RTS\<^sub>S.is_category by blast
 
-    notation in_hom           ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom           (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma ide_iff_RTS_obj:
     shows "ide a \<longleftrightarrow> RTSx.obj a"
@@ -329,9 +329,9 @@ begin
 
     subsection "Terminal Object"
 
-    definition one          ("\<^bold>\<one>")
+    definition one          (\<open>\<^bold>\<one>\<close>)
     where "one \<equiv> RTSx.one"
-    no_notation RTSx.one     ("\<^bold>\<one>")
+    no_notation RTSx.one     (\<open>\<^bold>\<one>\<close>)
 
     definition trm
     where "trm \<equiv> RTSx.trm"
@@ -399,10 +399,10 @@ begin
     definition p\<^sub>1 :: "'A arr \<Rightarrow> 'A arr \<Rightarrow> 'A arr"
     where "p\<^sub>1 \<equiv> RTSx.p\<^sub>1"
 
-    no_notation RTSx.p\<^sub>0  ("\<pp>\<^sub>0[_, _]")
-    no_notation RTSx.p\<^sub>1  ("\<pp>\<^sub>1[_, _]")
-    notation p\<^sub>0  ("\<pp>\<^sub>0[_, _]")
-    notation p\<^sub>1  ("\<pp>\<^sub>1[_, _]")
+    no_notation RTSx.p\<^sub>0  (\<open>\<pp>\<^sub>0[_, _]\<close>)
+    no_notation RTSx.p\<^sub>1  (\<open>\<pp>\<^sub>1[_, _]\<close>)
+    notation p\<^sub>0  (\<open>\<pp>\<^sub>0[_, _]\<close>)
+    notation p\<^sub>1  (\<open>\<pp>\<^sub>1[_, _]\<close>)
 
     sublocale elementary_cartesian_category comp p\<^sub>0 p\<^sub>1 one trm
     proof
@@ -451,15 +451,15 @@ begin
       qed
     qed
 
-    notation prod   (infixr "\<otimes>" 51)
-    notation tuple  ("\<langle>_, _\<rangle>")
-    notation dup    ("\<d>[_]")
-    notation assoc  ("\<a>[_, _, _]")
-    notation assoc' ("\<a>\<^sup>-\<^sup>1[_, _, _]")
-    notation lunit  ("\<l>[_]")
-    notation lunit' ("\<l>\<^sup>-\<^sup>1[_]")
-    notation runit  ("\<r>[_]")
-    notation runit' ("\<r>\<^sup>-\<^sup>1[_]")
+    notation prod   (infixr \<open>\<otimes>\<close> 51)
+    notation tuple  (\<open>\<langle>_, _\<rangle>\<close>)
+    notation dup    (\<open>\<d>[_]\<close>)
+    notation assoc  (\<open>\<a>[_, _, _]\<close>)
+    notation assoc' (\<open>\<a>\<^sup>-\<^sup>1[_, _, _]\<close>)
+    notation lunit  (\<open>\<l>[_]\<close>)
+    notation lunit' (\<open>\<l>\<^sup>-\<^sup>1[_]\<close>)
+    notation runit  (\<open>\<r>[_]\<close>)
+    notation runit' (\<open>\<r>\<^sup>-\<^sup>1[_]\<close>)
 
     lemma tuple_char:
     shows "tuple = (\<lambda>f g. if span f g then RTSx.tuple f g else null)"

@@ -75,9 +75,9 @@ subsection "Lazy Lists"
 text \<open>
   In the following we provide some additional notation and properties for lazy lists.
 \<close>
-notation LNil ("[]\<^sub>l")
-notation LCons (infixl "#\<^sub>l" 60)
-notation lappend (infixl "@\<^sub>l" 60)
+notation LNil (\<open>[]\<^sub>l\<close>)
+notation LCons (infixl \<open>#\<^sub>l\<close> 60)
+notation lappend (infixl \<open>@\<^sub>l\<close> 60)
 
 lemma lnth_lappend[simp]:
   assumes "lfinite xs"
@@ -169,7 +169,7 @@ type_synonym cta = "trace \<Rightarrow> nat \<Rightarrow> bool"
 
 subsubsection "Implication"
 
-definition imp :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<longrightarrow>\<^sup>c" 10)
+definition imp :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl \<open>\<longrightarrow>\<^sup>c\<close> 10)
   where "\<gamma> \<longrightarrow>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"
 
 declare imp_def[simp]
@@ -186,7 +186,7 @@ lemma impE[elim!]:
 
 subsubsection "Disjunction"  
     
-definition disj :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<or>\<^sup>c" 15)
+definition disj :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl \<open>\<or>\<^sup>c\<close> 15)
   where "\<gamma> \<or>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"
 
 declare disj_def[simp]
@@ -207,7 +207,7 @@ lemma disjE[elim!]:
 
 subsubsection "Conjunction"
   
-definition conj :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<and>\<^sup>c" 20)
+definition conj :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl \<open>\<and>\<^sup>c\<close> 20)
   where "\<gamma> \<and>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"
 
 declare conj_def[simp]
@@ -224,7 +224,7 @@ lemma conjE[elim!]:
 
 subsubsection "Negation"
   
-definition neg :: "cta \<Rightarrow> cta" ("\<not>\<^sup>c _" [19] 19)
+definition neg :: "cta \<Rightarrow> cta" (\<open>\<not>\<^sup>c _\<close> [19] 19)
   where "\<not>\<^sup>c \<gamma> \<equiv> \<lambda> t n. \<not> \<gamma> t n"
 
 declare neg_def[simp]
@@ -241,7 +241,7 @@ lemma negE[elim!]:
 subsubsection "Quantifiers"
 
 definition all :: "('a \<Rightarrow> cta)
-  \<Rightarrow> cta" (binder "\<forall>\<^sub>c" 10)
+  \<Rightarrow> cta" (binder \<open>\<forall>\<^sub>c\<close> 10)
   where "all P \<equiv> \<lambda>t n. (\<forall>y. (P y t n))"
 
 declare all_def[simp]
@@ -256,7 +256,7 @@ lemma allE[elim!]:
   shows "\<gamma>' t n" using assms by simp
 
 definition ex :: "('a \<Rightarrow> cta)
-  \<Rightarrow> cta" (binder "\<exists>\<^sub>c" 10)
+  \<Rightarrow> cta" (binder \<open>\<exists>\<^sub>c\<close> 10)
   where "ex P \<equiv> \<lambda>t n. (\<exists>y. (P y t n))"
 
 declare ex_def[simp]
@@ -289,17 +289,17 @@ lemma caE[elim]:
 
 subsubsection "Next Operator"
 
-definition nxt :: "cta \<Rightarrow> cta" ("\<circle>\<^sub>c(_)" 24)
+definition nxt :: "cta \<Rightarrow> cta" (\<open>\<circle>\<^sub>c(_)\<close> 24)
   where "\<circle>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<gamma> t (Suc n)"
 
 subsubsection "Eventually Operator"  
 
-definition evt :: "cta \<Rightarrow> cta" ("\<diamond>\<^sub>c(_)" 23)
+definition evt :: "cta \<Rightarrow> cta" (\<open>\<diamond>\<^sub>c(_)\<close> 23)
   where "\<diamond>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<exists>n'\<ge>n. \<gamma> t n'"
 
 subsubsection "Globally Operator"
 
-definition glob :: "cta \<Rightarrow> cta" ("\<box>\<^sub>c(_)" 22)
+definition glob :: "cta \<Rightarrow> cta" (\<open>\<box>\<^sub>c(_)\<close> 22)
   where "\<box>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<forall>n'\<ge>n. \<gamma> t n'"
 
 lemma globI[intro!]:
@@ -314,7 +314,7 @@ lemma globE[elim!]:
 
 subsubsection "Until Operator"
 
-definition until :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<UU>\<^sub>c" 21)
+definition until :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl \<open>\<UU>\<^sub>c\<close> 21)
   where "\<gamma>' \<UU>\<^sub>c \<gamma> \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"
 
 lemma untilI[intro]:
@@ -329,7 +329,7 @@ lemma untilE[elim]:
 
 subsubsection "Weak Until"
 
-definition wuntil :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<WW>\<^sub>c" 20)
+definition wuntil :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl \<open>\<WW>\<^sub>c\<close> 20)
   where "\<gamma>' \<WW>\<^sub>c \<gamma> \<equiv> \<gamma>' \<UU>\<^sub>c \<gamma> \<or>\<^sup>c \<box>\<^sub>c(\<gamma>')"
 
 lemma wUntilI[intro]:
@@ -411,8 +411,8 @@ text \<open>
   \end{itemize}
 \<close>
 locale dynamic_component =
-  fixes tCMP :: "'id \<Rightarrow> cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
-    and active :: "'id \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
+  fixes tCMP :: "'id \<Rightarrow> cnf \<Rightarrow> 'cmp" (\<open>\<sigma>\<^bsub>_\<^esub>(_)\<close> [0,110]60)
+    and active :: "'id \<Rightarrow> cnf \<Rightarrow> bool" (\<open>\<parallel>_\<parallel>\<^bsub>_\<^esub>\<close> [0,110]60)
 begin
   
 text \<open>
@@ -473,7 +473,7 @@ text \<open>
   In the following we introduce an operator which extracts the behavior of a certain component out of a given configuration trace.
 \<close>
 
-definition proj:: "'id \<Rightarrow> (cnf llist) \<Rightarrow> ('cmp llist)" ("\<pi>\<^bsub>_\<^esub>(_)" [0,110]60) 
+definition proj:: "'id \<Rightarrow> (cnf llist) \<Rightarrow> ('cmp llist)" (\<open>\<pi>\<^bsub>_\<^esub>(_)\<close> [0,110]60) 
   where "proj c = lmap (\<lambda>cnf. (\<sigma>\<^bsub>c\<^esub>(cnf))) \<circ> (lfilter (active c))"
 
 lemma proj_lnil [simp,intro]:
@@ -783,7 +783,7 @@ text \<open>
   We also introduce an operator to obtain the number of activations of a certain component within a given configuration trace.
 \<close>
 
-definition nAct :: "'id \<Rightarrow> enat \<Rightarrow> (cnf llist) \<Rightarrow> enat" ("\<langle>_ #\<^bsub>_\<^esub>_\<rangle>") where
+definition nAct :: "'id \<Rightarrow> enat \<Rightarrow> (cnf llist) \<Rightarrow> enat" (\<open>\<langle>_ #\<^bsub>_\<^esub>_\<rangle>\<close>) where
 "\<langle>c #\<^bsub>n\<^esub> t\<rangle> \<equiv> llength (\<pi>\<^bsub>c\<^esub>(ltake n t))"
 
 lemma nAct_0[simp]:
@@ -1174,7 +1174,7 @@ text \<open>
   In the following, we introduce an operator to obtain the least point in time before a certain point in time where a component was deactivated.
 \<close>
 
-definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" (\<open>\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
   where "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
 
 lemma lNact0[simp]:
@@ -1267,7 +1267,7 @@ text \<open>
   In the following, we introduce an operator to obtain the next point in time when a component is activated.
 \<close>
   
-definition nxtAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
+definition nxtAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" (\<open>\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
   where "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (THE n'. n'\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub> \<and> (\<nexists>k. k\<ge>n \<and> k<n' \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))"
 
 lemma nxtActI:
@@ -1401,7 +1401,7 @@ text \<open>
 abbreviation latestAct_cond:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
   where "latestAct_cond c t n n' \<equiv> n'<n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub>"
 
-definition latestAct:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+definition latestAct:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat" (\<open>\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>\<close>)
   where "latestAct c t n = (GREATEST n'. latestAct_cond c t n n')"
 
 lemma latestActEx:
@@ -1471,7 +1471,7 @@ text \<open>
   In the following we introduce an operator to obtain the latest point in time where a certain component was activated within a certain configuration trace.
 \<close>
 
-definition lActive :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat" ("\<langle>_ \<and> _\<rangle>")
+definition lActive :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat" (\<open>\<langle>_ \<and> _\<rangle>\<close>)
   where "\<langle>c \<and> t\<rangle> \<equiv> (GREATEST i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
 
 lemma lActive_active:
@@ -1551,7 +1551,7 @@ text \<open>
   First we provide an operator which maps a point in time of a configuration trace to the corresponding point in time of a behavior trace.
 \<close>
   
-definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+definition cnf2bhv :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" (\<open>\<^bsub>_\<^esub>\<down>\<^bsub>_\<^esub>(_)\<close> [150,150,150] 110)
   where "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<equiv> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 + (n - \<langle>c \<and> t\<rangle>)"
 
 lemma cnf2bhv_mono:
@@ -1672,7 +1672,7 @@ text \<open>
   Next we define an operator to map a point in time of a behavior trace back to a corresponding point in time for a configuration trace.
 \<close>
 
-definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)" [150,150,150] 110)
+definition bhv2cnf :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" (\<open>\<^bsub>_\<^esub>\<up>\<^bsub>_\<^esub>(_)\<close> [150,150,150] 110)
   where "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(n) \<equiv> \<langle>c \<and> t\<rangle> + (n - (the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1))"
 
 lemma bhv2cnf_mono:

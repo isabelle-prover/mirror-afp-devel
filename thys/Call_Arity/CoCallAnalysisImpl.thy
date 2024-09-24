@@ -141,11 +141,11 @@ begin
 sublocale CoCallArityAnalysis cCCexp.
 sublocale ArityAnalysis Aexp.
 
-abbreviation Aexp_syn'' ("\<A>\<^bsub>_\<^esub>") where "\<A>\<^bsub>a\<^esub> e \<equiv> Aexp e\<cdot>a"
-abbreviation Aexp_bot_syn'' ("\<A>\<^sup>\<bottom>\<^bsub>_\<^esub>") where "\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> e \<equiv> fup\<cdot>(Aexp e)\<cdot>a"
+abbreviation Aexp_syn'' (\<open>\<A>\<^bsub>_\<^esub>\<close>) where "\<A>\<^bsub>a\<^esub> e \<equiv> Aexp e\<cdot>a"
+abbreviation Aexp_bot_syn'' (\<open>\<A>\<^sup>\<bottom>\<^bsub>_\<^esub>\<close>) where "\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> e \<equiv> fup\<cdot>(Aexp e)\<cdot>a"
 
-abbreviation ccExp_syn'' ("\<G>\<^bsub>_\<^esub>") where "\<G>\<^bsub>a\<^esub> e \<equiv> CCexp e\<cdot>a"
-abbreviation ccExp_bot_syn'' ("\<G>\<^sup>\<bottom>\<^bsub>_\<^esub>") where "\<G>\<^sup>\<bottom>\<^bsub>a\<^esub> e \<equiv> fup\<cdot>(CCexp e)\<cdot>a"
+abbreviation ccExp_syn'' (\<open>\<G>\<^bsub>_\<^esub>\<close>) where "\<G>\<^bsub>a\<^esub> e \<equiv> CCexp e\<cdot>a"
+abbreviation ccExp_bot_syn'' (\<open>\<G>\<^sup>\<bottom>\<^bsub>_\<^esub>\<close>) where "\<G>\<^sup>\<bottom>\<^bsub>a\<^esub> e \<equiv> fup\<cdot>(CCexp e)\<cdot>a"
 
 
 lemma cCCexp_eq[simp]:

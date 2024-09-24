@@ -9,7 +9,7 @@ Barzdin~\<^cite>\<open>"b-iiafp-74" and "b-iiafp-77"\<close> and Blum and Blum~\
 was proven by Wiehagen~\<^cite>\<open>"w-lerfss-76"\<close> (see also Wiehagen and
 Zeugmann~\<^cite>\<open>"wz-idmowle-94"\<close>). The proof uses this class:\<close>
 
-definition U_LIMCONS :: "partial1 set" ("U\<^bsub>LIM-CONS\<^esub>") where
+definition U_LIMCONS :: "partial1 set" (\<open>U\<^bsub>LIM-CONS\<^esub>\<close>) where
   "U\<^bsub>LIM-CONS\<^esub> \<equiv> {vs @ [j] \<odot> p| vs j p. j \<ge> 2 \<and> p \<in> \<R>\<^sub>0\<^sub>1 \<and> \<phi> j = vs @ [j] \<odot> p}"
 
 text \<open>Every function in @{term "U\<^bsub>LIM-CONS\<^esub>"} carries a Gödel number
@@ -400,7 +400,7 @@ lemma prefixes_neq_nil: "length (prefixes i x) > 0"
 
 text \<open>The actual numbering can then be defined via @{term prefixes}.\<close>
 
-definition psi :: "partial2" ("\<psi>") where
+definition psi :: "partial2" (\<open>\<psi>\<close>) where
   "\<psi> i x \<equiv> Some (last (prefixes i x))"
 
 lemma psi_in_R2: "\<psi> \<in> \<R>\<^sup>2"

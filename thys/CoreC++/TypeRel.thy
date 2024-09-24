@@ -12,7 +12,7 @@ theory TypeRel imports SubObj begin
 
 
 inductive
-  widen   :: "prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
+  widen   :: "prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<le> _\<close>   [71,71,71] 70)
   for P :: prog
 where
   widen_refl[iff]: "P \<turnstile> T \<le> T"
@@ -21,7 +21,7 @@ where
 
 abbreviation
   widens :: "prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool"
-    ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70) where
+    (\<open>_ \<turnstile> _ [\<le>] _\<close> [71,71,71] 70) where
   "widens P Ts Ts' \<equiv> list_all2 (widen P) Ts Ts'"
 
 inductive_simps [iff]:

@@ -30,8 +30,8 @@ proof unfold_locales
     by (metis less_add_same_cancel2 less_trans perfect_def traffic.psGeZero traffic.sdGeZero)
 qed
   
-notation perfect_sensors.space ("space")
-notation perfect_sensors.len ("len")
+notation perfect_sensors.space (\<open>space\<close>)
+notation perfect_sensors.len (\<open>len\<close>)
 
 text\<open>
 With this sensor definition, we can show that the perceived length of a car

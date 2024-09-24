@@ -21,7 +21,7 @@ definition assign :: "('a, 'r) var \<Rightarrow> 'a \<Rightarrow> 'r \<Rightarro
 
 text \<open>The $VAR$ function allows to retrieve a variable given its name.\<close>
 
-syntax "_VAR" :: "id \<Rightarrow> ('a, 'r) var"  ("VAR _")
+syntax "_VAR" :: "id \<Rightarrow> ('a, 'r) var"  (\<open>VAR _\<close>)
 translations "VAR x" => "(x, _update_name x)"
 
 end

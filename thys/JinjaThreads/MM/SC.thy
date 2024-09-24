@@ -156,9 +156,9 @@ where
 abbreviation sc_wf_start_state :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> bool"
 where "sc_wf_start_state P \<equiv> sc.wf_start_state TYPE('m) P P"
 
-notation sc.conf ("_,_ \<turnstile>sc _ :\<le> _"  [51,51,51,51] 50)
-notation sc.confs ("_,_ \<turnstile>sc _ [:\<le>] _" [51,51,51,51] 50)
-notation sc.hext ("_ \<unlhd>sc _" [51,51] 50)
+notation sc.conf (\<open>_,_ \<turnstile>sc _ :\<le> _\<close>  [51,51,51,51] 50)
+notation sc.confs (\<open>_,_ \<turnstile>sc _ [:\<le>] _\<close> [51,51,51,51] 50)
+notation sc.hext (\<open>_ \<unlhd>sc _\<close> [51,51] 50)
 
 lemma sc_start_heap_ok: "sc_start_heap_ok P"
 apply(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def sys_xcpts_list_def case_option_conv_if new_Addr_SomeI del: blank.simps split del: option.split if_split)
@@ -211,15 +211,15 @@ by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def)
 
 subsection \<open>Conformance\<close>
 
-definition sc_fconf :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarrow> fields \<Rightarrow> bool" ("_,_,_ \<turnstile>sc _ \<surd>" [51,51,51,51] 50)
+definition sc_fconf :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarrow> fields \<Rightarrow> bool" (\<open>_,_,_ \<turnstile>sc _ \<surd>\<close> [51,51,51,51] 50)
 where "P,C,h \<turnstile>sc fs \<surd> = (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> (\<exists>v. fs(F,D) = Some v \<and> P,h \<turnstile>sc v :\<le> T))"
 
-primrec sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile>sc _ \<surd>" [51,51,51] 50)
+primrec sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   (\<open>_,_ \<turnstile>sc _ \<surd>\<close> [51,51,51] 50)
 where
   "P,h \<turnstile>sc Obj C fs \<surd> \<longleftrightarrow> is_class P C \<and> P,C,h \<turnstile>sc fs \<surd>"
 | "P,h \<turnstile>sc Arr T fs el \<surd> \<longleftrightarrow> is_type P (T\<lfloor>\<rceil>) \<and> P,Object,h \<turnstile>sc fs \<surd> \<and> (\<forall>v \<in> set el. P,h \<turnstile>sc v :\<le> T)"
 
-definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  ("_ \<turnstile>sc _ \<surd>" [51,51] 50)
+definition sc_hconf :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"  (\<open>_ \<turnstile>sc _ \<surd>\<close> [51,51] 50)
 where "P \<turnstile>sc h \<surd> \<longleftrightarrow> (\<forall>a obj. h a = Some obj \<longrightarrow> P,h \<turnstile>sc obj \<surd>)"
 
 interpretation sc: heap_conf_base  

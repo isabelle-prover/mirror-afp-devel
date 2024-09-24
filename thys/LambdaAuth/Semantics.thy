@@ -10,7 +10,7 @@ begin
 (*>*)
 
 text \<open>Avoid clash with substitution notation.\<close>
-no_notation inverse_divide (infixl "'/" 70)
+no_notation inverse_divide (infixl \<open>'/\<close> 70)
 
 text \<open>Help automated provers with smallsteps.\<close>
 declare One_nat_def[simp del]
@@ -129,7 +129,7 @@ lemma hash_eq_hash_real_closed:
 
 subsection \<open>Substitution\<close>
 
-nominal_function subst_term :: "term \<Rightarrow> term \<Rightarrow> var \<Rightarrow> term" ("_[_ '/ _]" [250, 200, 200] 250) where
+nominal_function subst_term :: "term \<Rightarrow> term \<Rightarrow> var \<Rightarrow> term" (\<open>_[_ '/ _]\<close> [250, 200, 200] 250) where
   "Unit[t' / x] = Unit" |
   "(Var y)[t' / x] = (if x = y then t' else Var y)" |
   "atom y \<sharp> (x, t') \<Longrightarrow> (Lam y t)[t' / x] = Lam y (t[t' / x])" |
@@ -291,7 +291,7 @@ subsection \<open>Weak Typing Judgement\<close>
 
 type_synonym tyenv = "(var, ty) fmap"
 
-inductive judge_weak :: "tyenv \<Rightarrow> term \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile>\<^sub>W _ : _" [150,0,150] 149) where
+inductive judge_weak :: "tyenv \<Rightarrow> term \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>W _ : _\<close> [150,0,150] 149) where
   jw_Unit:   "\<Gamma> \<turnstile>\<^sub>W Unit : One" |
   jw_Var:    "\<lbrakk> \<Gamma> $$ x = Some \<tau> \<rbrakk>
            \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>W Var x : \<tau>" |
@@ -513,7 +513,7 @@ definition erase_env :: "tyenv \<Rightarrow> tyenv" where
 
 subsection \<open>Strong Typing Judgement\<close>
 
-inductive judge :: "tyenv \<Rightarrow> term \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ : _" [150,0,150] 149) where
+inductive judge :: "tyenv \<Rightarrow> term \<Rightarrow> ty \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close> [150,0,150] 149) where
   j_Unit:   "\<Gamma> \<turnstile> Unit : One" |
   j_Var:    "\<lbrakk> \<Gamma> $$ x = Some \<tau> \<rbrakk>
            \<Longrightarrow> \<Gamma> \<turnstile> Var x : \<tau>" |
@@ -565,7 +565,7 @@ lemma judge_imp_judge_weak:
 
 subsection \<open>Shallow Projection\<close>
 
-nominal_function shallow :: "term \<Rightarrow> term" ("\<lparr>_\<rparr>") where
+nominal_function shallow :: "term \<Rightarrow> term" (\<open>\<lparr>_\<rparr>\<close>) where
   "\<lparr>Unit\<rparr>  = Unit" |
   "\<lparr>Var v\<rparr> = Var v" |
   "\<lparr>Lam x e\<rparr> = Lam x \<lparr>e\<rparr>" |
@@ -626,7 +626,7 @@ end
 
 type_synonym proofstream = "term list"
 
-inductive smallstep :: "proofstream \<Rightarrow> term \<Rightarrow> mode \<Rightarrow> proofstream \<Rightarrow> term \<Rightarrow> bool" ("\<lless>_, _\<ggreater> _\<rightarrow> \<lless>_, _\<ggreater>") where
+inductive smallstep :: "proofstream \<Rightarrow> term \<Rightarrow> mode \<Rightarrow> proofstream \<Rightarrow> term \<Rightarrow> bool" (\<open>\<lless>_, _\<ggreater> _\<rightarrow> \<lless>_, _\<ggreater>\<close>) where
   s_App1:      "\<lbrakk> \<lless> \<pi>, e\<^sub>1 \<ggreater>  m\<rightarrow>  \<lless> \<pi>', e\<^sub>1' \<ggreater> \<rbrakk>
               \<Longrightarrow> \<lless> \<pi>, App e\<^sub>1 e\<^sub>2 \<ggreater>  m\<rightarrow>  \<lless> \<pi>', App e\<^sub>1' e\<^sub>2 \<ggreater>" |
   s_App2:      "\<lbrakk> value v\<^sub>1; \<lless> \<pi>, e\<^sub>2 \<ggreater>  m\<rightarrow>  \<lless> \<pi>', e\<^sub>2' \<ggreater> \<rbrakk>
@@ -697,7 +697,7 @@ nominal_inductive smallstep
        | s_Let2:   x
   by (auto simp add: fresh_Pair fresh_subst_term)
 
-inductive smallsteps :: "proofstream \<Rightarrow> term \<Rightarrow> mode \<Rightarrow> nat \<Rightarrow> proofstream \<Rightarrow> term \<Rightarrow> bool" ("\<lless>_, _\<ggreater> _\<rightarrow>_ \<lless>_, _\<ggreater>") where
+inductive smallsteps :: "proofstream \<Rightarrow> term \<Rightarrow> mode \<Rightarrow> nat \<Rightarrow> proofstream \<Rightarrow> term \<Rightarrow> bool" (\<open>\<lless>_, _\<ggreater> _\<rightarrow>_ \<lless>_, _\<ggreater>\<close>) where
   s_Id: "\<lless> \<pi>, e \<ggreater> _\<rightarrow>0 \<lless> \<pi>, e \<ggreater>" |
   s_Tr: "\<lbrakk> \<lless> \<pi>\<^sub>1, e\<^sub>1 \<ggreater> m\<rightarrow>i \<lless> \<pi>\<^sub>2, e\<^sub>2 \<ggreater>; \<lless> \<pi>\<^sub>2, e\<^sub>2 \<ggreater> m\<rightarrow> \<lless> \<pi>\<^sub>3, e\<^sub>3 \<ggreater> \<rbrakk>
        \<Longrightarrow> \<lless> \<pi>\<^sub>1, e\<^sub>1 \<ggreater> m\<rightarrow>(i+1) \<lless> \<pi>\<^sub>3, e\<^sub>3 \<ggreater>"

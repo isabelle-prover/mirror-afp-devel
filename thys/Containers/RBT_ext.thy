@@ -120,18 +120,18 @@ unfolding rbt_product_def alist_product_code RBT_Impl.fold_def ..
 end
 
 context
-  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>a" 50) 
-  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>a" 50) 
-  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>b" 50) 
-  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<sqsubset>\<^sub>b" 50) 
+  fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<^sub>a\<close> 50) 
+  and less_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>\<sqsubset>\<^sub>a\<close> 50) 
+  and leq_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<^sub>b\<close> 50) 
+  and less_b :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<sqsubset>\<^sub>b\<close> 50) 
   assumes lin_a: "class.linorder leq_a less_a" 
   and lin_b: "class.linorder leq_b less_b"
 begin
 
-abbreviation (input) less_eq_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
+abbreviation (input) less_eq_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix \<open>\<sqsubseteq>\<close> 50)
 where "less_eq_prod' \<equiv> less_eq_prod leq_a less_a leq_b"
 
-abbreviation (input) less_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix "\<sqsubset>" 50)
+abbreviation (input) less_prod' :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50)
 where "less_prod' \<equiv> less_prod leq_a less_a less_b"
 
 lemmas linorder_prod = linorder_prod[OF lin_a lin_b]

@@ -25,9 +25,9 @@ begin
 \<comment> \<open>Security typing rules for the language commands\<close>
 inductive
 ComSecTyping :: "('exp, 'id) MWLfCom \<Rightarrow> bool"
-  ("\<turnstile>\<^bsub>\<C>\<^esub> _")
+  (\<open>\<turnstile>\<^bsub>\<C>\<^esub> _\<close>)
 and ComSecTypingL :: "('exp,'id) MWLfCom list \<Rightarrow> bool"
-   ("\<turnstile>\<^bsub>\<V>\<^esub> _")
+   (\<open>\<turnstile>\<^bsub>\<V>\<^esub> _\<close>)
 where
 skip: "\<turnstile>\<^bsub>\<C>\<^esub> skip" |
 Assign: "\<lbrakk> AssignSideCondition x e \<rbrakk> \<Longrightarrow> \<turnstile>\<^bsub>\<C>\<^esub> x := e" |

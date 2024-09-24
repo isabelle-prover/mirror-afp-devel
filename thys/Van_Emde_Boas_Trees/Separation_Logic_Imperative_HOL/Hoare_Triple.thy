@@ -30,7 +30,7 @@ text \<open>
 \<close>
 
 definition hoare_triple 
-  :: "assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> bool" ("<_>/ _/ <_>")
+  :: "assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> bool" (\<open><_>/ _/ <_>\<close>)
   where
   "<P> c <Q> \<equiv> \<forall>h as. (h,as)\<Turnstile>P \<longrightarrow> (\<exists>r h' t. execute c h = Some (r,h',t) 
   \<and> (let as'=new_addrs h as h' in  
@@ -93,7 +93,7 @@ text \<open>For garbage-collected languages, specifications usually allow for so
   arbitrary heap parts in the postcondition. The following abbreviation defines
   a handy shortcut notation for such specifications.\<close>
 abbreviation hoare_triple' 
-  :: "assn \<Rightarrow> 'r Heap \<Rightarrow> ('r \<Rightarrow> assn) \<Rightarrow> bool" ("<_> _ <_>\<^sub>t") 
+  :: "assn \<Rightarrow> 'r Heap \<Rightarrow> ('r \<Rightarrow> assn) \<Rightarrow> bool" (\<open><_> _ <_>\<^sub>t\<close>) 
   where "<P> c <Q>\<^sub>t \<equiv> <P> c <\<lambda>r. Q r * true>"
 
 subsection \<open>Rules\<close>

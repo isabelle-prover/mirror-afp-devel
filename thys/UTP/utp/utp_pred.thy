@@ -28,18 +28,18 @@ text \<open> We want to remain as close as possible to the mathematical UTP synt
         similarly use polymorphic constants for the other predicate calculus operators. \<close>
 
 purge_notation
-  conj (infixr "\<and>" 35) and
-  disj (infixr "\<or>" 30) and
-  Not ("\<not> _" [40] 40)
+  conj (infixr \<open>\<and>\<close> 35) and
+  disj (infixr \<open>\<or>\<close> 30) and
+  Not (\<open>\<not> _\<close> [40] 40)
 
 consts
-  utrue  :: "'a" ("true")
-  ufalse :: "'a" ("false")
-  uconj  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<and>" 35)
-  udisj  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<or>" 30)
-  uimpl  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<Rightarrow>" 25)
-  uiff   :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<Leftrightarrow>" 25)
-  unot   :: "'a \<Rightarrow> 'a" ("\<not> _" [40] 40)
+  utrue  :: "'a" (\<open>true\<close>)
+  ufalse :: "'a" (\<open>false\<close>)
+  uconj  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<and>\<close> 35)
+  udisj  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<or>\<close> 30)
+  uimpl  :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<Rightarrow>\<close> 25)
+  uiff   :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<Leftrightarrow>\<close> 25)
+  unot   :: "'a \<Rightarrow> 'a" (\<open>\<not> _\<close> [40] 40)
   uex    :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> 'p \<Rightarrow> 'p"
   uall   :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> 'p \<Rightarrow> 'p"
   ushEx  :: "['a \<Rightarrow> 'p] \<Rightarrow> 'p"
@@ -60,18 +60,18 @@ text \<open> We set up two versions of each of the quantifiers: @{const uex} / @
 nonterminal idt_list
 
 syntax
-  "_idt_el"  :: "idt \<Rightarrow> idt_list" ("_")
-  "_idt_list" :: "idt \<Rightarrow> idt_list \<Rightarrow> idt_list" ("(_,/ _)" [0, 1])
-  "_uex"     :: "salpha \<Rightarrow> logic \<Rightarrow> logic" ("\<exists> _ \<bullet> _" [0, 10] 10)
-  "_uall"    :: "salpha \<Rightarrow> logic \<Rightarrow> logic" ("\<forall> _ \<bullet> _" [0, 10] 10)
-  "_ushEx"   :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"   ("\<^bold>\<exists> _ \<bullet> _" [0, 10] 10)
-  "_ushAll"  :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"   ("\<^bold>\<forall> _ \<bullet> _" [0, 10] 10)
-  "_ushBEx"  :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<^bold>\<exists> _ \<in> _ \<bullet> _" [0, 0, 10] 10)
-  "_ushBAll" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<^bold>\<forall> _ \<in> _ \<bullet> _" [0, 0, 10] 10)
-  "_ushGAll" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<^bold>\<forall> _ | _ \<bullet> _" [0, 0, 10] 10)
-  "_ushGtAll" :: "idt \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("\<^bold>\<forall> _ > _ \<bullet> _" [0, 0, 10] 10)
-  "_ushLtAll" :: "idt \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" ("\<^bold>\<forall> _ < _ \<bullet> _" [0, 0, 10] 10)
-  "_uvar_res" :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl "\<restriction>\<^sub>v" 90)
+  "_idt_el"  :: "idt \<Rightarrow> idt_list" (\<open>_\<close>)
+  "_idt_list" :: "idt \<Rightarrow> idt_list \<Rightarrow> idt_list" (\<open>(_,/ _)\<close> [0, 1])
+  "_uex"     :: "salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<exists> _ \<bullet> _\<close> [0, 10] 10)
+  "_uall"    :: "salpha \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<forall> _ \<bullet> _\<close> [0, 10] 10)
+  "_ushEx"   :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<^bold>\<exists> _ \<bullet> _\<close> [0, 10] 10)
+  "_ushAll"  :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<^bold>\<forall> _ \<bullet> _\<close> [0, 10] 10)
+  "_ushBEx"  :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<^bold>\<exists> _ \<in> _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_ushBAll" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<^bold>\<forall> _ \<in> _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_ushGAll" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<^bold>\<forall> _ | _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_ushGtAll" :: "idt \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<^bold>\<forall> _ > _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_ushLtAll" :: "idt \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<^bold>\<forall> _ < _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_uvar_res" :: "logic \<Rightarrow> salpha \<Rightarrow> logic" (infixl \<open>\<restriction>\<^sub>v\<close> 90)
   
 translations
   "_uex x P"                   == "CONST uex x P"
@@ -97,7 +97,7 @@ text \<open> We chose to maximally reuse definitions and laws built into HOL. Fo
 
 class refine = order
 
-abbreviation refineBy :: "'a::refine \<Rightarrow> 'a \<Rightarrow> bool"  (infix "\<sqsubseteq>" 50) where
+abbreviation refineBy :: "'a::refine \<Rightarrow> 'a \<Rightarrow> bool"  (infix \<open>\<sqsubseteq>\<close> 50) where
 "P \<sqsubseteq> Q \<equiv> less_eq Q P"
 
 text \<open> Since, on the whole, lattices in UTP are the opposite way up to the standard definitions
@@ -105,32 +105,32 @@ text \<open> Since, on the whole, lattices in UTP are the opposite way up to the
         we do steal HOL syntax, but I think it makes sense for UTP. Indeed we make this
         inversion for all of the lattice operators. \<close>
 
-purge_notation Lattices.inf (infixl "\<sqinter>" 70)
-notation Lattices.inf (infixl "\<squnion>" 70)
-purge_notation Lattices.sup (infixl "\<squnion>" 65)
-notation Lattices.sup (infixl "\<sqinter>" 65)
+purge_notation Lattices.inf (infixl \<open>\<sqinter>\<close> 70)
+notation Lattices.inf (infixl \<open>\<squnion>\<close> 70)
+purge_notation Lattices.sup (infixl \<open>\<squnion>\<close> 65)
+notation Lattices.sup (infixl \<open>\<sqinter>\<close> 65)
   
-purge_notation Inf ("\<Sqinter>_" [900] 900)
-notation Inf ("\<Squnion>_" [900] 900)
-purge_notation Sup ("\<Squnion>_" [900] 900)
-notation Sup ("\<Sqinter>_" [900] 900)
+purge_notation Inf (\<open>\<Sqinter>_\<close> [900] 900)
+notation Inf (\<open>\<Squnion>_\<close> [900] 900)
+purge_notation Sup (\<open>\<Squnion>_\<close> [900] 900)
+notation Sup (\<open>\<Sqinter>_\<close> [900] 900)
   
-purge_notation Orderings.bot ("\<bottom>")
-notation Orderings.bot ("\<top>")
-purge_notation Orderings.top ("\<top>")
-notation Orderings.top ("\<bottom>")
+purge_notation Orderings.bot (\<open>\<bottom>\<close>)
+notation Orderings.bot (\<open>\<top>\<close>)
+purge_notation Orderings.top (\<open>\<top>\<close>)
+notation Orderings.top (\<open>\<bottom>\<close>)
 
 purge_syntax
-  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Sqinter>_./ _)" [0, 10] 10)
-  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Sqinter>_\<in>_./ _)" [0, 0, 10] 10)
-  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Squnion>_./ _)" [0, 10] 10)
-  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Squnion>_\<in>_./ _)" [0, 0, 10] 10)
+  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Sqinter>_./ _)\<close> [0, 10] 10)
+  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Sqinter>_\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Squnion>_./ _)\<close> [0, 10] 10)
+  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Squnion>_\<in>_./ _)\<close> [0, 0, 10] 10)
 
 syntax
-  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Squnion>_./ _)" [0, 10] 10)
-  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Squnion>_\<in>_./ _)" [0, 0, 10] 10)
-  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Sqinter>_./ _)" [0, 10] 10)
-  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Sqinter>_\<in>_./ _)" [0, 0, 10] 10)
+  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Squnion>_./ _)\<close> [0, 10] 10)
+  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Squnion>_\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Sqinter>_./ _)\<close> [0, 10] 10)
+  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Sqinter>_\<in>_./ _)\<close> [0, 0, 10] 10)
 
 text \<open> We trivially instantiate our refinement class \<close>
 
@@ -204,15 +204,15 @@ text \<open> From the complete lattice, we can also define and give syntax for t
   Like the lattice operators, these are reversed in UTP. \<close>
 
 syntax
-  "_mu" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<mu> _ \<bullet> _" [0, 10] 10)
-  "_nu" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("\<nu> _ \<bullet> _" [0, 10] 10)
+  "_mu" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<mu> _ \<bullet> _\<close> [0, 10] 10)
+  "_nu" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>\<nu> _ \<bullet> _\<close> [0, 10] 10)
 
 syntax_consts
   "_mu" == lfp and
   "_nu" == gfp
 
-notation gfp ("\<mu>")
-notation lfp ("\<nu>")
+notation gfp (\<open>\<mu>\<close>)
+notation lfp (\<open>\<nu>\<close>)
 
 translations
   "\<nu> X \<bullet> P" == "CONST lfp (\<lambda> X. P)"
@@ -228,15 +228,15 @@ definition "disj_upred  = (Lattices.sup :: '\<alpha> upred \<Rightarrow> '\<alph
 definition "not_upred   = (uminus :: '\<alpha> upred \<Rightarrow> '\<alpha> upred)"
 definition "diff_upred  = (minus :: '\<alpha> upred \<Rightarrow> '\<alpha> upred \<Rightarrow> '\<alpha> upred)"
 
-abbreviation Conj_upred :: "'\<alpha> upred set \<Rightarrow> '\<alpha> upred" ("\<And>_" [900] 900) where
+abbreviation Conj_upred :: "'\<alpha> upred set \<Rightarrow> '\<alpha> upred" (\<open>\<And>_\<close> [900] 900) where
 "\<And> A \<equiv> \<Squnion> A"
 
-abbreviation Disj_upred :: "'\<alpha> upred set \<Rightarrow> '\<alpha> upred" ("\<Or>_" [900] 900) where
+abbreviation Disj_upred :: "'\<alpha> upred set \<Rightarrow> '\<alpha> upred" (\<open>\<Or>_\<close> [900] 900) where
 "\<Or> A \<equiv> \<Sqinter> A"
 
 notation
-  conj_upred (infixr "\<and>\<^sub>p" 35) and
-  disj_upred (infixr "\<or>\<^sub>p" 30)
+  conj_upred (infixr \<open>\<and>\<^sub>p\<close> 35) and
+  disj_upred (infixr \<open>\<or>\<^sub>p\<close> 30)
 
 text \<open> Perhaps slightly confusingly, the UTP infimum is the HOL supremum and vice-versa. This is
   because, again, in UTP the lattice is inverted due to the definition of refinement and a desire
@@ -249,18 +249,18 @@ lift_definition USUP :: "('a \<Rightarrow> '\<alpha> upred) \<Rightarrow> ('a \<
 is "\<lambda> P F b. Inf {\<lbrakk>F x\<rbrakk>\<^sub>eb | x. \<lbrakk>P x\<rbrakk>\<^sub>eb}" .
   
 syntax
-  "_USup"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            ("\<And> _ \<bullet> _" [0, 10] 10)
-  "_USup"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            ("\<Squnion> _ \<bullet> _" [0, 10] 10)
-  "_USup_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<And> _ \<in> _ \<bullet> _" [0, 10] 10)
-  "_USup_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<Squnion> _ \<in> _ \<bullet> _" [0, 10] 10)
-  "_USUP"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<And> _ | _ \<bullet> _" [0, 0, 10] 10)
-  "_USUP"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<Squnion> _ | _ \<bullet> _" [0, 0, 10] 10)
-  "_UInf"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            ("\<Or> _ \<bullet> _" [0, 10] 10)
-  "_UInf"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            ("\<Sqinter> _ \<bullet> _" [0, 10] 10)
-  "_UInf_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<Or> _ \<in> _ \<bullet> _" [0, 10] 10)
-  "_UInf_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<Sqinter> _ \<in> _ \<bullet> _" [0, 10] 10)
-  "_UINF"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<Or> _ | _ \<bullet> _" [0, 10] 10)
-  "_UINF"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   ("\<Sqinter> _ | _ \<bullet> _" [0, 10] 10)
+  "_USup"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            (\<open>\<And> _ \<bullet> _\<close> [0, 10] 10)
+  "_USup"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            (\<open>\<Squnion> _ \<bullet> _\<close> [0, 10] 10)
+  "_USup_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<And> _ \<in> _ \<bullet> _\<close> [0, 10] 10)
+  "_USup_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<Squnion> _ \<in> _ \<bullet> _\<close> [0, 10] 10)
+  "_USUP"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<And> _ | _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_USUP"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<Squnion> _ | _ \<bullet> _\<close> [0, 0, 10] 10)
+  "_UInf"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            (\<open>\<Or> _ \<bullet> _\<close> [0, 10] 10)
+  "_UInf"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic"            (\<open>\<Sqinter> _ \<bullet> _\<close> [0, 10] 10)
+  "_UInf_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<Or> _ \<in> _ \<bullet> _\<close> [0, 10] 10)
+  "_UInf_mem" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<Sqinter> _ \<in> _ \<bullet> _\<close> [0, 10] 10)
+  "_UINF"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<Or> _ | _ \<bullet> _\<close> [0, 10] 10)
+  "_UINF"     :: "pttrn \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"   (\<open>\<Sqinter> _ | _ \<bullet> _\<close> [0, 10] 10)
 
 translations
   "\<Sqinter> x | P \<bullet> F" => "CONST UINF (\<lambda> x. P) (\<lambda> x. F)"
@@ -311,10 +311,10 @@ translations
 text \<open> We have to add a u subscript to the closure operator as I don't want to override the syntax
         for HOL lists (we'll be using them later). \<close>
 
-lift_definition closure::"'\<alpha> upred \<Rightarrow> '\<alpha> upred" ("[_]\<^sub>u") is
+lift_definition closure::"'\<alpha> upred \<Rightarrow> '\<alpha> upred" (\<open>[_]\<^sub>u\<close>) is
 "\<lambda> P A. \<forall>A'. P A'" .
 
-lift_definition taut :: "'\<alpha> upred \<Rightarrow> bool" ("`_`")
+lift_definition taut :: "'\<alpha> upred \<Rightarrow> bool" (\<open>`_`\<close>)
 is "\<lambda> P. \<forall> A. P A" .
 
 text \<open> Configuration for UTP tactics \<close>
@@ -337,8 +337,8 @@ adhoc_overloading
   ushAll shAll
 
 syntax
-  "_uneq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl "\<noteq>\<^sub>u" 50)
-  "_unmem"      :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix "\<notin>\<^sub>u" 50)
+  "_uneq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl \<open>\<noteq>\<^sub>u\<close> 50)
+  "_unmem"      :: "('a, '\<alpha>) uexpr \<Rightarrow> ('a set, '\<alpha>) uexpr \<Rightarrow> (bool, '\<alpha>) uexpr" (infix \<open>\<notin>\<^sub>u\<close> 50)
 
 syntax_consts
   "_uneq" "_unmem" == unot
@@ -613,7 +613,7 @@ lemma msubst_shAll_2 [usubst]:
 
 subsection \<open> Sandbox for conjectures \<close>
 
-definition utp_sandbox :: "'\<alpha> upred \<Rightarrow> bool" ("TRY'(_')") where
+definition utp_sandbox :: "'\<alpha> upred \<Rightarrow> bool" (\<open>TRY'(_')\<close>) where
 "TRY(P) = (P = undefined)"
 
 translations

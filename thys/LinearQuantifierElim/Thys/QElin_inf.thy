@@ -10,7 +10,7 @@ text\<open>This section formalizes Loos and Weispfenning's quantifier
 elimination procedure based on (the simulation of)
 infinitesimals~\<^cite>\<open>"LoosW93"\<close>.\<close>
 
-fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub>+") where
+fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" (\<open>asubst\<^sub>+\<close>) where
 "asubst_peps (r,cs) (Less s (d#ds)) =
   (if d=0 then Atom(Less s ds) else
    let u = s - d*r; v = d *\<^sub>s cs + ds; less = Atom(Less u v)
@@ -18,7 +18,7 @@ fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" (
 "asubst_peps rcs (Eq r (d#ds)) = (if d=0 then Atom(Eq r ds) else FalseF)" |
 "asubst_peps rcs a = Atom a"
 
-abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^sub>+")
+abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" (\<open>subst\<^sub>+\<close>)
 where "subst\<^sub>+ \<phi> rcs \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>+ rcs) \<phi>"
 
 definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"

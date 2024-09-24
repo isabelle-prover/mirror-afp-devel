@@ -60,7 +60,7 @@ datatype "term" =
   Var indexname "typ" |
   Bound nat |
   Abs string "typ" "term" |
-  App "term" "term" (infixl "$" 200)
+  App "term" "term" (infixl \<open>$\<close> 200)
 
 subsection\<open>Operations of Fold, Map, ..., on the Meta-Model\<close>
 

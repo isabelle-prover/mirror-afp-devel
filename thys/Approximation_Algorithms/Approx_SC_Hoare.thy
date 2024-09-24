@@ -317,7 +317,7 @@ qed
 
 abbreviation H :: "nat \<Rightarrow> real" where "H \<equiv> harm"
 
-definition d_star :: nat ("d\<^sup>*") where "d\<^sup>* \<equiv> Max (card ` (S ` {1..m}))"
+definition d_star :: nat (\<open>d\<^sup>*\<close>) where "d\<^sup>* \<equiv> Max (card ` (S ` {1..m}))"
 
 lemma set_cover_bound:
   assumes "inv C {}" "sc C' U"

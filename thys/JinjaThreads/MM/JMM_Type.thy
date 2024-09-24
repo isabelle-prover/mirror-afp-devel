@@ -41,7 +41,7 @@ where "jmm_heap_write h a ad v h"
 
 end
 
-definition jmm_hconf :: "'m prog \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool" ("_ \<turnstile>jmm _ \<surd>" [51,51] 50)
+definition jmm_hconf :: "'m prog \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool" (\<open>_ \<turnstile>jmm _ \<surd>\<close> [51,51] 50)
 where "P \<turnstile>jmm h \<surd> \<longleftrightarrow> ty_of_htype ` ran h \<subseteq> {T. is_type P T}"
 
 definition jmm_allocated :: "'addr JMM_heap \<Rightarrow> 'addr set"
@@ -69,11 +69,11 @@ interpretation jmm: heap_base
   jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write 
 .
 
-notation jmm.hext  ("_ \<unlhd>jmm _" [51,51] 50)
-notation jmm.conf ("_,_ \<turnstile>jmm _ :\<le> _"  [51,51,51,51] 50)
-notation jmm.addr_loc_type ("_,_ \<turnstile>jmm _@_ : _" [50, 50, 50, 50, 50] 51)
-notation jmm.confs ("_,_ \<turnstile>jmm _ [:\<le>] _"  [51,51,51,51] 50)
-notation jmm.tconf ("_,_ \<turnstile>jmm _ \<surd>t" [51,51,51] 50)
+notation jmm.hext  (\<open>_ \<unlhd>jmm _\<close> [51,51] 50)
+notation jmm.conf (\<open>_,_ \<turnstile>jmm _ :\<le> _\<close>  [51,51,51,51] 50)
+notation jmm.addr_loc_type (\<open>_,_ \<turnstile>jmm _@_ : _\<close> [50, 50, 50, 50, 50] 51)
+notation jmm.confs (\<open>_,_ \<turnstile>jmm _ [:\<le>] _\<close>  [51,51,51,51] 50)
+notation jmm.tconf (\<open>_,_ \<turnstile>jmm _ \<surd>t\<close> [51,51,51] 50)
 
 text \<open>Now a variation of the JMM with a different read operation that permits to read only type-conformant values\<close>
 
@@ -83,11 +83,11 @@ interpretation jmm': heap_base
   jmm_empty jmm_allocate jmm_typeof_addr "jmm.heap_read_typed P" jmm_heap_write
   for P .
 
-notation jmm'.hext ("_ \<unlhd>jmm'' _" [51,51] 50)
-notation jmm'.conf ("_,_ \<turnstile>jmm'' _ :\<le> _"  [51,51,51,51] 50)
-notation jmm'.addr_loc_type ("_,_ \<turnstile>jmm'' _@_ : _" [50, 50, 50, 50, 50] 51)
-notation jmm'.confs ("_,_ \<turnstile>jmm'' _ [:\<le>] _"  [51,51,51,51] 50)
-notation jmm'.tconf ("_,_ \<turnstile>jmm'' _ \<surd>t" [51,51,51] 50)
+notation jmm'.hext (\<open>_ \<unlhd>jmm'' _\<close> [51,51] 50)
+notation jmm'.conf (\<open>_,_ \<turnstile>jmm'' _ :\<le> _\<close>  [51,51,51,51] 50)
+notation jmm'.addr_loc_type (\<open>_,_ \<turnstile>jmm'' _@_ : _\<close> [50, 50, 50, 50, 50] 51)
+notation jmm'.confs (\<open>_,_ \<turnstile>jmm'' _ [:\<le>] _\<close>  [51,51,51,51] 50)
+notation jmm'.tconf (\<open>_,_ \<turnstile>jmm'' _ \<surd>t\<close> [51,51,51] 50)
 
 subsection \<open>Heap locale interpretations\<close>
 
@@ -141,7 +141,7 @@ interpretation jmm: heap_conf_base
   P
   for P .
 
-abbreviation (input) jmm'_hconf :: "'m prog \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool" ("_ \<turnstile>jmm'' _ \<surd>" [51,51] 50)
+abbreviation (input) jmm'_hconf :: "'m prog \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool" (\<open>_ \<turnstile>jmm'' _ \<surd>\<close> [51,51] 50)
 where "jmm'_hconf == jmm_hconf"
 
 interpretation jmm': heap_conf_base
@@ -313,7 +313,7 @@ by(rule jmm'_allocated_heap)
 
 subsection \<open>Syntax translations\<close>
 
-notation jmm'.external_WT' ("_,_ \<turnstile>jmm'' (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
+notation jmm'.external_WT' (\<open>_,_ \<turnstile>jmm'' (_\<bullet>_'(_')) : _\<close> [50,0,0,0,50] 60)
 
 abbreviation jmm'_red_external :: 
   "'m prog \<Rightarrow> 'addr thread_id \<Rightarrow> 'addr JMM_heap \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list
@@ -325,7 +325,7 @@ abbreviation jmm'_red_external_syntax ::
   "'m prog \<Rightarrow> 'addr thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'addr JMM_heap
   \<Rightarrow> ('addr :: addr, 'addr thread_id, 'addr JMM_heap) external_thread_action 
   \<Rightarrow> 'addr extCallRet \<Rightarrow> 'addr JMM_heap \<Rightarrow> bool"
-  ("_,_ \<turnstile>jmm'' (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)" [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
+  (\<open>_,_ \<turnstile>jmm'' (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)\<close> [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
 where
   "P,t \<turnstile>jmm' \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<equiv> jmm'_red_external P t h a M vs ta va h'"
 

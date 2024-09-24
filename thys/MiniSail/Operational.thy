@@ -39,7 +39,7 @@ nominal_function lookup_branch :: "dc \<Rightarrow> branch_list \<Rightarrow> br
 nominal_termination (eqvt) by lexicographic_order
 
 text \<open> Reduction rules \<close>
-inductive reduce_stmt :: "\<Phi> \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> bool"  (" _  \<turnstile> \<langle> _ , _\<rangle> \<longrightarrow> \<langle>  _ , _\<rangle>" [50, 50, 50] 50)  where
+inductive reduce_stmt :: "\<Phi> \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> bool"  (\<open> _  \<turnstile> \<langle> _ , _\<rangle> \<longrightarrow> \<langle>  _ , _\<rangle>\<close> [50, 50, 50] 50)  where
   reduce_if_trueI:  " \<Phi> \<turnstile> \<langle>\<delta>, AS_if [L_true]\<^sup>v s1 s2\<rangle> \<longrightarrow> \<langle>\<delta>, s1\<rangle> "
 | reduce_if_falseI: " \<Phi> \<turnstile> \<langle>\<delta>, AS_if [L_false]\<^sup>v s1 s2\<rangle> \<longrightarrow> \<langle>\<delta>, s2\<rangle> "
 | reduce_let_valI:  " \<Phi> \<turnstile> \<langle>\<delta>, AS_let x (AE_val v)  s\<rangle> \<longrightarrow> \<langle>\<delta>, s[x::=v]\<^sub>s\<^sub>v\<rangle>"  
@@ -98,7 +98,7 @@ inductive_cases reduce_stmt_elims[elim!]:
   "\<Phi> \<turnstile> \<langle>\<delta>, AS_assert c s \<rangle> \<longrightarrow> \<langle>\<delta>, s'\<rangle> "
   "\<Phi> \<turnstile> \<langle>\<delta>, AS_let x  ((AE_op Eq (V_lit (n1)) (V_lit (n2)))) s\<rangle> \<longrightarrow> \<langle>\<delta>, AS_let x  (AE_val (V_lit b)) s\<rangle>"
 
-inductive reduce_stmt_many :: "\<Phi> \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> bool"    ("_ \<turnstile> \<langle> _ , _\<rangle> \<longrightarrow>\<^sup>* \<langle>  _ , _\<rangle>" [50, 50, 50] 50)  where  
+inductive reduce_stmt_many :: "\<Phi> \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> bool"    (\<open>_ \<turnstile> \<langle> _ , _\<rangle> \<longrightarrow>\<^sup>* \<langle>  _ , _\<rangle>\<close> [50, 50, 50] 50)  where  
   reduce_stmt_many_oneI:  "\<Phi> \<turnstile> \<langle>\<delta>, s\<rangle> \<longrightarrow> \<langle>\<delta>', s'\<rangle>  \<Longrightarrow> \<Phi> \<turnstile> \<langle>\<delta>  , s\<rangle> \<longrightarrow>\<^sup>* \<langle>\<delta>', s'\<rangle> "
 | reduce_stmt_many_manyI:  "\<lbrakk> \<Phi> \<turnstile> \<langle>\<delta>, s\<rangle> \<longrightarrow>   \<langle>\<delta>', s'\<rangle> ; \<Phi> \<turnstile>  \<langle>\<delta>', s'\<rangle> \<longrightarrow>\<^sup>* \<langle>\<delta>'', s''\<rangle> \<rbrakk> \<Longrightarrow> \<Phi> \<turnstile>  \<langle>\<delta>, s\<rangle> \<longrightarrow>\<^sup>* \<langle>\<delta>'', s''\<rangle>"
 
@@ -127,7 +127,7 @@ inductive reduce_prog :: "p \<Rightarrow> v \<Rightarrow> bool" where
 section \<open>Reduction Typing\<close>
 
 text \<open> Checks that the store is consistent with @{typ \<Delta>} \<close>
-inductive delta_sim :: "\<Theta> \<Rightarrow> \<delta> \<Rightarrow> \<Delta> \<Rightarrow> bool" ( "_  \<turnstile> _ \<sim> _ " [50,50] 50 )  where
+inductive delta_sim :: "\<Theta> \<Rightarrow> \<delta> \<Rightarrow> \<Delta> \<Rightarrow> bool" ( \<open>_  \<turnstile> _ \<sim> _ \<close> [50,50] 50 )  where
   delta_sim_nilI:  "\<Theta> \<turnstile> [] \<sim> []\<^sub>\<Delta> "
 | delta_sim_consI: "\<lbrakk> \<Theta> \<turnstile> \<delta> \<sim> \<Delta> ; \<Theta> ; {||} ; GNil \<turnstile> v \<Leftarrow> \<tau> ; u \<notin> fst ` set \<delta>   \<rbrakk> \<Longrightarrow> \<Theta> \<turnstile> ((u,v)#\<delta>) \<sim> ((u,\<tau>)#\<^sub>\<Delta>\<Delta>)" 
 
@@ -140,7 +140,7 @@ inductive_cases delta_sim_elims[elim!]:
   "\<Theta> \<turnstile> ((u,v)#ds) \<sim> D"
 
 text \<open>A typing judgement that combines typing of the statement, the store and the condition that definitions are well-typed\<close>
-inductive config_type ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<Delta> \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> \<tau> \<Rightarrow>  bool"   ("_ ; _ ; _ \<turnstile> \<langle> _ , _\<rangle> \<Leftarrow> _ " [50, 50, 50] 50)  where 
+inductive config_type ::  "\<Theta> \<Rightarrow> \<Phi> \<Rightarrow> \<Delta> \<Rightarrow> \<delta> \<Rightarrow> s \<Rightarrow> \<tau> \<Rightarrow>  bool"   (\<open>_ ; _ ; _ \<turnstile> \<langle> _ , _\<rangle> \<Leftarrow> _ \<close> [50, 50, 50] 50)  where 
   config_typeI: "\<lbrakk> \<Theta> ; \<Phi> ; {||} ; GNil ; \<Delta> \<turnstile> s \<Leftarrow> \<tau>; 
                 (\<forall> fd \<in> set \<Phi>. \<Theta> ; \<Phi> \<turnstile> fd) ;
                 \<Theta>  \<turnstile> \<delta> \<sim> \<Delta> \<rbrakk>
@@ -160,7 +160,7 @@ nominal_function \<delta>_of  :: "var_def list \<Rightarrow> \<delta>" where
   by (metis var_def.strong_exhaust)
 nominal_termination (eqvt) by lexicographic_order
 
-inductive config_type_prog :: "p \<Rightarrow> \<tau> \<Rightarrow> bool"  (" \<turnstile> \<langle> _\<rangle> \<Leftarrow> _") where
+inductive config_type_prog :: "p \<Rightarrow> \<tau> \<Rightarrow> bool"  (\<open> \<turnstile> \<langle> _\<rangle> \<Leftarrow> _\<close>) where
   "\<lbrakk>
   \<Theta> ; \<Phi> ; \<Delta>_of \<G> \<turnstile> \<langle> \<delta>_of \<G>  , s\<rangle> \<Leftarrow>  \<tau>
 \<rbrakk> \<Longrightarrow> \<turnstile>  \<langle> AP_prog \<Theta> \<Phi> \<G> s\<rangle> \<Leftarrow> \<tau>"

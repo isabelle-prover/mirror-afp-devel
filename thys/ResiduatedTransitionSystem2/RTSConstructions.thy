@@ -17,13 +17,13 @@ section "Notation"
   \<close>
 
   (* I really don't like global notation -- it's rude. *)
-  no_notation Equipollence.eqpoll (infixl "\<approx>" 50)
-  no_notation Equipollence.lepoll (infixl "\<lesssim>" 50)
-  no_notation Lattices.sup_class.sup (infixl "\<squnion>" 65)
+  no_notation Equipollence.eqpoll (infixl \<open>\<approx>\<close> 50)
+  no_notation Equipollence.lepoll (infixl \<open>\<lesssim>\<close> 50)
+  no_notation Lattices.sup_class.sup (infixl \<open>\<squnion>\<close> 65)
   no_notation ZFC_Cardinals.cmult   (infixl \<open>\<otimes>\<close> 70)
 
-  no_syntax "_Tuple"    :: "[V, Vs] \<Rightarrow> V"                 ("\<langle>(_,/ _)\<rangle>")
-  no_syntax "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>(_,/ _)\<rangle>")
+  no_syntax "_Tuple"    :: "[V, Vs] \<Rightarrow> V"                 (\<open>\<langle>(_,/ _)\<rangle>\<close>)
+  no_syntax "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   (\<open>\<langle>(_,/ _)\<rangle>\<close>)
 
 section "Some Constraints on a Type"
 
@@ -678,13 +678,13 @@ section "Injective Images of RTS's"
   locale inj_image_rts =
     A: rts A
     for map :: "'a \<Rightarrow> 'b"
-    and A :: "'a resid"  (infix "\\\<^sub>A" 70) +
+    and A :: "'a resid"  (infix \<open>\\<^sub>A\<close> 70) +
     assumes inj_map: "inj_on map (Collect A.arr \<union> {A.null})"
   begin
 
-    notation A.con    (infix "\<frown>\<^sub>A" 50)
-    notation A.prfx   (infix "\<lesssim>\<^sub>A" 50)
-    notation A.cong   (infix "\<sim>\<^sub>A" 50)
+    notation A.con    (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx   (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation A.cong   (infix \<open>\<sim>\<^sub>A\<close> 50)
 
     abbreviation Null
     where "Null \<equiv> map A.null"
@@ -695,7 +695,7 @@ section "Injective Images of RTS's"
     abbreviation map'
     where "map' t \<equiv> inv_into (Collect A.arr) map t"
 
-    definition resid :: "'b resid"  (infix "\\" 70)
+    definition resid :: "'b resid"  (infix \<open>\\<close> 70)
     where "t \\ u = (if Arr t \<and> Arr u then map (map' t \\\<^sub>A map' u) else Null)"
 
     lemma inj_map':
@@ -759,7 +759,7 @@ section "Injective Images of RTS's"
       qed
     qed
 
-    notation con   (infix "\<frown>" 50)
+    notation con   (infix \<open>\<frown>\<close> 50)
 
     lemma con_char:
     shows "t \<frown> u \<longleftrightarrow> Arr t \<and> Arr u \<and> map' t \<frown>\<^sub>A map' u"
@@ -811,8 +811,8 @@ section "Injective Images of RTS's"
       qed
     qed
 
-    notation prfx   (infix "\<lesssim>" 50)
-    notation cong   (infix "\<sim>" 50)
+    notation prfx   (infix \<open>\<lesssim>\<close> 50)
+    notation cong   (infix \<open>\<sim>\<close> 50)
 
     text\<open>
       The function @{term map} and its inverse (both suitably extensionalized) determine an
@@ -1090,7 +1090,7 @@ section "One-Transition RTS"
     definition the_arr :: 't
     where "the_arr \<equiv> SOME t. t \<noteq> undefined"
 
-    definition resid :: "'t resid"  (infix "\\\<^sub>1" 70)
+    definition resid :: "'t resid"  (infix \<open>\\<^sub>1\<close> 70)
     where "resid t u = (if t = the_arr \<and> u = the_arr then the_arr else undefined)"
 
     sublocale ResiduatedTransitionSystem.partial_magma resid
@@ -1105,7 +1105,7 @@ section "One-Transition RTS"
       using null_char resid_def
       by unfold_locales metis+
 
-    notation con  (infix "\<frown>\<^sub>1" 50)
+    notation con  (infix \<open>\<frown>\<^sub>1\<close> 50)
 
     lemma arr_char:
     shows "arr t \<longleftrightarrow> t = the_arr"
@@ -1128,8 +1128,8 @@ section "One-Transition RTS"
       using con_char arr_char ide_char\<^sub>1\<^sub>R\<^sub>T\<^sub>S trg_char ideE
       by unfold_locales metis+
 
-    notation prfx  (infix "\<lesssim>\<^sub>1" 50)
-    notation cong  (infix "\<sim>\<^sub>1" 50)
+    notation prfx  (infix \<open>\<lesssim>\<^sub>1\<close> 50)
+    notation cong  (infix \<open>\<sim>\<^sub>1\<close> 50)
 
     lemma cong_char\<^sub>1\<^sub>R\<^sub>T\<^sub>S:
     shows "t \<lesssim>\<^sub>1 u \<longleftrightarrow> arr t \<and> arr u"
@@ -1326,7 +1326,7 @@ section "Sub-RTS"
 
   locale sub_rts =
     R: rts R
-  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
+  for R :: "'a resid"  (infix \<open>\\<^sub>R\<close> 70)
   and Arr :: "'a \<Rightarrow> bool" +
   assumes inclusion: "Arr t \<Longrightarrow> R.arr t"
   and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
@@ -1334,7 +1334,7 @@ section "Sub-RTS"
                           \<exists>a. Arr a \<and> a \<in> R.sources t \<and> a \<in> R.sources u"
   begin
 
-    definition resid :: "'a resid"  (infix "\\" 70)
+    definition resid :: "'a resid"  (infix \<open>\\<close> 70)
     where "resid t u \<equiv> if Arr t \<and> Arr u \<and> R.con t u then t \\\<^sub>R u else R.null"
 
     sublocale ResiduatedTransitionSystem.partial_magma resid
@@ -1421,7 +1421,7 @@ section "Sub-RTS"
   locale sub_rts_of_weakly_extensional_rts =
     R: weakly_extensional_rts R +
     sub_rts R Arr
-  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
+  for R :: "'a resid"  (infix \<open>\\<^sub>R\<close> 70)
   and Arr :: "'a \<Rightarrow> bool"
   begin
 
@@ -1447,7 +1447,7 @@ section "Sub-RTS"
   locale sub_rts_of_extensional_rts =
     R: extensional_rts R +
     sub_rts R Arr
-  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
+  for R :: "'a resid"  (infix \<open>\\<^sub>R\<close> 70)
   and Arr :: "'a \<Rightarrow> bool"
   begin
 
@@ -1467,22 +1467,22 @@ section "Fibered Product RTS"
   C: weakly_extensional_rts C +
   F: simulation A C F +
   G: simulation B C G
-  for A :: "'a resid"  (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"  (infix "\\\<^sub>B" 70)
-  and C :: "'c resid"  (infix "\\\<^sub>C" 70)
+  for A :: "'a resid"  (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"  (infix \<open>\\<^sub>B\<close> 70)
+  and C :: "'c resid"  (infix \<open>\\<^sub>C\<close> 70)
   and F :: "'a \<Rightarrow> 'c"
   and G :: "'b \<Rightarrow> 'c"
   begin
 
-    notation A.con   (infix "\<frown>\<^sub>A" 50)
-    notation B.con   (infix "\<frown>\<^sub>B" 50)
-    notation C.con   (infix "\<frown>\<^sub>C" 50)
-    notation A.prfx  (infix "\<lesssim>\<^sub>A" 50)
-    notation B.prfx  (infix "\<lesssim>\<^sub>B" 50)
-    notation C.prfx  (infix "\<lesssim>\<^sub>C" 50)
-    notation A.cong  (infix "\<sim>\<^sub>A" 50)
-    notation B.cong  (infix "\<sim>\<^sub>B" 50)
-    notation C.cong  (infix "\<sim>\<^sub>C" 50)
+    notation A.con   (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation B.con   (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation C.con   (infix \<open>\<frown>\<^sub>C\<close> 50)
+    notation A.prfx  (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation B.prfx  (infix \<open>\<lesssim>\<^sub>B\<close> 50)
+    notation C.prfx  (infix \<open>\<lesssim>\<^sub>C\<close> 50)
+    notation A.cong  (infix \<open>\<sim>\<^sub>A\<close> 50)
+    notation B.cong  (infix \<open>\<sim>\<^sub>B\<close> 50)
+    notation C.cong  (infix \<open>\<sim>\<^sub>C\<close> 50)
 
     abbreviation Arr
     where "Arr \<equiv> \<lambda>tu. A.arr (fst tu) \<and> B.arr (snd tu) \<and> F (fst tu) = G (snd tu)"
@@ -1494,7 +1494,7 @@ section "Fibered Product RTS"
     where "Con \<equiv> \<lambda>tu vw. fst tu \<frown>\<^sub>A fst vw \<and> snd tu \<frown>\<^sub>B snd vw \<and>
                           F (fst tu) = G (snd tu) \<and> F (fst vw) = G (snd vw)"
 
-    definition resid :: "('a * 'b) resid" (infix "\\" 70)
+    definition resid :: "('a * 'b) resid" (infix \<open>\\<close> 70)
     where "tu \\ vw =
            (if Con tu vw then (fst tu \\\<^sub>A fst vw, snd tu \\\<^sub>B snd vw)
             else (A.null, B.null))"
@@ -1557,7 +1557,7 @@ section "Fibered Product RTS"
       qed
     qed
 
-    notation con  (infix "\<frown>" 50)
+    notation con  (infix \<open>\<frown>\<close> 50)
 
     lemma arr_char:
     shows "arr t \<longleftrightarrow> Arr t"
@@ -1611,8 +1611,8 @@ section "Fibered Product RTS"
             ide_implies_arr resid_def snd_conv)
     qed
 
-    notation prfx  (infix "\<lesssim>" 50)
-    notation cong  (infix "\<sim>" 50)
+    notation prfx  (infix \<open>\<lesssim>\<close> 50)
+    notation cong  (infix \<open>\<sim>\<close> 50)
 
     lemma prfx_char:
     shows "t \<lesssim> u \<longleftrightarrow> F (fst t) = G (snd t) \<and> F (fst u) = G (snd u) \<and>
@@ -1874,7 +1874,7 @@ section "Product RTS"
     So, we will build on that existing construction.
   \<close>
 
-  definition pointwise_tuple :: "('x \<Rightarrow> 'a) \<Rightarrow> ('x \<Rightarrow> 'b) \<Rightarrow> 'x \<Rightarrow> 'a \<times> 'b"  ("\<langle>\<langle>_, _\<rangle>\<rangle>")
+  definition pointwise_tuple :: "('x \<Rightarrow> 'a) \<Rightarrow> ('x \<Rightarrow> 'b) \<Rightarrow> 'x \<Rightarrow> 'a \<times> 'b"  (\<open>\<langle>\<langle>_, _\<rangle>\<rangle>\<close>)
   where "pointwise_tuple H K \<equiv> (\<lambda>t. (H t, K t))"
 
   context product_rts
@@ -2391,10 +2391,10 @@ section "Product RTS"
     G0: simulation A0 B0 G0 +
     T1: transformation A1 B1 F1 G1 T1 +
     T0: transformation A0 B0 F0 G0 T0
-  for A1 :: "'a1 resid"      (infix "\\\<^sub>A\<^sub>1" 70)
-  and A0 :: "'a0 resid"      (infix "\\\<^sub>A\<^sub>0" 70)
-  and B1 :: "'b1 resid"      (infix "\\\<^sub>B\<^sub>1" 70)
-  and B0 :: "'b0 resid"      (infix "\\\<^sub>B\<^sub>0" 70)
+  for A1 :: "'a1 resid"      (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
+  and A0 :: "'a0 resid"      (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
+  and B1 :: "'b1 resid"      (infix \<open>\\<^sub>B\<^sub>1\<close> 70)
+  and B0 :: "'b0 resid"      (infix \<open>\\<^sub>B\<^sub>0\<close> 70)
   and F1 :: "'a1 \<Rightarrow> 'b1"
   and F0 :: "'a0 \<Rightarrow> 'b0"
   and G1 :: "'a1 \<Rightarrow> 'b1"
@@ -2697,8 +2697,8 @@ section "Exponential RTS"
     H: simulation A B H +
     \<sigma>: transformation A B F G \<sigma> +
     \<tau>: transformation A B F H \<tau>
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and H :: "'a \<Rightarrow> 'b"
@@ -2866,15 +2866,15 @@ section "Exponential RTS"
   locale exponential_rts =
   A: weakly_extensional_rts A +
   B: extensional_rts B
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
-  and B :: "'b resid"      (infix "\\\<^sub>B" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   begin
 
-    notation A.con   (infix "\<frown>\<^sub>A" 50)
-    notation A.prfx  (infix "\<lesssim>\<^sub>A" 50)
-    notation B.con   (infix "\<frown>\<^sub>B" 50)
-    notation B.join  (infix "\<squnion>\<^sub>B" 52)
-    notation B.prfx  (infix "\<lesssim>\<^sub>B" 50)
+    notation A.con   (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx  (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation B.con   (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.join  (infix \<open>\<squnion>\<^sub>B\<close> 52)
+    notation B.prfx  (infix \<open>\<lesssim>\<^sub>B\<close> 50)
 
     datatype ('aa, 'bb) arr =
       Null
@@ -2959,7 +2959,7 @@ section "Exponential RTS"
                             then (Map \<sigma> (A.src t) \\\<^sub>B Map \<tau> (A.src t)) \<squnion>\<^sub>B Cod \<tau> t
                             else B.null)"
 
-    definition resid :: "('a, 'b) arr resid"    (infix "\\" 70)
+    definition resid :: "('a, 'b) arr resid"    (infix \<open>\\<close> 70)
     where "\<sigma> \\ \<tau> =
            (if Con \<sigma> \<tau>
             then MkArr (Cod \<tau>)
@@ -3149,7 +3149,7 @@ section "Exponential RTS"
       qed
     qed
 
-    notation con   (infix "\<frown>" 50)
+    notation con   (infix \<open>\<frown>\<close> 50)
 
     lemma con_char:
     shows "\<sigma> \<frown> \<tau> \<longleftrightarrow> Con \<sigma> \<tau>"
@@ -3578,7 +3578,7 @@ section "Exponential RTS"
       using arr_char src_char trg_char
       by (metis (no_types, lifting) Map_src Map_trg seqE\<^sub>W\<^sub>E seqI\<^sub>W\<^sub>E(1))
 
-    notation prfx  (infix "\<lesssim>" 50)
+    notation prfx  (infix \<open>\<lesssim>\<close> 50)
 
     lemma prfx_char:
     shows "\<sigma> \<lesssim> \<tau> \<longleftrightarrow> arr \<sigma> \<and> arr \<tau> \<and> Dom \<sigma> = Dom \<tau> \<and>
@@ -3660,7 +3660,7 @@ section "Exponential RTS"
 
 subsubsection "Joins in an Exponential RTS"
 
-    notation join  (infix "\<squnion>" 52)
+    notation join  (infix \<open>\<squnion>\<close> 52)
 
     lemma join_char:
     shows "joinable \<sigma> \<tau> \<longleftrightarrow>
@@ -4408,7 +4408,7 @@ subsection "Exponential of Small RTS's"
     interpretation B: extensional_rts B ..
     interpretation B: extensional_rts_with_composites B ..
 
-    notation B.comp  (infixr "\<cdot>\<^sub>B" 55)
+    notation B.comp  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
 
     abbreviation COMP :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr \<Rightarrow> ('a, 'b) arr"
     where "COMP t u \<equiv> MkArr (Dom t) (Cod u)
@@ -4607,12 +4607,12 @@ subsection "Exponential by One"
   locale exponential_by_One =
     One: one_arr_rts +
     A: extensional_rts A
-  for A :: "'a resid"      (infix "\\\<^sub>A" 70)
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
   begin
 
     sublocale exponential_rts One.resid A ..
-    notation resid   (infix "\\" 70)
-    notation con     (infix "\<frown>" 50)
+    notation resid   (infix \<open>\\<close> 70)
+    notation con     (infix \<open>\<frown>\<close> 50)
 
     abbreviation Up :: "'a \<Rightarrow> ('b, 'a) arr"
     where "Up t \<equiv>
@@ -4754,17 +4754,17 @@ subsection "Evaluation Map"
   locale evaluation_map =
     A: weakly_extensional_rts A +
     B: extensional_rts B
-  for A :: "'a resid"          (infix "\\\<^sub>A" 55)
-  and B :: "'b resid"          (infix "\\\<^sub>B" 55)
+  for A :: "'a resid"          (infix \<open>\\<^sub>A\<close> 55)
+  and B :: "'b resid"          (infix \<open>\\<^sub>B\<close> 55)
   begin
 
     sublocale AB: exponential_rts A B ..
     sublocale ABxA: product_rts AB.resid A ..
 
-    notation AB.resid        (infix "\\\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]" 55)
-    notation ABxA.resid      (infix "\\\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A" 55)
-    notation AB.con          (infix "\<frown>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]" 50)
-    notation ABxA.con        (infix "\<frown>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>\<times>\<^sub>A" 50)
+    notation AB.resid        (infix \<open>\\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<close> 55)
+    notation ABxA.resid      (infix \<open>\\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<close> 55)
+    notation AB.con          (infix \<open>\<frown>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<close> 50)
+    notation ABxA.con        (infix \<open>\<frown>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>]\<^sub>\<times>\<^sub>A\<close> 50)
 
     definition map :: "('a, 'b) AB.arr \<times> 'a \<Rightarrow> 'b"
     where "map Fg \<equiv> if ABxA.arr Fg then AB.Map (fst Fg) (snd Fg) else B.null"
@@ -4839,9 +4839,9 @@ subsection "Evaluation Map"
   A: weakly_extensional_rts A +
   B: weakly_extensional_rts B +
   C: extensional_rts C
-  for A :: "'a resid"           (infix "\\\<^sub>A" 55)
-  and B :: "'b resid"           (infix "\\\<^sub>B" 55)
-  and C :: "'c resid"           (infix "\\\<^sub>C" 55)
+  for A :: "'a resid"           (infix \<open>\\<^sub>A\<close> 55)
+  and B :: "'b resid"           (infix \<open>\\<^sub>B\<close> 55)
+  and C :: "'c resid"           (infix \<open>\\<^sub>C\<close> 55)
   begin
 
     sublocale AxB: product_of_weakly_extensional_rts A B ..
@@ -4849,19 +4849,19 @@ subsection "Evaluation Map"
     sublocale BCxB: product_rts BC.resid B ..
     sublocale E: evaluation_map B C ..
 
-    notation A.con              (infix "\<frown>\<^sub>A" 50)
-    notation B.con              (infix "\<frown>\<^sub>B" 50)
-    notation C.con              (infix "\<frown>\<^sub>C" 50)
-    notation C.prfx             (infix "\<lesssim>\<^sub>C" 50)
-    notation C.join             (infixr "\<squnion>\<^sub>C" 52)
-    notation AxB.resid          (infix "\\\<^sub>A\<^sub>x\<^sub>B" 55)
-    notation AxB.con            (infix "\<frown>\<^sub>A\<^sub>x\<^sub>B" 52)
-    notation AxB.prfx           (infix "\<lesssim>\<^sub>A\<^sub>x\<^sub>B" 52)
-    notation BC.resid           (infix "\\\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]" 55)
-    notation BC.con             (infix "\<frown>\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]" 52)
-    notation BC.join            (infixr "\<squnion>\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]" 52)
-    notation BCxB.resid         (infix "\\\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>x\<^sub>B" 55)
-    notation BCxB.con           (infix "\<frown>\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>x\<^sub>B" 52)
+    notation A.con              (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation B.con              (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation C.con              (infix \<open>\<frown>\<^sub>C\<close> 50)
+    notation C.prfx             (infix \<open>\<lesssim>\<^sub>C\<close> 50)
+    notation C.join             (infixr \<open>\<squnion>\<^sub>C\<close> 52)
+    notation AxB.resid          (infix \<open>\\<^sub>A\<^sub>x\<^sub>B\<close> 55)
+    notation AxB.con            (infix \<open>\<frown>\<^sub>A\<^sub>x\<^sub>B\<close> 52)
+    notation AxB.prfx           (infix \<open>\<lesssim>\<^sub>A\<^sub>x\<^sub>B\<close> 52)
+    notation BC.resid           (infix \<open>\\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<close> 55)
+    notation BC.con             (infix \<open>\<frown>\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<close> 52)
+    notation BC.join            (infixr \<open>\<squnion>\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<close> 52)
+    notation BCxB.resid         (infix \<open>\\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>x\<^sub>B\<close> 55)
+    notation BCxB.con           (infix \<open>\<frown>\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>x\<^sub>B\<close> 52)
 
     definition Curry :: "('a \<times> 'b \<Rightarrow> 'c) \<Rightarrow> ('a \<times> 'b \<Rightarrow> 'c) \<Rightarrow> ('a \<times> 'b \<Rightarrow> 'c)
                            \<Rightarrow> 'a \<Rightarrow> ('b, 'c) BC.arr"
@@ -6146,10 +6146,10 @@ subsection "Evaluation Map"
     sublocale AxB_C: exponential_rts AxB.resid C ..
     sublocale A_BC: exponential_rts A BC.resid ..
 
-    notation AxB_C.resid         (infix "\\\<^sub>[\<^sub>A\<^sub>x\<^sub>B\<^sub>,\<^sub>C\<^sub>]" 55)
-    notation AxB_C.con           (infix "\<frown>\<^sub>[\<^sub>A\<^sub>x\<^sub>B\<^sub>,\<^sub>C\<^sub>]" 55)
-    notation A_BC.resid          (infix "\\\<^sub>[\<^sub>A\<^sub>,\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>]" 55)
-    notation A_BC.con            (infix "\<frown>\<^sub>[\<^sub>A\<^sub>,\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>]" 50)
+    notation AxB_C.resid         (infix \<open>\\<^sub>[\<^sub>A\<^sub>x\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<close> 55)
+    notation AxB_C.con           (infix \<open>\<frown>\<^sub>[\<^sub>A\<^sub>x\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<close> 55)
+    notation A_BC.resid          (infix \<open>\\<^sub>[\<^sub>A\<^sub>,\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>]\<close> 55)
+    notation A_BC.con            (infix \<open>\<frown>\<^sub>[\<^sub>A\<^sub>,\<^sub>[\<^sub>B\<^sub>,\<^sub>C\<^sub>]\<^sub>]\<close> 50)
 
     definition CURRY :: "('a \<times> 'b, 'c) AxB_C.arr \<Rightarrow> ('a, ('b, 'c) BC.arr) A_BC.arr"
     where "CURRY \<equiv>
@@ -8503,13 +8503,13 @@ subsection "Functoriality of Exponential"
 
   abbreviation cov_Exp
     :: "'c resid \<Rightarrow> 'a resid \<Rightarrow> 'b resid \<Rightarrow> ('a \<Rightarrow> 'b)
-           \<Rightarrow> ('c, 'a) exponential_rts.arr \<Rightarrow> ('c, 'b) exponential_rts.arr"  ("Exp\<^sup>\<rightarrow>")
+           \<Rightarrow> ('c, 'a) exponential_rts.arr \<Rightarrow> ('c, 'b) exponential_rts.arr"  (\<open>Exp\<^sup>\<rightarrow>\<close>)
   where "Exp\<^sup>\<rightarrow> X B C \<equiv>
          \<lambda>G t2. COMP.map X B C (exponential_rts.MkIde G, t2)"
 
   abbreviation cnt_Exp
     :: "'a resid \<Rightarrow> 'b resid \<Rightarrow> 'c resid \<Rightarrow> ('a \<Rightarrow> 'b)
-           \<Rightarrow> ('b, 'c) exponential_rts.arr \<Rightarrow> ('a, 'c) exponential_rts.arr"  ("Exp\<^sup>\<leftarrow>")
+           \<Rightarrow> ('b, 'c) exponential_rts.arr \<Rightarrow> ('a, 'c) exponential_rts.arr"  (\<open>Exp\<^sup>\<leftarrow>\<close>)
   where "Exp\<^sup>\<leftarrow> A B X \<equiv>
          \<lambda>F t1. COMP.map A B X (t1, exponential_rts.MkIde F)"
 

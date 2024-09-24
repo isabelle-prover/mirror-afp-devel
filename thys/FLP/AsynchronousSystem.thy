@@ -33,9 +33,9 @@ text \<open>
 \<close>
 
 datatype ('p, 'v) message =
-  InMsg 'p bool  ("<_, inM _>")
-| OutMsg bool    ("<\<bottom>, outM _>")
-| Msg 'p 'v      ("<_, _>")
+  InMsg 'p bool  (\<open><_, inM _>\<close>)
+| OutMsg bool    (\<open><\<bottom>, outM _>\<close>)
+| Msg 'p 'v      (\<open><_, _>\<close>)
 
 text \<open>
   A message value is the content of a message, which a process may receive. 
@@ -136,7 +136,7 @@ primrec steps ::
    \<Rightarrow> ('p, 'v) message
    \<Rightarrow> ('p, 'v, 's) configuration
    \<Rightarrow> bool"
-   ("_ \<turnstile> _ \<mapsto> _" [70,70,70])
+   (\<open>_ \<turnstile> _ \<mapsto> _\<close> [70,70,70])
 where 
   StepInMsg: "cfg1 \<turnstile> <p, inM v> \<mapsto> cfg2 = (
   (\<forall> s. ((s = p) \<longrightarrow> states cfg2 p = trans p (states cfg1 p) (Bool v))

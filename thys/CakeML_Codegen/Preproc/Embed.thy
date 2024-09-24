@@ -76,7 +76,7 @@ by auto
 
 ML_file "embed.ML"
 
-consts "lift_term" :: "'a \<Rightarrow> term" ("\<langle>_\<rangle>")
+consts "lift_term" :: "'a \<Rightarrow> term" (\<open>\<langle>_\<rangle>\<close>)
 
 setup\<open>
   let

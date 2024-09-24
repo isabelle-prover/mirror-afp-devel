@@ -23,12 +23,12 @@ text \<open> We declare a number of syntax translations to produce lens and prod
   to construct the vector itself, and finally to construct the state declaration. \<close>
 
 syntax
-  "_lensT" :: "type \<Rightarrow> type \<Rightarrow> type" ("LENSTYPE'(_, _')")
-  "_pairT" :: "type \<Rightarrow> type \<Rightarrow> type" ("PAIRTYPE'(_, _')")
+  "_lensT" :: "type \<Rightarrow> type \<Rightarrow> type" (\<open>LENSTYPE'(_, _')\<close>)
+  "_pairT" :: "type \<Rightarrow> type \<Rightarrow> type" (\<open>PAIRTYPE'(_, _')\<close>)
   "_state_type" :: "pttrn \<Rightarrow> type"
   "_state_tuple" :: "type \<Rightarrow> pttrn \<Rightarrow> logic"
   "_state_lenses" :: "pttrn \<Rightarrow> logic"
-  "_state_decl" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" ("LOCAL _ \<bullet> _" [0, 10] 10) 
+  "_state_decl" :: "pttrn \<Rightarrow> logic \<Rightarrow> logic" (\<open>LOCAL _ \<bullet> _\<close> [0, 10] 10) 
 
 syntax_types
   "_lensT" \<rightleftharpoons> lens and

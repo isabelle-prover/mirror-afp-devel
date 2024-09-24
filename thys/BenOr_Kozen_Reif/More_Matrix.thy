@@ -252,7 +252,7 @@ end
 abbreviation conjugate_transpose :: "'a::conjugate mat  \<Rightarrow> 'a mat"
   where "conjugate_transpose A \<equiv> conjugate (A\<^sup>T)"
 
-notation conjugate_transpose ("(_\<^sup>H)" [1000])
+notation conjugate_transpose (\<open>(_\<^sup>H)\<close> [1000])
 
 lemma transpose_conjugate:
   shows "(conjugate A)\<^sup>T = A\<^sup>H"

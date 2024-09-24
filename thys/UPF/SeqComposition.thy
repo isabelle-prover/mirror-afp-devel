@@ -175,11 +175,11 @@ text\<open>
   of decisions---which must be flattened. As we now that there are four different forms of 
   flattening, we have four different forms of policy composition:\<close>
 definition
-  comp_orA :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orA" 55) where
+  comp_orA :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl \<open>o'_orA\<close> 55) where
   "p2 o_orA p1 \<equiv> (map_option flat_orA) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation
-  comp_orA  (infixl "\<circ>\<^sub>\<or>\<^sub>A" 55)
+  comp_orA  (infixl \<open>\<circ>\<^sub>\<or>\<^sub>A\<close> 55)
 
 lemma comp_orA_mt[simp]:"p \<circ>\<^sub>\<or>\<^sub>A \<emptyset> = \<emptyset>"
   by(simp add: comp_orA_def)
@@ -188,11 +188,11 @@ lemma mt_comp_orA[simp]:"\<emptyset> \<circ>\<^sub>\<or>\<^sub>A p = \<emptyset>
   by(simp add: comp_orA_def)
 
 definition
-  comp_orD :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orD" 55) where
+  comp_orD :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl \<open>o'_orD\<close> 55) where
   "p2 o_orD p1 \<equiv> (map_option flat_orD) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation
-  comp_orD  (infixl "\<circ>\<^sub>orD" 55)
+  comp_orD  (infixl \<open>\<circ>\<^sub>orD\<close> 55)
 
 lemma comp_orD_mt[simp]:"p o_orD \<emptyset> = \<emptyset>"
   by(simp add: comp_orD_def)
@@ -201,11 +201,11 @@ lemma mt_comp_orD[simp]:"\<emptyset> o_orD p = \<emptyset>"
   by(simp add: comp_orD_def)
 
 definition
-  comp_1 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_1" 55) where
+  comp_1 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl \<open>o'_1\<close> 55) where
   "p2 o_1 p1 \<equiv> (map_option flat_1) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation
-  comp_1  (infixl "\<circ>\<^sub>1" 55)
+  comp_1  (infixl \<open>\<circ>\<^sub>1\<close> 55)
 
 lemma comp_1_mt[simp]:"p \<circ>\<^sub>1 \<emptyset> = \<emptyset>"
   by(simp add: comp_1_def)
@@ -214,11 +214,11 @@ lemma mt_comp_1[simp]:"\<emptyset> \<circ>\<^sub>1 p = \<emptyset>"
   by(simp add: comp_1_def)
 
 definition
-  comp_2 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_2" 55) where
+  comp_2 :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl \<open>o'_2\<close> 55) where
   "p2 o_2 p1 \<equiv> (map_option flat_2) o (lift p2 \<circ>\<^sub>m p1)"
 
 notation
-  comp_2  (infixl "\<circ>\<^sub>2" 55)
+  comp_2  (infixl \<open>\<circ>\<^sub>2\<close> 55)
 
 lemma comp_2_mt[simp]:"p \<circ>\<^sub>2 \<emptyset> = \<emptyset>"
   by(simp add: comp_2_def)

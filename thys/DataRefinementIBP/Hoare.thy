@@ -18,7 +18,7 @@ over a complete lattice.
 \<close>
 
 definition
-  Hoare :: "'a::complete_distrib_lattice \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" ("\<Turnstile> (_){| _ |}(_)" [0,0,900] 900) where
+  Hoare :: "'a::complete_distrib_lattice \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" (\<open>\<Turnstile> (_){| _ |}(_)\<close> [0,0,900] 900) where
   "\<Turnstile> p {|S|} q = (p \<le> (S q))"
 
 theorem hoare_sequential:

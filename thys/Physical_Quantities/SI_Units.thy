@@ -15,7 +15,7 @@ instance SI :: unit_system
 
 abbreviation "SI \<equiv> unit :: SI"
 
-type_synonym ('n, 'd) SIUnitT = "('n, 'd, SI) QuantT" ("_[_]" [999,0] 999)
+type_synonym ('n, 'd) SIUnitT = "('n, 'd, SI) QuantT" (\<open>_[_]\<close> [999,0] 999)
 
 text \<open> We now define the seven base units. Effectively, these definitions axiomatise given names
   for the \<^term>\<open>1\<close> elements of the base quantities. \<close>
@@ -70,7 +70,7 @@ lemma "(metre \<^bold>\<cdot> second\<^sup>-\<^sup>\<one>) \<^bold>\<cdot> secon
 subsection \<open> Metrification \<close>
 
 class metrifiable = unit_system +
-  fixes convschema :: "'a itself \<Rightarrow> ('a, SI) Conversion" ("schema\<^sub>C")
+  fixes convschema :: "'a itself \<Rightarrow> ('a, SI) Conversion" (\<open>schema\<^sub>C\<close>)
 
 instantiation SI :: metrifiable
 begin
@@ -98,7 +98,7 @@ abbreviation qmconv ::
 "qmconv s\<^sub>1 s\<^sub>2 x \<equiv> qconv (inv\<^sub>C (schema\<^sub>C s\<^sub>2) \<circ>\<^sub>C schema\<^sub>C s\<^sub>1) x"
 
 syntax
-  "_qmconv" :: "type \<Rightarrow> type \<Rightarrow> logic" ("QMC'(_ \<rightarrow> _')")
+  "_qmconv" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>QMC'(_ \<rightarrow> _')\<close>)
 
 syntax_consts
   "_qmconv" == qmconv

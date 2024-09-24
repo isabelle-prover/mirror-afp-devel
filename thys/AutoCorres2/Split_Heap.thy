@@ -3472,7 +3472,7 @@ declarations for the interpretations.
 \<close>
 end
 syntax
-  "_ptr_valid" :: "type \<Rightarrow> logic" ("(1PTR'_VALID/(1'(_')))")
+  "_ptr_valid" :: "type \<Rightarrow> logic" (\<open>(1PTR'_VALID/(1'(_')))\<close>)
 
 ML \<open>
 structure Ptr_Valid_Translation =
@@ -3587,7 +3587,7 @@ Note that \<^term>\<open>heap_typing\<close> is a field of the lifted globals re
 end
 
 syntax
-  "_is_valid" :: "type \<Rightarrow> logic \<Rightarrow> logic" ("(1IS'_VALID/(1'(_'))) _" [0, 1000] 1000)
+  "_is_valid" :: "type \<Rightarrow> logic \<Rightarrow> logic" (\<open>(1IS'_VALID/(1'(_'))) _\<close> [0, 1000] 1000)
 
 parse_translation \<open>
 let

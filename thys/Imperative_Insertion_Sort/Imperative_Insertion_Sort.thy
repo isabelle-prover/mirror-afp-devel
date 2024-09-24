@@ -13,11 +13,11 @@ begin
 subsection \<open>The Algorithm\<close>
 
 abbreviation
-  array_update :: "'a::heap array \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a array Heap" ("(_.'(_') \<leftarrow>/ _)" [1000, 0, 13] 14)
+  array_update :: "'a::heap array \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a array Heap" (\<open>(_.'(_') \<leftarrow>/ _)\<close> [1000, 0, 13] 14)
 where
   "a.(i) \<leftarrow> x \<equiv> Array.upd i x a"
 
-abbreviation array_nth :: "'a::heap array \<Rightarrow> nat \<Rightarrow> 'a Heap" ("_.'(_')" [1000, 0] 14)
+abbreviation array_nth :: "'a::heap array \<Rightarrow> nat \<Rightarrow> 'a Heap" (\<open>_.'(_')\<close> [1000, 0] 14)
 where
   "a.(i) \<equiv> Array.nth a i"
 

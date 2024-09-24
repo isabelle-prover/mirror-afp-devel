@@ -53,13 +53,13 @@ text \<open> Lemmas for manipulation of predicates in the relational model \<clo
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
-        and Archimedean_Field.floor_ceiling_class.floor ("\<lfloor>_\<rfloor>")
-        and tau ("\<tau>")
-        and Relation.relcomp (infixl ";" 75)
-        and proto_near_quantale_class.bres (infixr "\<rightarrow>" 60)
+no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
+        and Archimedean_Field.floor_ceiling_class.floor (\<open>\<lfloor>_\<rfloor>\<close>)
+        and tau (\<open>\<tau>\<close>)
+        and Relation.relcomp (infixl \<open>;\<close> 75)
+        and proto_near_quantale_class.bres (infixr \<open>\<rightarrow>\<close> 60)
 
-definition p2ndf :: "'a pred \<Rightarrow> 'a nd_fun" ("(1\<lceil>_\<rceil>)")
+definition p2ndf :: "'a pred \<Rightarrow> 'a nd_fun" (\<open>(1\<lceil>_\<rceil>)\<close>)
   where "\<lceil>Q\<rceil> \<equiv> (\<lambda> x::'a. {s::'a. s = x \<and> Q s})\<^sup>\<bullet>"
 
 lemma p2ndf_simps[simp]: 
@@ -76,7 +76,7 @@ text \<open> Lemmas for verification condition generation \<close>
 
 \<comment> \<open> Hoare Triples \<close>
 
-abbreviation ndfunHoare ("\<^bold>{_\<^bold>}_\<^bold>{_\<^bold>}") 
+abbreviation ndfunHoare (\<open>\<^bold>{_\<^bold>}_\<^bold>{_\<^bold>}\<close>) 
   where "\<^bold>{P\<^bold>}X\<^bold>{Q\<^bold>} \<equiv> Hoare \<lceil>P\<rceil> X \<lceil>Q\<rceil>"
 
 lemma ndfun_kat_H: "\<^bold>{P\<^bold>} X \<^bold>{Q\<^bold>} \<longleftrightarrow> (\<forall>s s'. P s \<longrightarrow> s' \<in> (X\<^sub>\<bullet>) s \<longrightarrow> Q s')"
@@ -110,7 +110,7 @@ lemma H_abort: "\<^bold>{P\<^bold>} abort \<^bold>{Q\<^bold>}"
 
 \<comment> \<open> Assignments \<close>
 
-definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) nd_fun" ("(2_ ::= _)" [70, 65] 61) 
+definition assign :: "'b \<Rightarrow> ('a^'b \<Rightarrow> 'a) \<Rightarrow> ('a^'b) nd_fun" (\<open>(2_ ::= _)\<close> [70, 65] 61) 
   where "(x ::= e) = (\<lambda>s. {vec_upd s x (e s)})\<^sup>\<bullet>"
 
 lemma sH_assign[simp]: "\<^bold>{P\<^bold>} (x ::= e) \<^bold>{Q\<^bold>} \<longleftrightarrow> (\<forall>s. P s \<longrightarrow> Q (\<chi> j. ((($) s)(x := (e s))) j))"
@@ -121,7 +121,7 @@ lemma H_assign: "P = (\<lambda>s. Q (\<chi> j. ((($) s)(x := (e s))) j)) \<Longr
 
 \<comment> \<open> Nondeterministic assignments \<close>
 
-definition nondet_assign :: "'b \<Rightarrow> ('a^'b) nd_fun" ("(2_ ::= ? )" [70] 61)
+definition nondet_assign :: "'b \<Rightarrow> ('a^'b) nd_fun" (\<open>(2_ ::= ? )\<close> [70] 61)
     where "(x ::= ?) = (\<lambda>s. {vec_upd s x k|k. True})\<^sup>\<bullet>"
 
 lemma sH_nondet_assign[simp]: 
@@ -133,7 +133,7 @@ lemma H_nondet_assign: "\<^bold>{\<lambda>s. \<forall>k. P (\<chi> j. ((($) s)(x
 
 \<comment> \<open> Sequential Composition \<close>
 
-abbreviation seq_seq :: "'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (infixl ";" 75)
+abbreviation seq_seq :: "'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (infixl \<open>;\<close> 75)
   where "f ; g \<equiv> f \<cdot> g"
 
 lemma H_seq: "\<^bold>{P\<^bold>} X \<^bold>{R\<^bold>} \<Longrightarrow> \<^bold>{R\<^bold>} Y \<^bold>{Q\<^bold>} \<Longrightarrow> \<^bold>{P\<^bold>} X;Y \<^bold>{Q\<^bold>}"
@@ -159,7 +159,7 @@ lemma H_choice: "\<^bold>{P\<^bold>} X \<^bold>{Q\<^bold>} \<Longrightarrow> \<^
 
 \<comment> \<open> Conditional Statement \<close>
 
-abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" ("IF _ THEN _ ELSE _" [64,64] 63) 
+abbreviation cond_sugar :: "'a pred \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (\<open>IF _ THEN _ ELSE _\<close> [64,64] 63) 
   where "IF B THEN X ELSE Y \<equiv> kat_cond \<lceil>B\<rceil> X Y"
 
 lemma sH_cond[simp]: 
@@ -172,7 +172,7 @@ lemma H_cond:
 
 \<comment> \<open> While Loop \<close>
 
-abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" ("WHILE _ INV _ DO _" [64,64,64] 63) 
+abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun \<Rightarrow> 'a nd_fun" (\<open>WHILE _ INV _ DO _\<close> [64,64,64] 63) 
   where "WHILE B INV I DO X \<equiv> kat_while_inv \<lceil>B\<rceil> \<lceil>I\<rceil> X"
 
 lemma sH_whileI: "\<forall>s. P s \<longrightarrow> I s \<Longrightarrow> \<forall>s. I s \<and> \<not> B s \<longrightarrow> Q s \<Longrightarrow> \<^bold>{\<lambda>s. I s \<and> B s\<^bold>} X \<^bold>{I\<^bold>} 
@@ -185,7 +185,7 @@ lemma "\<^bold>{\<lambda>s. P s \<and> B s\<^bold>} X \<^bold>{\<lambda>s. P s\<
 
 \<comment> \<open> Finite Iteration \<close>
 
-abbreviation loopi_sugar :: "'a nd_fun \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("LOOP _ INV _ " [64,64] 63)
+abbreviation loopi_sugar :: "'a nd_fun \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>LOOP _ INV _ \<close> [64,64] 63)
   where "LOOP X INV I \<equiv> kat_loop_inv X \<lceil>I\<rceil>"
 
 lemma H_loop: "\<^bold>{P\<^bold>} X \<^bold>{P\<^bold>} \<Longrightarrow> \<^bold>{P\<^bold>} (LOOP X INV I) \<^bold>{P\<^bold>}"
@@ -199,7 +199,7 @@ subsubsection \<open> Evolution commands \<close>
 
 \<comment> \<open>Verification by providing evolution\<close>
 
-definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b nd_fun" ("EVOL")
+definition g_evol :: "(('a::ord) \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b pred \<Rightarrow> ('b \<Rightarrow> 'a set) \<Rightarrow> 'b nd_fun" (\<open>EVOL\<close>)
   where "EVOL \<phi> G U = (\<lambda>s. g_orbit (\<lambda>t. \<phi> t s) G (U s))\<^sup>\<bullet>"
 
 lemma sH_g_evol[simp]:  
@@ -216,7 +216,7 @@ lemma H_g_evol:
 \<comment> \<open>Verification by providing solutions\<close>
 
 definition g_ode ::"(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a nd_fun" ("(1x\<acute>= _ & _ on _ _ @ _)") 
+  real \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>= _ & _ on _ _ @ _)\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0) \<equiv> (\<lambda> s. g_orbital f G U S t\<^sub>0 s)\<^sup>\<bullet>"
 
 lemma H_g_orbital: 
@@ -279,7 +279,7 @@ end
 \<comment> \<open> Verification with differential invariants \<close>
 
 definition g_ode_inv :: "(real \<Rightarrow> ('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> ('a \<Rightarrow> real set) \<Rightarrow> 'a set \<Rightarrow> 
-  real \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("(1x\<acute>=_ & _ on _ _ @ _ DINV _ )") 
+  real \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>=_ & _ on _ _ @ _ DINV _ )\<close>) 
   where "(x\<acute>= f & G on U S @ t\<^sub>0 DINV I) = (x\<acute>= f & G on U S @ t\<^sub>0)"
 
 lemma sH_g_orbital_guard: 
@@ -518,10 +518,10 @@ subsection \<open> Derivation of the rules of dL \<close>
 text \<open> We derive rules of differential dynamic logic (dL). This allows the components to reason 
 in the style of that logic. \<close>
 
-abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("(1x\<acute>=_ & _)") 
+abbreviation g_dl_ode ::"(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>=_ & _)\<close>) 
   where "(x\<acute>=f & G) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0)"
 
-abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" ("(1x\<acute>=_ & _ DINV _)") 
+abbreviation g_dl_ode_inv :: "(('a::banach)\<Rightarrow>'a) \<Rightarrow> 'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a nd_fun" (\<open>(1x\<acute>=_ & _ DINV _)\<close>) 
   where "(x\<acute>= f & G DINV I) \<equiv> (x\<acute>= (\<lambda>t. f) & G on (\<lambda>s. {t. t \<ge> 0}) UNIV @ 0 DINV I)"
 
 lemma diff_solve_rule1:

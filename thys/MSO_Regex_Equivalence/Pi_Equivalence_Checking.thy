@@ -82,7 +82,7 @@ begin
 lemma L_deltas[simp]: "\<lbrakk>wf_word n w; wf_state s\<rbrakk> \<Longrightarrow> L (fold delta w s) = fold lQuot w (L s)"
   by (induction w arbitrary: s) auto
 
-definition progression (infix "\<rightarrow>" 60) where 
+definition progression (infix \<open>\<rightarrow>\<close> 60) where 
   "R \<rightarrow> S = (\<forall>s1 s2. R s1 s2 \<longrightarrow> wf_state s1 \<and> wf_state s2 \<and> final s1 = final s2 \<and>
      (\<forall>x \<in> set (\<sigma> n). BNF_Greatest_Fixpoint.image2p post post S (post (delta x s1)) (post (delta x s2))))"
 

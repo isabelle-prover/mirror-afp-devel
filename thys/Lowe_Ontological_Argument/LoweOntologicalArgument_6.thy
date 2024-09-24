@@ -19,8 +19,8 @@ consts Concrete::"e\<Rightarrow>wo"
 consts Abstract::"e\<Rightarrow>wo"
 consts Necessary::"e\<Rightarrow>wo"
 consts Contingent::"e\<Rightarrow>wo"
-consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix "dependsOn"(*<*)100(*>*))
-consts explanation::"e\<Rightarrow>e\<Rightarrow>wo" (infix "explains"(*<*)100(*>*))
+consts dependence::"e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>dependsOn\<close>(*<*)100(*>*))
+consts explanation::"e\<Rightarrow>e\<Rightarrow>wo" (infix \<open>explains\<close>(*<*)100(*>*))
 consts Dependent::"e\<Rightarrow>wo"
 abbreviation Independent::"e\<Rightarrow>wo" where "Independent x  \<equiv> \<^bold>\<not>(Dependent x)"
 

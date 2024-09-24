@@ -191,10 +191,10 @@ nonterminal fsfields
 nonterminal vlist
 
 syntax
-  "" :: "V \<Rightarrow> fsfields" ("_")
-  "_fsfields" :: "fsfields \<Rightarrow> V \<Rightarrow> fsfields" ("_,/ _")
-  "_vlist" :: "fsfields \<Rightarrow> V" ("[(_)]\<^sub>\<circ>")
-  "_vapp" :: "V \<Rightarrow> fsfields \<Rightarrow> V" ("_ \<lparr>(_)\<rparr>\<^sub>\<bullet>" [100, 100] 100)
+  "" :: "V \<Rightarrow> fsfields" (\<open>_\<close>)
+  "_fsfields" :: "fsfields \<Rightarrow> V \<Rightarrow> fsfields" (\<open>_,/ _\<close>)
+  "_vlist" :: "fsfields \<Rightarrow> V" (\<open>[(_)]\<^sub>\<circ>\<close>)
+  "_vapp" :: "V \<Rightarrow> fsfields \<Rightarrow> V" (\<open>_ \<lparr>(_)\<rparr>\<^sub>\<bullet>\<close> [100, 100] 100)
 
 syntax_consts
   "_vlist" == vcons and
@@ -840,7 +840,7 @@ qed
 
 subsubsection\<open>Appending elements\<close>
 
-definition vappend :: "V \<Rightarrow> V \<Rightarrow> V" (infixr "@\<^sub>\<circ>" 65)
+definition vappend :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>@\<^sub>\<circ>\<close> 65)
   where "xs @\<^sub>\<circ> ys =
     vfsequence_of_vlist (vlist_of_vfsequence ys @ vlist_of_vfsequence xs)"
 

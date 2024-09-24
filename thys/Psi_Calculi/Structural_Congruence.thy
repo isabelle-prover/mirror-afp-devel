@@ -7,7 +7,7 @@ theory Structural_Congruence
 begin
 
 
-inductive structCong :: "(('a::fs_name), ('b::fs_name), ('c::fs_name)) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<equiv>\<^sub>s _" [70, 70] 70)
+inductive structCong :: "(('a::fs_name), ('b::fs_name), ('c::fs_name)) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<equiv>\<^sub>s _\<close> [70, 70] 70)
 where
   Refl: "P \<equiv>\<^sub>s P"
 | Sym:  "P \<equiv>\<^sub>s Q \<Longrightarrow> Q \<equiv>\<^sub>s P"

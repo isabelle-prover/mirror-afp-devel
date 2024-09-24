@@ -18,14 +18,14 @@ begin
   | "mmap f (x#xs) = do { y\<leftarrow>f x; ys \<leftarrow> mmap f xs; return (y#ys) }"
   
   definition mIf :: "bool Heap \<Rightarrow> 'a Heap \<Rightarrow> 'a Heap \<Rightarrow> 'a Heap"
-    ("(if\<^sub>m (_)/ then (_)/ else (_))" [0, 0, 10] 10)
+    (\<open>(if\<^sub>m (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
     where "mIf b t e \<equiv> do { bb \<leftarrow> b; if bb then t else e }"
   
   lemma mIf_rule[sep_decon_rules]: 
     "<P> do { bb \<leftarrow> b; if bb then t else e } <Q> \<Longrightarrow> <P> mIf b t e <Q>"  
     unfolding mIf_def by simp
 
-  abbreviation (input) pure_app (infix "$\<^sub>m" 10) where "f $\<^sub>m m \<equiv> do { x\<leftarrow>m; return (f x) }" 
+  abbreviation (input) pure_app (infix \<open>$\<^sub>m\<close> 10) where "f $\<^sub>m m \<equiv> do { x\<leftarrow>m; return (f x) }" 
   
     
   lemma mmap_pure_aux:

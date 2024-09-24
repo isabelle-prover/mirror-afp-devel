@@ -14,7 +14,7 @@ typedef ('a, 'n) sq_matrix = "UNIV :: ('n \<Rightarrow> 'n \<Rightarrow> 'a) set
   morphisms to_fun of_fun
   by (rule UNIV_witness)
 
-syntax "_sq_matrix" :: "type \<Rightarrow> type \<Rightarrow> type" ("(_ ^^/ _)" [15, 16] 15)
+syntax "_sq_matrix" :: "type \<Rightarrow> type \<Rightarrow> type" (\<open>(_ ^^/ _)\<close> [15, 16] 15)
 
 syntax_types "_sq_matrix" \<rightleftharpoons> sq_matrix
 
@@ -73,7 +73,7 @@ lemma diag_eq_iff: "diag x = diag y \<longleftrightarrow>  x = y"
 lemma map_sq_matrix_diag[simp]: "f 0 = 0 \<Longrightarrow> map_sq_matrix f (diag c) = diag (f c)"
   by transfer (simp add: fun_eq_iff)
 
-lift_definition smult_sq_matrix :: "'a::times \<Rightarrow> 'a^^'n \<Rightarrow> 'a^^'n" (infixr "*\<^sub>S" 75) is
+lift_definition smult_sq_matrix :: "'a::times \<Rightarrow> 'a^^'n \<Rightarrow> 'a^^'n" (infixr \<open>*\<^sub>S\<close> 75) is
   "\<lambda>c M i j. c * M i j" .
 
 lemma smult_map_sq_matrix:

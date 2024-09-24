@@ -256,7 +256,7 @@ subsubsection\<open>Isar Setup: Cartouche and Isar-Top-level Binding\<close>
 paragraph\<open>The JSON Cartouche.\<close>
 text\<open>First, we define a cartouche that allows using JSON syntax within HOL expressions:\<close>
 
-syntax "_cartouche_nano_json" :: "cartouche_position \<Rightarrow> 'a"  ("JSON _")
+syntax "_cartouche_nano_json" :: "cartouche_position \<Rightarrow> 'a"  (\<open>JSON _\<close>)
 parse_translation\<open> 
 let
   fun translation u args = let

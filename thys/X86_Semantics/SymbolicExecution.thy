@@ -13,7 +13,7 @@ begin
 
 
 
-definition eq (infixl "\<triangleq>" 50)
+definition eq (infixl \<open>\<triangleq>\<close> 50)
   where "(\<triangleq>) \<equiv> (=)"
 
 context unknowns

@@ -7,7 +7,7 @@ section \<open>Life Table\<close>
 text \<open>Define a life table axiomatically.\<close>
 
 locale life_table =
-  fixes l :: "real \<Rightarrow> real" ("$l'__" [101] 200)
+  fixes l :: "real \<Rightarrow> real" (\<open>$l'__\<close> [101] 200)
   assumes l_0_pos: "0 < l 0"
     and l_neg_nil: "\<And>x. x \<le> 0 \<Longrightarrow> l x = l 0"
     and l_PInfty_0: "(l \<longlongrightarrow> 0) at_top "
@@ -71,7 +71,7 @@ lemma compl_l_real_distribution: "real_distribution (interval_measure (\<lambda>
     compl_l_normal_NInfty_0 compl_l_normal_PInfty_1
   by (intro real_distribution_interval_measure; simp add: antimono_def)
 
-definition total :: "real \<Rightarrow> real" ("$T'__" [101] 200) where "$T_x \<equiv> LBINT y:{x..}. $l_y"
+definition total :: "real \<Rightarrow> real" (\<open>$T'__\<close> [101] 200) where "$T_x \<equiv> LBINT y:{x..}. $l_y"
   \<comment> \<open>the number of lives older than the ones aged \<open>x\<close>\<close>
   \<comment> \<open>The parameter \<open>x\<close> must be nonnegative.\<close>
 
@@ -116,13 +116,13 @@ proof -
     using LIM_zero_iff' by force
 qed
 
-definition lives :: "real \<Rightarrow> real \<Rightarrow> real" ("$L'_{_&_}" [0,0] 200)
+definition lives :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$L'_{_&_}\<close> [0,0] 200)
   where "$L_{n&x} \<equiv> LBINT y:{x..x+n}. $l_y"
     \<comment> \<open>the number of lives between ages \<open>x\<close> and \<open>x+n\<close>\<close>
     \<comment> \<open>The parameter \<open>x\<close> must be nonnegative.\<close>
     \<comment> \<open>The parameter \<open>n\<close> is usually nonnegative, but theoretically it can be negative.\<close>
 
-abbreviation lives_1 :: "real \<Rightarrow> real" ("$L'__" [101] 200)
+abbreviation lives_1 :: "real \<Rightarrow> real" (\<open>$L'__\<close> [101] 200)
   where "$L_x \<equiv> $L_{1&x}"
 
 lemma l_has_integral_L: "(l has_integral $L_{n&x}) {x..x+n}" for x n :: real
@@ -160,12 +160,12 @@ proof -
   thus ?thesis using that L_T by (rewrite sums_cong, simp_all) smt
 qed
 
-definition death :: "real \<Rightarrow> real \<Rightarrow> real" ("$d'_{_&_}" [0,0] 200)
+definition death :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$d'_{_&_}\<close> [0,0] 200)
   where "$d_{t&x} \<equiv> max 0 ($l_x - $l_(x+t))"
     \<comment> \<open>the number of deaths between ages \<open>x\<close> and \<open>x+t\<close>\<close>
     \<comment> \<open>The parameter \<open>t\<close> is usually nonnegative, but theoretically it can be negative.\<close>
 
-abbreviation death1 :: "real \<Rightarrow> real" ("$d'__" [101] 200)
+abbreviation death1 :: "real \<Rightarrow> real" (\<open>$d'__\<close> [101] 200)
   where "$d_x \<equiv> $d_{1&x}"
 
 lemma death_def_nonneg: "$d_{t&x} = $l_x - $l_(x+t)" if "t \<ge> 0" for t x :: real
@@ -205,23 +205,23 @@ corollary d_sums_l: "(\<lambda>k. $d_(x+k)) sums $l_x" for x::real
 lemma add_d: "$d_{t&x} + $d_{t' & x+t} = $d_{t+t' & x}" if "t \<ge> 0" "t' \<ge> 0" for t t' :: real
   using death_def_nonneg that by (smt (verit))
 
-definition die_central :: "real \<Rightarrow> real \<Rightarrow> real" ("$m'_{_&_}" [0,0] 200)
+definition die_central :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$m'_{_&_}\<close> [0,0] 200)
   where "$m_{n&x} \<equiv> $d_{n&x} / $L_{n&x}"
     \<comment> \<open>central death rate\<close>
 
-abbreviation die_central_1 :: "real \<Rightarrow> real" ("$m'__" [101] 200)
+abbreviation die_central_1 :: "real \<Rightarrow> real" (\<open>$m'__\<close> [101] 200)
   where "$m_x \<equiv> $m_{1&x}"
 
 subsection \<open>Construction of Survival Model from Life Table\<close>
 
-definition life_table_measure :: "real measure" ("\<MM>")
+definition life_table_measure :: "real measure" (\<open>\<MM>\<close>)
   where "\<MM> \<equiv> interval_measure (\<lambda>x. 1 - $l_x / $l_0)"
 
 lemma prob_space_actuary_MM: "prob_space_actuary \<MM>"
   unfolding life_table_measure_def using compl_l_real_distribution real_distribution_def
   by (intro prob_space_actuary.intro) force
 
-definition survival_model_X :: "real \<Rightarrow> real" ("X") where "X \<equiv> \<lambda>x. x"
+definition survival_model_X :: "real \<Rightarrow> real" (\<open>X\<close>) where "X \<equiv> \<lambda>x. x"
 
 lemma survival_model_MM_X: "survival_model \<MM> X"
 proof -
@@ -279,7 +279,7 @@ corollary deriv_ccdfX_l: "deriv (ccdf (distr \<MM> borel X)) x = deriv l x / $l_
   using differentiable_eq_field_differentiable_real that
   by (rewrite ccdfX_l_normal, rewrite deriv_cdivide_right; simp)
 
-notation death_pt ("$\<psi>")
+notation death_pt (\<open>$\<psi>\<close>)
 
 lemma l_0_equiv: "$l_x = 0 \<longleftrightarrow> x \<ge> $\<psi>" for x::real
   using ccdfX_l_normal ccdfX_0_equiv by simp
@@ -381,7 +381,7 @@ context
   assumes x_lt_psi[simp]: "x < $\<psi>"
 begin
 
-notation futr_life ("T")
+notation futr_life (\<open>T\<close>)
 
 interpretation alivex_PS: prob_space "\<MM> \<downharpoonright> alive x"
   by (rule MM_PS.cond_prob_space_correct, simp_all add: alive_def)
@@ -481,16 +481,16 @@ lemma PTx_compl_l_normal: "\<P>(\<xi> in \<MM>. T x \<xi> \<le> t \<bar> T x \<x
 
 subsubsection \<open>Life Table and Actuarial Notations\<close>
 
-notation survive ("$p'_{_&_}" [0,0] 200)
-notation survive_1 ("$p'__" [101] 200)
-notation die ("$q'_{_&_}" [0,0] 200)
-notation die_1 ("$q'__" [101] 200)
-notation die_defer ("$q'_{_\<bar>_&_}" [0,0,0] 200)
-notation die_defer_1 ("$q'_{_\<bar>&_}" [0,0] 200)
-notation life_expect ("$e`\<circ>'__" [101] 200)
-notation temp_life_expect ("$e`\<circ>'_{_:_}" [0,0] 200)
-notation curt_life_expect ("$e'__" [101] 200)
-notation temp_curt_life_expect ("$e'_{_:_}" [0,0] 200)
+notation survive (\<open>$p'_{_&_}\<close> [0,0] 200)
+notation survive_1 (\<open>$p'__\<close> [101] 200)
+notation die (\<open>$q'_{_&_}\<close> [0,0] 200)
+notation die_1 (\<open>$q'__\<close> [101] 200)
+notation die_defer (\<open>$q'_{_\<bar>_&_}\<close> [0,0,0] 200)
+notation die_defer_1 (\<open>$q'_{_\<bar>&_}\<close> [0,0] 200)
+notation life_expect (\<open>$e`\<circ>'__\<close> [101] 200)
+notation temp_life_expect (\<open>$e`\<circ>'_{_:_}\<close> [0,0] 200)
+notation curt_life_expect (\<open>$e'__\<close> [101] 200)
+notation temp_curt_life_expect (\<open>$e'_{_:_}\<close> [0,0] 200)
 
 lemma p_l: "$p_{t&x} = $l_(x+t) / $l_x" if "t \<ge> 0" for t::real
   unfolding survive_def using ccdfTx_l_normal that by simp
@@ -679,7 +679,7 @@ sublocale smooth_life_table \<subseteq> smooth_survival_function \<MM> X
 context smooth_life_table
 begin
 
-notation force_mortal ("$\<mu>'__" [101] 200)
+notation force_mortal (\<open>$\<mu>'__\<close> [101] 200)
 
 lemma l_continuous[simp]: "continuous_on UNIV l"
   using l_piecewise_differentiable piecewise_differentiable_on_imp_continuous_on by fastforce
@@ -1651,7 +1651,7 @@ sublocale limited_life_table \<subseteq> limited_survival_function \<MM> X
 context limited_life_table
 begin
 
-notation ult_age ("$\<omega>")
+notation ult_age (\<open>$\<omega>\<close>)
 
 lemma l_omega_0: "$l_$\<omega> = 0"
   using ccdfX_l_normal ccdfX_omega_0 by simp

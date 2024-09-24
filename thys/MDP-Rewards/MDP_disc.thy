@@ -263,7 +263,7 @@ definition "K0 d S0 = do {
   return_pmf (s,a)
 }"
 
-notation K0 ("K\<^sub>0")
+notation K0 (\<open>K\<^sub>0\<close>)
 
 lemma K0_iff: "K0 d S0 = S0 \<bind> (\<lambda>s. map_pmf (\<lambda>a. (s,a)) (d s))"
   by (simp add: K0_def map_pmf_def)

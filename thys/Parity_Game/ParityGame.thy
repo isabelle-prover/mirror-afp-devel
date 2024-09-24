@@ -23,9 +23,9 @@ text \<open>
 \<close>
 
 record 'a Graph =
-  verts :: "'a set" ("V\<index>")
-  arcs :: "'a Edge set" ("E\<index>")
-abbreviation is_arc :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>\<index>" 60) where
+  verts :: "'a set" (\<open>V\<index>\<close>)
+  arcs :: "'a Edge set" (\<open>E\<index>\<close>)
+abbreviation is_arc :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<rightarrow>\<index>\<close> 60) where
   "v \<rightarrow>\<^bsub>G\<^esub> w \<equiv> (v,w) \<in> E\<^bsub>G\<^esub>"
 
 locale Digraph =
@@ -226,7 +226,7 @@ text \<open>Parity games are games played by two players, called \Even and \Odd.
 datatype Player = Even | Odd
 
 abbreviation "other_player p \<equiv> (if p = Even then Odd else Even)"
-notation other_player ("(_**)" [1000] 1000)
+notation other_player (\<open>(_**)\<close> [1000] 1000)
 lemma other_other_player [simp]: "p**** = p" using Player.exhaust by auto
 
 text \<open>
@@ -235,8 +235,8 @@ text \<open>
 \<close>
 
 record 'a ParityGame = "'a Graph" +
-  player0 :: "'a set" ("V0\<index>")
-  priority :: "'a \<Rightarrow> nat" ("\<omega>\<index>")
+  player0 :: "'a set" (\<open>V0\<index>\<close>)
+  priority :: "'a \<Rightarrow> nat" (\<open>\<omega>\<index>\<close>)
 
 locale ParityGame = Digraph G for G :: "('a, 'b) ParityGame_scheme" (structure) +
   assumes valid_player0_set: "V0 \<subseteq> V"

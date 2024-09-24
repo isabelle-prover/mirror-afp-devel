@@ -100,7 +100,7 @@ proof
       by (auto simp: Roots_def)
   qed
 
-  define n_roots :: "int poly \<Rightarrow> nat" ("\<sharp>_")
+  define n_roots :: "int poly \<Rightarrow> nat" (\<open>\<sharp>_\<close>)
     where "n_roots = (\<lambda>p. card (Roots p))"
   define n where "n = (\<Sum>p\<in>P. \<sharp>p)"
   have n_altdef: "n = card Roots'"

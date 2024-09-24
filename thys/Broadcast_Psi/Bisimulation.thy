@@ -23,9 +23,9 @@ coinductive_set bisim :: "('b \<times> ('a, 'b, 'c) psi \<times> ('a, 'b, 'c) ps
     monos monoCoinduct
 
 abbreviation
-  bisimJudge ("_ \<rhd> _ \<sim> _" [70, 70, 70] 65) where "\<Psi> \<rhd> P \<sim> Q \<equiv> (\<Psi>, P, Q) \<in> bisim"
+  bisimJudge (\<open>_ \<rhd> _ \<sim> _\<close> [70, 70, 70] 65) where "\<Psi> \<rhd> P \<sim> Q \<equiv> (\<Psi>, P, Q) \<in> bisim"
 abbreviation
-  bisimNilJudge ("_ \<sim> _" [70, 70] 65) where "P \<sim> Q \<equiv> SBottom' \<rhd> P \<sim> Q"
+  bisimNilJudge (\<open>_ \<sim> _\<close> [70, 70] 65) where "P \<sim> Q \<equiv> SBottom' \<rhd> P \<sim> Q"
 
 lemma bisimCoinductAux[consumes 1]:
   fixes F :: 'b
@@ -615,7 +615,7 @@ shows "eqvt {(\<Psi>, P, Q) | \<Psi> P P' Q' Q. \<Psi> \<rhd> P \<sim> P' \<and>
   using ballE bisimClosed by fastforce
 
 inductive_set
-  rel_trancl :: "('b \<times> ('a,'b,'c) psi \<times> ('a,'b,'c) psi) set \<Rightarrow> ('b \<times> ('a,'b,'c) psi \<times> ('a,'b,'c) psi) set"  ("(_\<^sup>\<star>)" [1000] 999)
+  rel_trancl :: "('b \<times> ('a,'b,'c) psi \<times> ('a,'b,'c) psi) set \<Rightarrow> ('b \<times> ('a,'b,'c) psi \<times> ('a,'b,'c) psi) set"  (\<open>(_\<^sup>\<star>)\<close> [1000] 999)
   for r :: "('b \<times> ('a,'b,'c) psi \<times> ('a,'b,'c) psi) set"
   where
     r_into_rel_trancl [intro, Pure.intro]: "(\<Psi>, P,Q) : r ==> (\<Psi>,P,Q) : r\<^sup>\<star>"

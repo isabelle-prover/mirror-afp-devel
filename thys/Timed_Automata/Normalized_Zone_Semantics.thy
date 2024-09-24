@@ -5,7 +5,7 @@ theory Normalized_Zone_Semantics
 begin
 
 hide_const (open) D
-no_notation infinity ("\<infinity>")
+no_notation infinity (\<open>\<infinity>\<close>)
 
 (* XXX Move *)
 lemma rtranclp_backwards_invariant_iff:
@@ -68,13 +68,13 @@ subsection \<open>Single Step\<close>
 inductive step_z_norm ::
   "('a, 'c, t, 's) ta
   \<Rightarrow> 's \<Rightarrow> t DBM \<Rightarrow> ('s \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a action \<Rightarrow> 's \<Rightarrow> t DBM \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_,_\<^esub> \<langle>_, _\<rangle>" [61,61,61,61,61,61] 61)
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_,_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61,61,61] 61)
 where step_z_norm:
   "A \<turnstile> \<langle>l,D\<rangle> \<leadsto>\<^bsub>v,n,a\<^esub> \<langle>l', D'\<rangle> \<Longrightarrow> A \<turnstile> \<langle>l,D\<rangle> \<leadsto>\<^bsub>k,v,n,a\<^esub> \<langle>l', norm (FW D' n) (k l') n\<rangle>"
 
 inductive step_z_norm' ::
   "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> t DBM \<Rightarrow> ('s \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> t DBM \<Rightarrow> bool"
-("_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_\<^esub> \<langle>_, _\<rangle>" [61,61,61,61,61] 61)
+(\<open>_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61,61] 61)
 where
   step: "A \<turnstile> \<langle>l', Z'\<rangle> \<leadsto>\<^bsub>v,n,\<tau>\<^esub> \<langle>l'', Z''\<rangle>
         \<Longrightarrow> A \<turnstile> \<langle>l'', Z''\<rangle> \<leadsto>\<^bsub>k,v,n,\<upharpoonleft>(a)\<^esub> \<langle>l''', Z'''\<rangle>
@@ -82,7 +82,7 @@ where
 
 abbreviation steps_z_norm ::
   "('a, 'c, t, 's) ta \<Rightarrow> 's \<Rightarrow> t DBM \<Rightarrow> ('s \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> ('c \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> t DBM \<Rightarrow> bool"
-("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_\<^esub>* \<langle>_, _\<rangle>" [61,61,61,61,61] 61) where
+(\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>_,_,_\<^esub>* \<langle>_, _\<rangle>\<close> [61,61,61,61,61] 61) where
  "A \<turnstile> \<langle>l,D\<rangle> \<leadsto>\<^bsub>k,v,n\<^esub>* \<langle>l', D'\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z'). A \<turnstile>' \<langle>l, Z\<rangle> \<leadsto>\<^bsub>k,v,n\<^esub> \<langle>l', Z'\<rangle>)\<^sup>*\<^sup>* (l, D) (l', D')"
 
 lemma norm_empty_diag_preservation_real:
@@ -261,16 +261,16 @@ sublocale Regions_common by standard (rule finite clock_numbering not_in_X non_e
 definition "v' \<equiv> \<lambda> i. if 0 < i \<and> i \<le> n then (THE c. c \<in> X \<and> v c = i) else not_in_X"
 (*abbreviation "v' \<equiv> beta_interp.v'"*)
 
-abbreviation step_z_norm' ("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<N>(_)\<^esub> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+abbreviation step_z_norm' (\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<N>(_)\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, D\<rangle> \<leadsto>\<^bsub>\<N>(a)\<^esub> \<langle>l', D'\<rangle> \<equiv> A \<turnstile> \<langle>l, D\<rangle> \<leadsto>\<^bsub>(\<lambda> l. k l o v'),v,n,a\<^esub> \<langle>l', D'\<rangle>"
 
-definition step_z_norm'' ("_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<N>(_)\<^esub> \<langle>_, _\<rangle>" [61,61,61,61] 61)
+definition step_z_norm'' (\<open>_ \<turnstile>'' \<langle>_, _\<rangle> \<leadsto>\<^bsub>\<N>(_)\<^esub> \<langle>_, _\<rangle>\<close> [61,61,61,61] 61)
 where
   "A \<turnstile>' \<langle>l, D\<rangle> \<leadsto>\<^bsub>\<N>(a)\<^esub> \<langle>l'', D''\<rangle> \<equiv>
   \<exists> l' D'. A \<turnstile> \<langle>l, D\<rangle> \<leadsto>\<^bsub>v,n,\<tau>\<^esub> \<langle>l', D'\<rangle> \<and> A \<turnstile> \<langle>l', D'\<rangle> \<leadsto>\<^bsub>\<N>(\<upharpoonleft>a)\<^esub> \<langle>l'', D''\<rangle>"
 
-abbreviation steps_z_norm' ("_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<N>* \<langle>_, _\<rangle>" [61,61,61] 61)
+abbreviation steps_z_norm' (\<open>_ \<turnstile> \<langle>_, _\<rangle> \<leadsto>\<^sub>\<N>* \<langle>_, _\<rangle>\<close> [61,61,61] 61)
 where
   "A \<turnstile> \<langle>l, D\<rangle> \<leadsto>\<^sub>\<N>* \<langle>l', D'\<rangle> \<equiv> (\<lambda> (l,D) (l',D'). \<exists> a. A \<turnstile>' \<langle>l, D\<rangle> \<leadsto>\<^bsub>\<N>(a)\<^esub> \<langle>l', D'\<rangle>)\<^sup>*\<^sup>* (l,D) (l',D')"
 

@@ -694,7 +694,7 @@ typedef ('a , 'b) boffa_mon = "{f :: 'a::{finite,monoid_mult}  \<Rightarrow> 'b:
   by auto
 
 notation
-  Rep_boffa_mon ("_\<^bsub>_\<^esub>")
+  Rep_boffa_mon (\<open>_\<^bsub>_\<^esub>\<close>)
 
 lemma "finite (range (Rep_boffa_mon M))"
   by (metis finite_code finite_imageI)
@@ -703,7 +703,7 @@ abbreviation boffa_pair :: "('a, 'b) boffa_mon \<Rightarrow> 'a::{finite,monoid_
   "boffa_pair x i j \<equiv> \<Sum> { x\<^bsub>k\<^esub> | k. i\<cdot>k = j}"
 
 notation
-  boffa_pair ("_\<^bsub>_,_\<^esub>")
+  boffa_pair (\<open>_\<^bsub>_,_\<^esub>\<close>)
 
 abbreviation conway_assms where
   "conway_assms x \<equiv> (\<forall> i j. (x\<^bsub>i \<^esub>\<cdot> x\<^bsub>j\<^esub> \<le> x\<^bsub>i\<cdot>j\<^esub>) \<and> (x\<^bsub>i,i\<^esub>)\<^sup>\<star> = x\<^bsub>i,i\<^esub>)"

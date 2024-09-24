@@ -11,7 +11,7 @@ locale CFG =
   fixes targetnode :: "'edge \<Rightarrow> 'node"
   fixes kind :: "'edge \<Rightarrow> ('var,'val,'ret,'pname) edge_kind"
   fixes valid_edge :: "'edge \<Rightarrow> bool"
-  fixes Entry::"'node" ("'('_Entry'_')")
+  fixes Entry::"'node" (\<open>'('_Entry'_')\<close>)
   fixes get_proc::"'node \<Rightarrow> 'pname"
   fixes get_return_edges::"'edge \<Rightarrow> 'edge set"
   fixes procs::"('pname \<times> 'var list \<times> 'var list) list"
@@ -189,7 +189,7 @@ lemma [simp]: "valid_edge a \<Longrightarrow> valid_node (targetnode a)"
 subsection \<open>CFG paths\<close>
 
 inductive path :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
-  ("_ -_\<rightarrow>* _" [51,0,0] 80)
+  (\<open>_ -_\<rightarrow>* _\<close> [51,0,0] 80)
 where 
   empty_path:"valid_node n \<Longrightarrow> n -[]\<rightarrow>* n"
 
@@ -410,7 +410,7 @@ qed
 subsubsection \<open>Intraprocedural paths\<close>
 
 definition intra_path :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool" 
-  ("_ -_\<rightarrow>\<^sub>\<iota>* _" [51,0,0] 80)
+  (\<open>_ -_\<rightarrow>\<^sub>\<iota>* _\<close> [51,0,0] 80)
 where "n -as\<rightarrow>\<^sub>\<iota>* n' \<equiv> n -as\<rightarrow>* n' \<and> (\<forall>a \<in> set as. intra_kind(kind a))"
 
 lemma intra_path_get_procs:
@@ -946,7 +946,7 @@ lemma valid_path_split:
 
 
 definition valid_path' :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool"
-  ("_ -_\<rightarrow>\<^sub>\<surd>* _" [51,0,0] 80)
+  (\<open>_ -_\<rightarrow>\<^sub>\<surd>* _\<close> [51,0,0] 80)
 where vp_def:"n -as\<rightarrow>\<^sub>\<surd>* n' \<equiv> n -as\<rightarrow>* n' \<and> valid_path as"
 
 
@@ -2742,7 +2742,7 @@ qed
 
 
 definition same_level_path' :: "'node \<Rightarrow> 'edge list \<Rightarrow> 'node \<Rightarrow> bool" 
-  ("_ -_\<rightarrow>\<^bsub>sl\<^esub>* _" [51,0,0] 80)
+  (\<open>_ -_\<rightarrow>\<^bsub>sl\<^esub>* _\<close> [51,0,0] 80)
 where slp_def:"n -as\<rightarrow>\<^bsub>sl\<^esub>* n' \<equiv> n -as\<rightarrow>* n' \<and> same_level_path as"
 
 lemma slp_vp: "n -as\<rightarrow>\<^bsub>sl\<^esub>* n' \<Longrightarrow> n -as\<rightarrow>\<^sub>\<surd>* n'"

@@ -14,7 +14,7 @@ theory ClassRel imports Decl begin
 \<comment> \<open>direct repeated subclass\<close>
 inductive_set
   subclsR :: "prog \<Rightarrow> (cname \<times> cname) set"
-  and subclsR' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sub>R _" [71,71,71] 70)
+  and subclsR' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sub>R _\<close> [71,71,71] 70)
   for P :: prog
 where
   "P \<turnstile> C \<prec>\<^sub>R D \<equiv> (C,D) \<in> subclsR P"
@@ -23,7 +23,7 @@ where
 \<comment> \<open>direct shared subclass\<close>
 inductive_set
   subclsS :: "prog \<Rightarrow> (cname \<times> cname) set"
-  and subclsS' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sub>S _" [71,71,71] 70)
+  and subclsS' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sub>S _\<close> [71,71,71] 70)
   for P :: prog
 where
   "P \<turnstile> C \<prec>\<^sub>S D \<equiv> (C,D) \<in> subclsS P"
@@ -32,14 +32,14 @@ where
  \<comment> \<open>direct subclass\<close>
 inductive_set
   subcls1 :: "prog \<Rightarrow> (cname \<times> cname) set"
-  and subcls1' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71,71,71] 70)
+  and subcls1' :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<prec>\<^sup>1 _\<close> [71,71,71] 70)
   for P :: prog
 where
   "P \<turnstile> C \<prec>\<^sup>1 D \<equiv> (C,D) \<in> subcls1 P"
 | subcls1I: "\<lbrakk>class P C = Some (Bs,rest); D \<in>  baseClasses Bs\<rbrakk> \<Longrightarrow> P \<turnstile> C \<prec>\<^sup>1 D"
 
 abbreviation
-  subcls    :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" ("_ \<turnstile> _ \<preceq>\<^sup>* _"  [71,71,71] 70) where
+  subcls    :: "prog \<Rightarrow> [cname, cname] \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<preceq>\<^sup>* _\<close>  [71,71,71] 70) where
   "P \<turnstile> C \<preceq>\<^sup>* D \<equiv> (C,D) \<in> (subcls1 P)\<^sup>*"
  
 

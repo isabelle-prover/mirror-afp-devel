@@ -1008,7 +1008,7 @@ lemma the_Exception_Result:
   "the_Exception (Result v) = default"
   by (simp add: the_Exception_def)
 
-syntax "_Res" :: "pttrn \<Rightarrow> pttrn" ("Res _")
+syntax "_Res" :: "pttrn \<Rightarrow> pttrn" (\<open>Res _\<close>)
 
 definition undefined_unit::"unit \<Rightarrow> 'b" where "undefined_unit x \<equiv> undefined"
 
@@ -1334,7 +1334,7 @@ where
     bind get_state (\<lambda>s. if C s then T else F)"
 
 notation (output)
-  condition  ("(condition (_)//  (_)//  (_))" [1000,1000,1000] 999)
+  condition  (\<open>(condition (_)//  (_)//  (_))\<close> [1000,1000,1000] 999)
 
 definition "when" ::"bool \<Rightarrow> ('e::default, unit, 's) spec_monad \<Rightarrow> ('e, unit, 's) spec_monad"
   where "when c f \<equiv> condition (\<lambda>_. c) f skip"
@@ -1376,12 +1376,12 @@ type_synonym ('e, 'a, 's) predicate = "('e, 'a) exception_or_result \<Rightarrow
 
 lift_definition runs_to ::
     "('e::default, 'a, 's) spec_monad \<Rightarrow> 's \<Rightarrow> ('e, 'a, 's) predicate \<Rightarrow> bool"
-    ("_/ \<bullet> _ \<lbrace> _ \<rbrace>" [61, 1000, 0] 30) \<comment> \<open>syntax \<open>_do_block\<close> has 62\<close>
+    (\<open>_/ \<bullet> _ \<lbrace> _ \<rbrace>\<close> [61, 1000, 0] 30) \<comment> \<open>syntax \<open>_do_block\<close> has 62\<close>
   is "\<lambda>f s Q. holds_post_state (\<lambda>(r, t). Q r t) (f s)" .
 
 lift_definition runs_to_partial ::
     "('e::default, 'a, 's) spec_monad \<Rightarrow> 's \<Rightarrow> ('e, 'a, 's) predicate \<Rightarrow> bool"
-    ("_/ \<bullet> _ ?\<lbrace> _ \<rbrace>" [61, 1000, 0] 30)
+    (\<open>_/ \<bullet> _ ?\<lbrace> _ \<rbrace>\<close> [61, 1000, 0] 30)
   is "\<lambda>f s Q. holds_partial_post_state (\<lambda>(r, t). Q r t) (f s)" .
 
 lift_definition refines ::
@@ -2201,7 +2201,7 @@ definition "finally" :: "('a, 'a, 's) exn_monad \<Rightarrow> ('a, 's) res_monad
 definition
   catch :: "('e, 'a, 's) exn_monad \<Rightarrow>
             ('e \<Rightarrow> ( 'f::default, 'a, 's) spec_monad) \<Rightarrow>
-            ('f::default, 'a, 's) spec_monad" (infix "<catch>" 10)
+            ('f::default, 'a, 's) spec_monad" (infix \<open><catch>\<close> 10)
 where
   "f <catch> handler \<equiv> bind_handle f return (handler o the)"
 
@@ -4194,7 +4194,7 @@ lemma runs_to_partial_whileLoop_exn:
   done
 
 notation (output)
-  whileLoop  ("(whileLoop (_)//  (_))" [1000, 1000] 1000)
+  whileLoop  (\<open>(whileLoop (_)//  (_))\<close> [1000, 1000] 1000)
 
 lemma whileLoop_mono: "b \<le> b' \<Longrightarrow> whileLoop c b i \<le> whileLoop c b' i"
   unfolding whileLoop_def

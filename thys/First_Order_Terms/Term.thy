@@ -98,12 +98,12 @@ lemma finite_Union_vars_term:
 text \<open>We define the evaluation of terms, under interpretation of function symbols and assignment of
   variables, as follows:\<close>
 
-fun eval_term ("_\<lbrakk>(2_)\<rbrakk>_" [999,1,100]100) where
+fun eval_term (\<open>_\<lbrakk>(2_)\<rbrakk>_\<close> [999,1,100]100) where
   "I\<lbrakk>Var x\<rbrakk>\<alpha> = \<alpha> x"
 | "I\<lbrakk>Fun f ss\<rbrakk>\<alpha> = I f [I\<lbrakk>s\<rbrakk>\<alpha>. s \<leftarrow> ss]"
 
-notation eval_term ("_\<lbrakk>(2_)\<rbrakk>" [999,1]100)
-notation eval_term ("_\<lbrakk>(2_)\<rbrakk>_" [999,1,100]100)
+notation eval_term (\<open>_\<lbrakk>(2_)\<rbrakk>\<close> [999,1]100)
+notation eval_term (\<open>_\<lbrakk>(2_)\<rbrakk>_\<close> [999,1,100]100)
 
 lemma eval_same_vars:
   assumes "\<forall>x \<in> vars_term s. \<alpha> x = \<beta> x"
@@ -128,7 +128,7 @@ text \<open>A substitution is a mapping \<open>\<sigma>\<close> from variables t
 type_synonym ('f, 'v, 'w) gsubst = "'v \<Rightarrow> ('f, 'w) term"
 type_synonym ('f, 'v) subst  = "('f, 'v, 'v) gsubst"
 
-abbreviation subst_apply_term :: "('f, 'v) term \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term"  (infixl "\<cdot>" 67)
+abbreviation subst_apply_term :: "('f, 'v) term \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term"  (infixl \<open>\<cdot>\<close> 67)
   where "subst_apply_term \<equiv> eval_term Fun"
 
 definition eval_subst ("_\<lbrakk>_\<rbrakk>\<^sub>s _" [999,1,100]100) where
@@ -139,7 +139,7 @@ lemma eval_subst: "I\<lbrakk>s\<cdot>\<theta>\<rbrakk>\<alpha> = I\<lbrakk>s\<rb
 
 abbreviation
   subst_compose :: "('f, 'u, 'v) gsubst \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'u, 'w) gsubst"
-  (infixl "\<circ>\<^sub>s" 75)
+  (infixl \<open>\<circ>\<^sub>s\<close> 75)
   where
     "\<sigma> \<circ>\<^sub>s \<theta> \<equiv> Fun\<lbrakk>\<sigma>\<rbrakk>\<^sub>s \<theta>"
 
@@ -378,7 +378,7 @@ type_synonym ('f, 'v) terms = "('f, 'v) term set"
 
 text \<open>Applying a substitution to every term of a given set.\<close>
 abbreviation
-  subst_apply_set :: "('f, 'v) terms \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) terms" (infixl "\<cdot>\<^sub>s\<^sub>e\<^sub>t" 60)
+  subst_apply_set :: "('f, 'v) terms \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) terms" (infixl \<open>\<cdot>\<^sub>s\<^sub>e\<^sub>t\<close> 60)
   where
     "T \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma> \<equiv> (\<lambda>t. t \<cdot> \<sigma>) ` T"
 

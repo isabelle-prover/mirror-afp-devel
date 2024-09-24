@@ -9,8 +9,8 @@ begin
 text \<open>This is a general-purpose theory for enrichments of Rel, which is still quite basic,
 but helpful for developing properties of multirelations.\<close>
 
-notation relcomp (infixl ";" 75)
-notation converse ("_\<^sup>\<smile>" [1000] 999)
+notation relcomp (infixl \<open>;\<close> 75)
+notation converse (\<open>_\<^sup>\<smile>\<close> [1000] 999)
 
 type_synonym ('a,'b) rel = "('a \<times> 'b) set"
 
@@ -132,7 +132,7 @@ subsection \<open>Inverse image and the diagonal and graph functors\<close>
 definition Invim :: "('a,'b) rel \<Rightarrow> 'b set \<Rightarrow> 'a set" where
   "Invim R = Image (R\<^sup>\<smile>)"
 
-definition Delta :: "'a set \<Rightarrow> ('a,'a) rel" ("\<Delta>") where
+definition Delta :: "'a set \<Rightarrow> ('a,'a) rel" (\<open>\<Delta>\<close>) where
   "\<Delta> P = {(p,p) |p. p \<in> P}"
 
 definition Grph :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a,'b) rel" where
@@ -151,16 +151,16 @@ definition dom :: "('a,'b) rel \<Rightarrow> ('a,'a) rel" where
 definition cod :: "('a,'b) rel \<Rightarrow> ('b,'b) rel" where
   "cod R = dom (R\<^sup>\<smile>)"
 
-definition rel_fdia :: "('a,'b) rel \<Rightarrow> ('b,'b) rel \<Rightarrow> ('a,'a) rel" ("(|_\<rangle>_)" [61,81] 82) where
+definition rel_fdia :: "('a,'b) rel \<Rightarrow> ('b,'b) rel \<Rightarrow> ('a,'a) rel" (\<open>(|_\<rangle>_)\<close> [61,81] 82) where
   "|R\<rangle> Q = dom (R ; dom Q)"
 
-definition rel_bdia :: "('a,'b) rel \<Rightarrow> ('a,'a) rel \<Rightarrow> ('b,'b) rel" ("(\<langle>_|_)" [61,81] 82) where
+definition rel_bdia :: "('a,'b) rel \<Rightarrow> ('a,'a) rel \<Rightarrow> ('b,'b) rel" (\<open>(\<langle>_|_)\<close> [61,81] 82) where
   "rel_bdia R = rel_fdia (R\<^sup>\<smile>)"
 
-definition rel_fbox :: "('a,'b) rel \<Rightarrow> ('b,'b) rel \<Rightarrow> ('a,'a) rel" ("(|_]_)" [61,81] 82) where
+definition rel_fbox :: "('a,'b) rel \<Rightarrow> ('b,'b) rel \<Rightarrow> ('a,'a) rel" (\<open>(|_]_)\<close> [61,81] 82) where
   "|R]Q = neg (dom (R ; neg (dom Q)))"
 
-definition rel_bbox :: "('a,'b) rel \<Rightarrow> ('a,'a) rel \<Rightarrow> ('b,'b) rel" ("([_|_)" [61,81] 82) where
+definition rel_bbox :: "('a,'b) rel \<Rightarrow> ('a,'a) rel \<Rightarrow> ('b,'b) rel" (\<open>([_|_)\<close> [61,81] 82) where
   "rel_bbox R = rel_fbox (R\<^sup>\<smile>)"
 
 lemma rel_bdia_def_var: "rel_bdia = rel_fdia \<circ> converse"
@@ -266,10 +266,10 @@ lemma bfox_bbox_conjugation: "(neg (dom Q) \<subseteq> |R] P) = (neg (dom P) \<s
 
 subsection \<open>Residuation\<close>
 
-definition lres :: "('a,'c) rel \<Rightarrow> ('b,'c) rel \<Rightarrow> ('a,'b) rel" (infixl "\<sslash>" 75)
+definition lres :: "('a,'c) rel \<Rightarrow> ('b,'c) rel \<Rightarrow> ('a,'b) rel" (infixl \<open>\<sslash>\<close> 75)
   where "R \<sslash> S = {(a,b). \<forall>c. (b,c) \<in> S \<longrightarrow> (a,c) \<in> R}"
 
-definition rres :: "('c,'a) rel \<Rightarrow> ('c,'b) rel \<Rightarrow> ('a,'b) rel" (infixl "\<setminus>" 75)
+definition rres :: "('c,'a) rel \<Rightarrow> ('c,'b) rel \<Rightarrow> ('a,'b) rel" (infixl \<open>\<setminus>\<close> 75)
   where "R \<setminus> S = {(b,a). \<forall>c. (c,b) \<in> R \<longrightarrow> (c,a) \<in> S}"
 
 lemma rres_lres_conv: "R \<setminus> S = (S\<^sup>\<smile> \<sslash> R\<^sup>\<smile>)\<^sup>\<smile>"
@@ -367,7 +367,7 @@ lemma dom_demod_var2: "( |R\<rangle> (Id \<inter> P) \<subseteq> Id \<inter> Q) 
 
 subsection \<open>Symmetric quotient\<close>
 
-definition syq :: "('c,'a) rel \<Rightarrow> ('c,'b) rel \<Rightarrow> ('a,'b) rel" (infixl "\<div>" 75)
+definition syq :: "('c,'a) rel \<Rightarrow> ('c,'b) rel \<Rightarrow> ('a,'b) rel" (infixl \<open>\<div>\<close> 75)
   where "R \<div> S = (R \<setminus> S) \<inter> (R\<^sup>\<smile> \<sslash> S\<^sup>\<smile>)"
 
 lemma syq_set: "R \<div> S = {(a,b). \<forall>c. (c,a) \<in> R \<longleftrightarrow> (c,b) \<in> S}"

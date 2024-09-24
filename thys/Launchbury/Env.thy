@@ -62,10 +62,10 @@ subsubsection \<open>Restriction\<close>
 definition env_restr :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::pcpo) \<Rightarrow> ('a \<Rightarrow> 'b)"
   where "env_restr S m = (\<lambda> x. if x \<in> S then m x else \<bottom>)"
 
-abbreviation env_restr_rev  (infixl "f|`"  110)
+abbreviation env_restr_rev  (infixl \<open>f|`\<close>  110)
   where "env_restr_rev m S \<equiv> env_restr S m"
 
-notation (latex output) env_restr_rev ("_|\<^bsub>_\<^esub>")
+notation (latex output) env_restr_rev (\<open>_|\<^bsub>_\<^esub>\<close>)
 
 lemma env_restr_empty_iff[simp]: "m f|` S = \<bottom> \<longleftrightarrow> edom m \<inter> S = {}"
   apply (auto simp add: edom_def env_restr_def lambda_strict[symmetric]  split:if_splits)
@@ -238,7 +238,7 @@ text \<open>
 We'd like to have some nice syntax for @{term "override_on"}.
 \<close>
 
-abbreviation override_on_syn ("_ ++\<^bsub>_\<^esub> _" [100, 0, 100] 100) where "f1 ++\<^bsub>S\<^esub> f2 \<equiv> override_on f1 f2 S"
+abbreviation override_on_syn (\<open>_ ++\<^bsub>_\<^esub> _\<close> [100, 0, 100] 100) where "f1 ++\<^bsub>S\<^esub> f2 \<equiv> override_on f1 f2 S"
 
 lemma override_on_bot[simp]:
   "\<bottom> ++\<^bsub>S\<^esub> m = m f|` S" 

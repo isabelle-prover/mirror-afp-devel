@@ -25,7 +25,7 @@ definition intruder_deduct_GSMP::
   "[('fun,'atom,'sets,'lbl) prot_terms,
     ('fun,'atom,'sets,'lbl) prot_terms,
     ('fun,'atom,'sets,'lbl) prot_term]
-    \<Rightarrow> bool" ("\<langle>_;_\<rangle> \<turnstile>\<^sub>G\<^sub>S\<^sub>M\<^sub>P _" 50)
+    \<Rightarrow> bool" (\<open>\<langle>_;_\<rangle> \<turnstile>\<^sub>G\<^sub>S\<^sub>M\<^sub>P _\<close> 50)
 where
   "\<langle>M; T\<rangle> \<turnstile>\<^sub>G\<^sub>S\<^sub>M\<^sub>P t \<equiv> intruder_deduct_restricted M (\<lambda>t. t \<in> GSMP T - (pubval_terms \<union> abs_terms)) t"
 
@@ -5478,13 +5478,13 @@ subsection \<open>Automatically Checking Protocol Security in a Typed Model\<clo
 context stateful_protocol_model
 begin
 
-definition abs_intruder_knowledge ("\<alpha>\<^sub>i\<^sub>k") where
+definition abs_intruder_knowledge (\<open>\<alpha>\<^sub>i\<^sub>k\<close>) where
   "\<alpha>\<^sub>i\<^sub>k S \<I> \<equiv> (ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<I>)"
 
-definition abs_value_constants ("\<alpha>\<^sub>v\<^sub>a\<^sub>l\<^sub>s") where
+definition abs_value_constants (\<open>\<alpha>\<^sub>v\<^sub>a\<^sub>l\<^sub>s\<close>) where
   "\<alpha>\<^sub>v\<^sub>a\<^sub>l\<^sub>s S \<I> \<equiv> {t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t S) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>. \<exists>n. t = Fun (Val n) []} \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<I>)"
 
-definition abs_term_implications ("\<alpha>\<^sub>t\<^sub>i") where
+definition abs_term_implications (\<open>\<alpha>\<^sub>t\<^sub>i\<close>) where
   "\<alpha>\<^sub>t\<^sub>i \<A> T \<theta> \<I> \<equiv> {(s,t) | s t x.
     s \<noteq> t \<and> x \<in> fv_transaction T \<and> x \<notin> set (transaction_fresh T) \<and>
     Fun (Abs s) [] = \<theta> x \<cdot> \<I> \<cdot>\<^sub>\<alpha> \<alpha>\<^sub>0 (db\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> \<I>) \<and>

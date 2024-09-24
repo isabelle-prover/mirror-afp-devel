@@ -161,7 +161,7 @@ text\<open>Value of a polynomial in a given valuation\<close>
 lift_definition valuate :: "linear_poly \<Rightarrow> 'a valuation \<Rightarrow> ('a::rational_vector)" is fun_valuate .
 
 syntax
-  "_valuate" :: "linear_poly \<Rightarrow> 'a valuation \<Rightarrow> 'a"    ("_ \<lbrace> _ \<rbrace>")
+  "_valuate" :: "linear_poly \<Rightarrow> 'a valuation \<Rightarrow> 'a"    (\<open>_ \<lbrace> _ \<rbrace>\<close>)
 syntax_consts
   "_valuate" == valuate
 translations

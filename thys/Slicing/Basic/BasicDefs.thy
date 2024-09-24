@@ -20,8 +20,8 @@ section \<open>Basic Definitions\<close>
 
 subsection\<open>Edge kinds\<close>
 
-datatype 'state edge_kind = Update "'state \<Rightarrow> 'state"           ("\<Up>_")
-                          | Predicate "'state \<Rightarrow> bool"      ("'(_')\<^sub>\<surd>")
+datatype 'state edge_kind = Update "'state \<Rightarrow> 'state"           (\<open>\<Up>_\<close>)
+                          | Predicate "'state \<Rightarrow> bool"      (\<open>'(_')\<^sub>\<surd>\<close>)
 
 
 subsection \<open>Transfer and predicate functions\<close>

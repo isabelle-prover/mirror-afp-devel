@@ -14,12 +14,12 @@ typedecl state
 type_synonym bexp = "state \<Rightarrow> bool"
 
 datatype com = Do "(state \<Rightarrow> state set)"
-             | Semi  com com            ("_; _"  [60, 60] 10)
-             | Cond  bexp com com     ("IF _ THEN _ ELSE _"  60)
-             | While bexp com           ("WHILE _ DO _"  60)
+             | Semi  com com            (\<open>_; _\<close>  [60, 60] 10)
+             | Cond  bexp com com     (\<open>IF _ THEN _ ELSE _\<close>  60)
+             | While bexp com           (\<open>WHILE _ DO _\<close>  60)
              | CALL
              | Local "(state \<Rightarrow> state)" com "(state \<Rightarrow> state \<Rightarrow> state)"
-               ("LOCAL _; _; _" [0,0,60] 60)
+               (\<open>LOCAL _; _; _\<close> [0,0,60] 60)
 
 text\<open>\noindent There is only one parameterless procedure in the program. Hence
 @{term CALL} does not even need to mention the procedure name. There
@@ -34,7 +34,7 @@ As before, command execution is described by transitions
 it requires no comment:\<close>
 
 inductive
-  exec :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"  ("_/ -_\<rightarrow>/ _" [50,0,50] 50)
+  exec :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"  (\<open>_/ -_\<rightarrow>/ _\<close> [50,0,50] 50)
 where
     Do:     "t \<in> f s \<Longrightarrow> s -Do f\<rightarrow> t"
 
@@ -94,7 +94,7 @@ n} is just passed around, except for procedure calls, where it is
 decremented:\<close>
 
 inductive
-  execn :: "state \<Rightarrow> com \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_-_\<rightarrow>/ _" [50,0,0,50] 50)
+  execn :: "state \<Rightarrow> com \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"   (\<open>_/ -_-_\<rightarrow>/ _\<close> [50,0,0,50] 50)
 where
   "t \<in> f s \<Longrightarrow> s -Do f-n\<rightarrow> t"
 

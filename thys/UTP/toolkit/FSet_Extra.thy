@@ -15,12 +15,12 @@ begin
 
 setup_lifting type_definition_fset
 
-notation fempty ("\<lbrace>\<rbrace>")
-notation fset ("\<langle>_\<rangle>\<^sub>f")
-notation fminus (infixl "-\<^sub>f" 65)
+notation fempty (\<open>\<lbrace>\<rbrace>\<close>)
+notation fset (\<open>\<langle>_\<rangle>\<^sub>f\<close>)
+notation fminus (infixl \<open>-\<^sub>f\<close> 65)
 
 syntax
-  "_FinFset" :: "args => 'a fset"    ("\<lbrace>(_)\<rbrace>")
+  "_FinFset" :: "args => 'a fset"    (\<open>\<lbrace>(_)\<rbrace>\<close>)
 syntax_consts
   "_FinFset" == finsert
 translations
@@ -29,10 +29,10 @@ translations
 
 term "fBall"
 
-definition FUnion :: "'a fset fset \<Rightarrow> 'a fset" ("\<Union>\<^sub>f_" [90] 90) where
+definition FUnion :: "'a fset fset \<Rightarrow> 'a fset" (\<open>\<Union>\<^sub>f_\<close> [90] 90) where
 "FUnion xs = Abs_fset (\<Union>x\<in>\<langle>xs\<rangle>\<^sub>f. \<langle>x\<rangle>\<^sub>f)"
 
-definition FInter :: "'a fset fset \<Rightarrow> 'a fset" ("\<Inter>\<^sub>f_" [90] 90) where
+definition FInter :: "'a fset fset \<Rightarrow> 'a fset" (\<open>\<Inter>\<^sub>f_\<close> [90] 90) where
 "FInter xs = Abs_fset (\<Inter>x\<in>\<langle>xs\<rangle>\<^sub>f. \<langle>x\<rangle>\<^sub>f)"
 
 text \<open>Finite power set\<close>

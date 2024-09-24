@@ -13,8 +13,8 @@ For the moment, we assume an oracle that generates uniformly distributed permuta
 instead of instantiating it with e.g. Fischer-Yates algorithm.
 \<close>
 
-no_notation (ASCII) comp  (infixl "o" 55)
-no_notation m_inv ("inv\<index> _" [81] 80)
+no_notation (ASCII) comp  (infixl \<open>o\<close> 55)
+no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
 
 no_adhoc_overloading Monad_Syntax.bind bind_pmf
 

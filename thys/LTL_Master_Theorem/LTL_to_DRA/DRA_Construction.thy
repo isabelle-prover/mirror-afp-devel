@@ -27,7 +27,7 @@ hide_const Sublist.prefix Sublist.suffix
 
 locale dra_construction = transition_functions eq normalise + quotient eq Rep Abs
   for
-    eq :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>" 75)
+    eq :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix \<open>\<sim>\<close> 75)
   and
     normalise :: "'a ltln \<Rightarrow> 'a ltln"
   and
@@ -38,19 +38,19 @@ begin
 
 subsection \<open>Lifting Setup\<close>
 
-abbreviation true\<^sub>n_lifted :: "'ltlq" ("\<up>true\<^sub>n") where
+abbreviation true\<^sub>n_lifted :: "'ltlq" (\<open>\<up>true\<^sub>n\<close>) where
   "\<up>true\<^sub>n \<equiv> Abs true\<^sub>n"
 
-abbreviation false\<^sub>n_lifted :: "'ltlq" ("\<up>false\<^sub>n") where
+abbreviation false\<^sub>n_lifted :: "'ltlq" (\<open>\<up>false\<^sub>n\<close>) where
   "\<up>false\<^sub>n \<equiv> Abs false\<^sub>n"
 
-abbreviation af_letter_lifted :: "'a set \<Rightarrow> 'ltlq \<Rightarrow> 'ltlq" ("\<up>afletter") where
+abbreviation af_letter_lifted :: "'a set \<Rightarrow> 'ltlq \<Rightarrow> 'ltlq" (\<open>\<up>afletter\<close>) where
   "\<up>afletter \<nu> \<phi> \<equiv> Abs (af_letter (Rep \<phi>) \<nu>)"
 
-abbreviation af_lifted :: "'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq" ("\<up>af") where
+abbreviation af_lifted :: "'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq" (\<open>\<up>af\<close>) where
   "\<up>af \<phi> w \<equiv> fold \<up>afletter w \<phi>"
 
-abbreviation GF_advice_lifted :: "'ltlq \<Rightarrow> 'a ltln set \<Rightarrow> 'ltlq" ("_\<up>[_]\<^sub>\<nu>" [90,60] 89) where
+abbreviation GF_advice_lifted :: "'ltlq \<Rightarrow> 'a ltln set \<Rightarrow> 'ltlq" (\<open>_\<up>[_]\<^sub>\<nu>\<close> [90,60] 89) where
   "\<phi>\<up>[X]\<^sub>\<nu> \<equiv> Abs ((Rep \<phi>)[X]\<^sub>\<nu>)"
 
 
@@ -67,11 +67,11 @@ lemma af_lifted_range:
   using af_lifted_semantics af_nested_prop_atoms by blast
 
 
-definition af_letter\<^sub>F_lifted :: "'a ltln \<Rightarrow> 'a set \<Rightarrow> 'ltlq \<Rightarrow> 'ltlq" ("\<up>afletter\<^sub>F")
+definition af_letter\<^sub>F_lifted :: "'a ltln \<Rightarrow> 'a set \<Rightarrow> 'ltlq \<Rightarrow> 'ltlq" (\<open>\<up>afletter\<^sub>F\<close>)
 where
   "\<up>afletter\<^sub>F \<phi> \<nu> \<psi> \<equiv> Abs (af_letter\<^sub>F \<phi> (Rep \<psi>) \<nu>)"
 
-definition af_letter\<^sub>G_lifted :: "'a ltln \<Rightarrow> 'a set \<Rightarrow> 'ltlq \<Rightarrow> 'ltlq" ("\<up>afletter\<^sub>G")
+definition af_letter\<^sub>G_lifted :: "'a ltln \<Rightarrow> 'a set \<Rightarrow> 'ltlq \<Rightarrow> 'ltlq" (\<open>\<up>afletter\<^sub>G\<close>)
 where
   "\<up>afletter\<^sub>G \<phi> \<nu> \<psi> \<equiv> Abs (af_letter\<^sub>G \<phi> (Rep \<psi>) \<nu>)"
 
@@ -83,11 +83,11 @@ lemma af_letter\<^sub>G_lifted_semantics:
   "\<up>afletter\<^sub>G \<phi> \<nu> (Abs \<psi>) = Abs (af_letter\<^sub>G \<phi> \<psi> \<nu>)"
   by (metis af_letter\<^sub>G_lifted_def Rep_inverse af_letter\<^sub>G_def af_letter_congruent Abs_eq)
 
-abbreviation af\<^sub>F_lifted :: "'a ltln \<Rightarrow> 'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq" ("\<up>af\<^sub>F")
+abbreviation af\<^sub>F_lifted :: "'a ltln \<Rightarrow> 'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq" (\<open>\<up>af\<^sub>F\<close>)
 where
   "\<up>af\<^sub>F \<phi> \<psi> w \<equiv> fold (\<up>afletter\<^sub>F \<phi>) w \<psi>"
 
-abbreviation af\<^sub>G_lifted :: "'a ltln \<Rightarrow> 'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq" ("\<up>af\<^sub>G")
+abbreviation af\<^sub>G_lifted :: "'a ltln \<Rightarrow> 'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq" (\<open>\<up>af\<^sub>G\<close>)
 where
   "\<up>af\<^sub>G \<phi> \<psi> w \<equiv> fold (\<up>afletter\<^sub>G \<phi>) w \<psi>"
 
@@ -100,13 +100,13 @@ lemma af\<^sub>G_lifted_semantics:
   by (induction w rule: rev_induct) (auto simp: af_letter\<^sub>G_lifted_semantics)
 
 
-definition af_letter\<^sub>\<nu>_lifted :: "'a ltln set \<Rightarrow> 'a set \<Rightarrow> 'ltlq \<times> 'ltlq \<Rightarrow> 'ltlq \<times> 'ltlq" ("\<up>afletter\<^sub>\<nu>")
+definition af_letter\<^sub>\<nu>_lifted :: "'a ltln set \<Rightarrow> 'a set \<Rightarrow> 'ltlq \<times> 'ltlq \<Rightarrow> 'ltlq \<times> 'ltlq" (\<open>\<up>afletter\<^sub>\<nu>\<close>)
 where
   "\<up>afletter\<^sub>\<nu> X \<nu> p \<equiv>
     (Abs (fst (af_letter\<^sub>\<nu> X (Rep (fst p), Rep (snd p)) \<nu>)),
      Abs (snd (af_letter\<^sub>\<nu> X (Rep (fst p), Rep (snd p)) \<nu>)))"
 
-abbreviation af\<^sub>\<nu>_lifted :: "'a ltln set \<Rightarrow> 'ltlq \<times> 'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq \<times> 'ltlq" ("\<up>af\<^sub>\<nu>")
+abbreviation af\<^sub>\<nu>_lifted :: "'a ltln set \<Rightarrow> 'ltlq \<times> 'ltlq \<Rightarrow> 'a set list \<Rightarrow> 'ltlq \<times> 'ltlq" (\<open>\<up>af\<^sub>\<nu>\<close>)
 where
   "\<up>af\<^sub>\<nu> X p w \<equiv> fold (\<up>afletter\<^sub>\<nu> X) w p"
 

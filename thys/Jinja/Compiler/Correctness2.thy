@@ -18,11 +18,11 @@ instructions from a program given the class, method and program
 counter.\<close>
 
 definition before :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr list \<Rightarrow> bool"
-   ("(_,_,_,_/ \<rhd> _)" [51,0,0,0,51] 50) where
+   (\<open>(_,_,_,_/ \<rhd> _)\<close> [51,0,0,0,51] 50) where
  "P,C,M,pc \<rhd> is \<longleftrightarrow> prefix is (drop pc (instrs_of P C M))"
 
 definition at :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr \<Rightarrow> bool"
-   ("(_,_,_,_/ \<triangleright> _)" [51,0,0,0,51] 50) where
+   (\<open>(_,_,_,_/ \<triangleright> _)\<close> [51,0,0,0,51] 50) where
  "P,C,M,pc \<triangleright> i \<longleftrightarrow> (\<exists>is. drop pc (instrs_of P C M) = i#is)"
 
 lemma [simp]: "P,C,M,pc \<rhd> []"
@@ -197,12 +197,12 @@ definition caught :: "jvm_prog \<Rightarrow> pc \<Rightarrow> heap \<Rightarrow>
   (\<exists>entry \<in> set xt. matches_ex_entry P (cname_of h a) pc entry)"
 
 definition beforex :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"
-              ("(2_,/_,/_ \<rhd>/ _ /'/ _,/_)" [51,0,0,0,0,51] 50) where
+              (\<open>(2_,/_,/_ \<rhd>/ _ /'/ _,/_)\<close> [51,0,0,0,0,51] 50) where
   "P,C,M \<rhd> xt / I,d \<longleftrightarrow>
   (\<exists>xt\<^sub>0 xt\<^sub>1. ex_table_of P C M = xt\<^sub>0 @ xt @ xt\<^sub>1 \<and> pcs xt\<^sub>0 \<inter> I = {} \<and> pcs xt \<subseteq> I \<and>
     (\<forall>pc \<in> I. \<forall>C pc' d'. match_ex_table P C pc xt\<^sub>1 = \<lfloor>(pc',d')\<rfloor> \<longrightarrow> d' \<le> d))"
 
-definition dummyx :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"  ("(2_,_,_ \<triangleright>/ _ '/_,_)" [51,0,0,0,0,51] 50) where
+definition dummyx :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ex_table \<Rightarrow> nat set \<Rightarrow> nat \<Rightarrow> bool"  (\<open>(2_,_,_ \<triangleright>/ _ '/_,_)\<close> [51,0,0,0,0,51] 50) where
   "P,C,M \<triangleright> xt/I,d \<longleftrightarrow> P,C,M \<rhd> xt/I,d"
 
 abbreviation

@@ -33,7 +33,7 @@ class ceuclidean_space = complex_inner +
   assumes ceuclidean_all_zero_iff:
     "(\<forall>u\<in>CBasis. cinner x u = 0) \<longleftrightarrow> (x = 0)"
 
-syntax "_type_cdimension" :: "type \<Rightarrow> nat"  ("(1CDIM/(1'(_')))")
+syntax "_type_cdimension" :: "type \<Rightarrow> nat"  (\<open>(1CDIM/(1'(_')))\<close>)
 syntax_consts "_type_cdimension" \<rightleftharpoons> card
 translations "CDIM('a)" \<rightharpoonup> "CONST card (CONST CBasis :: 'a set)"
 typed_print_translation \<open>

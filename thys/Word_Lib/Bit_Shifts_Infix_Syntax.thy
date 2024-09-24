@@ -15,14 +15,14 @@ begin
 context semiring_bit_operations
 begin
 
-definition shiftl :: \<open>'a \<Rightarrow> nat \<Rightarrow> 'a\<close>  (infixl "<<" 55)
+definition shiftl :: \<open>'a \<Rightarrow> nat \<Rightarrow> 'a\<close>  (infixl \<open><<\<close> 55)
   where [code_unfold]: \<open>a << n = push_bit n a\<close>
 
 lemma bit_shiftl_iff [bit_simps]:
   \<open>bit (a << m) n \<longleftrightarrow> m \<le> n \<and> possible_bit TYPE('a) n \<and> bit a (n - m)\<close>
   by (simp add: shiftl_def bit_simps)
 
-definition shiftr :: \<open>'a \<Rightarrow> nat \<Rightarrow> 'a\<close>  (infixl ">>" 55)
+definition shiftr :: \<open>'a \<Rightarrow> nat \<Rightarrow> 'a\<close>  (infixl \<open>>>\<close> 55)
   where [code_unfold]: \<open>a >> n = drop_bit n a\<close>
 
 lemma bit_shiftr_eq [bit_simps]:

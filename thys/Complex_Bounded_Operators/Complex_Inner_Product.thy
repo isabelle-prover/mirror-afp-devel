@@ -372,11 +372,11 @@ abbreviation is_orthogonal::\<open>'a::complex_inner \<Rightarrow> 'a \<Rightarr
   \<open>is_orthogonal x y \<equiv> x \<bullet>\<^sub>C y = 0\<close>
 
 bundle orthogonal_notation begin
-notation is_orthogonal (infixl "\<bottom>" 69)
+notation is_orthogonal (infixl \<open>\<bottom>\<close> 69)
 end
 
 bundle no_orthogonal_notation begin
-no_notation is_orthogonal (infixl "\<bottom>" 69)
+no_notation is_orthogonal (infixl \<open>\<bottom>\<close> 69)
 end
 
 
@@ -2305,7 +2305,7 @@ lemma cadjoint_univ_prop':
   shows \<open>x \<bullet>\<^sub>C cadjoint G y = G x \<bullet>\<^sub>C y\<close>
   by (metis cadjoint_univ_prop assms cinner_commute')
 
-notation cadjoint ("_\<^sup>\<dagger>" [99] 100)
+notation cadjoint (\<open>_\<^sup>\<dagger>\<close> [99] 100)
 
 lemma cadjoint_eqI:
   fixes G:: \<open>'b::complex_inner \<Rightarrow> 'a::complex_inner\<close>

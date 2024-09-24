@@ -7,8 +7,8 @@ begin
 
 locale poset_on =
   fixes P :: "'b set"
-  fixes P_lesseq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<le>\<^sup>P" 60) 
-  fixes P_less :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "<\<^sup>P" 60)
+  fixes P_lesseq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<le>\<^sup>P\<close> 60) 
+  fixes P_less :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open><\<^sup>P\<close> 60)
   assumes not_empty [simp]: "P \<noteq> \<emptyset>"
   and reflex: "reflp_on P (\<le>\<^sup>P)"
   and antisymm: "antisymp_on P (\<le>\<^sup>P)"
@@ -25,12 +25,12 @@ lemma strict_trans:
 end
 
 locale bot_poset_on = poset_on +
-  fixes bot :: "'b" ("0\<^sup>P")
+  fixes bot :: "'b" (\<open>0\<^sup>P\<close>)
   assumes bot_closed: "0\<^sup>P \<in> P"
   and bot_first: "x \<in> P \<Longrightarrow> 0\<^sup>P \<le>\<^sup>P x"
 
 locale top_poset_on = poset_on +
-  fixes top :: "'b" ("1\<^sup>P")
+  fixes top :: "'b" (\<open>1\<^sup>P\<close>)
   assumes top_closed: "1\<^sup>P \<in> P"
   and top_last: "x \<in> P \<Longrightarrow> x \<le>\<^sup>P 1\<^sup>P"
 

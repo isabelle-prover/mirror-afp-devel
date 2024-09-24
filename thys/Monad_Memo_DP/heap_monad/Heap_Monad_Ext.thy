@@ -9,13 +9,13 @@ definition fun_app_lifted :: "('a \<Rightarrow> 'b Heap) Heap \<Rightarrow> 'a H
 
 bundle heap_monad_syntax begin
 
-notation fun_app_lifted (infixl "." 999)
-type_synonym ('a, 'b) fun_lifted = "'a \<Rightarrow> 'b Heap" ("_ ==H\<Longrightarrow> _" [3,2] 2)
-type_notation Heap ("[_]")
+notation fun_app_lifted (infixl \<open>.\<close> 999)
+type_synonym ('a, 'b) fun_lifted = "'a \<Rightarrow> 'b Heap" (\<open>_ ==H\<Longrightarrow> _\<close> [3,2] 2)
+type_notation Heap (\<open>[_]\<close>)
 
-notation Heap_Monad.return ("\<langle>_\<rangle>")
-notation (ASCII) Heap_Monad.return ("(#_#)")
-notation Transfer.Rel ("Rel")
+notation Heap_Monad.return (\<open>\<langle>_\<rangle>\<close>)
+notation (ASCII) Heap_Monad.return (\<open>(#_#)\<close>)
+notation Transfer.Rel (\<open>Rel\<close>)
 
 end
 

@@ -9,10 +9,10 @@ type_synonym state = "vname \<Rightarrow> val"
 
 text \<open>We introduce some syntax for the null state, and a state where only certain 
   variables are set.\<close>
-definition null_state ("<>") where
+definition null_state (\<open><>\<close>) where
   "null_state \<equiv> \<lambda>x. \<lambda>i. 0"
 syntax 
-  "_State" :: "updbinds => 'a" ("<_>")
+  "_State" :: "updbinds => 'a" (\<open><_>\<close>)
 translations
   "_State ms" == "_Update <> ms"
   "_State (_updbinds b bs)" <= "_Update (_State b) bs"
@@ -21,7 +21,7 @@ subsubsection \<open>State Combination\<close>
 text \<open>The state combination operator constructs a state by 
   taking the local variables from one state, and the globals from another state.\<close>
 
-definition combine_states :: "state \<Rightarrow> state \<Rightarrow> state" ("<_|_>" [0,0] 1000)
+definition combine_states :: "state \<Rightarrow> state \<Rightarrow> state" (\<open><_|_>\<close> [0,0] 1000)
   where "<s|t> n = (if is_local n then s n else t n)"
 
 text \<open>We prove some basic facts. 
@@ -89,7 +89,7 @@ text \<open>The big-step semantics is a relation from commands and start states 
 \<close>
 
 inductive big_step :: "program \<Rightarrow> com \<times> state \<Rightarrow> state \<Rightarrow> bool" 
-  ("_: _ \<Rightarrow> _" [1000,55,55] 55)
+  (\<open>_: _ \<Rightarrow> _\<close> [1000,55,55] 55)
 where
   \<comment> \<open>No-Op\<close>
   Skip: "\<pi>:(SKIP,s) \<Rightarrow> s" 
@@ -203,7 +203,7 @@ subsection \<open>Command Equivalence\<close>
 
 text \<open>Two commands are equivalent if they have the same semantics.\<close>
 definition
-  equiv_c :: "com \<Rightarrow> com \<Rightarrow> bool" (infix "\<sim>" 50) where
+  equiv_c :: "com \<Rightarrow> com \<Rightarrow> bool" (infix \<open>\<sim>\<close> 50) where
   "c \<sim> c' \<equiv> (\<forall>\<pi> s t. \<pi>:(c,s) \<Rightarrow> t  = \<pi>:(c',s) \<Rightarrow> t)"
 
 lemma equivI[intro?]: "\<lbrakk>

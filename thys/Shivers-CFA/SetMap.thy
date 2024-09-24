@@ -21,20 +21,20 @@ lemma sranI: "b \<in> m a \<Longrightarrow> b \<in> sran m"
 lemma sdom_not_mem[elim]: "a \<notin> sdom m \<Longrightarrow> m a = {}"
   by (auto simp: sdom_def)
 
-definition smap_empty ("{}.")
+definition smap_empty (\<open>{}.\<close>)
  where "{}. k = {}"
 
-definition smap_union :: "('a::type \<Rightarrow> 'b::type set)  \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set)" ("_ \<union>. _")
+definition smap_union :: "('a::type \<Rightarrow> 'b::type set)  \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set)" (\<open>_ \<union>. _\<close>)
  where "smap1 \<union>. smap2 k =  smap1 k \<union> smap2 k"
 
-primrec smap_Union :: "('a::type \<Rightarrow> 'b::type set) list \<Rightarrow> 'a \<Rightarrow> 'b set" ("\<Union>._")
+primrec smap_Union :: "('a::type \<Rightarrow> 'b::type set) list \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>\<Union>._\<close>)
   where [simp]:"\<Union>. [] = {}."
       | "\<Union>. (m#ms) = m  \<union>. \<Union>. ms"
 
-definition smap_singleton :: "'a::type \<Rightarrow> 'b::type set \<Rightarrow> 'a \<Rightarrow> 'b set" ("{ _ := _}.")
+definition smap_singleton :: "'a::type \<Rightarrow> 'b::type set \<Rightarrow> 'a \<Rightarrow> 'b set" (\<open>{ _ := _}.\<close>)
   where "{k := vs}. = {}. (k := vs)"
 
-definition smap_less :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool" ("_/ \<subseteq>. _" [50, 51] 50)
+definition smap_less :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool" (\<open>_/ \<subseteq>. _\<close> [50, 51] 50)
   where "smap_less m1 m2 = (\<forall>k. m1 k \<subseteq> m2 k)"
 
 lemma sdom_empty[simp]: "sdom {}. = {}"

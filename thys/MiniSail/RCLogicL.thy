@@ -1325,7 +1325,7 @@ so that we can obtain from a valuation i, that gives values like the first smt v
 the second.
 \<close>
 
-inductive  boxed_b :: "\<Theta> \<Rightarrow> rcl_val \<Rightarrow> b \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> rcl_val \<Rightarrow> bool"   ( " _  \<turnstile> _ ~ _ [ _ ::= _ ] \<setminus> _ " [50,50] 50) where    
+inductive  boxed_b :: "\<Theta> \<Rightarrow> rcl_val \<Rightarrow> b \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> rcl_val \<Rightarrow> bool"   ( \<open> _  \<turnstile> _ ~ _ [ _ ::= _ ] \<setminus> _ \<close> [50,50] 50) where    
   boxed_b_BVar1I:  "\<lbrakk> bv = bv' ;  wfRCV P s b \<rbrakk> \<Longrightarrow> boxed_b P s (B_var bv') bv b (SUt s)"
 | boxed_b_BVar2I:  "\<lbrakk> bv \<noteq> bv'; wfRCV P s  (B_var bv')  \<rbrakk> \<Longrightarrow> boxed_b P s (B_var bv') bv b s"
 | boxed_b_BIntI:"wfRCV P s B_int \<Longrightarrow> boxed_b P s B_int _ _ s"
@@ -1425,7 +1425,7 @@ lemma subst_b_var:
 text \<open>Here the valuation i' is the conv wrap version of i. For every x in G, i' x is the conv wrap version of i x.
 The next lemma for a clearer explanation of what this is. i produces values of sort b[bv::=b'] and i' produces values of sort b\<close>
 
-inductive boxed_i :: "\<Theta> \<Rightarrow> \<Gamma> \<Rightarrow> b \<Rightarrow> bv \<Rightarrow> valuation \<Rightarrow> valuation \<Rightarrow> bool"  ( " _  ; _ ; _ , _ \<turnstile> _ \<approx> _" [50,50] 50) where
+inductive boxed_i :: "\<Theta> \<Rightarrow> \<Gamma> \<Rightarrow> b \<Rightarrow> bv \<Rightarrow> valuation \<Rightarrow> valuation \<Rightarrow> bool"  ( \<open> _  ; _ ; _ , _ \<turnstile> _ \<approx> _\<close> [50,50] 50) where
   boxed_i_GNilI:  "\<Theta> ; GNil ; b , bv  \<turnstile> i \<approx> i"
 | boxed_i_GConsI: "\<lbrakk> Some s = i x;  boxed_b \<Theta> s b bv b' s' ;  \<Theta> ; \<Gamma> ; b' , bv \<turnstile> i \<approx> i' \<rbrakk> \<Longrightarrow> \<Theta> ; ((x,b,c)#\<^sub>\<Gamma>\<Gamma>) ; b' , bv \<turnstile> i \<approx> (i'(x \<mapsto> s'))"
 equivariance boxed_i

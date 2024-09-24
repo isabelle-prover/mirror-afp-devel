@@ -40,19 +40,19 @@ text \<open>This problem can be avoided by introducing a null individual @{term 
 reference of non-denoting definite descriptions, as follows:\<close>
 
 typedecl i \<comment> \<open>the type of individuals\<close>
-consts n:: "i" ("n") \<comment> \<open>the null individual\<close>
+consts n:: "i" (\<open>n\<close>) \<comment> \<open>the null individual\<close>
 
 text \<open>Then the universal and particular quantifiers can be restricted to
 individuals excluding the null-individual as follows, where the new free quantifiers
 are distinguished from the classical quantifiers by bold type:\<close>
-abbreviation universal_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool" ("\<^bold>\<forall>") 
+abbreviation universal_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (\<open>\<^bold>\<forall>\<close>) 
   where "\<^bold>\<forall> \<phi> \<equiv> \<forall>x::i. (\<not> x = n \<longrightarrow> \<phi> x)"
-abbreviation universal_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<^bold>\<forall>" [8] 9)
+abbreviation universal_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder \<open>\<^bold>\<forall>\<close> [8] 9)
   where "\<^bold>\<forall> x. \<phi> x \<equiv> \<^bold>\<forall> \<phi>"
 
-abbreviation particular_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool" ("\<^bold>\<exists>")
+abbreviation particular_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (\<open>\<^bold>\<exists>\<close>)
   where "\<^bold>\<exists> \<phi> \<equiv> \<exists>x::i. (x \<noteq> n \<and> \<phi> x)"
-abbreviation particular_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<^bold>\<exists>" [8] 9)
+abbreviation particular_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder \<open>\<^bold>\<exists>\<close> [8] 9)
   where "\<^bold>\<exists> x. \<phi> x \<equiv> \<^bold>\<exists> \<phi>"    
 text \<open>Note that the quantifiers here range over both existent and non-existent individuals, whereas 
 the quantifiers in \<^cite>\<open>"benzmuller_automating_2016"\<close> range only over existent individuals.\<close>
@@ -61,15 +61,15 @@ text \<open>In the free logic employed by Oppenheimer and Zalta, statements of i
 do not denote are always false \<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 511. So the domain of the identity
 relation should be restricted to exclude the null-individual:\<close>
 
-abbreviation identity:: "i \<Rightarrow> i \<Rightarrow> bool" ("is")
+abbreviation identity:: "i \<Rightarrow> i \<Rightarrow> bool" (\<open>is\<close>)
   where "is x y \<equiv> x \<noteq> n \<and> x = y"
-abbreviation identity_syntax:: "i \<Rightarrow> i \<Rightarrow> bool" (infix "\<^bold>=" 50 )
+abbreviation identity_syntax:: "i \<Rightarrow> i \<Rightarrow> bool" (infix \<open>\<^bold>=\<close> 50 )
   where "x \<^bold>= y \<equiv> is x y"
 
 text \<open>Once identity is introduced, the uniqueness quantifier can then be defined in the usual way:\<close>
-abbreviation uniqueness_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool" ("unique")
+abbreviation uniqueness_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (\<open>unique\<close>)
  where "unique \<phi> \<equiv> (\<^bold>\<exists> x::i. \<phi> x \<and> (\<^bold>\<forall> y::i. \<phi> y \<longrightarrow> x \<^bold>= y))"
-abbreviation uniqueness_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder "unique" [8] 9)
+abbreviation uniqueness_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder \<open>unique\<close> [8] 9)
   where "unique x. \<phi> x \<equiv> unique \<phi>"
 
 text \<open>Finally, the logic employed by Oppenheimer and Zalta is a negative free logic, in that
@@ -78,7 +78,7 @@ applications of atomic predicates to non-denoting terms are always false
 distinguishing between atomic and non-atomic predicates, and to introduce an axiom stipulating that
 no atomic predicate is true of the null individual:\<close>
 
-consts atomic_predicates:: "(i \<Rightarrow> bool) \<Rightarrow> bool " ("atomic")
+consts atomic_predicates:: "(i \<Rightarrow> bool) \<Rightarrow> bool " (\<open>atomic\<close>)
 axiomatization where negativity_constraint: "atomic \<phi> \<Longrightarrow> \<not> \<phi> n"
 
 text \<open>In addition, it has to be stated that identity is atomic:\<close>
@@ -93,8 +93,8 @@ section \<open>Definite Descriptions\<close>
 text \<open>The main idea of Oppenheimer and Zalta's reconstruction of the ontological argument is to
 treat definite descriptions as genuine singular terms, which leads to the following syntax in
 Isabelle/HOL:\<close>
-consts definite_description:: "(i \<Rightarrow> bool) \<Rightarrow> i" ("\<^bold>\<tau>")
-abbreviation description_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder "\<^bold>\<tau>" [8] 9)
+consts definite_description:: "(i \<Rightarrow> bool) \<Rightarrow> i" (\<open>\<^bold>\<tau>\<close>)
+abbreviation description_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder \<open>\<^bold>\<tau>\<close> [8] 9)
 where "\<^bold>\<tau> x. \<phi> x \<equiv> \<^bold>\<tau> \<phi>"
 
 text \<open>In Oppenheimer and Zalta's reconstruction of the argument, definite descriptions
@@ -128,16 +128,16 @@ whereas the first two theorems depend only on the atomicity of identity.\<close>
 section \<open>Anselm's Argument\<close>
 
 text \<open>The argument proper employs the following non-logical vocabulary:\<close>
-consts existence:: "i \<Rightarrow> bool" ("E") \<comment> \<open>exists in reality\<close>
-consts greater_than:: "i\<Rightarrow>i\<Rightarrow>bool" ("G") \<comment> \<open>is greater than\<close>
-consts conceivable:: "i\<Rightarrow>bool" ("C") \<comment> \<open>exists in the understanding\<close>
+consts existence:: "i \<Rightarrow> bool" (\<open>E\<close>) \<comment> \<open>exists in reality\<close>
+consts greater_than:: "i\<Rightarrow>i\<Rightarrow>bool" (\<open>G\<close>) \<comment> \<open>is greater than\<close>
+consts conceivable:: "i\<Rightarrow>bool" (\<open>C\<close>) \<comment> \<open>exists in the understanding\<close>
 text \<open>Note that @{term "E a"} is not intended by Oppenheimer and Zalta to be equivalent to
 @{term "\<^bold>\<exists> x. a = x"} since according to their reading of the argument, some things do not exist
 in reality \<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 514.\<close>
 
 text \<open>Finally, the presentation of the argument is simplified by introducing
 the following abbreviation for the predicate `is a being greater than which none can be conceived':\<close>
-abbreviation none_greater_than :: "i\<Rightarrow>bool" ("\<Phi>")
+abbreviation none_greater_than :: "i\<Rightarrow>bool" (\<open>\<Phi>\<close>)
 where "\<Phi> x \<equiv> (C x \<and> \<not>(\<^bold>\<exists> y. G y x \<and> C y))"
   
 text \<open>With this vocabulary in place, a name for God can be introduced as an abbreviation

@@ -16,7 +16,7 @@ subsection \<open>Definitions and Basic Properties\<close>
 text \<open>The approach follows the Compendium of Continuous Lattices~\<^cite>\<open>"GierzHKLMS80"\<close>, without attempting completeness. 
 First, left and right adjoints of a Galois connection are defined.\<close>
 
-definition adj :: "('a::ord \<Rightarrow> 'b::ord) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool" (infixl "\<stileturn>" 70) where 
+definition adj :: "('a::ord \<Rightarrow> 'b::ord) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool" (infixl \<open>\<stileturn>\<close> 70) where 
   "(f \<stileturn> g) = (\<forall>x y. (f x \<le> y) = (x \<le> g y))"
 
 definition "ladj (g::'a::Inf \<Rightarrow> 'b::ord) = (\<lambda>x. \<Sqinter>{y. x \<le> g y})"

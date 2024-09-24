@@ -7,7 +7,7 @@ theory Instance_Secret_IMem_Inp
 begin                                                                            
 
 text "Using the following notation to denote an undefined element"
-no_notation bot ("\<bottom>")
+no_notation bot (\<open>\<bottom>\<close>)
 
 definition ffile :: "vname" where "ffile = ''ffile''"
 definition xx :: "vname" where "xx = ''x''"

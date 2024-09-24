@@ -113,7 +113,7 @@ text \<open>The Store interface consists of five functions:
 \<open>update\<close> to change the value that is stored at a location.
 \<close>
 
-consts access:: "Store \<Rightarrow> Location \<Rightarrow> Value"  ("_@@_" [71,71] 70)     
+consts access:: "Store \<Rightarrow> Location \<Rightarrow> Value"  (\<open>_@@_\<close> [71,71] 70)     
        alive:: "Value \<Rightarrow> Store \<Rightarrow> bool"
        alloc:: "Store \<Rightarrow> New \<Rightarrow> Store" 
        new:: "Store \<Rightarrow> New \<Rightarrow> Value"
@@ -121,11 +121,11 @@ consts access:: "Store \<Rightarrow> Location \<Rightarrow> Value"  ("_@@_" [71,
        
 nonterminal smodifybinds and smodifybind
 syntax
-  "_smodifybind" :: "['a, 'a]     \<Rightarrow> smodifybind" ("(2_ :=/ _)")
-  ""         :: "smodifybind \<Rightarrow> smodifybinds"     ("_")
-  ""         :: "CTypeId \<Rightarrow> smodifybind"          ("_")
-  "_smodifybinds":: "[smodifybind, smodifybinds] => smodifybinds" ("_,/ _")
-  "_sModify"  :: "['a, smodifybinds] \<Rightarrow> 'a"       ("_/\<langle>(_)\<rangle>" [900,0] 900)
+  "_smodifybind" :: "['a, 'a]     \<Rightarrow> smodifybind" (\<open>(2_ :=/ _)\<close>)
+  ""         :: "smodifybind \<Rightarrow> smodifybinds"     (\<open>_\<close>)
+  ""         :: "CTypeId \<Rightarrow> smodifybind"          (\<open>_\<close>)
+  "_smodifybinds":: "[smodifybind, smodifybinds] => smodifybinds" (\<open>_,/ _\<close>)
+  "_sModify"  :: "['a, smodifybinds] \<Rightarrow> 'a"       (\<open>_/\<langle>(_)\<rangle>\<close> [900,0] 900)
 translations
   "_sModify s (_smodifybinds b bs)"  == "_sModify (_sModify s b) bs"
   "s\<langle>x:=y\<rangle>"                          == "CONST update s x y"

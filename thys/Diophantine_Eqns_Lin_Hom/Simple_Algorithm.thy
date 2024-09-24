@@ -16,7 +16,7 @@ lemma concat_map_nth0: "xs \<noteq> [] \<Longrightarrow> f (xs ! 0) \<noteq> [] 
 
 subsection \<open>Reverse-Lexicographic Enumeration of Potential Minimal Solutions\<close>
 
-fun rlex2 :: "(nat list \<times> nat list) \<Rightarrow> (nat list \<times> nat list) \<Rightarrow> bool"  (infix "<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2" 50)
+fun rlex2 :: "(nat list \<times> nat list) \<Rightarrow> (nat list \<times> nat list) \<Rightarrow> bool"  (infix \<open><\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2\<close> 50)
   where
     "(xs, ys) <\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2 (us, vs) \<longleftrightarrow> xs @ ys <\<^sub>r\<^sub>l\<^sub>e\<^sub>x us @ vs"
 

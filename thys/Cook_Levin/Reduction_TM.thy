@@ -5167,7 +5167,7 @@ text \<open>
 This is the function, in terms of bit strings, that maps $x$ to $\Phi$.
 \<close>
 
-definition freduce :: "string \<Rightarrow> string" ("f\<^bsub>reduce\<^esub>") where
+definition freduce :: "string \<Rightarrow> string" (\<open>f\<^bsub>reduce\<^esub>\<close>) where
   "f\<^bsub>reduce\<^esub> x \<equiv> formula_to_string (reduction_sat_x.PHI M G p x)"
 
 text \<open>

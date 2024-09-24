@@ -9,9 +9,9 @@ imports Tensor_Product
 begin
 
 text \<open>This symbol is used for the Tensor product:\<close>
-no_notation Group.monoid.mult (infixl "\<otimes>\<index>" 70)
+no_notation Group.monoid.mult (infixl \<open>\<otimes>\<index>\<close> 70)
 
-notation Matrix.unit_vec ("unit\<^sub>v")
+notation Matrix.unit_vec (\<open>unit\<^sub>v\<close>)
 hide_const (open) Matrix.unit_vec 
 
 

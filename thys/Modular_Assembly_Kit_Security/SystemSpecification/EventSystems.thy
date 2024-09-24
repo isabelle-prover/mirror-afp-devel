@@ -11,22 +11,22 @@ record 'e ES_rec =
 
 (* syntax abbreviations for ES_rec *)
 abbreviation ESrecEES :: "'e ES_rec \<Rightarrow> 'e set"
-("E\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>E\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "E\<^bsub>ES\<^esub> \<equiv> (E_ES ES)"
 
 abbreviation ESrecIES :: "'e ES_rec \<Rightarrow> 'e set"
-("I\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>I\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "I\<^bsub>ES\<^esub> \<equiv> (I_ES ES)"
 
 abbreviation ESrecOES :: "'e ES_rec \<Rightarrow> 'e set"
-("O\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>O\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "O\<^bsub>ES\<^esub> \<equiv> (O_ES ES)"
 
 abbreviation ESrecTrES :: "'e ES_rec \<Rightarrow> ('e list) set"
-("Tr\<^bsub>_\<^esub>" [1000] 1000)
+(\<open>Tr\<^bsub>_\<^esub>\<close> [1000] 1000)
 where
 "Tr\<^bsub>ES\<^esub> \<equiv> (Tr_ES ES)"
 
@@ -82,7 +82,7 @@ where
   \<rparr>"
 
 abbreviation composeESAbbrv :: "'e ES_rec \<Rightarrow> 'e ES_rec \<Rightarrow> 'e ES_rec"
-("_ \<parallel> _"[1000] 1000)
+(\<open>_ \<parallel> _\<close>[1000] 1000)
 where
 "ES1 \<parallel> ES2 \<equiv> (composeES ES1 ES2)"
 

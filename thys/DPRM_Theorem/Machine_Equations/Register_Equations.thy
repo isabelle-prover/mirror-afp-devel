@@ -31,7 +31,7 @@ begin
 
 definition sum_rsub_of_bit_and  :: "polynomial \<Rightarrow> nat \<Rightarrow> polynomial list \<Rightarrow> polynomial
                               \<Rightarrow> relation" 
-  ("[_ = \<Sum>R- _ '(_ && _')]") where
+  (\<open>[_ = \<Sum>R- _ '(_ && _')]\<close>) where
   "[x = \<Sum>R- d (s && zl)] \<equiv> let x' = push_param x (length p);
                                s' = push_param_list s (length p); 
                                zl' = push_param zl (length p)
@@ -439,7 +439,7 @@ qed
 
 
 definition register_equations_relation :: "polynomial \<Rightarrow> polynomial \<Rightarrow> polynomial
-   \<Rightarrow> polynomial list \<Rightarrow> polynomial list \<Rightarrow> polynomial list \<Rightarrow> relation" ("[REG] _ _ _ _ _ _") where
+   \<Rightarrow> polynomial list \<Rightarrow> polynomial list \<Rightarrow> polynomial list \<Rightarrow> relation" (\<open>[REG] _ _ _ _ _ _\<close>) where
   "[REG] a b q r z s \<equiv> LARY (\<lambda>ll. rm_eq_fixes.register_equations p n (ll!0!0) (ll!0!1) (ll!0!2)
                           (nth (ll!1)) (nth (ll!2)) (nth (ll!3))) [[a, b, q], r, z, s]"
 

@@ -76,34 +76,34 @@ definition bind_SE :: "('o,'\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('o \<Rig
 where     "bind_SE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarrow> None 
                                         | Some (out, \<sigma>') \<Rightarrow> g out \<sigma>')"
 
-notation bind_SE ("bind\<^sub>S\<^sub>E")
+notation bind_SE (\<open>bind\<^sub>S\<^sub>E\<close>)
 syntax
           "_bind_SE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E"  
-                                                                          ("(2 _ \<leftarrow> _; _)" [5,8,8]8)
+                                                                          (\<open>(2 _ \<leftarrow> _; _)\<close> [5,8,8]8)
 syntax_consts
           "_bind_SE" \<rightleftharpoons> bind_SE
 translations
           "x \<leftarrow> f; g" \<rightleftharpoons> "CONST bind_SE f (% x . g)"
 
-definition unit_SE :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   ("(return _)" 8) 
+definition unit_SE :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (\<open>(return _)\<close> 8) 
 where     "unit_SE e = (\<lambda>\<sigma>. Some(e,\<sigma>))"
-notation   unit_SE ("unit\<^sub>S\<^sub>E")
+notation   unit_SE (\<open>unit\<^sub>S\<^sub>E\<close>)
 
 definition fail\<^sub>S\<^sub>E :: "('o, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "fail\<^sub>S\<^sub>E = (\<lambda>\<sigma>. None)"
-notation   fail\<^sub>S\<^sub>E ("fail\<^sub>S\<^sub>E")
+notation   fail\<^sub>S\<^sub>E (\<open>fail\<^sub>S\<^sub>E\<close>)
 
 definition assert_SE :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> (bool, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "assert_SE P = (\<lambda>\<sigma>. if P \<sigma> then Some(True,\<sigma>) else None)"
-notation   assert_SE ("assert\<^sub>S\<^sub>E")
+notation   assert_SE (\<open>assert\<^sub>S\<^sub>E\<close>)
 
 definition assume_SE :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "assume_SE P = (\<lambda>\<sigma>. if \<exists>\<sigma> . P \<sigma> then Some((), SOME \<sigma> . P \<sigma>) else None)"
-notation   assume_SE ("assume\<^sub>S\<^sub>E")
+notation   assume_SE (\<open>assume\<^sub>S\<^sub>E\<close>)
 
 definition if_SE :: "['\<sigma> \<Rightarrow> bool, ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E, ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "if_SE c E F = (\<lambda>\<sigma>. if c \<sigma> then E \<sigma> else F \<sigma>)" 
-notation   if_SE   ("if\<^sub>S\<^sub>E")
+notation   if_SE   (\<open>if\<^sub>S\<^sub>E\<close>)
 
 text\<open>
   The standard monad theorems about unit and associativity: 
@@ -267,13 +267,13 @@ text\<open>On this basis, a symbolic evaluation scheme can be established
   that reduces @{term mbind}-code to @{term try_SE}-code and If-cascades.\<close>
 
 
-definition alt_SE    :: "[('o, '\<sigma>)MON\<^sub>S\<^sub>E, ('o, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (infixl "\<sqinter>\<^sub>S\<^sub>E" 10)
+definition alt_SE    :: "[('o, '\<sigma>)MON\<^sub>S\<^sub>E, ('o, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (infixl \<open>\<sqinter>\<^sub>S\<^sub>E\<close> 10)
 where     "(f \<sqinter>\<^sub>S\<^sub>E g) = (\<lambda> \<sigma>. case f \<sigma> of None \<Rightarrow> g \<sigma>
                                       | Some H \<Rightarrow> Some H)"
 
 definition malt_SE   :: "('o, '\<sigma>)MON\<^sub>S\<^sub>E list \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "malt_SE S = foldr alt_SE S fail\<^sub>S\<^sub>E"
-notation   malt_SE ("\<Sqinter>\<^sub>S\<^sub>E")
+notation   malt_SE (\<open>\<Sqinter>\<^sub>S\<^sub>E\<close>)
 
 lemma malt_SE_mt [simp]: "\<Sqinter>\<^sub>S\<^sub>E [] = fail\<^sub>S\<^sub>E"
   by(simp add: malt_SE_def)
@@ -294,14 +294,14 @@ type_synonym ('o, '\<sigma>) MON\<^sub>S\<^sub>B = "'\<sigma> \<Rightarrow> ('o 
 
 definition bind_SB :: "('o, '\<sigma>)MON\<^sub>S\<^sub>B \<Rightarrow> ('o \<Rightarrow>  ('o', '\<sigma>)MON\<^sub>S\<^sub>B) \<Rightarrow> ('o', '\<sigma>)MON\<^sub>S\<^sub>B"
 where     "bind_SB f g \<sigma> = \<Union> ((\<lambda>(out, \<sigma>). (g out \<sigma>)) ` (f \<sigma>))"
-notation   bind_SB ("bind\<^sub>S\<^sub>B")
+notation   bind_SB (\<open>bind\<^sub>S\<^sub>B\<close>)
 
-definition unit_SB   :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>B" ("(returns _)" 8) 
+definition unit_SB   :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>B" (\<open>(returns _)\<close> 8) 
 where     "unit_SB e = (\<lambda>\<sigma>. {(e,\<sigma>)})"
-notation   unit_SB ("unit\<^sub>S\<^sub>B")
+notation   unit_SB (\<open>unit\<^sub>S\<^sub>B\<close>)
 
 syntax "_bind_SB" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B,('o','\<sigma>)MON\<^sub>S\<^sub>B] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B" 
-                                                                         ("(2 _ := _; _)" [5,8,8]8)
+                                                                         (\<open>(2 _ := _; _)\<close> [5,8,8]8)
 syntax_consts "_bind_SB" \<rightleftharpoons> bind_SB
 translations
           "x := f; g" \<rightleftharpoons> "CONST bind_SB f (% x . g)"
@@ -337,27 +337,27 @@ where     "bind_SBE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarr
                                                           else Some(\<Union> (the ` S'))))"
 
 syntax "_bind_SBE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E" 
-                                                                         ("(2 _ :\<equiv> _; _)" [5,8,8]8)
+                                                                         (\<open>(2 _ :\<equiv> _; _)\<close> [5,8,8]8)
 syntax_consts "_bind_SBE" \<rightleftharpoons> bind_SBE
 translations
           "x :\<equiv> f; g" \<rightleftharpoons> "CONST bind_SBE f (% x . g)"
 
-definition unit_SBE   :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E"   ("(returning _)" 8) 
+definition unit_SBE   :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E"   (\<open>(returning _)\<close> 8) 
 where     "unit_SBE e = (\<lambda>\<sigma>. Some({(e,\<sigma>)}))"
 
 definition assert_SBE   :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E"
 where     "assert_SBE e = (\<lambda>\<sigma>. if e \<sigma> then Some({((),\<sigma>)})
                                       else None)"
-notation   assert_SBE ("assert\<^sub>S\<^sub>B\<^sub>E")
+notation   assert_SBE (\<open>assert\<^sub>S\<^sub>B\<^sub>E\<close>)
 
 definition assume_SBE :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E"
 where     "assume_SBE e = (\<lambda>\<sigma>. if e \<sigma> then Some({((),\<sigma>)})
                                       else Some {})"
-notation   assume_SBE ("assume\<^sub>S\<^sub>B\<^sub>E")
+notation   assume_SBE (\<open>assume\<^sub>S\<^sub>B\<^sub>E\<close>)
 
 definition havoc_SBE :: " (unit, '\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E"
 where     "havoc_SBE = (\<lambda>\<sigma>.  Some({x. True}))"
-notation   havoc_SBE ("havoc\<^sub>S\<^sub>B\<^sub>E")
+notation   havoc_SBE (\<open>havoc\<^sub>S\<^sub>B\<^sub>E\<close>)
 
 lemma bind_left_unit_SBE : "(x :\<equiv> returning a; m) = m"
   apply (rule ext)
@@ -422,7 +422,7 @@ text\<open>
   high-level properties initiating test procedures. 
 \<close>
 
-definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>" 15)
+definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 15)
 where "(\<sigma> \<Turnstile> m) = (m \<sigma> \<noteq> None \<and> fst(the (m \<sigma>)))"
 text\<open>
   This notation consideres failures as valid---a definition inspired by I/O conformance. 
@@ -586,7 +586,7 @@ text\<open>
   high-level properties initiating test procedures. 
 \<close>
   
-definition valid_SBE :: "'\<sigma> \<Rightarrow> ('a,'\<sigma>) MON\<^sub>S\<^sub>B\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>S\<^sub>B\<^sub>E" 15)
+definition valid_SBE :: "'\<sigma> \<Rightarrow> ('a,'\<sigma>) MON\<^sub>S\<^sub>B\<^sub>E \<Rightarrow> bool" (infix \<open>\<Turnstile>\<^sub>S\<^sub>B\<^sub>E\<close> 15)
   where "\<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E m \<equiv> (m \<sigma> \<noteq> None)"
 text\<open>
   This notation considers all non-failures as valid. 

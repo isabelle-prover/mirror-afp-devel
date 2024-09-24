@@ -21,10 +21,10 @@ text\<open>ML terms:\<close>
 
 datatype ml =
  \<comment> \<open>ML\<close>
-  C_ML cname ("C\<^sub>M\<^sub>L") (* ref to compiled code *)
-| V_ML ml_vname ("V\<^sub>M\<^sub>L")
-| A_ML ml "(ml list)" ("A\<^sub>M\<^sub>L")
-| Lam_ML ml ("Lam\<^sub>M\<^sub>L")
+  C_ML cname (\<open>C\<^sub>M\<^sub>L\<close>) (* ref to compiled code *)
+| V_ML ml_vname (\<open>V\<^sub>M\<^sub>L\<close>)
+| A_ML ml "(ml list)" (\<open>A\<^sub>M\<^sub>L\<close>)
+| Lam_ML ml (\<open>Lam\<^sub>M\<^sub>L\<close>)
  \<comment> \<open>the universal datatype\<close>
 | C\<^sub>U cname "(ml list)"
 | V\<^sub>U vname "(ml list)"
@@ -34,7 +34,7 @@ datatype ml =
 
 text\<open>Lambda-terms:\<close>
 
-datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
+datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix \<open>\<bullet>\<close> 100)
             | "term" ml   \<comment> \<open>ML function \texttt{term}\<close>
 
 text \<open>The following locale captures type conventions for variables.
@@ -70,7 +70,7 @@ qed
 
 text\<open>Closed terms w.r.t.\ ML variables:\<close>
 
-fun closed_ML :: "nat \<Rightarrow> ml \<Rightarrow> bool" ("closed\<^sub>M\<^sub>L") where
+fun closed_ML :: "nat \<Rightarrow> ml \<Rightarrow> bool" (\<open>closed\<^sub>M\<^sub>L\<close>) where
 "closed\<^sub>M\<^sub>L i (C\<^sub>M\<^sub>L nm) = True" |
 "closed\<^sub>M\<^sub>L i (V\<^sub>M\<^sub>L X) = (X<i)"  |
 "closed\<^sub>M\<^sub>L i (A\<^sub>M\<^sub>L v vs) = (closed\<^sub>M\<^sub>L i v \<and> (\<forall>v \<in> set vs. closed\<^sub>M\<^sub>L i v))" |
@@ -80,7 +80,7 @@ fun closed_ML :: "nat \<Rightarrow> ml \<Rightarrow> bool" ("closed\<^sub>M\<^su
 "closed\<^sub>M\<^sub>L i (Clo f vs n) = (closed\<^sub>M\<^sub>L i f \<and> (\<forall>v \<in> set vs. closed\<^sub>M\<^sub>L i v))" |
 "closed\<^sub>M\<^sub>L i (apply v w) = (closed\<^sub>M\<^sub>L i v \<and> closed\<^sub>M\<^sub>L i w)"
 
-fun closed_tm_ML :: "nat \<Rightarrow> tm \<Rightarrow> bool" ("closed\<^sub>M\<^sub>L") where
+fun closed_tm_ML :: "nat \<Rightarrow> tm \<Rightarrow> bool" (\<open>closed\<^sub>M\<^sub>L\<close>) where
 "closed_tm_ML i (r\<bullet>s) = (closed_tm_ML i r \<and> closed_tm_ML i s)" |
 "closed_tm_ML i (\<Lambda> t) = (closed_tm_ML i t)" |
 "closed_tm_ML i (term v) = closed_ML i v" |
@@ -88,7 +88,7 @@ fun closed_tm_ML :: "nat \<Rightarrow> tm \<Rightarrow> bool" ("closed\<^sub>M\<
 
 text\<open>Free variables:\<close>
 
-fun fv_ML :: "ml \<Rightarrow> ml_vname set" ("fv\<^sub>M\<^sub>L") where
+fun fv_ML :: "ml \<Rightarrow> ml_vname set" (\<open>fv\<^sub>M\<^sub>L\<close>) where
 "fv\<^sub>M\<^sub>L (C\<^sub>M\<^sub>L nm) = {}" |
 "fv\<^sub>M\<^sub>L (V\<^sub>M\<^sub>L X) = {X}"  |
 "fv\<^sub>M\<^sub>L (A\<^sub>M\<^sub>L v vs) = fv\<^sub>M\<^sub>L v \<union> (\<Union>v \<in> set vs. fv\<^sub>M\<^sub>L v)" |
@@ -107,7 +107,7 @@ primrec fv :: "tm \<Rightarrow> vname set" where
 
 subsection "Iterated Term Application"
 
-abbreviation foldl_At (infix "\<bullet>\<bullet>" 90) where
+abbreviation foldl_At (infix \<open>\<bullet>\<bullet>\<close> 90) where
 "t \<bullet>\<bullet> ts \<equiv> foldl (\<bullet>) t ts"
 
 text\<open>Auxiliary measure function:\<close>
@@ -243,7 +243,7 @@ by(induct ts arbitrary:t) auto
 
 subsection "Lifting and Substitution"
 
-fun lift_ml :: "nat \<Rightarrow> ml \<Rightarrow> ml" ("lift") where
+fun lift_ml :: "nat \<Rightarrow> ml \<Rightarrow> ml" (\<open>lift\<close>) where
 "lift i (C\<^sub>M\<^sub>L nm) = C\<^sub>M\<^sub>L nm" |
 "lift i (V\<^sub>M\<^sub>L X) = V\<^sub>M\<^sub>L X" |
 "lift i (A\<^sub>M\<^sub>L v vs) = A\<^sub>M\<^sub>L (lift i v) (map (lift i) vs)" |
@@ -255,14 +255,14 @@ fun lift_ml :: "nat \<Rightarrow> ml \<Rightarrow> ml" ("lift") where
 
 lemmas ml_induct = lift_ml.induct[of "\<lambda>i v. P v"] for P
 
-fun lift_tm :: "nat \<Rightarrow> tm \<Rightarrow> tm" ("lift") where
+fun lift_tm :: "nat \<Rightarrow> tm \<Rightarrow> tm" (\<open>lift\<close>) where
 "lift i (C nm) = C nm" |
 "lift i (V x) = V(if x < i then x else x+1)" |
 "lift i (s\<bullet>t) = (lift i s)\<bullet>(lift i t)" |
 "lift i (\<Lambda> t) = \<Lambda>(lift (i+1) t)" |
 "lift i (term v) = term (lift i v)"
 
-fun lift_ML :: "nat \<Rightarrow> ml \<Rightarrow> ml" ("lift\<^sub>M\<^sub>L") where
+fun lift_ML :: "nat \<Rightarrow> ml \<Rightarrow> ml" (\<open>lift\<^sub>M\<^sub>L\<close>) where
 "lift\<^sub>M\<^sub>L i (C\<^sub>M\<^sub>L nm) = C\<^sub>M\<^sub>L nm" |
 "lift\<^sub>M\<^sub>L i (V\<^sub>M\<^sub>L X) = V\<^sub>M\<^sub>L (if X < i then X else X+1)" |
 "lift\<^sub>M\<^sub>L i (A\<^sub>M\<^sub>L v vs) = A\<^sub>M\<^sub>L (lift\<^sub>M\<^sub>L i v) (map (lift\<^sub>M\<^sub>L i) vs)" |
@@ -273,11 +273,11 @@ fun lift_ML :: "nat \<Rightarrow> ml \<Rightarrow> ml" ("lift\<^sub>M\<^sub>L") 
 "lift\<^sub>M\<^sub>L i (apply u v) = apply (lift\<^sub>M\<^sub>L i u) (lift\<^sub>M\<^sub>L i v)"
 
 definition
- cons :: "tm \<Rightarrow> (nat \<Rightarrow> tm) \<Rightarrow> (nat \<Rightarrow> tm)" (infix "##" 65) where
+ cons :: "tm \<Rightarrow> (nat \<Rightarrow> tm) \<Rightarrow> (nat \<Rightarrow> tm)" (infix \<open>##\<close> 65) where
 "t##\<sigma> \<equiv> \<lambda>i. case i of 0 \<Rightarrow> t | Suc j \<Rightarrow> lift 0 (\<sigma> j)"
 
 definition
- cons_ML :: "ml \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> (nat \<Rightarrow> ml)" (infix "##" 65) where
+ cons_ML :: "ml \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> (nat \<Rightarrow> ml)" (infix \<open>##\<close> 65) where
 "v##\<sigma> \<equiv> \<lambda>i. case i of 0 \<Rightarrow> v::ml | Suc j \<Rightarrow> lift\<^sub>M\<^sub>L 0 (\<sigma> j)"
 
 text\<open>Only for pure terms!\<close>
@@ -288,7 +288,7 @@ where
 | "subst \<sigma> (\<Lambda> t) = \<Lambda>(subst (V 0 ## \<sigma>) t)"
 | "subst \<sigma> (s\<bullet>t) = (subst \<sigma> s) \<bullet> (subst \<sigma> t)"
 
-fun subst_ML :: "(nat \<Rightarrow> ml) \<Rightarrow> ml \<Rightarrow> ml" ("subst\<^sub>M\<^sub>L") where
+fun subst_ML :: "(nat \<Rightarrow> ml) \<Rightarrow> ml \<Rightarrow> ml" (\<open>subst\<^sub>M\<^sub>L\<close>) where
 "subst\<^sub>M\<^sub>L \<sigma> (C\<^sub>M\<^sub>L nm) = C\<^sub>M\<^sub>L nm" |
 "subst\<^sub>M\<^sub>L \<sigma> (V\<^sub>M\<^sub>L X) = \<sigma> X" |
 "subst\<^sub>M\<^sub>L \<sigma> (A\<^sub>M\<^sub>L v vs) = A\<^sub>M\<^sub>L (subst\<^sub>M\<^sub>L \<sigma> v) (map (subst\<^sub>M\<^sub>L \<sigma>) vs)" |
@@ -308,10 +308,10 @@ abbreviation
   subst_decr_ML :: "nat \<Rightarrow> ml \<Rightarrow> nat \<Rightarrow> ml" where
 "subst_decr_ML k v \<equiv> \<lambda>n. if n<k then V\<^sub>M\<^sub>L n else if n=k then v else V\<^sub>M\<^sub>L(n - 1)"
 abbreviation
-  subst1 :: "tm \<Rightarrow> tm \<Rightarrow> nat \<Rightarrow> tm" ("(_/[_'/_])" [300, 0, 0] 300) where
+  subst1 :: "tm \<Rightarrow> tm \<Rightarrow> nat \<Rightarrow> tm" (\<open>(_/[_'/_])\<close> [300, 0, 0] 300) where
  "s[t/k] \<equiv> subst (subst_decr k t) s"
 abbreviation
-  subst1_ML :: "ml \<Rightarrow> ml \<Rightarrow> nat \<Rightarrow> ml" ("(_/[_'/_])" [300, 0, 0] 300) where
+  subst1_ML :: "ml \<Rightarrow> ml \<Rightarrow> nat \<Rightarrow> ml" (\<open>(_/[_'/_])\<close> [300, 0, 0] 300) where
  "u[v/k] \<equiv> subst\<^sub>M\<^sub>L (subst_decr_ML k v) u"
 
 lemma apply_cons[simp]:
@@ -567,7 +567,7 @@ pattern_R: "(nm,ts,t') : R \<Longrightarrow> patterns ts"
 
 inductive_set
   Red_tm :: "(tm * tm)set"
-  and red_tm :: "[tm, tm] => bool"  (infixl "\<rightarrow>" 50)
+  and red_tm :: "[tm, tm] => bool"  (infixl \<open>\<rightarrow>\<close> 50)
 where
   "s \<rightarrow> t \<equiv> (s, t) \<in> Red_tm"
  \<comment> \<open>$\beta$-reduction\<close>
@@ -581,12 +581,12 @@ where
 | "t \<rightarrow> t' \<Longrightarrow> s \<bullet> t \<rightarrow> s \<bullet> t'"
 
 abbreviation
-  reds_tm :: "[tm, tm] => bool"  (infixl "\<rightarrow>*" 50) where
+  reds_tm :: "[tm, tm] => bool"  (infixl \<open>\<rightarrow>*\<close> 50) where
   "s \<rightarrow>* t \<equiv> (s, t) \<in> Red_tm^*"
 
 inductive_set
   Reds_tm_list :: "(tm list * tm list) set"
-  and reds_tm_list :: "[tm list, tm list] \<Rightarrow> bool" (infixl "\<rightarrow>*" 50)
+  and reds_tm_list :: "[tm list, tm list] \<Rightarrow> bool" (infixl \<open>\<rightarrow>*\<close> 50)
 where
   "ss \<rightarrow>* ts \<equiv> (ss, ts) \<in> Reds_tm_list"
 | "[] \<rightarrow>* []"
@@ -654,7 +654,7 @@ done
 
 declare conj_cong[fundef_cong]
 
-function no_match_ML ("no'_match\<^sub>M\<^sub>L") where
+function no_match_ML (\<open>no'_match\<^sub>M\<^sub>L\<close>) where
 "no_match\<^sub>M\<^sub>L ps os =
   (\<exists>i < min (size os) (size ps).
    \<exists>nm nm' vs vs'. (rev ps)!i = C\<^sub>U nm vs \<and> (rev os)!i = C\<^sub>U nm' vs' \<and>
@@ -675,9 +675,9 @@ declare no_match_ML.simps[simp del]
 inductive_set
   Red_ml :: "(ml * ml)set"
   and Red_ml_list :: "(ml list * ml list)set"
-  and red_ml :: "[ml, ml] => bool"  (infixl "\<Rightarrow>" 50)
-  and red_ml_list :: "[ml list, ml list] => bool"  (infixl "\<Rightarrow>" 50)
-  and reds_ml :: "[ml, ml] => bool"  (infixl "\<Rightarrow>*" 50)
+  and red_ml :: "[ml, ml] => bool"  (infixl \<open>\<Rightarrow>\<close> 50)
+  and red_ml_list :: "[ml list, ml list] => bool"  (infixl \<open>\<Rightarrow>\<close> 50)
+  and reds_ml :: "[ml, ml] => bool"  (infixl \<open>\<Rightarrow>*\<close> 50)
 where
   "s \<Rightarrow> t \<equiv> (s, t) \<in> Red_ml"
 | "ss \<Rightarrow> ts \<equiv> (ss, ts) \<in> Red_ml_list"
@@ -712,8 +712,8 @@ where
 
 inductive_set
   Red_term :: "(tm * tm)set"
-  and red_term :: "[tm, tm] => bool"  (infixl "\<Rightarrow>" 50)
-  and reds_term :: "[tm, tm] => bool"  (infixl "\<Rightarrow>*" 50)
+  and red_term :: "[tm, tm] => bool"  (infixl \<open>\<Rightarrow>\<close> 50)
+  and reds_term :: "[tm, tm] => bool"  (infixl \<open>\<Rightarrow>*\<close> 50)
 where
   "s \<Rightarrow> t \<equiv> (s, t) \<in> Red_term"
 | "s \<Rightarrow>* t \<equiv> (s, t) \<in> Red_term^*"
@@ -806,7 +806,7 @@ apply(rule map_ext)
 apply simp
 done
 
-function kernel  :: "ml \<Rightarrow> tm"  ("_!" 300) where
+function kernel  :: "ml \<Rightarrow> tm"  (\<open>_!\<close> 300) where
 "(C\<^sub>M\<^sub>L nm)! = C nm" |
 "(A\<^sub>M\<^sub>L v vs)! = v! \<bullet>\<bullet> (map kernel (rev vs))" |
 "(Lam\<^sub>M\<^sub>L v)! = \<Lambda> (((lift 0 v)[V\<^sub>U 0 []/0])!)" |
@@ -818,7 +818,7 @@ function kernel  :: "ml \<Rightarrow> tm"  ("_!" 300) where
 by pat_completeness auto
 termination by(relation "measure size'") auto
 
-primrec kernelt :: "tm \<Rightarrow> tm" ("_!" 300)
+primrec kernelt :: "tm \<Rightarrow> tm" (\<open>_!\<close> 300)
 where
   "(C nm)! = C nm"
 | "(V x)! = V x"
@@ -827,7 +827,7 @@ where
 | "(term v)! = v!"
 
 abbreviation
-  kernels :: "ml list \<Rightarrow> tm list" ("_!" 300) where
+  kernels :: "ml list \<Rightarrow> tm list" (\<open>_!\<close> 300) where
   "vs! \<equiv> map kernel vs"
 
 lemma kernel_pure: assumes "pure t" shows "t! = t"
@@ -1360,7 +1360,7 @@ inductive normal :: "tm \<Rightarrow> bool" where
  \<forall>\<sigma>. \<forall>(nm',ls,r)\<in>R. \<not>(nm = nm' \<and> take (size ls) ts = map (subst \<sigma>) ls)
  \<Longrightarrow> normal(C nm \<bullet>\<bullet> ts)"
 
-fun C_normal_ML :: "ml \<Rightarrow> bool" ("C'_normal\<^sub>M\<^sub>L") where
+fun C_normal_ML :: "ml \<Rightarrow> bool" (\<open>C'_normal\<^sub>M\<^sub>L\<close>) where
 "C_normal\<^sub>M\<^sub>L(C\<^sub>U nm vs) =
   ((\<forall>v\<in>set vs. C_normal\<^sub>M\<^sub>L v) \<and> no_match_compR nm vs)" |
 "C_normal\<^sub>M\<^sub>L (C\<^sub>M\<^sub>L _) = True" |
@@ -1423,7 +1423,7 @@ apply(subst no_match.simps)
 apply fastforce
 done
 
-fun dterm_ML :: "ml \<Rightarrow> tm" ("dterm\<^sub>M\<^sub>L") where
+fun dterm_ML :: "ml \<Rightarrow> tm" (\<open>dterm\<^sub>M\<^sub>L\<close>) where
 "dterm\<^sub>M\<^sub>L (C\<^sub>U nm vs) = C nm \<bullet>\<bullet> map dterm\<^sub>M\<^sub>L (rev vs)" |
 "dterm\<^sub>M\<^sub>L _ = V 0"
 
@@ -1937,11 +1937,11 @@ proof
     by cases
 qed
 
-abbreviation RedMLs :: "tm list \<Rightarrow> tm list \<Rightarrow> bool" (infix "[\<Rightarrow>*]" 50) where
+abbreviation RedMLs :: "tm list \<Rightarrow> tm list \<Rightarrow> bool" (infix \<open>[\<Rightarrow>*]\<close> 50) where
 "ss [\<Rightarrow>*] ts  \<equiv>  size ss = size ts \<and> (\<forall>i<size ss. ss!i \<Rightarrow>* ts!i)"
 
 
-fun C_U_args :: "tm \<Rightarrow> tm list" ("C\<^sub>U'_args") where
+fun C_U_args :: "tm \<Rightarrow> tm list" (\<open>C\<^sub>U'_args\<close>) where
 "C\<^sub>U_args(s \<bullet> t) = C\<^sub>U_args s @ [t]" |
 "C\<^sub>U_args(term(C\<^sub>U nm vs)) = map term (rev vs)" |
 "C\<^sub>U_args _ = []"

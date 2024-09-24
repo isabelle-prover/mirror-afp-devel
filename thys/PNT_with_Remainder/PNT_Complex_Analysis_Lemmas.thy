@@ -60,7 +60,7 @@ qed simp
 
 subsection \<open>Factorization of analytic function on compact region\<close>
 
-definition not_zero_on (infixr "not'_zero'_on" 46)
+definition not_zero_on (infixr \<open>not'_zero'_on\<close> 46)
   where "f not_zero_on S \<equiv> \<exists>z \<in> S. f z \<noteq> 0"
 
 lemma not_zero_on_obtain:

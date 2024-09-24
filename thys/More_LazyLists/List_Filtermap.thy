@@ -23,7 +23,7 @@ by (induction xs) auto
 
 (* Right-Cons: *)
 
-abbreviation Rcons (infix "##" 70) where "xs ## x \<equiv> xs @ [x]"
+abbreviation Rcons (infix \<open>##\<close> 70) where "xs ## x \<equiv> xs @ [x]"
 
 lemma two_singl_Rcons: "[a,b] = [a] ## b" by auto
 

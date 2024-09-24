@@ -39,18 +39,18 @@ subsection \<open>Formulas and Hybrid Games\<close>
 datatype fml =
   Pred ident trm
 | Geq trm trm
-| Not fml                 ("!")
-| And fml fml             (infixr "&&" 8)
+| Not fml                 (\<open>!\<close>)
+| And fml fml             (infixr \<open>&&\<close> 8)
 | Exists variable fml
-| Diamond game fml        ("(\<langle> _ \<rangle> _)" 20)
+| Diamond game fml        (\<open>(\<langle> _ \<rangle> _)\<close> 20)
 and game =
   Game ident
-| Assign variable trm     (infixr ":=" 20)
-| Test fml                ("?")
-| Choice game game        (infixr "\<union>\<union>" 10)
-| Compose game game       (infixr ";;" 8)
-| Loop game               ("_**")
-| Dual game               ("_^d")
+| Assign variable trm     (infixr \<open>:=\<close> 20)
+| Test fml                (\<open>?\<close>)
+| Choice game game        (infixr \<open>\<union>\<union>\<close> 10)
+| Compose game game       (infixr \<open>;;\<close> 8)
+| Loop game               (\<open>_**\<close>)
+| Dual game               (\<open>_^d\<close>)
 | ODE ident trm
 
 
@@ -61,13 +61,13 @@ where "Neg \<theta> = Times (Number (-1)) \<theta>"
 definition Minus ::"trm \<Rightarrow> trm \<Rightarrow> trm"
 where "Minus \<theta> \<eta> = Plus \<theta> (Neg \<eta>)"
 
-definition Or :: "fml \<Rightarrow> fml \<Rightarrow> fml" (infixr "||" 7)
+definition Or :: "fml \<Rightarrow> fml \<Rightarrow> fml" (infixr \<open>||\<close> 7)
 where "Or P Q = Not (And (Not P) (Not Q))"
 
-definition Implies :: "fml \<Rightarrow> fml \<Rightarrow> fml" (infixr "\<rightarrow>" 10)
+definition Implies :: "fml \<Rightarrow> fml \<Rightarrow> fml" (infixr \<open>\<rightarrow>\<close> 10)
 where "Implies P Q = Or Q (Not P)"
 
-definition Equiv :: "fml \<Rightarrow> fml \<Rightarrow> fml" (infixr "\<leftrightarrow>" 10)
+definition Equiv :: "fml \<Rightarrow> fml \<Rightarrow> fml" (infixr \<open>\<leftrightarrow>\<close> 10)
 where "Equiv P Q = Or (And P Q) (And (Not P) (Not Q))"
 
 definition Forall :: "variable \<Rightarrow> fml \<Rightarrow> fml"
@@ -81,7 +81,7 @@ where "Greater \<theta> \<theta>' = ((Geq \<theta> \<theta>') && (Not (Geq \<the
   
 text \<open>Justification: determinacy theorem justifies this equivalent syntactic abbreviation for box modalities from diamond modalities
   Theorem 3.1 \<^url>\<open>https://doi.org/10.1145/2817824\<close>\<close>
-definition Box :: "game \<Rightarrow> fml \<Rightarrow> fml" ("([[_]]_)" 20)
+definition Box :: "game \<Rightarrow> fml \<Rightarrow> fml" (\<open>([[_]]_)\<close> 20)
 where "Box \<alpha> P = Not (Diamond \<alpha> (Not P))"
   
 definition TT ::"fml" 

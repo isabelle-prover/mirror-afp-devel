@@ -14,10 +14,10 @@ subsection \<open>Arithmetic operations with intervals\<close>
 
 subsubsection \<open>Addition of and multiplication by constants\<close>
 
-definition iT_Plus :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<oplus>" 55)
+definition iT_Plus :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl \<open>\<oplus>\<close> 55)
   where "I \<oplus> k \<equiv> (\<lambda>n.(n + k)) ` I"
 
-definition iT_Mult :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<otimes>" 55)
+definition iT_Mult :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl \<open>\<otimes>\<close> 55)
   where iT_Mult_def : "I \<otimes> k \<equiv> (\<lambda>n.(n * k)) ` I"
 
 (*<*)
@@ -409,7 +409,7 @@ done
 
 subsubsection \<open>Subtraction of constants\<close>
 
-definition iT_Plus_neg :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<oplus>-" 55) where
+definition iT_Plus_neg :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl \<open>\<oplus>-\<close> 55) where
   "I \<oplus>- k \<equiv> {x. x + k \<in> I}"
 
 lemma iT_Plus_neg_mem_iff: "(x \<in> I \<oplus>- k) = (x + k \<in> I)"
@@ -745,7 +745,7 @@ lemmas iT_add_neg =
 
 subsubsection \<open>Subtraction of intervals from constants\<close>
 
-definition iT_Minus :: "Time \<Rightarrow> iT \<Rightarrow> iT" (infixl "\<ominus>" 55)
+definition iT_Minus :: "Time \<Rightarrow> iT \<Rightarrow> iT" (infixl \<open>\<ominus>\<close> 55)
   where "k \<ominus> I \<equiv> {x. x \<le> k \<and> (k - x) \<in> I}"
 
 lemma iT_Minus_mem_iff: "(x \<in> k \<ominus> I) = (x \<le> k \<and> k - x \<in> I)"
@@ -1082,7 +1082,7 @@ corollary iMODb_mult_div_right_inj_on2: "
   by (auto simp add: iMODb_mult_div_right_inj_on)
 
 
-definition iT_Div :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<oslash>" 55)
+definition iT_Div :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl \<open>\<oslash>\<close> 55)
   where "I \<oslash> k \<equiv> (\<lambda>n.(n div k)) ` I"
 
 lemma iT_Div_image_conv: "I \<oslash> k = (\<lambda>n.(n div k)) ` I"

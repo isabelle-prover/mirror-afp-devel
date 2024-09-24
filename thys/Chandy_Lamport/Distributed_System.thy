@@ -228,7 +228,7 @@ primrec "next" ::
   \<Rightarrow> ('p, 's, 'm) event
   \<Rightarrow> ('p, 's, 'm) configuration
   \<Rightarrow> bool"
-  ("_ \<turnstile> _ \<mapsto> _" [70, 70, 70]) where
+  (\<open>_ \<turnstile> _ \<mapsto> _\<close> [70, 70, 70]) where
     next_snapshot: "c \<turnstile> Snapshot p \<mapsto> c' =
       check_snapshot_occur c c' p"
   | next_recv_marker: "c \<turnstile> RecvMarker i p q \<mapsto> c' =

@@ -29,7 +29,7 @@ text \<open>Two "heaps" are compatible iff:
 2. The unique guard heaps are disjoint
 3. The shared guards permissions sum to at most 1\<close>
 
-definition compatible :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl "##" 60) where
+definition compatible :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl \<open>##\<close> 60) where
   "h ## h' \<longleftrightarrow> compatible_fract_heaps (get_fh h) (get_fh h') \<and> (\<forall>k. get_gu h k = None \<or> get_gu h' k = None)
   \<and> (\<forall>p p'. get_gs h = Some p \<and> get_gs h' = Some p' \<longrightarrow> pgte pwrite (padd (fst p) (fst p')))"
 
@@ -134,7 +134,7 @@ proof (rule ext)
   qed
 qed
 
-fun plus :: "('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option" (infixl "\<oplus>" 63) where
+fun plus :: "('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option" (infixl \<open>\<oplus>\<close> 63) where
   "None \<oplus> _ = None"
 | "_ \<oplus> None = None"
 | "Some h1 \<oplus> Some h2 = (if h1 ## h2 then Some (add_fh (get_fh h1) (get_fh h2), add_gs (get_gs h1) (get_gs h2), add_gu (get_gu h1) (get_gu h2)) else None)"
@@ -595,7 +595,7 @@ proof (cases a)
   qed (simp)
 qed (simp)
 
-definition larger :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl "\<succeq>" 55) where
+definition larger :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl \<open>\<succeq>\<close> 55) where
   "a \<succeq> b \<longleftrightarrow> (\<exists>c. Some a = Some b \<oplus> Some c)"
 
 lemma larger_trans:

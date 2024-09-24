@@ -85,10 +85,10 @@ doc_class report =
 section\<open>Experimental\<close>
 
 (* switch on regexp syntax *)
-notation Star  ("\<lbrace>(_)\<rbrace>\<^sup>*" [0]100)
-notation Plus  (infixr "||" 55)
-notation Times (infixr "~~" 60)
-notation Atom  ("\<lfloor>_\<rfloor>" 65)
+notation Star  (\<open>\<lbrace>(_)\<rbrace>\<^sup>*\<close> [0]100)
+notation Plus  (infixr \<open>||\<close> 55)
+notation Times (infixr \<open>~~\<close> 60)
+notation Atom  (\<open>\<lfloor>_\<rfloor>\<close> 65)
 
 
 

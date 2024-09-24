@@ -20,10 +20,10 @@ subsection "Publisher-Subscriber Architectures"
 locale publisher_subscriber =
   pb: singleton pbactive pbcmp +
   sb: dynamic_component sbcmp sbactive
-    for pbactive :: "'pid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
-    and pbcmp :: "'pid \<Rightarrow> cnf \<Rightarrow> 'PB" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
-    and sbactive :: "'sid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
-    and sbcmp :: "'sid \<Rightarrow> cnf \<Rightarrow> 'SB" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60) +
+    for pbactive :: "'pid \<Rightarrow> cnf \<Rightarrow> bool" (\<open>\<parallel>_\<parallel>\<^bsub>_\<^esub>\<close> [0,110]60)
+    and pbcmp :: "'pid \<Rightarrow> cnf \<Rightarrow> 'PB" (\<open>\<sigma>\<^bsub>_\<^esub>(_)\<close> [0,110]60)
+    and sbactive :: "'sid \<Rightarrow> cnf \<Rightarrow> bool" (\<open>\<parallel>_\<parallel>\<^bsub>_\<^esub>\<close> [0,110]60)
+    and sbcmp :: "'sid \<Rightarrow> cnf \<Rightarrow> 'SB" (\<open>\<sigma>\<^bsub>_\<^esub>(_)\<close> [0,110]60) +
   fixes pbsb :: "'PB \<Rightarrow> ('evt set) subscription set"
     and pbnt :: "'PB \<Rightarrow> ('evt \<times> 'msg)"             
     and sbnt :: "'SB \<Rightarrow> ('evt \<times> 'msg) set"

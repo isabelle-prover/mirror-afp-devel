@@ -14,7 +14,7 @@ text \<open>In the following, data (state) simulation and functional backwards s
 definition "Simul S b = extend (make (ok b) (wait b) (tr b) (ref b)) (S (more b))"
 
 definition 
-Simulation::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<sigma>1 \<Rightarrow> '\<sigma>) \<Rightarrow> ('\<theta>, '\<sigma>1) action \<Rightarrow> bool" ("_ \<preceq>_ _") 
+Simulation::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<sigma>1 \<Rightarrow> '\<sigma>) \<Rightarrow> ('\<theta>, '\<sigma>1) action \<Rightarrow> bool" (\<open>_ \<preceq>_ _\<close>) 
 where
 "A \<preceq>S B \<equiv> \<forall> a b. (relation_of B) (a, b) \<longrightarrow> (relation_of A) (Simul S a, Simul S b)"
 

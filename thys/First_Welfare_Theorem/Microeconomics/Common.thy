@@ -21,9 +21,9 @@ locale pareto_ordering =
   fixes agents :: "'i set"
   fixes U :: "'i \<Rightarrow> 'a \<Rightarrow> real"
 begin
-notation U ("U[_]")
+notation U (\<open>U[_]\<close>)
 
-definition pareto_dominating (infix "\<succ>Pareto"  60)
+definition pareto_dominating (infix \<open>\<succ>Pareto\<close>  60)
   where
     "X \<succ>Pareto Y \<longleftrightarrow>
       (\<forall>i \<in> agents. U[i] (X i) \<ge> U[i] (Y i)) \<and>

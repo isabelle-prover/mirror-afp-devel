@@ -28,7 +28,7 @@ lemma norm_\<beta>00[simp]: "norm \<beta>00 = 1"
 subsubsection \<open>Ket plus\<close>
 
 definition "vector_ketplus = vec_of_list [ 1/sqrt 2::complex, 1/sqrt 2 ]"
-definition ketplus :: \<open>bit ell2\<close> ("|+\<rangle>") where [code del]: \<open>ketplus = basis_enum_of_vec vector_ketplus\<close>
+definition ketplus :: \<open>bit ell2\<close> (\<open>|+\<rangle>\<close>) where [code del]: \<open>ketplus = basis_enum_of_vec vector_ketplus\<close>
 lemma vec_of_basis_enum_ketplus[simp]: "vec_of_basis_enum ketplus = vector_ketplus"
   by (auto simp add: ketplus_def vector_ketplus_def)
 lemma vec_of_ell2_ketplus[simp, code]: "vec_of_ell2 ketplus = vector_ketplus"

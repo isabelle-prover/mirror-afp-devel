@@ -43,7 +43,7 @@ by (induct vs) (auto)
 section \<open>Relation between values and regular expressions\<close>
 
 inductive 
-  Prf :: "'a val \<Rightarrow> 'a rexp \<Rightarrow> bool" ("\<turnstile> _ : _" [100, 100] 100)
+  Prf :: "'a val \<Rightarrow> 'a rexp \<Rightarrow> bool" (\<open>\<turnstile> _ : _\<close> [100, 100] 100)
 where
  "\<lbrakk>\<turnstile> v1 : r1; \<turnstile> v2 : r2\<rbrakk> \<Longrightarrow> \<turnstile> Seq v1 v2 : Times r1 r2"
 | "\<turnstile> v1 : r1 \<Longrightarrow> \<turnstile> Left v1 : Plus r1 r2"
@@ -169,7 +169,7 @@ by (simp add: Prf_injval_flat)
 section \<open>Our Alternative Posix definition\<close>
 
 inductive 
-  Posix :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a val \<Rightarrow> bool" ("_ \<in> _ \<rightarrow> _" [100, 100, 100] 100)
+  Posix :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a val \<Rightarrow> bool" (\<open>_ \<in> _ \<rightarrow> _\<close> [100, 100, 100] 100)
 where
   Posix_One: "[] \<in> One \<rightarrow> Void"
 | Posix_Atom: "[c] \<in> (Atom c) \<rightarrow> (Atm c)"

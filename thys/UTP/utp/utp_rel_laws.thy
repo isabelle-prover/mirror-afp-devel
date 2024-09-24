@@ -685,7 +685,7 @@ declare upred_semiring.power_Suc [simp del]
 
 text \<open> We introduce the power syntax derived from semirings \<close>
 
-abbreviation upower :: "'\<alpha> hrel \<Rightarrow> nat \<Rightarrow> '\<alpha> hrel" (infixr "\<^bold>^" 80) where
+abbreviation upower :: "'\<alpha> hrel \<Rightarrow> nat \<Rightarrow> '\<alpha> hrel" (infixr \<open>\<^bold>^\<close> 80) where
 "upower P n \<equiv> upred_semiring.power P n"
 
 translations
@@ -783,7 +783,7 @@ lemma assigns_power: "\<langle>f\<rangle>\<^sub>a \<^bold>^ n = \<langle>f ^^ n\
 
 subsection \<open> Kleene Star \<close>
 
-definition ustar :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" ("_\<^sup>\<star>" [999] 999) where
+definition ustar :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (\<open>_\<^sup>\<star>\<close> [999] 999) where
 "P\<^sup>\<star> = (\<Sqinter>i\<in>{0..} \<bullet> P\<^bold>^i)"
 
 lemma ustar_rep_eq:
@@ -794,9 +794,9 @@ update_uexpr_rep_eq_thms
 
 subsection \<open> Kleene Plus \<close>
 
-purge_notation trancl ("(_\<^sup>+)" [1000] 999)
+purge_notation trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
 
-definition uplus :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" ("_\<^sup>+" [999] 999) where
+definition uplus :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (\<open>_\<^sup>+\<close> [999] 999) where
 [upred_defs]: "P\<^sup>+ = P ;; P\<^sup>\<star>"
 
 lemma uplus_power_def: "P\<^sup>+ = (\<Sqinter> i \<bullet> P \<^bold>^ (Suc i))"
@@ -804,7 +804,7 @@ lemma uplus_power_def: "P\<^sup>+ = (\<Sqinter> i \<bullet> P \<^bold>^ (Suc i))
 
 subsection \<open> Omega \<close>
 
-definition uomega :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" ("_\<^sup>\<omega>" [999] 999) where
+definition uomega :: "'\<alpha> hrel \<Rightarrow> '\<alpha> hrel" (\<open>_\<^sup>\<omega>\<close> [999] 999) where
 "P\<^sup>\<omega> = (\<mu> X \<bullet> P ;; X)"
 
 subsection \<open> Relation Algebra Laws \<close>

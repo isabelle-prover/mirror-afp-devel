@@ -181,7 +181,7 @@ proof -
   finally show ?thesis .
 qed
 
-no_notation ccval ("\<lbrace>_\<rbrace>" [100])
+no_notation ccval (\<open>\<lbrace>_\<rbrace>\<close> [100])
 
 hide_const succ
 
@@ -282,7 +282,7 @@ context AlphaClosure_global
 begin
 
 (* XXX Clean *)
-no_notation Regions_Beta.part ("[_]\<^sub>_" [61,61] 61)
+no_notation Regions_Beta.part (\<open>[_]\<^sub>_\<close> [61,61] 61)
 
 lemma succ_ex:
   assumes "R \<in> \<R>"
@@ -493,11 +493,11 @@ definition
 where
   "inv_of \<equiv> snd"
 
-no_notation transition ("_ \<turnstile> _ \<longrightarrow>\<^bsup>_,_,_\<^esup> _" [61,61,61,61,61,61] 61)
+no_notation transition (\<open>_ \<turnstile> _ \<longrightarrow>\<^bsup>_,_,_\<^esup> _\<close> [61,61,61,61,61,61] 61)
 
 abbreviation transition ::
   "('c, 'time, 's) pta \<Rightarrow> 's \<Rightarrow> ('c, 'time) cconstraint \<Rightarrow> ('c set * 's) pmf \<Rightarrow> 'c set \<Rightarrow> 's \<Rightarrow> bool"
-("_ \<turnstile> _ \<longrightarrow>\<^bsup>_,_,_\<^esup> _" [61,61,61,61,61,61] 61) where
+(\<open>_ \<turnstile> _ \<longrightarrow>\<^bsup>_,_,_\<^esup> _\<close> [61,61,61,61,61,61] 61) where
   "(A \<turnstile> l \<longrightarrow>\<^bsup>g,p,X\<^esup> l') \<equiv> (l, g, p, X, l') \<in> Edges A"
 
 definition
@@ -546,25 +546,25 @@ using assms unfolding valid_abstraction_def by auto
 subsection \<open>Operational Semantics as an MDP\<close>
 
 abbreviation (input) clock_set_set :: "'c set \<Rightarrow> 't::time \<Rightarrow> ('c,'t) cval \<Rightarrow> ('c,'t) cval"
-("[_:=_]_" [65,65,65] 65)
+(\<open>[_:=_]_\<close> [65,65,65] 65)
 where
   "[X:=t]u \<equiv> clock_set (SOME r. set r = X) t u"
 
 term region_set'
 
 abbreviation region_set_set :: "'c set \<Rightarrow> 't::time \<Rightarrow> ('c,'t) zone \<Rightarrow> ('c,'t) zone"
-("[_::=_]_" [65,65,65] 65)
+(\<open>[_::=_]_\<close> [65,65,65] 65)
 where
   "[X::=t]R \<equiv> region_set' R (SOME r. set r = X) t"
 
-no_notation zone_set ("_\<^bsub>_ \<rightarrow> 0\<^esub>" [71] 71)
+no_notation zone_set (\<open>_\<^bsub>_ \<rightarrow> 0\<^esub>\<close> [71] 71)
 
 abbreviation zone_set_set :: "('c, 't::time) zone \<Rightarrow> 'c set \<Rightarrow> ('c, 't) zone"
-("_\<^bsub>_ \<rightarrow> 0\<^esub>" [71] 71)
+(\<open>_\<^bsub>_ \<rightarrow> 0\<^esub>\<close> [71] 71)
 where
   "Z\<^bsub>X \<rightarrow> 0\<^esub> \<equiv> zone_set Z (SOME r. set r = X)"
 
-abbreviation (input) ccval ("\<lbrace>_\<rbrace>" [100]) where "ccval cc \<equiv> {v. v \<turnstile> cc}"
+abbreviation (input) ccval (\<open>\<lbrace>_\<rbrace>\<close> [100]) where "ccval cc \<equiv> {v. v \<turnstile> cc}"
 
 locale Probabilistic_Timed_Automaton =
   fixes A :: "('c, 't :: time, 's) pta"
@@ -1201,7 +1201,7 @@ lemma K_closed:
 subsubsection \<open>Intermezzo\<close>
 
 (* XXX Correct binding strength *)
-abbreviation timed_bisim (infixr "~" 60) where
+abbreviation timed_bisim (infixr \<open>~\<close> 60) where
   "s ~ s' \<equiv> abss s = abss s'"
 
 lemma bisim_loc_id[intro]:

@@ -15,11 +15,11 @@ text \<open>This component supports the verification and step-wise refinement of
 in a partial correctness setting.\<close>
 
 notation
-  times (infixl "\<cdot>" 70) and
-  bot ("\<bottom>") and
-  top ("\<top>") and
-  inf (infixl "\<sqinter>" 65) and
-  sup (infixl "\<squnion>" 65)
+  times (infixl \<open>\<cdot>\<close> 70) and
+  bot (\<open>\<bottom>\<close>) and
+  top (\<open>\<top>\<close>) and
+  inf (infixl \<open>\<sqinter>\<close> 65) and
+  sup (infixl \<open>\<squnion>\<close> 65)
 
 subsection \<open>Lattice-Ordered Monoids with Domain\<close>
 
@@ -39,9 +39,9 @@ sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" bot "(\<le>)" "(<)"
 
 end
 
-no_notation ads_d ("d")
-  and ars_r ("r")
-  and antirange_op ("ar _" [999] 1000)
+no_notation ads_d (\<open>d\<close>)
+  and ars_r (\<open>r\<close>)
+  and antirange_op (\<open>ar _\<close> [999] 1000)
 
 class domain_bdlo_monoid = bd_lattice_ordered_monoid +
   assumes rdv: "(z \<sqinter> x \<cdot> top) \<cdot> y = z \<cdot> y \<sqinter> x \<cdot> top"  
@@ -492,10 +492,10 @@ sublocale mka: modal_kleene_algebra "(\<squnion>)" "(\<cdot>)" 1 \<bottom> "(\<l
 
 end
 
-no_notation fbox ("( |_] _)" [61,81] 82)
-  and antidomain_semiringl_class.fbox ("( |_] _)" [61,81] 82)
+no_notation fbox (\<open>( |_] _)\<close> [61,81] 82)
+  and antidomain_semiringl_class.fbox (\<open>( |_] _)\<close> [61,81] 82)
 
-notation ad.fbox ("( |_] _)" [61,81] 82)
+notation ad.fbox (\<open>( |_] _)\<close> [61,81] 82)
 
 subsection \<open>Recursion Rule\<close>
 

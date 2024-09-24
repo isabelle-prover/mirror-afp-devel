@@ -84,7 +84,7 @@ lemma bdia_assign [simp]: "rel_antirange_kleene_algebra.bdia (v ::= e) \<lceil>P
 lemma d_p2r [simp]: "rel_antirange_kleene_algebra.ars_r  \<lceil>P\<rceil> = \<lceil>P\<rceil>"
   by (simp add: p2r_def rel_antirange_kleene_algebra.ars_r_def rel_ar_def)
 
-abbreviation fspec_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" ("FPRE _ _ POST _" [64,64,64] 63) where
+abbreviation fspec_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" (\<open>FPRE _ _ POST _\<close> [64,64,64] 63) where
   "FPRE P X POST Q \<equiv> rel_antirange_kleene_algebra.bdia X \<lceil>P\<rceil> \<subseteq> rel_antirange_kleene_algebra.ars_r \<lceil>Q\<rceil>"
 
 end

@@ -6,7 +6,7 @@ theory Strong_Sim
   imports Agent
 begin
 
-definition simulation :: "ccs \<Rightarrow> (ccs \<times> ccs) set \<Rightarrow> ccs \<Rightarrow> bool"   ("_ \<leadsto>[_] _" [80, 80, 80] 80)
+definition simulation :: "ccs \<Rightarrow> (ccs \<times> ccs) set \<Rightarrow> ccs \<Rightarrow> bool"   (\<open>_ \<leadsto>[_] _\<close> [80, 80, 80] 80)
 where
   "P \<leadsto>[Rel] Q \<equiv> \<forall>a Q'. Q \<longmapsto>a \<prec> Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>a \<prec> P' \<and> (P', Q') \<in> Rel)"
 

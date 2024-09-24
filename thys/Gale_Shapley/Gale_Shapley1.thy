@@ -19,7 +19,7 @@ subsection \<open>Misc\<close>
 lemmas conj12 = conjunct1 conjunct2
 
 syntax
-  "_assign_list" :: "idt \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> 'com"  ("(2_[_] :=/ _)" [70, 0, 65] 61)
+  "_assign_list" :: "idt \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> 'com"  (\<open>(2_[_] :=/ _)\<close> [70, 0, 65] 61)
 
 syntax_consts
   "_assign_list" \<rightleftharpoons> list_update
@@ -27,14 +27,14 @@ syntax_consts
 translations
   "xs[n] := e" \<rightharpoonup> "xs := CONST list_update xs n e"
 
-abbreviation upt_set :: "nat \<Rightarrow> nat set" ("{<_}") where
+abbreviation upt_set :: "nat \<Rightarrow> nat set" (\<open>{<_}\<close>) where
 "{<n} \<equiv> {0..<n}"
 
 (* Maybe also require y : set P? *)
 definition prefers :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
 "prefers P x y = (index P x < index P y)"
 
-abbreviation prefa :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<turnstile>/ _ < _)" [50,50,50] 50) where
+abbreviation prefa :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<turnstile>/ _ < _)\<close> [50,50,50] 50) where
 "P \<turnstile> x < y \<equiv> prefers P x y"
 
 lemma prefers_asym: "P \<turnstile> x < y \<Longrightarrow> \<not> P \<turnstile> y < x"

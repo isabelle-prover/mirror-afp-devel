@@ -9,18 +9,18 @@ lemma nonempty_set_card:
   shows "S \<noteq> {} \<longleftrightarrow> card S \<ge> 1"
   using assms card_0_eq by fastforce
 
-no_notation one_class.one ("1")
-no_notation times_class.times (infixl "*" 70)
+no_notation one_class.one (\<open>1\<close>)
+no_notation times_class.times (infixl \<open>*\<close> 70)
 
-no_notation rel_fdia ("(|_\<rangle>_)" [61,81] 82)
-no_notation rel_bdia ("(\<langle>_|_)" [61,81] 82)
-no_notation rel_fbox ("(|_]_)" [61,81] 82)
-no_notation rel_bbox ("([_|_)" [61,81] 82)
+no_notation rel_fdia (\<open>(|_\<rangle>_)\<close> [61,81] 82)
+no_notation rel_bdia (\<open>(\<langle>_|_)\<close> [61,81] 82)
+no_notation rel_fbox (\<open>(|_]_)\<close> [61,81] 82)
+no_notation rel_bbox (\<open>([_|_)\<close> [61,81] 82)
 
 declare s_prod_pa_def [mr_simp]
 
-notation s_prod (infixl "*" 70)
-notation s_id ("1")
+notation s_prod (infixl \<open>*\<close> 70)
+notation s_id (\<open>1\<close>)
 
 lemma sp_oi_subdist:
   "(P \<inter> Q) * (R \<inter> S) \<subseteq> P * R"
@@ -34,19 +34,19 @@ section \<open>Inner Structure\<close>
 
 subsection \<open>Inner union, inner intersection and inner complement\<close>
 
-abbreviation "inner_union" (infixl "\<union>\<union>" 65)
+abbreviation "inner_union" (infixl \<open>\<union>\<union>\<close> 65)
   where "inner_union \<equiv> p_prod"
 
-definition inner_intersection :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (infixl "\<inter>\<inter>" 65) where
+definition inner_intersection :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (infixl \<open>\<inter>\<inter>\<close> 65) where
   "R \<inter>\<inter> S \<equiv> { (a,B) . \<exists>C D . B = C \<inter> D \<and> (a,C) \<in> R \<and> (a,D) \<in> S }"
 
-definition inner_complement :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("\<sim> _" [80] 80) where
+definition inner_complement :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>\<sim> _\<close> [80] 80) where
   "\<sim>R \<equiv> { (a,B) . (a,-B) \<in> R }"
 
-abbreviation "iu_unit" ("1\<^sub>\<union>\<^sub>\<union>")
+abbreviation "iu_unit" (\<open>1\<^sub>\<union>\<^sub>\<union>\<close>)
   where "1\<^sub>\<union>\<^sub>\<union> \<equiv> p_id"
 
-definition ii_unit :: "('a,'a) mrel" ("1\<^sub>\<inter>\<^sub>\<inter>")
+definition ii_unit :: "('a,'a) mrel" (\<open>1\<^sub>\<inter>\<^sub>\<inter>\<close>)
   where "1\<^sub>\<inter>\<^sub>\<inter> \<equiv> { (a,UNIV) | a . True }"
 
 declare inner_intersection_def [mr_simp] inner_complement_def [mr_simp] ii_unit_def [mr_simp]
@@ -187,10 +187,10 @@ lemma ii_sub_idempotent:
   "R \<subseteq> R \<inter>\<inter> R"
   unfolding inner_intersection_def by force
 
-definition inner_Union :: "('i \<Rightarrow> ('a,'b) mrel) \<Rightarrow> 'i set \<Rightarrow> ('a,'b) mrel" ("\<Union>\<Union>_|_" [80,80] 80) where
+definition inner_Union :: "('i \<Rightarrow> ('a,'b) mrel) \<Rightarrow> 'i set \<Rightarrow> ('a,'b) mrel" (\<open>\<Union>\<Union>_|_\<close> [80,80] 80) where
   "\<Union>\<Union>X|I \<equiv> { (a,B) . \<exists>f . B = (\<Union>i\<in>I . f i) \<and> (\<forall>i\<in>I . (a,f i) \<in> X i) }"
 
-definition inner_Intersection :: "('i \<Rightarrow> ('a,'b) mrel) \<Rightarrow> 'i set \<Rightarrow> ('a,'b) mrel" ("\<Inter>\<Inter>_|_" [80,80] 80) where
+definition inner_Intersection :: "('i \<Rightarrow> ('a,'b) mrel) \<Rightarrow> 'i set \<Rightarrow> ('a,'b) mrel" (\<open>\<Inter>\<Inter>_|_\<close> [80,80] 80) where
   "\<Inter>\<Inter>X|I \<equiv> { (a,B) . \<exists>f . B = (\<Inter>i\<in>I . f i) \<and> (\<forall>i\<in>I . (a,f i) \<in> X i) }"
 
 declare inner_Union_def [mr_simp] inner_Intersection_def [mr_simp]
@@ -297,7 +297,7 @@ lemma sp_right_dist_iU:
 
 subsection \<open>Dual\<close>
 
-abbreviation dual :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("_\<^sup>d" [100] 100)
+abbreviation dual :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>_\<^sup>d\<close> [100] 100)
   where "R\<^sup>d \<equiv> \<sim>-R"
 
 lemma dual:
@@ -344,7 +344,7 @@ lemma dual_antidist_oI:
 
 subsection \<open>Co-composition\<close>
 
-definition co_prod :: "('a,'b) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'c) mrel" (infixl "\<odot>" 70) where
+definition co_prod :: "('a,'b) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'c) mrel" (infixl \<open>\<odot>\<close> 70) where
   "R \<odot> S \<equiv> { (a,C) . \<exists>B . (a,B) \<in> R \<and> (\<exists>f . (\<forall>b \<in> B . (b,f b) \<in> S) \<and> C = \<Inter>{ f b | b . b \<in> B }) }"
 
 lemma co_prod_im:
@@ -482,10 +482,10 @@ qed
 
 subsection \<open>Inner order\<close>
 
-definition inner_order_iu :: "'a \<times> 'b set \<Rightarrow> 'a \<times> 'b set \<Rightarrow> bool" (infix "\<preceq>\<^sub>\<union>\<^sub>\<union>" 50) where
+definition inner_order_iu :: "'a \<times> 'b set \<Rightarrow> 'a \<times> 'b set \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>\<union>\<^sub>\<union>\<close> 50) where
   "x \<preceq>\<^sub>\<union>\<^sub>\<union> y \<equiv> fst x = fst y \<and> snd x \<subseteq> snd y"
 
-definition inner_order_ii :: "'a \<times> 'b set \<Rightarrow> 'a \<times> 'b set \<Rightarrow> bool" (infix "\<preceq>\<^sub>\<inter>\<^sub>\<inter>" 50) where
+definition inner_order_ii :: "'a \<times> 'b set \<Rightarrow> 'a \<times> 'b set \<Rightarrow> bool" (infix \<open>\<preceq>\<^sub>\<inter>\<^sub>\<inter>\<close> 50) where
   "x \<preceq>\<^sub>\<inter>\<^sub>\<inter> y \<equiv> fst x = fst y \<and> snd x \<supseteq> snd y"
 
 lemma inner_order_dual:
@@ -497,13 +497,13 @@ interpretation inner_order_iu: order "(\<preceq>\<^sub>\<union>\<^sub>\<union>)"
 
 subsection \<open>Up-closure, down-closure and convex-closure\<close>
 
-abbreviation up :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("_\<up>" [100] 100)
+abbreviation up :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>_\<up>\<close> [100] 100)
   where "R\<up> \<equiv> R \<union>\<union> U"
 
-abbreviation down :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("_\<down>" [100] 100)
+abbreviation down :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>_\<down>\<close> [100] 100)
   where "R\<down> \<equiv> R \<inter>\<inter> U"
 
-abbreviation convex :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("_\<updown>" [100] 100)
+abbreviation convex :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>_\<updown>\<close> [100] 100)
   where "R\<updown> \<equiv> R\<up> \<inter> R\<down>"
 
 lemma up:
@@ -979,16 +979,16 @@ lemma
 
 section \<open>Powerdomain Preorders\<close>
 
-abbreviation lower_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "\<sqsubseteq>\<down>" 50) where
+abbreviation lower_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>\<sqsubseteq>\<down>\<close> 50) where
   "R \<sqsubseteq>\<down> S \<equiv> R \<subseteq> S\<down>"
 
-abbreviation upper_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "\<sqsubseteq>\<up>" 50) where
+abbreviation upper_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>\<sqsubseteq>\<up>\<close> 50) where
   "R \<sqsubseteq>\<up> S \<equiv> S \<subseteq> R\<up>"
 
-abbreviation convex_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "\<sqsubseteq>\<updown>" 50) where
+abbreviation convex_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>\<sqsubseteq>\<updown>\<close> 50) where
   "R \<sqsubseteq>\<updown> S \<equiv> R \<sqsubseteq>\<down> S \<and> R \<sqsubseteq>\<up> S"
 
-abbreviation Convex_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "\<sqsubseteq>\<Updown>" 50) where
+abbreviation Convex_less_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>\<sqsubseteq>\<Updown>\<close> 50) where
   "R \<sqsubseteq>\<Updown> S \<equiv> R \<subseteq> S\<updown>"
 
 lemma lower_less_eq:
@@ -1900,13 +1900,13 @@ lemma univalent_lower_ii:
 
 subsection \<open>Equivalences induced by powerdomain preorders\<close>
 
-abbreviation lower_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "=\<down>" 50) where
+abbreviation lower_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>=\<down>\<close> 50) where
   "R =\<down> S \<equiv> R \<sqsubseteq>\<down> S \<and> S \<sqsubseteq>\<down> R"
 
-abbreviation upper_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "=\<up>" 50) where
+abbreviation upper_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>=\<up>\<close> 50) where
   "R =\<up> S \<equiv> R \<sqsubseteq>\<up> S \<and> S \<sqsubseteq>\<up> R"
 
-abbreviation convex_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl "=\<updown>" 50) where
+abbreviation convex_eq :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> bool" (infixl \<open>=\<updown>\<close> 50) where
   "R =\<updown> S \<equiv> R \<sqsubseteq>\<updown> S \<and> S \<sqsubseteq>\<updown> R"
 
 lemma Convex_eq:
@@ -2400,7 +2400,7 @@ lemma Inter_convex_closed:
   nitpick[expect=genuine,card=1,2]
   oops
 
-abbreviation "convex_iu" (infixl "\<union>\<union>\<updown>" 70)
+abbreviation "convex_iu" (infixl \<open>\<union>\<union>\<updown>\<close> 70)
   where "R \<union>\<union>\<updown> S \<equiv> (R \<union>\<union> S)\<updown>"
 
 lemma convex_iu:
@@ -2435,7 +2435,7 @@ lemma convex_iu_unit:
   "R = R\<updown> \<Longrightarrow> R \<union>\<union>\<updown> 1\<^sub>\<union>\<^sub>\<union> = R"
   by simp
 
-abbreviation "convex_ii" (infixl "\<inter>\<inter>\<updown>" 70)
+abbreviation "convex_ii" (infixl \<open>\<inter>\<inter>\<updown>\<close> 70)
   where "R \<inter>\<inter>\<updown> S \<equiv> (R \<inter>\<inter> S)\<updown>"
 
 lemma convex_ii:
@@ -2478,7 +2478,7 @@ lemma convex_ii_ic:
   "\<sim>(R \<inter>\<inter>\<updown> S) = \<sim>R \<union>\<union>\<updown> \<sim>S"
   by (simp add: ic_antidist_ii ic_convex)
 
-abbreviation convex_sup :: "('a,'b) mrel set \<Rightarrow> ('a,'b) mrel" ("\<Union>\<updown>") where
+abbreviation convex_sup :: "('a,'b) mrel set \<Rightarrow> ('a,'b) mrel" (\<open>\<Union>\<updown>\<close>) where
   "\<Union>\<updown>X \<equiv> (\<Union>X)\<updown>"
 
 lemma convex_sup_convex:
@@ -2554,10 +2554,10 @@ section \<open>Fusion and Fission\<close>
 
 subsection \<open>Atoms and co-atoms\<close>
 
-definition atoms :: "('a,'b) mrel" ("A\<^sub>\<union>\<^sub>\<union>")
+definition atoms :: "('a,'b) mrel" (\<open>A\<^sub>\<union>\<^sub>\<union>\<close>)
   where "A\<^sub>\<union>\<^sub>\<union> \<equiv> { (a,{b}) | a b . True }"
 
-definition co_atoms :: "('a,'b) mrel" ("A\<^sub>\<inter>\<^sub>\<inter>")
+definition co_atoms :: "('a,'b) mrel" (\<open>A\<^sub>\<inter>\<^sub>\<inter>\<close>)
   where "A\<^sub>\<inter>\<^sub>\<inter> \<equiv> { (a,UNIV - {b}) | a b . True }"
 
 declare atoms_def [mr_simp] co_atoms_def [mr_simp]
@@ -2894,7 +2894,7 @@ lemma fusion_deterministic_fixpoint:
   "deterministic R \<longleftrightarrow> R = fus R"
   by (metis deterministic_def fusion_deterministic fusion_iu_total fusion_least lower_reflexive p_prod_comm total_univalent_lower_iu)
 
-abbreviation non_empty :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("ne _" [100] 100)
+abbreviation non_empty :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>ne _\<close> [100] 100)
   where "ne R \<equiv> R \<inter> -1\<^sub>\<union>\<^sub>\<union>"
 
 lemma non_empty:
@@ -3205,7 +3205,7 @@ lemma fission_dist_oU:
 
 subsection \<open>Co-fusion and co-fission\<close>
 
-definition co_fusion :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("\<Sqinter>\<Sqinter> _" [80] 80) where
+definition co_fusion :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>\<Sqinter>\<Sqinter> _\<close> [80] 80) where
   "\<Sqinter>\<Sqinter>R \<equiv> { (a,B) . B = \<Inter>{ C . (a,C) \<in> R } }"
 
 declare co_fusion_def [mr_simp]
@@ -3327,7 +3327,7 @@ lemma co_fusion_deterministic_fixpoint:
    apply (metis deterministic_def co_fusion_deterministic co_fusion_greatest co_fusion_ii_total ii_commute total_univalent_upper_ii upper_reflexive)
   by (metis co_fusion_deterministic)
 
-abbreviation co_fission :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" ("at\<^sub>\<inter>\<^sub>\<inter> _" [80] 80) where
+abbreviation co_fission :: "('a,'b) mrel \<Rightarrow> ('a,'b) mrel" (\<open>at\<^sub>\<inter>\<^sub>\<inter> _\<close> [80] 80) where
   "at\<^sub>\<inter>\<^sub>\<inter> R \<equiv> R\<up> \<inter> A\<^sub>\<inter>\<^sub>\<inter>"
 
 lemma co_fission:
@@ -3479,7 +3479,7 @@ lemma test_oi_closed:
   "test p \<Longrightarrow> test (p \<inter> q)"
   by blast
 
-abbreviation test_complement :: "('a,'a) mrel \<Rightarrow> ('a,'a) mrel" ("\<wrong> _" [80] 80) where
+abbreviation test_complement :: "('a,'a) mrel \<Rightarrow> ('a,'a) mrel" (\<open>\<wrong> _\<close> [80] 80) where
   "\<wrong> R \<equiv> -R \<inter> 1"
 
 lemma test_complement_closed:
@@ -3505,7 +3505,7 @@ lemma test_complement_huntington:
   "test p \<Longrightarrow> p = \<wrong> (\<wrong> p \<union> \<wrong> q) \<union> \<wrong> (\<wrong> p \<union> q)"
   by blast
 
-abbreviation test_implication :: "('a,'a) mrel \<Rightarrow> ('a,'a) mrel \<Rightarrow> ('a,'a) mrel" (infixl "\<rightarrow>" 65) where
+abbreviation test_implication :: "('a,'a) mrel \<Rightarrow> ('a,'a) mrel \<Rightarrow> ('a,'a) mrel" (infixl \<open>\<rightarrow>\<close> 65) where
   "p \<rightarrow> q \<equiv> \<wrong> p \<union> q"
 
 lemma test_implication_closed:
@@ -4409,7 +4409,7 @@ lemma d_dist_iU_oI:
 
 subsection \<open>Left residual\<close>
 
-definition sp_lres :: "('a,'c) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'b) mrel" (infixl "\<oslash>" 65) where
+definition sp_lres :: "('a,'c) mrel \<Rightarrow> ('b,'c) mrel \<Rightarrow> ('a,'b) mrel" (infixl \<open>\<oslash>\<close> 65) where
   "Q \<oslash> R \<equiv> { (a,B) . \<forall>f . (\<forall>b \<in> B . (b,f b) \<in> R) \<longrightarrow> (a,\<Union>{ f b | b . b \<in> B }) \<in> Q }"
 
 declare sp_lres_def [mr_simp]
@@ -4826,16 +4826,16 @@ lemma test_sp_left_dist_iU:
 
 subsection \<open>Modal operations\<close>
 
-definition adia :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" ("| _ \<rangle> _" [50,90] 95) where
+definition adia :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" (\<open>| _ \<rangle> _\<close> [50,90] 95) where
   "|R\<rangle>p \<equiv> { (a,{a}) | a . \<exists>B . (a,B) \<in> R \<and> (\<forall>b\<in>B . (b,{b}) \<in> p) }"
 
-definition abox :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" ("| _ ] _" [50,90] 95) where
+definition abox :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" (\<open>| _ ] _\<close> [50,90] 95) where
   "|R]p \<equiv> { (a,{a}) | a . \<forall>B . (a,B) \<in> R \<longrightarrow> (\<forall>b\<in>B . (b,{b}) \<in> p) }"
 
-definition edia :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" ("| _ \<rangle>\<rangle> _" [50,90] 95) where
+definition edia :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" (\<open>| _ \<rangle>\<rangle> _\<close> [50,90] 95) where
   "|R\<rangle>\<rangle>p \<equiv> { (a,{a}) | a . \<exists>B . (a,B) \<in> R \<and> (\<exists>b\<in>B . (b,{b}) \<in> p) }"
 
-definition ebox :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" ("| _ ]] _" [50,90] 95) where
+definition ebox :: "('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> ('a,'a) mrel" (\<open>| _ ]] _\<close> [50,90] 95) where
   "|R]]p \<equiv> { (a,{a}) | a . \<forall>B . (a,B) \<in> R \<longrightarrow> (\<exists>b\<in>B . (b,{b}) \<in> p) }"
 
 declare adia_def [mr_simp] abox_def [mr_simp] edia_def [mr_simp] ebox_def [mr_simp]
@@ -5762,8 +5762,8 @@ lemma edia_left_dist_oU:
 
 subsection \<open>Goldblatt's axioms with star\<close>
 
-no_notation rtrancl ("(_\<^sup>*)" [1000] 999)
-notation star ("_\<^sup>*" [1000] 999)
+no_notation rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
+notation star (\<open>_\<^sup>*\<close> [1000] 999)
 
 lemma star_induct_1:
   assumes "1 \<subseteq> X"
@@ -6018,7 +6018,7 @@ lemma s_p_id_sp:
 
 subsection \<open>Propositional Hoare logic\<close>
 
-abbreviation hoare :: "('a,'a) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> bool" ("_\<lbrace>_\<rbrace>_" [50,60,50] 95)
+abbreviation hoare :: "('a,'a) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('b,'b) mrel \<Rightarrow> bool" (\<open>_\<lbrace>_\<rbrace>_\<close> [50,60,50] 95)
   where "p\<lbrace>R\<rbrace>q \<equiv> p \<subseteq> |R]q"
 
 abbreviation if_then_else :: "('a,'a) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel \<Rightarrow> ('a,'b) mrel"

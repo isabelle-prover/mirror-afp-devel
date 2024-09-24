@@ -9,8 +9,8 @@ theory Cblinfun_Code_Examples
 begin
 
 hide_const (open) Order.bottom Order.top
-no_notation Lattice.join (infixl "\<squnion>\<index>" 65)
-no_notation Lattice.meet (infixl "\<sqinter>\<index>" 70)
+no_notation Lattice.join (infixl \<open>\<squnion>\<index>\<close> 65)
+no_notation Lattice.meet (infixl \<open>\<sqinter>\<index>\<close> 70)
 
 unbundle lattice_syntax
 unbundle cblinfun_notation

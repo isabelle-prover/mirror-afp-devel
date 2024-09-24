@@ -196,7 +196,7 @@ subsection \<open>Matrix Multiplication\<close>
 fun matrix_times :: "('a::{comm_monoid_add,times},'m,'k) matrix \<Rightarrow> ('a,'k,'n) matrix \<Rightarrow> ('a,'m,'n) matrix" where
   "matrix_times (Matrix A) (Matrix B) = Matrix (\<lambda>i j. sum (\<lambda>k. A i k * B k j) (UNIV::'k atMost set))"
 
-notation matrix_times (infixl "*\<^sub>M" 70)
+notation matrix_times (infixl \<open>*\<^sub>M\<close> 70)
 
 instantiation sqmatrix :: ("{comm_monoid_add,times}",type) times
 begin

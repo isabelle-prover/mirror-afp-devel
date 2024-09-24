@@ -70,22 +70,22 @@ print_translation \<open>
 \<close>
 typ "('l,'t,'x,'m,'w,'o) thread_action"
  
-definition locks_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'l lock_actions" ("\<lbrace>_\<rbrace>\<^bsub>l\<^esub>" [0] 1000) where
+definition locks_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'l lock_actions" (\<open>\<lbrace>_\<rbrace>\<^bsub>l\<^esub>\<close> [0] 1000) where
   "locks_a \<equiv> fst"
 
-definition thr_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('t,'x,'m) new_thread_action list" ("\<lbrace>_\<rbrace>\<^bsub>t\<^esub>" [0] 1000) where
+definition thr_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('t,'x,'m) new_thread_action list" (\<open>\<lbrace>_\<rbrace>\<^bsub>t\<^esub>\<close> [0] 1000) where
   "thr_a \<equiv> fst o snd"
 
-definition cond_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 't conditional_action list" ("\<lbrace>_\<rbrace>\<^bsub>c\<^esub>" [0] 1000) where
+definition cond_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 't conditional_action list" (\<open>\<lbrace>_\<rbrace>\<^bsub>c\<^esub>\<close> [0] 1000) where
   "cond_a = fst o snd o snd"
 
-definition wset_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('t, 'w) wait_set_action list" ("\<lbrace>_\<rbrace>\<^bsub>w\<^esub>" [0] 1000) where
+definition wset_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('t, 'w) wait_set_action list" (\<open>\<lbrace>_\<rbrace>\<^bsub>w\<^esub>\<close> [0] 1000) where
   "wset_a = fst o snd o snd o snd" 
 
-definition interrupt_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 't interrupt_action list" ("\<lbrace>_\<rbrace>\<^bsub>i\<^esub>" [0] 1000) where
+definition interrupt_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 't interrupt_action list" (\<open>\<lbrace>_\<rbrace>\<^bsub>i\<^esub>\<close> [0] 1000) where
   "interrupt_a = fst o snd o snd o snd o snd"
 
-definition obs_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'o list" ("\<lbrace>_\<rbrace>\<^bsub>o\<^esub>" [0] 1000) where
+definition obs_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'o list" (\<open>\<lbrace>_\<rbrace>\<^bsub>o\<^esub>\<close> [0] 1000) where
   "obs_a \<equiv> snd o snd o snd o snd o snd"
 
 lemma locks_a_conv [simp]: "locks_a (ls, ntsjswss) = ls"
@@ -130,7 +130,7 @@ where
 abbreviation empty_ta :: "('l,'t,'x,'m,'w,'o) thread_action" where
   "empty_ta \<equiv> (K$ [], [], [], [], [], [])"
 
-notation (input) empty_ta ("\<epsilon>")
+notation (input) empty_ta (\<open>\<epsilon>\<close>)
 
 text \<open>
   Pretty syntax for specifying thread actions:
@@ -174,12 +174,12 @@ consts inject_thread_action :: "'a \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_acti
 
 nonterminal ta_let and ta_lets
 syntax
-  "_ta_snoc" :: "ta_lets \<Rightarrow> ta_let \<Rightarrow> ta_lets" ("_,/ _")
-  "_ta_block" :: "ta_lets \<Rightarrow> 'a" ("\<lbrace>_\<rbrace>" [0] 1000)
-  "_ta_empty" :: "ta_lets" ("") 
-  "_ta_single" :: "ta_let \<Rightarrow> ta_lets" ("_")
-  "_ta_inject" :: "logic \<Rightarrow> ta_let" ("(_)")
-  "_ta_lock" :: "logic \<Rightarrow> logic \<Rightarrow> ta_let" ("_\<rightarrow>_")
+  "_ta_snoc" :: "ta_lets \<Rightarrow> ta_let \<Rightarrow> ta_lets" (\<open>_,/ _\<close>)
+  "_ta_block" :: "ta_lets \<Rightarrow> 'a" (\<open>\<lbrace>_\<rbrace>\<close> [0] 1000)
+  "_ta_empty" :: "ta_lets" (\<open>\<close>) 
+  "_ta_single" :: "ta_let \<Rightarrow> ta_lets" (\<open>_\<close>)
+  "_ta_inject" :: "logic \<Rightarrow> ta_let" (\<open>(_)\<close>)
+  "_ta_lock" :: "logic \<Rightarrow> logic \<Rightarrow> ta_let" (\<open>_\<rightarrow>_\<close>)
 
 translations
   "_ta_block _ta_empty" == "CONST empty_ta"

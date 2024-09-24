@@ -57,7 +57,7 @@ text \<open>type for decimal floating point numbers
   (currently just for printing, TODO? generalize theory Float for arbitrary base)\<close>
 
 datatype float10 = Float10 (mantissa10: int) (exponent10: int)
-notation Float10 (infix "\<e>" 999)
+notation Float10 (infix \<open>\<e>\<close> 999)
 
 partial_function (tailrec) normalize_float10
   where [code]: "normalize_float10 f =

@@ -16,7 +16,7 @@ subsection \<open>Validity of Hoare Tuples: \<open>\<Gamma>\<Turnstile>\<^bsub>/
 
 definition
   valid :: "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com,'s assn,'s assn] => bool"
-                ("_ \<Turnstile>\<^bsub>'/_\<^esub>/ _ _ _, _"  [61,60,1000, 20, 1000,1000] 60)
+                (\<open>_ \<Turnstile>\<^bsub>'/_\<^esub>/ _ _ _, _\<close>  [61,60,1000, 20, 1000,1000] 60)
 where
   "\<Gamma> \<Turnstile>\<^bsub>/F\<^esub> P c Q,A \<equiv> \<forall>s t c'. \<Gamma>\<turnstile>(c,s) \<rightarrow>\<^sup>* (c', t) \<longrightarrow> final (c', t ) \<longrightarrow> s \<in> Normal ` P \<longrightarrow> t \<notin> Fault ` F  
                       \<longrightarrow>  c' = Skip \<and> t \<in> Normal ` Q \<or> c' = Throw \<and> t \<in> Normal ` A"
@@ -126,11 +126,11 @@ subsection \<open>The Owicki-Gries Logic for COMPLX\<close>
 inductive
   oghoare :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set
               \<Rightarrow> ('s, 'p, 'f) ann \<Rightarrow> ('s,'p,'f) com \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> bool"
-    ("(4_, _/ \<turnstile>\<^bsub>'/_\<^esub> (_/ (_)/ _, _))" [60,60,60,1000,1000,1000,1000]60)
+    (\<open>(4_, _/ \<turnstile>\<^bsub>'/_\<^esub> (_/ (_)/ _, _))\<close> [60,60,60,1000,1000,1000,1000]60)
 and
   oghoare_seq :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set
               \<Rightarrow> 's assn \<Rightarrow> ('s, 'p, 'f) ann \<Rightarrow> ('s,'p,'f) com \<Rightarrow> 's assn \<Rightarrow> 's assn \<Rightarrow> bool"
-    ("(4_, _/ \<tturnstile>\<^bsub>'/_\<^esub> (_/ _/ (_)/ _, _))" [60,60,60,1000,1000,1000,1000]60)
+    (\<open>(4_, _/ \<tturnstile>\<^bsub>'/_\<^esub> (_/ _/ (_)/ _, _))\<close> [60,60,60,1000,1000,1000,1000]60)
 
 where
  Skip: " \<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> (AnnExpr Q) Skip Q,A"

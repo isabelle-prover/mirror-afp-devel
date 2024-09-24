@@ -15,22 +15,22 @@ begin
    -------------------------------
    ------------------------------- *)
 
-abbreviation multiset_abbrev ("\<LM> _  \<RM>" [75]75) where
+abbreviation multiset_abbrev (\<open>\<LM> _  \<RM>\<close> [75]75) where
    "\<LM> A \<RM> \<equiv> {# A #}"
 
-abbreviation multiset_empty ("\<Empt>" 75) where
+abbreviation multiset_empty (\<open>\<Empt>\<close> 75) where
   "\<Empt> \<equiv> {#}"
 
 abbreviation
-multiset_plus (infixl "\<oplus>" 80) where
+multiset_plus (infixl \<open>\<oplus>\<close> 80) where
    "(\<Gamma> :: 'a multiset) \<oplus> (A :: 'a) \<equiv> \<Gamma> + \<LM>A\<RM>"
 abbreviation
-multiset_minus (infixl "\<ominus>" 80) where
+multiset_minus (infixl \<open>\<ominus>\<close> 80) where
    "(\<Gamma> :: 'a multiset) \<ominus>  (A :: 'a) \<equiv> \<Gamma> - \<LM>A\<RM>"
 
 
 abbreviation
-multiset_map (infixl "\<cdot>\<cdot>" 100) where
+multiset_map (infixl \<open>\<cdot>\<cdot>\<close> 100) where
    "(f :: 'a \<Rightarrow> 'a)\<cdot>\<cdot>(\<Gamma> :: 'a multiset) \<equiv> image_mset f \<Gamma>" 
 
 
@@ -148,7 +148,7 @@ datatype ('a, 'b) form = At "nat"
 datatype_compat form
 
 (*<*)
-datatype ('a,'b) sequent = Sequent "(('a,'b) form) multiset" "(('a,'b) form) multiset" (" (_) \<Rightarrow>* (_)" [6,6] 5)
+datatype ('a,'b) sequent = Sequent "(('a,'b) form) multiset" "(('a,'b) form) multiset" (\<open> (_) \<Rightarrow>* (_)\<close> [6,6] 5)
 
 type_synonym ('a,'b) rule = "('a,'b) sequent list * ('a,'b) sequent"
 
@@ -165,7 +165,7 @@ consts
   uniqueConclusion :: "('a,'b) rule set \<Rightarrow> bool"
 
   (* Transform a multiset using a modal operator.  "Boxing" a context, effectively *)
-  modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset" (infixl "\<cdot>" 200)
+  modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset" (infixl \<open>\<cdot>\<close> 200)
 
   (* functions to get at components of sequents *)
 
@@ -2252,17 +2252,17 @@ qed
 
 
 datatype C = con
-datatype BD = BOX ("\<box>")| DIAMOND ("\<diamond>")
+datatype BD = BOX (\<open>\<box>\<close>)| DIAMOND (\<open>\<diamond>\<close>)
 
 type_synonym CDBD_form = "(C,BD) form"
 
-abbreviation con_form (infixl "\<and>*" 80) where
+abbreviation con_form (infixl \<open>\<and>*\<close> 80) where
    "p \<and>* (q :: CDBD_form) \<equiv> Compound con [p,q]"
 
-abbreviation BOX_form ( "\<box> _" [80]80) where
+abbreviation BOX_form ( \<open>\<box> _\<close> [80]80) where
    "\<box> (p:: CDBD_form)  \<equiv> Modal \<box> [p]"
 
-abbreviation DIAMOND_form ("\<diamond> _" [80]80) where
+abbreviation DIAMOND_form (\<open>\<diamond> _\<close> [80]80) where
    "\<diamond> (p :: CDBD_form) \<equiv> Modal \<diamond> [p]"
 
 inductive_set "g3up"

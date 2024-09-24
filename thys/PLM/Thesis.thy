@@ -9,11 +9,11 @@ begin
 (*<*)
 (* Pretty printing settings for antiquotations. *)
 notation (latex output)
-  validity_in ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close> in _]")
+  validity_in (\<open>[\<^latex>\<open>\embeddedstyle{\<close>_\<^latex>\<open>}\<close> in _]\<close>)
 notation (latex output)
-  actual_validity ("[\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>]")
+  actual_validity (\<open>[\<^latex>\<open>\embeddedstyle{\<close>_\<^latex>\<open>}\<close>]\<close>)
 notation (latex output)
-  Axioms.axiom ("[[ \<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close> ]]")
+  Axioms.axiom (\<open>[[ \<^latex>\<open>\embeddedstyle{\<close>_\<^latex>\<open>}\<close> ]]\<close>)
 definition embedded_style where "embedded_style \<equiv> id"
 lemma embedded_meta_def: "(A \<equiv> B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
 lemma embedded_meta_eq: "(A = B) \<Longrightarrow> (embedded_style A) = B" unfolding embedded_style_def by auto
@@ -22,7 +22,7 @@ lemma embedded_def: "(A \<equiv> B) \<Longrightarrow> (embedded_style A) = (embe
 lemma embedded_eq: "(A = B) \<Longrightarrow> (embedded_style A) = (embedded_style B)"
     unfolding embedded_style_def by auto
 notation (latex output)
-  embedded_style ("\<^latex>\<open>\\embeddedstyle{\<close>_\<^latex>\<open>}\<close>")
+  embedded_style (\<open>\<^latex>\<open>\embeddedstyle{\<close>_\<^latex>\<open>}\<close>\<close>)
 translations
   "x" <= "CONST make\<kappa> x"
 translations
@@ -44,25 +44,25 @@ translations
 translations
   "p" <= "CONST eval\<Pi>\<^sub>3 p"
 notation (latex output)
-  that ("\<^bold>\<iota>x . _ x")
+  that (\<open>\<^bold>\<iota>x . _ x\<close>)
 notation (latex output)
-  forall\<^sub>\<nu> ("\<^bold>\<forall>\<^sub>\<nu> x . _ x")
+  forall\<^sub>\<nu> (\<open>\<^bold>\<forall>\<^sub>\<nu> x . _ x\<close>)
 notation (latex output)
-  forall\<^sub>0 ("\<^bold>\<forall>\<^sub>0 p . _ p")
+  forall\<^sub>0 (\<open>\<^bold>\<forall>\<^sub>0 p . _ p\<close>)
 notation (latex output)
-  forall\<^sub>1 ("\<^bold>\<forall>\<^sub>1 F . _ F")
+  forall\<^sub>1 (\<open>\<^bold>\<forall>\<^sub>1 F . _ F\<close>)
 notation (latex output)
-  forall\<^sub>2 ("\<^bold>\<forall>\<^sub>2 F . _ F")
+  forall\<^sub>2 (\<open>\<^bold>\<forall>\<^sub>2 F . _ F\<close>)
 notation (latex output)
-  forall\<^sub>3 ("\<^bold>\<forall>\<^sub>3 F . _ F")
+  forall\<^sub>3 (\<open>\<^bold>\<forall>\<^sub>3 F . _ F\<close>)
 notation (latex output)
-  forall ("\<^bold>\<forall> \<alpha> . _ \<alpha>")
+  forall (\<open>\<^bold>\<forall> \<alpha> . _ \<alpha>\<close>)
 notation (latex output)
-  exists ("\<^bold>\<exists> \<alpha> . _ \<alpha>")
+  exists (\<open>\<^bold>\<exists> \<alpha> . _ \<alpha>\<close>)
 notation (latex output)
-  exists_unique ("\<^bold>\<exists>! \<alpha> . _ \<alpha>")
+  exists_unique (\<open>\<^bold>\<exists>! \<alpha> . _ \<alpha>\<close>)
 notation (latex output)
-  lambdabinder1 ("\<^bold>\<lambda>x. _ x")
+  lambdabinder1 (\<open>\<^bold>\<lambda>x. _ x\<close>)
 translations
   (type) "\<alpha>" <= (type) "\<Pi>\<^sub>1 set"
 (* auxiliary lemmata and attributes to aid in pretty printing *)
@@ -81,8 +81,8 @@ attribute_setup expand3 = \<open>
   Scan.succeed (Thm.rule_attribute [] 
     (fn _ => fn thm => thm RS @{thm expand_def3}))
 \<close>
-no_syntax "_list" :: "list_args \<Rightarrow> 'a list" ("[(_)]") 
-no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" ("[(_)]")
+no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) 
+no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" (\<open>[(_)]\<close>)
 (*>*)
   
 (* abstract in thesis/root.tex *)

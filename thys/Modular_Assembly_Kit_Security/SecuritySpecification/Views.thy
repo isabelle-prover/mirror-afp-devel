@@ -10,17 +10,17 @@ record 'e V_rec =
 
 (* syntax abbreviations for V_rec *)
 abbreviation VrecV :: "'e V_rec \<Rightarrow> 'e set"
-("V\<^bsub>_\<^esub>" [100] 1000)
+(\<open>V\<^bsub>_\<^esub>\<close> [100] 1000)
 where
 "V\<^bsub>v\<^esub> \<equiv> (V v)"
 
 abbreviation VrecN :: "'e V_rec \<Rightarrow> 'e set"
-("N\<^bsub>_\<^esub>" [100] 1000)
+(\<open>N\<^bsub>_\<^esub>\<close> [100] 1000)
 where
 "N\<^bsub>v\<^esub> \<equiv> (N v)"
 
 abbreviation VrecC :: "'e V_rec \<Rightarrow> 'e set"
-("C\<^bsub>_\<^esub>" [100] 1000)
+(\<open>C\<^bsub>_\<^esub>\<close> [100] 1000)
 where
 "C\<^bsub>v\<^esub> \<equiv> (C v)"
 

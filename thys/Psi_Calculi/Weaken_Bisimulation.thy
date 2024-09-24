@@ -32,9 +32,9 @@ where
 monos weakenMonoCoinduct weakenMonoCoinduct2
 
 abbreviation
-  weakenBisimJudge ("_ \<rhd> _ \<approx>\<^sub>w _" [70, 70, 70] 65) where "\<Psi> \<rhd> P \<approx>\<^sub>w Q \<equiv> (\<Psi>, P, Q) \<in> weakenBisim"
+  weakenBisimJudge (\<open>_ \<rhd> _ \<approx>\<^sub>w _\<close> [70, 70, 70] 65) where "\<Psi> \<rhd> P \<approx>\<^sub>w Q \<equiv> (\<Psi>, P, Q) \<in> weakenBisim"
 abbreviation
-  weakenBisimNilJudge ("_ \<approx>\<^sub>w _" [70, 70] 65) where "P \<approx>\<^sub>w Q \<equiv> \<one> \<rhd> P \<approx>\<^sub>w Q"
+  weakenBisimNilJudge (\<open>_ \<approx>\<^sub>w _\<close> [70, 70] 65) where "P \<approx>\<^sub>w Q \<equiv> \<one> \<rhd> P \<approx>\<^sub>w Q"
 
 lemma weakenBisimCoinductAux[consumes 1]:
   fixes F :: 'b

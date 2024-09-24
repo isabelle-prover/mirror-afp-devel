@@ -16,7 +16,7 @@ subsection \<open>Multimagmas\<close>
 text \<open>Multimagmas are sets equipped with multioperations. Multioperations are isomorphic to ternary relations.\<close>
 
 class multimagma =
-  fixes mcomp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" (infixl "\<odot>" 70)
+  fixes mcomp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" (infixl \<open>\<odot>\<close> 70)
 
 begin
 
@@ -26,7 +26,7 @@ abbreviation "\<Delta> x y \<equiv> (x \<odot> y \<noteq> {})"
 
 text \<open>I extend the multioperation to powersets\<close>
 
-definition conv :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl "\<star>" 70) where
+definition conv :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set" (infixl \<open>\<star>\<close> 70) where
   "X \<star> Y = (\<Union>x \<in> X. \<Union>y \<in> Y. x \<odot> y)"
 
 lemma conv_exp: "X \<star> Y = {z. \<exists>x y. z \<in> x \<odot> y \<and> x \<in> X \<and> y \<in> Y}"
@@ -87,8 +87,8 @@ subsection \<open>st-Multimagmas\<close>
 text \<open>I equip multimagmas with source and target maps.\<close>
 
 class st_op =
-  fixes src :: "'a \<Rightarrow> 'a" ("\<sigma>")
-  and tgt :: "'a \<Rightarrow> 'a" ("\<tau>")
+  fixes src :: "'a \<Rightarrow> 'a" (\<open>\<sigma>\<close>)
+  and tgt :: "'a \<Rightarrow> 'a" (\<open>\<tau>\<close>)
 
 class st_multimagma = multimagma + st_op +
   assumes Dst: "x \<odot> y \<noteq> {} \<Longrightarrow> \<tau> x = \<sigma> y"
@@ -620,7 +620,7 @@ lemma fun_in_sgl: "(x \<in> y \<odot> z) = ({x} = y \<odot> z)"
 
 text \<open>I introduce a partial operation.\<close>
 
-definition pcomp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<otimes>" 70) where
+definition pcomp :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<otimes>\<close> 70) where
   "x \<otimes> y = (THE z. z \<in> x \<odot> y)"
 
 lemma functionality_var: "\<Delta> x y \<Longrightarrow> (\<exists>!z. z \<in> x \<odot> y)"
@@ -713,7 +713,7 @@ locale category =
   fixes id :: "'objects \<Rightarrow> 'arrows"
   and dom :: "'arrows \<Rightarrow> 'objects"
   and cod :: "'arrows \<Rightarrow> 'objects"
-  and comp :: "'arrows \<Rightarrow> 'arrows \<Rightarrow> 'arrows" (infixl "\<bullet>" 70)
+  and comp :: "'arrows \<Rightarrow> 'arrows \<Rightarrow> 'arrows" (infixl \<open>\<bullet>\<close> 70)
   assumes dom_id [simp]: "dom (id X) = X"
   and cod_id [simp]: "cod (id X) = X"
   and id_dom [simp]: "id (dom f) \<bullet> f = f"

@@ -47,7 +47,7 @@ type_synonym choice = "real + test"
 type_synonym state = "var \<Rightarrow> nat"
 
 syntax
- "_assign" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("_ ::= _" [1000, 61] 61)
+ "_assign" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (\<open>_ ::= _\<close> [1000, 61] 61)
 
 syntax_consts
   "_assign" == Assign
@@ -131,13 +131,13 @@ lemma compatPrchSyntactic[simp]: "Example_PL.compatCh (Inl p)"
 lemma compatIfchSyntactic[simp]: "Example_PL.compatCh (Inr tst) \<longleftrightarrow> Example_PL.compatTst tst"
   unfolding Example_PL.compatCh_def Example_PL.compatTst_def by auto
 
-abbreviation Ch_half ("Ch\<^sub>\<onehalf>") where "Ch\<^sub>\<onehalf> \<equiv> Ch (Inl (1/2))"
+abbreviation Ch_half (\<open>Ch\<^sub>\<onehalf>\<close>) where "Ch\<^sub>\<onehalf> \<equiv> Ch (Inl (1/2))"
 abbreviation If where "If tst \<equiv> Ch (Inr tst)"
 
 abbreviation "siso c \<equiv> Example_PL.siso c"
 abbreviation "discr c \<equiv> Example_PL.discr c"
-abbreviation Sbis_abbrev (infix "\<approx>s" 55) where "c1 \<approx>s c2 \<equiv> (c1,c2) \<in> Example_PL.Sbis"
-abbreviation ZObis_abbrev (infix "\<approx>01" 55) where "c1 \<approx>01 c2 \<equiv> (c1,c2) \<in> Example_PL.ZObis"
+abbreviation Sbis_abbrev (infix \<open>\<approx>s\<close> 55) where "c1 \<approx>s c2 \<equiv> (c1,c2) \<in> Example_PL.Sbis"
+abbreviation ZObis_abbrev (infix \<open>\<approx>01\<close> 55) where "c1 \<approx>01 c2 \<equiv> (c1,c2) \<in> Example_PL.ZObis"
 
 abbreviation "SC_siso c \<equiv> Example_PL.SC_siso c"
 abbreviation "SC_discr c \<equiv> Example_PL.SC_discr c"

@@ -15,20 +15,20 @@ begin
 context JVM_heap_base begin
 
 definition confT :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty err \<Rightarrow> bool"
-    ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
+    (\<open>_,_ \<turnstile> _ :\<le>\<^sub>\<top> _\<close> [51,51,51,51] 50)
 where
   "P,h \<turnstile> v :\<le>\<^sub>\<top> E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
 notation (ASCII) 
-  confT  ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+  confT  (\<open>_,_ |- _ :<=T _\<close> [51,51,51,51] 50)
 
 abbreviation confTs :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool"
-  ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
+  (\<open>_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _\<close> [51,51,51,51] 50)
 where
   "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
 notation (ASCII)
-  confTs  ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
+  confTs  (\<open>_,_ |- _ [:<=T] _\<close> [51,51,51,51] 50)
 
 definition conf_f :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> ty\<^sub>i \<Rightarrow> 'addr bytecode \<Rightarrow> 'addr frame \<Rightarrow> bool"
 where
@@ -71,10 +71,10 @@ where
                     conf_xcp P h xp (is ! pc) ))"
 
 notation
-  correct_state  ("_ \<turnstile> _:_ \<surd>"  [61,0,0] 61)
+  correct_state  (\<open>_ \<turnstile> _:_ \<surd>\<close>  [61,0,0] 61)
 
 notation (ASCII)
-  correct_state  ("_ |- _:_ [ok]"  [61,0,0] 61)
+  correct_state  (\<open>_ |- _:_ [ok]\<close>  [61,0,0] 61)
 
 end
 

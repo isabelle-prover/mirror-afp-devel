@@ -36,7 +36,7 @@ section \<open>Excluded or\<close>
 text \<open>Although the proof goes through with regular disjunction, Fitch phrases the judge's
 proposition using exclusive or, so we add syntax for that.\<close>
 
-abbreviation Xor :: "fm \<Rightarrow> fm \<Rightarrow> fm" (infix "XOR" 120)
+abbreviation Xor :: "fm \<Rightarrow> fm \<Rightarrow> fm" (infix \<open>XOR\<close> 120)
  where "Xor A B \<equiv> (A OR B) AND ((Neg A) OR (Neg B))"
 
 section \<open>Formulas with variables\<close>
@@ -58,19 +58,19 @@ In particular, we can use @{command datatype} and @{command fun}.
 datatype hfm =
    HVar name
  | HFm fm
- | HDisj hfm hfm (infixr "HOR" 130)
+ | HDisj hfm hfm (infixr \<open>HOR\<close> 130)
  | HNeg  hfm
 
-abbreviation HImp :: "hfm \<Rightarrow> hfm \<Rightarrow> hfm"  (infixr "HIMP" 125)
+abbreviation HImp :: "hfm \<Rightarrow> hfm \<Rightarrow> hfm"  (infixr \<open>HIMP\<close> 125)
   where "HImp A B \<equiv> HDisj (HNeg A) B"
 
-definition HConj :: "hfm \<Rightarrow> hfm \<Rightarrow> hfm"   (infixr "HAND" 135)
+definition HConj :: "hfm \<Rightarrow> hfm \<Rightarrow> hfm"   (infixr \<open>HAND\<close> 135)
   where "HConj A B \<equiv> HNeg (HDisj (HNeg A) (HNeg B))"
 
-abbreviation HXor :: "hfm \<Rightarrow> hfm \<Rightarrow> hfm" (infix "HXOR" 120)
+abbreviation HXor :: "hfm \<Rightarrow> hfm \<Rightarrow> hfm" (infix \<open>HXOR\<close> 120)
  where "HXor A B \<equiv> (A HOR B) HAND (HNeg A HOR HNeg B)"
 
-fun  subst_hfm :: "hfm \<Rightarrow> name \<Rightarrow> fm \<Rightarrow> hfm" ("_'(_:::=_')" [1000, 0, 0] 200)
+fun  subst_hfm :: "hfm \<Rightarrow> name \<Rightarrow> fm \<Rightarrow> hfm" (\<open>_'(_:::=_')\<close> [1000, 0, 0] 200)
   where
     "(HVar name)(i:::=x) = (if i = name then HFm x else HVar name)"
   | "(HDisj A B)(i:::=x) = HDisj (A(i:::=x)) (B(i:::=x))"

@@ -59,11 +59,11 @@ that is closed under finite intersections and infinite unions.\<close>
 type_synonym 'a top = "'a set set"
 
 definition
-  carr :: "'a top \<Rightarrow> 'a set" ("carrier\<index>") where
+  carr :: "'a top \<Rightarrow> 'a set" (\<open>carrier\<index>\<close>) where
   "carr T = \<Union>T"
 
 definition
-  is_open :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" ("_ open\<index>" [50] 50) where
+  is_open :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" (\<open>_ open\<index>\<close> [50] 50) where
   "is_open T s \<longleftrightarrow> s \<in> T"
 
 
@@ -438,7 +438,7 @@ lemma ordertop_topology [iff]:
 subsection\<open>Neighbourhoods\<close>
 
 definition
-  nhd :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set set"  ( "nhds\<index>") where
+  nhd :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set set"  ( \<open>nhds\<index>\<close>) where
   "nhd T x = {U. U \<subseteq> carr T \<and> (\<exists> m. is_open T m \<and> x\<in>m \<and> m \<subseteq> U)}"
 
 lemma (in carrier) nhdI [intro]:
@@ -525,7 +525,7 @@ subsection\<open>Closed sets\<close>
 text\<open>A set is closed if its complement is open.\<close>
 
 definition
-  is_closed :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" ("_ closed\<index>" [50] 50) where
+  is_closed :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool" (\<open>_ closed\<index>\<close> [50] 50) where
   "is_closed T s \<longleftrightarrow> is_open T (carr T - s)"
 
 lemma (in carrier) closedI:
@@ -619,15 +619,15 @@ qed
 subsection\<open>Core, closure, and frontier of a set\<close>
 
 definition
-  cor :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("core\<index>") where
+  cor :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          (\<open>core\<index>\<close>) where
   "cor T s = (\<Union>{m. is_open T m \<and> m \<subseteq> s})"
 
 definition
-  clsr :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("closure\<index>") where
+  clsr :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          (\<open>closure\<index>\<close>) where
   "clsr T a = (\<Inter>{c. is_closed T c \<and> a \<subseteq> c})"
 
 definition
-  frt :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          ("frontier\<index>") where
+  frt :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set"          (\<open>frontier\<index>\<close>) where
   "frt T s = clsr T s - cor T s"
 
 
@@ -807,7 +807,7 @@ qed
 subsubsection\<open>Adherent points\<close>
 
 definition
-  adhs :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool"     (infix "adh\<index>" 50) where
+  adhs :: "'a top \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool"     (infix \<open>adh\<index>\<close> 50) where
   "adhs T x A \<longleftrightarrow> (\<forall> U \<in> nhd T x. U \<inter> A \<noteq> {})"
 
 lemma (in carrier) adhCE [elim?]:
@@ -951,11 +951,11 @@ qed
 subsection\<open>Dense sets\<close>
 
 definition
-  is_densein :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "densein\<index>" 50) where
+  is_densein :: "'a top \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix \<open>densein\<index>\<close> 50) where
   "is_densein T A B \<longleftrightarrow> B \<subseteq> clsr T A"
 
 definition
-  is_dense :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool"             ("_ dense\<index>" [50] 50) where
+  is_dense :: "'a top \<Rightarrow> 'a set \<Rightarrow> bool"             (\<open>_ dense\<index>\<close> [50] 50) where
   "is_dense T A = is_densein T A (carr T)"
 
 
@@ -1224,18 +1224,18 @@ qed
 subsection\<open>Filters\<close>
 
 definition
-  fbas :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("fbase\<index>") where
+  fbas :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" (\<open>fbase\<index>\<close>) where
   "fbas T B \<longleftrightarrow> {} \<notin> B \<and> B \<noteq> {} \<and>
               (\<forall> a\<in>B. \<forall> b\<in>B. \<exists> c\<in>B. c \<subseteq> a \<inter> b)"
 
 definition
-  filters :: "'a top \<Rightarrow> 'a set set set"      ("Filters\<index>") where
+  filters :: "'a top \<Rightarrow> 'a set set set"      (\<open>Filters\<index>\<close>) where
   "filters T = { F. {} \<notin> F \<and> \<Union>F \<subseteq> carr T \<and>
                 (\<forall> A B. A\<in>F \<and> B\<in>F \<longrightarrow> A\<inter>B \<in> F) \<and>
                 (\<forall> A B. A\<in>F \<and> A\<subseteq>B \<and> B \<subseteq> carr T \<longrightarrow> B \<in> F) }"
 
 definition
-  ultr :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool"      ("ultra\<index>") where
+  ultr :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool"      (\<open>ultra\<index>\<close>) where
   "ultr T F \<longleftrightarrow> (\<forall> A. A \<subseteq> carr T \<longrightarrow> A \<in> F \<or> (carr T - A) \<in> F)"
 
 lemma filtersI [intro]:
@@ -1531,22 +1531,22 @@ qed
 subsection \<open>Convergence\<close>
 
 definition
-  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<longlongrightarrow>\<index> _)" [55, 55] 55) where
+  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<longlongrightarrow>\<index> _)\<close> [55, 55] 55) where
   "converges T F x \<longleftrightarrow> nhd T x \<subseteq> F"
 
 notation
-  converges  ("(_ \<turnstile> _ \<longrightarrow> _)" [55, 55, 55] 55)
+  converges  (\<open>(_ \<turnstile> _ \<longrightarrow> _)\<close> [55, 55, 55] 55)
 
 definition
-  cnvgnt :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" ("_ convergent\<index>" [50] 50) where
+  cnvgnt :: "'a top \<Rightarrow> 'a set set \<Rightarrow> bool" (\<open>_ convergent\<index>\<close> [50] 50) where
   "cnvgnt T F \<longleftrightarrow> (\<exists> x \<in> carr T. converges T F x)"
 
 definition
-  limites :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a set" ("lims\<index>") where
+  limites :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a set" (\<open>lims\<index>\<close>) where
   "limites T F = {x. x \<in> carr T \<and> T \<turnstile> F \<longrightarrow> x}"
 
 definition
-  limes :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a" ("lim\<index>") where
+  limes :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a" (\<open>lim\<index>\<close>) where
   "limes T F = (THE x. x \<in> carr T \<and> T \<turnstile> F \<longrightarrow> x)"
 
 

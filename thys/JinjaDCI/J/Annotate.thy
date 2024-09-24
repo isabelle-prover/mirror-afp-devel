@@ -12,19 +12,19 @@ theory Annotate imports WellType begin
 
 (*<*)
 abbreviation (output)
-  unanFAcc :: "expr \<Rightarrow> vname \<Rightarrow> expr" ("(_\<bullet>_)" [10,10] 90) where
+  unanFAcc :: "expr \<Rightarrow> vname \<Rightarrow> expr" (\<open>(_\<bullet>_)\<close> [10,10] 90) where
   "unanFAcc e F == FAcc e F []"
 
 abbreviation (output)
-  unanFAss :: "expr \<Rightarrow> vname \<Rightarrow> expr \<Rightarrow> expr" ("(_\<bullet>_ := _)" [10,0,90] 90) where
+  unanFAss :: "expr \<Rightarrow> vname \<Rightarrow> expr \<Rightarrow> expr" (\<open>(_\<bullet>_ := _)\<close> [10,0,90] 90) where
   "unanFAss e F e' == FAss e F [] e'"
 (*>*)
 
 inductive
   Anno :: "[J_prog,env, expr     , expr] \<Rightarrow> bool"
-         ("_,_ \<turnstile> _ \<leadsto> _"   [51,0,0,51]50)
+         (\<open>_,_ \<turnstile> _ \<leadsto> _\<close>   [51,0,0,51]50)
   and Annos :: "[J_prog,env, expr list, expr list] \<Rightarrow> bool"
-         ("_,_ \<turnstile> _ [\<leadsto>] _" [51,0,0,51]50)
+         (\<open>_,_ \<turnstile> _ [\<leadsto>] _\<close> [51,0,0,51]50)
   for P :: J_prog
 where
   

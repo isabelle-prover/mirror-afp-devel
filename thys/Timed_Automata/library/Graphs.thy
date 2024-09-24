@@ -286,11 +286,11 @@ next
   qed
 qed
 
-notation E ("_ \<rightarrow> _" [100, 100] 40)
+notation E (\<open>_ \<rightarrow> _\<close> [100, 100] 40)
 
-abbreviation reaches ("_ \<rightarrow>* _" [100, 100] 40) where "reaches x y \<equiv> E\<^sup>*\<^sup>* x y"
+abbreviation reaches (\<open>_ \<rightarrow>* _\<close> [100, 100] 40) where "reaches x y \<equiv> E\<^sup>*\<^sup>* x y"
 
-abbreviation reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40) where "reaches1 x y \<equiv> E\<^sup>+\<^sup>+ x y"
+abbreviation reaches1 (\<open>_ \<rightarrow>\<^sup>+ _\<close> [100, 100] 40) where "reaches1 x y \<equiv> E\<^sup>+\<^sup>+ x y"
 
 lemma steps_reaches:
   "hd xs \<rightarrow>* last xs" if "steps xs"
@@ -793,12 +793,12 @@ end (* Subgraph Node *)
 locale Subgraph_Node_Defs_Notation = Subgraph_Node_Defs
 begin
 
-no_notation E ("_ \<rightarrow> _" [100, 100] 40)
-notation E' ("_ \<rightarrow> _" [100, 100] 40)
-no_notation reaches ("_ \<rightarrow>* _" [100, 100] 40)
-notation G'.reaches ("_ \<rightarrow>* _" [100, 100] 40)
-no_notation reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40)
-notation G'.reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40)
+no_notation E (\<open>_ \<rightarrow> _\<close> [100, 100] 40)
+notation E' (\<open>_ \<rightarrow> _\<close> [100, 100] 40)
+no_notation reaches (\<open>_ \<rightarrow>* _\<close> [100, 100] 40)
+notation G'.reaches (\<open>_ \<rightarrow>* _\<close> [100, 100] 40)
+no_notation reaches1 (\<open>_ \<rightarrow>\<^sup>+ _\<close> [100, 100] 40)
+notation G'.reaches1 (\<open>_ \<rightarrow>\<^sup>+ _\<close> [100, 100] 40)
 
 end (* Subgraph_Node_Defs_Notation *)
 
@@ -1061,7 +1061,7 @@ end (* Graph Invariant *)
 section \<open>Simulations and Bisimulations\<close>
 locale Simulation_Defs =
   fixes A :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and B :: "'b \<Rightarrow> 'b \<Rightarrow> bool"
-    and sim :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixr "\<sim>" 60)
+    and sim :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixr \<open>\<sim>\<close> 60)
 begin
 
 sublocale A: Graph_Defs A .

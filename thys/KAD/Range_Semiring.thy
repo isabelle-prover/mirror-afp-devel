@@ -16,7 +16,7 @@ subsection \<open>Range Semirings\<close>
 text \<open>We set up the duality between domain and antidomain semirings on the one hand and range and antirange semirings on the other hand.\<close>
 
 class range_op =
-  fixes range_op :: "'a \<Rightarrow> 'a" ("r")
+  fixes range_op :: "'a \<Rightarrow> 'a" (\<open>r\<close>)
 
 class range_semiring = semiring_one_zero + plus_ord + range_op +
   assumes rsr1 [simp]: "x + (x \<cdot> r x) = x \<cdot> r x"
@@ -27,10 +27,10 @@ class range_semiring = semiring_one_zero + plus_ord + range_op +
 
 begin
 
-definition bd :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<langle>_| _" [61,81] 82) where
+definition bd :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<langle>_| _\<close> [61,81] 82) where
   "\<langle>x| y = r (y \<cdot> x)"
 
-no_notation range_op ("r")
+no_notation range_op (\<open>r\<close>)
 
 end
 
@@ -57,7 +57,7 @@ qed
 subsection \<open>Antirange Semirings\<close>
 
 class antirange_op =
-  fixes antirange_op :: "'a \<Rightarrow> 'a" ("ar _" [999] 1000)
+  fixes antirange_op :: "'a \<Rightarrow> 'a" (\<open>ar _\<close> [999] 1000)
 
 class antirange_semiring = semiring_one_zero + plus_ord + antirange_op +
   assumes ars1 [simp]: "x \<cdot> ar x = 0"
@@ -66,15 +66,15 @@ class antirange_semiring = semiring_one_zero + plus_ord + antirange_op +
 
 begin
 
-no_notation bd ("\<langle>_| _" [61,81] 82)
+no_notation bd (\<open>\<langle>_| _\<close> [61,81] 82)
 
-definition ars_r :: "'a \<Rightarrow> 'a" ("r") where
+definition ars_r :: "'a \<Rightarrow> 'a" (\<open>r\<close>) where
   "r x = ar (ar x)"
 
-definition bdia :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<langle>_| _" [61,81] 82) where
+definition bdia :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>\<langle>_| _\<close> [61,81] 82) where
   "\<langle>x| y = ar ar (y \<cdot> x)"
 
-definition bbox :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("[_| _" [61,81] 82) where
+definition bbox :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (\<open>[_| _\<close> [61,81] 82) where
   "[x| y = ar (ar y \<cdot> x)"
 
 end

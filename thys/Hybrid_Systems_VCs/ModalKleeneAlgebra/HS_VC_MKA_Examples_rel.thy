@@ -20,10 +20,10 @@ text \<open> The ODEs @{text "x' t = y t"} and {text "y' t = - x t"} describe th
 a mass attached to a string looked from above. We use @{text "s$1"} to represent the x-coordinate
 and @{text "s$2"} for the y-coordinate. We prove that this motion remains circular. \<close>
 
-abbreviation fpend :: "real^2 \<Rightarrow> real^2" ("f")
+abbreviation fpend :: "real^2 \<Rightarrow> real^2" (\<open>f\<close>)
   where "f s \<equiv> (\<chi> i. if i = 1 then s$2 else -s$1)"
 
-abbreviation pend_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>")
+abbreviation pend_flow :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>\<phi>\<close>)
   where "\<phi> t s \<equiv> (\<chi> i. if i = 1 then s$1 * cos t + s$2 * sin t
   else - s$1 * sin t + s$2 * cos t)"
 
@@ -51,8 +51,8 @@ lemma pendulum_flow:
   "\<lceil>\<lambda>s. r\<^sup>2 = (s$1)\<^sup>2 + (s$2)\<^sup>2\<rceil> \<le> wp (x\<acute>= f & G) \<lceil>\<lambda>s. r\<^sup>2 = (s$1)\<^sup>2 + (s$2)\<^sup>2\<rceil>"
   by (simp add: local_flow.wp_g_ode_subset[OF local_flow_pend])
 
-no_notation fpend ("f")
-        and pend_flow ("\<phi>")
+no_notation fpend (\<open>f\<close>)
+        and pend_flow (\<open>\<phi>\<close>)
 
 
 subsubsection\<open> Bouncing Ball \<close>
@@ -64,10 +64,10 @@ flips the velocity. That is, we model it as a completely elastic collision with 
 @{text "s$1"} to represent the ball's height and @{text "s$2"} for its velocity. We prove that the 
 ball remains above ground and below its initial resting position. \<close>
 
-abbreviation fball :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("f")
+abbreviation fball :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>f\<close>)
   where "f g s \<equiv> (\<chi> i. if i = 1 then s$2 else g)"
 
-abbreviation ball_flow :: "real \<Rightarrow> real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>")
+abbreviation ball_flow :: "real \<Rightarrow> real \<Rightarrow> real^2 \<Rightarrow> real^2" (\<open>\<phi>\<close>)
   where "\<phi> g t s \<equiv> (\<chi> i. if i = 1 then g * t ^ 2/2 + s$2 * t + s$1 else g * t + s$2)"
 
 \<comment> \<open>Verified with differential invariants. \<close>
@@ -175,8 +175,8 @@ lemma bouncing_ball_flow:
   apply(rule wp_loopI, simp_all add: local_flow.wp_g_ode_subset[OF local_flow_ball])
   by (auto simp: bb_real_arith)
 
-no_notation fball ("f")
-        and ball_flow ("\<phi>")
+no_notation fball (\<open>f\<close>)
+        and ball_flow (\<open>\<phi>\<close>)
 
 
 subsubsection\<open> Thermostat \<close>
@@ -191,10 +191,10 @@ temperature detected by the thermometer, and @{term "4::4"} states whether the h
 (@{text "s$4 = 1"}) or off (@{text "s$4 = 0"}). We prove that the thermostat keeps the room's
 temperature between @{text "Tmin"} and @{text "Tmax"}. \<close>
 
-abbreviation temp_vec_field :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("f")
+abbreviation temp_vec_field :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>f\<close>)
   where "f a L s \<equiv> (\<chi> i. if i = 2 then 1 else (if i = 1 then - a * (s$1 - L) else 0))"
 
-abbreviation temp_flow :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("\<phi>")
+abbreviation temp_flow :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>\<phi>\<close>)
   where "\<phi> a L t s \<equiv> (\<chi> i. if i = 1 then - exp(-a * t) * (L - s$1) + L else
   (if i = 2 then t + s$2 else s$i))"
 
@@ -292,8 +292,8 @@ lemma thermostat:
   using temp_dyn_up_real_arith[OF assms(1) _ _ assms(3), of Tmin]
     and temp_dyn_down_real_arith[OF assms(1,2), of _ Tmax] by auto
 
-no_notation temp_vec_field ("f")
-        and temp_flow ("\<phi>")
+no_notation temp_vec_field (\<open>f\<close>)
+        and temp_flow (\<open>\<phi>\<close>)
 
 subsubsection \<open> Tank \<close>
 
@@ -308,20 +308,20 @@ level of water measured by the chronometer, and @{term "4::4"} states whether th
 (@{text "s$4 = 1"}) or off (@{text "s$4 = 0"}). We prove that the controller keeps the level of
 water between @{text "hmin"} and @{text "hmax"}. \<close>
 
-abbreviation tank_vec_field :: "real \<Rightarrow> real^4 \<Rightarrow> real^4" ("f")
+abbreviation tank_vec_field :: "real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>f\<close>)
   where "f k s \<equiv> (\<chi> i. if i = 2 then 1 else (if i = 1 then k else 0))"
 
-abbreviation tank_flow :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("\<phi>")
+abbreviation tank_flow :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" (\<open>\<phi>\<close>)
   where "\<phi> k \<tau> s \<equiv> (\<chi> i. if i = 1 then k * \<tau> + s$1 else 
   (if i = 2 then \<tau> + s$2 else s$i))"
 
-abbreviation tank_guard :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("G")
+abbreviation tank_guard :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>G\<close>)
   where "G Hm k s \<equiv> s$2 \<le> (Hm - s$3)/k"
 
-abbreviation tank_loop_inv :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("I")
+abbreviation tank_loop_inv :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>I\<close>)
   where "I hmin hmax s \<equiv> hmin \<le> s$1 \<and> s$1 \<le> hmax \<and> (s$4 = 0 \<or> s$4 = 1)"
 
-abbreviation tank_diff_inv :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" ("dI")
+abbreviation tank_diff_inv :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> bool" (\<open>dI\<close>)
   where "dI hmin hmax k s \<equiv> s$1 = k * s$2 + s$3 \<and> 0 \<le> s$2 \<and> 
     hmin \<le> s$3 \<and> s$3 \<le> hmax \<and> (s$4 =0 \<or> s$4 = 1)"
 
@@ -356,10 +356,10 @@ lemma tank_flow:
   apply(rule wp_loopI, simp_all add: local_flow.wp_g_ode_subset[OF local_flow_tank])
   using assms tank_arith[OF _ assms] by auto
 
-no_notation tank_vec_field ("f")
-        and tank_flow ("\<phi>")
-        and tank_loop_inv ("I")
-        and tank_diff_inv ("dI")
-        and tank_guard ("G")
+no_notation tank_vec_field (\<open>f\<close>)
+        and tank_flow (\<open>\<phi>\<close>)
+        and tank_loop_inv (\<open>I\<close>)
+        and tank_diff_inv (\<open>dI\<close>)
+        and tank_guard (\<open>G\<close>)
 
 end

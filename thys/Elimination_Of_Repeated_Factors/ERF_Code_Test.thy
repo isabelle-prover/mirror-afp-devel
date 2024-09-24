@@ -14,7 +14,7 @@ imports
 begin
 
 hide_const (open) Formal_Power_Series.radical
-notation (output) Abs_mod_ring ("_")
+notation (output) Abs_mod_ring (\<open>_\<close>)
 
 subsection \<open>Example for the code generation with \<open>GF(2)\<close>\<close>
 

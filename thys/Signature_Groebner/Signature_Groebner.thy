@@ -43,10 +43,10 @@ locale qpm_inf_term =
     gd_term pair_of_term term_of_pair ord ord_strict ord_term ord_term_strict
       for pair_of_term::"'t \<Rightarrow> ('a::quasi_pm_powerprod \<times> nat)"
       and term_of_pair::"('a \<times> nat) \<Rightarrow> 't"
-      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<preceq>" 50)
-      and ord_strict (infixl "\<prec>" 50)
-      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<preceq>\<^sub>t" 50)
-      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl "\<prec>\<^sub>t" 50)
+      and ord::"'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl \<open>\<preceq>\<close> 50)
+      and ord_strict (infixl \<open>\<prec>\<close> 50)
+      and ord_term::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<preceq>\<^sub>t\<close> 50)
+      and ord_term_strict::"'t \<Rightarrow> 't \<Rightarrow> bool" (infixl \<open>\<prec>\<^sub>t\<close> 50)
 begin
 
 lemma in_idealE_rep_dgrad_p_set:

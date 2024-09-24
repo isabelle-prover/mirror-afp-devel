@@ -139,8 +139,8 @@ lemma nn_integral_count_space_reindex:
 by(simp add: embed_measure_count_space'[symmetric] nn_integral_embed_measure' measurable_embed_measure1)
 
 syntax
-  "_nn_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  ("(2\<Sum>\<^sup>+ _\<in>_./ _)" [0, 51, 10] 10)
-  "_nn_sum_UNIV" :: "pttrn \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add" ("(2\<Sum>\<^sup>+ _./ _)" [0, 10] 10)
+  "_nn_sum" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add"  (\<open>(2\<Sum>\<^sup>+ _\<in>_./ _)\<close> [0, 51, 10] 10)
+  "_nn_sum_UNIV" :: "pttrn \<Rightarrow> 'b \<Rightarrow> 'b::comm_monoid_add" (\<open>(2\<Sum>\<^sup>+ _./ _)\<close> [0, 10] 10)
 syntax_consts
   "_nn_sum" "_nn_sum_UNIV" \<rightleftharpoons> nn_integral
 translations

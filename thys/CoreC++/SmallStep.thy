@@ -46,9 +46,9 @@ inductive_set
   red  :: "prog \<Rightarrow> (env \<times> (expr \<times> state) \<times> (expr \<times> state)) set"
   and reds  :: "prog \<Rightarrow> (env \<times> (expr list \<times> state) \<times> (expr list \<times> state)) set"
   and red' :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+          (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81)
   and reds' :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81)
+          (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81)
   for P :: prog
 where
 
@@ -290,12 +290,12 @@ by (simp add:Reds_def)
 
 abbreviation
   Step :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81) where
+          (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<rightarrow>*/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81) where
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<equiv> ((e,s), e',s') \<in> (Red P E)\<^sup>*"
 
 abbreviation
   Steps :: "prog \<Rightarrow> env \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> expr list \<Rightarrow> state \<Rightarrow> bool"
-          ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0] 81) where
+          (\<open>_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [\<rightarrow>]*/ (1\<langle>_,/_\<rangle>))\<close> [51,0,0,0,0] 81) where
   "P,E \<turnstile> \<langle>es,s\<rangle> [\<rightarrow>]* \<langle>es',s'\<rangle> \<equiv> ((es,s), es',s') \<in> (Reds P E)\<^sup>*"
 
 

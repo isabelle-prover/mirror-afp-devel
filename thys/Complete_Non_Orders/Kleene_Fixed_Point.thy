@@ -30,7 +30,7 @@ $\set{f^n(\bot) \mid n \in \Nat}$ has a supremum and
 that all such are quasi-fixed points. We prove this claim without assuming 
 anything on the relation $\SLE$ besides $\omega$-completeness and one bottom element.\<close>
 
-notation compower ("_^_"[1000,1000]1000)
+notation compower (\<open>_^_\<close>[1000,1000]1000)
 
 lemma monotone_on_funpow: assumes f: "f ` A \<subseteq> A" and mono: "monotone_on A r r f"
   shows "monotone_on A r r (f^n)"
@@ -43,10 +43,10 @@ next
     by (auto intro!: monotone_onI monotone_onD[OF mono] elim!:monotone_onE)
 qed
 
-no_notation bot ("\<bottom>")
+no_notation bot (\<open>\<bottom>\<close>)
 
 context
-  fixes A and less_eq (infix "\<sqsubseteq>" 50) and bot ("\<bottom>") and f
+  fixes A and less_eq (infix \<open>\<sqsubseteq>\<close> 50) and bot (\<open>\<bottom>\<close>) and f
   assumes bot: "\<bottom> \<in> A" "\<forall>q \<in> A. \<bottom> \<sqsubseteq> q"
   assumes cont: "omega_chain-continuous A (\<sqsubseteq>) A (\<sqsubseteq>) f"
 begin
@@ -205,6 +205,6 @@ corollary(in antisymmetric) kleene_fp:
   using kleene_qfp[OF b cont] p cont[THEN continuous_carrierD]
   by (auto 2 3 intro!:antisym)
 
-no_notation compower ("_^_"[1000,1000]1000)
+no_notation compower (\<open>_^_\<close>[1000,1000]1000)
 
 end

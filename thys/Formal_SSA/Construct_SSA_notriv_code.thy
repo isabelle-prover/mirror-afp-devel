@@ -78,7 +78,7 @@ begin
   definition [code]: "step_code g = (let next = chooseNext' g in (uses'_code g next, phis'_code g next))"
   definition [code]: "step_codem g next next' nodes_of_uses nodes_of_phis = (uses'_codem g next next' nodes_of_uses, phis'_codem g next next' nodes_of_phis)"
 
-  definition phi_equiv_mapping :: "'g \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> bool" ("_ \<turnstile> _ \<approx>\<^sub>\<phi> _" 50)
+  definition phi_equiv_mapping :: "'g \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> bool" (\<open>_ \<turnstile> _ \<approx>\<^sub>\<phi> _\<close> 50)
     where "g \<turnstile> nou\<^sub>1 \<approx>\<^sub>\<phi> nou\<^sub>2 \<equiv> \<forall>v \<in> Mapping.keys (ssa.phidefNodes g). case_option {} id (Mapping.lookup nou\<^sub>1 v) = case_option {} id (Mapping.lookup nou\<^sub>2 v)"
 end
 

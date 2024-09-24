@@ -291,7 +291,7 @@ qed (auto simp:hyperset_defs)
 
 text\<open>Combining conformance of heap and local variables:\<close>
 
-definition sconf :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<surd>"   [51,51,51]50) where
+definition sconf :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"  (\<open>_,_ \<turnstile> _ \<surd>\<close>   [51,51,51]50) where
   "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>)\<^sub>w E \<and> P \<turnstile> E \<surd>"
 
 lemma red_preserves_sconf:
@@ -1532,7 +1532,7 @@ subsection \<open>The final polish\<close>
 
 text\<open>The above preservation lemmas are now combined and packed nicely.\<close>
 
-definition wf_config :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _ \<surd>"   [51,0,0,0,0]50) where
+definition wf_config :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" (\<open>_,_,_ \<turnstile> _ : _ \<surd>\<close>   [51,0,0,0,0]50) where
   "P,E,s \<turnstile> e:T \<surd>  \<equiv>  P,E \<turnstile> s \<surd> \<and> P,E,hp s \<turnstile> e : T"
 
 theorem Subject_reduction: assumes wf: "wf_C_prog P"

@@ -124,7 +124,7 @@ datatype ty
   | Integer
   | NT            \<comment> \<open>null type\<close>
   | Class cname   \<comment> \<open>class type\<close>
-  | Array ty      ("_\<lfloor>\<rceil>" 95) \<comment> \<open>array type\<close>
+  | Array ty      (\<open>_\<lfloor>\<rceil>\<close> 95) \<comment> \<open>array type\<close>
 
 context
   notes [[inductive_internals]]

@@ -8,7 +8,7 @@ text \<open>
   for formulae
 \<close>
 
-inductive types_pset_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_term \<Rightarrow> nat \<Rightarrow> bool" ("_ \<turnstile> _ : _" [46, 46, 46] 46) where
+inductive types_pset_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_term \<Rightarrow> nat \<Rightarrow> bool" (\<open>_ \<turnstile> _ : _\<close> [46, 46, 46] 46) where
   "v \<turnstile> \<emptyset> n : Suc n"
 | "v \<turnstile> Var x : v x"
 | "v \<turnstile> t : l \<Longrightarrow> v \<turnstile> Single t : Suc l"
@@ -20,7 +20,7 @@ text \<open>Activate this bundle to avoid ambiguity between
       \<^const>\<open>Set.member\<close> and \<^const>\<open>types_pset_term\<close>.\<close>
 bundle Set_member_no_ascii_notation
 begin
-no_notation Set.member ("(_/ : _)" [51, 51] 50)
+no_notation Set.member (\<open>(_/ : _)\<close> [51, 51] 50)
 end
 
 inductive_cases types_pset_term_cases:
@@ -43,7 +43,7 @@ inductive types_pset_atom :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_atom 
 definition types_pset_fm :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_fm \<Rightarrow> bool" where
   "types_pset_fm v \<phi> \<equiv> (\<forall>a \<in> atoms \<phi>. types_pset_atom v a)"
 
-consts types :: "('a \<Rightarrow> nat) \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<turnstile>" 45)
+consts types :: "('a \<Rightarrow> nat) \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<turnstile>\<close> 45)
 adhoc_overloading types types_pset_atom types_pset_fm
 
 inductive_cases types_pset_atom_Member_cases:

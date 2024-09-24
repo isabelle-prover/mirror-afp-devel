@@ -135,7 +135,7 @@ type_synonym id\<^sub>f\<^sub>o\<^sub>r\<^sub>k = nat
 type_synonym \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k = nat
 
 
-definition fork_transitions:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event set" ("Tr\<^sub>f")
+definition fork_transitions:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event set" (\<open>Tr\<^sub>f\<close>)
   where "Tr\<^sub>f i s = (if s = 0        then {picks i i} \<union> {picks ((i+1) mod N) i}
                     else if s = 1   then {putsdown i i} 
                     else if s = 2   then {putsdown ((i+1) mod N) i}
@@ -145,7 +145,7 @@ declare Un_insert_right[simp del] Un_insert_left[simp del]
 lemma ev_id\<^sub>f\<^sub>o\<^sub>r\<^sub>kx[simp]: "e \<in> Tr\<^sub>f i s \<Longrightarrow> fork e = i" 
   by (auto simp add:fork_transitions_def split:if_splits)
 
-definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" ("Up\<^sub>f")
+definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" (\<open>Up\<^sub>f\<close>)
   where "Up\<^sub>f i s e = ( if e = (picks i i)                   then 1 
                       else if e = (picks ((i+1) mod N) i)  then 2 
                       else                                      0 )"
@@ -210,13 +210,13 @@ text \<open>The all-forks process in normal form\<close>
 
 type_synonym \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s = "nat list"
 
-definition forks_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" ("Tr\<^sub>F")
+definition forks_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" (\<open>Tr\<^sub>F\<close>)
   where "Tr\<^sub>F n fs = (\<Union>i<n. Tr\<^sub>f i (fs!i))"
 
 lemma forks_transitions_take: "Tr\<^sub>F n fs = Tr\<^sub>F n (take n fs)"
   by (simp add:forks_transitions_def)
 
-definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" ("Up\<^sub>F")
+definition \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" (\<open>Up\<^sub>F\<close>)
   where "Up\<^sub>F fs e = (let i=(fork e) in fs[i:=(Up\<^sub>f i (fs!i) e)])"
 
 lemma forks_update_take: "take n (Up\<^sub>F fs e) = Up\<^sub>F (take n fs) e"
@@ -369,14 +369,14 @@ text \<open>The one-philosopher process in normal form:\<close>
 type_synonym phil_id = nat
 type_synonym phil_state = nat
 
-definition rphil_transitions:: "phil_id \<Rightarrow> phil_state \<Rightarrow> dining_event set" ("Tr\<^sub>r\<^sub>p")
+definition rphil_transitions:: "phil_id \<Rightarrow> phil_state \<Rightarrow> dining_event set" (\<open>Tr\<^sub>r\<^sub>p\<close>)
   where "Tr\<^sub>r\<^sub>p i s = ( if      s = 0  then {picks i i}
                      else if s = 1  then {picks i (i-1)}
                      else if s = 2  then {putsdown i (i-1)} 
                      else if s = 3  then {putsdown i i}
                      else                {})"
 
-definition lphil0_transitions:: "phil_state \<Rightarrow> dining_event set" ("Tr\<^sub>l\<^sub>p")
+definition lphil0_transitions:: "phil_state \<Rightarrow> dining_event set" (\<open>Tr\<^sub>l\<^sub>p\<close>)
     where "Tr\<^sub>l\<^sub>p s = ( if s = 0       then {picks 0 (N-1)}
                      else if s = 1  then {picks 0 0}
                      else if s = 2  then {putsdown 0 0} 
@@ -387,13 +387,13 @@ corollary rphil_phil: "e \<in> Tr\<^sub>r\<^sub>p i s \<Longrightarrow> phil e =
       and lphil0_phil: "e \<in> Tr\<^sub>l\<^sub>p s \<Longrightarrow> phil e = 0"
   by (simp_all add:rphil_transitions_def lphil0_transitions_def split:if_splits)
 
-definition rphil_state_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" ("Up\<^sub>r\<^sub>p")
+definition rphil_state_update:: "id\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" (\<open>Up\<^sub>r\<^sub>p\<close>)
   where "Up\<^sub>r\<^sub>p i s e = ( if e = (picks i i)               then 1 
                        else if e = (picks i (i-1))      then 2
                        else if e = (putsdown i (i-1))   then 3
                        else                                  0 )"
 
-definition lphil0_state_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" ("Up\<^sub>l\<^sub>p")
+definition lphil0_state_update:: "\<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k" (\<open>Up\<^sub>l\<^sub>p\<close>)
   where "Up\<^sub>l\<^sub>p s e = ( if e = (picks 0 (N-1))         then 1
                      else if e = (picks 0 0)        then 2 
                      else if e = (putsdown 0 0)     then 3
@@ -535,7 +535,7 @@ subsection \<open>The normal form for the global philosopher network\<close>
 
 type_synonym \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s = "nat list"
 
-definition phils_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event set" ("Tr\<^sub>P")
+definition phils_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event set" (\<open>Tr\<^sub>P\<close>)
   where "Tr\<^sub>P n ps = Tr\<^sub>l\<^sub>p (ps!0) \<union> (\<Union>i\<in>{1..< n}. Tr\<^sub>r\<^sub>p i (ps!i))"
 
 corollary phils_phil: "0 < n \<Longrightarrow> e \<in> Tr\<^sub>P n s \<Longrightarrow> phil e < n"
@@ -544,7 +544,7 @@ corollary phils_phil: "0 < n \<Longrightarrow> e \<in> Tr\<^sub>P n s \<Longrigh
 lemma phils_transitions_take: "0 < n \<Longrightarrow> Tr\<^sub>P n ps = Tr\<^sub>P n (take n ps)"
   by (auto simp add:phils_transitions_def) 
 
-definition \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update:: "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s" ("Up\<^sub>P")
+definition \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s_update:: "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s" (\<open>Up\<^sub>P\<close>)
   where "Up\<^sub>P ps e = (let i=(phil e) in if i = 0 then ps[i:=(Up\<^sub>l\<^sub>p (ps!i) e)] 
                                        else          ps[i:=(Up\<^sub>r\<^sub>p i (ps!i) e)])"
 
@@ -709,11 +709,11 @@ corollary PHILs_is_PHILs\<^sub>n\<^sub>o\<^sub>r\<^sub>m: "PHILs\<^sub>n\<^sub>o
 
 subsection \<open>The complete process system under normal form\<close>
 
-definition dining_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" ("Tr\<^sub>D")
+definition dining_transitions:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event set" (\<open>Tr\<^sub>D\<close>)
   where "Tr\<^sub>D n = (\<lambda>(ps,fs). (Tr\<^sub>P n ps) \<inter> (Tr\<^sub>F n fs))"
 
 definition dining_state_update:: 
-  "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" ("Up\<^sub>D")
+  "\<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s" (\<open>Up\<^sub>D\<close>)
   where "Up\<^sub>D = (\<lambda>(ps,fs) e. (Up\<^sub>P ps e, Up\<^sub>F fs e))"
 
 definition DINING\<^sub>n\<^sub>o\<^sub>r\<^sub>m:: "nat \<Rightarrow> \<sigma>\<^sub>p\<^sub>h\<^sub>i\<^sub>l\<^sub>s \<times> \<sigma>\<^sub>f\<^sub>o\<^sub>r\<^sub>k\<^sub>s \<Rightarrow> dining_event process"

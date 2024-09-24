@@ -85,11 +85,11 @@ begin
 \<close>
 
   locale set_category_data = category S
-  for S :: "'s comp"      (infixr "\<cdot>" 55)
+  for S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and img :: "'s \<Rightarrow> 's"
   begin
 
-    notation in_hom       ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom       (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     text\<open>
       Call the set of all terminal objects of S the ``universe''.
@@ -141,7 +141,7 @@ begin
 \<close>
     
   locale set_category_given_img = set_category_data S img
-  for S :: "'s comp"      (infixr "\<cdot>" 55)
+  for S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and img :: "'s \<Rightarrow> 's"
   and setp :: "'s set \<Rightarrow> bool" +
   assumes setp_imp_subset_Univ: "setp A \<Longrightarrow> A \<subseteq> Univ"
@@ -657,12 +657,12 @@ begin
 \<close>
 
   locale set_category = category S
-  for S :: "'s comp"      (infixr "\<cdot>" 55)
+  for S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and setp :: "'s set \<Rightarrow> bool" +
   assumes ex_img: "\<exists>img. set_category_given_img S img setp"
   begin
 
-    notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
   
     definition some_img
     where "some_img = (SOME img. set_category_given_img S img setp)"
@@ -684,7 +684,7 @@ begin
   locale replete_set_category =
     category S +
     set_category S \<open>\<lambda>A. A \<subseteq> Collect terminal\<close>
-  for S :: "'s comp"      (infixr "\<cdot>" 55)
+  for S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   begin
 
     abbreviation setp
@@ -748,17 +748,17 @@ begin
   locale two_set_categories_bij_betw_Univ =
     S: set_category S setp +
     S': set_category S' setp'
-  for S :: "'s comp"      (infixr "\<cdot>" 55)
+  for S :: "'s comp"      (infixr \<open>\<cdot>\<close> 55)
   and setp :: "'s set \<Rightarrow> bool"
-  and S' :: "'t comp"     (infixr "\<cdot>\<acute>" 55)
+  and S' :: "'t comp"     (infixr \<open>\<cdot>\<acute>\<close> 55)
   and setp' :: "'t set \<Rightarrow> bool"
   and \<phi> :: "'s \<Rightarrow> 't" +
   assumes bij_\<phi>: "bij_betw \<phi> S.Univ S'.Univ"
   and \<phi>_respects_setp: "A \<subseteq> S.Univ \<Longrightarrow> setp' (\<phi> ` A) \<longleftrightarrow> setp A"
   begin
 
-    notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation S'.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>'' _\<guillemotright>")
+    notation S.in_hom     (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
+    notation S'.in_hom    (\<open>\<guillemotleft>_ : _ \<rightarrow>'' _\<guillemotright>\<close>)
 
     abbreviation \<psi>
     where "\<psi> \<equiv> inv_into S.Univ \<phi>"
@@ -2329,7 +2329,7 @@ begin
 \<close>
 
   locale concrete_set_category = set_category S setp
-    for S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+    for S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
     and setp :: "'s set \<Rightarrow> bool"
     and U :: "'a set"
     and \<iota> :: "'a \<Rightarrow> 's" +
@@ -2370,7 +2370,7 @@ begin
   locale replete_concrete_set_category =
     replete_set_category S +
     concrete_set_category S \<open>\<lambda>A. A \<subseteq> Univ\<close> U UP
-    for S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+    for S :: "'s comp"      (infixr \<open>\<cdot>\<^sub>S\<close> 55)
     and U :: "'a set"
     and UP :: "'a \<Rightarrow> 's"
 

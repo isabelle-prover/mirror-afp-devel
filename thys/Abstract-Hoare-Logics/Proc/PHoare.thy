@@ -33,7 +33,7 @@ except that we have to take auxiliary variables into account as well:
 \<close>
 
 definition
- valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
+ valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>\<Turnstile> {(1_)}/ (_)/ {(1_)}\<close> 50) where
      "\<Turnstile> {P}c{Q} \<longleftrightarrow> (\<forall>s t. s -c\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t))"
 
 text\<open>\noindent Auxiliary variables are always denoted by @{term z}.
@@ -42,11 +42,11 @@ Validity of a context and validity of a Hoare triple in a context are defined
 as follows:\<close>
 
 definition
- valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50) where
+ valids :: "'a cntxt \<Rightarrow> bool" (\<open>|\<Turnstile> _\<close> 50) where
   [simp]: "|\<Turnstile> C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile> {P}c{Q})"
 
 definition
- cvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>/ {(1_)}/ (_)/ {(1_)}" 50) where
+ cvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>_ \<Turnstile>/ {(1_)}/ (_)/ {(1_)}\<close> 50) where
   "C \<Turnstile> {P}c{Q} \<longleftrightarrow> |\<Turnstile> C \<longrightarrow> \<Turnstile> {P}c{Q}"
 
 text\<open>\noindent Note that @{prop"{} \<Turnstile> {P}c{Q}"} is equivalent to
@@ -57,21 +57,21 @@ semantics, \<open>-c\<rightarrow>\<close> and \<open>-c-n\<rightarrow>\<close>, 
 of validity parameterized with the recursion depth @{term n}:\<close>
 
 definition
- nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50) where
+ nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>\<Turnstile>_ {(1_)}/ (_)/ {(1_)}\<close> 50) where
   "\<Turnstile>n {P}c{Q} \<equiv> (\<forall>s t. s -c-n\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t))"
 
 definition
- nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50) where
+ nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" (\<open>|\<Turnstile>'__/ _\<close> 50) where
   "|\<Turnstile>_n C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q})"
 
 definition
- cnvalid :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>_/ {(1_)}/ (_)/ {(1_)}" 50) where
+ cnvalid :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>_ \<Turnstile>_/ {(1_)}/ (_)/ {(1_)}\<close> 50) where
   "C \<Turnstile>n {P}c{Q} \<longleftrightarrow> |\<Turnstile>_n C \<longrightarrow> \<Turnstile>n {P}c{Q}"
 
 text\<open>Finally we come to the proof system for deriving triples in a context:\<close>
 
 inductive
-  hoare :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
+  hoare :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" (\<open>_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})\<close> 50)
 where
    (*<*)Do:(*>*)"C \<turnstile> {\<lambda>z s. \<forall>t \<in> f s . P z t} Do f {P}"
 
@@ -92,7 +92,7 @@ where
  | (*<*)Local:(*>*) "\<lbrakk> \<forall>s'. C \<turnstile> {\<lambda>z s. P z s' \<and> s = f s'} c {\<lambda>z t. Q z (g s' t)} \<rbrakk> \<Longrightarrow>
         C \<turnstile> {P} LOCAL f;c;g {Q}"
 
-abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile> _") where
+abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" (\<open>_ \<turnstile> _\<close>) where
   "C \<turnstile> x \<equiv> C \<turnstile> {fst x}fst (snd x){snd (snd x)}"
 
 text\<open>\noindent The first four rules are familiar, except for their adaptation

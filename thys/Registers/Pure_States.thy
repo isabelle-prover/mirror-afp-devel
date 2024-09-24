@@ -73,10 +73,10 @@ definition \<open>pure_state' F \<psi> \<eta>\<^sub>F = F (butterfly \<psi> \<et
 abbreviation \<open>pure_state F \<psi> \<equiv> pure_state' F \<psi> (ket default)\<close>
 
 nonterminal pure_tensor
-syntax "_pure_tensor" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> pure_tensor \<Rightarrow> pure_tensor\<close> ("_ _ \<otimes>\<^sub>p _" [1000, 0, 0] 1000)
-syntax "_pure_tensor2" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> pure_tensor\<close> ("_ _ \<otimes>\<^sub>p _ _" [1000, 0, 1000, 0] 1000)
+syntax "_pure_tensor" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> pure_tensor \<Rightarrow> pure_tensor\<close> (\<open>_ _ \<otimes>\<^sub>p _\<close> [1000, 0, 0] 1000)
+syntax "_pure_tensor2" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> pure_tensor\<close> (\<open>_ _ \<otimes>\<^sub>p _ _\<close> [1000, 0, 1000, 0] 1000)
 syntax "_pure_tensor1" :: \<open>'a \<Rightarrow> 'b \<Rightarrow> pure_tensor\<close>
-syntax "_pure_tensor_start" :: \<open>pure_tensor \<Rightarrow> 'a\<close> ("'(_')")
+syntax "_pure_tensor_start" :: \<open>pure_tensor \<Rightarrow> 'a\<close> (\<open>'(_')\<close>)
 
 syntax_consts
   "_pure_tensor" "_pure_tensor2" "_pure_tensor_start" \<rightleftharpoons> tensor_ell2

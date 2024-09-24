@@ -10,10 +10,10 @@ begin
 
 unbundle intro_cong_syntax
 
-no_notation Matrix.vec_index (infixl "$" 100)
+no_notation Matrix.vec_index (infixl \<open>$\<close> 100)
 hide_const Matrix.vec_index
 hide_const Matrix.vec
-no_notation Matrix.scalar_prod  (infix "\<bullet>" 70)
+no_notation Matrix.scalar_prod  (infix \<open>\<bullet>\<close> 70)
 
 fun walks' :: "('a,'b) pre_digraph \<Rightarrow> nat \<Rightarrow> ('a list) multiset"
   where

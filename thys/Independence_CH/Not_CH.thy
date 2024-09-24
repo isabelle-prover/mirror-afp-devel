@@ -301,8 +301,8 @@ sublocale add_generic3 \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub
 context add_generic3
 begin
 
-notation Leq (infixl "\<preceq>" 50)
-notation Incompatible (infixl "\<bottom>" 50)
+notation Leq (infixl \<open>\<preceq>\<close> 50)
+notation Incompatible (infixl \<open>\<bottom>\<close> 50)
 
 lemma Add_subs_preserves_Aleph_succ: "Ord(z) \<Longrightarrow> z\<in>M \<Longrightarrow> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
   using ccc_preserves_Aleph_succ ccc_Add_subs_Aleph_2

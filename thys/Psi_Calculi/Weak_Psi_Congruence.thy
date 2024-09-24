@@ -8,12 +8,12 @@ begin
 
 context env begin
 
-definition weakPsiCongruence :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<rhd> _ \<doteq> _" [70, 70, 70] 65)
+definition weakPsiCongruence :: "'b \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" (\<open>_ \<rhd> _ \<doteq> _\<close> [70, 70, 70] 65)
 where 
   "\<Psi> \<rhd> P \<doteq> Q \<equiv> \<Psi> \<rhd> P \<approx> Q \<and> \<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q \<and> \<Psi> \<rhd> Q \<leadsto>\<guillemotleft>weakBisim\<guillemotright> P"
 
 abbreviation
-  weakPsiCongNilJudge ("_ \<doteq> _" [70, 70] 65) where "P \<doteq> Q \<equiv> \<one> \<rhd> P \<doteq> Q"
+  weakPsiCongNilJudge (\<open>_ \<doteq> _\<close> [70, 70] 65) where "P \<doteq> Q \<equiv> \<one> \<rhd> P \<doteq> Q"
 
 lemma weakPsiCongSym:
   fixes \<Psi>  :: 'b

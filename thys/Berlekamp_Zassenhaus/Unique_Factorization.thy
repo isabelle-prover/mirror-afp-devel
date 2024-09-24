@@ -108,7 +108,7 @@ proof-
 qed
 
 context Rings.dvd begin
-  abbreviation ddvd (infix "ddvd" 40) where "x ddvd y \<equiv> x dvd y \<and> y dvd x"
+  abbreviation ddvd (infix \<open>ddvd\<close> 40) where "x ddvd y \<equiv> x dvd y \<and> y dvd x"
   lemma ddvd_sym[sym]: "x ddvd y \<Longrightarrow> y ddvd x" by auto
 end
 

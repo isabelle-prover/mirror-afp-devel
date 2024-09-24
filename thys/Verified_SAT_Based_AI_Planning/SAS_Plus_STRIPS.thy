@@ -26,7 +26,7 @@ definition state_to_strips_state
   :: "('variable, 'domain) sas_plus_problem 
     \<Rightarrow> ('variable, 'domain) state 
     \<Rightarrow> ('variable, 'domain) assignment strips_state" 
-  ("\<phi>\<^sub>S _ _" 99)
+  (\<open>\<phi>\<^sub>S _ _\<close> 99)
   where "state_to_strips_state \<Psi> s 
     \<equiv> let defined = filter (\<lambda>v. s v \<noteq> None) (variables_of \<Psi>) in
       map_of (map (\<lambda>(v, a). ((v, a), the (s v) = a)) 
@@ -36,7 +36,7 @@ definition sasp_op_to_strips
   :: "('variable, 'domain) sas_plus_problem
     \<Rightarrow> ('variable, 'domain) sas_plus_operator
     \<Rightarrow> ('variable, 'domain) assignment strips_operator" 
-  ("\<phi>\<^sub>O _ _" 99)
+  (\<open>\<phi>\<^sub>O _ _\<close> 99)
   where "sasp_op_to_strips \<Psi> op \<equiv> let
       pre = precondition_of op
       ; add = effect_of op
@@ -45,7 +45,7 @@ definition sasp_op_to_strips
 
 definition sas_plus_problem_to_strips_problem
   :: "('variable, 'domain) sas_plus_problem \<Rightarrow> ('variable, 'domain) assignment strips_problem" 
-  ("\<phi> _ " 99)
+  (\<open>\<phi> _ \<close> 99)
   where "sas_plus_problem_to_strips_problem \<Psi> \<equiv> let 
       vs = [as. v \<leftarrow> variables_of \<Psi>, as \<leftarrow> (possible_assignments_for \<Psi>) v]
       ; ops = map (sasp_op_to_strips \<Psi>) (operators_of \<Psi>)
@@ -57,7 +57,7 @@ definition sas_plus_parallel_plan_to_strips_parallel_plan
   :: "('variable, 'domain) sas_plus_problem
     \<Rightarrow> ('variable, 'domain) sas_plus_parallel_plan
     \<Rightarrow> ('variable \<times> 'domain) strips_parallel_plan" 
-  ("\<phi>\<^sub>P _ _" 99)
+  (\<open>\<phi>\<^sub>P _ _\<close> 99)
   where "sas_plus_parallel_plan_to_strips_parallel_plan \<Psi> \<psi>
     \<equiv> [[sasp_op_to_strips \<Psi> op. op \<leftarrow> ops]. ops \<leftarrow> \<psi>]"
 
@@ -66,7 +66,7 @@ definition strips_state_to_state
   :: "('variable, 'domain) sas_plus_problem
     \<Rightarrow> ('variable, 'domain) assignment strips_state
     \<Rightarrow> ('variable, 'domain) state" 
-  ("\<phi>\<^sub>S\<inverse> _ _" 99)
+  (\<open>\<phi>\<^sub>S\<inverse> _ _\<close> 99)
   where "strips_state_to_state \<Psi> s 
     \<equiv> map_of (filter (\<lambda>(v, a). s (v, a) = Some True) (all_possible_assignments_for \<Psi>))"
 
@@ -75,7 +75,7 @@ definition strips_op_to_sasp
   :: "('variable, 'domain) sas_plus_problem 
     \<Rightarrow> ('variable \<times> 'domain) strips_operator
     \<Rightarrow> ('variable, 'domain) sas_plus_operator"
-  ("\<phi>\<^sub>O\<inverse> _ _" 99)
+  (\<open>\<phi>\<^sub>O\<inverse> _ _\<close> 99)
   where "strips_op_to_sasp \<Psi> op 
     \<equiv> let 
         precondition = strips_operator.precondition_of op
@@ -88,7 +88,7 @@ definition strips_parallel_plan_to_sas_plus_parallel_plan
   :: "('variable, 'domain) sas_plus_problem
     \<Rightarrow> ('variable \<times> 'domain) strips_parallel_plan
     \<Rightarrow> ('variable, 'domain) sas_plus_parallel_plan" 
-  ("\<phi>\<^sub>P\<inverse> _ _" 99)
+  (\<open>\<phi>\<^sub>P\<inverse> _ _\<close> 99)
   where "strips_parallel_plan_to_sas_plus_parallel_plan \<Pi> \<pi>
     \<equiv> [[strips_op_to_sasp \<Pi> op. op \<leftarrow> ops]. ops \<leftarrow> \<pi>]"
 

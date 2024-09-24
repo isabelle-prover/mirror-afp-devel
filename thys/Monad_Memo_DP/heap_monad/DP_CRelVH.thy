@@ -26,7 +26,7 @@ definition "crel_vs R v f \<equiv>
     )
 "
 
-abbreviation rel_fun_lifted :: "('a \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c ==H\<Longrightarrow> 'd) \<Rightarrow> bool" (infixr "===>\<^sub>T" 55) where
+abbreviation rel_fun_lifted :: "('a \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c ==H\<Longrightarrow> 'd) \<Rightarrow> bool" (infixr \<open>===>\<^sub>T\<close> 55) where
   "rel_fun_lifted R R' \<equiv> R ===> crel_vs R'"
 
 
@@ -149,7 +149,7 @@ lemma dp_heap: "dp_heap P P lookup lookup' update update'"
 sublocale dp_heap P P dp lookup lookup' update update'
   by (rule dp_heap)
 
-notation rel_fun_lifted (infixr "===>\<^sub>T" 55)
+notation rel_fun_lifted (infixr \<open>===>\<^sub>T\<close> 55)
 end
 
 locale heap_correct_empty = heap_correct +

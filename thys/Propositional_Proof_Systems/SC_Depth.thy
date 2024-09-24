@@ -19,7 +19,7 @@ We dare the reader to write down (a few of) the cases for, e.g. \<open>AndL_inv'
 
 (* Warning: This theory may have name collisions with SC.thy\<dots> *)
 
-inductive SCc :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> nat \<Rightarrow> bool" ("((_ \<Rightarrow>/ _) \<down> _)" [53,53] 53) where
+inductive SCc :: "'a formula multiset \<Rightarrow> 'a formula multiset \<Rightarrow> nat \<Rightarrow> bool" (\<open>((_ \<Rightarrow>/ _) \<down> _)\<close> [53,53] 53) where
 BotL: "\<bottom> \<in># \<Gamma> \<Longrightarrow> \<Gamma>\<Rightarrow>\<Delta> \<down> Suc n" |
 Ax: "Atom k \<in># \<Gamma> \<Longrightarrow> Atom k \<in># \<Delta> \<Longrightarrow> \<Gamma>\<Rightarrow>\<Delta> \<down> Suc n" |
 NotL: "\<Gamma> \<Rightarrow> F,\<Delta> \<down> n \<Longrightarrow> Not F, \<Gamma> \<Rightarrow> \<Delta> \<down> Suc n" |

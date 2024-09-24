@@ -27,9 +27,9 @@ proof unfold_locales
         traffic.sdGeZero) 
 qed
 
-notation hmlsl.re ("re'(_')")
-notation hmlsl.cl("cl'(_')")
-notation hmlsl.len ("len")
+notation hmlsl.re (\<open>re'(_')\<close>)
+notation hmlsl.cl(\<open>cl'(_')\<close>)
+notation hmlsl.len (\<open>len\<close>)
   
 text\<open>
 Safety in the context of HMLSL means the absence of overlapping

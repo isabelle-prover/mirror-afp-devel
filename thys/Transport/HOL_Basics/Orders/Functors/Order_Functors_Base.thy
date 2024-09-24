@@ -17,17 +17,17 @@ locale orders =
   and R :: "'c \<Rightarrow> 'd \<Rightarrow> bool"
 begin
 
-notation L (infix "\<le>\<^bsub>L\<^esub>" 50)
-notation R (infix "\<le>\<^bsub>R\<^esub>" 50)
+notation L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
+notation R (infix \<open>\<le>\<^bsub>R\<^esub>\<close> 50)
 
 text\<open>We call @{term "(\<le>\<^bsub>L\<^esub>)"} the \<^emph>\<open>left relation\<close> and @{term "(\<le>\<^bsub>R\<^esub>)"} the
 \<^emph>\<open>right relation\<close>.\<close>
 
 abbreviation (input) "ge_left \<equiv> (\<le>\<^bsub>L\<^esub>)\<inverse>"
-notation ge_left (infix "\<ge>\<^bsub>L\<^esub>" 50)
+notation ge_left (infix \<open>\<ge>\<^bsub>L\<^esub>\<close> 50)
 
 abbreviation (input) "ge_right \<equiv> (\<le>\<^bsub>R\<^esub>)\<inverse>"
-notation ge_right (infix "\<ge>\<^bsub>R\<^esub>" 50)
+notation ge_right (infix \<open>\<ge>\<^bsub>R\<^esub>\<close> 50)
 
 end
 
@@ -91,7 +91,7 @@ are an \<^emph>\<open>adjoint\<close>.\<close>
 
 definition "unit \<equiv> r \<circ> l"
 
-notation unit ("\<eta>")
+notation unit (\<open>\<eta>\<close>)
 
 lemma unit_eq_comp: "\<eta> = r \<circ> l" unfolding unit_def by simp
 
@@ -110,7 +110,7 @@ interpretation flip : order_functors R L r l .
 
 definition "counit \<equiv> flip.unit"
 
-notation counit ("\<epsilon>")
+notation counit (\<open>\<epsilon>\<close>)
 
 lemma counit_eq_comp: "\<epsilon> = l \<circ> r" unfolding counit_def flip.unit_def by simp
 

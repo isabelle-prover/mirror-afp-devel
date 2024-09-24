@@ -283,7 +283,7 @@ lemma cat_Par_is_iso_arr:
 
 subsection\<open>The inverse arrow\<close>
 
-abbreviation (input) converse_Par :: "V \<Rightarrow> V" ("(_\<inverse>\<^sub>P\<^sub>a\<^sub>r)" [1000] 999)
+abbreviation (input) converse_Par :: "V \<Rightarrow> V" (\<open>(_\<inverse>\<^sub>P\<^sub>a\<^sub>r)\<close> [1000] 999)
   where "a\<inverse>\<^sub>P\<^sub>a\<^sub>r \<equiv> a\<inverse>\<^sub>R\<^sub>e\<^sub>l"
 
 lemma cat_Par_the_inverse[cat_Par_cs_simps]:

@@ -477,7 +477,7 @@ corollary subst_bv_bind_fv:
   unfolding bind_fv_def subst_bv_def using assms subst_bv1_bind_fv2 is_open_def
   by blast
 
-fun betapply :: "term \<Rightarrow> term \<Rightarrow> term" (infixl "\<bullet>" 52) where
+fun betapply :: "term \<Rightarrow> term \<Rightarrow> term" (infixl \<open>\<bullet>\<close> 52) where
   "betapply (Abs _ t) u = subst_bv u t"
 | "betapply t u = t $ u"
 

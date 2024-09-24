@@ -16,7 +16,7 @@ subsubsection \<open>K Block Designs\<close>
 text \<open>An important generalisation of a typical block design is the $\mathcal{K}$ block design, 
 where all blocks must have a size $x$ where $x \in \mathcal{K}$\<close>
 locale K_block_design = proper_design +
-  fixes sizes :: "nat set" ("\<K>")
+  fixes sizes :: "nat set" (\<open>\<K>\<close>)
   assumes block_sizes: "bl \<in># \<B> \<Longrightarrow> card bl \<in> \<K>"
   assumes positive_ints: "x \<in> \<K> \<Longrightarrow> x > 0"
 begin
@@ -29,7 +29,7 @@ end
 subsubsection\<open>Uniform Block Design\<close>
 text \<open>The typical uniform block design is defined below\<close>
 locale block_design = proper_design + 
-  fixes u_block_size :: nat ("\<k>")
+  fixes u_block_size :: nat (\<open>\<k>\<close>)
   assumes uniform [simp]: "bl \<in># \<B> \<Longrightarrow> card bl = \<k>"
 begin
 
@@ -145,7 +145,7 @@ text \<open>t-wise balance is a design with the property that all point subsets 
 $\lambda_t$ blocks\<close>
 
 locale t_wise_balance = proper_design + 
-  fixes grouping :: nat ("\<t>") and index :: nat ("\<Lambda>\<^sub>t")
+  fixes grouping :: nat (\<open>\<t>\<close>) and index :: nat (\<open>\<Lambda>\<^sub>t\<close>)
   assumes t_non_zero: "\<t> \<ge> 1"
   assumes t_lt_order: "\<t> \<le> \<v>"
   assumes balanced [simp]: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps = \<Lambda>\<^sub>t"
@@ -219,7 +219,7 @@ subsubsection \<open>Sub-types of t-wise balance\<close>
 
 text \<open>Pairwise balance is when $t = 2$. These are commonly of interest\<close>
 locale pairwise_balance = t_wise_balance \<V> \<B> 2 \<Lambda> 
-  for point_set ("\<V>") and block_collection ("\<B>") and index ("\<Lambda>")
+  for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) and index (\<open>\<Lambda>\<close>)
 
 text \<open>We can combine the balance properties with $K$\_block design to define tBD's 
 (t-wise balanced designs), and PBD's (pairwise balanced designs)\<close>
@@ -233,7 +233,7 @@ locale \<Lambda>_PBD = pairwise_balance + K_block_design +
 sublocale \<Lambda>_PBD \<subseteq> tBD \<V> \<B> 2 \<Lambda> \<K>
   using t_lt_order block_size_gt_t by (unfold_locales) (simp_all)
 
-locale PBD = \<Lambda>_PBD \<V> \<B> 1 \<K> for point_set ("\<V>") and block_collection ("\<B>") and sizes ("\<K>")
+locale PBD = \<Lambda>_PBD \<V> \<B> 1 \<K> for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) and sizes (\<open>\<K>\<close>)
 begin
 lemma multiplicity_is_1:
   assumes "bl \<in># \<B>"
@@ -252,7 +252,7 @@ locale k_\<Lambda>_PBD = pairwise_balance + block_design +
 sublocale k_\<Lambda>_PBD \<subseteq> \<Lambda>_PBD \<V> \<B> \<Lambda> "{\<k>}"
   using k_non_zero uniform block_size_t by(unfold_locales) (simp_all)
 
-locale k_PBD = k_\<Lambda>_PBD \<V> \<B> 1 \<k> for point_set ("\<V>") and block_collection ("\<B>") and u_block_size ("\<k>")
+locale k_PBD = k_\<Lambda>_PBD \<V> \<B> 1 \<k> for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) and u_block_size (\<open>\<k>\<close>)
 
 sublocale k_PBD \<subseteq> PBD \<V> \<B> "{\<k>}"
   using  block_size_t by (unfold_locales, simp_all)
@@ -264,8 +264,8 @@ are placed on the points index, instead of a strict equality\<close>
 text \<open>A t-covering design is a relaxed version of a tBD, where, for all point subsets of size t, 
 a lower bound is put on the points index\<close>
 locale t_covering_design = block_design +
-  fixes grouping :: nat ("\<t>")
-  fixes min_index :: nat ("\<Lambda>\<^sub>t")
+  fixes grouping :: nat (\<open>\<t>\<close>)
+  fixes min_index :: nat (\<open>\<Lambda>\<^sub>t\<close>)
   assumes covering: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps \<ge> \<Lambda>\<^sub>t" 
   assumes block_size_t: "\<t> \<le> \<k>"
   assumes t_non_zero: "\<t> \<ge> 1"
@@ -283,8 +283,8 @@ lemma (in block_design) t_covering_designI [intro]: "t \<le> \<k> \<Longrightarr
 text \<open>A t-packing design is a relaxed version of a tBD, where, for all point subsets of size t, 
 an upper bound is put on the points index\<close>
 locale t_packing_design = block_design + 
-  fixes grouping :: nat ("\<t>")
-  fixes min_index :: nat ("\<Lambda>\<^sub>t")
+  fixes grouping :: nat (\<open>\<t>\<close>)
+  fixes min_index :: nat (\<open>\<Lambda>\<^sub>t\<close>)
   assumes packing: "ps \<subseteq> \<V> \<Longrightarrow> card ps = \<t> \<Longrightarrow> \<B> index ps \<le> \<Lambda>\<^sub>t"
   assumes block_size_t: "\<t> \<le> \<k>"
   assumes t_non_zero: "\<t> \<ge> 1"
@@ -320,7 +320,7 @@ subsection \<open>Constant Replication Design\<close>
 text \<open>When the replication number for all points in a design is constant, it is the 
 design replication number.\<close>
 locale constant_rep_design = proper_design +
-  fixes design_rep_number :: nat ("\<r>")
+  fixes design_rep_number :: nat (\<open>\<r>\<close>)
   assumes rep_number [simp]: "x \<in> \<V> \<Longrightarrow>  \<B> rep x = \<r>" 
 
 begin
@@ -458,7 +458,7 @@ subsection \<open>Steiner Systems\<close>
 
 text \<open>Steiner systems are a special type of t-design where $\Lambda_t = 1$\<close>
 locale steiner_system = t_design \<V> \<B> \<k> \<t> 1 
-  for point_set ("\<V>") and block_collection ("\<B>") and u_block_size ("\<k>") and grouping ("\<t>")
+  for point_set (\<open>\<V>\<close>) and block_collection (\<open>\<B>\<close>) and u_block_size (\<open>\<k>\<close>) and grouping (\<open>\<t>\<close>)
 
 begin
 

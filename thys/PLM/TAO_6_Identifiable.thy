@@ -22,17 +22,17 @@ subsection\<open>Type Classes\<close>
 text\<open>\label{TAO_Identifiable_Class}\<close>
 
 class identifiable =
-fixes identity :: "'a\<Rightarrow>'a\<Rightarrow>\<o>" (infixl "\<^bold>=" 63)
+fixes identity :: "'a\<Rightarrow>'a\<Rightarrow>\<o>" (infixl \<open>\<^bold>=\<close> 63)
 assumes l_identity:
   "w \<Turnstile> x \<^bold>= y \<Longrightarrow> w \<Turnstile> \<phi> x \<Longrightarrow> w \<Turnstile> \<phi> y"
 begin
-  abbreviation notequal (infixl "\<^bold>\<noteq>" 63) where
+  abbreviation notequal (infixl \<open>\<^bold>\<noteq>\<close> 63) where
     "notequal \<equiv> \<lambda> x y . \<^bold>\<not>(x \<^bold>= y)"
 end
 
 class quantifiable_and_identifiable = quantifiable + identifiable
 begin
-  definition exists_unique::"('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<exists>!" [8] 9) where
+  definition exists_unique::"('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder \<open>\<^bold>\<exists>!\<close> [8] 9) where
     "exists_unique \<equiv> \<lambda> \<phi> . \<^bold>\<exists> \<alpha> . \<phi> \<alpha> \<^bold>& (\<^bold>\<forall>\<beta>. \<phi> \<beta> \<^bold>\<rightarrow> \<beta> \<^bold>= \<alpha>)"
   
   declare exists_unique_def[conn_defs]

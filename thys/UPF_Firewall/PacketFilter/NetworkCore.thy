@@ -152,7 +152,7 @@ type_synonym '\<alpha> net = "'\<alpha> set set"
 text\<open>The relation {in\_subnet} (\<open>\<sqsubset>\<close>) checks if an address is in a specific network.\<close>
 
 definition
-  in_subnet :: "'\<alpha>::adr \<Rightarrow> '\<alpha> net \<Rightarrow> bool"  (infixl "\<sqsubset>" 100)  where
+  in_subnet :: "'\<alpha>::adr \<Rightarrow> '\<alpha> net \<Rightarrow> bool"  (infixl \<open>\<sqsubset>\<close> 100)  where
   "in_subnet a S = (\<exists> s \<in> S. a \<in> s)"
 
 

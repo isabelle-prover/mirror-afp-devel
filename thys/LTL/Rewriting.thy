@@ -84,7 +84,7 @@ definition mk_next
 where
   "mk_next x \<equiv> case x of true\<^sub>n \<Rightarrow> true\<^sub>n | false\<^sub>n \<Rightarrow> false\<^sub>n | _ \<Rightarrow> X\<^sub>n x"
 
-definition mk_next_pow ("X\<^sub>n''")
+definition mk_next_pow (\<open>X\<^sub>n''\<close>)
 where
   "mk_next_pow n x \<equiv> case x of true\<^sub>n \<Rightarrow> true\<^sub>n | false\<^sub>n \<Rightarrow> false\<^sub>n | _ \<Rightarrow> (Next_ltln ^^ n) x"
 
@@ -712,7 +712,7 @@ lemma rewrite_modal_size:
 
 subsection \<open>Syntactical Implication Based Simplification\<close>
 
-inductive syntactical_implies :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" ("_ \<turnstile>\<^sub>s _" [80, 80])
+inductive syntactical_implies :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (\<open>_ \<turnstile>\<^sub>s _\<close> [80, 80])
 where
   "_ \<turnstile>\<^sub>s true\<^sub>n"
 | "false\<^sub>n \<turnstile>\<^sub>s _"

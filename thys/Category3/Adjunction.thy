@@ -41,8 +41,8 @@ begin
     C: category C +
     D: category D +
     F: "functor" D C F
-    for D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
-    and C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+    for D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    and C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
     and F :: "'d \<Rightarrow> 'c"
     and x :: 'd
     and y :: 'c
@@ -50,8 +50,8 @@ begin
     assumes arrow: "D.ide x \<and> C.in_hom e (F x) y"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
     text\<open>
       ``@{term g} is a @{term[source=true] D}-coextension of @{term f} along @{term e}.''
@@ -68,8 +68,8 @@ begin
 
   locale terminal_arrow_from_functor =
     arrow_from_functor D C F x y e
-    for D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
-    and C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+    for D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    and C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
     and F :: "'d \<Rightarrow> 'c"
     and x :: 'd
     and y :: 'c
@@ -105,14 +105,14 @@ begin
     C: category C +
     D: category D +
     "functor" D C F
-    for D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
-    and C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+    for D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    and C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
     and F :: "'d \<Rightarrow> 'c" +
     assumes ex_terminal_arrow: "C.ide y \<Longrightarrow> (\<exists>x e. terminal_arrow_from_functor D C F x y e)"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
   end
 
@@ -126,8 +126,8 @@ begin
     C: category C +
     D: category D +
     G: "functor" C D G
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
     and G :: "'c \<Rightarrow> 'd"
     and x :: 'd
     and y :: 'c
@@ -135,8 +135,8 @@ begin
     assumes arrow: "C.ide y \<and> D.in_hom e x (G y)"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
     text\<open>
       ``@{term f} is a @{term[source=true] C}-extension of @{term g} along @{term e}.''
@@ -153,8 +153,8 @@ begin
 
   locale initial_arrow_to_functor =
     arrow_to_functor C D G x y e
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
     and G :: "'c \<Rightarrow> 'd"
     and x :: 'd
     and y :: 'c
@@ -190,14 +190,14 @@ begin
     C: category C +
     D: category D +
     "functor" C D G
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
     and G :: "'c \<Rightarrow> 'd" +
     assumes ex_initial_arrow: "D.ide x \<Longrightarrow> (\<exists>y e. initial_arrow_to_functor C D G x y e)"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
   end
 
@@ -220,8 +220,8 @@ begin
     D: category D +
     F: "functor" D C F +
     G: "functor" C D G
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
     and F :: "'d \<Rightarrow> 'c"
     and G :: "'c \<Rightarrow> 'd"
     and \<phi> :: "'d \<Rightarrow> 'c \<Rightarrow> 'd"
@@ -234,8 +234,8 @@ begin
                          \<phi> y' (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F g) = G f \<cdot>\<^sub>D \<phi> y h \<cdot>\<^sub>D g"
   begin
 
-    notation C.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
     text\<open>
       The naturality of @{term \<psi>} is a consequence of the naturality of @{term \<phi>}
@@ -426,9 +426,9 @@ begin
     \<Phi>: set_valued_transformation DopxC.comp S setp Hom_FopxC.map Hom_DopxG.map \<Phi> +
     \<Psi>: set_valued_transformation DopxC.comp S setp Hom_DopxG.map Hom_FopxC.map \<Psi> +
     \<Phi>\<Psi>: inverse_transformations DopxC.comp S Hom_FopxC.map Hom_DopxG.map \<Phi> \<Psi>
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
-    and S :: "'s comp"     (infixr "\<cdot>\<^sub>S" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    and S :: "'s comp"     (infixr \<open>\<cdot>\<^sub>S\<close> 55)
     and setp :: "'s set \<Rightarrow> bool"
     and \<phi>C :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
     and \<phi>D :: "'d * 'd \<Rightarrow> 'd \<Rightarrow> 's"
@@ -438,8 +438,8 @@ begin
     and \<Psi> :: "'d * 'c \<Rightarrow> 's"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
     abbreviation \<psi>C :: "'c * 'c \<Rightarrow> 's \<Rightarrow> 'c"
     where "\<psi>C \<equiv> HomC.\<psi>"
@@ -474,8 +474,8 @@ begin
     G\<epsilon>: natural_transformation C D \<open>G o F o G\<close> G \<open>G o \<epsilon>\<close> +
     \<epsilon>FoF\<eta>: vertical_composite D C F \<open>F o G o F\<close> F \<open>F o \<eta>\<close> \<open>\<epsilon> o F\<close> +
     G\<epsilon>o\<eta>G: vertical_composite C D G \<open>G o F o G\<close> G \<open>\<eta> o G\<close> \<open>G o \<epsilon>\<close>
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
     and F :: "'d \<Rightarrow> 'c"
     and G :: "'c \<Rightarrow> 'd"
     and \<eta> :: "'d \<Rightarrow> 'd"
@@ -484,8 +484,8 @@ begin
     and triangle_G: "G\<epsilon>o\<eta>G.map = G"
   begin
 
-    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    notation C.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    notation D.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
 
   end
 
@@ -669,9 +669,9 @@ begin
     \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi> +
     \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon> +
     \<Phi>\<Psi>: hom_adjunction C D S setp \<phi>C \<phi>D F G \<Phi> \<Psi>
-    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
-    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
-    and S :: "'s comp"     (infixr "\<cdot>\<^sub>S" 55)
+    for C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    and D :: "'d comp"     (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    and S :: "'s comp"     (infixr \<open>\<cdot>\<^sub>S\<close> 55)
     and setp :: "'s set \<Rightarrow> bool"
     and \<phi>C :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
     and \<phi>D :: "'d * 'd \<Rightarrow> 'd \<Rightarrow> 's"
@@ -2862,9 +2862,9 @@ begin
     G': "functor" B C G' +
     FG: meta_adjunction A B F G \<phi> \<psi> +
     F'G': meta_adjunction B C F' G' \<phi>' \<psi>'
-  for A :: "'a comp"     (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"     (infixr "\<cdot>\<^sub>B" 55)
-  and C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+  for A :: "'a comp"     (infixr \<open>\<cdot>\<^sub>A\<close> 55)
+  and B :: "'b comp"     (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+  and C :: "'c comp"     (infixr \<open>\<cdot>\<^sub>C\<close> 55)
   and F :: "'b \<Rightarrow> 'a"
   and G :: "'a \<Rightarrow> 'b"
   and F' :: "'c \<Rightarrow> 'b"
@@ -3034,10 +3034,10 @@ begin
     interpret Adj': adjunction C D S.comp S.setp Adj'.\<phi>C Adj'.\<phi>D
                                F G' \<phi>' \<psi>' Adj'.\<eta> Adj'.\<epsilon> Adj'.\<Phi> Adj'.\<Psi>
       using Adj'.induces_adjunction by auto
-    write C (infixr "\<cdot>\<^sub>C" 55)
-    write D (infixr "\<cdot>\<^sub>D" 55)
-    write Adj.C.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
-    write Adj.D.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+    write C (infixr \<open>\<cdot>\<^sub>C\<close> 55)
+    write D (infixr \<open>\<cdot>\<^sub>D\<close> 55)
+    write Adj.C.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>\<close>)
+    write Adj.D.in_hom (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>\<close>)
     let ?\<tau>o = "\<lambda>a. G' (Adj.\<epsilon> a) \<cdot>\<^sub>D Adj'.\<eta> (G a)"
     interpret \<tau>: transformation_by_components C D G G' ?\<tau>o
     proof

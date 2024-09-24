@@ -22,14 +22,14 @@ begin
   locale product_category =
     C1: category C1 +
     C2: category C2
-  for C1 :: "'a1 comp"      (infixr "\<cdot>\<^sub>1" 55)
-  and C2 :: "'a2 comp"      (infixr "\<cdot>\<^sub>2" 55)
+  for C1 :: "'a1 comp"      (infixr \<open>\<cdot>\<^sub>1\<close> 55)
+  and C2 :: "'a2 comp"      (infixr \<open>\<cdot>\<^sub>2\<close> 55)
   begin
 
     type_synonym ('aa1, 'aa2) arr = "'aa1 * 'aa2"
 
-    notation C1.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>1 _\<guillemotright>")
-    notation C2.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>2 _\<guillemotright>")
+    notation C1.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>1 _\<guillemotright>\<close>)
+    notation C2.in_hom      (\<open>\<guillemotleft>_ : _ \<rightarrow>\<^sub>2 _\<guillemotright>\<close>)
 
     abbreviation (input) Null :: "('a1, 'a2) arr"
     where "Null \<equiv> (C1.null, C2.null)"
@@ -51,7 +51,7 @@ begin
                          (C1 (fst g) (fst f), C2 (snd g) (snd f))
                        else Null)"
 
-    notation comp      (infixr "\<cdot>" 55)
+    notation comp      (infixr \<open>\<cdot>\<close> 55)
 
     lemma not_Arr_Null:
     shows "\<not>Arr Null"
@@ -67,7 +67,7 @@ begin
       qed
     qed
 
-    notation in_hom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation in_hom  (\<open>\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>\<close>)
 
     lemma null_char [simp]:
     shows "null = Null"

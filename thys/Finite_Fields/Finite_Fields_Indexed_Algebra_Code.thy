@@ -43,25 +43,25 @@ fun idx_pow :: "('a,'b) idx_ring_scheme  \<Rightarrow> 'a \<Rightarrow> nat \<Ri
 
 bundle index_algebra_notation
 begin
-notation idx_zero ("0\<^sub>C\<index>")
-notation idx_one ("1\<^sub>C\<index>")
-notation idx_plus (infixl "+\<^sub>C\<index>" 65)
-notation idx_mult (infixl "*\<^sub>C\<index>" 70)
-notation idx_uminus ("-\<^sub>C\<index> _" [81] 80)
-notation idx_udivide ("_ \<inverse>\<^sub>C\<index>" [81] 80)
-notation idx_pow  (infixr "^\<^sub>C\<index>" 75)
+notation idx_zero (\<open>0\<^sub>C\<index>\<close>)
+notation idx_one (\<open>1\<^sub>C\<index>\<close>)
+notation idx_plus (infixl \<open>+\<^sub>C\<index>\<close> 65)
+notation idx_mult (infixl \<open>*\<^sub>C\<index>\<close> 70)
+notation idx_uminus (\<open>-\<^sub>C\<index> _\<close> [81] 80)
+notation idx_udivide (\<open>_ \<inverse>\<^sub>C\<index>\<close> [81] 80)
+notation idx_pow  (infixr \<open>^\<^sub>C\<index>\<close> 75)
 end
 unbundle index_algebra_notation
 
 bundle no_index_algebra_notation
 begin
-no_notation idx_zero ("0\<^sub>C\<index>")
-no_notation idx_one ("1\<^sub>C\<index>")
-no_notation idx_plus (infixl "+\<^sub>C\<index>" 65)
-no_notation idx_mult (infixl "*\<^sub>C\<index>" 70)
-no_notation idx_uminus ("-\<^sub>C\<index> _" [81] 80)
-no_notation idx_udivide ("_ \<inverse>\<^sub>C\<index>" [81] 80)
-no_notation idx_pow  (infixr "^\<^sub>C\<index>" 75)
+no_notation idx_zero (\<open>0\<^sub>C\<index>\<close>)
+no_notation idx_one (\<open>1\<^sub>C\<index>\<close>)
+no_notation idx_plus (infixl \<open>+\<^sub>C\<index>\<close> 65)
+no_notation idx_mult (infixl \<open>*\<^sub>C\<index>\<close> 70)
+no_notation idx_uminus (\<open>-\<^sub>C\<index> _\<close> [81] 80)
+no_notation idx_udivide (\<open>_ \<inverse>\<^sub>C\<index>\<close> [81] 80)
+no_notation idx_pow  (infixr \<open>^\<^sub>C\<index>\<close> 75)
 end
 
 definition ring_of :: "('a,'b) idx_ring_scheme \<Rightarrow> 'a ring"

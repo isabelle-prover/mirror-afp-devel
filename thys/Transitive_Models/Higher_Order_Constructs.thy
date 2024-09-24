@@ -6,7 +6,7 @@ theory Higher_Order_Constructs
 begin
 
 syntax
-  "_sats"  :: "[i, i, i] \<Rightarrow> o"  ("(_, _ \<Turnstile> _)" [36,36,36] 25)
+  "_sats"  :: "[i, i, i] \<Rightarrow> o"  (\<open>(_, _ \<Turnstile> _)\<close> [36,36,36] 25)
 syntax_consts
   "_sats" \<rightleftharpoons> sats
 translations

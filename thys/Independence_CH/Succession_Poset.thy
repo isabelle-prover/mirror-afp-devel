@@ -140,8 +140,8 @@ interpretation sp:forcing_notion "2\<^bsup><\<omega>\<^esup>" "seqle" "0"
   using preorder_on_seqle zero_seqle_max zero_in_seqspace
   by unfold_locales simp_all
 
-notation sp.Leq (infixl "\<preceq>s" 50)
-notation sp.Incompatible (infixl "\<bottom>s" 50)
+notation sp.Leq (infixl \<open>\<preceq>s\<close> 50)
+notation sp.Incompatible (infixl \<open>\<bottom>s\<close> 50)
 
 lemma seqspace_separative:
   assumes "f\<in>2\<^bsup><\<omega>\<^esup>"

@@ -19,9 +19,9 @@ with this approach, and this allows dualising less theorems.\<close>
 
 text \<open>I copy Wenzel's development \<^cite>\<open>"Wenzel"\<close> in this subsection and extend it with additional properties. I show only the most important properties.\<close>
 
-datatype 'a dual = dual (un_dual: 'a) ("\<partial>")
+datatype 'a dual = dual (un_dual: 'a) (\<open>\<partial>\<close>)
 
-notation un_dual ("\<partial>\<^sup>-")
+notation un_dual (\<open>\<partial>\<^sup>-\<close>)
 
 lemma dual_inj: "inj \<partial>"
   using injI by fastforce
@@ -213,10 +213,10 @@ definition directed :: "'a set \<Rightarrow> bool" where
 definition filtered :: "'a set \<Rightarrow> bool" where
  "filtered X = (\<forall>Y. finite Y \<and> Y \<subseteq> X \<longrightarrow> (\<exists>x \<in> X. \<forall>y \<in> Y. x \<le> y))"
 
-definition downset_set :: "'a set \<Rightarrow> 'a set" ("\<Down>") where
+definition downset_set :: "'a set \<Rightarrow> 'a set" (\<open>\<Down>\<close>) where
   "\<Down>X = {y. \<exists>x \<in> X. y \<le> x}"
 
-definition upset_set :: "'a set \<Rightarrow> 'a set" ("\<Up>") where
+definition upset_set :: "'a set \<Rightarrow> 'a set" (\<open>\<Up>\<close>) where
  "\<Up>X = {y. \<exists>x \<in> X. x \<le> y}"
 
 end

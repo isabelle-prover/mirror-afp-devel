@@ -351,7 +351,7 @@ definition typeof :: "Value \<Rightarrow> Javatype" where
              | arrV T a \<Rightarrow> ArrT T
              | nullV    \<Rightarrow> NullT)"
 
-abbreviation tau_syntax :: "Value \<Rightarrow> Javatype" ("\<tau> _")
+abbreviation tau_syntax :: "Value \<Rightarrow> Javatype" (\<open>\<tau> _\<close>)
   where "\<tau> v == typeof v"
 
 lemma typeof_simps [simp]:

@@ -30,9 +30,9 @@ atom_decl name
 nominal_datatype trm = 
     Var "name" 
   | App "trm" "trm"
-  | Lam "\<guillemotleft>name\<guillemotright>trm"      ("\<Lambda> _ . _" [0,120] 120)
-  | To "trm" "\<guillemotleft>name\<guillemotright>trm" ("_ to _ in _" [141,0,140] 140) 
-  | Ret "trm" ("[_]")
+  | Lam "\<guillemotleft>name\<guillemotright>trm"      (\<open>\<Lambda> _ . _\<close> [0,120] 120)
+  | To "trm" "\<guillemotleft>name\<guillemotright>trm" (\<open>_ to _ in _\<close> [141,0,140] 140) 
+  | Ret "trm" (\<open>[_]\<close>)
 
 
 declare trm.inject[simp]
@@ -57,7 +57,7 @@ establish equivariance of the typing relation.\<close>
 
 nominal_datatype ty =
     TBase
-  | TFun "ty" "ty" (infix "\<rightarrow>" 200)
+  | TFun "ty" "ty" (infix \<open>\<rightarrow>\<close> 200)
   | T "ty" 
 
 text\<open>Since we cannot use typed variables, we have to formalize typing
@@ -84,7 +84,7 @@ using a
 by (induct \<Gamma>) (auto simp add: fresh_prod fresh_list_cons fresh_atm)
 
 inductive 
-  typing :: "(name\<times>ty) list\<Rightarrow>trm\<Rightarrow>ty\<Rightarrow>bool" ("_ \<turnstile> _ : _" [60,60,60] 60)
+  typing :: "(name\<times>ty) list\<Rightarrow>trm\<Rightarrow>ty\<Rightarrow>bool" (\<open>_ \<turnstile> _ : _\<close> [60,60,60] 60)
 where
   t1[intro]: "\<lbrakk>valid \<Gamma>; (x,\<tau>)\<in>set \<Gamma>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> Var x : \<tau>"
 | t2[intro]: "\<lbrakk>\<Gamma> \<turnstile> s : \<tau>\<rightarrow>\<sigma>; \<Gamma> \<turnstile> t : \<tau>\<rbrakk> \<Longrightarrow> \<Gamma> \<turnstile> App s t : \<sigma>"
@@ -116,7 +116,7 @@ lemma lookup_eqvt[eqvt]:
 by (induct \<theta>) (auto simp add: eqvts)
 
 nominal_primrec
-  psubst :: "(name\<times>trm) list \<Rightarrow> trm \<Rightarrow> trm"  ("_<_>" [95,95] 205)
+  psubst :: "(name\<times>trm) list \<Rightarrow> trm \<Rightarrow> trm"  (\<open>_<_>\<close> [95,95] 205)
 where 
     "\<theta><Var x> = lookup \<theta> x"
   | "\<theta><App s t> = App (\<theta><s>) (\<theta><t>)"
@@ -132,7 +132,7 @@ by(nominal_induct t avoiding: \<theta> rule:trm.strong_induct)
   (auto simp add: eqvts fresh_bij)
 
 abbreviation 
-  subst :: "trm \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> trm" ("_[_::=_]" [200,100,100] 200)
+  subst :: "trm \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> trm" (\<open>_[_::=_]\<close> [200,100,100] 200)
 where 
   "t[x::=t']  \<equiv> ([(x,t')])<t>"
 
@@ -238,7 +238,7 @@ rearranges the binding structure, appeared to be impossible without going
 through this.\<close>
 
 
-inductive std_reduction :: "trm \<Rightarrow> trm \<Rightarrow> bool" ("_ \<leadsto> _" [80,80] 80)
+inductive std_reduction :: "trm \<Rightarrow> trm \<Rightarrow> bool" (\<open>_ \<leadsto> _\<close> [80,80] 80)
 where
   std_r1[intro!]:"s \<leadsto> s' \<Longrightarrow> App s t \<leadsto> App s' t"
 | std_r2[intro!]:"t \<leadsto> t' \<Longrightarrow> App s t \<leadsto> App s t'"
@@ -256,7 +256,7 @@ where
 | std_r11[intro!]: "s \<leadsto> s' \<Longrightarrow> [s] \<leadsto> [s']"
 
 inductive 
-  reduction :: "trm \<Rightarrow> trm \<Rightarrow> bool" ("_ \<mapsto> _" [80,80] 80)
+  reduction :: "trm \<Rightarrow> trm \<Rightarrow> bool" (\<open>_ \<mapsto> _\<close> [80,80] 80)
 where
   r1[intro!]:"s \<mapsto> s' \<Longrightarrow> App s t \<mapsto> App s' t"
 | r2[intro!]:"t \<mapsto> t' \<Longrightarrow> App s t \<mapsto> App s t'"
@@ -517,7 +517,7 @@ introduce stacks as an auxiliary notion to handle the monadic type constructor
 $T$. Stacks can be thought of as lists of term abstractions @{term "[x].t"}. The
 notation for stacks is chosen with this resemblance in mind.\<close>
 
-nominal_datatype stack = Id | St "\<guillemotleft>name\<guillemotright>trm" "stack" ("[_]_\<ggreater>_")
+nominal_datatype stack = Id | St "\<guillemotleft>name\<guillemotright>trm" "stack" (\<open>[_]_\<ggreater>_\<close>)
 
 lemma stack_exhaust :
   fixes c :: "'a::fs_name"
@@ -525,7 +525,7 @@ lemma stack_exhaust :
 by(nominal_induct k avoiding: c rule: stack.strong_induct) (auto)
 
 nominal_primrec 
-  length :: "stack \<Rightarrow> nat" ( "|_|")
+  length :: "stack \<Rightarrow> nat" ( \<open>|_|\<close>)
 where
   "|Id| = 0" 
 | "y \<sharp> L \<Longrightarrow> length ([y]n\<ggreater>L) = 1 + |L|"
@@ -540,7 +540,7 @@ one has to prove pattern completeness, right uniqueness, and termination
 explicitly.\<close>
 
 function
-  dismantle :: "trm \<Rightarrow> stack \<Rightarrow> trm" ("_ \<star> _" [160,160] 160)
+  dismantle :: "trm \<Rightarrow> stack \<Rightarrow> trm" (\<open>_ \<star> _\<close> [160,160] 160)
 where
   "t \<star> Id = t" |
   "x \<sharp> (K,t) \<Longrightarrow> t \<star> ([x]s\<ggreater>K) = (t to x in s) \<star> K"
@@ -603,7 +603,7 @@ text \<open>We also need a notion of reduction on stacks. This reduction relatio
 allows us to define strong normalization not only for terms but also for stacks
 and is needed to prove the properties of the logical relation later on.\<close>
 
-definition stack_reduction :: "stack \<Rightarrow> stack \<Rightarrow> bool" (" _ \<mapsto> _ ")
+definition stack_reduction :: "stack \<Rightarrow> stack \<Rightarrow> bool" (\<open> _ \<mapsto> _ \<close>)
 where
   "k \<mapsto> k' \<equiv> \<forall> (t::trm) . (t \<star> k)  \<mapsto> (t \<star> k')" 
 
@@ -782,7 +782,7 @@ qed
 
 
 inductive 
-  FST :: "trm\<Rightarrow>trm\<Rightarrow>bool" (" _ \<guillemotright> _" [80,80] 80)
+  FST :: "trm\<Rightarrow>trm\<Rightarrow>bool" (\<open> _ \<guillemotright> _\<close> [80,80] 80)
 where
   fst[intro!]:  "(App t s) \<guillemotright> t"
 
@@ -814,7 +814,7 @@ determine @{term t} and @{term k}. Thus, the extraction is a proper relation in
 this case.\<close>
 
 inductive
-  SND_DIS :: "trm \<Rightarrow> stack \<Rightarrow> bool" ("_ \<rhd> _")
+  SND_DIS :: "trm \<Rightarrow> stack \<Rightarrow> bool" (\<open>_ \<rhd> _\<close>)
 where
   snd_dis[intro!]: "t \<star> k \<rhd> k"
 
@@ -1471,7 +1471,7 @@ proof -
 qed
 
 abbreviation
-redrtrans :: "trm \<Rightarrow> trm \<Rightarrow> bool" (" _ \<mapsto>\<^sup>* _ " )
+redrtrans :: "trm \<Rightarrow> trm \<Rightarrow> bool" (\<open> _ \<mapsto>\<^sup>* _ \<close> )
 where "redrtrans \<equiv> reduction^**" 
 
 text \<open>To be able to handle the case where $p$ makes a step, we need to
@@ -1691,12 +1691,12 @@ first establish that all well typed terms are reducible if we substitute
 reducible terms for the free variables.\<close>
 
 abbreviation 
- mapsto :: "(name\<times>trm) list \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> bool" ("_ maps _ to _" [55,55,55] 55)
+ mapsto :: "(name\<times>trm) list \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> bool" (\<open>_ maps _ to _\<close> [55,55,55] 55)
 where
  "\<theta> maps x to e \<equiv> (lookup \<theta> x) = e"
 
 abbreviation 
-  closes :: "(name\<times>trm) list \<Rightarrow> (name\<times>ty) list \<Rightarrow> bool" ("_ closes _" [55,55] 55) 
+  closes :: "(name\<times>trm) list \<Rightarrow> (name\<times>ty) list \<Rightarrow> bool" (\<open>_ closes _\<close> [55,55] 55) 
 where
   "\<theta> closes \<Gamma> \<equiv> \<forall>x \<tau>. ((x,\<tau>) \<in> set \<Gamma> \<longrightarrow> (\<exists>t. \<theta> maps x to t \<and> t \<in> RED \<tau>))"
 

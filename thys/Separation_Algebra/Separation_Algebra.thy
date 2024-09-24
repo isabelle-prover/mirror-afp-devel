@@ -16,38 +16,38 @@ text \<open>This theory is the main abstract separation algebra development\<clo
 section \<open>Input syntax for lifting boolean predicates to separation predicates\<close>
 
 abbreviation (input)
-  pred_and :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "and" 35) where
+  pred_and :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr \<open>and\<close> 35) where
   "a and b \<equiv> \<lambda>s. a s \<and> b s"
 
 abbreviation (input)
-  pred_or :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "or" 30) where
+  pred_or :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr \<open>or\<close> 30) where
   "a or b \<equiv> \<lambda>s. a s \<or> b s"
 
 abbreviation (input)
-  pred_not :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" ("not _" [40] 40) where
+  pred_not :: "('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (\<open>not _\<close> [40] 40) where
   "not a \<equiv> \<lambda>s. \<not>a s"
 
 abbreviation (input)
-  pred_imp :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "imp" 25) where
+  pred_imp :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr \<open>imp\<close> 25) where
   "a imp b \<equiv> \<lambda>s. a s \<longrightarrow> b s"
 
 abbreviation (input)
-  pred_K :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" ("\<langle>_\<rangle>") where
+  pred_K :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (\<open>\<langle>_\<rangle>\<close>) where
   "\<langle>f\<rangle> \<equiv> \<lambda>s. f"
 
 abbreviation (input)
-  pred_ex :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder "EXS " 10) where
+  pred_ex :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder \<open>EXS \<close> 10) where
   "EXS x. P x \<equiv> \<lambda>s. \<exists>x. P x s"
 
 abbreviation (input)
-  pred_all :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder "ALLS " 10) where
+  pred_all :: "('b \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (binder \<open>ALLS \<close> 10) where
   "ALLS x. P x \<equiv> \<lambda>s. \<forall>x. P x s"
 
 
 section \<open>Associative/Commutative Monoid Basis of Separation Algebras\<close>
 
 class pre_sep_algebra = zero + plus +
-  fixes sep_disj :: "'a => 'a => bool" (infix "##" 60)
+  fixes sep_disj :: "'a => 'a => bool" (infix \<open>##\<close> 60)
 
   assumes sep_disj_zero [simp]: "x ## 0"
   assumes sep_disj_commuteI: "x ## y \<Longrightarrow> y ## x"
@@ -91,24 +91,24 @@ begin
 subsection \<open>Basic Construct Definitions and Abbreviations\<close>
 
 definition
-  sep_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr "**" 35)
+  sep_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr \<open>**\<close> 35)
   where
   "P ** Q \<equiv> \<lambda>h. \<exists>x y. x ## y \<and> h = x + y \<and> P x \<and> Q y"
 
 notation
-  sep_conj (infixr "\<and>*" 35)
+  sep_conj (infixr \<open>\<and>*\<close> 35)
 
 definition
-  sep_empty :: "'a \<Rightarrow> bool" ("\<box>") where
+  sep_empty :: "'a \<Rightarrow> bool" (\<open>\<box>\<close>) where
   "\<box> \<equiv> \<lambda>h. h = 0"
 
 definition
-  sep_impl :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr "\<longrightarrow>*" 25)
+  sep_impl :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr \<open>\<longrightarrow>*\<close> 25)
   where
   "P \<longrightarrow>* Q \<equiv> \<lambda>h. \<forall>h'. h ## h' \<and> P h' \<longrightarrow> Q (h + h')"
 
 definition
-  sep_substate :: "'a => 'a => bool" (infix "\<preceq>" 60) where
+  sep_substate :: "'a => 'a => bool" (infix \<open>\<preceq>\<close> 60) where
   "x \<preceq> y \<equiv> \<exists>z. x ## z \<and> x + z = y"
 
 (* We want these to be abbreviations not definitions, because basic True and
@@ -120,7 +120,7 @@ abbreviation
   "sep_false \<equiv> \<langle>False\<rangle>"
 
 definition
-  sep_list_conj :: "('a \<Rightarrow> bool) list \<Rightarrow> ('a \<Rightarrow> bool)"  ("\<And>* _" [60] 90) where
+  sep_list_conj :: "('a \<Rightarrow> bool) list \<Rightarrow> ('a \<Rightarrow> bool)"  (\<open>\<And>* _\<close> [60] 90) where
   "sep_list_conj Ps \<equiv> foldl (**) \<box> Ps"
 
 

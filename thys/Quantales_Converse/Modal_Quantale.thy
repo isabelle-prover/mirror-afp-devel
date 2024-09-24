@@ -280,7 +280,7 @@ lemma (in dc_modal_quantale) "\<top> \<cdot> x = \<top> \<cdot> cod x"
 
 subsection \<open>Antidomain and anticodomain quantales\<close>
 
-notation antidomain_op ("adom")
+notation antidomain_op (\<open>adom\<close>)
 
 class antidomain_quantale = unital_quantale + antidomain_op +
   assumes as1 [simp]: "adom x \<cdot> x = \<bottom>"
@@ -297,7 +297,7 @@ sublocale antidomain_quantale \<subseteq> adqmka: antidomain_kleene_algebra adom
 sublocale antidomain_quantale \<subseteq> addq: domain_quantale ddom
   by unfold_locales (simp_all add: ddom_def local.adqmsr.ans_d_def)
 
-notation antirange_op ("acod")
+notation antirange_op (\<open>acod\<close>)
 
 class anticodomain_quantale = unital_quantale + antirange_op +
   assumes ars1 [simp]: "x \<cdot> acod x = \<bottom>"

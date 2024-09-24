@@ -14,8 +14,8 @@ text \<open>Refinement from lists to arrays,
 resulting in a linear (in the input size, which is \<open>n^2\<close>) time algorithm.\<close>
 
 abbreviation "array \<equiv> new_array"
-notation array_get (infixl "!!" 100)
-notation array_set ("_[_ ::= _]" [1000,0,0] 900)
+notation array_get (infixl \<open>!!\<close> 100)
+notation array_set (\<open>_[_ ::= _]\<close> [1000,0,0] 900)
 abbreviation "list \<equiv> list_of_array"
 
 lemma list_array: "list (array x n) = replicate n x"

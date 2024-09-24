@@ -318,7 +318,7 @@ The contents of a tape starting with the start symbol @{text \<triangleright>} f
 symbol sequence representing a list of numbers:
 \<close>
 
-definition nlcontents :: "nat list \<Rightarrow> (nat \<Rightarrow> symbol)" ("\<lfloor>_\<rfloor>\<^sub>N\<^sub>L") where
+definition nlcontents :: "nat list \<Rightarrow> (nat \<Rightarrow> symbol)" (\<open>\<lfloor>_\<rfloor>\<^sub>N\<^sub>L\<close>) where
   "\<lfloor>ns\<rfloor>\<^sub>N\<^sub>L \<equiv> \<lfloor>numlist ns\<rfloor>"
 
 lemma clean_tape_nlcontents: "clean_tape (\<lfloor>ns\<rfloor>\<^sub>N\<^sub>L, i)"
@@ -3201,7 +3201,7 @@ Similar to @{text "\<lfloor>_\<rfloor>\<^sub>N"} and @{text "\<lfloor>_\<rfloor>
 of list of numbers:
 \<close>
 
-definition nllcontents :: "nat list list \<Rightarrow> (nat \<Rightarrow> symbol)" ("\<lfloor>_\<rfloor>\<^sub>N\<^sub>L\<^sub>L") where
+definition nllcontents :: "nat list list \<Rightarrow> (nat \<Rightarrow> symbol)" (\<open>\<lfloor>_\<rfloor>\<^sub>N\<^sub>L\<^sub>L\<close>) where
   "\<lfloor>nss\<rfloor>\<^sub>N\<^sub>L\<^sub>L \<equiv> \<lfloor>numlistlist nss\<rfloor>"
 
 lemma clean_tape_nllcontents: "clean_tape (\<lfloor>ns\<rfloor>\<^sub>N\<^sub>L\<^sub>L, i)"

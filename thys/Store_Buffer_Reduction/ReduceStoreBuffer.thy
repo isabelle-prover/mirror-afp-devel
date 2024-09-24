@@ -879,14 +879,14 @@ locale memory_system =
   fixes
   memop_step ::  "(instrs \<times> tmps \<times> 'sb \<times> memory \<times> 'dirty \<times> 'owns \<times> 'rels \<times> 'shared) \<Rightarrow> 
                   (instrs \<times> tmps \<times> 'sb \<times> memory \<times> 'dirty \<times> 'owns \<times> 'rels \<times> 'shared) \<Rightarrow> bool" 
-                    ("_ \<rightarrow>\<^sub>m _" [60,60] 100) and
+                    (\<open>_ \<rightarrow>\<^sub>m _\<close> [60,60] 100) and
   
-  storebuffer_step:: "(memory \<times> 'sb \<times> 'owns \<times> 'rels \<times> 'shared) \<Rightarrow> (memory \<times> 'sb \<times> 'owns \<times> 'rels \<times> 'shared) \<Rightarrow> bool" ("_ \<rightarrow>\<^sub>s\<^sub>b _" [60,60] 100)
+  storebuffer_step:: "(memory \<times> 'sb \<times> 'owns \<times> 'rels \<times> 'shared) \<Rightarrow> (memory \<times> 'sb \<times> 'owns \<times> 'rels \<times> 'shared) \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^sub>s\<^sub>b _\<close> [60,60] 100)
 
 
 locale program =
   fixes
-  program_step :: "tmps \<Rightarrow> 'p \<Rightarrow> 'p \<times> instrs \<Rightarrow> bool" ("_\<turnstile> _ \<rightarrow>\<^sub>p _" [60,60,60] 100) 
+  program_step :: "tmps \<Rightarrow> 'p \<Rightarrow> 'p \<times> instrs \<Rightarrow> bool" (\<open>_\<turnstile> _ \<rightarrow>\<^sub>p _\<close> [60,60,60] 100) 
   \<comment> \<open>A program only accesses the shared memory indirectly, it can read the temporaries
         and can output a sequence of memory instructions\<close>
 
@@ -905,7 +905,7 @@ begin
 
 inductive concurrent_step :: 
   "('p,'sb,'dirty,'owns,'rels,'shared) global_config \<Rightarrow> ('p,'sb,'dirty,'owns,'rels,'shared) global_config \<Rightarrow> bool"
-                               ("_ \<Rightarrow> _" [60,60] 100)
+                               (\<open>_ \<Rightarrow> _\<close> [60,60] 100)
 where
   Program: 
    "\<lbrakk>i < length ts; ts!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>);
@@ -968,11 +968,11 @@ end
 lemmas concurrent_step_cases = computation.concurrent_step.cases 
 [cases set, consumes 1, case_names Program Memop StoreBuffer]
 
-definition augment_shared:: "shared \<Rightarrow> addr set \<Rightarrow> addr set \<Rightarrow> shared" ("_ \<oplus>\<^bsub>_\<^esub> _" [61,1000,60] 61)
+definition augment_shared:: "shared \<Rightarrow> addr set \<Rightarrow> addr set \<Rightarrow> shared" (\<open>_ \<oplus>\<^bsub>_\<^esub> _\<close> [61,1000,60] 61)
 where
 "\<S> \<oplus>\<^bsub>W\<^esub> S \<equiv> (\<lambda>a. if a \<in> S then Some (a \<in> W) else \<S> a)"
 
-definition restrict_shared:: "shared \<Rightarrow> addr set \<Rightarrow> addr set \<Rightarrow> shared" ("_ \<ominus>\<^bsub>_\<^esub> _" [51,1000,50] 51)
+definition restrict_shared:: "shared \<Rightarrow> addr set \<Rightarrow> addr set \<Rightarrow> shared" (\<open>_ \<ominus>\<^bsub>_\<^esub> _\<close> [51,1000,50] 51)
 where
 "\<S> \<ominus>\<^bsub>A\<^esub> L \<equiv> (\<lambda>a. if a \<in> L then None 
                      else (case \<S> a of None \<Rightarrow> None
@@ -982,7 +982,7 @@ definition read_only :: "shared \<Rightarrow> addr set"
 where
 "read_only \<S> \<equiv> {a. (\<S> a = Some False)}"
 
-definition shared_le:: "shared \<Rightarrow> shared \<Rightarrow> bool" (infix "\<subseteq>\<^sub>s" 50)
+definition shared_le:: "shared \<Rightarrow> shared \<Rightarrow> bool" (infix \<open>\<subseteq>\<^sub>s\<close> 50)
 where 
 "m\<^sub>1 \<subseteq>\<^sub>s m\<^sub>2 \<equiv> m\<^sub>1 \<subseteq>\<^sub>m m\<^sub>2 \<and> read_only m\<^sub>1 \<subseteq> read_only m\<^sub>2"
 
@@ -1088,7 +1088,7 @@ fixes emp::'rels and aug::"owns \<Rightarrow> rel \<Rightarrow> 'rels \<Rightarr
 begin
 inductive gen_direct_memop_step :: "(instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> 'rels \<times> shared ) \<Rightarrow> 
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> 'rels \<times> shared ) \<Rightarrow> bool" 
-                    ("_ \<rightarrow> _" [60,60] 100)
+                    (\<open>_ \<rightarrow> _\<close> [60,60] 100)
 where
   Read: "(Read volatile a t # is,\<theta>, x, m,\<D>, \<O>, \<R>, \<S>) \<rightarrow>
                (is, \<theta> (t\<mapsto>m a), x, m, \<D>, \<O>, \<R>, \<S>)"
@@ -1123,7 +1123,7 @@ interpretation direct_memop_step: gen_direct_memop_step Map.empty augment_rels .
 term direct_memop_step.gen_direct_memop_step
 abbreviation direct_memop_step :: "(instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> rels \<times> shared ) \<Rightarrow> 
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> rels \<times> shared ) \<Rightarrow> bool" 
-                    ("_ \<rightarrow> _" [60,60] 100)
+                    (\<open>_ \<rightarrow> _\<close> [60,60] 100)
 where
 "direct_memop_step \<equiv> direct_memop_step.gen_direct_memop_step"
 
@@ -1133,7 +1133,7 @@ abbreviation direct_memop_steps :: "
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> rels \<times> shared ) \<Rightarrow> 
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> rels \<times> shared )  
                    \<Rightarrow> bool" 
-                    ("_ \<rightarrow>\<^sup>* _" [60,60] 100)
+                    (\<open>_ \<rightarrow>\<^sup>* _\<close> [60,60] 100)
 where 
 "direct_memop_steps == (direct_memop_step)^**"
 
@@ -1143,7 +1143,7 @@ interpretation virtual_memop_step: gen_direct_memop_step "()" "(\<lambda>S R \<R
 
 abbreviation virtual_memop_step :: "(instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> unit \<times> shared ) \<Rightarrow> 
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> unit \<times> shared ) \<Rightarrow> bool" 
-                    ("_ \<rightarrow>\<^sub>v _" [60,60] 100)
+                    (\<open>_ \<rightarrow>\<^sub>v _\<close> [60,60] 100)
 where
 "virtual_memop_step \<equiv> virtual_memop_step.gen_direct_memop_step"
 
@@ -1153,7 +1153,7 @@ abbreviation virtual_memop_steps :: "
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> unit \<times> shared ) \<Rightarrow> 
                   (instrs \<times> tmps \<times> unit \<times> memory \<times> bool \<times> owns \<times> unit \<times> shared )  
                    \<Rightarrow> bool" 
-                    ("_ \<rightarrow>\<^sub>v\<^sup>* _" [60,60] 100)
+                    (\<open>_ \<rightarrow>\<^sub>v\<^sup>* _\<close> [60,60] 100)
 where 
 "virtual_memop_steps == (virtual_memop_step)^**"
 
@@ -1174,7 +1174,7 @@ subsection \<open>Safe Configurations of Virtual Machines\<close>
 
 inductive safe_direct_memop_state :: "owns list \<Rightarrow> nat \<Rightarrow>  
                   (instrs \<times> tmps \<times> memory \<times> bool \<times> owns \<times> shared) \<Rightarrow> bool " 
-                    ("_,_\<turnstile> _ \<surd>" [60,60,60] 100)
+                    (\<open>_,_\<turnstile> _ \<surd>\<close> [60,60,60] 100)
 where
   Read: "\<lbrakk>a \<in> \<O> \<or> a \<in> read_only \<S> \<or> (volatile \<and> a \<in> dom \<S>);
           volatile \<longrightarrow> \<not> \<D> \<rbrakk>
@@ -1220,7 +1220,7 @@ where
 
 inductive safe_delayed_direct_memop_state :: "owns list \<Rightarrow> rels list \<Rightarrow> nat \<Rightarrow>  
                   (instrs \<times> tmps \<times> memory \<times> bool \<times> owns \<times> shared) \<Rightarrow> bool " 
-                    ("_,_,_\<turnstile> _ \<surd>" [60,60,60,60] 100)
+                    (\<open>_,_,_\<turnstile> _ \<surd>\<close> [60,60,60,60] 100)
 where
   Read: "\<lbrakk>a \<in> \<O> \<or> a \<in> read_only \<S> \<or> (volatile \<and> a \<in> dom \<S>);
           \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False; \<comment> \<open>no release of unshared address\<close>
@@ -1359,7 +1359,7 @@ qed
 
 
 inductive id_storebuffer_step:: 
-  "(memory \<times> unit \<times> owns \<times> rels \<times> shared) \<Rightarrow> (memory \<times> unit \<times> owns \<times> rels \<times> shared) \<Rightarrow> bool" ("_ \<rightarrow>\<^sub>I _" [60,60] 100)
+  "(memory \<times> unit \<times> owns \<times> rels \<times> shared) \<Rightarrow> (memory \<times> unit \<times> owns \<times> rels \<times> shared) \<Rightarrow> bool" (\<open>_ \<rightarrow>\<^sub>I _\<close> [60,60] 100)
 where
   Id: "(m,x,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>I (m,x,\<O>,\<R>,\<S>)"
 
@@ -1372,7 +1372,7 @@ begin
 
 abbreviation direct_concurrent_step ::
   "('p,unit,bool,owns,rels,shared) global_config \<Rightarrow> ('p,unit,bool,owns,rels,shared) global_config \<Rightarrow> bool"
-   ("_ \<Rightarrow>\<^sub>d _" [100,60] 100)
+   (\<open>_ \<Rightarrow>\<^sub>d _\<close> [100,60] 100)
 where
   "direct_concurrent_step \<equiv> 
      computation.concurrent_step direct_memop_step.gen_direct_memop_step empty_storebuffer_step program_step
@@ -1380,13 +1380,13 @@ where
 
 abbreviation direct_concurrent_steps::  
   "('p,unit,bool,owns,rels,shared) global_config \<Rightarrow> ('p,unit,bool,owns,rels,shared) global_config \<Rightarrow> bool" 
-    ("_ \<Rightarrow>\<^sub>d\<^sup>* _" [60,60] 100)
+    (\<open>_ \<Rightarrow>\<^sub>d\<^sup>* _\<close> [60,60] 100)
 where
 "direct_concurrent_steps == direct_concurrent_step^**"  
 
 abbreviation virtual_concurrent_step ::
   "('p,unit,bool,owns,unit,shared) global_config \<Rightarrow> ('p,unit,bool,owns,unit,shared) global_config \<Rightarrow> bool"
-   ("_ \<Rightarrow>\<^sub>v _" [100,60] 100)
+   (\<open>_ \<Rightarrow>\<^sub>v _\<close> [100,60] 100)
 where
   "virtual_concurrent_step \<equiv> 
      computation.concurrent_step virtual_memop_step.gen_direct_memop_step empty_storebuffer_step program_step
@@ -1394,7 +1394,7 @@ where
 
 abbreviation virtual_concurrent_steps::  
   "('p,unit,bool,owns,unit,shared) global_config \<Rightarrow> ('p,unit,bool,owns,unit,shared) global_config \<Rightarrow> bool" 
-    ("_ \<Rightarrow>\<^sub>v\<^sup>* _" [60,60] 100)
+    (\<open>_ \<Rightarrow>\<^sub>v\<^sup>* _\<close> [60,60] 100)
 where
 "virtual_concurrent_steps == virtual_concurrent_step^**"  
 
@@ -5157,7 +5157,7 @@ datatype 'p memref =
 
 type_synonym 'p store_buffer = "'p memref list"
 inductive flush_step:: "memory \<times> 'p store_buffer \<times> owns \<times> rels \<times> shared \<Rightarrow> memory \<times> 'p store_buffer \<times> owns \<times> rels \<times> shared \<Rightarrow> bool" 
-  ("_ \<rightarrow>\<^sub>f _" [60,60] 100)
+  (\<open>_ \<rightarrow>\<^sub>f _\<close> [60,60] 100)
 where
   Write\<^sub>s\<^sub>b: "\<lbrakk>\<O>' = (if volatile then \<O> \<union> A - R else \<O>);
            \<S>' = (if volatile then \<S> \<oplus>\<^bsub>W\<^esub> R \<ominus>\<^bsub>A\<^esub> L else \<S>);
@@ -5169,7 +5169,7 @@ where
 | Ghost: "(m, Ghost\<^sub>s\<^sub>b A L R W# rs,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>f (m, rs,\<O> \<union> A - R, augment_rels (dom \<S>) R \<R>, \<S> \<oplus>\<^bsub>W\<^esub> R \<ominus>\<^bsub>A\<^esub> L )"
 
 abbreviation flush_steps::"memory \<times> 'p store_buffer \<times> owns \<times> rels \<times> shared \<Rightarrow> memory \<times> 'p store_buffer \<times> owns \<times> rels \<times> shared\<Rightarrow> bool" 
-  ("_ \<rightarrow>\<^sub>f\<^sup>* _" [60,60] 100)
+  (\<open>_ \<rightarrow>\<^sub>f\<^sup>* _\<close> [60,60] 100)
 where
 "flush_steps == flush_step^**"
 
@@ -5180,13 +5180,13 @@ lemmas flush_step_induct =
   consumes 1, case_names Write\<^sub>s\<^sub>b Read\<^sub>s\<^sub>b Prog\<^sub>s\<^sub>b Ghost]
 
 inductive store_buffer_step:: "memory \<times> 'p store_buffer \<times> 'owns \<times> 'rels \<times> 'shared \<Rightarrow> memory \<times> 'p memref list \<times> 'owns \<times> 'rels \<times> 'shared \<Rightarrow> bool" 
-  ("_ \<rightarrow>\<^sub>w _" [60,60] 100)
+  (\<open>_ \<rightarrow>\<^sub>w _\<close> [60,60] 100)
 where
   SBWrite\<^sub>s\<^sub>b: "
           (m, Write\<^sub>s\<^sub>b volatile a sop v A L R W# rs,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>w (m(a := v), rs,\<O>,\<R>,\<S>)"
 
 abbreviation store_buffer_steps::"memory \<times> 'p store_buffer \<times> 'owns \<times> 'rels \<times> 'shared \<Rightarrow> memory \<times> 'p store_buffer \<times> 'owns \<times> 'rels \<times> 'shared\<Rightarrow> bool" 
-  ("_ \<rightarrow>w\<^sup>* _" [60,60] 100)
+  (\<open>_ \<rightarrow>w\<^sup>* _\<close> [60,60] 100)
 where
 "store_buffer_steps == store_buffer_step^**"
 
@@ -5499,7 +5499,7 @@ lemma no_volatile_Read\<^sub>s\<^sub>bs_conv: "(outstanding_refs is_volatile_Rea
 
 inductive sb_memop_step :: "(instrs \<times> tmps \<times> 'p store_buffer \<times> memory \<times> 'dirty \<times> 'owns \<times> 'rels \<times> 'shared ) \<Rightarrow> 
                   (instrs \<times> tmps \<times> 'p store_buffer \<times> memory \<times> 'dirty \<times> 'owns \<times> 'rels \<times> 'shared ) \<Rightarrow> bool" 
-                    ("_ \<rightarrow>\<^sub>s\<^sub>b _" [60,60] 100)
+                    (\<open>_ \<rightarrow>\<^sub>s\<^sub>b _\<close> [60,60] 100)
 where
   SBReadBuffered: 
   "\<lbrakk>buffered_val sb a = Some v\<rbrakk>
@@ -5542,7 +5542,7 @@ where
 inductive sbh_memop_step :: "
                   (instrs \<times> tmps \<times> 'p store_buffer \<times> memory \<times> bool \<times> owns \<times> rels \<times> shared ) \<Rightarrow>
                   (instrs \<times> tmps \<times> 'p store_buffer \<times> memory \<times> bool \<times> owns \<times> rels \<times> shared ) \<Rightarrow> bool" 
-                    ("_ \<rightarrow>\<^sub>s\<^sub>b\<^sub>h _" [60,60] 100)
+                    (\<open>_ \<rightarrow>\<^sub>s\<^sub>b\<^sub>h _\<close> [60,60] 100)
 where
   SBHReadBuffered: 
   "\<lbrakk>buffered_val sb a = Some v\<rbrakk>
@@ -9146,7 +9146,7 @@ begin
 
 abbreviation sb_concurrent_step ::
   "('p,'p store_buffer,'dirty,'owns,'rels,'shared) global_config \<Rightarrow> ('p,'p store_buffer,'dirty,'owns,'rels,'shared) global_config \<Rightarrow> bool"
-    ("_ \<Rightarrow>\<^sub>s\<^sub>b _" [60,60] 100)
+    (\<open>_ \<Rightarrow>\<^sub>s\<^sub>b _\<close> [60,60] 100)
 where
   "sb_concurrent_step \<equiv> 
      computation.concurrent_step sb_memop_step store_buffer_step program_step (\<lambda>p p' is sb. sb)"
@@ -9155,7 +9155,7 @@ term "x \<Rightarrow>\<^sub>s\<^sub>b Y"
 
 abbreviation (in program) sb_concurrent_steps::
   "('p,'p store_buffer,'dirty,'owns,'rels,'shared) global_config \<Rightarrow> ('p,'p store_buffer,'dirty,'owns,'rels,'shared) global_config \<Rightarrow> bool"
-    ("_ \<Rightarrow>\<^sub>s\<^sub>b\<^sup>* _" [60,60] 100)
+    (\<open>_ \<Rightarrow>\<^sub>s\<^sub>b\<^sup>* _\<close> [60,60] 100)
 where
 "sb_concurrent_steps \<equiv> sb_concurrent_step^**"
 
@@ -9163,7 +9163,7 @@ term "x \<Rightarrow>\<^sub>s\<^sub>b\<^sup>* Y"
 
 abbreviation sbh_concurrent_step ::
   "('p,'p store_buffer,bool,owns,rels,shared) global_config \<Rightarrow> ('p,'p store_buffer,bool,owns,rels,shared) global_config \<Rightarrow> bool"
-    ("_ \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h _" [60,60] 100)
+    (\<open>_ \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h _\<close> [60,60] 100)
 where
   "sbh_concurrent_step \<equiv> 
      computation.concurrent_step sbh_memop_step flush_step program_step 
@@ -9173,7 +9173,7 @@ term "x \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h Y"
 
 abbreviation sbh_concurrent_steps::
   "('p,'p store_buffer,bool,owns,rels,shared) global_config \<Rightarrow> ('p,'p store_buffer,bool,owns,rels,shared) global_config \<Rightarrow> bool"
-    ("_ \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h\<^sup>* _" [60,60] 100)
+    (\<open>_ \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h\<^sup>* _\<close> [60,60] 100)
 where
 "sbh_concurrent_steps \<equiv> sbh_concurrent_step^**"
 

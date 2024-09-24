@@ -187,16 +187,16 @@ definition directed :: "'a set \<Rightarrow> bool" where
 definition filtered :: "'a set \<Rightarrow> bool" where
  "filtered X = (\<forall>Y. finite Y \<and> Y \<subseteq> X \<longrightarrow> (\<exists>x \<in> X. \<forall>y \<in> Y. x \<le> y))"
 
-definition downset_set :: "'a set \<Rightarrow> 'a set" ("\<Down>") where
+definition downset_set :: "'a set \<Rightarrow> 'a set" (\<open>\<Down>\<close>) where
   "\<Down>X = {y. \<exists>x \<in> X. y \<le> x}"
 
-definition upset_set :: "'a set \<Rightarrow> 'a set" ("\<Up>") where
+definition upset_set :: "'a set \<Rightarrow> 'a set" (\<open>\<Up>\<close>) where
  "\<Up>X = {y. \<exists>x \<in> X. x \<le> y}"
 
-definition downset :: "'a \<Rightarrow> 'a set" ("\<down>") where 
+definition downset :: "'a \<Rightarrow> 'a set" (\<open>\<down>\<close>) where 
   "\<down> = \<Down> \<circ> \<eta>"
 
-definition upset :: "'a \<Rightarrow> 'a set" ("\<up>") where 
+definition upset :: "'a \<Rightarrow> 'a set" (\<open>\<up>\<close>) where 
   "\<up> = \<Up> \<circ> \<eta>"
 
 definition downsets :: "'a set set" where  

@@ -15,15 +15,15 @@ by(induct xvec) auto
 
 nominal_datatype 'assertion frame =
     FAssert "'assertion::fs_name"
-  | FRes "\<guillemotleft>name\<guillemotright> ('assertion frame)" ("\<lparr>\<nu>_\<rparr>_" [80, 80] 80)
+  | FRes "\<guillemotleft>name\<guillemotright> ('assertion frame)" (\<open>\<lparr>\<nu>_\<rparr>_\<close> [80, 80] 80)
 
 primrec frameResChain :: "name list \<Rightarrow> ('a::fs_name) frame \<Rightarrow> 'a frame" where
   base: "frameResChain [] F = F"
 | step: "frameResChain (x#xs) F = \<lparr>\<nu>x\<rparr>(frameResChain xs F)"
 
-notation frameResChain ("\<lparr>\<nu>*_\<rparr>_" [80, 80] 80)
-notation FAssert  ("\<langle>\<epsilon>, _\<rangle>" [80] 80)
-abbreviation FAssertJudge ("\<langle>_, _\<rangle>" [80, 80] 80) where "\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<equiv> frameResChain A\<^sub>F (FAssert \<Psi>\<^sub>F)"
+notation frameResChain (\<open>\<lparr>\<nu>*_\<rparr>_\<close> [80, 80] 80)
+notation FAssert  (\<open>\<langle>\<epsilon>, _\<rangle>\<close> [80] 80)
+abbreviation FAssertJudge (\<open>\<langle>_, _\<rangle>\<close> [80, 80] 80) where "\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<equiv> frameResChain A\<^sub>F (FAssert \<Psi>\<^sub>F)"
 
 lemma frameResChainEqvt[eqvt]:
   fixes perm :: "name prm"
@@ -602,10 +602,10 @@ proof -
 qed
 
 locale assertionAux = 
-  fixes SCompose :: "'b::fs_name \<Rightarrow> 'b \<Rightarrow> 'b"   (infixr "\<otimes>" 80)
-  and   SImp     :: "'b \<Rightarrow> 'c::fs_name \<Rightarrow> bool" ("_ \<turnstile> _" [70, 70] 70)
-  and   SBottom  :: 'b                         ("\<bottom>" 90) 
-  and   SChanEq  :: "'a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c"   ("_ \<leftrightarrow> _" [80, 80] 80)
+  fixes SCompose :: "'b::fs_name \<Rightarrow> 'b \<Rightarrow> 'b"   (infixr \<open>\<otimes>\<close> 80)
+  and   SImp     :: "'b \<Rightarrow> 'c::fs_name \<Rightarrow> bool" (\<open>_ \<turnstile> _\<close> [70, 70] 70)
+  and   SBottom  :: 'b                         (\<open>\<bottom>\<close> 90) 
+  and   SChanEq  :: "'a::fs_name \<Rightarrow> 'a \<Rightarrow> 'c"   (\<open>_ \<leftrightarrow> _\<close> [80, 80] 80)
 
   assumes statEqvt[eqvt]:   "\<And>p::name prm. p \<bullet> (\<Psi> \<turnstile> \<Phi>) = (p \<bullet> \<Psi>) \<turnstile> (p \<bullet> \<Phi>)"
   and     statEqvt'[eqvt]:  "\<And>p::name prm. p \<bullet> (\<Psi> \<otimes> \<Psi>') = (p \<bullet> \<Psi>) \<otimes> (p \<bullet> \<Psi>')" 
@@ -741,11 +741,11 @@ proof -
 qed
 
 definition
-  AssertionStatImp :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<hookrightarrow>" 70)
+  AssertionStatImp :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<hookrightarrow>\<close> 70)
   where "(\<Psi> \<hookrightarrow> \<Psi>') \<equiv> (\<forall>\<Phi>. \<Psi> \<turnstile> \<Phi> \<longrightarrow> \<Psi>' \<turnstile> \<Phi>)"
 
 definition
-  AssertionStatEq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix "\<simeq>" 70)
+  AssertionStatEq :: "'b \<Rightarrow> 'b \<Rightarrow> bool" (infix \<open>\<simeq>\<close> 70)
   where "(\<Psi> \<simeq> \<Psi>') \<equiv> \<Psi> \<hookrightarrow> \<Psi>' \<and> \<Psi>' \<hookrightarrow> \<Psi>"
 
 lemma statImpEnt:
@@ -862,7 +862,7 @@ using assms
 by(auto simp add: AssertionStatEq_def intro: AssertionStatImpTrans)
 
 definition 
-  FrameImp :: "'b::fs_name frame \<Rightarrow> 'c \<Rightarrow> bool"   (infixl "\<turnstile>\<^sub>F" 70)
+  FrameImp :: "'b::fs_name frame \<Rightarrow> 'c \<Rightarrow> bool"   (infixl \<open>\<turnstile>\<^sub>F\<close> 70)
   where "(F \<turnstile>\<^sub>F \<Phi>) = (\<exists>A\<^sub>F \<Psi>\<^sub>F. F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> A\<^sub>F \<sharp>* \<Phi> \<and> (\<Psi>\<^sub>F \<turnstile> \<Phi>))"
 
 lemma frameImpI:
@@ -1002,11 +1002,11 @@ lemma frameImpEmpty[simp]:
 by(auto simp add: FrameImp_def)
 
 definition
-  FrameStatImp :: "'b frame \<Rightarrow> 'b frame\<Rightarrow> bool" (infix "\<hookrightarrow>\<^sub>F" 70)
+  FrameStatImp :: "'b frame \<Rightarrow> 'b frame\<Rightarrow> bool" (infix \<open>\<hookrightarrow>\<^sub>F\<close> 70)
   where "(F \<hookrightarrow>\<^sub>F G) \<equiv> (\<forall>\<phi>. F \<turnstile>\<^sub>F \<phi> \<longrightarrow> G \<turnstile>\<^sub>F \<phi>)"
 
 definition
-  FrameStatEq :: "'b frame \<Rightarrow> 'b frame\<Rightarrow> bool" (infix "\<simeq>\<^sub>F" 70)
+  FrameStatEq :: "'b frame \<Rightarrow> 'b frame\<Rightarrow> bool" (infix \<open>\<simeq>\<^sub>F\<close> 70)
   where "(F \<simeq>\<^sub>F G) \<equiv> F \<hookrightarrow>\<^sub>F G \<and> G \<hookrightarrow>\<^sub>F F"
 
 lemma FrameStatImpClosed:
@@ -1143,10 +1143,10 @@ apply(simp add: fresh_def[symmetric])
 apply(fresh_guess)+
 done
 
-notation mergeFrame (infixr "\<otimes>\<^sub>F" 80)
+notation mergeFrame (infixr \<open>\<otimes>\<^sub>F\<close> 80)
 
 abbreviation
-  frameBottomJudge ("\<bottom>\<^sub>F") where "\<bottom>\<^sub>F \<equiv> (FAssert SBottom)"
+  frameBottomJudge (\<open>\<bottom>\<^sub>F\<close>) where "\<bottom>\<^sub>F \<equiv> (FAssert SBottom)"
 
 lemma mergeFrameEqvt[eqvt]:
   fixes p :: "name prm"
@@ -1913,10 +1913,10 @@ locale assertion = assertionAux SCompose SImp SBottom SChanEq
 
 begin
 
-notation SCompose (infixr "\<otimes>" 90)
-notation SImp ("_ \<turnstile> _" [85, 85] 85)
-notation SChanEq ("_ \<leftrightarrow> _" [90, 90] 90)
-notation SBottom ("\<bottom>" 90)
+notation SCompose (infixr \<open>\<otimes>\<close> 90)
+notation SImp (\<open>_ \<turnstile> _\<close> [85, 85] 85)
+notation SChanEq (\<open>_ \<leftrightarrow> _\<close> [90, 90] 90)
+notation SBottom (\<open>\<bottom>\<close> 90)
 
 lemma compositionSym:
   fixes \<Psi>   :: 'b
