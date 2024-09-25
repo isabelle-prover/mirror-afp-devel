@@ -12,6 +12,7 @@ section \<open>Splitting words into lists\<close>
 theory Rsplit
   imports More_Word Bit_Shifts_Infix_Syntax
 
+
 begin
 
 lemmas th_if_simp1 = if_split [where P = "(=) l", THEN iffD1, THEN conjunct1, THEN mp] for l
@@ -185,7 +186,7 @@ proof (induct m arbitrary: bin rule: wf_induct_rule)
     if "0 < m" and "0 < n"
     using that  by (simp add: drop_bit_take_bit min_def rsplit_def_auxs)
   then show ?case
-    unfolding bin_rsplitl_def bin_rsplit_def
+    unfolding bin_rsplitl_def bin_rsplit_def 
     apply (subst bin_rsplitl_aux.simps)
     apply (clarsimp simp: Let_def ac_simps split: prod.split)
     by (metis rsplit_aux_alts)
