@@ -375,6 +375,8 @@ that arguments can be arbitrary elements.\<close>
 datatype ('f,'a) actxt =
   Hole (\<open>\<box>\<close>) | More 'f "'a list" "('f,'a) actxt" "'a list"
 
+declare actxt.map_ident[simp]
+
 type_synonym ('f,'v) ctxt = "('f,('f,'v) term) actxt"
 
 fun map_ctxt where
@@ -440,7 +442,7 @@ lemma apply_ctxt_Var[simp]: "C \<cdot>\<^sub>c Var = C"
 lemma eval_subst_ctxt: "I\<lbrakk>C \<cdot>\<^sub>c \<theta>\<rbrakk>\<^sub>c \<rho> = I\<lbrakk>C\<rbrakk>\<^sub>c I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<rho>"
   apply (induct C) by (auto simp: eval_subst[symmetric])
 
-lemmas ctxt_subst_subst = eval_subst_ctxt[of Fun]
+lemmas ctxt_subst_subst[simp] = eval_subst_ctxt[of Fun]
 
 lemma ctxt_eq [simp]:
   "(C\<langle>s\<rangle> = C\<langle>t\<rangle>) = (s = t)" by (induct C) auto
