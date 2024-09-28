@@ -36,17 +36,7 @@ lemma distinct_the_index_is_index[simp]:
 
 lemma the_index_last_distinct:
   "distinct xs \<and> xs \<noteq> [] \<Longrightarrow> the_index xs (last xs) = length xs - 1"
-  apply safe
-  apply (subgoal_tac "xs ! (length xs - 1) = last xs")
-   apply (subgoal_tac "xs ! the_index xs (last xs) = last xs")
-    apply (subst nth_eq_iff_index_eq[symmetric])
-       apply assumption
-      apply (rule the_index_bounded)
-      apply simp_all
-   apply (rule nth_the_index)
-   apply simp
-  apply (induct xs, auto)
-  done
+  by (simp add: last_conv_nth)
 
 context enum begin
 
@@ -169,6 +159,7 @@ definition
 where
   "alt_from_ord L \<equiv> \<lambda>n. if (n < length L) then Some (L ! n) else None"
 
+(*Seemingly redundant, but heavily used elsewhere*)
 lemma handy_if_lemma: "((if P then Some A else None) = Some B) = (P \<and> (A = B))"
   by simp
 
@@ -177,12 +168,12 @@ class enumeration_both = enum_alt + enum +
 
 instance enumeration_both < enumeration_alt
   apply (intro_classes; simp add: enum_alt_rel alt_from_ord_def)
-    apply auto[1]
+    apply force
    apply (safe; simp)[1]
    apply (rule rev_image_eqI; simp)
     apply (rule the_index_bounded; simp)
    apply (subst nth_the_index; simp)
-  apply (clarsimp simp: handy_if_lemma)
+  apply (simp split: if_split_asm)
   apply (subst nth_eq_iff_index_eq[symmetric]; simp)
   done
 
