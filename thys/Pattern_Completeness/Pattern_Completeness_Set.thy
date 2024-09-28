@@ -65,7 +65,7 @@ locale pattern_completeness_context =
     and m :: nat \<comment> \<open>upper bound on arities of constructors\<close>
     and Cl :: "'s \<Rightarrow> ('f \<times> 's list)list" \<comment> \<open>a function to compute all constructors of given sort as list\<close> 
     and inf_sort :: "'s \<Rightarrow> bool" \<comment> \<open>a function to indicate whether a sort is infinite\<close>
-    and ty :: "'v itself" (* just fix the type-variable 'v for variables *)
+    and ty :: "'v itself" \<comment> \<open>fix the type-variable for term-variables\<close>
 begin
 
 definition tvars_disj_pp :: "nat set \<Rightarrow> ('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
@@ -98,12 +98,17 @@ proofs. Both of the deviations cause non-termination.
 
 The formal inference rules further separate those rules that deliver a bottom- or top-element from
 the ones that deliver a transformed problem.\<close>
-
 inductive mp_step :: "('f,'v,'s)match_problem_set \<Rightarrow> ('f,'v,'s)match_problem_set \<Rightarrow> bool"
 (infix \<open>\<rightarrow>\<^sub>s\<close> 50) where
   mp_decompose: "length ts = length ls \<Longrightarrow> insert (Fun f ts, Fun f ls) mp \<rightarrow>\<^sub>s set (zip ts ls) \<union> mp"
 | mp_match: "x \<notin> \<Union> (vars ` snd ` mp) \<Longrightarrow> insert (t, Var x) mp \<rightarrow>\<^sub>s mp" 
 | mp_identity: "mp \<rightarrow>\<^sub>s mp"
+| mp_instantiate_pat: "mp \<rightarrow>\<^sub>s (map_prod id (\<lambda> l. l \<cdot> subst y fys)) ` mp" 
+if "\<And> t. (t,Var y) \<in> mp \<Longrightarrow> root t = Some (f,n)" 
+   "\<And> t l. (t,l) \<in> mp \<Longrightarrow> l = Var y \<or> y \<notin> vars l"
+   "\<Union> (vars ` snd ` mp) \<inter> set ys = {}" 
+   "distinct ys" "length ys = n"  
+   "fys = Fun f (map Var ys)" 
 
 inductive mp_fail :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
   mp_clash: "(f,length ts) \<noteq> (g,length ls) \<Longrightarrow> mp_fail (insert (Fun f ts, Fun g ls) mp)" 
@@ -380,6 +385,10 @@ lemma mp_step_wf: "mp \<rightarrow>\<^sub>s mp' \<Longrightarrow> wf_match mp \<
 proof (induct mp mp' rule: mp_step.induct)
   case (mp_decompose f ts ls mp)
   then show ?case by (auto dest!: set_zip_leftD)
+next 
+  case (mp_instantiate_pat y mp f n ys fys)
+  from mp_instantiate_pat(7) (* IH *) 
+  show ?case by force
 qed auto
 
 lemma pp_step_wf: "pp \<Rightarrow>\<^sub>s pp' \<Longrightarrow> wf_pat pp \<Longrightarrow> wf_pat pp'" 
@@ -502,6 +511,93 @@ next
       by (auto intro!: term_subst_eq)
     thus "\<exists>\<mu>. \<forall>(ti, li)\<in>insert (t, Var x) mp. ti \<cdot> \<sigma> = li \<cdot> \<mu>" by (intro exI[of _ ?\<mu>], auto)
   qed auto
+next
+  case *: (mp_instantiate_pat y mp f n ys fys)
+  let ?\<delta> = "subst y fys" 
+  let ?mpi = "map_prod id (\<lambda>l. l \<cdot> ?\<delta>) ` mp" 
+  show ?case
+  proof (cases "y \<in> \<Union> (vars_term ` snd ` mp)")
+    case False
+    hence "?mpi = mp" by force
+    thus ?thesis by simp
+  next
+    case True
+    then obtain T L where TL: "(T,L) \<in> mp" and yL: "y \<in> vars L" by auto
+    let ?y = "Var y" 
+    from *(2)[OF TL] yL have L: "L = ?y" by auto
+    with TL have Ty: "(T, ?y) \<in> mp" by auto
+    show ?thesis
+    proof
+      assume "match_complete_wrt \<sigma> ?mpi" 
+      from this[unfolded match_complete_wrt_def] obtain \<mu>
+        where match: "\<And> t l. (t,l) \<in> mp \<Longrightarrow> t \<cdot> \<sigma> = l \<cdot> ?\<delta> \<cdot> \<mu>" by force
+      let ?\<mu> = "\<mu>( y := Fun f (map \<mu> ys))" 
+      show "match_complete_wrt \<sigma> mp" unfolding match_complete_wrt_def
+      proof (intro exI[of _ ?\<mu>] ballI, clarify)
+        fix t l
+        assume tl: "(t,l) \<in> mp"
+        show "t \<cdot> \<sigma> = l \<cdot> ?\<mu>" 
+          unfolding match[OF tl] 
+          unfolding subst_subst
+        proof (intro term_subst_eq)
+          fix x
+          assume "x \<in> vars l" 
+          show "?\<delta> x \<cdot> \<mu> = ?\<mu> x" 
+          proof (cases "x = y")
+            case False
+            thus ?thesis by (auto simp: subst_def)
+          next
+            case x: True
+            show ?thesis unfolding x 
+              by (simp add: *)
+          qed
+        qed
+      qed
+    next
+      assume "match_complete_wrt \<sigma> mp" 
+      from this[unfolded match_complete_wrt_def]
+      obtain \<mu> where match: "\<And> t l. (t,l) \<in> mp \<Longrightarrow> t \<cdot> \<sigma> = l \<cdot> \<mu>" by force
+      from match[OF Ty] have id: "\<mu> y = T \<cdot> \<sigma>" by auto
+      from *(1)[OF Ty] have "root T = Some (f,n)" by auto
+      with id obtain Ts where mu_y: "\<mu> y = Fun f Ts" and Tsn: "length Ts = n" 
+        by (cases T, auto)
+      define \<mu>' where "\<mu>' = (\<lambda> x. case map_of (zip ys Ts) x of None \<Rightarrow> \<mu> x | Some Ti \<Rightarrow> Ti)"
+      show "match_complete_wrt \<sigma> ?mpi" 
+        unfolding match_complete_wrt_def
+      proof (intro exI[of _ \<mu>'] ballI, clarify, unfold id_apply)
+        fix t l
+        assume tl: "(t,l) \<in> mp"   
+        {
+          fix x
+          assume "x \<in> vars l" 
+          with tl *(3) have x_ys: "x \<notin> set ys" by force
+          hence "\<mu>' x = \<mu> x" unfolding \<mu>'_def
+            using Tsn \<open>length ys = n\<close> 
+            apply (cases "map_of (zip ys Ts) x") 
+             apply (metis option.case_eq_if)
+            by (meson map_of_zip_is_Some)
+        } note mu' = this
+        show "t \<cdot> \<sigma> = l \<cdot> ?\<delta> \<cdot> \<mu>'"
+          unfolding match[OF tl] subst_subst
+        proof (intro term_subst_eq)
+          fix x
+          assume x: "x \<in> vars l" 
+          show "\<mu> x = ?\<delta> x \<cdot> \<mu>'" 
+          proof (cases "x = y")
+            case False
+            thus ?thesis using mu'[OF x] by (auto simp: subst_def)
+          next
+            case x: True
+            show ?thesis unfolding x 
+            proof (simp add: \<open>fys = Fun f (map Var ys)\<close> o_def mu_y)
+              show "Ts = map \<mu>' ys" unfolding \<mu>'_def using \<open>distinct ys\<close> Tsn \<open>length ys = n\<close>
+                by (metis (mono_tags, lifting) map_nth_eq_conv mk_subst_def mk_subst_distinct)
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
 qed auto
 
 lemma mp_fail_pcorrect: "mp_fail mp \<Longrightarrow> \<not> match_complete_wrt \<sigma> mp" 
