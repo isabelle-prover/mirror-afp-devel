@@ -12,21 +12,7 @@ theory More_Word
     "HOL-Library.Word" More_Arithmetic More_Divides More_Bit_Ring
 begin
 
-lemma context_disjE:
-  assumes "P \<or> Q" and "P \<Longrightarrow> R" and "\<not>P \<Longrightarrow> Q \<Longrightarrow> R"
-  shows R
-  using assms by blast
-
 declare bit_1_iff[simp]
-
-context semidom_divide
-begin
-
-lemma power_diff_if:
-  "a ^ (m - n) = (if n \<le> m then (a ^ m) div (a ^ n) else 1)" if "a \<noteq> 0"
-  by (simp add: power_diff that) 
-
-end
 
 context
   includes bit_operations_syntax
