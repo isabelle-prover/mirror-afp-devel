@@ -103,12 +103,10 @@ inductive mp_step :: "('f,'v,'s)match_problem_set \<Rightarrow> ('f,'v,'s)match_
   mp_decompose: "length ts = length ls \<Longrightarrow> insert (Fun f ts, Fun f ls) mp \<rightarrow>\<^sub>s set (zip ts ls) \<union> mp"
 | mp_match: "x \<notin> \<Union> (vars ` snd ` mp) \<Longrightarrow> insert (t, Var x) mp \<rightarrow>\<^sub>s mp" 
 | mp_identity: "mp \<rightarrow>\<^sub>s mp"
-| mp_instantiate_pat: "mp \<union> mp' \<rightarrow>\<^sub>s (map_prod id (\<lambda> l. l \<cdot> subst y fys)) ` mp \<union> mp'" 
+| mp_decompose': "mp \<union> mp' \<rightarrow>\<^sub>s (\<Union> (t, l) \<in> mp. set (zip (args t) (map Var ys))) \<union> mp'" 
 if "\<And> t l. (t,l) \<in> mp \<Longrightarrow> l = Var y \<and> root t = Some (f,n)" 
    "\<And> t l. (t,l) \<in> mp' \<Longrightarrow> y \<notin> vars l"
-   "\<Union> (vars ` snd ` (mp \<union> mp')) \<inter> set ys = {}" 
-   "distinct ys" "length ys = n"  
-   "fys = Fun f (map Var ys)" 
+   "\<Union> (vars ` snd ` (mp \<union> mp')) \<inter> set ys = {}" "distinct ys" "length ys = n" (* ys = n fresh vars *) 
 
 inductive mp_fail :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
   mp_clash: "(f,length ts) \<noteq> (g,length ls) \<Longrightarrow> mp_fail (insert (Fun f ts, Fun g ls) mp)" 
@@ -386,9 +384,13 @@ proof (induct mp mp' rule: mp_step.induct)
   case (mp_decompose f ts ls mp)
   then show ?case by (auto dest!: set_zip_leftD)
 next 
-  case (mp_instantiate_pat y mp f n ys fys)
-  from mp_instantiate_pat(7) (* IH *) 
-  show ?case by force
+  case *: (mp_decompose' mp y f n mp' ys)
+  from *(1) *(6)  
+  show ?case 
+    apply (auto dest!: set_zip_leftD) 
+    subgoal for _ _ t by (cases t; force)
+    subgoal for _ _ t by (cases t; force)
+    done
 qed auto
 
 lemma pp_step_wf: "pp \<Rightarrow>\<^sub>s pp' \<Longrightarrow> wf_pat pp \<Longrightarrow> wf_pat pp'" 
@@ -512,15 +514,14 @@ next
     thus "\<exists>\<mu>. \<forall>(ti, li)\<in>insert (t, Var x) mp. ti \<cdot> \<sigma> = li \<cdot> \<mu>" by (intro exI[of _ ?\<mu>], auto)
   qed auto
 next
-  case *: (mp_instantiate_pat mp y f n mp' ys fys)
-  let ?\<delta> = "subst y fys" 
-  let ?mpi = "map_prod id (\<lambda>l. l \<cdot> ?\<delta>) ` mp" 
+  case *: (mp_decompose' mp y f n mp' ys)
+  let ?mpi = "(\<Union>(t, l)\<in>mp. set (zip (args t) (map Var ys)))" 
   let ?y = "Var y" 
   show ?case
   proof
     assume "match_complete_wrt \<sigma> (?mpi \<union> mp')" 
     from this[unfolded match_complete_wrt_def] obtain \<mu>
-      where match: "\<And> t l. (t,l) \<in> mp \<Longrightarrow> t \<cdot> \<sigma> = l \<cdot> ?\<delta> \<cdot> \<mu>" 
+      where match: "\<And> t l. (t,l) \<in> ?mpi \<Longrightarrow> t \<cdot> \<sigma> = l \<cdot> \<mu>" 
         and match': "\<And> t l. (t,l) \<in> mp' \<Longrightarrow> t \<cdot> \<sigma> = l \<cdot> \<mu>" by force
     let ?\<mu> = "\<mu>( y := Fun f (map \<mu> ys))" 
     show "match_complete_wrt \<sigma> (mp \<union> mp')" unfolding match_complete_wrt_def
@@ -532,11 +533,18 @@ next
         show "t \<cdot> \<sigma> = l \<cdot> ?\<mu>" by (auto intro: term_subst_eq)
       }
       assume tl: "(t,l) \<in> mp"
-      hence l: "l = Var y" using * by auto
-      show "t \<cdot> \<sigma> = l \<cdot> ?\<mu>" 
-        unfolding match[OF tl] 
-        unfolding l
-        by (simp add: *)
+      from *(1)[OF this] obtain ts where l: "l = Var y" and t: "t = Fun f ts"  
+        and lts: "length ts = n" by (cases t, auto)
+      {
+        fix ti yi
+        assume "(ti,yi) \<in> set (zip ts ys)" 
+        hence "(ti, Var yi) \<in> set (zip (args t) (map Var ys))" 
+          using t lts \<open>length ys = n\<close> by (force simp: set_conv_nth)
+        hence "(ti, Var yi) \<in> ?mpi" using tl by blast
+        from match[OF this] have "\<mu> yi = ti \<cdot> \<sigma>" by simp
+      } note yi = this
+      show "t \<cdot> \<sigma> = l \<cdot> ?\<mu>" unfolding l t using yi lts \<open>length ys = n\<close> 
+        by (force intro!: nth_equalityI simp: set_zip)
     qed
   next
     assume "match_complete_wrt \<sigma> (mp \<union> mp')" 
@@ -547,7 +555,7 @@ next
       None \<Rightarrow> \<mu> x | Some Ti \<Rightarrow> Ti)"
     show "match_complete_wrt \<sigma> (?mpi \<union> mp')" 
       unfolding match_complete_wrt_def
-    proof ((intro exI[of _ \<mu>'] ballI, elim UnE; clarify), unfold id_apply)
+    proof (intro exI[of _ \<mu>'] ballI, elim UnE; clarify)
       fix t l
       assume tl: "(t,l) \<in> mp'" 
       from *(3) tl have vars: "vars l \<inter> set ys = {}" by force
@@ -556,17 +564,19 @@ next
       with match'[OF tl] 
       show "t \<cdot> \<sigma> = l \<cdot> \<mu>'" by (auto intro!: term_subst_eq simp: \<mu>'_def)
     next
-      fix t l
-      assume tl: "(t,l) \<in> mp" 
-      from *(1)[OF this] obtain ts where l: "l = Var y" and t: "t = Fun f ts"  
+      fix t l ti and vyi :: "('f,_)term" 
+      assume tl: "(t,l) \<in> mp"   
+        and i: "(ti,vyi) \<in> set (zip (args t) (map Var ys))" 
+      from *(1)[OF tl] obtain ts where l: "l = Var y" and t: "t = Fun f ts"  
         and lts: "length ts = n" by (cases t, auto)
+      from i lts obtain i where i: "i < n" and ti: "ti = ts ! i" and yi: "vyi = Var (ys ! i)" 
+        unfolding set_zip using \<open>length ys = n\<close> t by auto
       from match[OF tl] have mu_y: "\<mu> y = Fun f ts \<cdot> \<sigma>" unfolding l t by auto
-      have "l \<cdot> ?\<delta> \<cdot> \<mu>' = Fun f (map \<mu>' ys)" by (simp add: l \<open>fys = Fun f (map Var ys)\<close> o_def)
-      also have "map \<mu>' ys = args (\<mu> y)" unfolding \<mu>'_def unfolding mu_y
-        using \<open>length ys = n\<close> lts \<open>distinct ys\<close>
-        by (intro nth_equalityI, auto split: option.splits simp: set_zip distinct_conv_nth) blast
-      also have "Fun f \<dots> = t \<cdot> \<sigma>" by (simp add: mu_y t)
-      finally show "t \<cdot> \<sigma> = l \<cdot> ?\<delta> \<cdot> \<mu>'" ..
+      have yi: "vyi \<cdot> \<mu>' = args (\<mu> y) ! i" unfolding \<mu>'_def yi
+        using i lts \<open>length ys = n\<close> \<open>distinct ys\<close> mu_y 
+        by (force split: option.splits simp: set_zip distinct_conv_nth)
+      also have "\<dots> = ti \<cdot> \<sigma>" unfolding mu_y ti using i lts by auto
+      finally show "ti \<cdot> \<sigma> = vyi \<cdot> \<mu>'" ..
     qed
   qed
 qed auto
