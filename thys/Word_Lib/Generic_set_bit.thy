@@ -2,6 +2,7 @@
  * Copyright Data61, CSIRO (ABN 41 687 119 230)
  *
  * SPDX-License-Identifier: BSD-2-Clause
+Proofs tidied by LCP, 2024-09
  *)
 
 (* Author: Jeremy Dawson, NICTA *)
@@ -155,10 +156,7 @@ lemma bin_sc_nth [simp]: "bin_sc n ((bit :: int \<Rightarrow> nat \<Rightarrow> 
 
 lemma bin_sc_bintr [simp]:
   "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m w)) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) m (bin_sc n x w)"
-  apply (rule bit_eqI)
-  apply (cases x)
-   apply (auto simp add: bit_simps bin_sc_eq)
-  done
+  by (simp add: Generic_set_bit.set_bit_int_def take_bit_set_bit_eq take_bit_unset_bit_eq)
 
 lemma bin_clr_le: "bin_sc n False w \<le> w"
   by (simp add: set_bit_int_def unset_bit_less_eq)
@@ -200,18 +198,15 @@ lemma bin_sc_pos:
 
 lemma bin_clr_conv_NAND:
   "bin_sc n False i = i AND NOT (push_bit n 1)"
-  by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
+  by (fact int_set_bit_False_conv_NAND)
 
 lemma bin_set_conv_OR:
   "bin_sc n True i = i OR (push_bit n 1)"
-  by (rule bit_eqI) (auto simp add: bin_sc_eq bit_simps)
+  by (fact int_set_bit_True_conv_OR)
 
 lemma word_set_bit_def:
   \<open>set_bit a n x = word_of_int (bin_sc n x (uint a))\<close>
-  apply (rule bit_word_eqI)
-  apply (cases x)
-   apply (simp_all add: bit_simps bin_sc_eq)
-  done
+  by (rule bit_word_eqI) (simp add: bit_of_int_iff bit_uint_iff set_bit_class.bit_set_bit_iff)
 
 lemma set_bit_word_of_int:
   "set_bit (word_of_int x) n b = word_of_int (bin_sc n b x)"
@@ -220,7 +215,7 @@ lemma set_bit_word_of_int:
 lemma word_set_numeral [simp]:
   "set_bit (numeral bin::'a::len word) n b =
     word_of_int (bin_sc n b (numeral bin))"
-  unfolding word_numeral_alt by (rule set_bit_word_of_int)
+  by (metis set_bit_word_of_int word_of_int_numeral)
 
 lemma word_set_neg_numeral [simp]:
   "set_bit (- numeral bin::'a::len word) n b =
@@ -268,42 +263,22 @@ lemma word_set_set_diff:
 
 lemma word_set_nth_iff: "set_bit w n b = w \<longleftrightarrow> bit w n = b \<or> n \<ge> size w"
   for w :: "'a::len word"
-  apply (rule iffI)
-   apply (rule disjCI)
-   apply (drule word_eqD)
-   apply (erule sym [THEN trans])
-   apply (simp add: test_bit_set)
-  apply (erule disjE)
-   apply clarsimp
-  apply (rule word_eqI)
-   apply (clarsimp simp add : test_bit_set_gen)
-   apply (auto simp add: word_size)
-  apply (rule bit_eqI)
-  apply (simp add: bit_simps)
-  done
+  by (smt (verit) linorder_not_le test_bit_set word_set_nth word_set_set_same)
 
 lemma word_clr_le: "w \<ge> set_bit w n False"
   for w :: "'a::len word"
-  apply (simp add: set_bit_unfold)
-  apply transfer
-  apply (simp add: take_bit_unset_bit_eq unset_bit_less_eq)
-  done
+  by (metis test_bit_set_gen word_leI)
 
 lemma word_set_ge: "w \<le> set_bit w n True"
   for w :: "'a::len word"
-  apply (simp add: set_bit_unfold)
-  apply transfer
-  apply (simp add: take_bit_set_bit_eq set_bit_greater_eq)
-  done
+  by (simp add: test_bit_set_gen word_leI)
 
 lemma set_bit_beyond:
   "size x \<le> n \<Longrightarrow> set_bit x n b = x" for x :: "'a :: len word"
   by (simp add: word_set_nth_iff)
 
 lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
-  apply (rule word_eqI)
-  apply (auto simp add: word_size bit_simps)
-  done
+  by (rule word_eqI) (auto simp add: word_size bit_simps)
 
 lemma one_bit_pow: "set_bit 0 n True = (2 :: 'a :: len word) ^ n"
   by (rule word_eqI) (simp add: bit_simps)

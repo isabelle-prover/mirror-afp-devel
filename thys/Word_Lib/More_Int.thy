@@ -153,11 +153,7 @@ lemma nth_2p_bin: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (2 ^ n) m =
   by (auto simp add: bit_exp_iff)
 
 lemma nth_rest_power_bin: "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (((\<lambda>k::int. k div 2) ^^ k) w) n = (bit :: int \<Rightarrow> nat \<Rightarrow> bool) w (n + k)"
-  apply (induct k arbitrary: n)
-   apply clarsimp
-  apply clarsimp
-  apply (simp only: bit_Suc [symmetric] add_Suc)
-  done
+  by (induct k arbitrary: n) (auto simp flip: bit_Suc)
 
 lemma bin_nth_numeral_unfold:
   "(bit :: int \<Rightarrow> nat \<Rightarrow> bool) (numeral (num.Bit0 x)) n \<longleftrightarrow> n > 0 \<and> (bit :: int \<Rightarrow> nat \<Rightarrow> bool) (numeral x) (n - 1)"
@@ -300,22 +296,17 @@ lemmas bintrunc_bintrunc [simp] = order_refl [THEN bintrunc_bintrunc_l]
 lemmas sbintrunc_sbintrunc [simp] = order_refl [THEN sbintrunc_sbintrunc_l]
 
 lemma bintrunc_sbintrunc' [simp]: "0 < n \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (n - 1) w) = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w"
-  by (cases n) simp_all
+  by (metis Suc_diff_1 bintrunc_sbintrunc)
 
 lemma sbintrunc_bintrunc' [simp]: "0 < n \<Longrightarrow> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (n - 1) ((take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n w) = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (n - 1) w"
-  by (cases n) simp_all
+  by (simp add: sbintrunc_bintrunc_lt)
 
 lemma bin_sbin_eq_iff: "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) x = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (Suc n) y \<longleftrightarrow> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n x = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n y"
-  apply (rule iffI)
-   apply (rule box_equals [OF _ sbintrunc_bintrunc sbintrunc_bintrunc])
-   apply simp
-  apply (rule box_equals [OF _ bintrunc_sbintrunc bintrunc_sbintrunc])
-  apply simp
-  done
+  by (simp add: signed_take_bit_eq_iff_take_bit_eq)
 
 lemma bin_sbin_eq_iff':
   "0 < n \<Longrightarrow> (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n x = (take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n y \<longleftrightarrow> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (n - 1) x = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) (n - 1) y"
-  by (cases n) (simp_all add: bin_sbin_eq_iff)
+  by (simp add: signed_take_bit_eq_iff_take_bit_eq)
 
 lemmas bintrunc_sbintruncS0 [simp] = bintrunc_sbintrunc' [unfolded One_nat_def]
 lemmas sbintrunc_bintruncS0 [simp] = sbintrunc_bintrunc' [unfolded One_nat_def]
@@ -378,10 +369,8 @@ proof -
   moreover have \<open>(signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n = ((\<lambda>k. k - 2 ^ n) \<circ> take_bit (Suc n) \<circ> (\<lambda>k. k + 2 ^ n))\<close>
     by (simp add: sbintrunc_eq_take_bit fun_eq_iff)
   ultimately show ?thesis
-    apply (simp only: fun.set_map range_bintrunc)
-    apply (auto simp add: image_iff)
-    apply presburger
-    done
+    apply (simp add: fun.set_map range_bintrunc set_eq_iff image_iff fun_eq_iff)
+    by (metis sbintrunc_sbintrunc signed_take_bit_int_eq_self_iff)
 qed
 
 lemma sbintrunc_inc:
@@ -432,15 +421,18 @@ lemma bintrunc_rest': "(take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n \
 lemma sbintrunc_rest': "(signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n \<circ> (\<lambda>k::int. k div 2) \<circ> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n = (\<lambda>k::int. k div 2) \<circ> (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n"
   by (rule ext) auto
 
-lemma rco_lem: "f \<circ> g \<circ> f = g \<circ> f \<Longrightarrow> f \<circ> (g \<circ> f) ^^ n = g ^^ n \<circ> f"
-  apply (rule ext)
-  apply (induct_tac n)
-   apply (simp_all (no_asm))
-  apply (drule fun_cong)
-  apply (unfold o_def)
-  apply (erule trans)
-  apply simp
-  done
+lemma rco_lem: 
+  assumes "f \<circ> g \<circ> f = g \<circ> f"
+  shows "f \<circ> (g \<circ> f) ^^ n = g ^^ n \<circ> f"
+proof (induct n)
+  case 0
+  then show ?case
+    by auto
+next
+  case (Suc n)
+  then show ?case
+    by (metis assms comp_assoc funpow_Suc_right)
+qed
 
 lemmas rco_bintr = bintrunc_rest'
   [THEN rco_lem [THEN fun_cong], unfolded o_def]
@@ -832,18 +824,15 @@ lemma bin_mask_p1_conv_shift: "mask n + 1 = push_bit n (1 :: int)"
 lemma sbintrunc_eq_in_range:
   "((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n x = x) = (x \<in> range ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n))"
   "(x = (signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n x) = (x \<in> range ((signed_take_bit :: nat \<Rightarrow> int \<Rightarrow> int) n))"
-  apply (simp_all add: image_def)
-  apply (metis sbintrunc_sbintrunc)+
-  done
+  by (simp add: image_def, metis sbintrunc_sbintrunc)+
 
 lemma sbintrunc_If:
   "- 3 * (2 ^ n) \<le> x \<and> x < 3 * (2 ^ n)
     \<Longrightarrow> signed_take_bit n x = (if x < - (2 ^ n) then x + 2 * (2 ^ n)
         else if x \<ge> 2 ^ n then x - 2 * (2 ^ n) else x)" for x :: int
-  apply (simp add: no_sbintr_alt2, safe)
-   apply (simp add: mod_pos_geq)
-  apply (subst mod_add_self1[symmetric], simp)
-  done
+  apply (simp add: no_sbintr_alt2)
+  by (smt (verit, best) minus_mod_self2 mod_add_self2 mod_pos_pos_trivial)
+
 
 lemma bintrunc_id:
   "\<lbrakk>m \<le> int n; 0 < m\<rbrakk> \<Longrightarrow> take_bit n m = m"
