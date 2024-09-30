@@ -17,7 +17,7 @@ begin
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-no_notation Transitive_Closure.rtrancl (\<open>(_\<^sup>*)\<close> [1000] 999)
+no_notation Transitive_Closure.rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
 
 notation Union (\<open>\<mu>\<close>)
      and g_orbital (\<open>(1x\<acute>=_ & _ on _ _ @ _)\<close>)
@@ -137,7 +137,7 @@ lemma kpower_simp: "kpower f (Suc n) s = (f ; kpower f n) s"
    apply(force simp: subset_antisym)
   unfolding kpower_def kcomp_eq by simp
 
-definition kleene_star :: "('a \<Rightarrow> 'a set) \<Rightarrow> ('a \<Rightarrow> 'a set)" (\<open>(_\<^sup>*)\<close> [1000] 999)
+definition kleene_star :: "('a \<Rightarrow> 'a set) \<Rightarrow> ('a \<Rightarrow> 'a set)" (\<open>(\<open>notation=\<open>postfix kleene_star\<close>\<close>_\<^sup>*)\<close> [1000] 999)
   where "(f\<^sup>*) s = \<Union> {kpower f n s |n. n \<in> UNIV}"
 
 lemma kpower_inv: 

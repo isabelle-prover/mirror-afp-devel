@@ -21,7 +21,7 @@ no_notation Transitive_Closure.trancl (\<open>(\<open>notation=\<open>postfix +\
 \<comment> \<open> Hide constant and notation for \isaname{Relation.converse} (\<open>(_\<^sup>+)\<close>) to prevent
 warnings. \<close>
 hide_const (open) Relation.converse
-no_notation Relation.converse  (\<open>(_\<inverse>)\<close> [1000] 999)
+no_notation Relation.converse  (\<open>(\<open>notation=\<open>postfix -1\<close>\<close>_\<inverse>)\<close> [1000] 999)
 
 section "The Basic SATPlan Encoding"
 text \<open> We now move on to the formalization of the basic SATPlan encoding (see
