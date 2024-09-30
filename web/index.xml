@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 17 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Parallel Shear Sort</title>
+          <link>/entries/Parallel_Shear_Sort.html</link>
+          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Parallel_Shear_Sort.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>NREST: Nondeterministc RESult monad with Time</title>
           <link>/entries/NREST.html</link>
@@ -10056,6 +10063,13 @@
           <link>/sessions/paraconsistency/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/paraconsistency/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Parallel_Shear_Sort</title>
+          <link>/sessions/parallel_shear_sort/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/parallel_shear_sort/</guid>
           <description></description>
         </item>
         <item>
