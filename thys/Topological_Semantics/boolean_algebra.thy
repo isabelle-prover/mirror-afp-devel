@@ -11,7 +11,7 @@ sledgehammer_params[isar_proof=false]
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=3, atoms=a b c d] (*default Nitpick settings*)
 text\<open>We hide some Isabelle/HOL notation from the libraries (which we don't use) to avoid overloading\<close>
 hide_const(open) List.list.Nil no_notation List.list.Nil (\<open>[]\<close>)  (*We have no use for lists... *)
-hide_const(open) Relation.converse no_notation Relation.converse (\<open>(_\<inverse>)\<close> [1000] 999) (*..nor for relations in this work*)
+hide_const(open) Relation.converse no_notation Relation.converse (\<open>(\<open>notation=\<open>postfix -1\<close>\<close>_\<inverse>)\<close> [1000] 999) (*..nor for relations in this work*)
 hide_const(open) Fun.comp no_notation Fun.comp (infixl \<open>\<circ>\<close> 55) (*we redefine function composition below*)
 hide_const(open) Groups.plus_class.plus no_notation Groups.plus_class.plus (infixl \<open>+\<close> 65) (*we don't use this*)
 hide_const(open) Groups.times_class.times no_notation Groups.times_class.times (infixl \<open>*\<close> 70) (*we don't use this*)

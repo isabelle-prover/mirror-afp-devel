@@ -38,7 +38,7 @@ no_translations
   "[x]" == "x # []"
 
 no_syntax
-  "_list" :: "list_args \<Rightarrow> 'a List.list"    (\<open>[(_)]\<close>)
+  "_list" :: "args \<Rightarrow> 'a List.list"    (\<open>[(\<open>notation=\<open>mixfix list enumeration\<close>\<close>_)]\<close>)
 
 no_notation
   List.Nil (\<open>[]\<close>)
