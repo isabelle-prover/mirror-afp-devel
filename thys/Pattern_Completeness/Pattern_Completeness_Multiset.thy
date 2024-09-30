@@ -44,13 +44,18 @@ definition subst_pat_problem_mset :: "('f,nat \<times> 's)subst \<Rightarrow> ('
 
 definition \<tau>s_list :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> ('f,nat \<times> 's)subst list" where 
   "\<tau>s_list n x = map (\<tau>c n x) (Cl (snd x))" 
-
+ 
 inductive mp_step_mset :: "('f,'v,'s)match_problem_mset \<Rightarrow> ('f,'v,'s)match_problem_mset \<Rightarrow> bool" (infix \<open>\<rightarrow>\<^sub>m\<close> 50)where
   match_decompose: "(f,length ts) = (g,length ls)
     \<Longrightarrow> add_mset (Fun f ts, Fun g ls) mp \<rightarrow>\<^sub>m mp + mset (zip ts ls)" 
 | match_match: "x \<notin> \<Union> (vars ` snd ` set_mset mp)
     \<Longrightarrow> add_mset (t, Var x) mp \<rightarrow>\<^sub>m mp" 
-| match_duplicate: "add_mset pair (add_mset pair mp) \<rightarrow>\<^sub>m add_mset pair mp"  
+| match_duplicate: "add_mset pair (add_mset pair mp) \<rightarrow>\<^sub>m add_mset pair mp"
+| match_decompose': "mp + mp' \<rightarrow>\<^sub>m \<Sum>\<^sub># (image_mset (\<lambda> (t,l). mset (zip (args t) (map Var ys))) mp) + mp'"
+  if "\<And> t l. (t,l) \<in># mp \<Longrightarrow> l = Var y \<and> root t = Some (f,n)" 
+     "\<And> t l. (t,l) \<in># mp' \<Longrightarrow> y \<notin> vars l"
+     "lvars_disj_mp ys (mp_mset (mp + mp'))" "length ys = n"
+     "size mp \<ge> 2" (* for size = 2, get non-termination, for size = 1, use match_match instead *)
 
 
 inductive match_fail :: "('f,'v,'s)match_problem_mset \<Rightarrow> bool" where
@@ -348,7 +353,7 @@ definition meas_finvars :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
   "meas_finvars = sum_ms (\<lambda> mp. sum (max_size o snd) (tvars_mp (mp_mset mp)))" 
 
 definition meas_symbols :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
-  "meas_symbols = sum_ms size_mset" 
+  "meas_symbols = sum_ms (sum_ms (\<lambda> (t,l). num_funs t))" 
 
 definition meas_setsize :: "('f,'v,'s)pat_problem_mset \<Rightarrow> nat" where
   "meas_setsize p = sum_ms (sum_ms (\<lambda> _. 1)) p + size p" 
@@ -416,9 +421,66 @@ proof cases
   have "meas_diff {#mp'#} \<le> meas_diff {#mp#}" 
     unfolding meas_def * using *(3) 
     by (auto simp: sum_mset_sum_list[symmetric] zip_commute[of ts ls] image_mset.compositionality o_def id)
-  moreover have "meas_symbols {#mp'#} < meas_symbols {#mp#}" 
-    unfolding meas_def * using *(3) size_mset_Fun_less[of ts ls g g]
+  moreover have "length ts = length ls \<Longrightarrow> (\<Sum>(t, l)\<in>#mset (zip ts ls). num_funs t) \<le> sum_list (map num_funs ts)" 
+    by (induct ts ls rule: list_induct2, auto)
+  hence "meas_symbols {#mp'#} < meas_symbols {#mp#}" 
+    unfolding meas_def * using *(3)
     by (auto simp: sum_mset_sum_list)
+  ultimately show ?thesis unfolding rel_pat_def by auto
+next
+  case *: (match_decompose' mp1 y f n mp2 ys)
+  let ?Var = "Var :: 'v \<Rightarrow> ('f, 'v) term" 
+  have "meas_diff {#mp'#} \<le> meas_diff {#mp#}
+    \<longleftrightarrow> (\<Sum>(ti, yi)\<in>#(\<Sum>(t, l)\<in>#mp1. mset (zip (args t) (map ?Var ys))). fun_diff yi ti)
+    \<le> (\<Sum>(t, l)\<in>#mp1. fun_diff l t)" (is "_ \<longleftrightarrow> ?sum \<le> _")
+    unfolding * meas_diff_def by simp
+  also have "?sum = 0" 
+    by (intro sum_mset.neutral ballI, auto simp: set_zip)
+  finally have "meas_diff {#mp'#} \<le> meas_diff {#mp#}" by simp
+  moreover
+  have "meas_finvars {#mp'#} \<le> meas_finvars {#mp#}" 
+  proof (rule meas_finvars_mono)
+    show "tvars_mp (mp_mset mp') \<subseteq> tvars_mp (mp_mset mp)" 
+      unfolding tvars_mp_def * using *(3,6) 
+      by (auto simp: set_zip set_conv_nth) 
+        (metis case_prod_conv nth_mem option.simps(3) root.elims term.sel(4) term.set_intros(4))
+  qed
+  moreover       
+  have "meas_symbols {#mp'#} < meas_symbols {#mp#}"
+  proof -
+    from \<open>2 \<le> size mp1\<close> obtain T L MP where mp1: "mp1 = add_mset (T,L) MP" 
+      by (cases mp1; force)
+    from *(3)[of T L] mp1 obtain TS where id: "T = Fun f TS" "L = Var y" and lTS: "length TS = n" 
+      by (cases T, auto)
+    have aux: "length ts = length ls \<Longrightarrow> 
+      (\<Sum>(t, l)\<in>#mset (zip ts ls). num_funs t) \<le> sum_list (map num_funs ts)" 
+      for ts :: "('f, nat \<times> 's)term list" and ls :: "('f,'v)term list" 
+      by (induct ts ls rule: list_induct2, auto)
+    have "meas_symbols {#mp'#} < meas_symbols {#mp#} \<longleftrightarrow> 
+    ((\<Sum>(t, l)\<in>#mset (zip TS (map ?Var ys)). num_funs t) +
+     (\<Sum>(ti, yi)\<in>#(\<Sum>(t, l)\<in>#MP. mset (zip (args t) (map ?Var ys))). num_funs ti)
+     \<le> (sum_list (map num_funs TS) + (\<Sum>(t, l)\<in>#MP. num_funs t)))" 
+      (is "_ \<longleftrightarrow> (?a + ?b \<le> ?c + ?d)")
+      unfolding meas_symbols_def * mp1 id by (simp add: sum_mset_sum_list less_Suc_eq_le) 
+    also have \<dots>
+    proof (rule add_le_mono)
+      show "?a \<le> ?c" using aux lTS \<open>length ys = n\<close> by auto
+      from *(3) mp1 have "(t, l) \<in># MP \<Longrightarrow> l = Var y \<and> root t = Some (f, n)" for l t by auto
+      thus "?b \<le> ?d" 
+      proof (induct MP)
+        case (add pair MP)
+        obtain t l where pair: "pair = (t,l)" by force
+        from add(2)[of t l] obtain ts where id: "l = Var y" "t = Fun f ts" and lts: "length ts = n" 
+          by (cases t, auto simp: pair)
+        from add(1)[OF add(2)]
+        have IH: "(\<Sum>(ti, yi)\<in>#(\<Sum>(t, l)\<in>#MP. mset (zip (args t) (map ?Var ys))). num_funs ti)
+          \<le> (\<Sum>(t, l)\<in>#MP. num_funs t)" by auto
+        from IH aux[of ts, unfolded lts, of "map ?Var ys"] \<open>length ys = n\<close>
+        show ?case unfolding pair id by auto
+      qed auto
+    qed
+    finally show "meas_symbols {#mp'#} < meas_symbols {#mp#}" .
+  qed
   ultimately show ?thesis unfolding rel_pat_def by auto
 next
   case *: (match_match x t)
@@ -723,6 +785,9 @@ next
 next
   case (match_duplicate pair mp)
   show ?case by (rule mp_step_cong[OF mp_identity], auto)
+next
+  case *: (match_decompose' mp y f n mp' ys) 
+  show ?case by (rule mp_step_cong[OF mp_decompose'[OF *(1,2) *(3)[unfolded set_mset_union] *(4)]], auto)
 qed
 
 lemma mp_fail_cong: "mp_fail mp \<Longrightarrow> mp = mp' \<Longrightarrow> mp_fail mp'" by auto

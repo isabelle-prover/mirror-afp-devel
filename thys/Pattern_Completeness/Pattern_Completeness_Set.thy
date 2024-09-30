@@ -71,6 +71,9 @@ begin
 definition tvars_disj_pp :: "nat set \<Rightarrow> ('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
   "tvars_disj_pp V p = (\<forall> mp \<in> p. \<forall> (ti,pi) \<in> mp. fst ` vars ti \<inter> V = {})" 
 
+definition lvars_disj_mp :: "'v list \<Rightarrow> ('f,'v,'s)match_problem_set \<Rightarrow> bool" where
+  "lvars_disj_mp ys mp = (\<Union> (vars ` snd ` mp) \<inter> set ys = {} \<and> distinct ys)" 
+
 definition inf_var_conflict :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
   "inf_var_conflict mp = (\<exists> s t x y. 
     (s,Var x) \<in> mp \<and> (t,Var x) \<in> mp \<and> Conflict_Var s t y \<and> inf_sort (snd y))" 
@@ -106,7 +109,7 @@ inductive mp_step :: "('f,'v,'s)match_problem_set \<Rightarrow> ('f,'v,'s)match_
 | mp_decompose': "mp \<union> mp' \<rightarrow>\<^sub>s (\<Union> (t, l) \<in> mp. set (zip (args t) (map Var ys))) \<union> mp'" 
 if "\<And> t l. (t,l) \<in> mp \<Longrightarrow> l = Var y \<and> root t = Some (f,n)" 
    "\<And> t l. (t,l) \<in> mp' \<Longrightarrow> y \<notin> vars l"
-   "\<Union> (vars ` snd ` (mp \<union> mp')) \<inter> set ys = {}" "distinct ys" "length ys = n" (* ys = n fresh vars *) 
+   "lvars_disj_mp ys (mp \<union> mp')" "length ys = n" (* ys = n fresh vars *) 
 
 inductive mp_fail :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
   mp_clash: "(f,length ts) \<noteq> (g,length ls) \<Longrightarrow> mp_fail (insert (Fun f ts, Fun g ls) mp)" 
@@ -385,7 +388,7 @@ proof (induct mp mp' rule: mp_step.induct)
   then show ?case by (auto dest!: set_zip_leftD)
 next 
   case *: (mp_decompose' mp y f n mp' ys)
-  from *(1) *(6)  
+  from *(1) *(5)  
   show ?case 
     apply (auto dest!: set_zip_leftD) 
     subgoal for _ _ t by (cases t; force)
@@ -515,6 +518,7 @@ next
   qed auto
 next
   case *: (mp_decompose' mp y f n mp' ys)
+  note * = *[unfolded lvars_disj_mp_def]
   let ?mpi = "(\<Union>(t, l)\<in>mp. set (zip (args t) (map Var ys)))" 
   let ?y = "Var y" 
   show ?case
@@ -573,7 +577,7 @@ next
         unfolding set_zip using \<open>length ys = n\<close> t by auto
       from match[OF tl] have mu_y: "\<mu> y = Fun f ts \<cdot> \<sigma>" unfolding l t by auto
       have yi: "vyi \<cdot> \<mu>' = args (\<mu> y) ! i" unfolding \<mu>'_def yi
-        using i lts \<open>length ys = n\<close> \<open>distinct ys\<close> mu_y 
+        using i lts \<open>length ys = n\<close> *(3) mu_y 
         by (force split: option.splits simp: set_zip distinct_conv_nth)
       also have "\<dots> = ti \<cdot> \<sigma>" unfolding mu_y ti using i lts by auto
       finally show "ti \<cdot> \<sigma> = vyi \<cdot> \<mu>'" ..

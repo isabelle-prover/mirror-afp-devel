@@ -213,7 +213,25 @@ qed auto
 
 lemma mp_step_mset_vars: assumes "mp \<rightarrow>\<^sub>m mp'"
   shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
-  using assms by induct (auto simp: tvars_mp_def set_zip)
+  using assms 
+proof induct 
+  case *: (match_decompose' mp y f n mp' ys)
+  {
+    fix x
+    assume "x \<in> tvars_mp (mp_mset ((\<Sum>(t, l)\<in>#mp. mp_list (zip (args t) (map Var ys)))))" 
+    from this[unfolded tvars_mp_def, simplified]
+    obtain t l ti yi where tl: "(t,l) \<in># mp" and tiyi: "(ti,yi) \<in># mp_list (zip (args t) (map Var ys))" 
+      and x: "x \<in> vars ti" 
+      by auto
+    from *(1)[OF tl] obtain ts where l: "l = Var y" and t: "t = Fun f ts" and lts: "length ts = n"
+      by (cases t, auto)
+    from tiyi[unfolded t] have "ti \<in> set ts"
+      using set_zip_leftD by fastforce
+    with x t have "x \<in> vars t" by auto
+    hence "x \<in> tvars_mp (mp_mset mp)" using tl unfolding tvars_mp_def by auto
+  }
+  thus ?case unfolding tvars_mp_def by force
+qed (auto simp: tvars_mp_def set_zip)
 
 lemma mp_step_mset_steps_vars: assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
   shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
