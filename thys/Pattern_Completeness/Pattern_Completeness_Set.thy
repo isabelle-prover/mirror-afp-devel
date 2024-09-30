@@ -66,6 +66,8 @@ locale pattern_completeness_context =
     and Cl :: "'s \<Rightarrow> ('f \<times> 's list)list" \<comment> \<open>a function to compute all constructors of given sort as list\<close> 
     and inf_sort :: "'s \<Rightarrow> bool" \<comment> \<open>a function to indicate whether a sort is infinite\<close>
     and ty :: "'v itself" \<comment> \<open>fix the type-variable for term-variables\<close>
+    and improved :: bool \<comment> \<open>if improved = False, then FSCD-version of algorithm is used;
+                             if improved = True, the better journal version (under development) is used.\<close>
 begin
 
 definition tvars_disj_pp :: "nat set \<Rightarrow> ('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
@@ -110,6 +112,7 @@ inductive mp_step :: "('f,'v,'s)match_problem_set \<Rightarrow> ('f,'v,'s)match_
 if "\<And> t l. (t,l) \<in> mp \<Longrightarrow> l = Var y \<and> root t = Some (f,n)" 
    "\<And> t l. (t,l) \<in> mp' \<Longrightarrow> y \<notin> vars l"
    "lvars_disj_mp ys (mp \<union> mp')" "length ys = n" (* ys = n fresh vars *) 
+   improved (* decompose' is not available in FSCD version *)
 
 inductive mp_fail :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
   mp_clash: "(f,length ts) \<noteq> (g,length ls) \<Longrightarrow> mp_fail (insert (Fun f ts, Fun g ls) mp)" 
@@ -388,7 +391,7 @@ proof (induct mp mp' rule: mp_step.induct)
   then show ?case by (auto dest!: set_zip_leftD)
 next 
   case *: (mp_decompose' mp y f n mp' ys)
-  from *(1) *(5)  
+  from *(1) *(6)  
   show ?case 
     apply (auto dest!: set_zip_leftD) 
     subgoal for _ _ t by (cases t; force)

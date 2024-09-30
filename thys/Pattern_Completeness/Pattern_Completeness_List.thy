@@ -632,6 +632,10 @@ qed
 lemma pat_mset_list: "pat_mset (pat_mset_list p) = pat_list p" 
   unfolding pat_list_def pat_mset_list_def by (auto simp: image_comp)
 
+context
+  assumes non_improved: "\<not> improved" 
+begin
+
 text \<open>Main simulation lemma for a single @{const pat_impl} step.\<close>
 lemma pat_impl: assumes "pat_impl n p = res" 
     and vars: "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" 
@@ -742,7 +746,8 @@ proof (atomize(full), goal_cases)
           from ts rx have sty: "(s, Var y) \<in># mp_rx (rx, False)" "(t, Var y) \<in># mp_rx (rx,False)" 
             by (auto simp: mp_rx_def List.maps_def)
           with confl ninf have "\<not> inf_sort (snd x)" unfolding inf_var_conflict_def by blast
-          with sty confl rx have main: "(s, Var y) \<in># mp_lr mp \<and> (t, Var y) \<in># mp_lr mp \<and> Conflict_Var s t x \<and> \<not> inf_sort (snd x)" 
+          with sty confl rx have main: "(s, Var y) \<in># mp_lr mp \<and> (t, Var y) \<in># mp_lr mp \<and> Conflict_Var s t x \<and> \<not> inf_sort (snd x)
+            \<and> (improved \<longrightarrow> b)" for b using non_improved
             unfolding mp by (auto simp: mp_lr_def)
           from mpp obtain p'' where pat: "pat_lr p' = add_mset (mp_lr mp) p''" 
             unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
@@ -913,7 +918,8 @@ proof -
   from pats_impl[OF wf n, folded this]
   show ?thesis .
 qed
-end 
+end
+end
 
 subsection \<open>Getting the result outside the locale with assumptions\<close>
 
@@ -931,6 +937,7 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   and C: "\<And> f \<sigma>s \<sigma>. ((f,\<sigma>s),\<sigma>) \<in> set Cs \<Longrightarrow> length \<sigma>s \<le> m \<and> set (\<sigma> # \<sigma>s) \<subseteq> S" 
   and Cl: "\<And> s. Cl s = map fst (filter ((=) s o snd) Cs)" 
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
+  and impr: "\<not> improved" 
   shows "pat_complete_impl P = pats_complete (pat_list ` set P)" 
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
@@ -971,7 +978,7 @@ proof -
     subgoal by (rule Cl)
     subgoal by (rule m)
     done
-  show ?thesis by (rule pat_complete_impl[OF P])
+  show ?thesis by (rule pat_complete_impl[OF impr P])
 qed
 end
 
@@ -1004,13 +1011,13 @@ theorem decide_pat_complete: assumes C_Cs: "C = map_of Cs"
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S"
 shows "decide_pat_complete Cs P = pats_complete S C  (pat_list ` set P)" 
   unfolding decide_pat_complete_def Let_def
-proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist non_empty_sorts S refl _ refl P])
+proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist non_empty_sorts S refl _ refl P, of _ False])
   fix f \<sigma>s \<sigma>
   assume mem: "((f, \<sigma>s), \<sigma>) \<in> set Cs" 
   hence "length \<sigma>s \<in> set (map (length \<circ> snd \<circ> fst) Cs)" by force
   from max_list[OF this] mem
   show "length \<sigma>s \<le> max_list (map (length \<circ> snd \<circ> fst) Cs) \<and> set (\<sigma> # \<sigma>s) \<subseteq> S" 
     unfolding S sorts_of_ssig_list_def List.maps_def by force
-qed
+qed simp
 
 end
