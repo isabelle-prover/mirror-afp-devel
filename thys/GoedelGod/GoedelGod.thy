@@ -76,7 +76,7 @@ abbreviations.\<close>
   
 text \<open>For grounding lifted formulas, the meta-predicate \<open>valid\<close> is introduced.\<close>
 
-  (*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
+  (*<*) no_syntax "_list" :: "args => 'a list"    (\<open>[(\<open>notation=\<open>mixfix list enumeration\<close>\<close>_)]\<close>) (*>*) 
   abbreviation valid :: "\<sigma> \<Rightarrow> bool" (\<open>[_]\<close>) where "[p] \<equiv> \<forall>w. p w"
   
 section \<open>G\"odel's Ontological Argument\<close>  

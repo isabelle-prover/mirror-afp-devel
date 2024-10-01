@@ -355,7 +355,7 @@ subsection\<open>Validity Syntax\<close>
 text\<open>\label{TAO_Semantics_Validity}\<close>
 
 (* disable list syntax [] to replace it with truth evaluation *)
-(*<*) no_syntax "_list" :: "list_args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
+(*<*) no_syntax "_list" :: "args \<Rightarrow> 'a list" (\<open>[(\<open>notation=\<open>mixfix list enumeration\<close>\<close>_)]\<close>) (*>*) 
 (*<*) no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" (\<open>[(_)]\<close>) (*>*) 
 
 abbreviation validity_in :: "\<o>\<Rightarrow>i\<Rightarrow>bool" (\<open>[_ in _]\<close> [1]) where
