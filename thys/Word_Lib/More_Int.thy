@@ -2,6 +2,7 @@
  * Copyright Brian Huffman, PSU; Jeremy Dawson and Gerwin Klein, NICTA
  *
  * SPDX-License-Identifier: BSD-2-Clause
+Proofs tidied by LCP, 2024-09
  *)
 
 section \<open>More on bitwise operations on integers\<close>
