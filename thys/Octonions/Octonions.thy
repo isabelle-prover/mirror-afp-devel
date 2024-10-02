@@ -1198,8 +1198,6 @@ proof -
     by (simp add: eq) 
 qed
 
-unbundle no_cross7_syntax
-
 bundle octonion_syntax
 begin
 
