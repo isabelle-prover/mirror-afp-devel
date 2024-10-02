@@ -16,7 +16,7 @@ no_notation Orderings.bot_class.bot (\<open>\<bottom>\<close>)
 \<comment> \<open> Hide constant and notation for \isaname{Transitive_Closure.trancl} (\<open>(_\<^sup>+)\<close>) to prevent
 warnings. \<close>
 hide_const (open) Transitive_Closure.trancl
-no_notation Transitive_Closure.trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
+unbundle no_trancl_syntax
 
 \<comment> \<open> Hide constant and notation for \isaname{Relation.converse} (\<open>(_\<^sup>+)\<close>) to prevent
 warnings. \<close>

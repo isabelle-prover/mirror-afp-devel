@@ -23,8 +23,7 @@ theory CKA
   imports Main
 begin
 
-no_notation
-rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
+unbundle no_rtrancl_syntax
 
 notation
 times (infixl \<open>*\<close> 70)

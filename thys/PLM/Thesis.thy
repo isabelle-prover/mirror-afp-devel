@@ -81,8 +81,8 @@ attribute_setup expand3 = \<open>
   Scan.succeed (Thm.rule_attribute [] 
     (fn _ => fn thm => thm RS @{thm expand_def3}))
 \<close>
-no_syntax "_list" :: "args \<Rightarrow> 'a list" (\<open>[(\<open>notation=\<open>mixfix list enumeration\<close>\<close>_)]\<close>)
-no_syntax "__listcompr" :: "args \<Rightarrow> 'a list" (\<open>[(_)]\<close>)
+unbundle no_list_syntax
+unbundle no_listcompr_syntax
 (*>*)
   
 (* abstract in thesis/root.tex *)
