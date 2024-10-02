@@ -295,7 +295,7 @@ lemma fimage_size_le: "\<And>f s. size s \<le> n \<Longrightarrow> size (fimage 
 lemma ffilter_size_le: "\<And>f s. size s \<le> n \<Longrightarrow> size (ffilter f s) \<le> n"
   using dual_order.trans size_ffilter by blast
 
-lemma set_membership_eq: "A = B \<longleftrightarrow> (\<lambda>x. Set.member x A) = (\<lambda>x. Set.member x B)"
+lemma set_membership_eq: "A = B \<longleftrightarrow> (\<lambda>x. x \<in> A) = (\<lambda>x. x \<in> B)"
   apply standard
    apply simp
   by (meson equalityI subsetI)
