@@ -327,7 +327,7 @@ subsection \<open>Computing taylor models for basic, univariate functions\<close
 definition tm_const :: "float \<Rightarrow> taylor_model"
   where "tm_const c = TaylorModel (poly.C c) 0"
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition tm_pi :: "nat \<Rightarrow> taylor_model"
   where "tm_pi prec = (

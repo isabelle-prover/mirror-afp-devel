@@ -416,7 +416,7 @@ lemma dest_Num_eq_Some_iff[simp]: "dest_Num_fa fa = (Some x) \<longleftrightarro
   by (cases fa) auto
 
 lemma ode_d_raw_Suc:
-  includes floatarith_notation
+  includes floatarith_syntax
   assumes "x \<in> Csafe"
   shows "((\<lambda>x. ode_d_raw n x d d) has_derivative ode_d_raw (Suc n) x d) (at x)"
 proof -

@@ -481,7 +481,7 @@ qed
 qualified lemma Gamma_asymp_equiv_aux: 
   "Gamma \<sim>[at_top] (\<lambda>x. exp c * x powr (x - 1/2) / exp x)"
 proof (rule asymp_equiv_sandwich)
-  include asymp_equiv_notation
+  include asymp_equiv_syntax
   show "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x \<le> Gamma x) at_top"
        "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x * exp (1/(12*x)) \<ge> Gamma x) at_top"
     using eventually_ge_at_top[of "1::real"]
@@ -503,7 +503,7 @@ qualified lemma exp_1_powr_real [simp]: "exp (1::real) powr x = exp x"
 qualified lemma fact_asymp_equiv_aux:
   "fact \<sim>[at_top] (\<lambda>x. exp c * sqrt (real x) * (real x / exp 1) powr real x)"
 proof -
-  include asymp_equiv_notation
+  include asymp_equiv_syntax
   have "fact \<sim> (\<lambda>n. Gamma (real (Suc n)))" by (simp add: Gamma_fact)
   also have "eventually (\<lambda>n. Gamma (real (Suc n)) = real n * Gamma (real n)) at_top"
     using eventually_gt_at_top[of "0::nat"]
@@ -576,7 +576,7 @@ qualified lemma exp_mult_2: "exp (y * 2 :: real) = exp y * exp y"
 
 qualified lemma exp_c: "exp c = sqrt (2*pi)"
 proof -
-  include asymp_equiv_notation
+  include asymp_equiv_syntax
   define p where "p = (\<lambda>n. \<Prod>k=1..n. (4*real k^2) / (4*real k^2 - 1))"
 
   have p_0 [simp]: "p 0 = 1" by (simp add: p_def)

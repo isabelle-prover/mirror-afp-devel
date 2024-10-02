@@ -200,7 +200,7 @@ qed
 lemma ln_fact_bigo: "(\<lambda>n. ln (fact n) - (ln (2 * pi * n) / 2 + n * ln n - n)) \<in> O(\<lambda>n. 1 / n)"
   and asymp_equiv_ln_fact [asymp_equiv_intros]: "(\<lambda>n. ln (fact n)) \<sim>[at_top] (\<lambda>n. n * ln n)"
 proof -
-  include asymp_equiv_notation
+  include asymp_equiv_syntax
   define f where "f = (\<lambda>n. ln (2 * pi * real n) / 2 + real n * ln (real n) - real n)"
   have "eventually (\<lambda>n. ln (fact n) - f n \<in> {0..1/(12*real n)}) at_top"
     using eventually_gt_at_top[of "1::nat"]

@@ -708,7 +708,7 @@ lemma D_DIM_wdD[simp]: "wd TYPE('a::executable_euclidean_space) \<Longrightarrow
   by (auto simp: wdD)
 
 lemma euler_step_flowpipe:
-  includes floatarith_notation
+  includes floatarith_syntax
   assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   shows "euler_step X0 h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'a set). 0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
   unfolding euler_step_def THE_NRES_def
@@ -803,7 +803,7 @@ lemma max_Var_floatariths_rk2_fas[le]:
         max_Var_floatariths_rk2_fas_err)
 
 lemma rk2_step_flowpipe:
-  includes floatarith_notation
+  includes floatarith_syntax
   assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   shows "rk2_step X0 h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'a set).
     0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"

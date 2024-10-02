@@ -48,7 +48,7 @@ end
 lemma in_list_interval_lengthD: "x \<in> list_interval a b \<Longrightarrow> length x = length a"
   by (auto simp: list_interval_def list_all2_lengthD)
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "varvec_fas' D C = ((map Var [0..<D]) @
       concat (map (\<lambda>b.
@@ -1059,7 +1059,7 @@ lemma ldec: "ldec x \<le> real_of_rat x"
       quotient_of_denom_pos quotient_of_div)
   done
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "matrix_of_degrees\<^sub>e =
   (let

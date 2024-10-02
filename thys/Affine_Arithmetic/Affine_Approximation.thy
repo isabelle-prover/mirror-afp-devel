@@ -2080,7 +2080,7 @@ proof (rule order_trans[OF _ d])
     by (simp)
 qed
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "range_reducer p l =
   (if l < 0 \<or> l > 2 * lb_pi p
