@@ -669,8 +669,8 @@ proof (atomize(full), goal_cases)
       have "(add_mset (pat_lr p') P, add_mset {#} P) \<in> \<Rrightarrow>\<^sup>*" 
       proof (cases "pat_lr p' = {#}")
         case False
-        have "add_mset (pat_lr p') P \<Rrightarrow>\<^sub>m {# {#} #} + P" 
-        proof (intro P_simp_pp[OF pat_failure'[OF _ False]] ballI)
+        have "add_mset (pat_lr p' + {#}) P \<Rrightarrow>\<^sub>m {# {#} #} + P" 
+        proof (intro P_simp_pp[OF pat_inf_var_conflict[OF _ False]] ballI)
           fix mps
           assume "mps \<in> pat_mset (pat_lr p')" 
           then obtain mp where mem: "mp \<in> set p'" and mps: "mps = mp_mset (mp_lr mp)" by (auto simp: pat_lr_def)
@@ -680,7 +680,7 @@ proof (atomize(full), goal_cases)
           have "inf_var_conflict (set_mset (mp_rx (rx,b)))" unfolding wf_rx_def wf_rx2_def by (auto split: if_splits)
           thus "inf_var_conflict mps" unfolding mps mp_lr_def mp split
             unfolding inf_var_conflict_def by fastforce
-        qed
+        qed (auto simp: tvars_pp_def)
         thus ?thesis unfolding P_step_def by auto
       qed auto
       with steps have "(add_mset (pat_mset_list p) P, add_mset {#} P) \<in> \<Rrightarrow>\<^sup>*" by auto

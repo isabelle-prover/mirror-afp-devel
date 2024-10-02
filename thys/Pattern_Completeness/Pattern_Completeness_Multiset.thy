@@ -73,7 +73,8 @@ inductive pp_step_mset :: "('f,'v,'s)pat_problem_mset \<Rightarrow> ('f,'v,'s)pa
    (s,Var y) \<in> mp_mset mp \<and> (t,Var y) \<in> mp_mset mp \<and> Conflict_Var s t x \<and> \<not> inf_sort (snd x)
    \<and> (improved \<longrightarrow> s = Var x \<and> is_Fun t) \<Longrightarrow>
   add_mset mp pp \<Rightarrow>\<^sub>m mset (map (\<lambda> \<tau>. subst_pat_problem_mset \<tau> (add_mset mp pp)) (\<tau>s_list n x))"
-| pat_failure': "Ball (pat_mset pp) inf_var_conflict \<Longrightarrow> pp \<noteq> {#} \<Longrightarrow> pp \<Rightarrow>\<^sub>m {# {#} #}" 
+| pat_inf_var_conflict: "Ball (pat_mset pp) inf_var_conflict \<Longrightarrow> pp \<noteq> {#}
+    \<Longrightarrow> Ball (tvars_pp (pat_mset pp')) (\<lambda> x. \<not> inf_sort (snd x)) \<Longrightarrow> pp + pp' \<Rightarrow>\<^sub>m {# pp' #}" 
 
 
 inductive pat_fail :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
@@ -331,8 +332,8 @@ next
             qed
           next
             case no_non_inf: False
-            show ?thesis
-            proof (intro disjI2[OF disjI1] exI, rule pat_failure'[OF _ pne], intro ballI)
+            have "\<exists> ps. p + {#} \<Rightarrow>\<^sub>m ps"
+            proof (intro exI, rule pat_inf_var_conflict[OF _ pne], intro ballI)
               fix mp
               assume mp: "mp \<in> pat_mset p"
               then obtain mp' where mp': "mp' \<in># p" and mp: "mp = mp_mset mp'" by auto 
@@ -346,7 +347,8 @@ next
                 apply (rule exI[of _ s], rule exI[of _ t])
                 apply (intro exI[of _ x] exI[of _ y])
                 using insert inf conf by auto
-            qed
+            qed (auto simp: tvars_pp_def)
+            thus ?thesis by auto
           qed
         qed
       qed
@@ -853,7 +855,7 @@ next
   case *: (pat_remove_pp p)
   thus ?case by (intro meas_sub_rel_pat, auto)
 next
-  case *: (pat_failure' p)
+  case *: (pat_inf_var_conflict p)
   thus ?case by (intro meas_sub_rel_pat, cases p, auto)
 qed
 
@@ -975,8 +977,10 @@ next
       apply (rule P_step_set_cong[OF P_instantiate[OF *(1) x]])
       by (unfold conv subst_defs set_map image_comp, auto)
   next
-    case *: (pat_failure' pp)
-    from pp_inf_var_conflict[OF *(1), of "{}"] have "pat_mset pp \<Rightarrow>\<^sub>s {}" by (auto simp: tvars_pp_def)
+    case *: (pat_inf_var_conflict pp pp')
+    from pp_inf_var_conflict[OF *(1), of "pat_mset pp'"] 
+    have "pat_mset (pp + pp') \<Rightarrow>\<^sub>s pat_mset pp'" 
+      using * by (auto simp: tvars_pp_def image_Un)
     from P_simp[OF this]
     show ?case by auto
   qed
