@@ -5,7 +5,7 @@ imports
   Constructor_Funs.Constructor_Funs
   "../Utils/Code_Utils"
   Eval_Class
-keywords "embed" :: thy_decl
+keywords "embed" :: thy_goal
 begin
 
 fun non_overlapping' :: "term \<Rightarrow> term \<Rightarrow> bool" where

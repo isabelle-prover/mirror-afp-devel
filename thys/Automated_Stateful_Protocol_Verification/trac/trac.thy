@@ -15,18 +15,18 @@ imports
 keywords
       "trac" :: thy_decl
   and "trac_import" :: thy_decl
-  and "print_transaction_strand" :: thy_decl
-  and "print_transaction_strand_list" :: thy_decl
-  and "print_attack_trace" :: thy_decl
-  and "print_fixpoint" :: thy_decl
+  and "print_transaction_strand" :: diag
+  and "print_transaction_strand_list" :: diag
+  and "print_attack_trace" :: diag
+  and "print_fixpoint" :: diag
   and "save_fixpoint" :: thy_decl
   and "load_fixpoint" :: thy_decl
   and "protocol_model_setup" :: thy_decl
-  and "protocol_security_proof" :: thy_decl
-  and "protocol_composition_proof" :: thy_decl
+  and "protocol_security_proof" :: thy_goal
+  and "protocol_composition_proof" :: thy_goal
   and "manual_protocol_model_setup" :: thy_decl
-  and "manual_protocol_security_proof" :: thy_decl
-  and "manual_protocol_composition_proof" :: thy_decl
+  and "manual_protocol_security_proof" :: thy_goal
+  and "manual_protocol_composition_proof" :: thy_goal
   and "compute_fixpoint" :: thy_decl
   and "compute_SMP" :: thy_decl
   and "compute_shared_secrets" :: thy_decl
