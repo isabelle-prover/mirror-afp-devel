@@ -253,12 +253,12 @@ definition
 nonterminal recbinds and recbindt and recbind
 
 syntax
-  "_recbind"  :: "logic \<Rightarrow> logic \<Rightarrow> recbind"         (\<open>(2_ =/ _)\<close> 10)
+  "_recbind"  :: "logic \<Rightarrow> logic \<Rightarrow> recbind"         (\<open>(\<open>indent=2 notation=\<open>mixfix Letrec binding\<close>\<close>_ =/ _)\<close> 10)
   ""          :: "recbind \<Rightarrow> recbindt"               (\<open>_\<close>)
   "_recbindt" :: "recbind \<Rightarrow> recbindt \<Rightarrow> recbindt"   (\<open>_,/ _\<close>)
   ""          :: "recbindt \<Rightarrow> recbinds"              (\<open>_\<close>)
   "_recbinds" :: "recbindt \<Rightarrow> recbinds \<Rightarrow> recbinds"  (\<open>_;/ _\<close>)
-  "_Letrec"   :: "recbinds \<Rightarrow> logic \<Rightarrow> logic"        (\<open>(Letrec (_)/ in (_))\<close> 10)
+  "_Letrec"   :: "recbinds \<Rightarrow> logic \<Rightarrow> logic"        (\<open>(\<open>notation=\<open>mixfix Letrec expression\<close>\<close>Letrec (_)/ in (_))\<close> 10)
 
 syntax_consts
   "_recbind" "_recbindt" "_recbinds" "_Letrec" == CLetrec
