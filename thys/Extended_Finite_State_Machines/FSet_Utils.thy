@@ -8,33 +8,6 @@ notation (latex output)
   "FSet.fempty" (\<open>\<emptyset>\<close>) and
   "FSet.fmember" (\<open>\<in>\<close>)
 
-syntax (ASCII)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3ALL (_/:_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3EX (_/:_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex1"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3EX! (_/:_)./ _)\<close> [0, 0, 10] 10)
-
-syntax (input)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3! (_/:_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3? (_/:_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex1"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3?! (_/:_)./ _)\<close> [0, 0, 10] 10)
-
-syntax
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<forall>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBnex"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<nexists>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex1"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>!(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-
-syntax_consts
-  "_fBall" "_fBnex" \<rightleftharpoons> fBall and
-  "_fBex" \<rightleftharpoons> fBex and
-  "_fBex1" \<rightleftharpoons> Ex1
-  
-translations
-  "\<forall>x|\<in>|A. P" \<rightleftharpoons> "CONST fBall A (\<lambda>x. P)"
-  "\<exists>x|\<in>|A. P" \<rightleftharpoons> "CONST fBex  A (\<lambda>x. P)"
-  "\<nexists>x|\<in>|A. P" \<rightleftharpoons> "CONST fBall A (\<lambda>x. \<not>P)"
-  "\<exists>!x|\<in>|A. P" \<rightharpoonup> "\<exists>!x. x |\<in>| A \<and> P"
-
 lemma fset_of_list_remdups [simp]: "fset_of_list (remdups l) = fset_of_list l"
   apply (induct l)
    apply simp
