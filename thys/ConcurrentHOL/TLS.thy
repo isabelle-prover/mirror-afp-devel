@@ -1286,7 +1286,7 @@ abbreviation (input) always_imp_syn :: "('a, 's, 'v) tls \<Rightarrow> ('a, 's, 
 abbreviation (input) leads_to :: "('a, 's, 'v) tls \<Rightarrow> ('a, 's, 'v) tls \<Rightarrow> ('a, 's, 'v) tls" where
   "leads_to P Q \<equiv> tls.always_imp_syn P (tls.eventually Q)"
 
-bundle "notation"
+open_bundle "notation"
 begin
 
 notation tls.valid (\<open>\<Turnstile> _\<close> [30] 30)
@@ -1315,8 +1315,6 @@ no_notation tls.always_imp_syn (infixr \<open>\<^bold>\<longrightarrow>\<^sub>\<
 no_notation tls.leads_to (infixr \<open>\<^bold>\<leadsto>\<close> 75)
 
 end
-
-unbundle tls.notation
 
 lemma validI:
   assumes "\<top> \<le> P"

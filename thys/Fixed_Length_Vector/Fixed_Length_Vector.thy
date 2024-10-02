@@ -548,22 +548,16 @@ export_code
 lifting_update vec.lifting
 lifting_forget vec.lifting
 
-bundle vec_syntax begin
-type_notation
-  vec (infixl \<open>^\<close> 15)
-notation
-  nth_vec (infixl \<open>$\<close> 90) and
-  vec_lambda (binder \<open>\<chi>\<close> 10)
+bundle vec_syntax
+begin
+type_notation vec (infixl \<open>^\<close> 15)
+notation nth_vec (infixl \<open>$\<close> 90) and vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
-bundle no_vec_syntax begin
-no_type_notation
-  vec (infixl \<open>^\<close> 15)
-no_notation
-  nth_vec (infixl \<open>$\<close> 90) and
-  vec_lambda (binder \<open>\<chi>\<close> 10)
+open_bundle no_vec_syntax
+begin
+no_type_notation vec (infixl \<open>^\<close> 15)
+no_notation nth_vec (infixl \<open>$\<close> 90) and vec_lambda (binder \<open>\<chi>\<close> 10)
 end
-
-unbundle no_vec_syntax
 
 end

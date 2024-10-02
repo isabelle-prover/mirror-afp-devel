@@ -487,7 +487,7 @@ lemmas hash_pro_pmf_range = hash_pro_smpf_range[OF hashp_in_hash_pro_spmf]
 
 end
 
-bundle pseudorandom_object_notation
+open_bundle pseudorandom_object_notation
 begin
 notation hash_pro (\<open>\<H>\<close>)
 notation hash_pro_spmf (\<open>\<H>\<^sub>S\<close>)
@@ -508,7 +508,5 @@ no_notation nat_pro (\<open>\<N>\<close>)
 no_notation geom_pro (\<open>\<G>\<close>)
 no_notation prod_pro (infixr \<open>\<times>\<^sub>P\<close> 65)
 end
-
-unbundle pseudorandom_object_notation
 
 end

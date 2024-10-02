@@ -13,19 +13,19 @@ text \<open>Introduces notations and theorems for restricted equalities.
 An equality @{term "(=)"} can be restricted to only apply to a subset of its
 elements. The restriction can be formulated, for example, by a predicate or a set.\<close>
 
-bundle eq_rel_restrict_syntax
+open_bundle eq_rel_restrict_syntax
 begin
 syntax
   "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) =(\<^bsub>_\<^esub>) (_)\<close> [51,51,51] 50)
   "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>'(=(\<^bsub>_\<^esub>)')\<close>)
 end
+
 bundle no_eq_rel_restrict_syntax
 begin
 no_syntax
   "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) =(\<^bsub>_\<^esub>) (_)\<close> [51,51,51] 50)
   "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>'(=(\<^bsub>_\<^esub>)')\<close>)
 end
-unbundle eq_rel_restrict_syntax
 
 syntax_consts
   "_eq_restrict_infix" \<rightleftharpoons> rel_restrict_left and

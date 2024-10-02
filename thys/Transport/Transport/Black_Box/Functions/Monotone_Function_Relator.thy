@@ -9,7 +9,7 @@ abbreviation "Mono_Dep_Fun_Rel (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) (S 
   ((x y \<Colon> R) \<Rrightarrow> S x y)\<^sup>\<oplus>"
 abbreviation "Mono_Fun_Rel R S \<equiv> Mono_Dep_Fun_Rel R (\<lambda>_ _. S)"
 
-bundle Mono_Dep_Fun_Rel_syntax begin
+open_bundle Mono_Dep_Fun_Rel_syntax begin
 syntax
   "_Mono_Fun_Rel_rel" :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow>
     ('a \<Rightarrow> 'b) \<Rightarrow> bool" (\<open>(_) \<Rrightarrow>\<oplus> (_)\<close> [41, 40] 40)
@@ -27,7 +27,6 @@ no_syntax
   "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
 end
-unbundle Mono_Dep_Fun_Rel_syntax
 
 syntax_consts
   "_Mono_Fun_Rel_rel" \<rightleftharpoons> Mono_Fun_Rel and

@@ -1200,7 +1200,6 @@ qed
 
 bundle octonion_syntax
 begin
-
 notation octo_e0 (\<open>e0\<close>)
 notation octo_e1 (\<open>e1\<close>)
 notation octo_e2 (\<open>e2\<close>)
@@ -1209,12 +1208,10 @@ notation octo_e4 (\<open>e4\<close>)
 notation octo_e5 (\<open>e5\<close>)
 notation octo_e6 (\<open>e6\<close>)
 notation octo_e7 (\<open>e7\<close>)
-
 end
 
-bundle no_octonion_syntax
+open_bundle no_octonion_syntax
 begin
-
 no_notation octo_e0 (\<open>e0\<close>)
 no_notation octo_e1 (\<open>e1\<close>)
 no_notation octo_e2 (\<open>e2\<close>)
@@ -1223,10 +1220,8 @@ no_notation octo_e4 (\<open>e4\<close>)
 no_notation octo_e5 (\<open>e5\<close>)
 no_notation octo_e6 (\<open>e6\<close>)
 no_notation octo_e7 (\<open>e7\<close>)
-
 end
 
-unbundle no_octonion_syntax
 hide_const (open) Octonions.cnj
 
 end

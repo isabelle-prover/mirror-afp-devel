@@ -7,15 +7,16 @@ begin
 
 consts bthe :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'b"
 
-bundle bounded_the_syntax
+open_bundle bounded_the_syntax
 begin
 syntax "_bthe" :: "[idt, 'a, bool] \<Rightarrow> 'b" (\<open>(3THE _ : _./ _)\<close> [0, 0, 10] 10)
 end
+
 bundle no_bounded_the_syntax
 begin
 no_syntax "_bthe" :: "[idt, 'a, bool] \<Rightarrow> 'b" (\<open>(3THE _ : _./ _)\<close> [0, 0, 10] 10)
 end
-unbundle bounded_the_syntax
+
 syntax_consts "_bthe" \<rightleftharpoons> bthe
 translations "THE x : P. Q" \<rightleftharpoons> "CONST bthe P (\<lambda>x. Q)"
 

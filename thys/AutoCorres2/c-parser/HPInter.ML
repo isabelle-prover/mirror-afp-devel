@@ -931,7 +931,7 @@ fun define_state_spaces prog_name styargs globloc fninfos thy =
     fun proj xs = map (fn (n, T, _ ) => (HoarePackage.varname n, T)) xs
 
     fun define_variables_bundle fname name thy =
-         thy |> Bundle.init (Binding.make (name, \<^here>))
+         thy |> Bundle.init {open_bundle = false} (Binding.make (name, \<^here>))
              |> Local_Theory.declaration {syntax = true, pervasive = false, pos = \<^here>} (fn phi =>
                    Hoare.set_default_state_kind (Hoare.Other NameGeneration.locals_stackN) #>
                    enter_scope_declaration prog_name fname phi)

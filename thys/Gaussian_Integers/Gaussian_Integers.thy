@@ -357,28 +357,20 @@ lemma gauss_int_eq_iff: "x = y \<longleftrightarrow> ReZ x = ReZ y \<and> ImZ x 
 
 
 (*<*)
-bundle gauss_int_notation
+open_bundle gauss_int_notation
 begin
-
 notation gauss_i (\<open>\<i>\<^sub>\<int>\<close>)
-
 end
 
 bundle no_gauss_int_notation
 begin
-
 no_notation (output) gauss_i (\<open>\<i>\<^sub>\<int>\<close>)
-
 end
 
 bundle gauss_int_output_notation
 begin
-
 notation (output) gauss_i (\<open>\<ii>\<close>)
-
 end
-
-unbundle gauss_int_notation
 (*>*)
 
 

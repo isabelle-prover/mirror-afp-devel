@@ -1677,26 +1677,24 @@ qed
 
 subsection "Syntax bundles"
 
-
 abbreviation "shift_right_flip xs n \<equiv> shift_right n xs"
-bundle nat_lsbf_syntax
+
+open_bundle nat_lsbf_syntax
 begin
-  notation add_nat (infixl \<open>+\<^sub>n\<close> 65)
-  notation compare_nat (infixl \<open>\<le>\<^sub>n\<close> 50)
-  notation subtract_nat (infixl \<open>-\<^sub>n\<close> 65)
-  notation grid_mul_nat (infixl \<open>*\<^sub>n\<close> 70)
-  notation shift_right_flip (infixl \<open>>>\<^sub>n\<close> 55)
+notation add_nat (infixl \<open>+\<^sub>n\<close> 65)
+notation compare_nat (infixl \<open>\<le>\<^sub>n\<close> 50)
+notation subtract_nat (infixl \<open>-\<^sub>n\<close> 65)
+notation grid_mul_nat (infixl \<open>*\<^sub>n\<close> 70)
+notation shift_right_flip (infixl \<open>>>\<^sub>n\<close> 55)
 end
 
 bundle no_nat_lsbf_syntax
 begin
-  no_notation add_nat (infixl \<open>+\<^sub>n\<close> 65)
-  no_notation compare_nat (infixl \<open>\<le>\<^sub>n\<close> 50)
-  no_notation subtract_nat (infixl \<open>-\<^sub>n\<close> 65)
-  no_notation grid_mul_nat (infixl \<open>*\<^sub>n\<close> 70)
-  no_notation shift_right_flip (infixl \<open>>>\<^sub>n\<close> 55)
+no_notation add_nat (infixl \<open>+\<^sub>n\<close> 65)
+no_notation compare_nat (infixl \<open>\<le>\<^sub>n\<close> 50)
+no_notation subtract_nat (infixl \<open>-\<^sub>n\<close> 65)
+no_notation grid_mul_nat (infixl \<open>*\<^sub>n\<close> 70)
+no_notation shift_right_flip (infixl \<open>>>\<^sub>n\<close> 55)
 end
-
-unbundle nat_lsbf_syntax
 
 end

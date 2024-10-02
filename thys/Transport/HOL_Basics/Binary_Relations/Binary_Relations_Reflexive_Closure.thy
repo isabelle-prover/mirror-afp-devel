@@ -39,15 +39,16 @@ lemma reflexive_on_refl_closure_on:
 
 definition "refl_closure_field R \<equiv> refl_closure_on (in_field R) R"
 
-bundle refl_closure_field_syntax
+open_bundle refl_closure_field_syntax
 begin
 notation refl_closure_field (\<open>(_\<^sup>+)\<close> [1000])
 end
+
 bundle no_refl_closure_field_syntax
 begin
 notation refl_closure_field (\<open>(_\<^sup>+)\<close> [1000])
 end
-unbundle refl_closure_field_syntax
+
 
 lemma refl_closure_fieldI [intro]:
   assumes "refl_closure_on (in_field R) R x y"

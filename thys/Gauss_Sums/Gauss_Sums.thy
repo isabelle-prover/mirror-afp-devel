@@ -18,12 +18,10 @@ begin
 notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
-bundle no_vec_lambda_notation
+open_bundle no_vec_lambda_notation
 begin
 no_notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
-
-unbundle no_vec_lambda_notation
 
 
 subsection \<open>Definition and basic properties\<close>

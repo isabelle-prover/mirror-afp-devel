@@ -9,13 +9,14 @@ begin
 
 consts ball :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 
-bundle ball_syntax
+open_bundle ball_syntax
 begin
 syntax
   "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<forall>_ : _./ _)\<close> 10)
   "_ball2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 end
+
 bundle no_ball_syntax
 begin
 no_syntax
@@ -23,7 +24,7 @@ no_syntax
   "_ball2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 no_notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 end
-unbundle ball_syntax
+
 syntax_consts
   "_ball" "_ball2" \<rightleftharpoons> ball
 translations
@@ -33,13 +34,14 @@ translations
 
 consts bex :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 
-bundle bex_syntax
+open_bundle bex_syntax
 begin
 syntax
   "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>_ : _./ _)\<close> 10)
   "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 end
+
 bundle no_bex_syntax
 begin
 no_syntax
@@ -47,7 +49,7 @@ no_syntax
   "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 no_notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 end
-unbundle bex_syntax
+
 syntax_consts
   "_bex" "_bex2" \<rightleftharpoons> bex
 translations
@@ -57,13 +59,14 @@ translations
 
 consts bex1 :: "'a \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> bool"
 
-bundle bex1_syntax
+open_bundle bex1_syntax
 begin
 syntax
   "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>!_ : _./ _)\<close> 10)
   "_bex12" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 end
+
 bundle no_bex1_syntax
 begin
 no_syntax
@@ -71,7 +74,7 @@ no_syntax
   "_bex12" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 no_notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 end
-unbundle bex1_syntax
+
 syntax_consts
   "_bex1" "_bex12" \<rightleftharpoons> bex1
 translations
@@ -79,8 +82,15 @@ translations
   "_bex12 x P Q" \<rightharpoonup> "\<exists>!x : P. Q"
   "\<exists>!x : P. Q" \<rightleftharpoons> "CONST bex1 P (\<lambda>x. Q)"
 
-bundle bounded_quantifier_syntax begin unbundle ball_syntax bex_syntax bex1_syntax end
-bundle no_bounded_quantifier_syntax begin unbundle no_ball_syntax no_bex_syntax no_bex1_syntax end
+bundle bounded_quantifier_syntax
+begin
+unbundle ball_syntax bex_syntax bex1_syntax
+end
+
+bundle no_bounded_quantifier_syntax
+begin
+unbundle no_ball_syntax no_bex_syntax no_bex1_syntax
+end
 
 definition "ball_pred P Q \<equiv> \<forall>x. P x \<longrightarrow> Q x"
 adhoc_overloading ball ball_pred

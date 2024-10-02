@@ -127,9 +127,15 @@ subsubsection \<open>Composition\<close>
 
 consts rel_comp :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
-bundle rel_comp_syntax begin notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55) end
-bundle no_rel_comp_syntax begin no_notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55) end
-unbundle rel_comp_syntax
+open_bundle rel_comp_syntax
+begin
+notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55)
+end
+
+bundle no_rel_comp_syntax
+begin
+no_notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55)
+end
 
 definition "rel_comp_rel R S x y \<equiv> \<exists>z. R x z \<and> S z y"
 adhoc_overloading rel_comp rel_comp_rel
@@ -168,9 +174,15 @@ subsubsection \<open>Inverse\<close>
 
 consts rel_inv :: "'a \<Rightarrow> 'b"
 
-bundle rel_inv_syntax begin notation rel_inv (\<open>(_\<inverse>)\<close> [1000]) end
-bundle no_rel_inv_syntax begin no_notation rel_inv (\<open>(_\<inverse>)\<close> [1000]) end
-unbundle rel_inv_syntax
+open_bundle rel_inv_syntax
+begin
+notation rel_inv (\<open>(_\<inverse>)\<close> [1000])
+end
+
+bundle no_rel_inv_syntax
+begin
+no_notation rel_inv (\<open>(_\<inverse>)\<close> [1000])
+end
 
 definition rel_inv_rel :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
   where "rel_inv_rel R x y \<equiv> R y x"
@@ -217,9 +229,15 @@ subsubsection \<open>Restrictions\<close>
 
 consts rel_if :: "bool \<Rightarrow> 'a \<Rightarrow> 'a"
 
-bundle rel_if_syntax begin notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50) end
-bundle no_rel_if_syntax begin no_notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50) end
-unbundle rel_if_syntax
+open_bundle rel_if_syntax
+begin
+notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50)
+end
+
+bundle no_rel_if_syntax
+begin
+no_notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50)
+end
 
 definition "rel_if_rel B R x y \<equiv> B \<longrightarrow> R x y"
 adhoc_overloading rel_if rel_if_rel
@@ -254,19 +272,19 @@ consts rel_restrict_left :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
 consts rel_restrict_right :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
 consts rel_restrict :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
 
-bundle rel_restrict_syntax
+open_bundle rel_restrict_syntax
 begin
 notation rel_restrict_left (\<open>(_)\<restriction>(\<^bsub>_\<^esub>)\<close> [1000])
 notation rel_restrict_right (\<open>(_)\<upharpoonleft>(\<^bsub>_\<^esub>)\<close> [1000])
 notation rel_restrict (\<open>(_)\<up>(\<^bsub>_\<^esub>)\<close> [1000])
 end
+
 bundle no_rel_restrict_syntax
 begin
 no_notation rel_restrict_left (\<open>(_)\<restriction>(\<^bsub>_\<^esub>)\<close> [1000])
 no_notation rel_restrict_right (\<open>(_)\<upharpoonleft>(\<^bsub>_\<^esub>)\<close> [1000])
 no_notation rel_restrict (\<open>(_)\<up>(\<^bsub>_\<^esub>)\<close> [1000])
 end
-unbundle rel_restrict_syntax
 
 definition "rel_restrict_left_pred R P x y \<equiv> P x \<and> R x y"
 adhoc_overloading rel_restrict_left rel_restrict_left_pred

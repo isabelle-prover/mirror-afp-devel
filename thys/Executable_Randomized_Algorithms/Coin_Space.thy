@@ -23,17 +23,15 @@ text \<open>Notation for the discrete $\sigma$-algebra:\<close>
 abbreviation discrete_sigma_algebra
   where "discrete_sigma_algebra \<equiv> count_space UNIV"
 
-bundle discrete_sigma_algebra_notation
+open_bundle discrete_sigma_algebra_notation
 begin
-  notation discrete_sigma_algebra (\<open>\<D>\<close>)
+notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
 
 bundle no_discrete_sigma_algebra_notation
 begin
-  no_notation discrete_sigma_algebra (\<open>\<D>\<close>)
+no_notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
-
-unbundle discrete_sigma_algebra_notation
 
 lemma map_prod_measurable[measurable]:
   assumes "f \<in> M \<rightarrow>\<^sub>M M'"
@@ -541,17 +539,15 @@ text \<open>Measure space for coin streams:\<close>
 definition coin_space :: "coin_stream measure"
   where "coin_space = embed_measure (stream_space (measure_pmf (pmf_of_set UNIV))) to_coins"
 
-bundle coin_space_notation
+open_bundle coin_space_notation
 begin
-  notation coin_space (\<open>\<B>\<close>)
+notation coin_space (\<open>\<B>\<close>)
 end
 
 bundle no_coin_space_notation
 begin
-  no_notation coin_space (\<open>\<B>\<close>)
+no_notation coin_space (\<open>\<B>\<close>)
 end
-
-unbundle coin_space_notation
 
 lemma space_coin_space: "space \<B> = UNIV"
   using bij_is_surj[OF bij_to_coins]
