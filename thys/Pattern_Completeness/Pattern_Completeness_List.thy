@@ -666,20 +666,26 @@ proof (atomize(full), goal_cases)
     proof (cases "\<forall>mp\<in>set p'. snd (snd mp)")
       case True
       with res have res: "res = None" by auto
-      have "pat_fail (pat_lr p')" 
-      proof (intro pat_failure' ballI)
-        fix mps
-        assume "mps \<in> pat_mset (pat_lr p')" 
-        then obtain mp where mem: "mp \<in> set p'" and mps: "mps = mp_mset (mp_lr mp)" by (auto simp: pat_lr_def)
-        obtain lx rx b where mp: "mp = (lx,rx,b)" by (cases mp, auto)
-        from mp mem True have b by auto
-        with wf[unfolded wf_pat_lr_def, rule_format, OF mem, unfolded wf_lr2_def mp split]
-        have "inf_var_conflict (set_mset (mp_rx (rx,b)))" unfolding wf_rx_def wf_rx2_def by (auto split: if_splits)
-        thus "inf_var_conflict mps" unfolding mps mp_lr_def mp split
-          unfolding inf_var_conflict_def by fastforce
-      qed
-      with steps res
-      show ?thesis by auto
+      have "(add_mset (pat_lr p') P, add_mset {#} P) \<in> \<Rrightarrow>\<^sup>*" 
+      proof (cases "pat_lr p' = {#}")
+        case False
+        have "add_mset (pat_lr p') P \<Rrightarrow>\<^sub>m {# {#} #} + P" 
+        proof (intro P_simp_pp[OF pat_failure'[OF _ False]] ballI)
+          fix mps
+          assume "mps \<in> pat_mset (pat_lr p')" 
+          then obtain mp where mem: "mp \<in> set p'" and mps: "mps = mp_mset (mp_lr mp)" by (auto simp: pat_lr_def)
+          obtain lx rx b where mp: "mp = (lx,rx,b)" by (cases mp, auto)
+          from mp mem True have b by auto
+          with wf[unfolded wf_pat_lr_def, rule_format, OF mem, unfolded wf_lr2_def mp split]
+          have "inf_var_conflict (set_mset (mp_rx (rx,b)))" unfolding wf_rx_def wf_rx2_def by (auto split: if_splits)
+          thus "inf_var_conflict mps" unfolding mps mp_lr_def mp split
+            unfolding inf_var_conflict_def by fastforce
+        qed
+        thus ?thesis unfolding P_step_def by auto
+      qed auto
+      with steps have "(add_mset (pat_mset_list p) P, add_mset {#} P) \<in> \<Rrightarrow>\<^sup>*" by auto
+      moreover have "pat_fail {#}" by (intro pat_empty)
+      ultimately show ?thesis using res by auto 
     next
       case False
       define p'l where "p'l = map mp_lr_list p'" 

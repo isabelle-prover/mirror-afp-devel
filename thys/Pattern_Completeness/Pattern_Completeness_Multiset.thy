@@ -73,10 +73,11 @@ inductive pp_step_mset :: "('f,'v,'s)pat_problem_mset \<Rightarrow> ('f,'v,'s)pa
    (s,Var y) \<in> mp_mset mp \<and> (t,Var y) \<in> mp_mset mp \<and> Conflict_Var s t x \<and> \<not> inf_sort (snd x)
    \<and> (improved \<longrightarrow> s = Var x \<and> is_Fun t) \<Longrightarrow>
   add_mset mp pp \<Rightarrow>\<^sub>m mset (map (\<lambda> \<tau>. subst_pat_problem_mset \<tau> (add_mset mp pp)) (\<tau>s_list n x))"
+| pat_failure': "Ball (pat_mset pp) inf_var_conflict \<Longrightarrow> pp \<noteq> {#} \<Longrightarrow> pp \<Rightarrow>\<^sub>m {# {#} #}" 
+
 
 inductive pat_fail :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
-  pat_failure': "Ball (pat_mset pp) inf_var_conflict \<Longrightarrow> pat_fail pp" 
-| pat_empty: "pat_fail {#}" 
+  pat_empty: "pat_fail {#}" 
 
 inductive P_step_mset :: "('f,'v,'s)pats_problem_mset \<Rightarrow> ('f,'v,'s)pats_problem_mset \<Rightarrow> bool"
   (infix \<open>\<Rrightarrow>\<^sub>m\<close> 50)where
@@ -331,7 +332,7 @@ next
           next
             case no_non_inf: False
             show ?thesis
-            proof (intro disjI1 pat_failure' ballI)
+            proof (intro disjI2[OF disjI1] exI, rule pat_failure'[OF _ pne], intro ballI)
               fix mp
               assume mp: "mp \<in> pat_mset p"
               then obtain mp' where mp': "mp' \<in># p" and mp: "mp = mp_mset mp'" by auto 
@@ -851,6 +852,9 @@ next
 next
   case *: (pat_remove_pp p)
   thus ?case by (intro meas_sub_rel_pat, auto)
+next
+  case *: (pat_failure' p)
+  thus ?case by (intro meas_sub_rel_pat, cases p, auto)
 qed
 
 text \<open>finally: the transformation is terminating w.r.t. @{term "(\<succ>mul)"}\<close>
@@ -934,10 +938,6 @@ proof (induct)
   from *(1)
   have "?P \<Rrightarrow>\<^sub>s bottom"
   proof induct
-    case (pat_failure' p)
-    from P_failure'[OF this]
-    show ?case by auto
-  next
     case pat_empty
     show ?case using P_fail by auto
   qed
@@ -974,6 +974,11 @@ next
     show ?case unfolding conv \<tau>s_list
       apply (rule P_step_set_cong[OF P_instantiate[OF *(1) x]])
       by (unfold conv subst_defs set_map image_comp, auto)
+  next
+    case *: (pat_failure' pp)
+    from pp_failure'[OF *(1)] have "pat_mset pp \<Rightarrow>\<^sub>s {}" by auto
+    from P_simp[OF this]
+    show ?case by auto
   qed
   thus ?case unfolding conv .
 qed
