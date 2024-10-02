@@ -122,7 +122,18 @@ inductive pp_step :: "('f,'v,'s)pat_problem_set \<Rightarrow> ('f,'v,'s)pat_prob
 (infix \<open>\<Rightarrow>\<^sub>s\<close> 50) where
   pp_simp_mp: "mp \<rightarrow>\<^sub>s mp' \<Longrightarrow> insert mp pp \<Rightarrow>\<^sub>s insert mp' pp" 
 | pp_remove_mp: "mp_fail mp \<Longrightarrow> insert mp pp \<Rightarrow>\<^sub>s pp"
-| pp_failure': "\<forall>mp \<in> pp. inf_var_conflict mp \<Longrightarrow> finite pp \<Longrightarrow> pp \<Rightarrow>\<^sub>s {}" 
+| pp_inf_var_conflict: "pp \<union> pp' \<Rightarrow>\<^sub>s pp'" 
+  if "Ball pp inf_var_conflict" 
+    "finite pp" 
+    "Ball (tvars_pp pp') (\<lambda> x. \<not> inf_sort (snd x))" 
+
+text \<open>Note that in @{thm[source] pp_inf_var_conflict} the conflicts have to be simultaneously occurring. 
+  If just some matching problem has such a conflict, then this cannot be deleted immediately!
+
+  Example-program: f(x,x) = ..., f(s(x),y) = ..., f(x,s(y)) = ... cover all cases of natural numbers,
+    i.e., f(x1,x2), but if one would immediately delete the matching problem of the first lhs
+    because of the resulting @{const inf_var_conflict} in {(x1,x),(x2,x)} then it is no longer complete.\<close>
+
 
 inductive pp_success :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
   "pp_success (insert {} pp)" 
@@ -134,14 +145,6 @@ inductive P_step_set :: "('f,'v,'s)pats_problem_set \<Rightarrow> ('f,'v,'s)pats
 | P_remove_pp: "pp_success pp \<Longrightarrow> insert pp P \<Rrightarrow>\<^sub>s P"
 | P_instantiate: "tvars_disj_pp {n ..< n+m} pp \<Longrightarrow> x \<in> tvars_pp pp \<Longrightarrow>
     insert pp P \<Rrightarrow>\<^sub>s {subst_pat_problem_set \<tau> pp |. \<tau> \<in> \<tau>s n x} \<union> P"
-
-text \<open>Note that in @{thm[source] pp_failure'} the conflicts have to be simultaneously occurring. 
-  If just some matching problem has such a conflict, then this cannot be deleted immediately!
-
-  Example-program: f(x,x) = ..., f(s(x),y) = ..., f(x,s(y)) = ... cover all cases of natural numbers,
-    i.e., f(x1,x2), but if one would immediately delete the matching problem of the first lhs
-    because of the resulting @{const inf_var_conflict} in {(x1,x),(x2,x)} then it is no longer complete.\<close>
-
 
 
 subsection \<open>Soundness of the inference rules\<close>
@@ -625,426 +628,475 @@ next
   case (pp_remove_mp mp pp)
   then show ?case using mp_fail_pcorrect[of mp] unfolding pat_complete_def by auto
 next
-  case *: (pp_failure' pp)
-  hence wf: "wf_pat pp" and fin: "finite pp" by auto
+  case *: (pp_inf_var_conflict pp pp')
+  hence wf: "wf_pat (pp \<union> pp')" and fin: "finite pp" by auto
+  have easy: "pat_complete pp' \<Longrightarrow> pat_complete (pp \<union> pp')" unfolding pat_complete_def by auto
   {
-    assume pp: "pat_complete pp"
-    define confl' :: "('f, nat \<times> 's) term \<Rightarrow> ('f, nat \<times> 's)term \<Rightarrow> nat \<times> 's \<Rightarrow> bool" where "confl' = (\<lambda> sp tp y. 
+    assume pp: "pat_complete (pp \<union> pp')" 
+    have "pat_complete pp'" unfolding pat_complete_def
+    proof (intro allI impI)
+      fix \<delta>
+      assume \<delta>: "cg_subst \<delta>" 
+      define conv :: "('f, 'v) term \<Rightarrow> ('f, nat \<times> 's) term" where "conv t = t \<cdot> undefined" for t
+      define conv' :: "('f, nat \<times> 's) term \<Rightarrow> ('f, 'v) term" where "conv' t = t \<cdot> undefined" for t
+      define confl' :: "('f, nat \<times> 's) term \<Rightarrow> ('f, nat \<times> 's)term \<Rightarrow> nat \<times> 's \<Rightarrow> bool" where "confl' = (\<lambda> sp tp y. 
            sp = Var y \<and> inf_sort (snd y) \<and> sp \<noteq> tp)" 
-    define P1 where "P1 = (\<lambda> mp s t x y p. mp \<in> pp \<longrightarrow> (s, Var x) \<in> mp \<and> (t, Var x) \<in> mp \<and> p \<in> poss s \<and> p \<in> poss t \<and> confl' (s |_ p) (t |_ p) y)" 
-    {
-      fix mp
-      assume "mp \<in> pp" 
-      hence "inf_var_conflict mp" using * by auto
-      from inf_var_conflictD[OF this] 
-      have "\<exists> s t x y p. P1 mp s t x y p" unfolding P1_def confl'_def by force
-    }
-    hence "\<forall> mp. \<exists> s t x y p. P1 mp s t x y p" unfolding P1_def by blast
-    from choice[OF this] obtain s where "\<forall> mp. \<exists> t x y p. P1 mp (s mp) t x y p" by blast
-    from choice[OF this] obtain t where "\<forall> mp. \<exists> x y p. P1 mp (s mp) (t mp) x y p" by blast
-    from choice[OF this] obtain x where "\<forall> mp. \<exists> y p. P1 mp (s mp) (t mp) (x mp) y p" by blast
-    from choice[OF this] obtain y where "\<forall> mp. \<exists> p. P1 mp (s mp) (t mp) (x mp) (y mp) p" by blast
-    from choice[OF this] obtain p where "\<forall> mp. P1 mp (s mp) (t mp) (x mp) (y mp) (p mp)" by blast
-    note P1 = this[unfolded P1_def, rule_format]
-    from *(2) have "finite (y ` pp)" by blast
-    from ex_bij_betw_finite_nat[OF this] obtain index and n :: nat where 
-      bij: "bij_betw index (y ` pp) {..<n}" 
-      by (auto simp add: atLeast0LessThan)
-    define var_ind :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> bool" where
-      "var_ind i x = (x \<in> y ` pp \<and> index x \<in> {..<n} - {..<i})" for i x
-    have [simp]: "var_ind n x = False" for x
-      unfolding var_ind_def by auto  
-    define cg_subst_ind :: "nat \<Rightarrow> ('f,nat \<times> 's)subst \<Rightarrow> bool" where
-      "cg_subst_ind i \<sigma> = (\<forall> x. (var_ind i x \<longrightarrow> \<sigma> x = Var x)
-            \<and> (\<not> var_ind i x \<longrightarrow> (vars_term (\<sigma> x) = {} \<and> (snd x \<in> S \<longrightarrow> \<sigma> x : snd x in \<T>(C,EMPTYn)))))" for i \<sigma>
-    define confl :: "nat \<Rightarrow> ('f, nat \<times> 's) term \<Rightarrow> ('f, nat \<times> 's)term \<Rightarrow> bool" where "confl = (\<lambda> i sp tp. 
+      define P1 where "P1 = (\<lambda> mp s t x y p. mp \<in> pp \<longrightarrow> (s, Var x) \<in> mp \<and> (t, Var x) \<in> mp \<and> p \<in> poss s \<and> p \<in> poss t \<and> confl' (s |_ p) (t |_ p) y)" 
+      {
+        fix mp
+        assume "mp \<in> pp" 
+        hence "inf_var_conflict mp" using * by auto
+        from inf_var_conflictD[OF this] 
+        have "\<exists> s t x y p. P1 mp s t x y p" unfolding P1_def confl'_def by force
+      }
+      hence "\<forall> mp. \<exists> s t x y p. P1 mp s t x y p" unfolding P1_def by blast
+      from choice[OF this] obtain s where "\<forall> mp. \<exists> t x y p. P1 mp (s mp) t x y p" by blast
+      from choice[OF this] obtain t where "\<forall> mp. \<exists> x y p. P1 mp (s mp) (t mp) x y p" by blast
+      from choice[OF this] obtain x where "\<forall> mp. \<exists> y p. P1 mp (s mp) (t mp) (x mp) y p" by blast
+      from choice[OF this] obtain y where "\<forall> mp. \<exists> p. P1 mp (s mp) (t mp) (x mp) (y mp) p" by blast
+      from choice[OF this] obtain p where "\<forall> mp. P1 mp (s mp) (t mp) (x mp) (y mp) (p mp)" by blast
+      note P1 = this[unfolded P1_def, rule_format]
+      from *(2) have "finite (y ` pp)" by blast
+      from ex_bij_betw_finite_nat[OF this] obtain index and n :: nat where 
+        bij: "bij_betw index (y ` pp) {..<n}" 
+        by (auto simp add: atLeast0LessThan)
+      define var_ind :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> bool" where
+        "var_ind i x = (x \<in> y ` pp \<and> index x \<in> {..<n} - {..<i})" for i x
+      have [simp]: "var_ind n x = False" for x
+        unfolding var_ind_def by auto  
+      define cg_subst_ind :: "nat \<Rightarrow> ('f,nat \<times> 's)subst \<Rightarrow> bool" where
+        "cg_subst_ind i \<sigma> = (\<forall> x. (var_ind i x \<longrightarrow> \<sigma> x = Var x)
+            \<and> (\<not> var_ind i x \<longrightarrow> (vars_term (\<sigma> x) = {} \<and> (snd x \<in> S \<longrightarrow> \<sigma> x : snd x in \<T>(C,EMPTYn))))
+            \<and> (snd x \<in> S \<longrightarrow> \<not> inf_sort (snd x) \<longrightarrow> \<sigma> x = conv (\<delta> x)))" for i \<sigma>
+      define confl :: "nat \<Rightarrow> ('f, nat \<times> 's) term \<Rightarrow> ('f, nat \<times> 's)term \<Rightarrow> bool" where "confl = (\<lambda> i sp tp. 
            (case (sp,tp) of (Var x, Var y) \<Rightarrow> x \<noteq> y \<and> var_ind i x \<and> var_ind i y
            | (Var x, Fun _ _) \<Rightarrow> var_ind i x
            | (Fun _ _, Var x) \<Rightarrow> var_ind i x
            | (Fun f ss, Fun g ts) \<Rightarrow> (f,length ss) \<noteq> (g,length ts)))"
-    have confl_n: "confl n s t \<Longrightarrow> \<exists> f g ss ts. s = Fun f ss \<and> t = Fun g ts \<and> (f,length ss) \<noteq> (g,length ts)" for s t
-      by (cases s; cases t; auto simp: confl_def)
-    {
-      fix i
-      assume "i \<le> n"
-      hence "\<exists> \<sigma>. cg_subst_ind i \<sigma> \<and> (\<forall> mp \<in> pp. \<exists> p. p \<in> poss (s mp \<cdot> \<sigma>) \<and> p \<in> poss (t mp \<cdot> \<sigma>) \<and> confl i (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p))" 
-      proof (induction i)
-        case 0
-        define \<sigma> where "\<sigma> x = (if var_ind 0 x then Var x else if snd x \<in> S then map_vars undefined (\<sigma>g x) else Fun undefined [])" for x
-        {
-          fix x :: "nat \<times> 's" 
-          define t where "t = \<sigma>g x"
-          define s where "s = snd x" 
-          assume "snd x \<in> S" 
-          hence "\<sigma>g x : snd x in \<T>(C,EMPTY)" using \<sigma>g unfolding cg_subst_def by blast
-          hence "map_vars undefined (\<sigma>g x) : snd x in \<T>(C,EMPTYn)" (is "?m : _ in _")
-            unfolding t_def[symmetric] s_def[symmetric]
-          proof (induct t s rule: hastype_in_Term_induct)
-            case (Var v \<sigma>)
-            then show ?case by (auto simp: EMPTY_def)
-          next
-            case (Fun f ss \<sigma>s \<tau>)
-            then show ?case unfolding term.simps
-              by (smt (verit, best) Fun_hastype list_all2_map1 list_all2_mono)
-          qed
-        }  
-        from this cg_term_vars[OF this] have \<sigma>: "cg_subst_ind 0 \<sigma>" unfolding cg_subst_ind_def \<sigma>_def by auto
-        show ?case
-        proof (rule exI, rule conjI[OF \<sigma>], intro ballI exI conjI)
-          fix mp
-          assume mp: "mp \<in> pp" 
-          note P1 = P1[OF this]
-          from mp have mem: "y mp \<in> y ` pp" by auto
-          with bij have y: "index (y mp) \<in> {..<n}" by (metis bij_betw_apply)
-          hence y0: "var_ind 0 (y mp)" using mem unfolding var_ind_def by auto
-          show "p mp \<in> poss (s mp \<cdot> \<sigma>)" using P1 by auto
-          show "p mp \<in> poss (t mp \<cdot> \<sigma>)" using P1 by auto
-          let ?t = "t mp |_ p mp" 
-          define c where "c = confl 0 (s mp \<cdot> \<sigma> |_ p mp) (t mp \<cdot> \<sigma> |_ p mp)" 
-          have "c = confl 0 (s mp |_ p mp \<cdot> \<sigma>) (?t \<cdot> \<sigma>)" 
-            using P1 unfolding c_def by auto
-          also have s: "s mp |_ p mp = Var (y mp)" using P1 unfolding confl'_def by auto
-          also have "\<dots> \<cdot> \<sigma> = Var (y mp)" using y0 unfolding \<sigma>_def by auto
-          also have "confl 0 (Var (y mp)) (?t \<cdot> \<sigma>)" 
-          proof (cases "?t \<cdot> \<sigma>")
-            case Fun
-            thus ?thesis using y0 unfolding confl_def by auto
-          next
-            case (Var z)
-            then obtain u where t: "?t = Var u" and ssig: "\<sigma> u = Var z" 
-              by (cases ?t, auto)
-            from P1[unfolded s] have "confl' (Var (y mp)) ?t (y mp)" by auto
-            from this[unfolded confl'_def t] have uy: "y mp \<noteq> u" by auto
-            show ?thesis
-            proof (cases "var_ind 0 u")
-              case True
-              with y0 uy show ?thesis unfolding t \<sigma>_def confl_def by auto
+      have confl_n: "confl n s t \<Longrightarrow> \<exists> f g ss ts. s = Fun f ss \<and> t = Fun g ts \<and> (f,length ss) \<noteq> (g,length ts)" for s t
+        by (cases s; cases t; auto simp: confl_def)
+      {
+        fix i x
+        assume "var_ind i x" 
+        from this[unfolded var_ind_def] obtain i 
+          where z: "x \<in> y ` pp" "index x = i" by blast 
+        from z obtain mp where "mp \<in> pp" and "index (y mp) = i" and "x = y mp" by auto
+        with P1[OF this(1), unfolded confl'_def] have inf: "inf_sort (snd x)" by auto
+      } note var_ind_inf = this
+      {
+        fix i
+        assume "i \<le> n"
+        hence "\<exists> \<sigma>. cg_subst_ind i \<sigma> \<and> (\<forall> mp \<in> pp. \<exists> p. p \<in> poss (s mp \<cdot> \<sigma>) \<and> p \<in> poss (t mp \<cdot> \<sigma>) \<and> confl i (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p))" 
+        proof (induction i)
+          case 0
+          define \<sigma> where "\<sigma> x = (if var_ind 0 x then Var x else if snd x \<in> S then conv (\<delta> x) else Fun undefined [])" for x
+          have \<sigma>: "cg_subst_ind 0 \<sigma>" unfolding cg_subst_ind_def
+          proof (intro allI impI conjI)
+            fix x
+            show "var_ind 0 x \<Longrightarrow> \<sigma> x = Var x" unfolding \<sigma>_def by auto
+            show "\<not> var_ind 0 x \<Longrightarrow> vars (\<sigma> x) = {}" 
+              unfolding \<sigma>_def conv_def using \<delta>[unfolded cg_subst_def, rule_format, of x] 
+              by (auto simp: vars_term_subst EMPTY_def[abs_def] hastype_in_Term_empty_imp_vars)
+            show "\<not> var_ind 0 x \<Longrightarrow> snd x \<in> S \<Longrightarrow> \<sigma> x : snd x in \<T>(C,EMPTYn)" 
+              using \<delta>[unfolded cg_subst_def, rule_format, of x]
+              unfolding \<sigma>_def conv_def by (auto simp: \<sigma>_def intro: type_conversion2)
+            show "snd x \<in> S \<Longrightarrow> \<not> inf_sort (snd x) \<Longrightarrow> \<sigma> x = conv (\<delta> x)" 
+              unfolding \<sigma>_def by (auto dest: var_ind_inf)
+          qed            
+          show ?case
+          proof (rule exI, rule conjI[OF \<sigma>], intro ballI exI conjI)
+            fix mp
+            assume mp: "mp \<in> pp" 
+            note P1 = P1[OF this]
+            from mp have mem: "y mp \<in> y ` pp" by auto
+            with bij have y: "index (y mp) \<in> {..<n}" by (metis bij_betw_apply)
+            hence y0: "var_ind 0 (y mp)" using mem unfolding var_ind_def by auto
+            show "p mp \<in> poss (s mp \<cdot> \<sigma>)" using P1 by auto
+            show "p mp \<in> poss (t mp \<cdot> \<sigma>)" using P1 by auto
+            let ?t = "t mp |_ p mp" 
+            define c where "c = confl 0 (s mp \<cdot> \<sigma> |_ p mp) (t mp \<cdot> \<sigma> |_ p mp)" 
+            have "c = confl 0 (s mp |_ p mp \<cdot> \<sigma>) (?t \<cdot> \<sigma>)" 
+              using P1 unfolding c_def by auto
+            also have s: "s mp |_ p mp = Var (y mp)" using P1 unfolding confl'_def by auto
+            also have "\<dots> \<cdot> \<sigma> = Var (y mp)" using y0 unfolding \<sigma>_def by auto
+            also have "confl 0 (Var (y mp)) (?t \<cdot> \<sigma>)" 
+            proof (cases "?t \<cdot> \<sigma>")
+              case Fun
+              thus ?thesis using y0 unfolding confl_def by auto
             next
-              case False
-              with ssig[unfolded \<sigma>_def] have uS: "snd u \<in> S" and contra: "map_vars undefined (\<sigma>g u) = Var z" 
-                by (auto split: if_splits)
-              from \<sigma>g[unfolded cg_subst_def, rule_format, OF uS] contra
-              have False by (cases "\<sigma>g u", auto simp: EMPTY_def)
-              thus ?thesis ..
-            qed
-          qed
-          finally show "confl 0 (s mp \<cdot> \<sigma> |_ p mp) (t mp \<cdot> \<sigma> |_ p mp)" unfolding c_def .
-        qed
-      next
-        case (Suc i)
-        then obtain \<sigma> where \<sigma>: "cg_subst_ind i \<sigma>" and confl: "(\<forall>mp\<in>pp. \<exists>p. p \<in> poss (s mp \<cdot> \<sigma>) \<and> p \<in> poss (t mp \<cdot> \<sigma>) \<and> confl i (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p))" 
-          by auto
-        from Suc have "i \<in> {..< n}" and i: "i < n" by auto
-        with bij obtain z where z: "z \<in> y ` pp" "index z = i" unfolding bij_betw_def by (metis imageE)
-        {
-          from z obtain mp where "mp \<in> pp" and "index (y mp) = i" and "z = y mp" by auto
-          with P1[OF this(1), unfolded confl'_def] have inf: "inf_sort (snd z)" 
-            and *: "p mp \<in> poss (s mp)" "s mp |_ p mp = Var z" "(s mp, Var (x mp)) \<in> mp"
-            by auto
-          from *(1,2) have "z \<in> vars (s mp)" using vars_term_subt_at by fastforce
-          with *(3) have "z \<in> tvars_mp mp" unfolding tvars_mp_def by force
-          with \<open>mp \<in> pp\<close> wf have "snd z \<in> S" unfolding wf_pat_def wf_match_def by auto
-          from not_bdd_above_natD[OF inf[unfolded inf_sort_def[OF this]]] term_of_sort[OF this]
-          have "\<And> n. \<exists> t. t : snd z in \<T>(C,EMPTYn) \<and> n < size t" by auto
-        } note z_inf = this
-        (* define d as 1 + maximal size of all s- and t-terms in pp \<sigma> *)
-        define all_st where "all_st = (\<lambda> mp. s mp \<cdot> \<sigma>) ` pp \<union> (\<lambda> mp. t mp \<cdot> \<sigma>) ` pp" 
-        have fin_all_st: "finite all_st" unfolding all_st_def using *(2) by simp
-        define d :: nat where "d = Suc (Max (size ` all_st))" 
-        from z_inf[of d]
-        obtain u where u: "u : snd z in \<T>(C,EMPTYn)" and du: "d \<le> size u" by auto
-        have vars_u: "vars u = {}" by (rule cg_term_vars[OF u])
-
-        define \<sigma>' where "\<sigma>' x = (if x = z then u else \<sigma> x)" for x
-        have \<sigma>'_def': "\<sigma>' x = (if x \<in> y ` pp \<and> index x = i then u else \<sigma> x)" for x
-          unfolding \<sigma>'_def by (rule if_cong, insert bij z, auto simp: bij_betw_def inj_on_def) 
-        have var_ind_conv: "var_ind i x = (x = z \<or> var_ind (Suc i) x)" for x
-        proof
-          assume "x = z \<or> var_ind (Suc i) x" 
-          thus "var_ind i x" using z i unfolding var_ind_def by auto
-        next
-          assume "var_ind i x" 
-          hence x: "x \<in> y ` pp" "index x \<in> {..<n} - {..<i}" unfolding var_ind_def by auto
-          with i have "index x = i \<or> index x \<in> {..<n} - {..<Suc i}" by auto
-          thus "x = z \<or> var_ind (Suc i) x"
-          proof
-            assume "index x = i" 
-            with x(1) z bij have "x = z" by (auto simp: bij_betw_def inj_on_def)
-            thus ?thesis by auto
-          qed (insert x, auto simp: var_ind_def)
-        qed
-        have [simp]: "var_ind i z" unfolding var_ind_conv by auto
-        have [simp]: "var_ind (Suc i) z = False" unfolding var_ind_def using z by auto
-        have \<sigma>z[simp]: "\<sigma> z = Var z" using \<sigma>[unfolded cg_subst_ind_def, rule_format, of z] by auto
-        have \<sigma>'_upd: "\<sigma>' = \<sigma>(z := u)" unfolding \<sigma>'_def by (intro ext, auto)
-        have \<sigma>'_comp: "\<sigma>' = \<sigma> \<circ>\<^sub>s Var(z := u)" unfolding subst_compose_def \<sigma>'_upd
-        proof (intro ext)
-          fix x
-          show "(\<sigma>(z := u)) x = \<sigma> x \<cdot> Var(z := u)" 
-          proof (cases "x = z")
-            case False
-            hence "\<sigma> x \<cdot> (Var(z := u)) = \<sigma> x \<cdot> Var" 
-            proof (intro term_subst_eq)
-              fix y
-              assume y: "y \<in> vars (\<sigma> x)" 
-              show "(Var(z := u)) y = Var y" 
-              proof (cases "var_ind i x")
+              case (Var z)
+              then obtain u where t: "?t = Var u" and ssig: "\<sigma> u = Var z" 
+                by (cases ?t, auto)
+              from P1[unfolded s] have "confl' (Var (y mp)) ?t (y mp)" by auto
+              from this[unfolded confl'_def t] have uy: "y mp \<noteq> u" by auto
+              show ?thesis
+              proof (cases "var_ind 0 u")
                 case True
-                with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
-                have "\<sigma> x = Var x" by auto
-                with False y show ?thesis by auto
+                with y0 uy show ?thesis unfolding t \<sigma>_def confl_def by auto
               next
                 case False
-                with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
-                have "vars (\<sigma> x) = {}" by auto
-                with y show ?thesis by auto
+                with ssig[unfolded \<sigma>_def] have uS: "snd u \<in> S" and contra: "conv (\<delta> u) = Var z" 
+                  by (auto split: if_splits)
+                from \<delta>[unfolded cg_subst_def, rule_format, OF uS] contra
+                have False by (cases "\<delta> u", auto simp: EMPTY_def conv_def)
+                thus ?thesis ..
               qed
             qed
-            thus ?thesis by auto
-          qed simp
-        qed
-        have \<sigma>': "cg_subst_ind (Suc i) \<sigma>'" unfolding cg_subst_ind_def
-        proof (intro allI conjI impI)
-          fix x
-          assume "var_ind (Suc i) x" 
-          hence "var_ind i x" and diff: "index x \<noteq> i" unfolding var_ind_def by auto
-          hence "\<sigma> x = Var x" using \<sigma>[unfolded cg_subst_ind_def] by blast
-          thus "\<sigma>' x = Var x" unfolding \<sigma>'_def' using diff by auto
+            finally show "confl 0 (s mp \<cdot> \<sigma> |_ p mp) (t mp \<cdot> \<sigma> |_ p mp)" unfolding c_def .
+          qed
         next
-          fix x
-          assume "\<not> var_ind (Suc i) x" and "snd x \<in> S" 
-          thus "\<sigma>' x : snd x in \<T>(C,EMPTYn)" 
-            using \<sigma>[unfolded cg_subst_ind_def, rule_format, of x] u
-            unfolding \<sigma>'_def var_ind_conv by auto
-        next
-          fix x
-          assume "\<not> var_ind (Suc i) x"  
-          hence "x = z \<or> \<not> var_ind i x" unfolding var_ind_conv by auto
-          thus "vars (\<sigma>' x) = {}" unfolding \<sigma>'_upd using \<sigma>[unfolded cg_subst_ind_def, rule_format, of x] vars_u by auto
-        qed
-        show ?case
-        proof (intro exI[of _ \<sigma>'] conjI \<sigma>' ballI)
-          fix mp
-          assume mp: "mp \<in> pp" 
-          define s' where "s' = s mp \<cdot> \<sigma>" 
-          define t' where "t' = t mp \<cdot> \<sigma>" 
-          from confl[rule_format, OF mp]
-          obtain p where p: "p \<in> poss s'" "p \<in> poss t'" and confl: "confl i (s' |_ p) (t' |_ p)" by (auto simp: s'_def t'_def)
+          case (Suc i)
+          then obtain \<sigma> where \<sigma>: "cg_subst_ind i \<sigma>" and confl: "(\<forall>mp\<in>pp. \<exists>p. p \<in> poss (s mp \<cdot> \<sigma>) \<and> p \<in> poss (t mp \<cdot> \<sigma>) \<and> confl i (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p))" 
+            by auto
+          from Suc have "i \<in> {..< n}" and i: "i < n" by auto
+          with bij obtain z where z: "z \<in> y ` pp" "index z = i" unfolding bij_betw_def by (metis imageE)
           {
-            fix s' t' :: "('f, nat \<times> 's) term" and p f ss x
-            assume *: "(s' |_ p, t' |_p) = (Fun f ss, Var x)" "var_ind i x" and p: "p \<in> poss s'" "p \<in> poss t'" 
-              and range_all_st: "s' \<in> all_st" 
-            hence s': "s' \<cdot> Var(z := u) |_ p = Fun f ss \<cdot> Var(z := u)" (is "_ = ?s")
-              and t': "t' \<cdot> Var(z := u) |_ p = (if x = z then u else Var x)" using p by auto
-            from range_all_st[unfolded all_st_def] 
-            have range\<sigma>: "\<exists> S. s' = S \<cdot> \<sigma>" by auto
-            define s where "s = ?s"
-            have "\<exists>p. p \<in> poss (s' \<cdot> Var(z := u)) \<and> p \<in> poss (t' \<cdot> Var(z := u)) \<and> confl (Suc i) (s' \<cdot> Var(z := u) |_ p) (t' \<cdot> Var(z := u) |_ p)" 
+            from z obtain mp where "mp \<in> pp" and "index (y mp) = i" and "z = y mp" by auto
+            with P1[OF this(1), unfolded confl'_def] have inf: "inf_sort (snd z)" 
+              and *: "p mp \<in> poss (s mp)" "s mp |_ p mp = Var z" "(s mp, Var (x mp)) \<in> mp"
+              by auto
+            from *(1,2) have "z \<in> vars (s mp)" using vars_term_subt_at by fastforce
+            with *(3) have "z \<in> tvars_mp mp" unfolding tvars_mp_def by force
+            with \<open>mp \<in> pp\<close> wf have "snd z \<in> S" unfolding wf_pat_def wf_match_def by auto
+            from not_bdd_above_natD[OF inf[unfolded inf_sort_def[OF this]]] term_of_sort[OF this]
+            have "\<And> n. \<exists> t. t : snd z in \<T>(C,EMPTYn) \<and> n < size t" by auto
+            note this inf
+          } note z_inf = this
+            (* define d as 1 + maximal size of all s- and t-terms in pp \<sigma> *)
+          define all_st where "all_st = (\<lambda> mp. s mp \<cdot> \<sigma>) ` pp \<union> (\<lambda> mp. t mp \<cdot> \<sigma>) ` pp" 
+          have fin_all_st: "finite all_st" unfolding all_st_def using *(2) by simp
+          define d :: nat where "d = Suc (Max (size ` all_st))" 
+          from z_inf(1)[of d]
+          obtain u where u: "u : snd z in \<T>(C,EMPTYn)" and du: "d \<le> size u" by auto
+          have vars_u: "vars u = {}" by (rule cg_term_vars[OF u])
+
+          define \<sigma>' where "\<sigma>' x = (if x = z then u else \<sigma> x)" for x
+          have \<sigma>'_def': "\<sigma>' x = (if x \<in> y ` pp \<and> index x = i then u else \<sigma> x)" for x
+            unfolding \<sigma>'_def by (rule if_cong, insert bij z, auto simp: bij_betw_def inj_on_def) 
+          have var_ind_conv: "var_ind i x = (x = z \<or> var_ind (Suc i) x)" for x
+          proof
+            assume "x = z \<or> var_ind (Suc i) x" 
+            thus "var_ind i x" using z i unfolding var_ind_def by auto
+          next
+            assume "var_ind i x" 
+            hence x: "x \<in> y ` pp" "index x \<in> {..<n} - {..<i}" unfolding var_ind_def by auto
+            with i have "index x = i \<or> index x \<in> {..<n} - {..<Suc i}" by auto
+            thus "x = z \<or> var_ind (Suc i) x"
+            proof
+              assume "index x = i" 
+              with x(1) z bij have "x = z" by (auto simp: bij_betw_def inj_on_def)
+              thus ?thesis by auto
+            qed (insert x, auto simp: var_ind_def)
+          qed
+          have [simp]: "var_ind i z" unfolding var_ind_conv by auto
+          have [simp]: "var_ind (Suc i) z = False" unfolding var_ind_def using z by auto
+          have \<sigma>z[simp]: "\<sigma> z = Var z" using \<sigma>[unfolded cg_subst_ind_def, rule_format, of z] by auto
+          have \<sigma>'_upd: "\<sigma>' = \<sigma>(z := u)" unfolding \<sigma>'_def by (intro ext, auto)
+          have \<sigma>'_comp: "\<sigma>' = \<sigma> \<circ>\<^sub>s Var(z := u)" unfolding subst_compose_def \<sigma>'_upd
+          proof (intro ext)
+            fix x
+            show "(\<sigma>(z := u)) x = \<sigma> x \<cdot> Var(z := u)" 
             proof (cases "x = z")
               case False
-              thus ?thesis using * p unfolding s' t' by (intro exI[of _ p], auto simp: confl_def var_ind_conv)
-            next
-              case True
-              hence t': "t' \<cdot> Var(z := u) |_ p = u" unfolding t' by auto
-              have "\<exists> p'. p' \<in> poss u \<and> p' \<in> poss s \<and> confl (Suc i) (s |_ p') (u |_ p')" 
-              proof (cases "\<exists> x. x \<in> vars s \<and> var_ind (Suc i) x")
+              hence "\<sigma> x \<cdot> (Var(z := u)) = \<sigma> x \<cdot> Var" 
+              proof (intro term_subst_eq)
+                fix y
+                assume y: "y \<in> vars (\<sigma> x)" 
+                show "(Var(z := u)) y = Var y" 
+                proof (cases "var_ind i x")
+                  case True
+                  with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
+                  have "\<sigma> x = Var x" by auto
+                  with False y show ?thesis by auto
+                next
+                  case False
+                  with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
+                  have "vars (\<sigma> x) = {}" by auto
+                  with y show ?thesis by auto
+                qed
+              qed
+              thus ?thesis by auto
+            qed simp
+          qed
+          have \<sigma>': "cg_subst_ind (Suc i) \<sigma>'" unfolding cg_subst_ind_def
+          proof (intro allI conjI impI)
+            fix x
+            assume "var_ind (Suc i) x" 
+            hence "var_ind i x" and diff: "index x \<noteq> i" unfolding var_ind_def by auto
+            hence "\<sigma> x = Var x" using \<sigma>[unfolded cg_subst_ind_def] by blast
+            thus "\<sigma>' x = Var x" unfolding \<sigma>'_def' using diff by auto
+          next
+            fix x
+            assume "\<not> var_ind (Suc i) x" and "snd x \<in> S" 
+            thus "\<sigma>' x : snd x in \<T>(C,EMPTYn)" 
+              using \<sigma>[unfolded cg_subst_ind_def, rule_format, of x] u
+              unfolding \<sigma>'_def var_ind_conv by auto
+          next
+            fix x
+            assume "\<not> var_ind (Suc i) x"  
+            hence "x = z \<or> \<not> var_ind i x" unfolding var_ind_conv by auto
+            thus "vars (\<sigma>' x) = {}" unfolding \<sigma>'_upd using \<sigma>[unfolded cg_subst_ind_def, rule_format, of x] vars_u by auto
+          next
+            fix x :: "nat \<times> 's" 
+            assume *: "snd x \<in> S" "\<not> inf_sort (snd x)" 
+            with z_inf(2) have "x \<noteq> z" by auto
+            hence "\<sigma>' x = \<sigma> x" unfolding \<sigma>'_def by auto
+            thus "\<sigma>' x = conv (\<delta> x)" using \<sigma>[unfolded cg_subst_ind_def, rule_format, of x] * by auto
+          qed
+          show ?case
+          proof (intro exI[of _ \<sigma>'] conjI \<sigma>' ballI)
+            fix mp
+            assume mp: "mp \<in> pp" 
+            define s' where "s' = s mp \<cdot> \<sigma>" 
+            define t' where "t' = t mp \<cdot> \<sigma>" 
+            from confl[rule_format, OF mp]
+            obtain p where p: "p \<in> poss s'" "p \<in> poss t'" and confl: "confl i (s' |_ p) (t' |_ p)" by (auto simp: s'_def t'_def)
+            {
+              fix s' t' :: "('f, nat \<times> 's) term" and p f ss x
+              assume *: "(s' |_ p, t' |_p) = (Fun f ss, Var x)" "var_ind i x" and p: "p \<in> poss s'" "p \<in> poss t'" 
+                and range_all_st: "s' \<in> all_st" 
+              hence s': "s' \<cdot> Var(z := u) |_ p = Fun f ss \<cdot> Var(z := u)" (is "_ = ?s")
+                and t': "t' \<cdot> Var(z := u) |_ p = (if x = z then u else Var x)" using p by auto
+              from range_all_st[unfolded all_st_def] 
+              have range\<sigma>: "\<exists> S. s' = S \<cdot> \<sigma>" by auto
+              define s where "s = ?s"
+              have "\<exists>p. p \<in> poss (s' \<cdot> Var(z := u)) \<and> p \<in> poss (t' \<cdot> Var(z := u)) \<and> confl (Suc i) (s' \<cdot> Var(z := u) |_ p) (t' \<cdot> Var(z := u) |_ p)" 
+              proof (cases "x = z")
+                case False
+                thus ?thesis using * p unfolding s' t' by (intro exI[of _ p], auto simp: confl_def var_ind_conv)
+              next
                 case True
-                then obtain x where xs: "x \<in> vars s" and x: "var_ind (Suc i) x" by auto
-                from xs obtain p' where p': "p' \<in> poss s" and sp: "s |_ p' = Var x" by (metis vars_term_poss_subt_at)
-                from p' sp vars_u show ?thesis 
-                proof (induct u arbitrary: p' s) 
-                  case (Fun f us p' s)
-                  show ?case
-                  proof (cases s)
-                    case (Var y)
-                    with Fun have s: "s = Var x" by auto
-                    with x show ?thesis by (intro exI[of _ Nil], auto simp: confl_def)
-                  next
-                    case s: (Fun g ss)
-                    with Fun obtain j p where p: "p' = j # p" "j < length ss" "p \<in> poss (ss ! j)" "(ss ! j) |_ p = Var x" by auto
-                    show ?thesis
-                    proof (cases "(f,length us) = (g,length ss)")
+                hence t': "t' \<cdot> Var(z := u) |_ p = u" unfolding t' by auto
+                have "\<exists> p'. p' \<in> poss u \<and> p' \<in> poss s \<and> confl (Suc i) (s |_ p') (u |_ p')" 
+                proof (cases "\<exists> x. x \<in> vars s \<and> var_ind (Suc i) x")
+                  case True
+                  then obtain x where xs: "x \<in> vars s" and x: "var_ind (Suc i) x" by auto
+                  from xs obtain p' where p': "p' \<in> poss s" and sp: "s |_ p' = Var x" by (metis vars_term_poss_subt_at)
+                  from p' sp vars_u show ?thesis 
+                  proof (induct u arbitrary: p' s) 
+                    case (Fun f us p' s)
+                    show ?case
+                    proof (cases s)
+                      case (Var y)
+                      with Fun have s: "s = Var x" by auto
+                      with x show ?thesis by (intro exI[of _ Nil], auto simp: confl_def)
+                    next
+                      case s: (Fun g ss)
+                      with Fun obtain j p where p: "p' = j # p" "j < length ss" "p \<in> poss (ss ! j)" "(ss ! j) |_ p = Var x" by auto
+                      show ?thesis
+                      proof (cases "(f,length us) = (g,length ss)")
+                        case False
+                        thus ?thesis by (intro exI[of _ Nil], auto simp: s confl_def)
+                      next
+                        case True
+                        with p have j: "j < length us" by auto
+                        hence usj: "us ! j \<in> set us" by auto
+                        with Fun have "vars (us ! j) = {}" by auto
+                        from Fun(1)[OF usj p(3,4) this] obtain p' where 
+                          "p' \<in> poss (us ! j) \<and> p' \<in> poss (ss ! j) \<and> confl (Suc i) (ss ! j |_ p') (us ! j |_ p')" by auto
+                        thus ?thesis using j p by (intro exI[of _ "j # p'"], auto simp: s)
+                      qed
+                    qed
+                  qed auto
+                next
+                  case False
+                  from * have fss: "Fun f ss = s' |_ p" by auto 
+                  from range\<sigma> obtain S where sS: "s' = S \<cdot> \<sigma>" by auto
+                  from p have "vars (s' |_ p) \<subseteq> vars s'" by (metis vars_term_subt_at)
+                  also have "\<dots> = (\<Union>y\<in>vars S. vars (\<sigma> y))" unfolding sS by (simp add: vars_term_subst)
+                  also have "\<dots> \<subseteq> (\<Union>y\<in>vars S. Collect (var_ind i))" 
+                  proof -
+                    {
+                      fix x y
+                      assume "x \<in> vars (\<sigma> y)" 
+                      hence "var_ind i x" 
+                        using \<sigma>[unfolded cg_subst_ind_def, rule_format, of y] by auto
+                    }
+                    thus ?thesis by auto
+                  qed
+                  finally have sub: "vars (s' |_ p) \<subseteq> Collect (var_ind i)" by blast
+                  have "vars s = vars (s' |_ p \<cdot> Var(z := u))" unfolding s_def s' fss by auto 
+                  also have "\<dots> = \<Union> (vars ` Var(z := u) ` vars (s' |_ p))" by (simp add: vars_term_subst) 
+                  also have "\<dots> \<subseteq> \<Union> (vars ` Var(z := u) ` Collect (var_ind i))" using sub by auto
+                  also have "\<dots> \<subseteq> Collect (var_ind (Suc i))" 
+                    by (auto simp: vars_u var_ind_conv)
+                  finally have vars_s: "vars s = {}" using False by auto
+                      (* so u and s are ground terms; we will show that they differ and hence a 
+                   clash must exist *)
+                  {
+                    assume "s = u" 
+                    from this[unfolded s_def fss]
+                    have eq: "s' |_ p \<cdot> Var(z := u) = u" by auto
+                    have False
+                    proof (cases "z \<in> vars (s' |_ p)")
+                      case True
+                      have diff: "s' |_ p \<noteq> Var z" using * by auto 
+                      from True obtain C where id: "s' |_ p = C \<langle> Var z \<rangle>" 
+                        by (metis ctxt_supt_id vars_term_poss_subt_at)
+                      with diff have diff: "C \<noteq> Hole" by (cases C, auto)
+                      from eq[unfolded id, simplified] diff
+                      obtain C where "C\<langle>u\<rangle> = u" and "C \<noteq> Hole" by (cases C; force)
+                      from arg_cong[OF this(1), of size] this(2) show False 
+                        by (simp add: less_not_refl2 size_ne_ctxt)
+                    next
                       case False
-                      thus ?thesis by (intro exI[of _ Nil], auto simp: s confl_def)
+                      have size: "size s' \<in> size ` all_st" using range_all_st by auto
+                      from False have "s' |_ p \<cdot> Var(z := u) = s' |_ p \<cdot> Var" 
+                        by (intro term_subst_eq, auto)
+                      with eq have eq: "s' |_ p = u" by auto
+                      hence "size u = size (s' |_ p)" by auto
+                      also have "\<dots> \<le> size s'" using p(1) 
+                        by (rule subt_size)
+                      also have "\<dots> \<le> Max (size ` all_st)" 
+                        using size fin_all_st by simp
+                      also have "\<dots> < d" unfolding d_def by simp
+                      also have "\<dots> \<le> size u" using du .
+                      finally show False by simp
+                    qed
+                  }
+                  hence "s \<noteq> u" by auto
+                  with vars_s vars_u
+                  show ?thesis 
+                  proof (induct s arbitrary: u)
+                    case s: (Fun f ss u)
+                    then obtain g us where u: "u = Fun g us" by (cases u, auto)
+                    show ?case
+                    proof (cases "(f,length ss) = (g,length us)")
+                      case False
+                      thus ?thesis unfolding u by (intro exI[of _ Nil], auto simp: confl_def)
                     next
                       case True
-                      with p have j: "j < length us" by auto
-                      hence usj: "us ! j \<in> set us" by auto
-                      with Fun have "vars (us ! j) = {}" by auto
-                      from Fun(1)[OF usj p(3,4) this] obtain p' where 
-                        "p' \<in> poss (us ! j) \<and> p' \<in> poss (ss ! j) \<and> confl (Suc i) (ss ! j |_ p') (us ! j |_ p')" by auto
-                      thus ?thesis using j p by (intro exI[of _ "j # p'"], auto simp: s)
+                      with s(4)[unfolded u] have "\<exists> j < length us. ss ! j \<noteq> us ! j" 
+                        by (auto simp: list_eq_nth_eq)
+                      then obtain j where j: "j < length us" and diff: "ss ! j \<noteq> us ! j" by auto
+                      from j True have mem: "ss ! j \<in> set ss" "us ! j \<in> set us" by auto
+                      with s(2-) u have "vars (ss ! j) = {}" "vars (us ! j) = {}" by auto
+                      from s(1)[OF mem(1) this diff] obtain p' where
+                        "p' \<in> poss (us ! j) \<and> p' \<in> poss (ss ! j) \<and> confl (Suc i) (ss ! j |_ p') (us ! j |_ p')" 
+                        by blast
+                      thus ?thesis unfolding u using True j by (intro exI[of _ "j # p'"], auto)
                     qed
-                  qed
-                qed auto
-              next
-                case False
-                from * have fss: "Fun f ss = s' |_ p" by auto 
-                from range\<sigma> obtain S where sS: "s' = S \<cdot> \<sigma>" by auto
-                from p have "vars (s' |_ p) \<subseteq> vars s'" by (metis vars_term_subt_at)
-                also have "\<dots> = (\<Union>y\<in>vars S. vars (\<sigma> y))" unfolding sS by (simp add: vars_term_subst)
-                also have "\<dots> \<subseteq> (\<Union>y\<in>vars S. Collect (var_ind i))" 
-                proof -
-                  {
-                    fix x y
-                    assume "x \<in> vars (\<sigma> y)" 
-                    hence "var_ind i x" 
-                      using \<sigma>[unfolded cg_subst_ind_def, rule_format, of y] by auto
-                  }
-                  thus ?thesis by auto
+                  qed auto
                 qed
-                finally have sub: "vars (s' |_ p) \<subseteq> Collect (var_ind i)" by blast
-                have "vars s = vars (s' |_ p \<cdot> Var(z := u))" unfolding s_def s' fss by auto 
-                also have "\<dots> = \<Union> (vars ` Var(z := u) ` vars (s' |_ p))" by (simp add: vars_term_subst) 
-                also have "\<dots> \<subseteq> \<Union> (vars ` Var(z := u) ` Collect (var_ind i))" using sub by auto
-                also have "\<dots> \<subseteq> Collect (var_ind (Suc i))" 
-                  by (auto simp: vars_u var_ind_conv)
-                finally have vars_s: "vars s = {}" using False by auto
-                (* so u and s are ground terms; we will show that they differ and hence a 
-                   clash must exist *)
-                {
-                  assume "s = u" 
-                  from this[unfolded s_def fss]
-                  have eq: "s' |_ p \<cdot> Var(z := u) = u" by auto
-                  have False
-                  proof (cases "z \<in> vars (s' |_ p)")
-                    case True
-                    have diff: "s' |_ p \<noteq> Var z" using * by auto 
-                    from True obtain C where id: "s' |_ p = C \<langle> Var z \<rangle>" 
-                      by (metis ctxt_supt_id vars_term_poss_subt_at)
-                    with diff have diff: "C \<noteq> Hole" by (cases C, auto)
-                    from eq[unfolded id, simplified] diff
-                    obtain C where "C\<langle>u\<rangle> = u" and "C \<noteq> Hole" by (cases C; force)
-                    from arg_cong[OF this(1), of size] this(2) show False 
-                      by (simp add: less_not_refl2 size_ne_ctxt)
-                  next
-                    case False
-                    have size: "size s' \<in> size ` all_st" using range_all_st by auto
-                    from False have "s' |_ p \<cdot> Var(z := u) = s' |_ p \<cdot> Var" 
-                      by (intro term_subst_eq, auto)
-                    with eq have eq: "s' |_ p = u" by auto
-                    hence "size u = size (s' |_ p)" by auto
-                    also have "\<dots> \<le> size s'" using p(1) 
-                      by (rule subt_size)
-                    also have "\<dots> \<le> Max (size ` all_st)" 
-                      using size fin_all_st by simp
-                    also have "\<dots> < d" unfolding d_def by simp
-                    also have "\<dots> \<le> size u" using du .
-                    finally show False by simp
-                  qed
-                }
-                hence "s \<noteq> u" by auto
-                with vars_s vars_u
+                then obtain p' where p': "p' \<in> poss u" "p' \<in> poss s" and confl: "confl (Suc i) (s |_ p') (u |_ p')" by auto
+                have s'': "s' \<cdot> Var(z := u) |_ (p @ p') = s |_ p'" unfolding s_def s'[symmetric] using p p' by auto
+                have t'': "t' \<cdot> Var(z := u) |_ (p @ p') = u |_ p'" using t' p p' by auto
                 show ?thesis 
-                proof (induct s arbitrary: u)
-                  case s: (Fun f ss u)
-                  then obtain g us where u: "u = Fun g us" by (cases u, auto)
-                  show ?case
-                  proof (cases "(f,length ss) = (g,length us)")
-                    case False
-                    thus ?thesis unfolding u by (intro exI[of _ Nil], auto simp: confl_def)
-                  next
-                    case True
-                    with s(4)[unfolded u] have "\<exists> j < length us. ss ! j \<noteq> us ! j" 
-                      by (auto simp: list_eq_nth_eq)
-                    then obtain j where j: "j < length us" and diff: "ss ! j \<noteq> us ! j" by auto
-                    from j True have mem: "ss ! j \<in> set ss" "us ! j \<in> set us" by auto
-                    with s(2-) u have "vars (ss ! j) = {}" "vars (us ! j) = {}" by auto
-                    from s(1)[OF mem(1) this diff] obtain p' where
-                      "p' \<in> poss (us ! j) \<and> p' \<in> poss (ss ! j) \<and> confl (Suc i) (ss ! j |_ p') (us ! j |_ p')" 
-                      by blast
-                    thus ?thesis unfolding u using True j by (intro exI[of _ "j # p'"], auto)
-                  qed
-                qed auto
+                proof (intro exI[of _ "p @ p'"], unfold s'' t'', intro conjI confl)
+                  have "p \<in> poss (s' \<cdot> Var(z := u))" using p by auto
+                  moreover have "p' \<in> poss ((s' \<cdot> Var(z := u)) |_ p)" using s' p' p unfolding s_def by auto
+                  ultimately show "p @ p' \<in> poss (s' \<cdot> Var(z := u))" by simp
+                  have "p \<in> poss (t' \<cdot> Var(z := u))" using p by auto
+                  moreover have "p' \<in> poss ((t' \<cdot> Var(z := u)) |_ p)" using t' p' p by auto
+                  ultimately show "p @ p' \<in> poss (t' \<cdot> Var(z := u))" by simp
+                qed
               qed
-              then obtain p' where p': "p' \<in> poss u" "p' \<in> poss s" and confl: "confl (Suc i) (s |_ p') (u |_ p')" by auto
-              have s'': "s' \<cdot> Var(z := u) |_ (p @ p') = s |_ p'" unfolding s_def s'[symmetric] using p p' by auto
-              have t'': "t' \<cdot> Var(z := u) |_ (p @ p') = u |_ p'" using t' p p' by auto
-              show ?thesis 
-              proof (intro exI[of _ "p @ p'"], unfold s'' t'', intro conjI confl)
-                have "p \<in> poss (s' \<cdot> Var(z := u))" using p by auto
-                moreover have "p' \<in> poss ((s' \<cdot> Var(z := u)) |_ p)" using s' p' p unfolding s_def by auto
-                ultimately show "p @ p' \<in> poss (s' \<cdot> Var(z := u))" by simp
-                have "p \<in> poss (t' \<cdot> Var(z := u))" using p by auto
-                moreover have "p' \<in> poss ((t' \<cdot> Var(z := u)) |_ p)" using t' p' p by auto
-                ultimately show "p @ p' \<in> poss (t' \<cdot> Var(z := u))" by simp
-              qed
+            } note main = this
+            consider (FF) f g ss ts where "(s' |_ p, t' |_ p) = (Fun f ss, Fun g ts)" "(f,length ss) \<noteq> (g,length ts)" 
+              | (FV) f ss x where "(s' |_ p, t' |_ p) = (Fun f ss, Var x)" "var_ind i x"
+              | (VF) f ss x where "(s' |_ p, t' |_ p) = (Var x, Fun f ss)" "var_ind i x" 
+              | (VV) x x' where "(s' |_ p, t' |_ p) = (Var x, Var x')" "x \<noteq> x'" "var_ind i x" "var_ind i x'" 
+              using confl by (auto simp: confl_def split: term.splits)
+            hence "\<exists>p. p \<in> poss (s' \<cdot> Var(z := u)) \<and> p \<in> poss (t' \<cdot> Var(z := u)) \<and> confl (Suc i) (s' \<cdot> Var(z := u) |_ p) (t' \<cdot> Var(z := u) |_ p)" 
+            proof cases
+              case (FF f g ss ts)
+              thus ?thesis using p by (intro exI[of _ p], auto simp: confl_def)
+            next
+              case (FV f ss x)
+              have "s' \<in> all_st" unfolding s'_def using mp all_st_def by auto
+              from main[OF FV p this] show ?thesis by auto
+            next
+              case (VF f ss x)
+              have t': "t' \<in> all_st" unfolding t'_def using mp all_st_def by auto
+              from VF have "(t' |_ p, s' |_ p) = (Fun f ss, Var x)" "var_ind i x" by auto
+              from main[OF this p(2,1) t'] 
+              obtain p where "p \<in> poss (t' \<cdot> Var(z := u))" "p \<in> poss (s' \<cdot> Var(z := u))" "confl (Suc i) (t' \<cdot> Var(z := u) |_ p) (s' \<cdot> Var(z := u) |_ p)"
+                by auto
+              thus ?thesis by (intro exI[of _ p], auto simp: confl_def split: term.splits)
+            next
+              case (VV x x')
+              thus ?thesis using p vars_u by (intro exI[of _ p], cases u, auto simp: confl_def var_ind_conv)
             qed
-          } note main = this
-          consider (FF) f g ss ts where "(s' |_ p, t' |_ p) = (Fun f ss, Fun g ts)" "(f,length ss) \<noteq> (g,length ts)" 
-            | (FV) f ss x where "(s' |_ p, t' |_ p) = (Fun f ss, Var x)" "var_ind i x"
-            | (VF) f ss x where "(s' |_ p, t' |_ p) = (Var x, Fun f ss)" "var_ind i x" 
-            | (VV) x x' where "(s' |_ p, t' |_ p) = (Var x, Var x')" "x \<noteq> x'" "var_ind i x" "var_ind i x'" 
-            using confl by (auto simp: confl_def split: term.splits)
-          hence "\<exists>p. p \<in> poss (s' \<cdot> Var(z := u)) \<and> p \<in> poss (t' \<cdot> Var(z := u)) \<and> confl (Suc i) (s' \<cdot> Var(z := u) |_ p) (t' \<cdot> Var(z := u) |_ p)" 
-          proof cases
-            case (FF f g ss ts)
-            thus ?thesis using p by (intro exI[of _ p], auto simp: confl_def)
-          next
-            case (FV f ss x)
-            have "s' \<in> all_st" unfolding s'_def using mp all_st_def by auto
-            from main[OF FV p this] show ?thesis by auto
-          next
-            case (VF f ss x)
-            have t': "t' \<in> all_st" unfolding t'_def using mp all_st_def by auto
-            from VF have "(t' |_ p, s' |_ p) = (Fun f ss, Var x)" "var_ind i x" by auto
-            from main[OF this p(2,1) t'] 
-            obtain p where "p \<in> poss (t' \<cdot> Var(z := u))" "p \<in> poss (s' \<cdot> Var(z := u))" "confl (Suc i) (t' \<cdot> Var(z := u) |_ p) (s' \<cdot> Var(z := u) |_ p)"
-              by auto
-            thus ?thesis by (intro exI[of _ p], auto simp: confl_def split: term.splits)
-          next
-            case (VV x x')
-            thus ?thesis using p vars_u by (intro exI[of _ p], cases u, auto simp: confl_def var_ind_conv)
+            thus "\<exists>p. p \<in> poss (s mp \<cdot> \<sigma>') \<and> p \<in> poss (t mp \<cdot> \<sigma>') \<and> confl (Suc i) (s mp \<cdot> \<sigma>' |_ p) (t mp \<cdot> \<sigma>' |_ p)" 
+              unfolding \<sigma>'_comp subst_subst_compose s'_def t'_def by auto
           qed
-          thus "\<exists>p. p \<in> poss (s mp \<cdot> \<sigma>') \<and> p \<in> poss (t mp \<cdot> \<sigma>') \<and> confl (Suc i) (s mp \<cdot> \<sigma>' |_ p) (t mp \<cdot> \<sigma>' |_ p)" 
-            unfolding \<sigma>'_comp subst_subst_compose s'_def t'_def by auto
         qed
+      }
+      from this[of n]
+      obtain \<sigma> where \<sigma>: "cg_subst_ind n \<sigma>" and confl: "\<And> mp. mp \<in> pp \<Longrightarrow> \<exists>p. p \<in> poss (s mp \<cdot> \<sigma>) \<and> p \<in> poss (t mp \<cdot> \<sigma>) \<and> confl n (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p)" 
+        by blast
+      define \<sigma>' :: "('f,nat \<times> 's,'v)gsubst" where "\<sigma>' x = conv' (Var x)" for x
+      let ?\<sigma> = "\<sigma> \<circ>\<^sub>s \<sigma>'" 
+      {
+        fix x :: "nat \<times> 's" 
+        assume *: "snd x \<in> S" "\<not> inf_sort (snd x)" 
+        from \<delta>[unfolded cg_subst_def] * have "\<delta> x : snd x in \<T>(C,EMPTY)" by blast
+        hence vars: "vars (\<delta> x) = {}" unfolding EMPTY_def[abs_def] by (simp add: hastype_in_Term_empty_imp_vars)
+        from * \<sigma>[unfolded cg_subst_ind_def] have "\<sigma> x = conv (\<delta> x)" by blast
+        hence "?\<sigma> x = \<delta> x \<cdot> (undefined \<circ>\<^sub>s \<sigma>')" by (simp add: subst_compose_def conv_def subst_subst)
+        also have "\<dots> = \<delta> x" by (rule ground_term_subst[OF vars]) 
+        finally have "?\<sigma> x = \<delta> x" .
+      } note \<sigma>\<delta> = this
+      have "cg_subst ?\<sigma>" unfolding cg_subst_def subst_compose_def
+      proof (intro allI impI)
+        fix x :: "nat \<times> 's" 
+        assume "snd x \<in> S" 
+        with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
+        have "\<sigma> x : snd x in \<T>(C,EMPTYn)" by auto
+        thus "\<sigma> x \<cdot> \<sigma>' : snd x in \<T>(C,EMPTY)" by (rule type_conversion1)
+      qed  
+      from pp[unfolded pat_complete_def match_complete_wrt_def, rule_format, OF this]
+      obtain mp \<mu> where mp: "mp \<in> pp \<union> pp'" and match: "\<And> ti li. (ti, li)\<in> mp \<Longrightarrow> ti \<cdot> ?\<sigma> = li \<cdot> \<mu>" by force
+      {
+        assume mp: "mp \<in> pp" 
+        from P1[OF this(1)] 
+        have "(s mp, Var (x mp)) \<in> mp" "(t mp, Var (x mp)) \<in> mp" by auto
+        from match[OF this(1)] match[OF this(2)] have ident: "s mp \<cdot> ?\<sigma> = t mp \<cdot> ?\<sigma>" by auto
+        from confl[OF mp] obtain p 
+          where p: "p \<in> poss (s mp \<cdot> \<sigma>)" "p \<in> poss (t mp \<cdot> \<sigma>)" and confl: "confl n (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p)" 
+          by auto
+        let ?s = "s mp \<cdot> \<sigma>" let ?t = "t mp \<cdot> \<sigma>" 
+        from confl_n[OF confl] obtain f g ss ts where 
+          confl: "?s |_p = Fun f ss" "?t |_p = Fun g ts" and diff: "(f,length ss) \<noteq> (g,length ts)" by auto
+        define s' where "s' = s mp \<cdot> \<sigma>" 
+        define t' where "t' = t mp \<cdot> \<sigma>" 
+        from confl p ident 
+        have False 
+          unfolding subst_subst_compose s'_def[symmetric] t'_def[symmetric]
+        proof (induction p arbitrary: s' t')
+          case Nil
+          then show ?case using diff by (auto simp: list_eq_nth_eq)
+        next
+          case (Cons i p s t)
+          from Cons obtain h1 us1 where s: "s = Fun h1 us1" by (cases s, auto)
+          from Cons obtain h2 us2 where t: "t = Fun h2 us2" by (cases t, auto)
+          from Cons(2,4)[unfolded s] have si: "(us1 ! i) |_ p = Fun f ss" "p \<in> poss (us1 ! i)" and i1: "i < length us1" by auto
+          from Cons(3,5)[unfolded t] have ti: "(us2 ! i) |_ p = Fun g ts" "p \<in> poss (us2 ! i)" and i2: "i < length us2" by auto
+          from Cons(6)[unfolded s t] i1 i2 have " us1 ! i \<cdot> \<sigma>' = us2 ! i \<cdot> \<sigma>'" by (auto simp: list_eq_nth_eq)
+          from Cons.IH[OF si(1) ti(1) si(2) ti(2) this]
+          show False .
+        qed
+      }
+      with mp have mp: "mp \<in> pp'" by auto
+      show "Bex pp' (match_complete_wrt \<delta>)" 
+        unfolding match_complete_wrt_def
+      proof (intro bexI[OF _ mp] exI[of _ \<mu>] ballI, clarify)
+        fix ti li
+        assume tl: "(ti, li) \<in> mp" 
+        have "ti \<cdot> \<delta> = ti \<cdot> ?\<sigma>" 
+        proof (intro term_subst_eq, rule sym, rule \<sigma>\<delta>)
+          fix x
+          assume x: "x \<in> vars ti"
+          from *(3) x tl mp show "\<not> inf_sort (snd x)" by (auto simp: tvars_pp_def tvars_mp_def) 
+          from *(4) x tl mp show "snd x \<in> S" 
+            unfolding wf_pat_def wf_match_def tvars_mp_def by auto
+        qed
+        also have "\<dots> = li \<cdot> \<mu>" using match[OF tl] .
+        finally show "ti \<cdot> \<delta> = li \<cdot> \<mu>" .
       qed
-    }
-    from this[of n]
-    obtain \<sigma> where \<sigma>: "cg_subst_ind n \<sigma>" and confl: "\<And> mp. mp \<in> pp \<Longrightarrow> \<exists>p. p \<in> poss (s mp \<cdot> \<sigma>) \<and> p \<in> poss (t mp \<cdot> \<sigma>) \<and> confl n (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p)" 
-      by blast
-    define \<sigma>' :: "('f,nat \<times> 's,'v)gsubst" where "\<sigma>' x = Var undefined" for x
-    let ?\<sigma> = "\<sigma> \<circ>\<^sub>s \<sigma>'" 
-    have "cg_subst ?\<sigma>" unfolding cg_subst_def subst_compose_def
-    proof (intro allI impI)
-      fix x :: "nat \<times> 's" 
-      assume "snd x \<in> S" 
-      with \<sigma>[unfolded cg_subst_ind_def, rule_format, of x]
-      have "\<sigma> x : snd x in \<T>(C,EMPTYn)" by auto
-      thus "\<sigma> x \<cdot> \<sigma>' : snd x in \<T>(C,EMPTY)" by (rule type_conversion1)
-    qed  
-    from pp[unfolded pat_complete_def match_complete_wrt_def, rule_format, OF this]
-    obtain mp \<mu> where mp: "mp \<in> pp" and match: "\<And> ti li. (ti, li)\<in> mp \<Longrightarrow> ti \<cdot> ?\<sigma> = li \<cdot> \<mu>" by force 
-    from P1[OF this(1)] 
-    have "(s mp, Var (x mp)) \<in> mp" "(t mp, Var (x mp)) \<in> mp" by auto
-    from match[OF this(1)] match[OF this(2)] have ident: "s mp \<cdot> ?\<sigma> = t mp \<cdot> ?\<sigma>" by auto
-    from confl[OF mp] obtain p 
-      where p: "p \<in> poss (s mp \<cdot> \<sigma>)" "p \<in> poss (t mp \<cdot> \<sigma>)" and confl: "confl n (s mp \<cdot> \<sigma> |_ p) (t mp \<cdot> \<sigma> |_ p)" 
-      by auto
-    let ?s = "s mp \<cdot> \<sigma>" let ?t = "t mp \<cdot> \<sigma>" 
-    from confl_n[OF confl] obtain f g ss ts where 
-      confl: "?s |_p = Fun f ss" "?t |_p = Fun g ts" and diff: "(f,length ss) \<noteq> (g,length ts)" by auto
-    define s' where "s' = s mp \<cdot> \<sigma>" 
-    define t' where "t' = t mp \<cdot> \<sigma>" 
-    from confl p ident 
-    have False 
-      unfolding subst_subst_compose s'_def[symmetric] t'_def[symmetric]
-    proof (induction p arbitrary: s' t')
-      case Nil
-      then show ?case using diff by (auto simp: list_eq_nth_eq)
-    next
-      case (Cons i p s t)
-      from Cons obtain h1 us1 where s: "s = Fun h1 us1" by (cases s, auto)
-      from Cons obtain h2 us2 where t: "t = Fun h2 us2" by (cases t, auto)
-      from Cons(2,4)[unfolded s] have si: "(us1 ! i) |_ p = Fun f ss" "p \<in> poss (us1 ! i)" and i1: "i < length us1" by auto
-      from Cons(3,5)[unfolded t] have ti: "(us2 ! i) |_ p = Fun g ts" "p \<in> poss (us2 ! i)" and i2: "i < length us2" by auto
-      from Cons(6)[unfolded s t] i1 i2 have " us1 ! i \<cdot> \<sigma>' = us2 ! i \<cdot> \<sigma>'" by (auto simp: list_eq_nth_eq)
-      from Cons.IH[OF si(1) ti(1) si(2) ti(2) this]
-      show False .
     qed
   }
-  thus ?case by auto
+  with easy show ?case by auto
 qed
 
 lemma pp_success_pcorrect: "pp_success pp \<Longrightarrow> pat_complete pp" 

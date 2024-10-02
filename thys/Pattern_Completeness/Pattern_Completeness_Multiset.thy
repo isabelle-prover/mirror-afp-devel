@@ -976,7 +976,7 @@ next
       by (unfold conv subst_defs set_map image_comp, auto)
   next
     case *: (pat_failure' pp)
-    from pp_failure'[OF *(1)] have "pat_mset pp \<Rightarrow>\<^sub>s {}" by auto
+    from pp_inf_var_conflict[OF *(1), of "{}"] have "pat_mset pp \<Rightarrow>\<^sub>s {}" by (auto simp: tvars_pp_def)
     from P_simp[OF this]
     show ?case by auto
   qed
