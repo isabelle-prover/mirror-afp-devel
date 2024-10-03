@@ -20,8 +20,8 @@ purge_notation
   Lattice.inf (\<open>\<Sqinter>\<index>_\<close> [90] 90) and
   Lattice.join (infixl \<open>\<squnion>\<index>\<close> 65) and
   Lattice.meet (infixl \<open>\<sqinter>\<index>\<close> 70) and
-  Set.member (\<open>op :\<close>) and
-  Set.member (\<open>(_/ : _)\<close> [51, 51] 50) and
+  Set.member (\<open>'(:')\<close>) and
+  Set.member (\<open>(\<open>notation=\<open>infix :\<close>\<close>_/ : _)\<close> [51, 51] 50) and
   disj  (infixr \<open>|\<close> 30) and
   conj  (infixr \<open>&\<close> 35)
 
