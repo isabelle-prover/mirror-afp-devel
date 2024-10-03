@@ -16,13 +16,6 @@ inductive types_pset_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_term 
 | "v \<turnstile> s : l \<Longrightarrow> v \<turnstile> t : l \<Longrightarrow> l \<noteq> 0 \<Longrightarrow> v \<turnstile> s \<sqinter>\<^sub>s t : l"
 | "v \<turnstile> s : l \<Longrightarrow> v \<turnstile> t : l \<Longrightarrow> l \<noteq> 0 \<Longrightarrow> v \<turnstile> s -\<^sub>s t : l"
 
-text \<open>Activate this bundle to avoid ambiguity between
-      \<^const>\<open>Set.member\<close> and \<^const>\<open>types_pset_term\<close>.\<close>
-bundle no_Set_member_ASCII_syntax
-begin
-no_notation Set.member (\<open>(_/ : _)\<close> [51, 51] 50)
-end
-
 inductive_cases types_pset_term_cases:
   "v \<turnstile> \<emptyset> n : l" "v \<turnstile> Var x : l" "v \<turnstile> Single t : l"
   "v \<turnstile> s \<squnion>\<^sub>s t : l" "v \<turnstile> s \<sqinter>\<^sub>s t : l" "v \<turnstile> s -\<^sub>s t : l"
@@ -49,7 +42,7 @@ adhoc_overloading types types_pset_atom types_pset_fm
 inductive_cases types_pset_atom_Member_cases:
   "v \<turnstile> s \<in>\<^sub>s t1 \<squnion>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 \<sqinter>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 -\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s Single t"
 
-context includes no_Set_member_ASCII_syntax
+context includes no_member_ASCII_syntax
 begin
 abbreviation "urelem' v (\<phi> :: 'a pset_fm) t \<equiv> v \<turnstile> \<phi> \<and> v \<turnstile> t : 0"
 end
