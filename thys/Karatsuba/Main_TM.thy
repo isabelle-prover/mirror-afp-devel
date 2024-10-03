@@ -768,42 +768,40 @@ adhoc_overloading divide_tm divide_nat_tm
 consts mod_tm :: "'a \<Rightarrow> 'a \<Rightarrow> 'a tm"
 adhoc_overloading mod_tm mod_nat_tm
 
-bundle main_tm_syntax
+open_bundle main_tm_syntax
 begin
-  notation equal_tm (infixl \<open>=\<^sub>t\<close> 51)
-  notation Not_tm (\<open>\<not>\<^sub>t _\<close> [40] 40)
-  notation conj_tm (infixr \<open>\<and>\<^sub>t\<close> 35)
-  notation disj_tm (infixr \<open>\<or>\<^sub>t\<close> 30)
-  notation append_tm (infixr \<open>@\<^sub>t\<close> 65)
-  notation plus_tm (infixl \<open>+\<^sub>t\<close> 65)
-  notation times_tm (infixl \<open>*\<^sub>t\<close> 70)
-  notation power_tm (infixr \<open>^\<^sub>t\<close> 80)
-  notation minus_tm (infixl \<open>-\<^sub>t\<close> 65)
-  notation less_tm (infix \<open><\<^sub>t\<close> 50)
-  notation less_eq_tm (infix \<open>\<le>\<^sub>t\<close> 50)
-  notation mod_tm (infixl \<open>mod\<^sub>t\<close> 70)
-  notation divide_tm (infixl \<open>div\<^sub>t\<close> 70)
-  notation dvd_tm (infix \<open>dvd\<^sub>t\<close> 50)
+notation equal_tm (infixl \<open>=\<^sub>t\<close> 51)
+notation Not_tm (\<open>\<not>\<^sub>t _\<close> [40] 40)
+notation conj_tm (infixr \<open>\<and>\<^sub>t\<close> 35)
+notation disj_tm (infixr \<open>\<or>\<^sub>t\<close> 30)
+notation append_tm (infixr \<open>@\<^sub>t\<close> 65)
+notation plus_tm (infixl \<open>+\<^sub>t\<close> 65)
+notation times_tm (infixl \<open>*\<^sub>t\<close> 70)
+notation power_tm (infixr \<open>^\<^sub>t\<close> 80)
+notation minus_tm (infixl \<open>-\<^sub>t\<close> 65)
+notation less_tm (infix \<open><\<^sub>t\<close> 50)
+notation less_eq_tm (infix \<open>\<le>\<^sub>t\<close> 50)
+notation mod_tm (infixl \<open>mod\<^sub>t\<close> 70)
+notation divide_tm (infixl \<open>div\<^sub>t\<close> 70)
+notation dvd_tm (infix \<open>dvd\<^sub>t\<close> 50)
 end
 
 bundle no_main_tm_syntax
 begin
-  no_notation equal_tm (infixl \<open>=\<^sub>t\<close> 51)
-  no_notation Not_tm (\<open>\<not>\<^sub>t _\<close> [40] 40)
-  no_notation conj_tm (infixr \<open>\<and>\<^sub>t\<close> 35)
-  no_notation disj_tm (infixr \<open>\<or>\<^sub>t\<close> 30)
-  no_notation append_tm (infixr \<open>@\<^sub>t\<close> 65)
-  no_notation plus_tm (infixl \<open>+\<^sub>t\<close> 65)
-  no_notation times_tm (infixl \<open>*\<^sub>t\<close> 70)
-  no_notation power_tm (infixr \<open>^\<^sub>t\<close> 80)
-  no_notation minus_tm (infixl \<open>-\<^sub>t\<close> 65)
-  no_notation less_tm (infix \<open><\<^sub>t\<close> 50)
-  no_notation less_eq_tm (infix \<open>\<le>\<^sub>t\<close> 50)
-  no_notation mod_tm (infixl \<open>mod\<^sub>t\<close> 70)
-  no_notation divide_tm (infixl \<open>div\<^sub>t\<close> 70)
-  no_notation dvd_tm (infix \<open>dvd\<^sub>t\<close> 50)
+no_notation equal_tm (infixl \<open>=\<^sub>t\<close> 51)
+no_notation Not_tm (\<open>\<not>\<^sub>t _\<close> [40] 40)
+no_notation conj_tm (infixr \<open>\<and>\<^sub>t\<close> 35)
+no_notation disj_tm (infixr \<open>\<or>\<^sub>t\<close> 30)
+no_notation append_tm (infixr \<open>@\<^sub>t\<close> 65)
+no_notation plus_tm (infixl \<open>+\<^sub>t\<close> 65)
+no_notation times_tm (infixl \<open>*\<^sub>t\<close> 70)
+no_notation power_tm (infixr \<open>^\<^sub>t\<close> 80)
+no_notation minus_tm (infixl \<open>-\<^sub>t\<close> 65)
+no_notation less_tm (infix \<open><\<^sub>t\<close> 50)
+no_notation less_eq_tm (infix \<open>\<le>\<^sub>t\<close> 50)
+no_notation mod_tm (infixl \<open>mod\<^sub>t\<close> 70)
+no_notation divide_tm (infixl \<open>div\<^sub>t\<close> 70)
+no_notation dvd_tm (infix \<open>dvd\<^sub>t\<close> 50)
 end
-
-unbundle main_tm_syntax
 
 end

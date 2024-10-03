@@ -73,7 +73,7 @@ qed
 subsection \<open>Lower bound for $\pi(x)$\<close>
 
 context
-  includes prime_counting_notation
+  includes prime_counting_syntax
   fixes S :: "nat \<Rightarrow> nat \<Rightarrow> int"
   defines "S \<equiv> (\<lambda>n p. (\<Sum>m\<in>{0<..nat \<lfloor>log p (2*n)\<rfloor>}. \<lfloor>2*n/p^m\<rfloor> - 2 * \<lfloor>n/p^m\<rfloor>))"
 begin

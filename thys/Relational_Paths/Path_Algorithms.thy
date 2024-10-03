@@ -19,8 +19,7 @@ imports "HOL-Hoare.Hoare_Logic" Rooted_Paths
 
 begin
 
-no_notation
-  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
+unbundle no_trancl_syntax
 
 class choose_singleton_point_signature =
   fixes choose_singleton :: "'a \<Rightarrow> 'a"

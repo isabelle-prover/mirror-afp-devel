@@ -4,7 +4,7 @@ imports
   "Zeta_Zerofree"
   "Perron_Formula"
 begin
-unbundle pnt_notation
+unbundle pnt_syntax
 
 section \<open>Estimation of the order of $\frac{\zeta'(s)}{\zeta(s)}$\<close>
 
@@ -1103,7 +1103,7 @@ qed
 no_notation primes_psi (\<open>\<psi>\<close>)
 end
 
-unbundle prime_counting_notation
+unbundle prime_counting_syntax
 
 theorem prime_number_theorem:
   shows "(\<lambda>x. \<pi> x - Li x) \<in> O(\<lambda>x. x * exp (- 1 / 3653 * (ln x) powr (1 / 2)))"
@@ -1121,6 +1121,6 @@ proof -
 qed
 
 hide_const (open) C\<^sub>3 C\<^sub>4 C\<^sub>5
-unbundle no_prime_counting_notation
-unbundle no_pnt_notation
+unbundle no_prime_counting_syntax
+unbundle no_pnt_syntax
 end

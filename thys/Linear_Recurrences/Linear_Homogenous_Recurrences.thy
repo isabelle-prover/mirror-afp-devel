@@ -32,7 +32,7 @@ lemma lhr_fps_aux:
   defines "q \<equiv> Poly [(\<Sum>i\<le>min N k. c (N - i) * f (k - i)). k \<leftarrow> [0..<N+m]]"
   shows   "Abs_fps f = fps_of_poly q / fps_of_poly p"
 proof -
-  include fps_notation
+  include fps_syntax
   define F where "F = Abs_fps f"
   have [simp]: "F $ n = f n" for n by (simp add: F_def)
   have [simp]: "coeff p 0 = c N" 

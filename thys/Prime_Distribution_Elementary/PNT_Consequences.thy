@@ -23,7 +23,7 @@ text \<open>
 \<close>
 
 (*<*)
-unbundle prime_counting_notation
+unbundle prime_counting_syntax
 (*>*)
 
 locale prime_number_theorem =
@@ -50,7 +50,7 @@ corollary moebius_mu_smallo: "sum_upto moebius_mu \<in> o(\<lambda>x. x)"
   using PNT_implies_sum_moebius_mu_sublinear \<psi>_asymptotics by simp
 
 lemma ln_\<theta>_asymptotics:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   shows "(\<lambda>x. ln (\<theta> x) - ln x) \<in> o(\<lambda>_. 1)"
 proof -
   have [simp]: "\<theta> 2 = ln 2"
@@ -77,7 +77,7 @@ proof -
 qed
 
 lemma ln_\<theta>_asymp_equiv [asymp_equiv_intros]:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   shows "(\<lambda>x. ln (\<theta> x)) \<sim>[at_top] ln"
 proof (rule smallo_imp_asymp_equiv)
   have "(\<lambda>x. ln (\<theta> x) - ln x) \<in> o(\<lambda>_. 1)" by (rule ln_\<theta>_asymptotics)
@@ -521,7 +521,7 @@ lemma divisor_count_bound_gen:
   defines "g \<equiv> (\<lambda>n. (ln n + c * f n * ln (ln n)) / (ln (f n)))"
   shows "eventually (\<lambda>n. divisor_count n < 2 powr g n) at_top"
 proof -
-  include prime_counting_notation
+  include prime_counting_syntax
   have "eventually (\<lambda>n::nat. 1 + log 2 n \<le> ln n ^ 2) at_top"  by real_asymp
   thus "eventually (\<lambda>n. divisor_count n < 2 powr g n) at_top"
     using eventually_gt_at_top[of 2] assms(1)
@@ -1035,7 +1035,7 @@ theorem totient_lower_bound:
   defines "C \<equiv> third_mertens_const"
   shows "eventually (\<lambda>n. totient n > (1 - \<epsilon>) * C * n / ln (ln n)) at_top"
 proof -
-  include prime_counting_notation
+  include prime_counting_syntax
   define f :: "nat \<Rightarrow> nat" where "f = (\<lambda>n. card {p\<in>prime_factors n. p > ln n})"
 
   define lb1 where "lb1 = (\<lambda>n::nat. (\<Prod>p | prime p \<and> real p \<le> ln n. 1 - 1 / p))"
@@ -1284,7 +1284,7 @@ next
 qed
 
 (*<*)
-unbundle no_prime_counting_notation
+unbundle no_prime_counting_syntax
 (*>*)
 
 end

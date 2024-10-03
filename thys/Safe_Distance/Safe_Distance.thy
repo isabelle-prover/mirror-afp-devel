@@ -1113,7 +1113,7 @@ subsection \<open>Checker Design\<close>
 definition rel_dist_to_stop :: "real \<Rightarrow> real \<Rightarrow> real" where
   "rel_dist_to_stop v a \<equiv> - v\<^sup>2 / (2 * a)"
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 definition rel_dist_to_stop_expr :: "nat \<Rightarrow> nat \<Rightarrow> floatarith" where
   "rel_dist_to_stop_expr v a = Mult (Minus (Power (Var v) 2)) (Inverse (Mult (Num 2) (Var a)))"
 
@@ -1369,7 +1369,7 @@ schematic_goal checker_form: "interpret_form ?x ?y \<Longrightarrow> checker s\<
   apply assumption
   done
 
-context includes floatarith_notation begin                                            
+context includes floatarith_syntax begin                                            
 definition "checker' p s\<^sub>e v\<^sub>e a\<^sub>e s\<^sub>o v\<^sub>o a\<^sub>o = approx_form p
            (Conj (Conj (Less (Var (Suc (Suc 0))) (Var (Suc (Suc (Suc 0)))))
                    (Conj (LessEqual (Var (Suc (Suc (Suc (Suc (Suc (Suc (Suc 0)))))))) (Var (Suc (Suc (Suc (Suc (Suc 0)))))))

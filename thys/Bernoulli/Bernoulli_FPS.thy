@@ -226,7 +226,7 @@ text \<open>
 \<close>
 
 context
-  includes fps_notation
+  includes fps_syntax
 begin
 
 definition fps_XD' where "fps_XD' a = (\<lambda>b. a * fps_deriv b)"    

@@ -12,11 +12,12 @@ begin
 
 text \<open>We define bundles to activate/deactivate the notation from \<^session>\<open>Jordan_Normal_Form\<close>.
                                                                          
-Reactivate the notation locally via "@{theory_text \<open>includes jnf_notation\<close>}" in a lemma statement.
-(Or sandwich a declaration using that notation between "@{theory_text \<open>unbundle jnf_notation ... unbundle no_jnf_notation\<close>}.)
+Reactivate the notation locally via "@{theory_text \<open>includes jnf_syntax\<close>}" in a lemma statement.
+(Or sandwich a declaration using that notation between "@{theory_text \<open>unbundle jnf_syntax ... unbundle no_jnf_syntax\<close>}.)
 \<close>
 
-bundle jnf_notation begin
+open_bundle jnf_syntax
+begin
 notation transpose_mat (\<open>(_\<^sup>T)\<close> [1000])
 notation cscalar_prod (infix \<open>\<bullet>c\<close> 70)
 notation vec_index (infixl \<open>$\<close> 100)
@@ -30,8 +31,8 @@ notation append_vec (infixr \<open>@\<^sub>v\<close> 65)
 notation append_rows (infixr \<open>@\<^sub>r\<close> 65)
 end
 
-
-bundle no_jnf_notation begin
+bundle no_jnf_syntax
+begin
 no_notation transpose_mat (\<open>(_\<^sup>T)\<close> [1000])
 no_notation cscalar_prod (infix \<open>\<bullet>c\<close> 70)
 no_notation vec_index (infixl \<open>$\<close> 100)
@@ -44,9 +45,6 @@ no_notation pow_mat (infixr \<open>^\<^sub>m\<close> 75)
 no_notation append_vec (infixr \<open>@\<^sub>v\<close> 65)
 no_notation append_rows (infixr \<open>@\<^sub>r\<close> 65)
 end
-
-unbundle jnf_notation
-
 
 lemma mat_entry_explicit:
   fixes M :: "'a::field mat"
@@ -413,7 +411,7 @@ lemma map_map_vec_cols: \<open>map (map_vec f) (cols m) = cols (map_mat f m)\<cl
 lemma map_vec_conjugate: \<open>map_vec conjugate v = conjugate v\<close>
   by fastforce
 
-unbundle no_jnf_notation
+unbundle no_jnf_syntax
 
 
 end

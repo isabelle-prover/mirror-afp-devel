@@ -58,7 +58,7 @@ text\<open>\label{sec:examples}\<close>
 
 experiment begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 text \<open>The examples below are taken from
   @{url "http://link.springer.com/chapter/10.1007/978-3-642-38088-4_26"},

@@ -78,9 +78,6 @@ lemma numeral_7_eq_7: "7 = Suc(Suc( Suc(Suc( Suc (Suc (Suc 0))))))"
 
 subsection\<open>The definition of the 7D cross product and related lemmas\<close>
 
-context includes no_Set_Product_syntax 
-begin (* locally disable syntax for set product, to avoid warnings *)
-
 text \<open>Note: in total there exist 480 equivalent  multiplication tables for the definition,
  the following is based on the one most widely used: \<close>
 
@@ -93,20 +90,6 @@ definition cross7 :: "[real^7, real^7] \<Rightarrow> real^7"  (infixr \<open>\<t
             a$6 * b$1 - a$1 * b$6 +  a$7 * b$4 - a$4 * b$7  +  a$2 * b$3 - a$3 * b$2 ,
             a$7 * b$2 - a$2 * b$7 +  a$1 * b$5 - a$5 * b$1  +  a$3 * b$4 - a$4 * b$3 ,
             a$1 * b$3 - a$3 * b$1 +  a$2 * b$6 - a$6 * b$2  +  a$4 * b$5 - a$5 * b$4 ]"
-
-end
-
-bundle cross7_syntax begin
-notation cross7 (infixr \<open>\<times>\<^sub>7\<close> 80)
-no_notation Product_Type.Times (infixr \<open>\<times>\<^sub>7\<close> 80)
-end
-
-bundle no_cross7_syntax begin
-no_notation cross7 (infixr \<open>\<times>\<^sub>7\<close> 80)
-notation Product_Type.Times (infixr \<open>\<times>\<^sub>7\<close> 80)
-end
-
-unbundle cross7_syntax
 
 lemmas cross7_simps = cross7_def inner_vec_def sum_7 det_def vec_eq_iff vector_def algebra_simps
 

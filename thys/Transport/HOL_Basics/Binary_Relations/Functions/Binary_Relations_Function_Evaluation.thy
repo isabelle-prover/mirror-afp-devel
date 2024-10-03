@@ -11,17 +11,17 @@ consts eval :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 definition "eval_rel R x \<equiv> THE y. R x y"
 adhoc_overloading eval eval_rel
 
-bundle eval_syntax
+open_bundle eval_syntax
 begin
 notation eval (\<open>'(`')\<close>)
 notation eval (\<open>(_`_)\<close> [999, 1000] 999)
 end
+
 bundle no_eval_syntax
 begin
 no_notation eval (\<open>'(`')\<close>)
 no_notation eval (\<open>(_`_)\<close> [999, 1000] 999)
 end
-unbundle eval_syntax
 
 lemma eval_eq_if_right_unique_onI:
   assumes "right_unique_on P R"

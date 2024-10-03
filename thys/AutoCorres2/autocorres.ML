@@ -211,7 +211,7 @@ fun add_progenv_corres_bundle (prev_phase, phase) prog_info filename thy =
     val name = AutoCorresData.global_impl_corres_bundle phase filename
   in
     thy 
-    |> Bundle.init (Binding.make (name, \<^here>))
+    |> Bundle.init {open_bundle = false} (Binding.make (name, \<^here>))
     |> AutoCorresData.prove_and_note_fun_ptr_intros true (prev_phase, phase) prog_info (mk_thm)
     |> Local_Theory.exit_global
   end

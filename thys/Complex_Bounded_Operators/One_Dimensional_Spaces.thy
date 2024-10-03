@@ -26,7 +26,7 @@ instance complex :: one_dim
 
 lemma one_cinner_one[simp]: \<open>(1::('a::one_dim)) \<bullet>\<^sub>C 1 = 1\<close>
 proof-
-  include notation_norm
+  include norm_syntax
   have \<open>(canonical_basis::'a list) = [1::('a::one_dim)]\<close>
     by simp
   hence \<open>\<parallel>1::'a::one_dim\<parallel> = 1\<close>

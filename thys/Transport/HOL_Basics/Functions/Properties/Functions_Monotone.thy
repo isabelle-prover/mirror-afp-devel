@@ -18,7 +18,8 @@ declare le_funE[elim]
 consts dep_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 consts mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
-bundle dep_mono_wrt_syntax begin
+open_bundle dep_mono_wrt_syntax
+begin
 syntax
   "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>\<Rightarrow>\<close> 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
@@ -29,7 +30,9 @@ syntax
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
     (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
-bundle no_dep_mono_wrt_syntax begin
+
+bundle no_dep_mono_wrt_syntax
+begin
 no_syntax
   "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>\<Rightarrow>\<close> 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
@@ -40,7 +43,7 @@ no_syntax
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
     (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
-unbundle dep_mono_wrt_syntax
+
 syntax_consts
   "_mono_wrt" \<rightleftharpoons> mono_wrt and
   "_dep_mono_wrt_rel" "_dep_mono_wrt_rel_if" "_dep_mono_wrt_pred" "_dep_mono_wrt_pred_if" \<rightleftharpoons> dep_mono_wrt

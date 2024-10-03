@@ -1286,9 +1286,8 @@ abbreviation (input) always_imp_syn :: "('a, 's, 'v) tls \<Rightarrow> ('a, 's, 
 abbreviation (input) leads_to :: "('a, 's, 'v) tls \<Rightarrow> ('a, 's, 'v) tls \<Rightarrow> ('a, 's, 'v) tls" where
   "leads_to P Q \<equiv> tls.always_imp_syn P (tls.eventually Q)"
 
-bundle "notation"
+open_bundle "syntax"
 begin
-
 notation tls.valid (\<open>\<Turnstile> _\<close> [30] 30)
 notation tls.state_prop (\<open>\<llangle>_\<rrangle>\<close> [0])
 notation tls.until (infix \<open>\<U>\<close> 85)
@@ -1298,12 +1297,10 @@ notation tls.release (infixr \<open>\<R>\<close> 85)
 notation tls.unless (infixr \<open>\<W>\<close> 85)
 notation tls.always_imp_syn (infixr \<open>\<^bold>\<longrightarrow>\<^sub>\<box>\<close> 75)
 notation tls.leads_to (infixr \<open>\<^bold>\<leadsto>\<close> 75)
-
 end
 
-bundle "no_notation"
+bundle "no_syntax"
 begin
-
 no_notation tls.valid (\<open>\<Turnstile> _\<close> [30] 30)
 no_notation tls.state_prop (\<open>\<llangle>_\<rrangle>\<close> [0])
 no_notation tls.until (infixr \<open>\<U>\<close> 85)
@@ -1313,10 +1310,7 @@ no_notation tls.release (infixr \<open>\<R>\<close> 85)
 no_notation tls.unless (infixr \<open>\<W>\<close> 85)
 no_notation tls.always_imp_syn (infixr \<open>\<^bold>\<longrightarrow>\<^sub>\<box>\<close> 75)
 no_notation tls.leads_to (infixr \<open>\<^bold>\<leadsto>\<close> 75)
-
 end
-
-unbundle tls.notation
 
 lemma validI:
   assumes "\<top> \<le> P"
@@ -3058,25 +3052,21 @@ setup \<open>Sign.parent_path\<close>
 
 subsection\<open> Tweak syntax \<close>
 
-unbundle tls.no_notation
+unbundle tls.no_syntax
 no_notation tls.singleton (\<open>\<lblot>_\<rblot>\<^sub>T\<close>)
 
 setup \<open>Sign.mandatory_path "tls"\<close>
 
-bundle extra_notation
+bundle extra_syntax
 begin
-
 notation tls.singleton (\<open>\<lblot>_\<rblot>\<^sub>T\<close> [0])
 notation tls.from_spec (\<open>\<lparr>_\<rparr>\<close> [0])
-
 end
 
-bundle no_extra_notation
+bundle no_extra_syntax
 begin
-
 no_notation tls.singleton (\<open>\<lblot>_\<rblot>\<^sub>T\<close> [0])
 no_notation tls.from_spec (\<open>\<lparr>_\<rparr>\<close> [0])
-
 end
 
 setup \<open>Sign.parent_path\<close>

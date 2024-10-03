@@ -66,7 +66,7 @@ partial_function (tailrec) normalize_float10
 
 subsubsection \<open>Version that should be easy to prove correct, but slow!\<close>
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "float_to_float10_approximation f = the
   (do {

@@ -35,7 +35,7 @@ lemma Some_those_nth:
 lemma fun_pow: "f^n = (\<lambda>x. (f x)^n)"
 by (induction n, simp_all)
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 text \<open>Translate floatarith expressions by a vector of floats.\<close>
 fun fa_translate :: "float list \<Rightarrow> floatarith \<Rightarrow> floatarith"

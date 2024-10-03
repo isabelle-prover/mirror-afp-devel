@@ -148,7 +148,7 @@ subsection \<open>Bessel Function inspired example\<close>
 text \<open>\label{sec:bessel}\<close>
 experiment begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 text \<open>encoding a constant parameter and higher derivatives in the ode...\<close>
 

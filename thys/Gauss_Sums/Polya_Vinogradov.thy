@@ -12,7 +12,7 @@ imports
   "Dirichlet_Series.Divisor_Count"
 begin
 
-unbundle no_vec_lambda_notation
+unbundle no_vec_lambda_syntax
 
 subsection \<open>The case of primitive characters\<close>
 
@@ -844,6 +844,6 @@ proof -
   finally show ?thesis .
 qed
 
-unbundle vec_lambda_notation
+unbundle vec_lambda_syntax
 
 end

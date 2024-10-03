@@ -7,7 +7,7 @@ theory Voronoi_Congruence
   imports Kummer_Library Rat_Congruence
 begin
 
-unbundle bernoulli_notation
+unbundle bernoulli_syntax
 
 lemma sum_of_powers_mod_prime:
   assumes p: "prime p"
@@ -842,7 +842,7 @@ proof -
     by (simp add: mult_ac)
 qed
 
-unbundle no_bernoulli_notation
+unbundle no_bernoulli_syntax
 
 end
 

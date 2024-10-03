@@ -47,7 +47,7 @@ subsection \<open>Space Rendezvous\<close>
 
 experiment begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 abbreviation "r \<equiv> 42164000"
 abbreviation "mu \<equiv> 3.986*10^14*3600"
@@ -289,7 +289,7 @@ end
 subsection \<open>Quadrotor\<close>
 experiment begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 abbreviation "g \<equiv> 9.81"
 abbreviation "R \<equiv> 0.1"
@@ -418,7 +418,7 @@ end
 subsection \<open>Laub Loomis\<close>
 experiment begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 schematic_goal laub_fas:
   "[1,

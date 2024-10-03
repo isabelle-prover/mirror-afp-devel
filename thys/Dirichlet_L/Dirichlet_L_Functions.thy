@@ -20,12 +20,12 @@ text \<open>
 \<close>
 
 (*<*)
-bundle vec_lambda_notation
+bundle vec_lambda_syntax
 begin
 notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
-bundle no_vec_lambda_notation
+bundle no_vec_lambda_syntax
 begin
 no_notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
@@ -36,7 +36,7 @@ subsection \<open>Definition and basic properties\<close>
 
 (*<*)
 context
-  includes no_vec_lambda_notation
+  includes no_vec_lambda_syntax
 begin
 (*>*)
 
@@ -85,7 +85,7 @@ context dcharacter
 begin
 (*<*)
 context
-  includes no_vec_lambda_notation dcharacter_syntax
+  includes no_vec_lambda_syntax dcharacter_syntax
 begin
 (*>*)
 
@@ -400,7 +400,7 @@ end
 
 (*<*)
 context
-  includes no_vec_lambda_notation
+  includes no_vec_lambda_syntax
 begin
 (*>*)
 
@@ -454,7 +454,7 @@ context residues_nat
 begin
 (*<*)
 context
-includes no_vec_lambda_notation dcharacter_syntax
+includes no_vec_lambda_syntax dcharacter_syntax
 begin
 (*>*)
 
@@ -570,7 +570,7 @@ context dcharacter
 begin
 (*<*)
 context
-  includes no_vec_lambda_notation dcharacter_syntax
+  includes no_vec_lambda_syntax dcharacter_syntax
 begin
 (*>*)
 
@@ -1112,7 +1112,7 @@ context residues_nat
 begin
 (*<*)
 context
-  includes no_vec_lambda_notation dcharacter_syntax
+  includes no_vec_lambda_syntax dcharacter_syntax
 begin
 (*>*)
 
@@ -1136,7 +1136,7 @@ context dcharacter
 begin
 (*<*)
 context
-  includes no_vec_lambda_notation dcharacter_syntax
+  includes no_vec_lambda_syntax dcharacter_syntax
 begin
 (*>*)
 
@@ -1180,7 +1180,7 @@ end
 subsection \<open>Properties of $L(\chi, s)$ for real $\chi$\<close>
 
 (*<*)
-unbundle no_vec_lambda_notation
+unbundle no_vec_lambda_syntax
 (*>*)
 
 locale real_dcharacter = dcharacter +
@@ -1261,7 +1261,7 @@ qed
 end
 
 (*<*)
-unbundle vec_lambda_notation
+unbundle vec_lambda_syntax
 (*>*)
 
 end

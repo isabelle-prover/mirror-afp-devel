@@ -16,7 +16,8 @@ relators is "related functions map related inputs to related outputs".\<close>
 consts Dep_Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
 consts Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
 
-bundle Dep_Fun_Rel_syntax begin
+open_bundle Dep_Fun_Rel_syntax
+begin
 syntax
   "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr \<open>\<Rrightarrow>\<close> 50)
   "_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
@@ -28,7 +29,9 @@ syntax
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
-bundle no_Dep_Fun_Rel_syntax begin
+
+bundle no_Dep_Fun_Rel_syntax
+begin
 no_syntax
   "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr \<open>\<Rrightarrow>\<close> 50)
   "_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
@@ -40,7 +43,7 @@ no_syntax
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
-unbundle Dep_Fun_Rel_syntax
+
 syntax_consts
   "_Fun_Rel" \<rightleftharpoons> Fun_Rel and
   "_Dep_Fun_Rel_rel" "_Dep_Fun_Rel_rel_if" "_Dep_Fun_Rel_pred" "_Dep_Fun_Rel_pred_if" \<rightleftharpoons> Dep_Fun_Rel

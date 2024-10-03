@@ -7,7 +7,7 @@ theory Straight_Line_Program
     "HOL-Library.RBT_Mapping"
 begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 derive (linorder) compare_order float
 
@@ -988,6 +988,6 @@ lemma slp_of_fa_code[code]:
 
 definition "norm2_slp n = slp_of_fas [floatarith.Inverse (norm2\<^sub>e n)]"
 
-unbundle no_floatarith_notation
+unbundle no_floatarith_syntax
 
 end

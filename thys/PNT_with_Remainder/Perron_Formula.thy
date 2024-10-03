@@ -3,7 +3,7 @@ imports
   "PNT_Remainder_Library"
   "PNT_Subsummable"
 begin
-unbundle pnt_notation
+unbundle pnt_syntax
 
 section \<open>Perron's formula\<close>
 
@@ -1012,5 +1012,5 @@ proof -
     by (simp add: c_def A_def I_def g_def)
 qed
 
-unbundle no_pnt_notation
+unbundle no_pnt_syntax
 end

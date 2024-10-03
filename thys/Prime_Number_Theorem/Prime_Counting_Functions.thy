@@ -123,29 +123,21 @@ text \<open>
   Next, we define some nice optional notation for these functions.
 \<close>
 
-bundle prime_counting_notation
+open_bundle prime_counting_syntax
 begin
-
 notation primes_pi    (\<open>\<pi>\<close>)
 notation primes_theta (\<open>\<theta>\<close>)
 notation primes_psi   (\<open>\<psi>\<close>)
 notation primes_M     (\<open>\<MM>\<close>)
-
 end
 
-bundle no_prime_counting_notation
+bundle no_prime_counting_syntax
 begin
-
 no_notation primes_pi    (\<open>\<pi>\<close>)
 no_notation primes_theta (\<open>\<theta>\<close>)
 no_notation primes_psi   (\<open>\<psi>\<close>)
 no_notation primes_M     (\<open>\<MM>\<close>)
-
 end
-
-(*<*)
-unbundle prime_counting_notation
-(*>*)
 
 lemmas \<pi>_def = primes_pi_def
 lemmas \<theta>_def = primes_theta_def
@@ -1524,7 +1516,7 @@ proof -
 qed
 
 (*<*)
-unbundle no_prime_counting_notation
+unbundle no_prime_counting_syntax
 (*>*)
 
 end

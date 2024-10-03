@@ -6,7 +6,7 @@ begin
 
 section \<open>Proof System\<close>
 
-unbundle MFOTL_notation
+unbundle MFOTL_syntax
 
 context begin
 
@@ -527,7 +527,7 @@ lemma SAT_or_VIO: "SAT \<sigma> v i \<phi> \<or> VIO \<sigma> v i \<phi>"
 
 end
 
-unbundle MFOTL_no_notation
+unbundle no_MFOTL_syntax
 
 (*<*)
 end

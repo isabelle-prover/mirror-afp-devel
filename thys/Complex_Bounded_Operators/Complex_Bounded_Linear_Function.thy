@@ -4320,7 +4320,7 @@ lemma riesz_representation_cblinfun_unique:
   using assms by (rule riesz_representation_unique)
 
 theorem riesz_representation_cblinfun_norm:
-  includes notation_norm
+  includes norm_syntax
   fixes f::\<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
   assumes \<open>\<And>x.  f *\<^sub>V x = (t \<bullet>\<^sub>C x)\<close>
   shows \<open>\<parallel>f\<parallel> = \<parallel>t\<parallel>\<close>
@@ -5111,7 +5111,7 @@ qed
 
 subsection \<open>Notation\<close>
 
-bundle cblinfun_notation begin
+bundle cblinfun_syntax begin
 notation cblinfun_compose (infixl \<open>o\<^sub>C\<^sub>L\<close> 67)
 notation cblinfun_apply (infixr \<open>*\<^sub>V\<close> 70)
 notation cblinfun_image (infixr \<open>*\<^sub>S\<close> 70)
@@ -5119,7 +5119,7 @@ notation adj (\<open>_*\<close> [99] 100)
 type_notation cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21)
 end
 
-bundle no_cblinfun_notation begin
+bundle no_cblinfun_syntax begin
 no_notation cblinfun_compose (infixl \<open>o\<^sub>C\<^sub>L\<close> 67)
 no_notation cblinfun_apply (infixr \<open>*\<^sub>V\<close> 70)
 no_notation cblinfun_image (infixr \<open>*\<^sub>S\<close> 70)
@@ -5127,7 +5127,7 @@ no_notation adj (\<open>_*\<close> [99] 100)
 no_type_notation cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21)
 end
 
-unbundle no_cblinfun_notation
+unbundle no_cblinfun_syntax
 unbundle no_lattice_syntax
 
 end

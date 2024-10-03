@@ -727,14 +727,15 @@ lemma eucl_eq_iff: "x = y \<longleftrightarrow> (\<forall>i<DIM('a). nth_eucl x 
   apply (auto simp: nth_eucl_def euclidean_eq_iff[where 'a='a])
   by (metis eucl_of_list_list_of_eucl list_of_eucl_eq_iff)
 
-bundle eucl_notation begin
+open_bundle eucl_syntax
+begin
 notation nth_eucl (infixl \<open>$\<^sub>e\<close> 90)
 end
-bundle no_eucl_notation begin
+
+bundle no_eucl_syntax
+begin
 no_notation nth_eucl (infixl \<open>$\<^sub>e\<close> 90)
 end
-
-unbundle eucl_notation
 
 lemma eucl_of_list_eucl_nth:
   "(eucl_of_list xs::'a) $\<^sub>e i = xs ! i"

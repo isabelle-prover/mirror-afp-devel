@@ -23,34 +23,25 @@ datatype (vars_atom: 'a) pset_atom =
   Elem "'a pset_term" "'a pset_term" | 
   Equal "'a pset_term" "'a pset_term"
 
-bundle mlss_notation
+open_bundle mlss_syntax
 begin
-
 notation Empty (\<open>\<emptyset> _\<close>)
 notation Union (infixr \<open>\<squnion>\<^sub>s\<close> 165)
 notation Inter (infixr \<open>\<sqinter>\<^sub>s\<close> 170)
 notation Diff (infixl \<open>-\<^sub>s\<close> 180)
-
 notation Elem (infix \<open>\<in>\<^sub>s\<close> 150)
 notation Equal (infix \<open>=\<^sub>s\<close> 150)
-
 end
 
-bundle mlss_no_notation
+bundle no_mlss_syntax
 begin
-
 no_notation Empty (\<open>\<emptyset> _\<close>)
 no_notation Union (infixr \<open>\<squnion>\<^sub>s\<close> 165)
 no_notation Inter (infixr \<open>\<sqinter>\<^sub>s\<close> 170)
 no_notation Diff (infixl \<open>-\<^sub>s\<close> 180)
-
 no_notation Elem (infix \<open>\<in>\<^sub>s\<close> 150)
 no_notation Equal (infix \<open>=\<^sub>s\<close> 150)
-
 end
-
-unbundle mlss_notation
-
 
 abbreviation "AT a \<equiv> Atom a"
 abbreviation "AF a \<equiv> Neg (Atom a)"
