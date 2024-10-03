@@ -148,7 +148,7 @@ text \<open>
   It follows by induction that $\text{Lcm}\ \{1..n\} = e^{\psi(n)}$.
 \<close>
 lemma Lcm_atLeast1AtMost_conv_\<psi>:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   shows "real (Lcm {1..n}) = exp (\<psi> (real n))"
 proof (induction n)
   case (Suc n)
@@ -168,7 +168,7 @@ proof (induction n)
 qed simp_all
 
 lemma Lcm_upto_real_conv_\<psi>:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   shows "real (Lcm {1..nat \<lfloor>x\<rfloor>}) = exp (\<psi> x)"
   by (subst Lcm_atLeast1AtMost_conv_\<psi>) (simp add: primes_psi_def sum_upto_altdef)
 

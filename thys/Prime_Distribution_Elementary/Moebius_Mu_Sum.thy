@@ -25,7 +25,7 @@ text \<open>
 \<close>
 
 context
-  includes prime_counting_notation
+  includes prime_counting_syntax
   fixes M H :: "real \<Rightarrow> real"
   defines "M \<equiv> sum_upto moebius_mu"
   defines "H \<equiv> sum_upto (\<lambda>n. moebius_mu n * ln n)"

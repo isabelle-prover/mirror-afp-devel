@@ -10,14 +10,14 @@ abbreviation nat_powr
 where
   "n nat_powr x \<equiv> (of_nat n) powr x"
 
-bundle pnt_notation
+bundle pnt_syntax
 begin
 notation PNT_const_C\<^sub>1 (\<open>C\<^sub>1\<close>)
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 notation Suc (\<open>_\<^sub>+\<close> [101] 100)
 end
 
-bundle no_pnt_notation
+bundle no_pnt_syntax
 begin
 no_notation PNT_const_C\<^sub>1 (\<open>C\<^sub>1\<close>)
 no_notation norm (\<open>\<parallel>_\<parallel>\<close>)

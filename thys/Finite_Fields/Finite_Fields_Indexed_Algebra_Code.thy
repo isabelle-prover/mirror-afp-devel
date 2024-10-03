@@ -41,7 +41,7 @@ fun idx_pow :: "('a,'b) idx_ring_scheme  \<Rightarrow> 'a \<Rightarrow> nat \<Ri
   "idx_pow E x 0 = idx_one E" |
   "idx_pow E x (Suc n) = idx_mult E (idx_pow E x n) x"
 
-bundle index_algebra_notation
+open_bundle index_algebra_syntax
 begin
 notation idx_zero (\<open>0\<^sub>C\<index>\<close>)
 notation idx_one (\<open>1\<^sub>C\<index>\<close>)
@@ -51,9 +51,8 @@ notation idx_uminus (\<open>-\<^sub>C\<index> _\<close> [81] 80)
 notation idx_udivide (\<open>_ \<inverse>\<^sub>C\<index>\<close> [81] 80)
 notation idx_pow  (infixr \<open>^\<^sub>C\<index>\<close> 75)
 end
-unbundle index_algebra_notation
 
-bundle no_index_algebra_notation
+bundle no_index_algebra_syntax
 begin
 no_notation idx_zero (\<open>0\<^sub>C\<index>\<close>)
 no_notation idx_one (\<open>1\<^sub>C\<index>\<close>)

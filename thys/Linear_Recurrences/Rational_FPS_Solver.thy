@@ -29,7 +29,7 @@ lemma one_minus_const_fps_X_neg_power'':
   shows "fps_const d / ((1 - fps_const (c :: 'a :: field_char_0) * fps_X) ^ n) =
            Abs_fps (\<lambda>k. poly (inverse_irred_power_poly d n) (of_nat k) * c^k)" (is "?lhs = ?rhs")
 proof (rule fps_ext)
-  include fps_notation
+  include fps_syntax
   fix k :: nat
   let ?p = "smult (d / (fact (n - 1))) (pcompose (pochhammer_poly (n - 1)) [:1,1:])"
   from n have "?lhs = fps_const d * inverse ((1 - fps_const c * fps_X) ^ n)"

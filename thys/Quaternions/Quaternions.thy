@@ -37,17 +37,17 @@ primcorec quat_kk :: quat  (\<open>\<k>\<close>)
 
 end
 
-bundle quaternion_syntax begin
+open_bundle quaternion_syntax
+begin
 notation quat_ii (\<open>\<i>\<close>)
 no_notation Complex.imaginary_unit (\<open>\<i>\<close>)
 end
 
-bundle no_quaternion_syntax begin
+bundle no_quaternion_syntax
+begin
 no_notation quat_ii (\<open>\<i>\<close>)
 notation Complex.imaginary_unit (\<open>\<i>\<close>)
 end
-
-unbundle quaternion_syntax
 
 subsection \<open>Addition and Subtraction: An Abelian Group\<close>
 

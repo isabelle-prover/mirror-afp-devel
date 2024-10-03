@@ -153,7 +153,7 @@ text \<open>This should prove that the expansion estimates are sufficient.\<clos
 lemma expansion_main: "expansion_main (coarse_results) = Some True"
   by eval
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "matrix_of_degrees2\<^sub>e =
   (let
@@ -209,7 +209,7 @@ value [code] "length (slp_of_fas lorenz_fas)"
 
 definition "mig_aform p x = mig_componentwise (Inf_aform' p x) (Sup_aform' p x)"
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "mig_aforms p x = real_of_float ((lower o the) ((approx p (Norm (map (Num o float_of o (mig_aform p)) x))) []))"
 
@@ -1294,7 +1294,7 @@ lemma lorenz_poincare[le, refine_vcg]:
   qed
   done
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "mat1\<^sub>e =
   [Var 0, Var 1, Var 2,   Var 3, 0, 0,

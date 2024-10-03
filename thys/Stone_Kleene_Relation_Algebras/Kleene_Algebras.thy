@@ -31,8 +31,7 @@ class left_kleene_algebra = idempotent_left_semiring + star +
   assumes star_left_induct : "z \<squnion> y * x \<le> x \<longrightarrow> y\<^sup>\<star> * z \<le> x"
 begin
 
-no_notation
-  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
+unbundle no_trancl_syntax
 
 abbreviation tc (\<open>_\<^sup>+\<close> [100] 100) where "tc x \<equiv> x * x\<^sup>\<star>"
 

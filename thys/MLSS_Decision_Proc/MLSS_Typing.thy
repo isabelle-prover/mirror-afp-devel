@@ -8,7 +8,7 @@ text \<open>
   preserve well-typedness.
 \<close>
 
-context includes Set_member_no_ascii_notation
+context includes no_Set_member_ASCII_syntax
 begin
 
 lemma types_term_unique:
@@ -55,7 +55,7 @@ lemma types_fmI:
   unfolding types_pset_fm_def using fm.set_intros by auto
 
 lemma types_pset_atom_Member_D:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   assumes "v \<turnstile> s \<in>\<^sub>s f t1 t2" "f \<in> {(\<squnion>\<^sub>s), (\<sqinter>\<^sub>s), (-\<^sub>s)}"
   shows "v \<turnstile> s \<in>\<^sub>s t1" "v \<turnstile> s \<in>\<^sub>s t2"
 proof -
@@ -73,7 +73,7 @@ lemmas types_pset_atom_Member_Union_D = types_pset_atom_Member_D[where ?f="(\<sq
    and types_pset_atom_Member_Diff_D = types_pset_atom_Member_D[where ?f="(-\<^sub>s)", simplified]
 
 lemma types_term_if_mem_subterms:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   fixes \<phi> :: "'a pset_fm"
   assumes "v \<turnstile> \<phi>"
   assumes "f t1 t2 \<in> subterms \<phi>" "f \<in> {(\<squnion>\<^sub>s), (\<sqinter>\<^sub>s), (-\<^sub>s)}"
@@ -108,7 +108,7 @@ proof -
 qed
 
 lemma types_subst_tlvl:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   fixes l :: "'a pset_atom"
   assumes "v \<turnstile> AT (t1 =\<^sub>s t2)" "v \<turnstile> l"
   shows "v \<turnstile> subst_tlvl t1 t2 l"

@@ -19,7 +19,7 @@ text \<open>
 subsection \<open>Preliminaries for Sokal's proof of Banach-Steinhaus theorem\<close>
 
 lemma linear_plus_norm:
-  includes notation_norm
+  includes norm_syntax
   assumes \<open>linear f\<close>
   shows \<open>\<parallel>f \<xi>\<parallel> \<le> max \<parallel>f (x + \<xi>)\<parallel> \<parallel>f (x - \<xi>)\<parallel>\<close>
   text \<open>
@@ -42,7 +42,7 @@ proof-
 qed
 
 lemma onorm_Sup_on_ball:
-  includes notation_norm
+  includes norm_syntax
   assumes \<open>r > 0\<close>
   shows "\<parallel>f\<parallel> \<le> Sup ( (\<lambda>x. \<parallel>f *\<^sub>v x\<parallel>) ` (ball x r) ) / r"
   text \<open>
@@ -187,7 +187,7 @@ proof-
 qed
 
 lemma onorm_Sup_on_ball':
-  includes notation_norm
+  includes norm_syntax
   assumes \<open>r > 0\<close> and \<open>\<tau> < 1\<close>
   shows \<open>\<exists>\<xi>\<in>ball x r.  \<tau> * r * \<parallel>f\<parallel> \<le> \<parallel>f *\<^sub>v \<xi>\<parallel>\<close>
   text \<open>                 

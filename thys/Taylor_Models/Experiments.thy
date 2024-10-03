@@ -54,7 +54,7 @@ definition "prove_pos_slp prnt prec ord fa i xs = (let slp = slp_of_fas [fa] in 
 
 experiment begin
 
-unbundle floatarith_notation
+unbundle floatarith_syntax
 
 abbreviation "schwefel \<equiv>
   (5.8806 / 10 ^ 10) + (Var 0 - (Var 1)^\<^sub>e2)^\<^sub>e2 + (Var 1 - 1)^\<^sub>e2 + (Var 0 - (Var 2)^\<^sub>e2)^\<^sub>e2 + (Var 2 - 1)^\<^sub>e2"

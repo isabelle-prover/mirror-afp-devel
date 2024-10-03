@@ -357,28 +357,20 @@ lemma gauss_int_eq_iff: "x = y \<longleftrightarrow> ReZ x = ReZ y \<and> ImZ x 
 
 
 (*<*)
-bundle gauss_int_notation
+open_bundle gauss_int_syntax
 begin
-
 notation gauss_i (\<open>\<i>\<^sub>\<int>\<close>)
-
 end
 
-bundle no_gauss_int_notation
+bundle no_gauss_int_syntax
 begin
-
 no_notation (output) gauss_i (\<open>\<i>\<^sub>\<int>\<close>)
-
 end
 
-bundle gauss_int_output_notation
+bundle gauss_int_output_syntax
 begin
-
 notation (output) gauss_i (\<open>\<ii>\<close>)
-
 end
-
-unbundle gauss_int_notation
 (*>*)
 
 
@@ -2357,7 +2349,7 @@ proof (cases "z = 0")
 qed (auto simp: prime_factors_gauss_int_def)
 
 (*<*)
-unbundle no_gauss_int_notation
+unbundle no_gauss_int_syntax
 (*>*)
 
 end

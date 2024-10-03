@@ -12,7 +12,7 @@ imports
 begin
 
 (*<*)
-unbundle prime_counting_notation
+unbundle prime_counting_syntax
 (*>*)
 
 subsection \<open>Constructing Newman's function\<close>
@@ -820,7 +820,7 @@ proof -
 qed
 
 (*<*)
-unbundle no_prime_counting_notation
+unbundle no_prime_counting_syntax
 (*>*)
 
 end

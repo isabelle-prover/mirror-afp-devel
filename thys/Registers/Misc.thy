@@ -17,8 +17,8 @@ unbundle no_vec_syntax
 unbundle no_inner_syntax
 
 \<comment> \<open>Import notation from Bounded Operator and Jordan Normal Form libraries\<close>
-unbundle cblinfun_notation
-unbundle jnf_notation
+unbundle cblinfun_syntax
+unbundle jnf_syntax
 
 
 abbreviation "butterket i j \<equiv> butterfly (ket i) (ket j)"

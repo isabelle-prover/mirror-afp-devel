@@ -107,7 +107,7 @@ lemma between_nth_primes_imp_nonprime:
   using assms by (metis Suc_leI not_le nth_prime_Suc smallest_prime_beyond_smallest)
 
 lemma nth_prime_partition'':
-  includes prime_counting_notation
+  includes prime_counting_syntax
   assumes "x \<ge> (2 :: real)"
   shows "x \<in> {real (nth_prime (nat \<lfloor>\<pi> x\<rfloor> - 1))..<real (nth_prime (nat \<lfloor>\<pi> x\<rfloor>))}"
 proof -
@@ -309,7 +309,7 @@ lemma abs_\<pi> [simp]: "\<bar>primes_pi x\<bar> = primes_pi x"
   by (subst abs_of_nonneg) auto
 
 lemma \<pi>_less_self:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   assumes "x > 0"
   shows   "\<pi> x < x"
 proof -
@@ -322,7 +322,7 @@ proof -
 qed
 
 lemma \<pi>_le_self':
-  includes prime_counting_notation
+  includes prime_counting_syntax
   assumes "x \<ge> 1"
   shows   "\<pi> x \<le> x - 1"
 proof -
@@ -335,7 +335,7 @@ proof -
 qed
 
 lemma \<pi>_le_self:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   assumes "x \<ge> 0"
   shows   "\<pi> x \<le> x"
   using \<pi>_less_self[of x] assms by (cases "x = 0") auto

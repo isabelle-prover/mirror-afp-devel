@@ -49,48 +49,6 @@ syntax_consts
 translations
   "{p|:|A. P}" \<rightharpoonup> "CONST fCollect (\<lambda>p. p |\<in>| A \<and> P)"
 
-syntax (ASCII)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3ALL (_/|:|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3EX (_/|:|_)./ _)\<close> [0, 0, 10] 10)
-
-syntax (input)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3! (_/|:|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3? (_/|:|_)./ _)\<close> [0, 0, 10] 10)
-
-syntax
-  "_fBall"       :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<forall>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-
-syntax_consts
-  "_fBall" \<rightleftharpoons> fBall and
-  "_fBex" \<rightleftharpoons> fBex
-
-translations
-  "\<forall>x|\<in>|A. P" \<rightleftharpoons> "CONST fBall A (\<lambda>x. P)"
-  "\<exists>x|\<in>|A. P" \<rightleftharpoons> "CONST fBex A (\<lambda>x. P)"
-
-syntax (ASCII output)
-  "_setlessfAll" :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3ALL _|<|_./ _)\<close>  [0, 0, 10] 10)
-  "_setlessfEx"  :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3EX _|<|_./ _)\<close>  [0, 0, 10] 10)
-  "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3ALL _|<=|_./ _)\<close> [0, 0, 10] 10)
-  "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"  (\<open>(3EX _|<=|_./ _)\<close> [0, 0, 10] 10)
-
-syntax
-  "_setlessfAll" :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<forall>_|\<subset>|_./ _)\<close>  [0, 0, 10] 10)
-  "_setlessfEx"  :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<exists>_|\<subset>|_./ _)\<close>  [0, 0, 10] 10)
-  "_setlefAll"   :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<forall>_|\<subseteq>|_./ _)\<close> [0, 0, 10] 10)
-  "_setlefEx"    :: "[idt, 'a, bool] \<Rightarrow> bool"   (\<open>(3\<exists>_|\<subseteq>|_./ _)\<close> [0, 0, 10] 10)
-
-syntax_consts
-  "_setlessfAll" "_setlefAll" \<rightleftharpoons> All and
-  "_setlessfEx" "_setlefEx" \<rightleftharpoons> Ex
-
-translations
- "\<forall>A|\<subset>|B. P" \<rightharpoonup> "\<forall>A. A |\<subset>| B \<longrightarrow> P"
- "\<exists>A|\<subset>|B. P" \<rightharpoonup> "\<exists>A. A |\<subset>| B \<and> P"
- "\<forall>A|\<subseteq>|B. P" \<rightharpoonup> "\<forall>A. A |\<subseteq>| B \<longrightarrow> P"
- "\<exists>A|\<subseteq>|B. P" \<rightharpoonup> "\<exists>A. A |\<subseteq>| B \<and> P"
-
 syntax
   "_fSetcompr" :: "'a \<Rightarrow> idts \<Rightarrow> bool \<Rightarrow> 'a fset"    (\<open>(1{|_ |/_./ _|})\<close>)
 
@@ -113,11 +71,6 @@ parse_translation \<open>
 
   in [(\<^syntax_const>\<open>_fSetcompr\<close>, setcompr_tr)] end
 \<close>
-
-print_translation \<open>
- [Syntax_Trans.preserve_binder_abs2_tr' \<^const_syntax>\<open>fBall\<close> \<^syntax_const>\<open>_fBall\<close>,
-  Syntax_Trans.preserve_binder_abs2_tr' \<^const_syntax>\<open>fBex\<close> \<^syntax_const>\<open>_fBex\<close>]
-\<close> \<comment> \<open>to avoid eta-contraction of body\<close>
 
 print_translation \<open>
 let

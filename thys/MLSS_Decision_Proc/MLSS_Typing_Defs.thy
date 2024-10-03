@@ -18,7 +18,7 @@ inductive types_pset_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a pset_term 
 
 text \<open>Activate this bundle to avoid ambiguity between
       \<^const>\<open>Set.member\<close> and \<^const>\<open>types_pset_term\<close>.\<close>
-bundle Set_member_no_ascii_notation
+bundle no_Set_member_ASCII_syntax
 begin
 no_notation Set.member (\<open>(_/ : _)\<close> [51, 51] 50)
 end
@@ -49,7 +49,7 @@ adhoc_overloading types types_pset_atom types_pset_fm
 inductive_cases types_pset_atom_Member_cases:
   "v \<turnstile> s \<in>\<^sub>s t1 \<squnion>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 \<sqinter>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 -\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s Single t"
 
-context includes Set_member_no_ascii_notation
+context includes no_Set_member_ASCII_syntax
 begin
 abbreviation "urelem' v (\<phi> :: 'a pset_fm) t \<equiv> v \<turnstile> \<phi> \<and> v \<turnstile> t : 0"
 end

@@ -293,7 +293,7 @@ lemma sat_Always_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>G I
   unfolding sat_Always_Eventually sat.simps(5)
   by (subst sat_Eventually_rec) auto
 
-bundle MFOTL_no_notation begin
+bundle no_MFOTL_syntax begin
 
 text \<open> For bold font, type ``backslash'' followed by the word ``bold''  \<close>
 no_notation Var (\<open>\<^bold>v\<close>)
@@ -329,7 +329,7 @@ no_notation eval_trm (\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89)
 
 end
 
-bundle MFOTL_notation begin
+bundle MFOTL_syntax begin
 
 notation Var (\<open>\<^bold>v\<close>)
      and Const (\<open>\<^bold>c\<close>)
@@ -363,7 +363,7 @@ notation eval_trm (\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89)
 
 end
 
-unbundle MFOTL_no_notation
+unbundle no_MFOTL_syntax
 
 (*<*)
 end

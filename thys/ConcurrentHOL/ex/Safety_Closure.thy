@@ -75,7 +75,7 @@ lemma take_bnat_tnat:
   shows "behavior.take i bnat = tnat i"
 by (simp add: bnat_def tnat_def behavior.take_def ttake_bnats)
 
-unbundle tls.extra_notation
+unbundle tls.extra_syntax
 
 definition bnat_approx :: "(unit, nat, unit) spec set" where
   "bnat_approx = {\<lblot>behavior.take i bnat\<rblot> |i. True}"

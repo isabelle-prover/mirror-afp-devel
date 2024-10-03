@@ -18,26 +18,22 @@ text \<open>
 \<close>
 
 text\<open>Notation for the norm\<close>
-bundle notation_norm begin
+open_bundle norm_syntax begin
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
-bundle no_notation_norm begin
+bundle no_norm_syntax begin
 no_notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
-unbundle notation_norm
-
 text\<open>Notation for apply bilinear function\<close>
-bundle notation_blinfun_apply begin
+open_bundle blinfun_apply_syntax begin
 notation blinfun_apply (infixr \<open>*\<^sub>v\<close> 70)
 end
 
-bundle no_notation_blinfun_apply begin
+bundle no_blinfun_apply_syntax begin
 no_notation blinfun_apply (infixr \<open>*\<^sub>v\<close> 70)
 end
-
-unbundle notation_blinfun_apply
 
 lemma bdd_above_plus:
   fixes f::\<open>'a \<Rightarrow> real\<close>
@@ -245,7 +241,7 @@ proof-
 qed
 
 lemma onorm_open_ball:
-  includes notation_norm
+  includes norm_syntax
   shows \<open>\<parallel>f\<parallel> = Sup { \<parallel>f *\<^sub>v x\<parallel> | x. \<parallel>x\<parallel> < 1 }\<close>
   text \<open>
   Explanation: Let \<^term>\<open>f\<close> be a bounded linear operator. The operator norm of \<^term>\<open>f\<close> is the
@@ -499,7 +495,7 @@ next
 qed
 
 lemma onorm_r:
-  includes notation_norm
+  includes norm_syntax
   assumes \<open>r > 0\<close>
   shows \<open>\<parallel>f\<parallel> = Sup ((\<lambda>x. \<parallel>f *\<^sub>v x\<parallel>) ` (ball 0 r)) / r\<close>
   text \<open>
@@ -891,8 +887,8 @@ proof (unfold Cauchy_altdef2, rule, rule)
     using \<open>0 < e\<close> by fastforce
 qed
 
-unbundle notation_blinfun_apply
+unbundle blinfun_apply_syntax
 
-unbundle no_notation_norm
+unbundle no_norm_syntax
 
 end

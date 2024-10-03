@@ -6,7 +6,7 @@ imports
   Float_Real
 begin
 
-context includes floatarith_notation begin
+context includes floatarith_syntax begin
 
 definition "rotate_fas =
   [Cos (Rad_of (Var 2)) * Var 0 - Sin (Rad_of (Var 2)) * Var 1,

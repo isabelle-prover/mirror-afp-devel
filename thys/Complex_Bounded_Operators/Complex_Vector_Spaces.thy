@@ -26,7 +26,7 @@ theory Complex_Vector_Spaces
     Complex_Vector_Spaces0
 begin
 
-bundle notation_norm begin
+bundle norm_syntax begin
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
@@ -1892,7 +1892,7 @@ lemma bounded_clinear_finite_dim[simp]:
   assumes \<open>clinear f\<close>
   shows \<open>bounded_clinear f\<close>
 proof -
-  include notation_norm
+  include norm_syntax
   obtain basis :: \<open>'a set\<close> where b1: "complex_vector.span basis = UNIV"
     and b2: "cindependent basis"
     and b3:"finite basis"

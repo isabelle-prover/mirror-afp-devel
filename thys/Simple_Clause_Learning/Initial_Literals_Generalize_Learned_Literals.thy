@@ -2,27 +2,6 @@ theory Initial_Literals_Generalize_Learned_Literals
   imports SCL_FOL
 begin
 
-syntax (input)
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3! (_/|:|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3? (_/|:|_)./ _)\<close> [0, 0, 10] 10)
-
-syntax
-  "_fBall"       :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<forall>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-  "_fBex"        :: "pttrn \<Rightarrow> 'a fset \<Rightarrow> bool \<Rightarrow> bool"      (\<open>(3\<exists>(_/|\<in>|_)./ _)\<close> [0, 0, 10] 10)
-
-syntax_consts
-  "_fBall" \<rightleftharpoons> fBall and
-  "_fBex" \<rightleftharpoons> fBex
-
-translations
-  "\<forall>x|\<in>|A. P" \<rightleftharpoons> "CONST fBall A (\<lambda>x. P)"
-  "\<exists>x|\<in>|A. P" \<rightleftharpoons> "CONST fBex A (\<lambda>x. P)"
-
-print_translation \<open>
- [Syntax_Trans.preserve_binder_abs2_tr' \<^const_syntax>\<open>fBall\<close> \<^syntax_const>\<open>_fBall\<close>,
-  Syntax_Trans.preserve_binder_abs2_tr' \<^const_syntax>\<open>fBex\<close> \<^syntax_const>\<open>_fBex\<close>]
-\<close> \<comment> \<open>to avoid eta-contraction of body\<close>
-
 global_interpretation comp_finsert_commute: comp_fun_commute finsert
 proof (unfold_locales)
   show "\<And>y x. finsert y \<circ> finsert x = finsert x \<circ> finsert y"

@@ -1556,8 +1556,7 @@ notation (ASCII)
 
 end
 
-
-bundle no_finfun_syntax
+open_bundle no_finfun_syntax
 begin
 
 no_type_notation
@@ -1576,7 +1575,5 @@ no_notation (ASCII)
   finfun_comp2 (infixr \<open>$o\<close> 55)
 
 end
-
-unbundle no_finfun_syntax
 
 end

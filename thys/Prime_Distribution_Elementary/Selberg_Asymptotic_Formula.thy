@@ -78,7 +78,7 @@ text \<open>
 \<close>
 (* 4.18 *)
 theorem selberg_asymptotic_formula:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   shows    "(\<lambda>x. \<psi> x * ln x + dirichlet_prod' mangoldt \<psi> x) =o
                (\<lambda>x. 2 * x * ln x) +o O(\<lambda>x. x)"
 proof -

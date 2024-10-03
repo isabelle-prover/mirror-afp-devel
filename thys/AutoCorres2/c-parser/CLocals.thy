@@ -508,7 +508,7 @@ fun define_locals qualifier decls thy =
       end
     val lthy = lthy
       |> fold define (tag_list 0 decls)
-      |> Bundle.bundle (Binding.make (suffix "_scope" fname, \<^here>),
+      |> Bundle.bundle {open_bundle = false} (Binding.make (suffix "_scope" fname, \<^here>),
            Attrib.internal_declaration \<^here> (Morphism.entity (fn _ => scope_map (K (qualifier))))) []
   in
     lthy |> Local_Theory.exit_global

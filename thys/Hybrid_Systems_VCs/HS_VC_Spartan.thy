@@ -17,7 +17,7 @@ begin
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-no_notation Transitive_Closure.rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
+unbundle no_rtrancl_syntax
 
 notation Union (\<open>\<mu>\<close>)
      and g_orbital (\<open>(1x\<acute>=_ & _ on _ _ @ _)\<close>)

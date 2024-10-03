@@ -381,7 +381,7 @@ proof (transfer, goal_cases)
 qed
 
 context
-  includes fps_notation
+  includes fps_syntax
 begin
 
 lemma ratfps_nth_altdef: "ratfps_nth x n = fps_of_ratfps x $ n" 
@@ -519,7 +519,7 @@ lemma
   fps_of_ratfps_shift [simp]:
     "fps_of_ratfps (ratfps_shift n x) = fps_shift n (fps_of_ratfps x)"   
 proof -
-  include fps_notation
+  include fps_syntax
   define x' where "x' = ratfps_of_poly (ratfps_cutoff n x)"
   define y where "y = quot_of_ratfps (x - x')"
   

@@ -8,9 +8,15 @@ begin
 
 definition "Refl_Rel R x y \<equiv> R x x \<and> R y y \<and> R x y"
 
-bundle Refl_Rel_syntax begin notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000]) end
-bundle no_Refl_Rel_syntax begin no_notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000]) end
-unbundle Refl_Rel_syntax
+open_bundle Refl_Rel_syntax
+begin
+notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000])
+end
+
+bundle no_Refl_Rel_syntax
+begin
+no_notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000])
+end
 
 lemma Refl_RelI [intro]:
   assumes "R x x"

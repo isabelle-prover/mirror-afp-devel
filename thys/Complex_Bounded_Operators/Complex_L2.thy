@@ -18,8 +18,8 @@ theory Complex_L2
 begin
 
 unbundle lattice_syntax
-unbundle cblinfun_notation
-unbundle no_notation_blinfun_apply
+unbundle cblinfun_syntax
+unbundle no_blinfun_apply_syntax
 
 subsection \<open>l2 norm of functions\<close>
 
@@ -1743,6 +1743,6 @@ qed
 
 
 unbundle no_lattice_syntax
-unbundle no_cblinfun_notation
+unbundle no_cblinfun_syntax
 
 end

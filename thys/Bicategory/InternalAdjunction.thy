@@ -2015,8 +2015,7 @@ begin
     bicategory
   begin
 
-    (* Global notation is evil! *)
-    no_notation Transitive_Closure.rtrancl  (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
+    unbundle no_rtrancl_syntax
 
     definition some_right_adjoint  (\<open>_\<^sup>*\<close> [1000] 1000)
     where "f\<^sup>* \<equiv> SOME g. adjoint_pair f g"
