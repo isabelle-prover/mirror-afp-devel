@@ -13,6 +13,20 @@
     
       <atom:link href="/topics/computer-science/data-structures/index.xml" rel="self" type="application/rss+xml" />
         <item>
+          <title>Formally Verified Suffix Array Construction</title>
+          <link>/entries/SuffixArray.html</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/SuffixArray.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Formally Verified Suffix Array Construction</title>
+          <link>/entries/SuffixArray.html</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/SuffixArray.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Difference Bound Matrices</title>
           <link>/entries/Difference_Bound_Matrices.html</link>
           <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>

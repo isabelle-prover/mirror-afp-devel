@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 17 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formally Verified Suffix Array Construction</title>
+          <link>/entries/SuffixArray.html</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/SuffixArray.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Parallel Shear Sort</title>
           <link>/entries/Parallel_Shear_Sort.html</link>

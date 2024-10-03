@@ -1210,6 +1210,26 @@ host = [
 [chenj.homepages]
 chenj_homepage = "https://gitlab.com/Jamie-Chen"
 
+[cheung]
+name = "Louis Cheung"
+orcid = "0000-0002-3530-6662"
+
+[cheung.emails]
+
+[cheung.emails.cheung_email1]
+user = [
+  "louis",
+  "cheung",
+]
+host = [
+  "student",
+  "unimelb",
+  "edu",
+  "au",
+]
+
+[cheung.homepages]
+
 [chevalier]
 name = "Loïc Chevalier"
 
@@ -5878,6 +5898,17 @@ host = [
 name = "Christine Rizkallah"
 
 [rizkallah.emails]
+
+[rizkallah.emails.rizkallah_email]
+user = [
+  "christine",
+  "rizkallah",
+]
+host = [
+  "unimelb",
+  "edu",
+  "au",
+]
 
 [rizkallah.homepages]
 rizkallah_homepage = "https://www.mpi-inf.mpg.de/~crizkall/"

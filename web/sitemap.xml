@@ -3,27 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cheung/</loc>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/SuffixArray.html</loc>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/rizkallah/</loc>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
     <lastmod>2024-09-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lammich/</loc>
     <lastmod>2024-09-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Parallel_Shear_Sort.html</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-09-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/automatic_refinement/</loc>
@@ -3557,9 +3566,6 @@
     <loc>/authors/lewis/</loc>
     <lastmod>2016-11-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/rizkallah/</loc>
-    <lastmod>2016-11-29T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/tuongj/</loc>
     <lastmod>2016-11-29T00:00:00+00:00</lastmod>
   </url><url>
@@ -7085,6 +7091,8 @@
     <loc>/sessions/subset_boolean_algebras/</loc>
   </url><url>
     <loc>/sessions/substitutions_lambda_free/</loc>
+  </url><url>
+    <loc>/sessions/suffixarray/</loc>
   </url><url>
     <loc>/sessions/sugar/</loc>
   </url><url>

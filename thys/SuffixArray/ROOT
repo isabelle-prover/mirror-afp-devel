@@ -1,0 +1,125 @@
+chapter AFP
+
+session SuffixArray = Main +
+  options [timeout = 600]
+  
+  sessions 
+    "HOL-Combinatorics"
+    "HOL-Library"
+  directories
+    util
+    order
+    spec
+    simple
+    extra
+    "sais/code"
+    "sais/abs-def"
+    "sais/prop"
+    "sais/abs-proof"
+    "sais/def"
+    "sais/proof"
+
+  theories
+
+    (* Basic helper theories building on Main (in util folder) *)
+    Nat_Util
+    Fun_Util
+    Set_Util
+    List_Util
+    Sorting_Util
+    Repeat
+    Continuous_Interval
+    List_Slice
+
+    (* Specialised helper theories building on HOL-Combinatorics (in order folder) *)
+    List_Lexorder_Util
+    List_Lexorder_NS
+    Valid_List
+    Valid_List_Util
+    Suffix
+    Suffix_Util
+    List_Permutation_Util
+
+	(* Extra Theories *)
+	Prefix
+	Prefix_Util
+
+    (* An axiomatic characterisation fully specifying suffix array construction as well as  
+       properties of this axiomatic characterisation (in spec folder) *)
+    Suffix_Array
+    Suffix_Array_Properties
+
+    (* A simple suffix array construction algorithm and its formal verification against the
+       specification (in simple folder). 
+       This is used to validate the specification and to compare the verification effort to 
+       that of verifying SAIS *)
+    Simple_SACA
+    Simple_SACA_Verification
+
+    (* The SAIS Algorithm on valid lists and its verification (in sais folder) *)
+    Buckets
+    List_Type
+    LMS_List_Slice_Util
+
+    Abs_SAIS
+
+    (*
+	"sais/prop/Buckets"
+	"sais/prop/List_Type"
+	"sais/prop/LMS_List_Slice_Util"
+
+	"sais/abs_proof/Abs_Bucket_Insert_Verification"
+	"sais/abs-proof/Abs_Induce_Verification"
+	"sais/abs-proof/Abs_Induce_L_Verification"
+	"sais/abs-proof/Abs_Induce_S_Verification"
+	"sais/abs-proof/Abs_Order_LMS_Verification"
+	"sais/abs-proof/Abs_Rename_LMS_Verification"
+    *)
+
+    Abs_Bucket_Insert_Verification
+    Abs_Extract_LMS_Verification
+    Abs_Induce_L_Verification
+    Abs_Induce_S_Verification
+    Abs_Induce_Verification
+    Abs_Order_LMS_Verification
+    Abs_Rename_LMS_Verification
+    Abs_SAIS_Verification
+
+    Abs_SAIS_Verification_With_Valid_Precondition
+    Abs_SAIS_Verification
+
+    (*
+	"sais/def/Bucket_Insert"
+	"sais/def/Get_Types"
+	"sais/def/Induce_L"
+	"sais/def/Induce_S"
+	"sais/def/Induce"
+	
+    *)
+
+    (* Generalising the SAIS algorithm to work on any list and extending the verification *)
+    Bucket_Insert
+    Get_Types
+    Induce_L
+    Induce_S
+    Induce
+    SAIS
+
+    Bucket_Insert_Verification
+    Induce_L_Verification
+    Induce_S_Verification
+    Induce_Verification
+    Get_Types_Verification
+    SAIS_Verification
+
+    (* SAIS Haskel code extraction *)
+    Code_Extraction
+
+    (* Given the specification is an axiomatic characterisation fully specifying suffix
+       array construction, we obtain a corollary stating that generalised SAIS is functionally
+       equivalent to the simple construction algorithm.  *)
+    SACA_Equiv
+
+  document_files
+    "root.bib"
+    "root.tex"

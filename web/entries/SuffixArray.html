@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formally Verified Suffix Array Construction - Archive of Formal Proofs</title>
+    <meta name="description" content="A suffix array (Manber and Myers, 1993) is a data structure that is extensively used in text retrieval and data compression applications, including query...">
+
+  <meta property="og:title" content="Formally Verified Suffix Array Construction" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/SuffixArray.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-09-25T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-25T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Formally Verified Suffix Array Construction"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>ormally <span class='first'>V</span>erified <span class='first'>S</span>uffix <span class='first'>A</span>rray <span class='first'>C</span>onstruction
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/cheung">Louis Cheung</a> <a class="obfuscated" data="eyJob3N0IjpbInN0dWRlbnQiLCJ1bmltZWxiIiwiZWR1IiwiYXUiXSwidXNlciI6WyJsb3VpcyIsImNoZXVuZyJdfQ==">📧</a> and <a href="../authors/rizkallah">Christine Rizkallah</a> <a href="https://www.mpi-inf.mpg.de/~crizkall/">🌐</a>
+
+      </p>
+      <p class="date">September 25, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">A suffix array (Manber and Myers, 1993) is a data structure that is extensively used in text retrieval and data compression applications, including query suggestion mechanisms in web search, and in bioinformatics tools for DNA sequencing and matching. This wide applicability means that algorithms for constructing suffix arrays are of great practical importance. The Suffix Array by Induced Sorting (SA-IS) algorithm (Nong, Zhang and Chan, 2009) is a conceptually complex yet highly efficient suffix array construction technique, based on an earlier algorithm (Ko and Aluru, 2005).
+As part of this formalization, we have developed the SA-IS algorithm in Isabelle/HOL and formally verified that it is equivalent to a mathematical functional specification of suffix arrays. This required verifying a wide range of underlying properties of lists and suffixes, that could be reused in other contexts. We also used Isabelle’s code extraction facilities to extract an executable Haskell implementation of SAIS. In particular, this entry includes the following: an axiomatic characterisation of suffix array construction; a formally verified encoding of a straightforward but inefficient suffix array construction algorithm (validating the specification); and a formally verified encoding of the linear time SA-IS algorithm.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li>
+          <li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Nong, G., Zhang, S., & Chan, W. H. (2009). Linear Suffix Array Construction by Almost Pure Induced-Sorting. 2009 Data Compression Conference. https://doi.org/10.1109/dcc.2009.42
+
+        </li>
+        <li>Ko, P., & Aluru, S. (2005). Space efficient linear time construction of suffix arrays. Journal of Discrete Algorithms, 3(2–4), 143–156. https://doi.org/10.1016/j.jda.2004.08.002
+
+        </li>
+        <li><a href=\"https://en.wikipedia.org/wiki/Suffix_array\">Wikipedia</a>
+        </li>
+      </ul>
+      <h3>Session SuffixArray</h3>
+      <ul>
+          <li><a href="../sessions/suffixarray/#Nat_Util">Nat_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Fun_Util">Fun_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Set_Util">Set_Util</a></li>
+          <li><a href="../sessions/suffixarray/#List_Util">List_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Sorting_Util">Sorting_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Repeat">Repeat</a></li>
+          <li><a href="../sessions/suffixarray/#Continuous_Interval">Continuous_Interval</a></li>
+          <li><a href="../sessions/suffixarray/#List_Slice">List_Slice</a></li>
+          <li><a href="../sessions/suffixarray/#List_Lexorder_Util">List_Lexorder_Util</a></li>
+          <li><a href="../sessions/suffixarray/#List_Permutation_Util">List_Permutation_Util</a></li>
+          <li><a href="../sessions/suffixarray/#List_Lexorder_NS">List_Lexorder_NS</a></li>
+          <li><a href="../sessions/suffixarray/#Valid_List">Valid_List</a></li>
+          <li><a href="../sessions/suffixarray/#Valid_List_Util">Valid_List_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Suffix">Suffix</a></li>
+          <li><a href="../sessions/suffixarray/#Suffix_Util">Suffix_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Prefix">Prefix</a></li>
+          <li><a href="../sessions/suffixarray/#Prefix_Util">Prefix_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Suffix_Array">Suffix_Array</a></li>
+          <li><a href="../sessions/suffixarray/#Suffix_Array_Properties">Suffix_Array_Properties</a></li>
+          <li><a href="../sessions/suffixarray/#Simple_SACA">Simple_SACA</a></li>
+          <li><a href="../sessions/suffixarray/#Simple_SACA_Verification">Simple_SACA_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#List_Type">List_Type</a></li>
+          <li><a href="../sessions/suffixarray/#Buckets">Buckets</a></li>
+          <li><a href="../sessions/suffixarray/#LMS_List_Slice_Util">LMS_List_Slice_Util</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_SAIS">Abs_SAIS</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Bucket_Insert_Verification">Abs_Bucket_Insert_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Induce_L_Verification">Abs_Induce_L_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Induce_S_Verification">Abs_Induce_S_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Induce_Verification">Abs_Induce_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Extract_LMS_Verification">Abs_Extract_LMS_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Order_LMS_Verification">Abs_Order_LMS_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_Rename_LMS_Verification">Abs_Rename_LMS_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_SAIS_Verification_With_Valid_Precondition">Abs_SAIS_Verification_With_Valid_Precondition</a></li>
+          <li><a href="../sessions/suffixarray/#Abs_SAIS_Verification">Abs_SAIS_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Bucket_Insert">Bucket_Insert</a></li>
+          <li><a href="../sessions/suffixarray/#Get_Types">Get_Types</a></li>
+          <li><a href="../sessions/suffixarray/#Induce_L">Induce_L</a></li>
+          <li><a href="../sessions/suffixarray/#Induce_S">Induce_S</a></li>
+          <li><a href="../sessions/suffixarray/#Induce">Induce</a></li>
+          <li><a href="../sessions/suffixarray/#SAIS">SAIS</a></li>
+          <li><a href="../sessions/suffixarray/#Bucket_Insert_Verification">Bucket_Insert_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Induce_L_Verification">Induce_L_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Induce_S_Verification">Induce_S_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Induce_Verification">Induce_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Get_Types_Verification">Get_Types_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#SAIS_Verification">SAIS_Verification</a></li>
+          <li><a href="../sessions/suffixarray/#Code_Extraction">Code_Extraction</a></li>
+          <li><a href="../sessions/suffixarray/#SACA_Equiv">SACA_Equiv</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/SuffixArray/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/SuffixArray/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/SuffixArray/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">SuffixArray-AFP</p>
+        <pre id="copy-text">@article{SuffixArray-AFP,
+  author  = {Louis Cheung and Christine Rizkallah},
+  title   = {Formally Verified Suffix Array Construction},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/SuffixArray.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-SuffixArray-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

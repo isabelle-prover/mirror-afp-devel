@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 17 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>cheung</title>
+          <link>/authors/cheung/</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/cheung/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rizkallah</title>
+          <link>/authors/rizkallah/</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/rizkallah/</guid>
+          <description></description>
+        </item>
         <item>
           <title>eberl</title>
           <link>/authors/eberl/</link>
@@ -2524,13 +2538,6 @@
           <link>/authors/lewis/</link>
           <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
           <guid>/authors/lewis/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>rizkallah</title>
-          <link>/authors/rizkallah/</link>
-          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/authors/rizkallah/</guid>
           <description></description>
         </item>
         <item>
