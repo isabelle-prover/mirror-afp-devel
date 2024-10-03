@@ -6,7 +6,7 @@ begin
 
 declare cblinfun.scaleC_right[simp]
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
 
 lift_definition tensor_ell2 :: \<open>'a::finite ell2 \<Rightarrow> 'b::finite ell2 \<Rightarrow> ('a\<times>'b) ell2\<close> (infixr \<open>\<otimes>\<^sub>s\<close> 70) is

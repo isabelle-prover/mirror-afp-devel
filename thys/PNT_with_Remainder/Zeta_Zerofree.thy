@@ -2,7 +2,7 @@ theory Zeta_Zerofree
 imports
   "PNT_Complex_Analysis_Lemmas"
 begin
-unbundle pnt_notation
+unbundle pnt_syntax
 
 section \<open>Zero-free region of zeta function\<close>
 
@@ -887,5 +887,5 @@ proof -
   finally show ?thesis unfolding PNT_const_C\<^sub>1_def by auto
 qed
 
-unbundle no_pnt_notation
+unbundle no_pnt_syntax
 end

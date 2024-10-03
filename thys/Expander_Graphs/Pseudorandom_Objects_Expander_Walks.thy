@@ -296,17 +296,16 @@ qed
 
 end
 
-bundle expander_pseudorandom_object_notation
+open_bundle expander_pseudorandom_object_syntax
 begin
 notation expander_pro (\<open>\<E>\<close>)
 end
 
-bundle no_expander_pseudorandom_object_notation
+bundle no_expander_pseudorandom_object_syntax
 begin
 no_notation expander_pro (\<open>\<E>\<close>)
 end
 
-unbundle expander_pseudorandom_object_notation
 unbundle no_intro_cong_syntax
 
 end

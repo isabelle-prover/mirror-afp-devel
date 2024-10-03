@@ -54,12 +54,12 @@ lemma bind_mono_tspmf [partial_function_mono]:
 definition ord_tspmf :: "'a tspmf \<Rightarrow> 'a tspmf \<Rightarrow> bool" where
   "ord_tspmf = ord_spmf (\<lambda>x y. fst x = fst y \<and> snd x \<ge> snd y)"
 
-open_bundle ord_tspmf_notation
+open_bundle ord_tspmf_syntax
 begin
 notation ord_tspmf  (\<open>(_/ \<le>\<^sub>R _)\<close>  [51, 51] 50)
 end
 
-bundle no_ord_tspmf_notation
+bundle no_ord_tspmf_syntax
 begin
 no_notation ord_tspmf  (\<open>(_/ \<le>\<^sub>R _)\<close>  [51, 51] 50)
 end

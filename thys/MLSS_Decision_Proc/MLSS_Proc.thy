@@ -797,7 +797,7 @@ proof
 qed
 
 lemma types_term_inf:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   assumes "v1 \<turnstile> t : l1" "v2 \<turnstile> t : l2"
   shows "inf v1 v2 \<turnstile> t : inf l1 l2"
   using assms
@@ -821,7 +821,7 @@ lemma types_pset_fm_inf:
   unfolding types_pset_fm_def by blast
 
 lemma types_urelems:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   fixes b :: "'a branch"
   assumes "wf_branch b" "v \<turnstile> last b"
   obtains v' where "\<forall>\<phi> \<in> set b. v' \<turnstile> \<phi>" "\<forall>u \<in> urelems b. v' \<turnstile> u : 0"
@@ -1400,7 +1400,7 @@ proof -
 qed
 
 lemma AT_eq_urelems_subterms'_cases:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   assumes "AT (s =\<^sub>s t) \<in> set b"
   obtains (urelems) "s \<in> urelems b" "t \<in> urelems b" |
           (subterms') "s \<in> subterms' b" "t \<in> subterms' b"
@@ -2187,7 +2187,7 @@ proof -
 qed
 
 lemma types_term_lt_if_member_seq:
-  includes Set_member_no_ascii_notation
+  includes no_Set_member_ASCII_syntax
   fixes cs :: "'a pset_atom list"
   assumes "\<forall>a \<in> set cs. v \<turnstile> a"
   assumes "member_seq s cs t" "cs \<noteq> []"

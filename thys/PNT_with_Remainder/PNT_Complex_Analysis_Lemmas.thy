@@ -2,7 +2,7 @@ theory PNT_Complex_Analysis_Lemmas
 imports
   "PNT_Remainder_Library"
 begin
-unbundle pnt_notation
+unbundle pnt_syntax
 
 section \<open>Some basic theorems in complex analysis\<close>
 
@@ -804,5 +804,5 @@ proof -
        (auto intro: analytic_on_imp_differentiable_at [OF af])
 qed
 
-unbundle no_pnt_notation
+unbundle no_pnt_syntax
 end

@@ -58,7 +58,7 @@ lemma cinner_extensionality:
   by (metis assms cinner_eq_zero_iff cinner_simps(3) right_minus_eq)
 
 lemma polar_identity:
-  includes notation_norm
+  includes norm_syntax
   shows \<open>\<parallel>x + y\<parallel>^2 = \<parallel>x\<parallel>^2 + \<parallel>y\<parallel>^2 + 2 * Re (x \<bullet>\<^sub>C y)\<close>
     \<comment> \<open>Shown in the proof of Corollary 1.5 in \<^cite>\<open>conway2013course\<close>\<close>
 proof -
@@ -75,7 +75,7 @@ proof -
 qed
 
 lemma polar_identity_minus:
-  includes notation_norm
+  includes norm_syntax
   shows \<open>\<parallel>x - y\<parallel>^2 = \<parallel>x\<parallel>^2 + \<parallel>y\<parallel>^2 - 2 * Re (x \<bullet>\<^sub>C y)\<close>
 proof-
   have \<open>\<parallel>x + (-y)\<parallel>^2 = \<parallel>x\<parallel>^2 + \<parallel>-y\<parallel>^2 + 2 * Re (x \<bullet>\<^sub>C -y)\<close>
@@ -87,7 +87,7 @@ proof-
 qed
 
 proposition parallelogram_law:
-  includes notation_norm
+  includes norm_syntax
   fixes x y :: "'a::complex_inner"
   shows \<open>\<parallel>x+y\<parallel>^2 + \<parallel>x-y\<parallel>^2 = 2*( \<parallel>x\<parallel>^2 + \<parallel>y\<parallel>^2 )\<close>
     \<comment> \<open>Shown in the proof of Theorem 2.3 in \<^cite>\<open>conway2013course\<close>\<close>
@@ -95,7 +95,7 @@ proposition parallelogram_law:
 
 
 theorem pythagorean_theorem:
-  includes notation_norm
+  includes norm_syntax
   shows \<open>(x \<bullet>\<^sub>C y) = 0 \<Longrightarrow> \<parallel> x + y \<parallel>^2 = \<parallel> x \<parallel>^2 + \<parallel> y \<parallel>^2\<close>
     \<comment> \<open>Shown in the proof of Theorem 2.2 in \<^cite>\<open>conway2013course\<close>\<close>
   by (simp add: polar_identity)
@@ -371,11 +371,11 @@ lemma orthogonal_complementI:
 abbreviation is_orthogonal::\<open>'a::complex_inner \<Rightarrow> 'a \<Rightarrow> bool\<close>  where
   \<open>is_orthogonal x y \<equiv> x \<bullet>\<^sub>C y = 0\<close>
 
-bundle orthogonal_notation begin
+bundle orthogonal_syntax begin
 notation is_orthogonal (infixl \<open>\<bottom>\<close> 69)
 end
 
-bundle no_orthogonal_notation begin
+bundle no_orthogonal_syntax begin
 no_notation is_orthogonal (infixl \<open>\<bottom>\<close> 69)
 end
 
@@ -706,7 +706,7 @@ qed
 
 
 lemma onb_expansion_finite:
-  includes notation_norm
+  includes norm_syntax
   fixes T::\<open>'a::{complex_inner,cfinite_dim} set\<close>
   assumes a1: \<open>cspan T = UNIV\<close> and a3: \<open>is_ortho_set T\<close>
     and a4: \<open>\<And>t. t\<in>T \<Longrightarrow> \<parallel>t\<parallel> = 1\<close>
@@ -815,7 +815,7 @@ subsection \<open>Projections\<close>
 
 lemma smallest_norm_exists:
   \<comment> \<open>Theorem 2.5 in \<^cite>\<open>conway2013course\<close> (inside the proof)\<close>
-  includes notation_norm
+  includes norm_syntax
   fixes M :: \<open>'a::chilbert_space set\<close>
   assumes q1: \<open>convex M\<close> and q2: \<open>closed M\<close> and q3: \<open>M \<noteq> {}\<close>
   shows  \<open>\<exists>k. is_arg_min (\<lambda> x. \<parallel>x\<parallel>) (\<lambda> t. t \<in> M) k\<close>
@@ -984,7 +984,7 @@ qed
 
 lemma smallest_norm_unique:
   \<comment> \<open>Theorem 2.5 in \<^cite>\<open>conway2013course\<close> (inside the proof)\<close>
-  includes notation_norm
+  includes norm_syntax
   fixes M :: \<open>'a::complex_inner set\<close>
   assumes q1: \<open>convex M\<close>
   assumes r: \<open>is_arg_min (\<lambda> x. \<parallel>x\<parallel>) (\<lambda> t. t \<in> M) r\<close>
@@ -1065,7 +1065,7 @@ theorem smallest_dist_is_ortho:
   shows  \<open>(is_arg_min (\<lambda> x. dist x h) (\<lambda> x. x \<in> M) k) \<longleftrightarrow>
           h - k \<in> orthogonal_complement M \<and> k \<in> M\<close>
 proof -
-  include notation_norm
+  include norm_syntax
   have  \<open>csubspace M\<close>
     using \<open>closed_csubspace M\<close> unfolding closed_csubspace_def by blast
   have r1: \<open>2 * Re ((h - k) \<bullet>\<^sub>C f) \<le> \<parallel> f \<parallel>^2\<close>
@@ -1406,7 +1406,7 @@ proof -
 qed
 
 proposition is_projection_on_reduces_norm:
-  includes notation_norm
+  includes norm_syntax
   fixes M :: \<open>('a::complex_inner) set\<close>
   assumes \<open>is_projection_on \<pi> M\<close> and \<open>closed_csubspace M\<close>
   shows \<open>\<parallel> \<pi>  h \<parallel> \<le> \<parallel> h \<parallel>\<close>
@@ -1429,7 +1429,7 @@ proof-
 qed
 
 proposition projection_reduces_norm:
-  includes notation_norm
+  includes norm_syntax
   fixes M :: \<open>'a::chilbert_space set\<close>
   assumes a1: "closed_csubspace M"
   shows \<open>\<parallel> projection M h \<parallel> \<le> \<parallel> h \<parallel>\<close>
@@ -2243,7 +2243,7 @@ lemma cadjoint_exists:
   assumes [simp]: \<open>bounded_clinear G\<close>
   shows \<open>\<exists>F. is_cadjoint F G\<close>
 proof -
-  include notation_norm
+  include norm_syntax
   have [simp]: \<open>clinear G\<close>
     using assms unfolding bounded_clinear_def by blast
   define g :: \<open>'a \<Rightarrow> 'b \<Rightarrow> complex\<close>
@@ -2319,7 +2319,7 @@ lemma cadjoint_bounded_clinear:
   assumes a1: "bounded_clinear A"
   shows \<open>bounded_clinear (A\<^sup>\<dagger>)\<close>
 proof
-  include notation_norm
+  include norm_syntax
   have b1: \<open>((A\<^sup>\<dagger>) x \<bullet>\<^sub>C y) = (x \<bullet>\<^sub>C A y)\<close> for x y
     using cadjoint_univ_prop a1 by auto
   have \<open>is_orthogonal ((A\<^sup>\<dagger>) (x1 + x2) - ((A\<^sup>\<dagger>) x1 + (A\<^sup>\<dagger>) x2)) y\<close> for x1 x2 y

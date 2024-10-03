@@ -2,7 +2,7 @@ theory PNT_Remainder_Library
 imports
   "PNT_Notation"
 begin
-unbundle pnt_notation
+unbundle pnt_syntax
 section \<open>Auxiliary library for prime number theorem\<close>
 
 subsection \<open>Zeta function\<close>
@@ -635,5 +635,5 @@ qed
 
 lemma C\<^sub>1_gt_zero: "0 < C\<^sub>1" unfolding PNT_const_C\<^sub>1_def by auto
 
-unbundle no_pnt_notation
+unbundle no_pnt_syntax
 end

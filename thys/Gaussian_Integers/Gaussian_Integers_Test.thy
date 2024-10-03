@@ -17,7 +17,7 @@ text \<open>
 
 (*<*)
 context
-  includes gauss_int_notation
+  includes gauss_int_syntax
 begin
 (*>*)
 

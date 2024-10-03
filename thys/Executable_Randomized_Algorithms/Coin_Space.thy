@@ -23,12 +23,12 @@ text \<open>Notation for the discrete $\sigma$-algebra:\<close>
 abbreviation discrete_sigma_algebra
   where "discrete_sigma_algebra \<equiv> count_space UNIV"
 
-open_bundle discrete_sigma_algebra_notation
+open_bundle discrete_sigma_algebra_syntax
 begin
 notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
 
-bundle no_discrete_sigma_algebra_notation
+bundle no_discrete_sigma_algebra_syntax
 begin
 no_notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
@@ -539,12 +539,12 @@ text \<open>Measure space for coin streams:\<close>
 definition coin_space :: "coin_stream measure"
   where "coin_space = embed_measure (stream_space (measure_pmf (pmf_of_set UNIV))) to_coins"
 
-open_bundle coin_space_notation
+open_bundle coin_space_syntax
 begin
 notation coin_space (\<open>\<B>\<close>)
 end
 
-bundle no_coin_space_notation
+bundle no_coin_space_syntax
 begin
 no_notation coin_space (\<open>\<B>\<close>)
 end

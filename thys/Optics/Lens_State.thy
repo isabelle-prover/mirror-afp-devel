@@ -30,18 +30,19 @@ qualified abbreviation "dec l \<equiv> sub l 1"
 
 end
 
-bundle lens_state_notation begin
-  notation zoom (infixr \<open>\<rhd>\<close> 80)
-  notation modify (infix \<open>%=\<close> 80)
-  notation assign (infix \<open>.=\<close> 80)
-  notation Lens_State.add (infix \<open>+=\<close> 80)
-  notation Lens_State.sub (infix \<open>-=\<close> 80)
-  notation Lens_State.mul (infix \<open>*=\<close> 80)
-  notation Lens_State.inc (\<open>_ ++\<close>)
-  notation Lens_State.dec (\<open>_ --\<close>)
+bundle lens_state_syntax
+begin
+notation zoom (infixr \<open>\<rhd>\<close> 80)
+notation modify (infix \<open>%=\<close> 80)
+notation assign (infix \<open>.=\<close> 80)
+notation Lens_State.add (infix \<open>+=\<close> 80)
+notation Lens_State.sub (infix \<open>-=\<close> 80)
+notation Lens_State.mul (infix \<open>*=\<close> 80)
+notation Lens_State.inc (\<open>_ ++\<close>)
+notation Lens_State.dec (\<open>_ --\<close>)
 end
 
-context includes lens_state_notation begin
+context includes lens_state_syntax begin
 
 lemma zoom_comp1: "l1 \<rhd> l2 \<rhd> s = (l2 ;\<^sub>L l1) \<rhd> s"
 unfolding zoom_def lens_comp_def

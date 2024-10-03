@@ -7,7 +7,7 @@ theory Kummer_Congruence
   imports Voronoi_Congruence
 begin
 
-unbundle bernoulli_notation
+unbundle bernoulli_syntax
 
 context
   fixes S :: "nat \<Rightarrow> nat \<Rightarrow> nat" and D :: "nat \<Rightarrow> nat" and N :: "nat \<Rightarrow> int"
@@ -372,6 +372,6 @@ qed
 
 end
 
-unbundle no_bernoulli_notation
+unbundle no_bernoulli_syntax
 
 end

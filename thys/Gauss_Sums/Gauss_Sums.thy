@@ -13,12 +13,12 @@ begin
 
 section \<open>Gauss sums\<close>
 
-bundle vec_lambda_notation
+bundle vec_lambda_syntax
 begin
 notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
-open_bundle no_vec_lambda_notation
+open_bundle no_vec_lambda_syntax
 begin
 no_notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
@@ -1436,7 +1436,7 @@ qed
 
 text\<open>Theorem 8.20\<close>
 theorem (in primitive_dchar) fourier_primitive:
-  includes no_vec_lambda_notation
+  includes no_vec_lambda_syntax
   fixes \<tau> :: complex
   defines "\<tau> \<equiv> gauss_sum 1 / sqrt n"
   shows   "\<chi> m = \<tau> / sqrt n * (\<Sum>k=1..n. cnj (\<chi> k) * unity_root n (-m*k))"
@@ -1680,6 +1680,6 @@ proof -
   show "norm \<tau> = 1" using 1 2 n by simp
 qed
 
-unbundle vec_lambda_notation
+unbundle vec_lambda_syntax
 
 end

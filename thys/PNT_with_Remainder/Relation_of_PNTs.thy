@@ -2,8 +2,8 @@ theory Relation_of_PNTs
 imports
   "PNT_Remainder_Library"
 begin
-unbundle pnt_notation
-unbundle prime_counting_notation
+unbundle pnt_syntax
+unbundle prime_counting_syntax
 
 section \<open>Implication relation of many forms of prime number theorem\<close>
 
@@ -419,6 +419,6 @@ theorem PNT_3_imp_PNT_1:
   by (intro PNT_2_imp_PNT_1 PNT_3_imp_PNT_2 assms)
 
 hide_const (open) r\<^sub>1 r\<^sub>2
-unbundle no_prime_counting_notation
-unbundle no_pnt_notation
+unbundle no_prime_counting_syntax
+unbundle no_pnt_syntax
 end

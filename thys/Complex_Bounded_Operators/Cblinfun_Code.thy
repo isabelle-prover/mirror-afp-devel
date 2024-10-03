@@ -26,8 +26,8 @@ hide_const (open) Matrix_Kernel.kernel
 hide_const (open) Order.bottom Order.top
 
 unbundle lattice_syntax
-unbundle jnf_notation
-unbundle cblinfun_notation
+unbundle jnf_syntax
+unbundle cblinfun_syntax
 
 
 
@@ -664,7 +664,7 @@ derive (monad) set_impl ell2
 
 
 unbundle no_lattice_syntax
-unbundle no_jnf_notation
-unbundle no_cblinfun_notation
+unbundle no_jnf_syntax
+unbundle no_cblinfun_syntax
 
 end

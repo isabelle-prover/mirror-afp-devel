@@ -13,7 +13,7 @@ no_notation Lattice.join (infixl \<open>\<squnion>\<index>\<close> 65)
 no_notation Lattice.meet (infixl \<open>\<sqinter>\<index>\<close> 70)
 
 unbundle lattice_syntax
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 section \<open>Examples\<close>
 

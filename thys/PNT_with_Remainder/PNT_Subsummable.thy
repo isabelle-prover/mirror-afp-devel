@@ -2,7 +2,7 @@ theory PNT_Subsummable
 imports
   "PNT_Remainder_Library"
 begin
-unbundle pnt_notation
+unbundle pnt_syntax
 
 definition has_subsum where "has_subsum f S x \<equiv> (\<lambda>n. if n \<in> S then f n else 0) sums x"
 definition subsum where "subsum f S \<equiv> \<Sum>n. if n \<in> S then f n else 0"
@@ -303,5 +303,5 @@ proof -
     by (simp add: sum.inter_restrict [symmetric])
 qed
 
-unbundle no_pnt_notation
+unbundle no_pnt_syntax
 end

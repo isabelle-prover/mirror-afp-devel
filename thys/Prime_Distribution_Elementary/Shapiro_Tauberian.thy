@@ -333,7 +333,7 @@ text \<open>
   We can now apply Shapiro's Tauberian theorem to \<^term>\<open>\<psi>\<close> and \<^term>\<open>\<theta>\<close>.
 \<close>
 lemma dirichlet_prod_mangoldt1_floor_bigo:
-  includes prime_counting_notation
+  includes prime_counting_syntax
   shows "(\<lambda>x. dirichlet_prod' (\<lambda>n. ind prime n * ln n) floor x - x * ln x) \<in> O(\<lambda>x. x)"
 proof -
   \<comment> \<open>This is a perhaps somewhat roundabout way of proving this statement. We show this using
