@@ -917,7 +917,7 @@ instantiation ratfps :: ("{field_gcd,random}") random
 begin
 
 context
-  includes state_combinator_syntax term_syntax
+  includes state_combinator_syntax and term_syntax
 begin
 
 definition

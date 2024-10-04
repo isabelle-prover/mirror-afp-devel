@@ -18,7 +18,7 @@ where
 adhoc_overloading Applicative.pure sconst
 adhoc_overloading Applicative.ap ap_stream
 
-context includes lifting_syntax applicative_syntax
+context includes lifting_syntax and applicative_syntax
 begin
 
 lemma ap_stream_id: "pure (\<lambda>x. x) \<diamondop> x = x"

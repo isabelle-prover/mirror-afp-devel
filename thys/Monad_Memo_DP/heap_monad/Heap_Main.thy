@@ -93,7 +93,7 @@ end
 
 
 context dp_consistency_heap begin
-context includes lifting_syntax heap_monad_syntax begin
+context includes lifting_syntax and heap_monad_syntax begin
 
 named_theorems dp_match_rule
 

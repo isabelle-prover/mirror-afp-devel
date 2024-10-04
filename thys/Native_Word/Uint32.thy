@@ -288,7 +288,7 @@ lemma Uint32_code [code]:
   "Uint32 i = 
   (let i' = i AND 0xFFFFFFFF
    in if bit i' 31 then Uint32_signed (i' - 0x100000000) else Uint32_signed i')"
-  including undefined_transfer integer.lifting unfolding Uint32_signed_def
+  including undefined_transfer and integer.lifting unfolding Uint32_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
      apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)

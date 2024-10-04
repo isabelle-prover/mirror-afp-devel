@@ -116,7 +116,7 @@ lemma fmap_freshness_lemma_unique:
 
 lemma fmdrop_fset_fmupd[simp]:
   "(fmdrop_fset A f)(x $$:= y) = fmdrop_fset (A |-| {|x|}) f(x $$:= y)"
-  including fmap.lifting fset.lifting
+  including fmap.lifting and fset.lifting
   by transfer (auto simp: map_drop_set_def map_upd_def map_filter_def)
 
 lemma fresh_fset_fminus:

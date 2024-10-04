@@ -487,7 +487,7 @@ lemma Uint64_code [code]:
   "Uint64 i = 
   (let i' = i AND 0xFFFFFFFFFFFFFFFF
    in if bit i' 63 then Uint64_signed (i' - 0x10000000000000000) else Uint64_signed i')"
-  including undefined_transfer integer.lifting unfolding Uint64_signed_def
+  including undefined_transfer and integer.lifting unfolding Uint64_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
      apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed cong del: if_cong)

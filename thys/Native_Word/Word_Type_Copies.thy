@@ -108,7 +108,7 @@ lemma of_class_linorder:
 end
 
 locale word_type_copy_bits = word_type_copy_ring
-  opening constraintless bit_operations_syntax +
+  opening constraintless and bit_operations_syntax +
   constrains word_of :: \<open>'a::{comm_ring_1, semiring_modulo, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes signed_drop_bit :: \<open>nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
   assumes bit_eq_word_of [code]: \<open>bit p = bit (word_of p)\<close>
@@ -299,7 +299,7 @@ lemma neg_numeral_eq_integer [code_unfold]:
 end
 
 locale word_type_copy_misc = word_type_copy_more
-  opening constraintless bit_operations_syntax +
+  opening constraintless and bit_operations_syntax +
   constrains word_of :: \<open>'a::{ring_bit_operations, equal, linorder} \<Rightarrow> 'b::len word\<close>
   fixes size :: nat and set_bits_aux :: \<open>(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a\<close>
     assumes size_eq_length: \<open>size = LENGTH('b::len)\<close>

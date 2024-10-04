@@ -206,7 +206,7 @@ next
       \<comment> \<open>some property on various operations that is only useful in here\<close>
       have *: "fbind (fmimage m (fbind A g)) f = fbind A (\<lambda>x. fbind (fmimage m (g x)) f)"
         for m A f g
-        including fset.lifting fmap.lifting
+        including fset.lifting and fmap.lifting
         by transfer' force
 
       have "consts (subst (Sabs cs) env) = fbind (fset_of_list cs) (\<lambda>(pat, rhs). consts rhs |\<union>| ffUnion (consts |`| fmimage (fmdrop_fset (frees pat) env) (frees rhs)))"

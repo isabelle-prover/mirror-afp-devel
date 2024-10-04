@@ -363,7 +363,7 @@ text \<open>
 \<close>
 
 context
-  includes integer.lifting bit_operations_syntax
+  includes integer.lifting and bit_operations_syntax
 begin
 
 definition wivs_mask :: int where "wivs_mask = 2^ dflt_size - 1"

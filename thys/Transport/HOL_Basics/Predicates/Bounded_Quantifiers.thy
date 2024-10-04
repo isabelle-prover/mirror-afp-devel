@@ -84,12 +84,12 @@ translations
 
 bundle bounded_quantifier_syntax
 begin
-unbundle ball_syntax bex_syntax bex1_syntax
+unbundle ball_syntax and bex_syntax and bex1_syntax
 end
 
 bundle no_bounded_quantifier_syntax
 begin
-unbundle no_ball_syntax no_bex_syntax no_bex1_syntax
+unbundle no_ball_syntax and no_bex_syntax and no_bex1_syntax
 end
 
 definition "ball_pred P Q \<equiv> \<forall>x. P x \<longrightarrow> Q x"

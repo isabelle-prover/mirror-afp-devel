@@ -129,7 +129,7 @@ lemma rel_state_intro:
   done
 
 context
-  includes lifting_syntax state_monad_syntax
+  includes lifting_syntax and state_monad_syntax
 begin
 
 lemma transfer_bind[transfer_rule]:

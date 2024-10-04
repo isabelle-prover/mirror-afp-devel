@@ -32,7 +32,7 @@ typ "('\<sigma>, 'call, 'ret) oracle"
 
 subsection \<open>Shared state\<close>
 
-context includes \<I>.lifting lifting_syntax begin
+context includes \<I>.lifting and lifting_syntax begin
 
 lift_definition plus_\<I> :: "('out, 'ret) \<I> \<Rightarrow> ('out', 'ret') \<I> \<Rightarrow> ('out + 'out', 'ret + 'ret') \<I>" (infix \<open>\<oplus>\<^sub>\<I>\<close> 500)
 is "\<lambda>resp1 resp2. \<lambda>out. case out of Inl out' \<Rightarrow> Inl ` resp1 out' | Inr out' \<Rightarrow> Inr ` resp2 out'" .

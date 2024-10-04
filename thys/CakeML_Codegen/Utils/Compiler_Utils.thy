@@ -901,7 +901,7 @@ lemma fmdom_foldl_add: "fmdom (foldl (++\<^sub>f) m ns) = fmdom m |\<union>| ffU
 by (induction ns arbitrary: m) auto
 
 lemma fmimage_fmmap[simp]: "fmimage (fmmap f m) S = f |`| fmimage m S"
-including fmap.lifting fset.lifting
+including fmap.lifting and fset.lifting
 by transfer' auto
 
 lemma fmmap_total:
@@ -948,7 +948,7 @@ proof (induction xs rule: clearjunk.induct)
 qed (simp add: set_of_map_def)
 
 lemma fset_of_fmap_code[code]: "fset_of_fmap (fmap_of_list x) = fset_of_list (AList.clearjunk x)"
-including fmap.lifting fset.lifting
+including fmap.lifting and fset.lifting
   by transfer (rule set_of_map_map_of)
 
 lemma distinct_sorted_list_of_fmap[simp, intro]: "distinct (sorted_list_of_fmap m)"

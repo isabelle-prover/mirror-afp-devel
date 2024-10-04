@@ -2032,7 +2032,7 @@ lemma monad_alt_set [locale_witness]: "monad_alt return_set bind_set alt_set"
 by unfold_locales auto
 
 lemma monad_altc_set [locale_witness]: "monad_altc return_set bind_set altc_set"
-  including cset.lifting lifting_syntax
+  including cset.lifting and lifting_syntax
 proof
   show "(rel_cset R ===> (R ===> (=)) ===> (=)) (\<lambda>C f. \<Union> (f ` rcset C)) (\<lambda>C f. \<Union> (f ` rcset C))" for R
     by transfer_prover

@@ -387,7 +387,7 @@ lemma compute_W_correct:
   assumes "Mapping.lookup (compute_W n) (i, j) = Some x"
   shows "W i j = x"
 proof -
-  include state_monad_syntax app_syntax lifting_syntax
+  include state_monad_syntax and app_syntax and lifting_syntax
   let ?p = "State_Main.map\<^sub>T' (\<lambda>i. W\<^sub>m' i n) [0..n]"
   let ?q = "map (\<lambda>i. W i n) [0..n]"
   have "?q = map $ \<llangle>(\<lambda>i. W_fun i n)\<rrangle> $ \<llangle>[0..n]\<rrangle>"

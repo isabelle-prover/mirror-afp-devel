@@ -985,7 +985,7 @@ qed
 lemma bellman_ford_correct':
   "bf\<^sub>m.crel_vs (=) (if has_negative_cycle then None else Some (map shortest [0..<n+1])) bellman_ford"
 proof -
-  include state_monad_syntax app_syntax
+  include state_monad_syntax and app_syntax
   let ?l = "if has_negative_cycle then None else Some (map shortest [0..<n + 1])"
   let ?r = "(\<lambda>xs. (\<lambda>ys. (if xs = ys then Some xs else None))
     $ (map $ \<llangle>bf (n + 1)\<rrangle> $ \<llangle>[0..<n + 1]\<rrangle>)) $ (map $ \<llangle>bf n\<rrangle> $ \<llangle>[0..<n + 1]\<rrangle>)"

@@ -15,7 +15,7 @@ locale dp_heap =
 begin
 
 context
-  includes lifting_syntax heap_monad_syntax
+  includes lifting_syntax and heap_monad_syntax
 begin
 
 definition "crel_vs R v f \<equiv>

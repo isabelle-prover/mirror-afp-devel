@@ -12,7 +12,7 @@ text \<open>Introductory examples from \<^cite>\<open>"transport"\<close>.
 Transports between lists and (finite) sets. Refer to the paper for more details.\<close>
 
 context
-  includes galois_rel_syntax transport_syntax
+  includes galois_rel_syntax and transport_syntax
 begin
 
 paragraph \<open>Introductory examples from paper\<close>

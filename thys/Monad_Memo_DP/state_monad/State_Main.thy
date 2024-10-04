@@ -84,7 +84,7 @@ lemmas [fundef_cong] =
 end
 
 context dp_consistency begin
-context includes lifting_syntax state_monad_syntax begin
+context includes lifting_syntax and state_monad_syntax begin
 
 named_theorems dp_match_rule
 

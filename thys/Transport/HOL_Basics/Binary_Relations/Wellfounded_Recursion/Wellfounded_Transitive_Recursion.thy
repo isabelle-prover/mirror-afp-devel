@@ -15,7 +15,7 @@ well-founded recursion on non-transitive, well-founded relations since the trans
 well-founded relation is well-founded.\<close>
 
 context
-  includes fun_restrict_syntax no_rel_restrict_syntax
+  includes fun_restrict_syntax and no_rel_restrict_syntax
 begin
 
 definition "fun_rel_restrict f R y \<equiv> f\<restriction>\<^bsub>R\<inverse> y :: 'a \<Rightarrow> bool\<^esub>"

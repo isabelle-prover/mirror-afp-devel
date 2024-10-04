@@ -1128,7 +1128,7 @@ proof -
 qed
 
 context
-  includes Ord_dests Aleph_dests Aleph_intros Aleph_mem_dests mono_map_rules
+  includes Ord_dests and Aleph_dests and Aleph_intros and Aleph_mem_dests and mono_map_rules
 begin
 
 text\<open>We end this section by calculating the cofinality of Alephs, for

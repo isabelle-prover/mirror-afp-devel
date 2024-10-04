@@ -88,7 +88,7 @@ locale dp_consistency =
 begin
 
 context
-  includes lifting_syntax state_monad_syntax
+  includes lifting_syntax and state_monad_syntax
 begin
 
 definition cmem :: "'mem \<Rightarrow> bool" where

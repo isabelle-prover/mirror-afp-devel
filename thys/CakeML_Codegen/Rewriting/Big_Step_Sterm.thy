@@ -347,7 +347,7 @@ next
           have "fmrestrict_fset (S |\<union>| fmdom env) (\<Gamma> ++\<^sub>f env) = fmrestrict_fset (S |\<union>| fmdom env) (\<Gamma>' ++\<^sub>f env)"
             using comb(8)
             unfolding fmfilter_alt_defs
-            including fmap.lifting fset.lifting
+            including fmap.lifting and fset.lifting
             by transfer' (auto simp: map_filter_def fun_eq_iff map_add_def split: option.splits if_splits)
 
           thus "fmrestrict_fset (S |\<union>| frees pat) (\<Gamma> ++\<^sub>f env) = fmrestrict_fset (S |\<union>| frees pat) (\<Gamma>' ++\<^sub>f env)"

@@ -540,7 +540,7 @@ next
         qed
     next
       have "fmdrop_fset (fmdom venv) \<Gamma>' \<subseteq>\<^sub>f \<Gamma>' ++\<^sub>f venv"
-        including fmap.lifting fset.lifting
+        including fmap.lifting and fset.lifting
         by transfer'
            (auto simp: map_drop_set_def map_filter_def map_le_def map_add_def split: if_splits)
       thus "fmdrop_fset (frees pat) (fmmap value_to_sterm \<Gamma>') \<subseteq>\<^sub>f fmmap value_to_sterm (\<Gamma>' ++\<^sub>f venv)"
@@ -723,7 +723,7 @@ next
         qed
     next
       have "fmdrop_fset (fmdom venv) \<Gamma>' \<subseteq>\<^sub>f \<Gamma>' ++\<^sub>f venv"
-        including fmap.lifting fset.lifting
+        including fmap.lifting and fset.lifting
         by transfer'
            (auto simp: map_drop_set_def map_filter_def map_le_def map_add_def split: if_splits)
       thus "fmdrop_fset (frees pat) (fmmap value_to_sterm \<Gamma>') \<subseteq>\<^sub>f fmmap value_to_sterm (\<Gamma>' ++\<^sub>f venv)"

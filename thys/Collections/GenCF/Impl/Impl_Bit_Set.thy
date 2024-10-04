@@ -20,7 +20,7 @@ begin
 
 
   context
-    includes integer.lifting bit_operations_syntax
+    includes integer.lifting and bit_operations_syntax
   begin
 
   definition bs_empty :: "unit \<Rightarrow> bitset" where "bs_empty \<equiv> \<lambda>_. 0"

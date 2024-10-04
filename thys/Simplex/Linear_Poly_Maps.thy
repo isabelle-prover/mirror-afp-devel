@@ -26,7 +26,7 @@ qed
 definition ordered_keys :: "('a :: linorder, 'b)fmap \<Rightarrow> 'a list" where
   "ordered_keys m = sorted_list_of_set (fset (fmdom m))"
 
-context includes fmap.lifting lifting_syntax
+context includes fmap.lifting and lifting_syntax
 begin
 
 lemma [transfer_rule]: "(((=) ===> (=)) ===> pcr_linear_poly ===> (=)) (=) pcr_linear_poly"

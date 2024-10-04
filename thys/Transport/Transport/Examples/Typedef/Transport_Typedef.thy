@@ -9,7 +9,7 @@ theory Transport_Typedef
 begin
 
 context
-  includes galois_rel_syntax transport_syntax
+  includes galois_rel_syntax and transport_syntax
 begin
 
 typedef pint = "{i :: int. 0 \<le> i}" by auto

@@ -350,7 +350,7 @@ code_printing constant integer_test_bit \<rightharpoonup>
   (Scala) "Integer'_Bit.testBit"
 
 context
-  includes integer.lifting bit_operations_syntax
+  includes integer.lifting and bit_operations_syntax
 begin
 
 lemma msb_integer_code [code]:
@@ -478,7 +478,7 @@ lemma integer_shiftr_code [code]:
   done
 
 context
-  includes integer.lifting bit_operations_syntax
+  includes integer.lifting and bit_operations_syntax
 begin
 
 definition odd_integer :: \<open>integer \<Rightarrow> bool\<close>

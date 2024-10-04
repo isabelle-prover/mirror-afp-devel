@@ -117,7 +117,7 @@ end
 
 subsection \<open>Transfer rules\<close>
 
-context includes lifting_syntax transfer_CH_matrix_syntax begin
+context includes lifting_syntax and transfer_CH_matrix_syntax begin
 
 lemma right_total_rel_sm_vv' [transfer_rule]: "right_total EQ"
   unfolding right_total_def EQ_iff to_fun_vec_vec_def

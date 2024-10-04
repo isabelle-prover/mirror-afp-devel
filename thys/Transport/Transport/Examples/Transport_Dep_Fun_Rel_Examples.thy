@@ -13,7 +13,7 @@ text \<open>Dependent function relator examples from \<^cite>\<open>"transport"\
 Refer to the paper for more details.\<close>
 
 context
-  includes galois_rel_syntax transport_syntax
+  includes galois_rel_syntax and transport_syntax
   notes
     transport.rel_if_partial_equivalence_rel_equivalence_if_iff_if_partial_equivalence_rel_equivalenceI
       [rotated, per_intro]

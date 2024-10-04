@@ -85,7 +85,7 @@ context dcharacter
 begin
 (*<*)
 context
-  includes no_vec_lambda_syntax dcharacter_syntax
+  includes no_vec_lambda_syntax and dcharacter_syntax
 begin
 (*>*)
 
@@ -454,7 +454,7 @@ context residues_nat
 begin
 (*<*)
 context
-includes no_vec_lambda_syntax dcharacter_syntax
+includes no_vec_lambda_syntax and dcharacter_syntax
 begin
 (*>*)
 
@@ -570,7 +570,7 @@ context dcharacter
 begin
 (*<*)
 context
-  includes no_vec_lambda_syntax dcharacter_syntax
+  includes no_vec_lambda_syntax and dcharacter_syntax
 begin
 (*>*)
 
@@ -1112,7 +1112,7 @@ context residues_nat
 begin
 (*<*)
 context
-  includes no_vec_lambda_syntax dcharacter_syntax
+  includes no_vec_lambda_syntax and dcharacter_syntax
 begin
 (*>*)
 
@@ -1136,7 +1136,7 @@ context dcharacter
 begin
 (*<*)
 context
-  includes no_vec_lambda_syntax dcharacter_syntax
+  includes no_vec_lambda_syntax and dcharacter_syntax
 begin
 (*>*)
 
