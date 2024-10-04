@@ -1,0 +1,30 @@
+title = "Abstract Substitution"
+date = 2024-09-16
+topics = [
+  "Logic",
+]
+abstract = """
+This entry provides a small, reusable, theory that specifies the abstract concept of substition as monoid action.
+Both the substitution type and the object type are kept abstract.
+The theory provides multiple useful definitions and lemmas.
+Two example usages are provided for first order terms: one for terms from the AFP/First_Order_Terms session and one for terms from the Isabelle/HOL-ex session."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+email = "desharnais_email1"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

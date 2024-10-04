@@ -35,6 +35,9 @@
     <loc>/entries/Parallel_Shear_Sort.html</loc>
     <lastmod>2024-09-17T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Abstract_Substitution.html</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/automatic_refinement/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -44,7 +47,16 @@
     <loc>/dependencies/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/desharnais/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/haslbeckm/</loc>
+    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/NREST.html</loc>
@@ -144,9 +156,6 @@
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/limat/</loc>
-    <lastmod>2024-08-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-08-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/marriage/</loc>
@@ -300,9 +309,6 @@
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/complete_non_orders/</loc>
-    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lp_duality/</loc>
@@ -1062,9 +1068,6 @@
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Simple_Clause_Learning.html</loc>
-    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/desharnais/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/functional_ordered_resolution_prover/</loc>
@@ -5128,6 +5131,8 @@
     <loc>/sessions/abstract_completeness/</loc>
   </url><url>
     <loc>/sessions/abstract_soundness/</loc>
+  </url><url>
+    <loc>/sessions/abstract_substitution/</loc>
   </url><url>
     <loc>/sessions/abstract-hoare-logics/</loc>
   </url><url>

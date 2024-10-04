@@ -28,6 +28,13 @@
           <description></description>
         </item>
         <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Refine_Monadic</title>
           <link>/dependencies/refine_monadic/</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
@@ -270,13 +277,6 @@
           <link>/dependencies/complete_non_orders/</link>
           <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/complete_non_orders/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
           <description></description>
         </item>
         <item>
