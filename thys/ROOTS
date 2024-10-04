@@ -11,6 +11,7 @@ Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
 Abstract_Soundness
+Abstract_Substitution
 Ackermanns_not_PR
 Actuarial_Mathematics
 Adaptive_State_Counting
