@@ -14,16 +14,5 @@ notation (ASCII)
   converse  (\<open>(\<open>notation=\<open>postfix -1\<close>\<close>_^-1)\<close> [1000] 999) and
   conversep (\<open>(\<open>notation=\<open>postfix -1-1\<close>\<close>_^--1)\<close> [1000] 1000)
 end
-bundle no_HOL_relation_syntax
-begin
-no_notation relcomp (infixr \<open>O\<close> 75)
-no_notation relcompp (infixr \<open>OO\<close> 75)
-no_notation converse (\<open>(\<open>notation=\<open>postfix -1\<close>\<close>_\<inverse>)\<close> [1000] 999)
-no_notation conversep  (\<open>(\<open>notation=\<open>postfix -1-1\<close>\<close>_\<inverse>\<inverse>)\<close> [1000] 1000)
-no_notation (ASCII)
-  converse  (\<open>(\<open>notation=\<open>postfix -1\<close>\<close>_^-1)\<close> [1000] 999) and
-  conversep (\<open>(\<open>notation=\<open>postfix -1-1\<close>\<close>_^--1)\<close> [1000] 1000)
-end
-
 
 end

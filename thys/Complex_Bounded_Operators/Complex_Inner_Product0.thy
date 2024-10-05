@@ -537,12 +537,9 @@ proof -
 qed
 
 
-bundle cinner_syntax begin
+bundle cinner_syntax
+begin
 notation cinner (infix \<open>\<bullet>\<^sub>C\<close> 70)
-end
-
-bundle no_cinner_syntax begin
-no_notation cinner (infix \<open>\<bullet>\<^sub>C\<close> 70)
 end
 
 end

@@ -7,7 +7,7 @@ theory HOL_Alignment_Functions
     LFunctions
 begin
 
-unbundle no_HOL_function_syntax
+unbundle no HOL_function_syntax
 
 named_theorems HOL_fun_alignment
 

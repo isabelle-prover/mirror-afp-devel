@@ -371,14 +371,10 @@ lemma orthogonal_complementI:
 abbreviation is_orthogonal::\<open>'a::complex_inner \<Rightarrow> 'a \<Rightarrow> bool\<close>  where
   \<open>is_orthogonal x y \<equiv> x \<bullet>\<^sub>C y = 0\<close>
 
-bundle orthogonal_syntax begin
+bundle orthogonal_syntax
+begin
 notation is_orthogonal (infixl \<open>\<bottom>\<close> 69)
 end
-
-bundle no_orthogonal_syntax begin
-no_notation is_orthogonal (infixl \<open>\<bottom>\<close> 69)
-end
-
 
 lemma is_orthogonal_sym: "is_orthogonal \<psi> \<phi> = is_orthogonal \<phi> \<psi>"
   by (metis cinner_commute' complex_cnj_zero)

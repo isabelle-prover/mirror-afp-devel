@@ -21,13 +21,6 @@ notation has_derivative (\<open>(1(D _ \<mapsto> (_))/ _)\<close> [65,65] 61)
   and has_vderiv_on (\<open>(1 D _ = (_)/ on _)\<close> [65,65] 61)
 end
 
-bundle no_derivative_syntax
-begin
-notation has_vderiv_on (infix \<open>(has'_vderiv'_on)\<close> 50)
-no_notation has_derivative (\<open>(1(D _ \<mapsto> (_))/ _)\<close> [65,65] 61)
-  and has_vderiv_on (\<open>(1 D _ = (_)/ on _)\<close> [65,65] 61)
-end
-
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 
 subsection \<open> Real numbers \<close>

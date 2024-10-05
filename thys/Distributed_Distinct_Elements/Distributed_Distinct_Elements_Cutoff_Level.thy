@@ -456,6 +456,6 @@ qed
 
 end
 
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 end

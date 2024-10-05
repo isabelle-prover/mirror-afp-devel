@@ -59,11 +59,6 @@ begin
 notation ord_tspmf  (\<open>(_/ \<le>\<^sub>R _)\<close>  [51, 51] 50)
 end
 
-bundle no_ord_tspmf_syntax
-begin
-no_notation ord_tspmf  (\<open>(_/ \<le>\<^sub>R _)\<close>  [51, 51] 50)
-end
-
 definition coin_usage_of_tspmf :: "'a tspmf \<Rightarrow> enat pmf"
   where "coin_usage_of_tspmf = map_pmf (\<lambda>x. case x of None \<Rightarrow> \<infinity> | Some y \<Rightarrow> enat (snd y))"
 

@@ -561,6 +561,6 @@ proof -
     by (intro H.expander_intro_1) auto
 qed
 
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 end

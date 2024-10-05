@@ -14,16 +14,5 @@ notation Groups.uminus (\<open>- _\<close> [81] 80)
 notation Groups.times (infixl \<open>*\<close> 70)
 notation abs (\<open>\<bar>_\<bar>\<close>)
 end
-bundle no_HOL_groups_syntax
-begin
-no_notation Groups.zero (\<open>0\<close>)
-no_notation Groups.one (\<open>1\<close>)
-no_notation Groups.plus (infixl \<open>+\<close> 65)
-no_notation Groups.minus (infixl \<open>-\<close> 65)
-no_notation Groups.uminus (\<open>- _\<close> [81] 80)
-no_notation Groups.times (infixl \<open>*\<close> 70)
-no_notation abs (\<open>\<bar>_\<bar>\<close>)
-end
-
 
 end

@@ -17,14 +17,6 @@ syntax
 notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
 end
 
-bundle no_ball_syntax
-begin
-no_syntax
-  "_ball"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<forall>_ : _./ _)\<close> 10)
-  "_ball2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-no_notation ball (\<open>\<forall>(\<^bsub>_\<^esub>)\<close>)
-end
-
 syntax_consts
   "_ball" "_ball2" \<rightleftharpoons> ball
 translations
@@ -40,14 +32,6 @@ syntax
   "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>_ : _./ _)\<close> 10)
   "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
 notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
-end
-
-bundle no_bex_syntax
-begin
-no_syntax
-  "_bex"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>_ : _./ _)\<close> 10)
-  "_bex2" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-no_notation bex (\<open>\<exists>(\<^bsub>_\<^esub>)\<close>)
 end
 
 syntax_consts
@@ -67,14 +51,6 @@ syntax
 notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
 end
 
-bundle no_bex1_syntax
-begin
-no_syntax
-  "_bex1"  :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close> (\<open>(2\<exists>!_ : _./ _)\<close> 10)
-  "_bex12" :: \<open>[idts, 'a, bool] \<Rightarrow> bool\<close>
-no_notation bex1 (\<open>\<exists>!(\<^bsub>_\<^esub>)\<close>)
-end
-
 syntax_consts
   "_bex1" "_bex12" \<rightleftharpoons> bex1
 translations
@@ -85,11 +61,6 @@ translations
 bundle bounded_quantifier_syntax
 begin
 unbundle ball_syntax and bex_syntax and bex1_syntax
-end
-
-bundle no_bounded_quantifier_syntax
-begin
-unbundle no_ball_syntax and no_bex_syntax and no_bex1_syntax
 end
 
 definition "ball_pred P Q \<equiv> \<forall>x. P x \<longrightarrow> Q x"

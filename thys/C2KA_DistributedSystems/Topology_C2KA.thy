@@ -38,7 +38,7 @@ theory Topology_C2KA
 begin
 
 no_notation comp (infixl \<open>\<circ>\<close> 55)
-unbundle no_rtrancl_syntax
+unbundle no rtrancl_syntax
 
 text \<open>
 The locale \emph{topology-c2ka} extends the axiomatisation of \emph{c2ka} to support the notions of topology. 

@@ -3235,6 +3235,6 @@ end
 lemmas tendsto_scaleC [tendsto_intros] =
   bounded_cbilinear.tendsto [OF bounded_cbilinear_scaleC]
 
-unbundle no_lattice_syntax
+unbundle no lattice_syntax
 
 end

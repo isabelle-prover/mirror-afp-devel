@@ -314,7 +314,7 @@ lemma bigo_inv:
   shows "f \<in> O[at_right 0](g)"
   using assms eventually_inv unfolding bigo_def by auto
 
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 section \<open>Blind\<close>
 text \<open>Blind section added to preserve section numbers\<close>

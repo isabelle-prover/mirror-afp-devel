@@ -887,5 +887,6 @@ proof -
   finally show ?thesis unfolding PNT_const_C\<^sub>1_def by auto
 qed
 
-unbundle no_pnt_syntax
+unbundle no pnt_syntax
+
 end

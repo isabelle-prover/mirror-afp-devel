@@ -9,10 +9,6 @@ bundle fun_restrict_syntax
 begin
 notation fun_restrict (\<open>(_)\<restriction>(\<^bsub>_\<^esub>)\<close> [1000])
 end
-bundle no_fun_restrict_syntax
-begin
-no_notation fun_restrict (\<open>(_)\<restriction>(\<^bsub>_\<^esub>)\<close> [1000])
-end
 
 definition "fun_restrict_pred f P x \<equiv> if P x then f x else undefined"
 adhoc_overloading fun_restrict fun_restrict_pred

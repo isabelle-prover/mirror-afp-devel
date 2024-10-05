@@ -13,16 +13,7 @@ notation
   and inf (infixl \<open>\<sqinter>\<close> 70)
   and sup (infixl \<open>\<squnion>\<close> 65)
 end
-bundle no_lattice_syntax
-begin
-no_notation
-  bot (\<open>\<bottom>\<close>)
-  and top (\<open>\<top>\<close>)
-  and inf (infixl \<open>\<sqinter>\<close> 70)
-  and sup (infixl \<open>\<squnion>\<close> 65)
-end
 
 unbundle lattice_syntax
-
 
 end

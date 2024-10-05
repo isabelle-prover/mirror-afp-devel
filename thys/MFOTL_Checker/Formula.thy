@@ -293,47 +293,14 @@ lemma sat_Always_rec: "\<langle>\<sigma>, v, i\<rangle> \<Turnstile> \<^bold>G I
   unfolding sat_Always_Eventually sat.simps(5)
   by (subst sat_Eventually_rec) auto
 
-bundle no_MFOTL_syntax begin
+bundle MFOTL_syntax
+begin
 
 text \<open> For bold font, type ``backslash'' followed by the word ``bold''  \<close>
-no_notation Var (\<open>\<^bold>v\<close>)
-     and Const (\<open>\<^bold>c\<close>)
-
-text \<open> For subscripts type ``backslash'' followed by ``sub''  \<close>
-no_notation TT (\<open>\<top>\<close>)
-     and FF (\<open>\<bottom>\<close>)
-     and Pred (\<open>_ \<dagger> _\<close> [85, 85] 85)
-     and Eq_Const (\<open>_ \<^bold>\<approx> _\<close> [85, 85] 85)
-     and Neg (\<open>\<not>\<^sub>F _\<close> [82] 82)
-     and And (infixr \<open>\<and>\<^sub>F\<close> 80)
-     and Or (infixr \<open>\<or>\<^sub>F\<close> 80)
-     and Imp (infixr \<open>\<longrightarrow>\<^sub>F\<close> 79)
-     and Iff (infixr \<open>\<longleftrightarrow>\<^sub>F\<close> 79)
-     and Exists (\<open>\<exists>\<^sub>F_. _\<close> [70,70] 70)
-     and Forall (\<open>\<forall>\<^sub>F_. _\<close> [70,70] 70)
-     and Prev (\<open>\<^bold>Y _ _\<close> [1000, 65] 65)
-     and Next (\<open>\<^bold>X _ _\<close> [1000, 65] 65)
-     and Once (\<open>\<^bold>P _ _\<close> [1000, 65] 65)
-     and Eventually (\<open>\<^bold>F _ _\<close> [1000, 65] 65)
-     and Historically (\<open>\<^bold>H _ _\<close> [1000, 65] 65)
-     and Always (\<open>\<^bold>G _ _\<close> [1000, 65] 65)
-     and Since (\<open>_ \<^bold>S _ _\<close> [60,1000,60] 60)
-     and Until (\<open>_ \<^bold>U _ _\<close> [60,1000,60] 60)
-
-no_notation eval_trm (\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89)
-     and eval_trms (\<open>_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<close> [70,89] 89)
-     and eval_trm_set (\<open>_\<lbrace>_\<rbrace>\<close> [70,89] 89)
-     and eval_trms_set (\<open>_\<^bold>\<lbrace>_\<^bold>\<rbrace>\<close> [70,89] 89)
-     and sat (\<open>\<langle>_, _, _\<rangle> \<Turnstile> _\<close> [56, 56, 56, 56] 55)
-     and Interval.interval (\<open>\<^bold>[_,_\<^bold>]\<close>)
-
-end
-
-bundle MFOTL_syntax begin
-
 notation Var (\<open>\<^bold>v\<close>)
      and Const (\<open>\<^bold>c\<close>)
 
+text \<open> For subscripts type ``backslash'' followed by ``sub''  \<close>
 notation TT (\<open>\<top>\<close>)
      and FF (\<open>\<bottom>\<close>)
      and Pred (\<open>_ \<dagger> _\<close> [85, 85] 85)
@@ -363,7 +330,7 @@ notation eval_trm (\<open>_\<lbrakk>_\<rbrakk>\<close> [70,89] 89)
 
 end
 
-unbundle no_MFOTL_syntax
+unbundle no MFOTL_syntax
 
 (*<*)
 end

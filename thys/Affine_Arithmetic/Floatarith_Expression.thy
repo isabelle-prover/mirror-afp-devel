@@ -250,7 +250,7 @@ lemma
 
 
 lemma Max_Image_distrib:
-  includes no_floatarith_syntax
+  includes no floatarith_syntax
   assumes "finite X" "X \<noteq> {}"
   shows "Max ((\<lambda>x. max (f1 x) (f2 x)) ` X) = max (Max (f1 ` X)) (Max (f2 ` X))"
   apply (rule Max_eqI)
@@ -2228,6 +2228,6 @@ definition "Deg_of w = Num 180 * w / Pi"
 lemma interpret_Deg_of[simp]: "interpret_floatarith (Deg_of w) xs = deg_of (interpret_floatarith w xs)"
   by (auto simp: Deg_of_def deg_of_def inverse_eq_divide)
 
-unbundle no_floatarith_syntax
+unbundle no floatarith_syntax
 
 end

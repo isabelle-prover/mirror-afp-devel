@@ -3313,7 +3313,7 @@ lemma check_all_soundness_aux: "check_all \<sigma> \<phi> e \<Longrightarrow> p 
 lemma check_all_soundness: "check_all \<sigma> \<phi> e \<Longrightarrow> pdt_at i e \<Longrightarrow> isl (eval_pdt v e) \<longleftrightarrow> sat \<sigma> v i \<phi>"
   by (drule check_all_soundness_aux[OF _ refl, of _ _ _ v]) (auto simp: pdt_at_p_at_eval_pdt)
 
-unbundle no_MFOTL_syntax
+unbundle no MFOTL_syntax
 
 (*<*)
 end

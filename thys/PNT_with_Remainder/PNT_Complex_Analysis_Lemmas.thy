@@ -804,5 +804,6 @@ proof -
        (auto intro: analytic_on_imp_differentiable_at [OF af])
 qed
 
-unbundle no_pnt_syntax
+unbundle no pnt_syntax
+
 end

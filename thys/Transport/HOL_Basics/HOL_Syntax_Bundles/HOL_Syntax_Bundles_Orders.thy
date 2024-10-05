@@ -18,20 +18,5 @@ notation (ASCII)
   less_eq  (\<open>(_/ <= _)\<close> [51, 51] 50)
 notation (input) greater_eq (infix \<open>>=\<close> 50)
 end
-bundle no_HOL_order_syntax
-begin
-no_notation
-  less_eq  (\<open>'(\<le>')\<close>) and
-  less_eq  (\<open>(_/ \<le> _)\<close>  [51, 51] 50) and
-  less  (\<open>'(<')\<close>) and
-  less  (\<open>(_/ < _)\<close>  [51, 51] 50)
-no_notation (input) greater_eq (infix \<open>\<ge>\<close> 50)
-no_notation (input) greater (infix \<open>>\<close> 50)
-no_notation (ASCII)
-  less_eq  (\<open>'(<=')\<close>) and
-  less_eq  (\<open>(_/ <= _)\<close> [51, 51] 50)
-no_notation (input) greater_eq (infix \<open>>=\<close> 50)
-end
-
 
 end

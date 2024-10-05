@@ -842,7 +842,7 @@ proof -
     by (simp add: mult_ac)
 qed
 
-unbundle no_bernoulli_syntax
+unbundle no bernoulli_syntax
 
 end
 

@@ -43,12 +43,6 @@ notation quat_ii (\<open>\<i>\<close>)
 no_notation Complex.imaginary_unit (\<open>\<i>\<close>)
 end
 
-bundle no_quaternion_syntax
-begin
-no_notation quat_ii (\<open>\<i>\<close>)
-notation Complex.imaginary_unit (\<open>\<i>\<close>)
-end
-
 subsection \<open>Addition and Subtraction: An Abelian Group\<close>
 
 instantiation quat :: ab_group_add
@@ -740,7 +734,7 @@ proof -
     by (simp add: eq)
 qed
 
-unbundle no_quaternion_syntax
+unbundle no quaternion_syntax
 
 end
 

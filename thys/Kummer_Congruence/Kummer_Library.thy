@@ -456,11 +456,6 @@ begin
 notation bernoulli_rat (\<open>\<B>\<close>)
 end
 
-bundle no_bernoulli_syntax
-begin
-no_notation bernoulli_rat (\<open>\<B>\<close>)
-end
-
 lemma bernoulli_num_eq_0_iff: "bernoulli_num n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
 proof -
   have "bernoulli_num n = 0 \<longleftrightarrow> real_of_int (bernoulli_num n) / real (bernoulli_denom n) = 0"

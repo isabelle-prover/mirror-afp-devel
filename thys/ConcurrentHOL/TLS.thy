@@ -3063,12 +3063,6 @@ notation tls.singleton (\<open>\<lblot>_\<rblot>\<^sub>T\<close> [0])
 notation tls.from_spec (\<open>\<lparr>_\<rparr>\<close> [0])
 end
 
-bundle no_extra_syntax
-begin
-no_notation tls.singleton (\<open>\<lblot>_\<rblot>\<^sub>T\<close> [0])
-no_notation tls.from_spec (\<open>\<lparr>_\<rparr>\<close> [0])
-end
-
 setup \<open>Sign.parent_path\<close>
 (*<*)
 

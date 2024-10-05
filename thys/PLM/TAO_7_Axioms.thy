@@ -17,8 +17,8 @@ text\<open>
 (* TODO: why is this needed again here? The syntax should already
          have been disabled in TAO_Semantics. *)
 (* disable list syntax [] to replace it with truth evaluation *)
-(*<*) unbundle no_list_syntax (*>*) 
-(*<*) unbundle no_listcompr_syntax (*>*) 
+(*<*) unbundle no list_syntax (*>*) 
+(*<*) unbundle no listcompr_syntax (*>*) 
 
 locale Axioms
 begin

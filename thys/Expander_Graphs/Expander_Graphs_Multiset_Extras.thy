@@ -220,6 +220,6 @@ lemma sum_mset_repeat:
   shows "sum_mset (image_mset f (repeat_mset n A)) = of_nat n * sum_mset (image_mset f A)"
   by (induction n, auto simp add:sum_mset.distrib algebra_simps)
 
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 end

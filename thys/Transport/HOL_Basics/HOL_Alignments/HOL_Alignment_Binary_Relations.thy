@@ -8,7 +8,7 @@ theory HOL_Alignment_Binary_Relations
     LBinary_Relations
 begin
 
-unbundle no_HOL_relation_syntax
+unbundle no HOL_relation_syntax
 
 named_theorems HOL_bin_rel_alignment
 

@@ -5762,7 +5762,7 @@ lemma edia_left_dist_oU:
 
 subsection \<open>Goldblatt's axioms with star\<close>
 
-unbundle no_rtrancl_syntax
+unbundle no rtrancl_syntax
 notation star (\<open>_\<^sup>*\<close> [1000] 999)
 
 lemma star_induct_1:

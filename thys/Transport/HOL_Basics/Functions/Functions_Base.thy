@@ -20,11 +20,6 @@ begin
 notation comp (infixl \<open>\<circ>\<close> 55)
 end
 
-bundle no_comp_syntax
-begin
-no_notation comp (infixl \<open>\<circ>\<close> 55)
-end
-
 definition "comp_fun f g x \<equiv> f (g x)"
 adhoc_overloading comp comp_fun
 
@@ -48,15 +43,6 @@ definition "fun_map f g h \<equiv> dep_fun_map f (\<lambda>_ _. g) h"
 open_bundle dep_fun_map_syntax
 begin
 syntax
-  "_fun_map" :: "('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow>
-    ('a \<Rightarrow> 'd)" (\<open>(_) \<leadsto> (_)\<close> [41, 40] 40)
-  "_dep_fun_map" :: "idt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow>
-    ('a \<Rightarrow> 'd)" (\<open>'(_/ : / _') \<leadsto> (_)\<close> [41, 41, 40] 40)
-end
-
-bundle no_dep_fun_map_syntax
-begin
-no_syntax
   "_fun_map" :: "('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow>
     ('a \<Rightarrow> 'd)" (\<open>(_) \<leadsto> (_)\<close> [41, 40] 40)
   "_dep_fun_map" :: "idt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow>

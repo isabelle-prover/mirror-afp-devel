@@ -14,12 +14,6 @@ syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarr
 notation bin_rel (infixr \<open>{\<times>}\<close> 51)
 end
 
-bundle no_bin_rel_syntax
-begin
-no_syntax "_dep_bin_rel" :: \<open>idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c\<close> (\<open>{\<Sum>}_ : _./ _\<close> [51, 50, 50] 51)
-no_notation bin_rel (infixr \<open>{\<times>}\<close> 51)
-end
-
 syntax_consts
   "_dep_bin_rel" \<rightleftharpoons> dep_bin_rel
 translations

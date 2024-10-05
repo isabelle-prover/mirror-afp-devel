@@ -1012,5 +1012,6 @@ proof -
     by (simp add: c_def A_def I_def g_def)
 qed
 
-unbundle no_pnt_syntax
+unbundle no pnt_syntax
+
 end

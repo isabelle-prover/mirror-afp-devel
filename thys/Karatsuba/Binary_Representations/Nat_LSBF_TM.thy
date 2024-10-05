@@ -542,13 +542,4 @@ notation grid_mul_nat_tm (infixl \<open>*\<^sub>n\<^sub>t\<close> 70)
 notation shift_right_tm_flip (infixl \<open>>>\<^sub>n\<^sub>t\<close> 55)
 end
 
-bundle no_nat_lsbf_tm_syntax
-begin
-no_notation add_nat_tm (infixl \<open>+\<^sub>n\<^sub>t\<close> 65)
-no_notation compare_nat_tm (infixl \<open>\<le>\<^sub>n\<^sub>t\<close> 50)
-no_notation subtract_nat_tm (infixl \<open>-\<^sub>n\<^sub>t\<close> 65)
-no_notation grid_mul_nat_tm (infixl \<open>*\<^sub>n\<^sub>t\<close> 70)
-no_notation shift_right_tm_flip (infixl \<open>>>\<^sub>n\<^sub>t\<close> 55)
-end
-
 end

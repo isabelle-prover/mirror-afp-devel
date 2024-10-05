@@ -1556,24 +1556,6 @@ notation (ASCII)
 
 end
 
-open_bundle no_finfun_syntax
-begin
-
-no_type_notation
-  finfun (\<open>(_ \<Rightarrow>f /_)\<close> [22, 21] 21)
-
-no_notation
-  finfun_const (\<open>K$/ _\<close> [0] 1) and
-  finfun_update (\<open>_'(_ $:= _')\<close> [1000, 0, 0] 1000) and
-  finfun_apply (infixl \<open>$\<close> 999) and
-  finfun_comp (infixr \<open>\<circ>$\<close> 55) and
-  finfun_comp2 (infixr \<open>$\<circ>\<close> 55) and
-  finfun_Diag (\<open>(1'($_,/ _$'))\<close> [0, 0] 1000)
-
-no_notation (ASCII) 
-  finfun_comp (infixr \<open>o$\<close> 55) and
-  finfun_comp2 (infixr \<open>$o\<close> 55)
-
-end
+unbundle no finfun_syntax
 
 end

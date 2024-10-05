@@ -2015,7 +2015,7 @@ begin
     bicategory
   begin
 
-    unbundle no_rtrancl_syntax
+    unbundle no rtrancl_syntax
 
     definition some_right_adjoint  (\<open>_\<^sup>*\<close> [1000] 1000)
     where "f\<^sup>* \<equiv> SOME g. adjoint_pair f g"

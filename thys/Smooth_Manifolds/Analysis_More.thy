@@ -1232,12 +1232,13 @@ lemma (in bounded_linear) frechet_derivative:
    apply (rule has_derivative)
   by (auto intro!: derivative_eq_intros)
 
-bundle no_matrix_mult begin
-no_notation matrix_matrix_mult (infixl \<open>**\<close> 70)
+bundle matrix_mult
+begin
+notation matrix_matrix_mult (infixl \<open>**\<close> 70)
 end
 
 lemma (in bounded_bilinear) frechet_derivative:
-  includes no_matrix_mult
+  includes no matrix_mult
   shows
     "x differentiable at a \<Longrightarrow> y differentiable at a \<Longrightarrow>
       frechet_derivative (\<lambda>a. x a ** y a) (at a) =

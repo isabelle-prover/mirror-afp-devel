@@ -635,5 +635,6 @@ qed
 
 lemma C\<^sub>1_gt_zero: "0 < C\<^sub>1" unfolding PNT_const_C\<^sub>1_def by auto
 
-unbundle no_pnt_syntax
+unbundle no pnt_syntax
+
 end

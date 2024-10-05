@@ -419,7 +419,7 @@ lemma while_pres_conj: "(x::'a::mbt_algebra_fusion) \<in> conjunctive \<Longrigh
   apply(unfold while_def)
   by (simp add: comp_pres_conj omega_pres_conj)
 
-unbundle no_lattice_syntax
+unbundle no lattice_syntax
 
 end
 

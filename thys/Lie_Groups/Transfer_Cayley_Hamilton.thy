@@ -105,14 +105,9 @@ lemma EQ_intro: "EQ (of_fun f) (\<chi> i j. g i j)"
 
 end
 
-subsection \<open>Notation bundles\<close>
 bundle transfer_CH_matrix_syntax
 begin
-  notation EQ (infix \<open>\<cong>\<close> 80)
-end
-  
-bundle no_transfer_CH_matrix_syntax begin
-  no_notation EQ (infix \<open>\<cong>\<close> 80)
+notation EQ (infix \<open>\<cong>\<close> 80)
 end
 
 subsection \<open>Transfer rules\<close>

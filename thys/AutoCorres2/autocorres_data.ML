@@ -608,7 +608,8 @@ fun add_definition_and_corres_proof_locales (prog_info:ProgramInfo.prog_info) ba
     |> HP.add_locale (Binding.name corresL) (Binding.name corresL)
         (canonical_imports thy imports_corres) 
         [])
-    ||> (member (op =) [FI.HL, FI.WA, FI.TS] phase andalso is_addressed) ? Bundle.unbundle [perhaps_intern_global_impl_corres_bundle thy phase filename]
+    ||> (member (op =) [FI.HL, FI.WA, FI.TS] phase andalso is_addressed) ?
+          Bundle.unbundle [(true, perhaps_intern_global_impl_corres_bundle thy phase filename)]
     ||> Local_Theory.exit_global                                                             
     |> (fn (corresL, thy) => thy 
     |> length clique > 1 ? fold (add_alias_locale corresL) corresLs

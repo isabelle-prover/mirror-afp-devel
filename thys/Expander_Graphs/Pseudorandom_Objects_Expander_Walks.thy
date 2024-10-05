@@ -301,11 +301,6 @@ begin
 notation expander_pro (\<open>\<E>\<close>)
 end
 
-bundle no_expander_pseudorandom_object_syntax
-begin
-no_notation expander_pro (\<open>\<E>\<close>)
-end
-
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 end

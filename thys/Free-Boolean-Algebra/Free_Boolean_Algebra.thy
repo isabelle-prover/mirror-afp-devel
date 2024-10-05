@@ -743,6 +743,6 @@ text \<open>
   the syntax, users should unbundle \<open>lattice_syntax\<close>.
 \<close>
 
-unbundle no_lattice_syntax
+unbundle no lattice_syntax
 
 end

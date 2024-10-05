@@ -7,8 +7,7 @@ theory Clique_Large_Monotone_Circuits
 begin
 
 text \<open>disable list-syntax\<close>
-unbundle no_list_syntax
-unbundle no_listcompr_syntax
+unbundle no list_syntax and no listcompr_syntax
 
 hide_const (open) Sigma_Algebra.measure
 

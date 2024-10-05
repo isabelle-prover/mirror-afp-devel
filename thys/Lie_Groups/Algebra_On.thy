@@ -286,7 +286,7 @@ text \<open>
 (*no_translations
   "[x, xs]" == "x#[xs]"
   "[x]" == "x#[]"
-unbundle no_list_syntax
+unbundle no list_syntax
 no_notation Nil  ("[]")*)
 (*end*)
 

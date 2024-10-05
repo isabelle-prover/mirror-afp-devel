@@ -1464,6 +1464,6 @@ lemmas (in regular_graph) \<Lambda>\<^sub>2_range =
     internalize_sort "'n :: finite", OF _ regular_graph_axioms,
     unfolded remove_finite_premise, cancel_type_definition, OF verts_non_empty]
 
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 end

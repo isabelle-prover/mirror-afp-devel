@@ -17,11 +17,4 @@ notation norm (\<open>\<parallel>_\<parallel>\<close>)
 notation Suc (\<open>_\<^sub>+\<close> [101] 100)
 end
 
-bundle no_pnt_syntax
-begin
-no_notation PNT_const_C\<^sub>1 (\<open>C\<^sub>1\<close>)
-no_notation norm (\<open>\<parallel>_\<parallel>\<close>)
-no_notation Suc (\<open>_\<^sub>+\<close> [101] 100)
-end
-
 end

@@ -17,12 +17,6 @@ notation eval (\<open>'(`')\<close>)
 notation eval (\<open>(_`_)\<close> [999, 1000] 999)
 end
 
-bundle no_eval_syntax
-begin
-no_notation eval (\<open>'(`')\<close>)
-no_notation eval (\<open>(_`_)\<close> [999, 1000] 999)
-end
-
 lemma eval_eq_if_right_unique_onI:
   assumes "right_unique_on P R"
   and "P x"

@@ -1121,6 +1121,6 @@ proof -
 qed
 
 hide_const (open) C\<^sub>3 C\<^sub>4 C\<^sub>5
-unbundle no_prime_counting_syntax
-unbundle no_pnt_syntax
+unbundle no prime_counting_syntax and no pnt_syntax
+
 end

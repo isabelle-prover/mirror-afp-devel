@@ -554,10 +554,6 @@ type_notation vec (infixl \<open>^\<close> 15)
 notation nth_vec (infixl \<open>$\<close> 90) and vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
-open_bundle no_vec_syntax
-begin
-no_type_notation vec (infixl \<open>^\<close> 15)
-no_notation nth_vec (infixl \<open>$\<close> 90) and vec_lambda (binder \<open>\<chi>\<close> 10)
-end
+unbundle no vec_syntax
 
 end

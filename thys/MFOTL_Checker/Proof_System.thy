@@ -527,7 +527,7 @@ lemma SAT_or_VIO: "SAT \<sigma> v i \<phi> \<or> VIO \<sigma> v i \<phi>"
 
 end
 
-unbundle no_MFOTL_syntax
+unbundle no MFOTL_syntax
 
 (*<*)
 end

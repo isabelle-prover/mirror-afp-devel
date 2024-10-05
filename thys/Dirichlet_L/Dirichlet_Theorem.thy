@@ -93,7 +93,7 @@ context dcharacter
 begin
 
 context
-  includes no_vec_lambda_syntax and dcharacter_syntax
+  includes no vec_lambda_syntax and dcharacter_syntax
   fixes L
   assumes nonprincipal: "\<chi> \<noteq> \<chi>\<^sub>0"
   defines "L \<equiv> Dirichlet_L n \<chi> 1"
@@ -175,7 +175,7 @@ text \<open>
 context residues_nat
 begin
 context
-  includes no_vec_lambda_syntax and dcharacter_syntax
+  includes no vec_lambda_syntax and dcharacter_syntax
 begin
 
 lemma principal_dchar_sum_bound:

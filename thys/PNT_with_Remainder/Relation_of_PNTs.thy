@@ -419,6 +419,6 @@ theorem PNT_3_imp_PNT_1:
   by (intro PNT_2_imp_PNT_1 PNT_3_imp_PNT_2 assms)
 
 hide_const (open) r\<^sub>1 r\<^sub>2
-unbundle no_prime_counting_syntax
-unbundle no_pnt_syntax
+unbundle no prime_counting_syntax and no pnt_syntax
+
 end

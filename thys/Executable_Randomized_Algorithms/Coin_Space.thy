@@ -28,11 +28,6 @@ begin
 notation discrete_sigma_algebra (\<open>\<D>\<close>)
 end
 
-bundle no_discrete_sigma_algebra_syntax
-begin
-no_notation discrete_sigma_algebra (\<open>\<D>\<close>)
-end
-
 lemma map_prod_measurable[measurable]:
   assumes "f \<in> M \<rightarrow>\<^sub>M M'"
   assumes "g \<in> N \<rightarrow>\<^sub>M N'"
@@ -542,11 +537,6 @@ definition coin_space :: "coin_stream measure"
 open_bundle coin_space_syntax
 begin
 notation coin_space (\<open>\<B>\<close>)
-end
-
-bundle no_coin_space_syntax
-begin
-no_notation coin_space (\<open>\<B>\<close>)
 end
 
 lemma space_coin_space: "space \<B> = UNIV"

@@ -17,9 +17,7 @@ theory Complex_L2
     "HOL-Analysis.Infinite_Sum"
 begin
 
-unbundle lattice_syntax
-unbundle cblinfun_syntax
-unbundle no_blinfun_apply_syntax
+unbundle lattice_syntax and cblinfun_syntax and no blinfun_apply_syntax
 
 subsection \<open>l2 norm of functions\<close>
 
@@ -1741,8 +1739,6 @@ next
   finally show "classical_operator (Some \<circ> \<pi>) o\<^sub>C\<^sub>L classical_operator (Some \<circ> \<pi>)* = id_cblinfun".
 qed
 
-
-unbundle no_lattice_syntax
-unbundle no_cblinfun_syntax
+unbundle no lattice_syntax and no cblinfun_syntax
 
 end

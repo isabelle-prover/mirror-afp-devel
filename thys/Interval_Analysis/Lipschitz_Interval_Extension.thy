@@ -50,14 +50,10 @@ definition lipschitzI_on\<^marker>\<open>tag important\<close> :: "'a::{zero,min
 
 text \<open>The definition @{term "lipschitzI_on"} refers to definition 6.1 in\<^cite>\<open>"moore.ea:introduction:2009"\<close>\<close>
 
-bundle lipschitzI_syntax begin
+open_bundle lipschitzI_syntax
+begin
 notation\<^marker>\<open>tag important\<close> lipschitzI_on (\<open>_-lipschitzI'_on\<close> [1000])
 end
-bundle no_lipschitzI_syntax begin
-no_notation lipschitzI_on (\<open>_-lipschitzI'_on\<close> [1000])
-end
-
-unbundle lipschitzI_syntax
 
 lemma lipschitzI_onI: "C-lipschitzI_on U F"
   if "\<And>x . x \<in> U \<Longrightarrow> width (F x) \<le> C * width x" "0 \<le> C"

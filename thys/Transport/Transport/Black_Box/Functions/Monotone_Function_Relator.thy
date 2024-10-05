@@ -18,15 +18,6 @@ syntax
   "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
 end
-bundle no_Mono_Dep_Fun_Rel_syntax begin
-no_syntax
-  "_Mono_Fun_Rel_rel" :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow>
-    ('a \<Rightarrow> 'b) \<Rightarrow> bool" (\<open>(_) \<Rrightarrow>\<oplus> (_)\<close> [41, 40] 40)
-  "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)
-  "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
-end
 
 syntax_consts
   "_Mono_Fun_Rel_rel" \<rightleftharpoons> Mono_Fun_Rel and

@@ -81,8 +81,8 @@ attribute_setup expand3 = \<open>
   Scan.succeed (Thm.rule_attribute [] 
     (fn _ => fn thm => thm RS @{thm expand_def3}))
 \<close>
-unbundle no_list_syntax
-unbundle no_listcompr_syntax
+unbundle no list_syntax
+unbundle no listcompr_syntax
 (*>*)
   
 (* abstract in thesis/root.tex *)

@@ -1034,7 +1034,7 @@ let
         in fold_map def defines lthy end
     in
       thy
-      |> Named_Target.init [vars_bundle] globloc
+      |> Named_Target.init [(true, vars_bundle)] globloc
       |> def_elem |> snd
       |> Local_Theory.exit_global
     end
@@ -1130,7 +1130,7 @@ let
         val vars_bundle = NameGeneration.intern_variables_bundle_name thy name
         (* jump into an sig_locale corresponding to globloc to parse the tstr; this lthy
            is dropped and not used again *)
-        val lthy = Named_Target.init [vars_bundle] globloc thy
+        val lthy = Named_Target.init [(true, vars_bundle)] globloc thy
         val t = Syntax.read_term lthy tstr
         val _ = informStr (0, "Adding spec locale "^speclocalename^
                          (if speclocalename = "" then "" else " ")^
@@ -1146,7 +1146,7 @@ let
             |> add_locale speclocalename_b speclocalename_b
                  (map (import [] thy) [globloc], [])
                  [e']
-            ||> Bundle.unbundle [vars_bundle]
+            ||> Bundle.unbundle [(true, vars_bundle)]
 
         (* localename is the name we wanted, locname is the name Isabelle
            gives back to us.  This will be properly qualified yadda yadda *)

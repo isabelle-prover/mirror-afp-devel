@@ -22,17 +22,9 @@ open_bundle norm_syntax begin
 notation norm (\<open>\<parallel>_\<parallel>\<close>)
 end
 
-bundle no_norm_syntax begin
-no_notation norm (\<open>\<parallel>_\<parallel>\<close>)
-end
-
 text\<open>Notation for apply bilinear function\<close>
 open_bundle blinfun_apply_syntax begin
 notation blinfun_apply (infixr \<open>*\<^sub>v\<close> 70)
-end
-
-bundle no_blinfun_apply_syntax begin
-no_notation blinfun_apply (infixr \<open>*\<^sub>v\<close> 70)
 end
 
 lemma bdd_above_plus:
@@ -889,6 +881,6 @@ qed
 
 unbundle blinfun_apply_syntax
 
-unbundle no_norm_syntax
+unbundle no norm_syntax
 
 end

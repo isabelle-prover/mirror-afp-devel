@@ -1546,7 +1546,6 @@ proof-
     by (simp add: d_def gs_def mk_projector_def)
 qed
 
-unbundle no_jnf_syntax
-unbundle no_cblinfun_syntax
+unbundle no jnf_syntax and no cblinfun_syntax
 
 end

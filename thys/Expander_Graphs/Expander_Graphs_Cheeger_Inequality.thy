@@ -692,7 +692,7 @@ theorem cheeger_inequality:
   shows "\<Lambda>\<^sub>e \<in> {d * (1 - \<Lambda>\<^sub>2) / 2.. d * sqrt (2 * (1 - \<Lambda>\<^sub>2))}"
   using cheeger_aux_1 cheeger_aux_2 assms by auto
 
-unbundle no_intro_cong_syntax
+unbundle no intro_cong_syntax
 
 end
 

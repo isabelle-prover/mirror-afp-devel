@@ -131,14 +131,6 @@ notation primes_psi   (\<open>\<psi>\<close>)
 notation primes_M     (\<open>\<MM>\<close>)
 end
 
-bundle no_prime_counting_syntax
-begin
-no_notation primes_pi    (\<open>\<pi>\<close>)
-no_notation primes_theta (\<open>\<theta>\<close>)
-no_notation primes_psi   (\<open>\<psi>\<close>)
-no_notation primes_M     (\<open>\<MM>\<close>)
-end
-
 lemmas \<pi>_def = primes_pi_def
 lemmas \<theta>_def = primes_theta_def
 lemmas \<psi>_def = primes_psi_def
@@ -1516,7 +1508,7 @@ proof -
 qed
 
 (*<*)
-unbundle no_prime_counting_syntax
+unbundle no prime_counting_syntax
 (*>*)
 
 end

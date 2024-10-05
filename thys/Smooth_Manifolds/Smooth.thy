@@ -1025,7 +1025,7 @@ lemma smooth_on_sum:
   by (auto simp: smooth_on_def higher_differentiable_on_sum)
 
 lemma (in bounded_bilinear) smooth_on:
-  includes no_matrix_mult
+  includes no matrix_mult
   assumes "k-smooth_on S f" "k-smooth_on S g" "open S"
   shows "k-smooth_on S (\<lambda>x. (f x) ** (g x))"
   using assms

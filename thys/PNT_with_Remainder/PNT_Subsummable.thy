@@ -303,5 +303,6 @@ proof -
     by (simp add: sum.inter_restrict [symmetric])
 qed
 
-unbundle no_pnt_syntax
+unbundle no pnt_syntax
+
 end

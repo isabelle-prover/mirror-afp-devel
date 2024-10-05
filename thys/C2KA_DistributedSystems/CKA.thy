@@ -23,7 +23,7 @@ theory CKA
   imports Main
 begin
 
-unbundle no_rtrancl_syntax
+unbundle no rtrancl_syntax
 
 notation
 times (infixl \<open>*\<close> 70)

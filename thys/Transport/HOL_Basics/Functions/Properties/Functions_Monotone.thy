@@ -31,19 +31,6 @@ syntax
     (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
 
-bundle no_dep_mono_wrt_syntax
-begin
-no_syntax
-  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>\<Rightarrow>\<close> 50)
-  "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
-    (\<open>'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50] 50)
-  "_dep_mono_wrt_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50, 50] 50)
-  "_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>'(_/ :/ _') \<Rightarrow> (_)\<close> [51, 50, 50] 50)
-  "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
-    (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
-end
-
 syntax_consts
   "_mono_wrt" \<rightleftharpoons> mono_wrt and
   "_dep_mono_wrt_rel" "_dep_mono_wrt_rel_if" "_dep_mono_wrt_pred" "_dep_mono_wrt_pred_if" \<rightleftharpoons> dep_mono_wrt

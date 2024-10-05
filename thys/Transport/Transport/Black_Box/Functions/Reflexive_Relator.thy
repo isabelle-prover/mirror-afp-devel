@@ -13,11 +13,6 @@ begin
 notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000])
 end
 
-bundle no_Refl_Rel_syntax
-begin
-no_notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000])
-end
-
 lemma Refl_RelI [intro]:
   assumes "R x x"
   and "R y y"

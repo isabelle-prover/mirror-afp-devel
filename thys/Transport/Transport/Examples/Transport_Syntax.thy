@@ -16,24 +16,11 @@ begin
   notation ge_Galois (\<open>'((\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>)')\<close>)
   notation ge_Galois_infix (\<open>(_) (\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>) (_)\<close> [51,51,51,51,51] 50)
 end
-bundle no_galois_rel_syntax
-begin
-  no_notation galois_rel.Galois (\<open>'((\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>(_) (_)\<^esub>)')\<close>)
-  no_notation Galois_infix (\<open>(_) (\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>(_) (_)\<^esub>) (_)\<close> [51,51,51,51,51] 50)
-  no_notation ge_Galois (\<open>'((\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>)')\<close>)
-  no_notation ge_Galois_infix (\<open>(_) (\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>) (_)\<close> [51,51,51,51,51] 50)
-end
 
 bundle transport_syntax
 begin
   notation transport.preorder_equivalence (infix \<open>\<equiv>\<^bsub>pre\<^esub>\<close> 50)
   notation transport.partial_equivalence_rel_equivalence (infix \<open>\<equiv>\<^bsub>PER\<^esub>\<close> 50)
 end
-bundle no_transport_syntax
-begin
-  no_notation transport.preorder_equivalence (infix \<open>\<equiv>\<^bsub>pre\<^esub>\<close> 50)
-  no_notation transport.partial_equivalence_rel_equivalence (infix \<open>\<equiv>\<^bsub>PER\<^esub>\<close> 50)
-end
-
 
 end

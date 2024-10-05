@@ -70,7 +70,7 @@ lemma is_Var_Eq_Zero_if_is_NEq_constrs_fm:
   by (induction \<phi>) (use is_Var_Eq_Zero_if_is_NEq_constrs_atom in auto)
 
 lemma types_term_if_I_atom_constrs_term:
-  includes no_member_ASCII_syntax
+  includes no member_ASCII_syntax
   assumes "(\<forall>e \<in> set (constrs_term n t). MLSS_Suc_Theory.I_atom v e)"
   shows "(\<lambda>x. v (n (Var x))) \<turnstile> t : v (n t)"
   using assms
@@ -93,7 +93,7 @@ lemma types_pset_fm_if_I_atom_constrs_fm:
      (auto intro: types_fmI types_pset_atom_if_I_atom_constrs_atom)
 
 lemma I_atom_constrs_term_if_types_term:
-  includes no_member_ASCII_syntax
+  includes no member_ASCII_syntax
   assumes "inj_on n T" "subterms t \<subseteq> T"
   assumes "v \<turnstile> t : k"
   shows "(\<forall>e \<in> set (constrs_term n t).
@@ -176,7 +176,7 @@ qed
 
   
 lemma types_term_minimal:
-  includes no_member_ASCII_syntax
+  includes no member_ASCII_syntax
   assumes "\<And>z. z \<in> vars t \<Longrightarrow> v_min z \<le> v z"
   assumes "v_min \<turnstile> t : k'" "v \<turnstile> t : k"
   shows "k' \<le> k"
@@ -201,7 +201,7 @@ lemma constrs_term_subs_constrs_fm:
   by (induction \<phi>) (auto simp: constrs_term_subs_constrs_atom)
 
 lemma urelem_iff_assign_eq_0:
-  includes no_member_ASCII_syntax
+  includes no member_ASCII_syntax
   assumes "inj_on n (subterms \<phi>)"
   assumes "t \<in> subterms \<phi>"
   assumes "ssolve (MLSS_Suc_Theory.elim_NEq_Zero (constrs_fm n \<phi>)) = Some ss"

@@ -732,11 +732,6 @@ begin
 notation nth_eucl (infixl \<open>$\<^sub>e\<close> 90)
 end
 
-bundle no_eucl_syntax
-begin
-no_notation nth_eucl (infixl \<open>$\<^sub>e\<close> 90)
-end
-
 lemma eucl_of_list_eucl_nth:
   "(eucl_of_list xs::'a) $\<^sub>e i = xs ! i"
   if "length xs = DIM('a::executable_euclidean_space)"

@@ -19,7 +19,7 @@ imports "HOL-Hoare.Hoare_Logic" Rooted_Paths
 
 begin
 
-unbundle no_trancl_syntax
+unbundle no trancl_syntax
 
 class choose_singleton_point_signature =
   fixes choose_singleton :: "'a \<Rightarrow> 'a"

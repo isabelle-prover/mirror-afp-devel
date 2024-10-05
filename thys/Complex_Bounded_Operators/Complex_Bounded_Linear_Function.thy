@@ -5119,15 +5119,6 @@ notation adj (\<open>_*\<close> [99] 100)
 type_notation cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21)
 end
 
-bundle no_cblinfun_syntax begin
-no_notation cblinfun_compose (infixl \<open>o\<^sub>C\<^sub>L\<close> 67)
-no_notation cblinfun_apply (infixr \<open>*\<^sub>V\<close> 70)
-no_notation cblinfun_image (infixr \<open>*\<^sub>S\<close> 70)
-no_notation adj (\<open>_*\<close> [99] 100)
-no_type_notation cblinfun (\<open>(_ \<Rightarrow>\<^sub>C\<^sub>L /_)\<close> [22, 21] 21)
-end
-
-unbundle no_cblinfun_syntax
-unbundle no_lattice_syntax
+unbundle no cblinfun_syntax and no lattice_syntax
 
 end

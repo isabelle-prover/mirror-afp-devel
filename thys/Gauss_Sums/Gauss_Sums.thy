@@ -18,10 +18,7 @@ begin
 notation vec_lambda (binder \<open>\<chi>\<close> 10)
 end
 
-open_bundle no_vec_lambda_syntax
-begin
-no_notation vec_lambda (binder \<open>\<chi>\<close> 10)
-end
+unbundle no vec_lambda_syntax
 
 
 subsection \<open>Definition and basic properties\<close>
@@ -1436,7 +1433,7 @@ qed
 
 text\<open>Theorem 8.20\<close>
 theorem (in primitive_dchar) fourier_primitive:
-  includes no_vec_lambda_syntax
+  includes no vec_lambda_syntax
   fixes \<tau> :: complex
   defines "\<tau> \<equiv> gauss_sum 1 / sqrt n"
   shows   "\<chi> m = \<tau> / sqrt n * (\<Sum>k=1..n. cnj (\<chi> k) * unity_root n (-m*k))"

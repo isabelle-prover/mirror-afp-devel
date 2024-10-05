@@ -749,7 +749,7 @@ corollary prime_harmonic_diverges: "filterlim (prime_sum_upto (\<lambda>p. 1 / p
   by (rule asymp_equiv_at_top_transfer) real_asymp
 
 (*<*)
-unbundle no_prime_counting_syntax
+unbundle no prime_counting_syntax
 (*>*)
 
 end

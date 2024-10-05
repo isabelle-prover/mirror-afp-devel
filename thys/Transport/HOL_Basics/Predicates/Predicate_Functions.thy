@@ -20,11 +20,6 @@ begin
 notation (output) pred_if (infixl \<open>\<longrightarrow>\<close> 50)
 end
 
-bundle no_pred_if_syntax
-begin
-no_notation (output) pred_if (infixl \<open>\<longrightarrow>\<close> 50)
-end
-
 definition "pred_if_pred B P x \<equiv> B \<longrightarrow> P x"
 adhoc_overloading pred_if pred_if_pred
 

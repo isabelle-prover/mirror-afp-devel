@@ -662,9 +662,6 @@ derive (eq) ceq ell2
 derive (no) ccompare ell2
 derive (monad) set_impl ell2
 
-
-unbundle no_lattice_syntax
-unbundle no_jnf_syntax
-unbundle no_cblinfun_syntax
+unbundle no lattice_syntax and no jnf_syntax and no cblinfun_syntax
 
 end

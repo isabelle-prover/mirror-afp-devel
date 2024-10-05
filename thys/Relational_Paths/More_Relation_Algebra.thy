@@ -17,7 +17,7 @@ imports Relation_Algebra.Relation_Algebra_RTC Relation_Algebra.Relation_Algebra_
 
 begin
 
-unbundle no_trancl_syntax
+unbundle no trancl_syntax
 
 context relation_algebra
 begin

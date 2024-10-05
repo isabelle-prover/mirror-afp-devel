@@ -52,17 +52,6 @@ notation idx_udivide (\<open>_ \<inverse>\<^sub>C\<index>\<close> [81] 80)
 notation idx_pow  (infixr \<open>^\<^sub>C\<index>\<close> 75)
 end
 
-bundle no_index_algebra_syntax
-begin
-no_notation idx_zero (\<open>0\<^sub>C\<index>\<close>)
-no_notation idx_one (\<open>1\<^sub>C\<index>\<close>)
-no_notation idx_plus (infixl \<open>+\<^sub>C\<index>\<close> 65)
-no_notation idx_mult (infixl \<open>*\<^sub>C\<index>\<close> 70)
-no_notation idx_uminus (\<open>-\<^sub>C\<index> _\<close> [81] 80)
-no_notation idx_udivide (\<open>_ \<inverse>\<^sub>C\<index>\<close> [81] 80)
-no_notation idx_pow  (infixr \<open>^\<^sub>C\<index>\<close> 75)
-end
-
 definition ring_of :: "('a,'b) idx_ring_scheme \<Rightarrow> 'a ring"
   where "ring_of A = \<lparr>
     carrier = {x. idx_pred A x},

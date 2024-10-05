@@ -4,9 +4,10 @@ theory Blinfun_To_Matrix
     "Perron_Frobenius.HMA_Connect" 
     "MDP-Rewards.Blinfun_Util"
 begin
-unbundle no_vec_syntax
+unbundle no vec_syntax
 hide_const Finite_Cartesian_Product.vec
 hide_type Finite_Cartesian_Product.vec
+
 subsubsection \<open>Gauss Seidel is a Regular Splitting\<close>
 
 abbreviation "mat_inv m \<equiv> the (mat_inverse m)"
@@ -127,7 +128,7 @@ lemma nonneg_mult_vec_mono:
   unfolding Matrix.less_eq_mat_def Matrix.less_eq_vec_def
   by (auto simp: Matrix.scalar_prod_def intro!: sum_mono mult_left_mono)
   
-unbundle no_vec_syntax
+unbundle no vec_syntax
 
 lemma nonneg_blinfun_mat: "nonneg_blinfun (mat_to_blinfun M) \<longleftrightarrow> (0\<^sub>m (dim_row M) (dim_col M) \<le> M)"
 proof

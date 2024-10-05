@@ -1284,7 +1284,7 @@ next
 qed
 
 (*<*)
-unbundle no_prime_counting_syntax
+unbundle no prime_counting_syntax
 (*>*)
 
 end

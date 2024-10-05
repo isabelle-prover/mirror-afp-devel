@@ -498,15 +498,4 @@ notation geom_pro (\<open>\<G>\<close>)
 notation prod_pro (infixr \<open>\<times>\<^sub>P\<close> 65)
 end
 
-bundle no_pseudorandom_object_syntax
-begin
-no_notation hash_pro (\<open>\<H>\<close>)
-no_notation hash_pro_spmf (\<open>\<H>\<^sub>S\<close>)
-no_notation hash_pro_pmf (\<open>\<H>\<^sub>P\<close>)
-no_notation list_pro (\<open>\<L>\<close>)
-no_notation nat_pro (\<open>\<N>\<close>)
-no_notation geom_pro (\<open>\<G>\<close>)
-no_notation prod_pro (infixr \<open>\<times>\<^sub>P\<close> 65)
-end
-
 end

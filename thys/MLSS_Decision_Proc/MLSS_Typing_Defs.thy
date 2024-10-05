@@ -42,7 +42,7 @@ adhoc_overloading types types_pset_atom types_pset_fm
 inductive_cases types_pset_atom_Member_cases:
   "v \<turnstile> s \<in>\<^sub>s t1 \<squnion>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 \<sqinter>\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s t1 -\<^sub>s t2" "v \<turnstile> s \<in>\<^sub>s Single t"
 
-context includes no_member_ASCII_syntax
+context includes no member_ASCII_syntax
 begin
 abbreviation "urelem' v (\<phi> :: 'a pset_fm) t \<equiv> v \<turnstile> \<phi> \<and> v \<turnstile> t : 0"
 end

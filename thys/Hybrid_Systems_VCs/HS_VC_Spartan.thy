@@ -17,7 +17,7 @@ begin
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-unbundle no_rtrancl_syntax
+unbundle no rtrancl_syntax
 
 notation Union (\<open>\<mu>\<close>)
      and g_orbital (\<open>(1x\<acute>=_ & _ on _ _ @ _)\<close>)

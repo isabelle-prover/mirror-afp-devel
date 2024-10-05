@@ -10,11 +10,6 @@ begin
 notation rev_implies (infixr \<open>\<longleftarrow>\<close> 25)
 end
 
-bundle no_rev_implies_syntax
-begin
-no_notation rev_implies (infixr \<open>\<longleftarrow>\<close> 25)
-end
-
 lemma rev_imp_eq_imp_inv [simp]: "(\<longleftarrow>) = (\<longrightarrow>)\<inverse>"
   unfolding rev_implies_def by simp
 
