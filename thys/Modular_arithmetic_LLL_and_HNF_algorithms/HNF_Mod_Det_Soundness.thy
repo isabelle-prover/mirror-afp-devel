@@ -3654,8 +3654,8 @@ next
               list.set_intros(2) old.prod.case by auto
           finally show ?thesis .
         qed
-    qed
-  next
+      qed
+    next
       case False
       show ?thesis using 2 i j xn 
         by (smt (verit) False dim_col_mat(1) dim_row_mat(1) index_mat(1) insert_iff list.set(2) prod.simps(2))
