@@ -13,16 +13,13 @@ consts crel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle crel_mono_wrt_syntax
 begin
+notation "crel_mono_wrt" (infixr "\<rightarrow>\<^sub>c" 50)
 syntax
-  "_crel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>(_) \<rightarrow>\<^sub>c (_)\<close> [51, 50] 50)
   "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow>\<^sub>c (_)\<close> [51, 50, 50] 50)
 end
-
 syntax_consts
-  "_crel_mono_wrt" \<rightleftharpoons> crel_mono_wrt and
   "_crel_dep_mono_wrt" \<rightleftharpoons> crel_dep_mono_wrt
 translations
-  "A \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_mono_wrt A B"
   "(x : A) \<rightarrow>\<^sub>c B" \<rightleftharpoons> "CONST crel_dep_mono_wrt A (\<lambda>x. B)"
 
 definition "crel_dep_mono_wrt_pred (A :: 'a \<Rightarrow> bool) B R \<equiv> ((x : A) \<rightarrow> B x) R \<and> in_dom R = A"

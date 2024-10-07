@@ -13,16 +13,12 @@ consts rel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle rel_mono_wrt_syntax
 begin
+notation "rel_mono_wrt" (infixr "\<rightarrow>" 40)
 syntax
-  "_rel_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>(_) \<rightarrow> (_)\<close> [41, 40] 40)
   "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow> (_)\<close> [41, 41, 40] 40)
 end
-
-syntax_consts
-  "_rel_mono_wrt" \<rightleftharpoons> rel_mono_wrt and
-  "_rel_dep_mono_wrt_pred" \<rightleftharpoons> rel_dep_mono_wrt
+syntax_consts "_rel_dep_mono_wrt_pred" \<rightleftharpoons> rel_dep_mono_wrt
 translations
-  "A \<rightarrow> B" \<rightleftharpoons> "CONST rel_mono_wrt A B"
   "(x : A) \<rightarrow> B" \<rightleftharpoons> "CONST rel_dep_mono_wrt A (\<lambda>x. B)"
 
 definition "rel_dep_mono_wrt_pred (A :: 'a \<Rightarrow> bool) (B :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<equiv>

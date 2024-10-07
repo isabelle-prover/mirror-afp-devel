@@ -18,8 +18,8 @@ consts Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Right
 
 open_bundle Dep_Fun_Rel_syntax
 begin
+notation "Fun_Rel" (infixr "\<Rrightarrow>" 50)
 syntax
-  "_Fun_Rel" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool" (infixr \<open>\<Rrightarrow>\<close> 50)
   "_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow> (_)\<close> [51, 51, 50, 50] 50)
   "_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
@@ -29,12 +29,9 @@ syntax
   "_Dep_Fun_Rel_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ :/ _/ |/ _') \<Rrightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
-
 syntax_consts
-  "_Fun_Rel" \<rightleftharpoons> Fun_Rel and
   "_Dep_Fun_Rel_rel" "_Dep_Fun_Rel_rel_if" "_Dep_Fun_Rel_pred" "_Dep_Fun_Rel_pred_if" \<rightleftharpoons> Dep_Fun_Rel
 translations
-  "R \<Rrightarrow> S" \<rightleftharpoons> "CONST Fun_Rel R S"
   "(x y \<Colon> R) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel R (\<lambda>x y. S)"
   "(x y \<Colon> R | B) \<Rrightarrow> S" \<rightleftharpoons> "CONST Dep_Fun_Rel R (\<lambda>x y. CONST rel_if B S)"
   "(x : P) \<Rrightarrow> R" \<rightleftharpoons> "CONST Dep_Fun_Rel P (\<lambda>x. R)"

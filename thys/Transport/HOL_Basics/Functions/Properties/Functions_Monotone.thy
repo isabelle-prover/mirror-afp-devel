@@ -20,8 +20,8 @@ consts mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle dep_mono_wrt_syntax
 begin
+notation "mono_wrt" (infixr "\<Rightarrow>" 50)
 syntax
-  "_mono_wrt" :: "'a \<Rightarrow> 'b \<Rightarrow> 'c" (infixr \<open>\<Rightarrow>\<close> 50)
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
     (\<open>'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50] 50)
   "_dep_mono_wrt_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
@@ -30,17 +30,13 @@ syntax
   "_dep_mono_wrt_pred_if" :: "idt \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> 'b \<Rightarrow> 'c"
     (\<open>'(_/ :/ _/ |/ _') \<Rightarrow> (_)\<close> [51, 50, 50, 50] 50)
 end
-
 syntax_consts
-  "_mono_wrt" \<rightleftharpoons> mono_wrt and
   "_dep_mono_wrt_rel" "_dep_mono_wrt_rel_if" "_dep_mono_wrt_pred" "_dep_mono_wrt_pred_if" \<rightleftharpoons> dep_mono_wrt
 translations
-  "R \<Rightarrow> S" \<rightleftharpoons> "CONST mono_wrt R S"
   "(x y \<Colon> R) \<Rightarrow> S" \<rightleftharpoons> "CONST dep_mono_wrt R (\<lambda>x y. S)"
   "(x y \<Colon> R | B) \<Rightarrow> S" \<rightleftharpoons> "CONST dep_mono_wrt R (\<lambda>x y. CONST rel_if B S)"
   "(x : P) \<Rightarrow> Q" \<rightleftharpoons> "CONST dep_mono_wrt P (\<lambda>x. Q)"
   "(x : P | B) \<Rightarrow> Q" \<rightleftharpoons> "CONST dep_mono_wrt P (\<lambda>x. CONST pred_if B Q)"
-
 
 definition "dep_mono_wrt_rel (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool)
   (S :: 'a \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) \<equiv> ((x y \<Colon> R) \<Rrightarrow> S x y) f f"
