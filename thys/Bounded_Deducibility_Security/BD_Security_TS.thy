@@ -8,7 +8,7 @@ begin
 
 declare Let_def[simp]
 
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 
 locale BD_Security_TS = Transition_System istate validTrans srcOf tgtOf

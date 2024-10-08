@@ -23,7 +23,7 @@ Currently these facts provide an interface between the KAT theories and the veri
 
 no_notation if_then_else (\<open>if _ then _ else _ fi\<close> [64,64,64] 63)
 no_notation while (\<open>while _ do _ od\<close> [64,64] 63)
-no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
+unbundle no floor_ceiling_syntax
 
 notation relcomp (infixl \<open>;\<close> 70)               
 notation p2r (\<open>\<lceil>_\<rceil>\<close>)

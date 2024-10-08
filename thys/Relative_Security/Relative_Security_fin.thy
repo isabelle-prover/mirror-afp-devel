@@ -10,8 +10,7 @@ begin
 
 declare Let_def[simp]
 
-no_notation relcomp (infixr \<open>O\<close> 75)
-no_notation relcompp (infixr \<open>OO\<close> 75)
+unbundle no relcomp_syntax
 
 
 subsection \<open>Finite-trace versions of leakage models and attacker models \<close>

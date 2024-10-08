@@ -4,12 +4,8 @@ imports "List-Infinite.InfiniteSet2" Representation
 
 begin
 
-context uminus
-begin
+unbundle (in uminus) no uminus_syntax
 
-no_notation uminus (\<open>- _\<close> [81] 80)
-
-end
 
 section \<open>Atoms Below an Element in Partial Orders\<close>
 

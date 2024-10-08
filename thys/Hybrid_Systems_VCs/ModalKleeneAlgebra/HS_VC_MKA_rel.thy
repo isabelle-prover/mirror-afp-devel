@@ -31,8 +31,8 @@ text \<open> Lemmas for manipulation of predicates in the relational model \<clo
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
-        and antidomain_semiringl.ads_d (\<open>d\<close>)
+unbundle no floor_ceiling_syntax
+no_notation antidomain_semiringl.ads_d (\<open>d\<close>)
 
 notation Id (\<open>skip\<close>)
      and relcomp (infixl \<open>;\<close> 70)

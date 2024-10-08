@@ -293,7 +293,7 @@ abbreviation (input) one_symbol :: nat (\<open>\<one>\<close>)    where "\<one> 
 abbreviation (input) bar_symbol :: nat (\<open>\<bar>\<close>)      where "\<bar> \<equiv> 4"
 abbreviation (input) sharp_symbol :: nat (\<open>\<sharp>\<close>)  where "\<sharp> \<equiv> 5"
 
-no_notation abs (\<open>\<bar>_\<bar>\<close>)
+unbundle no abs_syntax
 
 text \<open>
 Tapes are infinite in one direction, so each cell can be addressed by a natural

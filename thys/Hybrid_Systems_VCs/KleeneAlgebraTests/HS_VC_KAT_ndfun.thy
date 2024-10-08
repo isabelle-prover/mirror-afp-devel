@@ -53,9 +53,8 @@ text \<open> Lemmas for manipulation of predicates in the relational model \<clo
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
-no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
-        and Archimedean_Field.floor_ceiling_class.floor (\<open>\<lfloor>_\<rfloor>\<close>)
-        and tau (\<open>\<tau>\<close>)
+unbundle no floor_ceiling_syntax
+no_notation tau (\<open>\<tau>\<close>)
         and Relation.relcomp (infixl \<open>;\<close> 75)
         and proto_near_quantale_class.bres (infixr \<open>\<rightarrow>\<close> 60)
 

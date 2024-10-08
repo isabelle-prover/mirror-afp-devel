@@ -35,7 +35,7 @@ fun postprocess_transfer_rule b thm ctxt =
       |>> #2
       |>> the_single
       |> #2
-    val lthy_print = Bundle.includes [(true, "Transfer.lifting_syntax")] lthy
+    val lthy_print = Bundle.includes [(true, \<^bundle>\<open>lifting_syntax\<close>)] lthy
     val _ =
       Proof_Display.print_theorem (Position.thread_data ()) lthy_print
         (Local_Theory.full_name lthy_print b, [thm])

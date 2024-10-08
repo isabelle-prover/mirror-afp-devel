@@ -49,7 +49,7 @@ and triggerEq_sym: "triggerEq s s' \<Longrightarrow> triggerEq s' s"
 and triggerEq_trans: "triggerEq s s' \<Longrightarrow> triggerEq s' s'' \<Longrightarrow> triggerEq s s''"
 unfolding triggerEq_def by auto
 
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 context Post
 begin

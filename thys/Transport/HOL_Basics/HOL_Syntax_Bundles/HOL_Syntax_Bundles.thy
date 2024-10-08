@@ -6,7 +6,6 @@ theory HOL_Syntax_Bundles
     HOL_Syntax_Bundles_Groups
     HOL_Syntax_Bundles_Lattices
     HOL_Syntax_Bundles_Orders
-    HOL_Syntax_Bundles_Relations
 begin
 
 paragraph \<open>Summary\<close>

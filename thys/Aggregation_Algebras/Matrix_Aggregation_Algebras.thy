@@ -25,9 +25,8 @@ imports Stone_Kleene_Relation_Algebras.Matrix_Kleene_Algebras Aggregation_Algebr
 
 begin
 
-no_notation
-  inf (infixl \<open>\<sqinter>\<close> 70)
-  and uminus (\<open>- _\<close> [81] 80)
+no_notation inf (infixl \<open>\<sqinter>\<close> 70)
+unbundle no uminus_syntax
 
 subsection \<open>Aggregation Orders and Finite Sums\<close>
 

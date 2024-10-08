@@ -7,7 +7,7 @@ begin
 (*>*)
 
 
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 abbreviation never :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where "never U \<equiv> list_all (\<lambda> a. \<not> U a)"
 
