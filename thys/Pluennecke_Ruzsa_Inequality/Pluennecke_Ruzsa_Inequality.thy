@@ -17,7 +17,7 @@ begin
 
 notation plus (infixl \<open>+\<close> 65)
 notation minus (infixl \<open>-\<close> 65)
-notation uminus (\<open>- _\<close> [81] 80)
+unbundle uminus_syntax
 
 subsection \<open>Key definitions (sumset, difference set) and basic lemmas \<close>
 

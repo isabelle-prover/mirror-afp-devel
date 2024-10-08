@@ -83,9 +83,9 @@ end
 context uminus
 begin
 
-no_notation uminus (\<open>- _\<close> [81] 80)
+unbundle no uminus_syntax
 
-notation uminus (\<open>- _\<close> [80] 80)
+notation uminus (\<open>(\<open>open_block notation=\<open>prefix -\<close>\<close>- _)\<close> [80] 80)
 
 end
 

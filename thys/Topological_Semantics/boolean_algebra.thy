@@ -16,7 +16,7 @@ hide_const(open) Fun.comp no_notation Fun.comp (infixl \<open>\<circ>\<close> 55
 hide_const(open) Groups.plus_class.plus no_notation Groups.plus_class.plus (infixl \<open>+\<close> 65) (*we don't use this*)
 hide_const(open) Groups.times_class.times no_notation Groups.times_class.times (infixl \<open>*\<close> 70) (*we don't use this*)
 hide_const(open) Groups.minus_class.minus no_notation Groups.minus_class.minus (infixl \<open>-\<close> 65) (*we don't use this*)
-hide_const(open) Groups.uminus_class.uminus no_notation Groups.uminus_class.uminus (\<open>- _\<close> [81] 80) (*we don't use this*)
+hide_const(open) Groups.uminus_class.uminus no_notation Groups.uminus_class.uminus (\<open>(\<open>open_block notation=\<open>prefix -\<close>\<close>- _)\<close> [81] 80) (*we don't use this*)
 (*-----------------------------------*)
 
 section \<open>Shallow semantical embedding of (a logic of) Boolean algebras\<close>

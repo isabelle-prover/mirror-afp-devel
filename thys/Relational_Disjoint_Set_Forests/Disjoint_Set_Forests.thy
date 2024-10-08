@@ -10,9 +10,8 @@ imports
   Stone_Kleene_Relation_Algebras.Kleene_Relation_Algebras
 begin
 
-no_notation
-  minus (infixl \<open>-\<close> 65) and
-  trancl (\<open>(\<open>notation=\<open>postfix +\<close>\<close>_\<^sup>+)\<close> [1000] 999)
+no_notation minus (infixl \<open>-\<close> 65)
+unbundle no trancl_syntax
 
 context p_algebra
 begin

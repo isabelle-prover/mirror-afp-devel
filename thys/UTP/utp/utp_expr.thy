@@ -7,7 +7,7 @@ begin
 
 subsection \<open> Expression type \<close>
   
-purge_notation BNF_Def.convol (\<open>\<langle>(_,/ _)\<rangle>\<close>)
+purge_notation BNF_Def.convol (\<open>(\<open>indent=1 notation=\<open>mixfix convol\<close>\<close>\<langle>_,/ _\<rangle>)\<close>)
 
 text \<open> Before building the predicate model, we will build a model of expressions that generalise
   alphabetised predicates. Expressions are represented semantically as mapping from

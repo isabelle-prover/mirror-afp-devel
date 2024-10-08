@@ -15,6 +15,8 @@ text \<open>
 This section contains further results about directed acyclic graphs and relational array operations.
 \<close>
 
+unbundle no uminus_syntax
+
 context stone_relation_algebra
 begin
 

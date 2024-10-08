@@ -30,7 +30,7 @@ text \<open> We want to remain as close as possible to the mathematical UTP synt
 purge_notation
   conj (infixr \<open>\<and>\<close> 35) and
   disj (infixr \<open>\<or>\<close> 30) and
-  Not (\<open>\<not> _\<close> [40] 40)
+  Not (\<open>(\<open>open_block notation=\<open>prefix \<not>\<close>\<close>\<not> _)\<close> [40] 40)
 
 consts
   utrue  :: "'a" (\<open>true\<close>)
@@ -110,27 +110,27 @@ notation Lattices.inf (infixl \<open>\<squnion>\<close> 70)
 purge_notation Lattices.sup (infixl \<open>\<squnion>\<close> 65)
 notation Lattices.sup (infixl \<open>\<sqinter>\<close> 65)
   
-purge_notation Inf (\<open>\<Sqinter>_\<close> [900] 900)
+purge_notation Inf (\<open>(\<open>open_block notation=\<open>prefix \<Sqinter>\<close>\<close>\<Sqinter> _)\<close> [900] 900)
 notation Inf (\<open>\<Squnion>_\<close> [900] 900)
-purge_notation Sup (\<open>\<Squnion>_\<close> [900] 900)
+purge_notation Sup (\<open>(\<open>open_block notation=\<open>prefix \<Squnion>\<close>\<close>\<Squnion> _)\<close> [900] 900)
 notation Sup (\<open>\<Sqinter>_\<close> [900] 900)
-  
+
 purge_notation Orderings.bot (\<open>\<bottom>\<close>)
 notation Orderings.bot (\<open>\<top>\<close>)
 purge_notation Orderings.top (\<open>\<top>\<close>)
 notation Orderings.top (\<open>\<bottom>\<close>)
 
 purge_syntax
-  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Sqinter>_./ _)\<close> [0, 10] 10)
-  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Sqinter>_\<in>_./ _)\<close> [0, 0, 10] 10)
-  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Squnion>_./ _)\<close> [0, 10] 10)
-  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Squnion>_\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(\<open>indent=3 notation=\<open>binder \<Sqinter>\<close>\<close>\<Sqinter>_./ _)\<close> [0, 10] 10)
+  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(\<open>indent=3 notation=\<open>binder \<Sqinter>\<close>\<close>\<Sqinter>_\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(\<open>indent=3 notation=\<open>binder \<Squnion>\<close>\<close>\<Squnion>_./ _)\<close> [0, 10] 10)
+  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(\<open>indent=3 notation=\<open>binder \<Squnion>\<close>\<close>\<Squnion>_\<in>_./ _)\<close> [0, 0, 10] 10)
 
 syntax
-  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Squnion>_./ _)\<close> [0, 10] 10)
-  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Squnion>_\<in>_./ _)\<close> [0, 0, 10] 10)
-  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(3\<Sqinter>_./ _)\<close> [0, 10] 10)
-  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(3\<Sqinter>_\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_INF1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(\<open>indent=3 notation=\<open>binder \<Squnion>\<close>\<close>\<Squnion>_./ _)\<close> [0, 10] 10)
+  "_INF"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(\<open>indent=3 notation=\<open>binder \<Squnion>\<close>\<close>\<Squnion>_\<in>_./ _)\<close> [0, 0, 10] 10)
+  "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           (\<open>(\<open>indent=3 notation=\<open>binder \<Sqinter>\<close>\<close>\<Sqinter>_./ _)\<close> [0, 10] 10)
+  "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  (\<open>(\<open>indent=3 notation=\<open>binder \<Sqinter>\<close>\<close>\<Sqinter>_\<in>_./ _)\<close> [0, 0, 10] 10)
 
 text \<open> We trivially instantiate our refinement class \<close>
 

@@ -10,7 +10,7 @@ imports
   Coinductive.TLList
 begin
 
-no_notation floor (\<open>\<lfloor>_\<rfloor>\<close>)
+unbundle no floor_ceiling_syntax
 
 lemma rel_option_mono:
   "\<lbrakk> rel_option R x y; \<And>x y. R x y \<Longrightarrow> R' x y \<rbrakk> \<Longrightarrow> rel_option R' x y"

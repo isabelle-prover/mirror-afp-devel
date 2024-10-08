@@ -57,8 +57,7 @@ text\<open>
   the presentation more like a textbook:
 \<close>
 
-no_notation ceiling  (\<open>\<lceil>_\<rceil>\<close>) (* For Real Numbers only ... Otherwise has unfortunate side-effects on syntax. *)
-no_notation floor  (\<open>\<lfloor>_\<rfloor>\<close>) (* For Real Numbers only ... Otherwise has unfortunate side-effects on syntax. *)
+unbundle no floor_ceiling_syntax
 
 type_notation option (\<open>\<langle>_\<rangle>\<^sub>\<bottom>\<close>) (* NOTE: "_\<^sub>\<bottom>" also works *)
 notation Some (\<open>\<lfloor>(_)\<rfloor>\<close>)
