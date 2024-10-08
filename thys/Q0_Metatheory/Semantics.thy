@@ -7,7 +7,7 @@ theory Semantics
     Boolean_Algebra
 begin
 
-no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle no funcset_syntax
 notation funcset (infixr \<open>\<Zpfun>\<close> 60)
 
 abbreviation vfuncset :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<longmapsto>\<close> 60) where

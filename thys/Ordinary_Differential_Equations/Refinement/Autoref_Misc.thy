@@ -390,7 +390,7 @@ end
 
 bundle autoref_syntax begin
 no_notation vec_nth (infixl \<open>$\<close> 90)
-no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle no funcset_syntax
 notation Autoref_Tagging.APP (infixl \<open>$\<close> 900)
 notation rel_ANNOT (infix \<open>:::\<close> 10)
 notation ind_ANNOT (infix \<open>::#\<close> 10)

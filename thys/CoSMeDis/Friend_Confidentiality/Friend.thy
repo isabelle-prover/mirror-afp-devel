@@ -51,7 +51,7 @@ definition "B vl vl1 \<equiv> BO vl vl1 \<and> alternatingFriends vl1 False"
 lemma BO_Nil_Nil: "BO vl vl1 \<Longrightarrow> vl = [] \<Longrightarrow> vl1 = []"
 by (cases rule: BO.cases) auto
 
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 sublocale BD_Security_IO where
 istate = istate and step = step and

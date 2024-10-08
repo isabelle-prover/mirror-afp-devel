@@ -418,8 +418,7 @@ where
   copyp_0:   "0 \<otimes> x = x"
 | copyp_Suc: "(Suc k) \<otimes> x = (k \<otimes> x) \<squnion> x"
 
-no_notation 
-  Product_Type.Times (infixr \<open>\<times>\<close> 80)
+unbundle no set_product_syntax
 
 primrec copy :: "nat \<Rightarrow> 'a \<Rightarrow> 'a" (infix \<open>\<times>\<close> 85)
 where

@@ -8,7 +8,7 @@ begin
 
 text \<open> Here we define the usual connectives for classical logic. \<close>
 
-no_notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle no funcset_syntax
 
 section \<open> Verum \<close>
 
@@ -1303,6 +1303,6 @@ next
   ultimately show ?case by meson
 qed
 
-notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle funcset_syntax
 
 end

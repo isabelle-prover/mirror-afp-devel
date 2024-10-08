@@ -6,7 +6,7 @@ theory Elementary_Logic
     Propositional_Wff
 begin
 
-no_notation funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle no funcset_syntax
 notation funcset (infixr \<open>\<Zpfun>\<close> 60)
 
 subsection \<open>Proposition 5200\<close>

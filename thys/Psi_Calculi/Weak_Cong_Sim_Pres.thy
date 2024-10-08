@@ -459,7 +459,7 @@ proof(induct rule: weakCongSimI)
     ultimately show ?case by blast
   qed
 qed
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 lemma weakCongSimBangPres:
   fixes \<Psi> :: 'b
@@ -895,7 +895,7 @@ proof(induct rule: weakCongSimI)
     ultimately show ?case by blast
   qed
 qed
-notation relcomp (infixr \<open>O\<close> 75)
+unbundle relcomp_syntax
 
 end
 
