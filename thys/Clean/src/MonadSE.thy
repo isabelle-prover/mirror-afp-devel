@@ -62,19 +62,17 @@ definition bind_SE :: "('o,'\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('o \<Rig
 where     "bind_SE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarrow> None 
                                         | Some (out, \<sigma>') \<Rightarrow> g out \<sigma>')"
 
-notation bind_SE (\<open>bind\<^sub>S\<^sub>E\<close>)
+notation bind_SE ("bind\<^sub>S\<^sub>E")
 
-syntax
+syntax    (xsymbols)
           "_bind_SE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
-          (\<open>(2 _ \<leftarrow> _; _)\<close> [5,8,8]8)
-syntax_consts
-          "_bind_SE" == bind_SE
+          ("(2 _ \<leftarrow> _; _)" [5,8,8]8)
 translations 
           "x \<leftarrow> f; g" == "CONST bind_SE f (% x . g)"
 
-definition unit_SE :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (\<open>(result _)\<close> 8) 
+definition unit_SE :: "'o \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   ("(result _)" 8) 
 where     "unit_SE e = (\<lambda>\<sigma>. Some(e,\<sigma>))"
-notation   unit_SE (\<open>unit\<^sub>S\<^sub>E\<close>)
+notation   unit_SE ("unit\<^sub>S\<^sub>E")
 
 text\<open>In the following, we prove the required Monad-laws\<close>
 
@@ -97,15 +95,15 @@ subsection\<open>Definition : More Operators and their Properties\<close>
 
 definition fail_SE :: "('o, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "fail_SE = (\<lambda>\<sigma>. None)" 
-notation   fail_SE (\<open>fail\<^sub>S\<^sub>E\<close>)
+notation   fail_SE ("fail\<^sub>S\<^sub>E")
 
 definition assert_SE :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> (bool, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "assert_SE P = (\<lambda>\<sigma>. if P \<sigma> then Some(True,\<sigma>) else None)"
-notation   assert_SE (\<open>assert\<^sub>S\<^sub>E\<close>)
+notation   assert_SE ("assert\<^sub>S\<^sub>E")
 
 definition assume_SE :: "('\<sigma> \<Rightarrow> bool) \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "assume_SE P = (\<lambda>\<sigma>. if \<exists>\<sigma> . P \<sigma> then Some((), SOME \<sigma> . P \<sigma>) else None)"
-notation   assume_SE (\<open>assume\<^sub>S\<^sub>E\<close>)
+notation   assume_SE ("assume\<^sub>S\<^sub>E")
 
 
 lemma bind_left_fail_SE[simp] : "(x \<leftarrow> fail\<^sub>S\<^sub>E; P x) = fail\<^sub>S\<^sub>E"
@@ -117,7 +115,7 @@ Just a "standard" programming sequential operator without output frills.\<close>
 (* TODO: Eliminate/Modify this. Is a consequence of the Monad-Instantiation. *)
 
 
-definition bind_SE' :: "('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr \<open>;-\<close> 10)
+definition bind_SE' :: "('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('\<beta>, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr ";-" 10)
 where     "(f ;- g) = (_ \<leftarrow> f ; g)"
 
 lemma bind_assoc'[simp]: "((m ;- k);- h ) = (m;- (k;- h))"
@@ -143,7 +141,7 @@ definition yield\<^sub>C :: "('a  \<Rightarrow> 'b) \<Rightarrow>  ('b,'a ) MON\
     where "yield\<^sub>C f \<equiv> (\<lambda>\<sigma>. Some(f \<sigma>, \<sigma>))"
 
 
-definition try_SE :: "('o,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> ('o option,'\<sigma>) MON\<^sub>S\<^sub>E" (\<open>try\<^sub>S\<^sub>E\<close>)
+definition try_SE :: "('o,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> ('o option,'\<sigma>) MON\<^sub>S\<^sub>E" ("try\<^sub>S\<^sub>E")
 where     "try\<^sub>S\<^sub>E ioprog = (\<lambda>\<sigma>. case ioprog \<sigma> of
                                       None \<Rightarrow> Some(None, \<sigma>)
                                     | Some(outs, \<sigma>') \<Rightarrow> Some(Some outs, \<sigma>'))" 
@@ -157,13 +155,13 @@ text\<open>In contrast, mbind as a failure safe operator can roughly be seen
 text\<open>On this basis, a symbolic evaluation scheme can be established
   that reduces mbind-code to try\_SE\_code and ite-cascades.\<close>
 
-definition alt_SE :: "[('o, '\<sigma>)MON\<^sub>S\<^sub>E, ('o, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (infixl \<open>\<sqinter>\<^sub>S\<^sub>E\<close> 10)
+definition alt_SE :: "[('o, '\<sigma>)MON\<^sub>S\<^sub>E, ('o, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (infixl "\<sqinter>\<^sub>S\<^sub>E" 10)
 where     "(f \<sqinter>\<^sub>S\<^sub>E g) = (\<lambda> \<sigma>. case f \<sigma> of None \<Rightarrow> g \<sigma>
                                       | Some H \<Rightarrow> Some H)"
 
 definition malt_SE :: "('o, '\<sigma>)MON\<^sub>S\<^sub>E list \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "malt_SE S = foldr alt_SE S fail\<^sub>S\<^sub>E"
-notation   malt_SE (\<open>\<Sqinter>\<^sub>S\<^sub>E\<close>)
+notation   malt_SE ("\<Sqinter>\<^sub>S\<^sub>E")
 
 lemma malt_SE_mt [simp]: "\<Sqinter>\<^sub>S\<^sub>E [] = fail\<^sub>S\<^sub>E"
 by(simp add: malt_SE_def)
@@ -179,11 +177,9 @@ definition  "skip\<^sub>S\<^sub>E = unit\<^sub>S\<^sub>E ()"
 definition if_SE :: "['\<sigma> \<Rightarrow> bool, ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E, ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "if_SE c E F = (\<lambda>\<sigma>. if c \<sigma> then E \<sigma> else F \<sigma>)" 
 
-syntax
+syntax    (xsymbols)
           "_if_SE" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
-          (\<open>(if\<^sub>S\<^sub>E _ then _ else _fi)\<close> [5,8,8]8)
-syntax_consts
-          "_if_SE" == if_SE
+          ("(if\<^sub>S\<^sub>E _ then _ else _fi)" [5,8,8]8)
 translations 
           "(if\<^sub>S\<^sub>E cond then T1 else T2 fi)" == "CONST if_SE cond T1 T2"
 
@@ -191,12 +187,12 @@ translations
 subsection\<open>Theory of a Monadic While\<close>
 
 text\<open>Prerequisites\<close>
-fun replicator :: "[('a, '\<sigma>)MON\<^sub>S\<^sub>E, nat] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr \<open>^^^\<close> 60)
+fun replicator :: "[('a, '\<sigma>)MON\<^sub>S\<^sub>E, nat] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr "^^^" 60)
 where     "f ^^^ 0      = (result ())"
         | "f ^^^ (Suc n) = (f ;- f ^^^  n)"
 
 
-fun replicator2 :: "[('a, '\<sigma>)MON\<^sub>S\<^sub>E, nat, ('b, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('b, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr \<open>^:^\<close> 60)
+fun replicator2 :: "[('a, '\<sigma>)MON\<^sub>S\<^sub>E, nat, ('b, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('b, '\<sigma>)MON\<^sub>S\<^sub>E" (infixr "^:^" 60)
 where     "(f ^:^ 0) M      = (M )"
         | "(f ^:^ (Suc n)) M = (f ;- ((f ^:^  n) M))"
 
@@ -317,11 +313,9 @@ where     "\<Gamma> b cd = (\<lambda>cw. {(s,t). if b s then (s, t) \<in> cd O c
 definition while_SE :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "while_SE c B \<equiv> (Rel2Mon(lfp(\<Gamma> c (Mon2Rel B))))"
 
-syntax
+syntax    (xsymbols)
           "_while_SE" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
-          (\<open>(while\<^sub>S\<^sub>E _ do _ od)\<close> [8,8]8)
-syntax_consts
-          "_while_SE" == while_SE
+          ("(while\<^sub>S\<^sub>E _ do _ od)" [8,8]8)
 translations 
           "while\<^sub>S\<^sub>E c do b od" == "CONST while_SE c b"
 

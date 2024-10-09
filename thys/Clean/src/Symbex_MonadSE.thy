@@ -55,7 +55,7 @@ Seen from an automata perspective (where the monad - operations correspond to
 the step function), valid execution sequences can be used to model ``feasible paths''
 across an automaton.\<close>
 
-definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix \<open>\<Turnstile>\<close> 9)
+definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>" 9)
 where "(\<sigma> \<Turnstile> m) = (m \<sigma> \<noteq> None \<and> fst(the (m \<sigma>)))"
 text\<open>This notation consideres failures as valid -- a definition
 inspired by I/O conformance.\<close>
@@ -191,6 +191,23 @@ lemma exec_mbindFPurge_success :
    (\<sigma>' \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e S ioprog ; M (b#s)))"
 unfolding valid_SE_def unit_SE_def bind_SE_def 
 by(cases "mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e S ioprog \<sigma>'", auto simp:  mbind''.simps)
+
+text\<open>versions suited for rewriting\<close> 
+lemma exec_mbindFStop_success':\<open>ioprog a \<sigma> \<noteq> None \<Longrightarrow> 
+        (\<sigma>  \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (a#S) ioprog ; M s)) = 
+        ((snd o the)(ioprog a \<sigma>) \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p S ioprog ; M ((fst o the)(ioprog a \<sigma>)#s)))\<close>
+  using exec_mbindFStop_success by fastforce
+
+lemma exec_mbindFSave_success': \<open>ioprog a \<sigma> \<noteq> None \<Longrightarrow> 
+   (\<sigma>  \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e (a#S) ioprog ; M s)) = 
+   ((snd o the)(ioprog a \<sigma>) \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e S ioprog ; M ((fst o the)(ioprog a \<sigma>)#s)))\<close>
+  using exec_mbindFSave_success by fastforce
+
+lemma exec_mbindFPurge_success' : 
+"ioprog a \<sigma>  \<noteq> None \<Longrightarrow> 
+   (\<sigma>  \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e (a#S) ioprog ; M s)) = 
+   ((snd o the)(ioprog a \<sigma>) \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e S ioprog ; M ((fst o the)(ioprog a \<sigma>)#s)))"
+  using exec_mbindFPurge_success by fastforce
 
 lemma exec_mbindFSave:
 "(\<sigma> \<Turnstile> (s \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e  (a#S) ioprog ; return (P s))) =
@@ -463,9 +480,11 @@ oops
 
 
 lemma monadic_sequence_rule:
-      "\<And> X \<sigma>\<^sub>1. (\<sigma> \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E (\<lambda>\<sigma>'. (\<sigma>=\<sigma>') \<and>  P \<sigma>) ; x  \<leftarrow> M; assert\<^sub>S\<^sub>E (\<lambda>\<sigma>.  (x=X) \<and> (\<sigma>=\<sigma>\<^sub>1) \<and> Q x \<sigma>)))
+      "\<And> X \<sigma>\<^sub>1. (\<sigma> \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E (\<lambda>\<sigma>'. (\<sigma>=\<sigma>') \<and>  P \<sigma>) ; x  \<leftarrow> M; 
+                      assert\<^sub>S\<^sub>E (\<lambda>\<sigma>.  (x=X) \<and> (\<sigma>=\<sigma>\<^sub>1) \<and> Q x \<sigma>)))
                \<and> 
-               (\<sigma>\<^sub>1 \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E (\<lambda>\<sigma>.  (\<sigma>=\<sigma>\<^sub>1) \<and> Q x \<sigma>) ; y  \<leftarrow> M'; assert\<^sub>S\<^sub>E (\<lambda>\<sigma>.  R x y \<sigma>)))
+               (\<sigma>\<^sub>1 \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E (\<lambda>\<sigma>.  (\<sigma>=\<sigma>\<^sub>1) \<and> Q x \<sigma>) ; 
+                      y  \<leftarrow> M'; assert\<^sub>S\<^sub>E (\<lambda>\<sigma>.  R x y \<sigma>)))
        \<Longrightarrow>
                \<sigma> \<Turnstile> (_  \<leftarrow> assume\<^sub>S\<^sub>E (\<lambda>\<sigma>'. (\<sigma>=\<sigma>') \<and>  P \<sigma>) ; x  \<leftarrow> M; y  \<leftarrow> M'; assert\<^sub>S\<^sub>E (R x y))"
 apply(elim exE impE conjE)
@@ -521,6 +540,7 @@ lemma mbindFSave_vs_mbindFStop :
   qed
 
 
+
 lemma mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e_vs_mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p:
 assumes A: "\<forall> \<iota>\<in>set \<iota>s. \<forall> \<sigma>. ioprog \<iota> \<sigma> \<noteq> None"
 shows      "(\<sigma> \<Turnstile> (os \<leftarrow> (mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e \<iota>s ioprog); P os)) = 
@@ -533,23 +553,102 @@ next
        have B:"\<forall> S f \<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e S f \<sigma> \<noteq> None " by simp
 
        have C:"(\<forall> \<iota>\<in>set \<iota>s. \<forall> \<sigma>. ioprog \<iota> \<sigma> \<noteq> None) 
-               \<longrightarrow> (\<forall>\<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p \<iota>s ioprog \<sigma> = mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e \<iota>s ioprog \<sigma>)" 
-               apply(induct \<iota>s, simp)
+               \<longrightarrow> (\<forall>\<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p \<iota>s ioprog \<sigma> = mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e \<iota>s ioprog \<sigma>)"  
+               apply(induct \<iota>s, simp) 
                apply(intro impI allI,rename_tac "\<sigma>")
                apply(simp add: Seq_MonadSE.mbind'.simps(2))
                apply(insert A, erule_tac x="a" in ballE)
                apply(erule_tac x="\<sigma>" and P="\<lambda>\<sigma> . ioprog a \<sigma> \<noteq> None" in allE)
                apply(auto split:option.split)
                done
-      show ?case 
-        apply(intro impI) 
-        by (smt (verit, best) C exec_mbindFSave_E exec_mbindFSave_success exec_mbindFStop_E 
-                exec_mbindFStop_success list.set_intros(1) list.set_intros(2) valid_bind_cong)
+       show ?case  by (meson C exec_mbindFSave_success' exec_mbindFStop_success' 
+                             list.set_intros(1) list.set_intros(2) valid_bind_cong)
+qed
+
+
+text\<open>Symbolic execution rules for assertions.\<close>
+lemma assert_suffix_seq : 
+              "\<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p xs iostep; assert\<^sub>S\<^sub>E (P)) 
+               \<Longrightarrow> \<forall>\<sigma>. P \<sigma> \<longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p ys iostep; assert\<^sub>S\<^sub>E (Q))) 
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (xs @ ys) iostep; assert\<^sub>S\<^sub>E (Q))"
+apply(subst mbind'_concat)
+unfolding bind_SE_def assert_SE_def valid_SE_def
+  apply(auto split: option.split option.split_asm, rename_tac "aa" "ba" "ab" "bb" )
+  apply (metis option.distinct(1))
+  by (meson option.distinct(1))
+
+lemma assert_suffix_seq2 : 
+              "\<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p xs iostep; assert\<^sub>S\<^sub>E (P)) 
+               \<Longrightarrow> (\<And> \<sigma>. P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p ys iostep; assert\<^sub>S\<^sub>E (Q))))
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (xs @ ys) iostep; assert\<^sub>S\<^sub>E (Q))"
+  by (simp add: assert_suffix_seq)
+
+lemma assert_suffix_seq_map : 
+              "\<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (map f xs) iostep; assert\<^sub>S\<^sub>E (P)) 
+               \<Longrightarrow> (\<And> \<sigma>. P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (map f ys) iostep; assert\<^sub>S\<^sub>E (Q))))
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (map f (xs @ ys)) iostep; assert\<^sub>S\<^sub>E (Q))"
+  by (simp add: assert_suffix_seq)
+
+
+lemma assert_suffix_seq_tot : 
+              "\<forall>x \<sigma>. iostep x \<sigma> \<noteq> None 
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e xs iostep; assert\<^sub>S\<^sub>E (P)) 
+               \<Longrightarrow> \<forall>\<sigma>. P \<sigma> \<longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p ys iostep; assert\<^sub>S\<^sub>E (Q)))
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e (xs @ ys) iostep; assert\<^sub>S\<^sub>E (Q))"
+  apply(subst Symbex_MonadSE.mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e_vs_mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p, simp)
+  apply(subst (asm) Symbex_MonadSE.mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e_vs_mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p, simp)
+  by (simp add: assert_suffix_seq)
+
+lemma assert_suffix_seq_tot2 : 
+              "(\<And> x \<sigma>. iostep x \<sigma> \<noteq> None)
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e xs iostep; assert\<^sub>S\<^sub>E (P)) 
+               \<Longrightarrow> (\<And>\<sigma>. P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p ys iostep; assert\<^sub>S\<^sub>E (Q))))
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e (xs @ ys) iostep; assert\<^sub>S\<^sub>E (Q))"
+  by (simp add: assert_suffix_seq_tot)
+
+
+lemma assert_suffix_seq_tot3 : 
+              "(\<And> x \<sigma>. iostep x \<sigma> \<noteq> None)
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e (map f xs) iostep; assert\<^sub>S\<^sub>E (P)) 
+               \<Longrightarrow> (\<And>\<sigma>. P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p (map f ys) iostep; assert\<^sub>S\<^sub>E (Q))))
+               \<Longrightarrow> \<sigma> \<Turnstile> ( _ \<leftarrow> mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e (map f (xs @ ys)) iostep; assert\<^sub>S\<^sub>E (Q))"
+  by (simp add: assert_suffix_seq_tot)
+
+
+lemma assert_disch : 
+   "(\<sigma> \<Turnstile> (_ \<leftarrow> iostep x; assert\<^sub>S\<^sub>E (Q))) = 
+    (case iostep x \<sigma> of None \<Rightarrow> False | Some(_,\<sigma>') \<Rightarrow> Q \<sigma>')"
+  by (smt (verit, best) assert_simp bind_SE_def option.case_eq_if split_def valid_SE_def)
+
+lemma assert_disch_tot :
+   "\<forall>x \<sigma>. iostep x \<sigma> \<noteq> None \<Longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> iostep x; assert\<^sub>S\<^sub>E (Q))) = (Q (snd(the(iostep x \<sigma>))))"
+  apply(subst assert_disch)
+  by (metis option.case_eq_if split_beta')
+
+lemma assert_disch_tot2 :
+   "(\<And>x \<sigma>. iostep x \<sigma> \<noteq> None) \<Longrightarrow> (\<sigma> \<Turnstile> (_ \<leftarrow> iostep x; assert\<^sub>S\<^sub>E (Q))) = (Q (snd(the(iostep x \<sigma>))))"
+  apply(subst assert_disch)
+  by (metis option.case_eq_if split_beta')
+
+lemma mbind_total_if_step_total  :
+   "(\<And>x \<sigma>. x \<in> set S \<Longrightarrow> iostep x \<sigma> \<noteq> None) \<Longrightarrow>  (\<And>\<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p S iostep \<sigma> \<noteq> None)"
+proof(induct S)
+  case Nil
+  then show ?case by (simp add: unit_SE_def) 
+next
+  case (Cons a S \<sigma>)
+  have 1 : "\<forall> x \<sigma>. x \<in> set S \<longrightarrow> iostep x \<sigma> \<noteq> None" 
+    by (simp add: Cons.prems)
+  have 2 : "\<And>\<sigma>. mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p S iostep \<sigma> \<noteq> None" 
+    using Cons.hyps Cons.prems by fastforce
+  then show ?case  
+    apply(simp add : mbind'.simps(2) 1 2) 
+    by (simp add: "2" Cons.prems option.case_eq_if split_beta')
 qed
 
 subsection\<open>Miscellaneous\<close>
 
-no_notation unit_SE (\<open>(result _)\<close> 8)
+no_notation unit_SE ("(result _)" 8)
 
 end
   

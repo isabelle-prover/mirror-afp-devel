@@ -83,7 +83,7 @@ where "mbind [] iostep \<sigma> = Some([], \<sigma>)"
                                           None    \<Rightarrow> Some([out],\<sigma>') 
                                         | Some(outs,\<sigma>'') \<Rightarrow> Some(out#outs,\<sigma>'')))"
 
-notation mbind (\<open>mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e\<close>) (* future name: mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e *)
+notation mbind ("mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e") (* future name: mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>a\<^sub>v\<^sub>e *)
 
 text\<open>This definition is fail-safe; in case of an exception, the current state is maintained,
        the computation as a whole is marked as success.
@@ -121,7 +121,7 @@ where "mbind' [] iostep \<sigma> = Some([], \<sigma>)" |
                   |  Some (out, \<sigma>') \<Rightarrow> (case mbind' S iostep \<sigma>' of 
                                           None    \<Rightarrow> None   \<comment> \<open>fail-strict\<close> 
                                         | Some(outs,\<sigma>'') \<Rightarrow> Some(out#outs,\<sigma>'')))"
-notation mbind' (\<open>mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p\<close>) (* future name: mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p *)
+notation mbind' ("mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p") (* future name: mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>S\<^sub>t\<^sub>o\<^sub>p *)
 
 lemma mbind'_unit [simp]: 
      "mbind' [] f = (result [])"
@@ -146,7 +146,7 @@ where "mbind'' [] iostep \<sigma> = Some([], \<sigma>)" |
                                           None    \<Rightarrow> None   \<comment> \<open>does not occur\<close> 
                                         | Some(outs,\<sigma>'') \<Rightarrow> Some(out#outs,\<sigma>'')))"
 
-notation mbind'' (\<open>mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e\<close>) (* future name: mbind\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e\<^sub>F\<^sub>a\<^sub>i\<^sub>l *)
+notation mbind'' ("mbind\<^sub>F\<^sub>a\<^sub>i\<^sub>l\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e") (* future name: mbind\<^sub>P\<^sub>u\<^sub>r\<^sub>g\<^sub>e\<^sub>F\<^sub>a\<^sub>i\<^sub>l *)
 declare  mbind''.simps[simp del] (* use only more abstract definitions *)
 
 

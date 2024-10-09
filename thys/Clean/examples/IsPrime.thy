@@ -44,9 +44,14 @@ chapter \<open> Clean Semantics : Another Clean Example\<close>
 
 
 theory IsPrime
-  imports Clean.Clean
-          Clean.Hoare_Clean
-          Clean.Clean_Symbex
+  imports (* "../src/Clean"
+             "../src/Hoare_Clean"
+              "../src/Clean_Symbex"
+              "HOL-Computational_Algebra.Primes"
+           *)
+          Clean.Clean
+          Clean.Hoare_MonadSE
+          Clean.Clean_Symbex 
           "HOL-Computational_Algebra.Primes"
 begin
 
@@ -74,9 +79,10 @@ defines " if\<^sub>C \<open>n < 2\<close>
             od ;-
          return\<^bsub>local_isPrime_state.result_value_update\<^esub> \<open>True\<close>"
 
+
 find_theorems name:isPrime name:core
 term\<open>isPrime_core\<close>
- 
+
 lemma XXX : 
 "isPrime_core n \<equiv>
      if\<^sub>C (\<lambda>\<sigma>. n < 2) then (return\<^bsub>result_value_update\<^esub> (\<lambda>\<sigma>. False)) 

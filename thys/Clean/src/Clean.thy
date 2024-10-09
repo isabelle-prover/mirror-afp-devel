@@ -160,7 +160,7 @@ definition exec_stop :: "('\<sigma>_ext) control_state_ext \<Rightarrow> bool"
 
 abbreviation normal_execution :: "('\<sigma>_ext) control_state_ext \<Rightarrow> bool" 
   where "(normal_execution s) \<equiv> (\<not> exec_stop s)"
-notation normal_execution (\<open>\<triangleright>\<close>)
+notation normal_execution ("\<triangleright>")
 
 
 lemma exec_stop1[simp] : "break_status \<sigma> \<Longrightarrow> exec_stop \<sigma>" 
@@ -196,7 +196,7 @@ lemma "vwb_lens return_status\<^sub>L"
 lemma break_return_indep : "break_status\<^sub>L \<bowtie> return_status\<^sub>L "
   by (simp add: break_status\<^sub>L_def lens_indepI return_status\<^sub>L_def upd2put_def create\<^sub>L_def)
 
-definition strong_control_independence  (\<open>\<sharp>!\<close>)
+definition strong_control_independence  ("\<sharp>!")
   where "\<sharp>! L = (break_status\<^sub>L \<bowtie> L \<and> return_status\<^sub>L \<bowtie> L)"
 
 lemma "vwb_lens break_status\<^sub>L"
@@ -205,7 +205,7 @@ lemma "vwb_lens break_status\<^sub>L"
 
 
 definition control_independence ::
-                 "(('b\<Rightarrow>'b)\<Rightarrow>'a control_state_scheme \<Rightarrow> 'a control_state_scheme) \<Rightarrow> bool"    (\<open>\<sharp>\<close>)
+                 "(('b\<Rightarrow>'b)\<Rightarrow>'a control_state_scheme \<Rightarrow> 'a control_state_scheme) \<Rightarrow> bool"    ("\<sharp>")
            where "\<sharp> upd \<equiv> (\<forall>\<sigma> T b. break_status (upd T \<sigma>) = break_status \<sigma> 
                                  \<and> return_status (upd T \<sigma>) = return_status \<sigma>
                                  \<and> upd T (\<sigma>\<lparr> return_status := b \<rparr>) = (upd T \<sigma>)\<lparr> return_status := b \<rparr>
@@ -331,7 +331,7 @@ cartouche: \<^url>\<open>https://isabelle.in.tum.de/doc/isar-ref.pdf\<close>\<cl
 and permit a human-readable form of assignments or expressions accessing the underlying state. \<close>
 
 
-consts syntax_assign :: "('\<alpha>  \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> term" (infix \<open>:=\<close> 60)
+consts syntax_assign :: "('\<alpha>  \<Rightarrow> int) \<Rightarrow> int \<Rightarrow> term" (infix ":=" 60)
 
 definition  assign :: "(('\<sigma>_ext) control_state_scheme  \<Rightarrow> 
                        ('\<sigma>_ext) control_state_scheme) \<Rightarrow> 
@@ -341,7 +341,7 @@ definition  assign :: "(('\<sigma>_ext) control_state_scheme  \<Rightarrow>
 
 definition  assign_global :: "(('a  \<Rightarrow> 'a ) \<Rightarrow> '\<sigma>_ext control_state_scheme \<Rightarrow> '\<sigma>_ext control_state_scheme)
                               \<Rightarrow> ('\<sigma>_ext control_state_scheme \<Rightarrow>  'a)
-                              \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E" (infix \<open>:==\<^sub>G\<close> 100)
+                              \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E" (infix ":==\<^sub>G" 100)
   where    "assign_global upd rhs = assign(\<lambda>\<sigma>. ((upd) (\<lambda>_. rhs \<sigma>)) \<sigma>)"
 
 text\<open>An update of the variable \<open>A\<close> based on the state of the previous example is done 
@@ -357,7 +357,7 @@ entering or leaving a function block (to be discussed later).\<close>
 definition  assign_local :: "(('a list \<Rightarrow> 'a list) 
                                  \<Rightarrow> '\<sigma>_ext control_state_scheme \<Rightarrow> '\<sigma>_ext control_state_scheme)
                              \<Rightarrow> ('\<sigma>_ext control_state_scheme \<Rightarrow>  'a)
-                             \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E"  (infix \<open>:==\<^sub>L\<close> 100)
+                             \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E"  (infix ":==\<^sub>L" 100)
   where    "assign_local upd rhs = assign(\<lambda>\<sigma>. ((upd o upd_hd) (%_. rhs \<sigma>)) \<sigma>)"
 
 
@@ -377,7 +377,7 @@ definition return\<^sub>C0
 
 definition return\<^sub>C :: "(('a list \<Rightarrow> 'a list) \<Rightarrow> '\<sigma>_ext control_state_scheme \<Rightarrow> '\<sigma>_ext control_state_scheme)
                       \<Rightarrow> ('\<sigma>_ext control_state_scheme \<Rightarrow>  'a)
-                      \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E" (\<open>return\<index>\<close>)
+                      \<Rightarrow> (unit,'\<sigma>_ext control_state_scheme) MON\<^sub>S\<^sub>E" ("return\<index>")
   where   "return\<^sub>C upd rhs = return\<^sub>C0 (assign_local upd rhs)"
 
 
@@ -1024,7 +1024,7 @@ struct
 end
 \<close>
 
-syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> string"  (\<open>_\<close>)
+syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> string"  ("_")
 
 parse_translation \<open>
   [(@{syntax_const "_cartouche_string"},
@@ -1216,12 +1216,12 @@ structure Function_Specification_Parser  =
                           $ Const(read_constname ctxt (Binding.name_of pop_name),rmty))
            val rhs_main_rec = wfrecT 
                               measure 
-                              (Abs(bdg_rec_name, (args_ty --> umty) , 
+                              (Abs(bdg_rec_name, (args_ty --> rmty) , 
                                    mk_pat_tupleabs params'
                                    (Const(@{const_name "Clean.block\<^sub>C"}, umty-->umty-->rmty-->rmty)
                                    $ Const(read_constname ctxt (Binding.name_of push_name),umty)
                                    $ (Const(read_constname ctxt bdg_core_name,
-                                            (args_ty --> umty) --> args_ty --> umty)  
+                                            (args_ty --> rmty) --> args_ty --> umty)  
                                       $ (Bound (length params))
                                       $ HOLogic.mk_tuple (map Free params'))
                                    $ Const(read_constname ctxt (Binding.name_of pop_name),rmty))))
@@ -1347,11 +1347,9 @@ definition if_C :: "[('\<sigma>_ext) control_state_ext \<Rightarrow> bool,
                               then Some(undefined, \<sigma>)  \<comment> \<open>state unchanged, return arbitrary\<close>
                               else if c \<sigma> then E \<sigma> else F \<sigma>)"     
 
-syntax
+syntax    (xsymbols)
           "_if_SECLEAN" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
-          (\<open>(if\<^sub>C _ then _ else _fi)\<close> [5,8,8]20)
-syntax_consts
-          "_if_SECLEAN" == Clean.if_C
+          ("(if\<^sub>C _ then _ else _fi)" [5,8,8]20)
 translations 
           "(if\<^sub>C cond then T1 else T2 fi)" == "CONST Clean.if_C cond T1 T2"
 
@@ -1364,11 +1362,9 @@ definition while_C :: "(('\<sigma>_ext) control_state_ext \<Rightarrow> bool)
                                else ((MonadSE.while_SE (\<lambda> \<sigma>. \<not>exec_stop \<sigma> \<and> c \<sigma>) B) ;- 
                                      unset_break_status) \<sigma>)"
   
-syntax
+syntax    (xsymbols)
           "_while_C" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
-          (\<open>(while\<^sub>C _ do _ od)\<close> [8,8]20)
-syntax_consts
-          "_while_C" == Clean.while_C
+          ("(while\<^sub>C _ do _ od)" [8,8]20)
 translations 
           "while\<^sub>C c do b od" == "CONST Clean.while_C c b"
 
