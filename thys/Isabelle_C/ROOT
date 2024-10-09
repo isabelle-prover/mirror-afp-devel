@@ -52,8 +52,6 @@ session Isabelle_C = HOL +
     "C11-FrontEnd/examples/C0"
     "C11-FrontEnd/examples/C1"
     "C11-FrontEnd/examples/C2"
-    "C11-FrontEnd/examples/C3"
-    "C11-FrontEnd/examples/C4"
     "C11-FrontEnd/examples/C_paper"
   theories (* document *)
     "C11-FrontEnd/appendices/C_Appendices"
