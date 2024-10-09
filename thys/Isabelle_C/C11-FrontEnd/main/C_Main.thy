@@ -38,5 +38,7 @@
 theory C_Main
   imports "../src/C_Document"
 begin
+text\<open> @{footnote \<open>sdf\<close>}, @{file "$ISABELLE_HOME/src/Pure/ROOT.ML"}\<close>
+
 end
 (*>*)

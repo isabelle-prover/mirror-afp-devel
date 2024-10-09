@@ -172,11 +172,11 @@ W+M(j/2/2,+06)*2+w*014      +00+M(00+      000+j,002      +00)]=000      +00+k)k
         ,C(k),k;)L(;k--;C(*r++/*---#$%&04689@ABDOPQRabdegopq---*/));}C(53+6);return(z);}
 \<close>
 
-section \<open>Experiments with \<^dir>\<open>../../src_ext/parser_menhir\<close>\<close>
+section \<open>Testsuite with \<^dir>\<open>../../src_ext/parser_menhir\<close>\<close>
 
 declare[[C_lexer_trace = false]]
 
-subsection \<open>Expecting to succeed\<close>
+subsection \<open>Expected to succeed:\<close>
 
 \<^cancel>\<open>C_file \<open>../../src_ext/parser_menhir/tests/aligned_struct_c18.c\<close>\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/argument_scope.c\<close>
@@ -220,7 +220,7 @@ C_file \<open>../../src_ext/parser_menhir/tests/typedef_star.c\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/types.c\<close>
 C_file \<open>../../src_ext/parser_menhir/tests/variable_star.c\<close>
 
-subsection \<open>Expecting to fail\<close>
+subsection \<open>Expected to fail:\<close>
 
 C_file \<open>../../src_ext/parser_menhir/tests/bitfield_declaration_ambiguity.fail.c\<close>
 \<^cancel>\<open>C_file \<open>../../src_ext/parser_menhir/tests/dangling_else_misleading.fail.c\<close>\<close>

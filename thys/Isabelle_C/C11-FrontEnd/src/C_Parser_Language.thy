@@ -806,7 +806,8 @@ struct
 local
 
 fun ml_text name ml =
-  Document_Output.antiquotation_raw_embedded name (Scan.lift Parse.embedded_input \<comment> \<open>TODO: enable reporting with \<^ML_type>\<open>Token.file\<close> as in \<^ML>\<open>Resources.parse_files\<close>\<close>)
+  Document_Output.antiquotation_raw_embedded name (Scan.lift Parse.embedded_input 
+    \<comment> \<open>TODO: enable reporting with \<^ML_type>\<open>Token.file\<close> as in \<^ML>\<open>Resources.parse_files\<close>\<close>)
     (fn ctxt => fn text =>
       let val file_content =
             Token.file_source
@@ -870,28 +871,6 @@ ML_file "../../src_ext/mlton/lib/mlyacc-lib/parser1.sml" \<comment>
 subsection \<open>Loading the Generated Grammar (SML signature)\<close>
 
 ML_file "../generated/c_grammar_fun.grm.sig"
-
-ML \<comment> \<open>\<^file>\<open>../generated/c_grammar_fun.grm.sig\<close>\<close>
-(*TODO: the whole part should be maximally generated and integrated in the signature file*)
-\<open>
-structure C_Grammar_Rule = struct
-open C_Grammar_Rule
-
-(* ast_generic is an untyped universe of (some) ast's with the specific lenses put ... get ... *)
-
-type ast_generic = start_happy
-
-val get_CExpr = start_happy4
-val get_CStat = start_happy3
-val get_CExtDecl = start_happy2
-val get_CTranslUnit = start_happy1
-
-fun put_CExpr (x :  C_Grammar_Rule_Lib.CExpr)      = Right (Right (Right (Left x))) : ast_generic
-fun put_CStat (x : C_Grammar_Rule_Lib.CStat)       = Right (Right (Left x))         : ast_generic
-fun put_CExtDecl (x : C_Grammar_Rule_Lib.CExtDecl) = Right (Left x)                 : ast_generic
-fun put_CTranslUnit (x : C_Grammar_Rule_Lib.CTranslUnit) = Left x                   : ast_generic
-end
-\<close>
 
 subsection \<open>Overloading Grammar Rules (Optional Part)\<close>
 
