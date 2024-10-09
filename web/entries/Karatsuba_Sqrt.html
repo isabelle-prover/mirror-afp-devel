@@ -4,21 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Go Code Generation for Isabelle - Archive of Formal Proofs</title>
-    <meta name="description" content="This entry contains a standalone code generation target for the Go programming language.
-Unlike the previous targets, Go is not a functional language and...">
+    <title>The Karatsuba Square Root Algorithm - Archive of Formal Proofs</title>
+    <meta name="description" content="This formalisation provides an executable version of Zimmerman&#39;s &amp;ldquo;Karatsuba Square Root&amp;rdquo; algorithm, which, given an integer $n \geq 0$,...">
 
-  <meta property="og:title" content="Go Code Generation for Isabelle" />
+  <meta property="og:title" content="The Karatsuba Square Root Algorithm" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Go.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2024-01-22T00:00:00+00:00" />
-<meta property="article:modified_time" content="2024-01-22T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Karatsuba_Sqrt.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-09-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-18T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Go Code Generation for Isabelle"/>
+<meta name="twitter:title" content="The Karatsuba Square Root Algorithm"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -124,15 +123,15 @@ Unlike the previous targets, Go is not a functional language and...">
       </div>
     </form>
   <h1>
-    <span class='first'>G</span>o <span class='first'>C</span>ode <span class='first'>G</span>eneration for <span class='first'>I</span>sabelle
+    <span class='first'>T</span>he <span class='first'>K</span>aratsuba <span class='first'>S</span>quare <span class='first'>R</span>oot <span class='first'>A</span>lgorithm
     
   </h1>
   <div>
       <p>
-        <a href="../authors/stuebinger">Terru Stübinger</a> <a href="https://stuebinm.eu/">🌐</a> and <a href="../authors/hupel">Lars Hupel</a> <a href="https://lars.hupel.info/">🌐</a>
+        <a href="../authors/eberl">Manuel Eberl</a> <a class="obfuscated" data="eyJob3N0IjpbInBydXZpc3RvIiwib3JnIl0sInVzZXIiOlsibWFudWVsIl19">📧</a>
 
       </p>
-      <p class="date">January 22, 2024</p>
+      <p class="date">September 18, 2024</p>
   </div>
 </header>
       <div>
@@ -140,9 +139,19 @@ Unlike the previous targets, Go is not a functional language and...">
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">This entry contains a standalone code generation target for the Go programming language.
-Unlike the previous targets, Go is not a functional language and encourages code in an imperative style, thus many of the features of Isabelle's language (particularly data types, pattern matching, and type classes) have to be emulated using imperative language constructs in Go.
-To generate Go code, users can simply import this entry, which makes the Go target available.</div>
+    <div class="abstract mathjax_process"><p>This formalisation provides an executable version of Zimmerman's &ldquo;Karatsuba Square Root&rdquo;
+algorithm, which, given an integer $n \geq 0$, computes the integer square root
+$\lfloor \sqrt{n}\rfloor$ and the remainder $n - \lfloor \sqrt{n}\rfloor^2$.
+This is the algorithm used by the GNU Multiple Precision Arithmetic Library (GMP).</p>
+<p>Similarly to Karatsuba multiplication, the algorithm is a divide-and-conquer algorithm that
+works by repeatedly splitting the input number $n$ into four parts and recursively calls
+itself once on an input with roughly half as many bits as $n$, leading to a total running time
+of $O(M(n))$ (where $M(n)$ is the time required to multiply two $n$-bit numbers).
+This is significantly faster than the standard Heron method for large numbers (i.e. more than
+roughly 1000 bits).</p>
+<p>As a simple application to interval arithmetic, an executable floating-point interval 
+extension of the square-root operation is provided. For high-precision computations this 
+is considerably more efficient than the interval extension method in the Isabelle distribution.</p></div>
 
     <h3>License</h3>
     <div>
@@ -150,28 +159,15 @@ To generate Go code, users can simply import this entry, which makes the Go targ
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/tools">Tools</a></li>
+          <li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Karatsuba_Sqrt</h3>
       <ul>
-        <li>Stübinger, T., &amp; Hupel, L. (2023). <i>Extending Isabelle/HOL's Code Generator with support for the Go programming language</i> (Version 1). arXiv. https://doi.org/10.48550/ARXIV.2310.02704
-        </li>
-        <li>Lars Hupel, &amp; terru. (2024). <i>isabelle-prover/isabelle-go-codegen: v0.3</i> (Version v0.3) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.8401392
-        </li>
-      </ul>
-      <h3>Session Go</h3>
-      <ul>
-          <li><a href="../sessions/go/#Go_Setup">Go_Setup</a></li>
-      </ul>
-      <h3>Session Go_Test_Quick</h3>
-      <ul>
-          <li><a href="../sessions/go_test_quick/#RBT_Test">RBT_Test</a></li>
-      </ul>
-      <h3>Session Go_Test_Slow</h3>
-      <ul>
-          <li><a href="../sessions/go_test_slow/#Candidates">Candidates</a></li>
-          <li><a href="../sessions/go_test_slow/#Generate">Generate</a></li>
-          <li><a href="../sessions/go_test_slow/#Generate_Binary_Nat">Generate_Binary_Nat</a></li>
+          <li><a href="../sessions/karatsuba_sqrt/#Ceil_Log2">Ceil_Log2</a></li>
+          <li><a href="../sessions/karatsuba_sqrt/#Karatsuba_Sqrt_Library">Karatsuba_Sqrt_Library</a></li>
+          <li><a href="../sessions/karatsuba_sqrt/#Karatsuba_Sqrt">Karatsuba_Sqrt</a></li>
+          <li><a href="../sessions/karatsuba_sqrt/#Karatsuba_Sqrt_Float">Karatsuba_Sqrt_Float</a></li>
+          <li><a href="../sessions/karatsuba_sqrt/#Karatsuba_Sqrt_Test">Karatsuba_Sqrt_Test</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -183,9 +179,9 @@ To generate Go code, users can simply import this entry, which makes the Go targ
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Go/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Go/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Go/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Karatsuba_Sqrt/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Karatsuba_Sqrt/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Karatsuba_Sqrt/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -194,14 +190,14 @@ To generate Go code, users can simply import this entry, which makes the Go targ
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Go-AFP</p>
-        <pre id="copy-text">@article{Go-AFP,
-  author  = {Terru Stübinger and Lars Hupel},
-  title   = {Go Code Generation for Isabelle},
+        <p style="display:none;" id="bibtex-filename">Karatsuba_Sqrt-AFP</p>
+        <pre id="copy-text">@article{Karatsuba_Sqrt-AFP,
+  author  = {Manuel Eberl},
+  title   = {The Karatsuba Square Root Algorithm},
   journal = {Archive of Formal Proofs},
-  month   = {January},
+  month   = {September},
   year    = {2024},
-  note    = {\url{https://isa-afp.org/entries/Go.html},
+  note    = {\url{https://isa-afp.org/entries/Karatsuba_Sqrt.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -215,23 +211,8 @@ To generate Go code, users can simply import this entry, which makes the Go targ
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Go-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Karatsuba_Sqrt-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Go-2024-05-26.tar.gz">
-                May 26, 2024
-              </a>
-              : Isabelle2024
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Go-2024-03-11.tar.gz">
-                Mar 11, 2024
-              </a>
-              : Isabelle2023
-            </li>
-        </ul>
     </div>
   </div>
         

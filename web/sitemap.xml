@@ -27,7 +27,10 @@
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Karatsuba_Sqrt.html</loc>
+    <lastmod>2024-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lammich/</loc>
     <lastmod>2024-09-17T00:00:00+00:00</lastmod>
@@ -6235,6 +6238,8 @@
     <loc>/sessions/kad/</loc>
   </url><url>
     <loc>/sessions/karatsuba/</loc>
+  </url><url>
+    <loc>/sessions/karatsuba_sqrt/</loc>
   </url><url>
     <loc>/sessions/kat_and_dra/</loc>
   </url><url>
