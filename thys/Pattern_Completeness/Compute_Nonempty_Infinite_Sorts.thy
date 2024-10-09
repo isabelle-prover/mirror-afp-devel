@@ -174,9 +174,8 @@ text \<open>We provide an algorithm, that given a list of sorts with constructor
   terms of that sort.\<close>
 
 context
-begin 
-
-unbundle finfun_syntax  
+  includes finfun_syntax
+begin   
 
 fun finfun_update_all :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow>f 'b) \<Rightarrow> ('a \<Rightarrow>f 'b)" where
   "finfun_update_all [] g f = f" 
@@ -555,7 +554,7 @@ proof -
   finally show ?thesis .
 qed
 end
-
+ 
 definition compute_inf_sorts :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set" where
   "compute_inf_sorts Cs = fst (compute_inf_card_sorts Cs)" 
 
