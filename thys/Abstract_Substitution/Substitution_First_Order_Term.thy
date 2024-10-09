@@ -84,7 +84,7 @@ lemma term_subst_is_renaming_iff:
 proof (rule iffI)
   show "term_subst.is_renaming \<rho> \<Longrightarrow> inj \<rho> \<and> (\<forall>x. is_Var (\<rho> x))"
     unfolding term_subst.is_renaming_def subst_compose_def inj_def
-    by (metis term.sel(1) is_VarI subst_apply_eq_Var) 
+    by (smt (verit, ccfv_SIG) is_VarI subst_apply_eq_Var substitution_ops.is_renaming_def term.inject(1))
 next
   show "inj \<rho> \<and> (\<forall>x. is_Var (\<rho> x)) \<Longrightarrow> term_subst.is_renaming \<rho>"
     unfolding term_subst.is_renaming_def
