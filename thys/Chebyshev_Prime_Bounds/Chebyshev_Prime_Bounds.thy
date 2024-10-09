@@ -182,7 +182,7 @@ qed
 
 subsection \<open>Approximating \<open>\<psi>\<close>\<close>
 
-unbundle prime_counting_notation
+unbundle prime_counting_syntax
 
 lemma primes_psi_lower_rec:
   fixes f :: "real \<Rightarrow> real"
@@ -992,6 +992,6 @@ next
     by auto
 qed
 
-unbundle no_prime_counting_notation
+unbundle no prime_counting_syntax
 
 end
