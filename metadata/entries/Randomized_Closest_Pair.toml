@@ -1,0 +1,32 @@
+title = "Rabin's Closest Pair of Points Algorithm"
+date = 2024-09-08
+topics = [
+  "Computer science/Algorithms/Randomized",
+]
+abstract = """
+This entry formalizes Rabin’s randomized algorithm for the closest pair of points problem with expected linear running time. Remarkable is that the best-known deterministic algorithms have super-linear running times. Hence this algorithm is one of the first known examples of randomized algorithms that outperform deterministic algorithms.
+The formalization also introduces a probabilistic time monad, which builds on the existing deterministic time monad."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+email = "karayel_email"
+
+[authors.fan]
+email = "fan_email"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+fan = "fan_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

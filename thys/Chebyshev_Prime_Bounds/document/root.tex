@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Concrete bounds for Chebyshev's prime counting functions}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry derives explicit lower and upper bounds for Chebyshev's prime counting functions
+\[\psi(x) = \sum_{\substack{p^k \leq x \\ k > 0}} \log p\hskip4em \vartheta(x) = \sum_{p\leq x} \log p\ .\]
+
+\noindent Concretely, the following inequalities are proven:
+\begin{itemize}
+\item $\psi(x)\geq 0.9x$ for $x\geq 41$
+\item $\vartheta(x) \geq 0.82x$ if $x\geq 97$
+\item $\vartheta(x) \leq \psi(x) \leq 1.2x$ if $x\geq 0$
+\end{itemize}
+The proofs work by careful estimation of $\psi(x)$, with
+Stirling's formula as a starting point, to prove the bound for 
+all $x\geq x_0$ with a concrete $x_0$, followed by brute-force
+approximation for all $x$ below $x_0$.
+
+An easy corollary of this is \emph{Bertrand's postulate}, i.e.\ the fact that for any
+$x > 1$ the interval $(x,2x)$ contains at least one prime (a fact that has already
+been shown in the AFP using weaker bounds for $\psi$ and $\vartheta$).
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{niven1947}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

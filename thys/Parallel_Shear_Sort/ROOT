@@ -1,0 +1,9 @@
+chapter AFP
+
+session Parallel_Shear_Sort (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  theories
+    Parallel_Shear_Sort
+  document_files
+    "root.tex"
+    "root.bib"

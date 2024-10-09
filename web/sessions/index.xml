@@ -41,6 +41,13 @@
           <description></description>
         </item>
         <item>
+          <title>Abstract_Substitution</title>
+          <link>/sessions/abstract_substitution/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/abstract_substitution/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Abstract-Hoare-Logics</title>
           <link>/sessions/abstract-hoare-logics/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -731,6 +738,13 @@
           <link>/sessions/chebyshev_polynomials/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/chebyshev_polynomials/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Chebyshev_Prime_Bounds</title>
+          <link>/sessions/chebyshev_prime_bounds/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/chebyshev_prime_bounds/</guid>
           <description></description>
         </item>
         <item>
@@ -3891,6 +3905,13 @@
           <description></description>
         </item>
         <item>
+          <title>NREST</title>
+          <link>/sessions/nrest/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/nrest/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Nullstellensatz</title>
           <link>/sessions/nullstellensatz/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4066,6 +4087,13 @@
           <description></description>
         </item>
         <item>
+          <title>Parallel_Shear_Sort</title>
+          <link>/sessions/parallel_shear_sort/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/parallel_shear_sort/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Parity_Game</title>
           <link>/sessions/parity_game/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4154,6 +4182,13 @@
           <link>/sessions/pi_calculus/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/pi_calculus/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Pi_Irrational</title>
+          <link>/sessions/pi_irrational/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/pi_irrational/</guid>
           <description></description>
         </item>
         <item>
@@ -4637,6 +4672,13 @@
           <link>/sessions/randomised_social_choice/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/randomised_social_choice/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Randomized_Closest_Pair</title>
+          <link>/sessions/randomized_closest_pair/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/randomized_closest_pair/</guid>
           <description></description>
         </item>
         <item>
@@ -5550,6 +5592,13 @@
           <description></description>
         </item>
         <item>
+          <title>SuffixArray</title>
+          <link>/sessions/suffixarray/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/suffixarray/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Sumcheck_Protocol</title>
           <link>/sessions/sumcheck_protocol/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6072,6 +6121,20 @@
           <link>/sessions/winding_number_eval/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/winding_number_eval/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>With_Type</title>
+          <link>/sessions/with_type/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/with_type/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Wlog</title>
+          <link>/sessions/wlog/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/wlog/</guid>
           <description></description>
         </item>
         <item>

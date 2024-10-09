@@ -1,0 +1,33 @@
+title = "NREST: Nondeterministc RESult monad with Time"
+date = 2024-09-16
+topics = [
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+This entry introduces NREST, a nondeterministc result monad with time,
+which was spun off a development of a framework for verifying 
+functional correctness and worst-case complexity of algorithms refined
+down to LLVM, due to Haslbeck and Lammich."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.haslbeckm]
+email = "haslbeckm_email"
+
+[contributors]
+
+[notify]
+rosskopf = "rosskopf_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1145/3486169",
+  "10.1007/978-3-030-72019-3_11",
+]
+pubs = []

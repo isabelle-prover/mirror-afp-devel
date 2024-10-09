@@ -1211,6 +1211,26 @@ host = [
 [chenj.homepages]
 chenj_homepage = "https://gitlab.com/Jamie-Chen"
 
+[cheung]
+name = "Louis Cheung"
+orcid = "0000-0002-3530-6662"
+
+[cheung.emails]
+
+[cheung.emails.cheung_email1]
+user = [
+  "louis",
+  "cheung",
+]
+host = [
+  "student",
+  "unimelb",
+  "edu",
+  "au",
+]
+
+[cheung.homepages]
+
 [chevalier]
 name = "Loïc Chevalier"
 
@@ -1866,6 +1886,23 @@ host = [
 ]
 
 [essmann.homepages]
+
+[fan]
+name = "Zixuan Fan"
+
+[fan.emails]
+
+[fan.emails.fan_email]
+user = [
+  "zixuan",
+  "fan",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[fan.homepages]
 
 [felgenhauer]
 name = "Bertram Felgenhauer"
@@ -5853,6 +5890,17 @@ name = "Christine Rizkallah"
 
 [rizkallah.emails]
 
+[rizkallah.emails.rizkallah_email]
+user = [
+  "christine",
+  "rizkallah",
+]
+host = [
+  "unimelb",
+  "edu",
+  "au",
+]
+
 [rizkallah.homepages]
 rizkallah_homepage = "https://www.mpi-inf.mpg.de/~crizkall/"
 
@@ -7417,8 +7465,20 @@ host = [
   "ee",
 ]
 
+[unruh.emails.unruh_email1]
+user = [
+  "afp",
+  "xkjnfh",
+]
+host = [
+  "rwth",
+  "unruh",
+  "de",
+]
+
 [unruh.homepages]
 unruh_homepage = "https://www.ut.ee/~unruh/"
+unruh_homepage1 = "https://qis.rwth-aachen.de/people/unruh/"
 
 [urban]
 name = "Christian Urban"

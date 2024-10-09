@@ -1,0 +1,12 @@
+chapter AFP
+session Abstract_Substitution = HOL +
+  options [timeout = 300]
+  sessions
+    First_Order_Terms
+    "HOL-ex"
+  theories
+    Substitution
+    Substitution_First_Order_Term
+    Substitution_HOL_ex_Unification
+  document_files
+    "root.tex"
