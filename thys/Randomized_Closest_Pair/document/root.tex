@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+\title{Rabin's Closest Pair of Points Algorithm}
+\author{Emin Karayel \and Zixuan Fan}
+\maketitle
+
+\begin{abstract}
+This entry formalizes Rabin's randomized algorithm for the closest pair of points problem
+with expected linear running time. Remarkable is that the best-known deterministic algorithms have
+super-linear running times. Hence this algorithm is one of the first known examples of randomized
+algorithms that outperform deterministic algorithms.
+
+The formalization also introduces a probabilistic time monad, which builds on the existing
+deterministic time monad.
+\end{abstract}
+
+\tableofcontents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

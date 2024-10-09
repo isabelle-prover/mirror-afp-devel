@@ -1,0 +1,17 @@
+chapter AFP
+
+session With_Type = Mersenne_Primes +
+  options [document_variants = "document:outline=/proof,/ML",
+	   timeout = 600]
+  sessions
+    "HOL-Types_To_Sets"
+    "HOL-Eisbach"
+    "HOL-Computational_Algebra"
+    "HOL-Analysis"
+  theories
+    With_Type
+    With_Type_Example
+    Example_Euclidean_Space
+  document_files
+    "root.tex"
+    "root.bib"

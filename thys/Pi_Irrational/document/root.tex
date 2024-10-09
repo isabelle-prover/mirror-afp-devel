@@ -1,0 +1,46 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{A simple proof that $\pi$ is irrational}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a formalisation of Niven's famously
+short one-page proof that $\pi$ is irrational. The proof uses
+only elementary algebra and analysis.
+
+The intrinsic de Bruijn factor, i.e.\ the file size ratio between
+the gzipped Isabelle sources and a gzipped \LaTeX{} version of the original
+paper's content, is roughly 4 despite the original paper's terse
+presentation.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{niven1947}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 28 Oct 2021 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 30 Aug 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/unruh/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Without Loss of Generality</title>
+          <link>/entries/Wlog.html</link>
+          <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Wlog.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>With-Type – Poor man&#39;s dependent types</title>
+          <link>/entries/With_Type.html</link>
+          <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/With_Type.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Quantum and Classical Registers</title>
           <link>/entries/Registers.html</link>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mersenne_Primes on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/mersenne_primes/</link>
+    <description>
+        Recent content in Mersenne_Primes 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Fri, 30 Aug 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/mersenne_primes/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Without Loss of Generality</title>
+          <link>/entries/Wlog.html</link>
+          <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Wlog.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>With-Type – Poor man&#39;s dependent types</title>
+          <link>/entries/With_Type.html</link>
+          <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/With_Type.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>
