@@ -6,6 +6,7 @@ session Pattern_Completeness = First_Order_Terms +
     LP_Duality
     Certification_Monads
     Sorted_Terms
+    FinFun
   theories     
     Pattern_Completeness     
     Test_Pat_Complete 

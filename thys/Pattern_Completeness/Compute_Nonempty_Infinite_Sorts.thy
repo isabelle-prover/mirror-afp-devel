@@ -11,6 +11,7 @@ theory Compute_Nonempty_Infinite_Sorts
     Sorted_Terms.Sorted_Terms
     LP_Duality.Minimum_Maximum
     Matrix.Utility
+    FinFun.FinFun
 begin
 
 (* TODO: move to some library *)
@@ -172,17 +173,34 @@ text \<open>We provide an algorithm, that given a list of sorts with constructor
   Moreover, we also compute for each sort the cardinality of the set of constructor ground
   terms of that sort.\<close>
 
-definition compute_card_of_sort :: "'\<tau> \<Rightarrow> ('f \<times> '\<tau> list)list \<Rightarrow> ('\<tau> \<Rightarrow> nat) \<Rightarrow> nat" where
-  "compute_card_of_sort \<tau> cs cards = (\<Sum>f\<sigma>s\<leftarrow>remdups cs. prod_list (map cards (snd f\<sigma>s)))" 
+context
+begin 
 
+unbundle finfun_syntax  
+
+fun finfun_update_all :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow>f 'b) \<Rightarrow> ('a \<Rightarrow>f 'b)" where
+  "finfun_update_all [] g f = f" 
+| "finfun_update_all (x # xs) g f = (finfun_update_all xs g f)(x $:= g x)"
+
+lemma finfun_update_all[simp]: "finfun_update_all xs g f $ x = (if x \<in> set xs then g x else f $ x)"
+proof (induct xs)
+  case (Cons y xs)
+  thus ?case by (cases "x = y", auto)
+qed auto
+
+
+definition compute_card_of_sort :: "'\<tau> \<Rightarrow> ('f \<times> '\<tau> list)list \<Rightarrow> ('\<tau> \<Rightarrow>f nat) \<Rightarrow> nat" where
+  "compute_card_of_sort \<tau> cs cards = (\<Sum>f\<sigma>s\<leftarrow>remdups cs. prod_list (map (($) cards) (snd f\<sigma>s)))" 
+ 
 (* second argument: take list of types combined with constructors *)
-function compute_inf_card_main :: "'\<tau> set \<Rightarrow> ('\<tau> \<Rightarrow> nat) \<Rightarrow> ('\<tau> \<times> ('f \<times> '\<tau> list)list) list \<Rightarrow> '\<tau> set \<times> ('\<tau> \<Rightarrow> nat)" where
+function compute_inf_card_main :: "'\<tau> set \<Rightarrow> ('\<tau> \<Rightarrow>f nat) \<Rightarrow> ('\<tau> \<times> ('f \<times> '\<tau> list)list) list \<Rightarrow> '\<tau> set \<times> ('\<tau> \<Rightarrow> nat)" where
   "compute_inf_card_main m_inf cards ls = (
    let (fin, ls') = 
          partition (\<lambda> (\<tau>,fs). \<forall> \<tau>s \<in> set (map snd fs). \<forall> \<tau> \<in> set \<tau>s. \<tau> \<notin> m_inf) ls 
-    in if fin = [] then (m_inf, \<lambda> \<tau>. if \<tau> \<in> m_inf then 0 else cards \<tau>) else 
-      let new = set (map fst fin); cards' = (\<lambda> \<tau>. if \<tau> \<in> new then compute_card_of_sort \<tau> (the (map_of ls \<tau>)) cards else cards \<tau>) in 
-       compute_inf_card_main (m_inf - new) cards' ls')" 
+    in if fin = [] then (m_inf, \<lambda> \<tau>. cards $ \<tau>) else 
+      let new = map fst fin; 
+       cards' = finfun_update_all new (\<lambda> \<tau>. compute_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards in 
+       compute_inf_card_main (m_inf - set new) cards' ls')" 
   by pat_completeness auto
 
 termination
@@ -205,7 +223,8 @@ lemma compute_inf_card_main: fixes E :: "'v \<rightharpoonup> 't" and C :: "('f,
   and "set ls \<subseteq> set Cs" 
   and "fst ` (set Cs - set ls) \<inter> m_inf = {}" 
   and "m_inf \<subseteq> fst ` set ls" 
-  and "\<forall> \<tau>. \<tau> \<notin> m_inf \<longrightarrow> cards \<tau> = card {t. t : \<tau> in \<T>(C,E)} \<and> finite {t. t : \<tau> in \<T>(C,E)}" 
+  and "\<forall> \<tau>. \<tau> \<notin> m_inf \<longrightarrow> cards $ \<tau> = card {t. t : \<tau> in \<T>(C,E)} \<and> finite {t. t : \<tau> in \<T>(C,E)}" 
+  and "\<forall> \<tau>. \<tau> \<in> m_inf \<longrightarrow> cards $ \<tau> = 0" 
 shows "compute_inf_card_main m_inf cards ls = ({\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(C,E)})},
          \<lambda> \<tau>. card {t. t : \<tau> in \<T>(C,E)})" 
   using assms(8-)
@@ -236,7 +255,8 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
       then show ?thesis by auto
     qed
   } note inhabited = this
-  define cards' where "cards' = (\<lambda> \<tau>. if \<tau> \<in> set (map fst fin) then compute_card_of_sort \<tau> (the (map_of ls \<tau>)) cards else cards \<tau>)"  
+  
+  define cards' where "cards' = finfun_update_all (map fst fin) (\<lambda> \<tau>. compute_card_of_sort \<tau> (the (map_of ls \<tau>)) cards) cards"  
   {
     fix \<tau>
     assume asm: "\<tau> \<in> fst ` set fin"
@@ -246,7 +266,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     with dist(1) \<open>set ls \<subseteq> set Cs\<close> 
     have map: "map_of Cs \<tau> = Some cs" "map_of ls \<tau> = Some cs" 
       by (metis (no_types, opaque_lifting) eq_key_imp_eq_value map_of_SomeD subsetD weak_map_of_SomeI)+
-    from asm have cards': "cards' \<tau> = compute_card_of_sort \<tau> cs cards" unfolding cards'_def map by auto
+    from asm have cards': "cards' $ \<tau> = compute_card_of_sort \<tau> cs cards" unfolding cards'_def by (auto simp: map)
     from part asm have tau_fin: "\<tau> \<in> set (map fst fin)" by auto
     {
       fix f \<sigma>s
@@ -276,7 +296,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
       assume in_cs: "(f, \<sigma>s) \<in> set cs" "\<sigma> \<in> set \<sigma>s" 
       from tau_cs_fin part have "crit (\<tau>,cs)" by auto
       from this[unfolded crit_def split] in_cs have "\<sigma> \<notin> m_inf" by auto
-      with 1(6) have "cards \<sigma> = card (T \<sigma>)" and "finite (T \<sigma>)" by (auto simp: T_def)
+      with 1(6) have "cards $ \<sigma> = card (T \<sigma>)" and "finite (T \<sigma>)" by (auto simp: T_def)
     } note \<sigma>s_infos = this
 
     have "?TT = { Fun f ts | f ts \<sigma>s. f : \<sigma>s \<rightarrow> \<tau> in C \<and> ts :\<^sub>l \<sigma>s in \<T>(C,E)}" (is "_ = ?FunApps")
@@ -347,13 +367,13 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     qed
     also have "\<dots> = (\<Sum> f\<sigma>s \<in>set cs. prod_list (map card (map T (snd f\<sigma>s))))" 
       by (rule sum.cong[OF refl], rule card_listset, insert \<sigma>s_infos, auto)
-    also have "\<dots> = (\<Sum> f\<sigma>s \<in>set cs. prod_list (map cards (snd f\<sigma>s)))" 
+    also have "\<dots> = (\<Sum> f\<sigma>s \<in>set cs. prod_list (map (($) cards) (snd f\<sigma>s)))" 
       unfolding map_map o_def using \<sigma>s_infos
       by (intro sum.cong[OF refl] arg_cong[of _ _ prod_list], auto)
-    also have "\<dots> = sum_list (map (\<lambda> f\<sigma>s. prod_list (map cards (snd f\<sigma>s))) (remdups cs))" 
+    also have "\<dots> = sum_list (map (\<lambda> f\<sigma>s. prod_list (map (($) cards) (snd f\<sigma>s))) (remdups cs))" 
       by (rule sum.set_conv_list)
-    also have "\<dots> = cards' \<tau>" unfolding cards' compute_card_of_sort_def ..
-    finally have cards': "card ?TT = cards' \<tau>" by auto
+    also have "\<dots> = cards' $ \<tau>" unfolding cards' compute_card_of_sort_def ..
+    finally have cards': "card ?TT = cards' $ \<tau>" by auto
 
 
     from inj have "finite ?TT = finite ?A"
@@ -366,7 +386,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     finally have fin: "finite ?TT" by simp 
 
     from fin cards'
-    have "cards' \<tau> = card (?terms \<tau>)" "finite (?terms \<tau>)" "?fin \<tau>" by auto
+    have "cards' $ \<tau> = card (?terms \<tau>)" "finite (?terms \<tau>)" "?fin \<tau>" by auto
   } note fin = this
     
   show ?case 
@@ -379,11 +399,11 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
       show "set ls' \<subseteq> set Cs" using 1(3) part by auto
       show "fst ` (set Cs - set ls') \<inter> (m_inf - set (map fst fin)) = {}" using 1(3-4) part by force
       show "m_inf - set (map fst fin) \<subseteq> fst ` set ls'" using 1(5) part by force
-      show "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> cards' \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)"
+      show "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> cards' $ \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)"
       proof (intro allI impI)
         fix \<tau>
         assume nmem: "\<tau> \<notin> m_inf - set (map fst fin)" 
-        show "cards' \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)" 
+        show "cards' $ \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)" 
         proof (cases "\<tau> \<in> set (map fst fin)")
           case False
           with nmem have tau: "\<tau> \<notin> m_inf" by auto
@@ -395,11 +415,13 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
         qed
       qed
       thus "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> ?fin \<tau>" by force
+      show "\<forall>\<tau>. \<tau> \<in> m_inf - set (map fst fin) \<longrightarrow> cards' $ \<tau> = 0" using 1(7) unfolding cards'_def 
+        by auto
     qed (auto simp: cards'_def)
     finally show ?thesis .
   next
     case True
-    let ?cards = "\<lambda>\<tau>. if \<tau> \<in> m_inf then 0 else cards \<tau>" 
+    let ?cards = "\<lambda>\<tau>. cards $ \<tau>" 
     have m_inf: "m_inf = {\<tau>. \<not> ?fin \<tau>}" 
     proof
       show "{\<tau>. \<not> ?fin \<tau>} \<subseteq> m_inf" using fin 1(2) by auto
@@ -462,7 +484,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     also have "?cards = (\<lambda> \<tau>. card (?terms \<tau>))" 
     proof (intro ext)
       fix \<tau>
-      show "(if \<tau> \<in> m_inf then 0 else cards \<tau>) = card (?terms \<tau>)" 
+      show "cards $ \<tau> = card (?terms \<tau>)" 
       proof (cases "\<tau> \<in> m_inf")
         case False
         thus ?thesis using 1(6) by auto
@@ -472,17 +494,17 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
         from True m_inf have "\<not> bdd_above (size ` TT)" unfolding TT_def by auto
         hence "infinite TT" by auto
         hence "card TT = 0" by auto
-        thus ?thesis unfolding TT_def using True by auto
+        thus ?thesis unfolding TT_def using True 1(7) by auto
       qed
     qed
     finally show ?thesis using m_inf by auto
   qed
-qed  
+qed
 
 definition compute_inf_card_sorts :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set \<times> ('t \<Rightarrow> nat)" where
   "compute_inf_card_sorts Cs = (let 
        Cs' = map (\<lambda> \<tau>. (\<tau>, map fst (filter(\<lambda>f. snd f = \<tau>) Cs))) (remdups (map snd Cs))
-    in compute_inf_card_main (set (map fst Cs')) (\<lambda> _. 0) Cs')" 
+    in compute_inf_card_main (set (map fst Cs')) (K$ 0) Cs')" 
 
 lemma compute_inf_card_sorts:
   fixes E :: "'v \<rightharpoonup> 't" and C :: "('f,'t)ssig"
@@ -496,10 +518,10 @@ shows "compute_inf_card_sorts Cs = (
 proof -
   define taus where "taus = remdups (map snd Cs)" 
   define Cs' where "Cs' = map (\<lambda> \<tau>. (\<tau>, map fst (filter(\<lambda>f. snd f = \<tau>) Cs))) taus" 
-  have "compute_inf_card_sorts Cs = compute_inf_card_main (set (map fst Cs')) (\<lambda> _. 0) Cs'" 
+  have "compute_inf_card_sorts Cs = compute_inf_card_main (set (map fst Cs')) (K$ 0) Cs'" 
     unfolding compute_inf_card_sorts_def taus_def Cs'_def Let_def by auto
   also have "\<dots> = (?inf, ?cards)"
-  proof (rule compute_inf_card_main[OF E C_Cs _ arg_types_inhabitet _ dist _ _ subset_refl])  
+  proof (rule compute_inf_card_main[OF E C_Cs _ arg_types_inhabitet _ dist _ _ subset_refl])   
     have "distinct taus" unfolding taus_def by auto
     thus "distinct (map fst Cs')" unfolding Cs'_def map_map o_def fst_conv by auto
     show "set Cs = set (concat (map (\<lambda>(\<tau>, fs). map (\<lambda>f. (f, \<tau>)) fs) Cs'))" 
@@ -527,11 +549,12 @@ proof -
       thus id: "{t. t : \<tau> in \<T>(C,E)} = {}" by auto
     qed
     then show "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> bdd_above (size ` {t. t : \<tau> in \<T>(C,E)})" 
-      "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> 0 = card {t. t : \<tau> in \<T>(C,E)} \<and> finite {t. t : \<tau> in \<T>(C,E)}" 
+      "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> (K$ 0) $ \<tau> = card {t. t : \<tau> in \<T>(C,E)} \<and> finite {t. t : \<tau> in \<T>(C,E)}" 
         by auto         
-  qed
+  qed auto
   finally show ?thesis .
 qed
+end
 
 definition compute_inf_sorts :: "(('f \<times> 't list) \<times> 't)list \<Rightarrow> 't set" where
   "compute_inf_sorts Cs = fst (compute_inf_card_sorts Cs)" 
