@@ -4,8 +4,8 @@ theory With_Type_Example
   imports With_Type "HOL-Computational_Algebra.Factorial_Ring" Mersenne_Primes.Lucas_Lehmer_Code
 begin
 
-unbundle lifting_syntax
-no_notation m_inv ("inv\<index> _" [81] 80)
+unbundle lifting_syntax and no m_inv_syntax
+
 
 subsection \<open>Semigroups (class with one parameter)\<close>
 
