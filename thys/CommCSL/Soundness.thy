@@ -1,5 +1,16 @@
 subsection \<open>Soundness of the Rules\<close>
 
+text \<open>In this file, we prove that each rule of the logic is sound. We do this by assuming that the Hoare
+triples in the premise of the rule hold semantically (as defined in Safety.thy), and then proving
+that the Hoare triple in the conclusion also holds semantically. We prove soundness of the logic
+(with some corollaries) at the end of the file.\<close>
+
+text \<open>For each rule, we first prove an important lemma about the safety of the statement (i.e., under
+which conditions is executing this statement safe, and what conditions will hold about the set of states
+that can be reached by executing this statement). We then use this lemma to prove the rule of the logic,
+by constructing the set of states that will be reached, proving that safety holds, and proving that the
+final set of states satisfies the postcondition.\<close>
+
 theory Soundness
   imports Safety AbstractCommutativity
 begin
@@ -59,7 +70,8 @@ proof (induct m)
           full_ownership (get_fh H') \<and>
           no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n None C' (s', h'') {(s(x := edenot E s), h)}"
       by (metis Pair_inject insertI1 red_assign_cases safe_skip)
-
+    show "accesses (Cassign x E) s \<subseteq> dom (fst h) \<and> writes (Cassign x E) s \<subseteq> fpdom (fst h)"
+      by simp
     fix H hf C' s' h' hj v0 \<Gamma>
     assume asm0: "\<Delta> = Some \<Gamma>" "Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red (Cassign x E) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -219,7 +231,7 @@ proof (induct n)
           h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n (None :: ('i, 'a, nat) cont) C' (s', h'') {(s(x := a), [a \<mapsto> (pwrite, edenot E s)], gs, gu) |a. True}"
         by blast
     qed
-  qed
+  qed (simp)
 qed (simp)
 
 lemma safe_new_Some:
@@ -385,7 +397,7 @@ proof (induct n)
           Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') {(s(x := a), [a \<mapsto> (pwrite, edenot E s)], gs, gu) |a. True}"
         by (metis (no_types, lifting) \<open>Some hjf = Some hj \<oplus> Some hf\<close> plus_asso)
     qed
-  qed
+  qed (simp)
 qed (simp)
 
 
@@ -460,6 +472,8 @@ proof (induct n)
       then show "\<not> aborts (Cwrite loc E) (s, normalize (get_fh H))"
         by (metis aborts_write_cases fst_eqD snd_eqD)
     qed
+    show "accesses (Cwrite loc E) s \<subseteq> dom (fst (fh, gs, gu)) \<and> writes (Cwrite loc E) s \<subseteq> fpdom (fst (fh, gs, gu))"
+      using assms fpdom_def by fastforce
 
 
     fix H hf C' s' h'
@@ -507,14 +521,16 @@ proof (induct n)
       then obtain H' where "Some H' = Some ?h \<oplus> Some hf" by auto
       moreover have "H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
       proof (rule heap_ext)
-        show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          using calculation asm0 by (metis \<open>get_fh hf (edenot loc s) = None\<close> add_fh_update add_get_fh fst_conv get_fh.simps)
-        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)" 
-          using calculation asm0
-          by (metis fst_conv get_gs.simps plus_extract(2) snd_conv)
+        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+          by (metis asm0 calculation fst_conv get_gs.simps plus_extract(2) snd_conv)
         show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          using add_fh_update[of "get_fh hf" "edenot E s" fh "(pwrite, edenot E s)"] asm0 calculation 
-          by (metis get_gu.elims plus_extract(3) snd_conv)
+          by (metis asm0 calculation get_gu.simps plus_extract(3) snd_conv)
+        show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+        proof (rule ext)
+          fix l show "get_fh H' l = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H) l"
+            using add_fh_update[of "get_fh hf" "edenot E s" fh "(pwrite, edenot E s)"]
+            by (metis \<open>get_fh hf (edenot loc s) = None\<close> add_fh_update add_get_fh asm0 calculation fst_conv get_fh.elims)
+        qed
       qed
       moreover have "safe n (None :: ('i, 'a, nat) cont) C' (s', ?h) {(s, fh(edenot loc s \<mapsto> (pwrite, edenot E s)), gs, gu)}"
         using \<open>s = sa\<close> asm1(2) asm1(3) safe_skip by fastforce
@@ -535,8 +551,8 @@ proof (induct n)
               by (metis (mono_tags, lifting) asm asm0 calculation(2) fst_eqD full_ownership_def get_fh.simps map_upd_Some_unfold)
           qed
         qed
-        moreover have "no_guard H'" using asm0 
-          by (simp add: \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> no_guard_def)
+        moreover have "no_guard H'"
+          by (metis \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> asm0 fst_conv get_gs.simps get_gu.simps no_guard_def snd_conv)
         moreover have "h' = FractionalHeap.normalize (get_fh H')"
         proof (rule ext)
           fix l show "h' l = FractionalHeap.normalize (get_fh H') l"
@@ -589,6 +605,8 @@ proof (induct n)
       then show "\<not> aborts (Cwrite loc E) (s, FractionalHeap.normalize (get_fh H))"
         by (metis aborts_write_cases fst_eqD snd_eqD)
     qed
+    show "accesses (Cwrite loc E) s \<subseteq> dom (fst (fh, gs, gu)) \<and> writes (Cwrite loc E) s \<subseteq> fpdom (fst (fh, gs, gu))"
+      using Suc.prems(1) fpdom_def by fastforce
 
     fix H hf C' s' h' hj v0
 
@@ -640,14 +658,16 @@ proof (induct n)
       then obtain H' where "Some H' = Some ?h \<oplus> Some hjf" by auto
       moreover have "H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
       proof (rule heap_ext)
-        show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          using asm00 calculation
-          by (metis \<open>get_fh hjf (edenot loc s) = None\<close> add_fh_update add_get_fh fst_conv get_fh.simps)
-        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)" 
-          using asm00 calculation 
-          by (metis fst_conv get_gs.simps plus_extract(2) snd_conv)
+        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+          by (metis asm00 calculation fst_conv get_gs.simps plus_extract(2) snd_conv)
         show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
           by (metis asm00 calculation get_gu.simps plus_extract(3) snd_conv)
+        show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+        proof (rule ext)
+          fix l show "get_fh H' l = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H) l"
+            using add_fh_update[of "get_fh hjf" "edenot E s" fh "(pwrite, edenot E s)"]
+            by (metis \<open>get_fh hjf (edenot loc s) = None\<close> add_fh_update add_get_fh asm00 calculation fst_conv get_fh.elims)
+        qed
       qed
       moreover have "safe n (Some \<Gamma>) C' (s', ?h) {(s, fh(edenot loc s \<mapsto> (pwrite, edenot E s)), gs, gu)}"
         using \<open>s = sa\<close> asm1(2) asm1(3) safe_skip by fastforce
@@ -789,6 +809,10 @@ proof (induct n)
       then show "\<not> aborts (Cread x E) (s, FractionalHeap.normalize (get_fh H))"
         by (metis aborts_read_cases fst_eqD snd_eqD)
     qed
+
+    show "accesses (Cread x E) s \<subseteq> dom (fst ([edenot E s \<mapsto> (\<pi>, v)], gs, gu)) \<and> writes (Cread x E) s \<subseteq> fpdom (fst ([edenot E s \<mapsto> (\<pi>, v)], gs, gu))"
+      by simp
+
     fix H hf C' s' h'
     assume asm0: "Some H = Some ([edenot E s \<mapsto> (\<pi>, v)], gs, gu) \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> no_guard H \<and> red (Cread x E) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -854,6 +878,9 @@ proof (induct n)
       then show "\<not> aborts (Cread x E) (s, FractionalHeap.normalize (get_fh H))"
         by (metis aborts_read_cases fst_eqD snd_eqD)
     qed
+    show "accesses (Cread x E) s \<subseteq> dom (fst ([edenot E s \<mapsto> (\<pi>, v)], gs, gu)) \<and> writes (Cread x E) s \<subseteq> fpdom (fst ([edenot E s \<mapsto> (\<pi>, v)], gs, gu))"
+      by simp
+
     fix H hf C' s' h' hj v0
     assume asm0: "Some H = Some ([edenot E s \<mapsto> (\<pi>, v)], gs, gu) \<oplus> Some hj \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red (Cread x E) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -1045,6 +1072,7 @@ lemma share_lemma:
       and "sat_inv s hj \<Gamma>"
       and "semi_consistent \<Gamma> v0 h'"
       and "view_function_of_inv \<Gamma>"
+      and "bounded h'"
     shows "safe n (None :: ('i, 'a, nat) cont) C (s, remove_guards h') (S_after_share S \<Gamma> v0)"
   using assms
 proof (induct n arbitrary: C s h h' hj)
@@ -1092,6 +1120,15 @@ proof (induct n arbitrary: C s h h' hj)
       show "view_function_of_inv \<Gamma>"
         by (simp add: assms(5))
     qed
+
+    have "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+      using Suc.prems(1) by force
+    moreover have "dom (fst h) \<subseteq> dom (fst h')"
+      by (metis Suc.prems(2) addition_smaller_domain get_fh.simps)
+    moreover have "fpdom (fst h) \<subseteq> fpdom (fst h')"
+      by (simp add: Suc.prems(2) Suc(7) fpdom_inclusion)
+    ultimately show "accesses C s \<subseteq> dom (fst (remove_guards h')) \<and> writes C s \<subseteq> fpdom (fst (remove_guards h'))"
+      unfolding remove_guards_def by force
 
     fix H hf C' s' h'a
     assume asm0: "Some H = Some (remove_guards h') \<oplus> Some hf \<and>
@@ -1211,6 +1248,13 @@ proof (induct n arbitrary: C s h h' hj)
       qed
       show "view_function_of_inv \<Gamma>"
         by (simp add: assms(5))
+      show "bounded hj''"
+      proof (rule bounded_smaller)
+        show "bounded H'"
+          by (metis asm1 full_ownership_then_bounded get_fh.simps)
+        show "H' \<succeq> hj''"
+          by (metis \<open>Some hj'' = Some h'' \<oplus> Some hj'\<close> asm1 larger_def)
+      qed
     qed
 
     let ?h'' = "remove_guards hj''"
@@ -1237,6 +1281,7 @@ definition no_need_guards where
 lemma has_guard_then_safe_none:
   assumes "\<not> no_guard h"
       and "C = Cskip \<Longrightarrow> (s, h) \<in> S"
+      and "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
   shows "safe n (None :: ('i, 'a, nat) cont) C (s, h) S"
 proof (induct n)
   case (Suc n)
@@ -1246,6 +1291,8 @@ proof (induct n)
       by (simp add: assms(2))
     show "no_abort None C s h"
       using assms(1) no_abortNoneI no_guard_then_smaller_same by blast
+    show "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+      using assms(3) by blast
     show "\<And>H hf C' s' h'.
        Some H = Some h \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> no_guard H \<and> red C (s, FractionalHeap.normalize (get_fh H)) C' (s', h') \<Longrightarrow>
        \<exists>h'' H'.
@@ -1272,7 +1319,7 @@ proof -
   let ?P = "Star P EmptyFullGuards"
   let ?Q = "Star Q (And (PreSharedGuards (Abs_precondition spre)) (PreUniqueGuards (Abs_indexed_precondition upre)))"
 
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> Star P EmptyFullGuards \<Longrightarrow> safe n (Some \<Gamma>) C \<sigma> (\<Sigma> \<sigma>)"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> Star P EmptyFullGuards \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (Some \<Gamma>) C \<sigma> (\<Sigma> \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> Star P EmptyFullGuards \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') (Star Q (And (PreSharedGuards (Abs_precondition spre)) (PreUniqueGuards (Abs_indexed_precondition upre))))"
     using hoare_triple_validE[of "Some \<Gamma>" ?P C ?Q] assms(3) by blast
 
@@ -1287,10 +1334,10 @@ proof -
   define \<Sigma>' where "\<Sigma>' = (\<lambda>\<sigma>. \<Union>p \<in> input_\<Sigma> \<sigma>. S_after_share (\<Sigma> p) \<Gamma> (f (normalize (get_fh (snd \<sigma>)))))"
 
   show ?thesis 
-  proof (rule hoare_triple_validI)
-    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Star P (LowView (\<alpha> \<circ> f) J x) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C (s, h) (\<Sigma>' (s, h))"
+  proof (rule hoare_triple_validI_bounded)
+    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Star P (LowView (\<alpha> \<circ> f) J x) \<Longrightarrow> bounded h \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C (s, h) (\<Sigma>' (s, h))"
     proof -
-      fix s h n assume asm1: "(s, h), (s, h) \<Turnstile> Star P (LowView (\<alpha> \<circ> f) J x)"
+      fix s h n assume asm1: "(s, h), (s, h) \<Turnstile> Star P (LowView (\<alpha> \<circ> f) J x)" "bounded h"
       then obtain hp hj where "no_guard h" "Some h = Some hp \<oplus> Some hj" "(s, hp), (s, hp) \<Turnstile> P"
         "(s, hj), (s, hj) \<Turnstile> LowView (\<alpha> \<circ> f) J x"
         by (meson always_sat_refl assms(8) hyper_sat.simps(4) no_guard_assertion_def)
@@ -1308,6 +1355,9 @@ proof -
         proof (rule asm0(1))
           show "(s, add_empty_guards hp), (s, add_empty_guards hp) \<Turnstile> Star P EmptyFullGuards"
             using \<open>(s, hp), (s, hp) \<Turnstile> P\<close> \<open>Some h = Some hp \<oplus> Some hj\<close> \<open>no_guard h\<close> no_guard_and_sat_p_empty_guards no_guard_then_smaller_same by blast
+          show "bounded (snd (s, add_empty_guards hp))"
+            unfolding bounded_def add_empty_guards_def apply simp
+            by (metis \<open>Some h = Some hp \<oplus> Some hj\<close> asm1(2) boundedE bounded_smaller_sum fst_eqD)
         qed
         show "Some (add_empty_guards h) = Some (add_empty_guards hp) \<oplus> Some hj"
           using \<open>Some h = Some hp \<oplus> Some hj\<close> \<open>no_guard h\<close> no_guard_add_empty_guards_sum by blast
@@ -1317,14 +1367,15 @@ proof -
           by (simp add: assms(4))
         show "semi_consistent \<Gamma> (f (FractionalHeap.normalize (get_fh h))) (add_empty_guards h)"
           by (metis \<open>no_guard h\<close> assms(1) select_convs(1) semi_consistent_empty_no_guard_initial_value)
+        show "bounded (add_empty_guards h)"
+          unfolding bounded_def add_empty_guards_def apply simp
+          by (metis asm1(2) boundedE fst_eqD)
       qed
       moreover have "(S_after_share (\<Sigma> ?p) \<Gamma> ?v0) \<subseteq> \<Sigma>' (s, h)"
         using \<Sigma>'_def \<open>(s, add_empty_guards hp) \<in> input_\<Sigma> (s, h)\<close> by auto
       ultimately show "safe n (None :: ('i, 'a, nat) cont) C (s, h) (\<Sigma>' (s, h))"
         by (metis \<open>no_guard h\<close> no_guards_remove_same safe_larger_set)
     qed
-
-
 
     fix s1 h1 s2 h2
     assume "(s1, h1), (s2, h2) \<Turnstile> Star P (LowView (\<alpha> \<circ> f) J x)"
@@ -1577,7 +1628,7 @@ proof -
   moreover have precises: "precise ?J \<and> precise ?J'"
     by (simp add: assms(3) precise_inv_then_view)
 
-  obtain \<Sigma> where asm0: "\<And>n \<sigma>. \<sigma>, \<sigma> \<Turnstile> Star P ?J \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
+  obtain \<Sigma> where asm0: "\<And>n \<sigma>. \<sigma>, \<sigma> \<Turnstile> Star P ?J \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
       "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> Star P ?J \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') (Star Q ?J')"
     using assms(2) hoare_triple_valid_def by blast
 
@@ -1588,7 +1639,7 @@ proof -
   let ?\<Sigma>' = "\<lambda>\<sigma>. close_var (\<Sigma>' \<sigma>) x"
 
   show "hoare_triple_valid (Some \<Gamma>) (Star P ?G) (Catomic C) (Star Q ?G')"
-  proof (rule hoare_triple_validI)
+  proof (rule hoare_triple_validI_bounded)
     show "\<And>s h s' h'. (s, h), (s', h') \<Turnstile> Star P ?G \<Longrightarrow> pair_sat (?\<Sigma>' (s, h)) (?\<Sigma>' (s', h')) (Star Q ?G')"
     proof -
       fix s1 h1 s2 h2
@@ -1733,11 +1784,13 @@ proof -
 
         ultimately have "(s, remove_guards hhj), (s, remove_guards hhj) \<Turnstile> Star P ?J"
           using \<open>(s, remove_guards h), (s, remove_guards h) \<Turnstile> P\<close> hyper_sat.simps(4) by blast
+        moreover have "bounded hhj"
+          apply (rule bounded_smaller_sum[of H])
+          apply (metis asm2 full_ownership_then_bounded get_fh.simps)
+          using \<open>Some H = Some hhj \<oplus> Some hf\<close> by blast
 
-
-
-        then have all_safes: "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s, remove_guards hhj) (\<Sigma> (s, remove_guards hhj))"
-          using asm0(1) by blast
+        ultimately have all_safes: "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s, remove_guards hhj) (\<Sigma> (s, remove_guards hhj))"          
+          using asm0(1) unfolding bounded_def remove_guards_def by simp
         then have "\<And>\<sigma>1 H1 \<sigma>2 H2 s2 C2. red_rtrans C \<sigma>1 C2 \<sigma>2 \<Longrightarrow> \<sigma>1 = (s, H1) \<Longrightarrow> \<sigma>2 = (s2, H2) \<Longrightarrow>
           ?H = denormalize H1 \<Longrightarrow>
 \<not> aborts C2 \<sigma>2 \<and> (C2 = Cskip \<longrightarrow> (\<exists>h1 H'. Some H' = Some h1 \<oplus> Some ?hf \<and> H2 = FractionalHeap.normalize (get_fh H')
@@ -2014,7 +2067,7 @@ proof -
           semi_consistent \<Gamma> v0 H' \<and>
           sat_inv pre_s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf
           \<and> safe n (Some \<Gamma>) C' (pre_s', h'') (?\<Sigma>' (pre_s, h))" using \<open>sat_inv s' hj' \<Gamma>\<close> by blast
-      qed
+      qed (simp)
       ultimately show "safe k (Some \<Gamma>) (Catomic C) (pre_s, h) (?\<Sigma>' (pre_s, h))" by blast
     qed (simp)
   qed
@@ -2059,7 +2112,7 @@ proof -
   moreover have precises: "precise ?J \<and> precise ?J'"
     by (simp add: assms(3) precise_inv_then_view)
 
-  obtain \<Sigma> where asm0: "\<And>n \<sigma>. \<sigma>, \<sigma> \<Turnstile> Star P ?J \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
+  obtain \<Sigma> where asm0: "\<And>n \<sigma>. \<sigma>, \<sigma> \<Turnstile> Star P ?J \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
       "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> Star P ?J \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') (Star Q ?J')"
     using assms(2) hoare_triple_valid_def by blast
 
@@ -2212,10 +2265,12 @@ proof -
 
         ultimately have "(s, remove_guards hhj), (s, remove_guards hhj) \<Turnstile> Star P ?J"
           using \<open>(s, remove_guards h), (s, remove_guards h) \<Turnstile> P\<close> hyper_sat.simps(4) by blast
+        moreover have "bounded hhj"
+          apply (rule bounded_smaller_sum[OF _ \<open>Some H = Some hhj \<oplus> Some hf\<close>])
+          by (metis asm2 full_ownership_then_bounded get_fh.simps)
 
-
-        then have all_safes: "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s, remove_guards hhj) (\<Sigma> (s, remove_guards hhj))"
-          using asm0(1) by blast
+        ultimately have all_safes: "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s, remove_guards hhj) (\<Sigma> (s, remove_guards hhj))"
+          using asm0(1) unfolding bounded_def remove_guards_def by simp
         then have "\<And>\<sigma>1 H1 \<sigma>2 H2 s2 C2. red_rtrans C \<sigma>1 C2 \<sigma>2 \<Longrightarrow> \<sigma>1 = (s, H1) \<Longrightarrow> \<sigma>2 = (s2, H2) \<Longrightarrow>
           ?H = denormalize H1 \<Longrightarrow>
 \<not> aborts C2 \<sigma>2 \<and> (C2 = Cskip \<longrightarrow> (\<exists>h1 H'. Some H' = Some h1 \<oplus> Some ?hf \<and> H2 = FractionalHeap.normalize (get_fh H')
@@ -2522,7 +2577,7 @@ proof -
           semi_consistent \<Gamma> v0 H' \<and>
           sat_inv pre_s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf
           \<and> safe n (Some \<Gamma>) C' (pre_s', h'') (?\<Sigma>' (pre_s, h))" using \<open>sat_inv s' hj' \<Gamma>\<close> by blast
-      qed
+      qed (simp)
       ultimately show "safe k (Some \<Gamma>) (Catomic C) (pre_s, h) (?\<Sigma>' (pre_s, h))" by blast
     qed (simp)
   qed
@@ -2546,40 +2601,72 @@ lemma par_cases:
   apply blast+
   done
 
+
 lemma no_abort_par:
   assumes "no_abort \<Gamma> C1 s h"
       and "no_abort \<Gamma> C2 s h"
-    shows "no_abort \<Gamma> (Cpar C1 C2) s h"
-proof (rule no_abortI)
-  show "\<And>hf H.
-       Some H = Some h \<oplus> Some hf \<and> \<Gamma> = None \<and> full_ownership (get_fh H) \<and> no_guard H \<Longrightarrow>
-       \<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
-  proof -
-    fix hf H assume asm0: "Some H = Some h \<oplus> Some hf \<and> \<Gamma> = None \<and> full_ownership (get_fh H) \<and> no_guard H"
+      and "safe (Suc n) \<Delta> C1 (s, h1) S1"
+      and "safe (Suc n) \<Delta> C2 (s, h2) S2"
+      and "Some h = Some h1 \<oplus> Some h2"
+      and "bounded h"
+    shows "no_abort \<Gamma> (Cpar C1 C2) s h \<and> accesses (Cpar C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)"
+proof (rule conjI)
+  have r: "accesses C1 s \<subseteq> dom (fst h1) \<and> accesses C2 s \<subseteq> dom (fst h2) \<and> writes C1 s \<subseteq> fpdom (fst h1) \<and> writes C2 s \<subseteq> fpdom (fst h2)"
+    using assms(3-4)
+    by (metis fst_eqD safeAccessesE snd_eqD)
+  then have "accesses (Cpar C1 C2) s \<subseteq> dom (fst h)"
+    by (metis Un_mono accesses.simps(8) assms(5) dom_sum_two get_fh.elims)
+  moreover have "fpdom (fst h1) \<union> fpdom (fst h2) \<subseteq> fpdom (fst h)"
+    using assms(5) fpdom_dom_union assms(6) by blast
+  then have "writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)"
+    using \<open>accesses C1 s \<subseteq> dom (fst h1) \<and> accesses C2 s \<subseteq> dom (fst h2) \<and> writes C1 s \<subseteq> fpdom (fst h1) \<and> writes C2 s \<subseteq> fpdom (fst h2)\<close> dual_order.trans by auto
+  ultimately show "accesses (Cpar C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)" by simp
+
+  have r: "accesses C1 s \<inter> writes C2 s = {} \<and> accesses C2 s \<inter> writes C1 s = {}"
+    apply (rule conjI)
+    using fpdom_dom_disjoint[OF assms(5)] r
+    apply blast
+    using assms(5) fpdom_dom_disjoint[of h h2 h1] r plus_comm[of "Some h1" "Some h2"]
+    by force
+
+  show "no_abort \<Gamma> (Cpar C1 C2) s h"
+  proof (rule no_abortI)
+    show "\<And>hf H.
+         Some H = Some h \<oplus> Some hf \<and> \<Gamma> = None \<and> full_ownership (get_fh H) \<and> no_guard H \<Longrightarrow>
+         \<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
+    proof -
+      fix hf H assume asm0: "Some H = Some h \<oplus> Some hf \<and> \<Gamma> = None \<and> full_ownership (get_fh H) \<and> no_guard H"
+      let ?H = "FractionalHeap.normalize (get_fh H)"
+  
+      show "\<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
+      proof (rule ccontr)
+        assume "\<not> \<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
+        then have "aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))" by simp
+        then have "aborts C1 (s, ?H) \<or> aborts C2 (s, ?H)"
+          apply (rule aborts.cases)
+                  apply simp_all
+          using r by force+
+        then show False
+          using asm0 assms(1) assms(2) no_abortE(1) by blast
+      qed
+    qed
+    fix H hf hj v0 \<Gamma>'
+    assume asm0: "\<Gamma> = Some \<Gamma>' \<and> Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> semi_consistent \<Gamma>' v0 H \<and> sat_inv s hj \<Gamma>'"
     let ?H = "FractionalHeap.normalize (get_fh H)"
     show "\<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
     proof (rule ccontr)
       assume "\<not> \<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
       then have "aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))" by simp
       then have "aborts C1 (s, ?H) \<or> aborts C2 (s, ?H)"
-        by (rule aborts.cases) auto
+        apply (rule aborts.cases)
+                apply simp_all
+          using r by force+
       then show False
-        using asm0 assms(1) assms(2) no_abortE(1) by blast
+        using asm0 assms(1) assms(2) no_abortE(2) by blast
     qed
   qed
-  fix H hf hj v0 \<Gamma>'
-  assume asm0: "\<Gamma> = Some \<Gamma>' \<and> Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> semi_consistent \<Gamma>' v0 H \<and> sat_inv s hj \<Gamma>'"
-  let ?H = "FractionalHeap.normalize (get_fh H)"
-  show "\<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
-  proof (rule ccontr)
-    assume "\<not> \<not> aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))"
-    then have "aborts (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H))" by simp
-    then have "aborts C1 (s, ?H) \<or> aborts C2 (s, ?H)"
-      by (rule aborts.cases) auto
-    then show False
-      using asm0 assms(1) assms(2) no_abortE(2) by blast
-  qed
 qed
+
 
 lemma parallel_comp_none:
   assumes "safe n (None :: ('i, 'a, nat) cont) C1 (s, h1) S1"
@@ -2592,15 +2679,17 @@ lemma parallel_comp_none:
       and "upper_fvs S1 vars1"
       and "upper_fvs S2 vars2"
 
+      and "bounded h"
+
     shows "safe n (None :: ('i, 'a, nat) cont) (Cpar C1 C2) (s, h) (add_states S1 S2)"
   using assms
 proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
-  case (Suc n)  
+  case (Suc n)
   show ?case
   proof (rule safeNoneI)
     show "Cpar C1 C2 = Cskip \<Longrightarrow> (s, h) \<in> add_states S1 S2"
       by simp
-    show "no_abort (None :: ('i, 'a, nat) cont) (Cpar C1 C2) s h"
+    have r: "no_abort (None :: ('i, 'a, nat) cont) (Cpar C1 C2) s h \<and> accesses (Cpar C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)"
     proof (rule no_abort_par)
       show "no_abort (None :: ('i, 'a, nat) cont) C1 s h"
         using Suc.prems(1) Suc.prems(3) larger_def no_abort_larger safe.simps(2) by blast
@@ -2608,7 +2697,13 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
         by (metis Suc.prems(3) larger_def plus_comm)
       then show "no_abort (None :: ('i, 'a, nat) cont) C2 s h"
         using Suc.prems(2) no_abort_larger safeNoneE_bis(2) by blast
-    qed
+
+      show "safe (Suc n) None C1 (s, h1) S1" using Suc(2) by simp
+      show "safe (Suc n) None C2 (s, h2) S2" using Suc(3) by simp
+    qed (simp_all add: Suc)
+    then show "no_abort (None :: ('i, 'a, nat) cont) (Cpar C1 C2) s h" by simp
+    show "accesses (Cpar C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)" using r by simp
+
     fix H hf C' s' h'
     assume asm0: "Some H = Some h \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> no_guard H \<and> red (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -2690,6 +2785,10 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
             by (simp add: Suc.prems(6))
           show "upper_fvs S2 vars2"
             by (simp add: Suc.prems(7))
+          show "bounded h''"
+            apply (rule bounded_smaller[of H'])
+            using calculation(1) full_ownership_then_bounded apply fastforce
+            by (metis \<open>Some h'' = Some h1' \<oplus> Some h2\<close> \<open>Some hf2 = Some h2 \<oplus> Some hf\<close> calculation(4) larger_def plus_asso)
         qed
 
         ultimately show "\<exists>h'' H'.
@@ -2741,6 +2840,10 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
             by (simp add: Suc.prems(6))
           show "upper_fvs S2 vars2"
             by (simp add: Suc.prems(7))
+          show "bounded h''"
+            apply (rule bounded_smaller[of H'])
+            using calculation(1) full_ownership_then_bounded apply fastforce
+            by (metis \<open>Some h'' = Some h2' \<oplus> Some h1\<close> \<open>Some hf1 = Some h1 \<oplus> Some hf\<close> calculation(4) larger_def plus_asso)
         qed
 
         ultimately show "\<exists>h'' H'.
@@ -2767,6 +2870,8 @@ lemma parallel_comp_some:
       and "disjoint (fvA (invariant \<Gamma>)) (wrC C2)"
       and "disjoint (fvA (invariant \<Gamma>)) (wrC C1)"
 
+      and "bounded h"
+
   shows "safe n (Some \<Gamma>) (Cpar C1 C2) (s, h) (add_states S1 S2)"
   using assms
 proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
@@ -2775,7 +2880,7 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
   proof (rule safeSomeI)
     show "Cpar C1 C2 = Cskip \<Longrightarrow> (s, h) \<in> add_states S1 S2"
       by simp
-    show "no_abort (Some \<Gamma>) (Cpar C1 C2) s h"
+    have r: "no_abort (Some \<Gamma>) (Cpar C1 C2) s h \<and> accesses (Cpar C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)"
     proof (rule no_abort_par)
       show "no_abort (Some \<Gamma>) C1 s h"
         using Suc.prems(1) Suc.prems(3) larger_def no_abort_larger safe.simps(3) by blast
@@ -2783,7 +2888,15 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
         by (metis Suc.prems(3) larger_def plus_comm)
       then show "no_abort (Some \<Gamma>) C2 s h"
         using Suc.prems(2) no_abort_larger safeSomeE(2) by blast
-    qed
+
+      show "safe (Suc n) (Some \<Gamma>) C1 (s, h1) S1" using Suc(2) by simp
+      show "safe (Suc n) (Some \<Gamma>) C2 (s, h2) S2" using Suc(3) by simp
+    qed (simp_all add: Suc)
+
+    then show "accesses (Cpar C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cpar C1 C2) s \<subseteq> fpdom (fst h)"
+      by simp
+    show "no_abort (Some \<Gamma>) (Cpar C1 C2) s h" using r by simp
+
     fix H hf C' s' h' hj v0
     assume asm0: "Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H) \<and>
        semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red (Cpar C1 C2) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -2876,6 +2989,12 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
             by (simp add: Suc.prems(8))
           show "disjoint (fvA (invariant \<Gamma>)) (wrC C1')"
             by (metis (no_types, lifting) Suc.prems(9) asm1 disjoint_def inf_commute inf_shunt red_properties(1) subset_Un_eq sup_assoc)
+          show "bounded h''"
+            apply (rule bounded_smaller[of H'])
+            using calculation(1) full_ownership_then_bounded apply fastforce
+            using \<open>Some h'' = Some h1' \<oplus> Some h2\<close> \<open>Some hf2 = Some h2 \<oplus> Some hf\<close> calculation(5) larger3[of H' _ h'' hf] plus_asso plus_comm[of "Some hj'"]
+            by metis
+
         qed
         moreover have "Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf"
           by (metis (no_types, opaque_lifting) \<open>Some h'' = Some h1' \<oplus> Some h2\<close> \<open>Some hf2 = Some h2 \<oplus> Some hf\<close> calculation(5) plus_asso plus_comm)
@@ -2939,6 +3058,15 @@ proof (induct n arbitrary: C1 h1 C2 h2 s h S1 S2)
             by (simp add: Suc.prems(6))
           show "upper_fvs S2 vars2"
             by (simp add: Suc.prems(7))
+          show "bounded h''"
+            apply (rule bounded_smaller[of H'])
+            using calculation(1) full_ownership_then_bounded apply fastforce
+          proof -
+            have "Some H' = Some h1 \<oplus> Some h2' \<oplus> Some hj' \<oplus> Some hf"
+              by (metis (no_types, lifting) \<open>Some hf1 = Some h1 \<oplus> Some hf\<close> calculation(5) plus_asso plus_comm)
+            then show "H' \<succeq> h''"
+              by (simp add: \<open>Some h'' = Some h1 \<oplus> Some h2'\<close> larger3 plus_comm)
+          qed
         qed
         moreover have "Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf"
           by (metis \<open>Some h'' = Some h1 \<oplus> Some h2'\<close> \<open>Some hf1 = Some h1 \<oplus> Some hf\<close> calculation(5) plus_comm simpler_asso)
@@ -2967,6 +3095,8 @@ lemma parallel_comp:
       and "\<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> disjoint (fvA (invariant \<Gamma>)) (wrC C2)"
       and "\<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> disjoint (fvA (invariant \<Gamma>)) (wrC C1)"
 
+      and "bounded h"
+
   shows "safe n \<Delta> (Cpar C1 C2) (s, h) (add_states S1 S2)"
 proof (cases \<Delta>)
   case None
@@ -2994,9 +3124,9 @@ theorem rule_par:
 
     shows "hoare_triple_valid \<Delta> (Star P1 P2) (Cpar C1 C2) (Star Q1 Q2)"
 proof -
-  obtain \<Sigma>1 where r1: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P1 \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>1 \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P1 \<Longrightarrow> pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>') Q1"
+  obtain \<Sigma>1 where r1: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P1 \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>1 \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P1 \<Longrightarrow> pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>') Q1"
     using assms(1) hoare_triple_validE by blast
-  obtain \<Sigma>2 where r2: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P2 \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>2 \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P2 \<Longrightarrow> pair_sat (\<Sigma>2 \<sigma>) (\<Sigma>2 \<sigma>') Q2"
+  obtain \<Sigma>2 where r2: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P2 \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>2 \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P2 \<Longrightarrow> pair_sat (\<Sigma>2 \<sigma>) (\<Sigma>2 \<sigma>') Q2"
     using assms(2) hoare_triple_validE by blast
 
   define pairs where "pairs = (\<lambda>(s, h). { ((s, h1), (s, h2)) |h1 h2. Some h = Some h1 \<oplus> Some h2 \<and> (s, h1), (s, h1) \<Turnstile> P1 \<and> (s, h2), (s, h2) \<Turnstile> P2 })"
@@ -3004,10 +3134,10 @@ proof -
 
 
   show ?thesis
-  proof (rule hoare_triple_validI)
-    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Star P1 P2 \<Longrightarrow> safe n \<Delta> (Cpar C1 C2) (s, h) (\<Sigma> (s, h))"
+  proof (rule hoare_triple_validI_bounded)
+    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Star P1 P2 \<Longrightarrow> bounded h \<Longrightarrow> safe n \<Delta> (Cpar C1 C2) (s, h) (\<Sigma> (s, h))"
     proof -
-      fix s h n assume "(s, h), (s, h) \<Turnstile> Star P1 P2"
+      fix s h n assume "(s, h), (s, h) \<Turnstile> Star P1 P2" "bounded h"
       then obtain h1 h2 where asm0: "Some h = Some h1 \<oplus> Some h2" "(s, h1), (s, h1) \<Turnstile> P1"
         "(s, h2), (s, h2) \<Turnstile> P2"
         using always_sat_refl hyper_sat.simps(4) by blast
@@ -3018,9 +3148,9 @@ proof -
       moreover have "safe n \<Delta> (Cpar C1 C2) (s, h) (add_states (upperize (\<Sigma>1 (s, h1)) (fvA Q1)) (upperize (\<Sigma>2 (s, h2)) (fvA Q2)))"
       proof (rule parallel_comp)
         show "safe n \<Delta> C1 (s, h1) (upperize (\<Sigma>1 (s, h1)) (fvA Q1))"
-          by (meson asm0(2) r1(1) safe_larger_set upperize_larger)
+          by (metis \<open>bounded h\<close> asm0(1) asm0(2) bounded_smaller_sum r1(1) safe_larger_set_aux snd_conv upperize_larger)
         show "safe n \<Delta> C2 (s, h2) (upperize (\<Sigma>2 (s, h2)) (fvA Q2))"
-          by (meson asm0(3) r2(1) safe_larger_set upperize_larger)
+          by (metis \<open>bounded h\<close> asm0(1) asm0(3) bounded_smaller_sum plus_comm r2(1) safe_larger_set_aux snd_conv upperize_larger)
         show "Some h = Some h1 \<oplus> Some h2" using asm0 by simp
         show "disjoint (fvC C1 \<union> fvA Q1) (wrC C2)"
           by (metis Un_subset_iff assms(3) disjoint_def inf_shunt)
@@ -3034,6 +3164,8 @@ proof -
           using assms(5) by auto
         show "\<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> disjoint (fvA (invariant \<Gamma>)) (wrC C1)"
           using assms(6) by blast
+        show "bounded h"
+          by (simp add: \<open>bounded h\<close>)
       qed
       ultimately show "safe n \<Delta> (Cpar C1 C2) (s, h) (\<Sigma> (s, h))"
         using safe_larger_set by blast
@@ -3135,7 +3267,7 @@ proof (rule safeNoneI)
           full_ownership (get_fh H') \<and>
           no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n (None :: ('i, 'a, nat) cont) C' (s', h'') S"
     by (metis asm0 assms(1) assms(2) assms(3) if_cases)
-qed
+qed (simp)
 
 lemma if_safe_Some:
   assumes "bdenot b s \<Longrightarrow> safe n (Some \<Gamma>) C1 (s, h) S"
@@ -3163,7 +3295,7 @@ proof (rule safeSomeI)
           semi_consistent \<Gamma> v0 H' \<and>
           sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S"
     by (metis asm0 assms(1) assms(2) if_cases)
-qed
+qed (simp)
 
 lemma if_safe:
   fixes \<Delta> :: "('i, 'a, nat) cont"
@@ -3182,22 +3314,22 @@ theorem if1_rule:
   shows "hoare_triple_valid \<Delta> (And P (Low b)) (Cif b C1 C2) Q"
 proof -
 
-  obtain \<Sigma>t where safe_t: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool b) \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>t \<sigma>)"
+  obtain \<Sigma>t where safe_t: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>t \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And P (Bool b) \<Longrightarrow> pair_sat (\<Sigma>t \<sigma>) (\<Sigma>t \<sigma>') Q"
     using assms(1) hoare_triple_validE by blast
-  obtain \<Sigma>f where safe_f: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool (Bnot b)) \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>f \<sigma>)"
+  obtain \<Sigma>f where safe_f: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool (Bnot b)) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>f \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And P (Bool (Bnot b)) \<Longrightarrow> pair_sat (\<Sigma>f \<sigma>) (\<Sigma>f \<sigma>') Q"
     using assms(2) hoare_triple_validE by blast
 
   define \<Sigma> where "\<Sigma> = (\<lambda>\<sigma>. if bdenot b (fst \<sigma>) then \<Sigma>t \<sigma> else \<Sigma>f \<sigma>)"
 
   show ?thesis
-  proof (rule hoare_triple_valid_smallerI)
+  proof (rule hoare_triple_valid_smallerI_bounded)
 
-    show "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Low b) \<Longrightarrow> safe n \<Delta> (Cif b C1 C2) \<sigma> (\<Sigma> \<sigma>)"
+    show "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Low b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> (Cif b C1 C2) \<sigma> (\<Sigma> \<sigma>)"
     proof -
       fix \<sigma> n
-      assume asm0: "\<sigma>, \<sigma> \<Turnstile> And P (Low b)"
+      assume asm0: "\<sigma>, \<sigma> \<Turnstile> And P (Low b)" "bounded (snd \<sigma>)"
       show "safe n \<Delta> (Cif b C1 C2) \<sigma> (\<Sigma> \<sigma>)"
       proof (cases "bdenot b (fst \<sigma>)")
         case True
@@ -3234,22 +3366,22 @@ theorem if2_rule:
       and "unary Q"
     shows "hoare_triple_valid \<Delta> P (Cif b C1 C2) Q"
 proof -
-  obtain \<Sigma>t where safe_t: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool b) \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>t \<sigma>)"
+  obtain \<Sigma>t where safe_t: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>t \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And P (Bool b) \<Longrightarrow> pair_sat (\<Sigma>t \<sigma>) (\<Sigma>t \<sigma>') Q"
     using assms(1) hoare_triple_validE by blast
-  obtain \<Sigma>f where safe_f: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool (Bnot b)) \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>f \<sigma>)"
+  obtain \<Sigma>f where safe_f: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> And P (Bool (Bnot b)) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>f \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And P (Bool (Bnot b)) \<Longrightarrow> pair_sat (\<Sigma>f \<sigma>) (\<Sigma>f \<sigma>') Q"
     using assms(2) hoare_triple_validE by blast
 
   define \<Sigma> where "\<Sigma> = (\<lambda>\<sigma>. if bdenot b (fst \<sigma>) then \<Sigma>t \<sigma> else \<Sigma>f \<sigma>)"
 
   show ?thesis
-  proof (rule hoare_triple_valid_smallerI)
+  proof (rule hoare_triple_valid_smallerI_bounded)
 
-    show "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> safe n \<Delta> (Cif b C1 C2) \<sigma> (\<Sigma> \<sigma>)"
+    show "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> (Cif b C1 C2) \<sigma> (\<Sigma> \<sigma>)"
     proof -
       fix \<sigma> n
-      assume asm0: "\<sigma>, \<sigma> \<Turnstile> P"
+      assume asm0: "\<sigma>, \<sigma> \<Turnstile> P" "bounded (snd \<sigma>)"
       show "safe n \<Delta> (Cif b C1 C2) \<sigma> (\<Sigma> \<sigma>)"
       proof (cases "bdenot b (fst \<sigma>)")
         case True
@@ -3309,6 +3441,8 @@ proof (induct n arbitrary: C1 s h)
   proof (rule safeNoneI)
     show "no_abort (None :: ('i, 'a, nat) cont) (Cseq C1 C2) s h"
       by (meson Suc.prems(1) aborts_seq_aborts_C1 no_abort.simps(1) safeNoneE_bis(2))
+    show "accesses (Cseq C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cseq C1 C2) s \<subseteq> fpdom (fst h)"
+      by (metis Suc.prems(1) accesses.simps(7) fst_conv safeAccessesE snd_conv writes.simps(7))
     fix H hf C' s' h'
     assume asm0: "Some H = Some h \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> no_guard H \<and> red (Cseq C1 C2) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -3350,6 +3484,8 @@ proof (induct n arbitrary: C1 s h)
   proof (rule safeSomeI)
     show "no_abort (Some \<Gamma>) (Cseq C1 C2) s h"
       by (meson Suc.prems(1) aborts_seq_aborts_C1 no_abort.simps(2) safeSomeE(2))
+    show "accesses (Cseq C1 C2) s \<subseteq> dom (fst h) \<and> writes (Cseq C1 C2) s \<subseteq> fpdom (fst h)"
+      by (metis Suc.prems(1) accesses.simps(7) fst_conv safeAccessesE snd_conv writes.simps(7))
     fix H hf C' s' h' hj v0
     assume asm0: "Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red (Cseq C1 C2) (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -3393,31 +3529,38 @@ theorem seq_rule:
       and "hoare_triple_valid \<Delta> R C2 Q"
     shows "hoare_triple_valid \<Delta> P (Cseq C1 C2) Q"
 proof -
-  obtain \<Sigma>1 where safe_1: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>1 \<sigma>)"
+  obtain \<Sigma>1 where safe_1: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C1 \<sigma> (\<Sigma>1 \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>') R"
     using assms(1) hoare_triple_validE by blast
-  obtain \<Sigma>2 where safe_2: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> R \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>2 \<sigma>)"
+  obtain \<Sigma>2 where safe_2: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> R \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C2 \<sigma> (\<Sigma>2 \<sigma>)"
     "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> R \<Longrightarrow> pair_sat (\<Sigma>2 \<sigma>) (\<Sigma>2 \<sigma>') Q"
     using assms(2) hoare_triple_validE by blast
 
   define \<Sigma> where "\<Sigma> = (\<lambda>\<sigma>. (\<Union>\<sigma>' \<in> \<Sigma>1 \<sigma>. \<Sigma>2 \<sigma>'))"
 
   show ?thesis
-  proof (rule hoare_triple_valid_smallerI)
-    show "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> safe n \<Delta> (Cseq C1 C2) \<sigma> (\<Sigma> \<sigma>)"
+  proof (rule hoare_triple_valid_smallerI_bounded)
+    show "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> (Cseq C1 C2) \<sigma> (\<Sigma> \<sigma>)"
     proof -
-      fix \<sigma> n assume asm0: "\<sigma>, \<sigma> \<Turnstile> P"
+      fix \<sigma> n assume asm0: "\<sigma>, \<sigma> \<Turnstile> P" "bounded (snd \<sigma>)"
       then have "pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R"
         using safe_1(2) by blast
 
       have "safe n \<Delta> (Cseq C1 C2) (fst \<sigma>, snd \<sigma>) (\<Sigma> \<sigma>)"
       proof (rule seq_safe)
-        show "safe n \<Delta> C1 (fst \<sigma>, snd \<sigma>) (\<Sigma>1 \<sigma>)"
-          by (simp add: asm0 safe_1(1))
+        thm restrict_safe_to_bounded
+        show "safe n \<Delta> C1 (fst \<sigma>, snd \<sigma>) (Set.filter (bounded \<circ> snd) (\<Sigma>1 \<sigma>))"
+          apply (rule restrict_safe_to_bounded)
+          using asm0 safe_1(1) by simp_all
+
         fix m s' h'
-        assume "m \<le> n \<and> (s', h') \<in> \<Sigma>1 \<sigma>"
+        assume "m \<le> n \<and> (s', h') \<in> Set.filter (bounded \<circ> snd) (\<Sigma>1 \<sigma>)"
+        then have "safe m \<Delta> C2 (s', h') (\<Sigma>2 (s', h'))"
+          using safe_2(1)[of "(s', h')" m] \<open>pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R\<close> unfolding pair_sat_def
+          by simp
         then show "safe m \<Delta> C2 (s', h') (\<Sigma> \<sigma>)"
-          by (metis (no_types, opaque_lifting) Sup_upper \<open>\<Sigma> \<equiv> \<lambda>\<sigma>. \<Union> (\<Sigma>2 ` \<Sigma>1 \<sigma>)\<close> \<open>pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R\<close> image_iff pair_sat_def safe_2(1) safe_larger_set)
+          using Sup_upper \<open>\<Sigma> \<equiv> \<lambda>\<sigma>. \<Union> (\<Sigma>2 ` \<Sigma>1 \<sigma>)\<close> \<open>pair_sat (\<Sigma>1 \<sigma>) (\<Sigma>1 \<sigma>) R\<close> image_iff  safe_larger_set asm0(2)
+          by (metis (no_types, lifting) \<open>m \<le> n \<and> (s', h') \<in> Set.filter (bounded \<circ> snd) (\<Sigma>1 \<sigma>)\<close> member_filter)
       qed
       then show "safe n \<Delta> (Cseq C1 C2) \<sigma> (\<Sigma> \<sigma>)" by auto
     qed
@@ -3441,6 +3584,7 @@ subsubsection \<open>Frame rule\<close>
 lemma safe_frame_None:
   assumes "safe n (None :: ('i, 'a, nat) cont) C (s, h) S"
       and "Some H = Some h \<oplus> Some hf0"
+      and "bounded H"
     shows "safe n (None :: ('i, 'a, nat) cont) C (s, H) (add_states S {(s'', hf0) |s''. agrees (- wrC C) s s''})"
   using assms
 proof (induct n arbitrary: s h H C)
@@ -3452,6 +3596,18 @@ proof (induct n arbitrary: s h H C)
       by fast
     show "no_abort (None :: ('i, 'a, nat) cont) C s H"
       using Suc.prems(1) Suc.prems(2) larger_def no_abort_larger safeNoneE(2) by blast
+
+    have "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+      using Suc.prems(1) by auto
+    moreover have "dom (fst h) \<subseteq> dom (fst H)"
+      by (metis Suc.prems(2) addition_smaller_domain get_fh.simps)
+    moreover have "fpdom (fst h) \<subseteq> fpdom (fst H)"
+      using Suc.prems(2) fpdom_inclusion
+      using Suc.prems(3) by blast
+
+    ultimately show "accesses C s \<subseteq> dom (fst H) \<and> writes C s \<subseteq> fpdom (fst H)"
+      by blast
+
     fix H1 hf1 C' s' h'
     assume asm0: "Some H1 = Some H \<oplus> Some hf1 \<and> full_ownership (get_fh H1) \<and> no_guard H1 \<and> red C (s, FractionalHeap.normalize (get_fh H1)) C' (s', h')"
     then obtain hf where "Some hf = Some hf0 \<oplus> Some hf1"
@@ -3471,6 +3627,8 @@ proof (induct n arbitrary: s h H C)
         using r by simp
       show "Some h''' = Some h'' \<oplus> Some hf0"
         by (simp add: \<open>Some h''' = Some h'' \<oplus> Some hf0\<close>)
+      show "bounded h'''"
+        by (metis bounded_smaller_sum calculation full_ownership_then_bounded get_fh.simps r(1))
     qed
     moreover have "add_states S {(s'', hf0) |s''. agrees (- wrC C') s' s''} \<subseteq> add_states S {(s'', hf0) |s''. agrees (- wrC C) s s''}"
     proof -
@@ -3508,6 +3666,7 @@ qed (simp)
 lemma safe_frame_Some:
   assumes "safe n (Some \<Gamma>) C (s, h) S"
       and "Some H = Some h \<oplus> Some hf0"
+      and "bounded H"
     shows "safe n (Some \<Gamma>) C (s, H) (add_states S {(s'', hf0) |s''. agrees (- wrC C) s s''})"
   using assms
 proof (induct n arbitrary: s h H C)
@@ -3520,6 +3679,17 @@ proof (induct n arbitrary: s h H C)
         safeSomeE(1)[of n \<Gamma> C s h S] by fast
     show "no_abort (Some \<Gamma>) C s H"
       using Suc.prems(1) Suc.prems(2) larger_def no_abort_larger safeSomeE(2) by blast
+
+    have "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+      using Suc.prems(1) by auto
+    moreover have "dom (fst h) \<subseteq> dom (fst H)"
+      by (metis Suc.prems(2) addition_smaller_domain get_fh.simps)
+    moreover have "fpdom (fst h) \<subseteq> fpdom (fst H)"
+      using Suc.prems(2) Suc.prems(3) fpdom_inclusion by blast
+
+    ultimately show "accesses C s \<subseteq> dom (fst H) \<and> writes C s \<subseteq> fpdom (fst H)"
+      by blast
+
     fix H1 hf1 C' s' h' hj v0
     assume asm0: "Some H1 = Some H \<oplus> Some hj \<oplus> Some hf1 \<and>
        full_ownership (get_fh H1) \<and> semi_consistent \<Gamma> v0 H1 \<and> sat_inv s hj \<Gamma> \<and> red C (s, FractionalHeap.normalize (get_fh H1)) C' (s', h')"
@@ -3543,6 +3713,10 @@ proof (induct n arbitrary: s h H C)
         using r by simp
       show "Some h''' = Some h'' \<oplus> Some hf0"
         by (simp add: \<open>Some h''' = Some h'' \<oplus> Some hf0\<close>)
+      show "bounded h'''"
+        apply (rule bounded_smaller[of H'])
+         apply (metis full_ownership_then_bounded get_fh.simps r)
+        by (simp add: calculation larger3 plus_comm)
     qed
     moreover have "add_states S {(s'', hf0) |s''. agrees (- wrC C') s' s''} \<subseteq> add_states S {(s'', hf0) |s''. agrees (- wrC C) s s''}"
     proof -
@@ -3579,10 +3753,11 @@ lemma safe_frame:
   fixes \<Delta> :: "('i, 'a, nat) cont"
   assumes "safe n \<Delta> C (s, h) S"
       and "Some H = Some h \<oplus> Some hf0"
+      and "bounded H"
     shows "safe n \<Delta> C (s, H) (add_states S {(s'', hf0) |s''. agrees (- wrC C) s s''})"
   apply (cases \<Delta>)
-  using assms(1) assms(2) safe_frame_None apply blast
-  using assms(1) assms(2) safe_frame_Some by blast
+  using assms safe_frame_None apply blast
+  using assms safe_frame_Some by blast
 
 theorem frame_rule:
   fixes \<Delta> :: "('i, 'a, nat) cont"
@@ -3591,7 +3766,7 @@ theorem frame_rule:
       and "precise P \<or> precise R"
     shows "hoare_triple_valid \<Delta> (Star P R) C (Star Q R)"
 proof -
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q"
     using assms(1) hoare_triple_validE by blast
 
   define pairs where "pairs = (\<lambda>\<sigma>. { (p, r) |p r. Some (snd \<sigma>) = Some p \<oplus> Some r \<and> (fst \<sigma>, p), (fst \<sigma>, p) \<Turnstile> P
@@ -3600,16 +3775,19 @@ proof -
   define \<Sigma>' where "\<Sigma>' = (\<lambda>\<sigma>. (\<Union>(p, r) \<in> pairs \<sigma>. add_states (\<Sigma> (fst \<sigma>, p)) {(s'', r) |s''. agrees (- wrC C) (fst \<sigma>) s''}))"
 
   show ?thesis
-  proof (rule hoare_triple_validI)
-    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Star P R \<Longrightarrow> safe n \<Delta> C (s, h) (\<Sigma>' (s, h))"
+  proof (rule hoare_triple_validI_bounded)
+    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Star P R \<Longrightarrow> bounded h \<Longrightarrow> safe n \<Delta> C (s, h) (\<Sigma>' (s, h))"
     proof -
-      fix s h n assume asm1: "(s, h), (s, h) \<Turnstile> Star P R"
+      fix s h n assume asm1: "(s, h), (s, h) \<Turnstile> Star P R" "bounded h"
       then obtain p r where "Some h = Some p \<oplus> Some r" "(s, p), (s, p) \<Turnstile> P" "(s, r), (s, r) \<Turnstile> R"
         using always_sat_refl hyper_sat.simps(4) by blast
       then have "safe n \<Delta> C (s, p) (\<Sigma> (s, p))"
-        using asm0(1) by blast
+        using asm0 asm1
+        by (metis bounded_smaller_sum snd_conv)
+
       then have "safe n \<Delta> C (s, h) (add_states (\<Sigma> (s, p)) {(s'', r) |s''. agrees (- wrC C) s s''})"
-        using safe_frame[of n \<Delta> C s p "\<Sigma> (s, p)" h r] \<open>Some h = Some p \<oplus> Some r\<close> by blast
+        using safe_frame[of n \<Delta> C s p "\<Sigma> (s, p)" h r] \<open>Some h = Some p \<oplus> Some r\<close>
+        using asm1(2) by blast
       moreover have "(add_states (\<Sigma> (s, p)) {(s'', r) |s''. agrees (- wrC C) s s''}) \<subseteq> \<Sigma>' (s, h)"
       proof -
         have "(p, r) \<in> pairs (s, h)"
@@ -3686,13 +3864,14 @@ theorem consequence_rule:
       and "entails Q' Q"
     shows "hoare_triple_valid \<Delta> P C Q"
 proof -
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P' \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P' \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q'"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P' \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P' \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q'"
     using assms(1) hoare_triple_validE by blast
 
   show ?thesis
-  proof (rule hoare_triple_validI)
-    show "\<And>s h n. (s, h), (s, h) \<Turnstile> P \<Longrightarrow> safe n \<Delta> C (s, h) (\<Sigma> (s, h))"
-      using asm0(1) assms(2) entails_def by blast
+  proof (rule hoare_triple_validI_bounded)
+    show "\<And>s h n. (s, h), (s, h) \<Turnstile> P \<Longrightarrow> bounded h \<Longrightarrow> safe n \<Delta> C (s, h) (\<Sigma> (s, h))"
+      using asm0(1) assms(2) entails_def
+      by fastforce
     show "\<And>s h s' h'. (s, h), (s', h') \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> (s, h)) (\<Sigma> (s', h')) Q"
       by (meson asm0(2) assms(2) assms(3) entails_def pair_sat_def)
   qed
@@ -3708,23 +3887,23 @@ theorem existential_rule:
       and "unambiguous P x"
     shows "hoare_triple_valid \<Delta> (Exists x P) C (Exists x Q)"
 proof -
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)" "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q"
     using assms(1) hoare_triple_validE by blast
 
   define \<Sigma>' where "\<Sigma>' = (\<lambda>\<sigma>. \<Union>v \<in> { v |v. ((fst \<sigma>)(x := v), snd \<sigma>), ((fst \<sigma>)(x := v), snd \<sigma>) \<Turnstile> P }. upperize (\<Sigma> ((fst \<sigma>)(x := v), snd \<sigma>)) (fvA Q - {x}))"
 
   show ?thesis
-  proof (rule hoare_triple_validI)
-    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Exists x P \<Longrightarrow> safe n \<Delta> C (s, h) (\<Sigma>' (s, h))"
+  proof (rule hoare_triple_validI_bounded)
+    show "\<And>s h n. (s, h), (s, h) \<Turnstile> Exists x P \<Longrightarrow> bounded h \<Longrightarrow> safe n \<Delta> C (s, h) (\<Sigma>' (s, h))"
     proof -
-      fix s h n assume "(s, h), (s, h) \<Turnstile> Exists x P"
+      fix s h n assume "(s, h), (s, h) \<Turnstile> Exists x P" "bounded h"
       then obtain v where "(s(x := v), h), (s(x := v), h) \<Turnstile> P"
         using always_sat_refl hyper_sat.simps(7) by blast
       then have "\<Sigma> (s(x := v), h) \<subseteq> \<Sigma>' (s, h)"
         using upperize_larger SUP_upper2 \<Sigma>'_def by fastforce
 
       moreover have "safe n \<Delta> C (s(x := v), h) (\<Sigma> (s(x := v), h))"
-        by (simp add: \<open>(s(x := v), h), (s(x := v), h) \<Turnstile> P\<close> asm0(1))
+        by (simp add: \<open>(s(x := v), h), (s(x := v), h) \<Turnstile> P\<close> \<open>bounded h\<close> asm0(1))
       ultimately have "safe n \<Delta> C (s(x := v), h) (\<Sigma>' (s, h))"
         using safe_larger_set by blast
       then have "safe n \<Delta> C (s, h) (\<Sigma>' (s, h))"
@@ -3766,7 +3945,6 @@ proof -
         using in_upperize by (metis (no_types, lifting))
 
       moreover have "(s1(x := v1), h1), (s2(x := v2), h2) \<Turnstile> P"
-\<comment>\<open>Unambiguity needed here\<close>
       proof -
         have "v1 = v1'"
           using \<open>(s1(x := v1'), h1), (s2(x := v2'), h2) \<Turnstile> P\<close> always_sat_refl assms(4) r(1) unambiguous_def by blast
@@ -3823,10 +4001,11 @@ inductive_cases red_while_cases: "red (Cwhile b s) \<sigma> C' \<sigma>'"
 inductive_cases abort_while_cases: "aborts (Cwhile b s) \<sigma>"
 
 lemma safe_while_None:
-  assumes "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
+  assumes "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
       and "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And I (Bool b) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') I"
       and "(s, h), (s, h) \<Turnstile> I"
       and "leads_to_loop b I \<Sigma> \<sigma> (s, h)"
+      and "bounded h"
     shows "safe n (None :: ('i, 'a, nat) cont) (Cwhile b C) (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
   using assms
 proof (induct n arbitrary: s h)
@@ -3857,20 +4036,29 @@ proof (induct n arbitrary: s h)
           then have "(s, h), (s, h) \<Turnstile> And I (Bool b)"
             by (simp add: Suc.prems(3))
           then have r: "safe (Suc n) (None :: ('i, 'a, nat) cont) C (s, h) (\<Sigma> (s, h))"
-            using Suc.prems(1) by blast
+            using Suc.prems(1)
+            by (metis Suc.prems(5) snd_eqD)
+
+
+
           show "safe k (None :: ('i, 'a, nat) cont) (Cseq C (Cwhile b C)) (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
           proof (rule seq_safe)
-            show "safe k (None :: ('i, 'a, nat) cont) C (s, h) (\<Sigma> (s, h))"
-              by (metis Suc Suc_n_not_le_n nat_le_linear r safe_smaller)
-            fix m s' h' assume asm3: "m \<le> k \<and> (s', h') \<in> \<Sigma> (s, h)"
+            show "safe k (None :: ('i, 'a, nat) cont) C (s, h) (Set.filter (bounded \<circ> snd) (\<Sigma> (s, h)))"
+              apply (rule restrict_safe_to_bounded)
+              using Suc Suc_n_not_le_n nat_le_linear r safe_smaller apply metis
+              by (simp add: Suc.prems(5))
+            fix m s' h' assume asm3: "m \<le> k \<and> (s', h')  \<in> Set.filter (bounded \<circ> snd) (\<Sigma> (s, h))"
             have "safe n (None :: ('i, 'a, nat) cont) (Cwhile b C) (s', h') (trans_\<Sigma> b I \<Sigma> \<sigma>)"
             proof (rule Suc.hyps)
               show "leads_to_loop b I \<Sigma> \<sigma> (s', h')"
-                by (metis Suc.prems(4) asm2 asm3 fst_conv leads_to_loop.intros(2))
+                by (metis Suc.prems(4) asm2 asm3 fst_conv leads_to_loop.simps member_filter)
               show "(s', h'), (s', h') \<Turnstile> I"
-                using \<open>(s, h), (s, h) \<Turnstile> And I (Bool b)\<close> asm3 assms(2) pair_satE by blast
-              show "\<And>\<sigma>. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
+                using \<open>(s, h), (s, h) \<Turnstile> And I (Bool b)\<close> asm3 assms(2) pair_satE
+                by (metis member_filter)
+              show "\<And>\<sigma>. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
                 by (meson Suc.prems(1) Suc_n_not_le_n nat_le_linear safe_smaller)
+              show "bounded h'"
+                using asm3 by auto
             qed (auto simp add: assms)
             then show "safe m (None :: ('i, 'a, nat) cont) (Cwhile b C) (s', h') (trans_\<Sigma> b I \<Sigma> \<sigma>)"
               using Suc asm3 le_SucI safe_smaller by blast
@@ -3883,12 +4071,12 @@ proof (induct n arbitrary: s h)
        no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n None C' (s', h'') (trans_\<Sigma> b I \<Sigma> \<sigma>)"
         using asm0 asm1(2) by blast
     qed
-  qed (simp)
+  qed (simp_all)
 qed (simp)
 
 
 lemma safe_while_Some:
-  assumes "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n (Some \<Gamma>) C \<sigma> (\<Sigma> \<sigma>)"
+  assumes "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (Some \<Gamma>) C \<sigma> (\<Sigma> \<sigma>)"
       and "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And I (Bool b) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') I"
       and "(s, h), (s, h) \<Turnstile> I"
       and "leads_to_loop b I \<Sigma> \<sigma> (s, h)"
@@ -3922,8 +4110,14 @@ proof (induct n arbitrary: s h)
           assume asm2: "bdenot b s"
           then have "(s, h), (s, h) \<Turnstile> And I (Bool b)"
             by (simp add: Suc.prems(3))
-          then have r: "safe (Suc n) (Some \<Gamma>) C (s, h) (\<Sigma> (s, h))"
-            using Suc.prems(1) by blast
+          moreover have "bounded h"
+            apply (rule bounded_smaller[of H])
+            using asm0 full_ownership_then_bounded apply fastforce
+            using asm0 plus_asso[of "Some h" "Some hj" "Some hf"] unfolding larger_def by auto
+
+          ultimately have r: "safe (Suc n) (Some \<Gamma>) C (s, h) (\<Sigma> (s, h))"
+            using Suc.prems(1)[of "(s, h)"] by fastforce
+            
           show "safe k (Some \<Gamma>) (Cseq C (Cwhile b C)) (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
           proof (rule seq_safe)
             show "safe k (Some \<Gamma>) C (s, h) (\<Sigma> (s, h))"
@@ -3935,7 +4129,7 @@ proof (induct n arbitrary: s h)
                 by (metis Suc.prems(4) asm2 asm3 fst_conv leads_to_loop.intros(2))
               show "(s', h'), (s', h') \<Turnstile> I"
                 using \<open>(s, h), (s, h) \<Turnstile> And I (Bool b)\<close> asm3 assms(2) pair_satE by blast
-              show "\<And>\<sigma>. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n (Some \<Gamma>) C \<sigma> (\<Sigma> \<sigma>)"
+              show "\<And>\<sigma>. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (Some \<Gamma>) C \<sigma> (\<Sigma> \<sigma>)"
                 by (meson Suc.prems(1) Suc_n_not_le_n nat_le_linear safe_smaller)
             qed (auto simp add: assms)
             then show "safe m (Some \<Gamma>) (Cwhile b C) (s', h') (trans_\<Sigma> b I \<Sigma> \<sigma>)"
@@ -3951,15 +4145,16 @@ proof (induct n arbitrary: s h)
        sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') (trans_\<Sigma> b I \<Sigma> \<sigma>)"
         using asm0 asm1(2) by blast
     qed
-  qed (simp)
+  qed (simp_all)
 qed (simp)
 
 lemma safe_while:
   fixes \<Delta> :: "('i, 'a, nat) cont"
-  assumes "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
+  assumes "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
       and "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> And I (Bool b) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') I"
       and "(s, h), (s, h) \<Turnstile> I"
       and "leads_to_loop b I \<Sigma> \<sigma> (s, h)"
+      and "bounded h"
     shows "safe n \<Delta> (Cwhile b C) (s, h) (trans_\<Sigma> b I \<Sigma> \<sigma>)"
   apply (cases \<Delta>)
   using assms safe_while_None apply blast
@@ -3985,12 +4180,12 @@ theorem while_rule2:
       and "hoare_triple_valid \<Delta> (And I (Bool b)) C I"
     shows "hoare_triple_valid \<Delta> I (Cwhile b C) (And I (Bool (Bnot b)))"
 proof -
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> (And I (Bool b)) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> (And I (Bool b)) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
       and "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> (And I (Bool b)) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') I"
     using assms(2) hoare_triple_validE by blast
   let ?\<Sigma> = "trans_\<Sigma> b I \<Sigma>"
   show ?thesis
-  proof (rule hoare_triple_validI)
+  proof (rule hoare_triple_validI_bounded)
 
     show "\<And>s h s' h'. (s, h), (s', h') \<Turnstile> I \<Longrightarrow> pair_sat (?\<Sigma> (s, h)) (?\<Sigma> (s', h')) (And I (Bool (Bnot b)))"
     proof -
@@ -4010,7 +4205,7 @@ proof -
       qed
     qed
     fix s h n
-    assume asm1: "(s, h), (s, h) \<Turnstile> I"
+    assume asm1: "(s, h), (s, h) \<Turnstile> I" "bounded h"
 
     show "safe n \<Delta> (Cwhile b C) (s, h) (trans_\<Sigma> b I \<Sigma> (s, h))"
     proof (rule safe_while)
@@ -4020,8 +4215,10 @@ proof -
         using asm1 by auto
       show "leads_to_loop b I \<Sigma> (s, h) (s, h)"
         by (simp add: leads_to_loop.intros(1))
-      show "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
-        by (simp add: asm0)
+      show "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
+        by (simp add: asm0 asm1(2))
+      show "bounded h"
+        using asm1(2) by blast
     qed
   qed
 qed
@@ -4242,12 +4439,12 @@ theorem while_rule1:
   assumes "hoare_triple_valid \<Delta> (And I (Bool b)) C (And I (Low b))"
     shows "hoare_triple_valid \<Delta> (And I (Low b)) (Cwhile b C) (And I (Bool (Bnot b)))"
 proof -
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> (And I (Bool b)) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> (And I (Bool b)) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
       and "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> (And I (Bool b)) \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') (And I (Low b))"
     using assms(1) hoare_triple_validE by blast
   let ?\<Sigma> = "\<lambda>\<sigma>. not_set b (\<Union>n. iterate_sigma n b I \<Sigma> \<sigma>)"
   show ?thesis
-  proof (rule hoare_triple_validI)
+  proof (rule hoare_triple_validI_bounded)
 
     show "\<And>s h s' h'. (s, h), (s', h') \<Turnstile> And I (Low b) \<Longrightarrow> pair_sat (?\<Sigma> (s, h)) (?\<Sigma> (s', h')) (And I (Bool (Bnot b)))"
     proof -
@@ -4270,7 +4467,7 @@ proof -
     qed
 
     fix s h n
-    assume asm1: "(s, h), (s, h) \<Turnstile> And I (Low b)"
+    assume asm1: "(s, h), (s, h) \<Turnstile> And I (Low b)" "bounded h"
 
     have "safe n \<Delta> (Cwhile b C) (s, h) (trans_\<Sigma> b I \<Sigma> (s, h))"
     proof (rule safe_while)
@@ -4280,8 +4477,10 @@ proof -
         using asm1 by auto
       show "leads_to_loop b I \<Sigma> (s, h) (s, h)"
         by (simp add: leads_to_loop.intros(1))
-      show "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
-        by (simp add: asm0)
+      show "\<And>\<sigma> m. \<sigma>, \<sigma> \<Turnstile> And I (Bool b) \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Delta> C \<sigma> (\<Sigma> \<sigma>)"
+        by (simp add: asm0 asm1)
+      show "bounded h"
+        by (simp add: asm1(2))
     qed
     then show "safe n \<Delta> (Cwhile b C) (s, h) (not_set b (\<Union>n. iterate_sigma n b I \<Sigma> (s, h)))"
       by (simp add: not_set_def safe_larger_set trans_included)
@@ -4356,6 +4555,12 @@ qed (simp_all add: rule_skip  assign_rule new_rule write_rule read_rule share_ru
 
 subsection \<open>Corollaries\<close>
 
+text \<open>The two following corollaries express what proving a Hoare triple in CommCSL with no invariant (initially)
+guarantees, i.e., that if C is executed in two states that together satisfy the precondition P,
+then no execution will abort, and any pair of final states will satisfy together the postcondition Q.\<close>
+
+text \<open>This first corollary considers that the heap h1 is part of a larger execution with heap H1.\<close>
+
 theorem safety:
   assumes "hoare_triple_valid (None :: ('i, 'a, nat) cont) P C Q"
       and "(s1, h1), (s2, h2) \<Turnstile> P"
@@ -4374,13 +4579,16 @@ theorem safety:
       \<and> no_guard H2' \<and> full_ownership (get_fh H2') \<and> snd \<sigma>2' = normalize (get_fh H2') \<and> Some H2' = Some h2' \<oplus> Some hf2
       \<and> (fst \<sigma>1', h1'), (fst \<sigma>2', h2') \<Turnstile> Q)"
 proof -
-  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
+  obtain \<Sigma> where asm0: "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n (None :: ('i, 'a, nat) cont) C \<sigma> (\<Sigma> \<sigma>)"
         "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q"
     using assms(1) hoare_triple_validE by blast
   then have "pair_sat (\<Sigma> (s1, h1)) (\<Sigma> (s2, h2)) Q"
     using assms(2) by blast
-  moreover have "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s1, h1) (\<Sigma> (s1, h1))"
-    using always_sat_refl asm0(1) assms(2) by blast
+  moreover have "bounded h1"
+    by (metis assms(3) bounded_smaller_sum full_ownership_then_bounded get_fh.simps)
+  then have "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s1, h1) (\<Sigma> (s1, h1))"
+    using always_sat_refl asm0(1) assms(2)
+    by (metis snd_conv)
   then show "\<And>\<sigma>' C'. red_rtrans C (s1, FractionalHeap.normalize (get_fh H1)) C' \<sigma>' \<Longrightarrow> \<not> aborts C' \<sigma>'"
   proof -
     fix \<sigma>' C'
@@ -4390,7 +4598,8 @@ proof -
       by (metis \<open>\<And>n. safe n None C (s1, h1) (\<Sigma> (s1, h1))\<close> assms(3) denormalize_properties(4) prod.exhaust_sel)
   qed
   moreover have "\<And>n. safe n (None :: ('i, 'a, nat) cont) C (s2, h2) (\<Sigma> (s2, h2))"
-    using always_sat_refl asm0(1) assms(2) sat_comm_aux by blast
+    using always_sat_refl asm0(1) assms(2) sat_comm_aux
+    by (metis assms(4) bounded_smaller_sum full_ownership_then_bounded get_fh.elims snd_conv)
   then show "\<And>\<sigma>' C'. red_rtrans C (s2, FractionalHeap.normalize (get_fh H2)) C' \<sigma>' \<Longrightarrow> \<not> aborts C' \<sigma>'"
   proof -
     fix \<sigma>' C'
@@ -4434,6 +4643,9 @@ proof -
     by (metis (no_types, lifting) addition_cancellative calculation decompose_guard_remove_easy fst_eqD get_gs.simps get_gu.simps no_guard_def no_guards_remove prod.sel(2) simpler_asso)
   ultimately show ?thesis by blast
 qed
+
+text \<open>This second corollary considers that the heap h1 is the only execution that matters, and
+thus it ignores any frame. It corresponds to Corollary 4.5 in the paper.\<close>
 
 corollary safety_no_frame:
   assumes "hoare_triple_valid (None :: ('i, 'a, nat) cont) P C Q"

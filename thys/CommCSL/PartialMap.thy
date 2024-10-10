@@ -2,6 +2,9 @@ section \<open>State Model\<close>
 
 subsection \<open>Partial Heaps\<close>
 
+text \<open>In this file, we prove useful lemmas about partial maps. Partial maps are used to define
+  permission heaps (see FractionalHeap.thy) and the family of unique action guard states (see StateModel.thy).\<close>
+
 theory PartialMap
   imports Main
 begin
@@ -21,6 +24,8 @@ fun merge_option :: "('b \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b opt
 definition merge_options :: "('c \<Rightarrow> 'c \<Rightarrow> 'c) \<Rightarrow> ('b, 'c) map \<Rightarrow> ('b, 'c) map \<Rightarrow> ('b, 'c) map" where
   "merge_options f a b p = merge_option f (a p) (b p)"
 
+text \<open>Two maps are compatible iff they are compatible pointwise (i.e., if both define values,
+then those values are compatible\<close>
 definition compatible_maps :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a, 'b) map \<Rightarrow> ('a, 'b) map \<Rightarrow> bool" where
   "compatible_maps f h1 h2 \<longleftrightarrow> (\<forall>hl. compatible_options f (h1 hl) (h2 hl))"
 

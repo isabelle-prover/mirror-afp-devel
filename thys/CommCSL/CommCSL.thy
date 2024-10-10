@@ -1,5 +1,7 @@
 section \<open>CommCSL\<close>
 
+text \<open>In this file, we define the assertion language and the rules of CommCSL.\<close>
+
 theory CommCSL
   imports Lang StateModel
 begin
@@ -31,7 +33,7 @@ datatype ('i, 'a, 'v) assertion =
   Bool bexp
   | Emp
   | And "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"
-  | Star "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"    (\<open>_ * _\<close> 70)
+  | Star "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"    ("_ * _" 70)
   | Low bexp
   | LowExp exp
 
@@ -59,7 +61,10 @@ inductive PRE_shared_simpler :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Righ
 definition PRE_unique :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> bool" where
   "PRE_unique upre uargs uargs' \<longleftrightarrow> length uargs = length uargs' \<and> (\<forall>i. i \<ge> 0 \<and> i < length uargs' \<longrightarrow> upre (uargs ! i) (uargs' ! i))"
 
-fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" (\<open>_, _ \<Turnstile> _\<close> [51, 65, 66] 50) where
+
+text \<open>The following function defines the validity of CommCSL assertions, which corresponds to Figure 7 from the paper.\<close>
+
+fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" ("_, _ \<Turnstile> _" [51, 65, 66] 50) where
   "(s, _), (s', _)  \<Turnstile> Bool b \<longleftrightarrow> bdenot b s \<and> bdenot b s'"
 | "(_, h), (_, h') \<Turnstile> Emp \<longleftrightarrow> dom (get_fh h) = {} \<and> dom (get_fh h') = {}"
 | "\<sigma>, \<sigma>' \<Turnstile> And A B \<longleftrightarrow> \<sigma>, \<sigma>' \<Turnstile> A \<and> \<sigma>, \<sigma>' \<Turnstile> B"
@@ -291,8 +296,7 @@ proof (rule PRE_uniqueI)
     by (metis PRE_unique_def assms diff_Suc_1 length_Cons)
   fix i assume "0 \<le> i \<and> i < length qb"
   then have "upre ((ta # qa) ! (i + 1)) ((tb # qb) ! (i + 1))"
-    using assms PRE_unique_def [of upre \<open>ta # qa\<close> \<open>tb # qb\<close>]
-    by (auto simp add: less_Suc_eq_le dest: spec [of _ \<open>Suc i\<close>])
+    by (metis One_nat_def PRE_unique_def add_mono1 assms less_eq_nat.simps(1) list.size(4))
   then show "upre (qa ! i) (qb ! i)"
     by simp
 qed
@@ -638,6 +642,7 @@ next
   qed
 qed (auto simp add: unary_def)
 
+text \<open>The following record defines resource contexts (Section 3.5).\<close>
 record ('i, 'a, 'v) single_context =
   view :: "(loc \<rightharpoonup> val) \<Rightarrow> 'v"
   abstract_view :: "'v \<Rightarrow> 'v"
@@ -650,7 +655,7 @@ type_synonym ('i, 'a, 'v) cont = "('i, 'a, 'v) single_context option"
 definition no_guard_assertion where
   "no_guard_assertion A \<longleftrightarrow> (\<forall>s1 h1 s2 h2. (s1, h1), (s2, h2) \<Turnstile> A \<longrightarrow> no_guard h1 \<and> no_guard h2)"
 
-text \<open>Axiom that says that view only depends on the part of the heap described by inv\<close>
+text \<open>Axiom that says that view only depends on the part of the heap described by the invariant inv.\<close>
 definition view_function_of_inv :: "('i, 'a, nat) single_context \<Rightarrow> bool" where
   "view_function_of_inv \<Gamma> \<longleftrightarrow> (\<forall>(h :: ('i, 'a) heap) (h' :: ('i, 'a) heap) s. (s, h), (s, h) \<Turnstile> invariant \<Gamma> \<and> (h' \<succeq> h)
   \<longrightarrow> view \<Gamma> (normalize (get_fh h)) = view \<Gamma> (normalize (get_fh h')))"
@@ -723,7 +728,7 @@ definition unambiguous where
 definition all_axioms :: "('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'a \<Rightarrow> 'v) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('i \<Rightarrow> 'v \<Rightarrow> 'b \<Rightarrow> 'v) \<Rightarrow> ('i \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" where
   "all_axioms \<alpha> sact spre uact upre \<longleftrightarrow>
 
-\<comment>\<open>Every action's relational precondition is sufficient to preserve the low-ness of the abstract view of the resource value:\<close>
+\<comment>\<open>Every action’s relational precondition is sufficient to preserve the low-ness of the abstract view of the resource value:\<close>
   (\<forall>v v' sarg sarg'. \<alpha> v = \<alpha> v' \<and> spre sarg sarg' \<longrightarrow> \<alpha> (sact v sarg) = \<alpha> (sact v' sarg')) \<and>
   (\<forall>v v' uarg uarg' i. \<alpha> v = \<alpha> v' \<and> upre i uarg uarg' \<longrightarrow> \<alpha> (uact i v uarg) = \<alpha> (uact i v' uarg')) \<and>
 
@@ -739,7 +744,7 @@ definition all_axioms :: "('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 
 subsection \<open>Rules of the Logic\<close>
 
 inductive CommCSL :: "('i, 'a, nat) cont \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> cmd \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool"
-   (\<open>_ \<turnstile> {_} _ {_}\<close> [51,0,0] 81) where
+   ("_ \<turnstile> {_} _ {_}" [51,0,0] 81) where
   RuleSkip: "\<Delta> \<turnstile> {P} Cskip {P}"
 | RuleAssign: "\<lbrakk> \<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> x \<notin> fvA (invariant \<Gamma>) ; collect_existentials P \<inter> fvE E = {} \<rbrakk> \<Longrightarrow> \<Delta> \<turnstile> {subA x E P} Cassign x E {P} "
 | RuleNew: "\<lbrakk> x \<notin> fvE E; \<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> x \<notin> fvA (invariant \<Gamma>) \<and> view_function_of_inv \<Gamma> \<rbrakk> \<Longrightarrow> \<Delta> \<turnstile> {Emp} Calloc x E {PointsTo (Evar x) pwrite E}"

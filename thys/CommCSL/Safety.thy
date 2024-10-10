@@ -1,5 +1,8 @@
 subsection \<open>Safety and Hoare Triples\<close>
 
+text \<open>In this file, the meaning of Hoare triples (Definition 4.1), through a notion of safety
+(see Section 4 and Appendix C). We also prove useful lemmas for the soundness proof.\<close>
+
 theory Safety
   imports Guards
 begin
@@ -200,15 +203,16 @@ lemma no_abortE:
   using assms no_abort.simps(1) apply blast
   by (metis assms no_abort.simps(2))
 
+text \<open>We define the notion of safety, central to the meaning of Hoare triples, as follows (Definition C.1 in the appendix).\<close>
 fun safe :: "nat \<Rightarrow> ('i, 'a, nat) cont \<Rightarrow> cmd \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) set \<Rightarrow> bool" where
   "safe 0 _ _ _ _ \<longleftrightarrow> True"
 
-| "safe (Suc n) None C (s, h) S \<longleftrightarrow> (C = Cskip \<longrightarrow> (s, h) \<in> S) \<and> no_abort (None :: ('i, 'a, nat) cont)  C s h \<and>
+| "safe (Suc n) None C (s, h) S \<longleftrightarrow> (C = Cskip \<longrightarrow> (s, h) \<in> S) \<and> no_abort (None :: ('i, 'a, nat) cont) C s h \<and> accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h) \<and>
 (\<forall>H hf C' s' h'. Some H = Some h \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> no_guard H
  \<and> red C (s, normalize (get_fh H)) C' (s', h')
 \<longrightarrow> (\<exists>h'' H'. full_ownership (get_fh H') \<and> no_guard H' \<and> h' = normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n (None :: ('i, 'a, nat) cont) C' (s', h'') S))"
 
-| "safe (Suc n) (Some \<Gamma>) C (s, h) S \<longleftrightarrow> (C = Cskip \<longrightarrow> (s, h) \<in> S) \<and> no_abort (Some \<Gamma>) C s h \<and>
+| "safe (Suc n) (Some \<Gamma>) C (s, h) S \<longleftrightarrow> (C = Cskip \<longrightarrow> (s, h) \<in> S) \<and> no_abort (Some \<Gamma>) C s h \<and> accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h) \<and>
 (\<forall>H hf C' s' h' hj v0. Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma>
  \<and> red C (s, normalize (get_fh H)) C' (s', h')
 \<longrightarrow> (\<exists>h'' H' hj'. full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma>
@@ -217,6 +221,7 @@ fun safe :: "nat \<Rightarrow> ('i, 'a, nat) cont \<Rightarrow> cmd \<Rightarrow
 lemma safeNoneI:
   assumes "C = Cskip \<Longrightarrow> (s, h) \<in> S"
       and "no_abort None C s h"
+      and "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
       and "\<And>H hf C' s' h'. Some H = Some h \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> no_guard H \<and> red C (s, normalize (get_fh H)) C' (s', h')
   \<Longrightarrow> (\<exists>h'' H'. full_ownership (get_fh H') \<and> no_guard H' \<and> h' = normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n (None :: ('i, 'a, nat) cont) C' (s', h'') S)"
 shows "safe (Suc n) (None :: ('i, 'a, nat) cont) C (s, h :: ('i, 'a) heap) S"
@@ -225,6 +230,7 @@ shows "safe (Suc n) (None :: ('i, 'a, nat) cont) C (s, h :: ('i, 'a) heap) S"
 lemma safeSomeI:
   assumes "C = Cskip \<Longrightarrow> (s, h) \<in> S"
       and "no_abort (Some \<Gamma>) C s h"
+      and "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
       and "\<And>H hf C' s' h' hj v0. Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H)
         \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red C (s, normalize (get_fh H)) C' (s', h')
 \<Longrightarrow> (\<exists>h'' H' hj'. full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma>
@@ -236,6 +242,7 @@ lemma safeI:
   fixes \<Delta> :: "('i, 'a, nat) cont"
   assumes "C = Cskip \<Longrightarrow> (s, h) \<in> S"
       and "no_abort \<Delta> C s h"
+      and "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
       and "\<And>H hf C' s' h'. \<Delta> = None \<Longrightarrow> Some H = Some h \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> no_guard H \<and> red C (s, normalize (get_fh H)) C' (s', h')
   \<Longrightarrow> (\<exists>h'' H'. full_ownership (get_fh H') \<and> no_guard H' \<and> h' = normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n (None :: ('i, 'a, nat) cont) C' (s', h'') S)"
       and "\<And>H hf C' s' h' hj v0 \<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H)
@@ -246,10 +253,10 @@ lemma safeI:
 proof (cases \<Delta>)
   case None
   then show ?thesis
-    using assms(1) assms(2) assms(3) by auto
+    using assms by auto
 next
   case (Some \<Gamma>)
-  then show ?thesis using safeSomeI assms(1) assms(2) assms(4)
+  then show ?thesis using safeSomeI assms
     by simp
 qed
 
@@ -262,6 +269,7 @@ lemma safeSomeAltI:
         \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<Longrightarrow> red C (s, normalize (get_fh H)) C' (s', h')
 \<Longrightarrow> (\<exists>h'' H' hj'. full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma>
  \<and> h' = normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S)"
+      and "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
     shows "safe (Suc n) (Some \<Gamma>) C (s, h :: ('i, 'a) heap) S"
   using assms(1)
 proof (rule safeSomeI)
@@ -272,8 +280,13 @@ proof (rule safeSomeI)
            full_ownership (get_fh H') \<and>
            semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S)"
     using assms(3) by blast
-qed (simp)
+qed (auto simp add: assms)
 
+lemma safeAccessesE:
+  assumes "safe (Suc n) \<Delta> C \<sigma> S"
+  shows "accesses C (fst \<sigma>) \<subseteq> dom (fst (snd \<sigma>)) \<and> writes C (fst \<sigma>) \<subseteq> fpdom (fst (snd \<sigma>))"
+  apply (cases \<Delta>)
+  using assms safe.simps(2)[of n C "fst \<sigma>" "snd \<sigma>" S] safe.simps(3)[of n _ C "fst \<sigma>" "snd \<sigma>" S] by simp_all
 
 lemma safeSomeE:
   assumes "safe (Suc n) (Some \<Gamma>) C (s, h :: ('i, 'a) heap) S"
@@ -369,6 +382,8 @@ proof (induct n arbitrary: s h C)
       \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S'"
         using safeSomeE(3)[of n \<Gamma> C s h S] Suc.hyps Suc.prems(1) assms(2) by blast
     qed
+    show "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+      by (metis Suc.prems(1) fst_conv safeAccessesE snd_conv)
   qed
 qed (simp)
 
@@ -412,6 +427,8 @@ proof (induct n arbitrary: s h C m)
         then show "\<exists>h'' H'. full_ownership (get_fh H') \<and> no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe k (None :: ('i, 'a, nat) cont) C' (s', h'') S"
           using Suc.hyps asm0(1) calculation by blast
       qed
+      show "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+        by (metis Suc.prems(2) fst_eqD safeAccessesE snd_eqD)
       fix H hf C' s' h' hj v0 \<Gamma>
       assume asm0: "\<Delta> = Some \<Gamma>" "Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and>
        full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red C (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
@@ -431,6 +448,11 @@ lemma safe_smaller:
       and "safe n \<Delta> C \<sigma> S"
     shows "safe m \<Delta> C \<sigma> S"
   by (metis assms(1) assms(2) safe_smaller_aux surj_pair)
+
+
+text \<open>If it is safe to execute n steps of C in the state (s0, h), then it is also safe to execute it
+in the state (s1, h), provided that s0 and s1 agree on the values of variables that are free in C, the
+invariant, and the postcondition.\<close>
 
 lemma safe_free_vars_aux:
   fixes \<Delta> :: "('i, 'a, nat) cont"
@@ -486,6 +508,8 @@ proof (induct n arbitrary: s0 h s1 C)
       then show "\<exists>h'' H'. full_ownership (get_fh H') \<and> no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n (None :: ('i, 'a, nat) cont) C' (s1', h'') S"
         using r by blast
     qed
+    show "accesses C s1 \<subseteq> dom (fst h) \<and> writes C s1 \<subseteq> fpdom (fst h)"
+      by (metis Suc.prems(1) Suc.prems(2) accesses_agrees writes_agrees agrees_union fst_conv safeAccessesE snd_conv)
     fix H hf C' s1' h' hj v0 \<Gamma>
     assume asm0: "\<Delta> = Some \<Gamma>"
       "Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s1 hj \<Gamma> \<and> red C (s1, normalize (get_fh H)) C' (s1', h')"
@@ -546,16 +570,78 @@ next
 qed
 
 
+lemma restrict_safe_to_bounded:
+  assumes "safe n \<Delta> C (s, h) S"
+      and "bounded h"
+  shows "safe n \<Delta> C (s, h) (Set.filter (bounded \<circ> snd) S)"
+  using assms
+proof (induct n arbitrary: s h C)
+  case (Suc n)
+  show ?case
+  proof (rule safeI)
+    have "C = Cskip \<Longrightarrow> (s, h) \<in> S"
+      using Suc.prems(1) safe.elims(2) by blast
+    then show "C = Cskip \<Longrightarrow> (s, h) \<in> Set.filter (bounded \<circ> snd) S"
+      by (simp add: Suc.prems(2))
+    show "no_abort \<Delta> C s h" using Suc.prems(1) safe.elims(2) by blast
+    show "accesses C s \<subseteq> dom (fst h) \<and> writes C s \<subseteq> fpdom (fst h)"
+      by (metis Suc.prems(1) fst_conv safeAccessesE snd_conv)
+    fix H hf C' s' h'
+    assume asm0: "\<Delta> = None" "Some H = Some h \<oplus> Some hf \<and> full_ownership (get_fh H) \<and> no_guard H \<and> red C (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
+    then obtain h'' H' where "full_ownership (get_fh H') \<and>
+          no_guard H' \<and>
+          h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n None C' (s', h'') S"
+      using Suc.prems(1) safeNoneE(3) by blast
+    then have "safe n None C' (s', h'') (Set.filter (bounded \<circ> snd) S)"
+      using Suc(1)[of C' s' h''] apply simp
+      using \<open>\<lbrakk>safe n \<Delta> C' (s', h'') S; bounded h''\<rbrakk> \<Longrightarrow> safe n \<Delta> C' (s', h'') (Set.filter (bounded \<circ> snd) S)\<close> \<open>full_ownership (get_fh H') \<and> no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n None C' (s', h'') S\<close> asm0(1) bounded_smaller_sum full_ownership_then_bounded by blast
+    then show "\<exists>h'' H'.
+          full_ownership (get_fh H') \<and>
+          no_guard H' \<and>
+          h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n None C' (s', h'') (Set.filter (bounded \<circ> snd) S)"
+      using \<open>full_ownership (get_fh H') \<and> no_guard H' \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hf \<and> safe n None C' (s', h'') S\<close> by blast
+  next
+    fix H hf C' s' h' hj v0 \<Gamma>
+    assume asm0: "\<Delta> = Some \<Gamma>" "Some H = Some h \<oplus> Some hj \<oplus> Some hf \<and>
+       full_ownership (get_fh H) \<and> semi_consistent \<Gamma> v0 H \<and> sat_inv s hj \<Gamma> \<and> red C (s, FractionalHeap.normalize (get_fh H)) C' (s', h')"
+    then obtain h'' H' hj' where "          full_ownership (get_fh H') \<and>
+          semi_consistent \<Gamma> v0 H' \<and>
+          sat_inv s' hj' \<Gamma> \<and>
+          h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S"
+      using Suc.prems(1) safeSomeE(3) by blast
+    then have "safe n (Some \<Gamma>) C' (s', h'') (Set.filter (bounded \<circ> snd) S)"
+      using Suc(1)[of C' s' h''] apply simp
+      by (metis (no_types, opaque_lifting) \<open>\<lbrakk>safe n \<Delta> C' (s', h'') S; bounded h''\<rbrakk> \<Longrightarrow> safe n \<Delta> C' (s', h'') (Set.filter (bounded \<circ> snd) S)\<close> \<open>full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S\<close> asm0(1) bounded_smaller full_ownership_then_bounded larger3 plus_comm)
+
+    then show "\<exists>h'' H' hj'.
+          full_ownership (get_fh H') \<and>
+          semi_consistent \<Gamma> v0 H' \<and>
+          sat_inv s' hj' \<Gamma> \<and>
+          h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') (Set.filter (bounded \<circ> snd) S)"
+      using \<open>full_ownership (get_fh H') \<and> semi_consistent \<Gamma> v0 H' \<and> sat_inv s' hj' \<Gamma> \<and> h' = FractionalHeap.normalize (get_fh H') \<and> Some H' = Some h'' \<oplus> Some hj' \<oplus> Some hf \<and> safe n (Some \<Gamma>) C' (s', h'') S\<close> by blast
+
+  qed
+qed (simp)
+
+
 
 subsubsection \<open>Hoare triples\<close>
 
+text \<open>The following defines when Hoare triples are valid, based on Definition 4.1.\<close>
+
 definition hoare_triple_valid :: "('i, 'a, nat) cont \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> cmd \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool"
-  (\<open>_ \<Turnstile> {_} _ {_}\<close> [51,0,0] 81) where
-  "hoare_triple_valid \<Gamma> P C Q \<longleftrightarrow> (\<exists>\<Sigma>. (\<forall>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<longrightarrow> safe n \<Gamma> C \<sigma> (\<Sigma> \<sigma>)) \<and>
+  ("_ \<Turnstile> {_} _ {_}" [51,0,0] 81) where
+  "hoare_triple_valid \<Gamma> P C Q \<longleftrightarrow> (\<exists>\<Sigma>. (\<forall>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<and> bounded (snd \<sigma>) \<longrightarrow> safe n \<Gamma> C \<sigma> (\<Sigma> \<sigma>)) \<and>
   (\<forall>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q))"
 
 lemma hoare_triple_validI:
   assumes "\<And>s h n. (s, h), (s, h) \<Turnstile> P \<Longrightarrow> safe n \<Gamma> C (s, h) (\<Sigma> (s, h))"
+      and "\<And>s h s' h'. (s, h), (s', h') \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> (s, h)) (\<Sigma> (s', h')) Q"
+    shows "hoare_triple_valid \<Gamma> P C Q"
+  by (metis assms(1) assms(2) hoare_triple_valid_def prod.collapse)
+
+lemma hoare_triple_validI_bounded:
+  assumes "\<And>s h n. (s, h), (s, h) \<Turnstile> P \<Longrightarrow> bounded h \<Longrightarrow> safe n \<Gamma> C (s, h) (\<Sigma> (s, h))"
       and "\<And>s h s' h'. (s, h), (s', h') \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> (s, h)) (\<Sigma> (s', h')) Q"
     shows "hoare_triple_valid \<Gamma> P C Q"
   by (metis assms(1) assms(2) hoare_triple_valid_def prod.collapse)
@@ -566,17 +652,25 @@ lemma hoare_triple_valid_smallerI:
     shows "hoare_triple_valid \<Gamma> P C Q"
   using assms hoare_triple_valid_def by metis
 
+lemma hoare_triple_valid_smallerI_bounded:
+  assumes "\<And>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<Longrightarrow> bounded (snd \<sigma>) \<Longrightarrow> safe n \<Gamma> C \<sigma> (\<Sigma> \<sigma>)"
+      and "\<And>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<Longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q"
+    shows "hoare_triple_valid \<Gamma> P C Q"
+  using assms hoare_triple_valid_def by metis
+
 lemma hoare_triple_validE:
   assumes "hoare_triple_valid \<Gamma> P C Q"
-  shows "\<exists>\<Sigma>.(\<forall>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<longrightarrow> safe n \<Gamma> C \<sigma> (\<Sigma> \<sigma>)) \<and>
+  shows "\<exists>\<Sigma>. (\<forall>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<and> bounded (snd \<sigma>) \<longrightarrow> safe n \<Gamma> C \<sigma> (\<Sigma> \<sigma>)) \<and>
   (\<forall>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q)"
   using assms hoare_triple_valid_def by blast
 
 lemma hoare_triple_valid_simplerE:
   assumes "hoare_triple_valid \<Gamma> P C Q"
       and "\<sigma>, \<sigma>' \<Turnstile> P"
+      and "bounded (snd \<sigma>)"
+      and "bounded (snd \<sigma>')"
     shows "\<exists>S S'. safe n \<Gamma> C \<sigma> S \<and> safe n \<Gamma> C \<sigma>' S' \<and> pair_sat S S' Q"
-  by (meson always_sat_refl assms(1) assms(2) hoare_triple_validE sat_comm)
+  by (meson always_sat_refl assms hoare_triple_validE sat_comm)
 
 
 end

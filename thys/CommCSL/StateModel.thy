@@ -1,5 +1,9 @@
 subsection \<open>Extended Heaps\<close>
 
+text \<open>In this file, we define extended heaps, which are triples of a permission heap, a shared action
+guard state, and a family of unique action guard states. We also define a (partial) addition of two
+extended heaps. Finally, we prove useful lemmas about them.\<close>
+
 theory StateModel
   imports FractionalHeap "HOL-Library.Multiset"
 begin
@@ -11,7 +15,7 @@ text \<open>We store the initial value with the unique guard\<close>
 
 type_synonym f_heap = "(loc, val) fract_heap"
 type_synonym 'a gs_heap = "(prat \<times> 'a multiset) option"
-type_synonym ('i, 'a) gu_heap = "'i \<Rightarrow> 'a list option"
+type_synonym ('i, 'a) gu_heap = "'i \<rightharpoonup> 'a list"
 
 (* 'a = type of action, 'v = type of value *)
 type_synonym ('i, 'a) heap = "f_heap \<times> 'a gs_heap \<times> ('i, 'a) gu_heap"
@@ -29,7 +33,7 @@ text \<open>Two "heaps" are compatible iff:
 2. The unique guard heaps are disjoint
 3. The shared guards permissions sum to at most 1\<close>
 
-definition compatible :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl \<open>##\<close> 60) where
+definition compatible :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl "##" 60) where
   "h ## h' \<longleftrightarrow> compatible_fract_heaps (get_fh h) (get_fh h') \<and> (\<forall>k. get_gu h k = None \<or> get_gu h' k = None)
   \<and> (\<forall>p p'. get_gs h = Some p \<and> get_gs h' = Some p' \<longrightarrow> pgte pwrite (padd (fst p) (fst p')))"
 
@@ -62,6 +66,7 @@ fun add_gs :: "(prat \<times> 'a multiset) option \<Rightarrow> (prat \<times> '
 | "add_gs x None = x"
 | "add_gs (Some p) (Some p') = Some (padd (fst p) (fst p'), snd p + snd p')"
 
+text \<open>Addition of shared guard states is cancellative.\<close>
 lemma add_gs_cancellative:
   assumes "add_gs a x = add_gs b x"
   shows "a = b"
@@ -85,6 +90,7 @@ proof -
     by (simp add: \<open>a = Some aa\<close> \<open>b = Some bb\<close> prod_eq_iff)
 qed
 
+text \<open>Addition of shared guard states is commutative.\<close>
 lemma add_gs_comm:
   "add_gs a b = add_gs b a"
 proof (cases a)
@@ -134,7 +140,8 @@ proof (rule ext)
   qed
 qed
 
-fun plus :: "('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option" (infixl \<open>\<oplus>\<close> 63) where
+text \<open>The following function defines addition between two extended heaps.\<close>
+fun plus :: "('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option \<Rightarrow> ('i, 'a) heap option" (infixl "\<oplus>" 63) where
   "None \<oplus> _ = None"
 | "_ \<oplus> None = None"
 | "Some h1 \<oplus> Some h2 = (if h1 ## h2 then Some (add_fh (get_fh h1) (get_fh h2), add_gs (get_gs h1) (get_gs h2), add_gu (get_gu h1) (get_gu h2)) else None)"
@@ -179,6 +186,7 @@ lemma heap_ext:
     shows "a = b"
   by (metis assms(1) assms(2) assms(3) get_fh.simps get_gs.simps get_gu.elims prod.expand)
 
+text \<open>Addition of two extended heaps is commutative.\<close>
 lemma plus_comm:
   "a \<oplus> b = b \<oplus> a"
 proof -
@@ -213,14 +221,13 @@ proof -
   qed
 qed
 
-
 lemma asso2:
   assumes "Some a \<oplus> Some b = Some ab"
       and "\<not> b ## c"
     shows "\<not> ab ## c"
 proof (cases "compatible_fract_heaps (get_fh b) (get_fh c)")
   case True
-  then have "(\<exists>k. get_gu b k \<noteq> None \<and> get_gu c k \<noteq> None)
+  then have r: "(\<exists>k. get_gu b k \<noteq> None \<and> get_gu c k \<noteq> None)
   \<or> (\<exists>p p'. get_gs b = Some p \<and> get_gs c = Some p' \<and> pgt (padd (fst p) (fst p')) pwrite)"
     by (metis assms(2) compatible_def not_pgte_charact)
   then show ?thesis
@@ -236,7 +243,7 @@ proof (cases "compatible_fract_heaps (get_fh b) (get_fh c)")
   next
     case False
     then obtain p p' where "get_gs b = Some p \<and> get_gs c = Some p' \<and> pgt (padd (fst p) (fst p')) pwrite"
-      using \<open>(\<exists>k. get_gu b k \<noteq> None \<and> get_gu c k \<noteq> None) \<or> (\<exists>p p'. get_gs b = Some p \<and> get_gs c = Some p' \<and> pgt (padd (fst p) (fst p')) pwrite)\<close> by blast
+      using r by blast
     moreover have "get_gs ab = add_gs (get_gs a) (Some p)"
       by (metis assms(1) calculation plus_extract(2))
     then show ?thesis
@@ -340,12 +347,12 @@ proof (cases "Some ab \<oplus> Some c")
         apply (cases "get_gs b")
          apply (metis add_gs.simps(1) add_gs.simps(2) assms(1) assms(2) compatible_def compatible_eq not_pgte_charact plus_extract(2))
       proof -
-        fix pa pb assume "get_gs ab = Some pab \<and> get_gs c = Some pc \<and> pgt (padd (fst pab) (fst pc)) pwrite"
+        fix pa pb assume asm: "get_gs ab = Some pab \<and> get_gs c = Some pc \<and> pgt (padd (fst pab) (fst pc)) pwrite"
         "get_gs a = Some pa" "get_gs b = Some pb"
         then have "pab = (padd (fst pa) (fst pb), snd pa + snd pb)"
           by (metis add_gs.simps(3) assms(1) option.sel plus_extract(2))
         then show "Some ab \<oplus> Some c = Some a \<oplus> Some bc"
-          using None \<open>get_gs a = Some pa\<close> \<open>get_gs ab = Some pab \<and> get_gs c = Some pc \<and> pgt (padd (fst pab) (fst pc)) pwrite\<close>
+          using None \<open>get_gs a = Some pa\<close> asm
             \<open>get_gs b = Some pb\<close> add_gs.simps(3) assms(2) compatible_def[of a bc]
             compatible_eq fst_conv not_pgte_charact[of pwrite "padd (fst pab) (fst pc)"] padd_asso plus_extract(2)
           by metis
@@ -573,6 +580,7 @@ next
   qed
 qed
 
+text \<open>Addition of two extended heaps is associative.\<close>
 lemma plus_asso:
   "(a \<oplus> b) \<oplus> c = a \<oplus> (b \<oplus> c)"
 proof (cases a)
@@ -595,9 +603,11 @@ proof (cases a)
   qed (simp)
 qed (simp)
 
-definition larger :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl \<open>\<succeq>\<close> 55) where
+text \<open>We define the extension order between extended heaps.\<close>
+definition larger :: "('i, 'a) heap \<Rightarrow> ('i, 'a) heap \<Rightarrow> bool" (infixl "\<succeq>" 55) where
   "a \<succeq> b \<longleftrightarrow> (\<exists>c. Some a = Some b \<oplus> Some c)"
 
+text \<open>The extension order between extended heaps is transitive.\<close>
 lemma larger_trans:
   assumes "a \<succeq> b"
       and "b \<succeq> c"
@@ -660,7 +670,6 @@ lemma equiv_sum_get_fh:
       and "Some x' = Some a' \<oplus> Some b'"
     shows "get_fh x = get_fh x'"
   by (metis assms(1) assms(2) assms(3) assms(4) fst_eqD get_fh.elims option.discI option.sel plus.simps(3))
-
 
 lemma addition_cancellative:
   assumes "Some a = Some b \<oplus> Some c"
@@ -832,5 +841,105 @@ proof (rule ext)
   fix x show "add_fh h Map.empty x = h x"
     by (metis add_fh_def fadd_options.simps(1) fadd_options.simps(2) not_None_eq)
 qed
+
+definition bounded where
+  "bounded h \<longleftrightarrow> (\<forall>l p. fst h l = Some p \<longrightarrow> pgte pwrite (fst p))"
+
+lemma boundedI:
+  assumes "\<And>l p. fst h l = Some p \<Longrightarrow> pgte pwrite (fst p)"
+  shows "bounded h"
+  by (simp add: assms bounded_def)
+
+
+lemma boundedE:
+  assumes "bounded h"
+      and "fst h l = Some p"
+    shows "pgte pwrite (fst p)"
+  by (meson assms(1) assms(2) bounded_def)
+
+lemma bounded_smaller_sum:
+  assumes "bounded x"
+      and "Some x = Some a \<oplus> Some b"
+    shows "bounded a"
+proof (rule boundedI)
+  fix l p assume asm0: "fst a l = Some p"
+  then obtain p' where "fst x l = Some p'"
+    by (metis assms(2) get_fh.simps one_value_sum_same prod.collapse)
+  then have "pgte (fst p') (fst p)"
+    apply (cases "fst b l")
+     apply (metis (no_types, lifting) add_fh_def add_get_fh asm0 assms(2) fadd_options.simps(2) get_fh.elims not_pgte_charact option.sel pgt_implies_pgte)
+    using add_fh_def[of "fst a" "fst b" l] asm0 assms(2) fadd_options.elims[of "fst a l" "fst b l"]
+      fst_eqD get_fh.simps option.discI option.sel pgt_implies_pgte plus.simps(3)[of a b] sum_larger[of ]
+    by metis
+  then show "pgte pwrite (fst p)"
+    by (meson \<open>fst x l = Some p'\<close> assms(1) boundedE dual_order.trans pgte.rep_eq)
+qed
+
+lemma bounded_smaller:
+  assumes "bounded x"
+      and "x \<succeq> a"
+    shows "bounded a"
+  using assms(1) assms(2) bounded_smaller_sum larger_def by blast
+
+
+lemma sum_perm_smaller:
+  assumes "Some x = Some a \<oplus> Some b"
+      and "fst a l = Some (p, v)"
+    shows "\<exists>p'. pgte p' p \<and> fst x l = Some (p', v)"
+  apply (cases "fst b l")
+   apply (metis assms(1) assms(2) get_fh.simps order.refl pgte.rep_eq sum_second_none_get_fh)
+  apply clarsimp
+  using assms(2) fst_eqD get_fh.simps pgt_implies_pgte plus_extract_point_fh[OF assms(1)] snd_eqD sum_larger
+  by simp
+
+lemma modus_ponens:
+  assumes A
+      and "A \<Longrightarrow> B"
+    shows B
+  using assms by simp
+
+
+
+lemma fpdom_inclusion:
+  assumes "Some h' = Some h \<oplus> Some r"
+      and "bounded h'"
+  shows "fpdom (fst h) \<subseteq> fpdom (fst h')"
+  apply rule
+  unfolding fpdom_def apply simp
+  apply (erule exE)
+  subgoal for x v
+    apply (rule modus_ponens[of "\<exists>p. fst h' x = Some (p, v)"])
+     apply (metis assms(1) get_fh.simps one_value_sum_same)
+    apply (erule exE)
+    subgoal for p
+      apply (rule modus_ponens[of "pgte pwrite p"])
+       apply (metis assms(2) boundedE fst_conv)
+      apply (rule modus_ponens[of "pgte p pwrite"])
+      apply (metis Pair_inject assms(1) option.inject sum_perm_smaller)
+      using pgte_antisym by blast
+    done
+  done
+
+lemma fpdom_dom_disjoint:
+  assumes "Some h = Some h1 \<oplus> Some h2"
+  shows "dom (fst h1) \<inter> fpdom (fst h2) = {}"
+  apply rule
+   apply rule
+  unfolding dom_def fpdom_def apply simp_all
+  apply (erule conjE)
+  apply (erule exE)+
+    by (metis (no_types, lifting) assms fst_eqD get_fh.simps not_pgte_charact plus_comm plus_extract_point_fh sum_larger)
+
+lemma fpdom_dom_union:
+  assumes "Some h = Some h1 \<oplus> Some h2"
+      and "bounded h"
+  shows "fpdom (fst h1) \<union> fpdom (fst h2) \<subseteq> fpdom (fst h)"
+  by (metis assms fpdom_inclusion plus_comm sup_least)
+
+lemma full_ownership_then_bounded:
+  assumes "full_ownership (fst h)"
+  shows "bounded h"
+  apply (rule boundedI)
+  by (metis assms full_ownership_def pgte.rep_eq pwrite.rep_eq rel_simps(47))
 
 end

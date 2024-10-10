@@ -2,13 +2,16 @@ section \<open>Soundness of CommCSL\<close>
 
 subsection \<open>Abstract Commutativity\<close>
 
+text \<open>In this file, we prove lemma 4.2 from the paper: Essentially, conditions (1)-(4) from Section 2
+are sufficient to ensure that the abstraction of the final shared value is low. \<close>
+
 theory AbstractCommutativity
   imports Main CommCSL "HOL-Library.Multiset"
 begin
 
 datatype ('i, 'a, 'b) action = Shared (get_s: 'a) | Unique (get_i: 'i) (get_u: 'b)
 
-text \<open>We consider a family of unique actions indexed by 'i\<close>
+text \<open>We consider a family of unique actions indexed by the type 'i\<close>
 
 lemma sabstract:
   assumes "all_axioms \<alpha> sact spre uact upre"
@@ -78,8 +81,13 @@ definition is_Unique :: "('i, 'a, 'b) action \<Rightarrow> bool" where
 definition is_Unique_i :: "'i \<Rightarrow> ('i, 'a, 'b) action \<Rightarrow> bool" where
   "is_Unique_i i a \<longleftrightarrow> is_Unique a \<and> get_i a = i"
 
+text \<open>The following definition expresses that a sequence of actions corresponds to some interleaving
+of a multiset of shared actions and a family of sequences of unique actions, by projecting the sequence
+of actions on each type of action.\<close>
+
 definition possible_sequence :: "'a multiset \<Rightarrow> ('i \<Rightarrow> 'b list) \<Rightarrow> ('i, 'a, 'b) action list \<Rightarrow> bool" where
-  "possible_sequence sargs uargs s \<longleftrightarrow> ((\<forall>i. uargs i = map get_u (filter (is_Unique_i i) s)) \<and> sargs = image_mset get_s (filter_mset is_Shared (mset s)))"
+  "possible_sequence sargs uargs s \<longleftrightarrow> ((\<forall>i. uargs i = map get_u (filter (is_Unique_i i) s))
+  \<and> sargs = image_mset get_s (filter_mset is_Shared (mset s)))"
 
 lemma possible_sequenceI:
   assumes "\<And>i. uargs i = map get_u (filter (is_Unique_i i) s)"
@@ -1321,6 +1329,8 @@ proof -
     by auto
 qed
 
+text \<open>The following inductive predicate captures all possible final values that can be reached with
+some interleaving of the actions described a multiset and a family of sequences of actions.\<close>
 inductive reachable_value :: "('v \<Rightarrow> 'a \<Rightarrow> 'v) \<Rightarrow> ('i \<Rightarrow> 'v \<Rightarrow> 'b \<Rightarrow> 'v) \<Rightarrow> 'v \<Rightarrow> 'a multiset \<Rightarrow> ('i \<Rightarrow> 'b list) \<Rightarrow> 'v \<Rightarrow> bool" where
   Self: "reachable_value sact uact v0 {#} (\<lambda>k. []) v0"
 | SharedStep: "reachable_value sact uact v0 sargs uargs v1 \<Longrightarrow> reachable_value sact uact v0 (sargs + {# sarg #}) uargs (sact v1 sarg)"
@@ -1394,6 +1404,7 @@ next
   then show ?case using PRE_shared_def by blast
 qed
 
+text \<open>The following theorem corresponds to Lemma 4.2 in the paper.\<close>
 theorem main_result:
   assumes "reachable_value sact uact v0 sargs uargs v"
       and "reachable_value sact uact v0' sargs' uargs' v'"
