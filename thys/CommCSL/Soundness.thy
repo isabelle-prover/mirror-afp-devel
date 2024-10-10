@@ -521,16 +521,14 @@ proof (induct n)
       then obtain H' where "Some H' = Some ?h \<oplus> Some hf" by auto
       moreover have "H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
       proof (rule heap_ext)
-        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm0 calculation fst_conv get_gs.simps plus_extract(2) snd_conv)
-        show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm0 calculation get_gu.simps plus_extract(3) snd_conv)
         show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-        proof (rule ext)
-          fix l show "get_fh H' l = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H) l"
-            using add_fh_update[of "get_fh hf" "edenot E s" fh "(pwrite, edenot E s)"]
-            by (metis \<open>get_fh hf (edenot loc s) = None\<close> add_fh_update add_get_fh asm0 calculation fst_conv get_fh.elims)
-        qed
+          using calculation asm0 by (metis \<open>get_fh hf (edenot loc s) = None\<close> add_fh_update add_get_fh fst_conv get_fh.simps)
+        show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)" 
+          using calculation asm0
+          by (metis fst_conv get_gs.simps plus_extract(2) snd_conv)
+        show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
+          using add_fh_update[of "get_fh hf" "edenot E s" fh "(pwrite, edenot E s)"] asm0 calculation 
+          by (metis get_gu.elims plus_extract(3) snd_conv)
       qed
       moreover have "safe n (None :: ('i, 'a, nat) cont) C' (s', ?h) {(s, fh(edenot loc s \<mapsto> (pwrite, edenot E s)), gs, gu)}"
         using \<open>s = sa\<close> asm1(2) asm1(3) safe_skip by fastforce
@@ -551,8 +549,9 @@ proof (induct n)
               by (metis (mono_tags, lifting) asm asm0 calculation(2) fst_eqD full_ownership_def get_fh.simps map_upd_Some_unfold)
           qed
         qed
-        moreover have "no_guard H'"
-          by (metis \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> asm0 fst_conv get_gs.simps get_gu.simps no_guard_def snd_conv)
+        moreover have "no_guard H'" using asm0
+          by (simp add: \<open>H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)\<close> no_guard_def)
+
         moreover have "h' = FractionalHeap.normalize (get_fh H')"
         proof (rule ext)
           fix l show "h' l = FractionalHeap.normalize (get_fh H') l"
@@ -659,9 +658,11 @@ proof (induct n)
       moreover have "H' = ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
       proof (rule heap_ext)
         show "get_gs H' = get_gs ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm00 calculation fst_conv get_gs.simps plus_extract(2) snd_conv)
+          using asm00 calculation
+          by (metis fst_conv get_gs.simps plus_extract(2) snd_conv)
         show "get_gu H' = get_gu ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
-          by (metis asm00 calculation get_gu.simps plus_extract(3) snd_conv)
+          using asm00 calculation
+          by (metis get_gu.simps plus_extract(3) snd_conv)
         show "get_fh H' = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H)"
         proof (rule ext)
           fix l show "get_fh H' l = get_fh ((get_fh H)(edenot loc s \<mapsto> (pwrite, edenot E s)), get_gs H, get_gu H) l"

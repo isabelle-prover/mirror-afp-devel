@@ -630,7 +630,7 @@ subsubsection \<open>Hoare triples\<close>
 text \<open>The following defines when Hoare triples are valid, based on Definition 4.1.\<close>
 
 definition hoare_triple_valid :: "('i, 'a, nat) cont \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> cmd \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool"
-  ("_ \<Turnstile> {_} _ {_}" [51,0,0] 81) where
+  (\<open>_ \<Turnstile> {_} _ {_}\<close> [51,0,0] 81) where
   "hoare_triple_valid \<Gamma> P C Q \<longleftrightarrow> (\<exists>\<Sigma>. (\<forall>\<sigma> n. \<sigma>, \<sigma> \<Turnstile> P \<and> bounded (snd \<sigma>) \<longrightarrow> safe n \<Gamma> C \<sigma> (\<Sigma> \<sigma>)) \<and>
   (\<forall>\<sigma> \<sigma>'. \<sigma>, \<sigma>' \<Turnstile> P \<longrightarrow> pair_sat (\<Sigma> \<sigma>) (\<Sigma> \<sigma>') Q))"
 

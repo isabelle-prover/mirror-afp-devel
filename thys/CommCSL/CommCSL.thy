@@ -33,7 +33,7 @@ datatype ('i, 'a, 'v) assertion =
   Bool bexp
   | Emp
   | And "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"
-  | Star "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"    ("_ * _" 70)
+  | Star "('i, 'a, 'v) assertion" "('i, 'a, 'v) assertion"    (\<open>_ * _\<close> 70)
   | Low bexp
   | LowExp exp
 
@@ -64,7 +64,7 @@ definition PRE_unique :: "('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow>
 
 text \<open>The following function defines the validity of CommCSL assertions, which corresponds to Figure 7 from the paper.\<close>
 
-fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" ("_, _ \<Turnstile> _" [51, 65, 66] 50) where
+fun hyper_sat :: "(store \<times> ('i, 'a) heap) \<Rightarrow> (store \<times> ('i, 'a) heap) \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool" (\<open>_, _ \<Turnstile> _\<close> [51, 65, 66] 50) where
   "(s, _), (s', _)  \<Turnstile> Bool b \<longleftrightarrow> bdenot b s \<and> bdenot b s'"
 | "(_, h), (_, h') \<Turnstile> Emp \<longleftrightarrow> dom (get_fh h) = {} \<and> dom (get_fh h') = {}"
 | "\<sigma>, \<sigma>' \<Turnstile> And A B \<longleftrightarrow> \<sigma>, \<sigma>' \<Turnstile> A \<and> \<sigma>, \<sigma>' \<Turnstile> B"
@@ -296,7 +296,8 @@ proof (rule PRE_uniqueI)
     by (metis PRE_unique_def assms diff_Suc_1 length_Cons)
   fix i assume "0 \<le> i \<and> i < length qb"
   then have "upre ((ta # qa) ! (i + 1)) ((tb # qb) ! (i + 1))"
-    by (metis One_nat_def PRE_unique_def add_mono1 assms less_eq_nat.simps(1) list.size(4))
+    using assms PRE_unique_def [of upre \<open>ta # qa\<close> \<open>tb # qb\<close>]
+    by (auto simp add: less_Suc_eq_le dest: spec [of _ \<open>Suc i\<close>])
   then show "upre (qa ! i) (qb ! i)"
     by simp
 qed
@@ -728,7 +729,7 @@ definition unambiguous where
 definition all_axioms :: "('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'a \<Rightarrow> 'v) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('i \<Rightarrow> 'v \<Rightarrow> 'b \<Rightarrow> 'v) \<Rightarrow> ('i \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" where
   "all_axioms \<alpha> sact spre uact upre \<longleftrightarrow>
 
-\<comment>\<open>Every action’s relational precondition is sufficient to preserve the low-ness of the abstract view of the resource value:\<close>
+\<comment>\<open>Every action's relational precondition is sufficient to preserve the low-ness of the abstract view of the resource value:\<close>
   (\<forall>v v' sarg sarg'. \<alpha> v = \<alpha> v' \<and> spre sarg sarg' \<longrightarrow> \<alpha> (sact v sarg) = \<alpha> (sact v' sarg')) \<and>
   (\<forall>v v' uarg uarg' i. \<alpha> v = \<alpha> v' \<and> upre i uarg uarg' \<longrightarrow> \<alpha> (uact i v uarg) = \<alpha> (uact i v' uarg')) \<and>
 
@@ -744,7 +745,7 @@ definition all_axioms :: "('v \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 
 subsection \<open>Rules of the Logic\<close>
 
 inductive CommCSL :: "('i, 'a, nat) cont \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> cmd \<Rightarrow> ('i, 'a, nat) assertion \<Rightarrow> bool"
-   ("_ \<turnstile> {_} _ {_}" [51,0,0] 81) where
+   (\<open>_ \<turnstile> {_} _ {_}\<close> [51,0,0] 81) where
   RuleSkip: "\<Delta> \<turnstile> {P} Cskip {P}"
 | RuleAssign: "\<lbrakk> \<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> x \<notin> fvA (invariant \<Gamma>) ; collect_existentials P \<inter> fvE E = {} \<rbrakk> \<Longrightarrow> \<Delta> \<turnstile> {subA x E P} Cassign x E {P} "
 | RuleNew: "\<lbrakk> x \<notin> fvE E; \<And>\<Gamma>. \<Delta> = Some \<Gamma> \<Longrightarrow> x \<notin> fvA (invariant \<Gamma>) \<and> view_function_of_inv \<Gamma> \<rbrakk> \<Longrightarrow> \<Delta> \<turnstile> {Emp} Calloc x E {PointsTo (Evar x) pwrite E}"

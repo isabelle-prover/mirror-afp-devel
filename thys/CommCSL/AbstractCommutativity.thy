@@ -10,7 +10,6 @@ theory AbstractCommutativity
 begin
 
 datatype ('i, 'a, 'b) action = Shared (get_s: 'a) | Unique (get_i: 'i) (get_u: 'b)
-
 text \<open>We consider a family of unique actions indexed by the type 'i\<close>
 
 lemma sabstract:
