@@ -6,25 +6,10 @@
 section \<open>Contributions to the Standard Library of HOL\<close>
 
 theory Contrib
-imports Main
+imports Main "HOL-Library.FuncSet"
 begin
 
 subsection \<open>Basic definitions and lemmas\<close>
-
-subsubsection \<open>Lambda expressions\<close>                  
-
-definition restrict :: "['a => 'b, 'a set] => ('a => 'b)" where
- "restrict f A = (%x. if x : A then f x else (@ y. True))"
-
-syntax (ASCII)
-  "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  (\<open>(3%_:_./ _)\<close> [0, 0, 3] 3)
-syntax
-  "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  (\<open>(3\<lambda>_\<in>_./ _)\<close> [0, 0, 3] 3)
-syntax_consts
-  "_lambda_in" == restrict
-translations
-  "\<lambda>x\<in>A. f"  == "CONST restrict (%x. f) A"
-
 
 subsubsection \<open>Maps\<close>                  
 
