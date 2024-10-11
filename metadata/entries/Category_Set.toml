@@ -1,0 +1,31 @@
+title = "The Elementary Theory of the Category of Sets"
+date = 2024-10-10
+topics = [
+  "Logic/Set theory",
+  "Mathematics/Category theory",
+]
+abstract = "Category theory presents a formulation of mathematical structures in terms of common properties of those structures. A particular formulation of interest is the Elementary Theory of the Category of Sets (ETCS), which is an axiomatization of set theory in category theory terms. This axiomatization provides an unusual view of sets, where the functions between sets are regarded as more important than the elements of the sets. We formalise an axiomatization of ETCS on top of HOL, following the presentation given by Halvorson in \"The Logic in Philosophy of Science\". We also build some other set theoretic results on top of the axiomatization, including Cantor's diagonalization theorem and mathematical induction. We additionally define a system of quantified predicate logic within the ETCS axiomatization."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.baxter]
+email = "baxter_email"
+
+[authors.bryant]
+email = "bryant_email"
+
+[contributors]
+
+[notify]
+baxter = "baxter_email1"
+bryant = "bryant_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

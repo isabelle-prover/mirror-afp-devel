@@ -3,10 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/baxter/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bryant/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Category_Set.html</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/cheung/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
@@ -14,16 +35,10 @@
     <loc>/topics/computer-science/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/SuffixArray.html</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/rizkallah/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
@@ -59,9 +74,6 @@
     <loc>/authors/haslbeckm/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/NREST.html</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -72,9 +84,6 @@
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Chebyshev_Prime_Bounds.html</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polynomial_interpolation/</loc>
@@ -5306,6 +5315,8 @@
     <loc>/sessions/catalan_numbers/</loc>
   </url><url>
     <loc>/sessions/category/</loc>
+  </url><url>
+    <loc>/sessions/category_set/</loc>
   </url><url>
     <loc>/sessions/category2/</loc>
   </url><url>

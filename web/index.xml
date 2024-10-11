@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 10 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Elementary Theory of the Category of Sets</title>
+          <link>/entries/Category_Set.html</link>
+          <pubDate>Thu, 10 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Category_Set.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Formally Verified Suffix Array Construction</title>
           <link>/entries/SuffixArray.html</link>
@@ -6647,6 +6654,13 @@
           <link>/sessions/category/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/category/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Category_Set</title>
+          <link>/sessions/category_set/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/category_set/</guid>
           <description></description>
         </item>
         <item>

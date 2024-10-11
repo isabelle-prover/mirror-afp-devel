@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Elementary Theory of the Category of Sets - Archive of Formal Proofs</title>
+    <meta name="description" content="Category theory presents a formulation of mathematical structures in terms of common properties of those structures. A particular formulation of interest...">
+
+  <meta property="og:title" content="The Elementary Theory of the Category of Sets" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Category_Set.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-10-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-10T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="The Elementary Theory of the Category of Sets"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>E</span>lementary <span class='first'>T</span>heory of the <span class='first'>C</span>ategory of <span class='first'>S</span>ets
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/baxter">James Baxter</a> <a class="obfuscated" data="eyJob3N0IjpbInlvcmsiLCJhYyIsInVrIl0sInVzZXIiOlsiamFtZXMiLCJiYXh0ZXIiXX0=">📧</a> and <a href="../authors/bryant">Dustin Bryant</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYnJ5ZHVzdGluIl19">📧</a>
+
+      </p>
+      <p class="date">October 10, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Category theory presents a formulation of mathematical structures in terms of common properties of those structures. A particular formulation of interest is the Elementary Theory of the Category of Sets (ETCS), which is an axiomatization of set theory in category theory terms. This axiomatization provides an unusual view of sets, where the functions between sets are regarded as more important than the elements of the sets. We formalise an axiomatization of ETCS on top of HOL, following the presentation given by Halvorson in "The Logic in Philosophy of Science". We also build some other set theoretic results on top of the axiomatization, including Cantor's diagonalization theorem and mathematical induction. We additionally define a system of quantified predicate logic within the ETCS axiomatization.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/set-theory">Logic/Set theory</a></li>
+          <li><a href="../topics/mathematics/category-theory">Mathematics/Category theory</a></li>
+      </ul>
+      <h3>Session Category_Set</h3>
+      <ul>
+          <li><a href="../sessions/category_set/#Cfunc">Cfunc</a></li>
+          <li><a href="../sessions/category_set/#Product">Product</a></li>
+          <li><a href="../sessions/category_set/#Terminal">Terminal</a></li>
+          <li><a href="../sessions/category_set/#Equalizer">Equalizer</a></li>
+          <li><a href="../sessions/category_set/#Truth">Truth</a></li>
+          <li><a href="../sessions/category_set/#Equivalence">Equivalence</a></li>
+          <li><a href="../sessions/category_set/#Coproduct">Coproduct</a></li>
+          <li><a href="../sessions/category_set/#Axiom_Of_Choice">Axiom_Of_Choice</a></li>
+          <li><a href="../sessions/category_set/#Initial">Initial</a></li>
+          <li><a href="../sessions/category_set/#Exponential_Objects">Exponential_Objects</a></li>
+          <li><a href="../sessions/category_set/#Nats">Nats</a></li>
+          <li><a href="../sessions/category_set/#Pred_Logic">Pred_Logic</a></li>
+          <li><a href="../sessions/category_set/#Quant_Logic">Quant_Logic</a></li>
+          <li><a href="../sessions/category_set/#Nat_Parity">Nat_Parity</a></li>
+          <li><a href="../sessions/category_set/#Cardinality">Cardinality</a></li>
+          <li><a href="../sessions/category_set/#Countable">Countable</a></li>
+          <li><a href="../sessions/category_set/#Fixed_Points">Fixed_Points</a></li>
+          <li><a href="../sessions/category_set/#ETCS">ETCS</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Category_Set/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Category_Set/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Category_Set/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Category_Set-AFP</p>
+        <pre id="copy-text">@article{Category_Set-AFP,
+  author  = {James Baxter and Dustin Bryant},
+  title   = {The Elementary Theory of the Category of Sets},
+  journal = {Archive of Formal Proofs},
+  month   = {October},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Category_Set.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Category_Set-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>
