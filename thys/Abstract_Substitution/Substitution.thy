@@ -37,11 +37,11 @@ in algebra, but right semigroup actions directly uses the usual notation of term
 substitution.\<close>
 
 locale left_semigroup_action = semigroup +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix "\<cdot>" 70)
+  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
   assumes action_compatibility[simp]: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)"
 
 locale right_semigroup_action = semigroup +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix "\<cdot>" 70)
+  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
   assumes action_compatibility[simp]: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b"
 
 text \<open>We then instantiate the right action in the context of the left action in order to get access
@@ -86,13 +86,13 @@ qed
 section \<open>Monoid Action\<close>
 
 locale left_monoid_action = monoid +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix "\<cdot>" 70)
+  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
   assumes
     monoid_action_compatibility: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)" and
     action_neutral[simp]: "\<And>x. \<^bold>1 \<cdot> x = x"
 
 locale right_monoid_action = monoid +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix "\<cdot>" 70)
+  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
   assumes
     monoid_action_compatibility: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b" and
     action_neutral[simp]: "\<And>x. x \<cdot> \<^bold>1 = x"
@@ -135,13 +135,13 @@ qed
 section \<open>Group Action\<close>
 
 locale left_group_action = group +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix "\<cdot>" 70)
+  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
   assumes
     group_action_compatibility: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)" and
     group_action_neutral: "\<And>x. \<^bold>1 \<cdot> x = x"
 
 locale right_group_action = group +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infixl "\<cdot>" 70)
+  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infixl \<open>\<cdot>\<close> 70)
   assumes
     group_action_compatibility: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b" and
     group_action_neutral: "\<And>x. x \<cdot> \<^bold>1 = x"
@@ -165,9 +165,9 @@ section \<open>Assumption-free Substitution\<close>
 
 locale substitution_ops =
   fixes
-    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl "\<cdot>" 67) and
+    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl \<open>\<cdot>\<close> 67) and
     id_subst :: 's and
-    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<odot>" 67) and
+    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<odot>\<close> 67) and
     is_ground :: "'x \<Rightarrow> bool"
 begin
 
@@ -316,9 +316,9 @@ locale substitution =
   comp_subst: right_monoid_action comp_subst id_subst subst +
   substitution_ops subst id_subst comp_subst is_ground
   for
-    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl "\<odot>" 70) and
+    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<odot>\<close> 70) and
     id_subst :: 's and
-    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl "\<cdot>" 70) and
+    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl \<open>\<cdot>\<close> 70) and
 
     \<comment> \<open>Predicate identifying the fixed elements w.r.t. the monoid action\<close>
     is_ground :: "'x \<Rightarrow> bool" +

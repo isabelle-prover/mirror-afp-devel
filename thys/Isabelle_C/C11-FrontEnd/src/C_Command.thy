@@ -1226,11 +1226,11 @@ in end\<close>
 
 subsection \<open>Term-Cartouches for C Syntax\<close>
 
-syntax "_C_translation_unit" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C>\<^sub>u\<^sub>n\<^sub>i\<^sub>t _")
-syntax "_C_external_declaration" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C>\<^sub>d\<^sub>e\<^sub>c\<^sub>l _")
-syntax "_C_expression" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r _")
-syntax "_C_statement" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C>\<^sub>s\<^sub>t\<^sub>m\<^sub>t _")
-syntax "_C" :: \<open>cartouche_position \<Rightarrow> string\<close> ("\<^C> _")
+syntax "_C_translation_unit" :: \<open>cartouche_position \<Rightarrow> string\<close> (\<open>\<^C>\<^sub>u\<^sub>n\<^sub>i\<^sub>t _\<close>)
+syntax "_C_external_declaration" :: \<open>cartouche_position \<Rightarrow> string\<close> (\<open>\<^C>\<^sub>d\<^sub>e\<^sub>c\<^sub>l _\<close>)
+syntax "_C_expression" :: \<open>cartouche_position \<Rightarrow> string\<close> (\<open>\<^C>\<^sub>e\<^sub>x\<^sub>p\<^sub>r _\<close>)
+syntax "_C_statement" :: \<open>cartouche_position \<Rightarrow> string\<close> (\<open>\<^C>\<^sub>s\<^sub>t\<^sub>m\<^sub>t _\<close>)
+syntax "_C" :: \<open>cartouche_position \<Rightarrow> string\<close> (\<open>\<^C> _\<close>)
 
 parse_translation \<open>
 C_Module.C_Term'.parse_translation

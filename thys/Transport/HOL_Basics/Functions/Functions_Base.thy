@@ -42,7 +42,7 @@ definition "fun_map f g h \<equiv> dep_fun_map f (\<lambda>_ _. g) h"
 
 open_bundle dep_fun_map_syntax
 begin
-notation "fun_map" (infixr "\<leadsto>" 40)
+notation "fun_map" (infixr \<open>\<leadsto>\<close> 40)
 syntax
   "_dep_fun_map" :: "idt \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow>
     ('a \<Rightarrow> 'd)" (\<open>'(_/ : / _') \<leadsto> (_)\<close> [41, 41, 40] 40)

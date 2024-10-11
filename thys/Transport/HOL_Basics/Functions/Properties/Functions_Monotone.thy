@@ -20,7 +20,7 @@ consts mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle dep_mono_wrt_syntax
 begin
-notation "mono_wrt" (infixr "\<Rightarrow>" 50)
+notation "mono_wrt" (infixr \<open>\<Rightarrow>\<close> 50)
 syntax
   "_dep_mono_wrt_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c"
     (\<open>'(_/ _/ \<Colon>/ _') \<Rightarrow> (_)\<close> [51, 51, 50, 50] 50)

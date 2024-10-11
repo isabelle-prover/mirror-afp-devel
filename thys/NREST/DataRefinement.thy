@@ -8,10 +8,10 @@ subsection \<open>Data Refinement\<close>
 lemma "{(1,2),(2,4)}``{1,2}={2,4}" by auto
 
 
-definition conc_fun ("\<Down>") where
+definition conc_fun (\<open>\<Down>\<close>) where
   "conc_fun R m \<equiv> case m of FAILi \<Rightarrow> FAILT | REST X \<Rightarrow> REST (\<lambda>c. Sup {X a| a. (c,a)\<in>R})"
                                                                   (* ^- not so sure here *)
-definition abs_fun ("\<Up>") where
+definition abs_fun (\<open>\<Up>\<close>) where
   "abs_fun R m \<equiv> case m of FAILi \<Rightarrow> FAILT 
     | REST X \<Rightarrow> if dom X\<subseteq>Domain R then REST (\<lambda>a. Sup {X c| c. (c,a)\<in>R}) else FAILT"
                                                 (* ^- not so sure here *)

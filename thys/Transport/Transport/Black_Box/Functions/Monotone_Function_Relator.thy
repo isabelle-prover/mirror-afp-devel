@@ -11,7 +11,7 @@ abbreviation "Mono_Fun_Rel R S \<equiv> Mono_Dep_Fun_Rel R (\<lambda>_ _. S)"
 
 open_bundle Mono_Dep_Fun_Rel_syntax 
 begin
-notation "Mono_Fun_Rel" (infixr "\<Rrightarrow>\<oplus>" 40)
+notation "Mono_Fun_Rel" (infixr \<open>\<Rrightarrow>\<oplus>\<close> 40)
 syntax
   "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
     ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)

@@ -204,7 +204,7 @@ ML \<open>
   
 definition nofailT :: "'a nrest \<Rightarrow> bool" where "nofailT S \<equiv> S\<noteq>FAILT"
 
-definition le_or_fail :: "'a nrest \<Rightarrow> 'a nrest \<Rightarrow> bool" (infix "\<le>\<^sub>n" 50) where
+definition le_or_fail :: "'a nrest \<Rightarrow> 'a nrest \<Rightarrow> bool" (infix \<open>\<le>\<^sub>n\<close> 50) where
   "m \<le>\<^sub>n m' \<equiv> nofailT m \<longrightarrow> m \<le> m'"
 
 lemma nofailT_simps[simp]:

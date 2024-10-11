@@ -4,7 +4,7 @@ theory Substitution_HOL_ex_Unification
     "HOL-ex.Unification"
 begin
 
-no_notation Comb (infix "\<cdot>" 60)
+no_notation Comb (infix \<open>\<cdot>\<close> 60)
 
 quotient_type 'a subst = "('a \<times> 'a trm) list" / "(\<doteq>)"
 proof (rule equivpI)
@@ -18,7 +18,7 @@ next
     using transpI subst_trans by metis
 qed
 
-lift_definition subst_comp :: "'a subst \<Rightarrow> 'a subst \<Rightarrow> 'a subst" (infixl "\<odot>" 67)
+lift_definition subst_comp :: "'a subst \<Rightarrow> 'a subst \<Rightarrow> 'a subst" (infixl \<open>\<odot>\<close> 67)
   is Unification.comp
   using Unification.subst_cong .
 

@@ -13,7 +13,7 @@ consts rel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle rel_mono_wrt_syntax
 begin
-notation "rel_mono_wrt" (infixr "\<rightarrow>" 40)
+notation "rel_mono_wrt" (infixr \<open>\<rightarrow>\<close> 40)
 syntax
   "_rel_dep_mono_wrt_pred" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow> (_)\<close> [41, 41, 40] 40)
 end
