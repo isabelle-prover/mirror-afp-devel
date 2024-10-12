@@ -74,7 +74,7 @@ fun AOT_print_item_number (name:string) = case (AOT_get_item_number name)
 
 fun add_AOT_print_rule AOTsyntax raw_rules thy = let
   val rules = map (fn (r, s) => let
-    val head = Ast.head_of_rule (s,r)
+    val head = Ast.rule_index (s,r)
   in (head, fn ctxt => fn asts =>
     if Config.get ctxt print_AOT_syntax = AOTsyntax then 
       let
