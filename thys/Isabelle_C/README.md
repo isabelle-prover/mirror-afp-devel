@@ -25,18 +25,20 @@ text ‹ which should work out of the box.
 text ‹ The following C examples or entry-points of documentation can be executed:
 
 ▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/examples/C0.thy›
-▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/examples/C2.thy›
 ▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/examples/C1.thy›
+▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/examples/C2.thy›
+▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/examples/C3.thy›
+▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/examples/C4.thy›
 ▪ ▩‹isabelle jedit -d› 🗀‹.› 🗏‹C11-FrontEnd/C_Appendices.thy›
 ›
 
 text ‹
 ▪ The example 🗏‹C11-FrontEnd/examples/C0.thy› is basically used to
 demonstrate the faithfulness of the C11 parser implementation.
-▪ The example 🗏‹C11-FrontEnd/examples/C2.thy› shows common cases of C and
-C editing support in PIDE; it also contains annotation commands without any semantics.
 ▪ The example 🗏‹C11-FrontEnd/examples/C1.thy› is a show-case for markup
 generation and the use of bindings resulting from the static C environment.
+▪ The example 🗏‹C11-FrontEnd/examples/C2.thy› shows common cases of C and
+C editing support in PIDE; it also contains annotation commands without any semantics.
 ▪ The example 🗏‹C11-FrontEnd/C_Appendices.thy› shows the use of
 Isabelle/C documentation facilities.
 ›
