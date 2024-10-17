@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Group Law of Edwards Elliptic Curves - Archive of Formal Proofs</title>
-    <meta name="description" content="This article gives an elementary computational proof of the group law for Edwards elliptic curves. The associative law is expressed as a polynomial...">
+    <title>Wooley&#39;s Discrete Inequality - Archive of Formal Proofs</title>
+    <meta name="description" content="This is a formalisation of the proof of an inequality by Trevor D. Wooley attesting that when $\lambda &gt; 0$, $$\min_{r \in \mathbb{N}}(r &#43; \lambda/r) \leq...">
 
-  <meta property="og:title" content="Group Law of Edwards Elliptic Curves" />
+  <meta property="og:title" content="Wooley&#39;s Discrete Inequality" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Edwards_Elliptic_Curves_Group.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-02-16T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-02-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Wooley_Elementary_Discrete_Inequality.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-10-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-02T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Group Law of Edwards Elliptic Curves"/>
+<meta name="twitter:title" content="Wooley&#39;s Discrete Inequality"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -123,15 +123,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>G</span>roup <span class='first'>L</span>aw of <span class='first'>E</span>dwards <span class='first'>E</span>lliptic <span class='first'>C</span>urves
+    <span class='first'>W</span>ooley's <span class='first'>D</span>iscrete <span class='first'>I</span>nequality
     
   </h1>
   <div>
       <p>
-        <a href="../authors/raya">Rodrigo Raya</a> <a href="https://people.epfl.ch/rodrigo.raya">🌐</a>
+        <a href="../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> <a class="obfuscated" data="eyJob3N0IjpbImNhbSIsImFjIiwidWsiXSwidXNlciI6WyJhazIxMTAiXX0=">📧</a>
 
       </p>
-      <p class="date">February 16, 2023</p>
+      <p class="date">October 2, 2024</p>
   </div>
 </header>
       <div>
@@ -139,7 +139,10 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">This article gives an elementary computational proof of the group law for Edwards elliptic curves. The associative law is expressed as a polynomial identity over the integers that is directly checked by polynomial division. Unlike other proofs, no preliminaries such as intersection numbers, B́ezout’s theorem, projective geometry, divisors, or Riemann Roch are required.</div>
+    <div class="abstract mathjax_process">This is a formalisation of the proof of an inequality by Trevor D. Wooley attesting that when 
+$\lambda > 0$, $$\min_{r \in \mathbb{N}}(r + \lambda/r) \leq \sqrt{4 \lambda +1}$$
+with equality if and only if $\lambda = m(m-1)$ for some positive integer $m$.
+The source is the note <a href="https://www.math.purdue.edu/~twooley/publ/20230410discineq.pdf"> An Elementary Discrete Inequality</a> by T. D. Wooley.</div>
 
     <h3>License</h3>
     <div>
@@ -147,17 +150,16 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+          <li><a href="../topics/mathematics/number-theory">Mathematics/Number theory</a></li>
       </ul>
       <h3>Related publications</h3>
       <ul>
-        <li>Hales, T., & Raya, R. (2020). Formal Proof of the Group Law for Edwards Elliptic Curves. Automated Reasoning, 254–269. <a href="https://doi.org/10.1007/978-3-030-51054-1_15">https://doi.org/10.1007/978-3-030-51054-1_15</a>
-
+        <li><a href="https://www.math.purdue.edu/~twooley/publ/20230410discineq.pdf">T.D. Wooley, An Elementary Discrete Inequality</a>.
         </li>
       </ul>
-      <h3>Session Edwards_Elliptic_Curves_Group</h3>
+      <h3>Session Wooley_Elementary_Discrete_Inequality</h3>
       <ul>
-          <li><a href="../sessions/edwards_elliptic_curves_group/#Edwards_Elliptic_Curves_Group">Edwards_Elliptic_Curves_Group</a></li>
+          <li><a href="../sessions/wooley_elementary_discrete_inequality/#Wooley_Elementary_Discrete_Inequality">Wooley_Elementary_Discrete_Inequality</a></li>
       </ul>
 
     <div class="flex-wrap">
@@ -169,9 +171,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Edwards_Elliptic_Curves_Group/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Edwards_Elliptic_Curves_Group/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Edwards_Elliptic_Curves_Group/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wooley_Elementary_Discrete_Inequality/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wooley_Elementary_Discrete_Inequality/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Wooley_Elementary_Discrete_Inequality/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -180,14 +182,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Edwards_Elliptic_Curves_Group-AFP</p>
-        <pre id="copy-text">@article{Edwards_Elliptic_Curves_Group-AFP,
-  author  = {Rodrigo Raya},
-  title   = {Group Law of Edwards Elliptic Curves},
+        <p style="display:none;" id="bibtex-filename">Wooley_Elementary_Discrete_Inequality-AFP</p>
+        <pre id="copy-text">@article{Wooley_Elementary_Discrete_Inequality-AFP,
+  author  = {Angeliki Koutsoukou-Argyraki},
+  title   = {Wooley&#39;s Discrete Inequality},
   journal = {Archive of Formal Proofs},
-  month   = {February},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Edwards_Elliptic_Curves_Group.html},
+  month   = {October},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Wooley_Elementary_Discrete_Inequality.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -201,29 +203,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Wooley_Elementary_Discrete_Inequality-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-2024-05-26.tar.gz">
-                May 26, 2024
-              </a>
-              : Isabelle2024
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-2023-09-13.tar.gz">
-                Sep 13, 2023
-              </a>
-              : Isabelle2023
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-2023-03-01.tar.gz">
-                Mar 1, 2023
-              </a>
-              : Isabelle2022
-            </li>
-        </ul>
     </div>
   </div>
         

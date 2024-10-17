@@ -29,6 +29,12 @@
     <loc>/topics/</loc>
     <lastmod>2024-10-10T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/argyraki/</loc>
+    <lastmod>2024-10-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Wooley_Elementary_Discrete_Inequality.html</loc>
+    <lastmod>2024-10-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/cheung/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -940,9 +946,6 @@
   </url><url>
     <loc>/dependencies/relation_algebra/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/leek/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
@@ -7278,6 +7281,8 @@
     <loc>/sessions/with_type/</loc>
   </url><url>
     <loc>/sessions/wlog/</loc>
+  </url><url>
+    <loc>/sessions/wooley_elementary_discrete_inequality/</loc>
   </url><url>
     <loc>/sessions/woot_strong_eventual_consistency/</loc>
   </url><url>
