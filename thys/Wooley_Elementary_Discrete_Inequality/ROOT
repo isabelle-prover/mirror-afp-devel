@@ -1,0 +1,12 @@
+(* All sessions must be in chapter AFP *)
+chapter AFP
+
+session "Wooley_Elementary_Discrete_Inequality" = "HOL-Real_Asymp" +
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+  theories
+    Wooley_Elementary_Discrete_Inequality
+  document_files       
+    "root.bib"
+    "root.tex"
