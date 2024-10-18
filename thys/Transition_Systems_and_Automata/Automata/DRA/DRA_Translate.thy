@@ -8,8 +8,8 @@ begin
 
   (* TODO: this syntax has unnecessarily high inner binding strength, requiring extra parentheses
     the regular let syntax correctly uses inner binding strength 0: ("(2_ =/ _)" 10) *)
-  no_syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" (\<open>(2let _ =/ _)\<close> [1000, 13] 13)
-  syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" (\<open>(2let _ =/ _)\<close> 13)
+  no_syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" (\<open>(\<open>indent=2 notation=\<open>infix do let\<close>\<close>let _ =/ _)\<close> [1000, 13] 13)
+  syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" (\<open>(\<open>indent=2 notation=\<open>infix do let\<close>\<close>let _ =/ _)\<close> 13)
 
   section \<open>Image on Explicit Automata\<close>
 
