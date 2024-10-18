@@ -11,7 +11,7 @@ subsection\<open>Definition\<close>
 
 declare Let_def[simp]
 
-no_notation relcomp (infixr "O" 75)
+unbundle no relcomp_syntax
 
 abbreviation never :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where "never U \<equiv> list_all (\<lambda> a. \<not> U a)"
 

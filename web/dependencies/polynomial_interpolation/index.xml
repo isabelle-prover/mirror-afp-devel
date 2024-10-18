@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 14 Nov 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 13 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/polynomial_interpolation/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A simple proof that π is irrational</title>
+          <link>/entries/Pi_Irrational.html</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Pi_Irrational.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Two theorems about the geometry of the critical points of a complex polynomial</title>
           <link>/entries/Polynomial_Crit_Geometry.html</link>

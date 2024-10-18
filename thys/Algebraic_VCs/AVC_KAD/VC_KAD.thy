@@ -17,8 +17,7 @@ subsection\<open>Verification Component for Backward Reasoning\<close>
 text \<open>This component supports the verification of simple while programs
 in a partial correctness setting.\<close>
 
-no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
-no_notation Archimedean_Field.floor (\<open>\<lfloor>_\<rfloor>\<close>)
+unbundle no floor_ceiling_syntax
 
 notation p2r (\<open>\<lceil>_\<rceil>\<close>)
 notation r2p (\<open>\<lfloor>_\<rfloor>\<close>)

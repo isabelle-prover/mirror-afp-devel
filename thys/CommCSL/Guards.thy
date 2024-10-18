@@ -1,5 +1,8 @@
 subsection \<open>Consistency\<close>
 
+text \<open>In this file, we define several notions and prove many lemmas about guard states, which are useful
+to prove that the rules of the logic are sound.\<close>
+
 theory Guards
   imports StateModel CommCSL AbstractCommutativity
 begin
@@ -258,6 +261,7 @@ proof -
   then show ?thesis by blast
 qed
 
+text \<open>The following lemma is the reason why we require many assertions to be precise in the logic.\<close>
 lemma magic_lemma:
   assumes "Some x1 = Some a1 \<oplus> Some j1"
       and "Some x2 = Some a2 \<oplus> Some j2"

@@ -23,7 +23,7 @@ notation t (\<open>\<tt>\<tt>\<close>)
 hide_const t
 
 no_notation if_then_else (\<open>if _ then _ else _ fi\<close> [64,64,64] 63)
-        and HOL.If (\<open>(if (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
+        and HOL.If (\<open>(\<open>notation=\<open>mixfix if expression\<close>\<close>if (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
         and while (\<open>while _ do _ od\<close> [64,64] 63)
 
 context kat (* mostly by Victor Gomes, Georg Struth *)

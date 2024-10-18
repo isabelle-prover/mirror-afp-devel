@@ -398,7 +398,7 @@ text \<open>
   Interpretation of abstract context.
 \<close>
 
-primrec intp_actxt ("(1_\<langle>_;/_\<rangle>)"[999,0,0]100) where
+primrec intp_actxt (\<open>(1_\<langle>_;/_\<rangle>)\<close>[999,0,0]100) where
   "I\<langle>Hole;a\<rangle> = a"
 | "I\<langle>More f ls C rs;a\<rangle> = I f (ls @ I\<langle>C;a\<rangle> # rs)"
 

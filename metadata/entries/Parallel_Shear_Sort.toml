@@ -1,0 +1,35 @@
+title = "Parallel Shear Sort"
+date = 2024-09-17
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+<p>This entry provides a formalisation of <em>parallel shear sort</em>, a comparison-based sorting
+algorithm intended for highly parallel systems. It sorts $n$ elements in $O(\\log n)$ steps,
+each of which involves sorting $\\sqrt{n}$ independent lists of $\\sqrt{n}$ elements each.</p>
+<p>If these smaller sort operations are done in parallel with a conventional $O(n\\log n)$ sorting
+algorithm, this leads to an overall work of $O(n \\log^2(n))$ and a span of 
+$O(\\sqrt{n}\\log^2(n))$ -- a considerable improvement over conventional non-parallel sorting.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[authors.lammich]
+email = "lammich_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

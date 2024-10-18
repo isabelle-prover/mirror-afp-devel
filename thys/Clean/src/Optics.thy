@@ -37,6 +37,33 @@ definition "hd\<^sub>L = create\<^sub>L hd upd_hd"   (* works since no partial l
 
 definition "map_nth i = (\<lambda>f l. list_update l i (f (l ! i)))"
 
+
+find_theorems "list_update"
+
+
+lemma [simp]: "map_nth i f [] = []"
+  by(simp_all add: map_nth_def)
+
+lemma [simp]: "map_nth i f (a#R) = (case i of 0 \<Rightarrow> (f a) # R | Suc j \<Rightarrow> a # map_nth j f R)"
+  by(simp add: Nitpick.case_nat_unfold map_nth_def)
+
+lemma [simp]: "map_nth n (\<lambda>x. x) S = S"
+  by(induct S, simp_all add: map_nth_def)
+ 
+lemma [simp]: "length(map_nth n f S) = length S"
+  by(simp add: map_nth_def)
+
+lemma [simp]: "n < length S \<Longrightarrow> (map_nth n f S) ! n = f (S ! n)"
+  by (simp add: map_nth_def)
+
+lemma [simp]: "n < length S \<Longrightarrow> m < length S \<Longrightarrow> n\<noteq>m \<Longrightarrow> (map_nth m f S) ! n = S ! n"
+  by (simp add: map_nth_def)
+
+lemma [simp]: "n < length S \<Longrightarrow> (map_nth n f (map_nth n g S)) = (map_nth n (f o g) S)"
+  by (simp add: map_nth_def)
+
+(* and more *)
+
 lemma indep_list_lift : 
      "X \<bowtie> create\<^sub>L getv updv 
       \<Longrightarrow> (\<lambda>f \<sigma>. updv (\<lambda>_. f (getv \<sigma>)) \<sigma>) = updv 

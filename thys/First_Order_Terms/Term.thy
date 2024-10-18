@@ -131,7 +131,7 @@ type_synonym ('f, 'v) subst  = "('f, 'v, 'v) gsubst"
 abbreviation subst_apply_term :: "('f, 'v) term \<Rightarrow> ('f, 'v, 'w) gsubst \<Rightarrow> ('f, 'w) term"  (infixl \<open>\<cdot>\<close> 67)
   where "subst_apply_term \<equiv> eval_term Fun"
 
-definition eval_subst ("_\<lbrakk>_\<rbrakk>\<^sub>s _" [999,1,100]100) where
+definition eval_subst (\<open>_\<lbrakk>_\<rbrakk>\<^sub>s _\<close> [999,1,100]100) where
   "(I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>) \<equiv> \<lambda>x. I\<lbrakk>\<theta> x\<rbrakk>\<alpha>"
 
 lemma eval_subst: "I\<lbrakk>s\<cdot>\<theta>\<rbrakk>\<alpha> = I\<lbrakk>s\<rbrakk> I\<lbrakk>\<theta>\<rbrakk>\<^sub>s \<alpha>"

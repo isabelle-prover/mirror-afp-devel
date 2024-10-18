@@ -49,7 +49,35 @@ ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/keyword.ML\<close>\<close>
 Isar keyword classification.
 *)*)
 \<open>
-structure C_Keyword =
+signature C_KEYWORD =
+  sig
+    type spec = Keyword.spec
+    type entry = {files: string list, id: serial, kind: string, pos: Position.T, tags: string list}
+    datatype keywords = Keywords of {commands: entry Symtab.table, major: Scan.lexicon, minor: Scan.lexicon}
+    val add_keywords: ((string * Position.T) * spec) list -> keywords -> keywords
+    val add_keywords0: ((string * Position.T) * bool * spec) list -> keywords -> keywords
+    val add_keywords_minor: ((string * Position.T) * spec) list -> keywords -> keywords
+    val check_spec: Position.T -> spec -> entry
+    val command_category: Symtab.key list -> keywords -> Symtab.key -> bool
+    val command_files: keywords -> Symtab.key -> Path.T -> Path.T list
+    val command_kinds: string list
+    val command_markup: keywords -> Symtab.key -> Markup.T option
+    val dest_commands: keywords -> Symtab.key list
+    val empty_keywords: keywords
+    val empty_keywords': Scan.lexicon -> keywords
+    val is_command: keywords -> Symtab.key -> bool
+    val is_improper: keywords -> Symtab.key -> bool
+    val is_proof_asm: keywords -> Symtab.key -> bool
+    val is_theory_end: keywords -> Symtab.key -> bool
+    val lookup_command: keywords -> Symtab.key -> entry option
+    val major_keywords: keywords -> Scan.lexicon
+    val make_keywords: Scan.lexicon * Scan.lexicon * entry Symtab.table -> keywords
+    val map_keywords: (Scan.lexicon * Scan.lexicon * entry Symtab.table 
+                       -> Scan.lexicon * Scan.lexicon * entry Symtab.table) -> keywords -> keywords
+    val merge_keywords: keywords * keywords -> keywords
+    val minor_keywords: keywords -> Scan.lexicon
+  end
+structure C_Keyword:C_KEYWORD =
 struct
 
 (** keyword classification **)
@@ -76,12 +104,23 @@ type entry =
  {pos: Position.T,
   id: serial,
   kind: string,
+  files: string list,  (*extensions of embedded files*)
   tags: string list};
+
+fun check_spec pos ((kind, files), tags) : entry =
+  if not (member (op =) command_kinds kind) then
+    error ("Unknown annotation syntax keyword kind " ^ quote kind)
+  else if not (null files) andalso kind <> Keyword.thy_load then
+    error ("Illegal specification of files for " ^ quote kind)
+  else {pos = pos, id = serial (), kind = kind, files = files, tags = tags};
+
+type spec = Keyword.spec;
 
 fun check_spec pos ({kind, tags, ...}: spec) : entry =
   if not (member (op =) command_kinds kind) then
     error ("Unknown annotation syntax keyword kind " ^ quote kind)
-  else {pos = pos, id = serial (), kind = kind, tags = tags};
+  else {pos = pos, id = serial (), files = [], kind = kind, tags = tags};
+
 
 
 (** keyword tables **)
@@ -101,6 +140,7 @@ fun make_keywords (minor, major, commands) =
 
 fun map_keywords f (Keywords {minor, major, commands}) =
   make_keywords (f (minor, major, commands));
+
 
 
 (* build keywords *)
@@ -150,11 +190,26 @@ fun dest_commands (Keywords {commands, ...}) = Symtab.keys commands;
 fun lookup_command (Keywords {commands, ...}) = Symtab.lookup commands;
 
 fun command_markup keywords name =
-  lookup_command keywords name
-  |> Option.map (fn {pos, id, ...} =>
-      Position.make_entity_markup {def = false} id Markup.command_keywordN (name, pos));
+  let       (* PATCH: copied as such from Isabelle2020 *)
+       fun entity_properties_of def serial pos =
+           if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
+           else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
+
+    in
+       lookup_command keywords name
+       |> Option.map (fn {pos, id, ...} =>
+           Markup.properties (entity_properties_of false id pos)
+             (Markup.entity Markup.command_keywordN name))
+    end;
 
 
+fun command_files keywords name path =
+  (case lookup_command keywords name of
+    NONE => []
+  | SOME {kind, files, ...} =>
+      if kind <> Keyword.thy_load then []
+      else if null files then [path]
+      else map (fn ext => Path.ext ext path) files);
 
 
 (* command categories *)
@@ -200,26 +255,25 @@ text \<open> Notes:
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/token.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay
-    Analogous to:
+(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
 (*  Title:      Pure/Isar/token.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Outer token syntax for Isabelle/Isar.
-*)*)
+*)
 \<open>
 structure C_Token =
 struct
 
 (** tokens **)
 
-(* token kind *)
-
 fun equiv_kind kind kind' =
   (case (kind, kind') of
     (Token.Control _, Token.Control _) => true
   | (Token.Error _, Token.Error _) => true
   | _ => kind = kind');
+
+(* token kind *)
 
 val immediate_kinds' = fn Token.Command => 0
                         | Token.Keyword => 1
@@ -237,8 +291,8 @@ val immediate_kinds' = fn Token.Command => 0
 val delimited_kind =
   (fn Token.String => true
     | Token.Alt_String => true
-    | Token.Cartouche => true
     | Token.Control _ => true
+    | Token.Cartouche => true
     | Token.Comment _ => true
     | _ => false);
 
@@ -301,7 +355,7 @@ fun kind_of (Token (_, (k, _), _)) = k;
 fun is_kind k (Token (_, (k', _), _)) = equiv_kind k k';
 
 fun get_control tok =
-  (case kind_of tok of Token.Control control => SOME control | _ => NONE);
+  (case kind_of tok of Token.Control control => SOME control | _ => NONE); 
 
 val is_command = is_kind Token.Command;
 
@@ -409,8 +463,8 @@ val token_kind_markup =
   | Token.Type_Var => (Markup.tvar, "")
   | Token.String => (Markup.string, "")
   | Token.Alt_String => (Markup.alt_string, "")
-  | Token.Cartouche => (Markup.cartouche, "")
   | Token.Control _ => (Markup.cartouche, "")
+  | Token.Cartouche => (Markup.cartouche, "")
   | Token.Comment _ => (Markup.ML_comment, "")
   | Token.Error msg => (Markup.bad (), msg)
   | _ => (Markup.empty, "");
@@ -469,7 +523,11 @@ fun unparse' (Token ((source0, _), (kind, x), _)) =
     val source =
       \<comment> \<open> We are computing a reverse function of \<^ML>\<open>Symbol_Pos.implode_range\<close>
           taking into account consecutive \<^ML>\<open>Symbol.DEL\<close> symbols potentially appearing
-          at the beginning, or at the end of the string.\<close>
+          at the beginning, or at the end of the string.
+
+          As remark, \<^ML>\<open>Symbol_Pos.explode_deleted\<close>
+          will remove any potentially consecutive \<^ML>\<open>Symbol.DEL\<close> symbols.
+          This is why it is not used here.\<close>
       case Symbol.explode source0 of
         x :: xs =>
           if x = Symbol.DEL then
@@ -482,8 +540,8 @@ fun unparse' (Token ((source0, _), (kind, x), _)) =
     case kind of
       Token.String => Symbol_Pos.quote_string_qq source
     | Token.Alt_String => Symbol_Pos.quote_string_bq source
-    | Token.Cartouche => cartouche source
     | Token.Control control => Symbol_Pos.content (Antiquote.control_symbols control)
+    | Token.Cartouche => cartouche source
     | Token.Comment NONE => enclose "(*" "*)" source
     | Token.EOF => ""
     | _ => x
@@ -510,7 +568,7 @@ fun text_of tok =
 fun file_source (file: Token.file) =
   let
     val text = cat_lines (#lines file);
-    val end_pos = Position.symbol_explode text (#pos file);
+    val end_pos = fold Position.symbol (Symbol.explode text) (#pos file);
   in Input.source true text (Position.range (#pos file, end_pos)) end;
 
 fun get_files (Token (_, _, Value (SOME (Files files)))) = files
@@ -611,6 +669,22 @@ fun ident_or_symbolic "begin" = false
   | ident_or_symbolic ":" = true
   | ident_or_symbolic "::" = true
   | ident_or_symbolic s = Symbol_Pos.is_identifier s orelse is_symid s;
+
+
+(* scan verbatim text *)
+
+val scan_verb =
+  $$$ "*" --| Scan.ahead (~$$ "}") ||
+  Scan.one (fn (s, _) => s <> "*" andalso Symbol.not_eof s) >> single;
+
+val scan_verbatim =
+  Scan.ahead ($$ "{" -- $$ "*") |--
+    !!! "unclosed verbatim text"
+      ((Symbol_Pos.scan_pos --| $$ "{" --| $$ "*") --
+        (Scan.repeats scan_verb -- ($$ "*" |-- $$ "}" |-- Symbol_Pos.scan_pos)));
+
+val recover_verbatim =
+  $$$ "{" @@@ $$$ "*" @@@ Scan.repeats scan_verb;
 
 
 (* scan cartouche *)
@@ -719,7 +793,7 @@ fun explode keywords pos text =
 fun explode0 keywords = explode keywords Position.none;
 
 
-(* print names in parsable form *)
+(* print name in parsable form *)
 
 
 
@@ -733,6 +807,36 @@ fun explode0 keywords = explode keywords Position.none;
 type 'a parser = T list -> 'a * T list;
 type 'a context_parser = Context.generic * T list -> 'a * (Context.generic * T list);
 
+
+(* read body -- e.g. antiquotation source *)
+
+fun read_with_commands'0 keywords syms =
+  Source.of_list syms
+  |> make_source keywords {strict = false}
+  |> Source.filter (not o is_proper)
+  |> Source.exhaust
+
+fun read_with_commands' keywords scan syms =
+  Source.of_list syms
+  |> make_source keywords {strict = false}
+  |> Source.filter is_proper
+  |> Source.source
+       stopper
+       (Scan.recover
+         (Scan.bulk scan)
+         (fn msg =>
+           Scan.one (not o is_eof)
+           >> (fn tok => [C_Scan.Right
+                           let
+                             val msg = case is_error' tok of SOME msg0 => msg0 ^ " (" ^ msg ^ ")"
+                                                           | NONE => msg
+                           in ( msg
+                              , [((pos_of tok, Markup.bad ()), msg)]
+                              , tok)
+                           end])))
+  |> Source.exhaust;
+
+fun read_antiq' keywords scan = read_with_commands' keywords (scan >> C_Scan.Left);
 
 (* wrapped syntax *)
 
@@ -758,9 +862,8 @@ fun syntax' f =
           explode
             ((case kind of
                 Token.Keyword => Keyword.add_keywords [((x, Position.none), Keyword.no_spec)]
-              | Token.Command => Keyword.add_keywords [( (x, Position.none)
-                                                       , Keyword.command_spec
-                                                           (Keyword.thy_decl, []))]
+              | Token.Command => Keyword.add_keywords [( (x, Position.none), 
+                                                         Keyword.command_spec(Keyword.thy_decl, []))]
               | _ => I)
                Keyword.empty_keywords)
             pos1
@@ -785,15 +888,16 @@ type 'a c_parser = 'a C_Token.parser;
 type 'a c_context_parser = 'a C_Token.context_parser;
 \<close>
 
-(* parsers for C syntax. A partial copy is unfortunately necessary due to signature restrictions. *)
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/parse.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay
-    Analogous to:
-(*  Title:      Pure/Isar/parse.ML
+    parsers for C syntax. A partial copy is unfortunately necessary due to signature restrictions.
+ *)
+(*  based on:
+    Title:      Pure/Isar/parse.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Generic parsers for Isabelle/Isar outer syntax.
-*)*)
+*)
 \<open>
 signature C_PARSE =
 sig
@@ -828,8 +932,8 @@ sig
   val string: string parser
   val string_position: (string * Position.T) parser
   val alt_string: string parser
-  val cartouche: string parser
   val control: Antiquote.control parser
+  val cartouche: string parser
   val eof: string parser
   val command_name: string -> string parser
   val keyword_with: (string -> bool) -> string parser
@@ -864,9 +968,9 @@ sig
   val name_position: (string * Position.T) parser
   val binding: binding parser
   val embedded: string parser
-  val embedded_inner_syntax: string parser
   val embedded_input: Input.source parser
   val embedded_position: (string * Position.T) parser
+  val embedded_inner_syntax: string parser
   val path_input: Input.source parser
   val path: string parser
   val path_binding: (string * Position.T) parser
@@ -1000,8 +1104,8 @@ val number = kind Token.Nat;
 val float_number = kind Token.Float;
 val string = kind Token.String;
 val alt_string = kind Token.Alt_String;
-val cartouche = kind Token.Cartouche;
 val control = token (kind Token.control_kind) >> (the o Token.get_control);
+val cartouche = kind Token.Cartouche;
 val eof = kind Token.EOF;
 
 fun command_name x =
@@ -1084,10 +1188,10 @@ val embedded =
     (cartouche || string || short_ident || long_ident || sym_ident ||
       term_var || type_ident || type_var || number);
 
-val embedded_inner_syntax = inner_syntax embedded;
 val embedded_input = input embedded;
 val embedded_position = embedded_input >> Input.source_content;
 
+val embedded_inner_syntax = inner_syntax embedded;
 val path_input = group (fn () => "file name/path specification") embedded_input;
 val path = path_input >> Input.string_of;
 val path_binding = group (fn () => "path binding (strict file name)") (position embedded);
@@ -1204,15 +1308,15 @@ val ML_source = input (group (fn () => "ML source") embedded);
 val document_source = input (group (fn () => "document source") embedded);
 
 val document_marker =
-  group (fn () => "document marker")
-    (RESET_VALUE (Scan.one Token.is_document_marker >> Token.input_of));
+        group (fn () => "document marker")
+        (RESET_VALUE (Scan.one Token.is_document_marker >> Token.input_of));
 
 
 (* terms *)
 
 val const = group (fn () => "constant") (inner_syntax embedded);
-val term = group (fn () => "term") (inner_syntax embedded);
-val prop = group (fn () => "proposition") (inner_syntax embedded);
+val term = group (fn ()  => "term") (inner_syntax embedded);
+val prop = group (fn ()  => "proposition") (inner_syntax embedded);
 
 val literal_fact = inner_syntax (group (fn () => "literal fact") (alt_string || cartouche));
 
@@ -1241,7 +1345,7 @@ local
 
 val argument_kinds =
  [Token.Ident, Token.Long_Ident, Token.Sym_Ident, Token.Var, Token.Type_Ident, Token.Type_Var,
-  Token.Nat, Token.Float, Token.String, Token.Alt_String, Token.Cartouche];
+  Token.Nat, Token.Float, Token.String, Token.Alt_String, Token.Cartouche, Token.Cartouche];
 
 fun arguments is_symid =
   let
@@ -1311,7 +1415,6 @@ val embedded_ml =
 
 
 (* read embedded source, e.g. for antiquotations *)
-
 
 
 (** C basic parsers **)
@@ -1407,5 +1510,6 @@ val get_keywords' = get_keywords o Proof_Context.theory_of;
 
 end
 \<close>
+
 
 end

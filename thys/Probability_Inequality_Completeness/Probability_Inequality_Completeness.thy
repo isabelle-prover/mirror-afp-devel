@@ -5,7 +5,7 @@ theory Probability_Inequality_Completeness
     "Suppes_Theorem.Probability_Logic"
 begin
 
-no_notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle no funcset_syntax
 
 text \<open> We introduce a novel logical calculus and prove completeness for
        probability inequalities. This is a vast generalization of \<^emph>\<open>Suppes' Theorem\<close>
@@ -8109,6 +8109,6 @@ no_notation disjunction_MaxSAT_optimal_witness (\<open>\<WW>\<^sub>\<squnion>\<c
 no_notation implication_MaxSAT_optimal_witness (\<open>\<WW>\<^sub>\<rightarrow>\<close>)
 no_notation MaxSAT_witness (\<open>\<UU>\<close>)
 
-notation FuncSet.funcset (infixr \<open>\<rightarrow>\<close> 60)
+unbundle funcset_syntax
 
 end

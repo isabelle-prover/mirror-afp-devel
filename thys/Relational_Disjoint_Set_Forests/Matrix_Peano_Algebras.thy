@@ -21,9 +21,7 @@ imports Aggregation_Algebras.M_Choose_Component Relational_Disjoint_Set_Forests.
 
 begin
 
-no_notation
-  uminus (\<open>- _\<close> [81] 80) and
-  minus_class.minus (infixl \<open>-\<close> 65)
+no_notation minus_class.minus (infixl \<open>-\<close> 65)
 
 definition Z_matrix :: "('a::enum,'b::{bot,top}) square" (\<open>mZero\<close>) where "mZero = (\<lambda>(i,j) . if i = hd enum_class.enum then top else bot)"
 definition S_matrix :: "('a::enum,'b::{bot,top}) square" (\<open>msuccmod\<close>) where "msuccmod = (\<lambda>(i,j) . let e = (enum_class.enum :: 'a list) in if (\<exists>k . Suc k<length e \<and> i = e ! k \<and> j = e ! Suc k) \<or> (i = e ! minus_class.minus (length e) 1 \<and> j = hd e) then top else bot)"

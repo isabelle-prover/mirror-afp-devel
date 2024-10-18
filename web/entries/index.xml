@@ -11,8 +11,57 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formally Verified Suffix Array Construction</title>
+          <link>/entries/SuffixArray.html</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/SuffixArray.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Parallel Shear Sort</title>
+          <link>/entries/Parallel_Shear_Sort.html</link>
+          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Parallel_Shear_Sort.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Abstract Substitution</title>
+          <link>/entries/Abstract_Substitution.html</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Abstract_Substitution.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>NREST: Nondeterministc RESult monad with Time</title>
+          <link>/entries/NREST.html</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/NREST.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A simple proof that π is irrational</title>
+          <link>/entries/Pi_Irrational.html</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Pi_Irrational.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concrete bounds for Chebyshev’s prime counting functions</title>
+          <link>/entries/Chebyshev_Prime_Bounds.html</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Chebyshev_Prime_Bounds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
+          <link>/entries/Randomized_Closest_Pair.html</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Randomized_Closest_Pair.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>An Exponential Improvement for Diagonal Ramsey</title>
           <link>/entries/Diagonal_Ramsey.html</link>
@@ -25,6 +74,20 @@
           <link>/entries/IMP_Noninterference_Extension.html</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/entries/IMP_Noninterference_Extension.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Without Loss of Generality</title>
+          <link>/entries/Wlog.html</link>
+          <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Wlog.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>With-Type – Poor man&#39;s dependent types</title>
+          <link>/entries/With_Type.html</link>
+          <pubDate>Thu, 29 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/With_Type.html</guid>
           <description></description>
         </item>
         <item>

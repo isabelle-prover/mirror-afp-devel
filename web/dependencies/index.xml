@@ -11,8 +11,106 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Automatic_Refinement</title>
+          <link>/dependencies/automatic_refinement/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/automatic_refinement/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Case_Labeling</title>
+          <link>/dependencies/case_labeling/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/case_labeling/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Monadic</title>
+          <link>/dependencies/refine_monadic/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_monadic/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial_Interpolation</title>
+          <link>/dependencies/polynomial_interpolation/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomial_interpolation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Prime_Distribution_Elementary</title>
+          <link>/dependencies/prime_distribution_elementary/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_distribution_elementary/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Prime_Number_Theorem</title>
+          <link>/dependencies/prime_number_theorem/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/prime_number_theorem/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Stirling_Formula</title>
+          <link>/dependencies/stirling_formula/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/stirling_formula/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Zeta_Function</title>
+          <link>/dependencies/zeta_function/</link>
+          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/zeta_function/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Approximate_Model_Counting</title>
+          <link>/dependencies/approximate_model_counting/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/approximate_model_counting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Closest_Pair_Points</title>
+          <link>/dependencies/closest_pair_points/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/closest_pair_points/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Distributed_Distinct_Elements</title>
+          <link>/dependencies/distributed_distinct_elements/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/distributed_distinct_elements/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Karatsuba</title>
+          <link>/dependencies/karatsuba/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/karatsuba/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Root_Balanced_Tree</title>
+          <link>/dependencies/root_balanced_tree/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/root_balanced_tree/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Ramsey_Bounds</title>
           <link>/dependencies/ramsey_bounds/</link>
@@ -21,10 +119,10 @@
           <description></description>
         </item>
         <item>
-          <title>Stirling_Formula</title>
-          <link>/dependencies/stirling_formula/</link>
-          <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/stirling_formula/</guid>
+          <title>Mersenne_Primes</title>
+          <link>/dependencies/mersenne_primes/</link>
+          <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/mersenne_primes/</guid>
           <description></description>
         </item>
         <item>
@@ -182,13 +280,6 @@
           <description></description>
         </item>
         <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>LP_Duality</title>
           <link>/dependencies/lp_duality/</link>
           <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
@@ -231,24 +322,10 @@
           <description></description>
         </item>
         <item>
-          <title>Karatsuba</title>
-          <link>/dependencies/karatsuba/</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/karatsuba/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Number_Theoretic_Transform</title>
           <link>/dependencies/number_theoretic_transform/</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/number_theoretic_transform/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Root_Balanced_Tree</title>
-          <link>/dependencies/root_balanced_tree/</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/root_balanced_tree/</guid>
           <description></description>
         </item>
         <item>
@@ -263,13 +340,6 @@
           <link>/dependencies/word_lib/</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/word_lib/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Prime_Number_Theorem</title>
-          <link>/dependencies/prime_number_theorem/</link>
-          <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/prime_number_theorem/</guid>
           <description></description>
         </item>
         <item>
@@ -364,13 +434,6 @@
           <description></description>
         </item>
         <item>
-          <title>Distributed_Distinct_Elements</title>
-          <link>/dependencies/distributed_distinct_elements/</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/distributed_distinct_elements/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Pell</title>
           <link>/dependencies/pell/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
@@ -382,13 +445,6 @@
           <link>/dependencies/polynomial_factorization/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/polynomial_factorization/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Zeta_Function</title>
-          <link>/dependencies/zeta_function/</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/zeta_function/</guid>
           <description></description>
         </item>
         <item>
@@ -508,13 +564,6 @@
           <link>/dependencies/linear_recurrences/</link>
           <pubDate>Wed, 15 Nov 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/linear_recurrences/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polynomial_Interpolation</title>
-          <link>/dependencies/polynomial_interpolation/</link>
-          <pubDate>Tue, 14 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomial_interpolation/</guid>
           <description></description>
         </item>
         <item>
@@ -1148,13 +1197,6 @@
           <description></description>
         </item>
         <item>
-          <title>Automatic_Refinement</title>
-          <link>/dependencies/automatic_refinement/</link>
-          <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/automatic_refinement/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Hermite_Lindemann</title>
           <link>/dependencies/hermite_lindemann/</link>
           <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
@@ -1519,13 +1561,6 @@
           <description></description>
         </item>
         <item>
-          <title>Prime_Distribution_Elementary</title>
-          <link>/dependencies/prime_distribution_elementary/</link>
-          <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/prime_distribution_elementary/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>LTL</title>
           <link>/dependencies/ltl/</link>
           <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
@@ -1698,13 +1733,6 @@
           <link>/dependencies/matroids/</link>
           <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
           <guid>/dependencies/matroids/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Refine_Monadic</title>
-          <link>/dependencies/refine_monadic/</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/dependencies/refine_monadic/</guid>
           <description></description>
         </item>
         <item>
@@ -2065,6 +2093,13 @@
           <description></description>
         </item>
         <item>
+          <title>Difference_Bound_Matrices</title>
+          <link>/dependencies/difference_bound_matrices/</link>
+          <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/dependencies/difference_bound_matrices/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Boolean_Expression_Checkers</title>
           <link>/dependencies/boolean_expression_checkers/</link>
           <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
@@ -2090,13 +2125,6 @@
           <link>/dependencies/sqrt_babylonian/</link>
           <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
           <guid>/dependencies/sqrt_babylonian/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Case_Labeling</title>
-          <link>/dependencies/case_labeling/</link>
-          <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
-          <guid>/dependencies/case_labeling/</guid>
           <description></description>
         </item>
         <item>

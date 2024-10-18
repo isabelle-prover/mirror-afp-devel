@@ -96,7 +96,7 @@ qed
 
 text \<open>Term contexts are abstract contexts in the term algebra.\<close>
 
-abbreviation Context ("(2\<C>'(_,/_'))" [1,1]50) where
+abbreviation Context (\<open>(2\<C>'(_,/_'))\<close> [1,1]50) where
   "\<C>(F,V) \<equiv> aContext F \<T>(F,V)"
 
 lemmas hastype_context_apply = term.intp_ctxt_hastype

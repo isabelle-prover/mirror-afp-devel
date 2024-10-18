@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter \<open>A Resume on Isabelle/C: Commands, Control Attributes and Programming Infrastructure\<close>
+chapter \<open>Annexes\<close>
 
 theory C_Appendices
   imports "../examples/C2"
@@ -113,7 +113,7 @@ fun entity check markup binding index =
           if Context_Position.is_reported ctxt pos then ignore (check ctxt (name, pos)) else ();
         val latex =
           idx ^
-          (Latex.output_ name
+          (Latex.output_  name
             |> (if markup = "" then I else enclose ("\\" ^ markup ^ "{") "}")
             |> hyper o enclose "\\mbox{\\isa{" "}}");
       in Latex.string latex end);
@@ -138,9 +138,8 @@ end;
 
 section \<open>Syntax Commands for Isabelle/C\<close>
 
-subsection \<open>Toplevel Commands and Control Attributes\<close>
-
-(* @{attribute_def C\<^sub>e\<^sub>n\<^sub>v\<^sub>0} cases LaTeX error *)
+subsection \<open>Outer Classical Commands\<close>
+(* @{attribute_def C\<^sub>e\<^sub>n\<^sub>v\<^sub>0} or @{attribute_def C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0} cause LaTeX crashs, therefore: *)
 text \<open>
   \begin{matharray}{rcl}
     @{command_def "C_file"} & : & \<open>local_theory \<rightarrow> local_theory\<close> \\
@@ -154,8 +153,8 @@ text \<open>
     @{attribute_def C_lexer_trace} & : & \<open>attribute\<close> & default \<open>false\<close> \\
     @{attribute_def C_parser_trace} & : & \<open>attribute\<close> & default \<open>false\<close> \\
     @{attribute_def C_ML_verbose} & : & \<open>attribute\<close> & default \<open>true\<close> \\
-    \<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close> & : & \<open>attribute\<close> & default \<open>empty\<close> \\
-    \<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> & : & \<open>attribute\<close> & default \<open>translation_unit\<close> \\
+    \<^theory_text>\<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close>  & : & \<open>attribute\<close> & default \<open>empty\<close> \\
+    \<^theory_text>\<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> & : & \<open>attribute\<close> & default \<open>translation_unit\<close> \\
   \end{tabular}
 
   \<^rail>\<open>
@@ -171,9 +170,9 @@ text \<open>
   \<^descr> \<^theory_text>\<open>C_file name\<close> reads the given C file, and let any attached
   semantic back-ends to proceed for further subsequent evaluation. Top-level C bindings are stored
   within the (global or local) theory context; the initial environment is set by default to be an
-  empty one, or the one returned by a previous \<^theory_text>\<open>C_file\<close> (depending on attribute
-  \<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close>). The entry-point of the grammar taken as initial starting point of the parser
-  is read from attribute \<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> (see
+  empty one, or the one returned by a previous \<^theory_text>\<open>C_file\<close> (depending on
+  \<^theory_text>\<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close>). The entry-point of the grammar taken as initial starting parser
+  is read from \<^theory_text>\<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> (see
   \<^url>\<open>https://www.haskell.org/happy/doc/html/sec-directives.html#sec-parser-name\<close>).
   Multiple \<^theory_text>\<open>C_file\<close> commands may be used to build larger C projects if
   they are all written in a single theory file (existing parent theories are ignored, and not
@@ -207,7 +206,7 @@ text \<open>
     \<^item> and any ML antiquotations in \<open>code\<close> are not analyzed by
     \<^theory_text>\<open>generate_file\<close> (in contrast with its default behavior). \<close>
 
-(* again,  @{attribute C\<^sub>e\<^sub>n\<^sub>v\<^sub>0}  and  @{attribute C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0} cause LaTeX errors... *)
+(* @{attribute C\<^sub>e\<^sub>n\<^sub>v\<^sub>0} or @{attribute C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0} cause LaTeX crashs, therefore: *)
 text \<open>
 
   \<^descr> @{attribute C_lexer_trace} indicates whether the list of C
@@ -223,20 +222,16 @@ text \<open>
   \<^theory_text>\<open>ML\<close> commands are acting similarly as
   their default verbose configuration in top-level.
 
-  \<^descr> \<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close> makes the start of a C
+  \<^descr> \<^theory_text>\<open>C\<^sub>e\<^sub>n\<^sub>v\<^sub>0\<close> makes the start of a C
   command (e.g., \<^theory_text>\<open>C_file\<close>,
   \<^theory_text>\<open>C\<close>) initialized with the environment of
   the previous C command if existing.
 
-  \<^descr> \<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> sets the root syntactic category in which the parser starts.
-  C commands (e.g., \<^theory_text>\<open>C_file\<close>, \<^theory_text>\<open>C\<close>). Possible  values are:
-      \<^descr>  \<open>"expression"\<close>, 
-      \<^descr>  \<open>"statement"\<close>,
-      \<^descr>  \<open>"external_declaration"\<close> and 
-      \<^descr>  \<open>"translation_unit"\<close> (the default)
+  \<^descr> \<^theory_text>\<open>C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0\<close> sets which parsing function will be used to parse the next
+  C commands (e.g., \<^theory_text>\<open>C_file\<close>, \<^theory_text>\<open>C\<close>).
 \<close>
 
-subsection \<open>Predefined Annotation Commands inside the C context (C Annotation commands)\<close>
+subsection \<open>Inner Annotation Commands\<close>
 
 text \<open>
   \<^rail>\<open>
@@ -308,7 +303,9 @@ text \<open>
 \<close>
 
 subsection \<open>Inner Directive Commands\<close>
-
+(*<*)
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]  \<comment> \<open>the following text-antiquotations C must be in toplevel.\<close>
+(*>*)
 text \<open>
   \<^descr> Among the directives provided as predefined in Isabelle/C, we currently have:
   \<^C>\<open>#define _\<close> and \<^C>\<open>#undef _\<close>. In particular, for the case of
@@ -361,8 +358,7 @@ comments, and certain proof-solving-command combinations are also not yet implem
 registration of commands to retrieve some more or less native user-experience remains possible
 though. Generally, the kind of content one can write in C comments should be arbitrary. The
 exhaustive list of Isabelle commands is provided in the accompanying above archive, for example in
-\<^dir>\<open>$ISABELLE_HOME/src/Doc/Isar_Ref\<close> or
-\<^url>\<open>https://isabelle.in.tum.de/doc/isar-ref.pdf\<close>.
+\<^dir>\<open>$ISABELLE_HOME/src/Doc/Isar_Ref\<close> or \<^doc>\<open>isar-ref\<close>.
 
 \<^item> Instead of starting from scratch, any existing C files can also be opened with Isabelle/C,
 it suffices to replace:
@@ -391,7 +387,7 @@ file-system in the left window. Selecting and opening a generated file in the la
 display it in a new buffer, which gives the possibility to export this file via ``\<open>File
 \<rightarrow> Save As\<dots>\<close>'' into the real file-system. \<close>
 
-section \<open>Case Study: Mapping on the Parsed AST via C99 ASTs\<close>
+section \<open>Case Study: Mapping on the Parsed AST\<close>
 
 text \<open> In this section, we give a concrete example of a situation where one is interested to
 do some automated transformations on the parsed AST, such as changing the type of every encountered
@@ -508,7 +504,7 @@ subtree \<open>T2\<close>, it is useful to zoom on the different parsing evaluat
 as make precise when the evaluation of semantic back-ends are starting.
 
 \<^enum> Whereas annotations in Isabelle/C code have the potential of carrying arbitrary ML code (as
-in \<^theory>\<open>Isabelle_C.C2\<close>), the moment when they are effectively evaluated
+in theory\<open>Isabelle_C_examples.C2\<close>), the moment when they are effectively evaluated
 will not be discussed here, because to closely follow the semantics of the language in embedding (so
 C), we suppose comments --- comprising annotations --- may not affect any parsed tokens living
 outside comments. So no matter when annotations are scheduled to be future evaluated in Isabelle/C,
@@ -601,8 +597,9 @@ conversion function, locate where \<open>T1\<close> is pattern-matched by the co
 and generate \<open>T2\<close> instead.
 
 As example, the conversion function \<^ML>\<open>C_Ast.main\<close> is particularly used to connect
-the C11 front-end to the entry-point of AutoCorres in
-\<^verbatim>\<open>l4v/src/tools/c-parser/StrictCParser.ML\<close>.
+the C11 front-end to the entry-point of AutoCorres in the
+\<open>l4v/src/tools/c-parser/StrictCParser.ML\<close> (this exists only in the Isabelle/C/Bundle
+\<^url>\<open>https://zenodo.org/records/6827097\<close> under Isabelle21-1).
 
 \<^item> \<^emph>\<open>At semantic back-ends execution time.\<close> The above points were dealing
 with the cases where modification actions were all occurring before getting a final
@@ -627,68 +624,11 @@ one can either:
 \<close>
 
 text \<open> More generally, to better inspect the list of rule code really executed when a C code
-is parsed, it might be helpful to proceed as in \<^theory>\<open>Isabelle_C.C2\<close>, by activating
+is parsed, it might be helpful to proceed as in theory\<open>Isabelle_C_examples.C2\<close>, by activating
 \<^theory_text>\<open>declare[[C_parser_trace]]\<close>. Then, the output window will display the
 sequence of Shift Reduce actions associated to the \<^theory_text>\<open>C\<close> command of
 interest.
 \<close>
-
-text\<open>\<^bold>\<open>NOTE\<close> :the C99 library is part of the configuration with AutoCorres, which is
-currently only available for Isabelle2019.\<close>
-
-section \<open>Case Study: Mapping on the Parsed AST via the \<^ML_structure>\<open>C11_Ast_Lib\<close>\<close>
-
-ML\<open>open C11_Ast_Lib\<close>
-text\<open>A simpler alternative for connecting Isabelle/C to a semantic backend is the use of the
-\<^ML_structure>\<open>C11_Ast_Lib\<close>, an API for the C11 abstract syntax. Among a number of utilities, 
-it provides a family of iterators (or: hylomorphisms, generalized fold operators, or whatever
-terminology you prefer). There is a fold-operator for each C11 Ast-category :
-\<^enum> \<^ML>\<open>fold_cArraySize: 'a -> (node_content->'a->'b->'b) -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>fold_cCompoundBlockItem: (node_content->'a->'b->'b) -> 'a C_Ast.cCompoundBlockItem->'b->'b\<close>
-\<^enum> \<^ML>\<open>fold_cArraySize: 'a -> (node_content->'a->'b->'b) -> 'a C_Ast.cArraySize -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>fold_cDeclaration: (node_content->'a->'b->'b) -> 'a C_Ast.cDeclaration -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>fold_cExpression: (node_content->'a->'b->'b) -> 'a C_Ast.cExpression -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>fold_cStatement: (node_content->'a->'b->'b)  -> 'a C_Ast.cStatement -> 'b -> 'b\<close>
-\<^enum> \<^ML>\<open>fold_cExternalDeclaration: (node_content->'a->'b->'b) -> 'a C_Ast.cExternalDeclaration->'b->'b\<close>
-\<^enum> \<^ML>\<open>fold_cTranslationUnit: (node_content->'a->'b->'b) -> 'a C_Ast.cTranslationUnit -> 'b -> 'b\<close>
-\<^enum> etc.
-\<close>
-text\<open>Here, \<^ML_type>\<open>node_content\<close>  is a data-structure providing untyped and uniform 
-information on which rule has been applied, and what kind of particular decoration appears in the
-C11-Ast. \<close>
-
-text\<open> This allows for a simple programming of queries like "get the list of identifiers" 
-directly on the C11-Ast. Moreover, it is pretty straight-forward to program a compiler to 
-\<open>\<lambda>\<close>-terms for a specific semantic interpretation in Isabelle/HOL. A simple example is here:\<close>
-
-text\<open>
-@{theory_text [display]
-\<open>declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
- C\<open>a + b * c - a / b\<close>
- ML\<open>val ast_expr = @{C11_CExpr}\<close>\<close>}
-
-@{verbatim [display]\<open>
-fun selectIdent0Binary (a as { tag, sub_tag, args }:C11_Ast_Lib.node_content) 
-                       (b:  C_Ast.nodeInfo ) 
-                       (c : term list)=  
-    case tag of
-      "Ident0" => (node_content_2_free a)::c
-     |"CBinary0" => (case (Protocol_Message.clean_output sub_tag, c) of 
-                      ("CAddOp0",b::a::R) => (Const("Groups.plus_class.plus",dummyT) $ a $ b :: R)
-                    | ("CMulOp0",b::a::R) => (Const("Groups.times_class.times",dummyT) $ a $ b :: R)
-                    | ("CDivOp0",b::a::R) => (Const("Rings.divide_class.divide",dummyT) $ a $ b :: R)
-                    | ("CSubOp0",b::a::R) => (Const("Groups.minus_class.minus",dummyT) $ a $ b :: R)
-                    | _ => (writeln ("sub_tag all " ^sub_tag^" :>> "^ @{make_string} c);c ))
-     | _ => c;
-
-
-val S =  (C11_Ast_Lib.fold_cExpression selectIdent0Binary ast_expr []);
-(* gives the (untyped) equivalent of : *)
-val S' = @{term "a + b * c - a / b"};
-\<close>}
-\<close>
-
-text\<open>This snippet is drawn from the C11-Example shown in Appendix III.\<close>
 
 section \<open>Known Limitations, Troubleshooting\<close>
 subsection \<open>The Document Model of the Isabelle/PIDE (applying since at least Isabelle 2019)\<close>
@@ -857,10 +797,10 @@ make the error disappear at the position the error is indicated can be detailed 
   contains \<^C>\<open>#define i int\<close>, as the former directive has been left for semantic
   back-end treatment. One way of solving this would be to modify the C code in input for it to be
   already preprocessed (without directives, for example the C example of
-  \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/TestSEL4.thy\<close> is already provided as
+  \<open>C11-BackEnds/AutoCorres_wrapper/examples/TestSEL4.thy\<close> (Zenodo Bundle only) is already provided as
   preprocessed). Another way would be adding a specific new semantic back-end implementing the
   automation of the preprocessing task (as done in
-  \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_linear_CCT.thy\<close>, where the
+  \<open>C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_linear_CCT.thy\<close> (Zenodo Bundle only), where the
   back-end explicitly makes a call to \<open>cpp\<close> at run-time).
 
   \<^item> Ultimately, modifying the grammar with new rules cancelling the exception would only work
@@ -871,9 +811,9 @@ text \<open> In terms of parsing correctness, Isabelle/C provides at least two d
 \<^item> a parser limited to C99/C11 code provided in \<^dir>\<open>../../C11-FrontEnd\<close> that can
 parse certain liberal extensions out of the C
 standard~\<^footnote>\<open>\<^url>\<open>http://hackage.haskell.org/package/language-c\<close>\<close>;
-\<^item> and another parser accepting C99/C11/C18 code in \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/tree/C/C18-FrontEnd\<close> that
+\<^item> and another parser accepting C99/C11/C18 code in \<open>C18-FrontEnd\<close> (Zenodo Bundle only) that
 is close to the C standard while focusing on resolving ambiguities of the
-standard~\<^footnote>\<open>\<^url>\<open>https://github.com/jhjourdan/C11parser\<close>\<close>~\<^cite>\<open>"DBLP:journals/toplas/JourdanP17"\<close>. \<close>
+standard~\<^footnote>\<open>\<^url>\<open>https://github.com/jhjourdan/C11parser\<close>\<close>~\cite{DBLP:journals/toplas/JourdanP17}. \<close>
 
 text \<open> Note that the two parsers are not accepting/rejecting the same range of arbitrary C
 code. We have actually already encountered situations where an error is raised by one parser, while

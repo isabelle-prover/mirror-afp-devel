@@ -12,8 +12,7 @@ begin
 
 \<comment> \<open>Remove notation that collides with the notation we use\<close>
 no_notation Order.top (\<open>\<top>\<index>\<close>)
-no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
-unbundle no vec_syntax and no inner_syntax
+unbundle no vec_syntax and no inner_syntax and no m_inv_syntax
 
 \<comment> \<open>Import notation from Bounded Operator and Jordan Normal Form libraries\<close>
 unbundle cblinfun_syntax and jnf_syntax

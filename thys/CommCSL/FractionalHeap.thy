@@ -1,11 +1,14 @@
 subsection \<open>Permission Heaps\<close>
 
+text \<open>In this file, we define permission heaps, (partial) addition between them, and prove useful lemmas.\<close>
+
 theory FractionalHeap
   imports Main PosRat PartialMap
 begin
 
 type_synonym ('l, 'v) fract_heap = "'l \<rightharpoonup> prat \<times> 'v"
 
+text \<open>Because fractional permissions are at most 1, two permission amounts are compatible if they sum to at most 1.\<close>
 definition compatible_fractions :: "('l, 'v) fract_heap \<Rightarrow> ('l, 'v) fract_heap \<Rightarrow> bool" where
   "compatible_fractions h h' \<longleftrightarrow>
   (\<forall>l p p'. h l = Some p \<and> h' l = Some p' \<longrightarrow> pgte pwrite (padd (fst p) (fst p')))"
@@ -80,7 +83,7 @@ proof (rule compatible_fract_heapsI)
 qed
 
 
-text \<open>The following definition only makes sense if h and h' are compatible\<close>
+text \<open>The following definition of the sum of two permission heaps only makes sense if h and h' are compatible\<close>
 
 definition add_fh :: "('l, 'v) fract_heap \<Rightarrow> ('l, 'v) fract_heap \<Rightarrow> ('l, 'v) fract_heap" where
   "add_fh h h' l = fadd_options (h l) (h' l)"
@@ -97,6 +100,7 @@ fun apply_opt where
   "apply_opt f None = None"
 | "apply_opt f (Some x) = Some (f x)"
 
+text \<open>This function maps a permission heap to a normal partial heap (without permissions).\<close>
 definition normalize :: "('l, 'v) fract_heap \<Rightarrow> ('l \<rightharpoonup> 'v)" where
   "normalize h l = apply_opt snd (h l)"
 
@@ -177,6 +181,7 @@ proof
     by metis
 qed
 
+text \<open>Addition of permission heaps is associative.\<close>
 lemma add_fh_asso:
   "add_fh (add_fh a b) c = add_fh a (add_fh b c)"
 proof (rule ext)

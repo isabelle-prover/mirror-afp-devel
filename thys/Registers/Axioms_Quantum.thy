@@ -37,7 +37,7 @@ begin
 
 
 unbundle cblinfun_syntax
-no_notation m_inv (\<open>inv\<index> _\<close> [81] 80)
+unbundle no m_inv_syntax
 
 type_synonym 'a update = \<open>('a ell2, 'a ell2) cblinfun\<close>
 

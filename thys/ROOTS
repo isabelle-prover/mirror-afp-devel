@@ -11,6 +11,7 @@ Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
 Abstract_Soundness
+Abstract_Substitution
 Ackermanns_not_PR
 Actuarial_Mathematics
 Adaptive_State_Counting
@@ -110,6 +111,7 @@ Certification_Monads
 Ceva
 Chandy_Lamport
 Chebyshev_Polynomials
+Chebyshev_Prime_Bounds
 Chord_Segments
 Circus
 Clean
@@ -530,6 +532,7 @@ Noninterference_Inductive_Unwinding
 Noninterference_Ipurge_Unwinding
 Noninterference_Sequential_Composition
 NormByEval
+NREST
 Nullstellensatz
 Number_Theoretic_Transform
 Octonions
@@ -558,6 +561,7 @@ Padic_Field
 Padic_Ints
 Pairing_Heap
 Paraconsistency
+Parallel_Shear_Sort
 Parity_Game
 Partial_Function_MR
 Partial_Order_Reduction
@@ -570,6 +574,7 @@ Perron_Frobenius
 Physical_Quantities
 Picks_Theorem
 Pi_Calculus
+Pi_Irrational
 Pi_Transcendental
 Planarity_Certificates
 Pluennecke_Ruzsa_Inequality
@@ -637,6 +642,7 @@ Random_BSTs
 Random_Graph_Subgraph_Threshold
 Randomised_BSTs
 Randomised_Social_Choice
+Randomized_Closest_Pair
 Rank_Nullity_Theorem
 Real_Impl
 Real_Power
@@ -759,6 +765,7 @@ Stuttering_Equivalence
 Subresultants
 Subset_Boolean_Algebras
 Substitutions_Lambda_Free
+SuffixArray
 Sumcheck_Protocol
 SumSquares
 Sunflowers
@@ -834,6 +841,8 @@ Well_Quasi_Orders
 Wetzels_Problem
 Wieferich_Kempner
 Winding_Number_Eval
+With_Type
+Wlog
 Word_Lib
 WorkerWrapper
 Worklist_Algorithms

@@ -41,20 +41,66 @@ theory C_Parser_Annotation
 begin
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay
-    Analogous to:
+(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
 (*  Title:      Pure/Isar/outer_syntax.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Isabelle/Isar outer syntax.
-*)*)
+*)
 \<open>
-structure C_Annotation =
+signature C_ANNOTATION =
+  sig
+    structure Data: THEORY_DATA
+    val get_commands: theory -> Data.T
+    val put_commands: Data.T -> theory -> theory
+
+    type command_keyword = string * Position.T
+    type command_config = (Symbol_Pos.T list * (bool * Symbol_Pos.T list)) * Position.range
+
+    datatype command_parser = Parser of command_config -> C_Env.eval_time c_parser
+    datatype command  = Command of {command_parser: command_parser, 
+                                    comment: string, id: serial, pos: Position.T}
+    val add_command   : Symtab.key -> command -> theory -> theory
+
+    val before_command: (command_keyword list * (bool * command_keyword list)) c_parser
+
+    val check_command: Proof.context -> Symtab.key * Position.T -> Symtab.key
+    val command  : command_keyword 
+                   -> string 
+                   -> (command_config -> C_Env.eval_time c_parser) 
+                   -> unit
+    val command' : command_keyword 
+                   -> string 
+                   -> (command_config -> C_Env.eval_time c_parser) 
+                   -> theory -> theory
+    val command'': string -> command_keyword 
+                   -> string 
+                   -> (command_config -> C_Env.eval_time c_parser) 
+                   -> theory -> theory
+    val command_markup: bool -> string * command -> Markup.T
+    val command_pos: command -> Position.T
+    val command_reports: theory -> C_Token.T -> ((Position.T * Markup.T) * string) list
+    val delete_command: Symtab.key * Position.T -> theory -> theory
+    val new_command: string -> command_parser -> Position.T -> command
+    val dest_commands: theory -> (Symtab.key * command) list
+    val eq_command: command * command -> bool
+    val err_command: string -> string -> Position.T list -> 'a
+    val err_dup_command: string -> Position.T list -> 'a
+    val lookup_commands: theory -> Symtab.key -> command option
+    val parse_command: theory -> C_Token.T list 
+                       -> (((Position.T * Markup.T) * string) list * C_Env.eval_time) * C_Token.T list
+    val raw_command: Symtab.key * Position.T -> string -> command_parser -> unit
+    val raw_command0: string -> string * Position.T -> string -> command_parser -> theory -> theory
+  end
+
+
+structure C_Annotation : C_ANNOTATION =
 struct
 
 (** outer syntax **)
 
 (* errors *)
+type command_config = (Symbol_Pos.T list * (bool * Symbol_Pos.T list)) * Position.range
 
 fun err_command msg name ps =
   error (msg ^ quote (Markup.markup Markup.keyword1 name) ^ Position.here_list ps);
@@ -83,7 +129,14 @@ fun new_command comment command_parser pos =
 fun command_pos (Command {pos, ...}) = pos;
 
 fun command_markup def (name, Command {pos, id, ...}) =
-  Position.make_entity_markup def id Markup.commandN (name, pos);
+    let   (* PATCH: copied as such from Isabelle2020 *)
+        fun entity_properties_of def serial pos =
+            if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
+            else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
+
+    in  Markup.properties (entity_properties_of def id pos)
+            (Markup.entity Markup.commandN name)
+    end;
 
 
 
@@ -93,6 +146,7 @@ structure Data = Theory_Data
 (
   type T = command Symtab.table;
   val empty = Symtab.empty;
+  val extend = I;
   fun merge data : T =
     data |> Symtab.join (fn name => fn (cmd1, cmd2) =>
       if eq_command (cmd1, cmd2) then raise Symtab.SAME
@@ -100,6 +154,7 @@ structure Data = Theory_Data
 );
 
 val get_commands = Data.get;
+val put_commands = Data.put;
 val dest_commands = get_commands #> Symtab.dest #> sort_by #1;
 val lookup_commands = Symtab.lookup o get_commands;
 
@@ -117,7 +172,7 @@ fun add_command name cmd thy =
         | SOME cmd' => err_dup_command name [command_pos cmd, command_pos cmd']);
       val _ =
         Context_Position.report_generic (Context.the_generic_context ())
-          (command_pos cmd) (command_markup {def = true} (name, cmd));
+          (command_pos cmd) (command_markup true (name, cmd));
     in Data.map (Symtab.update (name, cmd)) thy end;
 
 fun delete_command (name, pos) thy =
@@ -133,7 +188,7 @@ fun delete_command (name, pos) thy =
 type command_keyword = string * Position.T;
 
 fun raw_command0 kind (name, pos) comment command_parser =
-  C_Thy_Header.add_keywords [((name, pos), Keyword.command_spec (kind, [name]))]
+  C_Thy_Header.add_keywords [((name, pos), Keyword.command_spec(kind, [name]))]
   #> add_command name (new_command comment command_parser pos);
 
 fun raw_command (name, pos) comment command_parser =
@@ -175,7 +230,7 @@ fun parse_command thy =
       case lookup_commands thy name of
         SOME (cmd as Command {command_parser = Parser parse, ...}) =>
           C_Parse.!!! (command_tags :|-- parse)
-          >> pair [((pos, command_markup {def = false} (name, cmd)), "")]
+          >> pair [((pos, command_markup false (name, cmd)), "")]
       | NONE =>
           Scan.fail_with (fn _ => fn _ =>
             let
@@ -191,7 +246,7 @@ fun command_reports thy tok =
     let val name = C_Token.content_of tok in
       (case lookup_commands thy name of
         NONE => []
-      | SOME cmd => [((C_Token.pos_of tok, command_markup {def = false} (name, cmd)), "")])
+      | SOME cmd => [((C_Token.pos_of tok, command_markup false (name, cmd)), "")])
     end
   else [];
 
@@ -223,25 +278,40 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Build/resources.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay
-    Analogous to:
+(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
 (*  Title:      Pure/PIDE/resources.ML
     Author:     Makarius
 
 Resources for theories and auxiliary files.
-*)*)
+*)
 \<open>
-structure C_Resources:
-sig
-  val parse_file: (theory -> Token.file) C_Parse.parser
-end =
-struct
+signature C_RESOURCES = 
+sig 
+    val parse_files: (Path.T -> Path.T list) -> (theory -> Token.file list) c_parser  
+    val parse_file : (theory -> Token.file ) c_parser 
+end
 
-val parse_file =
-  (Scan.ahead C_Parse.not_eof >> C_Token.get_files) -- C_Parse.path_input
-    >> (the_single oo Resources.parsed_files single)
+structure C_Resources: C_RESOURCES=
+struct
+(* load files *)
+
+fun parse_files make_paths =
+  Scan.ahead C_Parse.not_eof -- C_Parse.path_input >> (fn (tok, source) => fn thy =>
+    (case C_Token.get_files tok of
+      [] =>
+        let
+          val master_dir = Resources.master_directory thy;
+          val name = Input.string_of source;
+          val pos = Input.pos_of source;
+          (* val delimited = Input.is_delimited source; *)
+          val src_paths = make_paths (Path.explode name);
+        in map (fn sd => Resources.read_file master_dir (sd,pos)) src_paths end
+    | files => map Exn.release files));
+
+val parse_file = parse_files single >> (fn f => f #> the_single);
 
 end;
+
 \<close>
 
 end

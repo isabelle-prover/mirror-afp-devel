@@ -16,9 +16,8 @@ imports Matrix_Aggregation_Algebras HOL.Real
 
 begin
 
-no_notation
-  inf (infixl \<open>\<sqinter>\<close> 70)
-  and uminus (\<open>- _\<close> [81] 80)
+no_notation inf (infixl \<open>\<sqinter>\<close> 70)
+unbundle no uminus_syntax
 
 subsection \<open>Linearly Ordered Commutative Semigroups\<close>
 

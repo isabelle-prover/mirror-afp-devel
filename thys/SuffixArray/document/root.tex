@@ -1,0 +1,57 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Formally Verified Suffix Array Construction}
+\author{Louis Cheung and Christine Rizkallah}
+\maketitle
+
+\begin{abstract}
+A suffix array~\cite{Manber_SIAM_1993} is a data structure that is extensively used in text retrieval and data compression
+applications, including query suggestion mechanisms in web search,
+and in bioinformatics tools for DNA sequencing and matching.
+This wide applicability means that algorithms for constructing suffix
+arrays are of great practical importance.
+The Suffix Array by Induced Sorting (SA-IS) algorithm~\cite{Nong_DCC_2009}  is a conceptually complex yet highly efficient
+suffix array construction technique, based on an earlier algorithm~\cite{Ko_JDA_2005}. 
+
+%Implementing it correctly requires a deep understanding
+%of its underlying theory.
+%As a vital step towards developing a provably correct implementation
+As part of this formalization, we have developed the SA-IS algorithm in Isabelle/HOL
+and formally verified that it is equivalent to a mathematical
+functional specification of suffix arrays. This required
+verifying a wide range of underlying properties of lists and
+suffixes, that could be reused in other contexts.
+We also used Isabelle's code extraction facilities to extract an
+executable Haskell implementation of SAIS. 
+In particular, this entry includes the following:
+an axiomatic characterisation of suffix array construction;
+a formally verified encoding of a straightforward but inefficient suffix array construction algorithm (validating the specification);
+and a formally verified encoding of the linear time SA-IS algorithm. 
+
+
+
+
+
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

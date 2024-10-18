@@ -20,7 +20,7 @@ text \<open>Here we derive verification components with weakest liberal precondi
 antidomain Kleene algebra \<close>
 
 no_notation Range_Semiring.antirange_semiring_class.ars_r (\<open>r\<close>)
-        and HOL.If (\<open>(if (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
+        and HOL.If (\<open>(\<open>notation=\<open>mixfix if expression\<close>\<close>if (_)/ then (_)/ else (_))\<close> [0, 0, 10] 10)
 
 notation zero_class.zero (\<open>0\<close>)
 

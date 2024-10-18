@@ -114,7 +114,6 @@ lemma map_assoc_None [simp]:
   by (induct ps) auto
 
 no_syntax
-  "_Map" :: "maplets => 'a \<rightharpoonup> 'b"  (\<open>(\<open>indent=1 notation=\<open>mixfix maplets\<close>\<close>[_])\<close>)
-
+  "_Map" :: "maplets => 'a \<rightharpoonup> 'b"  (\<open>(\<open>indent=1 notation=\<open>mixfix map\<close>\<close>[_])\<close>)
 
 end

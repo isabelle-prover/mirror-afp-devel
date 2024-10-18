@@ -34,21 +34,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section \<open>Support for Document Preparation: Text-Antiquotations.\<close>
+section \<open>Support for Document Preparation: Text-Antioquotations.\<close>
 
 theory C_Document
   imports C_Command
 begin
 
-ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay
+ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
+(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Text Antiquotations and Theory document output.
     Analogous to:
 (*  Title:      Pure/Thy/document_output.ML
     Author:     Makarius
-
-Theory document output.
-*)*)
-\<open>
+*)
+*)\<open>
 structure C_Document_Output =
 struct
 
@@ -152,8 +151,8 @@ fun output_token ctxt tok =
         else output false "" ""
     | Token.String => output false "{\\isachardoublequoteopen}" "{\\isachardoublequoteclose}"
     | Token.Alt_String => output false "{\\isacharbackquoteopen}" "{\\isacharbackquoteclose}"
-    | Token.Cartouche => output false "{\\isacartoucheopen}" "{\\isacartoucheclose}"
     | Token.Control control => output_body ctxt false "" "" (Antiquote.control_symbols control)
+    | Token.Cartouche => output false "{\\isacartoucheopen}" "{\\isacartoucheclose}"
     | _ => output false "" "")
   end handle ERROR msg => error (msg ^ Position.here (C_Token.pos_of tok));
 
@@ -163,13 +162,12 @@ end;
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_antiquotations.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay
-    Analogous to:
+(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
 (*  Title:      Pure/Thy/document_antiquotations.ML
     Author:     Makarius
 
 Miscellaneous document antiquotations.
-*)*)
+*)
 \<open>
 structure C_Document_Antiquotations =
 struct

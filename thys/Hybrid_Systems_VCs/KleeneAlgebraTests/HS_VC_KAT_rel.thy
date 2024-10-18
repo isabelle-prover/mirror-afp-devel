@@ -40,9 +40,8 @@ notation Id (\<open>skip\<close>)
      and empty (\<open>abort\<close>)
      and relcomp (infixr \<open>;\<close> 75)
 
-no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
-        and Archimedean_Field.floor_ceiling_class.floor (\<open>\<lfloor>_\<rfloor>\<close>)
-        and tau (\<open>\<tau>\<close>)
+unbundle no floor_ceiling_syntax
+no_notation tau (\<open>\<tau>\<close>)
         and n_op (\<open>n _\<close> [90] 91)
 
 definition p2r :: "'a pred \<Rightarrow> 'a rel" (\<open>\<lceil>_\<rceil>\<close>) where

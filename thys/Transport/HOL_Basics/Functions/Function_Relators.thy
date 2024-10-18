@@ -18,7 +18,7 @@ consts Fun_Rel :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Right
 
 open_bundle Dep_Fun_Rel_syntax
 begin
-notation "Fun_Rel" (infixr "\<Rrightarrow>" 50)
+notation "Fun_Rel" (infixr \<open>\<Rrightarrow>\<close> 50)
 syntax
   "_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow> (_)\<close> [51, 51, 50, 50] 50)

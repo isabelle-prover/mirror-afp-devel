@@ -1,0 +1,45 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Parallel Shear Sort}
+\author{Manuel Eberl and Peter Lammich}
+\maketitle
+
+\begin{abstract}
+This entry provides a formalisation of \emph{parallel shear sort}, a comparison-based sorting
+algorithm intended for highly parallel systems. It sorts $n$ elements in $O(\log n)$ steps,
+each of which involves sorting $\sqrt{n}$ independent lists of $\sqrt{n}$ elements each.
+
+If these smaller sort operations are done in parallel with a conventional $O(n\log n)$ sorting
+algorithm, this leads to an overall work of $O(n \log^2(n))$ and a span of 
+$O(\sqrt{n}\log^2(n))$ -- a considerable improvement over conventional non-parallel sorting.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{sss86}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

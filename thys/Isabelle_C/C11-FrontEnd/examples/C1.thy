@@ -77,51 +77,54 @@ val tt  = Context.the_theory ctxt';
 
 subsection\<open>Queries on C11-Asts via the iterator\<close>
 
+
 ML\<open>
 
 fun selectIdent0 (a:C11_Ast_Lib.node_content) b c=  if #tag a = "Ident0" then a::c else c;
 
 (* and here comes the hic >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> *)
 
-val S =  (C11_Ast_Lib.fold_cTranslationUnit selectIdent0 ast_unit []);
+val S =  (C11_Ast_Lib.fold_cTranslationUnit (K I) selectIdent0 ast_unit []);
 
 (* ... end of hic *)
 
-fun print ({args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.data_string S'::[], 
+val ttt = map C11_Ast_Lib.toString_node_content S;
+
+
+fun print ({args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.data_string S'::_, 
            sub_tag = STAG, tag = TAG}
           :C11_Ast_Lib.node_content)
-         = writeln (":>"^Protocol_Message.clean_output S^"<:>"^(S')^"<:>"^STAG^"<:>"^TAG^"<:");
+         = let fun dark_matter (x:bstring) = XML.content_of (YXML.parse_body x) 
+           in writeln (":>"^dark_matter(S)^"<:>"^(S')^"<:>"^STAG^"<:>"^TAG^"<:") end;
 
-app print S; (* these strings are representations for C_Ast.abr_string, 
+(*app print S;*) (* these strings are representations for C_Ast.abr_string, 
                 where the main constructor is C_Ast.SS_base. *)
-map (YXML.parse_body o (fn {args = (C11_Ast_Lib.data_string S)::_::C11_Ast_Lib.data_string S'::[], 
-           sub_tag = _, tag = _} =>S)) S ;
+
 \<close>
+
+
 
 subsection\<open>A small compiler to Isabelle term's.\<close>
 
 ML\<open>
+
+fun drop_dark_matter x = (XML.content_of o YXML.parse_body) x 
+
 fun node_content_2_free (x : C11_Ast_Lib.node_content) =
-    let  val C11_Ast_Lib.data_string a_markup = hd(#args(x));
-         val id = hd(tl(String.tokens (fn x => x = #"\"")(Protocol_Message.clean_output a_markup)))
-    in Free(id,dummyT) end  (* no type inference *);
-
-
+    Free(C11_Ast_Lib.id_of_node_content x,dummyT) (* no type inference *);
 
 fun selectIdent0Binary (a as { tag, sub_tag, args }:C11_Ast_Lib.node_content) 
                        (b:  C_Ast.nodeInfo ) 
                        (c : term list)=  
     case tag of
       "Ident0" => (node_content_2_free a)::c
-     |"CBinary0" => (case (Protocol_Message.clean_output sub_tag, c) of 
+     |"CBinary0" => (case (drop_dark_matter sub_tag, c) of 
                       ("CAddOp0",b::a::R) => (Const("Groups.plus_class.plus",dummyT) $ a $ b :: R)
                     | ("CMulOp0",b::a::R) => (Const("Groups.times_class.times",dummyT) $ a $ b :: R)
                     | ("CDivOp0",b::a::R) => (Const("Rings.divide_class.divide",dummyT) $ a $ b :: R)
                     | ("CSubOp0",b::a::R) => (Const("Groups.minus_class.minus",dummyT) $ a $ b :: R)
                     | _ => (writeln ("sub_tag all " ^sub_tag^" :>> "^ @{make_string} c);c ))
      | _ => c;
-
-
 \<close>
 
 text\<open>
@@ -131,7 +134,7 @@ sub-expressions were stored in reversed polish notation. The example shows that 
 structurally equivalent.    
 \<close>
 ML\<open>
-val S =  (C11_Ast_Lib.fold_cExpression selectIdent0Binary ast_expr []);
+val S =  (C11_Ast_Lib.fold_cExpression (K I) selectIdent0Binary ast_expr []);
 val S' = @{term "a + b * c - a / b"};
 \<close>
 
@@ -142,11 +145,9 @@ text\<open>The following setup just stores the result of the parsed values in th
 
 ML\<open>
 structure Data_Out = Generic_Data
-(
-  type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
-  val empty = []
-  val merge = K empty
-)
+  (type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
+   val empty = []
+   val merge = K empty)
 
 fun get_CTranslUnit thy =
   let val context = Context.Theory thy
@@ -230,11 +231,9 @@ its definition in its environment. \<close>
 
 ML \<open>
 structure Directive_include = Generic_Data
-(
-  type T = (Input.source * C_Env.markup_ident) list Symtab.table
-  val empty = Symtab.empty
-  val merge = K empty
-)
+  (type T = (Input.source * C_Env.markup_ident) list Symtab.table
+   val empty = Symtab.empty
+   val merge = K empty)
 \<close>
 
 ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
@@ -505,6 +504,7 @@ int linearsearch(int x, int t[], int n) {
       loop invariant "forall integer j; 0<=j<i ==> (t[j] != x)"
       loop assigns i
       loop variant "n-i"
+      text \<open>"This implementation is problematic wrt. @{requirement \<open>efficiency\<close>}"\<close>
    */
   while (i < n) {
     if (t[i] < x) {
@@ -633,7 +633,9 @@ void display(int a[],const int size)
 
 
 
-section \<open>C Code: Floats Exist\<close>
+section \<open>C Code: Floats Exist Lexically.\<close>
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 C\<open>
 int a;

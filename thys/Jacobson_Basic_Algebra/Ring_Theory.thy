@@ -7,7 +7,7 @@ theory Ring_Theory imports Group_Theory begin
 
 no_notation plus (infixl \<open>+\<close> 65)
 no_notation minus (infixl \<open>-\<close> 65)
-no_notation uminus (\<open>- _\<close> [81] 80)
+unbundle no uminus_syntax
 no_notation quotient (infixl \<open>'/'/\<close> 90)
 
 

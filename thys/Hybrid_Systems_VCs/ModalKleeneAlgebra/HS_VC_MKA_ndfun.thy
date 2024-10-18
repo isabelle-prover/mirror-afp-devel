@@ -45,8 +45,8 @@ type_synonym 'a pred = "'a \<Rightarrow> bool"
 
 notation fbox (\<open>wp\<close>)
 
-no_notation Archimedean_Field.ceiling (\<open>\<lceil>_\<rceil>\<close>)
-        and Relation.relcomp (infixl \<open>;\<close> 75)
+unbundle no floor_ceiling_syntax
+no_notation Relation.relcomp (infixl \<open>;\<close> 75)
         and Range_Semiring.antirange_semiring_class.ars_r (\<open>r\<close>)
         and antidomain_semiringl.ads_d (\<open>d\<close>)
 

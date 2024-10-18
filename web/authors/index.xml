@@ -11,8 +11,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 02 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>cheung</title>
+          <link>/authors/cheung/</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/cheung/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>rizkallah</title>
+          <link>/authors/rizkallah/</link>
+          <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/rizkallah/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>eberl</title>
+          <link>/authors/eberl/</link>
+          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/eberl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>lammich</title>
+          <link>/authors/lammich/</link>
+          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/lammich/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>desharnais</title>
+          <link>/authors/desharnais/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/desharnais/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>haslbeckm</title>
+          <link>/authors/haslbeckm/</link>
+          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/haslbeckm/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>fan</title>
+          <link>/authors/fan/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/fan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>karayel</title>
+          <link>/authors/karayel/</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/karayel/</guid>
+          <description></description>
+        </item>
         <item>
           <title>noce</title>
           <link>/authors/noce/</link>
@@ -25,6 +81,13 @@
           <link>/authors/paulson/</link>
           <pubDate>Mon, 02 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/authors/paulson/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>unruh</title>
+          <link>/authors/unruh/</link>
+          <pubDate>Fri, 30 Aug 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/unruh/</guid>
           <description></description>
         </item>
         <item>
@@ -67,13 +130,6 @@
           <link>/authors/wright/</link>
           <pubDate>Fri, 16 Aug 2024 00:00:00 +0000</pubDate>
           <guid>/authors/wright/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>lammich</title>
-          <link>/authors/lammich/</link>
-          <pubDate>Wed, 14 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/lammich/</guid>
           <description></description>
         </item>
         <item>
@@ -448,20 +504,6 @@
           <description></description>
         </item>
         <item>
-          <title>karayel</title>
-          <link>/authors/karayel/</link>
-          <pubDate>Sun, 24 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/karayel/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>eberl</title>
-          <link>/authors/eberl/</link>
-          <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/eberl/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>yang</title>
           <link>/authors/yang/</link>
           <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
@@ -795,13 +837,6 @@
           <link>/authors/kim/</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
           <guid>/authors/kim/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>desharnais</title>
-          <link>/authors/desharnais/</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/desharnais/</guid>
           <description></description>
         </item>
         <item>
@@ -1348,13 +1383,6 @@
           <link>/authors/reiche/</link>
           <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
           <guid>/authors/reiche/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>unruh</title>
-          <link>/authors/unruh/</link>
-          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>/authors/unruh/</guid>
           <description></description>
         </item>
         <item>
@@ -2037,13 +2065,6 @@
           <description></description>
         </item>
         <item>
-          <title>haslbeckm</title>
-          <link>/authors/haslbeckm/</link>
-          <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
-          <guid>/authors/haslbeckm/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>stuewe</title>
           <link>/authors/stuewe/</link>
           <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
@@ -2517,13 +2538,6 @@
           <link>/authors/lewis/</link>
           <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
           <guid>/authors/lewis/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>rizkallah</title>
-          <link>/authors/rizkallah/</link>
-          <pubDate>Tue, 29 Nov 2016 00:00:00 +0000</pubDate>
-          <guid>/authors/rizkallah/</guid>
           <description></description>
         </item>
         <item>

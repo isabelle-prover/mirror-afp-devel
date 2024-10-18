@@ -671,7 +671,7 @@ proof -
     qed
   qed
 qed
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 lemma weakSimBangPres:
   fixes \<Psi> :: 'b
   and   P :: "('a, 'b, 'c) psi"
@@ -1223,7 +1223,7 @@ next
     ultimately show ?case by blast
   qed
 qed
-notation relcomp (infixr \<open>O\<close> 75)
+unbundle relcomp_syntax
 end
 
 end

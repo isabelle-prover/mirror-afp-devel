@@ -9,7 +9,7 @@ theory Expr
 imports Update
 begin
 
-no_notation not (\<open>NOT\<close>)
+unbundle no bit_operations_syntax
 
 datatype ('s,'e)expr = true
                         | In 's

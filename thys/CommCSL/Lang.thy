@@ -1,9 +1,9 @@
 section \<open>Imperative Concurrent Language\<close>
 
-text \<open>This file defines the syntax and semantics of a concurrent programming language,
-based on Viktor Vafeiadis' Isabelle soundness proof of CSL~\cite{cslsound},
+text \<open>This file defines the syntax and semantics of the concurrent programming language described in
+the paper, based on Viktor Vafeiadis' Isabelle soundness proof of CSL~\cite{cslsound},
 and adapted to Isabelle 2016-1 by Qin Yu and James Brotherston
-(see https://people.mpi-sws.org/~viktor/cslsound/).\<close>
+(see https://people.mpi-sws.org/~viktor/cslsound/). We also prove some useful lemmas about the semantics.\<close>
 
 theory Lang
 imports Main StateModel
@@ -98,6 +98,38 @@ inductive_cases red_atomic_cases: "red (Catomic C) \<sigma> C' \<sigma>'"
 
 subsubsection \<open>Abort semantics\<close>
 
+primrec
+  accesses :: "cmd \<Rightarrow> store \<Rightarrow> nat set"
+where
+    "accesses Cskip            s = {}"
+  | "accesses (Cassign x E)    s = {}"
+  | "accesses (Cread x E)      s = {edenot E s}"
+  | "accesses (Cwrite E E')    s = {edenot E s}"
+  | "accesses (Calloc x E)     s = {}"
+  | "accesses (Cdispose E)     s = {edenot E s}"
+  | "accesses (Cseq C1 C2)     s = accesses C1 s"
+  | "accesses (Cpar C1 C2)     s = accesses C1 s \<union> accesses C2 s"
+  | "accesses (Cif B C1 C2)    s = {}"
+  | "accesses (Cwhile B C)     s = {}"
+  | "accesses (Catomic C)     s = {}"
+
+
+primrec
+  writes :: "cmd \<Rightarrow> store \<Rightarrow> nat set "
+where
+    "writes Cskip            s = {}"
+  | "writes (Cassign x E)    s = {}"
+  | "writes (Cread x E)      s = {}"
+  | "writes (Cwrite E E')    s = {edenot E s}"
+  | "writes (Calloc x E)     s = {}"
+  | "writes (Cdispose E)     s = {edenot E s}"
+  | "writes (Cseq C1 C2)     s = writes C1 s"
+  | "writes (Cpar C1 C2)     s = writes C1 s \<union> writes C2 s"
+  | "writes (Cif B C1 C2)    s = {}"
+  | "writes (Cwhile B C)     s = {}"
+  | "writes (Catomic C)     s = {}"
+
+
 inductive
   aborts :: "cmd \<Rightarrow> state \<Rightarrow> bool"
 where
@@ -108,6 +140,9 @@ where
 | aborts_Read[intro]:  "edenot E (fst \<sigma>) \<notin> dom (snd \<sigma>) \<Longrightarrow> aborts (Cread x E) \<sigma>"
 | aborts_Write[intro]: "edenot E (fst \<sigma>) \<notin> dom (snd \<sigma>) \<Longrightarrow> aborts (Cwrite E E') \<sigma>"
 | aborts_Free[intro]:  "edenot E (fst \<sigma>) \<notin> dom (snd \<sigma>) \<Longrightarrow> aborts (Cdispose E) \<sigma>"
+| aborts_Race1[intro]:  "accesses C1 (fst \<sigma>) \<inter> writes C2 (fst \<sigma>) \<noteq> {} \<Longrightarrow> aborts (Cpar C1 C2) \<sigma>"
+| aborts_Race2[intro]:  "writes C1 (fst \<sigma>) \<inter> accesses C2 (fst \<sigma>) \<noteq> {} \<Longrightarrow> aborts (Cpar C1 C2) \<sigma>"
+
 
 inductive_cases abort_atomic_cases: "aborts (Catomic C) \<sigma>"
 
@@ -416,6 +451,21 @@ lemma red_agrees[rule_format]:
    (\<exists>s' h'. red C (s, h) C' (s', h') \<and> agrees X (fst \<sigma>') s' \<and> snd \<sigma>' = h')"
   using red_agrees_aux(1) by blast
 
+lemma writes_accesses: "writes C s \<subseteq> accesses C s"
+  by (induct C arbitrary: s, auto)
+
+
+lemma accesses_agrees: "agrees (fvC C) s s' \<Longrightarrow> accesses C s = accesses C s'"
+  apply (induct C arbitrary: s s')
+  apply (simp_all add: exp_agrees agrees_def)
+  by blast
+
+lemma writes_agrees: "agrees (fvC C) s s' \<Longrightarrow> writes C s = writes C s'"
+  apply (induct C arbitrary: s s')
+  apply (simp_all add: exp_agrees agrees_def)
+  by blast
+
+
 lemma aborts_agrees:
   assumes "aborts C \<sigma>"
       and "agrees (fvC C) (fst \<sigma>) s"
@@ -463,6 +513,14 @@ next
     by (simp add: agrees_def)
   then show ?case
     by (simp add: aborts.aborts_Seq aborts_Seq.hyps(2) aborts_Seq.prems(2))
+next
+  case (aborts_Race1 C1 \<sigma> C2)
+  then show ?case using accesses_agrees[of C1 "fst \<sigma>" s] writes_agrees[of C2 "fst \<sigma>" s] aborts.aborts_Race1[of C1 "(s, h)" C2]
+    by (simp add: agrees_union)
+next
+  case (aborts_Race2 C1 \<sigma> C2)
+  then show ?case using accesses_agrees[of C2 "fst \<sigma>" s] writes_agrees[of C1 "fst \<sigma>" s] aborts.aborts_Race2[of C1 "(s, h)" C2]
+    by (simp add: agrees_union)
 qed
 
 corollary exp_agrees2[simp]:

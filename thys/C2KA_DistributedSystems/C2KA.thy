@@ -31,9 +31,8 @@ theory C2KA
   imports CKA Stimuli
 begin
 
-no_notation
-comp (infixl \<open>\<circ>\<close> 55)
-and rtrancl (\<open>(\<open>notation=\<open>postfix *\<close>\<close>_\<^sup>*)\<close> [1000] 999)
+no_notation comp (infixl \<open>\<circ>\<close> 55)
+unbundle no rtrancl_syntax
 
 text \<open>
 The locale \emph{c2ka} contains an axiomatisation of \CCKAabbrv  and some basic theorems relying on the 

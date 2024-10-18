@@ -1,0 +1,38 @@
+title = "Formally Verified Suffix Array Construction"
+date = 2024-09-25
+topics = [
+  "Computer science/Algorithms",
+  "Computer science/Data structures",
+]
+abstract = """
+A suffix array (Manber and Myers, 1993) is a data structure that is extensively used in text retrieval and data compression applications, including query suggestion mechanisms in web search, and in bioinformatics tools for DNA sequencing and matching. This wide applicability means that algorithms for constructing suffix arrays are of great practical importance. The Suffix Array by Induced Sorting (SA-IS) algorithm (Nong, Zhang and Chan, 2009) is a conceptually complex yet highly efficient suffix array construction technique, based on an earlier algorithm (Ko and Aluru, 2005).
+As part of this formalization, we have developed the SA-IS algorithm in Isabelle/HOL and formally verified that it is equivalent to a mathematical functional specification of suffix arrays. This required verifying a wide range of underlying properties of lists and suffixes, that could be reused in other contexts. We also used Isabelle’s code extraction facilities to extract an executable Haskell implementation of SAIS. In particular, this entry includes the following: an axiomatic characterisation of suffix array construction; a formally verified encoding of a straightforward but inefficient suffix array construction algorithm (validating the specification); and a formally verified encoding of the linear time SA-IS algorithm."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cheung]
+email = "cheung_email1"
+
+[authors.rizkallah]
+homepage = "rizkallah_homepage"
+
+[contributors]
+
+[notify]
+cheung = "cheung_email1"
+rizkallah = "rizkallah_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1109/DCC.2009.42",
+  "10.1016/J.JDA.2004.08.002",
+]
+pubs = [
+  "<a href=\\\"https://en.wikipedia.org/wiki/Suffix_array\\\">Wikipedia</a>",
+]

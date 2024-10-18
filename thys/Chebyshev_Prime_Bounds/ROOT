@@ -1,0 +1,13 @@
+chapter AFP
+
+session Chebyshev_Prime_Bounds (AFP) = "Zeta_Function" +
+  options [timeout = 900]
+  sessions
+    "HOL-Decision_Procs"
+    Stirling_Formula
+    Prime_Distribution_Elementary
+    Prime_Number_Theorem
+  theories
+    Chebyshev_Prime_Bounds
+  document_files
+    "root.tex"

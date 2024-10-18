@@ -1,0 +1,37 @@
+%The two versions of fafdm
+@article{TOPLAS,
+author = {Haslbeck, Maximilian P. L. and Lammich, Peter},
+title = {For a Few Dollars More: Verified Fine-Grained Algorithm Analysis Down to LLVM},
+year = {2022},
+issue_date = {September 2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {44},
+number = {3},
+issn = {0164-0925},
+url = {https://doi.org/10.1145/3486169},
+doi = {10.1145/3486169},
+abstract = {We present a framework to verify both, functional correctness and (amortized) worst-case complexity of practically efficient algorithms. We implemented a stepwise refinement approach, using the novel concept of resource currencies to naturally structure the resource analysis along the refinement chain, and allow a fine-grained analysis of operation counts. Our framework targets the LLVM intermediate representation. We extend its semantics from earlier work with a cost model. As case studies, we verify the amortized constant time push operation on dynamic arrays and the O(nlog n) introsort algorithm, and refine them down to efficient LLVM implementations. Our sorting algorithm performs on par with the state-of-the-art implementation found in the GNU C++ Library, and provably satisfies the complexity required by the C++ standard.},
+journal = {ACM Trans. Program. Lang. Syst.},
+month = {jul},
+articleno = {14},
+numpages = {36},
+keywords = {Algorithm analysis, program verification, refinement, Isabelle/HOL}
+}
+
+@InProceedings{ETAPS,
+author="Haslbeck, Maximilian P. L.
+and Lammich, Peter",
+editor="Yoshida, Nobuko",
+title="For a Few Dollars More",
+booktitle="Programming Languages and Systems",
+year="2021",
+publisher="Springer International Publishing",
+address="Cham",
+pages="292--319",
+abstract="We present a framework to verify both, functional correctness and worst-case complexity of practically efficient algorithms. We implemented a stepwise refinement approach, using the novel concept of resource currencies to naturally structure the resource analysis along the refinement chain, and allow a fine-grained analysis of operation counts. Our framework targets the LLVM intermediate representation. We extend its semantics from earlier work with a cost model. As case study, we verify the correctness and {\$}{\$}O(n{\backslash}log n){\$}{\$}O(nlogn)worst-case complexity of an implementation of the introsort algorithm, whose performance is on par with the state-of-the-art implementation found in the GNU C++ Library.",
+isbn="978-3-030-72019-3"
+}
+  
+
+

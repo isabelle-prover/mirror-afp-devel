@@ -1,0 +1,28 @@
+title = "With-Type – Poor man's dependent types"
+date = 2024-08-29
+topics = [
+  "Tools",
+]
+abstract = """
+The type system of Isabelle/HOL does not support dependent types or arbitrary quantification over types.
+We introduce a system to mimic dependent types and existential quantification over types in limited circumstances at the top level of theorems."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.unruh]
+homepage = "unruh_homepage1"
+
+[contributors]
+
+[notify]
+unruh = "unruh_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

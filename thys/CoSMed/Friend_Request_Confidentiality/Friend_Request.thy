@@ -62,7 +62,7 @@ definition "B vl vl1 \<equiv> BO (filter (Not o isFRVal) vl) (filter (Not o isFR
 lemma BO_Nil_iff: "BO vl vl1 \<Longrightarrow> vl = [] \<longleftrightarrow> vl1 = []"
 by (cases rule: BO.cases) auto
 
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 interpretation BD_Security_IO where
 istate = istate and step = step and

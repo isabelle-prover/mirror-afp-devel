@@ -1216,12 +1216,12 @@ structure Function_Specification_Parser  =
                           $ Const(read_constname ctxt (Binding.name_of pop_name),rmty))
            val rhs_main_rec = wfrecT 
                               measure 
-                              (Abs(bdg_rec_name, (args_ty --> umty) , 
+                              (Abs(bdg_rec_name, (args_ty --> rmty) , 
                                    mk_pat_tupleabs params'
                                    (Const(@{const_name "Clean.block\<^sub>C"}, umty-->umty-->rmty-->rmty)
                                    $ Const(read_constname ctxt (Binding.name_of push_name),umty)
                                    $ (Const(read_constname ctxt bdg_core_name,
-                                            (args_ty --> umty) --> args_ty --> umty)  
+                                            (args_ty --> rmty) --> args_ty --> umty)  
                                       $ (Bound (length params))
                                       $ HOLogic.mk_tuple (map Free params'))
                                    $ Const(read_constname ctxt (Binding.name_of pop_name),rmty))))
@@ -1347,11 +1347,9 @@ definition if_C :: "[('\<sigma>_ext) control_state_ext \<Rightarrow> bool,
                               then Some(undefined, \<sigma>)  \<comment> \<open>state unchanged, return arbitrary\<close>
                               else if c \<sigma> then E \<sigma> else F \<sigma>)"     
 
-syntax
+syntax    (xsymbols)
           "_if_SECLEAN" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           (\<open>(if\<^sub>C _ then _ else _fi)\<close> [5,8,8]20)
-syntax_consts
-          "_if_SECLEAN" == Clean.if_C
 translations 
           "(if\<^sub>C cond then T1 else T2 fi)" == "CONST Clean.if_C cond T1 T2"
 
@@ -1364,11 +1362,9 @@ definition while_C :: "(('\<sigma>_ext) control_state_ext \<Rightarrow> bool)
                                else ((MonadSE.while_SE (\<lambda> \<sigma>. \<not>exec_stop \<sigma> \<and> c \<sigma>) B) ;- 
                                      unset_break_status) \<sigma>)"
   
-syntax
+syntax    (xsymbols)
           "_while_C" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
           (\<open>(while\<^sub>C _ do _ od)\<close> [8,8]20)
-syntax_consts
-          "_while_C" == Clean.while_C
 translations 
           "while\<^sub>C c do b od" == "CONST Clean.while_C c b"
 

@@ -3,12 +3,7 @@ theory Xor imports
   "CryptHOL.Misc_CryptHOL" 
 begin
 
-(* disable lattice syntax for type class lattices *)
-no_notation
-  bot_class.bot (\<open>\<bottom>\<close>) and
-  top_class.top (\<open>\<top>\<close>) and 
-  inf  (infixl \<open>\<sqinter>\<close> 70) and
-  sup  (infixl \<open>\<squnion>\<close> 65) 
+unbundle no lattice_syntax
 
 context bounded_lattice begin
 

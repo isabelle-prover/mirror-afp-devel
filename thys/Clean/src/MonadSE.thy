@@ -64,11 +64,9 @@ where     "bind_SE f g = (\<lambda>\<sigma>. case f \<sigma> of None \<Rightarro
 
 notation bind_SE (\<open>bind\<^sub>S\<^sub>E\<close>)
 
-syntax
+syntax    (xsymbols)
           "_bind_SE" :: "[pttrn,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           (\<open>(2 _ \<leftarrow> _; _)\<close> [5,8,8]8)
-syntax_consts
-          "_bind_SE" == bind_SE
 translations 
           "x \<leftarrow> f; g" == "CONST bind_SE f (% x . g)"
 
@@ -179,11 +177,9 @@ definition  "skip\<^sub>S\<^sub>E = unit\<^sub>S\<^sub>E ()"
 definition if_SE :: "['\<sigma> \<Rightarrow> bool, ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E, ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('\<alpha>, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "if_SE c E F = (\<lambda>\<sigma>. if c \<sigma> then E \<sigma> else F \<sigma>)" 
 
-syntax
+syntax    (xsymbols)
           "_if_SE" :: "['\<sigma> \<Rightarrow> bool,('o,'\<sigma>)MON\<^sub>S\<^sub>E,('o','\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
           (\<open>(if\<^sub>S\<^sub>E _ then _ else _fi)\<close> [5,8,8]8)
-syntax_consts
-          "_if_SE" == if_SE
 translations 
           "(if\<^sub>S\<^sub>E cond then T1 else T2 fi)" == "CONST if_SE cond T1 T2"
 
@@ -317,11 +313,9 @@ where     "\<Gamma> b cd = (\<lambda>cw. {(s,t). if b s then (s, t) \<in> cd O c
 definition while_SE :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E"
 where     "while_SE c B \<equiv> (Rel2Mon(lfp(\<Gamma> c (Mon2Rel B))))"
 
-syntax
+syntax    (xsymbols)
           "_while_SE" :: "['\<sigma> \<Rightarrow> bool, (unit, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> (unit, '\<sigma>)MON\<^sub>S\<^sub>E" 
           (\<open>(while\<^sub>S\<^sub>E _ do _ od)\<close> [8,8]8)
-syntax_consts
-          "_while_SE" == while_SE
 translations 
           "while\<^sub>S\<^sub>E c do b od" == "CONST while_SE c b"
 

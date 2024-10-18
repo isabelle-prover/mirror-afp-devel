@@ -12,7 +12,7 @@ imports MonoBoolTranAlgebra.Assertion_Algebra Base
 begin
 
 no_notation inf (infixl \<open>\<sqinter>\<close> 70)
-no_notation uminus (\<open>- _\<close> [81] 80)
+unbundle no uminus_syntax
 
 context mbt_algebra
 begin

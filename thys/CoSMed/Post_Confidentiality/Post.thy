@@ -49,7 +49,7 @@ using assms apply(auto elim!: B.cases)
 by (metis append_self_conv2 hd_append list.map_disc_iff list.map_sel(1) list.sel(1)
        list.sel(3) value.distinct(1))+
 
-no_notation relcomp (infixr \<open>O\<close> 75)
+unbundle no relcomp_syntax
 
 interpretation BD_Security_IO where
 istate = istate and step = step and

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Closest_Pair_Points on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/closest_pair_points/</link>
+    <description>
+        Recent content in Closest_Pair_Points 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/closest_pair_points/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Rabin&#39;s Closest Pair of Points Algorithm</title>
+          <link>/entries/Randomized_Closest_Pair.html</link>
+          <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Randomized_Closest_Pair.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

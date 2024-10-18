@@ -20,7 +20,7 @@ theory Gram_Schmidt_2
 begin
 (* TODO: Documentation and add references to computer algebra book *)
 
-no_notation Group.m_inv  (\<open>inv\<index> _\<close> [81] 80)
+unbundle no m_inv_syntax
 
 (* TODO: Is a function like this already in the library
    find_index is used to rewrite the sumlists in the lattice_of definition to finsums *)

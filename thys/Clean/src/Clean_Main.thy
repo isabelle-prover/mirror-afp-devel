@@ -34,7 +34,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-
 (*
  * Clean --- a basic abstract ("shallow") programming language for test and proof.
  * Authors : Burkhart Wolff, Frédéric Tuong

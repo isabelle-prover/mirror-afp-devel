@@ -13,7 +13,7 @@ consts crel_mono_wrt :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 open_bundle crel_mono_wrt_syntax
 begin
-notation "crel_mono_wrt" (infixr "\<rightarrow>\<^sub>c" 50)
+notation "crel_mono_wrt" (infixr \<open>\<rightarrow>\<^sub>c\<close> 50)
 syntax
   "_crel_dep_mono_wrt" :: "idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool" (\<open>'(_/ :/ _') \<rightarrow>\<^sub>c (_)\<close> [51, 50, 50] 50)
 end

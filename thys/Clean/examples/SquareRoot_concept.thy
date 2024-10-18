@@ -230,6 +230,6 @@ txt\<open>Instead of testing, we @{emph \<open>prove\<close>} that the test case
  *) 
 oops
 
-text\<open>TODO: re-establish  automatic test-coverage tactics of \<^cite>\<open>"DBLP:conf/tap/Keller18"\<close>.\<close>
+text\<open>TODO: re-establish  automatic test-coverage tactics of \cite{"DBLP:conf/tap/Keller18"}.\<close>
 
 end
