@@ -82,7 +82,7 @@ fun decompose_msg ctxt tp = Pretty.block [
 
 fun decomposed_msg ctxt (ph, th) (ps, ts) = Pretty.block [
     Pretty.str "Decomposition result ",
-    map (UUtil.pretty_unif_problem ctxt) ((ph, th) :: (ps ~~ ts))
+    List.map (UUtil.pretty_unif_problem ctxt) ((ph, th) :: (ps ~~ ts))
     |> Pretty.separate "," |> Pretty.block
   ] |> Pretty.string_of
 
