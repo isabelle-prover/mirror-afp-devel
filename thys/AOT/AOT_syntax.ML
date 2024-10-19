@@ -475,7 +475,7 @@ val trm = case printVarKind name of SingleVariable name =>
         | _ => NONE
       val terms = case optBody of SOME trm => Abs (name, T, trm)::trms | _ => trms
     in
-        snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+        Syntax_Trans.preserve_binder_abs_tr' syntaxConst dummyT terms
     end
   | Ellipses (s,e) =>
     let
@@ -493,12 +493,12 @@ val trm = case printVarKind name of SingleVariable name =>
            Syntax_Trans.mark_bound_abs (e,dummyT)) $ body, trms)
     end
   | Verbatim _ => (* TODO *)
-    snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+      Syntax_Trans.preserve_binder_abs_tr' syntaxConst dummyT terms
 in SOME trm end
 | _ => NONE
 in
 case term_opt of SOME trm => trm | _ =>
-snd (Syntax_Trans.preserve_binder_abs_tr' constName syntaxConst) ctxt terms
+  Syntax_Trans.preserve_binder_abs_tr' syntaxConst dummyT terms
 end
 )
 

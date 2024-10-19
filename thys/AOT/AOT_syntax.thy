@@ -337,9 +337,7 @@ AOT_syntax_print_translations
     (\<^syntax_const>\<open>_AOT_all_ellipse\<close>, true)
     \<^const_name>\<open>AOT_imp\<close>,
   AOT_binder_trans @{theory} @{binding "AOT_forall_binder"} \<^syntax_const>\<open>_AOT_all\<close>,
-  Syntax_Trans.preserve_binder_abs_tr'
-    \<^const_syntax>\<open>AOT_desc\<close>
-    \<^syntax_const>\<open>_AOT_desc\<close>,
+  (\<^const_syntax>\<open>AOT_desc\<close>, K (Syntax_Trans.preserve_binder_abs_tr' \<^syntax_const>\<open>_AOT_desc\<close> dummyT)),
   AOT_binder_trans @{theory} @{binding "AOT_desc_binder"} \<^syntax_const>\<open>_AOT_desc\<close>,
   AOT_preserve_binder_abs_tr'
     \<^const_syntax>\<open>AOT_lambda\<close>

@@ -96,9 +96,8 @@ lemma cset_Collect_cong: "(\<And>x. P x = Q x) ==> {x. P x}\<^sub>c = {x. Q x}\<
 
 text \<open> Avoid eta-contraction for robust pretty-printing. \<close>
 
-print_translation \<open>
- [Syntax_Trans.preserve_binder_abs_tr'
-   @{const_syntax cset_Collect} @{syntax_const "_cColl"}]
+typed_print_translation \<open>
+  [(\<^const_syntax>\<open>cset_Collect\<close>, fn _ => Syntax_Trans.preserve_binder_abs_tr' \<^syntax_const>\<open>_cColl\<close>)]
 \<close>
 
 lift_definition cset_set :: "'a list \<Rightarrow> 'a cset" is set

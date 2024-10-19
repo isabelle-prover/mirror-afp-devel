@@ -205,9 +205,9 @@ lemmas iTL_defs =
   iTL_Next_defs
 (* Like in Set.thy *)
 (* To avoid eta-contraction of body: *)
-print_translation \<open>
- [Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iAll} @{syntax_const "_iAll"},
-  Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iEx} @{syntax_const "_iEx"}]
+typed_print_translation \<open>
+ [(\<^const_syntax>\<open>iAll\<close>, fn _ => Syntax_Trans.preserve_binder_abs2_tr' \<^syntax_const>\<open>_iAll\<close>),
+  (\<^const_syntax>\<open>iEx\<close>, fn _ => Syntax_Trans.preserve_binder_abs2_tr' \<^syntax_const>\<open>_iEx\<close>)]
 \<close>
 
 print_translation \<open>
