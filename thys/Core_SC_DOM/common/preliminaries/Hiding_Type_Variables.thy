@@ -223,7 +223,7 @@ structure Hide_Tvar : HIDE_TVAR = struct
 
   fun normalize_typvar_term' t = snd(normalize_typvar_term [] t) 
 
-  fun key_of_term (Const(s,_)) = if String.isPrefix "\<^type>" s
+  fun key_of_term (Const(s,_)) = if Lexicon.is_type s
                                  then Lexicon.unmark_type s
                                  else ""
     | key_of_term (Free(s,_))  = s
