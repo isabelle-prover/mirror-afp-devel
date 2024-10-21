@@ -79,7 +79,7 @@ fun add_AOT_print_rule AOTsyntax raw_rules thy = let
     if Config.get ctxt print_AOT_syntax = AOTsyntax then 
       let
         val orig = (Ast.mk_appl (Ast.Constant head) asts)
-        val normalized = Ast.normalize ctxt
+        val normalized = Ast.normalize ctxt {permissive_constraints = true}
           (fn head' => if head = head' then [(s,r)] else []) orig
       in
         if orig = normalized then raise Match else normalized

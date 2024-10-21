@@ -177,8 +177,6 @@ lemma enum_if_enum:
            y < length e \<Longrightarrow> x = y"
   by (simp add: e_def split: if_split_asm flip: nth_eq_iff_index_eq [where xs=e])
 
-declare [[show_consts]]
-
 instance enumeration_both < enumeration_alt
   apply (intro_classes)
     apply (simp_all add: enum_alt_rel alt_from_ord_def enum_if_enum split: if_split_asm)

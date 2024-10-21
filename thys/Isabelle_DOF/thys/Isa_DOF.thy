@@ -1082,8 +1082,8 @@ ML \<open>
       let fun err () = raise TERM ("string_tr", args) in
         (case args of
           [(c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p] =>
-            (case Term_Position.decode_position p of
-              SOME (pos, _) => c $ f (mk_string f_mk accu (content (s, pos))) $ p
+            (case Term_Position.decode_position1 p of
+              SOME pos => c $ f (mk_string f_mk accu (content (s, pos))) $ p
             | NONE => err ())
         | _ => err ())
       end;
@@ -2560,7 +2560,7 @@ fun get_positions ctxt x =
     fun get Cs (Const ("_type_constraint_", C) $ t) = get (C :: Cs) t
       | get Cs (Free (y, T)) =
           if x = y then
-            map_filter Term_Position.decode_positionT
+            maps Term_Position.decode_positionT
               (T :: map (Type.constraint_type ctxt) Cs)
           else []
       | get _ (t $ u) = get [] t @ get [] u

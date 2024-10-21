@@ -270,8 +270,8 @@ let
     in
       case args of
         [(c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p] =>
-          (case Term_Position.decode_position p of
-            SOME (pos, _) => c 
+          (case Term_Position.decode_position1 p of
+            SOME pos => c 
                           $ Nano_Json_Parser.term_of_json_string verbose strT numT (input s pos) 
                           $ p
           | NONE => err ())
