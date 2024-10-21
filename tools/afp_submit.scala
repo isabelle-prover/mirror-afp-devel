@@ -1197,7 +1197,7 @@ object AFP_Submit {
           hidden(key + ID, overview.id) ::
           hidden(key + DATE, overview.date.toString) ::
           hidden(key + NAME, overview.name) ::
-          span(text(overview.date.toString)) ::
+          css("white-space: nowrap")(span(text(overview.date.toString))) ::
           span(List(frontend_link(Page.SUBMISSION, List(ID.print -> overview.id),
             text(overview.name)))) ::
           render_if(mode == Mode.SUBMISSION,
