@@ -74,7 +74,7 @@ subsection \<open>Parser for IMP Programs\<close>
       val read_annotation_as_term: Proof.context -> term -> term * term
     end = struct
       fun annotate_term t (str,pos) = let
-        val pos = Free (Term_Position.encode pos,dummyT)
+        val pos = Free (Term_Position.encode [pos],dummyT)
         val str = Free (str,dummyT)
         val c = Const (@{syntax_const "_annotated_term"}, dummyT --> dummyT --> dummyT --> dummyT)
       in
@@ -82,8 +82,10 @@ subsection \<open>Parser for IMP Programs\<close>
       end
 
       fun dest_annotated_term (Const (@{syntax_const "_annotated_term"},_)$t$Free (str,_)$Free (pos,_)) = let
-            val pos = case Term_Position.decode pos of 
-              SOME pos => pos | NONE => raise TERM ("dest_term_annot: invalid pos",[t])
+            val pos =
+              case Term_Position.decode pos of
+                [] => raise TERM ("dest_term_annot: invalid pos",[t])
+              | pos :: _ => pos
           in ((str,pos),t) end
         | dest_annotated_term t = raise TERM("dest_annot",[t])      
         
@@ -550,8 +552,8 @@ subsection \<open>Parser for IMP Programs\<close>
       in 
         (case args of
           [(c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p] =>
-            (case Term_Position.decode_position p of
-              SOME (pos, _) => c $ parse (s,pos) $ p
+            (case Term_Position.decode_position1 p of
+              SOME pos => c $ parse (s,pos) $ p
             | NONE => err ())
         | _ => err ())
       end

@@ -117,8 +117,10 @@ val _ =
 
 
 fun decode_pos str =
-  case (Term_Position.decode str) of SOME pos => pos
-  | _ => raise Fail "expected position"
+  case Term_Position.decode str of
+    [] => raise Fail "expected position"
+  | pos :: _ => pos
+
 fun unconstrain_var
   (Ast.Appl [Ast.Constant "_constrain", Ast.Variable name, Ast.Variable pos]) =
     (name, decode_pos pos)
@@ -127,7 +129,7 @@ fun unconstrain_var
 fun make_constrained_var sx =
   (Ast.Appl [Ast.Constant "_constrain", Ast.Variable (Symbol_Pos.implode sx),
              Ast.Variable (Term_Position.encode
-                (Position.range_position (Symbol_Pos.range sx)))])
+                [Position.range_position (Symbol_Pos.range sx)])])
 fun implode_pos x = (Symbol_Pos.implode_range (Symbol_Pos.range x) x) |>
   (fn (x,y) => (x,Position.range_position y))
 fun splitFormulaParts x = x |> unconstrain_var |> Symbol_Pos.explode |>
@@ -150,7 +152,7 @@ fun dropConstraints (Const ("_constrain", _) $ x $ _) = dropConstraints x
 
 local
 fun constrain (name, pos) = Ast.mk_appl (Ast.Constant "_constrain")
-  [Ast.Variable name, Ast.Variable (Term_Position.encode pos)]
+  [Ast.Variable name, Ast.Variable (Term_Position.encode [pos])]
 in
 fun AOT_split_exe_vars [x] = x |> parseFormulaParts |> map constrain |> 
   map (fn x => Ast.mk_appl (Ast.Constant "_AOT_term_var") [x]) |>
