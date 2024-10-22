@@ -448,17 +448,16 @@ fun arr_mult_var_tr ctxt ps name arr pos vals idxs  =
     | SOME p => heap_var_tr ctxt name p value'
   end;
 
-fun update_tr ctxt ps off_var off_val e
-        (v as Const (@{syntax_const "_antiquoteCur"},_) $ Free (var,_)) =
+fun update_tr ctxt ps off_var off_val e arg =
+  (case arg of
+    v as Const (@{syntax_const "_antiquoteCur"},_) $ Free (var,_) =>
       if Hoare.is_state_var var then atomic_var_tr ctxt ps var e
       else raise TERM ("no proper lvalue", [v])
-  | update_tr ctxt ps off_var off_val e
-        ((v as Const (@{syntax_const "_antiquoteCur"},_) $ Free (hp, _)) $ p) =
+  | (v as Const (@{syntax_const "_antiquoteCur"},_) $ Free (hp, _)) $ p =>
       if Hoare.is_state_var hp
       then heap_var_tr ctxt hp (antiquote_off_tr off_val ctxt antiquoteCur p) e
-      else raise TERM ("no proper lvalue",[v])
-  | update_tr ctxt ps off_var off_val e
-        (v as Const (@{const_syntax list_multsel}, _) $ arr $ idxs) =
+      else raise TERM ("no proper lvalue", [v])
+  | v as Const (@{const_syntax list_multsel}, _) $ arr $ idxs =>
       (case get_arr_mult_var arr of
          SOME (var, pos) =>
             let
@@ -468,7 +467,7 @@ fun update_tr ctxt ps off_var off_val e
               val idxs' = antiquote_off_tr off_val ctxt antiquoteCur idxs;
             in arr_mult_var_tr ctxt ps var arr' pos' e idxs' end
        | NONE =>  raise TERM ("no proper lvalue", [v]))
-  | update_tr ctxt ps off_var off_val e v =
+  | v =>
       (case get_arr_var v of
         SOME (var,pos,idxs) =>
           let
@@ -477,8 +476,7 @@ fun update_tr ctxt ps off_var off_val e
             val arr' = case pos' of NONE => var' | SOME p => var' $ p;
             val idxs' = rev (map (antiquote_off_tr off_val ctxt antiquoteCur) idxs);
           in arr_var_tr ctxt ps var arr' pos' e idxs' end
-      | NONE => raise TERM ("no proper lvalue", [v]))
-  | update_tr _ _ _ _ e t = raise TERM ("update_tr", [t])
+      | NONE => raise TERM ("no proper lvalue", [v])))
 
 
 fun app_assign_tr f ctxt [v, e] =
@@ -521,7 +519,9 @@ fun basic_tr ctxt [t] =
     (Abs ("s", dummyT,
       antiquote_tr ctxt @{syntax_const "_antiquoteCur"} (Term.incr_boundvars 1 t) $ Bound 0));
 
-fun init_tr ctxt [Const (var,_),comp,value] =
+fun init_tr ctxt args =
+  (case args of
+    [Const (var,_),comp,value] =>
       let
         fun dest_set (Const (@{const_syntax Set.empty}, _)) = []
           | dest_set (Const (@{const_syntax insert}, _) $ x $ xs) = x :: dest_set xs;
@@ -554,7 +554,7 @@ fun init_tr ctxt [Const (var,_),comp,value] =
       in
         Syntax.const @{const_syntax Basic} $ Abs ("s", dummyT, upd)
       end
-  | init_tr _ _ = raise Match;
+  | _ => raise Match);
 
 
 fun new_tr ctxt (ts as [var,size,init]) =
