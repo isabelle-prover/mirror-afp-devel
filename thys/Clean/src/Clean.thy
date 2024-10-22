@@ -988,7 +988,7 @@ struct
 
     fun transform_term0 abs scope_var tm =
       case tm of
-         Const (@{const_name "Clean.syntax_assign"}, _)
+         Const ("_type_constraint_", _) $ Const (@{const_name "Clean.syntax_assign"}, _)
          $ (t1 as Const ("_type_constraint_", _) $ Const (name, ty))
          $ t2 =>
             Const ( case scope_var name of

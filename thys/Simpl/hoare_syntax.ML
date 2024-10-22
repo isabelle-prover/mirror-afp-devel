@@ -449,7 +449,7 @@ fun arr_mult_var_tr ctxt ps name arr pos vals idxs  =
   end;
 
 fun update_tr ctxt ps off_var off_val e arg =
-  (case arg of
+  (case Term_Position.strip_positions arg of
     v as Const (@{syntax_const "_antiquoteCur"},_) $ Free (var,_) =>
       if Hoare.is_state_var var then atomic_var_tr ctxt ps var e
       else raise TERM ("no proper lvalue", [v])
@@ -520,7 +520,7 @@ fun basic_tr ctxt [t] =
       antiquote_tr ctxt @{syntax_const "_antiquoteCur"} (Term.incr_boundvars 1 t) $ Bound 0));
 
 fun init_tr ctxt args =
-  (case args of
+  (case map Term_Position.strip_positions args of
     [Const (var,_),comp,value] =>
       let
         fun dest_set (Const (@{const_syntax Set.empty}, _)) = []
