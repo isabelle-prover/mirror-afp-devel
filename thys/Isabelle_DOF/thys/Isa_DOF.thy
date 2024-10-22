@@ -61,6 +61,8 @@ theory Isa_DOF                (* Isabelle Document Ontology Framework *)
   
 begin
 
+declare [[const_syntax_legacy]]  (* FIXME tmp *)
+
 text\<open> @{footnote \<open>sdf\<close>}, @{file "$ISABELLE_HOME/src/Pure/ROOT.ML"}\<close> 
 
 section\<open>Primitive Markup Generators\<close>
