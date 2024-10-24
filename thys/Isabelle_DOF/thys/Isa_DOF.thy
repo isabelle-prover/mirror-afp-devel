@@ -61,8 +61,6 @@ theory Isa_DOF                (* Isabelle Document Ontology Framework *)
   
 begin
 
-declare [[const_syntax_legacy]]  (* FIXME tmp *)
-
 text\<open> @{footnote \<open>sdf\<close>}, @{file "$ISABELLE_HOME/src/Pure/ROOT.ML"}\<close> 
 
 section\<open>Primitive Markup Generators\<close>
@@ -878,6 +876,14 @@ val long_doc_class_prefix = ISA_prefix ^ "long_doc_class_"
 
 fun is_ISA s = String.isPrefix ISA_prefix (Long_Name.base_name s)
 
+val strip_positions_is_ISA =
+  let
+    fun strip ((t as Const ("_type_constraint_", \<^Type>\<open>fun A _\<close>)) $ (u as Const (s,_))) =
+          if Term_Position.detect_positionT A andalso is_ISA s then u else t $ u
+      | strip (t $ u) = strip t $ strip u
+      | strip (Abs (a, T, b)) = Abs (a, T, strip b)
+      | strip t = t;
+  in strip end;
 
 fun transduce_term_global {mk_elaboration=mk_elaboration} (term,pos) thy =
     (* pre: term should be fully typed in order to allow type-related term-transformations *)
@@ -910,24 +916,27 @@ fun transduce_term_global {mk_elaboration=mk_elaboration} (term,pos) thy =
                 else Const(s, ty)
           | T(Abs(s,ty,t)) = Abs(s,ty,T t)
           | T t = t
-    in T term end
+    in T (strip_positions_is_ISA term) end
 
 (* Elaborate an Isabelle_DOF term-antiquotation from an only parsed-term (not checked) *)
-fun parsed_elaborate ctxt pos (Const(s,ty) $ t) =
-        if is_ISA s
-        then Syntax.check_term ctxt (Const(s, ty) $ t)
-             |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-        else (Const(s,ty) $ (parsed_elaborate ctxt pos t))
-  | parsed_elaborate ctxt pos (t1 $ t2) = parsed_elaborate ctxt pos (t1) $ parsed_elaborate ctxt pos (t2)
-  | parsed_elaborate ctxt pos (Const(s,ty)) =
-        if is_ISA s
-        then Syntax.check_term ctxt (Const(s, ty))
-             |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-        else Const(s,ty)
-  | parsed_elaborate ctxt pos (Abs(s,ty,t)) = Abs (s,ty,parsed_elaborate ctxt pos t)
-  | parsed_elaborate _ _ t = t
+fun parsed_elaborate ctxt pos  =
+  let
+    fun elaborate (Const(s,ty) $ t) =
+            if is_ISA s
+            then Syntax.check_term ctxt (Const(s, ty) $ t)
+                 |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+            else (Const(s,ty) $ (elaborate t))
+      | elaborate (t1 $ t2) = elaborate (t1) $ elaborate (t2)
+      | elaborate (Const(s,ty)) =
+            if is_ISA s
+            then Syntax.check_term ctxt (Const(s, ty))
+                 |> (fn t => transduce_term_global {mk_elaboration=true} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+            else Const(s,ty)
+      | elaborate (Abs(s,ty,t)) = Abs (s,ty,elaborate t)
+      | elaborate t = t
+  in elaborate o strip_positions_is_ISA end
 
 fun elaborate_term' ctxt parsed_term = parsed_elaborate ctxt Position.none parsed_term
 
@@ -940,23 +949,26 @@ fun check_term ctxt term = transduce_term_global {mk_elaboration=false}
                                                               (Proof_Context.theory_of ctxt)
 
 (* Check an Isabelle_DOF term-antiquotation from an only parsed-term (not checked) *)
-fun parsed_check ctxt pos (Const(s,ty) $ t) =
-        if is_ISA s
-        then let val _ = Syntax.check_term ctxt (Const(s, ty) $ t)
-                         |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-             in (Const(s,ty) $ (parsed_check ctxt pos t)) end
-        else (Const(s,ty) $ (parsed_check ctxt pos t))
-  | parsed_check ctxt pos (t1 $ t2) = parsed_check ctxt pos (t1) $ parsed_check ctxt pos (t2)
-  | parsed_check ctxt pos (Const(s,ty)) =
-        if is_ISA s
-        then let val _ = Syntax.check_term ctxt (Const(s, ty))
-                         |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
-                                  (Proof_Context.theory_of ctxt))
-             in Const(s,ty) end
-        else Const(s,ty)
-  | parsed_check ctxt pos (Abs(s,ty,t)) = Abs (s,ty,parsed_check ctxt pos t)
-  | parsed_check _ _ t = t
+fun parsed_check ctxt pos =
+  let
+    fun check (Const(s,ty) $ t) =
+            if is_ISA s
+            then let val _ = Syntax.check_term ctxt (Const(s, ty) $ t)
+                             |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+                 in (Const(s,ty) $ (check t)) end
+            else (Const(s,ty) $ (check t))
+      | check (t1 $ t2) = check (t1) $ check (t2)
+      | check (Const(s,ty)) =
+            if is_ISA s
+            then let val _ = Syntax.check_term ctxt (Const(s, ty))
+                             |> (fn t => transduce_term_global {mk_elaboration=false} (t , pos)
+                                      (Proof_Context.theory_of ctxt))
+                 in Const(s,ty) end
+            else Const(s,ty)
+      | check (Abs(s,ty,t)) = Abs (s,ty,check t)
+      | check t = t
+  in check o strip_positions_is_ISA end
 
 fun check_term' ctxt parsed_term = parsed_check ctxt Position.none parsed_term
 
