@@ -34,7 +34,7 @@ abbreviation bin_word_a  :: "binA list" (\<open>\<aa>\<close>) where
 abbreviation bin_word_b :: "binA list" (\<open>\<bb>\<close>) where
   "bin_word_b \<equiv> [binb]"
 
-abbreviation binUNIV :: "binA set" where "binUNIV \<equiv> UNIV"
+abbreviation (input) binUNIV :: "binA set" where "binUNIV \<equiv> UNIV"
 
 lemma binUNIV_I [simp, intro]: "bina \<in> A \<Longrightarrow> binb \<in> A \<Longrightarrow> A = UNIV"
   unfolding UNIV_finite_2 by auto

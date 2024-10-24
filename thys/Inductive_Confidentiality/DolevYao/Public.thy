@@ -43,11 +43,11 @@ abbreviation
 text\<open>These abbreviations give backward compatibility.  They represent the
 simple situation where the signature and encryption keys are the same.\<close>
 
-abbreviation
+abbreviation (input)
   pubK :: "agent => key" where
   "pubK A == pubEK A"
 
-abbreviation
+abbreviation (input)
   priK :: "agent => key" where
   "priK A == invKey (pubEK A)"
 

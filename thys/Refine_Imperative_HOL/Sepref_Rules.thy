@@ -307,7 +307,7 @@ begin
   text \<open>This section contains the lemmas. The ML code is further down. \<close>
 
   abbreviation "id_assn \<equiv> pure Id"
-  abbreviation "unit_assn \<equiv> id_assn :: unit \<Rightarrow> _"
+  abbreviation (input) "unit_assn \<equiv> id_assn :: unit \<Rightarrow> _"
 
   lemma pure_unit_rel_eq_empty: "unit_assn x y = emp"  
     by (auto simp: pure_def)
