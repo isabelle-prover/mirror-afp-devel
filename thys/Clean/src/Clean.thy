@@ -987,18 +987,25 @@ struct
     fun assign_update var = var ^ Record.updateN
 
     fun transform_term0 abs scope_var tm =
-      case tm of
-         Const ("_type_constraint_", _) $ Const (@{const_name "Clean.syntax_assign"}, _)
-         $ (t1 as Const ("_type_constraint_", _) $ Const (name, ty))
-         $ t2 =>
-            Const ( case scope_var name of
-                      SOME true => @{const_name "assign_global"}
-                    | SOME false => @{const_name "assign_local"}
-                    | NONE => raise TERM ("mk_assign", [t1])
-                  , dummyT)
-            $ Const(assign_update name, ty)
-            $ abs t2
-       | _ => abs tm
+      let
+        fun transform t1 t2 name ty =
+          Const ( case scope_var name of
+                    SOME true => @{const_name "assign_global"}
+                  | SOME false => @{const_name "assign_local"}
+                  | NONE => raise TERM ("mk_assign", [t1])
+                , dummyT)
+          $ Const(assign_update name, ty)
+          $ abs t2
+      in
+        case tm of
+           Const ("_type_constraint_", _) $ Const (@{const_name "Clean.syntax_assign"}, _)
+           $ (t1 as Const ("_type_constraint_", _) $ Const (name, ty))
+           $ t2 => transform t1 t2 name ty
+         | Const (@{const_name "Clean.syntax_assign"}, _)
+           $ (t1 as Const ("_type_constraint_", _) $ Const (name, ty))
+           $ t2 => transform t1 t2 name ty
+         | _ => abs tm
+      end
 
     fun transform_term st sty =
       transform_term0
