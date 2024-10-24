@@ -1287,15 +1287,14 @@ fun declare_ISA_class_accessor_and_check_instance (params, doc_class_name, bind_
     fun mixfix_enclose name = name |> enclose "@{"  " _}"
     val mixfix = clean_mixfix bname |> mixfix_enclose
     val mixfix' = clean_mixfix doc_class_name |> mixfix_enclose
+    fun add_const (b, T, mx) =
+      Sign.add_consts [(b, T, mx)] #>
+      DOF_core.add_isa_transformer b
+        ((check_instance, elaborate_instance) |> DOF_core.make_isa_transformer)
   in
     thy |> rm_mixfix bname' mixfix
-        |> Sign.add_consts [(bind, const_typ, Mixfix.mixfix mixfix)]
-        |> DOF_core.add_isa_transformer bind ((check_instance, elaborate_instance)
-                                               |> DOF_core.make_isa_transformer)
-        |> Sign.add_consts [(bind', const_typ, Mixfix.mixfix mixfix')]
-        |> DOF_core.add_isa_transformer bind' ((check_instance, elaborate_instance)
-                                                |> DOF_core.make_isa_transformer)
-
+        |> add_const (bind, const_typ, Mixfix.mixfix mixfix)
+        |> add_const (bind', const_typ, Mixfix.mixfix mixfix')
   end
 
 fun elaborate_instances_of thy _ _ term_option _ =
