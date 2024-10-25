@@ -1,13 +1,12 @@
 chapter AFP
 
-session IMP_With_Speculation = 
-  Secret_Directed_Unwinding + 
+session IMP_With_Speculation = Secret_Directed_Unwinding +
   options [timeout = 900]
-  directories 
+  directories
     Examples
     IMP
     Instance_IMP
-  theories [document = false] 
+  theories [document = false]
     Language_Prelims
   theories
     Language_Syntax
@@ -26,7 +25,7 @@ session IMP_With_Speculation =
     Fun4
     Fun4_secure
     Fun5
-    Fun5_secure    
+    Fun5_secure
     Fun6
     Fun6_secure
   document_files
