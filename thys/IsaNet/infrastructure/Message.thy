@@ -35,11 +35,9 @@ datatype msgterm =
 
 text \<open>Syntax sugar\<close>
 syntax
-  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"       (\<open>(2\<langle>_,/ _\<rangle>)\<close>)
-
+  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"       (\<open>(\<open>indent=2 notation=\<open>mixfix message tuple\<close>\<close>\<langle>_,/ _\<rangle>)\<close>)
 syntax_consts
   "_MTuple" \<rightleftharpoons> MPair
-
 translations
   "\<langle>x, y, z\<rangle>" \<rightleftharpoons> "\<langle>x, \<langle>y, z\<rangle>\<rangle>"
   "\<langle>x, y\<rangle>"    \<rightleftharpoons> "CONST MPair x y"

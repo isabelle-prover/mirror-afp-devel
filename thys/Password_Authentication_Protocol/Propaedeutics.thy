@@ -422,7 +422,7 @@ datatype msg =
   MPair     msg msg
 
 syntax
-  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"  (\<open>(2\<lbrace>_,/ _\<rbrace>)\<close>)
+  "_MTuple" :: "['a, args] \<Rightarrow> 'a * 'b"  (\<open>(\<open>indent=2 notation=\<open>mixfix message tuple\<close>\<close>\<lbrace>_,/ _\<rbrace>)\<close>)
 syntax_consts
   "_MTuple" \<rightleftharpoons> MPair
 translations

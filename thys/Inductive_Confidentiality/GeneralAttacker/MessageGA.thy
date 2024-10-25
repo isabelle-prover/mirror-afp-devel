@@ -40,7 +40,7 @@ datatype
 
 text\<open>Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...\<close>
 syntax
-  "_MTuple"      :: "['a, args] => 'a * 'b"       (\<open>(2\<lbrace>_,/ _\<rbrace>)\<close>)
+  "_MTuple"      :: "['a, args] => 'a * 'b"  (\<open>(\<open>indent=2 notation=\<open>mixfix message tuple\<close>\<close>\<lbrace>_,/ _\<rbrace>)\<close>)
 syntax_consts
   "_MTuple"     == MPair
 translations
