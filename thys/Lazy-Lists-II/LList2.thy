@@ -21,10 +21,6 @@ notation
   LCons  (infixr \<open>##\<close> 65) and
   lappend  (infixr \<open>@@\<close> 65)
 
-translations
-  "case p of XCONST LNil \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightleftharpoons> "CONST case_llist a (\<lambda>x l. b) p"
-  "case p of XCONST LNil :: 'a \<Rightarrow> a | x ## l \<Rightarrow> b" \<rightharpoonup> "CONST case_llist a (\<lambda>x l. b) p"
-
 
 lemmas llistE = llist.exhaust
 
