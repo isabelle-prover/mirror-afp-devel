@@ -7,10 +7,7 @@ section \<open>Hide legacy nondet monad from user\<close>
 
 hide_const L2Defs.gets_theE
 
-
-
-
-no_notation L1Valid.validE (\<open>\<lbrace>_\<rbrace>/ _ /(\<lbrace>_\<rbrace>,/ \<lbrace>_\<rbrace>)\<close>)
+unbundle no L1Valid.validE_syntax
 hide_const L1Valid.validE
 
 
@@ -79,14 +76,14 @@ nonterminal
   dobinds and dobind and nobind
 
 syntax (input)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             (\<open>(_ \<leftarrow>/ _)\<close> 10)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             (\<open>(_ <-/ _)\<close> 10)
-  ""           :: "dobind => dobinds"                 (\<open>_\<close>)
-  "_nobind"    :: "'a => dobind"                      (\<open>_\<close>)
-  "_dobinds"   :: "[dobind, dobinds] => dobinds"      (\<open>(_);//(_)\<close>)
+  "_dobind"    :: "[pttrn, 'a] => dobind"  (\<open>(\<open>notation=\<open>infix bind\<close>\<close>_ \<leftarrow>/ _)\<close> 10)
+  "_dobind"    :: "[pttrn, 'a] => dobind"  (\<open>(\<open>notation=\<open>infix bind\<close>\<close>_ <-/ _)\<close> 10)
+  ""           :: "dobind => dobinds"  (\<open>_\<close>)
+  "_nobind"    :: "'a => dobind"  (\<open>_\<close>)
+  "_dobinds"   :: "[dobind, dobinds] => dobinds"  (\<open>(\<open>open_block notation=\<open>infix do next\<close>\<close>(_);//(_))\<close>)
 
-  "_do"        :: "[dobinds, 'a] => 'a"               (\<open>(do ((_);//(_))//od)\<close> 100)
-  "_doE" :: "[dobinds, 'a] => 'a"  (\<open>(doE ((_);//(_))//odE)\<close> 100)
+  "_do"        :: "[dobinds, 'a] => 'a"  (\<open>(\<open>notation=\<open>mixfix do block\<close>\<close>do ((_);//(_))//od)\<close> 100)
+  "_doE" :: "[dobinds, 'a] => 'a"  (\<open>(\<open>notation=\<open>mixfix doE block\<close>\<close>doE ((_);//(_))//odE)\<close> 100)
 
 syntax_consts
   "_do" \<rightleftharpoons> bind_nd and
@@ -105,7 +102,7 @@ term "doE x <- f; g x odE"
 term "do x <- f; g x od"
 
 syntax
-  "_doO" :: "[dobinds, 'a] => 'a"  (\<open>(DO (_);//   (_)//OD)\<close> 100)
+  "_doO" :: "[dobinds, 'a] => 'a"  (\<open>(\<open>notation=\<open>mixfix DO block\<close>\<close>DO (_);//   (_)//OD)\<close> 100)
 
 syntax_consts
   "_doO" == obind

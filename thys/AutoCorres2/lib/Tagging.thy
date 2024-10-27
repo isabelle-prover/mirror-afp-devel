@@ -16,11 +16,11 @@ subsection \<open>Basic Definitions and Theorems\<close>
 definition ASM_TAG (\<open>\<paragraph>\<close>) where
   "ASM_TAG t \<equiv> True"
 
-definition TAG :: "'b \<Rightarrow> 'a :: {} \<Rightarrow> 'a" (\<open>_ \<bar> _\<close> [13, 13] 14) where
-  \<open>TAG t x \<equiv> x\<close>
+definition TAG :: "'b \<Rightarrow> 'a :: {} \<Rightarrow> 'a"  (\<open>(\<open>open_block notation=\<open>infix TAG\<close>\<close>_ \<bar> _)\<close> [13, 13] 14)
+  where \<open>TAG t x \<equiv> x\<close>
 
-abbreviation tag_prop (\<open>_ \<bar>\<bar> _\<close> [0, 0] 0) where
-  "tag_prop t x \<equiv> PROP TAG t x"
+abbreviation tag_prop  (\<open>(\<open>open_block notation=\<open>infix TAG\<close>\<close>_ \<bar>\<bar> _)\<close> [0, 0] 0)
+  where "tag_prop t x \<equiv> PROP TAG t x"
 
 lemma TAG_cong[cong]: "x \<equiv> y \<Longrightarrow> (tag \<bar> x) \<equiv> tag \<bar> (y::'a::{})"
   by simp

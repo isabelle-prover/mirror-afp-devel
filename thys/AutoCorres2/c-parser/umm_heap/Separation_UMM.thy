@@ -49,39 +49,44 @@ text \<open>
 \<close>
 
 definition
-  sep_map :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<mapsto>\<^bsub>_\<^esub> _\<close> [56,0,51] 56)
+  sep_map :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map\<close>\<close>_ \<mapsto>\<^bsub>_\<^esub> _)\<close> [56,0,51] 56)
 where
   "p \<mapsto>\<^bsub>g\<^esub> v \<equiv> \<lambda>s. lift_typ_heap g s p = Some v \<and> dom s = s_footprint p \<and> wf_heap_val s"
 
 notation (input)
-  sep_map (\<open>_ \<mapsto>\<^sub>_ _\<close> [56,1000,51] 56)
+  sep_map (\<open>(\<open>open_block notation=\<open>mixfix sep_map\<close>\<close>_ \<mapsto>\<^sub>_ _)\<close> [56,1000,51] 56)
 
 definition
-  sep_map_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert" (\<open>_ \<mapsto>\<^bsub>_\<^esub> -\<close> [56,0] 56)
+  sep_map_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map_any\<close>\<close>_ \<mapsto>\<^bsub>_\<^esub> -)\<close> [56,0] 56)
 where
   "p \<mapsto>\<^bsub>g\<^esub> - \<equiv> \<lambda>s. \<exists>v. (p \<mapsto>\<^sub>g v) s"
 
 notation (input)
-  sep_map_any (\<open>_ \<mapsto>\<^sub>_ -\<close> [56,0] 56)
+  sep_map_any (\<open>(\<open>open_block notation=\<open>mixfix sep_map_any\<close>\<close>_ \<mapsto>\<^sub>_ -)\<close> [56,0] 56)
 
 definition
-  sep_map' :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>\<^bsub>_\<^esub> _\<close> [56,0,51] 56)
+  sep_map' :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map'\<close>\<close>_ \<hookrightarrow>\<^bsub>_\<^esub> _)\<close> [56,0,51] 56)
 where
   "p \<hookrightarrow>\<^bsub>g\<^esub> v \<equiv> (p \<mapsto>\<^bsub>g\<^esub> v) \<and>\<^sup>* sep_true"
 
 notation (input)
-  sep_map' (\<open>_ \<hookrightarrow>\<^sub>_ _\<close> [56,1000,51] 56)
+  sep_map' (\<open>(\<open>open_block notation=\<open>mixfix sep_map'\<close>\<close>_ \<hookrightarrow>\<^sub>_ _)\<close> [56,1000,51] 56)
 
 definition
-  sep_map'_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard  \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>\<^bsub>_\<^esub> -\<close> [56,0] 56)
+  sep_map'_any :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard  \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map'_any\<close>\<close>_ \<hookrightarrow>\<^bsub>_\<^esub> -)\<close> [56,0] 56)
 where
   "p \<hookrightarrow>\<^bsub>g\<^esub> - \<equiv> \<lambda>s. \<exists>x. (p \<hookrightarrow>\<^sub>g x) s"
 
 notation (input)
-  sep_map'_any (\<open>_ \<hookrightarrow>\<^sub>_ -\<close> [56,0] 56)
+  sep_map'_any (\<open>(\<open>open_block notation=\<open>mixfix sep_map'_any\<close>\<close>_ \<hookrightarrow>\<^sub>_ -)\<close> [56,0] 56)
 
 syntax
-  "_sep_assert" :: "bool \<Rightarrow> heap_state \<Rightarrow> bool" (\<open>'(_')\<^bsup>sep\<^esup>\<close> [0] 100)
+  "_sep_assert" :: "bool \<Rightarrow> heap_state \<Rightarrow> bool"
+    (\<open>(\<open>open_block notation=\<open>mixfix assertion\<close>\<close>'(_')\<^bsup>sep\<^esup>)\<close> [0] 100)
 
 
 text \<open>----\<close>

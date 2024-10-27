@@ -68,7 +68,7 @@ end
 \<close>
 
 syntax
-  "_Ptr" :: "type \<Rightarrow> logic" (\<open>(1PTR/(1'(_')))\<close>)
+  "_Ptr" :: "type \<Rightarrow> logic" (\<open>(\<open>indent=1 notation=\<open>mixfix PTR\<close>\<close>PTR/(1'(_')))\<close>)
 syntax_consts
   "_Ptr" == Ptr
 translations
@@ -86,7 +86,8 @@ primrec
   "ptr_coerce (Ptr a) = Ptr a"
 
 syntax
-  "_Ptr_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic" (\<open>(1PTR'_COERCE/(1'(_ \<rightarrow> _')))\<close>)
+  "_Ptr_coerce" :: "type \<Rightarrow> type \<Rightarrow> logic"
+    (\<open>(\<open>indent=1 notation=\<open>mixfix PTR_COERCE\<close>\<close>PTR'_COERCE/(\<open>indent=1 notation=\<open>infix coerce\<close>\<close>'(_ \<rightarrow> _')))\<close>)
 syntax_consts
   "_Ptr_coerce" == ptr_coerce
 translations
@@ -154,8 +155,9 @@ definition
   "intvl x \<equiv> {z. \<exists>k. z = fst x + of_nat k \<and> k < snd x}"
 
 abbreviation
-  "intvl_abbr" :: "'a::len word \<Rightarrow> nat \<Rightarrow> 'a word set" (\<open>{_..+_}\<close>) where
-  "{a..+b} \<equiv> intvl (a,b)"
+  "intvl_abbr" :: "'a::len word \<Rightarrow> nat \<Rightarrow> 'a word set"
+    (\<open>(\<open>open_block notation=\<open>mixfix intvl\<close>\<close>{_..+_})\<close>)
+  where "{a..+b} \<equiv> intvl (a,b)"
 
 
 section "\<open>dt_tuple\<close>: a reimplementation of 3 item tuples"

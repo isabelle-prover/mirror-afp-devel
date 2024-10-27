@@ -201,8 +201,9 @@ definition
  "fromEnumAlt x \<equiv> THE n. enum_alt n = Some x"
 
 definition
-  upto_enum :: "('a :: enumeration_alt) \<Rightarrow> 'a \<Rightarrow> 'a list" (\<open>(1[_ .e. _])\<close>) where
- "upto_enum n m \<equiv> map toEnumAlt [fromEnumAlt n ..< Suc (fromEnumAlt m)]"
+  upto_enum :: "('a :: enumeration_alt) \<Rightarrow> 'a \<Rightarrow> 'a list"
+    (\<open>(\<open>indent=1 notation=\<open>mixfix upto_enum\<close>\<close>[_ .e. _])\<close>)
+  where "[n .e. m] \<equiv> map toEnumAlt [fromEnumAlt n ..< Suc (fromEnumAlt m)]"
 
 lemma fromEnum_alt_red[simp]:
   "fromEnumAlt = (fromEnum :: ('a :: enumeration_both) \<Rightarrow> nat)"

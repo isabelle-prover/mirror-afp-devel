@@ -25,36 +25,40 @@ text \<open>
 \<close>
 
 definition
-  sep_map_inv :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<mapsto>\<^sup>i\<^bsub>_\<^esub> _\<close> [56,0,51] 56)
+  sep_map_inv :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map_inv\<close>\<close>_ \<mapsto>\<^sup>i\<^bsub>_\<^esub> _)\<close> [56,0,51] 56)
 where
   "p \<mapsto>\<^sup>i\<^bsub>g\<^esub> v \<equiv> p \<mapsto>\<^sub>g v \<and>\<^sup>* inv_footprint p"
 
 notation (input)
-  sep_map_inv (\<open>_ \<mapsto>\<^sup>i\<^sub>_ _\<close> [56,1000,51] 56)
+  sep_map_inv (\<open>(\<open>open_block notation=\<open>mixfix sep_map_inv\<close>\<close>_ \<mapsto>\<^sup>i\<^sub>_ _)\<close> [56,1000,51] 56)
 
 definition
-  sep_map_any_inv :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert" (\<open>_ \<mapsto>\<^sup>i\<^bsub>_\<^esub> -\<close> [56,0] 56)
+  sep_map_any_inv :: "'a ::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map_any_inv\<close>\<close>_ \<mapsto>\<^sup>i\<^bsub>_\<^esub> -)\<close> [56,0] 56)
 where
   "p \<mapsto>\<^sup>i\<^bsub>g\<^esub> - \<equiv> p \<mapsto>\<^sub>g - \<and>\<^sup>* inv_footprint p"
 
 notation (input)
-  sep_map_any_inv (\<open>_ \<mapsto>\<^sup>i\<^sub>_ -\<close> [56,0] 56)
+  sep_map_any_inv (\<open>(\<open>open_block notation=\<open>mixfix sep_map_any_inv\<close>\<close>_ \<mapsto>\<^sup>i\<^sub>_ -)\<close> [56,0] 56)
 
 definition
-  sep_map'_inv :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>\<^sup>i\<^bsub>_\<^esub> _\<close> [56,0,51] 56)
+  sep_map'_inv :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> 'a \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map'_inv\<close>\<close>_ \<hookrightarrow>\<^sup>i\<^bsub>_\<^esub> _)\<close> [56,0,51] 56)
 where
   "p \<hookrightarrow>\<^sup>i\<^bsub>g\<^esub> v \<equiv> p \<hookrightarrow>\<^sub>g v \<and>\<^sup>* inv_footprint p"
 
 notation (input)
-  sep_map'_inv (\<open>_ \<hookrightarrow>\<^sup>i\<^sub>_ _\<close> [56,1000,51] 56)
+  sep_map'_inv (\<open>(\<open>open_block notation=\<open>mixfix sep_map'_inv\<close>\<close>_ \<hookrightarrow>\<^sup>i\<^sub>_ _)\<close> [56,1000,51] 56)
 
 definition
-  sep_map'_any_inv :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert" (\<open>_ \<hookrightarrow>\<^sup>i\<^bsub>_\<^esub> -\<close> [56,0] 56)
+  sep_map'_any_inv :: "'a::c_type ptr \<Rightarrow> 'a ptr_guard \<Rightarrow> heap_assert"
+    (\<open>(\<open>open_block notation=\<open>mixfix sep_map'_any_inv\<close>\<close>_ \<hookrightarrow>\<^sup>i\<^bsub>_\<^esub> -)\<close> [56,0] 56)
 where
   "p \<hookrightarrow>\<^sup>i\<^bsub>g\<^esub> - \<equiv> p \<hookrightarrow>\<^sub>g - \<and>\<^sup>* inv_footprint p"
 
 notation (input)
-  sep_map'_any_inv (\<open>_ \<hookrightarrow>\<^sup>i\<^sub>_ -\<close> [56,0] 56)
+  sep_map'_any_inv (\<open>(\<open>open_block notation=\<open>mixfix sep_map'_any_inv\<close>\<close>_ \<hookrightarrow>\<^sup>i\<^sub>_ -)\<close> [56,0] 56)
 
 definition
   tagd_inv :: "'a ptr_guard \<Rightarrow> 'a::c_type ptr \<Rightarrow> heap_assert" (infix \<open>\<turnstile>\<^sub>s\<^sup>i\<close> 100)

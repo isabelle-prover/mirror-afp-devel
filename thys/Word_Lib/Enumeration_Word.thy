@@ -45,10 +45,10 @@ instance
 end
 
 definition
-  upto_enum_step :: "('a :: len) word \<Rightarrow> 'a word \<Rightarrow> 'a word \<Rightarrow> 'a word list" (\<open>[_ , _ .e. _]\<close>)
+  upto_enum_step :: "('a :: len) word \<Rightarrow> 'a word \<Rightarrow> 'a word \<Rightarrow> 'a word list"
+    (\<open>(\<open>notation=\<open>mixfix upto_enum_step\<close>\<close>[_ , _ .e. _])\<close>)
 where
-  "upto_enum_step a b c \<equiv>
-      if c < a then [] else map (\<lambda>x. a + x * (b - a)) [0 .e. (c - a) div (b - a)]"
+  "[a , b .e. c] \<equiv> if c < a then [] else map (\<lambda>x. a + x * (b - a)) [0 .e. (c - a) div (b - a)]"
   (* in the wraparound case, bad things happen. *)
 
 lemma maxBound_word:

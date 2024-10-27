@@ -82,11 +82,13 @@ lemma forall_finite_index:
 
 section \<open>Finite Cartesian Products\<close>
 
-typedef ('a,'n::finite) array (\<open>_[_]\<close> [30,0] 31) = "UNIV :: ('n => 'a) set"
+typedef ('a,'n::finite) array
+    (\<open>(\<open>open_block notation=\<open>mixfix array\<close>\<close>_[_])\<close> [30,0] 31) = "UNIV :: ('n => 'a) set"
   by simp
 setup_lifting type_definition_array
 
-lift_definition index :: "('a,'n::finite) array \<Rightarrow> nat \<Rightarrow> 'a" (\<open>_.[_]\<close> [900,0] 901) is
+lift_definition index :: "('a,'n::finite) array \<Rightarrow> nat \<Rightarrow> 'a"
+    (\<open>(\<open>open_block notation=\<open>mixfix array index\<close>\<close>_.[_])\<close> [900,0] 901) is
   "\<lambda>f i. f (finite_index i)".
  
 lemma index_legacy_def: "index x i = Rep_array x (finite_index i)"

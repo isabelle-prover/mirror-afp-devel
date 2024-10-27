@@ -579,25 +579,33 @@ Attrib.setup \<^binding>\<open>unfold_locals\<close>
 nonterminal localsupdbinds and localsupdbind
 
 syntax
-  "_localsupdbind" :: "'a \<Rightarrow> 'a \<Rightarrow> localsupdbind"             (\<open>(2_ :=\<^sub>\<L>/ _)\<close>)
-  ""         :: "localsupdbind \<Rightarrow> localsupdbinds"             (\<open>_\<close>)
-  "_localsupdbinds":: "localsupdbind \<Rightarrow> localsupdbinds \<Rightarrow> localsupdbinds" (\<open>_,/ _\<close>)
-
+  "_localsupdbind" :: "'a \<Rightarrow> 'a \<Rightarrow> localsupdbind"
+    (\<open>(\<open>indent=2 notation=\<open>infix localsupdbind\<close>\<close>_ :=\<^sub>\<L>/ _)\<close>)
+  ""         :: "localsupdbind \<Rightarrow> localsupdbinds"  (\<open>_\<close>)
+  "_localsupdbinds":: "localsupdbind \<Rightarrow> localsupdbinds \<Rightarrow> localsupdbinds"
+    (\<open>(\<open>open_block notation=\<open>mixfix localsupdbinds\<close>\<close>_,/ _)\<close>)
 
 syntax
-  "_statespace_lookup" :: "locals \<Rightarrow> 'name \<Rightarrow> 'c"  (\<open>_ \<cdot> _\<close> [60, 60] 60)
+  "_statespace_lookup" :: "locals \<Rightarrow> 'name \<Rightarrow> 'c"
+    (\<open>(\<open>open_block notation=\<open>infix statespace_lookup\<close>\<close>_ \<cdot> _)\<close> [60, 60] 60)
   "_statespace_locals_lookup" :: "('g, locals, 'e, 'x) state_scheme \<Rightarrow> 'name \<Rightarrow> 'c"
-    (\<open>_ \<cdot>\<^sub>\<L> _\<close> [60, 60] 60)
+    (\<open>(\<open>open_block notation=\<open>infix statespace_locals_lookup\<close>\<close>_ \<cdot>\<^sub>\<L> _)\<close> [60, 60] 60)
 
   "_statespace_update" :: "locals \<Rightarrow> 'name \<Rightarrow> ('c \<Rightarrow> 'c) \<Rightarrow> locals"
-  "_statespace_updates" :: "locals \<Rightarrow> updbinds \<Rightarrow> locals"  (\<open>_\<langle>_\<rangle>\<close> [900, 0] 900)
+  "_statespace_updates" :: "locals \<Rightarrow> updbinds \<Rightarrow> locals"
+    (\<open>(\<open>open_block notation=\<open>mixfix statespace_updates\<close>\<close>_\<langle>_\<rangle>)\<close> [900, 0] 900)
 
   "_statespace_locals_update" :: "('g, locals, 'e, 'x) state_scheme \<Rightarrow> 'name \<Rightarrow> ('c \<Rightarrow> 'c) \<Rightarrow> ('g, locals, 'e, 'x) state_scheme"
-  "_statespace_locals_updates" :: "locals \<Rightarrow> localsupdbinds \<Rightarrow> locals"  (\<open>_\<langle>_\<rangle>\<close> [900, 0] 900)
+  "_statespace_locals_updates" :: "locals \<Rightarrow> localsupdbinds \<Rightarrow> locals"
+    (\<open>(\<open>open_block notation=\<open>mixfix statespace_locals_updates\<close>\<close>_\<langle>_\<rangle>)\<close> [900, 0] 900)
 
   "_statespace_locals_map" ::
   "'name \<Rightarrow> ('c \<Rightarrow> 'c) \<Rightarrow> ('g, locals, 'e, 'x) state_scheme \<Rightarrow> ('g, locals, 'e, 'x) state_scheme"
-  (\<open>(2_:=\<^sub>\<L>/ _)\<close> [1000, 1000] 1000)
+    (\<open>(\<open>indent=2 notation=\<open>infix statespace_locals_map\<close>\<close>_:=\<^sub>\<L>/ _)\<close> [1000, 1000] 1000)
+
+syntax_consts
+  "_statespace_updates" \<rightleftharpoons> fun_upd and
+  "_statespace_locals_updates" \<rightleftharpoons> locals_update
 
 translations
   "_statespace_updates f (_updbinds b bs)" ==

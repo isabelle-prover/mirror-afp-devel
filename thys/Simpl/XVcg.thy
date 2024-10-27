@@ -18,7 +18,8 @@ by the verification condition generator, while simplifying assertions.
 \<close>
 
 syntax
-"_Let'" :: "[letbinds, basicblock] => basicblock"  (\<open>(LET (_)/ IN (_))\<close> 23)
+  "_Let'" :: "[letbinds, basicblock] => basicblock"
+    (\<open>(\<open>notation=\<open>mixfix LET expression\<close>\<close>LET (_)/ IN (_))\<close> 23)
 
 syntax_consts
   "_Let'" == Let'

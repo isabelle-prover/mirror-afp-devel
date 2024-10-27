@@ -95,7 +95,7 @@ where
   "pred_disj P Q \<equiv> \<lambda>x. P x \<or> Q x"
 
 definition
-  pred_neg :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (\<open>not _\<close> [40] 40)
+  pred_neg :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (\<open>(\<open>open_block notation=\<open>prefix pred_neg\<close>\<close>not _)\<close> [40] 40)
 where
   "pred_neg P \<equiv> \<lambda>x. \<not> P x"
 
