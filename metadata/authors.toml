@@ -4858,13 +4858,12 @@ name = "Yutaka Nagashima"
 
 [nagashima.emails.nagashima_email]
 user = [
-  "Yutaka",
-  "Nagashima",
+  "nagashima",
 ]
 host = [
-  "data61",
-  "csiro",
-  "au",
+  "cs",
+  "cas",
+  "cz",
 ]
 
 [nagashima.homepages]
