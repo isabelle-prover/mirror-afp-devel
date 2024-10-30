@@ -1,0 +1,32 @@
+title = "A Modular Formalization of Superposition"
+date = 2024-10-24
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "Superposition is an efficient proof calculus for reasoning about first-order logic with equality that is implemented in many automatic theorem provers. It works by saturating the given set of clauses and is refutationally complete, meaning that if the set is inconsistent, the saturation will contain a contradiction. In this formalization, we restructured the completeness proof to cleanly separate the ground (i.e., variable-free) and nonground aspects. We relied on the IsaFoR library for first-order terms and on the Isabelle saturation framework. A paper describing this formalization was published at the 15th International Conference on Interactive Theorem Proving (ITP 2024)."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+email = "desharnais_email1"
+
+[authors.toth]
+email = "toth_email1"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email1"
+toth = "toth_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4230/LIPIcs.ITP.2024.12",
+]
+pubs = []

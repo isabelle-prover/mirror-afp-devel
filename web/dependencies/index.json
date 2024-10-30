@@ -11,1641 +11,1651 @@
  },
  {
   "id": 2,
+  "link": "/dependencies/abstract_substitution/",
+  "name": "Abstract_Substitution"
+ },
+ {
+  "id": 3,
   "link": "/dependencies/abstract-rewriting/",
   "name": "Abstract-Rewriting"
  },
  {
-  "id": 3,
+  "id": 4,
   "link": "/dependencies/affine_arithmetic/",
   "name": "Affine_Arithmetic"
  },
  {
-  "id": 4,
+  "id": 5,
   "link": "/dependencies/aggregation_algebras/",
   "name": "Aggregation_Algebras"
  },
  {
-  "id": 5,
+  "id": 6,
   "link": "/dependencies/ai_planning_languages_semantics/",
   "name": "AI_Planning_Languages_Semantics"
  },
  {
-  "id": 6,
+  "id": 7,
   "link": "/dependencies/akra_bazzi/",
   "name": "Akra_Bazzi"
  },
  {
-  "id": 7,
+  "id": 8,
   "link": "/dependencies/algebraic_numbers/",
   "name": "Algebraic_Numbers"
  },
  {
-  "id": 8,
+  "id": 9,
   "link": "/dependencies/amortized_complexity/",
   "name": "Amortized_Complexity"
  },
  {
-  "id": 9,
+  "id": 10,
   "link": "/dependencies/applicative_lifting/",
   "name": "Applicative_Lifting"
  },
  {
-  "id": 10,
+  "id": 11,
   "link": "/dependencies/approximate_model_counting/",
   "name": "Approximate_Model_Counting"
  },
  {
-  "id": 11,
+  "id": 12,
   "link": "/dependencies/auto2_hol/",
   "name": "Auto2_HOL"
  },
  {
-  "id": 12,
+  "id": 13,
   "link": "/dependencies/automatic_refinement/",
   "name": "Automatic_Refinement"
  },
  {
-  "id": 13,
+  "id": 14,
   "link": "/dependencies/awn/",
   "name": "AWN"
  },
  {
-  "id": 14,
+  "id": 15,
   "link": "/dependencies/banach_steinhaus/",
   "name": "Banach_Steinhaus"
  },
  {
-  "id": 15,
+  "id": 16,
   "link": "/dependencies/bd_security_compositional/",
   "name": "BD_Security_Compositional"
  },
  {
-  "id": 16,
+  "id": 17,
   "link": "/dependencies/bell_numbers_spivey/",
   "name": "Bell_Numbers_Spivey"
  },
  {
-  "id": 17,
+  "id": 18,
   "link": "/dependencies/benor_kozen_reif/",
   "name": "BenOr_Kozen_Reif"
  },
  {
-  "id": 18,
+  "id": 19,
   "link": "/dependencies/berlekamp_zassenhaus/",
   "name": "Berlekamp_Zassenhaus"
  },
  {
-  "id": 19,
+  "id": 20,
   "link": "/dependencies/bernoulli/",
   "name": "Bernoulli"
  },
  {
-  "id": 20,
+  "id": 21,
   "link": "/dependencies/bertrands_postulate/",
   "name": "Bertrands_Postulate"
  },
  {
-  "id": 21,
+  "id": 22,
   "link": "/dependencies/binomial-heaps/",
   "name": "Binomial-Heaps"
  },
  {
-  "id": 22,
+  "id": 23,
   "link": "/dependencies/boolean_expression_checkers/",
   "name": "Boolean_Expression_Checkers"
  },
  {
-  "id": 23,
+  "id": 24,
   "link": "/dependencies/bounded_deducibility_security/",
   "name": "Bounded_Deducibility_Security"
  },
  {
-  "id": 24,
+  "id": 25,
   "link": "/dependencies/budan_fourier/",
   "name": "Budan_Fourier"
  },
  {
-  "id": 25,
+  "id": 26,
   "link": "/dependencies/cakeml/",
   "name": "CakeML"
  },
  {
-  "id": 26,
+  "id": 27,
   "link": "/dependencies/card_equiv_relations/",
   "name": "Card_Equiv_Relations"
  },
  {
-  "id": 27,
+  "id": 28,
   "link": "/dependencies/card_multisets/",
   "name": "Card_Multisets"
  },
  {
-  "id": 28,
+  "id": 29,
   "link": "/dependencies/card_number_partitions/",
   "name": "Card_Number_Partitions"
  },
  {
-  "id": 29,
+  "id": 30,
   "link": "/dependencies/card_partitions/",
   "name": "Card_Partitions"
  },
  {
-  "id": 30,
+  "id": 31,
   "link": "/dependencies/cardinality_continuum/",
   "name": "Cardinality_Continuum"
  },
  {
-  "id": 31,
+  "id": 32,
   "link": "/dependencies/case_labeling/",
   "name": "Case_Labeling"
  },
  {
-  "id": 32,
+  "id": 33,
   "link": "/dependencies/category3/",
   "name": "Category3"
  },
  {
-  "id": 33,
+  "id": 34,
   "link": "/dependencies/catoids/",
   "name": "Catoids"
  },
  {
-  "id": 34,
+  "id": 35,
   "link": "/dependencies/cauchy/",
   "name": "Cauchy"
  },
  {
-  "id": 35,
+  "id": 36,
   "link": "/dependencies/cava_automata/",
   "name": "CAVA_Automata"
  },
  {
-  "id": 36,
+  "id": 37,
   "link": "/dependencies/cayley_hamilton/",
   "name": "Cayley_Hamilton"
  },
  {
-  "id": 37,
+  "id": 38,
   "link": "/dependencies/certification_monads/",
   "name": "Certification_Monads"
  },
  {
-  "id": 38,
+  "id": 39,
   "link": "/dependencies/closest_pair_points/",
   "name": "Closest_Pair_Points"
  },
  {
-  "id": 39,
+  "id": 40,
   "link": "/dependencies/coinductive/",
   "name": "Coinductive"
  },
  {
-  "id": 40,
+  "id": 41,
   "link": "/dependencies/coinductive_languages/",
   "name": "Coinductive_Languages"
  },
  {
-  "id": 41,
+  "id": 42,
   "link": "/dependencies/collections/",
   "name": "Collections"
  },
  {
-  "id": 42,
+  "id": 43,
   "link": "/dependencies/combinatorics_words/",
   "name": "Combinatorics_Words"
  },
  {
-  "id": 43,
+  "id": 44,
   "link": "/dependencies/combinatorics_words_graph_lemma/",
   "name": "Combinatorics_Words_Graph_Lemma"
  },
  {
-  "id": 44,
+  "id": 45,
   "link": "/dependencies/commuting_hermitian/",
   "name": "Commuting_Hermitian"
  },
  {
-  "id": 45,
+  "id": 46,
   "link": "/dependencies/comparison_sort_lower_bound/",
   "name": "Comparison_Sort_Lower_Bound"
  },
  {
-  "id": 46,
+  "id": 47,
   "link": "/dependencies/complete_non_orders/",
   "name": "Complete_Non_Orders"
  },
  {
-  "id": 47,
+  "id": 48,
   "link": "/dependencies/complex_bounded_operators/",
   "name": "Complex_Bounded_Operators"
  },
  {
-  "id": 48,
+  "id": 49,
   "link": "/dependencies/complex_geometry/",
   "name": "Complex_Geometry"
  },
  {
-  "id": 49,
+  "id": 50,
   "link": "/dependencies/concentration_inequalities/",
   "name": "Concentration_Inequalities"
  },
  {
-  "id": 50,
+  "id": 51,
   "link": "/dependencies/concurrentimp/",
   "name": "ConcurrentIMP"
  },
  {
-  "id": 51,
+  "id": 52,
   "link": "/dependencies/conditional_simplification/",
   "name": "Conditional_Simplification"
  },
  {
-  "id": 52,
+  "id": 53,
   "link": "/dependencies/conditional_transfer_rule/",
   "name": "Conditional_Transfer_Rule"
  },
  {
-  "id": 53,
+  "id": 54,
   "link": "/dependencies/constructive_cryptography/",
   "name": "Constructive_Cryptography"
  },
  {
-  "id": 54,
+  "id": 55,
   "link": "/dependencies/constructor_funs/",
   "name": "Constructor_Funs"
  },
  {
-  "id": 55,
+  "id": 56,
   "link": "/dependencies/containers/",
   "name": "Containers"
  },
  {
-  "id": 56,
+  "id": 57,
   "link": "/dependencies/core_dom/",
   "name": "Core_DOM"
  },
  {
-  "id": 57,
+  "id": 58,
   "link": "/dependencies/core_sc_dom/",
   "name": "Core_SC_DOM"
  },
  {
-  "id": 58,
+  "id": 59,
   "link": "/dependencies/count_complex_roots/",
   "name": "Count_Complex_Roots"
  },
  {
-  "id": 59,
+  "id": 60,
   "link": "/dependencies/crdt/",
   "name": "CRDT"
  },
  {
-  "id": 60,
+  "id": 61,
   "link": "/dependencies/crypthol/",
   "name": "CryptHOL"
  },
  {
-  "id": 61,
+  "id": 62,
   "link": "/dependencies/crystals-kyber/",
   "name": "CRYSTALS-Kyber"
  },
  {
-  "id": 62,
+  "id": 63,
   "link": "/dependencies/czh_elementary_categories/",
   "name": "CZH_Elementary_Categories"
  },
  {
-  "id": 63,
+  "id": 64,
   "link": "/dependencies/czh_foundations/",
   "name": "CZH_Foundations"
  },
  {
-  "id": 64,
+  "id": 65,
   "link": "/dependencies/datarefinementibp/",
   "name": "DataRefinementIBP"
  },
  {
-  "id": 65,
+  "id": 66,
   "link": "/dependencies/datatype_order_generator/",
   "name": "Datatype_Order_Generator"
  },
  {
-  "id": 66,
+  "id": 67,
   "link": "/dependencies/deep_learning/",
   "name": "Deep_Learning"
  },
  {
-  "id": 67,
+  "id": 68,
   "link": "/dependencies/delta_system_lemma/",
   "name": "Delta_System_Lemma"
  },
  {
-  "id": 68,
+  "id": 69,
   "link": "/dependencies/dependent_sifum_type_systems/",
   "name": "Dependent_SIFUM_Type_Systems"
  },
  {
-  "id": 69,
+  "id": 70,
   "link": "/dependencies/deriving/",
   "name": "Deriving"
  },
  {
-  "id": 70,
+  "id": 71,
   "link": "/dependencies/descartes_sign_rule/",
   "name": "Descartes_Sign_Rule"
  },
  {
-  "id": 71,
+  "id": 72,
   "link": "/dependencies/design_theory/",
   "name": "Design_Theory"
  },
  {
-  "id": 72,
+  "id": 73,
   "link": "/dependencies/dfs_framework/",
   "name": "DFS_Framework"
  },
  {
-  "id": 73,
+  "id": 74,
   "link": "/dependencies/dict_construction/",
   "name": "Dict_Construction"
  },
  {
-  "id": 74,
+  "id": 75,
   "link": "/dependencies/digit_expansions/",
   "name": "Digit_Expansions"
  },
  {
-  "id": 75,
+  "id": 76,
   "link": "/dependencies/dijkstra_shortest_path/",
   "name": "Dijkstra_Shortest_Path"
  },
  {
-  "id": 76,
+  "id": 77,
   "link": "/dependencies/dirichlet_l/",
   "name": "Dirichlet_L"
  },
  {
-  "id": 77,
+  "id": 78,
   "link": "/dependencies/dirichlet_series/",
   "name": "Dirichlet_Series"
  },
  {
-  "id": 78,
+  "id": 79,
   "link": "/dependencies/discrete_summation/",
   "name": "Discrete_Summation"
  },
  {
-  "id": 79,
+  "id": 80,
   "link": "/dependencies/distributed_distinct_elements/",
   "name": "Distributed_Distinct_Elements"
  },
  {
-  "id": 80,
+  "id": 81,
   "link": "/dependencies/dynamicarchitectures/",
   "name": "DynamicArchitectures"
  },
  {
-  "id": 81,
+  "id": 82,
   "link": "/dependencies/e_transcendental/",
   "name": "E_Transcendental"
  },
  {
-  "id": 82,
+  "id": 83,
   "link": "/dependencies/echelon_form/",
   "name": "Echelon_Form"
  },
  {
-  "id": 83,
+  "id": 84,
   "link": "/dependencies/edmondskarp_maxflow/",
   "name": "EdmondsKarp_Maxflow"
  },
  {
-  "id": 84,
+  "id": 85,
   "link": "/dependencies/efficient-mergesort/",
   "name": "Efficient-Mergesort"
  },
  {
-  "id": 85,
+  "id": 86,
   "link": "/dependencies/elliptic_curves_group_law/",
   "name": "Elliptic_Curves_Group_Law"
  },
  {
-  "id": 86,
+  "id": 87,
   "link": "/dependencies/enrichedcategorybasics/",
   "name": "EnrichedCategoryBasics"
  },
  {
-  "id": 87,
+  "id": 88,
   "link": "/dependencies/epistemic_logic/",
   "name": "Epistemic_Logic"
  },
  {
-  "id": 88,
+  "id": 89,
   "link": "/dependencies/equivalence_relation_enumeration/",
   "name": "Equivalence_Relation_Enumeration"
  },
  {
-  "id": 89,
+  "id": 90,
   "link": "/dependencies/ergodic_theory/",
   "name": "Ergodic_Theory"
  },
  {
-  "id": 90,
+  "id": 91,
   "link": "/dependencies/euler_maclaurin/",
   "name": "Euler_MacLaurin"
  },
  {
-  "id": 91,
+  "id": 92,
   "link": "/dependencies/executable_randomized_algorithms/",
   "name": "Executable_Randomized_Algorithms"
  },
  {
-  "id": 92,
+  "id": 93,
   "link": "/dependencies/expander_graphs/",
   "name": "Expander_Graphs"
  },
  {
-  "id": 93,
+  "id": 94,
   "link": "/dependencies/extended_finite_state_machines/",
   "name": "Extended_Finite_State_Machines"
  },
  {
-  "id": 94,
+  "id": 95,
   "link": "/dependencies/factor_algebraic_polynomial/",
   "name": "Factor_Algebraic_Polynomial"
  },
  {
-  "id": 95,
+  "id": 96,
   "link": "/dependencies/falling_factorial_sum/",
   "name": "Falling_Factorial_Sum"
  },
  {
-  "id": 96,
+  "id": 97,
   "link": "/dependencies/farkas/",
   "name": "Farkas"
  },
  {
-  "id": 97,
+  "id": 98,
   "link": "/dependencies/finfun/",
   "name": "FinFun"
  },
  {
-  "id": 98,
+  "id": 99,
   "link": "/dependencies/finger-trees/",
   "name": "Finger-Trees"
  },
  {
-  "id": 99,
+  "id": 100,
   "link": "/dependencies/finite_fields/",
   "name": "Finite_Fields"
  },
  {
-  "id": 100,
+  "id": 101,
   "link": "/dependencies/finite-map-extras/",
   "name": "Finite-Map-Extras"
  },
  {
-  "id": 101,
+  "id": 102,
   "link": "/dependencies/finitely_generated_abelian_groups/",
   "name": "Finitely_Generated_Abelian_Groups"
  },
  {
-  "id": 102,
+  "id": 103,
   "link": "/dependencies/first_order_terms/",
   "name": "First_Order_Terms"
  },
  {
-  "id": 103,
+  "id": 104,
   "link": "/dependencies/first_welfare_theorem/",
   "name": "First_Welfare_Theorem"
  },
  {
-  "id": 104,
+  "id": 105,
   "link": "/dependencies/fishers_inequality/",
   "name": "Fishers_Inequality"
  },
  {
-  "id": 105,
+  "id": 106,
   "link": "/dependencies/flow_networks/",
   "name": "Flow_Networks"
  },
  {
-  "id": 106,
+  "id": 107,
   "link": "/dependencies/floyd_warshall/",
   "name": "Floyd_Warshall"
  },
  {
-  "id": 107,
+  "id": 108,
   "link": "/dependencies/fol_seq_calc1/",
   "name": "FOL_Seq_Calc1"
  },
  {
-  "id": 108,
+  "id": 109,
   "link": "/dependencies/fol-fitting/",
   "name": "FOL-Fitting"
  },
  {
-  "id": 109,
+  "id": 110,
   "link": "/dependencies/formal_ssa/",
   "name": "Formal_SSA"
  },
  {
-  "id": 110,
+  "id": 111,
   "link": "/dependencies/frequency_moments/",
   "name": "Frequency_Moments"
  },
  {
-  "id": 111,
+  "id": 112,
   "link": "/dependencies/fresh_identifiers/",
   "name": "Fresh_Identifiers"
  },
  {
-  "id": 112,
+  "id": 113,
   "link": "/dependencies/functional_ordered_resolution_prover/",
   "name": "Functional_Ordered_Resolution_Prover"
  },
  {
-  "id": 113,
+  "id": 114,
   "link": "/dependencies/functional-automata/",
   "name": "Functional-Automata"
  },
  {
-  "id": 114,
+  "id": 115,
   "link": "/dependencies/gabow_scc/",
   "name": "Gabow_SCC"
  },
  {
-  "id": 115,
+  "id": 116,
   "link": "/dependencies/game_based_crypto/",
   "name": "Game_Based_Crypto"
  },
  {
-  "id": 116,
+  "id": 117,
   "link": "/dependencies/gauss_jordan/",
   "name": "Gauss_Jordan"
  },
  {
-  "id": 117,
+  "id": 118,
   "link": "/dependencies/gauss-jordan-elim-fun/",
   "name": "Gauss-Jordan-Elim-Fun"
  },
  {
-  "id": 118,
+  "id": 119,
   "link": "/dependencies/generic_join/",
   "name": "Generic_Join"
  },
  {
-  "id": 119,
+  "id": 120,
   "link": "/dependencies/girth_chromatic/",
   "name": "Girth_Chromatic"
  },
  {
-  "id": 120,
+  "id": 121,
   "link": "/dependencies/goedel_incompleteness/",
   "name": "Goedel_Incompleteness"
  },
  {
-  "id": 121,
+  "id": 122,
   "link": "/dependencies/graph_theory/",
   "name": "Graph_Theory"
  },
  {
-  "id": 122,
+  "id": 123,
   "link": "/dependencies/groebner_bases/",
   "name": "Groebner_Bases"
  },
  {
-  "id": 123,
+  "id": 124,
   "link": "/dependencies/group-ring-module/",
   "name": "Group-Ring-Module"
  },
  {
-  "id": 124,
+  "id": 125,
   "link": "/dependencies/heard_of/",
   "name": "Heard_Of"
  },
  {
-  "id": 125,
+  "id": 126,
   "link": "/dependencies/hereditarilyfinite/",
   "name": "HereditarilyFinite"
  },
  {
-  "id": 126,
+  "id": 127,
   "link": "/dependencies/hermite/",
   "name": "Hermite"
  },
  {
-  "id": 127,
+  "id": 128,
   "link": "/dependencies/hermite_lindemann/",
   "name": "Hermite_Lindemann"
  },
  {
-  "id": 128,
+  "id": 129,
   "link": "/dependencies/higher_order_terms/",
   "name": "Higher_Order_Terms"
  },
  {
-  "id": 129,
+  "id": 130,
   "link": "/dependencies/hol-csp/",
   "name": "HOL-CSP"
  },
  {
-  "id": 130,
+  "id": 131,
   "link": "/dependencies/hol-cspm/",
   "name": "HOL-CSPM"
  },
  {
-  "id": 131,
+  "id": 132,
   "link": "/dependencies/holcf-prelude/",
   "name": "HOLCF-Prelude"
  },
  {
-  "id": 132,
+  "id": 133,
   "link": "/dependencies/hrb-slicing/",
   "name": "HRB-Slicing"
  },
  {
-  "id": 133,
+  "id": 134,
   "link": "/dependencies/huffman/",
   "name": "Huffman"
  },
  {
-  "id": 134,
+  "id": 135,
   "link": "/dependencies/hybrid_systems_vcs/",
   "name": "Hybrid_Systems_VCs"
  },
  {
-  "id": 135,
+  "id": 136,
   "link": "/dependencies/hypergraph_basics/",
   "name": "Hypergraph_Basics"
  },
  {
-  "id": 136,
+  "id": 137,
   "link": "/dependencies/ieee_floating_point/",
   "name": "IEEE_Floating_Point"
  },
  {
-  "id": 137,
+  "id": 138,
   "link": "/dependencies/imp2/",
   "name": "IMP2"
  },
  {
-  "id": 138,
+  "id": 139,
   "link": "/dependencies/incompleteness/",
   "name": "Incompleteness"
  },
  {
-  "id": 139,
+  "id": 140,
   "link": "/dependencies/interpolation_polynomials_hol_algebra/",
   "name": "Interpolation_Polynomials_HOL_Algebra"
  },
  {
-  "id": 140,
+  "id": 141,
   "link": "/dependencies/intro_dest_elim/",
   "name": "Intro_Dest_Elim"
  },
  {
-  "id": 141,
+  "id": 142,
   "link": "/dependencies/ip_addresses/",
   "name": "IP_Addresses"
  },
  {
-  "id": 142,
+  "id": 143,
   "link": "/dependencies/iptables_semantics/",
   "name": "Iptables_Semantics"
  },
  {
-  "id": 143,
+  "id": 144,
   "link": "/dependencies/isabelle_marries_dirac/",
   "name": "Isabelle_Marries_Dirac"
  },
  {
-  "id": 144,
+  "id": 145,
   "link": "/dependencies/jacobson_basic_algebra/",
   "name": "Jacobson_Basic_Algebra"
  },
  {
-  "id": 145,
+  "id": 146,
   "link": "/dependencies/jinja/",
   "name": "Jinja"
  },
  {
-  "id": 146,
+  "id": 147,
   "link": "/dependencies/jinjadci/",
   "name": "JinjaDCI"
  },
  {
-  "id": 147,
+  "id": 148,
   "link": "/dependencies/jordan_normal_form/",
   "name": "Jordan_Normal_Form"
  },
  {
-  "id": 148,
+  "id": 149,
   "link": "/dependencies/kad/",
   "name": "KAD"
  },
  {
-  "id": 149,
+  "id": 150,
   "link": "/dependencies/karatsuba/",
   "name": "Karatsuba"
  },
  {
-  "id": 150,
+  "id": 151,
   "link": "/dependencies/kat_and_dra/",
   "name": "KAT_and_DRA"
  },
  {
-  "id": 151,
+  "id": 152,
   "link": "/dependencies/kbps/",
   "name": "KBPs"
  },
  {
-  "id": 152,
+  "id": 153,
   "link": "/dependencies/kleene_algebra/",
   "name": "Kleene_Algebra"
  },
  {
-  "id": 153,
+  "id": 154,
   "link": "/dependencies/knuth_bendix_order/",
   "name": "Knuth_Bendix_Order"
  },
  {
-  "id": 154,
+  "id": 155,
   "link": "/dependencies/labeled_transition_systems/",
   "name": "Labeled_Transition_Systems"
  },
  {
-  "id": 155,
+  "id": 156,
   "link": "/dependencies/lambda_free_rpos/",
   "name": "Lambda_Free_RPOs"
  },
  {
-  "id": 156,
+  "id": 157,
   "link": "/dependencies/landau_symbols/",
   "name": "Landau_Symbols"
  },
  {
-  "id": 157,
+  "id": 158,
   "link": "/dependencies/latticeproperties/",
   "name": "LatticeProperties"
  },
  {
-  "id": 158,
+  "id": 159,
   "link": "/dependencies/launchbury/",
   "name": "Launchbury"
  },
  {
-  "id": 159,
+  "id": 160,
   "link": "/dependencies/lazy_case/",
   "name": "Lazy_Case"
  },
  {
-  "id": 160,
+  "id": 161,
   "link": "/dependencies/lazy-lists-ii/",
   "name": "Lazy-Lists-II"
  },
  {
-  "id": 161,
+  "id": 162,
   "link": "/dependencies/lehmer/",
   "name": "Lehmer"
  },
  {
-  "id": 162,
+  "id": 163,
   "link": "/dependencies/linear_inequalities/",
   "name": "Linear_Inequalities"
  },
  {
-  "id": 163,
+  "id": 164,
   "link": "/dependencies/linear_recurrences/",
   "name": "Linear_Recurrences"
  },
  {
-  "id": 164,
+  "id": 165,
   "link": "/dependencies/list_interleaving/",
   "name": "List_Interleaving"
  },
  {
-  "id": 165,
+  "id": 166,
   "link": "/dependencies/list-index/",
   "name": "List-Index"
  },
  {
-  "id": 166,
+  "id": 167,
   "link": "/dependencies/list-infinite/",
   "name": "List-Infinite"
  },
  {
-  "id": 167,
+  "id": 168,
   "link": "/dependencies/lll_basis_reduction/",
   "name": "LLL_Basis_Reduction"
  },
  {
-  "id": 168,
+  "id": 169,
   "link": "/dependencies/lll_factorization/",
   "name": "LLL_Factorization"
  },
  {
-  "id": 169,
+  "id": 170,
   "link": "/dependencies/localization_ring/",
   "name": "Localization_Ring"
  },
  {
-  "id": 170,
+  "id": 171,
   "link": "/dependencies/lovasz_local/",
   "name": "Lovasz_Local"
  },
  {
-  "id": 171,
+  "id": 172,
   "link": "/dependencies/lp/",
   "name": "Lp"
  },
  {
-  "id": 172,
+  "id": 173,
   "link": "/dependencies/lp_duality/",
   "name": "LP_Duality"
  },
  {
-  "id": 173,
+  "id": 174,
   "link": "/dependencies/ltl/",
   "name": "LTL"
  },
  {
-  "id": 174,
+  "id": 175,
   "link": "/dependencies/ltl_master_theorem/",
   "name": "LTL_Master_Theorem"
  },
  {
-  "id": 175,
+  "id": 176,
   "link": "/dependencies/ltl_to_gba/",
   "name": "LTL_to_GBA"
  },
  {
-  "id": 176,
+  "id": 177,
   "link": "/dependencies/lucas_theorem/",
   "name": "Lucas_Theorem"
  },
  {
-  "id": 177,
+  "id": 178,
   "link": "/dependencies/markov_models/",
   "name": "Markov_Models"
  },
  {
-  "id": 178,
+  "id": 179,
   "link": "/dependencies/marriage/",
   "name": "Marriage"
  },
  {
-  "id": 179,
+  "id": 180,
   "link": "/dependencies/martingales/",
   "name": "Martingales"
  },
  {
-  "id": 180,
+  "id": 181,
   "link": "/dependencies/mason_stothers/",
   "name": "Mason_Stothers"
  },
  {
-  "id": 181,
+  "id": 182,
   "link": "/dependencies/matrix/",
   "name": "Matrix"
  },
  {
-  "id": 182,
+  "id": 183,
   "link": "/dependencies/matrix_tensor/",
   "name": "Matrix_Tensor"
  },
  {
-  "id": 183,
+  "id": 184,
   "link": "/dependencies/matroids/",
   "name": "Matroids"
  },
  {
-  "id": 184,
+  "id": 185,
   "link": "/dependencies/mdp-rewards/",
   "name": "MDP-Rewards"
  },
  {
-  "id": 185,
+  "id": 186,
   "link": "/dependencies/median_method/",
   "name": "Median_Method"
  },
  {
-  "id": 186,
+  "id": 187,
   "link": "/dependencies/median_of_medians_selection/",
   "name": "Median_Of_Medians_Selection"
  },
  {
-  "id": 187,
+  "id": 188,
   "link": "/dependencies/mersenne_primes/",
   "name": "Mersenne_Primes"
  },
  {
-  "id": 188,
+  "id": 189,
   "link": "/dependencies/mfmc_countable/",
   "name": "MFMC_Countable"
  },
  {
-  "id": 189,
+  "id": 190,
   "link": "/dependencies/mfotl_monitor/",
   "name": "MFOTL_Monitor"
  },
  {
-  "id": 190,
+  "id": 191,
+  "link": "/dependencies/min_max_least_greatest/",
+  "name": "Min_Max_Least_Greatest"
+ },
+ {
+  "id": 192,
   "link": "/dependencies/ml_unification/",
   "name": "ML_Unification"
  },
  {
-  "id": 191,
+  "id": 193,
   "link": "/dependencies/monad_memo_dp/",
   "name": "Monad_Memo_DP"
  },
  {
-  "id": 192,
+  "id": 194,
   "link": "/dependencies/monad_normalisation/",
   "name": "Monad_Normalisation"
  },
  {
-  "id": 193,
+  "id": 195,
   "link": "/dependencies/monobooltranalgebra/",
   "name": "MonoBoolTranAlgebra"
  },
  {
-  "id": 194,
+  "id": 196,
   "link": "/dependencies/monoidalcategory/",
   "name": "MonoidalCategory"
  },
  {
-  "id": 195,
+  "id": 197,
   "link": "/dependencies/monomorphic_monad/",
   "name": "Monomorphic_Monad"
  },
  {
-  "id": 196,
+  "id": 198,
   "link": "/dependencies/more_lazylists/",
   "name": "More_LazyLists"
  },
  {
-  "id": 197,
+  "id": 199,
   "link": "/dependencies/nash_williams/",
   "name": "Nash_Williams"
  },
  {
-  "id": 198,
+  "id": 200,
   "link": "/dependencies/nat-interval-logic/",
   "name": "Nat-Interval-Logic"
  },
  {
-  "id": 199,
+  "id": 201,
   "link": "/dependencies/native_word/",
   "name": "Native_Word"
  },
  {
-  "id": 200,
+  "id": 202,
   "link": "/dependencies/nested_multisets_ordinals/",
   "name": "Nested_Multisets_Ordinals"
  },
  {
-  "id": 201,
+  "id": 203,
   "link": "/dependencies/nominal2/",
   "name": "Nominal2"
  },
  {
-  "id": 202,
+  "id": 204,
   "link": "/dependencies/noninterference_csp/",
   "name": "Noninterference_CSP"
  },
  {
-  "id": 203,
+  "id": 205,
   "link": "/dependencies/noninterference_ipurge_unwinding/",
   "name": "Noninterference_Ipurge_Unwinding"
  },
  {
-  "id": 204,
+  "id": 206,
   "link": "/dependencies/noninterference_sequential_composition/",
   "name": "Noninterference_Sequential_Composition"
  },
  {
-  "id": 205,
+  "id": 207,
   "link": "/dependencies/number_theoretic_transform/",
   "name": "Number_Theoretic_Transform"
  },
  {
-  "id": 206,
+  "id": 208,
   "link": "/dependencies/open_induction/",
   "name": "Open_Induction"
  },
  {
-  "id": 207,
+  "id": 209,
   "link": "/dependencies/optics/",
   "name": "Optics"
  },
  {
-  "id": 208,
+  "id": 210,
   "link": "/dependencies/order_lattice_props/",
   "name": "Order_Lattice_Props"
  },
  {
-  "id": 209,
+  "id": 211,
   "link": "/dependencies/ordered_resolution_prover/",
   "name": "Ordered_Resolution_Prover"
  },
  {
-  "id": 210,
+  "id": 212,
   "link": "/dependencies/ordinal/",
   "name": "Ordinal"
  },
  {
-  "id": 211,
+  "id": 213,
   "link": "/dependencies/ordinary_differential_equations/",
   "name": "Ordinary_Differential_Equations"
  },
  {
-  "id": 212,
+  "id": 214,
   "link": "/dependencies/package_logic/",
   "name": "Package_logic"
  },
  {
-  "id": 213,
+  "id": 215,
   "link": "/dependencies/padic_ints/",
   "name": "Padic_Ints"
  },
  {
-  "id": 214,
+  "id": 216,
   "link": "/dependencies/pairing_heap/",
   "name": "Pairing_Heap"
  },
  {
-  "id": 215,
+  "id": 217,
   "link": "/dependencies/parity_game/",
   "name": "Parity_Game"
  },
  {
-  "id": 216,
+  "id": 218,
   "link": "/dependencies/partial_function_mr/",
   "name": "Partial_Function_MR"
  },
  {
-  "id": 217,
+  "id": 219,
   "link": "/dependencies/partial_order_reduction/",
   "name": "Partial_Order_Reduction"
  },
  {
-  "id": 218,
+  "id": 220,
   "link": "/dependencies/pell/",
   "name": "Pell"
  },
  {
-  "id": 219,
+  "id": 221,
   "link": "/dependencies/perfect_fields/",
   "name": "Perfect_Fields"
  },
  {
-  "id": 220,
+  "id": 222,
   "link": "/dependencies/perron_frobenius/",
   "name": "Perron_Frobenius"
  },
  {
-  "id": 221,
+  "id": 223,
   "link": "/dependencies/pi_transcendental/",
   "name": "Pi_Transcendental"
  },
  {
-  "id": 222,
+  "id": 224,
   "link": "/dependencies/pluennecke_ruzsa_inequality/",
   "name": "Pluennecke_Ruzsa_Inequality"
  },
  {
-  "id": 223,
+  "id": 225,
   "link": "/dependencies/poincare_bendixson/",
   "name": "Poincare_Bendixson"
  },
  {
-  "id": 224,
+  "id": 226,
   "link": "/dependencies/polylog/",
   "name": "Polylog"
  },
  {
-  "id": 225,
+  "id": 227,
   "link": "/dependencies/polynomial_factorization/",
   "name": "Polynomial_Factorization"
  },
  {
-  "id": 226,
+  "id": 228,
   "link": "/dependencies/polynomial_interpolation/",
   "name": "Polynomial_Interpolation"
  },
  {
-  "id": 227,
+  "id": 229,
   "link": "/dependencies/polynomials/",
   "name": "Polynomials"
  },
  {
-  "id": 228,
+  "id": 230,
   "link": "/dependencies/power_sum_polynomials/",
   "name": "Power_Sum_Polynomials"
  },
  {
-  "id": 229,
+  "id": 231,
   "link": "/dependencies/pratt_certificate/",
   "name": "Pratt_Certificate"
  },
  {
-  "id": 230,
+  "id": 232,
   "link": "/dependencies/prefix_free_code_combinators/",
   "name": "Prefix_Free_Code_Combinators"
  },
  {
-  "id": 231,
+  "id": 233,
   "link": "/dependencies/prime_distribution_elementary/",
   "name": "Prime_Distribution_Elementary"
  },
  {
-  "id": 232,
+  "id": 234,
   "link": "/dependencies/prime_number_theorem/",
   "name": "Prime_Number_Theorem"
  },
  {
-  "id": 233,
+  "id": 235,
   "link": "/dependencies/priority_search_trees/",
   "name": "Priority_Search_Trees"
  },
  {
-  "id": 234,
+  "id": 236,
   "link": "/dependencies/probabilistic_prime_tests/",
   "name": "Probabilistic_Prime_Tests"
  },
  {
-  "id": 235,
+  "id": 237,
   "link": "/dependencies/probabilistic_timed_automata/",
   "name": "Probabilistic_Timed_Automata"
  },
  {
-  "id": 236,
+  "id": 238,
   "link": "/dependencies/probabilistic_while/",
   "name": "Probabilistic_While"
  },
  {
-  "id": 237,
+  "id": 239,
   "link": "/dependencies/program-conflict-analysis/",
   "name": "Program-Conflict-Analysis"
  },
  {
-  "id": 238,
+  "id": 240,
   "link": "/dependencies/projective_measurements/",
   "name": "Projective_Measurements"
  },
  {
-  "id": 239,
+  "id": 241,
   "link": "/dependencies/promela/",
   "name": "Promela"
  },
  {
-  "id": 240,
+  "id": 242,
   "link": "/dependencies/propositional_logic_class/",
   "name": "Propositional_Logic_Class"
  },
  {
-  "id": 241,
+  "id": 243,
   "link": "/dependencies/propositional_proof_systems/",
   "name": "Propositional_Proof_Systems"
  },
  {
-  "id": 242,
+  "id": 244,
   "link": "/dependencies/psi_calculi/",
   "name": "Psi_Calculi"
  },
  {
-  "id": 243,
+  "id": 245,
   "link": "/dependencies/qhlprover/",
   "name": "QHLProver"
  },
  {
-  "id": 244,
+  "id": 246,
   "link": "/dependencies/quantales/",
   "name": "Quantales"
  },
  {
-  "id": 245,
+  "id": 247,
   "link": "/dependencies/quantales_converse/",
   "name": "Quantales_Converse"
  },
  {
-  "id": 246,
+  "id": 248,
   "link": "/dependencies/quick_sort_cost/",
   "name": "Quick_Sort_Cost"
  },
  {
-  "id": 247,
+  "id": 249,
   "link": "/dependencies/ramsey_bounds/",
   "name": "Ramsey_Bounds"
  },
  {
-  "id": 248,
+  "id": 250,
   "link": "/dependencies/random_bsts/",
   "name": "Random_BSTs"
  },
  {
-  "id": 249,
+  "id": 251,
   "link": "/dependencies/random_graph_subgraph_threshold/",
   "name": "Random_Graph_Subgraph_Threshold"
  },
  {
-  "id": 250,
+  "id": 252,
   "link": "/dependencies/randomised_social_choice/",
   "name": "Randomised_Social_Choice"
  },
  {
-  "id": 251,
+  "id": 253,
   "link": "/dependencies/rank_nullity_theorem/",
   "name": "Rank_Nullity_Theorem"
  },
  {
-  "id": 252,
+  "id": 254,
   "link": "/dependencies/real_impl/",
   "name": "Real_Impl"
  },
  {
-  "id": 253,
+  "id": 255,
   "link": "/dependencies/recursion-theory-i/",
   "name": "Recursion-Theory-I"
  },
  {
-  "id": 254,
+  "id": 256,
   "link": "/dependencies/refine_imperative_hol/",
   "name": "Refine_Imperative_HOL"
  },
  {
-  "id": 255,
+  "id": 257,
   "link": "/dependencies/refine_monadic/",
   "name": "Refine_Monadic"
  },
  {
-  "id": 256,
+  "id": 258,
   "link": "/dependencies/regular_tree_relations/",
   "name": "Regular_Tree_Relations"
  },
  {
-  "id": 257,
+  "id": 259,
   "link": "/dependencies/regular-sets/",
   "name": "Regular-Sets"
  },
  {
-  "id": 258,
+  "id": 260,
   "link": "/dependencies/relation_algebra/",
   "name": "Relation_Algebra"
  },
  {
-  "id": 259,
+  "id": 261,
   "link": "/dependencies/relational_disjoint_set_forests/",
   "name": "Relational_Disjoint_Set_Forests"
  },
  {
-  "id": 260,
+  "id": 262,
   "link": "/dependencies/relative_security/",
   "name": "Relative_Security"
  },
  {
-  "id": 261,
+  "id": 263,
   "link": "/dependencies/residuatedtransitionsystem/",
   "name": "ResiduatedTransitionSystem"
  },
  {
-  "id": 262,
+  "id": 264,
   "link": "/dependencies/riesz_representation/",
   "name": "Riesz_Representation"
  },
  {
-  "id": 263,
+  "id": 265,
   "link": "/dependencies/robdd/",
   "name": "ROBDD"
  },
  {
-  "id": 264,
+  "id": 266,
   "link": "/dependencies/root_balanced_tree/",
   "name": "Root_Balanced_Tree"
  },
  {
-  "id": 265,
+  "id": 267,
   "link": "/dependencies/routing/",
   "name": "Routing"
  },
  {
-  "id": 266,
+  "id": 268,
   "link": "/dependencies/s_finite_measure_monad/",
   "name": "S_Finite_Measure_Monad"
  },
  {
-  "id": 267,
+  "id": 269,
   "link": "/dependencies/saturation_framework/",
   "name": "Saturation_Framework"
  },
  {
-  "id": 268,
+  "id": 270,
   "link": "/dependencies/saturation_framework_extensions/",
   "name": "Saturation_Framework_Extensions"
  },
  {
-  "id": 269,
+  "id": 271,
   "link": "/dependencies/secondary_sylow/",
   "name": "Secondary_Sylow"
  },
  {
-  "id": 270,
+  "id": 272,
   "link": "/dependencies/secret_directed_unwinding/",
   "name": "Secret_Directed_Unwinding"
  },
  {
-  "id": 271,
+  "id": 273,
   "link": "/dependencies/separation_algebra/",
   "name": "Separation_Algebra"
  },
  {
-  "id": 272,
+  "id": 274,
   "link": "/dependencies/separation_logic_imperative_hol/",
   "name": "Separation_Logic_Imperative_HOL"
  },
  {
-  "id": 273,
+  "id": 275,
   "link": "/dependencies/shadow_dom/",
   "name": "Shadow_DOM"
  },
  {
-  "id": 274,
+  "id": 276,
   "link": "/dependencies/shadow_sc_dom/",
   "name": "Shadow_SC_DOM"
  },
  {
-  "id": 275,
+  "id": 277,
   "link": "/dependencies/show/",
   "name": "Show"
  },
  {
-  "id": 276,
+  "id": 278,
   "link": "/dependencies/sigma_commit_crypto/",
   "name": "Sigma_Commit_Crypto"
  },
  {
-  "id": 277,
+  "id": 279,
   "link": "/dependencies/simpl/",
   "name": "Simpl"
  },
  {
-  "id": 278,
+  "id": 280,
   "link": "/dependencies/simple_firewall/",
   "name": "Simple_Firewall"
  },
  {
-  "id": 279,
+  "id": 281,
   "link": "/dependencies/simplex/",
   "name": "Simplex"
  },
  {
-  "id": 280,
+  "id": 282,
   "link": "/dependencies/skew_heap/",
   "name": "Skew_Heap"
  },
  {
-  "id": 281,
+  "id": 283,
   "link": "/dependencies/skip_lists/",
   "name": "Skip_Lists"
  },
  {
-  "id": 282,
+  "id": 284,
   "link": "/dependencies/slicing/",
   "name": "Slicing"
  },
  {
-  "id": 283,
+  "id": 285,
   "link": "/dependencies/smith_normal_form/",
   "name": "Smith_Normal_Form"
  },
  {
-  "id": 284,
+  "id": 286,
   "link": "/dependencies/smooth_manifolds/",
   "name": "Smooth_Manifolds"
  },
  {
-  "id": 285,
+  "id": 287,
   "link": "/dependencies/sorted_terms/",
   "name": "Sorted_Terms"
  },
  {
-  "id": 286,
+  "id": 288,
   "link": "/dependencies/speccheck/",
   "name": "SpecCheck"
  },
  {
-  "id": 287,
+  "id": 289,
   "link": "/dependencies/splay_tree/",
   "name": "Splay_Tree"
  },
  {
-  "id": 288,
+  "id": 290,
   "link": "/dependencies/sqrt_babylonian/",
   "name": "Sqrt_Babylonian"
  },
  {
-  "id": 289,
+  "id": 291,
   "link": "/dependencies/standard_borel_spaces/",
   "name": "Standard_Borel_Spaces"
  },
  {
-  "id": 290,
+  "id": 292,
   "link": "/dependencies/stateful_protocol_composition_and_typing/",
   "name": "Stateful_Protocol_Composition_and_Typing"
  },
  {
-  "id": 291,
+  "id": 293,
   "link": "/dependencies/stirling_formula/",
   "name": "Stirling_Formula"
  },
  {
-  "id": 292,
+  "id": 294,
   "link": "/dependencies/stone_algebras/",
   "name": "Stone_Algebras"
  },
  {
-  "id": 293,
+  "id": 295,
   "link": "/dependencies/stone_kleene_relation_algebras/",
   "name": "Stone_Kleene_Relation_Algebras"
  },
  {
-  "id": 294,
+  "id": 296,
   "link": "/dependencies/stone_relation_algebras/",
   "name": "Stone_Relation_Algebras"
  },
  {
-  "id": 295,
+  "id": 297,
   "link": "/dependencies/strong_security/",
   "name": "Strong_Security"
  },
  {
-  "id": 296,
+  "id": 298,
   "link": "/dependencies/sturm_sequences/",
   "name": "Sturm_Sequences"
  },
  {
-  "id": 297,
+  "id": 299,
   "link": "/dependencies/sturm_tarski/",
   "name": "Sturm_Tarski"
  },
  {
-  "id": 298,
+  "id": 300,
   "link": "/dependencies/stuttering_equivalence/",
   "name": "Stuttering_Equivalence"
  },
  {
-  "id": 299,
+  "id": 301,
   "link": "/dependencies/subresultants/",
   "name": "Subresultants"
  },
  {
-  "id": 300,
+  "id": 302,
   "link": "/dependencies/subset_boolean_algebras/",
   "name": "Subset_Boolean_Algebras"
  },
  {
-  "id": 301,
+  "id": 303,
   "link": "/dependencies/sunflowers/",
   "name": "Sunflowers"
  },
  {
-  "id": 302,
+  "id": 304,
   "link": "/dependencies/suppes_theorem/",
   "name": "Suppes_Theorem"
  },
  {
-  "id": 303,
+  "id": 305,
   "link": "/dependencies/symmetric_polynomials/",
   "name": "Symmetric_Polynomials"
  },
  {
-  "id": 304,
+  "id": 306,
   "link": "/dependencies/syntax_independent_logic/",
   "name": "Syntax_Independent_Logic"
  },
  {
-  "id": 305,
+  "id": 307,
   "link": "/dependencies/szemeredi_regularity/",
   "name": "Szemeredi_Regularity"
  },
  {
-  "id": 306,
+  "id": 308,
   "link": "/dependencies/szpilrajn/",
   "name": "Szpilrajn"
  },
  {
-  "id": 307,
+  "id": 309,
   "link": "/dependencies/three_squares/",
   "name": "Three_Squares"
  },
  {
-  "id": 308,
+  "id": 310,
   "link": "/dependencies/timed_automata/",
   "name": "Timed_Automata"
  },
  {
-  "id": 309,
+  "id": 311,
   "link": "/dependencies/transformer_semantics/",
   "name": "Transformer_Semantics"
  },
  {
-  "id": 310,
+  "id": 312,
   "link": "/dependencies/transition_systems_and_automata/",
   "name": "Transition_Systems_and_Automata"
  },
  {
-  "id": 311,
+  "id": 313,
   "link": "/dependencies/transitive_models/",
   "name": "Transitive_Models"
  },
  {
-  "id": 312,
+  "id": 314,
   "link": "/dependencies/transitive-closure/",
   "name": "Transitive-Closure"
  },
  {
-  "id": 313,
+  "id": 315,
   "link": "/dependencies/triangle/",
   "name": "Triangle"
  },
  {
-  "id": 314,
+  "id": 316,
   "link": "/dependencies/trie/",
   "name": "Trie"
  },
  {
-  "id": 315,
+  "id": 317,
   "link": "/dependencies/twelvefold_way/",
   "name": "Twelvefold_Way"
  },
  {
-  "id": 316,
+  "id": 318,
   "link": "/dependencies/types_to_sets_extension/",
   "name": "Types_To_Sets_Extension"
  },
  {
-  "id": 317,
+  "id": 319,
   "link": "/dependencies/undirected_graph_theory/",
   "name": "Undirected_Graph_Theory"
  },
  {
-  "id": 318,
+  "id": 320,
   "link": "/dependencies/universal_hash_families/",
   "name": "Universal_Hash_Families"
  },
  {
-  "id": 319,
+  "id": 321,
   "link": "/dependencies/upf/",
   "name": "UPF"
  },
  {
-  "id": 320,
+  "id": 322,
   "link": "/dependencies/vectorspace/",
   "name": "VectorSpace"
  },
  {
-  "id": 321,
+  "id": 323,
   "link": "/dependencies/vericomp/",
   "name": "VeriComp"
  },
  {
-  "id": 322,
+  "id": 324,
   "link": "/dependencies/virtual_substitution/",
   "name": "Virtual_Substitution"
  },
  {
-  "id": 323,
+  "id": 325,
   "link": "/dependencies/weighted_arithmetic_geometric_mean/",
   "name": "Weighted_Arithmetic_Geometric_Mean"
  },
  {
-  "id": 324,
+  "id": 326,
   "link": "/dependencies/weighted_path_order/",
   "name": "Weighted_Path_Order"
  },
  {
-  "id": 325,
+  "id": 327,
   "link": "/dependencies/well_quasi_orders/",
   "name": "Well_Quasi_Orders"
  },
  {
-  "id": 326,
+  "id": 328,
   "link": "/dependencies/winding_number_eval/",
   "name": "Winding_Number_Eval"
  },
  {
-  "id": 327,
+  "id": 329,
   "link": "/dependencies/word_lib/",
   "name": "Word_Lib"
  },
  {
-  "id": 328,
+  "id": 330,
   "link": "/dependencies/zeta_function/",
   "name": "Zeta_Function"
  },
  {
-  "id": 329,
+  "id": 331,
   "link": "/dependencies/zfc_in_hol/",
   "name": "ZFC_in_HOL"
  }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Abstract_Substitution on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/abstract_substitution/</link>
+    <description>
+        Recent content in Abstract_Substitution 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/abstract_substitution/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Modular Formalization of Superposition</title>
+          <link>/entries/Superposition_Calculus.html</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Superposition_Calculus.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

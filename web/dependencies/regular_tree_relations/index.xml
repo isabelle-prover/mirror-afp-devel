@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 02 Jun 2022 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/regular_tree_relations/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Modular Formalization of Superposition</title>
+          <link>/entries/Superposition_Calculus.html</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Superposition_Calculus.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
           <link>/entries/Rewrite_Properties_Reduction.html</link>
