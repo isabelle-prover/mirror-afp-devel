@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>binder on Archive of Formal Proofs
+    <title>ren on Archive of Formal Proofs
     </title>
-    <link>/authors/binder/</link>
+    <link>/authors/ren/</link>
     <description>
-        Recent content in binder 
+        Recent content in ren 
         on Archive of Formal Proofs
     </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
       <lastBuildDate>Thu, 26 Sep 2024 00:00:00 +0000</lastBuildDate>
-      <atom:link href="/authors/binder/index.xml" rel="self" type="application/rss+xml" />
+      <atom:link href="/authors/ren/index.xml" rel="self" type="application/rss+xml" />
         <item>
           <title>Babai_Nearest_Plane</title>
           <link>/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Babai_Nearest_Plane.html</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Pick&#39;s Theorem</title>
-          <link>/entries/Picks_Theorem.html</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/entries/Picks_Theorem.html</guid>
           <description></description>
         </item>
   </channel>

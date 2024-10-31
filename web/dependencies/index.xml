@@ -63,6 +63,13 @@
           <description></description>
         </item>
         <item>
+          <title>LLL_Factorization</title>
+          <link>/dependencies/lll_factorization/</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lll_factorization/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Automatic_Refinement</title>
           <link>/dependencies/automatic_refinement/</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
@@ -284,13 +291,6 @@
           <link>/dependencies/farkas/</link>
           <pubDate>Thu, 13 Jun 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/farkas/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>LLL_Factorization</title>
-          <link>/dependencies/lll_factorization/</link>
-          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/lll_factorization/</guid>
           <description></description>
         </item>
         <item>

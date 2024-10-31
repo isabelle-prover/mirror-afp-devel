@@ -1,0 +1,35 @@
+title = "Babai_Nearest_Plane"
+date = 2024-09-26
+topics = [
+  "Computer science/Security/Cryptography",
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = "&gamma;-CVP is the problem of finding a vector in L that is within &gamma; times the closest possible to t, where L is a lattice and t is a target vector. If the basis for L is LLL-reduced, Babai's Closest Hyperplane algorithm solves &gamma;-CVP for &gamma;=2<sup>n/2</sup>, where n is the dimension of the lattice L, in time polynomial in n. This session formalizes said algorithm, using the AFP formalization of LLL and adapting a proof of correctness from the lecture notes of Stephens-Davidowitz."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ren]
+email = "ren_email"
+
+[authors.binder]
+email = "binder_email"
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[contributors]
+
+[notify]
+ren = "ren_email"
+binder = "binder_email"
+cordwell = "cordwell_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
