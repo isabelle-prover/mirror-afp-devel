@@ -217,6 +217,22 @@ lemma ground_instances_eq_Collect_subst_grounding:
   "ground_instances x = {x \<cdot> \<gamma> | \<gamma>. is_ground (x \<cdot> \<gamma>)}"
   by (auto simp: ground_instances_def instances_def generalizes_def)
 
+lemma mem_ground_instancesE[elim]:
+  fixes x x\<^sub>G :: 'x
+  assumes "x\<^sub>G \<in> ground_instances x"
+  obtains \<gamma> :: 's where "x\<^sub>G = x \<cdot> \<gamma>" and "is_ground (x \<cdot> \<gamma>)"
+  using assms
+  unfolding ground_instances_eq_Collect_subst_grounding mem_Collect_eq
+  by iprover
+
+lemma mem_ground_instances_setE[elim]:
+  fixes x\<^sub>G :: 'x and X :: "'x set"
+  assumes "x\<^sub>G \<in> ground_instances_set X"
+  obtains x :: 'x and \<gamma> :: 's where "x \<in> X" and "x\<^sub>G = x \<cdot> \<gamma>" and "is_ground (x \<cdot> \<gamma>)"
+  using assms
+  unfolding ground_instances_set_eq_Union_ground_instances
+  by blast
+
 (* This corresponds to the maximal subgroup of the monoid on (\<odot>) and id_subst *)
 definition is_renaming :: "'s \<Rightarrow> bool" where
   "is_renaming \<rho> \<longleftrightarrow> (\<exists>\<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
@@ -260,6 +276,14 @@ qed
 
 lemma is_unifier_singleton[simp]: "is_unifier \<upsilon> {x}"
   by (simp add: is_unifier_iff_if_finite)
+
+lemma is_unifier_set_empty[simp]:
+  "is_unifier_set \<sigma> {}"
+  by (simp add: is_unifier_set_def)
+
+lemma is_unifier_set_insert:
+  "is_unifier_set \<sigma> (insert X XX) \<longleftrightarrow> is_unifier \<sigma> X \<and> is_unifier_set \<sigma> XX"
+  by (simp add: is_unifier_set_def)
 
 lemma is_unifier_set_insert_singleton[simp]:
   "is_unifier_set \<sigma> (insert {x} XX) \<longleftrightarrow> is_unifier_set \<sigma> XX"
@@ -389,6 +413,20 @@ next
 next
   show "\<And>x y z. generalizes x y \<Longrightarrow> generalizes y z \<Longrightarrow> generalizes x z"
     unfolding generalizes_def using subst_comp_subst by metis
+qed
+
+lemma generalizes_antisym_if:
+  assumes "\<And>\<sigma>\<^sub>1 \<sigma>\<^sub>2 x. x \<cdot> (\<sigma>\<^sub>1 \<odot> \<sigma>\<^sub>2) = x \<Longrightarrow> x \<cdot> \<sigma>\<^sub>1 = x"
+  shows "\<And>x y. generalizes x y \<Longrightarrow> generalizes y x \<Longrightarrow> x = y"
+  using assms
+  by (metis generalizes_def subst_comp_subst)
+
+lemma order_generalizes_if:
+  assumes "\<And>\<sigma>\<^sub>1 \<sigma>\<^sub>2 x. x \<cdot> (\<sigma>\<^sub>1 \<odot> \<sigma>\<^sub>2) = x \<Longrightarrow> x \<cdot> \<sigma>\<^sub>1 = x"
+  shows "class.order generalizes strictly_generalizes"
+proof unfold_locales
+  show "\<And>x y. generalizes x y \<Longrightarrow> generalizes y x \<Longrightarrow> x = y"
+    using generalizes_antisym_if assms by iprover
 qed
 
 
