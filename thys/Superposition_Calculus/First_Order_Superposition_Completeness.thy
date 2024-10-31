@@ -819,8 +819,22 @@ proof(cases premise\<^sub>G\<^sub>2 premise\<^sub>G\<^sub>1 conclusion\<^sub>G r
         case (Fun f terms)
 
         then have "context\<^sub>G \<noteq> GHole"
-          by (metis Fun.prems(2) ctxt_apply_term.simps(1) ctxt_of_gctxt.simps(1) 
-              subst_apply_ctxt.simps(1) term.discI(2))
+          by (metis ctxt_of_gctxt.simps(1) vars_term_of_gterm
+              vars_ctxt_of_gctxt[of "gctxt_of_ctxt (\<box> \<circ>\<^sub>c \<box>)"]
+              gctxt_ident_iff_eq_GHole[of "\<box>\<^sub>G" term\<^sub>G\<^sub>1]
+              gctxt_ident_iff_eq_GHole[of "\<box>\<^sub>G" undefined]
+              ctxt_eq[of "\<box>" "Fun f terms" "\<box>\<langle>Fun f terms\<rangle>"]
+              ground_term_with_context3[of context\<^sub>G term\<^sub>G\<^sub>1]
+              ground_term_with_context3[of "\<box>\<^sub>G" undefined]
+              actxt.map(1)[of "\<lambda>x. x" "\<lambda>uua. uua \<cdot>t \<rho>\<^sub>1"]
+              actxt.map(1)[of "\<lambda>x. x" "\<lambda>uua. uua \<cdot>t \<gamma>"]
+              intp_actxt_compose[of Fun "\<box>" "\<box>" "Fun f terms"]
+              intp_actxt_compose[of Fun "\<box>" "\<box>" "term_of_gterm undefined"]
+              gctxt_of_ctxt_inv[of "\<box> \<circ>\<^sub>c \<box>"]
+              term.discI(2)[of "Fun f terms" f terms]
+              less\<^sub>t_ground_subterm_property[of "term.from_ground undefined" "\<box> \<circ>\<^sub>c \<box>"]
+              term_of_gterm_ctxt_apply_ground(1)[of undefined "\<box> \<circ>\<^sub>c \<box>" "term_of_gterm undefined"]
+              term_order.less_imp_not_eq[of "term.from_ground _" "term.from_ground _"])
 
         then obtain terms\<^sub>G\<^sub>1 context\<^sub>G' terms\<^sub>G\<^sub>2 where
           context\<^sub>G: "context\<^sub>G = GMore f terms\<^sub>G\<^sub>1 context\<^sub>G' terms\<^sub>G\<^sub>2"
@@ -955,9 +969,8 @@ proof(cases premise\<^sub>G\<^sub>2 premise\<^sub>G\<^sub>1 conclusion\<^sub>G r
 
     from is_Var_term\<^sub>x 
     obtain var\<^sub>x where var\<^sub>x: "Var var\<^sub>x = term\<^sub>x \<cdot>t \<rho>\<^sub>1"
-      using renaming(1)
-      unfolding is_Var_def term_subst.is_renaming_def subst_compose_def
-      by (metis eval_term.simps(1) subst_apply_eq_Var)
+      using renaming(1)[unfolded term_subst_is_renaming_iff]
+      by (cases term\<^sub>x) auto
 
     have \<tau>\<^sub>x_var\<^sub>x: "welltyped typeof_fun \<V>\<^sub>1 (Var var\<^sub>x) \<tau>\<^sub>x"
       using \<tau>\<^sub>x typing(6)

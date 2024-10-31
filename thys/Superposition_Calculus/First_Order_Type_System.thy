@@ -424,10 +424,7 @@ proof(induction \<kappa> arbitrary: \<tau>)
 next
   case (More x1 x2 \<kappa> x4)
   then show ?case 
-    by (metis ctxt_apply_term.simps(2) in_set_conv_decomp welltyped_subterm)
-    (* AFP Devel:
-      by (metis in_set_conv_decomp intp_actxt.simps(2) welltyped_subterm)
-    *)
+    by (metis in_set_conv_decomp intp_actxt.simps(2) welltyped_subterm)
 qed
 
 
