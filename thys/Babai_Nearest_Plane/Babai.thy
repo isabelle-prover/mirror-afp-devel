@@ -886,7 +886,7 @@ definition eps_closest::rat
   where "eps_closest = (if \<exists>r. close_condition r then SOME r. close_condition r else 0)"
 
 lemma eps_closest_lemma: "close_condition eps_closest"
-  using close_rat  unfolding eps_closest_def by metis
+  using close_rat  unfolding eps_closest_def by (metis (full_types))
 
 lemma rational_tri_ineq:
   fixes v::"rat vec"
