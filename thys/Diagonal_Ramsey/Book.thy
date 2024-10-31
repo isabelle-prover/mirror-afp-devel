@@ -104,9 +104,12 @@ proof -
     using \<phi> \<theta>_def bij_betw_inv_into by blast
   have emap: "bij_betw (\<lambda>e. \<phi>`e) (nsets {..<nV} 2) E"
     by (metis \<phi> bij_betw_nsets complete nsets2_eq_all_edges)
-
   define Red  where "Red \<equiv>  (\<lambda>e. \<phi>`e) ` ((f -` {0}) \<inter> nsets {..<nV} 2)"
   define Blue where "Blue \<equiv> (\<lambda>e. \<phi>`e) ` ((f -` {1}) \<inter> nsets {..<nV} 2)"
+  have f0: "f (\<theta>`e) = 0" if "e \<in> Red" for e
+    using that \<phi> by (auto simp add: Red_def image_iff \<theta>_def bij_betw_def nsets_def)
+  have f1: "f (\<theta>`e) = 1" if "e \<in> Blue" for e
+    using that \<phi> by (auto simp add: Blue_def image_iff \<theta>_def bij_betw_def nsets_def)
   have "Red \<subseteq> E"
     using bij_betw_imp_surj_on[OF emap] by (auto simp: Red_def)
   have "Blue = E-Red"
@@ -114,43 +117,27 @@ proof -
     by (auto simp: Red_def Blue_def bij_betw_def inj_on_eq_iff image_iff Pi_iff)
   have no_Red_K: False if "size_clique k K Red" for K
   proof -
-    have KR: "clique K Red" and Kk: "card K = k" and "K\<subseteq>V"
+    have "clique K Red" and Kk: "card K = k" and "K\<subseteq>V"
       using that by (auto simp: size_clique_def)
-    have "f {\<theta> v, \<theta> w} = 0"
-      if eq: "\<theta> v \<noteq> \<theta> w" and "v \<in> K" "w \<in> K" for v w
-    proof -
-      have "\<exists>e\<in>f -` {0} \<inter> [{..<nV}]\<^bsup>2\<^esup>. {v, w} = \<phi> ` e"
-        using that KR by (fastforce simp: clique_def Red_def)
-      then show ?thesis
-        using bij_betw_inv_into_left [OF \<phi>]
-        by (auto simp: \<theta>_def doubleton_eq_iff insert_commute elim!: nsets2_E)
-    qed
-    then have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {0}" by (auto elim!: nsets2_E)
+    then have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {0}"
+      unfolding clique_def image_subset_iff
+      by (smt (verit, ccfv_SIG) f0 image_empty image_iff image_insert nsets2_E singleton_iff)
     moreover have "\<theta>`K \<in> [{..<nV}]\<^bsup>card K\<^esup>"
       by (smt (verit) \<open>K\<subseteq>V\<close> \<theta> bij_betwE bij_betw_nsets finV mem_Collect_eq nsets_def finite_subset)
     ultimately show False
-      using noclique [of 0] Kk
-      by (simp add: size_clique_def monochromatic_def)
+      using noclique [of 0] Kk by (simp add: size_clique_def monochromatic_def)
   qed
   have no_Blue_K: False if "size_clique l K Blue" for K
   proof -
-    have KB: "clique K Blue" and Kl: "card K = l" and "K\<subseteq>V"
+    have "clique K Blue" and Kl: "card K = l" and "K\<subseteq>V"
       using that by (auto simp: size_clique_def)
-    have "f {\<theta> v, \<theta> w} = 1"
-      if eq: "\<theta> v \<noteq> \<theta> w" and "v \<in> K" "w \<in> K" for v w
-    proof -
-      have "\<exists>e\<in>f -` {1} \<inter> [{..<nV}]\<^bsup>2\<^esup>. {v, w} = \<phi> ` e"
-        using that KB by (fastforce simp: clique_def Blue_def)
-      then show ?thesis
-        using bij_betw_inv_into_left [OF \<phi>]
-        by (auto simp: \<theta>_def doubleton_eq_iff insert_commute elim!: nsets2_E)
-    qed
-    then have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {1}" by (auto elim!: nsets2_E)
+    then have "f ` [\<theta>`K]\<^bsup>2\<^esup> \<subseteq> {1}"
+      unfolding clique_def image_subset_iff
+      by (smt (verit, ccfv_SIG) f1 image_empty image_iff image_insert nsets2_E singleton_iff)
     moreover have "\<theta>`K \<in> [{..<nV}]\<^bsup>card K\<^esup>"
-      by (smt (verit) \<open>K\<subseteq>V\<close> \<theta> bij_betwE bij_betw_nsets finV mem_Collect_eq nsets_def finite_subset)
+      using bij_betw_nsets [OF \<theta>] \<open>K \<subseteq> V\<close> bij_betwE finV infinite_super nsets_def by fastforce
     ultimately show False
-      using noclique [of 1] Kl
-      by (simp add: size_clique_def monochromatic_def)
+      using noclique [of 1] Kl by (simp add: size_clique_def monochromatic_def)
   qed
   show thesis
     using \<open>Blue = E \<setminus> Red\<close> \<open>Red \<subseteq> E\<close> no_Blue_K no_Red_K that by presburger
@@ -158,7 +145,7 @@ qed
 
 end
 
-locale No_Cliques = Book_Basis + P0_min +
+locale No_Cliques = Book_Basis +
   fixes Red Blue :: "'a set set"
   assumes Red_E: "Red \<subseteq> E"
   assumes Blue_def: "Blue = E-Red"

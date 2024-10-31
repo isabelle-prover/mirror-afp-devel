@@ -345,21 +345,19 @@ proof -
     using assms
     apply (intro eventually_all_geI0, real_asymp)
     by (smt (verit, ccfv_SIG) divide_pos_pos frac_le powr_mono2)
-  moreover have "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu>0 \<le> \<mu> \<and> \<mu> \<le> \<mu>1 \<longrightarrow> 4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu> - 2/l) * real (m_of l))))"
+  moreover have "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu>0 \<le> \<mu> \<and> \<mu> \<le> \<mu>1 \<longrightarrow> 4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu> - 2/l) * m_of l)))"
   proof (intro eventually_all_geI0 [where L = "nat \<lceil>3/\<mu>0\<rceil>"])
-    show "\<forall>\<^sup>\<infinity>l. 4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu>0 - 2/l) * real (m_of l))))"
+    show "\<forall>\<^sup>\<infinity>l. 4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu>0 - 2/l) * m_of l)))"
     unfolding b_of_def m_of_def using assms by real_asymp
   next
     fix l \<mu>
-    assume \<section>: "4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu>0 - 2/l) * real (m_of l))))"
+    assume \<section>: "4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu>0 - 2/l) * m_of l)))"
       and "\<mu>0 \<le> \<mu>" "\<mu> \<le> \<mu>1" and lel: "nat \<lceil>3 / \<mu>0\<rceil> \<le> l"
-    then have "l>0"
-      using "3" by linarith
     then have 0: "m_of l > 0"
-      using 3 by (auto simp: m_of_def)
+      using 3 of_nat_0_eq_iff by (fastforce simp: m_of_def)
     have "\<mu>0 > 2/l"
       using lel assms by (auto simp: divide_simps mult.commute)
-    then show "4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu> - 2/l) * real (m_of l))))"
+    then show "4 \<le> 5 * exp (- ((real (b_of l))\<^sup>2 / ((\<mu> - 2/l) * m_of l)))"
       using order_trans [OF \<section>] by (simp add: "0" \<open>\<mu>0 \<le> \<mu>\<close> frac_le)
   qed
   moreover have "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu>0 \<le> \<mu> \<and> \<mu> \<le> \<mu>1 \<longrightarrow> 2/l < \<mu>"
@@ -382,8 +380,7 @@ context Book
 begin
 
 proposition Blue_4_1:
-  assumes "X\<subseteq>V" and manyb: "many_bluish X"
-    and big: "Big_Blue_4_1 \<mu> l"
+  assumes "X\<subseteq>V" and manyb: "many_bluish X" and big: "Big_Blue_4_1 \<mu> l"
   shows "\<exists>S T. good_blue_book X (S,T) \<and> card S \<ge> l powr (1/4)"
 proof -
   have lpowr0[simp]: "0 \<le> \<lceil>l powr r\<rceil>" for r
@@ -431,7 +428,7 @@ proof -
     using \<open>card U = m\<close> by blast
   text \<open>First part of (10)\<close>
   have "card U * (\<mu> * card X - card U) = m * (\<mu> * (card X - card U)) - (1-\<mu>) * m\<^sup>2"
-    using cardU_less_X by (simp add: \<open>card U = m\<close> algebra_simps of_nat_diff numeral_2_eq_2)
+    using cardU_less_X by (simp add: \<open>card U = m\<close> algebra_simps numeral_2_eq_2)
   also have "\<dots> \<le> real (card (Blue \<inter> all_edges_betw_un U (X-U)))"
   proof -
     have dfam: "disjoint_family_on (\<lambda>u. Blue \<inter> all_edges_betw_un {u} (X-U)) U"
