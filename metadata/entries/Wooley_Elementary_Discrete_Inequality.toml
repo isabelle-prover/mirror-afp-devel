@@ -1,0 +1,32 @@
+title = "Wooley's Discrete Inequality"
+date = 2024-10-02
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+This is a formalisation of the proof of an inequality by Trevor D. Wooley attesting that when 
+$\\lambda > 0$, $$\\min_{r \\in \\mathbb{N}}(r + \\lambda/r) \\leq \\sqrt{4 \\lambda +1}$$
+with equality if and only if $\\lambda = m(m-1)$ for some positive integer $m$.
+The source is the note <a href=\"https://www.math.purdue.edu/~twooley/publ/20230410discineq.pdf\"> An Elementary Discrete Inequality</a> by T. D. Wooley."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+email = "argyraki_email"
+
+[contributors]
+
+[notify]
+argyraki = "argyraki_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "<a href=\"https://www.math.purdue.edu/~twooley/publ/20230410discineq.pdf\">T.D. Wooley, An Elementary Discrete Inequality</a>.",
+]

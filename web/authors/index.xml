@@ -11,8 +11,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>desharnais</title>
+          <link>/authors/desharnais/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/desharnais/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>toth</title>
+          <link>/authors/toth/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/toth/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>baxter</title>
+          <link>/authors/baxter/</link>
+          <pubDate>Thu, 10 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/baxter/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>bryant</title>
+          <link>/authors/bryant/</link>
+          <pubDate>Thu, 10 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/bryant/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>argyraki</title>
+          <link>/authors/argyraki/</link>
+          <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/argyraki/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>binder</title>
+          <link>/authors/binder/</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/binder/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>cordwell</title>
+          <link>/authors/cordwell/</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/cordwell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ren</title>
+          <link>/authors/ren/</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/ren/</guid>
+          <description></description>
+        </item>
         <item>
           <title>cheung</title>
           <link>/authors/cheung/</link>
@@ -30,7 +86,7 @@
         <item>
           <title>eberl</title>
           <link>/authors/eberl/</link>
-          <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
+          <pubDate>Wed, 18 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/authors/eberl/</guid>
           <description></description>
         </item>
@@ -39,13 +95,6 @@
           <link>/authors/lammich/</link>
           <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/authors/lammich/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>desharnais</title>
-          <link>/authors/desharnais/</link>
-          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/desharnais/</guid>
           <description></description>
         </item>
         <item>
@@ -196,13 +245,6 @@
           <description></description>
         </item>
         <item>
-          <title>cordwell</title>
-          <link>/authors/cordwell/</link>
-          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/cordwell/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>tan</title>
           <link>/authors/tan/</link>
           <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
@@ -291,13 +333,6 @@
           <link>/authors/yao/</link>
           <pubDate>Sun, 05 May 2024 00:00:00 +0000</pubDate>
           <guid>/authors/yao/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>binder</title>
-          <link>/authors/binder/</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/binder/</guid>
           <description></description>
         </item>
         <item>
@@ -718,13 +753,6 @@
           <link>/authors/rabing/</link>
           <pubDate>Wed, 16 Aug 2023 00:00:00 +0000</pubDate>
           <guid>/authors/rabing/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>argyraki</title>
-          <link>/authors/argyraki/</link>
-          <pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate>
-          <guid>/authors/argyraki/</guid>
           <description></description>
         </item>
         <item>
@@ -1166,13 +1194,6 @@
           <link>/authors/marmsoler/</link>
           <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
           <guid>/authors/marmsoler/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>toth</title>
-          <link>/authors/toth/</link>
-          <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/authors/toth/</guid>
           <description></description>
         </item>
         <item>

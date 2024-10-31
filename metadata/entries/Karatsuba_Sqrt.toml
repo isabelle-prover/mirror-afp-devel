@@ -1,0 +1,39 @@
+title = "The Karatsuba Square Root Algorithm"
+date = 2024-09-18
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+<p>This formalisation provides an executable version of Zimmerman's &ldquo;Karatsuba Square Root&rdquo;
+algorithm, which, given an integer $n \\geq 0$, computes the integer square root
+$\\lfloor \\sqrt{n}\\rfloor$ and the remainder $n - \\lfloor \\sqrt{n}\\rfloor^2$.
+This is the algorithm used by the GNU Multiple Precision Arithmetic Library (GMP).</p>
+<p>Similarly to Karatsuba multiplication, the algorithm is a divide-and-conquer algorithm that
+works by repeatedly splitting the input number $n$ into four parts and recursively calls
+itself once on an input with roughly half as many bits as $n$, leading to a total running time
+of $O(M(n))$ (where $M(n)$ is the time required to multiply two $n$-bit numbers).
+This is significantly faster than the standard Heron method for large numbers (i.e. more than
+roughly 1000 bits).</p>
+<p>As a simple application to interval arithmetic, an executable floating-point interval 
+extension of the square-root operation is provided. For high-precision computations this 
+is considerably more efficient than the interval extension method in the Isabelle distribution.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

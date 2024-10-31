@@ -321,6 +321,13 @@
           <description></description>
         </item>
         <item>
+          <title>Babai_Nearest_Plane</title>
+          <link>/sessions/babai_nearest_plane/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/babai_nearest_plane/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Balog_Szemeredi_Gowers</title>
           <link>/sessions/balog_szemeredi_gowers/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -640,6 +647,13 @@
           <link>/sessions/category/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/category/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Category_Set</title>
+          <link>/sessions/category_set/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/category_set/</guid>
           <description></description>
         </item>
         <item>
@@ -2918,6 +2932,13 @@
           <description></description>
         </item>
         <item>
+          <title>Karatsuba_Sqrt</title>
+          <link>/sessions/karatsuba_sqrt/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/karatsuba_sqrt/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>KAT_and_DRA</title>
           <link>/sessions/kat_and_dra/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3601,6 +3622,13 @@
           <link>/sessions/mhcomputation/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/mhcomputation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Min_Max_Least_Greatest</title>
+          <link>/sessions/min_max_least_greatest/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/min_max_least_greatest/</guid>
           <description></description>
         </item>
         <item>
@@ -5627,6 +5655,13 @@
           <description></description>
         </item>
         <item>
+          <title>Superposition_Calculus</title>
+          <link>/sessions/superposition_calculus/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/superposition_calculus/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Suppes_Theorem</title>
           <link>/sessions/suppes_theorem/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6135,6 +6170,13 @@
           <link>/sessions/wlog/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/wlog/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Wooley_Elementary_Discrete_Inequality</title>
+          <link>/sessions/wooley_elementary_discrete_inequality/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/wooley_elementary_discrete_inequality/</guid>
           <description></description>
         </item>
         <item>

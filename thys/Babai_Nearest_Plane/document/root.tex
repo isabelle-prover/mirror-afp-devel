@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{eufrak}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Babai's Nearest Plane Algorithm}
+\author{Eric Ren, Sage Binder, and Katherine Kosaian}
+\maketitle
+
+\begin{abstract}
+   $\gamma$-CVP is the problem of finding a vector in $L$ that is within $\gamma$ times the closest possible to $t$, where $L$ is a lattice and $t$ is a target vector. If the basis for $L$ is LLL-reduced, Babai's Closest Hyperplane algorithm solves $\gamma$-CVP for $\gamma=2^{n/2}$, where $n$ is the dimension of the lattice $L$, in time polynomial in $n$. This session formalizes said algorithm, using the AFP formalization of LLL \cite{LLL_Factorization-AFP,Modular_arithmetic_LLL_and_HNF_algorithms-AFP} and adapting a proof of correctness from the lecture notes of Stephens-Davidowitz \cite{Stephens_Davidowitz}.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The (exact) \emph{closest vector problem} (CVP) is the problem of finding the closest vector within a lattice $L$ to a target vector $t$. This is equivalent to finding the shortest vector in the \emph{lattice coset} $L-t:=\{l-t:l\in L\}$. There is a corresponding family of weaker problems, $\gamma$-CVP (where $\gamma$ is some real parameter), where one needs only find a vector in $L-t$ whose length is at most $\gamma$ times the shortest possible. Through a reduction to the \emph{shortest vector problem} \cite{Stephens_Davidowitz}, solutions to these problems may be used to factor rational polynomials. This problem is therefore of cryptographic interest.
+
+Although exact CVP (or $1$-CVP) is NP-Complete \cite{CVP_Hardness-AFP}, Babai's Nearest Plane Algorithm solves $2^{n/2}$-CVP, where $n$ is the dimension of $L$, in polynomial time, provided that $L$ is presented using an LLL-reduced basis with parameter $\alpha=4/3$. The proof in this document is mostly a straightforward algebraicization of the proof in Stephens-Davidowitz' lecture notes. It makes use of the coordinate systems defined by the original basis
+(denoted $\beta$) and the Gram-Schmidt orthogonalization of that basis (denoted $\Tilde{\beta}$).
+Let $[u]_{\beta}$ denote the representation of a vector $u$ under $\beta$, with coordinates
+$[u]_{\beta}^j$; $j=1,...,n$ (likewise for $\Tilde{\beta}$).
+Also, let $s_i$ denote the output of the algorithm after step $i$ and let $d$ be the shortest 
+lattice coset vector, as witnessed by the vector $v$. The proof works by analysing the coordinates of
+$[s_n]_{\Tilde{\beta}}$, showing that all are at most $1/2$ and that some later coordinates are
+exactly those of $[v]_{\Tilde{\beta}}$.
+
+The algorithm modifies coordinate $n-i$ in both bases for the last time in step $i$
+(formalized in lemma $\mathtt{coord\_invariance}$), during which
+both coordinates are decreased below $1/2$ (formalized in lemma $\mathtt{small\_coord}$). Combined, these facts
+imply that the output $s_n$ has $\left|[s_n]_{\Tilde{\beta}}^j\right| \leq 1/2$ for all indices $j$.
+
+Since $\Tilde{\beta}$ is orthogonal, we have \begin{equation}\|s_n\|^2=\sum\limits_{i=1}^n \left([s_n]_{\Tilde{\beta}}^i\|\Tilde{\beta}_i\|\right)^2 \label{sum}, \end{equation} so the preceding coordinate bounds $\|s_n\|^2$ by 
+$\frac{1}{4}\sum\limits_{i=1}^n \|\Tilde{\beta}_i\|^2$. If the $\Tilde{\beta}_i$ are all short compared to $d$, this bound suffices. In fact, if there is any short vector $\Tilde{\beta}_I$ in $\Tilde{\beta}$ then because $\beta$ is LLL-reduced, any vector preceding $\Tilde{\beta}_I$ in $\Tilde{\beta}$ will not be much longer. This bounds the first $I$ terms in Equation \ref{sum}. By selecting $I$ maximal, we may assume that $\Tilde{\beta}$ ends in a series of $n-I$ long vectors. In this case it can be shown $[v]_{\Tilde{\beta}}^j$ and $[s_n]_{\Tilde{\beta}}^j$ differ by an integral amount for $j=I+1,...,n$. Therefore, if $[v]_{\Tilde{\beta}}^j$ and $[s_n]_{\Tilde{\beta}}^j$ differ at all, they differ by at least $1$, which would mean $\left|[v]_{\Tilde{\beta}}^j\right|\geq 1/2$, since $\left|[s_n]_{\Tilde{\beta}}^j\right|\leq 1/2$. This would force $v$ to be longer than $d$, a contradiction. So $[v]_{\Tilde{\beta}}^j=[s_n]_{\Tilde{\beta}}^j$ for $j=I+1,...n$, which gives a tighter bound on the last $n-I$ terms in equation \ref{sum}.
+
+Precisely, let $I$ denote $\max\{i:\|\Tilde{\beta}_i\|\leq 2d\}$, meaning for all indices $j>I$,
+$\|\Tilde{\beta}_j\|>2d$. Now, for all $j>I$, $d^2=\|v\|\geq ([v]_{\Tilde{\beta}}^j)^2 \|\Tilde{\beta}_j\|^2>([v]_{\Tilde{\beta}}^j)^2\cdot 4d^2$,
+meaning $1/4>(\Tilde{\beta}^j)^2$, or $1/2>\left|[v]_{\Tilde{\beta}}^j\right|$.
+Since $\left|[s_j]_{\Tilde{\beta}}^j\right|\leq 1/2$ from the previous section, 
+$\left|[v]_{\Tilde{\beta}}^j- [s_j]_{\Tilde{\beta}}^j \right|<1$. Using properties of the
+change-of-basis between $\beta,\Tilde{\beta}$ formalized in the LLL AFP session, we show that 
+$[v]_{\Tilde{\beta}}^j-[s_j]_{\Tilde{\beta}}^j=[v]_{\beta}^j-[s_j]_{\beta}^j = [v-s_j]_{\beta}^j$,
+so that $\left|[v-s_j]_{\beta}^j\right|<1$
+But since $v-s_j$ lies in the lattice, $[v-s_j]_{\beta}^j$ is integral, so $\left|[v-s_j]_{\beta}^j\right|=0$,
+meaning $[v]_{\Tilde{\beta}}^j = [s_j]_{\Tilde{\beta}}^j$. Lemma $\mathtt{coord\_invariance}$ gives that 
+$[v]_{\Tilde{\beta}}^j=[s_j]_{\Tilde{\beta}}^j = [s_n]_{\Tilde{\beta}}^j$. This is formalized by lemma
+$\mathtt{correct\_coord}$.
+
+Now $\|s_n\|^2 = \sum\limits_{i=1}^n ([s_n]_{\Tilde{\beta}}^i\|\Tilde{\beta}_i\|)^2$, since $\Tilde{\beta}$ is orthogonal.
+Splitting the sum around $I$ equates this to $\sum\limits_{i=1}^I ([s_n]_{\Tilde{\beta}}^i)^2+\sum\limits_{i=I+1}^n ([s_n]_{\Tilde{\beta}}^i)^2$.
+Lemma $\mathtt{small\_coord}$ bounds the terms in the first sum by $\|\Tilde{\beta}_i\|^2/4$, while lemma $\mathtt{correct_coord}$
+bounds the terms in the second sum by $d^2$, giving $\|s_n\|^2\leq (n-I)d^2+\sum\limits_{i=1}^I \|\Tilde{\beta}_i\|^2/4$.
+If $\beta$ is LLL-reduced with parameter $\alpha$, $\|\Tilde{\beta}_i\|^2\leq \alpha^I \|\Tilde{\beta}_I\|^2$ for all $i\leq I$,
+which, by the definition of $I$, is at most $4d^2$. So $\|s_n\|^2\leq ((n-I)+I\alpha^I)d^2\leq n\alpha^nd^2$.
+The standard choice of $\alpha=4/3$ gives $\|s_n\|^2\leq 2^nd^2$. All of this is formalized in the final
+section, which culminates in the main theorem.
+
+To avoid having to prove that a shortest vector exists, we use the definition $\text{inf}\{\|u-t\|:u\in L\}$
+for $d$ instead of $\text{min}\{\|u-t\|:u\in L\}$ and rephrase the arguments above to allow $\|v\|$ to
+exceed $d$ by a small constant factor $\epsilon$. This workaround and its details are contained in the section 
+on the closest distance and negligibly change the rest of the proof.
+\\ \\
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -11,13 +11,55 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 25 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>A Modular Formalization of Superposition</title>
+          <link>/entries/Superposition_Calculus.html</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Superposition_Calculus.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering</title>
+          <link>/entries/Min_Max_Least_Greatest.html</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Min_Max_Least_Greatest.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Elementary Theory of the Category of Sets</title>
+          <link>/entries/Category_Set.html</link>
+          <pubDate>Thu, 10 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Category_Set.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Wooley&#39;s Discrete Inequality</title>
+          <link>/entries/Wooley_Elementary_Discrete_Inequality.html</link>
+          <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Wooley_Elementary_Discrete_Inequality.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Babai_Nearest_Plane</title>
+          <link>/entries/Babai_Nearest_Plane.html</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Babai_Nearest_Plane.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Formally Verified Suffix Array Construction</title>
           <link>/entries/SuffixArray.html</link>
           <pubDate>Wed, 25 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/entries/SuffixArray.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Karatsuba Square Root Algorithm</title>
+          <link>/entries/Karatsuba_Sqrt.html</link>
+          <pubDate>Wed, 18 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Karatsuba_Sqrt.html</guid>
           <description></description>
         </item>
         <item>

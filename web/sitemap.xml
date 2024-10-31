@@ -3,18 +3,93 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Superposition_Calculus.html</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/abstract_substitution/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cheung/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
+    <loc>/authors/desharnais/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/knuth_bendix_order/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/min_max_least_greatest/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Min_Max_Least_Greatest.html</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ordered_resolution_prover/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/regular_tree_relations/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/saturation_framework/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/saturation_framework_extensions/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/toth/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/baxter/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bryant/</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Category_Set.html</loc>
+    <lastmod>2024-10-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/argyraki/</loc>
+    <lastmod>2024-10-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Wooley_Elementary_Discrete_Inequality.html</loc>
+    <lastmod>2024-10-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Babai_Nearest_Plane.html</loc>
+    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/binder/</loc>
+    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lll_factorization/</loc>
+    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/ren/</loc>
+    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cheung/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/SuffixArray.html</loc>
@@ -23,11 +98,11 @@
     <loc>/authors/rizkallah/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2024-09-17T00:00:00+00:00</lastmod>
+    <lastmod>2024-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Karatsuba_Sqrt.html</loc>
+    <lastmod>2024-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lammich/</loc>
     <lastmod>2024-09-17T00:00:00+00:00</lastmod>
@@ -44,19 +119,10 @@
     <loc>/dependencies/case_labeling/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/desharnais/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/first_order_terms/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/haslbeckm/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/NREST.html</loc>
@@ -69,9 +135,6 @@
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Chebyshev_Prime_Bounds.html</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polynomial_interpolation/</loc>
@@ -272,13 +335,7 @@
     <loc>/authors/thiemann/</loc>
     <lastmod>2024-06-13T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cordwell/</loc>
-    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Coppersmith_Method.html</loc>
-    <lastmod>2024-06-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/lll_factorization/</loc>
     <lastmod>2024-06-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/tan/</loc>
@@ -309,6 +366,9 @@
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/complete_non_orders/</loc>
+    <lastmod>2024-05-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/finfun/</loc>
     <lastmod>2024-05-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lp_duality/</loc>
@@ -404,9 +464,6 @@
     <loc>/entries/LL1_Parser.html</loc>
     <lastmod>2024-05-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/binder/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/brucker/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -432,9 +489,6 @@
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
-    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/knuth_bendix_order/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lambda_free_rpos/</loc>
@@ -929,9 +983,6 @@
     <loc>/dependencies/relation_algebra/</loc>
     <lastmod>2023-08-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2023-08-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/leek/</loc>
     <lastmod>2023-08-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -1071,15 +1122,6 @@
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/functional_ordered_resolution_prover/</loc>
-    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/ordered_resolution_prover/</loc>
-    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/saturation_framework/</loc>
-    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/saturation_framework_extensions/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/commuting_hermitian/</loc>
@@ -1469,9 +1511,6 @@
     <loc>/entries/Real_Time_Deque.html</loc>
     <lastmod>2022-06-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/toth/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Boolos_Curious_Inference.html</loc>
     <lastmod>2022-06-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -1521,9 +1560,6 @@
     <lastmod>2022-06-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Rewrite_Properties_Reduction.html</loc>
-    <lastmod>2022-06-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/regular_tree_relations/</loc>
     <lastmod>2022-06-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Combinable_Wands.html</loc>
@@ -2301,9 +2337,6 @@
     <lastmod>2020-09-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/extended_finite_state_machines/</loc>
-    <lastmod>2020-09-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/finfun/</loc>
     <lastmod>2020-09-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/foster/</loc>
@@ -5215,6 +5248,8 @@
   </url><url>
     <loc>/sessions/axiomaticcategorytheory/</loc>
   </url><url>
+    <loc>/sessions/babai_nearest_plane/</loc>
+  </url><url>
     <loc>/sessions/balog_szemeredi_gowers/</loc>
   </url><url>
     <loc>/sessions/banach_steinhaus/</loc>
@@ -5306,6 +5341,8 @@
     <loc>/sessions/catalan_numbers/</loc>
   </url><url>
     <loc>/sessions/category/</loc>
+  </url><url>
+    <loc>/sessions/category_set/</loc>
   </url><url>
     <loc>/sessions/category2/</loc>
   </url><url>
@@ -6239,6 +6276,8 @@
   </url><url>
     <loc>/sessions/karatsuba/</loc>
   </url><url>
+    <loc>/sessions/karatsuba_sqrt/</loc>
+  </url><url>
     <loc>/sessions/kat_and_dra/</loc>
   </url><url>
     <loc>/sessions/kbps/</loc>
@@ -6502,6 +6541,8 @@
     <loc>/sessions/mfotl_monitor/</loc>
   </url><url>
     <loc>/sessions/mhcomputation/</loc>
+  </url><url>
+    <loc>/sessions/min_max_least_greatest/</loc>
   </url><url>
     <loc>/sessions/minimal_ssa/</loc>
   </url><url>
@@ -7108,6 +7149,8 @@
   </url><url>
     <loc>/sessions/supercalc/</loc>
   </url><url>
+    <loc>/sessions/superposition_calculus/</loc>
+  </url><url>
     <loc>/sessions/suppes_theorem/</loc>
   </url><url>
     <loc>/sessions/surprise_paradox/</loc>
@@ -7261,6 +7304,8 @@
     <loc>/sessions/with_type/</loc>
   </url><url>
     <loc>/sessions/wlog/</loc>
+  </url><url>
+    <loc>/sessions/wooley_elementary_discrete_inequality/</loc>
   </url><url>
     <loc>/sessions/woot_strong_eventual_consistency/</loc>
   </url><url>

@@ -45,6 +45,7 @@ BD_Security_Compositional
 BNF_CC
 BNF_Operations
 BTree
+Babai_Nearest_Plane
 Balog_Szemeredi_Gowers
 Banach_Steinhaus
 Belief_Revision
@@ -104,6 +105,7 @@ Catalan_Numbers
 Category
 Category2
 Category3
+Category_Set
 Catoids
 Cauchy
 Cayley_Hamilton
@@ -397,6 +399,7 @@ Jordan_Hoelder
 Jordan_Normal_Form
 KAD
 Karatsuba
+Karatsuba_Sqrt
 KAT_and_DRA
 KBPs
 KD_Tree
@@ -490,6 +493,7 @@ Mereology
 Mersenne_Primes
 Metalogic_ProofChecker
 MHComputation
+Min_Max_Least_Greatest
 MiniML
 MiniSail
 Minimal_SSA
@@ -770,6 +774,7 @@ Sumcheck_Protocol
 SumSquares
 Sunflowers
 SuperCalc
+Superposition_Calculus
 Suppes_Theorem
 Surprise_Paradox
 Symmetric_Polynomials
@@ -843,6 +848,7 @@ Wieferich_Kempner
 Winding_Number_Eval
 With_Type
 Wlog
+Wooley_Elementary_Discrete_Inequality
 Word_Lib
 WorkerWrapper
 Worklist_Algorithms

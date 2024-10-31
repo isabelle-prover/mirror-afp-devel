@@ -11,8 +11,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 16 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Abstract_Substitution</title>
+          <link>/dependencies/abstract_substitution/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/abstract_substitution/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth_Bendix_Order</title>
+          <link>/dependencies/knuth_bendix_order/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/knuth_bendix_order/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Min_Max_Least_Greatest</title>
+          <link>/dependencies/min_max_least_greatest/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/min_max_least_greatest/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordered_Resolution_Prover</title>
+          <link>/dependencies/ordered_resolution_prover/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ordered_resolution_prover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular_Tree_Relations</title>
+          <link>/dependencies/regular_tree_relations/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular_tree_relations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Saturation_Framework</title>
+          <link>/dependencies/saturation_framework/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/saturation_framework/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Saturation_Framework_Extensions</title>
+          <link>/dependencies/saturation_framework_extensions/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/saturation_framework_extensions/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>LLL_Factorization</title>
+          <link>/dependencies/lll_factorization/</link>
+          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lll_factorization/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Automatic_Refinement</title>
           <link>/dependencies/automatic_refinement/</link>
@@ -238,13 +294,6 @@
           <description></description>
         </item>
         <item>
-          <title>LLL_Factorization</title>
-          <link>/dependencies/lll_factorization/</link>
-          <pubDate>Mon, 10 Jun 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/lll_factorization/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Riesz_Representation</title>
           <link>/dependencies/riesz_representation/</link>
           <pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate>
@@ -277,6 +326,13 @@
           <link>/dependencies/complete_non_orders/</link>
           <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/complete_non_orders/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>FinFun</title>
+          <link>/dependencies/finfun/</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/finfun/</guid>
           <description></description>
         </item>
         <item>
@@ -368,13 +424,6 @@
           <link>/dependencies/factor_algebraic_polynomial/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/factor_algebraic_polynomial/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Knuth_Bendix_Order</title>
-          <link>/dependencies/knuth_bendix_order/</link>
-          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/knuth_bendix_order/</guid>
           <description></description>
         </item>
         <item>
@@ -812,27 +861,6 @@
           <description></description>
         </item>
         <item>
-          <title>Ordered_Resolution_Prover</title>
-          <link>/dependencies/ordered_resolution_prover/</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/ordered_resolution_prover/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Saturation_Framework</title>
-          <link>/dependencies/saturation_framework/</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/saturation_framework/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Saturation_Framework_Extensions</title>
-          <link>/dependencies/saturation_framework_extensions/</link>
-          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/saturation_framework_extensions/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Commuting_Hermitian</title>
           <link>/dependencies/commuting_hermitian/</link>
           <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
@@ -1040,13 +1068,6 @@
           <link>/dependencies/lucas_theorem/</link>
           <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/lucas_theorem/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Regular_Tree_Relations</title>
-          <link>/dependencies/regular_tree_relations/</link>
-          <pubDate>Thu, 02 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/regular_tree_relations/</guid>
           <description></description>
         </item>
         <item>
@@ -1509,13 +1530,6 @@
           <link>/dependencies/extended_finite_state_machines/</link>
           <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/extended_finite_state_machines/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>FinFun</title>
-          <link>/dependencies/finfun/</link>
-          <pubDate>Mon, 07 Sep 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/finfun/</guid>
           <description></description>
         </item>
         <item>

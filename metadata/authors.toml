@@ -304,6 +304,35 @@ host = [
 
 [bauereiss.homepages]
 
+[baxter]
+name = "James Baxter"
+orcid = "0000-0001-6083-9607"
+
+[baxter.emails]
+
+[baxter.emails.baxter_email]
+user = [
+  "james",
+  "baxter",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
+[baxter.emails.baxter_email1]
+user = [
+  "jebaxter",
+]
+host = [
+  "hotmail",
+  "co",
+  "uk",
+]
+
+[baxter.homepages]
+
 [bayer]
 name = "Jonas Bayer"
 
@@ -1022,6 +1051,23 @@ host = [
 
 [brunner.homepages]
 brunner_homepage = "http://www21.in.tum.de/~brunnerj/"
+
+[bryant]
+name = "Dustin Bryant"
+orcid = "0000-0001-9876-3804"
+
+[bryant.emails]
+
+[bryant.emails.bryant_email]
+user = [
+  "brydustin",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bryant.homepages]
 
 [buday]
 name = "Gergely Buday"
@@ -5793,6 +5839,23 @@ name = "Markus Reiter"
 
 [reiter.homepages]
 
+[ren]
+name = "Eric Ren"
+
+[ren.emails]
+
+[ren.emails.ren_email]
+user = [
+  "reneric",
+  "2002",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[ren.homepages]
+
 [reynaud]
 name = "Alban Reynaud"
 
@@ -7250,6 +7313,16 @@ user = [
 ]
 host = [
   "tum",
+  "de",
+]
+
+[toth.emails.toth_email1]
+user = [
+  "balazs",
+  "toth",
+]
+host = [
+  "lmu",
   "de",
 ]
 

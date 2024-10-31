@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Modular Formalization of Superposition - Archive of Formal Proofs</title>
+    <meta name="description" content="Superposition is an efficient proof calculus for reasoning about first-order logic with equality that is implemented in many automatic theorem provers. It...">
+
+  <meta property="og:title" content="A Modular Formalization of Superposition" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Superposition_Calculus.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-10-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-24T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+  <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="A Modular Formalization of Superposition"/>
+<meta name="twitter:description" content=""/>
+
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+    <script src="../js/entries.js"></script>
+
+  <script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script>
+    <script src="../js/header-search.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+</head>
+
+  <body class='mathjax_ignore'>
+    <aside>
+        <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+         class="logo">
+  </a>
+
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs"
+             class="logo">
+      </a>
+      <ul>
+          <a href="../">
+            <li >
+              Home
+            </li>
+          </a>
+          <a href="../topics/">
+            <li >
+              Topics
+            </li>
+          </a>
+          <a href="../download/">
+            <li >
+              Download
+            </li>
+          </a>
+          <a href="../help/">
+            <li >
+              Help
+            </li>
+          </a>
+          <a href="../submission/">
+            <li >
+              Submission
+            </li>
+          </a>
+          <a href="../statistics/">
+            <li >
+              Statistics
+            </li>
+          </a>
+          <a href="../about/">
+            <li >
+              About
+            </li>
+          </a>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+    <div class='content entries'>
+      <header>
+    <form autocomplete="off" action="../search">
+      <div class='form-container'>
+        <input id="search-input" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button
+               id="search-button" type="button">
+          <img src="../images/search.svg" alt="Search"/>
+        </button>
+        <datalist id="autocomplete">
+        </datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span> <span class='first'>M</span>odular <span class='first'>F</span>ormalization of <span class='first'>S</span>uperposition
+    
+  </h1>
+  <div>
+      <p>
+        <a href="../authors/desharnais">Martin Desharnais</a> <a class="obfuscated" data="eyJob3N0IjpbIm1waS1pbmYiLCJtcGciLCJkZSJdLCJ1c2VyIjpbImRlc2hhcm5haXMiXX0=">📧</a> and <a href="../authors/toth">Balazs Toth</a> <a class="obfuscated" data="eyJob3N0IjpbImxtdSIsImRlIl0sInVzZXIiOlsiYmFsYXpzIiwidG90aCJdfQ==">📧</a>
+
+      </p>
+      <p class="date">October 24, 2024</p>
+  </div>
+</header>
+      <div>
+        
+  <main>
+    <h3>Abstract</h3>
+
+    <div class="abstract mathjax_process">Superposition is an efficient proof calculus for reasoning about first-order logic with equality that is implemented in many automatic theorem provers. It works by saturating the given set of clauses and is refutationally complete, meaning that if the set is inconsistent, the saturation will contain a contradiction. In this formalization, we restructured the completeness proof to cleanly separate the ground (i.e., variable-free) and nonground aspects. We relied on the IsaFoR library for first-order terms and on the Isabelle saturation framework. A paper describing this formalization was published at the 15th International Conference on Interactive Theorem Proving (ITP 2024).</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs">Logic/General logic/Mechanization of proofs</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Desharnais, M., Toth, B., Waldmann, U., Blanchette, J., &amp; Tourret, S. (2024). <i>A Modular Formalization of Superposition in Isabelle/HOL</i>. Schloss Dagstuhl – Leibniz-Zentrum für Informatik. https://doi.org/10.4230/LIPICS.ITP.2024.12
+        </li>
+      </ul>
+      <h3>Session Superposition_Calculus</h3>
+      <ul>
+          <li><a href="../sessions/superposition_calculus/#Transitive_Closure_Extra">Transitive_Closure_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Abstract_Rewriting_Extra">Abstract_Rewriting_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Term_Rewrite_System">Term_Rewrite_System</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Critical_Pairs">Ground_Critical_Pairs</a></li>
+          <li><a href="../sessions/superposition_calculus/#Multiset_Extra">Multiset_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Uprod_Extra">Uprod_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#HOL_Extra">HOL_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Relation_Extra">Relation_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Clausal_Calculus_Extra">Clausal_Calculus_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Term_Extra">Ground_Term_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Ctxt_Extra">Ground_Ctxt_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Clause">Ground_Clause</a></li>
+          <li><a href="../sessions/superposition_calculus/#Selection_Function">Selection_Function</a></li>
+          <li><a href="../sessions/superposition_calculus/#Term_Ordering_Lifting">Term_Ordering_Lifting</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Ordering">Ground_Ordering</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Type_System">Ground_Type_System</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Superposition">Ground_Superposition</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Superposition_Completeness">Ground_Superposition_Completeness</a></li>
+          <li><a href="../sessions/superposition_calculus/#Variable_Substitution">Variable_Substitution</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Clause">First_Order_Clause</a></li>
+          <li><a href="../sessions/superposition_calculus/#Fun_Extra">Fun_Extra</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Type_System">First_Order_Type_System</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Select">First_Order_Select</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Ordering">First_Order_Ordering</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Superposition">First_Order_Superposition</a></li>
+          <li><a href="../sessions/superposition_calculus/#Grounded_First_Order_Superposition">Grounded_First_Order_Superposition</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Superposition_Completeness">First_Order_Superposition_Completeness</a></li>
+          <li><a href="../sessions/superposition_calculus/#IsaFoR_Term_Copy">IsaFoR_Term_Copy</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Superposition_Example">First_Order_Superposition_Example</a></li>
+          <li><a href="../sessions/superposition_calculus/#First_Order_Superposition_Soundness">First_Order_Superposition_Soundness</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Superposition_Soundness">Ground_Superposition_Soundness</a></li>
+          <li><a href="../sessions/superposition_calculus/#Ground_Superposition_Welltypedness_Preservation">Ground_Superposition_Welltypedness_Preservation</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Abstract_Substitution.html">Abstract Substitution</a></li>
+              <li><a href="../entries/Knuth_Bendix_Order.html">A Formalization of Knuth–Bendix Orders</a></li>
+              <li><a href="../entries/Min_Max_Least_Greatest.html">Minimal, Maximal, Least, and Greatest Elements w.r.t. Restricted Ordering</a></li>
+              <li><a href="../entries/Ordered_Resolution_Prover.html">Formalization of Bachmair and Ganzinger&rsquo;s Ordered Resolution Prover</a></li>
+              <li><a href="../entries/Regular_Tree_Relations.html">Regular Tree Relations</a></li>
+              <li><a href="../entries/Saturation_Framework.html">A Comprehensive Framework for Saturation Theorem Proving</a></li>
+              <li><a href="../entries/Saturation_Framework_Extensions.html">Extensions to the Comprehensive Framework for Saturation Theorem Proving</a></li>
+        </ul>
+      </div>
+      </div>
+    
+  </main>
+
+  <nav class='links'>
+    <a class='popup-button' href="#cite-popup">Cite</a>
+    <a class='popup-button' href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Superposition_Calculus/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Superposition_Calculus/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Superposition_Calculus/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Superposition_Calculus-AFP</p>
+        <pre id="copy-text">@article{Superposition_Calculus-AFP,
+  author  = {Martin Desharnais and Balazs Toth},
+  title   = {A Modular Formalization of Superposition},
+  journal = {Archive of Formal Proofs},
+  month   = {October},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Superposition_Calculus.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://www.isa-afp.org/release/afp-Superposition_Calculus-current.tar.gz"
+         download>Download latest</a>
+    </div>
+  </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

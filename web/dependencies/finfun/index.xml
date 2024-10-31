@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 07 Sep 2020 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 27 May 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/finfun/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Verifying a Decision Procedure for Pattern Completeness</title>
+          <link>/entries/Pattern_Completeness.html</link>
+          <pubDate>Mon, 27 May 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Pattern_Completeness.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A Formal Model of Extended Finite State Machines</title>
           <link>/entries/Extended_Finite_State_Machines.html</link>

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 10 Aug 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Wed, 02 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/argyraki/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Wooley&#39;s Discrete Inequality</title>
+          <link>/entries/Wooley_Elementary_Discrete_Inequality.html</link>
+          <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Wooley_Elementary_Discrete_Inequality.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Polygonal Number Theorem</title>
           <link>/entries/Polygonal_Number_Theorem.html</link>
