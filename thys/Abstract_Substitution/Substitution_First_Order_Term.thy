@@ -52,6 +52,13 @@ lemma term_subst_is_unifier_set_iff_unifiers:
   unfolding term_subst.is_unifier_set_def unifiers_def 
   by fast
 
+lemma term_subst_is_mgu_iff_is_mgu:
+  assumes fin: "\<forall>X\<in> XX. finite X"
+  shows "term_subst.is_mgu \<mu> XX \<longleftrightarrow> is_mgu \<mu> (\<Union>X\<in>XX. X \<times> X)"
+  unfolding term_subst.is_mgu_def is_mgu_def
+  unfolding term_subst_is_unifier_set_iff_unifiers[OF fin]
+  by auto
+
 lemma term_subst_is_imgu_iff_is_imgu:
   assumes "\<forall>X\<in> XX. finite X"
   shows "term_subst.is_imgu \<mu> XX \<longleftrightarrow> is_imgu \<mu> (\<Union>X\<in>XX. X \<times> X)"
