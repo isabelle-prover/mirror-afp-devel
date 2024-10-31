@@ -138,10 +138,10 @@ lemma "\<M>_skip_fact_reso' C (propagate_lit K D \<gamma> # \<Gamma>) =
   (let n = count C (- (K \<cdot>l \<gamma>)) in n # \<M>_skip_fact_reso' (C + repeat_mset n (D \<cdot> \<gamma>)) \<Gamma>)"
   by (simp add: propagate_lit_def)
 
-fun \<M> :: "_ \<Rightarrow> _ \<Rightarrow> ('f, 'v) state \<Rightarrow>
+fun \<M> :: "_ \<Rightarrow> ('f, 'v) state \<Rightarrow>
   bool \<times> ('f, 'v) Term.term literal fset \<times> nat list \<times> nat" where
-  "\<M> N \<beta> (\<Gamma>, U, None) = (True, \<M>_prop_deci \<beta> \<Gamma>, [], 0)" |
-  "\<M> N \<beta> (\<Gamma>, U, Some (C, \<gamma>)) = (False, {||}, \<M>_skip_fact_reso \<Gamma> (C \<cdot> \<gamma>), size C)"
+  "\<M> \<beta> (\<Gamma>, U, None) = (True, \<M>_prop_deci \<beta> \<Gamma>, [], 0)" |
+  "\<M> \<beta> (\<Gamma>, U, Some (C, \<gamma>)) = (False, {||}, \<M>_skip_fact_reso \<Gamma> (C \<cdot> \<gamma>), size C)"
 
 lemma length_\<M>_skip_fact_reso[simp]: "length (\<M>_skip_fact_reso \<Gamma> C) = length \<Gamma>"
   by (induction \<Gamma> arbitrary: C) (simp_all add: Let_def)
@@ -203,11 +203,11 @@ proof -
       "initial_lits_generalize_learned_trail_conflict N S'"
       by (simp_all add: invars_def)
 
-    from step show "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+    from step show "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       unfolding conversep_iff scl_without_backtrack_def sup_apply sup_bool_def
     proof (elim disjE)
       assume "decide N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: decide.cases)
         case (decideI L \<gamma> \<Gamma> U)
         have "\<M>_prop_deci \<beta> ((L \<cdot>l \<gamma>, None) # \<Gamma>) |\<subset>| \<M>_prop_deci \<beta> \<Gamma>"
@@ -237,7 +237,7 @@ proof -
       qed
     next
       assume "propagate N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: propagate.cases)
         case (propagateI C U L C' \<gamma> C\<^sub>0 C\<^sub>1 \<Gamma> \<mu>)
 
@@ -281,7 +281,7 @@ proof -
       qed
     next
       assume "conflict N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: conflict.cases)
         case (conflictI D U \<gamma> \<Gamma>)
         show ?thesis
@@ -289,7 +289,7 @@ proof -
       qed
     next
       assume "skip N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: skip.cases)
         case (skipI L D \<sigma> n \<Gamma> U)
         have "(\<M>_skip_fact_reso \<Gamma> (D \<cdot> \<sigma>), \<M>_skip_fact_reso ((L, n) # \<Gamma>) (D \<cdot> \<sigma>)) \<in>
@@ -300,7 +300,7 @@ proof -
       qed
     next
       assume "factorize N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: factorize.cases)
         case (factorizeI L \<gamma> L' \<mu> \<Gamma> U D)
 
@@ -325,7 +325,7 @@ proof -
       qed
     next
       assume "resolve N \<beta> S S'"
-      thus "?less (\<M> N \<beta> S') (\<M> N \<beta> S)"
+      thus "?less (\<M> \<beta> S') (\<M> \<beta> S)"
       proof (cases N \<beta> S S' rule: resolve.cases)
         case (resolveI \<Gamma> \<Gamma>' K D \<gamma>\<^sub>D L \<gamma>\<^sub>C \<rho>\<^sub>C \<rho>\<^sub>D C \<mu> \<gamma> U)
         from \<open>ground_closures S\<close> have
@@ -384,9 +384,9 @@ proof -
       qed
     qed
   next
-    show "wfp_on (\<M> N \<beta> ` {S. invars S}) ?less"
+    show "wfp_on (\<M> \<beta> ` {S. invars S}) ?less"
     proof (rule wfp_on_subset)
-      show "\<M> N \<beta> ` {S. invars S} \<subseteq> UNIV"
+      show "\<M> \<beta> ` {S. invars S} \<subseteq> UNIV"
         by simp
     next
       show "wfp ?less"

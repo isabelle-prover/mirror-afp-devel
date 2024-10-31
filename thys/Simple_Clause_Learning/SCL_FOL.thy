@@ -1077,6 +1077,12 @@ definition is_decision_lit
 definition trail_interp :: "_ list \<Rightarrow> _ interp" where
   "trail_interp \<Gamma> = \<Union>((\<lambda>L. case L of Pos A \<Rightarrow> {A} | Neg A \<Rightarrow> {}) ` fst ` set \<Gamma>)"
 
+lemma
+  "trail_interp [] = {}"
+  "trail_interp ((Pos A, ann) # \<Gamma>) = insert A (trail_interp \<Gamma>)"
+  "trail_interp ((Neg A, ann) # \<Gamma>) = trail_interp \<Gamma>"
+  by (induction \<Gamma>) (simp_all add: trail_interp_def)
+
 lemma trail_interp_eq_Union:
   "trail_interp \<Gamma> = (\<Union>Ln \<in> set \<Gamma>. case fst Ln of Pos t \<Rightarrow> {t} | Neg t \<Rightarrow> {})"
   unfolding trail_interp_def by simp
