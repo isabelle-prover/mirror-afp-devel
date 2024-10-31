@@ -30,15 +30,9 @@ type_synonym ('f, 'v) atom = "('f, 'v) term uprod"
 notation subst_apply_term (infixl "\<cdot>t" 67)
 notation subst_compose (infixl "\<odot>" 75)
 
-notation subst_apply_ctxt (infixl "\<cdot>t\<^sub>c" 67)
-
-(*
-Uncomment for AFP devel:
-
 abbreviation subst_apply_ctxt ::
   "('f, 'v) context \<Rightarrow> ('f, 'v) subst \<Rightarrow> ('f, 'v) context" (infixl "\<cdot>t\<^sub>c" 67) where
   "subst_apply_ctxt \<equiv> subst_apply_actxt"
-*)
 
 lemmas clause_simp_term =
   subst_apply_term_ctxt_apply_distrib vars_term_ctxt_apply literal.sel
@@ -210,7 +204,7 @@ global_interpretation "context": all_subst_ident_iff_ground where
   is_ground = "\<lambda>\<kappa>. context.vars \<kappa> = {}" and subst = "(\<cdot>t\<^sub>c)"
 proof unfold_locales
   fix \<kappa> :: "('f, 'v) context"
-  show "context.vars \<kappa> = {} = (\<forall>\<sigma>. \<kappa> \<cdot>t\<^sub>c \<sigma> = \<kappa>)"
+  show "(context.vars \<kappa> = {}) = (\<forall>\<sigma>. \<kappa> \<cdot>t\<^sub>c \<sigma> = \<kappa>)"
   proof (intro iffI)
     show "context.vars \<kappa> = {} \<Longrightarrow> \<forall>\<sigma>. \<kappa> \<cdot>t\<^sub>c \<sigma> = \<kappa>"
       by(induction \<kappa>) (simp_all add: list.map_ident_strong)

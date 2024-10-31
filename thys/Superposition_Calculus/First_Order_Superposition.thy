@@ -71,7 +71,7 @@ proof(intro conjI)
 
   show "wfp (typed_tiebreakers clause\<^sub>G)"
     using wellfounded_tiebreakers
-    by (meson wfP_if_convertible_to_wfP)
+    by (meson wfp_if_convertible_to_wfp)
 
   show "transp (typed_tiebreakers clause\<^sub>G)"
     using wellfounded_tiebreakers
