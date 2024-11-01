@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 18 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/eberl/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences</title>
+          <link>/entries/Boustrophedon_Transform.html</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Boustrophedon_Transform.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>The Karatsuba Square Root Algorithm</title>
           <link>/entries/Karatsuba_Sqrt.html</link>

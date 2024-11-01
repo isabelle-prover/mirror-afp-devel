@@ -21,6 +21,13 @@
           <description></description>
         </item>
         <item>
+          <title>Bernoulli</title>
+          <link>/dependencies/bernoulli/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/bernoulli/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Knuth_Bendix_Order</title>
           <link>/dependencies/knuth_bendix_order/</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
@@ -39,6 +46,27 @@
           <link>/dependencies/ordered_resolution_prover/</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/ordered_resolution_prover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Polynomial_Interpolation</title>
+          <link>/dependencies/polynomial_interpolation/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/polynomial_interpolation/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Imperative_HOL</title>
+          <link>/dependencies/refine_imperative_hol/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_imperative_hol/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Refine_Monadic</title>
+          <link>/dependencies/refine_monadic/</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/refine_monadic/</guid>
           <description></description>
         </item>
         <item>
@@ -88,20 +116,6 @@
           <link>/dependencies/first_order_terms/</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/first_order_terms/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Refine_Monadic</title>
-          <link>/dependencies/refine_monadic/</link>
-          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/refine_monadic/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Polynomial_Interpolation</title>
-          <link>/dependencies/polynomial_interpolation/</link>
-          <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/polynomial_interpolation/</guid>
           <description></description>
         </item>
         <item>
@@ -221,13 +235,6 @@
           <link>/dependencies/probabilistic_timed_automata/</link>
           <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/probabilistic_timed_automata/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Refine_Imperative_HOL</title>
-          <link>/dependencies/refine_imperative_hol/</link>
-          <pubDate>Fri, 09 Aug 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/refine_imperative_hol/</guid>
           <description></description>
         </item>
         <item>
@@ -1012,13 +1019,6 @@
           <link>/dependencies/padic_ints/</link>
           <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/padic_ints/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Bernoulli</title>
-          <link>/dependencies/bernoulli/</link>
-          <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/bernoulli/</guid>
           <description></description>
         </item>
         <item>

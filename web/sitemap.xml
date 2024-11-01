@@ -14,10 +14,16 @@
     <loc>/authors/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/bernoulli/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/desharnais/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
@@ -41,6 +47,15 @@
     <loc>/dependencies/ordered_resolution_prover/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/polynomial_interpolation/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/refine_imperative_hol/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/refine_monadic/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/regular_tree_relations/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -48,6 +63,9 @@
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/saturation_framework_extensions/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Boustrophedon_Transform.html</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/</loc>
@@ -98,9 +116,6 @@
     <loc>/authors/rizkallah/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/eberl/</loc>
-    <lastmod>2024-09-18T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Karatsuba_Sqrt.html</loc>
     <lastmod>2024-09-18T00:00:00+00:00</lastmod>
   </url><url>
@@ -128,16 +143,10 @@
     <loc>/entries/NREST.html</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/refine_monadic/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Pi_Irrational.html</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Chebyshev_Prime_Bounds.html</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomial_interpolation/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/prime_distribution_elementary/</loc>
@@ -270,9 +279,6 @@
     <lastmod>2024-08-12T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/probabilistic_timed_automata/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/refine_imperative_hol/</loc>
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Worklist_Algorithms.html</loc>
@@ -1444,9 +1450,6 @@
   </url><url>
     <loc>/entries/Separation_Logic_Unbounded.html</loc>
     <lastmod>2022-09-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Khovanskii_Theorem.html</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
@@ -5298,6 +5301,8 @@
     <loc>/sessions/boolos_curious_inference_automated/</loc>
   </url><url>
     <loc>/sessions/bounded_deducibility_security/</loc>
+  </url><url>
+    <loc>/sessions/boustrophedon_transform/</loc>
   </url><url>
     <loc>/sessions/broadcast_psi/</loc>
   </url><url>
