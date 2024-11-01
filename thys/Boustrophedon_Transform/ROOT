@@ -1,0 +1,25 @@
+chapter AFP
+
+session Boustrophedon_Transform (AFP) = Bernoulli +
+  options [timeout = 900, document_build=pdflatex]
+  sessions
+    "HOL-Computational_Algebra"
+    "HOL-Combinatorics"
+    "Refine_Monadic"
+    "Refine_Imperative_HOL"
+    Polynomial_Interpolation
+    Bernoulli
+  theories
+    Alternating_Permutations
+    Increasing_Binary_Trees
+    Tangent_Numbers
+    Tangent_Numbers_Imperative
+    Secant_Numbers
+    Secant_Numbers_Imperative
+    Euler_Numbers
+    Boustrophedon_Transform
+    Boustrophedon_Transform_Impl_Test
+    Tangent_Secant_Imperative_Test
+  document_files
+    "root.tex"
+    "root.bib"
