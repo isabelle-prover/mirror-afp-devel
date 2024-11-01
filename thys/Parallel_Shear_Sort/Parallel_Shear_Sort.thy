@@ -17,65 +17,7 @@ theory Parallel_Shear_Sort
   imports Complex_Main "HOL-Library.Multiset" "HOL-Library.FuncSet" Ceil_Log2
 begin
 
-subsubsection \<open>Facts about multisets\<close>
-
-(* TODO: Move to distribution? *)
-lemma mset_concat: "mset (concat xss) = (\<Sum>xs\<leftarrow>xss. mset xs)"
-  by (induction xss) auto
-
-lemma sum_mset_singleton_mset [simp]: "(\<Sum>x\<in>#A. {#f x#}) = image_mset f A"
-  by (induction A) auto
-
-lemma sum_list_singleton_mset [simp]: "(\<Sum>x\<leftarrow>xs. {#f x#}) = image_mset f (mset xs)"
-  by (induction xs) auto
-
-lemma count_conv_size_mset: "count A x = size (filter_mset (\<lambda>y. y = x) A)"
-  by (induction A) auto
-
-lemma size_conv_count_bool_mset: "size A = count A True + count A False"
-  by (induction A) auto
-
-lemma set_mset_sum: "finite A \<Longrightarrow> set_mset (\<Sum>x\<in>A. f x) = (\<Union>x\<in>A. set_mset (f x))"
-  by (induction A rule: finite_induct) auto
-
-lemma filter_image_mset:
-  "filter_mset P (image_mset f A) = image_mset f (filter_mset (\<lambda>x. P (f x)) A)"
-  by (induction A) auto
-
-
 subsubsection \<open>Facts about sorting\<close>
-
-(* TODO: Move to distribution? *)
-lemma sort_replicate [simp]: "sort (replicate n x) = replicate n x"
-  by (intro properties_for_sort) auto
-
-lemma mset_replicate [simp]: "mset (replicate n x) = replicate_mset n x"
-  by (induction n) auto
-
-lemma sorted_wrt_induct [consumes 1, case_names Nil Cons]:
-  assumes "sorted_wrt R xs"
-  assumes "P []"
-          "\<And>x xs. (\<And>y. y \<in> set xs \<Longrightarrow> R x y) \<Longrightarrow> P xs \<Longrightarrow> P (x # xs)"
-  shows   "P xs"
-  using assms(1) by (induction xs) (auto intro: assms)
-
-lemma sorted_wrt_trans_induct [consumes 2, case_names Nil single Cons]:
-  assumes "sorted_wrt R xs" "transp R"
-  assumes "P []" "\<And>x. P [x]"
-          "\<And>x y xs. R x y \<Longrightarrow> P (y # xs) \<Longrightarrow> P (x # y # xs)"
-  shows   "P xs"
-  using assms(1)
-  by (induction xs rule: induct_list012)
-     (auto intro: assms simp: sorted_wrt2[OF assms(2)])
-
-lemmas sorted_induct [consumes 1, case_names Nil single Cons] =
-  sorted_wrt_trans_induct[OF _ preorder_class.transp_on_le]
-
-lemma sorted_wrt_map_mono:
-  assumes "sorted_wrt R xs"
-  assumes "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> R x y \<Longrightarrow> R' (f x) (f y)"
-  shows   "sorted_wrt R' (map f xs)"
-  using assms by (induction rule: sorted_wrt_induct) auto
 
 lemma sorted_map_mono:
   assumes "sorted xs" and "mono_on (set xs) f"
@@ -109,43 +51,17 @@ lemma rev_sorted_boolE:
   shows   "\<exists>k\<le>w. xs = replicate k True @ replicate (w - k) False"
 proof -
   from sorted_boolE[OF assms(1)] assms(2) obtain k
-    where k: "k \<le> w" "rev xs = replicate k False @ replicate (w - k) True" by auto
-  note k(2)
+    where "k \<le> w" and k: "rev xs = replicate k False @ replicate (w - k) True" by auto
+  note k
   also have "rev (replicate k False @ replicate (w - k) True) =
              replicate (w - k) True @ replicate (w - (w - k)) False"
-    using k(1) by auto
+    using \<open>k \<le> w\<close> by auto
   finally show ?thesis
     by (intro exI[of _ "w - k"]) auto
 qed
 
-lemma sort_append:
-  assumes "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set ys \<Longrightarrow> x \<le> y"
-  shows   "sort (xs @ ys) = sort xs @ sort ys"
-  using assms by (intro properties_for_sort) (auto simp: sorted_append)
-
-lemma sort_append_replicate_left:
-  "(\<And>y. y \<in> set xs \<Longrightarrow> x \<le> y) \<Longrightarrow> sort (replicate n x @ xs) = replicate n x @ sort xs"
-  by (subst sort_append) auto
-
-lemma sort_append_replicate_right:
-  "(\<And>y. y \<in> set xs \<Longrightarrow> x \<ge> y) \<Longrightarrow> sort (xs @ replicate n x) = sort xs @ replicate n x"
-  by (subst sort_append) auto
-
 
 subsubsection \<open>Miscellaneous\<close>
-
-(* TODO: Move to distribution? *)
-lemma nth_append_left: "i < length xs \<Longrightarrow> (xs @ ys) ! i = xs ! i"
-  by (auto simp: nth_append)
-
-lemma nth_append_right: "i \<ge> length xs \<Longrightarrow> (xs @ ys) ! i = ys ! (i - length xs)"
-  by (auto simp: nth_append)
-
-lemma Times_insert_right: "A \<times> insert y B = (\<lambda>x. (x, y)) ` A \<union> A \<times> B"
-  by auto
-
-lemma Times_insert_left: "insert x A \<times> B = (\<lambda>y. (x, y)) ` B \<union> A \<times> B"
-  by auto
 
 lemma map_nth_shift:
   assumes "length xs = b - a"
