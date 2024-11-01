@@ -61,7 +61,9 @@ lemma count_vars_term_v_pow_e:
   = (sc (v_sym x,1) 0)^e * count (vars_term_ms (scf_term sc t)) y" 
 proof (induct e)
   case (Suc e)
-  thus ?case by (simp split: if_splits add: scf_list_def sum_mset_sum_list sum_list_replicate count_sum_list sc)
+  thus ?case
+    by (simp split: if_splits add: scf_list_def sum_mset_sum_list sum_list_replicate count_sum_list sc
+             flip: mset_replicate)
 qed force
 
 lemma count_vars_term_encode_monom: assumes c: "c \<ge> 0" 

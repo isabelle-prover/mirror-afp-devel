@@ -836,7 +836,7 @@ qed
 
 lemma replicate_count:
  "count (mset (replicate n x)) x = n"
-by (induction n, simp_all)
+  by simp
 
 lemma fill_none [rule_format]:
   assumes A: "index_less index key"
@@ -1833,7 +1833,7 @@ proof (induction index key p q r t arbitrary: n f rule: round.induct,
     ultimately have "\<forall>x. count (mset xs') x = ?f' x" ..
     thus "(y = x \<longrightarrow> Suc (count (mset xs') x) = f x) \<and>
       (y \<noteq> x \<longrightarrow> count (mset xs') x = f x)"
-      by (simp, insert spec [OF A, where x = y], rule_tac impI, simp)
+      using A by force
   qed
 next
   fix index p q r u m ns n f and key :: "'a \<Rightarrow> 'b" and xs :: "'a list"
@@ -1841,20 +1841,21 @@ next
   let ?ys = "drop (Suc (Suc m)) xs"
   let ?r = "\<lambda>m'. round_suc_suc index key ?ws m m' u"
   let ?t = "\<lambda>r' v. round index key p q r' (v, ns, ?ys)"
+    note mset_replicate [simp del] 
   assume A: "index_less index key"
   assume
-   "\<And>ws a b c d e g h i n f.
+    "\<And>ws a b c d e g h i n f.
       ws = ?ws \<Longrightarrow> a = bn_comp m p q r \<Longrightarrow> (b, c) = bn_comp m p q r \<Longrightarrow>
       d = ?r b \<Longrightarrow> (e, g) = ?r b \<Longrightarrow> (h, i) = g \<Longrightarrow>
         bn_inv p q (e, ns, ?ys) \<longrightarrow> add_inv n (e, ns, ?ys) \<longrightarrow>
           count_inv f (e, ns, ?ys) \<longrightarrow> count_inv f (?t c e)" and
-   "bn_inv p q (u, Suc (Suc m) # ns, xs)" and
-   "add_inv n (u, Suc (Suc m) # ns, xs)" and
-   "count_inv f (u, Suc (Suc m) # ns, xs)"
+    "bn_inv p q (u, Suc (Suc m) # ns, xs)" and
+    "add_inv n (u, Suc (Suc m) # ns, xs)" and
+    "count_inv f (u, Suc (Suc m) # ns, xs)"
   thus "count_inv f (round index key p q r (u, Suc (Suc m) # ns, xs))"
-  using [[simproc del: defined_all]]
+    using [[simproc del: defined_all]] 
   proof (simp split: prod.split, ((rule_tac allI)+, ((rule_tac impI)+)?)+,
-   (erule_tac conjE)+, subst (asm) (2) add_base_zero, simp)
+      (erule_tac conjE)+, subst (asm) (2) add_base_zero, simp)
     fix m' r' v ms' ws' xs' x
     assume
       B: "?r m' = (v, ms', ws')" and
@@ -1874,12 +1875,11 @@ next
       using E by simp
     moreover assume "\<forall>x. count (mset xs) x = f x"
     ultimately have "f x = count (mset ?ws) x + count (mset xs') x"
-      by (subst (asm) append_take_drop_id [of "Suc (Suc m)", symmetric],
-       subst (asm) mset_append, simp)
+      by (metis append_take_drop_id count_union mset_append)
     with B [symmetric] show "count (mset ws') x + count (mset xs') x = f x"
     proof (simp add: round_suc_suc_def Let_def del: count_add_mset mset_map
-     split: if_split_asm, subst (1 2) add_mset_add_single, simp
-     only: count_single count_union)
+        split: if_split_asm, subst (1 2) add_mset_add_single, simp
+        only: count_single count_union)
       let ?nmi = "mini ?ws key"
       let ?nma = "maxi ?ws key"
       let ?xmi = "?ws ! ?nmi"
@@ -1894,7 +1894,7 @@ next
         using E and F by simp
       hence H: "card ?A \<le> count (mset ?ws) x"
         by (simp add: count_mset length_filter_conv_card, rule_tac card_mono,
-         simp, blast)
+            simp, blast)
       show "count (mset (map the (fill ?zs (offs ?ms 0) index key m ?mi ?ma))) x
         + (if ?xma = x then 1 else 0) + (if ?xmi = x then 1 else 0) =
         count (mset ?ws) x"
@@ -1908,36 +1908,34 @@ next
           using H and I by simp
         from I show ?thesis
         proof (simp, (rule_tac [!] conjI, rule_tac [!] impI)+,
-         simp_all (no_asm_simp) add: True)
+            simp_all (no_asm_simp) add: True)
           assume "?xmi = x" and "?xma = x"
           with G have "?A = {?nmi, ?nma}"
             by (rule_tac set_eqI, rule_tac iffI, simp_all, erule_tac disjE,
-             insert mini_less [of ?ws key], insert maxi_less [of ?ws key],
-             simp_all)
+                insert mini_less [of ?ws key], insert maxi_less [of ?ws key],
+                simp_all)
           with G have "card ?A = Suc (Suc 0)"
-            by (simp, subst card_insert_disjoint, simp_all,
-             rule_tac mini_maxi_neq, simp)
+            by (simp add: mini_maxi_neq)
           thus "Suc (Suc 0) = count (mset (take (Suc (Suc 0)) xs)) x"
             using True and J by simp
         next
           assume "?xmi \<noteq> x" and "?xma = x"
           with G have "?A = {?nma}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, (erule_tac conjE)+,
-             erule_tac disjE, insert maxi_less [of ?ws key], simp_all)
+            by (smt (verit, best) Collect_cong Suc_lessD True lessI maxi_less
+                singleton_conv)
           thus "Suc 0 = count (mset (take (Suc (Suc 0)) xs)) x"
             using True and J by simp
         next
           assume "?xmi = x" and "?xma \<noteq> x"
           with G have "?A = {?nmi}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, (erule_tac conjE)+,
-             erule_tac disjE, insert mini_less [of ?ws key], simp_all)
+            by (smt (verit, best) Collect_cong Suc_lessD True lessI mini_less
+                singleton_conv)
           thus "Suc 0 = count (mset (take (Suc (Suc 0)) xs)) x"
             using True and J by simp
         next
           assume "?xmi \<noteq> x" and "?xma \<noteq> x"
           hence "?A = {}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, (erule_tac conjE)+,
-             erule_tac disjE, simp_all)
+            by blast
           hence "count (mset ?ws) x = 0"
             using J by simp
           thus "x \<notin> set (take (Suc (Suc 0)) xs)"
@@ -1947,45 +1945,38 @@ next
         case False
         hence "0 < ?k"
           by (simp, drule_tac bn_comp_fst_nonzero [OF D], subst (asm) C,
-           simp split: nat.split)
+              simp split: nat.split)
         hence "count (mset (map the (fill ?zs (offs ?ms 0) index key
           (length ?zs) ?mi ?ma))) x = count (mset ?zs) x"
           by (rule_tac fill_offs_enum_count_item [OF A], simp, rule_tac conjI,
-           ((rule_tac mini_lb | rule_tac maxi_ub), erule_tac in_set_nthsD)+)
+              ((rule_tac mini_lb | rule_tac maxi_ub), erule_tac in_set_nthsD)+)
         with G show ?thesis
         proof (simp, (rule_tac [!] conjI, rule_tac [!] impI)+,
-         simp_all add: mini_maxi_nths nths_count)
+            simp_all add: mini_maxi_nths nths_count)
           assume "?xmi = x" and "?xma = x"
-          with G have "?A = {?nmi, ?nma}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, erule_tac disjE,
-             insert mini_less [of ?ws key], insert maxi_less [of ?ws key],
-             simp_all)
+          with G mini_less [of ?ws key] maxi_less [of ?ws key] 
+          have "?A = {?nmi, ?nma}" by auto
           with G have "card ?A = Suc (Suc 0)"
-            by (simp, subst card_insert_disjoint, simp_all,
-             rule_tac mini_maxi_neq, simp)
+            by (simp add: mini_maxi_neq)
           thus "Suc (Suc (count (mset ?ws) x - card ?A)) = count (mset ?ws) x"
             using H by simp
         next
           assume "?xmi \<noteq> x" and "?xma = x"
-          with G have "?A = {?nma}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, (erule_tac conjE)+,
-             erule_tac disjE, insert maxi_less [of ?ws key], simp_all)
+          with G maxi_less [of ?ws key] 
+          have "?A = {?nma}" by auto
           thus "Suc (count (mset ?ws) x - card ?A) = count (mset ?ws) x"
             using H by simp
         next
           assume "?xmi = x" and "?xma \<noteq> x"
-          with G have "?A = {?nmi}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, (erule_tac conjE)+,
-             erule_tac disjE, insert mini_less [of ?ws key], simp_all)
+          with G mini_less [of ?ws key] 
+          have "?A = {?nmi}" by auto
           thus "Suc (count (mset ?ws) x - card ?A) = count (mset ?ws) x"
             using H by simp
         next
           assume "?xmi \<noteq> x" and "?xma \<noteq> x"
-          hence "?A = {}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, (erule_tac conjE)+,
-             erule_tac disjE, simp_all)
+          hence "?A = {}" by auto
           thus "count (mset ?ws) x - card ?A = count (mset ?ws) x"
-            by (simp (no_asm_simp))
+            by (metis card.empty diff_zero)
         qed
       qed
     qed
@@ -2023,10 +2014,9 @@ theorem gcsort_count:
 proof -
   let ?t = "(0, [length xs], xs)"
   have "count_inv (count (mset xs)) (gcsort_aux index key p ?t)"
-    by (rule gcsort_count_inv [OF A _ B], rule gcsort_add_input,
-     rule gcsort_aux_set, rule gcsort_count_input)
-  hence "count (mset (gcsort_out (gcsort_aux index key p ?t))) x =
-    (count (mset xs)) x"
+    using A B gcsort_add_input gcsort_aux_set gcsort_count_input gcsort_count_inv
+    by blast
+  hence "count (mset (gcsort_out (gcsort_aux index key p ?t))) x = (count (mset xs)) x"
     by (rule gcsort_count_intro)
   moreover have "?t = gcsort_in xs"
     by (simp add: gcsort_in_def)
