@@ -1283,33 +1283,45 @@ in each recursive round.
 \<close>
 
 lemma add_zeros:
- "foldl (+) (m :: nat) (replicate n 0) = m"
-by (induction n, simp_all)
+  "foldl (+) (m :: nat) (replicate n 0) = m"
+  by (induction n, simp_all)
 
 lemma add_suc:
- "foldl (+) (Suc m) ns = Suc (foldl (+) m ns)"
-by (induction ns arbitrary: m, simp_all)
+  "foldl (+) (Suc m) ns = Suc (foldl (+) m ns)"
+  by (induction ns arbitrary: m, simp_all)
 
 lemma add_update:
- "i < length ns \<Longrightarrow> foldl (+) m (ns[i := Suc (ns ! i)]) = Suc (foldl (+) m ns)"
-by (induction ns arbitrary: i m, simp_all add: add_suc split: nat.split)
+  "i < length ns \<Longrightarrow> foldl (+) m (ns[i := Suc (ns ! i)]) = Suc (foldl (+) m ns)"
+  by (induction ns arbitrary: i m, simp_all add: add_suc split: nat.split)
 
 lemma add_le:
- "(m :: nat) \<le> foldl (+) m ns"
-by (induction ns arbitrary: m, simp_all, rule order_trans, rule le_add1)
+  "(m :: nat) \<le> foldl (+) m ns"
+  by (induction ns arbitrary: m, simp_all, rule order_trans, rule le_add1)
 
 lemma add_mono:
- "(m :: nat) \<le> n \<Longrightarrow> foldl (+) m ns \<le> foldl (+) n ns"
-by (induction ns arbitrary: m n, simp_all)
+  "(m :: nat) \<le> n \<Longrightarrow> foldl (+) m ns \<le> foldl (+) n ns"
+  by (induction ns arbitrary: m n, simp_all)
 
-lemma add_max [rule_format]:
- "ns \<noteq> [] \<longrightarrow> Max (set ns) \<le> foldl (+) (0 :: nat) ns"
-by (induction ns, simp_all add: add_le, erule impCE, simp, rule ballI, drule bspec,
- assumption, rule order_trans, assumption, rule add_mono, simp)
+lemma add_max:
+ "ns \<noteq> [] \<Longrightarrow> Max (set ns) \<le> foldl (+) (0 :: nat) ns"
+proof (induction ns)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a ns)
+  show ?case
+  proof (cases "ns=[]")
+    case True
+    then show ?thesis by auto
+  next
+    case False
+    with Cons show ?thesis
+      by (simp add: Algorithm.add_mono add_le le_trans)
+  qed
+qed
 
-lemma enum_length:
- "length (enum xs index key n mi ma) = n"
-by (induction xs, simp_all add: Let_def)
+lemma enum_length: "length (enum xs index key n mi ma) = n"
+  by (induction xs, simp_all add: Let_def)
 
 lemma enum_add_le:
  "foldl (+) 0 (enum xs index key n mi ma) \<le> length xs"
@@ -1324,41 +1336,37 @@ qed
 
 lemma enum_max_le:
  "0 < n \<Longrightarrow> Max (set (enum xs index key n mi ma)) \<le> length xs"
-  (is "_ \<Longrightarrow> Max (set ?ns) \<le> _")
-by (insert add_max [of ?ns], insert enum_add_le [of xs index key n mi ma],
- simp only: length_greater_0_conv [symmetric] enum_length, simp)
+  by (metis add_max enum_add_le enum_length le_trans length_greater_0_conv)
 
 lemma mini_less:
- "0 < length xs \<Longrightarrow> mini xs key < length xs"
-by (induction xs, simp_all add: Let_def)
+  "0 < length xs \<Longrightarrow> mini xs key < length xs"
+  by (induction xs, auto simp: Let_def)
 
 lemma maxi_less:
- "0 < length xs \<Longrightarrow> maxi xs key < length xs"
-by (induction xs, simp_all add: Let_def)
+  "0 < length xs \<Longrightarrow> maxi xs key < length xs"
+  by (induction xs, auto simp: Let_def)
 
 lemma mini_lb:
- "x \<in> set xs \<Longrightarrow> key (xs ! mini xs key) \<le> key x"
-by (induction xs, simp_all add: Let_def, auto)
+  "x \<in> set xs \<Longrightarrow> key (xs ! mini xs key) \<le> key x"
+  by (induction xs, auto simp: Let_def)
 
 lemma maxi_ub:
- "x \<in> set xs \<Longrightarrow> key x \<le> key (xs ! maxi xs key)"
-by (induction xs, simp_all add: Let_def, auto)
+  "x \<in> set xs \<Longrightarrow> key x \<le> key (xs ! maxi xs key)"
+  by (induction xs, auto simp: Let_def)
 
-lemma mini_maxi_neq [rule_format]:
- "Suc 0 < length xs \<longrightarrow> mini xs key \<noteq> maxi xs key"
-proof (induction xs, simp_all add: Let_def, rule conjI, (rule impI)+,
- (rule_tac [2] impI)+, rule_tac [2] notI, simp_all, rule ccontr)
-  fix x xs
-  assume "key (xs ! maxi xs key) < key x" and "key x \<le> key (xs ! mini xs key)"
-  hence "key (xs ! maxi xs key) < key (xs ! mini xs key)" by simp
-  moreover assume "xs \<noteq> []"
-  hence "0 < length xs" by simp
-  hence "mini xs key < length xs"
-    by (rule mini_less)
-  hence "xs ! mini xs key \<in> set xs" by simp
-  hence "key (xs ! mini xs key) \<le> key (xs ! maxi xs key)"
-    by (rule maxi_ub)
-  ultimately show False by simp
+lemma mini_maxi_neq:
+ "Suc 0 < length xs \<Longrightarrow> mini xs key \<noteq> maxi xs key"
+proof (induction xs)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a xs)
+  then have "\<lbrakk>key a \<le> key (xs ! mini xs key); key (xs ! maxi xs key) < key a\<rbrakk>
+    \<Longrightarrow> False"
+    by (metis length_Cons length_greater_0_conv linorder_neq_iff list.size(3)
+      maxi_ub mini_less nth_mem order_less_le_trans)
+  with Cons show ?case
+    by (auto simp add: Let_def)
 qed
 
 lemma mini_maxi_nths:
@@ -1379,8 +1387,8 @@ proof (simp add: length_nths split: nat.split, rule allI, rule conjI, rule_tac [
 qed
 
 lemma mini_maxi_nths_le:
- "length xs \<le> Suc (Suc n) \<Longrightarrow> length (nths xs (- {mini xs key, maxi xs key})) \<le> n"
-by (simp add: mini_maxi_nths split: nat.split)
+  "length xs \<le> Suc (Suc n) \<Longrightarrow> length (nths xs (- {mini xs key, maxi xs key})) \<le> n"
+  by (simp add: mini_maxi_nths split: nat.split)
 
 lemma round_nil:
  "(fst (snd (round index key p q r t)) \<noteq> []) = (\<exists>n \<in> set (fst (snd t)). 0 < n)"
@@ -1528,7 +1536,7 @@ next
     moreover {
       assume D: "i \<in> set ?ms"
       hence "i \<le> Max (set ?ms)"
-      by (rule_tac Max_ge, simp)
+        by (rule_tac Max_ge, simp)
       moreover have "0 < length ?ms"
         using D by (rule length_pos_if_in_set)
       hence "0 < ?k"
@@ -1599,7 +1607,7 @@ proof (relation "measure (\<lambda>(index, key, p, t). Max (set (fst (snd t))))"
   hence "Suc 0 < Max (set ns)"
     using C by (subst Max_gr_iff, simp_all)
   ultimately have "Max (set (fst (snd ?t))) < Max (set (fst (snd (0, ns, xs))))"
-    by (insert round_max_less [of "(0, ns, xs)"], simp)
+    using round_max_less [of "(0, ns, xs)"] by simp
   thus "Max (set (fst (snd ?t))) < Max (set ns)" by simp
 qed
 

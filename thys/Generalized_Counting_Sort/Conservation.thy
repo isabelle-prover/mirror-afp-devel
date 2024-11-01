@@ -163,21 +163,17 @@ next
     show "?B \<noteq> {}"
       using E by blast
   next
-    from E show "Min ?B = j"
-    proof (subst Min_eq_iff, simp, blast, simp, rule_tac allI, rule_tac impI,
-     (erule_tac conjE)+, rule_tac ccontr, simp)
-      fix k
-      assume
-       "j < length ns" and
-       "\<not> j \<le> k" and
-       "0 < offs_num (length ns) xs index key mi ma k"
+    { fix k
+      assume "j < length ns" "\<not> j \<le> k" "0 < offs_num (length ns) xs index key mi ma k"
       hence "k \<in> ?A" by simp
       hence "k \<le> Max ?A"
         by (rule_tac Max_ge, simp)
       moreover assume "i < k"
-      ultimately show False
-        using C by simp
-    qed
+      ultimately have False
+        using C by simp 
+    }
+    with E show "Min ?B = j"
+      by (intro Min_eqI) auto
   qed
 qed
 
@@ -259,16 +255,16 @@ next
   case False
   hence "?A = ?B"
     using A by (rule_tac set_eqI, simp add: offs_num_cons)
-  thus ?thesis
-  proof (simp only: offs_next_def split: if_split,
-   (rule_tac conjI, blast, rule_tac impI)+)
-    assume "?B \<noteq> {}"
+  moreover
+  { assume "?B \<noteq> {}"
     hence "Min ?B \<in> ?B"
       by (rule_tac Min_in, simp)
     hence "i < Min ?B"
       using False by simp
-    thus "ns[i := Suc (ns ! i)] ! Min ?B = ns ! Min ?B" by simp
-  qed
+    hence "ns[i := Suc (ns ! i)] ! Min ?B = ns ! Min ?B" by simp 
+  }
+  ultimately show ?thesis
+    by (force simp: offs_next_def)
 qed
 
 lemma offs_next_cons_neq:
@@ -325,16 +321,16 @@ next
     moreover assume "i < k"
     ultimately show "j < k" by simp
   qed
-  with B show "offs_next (ns[i := Suc (ns ! i)]) ub xs index key mi ma j =
-    offs_next ns ub (x # xs) index key mi ma i"
-  proof (simp only: offs_next_def split: if_split, (rule_tac conjI, rule_tac [!] impI,
-   simp)+, subst nth_list_update, blast, simp (no_asm_simp))
-    assume "offs_set_next ns (x # xs) index key mi ma i \<noteq> {}"
+  moreover
+  { assume "offs_set_next ns (x # xs) index key mi ma i \<noteq> {}"
     hence "Min (offs_set_next ns (x # xs) index key mi ma i)
       \<in> offs_set_next ns (x # xs) index key mi ma i"
       by (rule_tac Min_in, simp)
-    thus "i \<noteq> Min (offs_set_next ns (x # xs) index key mi ma i)" by simp
-  qed
+    hence "i \<noteq> Min (offs_set_next ns (x # xs) index key mi ma i)" by simp
+  }
+  ultimately show "offs_next (ns[i := Suc (ns ! i)]) ub xs index key mi ma j =
+    offs_next ns ub (x # xs) index key mi ma i"
+    using B  by (force simp: offs_next_def)
 qed
 
 lemma offs_pred_ub_aux [rule_format]:
