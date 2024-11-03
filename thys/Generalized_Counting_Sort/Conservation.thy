@@ -113,13 +113,13 @@ proof (rule iffI; elim conjE)
     B: "?A \<noteq> {}" and
     C: "Min ?A = j"
   have "Min ?A \<in> ?A"
-    using B by (rule_tac Min_in, simp)
+    using B by (intro Min_in) auto
   hence D: "j \<in> ?A"
     using C by simp
   hence E: "i \<in> ?B"
     using A by simp
   show ?Q
-  proof (rule conjI, rule_tac [2] conjI)
+  proof (intro conjI)
     show "0 < offs_num (length ns) xs index key mi ma j"
       using D by simp
   next
@@ -129,12 +129,10 @@ proof (rule iffI; elim conjE)
     { fix k
       assume F: "k < j" and "j < length ns"
       hence "k < length ns" by simp
-      moreover assume
-       "\<not> k \<le> i" and
-       "0 < offs_num (length ns) xs index key mi ma k"
+      moreover assume "\<not> k \<le> i" and "0 < offs_num (length ns) xs index key mi ma k"
       ultimately have "k \<in> ?A" by simp
       hence "Min ?A \<le> k"
-        by (rule_tac Min_le, simp)
+        by (intro Min_le) auto
       hence False
         using C and F by simp
     }
@@ -166,7 +164,7 @@ next
       assume "j < length ns" "\<not> j \<le> k" "0 < offs_num (length ns) xs index key mi ma k"
       hence "k \<in> ?A" by simp
       hence "k \<le> Max ?A"
-        by (rule_tac Max_ge, simp)
+        by (intro Max_ge) auto
       moreover assume "i < k"
       ultimately have False
         using C by simp 
@@ -180,28 +178,27 @@ lemma offs_next_cons_eq:
   assumes
     A: "index key x (length ns) mi ma = i" and
     B: "i < length ns" and
-    C: "0 < offs_num (length ns) (x # xs) index key mi ma j"
+    C: "0 < offs_num (length ns) (x # xs) index key mi ma j" and
+    D: "offs_set_prev ns (x # xs) index key mi ma i = {} \<or>
+        Max (offs_set_prev ns (x # xs) index key mi ma i) \<noteq> j" (is "?P \<or> ?Q")
   shows
-   "offs_set_prev ns (x # xs) index key mi ma i = {} \<or>
-      Max (offs_set_prev ns (x # xs) index key mi ma i) \<noteq> j \<Longrightarrow>
-    offs_next (ns[i := Suc (ns ! i)]) ub xs index key mi ma j =
-      offs_next ns ub (x # xs) index key mi ma j"
-  (is "?P \<or> ?Q \<Longrightarrow> _")
-proof (simp only: disj_imp, cases "j < i")
+   "offs_next (ns[i := Suc (ns ! i)]) ub xs index key mi ma j =
+      offs_next ns ub (x # xs) index key mi ma j" 
+proof (cases "j < i")
   let ?A = "offs_set_prev ns (x # xs) index key mi ma i"
   let ?B = "offs_set_next (ns[i := Suc (ns ! i)]) xs index key mi ma j"
   let ?C = "offs_set_next ns (x # xs) index key mi ma j"
   case True
-  hence D: "j \<in> ?A"
+  hence j: "j \<in> ?A"
     using B and C by simp
   hence "j \<le> Max ?A"
-    by (rule_tac Max_ge, simp)
-  moreover assume "\<not> ?P \<longrightarrow> ?Q"
-  hence ?Q
-    using D by blast
-  ultimately have E: "j < Max ?A" by simp
+    by (intro Max_ge) auto
+  moreover have ?Q
+    using j D by blast
+  ultimately have E: "j < Max ?A"
+    by simp
   have F: "Max ?A \<in> ?A"
-    using D by (rule_tac Max_in, simp, blast)
+    using j by (intro Max_in) auto
   have G: "Max ?A \<in> ?B"
   proof (simp, intro conjI)
     show "Max ?A < length ns"
@@ -221,7 +218,7 @@ proof (simp only: disj_imp, cases "j < i")
     ns[i := Suc (ns ! i)] ! Min ?B"
     by (simp only: offs_next_def split: if_split, blast)
   have "Min ?B \<le> Max ?A"
-    using G by (rule_tac Min_le, simp)
+    using G by (intro Min_le) auto
   moreover have "Max ?A < i"
     using F by blast
   ultimately have I: "Min ?B < i" by simp
@@ -241,7 +238,7 @@ proof (simp only: disj_imp, cases "j < i")
   ultimately have "Min ?C \<in> ?B"
     using A by (simp add: offs_num_cons)
   hence "Min ?B \<le> Min ?C"
-    using G by (rule_tac Min_le, simp)
+    using G by (intro Min_le) auto
   hence "Min ?B = Min ?C"
     using L by simp
   moreover have "offs_next ns ub (x # xs) index key mi ma j = ns ! Min ?C"
@@ -257,7 +254,7 @@ next
   moreover
   { assume "?B \<noteq> {}"
     hence "Min ?B \<in> ?B"
-      by (rule_tac Min_in, simp)
+      by (intro Min_in) auto
     hence "i < Min ?B"
       using False by simp
     hence "ns[i := Suc (ns ! i)] ! Min ?B = ns ! Min ?B" by simp 
@@ -275,30 +272,23 @@ lemma offs_next_cons_neq:
     (if 0 < offs_num (length ns) xs index key mi ma i
      then Suc (ns ! i)
      else offs_next ns ub (x # xs) index key mi ma i)"
-proof (simp, rule conjI, rule_tac [!] impI)
+proof (simp, intro conjI strip)
   let ?A = "offs_set_next ns (x # xs) index key mi ma j"
   assume "0 < offs_num (length ns) xs index key mi ma i"
   with A have "offs_set_next (ns[i := Suc (ns ! i)]) xs index key mi ma j = ?A"
-    by (rule_tac set_eqI, rule_tac iffI, simp_all add: offs_num_cons split:
-     if_split_asm)
+    by (force simp: offs_num_cons split: if_split_asm)
   moreover have "0 < offs_num (length ns) (x # xs) index key mi ma i"
     using A by (simp add: offs_num_def)
-  hence "0 < offs_num (length ns) (x # xs) index key mi ma j \<and> ?A \<noteq> {} \<and>
-    Min ?A = i"
-    using B and C by (subst offs_next_prev, simp)
+  hence "0 < offs_num (length ns) (x # xs) index key mi ma j \<and> ?A \<noteq> {} \<and> Min ?A = i"
+    by (metis (no_types, lifting) ext offs_next_prev B C)
   ultimately show "offs_next (ns[i := Suc (ns ! i)]) ub xs index key mi ma j =
     Suc (ns ! i)"
-    using B by (simp only: offs_next_def, simp, subst nth_list_update_eq, blast,
-     simp)
+    using B by (force simp: offs_next_def)
 next
   let ?A = "offs_set_prev ns (x # xs) index key mi ma i"
   assume "offs_num (length ns) xs index key mi ma i = 0"
-  with A have "offs_set_next (ns[i := Suc (ns ! i)]) xs index key mi ma j =
-    offs_set_next ns (x # xs) index key mi ma i"
-  proof (rule_tac set_eqI, rule_tac iffI, simp_all add: offs_num_cons split:
-   if_split_asm, rule_tac conjI, rule_tac notI, simp, rule_tac impI,
-   (erule_tac [!] conjE)+, rule_tac ccontr, simp_all)
-    fix k
+  moreover
+  {  fix k
     have "i < length ns"
       using B by blast
     moreover assume "i \<noteq> k" and "\<not> i < k"
@@ -307,24 +297,28 @@ next
     ultimately have "k \<in> ?A"
       by (simp add: offs_num_cons)
     hence "k \<le> Max ?A"
-      by (rule_tac Max_ge, simp)
+      by (intro Max_ge) auto
     moreover assume "j < k"
-    ultimately show False
+    ultimately have False
       using C by simp
-  next
-    fix k
+  }
+  moreover
+  { fix k
     have "Max ?A \<in> ?A"
       using B by (rule_tac Max_in, simp_all)
     hence "j < i"
       using C by simp
     moreover assume "i < k"
-    ultimately show "j < k" by simp
-  qed
+    ultimately have "j < k" by simp
+  }
+  ultimately have "offs_set_next (ns[i := Suc (ns ! i)]) xs index key mi ma j =
+    offs_set_next ns (x # xs) index key mi ma i"
+    by (auto simp: offs_num_cons A)
   moreover
   { assume "offs_set_next ns (x # xs) index key mi ma i \<noteq> {}"
     hence "Min (offs_set_next ns (x # xs) index key mi ma i)
       \<in> offs_set_next ns (x # xs) index key mi ma i"
-      by (rule_tac Min_in, simp)
+      by (intro Min_in) auto
     hence "i \<noteq> Min (offs_set_next ns (x # xs) index key mi ma i)" by simp
   }
   ultimately show "offs_next (ns[i := Suc (ns ! i)]) ub xs index key mi ma j =
@@ -365,7 +359,7 @@ next
     let ?A = "offs_set_next ns xs index key mi ma j"
     assume "?A \<noteq> {}"
     hence "Min ?A \<in> ?A"
-      by (rule_tac Min_in, simp)
+      by (intro Min_in) auto
     hence "ns ! Min ?A + offs_num (length ns) xs index key mi ma (Min ?A) \<le> ub"
       using B and C by simp
     thus "ns ! Min ?A \<le> ub" by simp
@@ -385,54 +379,44 @@ by (drule offs_pred_ub_aux, assumption+, simp)
 
 lemma offs_pred_asc_aux [rule_format]:
   assumes A: "offs_pred ns ub xs index key mi ma"
-  shows "i < length ns \<Longrightarrow>
-    \<forall>j k. k < length ns \<longrightarrow> i \<le> j \<longrightarrow> j < k \<longrightarrow>
-      0 < offs_num (length ns) xs index key mi ma j \<longrightarrow>
-      0 < offs_num (length ns) xs index key mi ma k \<longrightarrow>
+  shows "\<lbrakk>i < length ns; k < length ns; i \<le> j; j < k;
+      0 < offs_num (length ns) xs index key mi ma j;
+      0 < offs_num (length ns) xs index key mi ma k\<rbrakk> \<Longrightarrow>
       ns ! j + offs_num (length ns) xs index key mi ma j \<le> ns ! k"
-proof (erule strict_inc_induct, simp, (rule allI)+, (rule impI)+, simp)
-  fix i j k
-  assume
-    B: "k < length ns" and
-    C: "j < k"
+proof (induction arbitrary: j rule: strict_inc_induct)
+  case (base i)
+  then show ?case
+    by simp
+next
+  case (step i)
   hence "j < length ns" by simp
   hence "offs_num (length ns) xs index key mi ma j \<le>
     offs_next ns ub xs index key mi ma j - ns ! j"
     using A by (simp add: offs_pred_def)
-  moreover assume
-    D: "\<forall>j k. k < length ns \<longrightarrow> Suc i \<le> j \<longrightarrow> j < k \<longrightarrow>
-      0 < offs_num (length ns) xs index key mi ma j \<longrightarrow>
-      0 < offs_num (length ns) xs index key mi ma k \<longrightarrow>
-      ns ! j + offs_num (length ns) xs index key mi ma j \<le> ns ! k" and
-    E: "i \<le> j" and
-    F: "0 < offs_num (length ns) xs index key mi ma k"
+  moreover
   have "offs_next ns ub xs index key mi ma j \<le> ns ! k"
   proof (simp only: offs_next_def split: if_split, rule conjI, rule_tac [!] impI,
    rule ccontr, simp)
     assume "\<forall>n > j. n < length ns \<longrightarrow>
       offs_num (length ns) xs index key mi ma n = 0"
-    hence "offs_num (length ns) xs index key mi ma k = 0"
-      using B and C by simp
     thus False
-      using F by simp
+      using step.prems by presburger
   next
     let ?A = "offs_set_next ns xs index key mi ma j"
     have G: "k \<in> ?A"
-      using B and C and F by simp
+      by (simp add: step.prems(1,3,5))
     hence "Min ?A \<le> k"
-      by (rule_tac Min_le, simp)
+      by (intro Min_le) auto
     hence "Min ?A < k \<or> Min ?A = k"
       by (simp add: le_less)
     moreover {
-      have "Suc i \<le> Min ?A \<longrightarrow> Min ?A < k \<longrightarrow>
-        0 < offs_num (length ns) xs index key mi ma (Min ?A) \<longrightarrow>
-        ns ! Min ?A + offs_num (length ns) xs index key mi ma (Min ?A) \<le> ns ! k"
-        using B and D and F by simp
-      moreover assume "Min ?A < k"
+      assume "Min ?A < k"
       moreover have "Min ?A \<in> ?A"
         using G by (intro Min_in) auto
       ultimately have "ns ! Min ?A < ns ! k"
-        using E by simp
+        using step
+        by (smt (verit) add_diff_cancel_left' add_leD1 diff_is_0_eq' less_eq_Suc_le
+            mem_Collect_eq nat_less_le order_le_less_trans)
     }
     moreover {
       assume "Min ?A = k"
@@ -441,11 +425,8 @@ proof (erule strict_inc_induct, simp, (rule allI)+, (rule impI)+, simp)
     ultimately show "ns ! Min ?A \<le> ns ! k"
       by (simp add: le_less, blast)
   qed
-  ultimately have "offs_num (length ns) xs index key mi ma j \<le> ns ! k - ns ! j"
-    by simp
-  moreover assume "0 < offs_num (length ns) xs index key mi ma j"
-  ultimately show "ns ! j + offs_num (length ns) xs index key mi ma j \<le> ns ! k"
-    by simp
+  ultimately show ?case
+    using step.prems(4) by linarith
 qed
 
 lemma offs_pred_asc:
@@ -453,7 +434,7 @@ lemma offs_pred_asc:
    0 < offs_num (length ns) xs index key mi ma i;
    0 < offs_num (length ns) xs index key mi ma j\<rbrakk> \<Longrightarrow>
      ns ! i + offs_num (length ns) xs index key mi ma i \<le> ns ! j"
-by (drule offs_pred_asc_aux, erule less_trans, assumption+, rule order_refl)
+  by (metis gr_zeroI not_less_zero offs_pred_asc_aux zero_le)
 
 lemma offs_pred_next:
   assumes
@@ -461,21 +442,22 @@ lemma offs_pred_next:
     B: "i < length ns" and
     C: "0 < offs_num (length ns) xs index key mi ma i"
   shows "ns ! i < offs_next ns ub xs index key mi ma i"
-proof (simp only: offs_next_def split: if_split, rule conjI, rule_tac [!] impI)
-  have "ns ! i + offs_num (length ns) xs index key mi ma i \<le> ub"
-    using A and B and C by (rule offs_pred_ub)
-  thus "ns ! i < ub"
-    using C by simp
-next
-  assume "offs_set_next ns xs index key mi ma i \<noteq> {}"
-  hence "Min (offs_set_next ns xs index key mi ma i)
+proof -
+  have "ns ! i < ub"
+    using A B C offs_pred_ub by fastforce
+  moreover
+  { assume "offs_set_next ns xs index key mi ma i \<noteq> {}"
+    hence "Min (offs_set_next ns xs index key mi ma i)
     \<in> offs_set_next ns xs index key mi ma i"
-    by (rule_tac Min_in, simp)
-  hence "ns ! i + offs_num (length ns) xs index key mi ma i \<le>
+      by (intro Min_in) auto
+    hence "ns ! i + offs_num (length ns) xs index key mi ma i \<le>
     ns ! Min (offs_set_next ns xs index key mi ma i)"
-    using C by (rule_tac offs_pred_asc [OF A], simp_all)
-  thus "ns ! i < ns ! Min (offs_set_next ns xs index key mi ma i)"
-    using C by simp
+      using C by (rule_tac offs_pred_asc [OF A], simp_all)
+    hence "ns ! i < ns ! Min (offs_set_next ns xs index key mi ma i)"
+      using C by simp
+  } 
+  ultimately show ?thesis
+    by (simp add: offs_next_def)
 qed
 
 lemma offs_pred_next_cons_less:
@@ -650,7 +632,7 @@ lemma offs_next_zero_cons_eq:
     offs_next ns ub (x # xs) index key mi ma 0"
 proof -
   have D: "Min ?A \<in> ?A"
-    using C by (rule_tac Min_in, simp)
+    using C by (intro Min_in) auto
   moreover have E: "0 < Min ?A"
   proof (rule ccontr, simp)
     assume "Min ?A = 0"
@@ -677,7 +659,7 @@ proof -
     moreover assume "0 < offs_num (length ns) (x # xs) index key mi ma j"
     ultimately have "j \<in> ?A" by simp
     hence "Min ?A \<le> j"
-      by (rule_tac Min_le, simp)
+      by (intro Min_le) auto
     thus False
       using F by simp
   qed
@@ -701,7 +683,7 @@ proof -
       by (simp add: offs_num_cons)
     ultimately have "j \<in> ?A" by simp
     hence "Min ?A \<le> j"
-      by (rule_tac Min_le, simp)
+      by (intro Min_le) auto
     thus False
       using F by simp
   qed
@@ -963,27 +945,26 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
       I: "ns ! j + offs_num (length ns) xs index key mi ma j \<le> i" and
       J: "i < offs_next ns ub (x # xs) index key mi ma j" and
       K: "0 < offs_num (length ns) xs index key mi ma j"
-    from G have "ns ! ?i' \<noteq> i"
-    proof (rule_tac notI, cases "?i' < j", simp_all add: not_less le_less)
-      assume "?i' < j"
+    {  assume "?i' < j"
       hence "ns ! ?i' + offs_num (length ns) (x # xs) index key mi ma ?i' \<le> ns ! j"
-        using H and K by (rule_tac offs_pred_asc [OF B], simp_all add:
+        using H and K by (intro offs_pred_asc [OF B], simp_all add:
          offs_num_cons)
       moreover assume "ns ! ?i' = i"
       ultimately have "i < ns ! j" by (simp add: offs_num_cons)
-      thus False
+      hence False
         using I by simp
-    next
-      assume "j < ?i'"
+    }
+    moreover
+    {       assume "j < ?i'"
       hence L: "?i' \<in> offs_set_next ns (x # xs) index key mi ma j"
         (is "_ \<in> ?A")
         using E by (simp add: offs_num_cons)
       hence "Min ?A \<le> ?i'"
-        by (rule_tac Min_le, simp)
+        by (intro Min_le) auto
       hence "Min ?A < ?i' \<or> Min ?A = ?i'"
         by (simp add: le_less)
       hence "ns ! Min ?A \<le> ns ! ?i'"
-      proof (rule disjE, simp_all)
+      proof
         assume "Min ?A < ?i'"
         moreover have "Min ?A \<in> ?A"
           using L by (intro Min_in) auto
@@ -993,13 +974,15 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
           index key mi ma (Min ?A) \<le> ns ! ?i'"
           using E by (rule_tac offs_pred_asc [OF B], simp_all add: offs_num_cons)
         thus ?thesis by simp
-      qed
+      qed auto
       hence "offs_next ns ub (x # xs) index key mi ma j \<le> ns ! ?i'"
         using L by (simp only: offs_next_def split: if_split, blast)
       moreover assume "ns ! ?i' = i"
-      ultimately show False
+      ultimately have False
         using J by simp
-    qed
+    }
+    ultimately have "ns ! ?i' \<noteq> i"
+      using G by force
     thus "(fill xs ?ns' index key ub mi ma)[ns ! ?i' := Some x] ! i = None"
     proof simp
       have "j < length ns \<and> 0 < offs_num (length ns) xs index key mi ma j \<and>
@@ -1009,7 +992,7 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
         using F by (simp add: offs_none_def, blast)
       moreover have "offs_next ns ub (x # xs) index key mi ma j \<le>
         offs_next ?ns' ub xs index key mi ma j"
-        using E and K by (rule_tac offs_pred_next_cons [OF B], simp_all add:
+        using E and K by (intro offs_pred_next_cons [OF B], simp_all add:
          offs_num_cons)
       hence "i < offs_next ?ns' ub xs index key mi ma j"
         using J by simp
@@ -1029,7 +1012,7 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
         (is "_ \<in> ?A")
         using E and G by simp
       hence "Min ?A \<le> ?i'"
-        by (rule_tac Min_le, simp)
+        by (intro Min_le) auto
       hence "Min ?A < ?i' \<or> Min ?A = ?i'"
         by (simp add: le_less)
       hence "ns ! Min ?A \<le> ns ! ?i'"
@@ -1041,7 +1024,7 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
           by simp
         ultimately have "ns ! Min ?A + offs_num (length ns) (x # xs)
           index key mi ma (Min ?A) \<le> ns ! ?i'"
-          using E by (rule_tac offs_pred_asc [OF B], simp_all add: offs_num_cons)
+          using E by (intro offs_pred_asc [OF B], simp_all add: offs_num_cons)
         thus ?thesis by simp
       qed
       hence "offs_next ns ub (x # xs) index key mi ma 0 \<le> ns ! ?i'"
@@ -1058,7 +1041,7 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
         using F by (simp add: offs_none_def)
       moreover have "offs_next ns ub (x # xs) index key mi ma 0 \<le>
         offs_next ?ns' ub xs index key mi ma 0"
-        using E and G and H by (rule_tac offs_pred_zero_cons [OF B],
+        using E and G and H by (intro offs_pred_zero_cons [OF B],
          simp_all add: offs_num_cons)
       hence "i < offs_next ?ns' ub xs index key mi ma 0"
         using I by simp
@@ -1087,10 +1070,10 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
       moreover assume "offs_num (length ns) xs index key mi ma 0 = 0"
       moreover have I: "offs_next ?ns' ub xs index key mi ma 0 =
         offs_next ns ub (x # xs) index key mi ma 0"
-        using D and G by (rule_tac offs_next_cons_eq, simp_all add:
+        using D and G by (intro offs_next_cons_eq, simp_all add:
          offs_num_cons)
       have "ns ! 0 < offs_next ns ub (x # xs) index key mi ma 0"
-        using D and G by (rule_tac offs_pred_next [OF B], simp_all add:
+        using D and G by (intro offs_pred_next [OF B], simp_all add:
          offs_num_cons)
       hence "i < offs_next ?ns' ub xs index key mi ma 0"
         using H and I by simp
@@ -1105,7 +1088,7 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
     have "ns ! ?i' \<noteq> i"
     proof -
       have "ns ! 0 + offs_num (length ns) (x # xs) index key mi ma 0 \<le> ns ! ?i'"
-        using H by (rule_tac offs_pred_asc [OF B G E], simp_all add:
+        using H by (intro offs_pred_asc [OF B G E], simp_all add:
          offs_num_cons)
       moreover have "0 < offs_num (length ns) (x # xs) index key mi ma 0"
         using H by (simp add: offs_num_cons)
@@ -1137,7 +1120,7 @@ lemma fill_index_none [rule_format]:
         (ns ! index key x (length ns) mi ma) = None"
   (is "_ \<Longrightarrow> fill _ ?ns' _ _ _ _ _ ! (_ ! ?i) = _")
   using A and B and C and D
-proof (rule_tac fill_none, simp_all, rule_tac offs_pred_cons,
+proof (intro fill_none, simp_all, intro offs_pred_cons,
  simp_all, simp add: index_less_def, cases "0 < ?i",
  cases "offs_set_prev ns (x # xs) index key mi ma ?i = {}",
  case_tac [3] "0 < offs_num (length ns) xs index key mi ma 0")
@@ -1147,16 +1130,16 @@ proof (rule_tac fill_none, simp_all, rule_tac offs_pred_cons,
   have G: "?i < length ns"
     using A and B and C by (simp add: index_less_def)
   hence "offs_num (length ns) (x # xs) index key mi ma 0 = 0"
-    using E and F by (rule_tac ccontr, simp)
+    using E F by simp
   hence "offs_num (length ns) xs index key mi ma 0 = 0"
     by (simp add: offs_num_cons split: if_split_asm)
   moreover have "offs_next ?ns' ub xs index key mi ma 0 =
    (if 0 < offs_num (length ns) xs index key mi ma ?i
     then Suc (ns ! ?i)
     else offs_next ns ub (x # xs) index key mi ma ?i)"
-    using E and F and G by (rule_tac offs_next_zero_cons_neq, simp_all)
+    using E and F and G by (intro offs_next_zero_cons_neq, simp_all)
   hence "ns ! ?i < offs_next ?ns' ub xs index key mi ma 0"
-    by (simp split: if_split_asm, rule_tac offs_pred_next [OF D G], simp add:
+    by (simp split: if_split_asm, intro offs_pred_next [OF D G], simp add:
      offs_num_cons)
   ultimately show "offs_none ?ns' ub xs index key mi ma (ns ! ?i)"
     by (simp add: offs_none_def)
@@ -1168,7 +1151,7 @@ next
   have G: "?i < length ns"
     using A and B and C by (simp add: index_less_def)
   have H: "Max ?A \<in> ?A"
-    using F by (rule_tac Max_in, simp)
+    using F by (intro Max_in, simp)
   hence I: "Max ?A < ?i" by blast
   have "Max ?A < length ns"
     using H by auto
@@ -1178,7 +1161,7 @@ next
     using I by (subst (asm) offs_num_cons, split if_split_asm, simp_all)
   moreover have "ns ! Max ?A + offs_num (length ns) (x # xs)
     index key mi ma (Max ?A) \<le> ns ! ?i"
-    using G and H by (rule_tac offs_pred_asc [OF D], simp_all add: offs_num_cons)
+    using G and H by (intro offs_pred_asc [OF D], simp_all add: offs_num_cons)
   hence "?ns' ! Max ?A + offs_num (length ns) xs
     index key mi ma (Max ?A) \<le> ns ! ?i"
     using I by (simp add: offs_num_cons)
@@ -1186,9 +1169,9 @@ next
    (if 0 < offs_num (length ns) xs index key mi ma ?i
     then Suc (ns ! ?i)
     else offs_next ns ub (x # xs) index key mi ma ?i)"
-    using F and I by (rule_tac offs_next_cons_neq, simp_all)
+    using F and I by (intro offs_next_cons_neq, simp_all)
   hence "ns ! ?i < offs_next ?ns' ub xs index key mi ma (Max ?A)"
-    by (simp split: if_split_asm, rule_tac offs_pred_next [OF D G], simp add:
+    by (simp split: if_split_asm, intro offs_pred_next [OF D G], simp add:
      offs_num_cons)
   ultimately show "offs_none ?ns' ub xs index key mi ma (ns ! ?i)"
     by (simp add: offs_none_def, blast)
@@ -1208,9 +1191,9 @@ next
     using F by simp
   moreover have "offs_next ?ns' ub xs index key mi ma ?i =
     offs_next ns ub (x # xs) index key mi ma ?i"
-    using E and G by (rule_tac offs_next_cons_eq, simp_all add: offs_num_cons)
+    using E and G by (intro offs_next_cons_eq, simp_all add: offs_num_cons)
   hence "ns ! ?i < offs_next ?ns' ub xs index key mi ma ?i"
-    by (simp, rule_tac offs_pred_next [OF D G], simp add: offs_num_cons)
+    by (simp, intro offs_pred_next [OF D G], simp add: offs_num_cons)
   hence "ns ! ?i < offs_next ?ns' ub xs index key mi ma 0"
     using E by simp
   ultimately show "offs_none ?ns' ub xs index key mi ma (ns ! ?i)"
@@ -1245,7 +1228,7 @@ proof (induction xs arbitrary: ns, simp add: replicate_count, (rule impI)+,
     count (mset (map the (fill xs ns index key ub mi ma))) x =
     count (mset xs) x + (if the None = x then ub - length xs else 0)"
   moreover have "offs_pred ?ns' ub xs index key mi ma"
-    using F and H by (rule_tac offs_pred_cons, simp_all)
+    using F and H by (intro offs_pred_cons, simp_all)
   ultimately have "count (mset (map the (fill xs ?ns' index key ub mi ma))) x =
     count (mset xs) x + (if the None = x then ub - length xs else 0)"
     using E by simp
@@ -1262,7 +1245,7 @@ proof (induction xs arbitrary: ns, simp add: replicate_count, (rule impI)+,
    subst add.assoc, subst (3) add.commute, subst add.assoc [symmetric],
    subst add_right_cancel)
     have "fill xs ?ns' index key ub mi ma ! (ns ! ?i) = None"
-      using B and C and D and E by (rule_tac fill_index_none [OF A _ _ F],
+      using B and C and D and E by (intro fill_index_none [OF A _ _ F],
        simp_all)
     thus "count (mset xs) x + (if the None = x then ub - length xs else 0) -
       (if the (fill xs ?ns' index key ub mi ma ! (ns ! ?i)) = x then 1 else 0) =
@@ -1358,7 +1341,7 @@ proof -
     by (subst last_conv_nth, subst length_0_conv [symmetric], simp_all add:
      enum_length, subst enum_offs_num, simp_all)
   have "offs ?ns k ! (n - Suc 0) = foldl (+) k (take (n - Suc 0) ?ns)"
-    using B by (rule_tac offs_add, simp add: enum_length)
+    using B by (intro offs_add, simp add: enum_length)
   also have "\<dots> = foldl (+) k (butlast ?ns)"
     by (simp add: butlast_conv_take enum_length)
   finally have "offs ?ns k ! (n - Suc 0) + offs_num n xs index key mi ma
@@ -1383,12 +1366,12 @@ lemma offs_enum_ub [rule_format]:
 proof -
   let ?ns = "enum xs index key n mi ma"
   have "offs ?ns k ! i \<le> offs ?ns k ! (n - Suc 0)"
-    using B by (rule_tac offs_mono, simp_all add: enum_length)
+    using B by (intro offs_mono, simp_all add: enum_length)
   also have "\<dots> \<le> offs ?ns k ! (n - Suc 0) +
     offs_num n xs index key mi ma (n - Suc 0)"
     by simp
   also have "\<dots> = length xs + k"
-    using A and B and C by (rule_tac offs_enum_last, simp_all)
+    using A and B and C by (intro offs_enum_last, simp_all)
   finally show ?thesis .
 qed
 
@@ -1406,7 +1389,7 @@ proof (simp only: offs_next_def split: if_split, rule conjI, rule_tac [!] impI,
   assume "offs_set_next (offs ?ns k) xs index key mi ma i \<noteq> {}"
     (is "?A \<noteq> _")
   hence C: "Min ?A \<in> ?A"
-    by (rule_tac Min_in, simp)
+    by (intro Min_in, simp)
   hence "i \<le> Min ?A" by simp
   moreover have "Min ?A < length ?ns"
     using C by (simp add: offs_length)
@@ -1434,7 +1417,7 @@ proof (simp only: offs_next_def split: if_split, rule conjI, rule_tac [!] impI,
  cases "i = n - Suc 0", simp)
   assume "i = n - Suc 0"
   thus "offs (enum xs index key n mi ma) k ! (n - Suc 0) = length xs + k"
-    using A and B and C and D by (rule_tac offs_enum_zero_aux, simp_all)
+    using A and B and C and D by (intro offs_enum_zero_aux, simp_all)
 next
   let ?ns = "enum xs index key n mi ma"
   assume E: "offs_set_next (offs ?ns k) xs index key mi ma i = {}"
@@ -1479,7 +1462,7 @@ next
   assume "offs_set_next (offs ?ns k) xs index key mi ma i \<noteq> {}"
     (is "?A \<noteq> _")
   hence "Min ?A \<in> ?A"
-    by (rule_tac Min_in, simp)
+    by (intro Min_in, simp)
   thus "offs ?ns k ! i = offs ?ns k ! Min ?A"
   proof (rule_tac offs_equal, simp_all add: le_less, simp add: offs_length,
    (erule_tac conjE)+, erule_tac disjE, rule_tac ccontr, drule_tac [2] sym, simp_all)
@@ -1493,7 +1476,7 @@ next
        offs_length enum_length)
     ultimately have "j \<in> ?A" by simp
     hence "Min ?A \<le> j"
-      by (rule_tac Min_le, simp)
+      by (intro Min_le) auto
     thus False
       using E by simp
   next
@@ -1525,10 +1508,9 @@ proof (simp_all only: offs_next_def not_less split: if_split, (rule conjI, rule 
       (is "?A' \<noteq> _") and
     E: "i < ?i'"
   from C have F: "\<forall>j \<noteq> ?i'. j \<notin> ?A'"
-    by (rule_tac allI, rule_tac impI, rule_tac notI, simp add: enum_length
-     offs_length offs_num_cons split: if_split_asm, (erule_tac conjE)+, simp)
+    by (simp add: enum_length offs_length offs_num_cons)
   from D have "Min ?A' \<in> ?A'"
-    by (rule_tac Min_in, simp)
+    by (intro Min_in, simp)
   hence G: "Min ?A' < n"
     by (simp add: offs_length enum_length)
   have H: "Min ?A' = ?i'"
@@ -1607,13 +1589,13 @@ next
   assume "offs_set_next (offs ?ns k) xs index key mi ma i \<noteq> {}"
     (is "?A \<noteq> _")
   hence "Min ?A \<in> ?A"
-    by (rule_tac Min_in, simp)
+    by (intro Min_in, simp)
   hence C: "Min ?A < n"
     by (simp add: offs_length enum_length)
   assume "offs_set_next (offs ?ns' k) (x # xs) index key mi ma i \<noteq> {}"
     (is "?A' \<noteq> _")
   hence D: "Min ?A' \<in> ?A'"
-    by (rule_tac Min_in, simp)
+    by (intro Min_in, simp)
   hence E: "Min ?A' < n"
     by (simp add: offs_length enum_length)
   have "offs ?ns k ! Min ?A \<le> offs ?ns k ! Min ?A'"
@@ -1621,20 +1603,20 @@ next
     case True
     have "offs ?ns k ! Min ?A' =
       offs_next (offs ?ns k) (length xs + k) xs index key mi ma (Min ?A')"
-      using A and B and E and True by (rule_tac offs_enum_zero, simp_all)
+      using A and B and E and True by (intro offs_enum_zero, simp_all)
     also from A and B and C have "\<dots> \<ge> offs ?ns k ! Min ?A"
     proof (simp only: offs_next_def split: if_split, rule_tac conjI, rule_tac [!] impI,
      rule_tac offs_enum_ub, simp, simp, simp)
       assume "offs_set_next (offs ?ns k) xs index key mi ma (Min ?A') \<noteq> {}"
         (is "?B \<noteq> _")
       hence "Min ?B \<in> ?B"
-        by (rule_tac Min_in, simp)
+        by (intro Min_in, simp)
       hence "Min ?B \<in> ?A"
         using D by simp
       moreover from this have "Min ?A \<le> Min ?B"
-        by (rule_tac Min_le, simp)
+        by (intro Min_le) auto
       ultimately show "offs ?ns k ! Min ?A \<le> offs ?ns k ! Min ?B"
-        by (rule_tac offs_mono, simp_all add: offs_length)
+        by (intro offs_mono, simp_all add: offs_length)
     qed
     finally show ?thesis .
   next
@@ -1642,7 +1624,7 @@ next
     hence "Min ?A' \<in> ?A"
       using D by (simp add: offs_length enum_length)
     hence "Min ?A \<le> Min ?A'"
-      by (rule_tac Min_le, simp)
+      by (intro Min_le) auto
     thus ?thesis
       by (rule offs_mono, simp_all add: enum_length E)
   qed
@@ -1654,7 +1636,7 @@ next
   assume "offs_set_next (offs ?ns' k) (x # xs) index key mi ma i \<noteq> {}"
     (is "?A' \<noteq> _")
   hence C: "Min ?A' \<in> ?A'"
-    by (rule_tac Min_in, simp)
+    by (intro Min_in, simp)
   hence D: "Min ?A' < n"
     by (simp add: offs_length enum_length)
   assume "?i' \<le> i"
@@ -1665,7 +1647,7 @@ next
   hence "Min ?A' \<in> ?A"
     using C by (simp add: offs_length enum_length)
   hence "Min ?A \<le> Min ?A'"
-    by (rule_tac Min_le, simp)
+    by (intro Min_le) auto
   hence "offs ?ns k ! Min ?A \<le> offs ?ns k ! Min ?A'"
     by (rule offs_mono, simp_all add: enum_length D)
   also have "\<dots> < offs ?ns' k ! Min ?A'"
@@ -1716,7 +1698,7 @@ proof (induction xs, simp add: offs_pred_def offs_num_def,
     also from A and B and C and F have "\<dots> =
       Suc (offs_next (offs ?ns k) (length xs + k) xs index key mi ma ?i') -
         offs ?ns k ! ?i'"
-      by (rule_tac Suc_diff_le [symmetric], rule_tac offs_enum_next_ge, simp_all)
+      by (simp add: Suc_diff_le offs_enum_next_ge)
     finally have "Suc (offs_num n xs index key mi ma ?i') \<le>
       Suc (offs_next (offs ?ns k) (length xs + k) xs index key mi ma ?i') -
         offs ?ns k ! ?i'" .
@@ -1761,8 +1743,10 @@ the occurrences of whatever object in the objects' list is still the same after 
 lemma nths_count:
  "count (mset (nths xs A)) x =
     count (mset xs) x - card {i. i < length xs \<and> i \<notin> A \<and> xs ! i = x}"
-proof (induction xs arbitrary: A, simp_all add: nths_Cons)
-  fix v xs A
+proof (induction xs arbitrary: A)
+  case Nil then show ?case  by auto
+next
+  case (Cons v xs A)
   let ?B = "{i. i < length xs \<and> Suc i \<notin> A \<and> xs ! i = x}"
   let ?C = "\<lambda>v. {i. i < Suc (length xs) \<and> i \<notin> A \<and> (v # xs) ! i = x}"
   have A: "\<And>v. ?C v = ?C v \<inter> {0} \<union> ?C v \<inter> {i. \<exists>j. i = Suc j}"
@@ -1771,7 +1755,7 @@ proof (induction xs arbitrary: A, simp_all add: nths_Cons)
     by (subst A, rule card_Un_disjoint, simp_all, blast)
   moreover have "\<And>v. card ?B = card (?C v \<inter> {i. \<exists>j. i = Suc j})"
     by (rule bij_betw_same_card [of Suc], auto)
-  ultimately show
+  ultimately have
    "(0 \<in> A \<longrightarrow>
       (v = x \<longrightarrow> Suc (count (mset xs) x - card ?B) =
         Suc (count (mset xs) x) - card (?C x)) \<and>
@@ -1784,11 +1768,12 @@ proof (induction xs arbitrary: A, simp_all add: nths_Cons)
         count (mset xs) x - card (?C v)))"
   proof ((rule_tac [!] conjI, rule_tac [!] impI)+, simp_all)
     have "card ?B \<le> count (mset xs) x"
-      by (simp add: count_mset length_filter_conv_card, rule card_mono,
-       simp, blast)
+      by (force simp add: count_mset length_filter_conv_card intro: card_mono)
     thus "Suc (count (mset xs) x - card ?B) = Suc (count (mset xs) x) - card ?B"
       by (rule Suc_diff_le [symmetric])
   qed
+  then show ?case
+    by (simp add: nths_Cons Cons)
 qed
 
 lemma round_count_inv [rule_format]:
@@ -1818,7 +1803,7 @@ proof (induction index key p q r t arbitrary: n f rule: round.induct,
       (y \<noteq> x \<longrightarrow> count (mset ys) x = f x)"
     have "\<forall>x. count (mset ys) x = (f(y := f y - Suc 0)) x"
       (is "\<forall>x. _ = ?f' x")
-      by (simp add: A, insert spec [OF A, where x = y], simp)
+      by (metis A diff_Suc_1' fun_upd_other fun_upd_same)
     ultimately have "\<forall>x. count (mset xs') x = ?f' x" ..
     thus "(y = x \<longrightarrow> Suc (count (mset xs') x) = f x) \<and>
       (y \<noteq> x \<longrightarrow> count (mset xs') x = f x)"
@@ -1882,8 +1867,7 @@ next
       have G: "length ?ws = Suc (Suc m)"
         using E and F by simp
       hence H: "card ?A \<le> count (mset ?ws) x"
-        by (simp add: count_mset length_filter_conv_card, rule_tac card_mono,
-            simp, blast)
+        by (auto simp add: count_mset length_filter_conv_card intro: card_mono)
       show "count (mset (map the (fill ?zs (offs ?ms 0) index key m ?mi ?ma))) x
         + (if ?xma = x then 1 else 0) + (if ?xmi = x then 1 else 0) =
         count (mset ?ws) x"
@@ -1900,9 +1884,7 @@ next
             simp_all (no_asm_simp) add: True)
           assume "?xmi = x" and "?xma = x"
           with G have "?A = {?nmi, ?nma}"
-            by (rule_tac set_eqI, rule_tac iffI, simp_all, erule_tac disjE,
-                insert mini_less [of ?ws key], insert maxi_less [of ?ws key],
-                simp_all)
+            using mini_less [of ?ws key]maxi_less [of ?ws key] by auto
           with G have "card ?A = Suc (Suc 0)"
             by (simp add: mini_maxi_neq)
           thus "Suc (Suc 0) = count (mset (take (Suc (Suc 0)) xs)) x"
@@ -1974,14 +1956,20 @@ qed
 
 lemma gcsort_count_inv:
   assumes
-    A: "index_less index key" and
-    B: "add_inv n t" and
-    C: "n \<le> p"
+    "index_less index key" and
+    "add_inv n t" and
+    "n \<le> p"
   shows "\<lbrakk>t' \<in> gcsort_set index key p t; count_inv f t\<rbrakk> \<Longrightarrow>
     count_inv f t'"
-by (erule gcsort_set.induct, simp, drule gcsort_add_inv [OF A _ B C],
- rule round_count_inv [OF A], simp_all del: bn_inv.simps, erule conjE,
- frule sym, erule subst, rule bn_inv_intro, insert C, simp)
+proof (induction rule: gcsort_set.induct)
+  case R0
+  then show ?case by simp
+next
+  case (R1 u ns xs)
+  then show ?case
+    by (metis assms add_inv.simps bn_inv_intro count_inv.simps gcsort_add_inv
+        round_count_inv)
+qed
 
 text \<open>
 \null
