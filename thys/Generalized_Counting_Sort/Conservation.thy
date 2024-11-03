@@ -1727,8 +1727,9 @@ lemma fill_offs_enum_count_item [rule_format]:
     count (mset (map the (fill xs (offs (enum xs index key n mi ma) 0)
       index key (length xs) mi ma))) x =
     count (mset xs) x"
-by (subst fill_count_item, simp_all, simp only: length_greater_0_conv [symmetric]
- offs_length enum_length, insert offs_enum_pred [of index key xs mi ma n 0], simp)
+  using offs_enum_pred [of index key xs mi ma n 0] offs_length
+  by (smt (verit, best) add.right_neutral diff_is_0_eq dual_order.refl enum_length
+      fill_count_item length_greater_0_conv)
 
 text \<open>
 \null
@@ -1752,27 +1753,12 @@ next
   have A: "\<And>v. ?C v = ?C v \<inter> {0} \<union> ?C v \<inter> {i. \<exists>j. i = Suc j}"
     by (subst Int_Un_distrib [symmetric], auto, arith)
   have "\<And>v. card (?C v) = card (?C v \<inter> {0}) + card (?C v \<inter> {i. \<exists>j. i = Suc j})"
-    by (subst A, rule card_Un_disjoint, simp_all, blast)
+    by (subst A, rule card_Un_disjoint, auto)
   moreover have "\<And>v. card ?B = card (?C v \<inter> {i. \<exists>j. i = Suc j})"
     by (rule bij_betw_same_card [of Suc], auto)
-  ultimately have
-   "(0 \<in> A \<longrightarrow>
-      (v = x \<longrightarrow> Suc (count (mset xs) x - card ?B) =
-        Suc (count (mset xs) x) - card (?C x)) \<and>
-      (v \<noteq> x \<longrightarrow> count (mset xs) x - card ?B =
-        count (mset xs) x - card (?C v))) \<and>
-    (0 \<notin> A \<longrightarrow>
-      (v = x \<longrightarrow> count (mset xs) x - card ?B =
-        Suc (count (mset xs) x) - card (?C x)) \<and>
-      (v \<noteq> x \<longrightarrow> count (mset xs) x - card ?B =
-        count (mset xs) x - card (?C v)))"
-  proof ((rule_tac [!] conjI, rule_tac [!] impI)+, simp_all)
-    have "card ?B \<le> count (mset xs) x"
-      by (force simp add: count_mset length_filter_conv_card intro: card_mono)
-    thus "Suc (count (mset xs) x - card ?B) = Suc (count (mset xs) x) - card ?B"
-      by (rule Suc_diff_le [symmetric])
-  qed
-  then show ?case
+  moreover have "card ?B \<le> count (mset xs) x"
+    by (force simp add: count_mset length_filter_conv_card intro: card_mono)
+  ultimately show ?case
     by (simp add: nths_Cons Cons)
 qed
 
