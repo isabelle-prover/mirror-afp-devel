@@ -692,6 +692,7 @@ Routing
 Roy_Floyd_Warshall
 SATSolverVerification
 SCC_Bloemen_Sequential
+SCL_Simulates_Ground_Resolution
 SC_DOM_Components
 SDS_Impossibility
 SIFPL
