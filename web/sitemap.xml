@@ -3,7 +3,40 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/desharnais/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/min_max_least_greatest/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/SCL_Simulates_Ground_Resolution.html</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/simple_clause_learning/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/superposition_calculus/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/vericomp/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Superposition_Calculus.html</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
@@ -11,34 +44,16 @@
     <loc>/dependencies/abstract_substitution/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/desharnais/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/knuth_bendix_order/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/topics/mathematics/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/min_max_least_greatest/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Min_Max_Least_Greatest.html</loc>
@@ -66,9 +81,6 @@
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Boustrophedon_Transform.html</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/toth/</loc>
@@ -2223,9 +2235,6 @@
     <lastmod>2020-12-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Interpreter_Optimizations.html</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/vericomp/</loc>
     <lastmod>2020-12-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Relational_Method.html</loc>
@@ -6983,6 +6992,8 @@
     <loc>/sessions/schutz_spacetime/</loc>
   </url><url>
     <loc>/sessions/schwartz_zippel/</loc>
+  </url><url>
+    <loc>/sessions/scl_simulates_ground_resolution/</loc>
   </url><url>
     <loc>/sessions/sds_impossibility/</loc>
   </url><url>

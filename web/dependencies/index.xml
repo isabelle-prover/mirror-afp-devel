@@ -11,8 +11,36 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 31 Oct 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Min_Max_Least_Greatest</title>
+          <link>/dependencies/min_max_least_greatest/</link>
+          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/min_max_least_greatest/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Simple_Clause_Learning</title>
+          <link>/dependencies/simple_clause_learning/</link>
+          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/simple_clause_learning/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Superposition_Calculus</title>
+          <link>/dependencies/superposition_calculus/</link>
+          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/superposition_calculus/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>VeriComp</title>
+          <link>/dependencies/vericomp/</link>
+          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/vericomp/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Abstract_Substitution</title>
           <link>/dependencies/abstract_substitution/</link>
@@ -32,13 +60,6 @@
           <link>/dependencies/knuth_bendix_order/</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/knuth_bendix_order/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Min_Max_Least_Greatest</title>
-          <link>/dependencies/min_max_least_greatest/</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/min_max_least_greatest/</guid>
           <description></description>
         </item>
         <item>
@@ -1432,13 +1453,6 @@
           <link>/dependencies/relational_disjoint_set_forests/</link>
           <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
           <guid>/dependencies/relational_disjoint_set_forests/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>VeriComp</title>
-          <link>/dependencies/vericomp/</link>
-          <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
-          <guid>/dependencies/vericomp/</guid>
           <description></description>
         </item>
         <item>
