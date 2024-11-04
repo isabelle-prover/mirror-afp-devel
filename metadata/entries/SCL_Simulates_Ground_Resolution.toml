@@ -1,0 +1,28 @@
+title = "SCL Simulates Nonredundant Ground Resolution"
+date = 2024-10-31
+topics = [
+  "Logic/General logic/Classical first-order logic",
+]
+abstract = "SCL(FOL) (i.e., Simple Clause Learning for First-Order Logic without equality) is known to be able to simulate the derivation of nonredundant clauses by the ground ordered resolution calculus (see Bromberger et al. at CADE 2023). Due to the space constraints of a 16-pages paper, the published proof is monolithic and hard to comprehend. In this work, we reuse the existing strategy for ground ordered resolution and present a new, simpler strategy for SCL(FOL). We prove a stronger bisimulation theorem between these two strategies (i.e., they both simulate each other). Our proof is modular: it consists of ten refinement steps focusing on different aspects of the two strategies."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+email = "desharnais_email1"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-031-38499-8_8",
+]
+pubs = []
