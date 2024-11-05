@@ -193,7 +193,7 @@ Using lemma @{text round_sort_inv}, the invariance of predicate @{const sort_inv
 
 lemma mini_maxi_keys_le:
  "x \<in> set xs \<Longrightarrow> key (xs ! mini xs key) \<le> key (xs ! maxi xs key)"
-by (frule mini_lb, drule maxi_ub, erule order_trans)
+  by (meson maxi_ub mini_lb order.trans)
 
 lemma mini_maxi_keys_eq [rule_format]:
  "key (xs ! mini xs key) = key (xs ! maxi xs key) \<longrightarrow> x \<in> set xs \<longrightarrow>
@@ -202,16 +202,16 @@ by (induction xs, simp_all add: Let_def, (rule_tac [!] impI, (rule_tac [!] conjI
  rule_tac [2-4] impI, frule_tac [1-3] mini_maxi_keys_le [where key = key], simp_all)
 
 lemma offs_suc:
- "i < length ns \<Longrightarrow> offs ns (Suc k) ! i = Suc (offs ns k ! i)"
-by (simp add: offs_add add_suc)
+  "i < length ns \<Longrightarrow> offs ns (Suc k) ! i = Suc (offs ns k ! i)"
+  by (simp add: offs_add add_suc)
 
 lemma offs_base_zero:
- "i < length ns \<Longrightarrow> offs ns k ! i = offs ns 0 ! i + k"
-by (simp add: offs_add, subst add_base_zero, simp)
+  "i < length ns \<Longrightarrow> offs ns k ! i = offs ns 0 ! i + k"
+  by (metis add_base_zero offs_add)
 
 lemma offs_append:
- "offs (ms @ ns) k = offs ms k @ offs ns (foldl (+) k ms)"
-by (induction ms arbitrary: k, simp_all)
+  "offs (ms @ ns) k = offs ms k @ offs ns (foldl (+) k ms)"
+  by (induction ms arbitrary: k, simp_all)
 
 lemma offs_enum_next_le [rule_format]:
   assumes
@@ -241,8 +241,7 @@ proof (rule ccontr, simp add: not_le)
       using C by (rule_tac offs_mono, simp_all add: enum_length)
     hence "offs_next (offs ?ns k) (length xs + k) xs index key mi ma i \<le>
       offs ?ns k ! j"
-      using F by (simp only: offs_next_def split: if_split, rule_tac conjI,
-       blast, simp)
+      by (metis (lifting) ext F empty_iff offs_next_def)
     thus False
       using E by simp
   qed
@@ -261,21 +260,19 @@ proof (rule ccontr, simp add: not_le)
       using C by (erule_tac offs_mono, simp add: enum_length)
     ultimately have "offs_next (offs ?ns k) (length xs + k) xs index key mi ma i \<le>
       offs ?ns k ! j"
-      by (simp only: offs_next_def split: if_split, rule_tac conjI, blast, simp)
+      by (metis (lifting) ext empty_iff offs_next_def)
     thus False
       using E by simp
   qed
-  hence "offs ?ns k ! j =
-    offs_next (offs ?ns k) (length xs + k) xs index key mi ma j"
-    using A and C and D by (rule_tac offs_enum_zero, simp_all)
+  hence "offs ?ns k ! j = offs_next (offs ?ns k) (length xs + k) xs index key mi ma j"
+    using A C D offs_enum_zero by blast
   ultimately show False by simp
 qed
 
 lemma offs_pred_ub_less:
  "\<lbrakk>offs_pred ns ub xs index key mi ma; i < length ns;
-   0 < offs_num (length ns) xs index key mi ma i\<rbrakk> \<Longrightarrow>
-     ns ! i < ub"
-by (drule offs_pred_ub, assumption+, simp)
+   0 < offs_num (length ns) xs index key mi ma i\<rbrakk> \<Longrightarrow> ns ! i < ub"
+  using offs_pred_ub by fastforce
 
 lemma fill_count_none [rule_format]:
   assumes A: "index_less index key"
@@ -308,12 +305,13 @@ proof (induction xs arbitrary: ns, simp_all add: replicate_count Let_def,
     by simp
 qed
 
-lemma fill_offs_enum_count_none [rule_format]:
+lemma fill_offs_enum_count_none:
  "\<lbrakk>index_less index key; \<forall>x \<in> set xs. key x \<in> {mi..ma}; 0 < n\<rbrakk> \<Longrightarrow>
     count (mset (fill xs (offs (enum xs index key n mi ma) 0)
       index key (length xs) mi ma)) None = 0"
-by (subst fill_count_none, simp_all, simp only: length_greater_0_conv [symmetric]
- offs_length enum_length, insert offs_enum_pred [of index key xs mi ma n 0], simp)
+  using offs_enum_pred [of index key xs mi ma n 0]
+  by (metis add.right_neutral add_diff_cancel_left' neq0_conv
+      enum_length fill_count_none le_add1 list.size(3) offs_length)
 
 lemma fill_index [rule_format]:
   assumes A: "index_less index key"
@@ -1024,8 +1022,7 @@ next
               by (drule_tac bn_comp_fst_nonzero [OF G], subst (asm) F,
                simp split: nat.split)
             with A have "foldl (+) 0 ?ms = length ?zs"
-              by (rule enum_add, simp, rule_tac conjI,
-               ((rule_tac mini_lb | rule_tac maxi_ub), erule_tac in_set_nthsD)+)
+              by (metis atLeastAtMost_iff enum_add maxi_ub mini_lb notin_set_nthsI)
             hence "foldl (+) 0 ?ms = m"
               using O by (simp add: mini_maxi_nths)
             with X show "m \<le> (foldl (+) 0 ?ms #
@@ -1168,11 +1165,10 @@ next
       next
         case False
         hence "0 < ?k"
-          by (simp, drule_tac bn_comp_fst_nonzero [OF G], subst (asm) F,
-           simp split: nat.split)
+          by (metis F G Nitpick.case_nat_unfold add_gr_0 bn_comp_fst_nonzero gr0I
+              prod.sel(1))
         with A have "foldl (+) 0 ?ms = length ?zs"
-          by (rule enum_add, simp, rule_tac conjI,
-           ((rule_tac mini_lb | rule_tac maxi_ub), erule_tac in_set_nthsD)+)
+          by (metis atLeastAtMost_iff enum_add maxi_ub mini_lb notin_set_nthsI)
         thus "foldl (+) 0 ?ms = m"
           using O by (simp add: mini_maxi_nths)
       qed
@@ -1181,12 +1177,10 @@ next
         assume "i \<le> length ms'"
         moreover have "length ms' < length (ms' @ ns')"
           using U by simp
-        ultimately have "offs (ms' @ ns') 0 ! i \<le>
-          offs (ms' @ ns') 0 ! (length ms')"
+        ultimately have "offs (ms' @ ns') 0 ! i \<le> offs (ms' @ ns') 0 ! (length ms')"
           by (rule offs_mono)
         also have "\<dots> = Suc (Suc m)"
-          using U and X by (simp add: offs_append nth_append offs_length,
-           cases ns', simp_all)
+          using X \<open>length ms' < length (ms' @ ns')\<close> offs_add by force
         finally have "offs (ms' @ ns') 0 ! i \<le> Suc (Suc m)" .
         hence "j < Suc (Suc m)"
           using L by simp
@@ -1252,13 +1246,12 @@ theorem gcsort_sorted:
 proof -
   let ?t = "(0, [length xs], xs)"
   have "sort_inv key (gcsort_aux index key p ?t)"
-    by (rule gcsort_sort_inv [OF A B _ C], rule gcsort_add_input,
-     rule gcsort_aux_set, rule gcsort_sort_input)
+    using A B C gcsort_add_input gcsort_aux_set gcsort_sort_input gcsort_sort_inv
+    by blast
   moreover have "add_inv (length xs) (gcsort_aux index key p ?t)"
-    by (rule gcsort_add_inv [OF A _ _ C],
-     rule gcsort_aux_set, rule gcsort_add_input)
+    using A C gcsort_add_input gcsort_add_inv gcsort_aux_set by blast
   ultimately have "sorted (map key (gcsort_out (gcsort_aux index key p ?t)))"
-    by (rule gcsort_sort_intro, simp add: gcsort_sort_form)
+    using gcsort_sort_form gcsort_sort_intro by blast
   moreover have "?t = gcsort_in xs"
     by (simp add: gcsort_in_def)
   ultimately show ?thesis
