@@ -1304,8 +1304,7 @@ next
     by (metis add_leD1 foldl_Cons)
 qed
 
-lemma add_mono:
-  "(m :: nat) \<le> n \<Longrightarrow> foldl (+) m ns \<le> foldl (+) n ns"
+lemma add_mono: "(m :: nat) \<le> n \<Longrightarrow> foldl (+) m ns \<le> foldl (+) n ns"
   by (induction ns arbitrary: m n, auto)
 
 lemma add_max:
@@ -1420,55 +1419,40 @@ lemma round_nil:
 by (induction index key p q r t rule: round.induct,
  simp_all add: round_suc_suc_def Let_def split: prod.split)
 
-lemma round_max_eq [rule_format]:
- "fst (snd t) \<noteq> [] \<longrightarrow> Max (set (fst (snd t))) = Suc 0 \<longrightarrow>
+lemma round_max_eq:
+ "\<lbrakk>fst (snd t) \<noteq> []; Max (set (fst (snd t))) = Suc 0\<rbrakk> \<Longrightarrow>
     Max (set (fst (snd (round index key p q r t)))) = Suc 0"
-proof (induction index key p q r t rule: round.induct, simp_all add: Let_def split:
- prod.split del: all_simps, rule impI, (rule_tac [2] allI)+, (rule_tac [2] impI)+,
- (rule_tac [3] allI)+, (rule_tac [3] impI)+, rule_tac [3] FalseE)
-  fix index p q r u ns xs and key :: "'a \<Rightarrow> 'b"
-  let ?t = "round index key p q r (u, ns, xs)"
-  assume "ns \<noteq> [] \<longrightarrow> Max (set ns) = Suc 0 \<longrightarrow>
-    Max (set (fst (snd ?t))) = Suc 0"
-  moreover assume A: "Max (insert 0 (set ns)) = Suc 0"
-  hence "ns \<noteq> []"
-    by (cases ns, simp_all)
-  moreover from this have "Max (set ns) = Suc 0"
-    using A by simp
-  ultimately show "Max (set (fst (snd ?t))) = Suc 0"
-    by simp
+proof (induction index key p q r t rule: round.induct)
+  case (2 index key p q r u ns xs)
+  then show ?case
+  by (cases "ns=[]") auto
 next
-  fix index p q r u ns xs u' ns' xs' and key :: "'a \<Rightarrow> 'b"
-  let ?t = "round index key p q r (u, ns, tl xs)"
-  assume A: "?t = (u', ns', xs')" and
-   "ns \<noteq> [] \<longrightarrow> Max (set ns) = Suc 0 \<longrightarrow> Max (set (fst (snd ?t))) = Suc 0"
-  hence B: "ns \<noteq> [] \<longrightarrow> Max (set ns) = Suc 0 \<longrightarrow> Max (set ns') = Suc 0"
-    by simp
-  assume C: "Max (insert (Suc 0) (set ns)) = Suc 0"
-  show "Max (insert (Suc 0) (set ns')) = Suc 0"
-  proof (cases "ns' = []")
+  case (3 index key p q r u ns xs)
+  obtain m ps qs where \<section>: "round index key p q r (u, ns, tl xs) = (m, ps, qs)"
+    using prod_cases3 by blast
+  show ?case
+  proof (cases "ns=[]")
     case False
-    hence "fst (snd ?t) \<noteq> []"
-      using A by simp
-    then obtain n where E: "n \<in> set ns" and F: "0 < n"
-      using round_nil by fastforce
-    hence G: "ns \<noteq> []"
-      by fastforce
-    moreover have "0 < Max (set ns)"
-      using E F G Max_gr_iff by blast
-    hence "Max (set ns) = Suc 0"
-      using C G by simp
-    ultimately have "Max (set ns') = Suc 0"
-      using B by simp
-    thus ?thesis
-      using False by simp
+    show ?thesis 
+    proof (cases "Max (set ns) = Suc 0")
+      case True
+      with 3 \<section> \<open>ns \<noteq> []\<close> show ?thesis
+        by simp (metis List.finite_set Max_ge Max_insert2)
+    next
+      case False
+      with 3 \<open>ns \<noteq> []\<close> \<section> have "ps=[]"
+        apply (simp add: )
+        by (metis List.finite_set Max_ge add_is_1 fst_conv leD nat_minus_add_max round_nil
+            snd_conv)
+      with \<section> show ?thesis
+        by (auto split: prod.split)
+    qed
   qed auto
 next
-  fix n ns
-  assume "Max (insert (Suc (Suc n)) (set ns)) = Suc 0"
-  thus False
-    by (cases ns, simp_all)
-qed
+  case (4 index key p q r u n ns xs)
+  then show ?case 
+  by (cases "ns=[]", auto) 
+qed auto
 
 lemma round_max_less [rule_format]:
  "fst (snd t) \<noteq> [] \<longrightarrow> Suc 0 < Max (set (fst (snd t))) \<longrightarrow>
