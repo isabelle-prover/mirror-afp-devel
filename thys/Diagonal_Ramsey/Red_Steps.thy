@@ -539,8 +539,9 @@ proof -
     by (auto simp: algebra_simps)
 qed
 
-proposition Red_5_1:
-  assumes i: "i \<in> Step_class {red_step,dboost_step}"  and Big: "Big_Red_5_1 \<mu> l"
+lemma Red_5_1:
+  assumes i: "i \<in> Step_class {red_step,dboost_step}"  
+    and Big: "Big_Red_5_1 \<mu> l"
   defines "p \<equiv> pee i"
   defines "x \<equiv> cvx i"
   defines "X \<equiv> Xseq i" and "Y \<equiv> Yseq i"
@@ -573,7 +574,7 @@ proof -
       and nonterm: "\<not> termination_condition X Y"
       and "odd i"
       and non_mb: "\<not> many_bluish X" and "card X > 0"
-      and  not_halted: "i \<notin> Step_class {halted}"
+      and not_halted: "i \<notin> Step_class {halted}"
     using i by (auto simp: XY step_kind_defs termination_condition_def split: if_split_asm prod.split_asm)
   with Yseq_gt0 XY have "card Y \<noteq> 0"
     by blast
@@ -663,7 +664,7 @@ proof -
     proof 
       assume empty: "NBX = {}"
       then have cNRX: "card NRX = card X - 1"
-        using Xx \<open>x \<in> X\<close> by auto
+        using card_NRBX by auto
       have "card X > 3"
         using \<open>k\<ge>256\<close> X_gt_k by linarith
       then have "2 * card X / real (card X - 1) < 3"
