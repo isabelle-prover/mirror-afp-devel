@@ -29,7 +29,7 @@ note = ""
 homepage = "haslbeck_homepage"
 
 [authors.eberl]
-homepage = "eberl_homepage2"
+homepage = "eberl_homepage"
 
 [authors.nipkow]
 homepage = "nipkow_homepage"

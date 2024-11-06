@@ -139,22 +139,22 @@ aransay_homepage = "https://www.unirioja.es/cu/jearansa"
 
 [argyraki]
 name = "Angeliki Koutsoukou-Argyraki"
+orcid = "0000-0002-8886-5281"
 
 [argyraki.emails]
 
 [argyraki.emails.argyraki_email]
 user = [
-  "ak2110",
+  "angeliki", "koutsoukouargyraki",
 ]
 host = [
-  "cam",
+  "rhul",
   "ac",
   "uk",
 ]
 
 [argyraki.homepages]
-argyraki_homepage = "https://www.cl.cam.ac.uk/~ak2110/"
-argyraki_homepage2 = "https://www.cst.cam.ac.uk/people/ak2110"
+argyraki_homepage = "https://pure.royalholloway.ac.uk/en/persons/angeliki-koutsoukou-argyraki"
 
 [armstrong]
 name = "Alasdair Armstrong"
@@ -1823,30 +1823,8 @@ host = [
   "org",
 ]
 
-[eberl.emails.eberl_email1]
-user = [
-  "manuel",
-  "eberl",
-]
-host = [
-  "tum",
-  "de",
-]
-
-[eberl.emails.eberl_email2]
-user = [
-  "manuel",
-  "eberl",
-]
-host = [
-  "uibk",
-  "ac",
-  "at",
-]
-
 [eberl.homepages]
 eberl_homepage = "https://pruvisto.org/"
-eberl_homepage2 = "https://www.in.tum.de/~eberlm"
 
 [echenim]
 name = "Mnacho Echenim"
