@@ -25,6 +25,7 @@ note = ""
 
 [authors.argyraki]
 homepage = "argyraki_homepage"
+email = "argyraki_email"
 
 [authors.baksys]
 homepage = "baksys_homepage"
@@ -35,7 +36,7 @@ homepage = "edmonds_homepage"
 [contributors]
 
 [notify]
-argyraki = "argyraki_email"
+argyraki = "argyraki_email1"
 baksys = "baksys_email"
 edmonds = "edmonds_email"
 

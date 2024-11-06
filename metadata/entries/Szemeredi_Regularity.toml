@@ -25,7 +25,8 @@ note = ""
 homepage = "edmonds_homepage"
 
 [authors.argyraki]
-homepage = "argyraki_homepage"
+homepage = "argyraki_homepage1"
+email = "argyraki_email"
 
 [authors.paulson]
 homepage = "paulson_homepage"

@@ -145,6 +145,16 @@ orcid = "0000-0002-8886-5281"
 
 [argyraki.emails.argyraki_email]
 user = [
+  "ak2110",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[argyraki.emails.argyraki_email1]
+user = [
   "angeliki", "koutsoukouargyraki",
 ]
 host = [
@@ -154,7 +164,9 @@ host = [
 ]
 
 [argyraki.homepages]
-argyraki_homepage = "https://pure.royalholloway.ac.uk/en/persons/angeliki-koutsoukou-argyraki"
+argyraki_homepage = "https://www.cl.cam.ac.uk/~ak2110/"
+argyraki_homepage1 = "https://www.cst.cam.ac.uk/people/ak2110"
+argyraki_homepage2 = "https://pure.royalholloway.ac.uk/en/persons/angeliki-koutsoukou-argyraki"
 
 [armstrong]
 name = "Alasdair Armstrong"

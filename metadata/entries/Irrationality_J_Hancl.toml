@@ -18,6 +18,7 @@ note = ""
 
 [authors.argyraki]
 homepage = "argyraki_homepage"
+email = "argyraki_email"
 
 [authors.li]
 homepage = "li_homepage"

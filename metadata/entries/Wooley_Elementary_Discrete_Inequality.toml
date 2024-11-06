@@ -14,12 +14,13 @@ note = ""
 [authors]
 
 [authors.argyraki]
-email = "argyraki_email"
+email = "argyraki_email1"
+homepage = "argyraki_homepage2"
 
 [contributors]
 
 [notify]
-argyraki = "argyraki_email"
+argyraki = "argyraki_email1"
 
 [history]
 

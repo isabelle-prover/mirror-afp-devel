@@ -17,6 +17,7 @@ note = ""
 [authors]
 
 [authors.argyraki]
+email = "argyraki_email"
 homepage = "argyraki_homepage"
 
 [authors.li]
@@ -26,7 +27,7 @@ homepage = "li_homepage"
 
 [notify]
 li = "li_email"
-argyraki = "argyraki_email"
+argyraki = "argyraki_email1"
 
 [history]
 
