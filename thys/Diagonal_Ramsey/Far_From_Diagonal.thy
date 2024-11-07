@@ -501,7 +501,7 @@ proof -
     by (intro X_7_1) (auto simp: Big_Far_9_3_def)
   also have "\<dots> \<le> RN k l34"
   proof -
-    have "p0 - 3 * eps > 1/k" and "pee halted_point \<ge> p0 - 3 * eps"
+    have "p0 - 3 * \<epsilon> > 1/k" and "pee halted_point \<ge> p0 - 3 * \<epsilon>"
       using l_le_k big p0_ge Y_6_2_halted by (auto simp: Big_Far_9_3_def \<gamma>_def)
     then show ?thesis
       using halted_point_halted \<gamma>01

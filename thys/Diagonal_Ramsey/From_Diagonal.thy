@@ -119,7 +119,7 @@ proof -
     using X_7_1 assms big71 by blast
   also have "\<dots> \<le> 2 powr (g k)"
   proof -
-    have "1/k < p0 - 3 * eps"
+    have "1/k < p0 - 3 * \<epsilon>"
     using big \<open>p0 \<ge> 1/2\<close> by (auto simp: Big_From_11_2_def)
     also have "\<dots> \<le> pee halted_point"
       using Y_6_2_halted big62 assms by blast

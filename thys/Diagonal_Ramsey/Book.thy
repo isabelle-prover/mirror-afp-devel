@@ -147,12 +147,12 @@ lemma Big_height_upper_bound:
 context No_Cliques
 begin
 
-abbreviation "eps \<equiv> epsilon k"
+abbreviation "\<epsilon> \<equiv> epsilon k"
 
-lemma eps_eq_sqrt: "eps = 1 / sqrt (sqrt (real k))"
+lemma eps_eq_sqrt: "\<epsilon> = 1 / sqrt (sqrt (real k))"
   by (simp add: epsilon_def powr_minus_divide powr_powr flip: powr_half_sqrt)
 
-lemma eps_ge0: "eps \<ge> 0"
+lemma eps_ge0: "\<epsilon> \<ge> 0"
   by (simp add: epsilon_def)
 
 lemma ln0: "l>0"
@@ -161,15 +161,15 @@ lemma ln0: "l>0"
 lemma kn0: "k > 0"
   using  l_le_k ln0 by auto
 
-lemma eps_gt0: "eps > 0"
+lemma eps_gt0: "\<epsilon> > 0"
   by (simp add: epsilon_def kn0)
 
-lemma eps_le1: "eps \<le> 1"
+lemma eps_le1: "\<epsilon> \<le> 1"
   using kn0 ge_one_powr_ge_zero
   by (simp add: epsilon_def powr_minus powr_mono2 divide_simps)
 
 lemma eps_less1:
-  assumes "k>1" shows "eps < 1"
+  assumes "k>1" shows "\<epsilon> < 1"
   by (smt (verit) assms epsilon_def less_imp_of_nat_less of_nat_1 powr_less_one zero_le_divide_iff)
 
 lemma Blue_E: "Blue \<subseteq> E"
@@ -259,7 +259,7 @@ definition p0 :: "real"
 definition qfun :: "nat \<Rightarrow> real"
   where "qfun \<equiv> \<lambda>h. p0 + qfun_base k h"
 
-lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + eps)^h - 1) / k"
+lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + \<epsilon>)^h - 1) / k"
   by (simp add: qfun_def qfun_base_def epsilon_def epsilon_def)
 
 definition hgt :: "real \<Rightarrow> nat"
@@ -299,22 +299,22 @@ lemma qfun_strict_mono: "h'<h \<Longrightarrow> qfun h' < qfun h"
 lemma qfun_mono: "h'\<le>h \<Longrightarrow> qfun h' \<le> qfun h"
   by (metis less_eq_real_def nat_less_le qfun_strict_mono)
 
-lemma q_Suc_diff: "qfun (Suc h) - qfun h = eps * (1 + eps)^h / k"
+lemma q_Suc_diff: "qfun (Suc h) - qfun h = \<epsilon> * (1 + \<epsilon>)^h / k"
   by (simp add: qfun_eq field_split_simps)
 
 lemma height_exists':
   obtains h where "p \<le> qfun_base k h \<and> h>0"
 proof -
-  have 1: "1 + eps \<ge> 1"
+  have 1: "1 + \<epsilon> \<ge> 1"
     by (auto simp: epsilon_def)
-  have "\<forall>\<^sup>\<infinity>h. p \<le> real h * eps / real k"
+  have "\<forall>\<^sup>\<infinity>h. p \<le> real h * \<epsilon> / real k"
     using p0_01 kn0 unfolding epsilon_def by real_asymp
-  then obtain h where "p \<le> real h * eps / real k"
+  then obtain h where "p \<le> real h * \<epsilon> / real k"
     by (meson eventually_sequentially order.refl)
-  also have "\<dots> \<le> ((1 + eps) ^ h - 1) / real k"
-    using linear_plus_1_le_power [of "eps" h]
+  also have "\<dots> \<le> ((1 + \<epsilon>) ^ h - 1) / real k"
+    using linear_plus_1_le_power [of "\<epsilon>" h]
     by (intro divide_right_mono add_mono) (auto simp: epsilon_def add_ac)
-  also have "\<dots> \<le> ((1 + eps) ^ Suc h - 1) / real k"
+  also have "\<dots> \<le> ((1 + \<epsilon>) ^ Suc h - 1) / real k"
     using power_increasing [OF le_SucI [OF order_refl] 1]
     by (simp add: divide_right_mono)
   finally have "p \<le> qfun_base k (Suc h)"
@@ -382,7 +382,7 @@ text \<open>The upper bound of the height $h(p)$ appears just below (5) on page 
   we need to exhibit a specific $o(k)$ function.\<close>
 lemma height_upper_bound:
   assumes "p \<le> 1" and big: "Big_height_upper_bound k"
-  shows "hgt p \<le> 2 * ln k / eps"
+  shows "hgt p \<le> 2 * ln k / \<epsilon>"
   using assms real_hgt_Least big nat_floor_neg not_gr0 of_nat_floor
   unfolding Big_height_upper_bound_def hgt_maximum_def
   by (smt (verit) epsilon_def hgt_Least of_nat_mono p0_01(1) qfun0 qfun_def)
@@ -392,28 +392,28 @@ definition alpha :: "nat \<Rightarrow> real" where "alpha \<equiv> \<lambda>h. q
 lemma alpha_ge0: "alpha h \<ge> 0"
   by (simp add: alpha_def qfun_eq divide_le_cancel eps_gt0)
 
-lemma alpha_Suc_ge: "alpha (Suc h) \<ge> eps / k"
+lemma alpha_Suc_ge: "alpha (Suc h) \<ge> \<epsilon> / k"
 proof -
-  have "(1 + eps) ^ h \<ge> 1"
+  have "(1 + \<epsilon>) ^ h \<ge> 1"
     by (simp add: epsilon_def)
   then show ?thesis
     by (simp add: alpha_def qfun_eq eps_gt0 field_split_simps)
 qed
 
-lemma alpha_ge: "h>0 \<Longrightarrow> alpha h \<ge> eps / k"
+lemma alpha_ge: "h>0 \<Longrightarrow> alpha h \<ge> \<epsilon> / k"
   by (metis Suc_pred alpha_Suc_ge)
 
 lemma alpha_gt0: "h>0 \<Longrightarrow> alpha h > 0"
   by (metis alpha_ge alpha_ge0 eps_gt0 kn0 nle_le not_le of_nat_0_less_iff zero_less_divide_iff)
 
-lemma alpha_Suc_eq: "alpha (Suc h) = eps * (1 + eps) ^ h / k"
+lemma alpha_Suc_eq: "alpha (Suc h) = \<epsilon> * (1 + \<epsilon>) ^ h / k"
   by (simp add: alpha_def q_Suc_diff)
 
 lemma alpha_eq: 
-  assumes "h>0" shows "alpha h = eps * (1 + eps) ^ (h-1) / k"
+  assumes "h>0" shows "alpha h = \<epsilon> * (1 + \<epsilon>) ^ (h-1) / k"
   by (metis Suc_pred' alpha_Suc_eq assms)
 
-lemma alpha_hgt_eq: "alpha (hgt p) = eps * (1 + eps) ^ (hgt p -1) / k"
+lemma alpha_hgt_eq: "alpha (hgt p) = \<epsilon> * (1 + \<epsilon>) ^ (hgt p -1) / k"
   using alpha_eq hgt_gt0 by presburger
 
 lemma alpha_mono: "\<lbrakk>h' \<le> h; 0 < h'\<rbrakk> \<Longrightarrow> alpha h' \<le> alpha h"
@@ -470,7 +470,7 @@ lemma B_less_l:
 
 subsection \<open>Degree regularisation\<close>
 
-definition "red_dense \<equiv> \<lambda>Y p x. card (Neighbours Red x \<inter> Y) \<ge> (p - eps powr (-1/2) * alpha (hgt p)) * card Y"
+definition "red_dense \<equiv> \<lambda>Y p x. card (Neighbours Red x \<inter> Y) \<ge> (p - \<epsilon> powr (-1/2) * alpha (hgt p)) * card Y"
 
 definition "X_degree_reg \<equiv> \<lambda>X Y. {x \<in> X. red_dense Y (red_density X Y) x}"
 

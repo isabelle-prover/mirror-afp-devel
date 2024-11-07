@@ -52,10 +52,10 @@ proof -
                           else max (qfun (h-1)) (min (pee i) (qfun h)))" for i h
     using qfun_mono [of "h-1" h] by (auto simp: pp_def max_def)
 
-  define maxh where "maxh \<equiv> nat\<lfloor>2 * ln k / eps\<rfloor> + 1"  
-  have maxh: "\<And>pee. pee\<le>1 \<Longrightarrow> hgt pee \<le> 2 * ln k / eps" and "k\<ge>16"
+  define maxh where "maxh \<equiv> nat\<lfloor>2 * ln k / \<epsilon>\<rfloor> + 1"  
+  have maxh: "\<And>pee. pee\<le>1 \<Longrightarrow> hgt pee \<le> 2 * ln k / \<epsilon>" and "k\<ge>16"
     using big l_le_k by (auto simp: Big_ZZ_8_1_def height_upper_bound)
-  then have "1 \<le> 2 * ln k / eps"
+  then have "1 \<le> 2 * ln k / \<epsilon>"
     using hgt_gt0 [of 1] by force
   then have "maxh > 1"
     by (simp add: maxh_def eps_gt0)
@@ -138,9 +138,9 @@ proof -
     then show "(\<Sum>i<halted_point. \<Delta>\<Delta> i h / alpha h) \<le> 1"
       using alpha_ge0 [of h] by (simp add: divide_simps flip: sum_divide_distrib) 
   qed
-  also have "\<dots> \<le> 1 + 2 * ln k / eps"
+  also have "\<dots> \<le> 1 + 2 * ln k / \<epsilon>"
     using \<open>maxh > 1\<close> by (simp add: maxh_def)
-  finally have 34: "(\<Sum>h=Suc 0..maxh. \<Sum>i<halted_point. \<Delta>\<Delta> i h / alpha h) \<le> 1 + 2 * ln k / eps" .
+  finally have 34: "(\<Sum>h=Suc 0..maxh. \<Sum>i<halted_point. \<Delta>\<Delta> i h / alpha h) \<le> 1 + 2 * ln k / \<epsilon>" .
 
   define \<D> where "\<D> \<equiv> Step_class {dreg_step}" 
   define \<B> where "\<B> \<equiv> Step_class {bblue_step}" 
@@ -156,7 +156,7 @@ proof -
   have "card \<R> < k"
     using red_step_limit by (auto simp: \<R>_def)
 
-  have R52: "pee (Suc i) - pee i \<ge> (1 - eps) * ((1 - beta i) / beta i) * alpha (hgt (pee i))"
+  have R52: "pee (Suc i) - pee i \<ge> (1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha (hgt (pee i))"
     and beta_gt0: "beta i > 0"
     and R53: "pee (Suc i) \<ge> pee i \<and> beta i \<ge> 1 / (real k)\<^sup>2"
         if "i \<in> \<S>" for i
@@ -168,7 +168,7 @@ proof -
     using that R53 [OF \<open>i \<in> \<S>\<close>] by (fastforce simp: \<Delta>\<Delta>_def pp_eq)
   have \<Delta>\<Delta>_eq_0: "\<Delta>\<Delta> i h = 0" if "hgt (pee i) \<le> hgt (pee (Suc i))" "hgt (pee (Suc i)) < h" for h i
     using \<Delta>\<Delta>_def that by fastforce
-  define oneminus where "oneminus \<equiv> 1 - eps powr (1/2)"
+  define oneminus where "oneminus \<equiv> 1 - \<epsilon> powr (1/2)"
   have 35: "oneminus * ((1 - beta i) / beta i)
           \<le> (\<Sum>h=1..maxh. \<Delta>\<Delta> i h / alpha h)"   (is "?L \<le> ?R")
     if "i \<in> dboost_star" for i
@@ -177,31 +177,31 @@ proof -
       using \<open>dboost_star \<subseteq> \<S>\<close> that by blast
     have [simp]: "real (hgt x - Suc 0) = real (hgt x) - 1" for x
       using hgt_gt0 [of x] by linarith
-    have 36: "(1 - eps) * ((1 - beta i) / beta i) \<le> \<Delta> i / alpha (hgt (pee i))"
+    have 36: "(1 - \<epsilon>) * ((1 - beta i) / beta i) \<le> \<Delta> i / alpha (hgt (pee i))"
       using R52 alpha_gt0 [OF hgt_gt0] beta_gt0 that \<open>dboost_star \<subseteq> \<S>\<close> by (force simp: \<Delta>_def divide_simps)
-    have k_big: "(1 + eps powr (1/2)) \<ge> (1 + eps) powr (eps powr (-1/4))"
+    have k_big: "(1 + \<epsilon> powr (1/2)) \<ge> (1 + \<epsilon>) powr (\<epsilon> powr (-1/4))"
       using big l_le_k by (auto simp: Big_ZZ_8_1_def Big_ZZ_8_2_def)
     have *: "\<And>x::real. x > 0 \<Longrightarrow> (1 - x powr (1/2)) * (1 + x powr (1/2)) = 1 - x"
       by (simp add: algebra_simps flip: powr_add)
-    have "?L = (1 - eps) * ((1 - beta i) / beta i) / (1 + eps powr (1/2))"
+    have "?L = (1 - \<epsilon>) * ((1 - beta i) / beta i) / (1 + \<epsilon> powr (1/2))"
       using beta_gt0 [OF \<open>i \<in> \<S>\<close>] eps_gt0 k_big 
       by (force simp: oneminus_def divide_simps *)
-    also have "\<dots> \<le> \<Delta> i / alpha (hgt (pee i)) / (1 + eps powr (1/2))"
+    also have "\<dots> \<le> \<Delta> i / alpha (hgt (pee i)) / (1 + \<epsilon> powr (1/2))"
       by (intro 36 divide_right_mono) auto
-    also have "\<dots> \<le> \<Delta> i / alpha (hgt (pee i)) / (1 + eps) powr (real (hgt (pee (Suc i))) - hgt (pee i))"
+    also have "\<dots> \<le> \<Delta> i / alpha (hgt (pee i)) / (1 + \<epsilon>) powr (real (hgt (pee (Suc i))) - hgt (pee i))"
     proof (intro divide_left_mono mult_pos_pos)
-      have "real (hgt (pee (Suc i))) - hgt (pee i) \<le> eps powr (-1/4)"
+      have "real (hgt (pee (Suc i))) - hgt (pee i) \<le> \<epsilon> powr (-1/4)"
         using that by (simp add: dboost_star_def)
-      then show "(1 + eps) powr (real (hgt (pee (Suc i))) - real (hgt (pee i))) \<le> 1 + eps powr (1/2)"
+      then show "(1 + \<epsilon>) powr (real (hgt (pee (Suc i))) - real (hgt (pee i))) \<le> 1 + \<epsilon> powr (1/2)"
         using k_big by (smt (verit) eps_ge0 powr_mono)
       show "0 \<le> \<Delta> i / alpha (hgt (pee i))"
         by (simp add: \<Delta>0 \<Delta>\<Delta>_ge0 \<open>i \<in> \<S>\<close> alpha_ge0)
-      show "0 < (1 + eps) powr (real (hgt (pee (Suc i))) - real (hgt (pee i)))"
+      show "0 < (1 + \<epsilon>) powr (real (hgt (pee (Suc i))) - real (hgt (pee i)))"
         using eps_gt0 by auto
     qed (auto simp: add_strict_increasing)
     also have "\<dots> \<le> \<Delta> i / alpha (hgt (pee (Suc i)))"
     proof -
-      have "alpha (hgt (pee (Suc i))) \<le> alpha (hgt (pee i)) * (1 + eps) powr (real (hgt (pee (Suc i))) - real (hgt (pee i)))"
+      have "alpha (hgt (pee (Suc i))) \<le> alpha (hgt (pee i)) * (1 + \<epsilon>) powr (real (hgt (pee (Suc i))) - real (hgt (pee i)))"
         using eps_gt0 hgt_gt0
         by (simp add: alpha_eq divide_right_mono flip: powr_realpow powr_add)
       moreover have "0 \<le> \<Delta> i"
@@ -258,14 +258,14 @@ proof -
     unfolding \<Delta>_def \<R>_def
     by (smt (verit, best) hgt_gt0 alpha_gt0 divide_minus_left less_divide_eq_1_pos)
 
-  have "(\<Sum>i\<in>\<R>. - (1 + eps)\<^sup>2) \<le> (\<Sum>i\<in>\<R>. \<Sum>h=1..maxh. \<Delta>\<Delta> i h / alpha h)"
+  have "(\<Sum>i\<in>\<R>. - (1 + \<epsilon>)\<^sup>2) \<le> (\<Sum>i\<in>\<R>. \<Sum>h=1..maxh. \<Delta>\<Delta> i h / alpha h)"
   proof (intro sum_mono)
     fix i :: nat
     assume "i \<in> \<R>"
-    show "- (1 + eps)\<^sup>2 \<le> (\<Sum>h = 1..maxh. \<Delta>\<Delta> i h / alpha h)"
+    show "- (1 + \<epsilon>)\<^sup>2 \<le> (\<Sum>h = 1..maxh. \<Delta>\<Delta> i h / alpha h)"
     proof (cases "\<Delta> i < 0")
       case True
-      have "(1 + eps)\<^sup>2 * -1 \<le> (1 + eps)\<^sup>2 * (\<Delta> i / alpha (hgt (pee i)))"
+      have "(1 + \<epsilon>)\<^sup>2 * -1 \<le> (1 + \<epsilon>)\<^sup>2 * (\<Delta> i / alpha (hgt (pee i)))"
         using \<Delta>alpha 
         by (smt (verit, best) power2_less_0 \<open>i \<in> \<R>\<close> mult_le_cancel_left2 mult_minus_right)
       also have "\<dots> \<le> (\<Sum>h = 1..maxh. \<Delta>\<Delta> i h / alpha h)"
@@ -285,18 +285,18 @@ proof -
           fix h :: nat
           assume "h \<in> {1..maxh}"
           then have "1 \<le> h" "h \<le> maxh" by auto
-          show "(1 + eps)\<^sup>2 * (\<Delta>\<Delta> i h / alpha (hgt (pee i))) \<le> \<Delta>\<Delta> i h / alpha h"
+          show "(1 + \<epsilon>)\<^sup>2 * (\<Delta>\<Delta> i h / alpha (hgt (pee i))) \<le> \<Delta>\<Delta> i h / alpha h"
           proof (cases "h < hgt (pee i) - 2")
             case True
             then show ?thesis
               using \<open>1 \<le> h\<close> eq0 by force
           next
             case False
-            have *: "(1 + eps) ^ (hgt (pee i) - Suc 0) \<le> (1 + eps)\<^sup>2 * (1 + eps) ^ (h - Suc 0)"
+            have *: "(1 + \<epsilon>) ^ (hgt (pee i) - Suc 0) \<le> (1 + \<epsilon>)\<^sup>2 * (1 + \<epsilon>) ^ (h - Suc 0)"
               using False eps_ge0 unfolding power_add [symmetric] 
               by (intro power_increasing) auto
-            have **: "(1 + eps)\<^sup>2 * alpha h \<ge> alpha (hgt (pee i))"
-              using \<open>1 \<le> h\<close> mult_left_mono [OF *, of "eps"] eps_ge0
+            have **: "(1 + \<epsilon>)\<^sup>2 * alpha h \<ge> alpha (hgt (pee i))"
+              using \<open>1 \<le> h\<close> mult_left_mono [OF *, of "\<epsilon>"] eps_ge0
               by (simp add: alpha_eq hgt_gt0 mult_ac divide_right_mono)
             show ?thesis
               using le0 alpha_gt0 \<open>h\<ge>1\<close> hgt_gt0 mult_left_mono_neg [OF **, of "\<Delta>\<Delta> i h"]
@@ -316,7 +316,7 @@ proof -
         by (smt (verit, ccfv_SIG) sum_power2_ge_zero)
     qed
   qed
-  then have 83: "- (1 + eps)\<^sup>2 * card \<R> \<le> (\<Sum>h=1..maxh. \<Sum>i\<in>\<R>. \<Delta>\<Delta> i h / alpha h)" 
+  then have 83: "- (1 + \<epsilon>)\<^sup>2 * card \<R> \<le> (\<Sum>h=1..maxh. \<Sum>i\<in>\<R>. \<Delta>\<Delta> i h / alpha h)" 
     by (simp add: mult.commute sum.swap [of _ \<R>])
 
   \<comment> \<open>now to tackle claim 8.4\<close>
@@ -324,7 +324,7 @@ proof -
   have \<Delta>0: "\<Delta> i \<ge> 0" if "i \<in> \<D>" for i
     using Y_6_4_DegreeReg that unfolding \<D>_def \<Delta>_def by auto
 
-  have 39: "-2 * eps powr(-1/2) \<le> (\<Sum>h = 1..maxh. (\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h) / alpha h)" (is "?L \<le> ?R")
+  have 39: "-2 * \<epsilon> powr(-1/2) \<le> (\<Sum>h = 1..maxh. (\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h) / alpha h)" (is "?L \<le> ?R")
     if "i \<in> \<B>" for i
   proof -
     have "odd i"
@@ -344,39 +344,39 @@ proof -
       case False
       then have \<Delta>\<Delta>_le0: "\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h \<le> 0" if "h\<ge>1" for h
         by (smt (verit, best) One_nat_def \<Delta>\<Delta>_def \<Delta>_def \<open>odd i\<close> odd_Suc_minus_one pp_eq)
-      have hge: "hgt (pee (Suc i)) \<ge> hgt (pee (i-1)) - 2 * eps powr (-1/2)"
+      have hge: "hgt (pee (Suc i)) \<ge> hgt (pee (i-1)) - 2 * \<epsilon> powr (-1/2)"
         using bigY65B that Y_6_5_Bblue by (fastforce simp: \<B>_def)
-      have \<Delta>\<Delta>0: "\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h = 0" if "0<h" "h < hgt (pee (i-1)) - 2 * eps powr (-1/2)" for h
+      have \<Delta>\<Delta>0: "\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h = 0" if "0<h" "h < hgt (pee (i-1)) - 2 * \<epsilon> powr (-1/2)" for h
         using \<open>odd i\<close> that hge unfolding \<Delta>\<Delta>_def One_nat_def
         by (smt (verit) of_nat_less_iff odd_Suc_minus_one powr_non_neg pp_less_hgt)
-      have big39: "1/2 \<le> (1 + eps) powr (-2 * eps powr (-1/2))"
+      have big39: "1/2 \<le> (1 + \<epsilon>) powr (-2 * \<epsilon> powr (-1/2))"
         using big l_le_k by (auto simp: Big_ZZ_8_1_def Big39_def)
-      have "?L * alpha (hgt (pee (i-1))) * (1 + eps) powr (-2 * eps powr (-1/2))
-           \<le> - (eps powr (-1/2)) * alpha (hgt (pee (i-1)))"
-        using mult_left_mono_neg [OF big39, of "- (eps powr (-1/2)) * alpha (hgt (pee (i-1))) / 2"]
+      have "?L * alpha (hgt (pee (i-1))) * (1 + \<epsilon>) powr (-2 * \<epsilon> powr (-1/2))
+           \<le> - (\<epsilon> powr (-1/2)) * alpha (hgt (pee (i-1)))"
+        using mult_left_mono_neg [OF big39, of "- (\<epsilon> powr (-1/2)) * alpha (hgt (pee (i-1))) / 2"]
         using alpha_ge0 [of "hgt (pee (i-1))"] eps_ge0
         by (simp add: mult_ac)
       also have "\<dots> \<le> \<Delta> (i-1) + \<Delta> i"
       proof -
-        have "pee (Suc i) \<ge> pee (i-1) - (eps powr (-1/2)) * alpha (hgt (pee (i-1)))"
+        have "pee (Suc i) \<ge> pee (i-1) - (\<epsilon> powr (-1/2)) * alpha (hgt (pee (i-1)))"
           using Y_6_4_Bblue that \<B>_def by blast
         with \<open>i>0\<close> show ?thesis
           by (simp add: \<Delta>_def)
       qed
-      finally have "?L * alpha (hgt (pee (i-1))) * (1 + eps) powr (-2 * eps powr (-1/2)) \<le> \<Delta> (i-1) + \<Delta> i" .
-      then have "?L \<le> (1 + eps) powr (2 * eps powr (-1/2)) * (\<Delta> (i-1) + \<Delta> i) / alpha (hgt (pee (i-1)))"
+      finally have "?L * alpha (hgt (pee (i-1))) * (1 + \<epsilon>) powr (-2 * \<epsilon> powr (-1/2)) \<le> \<Delta> (i-1) + \<Delta> i" .
+      then have "?L \<le> (1 + \<epsilon>) powr (2 * \<epsilon> powr (-1/2)) * (\<Delta> (i-1) + \<Delta> i) / alpha (hgt (pee (i-1)))"
         using alpha_ge0 [of "hgt (pee (i-1))"] eps_ge0 
         by (simp add: powr_minus divide_simps mult_ac)
       also have "\<dots> \<le> ?R"
       proof -
-        have "(1 + eps) powr (2 * eps powr(-1/2)) * (\<Delta>\<Delta> (i - Suc 0) h + \<Delta>\<Delta> i h) / alpha (hgt (pee (i - Suc 0))) 
+        have "(1 + \<epsilon>) powr (2 * \<epsilon> powr(-1/2)) * (\<Delta>\<Delta> (i - Suc 0) h + \<Delta>\<Delta> i h) / alpha (hgt (pee (i - Suc 0))) 
            \<le> (\<Delta>\<Delta> (i - Suc 0) h + \<Delta>\<Delta> i h) / alpha h"
           if h: "Suc 0 \<le> h" "h \<le> maxh" for h
-        proof (cases "h < hgt (pee (i-1)) - 2 * eps powr(-1/2)")
+        proof (cases "h < hgt (pee (i-1)) - 2 * \<epsilon> powr(-1/2)")
           case False
-          then have "hgt (pee (i-1)) - 1 \<le> 2 * eps powr(-1/2) + (h - 1)"
+          then have "hgt (pee (i-1)) - 1 \<le> 2 * \<epsilon> powr(-1/2) + (h - 1)"
             using hgt_gt0 by (simp add: nat_less_real_le)
-          then have *: "(1 + eps) powr (2 * eps powr(-1/2)) / alpha (hgt (pee (i-1))) \<ge> 1 / alpha h"
+          then have *: "(1 + \<epsilon>) powr (2 * \<epsilon> powr(-1/2)) / alpha (hgt (pee (i-1))) \<ge> 1 / alpha h"
             using that eps_gt0 kn0 hgt_gt0
             by (simp add: alpha_eq divide_simps flip: powr_realpow powr_add)
           show ?thesis
@@ -391,11 +391,11 @@ proof -
 
   have B34: "card \<B> \<le> k powr (3/4)"
     by (smt (verit) card\<B> l_le_k of_nat_0_le_iff of_nat_mono powr_mono2 zero_le_divide_iff)
-  have "-2 * k powr (7/8) \<le> -2 * eps powr(-1/2) * k powr (3/4)"
+  have "-2 * k powr (7/8) \<le> -2 * \<epsilon> powr(-1/2) * k powr (3/4)"
     by (simp add: epsilon_def powr_powr flip: powr_add)
-  also have "\<dots> \<le> -2 * eps powr(-1/2) * card \<B>"
+  also have "\<dots> \<le> -2 * \<epsilon> powr(-1/2) * card \<B>"
     using B34 by (intro mult_left_mono_neg powr_mono2) auto
-  also have "\<dots> = (\<Sum>i\<in>\<B>. -2 * eps powr(-1/2))"
+  also have "\<dots> = (\<Sum>i\<in>\<B>. -2 * \<epsilon> powr(-1/2))"
     by simp
   also have "\<dots> \<le> (\<Sum>h = 1..maxh. \<Sum>i\<in>\<B>. (\<Delta>\<Delta> (i-1) h + \<Delta>\<Delta> i h) / alpha h)"
     unfolding sum.swap [of _ \<B>] by (intro sum_mono 39)
@@ -426,7 +426,7 @@ proof -
   have m_eq: "{..<halted_point} = \<R> \<union> \<S> \<union> (\<B> \<union> \<D>)"
     using before_halted_eq by (auto simp: \<B>_def \<D>_def \<S>_def \<R>_def Step_class_insert_NO_MATCH)
 
-  have "- (1 + eps)\<^sup>2 * real (card \<R>)
+  have "- (1 + \<epsilon>)\<^sup>2 * real (card \<R>)
      + oneminus * sum_SS 
      - 2 * real k powr (7/8) \<le> (\<Sum>h = Suc 0..maxh. \<Sum>i\<in>\<R>. \<Delta>\<Delta> i h / alpha h)
       + (\<Sum>h = Suc 0..maxh. \<Sum>i\<in>\<S>. \<Delta>\<Delta> i h / alpha h)
@@ -434,30 +434,30 @@ proof -
     using 82 83 84 by simp
   also have "\<dots> = (\<Sum>h = Suc 0..maxh. \<Sum>i \<in> \<R> \<union> \<S> \<union> (\<B> \<union> \<D>). \<Delta>\<Delta> i h / alpha h)"
     by (simp add: sum.distrib disj sum.union_disjoint Int_Un_distrib Int_Un_distrib2)
-  also have "\<dots> \<le> 1 + 2 * ln (real k) / eps"
+  also have "\<dots> \<le> 1 + 2 * ln (real k) / \<epsilon>"
     using 34 by (simp add: m_eq)
   finally
-  have 41: "oneminus * sum_SS - (1 + eps)\<^sup>2 * card \<R> - 2 * k powr (7/8)
-          \<le> 1 + 2 * ln k / eps" 
+  have 41: "oneminus * sum_SS - (1 + \<epsilon>)\<^sup>2 * card \<R> - 2 * k powr (7/8)
+          \<le> 1 + 2 * ln k / \<epsilon>" 
     by simp
-  have big42: "(1 + eps)\<^sup>2 / oneminus \<le> 1 + 2 * k powr (-1/16)"
+  have big42: "(1 + \<epsilon>)\<^sup>2 / oneminus \<le> 1 + 2 * k powr (-1/16)"
               "2 * k powr (-1/16) * k
-             + (1 + 2 * ln k / eps + 2 * k powr (7/8)) / oneminus
+             + (1 + 2 * ln k / \<epsilon> + 2 * k powr (7/8)) / oneminus
        \<le> real k powr (19/20)"
     using big l_le_k by (auto simp: Big_ZZ_8_1_def Big42a_def Big42b_def oneminus_def)
   have "oneminus > 0"
     using \<open>16 \<le> k\<close> eps_gt0 eps_less1 powr01_less_one by (auto simp: oneminus_def)
   with 41 have "sum_SS
-        \<le> (1 + 2 * ln k / eps + (1 + eps)\<^sup>2 * card \<R> + 2 * k powr (7/8)) / oneminus" 
+        \<le> (1 + 2 * ln k / \<epsilon> + (1 + \<epsilon>)\<^sup>2 * card \<R> + 2 * k powr (7/8)) / oneminus" 
     by (simp add: mult_ac pos_le_divide_eq diff_le_eq)
-  also have "\<dots> \<le> card \<R> * (((1 + eps)\<^sup>2) / oneminus) 
-                 + (1 + 2 * ln k / eps + 2 * k powr (7/8)) / oneminus"
+  also have "\<dots> \<le> card \<R> * (((1 + \<epsilon>)\<^sup>2) / oneminus) 
+                 + (1 + 2 * ln k / \<epsilon> + 2 * k powr (7/8)) / oneminus"
     by (simp add: field_simps add_divide_distrib)
   also have "\<dots> \<le> card \<R> * (1 + 2 * k powr (-1/16)) 
-                 + (1 + 2 * ln k / eps + 2 * k powr (7/8)) / oneminus"
+                 + (1 + 2 * ln k / \<epsilon> + 2 * k powr (7/8)) / oneminus"
     using big42 \<open>oneminus > 0\<close> by (intro add_mono mult_mono) auto
   also have "\<dots> \<le> card \<R> + 2 * k powr (-1/16) * k
-                 + (1 + 2 * ln k / eps + 2 * k powr (7/8)) / oneminus"
+                 + (1 + 2 * ln k / \<epsilon> + 2 * k powr (7/8)) / oneminus"
     using \<open>card \<R> < k\<close> by (intro add_mono mult_mono) (auto simp: algebra_simps)
   also have "\<dots> \<le> real (card \<R>) + real k powr (19/20)"
     using big42 by force
@@ -494,7 +494,7 @@ proof -
     by (auto simp: dboost_star_def \<S>_def)
   ultimately have "real (card \<S>) - real (card dboost_star) = card (\<S>\<setminus>dboost_star)"
     by (metis card_Diff_subset card_mono finite_subset of_nat_diff)
-  also have "\<dots> \<le> 3 * eps powr (1/4) * k"
+  also have "\<dots> \<le> 3 * \<epsilon> powr (1/4) * k"
     using \<mu>01 big X_7_5 by (auto simp: Big_ZZ_8_5_def dboost_star_def \<S>_def)
   also have "\<dots> \<le> k powr (19/20)"
     using big l_le_k by (auto simp: Big_ZZ_8_5_def inequality85_def)
