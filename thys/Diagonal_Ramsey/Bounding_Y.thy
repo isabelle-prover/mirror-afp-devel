@@ -153,7 +153,7 @@ proof -
       have "k powr (-1/8) \<le> 1"
         using kn0 by (simp add: ge_one_powr_ge_zero powr_minus_divide)
       then show ?thesis
-        by (simp add: alpha_eq epsilon_def powr_powr divide_le_cancel flip: powr_add)
+        by (simp add: alpha_eq eps_def powr_powr divide_le_cancel flip: powr_add)
     qed
     finally have "pee (i-1) - pee (Suc i) \<le> 1/k" .
   }
@@ -173,7 +173,7 @@ proof -
       by simp
     then show ?thesis
       using divide_right_mono [OF *, of k] 
-      by (metis epsilon_def of_nat_0_le_iff powr_diff powr_one)
+      by (metis eps_def of_nat_0_le_iff powr_diff powr_one)
   qed
   finally have bblue: "(\<Sum>i\<in>\<B> \<inter> Z_class. pee(i-1) - pee (Suc i)) \<le> \<epsilon>" .
   { fix i
@@ -287,18 +287,18 @@ corollary Y_6_5_dbooSt:
   using kn0 Red_5_3 assms hgt_mono by blast
 
 text \<open>this remark near the top of page 19 only holds in the limit\<close>
-lemma "\<forall>\<^sup>\<infinity>k. (1 + epsilon k) powr (- real (nat \<lfloor>2 * epsilon k powr (-1/2)\<rfloor>)) \<le> 1 - epsilon k powr (1/2)"
-  unfolding epsilon_def by real_asymp
+lemma "\<forall>\<^sup>\<infinity>k. (1 + eps k) powr (- real (nat \<lfloor>2 * eps k powr (-1/2)\<rfloor>)) \<le> 1 - eps k powr (1/2)"
+  unfolding eps_def by real_asymp
 
 end
 
 definition "Big_Y_6_5_Bblue \<equiv> 
-      \<lambda>l. \<forall>k\<ge>l. (1 + epsilon k) powr (- real (nat \<lfloor>2*(epsilon k powr (-1/2))\<rfloor>)) \<le> 1 - epsilon k powr (1/2)" 
+      \<lambda>l. \<forall>k\<ge>l. (1 + eps k) powr (- real (nat \<lfloor>2*(eps k powr (-1/2))\<rfloor>)) \<le> 1 - eps k powr (1/2)" 
 
 text \<open>establishing the size requirements for Y 6.5\<close>
 lemma Big_Y_6_5_Bblue:
   shows "\<forall>\<^sup>\<infinity>l. Big_Y_6_5_Bblue l"
-  unfolding Big_Y_6_5_Bblue_def epsilon_def by (intro eventually_all_ge_at_top; real_asymp)
+  unfolding Big_Y_6_5_Bblue_def eps_def by (intro eventually_all_ge_at_top; real_asymp)
 
 lemma (in Book) Y_6_5_Bblue:
   fixes \<kappa>::real
@@ -358,15 +358,15 @@ qed
 subsection \<open>Lemma 6.2\<close>
 
 definition "Big_Y_6_2 \<equiv> \<lambda>\<mu> l. Big_Y_6_5_Bblue l \<and> Big_Red_5_3 \<mu> l \<and> Big_Blue_4_1 \<mu> l
-               \<and> (\<forall>k\<ge>l. ((1 + epsilon k)^2) * epsilon k powr (1/2) \<le> 1 
-                       \<and> (1 + epsilon k) powr (2 * epsilon k powr (-1/2)) \<le> 2 \<and> k \<ge> 16)"
+               \<and> (\<forall>k\<ge>l. ((1 + eps k)^2) * eps k powr (1/2) \<le> 1 
+                       \<and> (1 + eps k) powr (2 * eps k powr (-1/2)) \<le> 2 \<and> k \<ge> 16)"
 
 text \<open>establishing the size requirements for 6.2\<close>
 lemma Big_Y_6_2:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_Y_6_2 \<mu> l"
   using assms Big_Y_6_5_Bblue Big_Red_5_3 Big_Blue_4_1
-  unfolding Big_Y_6_2_def epsilon_def
+  unfolding Big_Y_6_2_def eps_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI1 eventually_all_ge_at_top; real_asymp)
   done
@@ -498,7 +498,7 @@ next
   have j'_dreg: "j' \<in> Step_class {dreg_step}"
     using RBS_def \<open>Suc j' \<in> RBS\<close> dreg_before_step by blast
   have 1: "\<epsilon> powr -(1/2) \<ge> 1"
-    using kn0 by (simp add: epsilon_def powr_powr ge_one_powr_ge_zero)
+    using kn0 by (simp add: eps_def powr_powr ge_one_powr_ge_zero)
   consider (R) "Suc j' \<in> Step_class {red_step}"
          | (B) "Suc j' \<in> Step_class {bblue_step}"
          | (S) "Suc j' \<in> Step_class {dboost_step}"
@@ -529,7 +529,7 @@ next
     unfolding powr_add [symmetric] using \<open>k\<ge>16\<close> order.trans nle_le by fastforce
   have "p0 - \<epsilon> \<le> qfun 0 - 2 * \<epsilon> powr (1/2) / k"
     using mult_left_mono [OF 8, of "k powr (-1/8)"] kn0 
-    by (simp add: qfun_eq epsilon_def powr_powr field_simps flip: powr_add)
+    by (simp add: qfun_eq eps_def powr_powr field_simps flip: powr_add)
   also have "\<dots> \<le> pee j'  - \<epsilon> powr (-1/2) * alpha (hgt (pee j'))"
   proof -
     have 2: "(1 + \<epsilon>) ^ (hgt (pee j') - Suc 0) \<le> 2"
@@ -645,28 +645,28 @@ subsection \<open>Lemma 6.1\<close>
 context P0_min
 begin
 
-definition "ok_fun_61 \<equiv> \<lambda>k. (2 * real k) * log 2 (1 - 2 * epsilon k powr (1/2) / p0_min)"
+definition "ok_fun_61 \<equiv> \<lambda>k. (2 * real k) * log 2 (1 - 2 * eps k powr (1/2) / p0_min)"
 
 lemma ok_fun_61_works:
-  assumes "p0_min > 2 * epsilon k powr (1/2)"
-  shows "2 powr (ok_fun_61 k) = (1 - 2 * (epsilon k) powr (1/2) / p0_min) ^ (2*k)"
+  assumes "p0_min > 2 * eps k powr (1/2)"
+  shows "2 powr (ok_fun_61 k) = (1 - 2 * (eps k) powr (1/2) / p0_min) ^ (2*k)"
   using  p0_min assms
   by (simp add: powr_def ok_fun_61_def log_def flip: powr_realpow)
 
 lemma ok_fun_61: "ok_fun_61 \<in> o(real)"
-  unfolding epsilon_def ok_fun_61_def
+  unfolding eps_def ok_fun_61_def
   using p0_min by real_asymp
 
 definition 
   "Big_Y_6_1 \<equiv> 
-    \<lambda>\<mu> l. Big_Y_6_2 \<mu> l \<and> (\<forall>k\<ge>l. epsilon k powr (1/2) \<le> 1/3 \<and> p0_min > 2 * epsilon k powr (1/2))"
+    \<lambda>\<mu> l. Big_Y_6_2 \<mu> l \<and> (\<forall>k\<ge>l. eps k powr (1/2) \<le> 1/3 \<and> p0_min > 2 * eps k powr (1/2))"
 
 text \<open>establishing the size requirements for 6.1\<close>
 lemma Big_Y_6_1:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_Y_6_1 \<mu> l"
   using p0_min assms Big_Y_6_2
-  unfolding Big_Y_6_1_def epsilon_def
+  unfolding Big_Y_6_1_def eps_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_ge_at_top eventually_all_geI0; real_asymp)
   done

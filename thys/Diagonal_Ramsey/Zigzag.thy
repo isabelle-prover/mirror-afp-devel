@@ -6,16 +6,16 @@ begin
           
 subsection \<open>Lemma 8.1 (the actual Zigzag Lemma)\<close>
 
-definition "Big_ZZ_8_2 \<equiv> \<lambda>k. (1 + epsilon k powr (1/2)) \<ge> (1 + epsilon k) powr (epsilon k powr (-1/4))"
+definition "Big_ZZ_8_2 \<equiv> \<lambda>k. (1 + eps k powr (1/2)) \<ge> (1 + eps k) powr (eps k powr (-1/4))"
                                                  
 text \<open>An inequality that pops up in the proof of (39)\<close>
-definition "Big39 \<equiv> \<lambda>k. 1/2 \<le> (1 + epsilon k) powr (-2 * epsilon k powr (-1/2))"
+definition "Big39 \<equiv> \<lambda>k. 1/2 \<le> (1 + eps k) powr (-2 * eps k powr (-1/2))"
 
 text \<open>Two inequalities that pops up in the proof of (42)\<close>
-definition "Big42a \<equiv> \<lambda>k. (1 + epsilon k)\<^sup>2 / (1 - epsilon k powr (1/2)) \<le> 1 + 2 * k powr (-1/16)" 
+definition "Big42a \<equiv> \<lambda>k. (1 + eps k)\<^sup>2 / (1 - eps k powr (1/2)) \<le> 1 + 2 * k powr (-1/16)" 
 
 definition "Big42b \<equiv> \<lambda>k. 2 * k powr (-1/16) * k
-                        + (1 + 2 * ln k / epsilon k + 2 * k powr (7/8)) / (1 - epsilon k powr (1/2))
+                        + (1 + 2 * ln k / eps k + 2 * k powr (7/8)) / (1 - eps k powr (1/2))
                        \<le> real k powr (19/20)"
 
 definition "Big_ZZ_8_1 \<equiv>
@@ -31,7 +31,7 @@ lemma Big_ZZ_8_1:
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_ZZ_8_1 \<mu> l"
   using assms Big_Blue_4_1 Big_Red_5_1 Big_Red_5_3 Big_Y_6_5_Bblue
   unfolding Big_ZZ_8_1_def Big_ZZ_8_2_def Big39_def Big42a_def Big42b_def
-            eventually_conj_iff all_imp_conj_distrib epsilon_def
+            eventually_conj_iff all_imp_conj_distrib eps_def
   apply (simp add: eventually_conj_iff eventually_frequently_const_simps)   
   apply (intro conjI strip eventually_all_ge_at_top Big_height_upper_bound; real_asymp)
   done
@@ -392,7 +392,7 @@ proof -
   have B34: "card \<B> \<le> k powr (3/4)"
     by (smt (verit) card\<B> l_le_k of_nat_0_le_iff of_nat_mono powr_mono2 zero_le_divide_iff)
   have "-2 * k powr (7/8) \<le> -2 * \<epsilon> powr(-1/2) * k powr (3/4)"
-    by (simp add: epsilon_def powr_powr flip: powr_add)
+    by (simp add: eps_def powr_powr flip: powr_add)
   also have "\<dots> \<le> -2 * \<epsilon> powr(-1/2) * card \<B>"
     using B34 by (intro mult_left_mono_neg powr_mono2) auto
   also have "\<dots> = (\<Sum>i\<in>\<B>. -2 * \<epsilon> powr(-1/2))"
@@ -467,7 +467,7 @@ qed
 subsection \<open>Lemma 8.5\<close>
 
 text \<open>An inequality that pops up in the proof of (39)\<close>
-definition "inequality85 \<equiv> \<lambda>k. 3 * epsilon k powr (1/4) * k \<le> k powr (19/20)"
+definition "inequality85 \<equiv> \<lambda>k. 3 * eps k powr (1/4) * k \<le> k powr (19/20)"
 
 definition "Big_ZZ_8_5 \<equiv>     
    \<lambda>\<mu> l. Big_X_7_5 \<mu> l \<and> Big_ZZ_8_1 \<mu> l \<and> Big_Red_5_3 \<mu> l
@@ -477,7 +477,7 @@ lemma Big_ZZ_8_5:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_ZZ_8_5 \<mu> l"
   using assms Big_Red_5_3 Big_X_7_5 Big_ZZ_8_1
-  unfolding Big_ZZ_8_5_def inequality85_def epsilon_def
+  unfolding Big_ZZ_8_5_def inequality85_def eps_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)       
   apply (intro conjI strip eventually_all_ge_at_top; real_asymp)     
   done

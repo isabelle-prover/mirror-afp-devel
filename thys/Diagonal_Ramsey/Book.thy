@@ -129,31 +129,31 @@ locale Book' = Book_Basis + No_Cliques +
   assumes XY0: "disjnt X0 Y0" "X0 \<subseteq> V" "Y0 \<subseteq> V"
   assumes density_ge_p0_min: "gen_density Red X0 Y0 \<ge> p0_min"
 
-definition "epsilon \<equiv> \<lambda>k. real k powr (-1/4)"
+definition "eps \<equiv> \<lambda>k. real k powr (-1/4)"
 
 definition qfun_base :: "[nat, nat] \<Rightarrow> real"
-  where "qfun_base \<equiv> \<lambda>k h. ((1 + epsilon k)^h - 1) / k"
+  where "qfun_base \<equiv> \<lambda>k h. ((1 + eps k)^h - 1) / k"
 
-definition "hgt_maximum \<equiv> \<lambda>k. 2 * ln (real k) / epsilon k"
+definition "hgt_maximum \<equiv> \<lambda>k. 2 * ln (real k) / eps k"
 
 text \<open>The first of many "bigness assumptions"\<close>
 definition "Big_height_upper_bound \<equiv> \<lambda>k. qfun_base k (nat \<lfloor>hgt_maximum k\<rfloor>) > 1"
 
 lemma Big_height_upper_bound:
   shows "\<forall>\<^sup>\<infinity>k. Big_height_upper_bound k"
-  unfolding Big_height_upper_bound_def hgt_maximum_def epsilon_def qfun_base_def
+  unfolding Big_height_upper_bound_def hgt_maximum_def eps_def qfun_base_def
   by real_asymp
 
 context No_Cliques
 begin
 
-abbreviation "\<epsilon> \<equiv> epsilon k"
+abbreviation "\<epsilon> \<equiv> eps k"
 
 lemma eps_eq_sqrt: "\<epsilon> = 1 / sqrt (sqrt (real k))"
-  by (simp add: epsilon_def powr_minus_divide powr_powr flip: powr_half_sqrt)
+  by (simp add: eps_def powr_minus_divide powr_powr flip: powr_half_sqrt)
 
 lemma eps_ge0: "\<epsilon> \<ge> 0"
-  by (simp add: epsilon_def)
+  by (simp add: eps_def)
 
 lemma ln0: "l>0"
   using no_Blue_clique by (force simp: size_clique_def clique_def)
@@ -162,15 +162,15 @@ lemma kn0: "k > 0"
   using  l_le_k ln0 by auto
 
 lemma eps_gt0: "\<epsilon> > 0"
-  by (simp add: epsilon_def kn0)
+  by (simp add: eps_def kn0)
 
 lemma eps_le1: "\<epsilon> \<le> 1"
   using kn0 ge_one_powr_ge_zero
-  by (simp add: epsilon_def powr_minus powr_mono2 divide_simps)
+  by (simp add: eps_def powr_minus powr_mono2 divide_simps)
 
 lemma eps_less1:
   assumes "k>1" shows "\<epsilon> < 1"
-  by (smt (verit) assms epsilon_def less_imp_of_nat_less of_nat_1 powr_less_one zero_le_divide_iff)
+  by (smt (verit) assms eps_def less_imp_of_nat_less of_nat_1 powr_less_one zero_le_divide_iff)
 
 lemma Blue_E: "Blue \<subseteq> E"
   by (simp add: Blue_def) 
@@ -260,7 +260,7 @@ definition qfun :: "nat \<Rightarrow> real"
   where "qfun \<equiv> \<lambda>h. p0 + qfun_base k h"
 
 lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + \<epsilon>)^h - 1) / k"
-  by (simp add: qfun_def qfun_base_def epsilon_def epsilon_def)
+  by (simp add: qfun_def qfun_base_def eps_def eps_def)
 
 definition hgt :: "real \<Rightarrow> nat"
   where "hgt \<equiv> \<lambda>p. LEAST h. p \<le> qfun h \<and> h>0"
@@ -306,19 +306,19 @@ lemma height_exists':
   obtains h where "p \<le> qfun_base k h \<and> h>0"
 proof -
   have 1: "1 + \<epsilon> \<ge> 1"
-    by (auto simp: epsilon_def)
+    by (auto simp: eps_def)
   have "\<forall>\<^sup>\<infinity>h. p \<le> real h * \<epsilon> / real k"
-    using p0_01 kn0 unfolding epsilon_def by real_asymp
+    using p0_01 kn0 unfolding eps_def by real_asymp
   then obtain h where "p \<le> real h * \<epsilon> / real k"
     by (meson eventually_sequentially order.refl)
   also have "\<dots> \<le> ((1 + \<epsilon>) ^ h - 1) / real k"
     using linear_plus_1_le_power [of "\<epsilon>" h]
-    by (intro divide_right_mono add_mono) (auto simp: epsilon_def add_ac)
+    by (intro divide_right_mono add_mono) (auto simp: eps_def add_ac)
   also have "\<dots> \<le> ((1 + \<epsilon>) ^ Suc h - 1) / real k"
     using power_increasing [OF le_SucI [OF order_refl] 1]
     by (simp add: divide_right_mono)
   finally have "p \<le> qfun_base k (Suc h)"
-    unfolding qfun_base_def epsilon_def epsilon_def using p0_01 by blast
+    unfolding qfun_base_def eps_def eps_def using p0_01 by blast
   then show thesis
     using that by blast 
 qed
@@ -385,7 +385,7 @@ lemma height_upper_bound:
   shows "hgt p \<le> 2 * ln k / \<epsilon>"
   using assms real_hgt_Least big nat_floor_neg not_gr0 of_nat_floor
   unfolding Big_height_upper_bound_def hgt_maximum_def
-  by (smt (verit) epsilon_def hgt_Least of_nat_mono p0_01(1) qfun0 qfun_def)
+  by (smt (verit) eps_def hgt_Least of_nat_mono p0_01(1) qfun0 qfun_def)
 
 definition alpha :: "nat \<Rightarrow> real" where "alpha \<equiv> \<lambda>h. qfun h - qfun (h-1)"
 
@@ -395,7 +395,7 @@ lemma alpha_ge0: "alpha h \<ge> 0"
 lemma alpha_Suc_ge: "alpha (Suc h) \<ge> \<epsilon> / k"
 proof -
   have "(1 + \<epsilon>) ^ h \<ge> 1"
-    by (simp add: epsilon_def)
+    by (simp add: eps_def)
   then show ?thesis
     by (simp add: alpha_def qfun_eq eps_gt0 field_split_simps)
 qed

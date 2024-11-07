@@ -168,7 +168,7 @@ text \<open>establishing the size requirements for 7.11\<close>
 lemma Big_X_7_2:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_2 \<mu> l"
-  unfolding Big_X_7_2_def eventually_conj_iff all_imp_conj_distrib epsilon_def
+  unfolding Big_X_7_2_def eventually_conj_iff all_imp_conj_distrib eps_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI1[where L=1] eventually_all_ge_at_top)
   apply real_asymp+
@@ -458,12 +458,12 @@ subsection \<open>Lemma 7.5\<close>
 text \<open>Small $o(k)$ bounds on summations for this section\<close>
 
 text \<open>This is the explicit upper bound for heights given just below (5) on page 9\<close>
-definition "ok_fun_26 \<equiv> \<lambda>k. 2 * ln k / epsilon k" 
+definition "ok_fun_26 \<equiv> \<lambda>k. 2 * ln k / eps k" 
 
 definition "ok_fun_28 \<equiv> \<lambda>k. -2 * real k powr (7/8)"  
 
 lemma ok_fun_26: "ok_fun_26 \<in> o(real)" and ok_fun_28: "ok_fun_28 \<in> o(real)"
-  unfolding ok_fun_26_def ok_fun_28_def epsilon_def by real_asymp+
+  unfolding ok_fun_26_def ok_fun_28_def eps_def by real_asymp+
 
 definition 
   "Big_X_7_5 \<equiv> 
@@ -476,7 +476,7 @@ lemma Big_X_7_5:
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_5 \<mu> l"
 proof -
   have ok: "\<forall>\<^sup>\<infinity>l. ok_fun_26 l - ok_fun_28 l \<le> l" 
-    unfolding epsilon_def ok_fun_26_def ok_fun_28_def by real_asymp
+    unfolding eps_def ok_fun_26_def ok_fun_28_def by real_asymp
   show ?thesis
     using assms Big_Y_6_5_Bblue Big_Red_5_3 Big_Blue_4_1 
     unfolding Big_X_7_5_def 
@@ -516,7 +516,7 @@ proof -
     also have "\<dots> = k powr (7/8)"
       by (simp flip: powr_add)
     finally show ?thesis
-      by (simp add: epsilon_def powr_powr ok_fun_28_def)
+      by (simp add: eps_def powr_powr ok_fun_28_def)
   qed
   also have "\<dots> \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1))"
   proof -
@@ -668,10 +668,10 @@ lemma Big_X_7_4:
   by (simp add: eventually_conj_iff all_imp_conj_distrib)
 
 
-definition "ok_fun_74 \<equiv> \<lambda>k. -6 * epsilon k powr (1/4) * k * ln k / ln 2" 
+definition "ok_fun_74 \<equiv> \<lambda>k. -6 * eps k powr (1/4) * k * ln k / ln 2" 
 
 lemma ok_fun_74: "ok_fun_74 \<in> o(real)"
-  unfolding ok_fun_74_def epsilon_def by real_asymp
+  unfolding ok_fun_74_def eps_def by real_asymp
 
 context Book
 begin
@@ -837,10 +837,10 @@ end
 
 subsection \<open>Lemma 7.8\<close>
 
-definition "Big_X_7_8 \<equiv> \<lambda>k. k\<ge>2 \<and> epsilon k powr (1/2) / k \<ge> 2 / k^2"
+definition "Big_X_7_8 \<equiv> \<lambda>k. k\<ge>2 \<and> eps k powr (1/2) / k \<ge> 2 / k^2"
 
 lemma Big_X_7_8: "\<forall>\<^sup>\<infinity>k. Big_X_7_8 k"
-  unfolding epsilon_def Big_X_7_8_def eventually_conj_iff epsilon_def
+  unfolding eps_def Big_X_7_8_def eventually_conj_iff eps_def
   by (intro conjI; real_asymp)
 
 lemma (in Book) X_7_8:
@@ -893,11 +893,11 @@ qed
 
 subsection \<open>Lemma 7.9\<close>
 
-definition "Big_X_7_9 \<equiv> \<lambda>k. ((1 + epsilon k) powr (epsilon k powr (-1/4) + 1) - 1) / epsilon k \<le> 2 * epsilon k powr (-1/4)
-   \<and> k\<ge>2 \<and> epsilon k powr (1/2) / k \<ge> 2 / k^2"
+definition "Big_X_7_9 \<equiv> \<lambda>k. ((1 + eps k) powr (eps k powr (-1/4) + 1) - 1) / eps k \<le> 2 * eps k powr (-1/4)
+   \<and> k\<ge>2 \<and> eps k powr (1/2) / k \<ge> 2 / k^2"
 
 lemma Big_X_7_9: "\<forall>\<^sup>\<infinity>k. Big_X_7_9 k"
-  unfolding epsilon_def Big_X_7_9_def eventually_conj_iff epsilon_def
+  unfolding eps_def Big_X_7_9_def eventually_conj_iff eps_def
   by (intro conjI; real_asymp)
 
 lemma one_plus_powr_le:
@@ -1095,10 +1095,10 @@ subsection \<open>Lemma 7.11\<close>
 (*Big_X_7_5 is used (rather than the conclusion) because that theorem is split in two*)
 
 definition "Big_X_7_11_inequalities \<equiv> \<lambda>k. 
-              epsilon k * epsilon k powr (-1/4) \<le> (1 + epsilon k) ^ (2 * nat \<lfloor>epsilon k powr (-1/4)\<rfloor>) - 1
-            \<and> k \<ge> 2 * epsilon k powr (-1/2) * k powr (3/4)
-            \<and> ((1 + epsilon k) * (1 + epsilon k) powr (2 * epsilon k powr (-1/4))) \<le> 2
-            \<and> (1 + epsilon k) ^ (nat \<lfloor>2 * epsilon k powr (-1/4)\<rfloor> + nat \<lfloor>2 * epsilon k powr (-1/2)\<rfloor> - 1) \<le> 2"
+              eps k * eps k powr (-1/4) \<le> (1 + eps k) ^ (2 * nat \<lfloor>eps k powr (-1/4)\<rfloor>) - 1
+            \<and> k \<ge> 2 * eps k powr (-1/2) * k powr (3/4)
+            \<and> ((1 + eps k) * (1 + eps k) powr (2 * eps k powr (-1/4))) \<le> 2
+            \<and> (1 + eps k) ^ (nat \<lfloor>2 * eps k powr (-1/4)\<rfloor> + nat \<lfloor>2 * eps k powr (-1/2)\<rfloor> - 1) \<le> 2"
 
 definition "Big_X_7_11 \<equiv> 
       \<lambda>\<mu> l. Big_X_7_5 \<mu> l \<and> Big_Red_5_3 \<mu> l \<and> Big_Y_6_5_Bblue l
@@ -1109,7 +1109,7 @@ lemma Big_X_7_11:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_11 \<mu> l"
   using assms Big_Red_5_3 Big_X_7_5 Big_Y_6_5_Bblue
-  unfolding Big_X_7_11_def Big_X_7_11_inequalities_def eventually_conj_iff all_imp_conj_distrib epsilon_def
+  unfolding Big_X_7_11_def Big_X_7_11_inequalities_def eventually_conj_iff all_imp_conj_distrib eps_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI0 eventually_all_ge_at_top; real_asymp)
   done
@@ -1312,7 +1312,7 @@ proof -
   also have "\<dots> \<le> alpha 1 * \<epsilon> powr (-1/4)"
     using alpha_ge0 by (simp add: mult.commute pee_eq_p0 pstar_def qstar_def) 
   also have "\<dots> \<le> alpha 1 * k"
-    using alpha_ge0 k16 by (intro powr_mono mult_left_mono) (auto simp: epsilon_def powr_powr)
+    using alpha_ge0 k16 by (intro powr_mono mult_left_mono) (auto simp: eps_def powr_powr)
   finally have "\<epsilon> powr (-1/4) * card ((\<R> \<union> \<S>) \<inter> C) * alpha 1 \<le> 4 * k * alpha 1"
     by (simp add: mult_ac)
   then have "\<epsilon> powr (-1/4) * real (card ((\<R> \<union> \<S>) \<inter> C)) \<le> 4 * k"
@@ -1434,23 +1434,23 @@ qed
 subsection \<open>Lemma 7.6\<close>
 
 definition "Big_X_7_6 \<equiv>
-   \<lambda>\<mu> l. Big_Blue_4_1 \<mu> l \<and> Big_X_7_12 \<mu> l \<and> (\<forall>k. k\<ge>l \<longrightarrow> Big_X_7_8 k \<and> 1 - 2 * epsilon k powr (1/4) > 0)"
+   \<lambda>\<mu> l. Big_Blue_4_1 \<mu> l \<and> Big_X_7_12 \<mu> l \<and> (\<forall>k. k\<ge>l \<longrightarrow> Big_X_7_8 k \<and> 1 - 2 * eps k powr (1/4) > 0)"
 
 lemma Big_X_7_6:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_6 \<mu> l"
   using assms Big_Blue_4_1 Big_X_7_8 Big_X_7_12
-  unfolding Big_X_7_6_def epsilon_def
+  unfolding Big_X_7_6_def eps_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib eventually_all_ge_at_top)  
   apply (intro conjI strip eventually_all_geI0 eventually_all_ge_at_top; real_asymp)
   done
 
 definition "ok_fun_76 \<equiv> 
-  \<lambda>k. ((1 + 2 * real k) * ln (1 - 2 * epsilon k powr (1/4)) 
-      - (k powr (3/4) + 7 * epsilon k powr (1/4) * k + 1) * (2 * ln k)) / ln 2" 
+  \<lambda>k. ((1 + 2 * real k) * ln (1 - 2 * eps k powr (1/4)) 
+      - (k powr (3/4) + 7 * eps k powr (1/4) * k + 1) * (2 * ln k)) / ln 2" 
 
 lemma ok_fun_76: "ok_fun_76 \<in> o(real)"
-  unfolding epsilon_def ok_fun_76_def by real_asymp
+  unfolding eps_def ok_fun_76_def by real_asymp
 
 lemma (in Book) X_7_6:
   assumes big: "Big_X_7_6 \<mu> l"
@@ -1490,7 +1490,7 @@ proof -
   then have X78: "card (Xseq (Suc i)) \<ge> card (Xseq i) / k^2" if "i \<in> \<D>" for i
     using X_7_8 that by (force simp: \<D>_def)
 
-  let ?DC = "\<lambda>k. k powr (3/4) + 7 * epsilon k powr (1/4) * k + 1"
+  let ?DC = "\<lambda>k. k powr (3/4) + 7 * eps k powr (1/4) * k + 1"
   have dc_pos: "?DC k > 0" for k
     by (smt (verit) of_nat_less_0_iff powr_ge_zero zero_le_mult_iff)
   have X_pos: "card (Xseq i) > 0" if "i \<in> \<D>" for i
