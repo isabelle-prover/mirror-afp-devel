@@ -644,14 +644,13 @@ subsection \<open>Lemma 6.1\<close>
 context P0_min
 begin
 
-definition "ok_fun_61 \<equiv> \<lambda>k. (2 * real k / ln 2) * ln (1 - 2 * eps k powr (1/2) / p0_min)"
+definition "ok_fun_61 \<equiv> \<lambda>k. (2 * real k) * log 2 (1 - 2 * eps k powr (1/2) / p0_min)"
 
-text \<open>Not actually used, but justifies the definition above\<close>
 lemma ok_fun_61_works:
-  assumes "k>0" "p0_min > 2 * eps k powr (1/2)"
-  shows "2 powr (ok_fun_61 k) = (1 - 2 * (eps k) powr(1/2) / p0_min) ^ (2*k)"
+  assumes "p0_min > 2 * eps k powr (1/2)"
+  shows "2 powr (ok_fun_61 k) = (1 - 2 * (eps k) powr (1/2) / p0_min) ^ (2*k)"
   using eps_gt0[of k] p0_min assms
-  by (simp add: powr_def ok_fun_61_def flip: powr_realpow)
+  by (simp add: powr_def ok_fun_61_def log_def flip: powr_realpow)
 
 lemma ok_fun_61: "ok_fun_61 \<in> o(real)"
   unfolding eps_def ok_fun_61_def
@@ -691,8 +690,7 @@ proof -
   let ?RS = "Step_class {red_step,dboost_step}"
   let ?BD = " Step_class {bblue_step,dreg_step}"
   have not_halted_below_m: "i \<notin> Step_class {halted}" if "i < halted_point" for i
-    using that 
-    by (simp add:  halted_point_minimal)
+    using that by (simp add:  halted_point_minimal)
   have BD_card: "card (Yseq i) = card (Yseq (Suc i))"
     if "i \<in> ?BD" for i
   proof -
@@ -828,8 +826,7 @@ proof -
   have "2 powr (ok_fun_61 k) * p0 ^ card st \<le> (p0 - 2 * eps k powr (1/2)) ^ card st"
   proof -
     have "2 powr (ok_fun_61 k) = (1 - 2 * (eps k) powr(1/2) / p0_min) ^ (2*k)"
-      using eps_gt0[of k] p0_min big_p0
-      by (simp add: powr_def ok_fun_61_def flip: powr_realpow)
+      using big_p0 ok_fun_61_works by blast
     also have "\<dots> \<le> (1 - 2 * (eps k) powr(1/2) / p0) ^ (2*k)"
       using p0_ge p0_min big_p0 by (intro power_mono) (auto simp: frac_le)
     also have "\<dots> \<le> (1 - 2 * (eps k) powr(1/2) / p0) ^ card st"

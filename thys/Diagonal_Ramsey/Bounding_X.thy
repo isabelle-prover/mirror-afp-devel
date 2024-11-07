@@ -1584,7 +1584,8 @@ lemma (in Book) X_7_1:
   assumes big: "Big_X_7_1 \<mu> l"
   defines "\<D> \<equiv> Step_class {dreg_step}"
   defines "\<R> \<equiv> Step_class {red_step}" and "\<S> \<equiv> Step_class {dboost_step}"
-  shows "card (Xseq halted_point) \<ge> 2 powr ok_fun_71 \<mu> k * \<mu>^l * (1-\<mu>) ^ card \<R> * (bigbeta / \<mu>) ^ card \<S> * card X0"
+  shows "card (Xseq halted_point) \<ge> 
+     2 powr ok_fun_71 \<mu> k * \<mu>^l * (1-\<mu>) ^ card \<R> * (bigbeta / \<mu>) ^ card \<S> * card X0"
 proof -
   define \<B> where "\<B> \<equiv> Step_class {bblue_step}"
   have 72: "Big_X_7_2 \<mu> l" and 74: "Big_X_7_4 \<mu> l" 

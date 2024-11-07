@@ -379,7 +379,7 @@ qed
 context Book
 begin
 
-proposition Blue_4_1:
+lemma Blue_4_1:
   assumes "X\<subseteq>V" and manyb: "many_bluish X" and big: "Big_Blue_4_1 \<mu> l"
   shows "\<exists>S T. good_blue_book X (S,T) \<and> card S \<ge> l powr (1/4)"
 proof -

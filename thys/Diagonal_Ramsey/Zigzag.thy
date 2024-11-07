@@ -40,7 +40,7 @@ lemma (in Book) ZZ_8_1:
   assumes big: "Big_ZZ_8_1 \<mu> l" 
   defines "\<R> \<equiv> Step_class {red_step}"
   defines "sum_SS \<equiv> (\<Sum>i\<in>dboost_star. (1 - beta i) / beta i)"
-  shows "sum_SS \<le> real (card \<R>) + k powr (19/20)"
+  shows "sum_SS \<le> card \<R> + k powr (19/20)"
 proof -
   define pp where "pp \<equiv> \<lambda>i h. if h=1 then min (pee i) (qfun 1)
                           else if pee i \<le> qfun (h-1) then qfun (h-1) 
