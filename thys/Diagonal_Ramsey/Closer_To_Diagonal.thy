@@ -195,7 +195,7 @@ proof -
     by auto
   with 52 have "(k-t+l choose l) \<le> card (Yseq halted_point)" by linarith
   then show False
-    using Far_9_2_conclusion by (simp flip: \<R>_def t_def)
+    using Off_diagonal_conclusion by (simp flip: \<R>_def t_def)
 qed
 
 text \<open>Material that needs to be proved \textbf{outside} the book locales\<close>

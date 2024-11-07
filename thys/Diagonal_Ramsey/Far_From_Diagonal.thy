@@ -838,7 +838,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection \<open>Lemma 9.2 actual proof\<close>
+subsection \<open>Lemma 9.2\<close>
 
 context P0_min
 begin
@@ -874,7 +874,8 @@ qed
 
 end
 
-lemma (in Book') Far_9_2_conclusion:
+text \<open>Used for both 9.2 and 10.2\<close>
+lemma (in Book') Off_diagonal_conclusion:
   defines "\<R> \<equiv> Step_class {red_step}"
   defines "t \<equiv> card \<R>"
   assumes Y: "(k-t+l choose l) \<le> card (Yseq halted_point)"
@@ -1027,7 +1028,7 @@ proof -
   have D: "exp (- 3*\<gamma>*t\<^sup>2 / (20*k)) \<le> ((1-\<gamma>-\<eta>) / (1-\<gamma>))^t"
     by (simp add: eval_nat_numeral powr_powr exp_powr_real mult_ac flip: powr_realpow)
 
-  have "(k-t+l choose l) \<le> card (Yseq halted_point)"
+  have Y: "(k-t+l choose l) \<le> card (Yseq halted_point)"
   proof -
     have "1 * real(k-t+l choose l) 
             \<le> exp (ok_fun_95b k + \<gamma>*k/60) * (k-t+l choose l)"
@@ -1058,7 +1059,7 @@ proof -
     finally show ?thesis by simp
   qed
   then show False
-    using Far_9_2_conclusion by (simp flip: \<R>_def t_def)
+    using Off_diagonal_conclusion by (simp flip: \<R>_def t_def)
 qed
 
 text \<open>Mediation of 9.2 (and 10.2) from locale @{term Book_Basis} to the book locales
@@ -1133,10 +1134,10 @@ lemma (in No_Cliques) Far_9_2:
   fixes \<delta> \<gamma> \<eta>::real
   defines "\<gamma> \<equiv> l / (real k + real l)"
   defines "\<delta> \<equiv> \<gamma>/20"
-  assumes nV: "real nV \<ge> exp (-\<delta> * k) * (k+l choose l)" 
   assumes gd: "graph_density Red \<ge> 1-\<gamma>-\<eta>" and p0_min_OK: "p0_min \<le> 1-\<gamma>-\<eta>"  
-  assumes big: "Big_Far_9_2 \<gamma> l" 
   assumes "\<gamma> \<le> 1/10" and \<eta>: "0\<le>\<eta>" "\<eta> \<le> \<gamma>/15"
+  assumes nV: "real nV \<ge> exp (-\<delta> * k) * (k+l choose l)" 
+  assumes big: "Big_Far_9_2 \<gamma> l" 
   shows False
 proof -
   obtain X0 Y0 where "l\<ge>2" and card_X0: "card X0 \<ge> real nV / 2" 
