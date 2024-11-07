@@ -35,7 +35,7 @@ lemma Y_6_4_DegreeReg:
 
 lemma Y_6_4_Bblue: 
   assumes i: "i \<in> Step_class {bblue_step}"
-  shows "pee (Suc i) \<ge> pee (i-1) - (eps k powr (-1/2)) * alpha (hgt (pee (i-1)))"
+  shows "pee (Suc i) \<ge> pee (i-1) - (eps powr (-1/2)) * alpha (hgt (pee (i-1)))"
 proof -
   define X where "X \<equiv> Xseq i" 
   define Y where "Y \<equiv> Yseq i"
@@ -69,7 +69,7 @@ proof -
   then have Xeq: "X = X_degree_reg (Xseq i') (Yseq i')"
        and  Yeq: "Y = Yseq i'"
     using Suci' by (auto simp: X_def Y_def)
-  define pm where "pm \<equiv> (pee i' - eps k powr (-1/2) * alpha (hgt (pee i')))"
+  define pm where "pm \<equiv> (pee i' - eps powr (-1/2) * alpha (hgt (pee i')))"
   have "T \<subseteq> X"
     using bluebook by (simp add: choose_blue_book_subset fin)
   then have T_reds: "\<And>x. x \<in> T \<Longrightarrow> pm * card Y \<le> card (Neighbours Red x \<inter> Y)"
@@ -116,7 +116,7 @@ lemma finite_Z_class: "finite (Z_class)"
 
 lemma Y_6_3:
   assumes big53: "Big_Red_5_3 \<mu> l" and big41: "Big_Blue_4_1 \<mu> l"
-  shows "(\<Sum>i \<in> Z_class. pee (i-1) - pee (Suc i)) \<le> 2 * eps k"
+  shows "(\<Sum>i \<in> Z_class. pee (i-1) - pee (Suc i)) \<le> 2 * eps"
 proof -
   define \<S> where "\<S> \<equiv> Step_class {dboost_step}" 
   define \<R> where "\<R> \<equiv> Step_class {red_step}"
@@ -146,14 +146,14 @@ proof -
       then show ?thesis
         by (metis One_nat_def Suc_pred' diff_is_0_eq hgt_gt0)
     qed
-    then have "pee (i-1) - pee (Suc i) \<le> eps k powr (-1/2) * alpha 1"
+    then have "pee (i-1) - pee (Suc i) \<le> eps powr (-1/2) * alpha 1"
       using pee iB Y_6_4_Bblue \<mu>01 by (fastforce simp: \<B>_def)
     also have "\<dots> \<le> 1/k"
     proof -
       have "k powr (-1/8) \<le> 1"
         using kn0 by (simp add: ge_one_powr_ge_zero powr_minus_divide)
       then show ?thesis
-        by (simp add: alpha_eq eps_def powr_powr divide_le_cancel flip: powr_add)
+        by (simp add: alpha_eq epsilon_def powr_powr divide_le_cancel flip: powr_add)
     qed
     finally have "pee (i-1) - pee (Suc i) \<le> 1/k" .
   }
@@ -165,7 +165,7 @@ proof -
     by (simp add: \<B>_def divide_le_cancel card_mono)
   also have "\<dots> \<le> l powr (3/4) / k"
     using big41 by (simp add: \<B>_def kn0 frac_le bblue_step_limit)
-  also have "\<dots> \<le> eps k"
+  also have "\<dots> \<le> eps"
   proof -
     have *: "l powr (3/4) \<le> k powr (3/4)"
       by (simp add: l_le_k powr_mono2)
@@ -173,9 +173,9 @@ proof -
       by simp
     then show ?thesis
       using divide_right_mono [OF *, of k] 
-      by (metis eps_def of_nat_0_le_iff powr_diff powr_one)
+      by (metis epsilon_def of_nat_0_le_iff powr_diff powr_one)
   qed
-  finally have bblue: "(\<Sum>i\<in>\<B> \<inter> Z_class. pee(i-1) - pee (Suc i)) \<le> eps k" .
+  finally have bblue: "(\<Sum>i\<in>\<B> \<inter> Z_class. pee(i-1) - pee (Suc i)) \<le> eps" .
   { fix i
     assume i: "i \<in> \<R> \<inter> Z_class" 
     then have pee_alpha: "pee (i-1) - pee (Suc i) 
@@ -186,7 +186,7 @@ proof -
       by (simp add: \<R>_def Step_class_insert_NO_MATCH)
     consider (1) "hgt (pee i) = 1" | (2) "hgt (pee i) > 1"
       by (metis hgt_gt0 less_one nat_neq_iff)
-    then have "pee (i-1) - pee i + alpha (hgt (pee i)) \<le> eps k / k"
+    then have "pee (i-1) - pee i + alpha (hgt (pee i)) \<le> eps / k"
     proof cases
       case 1
       then show ?thesis
@@ -201,27 +201,27 @@ proof -
         using alpha_eq p_gt_q by (smt (verit, best) kn0 qfun_mono zero_le_one) 
       finally have "pee (i-1) \<le> pee i" .
       then have "pee (i-1) - pee i + alpha (hgt (pee i)) 
-              \<le> qfun 0 - pee i + eps k * (pee i - qfun 0 + 1/k)"
+              \<le> qfun 0 - pee i + eps * (pee i - qfun 0 + 1/k)"
         using Red_5_7b pee_le_q0 pee2 by fastforce
-      also have "\<dots> \<le> eps k / k"
+      also have "\<dots> \<le> eps / k"
         using kn0 pee2 by (simp add: algebra_simps) (smt (verit) affine_ineq eps_le1)
       finally show ?thesis .
     qed
-    with pee_alpha have "pee (i-1) - pee (Suc i) \<le> eps k / k"
+    with pee_alpha have "pee (i-1) - pee (Suc i) \<le> eps / k"
       by linarith
   }
   then have "(\<Sum>i \<in> \<R> \<inter> Z_class. pee (i-1) - pee (Suc i))
-           \<le> card (\<R> \<inter> Z_class) * (eps k / k)"
+           \<le> card (\<R> \<inter> Z_class) * (eps / k)"
     using sum_bounded_above by (metis (mono_tags, lifting))
-  also have "\<dots> \<le> card (\<R>) * (eps k / k)"
-    using eps_ge0[of k] assms red_step_finite
+  also have "\<dots> \<le> card (\<R>) * (eps / k)"
+    using eps_ge0 assms red_step_finite
     by (simp add: \<R>_def divide_le_cancel mult_le_cancel_right card_mono)
-  also have "\<dots> \<le> k * (eps k / k)"
+  also have "\<dots> \<le> k * (eps / k)"
     using red_step_limit \<R>_def \<mu>01 
     by (smt (verit, best) divide_nonneg_nonneg eps_ge0 mult_mono nat_less_real_le of_nat_0_le_iff)
-  also have "\<dots> \<le> eps k"
-    by (simp add: eps_ge0)
-  finally have red: "(\<Sum>i\<in>\<R> \<inter> Z_class. pee (i-1) - pee (Suc i)) \<le> eps k" .
+  also have "\<dots> \<le> eps"
+    using eps_ge0 by force
+  finally have red: "(\<Sum>i\<in>\<R> \<inter> Z_class. pee (i-1) - pee (Suc i)) \<le> eps" .
   have *: "finite (\<B>)" "finite (\<R>)" "\<And>x. x \<in> \<B> \<Longrightarrow> x \<notin> \<R>"
     using finite_components  by (auto simp: \<B>_def \<R>_def Step_class_def)
   have eq: "Z_class = \<S> \<inter> Z_class  \<union> \<B> \<inter> Z_class \<union> \<R> \<inter> Z_class"
@@ -246,23 +246,23 @@ proof (cases "h i \<le> 3")
 next
   case False
   have "k>0" using assms by auto
-  have "eps k \<le> 1/2"
+  have "eps \<le> 1/2"
     using \<open>k\<ge>16\<close> by (simp add: eps_eq_sqrt divide_simps real_le_rsqrt)
   moreover have "0 \<le> x \<and> x \<le> 1/2 \<Longrightarrow> x * (1 + x)\<^sup>2 + 1 \<le> (1 + x)\<^sup>2" for x::real
     by sos
-  ultimately have \<section>: "eps k * (1 + eps k)\<^sup>2 + 1 \<le> (1 + eps k)\<^sup>2"
+  ultimately have \<section>: "eps * (1 + eps)\<^sup>2 + 1 \<le> (1 + eps)\<^sup>2"
     using eps_ge0 by presburger
-  have le1: "eps k + 1 / (1 + eps k)\<^sup>2 \<le> 1"
-    using mult_left_mono [OF \<section>, of "inverse ((1 + eps k)\<^sup>2)"]
+  have le1: "eps + 1 / (1 + eps)\<^sup>2 \<le> 1"
+    using mult_left_mono [OF \<section>, of "inverse ((1 + eps)\<^sup>2)"]
     by (simp add: ring_distribs inverse_eq_divide) (smt (verit))
-  have 0: "0 \<le> (1 + eps k) ^ (h i - Suc 0)"
+  have 0: "0 \<le> (1 + eps) ^ (h i - Suc 0)"
     using eps_ge0 by auto
   have lesspi: "qfun (h i - 1) < pee i"
     using False hgt_Least [of "h i - 1" "pee i"] unfolding h_def by linarith
-  have A: "(1 + eps k) ^ h i = (1 + eps k) * (1 + eps k) ^ (h i - Suc 0)"
+  have A: "(1 + eps) ^ h i = (1 + eps) * (1 + eps) ^ (h i - Suc 0)"
     using False power.simps by (metis h_def Suc_pred hgt_gt0)
-  have B: "(1 + eps k) ^ (h i - 3) = 1 / (1 + eps k)^2 * (1 + eps k) ^ (h i - Suc 0)"
-    using eps_gt0 [OF kn0] False
+  have B: "(1 + eps) ^ (h i - 3) = 1 / (1 + eps)^2 * (1 + eps) ^ (h i - Suc 0)"
+    using eps_gt0 False
     by (simp add: divide_simps Suc_diff_Suc numeral_3_eq_3 flip: power_add)
   have "qfun (h i - 3) \<le> qfun (h i - 1) - (qfun (h i) - qfun (h i - 1))"
     using kn0 mult_left_mono [OF le1 0]
@@ -287,21 +287,22 @@ corollary Y_6_5_dbooSt:
   using kn0 Red_5_3 assms hgt_mono by blast
 
 text \<open>this remark near the top of page 19 only holds in the limit\<close>
-lemma "\<forall>\<^sup>\<infinity>k. (1 + eps k) powr (- real (nat \<lfloor>2 * eps k powr (-1/2)\<rfloor>)) \<le> 1 - eps k powr (1/2)"
-  unfolding eps_def by real_asymp
+lemma "\<forall>\<^sup>\<infinity>k. (1 + epsilon k) powr (- real (nat \<lfloor>2 * epsilon k powr (-1/2)\<rfloor>)) \<le> 1 - epsilon k powr (1/2)"
+  unfolding epsilon_def by real_asymp
 
 end
 
-definition "Big_Y_6_5_Bblue \<equiv> \<lambda>l. \<forall>k\<ge>l. (1 + eps k) powr (- real (nat \<lfloor>2*(eps k powr (-1/2))\<rfloor>)) \<le> 1 - eps k powr (1/2)" 
+definition "Big_Y_6_5_Bblue \<equiv> 
+      \<lambda>l. \<forall>k\<ge>l. (1 + epsilon k) powr (- real (nat \<lfloor>2*(epsilon k powr (-1/2))\<rfloor>)) \<le> 1 - epsilon k powr (1/2)" 
 
 text \<open>establishing the size requirements for Y 6.5\<close>
 lemma Big_Y_6_5_Bblue:
   shows "\<forall>\<^sup>\<infinity>l. Big_Y_6_5_Bblue l"
-  unfolding Big_Y_6_5_Bblue_def eps_def by (intro eventually_all_ge_at_top; real_asymp)
+  unfolding Big_Y_6_5_Bblue_def epsilon_def by (intro eventually_all_ge_at_top; real_asymp)
 
 lemma (in Book) Y_6_5_Bblue:
   fixes \<kappa>::real
-  defines "\<kappa> \<equiv> eps k powr (-1/2)"
+  defines "\<kappa> \<equiv> eps powr (-1/2)"
   assumes i: "i \<in> Step_class {bblue_step}" and big: "Big_Y_6_5_Bblue l"
   defines "h \<equiv> hgt (pee (i-1))"
   shows "hgt (pee (Suc i)) \<ge> h - 2*\<kappa>"
@@ -311,34 +312,34 @@ proof (cases "h > 2*\<kappa> + 1")
     by (smt (verit, best) \<kappa>_def one_less_of_natD powr_non_neg zero_less_diff)
   with True have "pee (i-1) > qfun (h-1)"
     by (simp add: h_def hgt_less_imp_qfun_less)
-  then have "qfun (h-1) - eps k powr (1/2) * (1 + eps k) ^ (h-1) / k < pee (i-1) - \<kappa> * alpha h"
+  then have "qfun (h-1) - eps powr (1/2) * (1 + eps) ^ (h-1) / k < pee (i-1) - \<kappa> * alpha h"
     using \<open>0 < h-1\<close> Y_6_4_Bblue [OF i] eps_ge0
     apply (simp add: alpha_eq \<kappa>_def)
     by (smt (verit, best) field_sum_of_halves mult.assoc mult.commute powr_mult_base)
   also have "\<dots> \<le> pee (Suc i)"
     using Y_6_4_Bblue i h_def \<kappa>_def by blast
-  finally have A: "qfun (h-1) - eps k powr (1/2) * (1 + eps k) ^ (h-1) / k < pee (Suc i)" .
-  have ek0: "0 < 1 + eps k"
+  finally have A: "qfun (h-1) - eps powr (1/2) * (1 + eps) ^ (h-1) / k < pee (Suc i)" .
+  have ek0: "0 < 1 + eps"
     by (smt (verit, best) eps_ge0)
   have less_h: "nat \<lfloor>2*\<kappa>\<rfloor> < h"
     using True \<open>0 < h - 1\<close> by linarith
-  have "qfun (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1) = p0 + ((1 + eps k) ^ (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1) - 1) / k"
+  have "qfun (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1) = p0 + ((1 + eps) ^ (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1) - 1) / k"
     by (simp add: qfun_eq)
-  also have "\<dots> \<le> p0 + ((1 - eps k powr (1/2)) * (1 + eps k) ^ (h-1) - 1) / k"
+  also have "\<dots> \<le> p0 + ((1 - eps powr (1/2)) * (1 + eps) ^ (h-1) - 1) / k"
   proof -
-    have ge0: "(1 + eps k) ^ (h-1) \<ge> 0"
+    have ge0: "(1 + eps) ^ (h-1) \<ge> 0"
       using eps_ge0 by auto
-    have "(1 + eps k) ^ (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1) = (1 + eps k) ^ (h-1) * (1 + eps k) powr - real(nat \<lfloor>2*\<kappa>\<rfloor>)"
+    have "(1 + eps) ^ (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1) = (1 + eps) ^ (h-1) * (1 + eps) powr - real(nat \<lfloor>2*\<kappa>\<rfloor>)"
       using less_h ek0 by (simp add: algebra_simps flip: powr_realpow powr_add)
-    also have "\<dots> \<le> (1 - eps k powr (1/2)) * (1 + eps k) ^ (h-1)"
+    also have "\<dots> \<le> (1 - eps powr (1/2)) * (1 + eps) ^ (h-1)"
       using big l_le_k unfolding \<kappa>_def Big_Y_6_5_Bblue_def
       by (metis mult.commute ge0 mult_left_mono)
-    finally have "(1 + eps k) ^ (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1)
-        \<le> (1 - eps k powr (1/2)) * (1 + eps k) ^ (h-1)" .
+    finally have "(1 + eps) ^ (h - nat \<lfloor>2*\<kappa>\<rfloor> - 1)
+        \<le> (1 - eps powr (1/2)) * (1 + eps) ^ (h-1)" .
     then show ?thesis
       by (intro add_left_mono divide_right_mono diff_right_mono) auto
   qed
-  also have "\<dots> \<le> qfun (h-1) - eps k powr (1/2) * (1 + eps k) ^ (h-1) / real k"
+  also have "\<dots> \<le> qfun (h-1) - eps powr (1/2) * (1 + eps) ^ (h-1) / real k"
     using kn0 eps_ge0 by (simp add: qfun_eq powr_half_sqrt field_simps)
   also have "\<dots> < pee (Suc i)"
     using A by blast
@@ -357,15 +358,15 @@ qed
 subsection \<open>Lemma 6.2\<close>
 
 definition "Big_Y_6_2 \<equiv> \<lambda>\<mu> l. Big_Y_6_5_Bblue l \<and> Big_Red_5_3 \<mu> l \<and> Big_Blue_4_1 \<mu> l
-               \<and> (\<forall>k\<ge>l. ((1 + eps k)^2) * eps k powr (1/2) \<le> 1 
-                       \<and> (1 + eps k) powr (2 * eps k powr (-1/2)) \<le> 2 \<and> k \<ge> 16)"
+               \<and> (\<forall>k\<ge>l. ((1 + epsilon k)^2) * epsilon k powr (1/2) \<le> 1 
+                       \<and> (1 + epsilon k) powr (2 * epsilon k powr (-1/2)) \<le> 2 \<and> k \<ge> 16)"
 
 text \<open>establishing the size requirements for 6.2\<close>
 lemma Big_Y_6_2:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_Y_6_2 \<mu> l"
   using assms Big_Y_6_5_Bblue Big_Red_5_3 Big_Blue_4_1
-  unfolding Big_Y_6_2_def eps_def
+  unfolding Big_Y_6_2_def epsilon_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI1 eventually_all_ge_at_top; real_asymp)
   done
@@ -378,7 +379,7 @@ text \<open>Following Bhavik in excluding the even steps (degree regularisation)
 proposition Y_6_2:
   defines "RBS \<equiv> Step_class {red_step,bblue_step,dboost_step}"
   assumes j: "j \<in> RBS" and big: "Big_Y_6_2 \<mu> l"
-  shows "pee (Suc j) \<ge> p0 - 3 * eps k"
+  shows "pee (Suc j) \<ge> p0 - 3 * eps"
 proof (cases "pee (Suc j) \<ge> p0")
   case True
   then show ?thesis
@@ -387,9 +388,9 @@ next
   case False
   then have pj_less: "pee(Suc j) < p0" by linarith
   have big53: "Big_Red_5_3 \<mu> l"
-    and Y63: "(\<Sum>i \<in> Z_class. pee (i-1) - pee (Suc i)) \<le> 2 * eps k"
-    and Y65B: "\<And>i. i \<in> Step_class {bblue_step} \<Longrightarrow> hgt (pee (Suc i)) \<ge> hgt (pee (i-1)) - 2*(eps k powr (-1/2))"
-    and big1: "((1 + eps k)^2) * eps k powr (1/2) \<le> 1" and big2: "(1 + eps k) powr (2 * eps k powr (-1/2)) \<le> 2"
+    and Y63: "(\<Sum>i \<in> Z_class. pee (i-1) - pee (Suc i)) \<le> 2 * eps"
+    and Y65B: "\<And>i. i \<in> Step_class {bblue_step} \<Longrightarrow> hgt (pee (Suc i)) \<ge> hgt (pee (i-1)) - 2*(eps powr (-1/2))"
+    and big1: "((1 + eps)^2) * eps powr (1/2) \<le> 1" and big2: "(1 + eps) powr (2 * eps powr (-1/2)) \<le> 2"
     and "k\<ge>16"
     using big Y_6_5_Bblue Y_6_3 kn0 l_le_k by (auto simp: Big_Y_6_2_def)
   have Y64_S: " \<And>i. i \<in> Step_class {dboost_step} \<Longrightarrow> pee i \<le> pee (Suc i)"
@@ -413,7 +414,7 @@ next
     by (auto simp: J_def odd_RBS)
   have maximal: "j'' \<le> j'" if "j'' \<in> J" for j''
     using \<open>finite J\<close> exists by (simp add: j'_def that)
-  have "pee (j'+2) - 2 * eps k \<le> pee (j'+2) - (\<Sum>i \<in> Z_class. pee (i-1) - pee (Suc i))"
+  have "pee (j'+2) - 2 * eps \<le> pee (j'+2) - (\<Sum>i \<in> Z_class. pee (i-1) - pee (Suc i))"
     using Y63 by simp
   also have "\<dots> \<le> pee (Suc j)"
   proof -
@@ -481,7 +482,7 @@ next
     qed
     finally show ?thesis .
   qed
-  finally have p2_le_pSuc: "pee (j'+2) - 2 * eps k \<le> pee (Suc j)" .
+  finally have p2_le_pSuc: "pee (j'+2) - 2 * eps \<le> pee (Suc j)" .
   have "Suc j' \<in> RBS"
     unfolding RBS_def
   proof (intro not_halted_odd_RBS)
@@ -496,19 +497,19 @@ next
   moreover 
   have j'_dreg: "j' \<in> Step_class {dreg_step}"
     using RBS_def \<open>Suc j' \<in> RBS\<close> dreg_before_step by blast
-  have 1: "eps k powr -(1/2) \<ge> 1"
-    using kn0 by (simp add: eps_def powr_powr ge_one_powr_ge_zero)
+  have 1: "eps powr -(1/2) \<ge> 1"
+    using kn0 by (simp add: epsilon_def powr_powr ge_one_powr_ge_zero)
   consider (R) "Suc j' \<in> Step_class {red_step}"
          | (B) "Suc j' \<in> Step_class {bblue_step}"
          | (S) "Suc j' \<in> Step_class {dboost_step}"
     by (metis Step_class_insert UnE \<open>Suc j' \<in> RBS\<close> RBS_def)
   note j'_cases = this
-  then have hgt_le_hgt: "hgt (pee j') \<le> hgt (pee (j'+2)) + 2 * eps k powr (-1/2)"
+  then have hgt_le_hgt: "hgt (pee j') \<le> hgt (pee (j'+2)) + 2 * eps powr (-1/2)"
   proof cases
     case R
     have "real (hgt (pee j')) \<le> hgt (pee (Suc j'))"
       using Y_6_5_DegreeReg[OF j'_dreg] kn0 by (simp add: eval_nat_numeral)
-    also have "\<dots> \<le> hgt (pee (j'+2)) + 2 * eps k powr (-1/2)"
+    also have "\<dots> \<le> hgt (pee (j'+2)) + 2 * eps powr (-1/2)"
       using Y_6_5_Red[OF R \<open>k\<ge>16\<close>] 1 by (simp add: eval_nat_numeral)
     finally show ?thesis .
   next
@@ -520,29 +521,29 @@ next
     then show ?thesis
       using Y_6_4_DegreeReg \<open>pee (j'+2) < p0\<close> Y64_S j'_dreg pSj' by force
   qed
-  ultimately have B: "hgt (pee j') \<le> 1 + 2 * eps k powr (-1/2)"
+  ultimately have B: "hgt (pee j') \<le> 1 + 2 * eps powr (-1/2)"
     by linarith
   have "2 \<le> real k powr (1/2)"
     using \<open>k\<ge>16\<close> by (simp add: powr_half_sqrt real_le_rsqrt)
   then have 8: "2 \<le> real k powr 1 * real k powr -(1/8)"
     unfolding powr_add [symmetric] using \<open>k\<ge>16\<close> order.trans nle_le by fastforce
-  have "p0 - eps k \<le> qfun 0 - 2 * eps k powr (1/2) / k"
+  have "p0 - eps \<le> qfun 0 - 2 * eps powr (1/2) / k"
     using mult_left_mono [OF 8, of "k powr (-1/8)"] kn0 
-    by (simp add: qfun_eq eps_def powr_powr field_simps flip: powr_add)
-  also have "\<dots> \<le> pee j'  - eps k powr (-1/2) * alpha (hgt (pee j'))"
+    by (simp add: qfun_eq epsilon_def powr_powr field_simps flip: powr_add)
+  also have "\<dots> \<le> pee j'  - eps powr (-1/2) * alpha (hgt (pee j'))"
   proof -
-    have 2: "(1 + eps k) ^ (hgt (pee j') - Suc 0) \<le> 2"
+    have 2: "(1 + eps) ^ (hgt (pee j') - Suc 0) \<le> 2"
       using B big2 kn0 eps_ge0
       by (smt (verit) diff_Suc_less hgt_gt0 nat_less_real_le powr_mono powr_realpow)
     have *: "x \<ge> 0 \<Longrightarrow> inverse (x powr (1/2)) * x = x powr (1/2)" for x::real
       by (simp add: inverse_eq_divide powr_half_sqrt real_div_sqrt)
     have "p0 - pee j' \<le> 0"
       by (simp add: pSj')
-    also have "\<dots> \<le> 2 * eps k powr (1/2) / k - (eps k powr (1/2)) * (1 + eps k) ^ (hgt (pee j') - 1) / k"
-      using mult_left_mono [OF 2, of "eps k powr (1/2) / k"]
+    also have "\<dots> \<le> 2 * eps powr (1/2) / k - (eps powr (1/2)) * (1 + eps) ^ (hgt (pee j') - 1) / k"
+      using mult_left_mono [OF 2, of "eps powr (1/2) / k"]
       by (simp add: field_simps diff_divide_distrib)
-    finally have "p0 - 2 * eps k powr (1/2) / k 
-       \<le> pee j' - (eps k powr (1/2)) * (1 + eps k) ^ (hgt (pee j') - 1) / k"
+    finally have "p0 - 2 * eps powr (1/2) / k 
+       \<le> pee j' - (eps powr (1/2)) * (1 + eps) ^ (hgt (pee j') - 1) / k"
       by simp
     with * [OF eps_ge0] show ?thesis
       by (simp add: alpha_hgt_eq powr_minus) (metis mult.assoc)
@@ -555,21 +556,21 @@ next
       using le1 Y_6_5_Red[OF R \<open>k\<ge>16\<close>] by simp
     then have h_le3: "hgt (pee j') \<le> 3"
       using Y_6_5_DegreeReg [OF j'_dreg] by simp
-    have alpha1: "alpha (hgt (pee (Suc j'))) \<le> eps k * (1 + eps k) ^ 2 / k"
+    have alpha1: "alpha (hgt (pee (Suc j'))) \<le> eps * (1 + eps) ^ 2 / k"
       by (metis alpha_Suc_eq alpha_mono hgt_gt0 hs_le3 numeral_nat(3))
-    have alpha2: "alpha (hgt (pee j')) \<ge> eps k / k"
+    have alpha2: "alpha (hgt (pee j')) \<ge> eps / k"
       by (simp add: Red_5_7a)
-    have "pee j' - eps k powr (- 1/2) * alpha (hgt (pee j')) 
+    have "pee j' - eps powr (- 1/2) * alpha (hgt (pee j')) 
        \<le> pee (Suc j') - alpha (hgt (pee (Suc j')))"
     proof -
-      have "alpha (hgt (pee (Suc j'))) \<le> (1 + eps k)\<^sup>2 * alpha (hgt (pee j'))"
-        using alpha1 mult_left_mono [OF alpha2, of "(1 + eps k)\<^sup>2"]
+      have "alpha (hgt (pee (Suc j'))) \<le> (1 + eps)\<^sup>2 * alpha (hgt (pee j'))"
+        using alpha1 mult_left_mono [OF alpha2, of "(1 + eps)\<^sup>2"]
         by (simp add: mult.commute)
-      also have "\<dots> \<le> inverse (eps k powr (1/2)) * alpha (hgt (pee j'))"
-        using mult_left_mono [OF big1, of "alpha (hgt (pee j'))"] eps_gt0[OF kn0] alpha_ge0
+      also have "\<dots> \<le> inverse (eps powr (1/2)) * alpha (hgt (pee j'))"
+        using mult_left_mono [OF big1, of "alpha (hgt (pee j'))"] eps_gt0 alpha_ge0
         by (simp add: divide_simps mult_ac)
       finally have "alpha (hgt (pee (Suc j')))
-                 \<le> inverse (eps k powr (1/2)) * alpha (hgt (pee j'))" .
+                 \<le> inverse (eps powr (1/2)) * alpha (hgt (pee j'))" .
       then show ?thesis
         using Y_6_4_DegreeReg[OF j'_dreg] by (simp add: powr_minus)
     qed
@@ -585,8 +586,8 @@ next
     show ?thesis
       using Y_6_4_DegreeReg S \<open>pee (j'+2) < p0\<close> Y64_S j'_dreg pSj' by fastforce
   qed
-  finally have "p0 - eps k \<le> pee (j'+2)" .
-  then have "p0 - 3 * eps k \<le> pee (j'+2) - 2 * eps k"
+  finally have "p0 - eps \<le> pee (j'+2)" .
+  then have "p0 - 3 * eps \<le> pee (j'+2) - 2 * eps"
     by simp
   with p2_le_pSuc show ?thesis
     by linarith
@@ -594,7 +595,7 @@ qed
 
 corollary Y_6_2_halted:
   assumes big: "Big_Y_6_2 \<mu> l"
-  shows "pee halted_point \<ge> p0 - 3 * eps k"
+  shows "pee halted_point \<ge> p0 - 3 * eps"
 proof (cases "halted_point=0")
   case True
   then show ?thesis
@@ -621,7 +622,7 @@ next
     then show ?thesis
     proof cases
       case 1
-      with * eps_gt0[of k] kn0 show ?thesis 
+      with * eps_gt0 kn0 show ?thesis 
         by (simp add: pee_eq_p0)
     next
       case 2
@@ -630,7 +631,7 @@ next
         by (simp flip: Suc_diff_le)
       then obtain j where j: "halted_point-1 = Suc j"
         using 2 not0_implies_Suc by fastforce
-      then have "pee (Suc j) \<ge> p0 - 3 * eps k"
+      then have "pee (Suc j) \<ge> p0 - 3 * eps"
         by (metis m2 Suc_1 Y_6_2 big diff_Suc_1 diff_Suc_eq_diff_pred)
       with * j show ?thesis by simp
     qed
@@ -644,28 +645,28 @@ subsection \<open>Lemma 6.1\<close>
 context P0_min
 begin
 
-definition "ok_fun_61 \<equiv> \<lambda>k. (2 * real k) * log 2 (1 - 2 * eps k powr (1/2) / p0_min)"
+definition "ok_fun_61 \<equiv> \<lambda>k. (2 * real k) * log 2 (1 - 2 * epsilon k powr (1/2) / p0_min)"
 
 lemma ok_fun_61_works:
-  assumes "p0_min > 2 * eps k powr (1/2)"
-  shows "2 powr (ok_fun_61 k) = (1 - 2 * (eps k) powr (1/2) / p0_min) ^ (2*k)"
-  using eps_gt0[of k] p0_min assms
+  assumes "p0_min > 2 * epsilon k powr (1/2)"
+  shows "2 powr (ok_fun_61 k) = (1 - 2 * (epsilon k) powr (1/2) / p0_min) ^ (2*k)"
+  using  p0_min assms
   by (simp add: powr_def ok_fun_61_def log_def flip: powr_realpow)
 
 lemma ok_fun_61: "ok_fun_61 \<in> o(real)"
-  unfolding eps_def ok_fun_61_def
+  unfolding epsilon_def ok_fun_61_def
   using p0_min by real_asymp
 
 definition 
   "Big_Y_6_1 \<equiv> 
-    \<lambda>\<mu> l. Big_Y_6_2 \<mu> l \<and> (\<forall>k\<ge>l. eps k powr (1/2) \<le> 1/3 \<and> p0_min > 2 * eps k powr (1/2))"
+    \<lambda>\<mu> l. Big_Y_6_2 \<mu> l \<and> (\<forall>k\<ge>l. epsilon k powr (1/2) \<le> 1/3 \<and> p0_min > 2 * epsilon k powr (1/2))"
 
 text \<open>establishing the size requirements for 6.1\<close>
 lemma Big_Y_6_1:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_Y_6_1 \<mu> l"
   using p0_min assms Big_Y_6_2
-  unfolding Big_Y_6_1_def eps_def
+  unfolding Big_Y_6_1_def epsilon_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_ge_at_top eventually_all_geI0; real_asymp)
   done
@@ -677,14 +678,14 @@ lemma (in Book) Y_6_1:
   defines "st \<equiv> Step_class {red_step,dboost_step}"
   shows "card (Yseq halted_point) / card Y0 \<ge> 2 powr (ok_fun_61 k) * p0 ^ card st"
 proof -
-  have big13: "eps k powr (1/2) \<le> 1/3" 
-    and big_p0: "p0_min > 2 * eps k powr (1/2)"
+  have big13: "eps powr (1/2) \<le> 1/3" 
+    and big_p0: "p0_min > 2 * eps powr (1/2)"
     and big62: "Big_Y_6_2 \<mu> l"
     and big41: "Big_Blue_4_1 \<mu> l"
     using big l_le_k by (auto simp: Big_Y_6_1_def Big_Y_6_2_def)
   with l_le_k have dboost_step_limit: "card (Step_class {dboost_step}) < k"
     using bblue_dboost_step_limit by fastforce
-  define p0m where "p0m \<equiv> p0 - 2 * eps k powr (1/2)"
+  define p0m where "p0m \<equiv> p0 - 2 * eps powr (1/2)"
   have "p0m > 0"
     using big_p0 p0_ge by (simp add: p0m_def)
   let ?RS = "Step_class {red_step,dboost_step}"
@@ -712,7 +713,7 @@ proof -
       using that by (auto simp: Step_class_def)
     ultimately have iminus1_dreg: "i - 1 \<in> Step_class {dreg_step}"
       by (simp add: dreg_before_step not_halted_odd_RBS)
-    have "p0m * card (Yseq i) \<le> (1 - eps k powr (1/2)) * pee (i-1) * card (Yseq i)"
+    have "p0m * card (Yseq i) \<le> (1 - eps powr (1/2)) * pee (i-1) * card (Yseq i)"
     proof (cases "i=1")
       case True
       with p0_01 show ?thesis 
@@ -728,23 +729,23 @@ proof -
         show "odd (i-2)"
           using \<open>2 < i\<close> \<open>odd i\<close> by auto
       qed
-      then have Y62: "pee (i-1) \<ge> p0 - 3 * eps k"
+      then have Y62: "pee (i-1) \<ge> p0 - 3 * eps"
         using Y_6_2 [OF _ big62] \<open>2 < i\<close> by (metis Suc_1 Suc_diff_Suc Suc_lessD)
       show ?thesis
       proof (intro mult_right_mono)
-        have "eps k powr (1/2) * pee (i-1) \<le> eps k powr (1/2) * 1"
+        have "eps powr (1/2) * pee (i-1) \<le> eps powr (1/2) * 1"
           by (metis mult.commute mult_right_mono powr_ge_zero pee_le1)
-        moreover have "3 * eps k \<le> eps k powr (1/2)"
+        moreover have "3 * eps \<le> eps powr (1/2)"
         proof -
-          have "3 * eps k = 3 * (eps k powr (1/2))\<^sup>2"
+          have "3 * eps = 3 * (eps powr (1/2))\<^sup>2"
             using eps_ge0 powr_half_sqrt real_sqrt_pow2 by presburger
-          also have "\<dots> \<le> 3 * ((1/3) * eps k powr (1/2))"
+          also have "\<dots> \<le> 3 * ((1/3) * eps powr (1/2))"
             by (smt (verit) big13 mult_right_mono power2_eq_square powr_ge_zero)
-          also have "\<dots> \<le> eps k powr (1/2)"
+          also have "\<dots> \<le> eps powr (1/2)"
             by simp
           finally show ?thesis .
         qed
-        ultimately show "p0m \<le> (1 - eps k powr (1/2)) * pee (i - 1)"
+        ultimately show "p0m \<le> (1 - eps powr (1/2)) * pee (i - 1)"
           using Y62 by (simp add: p0m_def algebra_simps)
       qed auto
     qed
@@ -805,7 +806,7 @@ proof -
       using card_XY0 prod_lessThan_telescope_mult [of halted_point "\<lambda>i. real (card (Yseq i))"]
       by (simp add: nonzero_eq_divide_eq)
   qed
-  finally have *: "(p0 - 2 * eps k powr (1/2)) ^ card st \<le> card (Yseq halted_point) / card (Y0)"
+  finally have *: "(p0 - 2 * eps powr (1/2)) ^ card st \<le> card (Yseq halted_point) / card (Y0)"
     by (simp add: STm p0m_def)
   \<comment> \<open>Asymptotic part of the argument\<close>
   have st_le_2k: "card st \<le> 2 * k"
@@ -823,20 +824,20 @@ proof -
     finally show ?thesis 
       by auto
   qed
-  have "2 powr (ok_fun_61 k) * p0 ^ card st \<le> (p0 - 2 * eps k powr (1/2)) ^ card st"
+  have "2 powr (ok_fun_61 k) * p0 ^ card st \<le> (p0 - 2 * eps powr (1/2)) ^ card st"
   proof -
-    have "2 powr (ok_fun_61 k) = (1 - 2 * (eps k) powr(1/2) / p0_min) ^ (2*k)"
+    have "2 powr (ok_fun_61 k) = (1 - 2 * (eps) powr(1/2) / p0_min) ^ (2*k)"
       using big_p0 ok_fun_61_works by blast
-    also have "\<dots> \<le> (1 - 2 * (eps k) powr(1/2) / p0) ^ (2*k)"
+    also have "\<dots> \<le> (1 - 2 * (eps) powr(1/2) / p0) ^ (2*k)"
       using p0_ge p0_min big_p0 by (intro power_mono) (auto simp: frac_le)
-    also have "\<dots> \<le> (1 - 2 * (eps k) powr(1/2) / p0) ^ card st"
+    also have "\<dots> \<le> (1 - 2 * (eps) powr(1/2) / p0) ^ card st"
       using big_p0 p0_01 \<open>0 < p0m\<close>
       by (intro power_decreasing st_le_2k) (auto simp: p0m_def)
-    finally have \<section>: "2 powr ok_fun_61 k \<le> (1 - 2 * eps k powr (1/2) / p0) ^ card st" .
-    have "(1 - 2 * eps k powr (1/2) / p0) ^ card st * p0 ^ card st
-       = ((1 - 2 * eps k powr (1/2) / p0) * p0) ^ card st"
+    finally have \<section>: "2 powr ok_fun_61 k \<le> (1 - 2 * eps powr (1/2) / p0) ^ card st" .
+    have "(1 - 2 * eps powr (1/2) / p0) ^ card st * p0 ^ card st
+       = ((1 - 2 * eps powr (1/2) / p0) * p0) ^ card st"
       by (simp add: power_mult_distrib)
-    also have "\<dots> = (p0 - 2 * eps k powr (1/2)) ^ card st"
+    also have "\<dots> = (p0 - 2 * eps powr (1/2)) ^ card st"
       using p0_01 by (simp add: algebra_simps)
     finally show ?thesis
       using mult_right_mono [OF \<section>, of "p0 ^ card st"] p0_01 by auto 

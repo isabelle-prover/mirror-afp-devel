@@ -387,7 +387,7 @@ begin
 
 definition "Big_Far_9_3 \<equiv>     
    \<lambda>\<mu> l. Big_ZZ_8_5 \<mu> l \<and> Big_X_7_1 \<mu> l \<and> Big_Y_6_2 \<mu> l \<and> Big_Red_5_3 \<mu> l
-      \<and> (\<forall>k\<ge>l. p0_min - 3 * eps k > 1/k \<and> k\<ge>2
+      \<and> (\<forall>k\<ge>l. p0_min - 3 * epsilon k > 1/k \<and> k\<ge>2
              \<and> \<bar>ok_fun_93h \<mu> k / (\<mu> * (1 + 1 / (exp 1 * (1-\<mu>))))\<bar> / k \<le> 0.667 - 2/3)"
 
 lemma Big_Far_9_3:
@@ -416,7 +416,7 @@ proof -
         (smt (verit) mult_less_cancel_left nat_neq_iff of_nat_0_le_iff)
   qed
   with p0_min show ?thesis
-    unfolding Big_Far_9_3_def eps_def d_def e_def
+    unfolding Big_Far_9_3_def epsilon_def d_def e_def
     using assms Big_ZZ_8_5 Big_X_7_1 Big_Y_6_2 Big_Red_5_3
     apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
     apply (intro conjI strip eventually_all_ge_at_top; real_asymp)
@@ -501,7 +501,7 @@ proof -
     by (intro X_7_1) (auto simp: Big_Far_9_3_def)
   also have "\<dots> \<le> RN k l34"
   proof -
-    have "p0 - 3 * eps k > 1/k" and "pee halted_point \<ge> p0 - 3 * eps k"
+    have "p0 - 3 * eps > 1/k" and "pee halted_point \<ge> p0 - 3 * eps"
       using l_le_k big p0_ge Y_6_2_halted by (auto simp: Big_Far_9_3_def \<gamma>_def)
     then show ?thesis
       using halted_point_halted \<gamma>01
@@ -734,7 +734,7 @@ lemma Big_Far_9_5:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu>0 \<le> \<mu> \<and> \<mu> \<le> \<mu>1 \<longrightarrow> Big_Far_9_5 \<mu> l"
   using assms Big_Red_5_3 Big_Y_6_1 Big_ZZ_8_5
-  unfolding Big_Far_9_5_def  eps_def
+  unfolding Big_Far_9_5_def  epsilon_def
   by (simp add: eventually_conj_iff all_imp_conj_distrib)  
 
 end

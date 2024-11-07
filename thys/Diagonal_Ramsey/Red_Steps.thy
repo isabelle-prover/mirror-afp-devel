@@ -126,7 +126,7 @@ proof -
     by (smt (verit, ccfv_SIG) mult_left_mono of_nat_0_le_iff)
   show ?thesis
     using assms
-    unfolding Big_Red_5_6_Ramsey_def eventually_conj_iff eps_def m_of_def
+    unfolding Big_Red_5_6_Ramsey_def eventually_conj_iff m_of_def
     by (intro conjI eventually_all_ge_at_top D; real_asymp)
 qed
 
@@ -208,7 +208,7 @@ proof -
     unfolding ineq_Red_5_6_def using Red_5_6_Ramsey Big_Red_5_6_Ramsey exp_gt_zero
     by (smt (verit, del_insts) eventually_sequentially) 
   then show ?thesis
-    unfolding Big_Red_5_6_def eventually_conj_iff eps_def m_of_def
+    unfolding Big_Red_5_6_def eventually_conj_iff m_of_def
     by (simp add: c_def; real_asymp)
 qed
 
@@ -247,7 +247,7 @@ definition "Big_Red_5_4 \<equiv> \<lambda>l. Big_Red_5_6 l \<and> (\<forall>k\<g
 
 text \<open>establishing the size requirements for 5.4\<close>
 lemma Big_Red_5_4: "\<forall>\<^sup>\<infinity>l. Big_Red_5_4 l"
-  unfolding Big_Red_5_4_def eventually_conj_iff all_imp_conj_distrib eps_def
+  unfolding Big_Red_5_4_def eventually_conj_iff all_imp_conj_distrib 
   apply (simp add: Big_Red_5_6)
   apply (intro conjI eventually_all_ge_at_top; real_asymp)
   done
@@ -372,31 +372,31 @@ proof -
     using RNX by (simp add: X_def Y_def divide_simps)
 qed
 
-lemma Red_5_7a: "eps k / k \<le> alpha (hgt p)"
+lemma Red_5_7a: "eps / k \<le> alpha (hgt p)"
   by (simp add: alpha_ge hgt_gt0)
 
 lemma Red_5_7b: 
-  assumes "p \<ge> qfun 0" shows "alpha (hgt p) \<le> eps k * (p - qfun 0 + 1/k)"
+  assumes "p \<ge> qfun 0" shows "alpha (hgt p) \<le> eps * (p - qfun 0 + 1/k)"
 proof -
   have qh_le_p: "qfun (hgt p - Suc 0) \<le> p"
     by (smt (verit) assms diff_Suc_less hgt_gt0 hgt_less_imp_qfun_less zero_less_iff_neq_zero)
-  have "alpha (hgt p) = eps k * (1 + eps k)^(hgt p - 1) / k"
+  have "alpha (hgt p) = eps * (1 + eps)^(hgt p - 1) / k"
     using alpha_eq alpha_hgt_eq by blast
-  also have "\<dots> = eps k * (qfun (hgt p - 1) - qfun 0 + 1/k)"
+  also have "\<dots> = eps * (qfun (hgt p - 1) - qfun 0 + 1/k)"
     by (simp add: diff_divide_distrib qfun_eq)
-  also have "\<dots> \<le> eps k * (p - qfun 0 + 1/k)"
+  also have "\<dots> \<le> eps * (p - qfun 0 + 1/k)"
     by (simp add: eps_ge0 mult_left_mono qh_le_p)
   finally show ?thesis .
 qed
 
 lemma Red_5_7c: 
-  assumes "p \<le> qfun 1" shows "alpha (hgt p) = eps k / k"
+  assumes "p \<le> qfun 1" shows "alpha (hgt p) = eps / k"
   using alpha_hgt_eq Book_axioms assms hgt_Least by fastforce
 
 lemma Red_5_8:
   assumes i: "i \<in> Step_class {dreg_step}" and x: "x \<in> Xseq (Suc i)" 
   shows "card (Neighbours Red x \<inter> Yseq (Suc i))
-         \<ge> (1 - (eps k) powr (1/2)) * pee i * (card (Yseq (Suc i)))"
+         \<ge> (1 - (eps) powr (1/2)) * pee i * (card (Yseq (Suc i)))"
 proof -
   obtain X Y A B
     where step: "stepper i = (X,Y,A,B)"
@@ -414,7 +414,7 @@ proof -
     using Suc_i step by (auto simp: degree_reg_def stepper_XYseq)
   have p_gt_invk: "(pee i) > 1/k"
     using "XY" nonterm pee_def termination_condition_def by auto
-  have RedN: "(pee i - eps k powr -(1/2) * alpha (hgt (pee i))) * card Y \<le> card (Neighbours Red x \<inter> Y)"
+  have RedN: "(pee i - eps powr -(1/2) * alpha (hgt (pee i))) * card Y \<le> card (Neighbours Red x \<inter> Y)"
     using x XY by (simp add: XSuc YSuc X_degree_reg_def pee_def red_dense_def)
   show ?thesis
   proof (cases "pee i \<ge> qfun 0")
@@ -423,28 +423,28 @@ proof -
       using i by (simp add: Step_class_def)
     then have p0: "1/k < p0"
       by (metis Step_class_not_halted gr0I nat_less_le not_halted_pee_gt pee_eq_p0)
-    have 0: "eps k powr -(1/2) \<ge> 0"
+    have 0: "eps powr -(1/2) \<ge> 0"
       by simp
-    have "eps k powr -(1/2) * alpha (hgt (pee i)) \<le> eps k powr (1/2) * ((pee i) - qfun 0 + 1/k)"
+    have "eps powr -(1/2) * alpha (hgt (pee i)) \<le> eps powr (1/2) * ((pee i) - qfun 0 + 1/k)"
       using mult_left_mono [OF Red_5_7b [OF True] 0]
-      by (simp add: eps_def powr_mult_base flip: mult_ac)
-    also have "\<dots> \<le> eps k powr (1/2) * (pee i)"
+      by (simp add: epsilon_def powr_mult_base flip: mult_ac)
+    also have "\<dots> \<le> eps powr (1/2) * (pee i)"
       using p0 by (intro mult_left_mono) (auto simp flip: pee_eq_p0)
-    finally have "eps k powr -(1/2) * alpha (hgt (pee i)) \<le> eps k powr (1/2) * (pee i)" .
-    then have "(1 - (eps k) powr (1/2)) * (pee i) * (card Y) \<le> ((pee i) - eps k powr -(1/2) * alpha (hgt (pee i))) * card Y"
+    finally have "eps powr -(1/2) * alpha (hgt (pee i)) \<le> eps powr (1/2) * (pee i)" .
+    then have "(1 - (eps) powr (1/2)) * (pee i) * (card Y) \<le> ((pee i) - eps powr -(1/2) * alpha (hgt (pee i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)
     with XY RedN YSuc show ?thesis by fastforce
   next
     case False
     then have "pee i \<le> qfun 1"
       by (smt (verit) One_nat_def alpha_Suc_eq alpha_ge0 q_Suc_diff)
-    then have "eps k powr -(1/2) * alpha (hgt (pee i)) = eps k powr (1/2) / k"
-      using powr_mult_base [of "eps k"] eps_gt0 by (force simp: Red_5_7c mult.commute)
-    also have "\<dots> \<le> eps k powr (1/2) * (pee i)"
+    then have "eps powr -(1/2) * alpha (hgt (pee i)) = eps powr (1/2) / k"
+      using powr_mult_base [of "eps"] eps_gt0 by (force simp: Red_5_7c mult.commute)
+    also have "\<dots> \<le> eps powr (1/2) * (pee i)"
       using p_gt_invk 
       by (smt (verit) divide_inverse inverse_eq_divide mult_left_mono powr_ge_zero)
-    finally have "eps k powr -(1/2) * alpha (hgt (pee i)) \<le> eps k powr (1/2) * (pee i)" .
-    then have "(1 - (eps k) powr (1/2)) * pee i * card Y \<le> (pee i - eps k powr -(1/2) * alpha (hgt (pee i))) * card Y"
+    finally have "eps powr -(1/2) * alpha (hgt (pee i)) \<le> eps powr (1/2) * (pee i)" .
+    then have "(1 - (eps) powr (1/2)) * pee i * card Y \<le> (pee i - eps powr -(1/2) * alpha (hgt (pee i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)
     with XY RedN YSuc show ?thesis by fastforce
   qed
@@ -462,13 +462,13 @@ proof
   have Y': "card (Yseq (Suc i)) > 0"
     using i Yseq_gt0 [OF not_halted] stepper_XYseq
     by (auto simp: step_kind_defs degree_reg_def split: if_split_asm prod.split_asm)
-  have "(1 - eps k powr (1/2)) * pee i * card (Yseq (Suc i)) \<le> 0"
+  have "(1 - eps powr (1/2)) * pee i * card (Yseq (Suc i)) \<le> 0"
     using Red_5_8 [OF i x] con by simp 
-  with 0 Y' have "(1 - eps k powr (1/2)) \<le> 0"
+  with 0 Y' have "(1 - eps powr (1/2)) \<le> 0"
     by (simp add: mult_le_0_iff zero_le_mult_iff)
   then show False
     using \<open>k\<ge>2\<close> powr_le_cancel_iff [of k "1/8" 0]
-    by (simp add: eps_def powr_minus_divide powr_divide powr_powr)
+    by (simp add: epsilon_def powr_minus_divide powr_divide powr_powr)
 qed
 
 corollary Y_Neighbours_nonempty:
@@ -550,7 +550,7 @@ lemma Red_5_1:
   defines "NRY \<equiv> Neighbours Red x \<inter> Y"
   defines "\<beta> \<equiv> card NBX / card X"
   shows "red_density NRX NRY \<ge> p - alpha (hgt p)
-       \<or> red_density NBX NRY \<ge> p + (1 - eps k) * ((1-\<beta>) / \<beta>) * alpha (hgt p) \<and> \<beta> > 0"
+       \<or> red_density NBX NRY \<ge> p + (1 - eps) * ((1-\<beta>) / \<beta>) * alpha (hgt p) \<and> \<beta> > 0"
 proof -
   have Red_5_4: "weight X Y x \<ge> - real (card X) / (real k)^5"
     using Big i Red_5_4 by (auto simp: Big_Red_5_1_def x_def X_def Y_def)
@@ -647,15 +647,15 @@ proof -
     have im1: "i-1 \<in> Step_class {dreg_step}"
       using i \<open>odd i\<close> dreg_before_step
       by (metis Step_class_insert Un_iff One_nat_def odd_Suc_minus_one)
-    have "eps k \<le> 1/4"
-      using \<open>k>0\<close> k_powr_14 by (simp add: eps_def powr_minus_divide)
-    then have "eps k powr (1/2) \<le> (1/4) powr (1/2)"
-      by (simp add: eps_def powr_mono2)
-    then have A: "1/2 \<le> 1 - eps k powr (1/2)"
+    have "eps \<le> 1/4"
+      using \<open>k>0\<close> k_powr_14 by (simp add: epsilon_def powr_minus_divide)
+    then have "eps powr (1/2) \<le> (1/4) powr (1/2)"
+      by (simp add: epsilon_def powr_mono2)
+    then have A: "1/2 \<le> 1 - eps powr (1/2)"
       by (simp add: powr_divide)
-    have le: "1 / (2 * real k) \<le> (1 - eps k powr (1/2)) * pee (i-1)"
+    have le: "1 / (2 * real k) \<le> (1 - eps powr (1/2)) * pee (i-1)"
       using pm1 \<open>k>0\<close> mult_mono [OF A less_imp_le [OF pm1]] A by simp
-    have "card Y / (2 * real k) \<le> (1 - eps k powr (1/2)) * pee (i-1) * card Y"
+    have "card Y / (2 * real k) \<le> (1 - eps powr (1/2)) * pee (i-1) * card Y"
       using mult_left_mono [OF le] by (metis mult.commute divide_inverse inverse_eq_divide of_nat_0_le_iff)
     also have "\<dots> \<le> card NRY"
       using pm1 Red_5_8 im1 by (metis NRY_def One_nat_def \<open>odd i\<close> \<open>x \<in> X\<close> XY odd_Suc_minus_one)
@@ -671,19 +671,19 @@ proof -
         by (simp add: divide_simps)
       also have "\<dots> \<le> k^2"
         using mult_mono [OF \<open>k\<ge>256\<close> \<open>k\<ge>256\<close>] by (simp add: power2_eq_square flip: of_nat_mult)
-      also have "\<dots> \<le> eps k * k^3"
-        using \<open>k\<ge>256\<close> by (simp add: eps_def flip: powr_numeral powr_add)
-      finally have "(real (2 * card X) / real (card X - 1)) * k^2 < eps k * real (k^3) * k^2"
+      also have "\<dots> \<le> eps * k^3"
+        using \<open>k\<ge>256\<close> by (simp add: epsilon_def flip: powr_numeral powr_add)
+      finally have "(real (2 * card X) / real (card X - 1)) * k^2 < eps * real (k^3) * k^2"
         using \<open>k>0\<close> by (intro mult_strict_right_mono) auto
-      then have "real (2 * card X) / real (card X - 1) * k^2 < eps k * real (k^5)"
+      then have "real (2 * card X) / real (card X - 1) * k^2 < eps * real (k^5)"
         by (simp add: mult.assoc flip: of_nat_mult)
-      then have "0 < - real (card X) / (real k)^5 + (eps k / k) * real (card X - 1) * (1 / (2 * real k))"
+      then have "0 < - real (card X) / (real k)^5 + (eps / k) * real (card X - 1) * (1 / (2 * real k))"
         using \<open>k>0\<close> X_gt_k by (simp add: field_simps power2_eq_square)
-      also have "- real (card X) / (real k)^5 + (eps k / k) * real (card X - 1) * (1 / (2 * real k)) 
-               \<le> - real (card X) / (real k)^5 + (eps k / k) * real (card NRX) * (card NRY / card Y)"
+      also have "- real (card X) / (real k)^5 + (eps / k) * real (card X - 1) * (1 / (2 * real k)) 
+               \<le> - real (card X) / (real k)^5 + (eps / k) * real (card NRX) * (card NRY / card Y)"
         using Y_NRY \<open>k>0\<close> \<open>card Y \<noteq> 0\<close>
-        by (intro add_mono mult_mono) (auto simp: cNRX eps_def divide_simps)
-      also have "\<dots> = - real (card X) / (real k)^5 + (eps k / k) * real (card NRX) * card NRY / card Y"
+        by (intro add_mono mult_mono) (auto simp: cNRX epsilon_def divide_simps)
+      also have "\<dots> = - real (card X) / (real k)^5 + (eps / k) * real (card NRX) * card NRY / card Y"
         by simp
       also have "\<dots> \<le> - real (card X) / (real k)^5 + alpha (hgt p) * real (card NRX) * card NRY / card Y"
         using alpha_ge [OF hgt_gt0]
@@ -730,13 +730,13 @@ proof -
     then have alpha_le_1: "alpha (hgt p) \<le> 1"
     proof cases
       case 1
-      have "p * eps k + eps k / real k \<le> 1 + eps k * p0"
+      have "p * eps + eps / real k \<le> 1 + eps * p0"
       proof (intro add_mono)
-        show "p * eps k \<le> 1"
+        show "p * eps \<le> 1"
           by (smt (verit) eps_le1 \<open>0 < k\<close> mult_left_le p_def pee_ge0 pee_le1)
         have "p0 > 1/k"
           by (metis Step_class_not_halted diff_le_self not_halted not_halted_pee_gt diff_is_0_eq' pee_eq_p0)
-        then show "eps k / real k \<le> eps k * p0"
+        then show "eps / real k \<le> eps * p0"
           by (metis divide_inverse eps_ge0 mult_left_mono less_eq_real_def mult_cancel_right1)
       qed
       then show ?thesis
@@ -744,7 +744,7 @@ proof -
     next
       case 2
       show ?thesis
-        using Red_5_7c [OF 2] \<open>k\<ge>256\<close> eps_less1 [of k] by simp
+        using Red_5_7c [OF 2] \<open>k\<ge>256\<close> eps_less1 by simp
     qed
     have B: "- (3 / (real k^4)) \<le> (-2 / real k^4) - alpha (hgt p) / card X"
       using \<open>card X > k^4\<close> \<open>card Y \<noteq> 0\<close> \<open>0 < k\<close> alpha_le_1 by (simp add: algebra_simps frac_le)
@@ -762,20 +762,20 @@ proof -
     finally have "- (3 / (\<beta> * real k^4)) \<le> weight X Y x * card Y / (\<beta> * real (card X) * card NRY) - alpha (hgt p) / (\<beta> * card X)" .
     then have 17: "p + ((1-\<beta>)/\<beta>) * alpha (hgt p) - 3 / (\<beta> * real k^4) \<le> ?E16"
       by simp
-    have "3 / real k^4 \<le> (1-\<mu>) * eps k^2 / k"
+    have "3 / real k^4 \<le> (1-\<mu>) * eps^2 / k"
       using \<open>k>0\<close> \<mu>01 mult_left_mono [OF k52, of k] 
-      by (simp add: field_simps eps_def powr_powr powr_mult_base flip: powr_numeral powr_add)
-    also have "\<dots> \<le> (1-\<beta>) * eps k^2 / k"
+      by (simp add: field_simps epsilon_def powr_powr powr_mult_base flip: powr_numeral powr_add)
+    also have "\<dots> \<le> (1-\<beta>) * eps^2 / k"
       using \<open>\<beta>\<le>\<mu>\<close>
       by (intro divide_right_mono mult_right_mono) auto
-    also have "\<dots> \<le> (1-\<beta>) * eps k * alpha (hgt p)"
+    also have "\<dots> \<le> (1-\<beta>) * eps * alpha (hgt p)"
       using Red_5_7a [of p] eps_ge0 \<open>\<beta>\<le>\<mu>\<close> \<mu>01
       unfolding power2_eq_square divide_inverse mult.assoc
       by (intro mult_mono) auto
-    finally have \<dagger>: "3 / real k^4 \<le> (1-\<beta>) * eps k * alpha (hgt p)" .
-    have "p + (1 - eps k) * ((1-\<beta>) / \<beta>) * alpha (hgt p) + 3 / (\<beta> * real k^4) \<le> p + ((1-\<beta>)/\<beta>) * alpha (hgt p)"
+    finally have \<dagger>: "3 / real k^4 \<le> (1-\<beta>) * eps * alpha (hgt p)" .
+    have "p + (1 - eps) * ((1-\<beta>) / \<beta>) * alpha (hgt p) + 3 / (\<beta> * real k^4) \<le> p + ((1-\<beta>)/\<beta>) * alpha (hgt p)"
       using \<open>0<\<beta>\<close> \<open>k>0\<close> mult_left_mono [OF \<dagger>, of \<beta>] by (simp add: field_simps)
-    with 16 17 have "p + (1 - eps k) * ((1 - \<beta>) / \<beta>) * alpha (hgt p) \<le> red_density NBX NRY"
+    with 16 17 have "p + (1 - eps) * ((1 - \<beta>) / \<beta>) * alpha (hgt p) \<le> red_density NBX NRY"
       by linarith
     then show ?thesis
       using \<open>0 < \<beta>\<close> NBX_def NRY_def XY by fastforce
@@ -786,7 +786,7 @@ text \<open>This and the previous result are proved under the assumption of a su
 corollary Red_5_2:
   assumes i: "i \<in> Step_class {dboost_step}" 
     and Big: "Big_Red_5_1 \<mu> l"
-  shows "pee (Suc i) - pee i \<ge> (1 - eps k) * ((1 - beta i) / beta i) * alpha (hgt (pee i)) \<and>
+  shows "pee (Suc i) - pee i \<ge> (1 - eps) * ((1 - beta i) / beta i) * alpha (hgt (pee i)) \<and>
          beta i > 0"
 proof -
   let ?x = "cvx i"
@@ -817,7 +817,7 @@ proof -
   with nonredd have "red_density (Neighbours Red (cvx i) \<inter> X) (Neighbours Red (cvx i) \<inter> Y)
                    < pee i - alpha (hgt (red_density X Y))"
     using nonredd by (simp add: reddish_def pee)
-  then have "pee i + (1 - eps k) * ((1 - beta i) / beta i) * alpha (hgt (pee i))
+  then have "pee i + (1 - eps) * ((1 - beta i) / beta i) * alpha (hgt (pee i))
           \<le> red_density (Neighbours Blue (cvx i) \<inter> Xseq i)
               (Neighbours Red (cvx i) \<inter> Yseq i) \<and> beta i > 0"
     using Red_5_1 Un_iff Xeq Yeq assms gen_density_ge0 pee Step_class_insert
@@ -838,7 +838,7 @@ text \<open>This is a weaker consequence of the previous results\<close>
 definition 
   "Big_Red_5_3 \<equiv> 
     \<lambda>\<mu> l. Big_Red_5_1 \<mu> l
-        \<and> (\<forall>k\<ge>l. k>1 \<and> 1 / (real k)\<^sup>2 \<le> \<mu> \<and> 1 / (real k)\<^sup>2 \<le> 1 / (k / eps k / (1 - eps k) + 1))"
+        \<and> (\<forall>k\<ge>l. k>1 \<and> 1 / (real k)\<^sup>2 \<le> \<mu> \<and> 1 / (real k)\<^sup>2 \<le> 1 / (k / epsilon k / (1 - epsilon k) + 1))"
 
 text \<open>establishing the size requirements for 5.3. The one involving @{term \<mu>},
 namely @{term "1 / (real k)\<^sup>2 \<le> \<mu>"}, will be useful later with "big beta".\<close>
@@ -846,7 +846,7 @@ lemma Big_Red_5_3:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_Red_5_3 \<mu> l"
   using assms Big_Red_5_1
-  apply (simp add: Big_Red_5_3_def eps_def eventually_conj_iff all_imp_conj_distrib)  
+  apply (simp add: Big_Red_5_3_def epsilon_def eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI0 eventually_all_ge_at_top)
   apply (real_asymp|force)+
   done
@@ -864,15 +864,15 @@ proof
   let ?h = "hgt (pee i)"
   have "?h > 0"
     by (simp add: hgt_gt0 kn0 pee_le1)
-  then obtain \<alpha>: "alpha ?h \<ge> 0" and *: "alpha ?h \<ge> eps k / k"
+  then obtain \<alpha>: "alpha ?h \<ge> 0" and *: "alpha ?h \<ge> eps / k"
     using alpha_ge0 \<open>k>1\<close> alpha_ge by auto
   moreover have "-5/4 = -1/4 - (1::real)"
     by simp
   ultimately have \<alpha>54: "alpha ?h \<ge> k powr (-5/4)"
-    unfolding eps_def by (metis powr_diff of_nat_0_le_iff powr_one)
+    unfolding epsilon_def by (metis powr_diff of_nat_0_le_iff powr_one)
   have \<beta>: "beta i \<le> \<mu>"
     by (metis Step_class_insert Un_iff beta_le i)
-  have "(1 - eps k) * ((1 - beta i) / beta i) * alpha ?h \<ge> 0"
+  have "(1 - eps) * ((1 - beta i) / beta i) * alpha ?h \<ge> 0"
     using beta_ge0[of i] eps_le1 \<alpha> \<beta> \<mu>01 \<open>k>1\<close>
     by (simp add: zero_le_mult_iff zero_le_divide_iff)
   then show "pee (Suc i) \<ge> pee i"
@@ -880,23 +880,23 @@ proof
   have "pee (Suc i) - pee i \<le> 1"
     by (smt (verit) pee_ge0 pee_le1)
   with Red_5_2 [OF i big51] 
-  have "(1 - eps k) * ((1 - beta i) / beta i) * alpha ?h \<le> 1" and beta_gt0: "beta i > 0"
+  have "(1 - eps) * ((1 - beta i) / beta i) * alpha ?h \<le> 1" and beta_gt0: "beta i > 0"
     by linarith+
-  with * have "(1 - eps k) * ((1 - beta i) / beta i) * eps k / k \<le> 1"
+  with * have "(1 - eps) * ((1 - beta i) / beta i) * eps / k \<le> 1"
     by (smt (verit, best) mult.commute eps_ge0 mult_mono mult_nonneg_nonpos of_nat_0_le_iff times_divide_eq_right zero_le_divide_iff)
-  then have "(1 - eps k) * ((1 - beta i) / beta i) \<le> k / eps k"
-    using beta_ge0 [of i] eps_gt0 [OF kn0] kn0
+  then have "(1 - eps) * ((1 - beta i) / beta i) \<le> k / eps"
+    using beta_ge0 [of i] eps_gt0 kn0
     by (auto simp: divide_simps mult_less_0_iff mult_of_nat_commute split: if_split_asm)
-  then have "(1 - beta i) / beta i \<le> k / eps k / (1 - eps k)"
+  then have "(1 - beta i) / beta i \<le> k / eps / (1 - eps)"
     by (smt (verit) eps_less1 mult.commute pos_le_divide_eq \<open>1 < k\<close>)
-  then have "1 / beta i \<le> k / eps k / (1 - eps k) + 1"
+  then have "1 / beta i \<le> k / eps / (1 - eps) + 1"
     using beta_gt0 by (simp add: diff_divide_distrib)
-  then have "1 / (k / eps k / (1 - eps k) + 1) \<le> beta i"
+  then have "1 / (k / eps / (1 - eps) + 1) \<le> beta i"
     using beta_gt0 eps_gt0 eps_less1 [OF \<open>k>1\<close>] kn0
     apply (simp add: divide_simps split: if_split_asm)
     by (smt (verit, ccfv_SIG) mult.commute mult_less_0_iff)
-  moreover have "1 / k^2 \<le> 1 / (k / eps k / (1 - eps k) + 1)"
-    using Big_Red_5_3_def l_le_k big by (metis (no_types, lifting) of_nat_power)
+  moreover have "1 / k^2 \<le> 1 / (k / eps / (1 - eps) + 1)"
+    using Big_Red_5_3_def l_le_k big epsilon_def by (metis (no_types, lifting) of_nat_power)
   ultimately show "beta i \<ge> 1 / (real k)\<^sup>2"
     by auto
 qed

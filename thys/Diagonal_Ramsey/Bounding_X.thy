@@ -49,7 +49,7 @@ begin
 
 text \<open>the set of moderate density-boost steps (page 20)\<close>
 definition dboost_star where
-  "dboost_star \<equiv> {i \<in> Step_class {dboost_step}. real (hgt (pee (Suc i))) - hgt (pee i) \<le> eps k powr (-1/4)}"
+  "dboost_star \<equiv> {i \<in> Step_class {dboost_step}. real (hgt (pee (Suc i))) - hgt (pee i) \<le> eps powr (-1/4)}"
 
 definition bigbeta where
   "bigbeta \<equiv> let S = dboost_star in if S = {} then \<mu> else (card S) * inverse (\<Sum>i\<in>S. inverse (beta i))"
@@ -168,7 +168,7 @@ text \<open>establishing the size requirements for 7.11\<close>
 lemma Big_X_7_2:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_2 \<mu> l"
-  unfolding Big_X_7_2_def eventually_conj_iff all_imp_conj_distrib eps_def
+  unfolding Big_X_7_2_def eventually_conj_iff all_imp_conj_distrib epsilon_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI1[where L=1] eventually_all_ge_at_top)
   apply real_asymp+
@@ -458,12 +458,12 @@ subsection \<open>Lemma 7.5\<close>
 text \<open>Small $o(k)$ bounds on summations for this section\<close>
 
 text \<open>This is the explicit upper bound for heights given just below (5) on page 9\<close>
-definition "ok_fun_26 \<equiv> \<lambda>k. 2 * ln k / eps k" 
+definition "ok_fun_26 \<equiv> \<lambda>k. 2 * ln k / epsilon k" 
 
 definition "ok_fun_28 \<equiv> \<lambda>k. -2 * real k powr (7/8)"  
 
 lemma ok_fun_26: "ok_fun_26 \<in> o(real)" and ok_fun_28: "ok_fun_28 \<in> o(real)"
-  unfolding ok_fun_26_def ok_fun_28_def eps_def by real_asymp+
+  unfolding ok_fun_26_def ok_fun_28_def epsilon_def by real_asymp+
 
 definition 
   "Big_X_7_5 \<equiv> 
@@ -476,7 +476,7 @@ lemma Big_X_7_5:
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_5 \<mu> l"
 proof -
   have ok: "\<forall>\<^sup>\<infinity>l. ok_fun_26 l - ok_fun_28 l \<le> l" 
-    unfolding eps_def ok_fun_26_def ok_fun_28_def by real_asymp
+    unfolding epsilon_def ok_fun_26_def ok_fun_28_def by real_asymp
   show ?thesis
     using assms Big_Y_6_5_Bblue Big_Red_5_3 Big_Blue_4_1 
     unfolding Big_X_7_5_def 
@@ -507,7 +507,7 @@ proof -
     using m_minimal step_odd step_even not_halted_even_dreg 
     by (auto simp: \<D>_def \<H>_def Step_class_insert_NO_MATCH)
       \<comment> \<open>working on 28\<close>
-  have "ok_fun_28 k \<le> -2 * eps k powr (-1/2) * card \<B>"
+  have "ok_fun_28 k \<le> -2 * eps powr (-1/2) * card \<B>"
   proof -
     have "k powr (1/8) * card \<B> \<le> k powr (1/8) * l powr (3/4)"
       using B_limit bblue_step_limit by (simp add: \<B>_def mult_left_mono)
@@ -516,15 +516,15 @@ proof -
     also have "\<dots> = k powr (7/8)"
       by (simp flip: powr_add)
     finally show ?thesis
-      by (simp add: eps_def powr_powr ok_fun_28_def)
+      by (simp add: epsilon_def powr_powr ok_fun_28_def)
   qed
   also have "\<dots> \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1))"
   proof -
-    have "(\<Sum>i \<in> \<B>. -2 * eps k powr (-1/2)) \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1))"
+    have "(\<Sum>i \<in> \<B>. -2 * eps powr (-1/2)) \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1))"
     proof (rule sum_mono)
       fix i :: nat
       assume i: "i \<in> \<B>"
-      show "-2 * eps k powr (-1/2) \<le> h(Suc i) - h(i-1)"
+      show "-2 * eps powr (-1/2) \<le> h(Suc i) - h(i-1)"
         using bigY65B kn0 i Y_6_5_Bblue by (fastforce simp: \<B>_def h_def)
     qed
     then show ?thesis 
@@ -560,7 +560,7 @@ proposition X_7_5:
   assumes \<mu>: "0<\<mu>" "\<mu><1" 
   defines "\<S> \<equiv> Step_class {dboost_step}" and "\<S>\<S> \<equiv> dboost_star"
   assumes big: "Big_X_7_5 \<mu> l"
-  shows "card (\<S>\<setminus>\<S>\<S>) \<le> 3 * eps k powr (1/4) * k"
+  shows "card (\<S>\<setminus>\<S>\<S>) \<le> 3 * eps powr (1/4) * k"
 proof -
   define \<D> where "\<D> \<equiv> Step_class {dreg_step}"
   define \<R> where "\<R> \<equiv> Step_class {red_step}"
@@ -570,9 +570,9 @@ proof -
      and 28: "ok_fun_28 k \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1))"
     using X_26_and_28 assms(1-3) big
     unfolding \<B>_def \<D>_def h_def Big_X_7_5_def by blast
-  have \<S>\<S>: "\<S>\<S> = {i \<in> \<S>. h(Suc i) - h i \<le> eps k powr (-1/4)}" and "\<S>\<S> \<subseteq> \<S>"
+  have \<S>\<S>: "\<S>\<S> = {i \<in> \<S>. h(Suc i) - h i \<le> eps powr (-1/4)}" and "\<S>\<S> \<subseteq> \<S>"
     by (auto simp: \<S>\<S>_def \<S>_def dboost_star_def h_def)
-  have in_S: "h(Suc i) - h i > eps k powr (-1/4)" if "i \<in> \<S>\<setminus>\<S>\<S>" for i
+  have in_S: "h(Suc i) - h i > eps powr (-1/4)" if "i \<in> \<S>\<setminus>\<S>\<S>" for i
     using that by (fastforce simp: \<S>\<S>)
   have B_limit: "Big_Blue_4_1 \<mu> l"
       and bigR53: "Big_Red_5_3 \<mu> l"
@@ -586,15 +586,15 @@ proof -
 
   obtain cardss:  "card \<S>\<S> \<le> card \<S>" "card (\<S>\<setminus>\<S>\<S>) = card \<S> - card \<S>\<S>"
     by (meson \<open>\<S>\<S> \<subseteq> \<S>\<close> \<open>finite \<S>\<close> card_Diff_subset card_mono infinite_super)
-  have "(\<Sum>i \<in> \<S>. h(Suc i) - h(i-1)) \<ge> eps k powr (-1/4) * card (\<S>\<setminus>\<S>\<S>)"
+  have "(\<Sum>i \<in> \<S>. h(Suc i) - h(i-1)) \<ge> eps powr (-1/4) * card (\<S>\<setminus>\<S>\<S>)"
   proof -
-    have "(\<Sum>i \<in> \<S>\<setminus>\<S>\<S>. h(Suc i) - h(i-1)) \<ge> (\<Sum>i \<in> \<S>\<setminus>\<S>\<S>. eps k powr (-1/4))"
+    have "(\<Sum>i \<in> \<S>\<setminus>\<S>\<S>. h(Suc i) - h(i-1)) \<ge> (\<Sum>i \<in> \<S>\<setminus>\<S>\<S>. eps powr (-1/4))"
     proof (rule sum_mono)
       fix i :: nat
       assume i: "i \<in> \<S>\<setminus>\<S>\<S>"
       with i obtain "i-1 \<in> \<D>" "i>0"    
         using dreg_before_step1 dreg_before_gt0 by (fastforce simp: \<S>_def \<D>_def Step_class_insert_NO_MATCH)
-      with i show "eps k powr (-1/4) \<le> h(Suc i) - h(i-1)"
+      with i show "eps powr (-1/4) \<le> h(Suc i) - h(i-1)"
         using in_S[of i] Y_6_5_DegreeReg[of "i-1"] by (simp add: \<D>_def h_def)
     qed
     moreover
@@ -620,10 +620,10 @@ proof -
     then show "- 2 \<le> h(Suc i) - h(i-1)"
       unfolding h_def by linarith
   qed
-  ultimately have 27: "(\<Sum>i \<in> \<R>\<union>\<S>. h(Suc i) - h(i-1)) \<ge> eps k powr (-1/4) * card (\<S>\<setminus>\<S>\<S>) - 2 * card \<R>"
+  ultimately have 27: "(\<Sum>i \<in> \<R>\<union>\<S>. h(Suc i) - h(i-1)) \<ge> eps powr (-1/4) * card (\<S>\<setminus>\<S>\<S>) - 2 * card \<R>"
     by (simp add: sum.union_disjoint)
 
-  have "ok_fun_28 k + (eps k powr (-1/4) * card (\<S>\<setminus>\<S>\<S>) - 2 * card \<R>) \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1)) + (\<Sum>i \<in> \<R>\<union>\<S>. h(Suc i) - h(i-1))"
+  have "ok_fun_28 k + (eps powr (-1/4) * card (\<S>\<setminus>\<S>\<S>) - 2 * card \<R>) \<le> (\<Sum>i \<in> \<B>. h(Suc i) - h(i-1)) + (\<Sum>i \<in> \<R>\<union>\<S>. h(Suc i) - h(i-1))"
     using 27 28 by simp
   also have "\<dots> = (\<Sum>i \<in> \<B> \<union> (\<R>\<union>\<S>). h(Suc i) - h(i-1))"
     by (simp add: sum.union_disjoint)
@@ -640,14 +640,13 @@ proof -
     then show ?thesis
       by simp
   qed
-  finally have "ok_fun_28 k + (eps k powr (-1/4) * card (\<S>\<setminus>\<S>\<S>) - real (2 * card \<R>)) \<le> ok_fun_26 k" 
+  finally have "ok_fun_28 k + (eps powr (-1/4) * card (\<S>\<setminus>\<S>\<S>) - real (2 * card \<R>)) \<le> ok_fun_26 k" 
     using 26 by simp
-  then have "real (card (\<S> \<setminus> \<S>\<S>)) \<le> (ok_fun_26 k - ok_fun_28 k + 2 * card \<R>) * eps k powr (1/4)"
-    using eps_gt0 [OF kn0]
-    by (simp add: powr_minus field_simps del: div_add div_mult_self3)
+  then have "real (card (\<S> \<setminus> \<S>\<S>)) \<le> (ok_fun_26 k - ok_fun_28 k + 2 * card \<R>) * eps powr (1/4)"
+    using eps_gt0 by (simp add: powr_minus field_simps del: div_add div_mult_self3)
   moreover have "card \<R> < k"
     using red_step_limit \<mu> unfolding \<R>_def by blast
-  ultimately have "card (\<S>\<setminus>\<S>\<S>) \<le> (k + 2 * k) * eps k powr (1/4)"
+  ultimately have "card (\<S>\<setminus>\<S>\<S>) \<le> (k + 2 * k) * eps powr (1/4)"
     by (smt (verit, best) of_nat_add mult_2 mult_right_mono nat_less_real_le ok_fun powr_ge_zero)
   then show ?thesis
     by (simp add: algebra_simps)
@@ -669,10 +668,10 @@ lemma Big_X_7_4:
   by (simp add: eventually_conj_iff all_imp_conj_distrib)
 
 
-definition "ok_fun_74 \<equiv> \<lambda>k. -6 * eps k powr (1/4) * k * ln k / ln 2" 
+definition "ok_fun_74 \<equiv> \<lambda>k. -6 * epsilon k powr (1/4) * k * ln k / ln 2" 
 
 lemma ok_fun_74: "ok_fun_74 \<in> o(real)"
-  unfolding ok_fun_74_def eps_def by real_asymp
+  unfolding ok_fun_74_def epsilon_def by real_asymp
 
 context Book
 begin
@@ -683,7 +682,7 @@ lemma X_7_4:
   shows "(\<Prod>i\<in>\<S>. card (Xseq (Suc i)) / card (Xseq i)) \<ge> 2 powr ok_fun_74 k * bigbeta ^ card \<S>"
 proof -
   define \<S>\<S> where "\<S>\<S> \<equiv> dboost_star"
-  then have big53: "Big_Red_5_3 \<mu> l" and X75: "card (\<S>\<setminus>\<S>\<S>) \<le> 3 * eps k powr (1/4) * k" 
+  then have big53: "Big_Red_5_3 \<mu> l" and X75: "card (\<S>\<setminus>\<S>\<S>) \<le> 3 * eps powr (1/4) * k" 
     using \<mu>01 big by (auto simp: Big_X_7_4_def X_7_5 \<S>_def \<S>\<S>_def)
   then have R53:  "pee (Suc i) \<ge> pee i \<and> beta i \<ge> 1 / (real k)\<^sup>2" and beta_gt0: "0 < beta i"
     if "i \<in> \<S>" for i
@@ -721,9 +720,9 @@ proof -
     by (simp add: power_mult)
   also have "\<dots> = real k powr (2 * card(\<S>\<setminus>\<S>\<S>))"
     by (metis kn0 of_nat_0_less_iff powr_realpow)
-  also have "\<dots> \<le> k powr (2 * 3 * eps k powr (1/4) * k)"
+  also have "\<dots> \<le> k powr (2 * 3 * eps powr (1/4) * k)"
     using X75 kn0 by (intro powr_mono; linarith) 
-  also have "\<dots> \<le> exp (6 * eps k powr (1/4) * k * ln k)"
+  also have "\<dots> \<le> exp (6 * eps powr (1/4) * k * ln k)"
     by (simp add: powr_def)
   also have "\<dots> = 2 powr -ok_fun_74 k"
     by (simp add: ok_fun_74_def powr_def)
@@ -777,7 +776,7 @@ subsection \<open>Observation 7.7\<close>
 
 lemma X_7_7:
   assumes i: "i \<in> Step_class {dreg_step}"
-  defines "q \<equiv> eps k powr (-1/2) * alpha (hgt (pee i))"
+  defines "q \<equiv> eps powr (-1/2) * alpha (hgt (pee i))"
   shows "pee (Suc i) - pee i \<ge> card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) * q \<and> card (Xseq (Suc i)) > 0"
 proof -
   have finX: "finite (Xseq i)" for i
@@ -838,10 +837,10 @@ end
 
 subsection \<open>Lemma 7.8\<close>
 
-definition "Big_X_7_8 \<equiv> \<lambda>k. k\<ge>2 \<and> eps k powr (1/2) / k \<ge> 2 / k^2"
+definition "Big_X_7_8 \<equiv> \<lambda>k. k\<ge>2 \<and> epsilon k powr (1/2) / k \<ge> 2 / k^2"
 
 lemma Big_X_7_8: "\<forall>\<^sup>\<infinity>k. Big_X_7_8 k"
-  unfolding eps_def Big_X_7_8_def eventually_conj_iff eps_def
+  unfolding epsilon_def Big_X_7_8_def eventually_conj_iff epsilon_def
   by (intro conjI; real_asymp)
 
 lemma (in Book) X_7_8:
@@ -849,12 +848,12 @@ lemma (in Book) X_7_8:
     and i: "i \<in> Step_class {dreg_step}"
   shows "card (Xseq (Suc i)) \<ge> card (Xseq i) / k^2"
 proof -
-  define q where "q \<equiv> eps k powr (-1/2) * alpha (hgt (pee i))"
+  define q where "q \<equiv> eps powr (-1/2) * alpha (hgt (pee i))"
   have "k>0" \<open>k\<ge>2\<close> using big by (auto simp: Big_X_7_8_def)
-  have "2 / k^2 \<le> eps k powr (1/2) / k"
+  have "2 / k^2 \<le> eps powr (1/2) / k"
     using big by (auto simp: Big_X_7_8_def)
   also have "\<dots> \<le> q"
-    using kn0 eps_gt0[of k] Red_5_7a [of "pee i"]
+    using kn0 eps_gt0 Red_5_7a [of "pee i"]
     by (simp add: q_def powr_minus divide_simps flip: powr_add)
   finally have q_ge: "q \<ge> 2 / k^2" .
   define Y where "Y \<equiv> Yseq"
@@ -894,11 +893,11 @@ qed
 
 subsection \<open>Lemma 7.9\<close>
 
-definition "Big_X_7_9 \<equiv> \<lambda>k. ((1 + eps k) powr (eps k powr (-1/4) + 1) - 1) / eps k \<le> 2 * eps k powr (-1/4)
-   \<and> k\<ge>2 \<and> eps k powr (1/2) / k \<ge> 2 / k^2"
+definition "Big_X_7_9 \<equiv> \<lambda>k. ((1 + epsilon k) powr (epsilon k powr (-1/4) + 1) - 1) / epsilon k \<le> 2 * epsilon k powr (-1/4)
+   \<and> k\<ge>2 \<and> epsilon k powr (1/2) / k \<ge> 2 / k^2"
 
 lemma Big_X_7_9: "\<forall>\<^sup>\<infinity>k. Big_X_7_9 k"
-  unfolding eps_def Big_X_7_9_def eventually_conj_iff eps_def
+  unfolding epsilon_def Big_X_7_9_def eventually_conj_iff epsilon_def
   by (intro conjI; real_asymp)
 
 lemma one_plus_powr_le:
@@ -925,12 +924,12 @@ qed
 lemma (in Book) X_7_9:
   assumes i: "i \<in> Step_class {dreg_step}" and big: "Big_X_7_9 k"
   defines "hp \<equiv> \<lambda>i. hgt (pee i)"
-  assumes "pee i \<ge> p0" and hgt: "hp (Suc i) \<le> hp i + eps k powr (-1/4)"
-  shows "card (Xseq (Suc i)) \<ge> (1 - 2 * eps k powr (1/4)) * card (Xseq i)"
+  assumes "pee i \<ge> p0" and hgt: "hp (Suc i) \<le> hp i + eps powr (-1/4)"
+  shows "card (Xseq (Suc i)) \<ge> (1 - 2 * eps powr (1/4)) * card (Xseq i)"
 proof -
-  have k: "k\<ge>2" "eps k powr (1/2) / k \<ge> 2 / k^2" 
+  have k: "k\<ge>2" "eps powr (1/2) / k \<ge> 2 / k^2" 
     using big by (auto simp: Big_X_7_9_def)
-  let ?q = "eps k powr (-1/2) * alpha (hp i)"
+  let ?q = "eps powr (-1/2) * alpha (hp i)"
   have "k>0" using k by auto
   have Xsub[simp]: "Xseq (Suc i) \<subseteq> Xseq i"
     using Xseq_Suc_subset by blast
@@ -942,7 +941,7 @@ proof -
     using X_7_7 \<open>0 < k\<close> i by blast
   have "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) * ?q \<le> pee (Suc i) - pee i"
     using X_7_7 i k hp_def by auto
-  also have "\<dots> \<le> 2 * eps k powr (-1/4) * alpha (hp i)"
+  also have "\<dots> \<le> 2 * eps powr (-1/4) * alpha (hp i)"
   proof -
     have hgt_le: "hp i \<le> hp (Suc i)" 
       using Y_6_5_DegreeReg \<open>0 < k\<close> i hp_def by blast
@@ -952,38 +951,38 @@ proof -
       using hgt_Least [of "hp i - 1" "pee i"] \<open>pee i \<ge> p0\<close> by (force simp: hp_def)
     have "pee (Suc i) - pee i \<le> qfun (hp (Suc i)) - qfun (hp i - 1)"
       using A B by auto
-    also have "\<dots> = ((1 + eps k) ^ (Suc (hp i - 1 + hp (Suc i)) - hp i) -
-                      (1 + eps k) ^ (hp i - 1))  /  k"
-      using kn0 eps_gt0 [of k] hgt_le \<open>pee i \<ge> p0\<close> hgt_gt0 [of k]
+    also have "\<dots> = ((1 + eps) ^ (Suc (hp i - 1 + hp (Suc i)) - hp i) -
+                      (1 + eps) ^ (hp i - 1))  /  k"
+      using kn0 eps_gt0 hgt_le \<open>pee i \<ge> p0\<close> hgt_gt0 [of k]
       by (simp add: hp_def qfun_eq Suc_diff_eq_diff_pred hgt_gt0 diff_divide_distrib)
-    also have "\<dots> = alpha (hp i) / eps k * ((1 + eps k) ^ (1 + hp (Suc i) - hp i) - 1)"
+    also have "\<dots> = alpha (hp i) / eps * ((1 + eps) ^ (1 + hp (Suc i) - hp i) - 1)"
       using kn0 hgt_le hgt_gt0 
       by (simp add: hp_def alpha_eq right_diff_distrib flip: diff_divide_distrib power_add)
-    also have "\<dots> \<le> 2 * eps k powr (-1/4) * alpha (hp i)"
+    also have "\<dots> \<le> 2 * eps powr (-1/4) * alpha (hp i)"
     proof -
-      have "((1 + eps k) ^ (1 + hp (Suc i) - hp i) - 1)  / eps k \<le> ((1 + eps k) powr (eps k powr (-1/4) + 1) - 1) / eps k"
-        using hgt eps_ge0 [of k] hgt_le powr_mono_both by (force simp flip: powr_realpow intro: divide_right_mono)
-      also have "\<dots> \<le> 2 * eps k powr (-1/4)"
+      have "((1 + eps) ^ (1 + hp (Suc i) - hp i) - 1)  / eps \<le> ((1 + eps) powr (eps powr (-1/4) + 1) - 1) / eps"
+        using hgt eps_ge0 hgt_le powr_mono_both by (force simp flip: powr_realpow intro: divide_right_mono)
+      also have "\<dots> \<le> 2 * eps powr (-1/4)"
         using big by (meson Big_X_7_9_def)
-      finally have *: "((1 + eps k) ^ (1 + hp (Suc i) - hp i) - 1) / eps k \<le> 2 * eps k powr (-1/4)" .
+      finally have *: "((1 + eps) ^ (1 + hp (Suc i) - hp i) - 1) / eps \<le> 2 * eps powr (-1/4)" .
       show ?thesis
         using mult_left_mono [OF *, of "alpha (hp i)"]
         by (smt (verit) alpha_ge0 mult.commute times_divide_eq_right)
     qed
     finally show ?thesis .
   qed
-  finally have 29: "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) * ?q \<le> 2 * eps k powr (-1/4) * alpha (hp i)" .
+  finally have 29: "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) * ?q \<le> 2 * eps powr (-1/4) * alpha (hp i)" .
   moreover have "alpha (hp i) > 0"
     unfolding hp_def
     by (smt (verit, ccfv_SIG) eps_gt0 \<open>0 < k\<close> alpha_ge divide_le_0_iff hgt_gt0 of_nat_0_less_iff)
-  ultimately have "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) * eps k powr (-1/2) \<le> 2 * eps k powr (-1/4)" 
+  ultimately have "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) * eps powr (-1/2) \<le> 2 * eps powr (-1/4)" 
     using mult_le_cancel_right by fastforce
-  then have "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) \<le> 2 * eps k powr (-1/4) * eps k powr (1/2)" 
-    using \<open>0 < k\<close> eps_gt0 [of k]  
+  then have "card (Xseq i \<setminus> Xseq (Suc i)) / card (Xseq (Suc i)) \<le> 2 * eps powr (-1/4) * eps powr (1/2)" 
+    using \<open>0 < k\<close> eps_gt0
     by (force simp: powr_minus divide_simps mult.commute mult_less_0_iff)
-  then have "card (Xseq i \<setminus> Xseq (Suc i)) \<le> 2 * eps k powr (1/4) * card (Xseq (Suc i))"
+  then have "card (Xseq i \<setminus> Xseq (Suc i)) \<le> 2 * eps powr (1/4) * card (Xseq (Suc i))"
     using XSnon0 by (simp add: field_simps flip: powr_add)
-  also have "\<dots> \<le> 2 * eps k powr (1/4) * card (Xseq i)"
+  also have "\<dots> \<le> 2 * eps powr (1/4) * card (Xseq i)"
     by (simp add: card_le mult_mono')
   finally show ?thesis
     by (simp add: card_Diff_subset finX card_le algebra_simps)
@@ -1004,9 +1003,9 @@ lemma (in Book) X_7_10:
   defines "\<R> \<equiv> Step_class {red_step}"
   defines "\<S> \<equiv> Step_class {dboost_step}"
   defines "h \<equiv> \<lambda>i. real (hgt (pee i))"
-  defines "C \<equiv> {i. h i \<ge> h (i-1) + eps k powr (-1/4)}"
+  defines "C \<equiv> {i. h i \<ge> h (i-1) + eps powr (-1/4)}"
   assumes big: "Big_X_7_10 \<mu> l" 
-  shows "card ((\<R>\<union>\<S>) \<inter> C) \<le> 3 * eps k powr (1/4) * k"
+  shows "card ((\<R>\<union>\<S>) \<inter> C) \<le> 3 * eps powr (1/4) * k"
 proof -
   define \<D> where "\<D> \<equiv> Step_class {dreg_step}"
   define \<B> where "\<B> \<equiv> Step_class {bblue_step}"
@@ -1044,10 +1043,10 @@ proof -
       using kn0 unfolding h_def by linarith
   qed
 
-  have "card ((\<R>\<union>\<S>) \<inter> C) * eps k powr (-1/4) + real (card \<R>) * (-2)
-      = (\<Sum>i \<in> \<R>\<union>\<S>. if i\<in>C then eps k powr (-1/4) else 0) + (\<Sum>i \<in> \<R>\<union>\<S>. if i\<in>\<R> then -2 else 0)"
+  have "card ((\<R>\<union>\<S>) \<inter> C) * eps powr (-1/4) + real (card \<R>) * (-2)
+      = (\<Sum>i \<in> \<R>\<union>\<S>. if i\<in>C then eps powr (-1/4) else 0) + (\<Sum>i \<in> \<R>\<union>\<S>. if i\<in>\<R> then -2 else 0)"
     by (simp add: Int_commute Int_left_commute flip: sum.inter_restrict)
-  also have "\<dots> = (\<Sum>i \<in> \<R>\<union>\<S>. (if i\<in>C then eps k powr (-1/4) else 0) + (if i\<in>\<R> then -2 else 0))"
+  also have "\<dots> = (\<Sum>i \<in> \<R>\<union>\<S>. (if i\<in>C then eps powr (-1/4) else 0) + (if i\<in>\<R> then -2 else 0))"
     by (simp add: sum.distrib)
   also have "\<dots> \<le> (\<Sum>i \<in> \<R>\<union>\<S>. h(Suc i) - h(i-1))"
   proof (rule sum_mono)
@@ -1057,7 +1056,7 @@ proof -
       by (force simp: \<S>_def \<R>_def \<D>_def dreg_before_step Step_class_def)+
     then have *: "hgt (pee (i-1)) \<le> hgt (pee i)"
       by (metis Suc_diff_1 Y_6_5_DegreeReg \<D>_def)
-    show "(if i\<in>C then eps k powr (-1/4) else 0) + (if i\<in>\<R> then - 2 else 0) \<le> h (Suc i) - h (i-1)"
+    show "(if i\<in>C then eps powr (-1/4) else 0) + (if i\<in>\<R> then - 2 else 0) \<le> h (Suc i) - h (i-1)"
     proof (cases "i\<in>\<R>")
       case True
       then have "h i - 2 \<le> h (Suc i)"
@@ -1070,7 +1069,7 @@ proof -
       show ?thesis
       proof (cases "i\<in>C")
         case True
-        then have "h (i - Suc 0) + eps k powr (-1/4) \<le> h i"
+        then have "h (i - Suc 0) + eps powr (-1/4) \<le> h i"
           by (simp add: C_def)
         then show ?thesis
           using * i \<open>i\<notin>\<R>\<close> kn0 bigR53 Y_6_5_dbooSt by (force simp: h_def \<S>_def)
@@ -1080,13 +1079,13 @@ proof -
   also have "\<dots> \<le> k"
     using * ok_le_k
     by linarith
-  finally have "card ((\<R>\<union>\<S>) \<inter> C) * eps k powr (-1/4) - 2 * card \<R> \<le> k"
+  finally have "card ((\<R>\<union>\<S>) \<inter> C) * eps powr (-1/4) - 2 * card \<R> \<le> k"
     by linarith 
   moreover have "card \<R> \<le> k"
     by (metis \<R>_def nless_le red_step_limit)
-  ultimately have "card ((\<R>\<union>\<S>) \<inter> C) * eps k powr (-1/4) \<le> 3 * k"
+  ultimately have "card ((\<R>\<union>\<S>) \<inter> C) * eps powr (-1/4) \<le> 3 * k"
     by linarith
-  with eps_gt0 [OF kn0] show ?thesis
+  with eps_gt0 show ?thesis
     by (simp add: powr_minus divide_simps mult.commute split: if_split_asm)
 qed
 
@@ -1096,10 +1095,10 @@ subsection \<open>Lemma 7.11\<close>
 (*Big_X_7_5 is used (rather than the conclusion) because that theorem is split in two*)
 
 definition "Big_X_7_11_inequalities \<equiv> \<lambda>k. 
-              eps k * eps k powr (-1/4) \<le> (1 + eps k) ^ (2 * nat \<lfloor>eps k powr (-1/4)\<rfloor>) - 1
-            \<and> k \<ge> 2 * eps k powr (-1/2) * k powr (3/4)
-            \<and> ((1 + eps k) * (1 + eps k) powr (2 * eps k powr (-1/4))) \<le> 2
-            \<and> (1 + eps k) ^ (nat \<lfloor>2 * eps k powr (-1/4)\<rfloor> + nat \<lfloor>2 * eps k powr (-1/2)\<rfloor> - 1) \<le> 2"
+              epsilon k * epsilon k powr (-1/4) \<le> (1 + epsilon k) ^ (2 * nat \<lfloor>epsilon k powr (-1/4)\<rfloor>) - 1
+            \<and> k \<ge> 2 * epsilon k powr (-1/2) * k powr (3/4)
+            \<and> ((1 + epsilon k) * (1 + epsilon k) powr (2 * epsilon k powr (-1/4))) \<le> 2
+            \<and> (1 + epsilon k) ^ (nat \<lfloor>2 * epsilon k powr (-1/4)\<rfloor> + nat \<lfloor>2 * epsilon k powr (-1/2)\<rfloor> - 1) \<le> 2"
 
 definition "Big_X_7_11 \<equiv> 
       \<lambda>\<mu> l. Big_X_7_5 \<mu> l \<and> Big_Red_5_3 \<mu> l \<and> Big_Y_6_5_Bblue l
@@ -1110,7 +1109,7 @@ lemma Big_X_7_11:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_11 \<mu> l"
   using assms Big_Red_5_3 Big_X_7_5 Big_Y_6_5_Bblue
-  unfolding Big_X_7_11_def Big_X_7_11_inequalities_def eventually_conj_iff all_imp_conj_distrib eps_def
+  unfolding Big_X_7_11_def Big_X_7_11_inequalities_def eventually_conj_iff all_imp_conj_distrib epsilon_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib)  
   apply (intro conjI strip eventually_all_geI0 eventually_all_ge_at_top; real_asymp)
   done
@@ -1118,24 +1117,24 @@ lemma Big_X_7_11:
 lemma (in Book) X_7_11:
   defines "\<R> \<equiv> Step_class {red_step}"
   defines "\<S> \<equiv> Step_class {dboost_step}"
-  defines "C \<equiv> {i. pee i \<ge> pee (i-1) + eps k powr (-1/4) * alpha 1 \<and> pee (i-1) \<le> p0}"
+  defines "C \<equiv> {i. pee i \<ge> pee (i-1) + eps powr (-1/4) * alpha 1 \<and> pee (i-1) \<le> p0}"
   assumes big: "Big_X_7_11 \<mu> l"
-  shows "card ((\<R>\<union>\<S>) \<inter> C) \<le> 4 * eps k powr (1/4) * k"
+  shows "card ((\<R>\<union>\<S>) \<inter> C) \<le> 4 * eps powr (1/4) * k"
 proof -
-  define qstar where "qstar \<equiv> p0 + eps k powr (-1/4) * alpha 1"
+  define qstar where "qstar \<equiv> p0 + eps powr (-1/4) * alpha 1"
   define pstar where "pstar \<equiv> \<lambda>i. min (pee i) qstar"
   define \<D> where "\<D> \<equiv> Step_class {dreg_step}"
   define \<B> where "\<B> \<equiv> Step_class {bblue_step}"
   have big_x75: "Big_X_7_5 \<mu> l"  
-    and 711: "eps k * eps k powr (-1/4) \<le> (1 + eps k) ^ (2 * nat \<lfloor>eps k powr (-1/4)\<rfloor>) - 1"
-    and big34: "k \<ge> 2 * eps k powr (-1/2) * k powr (3/4)"
-    and le2: "((1 + eps k) * (1 + eps k) powr (2 * eps k powr (-1/4))) \<le> 2"
-             "(1 + eps k) ^ (nat \<lfloor>2 * eps k powr (-1/4)\<rfloor> + nat \<lfloor>2 * eps k powr (-1/2)\<rfloor> - 1) \<le> 2"
+    and 711: "eps * eps powr (-1/4) \<le> (1 + eps) ^ (2 * nat \<lfloor>eps powr (-1/4)\<rfloor>) - 1"
+    and big34: "k \<ge> 2 * eps powr (-1/2) * k powr (3/4)"
+    and le2: "((1 + eps) * (1 + eps) powr (2 * eps powr (-1/4))) \<le> 2"
+             "(1 + eps) ^ (nat \<lfloor>2 * eps powr (-1/4)\<rfloor> + nat \<lfloor>2 * eps powr (-1/2)\<rfloor> - 1) \<le> 2"
     and bigY65B: "Big_Y_6_5_Bblue l"
     and R53:  "\<And>i. i \<in> \<S> \<Longrightarrow> pee (Suc i) \<ge> pee i"
     using big l_le_k
     by (auto simp: Red_5_3 Big_X_7_11_def Big_X_7_11_inequalities_def \<S>_def)
-  then have Y_6_5_B: "\<And>i. i \<in> \<B> \<Longrightarrow> hgt (pee (Suc i)) \<ge> hgt (pee (i-1)) - 2 * eps k powr (-1/2)"
+  then have Y_6_5_B: "\<And>i. i \<in> \<B> \<Longrightarrow> hgt (pee (Suc i)) \<ge> hgt (pee (i-1)) - 2 * eps powr (-1/2)"
     using bigY65B Y_6_5_Bblue unfolding \<B>_def by blast 
   have big41: "Big_Blue_4_1 \<mu> l"
     and hub: "Big_height_upper_bound k"
@@ -1149,25 +1148,25 @@ proof -
   have [simp]: "\<R> \<inter> \<S> = {}" and [simp]: "(\<R> \<union> \<S>) \<inter> \<B> = {}"
     by (simp_all add: \<R>_def \<S>_def \<B>_def Step_class_def disjoint_iff)
 
-  have hgt_qstar_le: "hgt qstar \<le> 2 * eps k powr (-1/4)"
+  have hgt_qstar_le: "hgt qstar \<le> 2 * eps powr (-1/4)"
   proof (intro real_hgt_Least)
-    show "0 < 2 * nat \<lfloor>eps k powr (-1/4)\<rfloor>"
-      using kn0 eps_gt0 [of k] by (simp add: eps_le1 powr_le1 powr_minus_divide)
-    show "qstar \<le> qfun (2 * nat \<lfloor>eps k powr (-1/4)\<rfloor>)"
+    show "0 < 2 * nat \<lfloor>eps powr (-1/4)\<rfloor>"
+      using kn0 eps_gt0 by (simp add: eps_le1 powr_le1 powr_minus_divide)
+    show "qstar \<le> qfun (2 * nat \<lfloor>eps powr (-1/4)\<rfloor>)"
       using kn0 711
       by (simp add: qstar_def alpha_def qfun_eq divide_right_mono mult.commute)
   qed auto
-  then have "((1 + eps k) * (1 + eps k) ^ hgt qstar) \<le> ((1 + eps k) * (1 + eps k) powr (2 * eps k powr (-1/4)))"
+  then have "((1 + eps) * (1 + eps) ^ hgt qstar) \<le> ((1 + eps) * (1 + eps) powr (2 * eps powr (-1/4)))"
     by (smt (verit) eps_ge0 mult_left_mono powr_mono powr_realpow)
-  also have "((1 + eps k) * (1 + eps k) powr (2 * eps k powr (-1/4))) \<le> 2"
+  also have "((1 + eps) * (1 + eps) powr (2 * eps powr (-1/4))) \<le> 2"
     using le2 by simp
-  finally have "(1 + eps k) * (1 + eps k) ^ hgt qstar \<le> 2" .
+  finally have "(1 + eps) * (1 + eps) ^ hgt qstar \<le> 2" .
   moreover have "card \<R> \<le> k"
     by (simp add: \<R>_def less_imp_le red_step_limit)
-  ultimately have \<section>: "((1 + eps k) * (1 + eps k) ^ hgt qstar) * card \<R> \<le> 2 * real k"
+  ultimately have \<section>: "((1 + eps) * (1 + eps) ^ hgt qstar) * card \<R> \<le> 2 * real k"
     by (intro mult_mono) auto
   have "- 2 * alpha 1 * k \<le> - alpha (hgt qstar + 2) * card \<R>"
-    using mult_right_mono_neg [OF \<section>, of "- (eps k)"] eps_ge0 [of k]
+    using mult_right_mono_neg [OF \<section>, of "- (eps)"] eps_ge0 
     by (simp add: alpha_eq divide_simps mult_ac)
   also have "\<dots> \<le> (\<Sum>i\<in>\<R>. pstar (Suc i) - pstar i)"
   proof -
@@ -1198,7 +1197,7 @@ proof -
   ultimately have RS_half: "- 2 * alpha 1 * k \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar (Suc i) - pstar i)"
     by (simp add: sum.union_disjoint)
 
-  let ?e12 = "eps k powr (-1/2)"
+  let ?e12 = "eps powr (-1/2)"
   define h' where "h' \<equiv> hgt qstar + nat \<lfloor>2 * ?e12\<rfloor>"
   have "- alpha 1 * k \<le> -2 * ?e12 * alpha 1 * k powr (3/4)"
     using mult_right_mono_neg [OF big34, of "- alpha 1"] alpha_ge0 [of 1]
@@ -1210,19 +1209,19 @@ proof -
     also have "\<dots> \<le> k powr (3/4)"
       by (simp add: powr_mono2 l_le_k)
     finally have 1: "card \<B> \<le> k powr (3/4)" .
-    have "alpha (h') \<le> alpha (nat \<lfloor>2 * eps k powr (-1/4)\<rfloor> + nat \<lfloor>2 * ?e12\<rfloor>)"
+    have "alpha (h') \<le> alpha (nat \<lfloor>2 * eps powr (-1/4)\<rfloor> + nat \<lfloor>2 * ?e12\<rfloor>)"
     proof (rule alpha_mono)
-      show "h' \<le> nat \<lfloor>2 * eps k powr (-1/4)\<rfloor> + nat \<lfloor>2 * ?e12\<rfloor>"
+      show "h' \<le> nat \<lfloor>2 * eps powr (-1/4)\<rfloor> + nat \<lfloor>2 * ?e12\<rfloor>"
         using h'_def hgt_qstar_le le_nat_floor by auto
     qed (simp add: hgt_gt0 h'_def)
     also have "\<dots> \<le> 2 * alpha 1"
     proof -
-      have *: "(1 + eps k) ^ (nat \<lfloor>2 * eps k powr (-1/4)\<rfloor> + nat \<lfloor>2 * ?e12\<rfloor> - 1) \<le> 2"
+      have *: "(1 + eps) ^ (nat \<lfloor>2 * eps powr (-1/4)\<rfloor> + nat \<lfloor>2 * ?e12\<rfloor> - 1) \<le> 2"
         using le2 by simp
-      have "1 \<le> 2 * eps k powr (-1/4)"
+      have "1 \<le> 2 * eps powr (-1/4)"
         by (smt (verit) hgt_qstar_le Suc_leI divide_minus_left hgt_gt0 numeral_nat(7) real_of_nat_ge_one_iff)
       then show ?thesis
-        using mult_right_mono [OF *, of "eps k"] eps_ge0 
+        using mult_right_mono [OF *, of "eps"] eps_ge0 
         by (simp add: alpha_eq hgt_gt0 divide_right_mono mult.commute)
     qed
     finally have 2: "2 * alpha 1 \<ge> alpha (h')" .
@@ -1261,9 +1260,9 @@ proof -
   qed
   finally have B: "- alpha 1 * k \<le> (\<Sum>i\<in>\<B>. pstar (Suc i) - pstar (i-1))" .
 
-  have "eps k powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. if i \<in> C then eps k powr (-1/4) * alpha 1 else 0)"
+  have "eps powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. if i \<in> C then eps powr (-1/4) * alpha 1 else 0)"
     by (simp add: flip: sum.inter_restrict)
-  also have "(\<Sum>i\<in>\<R>\<union>\<S>. if i \<in> C then eps k powr (-1/4) * alpha 1 else 0) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar i - pstar (i-1))"
+  also have "(\<Sum>i\<in>\<R>\<union>\<S>. if i \<in> C then eps powr (-1/4) * alpha 1 else 0) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar i - pstar (i-1))"
   proof (intro sum_mono)
     fix i
     assume i: "i \<in> \<R> \<union> \<S>"
@@ -1273,14 +1272,14 @@ proof -
       by (metis Suc_pred' Y_6_4_DegreeReg \<D>_def)
     then have "pstar (i-1) \<le> pstar i"
       by (fastforce simp: pstar_def)
-    then show "(if i \<in> C then eps k powr (-1/4) * alpha 1 else 0) \<le> pstar i - pstar (i-1)"
+    then show "(if i \<in> C then eps powr (-1/4) * alpha 1 else 0) \<le> pstar i - pstar (i-1)"
       using C_def pstar_def qstar_def by auto
   qed
-  finally have \<section>: "eps k powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar i - pstar (i-1))" .
+  finally have \<section>: "eps powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar i - pstar (i-1))" .
 
   have psplit: "pstar (Suc i) - pstar (i-1) = (pstar (Suc i) - pstar i) + (pstar i - pstar (i-1))" for i
     by simp
-  have RS: "eps k powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) + (- 2 * alpha 1 * k) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar (Suc i) - pstar (i-1))"
+  have RS: "eps powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) + (- 2 * alpha 1 * k) \<le> (\<Sum>i\<in>\<R>\<union>\<S>. pstar (Suc i) - pstar (i-1))"
     unfolding psplit sum.distrib using RS_half \<section> by linarith
 
   have k16: "k powr (1/16) \<le> k powr 1"
@@ -1289,7 +1288,7 @@ proof -
   have meq: "{..<halted_point} \<setminus> \<D> = (\<R>\<union>\<S>) \<union> \<B>"
     using Step_class_cases halted_point_minimal' by(fastforce simp: \<R>_def \<S>_def \<D>_def \<B>_def Step_class_def)
 
-  have "(eps k powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) + (- 2 * alpha 1 * k))
+  have "(eps powr (-1/4) * alpha 1 * card ((\<R>\<union>\<S>) \<inter> C) + (- 2 * alpha 1 * k))
         + (- alpha 1 * k)
       \<le> (\<Sum>i \<in> \<R>\<union>\<S>. pstar(Suc i) - pstar(i-1)) + (\<Sum>i\<in>\<B>. pstar(Suc i) - pstar(i-1))"
     using RS B by linarith
@@ -1310,17 +1309,16 @@ proof -
     by (simp add: sum_lessThan_telescope)
   also have "\<dots> = pstar halted_point - pstar 0" 
     by (simp add: sum_lessThan_telescope)
-  also have "\<dots> \<le> alpha 1 * eps k powr (-1/4)"
+  also have "\<dots> \<le> alpha 1 * eps powr (-1/4)"
     using alpha_ge0 by (simp add: mult.commute pee_eq_p0 pstar_def qstar_def) 
   also have "\<dots> \<le> alpha 1 * k"
-    using alpha_ge0 k16 by (intro powr_mono mult_left_mono) (auto simp: eps_def powr_powr)
-  finally have "eps k powr (-1/4) * card ((\<R> \<union> \<S>) \<inter> C) * alpha 1 \<le> 4 * k * alpha 1"
+    using alpha_ge0 k16 by (intro powr_mono mult_left_mono) (auto simp: epsilon_def powr_powr)
+  finally have "eps powr (-1/4) * card ((\<R> \<union> \<S>) \<inter> C) * alpha 1 \<le> 4 * k * alpha 1"
     by (simp add: mult_ac)
-  then have "eps k powr (-1/4) * real (card ((\<R> \<union> \<S>) \<inter> C)) \<le> 4 * k"
+  then have "eps powr (-1/4) * real (card ((\<R> \<union> \<S>) \<inter> C)) \<le> 4 * k"
     using kn0 by (simp add: divide_simps alpha_eq eps_gt0)
   then show ?thesis
-    using alpha_ge0[of 1] kn0 eps_gt0 [of k]
-    by (simp add: powr_minus divide_simps mult_ac split: if_split_asm)
+    using alpha_ge0[of 1] kn0 eps_gt0 by (simp add: powr_minus divide_simps mult_ac split: if_split_asm)
 qed
 
 
@@ -1341,9 +1339,9 @@ lemma Big_X_7_12:
 lemma (in Book) X_7_12:
   defines "\<R> \<equiv> Step_class {red_step}"
   defines "\<S> \<equiv> Step_class {dboost_step}"
-  defines "C \<equiv> {i. card (Xseq i) < (1 - 2 * eps k powr (1/4)) * card (Xseq (i-1))}"
+  defines "C \<equiv> {i. card (Xseq i) < (1 - 2 * eps powr (1/4)) * card (Xseq (i-1))}"
   assumes big: "Big_X_7_12 \<mu> l"
-  shows "card ((\<R>\<union>\<S>) \<inter> C) \<le> 7 * eps k powr (1/4) * k"
+  shows "card ((\<R>\<union>\<S>) \<inter> C) \<le> 7 * eps powr (1/4) * k"
 proof -
   define \<D> where "\<D> \<equiv> Step_class {dreg_step}"
   have big_711: "Big_X_7_11 \<mu> l" and big_710: "Big_X_7_10 \<mu> l"
@@ -1351,8 +1349,8 @@ proof -
   have [simp]: "finite \<R>" "finite \<S>"
     using finite_components by (auto simp: \<R>_def \<S>_def)
   \<comment> \<open>now the conditions for Lemmas 7.10 and 7.11\<close>
-  define C10 where "C10 \<equiv> {i. hgt (pee i) \<ge> hgt (pee (i-1)) + eps k powr (-1/4)}"
-  define C11 where "C11 \<equiv> {i. pee i \<ge> pee (i-1) + eps k powr (-1/4) * alpha 1 \<and> pee (i-1) \<le> p0}"
+  define C10 where "C10 \<equiv> {i. hgt (pee i) \<ge> hgt (pee (i-1)) + eps powr (-1/4)}"
+  define C11 where "C11 \<equiv> {i. pee i \<ge> pee (i-1) + eps powr (-1/4) * alpha 1 \<and> pee (i-1) \<le> p0}"
   have "(\<R>\<union>\<S>) \<inter> C \<inter> {i. pee (i-1) \<le> p0} \<subseteq> (\<R>\<union>\<S>) \<inter> C11"
   proof
     fix i
@@ -1361,7 +1359,7 @@ proof -
       by auto
     then obtain i1: "i-1 \<in> \<D>" "i>0"
       unfolding \<R>_def \<S>_def \<D>_def by (metis Step_class_insert Un_iff dreg_before_step1 dreg_before_gt0)
-    then have 77: "card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i) * (eps k powr (-1/2) * alpha (hgt (pee (i-1))))
+    then have 77: "card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i) * (eps powr (-1/2) * alpha (hgt (pee (i-1))))
             \<le> pee i - pee (i-1)"
       by (metis Suc_diff_1 X_7_7 \<D>_def)
     have card_Xm1: "card (Xseq (i-1)) = card (Xseq i) + card (Xseq (i-1) \<setminus> Xseq i)"
@@ -1371,57 +1369,57 @@ proof -
       by (metis Step_class_insert card_Xseq_pos \<R>_def \<S>_def iRS)
     have "card (Xseq (i-1)) > 0"
       using C_def iC less_irrefl by fastforce
-    moreover have "2 * (card (Xseq (i-1)) * eps k powr (1/4)) < card (Xseq (i-1) \<setminus> Xseq i)"
+    moreover have "2 * (card (Xseq (i-1)) * eps powr (1/4)) < card (Xseq (i-1) \<setminus> Xseq i)"
       using iC card_Xm1 by (simp add: algebra_simps C_def)
     moreover have "card (Xseq i) \<le> 2 * card (Xseq (i-1))"
       using card_Xm1 by linarith
-    ultimately have "eps k powr (1/4) \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq (i-1))"
+    ultimately have "eps powr (1/4) \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq (i-1))"
       by (simp add: divide_simps mult.commute)
     moreover have "real (card (Xseq i)) \<le> card (Xseq (i-1))"
       using card_Xm1 by linarith
-    ultimately have 1: "eps k powr (1/4) \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i)"
+    ultimately have 1: "eps powr (1/4) \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i)"
       by (smt (verit) \<open>0 < card (Xseq i)\<close> frac_le of_nat_0_le_iff of_nat_0_less_iff)
-    have "eps k powr (-1/4) * alpha 1
-       \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i) * (eps k powr (-1/2) * alpha 1)"
-      using alpha_ge0 mult_right_mono [OF 1, of "eps k powr (-1/2) * alpha 1"] 
+    have "eps powr (-1/4) * alpha 1
+       \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i) * (eps powr (-1/2) * alpha 1)"
+      using alpha_ge0 mult_right_mono [OF 1, of "eps powr (-1/2) * alpha 1"] 
       by (simp add: mult_ac flip: powr_add)
-    also have "\<dots> \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i) * (eps k powr (-1/2) * alpha (hgt (pee (i-1))))"
+    also have "\<dots> \<le> card (Xseq (i-1) \<setminus> Xseq i) / card (Xseq i) * (eps powr (-1/2) * alpha (hgt (pee (i-1))))"
       by (intro mult_left_mono alpha_mono) (auto simp: Suc_leI hgt_gt0)
     also have "\<dots> \<le> pee i - pee (i-1)"
       using 77 by simp
-    finally have "eps k powr (-1/4) * alpha 1 \<le> pee i - pee (i-1)" .
+    finally have "eps powr (-1/4) * alpha 1 \<le> pee i - pee (i-1)" .
     with i show "i \<in> (\<R> \<union> \<S>) \<inter> C11"
       by (simp add: C11_def)
   qed
   then have "real (card ((\<R>\<union>\<S>) \<inter> C \<inter> {i. pee (i-1) \<le> p0})) \<le> real (card ((\<R>\<union>\<S>) \<inter> C11))"
     by (simp add: card_mono)
-  also have "\<dots> \<le> 4 * eps k powr (1/4) * k"
+  also have "\<dots> \<le> 4 * eps powr (1/4) * k"
     using X_7_11 big_711 by (simp add: \<R>_def \<S>_def C11_def Step_class_insert_NO_MATCH)
-  finally have "card ((\<R>\<union>\<S>) \<inter> C \<inter> {i. pee (i-1) \<le> p0}) \<le> 4 * eps k powr (1/4) * k" .
+  finally have "card ((\<R>\<union>\<S>) \<inter> C \<inter> {i. pee (i-1) \<le> p0}) \<le> 4 * eps powr (1/4) * k" .
   moreover
-  have "card ((\<R>\<union>\<S>) \<inter> C \<setminus> {i. pee (i-1) \<le> p0}) \<le> 3 * eps k powr (1/4) * k" 
+  have "card ((\<R>\<union>\<S>) \<inter> C \<setminus> {i. pee (i-1) \<le> p0}) \<le> 3 * eps powr (1/4) * k" 
   proof -
     have "Big_X_7_9 k"
       using Big_X_7_12_def big l_le_k by presburger
-    then have X79: "card (Xseq (Suc i)) \<ge> (1 - 2 * eps k powr (1/4)) * card (Xseq i)" 
+    then have X79: "card (Xseq (Suc i)) \<ge> (1 - 2 * eps powr (1/4)) * card (Xseq i)" 
       if "i \<in> Step_class {dreg_step}" and "pee i \<ge> p0" 
-          and "hgt (pee (Suc i)) \<le> hgt (pee i) + eps k powr (-1/4)" for i
+          and "hgt (pee (Suc i)) \<le> hgt (pee i) + eps powr (-1/4)" for i
       using X_7_9 that by blast 
     have "(\<R>\<union>\<S>) \<inter> C \<setminus> {i. pee (i-1) \<le> p0} \<subseteq> (\<R>\<union>\<S>) \<inter> C10"
       unfolding C10_def C_def
     proof clarify
       fix i
       assume "i \<in> \<R> \<union> \<S>"
-        and \<section>: "card (Xseq i) < (1 - 2 * eps k powr (1/4)) * card (Xseq (i-1))" "\<not> pee (i-1) \<le> p0"
+        and \<section>: "card (Xseq i) < (1 - 2 * eps powr (1/4)) * card (Xseq (i-1))" "\<not> pee (i-1) \<le> p0"
       then obtain "i-1 \<in> \<D>" "i>0"
         unfolding \<D>_def \<R>_def \<S>_def 
         by (metis dreg_before_step1 dreg_before_gt0 Step_class_Un Un_iff insert_is_Un)
-      with X79 \<section> show "hgt (pee (i - 1)) + eps k powr (-1/4) \<le> hgt (pee i)"
+      with X79 \<section> show "hgt (pee (i - 1)) + eps powr (-1/4) \<le> hgt (pee i)"
         by (force simp: \<D>_def)
     qed
     then have "card ((\<R>\<union>\<S>) \<inter> C \<setminus> {i. pee (i-1) \<le> p0}) \<le> real (card ((\<R>\<union>\<S>) \<inter> C10))"
       by (simp add: card_mono)
-    also have "card ((\<R>\<union>\<S>) \<inter> C10) \<le> 3 * eps k powr (1/4) * k"
+    also have "card ((\<R>\<union>\<S>) \<inter> C10) \<le> 3 * eps powr (1/4) * k"
       unfolding \<R>_def \<S>_def C10_def by (intro X_7_10 assms big_710)
     finally show ?thesis . 
   qed
@@ -1436,23 +1434,23 @@ qed
 subsection \<open>Lemma 7.6\<close>
 
 definition "Big_X_7_6 \<equiv>
-   \<lambda>\<mu> l. Big_Blue_4_1 \<mu> l \<and> Big_X_7_12 \<mu> l \<and> (\<forall>k. k\<ge>l \<longrightarrow> Big_X_7_8 k \<and> 1 - 2 * eps k powr (1/4) > 0)"
+   \<lambda>\<mu> l. Big_Blue_4_1 \<mu> l \<and> Big_X_7_12 \<mu> l \<and> (\<forall>k. k\<ge>l \<longrightarrow> Big_X_7_8 k \<and> 1 - 2 * epsilon k powr (1/4) > 0)"
 
 lemma Big_X_7_6:
   assumes "0<\<mu>0" "\<mu>1<1" 
   shows "\<forall>\<^sup>\<infinity>l. \<forall>\<mu>. \<mu> \<in> {\<mu>0..\<mu>1} \<longrightarrow> Big_X_7_6 \<mu> l"
   using assms Big_Blue_4_1 Big_X_7_8 Big_X_7_12
-  unfolding Big_X_7_6_def eps_def
+  unfolding Big_X_7_6_def epsilon_def
   apply (simp add: eventually_conj_iff all_imp_conj_distrib eventually_all_ge_at_top)  
   apply (intro conjI strip eventually_all_geI0 eventually_all_ge_at_top; real_asymp)
   done
 
 definition "ok_fun_76 \<equiv> 
-  \<lambda>k. ((1 + 2 * real k) * ln (1 - 2 * eps k powr (1/4)) 
-      - (k powr (3/4) + 7 * eps k powr (1/4) * k + 1) * (2 * ln k)) / ln 2" 
+  \<lambda>k. ((1 + 2 * real k) * ln (1 - 2 * epsilon k powr (1/4)) 
+      - (k powr (3/4) + 7 * epsilon k powr (1/4) * k + 1) * (2 * ln k)) / ln 2" 
 
 lemma ok_fun_76: "ok_fun_76 \<in> o(real)"
-  unfolding eps_def ok_fun_76_def by real_asymp
+  unfolding epsilon_def ok_fun_76_def by real_asymp
 
 lemma (in Book) X_7_6:
   assumes big: "Big_X_7_6 \<mu> l"
@@ -1462,10 +1460,10 @@ proof -
   define \<R> where "\<R> \<equiv> Step_class {red_step}"
   define \<B> where "\<B> \<equiv> Step_class {bblue_step}"
   define \<S> where "\<S> \<equiv> Step_class {dboost_step}"
-  define C where "C \<equiv> {i. card (Xseq i) < (1 - 2 * eps k powr (1/4)) * card (Xseq (i-1))}"
+  define C where "C \<equiv> {i. card (Xseq i) < (1 - 2 * eps powr (1/4)) * card (Xseq (i-1))}"
   define C' where "C' \<equiv> Suc -` C"
   have big41: "Big_Blue_4_1 \<mu> l"
-    and 712: "card ((\<R>\<union>\<S>) \<inter> C) \<le> 7 * eps k powr (1/4) * k"
+    and 712: "card ((\<R>\<union>\<S>) \<inter> C) \<le> 7 * eps powr (1/4) * k"
     using big X_7_12 l_le_k by (auto simp: Big_X_7_6_def \<R>_def \<S>_def C_def)
 
   have [simp]: "finite \<D>" "finite \<R>" "finite \<B>" "finite \<S>"
@@ -1487,12 +1485,12 @@ proof -
                "\<B> \<inter> C \<inter> (\<R> \<inter> C \<union> \<S> \<inter> C) = {}" for C
     using halted_point_minimal' by (force simp: \<B>_def \<R>_def \<S>_def Step_class_def)+
 
-  have "Big_X_7_8 k" and one_minus_gt0: "1 - 2 * eps k powr (1/4) > 0"
+  have "Big_X_7_8 k" and one_minus_gt0: "1 - 2 * eps powr (1/4) > 0"
     using big l_le_k by (auto simp: Big_X_7_6_def)
   then have X78: "card (Xseq (Suc i)) \<ge> card (Xseq i) / k^2" if "i \<in> \<D>" for i
     using X_7_8 that by (force simp: \<D>_def)
 
-  let ?DC = "\<lambda>k. k powr (3/4) + 7 * eps k powr (1/4) * k + 1"
+  let ?DC = "\<lambda>k. k powr (3/4) + 7 * epsilon k powr (1/4) * k + 1"
   have dc_pos: "?DC k > 0" for k
     by (smt (verit) of_nat_less_0_iff powr_ge_zero zero_le_mult_iff)
   have X_pos: "card (Xseq i) > 0" if "i \<in> \<D>" for i
@@ -1502,13 +1500,13 @@ proof -
     then show ?thesis
       by (metis Xseq_Suc_subset card_mono finite_Xseq gr0I leD)
   qed
-  have "ok_fun_76 k \<le> log 2 ((1 / (real k)\<^sup>2) powr ?DC k * (1 - 2 * eps k powr (1/4)) ^ (k + l + 1))"
+  have "ok_fun_76 k \<le> log 2 ((1 / (real k)\<^sup>2) powr ?DC k * (1 - 2 * eps powr (1/4)) ^ (k + l + 1))"
     unfolding ok_fun_76_def log_def
     using kn0 l_le_k one_minus_gt0
-    by (simp add: ln_powr ln_mult ln_div ln_realpow divide_right_mono mult_le_cancel_right flip: power_Suc mult.assoc)
-  then have "2 powr ok_fun_76 k \<le> (1 / (real k)\<^sup>2) powr ?DC k * (1 - 2 * eps k powr (1/4)) ^ (k + l + 1)"
+    by (simp add: ln_mult ln_div ln_realpow divide_right_mono mult_le_cancel_right flip: power_Suc mult.assoc)
+  then have "2 powr ok_fun_76 k \<le> (1 / (real k)\<^sup>2) powr ?DC k * (1 - 2 * eps powr (1/4)) ^ (k + l + 1)"
     using powr_eq_iff kn0 one_minus_gt0 by (simp add: le_log_iff)
-  also have "\<dots> \<le> (1 / (real k)\<^sup>2) powr card (\<D> \<inter> C') * (1 - 2 * eps k powr (1/4)) ^ card (\<D>\<setminus>C')"
+  also have "\<dots> \<le> (1 / (real k)\<^sup>2) powr card (\<D> \<inter> C') * (1 - 2 * eps powr (1/4)) ^ card (\<D>\<setminus>C')"
   proof (intro mult_mono powr_mono')
     have "Suc i \<in> \<R>" if "i \<in> \<D>" "Suc i \<noteq> halted_point" "Suc i \<notin> \<B>" "Suc i \<notin> \<S>" for i
     proof -
@@ -1533,7 +1531,7 @@ proof -
       using \<open>card \<R> < k\<close> less_l by linarith
     finally have card_D: "card \<D> \<le> k + l + 1" .
 
-    have "(1 - 2 * eps k powr (1/4)) * card (Xseq 0) \<le> 1 * real (card (Xseq 0))"
+    have "(1 - 2 * eps powr (1/4)) * card (Xseq 0) \<le> 1 * real (card (Xseq 0))"
       by (intro mult_right_mono; force)
     then have "0 \<notin> C"
       by (force simp: C_def)
@@ -1549,10 +1547,10 @@ proof -
     finally show "card (\<D> \<inter> C') \<le> ?DC k" .
     have "card (\<D>\<setminus>C') \<le> card \<D>"
       using \<open>finite \<D>\<close> by (simp add: card_mono)
-    then show "(1 - 2 * eps k powr (1/4)) ^ (k+l+1) \<le> (1 - 2 * eps k powr (1/4)) ^ card (\<D>\<setminus>C')"
+    then show "(1 - 2 * eps powr (1/4)) ^ (k+l+1) \<le> (1 - 2 * eps powr (1/4)) ^ card (\<D>\<setminus>C')"
       by (smt (verit) card_D add_leD2 one_minus_gt0 power_decreasing powr_ge_zero)
   qed (use one_minus_gt0 kn0 in auto)
-  also have "\<dots> = (\<Prod>i\<in>\<D>. if i \<in> C' then 1 / real k ^ 2 else 1 - 2 * eps k powr (1/4))"
+  also have "\<dots> = (\<Prod>i\<in>\<D>. if i \<in> C' then 1 / real k ^ 2 else 1 - 2 * eps powr (1/4))"
     by (simp add: kn0 powr_realpow prod.If_cases Diff_eq)
   also have "\<dots> \<le> (\<Prod>i \<in> \<D>. card (Xseq (Suc i)) / card (Xseq i))"
     using X_pos X78 one_minus_gt0 kn0 by (simp add: divide_simps C'_def C_def prod_mono)  

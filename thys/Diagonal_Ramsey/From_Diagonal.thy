@@ -39,7 +39,7 @@ lemma ok_fun_11_2:
 
 definition "Big_From_11_2 \<equiv>     
    \<lambda>\<mu> k. Big_ZZ_8_6 \<mu> k \<and> Big_X_7_1 \<mu> k \<and> Big_Y_6_2 \<mu> k \<and> Big_Red_5_3 \<mu> k \<and> Big_Blue_4_1 \<mu> k 
-       \<and> 1 \<le> \<mu>^2 * real k \<and> 2 / (1-\<mu>) * real k powr (-1/40) < 1 \<and> 1/k < 1/2 - 3 * eps k"
+       \<and> 1 \<le> \<mu>^2 * real k \<and> 2 / (1-\<mu>) * real k powr (-1/40) < 1 \<and> 1/k < 1/2 - 3 * epsilon k"
 
 lemma Big_From_11_2:
   assumes "0<\<mu>0" "\<mu>0 \<le> \<mu>1" "\<mu>1<1" 
@@ -60,8 +60,8 @@ proof -
     show "\<forall>\<^sup>\<infinity>k. 2 / (1-\<mu>1) * k powr (-1/40) < 1"
       by real_asymp
   qed (use assms in auto)
-  have C: "\<forall>\<^sup>\<infinity>k. 1/k < 1/2 - 3 * eps k"
-    unfolding eps_def by real_asymp
+  have C: "\<forall>\<^sup>\<infinity>k. 1/k < 1/2 - 3 * epsilon k"
+    unfolding epsilon_def by real_asymp
   show ?thesis
     unfolding Big_From_11_2_def
     using assms Big_ZZ_8_6 Big_X_7_1 Big_Y_6_2 Big_Red_5_3 Big_Blue_4_1 A B C
@@ -119,7 +119,7 @@ proof -
     using X_7_1 assms big71 by blast
   also have "\<dots> \<le> 2 powr (g k)"
   proof -
-    have "1/k < p0 - 3 * eps k"
+    have "1/k < p0 - 3 * eps"
     using big \<open>p0 \<ge> 1/2\<close> by (auto simp: Big_From_11_2_def)
     also have "\<dots> \<le> pee halted_point"
       using Y_6_2_halted big62 assms by blast

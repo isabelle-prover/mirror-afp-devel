@@ -9,48 +9,7 @@ begin
 
 hide_const Bseq
 
-subsection \<open>Locale for the parameters of the construction\<close>
-
-text \<open>The epsilon of the paper, outside the locale\<close>
-definition eps :: "nat \<Rightarrow> real"
-  where "eps \<equiv> \<lambda>k. real k powr (-1/4)"
-
-lemma eps_eq_sqrt: "eps k = 1 / sqrt (sqrt (real k))"
-  by (simp add: eps_def powr_minus_divide powr_powr flip: powr_half_sqrt)
-
-lemma eps_ge0: "eps k \<ge> 0"
-  by (simp add: eps_def)
-
-lemma eps_gt0: "k>0 \<Longrightarrow> eps k > 0"
-  by (simp add: eps_def)
-
-lemma eps_le1:
-  assumes "k>0" shows "eps k \<le> 1"
-proof -
-  have "eps 1 = 1"
-    by (simp add: eps_def)
-  moreover have "eps n \<le> eps m" if "0<m" "m \<le> n" for m n
-    using that by (simp add: eps_def powr_minus powr_mono2 divide_simps)
-  ultimately show ?thesis
-    using assms by (metis less_one nat_neq_iff not_le)
-qed
-
-lemma eps_less1:
-  assumes "k>1" shows "eps k < 1"
-  by (smt (verit) assms eps_def less_imp_of_nat_less of_nat_1 powr_less_one zero_le_divide_iff)
-
-definition qfun_base :: "[nat, nat] \<Rightarrow> real"
-  where "qfun_base \<equiv> \<lambda>k h. ((1 + eps k)^h - 1) / k"
-
-definition "hgt_maximum \<equiv> \<lambda>k. 2 * ln (real k) / eps k"
-
-text \<open>The first of many "bigness assumptions"\<close>
-definition "Big_height_upper_bound \<equiv> \<lambda>k. qfun_base k (nat \<lfloor>hgt_maximum k\<rfloor>) > 1"
-
-lemma Big_height_upper_bound:
-  shows "\<forall>\<^sup>\<infinity>k. Big_height_upper_bound k"
-  unfolding Big_height_upper_bound_def hgt_maximum_def eps_def qfun_base_def
-  by real_asymp
+subsection \<open>Locales for the parameters of the construction\<close>
 
 type_synonym 'a config = "'a set \<times> 'a set \<times> 'a set \<times> 'a set"
 
@@ -170,14 +129,48 @@ locale Book' = Book_Basis + No_Cliques +
   assumes XY0: "disjnt X0 Y0" "X0 \<subseteq> V" "Y0 \<subseteq> V"
   assumes density_ge_p0_min: "gen_density Red X0 Y0 \<ge> p0_min"
 
+definition "epsilon \<equiv> \<lambda>k. real k powr (-1/4)"
+
+definition qfun_base :: "[nat, nat] \<Rightarrow> real"
+  where "qfun_base \<equiv> \<lambda>k h. ((1 + epsilon k)^h - 1) / k"
+
+definition "hgt_maximum \<equiv> \<lambda>k. 2 * ln (real k) / epsilon k"
+
+text \<open>The first of many "bigness assumptions"\<close>
+definition "Big_height_upper_bound \<equiv> \<lambda>k. qfun_base k (nat \<lfloor>hgt_maximum k\<rfloor>) > 1"
+
+lemma Big_height_upper_bound:
+  shows "\<forall>\<^sup>\<infinity>k. Big_height_upper_bound k"
+  unfolding Big_height_upper_bound_def hgt_maximum_def epsilon_def qfun_base_def
+  by real_asymp
+
 context No_Cliques
 begin
+
+abbreviation "eps \<equiv> epsilon k"
+
+lemma eps_eq_sqrt: "eps = 1 / sqrt (sqrt (real k))"
+  by (simp add: epsilon_def powr_minus_divide powr_powr flip: powr_half_sqrt)
+
+lemma eps_ge0: "eps \<ge> 0"
+  by (simp add: epsilon_def)
 
 lemma ln0: "l>0"
   using no_Blue_clique by (force simp: size_clique_def clique_def)
 
 lemma kn0: "k > 0"
   using  l_le_k ln0 by auto
+
+lemma eps_gt0: "eps > 0"
+  by (simp add: epsilon_def kn0)
+
+lemma eps_le1: "eps \<le> 1"
+  using kn0 ge_one_powr_ge_zero
+  by (simp add: epsilon_def powr_minus powr_mono2 divide_simps)
+
+lemma eps_less1:
+  assumes "k>1" shows "eps < 1"
+  by (smt (verit) assms epsilon_def less_imp_of_nat_less of_nat_1 powr_less_one zero_le_divide_iff)
 
 lemma Blue_E: "Blue \<subseteq> E"
   by (simp add: Blue_def) 
@@ -266,8 +259,8 @@ definition p0 :: "real"
 definition qfun :: "nat \<Rightarrow> real"
   where "qfun \<equiv> \<lambda>h. p0 + qfun_base k h"
 
-lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + eps k)^h - 1) / k"
-  by (simp add: qfun_def qfun_base_def)
+lemma qfun_eq: "qfun \<equiv> \<lambda>h. p0 + ((1 + eps)^h - 1) / k"
+  by (simp add: qfun_def qfun_base_def epsilon_def epsilon_def)
 
 definition hgt :: "real \<Rightarrow> nat"
   where "hgt \<equiv> \<lambda>p. LEAST h. p \<le> qfun h \<and> h>0"
@@ -306,26 +299,26 @@ lemma qfun_strict_mono: "h'<h \<Longrightarrow> qfun h' < qfun h"
 lemma qfun_mono: "h'\<le>h \<Longrightarrow> qfun h' \<le> qfun h"
   by (metis less_eq_real_def nat_less_le qfun_strict_mono)
 
-lemma q_Suc_diff: "qfun (Suc h) - qfun h = eps k * (1 + eps k)^h / k"
+lemma q_Suc_diff: "qfun (Suc h) - qfun h = eps * (1 + eps)^h / k"
   by (simp add: qfun_eq field_split_simps)
 
 lemma height_exists':
   obtains h where "p \<le> qfun_base k h \<and> h>0"
 proof -
-  have 1: "1 + eps k \<ge> 1"
-    by (auto simp: eps_def)
-  have "\<forall>\<^sup>\<infinity>h. p \<le> real h * eps k / real k"
-    using p0_01 kn0 unfolding eps_def by real_asymp
-  then obtain h where "p \<le> real h * eps k / real k"
+  have 1: "1 + eps \<ge> 1"
+    by (auto simp: epsilon_def)
+  have "\<forall>\<^sup>\<infinity>h. p \<le> real h * eps / real k"
+    using p0_01 kn0 unfolding epsilon_def by real_asymp
+  then obtain h where "p \<le> real h * eps / real k"
     by (meson eventually_sequentially order.refl)
-  also have "\<dots> \<le> ((1 + eps k) ^ h - 1) / real k"
-    using linear_plus_1_le_power [of "eps k" h]
-    by (intro divide_right_mono add_mono) (auto simp: eps_def add_ac)
-  also have "\<dots> \<le> ((1 + eps k) ^ Suc h - 1) / real k"
+  also have "\<dots> \<le> ((1 + eps) ^ h - 1) / real k"
+    using linear_plus_1_le_power [of "eps" h]
+    by (intro divide_right_mono add_mono) (auto simp: epsilon_def add_ac)
+  also have "\<dots> \<le> ((1 + eps) ^ Suc h - 1) / real k"
     using power_increasing [OF le_SucI [OF order_refl] 1]
     by (simp add: divide_right_mono)
   finally have "p \<le> qfun_base k (Suc h)"
-    unfolding qfun_base_def using p0_01 by blast
+    unfolding qfun_base_def epsilon_def epsilon_def using p0_01 by blast
   then show thesis
     using that by blast 
 qed
@@ -389,38 +382,38 @@ text \<open>The upper bound of the height $h(p)$ appears just below (5) on page 
   we need to exhibit a specific $o(k)$ function.\<close>
 lemma height_upper_bound:
   assumes "p \<le> 1" and big: "Big_height_upper_bound k"
-  shows "hgt p \<le> 2 * ln k / eps k"
+  shows "hgt p \<le> 2 * ln k / eps"
   using assms real_hgt_Least big nat_floor_neg not_gr0 of_nat_floor
   unfolding Big_height_upper_bound_def hgt_maximum_def
-  by (smt (verit, ccfv_SIG) p0_01(1) power.simps(1) qfun_def qfun_eq zero_less_divide_iff) 
+  by (smt (verit) epsilon_def hgt_Least of_nat_mono p0_01(1) qfun0 qfun_def)
 
 definition alpha :: "nat \<Rightarrow> real" where "alpha \<equiv> \<lambda>h. qfun h - qfun (h-1)"
 
 lemma alpha_ge0: "alpha h \<ge> 0"
   by (simp add: alpha_def qfun_eq divide_le_cancel eps_gt0)
 
-lemma alpha_Suc_ge: "alpha (Suc h) \<ge> eps k / k"
+lemma alpha_Suc_ge: "alpha (Suc h) \<ge> eps / k"
 proof -
-  have "(1 + eps k) ^ h \<ge> 1"
-    by (simp add: eps_def)
+  have "(1 + eps) ^ h \<ge> 1"
+    by (simp add: epsilon_def)
   then show ?thesis
     by (simp add: alpha_def qfun_eq eps_gt0 field_split_simps)
 qed
 
-lemma alpha_ge: "h>0 \<Longrightarrow> alpha h \<ge> eps k / k"
+lemma alpha_ge: "h>0 \<Longrightarrow> alpha h \<ge> eps / k"
   by (metis Suc_pred alpha_Suc_ge)
 
 lemma alpha_gt0: "h>0 \<Longrightarrow> alpha h > 0"
   by (metis alpha_ge alpha_ge0 eps_gt0 kn0 nle_le not_le of_nat_0_less_iff zero_less_divide_iff)
 
-lemma alpha_Suc_eq: "alpha (Suc h) = eps k * (1 + eps k) ^ h / k"
+lemma alpha_Suc_eq: "alpha (Suc h) = eps * (1 + eps) ^ h / k"
   by (simp add: alpha_def q_Suc_diff)
 
 lemma alpha_eq: 
-  assumes "h>0" shows "alpha h = eps k * (1 + eps k) ^ (h-1) / k"
+  assumes "h>0" shows "alpha h = eps * (1 + eps) ^ (h-1) / k"
   by (metis Suc_pred' alpha_Suc_eq assms)
 
-lemma alpha_hgt_eq: "alpha (hgt p) = eps k * (1 + eps k) ^ (hgt p -1) / k"
+lemma alpha_hgt_eq: "alpha (hgt p) = eps * (1 + eps) ^ (hgt p -1) / k"
   using alpha_eq hgt_gt0 by presburger
 
 lemma alpha_mono: "\<lbrakk>h' \<le> h; 0 < h'\<rbrakk> \<Longrightarrow> alpha h' \<le> alpha h"
@@ -477,7 +470,7 @@ lemma B_less_l:
 
 subsection \<open>Degree regularisation\<close>
 
-definition "red_dense \<equiv> \<lambda>Y p x. card (Neighbours Red x \<inter> Y) \<ge> (p - eps k powr (-1/2) * alpha (hgt p)) * card Y"
+definition "red_dense \<equiv> \<lambda>Y p x. card (Neighbours Red x \<inter> Y) \<ge> (p - eps powr (-1/2) * alpha (hgt p)) * card Y"
 
 definition "X_degree_reg \<equiv> \<lambda>X Y. {x \<in> X. red_dense Y (red_density X Y) x}"
 
