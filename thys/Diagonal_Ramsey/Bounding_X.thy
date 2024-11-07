@@ -1166,7 +1166,7 @@ proof -
   ultimately have \<section>: "((1 + \<epsilon>) * (1 + \<epsilon>) ^ hgt qstar) * card \<R> \<le> 2 * real k"
     by (intro mult_mono) auto
   have "- 2 * alpha 1 * k \<le> - alpha (hgt qstar + 2) * card \<R>"
-    using mult_right_mono_neg [OF \<section>, of "- (\<epsilon>)"] eps_ge0 
+    using mult_right_mono_neg [OF \<section>, of "- \<epsilon>"] eps_ge0 
     by (simp add: alpha_eq divide_simps mult_ac)
   also have "\<dots> \<le> (\<Sum>i\<in>\<R>. pstar (Suc i) - pstar i)"
   proof -

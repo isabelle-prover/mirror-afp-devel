@@ -396,7 +396,7 @@ lemma Red_5_7c:
 lemma Red_5_8:
   assumes i: "i \<in> Step_class {dreg_step}" and x: "x \<in> Xseq (Suc i)" 
   shows "card (Neighbours Red x \<inter> Yseq (Suc i))
-         \<ge> (1 - (\<epsilon>) powr (1/2)) * pee i * (card (Yseq (Suc i)))"
+         \<ge> (1 - \<epsilon> powr (1/2)) * pee i * (card (Yseq (Suc i)))"
 proof -
   obtain X Y A B
     where step: "stepper i = (X,Y,A,B)"
@@ -431,7 +431,7 @@ proof -
     also have "\<dots> \<le> \<epsilon> powr (1/2) * (pee i)"
       using p0 by (intro mult_left_mono) (auto simp flip: pee_eq_p0)
     finally have "\<epsilon> powr -(1/2) * alpha (hgt (pee i)) \<le> \<epsilon> powr (1/2) * (pee i)" .
-    then have "(1 - (\<epsilon>) powr (1/2)) * (pee i) * (card Y) \<le> ((pee i) - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y"
+    then have "(1 - \<epsilon> powr (1/2)) * (pee i) * (card Y) \<le> ((pee i) - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)
     with XY RedN YSuc show ?thesis by fastforce
   next
@@ -444,7 +444,7 @@ proof -
       using p_gt_invk 
       by (smt (verit) divide_inverse inverse_eq_divide mult_left_mono powr_ge_zero)
     finally have "\<epsilon> powr -(1/2) * alpha (hgt (pee i)) \<le> \<epsilon> powr (1/2) * (pee i)" .
-    then have "(1 - (\<epsilon>) powr (1/2)) * pee i * card Y \<le> (pee i - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y"
+    then have "(1 - \<epsilon> powr (1/2)) * pee i * card Y \<le> (pee i - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)
     with XY RedN YSuc show ?thesis by fastforce
   qed

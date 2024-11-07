@@ -826,11 +826,11 @@ proof -
   qed
   have "2 powr (ok_fun_61 k) * p0 ^ card st \<le> (p0 - 2 * \<epsilon> powr (1/2)) ^ card st"
   proof -
-    have "2 powr (ok_fun_61 k) = (1 - 2 * (\<epsilon>) powr(1/2) / p0_min) ^ (2*k)"
+    have "2 powr (ok_fun_61 k) = (1 - 2 * \<epsilon> powr(1/2) / p0_min) ^ (2*k)"
       using big_p0 ok_fun_61_works by blast
-    also have "\<dots> \<le> (1 - 2 * (\<epsilon>) powr(1/2) / p0) ^ (2*k)"
+    also have "\<dots> \<le> (1 - 2 * \<epsilon> powr(1/2) / p0) ^ (2*k)"
       using p0_ge p0_min big_p0 by (intro power_mono) (auto simp: frac_le)
-    also have "\<dots> \<le> (1 - 2 * (\<epsilon>) powr(1/2) / p0) ^ card st"
+    also have "\<dots> \<le> (1 - 2 * \<epsilon> powr(1/2) / p0) ^ card st"
       using big_p0 p0_01 \<open>0 < p0m\<close>
       by (intro power_decreasing st_le_2k) (auto simp: p0m_def)
     finally have \<section>: "2 powr ok_fun_61 k \<le> (1 - 2 * \<epsilon> powr (1/2) / p0) ^ card st" .
