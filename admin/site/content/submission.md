@@ -66,6 +66,6 @@ Major monotone changes, e.g. adding a new concept rather than more results on ex
 
 The above means that if you are an author and would like to provide a new, better version of your AFP entry, you can do so.
 
-To achieve this, you should base your changes on the [mercurial development version](https:/foss.heptapod.net/isa-afp/afp-devel/) of your AFP entry and test it against the current [Isabelle development version](https://isabelle.in.tum.de/devel/).
+To achieve this, you should base your changes on the [mercurial development version](https://foss.heptapod.net/isa-afp/afp-devel/) of your AFP entry and test it against the current [Isabelle development version](https://isabelle-dev.sketis.net/source/isabelle/).
 
 If you would like to get write access to your entry in the mercurial repository or if you need assistance, please contact the [editors](/about#editors).
