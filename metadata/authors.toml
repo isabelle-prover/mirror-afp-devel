@@ -155,7 +155,8 @@ host = [
 
 [argyraki.emails.argyraki_email1]
 user = [
-  "angeliki", "koutsoukouargyraki",
+  "angeliki",
+  "koutsoukouargyraki",
 ]
 host = [
   "rhul",
