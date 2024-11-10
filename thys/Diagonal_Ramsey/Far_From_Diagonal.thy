@@ -501,11 +501,11 @@ proof -
     by (intro X_7_1) (auto simp: Big_Far_9_3_def)
   also have "\<dots> \<le> RN k l34"
   proof -
-    have "p0 - 3 * \<epsilon> > 1/k" and "pee halted_point \<ge> p0 - 3 * \<epsilon>"
+    have "p0 - 3 * \<epsilon> > 1/k" and "pseq halted_point \<ge> p0 - 3 * \<epsilon>"
       using l_le_k big p0_ge Y_6_2_halted by (auto simp: Big_Far_9_3_def \<gamma>_def)
     then show ?thesis
       using halted_point_halted \<gamma>01
-      by (fastforce simp: step_terminating_iff termination_condition_def pee_def l34_def)
+      by (fastforce simp: step_terminating_iff termination_condition_def pseq_def l34_def)
   qed
   also have "\<dots> \<le> 2 powr (\<lceil>k powr (3/4)\<rceil> * log 2 k)"
     using RN34_le_2powr_ok l34_def l_le_k ln0 by blast
