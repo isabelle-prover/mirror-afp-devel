@@ -2087,31 +2087,32 @@ proof (induction index key p q r t rule: round.induct, simp_all add: Let_def
   qed
 qed
 
-lemma round_len_eq [rule_format]:
- "bn_count (fst (snd t)) = foldl (+) 0 (fst (snd t)) \<longrightarrow>
+lemma round_len_eq:
+ "bn_count (fst (snd t)) = foldl (+) 0 (fst (snd t)) \<Longrightarrow>
     length (fst (snd (round index key p q r t))) = foldl (+) 0 (fst (snd t))"
-  using [[simproc del: defined_all]]
-proof (induction index key p q r t rule: round.induct, simp_all add: Let_def
- split: prod.split del: all_simps, ((rule allI)+, (rule impI)+, simp add:
- add_suc)+, subst (asm) (3) add_base_zero, subst add_base_zero)
-  fix index p q r u n ns n' v ms' ws'
-    and key :: "'a \<Rightarrow> 'b" and xs :: "'a list" and ns' :: "nat list" and r' :: nat
-  let ?ws = "take (Suc (Suc n)) xs"
-  assume
-    A: "round_suc_suc index key ?ws n n' u = (v, ms', ws')" and
-    B: "bn_count (Suc (Suc n) # ns) = Suc (Suc (foldl (+) 0 ns + n))"
-  assume "\<And>ws a b c d e f g h.
-    ws = ?ws \<Longrightarrow> a = (n', r') \<Longrightarrow> b = n' \<and> c = r' \<Longrightarrow>
-    d = (v, ms', ws') \<Longrightarrow> e = v \<and> f = (ms', ws') \<Longrightarrow> g = ms' \<and> h = ws' \<Longrightarrow>
-      bn_count ns = foldl (+) 0 ns \<longrightarrow> length ns' = foldl (+) 0 ns"
-  moreover have C: "n = 0 \<or> n = Suc 0"
-    using B bn_count_le [of ns] le_less_Suc_eq by (force elim!: bn_count.elims)
-  ultimately have "length ns' = foldl (+) 0 ns"
-    using B by auto
-  with A [symmetric] C 
-  show "length ms' + length ns' = Suc (Suc (foldl (+) 0 ns + n))"
-    by (auto simp: round_suc_suc_def Let_def enum_length split: if_split_asm)
-qed
+proof (induction index key p q r t rule: round.induct)
+  case (3 index key p q r u ns xs)
+  then show ?case
+    by (force simp add: prod.case_eq_if add_suc)
+next
+  case (4 index key p q r u n ns xs)
+  then have "\<forall>n. bn_count ns + n \<le> foldl (+) n ns"
+    by (metis add_base_zero add_le_cancel_right bn_count_le)
+  moreover have "\<And>n. \<lbrakk>\<forall>n. bn_count ns + n \<le> foldl (+) n ns;
+          foldl (+) (Suc (Suc (Suc (Suc n)))) ns =
+          Suc (Suc (bn_count ns))\<rbrakk>
+         \<Longrightarrow> False"
+  by (metis add_Suc_shift le0 le_add_same_cancel1
+      not_less_eq_eq)
+  ultimately have "0 = n \<or> 1 = n \<or> Suc (Suc (n + bn_count ns)) \<le> Suc (Suc (bn_count ns))"
+    using "4.prems" bn_count_le [of ns] 
+    by (auto simp: elim!: bn_count.elims)
+  then
+  have C: "n = 0 \<or> n = Suc 0"
+    by linarith
+  with 4 show ?case
+    by (auto simp: round_suc_suc_def add_suc Let_def enum_length split: prod.split)
+qed auto
 
 theorem round_len:
   assumes

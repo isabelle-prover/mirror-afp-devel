@@ -900,9 +900,7 @@ definition "Xseq \<equiv> (\<lambda>(X,Y,A,B). X) \<circ> stepper"
 definition "Yseq \<equiv> (\<lambda>(X,Y,A,B). Y) \<circ> stepper"
 definition "Aseq \<equiv> (\<lambda>(X,Y,A,B). A) \<circ> stepper"
 definition "Bseq \<equiv> (\<lambda>(X,Y,A,B). B) \<circ> stepper"
-definition "pseq \<equiv> \<lambda>n. red_density (Xseq n) (Yseq n)"
-
-definition "pee \<equiv> \<lambda>i. red_density (Xseq i) (Yseq i)"
+definition "pseq \<equiv> \<lambda>i. red_density (Xseq i) (Yseq i)"
 
 lemma Xseq_0 [simp]: "Xseq 0 = X0"
   by (simp add: Xseq_def)
@@ -936,8 +934,8 @@ lemma Xseq_Yseq_disjnt: "disjnt (Xseq i) (Yseq i)"
   by (metis XY0(1) Xseq_0 Xseq_antimono Yseq_0 Yseq_antimono disjnt_subset1 disjnt_sym zero_le)
 
 lemma edge_card_eq_pee: 
-  "edge_card Red (Xseq i) (Yseq i) = pee i * card (Xseq i) * card (Yseq i)"
-  by (simp add: pee_def gen_density_def finite_Xseq finite_Yseq)
+  "edge_card Red (Xseq i) (Yseq i) = pseq i * card (Xseq i) * card (Yseq i)"
+  by (simp add: pseq_def gen_density_def finite_Xseq finite_Yseq)
 
 lemma valid_state_seq: "valid_state(Xseq i, Yseq i, Aseq i, Bseq i)"
   using valid_state_stepper[of i]
@@ -972,14 +970,14 @@ lemma Bseq_less_l: "card (Bseq i) < l"
 lemma Bseq_0 [simp]: "Bseq 0 = {}"
   by (simp add: Bseq_def)
 
-lemma pee_eq_p0: "pee 0 = p0"
-  by (simp add: pee_def p0_def)
+lemma pee_eq_p0: "pseq 0 = p0"
+  by (simp add: pseq_def p0_def)
 
-lemma pee_ge0: "pee i \<ge> 0"
-  by (simp add: gen_density_ge0 pee_def)
+lemma pee_ge0: "pseq i \<ge> 0"
+  by (simp add: gen_density_ge0 pseq_def)
 
-lemma pee_le1: "pee i \<le> 1"
-  using gen_density_le1 pee_def by presburger
+lemma pee_le1: "pseq i \<le> 1"
+  using gen_density_le1 pseq_def by presburger
 
 lemma pseq_0: "p0 = pseq 0"
   by (simp add: p0_def pseq_def Xseq_def Yseq_def)
@@ -1062,23 +1060,23 @@ lemma Step_class_not_halted: "\<lbrakk>i \<notin> Step_class {halted}; i\<ge>j\<
 
 lemma
   assumes "i \<notin> Step_class {halted}" 
-  shows not_halted_pee_gt: "pee i > 1/k"
+  shows not_halted_pee_gt: "pseq i > 1/k"
     and Xseq_gt0: "card (Xseq i) > 0"
     and Xseq_gt_RN: "card (Xseq i) > RN k (nat \<lceil>real l powr (3/4)\<rceil>)"
     and not_termination_condition: "\<not> termination_condition (Xseq i) (Yseq i)"
   using assms
-  by (auto simp: step_kind_defs termination_condition_def pee_def split: if_split_asm prod.split_asm)
+  by (auto simp: step_kind_defs termination_condition_def pseq_def split: if_split_asm prod.split_asm)
 
 lemma not_halted_pee_gt0:
   assumes "i \<notin> Step_class {halted}" 
-  shows "pee i > 0" 
+  shows "pseq i > 0" 
   using not_halted_pee_gt [OF assms] linorder_not_le order_less_le_trans by fastforce
 
 lemma Yseq_gt0:
   assumes "i \<notin> Step_class {halted}"
   shows "card (Yseq i) > 0"
   using not_halted_pee_gt [OF assms]
-  using card_gt_0_iff finite_Yseq pee_def by fastforce 
+  using card_gt_0_iff finite_Yseq pseq_def by fastforce 
 
 lemma step_odd: "i \<in> Step_class {red_step,bblue_step,dboost_step} \<Longrightarrow> odd i" 
   by (auto simp: Step_class_def stepper_kind_def split: if_split_asm prod.split_asm)

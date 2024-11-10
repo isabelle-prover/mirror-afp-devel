@@ -121,13 +121,13 @@ proof -
   proof -
     have "1/k < p0 - 3 * \<epsilon>"
     using big \<open>p0 \<ge> 1/2\<close> by (auto simp: Big_From_11_2_def)
-    also have "\<dots> \<le> pee halted_point"
+    also have "\<dots> \<le> pseq halted_point"
       using Y_6_2_halted big62 assms by blast
-    finally have "pee halted_point > 1/k" .
+    finally have "pseq halted_point > 1/k" .
     moreover have "termination_condition (Xseq halted_point) (Yseq halted_point)"
       using halted_point_halted step_terminating_iff by blast
     ultimately have "card (Xseq halted_point) \<le> RN k (nat \<lceil>real k powr (3/4)\<rceil>)"
-      using \<open>l=k\<close> pee_def termination_condition_def by auto
+      using \<open>l=k\<close> pseq_def termination_condition_def by auto
     then show ?thesis
       unfolding g_def by (smt (verit) RN34_le_2powr_ok kn0 of_nat_le_iff)
   qed

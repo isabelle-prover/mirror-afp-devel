@@ -396,7 +396,7 @@ lemma Red_5_7c:
 lemma Red_5_8:
   assumes i: "i \<in> Step_class {dreg_step}" and x: "x \<in> Xseq (Suc i)" 
   shows "card (Neighbours Red x \<inter> Yseq (Suc i))
-         \<ge> (1 - \<epsilon> powr (1/2)) * pee i * (card (Yseq (Suc i)))"
+         \<ge> (1 - \<epsilon> powr (1/2)) * pseq i * (card (Yseq (Suc i)))"
 proof -
   obtain X Y A B
     where step: "stepper i = (X,Y,A,B)"
@@ -412,12 +412,12 @@ proof -
   finally have XSuc: "Xseq (Suc i) = X_degree_reg X Y" .
   have YSuc: "Yseq (Suc i) = Yseq i"
     using Suc_i step by (auto simp: degree_reg_def stepper_XYseq)
-  have p_gt_invk: "(pee i) > 1/k"
-    using "XY" nonterm pee_def termination_condition_def by auto
-  have RedN: "(pee i - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y \<le> card (Neighbours Red x \<inter> Y)"
-    using x XY by (simp add: XSuc YSuc X_degree_reg_def pee_def red_dense_def)
+  have p_gt_invk: "(pseq i) > 1/k"
+    using "XY" nonterm pseq_def termination_condition_def by auto
+  have RedN: "(pseq i - \<epsilon> powr -(1/2) * alpha (hgt (pseq i))) * card Y \<le> card (Neighbours Red x \<inter> Y)"
+    using x XY by (simp add: XSuc YSuc X_degree_reg_def pseq_def red_dense_def)
   show ?thesis
-  proof (cases "pee i \<ge> qfun 0")
+  proof (cases "pseq i \<ge> qfun 0")
     case True
     have "i \<notin> Step_class {halted}"
       using i by (simp add: Step_class_def)
@@ -425,26 +425,26 @@ proof -
       by (metis Step_class_not_halted gr0I nat_less_le not_halted_pee_gt pee_eq_p0)
     have 0: "\<epsilon> powr -(1/2) \<ge> 0"
       by simp
-    have "\<epsilon> powr -(1/2) * alpha (hgt (pee i)) \<le> \<epsilon> powr (1/2) * ((pee i) - qfun 0 + 1/k)"
+    have "\<epsilon> powr -(1/2) * alpha (hgt (pseq i)) \<le> \<epsilon> powr (1/2) * ((pseq i) - qfun 0 + 1/k)"
       using mult_left_mono [OF Red_5_7b [OF True] 0]
       by (simp add: eps_def powr_mult_base flip: mult_ac)
-    also have "\<dots> \<le> \<epsilon> powr (1/2) * (pee i)"
+    also have "\<dots> \<le> \<epsilon> powr (1/2) * (pseq i)"
       using p0 by (intro mult_left_mono) (auto simp flip: pee_eq_p0)
-    finally have "\<epsilon> powr -(1/2) * alpha (hgt (pee i)) \<le> \<epsilon> powr (1/2) * (pee i)" .
-    then have "(1 - \<epsilon> powr (1/2)) * (pee i) * (card Y) \<le> ((pee i) - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y"
+    finally have "\<epsilon> powr -(1/2) * alpha (hgt (pseq i)) \<le> \<epsilon> powr (1/2) * (pseq i)" .
+    then have "(1 - \<epsilon> powr (1/2)) * (pseq i) * (card Y) \<le> ((pseq i) - \<epsilon> powr -(1/2) * alpha (hgt (pseq i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)
     with XY RedN YSuc show ?thesis by fastforce
   next
     case False
-    then have "pee i \<le> qfun 1"
+    then have "pseq i \<le> qfun 1"
       by (smt (verit) One_nat_def alpha_Suc_eq alpha_ge0 q_Suc_diff)
-    then have "\<epsilon> powr -(1/2) * alpha (hgt (pee i)) = \<epsilon> powr (1/2) / k"
+    then have "\<epsilon> powr -(1/2) * alpha (hgt (pseq i)) = \<epsilon> powr (1/2) / k"
       using powr_mult_base [of "\<epsilon>"] eps_gt0 by (force simp: Red_5_7c mult.commute)
-    also have "\<dots> \<le> \<epsilon> powr (1/2) * (pee i)"
+    also have "\<dots> \<le> \<epsilon> powr (1/2) * (pseq i)"
       using p_gt_invk 
       by (smt (verit) divide_inverse inverse_eq_divide mult_left_mono powr_ge_zero)
-    finally have "\<epsilon> powr -(1/2) * alpha (hgt (pee i)) \<le> \<epsilon> powr (1/2) * (pee i)" .
-    then have "(1 - \<epsilon> powr (1/2)) * pee i * card Y \<le> (pee i - \<epsilon> powr -(1/2) * alpha (hgt (pee i))) * card Y"
+    finally have "\<epsilon> powr -(1/2) * alpha (hgt (pseq i)) \<le> \<epsilon> powr (1/2) * (pseq i)" .
+    then have "(1 - \<epsilon> powr (1/2)) * pseq i * card Y \<le> (pseq i - \<epsilon> powr -(1/2) * alpha (hgt (pseq i))) * card Y"
       by (intro mult_right_mono) (auto simp: algebra_simps)
     with XY RedN YSuc show ?thesis by fastforce
   qed
@@ -457,12 +457,12 @@ proof
   assume con: "Neighbours Red x \<inter> Yseq (Suc i) = {}"
   have not_halted: "i \<notin> Step_class {halted}"
     using i by (auto simp: Step_class_def)
-  then have 0: "pee i > 0"
+  then have 0: "pseq i > 0"
     using not_halted_pee_gt0 by blast
   have Y': "card (Yseq (Suc i)) > 0"
     using i Yseq_gt0 [OF not_halted] stepper_XYseq
     by (auto simp: step_kind_defs degree_reg_def split: if_split_asm prod.split_asm)
-  have "(1 - \<epsilon> powr (1/2)) * pee i * card (Yseq (Suc i)) \<le> 0"
+  have "(1 - \<epsilon> powr (1/2)) * pseq i * card (Yseq (Suc i)) \<le> 0"
     using Red_5_8 [OF i x] con by simp 
   with 0 Y' have "(1 - \<epsilon> powr (1/2)) \<le> 0"
     by (simp add: mult_le_0_iff zero_le_mult_iff)
@@ -542,7 +542,7 @@ qed
 lemma Red_5_1:
   assumes i: "i \<in> Step_class {red_step,dboost_step}"  
     and Big: "Big_Red_5_1 \<mu> l"
-  defines "p \<equiv> pee i"
+  defines "p \<equiv> pseq i"
   defines "x \<equiv> cvx i"
   defines "X \<equiv> Xseq i" and "Y \<equiv> Yseq i"
   defines "NBX \<equiv> Neighbours Blue x \<inter> X"
@@ -614,7 +614,7 @@ proof -
     then have "(p - alpha (hgt p)) * (card NRX * card NRY) \<le> (\<Sum>y \<in> NRX. p * card NRY + Weight X Y x y * card Y)"
       using \<open>card Y \<noteq> 0\<close> by (simp add: field_simps sum_distrib_left sum.distrib)
     also have "\<dots> = (\<Sum>y \<in> NRX. card (Neighbours Red x \<inter> Neighbours Red y \<inter> Y))"
-      using \<open>card Y \<noteq> 0\<close> by (simp add: Weight_def pee_def XY NRY_def field_simps p_def)
+      using \<open>card Y \<noteq> 0\<close> by (simp add: Weight_def pseq_def XY NRY_def field_simps p_def)
     also have "\<dots> = edge_card Red NRY NRX"
       using \<open>disjnt NRX NRY\<close> \<open>finite NRX\<close>
       by (simp add: disjnt_sym edge_card_eq_sum_Neighbours Red_E psubset_imp_subset NRY_def Int_ac)
@@ -638,7 +638,7 @@ proof -
     have 15: "(\<Sum>y \<in> NBX. Weight X Y x y) 
         \<ge> weight X Y x + alpha (hgt p) * card NRX * card NRY / card Y"
       by linarith    
-    have pm1: "pee (i-1) > 1/k"
+    have pm1: "pseq (i-1) > 1/k"
       by (meson Step_class_not_halted diff_le_self not_halted not_halted_pee_gt)
     have \<beta>_eq: "\<beta> = card NBX / card X"
       using NBX_def \<beta>_def XY by blast
@@ -653,9 +653,9 @@ proof -
       by (simp add: eps_def powr_mono2)
     then have A: "1/2 \<le> 1 - \<epsilon> powr (1/2)"
       by (simp add: powr_divide)
-    have le: "1 / (2 * real k) \<le> (1 - \<epsilon> powr (1/2)) * pee (i-1)"
+    have le: "1 / (2 * real k) \<le> (1 - \<epsilon> powr (1/2)) * pseq (i-1)"
       using pm1 \<open>k>0\<close> mult_mono [OF A less_imp_le [OF pm1]] A by simp
-    have "card Y / (2 * real k) \<le> (1 - \<epsilon> powr (1/2)) * pee (i-1) * card Y"
+    have "card Y / (2 * real k) \<le> (1 - \<epsilon> powr (1/2)) * pseq (i-1) * card Y"
       using mult_left_mono [OF le] by (metis mult.commute divide_inverse inverse_eq_divide of_nat_0_le_iff)
     also have "\<dots> \<le> card NRY"
       using pm1 Red_5_8 im1 by (metis NRY_def One_nat_def \<open>odd i\<close> \<open>x \<in> X\<close> XY odd_Suc_minus_one)
@@ -709,7 +709,7 @@ proof -
       using 15 \<open>card Y \<noteq> 0\<close> apply (simp add: sum_distrib_left sum.distrib)
       by (simp only: sum_distrib_right divide_simps split: if_split_asm)
     also have "\<dots> \<le> (\<Sum>y \<in> NBX. card (Neighbours Red x \<inter> Neighbours Red y \<inter> Y))"
-      using \<open>card Y \<noteq> 0\<close> by (simp add: Weight_def pee_def XY NRY_def field_simps p_def)
+      using \<open>card Y \<noteq> 0\<close> by (simp add: Weight_def pseq_def XY NRY_def field_simps p_def)
     also have "\<dots> = edge_card Red NRY NBX"
       using \<open>disjnt NBX NRY\<close> \<open>finite NBX\<close>
       by (simp add: disjnt_sym edge_card_eq_sum_Neighbours Red_E psubset_imp_subset NRY_def Int_ac)
@@ -786,7 +786,7 @@ text \<open>This and the previous result are proved under the assumption of a su
 corollary Red_5_2:
   assumes i: "i \<in> Step_class {dboost_step}" 
     and Big: "Big_Red_5_1 \<mu> l"
-  shows "pee (Suc i) - pee i \<ge> (1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha (hgt (pee i)) \<and>
+  shows "pseq (Suc i) - pseq i \<ge> (1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha (hgt (pseq i)) \<and>
          beta i > 0"
 proof -
   let ?x = "cvx i"
@@ -810,21 +810,21 @@ proof -
   have SUC: "stepper (Suc i) = (Neighbours Blue ?x \<inter> X, Neighbours Red ?x \<inter> Y, A, insert ?x B)"
     using step nonterm \<open>odd i\<close> non_mb nonredd
     by (simp add: stepper_def next_state_def Let_def cvx_def)
-  have pee: "pee i = red_density X Y"
-    by (simp add: pee_def Xeq Yeq)
+  have pseq: "pseq i = red_density X Y"
+    by (simp add: pseq_def Xeq Yeq)
   have "choose_central_vx (X,Y,A,B) = cvx i"
     by (simp add: cvx_def step)
   with nonredd have "red_density (Neighbours Red (cvx i) \<inter> X) (Neighbours Red (cvx i) \<inter> Y)
-                   < pee i - alpha (hgt (red_density X Y))"
-    using nonredd by (simp add: reddish_def pee)
-  then have "pee i + (1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha (hgt (pee i))
+                   < pseq i - alpha (hgt (red_density X Y))"
+    using nonredd by (simp add: reddish_def pseq)
+  then have "pseq i + (1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha (hgt (pseq i))
           \<le> red_density (Neighbours Blue (cvx i) \<inter> Xseq i)
               (Neighbours Red (cvx i) \<inter> Yseq i) \<and> beta i > 0"
-    using Red_5_1 Un_iff Xeq Yeq assms gen_density_ge0 pee Step_class_insert
+    using Red_5_1 Un_iff Xeq Yeq assms gen_density_ge0 pseq Step_class_insert
     by (smt (verit, ccfv_threshold) \<beta>eq divide_eq_eq)
   moreover have "red_density (Neighbours Blue (cvx i) \<inter> Xseq i)
-                             (Neighbours Red (cvx i) \<inter> Yseq i) \<le> pee (Suc i)"
-    using SUC Xeq Yeq stepper_XYseq by (simp add: pee_def)
+                             (Neighbours Red (cvx i) \<inter> Yseq i) \<le> pseq (Suc i)"
+    using SUC Xeq Yeq stepper_XYseq by (simp add: pseq_def)
   ultimately show ?thesis
     by linarith
 qed
@@ -857,11 +857,11 @@ begin
 corollary Red_5_3:
   assumes i: "i \<in> Step_class {dboost_step}"
     and big: "Big_Red_5_3 \<mu> l" 
-  shows "pee (Suc i) \<ge> pee i \<and> beta i \<ge> 1 / (real k)\<^sup>2"
+  shows "pseq (Suc i) \<ge> pseq i \<and> beta i \<ge> 1 / (real k)\<^sup>2"
 proof 
   have "k>1" and big51: "Big_Red_5_1 \<mu> l"
     using l_le_k big by (auto simp: Big_Red_5_3_def)
-  let ?h = "hgt (pee i)"
+  let ?h = "hgt (pseq i)"
   have "?h > 0"
     by (simp add: hgt_gt0 kn0 pee_le1)
   then obtain \<alpha>: "alpha ?h \<ge> 0" and *: "alpha ?h \<ge> \<epsilon> / k"
@@ -875,9 +875,9 @@ proof
   have "(1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha ?h \<ge> 0"
     using beta_ge0[of i] eps_le1 \<alpha> \<beta> \<mu>01 \<open>k>1\<close>
     by (simp add: zero_le_mult_iff zero_le_divide_iff)
-  then show "pee (Suc i) \<ge> pee i"
+  then show "pseq (Suc i) \<ge> pseq i"
     using Red_5_2 [OF i big51] by linarith 
-  have "pee (Suc i) - pee i \<le> 1"
+  have "pseq (Suc i) - pseq i \<le> 1"
     by (smt (verit) pee_ge0 pee_le1)
   with Red_5_2 [OF i big51] 
   have "(1 - \<epsilon>) * ((1 - beta i) / beta i) * alpha ?h \<le> 1" and beta_gt0: "beta i > 0"
