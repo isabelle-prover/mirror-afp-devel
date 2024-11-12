@@ -178,24 +178,27 @@ fun hammer_logtac (pstate:Proof.state) =
                              (if Utils.debug then tracing "ERROR in result/hammer_logtac" else ();
                               NONE)
                            : (bool * (string * string list)) option;
+
     val orig_string        = result <$> snd <$> snd <$> hd handle Empty =>
                              (if Utils.debug then tracing "Empty in orig_string/hammer_logtac" else (); 
                               NONE) : string option;
+
     fun did_smt_timeout (out::timed::_) = "out)" = out andalso "timed" = timed
      |  did_smt_timeout _ = error "Something went wrong in Subtool.ML";
-    val one_line_apply     = orig_string <$> space_explode " "
+    val one_line_apply     = orig_string
+                            <$> XML.content_of o YXML.parse_body
+                            <$> space_explode " "
                             <$> drop 2                           (* drop "Try this:"*)
                             <$> rev <$> (fn tokens =>
                                 if did_smt_timeout tokens then drop 5 tokens else drop 2 tokens)
                             <$> rev           (* drop "(0.1 ms)." and such.*)
                             <$> String.concatWith " "            : string option;
-    val apply_script_cntnt = omap Protocol_Message.clean_output one_line_apply : string option;
-    val sh_returned        = if is_some apply_script_cntnt
+    val sh_returned        = if is_some one_line_apply
                              then valOf result |> fst else false : bool;
   in
     if   sh_returned
     then
-      sh_output_to_sh_logtac (valOf apply_script_cntnt) pstate
+      sh_output_to_sh_logtac (valOf one_line_apply) pstate
     else Seq.empty : (Dynamic_Utils.log * Proof.state) Seq.seq
   end;
 
