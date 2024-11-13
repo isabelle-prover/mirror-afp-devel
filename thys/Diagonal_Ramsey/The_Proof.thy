@@ -491,7 +491,7 @@ proof -
 qed 
 
 theorem (in P0_min) From_11_1:
-  assumes \<mu>: "0 < \<mu>" "\<mu> \<le> 2/5" and "\<eta> > 0" and le: "\<eta> \<le> 1/12"
+  assumes \<mu>: "0 < \<mu>" "\<mu> \<le> 2/5" and "0 < \<eta>" "\<eta> \<le> 1/12"
     and p0_min12: "p0_min \<le> 1/2" and big: "Big_From_11_1 \<eta> \<mu> k"
   shows "log 2 (RN k k) / k \<le> (SUP x \<in> {0..1}. SUP y \<in> {0..3/4}. ffGG \<mu> x y + \<eta>)"
 proof -
