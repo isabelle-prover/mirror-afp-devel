@@ -3,7 +3,6 @@ imports
   Complex_Main
   "HOL-Library.Discrete"
   "HOL-Library.Log_Nat"
-  Ceil_Log2
   Karatsuba_Sqrt_Library
 begin
 

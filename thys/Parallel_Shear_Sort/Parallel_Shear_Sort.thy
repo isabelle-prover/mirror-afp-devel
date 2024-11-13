@@ -14,7 +14,7 @@
   Originally a submission to VerifyThis 2021.
 *)
 theory Parallel_Shear_Sort
-  imports Complex_Main "HOL-Library.Multiset" "HOL-Library.FuncSet" Ceil_Log2
+  imports Complex_Main "HOL-Library.Multiset" "HOL-Library.FuncSet" "HOL-Library.Log_Nat"
 begin
 
 subsubsection \<open>Facts about sorting\<close>
