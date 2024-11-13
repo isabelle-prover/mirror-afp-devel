@@ -839,7 +839,6 @@ proof -
     using assms by (simp add: x_def x_of_def)
   then have x: "x \<in> I"
     by (simp add: x_of_def I_def)
-
   have D: "((\<lambda>x. f1 x (y_of x)) has_real_derivative D x) (at x)" if "x \<in> I" for x
     using that Df1_y by (force simp: D_def I_def)
   have Dgt0: "D x \<ge> 0" if "x \<in> I" for x
@@ -871,8 +870,7 @@ begin
 
 text \<open>The truly horrible Lemma 12.3\<close>
 lemma 123:
-  fixes \<delta>::real
-  assumes "0 < \<delta>" "\<delta> \<le> 1 / 2^11"
+  assumes "\<delta> \<le> 1 / 2^11"
   shows "(SUP x \<in> {0..1}. SUP y \<in> {0..3/4}. ffGG (2/5) x y) \<le> 2-\<delta>"
 proof -
   have "min (ff x y) (gg x y) \<le> 2 - 1/2^11" if "x \<in> {0..1}" "y \<in> {0..3/4}" for x y
