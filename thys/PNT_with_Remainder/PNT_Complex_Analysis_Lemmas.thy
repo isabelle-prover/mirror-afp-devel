@@ -604,7 +604,7 @@ lemma lemma_3_9_beta1':
     and ne: "\<And>z. z \<in> ball s r \<Longrightarrow> f z \<noteq> 0"
     and bn: "\<And>z. z \<in> ball s r \<Longrightarrow> \<parallel>f z / f s\<parallel> \<le> exp M"
     and hs: "z \<in> cball s (r / 4)"
-  shows "\<parallel>logderiv f z\<parallel> \<le> 8 * M / r" 
+  shows "\<parallel>logderiv f z\<parallel> \<le> 8 * M / r"
 proof -
   define g where "g z \<equiv> f (s + z)" for z
   have "\<forall>z \<in> cball 0 (r / 4). \<parallel>logderiv g z\<parallel> \<le> 8 * M / r"
@@ -625,7 +625,7 @@ lemma lemma_3_9_beta2:
     and f0: "f 0 \<noteq> 0"
     and rz: "\<And>z. z \<in> cball 0 r \<Longrightarrow> Re z > 0 \<Longrightarrow> f z \<noteq> 0"
     and bn: "\<And>z. z \<in> cball 0 r \<Longrightarrow> \<parallel>f z / f 0\<parallel> \<le> exp M"
-    and hg: "\<Gamma> \<subseteq> {z \<in> cball 0 (r / 2). f z = 0 \<and> Re z \<le> 0}"
+    and hg: "\<Gamma> \<subseteq> {z \<in> cball 0 (r / 2). f z = 0}"
   shows "- Re (logderiv f 0) \<le> 8 * M / r + Re (\<Sum>z\<in>\<Gamma>. 1 / z)"
 proof -
   have nz': "f not_zero_on cball 0 (r / 2)"
@@ -767,7 +767,7 @@ theorem lemma_3_9_beta3:
     and f0: "f s \<noteq> 0"
     and rz: "\<And>z. z \<in> cball s r \<Longrightarrow> Re z > Re s \<Longrightarrow> f z \<noteq> 0"
     and bn: "\<And>z. z \<in> cball s r \<Longrightarrow> \<parallel>f z / f s\<parallel> \<le> exp M"
-    and hg: "\<Gamma> \<subseteq> {z \<in> cball s (r / 2). f z = 0 \<and> Re z \<le> Re s}"
+    and hg: "\<Gamma> \<subseteq> {z \<in> cball s (r / 2). f z = 0}"
   shows "- Re (logderiv f s) \<le> 8 * M / r + Re (\<Sum>z\<in>\<Gamma>. 1 / (z - s))"
 proof -
   define g where "g \<equiv> f \<circ> (\<lambda>z. s + z)"
@@ -787,11 +787,11 @@ proof -
       unfolding g_def comp_def using hz
       by (auto simp add: dist_complex_def intro!: bn)
   qed
-  moreover have "\<Delta> \<subseteq> {z \<in> cball 0 (r / 2). g z = 0 \<and> Re z \<le> 0}"
+  moreover have "\<Delta> \<subseteq> {z \<in> cball 0 (r / 2). g z = 0}"
   proof safe
     fix z assume "z \<in> \<Delta>"
     hence "s + z \<in> \<Gamma>" unfolding \<Delta>_def by auto
-    thus "g z = 0" "Re z \<le> 0" "z \<in> cball 0 (r / 2)"
+    thus "g z = 0" "z \<in> cball 0 (r / 2)"
       unfolding g_def comp_def using hg by (auto simp add: dist_complex_def)
   qed
   ultimately have "- Re (logderiv g 0) \<le> 8 * M / r +  Re (\<Sum>z\<in>\<Delta>. 1 / z)"

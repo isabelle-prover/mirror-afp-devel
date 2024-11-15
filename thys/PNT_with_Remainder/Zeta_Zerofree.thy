@@ -630,8 +630,8 @@ proof -
         rule cball_in_region zeta_analytic_on_region)
   have 5: "z \<in> cball s r \<Longrightarrow> \<parallel>zeta z / zeta s\<parallel> \<le> exp (3 * \<phi> (2 * \<gamma> + 1))"
     for z by (rule zeta_div_bound)
-  have 6: "{} \<subseteq> {z \<in> cball s (r / 2). zeta z = 0 \<and> Re z \<le> Re s}" by auto
-  have 7: "{Complex \<beta> \<delta>} \<subseteq> {z \<in> cball s (r / 2). zeta z = 0 \<and> Re z \<le> Re s}"
+  have 6: "{} \<subseteq> {z \<in> cball s (r / 2). zeta z = 0}" by auto
+  have 7: "{Complex \<beta> \<delta>} \<subseteq> {z \<in> cball s (r / 2). zeta z = 0}"
     if "\<sigma> - r / 2 \<le> \<beta>" "zeta (Complex \<beta> \<delta>) = 0" for \<beta>
   proof -
     have "\<beta> \<le> \<sigma>"
