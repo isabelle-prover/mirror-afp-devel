@@ -1,9 +1,11 @@
 section \<open>Pratt's Primality Certificates\<close>
 text_raw \<open>\label{sec:pratt}\<close>
 theory Pratt_Certificate
-imports
-  Complex_Main
-  Lehmer.Lehmer
+  imports
+    Complex_Main
+    Lehmer.Lehmer
+  keywords
+    "check_pratt_primes" :: thy_defn
 begin
 
 text \<open>
@@ -885,5 +887,39 @@ lemma "prime (7919 :: nat)"
 
 lemma "prime (131059 :: nat)"
   by (pratt \<open>{131059, 2, {2, {3, 2, {2}}, {809, 3, {2, {101, 2, {2, {5, 2, {2}}}}}}}}\<close>)
+
+text \<open>
+  The following command allows to check certificates in bulk and note the resulting theorems
+  under a chosen name.
+
+  The certificates can use an abbreviated format, e.g. one can write \<open>3\<close> instead of \<open>{3, 2, {2}}\<close>
+  as long as the latter certificate is also part of the batch.
+  Option \<open>full\<close> presents the full certificates.
+  Conversely, option \<open>reduce\<close> presents the abbreviated certificates.
+\<close>
+
+ML \<open>Outer_Syntax.command \<^command_keyword>\<open>check_pratt_primes\<close>
+  "Check Pratt certicates and note resulting theorems"
+  Pratt.check_certs_parser
+\<close>
+
+check_pratt_primes (reduce) more_primes \<open>
+  {3, 2, {2}}
+  {5, 2, {2}}
+  {7, 3, {2, {3, 2, {2}}}}
+  {13, 2, {2, {3, 2, {2}}}}
+  {29, 2, {2, {7, 3, {2, {3, 2, {2}}}}}}
+\<close>
+thm more_primes
+
+check_pratt_primes (full) even_more_primes \<open>
+  2
+  {3, 2, {2}}
+  {5, 2, {2}}
+  {7, 3, {2, 3}}
+  {13, 2, {2, 3}}
+  {29, 2, {2, 7}}
+\<close>
+thm even_more_primes
 
 end
