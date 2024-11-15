@@ -6,27 +6,28 @@ begin
 
 text \<open>Bhavik Mehta: choose-free Ramsey lower bound that's okay for very small @{term p}\<close>
 lemma Ramsey_number_lower_simple: 
-  assumes n: "of_real n^k * p powr (real k^2 / 4) + of_real n^l * exp (-p * real l^2 / 4) < 1"
+  fixes p::real
+  assumes n: "n^k * p powr (k^2 / 4) + n^l * exp (-p * l^2 / 4) < 1"
   assumes p01: "0<p" "p<1" and "k>1" "l>1"
   shows "\<not> is_Ramsey_number k l n"
 proof (rule Ramsey_number_lower_gen)
-  have "real (n choose k) * p^(k choose 2) \<le> of_real n^k * p powr (real k^2 / 4)"
+  have "(n choose k) * p^(k choose 2) \<le> n^k * p powr (real k^2 / 4)"
   proof -
-    have "real (n choose k) * p^(k choose 2) \<le> real (Suc n - k)^k * p^(k choose 2)"
+    have "(n choose k) * p^(k choose 2) \<le> real (Suc n - k)^k * p^(k choose 2)"
       using choose_le_power p01 by simp
     also have "\<dots> = real (Suc n - k)^k * p powr (k * (real k - 1) / 2)"
       by (metis choose_two_real p01(1) powr_realpow)
-    also have "\<dots> \<le> of_real n^k * p powr (real k^2 / 4)"
+    also have "\<dots> \<le> n^k * p powr (real k^2 / 4)"
       using p01 \<open>k>1\<close> by (intro mult_mono powr_mono') (auto simp: power2_eq_square)
     finally show ?thesis .
   qed
   moreover
-  have "real (n choose l) * (1 - p)^(l choose 2) \<le> of_real n^l * exp (-p * real l^2 / 4)"
+  have "real (n choose l) * (1 - p)^(l choose 2) \<le> n^l * exp (-p * real l^2 / 4)"
   proof -
     show ?thesis
     proof (intro mult_mono)
-      show "real (n choose l) \<le> of_real (real n)^l"
-        by (metis binomial_eq_0_iff binomial_le_pow linorder_not_le of_nat_0 of_nat_0_le_iff of_nat_mono of_nat_power of_real_of_nat_eq)
+      show "real (n choose l) \<le> n^l"
+        by (metis binomial_eq_0_iff binomial_le_pow not_le of_nat_le_iff zero_le)
       have "l * p \<le> 2 * (1 - real l) * -p"
         using assms by (auto simp: algebra_simps)
       also have "\<dots> \<le> 2 * (1 - real l) * ln (1-p)"
@@ -40,7 +41,7 @@ proof (rule Ramsey_number_lower_gen)
   qed
   ultimately
   show "real (n choose k) * p^(k choose 2) + real (n choose l) * (1 - p)^(l choose 2) < 1"
-    using n by linarith
+    using n by auto
 qed (use p01 in auto)
 
 
@@ -151,7 +152,7 @@ proof -
   have r_le: "r \<le> k powr (c * l powr (3/4))"
     using p01 \<open>k\<ge>3\<close> unfolding r_def powr_def by force
 
-  have left: "of_real r^s * p powr ((real s)\<^sup>2 / 4) < 1/2" 
+  have left: " r^s * p powr ((real s)\<^sup>2 / 4) < 1/2" 
   proof -
     have A: "r powr s \<le> k powr (s * c * l powr (3/4))"
       using r_le by (smt (verit) mult.commute of_nat_0_le_iff powr_mono2 powr_powr)
@@ -159,7 +160,7 @@ proof -
       by (simp add: powr_powr p_def power2_eq_square)
     have C: "(c * l powr (3/4) - s/32) \<le> -1"
       using big by (simp add: Big_Red_5_6_Ramsey_def s_def algebra_simps) linarith
-    have "of_real r^s * p powr ((real s)\<^sup>2 / 4) \<le> k powr (s * (c * l powr (3/4) - s / 32))"
+    have " r^s * p powr ((real s)\<^sup>2 / 4) \<le> k powr (s * (c * l powr (3/4) - s / 32))"
       using mult_mono [OF A B] \<open>s\<ge>3\<close>
       by (simp add: power2_eq_square algebra_simps powr_realpow' flip: powr_add)
     also have "\<dots> \<le> k powr - real s"
