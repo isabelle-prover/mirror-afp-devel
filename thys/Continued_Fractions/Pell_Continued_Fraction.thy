@@ -56,12 +56,12 @@ lemma conv_num_denom_pell:
   "h 0 ^ 2 - D * k 0 ^ 2 < 0"
   "m > 0 \<Longrightarrow> h m ^ 2 - D * k m ^ 2 = (-1) ^ Suc m * Q m"
 proof -
-  define D' where "D' = Discrete.sqrt D"
+  define D' where "D' = floor_sqrt D"
   have "h 0 ^ 2 - D * k 0 ^ 2 = int (D' ^ 2) - int D"
     by (simp_all add: h_def k_def c_def Discrete_sqrt_altdef D'_def)
   also {
     have "int (D' ^ 2) - int D \<le> 0"
-      using Discrete.sqrt_power2_le[of D] by (simp add: D'_def)
+      using floor_sqrt_power2_le[of D] by (simp add: D'_def)
     moreover have "D \<noteq> D' ^ 2" using nonsquare by auto
     ultimately have "int (D' ^ 2) - int D < 0" by linarith
   }

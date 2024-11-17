@@ -9,7 +9,7 @@ theory Efficient_Discrete_Sqrt
 imports
   Complex_Main
   "HOL-Computational_Algebra.Computational_Algebra"
-  "HOL-Library.Discrete"
+  "HOL-Library.Discrete_Functions"
   "HOL-Library.Tree"
   "HOL-Library.IArray"
 begin
@@ -28,7 +28,7 @@ text \<open>
   Heron's method or Newton's method specialised to the square root function.
 \<close>
 
-lemma sqrt_eq_floor_sqrt: "Discrete.sqrt n = nat \<lfloor>sqrt n\<rfloor>"
+lemma sqrt_eq_floor_sqrt: "floor_sqrt n = nat \<lfloor>sqrt n\<rfloor>"
 proof -
   have "real ((nat \<lfloor>sqrt n\<rfloor>)\<^sup>2) = (real (nat \<lfloor>sqrt n\<rfloor>))\<^sup>2"
     by simp
@@ -47,7 +47,7 @@ proof -
         of_nat_le_iff[of "(Suc (nat \<lfloor>sqrt n\<rfloor>))\<^sup>2" n] real_le_rsqrt[of _ n] not_le
       by fastforce
   qed
-  ultimately show ?thesis using sqrt_unique by fast
+  ultimately show ?thesis using floor_sqrt_unique by fast
 qed
 
 fun newton_sqrt_aux :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
@@ -81,10 +81,10 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma heron_step: "t > 0 \<Longrightarrow> (t + n div t) div 2 \<ge> Discrete.sqrt n"
+lemma heron_step: "t > 0 \<Longrightarrow> (t + n div t) div 2 \<ge> floor_sqrt n"
 proof -
   assume "t > 0"
-  have "Discrete.sqrt n = nat \<lfloor>sqrt n\<rfloor>" by (rule sqrt_eq_floor_sqrt)
+  have "floor_sqrt n = nat \<lfloor>sqrt n\<rfloor>" by (rule sqrt_eq_floor_sqrt)
   also have "\<dots> \<le> nat \<lfloor>(t + n/t) / 2\<rfloor>"
     using heron_step_real[of t n] \<open>t > 0\<close> by linarith
   also have "\<dots> = (t + n div t) div 2"
@@ -93,13 +93,13 @@ proof -
 qed
 
 lemma newton_sqrt_aux_correct:
-  assumes "x \<ge> Discrete.sqrt n"
-  shows   "newton_sqrt_aux x n = Discrete.sqrt n"
+  assumes "x \<ge> floor_sqrt n"
+  shows   "newton_sqrt_aux x n = floor_sqrt n"
   using assms
 proof (induction x n rule: newton_sqrt_aux.induct)
   case (1 x n)
   show ?case
-  proof (cases "x = Discrete.sqrt n")
+  proof (cases "x = floor_sqrt n")
     case True
     then have "(x ^ 2) div x \<le> n div x" by (intro div_le_mono) simp_all
     also have "(x ^ 2) div x = x" by (simp add: power2_eq_square)
@@ -107,18 +107,18 @@ proof (induction x n rule: newton_sqrt_aux.induct)
     with True show ?thesis by (auto simp: newton_sqrt_aux_simps)
   next
     case False
-    with "1.prems" have x_gt_sqrt: "x > Discrete.sqrt n" by auto
-    with Discrete.le_sqrt_iff[of x n] have "n < x ^ 2" by simp
+    with "1.prems" have x_gt_sqrt: "x > floor_sqrt n" by auto
+    with le_floor_sqrt_iff[of x n] have "n < x ^ 2" by simp
     have "x * (n div x) \<le> n" using mult_div_mod_eq[of x n] by linarith
-    also have "\<dots> < x ^ 2" using Discrete.le_sqrt_iff[of x n] and x_gt_sqrt by simp
+    also have "\<dots> < x ^ 2" using le_floor_sqrt_iff[of x n] and x_gt_sqrt by simp
     also have "\<dots> = x * x" by (simp add: power2_eq_square)
     finally have "n div x < x" by (subst (asm) mult_less_cancel1) auto
     then have step_decreasing: "(x + n div x) div 2 < x" by linarith
-    with x_gt_sqrt have step_ge_sqrt: "(x + n div x) div 2 \<ge> Discrete.sqrt n"
+    with x_gt_sqrt have step_ge_sqrt: "(x + n div x) div 2 \<ge> floor_sqrt n"
       by (simp add: heron_step)
     from step_decreasing have "newton_sqrt_aux x n = newton_sqrt_aux ((x + n div x) div 2) n"
       by (simp add: newton_sqrt_aux_simps)
-    also have "\<dots> = Discrete.sqrt n"
+    also have "\<dots> = floor_sqrt n"
       by (intro "1.IH" step_decreasing step_ge_sqrt) simp_all
     finally show ?thesis .
   qed
@@ -127,10 +127,10 @@ qed
 definition newton_sqrt :: "nat \<Rightarrow> nat" where
   "newton_sqrt n = newton_sqrt_aux n n"
 
-declare Discrete.sqrt_code [code del]
+declare floor_sqrt_code [code del]
 
-theorem Discrete_sqrt_eq_newton_sqrt [code]: "Discrete.sqrt n = newton_sqrt n"
-  unfolding newton_sqrt_def by (simp add: newton_sqrt_aux_correct Discrete.sqrt_le)
+theorem Discrete_sqrt_eq_newton_sqrt [code]: "floor_sqrt n = newton_sqrt n"
+  unfolding newton_sqrt_def by (simp add: newton_sqrt_aux_correct floor_sqrt_le)
 
 
 subsection \<open>Square Testing\<close>
@@ -204,14 +204,14 @@ lemma in_q65_code: "x mod 65 \<in> q65 \<longleftrightarrow> IArray.sub q65_arra
 definition square_test :: "nat \<Rightarrow> bool" where
   "square_test n =
     (n mod 64 \<in> q64 \<and> (let r = n mod 45045 in
-      r mod 63 \<in> q63 \<and> r mod 65 \<in> q65 \<and> r mod 11 \<in> q11 \<and> n = (Discrete.sqrt n)\<^sup>2))"
+      r mod 63 \<in> q63 \<and> r mod 65 \<in> q65 \<and> r mod 11 \<in> q11 \<and> n = (floor_sqrt n)\<^sup>2))"
 
 lemma square_test_code [code]:
   "square_test n =
     (IArray.sub q64_array (n mod 64) \<and> (let r = n mod 45045 in
            IArray.sub q63_array (r mod 63) \<and> 
            IArray.sub q65_array (r mod 65) \<and>
-           IArray.sub q11_array (r mod 11) \<and> n = (Discrete.sqrt n)\<^sup>2))"
+           IArray.sub q11_array (r mod 11) \<and> n = (floor_sqrt n)\<^sup>2))"
     using in_q11_code [symmetric] in_q63_code [symmetric] 
           in_q64_code [symmetric] in_q65_code [symmetric]
   by (simp add: Let_def square_test_def)
@@ -292,13 +292,13 @@ proof cases
 next
   assume not_rhs: "\<not>is_square n"
   hence "\<nexists>q. q\<^sup>2 = n" by auto
-  then have "(Discrete.sqrt n)\<^sup>2 \<noteq> n" by simp
+  then have "(floor_sqrt n)\<^sup>2 \<noteq> n" by simp
   then show ?thesis unfolding square_test_def by (auto simp: is_nth_power_def)
 qed
 
 
 definition get_nat_sqrt :: "nat \<Rightarrow> nat option" 
-  where "get_nat_sqrt n = (if is_square n then Some (Discrete.sqrt n) else None)"
+  where "get_nat_sqrt n = (if is_square n then Some (floor_sqrt n) else None)"
 
 lemma get_nat_sqrt_code [code]:
   "get_nat_sqrt n = 
@@ -306,7 +306,7 @@ lemma get_nat_sqrt_code [code]:
            IArray.sub q63_array (r mod 63) \<and> 
            IArray.sub q65_array (r mod 65) \<and>
            IArray.sub q11_array (r mod 11)) then
-       (let x = Discrete.sqrt n in if x\<^sup>2 = n then Some x else None) else None)"
+       (let x = floor_sqrt n in if x\<^sup>2 = n then Some x else None) else None)"
   unfolding get_nat_sqrt_def square_test_correct [symmetric] square_test_def
   using in_q11_code [symmetric] in_q63_code [symmetric] 
         in_q64_code [symmetric] in_q65_code [symmetric]

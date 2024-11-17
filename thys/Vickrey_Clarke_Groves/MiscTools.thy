@@ -20,7 +20,7 @@ section \<open>Toolbox of various definitions and theorems about sets, relations
 theory MiscTools 
 
 imports 
-"HOL-Library.Discrete"
+"HOL-Library.Discrete_Functions"
 "HOL-Library.Code_Target_Nat"
 "HOL-Library.Indicator_Function"
 Argmax
@@ -1160,12 +1160,12 @@ corollary lm145:
 
 lemma lm146: 
   assumes "card (Pow A) \<noteq> 0" 
-  shows "card A=Discrete.log (card (Pow A))" 
-  using assms log_power card_Pow by (metis card.infinite finite_Pow_iff)
+  shows "card A=floor_log (card (Pow A))" 
+  using assms floor_log_power card_Pow by (metis card.infinite finite_Pow_iff)
 
 lemma log_2 [simp]:
-  "Discrete.log 2 = 1"
-  using log_power [of 1] by simp
+  "floor_log 2 = 1"
+  using floor_log_power [of 1] by simp
 
 lemma lm147: 
   assumes "card (Pow A) = 2" 

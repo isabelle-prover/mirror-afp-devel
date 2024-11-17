@@ -7,7 +7,7 @@ begin
 
 value "sqrt_rem' 123456"
 value "sqrt_rem 123456"
-value "Discrete.sqrt 123456"
+value "floor_sqrt 123456"
 value "sqrt_int_floor 123456"
 value "sqrt_nat_ceiling 123456"
 value "sqrt_int_ceiling 123456"

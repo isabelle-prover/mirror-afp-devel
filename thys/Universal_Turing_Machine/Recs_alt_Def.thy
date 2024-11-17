@@ -7,7 +7,6 @@ chapter \<open>An alternative modelling of Recursive Functions\<close>
 theory Recs_alt_Def
   imports Main
     "HOL-Library.Nat_Bijection"
-    "HOL-Library.Discrete"
 begin
 
 

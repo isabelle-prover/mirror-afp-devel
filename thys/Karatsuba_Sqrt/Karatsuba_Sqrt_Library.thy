@@ -1,8 +1,7 @@
 subsection \<open>Auxiliary material\<close>
 theory Karatsuba_Sqrt_Library
 imports
-  Complex_Main
-  "HOL-Library.Discrete"
+  "HOL-Library.Discrete_Functions"
   "HOL-Library.Log_Nat"
 begin
 
@@ -132,16 +131,16 @@ next
 qed
 
 
-subsubsection \<open>Missing lemmas about \<^const>\<open>Discrete.sqrt\<close>\<close>
+subsubsection \<open>Missing lemmas about \<^const>\<open>floor_sqrt\<close>\<close>
 
 lemma Discrete_sqrt_lessI:
   assumes "x < y ^ 2"
-  shows   "Discrete.sqrt x < y"
-  using assms Discrete.le_sqrt_iff linorder_not_less by blast
+  shows   "floor_sqrt x < y"
+  using assms le_floor_sqrt_iff linorder_not_less by blast
 
-lemma Discrete_sqrt_conv_floor_sqrt:
-  "Discrete.sqrt n = nat (floor (sqrt n))"
-proof (rule Discrete.sqrt_unique)
+lemma floor_sqrt_conv_floor_of_sqrt:
+  "floor_sqrt n = nat (floor (sqrt n))"
+proof (rule floor_sqrt_unique)
   have "real (nat (floor (sqrt n)) ^ 2) = real_of_int \<lfloor>sqrt (real n)\<rfloor> ^ 2"
     by simp
   also have "\<dots> \<le> sqrt (real n) ^ 2"

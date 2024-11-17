@@ -16,7 +16,7 @@ theory LLL_Complexity
   imports 
     LLL_Impl
     Cost
-    "HOL-Library.Discrete"
+    "HOL-Library.Discrete_Functions"
 begin
 
 definition round_num_denom_cost :: "int \<Rightarrow> int \<Rightarrow> int cost" where
@@ -676,7 +676,7 @@ proof (cases "m > 0")
   let ?base = "real_of_rat (4 * \<alpha> / (4 + \<alpha>))" 
   have base: "1 < ?base" using \<alpha>_gt by auto
   have Lg: "nat \<lceil>log ?base N\<rceil> \<le> nat \<lceil>log ?base ?p\<rceil>"
-    by (intro nat_mono ceiling_mono log_mono, subst log_le_cancel_iff[OF base],
+    by (intro nat_mono ceiling_mono floor_log_mono, subst log_le_cancel_iff[OF base],
       insert M0 N_p N0 p0 n0, auto simp flip: of_int_mult of_nat_mult)
   also have "log ?base ?p = log ?base (?lg^2)" 
     using M0 by (simp add: power2_eq_square ac_simps)

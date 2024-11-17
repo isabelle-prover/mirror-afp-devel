@@ -4,7 +4,7 @@ Author: Thomas Ammer
 *)
 
 theory Butterfly
-  imports NTT "HOL-Library.Discrete"
+  imports NTT "HOL-Library.Discrete_Functions"
 begin
 
 text \<open>\pagebreak\<close>
@@ -1298,8 +1298,8 @@ theorem log_lin_time:
   shows "T\<^sub>F\<^sub>N\<^sub>T\<^sub>T  numbers \<le> 30 * l * length numbers + 1"
 proof-
   have 00: "T\<^sub>F\<^sub>N\<^sub>T\<^sub>T  numbers  = (2 ^ l - 1) * 14 + l * 15 * 2 ^ (l - 1) + 2 ^ l"
-    using tight_bound[of "\<lambda> xs. (length xs - 1) * 14 + (Discrete.log (length xs)) * 15 * 
-                            2 ^ ( (Discrete.log (length xs)) - 1) + length xs" numbers l] 
+    using tight_bound[of "\<lambda> xs. (length xs - 1) * 14 + (floor_log (length xs)) * 15 * 
+                            2 ^ ( (floor_log (length xs)) - 1) + length xs" numbers l] 
           assms by simp
   have " l * 15 * 2 ^ (l - 1) \<le> 15 * l * length numbers" using assms by simp
   moreover have "(2 ^ l - 1) * 14  + 2^l\<le> 15 * length numbers " 
@@ -1316,7 +1316,7 @@ qed
 
 theorem log_lin_time_explicitly:
   assumes "length numbers = 2^l"
-  shows "T\<^sub>F\<^sub>N\<^sub>T\<^sub>T  numbers \<le> 30 * Discrete.log (length numbers) * length numbers + 1"
+  shows "T\<^sub>F\<^sub>N\<^sub>T\<^sub>T  numbers \<le> 30 * floor_log (length numbers) * length numbers + 1"
   using log_lin_time[of numbers l] assms by simp
 
 end

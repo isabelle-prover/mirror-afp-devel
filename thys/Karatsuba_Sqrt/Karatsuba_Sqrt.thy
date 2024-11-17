@@ -1,21 +1,19 @@
 theory Karatsuba_Sqrt                                   
 imports
   Complex_Main
-  "HOL-Library.Discrete"
-  "HOL-Library.Log_Nat"
   Karatsuba_Sqrt_Library
 begin
 
 subsection \<open>Definition of an integer square root with remainder\<close>
 
 definition sqrt_rem :: "nat \<Rightarrow> nat" where
-  "sqrt_rem n = n - Discrete.sqrt n ^ 2"
+  "sqrt_rem n = n - floor_sqrt n ^ 2"
 
-lemma sqrt_rem_upper_bound: "sqrt_rem n \<le> 2 * Discrete.sqrt n"
+lemma sqrt_rem_upper_bound: "sqrt_rem n \<le> 2 * floor_sqrt n"
 proof -
-  define s where "s = Discrete.sqrt n"
+  define s where "s = floor_sqrt n"
   have "n < (s + 1) ^ 2"
-    unfolding s_def using Suc_sqrt_power2_gt[of n] by auto
+    unfolding s_def using Suc_floor_sqrt_power2_gt[of n] by auto
   hence "n + 1 \<le> (s + 1) ^ 2"
     by linarith
   hence "n \<le> s ^ 2 + 2 * s"
@@ -25,12 +23,12 @@ proof -
 qed
 
 lemma of_nat_sqrt_rem:
-  "(of_nat (sqrt_rem n) :: 'a :: ring_1) = of_nat n - of_nat (Discrete.sqrt n) ^ 2"
-  by (simp add: sqrt_rem_def of_nat_diff)
+  "(of_nat (sqrt_rem n) :: 'a :: ring_1) = of_nat n - of_nat (floor_sqrt n) ^ 2"
+  by (simp add: sqrt_rem_def)
 
-definition sqrt_rem' where "sqrt_rem' n = (Discrete.sqrt n, sqrt_rem n)"
+definition sqrt_rem' where "sqrt_rem' n = (floor_sqrt n, sqrt_rem n)"
 
-lemma Discrete_sqrt_code [code]: "Discrete.sqrt n = fst (sqrt_rem' n)"
+lemma Discrete_sqrt_code [code]: "floor_sqrt n = fst (sqrt_rem' n)"
   by (simp add: sqrt_rem'_def)
 
 lemma sqrt_rem_code [code]: "sqrt_rem n = snd (sqrt_rem' n)"
@@ -88,16 +86,16 @@ lemma sqrt_rem_aux_decompose: "fst (sqrt_rem_aux x) ^ 2 + snd (sqrt_rem_aux x) =
   by (induction x rule: sqrt_rem_aux.induct; subst (1 2) sqrt_rem_aux.simps) auto
 
 lemma sqrt_rem_aux_correct:
-  assumes "x \<ge> Discrete.sqrt n"
-  shows   "fst (sqrt_rem_aux x) = Discrete.sqrt n"
+  assumes "x \<ge> floor_sqrt n"
+  shows   "fst (sqrt_rem_aux x) = floor_sqrt n"
   using assms
 proof (induction x rule: sqrt_rem_aux.induct)
   case (1 x)
   show ?case
   proof (cases "x ^ 2 \<le> n")
     case True
-    from True have "Discrete.sqrt n \<ge> x"
-      by (simp add: le_sqrtI)
+    from True have "floor_sqrt n \<ge> x"
+      by (simp add: le_floor_sqrtI)
     with "1.prems" show ?thesis using True
       by (subst sqrt_rem_aux.simps) auto
   next
@@ -107,7 +105,7 @@ proof (induction x rule: sqrt_rem_aux.induct)
     have "0 < (x ^ 2 - n) ^ 2 / (4 * x ^ 2)"
       using \<open>x > 0\<close> False by (intro divide_pos_pos) auto
     also have "(x ^ 2 - n) ^ 2 / (4 * x ^ 2) = ((n / x + x) / 2) ^ 2 - n"
-      using \<open>x > 0\<close> False by (simp add: field_simps power2_eq_square of_nat_diff)
+      using \<open>x > 0\<close> False by (simp add: field_simps power2_eq_square)
     finally have "n < ((n / x + x) / 2) ^ 2"
       by simp
     hence "sqrt n ^ 2 < ((n / x + x) / 2) ^ 2"
@@ -116,11 +114,11 @@ proof (induction x rule: sqrt_rem_aux.induct)
       by (rule power_less_imp_less_base) auto
     hence "nat (floor (sqrt n)) \<le> nat (floor ((n / x + x) / 2))"
       by linarith
-    also have "nat (floor (sqrt n)) = Discrete.sqrt n"
-      by (simp add: Discrete_sqrt_conv_floor_sqrt)
+    also have "nat (floor (sqrt n)) = floor_sqrt n"
+      by (simp add: floor_sqrt_conv_floor_of_sqrt)
     also have "floor ((n / x + x) / 2) = (n div x + x) div 2"
       using floor_divide_real_eq_div[of 2 "n / x + x"] by (simp add: floor_divide_of_nat_eq)
-    finally have "Discrete.sqrt n \<le> (n div x + x) div 2"
+    finally have "floor_sqrt n \<le> (n div x + x) div 2"
       by simp
     from "1.IH"[OF False this] show ?thesis
       by (subst sqrt_rem_aux.simps) (use False in auto)
@@ -128,7 +126,7 @@ proof (induction x rule: sqrt_rem_aux.induct)
 qed
 
 lemma sqrt_rem_aux_correct':
-  assumes "x \<ge> Discrete.sqrt n"
+  assumes "x \<ge> floor_sqrt n"
   shows   "sqrt_rem_aux x = sqrt_rem' n"
   using sqrt_rem_aux_correct[OF assms] sqrt_rem_aux_decompose[of x]
   by (simp add: sqrt_rem'_def prod_eq_iff sqrt_rem_def)
@@ -148,8 +146,8 @@ next
     by auto
   show ?thesis unfolding sqrt_rem'_heron_def
   proof (rule sqrt_rem_aux_correct')
-    have "real (Discrete.sqrt n) \<le> sqrt n"
-      by (simp add: Discrete_sqrt_conv_floor_sqrt)
+    have "real (floor_sqrt n) \<le> sqrt n"
+      by (simp add: floor_sqrt_conv_floor_of_sqrt)
     also have "\<dots> = 2 powr log 2 (sqrt n)"
       using n by simp
     also have "log 2 (sqrt n) = log 2 n / 2"
@@ -167,7 +165,7 @@ next
       by (subst powr_realpow) auto
     also have "2 ^ ((ceillog2 n + 1) div 2) = push_bit ((ceillog2 n + 1) div 2) 1"
       by (simp add: push_bit_eq_mult)
-    finally show "Discrete.sqrt n \<le> push_bit ((ceillog2 n + 1) div 2) 1"
+    finally show "floor_sqrt n \<le> push_bit ((ceillog2 n + 1) div 2) 1"
       by linarith
   qed
 qed
@@ -221,7 +219,7 @@ lemma karatsuba_sqrt_step_correct:
   shows   "karatsuba_sqrt_step a32 a1 a0 b =
              map_prod of_nat of_nat (sqrt_rem' n)"
 proof -
-  define s where "s = Discrete.sqrt a32"
+  define s where "s = floor_sqrt a32"
   define r where "r = sqrt_rem a32"
   define q where "q = (r * b + a1) div (2 * s)"
   define u where "u = (r * b + a1) mod (2 * s)"
@@ -242,7 +240,7 @@ proof -
     also have "\<dots> \<le> 4 * a32"
       by fact
     finally have "b div 2 \<le> s"
-      unfolding s_def by (subst Discrete.le_sqrt_iff) auto
+      unfolding s_def by (subst le_floor_sqrt_iff) auto
     thus "b \<le> 2 * s"
       using \<open>even b\<close> by (elim evenE) auto
   qed
@@ -263,16 +261,16 @@ proof -
 
   have "int n < (s' + 1) ^ 2"
   proof -
-    define t where "t = Discrete.sqrt n - s * b"
+    define t where "t = floor_sqrt n - s * b"
     have "s ^ 2 * b ^ 2 \<le> a32 * b ^ 2"
-      unfolding s_def by (intro mult_right_mono Discrete.sqrt_power2_le) auto
+      unfolding s_def by (intro mult_right_mono floor_sqrt_power2_le) auto
     also have "\<dots> \<le> n"
       by (simp add: n_def)
     finally have "(s * b) ^ 2 \<le> n"
       by (simp add: power_mult_distrib)
-    hence "Discrete.sqrt n \<ge> s * b"
-      by (simp add: le_sqrt_iff)
-    hence sqrt_n_eq: "Discrete.sqrt n = s * b + t"
+    hence "floor_sqrt n \<ge> s * b"
+      by (simp add: le_floor_sqrt_iff)
+    hence sqrt_n_eq: "floor_sqrt n = s * b + t"
       unfolding t_def by simp
 
     have "int (2 * s * t * b) = 2 * int s * int b * int t"
@@ -281,9 +279,9 @@ proof -
       by simp
     also have "\<dots> = int ((s * b + t) ^ 2) - (int s * int b) ^ 2"
       unfolding of_nat_power of_nat_mult of_nat_add by algebra
-    also have "s * b + t = Discrete.sqrt n"
+    also have "s * b + t = floor_sqrt n"
       by (simp add: sqrt_n_eq)
-    also have "Discrete.sqrt n ^ 2 \<le> n"
+    also have "floor_sqrt n ^ 2 \<le> n"
       by simp
     also have "n - (int s * int b) ^ 2 = int (a1 * b + a0) + (int a32 - int s ^ 2) * int b ^ 2"
       unfolding n_def of_nat_add of_nat_mult of_nat_power by algebra
@@ -302,11 +300,11 @@ proof -
     hence "t \<le> q"
       unfolding q_def using \<open>s > 0\<close>
       by (subst less_eq_div_iff_mult_less_eq) (auto simp: algebra_simps)
-    with sqrt_n_eq have *: "Discrete.sqrt n \<le> s * b + q"
+    with sqrt_n_eq have *: "floor_sqrt n \<le> s * b + q"
       by simp
 
-    have "n < (Discrete.sqrt n + 1) ^ 2"
-        using Suc_sqrt_power2_gt[of n] by simp
+    have "n < (floor_sqrt n + 1) ^ 2"
+        using Suc_floor_sqrt_power2_gt[of n] by simp
     also have "\<dots> \<le> (s * b + q + 1) ^ 2"
       by (intro power_mono add_mono *) auto
     finally have "int n < int ((s * b + q + 1) ^ 2)"
@@ -374,8 +372,8 @@ proof -
     finally show "s'' ^ 2 \<le> n" .
   qed
 
-  have "Discrete.sqrt n = nat s''"
-  proof (rule Discrete.sqrt_unique)
+  have "floor_sqrt n = nat s''"
+  proof (rule floor_sqrt_unique)
     show "nat s'' ^ 2 \<le> n"
       using \<open>s'' ^ 2 \<le> int n\<close>
       by (metis nat_eq_iff2 of_nat_le_of_nat_power_cancel_iff zero_eq_power2 zero_le)
@@ -665,22 +663,22 @@ definition sqrt_int_ceiling :: "int \<Rightarrow> int" where
 lemma sqrt_nat_ceiling_code [code]:
   "sqrt_nat_ceiling n = (case sqrt_rem' n of (s, r) \<Rightarrow> if r = 0 then s else s + 1)"
 proof -
-  have n: "(Discrete.sqrt n)\<^sup>2 + sqrt_rem n = n"
+  have n: "(floor_sqrt n)\<^sup>2 + sqrt_rem n = n"
     by (auto simp: sqrt_rem_def)
-  have "sqrt n = sqrt (Discrete.sqrt n ^ 2 + sqrt_rem n)"
+  have "sqrt n = sqrt (floor_sqrt n ^ 2 + sqrt_rem n)"
     by (simp add: sqrt_rem_def)
-  also have "ceiling \<dots> = Discrete.sqrt n + (if sqrt_rem n = 0 then 0 else 1)"
+  also have "ceiling \<dots> = floor_sqrt n + (if sqrt_rem n = 0 then 0 else 1)"
   proof (cases "sqrt_rem n = 0")
     case False
-    have "n < (Discrete.sqrt n + 1)\<^sup>2"
-      using Suc_sqrt_power2_gt le_eq_less_or_eq by auto
-    hence "real n < real ((Discrete.sqrt n + 1)\<^sup>2)"
+    have "n < (floor_sqrt n + 1)\<^sup>2"
+      using Suc_floor_sqrt_power2_gt le_eq_less_or_eq by auto
+    hence "real n < real ((floor_sqrt n + 1)\<^sup>2)"
       by linarith
-    hence "sqrt (Discrete.sqrt n ^ 2 + sqrt_rem n) \<le> Discrete.sqrt n + 1"
+    hence "sqrt (floor_sqrt n ^ 2 + sqrt_rem n) \<le> floor_sqrt n + 1"
       by (subst n) (auto intro!: real_le_lsqrt simp flip: of_nat_add)
-    moreover have "Discrete.sqrt n < sqrt (Discrete.sqrt n ^ 2 + sqrt_rem n)"
+    moreover have "floor_sqrt n < sqrt (floor_sqrt n ^ 2 + sqrt_rem n)"
       by (rule real_less_rsqrt) (use False in auto)
-    ultimately have "ceiling (sqrt (Discrete.sqrt n ^ 2 + sqrt_rem n)) = Discrete.sqrt n + 1"
+    ultimately have "ceiling (sqrt (floor_sqrt n ^ 2 + sqrt_rem n)) = floor_sqrt n + 1"
       by linarith
     thus ?thesis
       using False by simp
@@ -691,13 +689,13 @@ qed
 
 lemma sqrt_int_floor_code [code]:
   "sqrt_int_floor n =
-     (if n \<ge> 0 then int (Discrete.sqrt (nat n)) else -int (sqrt_nat_ceiling (nat (-n))))"
-  by (auto simp: sqrt_int_floor_def sqrt_nat_ceiling_def Discrete_sqrt_conv_floor_sqrt
+     (if n \<ge> 0 then int (floor_sqrt (nat n)) else -int (sqrt_nat_ceiling (nat (-n))))"
+  by (auto simp: sqrt_int_floor_def sqrt_nat_ceiling_def floor_sqrt_conv_floor_of_sqrt
                  real_sqrt_minus ceiling_minus)
 
 lemma sqrt_int_ceiling_code [code]:
   "sqrt_int_ceiling n =
-     (if n \<ge> 0 then int (sqrt_nat_ceiling (nat n)) else -int (Discrete.sqrt (nat (-n))))"
+     (if n \<ge> 0 then int (sqrt_nat_ceiling (nat n)) else -int (floor_sqrt (nat (-n))))"
   using sqrt_int_floor_code[of "-n"]
   by (cases n "0 :: int" rule: linorder_cases)
      (auto simp: sqrt_int_ceiling_def sqrt_int_floor_def sqrt_nat_ceiling_def[of 0]

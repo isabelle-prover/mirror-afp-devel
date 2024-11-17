@@ -9,7 +9,7 @@ theory Pell_Algorithm
 imports
   Pell
   Efficient_Discrete_Sqrt
-  "HOL-Library.Discrete"
+  "HOL-Library.Discrete_Functions"
   "HOL-Library.While_Combinator"
   "HOL-Library.Stream"
 begin
@@ -93,7 +93,7 @@ text \<open>
 
 lemma Discrete_sqrt_square_is_square:
   assumes "is_square n"
-  shows   "Discrete.sqrt n ^ 2 = n"
+  shows   "floor_sqrt n ^ 2 = n"
   using assms unfolding is_nth_power_def by force
 
 definition find_fund_sol_step :: "nat \<Rightarrow> nat \<times> nat + nat \<times> nat \<Rightarrow> _" where
@@ -118,7 +118,7 @@ proof -
   define f where "f = find_fund_sol_step D"
   define P :: "nat \<Rightarrow> bool" where "P = (\<lambda>y. y > 0 \<and> is_square (y^2 * D + 1))" 
   define Q :: "nat \<times> nat \<Rightarrow> bool" where
-    "Q = (\<lambda>(x,y). P y \<and> (\<forall>y'\<in>{0<..<y}. \<not>P y') \<and> x = Discrete.sqrt (y^2 * D + 1))"
+    "Q = (\<lambda>(x,y). P y \<and> (\<forall>y'\<in>{0<..<y}. \<not>P y') \<and> x = floor_sqrt (y^2 * D + 1))"
   define R :: "nat \<times> nat + nat \<times> nat \<Rightarrow> bool" 
     where "R = (\<lambda>s. case s of
                       Inl (m, m') \<Rightarrow> m > 0 \<and> (m' = m^2 * D + 1) \<and> (\<forall>y\<in>{0<..<m}. \<not>is_square (y^2 * D + 1))

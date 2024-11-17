@@ -4,7 +4,6 @@
 theory Recs
   imports Main
     "HOL-Library.Nat_Bijection"
-    "HOL-Library.Discrete"
 begin
 
 

@@ -3,7 +3,7 @@ section \<open>Exponentiation is Diophaninte\<close>
 subsection \<open>Expressing Exponentiation in terms of the alpha function\<close>
 
 theory Exponentiation
-  imports "HOL-Library.Discrete"
+  imports Complex_Main
 begin
 
 locale Exp_Matrices

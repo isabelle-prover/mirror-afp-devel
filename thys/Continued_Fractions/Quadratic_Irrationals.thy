@@ -7,7 +7,7 @@ theory Quadratic_Irrationals
 imports
   Continued_Fractions
   "HOL-Computational_Algebra.Computational_Algebra"
-  "HOL-Library.Discrete"
+  "HOL-Library.Discrete_Functions"
   "Coinductive.Coinductive_Stream"
 begin
 
@@ -118,19 +118,19 @@ corollary irrat_sqrt_nonsquare: "\<not>is_square n \<Longrightarrow> sqrt (real 
 lemma sqrt_of_nat_in_Rats_iff: "sqrt (real n) \<in> \<rat> \<longleftrightarrow> is_square n"
   using irrat_sqrt_nonsquare[of n] sqrt_nat_iff_is_square[of n] Nats_subset_Rats by blast
 
-lemma Discrete_sqrt_altdef: "Discrete.sqrt n = nat \<lfloor>sqrt n\<rfloor>"
+lemma Discrete_sqrt_altdef: "floor_sqrt n = nat \<lfloor>sqrt n\<rfloor>"
 proof -
-  have "real (Discrete.sqrt n ^ 2) \<le> sqrt n ^ 2"
+  have "real (floor_sqrt n ^ 2) \<le> sqrt n ^ 2"
     by simp
-  hence "Discrete.sqrt n \<le> sqrt n"
+  hence "floor_sqrt n \<le> sqrt n"
     unfolding of_nat_power by (rule power2_le_imp_le) auto
-  moreover have "real (Suc (Discrete.sqrt n) ^ 2) > real n"
-    unfolding of_nat_less_iff by (rule Suc_sqrt_power2_gt)
-  hence "real (Discrete.sqrt n + 1) ^ 2 > sqrt n ^ 2"
+  moreover have "real (Suc (floor_sqrt n) ^ 2) > real n"
+    unfolding of_nat_less_iff by (rule Suc_floor_sqrt_power2_gt)
+  hence "real (floor_sqrt n + 1) ^ 2 > sqrt n ^ 2"
     unfolding of_nat_power by simp
-  hence "real (Discrete.sqrt n + 1) > sqrt n"
+  hence "real (floor_sqrt n + 1) > sqrt n"
     by (rule power2_less_imp_less) auto
-  hence "Discrete.sqrt n + 1 > sqrt n" by simp
+  hence "floor_sqrt n + 1 > sqrt n" by simp
   ultimately show ?thesis by linarith
 qed
 
