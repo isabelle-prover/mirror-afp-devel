@@ -100,7 +100,7 @@ by (cases "(h1,h2)" rule: link.cases) (simp)
 *)
 lemma \<Delta>\<Phi>_pass1: "\<Phi> (pass\<^sub>1 hs) - \<Phi> hs  \<le> 2 * log 2 (sz hs + 1) - length hs + 2"
 proof (induction hs rule: pass\<^sub>1.induct)
-  case (3 h1 h2 hs)
+  case (1 h1 h2 hs)
   let ?hs' = "h1 # h2 # hs" let ?m = "sz hs"
   obtain x1 hs1 x2 hs2 where h12: "h1 = Hp x1 hs1" "h2 = Hp x2 hs2"
     using hp.exhaust_sel by blast
@@ -108,7 +108,7 @@ proof (induction hs rule: pass\<^sub>1.induct)
   have "\<Phi> (pass\<^sub>1 ?hs') - \<Phi> ?hs' = \<Phi> (pass\<^sub>1 hs) + log 2 (?n1+?n2+1) - \<Phi> hs - log 2 (?n2+?m+1)" 
     by (simp add: h12)
   also have "\<dots> \<le> log 2 (?n1+?n2+1) - log 2 (?n2+?m+1) + 2 * log 2 (?m+1) - length hs + 2" 
-    using 3 by (simp)
+    using 1 by (simp)
   also have "\<dots> \<le> 2 * log 2 (?n1+?n2+?m+2) - log 2 (?n2+?m+1) + log 2 (?m+1) - length hs" 
         using ld_sum_inequality [of "?n1+?n2+1" "?m+1"] by(simp)
   also have "\<dots> \<le> 2 * log 2 (?n1+?n2+?m+2) - length hs" by simp
