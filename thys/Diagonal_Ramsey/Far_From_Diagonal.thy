@@ -1064,7 +1064,7 @@ qed
 
 text \<open>Mediation of 9.2 (and 10.2) from locale @{term Book_Basis} to the book locales
    with the starting sets of equal size\<close>
-lemma (in No_Cliques) Basis_imp_Book:
+lemma (in No_Cliques) to_Book:
   assumes gd: "p0_min \<le> graph_density Red"
   assumes \<mu>01: "0 < \<mu>" "\<mu> < 1"
   obtains X0 Y0 where "l\<ge>2" "card X0 \<ge> real nV / 2" "card Y0 = gorder div 2" 
@@ -1108,7 +1108,7 @@ qed
 text \<open>Material that needs to be proved \textbf{outside} the book locales\<close>
 
 text \<open>As above, for @{term Book'}\<close>
-lemma (in No_Cliques) Basis_imp_Book':
+lemma (in No_Cliques) to_Book':
   assumes gd: "p0_min \<le> graph_density Red"
   assumes l: "0<l" "l\<le>k"
   obtains X0 Y0 where "l\<ge>2" "card X0 \<ge> real nV / 2" "card Y0 = gorder div 2" and "X0 = V \<setminus> Y0" "Y0\<subseteq>V" 
@@ -1118,7 +1118,7 @@ proof -
   define \<gamma> where "\<gamma> \<equiv> real l / (real k + real l)"
   have "0 < \<gamma>" "\<gamma> < 1"
     using l by (auto simp: \<gamma>_def)
-  with assms Basis_imp_Book [of  \<gamma>]
+  with assms to_Book [of  \<gamma>]
   obtain X0 Y0 where *: "l\<ge>2" "card X0 \<ge> real nV / 2" "card Y0 = gorder div 2" "X0 = V \<setminus> Y0" "Y0\<subseteq>V" 
     "graph_density Red \<le> gen_density Red X0 Y0" "Book V E p0_min Red Blue l k \<gamma> X0 Y0"
     by blast
@@ -1145,7 +1145,7 @@ proof -
     and X0_def: "X0 = V \<setminus> Y0" and "Y0\<subseteq>V" 
     and gd_le: "graph_density Red \<le> gen_density Red X0 Y0"
     and "Book' V E p0_min Red Blue l k \<gamma> X0 Y0" 
-    using Basis_imp_Book' assms p0_min no_Red_clique no_Blue_clique ln0 by auto
+    using to_Book' assms p0_min no_Red_clique no_Blue_clique ln0 by auto
   then interpret Book' V E p0_min Red Blue l k \<gamma> X0 Y0
     by blast 
   show False
