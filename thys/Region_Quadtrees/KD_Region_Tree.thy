@@ -157,7 +157,7 @@ text \<open>Compressing Split:\<close>
 
 fun SplitC :: "'a kdt \<Rightarrow> 'a kdt \<Rightarrow> 'a kdt" where
 "SplitC (Box b1) (Box b2) = (if b1=b2 then Box b1 else Split (Box b1) (Box b2))" |
-"SplitC t1 t2 = Split t1 t2"
+"SplitC l r = Split l r"
 
 fun compressed :: "'a kdt \<Rightarrow> bool" where
 "compressed (Box _) = True" |
