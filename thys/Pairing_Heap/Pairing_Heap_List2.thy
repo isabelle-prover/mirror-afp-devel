@@ -24,8 +24,8 @@ fun get_min  :: "'a heap \<Rightarrow> 'a" where
 
 
 fun link :: "('a::linorder) hp \<Rightarrow> 'a hp \<Rightarrow> 'a hp" where
-"link (Hp x lx) (Hp y ly) = 
-    (if x < y then Hp x (Hp y ly # lx) else Hp y (Hp x lx # ly))"
+"link (Hp x hx) (Hp y hy) = 
+    (if x < y then Hp x (Hp y hy # hx) else Hp y (Hp x hx # hy))"
 
 fun merge :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge h None = h" |
