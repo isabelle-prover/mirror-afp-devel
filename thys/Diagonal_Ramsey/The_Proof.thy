@@ -308,7 +308,7 @@ proof -
     and "X0 = V \<setminus> Y0" "Y0\<subseteq>V"
     and p0_half: "1/2 \<le> gen_density Red X0 Y0"
     and "Book V E p0_min Red Blue k k \<mu> X0 Y0" 
-  proof (rule Basis_imp_Book)
+  proof (rule to_Book)
     show "p0_min \<le> graph_density Red"
       using p0_min12 Red by linarith
     show "0 < \<mu>" "\<mu> < 1"
