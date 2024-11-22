@@ -1294,7 +1294,7 @@ proof -
       have foral: "(\<And>y. y \<in> b \<Longrightarrow> f y = f l)" 
          using m_mod l_prop unfolding f_def by blast
       have eq: "the_elem (f ` b) = f l"
-        using the_elem_image_unique[of _ f l, OF b_not_empty foral] by simp
+        by (simp add: b_not_empty foral the_elem_image_unique)
       have per: "periodic_arithmetic \<Phi> d" using prod \<Phi>.dir_periodic_arithmetic by blast
       show ?thesis
         unfolding eq using mod_periodic_arithmetic[OF per, of "l mod d" l]
