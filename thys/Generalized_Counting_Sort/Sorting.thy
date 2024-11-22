@@ -419,7 +419,8 @@ proof (induction xs arbitrary: ns, simp add: offs_num_def, simp add: Let_def,
          [where x = i], simp)
       with B and C and D and E and F have
        "fill (y # xs) ns index key ub mi ma ! j = None"
-        by (rule_tac fill_none [OF A], simp_all, erule_tac disjE, simp_all, auto)
+        using fill_none [OF A] \<open>0 < length ns\<close>
+        by (metis atLeastAtMost_iff length_greater_0_conv set_ConsD)
       thus False
         using K by (simp add: Let_def)
     qed
@@ -835,8 +836,8 @@ next
          simp split: nat.split)
       hence "count (mset (map the (fill ?zs (offs ?ms 0)
         index key (length ?zs) ?mi ?ma))) ?x = count (mset ?zs) ?x"
-        by (rule_tac fill_offs_enum_count_item [OF A], simp, rule_tac conjI,
-         ((rule_tac mini_lb | rule_tac maxi_ub), erule_tac in_set_nthsD)+)
+        using fill_offs_enum_count_item [OF A] mini_lb maxi_ub
+        by (metis atLeastAtMost_iff in_set_nthsD)
       hence "count (mset (map the (fill ?zs (offs ?ms 0)
         index key m ?mi ?ma))) ?x = count (mset ?zs) ?x"
         using O by (simp add: mini_maxi_nths)
