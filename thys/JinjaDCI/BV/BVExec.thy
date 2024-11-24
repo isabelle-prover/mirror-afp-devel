@@ -43,194 +43,133 @@ begin
 
 lemma Cons_less_Conss3 [simp]:
   "x#xs [\<sqsubset>\<^bsub>r\<^esub>] y#ys = (x \<sqsubset>\<^bsub>r\<^esub> y \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^bsub>r\<^esub>] ys)"
-  apply (unfold lesssub_def )
-  apply auto
-  apply (insert sup_state_opt_err)
-  apply (unfold lesssub_def lesub_def sup_state_opt_def sup_state_def sup_ty_opt_def)
-  apply (simp only: JVM_le_unfold )
-  apply fastforce
-  done
+  unfolding lesssub_def
+  by (metis Cons_le_Cons JVM_le_Err_conv lesub_def list.inject r_def sup_state_opt_err) 
 
 lemma acc_le_listI3 [intro!]:
   " acc r \<Longrightarrow> acc (Listn.le r)"
-apply (unfold acc_def)
-apply (subgoal_tac
- "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le r) ys})")
+  unfolding acc_def
+  apply (subgoal_tac
+      "wf(UN n. {(ys,xs). size xs = n \<and> size ys = n \<and> xs <_(Listn.le r) ys})")
    apply (erule wf_subset)
- apply (blast intro: lesssub_lengthD)
-apply (rule wf_UN)
- prefer 2
- apply (rename_tac m n)
- apply (case_tac "m=n")
-  apply simp
- apply (fast intro!: equals0I dest: not_sym)
-apply (rename_tac n)
-apply (induct_tac n)
- apply (simp add: lesssub_def cong: conj_cong)
-apply (rename_tac k)
-apply (simp add: wf_eq_minimal del: r_def f_def step_def A_def)
-apply (simp (no_asm) add: length_Suc_conv cong: conj_cong del: r_def f_def step_def A_def)
-apply clarify
-apply (rename_tac M m)
-apply (case_tac "\<exists>x xs. size xs = k \<and> x#xs \<in> M")
- prefer 2
- apply (erule thin_rl)
- apply (erule thin_rl)
- apply blast
-apply (erule_tac x = "{a. \<exists>xs. size xs = k \<and> a#xs:M}" in allE)
-apply (erule impE)
- apply blast
-apply (thin_tac "\<exists>x xs. P x xs" for P)
-apply clarify
-apply (rename_tac maxA xs)
-apply (erule_tac x = "{ys. size ys = size xs \<and> maxA#ys \<in> M}" in allE)
-apply (erule impE)
- apply blast
-apply clarify
-apply (thin_tac "m \<in> M")
-apply (thin_tac "maxA#xs \<in> M")
-apply (rule bexI)
- prefer 2
- apply assumption
-apply clarify
-apply (simp del: r_def f_def step_def A_def)
-apply blast
-  done
+   apply (blast intro: lesssub_lengthD)
+  apply (rule wf_UN)
+   prefer 2
+   apply force
+  apply (rename_tac n)
+  apply (induct_tac n)
+   apply (simp add: lesssub_def cong: conj_cong)
+  apply (rename_tac k)
+  apply (simp add: wf_eq_minimal del: r_def f_def step_def A_def)
+  apply (simp (no_asm) add: length_Suc_conv cong: conj_cong del: r_def f_def step_def A_def)
+  apply clarify
+  apply (rename_tac M m)
+  apply (case_tac "\<exists>x xs. size xs = k \<and> x#xs \<in> M")
+   prefer 2
+   apply blast
+  apply (erule_tac x = "{a. \<exists>xs. size xs = k \<and> a#xs:M}" in allE)
+  apply (erule impE)
+   apply blast
+  apply (thin_tac "\<exists>x xs. P x xs" for P)
+  apply clarify
+  apply (rename_tac maxA xs)
+  apply (erule_tac x = "{ys. size ys = size xs \<and> maxA#ys \<in> M}" in allE)
+  apply (erule impE)
+   apply blast
+  apply clarify
+  using Cons_less_Conss3 by blast
 
 
 lemma wf_jvm: " wf {(ss', ss). ss [\<sqsubset>\<^bsub>r\<^esub>] ss'}"
-  apply (insert acc_le_listI3 acc_JVM [OF wf])
-  by (simp add: acc_def r_def) 
+  using acc_le_listI3 acc_JVM [OF wf] by (simp add: acc_def r_def) 
 
 lemma iter_properties_bv[rule_format]:
 shows "\<lbrakk> \<forall>p\<in>w0. p < n; ss0 \<in> nlists n A; \<forall>p<n. p \<notin> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
          iter f step ss0 w0 = (ss',w') \<longrightarrow>
          ss' \<in> nlists n A \<and> stables r step ss' \<and> ss0 [\<sqsubseteq>\<^sub>r] ss' \<and>
          (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
-(*<*) (is "PROP ?P")
+(*<*)
+  using semi bounded_step exec_pres_type step_mono[OF wf]  
+  unfolding iter_def stables_def
 
-proof -
-  show "PROP ?P"
-    apply (insert semi bounded_step exec_pres_type step_mono[OF wf])  
-    apply (unfold iter_def stables_def)
-
-    apply (rule_tac P = "\<lambda>(ss,w).
+  apply (rule_tac P = "\<lambda>(ss,w).
                 ss \<in> nlists n A \<and> (\<forall>p<n. p \<notin> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
    (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
    (\<forall>p\<in>w. p < n)" and
-   r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
-         in while_rule)
+      r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
+      in while_rule)
 
-  \<comment> \<open>Invariant holds initially:\<close>  
-        apply (simp add:stables_def  semilat_Def   del: n_def A_def r_def f_def step_def)
-        apply (blast intro:le_list_refl')     
-   
-  \<comment> \<open>Invariant is preserved:\<close>
-       apply(simp add: stables_def split_paired_all del: A_def r_def f_def step_def n_def)
-       apply(rename_tac ss w)
-       apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
-        prefer 2 apply (fast intro: someI)
-       apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
-        prefer 2
-        apply clarify
-        apply (rule conjI)
-         apply(clarsimp, blast dest!: boundedD)
-        apply (subgoal_tac "(SOME p. p \<in> w) < n")
-         apply (subgoal_tac "(ss ! (SOME p. p \<in> w)) \<in> A")
-          apply (fastforce simp only:n_def dest:pres_typeD )   
-         apply simp
-        apply simp
-       apply (subst decomp_propa)
-        apply blast
-       apply (simp del:A_def r_def f_def step_def n_def)
-       apply (rule conjI)
-        apply (rule Semilat.merges_preserves_type[OF Semilat.intro, OF semi])
-         apply blast
-        apply clarify
-        apply (rule conjI)
-         apply(clarsimp, blast dest!: boundedD)
-        apply (erule pres_typeD)
-          prefer 3
-          apply assumption
-         apply (erule nlistsE_nth_in)
-         apply blast
-        apply (simp only:n_def)
-       apply (rule conjI)
-        apply clarify
-        apply (subgoal_tac "ss \<in> nlists (length is) A" "\<forall>p\<in>w. p <  (length is) " "\<forall>p<(length is). p \<notin> w \<longrightarrow> stable r step ss p "
- "p < length is")
-            apply (blast   intro!: Semilat.stable_pres_lemma[OF Semilat.intro, OF semi])
-           apply (simp only:n_def)
-          apply (simp only:n_def)
-         apply (simp only:n_def)
-        apply (simp only:n_def)
-       apply (rule conjI)
-        apply (subgoal_tac "ss \<in> nlists (length is) A" 
-               "\<forall>(q,t)\<in>set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length is \<and> t \<in> A"
-               "ss [\<sqsubseteq>\<^bsub>r\<^esub>] merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss" "ss0\<in> nlists (size is) A"
-               "merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss \<in> nlists (size is) A" 
-               "ss \<in>nlists (size is) A" "order r A" "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ss ")
-                apply (blast dest: le_list_trans)
-               apply simp
-              apply (simp only:semilat_Def)
-             apply (simp only:n_def)
-            apply (fastforce simp only: n_def dest:Semilat.merges_preserves_type[OF Semilat.intro, OF semi] )
-           apply (simp only:n_def)
-          apply (blast intro:Semilat.merges_incr[OF Semilat.intro, OF semi])
-         apply (subgoal_tac "length ss = n")
-          apply (simp only:n_def)
-         apply (subgoal_tac "ss \<in>nlists n A")
-          defer
-          apply simp
-         apply (simp only:n_def)
-        prefer 5
-        apply (simp only:nlistsE_length n_def)
-       apply(rule conjI)
-        apply (clarsimp simp del: A_def r_def f_def step_def)
-        apply (blast intro!: Semilat.merges_bounded_lemma[OF Semilat.intro, OF semi])       
-       apply (subgoal_tac "bounded step n")
-        apply (blast dest!: boundedD)
-       apply (simp only:n_def)
+\<comment> \<open>Invariant holds initially:\<close>
+      apply (smt (verit) case_prodI le_list_refl' semilat_Def)  
 
-  \<comment> \<open>Postcondition holds upon termination:\<close>
-      apply(clarsimp simp add: stables_def split_paired_all)
-  
-  \<comment> \<open>Well-foundedness of the termination relation:\<close>    
-      apply (rule wf_lex_prod)
-     apply (simp only:wf_jvm) 
-    apply (rule wf_finite_psubset) 
-
-  \<comment> \<open>Loop decreases along termination relation:\<close>
-     apply(simp add: stables_def split_paired_all del: A_def r_def f_def step_def)
+\<comment> \<open>Invariant is preserved:\<close>
+     apply(simp add: stables_def split_paired_all del: A_def r_def f_def step_def n_def)
      apply(rename_tac ss w)
-     apply(subgoal_tac "(SOME p. p \<in> w) \<in> w")
-      prefer 2 apply (fast intro: someI)
-     apply(subgoal_tac "\<forall>(q,t) \<in> set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length ss \<and> t \<in> A")
+     apply(subgoal_tac "\<forall>(q,t) \<in> set (step (some_elem w) (ss ! (some_elem w))). q < length ss \<and> t \<in> A")
       prefer 2
+      apply clarify
+      apply (metis boundedD n_def nlistsE_length nlistsE_nth_in pres_typeD some_elem_nonempty)
+     apply (subst decomp_propa)
+      apply blast
+     apply (simp del:A_def r_def f_def step_def n_def)
+     apply (rule conjI)
+      apply (rule Semilat.merges_preserves_type[OF Semilat.intro, OF semi])
+       apply blast
       apply clarify
       apply (rule conjI)
        apply(clarsimp, blast dest!: boundedD)
-      apply (erule pres_typeD)
-        prefer 3
-        apply assumption
-       apply (erule nlistsE_nth_in)
-       apply blast
-      apply blast
-     apply (subst decomp_propa)
-      apply blast
-     apply clarify
+      apply fastforce
+     apply (simp only:n_def)
+     apply (rule conjI)
+      apply clarify
+      apply (smt (verit, ccfv_SIG) Semilat.intro Semilat.stable_pres_lemma some_elem_nonempty)
+     apply (rule conjI)
+      apply (subgoal_tac "ss \<in> nlists (length is) A" 
+      "\<forall>(q,t)\<in>set (step (some_elem w) (ss ! (some_elem w))). q < length is \<and> t \<in> A"
+      "ss [\<sqsubseteq>\<^bsub>r\<^esub>] merges f (step (some_elem w) (ss ! (some_elem w))) ss" "ss0\<in> nlists (size is) A"
+      "merges f (step (some_elem w) (ss ! (some_elem w))) ss \<in> nlists (size is) A" 
+      "ss \<in>nlists (size is) A" "order r A" "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ss ")
+              apply (blast dest: le_list_trans)
+             apply simp
+  apply (simp only:semilat_Def)
+  apply (simp only:n_def)
+  apply (fastforce simp only: n_def dest:Semilat.merges_preserves_type[OF Semilat.intro, OF semi] )
+  apply (simp only:n_def)
+  apply (blast intro:Semilat.merges_incr[OF Semilat.intro, OF semi])
+  apply (subgoal_tac "length ss = n")
+  apply (simp only:n_def)
+  apply (metis n_def nlistsE_length)
+  apply (simp only:nlistsE_length n_def)
+  apply(rule conjI)
+  apply (clarsimp simp del: A_def r_def f_def step_def)
+  apply (smt (verit, del_insts) Semilat.intro Semilat.merges_bounded_lemma case_prodD
+      case_prodI2 some_elem_nonempty)
+  apply (subgoal_tac "bounded step n")
+  apply (blast dest!: boundedD intro: some_elem_nonempty)
+  apply (simp only:n_def)
+
+\<comment> \<open>Postcondition holds upon termination:\<close>
+  apply(clarsimp simp add: stables_def split_paired_all)
+
+\<comment> \<open>Well-foundedness of the termination relation:\<close>
+  using wf_finite_psubset wf_jvm apply blast  
+
+\<comment> \<open>Loop decreases along termination relation:\<close>
+  apply(simp add: stables_def split_paired_all del: A_def r_def f_def step_def)
+  apply(rename_tac ss w)
+  apply(subgoal_tac "\<forall>(q,t) \<in> set (step (some_elem w) (ss ! (some_elem w))). q < length ss \<and> t \<in> A")
+  prefer 2
+  apply clarify
+  apply (metis boundedD nlistsE_length nlistsE_nth_in pres_typeD some_elem_nonempty)
+  apply (subst decomp_propa)
+  apply blast
+  apply clarify
   apply (simp del: nlistsE_length  A_def r_def f_def step_def
       add: lex_prod_def finite_psubset_def 
-           bounded_nat_set_is_finite)
-     apply (rule termination_lemma)
-        apply (insert Semilat.intro)
-        apply assumption+
-      defer
-      apply assumption
-     defer
-     apply clarsimp   
-    done
-qed
+      bounded_nat_set_is_finite)
+  apply (intro termination_lemma some_elem_nonempty Semilat.intro)
+  apply simp_all
+  done
 
 (*>*)
 
@@ -242,24 +181,19 @@ shows "\<lbrakk> ss0 \<in> nlists n A \<rbrakk> \<Longrightarrow>
   ss0 [\<sqsubseteq>\<^sub>r] kildall r f step ss0 \<and>
   (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow>
                  kildall r f step ss0 [\<sqsubseteq>\<^sub>r] ts)"
-(*<*) (is "PROP ?P")
-proof -
-  show "PROP ?P"
-  apply (unfold kildall_def)
+(*<*) 
+  unfolding kildall_def
     apply(case_tac "iter f step ss0 (unstables r step ss0)")
-    apply (simp del:r_def f_def n_def step_def A_def)
-    apply (rule iter_properties_bv)      
-     apply (simp_all add: unstables_def stable_def)
-    done
-qed
+    by (smt (verit, best) eq_fst_iff iter_properties_bv mem_Collect_eq nlists_def
+        unstables_def)
 
 end
 
 theorem (in start_context) is_bcv_kiljvm:
   "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
 (*<*)
-  apply (insert wf)
-  apply (unfold kiljvm_def)
+  using wf
+  unfolding kiljvm_def
   apply (fold r_def f_def step_def_exec n_def)
   apply(unfold is_bcv_def wt_step_def)
   apply(insert semi  kildall_properties_bv)
@@ -268,23 +202,7 @@ theorem (in start_context) is_bcv_kiljvm:
   apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0 \<in> nlists n A")
    prefer 2
    apply (fastforce intro: kildall_properties_bv)
-  apply (rule iffI)
-   apply (rule_tac x = "kildall r f step \<tau>s\<^sub>0" in bexI) 
-    apply (rule conjI)
-     apply (fastforce intro: kildall_properties_bv)
-  apply (force intro: kildall_properties_bv)
-   apply simp
-  apply clarify
-  apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0!pa <=_r \<tau>s!pa")
-   defer
-   apply (blast intro!: le_listD less_lengthI)
-  apply (subgoal_tac "\<tau>s!pa \<noteq> Err")
-   defer
-   apply simp
-  apply (rule ccontr)
-  apply (simp only:top_def r_def JVM_le_unfold)
-  apply fastforce
-  done
+  by (metis Err_le_conv JVM_le_Err_conv le_listD nlistsE_length r_def)
 (*
 proof -
   let ?n = "length is"
@@ -308,24 +226,13 @@ qed
 lemma subset_replicate [intro?]: "set (replicate n x) \<subseteq> {x}"
   by (induct n) auto
 
-lemma in_set_replicate:
-  assumes "x \<in> set (replicate n y)"
-  shows "x = y"
-(*<*)
-proof -
-  note assms
-  also have "set (replicate n y) \<subseteq> {y}" ..
-  finally show ?thesis by simp
-qed
-(*>*)
 
 lemma (in start_context) start_in_A [intro?]:
   "0 < size is \<Longrightarrow> start \<in> nlists (size is) A"
   using Ts C
 (*<*)
 proof(cases b)
-qed (force simp: JVM_states_unfold intro!: nlistsI nlists_appendI
-           dest!: in_set_replicate)+
+qed (force simp: JVM_states_unfold intro!: nlistsI nlists_appendI)+
 (*>*)
 
 
