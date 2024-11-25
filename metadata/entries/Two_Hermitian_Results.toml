@@ -4,7 +4,7 @@ topics = [
   "Mathematics/Algebra",
 ]
 abstract = """
-We formalize two results on Hermitian matrices. First, Sylvester's criterion: a hermitian matrix is positive definite if and only if all its leading principal submatrices have positive determinant. Second, Cauchy's eigenvalue interlacing theorem: given a principal submatrix \\(B\\) of a hermitian matrix \\(A\\), the eigenvalues of \\(B\\) interlace those of \\(A\\).
+We formalize two results on Hermitian matrices. First, Sylvester's criterion: a Hermitian matrix is positive definite if and only if all its leading principal submatrices have positive determinant. Second, Cauchy's eigenvalue interlacing theorem: given a principal submatrix \\(B\\) of a Hermitian matrix \\(A\\), the eigenvalues of \\(B\\) interlace those of \\(A\\).
 
 Our approach to Sylvester's criterion is fairly standard, and required us to formalize Schur's block matrix determinant formula, which gives a formula for the determinant of a block matrix \\((A, B, C, D)\\) when \\(A\\) is invertible.
 
