@@ -9,9 +9,9 @@ begin
 
 
 
-no_notation bot (\<open>\<bottom>\<close>)
+no_notation bot ("\<bottom>")
 (* This will be used for non-informative entities, e.g., a noninformative output: *)
-abbreviation noninform (\<open>\<bottom>\<close>) where "\<bottom> \<equiv> undefined"
+abbreviation noninform ("\<bottom>") where "\<bottom> \<equiv> undefined"
 
 
 (* Avoid splitting the quantifiers over product types into two quantifiers *)
@@ -115,7 +115,6 @@ and update :: "predState \<Rightarrow> pcounter list \<Rightarrow> predState"
 + 
 fixes initPstate :: predState
   and istate :: "state \<Rightarrow> bool"
-  and input :: "nat"
 begin
 
 fun istateV :: "stateV \<Rightarrow> bool" where 

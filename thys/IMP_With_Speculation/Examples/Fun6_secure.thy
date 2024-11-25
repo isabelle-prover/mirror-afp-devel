@@ -362,8 +362,8 @@ proof(rule unwindIntoCond_simpleI)
   then show "isIntO ss3 = isIntO ss4" by simp
 
 
-  show "match (oor \<Delta>0 \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor \<Delta>0 \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 (oor \<Delta>0 \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -423,7 +423,7 @@ proof(rule unwindIntoCond_simpleI)
          using cases_14[of pc3] apply(elim disjE)
          apply simp_all apply(cases statO, simp_all) apply(cases statA, simp_all)
          apply(cases statO, simp_all) apply (cases statA, simp_all)
-         by (smt (z3) status.distinct status.exhaust updStat.simps)+
+         by (smt (z3) status.distinct status.exhaust newStat.simps)+
         } note stat = this
 
         show "oor \<Delta>0 \<Delta>1 \<infinity> \<infinity> \<infinity> ss3' ss4' statA' (nextN ss1) (nextN ss2) (sstatO' statO ss1 ss2)"
@@ -535,8 +535,8 @@ have f1:"\<not>finalN ss1"
   then show "isIntO ss3 = isIntO ss4" by simp
 
 
-  show "match (oor5 \<Delta>1 \<Delta>1' \<Delta>2 \<Delta>3 \<Delta>e) w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor5 \<Delta>1 \<Delta>1' \<Delta>2 \<Delta>3 \<Delta>e) w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 (oor5 \<Delta>1 \<Delta>1' \<Delta>2 \<Delta>3 \<Delta>e) w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -583,30 +583,30 @@ have f1:"\<not>finalN ss1"
          show "sstatO' statO ss1 ss2 = Diff"
            using v sa \<Delta>1 sstat finals unfolding ss cfg statA'
            apply-apply(frule \<Delta>1_implies)
-         apply(simp add: \<Delta>1_defs sstatO'_def sstatA'_def updStat_EqI) 
+         apply(simp add: \<Delta>1_defs sstatO'_def sstatA'_def newStat_EqI) 
          using cases_14[of pc3] apply(elim disjE, simp_all)
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI)
+           by(cases statA, simp_all add: newStat_EqI)
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI) 
+           by(cases statA, simp_all add: newStat_EqI) 
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI) 
+           by(cases statA, simp_all add: newStat_EqI) 
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI)
+           by(cases statA, simp_all add: newStat_EqI)
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI)
+           by(cases statA, simp_all add: newStat_EqI)
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI)
+           by(cases statA, simp_all add: newStat_EqI)
          subgoal apply(cases statO, simp_all, cases statA) 
-           by (simp_all add: updStat_EqI)  
+           by (simp_all add: newStat_EqI)  
          subgoal apply(cases statO, simp_all) 
-           by(cases statA, simp_all add: updStat_EqI)
+           by(cases statA, simp_all add: newStat_EqI)
          subgoal apply(cases statO, simp_all, cases statA) 
-           by (simp_all add: updStat_EqI split: if_splits)
+           by (simp_all add: newStat_EqI split: if_splits)
          subgoal apply(cases statO, simp_all, cases statA) 
-           by (simp_all add: updStat_EqI split: if_splits)
+           by (simp_all add: newStat_EqI split: if_splits)
          subgoal apply(cases statO, simp_all, cases statA) 
-           by (simp_all add: updStat_EqI split: if_splits) .
+           by (simp_all add: newStat_EqI split: if_splits) .
         } note stat = this
 
         show "oor5 \<Delta>1 \<Delta>1' \<Delta>2 \<Delta>3 \<Delta>e \<infinity> \<infinity> \<infinity> ss3' ss4' statA' (nextN ss1) (nextN ss2) (sstatO' statO ss1 ss2)"
@@ -776,7 +776,7 @@ proof(rule unwindIntoCond_simpleI)
       apply (cases ss3', cases ss4', clarsimp)
       using \<Delta>2 finals unfolding ss apply clarsimp        
       apply(simp_all add: \<Delta>2_defs sstatA'_def) 
-      apply(cases statO, simp_all) by (cases statA, simp_all add: updStat_EqI) .
+      apply(cases statO, simp_all) by (cases statA, simp_all add: newStat_EqI) .
 
   have xx:"vs3 xx = vs4 xx" using \<Delta>2 lcfgs unfolding ss \<Delta>2_defs apply clarsimp
     by (metis cfgs_Suc_zero config.sel(2) list.set_intros(1) state.sel(1) vstore.sel)
@@ -824,8 +824,8 @@ proof(rule unwindIntoCond_simpleI)
             using \<Delta>2 p unfolding ss \<Delta>2_defs by clarify . . . .
 
 
-  show "match (oor3 \<Delta>2 \<Delta>2' \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor3 \<Delta>2 \<Delta>2' \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 (oor3 \<Delta>2 \<Delta>2' \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -1139,7 +1139,7 @@ proof(rule unwindIntoCond_simpleI)
       apply (cases ss3', cases ss4', clarsimp)
       using \<Delta>3 finals unfolding ss apply clarsimp        
       apply(simp_all add: \<Delta>3_defs sstatA'_def) 
-      apply(cases statO, simp_all) by (cases statA, simp_all add: updStat_EqI) .
+      apply(cases statO, simp_all) by (cases statA, simp_all add: newStat_EqI) .
 
     have "vs3 xx = vs4 xx" using \<Delta>3 lcfgs unfolding ss \<Delta>3_defs apply clarsimp
       by (metis cfgs_Suc_zero config.sel(2) list.set_intros(1) state.sel(1) vstore.sel)
@@ -1174,8 +1174,8 @@ proof(rule unwindIntoCond_simpleI)
         by (metis one_less_numeral_iff semiring_norm(76))
       by simp . . .
 
-  show "match (oor \<Delta>3 \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react (oor \<Delta>3 \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 (oor \<Delta>3 \<Delta>1) w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -1380,8 +1380,8 @@ proof(rule unwindIntoCond_simpleI)
         by(metis enat_ord_simps(4) infinity_ne_i1)
      by auto 
 
-  show "match \<Delta>1 w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react \<Delta>1 w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 \<Delta>1 w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -1421,11 +1421,11 @@ proof(rule unwindIntoCond_simpleI)
       using v sa \<Delta>1' unfolding ss statA' apply clarsimp        
       apply(simp_all add: \<Delta>1'_defs sstatA'_def) 
       apply(cases statO, simp_all) 
-      apply(cases statA, simp_all add: updStat_EqI)
+      apply(cases statA, simp_all add: newStat_EqI)
       unfolding finalS_def final_def 
       using One_nat_def less_numeral_extra(4) 
           less_one list.size(3) map_is_Nil_conv 
-      by (smt (verit) status.exhaust updStat.simps)
+      by (smt (verit) status.exhaust newStat.simps)
 
       show "\<Delta>1 \<infinity> 1 1 ss3' ss4' statA' ss1 ss2 statO"
         using v3[unfolded ss, simplified] proof(cases rule: stepS_cases)
@@ -1555,7 +1555,7 @@ proof(rule unwindIntoCond_simpleI)
       apply (cases ss3', cases ss4', clarsimp)
       using \<Delta>2' finals unfolding ss apply clarsimp        
       apply(simp_all add: \<Delta>2'_defs sstatA'_def) 
-      apply(cases statO, simp_all) by (cases statA, simp_all add: updStat_EqI) .
+      apply(cases statO, simp_all) by (cases statA, simp_all add: newStat_EqI) .
 
 
   have match12_aux:"
@@ -1579,8 +1579,8 @@ proof(rule unwindIntoCond_simpleI)
                   pstate4' cfg4' cfgs4' ib4' ibUT4' ls4' 
         using ss3 ss4 by blast . .
 
-  show "match \<Delta>2 w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react \<Delta>2 w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 \<Delta>2 w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)
@@ -1686,8 +1686,8 @@ proof(rule unwindIntoCond_simpleI)
 
   then show "isIntO ss3 = isIntO ss4" by simp
 
-  show "match \<Delta>e w1 w2 ss3 ss4 statA ss1 ss2 statO"
-  unfolding match_def proof(intro conjI)
+  show "react \<Delta>e w1 w2 ss3 ss4 statA ss1 ss2 statO"
+  unfolding react_def proof(intro conjI)
     (* match1 and match2 are imposible case since isIntO always holds *)
     show "match1 \<Delta>e w1 w2 ss3 ss4 statA ss1 ss2 statO"
     unfolding match1_def by (simp add: finalS_def final_def)

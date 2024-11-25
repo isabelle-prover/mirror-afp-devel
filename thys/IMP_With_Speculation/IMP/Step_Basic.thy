@@ -48,7 +48,7 @@ The semantics operate on input streams and memories which are consumed and updat
 This emulates standard (and expected) execution of the commands defined. Since no speculation is captured in this basic semantics, the Fence command the same as SKIP\<close>
 
 inductive
-stepB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>B\<close> 55)
+stepB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>B" 55)
 where
 Seq_Start_Skip_Fence: 
 "pc < endPC \<Longrightarrow> prog!pc \<in> {Start, Skip, Fence} \<Longrightarrow> 
@@ -103,28 +103,12 @@ IfFalse:
 "pc < endPC \<Longrightarrow> prog!pc = IfJump b pc1 pc2 \<Longrightarrow> 
  \<not> bval b s \<Longrightarrow> 
  (Config pc s, ibT, ibUT) \<rightarrow>B (Config pc2 s, ibT, ibUT)" 
-|
-MaskTrue:  
-"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2 ) \<Longrightarrow> 
- bval b s \<Longrightarrow>
- s = State (Vstore vs) avst h p \<Longrightarrow>
- (Config pc s, ibT, ibUT) 
- \<rightarrow>B 
- (Config (Suc pc) (State (Vstore (vs(x := aval a1 s))) avst h p), ibT, ibUT)" 
-|
-MaskFalse:  
-"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2 ) \<Longrightarrow>
- \<not>bval b s \<Longrightarrow>
- s = State (Vstore vs) avst h p \<Longrightarrow>
- (Config pc s, ibT, ibUT) 
- \<rightarrow>B 
- (Config (Suc pc) (State (Vstore (vs(x := aval a2 s))) avst h p), ibT, ibUT)" 
 
 lemmas stepB_induct = stepB.induct[split_format(complete)]
 (* thm stepB_induct *)
 
 abbreviation
-  stepsB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix \<open>\<rightarrow>B*\<close> 55)
+  stepsB :: "config \<times> val llist \<times> val llist \<Rightarrow> config \<times> val llist \<times> val llist \<Rightarrow> bool" (infix "\<rightarrow>B*" 55)
   where "x \<rightarrow>B* y == star stepB x y"
 
 declare stepB.intros[simp,intro]
@@ -164,8 +148,7 @@ apply (cases "prog!pc")
   subgoal by (auto elim: stepB.cases, blast)   
   subgoal by (auto elim: stepB.cases, blast)
   subgoal by (auto elim: stepB.cases, blast)
-  subgoal by (auto elim: stepB.cases, blast)
-  subgoal by (auto elim: stepB.cases,meson IfFalse IfTrue) . . .
+  subgoal by (auto elim: stepB.cases, blast) . . .
 
 lemma finalB_iff: 
 "finalB (Config pc s, ibT, ibUT) 
@@ -288,22 +271,6 @@ lemma nextB_IfFalse[simp]:
  nextB (Config pc s, ibT, ibUT) = (Config pc2 s, ibT, ibUT)" 
 by(intro stepB_nextB[THEN sym] stepB.intros)
 
-
-lemma nextB_MaskTrue[simp]:  
-"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2) \<Longrightarrow> 
- bval b (State (Vstore vs) avst h p) \<Longrightarrow> 
- nextB (Config pc (State (Vstore vs) avst h p), ibT, ibUT) = 
-       (Config (Suc pc) (State (Vstore (vs(x := aval a1 (State (Vstore vs) avst h p)))) avst h p), ibT, ibUT)" 
-apply(intro stepB_nextB[THEN sym])
-  using MaskTrue by simp
-
-lemma nextB_MaskFalse[simp]:  
-"pc < endPC \<Longrightarrow> prog!pc = (M x I b T a1 E a2) \<Longrightarrow> 
- \<not>bval b (State (Vstore vs) avst h p) \<Longrightarrow> 
- nextB (Config pc (State (Vstore vs) avst h p), ibT, ibUT) = 
-       (Config (Suc pc) (State (Vstore (vs(x := aval a2 (State (Vstore vs) avst h p)))) avst h p), ibT, ibUT)" 
-apply(intro stepB_nextB[THEN sym])
-  using MaskFalse by simp
 (* *)
 
 
@@ -455,9 +422,6 @@ fun readLocsC :: "com \<Rightarrow> state \<Rightarrow> loc set" where
 "readLocsC (Output t a) s = readLocsA a s"
 |
 "readLocsC (IfJump b n1 n2) s = readLocsB b s"
-|
-"readLocsC (M x I b T a1 E a2) s = readLocsB b s \<union> (if (bval b s) then readLocsA a1 s 
-                                    else readLocsA a2 s) "
 |
 "readLocsC _ _ = {}"
 
