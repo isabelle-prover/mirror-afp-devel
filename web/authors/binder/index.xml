@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 26 Sep 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/binder/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Two Theorems on Hermitian Matrices</title>
+          <link>/entries/Two_Hermitian_Results.html</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Two_Hermitian_Results.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Babai&#39;s Nearest Plane Algorithm</title>
           <link>/entries/Babai_Nearest_Plane.html</link>

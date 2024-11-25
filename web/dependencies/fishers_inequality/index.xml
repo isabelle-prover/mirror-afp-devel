@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 20 Sep 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/fishers_inequality/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Two Theorems on Hermitian Matrices</title>
+          <link>/entries/Two_Hermitian_Results.html</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Two_Hermitian_Results.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Hypergraphs</title>
           <link>/entries/Hypergraph_Basics.html</link>

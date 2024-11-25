@@ -3295,6 +3295,15 @@ host = [
 
 [jiangd.homepages]
 
+[jiangz]
+name = "Zilin Jiang"
+orcid = "0000-0002-2946-7347"
+
+[jiangz.emails]
+
+[jiangz.homepages]
+jiangz_homepage = "https://www.zilin.one/"
+
 [joosten]
 name = "Sebastiaan J. C. Joosten"
 

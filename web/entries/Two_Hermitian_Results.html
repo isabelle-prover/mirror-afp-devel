@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cardinality and Representation of Stone Relation Algebras - Archive of Formal Proofs</title>
-    <meta name="description" content="In relation algebras, which model unweighted graphs, the cardinality operation counts the number of edges of a graph. We generalise the cardinality axioms...">
+    <title>Two Theorems on Hermitian Matrices - Archive of Formal Proofs</title>
+    <meta name="description" content="We formalize two results on Hermitian matrices. First, Sylvester&#39;s criterion: a hermitian matrix is positive definite if and only if all its leading...">
 
-  <meta property="og:title" content="Cardinality and Representation of Stone Relation Algebras" />
+  <meta property="og:title" content="Two Theorems on Hermitian Matrices" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Relational_Cardinality.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-09-22T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-09-22T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Two_Hermitian_Results.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-11-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-11-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Cardinality and Representation of Stone Relation Algebras"/>
+<meta name="twitter:title" content="Two Theorems on Hermitian Matrices"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -123,15 +123,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>C</span>ardinality and <span class='first'>R</span>epresentation of <span class='first'>S</span>tone <span class='first'>R</span>elation <span class='first'>A</span>lgebras
+    <span class='first'>T</span>wo <span class='first'>T</span>heorems on <span class='first'>H</span>ermitian <span class='first'>M</span>atrices
     
   </h1>
   <div>
       <p>
-        <a href="../authors/guttmann">Walter Guttmann</a> <a class="obfuscated" data="eyJob3N0IjpbImNhbnRlcmJ1cnkiLCJhYyIsIm56Il0sInVzZXIiOlsid2FsdGVyIiwiZ3V0dG1hbm4iXX0=">📧</a>
+        <a href="../authors/binder">Sage Binder</a> <a class="obfuscated" data="eyJob3N0IjpbInVpb3dhIiwiZWR1Il0sInVzZXIiOlsic2FnZS1iaW5kZXIiXX0=">📧</a> and <a href="../authors/jiangz">Zilin Jiang</a> <a href="https://www.zilin.one/">🌐</a>
 
       </p>
-      <p class="date">September 22, 2023</p>
+      <p class="date">November 16, 2024</p>
   </div>
 </header>
       <div>
@@ -139,7 +139,11 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">In relation algebras, which model unweighted graphs, the cardinality operation counts the number of edges of a graph. We generalise the cardinality axioms to Stone relation algebras, which model weighted graphs, and study the relationships between various axioms for cardinality. We also give a representation theorem for Stone relation algebras.</div>
+    <div class="abstract mathjax_process">We formalize two results on Hermitian matrices. First, Sylvester's criterion: a hermitian matrix is positive definite if and only if all its leading principal submatrices have positive determinant. Second, Cauchy's eigenvalue interlacing theorem: given a principal submatrix \(B\) of a hermitian matrix \(A\), the eigenvalues of \(B\) interlace those of \(A\).
+
+Our approach to Sylvester's criterion is fairly standard, and required us to formalize Schur's block matrix determinant formula, which gives a formula for the determinant of a block matrix \((A, B, C, D)\) when \(A\) is invertible.
+
+Our approach to Cauchy's eigenvalue interlacing theorem follows a proof given in a set of lecture notes by Dr. David Bindel. This approach involved formalizing the Courant-Fischer minimax theorem (a theorem about the Rayleigh quotient, which we define in this entry). In our statement of the Courant-Fischer minimax theorem, we refer to the infimum and supremum instead of the minimum and maximum, as this simplifies the proof and is sufficient to prove Cauchy's eigenvalue interlacing theorem.</div>
 
     <h3>License</h3>
     <div>
@@ -149,23 +153,24 @@
       <ul>
           <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Two_Hermitian_Results</h3>
       <ul>
-        <li>Furusawa, H., &amp; Guttmann, W. (2023). <i>Cardinality and Representation of Stone Relation Algebras</i> (Version 3). arXiv. https://doi.org/10.48550/ARXIV.2309.11676
-        </li>
-      </ul>
-      <h3>Session Relational_Cardinality</h3>
-      <ul>
-          <li><a href="../sessions/relational_cardinality/#Representation">Representation</a></li>
-          <li><a href="../sessions/relational_cardinality/#Cardinality">Cardinality</a></li>
+          <li><a href="../sessions/two_hermitian_results/#Misc_Matrix_Results">Misc_Matrix_Results</a></li>
+          <li><a href="../sessions/two_hermitian_results/#Sylvester_Criterion">Sylvester_Criterion</a></li>
+          <li><a href="../sessions/two_hermitian_results/#Cauchy_Eigenvalue_Interlacing">Cauchy_Eigenvalue_Interlacing</a></li>
       </ul>
 
     <div class="flex-wrap">
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
-              <li><a href="../entries/List-Infinite.html">Infinite Lists</a></li>
-              <li><a href="../entries/Stone_Relation_Algebras.html">Stone Relation Algebras</a></li>
+              <li><a href="../entries/BenOr_Kozen_Reif.html">The BKR Decision Procedure for Univariate Real Arithmetic</a></li>
+              <li><a href="../entries/Commuting_Hermitian.html">Simultaneous diagonalization of pairwise commuting Hermitian matrices</a></li>
+              <li><a href="../entries/Complex_Bounded_Operators.html">Complex Bounded Operators</a></li>
+              <li><a href="../entries/Fishers_Inequality.html">Fisher&rsquo;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</a></li>
+              <li><a href="../entries/Hermite_Lindemann.html">The Hermite–Lindemann–Weierstraß Transcendence Theorem</a></li>
+              <li><a href="../entries/Jordan_Normal_Form.html">Matrices, Jordan Normal Forms, and Spectral Radius Theory</a></li>
+              <li><a href="../entries/QHLProver.html">Quantum Hoare Logic</a></li>
         </ul>
       </div>
       </div>
@@ -176,9 +181,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Relational_Cardinality/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Relational_Cardinality/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Relational_Cardinality/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Two_Hermitian_Results/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Two_Hermitian_Results/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Two_Hermitian_Results/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -187,14 +192,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Relational_Cardinality-AFP</p>
-        <pre id="copy-text">@article{Relational_Cardinality-AFP,
-  author  = {Walter Guttmann},
-  title   = {Cardinality and Representation of Stone Relation Algebras},
+        <p style="display:none;" id="bibtex-filename">Two_Hermitian_Results-AFP</p>
+        <pre id="copy-text">@article{Two_Hermitian_Results-AFP,
+  author  = {Sage Binder and Zilin Jiang},
+  title   = {Two Theorems on Hermitian Matrices},
   journal = {Archive of Formal Proofs},
-  month   = {September},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Relational_Cardinality.html},
+  month   = {November},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Two_Hermitian_Results.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -208,23 +213,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Relational_Cardinality-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Two_Hermitian_Results-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Relational_Cardinality-2024-05-26.tar.gz">
-                May 26, 2024
-              </a>
-              : Isabelle2024
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Relational_Cardinality-2023-09-26.tar.gz">
-                Sep 26, 2023
-              </a>
-              : Isabelle2023
-            </li>
-        </ul>
     </div>
   </div>
         

@@ -11,8 +11,57 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 31 Oct 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>BenOr_Kozen_Reif</title>
+          <link>/dependencies/benor_kozen_reif/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/benor_kozen_reif/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Commuting_Hermitian</title>
+          <link>/dependencies/commuting_hermitian/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/commuting_hermitian/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Complex_Bounded_Operators</title>
+          <link>/dependencies/complex_bounded_operators/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/complex_bounded_operators/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fishers_Inequality</title>
+          <link>/dependencies/fishers_inequality/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/fishers_inequality/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Hermite_Lindemann</title>
+          <link>/dependencies/hermite_lindemann/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/hermite_lindemann/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Jordan_Normal_Form</title>
+          <link>/dependencies/jordan_normal_form/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jordan_normal_form/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>QHLProver</title>
+          <link>/dependencies/qhlprover/</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/qhlprover/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Min_Max_Least_Greatest</title>
           <link>/dependencies/min_max_least_greatest/</link>
@@ -497,13 +546,6 @@
           <description></description>
         </item>
         <item>
-          <title>QHLProver</title>
-          <link>/dependencies/qhlprover/</link>
-          <pubDate>Tue, 26 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/qhlprover/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Pell</title>
           <link>/dependencies/pell/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
@@ -749,13 +791,6 @@
           <description></description>
         </item>
         <item>
-          <title>Fishers_Inequality</title>
-          <link>/dependencies/fishers_inequality/</link>
-          <pubDate>Wed, 20 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/fishers_inequality/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>SpecCheck</title>
           <link>/dependencies/speccheck/</link>
           <pubDate>Tue, 19 Sep 2023 00:00:00 +0000</pubDate>
@@ -861,13 +896,6 @@
           <description></description>
         </item>
         <item>
-          <title>Jordan_Normal_Form</title>
-          <link>/dependencies/jordan_normal_form/</link>
-          <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/jordan_normal_form/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Skip_Lists</title>
           <link>/dependencies/skip_lists/</link>
           <pubDate>Thu, 27 Apr 2023 00:00:00 +0000</pubDate>
@@ -879,13 +907,6 @@
           <link>/dependencies/functional_ordered_resolution_prover/</link>
           <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/functional_ordered_resolution_prover/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Commuting_Hermitian</title>
-          <link>/dependencies/commuting_hermitian/</link>
-          <pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/commuting_hermitian/</guid>
           <description></description>
         </item>
         <item>
@@ -914,13 +935,6 @@
           <link>/dependencies/suppes_theorem/</link>
           <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/suppes_theorem/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>BenOr_Kozen_Reif</title>
-          <link>/dependencies/benor_kozen_reif/</link>
-          <pubDate>Thu, 02 Feb 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/benor_kozen_reif/</guid>
           <description></description>
         </item>
         <item>
@@ -1229,20 +1243,6 @@
           <link>/dependencies/robdd/</link>
           <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/robdd/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Hermite_Lindemann</title>
-          <link>/dependencies/hermite_lindemann/</link>
-          <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/hermite_lindemann/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Complex_Bounded_Operators</title>
-          <link>/dependencies/complex_bounded_operators/</link>
-          <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/complex_bounded_operators/</guid>
           <description></description>
         </item>
         <item>
