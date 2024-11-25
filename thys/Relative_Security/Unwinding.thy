@@ -16,22 +16,22 @@ begin
 (* Observation status *)
 datatype status = Eq | Diff 
 
-fun updStat :: "status \<Rightarrow> bool \<times> 'a \<Rightarrow> bool \<times> 'a \<Rightarrow> status" where 
- "updStat Eq (True,a) (True,a') = (if a = a' then Eq else Diff)"
-|"updStat stat _ _ = stat"
+fun newStat :: "status \<Rightarrow> bool \<times> 'a \<Rightarrow> bool \<times> 'a \<Rightarrow> status" where 
+ "newStat Eq (True,a) (True,a') = (if a = a' then Eq else Diff)"
+|"newStat stat _ _ = stat"
 
-definition "sstatO' statO sv1 sv2 = updStat statO (isIntV sv1, getObsV sv1) (isIntV sv2, getObsV sv2)"
-definition "sstatA' statA s1 s2 = updStat statA (isIntO s1, getObsO s1) (isIntO s2, getObsO s2)"
+definition "sstatO' statO sv1 sv2 = newStat statO (isIntV sv1, getObsV sv1) (isIntV sv2, getObsV sv2)"
+definition "sstatA' statA s1 s2 = newStat statA (isIntO s1, getObsO s1) (isIntO s2, getObsO s2)"
 
-lemma updStat_EqI: 
+lemma newStat_EqI: 
   assumes \<open>R = S\<close>
-    shows \<open>updStat Eq (P, R) (Q, S) = Eq\<close>
+    shows \<open>newStat Eq (P, R) (Q, S) = Eq\<close>
   apply (cases P)  
-  apply (metis assms updStat.simps(1) updStat.simps(4))
+  apply (metis assms newStat.simps(1) newStat.simps(4))
   by (cases Q) auto
 
-lemma updStat_diff:"updStat stat r r = Diff \<Longrightarrow> stat = Diff"
-  by (metis updStat.elims updStat.simps(1))
+lemma newStat_diff:"newStat stat r r = Diff \<Longrightarrow> stat = Diff"
+  by (metis newStat.elims newStat.simps(1))
 
 
 (* *)
@@ -210,20 +210,20 @@ apply simp by blast .
 
 (* *)
 
-definition "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO \<equiv> 
+definition "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO \<equiv> 
  match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO 
  \<and>
  match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO 
  \<and> 
  match12 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
 
-lemmas match_defs = match1_def match2_def match12_def
+lemmas react_defs = match1_def match2_def match12_def
 lemmas match_deep_defs = match1_defs match2_defs match12_defs
 
 lemma match_mono: 
 assumes "\<Delta> \<le> \<Delta>'" 
-shows "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> match \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO"
-unfolding match_def using match1_mono[OF assms] match2_mono[OF assms] match12_mono[OF assms] by auto    
+shows "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> react \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO"
+unfolding react_def using match1_mono[OF assms] match2_mono[OF assms] match12_mono[OF assms] by auto    
 
 (* *)
 
@@ -283,7 +283,7 @@ where
  \<and>
  ((\<exists>v < w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) 
   \<or> 
-  match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO
+  react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO
  )"
 
 (* *)
@@ -307,7 +307,7 @@ and
  reachO s1 \<Longrightarrow> reachO s2 \<Longrightarrow> reachV sv1 \<Longrightarrow> reachV sv2 \<Longrightarrow> 
  \<Delta> w w1 w2 s1 s2 statA sv1 sv2 statO 
  \<Longrightarrow>
- match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+ react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
 shows "unwindCond \<Delta>"
 using assms unfolding unwindCond_def by auto
 
@@ -378,7 +378,7 @@ proof(induction "length tr1 + length tr2" w
   and f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2"
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w"
@@ -428,7 +428,7 @@ proof(induction "length tr1 + length tr2" w
       less.prems(6) by auto 
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
     show ?thesis
     proof(cases "length tr1 \<le> Suc 0") 
       case True note tr1 = True
@@ -481,7 +481,7 @@ proof(induction "length tr1 + length tr2" w
         using isAO3 unfolding tr1 by auto  
         have A34': "Opt.A tr1' = Opt.A tr2"  
         using A34 O33'(2) by auto 
-        have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+        have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
         have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s1 \<and> \<Delta> \<infinity> w1' w2' s1' s2 statA sv1 sv2 statO) \<or> 
               (\<exists>w2'<w2. eqSec sv1 s1 \<and> \<not> isIntV sv1 \<and> match1_1 \<Delta> \<infinity> w2' s1 s1' s2 statA sv1 sv2 statO) \<or> 
               (eqSec sv1 s1 \<and> \<not> isSecV sv2 \<and> Van.eqAct sv1 sv2 \<and> match1_12 \<Delta> \<infinity> \<infinity> s1 s1' s2 statA sv1 sv2 statO)" 
@@ -545,7 +545,7 @@ proof(induction "length tr1 + length tr2" w
         using isAO4 unfolding tr2 by auto  
         have A34': "Opt.A tr1 = Opt.A tr2'"  
         using A34 O44'(2) by auto 
-        have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto 
+        have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto 
         have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s2 \<and> \<Delta> \<infinity> w1' w2' s1 s2' statA sv1 sv2 statO) \<or> 
               (\<exists>w1'<w1. eqSec sv2 s2 \<and> \<not> isIntV sv2 \<and> match2_1 \<Delta> w1' \<infinity> s1 s2 s2' statA sv1 sv2 statO) \<or> 
               (\<not> isSecV sv1 \<and> eqSec sv2 s2 \<and> Van.eqAct sv1 sv2 \<and> match2_12 \<Delta> \<infinity> \<infinity> s1 s2 s2' statA sv1 sv2 statO)" 
@@ -608,7 +608,7 @@ proof(induction "length tr1 + length tr2" w
         have O33': "Opt.O tr1 = getObsO s1 # Opt.O tr1'" and 
              O44': "Opt.O tr2 = getObsO s2 # Opt.O tr2'"  
         using isAO34 tr1'NE tr2'NE unfolding tr1 s13 tr2 s24 by auto     
-        have m: "match12 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding statA' match_def by auto
+        have m: "match12 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding statA' react_def by auto
         have trn34: "getObsO s1 = getObsO s2 \<or> statA' = Diff"
         using isAO34 unfolding statA' sstatA'_def by (cases statA,auto)  
         have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s1 \<and> \<not> isSecO s2 \<and> (statA = statA' \<or> statO = Diff) \<and> 
@@ -701,7 +701,7 @@ proof(induction "length tr1 + length tr2" w
           using Van.validFromS_Cons 0 
           using K4 eqSec_S_Cons 
           unfolding statA' Van.eqAct_def Van.completedFrom_def match12_12_def sstatO'_def 
-          by simp (smt (z3) Simple_Transition_System.lastt_Cons Van.A.Cons_unfold Van.O.Cons_unfold list.inject status.exhaust status.simps(1) tr1' tr2' trn3 trn4 updStat.simps(4) updStat_diff)
+          by simp (smt (z3) Simple_Transition_System.lastt_Cons Van.A.Cons_unfold Van.O.Cons_unfold list.inject status.exhaust status.simps(1) tr1' tr2' trn3 trn4 newStat.simps(4) newStat_diff)
         qed
       qed
     qed
@@ -714,7 +714,7 @@ lemma unwindCond_final:
 "unwindCond \<Delta> \<Longrightarrow> reachO s1 \<Longrightarrow> reachO s2 \<Longrightarrow> reachV sv1 \<Longrightarrow> reachV sv2 \<Longrightarrow> \<Delta> w w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> 
  (finalV sv1 \<longleftrightarrow> finalO s1) \<and> (finalV sv2 \<longleftrightarrow> finalO s2)"
 unfolding unwindCond_def 
-unfolding proact_def match_def match1_def match1_1_def
+unfolding proact_def react_def match1_def match1_1_def
 by auto
 
 (* The crucial properties in lifting unwinding proof method from finite to infinite traces:  *)
@@ -790,7 +790,7 @@ proof(induction "length tr1 + length tr2" w
   note vtr1 = `Opt.validFromS s1 tr1` 
   note vtr2 = `Opt.validFromS s2 tr2` 
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -843,10 +843,10 @@ proof(induction "length tr1 + length tr2" w
      using \<phi> ok' 0 sv12 nev unfolding \<phi>_def sstatO'_def 
      by simp (smt (verit, ccfv_SIG) Statewise_Attacker_Mod.eqAct_def 
      Van.A.Cons_unfold Van.O.Cons_unfold Van.Statewise_Attacker_Mod_axioms 
-     Van.validFromS_Cons list.inject updStat.simps(1) updStat.simps(4)) 
+     Van.validFromS_Cons list.inject newStat.simps(1) newStat.simps(4)) 
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
     define statA' where statA': "statA' = sstatA' statA s1 s2" 
     show ?thesis
     proof(cases "length tr1 \<le> Suc 0") 
@@ -885,7 +885,7 @@ proof(induction "length tr1 + length tr2" w
        using \<open>Opt.A tr2 = []\<close> tr2 tr2'NE by auto 
        have O44': "Opt.O tr2 = Opt.O tr2'" "Opt.A tr2 = Opt.A tr2'" 
        using isAO4 \<open>Opt.A tr2 = []\<close> tr2 by auto
-       have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto 
+       have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto 
        have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s2 \<and> \<Delta> \<infinity> w1' w2' s1 s2' statA sv1 sv2 statO) \<or> 
             (\<exists>w1'<w1. eqSec sv2 s2 \<and> \<not> isIntV sv2 \<and> match2_1 \<Delta> w1' \<infinity> s1 s2 s2' statA sv1 sv2 statO) \<or> 
             (\<not> isSecV sv1 \<and> eqSec sv2 s2 \<and> Van.eqAct sv1 sv2 \<and> match2_12 \<Delta> \<infinity> \<infinity> s1 s2 s2' statA sv1 sv2 statO)" 
@@ -938,7 +938,7 @@ proof(induction "length tr1 + length tr2" w
          using isAO4 ok Atrn12 eqSec_S_Cons trn24 tr2' trn4
          unfolding \<phi>_def tr2 Van.completedFrom_def Van.eqAct_def statO' sstatO'_def 
          by simp (smt (verit, ccfv_threshold) Van.A.Cons_unfold i34 is1 last_ConsL 
-         lastt_def status.exhaust tr1e updStat.simps(2))
+         lastt_def status.exhaust tr1e newStat.simps(2))
       qed
      qed
     next
@@ -959,7 +959,7 @@ proof(induction "length tr1 + length tr2" w
      have isAO3: "\<not> isIntO s1" using less.prems(11) tr1 tr1'NE by auto 
      have O33': "Opt.O tr1 = Opt.O tr1'" "Opt.A tr1 = Opt.A tr1'" 
      using isAO3 unfolding tr1 by auto   
-     have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+     have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
      have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s1 \<and> \<Delta> \<infinity> w1' w2' s1' s2 statA sv1 sv2 statO) \<or> 
           (\<exists>w2'<w2. eqSec sv1 s1 \<and> \<not> isIntV sv1 \<and> match1_1 \<Delta> \<infinity> w2' s1 s1' s2 statA sv1 sv2 statO) \<or> 
           (eqSec sv1 s1 \<and> \<not> isSecV sv2 \<and> Van.eqAct sv1 sv2 \<and> match1_12 \<Delta> \<infinity> \<infinity> s1 s1' s2 statA sv1 sv2 statO)" 
@@ -1015,7 +1015,7 @@ proof(induction "length tr1 + length tr2" w
        using Van.validFromS_Cons trn1 trn2 
        using isAO3 ok Atrn12 eqSec_S_Cons trn13 f3 f34 s13 tr1' trn3
        unfolding \<phi>_def tr1 Van.completedFrom_def Van.eqAct_def statO' sstatO'_def apply clarsimp
-       by (smt (verit, ccfv_SIG) Van.A.Cons_unfold updStat.simps(1) updStat.simps(2) updStat.simps(4))
+       by (smt (verit, ccfv_SIG) Van.A.Cons_unfold newStat.simps(1) newStat.simps(2) newStat.simps(4))
      qed
     qed
   qed
@@ -1056,7 +1056,7 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
   have f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -1109,12 +1109,12 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
        subgoal by (metis Van.A.Cons_unfold Van.eqAct_def)
        subgoal apply(rule exI[of _ statOO]) apply simp  
        by (smt (verit, ccfv_threshold) Van.O.Cons_unfold Van.eqAct_def 
-         list.inject updStat.simps(1) updStat.simps(3)) .
+         list.inject newStat.simps(1) newStat.simps(3)) .
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
     define statA' where statA': "statA' = sstatA' statA s1 s2" 
-    have m: "match12 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+    have m: "match12 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
     have "(\<exists>w1' w2'. w1' < w1 \<and> w2'< w2 \<and> \<not> isSecO s1 \<and> \<not> isSecO s2 \<and> (statA = statA' \<or> statO = Diff) \<and> 
             \<Delta> \<infinity> w1' w2' s1' s2' statA' sv1 sv2 statO) 
           \<or>
@@ -1412,7 +1412,7 @@ proof(induction "length tr1" w
   and f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto 
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -1462,7 +1462,7 @@ proof(induction "length tr1" w
      by (auto simp: Van.eqAct_def)    
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
     define statA' where statA': "statA' = sstatA' statA s1 s2" 
     show ?thesis
     proof(cases "length tr1 \<le> Suc 0") 
@@ -1475,7 +1475,7 @@ proof(induction "length tr1" w
      hence "\<not> finalO s1" using Opt.final_not_isSec by blast
      then obtain s1' where s13': "validTransO (s1, s1')" unfolding Opt.final_def by auto
      hence isv1: "isSecV sv1 \<and> getSecV sv1 = getSecO s1" using m is1 nis1
-     unfolding match_def match1_def eqSec_def by auto
+     unfolding react_def match1_def eqSec_def by auto
      show ?thesis using tr1e isv1 apply-
        apply(rule exI[of _ w]) apply(rule exI[of _ w1]) apply(rule exI[of _ w2]) 
        apply(rule exI[of _ "[sv1]"], rule exI[of _ "[sv2]"], rule exI[of _ statO]) 
@@ -1499,7 +1499,7 @@ proof(induction "length tr1" w
      have isAO3: "\<not> isIntO s1" by (simp add: nis1)  
      have O33': "Opt.O tr1 = Opt.O tr1'" "Opt.A tr1 = Opt.A tr1'" 
      using isAO3 unfolding tr1 by auto
-     have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+     have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
      have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s1 \<and> \<Delta> \<infinity> w1' w2' s1' s2 statA sv1 sv2 statO) \<or> 
           (\<exists>w2'<w2. eqSec sv1 s1 \<and> \<not> isIntV sv1 \<and> match1_1 \<Delta> \<infinity> w2' s1 s1' s2 statA sv1 sv2 statO) \<or> 
           (eqSec sv1 s1 \<and> \<not> isSecV sv2 \<and> Van.eqAct sv1 sv2 \<and> match1_12 \<Delta> \<infinity> \<infinity> s1 s1' s2 statA sv1 sv2 statO)" 
@@ -1591,7 +1591,7 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
   have f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -1619,8 +1619,8 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
       thus ?thesis by auto
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
-    have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
+    have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
     have "(\<exists>w1' w2'. w1'<w1 \<and> w2'<w2 \<and> \<not> isSecO s1 \<and> \<Delta> \<infinity> w1' w2' s1' s2 statA sv1 sv2 statO) \<or> 
           (\<exists>w2'< w2. eqSec sv1 s1 \<and> \<not> isIntV sv1 \<and> match1_1 \<Delta> \<infinity> w2' s1 s1' s2 statA sv1 sv2 statO) \<or> 
           (eqSec sv1 s1 \<and> \<not> isSecV sv2 \<and> Van.eqAct sv1 sv2 \<and> match1_12 \<Delta> \<infinity> \<infinity> s1 s1' s2 statA sv1 sv2 statO)" 
@@ -1835,7 +1835,7 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
   have f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -1885,8 +1885,8 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
       using \<omega>3 0 sv1 sv2 sv12 unfolding \<omega>3_def statO' by (auto simp: Van.eqAct_def)
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
-    have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
+    have m: "match1 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
     have "(\<exists>w1' w2'. w1' < w1 \<and> w2'<w2 \<and> \<not> isSecO s1 \<and> \<Delta> \<infinity> w1' w2' s1' s2 statA sv1 sv2 statO) \<or> 
           (\<exists>w2'<w2. eqSec sv1 s1 \<and> \<not> isIntV sv1 \<and> match1_1 \<Delta> \<infinity> w2' s1 s1' s2 statA sv1 sv2 statO) \<or> 
           (eqSec sv1 s1 \<and> \<not> isSecV sv2 \<and> Van.eqAct sv1 sv2 \<and> match1_12 \<Delta> \<infinity> \<infinity> s1 s1' s2 statA sv1 sv2 statO)" 
@@ -1981,7 +1981,7 @@ proof(induction "length tr2" w
   and f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto 
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -2030,7 +2030,7 @@ proof(induction "length tr2" w
      by (auto simp: Van.eqAct_def)    
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
     define statA' where statA': "statA' = sstatA' statA s1 s2" 
     show ?thesis
     proof(cases "length tr2 \<le> Suc 0") 
@@ -2043,7 +2043,7 @@ proof(induction "length tr2" w
      hence "\<not> finalO s2" using Opt.final_not_isSec by blast
      then obtain s2' where s24': "validTransO (s2, s2')" unfolding Opt.final_def by auto
      hence isv2: "isSecV sv2 \<and> getSecV sv2 = getSecO s2" using m is2 nis2
-     unfolding match_def match2_def eqSec_def by auto
+     unfolding react_def match2_def eqSec_def by auto
      show ?thesis using tr2e isv2 apply-
        apply(rule exI[of _ w]) apply(rule exI[of _ w1]) apply(rule exI[of _ w2]) 
        apply(rule exI[of _ "[sv1]"], rule exI[of _ "[sv2]"], rule exI[of _ statO]) 
@@ -2067,7 +2067,7 @@ proof(induction "length tr2" w
      have isAO4: "\<not> isIntO s2" by (simp add: nis2)  
      have O44': "Opt.O tr2 = Opt.O tr2'" "Opt.A tr2 = Opt.A tr2'" 
      using isAO4 unfolding tr2 by auto
-     have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+     have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
      have "(\<exists>w1'<w1. \<exists>w2'<w2. \<not> isSecO s2 \<and> \<Delta> \<infinity> w1' w2' s1 s2' statA sv1 sv2 statO) \<or> 
           (\<exists>w1'<w1. eqSec sv2 s2 \<and> \<not> isIntV sv2 \<and> match2_1 \<Delta> w1' \<infinity> s1 s2 s2' statA sv1 sv2 statO) \<or> 
           (eqSec sv2 s2 \<and> \<not> isSecV sv1 \<and> Van.eqAct sv1 sv2 \<and> match2_12 \<Delta> \<infinity> \<infinity> s1 s2 s2' statA sv1 sv2 statO)" 
@@ -2159,7 +2159,7 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
   have f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -2187,8 +2187,8 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
       thus ?thesis by auto
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
-    have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
+    have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
     have "(\<exists>w1' w2'. w1'<w1 \<and> w2'<w2 \<and> \<not> isSecO s2 \<and> \<Delta> \<infinity> w1' w2' s1 s2' statA sv1 sv2 statO) \<or> 
           (\<exists>w1'<w1. eqSec sv2 s2 \<and> \<not> isIntV sv2 \<and> match2_1 \<Delta> w1' \<infinity> s1 s2 s2' statA sv1 sv2 statO) \<or> 
           (eqSec sv2 s2 \<and> \<not> isSecV sv1 \<and> Van.eqAct sv1 sv2 \<and> match2_12 \<Delta> \<infinity> \<infinity> s1 s2 s2' statA sv1 sv2 statO)" 
@@ -2402,7 +2402,7 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
   have f34: "finalO s1 = finalO s2 \<and> finalV sv1 = finalO s1 \<and> finalV sv2 = finalO s2" 
     using \<Delta> unwind[unfolded unwindCond_def] r by auto
 
-  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
+  have proact_match: "(\<exists>v<w. proact \<Delta> v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO"
   using \<Delta> unwind[unfolded unwindCond_def] r by auto
   show ?case using proact_match proof safe
     fix v assume v: "v < w" 
@@ -2452,8 +2452,8 @@ proof(induction w arbitrary: w1 w2 sv1 sv2 statO rule: less_induct)
       using \<omega>4 0 sv1 sv2 sv12 unfolding \<omega>4_def statO' by (auto simp: Van.eqAct_def)
     qed
   next
-    assume m: "match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
-    have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding match_def by auto
+    assume m: "react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" 
+    have m: "match2 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO" using m unfolding react_def by auto
     have "(\<exists>w1' w2'. w1'<w1 \<and> w2'<w2 \<and> \<not> isSecO s2 \<and> \<Delta> \<infinity>  w1' w2' s1 s2' statA sv1 sv2 statO) \<or> 
           (\<exists>w1'<w1. eqSec sv2 s2 \<and> \<not> isIntV sv2 \<and> match2_1 \<Delta>  w1' \<infinity> s1 s2 s2' statA sv1 sv2 statO) \<or> 
           \<not> isSecV sv1 \<and> eqSec sv2 s2 \<and> Van.eqAct sv1 sv2 \<and> match2_12 \<Delta>  \<infinity> \<infinity> s1 s2 s2' statA sv1 sv2 statO" 
@@ -7181,7 +7181,7 @@ where
  \<and>
  ((\<exists>v<w. proact \<Delta>' v w1 w2 s1 s2 statA sv1 sv2 statO)   
   \<or> 
-  match \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO)"
+  react \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO)"
 
 theorem distrib_unwind_lrsecure:
 assumes m: "0 < m" and nxt: "\<And>i. i < (m::nat) \<Longrightarrow> nxt i \<subseteq> {0..<m}" 
@@ -7234,7 +7234,7 @@ and
  reachO s1 \<Longrightarrow> reachO s2 \<Longrightarrow> reachV sv1 \<Longrightarrow> reachV sv2 \<Longrightarrow> 
  \<Delta> w w1 w2 s1 s2 statA sv1 sv2 statO 
  \<Longrightarrow>
- match \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO"
+ react \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO"
 shows "unwindIntoCond \<Delta> \<Delta>'"
 using assms unfolding unwindIntoCond_def by auto
 
@@ -7280,7 +7280,7 @@ and
  reachO s1 \<Longrightarrow> reachO s2 \<Longrightarrow> reachV sv1 \<Longrightarrow> reachV sv2 \<Longrightarrow> 
  \<Delta> w w1 w2 s1 s2 statA sv1 sv2 statO 
  \<Longrightarrow>
- (\<exists>v<w. proact \<Delta>' v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> match \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO"
+ (\<exists>v<w. proact \<Delta>' v w1 w2 s1 s2 statA sv1 sv2 statO) \<or> react \<Delta>' w1 w2 s1 s2 statA sv1 sv2 statO"
 shows "unwindIntoCond \<Delta> \<Delta>'"
   using assms unfolding unwindIntoCond_def by auto
 
@@ -7375,8 +7375,8 @@ unfolding match2_def by auto
 lemma isIntO_match: 
   assumes \<open>isIntO s1\<close> and \<open>isIntO s2\<close>
       and \<open>match12 \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO\<close>
-    shows \<open>match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO\<close>
-  unfolding match_def apply (intro conjI)
+    shows \<open>react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO\<close>
+  unfolding react_def apply (intro conjI)
   subgoal
     using assms(1) by (rule isIntO_match1)
   subgoal
@@ -7474,13 +7474,13 @@ apply(rule match12_12_mono) unfolding le_fun_def oor_def by auto
 (* *)
 
 lemma match_oorI1: 
-"match \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> 
- match (oor \<Delta> \<Delta>\<^sub>2) w1 w2 s1 s2 statA sv1 sv2 statO"
+"react \<Delta> w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> 
+ react (oor \<Delta> \<Delta>\<^sub>2) w1 w2 s1 s2 statA sv1 sv2 statO"
 apply(rule match_mono) unfolding le_fun_def oor_def by auto
 
 lemma match_oorI2: 
-"match \<Delta>\<^sub>2 w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> 
- match (oor \<Delta> \<Delta>\<^sub>2) w1 w2 s1 s2 statA sv1 sv2 statO"
+"react \<Delta>\<^sub>2 w1 w2 s1 s2 statA sv1 sv2 statO \<Longrightarrow> 
+ react (oor \<Delta> \<Delta>\<^sub>2) w1 w2 s1 s2 statA sv1 sv2 statO"
 apply(rule match_mono) unfolding le_fun_def oor_def by auto
 
 (* *)
