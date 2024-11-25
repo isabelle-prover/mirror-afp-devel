@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{eufrak}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Two Theorems on Hermitian Matrices}
+\author{Sage Binder and Zilin Jiang}
+\maketitle
+
+\begin{abstract}
+    We formalize two results on Hermitian matrices.
+    First, Sylvester's criterion: a hermitian matrix
+    is positive definite if and only if all its leading principal submatrices
+    have positive determinant.
+    Second, Cauchy's eigenvalue interlacing theorem:
+    given a principal submatrix $B$ of a hermitian matrix $A$,
+    the eigenvalues of $B$ interlace those of $A$.
+
+    Our approach to Sylvester's criterion is fairly standard,
+    and required us to formalize Schur's block matrix determinant formula,
+    which gives a formula for the determinant of a block matrix $(A, B, C, D)$
+    when $A$ is invertible.
+
+    Our approach to Cauchy's eigenvalue interlacing theorem
+    follows a proof given in a set of lecture notes by Dr. David Bindel \cite{bindel2019lecture}.
+    This approach involved formalizing the Courant-Fischer minimax theorem
+    (a theorem about the Rayleigh quotient, which we define in this entry).
+    In our statement of the Courant-Fischer minimax theorem,
+    we refer to the infimum and supremum instead of the minimum and maximum,
+    as this simplifies the proof and is sufficient to prove Cauchy's eigenvalue interlacing theorem.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
