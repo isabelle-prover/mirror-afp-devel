@@ -7083,6 +7083,22 @@ host = [
 
 [sulejmani.homepages]
 
+[surlykke]
+name = "Thomas Holme Surlykke"
+
+[surlykke.emails]
+
+[surlykke.emails.surlykke_email]
+user = [
+  "thomas",
+]
+host = [
+  "surlykke",
+  "dk",
+]
+
+[surlykke.homepages]
+
 [sutcliffe]
 name = "Geoff Sutcliffe"
 

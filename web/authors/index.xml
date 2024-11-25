@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 22 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>surlykke</title>
+          <link>/authors/surlykke/</link>
+          <pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/surlykke/</guid>
+          <description></description>
+        </item>
         <item>
           <title>binder</title>
           <link>/authors/binder/</link>

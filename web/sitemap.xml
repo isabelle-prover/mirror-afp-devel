@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Cube_Dissection.html</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/surlykke/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
@@ -23,9 +38,6 @@
     <loc>/dependencies/</loc>
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/fishers_inequality/</loc>
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -38,13 +50,7 @@
     <loc>/dependencies/jordan_normal_form/</loc>
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/qhlprover/</loc>
-    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Two_Hermitian_Results.html</loc>
@@ -5600,6 +5606,8 @@
     <loc>/sessions/ctt/</loc>
   </url><url>
     <loc>/sessions/cube/</loc>
+  </url><url>
+    <loc>/sessions/cube_dissection/</loc>
   </url><url>
     <loc>/sessions/cubic_quartic_equations/</loc>
   </url><url>

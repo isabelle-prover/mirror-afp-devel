@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>surlykke on Archive of Formal Proofs
+    </title>
+    <link>/authors/surlykke/</link>
+    <description>
+        Recent content in surlykke 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Fri, 22 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/authors/surlykke/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Impossibility of the Dissection of a Cube</title>
+          <link>/entries/Cube_Dissection.html</link>
+          <pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Cube_Dissection.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>
