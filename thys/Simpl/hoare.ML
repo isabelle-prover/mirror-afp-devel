@@ -1508,7 +1508,7 @@ fun split_pair_apps ctxt thm =
               let
                 val len = length args;
                 val (argTs,bdyT) = strip_type vT;
-                val (z, _) = Name.variant "z" (fold Term.declare_term_frees args Name.context);
+                val (z, _) = Name.variant "z" (fold Term.declare_free_names args Name.context);
                 val frees = map (apfst (fn i => z^string_of_int i))
                                 (0 upto (len - 1) ~~ argTs);
                 fun splitT (Type (@{type_name Product_Type.prod}, [T1, T2])) = T1::splitT T2
