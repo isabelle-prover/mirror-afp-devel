@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ILL on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/ill/</link>
+    <description>
+        Recent content in ILL 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/ill/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Linear Resources and Process Compositions</title>
+          <link>/entries/ProcessComposition.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ProcessComposition.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

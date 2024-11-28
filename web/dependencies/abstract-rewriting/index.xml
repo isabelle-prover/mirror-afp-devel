@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 14 Aug 2018 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/abstract-rewriting/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Linear Resources and Process Compositions</title>
+          <link>/entries/ProcessComposition.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ProcessComposition.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Minsky Machines</title>
           <link>/entries/Minsky_Machines.html</link>

@@ -1,0 +1,30 @@
+chapter AFP
+
+session "ProcessComposition" = "HOL" +
+  options [timeout = 600]
+  sessions
+    "Abstract-Rewriting"
+  theories
+    Util
+    ResTerm
+    ResNormalForm
+    ResNormRewrite
+    ResNormDirect
+    ResNormCompare
+    Resource
+    Process
+    CopyableElimination
+  document_files
+    "root.tex"
+    "root.bib"
+
+session "ProcessComposition_ILL" in ProcessILL = "ProcessComposition" +
+  options [timeout = 600]
+  sessions
+    "ILL"
+  theories
+    ResTermILL
+    ResourceILL
+    ProcessILL
+  document_files
+    "root.tex"

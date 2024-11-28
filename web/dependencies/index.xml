@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Sat, 16 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Abstract-Rewriting</title>
+          <link>/dependencies/abstract-rewriting/</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/abstract-rewriting/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ILL</title>
+          <link>/dependencies/ill/</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ill/</guid>
+          <description></description>
+        </item>
         <item>
           <title>BenOr_Kozen_Reif</title>
           <link>/dependencies/benor_kozen_reif/</link>
@@ -1796,13 +1810,6 @@
           <link>/dependencies/random_bsts/</link>
           <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
           <guid>/dependencies/random_bsts/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abstract-Rewriting</title>
-          <link>/dependencies/abstract-rewriting/</link>
-          <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
-          <guid>/dependencies/abstract-rewriting/</guid>
           <description></description>
         </item>
         <item>

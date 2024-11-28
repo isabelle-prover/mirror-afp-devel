@@ -1,0 +1,29 @@
+title = "Deep Embedding of Intuitionistic Linear Logic"
+date = 2024-11-25
+topics = [
+  "Logic/General logic/Modal logic",
+]
+abstract = "In this entry we formalise intuitionistic linear logic (ILL) with a deep embedding of propositions, and shallow and deep embeddings of deductions. We introduce the logic with an <i>explicit</i> exchange rule, meaning sequents have a list of propositions as antecedents. We then prove that sequents that differ only in the order of their antecedents are equivalently valid, representing the alternative <i>implicit</i> exchange rule. The deep embedding of deductions allows for direct construction, manipulation and verification of ILL deductions."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.smola]
+email = "smola_email"
+
+[authors.fleuriot]
+email = "fleuriot_email"
+
+[contributors]
+
+[notify]
+smola = "smola_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -3,13 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/abstract-rewriting/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ILL.html</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/fleuriot/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ill/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ProcessComposition.html</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/smola/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Cube_Dissection.html</loc>
     <lastmod>2024-11-22T00:00:00+00:00</lastmod>
@@ -18,9 +48,6 @@
     <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/surlykke/</loc>
-    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/benor_kozen_reif/</loc>
@@ -33,9 +60,6 @@
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/complex_bounded_operators/</loc>
-    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/fishers_inequality/</loc>
@@ -57,9 +81,6 @@
     <lastmod>2024-11-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/desharnais/</loc>
-    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/min_max_least_greatest/</loc>
@@ -138,9 +159,6 @@
     <lastmod>2024-10-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Babai_Nearest_Plane.html</loc>
-    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-09-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/cordwell/</loc>
@@ -330,9 +348,6 @@
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/cayley_hamilton/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/fleuriot/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/jacobson_basic_algebra/</loc>
@@ -1763,9 +1778,6 @@
     <loc>/entries/Hyperdual.html</loc>
     <lastmod>2021-12-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/smola/</loc>
-    <lastmod>2021-12-31T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Gale_Shapley.html</loc>
     <lastmod>2021-12-29T00:00:00+00:00</lastmod>
   </url><url>
@@ -3046,9 +3058,6 @@
   </url><url>
     <loc>/authors/spasic/</loc>
     <lastmod>2018-08-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/abstract-rewriting/</loc>
-    <lastmod>2018-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Minsky_Machines.html</loc>
     <lastmod>2018-08-14T00:00:00+00:00</lastmod>
@@ -6181,6 +6190,8 @@
   </url><url>
     <loc>/sessions/ifc_tracking/</loc>
   </url><url>
+    <loc>/sessions/ill/</loc>
+  </url><url>
     <loc>/sessions/imap-crdt/</loc>
   </url><url>
     <loc>/sessions/imo2019/</loc>
@@ -6810,6 +6821,10 @@
     <loc>/sessions/probabilistic_while/</loc>
   </url><url>
     <loc>/sessions/probability_inequality_completeness/</loc>
+  </url><url>
+    <loc>/sessions/processcomposition/</loc>
+  </url><url>
+    <loc>/sessions/processcomposition_ill/</loc>
   </url><url>
     <loc>/sessions/prog_prove/</loc>
   </url><url>

@@ -352,6 +352,7 @@ Hypergraph_Basics
 Hypergraph_Colourings
 IEEE_Floating_Point
 IFC_Tracking
+ILL
 IMAP-CRDT
 IMO2019
 IMP2
@@ -607,6 +608,7 @@ Prime_Number_Theorem
 Priority_Queue_Braun
 Priority_Search_Trees
 Probabilistic_Noninterference
+ProcessComposition
 Probabilistic_Prime_Tests
 Probabilistic_System_Zoo
 Probabilistic_Timed_Automata

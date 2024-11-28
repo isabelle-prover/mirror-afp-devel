@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 22 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>fleuriot</title>
+          <link>/authors/fleuriot/</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/fleuriot/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>smola</title>
+          <link>/authors/smola/</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/authors/smola/</guid>
+          <description></description>
+        </item>
         <item>
           <title>surlykke</title>
           <link>/authors/surlykke/</link>
@@ -221,13 +235,6 @@
           <link>/authors/glabbeek/</link>
           <pubDate>Mon, 12 Aug 2024 00:00:00 +0000</pubDate>
           <guid>/authors/glabbeek/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>fleuriot</title>
-          <link>/authors/fleuriot/</link>
-          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/fleuriot/</guid>
           <description></description>
         </item>
         <item>
@@ -1334,13 +1341,6 @@
           <link>/authors/koller/</link>
           <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>
           <guid>/authors/koller/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>smola</title>
-          <link>/authors/smola/</link>
-          <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
-          <guid>/authors/smola/</guid>
           <description></description>
         </item>
         <item>
