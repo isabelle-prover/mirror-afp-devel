@@ -1,9 +1,7 @@
 chapter AFP
 
-session Gauss_Jordan = "HOL-Analysis" +
+session Gauss_Jordan = Rank_Nullity_Theorem +
   options [timeout = 600]
-  sessions
-    Rank_Nullity_Theorem
   theories
     Examples_Gauss_Jordan_Abstract
     Code_Generation_IArrays_SML
