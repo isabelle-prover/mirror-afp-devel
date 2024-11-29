@@ -291,8 +291,7 @@ fun prepare_dict_goal (classes, (term, _, class)) lthy =
     | SOME {cert, ...} =>
         cert dummyT
 
-    val names = Name.context
-    val (dict_params, prems, _) = prepare_dicts classes names lthy
+    val (dict_params, prems, _) = prepare_dicts classes Name.context lthy
     val (term_name, _) = dest_Const term
     val dict = list_comb (Const (term_name, dummyT), dict_params)
 
@@ -536,7 +535,7 @@ fun instance consts tyco class lthy =
         val ({make, ...}, lthy) = axclass class lthy
 
         val name = mangle class ^ "__instance__" ^ mangle tyco
-        val tparams = Name.invent_names Name.context Name.aT tparam_sorts
+        val tparams = Name.invent_types_global tparam_sorts
         val ((dict_params, _), lthy) = raw_dict_params tparams lthy
           |>> map fst
           |>> dict_params (Name.make_context [name])

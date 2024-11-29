@@ -584,7 +584,7 @@ AOT_syntax_print_translations [
   fn [lhs as Abs (lhsName, lhsTy, lhsTrm), rhs as Abs (rhsName, rhsTy, rhsTrm)] =>
     let
       val (name,_) = Name.variant lhsName
-        (Term.declare_term_names rhsTrm (Term.declare_term_names lhsTrm Name.context));
+        (Term.declare_term_names rhsTrm (Name.build_context (Term.declare_term_names lhsTrm)));
       val lhs = Term.betapply (lhs, Const ("_bound", dummyT) $ Free (name, lhsTy))
       val rhs = Term.betapply (rhs, Const ("_bound", dummyT) $ Free (name, rhsTy))
     in
