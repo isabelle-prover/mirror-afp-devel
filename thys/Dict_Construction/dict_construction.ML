@@ -522,9 +522,7 @@ fun instance consts tyco class lthy =
 
         fun print_info ctxt =
           let
-            val tvars =
-              Name.invent_list [] Name.aT (length tparam_sorts) ~~ tparam_sorts
-              |> map TFree
+            val tvars = map TFree (Name.invent_types_global tparam_sorts)
           in
             [Pretty.str "Defining instance ", Syntax.pretty_typ ctxt (Type (tyco, tvars)),
               Pretty.str " :: ", Syntax.pretty_sort ctxt [class]]
