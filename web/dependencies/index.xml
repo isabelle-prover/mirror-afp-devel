@@ -11,8 +11,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 26 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Dirichlet_Series</title>
+          <link>/dependencies/dirichlet_series/</link>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/dirichlet_series/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Gaussian_Integers</title>
+          <link>/dependencies/gaussian_integers/</link>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/gaussian_integers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>List-Index</title>
+          <link>/dependencies/list-index/</link>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/list-index/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Abstract-Rewriting</title>
           <link>/dependencies/abstract-rewriting/</link>
@@ -665,13 +686,6 @@
           <description></description>
         </item>
         <item>
-          <title>Dirichlet_Series</title>
-          <link>/dependencies/dirichlet_series/</link>
-          <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/dirichlet_series/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Polylog</title>
           <link>/dependencies/polylog/</link>
           <pubDate>Fri, 24 Nov 2023 00:00:00 +0000</pubDate>
@@ -893,13 +907,6 @@
           <link>/dependencies/hereditarilyfinite/</link>
           <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/hereditarilyfinite/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>List-Index</title>
-          <link>/dependencies/list-index/</link>
-          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/list-index/</guid>
           <description></description>
         </item>
         <item>

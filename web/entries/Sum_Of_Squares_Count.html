@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Group Law of Edwards Elliptic Curves - Archive of Formal Proofs</title>
-    <meta name="description" content="This article gives an elementary computational proof of the group law for Edwards elliptic curves. The associative law is expressed as a polynomial...">
+    <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content=" This entry defines the sum-of-squares function $r_k(n)$, which counts the number of ways to write a natural number $n$ as a sum of $k$ squares of...">
 
-  <meta property="og:title" content="Group Law of Edwards Elliptic Curves" />
+  <meta property="og:title" content="The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="/entries/Edwards_Elliptic_Curves_Group.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
-<meta property="article:published_time" content="2023-02-16T00:00:00+00:00" />
-<meta property="article:modified_time" content="2023-02-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+<meta property="og:url" content="/entries/Sum_Of_Squares_Count.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2024-11-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-11-26T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
 
   <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/afp.png"/>
 
-<meta name="twitter:title" content="Group Law of Edwards Elliptic Curves"/>
+<meta name="twitter:title" content="The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem"/>
 <meta name="twitter:description" content=""/>
 
   <link rel="stylesheet" type="text/css" href="../css/front.min.css">
@@ -123,15 +123,15 @@
       </div>
     </form>
   <h1>
-    <span class='first'>G</span>roup <span class='first'>L</span>aw of <span class='first'>E</span>dwards <span class='first'>E</span>lliptic <span class='first'>C</span>urves
+    <span class='first'>T</span>he <span class='first'>S</span>um-of-<span class='first'>S</span>quares <span class='first'>F</span>unction and <span class='first'>J</span>acobi's <span class='first'>T</span>wo-<span class='first'>S</span>quare <span class='first'>T</span>heorem
     
   </h1>
   <div>
       <p>
-        <a href="../authors/raya">Rodrigo Raya</a> <a href="https://people.epfl.ch/rodrigo.raya">🌐</a>
+        <a href="../authors/eberl">Manuel Eberl</a> <a class="obfuscated" data="eyJob3N0IjpbInBydXZpc3RvIiwib3JnIl0sInVzZXIiOlsibWFudWVsIl19">📧</a>
 
       </p>
-      <p class="date">February 16, 2023</p>
+      <p class="date">November 26, 2024</p>
   </div>
 </header>
       <div>
@@ -139,7 +139,22 @@
   <main>
     <h3>Abstract</h3>
 
-    <div class="abstract mathjax_process">This article gives an elementary computational proof of the group law for Edwards elliptic curves. The associative law is expressed as a polynomial identity over the integers that is directly checked by polynomial division. Unlike other proofs, no preliminaries such as intersection numbers, B́ezout’s theorem, projective geometry, divisors, or Riemann Roch are required.</div>
+    <div class="abstract mathjax_process"><p>
+This entry defines the <em>sum-of-squares function</em> $r_k(n)$, which counts the number of
+ways to write a natural number $n$ as a sum of $k$ squares of integers. Signs and permutations of 
+these integers are taken into account, such that e.g. $1^2+2^2$, $2^2+1^2$, and $(-1)^2+2^2$
+are all different decompositions of $5$.
+</p>
+<p>
+Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n > 0$
+we have \[r_2(n) = 4(d_1(3) - d_3(n))\ ,\] where $d_i(n)$ denotes the number of divisors $m$ of $n$
+such that $m = i\ (\text{mod}\ 4)$.
+</p>
+<p>
+Corollaries include the identities $r_2(2n) = r_2(n)$ and $r_2(p^2n) = r_2(n)$ if
+$p = 3\ (\text{mod}\ 4)$ and the well-known theorem that $r_2(n) = 0$ iff $n$ has a prime
+factor $p$ of odd multiplicity with $p = 3\ (\text{mod}\ 4)$.
+</p></div>
 
     <h3>License</h3>
     <div>
@@ -147,20 +162,22 @@
     </div>
       <h3>Topics</h3>
       <ul>
-          <li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li>
+          <li><a href="../topics/mathematics/number-theory">Mathematics/Number theory</a></li>
       </ul>
-      <h3>Related publications</h3>
+      <h3>Session Sum_Of_Squares_Count</h3>
       <ul>
-        <li>Hales, T., & Raya, R. (2020). Formal Proof of the Group Law for Edwards Elliptic Curves. Automated Reasoning, 254–269. <a href="https://doi.org/10.1007/978-3-030-51054-1_15">https://doi.org/10.1007/978-3-030-51054-1_15</a>
-
-        </li>
-      </ul>
-      <h3>Session Edwards_Elliptic_Curves_Group</h3>
-      <ul>
-          <li><a href="../sessions/edwards_elliptic_curves_group/#Edwards_Elliptic_Curves_Group">Edwards_Elliptic_Curves_Group</a></li>
+          <li><a href="../sessions/sum_of_squares_count/#Sum_Of_Squares_Count">Sum_Of_Squares_Count</a></li>
       </ul>
 
     <div class="flex-wrap">
+      <div>
+        <h3>Depends on</h3>
+        <ul class="horizontal-list">
+              <li><a href="../entries/Dirichlet_Series.html">Dirichlet Series</a></li>
+              <li><a href="../entries/Gaussian_Integers.html">Gaussian Integers</a></li>
+              <li><a href="../entries/List-Index.html">List Index</a></li>
+        </ul>
+      </div>
       </div>
     
   </main>
@@ -169,9 +186,9 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Edwards_Elliptic_Curves_Group/outline.pdf">Proof outline</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Edwards_Elliptic_Curves_Group/document.pdf">Proof document</a>
-    <a href="https://www.isa-afp.org/browser_info/current/AFP/Edwards_Elliptic_Curves_Group/session_graph.pdf">Dependencies</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Sum_Of_Squares_Count/outline.pdf">Proof outline</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Sum_Of_Squares_Count/document.pdf">Proof document</a>
+    <a href="https://www.isa-afp.org/browser_info/current/AFP/Sum_Of_Squares_Count/session_graph.pdf">Dependencies</a>
   </nav>
 
   <div id="cite-popup" class="overlay">
@@ -180,14 +197,14 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">Edwards_Elliptic_Curves_Group-AFP</p>
-        <pre id="copy-text">@article{Edwards_Elliptic_Curves_Group-AFP,
-  author  = {Rodrigo Raya},
-  title   = {Group Law of Edwards Elliptic Curves},
+        <p style="display:none;" id="bibtex-filename">Sum_Of_Squares_Count-AFP</p>
+        <pre id="copy-text">@article{Sum_Of_Squares_Count-AFP,
+  author  = {Manuel Eberl},
+  title   = {The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem},
   journal = {Archive of Formal Proofs},
-  month   = {February},
-  year    = {2023},
-  note    = {\url{https://isa-afp.org/entries/Edwards_Elliptic_Curves_Group.html},
+  month   = {November},
+  year    = {2024},
+  note    = {\url{https://isa-afp.org/entries/Sum_Of_Squares_Count.html},
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -201,29 +218,8 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-current.tar.gz"
+      <a href="https://www.isa-afp.org/release/afp-Sum_Of_Squares_Count-current.tar.gz"
          download>Download latest</a>
-        <p>Older releases:</p>
-        <ul>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-2024-05-26.tar.gz">
-                May 26, 2024
-              </a>
-              : Isabelle2024
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-2023-09-13.tar.gz">
-                Sep 13, 2023
-              </a>
-              : Isabelle2023
-            </li>
-            <li>
-              <a href="https://www.isa-afp.org/release/afp-Edwards_Elliptic_Curves_Group-2023-03-01.tar.gz">
-                Mar 1, 2023
-              </a>
-              : Isabelle2022
-            </li>
-        </ul>
     </div>
   </div>
         

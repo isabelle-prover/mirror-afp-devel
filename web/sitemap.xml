@@ -3,24 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/abstract-rewriting/</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/dirichlet_series/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/gaussian_integers/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/list-index/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Sum_Of_Squares_Count.html</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/abstract-rewriting/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ILL.html</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/fleuriot/</loc>
@@ -38,13 +59,7 @@
     <loc>/authors/smola/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Cube_Dissection.html</loc>
-    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/surlykke/</loc>
@@ -105,9 +120,6 @@
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/knuth_bendix_order/</loc>
@@ -842,9 +854,6 @@
     <loc>/entries/KnuthMorrisPratt.html</loc>
     <lastmod>2023-11-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/dirichlet_series/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Lambert_Series.html</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
@@ -1137,9 +1146,6 @@
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/hereditarilyfinite/</loc>
-    <lastmod>2023-05-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/list-index/</loc>
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MLSS_Decision_Proc.html</loc>
@@ -7186,6 +7192,8 @@
     <loc>/sessions/suffixarray/</loc>
   </url><url>
     <loc>/sessions/sugar/</loc>
+  </url><url>
+    <loc>/sessions/sum_of_squares_count/</loc>
   </url><url>
     <loc>/sessions/sumcheck_protocol/</loc>
   </url><url>

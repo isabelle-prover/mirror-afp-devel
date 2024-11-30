@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 26 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
+          <link>/entries/Sum_Of_Squares_Count.html</link>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sum_Of_Squares_Count.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Deep Embedding of Intuitionistic Linear Logic</title>
           <link>/entries/ILL.html</link>
@@ -11750,6 +11757,13 @@
           <link>/sessions/suffixarray/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/suffixarray/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sum_Of_Squares_Count</title>
+          <link>/sessions/sum_of_squares_count/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/sum_of_squares_count/</guid>
           <description></description>
         </item>
         <item>
