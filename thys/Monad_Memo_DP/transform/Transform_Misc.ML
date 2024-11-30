@@ -76,8 +76,7 @@ struct
   fun uncurry tm =
     let
       val arg_typs = fastype_of tm |> binder_types
-      val arg_names = Name.invent_list [] "a" (length arg_typs)
-      val args = map Free (arg_names ~~ arg_typs)
+      val args = map Free (Name.invent_names_global "a" arg_typs)
       val args_tuple = HOLogic.mk_tuple args
       val tm' = list_comb (tm, args) |> HOLogic.tupled_lambda args_tuple
     in

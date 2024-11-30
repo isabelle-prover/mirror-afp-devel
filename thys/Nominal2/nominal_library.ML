@@ -269,7 +269,7 @@ fun fresh_args ctxt f =
     f |> fastype_of
       |> binder_types
       |> map (pair "z")
-      |> Variable.variant_frees ctxt [f]
+      |> Variable.variant_names (Variable.declare_names f ctxt)
       |> map Free
 
 

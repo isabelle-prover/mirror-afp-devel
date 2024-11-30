@@ -39,7 +39,7 @@ let open HOLCF_Library in
       let
         val ctxt' = fold Variable.declare_term ts ctxt
       in
-        singleton (Variable.variant_frees ctxt' []) ("x", dummyT)
+        singleton (Variable.variant_names ctxt') ("x", dummyT)
       end
 
     fun pat_tr ctxt p e = (* %x. case x of p => e | _ => [] *)

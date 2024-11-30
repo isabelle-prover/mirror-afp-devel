@@ -661,9 +661,8 @@ fun define_rep_type tnames ctrs constr_names lthy =
     val tFree_renaming =
       let
         val used_tfrees = collect_tfree_names ctrs
-        val ctxt = Name.make_context used_tfrees
         val ts = map Type ((map fst ctrs) ~~ (replicate (length ctrs) []))
-        val names = Name.invent_names ctxt "'a" ts |> map fst
+        val names = Name.invent (Name.make_context used_tfrees) Name.aT (length ts)
       in
         ts ~~ (map TFree (names ~~ (replicate (length names) \<^sort>\<open>type\<close>))) 
       end

@@ -70,8 +70,8 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
             HEADGOAL (resolve_tac ctxt @{thms refl})
 
         val frees = fastype_of term' |> strip_type |> fst |> init
-        val frees_f = Name.invent_names Name.context "f0" frees
-        val frees_g = Name.invent_names Name.context "g0" frees
+        val frees_f = Name.invent_names_global "f0" frees
+        val frees_g = Name.invent_names_global "g0" frees
 
         val fs = map Free frees_f
         val gs = map Free frees_g
@@ -79,7 +79,7 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
         fun mk_def_goal ctr idx =
           let
             val (name, len) = dest_Const ctr ||> strip_type ||> fst ||> length
-            val frees = Name.invent Name.context "p0" len
+            val frees = Name.invent_global "p0" len
             val args = map (Free o rpair dummyT) frees
             val ctr_val = list_comb (Const (name, dummyT), args)
             val lhs = list_comb (term', fs) $ ctr_val
@@ -98,7 +98,7 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
 
         val def_thms = map2 prove_defs (map2 mk_def_goal ctrs idxs) idxs
 
-        val frees = Name.invent_names Name.context "q0" arg_typs
+        val frees = Name.invent_names_global "q0" arg_typs
         val unfold_goal =
           let
             val lhs = list_comb (Const (name, typ), map Free frees)
