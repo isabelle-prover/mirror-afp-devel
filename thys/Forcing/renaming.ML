@@ -30,8 +30,8 @@ fun ren_tc_goal fin ren rho rho' =
 end
 
 fun ren_action_goal ren rho rho' ctxt =
-  let val setV = Variable.variant_frees ctxt [] [("A",@{typ i})] |> hd |> Free
-      val j = Variable.variant_frees ctxt [] [("j",@{typ i})] |> hd |> Free 
+  let val setV = Variable.variant_names ctxt [("A",@{typ i})] |> hd |> Free
+      val j = Variable.variant_names ctxt [("j",@{typ i})] |> hd |> Free 
       val vs = rho  |> to_ML_list
       val ws = rho' |> to_ML_list |> filter isFree 
       val h1 = subset_ (vs|> mk_FinSet) setV
@@ -57,9 +57,9 @@ fun ren_action_goal ren rho rho' ctxt =
   end
 
 fun sum_action_goal ren rho rho' ctxt =
-  let val setV = Variable.variant_frees ctxt [] [("A",@{typ i})] |> hd |> Free
-      val envV = Variable.variant_frees ctxt [] [("env",@{typ i})] |> hd |> Free
-      val j = Variable.variant_frees ctxt [] [("j",@{typ i})] |> hd |> Free 
+  let val setV = Variable.variant_names ctxt [("A",@{typ i})] |> hd |> Free
+      val envV = Variable.variant_names ctxt [("env",@{typ i})] |> hd |> Free
+      val j = Variable.variant_names ctxt [("j",@{typ i})] |> hd |> Free 
       val vs = rho  |> to_ML_list
       val ws = rho' |> to_ML_list |> filter isFree 
       val envL =  envV |> length_
@@ -129,10 +129,10 @@ Returns the sum renaming, the goal for type_checking, and the actual lemmas
 for the left part of the sum.
 *)
  fun sum_ren_aux e e' ctxt = 
-  let val env = Variable.variant_frees ctxt [] [("env",@{typ i})] |> hd |> Free
+  let val env = Variable.variant_names ctxt [("env",@{typ i})] |> hd |> Free
       val (left_action_lemma,left_tc_lemma,_,r) = ren_thm e e' ctxt
       val (sum_ren,sum_goal_tc) = sum_tc_goal r e e' env
-      val setV = Variable.variant_frees ctxt [] [("A",@{typ i})] |> hd |> Free      
+      val setV = Variable.variant_names ctxt [("A",@{typ i})] |> hd |> Free      
       fun hyp en = mem_ en (list_ setV)
   in (sum_ren,
       freeName env,

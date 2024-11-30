@@ -797,7 +797,8 @@ let
   fun get_lambda_name (Abs (n, _, _)) = n
     | get_lambda_name _ = "x"
   val first_argT = domain_type (fastype_of t)
-  val [(n', _)] = Variable.variant_frees ctxt [t] [(get_lambda_name t, ())]
+  val (n', _) =
+    singleton (Variable.variant_names (Variable.declare_names t ctxt)) (get_lambda_name t, ())
   val free = Free (n', first_argT)
 in
   ((betapply (t, free)), free, n')

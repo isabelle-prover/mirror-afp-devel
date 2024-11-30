@@ -219,7 +219,7 @@ parse_translation\<open>
   (\<^syntax_const>\<open>_AOT_process_frees\<close>, fn ctxt => fn [x] => processFrees ctxt x),
   (\<^syntax_const>\<open>_AOT_world_relative_prop\<close>, fn ctxt => fn [x] => let
     val (x, premises) = processFreesAndPremises ctxt x
-    val (world::formulas) = Variable.variant_frees ctxt [x]
+    val (world::formulas) = Variable.variant_names (Variable.declare_names x ctxt)
         (("v", dummyT)::(map (fn _ => ("\<phi>", dummyT)) premises))
     val term = HOLogic.mk_Trueprop
         (@{const AOT_model_valid_in} $ Free world $ processFrees ctxt x)
@@ -246,7 +246,7 @@ parse_translation\<open>
   (\<^syntax_const>\<open>_AOT_act_axiom\<close>, fn ctxt => fn [x] =>
       HOLogic.mk_Trueprop (@{const AOT_model_act_axiom} $ x)),
   (\<^syntax_const>\<open>_AOT_nec_theorem\<close>, fn ctxt => fn [trm] => let
-    val world = singleton (Variable.variant_frees ctxt [trm]) ("v", @{typ w})
+    val world = singleton (Variable.variant_names (Variable.declare_names trm ctxt)) ("v", @{typ w})
     val trm = HOLogic.mk_Trueprop (@{const AOT_model_valid_in} $ Free world $ trm)
     val trm = Term.absfree world trm
     val trm = Const (\<^const_name>\<open>Pure.all\<close>, dummyT) $ trm
