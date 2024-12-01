@@ -794,11 +794,9 @@ fun chain_preds stateT [] = Abs ("s", stateT, @{term "HOL.True"})
  *)
 fun concrete_abs' ctxt t =
 let
-  fun get_lambda_name (Abs (n, _, _)) = n
-    | get_lambda_name _ = "x"
+  val lambda_name = (case t of Abs (n, _, _) => n | _ => "x")
   val first_argT = domain_type (fastype_of t)
-  val (n', _) =
-    singleton (Variable.variant_names (Variable.declare_names t ctxt)) (get_lambda_name t, ())
+  val (n', _) = Name.variant lambda_name (Variable.names_of (Variable.declare_names t ctxt))
   val free = Free (n', first_argT)
 in
   ((betapply (t, free)), free, n')

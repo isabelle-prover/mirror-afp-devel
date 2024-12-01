@@ -439,7 +439,7 @@ fun mutual_ccpo_fixed_point (fs : functional list) ctxt =
       |> synth_btree ctxt
     val ps = projs_follow (#typ ccpo_struct) b_fs
 
-    val (recN, _) = singleton (Variable.variant_names ctxt) ("rec", ())
+    val (recN, _) = Name.variant "rec" (Variable.names_of ctxt)
     val recF = (recN, #typ ccpo_struct)
     val projs = ps |> map_btree (fn ps => app_tower ps (Free recF)) |> btree_to_list
     val fixes = fs |> map (fn f => (Binding.name_of (#binding f),
@@ -695,7 +695,7 @@ fun prepare_fixed_point prepare fixes_raw eqns_raw lthy =
 
     val fixes = map (#1 #> apfst Binding.name_of) fixes'
     val b_fixes = fixes |> btree_of
-    val (recN, _) = singleton (Variable.variant_names lthy') ("rec", ())
+    val (recN, _) = Name.variant "rec" (Variable.names_of lthy')
     val tupleT = b_fixes |> map_btree #2 |> tupleT_of_btree
     val recF = (recN, tupleT)
     fun gen_projs t (Leaf f)      = Leaf (f, t)
