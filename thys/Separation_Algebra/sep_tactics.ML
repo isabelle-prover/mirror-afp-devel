@@ -50,15 +50,9 @@ struct
 
 fun init l = List.take (l, List.length l - 1);
 
-fun range _ 0 = []
-  | range from howmany = from :: (range (from+1) (howmany-1));
-
 (* move nth element in list to the front *)
 fun nth_to_front i xs =
       (nth xs i) :: (List.take (xs, i)) @ (List.drop (xs,i+1));
-
-(* assign all members of list an index in the list *)
-fun index_list xs = ListPair.zip (range 0 (length xs), xs);
 
 end; (* }}} *)
 
@@ -105,8 +99,7 @@ let
   fun conc_str_int str int = str ^ Int.toString int;
 
   (* make the conjunct names *)
-  val cjts = ListExtra.range 1 cjt_count
-                  |> map (conc_str_int "a") |> Name.variants nctxt0;
+  val cjts = (1 upto cjt_count) |> map (conc_str_int "a") |> Name.variants nctxt0;
 
   (* make normal-order separation conjunction terms *)
   val orig = sep_conj_prop cjts;
@@ -156,12 +149,6 @@ local
             handle ERROR _ => false
     end;
 
-  (* apply function in list until it returns SOME *)
-  fun find_some (x::xs) f =
-    (case f x of SOME v => SOME v
-               | NONE => find_some xs f)
-    | find_some [] _ = NONE;
-
   (* Given indices into the separating conjunctions in the assumption and
      conclusion, rewrite them so that the targeted conjuncts are at the
      front, then remove them. *)
@@ -182,14 +169,13 @@ local
       val prem_cjts = cprem |> Thm.term_of |> SepConj.break_sep_conj;
       val concl_cjts = cconcl |> Thm.term_of |> SepConj.break_sep_conj;
 
-      val iprems = ListExtra.index_list prem_cjts;
-      val iconcls = ListExtra.index_list concl_cjts;
+      val iprems = map_index I prem_cjts;
+      val iconcls = map_index I concl_cjts;
 
       fun can_prove' (pi,p) (ci,c) =
             if can_prove ctxt tac p c then SOME (pi, ci) else NONE;
 
-      val target = find_some iconcls
-                     (fn c => find_some iprems (fn p => can_prove' p c));
+      val target = iconcls |> get_first (fn c => iprems |> get_first (fn p => can_prove' p c));
     in
       case target
         of SOME (pi,ci) => SOME ((List.length prem_cjts, pi),
