@@ -95,8 +95,6 @@ end; (* }}} *)
 *)
 fun mk_sep_select_rule ctxt conclusion (cjt_count, cjt_select) =
 let
-  fun variants nctxt names = fold_map Name.variant names nctxt;
-
   val (state, nctxt0) = Name.variant "s" (Variable.names_of ctxt);
   fun sep_conj_prop cjts =
         FunApp.fun_app_free
@@ -107,8 +105,8 @@ let
   fun conc_str_int str int = str ^ Int.toString int;
 
   (* make the conjunct names *)
-  val (cjts, _) = ListExtra.range 1 cjt_count
-                  |> map (conc_str_int "a") |> variants nctxt0;
+  val cjts = ListExtra.range 1 cjt_count
+                  |> map (conc_str_int "a") |> Name.variants nctxt0;
 
   (* make normal-order separation conjunction terms *)
   val orig = sep_conj_prop cjts;
