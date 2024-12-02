@@ -20,7 +20,7 @@ fun prep_params (((scope, tm_str), def_thms_opt), mem_locale_opt) ctxt =
     val tm = Syntax.read_term ctxt tm_str
     val scope' = (Binding.is_empty scope? Binding.map_name (fn _ => Transform_Misc.term_name tm ^ "\<^sub>T")) scope
     val def_thms_opt' = Option.map (Attrib.eval_thms ctxt) def_thms_opt
-    val mem_locale_opt' = Option.map (Locale.check (Proof_Context.theory_of ctxt)) mem_locale_opt
+    val mem_locale_opt' = Option.map (Locale.check ctxt) mem_locale_opt
   in
     (scope', tm, def_thms_opt', mem_locale_opt')
   end
@@ -158,13 +158,13 @@ fun dp_fun_part1_cmd ((scope, tm_str), (mem_locale_instance_opt)) lthy =
     val scope_name = Binding.name_of scope
     val tm = Syntax.read_term lthy tm_str
     val _ = if is_Free tm then warning ("Free term: " ^ (Syntax.pretty_term lthy tm |> Pretty.string_of)) else ()
-    val mem_locale_opt' = Option.map (Locale.check (Proof_Context.theory_of lthy) o (snd o fst)) mem_locale_instance_opt
+    val mem_locale_opt' = Option.map (Locale.check lthy o (snd o fst)) mem_locale_instance_opt
 
     val lthy1 = case mem_locale_instance_opt of
       NONE => lthy
     | SOME ((standard_proof, locale_name), instance) =>
       let
-        val locale_name = Locale.check (Proof_Context.theory_of lthy) locale_name
+        val locale_name = Locale.check lthy locale_name
         val instance = map (apsnd (Syntax.read_term lthy)) instance
       in
         dp_interpretation standard_proof locale_name instance scope_name (Transform_Misc.uncurry tm) lthy

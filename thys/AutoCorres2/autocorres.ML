@@ -756,7 +756,7 @@ let
   val do_phase = do_phase' (fn lthy => ([], lthy))
 
   val base_locale_opt = AutoCorres_Options.get_base_locale opt
-    |> Option.map (Locale.check thy)
+    |> Option.map (Locale.check_global thy)
 
   (* Do the translation. *)
   val (simpl_call_graph, _) = FunctionInfo.calc_call_graph simpl_info;
