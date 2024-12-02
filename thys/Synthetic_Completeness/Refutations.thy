@@ -22,7 +22,7 @@ lemma split_list:
 section \<open>Rearranging Refutations\<close>
 
 locale Refutations =
-  fixes refute :: \<open>'a list \<Rightarrow> bool\<close>
+  fixes refute :: \<open>'fm list \<Rightarrow> bool\<close>
   assumes refute_set: \<open>\<And>A B. refute A \<Longrightarrow> set A = set B \<Longrightarrow> refute B\<close>
 begin
 
@@ -40,23 +40,29 @@ end
 
 section \<open>MCSs and Refutability\<close>
 
-locale Refutations_MCS = Refutations + MCS_Base +
+locale Refutations_MCS = MCS_Base + Refutations +
   assumes consistent_refute: \<open>\<And>S. consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> refute A)\<close>
 begin
 
 theorem MCS_refute:
   assumes \<open>consistent S\<close> \<open>maximal S\<close>
   shows \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> refute (p # A))\<close>
-proof -
-  have \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> {p} \<union> S \<and> p \<in> set A \<and> (\<exists>B. set B \<subseteq> set A \<and> refute B))\<close>
-    using MCS_inconsistent[OF assms] unfolding consistent_refute
-    by (metis List.finite_set finite_list)
-  moreover have \<open>\<forall>B. set B \<subseteq> {p} \<union> S \<longrightarrow> refute B \<longrightarrow> p \<in> set B\<close>
-    using assms unfolding consistent_refute by blast
-  then have \<open>\<forall>B. set B \<subseteq> {p} \<union> S \<longrightarrow> refute B \<longrightarrow> (\<exists>B'. set B' \<subseteq> S \<and> refute (p # B'))\<close>
-    using refute_split1 by blast
-  ultimately show \<open>p \<notin> S \<longleftrightarrow> (\<exists>A. set A \<subseteq> S \<and> refute (p # A))\<close>
-    using assms(1) consistent_refute by auto
+proof safe
+  assume \<open>p \<notin> S\<close>
+  then obtain B where B: \<open>set B \<subseteq> {p} \<union> S\<close> \<open>p \<in> set B\<close> \<open>refute B\<close>
+    using assms unfolding consistent_refute maximal_def by blast
+  moreover have \<open>set (p # removeAll p B) = set B\<close>
+    using B(2) by auto
+  ultimately have \<open>refute (p # removeAll p B)\<close>
+    using refute_set by metis
+  then show \<open>\<exists>A. set A \<subseteq> S \<and> refute (p # A)\<close>
+    using B(1) by (metis Diff_subset_conv set_removeAll)
+next
+  fix A
+  assume \<open>set A \<subseteq> S\<close> \<open>refute (p # A)\<close> \<open>p \<in> S\<close>
+  then show False
+    using assms unfolding consistent_refute
+    by (metis (no_types, lifting) insert_subsetI list.simps(15))
 qed
 
 end

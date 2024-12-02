@@ -18,7 +18,7 @@ section \<open>Semantics\<close>
 
 type_synonym 'p model = \<open>'p \<Rightarrow> bool\<close>
 
-fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>T _\<close> [50, 50] 50) where
+fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (infix \<open>\<Turnstile>\<^sub>T\<close> 50) where
   \<open>I \<Turnstile>\<^sub>T \<^bold>\<cdot>P \<longleftrightarrow> I P\<close>
 | \<open>I \<Turnstile>\<^sub>T \<^bold>\<not> p \<longleftrightarrow> \<not> I \<Turnstile>\<^sub>T p\<close>
 | \<open>I \<Turnstile>\<^sub>T p \<^bold>\<longrightarrow> q \<longleftrightarrow> I \<Turnstile>\<^sub>T p \<longrightarrow> I \<Turnstile>\<^sub>T q\<close>
@@ -59,7 +59,7 @@ proof
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
 qed (auto simp: consistent_def)
 
-interpretation Refutations_MCS Calculus consistent
+interpretation Refutations_MCS consistent Calculus
 proof
   fix A B :: \<open>'p fm list\<close>
   assume \<open>\<turnstile>\<^sub>T A\<close> \<open>set A = set B\<close>
@@ -73,8 +73,8 @@ qed
 
 section \<open>Truth Lemma\<close>
 
-abbreviation (input) canonical :: \<open>'p fm set \<Rightarrow> 'p model\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
-  \<open>\<lbrakk>S\<rbrakk> \<equiv> \<lambda>P. \<^bold>\<cdot>P \<in> S\<close>
+abbreviation (input) canonical :: \<open>'p fm set \<Rightarrow> 'p model\<close> (\<open>\<M>\<^sub>T\<close>) where
+  \<open>\<M>\<^sub>T(S) \<equiv> \<lambda>P. \<^bold>\<cdot>P \<in> S\<close>
 
 locale Hintikka =
   fixes H :: \<open>'a fm set\<close>
@@ -85,7 +85,7 @@ locale Hintikka =
 
 lemma Hintikka_model:
   assumes \<open>Hintikka H\<close>
-  shows \<open>(p \<in> H \<longrightarrow> \<lbrakk>H\<rbrakk> \<Turnstile>\<^sub>T p) \<and> (\<^bold>\<not> p \<in> H \<longrightarrow> \<not> \<lbrakk>H\<rbrakk> \<Turnstile>\<^sub>T p)\<close>
+  shows \<open>(p \<in> H \<longrightarrow> \<M>\<^sub>T(H) \<Turnstile>\<^sub>T p) \<and> (\<^bold>\<not> p \<in> H \<longrightarrow> \<not> \<M>\<^sub>T(H) \<Turnstile>\<^sub>T p)\<close>
   using assms by (induct p) (unfold Hintikka_def semantics.simps; blast)+
 
 lemma MCS_Hintikka:
@@ -163,7 +163,7 @@ qed
 
 lemma truth_lemma:
   assumes \<open>MCS H\<close> \<open>p \<in> H\<close>
-  shows \<open>\<lbrakk>H\<rbrakk> \<Turnstile>\<^sub>T p\<close>
+  shows \<open>\<M>\<^sub>T(H) \<Turnstile>\<^sub>T p\<close>
   using Hintikka_model MCS_Hintikka assms by blast
 
 section \<open>Completeness\<close>
@@ -183,13 +183,13 @@ proof (rule ccontr)
     unfolding consistent_def using * by blast
   then have \<open>MCS ?H\<close>
     using MCS_Extend' by blast
-  then have \<open>p \<in> ?H \<longrightarrow> \<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T p\<close> for p
+  then have \<open>p \<in> ?H \<longrightarrow> \<M>\<^sub>T(?H) \<Turnstile>\<^sub>T p\<close> for p
     using truth_lemma by blast
-  then have \<open>p \<in> ?S \<longrightarrow> \<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T p\<close> for p
+  then have \<open>p \<in> ?S \<longrightarrow> \<M>\<^sub>T(?H) \<Turnstile>\<^sub>T p\<close> for p
     using Extend_subset by blast
-  then have \<open>\<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T \<^bold>\<not> p\<close> \<open>\<forall>q \<in> X. \<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T q\<close>
+  then have \<open>\<M>\<^sub>T(?H) \<Turnstile>\<^sub>T \<^bold>\<not> p\<close> \<open>\<forall>q \<in> X. \<M>\<^sub>T(?H) \<Turnstile>\<^sub>T q\<close>
     by blast+
-  moreover from this have \<open>\<lbrakk>?H\<rbrakk> \<Turnstile>\<^sub>T p\<close>
+  moreover from this have \<open>\<M>\<^sub>T(?H) \<Turnstile>\<^sub>T p\<close>
     using assms(1) by blast
   ultimately show False
     by simp

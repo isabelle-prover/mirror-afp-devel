@@ -20,14 +20,14 @@ section \<open>Semantics\<close>
 
 type_synonym 'p model = \<open>'p \<Rightarrow> bool\<close>
 
-fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>_ \<Turnstile>\<^sub>S _\<close> [50, 50] 50) where
+fun semantics :: \<open>'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (infix \<open>\<Turnstile>\<^sub>S\<close> 50) where
   \<open>_ \<Turnstile>\<^sub>S \<^bold>\<bottom> \<longleftrightarrow> False\<close>
 | \<open>I \<Turnstile>\<^sub>S \<^bold>\<cdot>P \<longleftrightarrow> I P\<close>
 | \<open>I \<Turnstile>\<^sub>S p \<^bold>\<longrightarrow> q \<longleftrightarrow> I \<Turnstile>\<^sub>S p \<longrightarrow> I \<Turnstile>\<^sub>S q\<close>
 
 section \<open>Calculus\<close>
 
-inductive Calculus :: \<open>'p fm list \<Rightarrow> 'p fm list \<Rightarrow> bool\<close> (\<open>_ \<turnstile>\<^sub>S _\<close> [50, 50] 50) where
+inductive Calculus :: \<open>'p fm list \<Rightarrow> 'p fm list \<Rightarrow> bool\<close> (infix \<open>\<turnstile>\<^sub>S\<close> 50) where
   Axiom [simp]: \<open>p # A \<turnstile>\<^sub>S p # B\<close>
 | FlsL [simp]: \<open>\<^bold>\<bottom> # A \<turnstile>\<^sub>S B\<close>
 | FlsR [elim]: \<open>A \<turnstile>\<^sub>S \<^bold>\<bottom> # B \<Longrightarrow> A \<turnstile>\<^sub>S B\<close>
@@ -62,7 +62,7 @@ proof
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
 qed (auto simp: consistent_def)
 
-interpretation Derivations_Cut_MCS \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close>
+interpretation Derivations_Cut_MCS consistent \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close>
 proof
   fix A B and p :: \<open>'p fm\<close>
   assume \<open>A \<turnstile>\<^sub>S [p]\<close> \<open>set A = set B\<close>
@@ -70,8 +70,8 @@ proof
     using WeakL by blast
 next
   fix S :: \<open>'p fm set\<close>
-  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> \<not> A \<turnstile>\<^sub>S [\<^bold>\<bottom>])\<close>
-    unfolding consistent_def ..
+  show \<open>consistent S \<longleftrightarrow> (\<forall>A. set A \<subseteq> S \<longrightarrow> (\<exists>q. \<not> A \<turnstile>\<^sub>S [q]))\<close>
+    unfolding consistent_def using Cut FlsL by blast
 next
   fix A and p :: \<open>'p fm\<close>
   assume \<open>p \<in> set A\<close>
@@ -86,35 +86,35 @@ next
     using Cut by blast
 qed
 
-interpretation Derivations_Bot \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close>
+interpretation Derivations_Bot consistent \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> \<open>\<^bold>\<bottom>\<close>
 proof
   show \<open>\<And>A r. A \<turnstile>\<^sub>S [\<^bold>\<bottom>] \<Longrightarrow> A \<turnstile>\<^sub>S [r]\<close>
     using Cut FlsL by blast
 qed
 
-interpretation Derivations_Imp \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> consistent \<open>\<^bold>\<bottom>\<close> \<open>\<lambda>p q. p \<^bold>\<longrightarrow> q\<close>
+interpretation Derivations_Imp consistent \<open>\<lambda>A p. A \<turnstile>\<^sub>S [p]\<close> \<open>\<lambda>p q. p \<^bold>\<longrightarrow> q\<close>
 proof
   show \<open>\<And>A p q. A \<turnstile>\<^sub>S [p] \<Longrightarrow> A \<turnstile>\<^sub>S [p \<^bold>\<longrightarrow> q] \<Longrightarrow> A \<turnstile>\<^sub>S [q]\<close>
     by (meson Axiom Cut ImpL)
-qed blast
+qed fast+
 
 section \<open>Truth Lemma\<close>
 
-abbreviation canonical :: \<open>'p fm set \<Rightarrow> 'p model\<close> (\<open>\<lbrakk>_\<rbrakk>\<close>) where
-  \<open>\<lbrakk>S\<rbrakk> \<equiv> \<lambda>P. \<^bold>\<cdot>P \<in> S\<close>
+abbreviation canonical :: \<open>'p fm set \<Rightarrow> 'p model\<close> (\<open>\<M>\<^sub>S\<close>) where
+  \<open>\<M>\<^sub>S(S) \<equiv> \<lambda>P. \<^bold>\<cdot>P \<in> S\<close>
 
 fun semics :: \<open>'p model \<Rightarrow> ('p model \<Rightarrow> 'p fm \<Rightarrow> bool) \<Rightarrow> 'p fm \<Rightarrow> bool\<close>
-  (\<open>_ \<langle>_\<rangle>=\<^sub>S _\<close> [55, 0, 55] 55) where
-  \<open>_ \<langle>_\<rangle>=\<^sub>S \<^bold>\<bottom> \<longleftrightarrow> False\<close>
-| \<open>I \<langle>_\<rangle>=\<^sub>S \<^bold>\<cdot>P \<longleftrightarrow> I P\<close>
-| \<open>I \<langle>\<R>\<rangle>=\<^sub>S p \<^bold>\<longrightarrow> q \<longleftrightarrow> \<R> I p \<longrightarrow> \<R> I q\<close>
+  (\<open>_ \<lbrakk>_\<rbrakk>\<^sub>S _\<close> [55, 0, 55] 55) where
+  \<open>_ \<lbrakk>_\<rbrakk>\<^sub>S \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>I \<lbrakk>_\<rbrakk>\<^sub>S \<^bold>\<cdot>P \<longleftrightarrow> I P\<close>
+| \<open>I \<lbrakk>\<R>\<rbrakk>\<^sub>S p \<^bold>\<longrightarrow> q \<longleftrightarrow> \<R> I p \<longrightarrow> \<R> I q\<close>
 
 fun rel :: \<open>'p fm set \<Rightarrow> 'p model \<Rightarrow> 'p fm \<Rightarrow> bool\<close> (\<open>\<R>\<^sub>S\<close>) where
-  \<open>\<R>\<^sub>S S _ p \<longleftrightarrow> p \<in> S\<close>
+  \<open>\<R>\<^sub>S(S) _ p \<longleftrightarrow> p \<in> S\<close>
 
 theorem saturated_model:
-  assumes \<open>\<And>p. \<forall>M\<in>{\<lbrakk>S\<rbrakk>}. M \<langle>\<R>\<^sub>S S\<rangle>=\<^sub>S p = \<R>\<^sub>S S M p\<close> \<open>M \<in> {\<lbrakk>S\<rbrakk>}\<close>
-  shows \<open>\<R>\<^sub>S S M p \<longleftrightarrow> M \<Turnstile>\<^sub>S p\<close>
+  assumes \<open>\<And>p. \<forall>M\<in>{\<M>\<^sub>S(S)}. M \<lbrakk>\<R>\<^sub>S(S)\<rbrakk>\<^sub>S p = \<R>\<^sub>S(S) M p\<close> \<open>M \<in> {\<M>\<^sub>S(S)}\<close>
+  shows \<open>\<R>\<^sub>S(S) M p \<longleftrightarrow> M \<Turnstile>\<^sub>S p\<close>
 proof (induct p rule: wf_induct[where r=\<open>measure size\<close>])
   case 1
   then show ?case ..
@@ -125,14 +125,14 @@ next
 qed
 
 theorem saturated_MCS:
-  assumes \<open>MCS S\<close> \<open>M \<in> {\<lbrakk>S\<rbrakk>}\<close>
-  shows \<open>M \<langle>\<R>\<^sub>S S\<rangle>=\<^sub>S p \<longleftrightarrow> \<R>\<^sub>S S M p\<close>
+  assumes \<open>MCS S\<close> \<open>M \<in> {\<M>\<^sub>S(S)}\<close>
+  shows \<open>M \<lbrakk>\<R>\<^sub>S(S)\<rbrakk>\<^sub>S p \<longleftrightarrow> \<R>\<^sub>S(S) M p\<close>
   using assms by (cases p) auto
 
-interpretation Truth_No_Witness semics semantics \<open>\<lambda>S. {\<lbrakk>S\<rbrakk>}\<close> \<R>\<^sub>S consistent
+interpretation Truth_No_Witness semics semantics \<open>\<lambda>S. {\<M>\<^sub>S(S)}\<close> rel consistent
 proof
   fix p and M :: \<open>'p model\<close>
-  show \<open>(M \<Turnstile>\<^sub>S p) = M \<langle>semantics\<rangle>=\<^sub>S p\<close>
+  show \<open>(M \<Turnstile>\<^sub>S p) = M \<lbrakk>(\<Turnstile>\<^sub>S)\<rbrakk>\<^sub>S p\<close>
     by (induct p) auto
 qed (use saturated_model saturated_MCS in blast)+
 
@@ -153,13 +153,13 @@ proof (rule ccontr)
     unfolding consistent_def using * .
   then have \<open>MCS ?S\<close>
     using MCS_Extend' by blast
-  then have \<open>p \<in> ?S \<longleftrightarrow> \<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>S p\<close> for p
+  then have \<open>p \<in> ?S \<longleftrightarrow> \<M>\<^sub>S ?S \<Turnstile>\<^sub>S p\<close> for p
     using truth_lemma by fastforce
-  then have \<open>p \<in> ?X \<longrightarrow> \<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>S p\<close> for p
+  then have \<open>p \<in> ?X \<longrightarrow> \<M>\<^sub>S ?S \<Turnstile>\<^sub>S p\<close> for p
     using Extend_subset by blast
-  then have \<open>\<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>S \<^bold>\<not> p\<close> \<open>\<forall>q \<in> X. \<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>S q\<close>
+  then have \<open>\<M>\<^sub>S ?S \<Turnstile>\<^sub>S \<^bold>\<not> p\<close> \<open>\<forall>q \<in> X. \<M>\<^sub>S ?S \<Turnstile>\<^sub>S q\<close>
     by blast+
-  moreover from this have \<open>\<lbrakk>?S\<rbrakk> \<Turnstile>\<^sub>S p\<close>
+  moreover from this have \<open>\<M>\<^sub>S ?S \<Turnstile>\<^sub>S p\<close>
     using assms(1) by blast
   ultimately show False
     by simp
