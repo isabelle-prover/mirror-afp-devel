@@ -261,8 +261,7 @@ let
   (* Construct a witness for the choice specification theorem. *)
   val frees = Term.add_frees trm []
   val witness = let
-    val w = case Term.variant_bounds trm [("w", @{typ w})] of [w] => w
-                | _ => raise Fail "Unexpected."
+    val w = singleton (Term.variant_bounds trm) ("w", @{typ w})
   in
     \<^const>\<open>AOT_model_proposition_choice\<close> $
     Term.absfree w (\<^const>\<open>AOT_model_valid_in\<close> $ Free w $ rhs)
