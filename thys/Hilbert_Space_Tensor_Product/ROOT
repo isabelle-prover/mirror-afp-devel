@@ -1,0 +1,18 @@
+chapter AFP
+
+session Hilbert_Space_Tensor_Product = Complex_Bounded_Operators +
+  options [timeout = 600]
+  sessions
+    Ordinary_Differential_Equations
+    With_Type
+    Wlog
+  theories
+    Hilbert_Space_Tensor_Product
+    Weak_Star_Topology
+    Partial_Trace
+    Von_Neumann_Algebras
+    Tensor_Product_Code
+  document_files
+    "root.tex"
+    "root.bib"
+
