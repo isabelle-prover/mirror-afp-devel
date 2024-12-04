@@ -1666,16 +1666,26 @@
  },
  {
   "id": 333,
+  "link": "/dependencies/with_type/",
+  "name": "With_Type"
+ },
+ {
+  "id": 334,
+  "link": "/dependencies/wlog/",
+  "name": "Wlog"
+ },
+ {
+  "id": 335,
   "link": "/dependencies/word_lib/",
   "name": "Word_Lib"
  },
  {
-  "id": 334,
+  "id": 336,
   "link": "/dependencies/zeta_function/",
   "name": "Zeta_Function"
  },
  {
-  "id": 335,
+  "id": 337,
   "link": "/dependencies/zfc_in_hol/",
   "name": "ZFC_in_HOL"
  }

@@ -1,0 +1,41 @@
+title = "The Tensor Product on Hilbert Spaces"
+date = 2024-09-10
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+We formalize the tensor product of Hilbert spaces, and related
+material.  Specifically, we define the product of vectors in Hilbert
+spaces, of operators on Hilbert spaces, and of subspaces of Hilbert
+spaces, and of von Neumann algebras, and study their properties.
+
+The theory is based on the AFP entry
+<tt>Complex_Bounded_Operators</tt> that introduces Hilbert spaces and
+operators and related concepts, but in addition to their work, we
+defined and study a number of additional concepts needed for the
+tensor product.
+
+Specifically: Hilbert-Schmidt and trace-class operators; compact
+operators; positive operators; the weak operator, strong operator, and
+weak<sup>*</sup> topology; the spectral theorem for compact operators; and the
+double commutant theorem."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.unruh]
+homepage = "unruh_homepage1"
+
+[contributors]
+
+[notify]
+unruh = "unruh_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

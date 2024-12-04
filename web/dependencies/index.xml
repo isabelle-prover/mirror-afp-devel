@@ -252,6 +252,27 @@
           <description></description>
         </item>
         <item>
+          <title>Ordinary_Differential_Equations</title>
+          <link>/dependencies/ordinary_differential_equations/</link>
+          <pubDate>Tue, 10 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ordinary_differential_equations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>With_Type</title>
+          <link>/dependencies/with_type/</link>
+          <pubDate>Tue, 10 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/with_type/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Wlog</title>
+          <link>/dependencies/wlog/</link>
+          <pubDate>Tue, 10 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/wlog/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Approximate_Model_Counting</title>
           <link>/dependencies/approximate_model_counting/</link>
           <pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate>
@@ -1677,13 +1698,6 @@
           <link>/dependencies/e_transcendental/</link>
           <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
           <guid>/dependencies/e_transcendental/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ordinary_Differential_Equations</title>
-          <link>/dependencies/ordinary_differential_equations/</link>
-          <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
-          <guid>/dependencies/ordinary_differential_equations/</guid>
           <description></description>
         </item>
         <item>
