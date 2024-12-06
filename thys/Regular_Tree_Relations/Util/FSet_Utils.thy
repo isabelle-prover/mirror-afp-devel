@@ -92,7 +92,7 @@ let
       if check (P, 0) then tr' P
       else
         let
-          val (x as _ $ Free(xN, _), t) = Syntax_Trans.atomic_abs_tr' abs;
+          val (x as _ $ Free(xN, _), t) = Syntax_Trans.atomic_abs_tr' ctxt abs;
           val M = Syntax.const \<^syntax_const>\<open>_fColl\<close> $ x $ t;
         in
           case t of

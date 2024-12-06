@@ -65,7 +65,7 @@ ML \<open>
     (* Tactic that depends on subgoal term structure *)
     val WITH_subgoal: (term -> tactic') -> tactic'
     (* Tactic that depends on subgoal's conclusion term structure *)
-    val WITH_concl: (term -> tactic') -> tactic'
+    val WITH_concl: Proof.context -> (term -> tactic') -> tactic'
 
     (* Tactic version of Variable.trade. Import, apply tactic, and export results.
       One effect is that schematic variables in the goal are fixed, and thus cannot 
@@ -757,7 +757,7 @@ ML \<open>
         CONVERSION Thm.eta_conversion THEN' 
         IF_EXGOAL (fn i => fn st => tac (nth (Thm.prems_of st) (i - 1)) i st)
   
-      fun WITH_concl tac = 
+      fun WITH_concl ctxt tac = 
         CONVERSION Thm.eta_conversion THEN' 
         IF_EXGOAL (fn i => fn st => 
           tac (Logic.concl_of_goal (Thm.prop_of st) i) i st

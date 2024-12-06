@@ -30,7 +30,7 @@ begin
     
       val dest_param_term: term -> param_ruleT
       val dest_param_rule: thm -> param_ruleT
-      val dest_param_goal: int -> thm -> param_ruleT
+      val dest_param_goal: Proof.context -> int -> thm -> param_ruleT
 
       val safe_fun_relD_tac: Proof.context -> tactic'
 
@@ -97,7 +97,7 @@ begin
         | t => raise TERM ("dest_param_term: Expected (_,_):_",[t])
 
       val dest_param_rule = dest_param_term o Thm.prop_of
-      fun dest_param_goal i st = 
+      fun dest_param_goal ctxt i st = 
         if i > Thm.nprems_of st then
           raise THM ("dest_param_goal",i,[st])
         else
@@ -130,7 +130,7 @@ begin
         else NTIMES (~n) (safe_fun_relD_tac ctxt)) i st
 
       fun unlambda_tac ctxt i st = 
-        case try (dest_param_goal i) st of
+        case try (dest_param_goal ctxt i) st of
           NONE => Seq.empty
         | SOME g => let
             val n = Term.strip_abs (#rhs_head g) |> #1 |> length
@@ -141,10 +141,10 @@ begin
         THEN' unlambda_tac ctxt
 
 
-      fun could_param_rl rl i st = 
+      fun could_param_rl ctxt rl i st = 
         if i > Thm.nprems_of st then NONE
         else (
-          case (try (dest_param_goal i) st, try dest_param_term rl) of
+          case (try (dest_param_goal ctxt i) st, try dest_param_term rl) of
             (SOME g, SOME r) =>
               if Term.could_unify (#rhs_head g, #rhs_head r) then
                 SOME (#arity r - #arity g)
@@ -153,7 +153,7 @@ begin
         )
 
       fun param_rule_tac_aux ctxt rl i st = 
-        case could_param_rl (Thm.prop_of rl) i st of
+        case could_param_rl ctxt (Thm.prop_of rl) i st of
           SOME adj => (adjust_arity_tac adj ctxt THEN' resolve_tac ctxt [rl]) i st
         | _ => Seq.empty
 
@@ -168,7 +168,7 @@ begin
         else let
           val prems = Logic.prems_of_goal (Thm.prop_of st) i |> tag_list 1
           
-          fun tac (n,t) i st = case could_param_rl t i st of
+          fun tac (n,t) i st = case could_param_rl ctxt t i st of
             SOME adj => (adjust_arity_tac adj ctxt THEN' rprem_tac n ctxt) i st
           | NONE => Seq.empty
         in
@@ -205,7 +205,7 @@ begin
           Seq.empty 
         else
           let
-            val g = dest_param_goal i st
+            val g = dest_param_goal ctxt i st
             val rls = Item_Net.retrieve net (#rhs_head g)
         
             fun tac (r,thm) = 
