@@ -197,9 +197,9 @@ lemma UNION_disjoint:
   apply (induct rule: finite_induct)
    apply simp
   apply atomize
-  apply (subgoal_tac "\<forall>i\<in>Fa. x \<noteq> i")
+  apply (subgoal_tac "\<forall>i\<in>F. x \<noteq> i")
    prefer 2 apply blast
-  apply (subgoal_tac "A x \<inter> \<Union>(A ` Fa) = {}")
+  apply (subgoal_tac "A x \<inter> \<Union>(A ` F) = {}")
    prefer 2 apply blast
   apply (simp add: union_disjoint)
   done
