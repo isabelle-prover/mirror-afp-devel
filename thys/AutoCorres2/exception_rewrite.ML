@@ -410,7 +410,9 @@ val l1_merge_assignments_simproc =
           val record_ss = merge_ss (RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt), 
                   Record.get_simpset (Proof_Context.theory_of ctxt))
           val state_simprocs = @{code_simprocs "state_simp"}
-          val ([stmt], ctxt') = Variable.add_fixes (map fst (Term.variant_frees (Thm.term_of cterm) [("stmt",())])) ctxt;
+          val ([stmt], ctxt') = ctxt
+            |> Variable.declare_term (Thm.term_of cterm)
+            |> Variable.variant_fixes ["stmt"];
           val [thm] = Thm.cterm_of ctxt' (seq $ mod1 $ (seq $ mod2 $ Free (stmt, domain_type sT))) 
                 |> Simplifier.rewrite (put_simpset record_ss ctxt'
                     addsimps @{thms L1_merge_assignments Fun.comp_def state_simp} 
