@@ -96,7 +96,7 @@ ML \<open>
     val thm_pairsD_get: Proof.context -> thm_pairs
 
     val constraints_of_term: term -> (term * term) list
-    val constraints_of_goal: int -> thm -> (term * term) list
+    val constraints_of_goal: Proof.context -> int -> thm -> (term * term) list
 
     val mk_CONSTRAINT: term * term -> term 
     val mk_CONSTRAINT_rl: Proof.context -> constraint -> thm
@@ -192,7 +192,7 @@ ML \<open>
       val constraints_of_term = constraints [] 
     end
 
-    fun constraints_of_goal i st =
+    fun constraints_of_goal ctxt i st =
       case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop ((_,?a)\<in>_)"} => constraints_of_term a
       | _ => raise THM ("constraints_of_goal",i,[st])
@@ -226,7 +226,7 @@ ML \<open>
     end;
 
     fun insert_CONSTRAINTS_tac ctxt i st = let
-      val cs = constraints_of_goal i st 
+      val cs = constraints_of_goal ctxt i st 
       |> map (mk_CONSTRAINT #> HOLogic.mk_Trueprop #> Thm.cterm_of ctxt)
     in
       Refine_Util.insert_subgoals_tac cs i st
@@ -558,7 +558,7 @@ ML \<open>
         res
       end
   
-      fun add_relators_of_subgoal st i acc = 
+      fun add_relators_of_subgoal ctxt st i acc = 
         case Logic.concl_of_goal (Thm.prop_of st) i of
           @{mpat "Trueprop (CONSTRAINT _ ?R)"} => add_relators R acc
         | _ => acc
@@ -573,7 +573,7 @@ ML \<open>
           res |> HOLogic.mk_Trueprop |> Thm.cterm_of ctxt
         end
         
-        val relators = fold (add_relators_of_subgoal st) (i upto j) []
+        val relators = fold (add_relators_of_subgoal ctxt st) (i upto j) []
         val tyrels = map get_constraint relators
       in
         Refine_Util.insert_subgoals_tac tyrels k st
@@ -613,7 +613,7 @@ ML \<open>
       )
     end
 
-    fun apply_to_constraints tac = let
+    fun apply_to_constraints ctxt tac = let
       fun no_CONSTRAINT_tac i st = 
         case Logic.concl_of_goal (Thm.prop_of st) i of
           @{mpat "Trueprop (CONSTRAINT _ _)"} => Seq.empty
@@ -631,9 +631,9 @@ ML \<open>
 
       val s_tac = SOLVED' (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
     in 
-      apply_to_constraints s_tac
+      apply_to_constraints ctxt s_tac
       ORELSE_INTERVAL 
-      apply_to_constraints (TRY o DETERM o s_tac)
+      apply_to_constraints ctxt (TRY o DETERM o s_tac)
     end
 
     fun guess_relators_tac ctxt = let
@@ -655,9 +655,9 @@ ML \<open>
       val solve_tac = let 
         val s_tac = SOLVED' (REPEAT_ALL_NEW (resolve_from_net_tac ctxt net))
       in   
-        apply_to_constraints s_tac
+        apply_to_constraints ctxt s_tac
         ORELSE_INTERVAL 
-        apply_to_constraints (TRY o DETERM o s_tac)
+        apply_to_constraints ctxt (TRY o DETERM o s_tac)
       end
     in
       Seq.INTERVAL (insert_CONSTRAINTS_tac ctxt)

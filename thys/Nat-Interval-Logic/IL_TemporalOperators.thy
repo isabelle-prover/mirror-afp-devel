@@ -206,46 +206,46 @@ lemmas iTL_defs =
 (* Like in Set.thy *)
 (* To avoid eta-contraction of body: *)
 typed_print_translation \<open>
- [(\<^const_syntax>\<open>iAll\<close>, fn _ => Syntax_Trans.preserve_binder_abs2_tr' \<^syntax_const>\<open>_iAll\<close>),
-  (\<^const_syntax>\<open>iEx\<close>, fn _ => Syntax_Trans.preserve_binder_abs2_tr' \<^syntax_const>\<open>_iEx\<close>)]
+ [(\<^const_syntax>\<open>iAll\<close>, Syntax_Trans.preserve_binder_abs2_tr' \<^syntax_const>\<open>_iAll\<close>),
+  (\<^const_syntax>\<open>iEx\<close>, Syntax_Trans.preserve_binder_abs2_tr' \<^syntax_const>\<open>_iEx\<close>)]
 \<close>
 
 print_translation \<open>
 let
-  fun btr' syn [i,Abs abs,Abs abs'] =
+  fun btr' syn ctxt [i,Abs abs,Abs abs'] =
     let
-      val (t,P) = Syntax_Trans.atomic_abs_tr' abs;
-      val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
+      val (t,P) = Syntax_Trans.atomic_abs_tr' ctxt abs;
+      val (t',Q) = Syntax_Trans.atomic_abs_tr' ctxt abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
- [(@{const_syntax "iUntil"}, K (btr' "_iUntil")),
-  (@{const_syntax "iSince"}, K (btr' "_iSince"))]
+ [(@{const_syntax "iUntil"}, btr' "_iUntil"),
+  (@{const_syntax "iSince"}, btr' "_iSince")]
 end
 \<close>
 
 print_translation \<open>
 let
-  fun btr' syn [i,Abs abs,Abs abs'] =
+  fun btr' syn ctxt [i,Abs abs,Abs abs'] =
     let
-      val (t,P) = Syntax_Trans.atomic_abs_tr' abs;
-      val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
+      val (t,P) = Syntax_Trans.atomic_abs_tr' ctxt abs;
+      val (t',Q) = Syntax_Trans.atomic_abs_tr' ctxt abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
- [(@{const_syntax "iWeakUntil"}, K (btr' "_iWeakUntil")),
-  (@{const_syntax "iWeakSince"}, K (btr' "_iWeakSince"))]
+ [(@{const_syntax "iWeakUntil"}, btr' "_iWeakUntil"),
+  (@{const_syntax "iWeakSince"}, btr' "_iWeakSince")]
 end
 \<close>
 
 print_translation \<open>
 let
-  fun btr' syn [i,Abs abs,Abs abs'] =
+  fun btr' syn ctxt [i,Abs abs,Abs abs'] =
     let
-      val (t,P) = Syntax_Trans.atomic_abs_tr' abs;
-      val (t',Q) = Syntax_Trans.atomic_abs_tr' abs'
+      val (t,P) = Syntax_Trans.atomic_abs_tr' ctxt abs;
+      val (t',Q) = Syntax_Trans.atomic_abs_tr' ctxt abs'
     in Syntax.const syn $ P $ t $ t' $ i $ Q end
 in
- [(@{const_syntax "iRelease"}, K (btr' "_iRelease")),
-  (@{const_syntax "iTrigger"}, K (btr' "_iTrigger"))]
+ [(@{const_syntax "iRelease"}, btr' "_iRelease"),
+  (@{const_syntax "iTrigger"}, btr' "_iTrigger")]
 end
 \<close>
 

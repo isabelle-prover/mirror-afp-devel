@@ -322,7 +322,7 @@ structure Sepref_Translate = struct
       val t_gen_algo = side_gen_algo_tac ctxt
       val t_fallback = MK side_fallback_tac
     in
-      WITH_concl 
+      WITH_concl ctxt
         (fn @{mpat "Trueprop ?t"} => (case t of
               @{mpat "_ \<or>\<^sub>A _ \<Longrightarrow>\<^sub>t _"} => t_merge
             | @{mpat "_ \<Longrightarrow>\<^sub>t _"} => t_frame
