@@ -7,39 +7,26 @@ theory Tilings imports Main begin
 
 section\<open>Inductive Tiling\<close>
 
-
 inductive_set
   tiling :: "'a set set \<Rightarrow> 'a set set"
   for A :: "'a set set" where
-empty [simp, intro]: "{} \<in> tiling A" |
-Un [simp, intro]:    "\<lbrakk> a \<in> A; t \<in> tiling A; a \<inter> t = {} \<rbrakk>
+    empty [simp, intro]: "{} \<in> tiling A" |
+    Un [simp, intro]:    "\<lbrakk> a \<in> A; t \<in> tiling A; a \<inter> t = {} \<rbrakk>
                          \<Longrightarrow> a \<union> t \<in> tiling A"
-
 
 lemma tiling_UnI [intro]:
   "\<lbrakk> t \<in> tiling A; u \<in> tiling A; t \<inter> u = {} \<rbrakk> \<Longrightarrow>  t \<union> u \<in> tiling A"
-apply (induct set: tiling)
-apply (auto simp add: Un_assoc)
-done
+  by (induct set: tiling) (auto simp: Un_assoc)
 
 lemma tiling_Diff1E:
-assumes "t-a \<in> tiling A" and "a \<in> A" and "a \<subseteq> t"
-shows "t \<in> tiling A"
-proof -
-  from assms(2-3) have  "\<exists>r. t = r Un a & r Int a = {}"
-    by (metis Diff_disjoint Int_commute Un_Diff_cancel Un_absorb1 Un_commute)
-  thus ?thesis using assms(1,2)
-    by (auto simp:Un_Diff)
-       (metis Compl_Diff_eq Diff_Compl Diff_empty Int_commute Un_Diff_cancel
-              Un_commute double_complement tiling.Un)
-qed
+  assumes "t-a \<in> tiling A" and "a \<in> A" and "a \<subseteq> t"
+  shows "t \<in> tiling A"
+  by (metis Diff_disjoint Diff_partition assms tiling.Un)
 
 lemma tiling_finite:
   assumes "\<And>a. a \<in> A \<Longrightarrow> finite a"
   shows "t \<in> tiling A \<Longrightarrow> finite t"
-apply (induct set: tiling)
-using assms apply auto
-done
+  by (induct set: tiling) (use assms in auto)
 
 
 section\<open>The Mutilated Chess Board Cannot be Tiled by Dominoes\<close>
@@ -49,11 +36,11 @@ Robinson. It was popularized as the \emph{Mutilated Checkerboard Problem} by
 J McCarthy.\<close>
 
 inductive_set domino :: "(nat \<times> nat) set set" where
-horiz [simp]: "{(i, j), (i, Suc j)} \<in> domino" |
-vertl [simp]: "{(i, j), (Suc i, j)} \<in> domino"
+  horiz [simp]: "{(i, j), (i, Suc j)} \<in> domino" |
+  vertl [simp]: "{(i, j), (Suc i, j)} \<in> domino"
 
 lemma domino_finite: "d \<in> domino \<Longrightarrow> finite d"
-by (erule domino.cases, auto)
+  by (erule domino.cases, auto)
 
 declare tiling_finite[OF domino_finite, simp]
 
@@ -76,19 +63,17 @@ text \<open>\medskip Chess boards\<close>
 
 lemma Sigma_Suc1 [simp]:
   "{0..< Suc n} \<times> B = ({n} \<times> B) \<union> ({0..<n} \<times> B)"
-by auto
+  by auto
 
 lemma Sigma_Suc2 [simp]:
   "A \<times> {0..< Suc n} = (A \<times> {n}) \<union> (A \<times> {0..<n})"
-by auto
+  by auto
 
 lemma dominoes_tile_row [intro!]: "{i} \<times> {0..< 2*n} \<in> tiling domino"
-apply (induct n)
-apply (simp_all del:Un_insert_left add: Un_assoc [symmetric])
-done
+  by (induct n) (auto simp flip: Un_insert_left Un_assoc)
 
 lemma dominoes_tile_matrix: "{0..<m} \<times> {0..< 2*n} \<in> tiling domino"
-by (induct m) auto
+  by (induct m) auto
 
 
 text \<open>\medskip @{term coloured} and Dominoes\<close>
@@ -97,15 +82,13 @@ lemma coloured_insert [simp]:
   "coloured b \<inter> (insert (i, j) t) =
    (if (i + j) mod 2 = b then insert (i, j) (coloured b \<inter> t)
     else coloured b \<inter> t)"
-by (auto simp add: coloured_def)
+by (auto simp: coloured_def)
 
 lemma domino_singletons:
   "d \<in> domino \<Longrightarrow>
    (\<exists>i j. whites \<inter> d = {(i, j)}) \<and>
    (\<exists>m n. blacks \<inter> d = {(m, n)})"
-apply (erule domino.cases)
- apply (auto simp add: mod_Suc)
-done
+  by (elim domino.cases) (auto simp: mod_Suc)
 
 
 text \<open>\medskip Tilings of dominoes\<close>
@@ -115,42 +98,50 @@ declare
   Diff_Int_distrib [simp]
 
 lemma tiling_domino_0_1:
-  "t \<in> tiling domino ==> card(whites \<inter> t) = card(blacks \<inter> t)"
-apply (induct set: tiling)
- apply (drule_tac [2] domino_singletons)
- apply (auto)
-apply (subgoal_tac "\<forall>p C. C \<inter> a = {p} --> p \<notin> t")
-  \<comment> \<open>this lemma tells us that both ``inserts'' are non-trivial\<close>
- apply (simp (no_asm_simp))
-apply blast
-done
+  "t \<in> tiling domino \<Longrightarrow> card(whites \<inter> t) = card(blacks \<inter> t)"
+proof (induct set: tiling)
+  case empty
+  then show ?case
+    by auto
+next
+  case (Un d t)
+  \<comment> \<open>this fact tells us that both ``inserts'' are non-trivial\<close>
+  then have "\<And>p C. C \<inter> d = {p} \<longrightarrow> p \<notin> t"
+    by auto
+  moreover
+  obtain w b where "whites \<inter> d = {w}" "blacks \<inter> d = {b}"
+    using Un.hyps domino_singletons by force
+  ultimately show ?case
+    using Un by auto
+qed
 
 
 text \<open>\medskip Final argument is surprisingly complex\<close>
 
 theorem gen_mutil_not_tiling:
-  "t \<in> tiling domino ==>
-  (i + j) mod 2 = 0 ==> (m + n) mod 2 = 0 ==>
-  {(i, j), (m, n)} \<subseteq> t
-  ==> (t - {(i,j)} - {(m,n)}) \<notin> tiling domino"
-apply (rule notI)
-apply (subgoal_tac
-  "card (whites \<inter> (t - {(i,j)} - {(m,n)})) <
-   card (blacks \<inter> (t - {(i,j)} - {(m,n)}))")
- apply (force simp only: tiling_domino_0_1)
-apply (simp add: tiling_domino_0_1 [symmetric])
-apply (simp add: coloured_def card_Diff2_less)
-done
+  assumes "t \<in> tiling domino" "(i + j) mod 2 = 0"
+    "(m + n) mod 2 = 0" "{(i, j), (m, n)} \<subseteq> t"
+  shows "t - {(i, j)} - {(m, n)} \<notin> tiling domino"
+proof -
+  have "card (whites \<inter> (t - {(i,j)} - {(m,n)})) 
+      < card (blacks \<inter> (t - {(i,j)} - {(m,n)}))"
+    using assms unfolding tiling_domino_0_1 [symmetric]
+    by (simp flip: tiling_domino_0_1) (simp add: coloured_def card_Diff2_less)
+  then show ?thesis
+    by (metis nat_neq_iff tiling_domino_0_1)
+qed
 
 text \<open>Apply the general theorem to the well-known case\<close>
 
 theorem mutil_not_tiling:
-  "t = {0..< 2 * Suc m} \<times> {0..< 2 * Suc n}
-   ==> t - {(0,0)} - {(Suc(2 * m), Suc(2 * n))} \<notin> tiling domino"
-apply (rule gen_mutil_not_tiling)
- apply (blast intro!: dominoes_tile_matrix)
-apply auto
-done
+  assumes "t = {0..< 2 * Suc m} \<times> {0..< 2 * Suc n}"
+  shows "t - {(0,0)} - {(Suc(2 * m), Suc(2 * n))} \<notin> tiling domino"
+proof -
+  have "t \<in> tiling domino"
+    using assms dominoes_tile_matrix by blast
+  with assms show ?thesis
+    by (intro gen_mutil_not_tiling) auto
+qed
 
 
 section\<open>The Mutilated Chess Board Can be Tiled by Ls\<close>
@@ -173,11 +164,11 @@ definition "L1 (x::nat) (y::nat) = {(x,y), (x,y+1), (x+1, y+1)}"
 text\<open>All tiles:\<close>
 
 definition Ls :: "(nat * nat) set set" where
-"Ls \<equiv> { L0 x y | x y. True} \<union> { L1 x y | x y. True} \<union>
+  "Ls \<equiv> { L0 x y | x y. True} \<union> { L1 x y | x y. True} \<union>
       { L2 x y | x y. True} \<union> { L3 x y | x y. True}"
 
 lemma LinLs: "L0 i j : Ls & L1 i j : Ls & L2 i j : Ls & L3 i j : Ls"
-by(fastforce simp:Ls_def)
+  by(fastforce simp: Ls_def)
 
 
 text\<open>Square $2^n \times 2^n$ grid, shifted by $i$ and $j$:\<close>
@@ -186,12 +177,12 @@ definition "square2 (n::nat) (i::nat) (j::nat) = {i..< 2^n+i} \<times> {j..< 2^n
 
 lemma in_square2[simp]:
   "(a,b) : square2 n i j \<longleftrightarrow> i\<le>a \<and> a<2^n+i \<and> j\<le>b \<and> b<2^n+j"
-by(simp add:square2_def)
+  by(simp add:square2_def)
 
 lemma square2_Suc: "square2 (Suc n) i j =
   square2 n i j \<union> square2 n (2^n + i) j \<union> square2 n i (2^n + j) \<union>
   square2 n (2^n + i) (2^n + j)"
-by(auto simp:square2_def)
+  by auto
 
 lemma square2_disj: "square2 n i j \<inter> square2 n x y = {} \<longleftrightarrow>
   (2^n+i \<le> x \<or> 2^n+x \<le> i) \<or> (2^n+j \<le> y \<or> 2^n+y \<le> j)" (is "?A = ?B")
@@ -206,25 +197,26 @@ qed
 
 text\<open>Some specific lemmas:\<close>
 
-lemma pos_pow2: "(0::nat) < 2^(n::nat)"
-by simp
+lemma pos_pow2: "(0::nat) < 2^n"
+  by simp
 
 declare nat_zero_less_power_iff[simp del] zero_less_power[simp del]
 
 lemma Diff_insert_if: shows
-  "B \<noteq> {} \<Longrightarrow> a:A \<Longrightarrow> A - insert a B = (A-B - {a})" and
-  "B \<noteq> {} \<Longrightarrow> a ~: A \<Longrightarrow> A - insert a B = A-B"
-by auto
+  "B \<noteq> {} \<Longrightarrow> a \<in> A \<Longrightarrow> A - insert a B = (A-B - {a})" and
+  "B \<noteq> {} \<Longrightarrow> a \<notin> A \<Longrightarrow> A - insert a B = A-B"
+  by auto
 
-lemma DisjI1: "A Int B = {} \<Longrightarrow> (A-X) Int B = {}"
-by blast
-lemma DisjI2: "A Int B = {} \<Longrightarrow> A Int (B-X) = {}"
-by blast
+lemma DisjI1: "A \<inter> B = {} \<Longrightarrow> (A-X) \<inter> B = {}"
+  by blast
+
+lemma DisjI2: "A \<inter> B = {} \<Longrightarrow> A \<inter> (B-X) = {}"
+  by blast
 
 text\<open>The main theorem:\<close>
 
 theorem Ls_can_tile: "i \<le> a \<Longrightarrow> a < 2^n + i \<Longrightarrow> j \<le> b \<Longrightarrow> b < 2^n + j
-  \<Longrightarrow> square2 n i j - {(a,b)} : tiling Ls"
+  \<Longrightarrow> square2 n i j - {(a,b)} \<in> tiling Ls"
 proof(induct n arbitrary: a b i j)
   case 0 thus ?case by (simp add:square2_def)
 next
@@ -236,13 +228,12 @@ next
     by simp arith
   moreover
   { assume "?A"
-    hence "square2 n i j - {(a,b)} : tiling Ls" using IH a b by auto
-    moreover have "square2 n (2^n+i) j - {(2^n+i,2^n+j - 1)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n i (2^n+j) - {(2^n+i - 1, 2^n+j)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n (2^n+i) (2^n+j) - {(2^n+i, 2^n+j)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
+    hence "square2 n i j - {(a,b)} \<in> tiling Ls" using IH a b by auto
+    moreover 
+    have "square2 n (2^n+i) j - {(2^n+i,2^n+j - 1)} \<in> tiling Ls"
+         "square2 n i (2^n+j) - {(2^n+i - 1, 2^n+j)} \<in> tiling Ls"
+         "square2 n (2^n+i) (2^n+j) - {(2^n+i, 2^n+j)} \<in> tiling Ls"
+      by (simp_all add: IH le_add_diff pos_pow2)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L0 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b \<open>?A\<close>
@@ -251,13 +242,12 @@ next
                    simp:Int_Un_distrib2)
   } moreover
   { assume "?B"
-    hence "square2 n (2^n+i) j - {(a,b)} : tiling Ls" using IH a b by auto
-    moreover have "square2 n i j - {(2^n+i - 1,2^n+j - 1)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n i (2^n+j) - {(2^n+i - 1, 2^n+j)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n (2^n+i) (2^n+j) - {(2^n+i, 2^n+j)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
+    hence "square2 n (2^n+i) j - {(a,b)} \<in> tiling Ls" using IH a b by auto
+    moreover 
+    have "square2 n i j - {(2^n+i - 1,2^n+j - 1)} \<in> tiling Ls"
+         "square2 n i (2^n+j) - {(2^n+i - 1, 2^n+j)} \<in> tiling Ls"
+         "square2 n (2^n+i) (2^n+j) - {(2^n+i, 2^n+j)} \<in> tiling Ls"
+      by (simp_all add: IH le_add_diff pos_pow2)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L1 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b \<open>?B\<close>
@@ -266,13 +256,12 @@ next
                    simp:Int_Un_distrib2)
   } moreover
   { assume "?C"
-    hence "square2 n i (2^n+j) - {(a,b)} : tiling Ls" using IH a b by auto
-    moreover have "square2 n i j - {(2^n+i - 1,2^n+j - 1)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n (2^n+i) j - {(2^n+i, 2^n+j - 1)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n (2^n+i) (2^n+j) - {(2^n+i, 2^n+j)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
+    hence "square2 n i (2^n+j) - {(a,b)} \<in> tiling Ls" using IH a b by auto
+    moreover 
+    have "square2 n i j - {(2^n+i - 1,2^n+j - 1)} \<in> tiling Ls"
+         "square2 n (2^n+i) j - {(2^n+i, 2^n+j - 1)} \<in> tiling Ls"
+         "square2 n (2^n+i) (2^n+j) - {(2^n+i, 2^n+j)} \<in> tiling Ls"
+      by (simp_all add: IH le_add_diff pos_pow2)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L3 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b \<open>?C\<close>
@@ -281,13 +270,12 @@ next
                    simp:Int_Un_distrib2)
   } moreover
   { assume "?D"
-    hence "square2 n (2^n+i) (2^n+j) -{(a,b)} : tiling Ls" using IH a b by auto
-    moreover have "square2 n i j - {(2^n+i - 1,2^n+j - 1)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n (2^n+i) j - {(2^n+i, 2^n+j - 1)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
-    moreover have "square2 n i (2^n+j) - {(2^n+i - 1, 2^n+j)} : tiling Ls"
-      by(rule IH)(insert pos_pow2[of n], auto)
+    hence "square2 n (2^n+i) (2^n+j) -{(a,b)} \<in> tiling Ls" using IH a b by auto
+    moreover 
+    have "square2 n i j - {(2^n+i - 1,2^n+j - 1)} \<in> tiling Ls"
+         "square2 n (2^n+i) j - {(2^n+i, 2^n+j - 1)} \<in> tiling Ls"
+         "square2 n i (2^n+j) - {(2^n+i - 1, 2^n+j)} \<in> tiling Ls"
+      by (simp_all add: IH le_add_diff pos_pow2)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L2 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
       using  a b \<open>?D\<close>
@@ -308,6 +296,6 @@ qed
 
 corollary Ls_can_tile00:
   "a < 2^n \<Longrightarrow> b < 2^n \<Longrightarrow> square2 n 0 0 - {(a, b)} \<in> tiling Ls"
-by(rule Ls_can_tile) auto
+  by(intro Ls_can_tile) auto
 
 end
