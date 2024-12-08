@@ -18,13 +18,6 @@ lemmas real_sq = power2_eq_square [where 'a = real, symmetric]
 
 lemmas real_sq_exp = power_mult_distrib [where 'a = real and ?n = 2]
 
-lemma double_sum_equiv:
-  fixes f::"nat \<Rightarrow> real"
-  shows
-  "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) =
-   (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f j * g k))"
-  by (rule sum.swap)
-
 (*>*)
 
 
@@ -83,25 +76,14 @@ definition
 text \<open>Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt
 (v\<cdot>v)"}. We show that our definition leads to this one.\<close>
 
-lemma norm_dot:
- "\<parallel>v\<parallel> = sqrt (v\<cdot>v)"
-proof -
-  have "sqrt (v\<cdot>v) = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>*v\<^bsub>j\<^esub>)" unfolding dot_def by simp
-  also with real_sq have "\<dots> = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2)" by simp
-  also have "\<dots> = \<parallel>v\<parallel>" unfolding norm_def by simp
-  finally show ?thesis ..
-qed
+lemma norm_dot: "\<parallel>v\<parallel> = sqrt (v\<cdot>v)"
+  using dot_def norm_def real_sq by presburger
 
 text \<open>A further important property is that the norm is never negative.\<close>
 
 lemma norm_pos:
   "\<parallel>v\<parallel> \<ge> 0"
-proof -
-  have "\<forall>j. v\<^bsub>j\<^esub>^2 \<ge> 0" unfolding ith_def by auto
-  have "(\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" by (simp add: sum_nonneg)
-  with real_sqrt_ge_zero have "sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2) \<ge> 0" .
-  thus ?thesis unfolding norm_def .
-qed
+  by (simp add: norm_def sum_nonneg)
 
 text \<open>We now prove an intermediary lemma regarding double summation.\<close>
 
@@ -120,7 +102,7 @@ proof -
     "\<dots> =
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j)) +
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f j * g k))"
-    by (simp only: double_sum_equiv)
+    using sum.swap by force 
   also have
     "\<dots> =
     (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. f k * g j + f j * g k))"
@@ -166,8 +148,7 @@ proof -
           by (rule real_sqrt_pow2)
 
         txt \<open>The main result of this section is that \<open>(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2\<close> can be written as a double sum.\<close>
-        have
-          "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = \<parallel>x\<parallel>^2 * \<parallel>y\<parallel>^2"
+        have "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = \<parallel>x\<parallel>^2 * \<parallel>y\<parallel>^2"
           by (simp add: real_sq_exp)
         also from nx ny have
           "\<dots> = (sqrt (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2))^2 * (sqrt (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2))^2"
@@ -181,22 +162,9 @@ proof -
           "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>^2)*(y\<^bsub>j\<^esub>^2)))" .
       }
       moreover
-      {
-        txt \<open>We also show that \<open>\<bar>x\<cdot>y\<bar>^2\<close> can be expressed as a double sum.\<close>
-        have
-          "\<bar>x\<cdot>y\<bar>^2 = (x\<cdot>y)^2"
-          by simp
-        also from nx have
-          "\<dots> = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)^2"
-          unfolding dot_def by simp
-        also from real_sq have
-          "\<dots> = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)*(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)"
-          by simp
-        also from sum_product have
-          "\<dots> = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))" .
-        finally have
-          "\<bar>x\<cdot>y\<bar>^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))" .
-      }
+      txt \<open>We also show that \<open>\<bar>x\<cdot>y\<bar>^2\<close> can be expressed as a double sum.\<close>
+      have "\<bar>x\<cdot>y\<bar>^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))"
+        by (metis (no_types) dot_def nx power2_abs real_sq sum_product) 
       txt \<open>We now manipulate the double sum expressions to get the
       required inequality.\<close>
       ultimately have
@@ -232,7 +200,7 @@ proof -
         "\<dots> =
         (\<Sum>k\<in>{1..n}.  (\<Sum>j\<in>{1..n}. (inverse 2)*
         ((((x\<^bsub>k\<^esub>^2*y\<^bsub>j\<^esub>^2) + (x\<^bsub>j\<^esub>^2*y\<^bsub>k\<^esub>^2)) - 2*(x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))))"
-        by (simp only: mult.assoc, simp)
+        unfolding mult.assoc by simp
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}.
@@ -243,11 +211,7 @@ proof -
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2))"
         by (simp only: power2_diff real_sq_exp, auto simp add: ac_simps)
       also have "\<dots> \<ge> 0"
-      proof -
-        have "(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2)) \<ge> 0"
-          by (simp add: sum_nonneg)
-        thus ?thesis by simp
-      qed
+        by (simp add: sum_nonneg)
       finally show "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 \<ge> 0" .
     qed
     thus ?thesis by simp
