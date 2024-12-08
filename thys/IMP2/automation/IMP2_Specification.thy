@@ -234,7 +234,7 @@ ML \<open> structure VCG_Htriple_Syntax
     
     fun decon_cartouche_ast ((c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p) = (
       case Term_Position.decode_position1 p of 
-        SOME pos => ((s,pos) (*, fn t => c$t$p*))
+        SOME {pos, ...} => ((s,pos) (*, fn t => c$t$p*))
       | NONE => raise TERM ("cartouche with invalid pos",[c,p])  
     )
     | decon_cartouche_ast t = raise TERM ("decon_cartouche_ast",[t])  
