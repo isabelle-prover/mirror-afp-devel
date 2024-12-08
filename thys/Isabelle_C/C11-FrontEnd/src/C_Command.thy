@@ -406,7 +406,7 @@ fun parse_translation l = l |>
        case args of
          [(c as Const (\<^syntax_const>\<open>_constrain\<close>, _)) $ Free (s, _) $ p] =>
           (case Term_Position.decode_position1 p of
-            SOME pos =>
+            SOME {pos, ...} =>
             c
             $ let val src = 
                 uncurry
