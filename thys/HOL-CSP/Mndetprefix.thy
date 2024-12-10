@@ -232,7 +232,7 @@ next
 qed
 
 lemma Mndetprefix_cont[simp]: "(\<And>x. cont (f x)) \<Longrightarrow> cont (\<lambda>y. (\<sqinter> z \<in> A \<rightarrow> (f z y)))"
-  apply(rule_tac f = "\<lambda>z y. (f y z)" in Cont.cont_compose, rule monocontlub2cont) 
-  by (auto intro: mono_Mndetprefix contlub_Mndetprefix Fun_Cpo.cont2cont_lambda)
+  apply(rule_tac f = "\<lambda>z y. (f y z)" in cont_compose, rule monocontlub2cont) 
+  by (auto intro: mono_Mndetprefix contlub_Mndetprefix cont2cont_lambda)
 
 end

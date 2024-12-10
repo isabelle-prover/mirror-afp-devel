@@ -267,7 +267,7 @@ by (simp add: contlub_def)
 
 lemma cont2contlub: "cont f \<Longrightarrow> contlub f"
 apply (rule contlubI)
-apply (rule Porder.po_class.lub_eqI [symmetric])
+apply (rule po_class.lub_eqI [symmetric])
 apply (erule (1) contE)
 done
 
@@ -304,7 +304,7 @@ done
 
 
 lemma mono_Mprefix[simp]: "monofun(Mprefix A)"
-by(auto simp: Fun_Cpo.below_fun_def monofun_def mono_Mprefix0)
+by(auto simp: below_fun_def monofun_def mono_Mprefix0)
 
 
 lemma proc_ord2_set: 
@@ -356,9 +356,9 @@ qed
 
 lemma Mprefix_cont [simp]: 
 "(\<And>x. cont (f x)) \<Longrightarrow> cont (\<lambda>y. \<box> z \<in>  A \<rightarrow> f z y)"
-apply(rule_tac f = "\<lambda>z y. (f y z)" in Cont.cont_compose)
+apply(rule_tac f = "\<lambda>z y. (f y z)" in cont_compose)
 apply(rule monocontlub2cont)
-apply(auto intro: mono_Mprefix contlub_Mprefix Fun_Cpo.cont2cont_lambda)
+apply(auto intro: mono_Mprefix contlub_Mprefix cont2cont_lambda)
 done
 
 

@@ -128,7 +128,8 @@ lemma Sliding_STOP_Det: \<open>(P \<rhd> STOP) \<box> Q = P \<rhd> Q\<close>
 
 lemma BOT_Sliding: \<open>\<bottom> \<rhd> P = \<bottom>\<close>
   and Sliding_BOT: \<open>P \<rhd> \<bottom> = \<bottom>\<close>
-  unfolding Sliding_def by (simp_all add: Det_commute Det_BOT Ndet_commute Ndet_BOT)
+  unfolding Sliding_def
+  by (simp_all add: Det_commute Det_BOT BOT_Det Ndet_commute Ndet_BOT BOT_Ndet)
 
 lemma Sliding_is_BOT_iff: \<open>P \<rhd> Q = \<bottom> \<longleftrightarrow> P = \<bottom> \<or> Q = \<bottom>\<close>
   by (simp add: Det_is_BOT_iff Ndet_is_BOT_iff Sliding_def)
