@@ -47,7 +47,7 @@ syntax "_bind" :: "[pttrns,'a M,'b] \<Rightarrow> 'c" (\<open>(_ \<leftarrow> _;
 syntax_consts "_bind" \<rightleftharpoons> bind
 translations "P \<leftarrow> E; F" \<rightleftharpoons> "CONST bind E (\<lambda>P. F)"
 
-no_notation "binomial" (infix \<open>choose\<close> 64)
+unbundle no binomial_syntax
 
 definition choose :: "'a set \<Rightarrow> 'a M" where
   "choose S \<mu> \<equiv> {(a,\<mu>1). a \<in> S \<and> \<mu>1=\<mu>}"
