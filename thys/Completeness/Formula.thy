@@ -1,7 +1,7 @@
 section "Formula"
 
 theory Formula
-imports Base
+  imports Base 
 begin
 
 subsection "Variables"
@@ -12,55 +12,50 @@ datatype vbl = X nat
   wonder whether things wouldn't be clearer is we just identified vbls
   with nats\<close>
 
-primrec deX :: "vbl => nat" where "deX (X n) = n"
+primrec deX :: "vbl \<Rightarrow> nat" where "deX (X n) = n"
 
 lemma X_deX[simp]: "X (deX a) = a"
   by(cases a) simp
 
 definition "zeroX = X 0"
 
-
 primrec
-  nextX :: "vbl => vbl" where
+  nextX :: "vbl \<Rightarrow> vbl" where
   "nextX (X n) = X (Suc n)"
 
 definition
-  vblcase :: "['a,vbl => 'a,vbl] => 'a" where
-  "vblcase a f n = (@z. (n=zeroX \<longrightarrow> z=a) \<and> (!x. n=nextX x \<longrightarrow> z=f(x)))"
+  vblcase :: "['a,vbl \<Rightarrow> 'a,vbl] \<Rightarrow> 'a" where
+  "vblcase a f n \<equiv> (@z. (n=zeroX \<longrightarrow> z=a) \<and> (!x. n=nextX x \<longrightarrow> z=f(x)))"
 
 declare [[case_translation vblcase zeroX nextX]]
 
 definition
-  freshVar :: "vbl set => vbl" where
+  freshVar :: "vbl set \<Rightarrow> vbl" where
   "freshVar vs = X (LEAST n. n \<notin> deX ` vs)"
     
-lemma nextX_nextX[iff]: "nextX x = nextX y = (x =  y)"
-  by(cases x, cases y) auto
+lemma nextX_nextX[iff]: "nextX x = nextX y = (x = y)"
+  by (metis Suc_inject nextX.simps vbl.exhaust vbl.inject)
 
 lemma inj_nextX: "inj nextX"
   by(auto simp add: inj_on_def)
 
-lemma ind': "P zeroX ==> (! v . P v --> P (nextX v)) ==> P v'"
-  apply (case_tac v', simp)
-  apply(rename_tac nat)
-  apply(induct_tac nat)
-   apply(simp add: zeroX_def)
-  apply(rename_tac n)
-  apply (drule_tac x="X n" in spec, simp)
-  done
+lemma ind: 
+  assumes "P zeroX" "\<And> v. P v \<Longrightarrow> P (nextX v)"
+  shows "P v'"
+proof -
+  have "P (X n)" for n
+    by (induction n) (use assms zeroX_def nextX_def in force)+
+  then show ?thesis
+    by (metis X_deX)
+qed
 
-lemma ind: "\<lbrakk> P zeroX; \<And> v. P v \<Longrightarrow> P (nextX v) \<rbrakk> \<Longrightarrow> P v'"
-  apply(rule ind') by auto
-
-lemma zeroX_nextX[iff]: "zeroX ~= nextX a" \<comment> \<open>FIXME iff?\<close>
-  apply(case_tac a)
-  apply(simp add: zeroX_def)
-  done
+lemma zeroX_nextX[iff]: "zeroX \<noteq> nextX a"
+  by (metis nat.discI nextX.simps vbl.exhaust vbl.inject zeroX_def)
 
 lemmas nextX_zeroX[iff] = not_sym[OF zeroX_nextX]
 
 lemma nextX: "nextX (X n) = X (Suc n)"
-  apply simp done
+  by simp
 
 lemma vblcase_zeroX[simp]: "vblcase a b zeroX = a" 
   by(simp add: vblcase_def)
@@ -68,53 +63,40 @@ lemma vblcase_zeroX[simp]: "vblcase a b zeroX = a"
 lemma vblcase_nextX[simp]: "vblcase a b (nextX n) = b n" 
   by(simp add: vblcase_def)
 
-lemma vbl_cases: "x = zeroX | (? y . x = nextX y)"
-  apply(case_tac x, rename_tac m)
-  apply(case_tac m)
-  apply(simp add: zeroX_def)
-  apply(rule disjI2)
-  apply (rule_tac x="X nat" in exI, simp)
-  done
+lemma vbl_cases: "x = zeroX \<or> (\<exists>y. x = nextX y)"
+  by (metis X_deX nextX old.nat.exhaust zeroX_def)
 
 lemma vbl_casesE: "\<lbrakk> x = zeroX \<Longrightarrow> P; \<And> y. x = nextX y \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  apply(auto intro: vbl_cases[elim_format]) done
+  using vbl_cases by blast
 
-lemma comp_vblcase: "f o vblcase a b = vblcase (f a) (f o b)"
-  apply(rule ext) 
-  apply(rule_tac x = x in vbl_casesE) 
-   apply(simp_all add: vblcase_zeroX vblcase_nextX) 
-  done
+lemma comp_vblcase: "f \<circ> vblcase a b = vblcase (f a) (f \<circ> b)"
+proof
+  fix x
+  show "(f \<circ> vblcase a b) x = (case x of zeroX \<Rightarrow> f a | nextX x \<Rightarrow> (f \<circ> b) x)"
+    using vbl_cases [of x] by auto
+qed
 
-lemma equalOn_vblcaseI': "equalOn (preImage nextX A) f g ==> equalOn A (vblcase x f) (vblcase x g)"
-  apply(simp add: equalOn_def) 
-  apply(rule+)
-  apply (case_tac xa rule: vbl_casesE, simp, simp)
-  apply(drule_tac x=y in bspec)
-  apply(simp add: preImage_def) 
-  by assumption
+lemma equalOn_vblcaseI': "equalOn (preImage nextX A) f g \<Longrightarrow> equalOn A (vblcase x f) (vblcase x g)"
+  unfolding equalOn_def
+  by (metis vbl_casesE vblcase_nextX vblcase_zeroX vimageI2) 
     
-lemma equalOn_vblcaseI: "(zeroX : A --> x=y) ==> equalOn (preImage nextX A) f g ==> equalOn A (vblcase x f) (vblcase y g)"
-  apply (rule equalOnI, rule)
-  apply (case_tac xa rule: vbl_casesE, simp, simp)
-  apply(simp add: preImage_def equalOn_def) 
-  done
+lemma equalOn_vblcaseI: "(zeroX \<in> A \<Longrightarrow> x=y) \<Longrightarrow> equalOn (preImage nextX A) f g \<Longrightarrow> equalOn A (vblcase x f) (vblcase y g)"
+  by (smt (verit) equalOnD equalOnI equalOn_vblcaseI' vbl_casesE vblcase_nextX)
 
-lemma X_deX_connection: "X n : A = (n : (deX ` A))"
+lemma X_deX_connection: "X n \<in> A = (n \<in> (deX ` A))"
   by force
 
-lemma finiteFreshVar: "finite A ==> freshVar A ~: A"
-  apply(simp add: freshVar_def)
-  apply(simp add: X_deX_connection)
-  apply(rule_tac LeastI_ex)
-  apply(rule_tac x="(Suc (Max (deX ` A)))" in exI)
-  apply(rule natset_finite_max)
-  by force
+lemma finiteFreshVar: "finite A \<Longrightarrow> freshVar A \<notin> A"
+  unfolding freshVar_def
+  by (metis (no_types, lifting) LeastI_ex X_deX finite_imageI
+      finite_nat_set_iff_bounded image_eqI order_less_imp_triv
+      vbl.inject)
 
-lemma freshVarI: "[| finite A; B <= A |] ==> freshVar A ~: B"
-  apply(auto dest!: finiteFreshVar) done
+lemma freshVarI: "\<lbrakk>finite A; B \<subseteq> A\<rbrakk> \<Longrightarrow> freshVar A \<notin> B"
+  using finiteFreshVar in_mono by blast
 
-lemma freshVarI2: "finite A ==> !x . x ~: A --> P x ==> P (freshVar A)"
-  apply(auto dest!: finiteFreshVar) done
+lemma freshVarI2: "\<lbrakk>finite A; \<And>x . x \<notin> A \<Longrightarrow> P x\<rbrakk> \<Longrightarrow> P (freshVar A)"
+  using finiteFreshVar by presburger
 
 lemmas vblsimps = vblcase_zeroX vblcase_nextX zeroX_nextX
   nextX_zeroX nextX_nextX comp_vblcase
@@ -126,111 +108,75 @@ datatype predicate = Predicate nat
 
 datatype signs = Pos | Neg
 
-lemma signsE: "\<lbrakk> signs = Neg \<Longrightarrow> P; signs = Pos \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  apply(cases signs, auto) done
-
-lemma expand_case_signs: "Q(case_signs vpos vneg F) = ( 
-  (F = Pos --> Q (vpos)) & 
-  (F = Neg --> Q (vneg)) 
- )"
-  by(induct F) simp_all
-
 primrec sign :: "signs \<Rightarrow> bool \<Rightarrow> bool"
-where
-  "sign Pos x = x"
-| "sign Neg x = (\<not> x)"
+  where
+    "sign Pos x = x"
+  | "sign Neg x = (\<not> x)"
 
-lemma sign_arg_cong: "x = y ==> sign z x = sign z y" by simp
-    
 primrec invSign :: "signs \<Rightarrow> signs"
-where
-  "invSign Pos = Neg"
-| "invSign Neg = Pos"
+  where
+    "invSign Pos = Neg"
+  | "invSign Neg = Pos"
 
 
 subsection "Formulas"
 
 datatype formula =
-    FAtom signs predicate "(vbl list)"
+  FAtom signs predicate "(vbl list)"
   | FConj signs formula formula
   | FAll  signs formula  
 
 
 subsection "formula signs induct, formula signs cases"
 
-lemma formula_signs_induct: "[|
-  ! p vs. P (FAtom Pos p vs);
-  ! p vs. P (FAtom Neg p vs);
-  !! A B  . [| P A; P B |] ==> P (FConj Pos A B);
-  !! A B  . [| P A; P B |] ==> P (FConj Neg A B);
-  !! A    . [| P A |] ==> P (FAll  Pos A); 
-  !! A    . [| P A |] ==> P (FAll  Neg A) 
-  |]
-  ==> P A"
-  apply(induct_tac A) 
-  apply(rule signs.induct, force, force)+
-  done
-
-lemma formula_signs_cases: "!!P. 
-  [| !! p vs . P (FAtom Pos p vs); 
-  !! p vs . P (FAtom Neg p vs); 
-  !! f1 f2  . P (FConj Pos f1 f2); 
-  !! f1 f2  . P (FConj Neg f1 f2); 
-  !! f1    . P (FAll  Pos f1); 
-  !! f1    . P (FAll  Neg f1) |] 
-  ==> P A"
-  apply(induct_tac A)
-  apply(rule signs.induct, force, force)+
-  done
+lemma formula_signs_induct [case_names FAtomP FAtomN FConjP FConjN FAllP FAllN, cases type: formula]: 
+  "\<lbrakk>\<And>p vs. P (FAtom Pos p vs);
+  \<And>p vs. P (FAtom Neg p vs);
+  \<And>A B  . \<lbrakk>P A; P B\<rbrakk> \<Longrightarrow> P (FConj Pos A B);
+  \<And>A B  . \<lbrakk>P A; P B\<rbrakk> \<Longrightarrow> P (FConj Neg A B);
+  \<And>A    . \<lbrakk>P A\<rbrakk> \<Longrightarrow> P (FAll  Pos A); 
+  \<And>A    . \<lbrakk>P A\<rbrakk> \<Longrightarrow> P (FAll  Neg A) 
+ \<rbrakk> \<Longrightarrow> P A"
+  by (induct A; rule signs.induct; force)
 
     \<comment> \<open>induction using nat induction, not wellfounded induction\<close>
-lemma strong_formula_induct': "!A. (! B. size B < size A --> P B) --> P A ==> ! A. size A = n --> P (A::formula)"
-  by (induct_tac n rule: nat_less_induct, blast) 
-
-lemma strong_formula_induct: "(! A. (! B. size B < size A --> P B) --> P A) ==> P (A::formula)"
- by (rule strong_formula_induct'[rule_format], blast+) 
 
 lemma sizelemmas: "size A < size (FConj z A B)"
   "size B < size (FConj z A B)"
   "size A < size (FAll  z A)"
   by auto
 
-lemma expand_case_formula:
-  "Q(case_formula fatom fconj fall F) = ( 
-  (! z P vs  . F = FAtom z P vs  --> Q (fatom z P vs)) & 
-  (! z A0 A1 . F = FConj z A0 A1 --> Q (fconj z A0 A1)) & 
-  (! z A     . F = FAll  z A     --> Q (fall  z A)) 
- )"
-  apply(cases F) apply simp_all done
+primrec FNot :: "formula \<Rightarrow> formula"
+  where
+    FNot_FAtom: "FNot (FAtom z P vs)  = FAtom (invSign z) P vs"
+  | FNot_FConj: "FNot (FConj z A0 A1) = FConj (invSign z) (FNot A0) (FNot A1)"    
+  | FNot_FAll:  "FNot (FAll  z body)  = FAll  (invSign z) (FNot body)"
 
-primrec FNot :: "formula => formula"
-where
-  FNot_FAtom: "FNot (FAtom z P vs)  = FAtom (invSign z) P vs"
-| FNot_FConj: "FNot (FConj z A0 A1) = FConj (invSign z) (FNot A0) (FNot A1)"    
-| FNot_FAll:  "FNot (FAll  z body)  = FAll  (invSign z) (FNot body)"
-
-primrec neg  :: "signs => signs"
-where
-  "neg Pos = Neg"
-| "neg Neg = Pos"
+primrec neg  :: "signs \<Rightarrow> signs"
+  where
+    "neg Pos = Neg"
+  | "neg Neg = Pos"
 
 primrec
-  dual :: "[(signs => signs),(signs => signs),(signs => signs)] => formula => formula"
-where
-  dual_FAtom: "dual p q r (FAtom z P vs)  = FAtom (p z) P vs"
-| dual_FConj: "dual p q r (FConj z A0 A1) = FConj (q z) (dual p q r A0) (dual p q r A1)"
-| dual_FAll:  "dual p q r (FAll  z body)  = FAll  (r z) (dual p q r body)"
+  dual :: "[(signs \<Rightarrow> signs),(signs \<Rightarrow> signs),(signs \<Rightarrow> signs)] \<Rightarrow> formula \<Rightarrow> formula"
+  where
+    dual_FAtom: "dual p q r (FAtom z P vs)  = FAtom (p z) P vs"
+  | dual_FConj: "dual p q r (FConj z A0 A1) = FConj (q z) (dual p q r A0) (dual p q r A1)"
+  | dual_FAll:  "dual p q r (FAll  z body)  = FAll  (r z) (dual p q r body)"
 
-lemma dualCompose: "dual p q r o dual P Q R = dual (p o P) (q o Q) (r o R)"
-  apply(rule ext)
-  apply (induct_tac x, auto) 
-  done
+lemma dualCompose: "dual p q r \<circ> dual P Q R = dual (p \<circ> P) (q \<circ> Q) (r \<circ> R)"
+proof
+  fix x
+  show "(dual p q r \<circ> dual P Q R) x = dual (p \<circ> P) (q \<circ> Q) (r \<circ> R) x"
+    by (induct x) auto
+qed
 
 lemma dualFNot': "dual invSign invSign invSign = FNot"
-  apply(rule ext) 
-  apply(induct_tac x) 
-  apply auto
-  done
+proof
+  fix x
+  show "dual invSign invSign invSign x = FNot x"
+    by (induct x) auto
+qed
 
 lemma dualFNot: "dual invSign id id (FNot A) = FNot (dual invSign id id A)"
   by(induct A) (auto simp: id_def)
@@ -241,31 +187,30 @@ lemma dualId: "dual id id id A = A"
 
 subsection "Frees"
 
-primrec freeVarsF  :: "formula => vbl set"
-where
-  freeVarsFAtom: "freeVarsF (FAtom z P vs)  = set vs"
-| freeVarsFConj: "freeVarsF (FConj z A0 A1) = (freeVarsF A0) Un (freeVarsF A1)"    
-| freeVarsFAll:  "freeVarsF (FAll  z body)  = preImage nextX (freeVarsF body)"
+primrec freeVarsF  :: "formula \<Rightarrow> vbl set"
+  where
+    freeVarsFAtom: "freeVarsF (FAtom z P vs)  = set vs"
+  | freeVarsFConj: "freeVarsF (FConj z A0 A1) = (freeVarsF A0) \<union> (freeVarsF A1)"    
+  | freeVarsFAll:  "freeVarsF (FAll  z body)  = preImage nextX (freeVarsF body)"
 
 definition
-  freeVarsFL :: "formula list => vbl set" where
-  "freeVarsFL gamma = Union (freeVarsF ` (set gamma))"
+  freeVarsFL :: "formula list \<Rightarrow> vbl set" where
+  "freeVarsFL \<Gamma> = Union (freeVarsF ` (set \<Gamma>))"
 
 lemma freeVarsF_FNot[simp]: "freeVarsF (FNot A) = freeVarsF A"
   by(induct A) auto
 
 lemma finite_freeVarsF[simp]: "finite (freeVarsF A)"
-  by(induct A) (auto simp add: inj_nextX finite_preImage) 
+  by(induct A) (auto simp add: inj_nextX) 
 
 lemma freeVarsFL_nil[simp]: "freeVarsFL ([]) = {}"
   by(simp add: freeVarsFL_def)
 
-lemma freeVarsFL_cons: "freeVarsFL (A#Gamma) = freeVarsF A \<union> freeVarsFL Gamma"
+lemma freeVarsFL_cons: "freeVarsFL (A#\<Gamma>) = freeVarsF A \<union> freeVarsFL \<Gamma>"
   by(simp add: freeVarsFL_def)
-    \<comment> \<open>FIXME not simp, since simp stops some later lemmas because the simpset isn't confluent\<close>
 
-lemma finite_freeVarsFL[simp]: "finite (freeVarsFL gamma)"
-  by(induct gamma) (auto simp: freeVarsFL_cons)
+lemma finite_freeVarsFL[simp]: "finite (freeVarsFL \<Gamma>)"
+  by(induct \<Gamma>) (auto simp: freeVarsFL_cons)
 
 lemma freeVarsDual: "freeVarsF (dual p q r A) = freeVarsF A"
   by(induct A) auto
@@ -273,28 +218,28 @@ lemma freeVarsDual: "freeVarsF (dual p q r A) = freeVarsF A"
 
 subsection "Substitutions"
 
-primrec subF :: "[vbl => vbl,formula] => formula"
-where
-  subFAtom: "subF theta (FAtom z P vs)  = FAtom z P (map theta vs)"
-| subFConj: "subF theta (FConj z A0 A1) = FConj z (subF theta A0) (subF theta A1)"
-| subFAll: "subF theta (FAll z body)  = 
-  FAll  z (subF (% v . (case v of zeroX => zeroX | nextX v => nextX (theta v))) body)"
+primrec subF :: "[vbl \<Rightarrow> vbl,formula] \<Rightarrow> formula"
+  where
+    subFAtom: "subF theta (FAtom z P vs)  = FAtom z P (map theta vs)"
+  | subFConj: "subF theta (FConj z A0 A1) = FConj z (subF theta A0) (subF theta A1)"
+  | subFAll: "subF theta (FAll z body) = 
+      FAll z (subF (\<lambda>v . (case v of zeroX \<Rightarrow> zeroX | nextX v \<Rightarrow> nextX (theta v))) body)"
 
-lemma size_subF: "!!theta. size (subF theta A) = size (A::formula)"
-  by(induct A) auto
+lemma size_subF: "size (subF theta A) = size (A::formula)"
+  by(induct A arbitrary: theta) auto
 
-lemma subFNot: "!!theta. subF theta (FNot A) = FNot (subF theta A)"
-  by(induct A) auto
+lemma subFNot: "subF theta (FNot A) = FNot (subF theta A)"
+  by(induct A arbitrary: theta) auto
 
-lemma subFDual: "!!theta. subF theta (dual p q r A) = dual p q r (subF theta A)"
-  by(induct A) auto
+lemma subFDual: "subF theta (dual p q r A) = dual p q r (subF theta A)"
+  by(induct A arbitrary: theta) auto
 
 definition
-  instanceF :: "[vbl,formula] => formula" where
-  "instanceF w body = subF (%v. case v of zeroX => w | nextX v => v) body"
+  instanceF :: "[vbl,formula] \<Rightarrow> formula" where
+  "instanceF w body = subF (\<lambda>v. case v of zeroX \<Rightarrow> w | nextX v \<Rightarrow> v) body"
 
-lemma size_instance: "!!v. size (instanceF v A) = size (A::formula)"
-  by(induct A) (auto simp: instanceF_def size_subF)
+lemma size_instance: "size (instanceF v A) = size A"
+  by (simp add: instanceF_def size_subF)
 
 lemma instanceFDual: "instanceF u (dual p q r A) = dual p q r (instanceF u A)" 
   by(induct A) (simp_all add: instanceF_def subFDual)
@@ -305,27 +250,28 @@ subsection "Models"
 typedecl
   object
 
-axiomatization obj :: "nat => object"
-where inj_obj: "inj obj"
+axiomatization obj :: "nat \<Rightarrow> object"
+  where inj_obj: "inj obj"
 
 
 subsection "model, non empty set and positive atom valuation"
 
-definition "model = {z :: (object set * ([predicate,object list] => bool)). (fst z ~= {})}"
+definition "model = {z :: (object set * ([predicate,object list] \<Rightarrow> bool)). (fst z \<noteq> {})}"
 
 typedef model = model
   unfolding model_def by auto
 
 definition
-  objects :: "model => object set" where
+  objects :: "model \<Rightarrow> object set" where
   "objects M = fst (Rep_model M)"
 
 definition
-  evalP :: "model => predicate => object list => bool" where
+  evalP :: "model \<Rightarrow> predicate \<Rightarrow> object list \<Rightarrow> bool" where
   "evalP M = snd (Rep_model M)"
 
 
-lemma evalP_arg2_cong: "x = y ==> evalP M p x = evalP M p y" by simp
+lemma evalP_arg2_cong: "x = y \<Longrightarrow> evalP M p x = evalP M p y" 
+  by simp
 
 lemma objectsNonEmpty: "objects M \<noteq> {}"
   using Rep_model[of M]
@@ -337,77 +283,80 @@ lemma modelsNonEmptyI: "fst (Rep_model M) \<noteq> {}"
 
 subsection "Validity"
 
-primrec evalF :: "[model,vbl => object,formula] => bool"
-where
-  evalFAtom: "evalF M phi (FAtom z P vs)  = sign z (evalP M P (map phi vs))"
-| evalFConj: "evalF M phi (FConj z A0 A1) = sign z (sign z (evalF M phi A0) & sign z (evalF M phi A1))"
-| evalFAll:  "evalF M phi (FAll  z body)  = sign z (!x: (objects M).
-                                                       sign z
-                                                            (evalF M (%v . (case v of
-                                                                                zeroX   => x
-                                                                              | nextX v => phi v)) body))"
+primrec evalF :: "[model,vbl \<Rightarrow> object,formula] \<Rightarrow> bool"
+  where
+    evalFAtom: "evalF M phi (FAtom z P vs)  = sign z (evalP M P (map phi vs))"
+  | evalFConj: "evalF M phi (FConj z A0 A1) = sign z (sign z (evalF M phi A0) \<and> sign z (evalF M phi A1))"
+  | evalFAll:  "evalF M phi (FAll  z body)  = 
+      sign z (\<forall>x\<in>objects M. sign z (evalF M (\<lambda>v . (case v of zeroX   \<Rightarrow> x | nextX v \<Rightarrow> phi v)) body))"
 
 definition
-  valid :: "formula => bool" where
-  "valid F \<longleftrightarrow> (\<forall>M phi. evalF M phi F = True)"
+  valid :: "formula \<Rightarrow> bool" where
+  "valid F \<equiv> (\<forall>M phi. evalF M phi F = True)"
 
 
-lemma evalF_FAll: "evalF M phi (FAll Pos A) = (!x: (objects M). (evalF M (vblcase x (%v .phi v)) A))"
+lemma evalF_FAll: "evalF M phi (FAll Pos A) = (\<forall>x\<in>objects M. (evalF M (vblcase x phi) A))"
   by simp
   
-lemma evalF_FEx: "evalF M phi (FAll Neg A) = ( ? x:(objects M). (evalF M (vblcase x (%v. phi v)) A))"
+lemma evalF_FEx: "evalF M phi (FAll Neg A) = (\<exists>x\<in>objects M. (evalF M (vblcase x phi) A))"
   by simp
 
-lemma evalF_arg2_cong: "x = y ==> evalF M p x = evalF M p y" by simp
+lemma evalF_arg2_cong: "x = y \<Longrightarrow> evalF M p x = evalF M p y" 
+  by simp
 
 lemma evalF_FNot: "!!phi. evalF M phi (FNot A) = (\<not> evalF M phi A)"
   by(induct A rule: formula_signs_induct) simp_all
 
-lemma evalF_equiv[rule_format]: "! f g. (equalOn (freeVarsF A) f g) \<longrightarrow> (evalF M f A = evalF M g A)"
-  apply(induct A)
-    apply (force simp:equalOn_def cong: map_cong, clarify) apply simp apply(drule_tac equalOn_UnD) apply force
-  apply clarify apply simp apply(rename_tac signs A f g) apply(rule_tac f = "sign signs" in arg_cong) apply(rule ball_cong) apply rule 
-  apply(rule_tac f = "sign signs" in arg_cong) apply(force intro: equalOn_vblcaseI')
-  done
-    \<comment> \<open>FIXME tricky to automate cong args convincingly?\<close>
+lemma evalF_equiv:  "equalOn (freeVarsF A) f g \<Longrightarrow> evalF M f A = evalF M g A"
+proof(induction A arbitrary: f g)
+  case (FAtom x1 x2 x3)
+  then show ?case
+    unfolding equalOn_def
+    by (metis (mono_tags, lifting) evalFAtom freeVarsFAtom map_eq_conv)
+next
+  case (FConj x1 A1 A2)
+  then show ?case
+    by (smt (verit, ccfv_SIG) FConj equalOn_UnD evalFConj freeVarsFConj)
+next
+  case (FAll x1 A)
+  then show ?case
+    by (metis (full_types) equalOn_vblcaseI' evalF_FAll evalF_FEx freeVarsFAll
+        signs.exhaust)
+qed
 
     \<comment> \<open>composition of substitutions\<close>
-lemma evalF_subF_eq: "!phi theta. evalF M phi (subF theta A) = evalF M (phi o theta) A"
-  apply(induct_tac A)
-    apply(simp del: o_apply)
-   apply(simp del: o_apply)
-  apply(intro allI)
-  apply(simp del: o_apply)
-  apply(rename_tac signs phi0 phi theta)
-  apply(rule_tac f="sign signs" in arg_cong) 
-  apply(rule ball_cong) apply rule
-  apply(rule_tac f="sign signs" in arg_cong)
-  apply(subgoal_tac "(vblcase x phi \<circ> vblcase zeroX (\<lambda>v. nextX (theta v))) = (vblcase x (phi \<circ> theta))")
-  apply(simp del: o_apply)
-  apply(rule ext)
-  apply (case_tac xa rule: vbl_casesE, simp, simp)
-  done
-
-lemma o_id'[simp]: "f o (% x. x) = f"
-by (fold id_def, simp)
+lemma evalF_subF_eq: "evalF M phi (subF theta A) = evalF M (phi \<circ> theta) A"
+proof (induction A arbitrary: phi theta)
+  case (FAtom x1 x2 x3)
+  then show ?case
+    by (metis evalFAtom list.map_comp subFAtom)
+next
+  case (FConj x1 A1 A2)
+  then show ?case
+    by auto
+next
+  case (FAll x1 A)
+  then have "(vblcase x phi \<circ> vblcase zeroX (\<lambda>v. nextX (theta v))) = (vblcase x (phi \<circ> theta))"
+    if "x \<in> objects M" for x
+    using that 
+    apply (clarsimp simp add: o_def fun_eq_iff split: vbl.splits)
+    by (metis vbl_cases vblcase_nextX vblcase_zeroX)
+  with FAll show ?case
+    by (simp add: comp_def)
+qed
 
 lemma evalF_instance: "evalF M phi (instanceF u A) = evalF M (vblcase (phi u) phi) A"
-  apply(simp add: instanceF_def evalF_subF_eq vblsimps)
-  done
+  by (metis comp_id comp_vblcase evalF_subF_eq fun.map_ident instanceF_def)
 
 \<comment> \<open>FIXME move\<close>
 
 lemma s[simp]:" FConj signs formula1 formula2 \<noteq> formula1"
-  apply(induct_tac formula1, auto) done
+  by simp
 
-lemma s'[simp]:" FConj signs formula1 formula2 \<noteq> formula2" 
-  apply(induct formula2, auto) done
+lemma s'[simp]:" FConj signs formula1 formula2 \<noteq> formula2"
+  by auto
 
 lemma instanceF_E: "instanceF g formula \<noteq> FAll signs formula"
-  apply clarify
-  apply(subgoal_tac "Suc (size (instanceF g formula)) = (size (FAll signs formula))")
-  apply force
-  apply(simp (no_asm) only: size_instance[rule_format])
-  apply simp done
+  by (metis less_irrefl_nat size_instance sizelemmas(3))
 
 end
