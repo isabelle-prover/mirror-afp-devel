@@ -107,13 +107,10 @@ val trans_line =
 
 fun add_trans_rule AOTsyntax raw_rules thy =
 let
-  fun mapPair f (x, y) = (f x, f y)
-  val ctxt = Proof_Context.init_global thy;
-  val read_root = #1 o dest_Type o
-    Proof_Context.read_type_name {proper = true, strict = false} ctxt;
-  val raw_rules = map (mapPair (fn (r, s) =>
-    (Syntax_Phases.parse_ast_pattern ctxt (read_root r, s)))) raw_rules
-in add_AOT_print_rule AOTsyntax raw_rules thy end
+  val thy_ctxt = Proof_Context.init_global thy;
+  val rules = raw_rules
+    |> map (Syntax.Print_Rule #> Syntax.parse_trrule thy_ctxt #> (fn Syntax.Print_Rule r => r))
+in add_AOT_print_rule AOTsyntax rules thy end
 
 val _ =
   Outer_Syntax.command
