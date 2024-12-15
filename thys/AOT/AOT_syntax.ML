@@ -354,7 +354,7 @@ fun unconstrain (Ast.Appl (Ast.Constant "_constrain"::x::tl)) =
       addFunct (unconstrain x) (fn x => Ast.Appl (Ast.Constant "_var"::[x]))
   | unconstrain trm = (trm, fn x => x)
 fun isDefinedConst ctxt name = let
-  val unmarkedName = Lexicon.unmark {case_class = fn str => NONE,
+  val unmarkedName = Lexicon.unmark_entity {case_class = fn str => NONE,
       case_type = fn name => NONE,
       case_const = fn name => SOME name,
       case_fixed = fn name => NONE,
