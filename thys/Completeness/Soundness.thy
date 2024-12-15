@@ -6,7 +6,7 @@ lemma permutation_validS: "mset fs = mset gs \<Longrightarrow> (validS fs = vali
   unfolding validS_def evalS_def
   using mset_eq_setD by blast
 
-lemma modelAssigns_vblcase: "phi \<in> modelAssigns M \<Longrightarrow> x \<in> objects M \<Longrightarrow> vblcase x phi \<in> modelAssigns M"
+lemma modelAssigns_vblcase: "\<phi> \<in> modelAssigns M \<Longrightarrow> x \<in> objects M \<Longrightarrow> vblcase x \<phi> \<in> modelAssigns M"
   unfolding modelAssigns_def mem_Collect_eq
   by (smt (verit) image_subset_iff mem_Collect_eq range_subsetD vbl_cases
       vblcase_nextX vblcase_zeroX)
@@ -17,29 +17,29 @@ lemma soundnessFAll:
   shows "validS (FAll Pos A # Gamma)"
 unfolding validS_def
 proof (intro strip)
-  fix M phi
-  assume \<phi>: "phi \<in> modelAssigns M"
-  have "evalF M (vblcase x phi) A" 
-    if x: "x \<in> objects M" and "\<not> evalS M phi Gamma" 
+  fix M \<phi>
+  assume \<phi>: "\<phi> \<in> modelAssigns M"
+  have "evalF M (vblcase x \<phi>) A" 
+    if x: "x \<in> objects M" and "\<not> evalS M \<phi> Gamma" 
     for x
   proof -
-    have "evalF M (vblcase x (\<lambda>y. if y = u then x else phi y)) A"
+    have "evalF M (vblcase x (\<lambda>y. if y = u then x else \<phi> y)) A"
     proof -
-      have "evalF M (vblcase x (\<lambda>y. if y = u then x else phi y)) A 
-           \<or>evalS M (\<lambda>y. if y = u then x else phi y) Gamma"
+      have "evalF M (vblcase x (\<lambda>y. if y = u then x else \<phi> y)) A 
+           \<or>evalS M (\<lambda>y. if y = u then x else \<phi> y) Gamma"
         using \<phi> assms(2) evalF_instance image_subset_iff validS_def x by fastforce
       then show ?thesis
         using assms(1) equalOn_def evalS_equiv freeVarsFL_cons that(2) by fastforce
     qed
     moreover
-    have "equalOn (freeVarsF A) (vblcase x (\<lambda>y. if y = u then x else phi y))
-     (vblcase x phi)"
+    have "equalOn (freeVarsF A) (vblcase x (\<lambda>y. if y = u then x else \<phi> y))
+     (vblcase x \<phi>)"
       by (smt (verit, best) Un_iff assms(1) equalOn_def equalOn_vblcaseI' freeVarsFAll
           freeVarsFL_cons)
     ultimately show ?thesis
       using evalF_equiv by force
   qed 
-  then show "evalS M phi (FAll Pos A # Gamma) = True"
+  then show "evalS M \<phi> (FAll Pos A # Gamma) = True"
     by auto
 qed
 

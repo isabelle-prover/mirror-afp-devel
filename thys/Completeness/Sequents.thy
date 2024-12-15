@@ -8,15 +8,15 @@ type_synonym sequent = "formula list"
 
 definition
   evalS :: "[model,vbl \<Rightarrow> object,formula list] \<Rightarrow> bool" where
-  "evalS M phi fs \<equiv> (\<exists>f \<in> set fs . evalF M phi f = True)"
+  "evalS M \<phi> fs \<equiv> (\<exists>f \<in> set fs . evalF M \<phi> f = True)"
 
-lemma evalS_nil[simp]: "evalS M phi [] = False"
+lemma evalS_nil[simp]: "evalS M \<phi> [] = False"
   by(simp add: evalS_def)
 
-lemma evalS_cons[simp]: "evalS M phi (A # \<Gamma>) = (evalF M phi A \<or> evalS M phi \<Gamma>)"
+lemma evalS_cons[simp]: "evalS M \<phi> (A # \<Gamma>) = (evalF M \<phi> A \<or> evalS M \<phi> \<Gamma>)"
   by(simp add: evalS_def)
 
-lemma evalS_append: "evalS M phi (\<Gamma> @ \<Delta>) = (evalS M phi \<Gamma> \<or> evalS M phi \<Delta>)"
+lemma evalS_append: "evalS M \<phi> (\<Gamma> @ \<Delta>) = (evalS M \<phi> \<Gamma> \<or> evalS M \<phi> \<Delta>)"
   by(force simp add: evalS_def)
 
 lemma evalS_equiv: "(equalOn (freeVarsFL \<Gamma>) f g) \<Longrightarrow> (evalS M f \<Gamma> = evalS M g \<Gamma>)"
@@ -25,14 +25,14 @@ lemma evalS_equiv: "(equalOn (freeVarsFL \<Gamma>) f g) \<Longrightarrow> (evalS
 
 definition
   modelAssigns :: "[model] \<Rightarrow> (vbl \<Rightarrow> object) set" where
-  "modelAssigns M = { phi . range phi \<subseteq> objects M }"
+  "modelAssigns M = { \<phi> . range \<phi> \<subseteq> objects M }"
 
 lemma modelAssigns_iff [simp]: "f \<in> modelAssigns M \<longleftrightarrow> range f \<subseteq> objects M" 
   by(simp add: modelAssigns_def)
   
 definition
   validS :: "formula list \<Rightarrow> bool" where
-  "validS fs \<equiv> (\<forall>M. \<forall>phi \<in> modelAssigns M . evalS M phi fs = True)"
+  "validS fs \<equiv> (\<forall>M. \<forall>\<phi> \<in> modelAssigns M . evalS M \<phi> fs = True)"
 
 
 subsection "Rules"

@@ -269,10 +269,6 @@ definition
   evalP :: "model \<Rightarrow> predicate \<Rightarrow> object list \<Rightarrow> bool" where
   "evalP M = snd (Rep_model M)"
 
-
-lemma evalP_arg2_cong: "x = y \<Longrightarrow> evalP M p x = evalP M p y" 
-  by simp
-
 lemma objectsNonEmpty: "objects M \<noteq> {}"
   using Rep_model[of M]
   by(simp add: objects_def model_def)
@@ -285,26 +281,26 @@ subsection "Validity"
 
 primrec evalF :: "[model,vbl \<Rightarrow> object,formula] \<Rightarrow> bool"
   where
-    evalFAtom: "evalF M phi (FAtom z P vs)  = sign z (evalP M P (map phi vs))"
-  | evalFConj: "evalF M phi (FConj z A0 A1) = sign z (sign z (evalF M phi A0) \<and> sign z (evalF M phi A1))"
-  | evalFAll:  "evalF M phi (FAll  z body)  = 
-      sign z (\<forall>x\<in>objects M. sign z (evalF M (\<lambda>v . (case v of zeroX   \<Rightarrow> x | nextX v \<Rightarrow> phi v)) body))"
+    evalFAtom: "evalF M \<phi> (FAtom z P vs)  = sign z (evalP M P (map \<phi> vs))"
+  | evalFConj: "evalF M \<phi> (FConj z A0 A1) = sign z (sign z (evalF M \<phi> A0) \<and> sign z (evalF M \<phi> A1))"
+  | evalFAll:  "evalF M \<phi> (FAll  z body)  = 
+      sign z (\<forall>x\<in>objects M. sign z (evalF M (\<lambda>v . (case v of zeroX   \<Rightarrow> x | nextX v \<Rightarrow> \<phi> v)) body))"
 
 definition
   valid :: "formula \<Rightarrow> bool" where
-  "valid F \<equiv> (\<forall>M phi. evalF M phi F = True)"
+  "valid F \<equiv> (\<forall>M \<phi>. evalF M \<phi> F = True)"
 
 
-lemma evalF_FAll: "evalF M phi (FAll Pos A) = (\<forall>x\<in>objects M. (evalF M (vblcase x phi) A))"
+lemma evalF_FAll: "evalF M \<phi> (FAll Pos A) = (\<forall>x\<in>objects M. (evalF M (vblcase x \<phi>) A))"
   by simp
   
-lemma evalF_FEx: "evalF M phi (FAll Neg A) = (\<exists>x\<in>objects M. (evalF M (vblcase x phi) A))"
+lemma evalF_FEx: "evalF M \<phi> (FAll Neg A) = (\<exists>x\<in>objects M. (evalF M (vblcase x \<phi>) A))"
   by simp
 
 lemma evalF_arg2_cong: "x = y \<Longrightarrow> evalF M p x = evalF M p y" 
   by simp
 
-lemma evalF_FNot: "!!phi. evalF M phi (FNot A) = (\<not> evalF M phi A)"
+lemma evalF_FNot: "!!\<phi>. evalF M \<phi> (FNot A) = (\<not> evalF M \<phi> A)"
   by(induct A rule: formula_signs_induct) simp_all
 
 lemma evalF_equiv:  "equalOn (freeVarsF A) f g \<Longrightarrow> evalF M f A = evalF M g A"
@@ -325,8 +321,8 @@ next
 qed
 
     \<comment> \<open>composition of substitutions\<close>
-lemma evalF_subF_eq: "evalF M phi (subF theta A) = evalF M (phi \<circ> theta) A"
-proof (induction A arbitrary: phi theta)
+lemma evalF_subF_eq: "evalF M \<phi> (subF theta A) = evalF M (\<phi> \<circ> theta) A"
+proof (induction A arbitrary: \<phi> theta)
   case (FAtom x1 x2 x3)
   then show ?case
     by (metis evalFAtom list.map_comp subFAtom)
@@ -336,7 +332,7 @@ next
     by auto
 next
   case (FAll x1 A)
-  then have "(vblcase x phi \<circ> vblcase zeroX (\<lambda>v. nextX (theta v))) = (vblcase x (phi \<circ> theta))"
+  then have "(vblcase x \<phi> \<circ> vblcase zeroX (\<lambda>v. nextX (theta v))) = (vblcase x (\<phi> \<circ> theta))"
     if "x \<in> objects M" for x
     using that 
     apply (clarsimp simp add: o_def fun_eq_iff split: vbl.splits)
@@ -345,16 +341,8 @@ next
     by (simp add: comp_def)
 qed
 
-lemma evalF_instance: "evalF M phi (instanceF u A) = evalF M (vblcase (phi u) phi) A"
+lemma evalF_instance: "evalF M \<phi> (instanceF u A) = evalF M (vblcase (\<phi> u) \<phi>) A"
   by (metis comp_id comp_vblcase evalF_subF_eq fun.map_ident instanceF_def)
-
-\<comment> \<open>FIXME move\<close>
-
-lemma s[simp]:" FConj signs formula1 formula2 \<noteq> formula1"
-  by simp
-
-lemma s'[simp]:" FConj signs formula1 formula2 \<noteq> formula2"
-  by auto
 
 lemma instanceF_E: "instanceF g formula \<noteq> FAll signs formula"
   by (metis less_irrefl_nat size_instance sizelemmas(3))
