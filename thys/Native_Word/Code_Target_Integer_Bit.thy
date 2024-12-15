@@ -166,16 +166,16 @@ testBitUnbounded x b
 testBitBounded :: Data.Bits.Bits a => a -> Integer -> Bool;
 testBitBounded x b = Data.Bits.testBit x (fromInteger b);
 
-setBitUnbounded :: Data.Bits.Bits a => a -> Integer -> Bool -> a;
-setBitUnbounded x n b
+genericSetBitUnbounded :: Data.Bits.Bits a => a -> Integer -> Bool -> a;
+genericSetBitUnbounded x n b
   | n <= toInteger (Prelude.maxBound :: Int) =
     if b then Data.Bits.setBit x (fromInteger n) else Data.Bits.clearBit x (fromInteger n)
   | otherwise = error ("Bit index too large: " ++ show n)
 ;
 
-setBitBounded :: Data.Bits.Bits a => a -> Integer -> Bool -> a;
-setBitBounded x n True = Data.Bits.setBit x (fromInteger n);
-setBitBounded x n False = Data.Bits.clearBit x (fromInteger n);
+genericSetBitBounded :: Data.Bits.Bits a => a -> Integer -> Bool -> a;
+genericSetBitBounded x n True = Data.Bits.setBit x (fromInteger n);
+genericSetBitBounded x n False = Data.Bits.clearBit x (fromInteger n);
 
 shiftlUnbounded :: Data.Bits.Bits a => a -> Integer -> a;
 shiftlUnbounded x n
@@ -234,13 +234,13 @@ testBitUnbounded = Data.Bits.testBit;
 testBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool;
 testBitBounded = Data.Bits.testBit;
 
-setBitUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
-setBitUnbounded x n True = Data.Bits.setBit x n;
-setBitUnbounded x n False = Data.Bits.clearBit x n;
+genericSetBitUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
+genericSetBitUnbounded x n True = Data.Bits.setBit x n;
+genericSetBitUnbounded x n False = Data.Bits.clearBit x n;
 
-setBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
-setBitBounded x n True = Data.Bits.setBit x n;
-setBitBounded x n False = Data.Bits.clearBit x n;
+genericSetBitBounded :: Data.Bits.Bits a => a -> Prelude.Int -> Bool -> a;
+genericSetBitBounded x n True = Data.Bits.setBit x n;
+genericSetBitBounded x n False = Data.Bits.clearBit x n;
 
 shiftlUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
 shiftlUnbounded = Data.Bits.shiftL;
@@ -373,8 +373,8 @@ end
 
 code_printing constant integer_set_bit \<rightharpoonup>
   (SML) "Integer'_Bit.set'_bit" and
-  (Haskell) "(Data'_Bits.setBitUnbounded :: Integer -> Integer -> Bool -> Integer)" and
-  (Haskell_Quickcheck) "(Data'_Bits.setBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool -> Prelude.Int)" and
+  (Haskell) "(Data'_Bits.genericSetBitUnbounded :: Integer -> Integer -> Bool -> Integer)" and
+  (Haskell_Quickcheck) "(Data'_Bits.genericSetBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool -> Prelude.Int)" and
   (Scala) "Integer'_Bit.setBit"
 
 text \<open>

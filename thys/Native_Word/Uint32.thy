@@ -157,14 +157,14 @@ code_printing code_module Uint32 \<rightharpoonup> (SML)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
 structure Uint32 : sig
-  val set_bit : Word32.word -> IntInf.int -> bool -> Word32.word
+  val generic_set_bit : Word32.word -> IntInf.int -> bool -> Word32.word
   val shiftl : Word32.word -> IntInf.int -> Word32.word
   val shiftr : Word32.word -> IntInf.int -> Word32.word
   val shiftr_signed : Word32.word -> IntInf.int -> Word32.word
   val test_bit : Word32.word -> IntInf.int -> bool
 end = struct
 
-fun set_bit x n b =
+fun generic_set_bit x n b =
   let val mask = Word32.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
   in if b then Word32.orb (x, mask)
      else Word32.andb (x, Word32.notb mask)
@@ -200,7 +200,7 @@ code_printing code_module "Uint32" \<rightharpoonup> (OCaml)
 \<open>module Uint32 : sig
   val less : int32 -> int32 -> bool
   val less_eq : int32 -> int32 -> bool
-  val set_bit : int32 -> Z.t -> bool -> int32
+  val generic_set_bit : int32 -> Z.t -> bool -> int32
   val shiftl : int32 -> Z.t -> int32
   val shiftr : int32 -> Z.t -> int32
   val shiftr_signed : int32 -> Z.t -> int32
@@ -219,7 +219,7 @@ let less_eq x y =
     Int32.compare y Int32.zero < 0 && Int32.compare x y <= 0
   else Int32.compare y Int32.zero < 0 || Int32.compare x y <= 0;;
 
-let set_bit x n b =
+let generic_set_bit x n b =
   let mask = Int32.shift_left Int32.one (Z.to_int n)
   in if b then Int32.logor x mask
      else Int32.logand x (Int32.lognot mask);;
@@ -254,7 +254,7 @@ def less_eq(x: Int, y: Int) : Boolean =
     case false => y < 0 || x <= y
   }
 
-def set_bit(x: Int, n: BigInt, b: Boolean) : Int =
+def generic_set_bit(x: Int, n: BigInt, b: Boolean) : Int =
   b match {
     case true => x | (1 << n.intValue)
     case false => x & (1 << n.intValue).unary_~
@@ -500,7 +500,7 @@ global_interpretation uint32: word_type_copy_target_language Abs_uint32 Rep_uint
     and uint32_shiftl = uint32.shiftl
     and uint32_shiftr = uint32.shiftr
     and uint32_sshiftr = uint32.sshiftr
-    and uint32_set_bit = uint32.set_bit
+    and uint32_generic_set_bit = uint32.gen_set_bit
   by standard simp_all
 
 code_printing constant uint32_test_bit \<rightharpoonup>
@@ -510,12 +510,12 @@ code_printing constant uint32_test_bit \<rightharpoonup>
   (Scala) "Uint32.test'_bit" and
   (Eval) "(fn w => fn n => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_test'_bit out of bounds\") else Uint32.test'_bit w n)"
 
-code_printing constant uint32_set_bit \<rightharpoonup>
-  (SML) "Uint32.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (OCaml) "Uint32.set'_bit" and
-  (Scala) "Uint32.set'_bit" and
-  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_set'_bit out of bounds\") else Uint32.set'_bit w n b)"
+code_printing constant uint32_generic_set_bit \<rightharpoonup>
+  (SML) "Uint32.generic'_set'_bit" and
+  (Haskell) "Data'_Bits.genericSetBitBounded" and
+  (OCaml) "Uint32.generic'_set'_bit" and
+  (Scala) "Uint32.generic'_set'_bit" and
+  (Eval) "(fn w => fn n => fn b => if n < 0 orelse 32 <= n then raise (Fail \"argument to uint32'_generic'_set'_bit out of bounds\") else Uint32.generic'_set'_bit w n b)"
 
 code_printing constant uint32_shiftl \<rightharpoonup>
   (SML) "Uint32.shiftl" and

@@ -203,14 +203,14 @@ section \<open>Code setup\<close>
 code_printing code_module Uint \<rightharpoonup> (SML)
 \<open>
 structure Uint : sig
-  val set_bit : Word.word -> IntInf.int -> bool -> Word.word
+  val generic_set_bit : Word.word -> IntInf.int -> bool -> Word.word
   val shiftl : Word.word -> IntInf.int -> Word.word
   val shiftr : Word.word -> IntInf.int -> Word.word
   val shiftr_signed : Word.word -> IntInf.int -> Word.word
   val test_bit : Word.word -> IntInf.int -> bool
 end = struct
 
-fun set_bit x n b =
+fun generic_set_bit x n b =
   let val mask = Word.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
   in if b then Word.orb (x, mask)
      else Word.andb (x, Word.notb mask)
@@ -269,7 +269,7 @@ code_printing code_module "Uint" \<rightharpoonup> (OCaml)
   val dflt_size : Z.t
   val less : t -> t -> bool
   val less_eq : t -> t -> bool
-  val set_bit : t -> Z.t -> bool -> t
+  val generic_set_bit : t -> Z.t -> bool -> t
   val shiftl : t -> Z.t -> t
   val shiftr : t -> Z.t -> t
   val shiftr_signed : t -> Z.t -> t
@@ -295,7 +295,7 @@ let less_eq x y =
     y < 0 &&  x <= y
   else y < 0 || x <= y;;
 
-let set_bit x n b =
+let generic_set_bit x n b =
   let mask = 1 lsl (Z.to_int n)
   in if b then x lor mask
      else x land (lnot mask);;
@@ -338,7 +338,7 @@ def less_eq(x: Int, y: Int) : Boolean =
     case false => y < 0 || x <= y
   }
 
-def set_bit(x: Int, n: BigInt, b: Boolean) : Int =
+def generic_set_bit(x: Int, n: BigInt, b: Boolean) : Int =
   b match {
     case true => x | (1 << n.intValue)
     case false => x & (1 << n.intValue).unary_~
@@ -676,7 +676,7 @@ global_interpretation uint: word_type_copy_target_language Abs_uint Rep_uint sig
     and uint_shiftl = uint.shiftl
     and uint_shiftr = uint.shiftr
     and uint_sshiftr = uint.sshiftr
-    and uint_set_bit = uint.set_bit
+    and uint_generic_set_bit = uint.gen_set_bit
   by standard (simp_all add: wivs_index_def)
 
 code_printing constant uint_test_bit \<rightharpoonup>
@@ -687,13 +687,13 @@ code_printing constant uint_test_bit \<rightharpoonup>
   (OCaml) "Uint.test'_bit" and
   (Scala) "Uint.test'_bit"
 
-code_printing constant uint_set_bit \<rightharpoonup>
-  (SML) "Uint.set'_bit" and
+code_printing constant uint_generic_set_bit \<rightharpoonup>
+  (SML) "Uint.generic'_set'_bit" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
-  (Quickcheck) "Uint.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (OCaml) "Uint.set'_bit" and
-  (Scala) "Uint.set'_bit"
+  (Quickcheck) "Uint.generic'_set'_bit" and
+  (Haskell) "Data'_Bits.genericSetBitBounded" and
+  (OCaml) "Uint.generic'_set'_bit" and
+  (Scala) "Uint.generic'_set'_bit"
 
 code_printing constant uint_shiftl \<rightharpoonup>
   (SML) "Uint.shiftl" and

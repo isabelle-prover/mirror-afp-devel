@@ -405,21 +405,21 @@ lemma bit_code [code]:
   by (simp add: test_bit_def integer_of_nat_eq_of_nat)
     (simp add: bit_eq_word_of size_eq_length size_integer_eq_length impossible_bit)
 
-definition set_bit :: \<open>'a \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> 'a\<close>
-  where \<open>set_bit w k b =
+definition gen_set_bit :: \<open>'a \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> 'a\<close>
+  where \<open>gen_set_bit w k b =
   (if k < 0 \<or> size_integer \<le> k then undefined (Generic_set_bit.set_bit :: 'a \<Rightarrow> _) w k b
    else Generic_set_bit.set_bit w (nat_of_integer k) b)\<close>
 
 lemma word_of_gen_set_bit [code abstract]:
-  \<open>word_of (set_bit w k b) =
+  \<open>word_of (gen_set_bit w k b) =
   (if k < 0 \<or> size_integer \<le> k then word_of (undefined (Generic_set_bit.set_bit :: 'a \<Rightarrow> _) w k b)
    else Generic_set_bit.set_bit (word_of w) (nat_of_integer k) b)\<close>
-  by (simp add: set_bit_def word_of_generic_set_bit)
+  by (simp add: gen_set_bit_def word_of_generic_set_bit)
 
 lemma generic_set_bit_code [code]:
-  \<open>Generic_set_bit.set_bit w n b = (if n < size then set_bit w (integer_of_nat n) b else w)\<close>
+  \<open>Generic_set_bit.set_bit w n b = (if n < size then gen_set_bit w (integer_of_nat n) b else w)\<close>
   by (rule word_of_eqI)
-    (simp add: set_bit_def word_of_generic_set_bit, simp add: integer_of_nat_eq_of_nat
+    (simp add: gen_set_bit_def word_of_generic_set_bit, simp add: integer_of_nat_eq_of_nat
      size_eq_length size_integer_eq_length set_bit_beyond word_size)
 
 end
