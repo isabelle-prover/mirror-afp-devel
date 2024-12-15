@@ -399,6 +399,8 @@ text \<open>
     \<^item> Session \<^text>\<open>Native_Word\<close>: Fact aliases \<^text>\<open>word_sdiv_def\<close> and \<^text>\<open>word_smod_def\<close>
       are gone, use \<^text>\<open>sdiv_word_def\<close> and \<^text>\<open>smod_word_def\<close> instead.
 
+    \<^item> Session \<^text>\<open>Native_Word\<close>: Removed abbreviation \<^text>\<open>word_of_integer\<close>.
+
   \<^descr>[Changes since AFP 2022] ~
 
     \<^item> Theory \<^text>\<open>Word_Lib.Ancient_Numeral\<close> has been removed from session.

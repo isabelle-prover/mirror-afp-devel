@@ -21,9 +21,6 @@ lemma int_of_integer_signed_eq [simp]:
   \<open>int_of_integer (signed w) = sint w\<close>
   by transfer simp
 
-abbreviation word_of_integer :: \<open>integer \<Rightarrow> 'a::len word\<close>
-  where \<open>word_of_integer k \<equiv> word_of_int (int_of_integer k)\<close>
-
 
 subsection \<open>Quickcheck conversion functions\<close>
 

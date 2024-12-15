@@ -270,7 +270,7 @@ locale word_type_copy_more = word_type_copy_bits +
     and nat_of_eq_word_of: \<open>nat_of p = unat (word_of p)\<close>
     and word_of_int_eq: \<open>word_of (of_int k) = word_of_int k\<close>
     and int_of_eq_word_of: \<open>int_of p = uint (word_of p)\<close>
-    and word_of_integer_eq: \<open>word_of (of_integer l) = word_of_integer l\<close>
+    and word_of_integer_eq: \<open>word_of (of_integer l) = word_of_int (int_of_integer l)\<close>
     and integer_of_eq_word_of: \<open>integer_of p = unsigned (word_of p)\<close>
 begin
 
