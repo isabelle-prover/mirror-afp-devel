@@ -375,10 +375,4 @@ setup \<open>Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I
 code_identifier code_module Code_Target_Word_Base \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
 
-
-text \<open>Misc\<close>
-
-lemmas word_sdiv_def = sdiv_word_def
-lemmas word_smod_def = smod_word_def
-
 end
