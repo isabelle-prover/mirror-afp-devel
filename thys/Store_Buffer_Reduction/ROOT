@@ -6,7 +6,8 @@ session Store_Buffer_Reduction = HOL +
     Text
     PIMP
     Preliminaries
+  document_files (in "$ISABELLE_LLNCS_HOME")
+    "llncs.cls"
   document_files
     "root.tex"
     "root.bib"
-    "llncs.cls"
