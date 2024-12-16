@@ -2,6 +2,9 @@ theory Substitution
   imports Main
 begin
 
+abbreviation set_prod where
+  "set_prod \<equiv> \<lambda>(t, t'). {t, t'}"
+
 section \<open>General Results on Groups\<close>
 
 lemma (in monoid) right_inverse_idem:
@@ -474,19 +477,35 @@ next
     by (metis is_ground_set_def finite.insertI is_unifier_iff_if_finite subst_ident_if_ground)
 qed
 
-lemma subst_mgu_eq_subst_mgu: 
-  assumes "is_mgu \<mu> {{t\<^sub>1, t\<^sub>2}}" 
-  shows "t\<^sub>1 \<cdot> \<mu> = t\<^sub>2 \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite[of "{t\<^sub>1, t\<^sub>2}"]
+lemma is_mgu_unifies: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "is_mgu \<mu> XX" "\<forall>X \<in> XX. finite X"
+  shows "\<forall>X \<in> XX. \<forall>t \<in> X. \<forall>t' \<in> X. t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using assms is_unifier_iff_if_finite
   unfolding is_mgu_def is_unifier_set_def
   by blast
 
-lemma subst_imgu_eq_subst_imgu: 
-  assumes "is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}" 
-  shows "t\<^sub>1 \<cdot> \<mu> = t\<^sub>2 \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite[of "{t\<^sub>1, t\<^sub>2}"]
+corollary is_mgu_unifies_pair: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
+  assumes "is_mgu \<mu> {{t, t'}}"
+  shows "t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using is_mgu_unifies[OF assms]
+  by (metis finite.emptyI finite.insertI insertCI singletonD)
+
+lemmas subst_mgu_eq_subst_mgu = is_mgu_unifies_pair
+
+lemma is_imgu_unifies: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "is_imgu \<mu> XX" "\<forall>X \<in> XX. finite X"
+  shows "\<forall>X \<in> XX. \<forall>t \<in> X. \<forall>t' \<in> X. t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using assms is_unifier_iff_if_finite
   unfolding is_imgu_def is_unifier_set_def
   by blast
+
+corollary is_imgu_unifies_pair: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "is_imgu \<mu> {{t, t'}}"
+  shows "t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using is_imgu_unifies[OF assms]
+  by (metis finite.emptyI finite.insertI insertCI singletonD)
+
+lemmas subst_imgu_eq_subst_imgu = is_imgu_unifies_pair
 
 
 subsection \<open>Ground Substitutions\<close>
@@ -497,8 +516,8 @@ lemma is_ground_subst_comp_left: "is_ground_subst \<sigma> \<Longrightarrow> is_
 lemma is_ground_subst_comp_right: "is_ground_subst \<tau> \<Longrightarrow> is_ground_subst (\<sigma> \<odot> \<tau>)"
   by (simp add: is_ground_subst_def)
 
-lemma is_ground_subst_is_ground: 
-  assumes "is_ground_subst \<gamma>" 
+lemma is_ground_subst_is_ground:
+  assumes "is_ground_subst \<gamma>"
   shows "is_ground (t \<cdot> \<gamma>)"
   using assms is_ground_subst_def by blast
 

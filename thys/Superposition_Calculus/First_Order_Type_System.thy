@@ -1497,7 +1497,7 @@ lemma welltyped_is_ground:
   by (metis assms(1) assms(2) empty_iff welltyped_\<V>)
 
 lemma term_subst_is_imgu_is_mgu: "term_subst.is_imgu \<mu> {{s, t}} = is_imgu \<mu> {(s, t)}"
-  apply (simp add: term_subst_is_imgu_iff_is_imgu)
+  apply (simp add: term_subst_is_imgu_iff_is_imgu_Union_Times)
   by (smt (verit, ccfv_threshold) insert_absorb2 insert_commute is_imgu_def unifiers_insert_ident
       unifiers_insert_swap)
 
@@ -1743,7 +1743,7 @@ proof-
     by blast
 
   then show ?thesis
-    using that imgu_exists_extendable[OF unified]
+    using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
     by (metis the_mgu the_mgu_term_subst_is_imgu unified)
 qed
 
@@ -1769,7 +1769,7 @@ proof-
     by blast
 
   then show ?thesis
-    using that imgu_exists_extendable[OF unified]
+    using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
     by (metis assms(2) assms(3) the_mgu the_mgu_term_subst_is_imgu unified)
 qed
 

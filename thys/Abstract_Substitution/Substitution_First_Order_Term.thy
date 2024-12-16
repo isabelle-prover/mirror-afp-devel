@@ -13,7 +13,7 @@ lemma is_ground_iff: "is_ground_trm (t \<cdot> \<gamma>) \<longleftrightarrow> (
 lemma is_ground_trm_iff_ident_forall_subst: "is_ground_trm t \<longleftrightarrow> (\<forall>\<sigma>. t \<cdot> \<sigma> = t)"
 proof(induction t)
   case Var
-  then show ?case 
+  then show ?case
     by auto
 next
   case Fun
@@ -38,31 +38,31 @@ next
   show "\<And>x. is_ground_trm x \<Longrightarrow> \<forall>\<sigma>. x \<cdot> \<sigma> = x"
     using is_ground_trm_iff_ident_forall_subst ..
 qed
-                      
-lemma term_subst_is_unifier_iff_unifiers:
+
+lemma term_subst_is_unifier_iff_unifiers_Times:
   assumes "finite X"
   shows "term_subst.is_unifier \<mu> X \<longleftrightarrow> \<mu> \<in> unifiers (X \<times> X)"
   unfolding term_subst.is_unifier_iff_if_finite[OF assms] unifiers_def
   by simp
 
-lemma term_subst_is_unifier_set_iff_unifiers:
+lemma term_subst_is_unifier_set_iff_unifiers_Union_Times:
   assumes "\<forall>X\<in> XX. finite X"
   shows "term_subst.is_unifier_set \<mu> XX \<longleftrightarrow> \<mu> \<in> unifiers (\<Union>X\<in>XX. X \<times> X)"
-  using term_subst_is_unifier_iff_unifiers assms 
-  unfolding term_subst.is_unifier_set_def unifiers_def 
+  using term_subst_is_unifier_iff_unifiers_Times assms
+  unfolding term_subst.is_unifier_set_def unifiers_def
   by fast
 
-lemma term_subst_is_mgu_iff_is_mgu:
+lemma term_subst_is_mgu_iff_is_mgu_Union_Times:
   assumes fin: "\<forall>X\<in> XX. finite X"
   shows "term_subst.is_mgu \<mu> XX \<longleftrightarrow> is_mgu \<mu> (\<Union>X\<in>XX. X \<times> X)"
   unfolding term_subst.is_mgu_def is_mgu_def
-  unfolding term_subst_is_unifier_set_iff_unifiers[OF fin]
+  unfolding term_subst_is_unifier_set_iff_unifiers_Union_Times[OF fin]
   by auto
 
-lemma term_subst_is_imgu_iff_is_imgu:
+lemma term_subst_is_imgu_iff_is_imgu_Union_Times:
   assumes "\<forall>X\<in> XX. finite X"
   shows "term_subst.is_imgu \<mu> XX \<longleftrightarrow> is_imgu \<mu> (\<Union>X\<in>XX. X \<times> X)"
-  using term_subst_is_unifier_set_iff_unifiers[OF assms]
+  using term_subst_is_unifier_set_iff_unifiers_Union_Times[OF assms]
   unfolding term_subst.is_imgu_def is_imgu_def
   by auto
 
@@ -71,7 +71,7 @@ lemma range_vars_subset_if_is_imgu:
   shows "range_vars \<mu> \<subseteq> (\<Union>t\<in>\<Union>XX. vars_term t)"
 proof-
   have is_imgu: "is_imgu \<mu> (\<Union>X\<in>XX. X \<times> X)"
-    using term_subst_is_imgu_iff_is_imgu[of "XX"] assms
+    using term_subst_is_imgu_iff_is_imgu_Union_Times[of "XX"] assms
     by simp
 
   have finite_prod: "finite (\<Union>X\<in>XX. X \<times> X)"
@@ -120,69 +120,119 @@ next
     by auto
 qed
 
-lemma ground_imgu_equals: 
+lemma ground_imgu_equals:
   assumes "is_ground_trm t\<^sub>1" and "is_ground_trm t\<^sub>2" and "term_subst.is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}"
   shows "t\<^sub>1 = t\<^sub>2"
   using assms
   using term_subst.ground_eq_ground_if_unifiable
   by (metis insertCI term_subst.is_imgu_def term_subst.is_unifier_set_def)
 
-lemma the_mgu_is_unifier: 
-  assumes "term \<cdot> the_mgu term term' = term' \<cdot> the_mgu term term'" 
-  shows "term_subst.is_unifier (the_mgu term term') {term, term'}"
+lemma is_unifier_the_mgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "t \<cdot> the_mgu t t' = t' \<cdot> the_mgu t t'"
+  shows "term_subst.is_unifier (the_mgu t t') {t, t'}"
   using assms
   unfolding term_subst.is_unifier_def the_mgu_def
   by simp
 
-lemma imgu_exists_extendable:
+lemma obtains_imgu_from_unifier_and_the_mgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   fixes \<upsilon> :: "('f, 'v) subst"
-  assumes "term \<cdot> \<upsilon> = term' \<cdot> \<upsilon>" "P term term' (the_mgu term term')"
+  assumes "t \<cdot> \<upsilon> = t' \<cdot> \<upsilon>" "P t t' (Unification.the_mgu t t')"
   obtains \<mu> :: "('f, 'v) subst"
-  where "\<upsilon> = \<mu> \<circ>\<^sub>s \<upsilon>" "term_subst.is_imgu \<mu> {{term, term'}}" "P term term' \<mu>"
+  where "\<upsilon> = \<mu> \<circ>\<^sub>s \<upsilon>" "term_subst.is_imgu \<mu> {{t, t'}}" "P t t' \<mu>"
 proof
-  have finite: "finite {term, term'}"
+  have finite: "finite {t, t'}"
     by simp
 
-  have "term_subst.is_unifier_set (the_mgu term term') {{term, term'}}"
+  have "term_subst.is_unifier_set (the_mgu t t') {{t, t'}}"
     unfolding term_subst.is_unifier_set_def
-    using the_mgu_is_unifier[OF the_mgu[OF assms(1), THEN conjunct1]]
+    using is_unifier_the_mgu[OF the_mgu[OF assms(1), THEN conjunct1]]
     by simp
 
-  moreover have
-    "\<And>\<sigma>. term_subst.is_unifier_set \<sigma> {{term, term'}} \<Longrightarrow> \<sigma> = the_mgu term term' \<circ>\<^sub>s \<sigma>"
+  moreover have "\<And>\<sigma>. term_subst.is_unifier_set \<sigma> {{t, t'}} \<Longrightarrow> \<sigma> = the_mgu t t' \<circ>\<^sub>s \<sigma>"
     unfolding term_subst.is_unifier_set_def
     using term_subst.is_unifier_iff_if_finite[OF finite] the_mgu
     by blast
 
-  ultimately have is_imgu: "term_subst.is_imgu (the_mgu term term') {{term, term'}}"
+  ultimately have is_imgu: "term_subst.is_imgu (the_mgu t t') {{t, t'}}"
     unfolding term_subst.is_imgu_def
     by metis
 
-  show "\<upsilon> = (the_mgu term term') \<circ>\<^sub>s \<upsilon>" 
+  show "\<upsilon> = (the_mgu t t') \<circ>\<^sub>s \<upsilon>"
     using the_mgu[OF assms(1)]
     by blast
 
-  show "term_subst.is_imgu (the_mgu term term') {{term, term'}}"
+  show "term_subst.is_imgu (the_mgu t t') {{t, t'}}"
     using is_imgu
     by blast
 
-  show "P term term' (the_mgu term term')"
+  show "P t t' (the_mgu t t')"
     using assms(2).
 qed
 
-lemma imgu_exists:
+lemma obtains_imgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   fixes \<upsilon> :: "('f, 'v) subst"
-  assumes "term \<cdot> \<upsilon> = term' \<cdot> \<upsilon>"
+  assumes "t \<cdot> \<upsilon> = t' \<cdot> \<upsilon>"
   obtains \<mu> :: "('f, 'v) subst"
-  where "\<upsilon> = \<mu> \<circ>\<^sub>s \<upsilon>" "term_subst.is_imgu \<mu> {{term, term'}}"
-  using imgu_exists_extendable[OF assms, of "(\<lambda>_ _ _. True)"]
+  where "\<upsilon> = \<mu> \<circ>\<^sub>s \<upsilon>" "term_subst.is_imgu \<mu> {{t, t'}}"
+  using obtains_imgu_from_unifier_and_the_mgu[OF assms, of "(\<lambda>_ _ _. True)"]
   by auto
 
 (* The other way around it does not work! *)
-lemma is_renaming_if_term_subst_is_renaming:
+lemma is_renaming_if_term_subst_is_renaming: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   assumes "term_subst.is_renaming \<rho>"
-  shows "is_renaming \<rho>"
+  shows "Term.is_renaming \<rho>"
   using assms
   by (simp add: inj_on_def is_renaming_def term_subst_is_renaming_iff)
+
+lemma is_mgu_iff_term_subst_is_imgu_image_set_prod: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  fixes \<mu> :: "('f, 'v) subst" and X :: "(('f, 'v) term \<times> ('f, 'v) term) set"
+  shows "Unifiers.is_imgu \<mu> X \<longleftrightarrow> term_subst.is_imgu \<mu> (set_prod ` X)"
+proof (rule iffI)
+  assume "is_imgu \<mu> X"
+
+  moreover then have
+    "\<forall>e\<in>X. fst e \<cdot> \<mu> = snd e \<cdot> \<mu>"
+    "\<forall>\<tau> :: ('f, 'v) subst. (\<forall>e\<in>X. fst e \<cdot> \<tau> = snd e \<cdot> \<tau>) \<longrightarrow> \<tau> = \<mu> \<circ>\<^sub>s \<tau>"
+    unfolding is_imgu_def unifiers_def
+    by auto
+
+  moreover then have
+    "\<And>\<tau> :: ('f, 'v) subst. \<forall>e\<in>X. \<forall>t t'. e = (t, t') \<longrightarrow> card {t \<cdot> \<tau>, t' \<cdot> \<tau>} \<le> Suc 0 \<Longrightarrow> \<mu> \<circ>\<^sub>s \<tau> = \<tau>"
+    by (metis Suc_n_not_le_n card_1_singleton_iff card_Suc_eq insert_iff prod.collapse)
+
+  ultimately show "term_subst.is_imgu \<mu> (set_prod ` X)"
+    unfolding term_subst.is_imgu_def term_subst.is_unifier_set_def term_subst.is_unifier_def
+    by (auto split: prod.splits)
+next
+  assume is_imgu: "term_subst.is_imgu \<mu> (set_prod ` X)"
+
+  show "is_imgu \<mu> X"
+  proof(unfold is_imgu_def unifiers_def, intro conjI ballI)
+
+    show "\<mu> \<in> {\<sigma>. \<forall>e\<in>X. fst e \<cdot> \<sigma> = snd e \<cdot> \<sigma>}"
+      using term_subst.is_imgu_unifies[OF is_imgu]
+      by fastforce
+  next
+    fix \<tau> :: "('f, 'v) subst"
+    assume "\<tau> \<in> {\<sigma>. \<forall>e\<in>X. fst e \<cdot> \<sigma> = snd e \<cdot> \<sigma>}"
+
+    then have "\<forall>e\<in>X. fst e \<cdot> \<tau> = snd e \<cdot> \<tau>"
+      by blast
+
+    then show "\<tau> = \<mu> \<circ>\<^sub>s \<tau>"
+      using is_imgu
+      unfolding term_subst.is_imgu_def term_subst.is_unifier_set_def
+      by (smt (verit, del_insts) case_prod_conv empty_iff finite.emptyI finite.insertI image_iff
+          insert_iff prod.collapse term_subst.is_unifier_iff_if_finite)
+  qed
+qed
+
+lemma the_mgu_term_subst_is_imgu: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  fixes \<upsilon> :: "('f, 'v) subst"
+  assumes "s \<cdot> \<upsilon> = t \<cdot> \<upsilon>"
+  shows "term_subst.is_imgu (Unification.the_mgu s t) {{s, t}}"
+  using the_mgu_is_imgu[OF assms]
+  unfolding is_mgu_iff_term_subst_is_imgu_image_set_prod
+  by simp
 
 end
