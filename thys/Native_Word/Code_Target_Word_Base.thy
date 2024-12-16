@@ -11,17 +11,6 @@ theory Code_Target_Word_Base
     "Word_Lib.More_Word"
 begin
 
-subsection \<open>More on conversions\<close>
-
-lemma int_of_integer_unsigned_eq [simp]:
-  \<open>int_of_integer (unsigned w) = uint w\<close>
-  by transfer simp
-
-lemma int_of_integer_signed_eq [simp]:
-  \<open>int_of_integer (signed w) = sint w\<close>
-  by transfer simp
-
-
 subsection \<open>Quickcheck conversion functions\<close>
 
 context
