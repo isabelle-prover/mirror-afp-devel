@@ -2161,15 +2161,16 @@ name = "Asta Halkjær From"
 
 [from.emails.from_email]
 user = [
-  "ahfrom",
+  "asfr",
 ]
 host = [
-  "dtu",
+  "di",
+  "ku",
   "dk",
 ]
 
 [from.homepages]
-from_homepage = "https://people.compute.dtu.dk/ahfrom/"
+from_homepage = "https://astahfrom.github.io/"
 
 [fuenmayor]
 name = "David Fuenmayor"
