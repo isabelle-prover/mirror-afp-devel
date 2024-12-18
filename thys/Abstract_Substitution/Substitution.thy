@@ -77,17 +77,6 @@ lemma mem_ground_instances_setE[elim]:
   unfolding ground_instances_set_eq_Union_ground_instances
   by blast
 
-(* This corresponds to the maximal subgroup of the monoid on (\<odot>) and id_subst *)
-definition is_renaming :: "'s \<Rightarrow> bool" where
-  "is_renaming \<rho> \<longleftrightarrow> (\<exists>\<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
-
-definition renaming_inverse where
-  "is_renaming \<rho> \<Longrightarrow> renaming_inverse \<rho> = (SOME \<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
-
-lemma renaming_comp_renaming_inverse[simp]:
-  "is_renaming \<rho> \<Longrightarrow> \<rho> \<odot> renaming_inverse \<rho> = id_subst"
-  by (auto simp: is_renaming_def renaming_inverse_def intro: someI_ex)
-
 definition is_unifier :: "'s \<Rightarrow> 'x set \<Rightarrow> bool" where
   "is_unifier \<upsilon> X \<longleftrightarrow> card (subst_set X \<upsilon>) \<le> 1"
 
@@ -99,9 +88,6 @@ definition is_mgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
 
 definition is_imgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
   "is_imgu \<mu> XX \<longleftrightarrow> is_unifier_set \<mu> XX \<and> (\<forall>\<tau>. is_unifier_set \<tau> XX \<longrightarrow> \<mu> \<odot> \<tau> = \<tau>)"
-
-definition is_idem :: "'s \<Rightarrow> bool" where
-  "is_idem \<sigma> \<longleftrightarrow> \<sigma> \<odot> \<sigma> = \<sigma>"
 
 lemma is_unifier_iff_if_finite:
   assumes "finite X"
@@ -179,8 +165,35 @@ end
 
 section \<open>Basic Substitution\<close>
 
+locale substitution_monoid = monoid comp_subst id_subst \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  for
+    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" and
+    id_subst :: 's
+begin
+
+abbreviation is_renaming where
+ "is_renaming \<equiv> is_right_invertible"
+
+lemmas is_renaming_def = is_right_invertible_def
+
+abbreviation renaming_inverse where
+  "renaming_inverse \<equiv> right_inverse"
+
+lemmas renaming_inverse_def = right_inverse_def
+
+lemmas is_renaming_id_subst = neutral_is_right_invertible
+
+definition is_idem :: "'s \<Rightarrow> bool" where
+  "is_idem a \<longleftrightarrow> comp_subst a a = a"
+
+lemma is_idem_id_subst [simp]: "is_idem id_subst"
+  by (simp add: is_idem_def)
+
+end
+
 (* Rename to abstract substitution *)
 locale substitution =
+  substitution_monoid comp_subst id_subst +
   comp_subst: right_monoid_action comp_subst id_subst subst +
   substitution_ops subst id_subst comp_subst is_ground
   for
@@ -214,9 +227,6 @@ lemmas subst_id_subst = comp_subst.action_neutral
 lemmas subst_set_id_subst = comp_subst_set.action_neutral
 lemmas subst_list_id_subst = comp_subst_list.action_neutral
 
-lemma is_renaming_id_subst[simp]: "is_renaming id_subst"
-  by (simp add: is_renaming_def)
-
 lemma is_unifier_id_subst_empty[simp]: "is_unifier id_subst {}"
   by (simp add: is_unifier_def)
 
@@ -228,9 +238,6 @@ lemma is_mgu_id_subst_empty[simp]: "is_mgu id_subst {}"
 
 lemma is_imgu_id_subst_empty[simp]: "is_imgu id_subst {}"
   by (simp add: is_imgu_def)
-
-lemma is_idem_id_subst[simp]: "is_idem id_subst"
-  by (simp add: is_idem_def)
 
 lemma is_unifier_id_subst: "is_unifier id_subst X \<longleftrightarrow> card X \<le> 1"
   by (simp add: is_unifier_def)
@@ -366,7 +373,7 @@ lemma is_ground_subst_is_ground:
 subsection \<open>IMGU is Idempotent and an MGU\<close>
 
 lemma is_imgu_iff_is_idem_and_is_mgu: "is_imgu \<mu> XX \<longleftrightarrow> is_idem \<mu> \<and> is_mgu \<mu> XX"
-  by (auto simp add: is_imgu_def is_idem_def is_mgu_def simp flip: comp_subst.assoc)
+  by (auto simp add: is_imgu_def is_idem_def is_mgu_def simp flip: assoc)
 
 
 subsection \<open>IMGU can be used before unification\<close>

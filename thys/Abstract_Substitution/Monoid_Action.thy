@@ -30,6 +30,37 @@ next
 qed
 
 
+section \<open>Monoid\<close>
+
+definition (in monoid) is_left_invertible \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> where
+  "is_left_invertible a \<longleftrightarrow> (\<exists>a_inv. a_inv \<^bold>* a = \<^bold>1)"
+
+definition (in monoid) is_right_invertible \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> where
+  "is_right_invertible a \<longleftrightarrow> (\<exists>a_inv. a \<^bold>* a_inv = \<^bold>1)"
+
+definition (in monoid) left_inverse \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> where
+  "is_left_invertible a \<Longrightarrow> left_inverse a = (SOME a_inv. a_inv \<^bold>* a = \<^bold>1)"
+
+definition (in monoid) right_inverse \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> where
+  "is_right_invertible a \<Longrightarrow> right_inverse a = (SOME a_inv. a \<^bold>* a_inv = \<^bold>1)"
+
+lemma (in monoid) comp_left_inverse [simp]: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "is_left_invertible a \<Longrightarrow> left_inverse a \<^bold>* a = \<^bold>1"
+  by (auto simp: is_left_invertible_def left_inverse_def intro: someI_ex)
+
+lemma (in monoid) comp_right_inverse [simp]: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "is_right_invertible a \<Longrightarrow> a \<^bold>* right_inverse a = \<^bold>1"
+  by (auto simp: is_right_invertible_def right_inverse_def intro: someI_ex)
+
+lemma (in monoid) neutral_is_left_invertible [simp]: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "is_left_invertible \<^bold>1"
+  by (simp add: is_left_invertible_def)
+
+lemma (in monoid) neutral_is_right_invertible [simp]: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "is_right_invertible \<^bold>1"
+  by (simp add: is_right_invertible_def)
+
+
 section \<open>Semigroup Action\<close>
 
 text \<open>We define both left and right semigroup actions. Left semigroup actions seem to be prevalent

@@ -21,7 +21,8 @@ lemma fset_finite_set [simp]: "fset (finite_set b) = set b"
 
 end
 
-locale variable_substitution = substitution _ _ subst "\<lambda>a. vars a = {}" 
+locale variable_substitution = substitution where
+  subst = subst and is_ground = "\<lambda>a. vars a = {}"
 for
   subst :: "'expression \<Rightarrow> ('variable \<Rightarrow> 'base_expression) \<Rightarrow> 'expression" (infixl "\<cdot>" 70) and
   vars :: "'expression \<Rightarrow> 'variable set" +

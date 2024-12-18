@@ -102,8 +102,8 @@ proof-
             welltyped\<^sub>\<sigma>_on (clause.vars conclusion) typeof_fun \<V> \<gamma> \<and>
             First_Order_Type_System.welltyped\<^sub>c typeof_fun \<V> conclusion \<and> \<V> = \<V>' \<and> all_types \<V>
         | [(premise, \<V>'), (premise\<^sub>1, \<V>\<^sub>1)] \<Rightarrow>
-            clause.is_renaming \<rho>\<^sub>1 \<and>
-            clause.is_renaming \<rho>\<^sub>2 \<and>
+            term_subst.is_renaming \<rho>\<^sub>1 \<and>
+            term_subst.is_renaming \<rho>\<^sub>2 \<and>
             clause.vars (premise\<^sub>1 \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (premise \<cdot> \<rho>\<^sub>2) = {} \<and>
             term_subst.is_ground_subst \<gamma> \<and>
             Infer premises\<^sub>G conlcusion\<^sub>G =
