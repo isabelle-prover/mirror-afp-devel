@@ -14,21 +14,6 @@ theory Code_Target_Integer_Bit
     "Word_Lib.Bit_Comprehension"
 begin
 
-text \<open>TODO: separate\<close>
-
-lemmas [transfer_rule] =
-  identity_quotient
-  fun_quotient
-  Quotient_integer[folded integer.pcr_cr_eq]
-
-lemma undefined_transfer:
-  assumes "Quotient R Abs Rep T"
-  shows "T (Rep undefined) undefined"
-using assms unfolding Quotient_alt_def by blast
-
-bundle undefined_transfer = undefined_transfer[transfer_rule]
-
-
 section \<open>More lemmas about @{typ integer}s\<close>
 
 context
