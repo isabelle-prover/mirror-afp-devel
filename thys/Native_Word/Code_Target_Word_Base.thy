@@ -11,32 +11,6 @@ theory Code_Target_Word_Base
     "Word_Lib.More_Word"
 begin
 
-subsection \<open>Signed division on word\<close>
-
-lemma sdiv_word_code [code]:
-  "x sdiv y =
-   (let x' = sint x; y' = sint y;
-        negative = (x' < 0) \<noteq> (y' < 0);
-        result = \<bar>x'\<bar> div \<bar>y'\<bar>
-    in word_of_int (if negative then - result else result))"
-  for x y :: \<open>'a::len word\<close>
-by (simp add: sdiv_word_def signed_divide_int_def sgn_if Let_def not_less not_le)
-
-lemma smod_word_code [code]:
-  "x smod y =
-   (let x' = sint x; y' = sint y;
-        negative = (x' < 0);
-        result = \<bar>x'\<bar> mod abs \<bar>y'\<bar>
-    in word_of_int (if negative then - result else result))"
-  for x y :: \<open>'a::len word\<close>
-proof -
-  have *: \<open>k mod l = k - k div l * l\<close> for k l :: int
-    by (simp add: minus_div_mult_eq_mod)
-  show ?thesis
-    by (simp add: smod_word_def signed_modulo_int_def signed_divide_int_def * sgn_if Let_def)
-qed
-
-
 subsection \<open>Quickcheck conversion functions\<close>
 
 context

@@ -28,12 +28,12 @@ lift_definition signed_modulo_word :: \<open>'a::len word \<Rightarrow> 'a word 
   is \<open>\<lambda>k l. signed_take_bit (LENGTH('a) - Suc 0) k smod signed_take_bit (LENGTH('a) - Suc 0) l\<close>
   by (simp flip: signed_take_bit_decr_length_iff)
 
-lemma sdiv_word_def [code]:
+lemma sdiv_word_def:
   \<open>v sdiv w = word_of_int (sint v sdiv sint w)\<close>
   for v w :: \<open>'a::len word\<close>
   by transfer simp
 
-lemma smod_word_def [code]:
+lemma smod_word_def:
   \<open>v smod w = word_of_int (sint v smod sint w)\<close>
   for v w :: \<open>'a::len word\<close>
   by transfer simp
@@ -49,6 +49,24 @@ instance proof
 qed
 
 end
+
+lemma signed_divide_word_code [code]: \<^marker>\<open>contributor \<open>Andreas Lochbihler\<close>\<close>
+  \<open>v sdiv w =
+   (let v' = sint v; w' = sint w;
+        negative = (v' < 0) \<noteq> (w' < 0);
+        result = \<bar>v'\<bar> div \<bar>w'\<bar>
+    in word_of_int (if negative then - result else result))\<close>
+  for v w :: \<open>'a::len word\<close>
+  by (simp add: sdiv_word_def signed_divide_int_def sgn_if)
+
+lemma signed_modulo_word_code [code]: \<^marker>\<open>contributor \<open>Andreas Lochbihler\<close>\<close>
+  \<open>v smod w =
+   (let v' = sint v; w' = sint w;
+        negative = (v' < 0);
+        result = \<bar>v'\<bar> mod \<bar>w'\<bar>
+    in word_of_int (if negative then - result else result))\<close>
+  for v w :: \<open>'a::len word\<close>
+  by (simp add: smod_word_def signed_modulo_int_def sgn_if)
 
 lemma sdiv_smod_id:
   \<open>(a sdiv b) * b + (a smod b) = a\<close>
