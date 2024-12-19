@@ -29,15 +29,9 @@ lemma int_of_integer_pow: "int_of_integer (x ^ n) = int_of_integer x ^ n"
 lemma sub1_lt_0_iff [simp]: "Code_Numeral.sub n num.One < 0 \<longleftrightarrow> False"
   by transfer (simp add: sub_negative)
 
-lemma nat_of_integer_numeral [simp]: "nat_of_integer (numeral n) = numeral n"
-  by transfer simp
-
 lemma nat_of_integer_sub1_conv_pred_numeral [simp]:
   "nat_of_integer (Code_Numeral.sub n num.One) = pred_numeral n"
   by transfer (simp only: pred_numeral_def int_nat_eq numeral_One int_minus flip: int_int_eq, simp)
-
-lemma nat_of_integer_1 [simp]: "nat_of_integer 1 = 1"
-  by transfer simp
 
 lemma dup_1 [simp]: "Code_Numeral.dup 1 = 2"
   by transfer simp
