@@ -403,8 +403,8 @@ lemma Uint_code [code]:
   unfolding Uint_signed_def
   apply transfer
   apply (subst word_of_int_via_signed)
-       apply (auto simp add: push_bit_of_1 mask_eq_exp_minus_1 word_of_int_via_signed
-         wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def)
+       apply (auto simp add: mask_eq_exp_minus_1 word_of_int_via_signed
+         wivs_mask_def wivs_index_def wivs_overflow_def wivs_least_def wivs_shift_def Let_def)
   done
 
 lemma Uint_signed_code [code]:
