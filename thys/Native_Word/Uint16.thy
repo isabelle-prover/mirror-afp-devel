@@ -6,6 +6,7 @@ chapter \<open>Unsigned words of 16 bits\<close>
 
 theory Uint16 imports
   Word_Type_Copies
+  Code_Target_Word
   Code_Target_Integer_Bit
 begin
 

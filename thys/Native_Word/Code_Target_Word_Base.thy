@@ -351,13 +351,6 @@ end
 
 subsection \<open>Code generator setup\<close>
 
-text \<open>
-  The separate code target \<open>SML_word\<close> collects setups for the
-  code generator that PolyML does not provide.
-\<close>
-
-setup \<open>Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I)])\<close>
-
 code_identifier code_module Code_Target_Word_Base \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
 

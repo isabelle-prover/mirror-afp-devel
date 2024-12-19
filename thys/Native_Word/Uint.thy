@@ -7,6 +7,7 @@ chapter \<open>Unsigned words of default size\<close>
 
 theory Uint imports
   Word_Type_Copies
+  Code_Target_Word
   Code_Target_Integer_Bit
 begin
 

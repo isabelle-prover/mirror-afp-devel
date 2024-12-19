@@ -6,6 +6,7 @@ chapter \<open>Unsigned words of 32 bits\<close>
 
 theory Uint32 imports
   Word_Type_Copies
+  Code_Target_Word
   Code_Target_Integer_Bit
 begin
 
