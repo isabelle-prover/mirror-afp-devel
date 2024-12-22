@@ -185,4 +185,8 @@ end
 
 end
 
+lemma msb_integer_code [code]:
+  \<open>msb k \<longleftrightarrow> k < 0\<close> for k :: integer
+  including integer.lifting by transfer (simp add: msb_int_def)
+
 end
