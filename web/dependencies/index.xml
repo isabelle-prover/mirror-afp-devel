@@ -49,6 +49,13 @@
           <description></description>
         </item>
         <item>
+          <title>Jacobson_Basic_Algebra</title>
+          <link>/dependencies/jacobson_basic_algebra/</link>
+          <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/jacobson_basic_algebra/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>BenOr_Kozen_Reif</title>
           <link>/dependencies/benor_kozen_reif/</link>
           <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
@@ -368,13 +375,6 @@
           <link>/dependencies/cayley_hamilton/</link>
           <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/cayley_hamilton/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Jacobson_Basic_Algebra</title>
-          <link>/dependencies/jacobson_basic_algebra/</link>
-          <pubDate>Wed, 31 Jul 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/jacobson_basic_algebra/</guid>
           <description></description>
         </item>
         <item>

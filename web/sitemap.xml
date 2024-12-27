@@ -59,6 +59,15 @@
     <loc>/authors/smola/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Generalized_Cauchy_Davenport.html</loc>
+    <lastmod>2024-11-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/baksys/</loc>
+    <lastmod>2024-11-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/jacobson_basic_algebra/</loc>
+    <lastmod>2024-11-23T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Cube_Dissection.html</loc>
     <lastmod>2024-11-22T00:00:00+00:00</lastmod>
   </url><url>
@@ -372,9 +381,6 @@
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/cayley_hamilton/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/jacobson_basic_algebra/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lie_Groups.html</loc>
@@ -1411,9 +1417,6 @@
   </url><url>
     <loc>/entries/Sauer_Shelah_Lemma.html</loc>
     <lastmod>2022-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/baksys/</loc>
-    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Kneser_Cauchy_Davenport.html</loc>
     <lastmod>2022-11-21T00:00:00+00:00</lastmod>
@@ -5932,6 +5935,8 @@
     <loc>/sessions/genclock/</loc>
   </url><url>
     <loc>/sessions/general-triangle/</loc>
+  </url><url>
+    <loc>/sessions/generalized_cauchy_davenport/</loc>
   </url><url>
     <loc>/sessions/generalized_counting_sort/</loc>
   </url><url>
