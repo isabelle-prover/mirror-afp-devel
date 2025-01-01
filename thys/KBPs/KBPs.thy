@@ -41,7 +41,7 @@ an arbitrary formula as it may depend on propositions that the agent
 has no certainty about. For example, a card-playing agent cannot
 determine which cards are in the deck, despite being sure that those
 in her hand are not. Conversely agent $a$ can evaluate formulas of the
-form @{term "\<^bold>K\<^sub>a \<phi>"} as these depend only on the worlds the agent thinks
+form @{term "\<^bold>K\<^bsub>a\<^esub> \<phi>"} as these depend only on the worlds the agent thinks
 is possible.
 
 Thus we restrict the guards of the JKBP to be boolean combinations of

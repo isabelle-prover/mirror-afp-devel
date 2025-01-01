@@ -31,7 +31,7 @@ datatype ('a, 'p) Kform
   = Kprop "'p"
   | Knot "('a, 'p) Kform"
   | Kand "('a, 'p) Kform" "('a, 'p) Kform"
-  | Kknows "'a" "('a, 'p) Kform"  (\<open>\<^bold>K\<^sub>_ _\<close>)
+  | Kknows "'a" "('a, 'p) Kform"  (\<open>\<^bold>K\<^bsub>_\<^esub> _\<close>)
   | Kcknows "'a list" "('a, 'p) Kform" (\<open>\<^bold>C\<^bsub>_\<^esub> _\<close>)
 
 text\<open>
@@ -147,7 +147,7 @@ fun models :: "('a, 'p, 'w) KripkeStructure \<Rightarrow> 'w \<Rightarrow> ('a, 
   "M, w \<Turnstile> (Kprop p) = valuation M w p"
 | "M, w \<Turnstile> (Knot \<phi>) = (\<not> M, w \<Turnstile> \<phi>)"
 | "M, w \<Turnstile> (Kand \<phi> \<psi>) = (M, w \<Turnstile> \<phi> \<and> M, w \<Turnstile> \<psi>)"
-| "M, w \<Turnstile> (\<^bold>K\<^sub>a \<phi>) = (\<forall>w' \<in> relations M a `` {w}. M, w' \<Turnstile> \<phi>)"
+| "M, w \<Turnstile> (\<^bold>K\<^bsub>a\<^esub> \<phi>) = (\<forall>w' \<in> relations M a `` {w}. M, w' \<Turnstile> \<phi>)"
 | "M, w \<Turnstile> (\<^bold>C\<^bsub>as\<^esub> \<phi>) = (\<forall>w' \<in> (\<Union>a \<in> set as. relations M a)\<^sup>+ `` {w}. M, w' \<Turnstile> \<phi>)"
 
 text\<open>
@@ -276,7 +276,7 @@ lemma S5n_common_knowledge_induct:
   assumes S5n: "S5n M"
   assumes w: "w \<in> worlds M"
   assumes E: "\<forall>a \<in> set as. \<forall>w \<in> worlds M.
-                 M, w \<Turnstile> \<phi> \<longrightarrow> M, w \<Turnstile> \<^bold>K\<^sub>a (Kand \<phi> \<psi>)"
+                 M, w \<Turnstile> \<phi> \<longrightarrow> M, w \<Turnstile> \<^bold>K\<^bsub>a\<^esub> (Kand \<phi> \<psi>)"
   assumes p: "M, w \<Turnstile> \<phi>"
   shows "M, w \<Turnstile> \<^bold>C\<^bsub>as\<^esub> \<psi>"
 (*<*)
