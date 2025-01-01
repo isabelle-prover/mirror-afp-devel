@@ -1004,7 +1004,7 @@ abbreviation
 where
   "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l', Z''\<rangle> \<equiv> (\<lambda> (l, Z) (l', Z''). A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha> \<langle>l', Z''\<rangle>)\<^sup>*\<^sup>* (l, Z) (l', Z'')"
 
-text \<open>P. Bouyer's calculation for @{term "Post(Closure\<^sub>\<alpha>\<^sub>,\<^sub>l Z, e) \<subseteq> Closure\<^sub>\<alpha>\<^sub>,\<^sub>l(Post (Z, e))"}\<close>
+text \<open>P. Bouyer's calculation for @{term [source] "Post(Closure\<^sub>\<alpha>\<^sub>,\<^sub>l Z, e) \<subseteq> Closure\<^sub>\<alpha>\<^sub>,\<^sub>l(Post (Z, e))"}\<close>
 text \<open>This is now obsolete as we argue solely with monotonicty of \<open>steps_z\<close> w.r.t \<open>Closure\<^sub>\<alpha>\<^sub>,\<^sub>l\<close>\<close>
 
 text \<open>
