@@ -171,7 +171,7 @@ fun shiftr x n =
   else raise (Fail ("Shift operand too large: " ^ IntInf.toString n));
 
 end; (*struct Integer_Bit*)\<close>
-code_reserved SML Integer_Bit
+code_reserved (SML) Integer_Bit
 
 code_printing code_module Integer_Bit \<rightharpoonup> (OCaml)
 \<open>module Integer_Bit : sig
@@ -190,7 +190,7 @@ let shiftl x n = Z.shift_left x (Z.to_int n);;
 let shiftr x n = Z.shift_right x (Z.to_int n);;
 
 end;; (*struct Integer_Bit*)\<close>
-code_reserved OCaml Integer_Bit
+code_reserved (OCaml) Integer_Bit
 
 code_printing code_module Integer_Bit \<rightharpoonup> (Scala)
 \<open>object Integer_Bit {

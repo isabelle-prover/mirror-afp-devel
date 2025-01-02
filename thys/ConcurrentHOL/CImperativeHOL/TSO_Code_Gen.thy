@@ -85,7 +85,7 @@ parallel p q = do
   return ()
 \<close>
 
-code_reserved Haskell TSOHeap
+code_reserved (Haskell) TSOHeap
 
 text \<open>Monad\<close>
 

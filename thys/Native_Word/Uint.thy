@@ -231,7 +231,7 @@ fun test_bit x n =
   Word.andb (x, Word.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word.fromInt 0
 
 end; (* struct Uint *)\<close>
-code_reserved SML Uint
+code_reserved (SML) Uint
 
 code_printing code_module Uint \<rightharpoonup> (Haskell)
  \<open>module Uint(Int, Word, dflt_size) where
@@ -258,7 +258,7 @@ code_printing code_module Uint \<rightharpoonup> (Haskell)
     bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Int
     bitSize_aux = Data.Bits.bitSize
 \<close>
-code_reserved Haskell Uint dflt_size
+code_reserved (Haskell) Uint dflt_size
 
 text \<open>
   OCaml and Scala provide only signed bit numbers, so we use these and 
@@ -322,7 +322,7 @@ let int64_mask =
   else Int64.of_string "0xFFFFFFFFFFFFFFFF";;
 
 end;; (*struct Uint*)\<close>
-code_reserved OCaml Uint
+code_reserved (OCaml) Uint
 
 code_printing code_module Uint \<rightharpoonup> (Scala)
 \<open>object Uint {
@@ -356,7 +356,7 @@ def test_bit(x: Int, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint */\<close>
-code_reserved Scala Uint
+code_reserved (Scala) Uint
 
 
 text \<open>

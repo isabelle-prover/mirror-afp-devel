@@ -192,14 +192,14 @@ fun test_bit x n =
   Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
 
 end; (* struct Uint8 *)\<close>
-code_reserved SML Uint8
+code_reserved (SML) Uint8
 
 code_printing code_module Uint8 \<rightharpoonup> (Haskell)
  \<open>module Uint8(Int8, Word8) where
 
   import Data.Int(Int8)
   import Data.Word(Word8)\<close>
-code_reserved Haskell Uint8
+code_reserved (Haskell) Uint8
 
 text \<open>
   Scala provides only signed 8bit numbers, so we use these and 
@@ -237,7 +237,7 @@ def test_bit(x: Byte, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint8 */\<close>
-code_reserved Scala Uint8
+code_reserved (Scala) Uint8
 
 text \<open>
   Avoid @{term Abs_uint8} in generated code, use @{term Rep_uint8'} instead. 

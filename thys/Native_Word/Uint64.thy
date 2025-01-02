@@ -272,7 +272,7 @@ fun generic_set_bit x n b =
 
 end
 \<close>
-code_reserved SML Uint64
+code_reserved (SML) Uint64
 
 setup \<open>
 let
@@ -391,7 +391,7 @@ code_printing code_module Uint64 \<rightharpoonup> (Haskell)
 
   import Data.Int(Int64)
   import Data.Word(Word64)\<close>
-code_reserved Haskell Uint64
+code_reserved (Haskell) Uint64
 
 text \<open>
   OCaml and Scala provide only signed 64bit numbers, so we use these and 
@@ -438,7 +438,7 @@ let test_bit x n =
   <> 0;;
 
 end;; (*struct Uint64*)\<close>
-code_reserved OCaml Uint64
+code_reserved (OCaml) Uint64
 
 code_printing code_module Uint64 \<rightharpoonup> (Scala)
 \<open>object Uint64 {
@@ -471,7 +471,7 @@ def test_bit(x: Long, n: BigInt) : Boolean =
   (x & (1L << n.intValue)) != 0
 
 } /* object Uint64 */\<close>
-code_reserved Scala Uint64
+code_reserved (Scala) Uint64
 
 text \<open>
   OCaml's conversion from Big\_int to int64 demands that the value fits int a signed 64-bit integer.

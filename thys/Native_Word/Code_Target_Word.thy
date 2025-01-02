@@ -155,7 +155,7 @@ shiftrBounded = Data.Bits.shiftR;
 
 }\<close>
 
-code_reserved Haskell Data_Bits
+code_reserved (Haskell) Data_Bits
 
 
 end

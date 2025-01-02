@@ -44,7 +44,7 @@ code_printing
 
     end
 \<close>
-code_reserved SML Gabow_Skeleton_Statistics
+code_reserved (SML) Gabow_Skeleton_Statistics
 
 code_printing
   constant stat_newnode \<rightharpoonup> (SML) "Gabow'_Skeleton'_Statistics.newnode"

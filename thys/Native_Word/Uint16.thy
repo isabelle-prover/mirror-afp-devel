@@ -201,14 +201,14 @@ fun test_bit x n =
   Word16.andb (x, Word16.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word16.fromInt 0
 
 end; (* struct Uint16 *)\<close>
-code_reserved SML_word Uint16
+code_reserved (SML_word) Uint16
 
 code_printing code_module Uint16 \<rightharpoonup> (Haskell)
  \<open>module Uint16(Int16, Word16) where
 
   import Data.Int(Int16)
   import Data.Word(Word16)\<close>
-code_reserved Haskell Uint16
+code_reserved (Haskell) Uint16
 
 text \<open>Scala provides unsigned 16-bit numbers as Char.\<close>
 
@@ -230,7 +230,7 @@ def shiftr_signed(x: scala.Char, n: BigInt) : scala.Char = (x.toShort >> n.intVa
 def test_bit(x: scala.Char, n: BigInt) : Boolean = (x & (1.toChar << n.intValue)) != 0
 
 } /* object Uint16 */\<close>
-code_reserved Scala Uint16
+code_reserved (Scala) Uint16
 
 text \<open>
   Avoid @{term Abs_uint16} in generated code, use @{term Rep_uint16'} instead. 

@@ -185,14 +185,14 @@ fun test_bit x n =
   Word32.andb (x, Word32.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word32.fromInt 0
 
 end; (* struct Uint32 *)\<close>
-code_reserved SML Uint32
+code_reserved (SML) Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Haskell)
  \<open>module Uint32(Int32, Word32) where
 
   import Data.Int(Int32)
   import Data.Word(Word32)\<close>
-code_reserved Haskell Uint32
+code_reserved (Haskell) Uint32
 
 text \<open>
   OCaml and Scala provide only signed 32bit numbers, so we use these and 
@@ -239,7 +239,7 @@ let test_bit x n =
   <> 0;;
 
 end;; (*struct Uint32*)\<close>
-code_reserved OCaml Uint32
+code_reserved (OCaml) Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Scala)
 \<open>object Uint32 {
@@ -272,7 +272,7 @@ def test_bit(x: Int, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint32 */\<close>
-code_reserved Scala Uint32
+code_reserved (Scala) Uint32
 
 text \<open>
   OCaml's conversion from Big\_int to int32 demands that the value fits int a signed 32-bit integer.
