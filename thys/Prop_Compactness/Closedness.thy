@@ -26,32 +26,33 @@ definition consistenceP :: "'b formula set set \<Rightarrow> bool" where
 definition subset_closed :: "'a set set \<Rightarrow> bool" where
   "subset_closed \<C> = (\<forall>S \<in> \<C>. \<forall>S'. S' \<subseteq> S \<longrightarrow> S' \<in> \<C>)"
 
+unbundle no trancl_syntax
 
-definition closure_subset :: "'a set set \<Rightarrow> 'a set set" (\<open>_⁺\<close>[1000] 1000) where
-  "\<C>⁺ = {S. \<exists>S' \<in> \<C>. S \<subseteq> S'}"
+definition closure_subset :: "'a set set \<Rightarrow> 'a set set" (\<open>_\<^sup>+\<close>[1000] 1000) where
+  "\<C>\<^sup>+ = {S. \<exists>S' \<in> \<C>. S \<subseteq> S'}"
 
 
-lemma closed_subset: "\<C> \<subseteq> \<C>⁺"
+lemma closed_subset: "\<C> \<subseteq> \<C>\<^sup>+"
 proof -
   { fix S
     assume "S \<in> \<C>" 
     moreover 
     have "S \<subseteq> S" by simp
     ultimately
-    have "S \<in> \<C>⁺"
+    have "S \<in> \<C>\<^sup>+"
       by (unfold closure_subset_def, auto) }
   thus ?thesis by auto
 qed 
 
 
-lemma closed_closed: "subset_closed (\<C>⁺)"
+lemma closed_closed: "subset_closed (\<C>\<^sup>+)"
 proof -
  { fix S T
-   assume "S \<in> \<C>⁺" and "T \<subseteq> S"
-   obtain S1 where "S1 \<in> \<C>" and "S \<subseteq> S1" using `S \<in> \<C>⁺` 
+   assume "S \<in> \<C>\<^sup>+" and "T \<subseteq> S"
+   obtain S1 where "S1 \<in> \<C>" and "S \<subseteq> S1" using `S \<in> \<C>\<^sup>+` 
      by (unfold closure_subset_def, auto)
    have "T \<subseteq> S1" using `T \<subseteq> S` and `S \<subseteq> S1`  by simp
-   hence "T \<in> \<C>⁺" using `S1 \<in> \<C>` 
+   hence "T \<in> \<C>\<^sup>+" using `S1 \<in> \<C>` 
      by (unfold closure_subset_def, auto)}
  thus ?thesis by (unfold subset_closed_def, auto) 
 qed 
@@ -86,11 +87,11 @@ qed
 
 lemma cond_consistP3:
   assumes "consistenceP \<C>" and "T \<in> \<C>" and "S \<subseteq> T"   
-  shows "\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow> S \<union> {F} \<in> \<C>⁺"
+  shows "\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow> S \<union> {F} \<in> \<C>\<^sup>+"
 proof(rule allI) 
 (*<*)       
   fix F
-  show "(\<not>.\<not>.F) \<in> S \<longrightarrow>  S \<union> {F} \<in> \<C>⁺"
+  show "(\<not>.\<not>.F) \<in> S \<longrightarrow>  S \<union> {F} \<in> \<C>\<^sup>+"
   proof (rule impI)
     assume "(\<not>.\<not>.F) \<in> S"
     hence "(\<not>.\<not>.F) \<in> T" using `S \<subseteq> T` by auto   
@@ -99,7 +100,7 @@ proof(rule allI)
     moreover 
     have "S \<union> {F} \<subseteq>  T \<union> {F}" using `S \<subseteq> T` by auto
     ultimately   
-    show "S \<union> {F} \<in> \<C>⁺"
+    show "S \<union> {F} \<in> \<C>\<^sup>+"
       by (auto simp add: closure_subset_def)
   qed
 qed
@@ -107,11 +108,11 @@ qed
 
 lemma cond_consistP4:
   assumes "consistenceP \<C>" and "T \<in> \<C>" and "S \<subseteq> T" 
-  shows "\<forall>F. ((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>⁺"
+  shows "\<forall>F. ((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>\<^sup>+"
 (*<*)
 proof (rule allI) 
   fix F 
-  show "((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> S \<union> {Comp1 F, Comp2 F} \<in> \<C>⁺"
+  show "((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> S \<union> {Comp1 F, Comp2 F} \<in> \<C>\<^sup>+"
   proof (rule impI)
     assume "((FormulaAlfa F) \<and> F \<in> S)"
     hence "FormulaAlfa F" and  "F \<in> T" using `S \<subseteq> T` by auto 
@@ -122,7 +123,7 @@ proof (rule allI)
     have "S \<union> {Comp1 F, Comp2 F} \<subseteq> T \<union> {Comp1 F, Comp2 F}" 
       using `S \<subseteq> T` by auto
     ultimately
-    show  "S \<union> {Comp1 F, Comp2 F} \<in> \<C>⁺" 
+    show  "S \<union> {Comp1 F, Comp2 F} \<in> \<C>\<^sup>+" 
       by (auto simp add: closure_subset_def)
   qed
 qed
@@ -131,11 +132,11 @@ text\<open> \<close>
 lemma cond_consistP5:
   assumes "consistenceP \<C>" and "T \<in> \<C>" and "S \<subseteq> T" 
   shows "(\<forall>F. ((FormulaBeta F) \<and> F \<in> S) \<longrightarrow> 
-              (S \<union> {Comp1 F} \<in> \<C>⁺) \<or> (S \<union> {Comp2 F} \<in> \<C>⁺))" 
+              (S \<union> {Comp1 F} \<in> \<C>\<^sup>+) \<or> (S \<union> {Comp2 F} \<in> \<C>\<^sup>+))" 
 (*<*)
 proof (rule allI) 
   fix F 
-  show "((FormulaBeta F) \<and> F \<in> S) \<longrightarrow> S \<union> {Comp1 F} \<in> \<C>⁺ \<or> S \<union> {Comp2 F} \<in> \<C>⁺" 
+  show "((FormulaBeta F) \<and> F \<in> S) \<longrightarrow> S \<union> {Comp1 F} \<in> \<C>\<^sup>+ \<or> S \<union> {Comp2 F} \<in> \<C>\<^sup>+" 
   proof (rule impI)
     assume "(FormulaBeta F) \<and> F \<in> S"
     hence "FormulaBeta F" and "F \<in> T" using `S \<subseteq> T` by auto 
@@ -146,7 +147,7 @@ proof (rule allI)
     have "S \<union> {Comp1 F} \<subseteq> T \<union> {Comp1 F}" and "S \<union> {Comp2 F} \<subseteq> T \<union> {Comp2 F}" 
       using `S \<subseteq> T` by auto
     ultimately
-    show "S \<union> {Comp1 F} \<in> \<C>⁺ \<or> S \<union> {Comp2 F} \<in> \<C>⁺"
+    show "S \<union> {Comp1 F} \<in> \<C>\<^sup>+ \<or> S \<union> {Comp2 F} \<in> \<C>\<^sup>+"
       by(auto simp add: closure_subset_def)
   qed
 qed
@@ -154,19 +155,19 @@ qed
 
 theorem closed_consistenceP:
   assumes hip1: "consistenceP \<C>"
-  shows "consistenceP (\<C>⁺)"
+  shows "consistenceP (\<C>\<^sup>+)"
 proof -
   { fix S
-    assume "S \<in> \<C>⁺" 
+    assume "S \<in> \<C>\<^sup>+" 
     hence "\<exists>T\<in>\<C>. S \<subseteq> T" by(simp add: closure_subset_def)
     then obtain T where hip2: "T \<in> \<C>" and hip3: "S \<subseteq> T" by auto
     have "(\<forall>P. \<not> (atom P \<in> S \<and> (\<not>.atom P) \<in> S)) \<and>
                FF \<notin> S \<and> (\<not>.TT) \<notin> S \<and>
-               (\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow> S \<union> {F} \<in> \<C>⁺) \<and>
+               (\<forall>F. (\<not>.\<not>.F) \<in> S \<longrightarrow> S \<union> {F} \<in> \<C>\<^sup>+) \<and>
                (\<forall>F. ((FormulaAlfa F) \<and> F \<in> S) \<longrightarrow> 
-                    (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>⁺) \<and>
+                    (S \<union> {Comp1 F, Comp2 F}) \<in> \<C>\<^sup>+) \<and>
                (\<forall>F. ((FormulaBeta F) \<and> F \<in> S) \<longrightarrow> 
-                    (S \<union> {Comp1 F} \<in> \<C>⁺) \<or> (S \<union> {Comp2 F} \<in> \<C>⁺))"
+                    (S \<union> {Comp1 F} \<in> \<C>\<^sup>+) \<or> (S \<union> {Comp2 F} \<in> \<C>\<^sup>+))"
       using 
         cond_consistP1[OF hip1 hip2 hip3]  cond_consistP2[OF hip1 hip2 hip3]
         cond_consistP3[OF hip1 hip2 hip3]  cond_consistP4[OF hip1 hip2 hip3]
