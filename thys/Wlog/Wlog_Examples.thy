@@ -1,4 +1,4 @@
-section \<open>\<open>Wlog_Examples\<close> – Examples how to use \texttt{wlog}\<close>
+section \<open>\<open>Wlog_Examples\<close> -- Examples how to use \texttt{wlog}\<close>
 
 theory Wlog_Examples
   imports Wlog Complex_Main

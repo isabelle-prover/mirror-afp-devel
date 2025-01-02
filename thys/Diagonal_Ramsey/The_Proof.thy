@@ -102,7 +102,7 @@ definition "f2 \<equiv> \<lambda>x y. f1 x y - (1 / (40 * ln 2)) * ((1-x) / (2-x
 
 definition "ff \<equiv> \<lambda>x y. if x < 3/4 then f1 x y else f2 x y"
 
-text \<open>Incorporating Bhavik‘s idea, which gives us a lower bound for @{term \<gamma>} of 1/101\<close>
+text \<open>Incorporating Bhavik's idea, which gives us a lower bound for @{term \<gamma>} of 1/101\<close>
 definition ffGG :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real" where
   "ffGG \<equiv> \<lambda>\<mu> x y. max 1.9 (min (ff x y) (GG \<mu> x y))"
 

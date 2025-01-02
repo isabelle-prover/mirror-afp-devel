@@ -1,4 +1,4 @@
-section \<open>\<open>Wlog\<close> – Setting up the command\<close>
+section \<open>\<open>Wlog\<close> -- Setting up the command\<close>
 
 theory Wlog
 imports Main
