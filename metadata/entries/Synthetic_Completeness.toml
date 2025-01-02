@@ -52,5 +52,5 @@ from = "from_email"
 [extra]
 
 [related]
-dois = [ "10.1145/3703595.3705882" ]
+dois = []
 pubs = []
