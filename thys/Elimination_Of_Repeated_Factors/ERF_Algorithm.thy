@@ -204,7 +204,7 @@ proof -
     also have "\<dots> = \<Prod>P1"
     proof -
       have *: "(\<Prod>fj\<in>P1. fj^(ex fj)) = (\<Prod>P1) * (\<Prod>fj\<in>P1. fj^(ex fj-1))"
-      by (smt (z3) P1_def dvd_0_right mem_Collect_eq power_eq_if prod.cong prod.distrib)
+      by (smt P1_def dvd_0_right mem_Collect_eq power_eq_if prod.cong prod.distrib)
       show ?thesis unfolding * by auto
     qed
     finally show ?thesis by auto

@@ -973,7 +973,7 @@ lemma corresTA_L2_call':
     apply (cases r')
     subgoal
       apply (simp add: default_option_def Exn_def [symmetric])
-      by (smt (z3) Exn_def Exn_neq_Result case_exception_or_result_Exn case_xval_simps(1) the_Exn_Exn(1))
+      by (metis (mono_tags, lifting) Exn_def Result_neq_Exn case_exception_or_result_Exn case_xval_simps(1))
     subgoal
       apply simp
       by (metis (mono_tags, lifting) Exn_neq_Result case_exception_or_result_Result case_xval_simps(2) the_Result_simp)
@@ -1055,14 +1055,14 @@ lemma corresTA_L2_call_exec_concrete':
     apply (cases r')
     subgoal
       apply (clarsimp simp add: default_option_def Exn_def [symmetric])
-      by (smt (z3) Exn_def Exn_eq_Exn Exn_neq_Result case_exception_or_result_Exn)
+      by (smt (verit, ccfv_threshold) Exn_def Exn_eq_Exn Exn_neq_Result case_exception_or_result_Exn)
 
 
     subgoal for v
       apply clarsimp
       apply (erule_tac x="Result v" in allE)
       apply (erule_tac x="t'" in allE)
-      by (smt (z3) Exn_neq_Result Result_eq_Result case_exception_or_result_Result)
+      by (smt (verit, ccfv_threshold) Exn_neq_Result Result_eq_Result case_exception_or_result_Result)
     done
   done
 
@@ -1086,10 +1086,10 @@ lemma corresTA_L2_call_exec_abstract':
     apply (cases r')
     subgoal
       apply (clarsimp simp add: default_option_def Exn_def [symmetric])
-      by (smt (z3) Exn_def Exn_eq_Exn Exn_neq_Result case_exception_or_result_Exn)
+      by (smt (verit, del_insts) Exn_eq_Exn Result_neq_Exn case_exception_or_result_Exn)
     subgoal
       apply clarsimp
-      by (smt (z3) Result_eq_Result Result_neq_Exn case_exception_or_result_Result)
+      by (smt (verit, ccfv_threshold) Exn_neq_Result Result_eq_Result case_exception_or_result_Result)
     done
   done
 
@@ -1454,8 +1454,7 @@ lemma uint_ucast':
 
 lemma sint_ucast':
   "LENGTH('a) < LENGTH('b) \<Longrightarrow> sint (UCAST('a::len \<rightarrow> 'b::len) c) = uint c"
-  by (smt bintrunc_bintrunc_ge less_or_eq_imp_le signed_take_bit_eq uint_sint unsigned_ucast_eq 
-    unsigned_word_eqI)
+  using sint_ucast_eq_uint' by blast
 
 lemma scast_ucast_eq_ucast [simp, L2opt]:
   "LENGTH('a::len) < LENGTH('b::len) \<Longrightarrow> LENGTH('b) \<le> LENGTH('c::len) \<Longrightarrow>

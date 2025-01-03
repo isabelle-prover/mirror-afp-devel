@@ -29,10 +29,10 @@ proof (induction rule: fun_evaluate_match_fun_evaluate.induct)
     apply (auto split: prod.splits result.splits)
     subgoal
       using 2(2)[OF *[symmetric]]
-      by (smt "*" fix_clock(1) fix_clock.simps fst_conv le_trans prod.collapse)
+      by (metis "*" fix_clock(1) fix_clock.simps fst_conv le_trans prod.collapse)
     subgoal
       using 2(2)[OF *[symmetric]]
-      by (smt "*" fix_clock(1) fix_clock.simps fst_conv le_trans prod.collapse)
+      by (metis "*" fix_clock(1) fix_clock.simps fst_conv le_trans prod.collapse)
     subgoal
       by (metis "*" fix_clock(1) fix_clock.simps prod.collapse prod.sel(2))
     done
@@ -48,7 +48,7 @@ next
       by (metis "*" fix_clock(1) fix_clock.simps prod.collapse prod.sel(2))
     subgoal
       using 5(2)[OF *[symmetric]]
-      by (smt "*" "5.IH"(1) dual_order.trans eq_fst_iff error_result.exhaust error_result.simps(5) error_result.simps(6) fix_clock(2) fix_clock.simps)
+      by (smt (verit) "*" "5.IH"(1) dual_order.trans eq_fst_iff error_result.exhaust error_result.simps(5) error_result.simps(6) fix_clock(2) fix_clock.simps)
     done
 next
   case (9 st env op1 es)
@@ -70,12 +70,12 @@ next
       by (metis "*" fix_clock(1) fix_clock.simps fst_conv prod.collapse)
     subgoal
       using 9(2)[OF *[symmetric], simplified]
-      by (smt "*" Suc_pred dual_order.trans fix_clock(1) fix_clock.simps le_imp_less_Suc less_irrefl_nat nat_le_linear prod.collapse prod.sel(2))
+      by (metis "*" Suc_pred dual_order.trans fix_clock(1) fix_clock.simps le_imp_less_Suc less_irrefl_nat nat_le_linear prod.collapse prod.sel(2))
     subgoal
       by (metis "*" fix_clock(1) fix_clock.simps prod.collapse prod.sel(2))
     subgoal
       using 9(2)[OF *[symmetric], simplified]
-      by (smt "*" Suc_pred dual_order.trans fix_clock(1) fix_clock.simps le_imp_less_Suc less_irrefl_nat nat_le_linear prod.collapse prod.sel(2))
+      by (metis "*" Suc_pred dual_order.trans fix_clock(1) fix_clock.simps le_imp_less_Suc less_irrefl_nat nat_le_linear prod.collapse prod.sel(2))
     done
 next
   case (10 st env lop e1 e2)

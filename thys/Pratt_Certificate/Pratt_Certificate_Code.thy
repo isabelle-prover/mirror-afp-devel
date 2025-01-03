@@ -475,7 +475,7 @@ check_pratt_primes (code) fips_186_4_primes \<open>
 thm fips_186_4_primes
 
 text \<open>
-  Two more primes from PKCS #1 v2.2.
+  Two more primes from \<^verbatim>\<open>PKCS #1 v2.2\<close>.
 \<close>
 check_pratt_primes (code reduce) pkcs_1_primes \<open>
   2

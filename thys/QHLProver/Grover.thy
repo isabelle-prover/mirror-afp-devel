@@ -45,7 +45,7 @@ lemma \<psi>_eval:
 lemma \<psi>_inner:
   "inner_prod \<psi> \<psi> = 1"
   apply (simp add: \<psi>_eval scalar_prod_def)
-  by (smt of_nat_less_0_iff of_real_mult of_real_of_nat_eq real_sqrt_mult_self)
+  by (smt (verit) of_nat_less_0_iff of_real_mult of_real_of_nat_eq real_sqrt_mult_self)
  
 lemma \<psi>_norm:
   "vec_norm \<psi> = 1"
@@ -209,7 +209,7 @@ lemma cnj_beta_l:
 
 lemma csin_ccos_squared_add:
   "ccos (a::real) * ccos a + csin a * csin a = 1"
-  by (smt cos_diff cos_zero of_real_add of_real_hom.hom_one of_real_mult)
+  by (smt (verit) cos_diff cos_zero of_real_add of_real_hom.hom_one of_real_mult)
 
 lemma alpha_l_beta_l_add_norm:
   "alpha_l l * alpha_l l + beta_l l * beta_l l = 1"
@@ -1090,7 +1090,7 @@ lemma ket_plus_eval [simp]:
 
 lemma csqrt_2_sq [simp]:
   "complex_of_real (sqrt 2) * complex_of_real (sqrt 2) = 2"
-  by (smt of_real_add of_real_hom.hom_one of_real_power one_add_one power2_eq_square real_sqrt_pow2)
+  by (smt (verit) of_real_add of_real_hom.hom_one of_real_power one_add_one power2_eq_square real_sqrt_pow2)
 
 lemma ket_plus_tensor_n:
   "partial_state.tensor_vec [2, 2] {0} ket_plus ket_plus = Matrix.vec 4 (\<lambda>k. 1 / 2)"
@@ -1544,7 +1544,7 @@ next
 
   have nthsSSk2: "nths (replicate (Suc (Suc k)) 2) {0..<Suc k} = replicate (Suc k) 2" 
     unfolding nths_replicate[of "Suc (Suc k)" 2 "{0..<Suc k}"]
-    by (smt Collect_cong \<open>{card {0..<x} |x. x \<in> {0..<Suc k}} = {0..<Suc k}\<close> atLeastLessThan_iff card_atLeastLessThan diff_zero less_SucI)
+    by (smt (verit) Collect_cong \<open>{card {0..<x} |x. x \<in> {0..<Suc k}} = {0..<Suc k}\<close> atLeastLessThan_iff card_atLeastLessThan diff_zero less_SucI)
   then have std1: "st.d1 = 2^(Suc k)" unfolding st.d1_def st.dims1_def nthsSSk2 by auto
   have "{i. i < Suc (Suc k) \<and> i \<in> {Suc k..}} = {Suc k}" by auto
   then have "nths (replicate (Suc (Suc k)) 2) ({Suc k..}) = replicate 1 2" unfolding nths_replicate by auto
@@ -1643,7 +1643,7 @@ lemma proj_psi_mat:
   unfolding proj_psi_def
   apply (rule eq_matI, simp_all)
     apply (simp add: \<psi>_def index_outer_prod)
-    apply (smt of_nat_less_0_iff of_real_of_nat_eq of_real_power power2_eq_square real_sqrt_pow2)
+    apply (smt (verit) of_nat_less_0_iff of_real_of_nat_eq of_real_power power2_eq_square real_sqrt_pow2)
    by (auto simp add: carrier_matD[OF outer_prod_dim[OF \<psi>_dim(1) \<psi>_dim(1)]])
 
 lemma hermitian_proj_psi:

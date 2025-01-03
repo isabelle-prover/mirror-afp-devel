@@ -257,9 +257,9 @@ lemma alpha_trans:
     moreover then obtain u1 u2 where "alpha t1 u1" "alpha t2 u2" "u = PAp u1 u2"
       using less.prems by blast
     ultimately show ?thesis 
-    	by (smt (verit, ccfv_threshold) add.right_neutral add_less_le_mono alpha.PAp depth.simps(2) 
-    	    dual_order.strict_trans2 le_add_same_cancel2 less.hyps less_add_same_cancel1 
-    	    PAp neq0_conv zero_le zero_less_one)
+      by (smt (verit, ccfv_threshold) add.right_neutral add_less_le_mono alpha.PAp depth.simps(2) 
+          dual_order.strict_trans2 le_add_same_cancel2 less.hyps less_add_same_cancel1 
+          PAp neq0_conv zero_le zero_less_one)
   next
     case (PLm x s')
     obtain t' z y where t: "t = PLm y t'" "z = x \<or> pfresh z s'" 
@@ -284,7 +284,7 @@ lemma alpha_trans:
     }
     moreover
     {have "alpha (pswap t' zf y) (pswap (pswap t' zz y) zz zf)"
-        by (smt (z3) pswap_pswap alpha_pswap alpha_sym sw_diff sw_eqL pswap_pfresh_alpha pswap_sym 
+        by (smt (verit) pswap_pswap alpha_pswap alpha_sym sw_diff sw_eqL pswap_pfresh_alpha pswap_sym 
             u(2) zf(2) zf(7))
       moreover have "alpha (pswap (pswap u' zz w) zz zf) (pswap u' zf w)"
         by (smt (verit, ccfv_threshold) pswap_pswap alpha_pswap sw_diff sw_eqL 
@@ -294,8 +294,8 @@ lemma alpha_trans:
             less.prems less_add_same_cancel1 pswap_same_depth u(1) u(4) zero_less_one)
     }
     ultimately show ?thesis 
-    	by (metis alpha.PLm depth.simps(3) less.hyps less_add_same_cancel1 
-    	    local.PLm pswap_same_depth u(1) zero_less_one zf(6) zf(8))
+      by (metis alpha.PLm depth.simps(3) less.hyps less_add_same_cancel1 
+          local.PLm pswap_same_depth u(1) zero_less_one zf(6) zf(8))
   qed
 qed
 
@@ -306,7 +306,7 @@ lemma alpha_PLm_strong_elim:
 proof-
   obtain zz where zz: "zz = x \<or> pfresh zz t" "zz = x' \<or> pfresh zz t'"
     "alpha (pswap t zz x) (pswap t' zz x')"
-    using alpha_PLm_cases[OF assms(1)] by (smt ptrm.inject(3))
+    using alpha_PLm_cases[OF assms(1)] by (smt (verit) ptrm.inject(3))
   have sw1: "alpha (pswap t z x) (pswap (pswap t zz x) zz z)"
     unfolding pswap_pswap[of t zz x] 
     by (metis alpha_refl alpha_pswap assms(2) 
@@ -322,13 +322,13 @@ qed
 lemma pfresh_pswap_alpha: 
   assumes "y = x \<or> pfresh y t" and "z = x \<or> pfresh z t"
   shows "alpha (pswap (pswap t y x) z y) (pswap t z x)"
-  by (smt assms pswap_pswap alpha_refl alpha_pswap sw_diff sw_eqR pswap_pfresh_alpha pswap_id pswap_invol2)
+  by (smt (verit) assms pswap_pswap alpha_refl alpha_pswap sw_diff sw_eqR pswap_pfresh_alpha pswap_id pswap_invol2)
 
 lemma pfresh_sw_pswap_pswap: 
   assumes "sw y' z1 z2 \<noteq> y" and "y = sw x z1 z2 \<or> pfresh y (pswap t z1 z2)"
     and "y' = x \<or> pfresh y' t"  
   shows "pfresh (sw y' z1 z2) (pswap (pswap t z1 z2) y (sw x z1 z2))"
-  using assms pfresh_pswap_iff sw_diff sw_eqR sw_invol by smt
+  using assms pfresh_pswap_iff sw_diff sw_eqR sw_invol by (smt (verit))
 
 
 
@@ -362,7 +362,7 @@ lemma swap_id[simp]:
   by transfer simp
 
 lemma fresh_PVr[simp]: "fresh x (Vr y) \<longleftrightarrow> x \<noteq> y" 
-	by (simp add: Vr_def fresh.abs_eq)
+  by (simp add: Vr_def fresh.abs_eq)
 
 lemma fresh_Ap[simp]: "fresh z (Ap t1 t2) \<longleftrightarrow> fresh z t1 \<and> fresh z t2"
   by transfer auto
@@ -409,7 +409,7 @@ proof(cases "x = x1")
 next
   case False
   thus ?thesis  
-  	by (metis Lm_sameVar_inj Lm_swap_rename assms fresh_Lm)
+    by (metis Lm_sameVar_inj Lm_swap_rename assms fresh_Lm)
 qed
 
 lemma alpha_rep_abs_trm: "alpha (rep_trm (abs_trm t)) t" 
@@ -421,7 +421,7 @@ lemma swap_fresh_eq: assumes x:"fresh x t" and y:"fresh y t"
   by (metis (full_types) Quotient3_abs_rep Quotient3_trm swap.abs_eq trm.abs_eq_iff)
 
 lemma bij_sw:"bij (\<lambda> x. sw x z1 z2)"
-  unfolding sw_def bij_def inj_def surj_def by smt
+  unfolding sw_def bij_def inj_def surj_def by (smt (verit))
 
 lemma sw_set: "x \<in> X = ((sw x z1 z2) \<in> (\<lambda> x. sw x z1 z2) ` X)"
   using bij_sw by blast
@@ -445,13 +445,13 @@ lemma trm_exhaust[case_names Vr Ap Lm, cases type: trm]:
   using trm_nchotomy by blast
 
 lemma Vr_Ap_diff[simp]: "Vr x \<noteq> Ap t1 t2"  "Ap t1 t2 \<noteq> Vr x" 
-	by (metis Zero_not_Suc ddepth_Ap ddepth_Vr)+
+  by (metis Zero_not_Suc ddepth_Ap ddepth_Vr)+
 
 lemma Vr_Lm_diff[simp]: "Vr x \<noteq> Lm y t"  "Lm y t \<noteq> Vr x" 
-	by (metis Zero_not_Suc ddepth_Lm ddepth_Vr)+
+  by (metis Zero_not_Suc ddepth_Lm ddepth_Vr)+
 
 lemma Ap_Lm_diff[simp]: "Ap t1 t2 \<noteq> Lm y t"  "Lm y t \<noteq> Ap t1 t2" 
-	by (transfer,blast)+
+  by (transfer,blast)+
 
 lemma Vr_inj[simp]: "(Vr x = Vr y) \<longleftrightarrow> x = y"  
   by transfer auto
@@ -473,7 +473,7 @@ lemma exists_fresh_set:
   assumes "finite X"
   shows "\<exists> z. z \<notin> X \<and> z \<notin> set xs \<and> (\<forall>t \<in> set ts. fresh z t)"
   using assms apply transfer 
-	using exists_pfresh_set by presburger
+  using exists_pfresh_set by presburger
 
 definition ppickFreshS :: "var set \<Rightarrow> var list \<Rightarrow> trm list \<Rightarrow> var" where 
   "ppickFreshS X xs ts \<equiv> SOME z. z \<notin> X \<and> z \<notin> set xs \<and> 
@@ -503,9 +503,9 @@ lemma fresh_swap_nominal_style:
 proof
   assume "fresh x t"
   hence "{y. swap t y x \<noteq> t} \<subseteq> {y. \<not> fresh y t}"
-  	by (auto, meson swap_fresh_eq)
+    by (auto, meson swap_fresh_eq)
   thus "finite {y. swap t y x \<noteq> t}" 
-  	using cofinite_fresh rev_finite_subset by blast
+    using cofinite_fresh rev_finite_subset by blast
 next
   assume "finite {y. swap t y x \<noteq> t}"
   moreover have "finite {y. \<not> fresh y t}" using cofinite_fresh .
@@ -548,7 +548,7 @@ lemma plain_induct[case_names Vr Ap Lm]:
     and "\<And>t1 t2. \<phi> t1 \<Longrightarrow> \<phi> t2 \<Longrightarrow> \<phi> (Ap t1 t2)"
     and "\<And>x t. \<phi> t \<Longrightarrow> \<phi> (Lm x t)"
   shows "\<phi> t"
-	by (metis assms fresh_induct finite.emptyI)
+  by (metis assms fresh_induct finite.emptyI)
 
 
 subsection \<open>Substitution\<close>
@@ -602,7 +602,7 @@ lemma substRel_Lm_invert:
     "substRel t1 s y t1'" "tt' = Lm x1 t1'"
   have 2: "t = swap t1 x x1" by (simp add: "1"(3) Lm_eq_swap) 
   hence 3: "x = x1 \<or> fresh x t1"  
-  	by (metis "1"(3) fresh_Lm) 
+    by (metis "1"(3) fresh_Lm) 
   have 4: "s = swap s x x1" "y = sw y x x1"
     apply (simp add: "1"(2) assms(3) swap_fresh_eq) 
     using "1"(1) assms(2) sw_def by presburger
@@ -618,7 +618,7 @@ lemma substRel_total:
   "\<exists>t'. substRel t s y t'"
 proof-
   have "finite ({y} \<union> FFvars s)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis apply(induct t rule: fresh_induct) 
     subgoal by (metis substRel_Vr_diff substRel_Vr_same)
     subgoal by(auto intro: substRel_Ap)
@@ -630,7 +630,7 @@ lemma substRel_functional:
   shows "t' = tt'"
 proof-
   have "finite ({y} \<union> FFvars s)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis 
     using assms apply(induct t arbitrary: t' tt' rule: fresh_induct)
     subgoal using substRel_Vr_invert by blast
@@ -663,7 +663,7 @@ lemma fresh_subst:
   "fresh z (subst s t x) \<longleftrightarrow> (z = x \<or> fresh z s) \<and> (fresh x s \<or> fresh z t)"
 proof-
   have "finite ({x,z} \<union> FFvars t)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis apply(induct s rule: fresh_induct) by auto
 qed
 
@@ -671,7 +671,7 @@ lemma fresh_subst_id[simp]:
   assumes "fresh x s" shows "subst s t x = s"
 proof-
   have "finite (FFvars t \<union> {x})"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis using assms apply(induct s rule: fresh_induct) by auto
 qed
 
@@ -693,9 +693,9 @@ lemma swap_subst:
   "swap (subst s t x) z1 z2 = subst (swap s z1 z2) (swap t z1 z2) (sw x z1 z2)"
 proof-
   have "finite (FFvars t \<union> {x,z1,z2})"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis apply(induct s rule: fresh_induct)  
-  	using fresh_swap subst_Lm sw_def by auto
+    using fresh_swap subst_Lm sw_def by auto
 qed
 
 lemma subst_Lm_same[simp]: "subst (Lm x s) t x = Lm x s"
@@ -705,7 +705,7 @@ lemma fresh_subst_same:
   assumes "y \<noteq> z" shows "fresh y (subst t (Vr z) y)"
 proof-
   have "finite ({y,z})"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis using assms apply(induct t rule: fresh_induct) by auto
 qed
 
@@ -713,9 +713,9 @@ lemma subst_comp_same:
   "subst (subst s t x) t1 x = subst s (subst t t1 x) x"
 proof-
   have "finite ({x} \<union> FFvars t \<union> FFvars t1)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis apply(induct s rule: fresh_induct)  
-  	using fresh_subst subst_Lm by auto
+    using fresh_subst subst_Lm by auto
 qed
 
 
@@ -724,9 +724,9 @@ lemma subst_comp_diff:
   shows "subst (subst s t x) t1 x1 = subst (subst s t1 x1) (subst t t1 x1) x"
 proof-
   have "finite ({x,x1} \<union> FFvars t \<union> FFvars t1)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis using assms apply(induct s rule: fresh_induct)   
-  	using fresh_subst subst_Lm by auto
+    using fresh_subst subst_Lm by auto
 qed
 
 lemma subst_comp_diff_var: 
@@ -741,7 +741,7 @@ lemma subst_chain:
   shows "subst (subst s (Vr u) x) t u = subst s t x"
 proof-
   have "finite ({x,u} \<union> FFvars t \<union> FFvars s)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis using assms apply(induct s rule: fresh_induct)   
     by auto
 qed
@@ -751,9 +751,9 @@ lemma subst_repeated_Vr:
  subst (subst t (Vr u) x) (Vr u) y"
 proof-
   have "finite ({x,y,u} \<union> FFvars t)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis apply(induct t rule: fresh_induct)   
-  	using fresh_subst subst_Lm by auto
+    using fresh_subst subst_Lm by auto
 qed
 
 lemma subst_commute_same: 
@@ -765,7 +765,7 @@ lemma subst_commute_diff:
   shows "subst (subst t (Vr u) x) (Vr v) y = subst (subst t (Vr v) y) (Vr u) x"
 proof-
   have "finite ({u,v,x,y})"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis using assms apply(induct t rule: fresh_induct) by auto
 qed
 
@@ -779,7 +779,7 @@ lemma swap_from_subst:
   shows "swap t z1 z2 = subst (subst (subst t (Vr yy) z1) (Vr z1) z2) (Vr z2) yy"
 proof-
   have "finite ({z1,z2,yy} \<union> FFvars t)"   
-  	by (simp add: cofinite_fresh)
+    by (simp add: cofinite_fresh)
   thus ?thesis using assms apply(induct t rule: fresh_induct) by auto
 qed
 
@@ -847,7 +847,7 @@ lemma fresh_subst_eq_swap:
   shows "subst t (Vr z) x = swap t z x" 
 proof-
   have "finite ({z,x})"   
-  	by simp
+    by simp
   thus ?thesis using assms by (induct t rule: fresh_induct) auto
 qed
 
@@ -890,7 +890,7 @@ lemma ddepth_subst_Vr[simp]:
   "ddepth (vsubst t z x) = ddepth t"
 proof-
   have "finite ({z,x})"   
-  	by simp
+    by simp
   thus ?thesis by (induct t rule: fresh_induct) auto
 qed
 

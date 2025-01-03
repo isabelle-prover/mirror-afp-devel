@@ -46,10 +46,10 @@ proof -
     have 1: "map_indets (rep \<circ> abs) ` F = F"
     proof
       from F_sub show "map_indets (rep \<circ> abs) ` F \<subseteq> F"
-        by (smt PolysD(2) comp_apply image_subset_iff map_indets_id subsetD y.Abs_inverse)
+        by (smt (verit) PolysD(2) comp_apply image_subset_iff map_indets_id subsetD y.Abs_inverse)
     next
       from F_sub show "F \<subseteq> map_indets (rep \<circ> abs) ` F"
-        by (smt PolysD(2) comp_apply image_eqI map_indets_id subsetD subsetI y.Abs_inverse)
+        by (smt (verit) PolysD(2) comp_apply image_eqI map_indets_id subsetD subsetI y.Abs_inverse)
     qed
     have 2: "inj rep" by (meson inj_onI y.Rep_inject)
     hence 3: "inj (map_indets rep)" by (rule map_indets_injI)
@@ -491,10 +491,10 @@ next
     have 1: "map_indets (rep \<circ> abs) ` A = A" if "A \<subseteq> P[X]" for A::"(_ \<Rightarrow>\<^sub>0 'a) set"
     proof
       from that show "map_indets (rep \<circ> abs) ` A \<subseteq> A"
-        by (smt PolysD(2) comp_apply image_subset_iff map_indets_id subsetD y.Abs_inverse)
+        by (smt (verit) PolysD(2) comp_apply image_subset_iff map_indets_id subsetD y.Abs_inverse)
     next
       from that show "A \<subseteq> map_indets (rep \<circ> abs) ` A"
-        by (smt PolysD(2) comp_apply image_eqI map_indets_id subsetD subsetI y.Abs_inverse)
+        by (smt (verit) PolysD(2) comp_apply image_eqI map_indets_id subsetD subsetI y.Abs_inverse)
     qed
     have 2: "inj rep" by (meson inj_onI y.Rep_inject)
     hence 3: "inj (map_indets rep)" by (rule map_indets_injI)
@@ -558,7 +558,7 @@ next
     also have "?B = (\<lambda>x. monomial 1 (Poly_Mapping.single x 1) - monomial ((a \<circ> abs) x) 0) ` X"
         (is "_ = ?C")
     proof
-      show "?B \<subseteq> ?C" by (smt comp_apply image_iff image_subset_iff y.Abs_image y.Abs_inverse)
+      show "?B \<subseteq> ?C" by (smt (verit) comp_apply image_iff image_subset_iff y.Abs_image y.Abs_inverse)
     next
       from y.Rep_inverse y.Rep_range show "?C \<subseteq> ?B" by auto
     qed

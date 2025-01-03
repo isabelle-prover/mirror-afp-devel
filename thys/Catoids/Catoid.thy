@@ -763,7 +763,7 @@ sublocale category \<subseteq> catsscat: single_set_category Comp LL RR
      apply (smt (verit, ccfv_threshold) Sup_empty category.assoc category_axioms ccpo_Sup_singleton cod_id cod_loc dom_loc image_empty image_insert)
     apply (metis empty_iff singletonD)
    apply (smt (verit, best) category.dom_id category_axioms dom_loc image_insert set_eq_subset)
-  by (smt (z3) category.cod_id category_axioms cod_loc image_insert subsetI)
+  by (smt (verit, ccfv_SIG) cod_id cod_loc image_insert set_eq_subset)
 
 subsection \<open>A Mac Lane style variant\<close>
 

@@ -442,7 +442,7 @@ proof (rule ccontr)
 
       let ?s = "r / (2 * ?u)"
       have sgz: "?s > 0" using ug rl
-        by (smt divide_pos_pos dual_order.strict_iff_order linordered_semiring_strict_class.mult_pos_pos zero_less_norm_iff r)
+        by (smt (verit) divide_pos_pos dual_order.strict_iff_order linordered_semiring_strict_class.mult_pos_pos zero_less_norm_iff r)
       from limijm have sij: "\<exists>no. \<forall>n\<ge>no. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" if i: "i < m" and j: "j < m" for i j
       proof -
         obtain N where Ns: "\<forall>n\<ge>N. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" using sgz limijm i j by blast
@@ -457,7 +457,7 @@ proof (rule ccontr)
       proof -
         have geq: "cmod (conjugate (v $ i)) \<ge> 0 \<and> cmod (v $ j)\<ge>0" by simp
         then have "cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) \<le>cmod (conjugate (v $ i)) * ?s" using Nno i j n
-          by (smt mult_left_mono)
+          by (smt (verit) mult_left_mono)
         then have "cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)
                     \<le> cmod (conjugate (v $ i)) *?s * cmod (v $ j)" using geq mult_right_mono by blast
         also have "\<dots> = ?s * (cmod (conjugate (v $ i)) * cmod (v $ j))" by simp
@@ -490,7 +490,7 @@ proof (rule ccontr)
     proof -
       obtain no where nno: "\<forall>n\<ge>no. (\<Sum>i = 0..<m. \<Sum>j = 0..<m. cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)) < r"
         using r cmoda neg by auto
-      then have "\<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < r" using XAless neg by smt
+      then have "\<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < r" using XAless neg by (smt (verit))
       then show ?thesis by auto
     qed
     then have "(\<lambda>n. inner_prod v (X n *\<^sub>v v)) \<longlonglongrightarrow> inner_prod v (A *\<^sub>v v)" unfolding LIMSEQ_def dist_norm by auto
@@ -849,7 +849,7 @@ proof-
     have mnA: "trace ((f n - f m) * adjoint (f n - f m)) \<le> (trace (f n - f m))\<^sup>2" using tr_re nm by auto
     have mnB: "trace ((f n - f m) * adjoint (f n - f m)) \<ge> 0" using tr_re_g nm by auto
     from mnA mnB show ?thesis
-      by (smt cmod_eq_Re less_eq_complex_def norm_power zero_complex.sel(1) zero_complex.sel(2))
+      by (smt (verit) cmod_eq_Re less_eq_complex_def norm_power zero_complex.sel(1) zero_complex.sel(2))
   qed
   then have cauchy_adj: "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. norm(trace ((f n- f m) * adjoint (f n - f m))) < e\<^sup>2" if e: "e > 0" for e
   proof -
@@ -861,12 +861,12 @@ proof-
 
   have norm_minus: "\<forall> m. \<forall> n \<ge> m. (norm ((f n - f m) $$ (i, j)))\<^sup>2 \<le> trace ((f n - f m) * adjoint (f n - f m))"
     using trace_adjoint_element_ineq i j
-    by (smt adjoint_dim_row carrier_matD(1) index_minus_mat(2) index_mult_mat(2) lowner_le_transitive matrix_seq_axioms matrix_seq_def positive_is_normal)
+    by (smt (verit) adjoint_dim_row carrier_matD(1) index_minus_mat(2) index_mult_mat(2) lowner_le_transitive matrix_seq_axioms matrix_seq_def positive_is_normal)
   then have norm_minus_le: "(norm ((f n - f m) $$ (i, j)))\<^sup>2 \<le> norm (trace ((f n - f m) * adjoint (f n - f m)))" if nm: "n \<ge> m" for n m
   proof -
     have "(norm ((f n - f m) $$ (i, j)))\<^sup>2 \<le> (trace ((f n - f m) * adjoint (f n - f m)))" using norm_minus nm by auto
     also have "\<dots> = norm (trace ((f n - f m) * adjoint (f n - f m)))" using tr_re_g nm
-      by (smt Re_complex_of_real less_eq_complex_def matrix_seq.trace_adjoint_eq_u matrix_seq_axioms mult_cancel_left2 norm_one norm_scaleR of_real_def of_real_hom.hom_zero)
+      by (smt (verit) Re_complex_of_real less_eq_complex_def matrix_seq.trace_adjoint_eq_u matrix_seq_axioms mult_cancel_left2 norm_one norm_scaleR of_real_def of_real_hom.hom_zero)
     finally show ?thesis by (auto simp: less_eq_complex_def less_complex_def)
   qed
 
@@ -1017,7 +1017,7 @@ proof-
       proof -
         have "(B - X n) $$ (i, j) - (B - A) $$ (i, j) = - ((X n) $$ (i, j) -  A $$ (i, j))"
           using dimA i j
-          by (smt cancel_ab_semigroup_add_class.diff_right_commute cancel_comm_monoid_add_class.diff_cancel carrier_matD(1) carrier_matD(2) diff_add_cancel dimX index_minus_mat(1) minus_diff_eq)
+          by (smt (verit) cancel_ab_semigroup_add_class.diff_right_commute cancel_comm_monoid_add_class.diff_cancel carrier_matD(1) carrier_matD(2) diff_add_cancel dimX index_minus_mat(1) minus_diff_eq)
         then have "norm ((B - X n) $$ (i, j) - (B - A) $$ (i, j)) = norm ((X n) $$ (i, j) -  A $$ (i, j))"
           by (metis norm_minus_cancel)
         then show ?thesis using dist n by auto

@@ -129,7 +129,7 @@ qed
 lemma root_substerms_funas_term_set:
   "the ` (root ` \<Union> (subterms ` R) - {None}) = \<Union> (funas_term ` R)"
   using root_substerms_funas_term
-  by auto (smt DiffE DiffI UN_I image_iff)
+  by fastforce
 
 
 lemma subst_merge:

@@ -210,7 +210,8 @@ proof(induct r arbitrary: s)
   have IH: "\<And>s. s \<in> lang r \<Longrightarrow> \<exists>v.\<turnstile> v : r \<and> flat v = s" by fact
   have "s \<in> lang (Star r)" by fact
   then obtain ss where "concat ss = s" "\<forall>s \<in> set ss. s \<in> lang r \<and> s \<noteq> []"
-    by (smt (z3) IH Prf_flat_lang Star_val imageE in_star_iff_concat lang.simps(6) list.set_map subset_iff)  
+    by (smt (verit) Nil_eq_concat_conv concat_append lang.simps(6) pow_cstring self_append_conv
+        star_pow)
   then obtain vs where "flats vs = s" "\<forall>v\<in>set vs. \<turnstile> v : r \<and> flat v \<noteq> []"
   using IH by (metis Star_val) 
   then show "\<exists>v. \<turnstile> v : Star r \<and> flat v = s"

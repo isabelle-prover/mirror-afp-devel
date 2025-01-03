@@ -205,7 +205,7 @@ proof (induct C arbitrary: q)
       using More(2) length_map
      (* SLOW *)
       by (auto simp: comp_def nth_append_Cons split: if_splits cong: if_cong')
-         (smt nat_neq_iff nth_map ta_der_strict_simps)+
+         (smt (verit) nat_neq_iff nth_map ta_der_strict_simps)+
     have "(p, q') \<in> Q_inf \<A>" using More(1)[OF q(1) False] .
     then show ?thesis using step_in_Q_inf[OF q(2)] by (auto intro: trans)
   qed
@@ -234,7 +234,7 @@ proof -
   ultimately have inf: "infinite ?S" using ctxt_comp_n_lower_bound[OF ctxt(1)]
     using no_upper_bound_infinite[of _ depth, of ?S] by blast
   from infinite_inj_image_infinite[OF this] have inf:"infinite (ctxt_apply_term C2 ` ?S)"
-    by (smt ctxt_eq inj_on_def)
+    by (smt (verit) ctxt_eq inj_on_def)
   {fix u assume "u \<in> (ctxt_apply_term C2 ` ?S)"
     then have "?P u" unfolding image_Collect using closing_ctxt cl_reach
       by (auto simp: ta_der_ctxt)}
@@ -374,7 +374,7 @@ proof (rule ccontr)
   have "S \<subseteq> f ` {x . P x}" using assms(2) by auto 
   then show False using ass assms(1)
     by (auto simp: subset_image_iff)
-      (smt Ball_Collect finite_imageI image_subset_iff infinite_iff_countable_subset subset_eq) 
+       (metis (mono_tags, lifting) Ball_Collect finite_imageI image_eqI infinite_super)
 qed
 
 lemma Q_inf_exec_impl_Q_inf:

@@ -59,7 +59,7 @@ lemma Subdis_ge_0: "p \<in> Subdis A \<Longrightarrow> a \<in> A \<Longrightarro
   unfolding Subdis_def positive_def by auto
 
 lemma Subdis_le_1: "p \<in> Subdis A \<Longrightarrow> a \<in> A \<Longrightarrow> p a \<le> 1"
-  unfolding Subdis_def by simp (smt in_le_isum)
+  unfolding Subdis_def using in_le_isum by fastforce
 
 lemma Subdis_eq:
   assumes "p \<in> Subdis A" and "\<forall>a\<in>A. p1 a = p a"
@@ -152,8 +152,8 @@ qed
 lemma Subdis_sum_le: 
   assumes "finite A" "p \<in> Subdis A" "positive g A" "A \<noteq> {}" "\<forall>a\<in>A. g a \<le> x"
   shows "(\<Sum>a\<in>A. p a * g a) \<le> x"
-  using Subdis_sum_le_Max[OF assms(1-4)] 
-  by (smt Max_in assms(1) assms(4) assms(5) finite_imageI imageE image_is_empty)
+  using Subdis_sum_le_Max[OF assms(1-4)]
+  by (metis assms(1,4,5) dual_order.trans obtains_MAX)
 
 
 subsection \<open>Monadic structure\<close>
@@ -198,7 +198,8 @@ lemma isum_ind[simp]: "\<And>a A. a \<in> A \<Longrightarrow> isum (ind a) A = 1
   by (metis ind_simps(2) isum_const_zero')
 
 lemma ind_Subdis[simp, intro!]: "ind a \<in> Subdis A" 
-  unfolding Subdis_def by simp (smt isum_ind(1) isum_ind(2) positive_ind sbounded_ind)
+  unfolding Subdis_def
+  by (metis (lifting) isum_ind(1,2) le_numeral_extra(4) linordered_nonzero_semiring_class.zero_le_one mem_Collect_eq positive_ind sbounded_ind)
 
 lemma Dis_ind[simp, intro!]: "a \<in> A \<Longrightarrow> ind a \<in> Dis A" 
   unfolding Dis_def by simp
@@ -271,7 +272,7 @@ proof-
         subgoal for AB apply(rule order.trans[of _ "\<Sum>(a, b)\<in>(fst`AB)\<times>B. p a * 1"])      
           subgoal apply(rule sum_mono3)
             subgoal using B by auto
-            subgoal by (smt SigmaE mem_Sigma_iff subsetD subsetI subset_fst_snd)
+            subgoal by (smt (verit, ccfv_threshold) SigmaE mem_Sigma_iff subset_eq subset_fst_snd)
             subgoal for ab using p f unfolding Subdis_def positive_def by (cases ab, auto) 
             subgoal for ab using p f unfolding Subdis_def positive_def apply (cases ab, auto)  
               by (meson Subdis_le_1 f in_mono mem_Sigma_iff mult_left_le) . 
@@ -417,7 +418,7 @@ proof-
               subgoal by auto . . . . .
     subgoal apply(rule isum_cong, rule refl)
       apply(subst isum_distribR)
-      subgoal by (smt positive_def Subdis_ge_0 comp_apply ind_eq_0_iff ind_simps(1) mult_nonneg_nonneg p)
+      subgoal using Subdis_def ind_mult_SubdisL p by fastforce
       subgoal apply(rule Subdis_sboundedL[of _ _ _ 1]) using assms  
         by (simp_all add: ind_le_1) 
       subgoal by (meson Subdis_ge_0 c gg)
@@ -707,8 +708,8 @@ lemma flatP_flatP_lift:
             subgoal apply(rule Subdis_sboundedL[of _ _ _ 1]) using assms by (auto simp: Subdis_le_1) 
             subgoal using Subdis_ge_0 ppp by fastforce
             subgoal apply(subst isum_distribL[symmetric])
-              subgoal using assms unfolding positive_def 
-                by (smt Subdis_ge_0 comp_apply in_mono ind_ge_0 mult_nonneg_nonneg)
+              subgoal using assms unfolding positive_def
+                by (metis (lifting) Subdis_ge_0 comp_eq_dest_lhs ind_Subdis split_mult_pos_le subsetD)
               subgoal apply(rule Subdis_sboundedL[of _ _ _ 1]) using assms by (auto simp: Subdis_le_1) 
               subgoal using Subdis_ge_0 ppp by fastforce 
               subgoal unfolding mult_cancel_left apply(rule disjI2)

@@ -380,7 +380,10 @@ proof-
         have *: "H *\<^sub>m\<^sub>m ?M = ?M *\<^sub>m\<^sub>m (k1, 0, 0, k2)"
           using \<open>eigenpair k1 v1 H\<close> \<open>eigenpair k2 v2 H\<close> vv \<open>?nv1 \<noteq> 0\<close> \<open>?nv2 \<noteq> 0\<close>
           unfolding eigenpair_def vec_cnj_def
-          by (cases H) (smt mult_mm.simps vec_map.simps add.right_neutral add_cancel_left_left distrib_left fst_mult_sv mult.commute mult.left_commute mult_mv.simps mult_zero_right prod.sel(1) prod.sel(2) snd_mult_sv)
+          apply (cases H)
+          apply simp
+          apply (metis add_divide_distrib mult.commute)
+          done
         show ?thesis
           using mult_mm_inv_l[of ?M "(k1, 0, 0, k2)" "H *\<^sub>m\<^sub>m ?M", OF \<open>mat_det ?M \<noteq> 0\<close> *[symmetric], symmetric]
           by (simp add: mult_mm_assoc)

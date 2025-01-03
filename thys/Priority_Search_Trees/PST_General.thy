@@ -109,8 +109,7 @@ apply (cases l rule: invpst.cases;
        simp add: mkNode_def min_kp_def)
   subgoal using is_min2_min2_insI by blast
  subgoal by (auto intro!: is_min2_min2_insI simp: insert_commute)
-subgoal by (smt Un_insert_left Un_insert_right is_min2_mergeI is_min2_min2_insI 
-                sup_assoc)
+subgoal by (smt (verit, del_insts) Un_assoc Un_insert_left Un_insert_right is_min2_mergeI is_min2_min2_insI)
 done
 
 end

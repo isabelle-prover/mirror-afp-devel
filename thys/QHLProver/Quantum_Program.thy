@@ -325,7 +325,7 @@ proof auto
          = denote_while_n M0 M1 DS n \<rho>  + matrix_sum d (\<lambda>n. denote_while_n M0 M1 DS n \<rho>) n + (- matrix_sum d (\<lambda>n. denote_while_n M0 M1 DS n \<rho>) n)" 
     using  minus_add_uminus_mat[of "matrix_sum d (\<lambda>n. denote_while_n M0 M1 DS n \<rho>) n" d d "matrix_sum d (\<lambda>n. denote_while_n M0 M1 DS n \<rho>) n"] by auto
   also have "\<dots> = denote_while_n M0 M1 DS n \<rho>  + 0\<^sub>m d d" 
-    by (smt assoc_add_mat minus_add_uminus_mat minus_r_inv_mat sumc uminus_carrier_mat whilenc)
+    by (smt (verit) assoc_add_mat minus_add_uminus_mat minus_r_inv_mat sumc uminus_carrier_mat whilenc)
   also have "\<dots> = denote_while_n M0 M1 DS n \<rho>" using whilenc by auto
   finally have simp: "denote_while_n M0 M1 DS n \<rho> + matrix_sum d (\<lambda>n. denote_while_n M0 M1 DS n \<rho>) n -  matrix_sum d (\<lambda>n. denote_while_n M0 M1 DS n \<rho>) n =
                 denote_while_n M0 M1 DS n \<rho> " by auto
@@ -764,7 +764,7 @@ next
     have "trace (denote x1  \<rho>\<^sub>1) \<le> trace \<rho>\<^sub>1" using denote_positive_trace_dim Seq by auto
     moreover have "trace (denote x1 \<rho>\<^sub>2) \<le> trace \<rho>\<^sub>2" using denote_positive_trace_dim Seq by auto
     ultimately have tr: "trace (denote x1 \<rho>\<^sub>1 + denote x1 \<rho>\<^sub>2) \<le> 1" using Seq(4,5,8) trace_add_linear dim1 dim2
-      by (smt add_mono order_trans)
+      by (smt (verit) add_mono order_trans)
 
     have "denote (Seq x1 x2a) (\<rho>\<^sub>1 + \<rho>\<^sub>2) = denote x2a (denote x1 (\<rho>\<^sub>1 + \<rho>\<^sub>2))" by auto
     moreover have "denote x1 (\<rho>\<^sub>1 + \<rho>\<^sub>2) = denote x1 \<rho>\<^sub>1 + denote x1 \<rho>\<^sub>2" using Seq by auto

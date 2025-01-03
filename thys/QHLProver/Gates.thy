@@ -29,7 +29,7 @@ lemma hermitian_hadamard:
 
 lemma csqrt_2_sq:
   "complex_of_real (sqrt 2) * complex_of_real (sqrt 2) = 2"
-  by (smt of_real_add of_real_hom.hom_one of_real_power one_add_one power2_eq_square real_sqrt_pow2)
+  by (smt (verit) of_real_add of_real_hom.hom_one of_real_power one_add_one power2_eq_square real_sqrt_pow2)
 
 lemma sum_le_2:
   "\<And>(f::nat\<Rightarrow>complex). sum f {0..<2} = f 0 + f 1"

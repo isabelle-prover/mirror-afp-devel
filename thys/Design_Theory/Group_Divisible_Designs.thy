@@ -317,8 +317,7 @@ proof -
     by (simp add: groups_finite) 
   then have eq_mset: "{#b \<in>#  mset_set \<G> . ps \<subseteq> b#} = mset_set {b \<in> \<G> . ps \<subseteq> b}"
     using filter_mset_mset_set groups_finite by blast 
-  then have "{b \<in> \<G> . ps \<subseteq> b} = {G}" using unique psin
-    by (smt Collect_cong ging singleton_conv)
+  then have "{b \<in> \<G> . ps \<subseteq> b} = {G}" using ging unique psin by blast
   thus ?thesis by (simp add: eq_mset) 
 qed
 
@@ -517,7 +516,7 @@ proof -
     by (simp add: points_index_def)
   thus ?thesis using index1 groups1 gdd_index_non_zero_iff gdd_index_zero_iff assms 
       gdd_index_options points_index_def filter_union_mset union_commute
-    by (smt (z3) empty_neutral(1) less_irrefl_nat nonempty_has_size of_nat_1_eq_iff) 
+    by (metis add_cancel_right_left index_together_alt_ss point_index_distrib)
 qed
 
 text \<open>Combining blocks and the group set forms a PBD\<close>
@@ -666,7 +665,7 @@ proof -
     qed
     then show "\<And>bl. bl \<in># \<B> + mset_set {insert x g |g. g \<in> \<G>} \<Longrightarrow> 
         (card bl) \<in> \<K> \<union> {(card g + 1) |g. g \<in> \<G>}"
-      using UnI1 UnI2 block_sizes union_iff by (smt (z3) mem_Collect_eq)
+      using UnI1 UnI2 block_sizes union_iff by auto
     show "\<And>x. x \<in> \<K> \<union> {card g + 1 |g. g \<in> \<G>} \<Longrightarrow> 0 < x" 
       using min_group_size positive_ints by auto
     show "\<And>k.  k \<in> \<K> \<union> {card g + 1 |g. g \<in> \<G>} \<Longrightarrow> 2 \<le> k" 
@@ -890,7 +889,7 @@ proof -
   have "\<And> g . g \<in> \<G> \<Longrightarrow> card g + 1 = \<k>" using assms k_non_zero by auto 
   then have s: "({\<k>} \<union> {(card g) + 1 | g . g \<in> \<G>}) = {\<k>}" by auto
   then interpret pbd: PBD "(add_point x)" "\<B> + mset_set { insert x g | g. g \<in> \<G>}" "{\<k>}"
-    using PBD_by_adjoining_point[of "x"] kge assms by (smt (z3) Collect_cong)
+    using PBD_by_adjoining_point[of "x"] kge assms by argo
   show ?thesis using assms pbd.block_sizes block_size_lt_v finite_sets add_point_def
     by (unfold_locales) (simp_all)
 qed

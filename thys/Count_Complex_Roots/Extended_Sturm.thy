@@ -473,9 +473,7 @@ lemma psign_diff_poly_commute:
 lemma normalize_real_poly:
   "normalize p = smult (1/lead_coeff p) (p::real poly)"
   unfolding normalize_poly_def
-  by (smt (z3) div_unit_factor normalize_eq_0_iff normalize_poly_def 
-      normalize_unit_factor smult_eq_0_iff smult_eq_iff 
-      smult_normalize_field_eq unit_factor_1)
+  by (metis Missing_Polynomial.unit_factor_field inverse_eq_divide normalize_poly_def normalize_poly_old_def)
 
 lemma psign_diff_cancel:
   assumes "poly r x\<noteq>0"
@@ -743,9 +741,8 @@ next
   have ?thesis when "sign_r_pos p x \<longleftrightarrow> poly q x>0"
   proof -
     have "(poly p has_sgnx sgn (poly q x)) (at_right x)"
-      by (smt (z3) False \<open>poly q x \<noteq> 0\<close> has_sgnx_imp_sgnx 
-          poly_has_sgnx_values(2) sgn_real_def sign_r_pos_sgnx_iff that 
-          trivial_limit_at_right_real)
+      by (metis False \<open>poly q x \<noteq> 0\<close> has_sgnx_imp_sgnx lt_ex order_less_not_sym poly_has_sgnx_values(2) sgn_greater
+          sgn_real_def sign_r_pos_sgnx_iff that trivial_limit_at_right_real zero_less_one)
     then have "LIM x at_right x. poly q x / poly p x :> at_top"    
       apply (subst filterlim_divide_at_bot_at_top_iff[of _ "poly q x"])
       apply (auto simp add:\<open>poly q x\<noteq>0\<close>)
@@ -1214,7 +1211,7 @@ proof -
       then show ?thesis
         apply (subst jumpF_polyL_coprime')
         subgoal by simp
-        subgoal by (smt (z3) \<open>p \<noteq> 0\<close> \<open>poly p' x = 0\<close> mult.commute 
+        subgoal by (smt (verit) \<open>p \<noteq> 0\<close> \<open>poly p' x = 0\<close> mult.commute 
               mult_zero_left p poly_0)
         done
     qed
@@ -1243,7 +1240,7 @@ proof -
         apply (subst jumpF_polyR_coprime')
         subgoal by simp
         subgoal 
-          by (smt (z3) \<open>p \<noteq> 0\<close> \<open>poly p' x = 0\<close> mult.commute 
+          by (smt (verit) \<open>p \<noteq> 0\<close> \<open>poly p' x = 0\<close> mult.commute 
               mult_zero_left p poly_0)
         done
     qed
@@ -2779,12 +2776,12 @@ next
           proof (subst jumpF_polyR_coprime')
             let ?C="(P \<noteq> 0 \<and> p * r - q * s \<noteq> 0 \<and> poly P a = 0)"
             have "?C"
-              by (smt (z3) P_def \<open>P \<noteq> 0\<close> add.left_neutral diff_add_cancel 
-                  poly_add poly_mult_zero_iff sign_r_pos_mult sign_r_pos_rec that(1) that(2) that(3))
+              by (smt (verit, del_insts) P_def \<open>P \<noteq> 0\<close> \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> \<open>r \<noteq> 0\<close> \<open>s \<noteq> 0\<close> eq_iff_diff_eq_0 no_zero_divisors poly_add
+                  poly_mult_zero_iff sign_r_pos_mult sign_r_pos_rec that(1,2,3))
             then show "(if ?C then ?R else 0) = ?R" by auto
-            show "poly P a \<noteq> 0 \<or> poly (p * r - q * s) a \<noteq> 0" 
-              by (smt (z3) P_def mult_less_0_iff poly_add poly_diff poly_mult 
-                  poly_mult_zero_iff that(2) that(3))
+            show "poly P a \<noteq> 0 \<or> poly (p * r - q * s) a \<noteq> 0"
+              by (smt (verit, ccfv_threshold) P_def \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close> \<open>r \<noteq> 0\<close> \<open>s \<noteq> 0\<close> no_zero_divisors poly_add poly_diff
+                  poly_mult_zero_iff sign_r_pos_mult sign_r_pos_rec that(2,3))
           qed
           also have "... = - cross_alt P (q * s) a b / 2"
           proof -
@@ -2893,7 +2890,7 @@ next
               subgoal 
                 by (simp add: \<open>poly p a \<noteq> 0\<close> \<open>poly r a \<noteq> 0\<close> that(1))
               subgoal 
-                by (smt (z3) \<open>P \<noteq> 0\<close> \<open>poly P a = 0\<close> 
+                by (smt (verit) \<open>P \<noteq> 0\<close> \<open>poly P a = 0\<close> 
                     \<open>poly P a \<noteq> 0 \<or> poly (p * r - q * s) a \<noteq> 0\<close> poly_0)
               done
             also have "... = (ff (sign_r_pos P a = (0 < poly (p * r) a)))"
@@ -2904,7 +2901,7 @@ next
             qed
             also have "... = ff ((C1 = C2) = C3)"
               unfolding CC_def
-              by (smt (z3) \<open>p \<noteq> 0\<close> \<open>poly p a \<noteq> 0\<close> \<open>poly r a \<noteq> 0\<close> \<open>r \<noteq> 0\<close> no_zero_divisors 
+              by (smt (verit) \<open>p \<noteq> 0\<close> \<open>poly p a \<noteq> 0\<close> \<open>poly r a \<noteq> 0\<close> \<open>r \<noteq> 0\<close> no_zero_divisors 
                   poly_mult_zero_iff sign_r_pos_mult sign_r_pos_rec)
             finally show ?thesis .
           qed

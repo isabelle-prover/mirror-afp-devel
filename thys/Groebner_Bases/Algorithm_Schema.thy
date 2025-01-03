@@ -3069,7 +3069,7 @@ proof -
     "\<exists>r \<in> set gs \<union> set bs \<union> set hs. let k = fst (snd r) in
           k \<noteq> ?i \<and> k \<noteq> ?j \<and> lt (fst r) adds\<^sub>t ?l \<and> pair_in_list ps ?i k \<and>
          ((r \<in> set gs \<union> set bs \<and> q_in_bs) \<or> pair_in_list ps ?j k) \<and> fst r \<noteq> 0"
-    by (smt UnI1 chain_ncrit_def sup_commute)
+    by (smt (verit) Un_iff chain_ncrit_def)
 
   then obtain r where r_in: "r \<in> set gs \<union> set bs \<union> set hs" and "fst r \<noteq> 0" and rp: "fst (snd r) \<noteq> ?i"
     and rq: "fst (snd r) \<noteq> ?j" and "lt (fst r) adds\<^sub>t ?l"
