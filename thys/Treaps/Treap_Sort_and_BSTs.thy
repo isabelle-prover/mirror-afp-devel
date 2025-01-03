@@ -87,13 +87,8 @@ lemma arg_min_on_image_finite:
   fixes f :: "'b \<Rightarrow> 'c :: linorder"
   assumes "inj_on f (g ` B)" "finite B" "B \<noteq> {}"
   shows "arg_min_on f (g ` B) = g (arg_min_on (f \<circ> g) B)"
-proof -
-  note * = arg_min_if_finite[OF \<open>finite B\<close> \<open>B \<noteq> {}\<close>, of \<open>f \<circ> g\<close>]
-  show ?thesis
-    using assms * arg_min_inj_eq
-    by (smt arg_min_if_finite(1) arg_min_least 
-        comp_apply finite_imageI imageE image_eqI image_is_empty inj_onD less_le)
-qed
+  by (smt (verit, best) antisym_conv3 arg_min_if_finite(1,2) assms(1,2,3) finite_imageI image_iff image_is_empty o_apply
+      the_inv_into_f_f)
 
 lemma fst_snd_arg_min_on: fixes p::"'a \<Rightarrow> 'b::linorder"
   assumes "finite B" "inj_on p B" "B \<noteq> {}"

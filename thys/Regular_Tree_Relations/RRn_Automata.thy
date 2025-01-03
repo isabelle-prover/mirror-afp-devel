@@ -1526,7 +1526,7 @@ proof -
   have F: "RRn_spec 1 ?F {[t] | t. t \<in> \<T>\<^sub>G (fset \<F>)}" using true_RRn_spec[of 1 \<F>] unfolding * .
   have "RRn_spec 3 ?CA ?Rs" "RRn_spec 3 ?CB ?Ls"
     using append_automaton[OF rr2(1) F] append_automaton[OF F rr2(2)]
-    by (auto simp: numeral_3_eq_3) (smt Collect_cong)
+    by (auto simp: numeral_3_eq_3) (smt (verit) Collect_cong)
   from permute_automaton[OF intersect_automaton[OF this], of "[1, 0, 2]"]
   have "RRn_spec 3 ?PI ((\<lambda>xs. map ((!) xs) [1, 0, 2]) ` (?Rs \<inter> ?Ls))"
     by (auto simp: atLeast0_lessThan_Suc insert_commute numeral_2_eq_2 numeral_3_eq_3)

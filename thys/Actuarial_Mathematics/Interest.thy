@@ -156,7 +156,7 @@ proof
   show "i = 0"
   proof (rule ccontr)
     assume "i \<noteq> 0"
-    hence "1/m = 0" using powr_inj \<star> v_futr_pos by smt
+    hence "1/m = 0" using powr_inj \<star> v_futr_pos by (smt (verit))
     thus False using that by simp
   qed
 next
@@ -223,7 +223,7 @@ qed
 lemma d_nom_pos_iff_i_pos: "$d^{m} > 0 \<longleftrightarrow> i > 0" if "m \<noteq> 0" for m::nat
 proof -
   have "$d^{m} > 0 \<longleftrightarrow> $i^{m} > 0"
-    unfolding d_nom_def using zero_less_divide_iff i_nom_pos_iff_i_pos v_futr_m_pos that by smt
+    unfolding d_nom_def using zero_less_divide_iff i_nom_pos_iff_i_pos v_futr_m_pos that by (smt (verit))
   thus ?thesis
     using i_nom_pos_iff_i_pos that by auto
 qed
@@ -332,7 +332,7 @@ proof -
     apply (subst times_divide_eq_right[of _ _ "$v.^(1/m)", THEN sym])
     using v_pos by (subst diff_divide_distrib[of _ _ "$v.^(1/m)"], simp)
   also have "\<dots> = (1 - $v^n) / (m * (1 / $v.^(1/m) - 1))"
-    using minus_divide_divide by (smt mult_minus_right)
+    using minus_divide_divide by (smt (verit) mult_minus_right)
   also have "\<dots> = (1 - $v^n) / $i^{m}"
     unfolding i_nom_def v_pres_def using v_futr_pos powr_divide by auto
   finally show ?thesis .
@@ -426,7 +426,7 @@ lemma a'_calc: "$a'_n = (1 - $v.^n) / $\<delta>" if "i \<noteq> 0" "n \<ge> 0" f
   unfolding ann_cont_def
   apply (rule integral_unique)
   using has_integral_powr2_from_0[OF v_pos _ that(2)] v_delta v_1_iff_i_0 that
-  by (smt minus_divide_divide)
+  by (smt (verit) minus_divide_divide)
 
 lemma a'_calc_i_0: "$a'_n = n" if "i = 0" "n \<ge> 0" for n::real
   unfolding ann_cont_def
@@ -451,7 +451,7 @@ proof -
     using integrable_on_powr2_from_0_general[of "$v" n] v_pos v_futr_pos that
     apply (subst integral_mult, simp)
     apply (rule integral_cong)
-    unfolding v_pres_def using inverse_powr powr_add[THEN sym] by smt
+    unfolding v_pres_def using inverse_powr powr_add[THEN sym] by (smt (verit))
   also have "\<dots> = $s'_n"
     unfolding acc_cont_def using v_futr_pos that
     apply (subst has_integral_interval_reverse[of 0 n, simplified, THEN integral_unique]; simp?)
@@ -537,7 +537,7 @@ qed
 
 lemma lim_n_a: "(\<lambda>n. $a^{m}_n) \<longlonglongrightarrow> $a^{m}_\<infinity>" if "m \<noteq> 0" "i > 0" for m::nat
 proof -
-  have "$i^{m} \<noteq> 0" using i_nom_pos_iff_i_pos that by smt
+  have "$i^{m} \<noteq> 0" using i_nom_pos_iff_i_pos that by (smt (verit))
   moreover have "(\<lambda>n. $v^n) \<longlonglongrightarrow> 0"
     using LIMSEQ_realpow_zero[of "$v"] v_pos v_lt_1_iff_i_pos that by simp
   ultimately show ?thesis
@@ -548,7 +548,7 @@ qed
 
 lemma lim_n_a'': "(\<lambda>n. $a''^{m}_n) \<longlonglongrightarrow> $a''^{m}_\<infinity>" if "m \<noteq> 0" "i > 0" for m::nat
 proof -
-  have "$d^{m} \<noteq> 0" using d_nom_pos_iff_i_pos that by smt
+  have "$d^{m} \<noteq> 0" using d_nom_pos_iff_i_pos that by (smt (verit))
   moreover have "(\<lambda>n. $v^n) \<longlonglongrightarrow> 0"
     using LIMSEQ_realpow_zero[of "$v"] v_pos v_lt_1_iff_i_pos that by simp
   ultimately show ?thesis
@@ -678,7 +678,7 @@ proof -
         apply ((erule ssubst)+, simp_all add: field_simps)
       using v_pos
        apply (simp add: powr_diff[THEN sym] powr_realpow[THEN sym])
-      by (smt powr_minus_divide)
+      by (smt (verit) powr_minus_divide)
     also have "\<dots> =
       ($v^n * ($v.^(-n-1/m) - (n*m+1)*$v.^(-1/m) + n*m)) / ((m*($v.^(-1/m)-1))^2)"
       apply (subst powr_add[of _ n "1/m"])

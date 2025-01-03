@@ -56,7 +56,7 @@ proof (goal_cases \<F> lv fin)
      apply fastforce
     apply (metis (no_types, lifting) assms(1) in_mono rhs_wf)
     apply (metis (no_types, lifting) assms(1) in_mono rhs_wf)
-    by (smt (z3) UN_subset_iff fst_conv in_mono le_sup_iff)
+    by (smt (verit) UN_subset_iff fst_conv in_mono le_sup_iff)
 qed (insert assms, (fastforce simp: is_to_trs_def funas_trs_def lv_trs_def split: ftrs.splits)+)
 
 
@@ -647,7 +647,7 @@ next
         apply (simp add: Compl_eq[symmetric] Diff_eq[symmetric] Un_Diff Diff_triv Int_absorb1)
         apply (simp add: nth_image[symmetric, of "length xs" xs for xs, simplified] image_iff comp_def)
         using image_cong[OF refl arg_cong[OF the_mem_idx_simp]] \<open>distinct vs''\<close>
-        by (smt (z3) add_diff_inverse_nat add_less_cancel_left atLeast0LessThan lessThan_iff the_mem_idx_simp)
+        by (smt (verit) add_diff_inverse_nat add_less_cancel_left atLeast0LessThan lessThan_iff the_mem_idx_simp)
       done
   done
 qed
@@ -923,7 +923,7 @@ lemma closed_sat_form_env_dom:
   using formula_relevantD[OF assms(1)] assms(2-)
   apply auto
   apply blast
-  by (smt rangeI shift_eq shift_rangeI shift_right_rangeI shift_shift_right_id subsetD)
+  by (smt (verit) rangeI shift_eq shift_rangeI shift_right_rangeI shift_shift_right_id subsetD)
 
 (* MOVE *)
 lemma find_append:

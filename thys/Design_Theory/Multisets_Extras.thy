@@ -40,7 +40,7 @@ next
     by (metis (full_types, lifting) Collect_empty_eq_bot Pow_bottom bot_empty_eq  mem_Collect_eq)  
   then have " {y \<in> (insert x ` Pow F) . card y = 1} = {{x}}"
     using single card_1_singletonE card_eq_0_iff
-    by (smt empty_Collect_eq mem_Collect_eq singletonD zero_neq_one) 
+    by (smt (verit) empty_Collect_eq mem_Collect_eq singletonD zero_neq_one) 
   then have split2:"{y \<in> Pow (insert x F) . card y = 1} = {y \<in> (Pow F) . card y = 1} \<union> {{x}}" 
     using split by simp
   then show ?case 
@@ -521,7 +521,7 @@ next
     then have "(\<Sum>x\<in>set_mset (add_mset y A). x * count (add_mset y A) x) = 
         (y * (count (add_mset y A) y)) + (\<Sum>x\<in>(set_mset A) - {y}. x * count A x)" 
       using x_val finite_set_mset sum.cong sum.insert rhs
-      by (smt DiffD1 Diff_insert_absorb insert_absorb mk_disjoint_insert sum.insert_remove) 
+      by (smt (verit) DiffD1 Diff_insert_absorb insert_absorb mk_disjoint_insert sum.insert_remove) 
     then have s1: "(\<Sum>x\<in>set_mset (add_mset y A). x * count (add_mset y A) x) = 
         y + y * (count A y) + (\<Sum>x\<in>(set_mset A) - {y}. x * count A x)" 
       using y_count by simp
@@ -622,7 +622,7 @@ proof (rule ccontr)
   then obtain p1 where count: "count P p1 \<ge> 2"
     by (metis Suc_1 distinct_mset_count_less_1 less_Suc_eq_le not_less_eq) 
   then have cge: "\<And> x . x \<in># p1 \<Longrightarrow> (\<Sum>p \<in># P. count p x ) \<ge> 2"
-    by (smt count_greater_eq_one_iff count_sum_mset_if_1_0 dual_order.trans sum_mset_mono zero_le)
+    by (smt (verit) count_greater_eq_one_iff count_sum_mset_if_1_0 dual_order.trans sum_mset_mono zero_le)
   have elem_in: "\<And> x . x \<in># p1 \<Longrightarrow> x \<in># A" using partition_on_mset_elems
     by (metis count assms(1) count_eq_zero_iff not_numeral_le_zero) 
   have "\<And> x . x \<in># A \<Longrightarrow> count A x = 1" using assms
@@ -639,14 +639,14 @@ lemma partition_on_mset_distinct_disjoint:
   assumes "p2 \<in># P - {#p1#}"
   shows "p1 \<inter># p2 = {#}"
   using Diff_eq_empty_iff_mset assms diff_add_zero distinct_mset_add multiset_inter_assoc sum_mset.remove
-  by (smt partition_on_msetD1 subset_mset.inf.absorb_iff2 subset_mset.le_add_same_cancel1 subset_mset.le_iff_inf)
+  by (smt (verit) partition_on_msetD1 subset_mset.inf.absorb_iff2 subset_mset.le_add_same_cancel1 subset_mset.le_iff_inf)
 
 lemma partition_on_mset_diff: 
   assumes "partition_on_mset A P"
   assumes "Q \<subseteq>#P"
   shows "partition_on_mset (A - \<Sum>\<^sub>#Q) (P - Q)"
   using assms partition_on_mset_def
-  by (smt diff_union_cancelL subset_mset.add_diff_inverse sum_mset.union union_iff)
+  by (smt (verit) diff_union_cancelL subset_mset.add_diff_inverse sum_mset.union union_iff)
 
 lemma sigma_over_set_partition_count: 
   assumes "finite A"
@@ -794,7 +794,7 @@ lemma partition_on_mset_add:
   assumes "add_mset a X = X'"
   shows "partition_on_mset (add_mset a A) (add_mset X' (P - {#X#}))"
   using add_mset_add_single assms empty_not_add_mset mset_subset_eq_single partition_on_mset_all
-  by (smt partition_on_mset_def subset_mset.add_diff_inverse sum_mset.add_mset sum_mset.remove union_iff union_mset_add_mset_left)
+  by (smt (verit) partition_on_mset_def subset_mset.add_diff_inverse sum_mset.add_mset sum_mset.remove union_iff union_mset_add_mset_left)
 
 lemma partition_on_mset_elem_exists_part:
   assumes "partition_on_mset A P"

@@ -395,11 +395,11 @@ qed
 
 lemma arg_0_iff:
   shows "z \<noteq> 0 \<and> Arg z = 0 \<longleftrightarrow> is_real z \<and> Re z > 0"
-  by (smt arg_complex_of_real_negative arg_complex_of_real_positive Arg_zero complex_of_real_Re is_real_arg1 pi_gt_zero zero_complex.simps)
+  by (smt (verit, best) arg_complex_of_real_negative arg_complex_of_real_positive Arg_zero complex_of_real_Re is_real_arg1 pi_gt_zero zero_complex.simps)
 
 lemma arg_pi_iff:
   shows "Arg z = pi \<longleftrightarrow> is_real z \<and> Re z < 0"
-  by (smt arg_complex_of_real_negative arg_complex_of_real_positive Arg_zero complex_of_real_Re is_real_arg1 pi_gt_zero zero_complex.simps)
+  by (smt (verit, best) arg_complex_of_real_negative arg_complex_of_real_positive Arg_zero complex_of_real_Re is_real_arg1 pi_gt_zero zero_complex.simps)
 
 
 text \<open>@{term Arg} of imaginary numbers\<close>
@@ -422,7 +422,7 @@ lemma arg_complex_of_real_times_i_positive [simp]:
 proof-
   have "sin (Arg (Complex 0 k)) > 0"
     using \<open>k > 0\<close> rcis_cmod_Arg[of "Complex 0 k"] Im_rcis[of "cmod (Complex 0 k)" "Arg (Complex 0 k)"]
-    by (smt complex.sel(2) mult_nonneg_nonpos norm_ge_zero)
+    by (smt (verit, best) complex.sel(2) mult_nonneg_nonpos norm_ge_zero)
   thus ?thesis
     using assms is_imag_arg2[of "cor k * \<i>"]
     using Arg_zero complex_of_real_i
@@ -439,16 +439,16 @@ proof-
   thus ?thesis
     using assms is_imag_arg2[of "cor k * \<i>"]
     using Arg_zero complex_of_real_i[of k]
-    by (smt complex.sel(1) sin_pi_half sin_zero)
+    by (smt (verit, best) complex.sel(1) sin_pi_half sin_zero)
 qed
 
 lemma arg_pi2_iff:
   shows "z \<noteq> 0 \<and> Arg z = pi / 2 \<longleftrightarrow> is_imag z \<and> Im z > 0"
-  by (smt Im_rcis Re_i_times Re_rcis arcsin_minus_1 cos_pi_half divide_minus_left mult.commute mult_cancel_right1 rcis_cmod_Arg is_imag_arg2 sin_arcsin sin_pi_half zero_less_mult_pos zero_less_norm_iff)
+  by (smt (verit, best) Im_rcis Re_i_times Re_rcis arcsin_minus_1 cos_pi_half divide_minus_left mult.commute mult_cancel_right1 rcis_cmod_Arg is_imag_arg2 sin_arcsin sin_pi_half zero_less_mult_pos zero_less_norm_iff)
 
 lemma arg_minus_pi2_iff:
   shows "z \<noteq> 0 \<and> Arg z = - pi / 2 \<longleftrightarrow> is_imag z \<and> Im z < 0"
-  by (smt arg_pi2_iff complex.expand divide_cancel_right pi_neq_zero is_imag_arg1 is_imag_arg2 zero_complex.simps(1) zero_complex.simps(2))
+  by (smt (verit, best) arg_pi2_iff complex.expand divide_cancel_right pi_neq_zero is_imag_arg1 is_imag_arg2 zero_complex.simps(1) zero_complex.simps(2))
 
 text \<open>Argument is a canonical angle\<close>
 
@@ -713,13 +713,13 @@ proof-
     using assms
     by auto
   then obtain r \<phi> where polar: "z = cor r * cis \<phi>" "\<phi> = Arg z" "r > 0"
-    by (smt cmod_cis mult_eq_0_iff norm_ge_zero of_real_0)
+    by (smt (verit, best) cmod_cis mult_eq_0_iff norm_ge_zero of_real_0)
   hence "Im z = r * sin \<phi>"
     by (metis Im_mult_real Re_complex_of_real cis.simps(2) Im_complex_of_real)
   hence  "Im z > 0 \<longleftrightarrow> sin \<phi> > 0" "Im z < 0 \<longleftrightarrow> sin \<phi> < 0"
     using \<open>r > 0\<close>
     using mult_pos_pos mult_nonneg_nonneg zero_less_mult_pos mult_less_cancel_left
-    by smt+
+    by (smt (verit, best))+
   moreover
   have "\<phi> \<noteq> pi" "\<phi> \<noteq> 0"
     using \<open>\<not> is_real z\<close> polar cis_pi
@@ -727,7 +727,7 @@ proof-
   hence "sin \<phi> > 0 \<longleftrightarrow> \<phi> > 0" "\<phi> < 0 \<longleftrightarrow> sin \<phi> < 0"
     using \<open>\<phi> = Arg z\<close> \<open>\<phi> \<noteq> 0\<close> \<open>\<phi> \<noteq> pi\<close>
     using Arg_bounded[of z]
-    by (smt sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
+    by (smt (verit, best) sin_gt_zero sin_le_zero sin_pi_minus sin_0_iff_canon sin_ge_zero)+
   ultimately
   show ?thesis
     using \<open>\<phi> = Arg z\<close>
@@ -769,7 +769,7 @@ next
     by (auto simp add: norm_mult arg_mult)
   have *: "sqrt (cmod z) = cmod s"
     using \<open>cmod s * cmod s = cmod z\<close>
-    by (smt norm_not_less_zero real_sqrt_abs2)
+    by (smt (verit, best) norm_not_less_zero real_sqrt_abs2)
 
   have **: "Arg z / 2 = Arg s - k*pi"
     using \<open>2 * Arg s - Arg z = 2*k*pi\<close>
@@ -904,7 +904,8 @@ lemma positive_rot_to_x_axis:
   assumes "z \<noteq> 0"
   shows "Re (cis (-Arg z) * z) > 0"
   using assms
-  by (smt Re_complex_of_real cis_rcis_eq mult_cancel_right1 rcis_cmod_Arg rcis_mult rcis_zero_arg zero_less_norm_iff)
+  by (smt (verit) ab_group_add_class.ab_left_minus add_eq_0_iff arg_cis arg_inv arg_inv_not_pi arg_mult arg_pi_iff cis_neq_zero cis_pm_pi(2)
+      divisors_zero is_real_rot_to_x_axis pi_canonical pi_neq_zero real_imag_0 zero_canonical)
 
 text \<open>Inequalities involving @{term cmod}.\<close>
 

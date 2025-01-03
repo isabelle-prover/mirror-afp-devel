@@ -2441,7 +2441,7 @@ proof -
     have "\<not> cmp2.lt k k" by auto
     with Cons(4) have "k \<notin> fst ` set xs" by blast
     with \<open>k \<notin> fst ` set ys\<close> have "k \<notin> fst ` (set xs \<union> set ys)" by (simp add: image_Un)
-    hence "(set xs \<union> set ys) \<inter> range (Pair k) = {}" by (smt Int_emptyI fstI image_iff)
+    hence "(set xs \<union> set ys) \<inter> range (Pair k) = {}" by (smt (verit) Int_emptyI fstI image_iff)
     hence eq2: "(set xs \<union> set ys) - range (Pair k) = set xs \<union> set ys" by (rule Diff_triv)
     from \<open>oalist_inv_raw ys\<close> have "oalist_inv_raw (foldr update_by_pair xs ys)"
       by (rule oalist_inv_raw_foldr_update_by_pair)

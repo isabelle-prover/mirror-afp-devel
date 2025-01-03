@@ -801,7 +801,10 @@ next
       "\<not> (a, b) \<approx>\<^sub>v \<infinity>\<^sub>v"
     hence "b \<noteq> 0" "cnj a * b + cnj b * a = 0"
       using inf_cvec_z2_zero_iff
-      by (blast, smt add.left_neutral add_cancel_right_right mult.commute mult.left_neutral mult_not_zero on_circline_cmat_cvec_circline_equation y_axis_cmat_def)
+       apply blast
+      apply (smt (verit, ccfv_threshold) \<open>on_circline_cmat_cvec y_axis_cmat (a, b)\<close> add_0 add_cancel_left_right mult.commute
+          mult_cancel_left2 on_circline_cmat_cvec_circline_equation y_axis_cmat_def)
+      done
     thus "\<exists>c. is_imag c \<and> (a, b) \<approx>\<^sub>v of_complex_cvec c"
       using eq_minus_cnj_iff_imag[of "a / b"]
       apply (rule_tac x="a/b" in exI)
@@ -1585,7 +1588,7 @@ proof-
   have "Re (-k2/k1) \<ge> 0"
     using \<open>Re k1 * Re k2 < 0\<close> \<open>is_real k1\<close> \<open>is_real k2\<close> \<open>k1 \<noteq> 0\<close>
     using Re_divide_real[of k1 "-k2"]
-    by (smt divide_less_0_iff mult_nonneg_nonneg mult_nonpos_nonpos uminus_complex.simps(1))
+    by (smt (verit) divide_less_0_iff mult_nonneg_nonneg mult_nonpos_nonpos uminus_complex.simps(1))
 
   have "quad_form (z1, 1) (k1, 0, 0, k2) = 0 \<longleftrightarrow> (cor (cmod z1))\<^sup>2 = -k2 / k1"
     using assms add_eq_0_iff[of k2 "k1*(cor (cmod z1))\<^sup>2"]
@@ -1724,7 +1727,7 @@ proof (transfer, transfer)
       done
     ultimately
     have "Re A * Re (x1 * cnj x1) + Re D * Re (x2 * cnj x2) \<noteq> 0"
-      by (smt mult_neg_pos mult_nonneg_nonneg mult_nonpos_nonneg mult_pos_pos)
+      by (smt (verit) mult_neg_pos mult_nonneg_nonneg mult_nonpos_nonneg mult_pos_pos)
     hence "A * (x1 * cnj x1) + D * (x2 * cnj x2) \<noteq> 0"
       using \<open>is_real A\<close> \<open>is_real D\<close>
       by (metis Re_mult_real plus_complex.simps(1) zero_complex.simps(1))

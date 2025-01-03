@@ -412,7 +412,7 @@ proof -
         by(meson neq_Leaf2_iff)
       have "doubly_balanced_arith (size l') (size llr) (size rlr) (size rr)"
         using assms(1) notBalanced rl'Balanced rBalanced isDouble assms(2,3)
-        apply (auto) apply((thin_tac "_ = _")+, smt)? done
+        by auto
       thus ?thesis using notBalanced isDouble assms(2) rBalanced by simp
     qed
   qed

@@ -47,7 +47,7 @@ proof-
   obtain yy where yy: "yy \<noteq> x2"
     by (metis(full_types) list.set_intros(1) pickFresh_var)
   have 0: "a = vsubstA a yy x2" 
-  	using assms freshA_vsubstA_idle yy by presburger
+    using assms freshA_vsubstA_idle yy by presburger
   show ?thesis
     by (metis "0" vsubstA_chain yy)
 qed
@@ -87,7 +87,7 @@ lemma vsubstA_idle_freshA:
 
 lemma freshA_iff_ex_vvsubstA_idle:
   "freshA x a \<longleftrightarrow> (\<exists>y. y\<noteq>x \<and> vsubstA a y x = a)"
-  by (smt (z3) CollectI exists_var finite.insertI insertCI freshA_def vsubstA_idle_freshA)
+  by (smt (verit) CollectI exists_var finite.insertI insertCI freshA_def vsubstA_idle_freshA)
 
 lemma freshA_iff_all_vvsubstA_idle:
   "freshA x a \<longleftrightarrow> (\<forall>y. y\<noteq>x \<longrightarrow> vsubstA a y x = a)"

@@ -985,7 +985,7 @@ next
   case (8 a b m t ts)
   then show ?case
     apply (simp add: Let_def)
-    by (smt (z3) ab_mins'_le_a linorder_not_le min.absorb_iff2 min.coboundedI1 min_def)
+    by (smt (verit) ab_mins'_le_a linorder_not_le min.absorb_iff2 min.coboundedI1 min_def)
 qed auto
 
 theorem fishburn_ab'_ab:
@@ -1387,7 +1387,8 @@ next
   show ?case
     using "4.prems" apply (simp add: Let_def)
     using "4.IH" ab_maxs'_ge_a
-    by (smt (z3) le_max_iff_disj linorder_not_le max.cobounded2 max.commute max_def)
+    by (smt (verit) knuth_comm linorder_le_cases max.absorb1 max.absorb2 max.absorb4
+        max.bounded_iff)
 next
   case (6 a b ts)
   show ?case
@@ -1398,7 +1399,7 @@ next
   show ?case
     using "8.prems" apply (simp add: Let_def)
     using "8.IH" ab_mins'_le_a
-    by (smt (z3) leD linorder_linear min.absorb1 min.absorb2 min.bounded_iff not_le_imp_less)
+    by (smt (verit) leD linorder_linear min.absorb1 min.absorb2 min.bounded_iff not_le_imp_less)
 qed auto
 
 text \<open>Example of reduced search space:\<close>
@@ -1780,7 +1781,7 @@ proof(induction t a b and i ts a b and t a b and i ts a b rule: abir0'_abirs0'_a
 next
   case (4 i t ts a b)
   thus ?case apply (simp add: Let_def)
-    by (smt (z3) linorder_not_le max.coboundedI2 max_def nle_le)
+    by (smt (verit, ccfv_SIG) linorder_not_le max.coboundedI2 max_def nle_le)
 next
   case (6 ts a b)
   thus ?case
@@ -1847,7 +1848,7 @@ proof(induction i0 i1 t a b and i0 i1 i ts a b and i0 i1 t a b and i0 i1 i ts a 
 next
   case (4 i t ts a b)
   thus ?case apply (simp add: Let_def)
-    by (smt (z3) linorder_not_le max.coboundedI2 max_def nle_le)
+    by (smt (verit, ccfv_SIG) linorder_not_le max.coboundedI2 max_def nle_le)
 next
   case (6 ts a b)
   thus ?case
@@ -1898,7 +1899,8 @@ next
   case (4 i0 i1 i t ts a b)
   show ?case
     using "4.prems" "4.IH"(2)[OF refl, of i0' i1'] "4.IH"(1)[OF \<open>a<b\<close>, of i0' i1' "ts0 @ [t]"]
-    by (smt (z3) Cons_eq_appendI abirs0'.simps(2) append_eq_append_conv2 append_self_conv linorder_not_less max_def_raw nless_le order.strict_trans1)
+    by (smt (verit) abirs0'.simps(2) append_Cons append_eq_append_conv2 linorder_not_less max.absorb4
+        max.absorb_iff2 max.coboundedI2 max.order_iff self_append_conv)
 next
   case 5
   then show ?case by simp
@@ -2185,7 +2187,8 @@ proof(induction a b t and a b ts rule: ab_negmax2_ab_negmaxs2.induct)
 next
   case 4 thus ?case
     apply (simp add: Let_def)
-    by (smt (z3) de_morgan_max le_max_iff_disj linorder_not_le max.commute max_def neg_neg uminus_less_reorder)
+    by (smt (verit) less_le_not_le linorder_less_linear max.absorb3 max.cobounded1 max.commute max_min_commute2
+        min.absorb2 min.commute minus_le_minus neg_neg)
 qed auto
 
 corollary ab_negmax2_bot_top: "ab_negmax2 \<bottom> \<top> t = negmax t"

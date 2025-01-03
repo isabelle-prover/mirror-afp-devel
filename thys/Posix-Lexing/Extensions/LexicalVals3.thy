@@ -248,8 +248,9 @@ apply(rule Prf.intros)
   prefer 2
   using nth_mem apply blast
   apply(case_tac vs1)
-  apply (smt Groups.add_ac(2) Prf.intros(9) add.right_neutral add_Suc_right append.simps(1) insert_iff length_append list.set(2) list.size(3) list.size(4))
-    apply(auto)
+   apply (smt (verit, del_insts) Prf.intros(9) append.left_neutral length_Suc_conv length_append
+      set_ConsD)
+  apply(auto)
 done   
 
 lemma LV_From_empty:

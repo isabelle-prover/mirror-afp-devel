@@ -185,7 +185,7 @@ text \<open>Cosine and scalar product\<close>
 
 lemma cos_c_: "cos (\<angle>c z1 z2) = cos (\<angle> z1 z2)"
   unfolding ang_vec_c_def
-  by (smt cos_minus)
+  by (smt (verit) cos_minus)
 
 lemma ortho_c_scalprod0:
   assumes "z1 \<noteq> 0" and "z2 \<noteq> 0"
@@ -479,7 +479,7 @@ proof-
     case True
     thus ?thesis
       unfolding ang_vec_a_def acute_ang_def
-      by (smt cos_pi_half pi_def pi_half)
+      by (smt (verit) cos_pi_half pi_def pi_half)
   next
     case False
     show ?thesis

@@ -387,7 +387,7 @@ lemma and_list_aci_simps:
 lemma ord_form_list_idemp:
   "ord_form_list_aci (ord_form_list_aci q) = ord_form_list_aci q"
   apply (induct q) apply (auto simp: list.set_map)
-  apply (smt imageE list.set_map map_idI set_sort sorted_sort_id sorted_sort_key)+
+  apply (smt (verit) imageE list.set_map map_idI set_sort sorted_sort_id sorted_sort_key)+
   done
 
 lemma eval_lsit_aci_ord_form_list_aci:

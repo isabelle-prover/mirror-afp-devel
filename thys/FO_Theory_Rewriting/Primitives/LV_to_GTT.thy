@@ -267,7 +267,7 @@ proof
       using pattern_automaton_reach_smallet_term[of l \<F> "fst |`| R" "term_of_gterm s"]
       using pattern_automaton_reach_smallet_term[of r \<F> "snd |`| R" "term_of_gterm t"]
       using st(2, 3) tm(3) unfolding tm
-      by (auto simp: gta_der_def root_pair_automaton_def) (smt bot_term_of_gterm_conv)+
+      by (auto simp: gta_der_def root_pair_automaton_def) (smt (verit) bot_term_of_gterm_conv)+
     have "linear_term l" "linear_term r" using tm(3) assms(1)
       by (auto simp: lv_trs_def)
     then obtain \<sigma> \<tau> where "l \<cdot> \<sigma> = ?t_o_g s" "r \<cdot> \<tau> = ?t_o_g t" using sm

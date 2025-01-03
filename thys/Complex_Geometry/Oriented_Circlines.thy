@@ -381,12 +381,14 @@ proof (transfer, transfer)
 
   have "Re D - Re (cnj B * B / cnj A) < Re ((C - cnj B * A / cnj A) * B / A)" if "Re A > 0"
     using HH * \<open>is_real A\<close> that
-    by simp (smt "**" "***" cnj.simps(1) cnj.simps(2) complex_eq diff_divide_distrib left_diff_distrib'
-               minus_complex.simps(1) mult.commute nonzero_mult_div_cancel_right)?
+    by simp
+      (metis "**" "***" \<open>C = cnj B\<close> cancel_comm_monoid_add_class.diff_cancel diff_divide_distrib eq_cnj_iff_real
+        minus_complex.simps(1) mult.commute mult_eq_0_iff nonzero_mult_div_cancel_right)
   moreover have "Re A > 0" if "Re D - Re (cnj B * B / cnj A) < Re ((C - cnj B * A / cnj A) * B / A)"
     using HH * \<open>is_real A\<close> that
-    by simp (smt "**" "***" cnj.simps(1) cnj.simps(2) complex_eq diff_divide_distrib left_diff_distrib'
-               minus_complex.simps(1) mult.commute nonzero_mult_div_cancel_right)?
+    by simp
+      (metis "**" "***" \<open>C = cnj B\<close> cancel_comm_monoid_add_class.diff_cancel diff_divide_distrib eq_cnj_iff_real
+        minus_complex.simps(1) mult.commute mult_eq_0_iff nonzero_mult_div_cancel_right)
   ultimately show "pos_oriented_cmat H = in_ocircline_cmat_cvec H (of_complex_cvec a)"
     using HH \<open>Re A \<noteq> 0\<close> * \<open>is_real A\<close> by (auto simp add: vec_cnj_def)
 qed
@@ -492,7 +494,9 @@ proof-
         case True
         thus ?thesis 
           using assms * ** H2 \<open>\<not> Re A > 0\<close>
-          by simp (smt arg_0_iff arg_complex_of_real_negative arg_complex_of_real_positive arg_mult_eq complex_of_real_Re mult.right_neutral mult_eq_0_iff of_real_0 of_real_1 zero_complex.simps(1))
+          by simp
+            (smt (verit, del_insts) Im_complex_of_real Re_complex_of_real Re_mult_real arg_0_iff arg_pi_iff is_real_arg2
+              mult_less_0_iff mult_minus_right)
       next
         case False
         thus ?thesis

@@ -42,7 +42,7 @@ proof (auto simp del: congruence_def)
     by auto
   hence "is_real (k*k) \<and> Re (k * k) > 0"
     using \<open>k \<noteq> 0\<close>
-    by (smt complex_eq_if_Re_eq mult_eq_0_iff mult_minus_left uminus_complex.simps(1) zero_complex.simps(1) zero_complex.simps(2))
+    by (smt (verit) complex_eq_if_Re_eq mult_eq_0_iff mult_minus_left uminus_complex.simps(1) zero_complex.simps(1) zero_complex.simps(2))
   hence "is_real k"
     by auto
   thus "\<exists>ka. ka \<noteq> 0 \<and> k = cor ka"

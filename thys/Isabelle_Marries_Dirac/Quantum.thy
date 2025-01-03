@@ -270,8 +270,7 @@ dim_row_of_cjn_prod dim_col_of_cjn_prod
   also have "((M\<^sup>\<star>) * (N\<^sup>\<star>)) $$ (i,j) = 
     (\<Sum>k<(dim_row N). cnj(M $$ (i,k)) * cnj(N $$ (k,j)))"
     using assms a1 a2 cpx_mat_cnj_def index_mat times_mat_def scalar_prod_def row_def col_def
-    by (smt case_prod_conv dim_col dim_col_mat(1) dim_row_mat(1) index_vec lessThan_atLeast0 
-        lessThan_iff sum.cong)
+    by simp
   finally show "(M * N)\<^sup>\<star> $$ (i, j) = ((M\<^sup>\<star>) * (N\<^sup>\<star>)) $$ (i, j)" by simp
 qed
 
@@ -631,8 +630,7 @@ next
   then have "cnj((A * v) $$ (j,0)) = cnj (row A j \<bullet> v)"
     using bra_def times_mat_def ket_vec_col ket_vec_def by simp
   also have f7:"\<dots>= (\<Sum>i\<in>{0 ..< dim_vec v}. cnj(v $ i) * cnj(A $$ (j,i)))"
-    using row_def scalar_prod_def cnj_sum complex_cnj_mult mult.commute
-    by (smt assms index_vec lessThan_atLeast0 lessThan_iff sum.cong)
+    by (simp add: row_def scalar_prod_def mult.commute) (use assms in auto)
   moreover have f8:"(row \<langle>v| 0) \<bullet> (col (A\<^sup>\<dagger>) j) = 
     vec (dim_vec v) (\<lambda>i. cnj (v $ i)) \<bullet> vec (dim_col A) (\<lambda>i. cnj (A $$ (j,i)))"
     using a2 by simp 

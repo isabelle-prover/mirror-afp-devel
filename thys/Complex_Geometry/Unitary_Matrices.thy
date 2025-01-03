@@ -32,7 +32,7 @@ proof-
     by (subst  complex_mult_cnj_cmod[symmetric])+ (auto simp add: mat_adj_def mat_cnj_def)
   hence "is_real k \<and> Re k > 0"
     using \<open>k \<noteq> 0\<close>
-    by (smt add_cancel_left_left arg_0_iff arg_complex_of_real_positive not_sum_power2_lt_zero of_real_0 plus_complex.simps(1) plus_complex.simps(2))
+    by (smt (verit) add_cancel_left_left arg_0_iff arg_complex_of_real_positive not_sum_power2_lt_zero of_real_0 plus_complex.simps(1) plus_complex.simps(2))
   thus ?thesis
     using *
     by (rule_tac x="Re k" in exI) simp
@@ -233,7 +233,7 @@ proof-
     by (auto simp add: mat_adj_def mat_cnj_def)
   moreover
   have "Re (- (cor (cmod a))\<^sup>2 - (cor (cmod b))\<^sup>2) < 1"
-    by (smt cmod_square complex_norm_square minus_complex.simps(1) of_real_power realpow_square_minus_le uminus_complex.simps(1))
+    by (smt (verit) cmod_square complex_norm_square minus_complex.simps(1) of_real_power realpow_square_minus_le uminus_complex.simps(1))
   hence "- (cor (cmod a))\<^sup>2 - (cor (cmod b))\<^sup>2 \<noteq> 1"
     by force
   hence "M \<noteq> (a, b, cnj b, -cnj a)"

@@ -316,7 +316,7 @@ proof-
   proof-
     have "2*k+1 < 2^(n + 1)" 
       using assms(1)
-      by (smt Suc_1 Suc_eq_plus1 Suc_le_lessD Suc_le_mono add_Suc_right distrib_left_numeral le_add_diff_inverse mult_le_mono2 nat_mult_1_right one_le_numeral one_le_power plus_1_eq_Suc power_add power_one_right)
+      by (smt (verit) Suc_1 Suc_eq_plus1 Suc_le_lessD Suc_le_mono add_Suc_right distrib_left_numeral le_add_diff_inverse mult_le_mono2 nat_mult_1_right one_le_numeral one_le_power plus_1_eq_Suc power_add power_one_right)
     moreover have "i < n" 
       using assms(2) select_index_def
       by (metis (no_types, opaque_lifting) add_cancel_left_left add_diff_inverse_nat diff_le_self div_by_1 le_antisym less_le_trans less_one mod_div_trivial not_le power_0)
@@ -329,7 +329,7 @@ proof-
   proof-
     have "i \<le> Suc n -1" using assms(2) select_index_def by auto
     moreover have "2*k+1 \<le> 2^(Suc n)-1" 
-      using assms(1) by (smt Suc_diff_1 Suc_eq_plus1 add_diff_cancel_right' diff_Suc_diff_eq2 diff_diff_left diff_is_0_eq diff_mult_distrib2 le_add2 mult_2 mult_Suc_right plus_1_eq_Suc pos2 power_Suc zero_less_power)
+      using assms(1) by (smt (verit) Suc_diff_1 Suc_eq_plus1 add_diff_cancel_right' diff_Suc_diff_eq2 diff_diff_left diff_is_0_eq diff_mult_distrib2 le_add2 mult_2 mult_Suc_right plus_1_eq_Suc pos2 power_Suc zero_less_power)
     ultimately show ?thesis
       using select_index_def
       by (metis \<open>(2 ^ (n - 1 - i) \<le> (2 * k + 1) div 2 mod 2 ^ (n - i)) = (2 ^ (n - 1 - i) \<le> k mod 2 ^ (n - i))\<close> \<open>(2 ^ (n - i) \<le> (2 * k + 1) mod 2 ^ (Suc n - i)) = (2 ^ (n - 1 - i) \<le> (2 * k + 1) div 2 mod 2 ^ (n - i))\<close> assms(2) diff_Suc_1)
@@ -385,7 +385,7 @@ next
     have "select_index (Suc n + 1) n 2"
     proof-
       have "select_index (Suc n) n 1" 
-        using select_index_def by(smt Suc_1 Suc_diff_Suc Suc_lessI add_diff_cancel_right' diff_Suc_1 
+        using select_index_def by (smt (verit) Suc_1 Suc_diff_Suc Suc_lessI add_diff_cancel_right' diff_Suc_1 
 diff_commute diff_zero le_eq_less_or_eq less_Suc_eq_le nat.simps(3) nat_power_eq_Suc_0_iff 
 one_mod_two_eq_one plus_1_eq_Suc power_one_right zero_less_power)
       thus ?thesis 
@@ -394,7 +394,7 @@ one_mod_two_eq_one plus_1_eq_Suc power_one_right zero_less_power)
     moreover have "select_index (Suc n + 1) n 3"
     proof-
       have "select_index (Suc n) n 1"
-        using select_index_def by(smt Suc_1 Suc_diff_Suc Suc_lessI add_diff_cancel_right' diff_Suc_1 
+        using select_index_def by (smt (verit) Suc_1 Suc_diff_Suc Suc_lessI add_diff_cancel_right' diff_Suc_1 
 diff_commute diff_zero le_eq_less_or_eq less_Suc_eq_le nat.simps(3) nat_power_eq_Suc_0_iff 
 one_mod_two_eq_one plus_1_eq_Suc power_one_right zero_less_power)
       thus ?thesis 
@@ -445,12 +445,12 @@ next
         using IH by auto
       then have "(\<forall>i\<in>{0..<n}. \<not> select_index (Suc n +1) i 0) \<and> (\<forall>i\<in>{0..<n}. \<not> select_index (Suc n +1) i 1)"
         using select_index_suc_odd[of 0 "n+1"] Suc_eq_plus1
-        by (smt One_nat_def Suc_1 add_Suc_shift add_diff_cancel_right' atLeastLessThan_iff diff_diff_cancel 
+        by (smt (verit) One_nat_def Suc_1 add_Suc_shift add_diff_cancel_right' atLeastLessThan_iff diff_diff_cancel 
 le_eq_less_or_eq less_Suc_eq linorder_not_le mod_less nat_power_eq_Suc_0_iff select_index_def zero_less_power)
       moreover have "select_index (Suc n + 1) n 0 = False" using select_index_def by simp
       moreover have "select_index (Suc n + 1) n 1 = False" using select_index_def by simp
       ultimately show ?thesis
-        by (smt One_nat_def Suc_1 Suc_eq_plus1 Suc_lessI atLeast0_lessThan_Suc empty_iff insertE 
+        by (smt (verit) One_nat_def Suc_1 Suc_eq_plus1 Suc_lessI atLeast0_lessThan_Suc empty_iff insertE 
 mem_Collect_eq nat.simps(1) nat_power_eq_Suc_0_iff pos2 subsetI zero_less_power)
     qed
     moreover have "{k |k. k < 2^(Suc n + 1) \<and> (\<forall>i\<in>{0..<Suc n}. \<not> select_index (Suc n + 1) i k)} \<subseteq> {0,1}"

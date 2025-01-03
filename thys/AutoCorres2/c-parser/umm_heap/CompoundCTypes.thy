@@ -4037,19 +4037,19 @@ proof -
     fix ud
     assume "ud \<in> ?U"
     show "fu_commutes ?upd (field_update ud)"
-      by (smt \<open>ud \<in> update_desc acc upd ` D\<close> acc_upd double_update_upd field_desc.select_convs(2)
+      by (smt (verit) \<open>ud \<in> update_desc acc upd ` D\<close> acc_upd double_update_upd field_desc.select_convs(2)
           field_desc_independent.fu_commutes fu_commutes_def imageE ind.field_desc_independent_axioms update_desc_def)
   next
     fix ud bs v bs'
     assume "ud \<in> ?U"
     show "?acc (field_update ud bs v) bs' = ?acc v bs'"
-      by (smt \<open>ud \<in> update_desc acc upd ` D\<close> acc_upd field_desc.select_convs(1) field_desc.select_convs(2)
+      by (smt (verit) \<open>ud \<in> update_desc acc upd ` D\<close> acc_upd field_desc.select_convs(1) field_desc.select_convs(2)
           field_desc_independent.acc_upd_old imageE ind.field_desc_independent_axioms o_apply update_desc_def)
   next
     fix ud bs' v bs
     assume "ud \<in> ?U"
     show "field_access ud (?upd bs' v) bs = field_access ud v bs"
-      by (smt \<open>ud \<in> update_desc acc upd ` D\<close> acc_upd field_desc.select_convs(1) field_desc.select_convs(2)
+      by (smt (verit) \<open>ud \<in> update_desc acc upd ` D\<close> acc_upd field_desc.select_convs(1) field_desc.select_convs(2)
           field_desc_independent.acc_upd_new imageE ind.field_desc_independent_axioms o_apply update_desc_def)
   qed
 qed

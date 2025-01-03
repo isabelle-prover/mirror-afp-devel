@@ -6252,7 +6252,8 @@ proof (rule check_induct'')
               and diff: "\<I>\<^sub>l s' y \<noteq> \<I>\<^sub>u s' y"
             from both(1) dir obtain xu cu where 
               looku: "look (\<B>\<^sub>i\<^sub>l s') xu = Some (\<I>\<^sub>u s' y, cu) \<or> look (\<B>\<^sub>i\<^sub>u s') xu = Some (\<I>\<^sub>u s' y,cu)"
-              by (smt Is' indices_state_def le_sup_iff mem_Collect_eq setI set_unsat_simps subsetCE)
+              by (smt (verit) Is' Un_insert_left indices_state_def indices_state_set_unsat insert_iff mem_Collect_eq setI subsetD
+                  sup_bot_left)
             from both(1) obtain xu' where "xu' \<in> rvars_eq ?eq" "coeff (rhs ?eq) xu' < 0 \<and> \<I>\<^sub>u s' y = LI dir s' xu' \<or>
                    coeff (rhs ?eq) xu' > 0 \<and> \<I>\<^sub>u s' y = UI dir s' xu'" by blast
             with x_vars_main(1)[OF looku this] 
@@ -6267,7 +6268,8 @@ proof (rule check_induct'')
             hence xu_y: "xu = y" by blast
             from both(3) dir obtain xl cl where 
               lookl: "look (\<B>\<^sub>i\<^sub>l s') xl = Some (\<I>\<^sub>l s' y, cl) \<or> look (\<B>\<^sub>i\<^sub>u s') xl = Some (\<I>\<^sub>l s' y,cl)"
-              by (smt Is' indices_state_def le_sup_iff mem_Collect_eq setI set_unsat_simps subsetCE)
+              by (smt (verit) Is' Un_insert_right in_mono indices_state_def indices_state_set_unsat insert_compr mem_Collect_eq setI
+                  sup_bot.right_neutral sup_commute)
             from both(3) obtain xl' where "xl' \<in> rvars_eq ?eq" "coeff (rhs ?eq) xl' < 0 \<and> \<I>\<^sub>l s' y = LI dir s' xl' \<or>
                    coeff (rhs ?eq) xl' > 0 \<and> \<I>\<^sub>l s' y = UI dir s' xl'" by blast
             with x_vars_main(1)[OF lookl this] 
@@ -7480,7 +7482,7 @@ proof -
     using vars_tableau_vars_constraints[of cs ?s]
     using start_fresh_variable_fresh[of cs] 
     unfolding normalized_tableau_def Let_def
-    by (smt disjoint_iff_not_equal inf.absorb_iff2 inf.strict_order_iff rhs_no_zero_tableau_start subsetD)
+    by (meson disjoint_iff linorder_not_le rhs_no_zero_tableau_start subset_eq)
 qed
 
 

@@ -140,7 +140,7 @@ proof (induct s)
     using Ex_list_of_length_P[of "length ts" "\<lambda> s i. gterm_to_None_Some s = ts ! i"] GFun(2-)
     by (auto simp: funas_gterm_def) (meson UN_subset_iff nth_mem)
   then have "i < length ss \<Longrightarrow> funas_gterm (ss ! i) \<subseteq> \<F>" for i using GFun(2)
-    by (auto simp: UN_subset_iff) (smt (z3) gterm_to_None_Some_funas nth_mem subsetD)
+    by (auto simp: UN_subset_iff) (smt (verit) gterm_to_None_Some_funas nth_mem subsetD)
   then show ?case using GFun(2-) l
     by (cases f) (force simp: map_nth_eq_conv UN_subset_iff dest!: in_set_idx intro!: exI[of _ "GFun (the (snd f)) ss"])
 qed
@@ -465,7 +465,7 @@ proof -
   have inf: "infinite {v. funas_gterm v \<subseteq> fset \<F> \<and> q |\<in>| gta_der (ta \<A>) (gctxt_of_ctxt C)\<langle>gterm_to_None_Some v\<rangle>\<^sub>G}"
     using reach ground_ctxt_adapt_ground[OF gr(2)] gr
     by (intro infinite_super[OF _ inf], auto simp: gta_der_def)
-       (smt (z3) adapt_vars_ctxt adapt_vars_term_of_gterm ground_gctxt_of_ctxt_apply_gterm ta_der_ctxt)
+       (smt (verit) adapt_vars_ctxt adapt_vars_term_of_gterm ground_gctxt_of_ctxt_apply_gterm ta_der_ctxt)
   have *: "gfun_at (gterm_of_term C\<langle>s\<rangle>) (hole_pos C) = gfun_at (gterm_of_term s) []"
     by (induct C) (auto simp: nth_append_Cons)
   from arg_cong[OF ctxt, of "\<lambda> t. gfun_at (gterm_of_term t) (hole_pos C)"] none

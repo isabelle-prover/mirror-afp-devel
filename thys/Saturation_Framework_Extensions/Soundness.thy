@@ -27,7 +27,7 @@ lemma Inf_consist_preserving:
 proof -
   have "N \<Turnstile> concl_of ` Inf_from N"
     using sound unfolding Inf_from_def image_def Bex_def mem_Collect_eq
-    by (smt all_formulas_entailed entails_trans mem_Collect_eq subset_entailed)
+    by (smt (verit, best) all_formulas_entailed entails_trans mem_Collect_eq subset_entailed)
   then show ?thesis
     using n_cons entails_trans_strong by blast
 qed
@@ -94,9 +94,8 @@ next
   then have "Sup_llist Ns - Red_F (Sup_llist Ns) \<Turnstile> Bot"
     using Red_F_Bot entail_set_all_formulas by blast
   then have "Liminf_llist Ns - Red_F (Sup_llist Ns) \<Turnstile> Bot"
-    by (smt Diff_idemp Diff_mono Diff_subset Liminf_llist_subset_Sup_llist
-        Red_F_Sup_subset_Red_F_Liminf Red_F_of_subset Red_in_Sup antisym_conv chain_red double_diff
-        entail_set_all_formulas order_refl order_trans subset_antisym)
+    by (metis (no_types, lifting) ext Diff_eq_empty_iff Diff_partition Diff_subset
+        Liminf_llist_subset_Sup_llist Red_in_Sup Un_Diff chain_red)
   then show "Liminf_llist Ns \<Turnstile> Bot"
     by (meson Diff_subset entails_trans subset_entailed)
 qed

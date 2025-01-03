@@ -480,7 +480,7 @@ proof -
   consider
     (L_empty) "L = {}" | (Lt_empty) "LT = {}" | (L_gt_Lt) "Max L > Max LT" |
     (Lt_Max) x d where "Lower x (Lt d) \<in> cs" "Le (-d - u x) \<in> LT" "Max L = Le (-d - u x)"
-    by (smt finite_subset Max_in Max_mono \<open>finite L\<close> \<open>LT \<subseteq> L\<close> less_le mem_Collect_eq defs)
+    by (smt (verit) finite_subset Max_in Max_mono \<open>finite L\<close> \<open>LT \<subseteq> L\<close> less_le mem_Collect_eq defs)
   note L_Lt_cases = this
   have Lt_Max_rule: "- c - u x < 0"
     if "Lower x (Lt c) \<in> cs" "Max L = Le (- c - u x)" "L \<noteq> {}" for c x
@@ -499,11 +499,11 @@ proof -
     next
       case Lt_empty
       then show ?thesis
-        by (smt L_ge d(1,2) empty_iff leD leI less_le_trans)
+        by (smt (verit) L_ge d(1,2) empty_iff leD leI less_le_trans)
     next
       case L_gt_Lt
       then show ?thesis
-        by (smt finite_subset Max_ge \<open>finite L\<close> \<open>LT \<subseteq> L\<close> d(1,2) leD leI less_le_trans)
+        by (smt (verit) finite_subset Max_ge \<open>finite L\<close> \<open>LT \<subseteq> L\<close> d(1,2) leD leI less_le_trans)
     next
       case (Lt_Max x c)
       define d where "d \<equiv> - c - u x"
@@ -541,14 +541,14 @@ proof -
   next
     case upper
     obtain d where "Le d \<le> Min U" "d \<le> 0"
-      by (smt DBMEntry.distinct(3) add_inf(2) any_le_inf neg_le_0_iff_le DBM.neutral
+      by (smt (verit) DBMEntry.distinct(3) add_inf(2) any_le_inf neg_le_0_iff_le DBM.neutral
             order.not_eq_order_implies_strict sum_gt_neutral_dest')
     then show ?thesis
       using upper \<open>finite U\<close> by (intro that[of d]) (auto simp: defs)
   next
     case lower
     obtain d where d: "Max L \<le> Le d" "d \<le> 0"
-      by (smt L_0 lower(1) neutral order_refl)
+      by (smt (verit) L_0 lower(1) neutral order_refl)
     show ?thesis
     proof (cases rule: L_Lt_cases)
       case L_empty
@@ -831,7 +831,7 @@ lemma close_lu_equiv:
       by (intro add_mono) auto
     finally show ?thesis .
   qed
-  by (smt leI le_zero_eq order_trans | metis le0)+
+  by (smt (verit) leI le_zero_eq order_trans | metis le0)+
 
 lemma close_lu_closed:
   "lower_upper_closed (dbm_to_cs n v (close_lu M))" if "M 0 0 \<ge> 0"

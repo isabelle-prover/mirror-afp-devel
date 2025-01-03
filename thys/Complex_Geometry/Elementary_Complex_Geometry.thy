@@ -90,7 +90,7 @@ lemma line_points_collinear:
   shows "collinear z1 z2 z3"
   using assms
   unfolding line_def
-  by (smt collinear_sym1 collinear_sym2' collinear_trans1 mem_Collect_eq)
+  by (smt (verit) collinear_sym1 collinear_sym2' collinear_trans1 mem_Collect_eq)
 
 text \<open>Parametric equation of a line\<close>
 lemma line_param:
@@ -277,7 +277,7 @@ proof-
       thus ?thesis
         using assms
         by (rule_tac x="-(cmod BC)" in exI, simp)
-           (smt Complex.Re_sgn Im_sgn cis_Arg complex_minus complex_surj mult_minus_right rcis_cmod_Arg rcis_def)
+           (smt (verit) Complex.Re_sgn Im_sgn cis_Arg complex_minus complex_surj mult_minus_right rcis_cmod_Arg rcis_def)
     qed
     then obtain k where "cor k \<noteq> 0" "BC = cor k*rot90 (z2 - z1)"
       by auto
