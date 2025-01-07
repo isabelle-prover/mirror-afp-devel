@@ -1,0 +1,42 @@
+chapter AFP
+session "Notes_On_Goedels_Ontological_Argument" = HOL +
+  options [timeout = 900]
+    (* when running ".../bin/isabelle -D ." the pdf output is
+       written into directory "output" *)
+
+theories
+	SurjectiveCantor (* Figure 2 *)
+	HOMLinHOL (* Figure 3 *)
+	TestsHOML (* Figure 4 *)
+	ModalFilter (* Figure 5 *)
+	GoedelVariantHOML1 (* Figure 6 *)
+	GoedelVariantHOML2 (* Figure 7 *)
+	GoedelVariantHOML3 (* Figure 8 *)
+	ThereIsNoEvil1 (* Figure 10 *)
+	ThereIsNoEvil2 (* Figure 11 *)
+	ScottVariantHOML (* Figure 12 *)
+	HOMLinHOLonlyK
+	ScottVariantHOMLinK (* Figure 13 *)
+	ScottVariantHOMLAndersonQuant (* Figure 15 *)
+	GoedelVariantHOML1poss (* Figure 16 *)
+	GoedelVariantHOML2poss (* Figure 17 *)
+	GoedelVariantHOML3poss (* Figure 18 *)
+ 	ScottVariantHOMLposs (* Figure 19 *)
+	EvilDerivable (* Figure 20 *)
+	GoedelVariantHOML2poss (* no Figure *)
+	GoedelVariantHOML1AndersonQuant
+	GoedelVariantHOML2AndersonQuant
+	GoedelVariantHOML3AndersonQuant
+	HOMLinHOLonlyS4
+	TestsHOMLinS4  
+	GoedelVariantHOML1inS4
+	GoedelVariantHOML2inS4
+	GoedelVariantHOML2possInS4
+	GoedelVariantHOML3inS4
+	GoedelVariantHOML3possInS4
+	ScottVariantHOMLinS4	
+	ScottVariantHOMLpossInS4  
+
+document_files
+  "root.bib"
+  "root.tex"
