@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/benzmueller/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Notes_On_Goedels_Ontological_Argument.html</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
@@ -15,9 +30,6 @@
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/gaussian_integers/</loc>
@@ -30,9 +42,6 @@
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Sum_Of_Squares_Count.html</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/abstract-rewriting/</loc>
@@ -51,9 +60,6 @@
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ProcessComposition.html</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/smola/</loc>
@@ -736,9 +742,6 @@
   </url><url>
     <loc>/authors/yang/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/benzmueller/</loc>
-    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CondNormReasHOL.html</loc>
     <lastmod>2024-03-09T00:00:00+00:00</lastmod>
@@ -6693,6 +6696,8 @@
     <loc>/sessions/noninterference_sequential_composition/</loc>
   </url><url>
     <loc>/sessions/normbyeval/</loc>
+  </url><url>
+    <loc>/sessions/notes_on_goedels_ontological_argument/</loc>
   </url><url>
     <loc>/sessions/nrest/</loc>
   </url><url>
