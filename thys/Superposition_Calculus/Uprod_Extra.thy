@@ -1,7 +1,8 @@
 theory Uprod_Extra
   imports
-    "HOL-Library.Multiset"
     "HOL-Library.Uprod"
+    Multiset_Extra
+    Natural_Functor
 begin
 
 abbreviation upair where
@@ -9,6 +10,12 @@ abbreviation upair where
 
 lemma Upair_sym: "Upair x y = Upair y x"
   by (metis Upair_inject)
+
+lemma upair_in_sym [simp]:
+  assumes "sym I"
+  shows "Upair a b \<in> upair ` I \<longleftrightarrow> (a, b) \<in> I \<and> (b, a) \<in> I"
+  using assms
+  by (auto dest: symD)
 
 lemma ex_ordered_Upair:
   assumes tot: "totalp_on (set_uprod p) R"
@@ -72,4 +79,34 @@ proof-
     by simp
 qed
 
+lemma ball_set_uprod [simp]: "(\<forall>t\<in>set_uprod (Upair t\<^sub>1 t\<^sub>2). P t) \<longleftrightarrow> P t\<^sub>1 \<and> P t\<^sub>2"
+  by auto
+
+lemma inj_mset_uprod: "inj mset_uprod"
+proof(unfold inj_def, intro allI impI)
+  fix a b :: "'a uprod"
+  assume "mset_uprod a = mset_uprod b"
+  then show "a = b"
+    by(cases a; cases b)(auto simp: add_mset_eq_add_mset)
+qed
+
+lemma mset_uprod_plus_neq: "mset_uprod a \<noteq> mset_uprod b + mset_uprod b"
+  by(cases a; cases b)(auto simp: add_mset_eq_add_mset)
+
+lemma set_uprod_not_empty: "set_uprod a \<noteq> {}"
+  by(cases a) simp
+
+lemma exists_uprod [intro]: "\<exists>a. x \<in> set_uprod a"
+  by (metis insertI1 set_uprod_simps)
+
+global_interpretation uprod_functor: finite_natural_functor where map = map_uprod and to_set = set_uprod
+  by
+    unfold_locales 
+    (auto simp: uprod.map_comp uprod.map_ident uprod.set_map intro: uprod.map_cong)
+
+global_interpretation uprod_functor: natural_functor_conversion where 
+  map = map_uprod and to_set = set_uprod and map_to = map_uprod and map_from = map_uprod and 
+  map' = map_uprod and to_set' = set_uprod
+  by unfold_locales (auto simp: uprod.set_map uprod.map_comp)
+  
 end

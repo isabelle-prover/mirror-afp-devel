@@ -1,26 +1,29 @@
-theory First_Order_Superposition_Example
+theory Superposition_Example
   imports
     IsaFoR_Term_Copy
-    First_Order_Superposition
+    Superposition
 begin
 
+(* TODO: Add more examples *)
 abbreviation trivial_select :: "('f, 'v) select" where
   "trivial_select _ \<equiv> {#}"
 
 abbreviation trivial_tiebreakers where
   "trivial_tiebreakers _ _ _ \<equiv> False"
 
+interpretation nonground_clause.
+
 context
   assumes ground_critical_pair_theorem:
     "\<And>(R :: ('f :: weighted) gterm rel). ground_critical_pair_theorem R"
 begin
-
-interpretation first_order_superposition_calculus 
+                                    
+interpretation superposition_calculus 
   "trivial_select :: ('f :: weighted, 'v :: infinite) select" 
   less_kbo
-  trivial_tiebreakers
   "\<lambda>_. ([], ())"
-proof(unfold_locales)
+  trivial_tiebreakers
+proof unfold_locales
   fix clause :: "('f, 'v) atom clause"
 
   show "trivial_select clause \<subseteq># clause"
@@ -33,7 +36,26 @@ next
   then show "is_neg literal"
     by simp
 next
-  show "transp less_kbo"
+  show "\<And>(R :: ('f gterm \<times> 'f gterm) set). ground_critical_pair_theorem R"
+    using ground_critical_pair_theorem .
+next
+  show "\<And>C\<^sub>G. transp (\<lambda>_ _. False)"
+    by simp
+next
+  show "\<And>C\<^sub>G. asymp (\<lambda>_ _. False)"
+    by auto
+next
+  show "\<And>C\<^sub>G. wfp (\<lambda>_ _. False)"
+    by simp
+next
+  show "\<And>\<tau>. \<exists>f. ([], ()) = ([], \<tau>)"
+    by simp
+next
+  show "|UNIV :: unit set| \<le>o |UNIV|"
+    unfolding UNIV_unit
+    by simp
+next
+   show "transp less_kbo"
     using KBO.S_trans 
     unfolding transp_def less_kbo_def
     by blast
@@ -42,13 +64,13 @@ next
     using wfp_imp_asymp wfP_less_kbo 
     by blast
 next
-  show "Wellfounded.wfp_on {term. term.is_ground term} less_kbo"
+  show "Wellfounded.wfp_on (range term.from_ground) less_kbo"
     using Wellfounded.wfp_on_subset[OF wfP_less_kbo subset_UNIV] .
 next
-  show "totalp_on {term. term.is_ground term} less_kbo"
+  show "totalp_on (range term.from_ground) less_kbo"
     using less_kbo_gtotal
     unfolding totalp_on_def Term.ground_vars_term_empty
-    by blast
+    by (metis term.is_ground_iff_range_from_ground)
 next
   fix 
     context\<^sub>G :: "('f, 'v) context" and
@@ -78,19 +100,6 @@ next
   
   then show "less_kbo term\<^sub>G context\<^sub>G\<langle>term\<^sub>G\<rangle>"
     by (simp add: KBO.S_supt less_kbo_def nectxt_imp_supt_ctxt)
-next
-  show "\<And>(R :: ('f gterm \<times> 'f gterm) set). ground_critical_pair_theorem R"
-    using ground_critical_pair_theorem .
-next
-  show "\<And>clause\<^sub>G. wfP (\<lambda>_ _. False) \<and> transp (\<lambda>_ _. False) \<and> asymp (\<lambda>_ _. False)"
-    by (simp add: asympI)
-next
-  show "\<And>\<tau>. \<exists>f. ([], ()) = ([], \<tau>)"
-    by simp
-next
-  show "|UNIV :: unit set| \<le>o |UNIV|"
-    unfolding UNIV_unit
-    by simp
 qed
 
 end
