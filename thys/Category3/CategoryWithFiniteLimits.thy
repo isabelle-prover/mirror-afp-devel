@@ -349,7 +349,7 @@ begin
                   qed
                 qed
                 thus ?thesis
-                  using f e0 \<chi>.cone_axioms \<chi>'.is_extensional by auto
+                  using f e0 \<chi>.cone_axioms \<chi>'.extensionality by auto
               qed
               ultimately show "\<guillemotleft>f : a' \<rightarrow> dom e0\<guillemotright> \<and> D.cones_map f (D.mkCone e0) = \<chi>'"
                 by simp

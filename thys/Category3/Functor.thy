@@ -23,7 +23,7 @@ begin
   for A :: "'a comp"      (infixr \<open>\<cdot>\<^sub>A\<close> 55)
   and B :: "'b comp"      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b" +
-  assumes is_extensional: "\<not>A.arr f \<Longrightarrow> F f = B.null"
+  assumes extensionality: "\<not>A.arr f \<Longrightarrow> F f = B.null"
   and preserves_arr: "A.arr f \<Longrightarrow> B.arr (F f)"
   and preserves_dom [iff]: "A.arr f \<Longrightarrow> B.dom (F f) = F (A.dom f)"
   and preserves_cod [iff]: "A.arr f \<Longrightarrow> B.cod (F f) = F (A.cod f)"
@@ -49,7 +49,7 @@ begin
 
     lemma preserves_reflects_arr [iff]:
     shows "B.arr (F f) \<longleftrightarrow> A.arr f"
-      using preserves_arr is_extensional B.not_arr_null by metis
+      using preserves_arr extensionality B.not_arr_null by metis
 
     lemma preserves_seq [intro]:
     assumes "A.seq g f"
@@ -163,16 +163,7 @@ begin
     lemma reflects_isomorphic:
     assumes "A.ide f" and "A.ide f'" and "B.isomorphic (F f) (F f')"
     shows "A.isomorphic f f'"
-    proof -
-      obtain \<psi> where \<psi>: "B.in_hom \<psi> (F f) (F f') \<and> B.iso \<psi>"
-        using assms B.isomorphic_def by auto
-      obtain \<phi> where \<phi>: "A.in_hom \<phi> f f' \<and> F \<phi> = \<psi>"
-        using assms \<psi> is_full by blast
-      have "A.iso \<phi>"
-        using \<phi> \<psi> reflects_iso by auto
-      thus ?thesis
-        using \<phi> A.isomorphic_def by auto
-    qed
+      by (metis A.isomorphic_def B.isomorphicE assms(1-3) is_full reflects_iso)
 
   end
 
@@ -285,7 +276,7 @@ begin
     interpret F: "functor" A B F using assms(1) by auto
     interpret G: "functor" B C G using assms(2) by auto
     show "functor A C (G o F)"
-      using F.preserves_arr F.is_extensional G.is_extensional by (unfold_locales, auto)
+      using F.preserves_arr F.extensionality G.extensionality by (unfold_locales, auto)
   qed
 
   locale composite_functor =
@@ -316,7 +307,7 @@ begin
   proof
     interpret "functor" A B F using assms by blast
     show "\<And>x. (F o A.map) x = F x"
-      using A.map_def is_extensional by simp
+      using A.map_def extensionality by simp
   qed
 
   lemma comp_identity_functor [simp]:
@@ -325,7 +316,7 @@ begin
   proof
     interpret "functor" A B F using assms by blast
     show "\<And>x. (B.map o F) x = F x"
-      using B.map_def by (metis comp_apply is_extensional preserves_arr)
+      using B.map_def by (metis comp_apply extensionality preserves_arr)
   qed
 
   lemma faithful_functors_compose:
@@ -427,23 +418,8 @@ begin
     show "essentially_surjective_functor A C (G o F)"
     proof
       show "\<And>c. G.B.ide c \<Longrightarrow> \<exists>a. F.A.ide a \<and> G.B.isomorphic (map a) c"
-      proof -
-        fix c
-        assume c: "G.B.ide c"
-        obtain b where b: "F.B.ide b \<and> G.B.isomorphic (G b) c"
-          using c G.essentially_surjective by auto
-        obtain a where a: "F.A.ide a \<and> F.B.isomorphic (F a) b"
-          using b F.essentially_surjective by auto
-        have "G.B.isomorphic (map a) c"
-        proof -
-          have "G.B.isomorphic (G (F a)) (G b)"
-            using a G.preserves_iso G.B.isomorphic_def by blast
-          thus ?thesis
-            using b G.B.isomorphic_transitive by auto
-        qed
-        thus "\<exists>a. F.A.ide a \<and> G.B.isomorphic (map a) c"
-          using a by auto
-      qed
+        by (metis F.essentially_surjective G.B.isomorphic_transitive
+            G.essentially_surjective G.preserves_isomorphic comp_def)
     qed
   qed
 
@@ -498,7 +474,7 @@ begin
     interpret FG: inverse_functors C D F G using assms(1) by auto
     interpret FG': inverse_functors C D F G' using assms(2) by auto
     show "G = G'"
-      using FG.G.is_extensional FG'.G.is_extensional FG'.inv FG.inv'
+      using FG.G.extensionality FG'.G.extensionality FG'.inv FG.inv'
       by (metis FG'.G.functor_axioms FG.G.functor_axioms comp_assoc comp_identity_functor
                 comp_functor_identity)
   qed
@@ -687,10 +663,10 @@ begin
           by (auto simp add: f_inv_into_f is_embedding)
         next
         show "F \<circ> ?G = B.map"
-          using inj surj f_inv_into_f A.not_arr_null B.map_def is_extensional
+          using inj surj f_inv_into_f A.not_arr_null B.map_def extensionality
           by (auto simp add: f_inv_into_f)
         show "?G \<circ> F = A.map"
-          using inj surj A.is_extensional by auto
+          using inj surj A.extensionality by auto
       qed
       hence "\<exists>G. inverse_functors A B G F"
         by blast
@@ -719,7 +695,7 @@ begin
 
     lemma is_functor:
     shows "functor Aop.comp Bop.comp map"
-      using F.is_extensional by (unfold_locales, auto)
+      using F.extensionality by (unfold_locales, auto)
 
   end
 
@@ -883,9 +859,9 @@ begin
       interpret \<phi>\<psi>: inverse_functors C' C \<psi> \<open>\<lambda>i. if C'.arr i then \<phi> i else null\<close>
       proof
         show "\<psi> \<circ> (\<lambda>i. if C'.arr i then \<phi> i else null) = C'.map"
-          by (auto simp add: C'.is_extensional \<psi>.is_extensional arr_char)
+          by (auto simp add: C'.extensionality \<psi>.extensionality arr_char)
         show "(\<lambda>i. if C'.arr i then \<phi> i else null) \<circ> \<psi> = map"
-          by (auto simp add: is_extensional)
+          by (auto simp add: extensionality)
       qed
       have "invertible_functor C' C (\<lambda>i. if C'.arr i then \<phi> i else null)"
         using \<phi>\<psi>.inverse_functors_axioms by unfold_locales auto
@@ -944,7 +920,7 @@ begin
               (\<lambda>F. if CC.arr F then CC.Map F else null) =
             CC.map"
         using CC.MkArr_Map G.preserves_arr G.preserves_cod G.preserves_dom
-              CC.is_extensional
+              CC.extensionality
         by auto
     qed
 

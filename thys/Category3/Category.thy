@@ -56,9 +56,6 @@ begin
     of elements at a type @{typ 'a}.  As discussed above,
     we assume the existence of a unique element \<open>null\<close> of type @{typ 'a}
     that is a zero for \<open>OP\<close>, and we use \<open>null\<close> to represent ``undefined''.
-    A \emph{partial magma} consists simply of a partial binary operation.
-    We represent the partiality by assuming the existence of a unique value \<open>null\<close>
-    that behaves as a zero for the operation.
   \<close>
 
   locale partial_magma =
@@ -477,13 +474,7 @@ begin
     lemma comp_in_homI [intro]:
     assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : b \<rightarrow> c\<guillemotright>"
     shows "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
-    proof
-      show 1: "seq g f" using assms compatible_iff_seq by blast
-      show "dom (g \<cdot> f) = a"
-        using assms 1 domains_comp domains_simp by blast
-      show "cod (g \<cdot> f) = c"
-        using assms 1 codomains_comp codomains_simp by blast
-    qed
+      using assms(1-2) codomains_comp domains_comp in_hom_def seqI' by auto
 
     lemma comp_in_homI' [simp]:
     assumes "arr f" and "arr g" and "dom f = a" and "cod g = c" and "dom g = cod f"

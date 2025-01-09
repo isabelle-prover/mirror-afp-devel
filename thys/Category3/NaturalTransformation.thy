@@ -43,17 +43,26 @@ begin
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
-  assumes is_extensional: "\<not>A.arr f \<Longrightarrow> \<tau> f = B.null"
-  and preserves_dom [iff]: "A.arr f \<Longrightarrow> B.dom (\<tau> f) = F (A.dom f)"
-  and preserves_cod [iff]: "A.arr f \<Longrightarrow> B.cod (\<tau> f) = G (A.cod f)"
-  and is_natural_1 [iff]: "A.arr f \<Longrightarrow> G f \<cdot>\<^sub>B \<tau> (A.dom f) = \<tau> f"
-  and is_natural_2 [iff]: "A.arr f \<Longrightarrow> \<tau> (A.cod f) \<cdot>\<^sub>B F f = \<tau> f"
+  assumes extensionality: "\<not>A.arr f \<Longrightarrow> \<tau> f = B.null"
+  and preserves_arr [simp]: "A.arr f \<Longrightarrow> B.arr (\<tau> f)"
+  and naturality1 [iff]: "A.arr f \<Longrightarrow> G f \<cdot>\<^sub>B \<tau> (A.dom f) = \<tau> f"
+  and naturality2 [iff]: "A.arr f \<Longrightarrow> \<tau> (A.cod f) \<cdot>\<^sub>B F f = \<tau> f"
   begin
+
+    lemma preserves_dom [iff]:
+    assumes "A.arr f"
+    shows "B.dom (\<tau> f) = F (A.dom f)"
+      using assms naturality2 B.dom_comp [of "\<tau> (A.cod f)" "F f"] by auto
+
+    lemma preserves_cod [iff]:
+    assumes "A.arr f"
+    shows "B.cod (\<tau> f) = G (A.cod f)"
+      using assms naturality2 B.cod_comp [of "G f" "\<tau> (A.dom f)"] by auto
 
     lemma naturality:
     assumes "A.arr f"
     shows "\<tau> (A.cod f) \<cdot>\<^sub>B F f = G f \<cdot>\<^sub>B \<tau> (A.dom f)"
-      using assms is_natural_1 is_natural_2 by simp
+      using assms naturality1 naturality2 by simp
 
     text\<open>
       The following fact for natural transformations provides us with the same advantages
@@ -62,7 +71,7 @@ begin
 
     lemma preserves_reflects_arr [iff]:
     shows "B.arr (\<tau> f) \<longleftrightarrow> A.arr f"
-      using is_extensional A.arr_cod_iff_arr B.arr_cod_iff_arr preserves_cod by force
+      using extensionality A.arr_cod_iff_arr B.arr_cod_iff_arr preserves_cod by force
 
     lemma preserves_hom [intro]:
     assumes "\<guillemotleft>f : a \<rightarrow>\<^sub>A b\<guillemotright>"
@@ -75,13 +84,13 @@ begin
     assumes "A.seq f' f"
     shows "\<tau> (f' \<cdot>\<^sub>A f) = G f' \<cdot>\<^sub>B \<tau> f"
       using assms
-      by (metis A.seqE A.dom_comp B.comp_assoc G.preserves_comp is_natural_1)
+      by (metis A.seqE A.dom_comp B.comp_assoc G.preserves_comp naturality1)
 
     lemma preserves_comp_2:
     assumes "A.seq f' f"
     shows "\<tau> (f' \<cdot>\<^sub>A f) = \<tau> f' \<cdot>\<^sub>B F f"
       using assms
-      by (metis A.arr_cod_iff_arr A.cod_comp B.comp_assoc F.preserves_comp is_natural_2)
+      by (metis A.arr_cod_iff_arr A.cod_comp B.comp_assoc F.preserves_comp naturality2)
 
     text\<open>
       A natural transformation that also happens to be a functor is equal to
@@ -96,8 +105,8 @@ begin
       fix f
       show "F f = \<tau> f"
         using assms
-        by (metis A.dom_cod B.comp_cod_arr F.is_extensional F.preserves_arr F.preserves_cod
-            \<tau>.preserves_dom is_extensional is_natural_2 preserves_dom)
+        by (metis A.dom_cod B.comp_cod_arr F.extensionality F.preserves_arr F.preserves_cod
+            \<tau>.preserves_dom extensionality naturality2 preserves_dom)
     qed
 
     lemma functor_implies_equals_cod:
@@ -108,9 +117,9 @@ begin
       fix f
       show "G f = \<tau> f"
         using assms
-        by (metis A.cod_dom B.comp_arr_dom G.is_extensional G.preserves_arr
-            G.preserves_dom B.cod_dom functor_implies_equals_dom is_extensional
-            is_natural_1 preserves_cod preserves_dom)
+        by (metis A.cod_dom B.comp_arr_dom G.extensionality G.preserves_arr
+            G.preserves_dom B.cod_dom functor_implies_equals_dom extensionality
+            naturality1 preserves_cod preserves_dom)
     qed
           
   end
@@ -123,7 +132,7 @@ begin
     transformations equal: show that they have the same components.
 \<close>
 
-  lemma eqI:
+  lemma natural_transformation_eqI:
   assumes "natural_transformation A B F G \<sigma>" and "natural_transformation A B F G \<sigma>'"
   and "\<And>a. partial_composition.ide A a \<Longrightarrow> \<sigma> a = \<sigma>' a"
   shows "\<sigma> = \<sigma>'"
@@ -132,7 +141,7 @@ begin
     interpret \<sigma>: natural_transformation A B F G \<sigma> using assms(1) by auto
     interpret \<sigma>': natural_transformation A B F G \<sigma>' using assms(2) by auto
     have "\<And>f. \<sigma> f = \<sigma>' f"
-      using assms(3) \<sigma>.is_natural_2 \<sigma>'.is_natural_2 \<sigma>.is_extensional \<sigma>'.is_extensional A.ide_cod
+      using assms(3) \<sigma>.naturality2 \<sigma>'.naturality2 \<sigma>.extensionality \<sigma>'.extensionality A.ide_cod
       by metis
     thus ?thesis by auto
   qed
@@ -140,8 +149,8 @@ begin
   text\<open>
     As equality of natural transformations is determined by equality of components,
     a natural transformation may be uniquely defined by specifying its components.
-    The extension to all arrows is given by @{prop is_natural_1} or equivalently
-    by @{prop is_natural_2}.
+    The extension to all arrows is given by @{prop naturality1} or equivalently
+    by @{prop naturality2}.
 \<close>
 
   locale transformation_by_components =
@@ -170,10 +179,8 @@ begin
     shows "natural_transformation A B F G map"
       using map_def is_natural
       apply (unfold_locales, simp_all)
-         apply (metis A.ide_dom B.dom_comp B.seqI
-                      G.preserves_arr G.preserves_dom B.in_homE maps_ide_in_hom)
-        apply (metis A.ide_dom B.arrI B.cod_comp B.in_homE B.seqI
-                     G.preserves_arr G.preserves_cod G.preserves_dom maps_ide_in_hom)
+         apply (metis A.ide_dom B.seqI G.preserves_arr G.preserves_dom B.in_homE
+                      maps_ide_in_hom)
        apply (metis A.ide_dom B.comp_arr_dom B.in_homE maps_ide_in_hom)
       by (metis B.comp_assoc A.comp_cod_arr F.preserves_comp)
 
@@ -190,7 +197,9 @@ begin
     interpret \<tau>': transformation_by_components A B F G \<tau>
       by (unfold_locales, auto) 
     show ?thesis
-      using assms \<tau>'.map_simp_ide \<tau>'.is_natural_transformation eqI by blast
+      using assms \<tau>'.map_simp_ide \<tau>'.is_natural_transformation
+            natural_transformation_eqI
+      by blast
   qed
 
   section "Functors as Natural Transformations"
@@ -206,7 +215,7 @@ begin
   proof -
     interpret "functor" A B F using assms by auto
     show "natural_transformation A B F F F"
-      using is_extensional B.comp_arr_dom B.comp_cod_arr
+      using extensionality B.comp_arr_dom B.comp_cod_arr
       by (unfold_locales, simp_all)
   qed
 
@@ -326,13 +335,13 @@ begin
     assumes "A.arr f"
     shows "map f = \<tau> f \<cdot>\<^sub>B \<sigma> (A.dom f)"
       using assms
-      by (metis B.comp_assoc \<sigma>.is_natural_2 \<sigma>.naturality \<tau>.is_natural_1 \<tau>.naturality map_simp_1)
+      by (metis B.comp_assoc \<sigma>.naturality2 \<sigma>.naturality \<tau>.naturality1 \<tau>.naturality map_simp_1)
 
     lemma is_natural_transformation:
     shows "natural_transformation A B F H map"
       using map_def map_simp_1 map_simp_2 map_seq B.comp_assoc
       apply (unfold_locales, simp_all)
-      by (metis B.comp_assoc \<tau>.is_natural_1)
+      by (metis B.comp_assoc \<tau>.naturality1)
 
   end
 
@@ -346,38 +355,28 @@ begin
   lemma vcomp_ide_dom [simp]:
   assumes "natural_transformation A B F G \<tau>"
   shows "vertical_composite.map A B F \<tau> = \<tau>"
-    using assms apply (intro eqI)
-      apply auto[2]
-     apply (meson functor_is_transformation natural_transformation_def vertical_composite.intro
-                  vertical_composite.is_natural_transformation)
-  proof -
-    fix a :: 'a
-    have "vertical_composite A B F F G F \<tau>"
-      by (meson assms functor_is_transformation natural_transformation.axioms(1-4)
-                vertical_composite.intro)
-    thus "vertical_composite.map A B F \<tau> a = \<tau> a"
-      using assms natural_transformation.is_extensional natural_transformation.is_natural_2
-            vertical_composite.map_def
-      by fastforce
+  proof (intro natural_transformation_eqI)
+    interpret \<tau>: natural_transformation A B F G \<tau>
+      using assms by blast
+    interpret \<tau>oF: vertical_composite A B F F G F \<tau> ..
+    show "natural_transformation A B F G \<tau>" ..
+    show "natural_transformation A B F G (vertical_composite.map A B F \<tau>)" ..
+    show "\<And>a. \<tau>.A.ide a \<Longrightarrow> \<tau>oF.map a = \<tau> a"
+      using \<tau>oF.map_def \<tau>oF.extensionality \<tau>.extensionality \<tau>.naturality2 by metis
   qed
     
   lemma vcomp_ide_cod [simp]:
   assumes "natural_transformation A B F G \<tau>"
   shows "vertical_composite.map A B \<tau> G = \<tau>"
-    using assms apply (intro eqI)
-      apply auto[2]
-     apply (meson functor_is_transformation natural_transformation_def vertical_composite.intro
-                  vertical_composite.is_natural_transformation)
-  proof -
-    fix a :: 'a
-    assume a: "partial_composition.ide A a"
-    interpret Go\<tau>: vertical_composite A B F G G \<tau> G
-      by (meson assms functor_is_transformation natural_transformation.axioms(1-4)
-                vertical_composite.intro)
-    show "vertical_composite.map A B \<tau> G a = \<tau> a"
-      using assms a natural_transformation.is_extensional natural_transformation.is_natural_1
-            Go\<tau>.map_simp_ide Go\<tau>.B.comp_cod_arr
-      by simp
+  proof (intro natural_transformation_eqI)
+    interpret \<tau>: natural_transformation A B F G \<tau>
+      using assms by blast
+    interpret Go\<tau>: vertical_composite A B F G G \<tau> G ..
+    show "natural_transformation A B F G \<tau>" ..
+    show "natural_transformation A B F G (vertical_composite.map A B \<tau> G)" ..
+    show "\<And>a. \<tau>.A.ide a \<Longrightarrow> Go\<tau>.map a = \<tau> a"
+      using Go\<tau>.map_def Go\<tau>.extensionality \<tau>.extensionality
+      by (metis Go\<tau>.map_simp_ide \<tau>.A.comp_ide_self \<tau>.preserves_comp_1)
   qed
 
   text\<open>
@@ -405,7 +404,7 @@ begin
     show ?thesis
       using \<rho>\<sigma>_\<tau>.is_natural_transformation \<rho>_\<sigma>\<tau>.natural_transformation_axioms
             \<rho>\<sigma>.map_simp_ide \<rho>\<sigma>_\<tau>.map_simp_ide \<rho>_\<sigma>\<tau>.map_simp_ide \<sigma>\<tau>.map_simp_ide B.comp_assoc
-      by (intro eqI, auto)
+      by (intro natural_transformation_eqI, auto)
   qed
 
   section "Natural Isomorphisms"
@@ -428,7 +427,7 @@ begin
     lemma inv_naturality:
     assumes "A.arr f"
     shows "F f \<cdot>\<^sub>B B.inv (\<tau> (A.dom f)) = B.inv (\<tau> (A.cod f)) \<cdot>\<^sub>B G f"
-      using assms is_natural_1 is_natural_2 components_are_iso B.invert_side_of_triangle
+      using assms naturality1 naturality2 components_are_iso B.invert_side_of_triangle
             B.comp_assoc A.ide_cod A.ide_dom preserves_reflects_arr
       by fastforce
 
@@ -443,7 +442,7 @@ begin
     shows "B.iso (\<tau> f)"
       using assms
       by (metis A.ide_dom A.iso_is_arr B.isos_compose G.preserves_iso components_are_iso
-          is_natural_2 naturality preserves_reflects_arr)
+          naturality2 naturality preserves_reflects_arr)
 
   end
 
@@ -511,9 +510,9 @@ begin
     interpret \<phi>.F: faithful_functor A B F
       using assms by auto
     show "faithful_functor A B G"
-      using \<phi>.naturality \<phi>.components_are_iso \<phi>.B.iso_is_section \<phi>.B.section_is_mono
-            \<phi>.B.monoE \<phi>.F.is_faithful \<phi>.is_natural_1 \<phi>.natural_transformation_axioms
-            \<phi>.preserves_reflects_arr \<phi>.A.ide_cod
+      using \<phi>.naturality1 \<phi>.components_are_iso \<phi>.B.iso_is_section \<phi>.B.section_is_mono
+            \<phi>.B.mono_cancel \<phi>.F.is_faithful \<phi>.naturality
+            \<phi>.natural_transformation_axioms \<phi>.preserves_reflects_arr \<phi>.A.ide_cod
       by (unfold_locales, metis)
   qed
 
@@ -537,7 +536,7 @@ begin
         using B.inv_in_hom \<tau>.components_are_iso A.ide_in_hom by blast
       show "A.arr f \<Longrightarrow> B.inv (\<tau> (A.cod f)) \<cdot>\<^sub>B G f = F f \<cdot>\<^sub>B B.inv (\<tau> (A.dom f))"
         by (metis A.ide_cod A.ide_dom B.invert_opposite_sides_of_square \<tau>.components_are_iso
-            \<tau>.is_natural_2 \<tau>.naturality \<tau>.preserves_reflects_arr)
+            \<tau>.naturality2 \<tau>.naturality \<tau>.preserves_reflects_arr)
     qed
 
     definition map
@@ -582,7 +581,7 @@ begin
     interpret \<tau>'': inverse_transformation A B G F \<tau>'.map ..
     show "\<tau>''.map = \<tau>"
       using \<tau>.natural_transformation_axioms \<tau>''.natural_transformation_axioms   
-      by (intro eqI, auto)
+      by (intro natural_transformation_eqI, auto)
   qed
 
   locale inverse_transformations =
@@ -627,14 +626,14 @@ begin
     show "vertical_composite.map A B \<sigma> \<sigma>' = F"
       using \<sigma>\<sigma>'.is_natural_transformation inv.F.as_nat_trans.natural_transformation_axioms
             \<sigma>\<sigma>'.map_simp_ide inv.B.comp_inv_arr inv.inv
-      by (intro eqI, simp_all)
+      by (intro natural_transformation_eqI, simp_all)
     interpret inv': inverse_transformations A B G F \<sigma>' \<sigma>
       using assms inverse_transformations_sym by blast
     interpret \<sigma>'\<sigma>: vertical_composite A B G F G \<sigma>' \<sigma> ..
     show "vertical_composite.map A B \<sigma>' \<sigma> = G"
       using \<sigma>'\<sigma>.is_natural_transformation inv.G.as_nat_trans.natural_transformation_axioms
             \<sigma>'\<sigma>.map_simp_ide inv'.inv inv.B.comp_inv_arr
-      by (intro eqI, simp_all)
+      by (intro natural_transformation_eqI, simp_all)
   qed
 
   lemma inverse_transformations_compose:
@@ -664,7 +663,7 @@ begin
     show ?thesis
       using \<tau>\<tau>'.is_natural_transformation \<tau>.F.as_nat_trans.natural_transformation_axioms
             \<tau>'.inverts_components \<tau>.B.comp_inv_arr \<tau>\<tau>'.map_simp_ide
-      by (intro eqI, auto)
+      by (intro natural_transformation_eqI, auto)
   qed
 
   lemma vertical_composite_inverse_iso [simp]:
@@ -677,7 +676,7 @@ begin
     show ?thesis
       using \<tau>'\<tau>.is_natural_transformation \<tau>.G.as_nat_trans.natural_transformation_axioms
             \<tau>'.inverts_components \<tau>'\<tau>.map_simp_ide \<tau>.B.comp_arr_inv
-      by (intro eqI, auto)
+      by (intro natural_transformation_eqI, auto)
   qed
 
   lemma natural_isomorphisms_compose:
@@ -764,10 +763,10 @@ begin
     interpret HF: composite_functor A B C F H ..
     interpret KG: composite_functor A B C G K ..
     show "natural_transformation A C (H o F) (K o G) (\<tau> o \<sigma>)"
-      using \<sigma>.is_extensional \<tau>.is_extensional
+      using \<sigma>.extensionality \<tau>.extensionality
       apply (unfold_locales, auto)
-       apply (metis \<sigma>.is_natural_1 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_1)
-      by (metis \<sigma>.is_natural_2 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_2)
+       apply (metis \<sigma>.naturality1 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_1)
+      by (metis \<sigma>.naturality2 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_2)
   qed
 
   lemma hcomp_ide_dom [simp]:
@@ -776,7 +775,7 @@ begin
   proof -
     interpret \<tau>: natural_transformation A B F G \<tau> using assms by auto
     show "\<tau> o \<tau>.A.map = \<tau>"
-      using \<tau>.A.map_def \<tau>.is_extensional by fastforce
+      using \<tau>.A.map_def \<tau>.extensionality by fastforce
   qed
 
   lemma hcomp_ide_cod [simp]:
@@ -785,7 +784,7 @@ begin
   proof -
     interpret \<tau>: natural_transformation A B F G \<tau> using assms by auto
     show "\<tau>.B.map o \<tau> = \<tau>"
-      using \<tau>.B.map_def \<tau>.is_extensional by auto
+      using \<tau>.B.map_def \<tau>.extensionality by auto
   qed
 
   text\<open>
@@ -815,7 +814,7 @@ begin
       by blast
     interpret \<tau>'oF_\<tau>oF: vertical_composite A C \<open>H o F\<close> \<open>K o F\<close> \<open>L o F\<close> \<open>\<tau> o F\<close> \<open>\<tau>' o F\<close> ..
     show ?thesis
-      using \<tau>'oF_\<tau>oF.map_def \<tau>'\<tau>.map_def \<tau>'\<tau>oF.is_extensional by auto
+      using \<tau>'oF_\<tau>oF.map_def \<tau>'\<tau>.map_def \<tau>'\<tau>oF.extensionality by auto
   qed
 
   text\<open>
@@ -845,7 +844,7 @@ begin
       by blast
     interpret Ko\<tau>'_Ko\<tau>: vertical_composite A C \<open>K o F\<close> \<open>K o G\<close> \<open>K o H\<close> \<open>K o \<tau>\<close> \<open>K o \<tau>'\<close> ..
     show "K o \<tau>'\<tau>.map = Ko\<tau>'_Ko\<tau>.map"
-      using Ko\<tau>'_Ko\<tau>.map_def \<tau>'\<tau>.map_def Ko\<tau>'\<tau>.is_extensional Ko\<tau>'_Ko\<tau>.map_simp_1 \<tau>'\<tau>.map_simp_1
+      using Ko\<tau>'_Ko\<tau>.map_def \<tau>'\<tau>.map_def Ko\<tau>'\<tau>.extensionality Ko\<tau>'_Ko\<tau>.map_simp_1 \<tau>'\<tau>.map_simp_1
       by auto
   qed
 
@@ -883,7 +882,7 @@ begin
       by blast
     interpret \<mu>o\<nu>_\<sigma>o\<tau>: vertical_composite B D \<open>K o F\<close> \<open>L o G\<close> \<open>M o H\<close> \<open>\<sigma> o \<tau>\<close> \<open>\<mu> o \<nu>\<close> ..
     show "\<mu>\<sigma>.map o \<nu>\<tau>.map = \<mu>o\<nu>_\<sigma>o\<tau>.map"
-    proof (intro eqI)
+    proof (intro natural_transformation_eqI)
       show "natural_transformation B D (K \<circ> F) (M \<circ> H) (\<mu>\<sigma>.map o \<nu>\<tau>.map)" ..
       show "natural_transformation B D (K \<circ> F) (M \<circ> H) \<mu>o\<nu>_\<sigma>o\<tau>.map" ..
       show "\<And>a. \<tau>.A.ide a \<Longrightarrow> (\<mu>\<sigma>.map o \<nu>\<tau>.map) a = \<mu>o\<nu>_\<sigma>o\<tau>.map a"
@@ -894,7 +893,7 @@ begin
           using a \<mu>\<sigma>.map_simp_1 \<nu>\<tau>.map_simp_2 by simp
         also have "... = D (\<mu> (\<nu> a)) (\<sigma> (\<tau> a))"
           using a
-          by (metis (full_types) \<mu>.is_natural_1 \<mu>\<sigma>.map_simp_1 \<mu>\<sigma>.preserves_comp_1
+          by (metis (full_types) \<mu>.naturality1 \<mu>\<sigma>.map_simp_1 \<mu>\<sigma>.preserves_comp_1
               \<nu>\<tau>.map_seq \<nu>\<tau>.map_simp_1 \<nu>\<tau>.preserves_cod \<sigma>.B.comp_assoc \<tau>.A.ide_char \<tau>.B.seqE)
         also have "... = \<mu>o\<nu>_\<sigma>o\<tau>.map a"
           using a \<mu>o\<nu>_\<sigma>o\<tau>.map_simp_ide by simp

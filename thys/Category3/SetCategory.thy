@@ -1251,11 +1251,11 @@ begin
     proof -
       interpret \<Phi>\<Psi>: composite_functor S S' S \<Phi> \<Psi> ..
       have inv: "\<Psi> o \<Phi> = S.map"
-        using \<Phi>\<Psi> S.map_def \<Phi>\<Psi>.is_extensional by auto
+        using \<Phi>\<Psi> S.map_def \<Phi>\<Psi>.extensionality by auto
     
       interpret \<Psi>\<Phi>: composite_functor S' S S' \<Psi> \<Phi> ..
       have inv': "\<Phi> o \<Psi> = S'.map"
-        using \<Psi>\<Phi> S'.map_def \<Psi>\<Phi>.is_extensional by auto
+        using \<Psi>\<Phi> S'.map_def \<Psi>\<Phi>.extensionality by auto
     
       show ?thesis
         using inv inv' by (unfold_locales, auto)
@@ -2149,17 +2149,17 @@ begin
       show "mono f"
       proof
         show "arr f" using f by auto
-        show "\<And>g g'. \<lbrakk>seq f g; seq f g'; f \<cdot> g = f \<cdot> g'\<rbrakk> \<Longrightarrow> g = g'"
+        show "\<And>g g'. \<lbrakk>seq f g; f \<cdot> g = f \<cdot> g'\<rbrakk> \<Longrightarrow> g = g'"
         proof -
           fix g g'
-          assume fg: "seq f g" and fg': "seq f g'" and eq: "f \<cdot> g = f \<cdot> g'"
+          assume fg: "seq f g" and eq: "f \<cdot> g = f \<cdot> g'"
           show "g = g'"
           proof (intro arr_eqI\<^sub>S\<^sub>C)
             show par: "par g g'"
-              using fg' eq dom_comp by (metis seqE)
+              using fg eq dom_comp by (metis seqE)
             show "Fun g = Fun g'"
-              by (metis empty_is_image eq f fg' ide_dom incl_in_def incl_in_img_cod
-                  initial_arr_unique initial_empty empty_def monoE mkIde_set
+              by (metis empty_is_image eq f fg ide_dom incl_in_def incl_in_img_cod
+                  initial_arr_unique initial_empty empty_def mono_cancel mkIde_set
                   section_if_inj(1) section_is_mono seqE set_img subset_empty)
           qed
         qed
@@ -2228,7 +2228,7 @@ begin
                   using f g g' Fun_comp comp_mkArr by fastforce
               qed
               hence gg': "?g = ?g'"
-                by (metis (no_types, lifting) epiE epi f g in_homE seqI)
+                by (metis (no_types, lifting) epi_cancel epi f g in_homE seqI)
               fix y
               assume y: "y \<in> Cod f"
               have "Fun ?g' y = tt" using gg' g y by simp

@@ -26,7 +26,7 @@ begin
     interpretation RTSx: rtscatx arr_type ..
     interpretation RTSx: elementary_category_with_binary_products
                           RTSx.hcomp RTSx.p\<^sub>0 RTSx.p\<^sub>1
-      using RTSx.extends_to_elementary_category_with_binary_products by blast
+      using RTSx.extends_to_elementary_category_with_binary_products\<^sub>X by blast
     interpretation RTS\<^sub>S: subcategory RTSx.hcomp RTSx.sta
       using RTSx.dom.preserves_ide RTSx.cod.preserves_ide RTSx.sta_hcomp
             RTSx.arr_hcomp RTSx.H.seqI
@@ -165,7 +165,7 @@ begin
       show "Obj (Rts (cod f))"
         using B.extensional_rts_axioms B.small_rts_axioms by simp
       show "simulation (Rts (dom f)) (Rts (cod f)) (Map f)"
-        using assms 1 RTSx.sta_char RTSx.simulation_Map_sta
+        using assms 1 RTSx.sta_char RTSx.simulation_Map
               RTS\<^sub>S.arr_char\<^sub>S\<^sub>b\<^sub>C RTS\<^sub>S.cod_simp RTS\<^sub>S.dom_simp comp_def
         by (simp add: Map_def Rts_def)
     qed
@@ -534,7 +534,7 @@ begin
 
     lemma inverse_simulations_Pack_Unpack:
     assumes "ide a" and "ide b"
-    shows "inverse_simulations (Rts (a \<otimes> b)) (product_rts.resid (Rts a) (Rts b))
+    shows "inverse_simulations (Rts (a \<otimes> b)) (Rts a \<Otimes> Rts b)
              (Pack a b) (Unpack a b)"
       using Pack_def RTSx.inverse_simulations_Pack_Unpack Rts_def Unpack_def
             assms(1-2) ide_iff_RTS_obj prod_char
@@ -542,15 +542,13 @@ begin
 
     lemma simulation_Pack:
     assumes "ide a" and "ide b"
-    shows "simulation
-             (product_rts.resid (Rts a) (Rts b)) (Rts (a \<otimes> b)) (Pack a b)"
+    shows "simulation (Rts a \<Otimes> Rts b) (Rts (a \<otimes> b)) (Pack a b)"
       using assms inverse_simulations_Pack_Unpack inverse_simulations_def
       by fast
 
     lemma simulation_Unpack:
     assumes "ide a" and "ide b"
-    shows "simulation
-             (Rts (a \<otimes> b)) (product_rts.resid (Rts a) (Rts b)) (Unpack a b)"
+    shows "simulation (Rts (a \<otimes> b)) (Rts a \<Otimes> Rts b) (Unpack a b)"
       using assms inverse_simulations_Pack_Unpack inverse_simulations_def
       by fast
 
@@ -562,7 +560,7 @@ begin
 
     lemma Unpack_o_Pack:
     assumes "ide a" and "ide b"
-    shows "Unpack a b \<circ> Pack a b = I (product_rts.resid (Rts a) (Rts b))"
+    shows "Unpack a b \<circ> Pack a b = I (Rts a \<Otimes> Rts b)"
       unfolding Pack_def Unpack_def Rts_def
       using assms RTSx.Unpack_o_Pack ide_iff_RTS_obj prod_char by auto
 
@@ -574,7 +572,7 @@ begin
 
     lemma Unpack_Pack [simp]:
     assumes "ide a" and "ide b"
-    and "residuation.arr (product_rts.resid (Rts a) (Rts b)) t"
+    and "residuation.arr (Rts a \<Otimes> Rts b) t"
     shows "Unpack a b (Pack a b t) = t"
       using assms by (metis Unpack_o_Pack comp_apply)
 
@@ -1193,8 +1191,8 @@ subsection "Associators"
                 (AxB_xC.P\<^sub>1 \<circ> Unpack_abxC.map) x"
           proof (cases "abxC.arr x")
             show "\<not> abxC.arr x \<Longrightarrow> ?thesis"
-              using Unpack_abxC.extensional AxB_xC.P\<^sub>1.extensional
-                    abxC.P\<^sub>1.extensional PU_ab.G.extensional
+              using Unpack_abxC.extensionality AxB_xC.P\<^sub>1.extensionality
+                    abxC.P\<^sub>1.extensionality PU_ab.G.extensionality
               by auto
             assume x: "abxC.arr x"
             show ?thesis
@@ -1243,8 +1241,8 @@ subsection "Associators"
           fix x
           show "(AxB_xC.P\<^sub>0 \<circ> Unpack_abxC.map) x = abxC.P\<^sub>0 x"
             using a b c abxC.P\<^sub>0_def Unpack_abxC.map_def AxB_xC.P\<^sub>0_def
-                  PU_ab.G.preserves_reflects_arr abxC.arr_char PU_ab.G.extensional
-                  abxC.P\<^sub>1.extensional axb.not_arr_null AxB_xC.P\<^sub>1.extensional
+                  PU_ab.G.preserves_reflects_arr abxC.arr_char PU_ab.G.extensionality
+                  abxC.P\<^sub>1.extensionality axb.not_arr_null AxB_xC.P\<^sub>1.extensionality
                   AxB_xC.not_arr_null
             by auto
         qed
@@ -1356,7 +1354,7 @@ subsection "Associators"
     assumes "ide a" and "ide b" and "ide c"
     shows "Map \<a>[a, b, c] =
            Pack a (b \<otimes> c) \<circ>
-             product_simulation.map (Rts a) (product_rts.resid (Rts b) (Rts c))
+             product_simulation.map (Rts a) (Rts b \<Otimes> Rts c)
                  (I (Rts a)) (Pack b c) \<circ>
                ASSOC.map (Rts a) (Rts b) (Rts c) \<circ>
                  (product_simulation.map
@@ -2000,7 +1998,7 @@ subsection "Compositors"
           proof -
             have "Func b c \<circ> (bcxab.P\<^sub>1 \<circ> bcxab_x_A.P\<^sub>1) =
                   BCxAB.P\<^sub>1 \<circ> BCxAB_x_A.P\<^sub>1 \<circ> Func_bcxFunc_ab_x_A.map"
-              using Func_Unfunc_bc.F.extensional BCxAB_x_A.P\<^sub>1.extensional
+              using Func_Unfunc_bc.F.extensionality BCxAB_x_A.P\<^sub>1.extensionality
                     bcxab_x_A.map_def bcxab_x_A.P\<^sub>1_def bcxab.P\<^sub>1_def
                     Func_bcxFunc_ab_x_A.map_def Func_bcxFunc_ab.map_def
                     BCxAB_x_A.P\<^sub>1_def BCxAB.P\<^sub>1_def
@@ -2009,13 +2007,13 @@ subsection "Compositors"
                            (BCxAB.P\<^sub>0 \<circ> BCxAB_x_A.P\<^sub>1) \<circ> Func_bcxFunc_ab_x_A.map"
               using BCxAB.P\<^sub>0_def BCxAB_x_A.P\<^sub>1_def bcxab.P\<^sub>0_def bcxab_x_A.P\<^sub>1_def
                     Func_bcxFunc_ab_x_A.map_def Func_bcxFunc_ab.map_def
-                    Func_bcxFunc_ab_x_A.extensional Func_Unfunc_ab.F.extensional
+                    Func_bcxFunc_ab_x_A.extensionality Func_Unfunc_ab.F.extensionality
               by auto
             moreover have "bcxab_x_A.P\<^sub>0 =
                            BCxAB_x_A.P\<^sub>0 \<circ> Func_bcxFunc_ab_x_A.map"
               using BCxAB.P\<^sub>0_def BCxAB_x_A.P\<^sub>0_def bcxab_x_A.P\<^sub>0_def
                     Func_bcxFunc_ab_x_A.map_def Func_bcxFunc_ab.map_def
-                    Func_bcxFunc_ab_x_A.extensional
+                    Func_bcxFunc_ab_x_A.extensionality
               by auto
             ultimately show ?thesis by simp
           qed

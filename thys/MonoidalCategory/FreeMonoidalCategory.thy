@@ -1914,7 +1914,7 @@ begin
         finally show ?thesis by blast
       qed
       also have "... = \<ll>' (mkarr t)"
-        using assms \<ll>'.is_natural_2 [of "mkarr t"] by simp
+        using assms \<ll>'.naturality2 [of "mkarr t"] by simp
       finally show ?thesis by blast
     qed
 
@@ -1989,7 +1989,7 @@ begin
         finally show ?thesis by blast
       qed
       also have "... = \<rho>' (mkarr t)"
-        using assms \<rho>'.is_natural_2 [of "mkarr t"] by simp
+        using assms \<rho>'.naturality2 [of "mkarr t"] by simp
       finally show ?thesis by blast
     qed
 
@@ -2361,7 +2361,7 @@ begin
       proof
         fix f
         have "\<not>arr f \<Longrightarrow> F f = E.map f"
-          using E.is_extensional F.is_extensional by simp
+          using E.extensionality F.extensionality by simp
         moreover have "arr f \<Longrightarrow> F f = E.map f"
         proof -
           assume f: "arr f"
@@ -2542,7 +2542,7 @@ begin
     lemma diagonalize_is_idempotent:
     shows "D o D = D"
       unfolding D_def
-      using D.is_extensional \<F>\<^sub>SC.null_char Arr_rep Diagonalize_in_Hom mkarr_Diagonalize_rep
+      using D.extensionality \<F>\<^sub>SC.null_char Arr_rep Diagonalize_in_Hom mkarr_Diagonalize_rep
             strict_arr_char rep_mkarr
       by fastforce
 
@@ -2644,7 +2644,7 @@ begin
     proof
       fix f
       have "\<not> \<F>\<^sub>SC.arr f \<Longrightarrow> DoS.map f = \<F>\<^sub>SC.map f"
-        using DoS.is_extensional \<F>\<^sub>SC.map_def by simp
+        using DoS.extensionality \<F>\<^sub>SC.map_def by simp
       moreover have "\<F>\<^sub>SC.arr f \<Longrightarrow> DoS.map f = \<F>\<^sub>SC.map f"
         using \<F>\<^sub>SC.map_simp strict_arr_char Diagonalize_Diag D_def mkarr_Diagonalize_rep
         by simp
@@ -2677,7 +2677,7 @@ begin
 
     lemma \<mu>_char:
     shows "\<mu>.map = \<mu>"
-    proof (intro NaturalTransformation.eqI)
+    proof (intro natural_transformation_eqI)
       show "natural_transformation \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map \<mu>.map" ..
       have "natural_transformation \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp \<F>\<^sub>SC.map \<F>\<^sub>SC.map \<F>\<^sub>SC.map"
         using DoS.as_nat_trans.natural_transformation_axioms DoS_eq_\<F>\<^sub>SC by simp
@@ -2714,7 +2714,7 @@ begin
     proof
       fix f
       have "\<not> C.arr f \<Longrightarrow> DoI.map f = inclusion_of_generators f"
-        using DoI.is_extensional I.is_extensional \<F>\<^sub>SC.null_char by blast
+        using DoI.extensionality I.extensionality \<F>\<^sub>SC.null_char by blast
       moreover have "C.arr f \<Longrightarrow> DoI.map f = inclusion_of_generators f"
       proof -
         assume f: "C.arr f"
@@ -3076,7 +3076,7 @@ begin
 
     interpretation \<phi>: natural_isomorphism
                         \<F>C.CC.comp comp D.T\<^sub>DoFF.map D.FoT\<^sub>C.map D.\<phi>
-      using D.structure_is_natural_isomorphism by simp
+      using D.structure_naturalityisomorphism by simp
 
     text \<open>
       The diagonalization functor is part of a monoidal equivalence between the
@@ -3289,7 +3289,7 @@ begin
       moreover have "D.dom (E.map (\<F>C.D f)) = D.cod (E.map (\<F>C.\<nu> (\<F>C.dom f)))"
           using f 1 E.preserves_seq EQ.F.preserves_arr \<F>\<^sub>SC.map_simp by auto
       ultimately show ?thesis
-        using f D.comp_arr_dom D.ideD D.arr_dom_iff_arr E.as_nat_trans.is_natural_2
+        using f D.comp_arr_dom D.ideD D.arr_dom_iff_arr E.as_nat_trans.naturality2
         by (metis E.preserves_cod \<F>C.ide_cod \<F>C.ide_dom)
     qed
 
@@ -3464,7 +3464,7 @@ begin
               FoD.strict_monoidal_extension_to_free_monoidal_category_axioms E\<^sub>S.map_def
         by simp
       moreover have "\<And>f. \<not>arr f \<Longrightarrow> F f = E\<^sub>S.map f"
-        using F.is_extensional E\<^sub>S.is_extensional arr_char\<^sub>S\<^sub>b\<^sub>C by auto
+        using F.extensionality E\<^sub>S.extensionality arr_char\<^sub>S\<^sub>b\<^sub>C by auto
       ultimately show "F = E\<^sub>S.map" by blast
     qed
 

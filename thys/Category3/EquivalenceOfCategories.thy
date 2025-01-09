@@ -74,7 +74,8 @@ begin
         proof -
           have "C.epi (\<epsilon> (C.dom f))"
             using 1 par C.iso_is_retraction C.retraction_is_epi by blast
-          thus ?thesis using 2 par by auto
+          thus ?thesis using 2 par
+            by (metis C_arr_expansion(1) eq)
         qed
       qed
     qed
@@ -217,7 +218,7 @@ begin
 
   lemma (in inverse_functors) induce_equivalence:
   shows "equivalence_of_categories A B F G B.map A.map"
-    using inv inv' A.is_extensional B.is_extensional B.comp_arr_dom B.comp_cod_arr
+    using inv inv' A.extensionality B.extensionality B.comp_arr_dom B.comp_cod_arr
           A.comp_arr_dom A.comp_cod_arr
     by unfold_locales auto
 
@@ -288,13 +289,13 @@ begin
     interpretation Fop_o_Gop: composite_functor Cop.comp Dop.comp Cop.comp Gop.map Fop.map ..
     sublocale \<eta>': inverse_transformation D D E.D.map \<open>G \<circ> F\<close> \<eta> ..
     interpretation \<eta>op: natural_transformation Dop.comp Dop.comp Dop.map Gop_o_Fop.map \<eta>'.map
-      using \<eta>'.is_extensional \<eta>'.is_natural_1 \<eta>'.is_natural_2
+      using \<eta>'.extensionality \<eta>'.naturality1 \<eta>'.naturality2
       by unfold_locales auto
     interpretation \<eta>op: natural_isomorphism Dop.comp Dop.comp Dop.map Gop_o_Fop.map \<eta>'.map
       by unfold_locales auto
     sublocale \<epsilon>': inverse_transformation C C \<open>F \<circ> G\<close> E.C.map \<epsilon> ..
     interpretation \<epsilon>op: natural_transformation Cop.comp Cop.comp Fop_o_Gop.map Cop.map \<epsilon>'.map
-      using \<epsilon>'.is_extensional \<epsilon>'.is_natural_1 \<epsilon>'.is_natural_2
+      using \<epsilon>'.extensionality \<epsilon>'.naturality1 \<epsilon>'.naturality2
       by unfold_locales auto
     interpretation \<epsilon>op: natural_isomorphism Cop.comp Cop.comp Fop_o_Gop.map Cop.map \<epsilon>'.map
       by unfold_locales auto
@@ -427,7 +428,7 @@ begin
       show ?thesis
       proof
         show "\<eta>'GoG\<epsilon>'.map = G"
-        proof (intro NaturalTransformation.eqI)
+        proof (intro natural_transformation_eqI)
           show "natural_transformation C D G G G"
             using G.as_nat_trans.natural_transformation_axioms by auto
           show "natural_transformation C D G G \<eta>'GoG\<epsilon>'.map"
@@ -445,7 +446,7 @@ begin
           qed
         qed
         show "F\<eta>'o\<epsilon>'F.map = F"
-        proof (intro NaturalTransformation.eqI)
+        proof (intro natural_transformation_eqI)
           show "natural_transformation D C F F F"
             using F.as_nat_trans.natural_transformation_axioms by auto
           show "natural_transformation D C F F F\<eta>'o\<epsilon>'F.map"
@@ -551,7 +552,7 @@ begin
                 have 2: "\<guillemotleft>g' : x' \<rightarrow>\<^sub>C ?x\<guillemotright> \<and> ?e \<cdot>\<^sub>D F g' = f" using g' is_coext_def by simp
                 have 3: "\<guillemotleft>?g : x' \<rightarrow>\<^sub>C ?x\<guillemotright> \<and> ?e \<cdot>\<^sub>D F ?g = f" using 1 is_coext_def by simp
                 have "F g' = F ?g"
-                  using e f 2 3 D.iso_is_section D.section_is_mono D.monoE D.arrI
+                  using e f 2 3 D.iso_is_section D.section_is_mono D.mono_cancel D.arrI
                   by (metis (no_types, lifting) D.arrI)
                 moreover have "C.par g' ?g"
                   using 2 3 by fastforce
@@ -611,16 +612,16 @@ begin
           proof
             show "D.arr (Adj.\<epsilon> a)"
               using a by simp
-            show "\<And>f f'. \<lbrakk>D.seq (Adj.\<epsilon> a) f; D.seq (Adj.\<epsilon> a) f'; Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'\<rbrakk>
+            show "\<And>f f'. \<lbrakk>D.seq (Adj.\<epsilon> a) f; Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'\<rbrakk>
                             \<Longrightarrow> f = f'"
             proof -
               fix f f'
-              assume seq: "D.seq (Adj.\<epsilon> a) f" and seq': "D.seq (Adj.\<epsilon> a) f'"
+              assume seq: "D.seq (Adj.\<epsilon> a) f"
               and eq: "Adj.\<epsilon> a \<cdot>\<^sub>D f = Adj.\<epsilon> a \<cdot>\<^sub>D f'"
               have f: "\<guillemotleft>f : D.dom f \<rightarrow>\<^sub>D F (G a)\<guillemotright>"
                 using a seq Adj.\<epsilon>.preserves_hom [of a a a] by fastforce
               have f': "\<guillemotleft>f' : D.dom f' \<rightarrow>\<^sub>D F (G a)\<guillemotright>"
-                using a seq' Adj.\<epsilon>.preserves_hom [of a a a] by fastforce
+                using a seq Adj.\<epsilon>.preserves_hom [of a a a] D.in_homI eq by auto
               have par: "D.par f f'"
                 using f f' seq eq D.dom_comp [of "Adj.\<epsilon> a" f] by force
               obtain b' \<phi> where \<phi>: "C.ide b' \<and> D.iso \<phi> \<and> \<guillemotleft>\<phi>: F b' \<rightarrow>\<^sub>D D.dom f\<guillemotright>"
@@ -648,7 +649,8 @@ begin
               hence "f \<cdot>\<^sub>D \<phi> = f' \<cdot>\<^sub>D \<phi>"
                 using g g' is_faithful by argo
               thus "f = f'"
-                using \<phi> f f' par D.iso_is_retraction D.retraction_is_epi D.epiE [of \<phi> f f']
+                using \<phi> f f' par D.iso_is_retraction D.retraction_is_epi
+                      D.epi_cancel [of \<phi> f f']
                 by auto
             qed
           qed
@@ -914,12 +916,12 @@ begin
         show "\<epsilon>'F_F\<eta>.map g = F g"
         proof (cases "D.arr g")
           show "\<not> D.arr g \<Longrightarrow> \<epsilon>'F_F\<eta>.map g = F g"
-            using \<epsilon>'F_F\<eta>.is_extensional F.is_extensional by simp
+            using \<epsilon>'F_F\<eta>.extensionality F.extensionality by simp
           assume g: "D.arr g"
           have "\<epsilon>'F_F\<eta>.map g = \<epsilon>' (F (D.cod g)) \<cdot>\<^sub>C F (\<eta> g)"
             using g \<epsilon>'F_F\<eta>.map_def by simp
           also have "... = \<epsilon>' (F (D.cod g)) \<cdot>\<^sub>C F (\<eta> (D.cod g) \<cdot>\<^sub>D g)"
-            using g \<eta>.is_natural_2 by simp
+            using g \<eta>.naturality2 by simp
           also have "... = (\<epsilon>' (F (D.cod g)) \<cdot>\<^sub>C F (\<eta> (D.cod g))) \<cdot>\<^sub>C F g"
             using g C.comp_assoc by simp
           also have "... = F (D.cod g) \<cdot>\<^sub>C F g"
@@ -935,12 +937,12 @@ begin
         show "G\<epsilon>'_\<eta>G.map f = G f"
         proof (cases "C.arr f")
           show "\<not> C.arr f \<Longrightarrow> G\<epsilon>'_\<eta>G.map f = G f"
-            using G\<epsilon>'_\<eta>G.is_extensional G.is_extensional by simp
+            using G\<epsilon>'_\<eta>G.extensionality G.extensionality by simp
           assume f: "C.arr f"
           have "F (G\<epsilon>'_\<eta>G.map f) = F (G (\<epsilon>' (C.cod f)) \<cdot>\<^sub>D \<eta> (G f))"
             using f G\<epsilon>'_\<eta>G.map_def D.comp_assoc by simp
           also have "... = F (G (\<epsilon>' (C.cod f)) \<cdot>\<^sub>D \<eta> (G (C.cod f)) \<cdot>\<^sub>D G f)"
-            using f \<eta>.is_natural_2 [of "G f"] by simp
+            using f \<eta>.naturality2 [of "G f"] by simp
           also have "... = F (G (\<epsilon>' (C.cod f))) \<cdot>\<^sub>C F (\<eta> (G (C.cod f))) \<cdot>\<^sub>C F (G f)"
             using f by simp
           also have "... = (F (G (\<epsilon>' (C.cod f))) \<cdot>\<^sub>C C.inv (\<epsilon>' (F (G (C.cod f))))) \<cdot>\<^sub>C F (G f)"

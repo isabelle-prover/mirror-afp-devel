@@ -65,17 +65,17 @@ begin
         using assms src_cod trg_cod vconn_implies_hpar(1) vconn_implies_hpar(2) by auto
     qed
 
-    lemma assoc_is_natural_1:
+    lemma assoc_naturality1:
     assumes "arr \<mu>" and "arr \<nu>" and "arr \<tau>" and "src \<mu> = trg \<nu>" and "src \<nu> = trg \<tau>"
     shows "\<a>[\<mu>, \<nu>, \<tau>] = (\<mu> \<star> \<nu> \<star> \<tau>) \<cdot> \<a>[dom \<mu>, dom \<nu>, dom \<tau>]"
-      using assms \<alpha>.is_natural_1 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C
+      using assms \<alpha>.naturality1 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C
             HoVH_def src_dom trg_dom
       by simp
 
-    lemma assoc_is_natural_2:
+    lemma assoc_naturality2:
     assumes "arr \<mu>" and "arr \<nu>" and "arr \<tau>" and "src \<mu> = trg \<nu>" and "src \<nu> = trg \<tau>"
     shows "\<a>[\<mu>, \<nu>, \<tau>] = \<a>[cod \<mu>, cod \<nu>, cod \<tau>] \<cdot> ((\<mu> \<star> \<nu>) \<star> \<tau>)"
-      using assms \<alpha>.is_natural_2 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
+      using assms \<alpha>.naturality2 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
             HoHV_def src_dom trg_dom
       by simp
 
@@ -280,11 +280,11 @@ begin
 
     lemma R'_eq_R:
     shows "H.R = R"
-      using H.is_extensional CC_eq_VV CC.arr_char by force
+      using H.extensionality CC_eq_VV CC.arr_char by force
 
     lemma L'_eq_L:
     shows "H.L = L"
-      using H.is_extensional CC_eq_VV CC.arr_char by force
+      using H.extensionality CC_eq_VV CC.arr_char by force
 
     interpretation R': fully_faithful_functor C C H.R
       using R'_eq_R R.fully_faithful_functor_axioms by auto
@@ -297,8 +297,9 @@ begin
 
     proposition induces_bicategory:
     shows "bicategory C tensor (\<lambda>\<mu> \<nu> \<tau>. \<alpha> (\<mu>, \<nu>, \<tau>)) (\<lambda>_. \<iota>) I.map I.map"
-      using obj_char unit_in_hom unit_is_iso pentagon \<alpha>.is_extensional \<alpha>.is_natural_1 \<alpha>.is_natural_2
-      by unfold_locales simp_all
+      using unit_in_hom unit_is_iso pentagon \<alpha>.extensionality
+            \<alpha>.naturality1 \<alpha>.naturality2 CCC.arrE CCC_eq_VVV
+      by unfold_locales auto
 
   end
 
@@ -638,7 +639,7 @@ begin
         using assms lunit_char(2) lunit_char(2) [of "L f"] L.preserves_ide by auto
       ultimately show ?thesis
         using assms lunit_char(2) [of f] lunit_naturality [of "\<l>[f]"] iso_lunit
-              iso_is_section section_is_mono monoE [of "\<l>[f]" "L \<l>[f]" "\<l>[L f]"]
+              iso_is_section section_is_mono mono_cancel [of "\<l>[f]" "L \<l>[f]" "\<l>[L f]"]
         by auto
     qed
 
@@ -670,7 +671,7 @@ begin
         using assms runit_char(2) runit_char(2) [of "R f"] R.preserves_ide by auto
       ultimately show ?thesis
         using assms runit_char(2) [of f] runit_naturality [of "\<r>[f]"] iso_runit
-              iso_is_section section_is_mono monoE [of "\<r>[f]" "R \<r>[f]" "\<r>[R f]"]
+              iso_is_section section_is_mono mono_cancel [of "\<r>[f]" "R \<r>[f]" "\<r>[R f]"]
         by auto
     qed
 
@@ -901,24 +902,24 @@ begin
         using assms vconn_implies_hpar(1) vconn_implies_hpar(2) by auto
     qed
 
-    lemma assoc'_is_natural_1:
+    lemma assoc'_naturality1:
     assumes "arr \<mu>" and "arr \<nu>" and "arr \<tau>" and "src \<mu> = trg \<nu>" and "src \<nu> = trg \<tau>"
     shows "\<a>\<^sup>-\<^sup>1[\<mu>, \<nu>, \<tau>] = ((\<mu> \<star> \<nu>) \<star> \<tau>) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<mu>, dom \<nu>, dom \<tau>]"
-      using assms \<alpha>'.is_natural_1 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+      using assms \<alpha>'.naturality1 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
             VVV.dom_char\<^sub>S\<^sub>b\<^sub>C HoHV_def src_dom trg_dom \<a>'_def
       by simp
 
-    lemma assoc'_is_natural_2:
+    lemma assoc'_naturality2:
     assumes "arr \<mu>" and "arr \<nu>" and "arr \<tau>" and "src \<mu> = trg \<nu>" and "src \<nu> = trg \<tau>"
     shows "\<a>\<^sup>-\<^sup>1[\<mu>, \<nu>, \<tau>] = \<a>\<^sup>-\<^sup>1[cod \<mu>, cod \<nu>, cod \<tau>] \<cdot> (\<mu> \<star> \<nu> \<star> \<tau>)"
-      using assms \<alpha>'.is_natural_2 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+      using assms \<alpha>'.naturality2 [of "(\<mu>, \<nu>, \<tau>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
             VVV.cod_char\<^sub>S\<^sub>b\<^sub>C HoVH_def src_dom trg_dom \<a>'_def
       by simp
 
     lemma assoc'_naturality:
     assumes "arr \<mu>" and "arr \<nu>" and "arr \<tau>" and "src \<mu> = trg \<nu>" and "src \<nu> = trg \<tau>"
     shows "\<a>\<^sup>-\<^sup>1[cod \<mu>, cod \<nu>, cod \<tau>] \<cdot> (\<mu> \<star> \<nu> \<star> \<tau>) = ((\<mu> \<star> \<nu>) \<star> \<tau>) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<mu>, dom \<nu>, dom \<tau>]"
-      using assms assoc'_is_natural_1 assoc'_is_natural_2 by metis
+      using assms assoc'_naturality1 assoc'_naturality2 by metis
 
     lemma assoc'_in_hom [intro]:
     assumes "ide f" and "ide g" and "ide h" and "src f = trg g" and "src g = trg h"
@@ -978,7 +979,7 @@ begin
     lemma seq_if_composable:
     assumes "\<nu> \<star> \<mu> \<noteq> null"
     shows "src \<nu> = trg \<mu>"
-      using assms H.is_extensional [of "(\<nu>, \<mu>)"] VV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
+      using assms H.extensionality [of "(\<nu>, \<mu>)"] VV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
 
     lemma obj_self_composable:
     assumes "obj a"
@@ -1129,7 +1130,7 @@ begin
       obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : a \<star> f \<Rightarrow> a \<star> g\<guillemotright>"
         using assms by blast
       have 1: "Left_a.iso \<phi> \<and> Left_a.in_hom \<phi> (a \<star> f) (a \<star> g)"
-        by (metis H\<^sub>L_def La.is_extensional La.preserves_arr Left_a.dom_closed
+        by (metis H\<^sub>L_def La.extensionality La.preserves_arr Left_a.dom_closed
             Left_a.in_hom_char\<^sub>S\<^sub>b\<^sub>C Left_a.iso_char Left_a.not_arr_null Left_a.null_char \<phi> assms(4)
             hom_connected(4) hseq_char' ide_char' in_homE isomorphic_implies_ide(2) left_def)
       hence 2: "Left_a.ide (a \<star> f) \<and> Left_a.ide (a \<star> g)"
@@ -1317,7 +1318,7 @@ begin
     shows "associative_weak_composition V H \<a>"
     proof -
       have 1: "\<And>\<nu> \<mu>. \<nu> \<star> \<mu> \<noteq> null \<Longrightarrow> src \<nu> = trg \<mu>"
-        using H.is_extensional VV.arr_char\<^sub>S\<^sub>b\<^sub>C by force
+        using H.extensionality VV.arr_char\<^sub>S\<^sub>b\<^sub>C by force
       show "associative_weak_composition V H \<a>"
       proof
         show "\<And>f g h. ide f \<Longrightarrow> ide g \<Longrightarrow> ide h \<Longrightarrow> f \<star> g \<noteq> null \<Longrightarrow> g \<star> h \<noteq> null \<Longrightarrow>
@@ -1966,7 +1967,7 @@ begin
           have "epi \<a>[g \<star> ?b, ?b, f]"
             using assms preserves_ide iso_assoc iso_is_retraction retraction_is_epi by force
           thus ?thesis
-            using assms 1 by auto
+            using assms 1 epi_cancel by auto
         qed
       qed
       have "(g \<star> \<l>[f]) \<cdot> \<a>[g, ?b, f] = ((g \<star> \<l>[f]) \<cdot> (g \<star> \<l>[?b \<star> f]) \<cdot> (g \<star> ?b \<star> \<l>\<^sup>-\<^sup>1[f])) \<cdot>
@@ -2058,8 +2059,9 @@ begin
         using assms iso_assoc isos_compose by simp
       ultimately show ?thesis
         using assms iso_is_retraction retraction_is_epi
-              epiE [of "\<a>[f, trg g \<star> g, h] \<cdot> (\<a>[f, trg g, g] \<star> h)"
-                         "(f \<star> \<l>[g \<star> h]) \<cdot> (f \<star> \<a>[trg g, g, h])" "f \<star> \<l>[g] \<star> h"]
+              epi_cancel
+                [of "\<a>[f, trg g \<star> g, h] \<cdot> (\<a>[f, trg g, g] \<star> h)"
+                    "(f \<star> \<l>[g \<star> h]) \<cdot> (f \<star> \<a>[trg g, g, h])" "f \<star> \<l>[g] \<star> h"]
          by auto
     qed
 

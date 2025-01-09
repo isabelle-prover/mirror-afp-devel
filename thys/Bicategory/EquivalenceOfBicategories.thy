@@ -698,13 +698,13 @@ begin
                           IH.map IH.cmp GFH.map GFH.cmp K \<Phi>\<^sub>K \<rho>oH.map\<^sub>0 \<rho>oH.map\<^sub>1
         ..
       have "IH.map = H"
-        using H.is_extensional IH.is_extensional H.functor_axioms by force
+        using H.extensionality IH.extensionality H.functor_axioms by force
       moreover have "IH.cmp = \<Phi>\<^sub>H"
       proof
         fix \<mu>\<nu>
         show "IH.cmp \<mu>\<nu> = \<Phi>\<^sub>H \<mu>\<nu>"
           using IH.cmp_def D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.VV.dom_simp D.VV.cod_simp H.FF_def
-                C.comp_arr_dom C.comp_cod_arr H.\<Phi>.is_natural_1 H.\<Phi>.is_extensional
+                C.comp_arr_dom C.comp_cod_arr H.\<Phi>.naturality1 H.\<Phi>.extensionality
           by (cases "D.VV.arr \<mu>\<nu>") auto
       qed
       ultimately show "pseudonatural_equivalence_whisker_left V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
@@ -725,14 +725,14 @@ begin
                          HKG.map HKG.cmp IG.map IG.cmp F \<Phi>\<^sub>F \<xi>oG.map\<^sub>0 \<xi>oG.map\<^sub>1
         ..
       have "IG.map = G"
-        using G_.is_extensional IG.is_extensional
+        using G_.extensionality IG.extensionality
         by (meson G_.functor_axioms comp_identity_functor)
       moreover have "IG.cmp = \<Phi>\<^sub>G"
       proof
         fix \<mu>\<nu>
         show "IG.cmp \<mu>\<nu> = \<Phi>\<^sub>G \<mu>\<nu>"
           using IG.cmp_def B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp G_.FF_def
-                C.comp_arr_dom C.comp_cod_arr G_.\<Phi>.is_natural_1 G_.\<Phi>.is_extensional
+                C.comp_arr_dom C.comp_cod_arr G_.\<Phi>.naturality1 G_.\<Phi>.extensionality
           by (cases "B.VV.arr \<mu>\<nu>") auto
       qed
       ultimately show "pseudonatural_equivalence_whisker_left V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
@@ -831,7 +831,7 @@ begin
         proof (cases "B.VV.arr \<mu>\<nu>")
           case False
           thus ?thesis
-            using FH_KG.\<Phi>.is_extensional FHKG.\<Phi>.is_extensional by simp
+            using FH_KG.\<Phi>.extensionality FHKG.\<Phi>.extensionality by simp
           next
           case True
           have "FH_KG.cmp \<mu>\<nu> =
@@ -906,7 +906,7 @@ begin
         proof (cases "D.VV.arr \<mu>\<nu>")
           case False
           thus ?thesis
-            using KG_FH.\<Phi>.is_extensional KGFH.\<Phi>.is_extensional by simp
+            using KG_FH.\<Phi>.extensionality KGFH.\<Phi>.extensionality by simp
           next
           case True
           have "KG_FH.cmp \<mu>\<nu> =
@@ -6155,7 +6155,7 @@ begin
             using a B.obj_simps P\<^sub>0_props obj_char arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           moreover have "P\<^sub>0 a \<cdot>\<^sub>B P\<^sub>0 a \<in> Obj"
             using 1 arr_char\<^sub>S\<^sub>b\<^sub>C P\<^sub>0_props(1) obj_char
-            by (metis (no_types, lifting) B.cod_trg B.obj_def' B.trg.as_nat_trans.is_natural_2)
+            by (metis (no_types, lifting) B.cod_trg B.obj_def' B.trg.as_nat_trans.naturality2)
           moreover have "emb.unit (P\<^sub>0 (src\<^sub>B a)) = P\<^sub>0 (src\<^sub>B a)"
             using a 0 1 emb.unit_char' P.map\<^sub>0_def src_def by simp
           ultimately show ?thesis
@@ -6618,17 +6618,17 @@ begin
         using assms G\<^sub>0_props by unfold_locales auto
       show 1: "\<eta> (D.cod \<nu>) \<cdot>\<^sub>D \<nu> = \<eta> \<nu>"
         unfolding \<eta>_def
-        using assms Faa'.\<eta>\<epsilon>.\<eta>.is_natural_2 hom\<^sub>D.comp_char G_def hom\<^sub>D.cod_simp
+        using assms Faa'.\<eta>\<epsilon>.\<eta>.naturality2 hom\<^sub>D.comp_char G_def hom\<^sub>D.cod_simp
               G_in_hom(1) hom\<^sub>C.arr_char\<^sub>S\<^sub>b\<^sub>C hom\<^sub>D.arr_char\<^sub>S\<^sub>b\<^sub>C hom\<^sub>D.cod_closed
         apply simp
         by (metis (no_types, lifting) D.ext Faa'.\<eta>\<epsilon>.F.preserves_reflects_arr
             Faa'.\<eta>\<epsilon>.\<eta>.preserves_reflects_arr)
       show 2: "F (G \<nu>) \<cdot>\<^sub>D \<eta> (D.dom \<nu>) = \<eta> \<nu>"
         unfolding \<eta>_def
-        using assms D.src_dom D.src_cod D.trg_dom D.trg_cod Faa'.\<eta>\<epsilon>.\<eta>.is_natural_1
+        using assms D.src_dom D.src_cod D.trg_dom D.trg_cod Faa'.\<eta>\<epsilon>.\<eta>.naturality1
               hom\<^sub>D.comp_char G_def Faa'.F\<^sub>1_def hom\<^sub>D.dom_simp hom\<^sub>D.cod_simp
         apply simp
-        by (metis (no_types, lifting) D.not_arr_null Faa'.\<eta>\<epsilon>.\<eta>.is_extensional
+        by (metis (no_types, lifting) D.not_arr_null Faa'.\<eta>\<epsilon>.\<eta>.extensionality
             \<eta>_def \<eta>_simps(1) hom\<^sub>D.null_char)
       show "\<nu> \<cdot>\<^sub>D D.inv (\<eta> (D.dom \<nu>)) = D.inv (\<eta> (D.cod \<nu>)) \<cdot>\<^sub>D F (G \<nu>)"
         using assms 1 2
@@ -6718,14 +6718,14 @@ begin
         using assms by unfold_locales simp_all
       show 1: "\<epsilon> (C.cod \<mu>) \<cdot>\<^sub>C G (F \<mu>) = \<epsilon> \<mu>"
         unfolding \<epsilon>_def
-        using assms C.src_dom C.src_cod C.trg_dom C.trg_cod Faa'.\<eta>\<epsilon>.\<epsilon>.is_natural_2
+        using assms C.src_dom C.src_cod C.trg_dom C.trg_cod Faa'.\<eta>\<epsilon>.\<epsilon>.naturality2
               hom\<^sub>C.comp_char G_def Faa'.F\<^sub>1_def G\<^sub>0_props hom\<^sub>C.dom_char\<^sub>S\<^sub>b\<^sub>C hom\<^sub>C.cod_char\<^sub>S\<^sub>b\<^sub>C
         apply simp
         by (metis (no_types, lifting) C.in_hhomI Faa'.\<eta>\<epsilon>.\<epsilon>.preserves_reflects_arr hom\<^sub>C.arr_char\<^sub>S\<^sub>b\<^sub>C
             hom\<^sub>C.not_arr_null hom\<^sub>C.null_char)
       show 2: "\<mu> \<cdot>\<^sub>C \<epsilon> (C.dom \<mu>) = \<epsilon> \<mu>"
         unfolding \<epsilon>_def
-        using assms C.src_dom C.src_cod C.trg_dom C.trg_cod Faa'.\<eta>\<epsilon>.\<epsilon>.is_natural_1
+        using assms C.src_dom C.src_cod C.trg_dom C.trg_cod Faa'.\<eta>\<epsilon>.\<epsilon>.naturality1
               hom\<^sub>C.comp_char G_def Faa'.F\<^sub>1_def G\<^sub>0_props hom\<^sub>C.dom_char\<^sub>S\<^sub>b\<^sub>C hom\<^sub>C.cod_char\<^sub>S\<^sub>b\<^sub>C
         apply simp
         by (metis (no_types, lifting) C.in_hhomI Faa'.\<eta>\<epsilon>.\<epsilon>.preserves_reflects_arr
@@ -6789,7 +6789,7 @@ begin
         fix \<nu>
         have "\<not> D.arr \<nu> \<Longrightarrow> \<epsilon>oG_Go\<eta>.map \<nu> = G \<nu>"
           unfolding \<epsilon>oG_Go\<eta>.map_def
-          by (simp add: G.is_extensional)
+          by (simp add: G.extensionality)
         moreover have "D.arr \<nu> \<Longrightarrow> \<epsilon>oG_Go\<eta>.map \<nu> = G \<nu>"
         proof -
           assume \<nu>: "D.arr \<nu>"
@@ -6861,7 +6861,7 @@ begin
         fix \<mu>
         have "\<not> C.arr \<mu> \<Longrightarrow> Fo\<epsilon>_\<eta>oF.map \<mu> = F \<mu>"
           unfolding Fo\<epsilon>_\<eta>oF.map_def
-          by (simp add: is_extensional)
+          by (simp add: extensionality)
         moreover have "C.arr \<mu> \<Longrightarrow> Fo\<epsilon>_\<eta>oF.map \<mu> = F \<mu>"
         proof -
           assume \<mu>: "C.arr \<mu>"
@@ -8882,7 +8882,7 @@ begin
       apply unfold_locales
                   apply auto
        apply (metis C.comp_ide_self C.ide_src C.src_cod C.src_dom)
-      by (metis C.trg.as_nat_trans.is_natural_2 C.trg.as_nat_trans.naturality C.trg_cod)
+      by (metis C.trg.as_nat_trans.naturality2 C.trg.as_nat_trans.naturality C.trg_cod)
 
     interpretation C\<^sub>U: dense_subbicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C U  (* 15 sec *)
     proof
@@ -8899,7 +8899,7 @@ begin
       apply unfold_locales
                   apply auto
        apply (metis D.comp_ide_self D.ide_src D.src_cod D.src_dom)
-      by (metis D.trg.as_nat_trans.is_natural_2 D.trg.as_nat_trans.naturality D.trg_cod)
+      by (metis D.trg.as_nat_trans.naturality2 D.trg.as_nat_trans.naturality D.trg_cod)
 
     interpretation D\<^sub>V: dense_subbicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V  (* 25 sec *)
       using V_dense D.equivalent_objects_def D.equivalent_objects_symmetric V_def

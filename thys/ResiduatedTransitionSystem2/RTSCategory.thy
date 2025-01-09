@@ -103,7 +103,7 @@ begin
     lemma dom_trg [simp]:
     shows "dom (trg t) = dom t"
       using H.preserves_trg
-      by (metis VV.F.extensional VV.F.preserves_trg V.arr_trg_iff_arr trg_dom)
+      by (metis VV.F.extensionality VV.F.preserves_trg V.arr_trg_iff_arr trg_dom)
 
     lemma cod_src [simp]:
     shows "cod (src t) = cod t"
@@ -114,7 +114,7 @@ begin
     lemma cod_trg [simp]:
     shows "cod (trg t) = cod t"
       using H.preserves_trg
-      by (metis VV.G.extensional VV.G.preserves_trg V.arr_trg_iff_arr trg_cod)
+      by (metis VV.G.extensionality VV.G.preserves_trg V.arr_trg_iff_arr trg_cod)
 
     lemma arr_hcomp [intro]:
     assumes "H.seq t u"
@@ -207,7 +207,7 @@ begin
       middle-four interchange law holds, as for 2-categories, between the horizontal
       and vertical compositions.
     \<close>
-    lemma interchange:
+    lemma interchange\<^sub>R\<^sub>T\<^sub>S\<^sub>C:
     assumes "V.composable t r" and "V.composable u s" and "H.seq t u"
     shows "V.composable (t \<star> u) (r \<star> s)"
     and "(t \<star> u) \<cdot> (r \<star> s) = (t \<cdot> r) \<star> (u \<cdot> s)"
@@ -278,11 +278,11 @@ begin
       have 4: "(r \<squnion> t) \\ t = r \\ t \<and> (r \<squnion> t) \\ r = t \\ r"
         by (metis (no_types, lifting) 2 V.arr_resid_iff_con V.con_sym
             V.join_src V.join_sym V.joinable_implies_con V.resid_join\<^sub>E(3)
-            V.src_resid V.trg_def assms(1))
+            V.src_resid\<^sub>W\<^sub>E V.trg_def assms(1))
       have 5: "(s \<squnion> u) \\ u = s \\ u \<and> (s \<squnion> u) \\ s = u \\ s"
         by (metis (no_types, lifting) 3 V.arr_resid_iff_con V.con_sym
             V.join_src V.join_sym V.joinable_implies_con V.resid_join\<^sub>E(3)
-            V.src_resid V.trg_def assms(2))
+            V.src_resid\<^sub>W\<^sub>E V.trg_def assms(2))
       show "((r \<squnion> t) \<star> (s \<squnion> u)) \\ (t \<star> u) = (r \<star> s) \\ (t \<star> u)"
         using assms 1 2 3 4 5 V.joinable_implies_con resid_hcomp by auto
       show "((r \<squnion> t) \<star> (s \<squnion> u)) \\ (r \<star> s) = (t \<star> u) \\ (r \<star> s)"
@@ -338,9 +338,9 @@ begin
               moreover have "H.seq g (src f)"
                 by (metis H.dom_null H.ext H.ide_compE
                     H.inverse_arrowsE H.seqI cod_src dom_trg
-                    inv_fg src.preserves_arr trg.is_extensional)
+                    inv_fg src.preserves_arr trg.extensionality)
               ultimately show ?thesis
-                using g interchange by auto
+                using g interchange\<^sub>R\<^sub>T\<^sub>S\<^sub>C by auto
             qed
             moreover have "V.composable (g \<star> src f) (trg g \<star> f)"
               using 2 V.composable_iff_arr_comp by blast
@@ -489,6 +489,8 @@ begin
         using assms simulation_cov_HOM_sta [of a "trg t"] by auto
       show ?thesis
       proof
+        show "\<And>x x'. \<lbrakk>Dom.ide x; Dom.cong x x'\<rbrakk> \<Longrightarrow> HOM\<^sup>\<rightarrow> a t x = HOM\<^sup>\<rightarrow> a t x'"
+          by (simp add: Dom.cong_char)
         show "\<And>f. \<not> Dom.arr f \<Longrightarrow> HOM\<^sup>\<rightarrow> a t f = Cod.null"
           using Dom'_eq Cod'_eq Cod'.null_char by simp
         fix f
@@ -504,78 +506,93 @@ begin
         show "Cod.trg (HOM\<^sup>\<rightarrow> a t f) = HOM\<^sup>\<rightarrow> a (trg t) f"
           using f 1 2 Cod'.trg_char Dom'.ide_char Cod'.arr_char by simp
         next
-        fix f
-        assume f: "Dom.arr f"
+        fix x f
+        assume f: "x \<in> Dom.sources f"
         have arr_f: "arr f"
-          using f Dom'.arr_char by auto
+          using f Dom'.arr_char
+          by (simp add: Dom'.inclusion Dom.sources_char\<^sub>W\<^sub>E)
         have 3: "H.cod f = H.dom t"
-          using f Dom'.arr_char by auto
+          using f Dom'.arr_char Dom.sources_char\<^sub>W\<^sub>E by auto
         have 4: "Dom.src f = src f"
-          using f Dom'_eq Dom'.src_char by auto
+          using f Dom'_eq Dom'.src_char
+          by (simp add: Dom.sources_char\<^sub>W\<^sub>E)
         have 5: "VV.con (t, Dom.src f) (src t, f)"
           unfolding VV.con_char
           using assms f 3 4 Dom'_eq Dom'.arr_char
-          by (intro conjI) auto
+          by (simp add: arr_f)
         have 6: "VV.con (src t, f) (t, Dom.src f)"
           using assms arr_f 3 4 VV.con_char by auto
         have 7: "VV.resid (t, Dom.src f) (src t, f) = (t, trg f)"
-          using f 5 VV.resid_def VV.con_char Dom'.src_char V.con_implies_arr
+          using f 4 5 VV.resid_def VV.con_char Dom'.src_char V.con_implies_arr
           by auto
-        show "HOM a (cod t) (HOM\<^sup>\<rightarrow> a t (Dom.src f)) (HOM\<^sup>\<rightarrow> a (src t) f) =
-              HOM\<^sup>\<rightarrow> a t (Dom.trg f)"
+        show "HOM a (cod t) (HOM\<^sup>\<rightarrow> a t x) (HOM\<^sup>\<rightarrow> a (src t) f) =
+              HOM\<^sup>\<rightarrow> a t (HOM a (dom t) x f)"
         proof -
-          have "HOM a (cod t) (HOM\<^sup>\<rightarrow> a t (Dom.src f)) (HOM\<^sup>\<rightarrow> a (src t) f) =
+          have "HOM a (cod t) (HOM\<^sup>\<rightarrow> a t x) (HOM\<^sup>\<rightarrow> a (src t) f) =
                 Cod'.resid (t \<star> src f) (src t \<star> f)"
-            using f 4 Dom.arr_src_iff_arr [of f] by simp
+            using f 4 Dom.arr_src_iff_arr [of f]
+            by (simp add: Dom.sources_char\<^sub>W\<^sub>E)
           also have "... = (t \<star> src f) \\ (src t \<star> f)"
-            using assms f 4 5 Cod'.resid_def Dom'_eq Dom'.arr_char H.preserves_con
-                  VV.con_implies_arr
-            by auto
+          proof -
+            have "\<guillemotleft>src t \<star> f : a \<rightarrow> cod t\<guillemotright>"
+              using assms f Dom'.con_char by fastforce
+            moreover have "\<guillemotleft>t \<star> src f : a \<rightarrow> cod t\<guillemotright>"
+              using assms f "5" VV.con_char calculation by fastforce
+            ultimately show ?thesis
+            unfolding Cod'.resid_def
+            using assms f by auto
+          qed
           also have "... = t \\ src t \<star> src f \\ f"
             using assms f 4 5 7 VV.arr_char Dom'.arr_char
                   H.preserves_resid [of "(t, src f)" "(src t, f)"]
-            by auto
-          also have "... = HOM\<^sup>\<rightarrow> a t (Dom.trg f)"
-            using assms f Dom'.arr_char Dom'.trg_char H.in_homI by auto
+                  VV.con_implies_arr(1) VV.con_implies_arr(2)
+            by force
+          also have "... = HOM\<^sup>\<rightarrow> a t (HOM a (dom t) x f)"
+            using Dom'.trg_char Dom.source_is_prfx Dom.sources_char\<^sub>W\<^sub>E
+                  arr_f assms(2) f
+            by fastforce
           finally show ?thesis by blast
         qed
-        show "HOM a (cod t) (HOM\<^sup>\<rightarrow> a (src t) f) (HOM\<^sup>\<rightarrow> a t (Dom.src f)) =
+        show "HOM a (cod t) (HOM\<^sup>\<rightarrow> a (src t) f) (HOM\<^sup>\<rightarrow> a t x) =
               HOM\<^sup>\<rightarrow> a (trg t) f"
         proof -
-          have "HOM a (cod t) (HOM\<^sup>\<rightarrow> a (src t) f) (HOM\<^sup>\<rightarrow> a t (Dom.src f)) =
-                Cod'.resid (src t \<star> f) (t \<star> Dom.src f)"
-            using f by simp
+          have "HOM a (cod t) (HOM\<^sup>\<rightarrow> a (src t) f) (HOM\<^sup>\<rightarrow> a t x) =
+                Cod'.resid (src t \<star> f) (t \<star> x)"
+            using f Dom.sources_char\<^sub>W\<^sub>E by force
           also have "... = (src t \<star> f) \\ (t \<star> src f)"
-            using assms f 4 Cod'.resid_def Dom'.arr_char by auto
+          proof -
+            have "\<guillemotleft>src t \<star> f : a \<rightarrow> cod t\<guillemotright>"
+              using assms f Dom'.con_char by fastforce
+            moreover have "\<guillemotleft>t \<star> x : a \<rightarrow> cod t\<guillemotright>"
+              using assms f Dom'.con_char by fastforce
+            ultimately show ?thesis
+              unfolding Cod'.resid_def
+              using assms f
+              by (auto simp add: "4" Dom.sources_char\<^sub>W\<^sub>E)
+          qed
           also have "... = src t \\ t \<star> f \\ src f"
             using assms f arr_f 4 6 VV.arr_char Dom'.arr_char VV.resid_def
                   H.preserves_resid [of "(src t, f)" "(t, src f)"]
-            by auto
-          also have "... = cov_HOM a (trg t) f"
-            using assms f arr_f by simp
+            by (simp add: VV.con_char)
+          also have "... = HOM\<^sup>\<rightarrow> a (trg t) f"
+            using assms f arr_f
+            by (metis "4" Dom'.null_char Dom'.src_char Dom'_eq V.ide_implies_arr
+                V.ide_src V.not_arr_null V.resid_arr_src V.resid_src_arr dom_trg)
           finally show ?thesis by blast
         qed
-        show "Cod.join_of (HOM\<^sup>\<rightarrow> a t (Dom.src f)) (HOM\<^sup>\<rightarrow> a (src t) f)
+        show "Cod.join_of (HOM\<^sup>\<rightarrow> a t x) (HOM\<^sup>\<rightarrow> a (src t) f)
                 (HOM\<^sup>\<rightarrow> a t f)"
         proof -
-          have 8: "t \<star> src f \<squnion> src t \<star> f = t \<star> f"
-            using assms f arr_f V.join_src V.join_sym V.joinable_iff_arr_join
-                  join_hcomp Dom'.arr_char H.seqI
-            by auto
-          moreover have "\<guillemotleft>f : a \<rightarrow> dom t\<guillemotright>"
-            using f Dom'.arr_char by auto
-          moreover have "\<guillemotleft>src f : a \<rightarrow> dom t\<guillemotright>"
-            using f Dom'.arr_char H.in_homI by auto
-          moreover have "V.joinable (t \<star> src f) (src t \<star> f)"
-          proof -
-            have "t \<star> f \<in> H.hom a (cod t)"
-              using assms f Dom'.arr_char by auto
-            thus ?thesis
-              using 8 V.joinable_iff_arr_join by auto
-          qed
+          have "Dom.arr f"
+            using f Dom.sources_char\<^sub>W\<^sub>E by blast
+          moreover have "V.join_of (t \<star> x) (src t \<star> f) (t \<star> f)"
+            using assms f V.join_is_join_of join_hcomp [of t "src t" x f]
+            by (metis "3" "4" Dom.arr_has_un_source Dom.src_in_sources H.seqI
+                V.arr_src_if_arr V.join_src V.join_sym V.joinable_iff_arr_join
+                arr_coincidence arr_f calculation dom_src src.preserves_cod
+                src.preserves_dom)
           ultimately show ?thesis
-            using assms 4 Dom'.arr_char Cod'.join_of_char
-                  V.join_is_join_of [of "t \<star> src f" "src t \<star> f"]
+            using assms f 4 Dom'.arr_char Cod'.join_of_char V.join_is_join_of
             by auto
         qed
       qed
@@ -642,8 +659,8 @@ begin
                          \<open>HOM\<^sup>\<rightarrow> a (src t)\<close> \<open>HOM\<^sup>\<rightarrow> a (trg t)\<close> \<open>HOM\<^sup>\<rightarrow> a (trg u)\<close>
                          \<open>HOM\<^sup>\<rightarrow> a t\<close> \<open>HOM\<^sup>\<rightarrow> a u\<close>
       proof
-        show "\<And>x. A.ide x \<longrightarrow> HOM\<^sup>\<rightarrow> a t x \<frown>\<^sub>B HOM\<^sup>\<rightarrow> a u x"
-        proof (intro impI)
+        show "\<And>x. A.ide x \<Longrightarrow> HOM\<^sup>\<rightarrow> a t x \<frown>\<^sub>B HOM\<^sup>\<rightarrow> a u x"
+        proof -
           fix x
           assume x: "A.ide x"
           show "HOM\<^sup>\<rightarrow> a t x \<frown>\<^sub>B HOM\<^sup>\<rightarrow> a u x"
@@ -717,7 +734,7 @@ begin
                       using assms True resid_hcomp [of "trg u" "t \\ u" x "A.src x"]
                       by (metis (no_types, lifting) A.con_arr_src(1) A.con_char
                           A.resid_arr_src A.resid_def H.arrI V.arr_resid V.con_def
-                          V.con_imp_arr_resid V.resid_src_arr V.src_resid V.trg_def)
+                          V.con_imp_arr_resid V.resid_src_arr V.src_resid\<^sub>W\<^sub>E V.trg_def)
                   qed
                   finally show ?thesis by simp
                 qed
@@ -940,7 +957,7 @@ begin
       interpret FG: inverse_simulations resid\<^sub>A resid\<^sub>B G F
       proof
         show "\<And>t. \<not> B.arr t \<Longrightarrow> G t = A.null"
-          using FG.F.is_extensional by simp
+          using FG.F.extensionality by simp
         show inv: "F \<circ> G = I resid\<^sub>B" and inv': "G \<circ> F = I resid\<^sub>A"
           using FG.inv FG.inv' A.H.map_def B.H.map_def by auto
         fix t u
@@ -969,7 +986,7 @@ begin
       interpret FG: inverse_functors comp\<^sub>A comp\<^sub>B G F
       proof
         show "\<And>f. \<not> B.H.arr f \<Longrightarrow> G f = A.H.null"
-          using FG.F.extensional by auto
+          using FG.F.extensionality by auto
         show 1: "\<And>f. B.H.arr f \<Longrightarrow> A.H.arr (G f)"
           by auto
         show 2: "\<And>f. B.H.arr f \<Longrightarrow> A.H.dom (G f) = G (B.H.dom f)"

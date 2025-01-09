@@ -8,17 +8,6 @@ imports Main "HOL-Library.FuncSet"
         ResiduatedTransitionSystem.ResiduatedTransitionSystem
 begin
 
-  lemma (in extensional_rts) divisors_of_ide:
-  assumes "composite_of t u v" and "ide v"
-  shows "ide t" and "ide u"
-  proof -
-    show "ide t"
-      using assms ide_backward_stable by blast
-    show "ide u"
-      by (metis assms(1-2) composite_ofE con_ide_are_eq con_prfx_composite_of(1)
-          ide_backward_stable)
-  qed
-
 section "Simulations"
 
   abbreviation I
@@ -27,13 +16,13 @@ section "Simulations"
   lemma comp_identity_simulation:
   assumes "simulation A B F"
   shows "I B \<circ> F = F"
-    using assms simulation.extensional simulation.preserves_reflects_arr
+    using assms simulation.extensionality simulation.preserves_reflects_arr
     by fastforce
 
   lemma comp_simulation_identity:
   assumes "simulation A B F"
   shows "F \<circ> I A = F"
-    using assms residuation.not_arr_null rts.axioms(1) simulation.extensional
+    using assms residuation.not_arr_null rts.axioms(1) simulation.extensionality
       simulation_def
     by fastforce
 
@@ -103,6 +92,69 @@ section "Simulations"
     shows "bij_betw F (Collect B.arr) (Collect A.arr)"
       using inv inv' by (intro bij_betwI) auto
 
+    lemma preserve_sources_exactly:
+    assumes "B.arr t"
+    shows "A.sources (F t) = F ` B.sources t"
+    proof
+      show "F ` B.sources t \<subseteq> A.sources (F t)"
+        using F.preserves_sources by auto
+      show "A.sources (F t) \<subseteq> F ` B.sources t"
+        by (metis A.ide_implies_arr A.source_is_ide G.preserves_sources assms
+            image_subset_iff inv'_simp inv_simp subsetI)
+    qed
+
+    lemma preserve_targets_exactly:
+    assumes "B.arr t"
+    shows "A.targets (F t) = F ` B.targets t"
+    proof
+      show "F ` B.targets t \<subseteq> A.targets (F t)"
+        using F.preserves_targets by auto
+      show "A.targets (F t) \<subseteq> F ` B.targets t"
+        by (metis A.ide_implies_arr A.target_is_ide G.preserves_targets assms
+            image_subset_iff inv'_simp inv_simp subsetI)
+    qed
+
+    lemma preserve_weakly_extensional_rts:
+    assumes "weakly_extensional_rts A"
+    shows "weakly_extensional_rts B"
+      using assms
+      by (metis A.ide_implies_arr B.ide_implies_arr B.rts_axioms
+          F.preserves_con F.preserves_ide inv_simp B.prfx_implies_con
+          weakly_extensional_rts.con_imp_eq_src weakly_extensional_rts.ide_iff_src_self
+          weakly_extensional_rts.intro weakly_extensional_rts_axioms.intro)
+
+    lemma preserve_extensional_rts:
+    assumes "extensional_rts A"
+    shows "extensional_rts B"
+      using assms
+      by (metis (full_types) B.con_implies_arr(2) B.rts_axioms extensional_rts.extensionality
+          extensional_rts.intro extensional_rts_axioms.intro inv_simp B.prfx_implies_con
+          F.preserves_prfx)
+
+    lemma preserve_rts_with_composites:
+    assumes "rts_with_composites A"
+    shows "rts_with_composites B"
+      by (metis B.composable_def B.rts_axioms B.seqE F.preserves_seq G.preserves_composites
+          assms inv_simp rts_with_composites.intro rts_with_composites.obtains_composite_of
+          rts_with_composites_axioms.intro)
+
+    lemma preserve_rts_with_joins:
+    assumes "rts_with_joins A"
+    shows "rts_with_joins B"
+    proof -
+      show "rts_with_joins B"
+      proof
+        fix t u
+        assume con: "B.con t u"
+        obtain t' u' where 1: "A.con t' u' \<and> G t' = t \<and> G u' = u"
+          using con B.con_implies_arr(1-2) F.preserves_con inv_simp by meson
+        have "A.joinable t' u'"
+          using assms 1 rts_with_joins.has_joins by auto
+        thus "B.joinable t u"
+          by (metis "1" A.joinable_def B.joinable_def G.preserves_joins)
+      qed
+    qed
+
   end
 
   lemma inverse_simulations_sym:
@@ -143,7 +195,7 @@ section "Simulations"
       using G inverse_simulations.induce_bij_betw_arr_sets inverse_simulations_sym
       by blast
     show "\<forall>t u. F.B.con (F t) (F u) \<longrightarrow> F.A.con t u"
-      by (metis F.B.not_con_null(1) F.B.not_con_null(2) F.extensional FG.F.preserves_con
+      by (metis F.B.not_con_null(1) F.B.not_con_null(2) F.extensionality FG.F.preserves_con
           FG.inv' comp_apply)
     next
     assume F: "simulation A B F \<and>
@@ -193,7 +245,7 @@ section "Simulations"
         show "(F \<circ> ?G) t = I B t"
           apply simp
           by (metis F F.A.not_arr_null bij_betw_def f_inv_into_f mem_Collect_eq
-              simulation.extensional)
+              simulation.extensionality)
       qed
       show "?G \<circ> F = I A"
       proof
@@ -246,7 +298,7 @@ section "Simulations"
     proof
       fix x
       show "G x = G' x"
-        by (metis FG'.F.extensional FG'.F.preserves_reflects_arr FG'.inv FG.F.extensional
+        by (metis FG'.F.extensionality FG'.F.preserves_reflects_arr FG'.inv FG.F.extensionality
             FG.inv' comp_apply)
     qed
   qed
@@ -282,7 +334,18 @@ section "Simulations"
 
     lemma map_eq:
     shows "map = (\<lambda>x. if B.arr x then inv_into (Collect A.arr) F x else A.null)"
-      using map_simp by (meson F.extensional)
+      using map_simp by (meson F.extensionality)
+
+  end
+
+  context inverse_simulations
+  begin
+
+    lemma inverse_eq:
+    shows "inverse_simulation.map A B G = F"
+      by (metis G.invertible_simulation_axioms inverse_simulation.intro
+          inverse_simulation.map_def inverse_simulation_unique inverse_simulations_axioms
+          inverse_simulations_def someI_ex)
 
   end
 
@@ -320,7 +383,7 @@ section "Simulations"
     show ?thesis
     proof
       show "GoF.map \<circ> F'oG'.map = I C"
-        by (metis FF'.inv GG'.F.extensional GG'.F.preserves_reflects_arr
+        by (metis FF'.inv GG'.F.extensionality GG'.F.preserves_reflects_arr
             GG'.inv comp_def)
       show "F'oG'.map \<circ> GoF.map = I A"
         by (metis FF'.A.not_arr_null FF'.G.preserves_reflects_arr FF'.inv
@@ -409,7 +472,7 @@ section "Simulations"
         fix t
         show "(FxG.map \<circ> F'xG'.map) t = I BxD.resid t"
           using F'.inv G'.inv FxG.map_def F'xG'.map_def
-                F.extensional G.extensional
+                F.extensionality G.extensionality
           by auto
       qed
       show "F'xG'.map \<circ> FxG.map = I AxC.resid"
@@ -417,7 +480,7 @@ section "Simulations"
         fix t
         show "(F'xG'.map \<circ> FxG.map) t = I AxC.resid t"
           using F'.inv' G'.inv' FxG.map_def F'xG'.map_def
-                F'.extensional G'.extensional
+                F'.extensionality G'.extensionality
           by auto
       qed
     qed
@@ -440,7 +503,7 @@ section "Simulations"
     interpret HK: inverse_simulations A B K H
       using K by blast
     show "\<lbrakk>simulation C A F; simulation C A G; H \<circ> F = H \<circ> G\<rbrakk> \<Longrightarrow> F = G"
-      by (metis HK.inv' HOL.ext comp_def simulation.extensional
+      by (metis HK.inv' HOL.ext comp_def simulation.extensionality
           simulation.preserves_reflects_arr)
   qed
 
@@ -453,7 +516,7 @@ section "Simulations"
     interpret HK: inverse_simulations A B K H
       using K by blast
     show "\<lbrakk>simulation B C F; simulation B C G; F \<circ> H = G \<circ> H\<rbrakk> \<Longrightarrow> F = G"
-      by (metis HK.inv HOL.ext comp_def simulation.extensional)
+      by (metis HK.inv HOL.ext comp_def simulation.extensionality)
   qed
 
   definition isomorphic_rts
@@ -476,6 +539,28 @@ section "Simulations"
           invertible_simulation_def
     by (metis inverse_simulations.axioms(4) invertible_simulation.invertible
         invertible_simulation_axioms.intro)
+
+  lemma isomorphism_cong_props:
+  assumes "isomorphic_rts A B"
+  shows weakly_extensional_cong_iso: "weakly_extensional_rts A \<Longrightarrow> weakly_extensional_rts B"
+  and extensional_cong_iso: "extensional_rts A \<Longrightarrow> extensional_rts B"
+  and rts_with_composites_cong_iso: "rts_with_composites A \<Longrightarrow> rts_with_composites B"
+  and rts_with_joins_cong_iso: "rts_with_joins A \<Longrightarrow> rts_with_joins B"
+  proof -
+    obtain F G where FG: "inverse_simulations A B G F"
+      using assms(1)
+      by (meson invertible_simulation_def' isomorphic_rts_def)
+    interpret FG: inverse_simulations A B G F
+      using FG by blast
+    show "weakly_extensional_rts A \<Longrightarrow> weakly_extensional_rts B"
+      using FG.preserve_weakly_extensional_rts by auto
+    show "extensional_rts A \<Longrightarrow> extensional_rts B"
+      using FG.preserve_extensional_rts by auto
+    show "rts_with_composites A \<Longrightarrow> rts_with_composites B"
+      using FG.preserve_rts_with_composites by auto
+    show "rts_with_joins A \<Longrightarrow> rts_with_joins B"
+      using FG.preserve_rts_with_joins by auto
+  qed
 
   lemma (in simulation) simulation_inv_intoI:
   assumes "inj_on F (Collect A.arr)" and "F ` (Collect A.arr) = Collect B.arr"
@@ -500,53 +585,37 @@ section "Transformations"
   lemma (in transformation) preserves_arr:
   assumes "A.arr t"
   shows "B.arr (\<tau> t)"
-    using assms B.join_of_un_upto_cong B.prfx_implies_con naturality3 by blast
+    by (metis A.ide_trg A.trg_def B.conI B.con_implies_arr(2) B.not_ide_null
+        assms respects_cong)
 
   lemma (in transformation) preserves_con:
   assumes "t \<frown>\<^sub>A u"
   shows "\<tau> t \<frown>\<^sub>B \<tau> u" and "\<tau> t \<frown>\<^sub>B F u"
   proof -
+    obtain a where a: "a \<in> A.sources t \<inter> A.sources u"
+      using assms(1)
+      by (meson A.con_imp_common_source all_not_in_conv)
+    have 1: "B.join_of (\<tau> a) (F t) (\<tau> t) \<and> B.join_of (\<tau> a) (F u) (\<tau> u)"
+      using a naturality3 by auto
     show "\<tau> t \<frown>\<^sub>B \<tau> u"
-    proof (intro B.con_with_join_of_iff(1))
-      show "B.join_of (\<tau> (A.src t)) (F t) (\<tau> t)"
-        using assms naturality3 [of t] A.con_implies_arr(1) by blast
-      show "F t \<frown>\<^sub>B \<tau> u \<and> \<tau> u \\\<^sub>B F t \<frown>\<^sub>B \<tau> (A.src t) \\\<^sub>B F t"
-      proof (intro conjI)
-        show "\<tau> u \\\<^sub>B F t \<frown>\<^sub>B \<tau> (A.src t) \\\<^sub>B F t"
-        proof -
-          have "(\<tau> u \\\<^sub>B F t \<frown>\<^sub>B \<tau> (A.src t) \\\<^sub>B F t) \<longleftrightarrow>
-                (\<tau> u \\\<^sub>B \<tau> (A.src t) \<frown>\<^sub>B F t \\\<^sub>B \<tau> (A.src t))"
-            using B.con_def B.cube by force
-          also have "... \<longleftrightarrow> \<tau> u \\\<^sub>B \<tau> (A.src t) \<frown>\<^sub>B G t"
-            using A.con_implies_arr(1) assms naturality2 by force
-          also have "... \<longleftrightarrow> G u \<frown>\<^sub>B G t"
-            by (metis (mono_tags, lifting) A.con_imp_eq_src A.con_implies_arr(2)
-                B.composite_ofE B.cong_subst_left(1) B.join_ofE assms
-                naturality2 naturality3)
-          also have "... = True"
-            using assms A.con_sym G.preserves_con by blast
-          finally show ?thesis by blast
-        qed
-        thus "F t \<frown>\<^sub>B \<tau> u"
-          by (metis B.con_def B.con_sym B.not_con_null(1))
-      qed
-    qed
+      by (metis (full_types) "1" B.composite_ofE B.con_composite_of_iff
+          B.cong_subst_left(1) B.join_ofE G.simulation_axioms IntD1 IntD2
+          a assms naturality2_ax simulation.preserves_con)
     thus "\<tau> t \<frown>\<^sub>B F u"
       using assms
-      by (meson A.residuation_axioms B.con_sym B.con_with_join_of_iff(2)
-          B.join_of_symmetric naturality3 residuation.con_implies_arr(2))
+      by (meson "1" B.con_sym B.con_with_join_of_iff(2) B.join_of_symmetric)
   qed
 
   lemma (in transformation) naturality1':
   assumes "A.arr t"
   shows "B.composite_of (F t) (\<tau> (A.trg t)) (\<tau> t)"
     using assms
-    by (metis B.rts_axioms naturality1 naturality3 rts.join_ofE)
+    by (metis A.src_in_sources B.join_ofE naturality1 naturality3)
 
   lemma (in transformation) naturality2':
   assumes "A.arr t"
   shows "B.composite_of (\<tau> (A.src t)) (G t) (\<tau> t)"
-      by (metis B.join_ofE assms naturality2 naturality3)
+    by (metis A.src_in_sources B.join_ofE assms naturality2 naturality3)
 
   locale transformation_to_extensional_rts =
     transformation +
@@ -554,7 +623,7 @@ section "Transformations"
   begin
 
     notation B.comp  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
-    notation B.join  (infix \<open>\<squnion>\<^sub>B\<close> 52)
+    notation B.join  (infixr \<open>\<squnion>\<^sub>B\<close> 52)
 
     lemma naturality1'\<^sub>E:
     shows "F t \<cdot>\<^sub>B \<tau> (A.trg t) = \<tau> t"
@@ -562,7 +631,7 @@ section "Transformations"
     proof -
       show "F t \<cdot>\<^sub>B \<tau> (A.trg t) = \<tau> t"
         using naturality1' B.comp_is_composite_of(2)
-        by (metis A.arr_trg_iff_arr B.comp_null(2) extensional)
+        by (metis A.arr_trg_iff_arr B.comp_null(2) extensionality)
       thus "A.arr t \<Longrightarrow> B.composable (F t) (\<tau> (A.trg t))"
         by (simp add: B.composable_iff_arr_comp preserves_arr)
     qed
@@ -573,7 +642,7 @@ section "Transformations"
     proof -
       show "\<tau> (A.src t) \<cdot>\<^sub>B G t = \<tau> t"
         using naturality2' B.comp_is_composite_of(2)
-        by (metis B.comp_null(2) G.extensional extensional)
+        by (metis B.comp_null(2) G.extensionality extensionality)
       thus "A.arr t \<Longrightarrow> B.composable (\<tau> (A.src t)) (G t)"
         by (simp add: B.composable_iff_arr_comp preserves_arr)
     qed
@@ -584,9 +653,8 @@ section "Transformations"
     proof -
       show "\<tau> (A.src t) \<squnion>\<^sub>B F t = \<tau> t"
         using naturality3
-        by (metis A.not_arr_null A.src_def B.join_def B.join_is_join_of
-            B.join_of_unique B.joinable_def B.joinable_implies_con
-            B.not_arr_null F.extensional extensional B.arrI)
+        by (metis B.extensional_rts_axioms B.join_expansion(1) B.joinable_iff_composable
+            extensionality extensional_rts.join_def naturality2 naturality2'\<^sub>E(1-2))
       thus "A.arr t \<Longrightarrow> B.joinable (\<tau> (A.src t)) (F t)"
         by (metis B.joinable_iff_arr_join preserves_arr)
     qed
@@ -602,16 +670,14 @@ section "Transformations"
     proof -
       show "\<tau> x \\\<^sub>B F y = \<tau> (x \\\<^sub>A y)"
         using assms
-        by (metis (full_types) A.residuation_axioms A.weakly_extensional_rts_axioms
-            B.extensional_rts_axioms G.simulation_axioms extensional_rts.resid_comp(2)
-            naturality2'\<^sub>E(1) residuation.con_implies_arr(2) simulation.preserves_resid
-            transformation.naturality1_ax transformation.naturality2_ax
-            transformation.preserves_con(2) transformation_axioms
-            weakly_extensional_rts.con_imp_eq_src weakly_extensional_rts.src_resid)
+        by (metis A.con_imp_cong_src A.con_implies_arr(2) A.ide_src A.ide_trg
+            A.src_resid B.resid_comp(2) G.preserves_resid naturality1 naturality2
+            naturality2'\<^sub>E(1) preserves_con(2) respects_cong_ide)
       show "F x \\\<^sub>B \<tau> y = G (x \\\<^sub>A y)"
         using assms
-        by (metis A.con_sym A.src_resid B.resid_comp(1) F.preserves_resid
-            naturality1'\<^sub>E(1) naturality2 preserves_con(2))
+        by (metis A.arr_resid A.con_sym A.ide_src A.src_resid B.resid_comp(1)
+            F.preserves_resid naturality1'\<^sub>E(1) naturality2 preserves_con(2)
+            respects_cong_ide)
     qed
 
     (*
@@ -626,7 +692,8 @@ section "Transformations"
                             B.trg (F u) \\\<^sub>B (\<tau> (A.src t) \\\<^sub>B F u)"
       proof -
         have "\<tau> t \\\<^sub>B \<tau> u = (\<tau> (A.src t) \<squnion>\<^sub>B F t) \\\<^sub>B (\<tau> (A.src t) \<squnion>\<^sub>B F u)"
-          by (metis A.con_imp_eq_src A.prfx_implies_con assms naturality3'\<^sub>E(1))
+          by (metis A.con_imp_cong_src A.con_implies_arr(2) A.ide_src
+              A.prfx_implies_con assms naturality3'\<^sub>E(1) respects_cong_ide)
         also have "... = (\<tau> (A.src t) \\\<^sub>B (\<tau> (A.src t) \<squnion>\<^sub>B F u)) \<squnion>\<^sub>B
                          (F t \\\<^sub>B (\<tau> (A.src t) \<squnion>\<^sub>B F u))"
           by (metis assms calculation A.con_implies_arr(2) A.con_sym
@@ -639,22 +706,21 @@ section "Transformations"
               B.resid_join\<^sub>E(1-2) B.null_is_zero(2) preserves_con(1))
         also have "... = B.trg (\<tau> (A.src t)) \\\<^sub>B (F u \\\<^sub>B \<tau> (A.src t)) \<squnion>\<^sub>B
                            B.trg (F u) \\\<^sub>B (\<tau> (A.src t) \\\<^sub>B F u)"
-          by (metis A.arr_resid_iff_con A.con_implies_arr(2) A.ide_implies_arr
-              A.src_ide A.src_resid B.trg_def F.preserves_resid F.preserves_trg
-              assms)
+          by (metis B.apex_arr_prfx\<^sub>W\<^sub>E(2) B.trg_def B.trg_ide F.preserves_prfx assms)
         finally show ?thesis by blast
       qed
       moreover have "B.ide ..."
       proof -
         have "B.ide (B.trg (\<tau> (A.src t)) \\\<^sub>B (F u \\\<^sub>B \<tau> (A.src t)))"
-          by (metis assms A.con_imp_eq_src A.con_implies_arr(2) A.cong_reflexive
-              A.ide_src A.prfx_implies_con A.resid_src_arr A.trg_def naturality2
-              preserves_trg G.preserves_prfx)
+          by (metis A.not_arr_null A.src_def B.rts_axioms assms
+              extensionality B.cong_char naturality2' preserves_con(2)
+              A.arr_resid_iff_con B.arr_resid_iff_con B.cube A.ide_implies_arr
+              B.trg_def rts.con_prfx_composite_of(2))
         moreover have "B.ide (B.trg (F u) \\\<^sub>B (\<tau> (A.src t) \\\<^sub>B F u))"
           using B.apex_sym B.cube B.trg_def calculation by force
         ultimately show ?thesis
           by (metis B.apex_sym B.ide_iff_src_self B.ide_implies_arr
-              B.join_arr_self B.prfx_implies_con B.src_resid)
+              B.join_arr_self B.prfx_implies_con B.src_resid\<^sub>W\<^sub>E)
       qed
       ultimately show ?thesis by simp
     qed
@@ -670,7 +736,7 @@ section "Transformations"
    *)
 
   locale transformation_by_components =
-    A: weakly_extensional_rts A +
+    A: rts A +
     B: extensional_rts B + 
     F: simulation A B F +
     G: simulation A B G
@@ -681,13 +747,14 @@ section "Transformations"
   and \<tau> :: "'a \<Rightarrow> 'b" +
   assumes preserves_src: "A.ide a \<Longrightarrow> B.src (\<tau> a) = F a"
   and preserves_trg: "A.ide a \<Longrightarrow> B.trg (\<tau> a) = G a"
-  and naturality1: "A.arr t \<Longrightarrow> \<tau> (A.src t) \\\<^sub>B F t = \<tau> (A.trg t)"
-  and naturality2: "A.arr t \<Longrightarrow> F t \\\<^sub>B \<tau> (A.src t) = G t"
-  and joinable: "A.arr t \<Longrightarrow> B.joinable (\<tau> (A.src t)) (F t)"
+  and respects_cong_ide: "\<lbrakk>A.ide a; A.cong a a'\<rbrakk> \<Longrightarrow> \<tau> a = \<tau> a'"
+  and naturality1: "a \<in> A.sources t \<Longrightarrow> \<tau> a \\\<^sub>B F t = \<tau> (a \\\<^sub>A t)"
+  and naturality2: "a \<in> A.sources t \<Longrightarrow> F t \\\<^sub>B \<tau> a = G t"
+  and joinable: "a \<in> A.sources t \<Longrightarrow> B.joinable (\<tau> a) (F t)"
   begin
 
     notation B.comp  (infixr \<open>\<cdot>\<^sub>B\<close> 55)
-    notation B.join  (infix \<open>\<squnion>\<^sub>B\<close> 52)
+    notation B.join  (infixr \<open>\<squnion>\<^sub>B\<close> 52)
 
     definition map
     where "map t = \<tau> (A.src t) \<squnion>\<^sub>B F t"
@@ -696,24 +763,25 @@ section "Transformations"
     shows "map t = (if A.arr t then \<tau> (A.src t) \<squnion>\<^sub>B F t else B.null)"
       unfolding map_def
       by (metis B.conE B.join_def B.joinable_implies_con B.null_is_zero(2)
-          F.extensional)
+          F.extensionality)
 
     lemma map_simp_ide [simp]:
     assumes "A.ide a"
     shows "map a = \<tau> a"
       using assms map_def
-      by (metis A.ide_iff_src_self A.ide_implies_arr B.arr_trg_iff_arr B.join_src
-          B.join_sym G.preserves_ide preserves_src preserves_trg B.ide_implies_arr)
+      by (simp add: B.join_prfx(2) naturality2 respects_cong_ide)
 
     sublocale transformation A B F G map
       using map_eq preserves_src preserves_trg naturality1 naturality2 joinable
-      apply (unfold_locales, simp_all)
-          apply (metis A.ide_implies_arr A.src_ide B.src_join)
-         apply (metis A.ide_implies_arr A.src_ide A.trg_ide B.trg_join)
-        apply (metis A.arr_src_iff_arr A.arr_trg_iff_arr A.ide_src A.src_src A.src_trg
-          map_simp_ide)
-       apply (metis A.arr_src_iff_arr A.ide_src A.src_src map_simp_ide)
-      by (metis A.arr_src_iff_arr A.ide_src A.src_src B.join_is_join_of map_simp_ide)
+      apply (unfold_locales)
+            apply presburger
+           apply (metis A.ide_backward_stable map_simp_ide respects_cong_ide)
+          apply (metis map_simp_ide)
+         apply (metis map_simp_ide)
+        apply (metis A.in_sourcesE A.source_is_prfx map_simp_ide)
+       apply (metis A.in_sourcesE map_simp_ide)
+      by (metis A.con_implies_arr(1) A.in_sourcesE A.sources_are_cong
+          A.src_in_sources B.join_is_join_of map_simp_ide respects_cong_ide)
 
     lemma is_transformation:
     shows "transformation A B F G map"
@@ -731,9 +799,9 @@ section "Transformations"
     proof
       fix x
       show "F x = G x"
-        by (metis A.ide_src B.ideE B.resid_arr_src B.src_eqI B.src_join_of(1-2)
-          F.extensional F.preserves_reflects_arr G.extensional identity
-          naturality3 naturality2)
+        by (metis A.con_arr_src(2) A.ide_src B.resid_arr_ide
+            F.extensionality G.extensionality identity naturality2 preserves_con(2)
+            B.con_sym)
     qed
 
     sublocale simulation ..
@@ -743,18 +811,18 @@ section "Transformations"
   lemma comp_identity_transformation:
   assumes "transformation A B F G T"
   shows "I B \<circ> T = T"
-    using assms transformation.extensional transformation.preserves_arr
+    using assms transformation.extensionality transformation.preserves_arr
     by fastforce
 
   lemma comp_transformation_identity:
   assumes "transformation A B F G T"
   shows "T \<circ> I A = T"
-    using assms residuation.not_arr_null rts.axioms(1) transformation.extensional
-          transformation_def simulation_def
+    using assms residuation.not_arr_null rts_def transformation.extensionality
+          transformation_def
     by fastforce
 
   locale constant_transformation =
-    A: weakly_extensional_rts A +
+    A: rts A +
     B: weakly_extensional_rts B
   for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
   and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
@@ -780,27 +848,30 @@ section "Transformations"
       by unfold_locales auto
 
     sublocale transformation A B F G map
-      using arr_t B.join_of_arr_src(2)
-      by unfold_locales auto
+      using arr_t B.join_of_arr_src(2) A.ide_backward_stable A.ide_implies_arr
+      apply unfold_locales
+            apply argo
+           apply meson
+          apply (metis (full_types))
+         apply (metis (full_types))
+        apply (metis (full_types) A.arr_iff_has_source A.in_sourcesE A.source_is_prfx
+          B.con_arr_src(2) B.con_imp_coinitial B.resid_ide(1) ex_in_conv B.ide_src)
+       apply (metis (full_types) A.in_sourcesE B.null_is_zero(1) B.resid_src_arr)
+      by (metis (full_types) A.con_implies_arr(1) A.in_sourcesE B.src_in_sources)
 
   end
 
   locale simulation_as_transformation =
     simulation +
-    A: weakly_extensional_rts A +
     B: weakly_extensional_rts B
   begin
 
     sublocale transformation A B F F F
-      using extensional A.con_arr_src(1-2) B.join_of_arr_src(1)
+      using extensionality B.join_of_arr_src(1) A.con_sym B.resid_arr_ide
+            A.con_implies_arr(1)
       apply unfold_locales
-      subgoal by simp
-      subgoal by simp
-      subgoal by simp
-      subgoal by simp (metis A.con_arr_src(2) A.resid_src_arr preserves_resid)
-      subgoal by simp (metis A.con_arr_src(1) A.resid_arr_src preserves_resid)
-      subgoal by simp
-      done
+      by auto (meson B.ide_backward_stable B.weak_extensionality preserves_ide
+          preserves_prfx)
 
     sublocale identity_transformation A B F F F
       by unfold_locales auto
@@ -813,7 +884,7 @@ section "Transformations"
   and "\<And>a. residuation.ide A a \<Longrightarrow> \<sigma> a = \<tau> a"
   shows "\<sigma> = \<tau>"
   proof
-    interpret A: weakly_extensional_rts A
+    interpret A:rts A
       using assms(1) simulation.axioms(1) transformation_def by blast
     interpret B: extensional_rts B
       using assms(3) by simp
@@ -827,8 +898,8 @@ section "Transformations"
       using assms(2) by blast
     fix t
     show "\<sigma> t = \<tau> t"
-      by (metis A.ide_src B.join_of_unique \<sigma>.extensional \<sigma>.naturality3
-          \<tau>.extensional \<tau>.naturality3 assms(4))
+      by (metis A.prfx_reflexive A.trg_def B.composite_of_unique \<sigma>.extensionality
+          \<sigma>.naturality1' \<tau>.extensionality \<tau>.naturality1' assms(4))
   qed
 
   lemma invertible_simulation_cancel_left':
@@ -844,7 +915,7 @@ section "Transformations"
     show "\<lbrakk>transformation C A F G S; transformation C A F G T;
            H \<circ> S = H \<circ> T\<rbrakk>
              \<Longrightarrow> S = T"
-      by (metis HK.inv' HOL.ext comp_def transformation.extensional
+      by (metis HK.inv' HOL.ext comp_def transformation.extensionality
           transformation.preserves_arr)
   qed
 
@@ -861,7 +932,7 @@ section "Transformations"
     show "\<lbrakk>transformation B C F G S; transformation B C F G T;
            S \<circ> H = T \<circ> H\<rbrakk>
              \<Longrightarrow> S = T"
-      by (metis HK.inv HOL.ext comp_def transformation.extensional)
+      by (metis HK.inv HOL.ext comp_def transformation.extensionality)
   qed
 
   section "Binary Simulations"
@@ -897,34 +968,27 @@ section "Transformations"
               (\<lambda>t0. F (t1, t0))"
       proof
         show "\<And>f. \<not> A0.arr f \<Longrightarrow> F (t1, f) = B.null"
-          by (simp add: extensional)
+          by (simp add: extensionality)
         show "\<And>f. A0.ide f \<Longrightarrow> B.src (F (t1, f)) = F (A1.src t1, f)"
           using assms B.src_eqI by simp
         show "\<And>f. A0.ide f \<Longrightarrow> B.trg (F (t1, f)) = F (A1.trg t1, f)"
           by (metis assms fixing_ide_gives_simulation_0 simulation.preserves_trg)
-        fix f
-        assume f: "A0.arr f"
-        show "F (t1, A0.src f) \\\<^sub>B F (A1.src t1, f) = F (t1, A0.trg f)"
-        proof -
-          have "F (t1, A0.src f) \\\<^sub>B F (A1.src t1, f) =
-                F (A.resid (t1, A0.src f) (A1.src t1, f))"
-            by (simp add: assms f)
-          also have "... = F (t1, A0.trg f)"
-            by (simp add: assms f A.resid_def)
-          finally show ?thesis by blast
-        qed
-        show "F (A1.src t1, f) \\\<^sub>B F (t1, A0.src f) = F (A1.trg t1, f)"
-        proof -
-          have "F (A1.src t1, f) \\\<^sub>B F (t1, A0.src f) =
-                F (A.resid (A1.src t1, f) (t1, A0.src f))"
-            by (simp add: assms f)
-          also have "... = F (A1.trg t1, f)"
-            by (simp add: assms f A.resid_def)
-          finally show ?thesis by blast
-        qed
-        show "B.join_of (F (t1, A0.src f)) (F (A1.src t1, f)) (F (t1, f))"
-          by (simp add: f A1.join_of_arr_src(2) A0.join_of_arr_src(1)
-              assms preserves_joins A.join_of_char(1))
+        show "\<And>a a'. \<lbrakk>A0.ide a; A0.cong a a'\<rbrakk> \<Longrightarrow> F (t1, a) = F (t1, a')"
+          using A0.ide_backward_stable A0.weak_extensionality by blast
+        fix a f
+        assume f: "a \<in> A0.sources f"
+        show "F (t1, a) \\\<^sub>B F (A1.src t1, f) = F (t1, a \\\<^sub>A\<^sub>0 f)"
+          by (metis A.resid_def A0.prfx_implies_con
+              A1.con_arr_src(1) A1.resid_arr_src assms f fst_conv
+              preserves_resid A.con_char A0.source_is_prfx snd_conv)
+        show "F (A1.src t1, f) \\\<^sub>B F (t1, a) = F (A1.trg t1, f)"
+          by (metis A.resid_def  A1.con_arr_src(2) A1.resid_src_arr assms f
+              fst_conv preserves_resid A.con_char A0.in_sourcesE
+              A0.resid_arr_ide snd_conv)
+        show "B.join_of (F (t1, a)) (F (A1.src t1, f)) (F (t1, f))"
+          by (metis A.join_of_char(1) A0.con_implies_arr(2)
+              A1.join_of_arr_src(2) A1.src_in_sources assms f fst_conv preserves_joins
+              A0.join_of_arr_src(1) A0.prfx_implies_con A0.source_is_prfx snd_conv)
       qed
     qed
 
@@ -949,31 +1013,36 @@ section "Transformations"
               (\<lambda>t1. F (t1, t2))"
       proof
         show "\<And>f. \<not> A1.arr f \<Longrightarrow> F (f, t2) = B.null"
-          by (simp add: extensional)
+          by (simp add: extensionality)
         show "\<And>f. A1.ide f \<Longrightarrow> B.src (F (f, t2)) = F (f, A0.src t2)"
           using assms B.src_eqI by simp
         show "\<And>f. A1.ide f \<Longrightarrow> B.trg (F (f, t2)) = F (f, A0.trg t2)"
           by (metis assms fixing_ide_gives_simulation_1 simulation.preserves_trg)
-        fix f
-        assume f: "A1.arr f"
-        show "F (A1.src f, t2) \\\<^sub>B F (f, A0.src t2) = F (A1.trg f, t2)"
-          using f fixing_arr_gives_transformation_1 transformation.naturality2
-          by fastforce
-        show "F (f, A0.src t2) \\\<^sub>B F (A1.src f, t2) = F (f, A0.trg t2)"
-          by (metis assms f fixing_arr_gives_transformation_1
-              transformation.naturality1_ax)
-        show "\<And>f. A1.arr f \<Longrightarrow>
-                    B.join_of (F (A1.src f, t2)) (F (f, A0.src t2)) (F (f, t2))"
-          by (simp add: A1.join_of_arr_src(1) A0.join_of_arr_src(2)
-              assms preserves_joins A.join_of_char(1))
+        show "\<And>a a'. \<lbrakk>A1.ide a; A1.cong a a'\<rbrakk> \<Longrightarrow> F (a, t2) = F (a', t2)"
+          using A1.ide_backward_stable A1.weak_extensionality by blast
+
+        fix a f
+        assume f: "a \<in> A1.sources f"
+        show "F (a, t2) \\\<^sub>B F (f, A0.src t2) = F (a \\\<^sub>A\<^sub>1 f, t2)"
+          by (metis A.resid_def A0.resid_arr_src
+              A1.prfx_implies_con assms f fst_conv preserves_resid
+              A.con_char A0.con_arr_src(1) A1.source_is_prfx snd_conv)
+        show "F (f, A0.src t2) \\\<^sub>B F (a, t2) = F (f, A0.trg t2)"
+          by (metis A.con_char A.resid_def A0.con_arr_src(2)
+              A0.resid_src_arr assms f fst_conv preserves_resid
+              A1.in_sourcesE A1.resid_arr_ide snd_conv)
+        show "B.join_of (F (a, t2)) (F (f, A0.src t2)) (F (f, t2))"
+          by (metis A.join_of_char(1) A0.join_of_arr_src(2) A0.src_in_sources
+              A1.in_sourcesE assms f fst_conv preserves_joins
+              A1.con_implies_arr(1) A1.join_of_arr_src(1) snd_conv)
       qed
     qed
 
   end
 
   locale transformation_of_binary_simulations =
-    A1: weakly_extensional_rts A1 +
-    A0: weakly_extensional_rts A0 +
+    A1: rts A1 +
+    A0: rts A0 +
     B: weakly_extensional_rts B +
     A1xA0: product_rts A1 A0 +
     F: binary_simulation A1 A0 B F +
@@ -1001,7 +1070,7 @@ section "Transformations"
 
     notation A1xA0.resid    (infix \<open>\\<^sub>A\<^sub>1\<^sub>x\<^sub>A\<^sub>0\<close> 55)
 
-    sublocale A1xA0: product_of_weakly_extensional_rts A1 A0 ..
+    sublocale A1xA0: product_rts A1 A0 ..
 
     lemma fixing_ide_gives_transformation_1:
     assumes "A1.ide a1"
@@ -1016,23 +1085,27 @@ section "Transformations"
       proof
         fix f
         show "\<not> A0.arr f \<Longrightarrow> \<tau> (a1, f) = B.null"
-          by (simp add: extensional)
+          by (simp add: extensionality)
         show "A0.ide f \<Longrightarrow> B.src (\<tau> (a1, f)) = F (a1, f)"
           using assms preserves_src by force
         show "A0.ide f \<Longrightarrow> B.trg (\<tau> (a1, f)) = G (a1, f)"
           by (simp add: assms preserves_trg)
-        show "A0.arr f \<Longrightarrow> \<tau> (a1, A0.src f) \\\<^sub>B F (a1, f) = \<tau> (a1, A0.trg f)"
-          by (metis A1.ide_iff_src_self A1.ide_iff_trg_self A1.ide_implies_arr
-              A1xA0.src_char A1xA0.trg_char F.preserves_reflects_arr
-              Fa1.preserves_reflects_arr assms fst_conv naturality1 snd_conv)
-        show "A0.arr f \<Longrightarrow> F (a1, f) \\\<^sub>B \<tau> (a1, A0.src f) = G (a1, f)"
-          by (metis assms A1.ide_iff_src_self A1.ide_implies_arr A1xA0.src_char
-              G.preserves_reflects_arr Ga1.preserves_reflects_arr fst_conv
-              naturality2 snd_conv)
-        show "A0.arr f \<Longrightarrow> B.join_of (\<tau> (a1, A0.src f)) (F (a1, f)) (\<tau> (a1, f))"
-          by (metis assms A1.ide_iff_src_self A1.ide_implies_arr A1xA0.src_char
-              G.preserves_reflects_arr Ga1.preserves_reflects_arr fst_conv naturality3
-              snd_conv)
+        show "\<And>a a'. \<lbrakk>A0.ide a; a \<sim>\<^sub>A\<^sub>0 a'\<rbrakk> \<Longrightarrow> \<tau> (a1, a) = \<tau> (a1, a')"
+          using A1xA0.prfx_char assms respects_cong_ide by auto
+        fix a
+        assume f: "a \<in> A0.sources f"
+        show "\<tau> (a1, a) \\\<^sub>B F (a1, f) = \<tau> (a1, a \\\<^sub>A\<^sub>0 f)"
+        proof -
+          have "A1xA0.con (a1, a) (a1, f)"
+            using assms f A1xA0.con_char A0.prfx_implies_con A0.source_is_prfx
+            by fastforce
+          thus ?thesis
+            using assms f naturality1_ax A1xA0.resid_def by fastforce
+        qed
+        show "F (a1, f) \\\<^sub>B \<tau> (a1, a) = G (a1, f)"
+          using assms f naturality2_ax by auto
+        show "B.join_of (\<tau> (a1, a)) (F (a1, f)) (\<tau> (a1, f))"
+          using assms f naturality3 by auto
       qed
     qed
 
@@ -1049,23 +1122,28 @@ section "Transformations"
       proof
         fix f
         show "\<not> A1.arr f \<Longrightarrow> \<tau> (f, a0) = B.null"
-          by (simp add: extensional)
+          by (simp add: extensionality)
         show "A1.ide f \<Longrightarrow> B.src (\<tau> (f, a0)) = F (f, a0)"
           by (simp add: assms preserves_src)
         show "A1.ide f \<Longrightarrow> B.trg (\<tau> (f, a0)) = G (f, a0)"
           by (simp add: assms preserves_trg)
-        show "A1.arr f \<Longrightarrow> \<tau> (A1.src f, a0) \\\<^sub>B F (f, a0) = \<tau> (A1.trg f, a0)"
-          by (metis A1xA0.src_char A1xA0.trg_char A0.ide_iff_src_self
-              A0.ide_iff_trg_self A0.ide_implies_arr F.preserves_reflects_arr
-              Fa0.preserves_reflects_arr assms fst_conv naturality1 snd_conv)
-        show "A1.arr f \<Longrightarrow> F (f, a0) \\\<^sub>B \<tau> (A1.src f, a0) = G (f, a0)"
-          by (metis A1xA0.src_char A0.ide_iff_src_self A0.ide_implies_arr
-              F.preserves_reflects_arr Fa0.preserves_reflects_arr assms
-              fst_conv naturality2 snd_conv)
-        show "A1.arr f \<Longrightarrow> B.join_of (\<tau> (A1.src f, a0)) (F (f, a0)) (\<tau> (f, a0))"
-          by (metis A1xA0.src_char A0.ide_iff_src_self A0.ide_implies_arr
-              F.preserves_reflects_arr Fa0.preserves_reflects_arr assms
-              fst_conv naturality3 snd_conv)
+        show "\<And>a a'. \<lbrakk>A1.ide a; a \<sim>\<^sub>A\<^sub>1 a'\<rbrakk> \<Longrightarrow> \<tau> (a, a0) = \<tau> (a', a0)"
+          using A1xA0.prfx_char assms respects_cong_ide by auto
+        fix a
+        assume f: "a \<in> A1.sources f"
+        show "\<tau> (a, a0) \\\<^sub>B F (f, a0) = \<tau> (a \\\<^sub>A\<^sub>1 f, a0)"
+        proof -
+          have "A1xA0.con (a, a0) (f, a0)"
+            by (simp add: A1.rts_axioms assms f rts.prfx_implies_con rts.source_is_prfx)
+          thus ?thesis
+            using assms f A1xA0.resid_def
+            by (metis A0.ideE A1.source_is_ide A1xA0.con_char A1xA0.con_sym
+                A1xA0.ide_char A1xA0.in_sourcesI fst_conv naturality1_ax snd_conv)
+        qed
+        show "F (f, a0) \\\<^sub>B \<tau> (a, a0) = G (f, a0)"
+          using assms f naturality2_ax by auto
+        show "B.join_of (\<tau> (a, a0)) (F (f, a0)) (\<tau> (f, a0))"
+          using assms f naturality3 by auto
       qed
     qed
 
@@ -1090,32 +1168,35 @@ section "Transformations"
     proof
       fix t
       show "\<not> \<tau>.A.arr t \<Longrightarrow> (H \<circ> \<tau>) t = C.null"
-        by (simp add: H.extensional \<tau>.extensional)
+        by (simp add: H.extensionality \<tau>.extensionality)
       show "\<tau>.A.ide t \<Longrightarrow> C.src ((H \<circ> \<tau>) t) = HoF.map t"
         by (metis C.src_eqI H.preserves_con HoF.preserves_ide \<tau>.A.ide_implies_arr
             \<tau>.B.con_arr_src(2) \<tau>.preserves_arr \<tau>.preserves_src comp_eq_dest_lhs)
       show "\<tau>.A.ide t \<Longrightarrow> C.trg ((H \<circ> \<tau>) t) = HoG.map t"
         by (metis H.preserves_trg \<tau>.A.ide_implies_arr \<tau>.preserves_arr
             \<tau>.preserves_trg comp_apply)
-      show "\<tau>.A.arr t \<Longrightarrow>
-              C ((H \<circ> \<tau>) (\<tau>.A.src t)) (HoF.map t) = (H \<circ> \<tau>) (\<tau>.A.trg t)"
-        by (metis H.preserves_resid \<tau>.B.conI \<tau>.B.con_sym_ax \<tau>.B.not_arr_null
-            \<tau>.G.preserves_reflects_arr \<tau>.naturality1_ax \<tau>.naturality2_ax comp_apply)
-      show "\<tau>.A.arr t \<Longrightarrow> C (HoF.map t) ((H \<circ> \<tau>) (\<tau>.A.src t)) = HoG.map t"
-        by (metis H.preserves_resid \<tau>.B.arr_resid_iff_con \<tau>.G.preserves_reflects_arr
-            \<tau>.naturality2_ax comp_apply)
-      show "\<tau>.A.arr t \<Longrightarrow> C.join_of ((H \<circ> \<tau>) (\<tau>.A.src t)) (HoF.map t) ((H \<circ> \<tau>) t)"
-        by (metis H.simulation_axioms \<tau>.naturality3 comp_apply
-            simulation.preserves_joins)
+      show "\<And>a a'. \<lbrakk>\<tau>.A.ide a; \<tau>.A.cong a a'\<rbrakk> \<Longrightarrow> (H \<circ> \<tau>) a = (H \<circ> \<tau>) a'"
+        using \<tau>.respects_cong_ide by auto
+      fix a
+      assume t: "a \<in> \<tau>.A.sources t"
+      show "C ((H \<circ> \<tau>) a) (HoF.map t) = (H \<circ> \<tau>) (A a t)"
+        by (metis H.preserves_resid \<tau>.A.con_sym \<tau>.A.in_sourcesE \<tau>.naturality1_ax
+            \<tau>.preserves_con(2) comp_apply t)
+      show "C (HoF.map t) ((H \<circ> \<tau>) a) = HoG.map t"
+        by (metis H.preserves_resid \<tau>.A.con_implies_arr(1) \<tau>.A.in_sourcesE
+            \<tau>.B.arr_resid_iff_con \<tau>.G.preserves_reflects_arr \<tau>.naturality2_ax
+            comp_apply t)
+      show "C.join_of ((H \<circ> \<tau>) a) (HoF.map t) ((H \<circ> \<tau>) t)"
+        using H.preserves_joins \<tau>.naturality3 t by auto
     qed
   qed
 
   lemma transformation_whisker_right:
   assumes "transformation B C F G \<tau>" and "simulation A B H"
-  and "weakly_extensional_rts A"
+  and "rts A"
   shows "transformation A C (F \<circ> H) (G \<circ> H) (\<tau> \<circ> H)"
   proof -
-    interpret A: weakly_extensional_rts A
+    interpret A: rts A
       using assms(3) by blast
     interpret \<tau>: transformation B C F G \<tau>
       using assms by blast
@@ -1127,22 +1208,21 @@ section "Transformations"
     proof
       fix t
       show "\<not> A.arr t \<Longrightarrow> (\<tau> \<circ> H) t = \<tau>.B.null"
-        by (simp add: \<tau>.extensional)
+        by (simp add: \<tau>.extensionality)
       show "A.ide t \<Longrightarrow> \<tau>.B.src ((\<tau> \<circ> H) t) = FoH.map t"
         by (simp add: \<tau>.preserves_src)
       show "A.ide t \<Longrightarrow> \<tau>.B.trg ((\<tau> \<circ> H) t) = GoH.map t"
         by (simp add: \<tau>.preserves_trg)
-      show "A.arr t \<Longrightarrow> C ((\<tau> \<circ> H) (A.src t)) (FoH.map t) = (\<tau> \<circ> H) (A.trg t)"
-        by (metis A.arr_has_un_source A.arr_src_iff_arr A.con_arr_src(1)
-            A.src_in_sources A.trg_src H.preserves_con H.preserves_trg
-            \<tau>.A.con_imp_eq_src \<tau>.A.src_trg \<tau>.naturality1 comp_def)
-      show "A.arr t \<Longrightarrow> C (FoH.map t) ((\<tau> \<circ> H) (A.src t)) = GoH.map t"
-        by (metis A.con_arr_src(2) A.ide_src H.preserves_con H.preserves_ide
-            \<tau>.A.con_imp_eq_src \<tau>.naturality2 comp_apply \<tau>.A.src_ide)
-      show "A.arr t \<Longrightarrow> \<tau>.B.join_of ((\<tau> \<circ> H) (A.src t)) (FoH.map t) ((\<tau> \<circ> H) t)"
-        by (metis (full_types) A.con_arr_src(2) A.ide_src FoH.preserves_reflects_arr
-            H.preserves_con H.preserves_ide \<tau>.B.not_arr_null
-            \<tau>.F.extensional \<tau>.naturality3 comp_apply \<tau>.A.con_imp_eq_src \<tau>.A.src_ide)
+      show "\<And>a a'. \<lbrakk>A.ide a; a \<sim>\<^sub>A a'\<rbrakk> \<Longrightarrow> (\<tau> \<circ> H) a = (\<tau> \<circ> H) a'"
+        using H.preserves_prfx \<tau>.respects_cong_ide by auto
+      fix a
+      assume t: "a \<in> A.sources t"
+      show "C ((\<tau> \<circ> H) a) (FoH.map t) = (\<tau> \<circ> H) (A a t)"
+        using A.prfx_implies_con A.source_is_prfx \<tau>.naturality1_ax t by auto
+      show "C (FoH.map t) ((\<tau> \<circ> H) a) = GoH.map t"
+        using \<tau>.naturality2_ax t by auto
+      show "\<tau>.B.join_of ((\<tau> \<circ> H) a) (FoH.map t) ((\<tau> \<circ> H) t)"
+        using \<tau>.naturality3 t by auto
     qed
   qed
 
@@ -1153,15 +1233,15 @@ section "Transformations"
 
   lemma horizontal_composite:
   assumes "transformation B C F G \<sigma>" and "transformation A B H K \<tau>"
-  and "extensional_rts A" and "extensional_rts B" and "extensional_rts C"
+  and "extensional_rts B" and "extensional_rts C"
   shows "transformation A C (F \<circ> H) (G \<circ> K) (\<sigma> \<circ> \<tau>)"
   proof -
-    interpret A: extensional_rts A
-      using assms(3) by blast
+    interpret A: rts A
+      using assms(2) transformation_def by blast
     interpret B: extensional_rts B
-      using assms(4) by blast
+      using assms(3) by blast
     interpret C: extensional_rts C
-      using assms(5) by blast
+      using assms(4) by blast
     interpret \<sigma>: transformation B C F G \<sigma>
       using assms by blast
     interpret \<sigma>: transformation_to_extensional_rts B C F G \<sigma> ..
@@ -1181,44 +1261,66 @@ section "Transformations"
        write C.join  (infixr \<open>\<squnion>\<^sub>C\<close> 52)
        fix t
        show "\<not> A.arr t \<Longrightarrow> (\<sigma> \<circ> \<tau>) t = C.null"
-         by (simp add: \<sigma>.extensional \<tau>.extensional)
+         by (simp add: \<sigma>.extensionality \<tau>.extensionality)
+       show "\<And>a a'. \<lbrakk>A.ide a; a \<sim>\<^sub>A a'\<rbrakk> \<Longrightarrow> (\<sigma> \<circ> \<tau>) a = (\<sigma> \<circ> \<tau>) a'"
+         by (simp add: \<tau>.respects_cong_ide)
        show "A.ide t \<Longrightarrow> C.src ((\<sigma> \<circ> \<tau>) t) = FoH.map t"
-         by (metis A.arr_def A.ideE C.weakly_extensional_rts_axioms \<sigma>.naturality3
-             \<sigma>.transformation_axioms \<tau>.F.preserves_ide \<tau>.preserves_arr \<tau>.preserves_src
-             comp_apply transformation.preserves_src weakly_extensional_rts.src_join_of(1))
+         by (metis A.residuation_axioms B.rts_axioms C.src_composite_of \<sigma>.naturality2'
+             \<sigma>.preserves_src \<tau>.preserves_arr \<tau>.preserves_src comp_apply
+             residuation.ide_implies_arr rts.ide_src)
        show "A.ide t \<Longrightarrow> C.trg ((\<sigma> \<circ> \<tau>) t) = GoK.map t"
-         by (metis A.arr_resid_iff_con A.ideE C.apex_sym C.trg_join_of(1)
-             \<sigma>.G.preserves_trg \<sigma>.naturality2 \<sigma>.naturality3 \<tau>.preserves_arr
-             \<tau>.preserves_trg comp_apply)
-       assume t: "A.arr t"
-       show "(\<sigma> \<circ> \<tau>) (A.src t) \\\<^sub>C FoH.map t = (\<sigma> \<circ> \<tau>) (A.trg t)"
-         by (simp add: \<sigma>.general_naturality(1) \<tau>.naturality1_ax
-             \<tau>.preserves_con(2) t)
-       show "FoH.map t \\\<^sub>C (\<sigma> \<circ> \<tau>) (A.src t) = GoK.map t"
-         by (simp add: B.con_sym \<sigma>.general_naturality(2) \<tau>.naturality2_ax
-             \<tau>.preserves_con(2) t)
-       show "C.join_of ((\<sigma> \<circ> \<tau>) (A.src t)) (FoH.map t) ((\<sigma> \<circ> \<tau>) t)"
+         by (metis A.ide_implies_arr C.trg_composite_of \<sigma>.G.preserves_trg \<sigma>.naturality2'
+             \<tau>.preserves_arr \<tau>.preserves_trg comp_eq_dest_lhs)
+       fix a
+       assume t: "a \<in> A.sources t"
+       show "(\<sigma> \<circ> \<tau>) a \\\<^sub>C FoH.map t = (\<sigma> \<circ> \<tau>) (A a t)"
+         by (simp add: A.rts_axioms A.source_is_prfx \<sigma>.general_naturality(1)
+             \<tau>.naturality1_ax \<tau>.preserves_con(2) rts.prfx_implies_con t)
+       show "FoH.map t \\\<^sub>C (\<sigma> \<circ> \<tau>) a = GoK.map t"
+         by (metis A.rts_axioms B.con_sym \<sigma>.general_naturality(2) \<tau>.naturality2_ax
+             \<tau>.preserves_con(2) comp_eq_dest_lhs rts.prfx_implies_con rts.source_is_prfx t)
+       show "C.join_of ((\<sigma> \<circ> \<tau>) a) (FoH.map t) ((\<sigma> \<circ> \<tau>) t)"
        proof -
-         have "\<sigma> (\<tau> (A.src t)) \<squnion>\<^sub>C F (H t) = \<sigma> (\<tau> t)"
+         have "\<sigma> (\<tau> a) \<squnion>\<^sub>C F (H t) = \<sigma> (\<tau> t)"
          proof (intro C.join_eqI)
-           show 1: "C.prfx (\<sigma> (\<tau> (A.src t))) (\<sigma> (\<tau> t))"
-             using t \<tau>.preserves_prfx \<sigma>.preserves_prfx by simp
+           show 1: "C.prfx (\<sigma> (\<tau> a)) (\<sigma> (\<tau> t))"
+             by (simp add: A.source_is_prfx \<sigma>.preserves_prfx \<tau>.preserves_prfx t)
            show 2: "C.prfx (F (H t)) (\<sigma> (\<tau> t))"
              using t
-             by (meson C.composite_ofE C.prfx_transitive \<sigma>.F.preserves_composites
-                 \<sigma>.naturality1' \<tau>.naturality1' \<tau>.preserves_arr)
-           show 3: "\<sigma> (\<tau> t) \\\<^sub>C F (H t) = \<sigma> (\<tau> (A.src t)) \\\<^sub>C F (H t)"
-             by (simp add: A.trg_def \<sigma>.general_naturality(1) \<tau>.general_naturality(1)
-                 \<tau>.preserves_con(2) t)
-           show "\<sigma> (\<tau> t) \\\<^sub>C \<sigma> (\<tau> (A.src t)) = F (H t) \\\<^sub>C \<sigma> (\<tau> (A.src t))"
-             using t 1 2 3 C.apex_arr_prfx(1) C.apex_sym C.cube C.extensional
-	           C.ideE C.trg_def
-             by (smt (verit, del_insts))
+             by (metis "1" B.arr_resid_iff_con B.composite_ofE B.ide_implies_arr
+                 C.not_con_null(2) C.prfx_implies_con \<open>\<not> A.arr t \<Longrightarrow> (\<sigma> \<circ> \<tau>) t = C.null\<close>
+                 \<sigma>.G.preserves_ide \<sigma>.general_naturality(2) \<tau>.naturality1' comp_apply)
+           show 3: "\<sigma> (\<tau> t) \\\<^sub>C F (H t) = \<sigma> (\<tau> a) \\\<^sub>C F (H t)"
+             by (metis (no_types, opaque_lifting) "1" A.arrE A.con_sym A.in_sourcesE
+                 A.resid_arr_self A.src_congI C.not_ide_null C.null_is_zero(2)
+                 \<open>\<not> A.arr t \<Longrightarrow> (\<sigma> \<circ> \<tau>) t = C.null\<close> \<sigma>.general_naturality(1) \<tau>.general_naturality(1)
+                 \<tau>.naturality1 \<tau>.preserves_con(2) \<tau>.respects_cong_ide comp_eq_dest_lhs t)
+           show "\<sigma> (\<tau> t) \\\<^sub>C \<sigma> (\<tau> a) = F (H t) \\\<^sub>C \<sigma> (\<tau> a)"
+             (*
+              * using t 1 2 3 C.apex_arr_prfx(1) C.apex_sym C.cube C.extensionality C.ideE C.trg_def
+              * by (smt (verit, del_insts))
+              *)
+           proof -
+             have "\<sigma> (\<tau> t) \\\<^sub>C \<sigma> (\<tau> a) =
+                   (\<sigma> (\<tau> a) \<squnion>\<^sub>C F (H t)) \\\<^sub>C \<sigma> (\<tau> a)"
+             proof -
+               have "\<sigma> (\<tau> t) = \<sigma> (\<tau> a) \<squnion>\<^sub>C F (H t)"
+                 by (metis "2" "3" C.comp_eqI C.composable_iff_comp_not_null C.join_def
+                     C.join_expansion(1) C.join_sym C.joinable_iff_composable)
+               thus ?thesis by argo
+             qed
+             also have "... = F (H t) \\\<^sub>C \<sigma> (\<tau> a)"
+               by (metis "1" C.arr_prfx_join_self C.comp_eqI C.comp_resid_prfx
+                   C.con_sym_ax C.join_def C.join_expansion(1) C.null_is_zero(2)
+                   \<sigma>.extensionality \<sigma>.preserves_arr calculation)
+             finally show ?thesis by blast
+           qed
          qed
          thus ?thesis
            using t
-           by (metis C.join_is_join_of C.joinable_iff_arr_join \<sigma>.preserves_arr
-               \<tau>.preserves_arr comp_apply)
+           by (metis A.con_implies_arr(1) A.in_sourcesE C.join_is_join_of
+               C.joinable_iff_join_not_null C.not_arr_null \<sigma>.preserves_arr \<tau>.preserves_arr
+               comp_apply)
        qed
      qed
    qed
