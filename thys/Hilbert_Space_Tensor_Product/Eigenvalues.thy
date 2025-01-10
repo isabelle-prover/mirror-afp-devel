@@ -6,6 +6,8 @@ theory Eigenvalues
     Misc_Tensor_Product_TTS
 begin
 
+unbundle cblinfun_syntax
+
 definition normal_op :: \<open>('a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a) \<Rightarrow> bool\<close> where
   \<open>normal_op A  \<longleftrightarrow>  A o\<^sub>C\<^sub>L A* = A* o\<^sub>C\<^sub>L A\<close>
 
@@ -582,6 +584,6 @@ proof -
     by blast
 qed
 
-
+unbundle no cblinfun_syntax
 
 end

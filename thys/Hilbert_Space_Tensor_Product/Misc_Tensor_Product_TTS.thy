@@ -10,8 +10,7 @@ theory Misc_Tensor_Product_TTS
     With_Type.With_Type
 begin
 
-unbundle lattice_syntax
-unbundle cblinfun_notation
+unbundle lattice_syntax and cblinfun_syntax
 
 subsection \<open>Retrieving axioms\<close>
 
@@ -1549,5 +1548,7 @@ next
   ultimately show ?thesis 
     by simp
 qed
+
+unbundle no lattice_syntax and no cblinfun_syntax
 
 end

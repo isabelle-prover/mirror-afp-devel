@@ -4,6 +4,8 @@ theory Von_Neumann_Algebras
   imports Hilbert_Space_Tensor_Product
 begin
 
+unbundle cblinfun_syntax
+
 subsection \<open>Commutants\<close>
 
 definition \<open>commutant F = {x. \<forall>y\<in>F. x o\<^sub>C\<^sub>L y = y o\<^sub>C\<^sub>L x}\<close>
@@ -1343,6 +1345,7 @@ proof -
     by auto
 qed
 
+unbundle no cblinfun_syntax
 
 
 end

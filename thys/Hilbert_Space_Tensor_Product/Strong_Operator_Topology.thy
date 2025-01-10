@@ -7,7 +7,7 @@ begin
 (* declare no_leading_Cons[rule del, simp del, iff] *)
 
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 typedef (overloaded) ('a,'b) cblinfun_sot = \<open>UNIV :: ('a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector) set\<close> ..
 setup_lifting type_definition_cblinfun_sot
@@ -587,6 +587,6 @@ lemma closed_map_sot_unitary_sandwich:
       simp flip: sandwich_compose cblinfun_apply_cblinfun_compose)
 
 
-unbundle no_cblinfun_notation
+unbundle no cblinfun_syntax
 
 end

@@ -11,7 +11,7 @@ hide_fact (open) Infinite_Set_Sum.abs_summable_on_comparison_test
 hide_const (open) Determinants.trace
 hide_fact (open) Determinants.trace_def
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 subsection \<open>Auxiliary lemmas\<close>
 
@@ -4039,6 +4039,7 @@ proof -
 qed
 
 
+unbundle no cblinfun_syntax
 
 
 end

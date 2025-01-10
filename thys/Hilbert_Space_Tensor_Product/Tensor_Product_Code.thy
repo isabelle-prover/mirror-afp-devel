@@ -10,7 +10,7 @@ Builds upon \<^theory>\<open>Complex_Bounded_Operators.Cblinfun_Code\<close> and
 to the existing procedures from \<^session>\<open>Jordan_Normal_Form\<close>.\<close>
 
 
-unbundle cblinfun_notation Finite_Cartesian_Product.no_vec_syntax jnf_notation
+unbundle cblinfun_syntax and jnf_syntax
 hide_const (open) Finite_Cartesian_Product.vec
 hide_const (open) Finite_Cartesian_Product.mat
 
@@ -250,6 +250,6 @@ proof -
     by simp
 qed
 
-
+unbundle no cblinfun_syntax and no jnf_syntax
 
 end

@@ -10,7 +10,7 @@ begin
 no_notation Set_Algebras.elt_set_eq (infix "=o" 50)
 (* no_notation Infinite_Set_Sum.abs_summable_on (infixr "abs'_summable'_on" 46) *)
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 instance cblinfun :: (chilbert_space,chilbert_space) ordered_comm_monoid_add
   by intro_classes

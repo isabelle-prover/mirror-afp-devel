@@ -9,7 +9,8 @@ theory Compact_Operators
     Eigenvalues
 begin
 
-unbundle cblinfun_notation
+
+unbundle cblinfun_syntax
 
 subsection \<open>Finite rank operators\<close>
 
@@ -1517,5 +1518,6 @@ proof -
     using compact_op_finite_rank by blast
 qed
 
+unbundle no cblinfun_syntax
 
 end

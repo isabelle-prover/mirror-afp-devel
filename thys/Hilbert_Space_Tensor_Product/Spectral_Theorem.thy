@@ -4,6 +4,8 @@ theory Spectral_Theorem
   imports Compact_Operators Positive_Operators Eigenvalues
 begin
 
+unbundle cblinfun_syntax
+
 subsection \<open>Spectral decomp, compact op\<close>
 
 fun spectral_dec_val :: \<open>('a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a) \<Rightarrow> nat \<Rightarrow> complex\<close>
@@ -719,5 +721,6 @@ lemma spectral_dec_space_0:
   shows \<open>spectral_dec_space a n = 0\<close>
   by (simp add: assms spectral_dec_space_def)
 
+unbundle no cblinfun_syntax
 
 end

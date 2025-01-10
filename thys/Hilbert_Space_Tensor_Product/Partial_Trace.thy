@@ -4,6 +4,7 @@ theory Partial_Trace
   imports Trace_Class Hilbert_Space_Tensor_Product
 begin
 
+unbundle cblinfun_syntax
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_Sigma_iff
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_comparison_test
 hide_const (open) Determinants.trace
@@ -382,6 +383,7 @@ lemma vector_sandwich_partial_trace:
       (\<Sum>\<^sub>\<infinity>z. ((x \<otimes>\<^sub>s ket z) \<bullet>\<^sub>C (from_trace_class \<rho> *\<^sub>V (y \<otimes>\<^sub>s ket z))))\<close>
   by (metis (mono_tags, lifting) infsumI vector_sandwich_partial_trace_has_sum)
 
+unbundle no cblinfun_syntax
 
 
 end

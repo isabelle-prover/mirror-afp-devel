@@ -4,7 +4,7 @@ theory Weak_Operator_Topology
   imports Misc_Tensor_Product Strong_Operator_Topology Positive_Operators Wlog.Wlog
 begin
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 definition cweak_operator_topology::"('a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L'b::complex_inner) topology"
   where "cweak_operator_topology = pullback_topology UNIV (\<lambda>a (x,y). cinner x (a *\<^sub>V y)) euclidean"
@@ -1026,6 +1026,6 @@ proof (rule less_eq_cblinfunI)
     by -
 qed
 
-
+unbundle no cblinfun_syntax
 
 end

@@ -11,7 +11,7 @@ no_notation Infinite_Set_Sum.abs_summable_on (infix "abs'_summable'_on" 50)
 hide_const (open) Infinite_Set_Sum.abs_summable_on
 hide_fact (open) Infinite_Set_Sum.abs_summable_on_Sigma_iff
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 
 lemma cinner_pos_if_pos: \<open>f \<bullet>\<^sub>C (A *\<^sub>V f) \<ge> 0\<close> if \<open>A \<ge> 0\<close>
   using less_eq_cblinfun_def that by force
@@ -1411,6 +1411,6 @@ next
     by (simp add: diagonal_operator_invalid)
 qed
 
-
+unbundle no cblinfun_syntax
 
 end

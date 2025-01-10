@@ -6,7 +6,7 @@ theory Hilbert_Space_Tensor_Product
     Positive_Operators Weak_Star_Topology Spectral_Theorem Trace_Class
 begin
 
-unbundle cblinfun_notation
+unbundle cblinfun_syntax
 hide_const (open) Determinants.trace
 hide_fact (open) Determinants.trace_def
 
@@ -2484,5 +2484,7 @@ proof -
   show ?thesis
     by (simp add: swap_ell2_commute_tensor_op cblinfun_image_eigenspace_unitary swap_ell2_tensor_ccsubspace)
 qed
+
+unbundle no cblinfun_syntax
 
 end
