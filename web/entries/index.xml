@@ -11,8 +11,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Thu, 24 Oct 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 07 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
+          <link>/entries/Notes_On_Goedels_Ontological_Argument.html</link>
+          <pubDate>Tue, 07 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Notes_On_Goedels_Ontological_Argument.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
+          <link>/entries/Sum_Of_Squares_Count.html</link>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sum_Of_Squares_Count.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Deep Embedding of Intuitionistic Linear Logic</title>
+          <link>/entries/ILL.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ILL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Resources and Process Compositions</title>
+          <link>/entries/ProcessComposition.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ProcessComposition.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>A Generalization of the Cauchy–Davenport theorem</title>
+          <link>/entries/Generalized_Cauchy_Davenport.html</link>
+          <pubDate>Sat, 23 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Generalized_Cauchy_Davenport.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Impossibility of the Dissection of a Cube</title>
+          <link>/entries/Cube_Dissection.html</link>
+          <pubDate>Fri, 22 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Cube_Dissection.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two Theorems on Hermitian Matrices</title>
+          <link>/entries/Two_Hermitian_Results.html</link>
+          <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Two_Hermitian_Results.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>SCL Simulates Nonredundant Ground Resolution</title>
+          <link>/entries/SCL_Simulates_Ground_Resolution.html</link>
+          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/SCL_Simulates_Ground_Resolution.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>A Modular Formalization of Superposition</title>
           <link>/entries/Superposition_Calculus.html</link>
@@ -25,6 +81,13 @@
           <link>/entries/Min_Max_Least_Greatest.html</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Min_Max_Least_Greatest.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Boustrophedon Transform, the Entringer Numbers, and Related Sequences</title>
+          <link>/entries/Boustrophedon_Transform.html</link>
+          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Boustrophedon_Transform.html</guid>
           <description></description>
         </item>
         <item>
@@ -42,7 +105,7 @@
           <description></description>
         </item>
         <item>
-          <title>Babai_Nearest_Plane</title>
+          <title>Babai&#39;s Nearest Plane Algorithm</title>
           <link>/entries/Babai_Nearest_Plane.html</link>
           <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Babai_Nearest_Plane.html</guid>
@@ -95,6 +158,13 @@
           <link>/entries/Chebyshev_Prime_Bounds.html</link>
           <pubDate>Fri, 13 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/entries/Chebyshev_Prime_Bounds.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Tensor Product on Hilbert Spaces</title>
+          <link>/entries/Hilbert_Space_Tensor_Product.html</link>
+          <pubDate>Tue, 10 Sep 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Hilbert_Space_Tensor_Product.html</guid>
           <description></description>
         </item>
         <item>

@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+
+\usepackage{amssymb}
+
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Impossibility of the Dissection of a Cube}
+\author{Thomas Holme Surlykke}
+\maketitle
+
+\begin{abstract}
+This entry formalizes Littlewood's argument \cite{littlewood}, demonstrating that a 3-dimensional cube cannot be dissected into a finite collection of smaller cubes, each of a different size.
+The formalization addresses theorem \#82, ``Dissection of Cubes (J.E. Littlewood's `elegant' proof)'' from Freek Wiedijk's ``100 Mathematical Theorems'' list \cite{theorems100}, and is based upon a prior formalization in Lean \cite{leanproof}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

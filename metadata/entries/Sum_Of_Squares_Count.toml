@@ -1,0 +1,42 @@
+title = "The Sum-of-Squares Function and Jacobi's Two-Square Theorem"
+date = 2024-11-26
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>
+This entry defines the <em>sum-of-squares function</em> $r_k(n)$, which counts the number of
+ways to write a natural number $n$ as a sum of $k$ squares of integers. Signs and permutations of 
+these integers are taken into account, such that e.g. $1^2+2^2$, $2^2+1^2$, and $(-1)^2+2^2$
+are all different decompositions of $5$.
+</p>
+<p>
+Using this, I then formalise the main result: Jacobi's two-square theorem, which states that for $n > 0$
+we have \\[r_2(n) = 4(d_1(3) - d_3(n))\\ ,\\] where $d_i(n)$ denotes the number of divisors $m$ of $n$
+such that $m = i\\ (\\text{mod}\\ 4)$.
+</p>
+<p>
+Corollaries include the identities $r_2(2n) = r_2(n)$ and $r_2(p^2n) = r_2(n)$ if
+$p = 3\\ (\\text{mod}\\ 4)$ and the well-known theorem that $r_2(n) = 0$ iff $n$ has a prime
+factor $p$ of odd multiplicity with $p = 3\\ (\\text{mod}\\ 4)$.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

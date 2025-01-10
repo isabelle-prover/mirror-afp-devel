@@ -3,7 +3,130 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/benzmueller/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Notes_On_Goedels_Ontological_Argument.html</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/dirichlet_series/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/gaussian_integers/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/list-index/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Sum_Of_Squares_Count.html</loc>
+    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/abstract-rewriting/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ILL.html</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/fleuriot/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ill/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/ProcessComposition.html</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/smola/</loc>
+    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Generalized_Cauchy_Davenport.html</loc>
+    <lastmod>2024-11-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/baksys/</loc>
+    <lastmod>2024-11-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/jacobson_basic_algebra/</loc>
+    <lastmod>2024-11-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Cube_Dissection.html</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/surlykke/</loc>
+    <lastmod>2024-11-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/benor_kozen_reif/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/binder/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/commuting_hermitian/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/complex_bounded_operators/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/fishers_inequality/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/hermite_lindemann/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/jiangz/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/jordan_normal_form/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/qhlprover/</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Two_Hermitian_Results.html</loc>
+    <lastmod>2024-11-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/desharnais/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/min_max_least_greatest/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/SCL_Simulates_Ground_Resolution.html</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/simple_clause_learning/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/superposition_calculus/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/vericomp/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Superposition_Calculus.html</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
@@ -11,34 +134,25 @@
     <loc>/dependencies/abstract_substitution/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/desharnais/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
+    <loc>/dependencies/bernoulli/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/knuth_bendix_order/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/min_max_least_greatest/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Min_Max_Least_Greatest.html</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ordered_resolution_prover/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/polynomial_interpolation/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/refine_imperative_hol/</loc>
+    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/refine_monadic/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/regular_tree_relations/</loc>
@@ -50,7 +164,7 @@
     <loc>/dependencies/saturation_framework_extensions/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
+    <loc>/entries/Boustrophedon_Transform.html</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/toth/</loc>
@@ -74,12 +188,6 @@
     <loc>/entries/Babai_Nearest_Plane.html</loc>
     <lastmod>2024-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/binder/</loc>
-    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
-    <lastmod>2024-09-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/cordwell/</loc>
     <lastmod>2024-09-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -97,9 +205,6 @@
   </url><url>
     <loc>/authors/rizkallah/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
-    <lastmod>2024-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Karatsuba_Sqrt.html</loc>
     <lastmod>2024-09-18T00:00:00+00:00</lastmod>
@@ -128,16 +233,10 @@
     <loc>/entries/NREST.html</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/refine_monadic/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Pi_Irrational.html</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Chebyshev_Prime_Bounds.html</loc>
-    <lastmod>2024-09-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomial_interpolation/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/prime_distribution_elementary/</loc>
@@ -151,6 +250,21 @@
   </url><url>
     <loc>/dependencies/zeta_function/</loc>
     <lastmod>2024-09-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ordinary_differential_equations/</loc>
+    <lastmod>2024-09-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Hilbert_Space_Tensor_Product.html</loc>
+    <lastmod>2024-09-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/unruh/</loc>
+    <lastmod>2024-09-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/with_type/</loc>
+    <lastmod>2024-09-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/wlog/</loc>
+    <lastmod>2024-09-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/approximate_model_counting/</loc>
     <lastmod>2024-09-08T00:00:00+00:00</lastmod>
@@ -195,9 +309,6 @@
     <lastmod>2024-08-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/tools/</loc>
-    <lastmod>2024-08-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/unruh/</loc>
     <lastmod>2024-08-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Wlog.html</loc>
@@ -272,19 +383,10 @@
     <loc>/dependencies/probabilistic_timed_automata/</loc>
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/refine_imperative_hol/</loc>
-    <lastmod>2024-08-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Worklist_Algorithms.html</loc>
     <lastmod>2024-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/cayley_hamilton/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/fleuriot/</loc>
-    <lastmod>2024-07-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/jacobson_basic_algebra/</loc>
     <lastmod>2024-07-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lie_Groups.html</loc>
@@ -608,9 +710,6 @@
     <loc>/authors/weber/</loc>
     <lastmod>2024-03-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/qhlprover/</loc>
-    <lastmod>2024-03-26T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/treml/</loc>
     <lastmod>2024-03-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -646,9 +745,6 @@
   </url><url>
     <loc>/authors/yang/</loc>
     <lastmod>2024-03-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/benzmueller/</loc>
-    <lastmod>2024-03-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CondNormReasHOL.html</loc>
     <lastmod>2024-03-09T00:00:00+00:00</lastmod>
@@ -781,9 +877,6 @@
   </url><url>
     <loc>/entries/KnuthMorrisPratt.html</loc>
     <lastmod>2023-11-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/dirichlet_series/</loc>
-    <lastmod>2023-11-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lambert_Series.html</loc>
     <lastmod>2023-11-24T00:00:00+00:00</lastmod>
@@ -921,9 +1014,6 @@
     <lastmod>2023-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
-    <lastmod>2023-09-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/fishers_inequality/</loc>
     <lastmod>2023-09-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Lovasz_Local.html</loc>
@@ -1082,9 +1172,6 @@
     <loc>/dependencies/hereditarilyfinite/</loc>
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/list-index/</loc>
-    <lastmod>2023-05-05T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/MLSS_Decision_Proc.html</loc>
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -1106,9 +1193,6 @@
     <loc>/entries/MHComputation.html</loc>
     <lastmod>2023-04-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/jordan_normal_form/</loc>
-    <lastmod>2023-04-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/kim/</loc>
     <lastmod>2023-04-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -1123,9 +1207,6 @@
   </url><url>
     <loc>/dependencies/functional_ordered_resolution_prover/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/commuting_hermitian/</loc>
-    <lastmod>2023-04-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/echenim/</loc>
     <lastmod>2023-04-18T00:00:00+00:00</lastmod>
@@ -1207,9 +1288,6 @@
   </url><url>
     <loc>/authors/raya/</loc>
     <lastmod>2023-02-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/benor_kozen_reif/</loc>
-    <lastmod>2023-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CVP_Hardness.html</loc>
     <lastmod>2023-02-02T00:00:00+00:00</lastmod>
@@ -1349,9 +1427,6 @@
     <loc>/entries/Sauer_Shelah_Lemma.html</loc>
     <lastmod>2022-11-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/baksys/</loc>
-    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Kneser_Cauchy_Davenport.html</loc>
     <lastmod>2022-11-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -1450,9 +1525,6 @@
   </url><url>
     <loc>/entries/Separation_Logic_Unbounded.html</loc>
     <lastmod>2022-09-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Khovanskii_Theorem.html</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
@@ -1733,9 +1805,6 @@
     <loc>/entries/Hyperdual.html</loc>
     <lastmod>2021-12-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/smola/</loc>
-    <lastmod>2021-12-31T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Gale_Shapley.html</loc>
     <lastmod>2021-12-29T00:00:00+00:00</lastmod>
   </url><url>
@@ -1817,9 +1886,6 @@
     <loc>/entries/Factor_Algebraic_Polynomial.html</loc>
     <lastmod>2021-11-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/hermite_lindemann/</loc>
-    <lastmod>2021-11-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Real_Power.html</loc>
     <lastmod>2021-11-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -1828,9 +1894,6 @@
   </url><url>
     <loc>/entries/Szemeredi_Regularity.html</loc>
     <lastmod>2021-11-05T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/complex_bounded_operators/</loc>
-    <lastmod>2021-10-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Registers.html</loc>
     <lastmod>2021-10-28T00:00:00+00:00</lastmod>
@@ -2225,9 +2288,6 @@
     <loc>/entries/Interpreter_Optimizations.html</loc>
     <lastmod>2020-12-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/vericomp/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Relational_Method.html</loc>
     <lastmod>2020-12-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -2587,9 +2647,6 @@
   </url><url>
     <loc>/entries/Hybrid_Logic.html</loc>
     <lastmod>2019-12-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/ordinary_differential_equations/</loc>
-    <lastmod>2019-12-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Poincare_Bendixson.html</loc>
     <lastmod>2019-12-18T00:00:00+00:00</lastmod>
@@ -3022,9 +3079,6 @@
   </url><url>
     <loc>/authors/spasic/</loc>
     <lastmod>2018-08-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/abstract-rewriting/</loc>
-    <lastmod>2018-08-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Minsky_Machines.html</loc>
     <lastmod>2018-08-14T00:00:00+00:00</lastmod>
@@ -5302,6 +5356,8 @@
   </url><url>
     <loc>/sessions/bounded_deducibility_security/</loc>
   </url><url>
+    <loc>/sessions/boustrophedon_transform/</loc>
+  </url><url>
     <loc>/sessions/broadcast_psi/</loc>
   </url><url>
     <loc>/sessions/btree/</loc>
@@ -5583,6 +5639,8 @@
     <loc>/sessions/ctt/</loc>
   </url><url>
     <loc>/sessions/cube/</loc>
+  </url><url>
+    <loc>/sessions/cube_dissection/</loc>
   </url><url>
     <loc>/sessions/cubic_quartic_equations/</loc>
   </url><url>
@@ -5884,6 +5942,8 @@
   </url><url>
     <loc>/sessions/general-triangle/</loc>
   </url><url>
+    <loc>/sessions/generalized_cauchy_davenport/</loc>
+  </url><url>
     <loc>/sessions/generalized_counting_sort/</loc>
   </url><url>
     <loc>/sessions/generic_deriving/</loc>
@@ -5955,6 +6015,8 @@
     <loc>/sessions/hidden_markov_models/</loc>
   </url><url>
     <loc>/sessions/higher_order_terms/</loc>
+  </url><url>
+    <loc>/sessions/hilbert_space_tensor_product/</loc>
   </url><url>
     <loc>/sessions/hoare_time/</loc>
   </url><url>
@@ -6155,6 +6217,8 @@
     <loc>/sessions/ieee_floating_point/</loc>
   </url><url>
     <loc>/sessions/ifc_tracking/</loc>
+  </url><url>
+    <loc>/sessions/ill/</loc>
   </url><url>
     <loc>/sessions/imap-crdt/</loc>
   </url><url>
@@ -6632,6 +6696,8 @@
   </url><url>
     <loc>/sessions/normbyeval/</loc>
   </url><url>
+    <loc>/sessions/notes_on_goedels_ontological_argument/</loc>
+  </url><url>
     <loc>/sessions/nrest/</loc>
   </url><url>
     <loc>/sessions/nullstellensatz/</loc>
@@ -6781,6 +6847,10 @@
     <loc>/sessions/probabilistic_while/</loc>
   </url><url>
     <loc>/sessions/probability_inequality_completeness/</loc>
+  </url><url>
+    <loc>/sessions/processcomposition/</loc>
+  </url><url>
+    <loc>/sessions/processcomposition_ill/</loc>
   </url><url>
     <loc>/sessions/prog_prove/</loc>
   </url><url>
@@ -6978,6 +7048,8 @@
   </url><url>
     <loc>/sessions/schwartz_zippel/</loc>
   </url><url>
+    <loc>/sessions/scl_simulates_ground_resolution/</loc>
+  </url><url>
     <loc>/sessions/sds_impossibility/</loc>
   </url><url>
     <loc>/search/</loc>
@@ -7141,6 +7213,8 @@
   </url><url>
     <loc>/sessions/sugar/</loc>
   </url><url>
+    <loc>/sessions/sum_of_squares_count/</loc>
+  </url><url>
     <loc>/sessions/sumcheck_protocol/</loc>
   </url><url>
     <loc>/sessions/sumsquares/</loc>
@@ -7230,6 +7304,8 @@
     <loc>/sessions/twelvefold_way/</loc>
   </url><url>
     <loc>/sessions/two_generated_word_monoids_intersection/</loc>
+  </url><url>
+    <loc>/sessions/two_hermitian_results/</loc>
   </url><url>
     <loc>/sessions/tycon/</loc>
   </url><url>

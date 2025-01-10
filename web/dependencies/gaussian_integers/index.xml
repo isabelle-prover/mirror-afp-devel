@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gaussian_Integers on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/gaussian_integers/</link>
+    <description>
+        Recent content in Gaussian_Integers 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Tue, 26 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/gaussian_integers/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
+          <link>/entries/Sum_Of_Squares_Count.html</link>
+          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Sum_Of_Squares_Count.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>
