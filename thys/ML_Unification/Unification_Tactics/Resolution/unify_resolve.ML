@@ -193,22 +193,22 @@ sig
   val setup_method : string option -> local_theory -> local_theory
 end
 
-functor Unify_Resolve(A : sig
+functor Unify_Resolve(
     structure FIA : FUNCTOR_INSTANCE_ARGS
     val init_args : Unify_Resolve_Args.context_args
-  end) : UNIFY_RESOLVE =
+  ) : UNIFY_RESOLVE =
 struct
 
 structure URA = Unify_Resolve_Args
 structure PCA = URA.PCA
 structure PA = URA.PA
 structure PRM = URA.PRM
-structure FIU = Functor_Instance_Util(A.FIA)
+structure FIU = Functor_Instance_Util(FIA)
 structure MCU = ML_Code_Util
 
 structure Data = Generic_Data(struct
   type T = URA.context_args
-  val empty = A.init_args
+  val empty = init_args
   val merge = fst
 end)
 

@@ -37,5 +37,4 @@ declare [[ucombine add = \<open>
       (Standard_Unification_Combine.metadata \<^binding>\<open>SIMPS_TO_UNIF_unif\<close> Prio.HIGH)
   end\<close>]]
 
-
 end
