@@ -17,6 +17,8 @@ signature FUNCTOR_INSTANCE_UTIL =
 sig
   structure FIA : FUNCTOR_INSTANCE_ARGS
 
+  val base_name : string
+
   (*create code that calls the given function of the functor instance*)
   val struct_op : string -> string
   val code_struct_op : string -> ML_Code_Util.code
@@ -35,6 +37,9 @@ struct
 val _ = @{assert} (FIA.full_name <> "")
 
 structure FIA = FIA
+
+val base_name = Binding.qualified_name FIA.full_name |> Binding.name_of
+
 val struct_op = ML_Syntax_Util.mk_struct_access FIA.full_name
 val code_struct_op = ML_Code_Util.read o struct_op
 val accessor = struct_op ""

@@ -21,7 +21,8 @@ functor Mixed_Unification (A : sig
   end) : MIXED_UNIFICATION =
 struct
 
-val logger = Logger.setup_new_logger Unification_Base.logger A.FIA.full_name
+structure FIU = Functor_Instance_Util(A.FIA)
+val logger = Logger.setup_new_logger Unification_Base.logger FIU.base_name
 
 structure UUtil = Unification_Util
 structure UCO = Unification_Combinator
