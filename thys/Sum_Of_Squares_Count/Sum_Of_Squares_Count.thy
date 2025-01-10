@@ -7,7 +7,7 @@
 section \<open>Sum-of-square decompositions and Jacobi's two-squares Theorem\<close>
 theory Sum_Of_Squares_Count
 imports
-  "HOL-Library.Discrete"
+  "HOL-Library.Discrete_Functions"
   "HOL-Library.FuncSet"
   "Gaussian_Integers.Gaussian_Integers"
   "Dirichlet_Series.Multiplicative_Function"
@@ -138,8 +138,8 @@ proof (induction xs)
   qed
 qed auto
 
-lemma is_square_conv_sqrt: "is_square n \<longleftrightarrow> Discrete.sqrt n ^ 2 = n"
-  by (metis is_nth_power_def sqrt_inverse_power2)
+lemma is_square_conv_sqrt: "is_square n \<longleftrightarrow> floor_sqrt n ^ 2 = n"
+  by (metis is_nth_power_def floor_sqrt_inverse_power2)
 
 lemma sum_replicate_mset_count_eq: "(\<Sum>x\<in>set_mset X. replicate_mset (count X x) x) = X"
   by (rule multiset_eqI) (auto simp: count_sum Multiset.not_in_iff)
@@ -274,7 +274,7 @@ lemma sos_decomps_0: "sos_decomps 0 n = (if n = 0 then {[]} else {})"
   by (auto simp: sos_decomps_def)
 
 lemma sos_decomps_1:
-  "sos_decomps (Suc 0) n = (if is_square n then {[Discrete.sqrt n], [-Discrete.sqrt n]} else {})"
+  "sos_decomps (Suc 0) n = (if is_square n then {[floor_sqrt n], [-floor_sqrt n]} else {})"
   (is "?lhs = ?rhs")
 proof (intro equalityI subsetI)
   fix xs assume "xs \<in> ?lhs"
@@ -297,12 +297,12 @@ lemma bij_betw_sos_decomps_2: "bij_betw (\<lambda>(x,y). [x,y]) {(i,j). i\<^sup>
 lemma sos_decomps_Suc:
   "sos_decomps (Suc k) n =
      (#) 0 ` sos_decomps k n \<union> 
-     (\<Union>i\<in>{1..Discrete.sqrt n}. \<Union>xs\<in>sos_decomps k (n - i ^ 2). {int i # xs, (-int i) # xs})"
+     (\<Union>i\<in>{1..floor_sqrt n}. \<Union>xs\<in>sos_decomps k (n - i ^ 2). {int i # xs, (-int i) # xs})"
   (is "?A = ?B \<union> ?C")
 proof (intro equalityI subsetI)
   fix xs assume "xs \<in> ?B \<union> ?C"
   thus "xs \<in> ?A"
-    by (auto simp: sos_decomps_def of_nat_diff Discrete.le_sqrt_iff)
+    by (auto simp: sos_decomps_def of_nat_diff le_floor_sqrt_iff)
 next
   fix xs assume "xs \<in> ?A"
   hence xs: "length xs = Suc k" "int n = (\<Sum>x\<leftarrow>xs. x ^ 2)"
@@ -318,7 +318,7 @@ next
   next
     case False
     define y where "y = nat \<bar>x\<bar>"
-    have "y \<in> {1..Discrete.sqrt n}" and "y ^ 2 \<le> n"
+    have "y \<in> {1..floor_sqrt n}" and "y ^ 2 \<le> n"
     proof -
       have *: "x ^ 2 = int y ^ 2"
         by (auto simp: y_def)
@@ -328,8 +328,8 @@ next
         unfolding of_nat_power [symmetric] by linarith
       moreover have "y \<ge> 1"
         using False by (auto simp: y_def)
-      ultimately show "y \<in> {1..Discrete.sqrt n}"
-        by (simp add: Discrete.le_sqrt_iff)
+      ultimately show "y \<in> {1..floor_sqrt n}"
+        by (simp add: le_floor_sqrt_iff)
     qed
     have x_disj: "x = int y \<or> x = -int y"
       by (auto simp: y_def)
@@ -358,18 +358,18 @@ text \<open>
   \[r_{k+1}(n) = r_k(n) + 2 \sum_{i=1}^{\lfloor\sqrt{n}\rfloor} r_k(n-i^2)\]
 \<close>
 lemma count_sos_Suc:
-  "count_sos (Suc k) n = count_sos k n + 2 * (\<Sum>i=1..Discrete.sqrt n. count_sos k (n - i ^ 2))"
+  "count_sos (Suc k) n = count_sos k n + 2 * (\<Sum>i=1..floor_sqrt n. count_sos k (n - i ^ 2))"
 proof -
   have "count_sos (Suc k) n = card ((#) 0 ` sos_decomps k n \<union>
-          (\<Union>i\<in>{1..Discrete.sqrt n}. \<Union>xs\<in>sos_decomps k (n - i\<^sup>2). {int i # xs, - int i # xs}))"
+          (\<Union>i\<in>{1..floor_sqrt n}. \<Union>xs\<in>sos_decomps k (n - i\<^sup>2). {int i # xs, - int i # xs}))"
     (is "_ = card (?A \<union> ?B)") unfolding count_sos_def sos_decomps_Suc ..
   also have "\<dots> = card ?A + card ?B"
     by (subst card_Un_disjoint) auto
   also have "card ?A = count_sos k n"
     unfolding count_sos_def by (subst card_image) auto
-  also have "card ?B = (\<Sum>i=1..Discrete.sqrt n. card (\<Union>xs\<in>sos_decomps k (n - i\<^sup>2). {int i # xs, - int i # xs}))"
+  also have "card ?B = (\<Sum>i=1..floor_sqrt n. card (\<Union>xs\<in>sos_decomps k (n - i\<^sup>2). {int i # xs, - int i # xs}))"
     by (rule card_UN_disjoint) auto
-  also have "\<dots> = (\<Sum>i=1..Discrete.sqrt n. 2 * count_sos k (n - i ^ 2))"
+  also have "\<dots> = (\<Sum>i=1..floor_sqrt n. 2 * count_sos k (n - i ^ 2))"
     by (rule sum.cong) (auto simp: card_UN_disjoint count_sos_def)
   finally show ?thesis
     by (simp add: sum_distrib_left)
@@ -378,8 +378,8 @@ qed
 lemma count_sos_code [code]:
   "count_sos k n = (if n = 0 then 1 
      else if k = 0 then 0
-     else if k = 1 then (if Discrete.sqrt n ^ 2 = n then 2 else 0)
-     else count_sos (k-1) n + 2 * (\<Sum>i=1..Discrete.sqrt n. count_sos (k-1) (n-i^2)))"
+     else if k = 1 then (if floor_sqrt n ^ 2 = n then 2 else 0)
+     else count_sos (k-1) n + 2 * (\<Sum>i=1..floor_sqrt n. count_sos (k-1) (n-i^2)))"
   unfolding is_square_conv_sqrt [symmetric] using count_sos_Suc[of "k-1" n]
   by (auto simp: count_sos_1)
 
@@ -429,7 +429,7 @@ lemma pos_sos_decomps_0: "pos_sos_decomps 0 n = (if n = 0 then {[]} else {})"
   by (auto simp: pos_sos_decomps_def)
 
 lemma pos_sos_decomps_1:
-  "pos_sos_decomps (Suc 0) n = (if is_square n \<and> n > 0 then {[Discrete.sqrt n]} else {})"
+  "pos_sos_decomps (Suc 0) n = (if is_square n \<and> n > 0 then {[floor_sqrt n]} else {})"
   (is "?lhs = ?rhs")
 proof (intro equalityI subsetI)
   fix xs assume "xs \<in> ?lhs"
@@ -446,12 +446,12 @@ lemma bij_betw_pos_sos_decomps_2:
 
 lemma pos_sos_decomps_Suc:
   "pos_sos_decomps (Suc k) n =
-     (\<Union>i\<in>{1..Discrete.sqrt n}. ((#) i) ` pos_sos_decomps k (n - i ^ 2))"
+     (\<Union>i\<in>{1..floor_sqrt n}. ((#) i) ` pos_sos_decomps k (n - i ^ 2))"
   (is "?A = ?B")
 proof (intro equalityI subsetI)
   fix xs assume "xs \<in> ?B"
   thus "xs \<in> ?A"
-    by (auto simp: pos_sos_decomps_def of_nat_diff Discrete.le_sqrt_iff)
+    by (auto simp: pos_sos_decomps_def of_nat_diff le_floor_sqrt_iff)
 next
   fix xs assume "xs \<in> ?A"
   hence xs: "length xs = Suc k" "n = (\<Sum>x\<leftarrow>xs. x ^ 2)" "0 \<notin> set xs"
@@ -459,7 +459,7 @@ next
   then obtain x xs' where xs_eq: "xs = x # xs'"
     by (cases xs) auto
 
-  have "x \<in> {1..Discrete.sqrt n}" and "x ^ 2 \<le> n"
+  have "x \<in> {1..floor_sqrt n}" and "x ^ 2 \<le> n"
   proof -
     have "x ^ 2 \<le> int n"
       using xs by (auto simp: xs_eq intro!: sum_list_nonneg)
@@ -467,8 +467,8 @@ next
       unfolding of_nat_power [symmetric] by linarith
     moreover have "x \<ge> 1"
       using xs by (auto simp: xs_eq)
-    ultimately show "x\<in> {1..Discrete.sqrt n}"
-      by (simp add: Discrete.le_sqrt_iff)
+    ultimately show "x\<in> {1..floor_sqrt n}"
+      by (simp add: le_floor_sqrt_iff)
   qed
   thus "xs \<in> ?B"
     using xs \<open>x \<in> _\<close> \<open>x ^ 2 \<le> n\<close>
@@ -498,14 +498,14 @@ text \<open>
   We get a similar recurrence for \<^const>\<open>count_pos_sos\<close> as earlier:
 \<close>
 lemma count_pos_sos_Suc:
-  "count_pos_sos (Suc k) n = (\<Sum>i=1..Discrete.sqrt n. count_pos_sos k (n - i ^ 2))"
+  "count_pos_sos (Suc k) n = (\<Sum>i=1..floor_sqrt n. count_pos_sos k (n - i ^ 2))"
 proof -
   have "count_pos_sos (Suc k) n = 
-          card ((\<Union>i\<in>{1..Discrete.sqrt n}. (#) i ` pos_sos_decomps k (n - i\<^sup>2)))"
+          card ((\<Union>i\<in>{1..floor_sqrt n}. (#) i ` pos_sos_decomps k (n - i\<^sup>2)))"
     unfolding count_pos_sos_def pos_sos_decomps_Suc ..
-  also have "\<dots> = (\<Sum>i=1..Discrete.sqrt n. card ((#) i ` pos_sos_decomps k (n - i\<^sup>2)))"
+  also have "\<dots> = (\<Sum>i=1..floor_sqrt n. card ((#) i ` pos_sos_decomps k (n - i\<^sup>2)))"
     by (rule card_UN_disjoint) auto
-  also have "\<dots> = (\<Sum>i=1..Discrete.sqrt n. count_pos_sos k (n - i ^ 2))"
+  also have "\<dots> = (\<Sum>i=1..floor_sqrt n. count_pos_sos k (n - i ^ 2))"
     by (rule sum.cong) (auto simp: card_UN_disjoint count_pos_sos_def card_image)
   finally show ?thesis
     by (simp add: sum_distrib_left)
@@ -514,8 +514,8 @@ qed
 lemma count_pos_sos_code [code]:
   "count_pos_sos k n = (if k = 0 \<and> n = 0 then 1 
      else if k = 0 \<or> n = 0 then 0
-     else if k = 1 then (if Discrete.sqrt n ^ 2 = n then 1 else 0)
-     else (\<Sum>i=1..Discrete.sqrt n. count_pos_sos (k-1) (n-i^2)))"
+     else if k = 1 then (if floor_sqrt n ^ 2 = n then 1 else 0)
+     else (\<Sum>i=1..floor_sqrt n. count_pos_sos (k-1) (n-i^2)))"
   unfolding is_square_conv_sqrt [symmetric] using count_pos_sos_Suc[of "k-1" n]
   by (auto simp: count_pos_sos_1)
 
@@ -556,7 +556,7 @@ lemma count_sos_conv_count_pos_sos:
   "count_sos k n = (\<Sum>j\<le>k. 2 ^ j * (k choose j) * count_pos_sos j n)"
 proof (induction k arbitrary: n)
   case (Suc k n)
-  define m where "m = Discrete.sqrt n"
+  define m where "m = floor_sqrt n"
   have "(\<Sum>j\<le>Suc k. 2 ^ j * (Suc k choose j) * count_pos_sos j n) =
         count_pos_sos 0 n +
         (\<Sum>j\<le>k. 2 ^ Suc j * (k choose j) * count_pos_sos (Suc j) n) +
