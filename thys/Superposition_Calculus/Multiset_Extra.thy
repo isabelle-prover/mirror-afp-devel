@@ -3,7 +3,24 @@ theory Multiset_Extra
     "HOL-Library.Multiset"
     "HOL-Library.Multiset_Order"
     Nested_Multisets_Ordinals.Multiset_More
+    Natural_Magma_Functor
 begin
+
+lemma exists_multiset [intro]: "\<exists>M. x \<in> set_mset M"
+  by (meson union_single_eq_member)
+
+global_interpretation multiset_functor: finite_natural_functor where 
+  map = image_mset and to_set = set_mset
+  by unfold_locales (auto)
+
+global_interpretation multiset_functor: natural_functor_conversion where 
+  map = image_mset and to_set = set_mset and map_to = image_mset and map_from = image_mset and 
+  map' = image_mset and to_set' = set_mset
+  by unfold_locales simp_all 
+
+global_interpretation muliset_functor: natural_magma_functor where
+  map = image_mset and to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset
+  by unfold_locales simp_all
 
 lemma one_le_countE:
   assumes "1 \<le> count M x"
@@ -32,10 +49,15 @@ lemma one_step_implies_multp\<^sub>H\<^sub>O_strong:
   unfolding multp\<^sub>H\<^sub>O_def
 proof (intro conjI allI impI)
   show "A \<noteq> B"
-    using assms by force
+    using assms 
+    by force
 next
-  show "\<And>y. count B y < count A y \<Longrightarrow> \<exists>x. R y x \<and> count A x < count B x"
-    using assms by (metis in_diff_count)
+  fix y
+  assume "count B y < count A y"
+
+  then show "\<exists>x. R y x \<and> count A x < count B x"
+    using assms 
+    by (metis in_diff_count)
 qed
 
 lemma Uniq_antimono: "Q \<le> P \<Longrightarrow> Uniq Q \<ge> Uniq P"
@@ -189,6 +211,7 @@ lemma image_mset_remove1_mset:
   unfolding image_mset_remove1_mset_if inj_image_mem_iff[OF assms, symmetric]
   by simp
 
+(* TODO: Make nicer *)
 lemma multp\<^sub>D\<^sub>M_map_strong:
   assumes
     f_mono: "monotone_on (set_mset (M1 + M2)) R S f" and
@@ -287,6 +310,7 @@ next
     qed
 qed
 
+(* TODO: Better names? *)
 lemma multp_add_mset:
   assumes "asymp R" "transp R" "R x y" "multp R X Y"
   shows "multp R (add_mset x X) (add_mset y Y)"
@@ -310,9 +334,127 @@ lemma multp_add_mset_reflclp:
     multp_add_mset[OF assms(1-3)]
   by blast
 
-lemma multp_add_same:
-  assumes "asymp R" "transp R" "multp R X Y"
-  shows "multp R (add_mset x X) (add_mset x Y)"
+lemma multp_add_same [simp]:
+  assumes "asymp R" "transp R"
+  shows "multp R (add_mset x X) (add_mset x Y) \<longleftrightarrow> multp R X Y"
   by (meson assms asymp_on_subset irreflp_on_if_asymp_on multp_cancel_add_mset top_greatest)
+
+lemma inj_mset_plus_same: "inj (\<lambda>X :: 'a multiset . X + X)"
+proof(unfold inj_def, intro allI impI)
+  fix X Y :: "'a multiset"
+  assume "X + X = Y + Y"
+  
+  then show "X = Y"
+  proof(induction X arbitrary: Y)
+    case empty
+    then show ?case
+      by simp
+  next
+    case (add x X)
+    then show ?case
+      by (metis diff_single_eq_union diff_union_single_conv single_subset_iff 
+          subset_mset.add_diff_assoc2 union_iff union_single_eq_member)
+  qed
+qed
+
+(* TODO: Should be possible 
+lemma 
+  assumes "wfP (multp\<^sub>D\<^sub>M R)" (* "asymp (multp\<^sub>D\<^sub>M R)" "transp (multp\<^sub>D\<^sub>M R)" ? *)
+  shows "wfP R"
+  using assms
+  sorry
+*)
+
+(* TODO: everywhere less_eq \<rightarrow> lesseq *)
+lemma multp_image_lesseq_if_all_lesseq:
+   assumes 
+    asymp: "asymp R" and
+    transp: "transp R" and
+    all_lesseq: "\<forall>x\<in>#X. R\<^sup>=\<^sup>= (f x) (g x)"
+  shows "(multp R)\<^sup>=\<^sup>= (image_mset f X) (image_mset g X)"
+  using assms
+  by(induction X) (auto simp: multp_add_mset multp_add_mset')
+
+lemma multp_image_less_if_all_lesseq_ex_less: 
+  assumes 
+    asymp: "asymp R" and
+    transp: "transp R" and
+    all_less_eq: "\<forall>x\<in>#X. R\<^sup>=\<^sup>= (f x) (g x)" and
+    ex_less: "\<exists>x\<in>#X. R (f x) (g x)" 
+  shows "multp R {# f x. x \<in># X #} {# g x. x \<in># X #}"
+  using all_less_eq ex_less
+proof(induction X)
+  case empty
+  then show ?case 
+    by simp
+next
+  case (add x X)
+
+  show ?case
+  proof(cases "\<exists>x\<in>#X. R (f x) (g x)")
+    case True
+
+    then have "\<forall>x\<in>#X. R\<^sup>=\<^sup>= (f x) (g x)" "\<exists>x\<in>#X. R (f x) (g x)"
+      using add.prems
+      by auto
+
+    then have "multp R (image_mset f X) (image_mset g X)"
+      using add.IH
+      by blast
+
+    then show ?thesis
+      using add.prems(1) multp_add_mset[OF asymp transp] multp_add_same[OF asymp transp]
+      by auto   
+  next
+    case False
+    
+    then have "R (f x) (g x)"
+      using add.prems(2) by fastforce
+
+    moreover have "\<forall>x\<in>#X. f x = g x"
+      using False add.prems(1) by auto
+
+    ultimately show ?thesis
+      by (metis image_mset_add_mset multiset.map_cong0 multp_add_mset')
+  qed
+qed
+
+lemma not_reflp_multp\<^sub>D\<^sub>M: "\<not> reflp (multp\<^sub>D\<^sub>M R)"
+  unfolding multp\<^sub>D\<^sub>M_def reflp_def
+  by force
+
+lemma not_less_empty_multp\<^sub>D\<^sub>M: "\<not> multp\<^sub>D\<^sub>M R X {#}"
+  by (simp add: multp\<^sub>D\<^sub>M_def)
+
+lemma not_reflp_multp\<^sub>H\<^sub>O: "\<not> reflp (multp\<^sub>H\<^sub>O R)"
+  unfolding multp\<^sub>H\<^sub>O_def reflp_def
+  by simp
+
+lemma not_less_empty_multp\<^sub>H\<^sub>O: "\<not> multp\<^sub>H\<^sub>O R X {#}"
+  by (simp add: multp\<^sub>H\<^sub>O_def)
+
+lemma not_refl_mult: "\<not> refl (mult R)"
+  unfolding refl_on_def mult_def
+  by (meson UNIV_I not_less_empty trancl.cases)
+
+lemma not_less_empty_mult: "(X, {#}) \<notin> mult R"
+  by (metis mult_def not_less_empty tranclD2)
+
+lemma empty_less_mult: "X \<noteq> {#} \<Longrightarrow> ({#}, X) \<in> mult R"
+  using subset_implies_mult
+  by force
+
+lemma not_reflp_multp: "\<not> reflp (multp R)"
+  using not_refl_mult
+  unfolding multp_def reflp_refl_eq
+  by blast
+
+lemma empty_less_multp: "X \<noteq> {#} \<Longrightarrow> multp R {#} X"
+  by (simp add: subset_implies_multp subset_mset.not_eq_extremum)
+
+lemma not_less_empty_multp: "\<not> multp R X {#}"
+  using not_less_empty_mult
+  unfolding multp_def
+  by blast
 
 end

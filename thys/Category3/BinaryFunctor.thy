@@ -72,7 +72,7 @@ begin
 
     lemma is_functor:
     shows "functor A1xA2.comp B1xB2.comp map"
-      using B1xB2.dom_char B1xB2.cod_char F1.is_extensional F2.is_extensional
+      using B1xB2.dom_char B1xB2.cod_char F1.extensionality F2.extensionality
       apply (unfold_locales)
       using map_def A1.arr_dom_iff_arr A1.arr_cod_iff_arr A2.arr_dom_iff_arr A2.arr_cod_iff_arr
           apply auto[4]
@@ -197,7 +197,7 @@ begin
       interpret SF: composite_functor A2xA1.comp A1xA2.comp B S.map F ..
       have "binary_functor A2 A1 B (F o S.map)" ..
       moreover have "F o S.map = (\<lambda>f. F (snd f, fst f))"
-        using is_extensional SF.is_extensional S.map_def by fastforce
+        using extensionality SF.extensionality S.map_def by fastforce
       ultimately show ?thesis using sym_def by auto
     qed
 
@@ -211,7 +211,7 @@ begin
     shows "functor A2 B (\<lambda>f2. F (a1, f2))"
       using assms
       apply unfold_locales
-      using is_extensional
+      using extensionality
           apply auto[4]
       by (metis A1.ideD(1) A1.comp_ide_self A1xA2.comp_simp A1xA2.seq_char fst_conv
           as_nat_trans.preserves_comp_2 snd_conv)
@@ -221,7 +221,7 @@ begin
     shows "functor A1 B (\<lambda>f1. F (f1, a2))"
       using assms
       apply (unfold_locales)
-      using is_extensional
+      using extensionality
           apply auto[4]
       by (metis A1xA2.comp_simp A1xA2.seq_char A2.ideD(1) A2.comp_ide_self fst_conv
           as_nat_trans.preserves_comp_2 snd_conv)
@@ -244,7 +244,7 @@ begin
       show "natural_transformation A2 B ?Fdom ?Fcod ?\<tau>"
         using assms
         apply unfold_locales
-        using is_extensional
+        using extensionality
             apply auto[3]
         using A1xA2.arr_char preserves_comp A1.comp_cod_arr A1xA2.comp_char A2.comp_arr_dom
          apply (metis fst_conv snd_conv)
@@ -288,7 +288,7 @@ begin
       proof
         fix f2
         have "\<not>A2.arr f2 \<Longrightarrow> F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = \<tau>'o\<tau>.map f2"
-          using \<tau>'o\<tau>.is_extensional is_extensional by simp
+          using \<tau>'o\<tau>.extensionality extensionality by simp
         moreover have "A2.arr f2 \<Longrightarrow> F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2) = \<tau>'o\<tau>.map f2"
           using \<tau>'o\<tau>.map_simp_1 assms fixing_arr_gives_natural_transformation_2
                 natural_transformation.preserves_comp_1
@@ -346,7 +346,7 @@ begin
       interpret Ga1: "functor" A2 B \<open>\<lambda>f2. G (a1, f2)\<close>
         using assms "G.fixing_ide_gives_functor_1" by simp
       show ?thesis
-        using assms is_extensional is_natural_1 is_natural_2
+        using assms extensionality naturality1 naturality2
         apply (unfold_locales, auto)
          apply (metis A1.ide_char)
         by (metis A1.ide_char)
@@ -361,7 +361,7 @@ begin
       interpret Ga2: "functor" A1 B \<open>\<lambda>f1. G (f1, a2)\<close>
         using assms "G.fixing_ide_gives_functor_2" by simp
       show ?thesis
-        using assms is_extensional is_natural_1 is_natural_2
+        using assms extensionality naturality1 naturality2
         apply (unfold_locales, auto)
          apply (metis A2.ide_char)
         by (metis A2.ide_char)

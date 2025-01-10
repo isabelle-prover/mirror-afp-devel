@@ -412,7 +412,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
             residuation.resid_arr_self rts.axioms(1) small_rts_def)
     qed
 
-    sublocale rts resid
+    sublocale V: rts resid
     proof
       show "\<And>t. V.arr t \<Longrightarrow> V.ide (V.trg t)"
         by (simp add: arr_char extensional_rts.axioms(1) ide_char
@@ -497,7 +497,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
     sublocale V: extensional_rts resid
     proof
       fix t u
-      assume tu: "cong t u"
+      assume tu: "V.cong t u"
       have 1: "t \\ u \<noteq> V.null"
         using tu by auto
       interpret hom: hom_rts arr_type Obj Hom Id Comp \<open>Dom t\<close> \<open>Cod t\<close>
@@ -509,7 +509,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
         using tu 1 con_char by blast
       moreover have "Trn t = Trn u"
         by (metis Cod_resid Dom_resid Trn_resid calculation(2)
-            hom.extensional ide_char prfx_implies_con tu)
+            hom.extensionality ide_char V.prfx_implies_con tu)
       ultimately show "t = u"
         by (cases t; cases u) auto
     qed
@@ -540,7 +540,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
     lemma src_char:
     shows "V.src t = (if V.arr t
                       then MkArr (Dom t) (Cod t)
-                             (weakly_extensional_rts.src
+                             (rts.src
                                 (HOM\<^sub>E\<^sub>C (Dom t) (Cod t)) (Trn t))
                       else Null)"
     proof (cases "V.arr t")
@@ -557,7 +557,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
         moreover have "t \<frown> MkArr (Dom t) (Cod t) (Hom.src (Trn t))"
           using t MkArr_Trn con_char Con_def by auto
         ultimately show ?thesis
-          using V.sources_char V.src_in_sources by auto
+          using V.sources_char\<^sub>W\<^sub>E V.src_in_sources by auto
       qed
     qed
 
@@ -1736,7 +1736,7 @@ section "RTS-Enriched Categories induce RTS-Categories"
 
     lemma src_dom [simp]:
     shows "V.src (H.dom t) = H.dom t"
-      using H_ide_is_V_ide V.src_def V.src_ide dom.extensional by auto
+      using H_ide_is_V_ide V.src_def V.src_ide dom.extensionality by auto
 
     lemma small_homs:
     shows "small (H.hom a b)"
@@ -1925,7 +1925,7 @@ subsection "The Small Case"
              by blast
          qed
          hence "small_rts R"
-           using small_rts_def rts_axioms small_rts_axioms.intro by auto
+           using small_rts_def V.rts_axioms small_rts_axioms.intro by auto
          thus "small_rts R'.resid"
            using R'.preserves_reflects_small_rts by blast
        qed
@@ -1992,7 +1992,7 @@ subsection "The Small Case"
      proof -
        have "\<And>t. DN (UP (R'.src t)) = DN (src (UP t))"
          by (metis H.dom_null R'.con_arr_src(2) R'.ide_src R'.not_arr_null R'.src_def
-             UP_DN.F.extensional UP_DN.F.preserves_con UP_DN.F.preserves_ide
+             UP_DN.F.extensionality UP_DN.F.preserves_con UP_DN.F.preserves_ide
              null_coincidence src_dom V.src_eqI)
        moreover have "\<And>t. DN (UP (R'.src t)) = R'.src t"
          using R'.arr_src_iff_arr R'.src_def UP_DN.inv
@@ -2004,7 +2004,7 @@ subsection "The Small Case"
      shows "R'.trg = DN \<circ> trg \<circ> UP"
      proof -
        have "\<And>t. DN (UP (R'.trg t)) = DN (trg (UP t))"
-         by (metis R'.arr_trg_iff_arr UP_DN.F.extensional UP_DN.F.preserves_trg
+         by (metis R'.arr_trg_iff_arr UP_DN.F.extensionality UP_DN.F.preserves_trg
              V.null_is_zero(2) V.trg_def)
        moreover have "\<And>t. DN (UP (R'.trg t)) = R'.trg t"
          using R'.arr_trg_iff_arr R'.trg_def UP_DN.inv
@@ -2022,13 +2022,13 @@ subsection "The Small Case"
 
      interpretation H': Category.partial_magma hcomp'
        by unfold_locales
-          (metis H_composable_char R'.not_arr_null UP_DN.F.extensional
-           UP_DN.F.preserves_reflects_arr UP_DN.G.extensional)
+          (metis H_composable_char R'.not_arr_null UP_DN.F.extensionality
+           UP_DN.F.preserves_reflects_arr UP_DN.G.extensionality)
 
      lemma H'_null_char:
      shows "H'.null = DN null"
        using arr_coincidence
-       by (metis H'.null_is_zero(2) R'.not_arr_null UP_DN.F.extensional
+       by (metis H'.null_is_zero(2) R'.not_arr_null UP_DN.F.extensionality
            hcomp_Null(2) null_char)
 
      interpretation H': partial_composition \<open>\<lambda>t u. DN (hcomp (UP t) (UP u))\<close> ..
@@ -2060,8 +2060,8 @@ subsection "The Small Case"
        show "obj (UP t) \<Longrightarrow> H'.ide t"
          unfolding H'.ide_def H.ide_def
          apply (auto simp add: H'_null_char H_composable_char)[1]
-          apply (metis H_composable_char UP_DN.F.extensional UP_DN.inv_simp)
-         by (metis H_composable_char UP_DN.F.extensional UP_DN.inv_simp)
+          apply (metis H_composable_char UP_DN.F.extensionality UP_DN.inv_simp)
+         by (metis H_composable_char UP_DN.F.extensionality UP_DN.inv_simp)
      qed
 
      lemma H'_domains_char:
@@ -2156,7 +2156,7 @@ subsection "The Small Case"
      sublocale H': category hcomp'
      proof
        show "\<And>g f. g \<star>\<acute> f \<noteq> H'.null \<Longrightarrow> H'.seq g f"
-         using H'_null_char H'_seq_char UP_DN.G.extensional by auto
+         using H'_null_char H'_seq_char UP_DN.G.extensionality by auto
        show "\<And>f. (H'.domains f \<noteq> {}) = (H'.codomains f \<noteq> {})"
          using H'_domains_char H'_codomains_char H.has_domain_iff_has_codomain
          by simp
@@ -2182,7 +2182,7 @@ subsection "The Small Case"
        proof (cases "arr (UP t)")
          show "\<not> arr (UP t) \<Longrightarrow> ?thesis"
            by (metis H'.dom_def H'.domains_char H'_arr_char H'_null_char
-               H.dom_null H_arr_char UP_DN.F.extensional
+               H.dom_null H_arr_char UP_DN.F.extensionality
                UP_DN.F.preserves_reflects_arr arr_char comp_def
                null_coincidence)
          assume t: "arr (UP t)"
@@ -2204,7 +2204,7 @@ subsection "The Small Case"
        proof (cases "arr (UP t)")
          show "\<not> arr (UP t) \<Longrightarrow> ?thesis"
            by (metis H'.cod_def H'.codomains_char H'_arr_char H'_null_char
-               H.cod_null H_arr_char UP_DN.F.extensional
+               H.cod_null H_arr_char UP_DN.F.extensionality
                UP_DN.F.preserves_reflects_arr arr_char comp_def
                null_coincidence)
          assume t: "arr (UP t)"
@@ -2220,7 +2220,7 @@ subsection "The Small Case"
 
      lemma null'_coincidence [simp]:
      shows "H'.null = R'.null"
-       by (simp add: H'_null_char UP_DN.G.extensional)
+       by (simp add: H'_null_char UP_DN.G.extensionality)
 
      lemma arr'_coincidence [simp]:
      shows "H'.arr = R'.arr"
@@ -2347,7 +2347,7 @@ subsection "The Small Case"
                UP (fst u \<star>\<acute> snd u) = UP (fst u) \<star> UP (snd u)"
            using tu arr_coincidence null_coincidence UP_DN.inv' H.ext
            apply auto[1]
-           by (metis (no_types, lifting) UP_DN.F.extensional
+           by (metis (no_types, lifting) UP_DN.F.extensionality
                UP_DN.G.preserves_reflects_arr UP_DN.inv'_simp)+
          moreover have "UP (fst t) \<star> UP (snd t) \<frown> UP (fst u) \<star> UP (snd u)"
          proof -
@@ -2388,7 +2388,7 @@ subsection "The Small Case"
                using tu 1 H.preserves_resid H.seqE R'.con_implies_arr(1-2)
                      R'.not_arr_null R'R'.con_char R'_con_char RR.arr_char
                      RR.arr_resid_iff_con RR.con_char RR.resid_def
-                     UP_DN.G.extensional
+                     UP_DN.G.extensionality
                by (metis (no_types, lifting) H'.seqI H'_arr_char H'_seq_char
                    hpar_arr_resid resid_hcomp(2))
              also have "... = UP (fst t \<star>\<acute> snd t) \\ UP (fst u \<star>\<acute> snd u)"
@@ -2418,11 +2418,11 @@ subsection "The Small Case"
      shows "locally_small_rts_category R' hcomp'"
      proof
        show "H'.null = R'.null"
-         by (simp add: H'_null_char UP_DN.G.extensional)
+         by (simp add: H'_null_char UP_DN.G.extensionality)
        show "H'.arr = R'.arr"
          using H'_arr_char UP_DN.F.preserves_reflects_arr arr_coincidence by auto
        show "\<And>t. R'.src (H'.dom t) = H'.dom t"
-         using R'_src_char H'_dom_char R'.arr_src_iff_arr UP_DN.G.extensional
+         using R'_src_char H'_dom_char R'.arr_src_iff_arr UP_DN.G.extensionality
                UP_DN.G.preserves_reflects_arr
          apply auto[1]
          by (metis (no_types, lifting) R'.not_arr_null UP_DN.inv'_simp src_dom)
@@ -2549,11 +2549,11 @@ subsection "Functoriality"
           using f 2 F_def A.H_cod_char B.null_char by auto
         show "B.Dom (B.H.cod (F f)) = B.Dom (F (A.H.cod f))"
           using f 2 F_def A.H_cod_char B.H_cod_char B.null_char
-                B.cod.extensional \<open>B.H.cod (F f) \<noteq> B.null\<close>
+                B.cod.extensionality \<open>B.H.cod (F f) \<noteq> B.null\<close>
           by fastforce
         show "B.Cod (B.H.cod (F f)) = B.Cod (F (A.H.cod f))"
           using f 2 F_def A.H_cod_char B.H_cod_char B.null_char
-                B.cod.extensional \<open>B.H.cod (F f) \<noteq> B.null\<close>
+                B.cod.extensionality \<open>B.H.cod (F f) \<noteq> B.null\<close>
           by fastforce
         show "B.Trn (B.H.cod (F f)) = B.Trn (F (A.H.cod f))"
         proof -
@@ -3013,7 +3013,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                              snd (RTS.Unpack (Hom b c) (Hom a b) t) =
                            ac.null"
               using assms H.null_is_zero(2) HOM_null_char U.simulation_axioms
-                    simulation.extensional
+                    simulation.extensionality
               by fastforce
             fix t u
             assume tu: "bcxab.con t u"
@@ -3282,8 +3282,8 @@ section "RTS-Categories induce RTS-Enriched Categories"
                       snd ((I abXaa.resid \<circ> abXI.map \<circ>
                               RTS.Unpack (Hom a b) \<one>) t) =
                       null"
-                  using a b t 1 PU_abXI.G.extensional abXI.extensional
-                        abXI.A1xA0.P\<^sub>1.extensional H.null_is_zero(2)
+                  using a b t 1 PU_abXI.G.extensionality abXI.extensionality
+                        abXI.A1xA0.P\<^sub>1.extensionality H.null_is_zero(2)
                         HOM_null_char null_coincidence
                   by simp
                 also have "... = RTS.Map \<r>[Hom a b] t"
@@ -3294,7 +3294,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                     by (metis (no_types, lifting) RTS.CMC.cod_runit
                         RTS.CMC.dom_runit)
                   show ?thesis
-                    using a b t R.extensional HOM_null_char by simp
+                    using a b t R.extensionality HOM_null_char by simp
                 qed
                 finally show ?thesis by blast
               qed
@@ -3392,8 +3392,8 @@ section "RTS-Categories induce RTS-Enriched Categories"
                 have "fst ((I bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t) \<star>
                       snd ((I bbXab.resid \<circ> IXab.map \<circ> RTS.Unpack \<one> (Hom a b)) t) =
                       null"
-                  using a b t 1 PU_IXab.G.extensional IXab.extensional
-                        IXab.A1xA0.P\<^sub>0.extensional HOM_null_char
+                  using a b t 1 PU_IXab.G.extensionality IXab.extensionality
+                        IXab.A1xA0.P\<^sub>0.extensionality HOM_null_char
                   apply auto[1]
                   by (metis H.null_is_zero(2) null_coincidence)+
                 also have "... = RTS.Map \<l>[Hom a b] t"
@@ -3403,7 +3403,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                  \<open>RTS.Map \<l>[Hom a b]\<close>
                     using a b t 1 RTS.arrD(3) [of "\<l>[Hom a b]"] by force
                   show ?thesis
-                    using t L.extensional HOM_null_char a b by force
+                    using t L.extensionality HOM_null_char a b by force
                 qed
                 finally show ?thesis by blast
               qed
@@ -3617,7 +3617,7 @@ section "RTS-Categories induce RTS-Enriched Categories"
                                  \<a>[Hom c d, Hom b c, Hom a b]"]
                   by auto
                 show ?thesis
-                  using x L.extensional R.extensional by simp
+                  using x L.extensionality R.extensionality by simp
               qed
               next
               assume x: "cdxbc_x_ab.arr x"
@@ -4277,8 +4277,8 @@ subsection "Functoriality"
               proof (cases "U.A.arr t")
                 show "\<not> U.A.arr t \<Longrightarrow> ?thesis"
                   using a b c sub_rts_resid_eq
-                        F\<^sub>a_bc_x_F\<^sub>a_ab.extensional PU.F.extensional PU.G.extensional
-                        U.extensional F\<^sub>a_bc.extensional F\<^sub>a_ab.extensional
+                        F\<^sub>a_bc_x_F\<^sub>a_ab.extensionality PU.F.extensionality PU.G.extensionality
+                        U.extensionality F\<^sub>a_bc.extensionality F\<^sub>a_ab.extensionality
                         PU.A.not_arr_null B_HOM_bc_x_B_HOM_ab.not_arr_null
                   by auto
                 assume t: "U.A.arr t"
@@ -4303,9 +4303,9 @@ subsection "Functoriality"
                     F (snd (RTS.Unpack (A.Hom b c) (A.Hom a b) t))"
               proof (cases "U.A.arr t")
                 show "\<not> U.A.arr t \<Longrightarrow> ?thesis"
-                  using a b c U.extensional F\<^sub>a_bc_x_F\<^sub>a_ab.extensional F.extensional
+                  using a b c U.extensionality F\<^sub>a_bc_x_F\<^sub>a_ab.extensionality F.extensionality
                         HOM\<^sub>A_bc.null_char HOM\<^sub>A_ab.null_char HOM\<^sub>B_bc.null_char
-                        HOM\<^sub>B_ab.null_char F\<^sub>a_bc.extensional F\<^sub>a_ab.extensional
+                        HOM\<^sub>B_ab.null_char F\<^sub>a_bc.extensionality F\<^sub>a_ab.extensionality
                         sub_rts_resid_eq HOM\<^sub>A_bc.not_arr_null HOM\<^sub>A_ab.not_arr_null
                   by auto
                 assume t: "U.A.arr t"
@@ -4328,8 +4328,8 @@ subsection "Functoriality"
                        snd (RTS.Unpack (A.Hom b c) (A.Hom a b) t))"
               proof (cases "U.A.arr t")
                 show "\<not> U.A.arr t \<Longrightarrow> ?thesis"
-                  using a b c U.extensional F.extensional A.HOM_null_char
-                        A.H.extensional B.H.extensional
+                  using a b c U.extensionality F.extensionality A.HOM_null_char
+                        A.H.extensionality B.H.extensionality
                         A.H.null_is_zero(2) A.null_coincidence
                         B.H.null_is_zero(2) B.null_coincidence
                   by auto
@@ -4360,7 +4360,7 @@ subsection "Functoriality"
                          t"
               proof (cases "U.A.arr t")
                 show "\<not> U.A.arr t \<Longrightarrow> ?thesis"
-                  using a b c U.extensional F.extensional A.HOM_null_char
+                  using a b c U.extensionality F.extensionality A.HOM_null_char
                         A.H.null_is_zero(2) A.null_coincidence sub_rts_resid_eq
                         HOM\<^sub>B_ac.null_char
                   by auto
@@ -4498,7 +4498,7 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
       show "\<And>f. \<not> RC.H.arr f \<Longrightarrow> ?Trn f = H.null"
         using null_coincidence RC.arr_coincidence by auto
       show 1: "\<And>f. RC.H.arr f \<Longrightarrow> H.arr (?Trn f)"
-        using RC.arr_coincidence arr_coincidence null_coincidence Trn.extensional
+        using RC.arr_coincidence arr_coincidence null_coincidence Trn.extensionality
         by (metis Trn.preserves_reflects_arr)
       show "\<And>f. RC.H.arr f \<Longrightarrow> H.dom (?Trn f) = ?Trn (RC.H.dom f)"
       proof -
@@ -4659,7 +4659,7 @@ subsection "RTS-Category to Enriched Category to RTS-Category"
       show "?MkArr \<circ> ?Trn = RC.H.map"
         by (auto simp add: RC.H.map_def Trn_MkArr.inv)
       show "(?Trn \<circ> ?MkArr) = H.map"
-        using arr_coincidence null_coincidence H.is_extensional by auto
+        using arr_coincidence null_coincidence H.map_def by auto
     qed
 
     lemma inverse_functors_Trn_MkArr:
@@ -4937,7 +4937,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
              have "RTS.Map (F\<^sub>a a a \<cdot> Id a) = RTS.Map (F\<^sub>a a a) \<circ> RTS.Map (Id a)"
                using 1 RTS.Map_comp by blast
              also have "... = RTS.Map (R''.Id (F\<^sub>o a))"
-               using Map_Id_a.preserves_reflects_arr Map_R''_Id_F\<^sub>o_a.extensional
+               using Map_Id_a.preserves_reflects_arr Map_R''_Id_F\<^sub>o_a.extensionality
                      R''.Id_def RTS.One.arr_char RTS.One.is_extensional_rts
                      RTS.One.small_rts_axioms RTS.bij_mkarr(3) a ide_F\<^sub>o
                by auto
@@ -5112,7 +5112,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                  show "RTS.Map
                          (R''.Comp (F\<^sub>o a) (F\<^sub>o b) (F\<^sub>o c) \<cdot> (F\<^sub>a b c \<otimes> F\<^sub>a a b)) x =
                        RTS.Map (F\<^sub>a a c \<cdot> Comp a b c) x"
-                   using x LHS.extensional RHS.extensional by presburger
+                   using x LHS.extensionality RHS.extensionality by presburger
                qed
                assume x: "Dom_bcxab.arr x"
                have 0: "Dom_bc_X_Dom_ab.arr (RTS.Unpack (Hom b c) (Hom a b) x)"
@@ -5255,7 +5255,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                qed
                also have "... = RTS.Map (F\<^sub>a a c) (RTS.Map (Comp a b c) x)"
                  using a b c x Map_F\<^sub>a_simp R''.HOM_null_char RTS.bij_mkarr(3)
-                       UP_DN.G.extensional arr_char ide_F\<^sub>o
+                       UP_DN.G.extensionality arr_char ide_F\<^sub>o
                  by force
                also have "... = (RTS.Map (F\<^sub>a a c) \<circ> RTS.Map (Comp a b c)) x"
                  by simp
@@ -5336,7 +5336,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                      using t * Cod by auto
                    have "Dom (UP t) = Dom (H.dom (UP t))"
                      using t
-                     by (simp add: H_dom_char UP_DN.F.extensional)
+                     by (simp add: H_dom_char UP_DN.F.extensionality)
                    also have "... = Dom (UP (H'.dom t))"
                      using t 1 H'_dom_char UP_DN.inv'_simp [of "H.dom (UP t)"]
                            DOM'_alt.arr_char DOM'_alt.inclusion
@@ -5354,8 +5354,8 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                      using t * Cod by auto
                    have "Cod (UP t) = Cod (H.cod (UP t))"
                      using t H_cod_char
-                     by (metis (no_types, lifting) Cod.simps(1) cod.extensional
-                         H_cod_simp UP_DN.F.extensional UP_DN.F.preserves_reflects_arr)
+                     by (metis (no_types, lifting) Cod.simps(1) cod.extensionality
+                         H_cod_simp UP_DN.F.extensionality UP_DN.F.preserves_reflects_arr)
                    also have "... = Cod (UP (H'.cod t))"
                      using t 1 H'_cod_char UP_DN.inv'_simp
                            DOM'_alt.arr_char DOM'_alt.inclusion
@@ -5390,7 +5390,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                  assume y: "y \<in> Collect F\<^sub>a_ab.B.arr"
                  have "RTS.Map (F\<^sub>a a b) (?g y) = DN (MkArr a b (Trn (UP y)))"
                    using a b y * DOM'_alt.null_char Map
-                         UP_DN.G.extensional arr_char
+                         UP_DN.G.extensionality arr_char
                    by auto
                  also have "... = y"
                  proof -
@@ -5402,7 +5402,7 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                        using y * Cod by auto
                      have "Dom (UP y) = Dom (H.dom (UP y))"
                        using y
-                       by (simp add: H_dom_char UP_DN.F.extensional)
+                       by (simp add: H_dom_char UP_DN.F.extensionality)
                      also have "... = Dom (UP (H'.dom y))"
                        using y H'_dom_char UP_DN.inv'_simp
                        apply auto[1]
@@ -5420,8 +5420,8 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                        using y * Cod by auto
                      have "Cod (UP y) = Cod (H.cod (UP y))"
                        using y H_cod_char
-                       by (metis (no_types, lifting) Cod.simps(1) cod.extensional
-                           H_cod_simp UP_DN.F.extensional UP_DN.F.preserves_reflects_arr)
+                       by (metis (no_types, lifting) Cod.simps(1) cod.extensionality
+                           H_cod_simp UP_DN.F.extensionality UP_DN.F.preserves_reflects_arr)
                      also have "... = Cod (UP (H'.cod y))"
                        using y H'_cod_char UP_DN.inv'_simp
                        apply auto[1]
@@ -5449,11 +5449,11 @@ subsection "Enriched Category to RTS-Category to Enriched Category"
                  have "F\<^sub>a_ab.B.con (DN (MkArr a b t)) (DN (MkArr a b u))"
                  proof -
                    have "RTS.Map (F\<^sub>a a b) t = DN (MkArr a b t)"
-                     using a b R''.HOM_null_char RTS.bij_mkarr(3) UP_DN.G.extensional
+                     using a b R''.HOM_null_char RTS.bij_mkarr(3) UP_DN.G.extensionality
                            arr_char ide_F\<^sub>o
                      by force
                    moreover have "RTS.Map (F\<^sub>a a b) u = DN (MkArr a b u)"
-                     using a b R''.HOM_null_char RTS.bij_mkarr(3) UP_DN.G.extensional
+                     using a b R''.HOM_null_char RTS.bij_mkarr(3) UP_DN.G.extensionality
                            arr_char ide_F\<^sub>o
                      by force
                    ultimately show ?thesis
@@ -6168,7 +6168,7 @@ section "\<open>\<^bold>R\<^bold>T\<^bold>S\<^sup>\<dagger>\<close> Determined b
               Unfunc_def \<Phi>.as_nat_trans.preserves_reflects_arr con Func_def)
         thus "RC.V.con t u"
           using 1 con bij_mkide(4) RC.con_char RTSx.con_char RC.arr_char
-                RTSx.con_implies_par RTSx.null_char \<Phi>.extensional Rts_def bij_mkide(4)
+                RTSx.con_implies_par RTSx.null_char \<Phi>.extensionality Rts_def bij_mkide(4)
           apply auto[1]
           apply (intro RC.ConI conjI, auto)
           by metis+

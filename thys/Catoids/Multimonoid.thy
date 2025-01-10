@@ -258,7 +258,7 @@ lemma part_locality: "\<Delta> x y  \<Longrightarrow> \<Delta> y z  \<Longrighta
   by (meson local.locality local.pcomp_def_var2)
 
 lemma part_locality_var: "\<Delta> x y  \<Longrightarrow> \<Delta> y z  \<Longrightarrow> (x \<odot> y) \<star> {z} \<noteq> {}"
-  by (smt (z3) ex_in_conv local.locality multimagma.conv_exp2 singleton_iff)
+  by (metis local.pcomp_def_var3 multimagma.conv_atom part_locality)
 
 lemma locality_iff: "(\<Delta> x y \<and> \<Delta> y z) = (\<Delta> x y \<and> \<Delta> (x \<otimes> y) z)"
   by (meson local.pcomp_assoc_defined part_locality)

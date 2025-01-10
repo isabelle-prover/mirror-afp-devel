@@ -186,7 +186,9 @@ let
   val is_unit = case varTs of [(_, @{typ unit})] => true | _ => false;
   val _ = if is_unit orelse List.null (Simplifier.prems_of ctxt) then raise Match else ();
 
-  val (vs, ctxt1) = Variable.variant_fixes (map fst (Term.variant_frees t varTs)) ctxt
+  val (vs, ctxt1) = ctxt
+    |> Variable.declare_term t
+    |> Variable.variant_fixes (map fst varTs);
   val frees = map Free (vs ~~ map snd varTs)
   val defs = map (Thm.cterm_of ctxt1 o Logic.mk_equals) (frees ~~ rets) 
 

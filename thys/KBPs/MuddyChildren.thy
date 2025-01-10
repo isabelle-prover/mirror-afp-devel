@@ -294,10 +294,10 @@ abbreviation
 definition
   jkbp :: "Agent \<Rightarrow> (Agent, Proposition, ChildAct) KBP"
 where
-  "jkbp a = [ \<lparr> guard = Kor (\<^bold>K\<^sub>a (Kprop (Dirty a)))
-                            (\<^bold>K\<^sub>a (Knot (Kprop (Dirty a)))), action = SayIKnow \<rparr>,
-              \<lparr> guard = Kand (Knot (\<^bold>K\<^sub>a (Kprop (Dirty a))))
-                             (Knot (\<^bold>K\<^sub>a (Knot (Kprop (Dirty a))))), action = SayNothing \<rparr> ]"
+  "jkbp a = [ \<lparr> guard = Kor (\<^bold>K\<^bsub>a\<^esub> (Kprop (Dirty a)))
+                            (\<^bold>K\<^bsub>a\<^esub> (Knot (Kprop (Dirty a)))), action = SayIKnow \<rparr>,
+              \<lparr> guard = Kand (Knot (\<^bold>K\<^bsub>a\<^esub> (Kprop (Dirty a))))
+                             (Knot (\<^bold>K\<^bsub>a\<^esub> (Knot (Kprop (Dirty a))))), action = SayNothing \<rparr> ]"
 
 subsubsection\<open>Locale instantiations\<close>
 

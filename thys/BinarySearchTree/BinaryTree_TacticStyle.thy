@@ -99,16 +99,16 @@ where
      else Nd (rem l) (rm l) r)"
 
 lemma rm_in_set_of: "t ~= Tip ==> rm t : set_of t"
-by (induct t) auto
+  by (induct t) auto
 
 lemma set_of_rem: "t ~= Tip ==> set_of t = set_of(rem t) Un {rm t}"
-by (induct t) auto
+  by (induct t) auto
 
 lemma [simp]: "[| t ~= Tip; sorted t  |] ==> sorted(rem t)"
-by (induct t) (auto simp add:set_of_rem)
+  by (induct t) (auto simp add:set_of_rem)
 
 lemma sorted_rem: "[| t ~= Tip; x \<in> set_of(rem t); sorted t |] ==> x < rm t"
-by (induct t) (auto simp add:set_of_rem split:if_splits)
+  by (induct t) (auto simp add:set_of_rem split:if_splits)
 
 theorem set_of_remove [simp]: "sorted t ==> set_of(remove x t) = set_of t - {x}"
 apply(induct t)

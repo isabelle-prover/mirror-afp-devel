@@ -62,7 +62,7 @@ apply vcg
   apply(erule sep_map'_g)
  apply rule
   apply(erule sep_map'_ptr_safe)
- apply(rule_tac x="lista" in exI)
+ apply(rule_tac x="list" in exI)
  apply (simp add: ucast_id)
  apply sep_exists_tac
  apply(rule_tac x=j in exI)
@@ -70,7 +70,7 @@ apply vcg
  apply(rule sep_heap_update_global)
  apply(erule sep_conj_impl)
   apply simp
- apply(sep_select_tac "list lista _")
+ apply(sep_select_tac "list_reverse.list list _")
  apply(erule sep_conj_impl)
   apply(subgoal_tac "lift a (Ptr aa) = ja")
    apply simp

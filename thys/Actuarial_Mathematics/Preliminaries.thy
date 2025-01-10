@@ -153,7 +153,7 @@ lemma(in field) divide_mult_cancel[simp]: fixes a b assumes "b \<noteq> 0"
   by (simp add: assms)
 
 lemma inverse_powr: "(1/a).^b = a.^-b" if "a > 0" for a b :: real
-  by (smt that powr_divide powr_minus_divide powr_one_eq_one)
+  by (smt (verit) that powr_divide powr_minus_divide powr_one_eq_one)
 
 lemma powr_eq_one_iff_gen[simp]: "a.^x = 1 \<longleftrightarrow> x = 0" if "a > 0" "a \<noteq> 1" for a x :: real
   by (metis powr_eq_0_iff powr_inj powr_zero_eq_one that)
@@ -838,7 +838,7 @@ proof -
     have "open ({a<..<b} - S)"
       using fin finite_imp_closed by (metis open_Diff open_greaterThanLessThan)
     hence "at x within {a<..<b} - S = at x" by (meson x_in at_within_open)
-    hence "F differentiable at x" using diff x_in by smt
+    hence "F differentiable at x" using diff x_in by (smt (verit))
     thus "(F has_real_derivative deriv F x) (at x)"
       using DERIV_deriv_iff_real_differentiable by simp
   qed
@@ -1027,7 +1027,7 @@ lemma AE_scale_measure_iff:
   shows "(AE x in (scale_measure r M). P x) \<longleftrightarrow> (AE x in M. P x)"
   unfolding ae_filter_def null_sets_def
   apply (rewrite space_scale_measure, simp)
-  using assms by (smt Collect_cong not_gr_zero)
+  using assms by (smt (verit) Collect_cong not_gr_zero)
 
 lemma nn_set_integral_cong2:
   assumes "AE x\<in>A in M. f x = g x"
@@ -1119,7 +1119,7 @@ proof -
       unfolding null_sets_def using assms
       apply (simp, rewrite emeasure_distr; simp)
       unfolding vimage_def using emeasure_empty
-      by (smt (z3) Collect_empty_eq Diff_iff Int_def mem_Collect_eq)
+      by (metis (no_types, lifting) Diff_disjoint disjoint_iff_not_equal mem_Collect_eq)
   qed
   finally show ?thesis .
 qed
@@ -2348,7 +2348,7 @@ proof -
   have FBM: "finite_borel_measure (distr M borel X)"
     using real_distribution.finite_borel_measure_M real_distribution_distr assms by simp
   then interpret distrX_FBM: finite_borel_measure "distr M borel X" .
-  have FBMl: "finite_borel_measure (distr M lborel X)" using FBM distr_borel_lborel by smt
+  have FBMl: "finite_borel_measure (distr M lborel X)" using FBM distr_borel_lborel by (smt (verit))
   then interpret distrlX_FBM: finite_borel_measure "distr M lborel X" .
   have [simp]: "(\<lambda>x. ennreal (f x)) \<in> borel_measurable borel" using assms by simp
   moreover have "distr M lborel X = density lborel f"
@@ -2625,7 +2625,7 @@ proof -
   also have "\<dots> = enn2real (1 / prob A * \<integral>\<^sup>+ x. ennreal (X x) \<partial>(restrict_space M A))"
     unfolding cond_prob_space_def
     apply (rewrite nn_integral_scale_measure, simp add: measurable_restrict_space1)
-    using divide_ennreal emeasure_eq_measure ennreal_1 assms by smt
+    using divide_ennreal emeasure_eq_measure ennreal_1 assms by (smt (verit))
   also have "\<dots> = enn2real (1 / prob A * (\<integral>\<^sup>+ x. ennreal (indicator A x * X x) \<partial>M))"
     apply (rewrite nn_integral_restrict_space, simp add: assms)
     by (metis indicator_mult_ennreal mult.commute)
@@ -2668,10 +2668,10 @@ proof -
 qed
 
 lemma ccdf_cdf: "ccdf M = (\<lambda>x. measure M (space M) - cdf M x)"
-  by (rule ext) (smt add_cdf_ccdf)
+  by (rule ext) (smt (verit) add_cdf_ccdf)
 
 lemma cdf_ccdf: "cdf M = (\<lambda>x. measure M (space M) - ccdf M x)"
-  by (rule ext) (smt add_cdf_ccdf)
+  by (rule ext) (smt (verit) add_cdf_ccdf)
 
 lemma isCont_cdf_ccdf: "isCont (cdf M) x \<longleftrightarrow> isCont (ccdf M) x"
 proof
@@ -2728,13 +2728,13 @@ proof -
 qed
 
 lemma ccdf_nonincreasing: "x \<le> y \<Longrightarrow> ccdf M x \<ge> ccdf M y"
-  using add_cdf_ccdf cdf_nondecreasing by smt
+  using add_cdf_ccdf cdf_nondecreasing by (smt (verit))
 
 lemma ccdf_nonneg: "ccdf M x \<ge> 0"
-  using add_cdf_ccdf cdf_bounded by smt
+  using add_cdf_ccdf cdf_bounded by (smt (verit))
 
 lemma ccdf_bounded: "ccdf M x \<le> measure M (space M)"
-  using add_cdf_ccdf cdf_nonneg by smt
+  using add_cdf_ccdf cdf_nonneg by (smt (verit))
 
 lemma ccdf_lim_at_top: "(ccdf M \<longlongrightarrow> 0) at_top"
 proof -
@@ -3095,7 +3095,7 @@ next
         by (metis DERIV_at_within_shift_lemma)
       hence "((\<lambda>dt. (integral {t..t+dt} f) / dt) \<longlongrightarrow> f t) (at 0 within {0..u-t})"
         using has_field_derivative_iff by force
-      thus ?thesis using at_within_Icc_at_right assms by smt
+      thus ?thesis using at_within_Icc_at_right assms by (smt (verit))
     qed
     ultimately show ?thesis by simp
   qed

@@ -18,7 +18,7 @@ hide_const (open) BNF_Cardinal_Order_Relation.stable
 hide_const (open) Topological_Spaces.incseq
 hide_const (open) Topological_Spaces.decseq
 
-no_notation Binomial.binomial (infixl \<open>choose\<close> 65)
+unbundle no binomial_syntax
 no_notation Sublist.parallel (infixl \<open>\<parallel>\<close> 50)
 
 consts parallel :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr \<open>\<parallel>\<close> 53) \<comment>\<open> for adhoc overloading \<close>

@@ -491,7 +491,7 @@ subsubsection \<open>Code generator setup for Haskell\<close>
 code_printing type_constructor array \<rightharpoonup>
   (Haskell) "Array.ArrayType/ _"
 
-code_reserved Haskell array_of_list
+code_reserved (Haskell) array_of_list
 
 (*
 code_printing code_module "Array" \<rightharpoonup>

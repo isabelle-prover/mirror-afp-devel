@@ -379,7 +379,7 @@ proof -
     using \<open>r mod 96 \<in> residue\<close>
     by (metis \<open>\<forall>r\<in>residue. \<exists>h\<in>H. \<exists>d\<in>D. r = (d ^ 3 + h) mod 96\<close> unique_euclidean_semiring_class.cong_def)
   hence "\<exists> h \<in> H. \<exists> d \<in> D. [r - d^3 = h] (mod 96)"
-    by (smt (z3) \<open>\<forall>d\<in>D. d^3 \<le> r\<close> add.commute add_diff_cancel_right' cong_diff_nat cong_refl le_add2)
+    by (metis \<open>\<forall>d\<in>D. d ^ 3 \<le> r\<close> cong_add_lcancel_nat cong_sym ordered_cancel_comm_monoid_diff_class.add_diff_inverse)
   then obtain h d where "h \<in> H" and "d \<in> D" and "[r - d^3 = h] (mod 96)"
     by auto
   then obtain h' where "h' mod 96 = h" and "r - d^3 = h'"
@@ -848,7 +848,7 @@ formalisation.  This does not affect the proof in any meaningful way.\<close>
     moreover have "\<dots> = a^3 + b^3 + ((2^(nat k))*d)^3 + 8^(nat k)*(6*8^(nat(2*k)) + 6*m)"
       by (smt (verit) \<open>2 ^ 3 = 8\<close> mult.commute power_mult power_mult_distrib)
     moreover have "\<dots> = a^3 + b^3 + c^3 + 6*A*(A\<^sup>2 + m)"
-      by (smt (z3) A_def c_def exp24 \<open>real (8 ^ nat(k*2)) = 8 powr (2*k)\<close> add_mult_distrib2
+      by (smt (verit) A_def c_def exp24 \<open>real (8 ^ nat(k*2)) = 8 powr (2*k)\<close> add_mult_distrib2
           mult.assoc mult.commute of_nat_eq_iff power_even_eq)
     ultimately have "N = a^3 + b^3 + c^3 + 6*A*(A\<^sup>2 + m)"
       using of_nat_eq_iff by metis

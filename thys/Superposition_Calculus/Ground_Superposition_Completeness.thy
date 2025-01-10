@@ -1,58 +1,6 @@
 theory Ground_Superposition_Completeness
-  imports Ground_Superposition
+  imports Ground_Superposition Relation_Extra
 begin
-
-subsection \<open>Redundancy Criterion\<close>
-
-sublocale ground_superposition_calculus \<subseteq> calculus_with_finitary_standard_redundancy where
-  Inf = G_Inf and
-  Bot = G_Bot and
-  entails = G_entails and
-  less = "(\<prec>\<^sub>c)"
-  defines GRed_I = Red_I and GRed_F = Red_F
-proof unfold_locales
-  show "transp (\<prec>\<^sub>c)"
-    using clause_order.transp_on_less .
-next
-  show "wfP (\<prec>\<^sub>c)"
-    using wfP_less_cls .
-next
-  show "\<And>\<iota>. \<iota> \<in> G_Inf \<Longrightarrow> prems_of \<iota> \<noteq> []"
-    by (auto simp: G_Inf_def)
-next
-  fix \<iota>
-  have "concl_of \<iota> \<prec>\<^sub>c main_prem_of \<iota>"
-    if \<iota>_def: "\<iota> = Infer [P\<^sub>2, P\<^sub>1] C" and
-      infer: "ground_superposition P\<^sub>2 P\<^sub>1 C"
-    for P\<^sub>2 P\<^sub>1 C
-    unfolding \<iota>_def
-    using infer
-    using ground_superposition_smaller_conclusion
-    by simp
-
-  moreover have "concl_of \<iota> \<prec>\<^sub>c main_prem_of \<iota>"
-    if \<iota>_def: "\<iota> = Infer [P] C" and
-      infer: "ground_eq_resolution P C"
-    for P C
-    unfolding \<iota>_def
-    using infer
-    using ground_eq_resolution_smaller_conclusion
-    by simp
-
-  moreover have "concl_of \<iota> \<prec>\<^sub>c main_prem_of \<iota>"
-    if \<iota>_def: "\<iota> = Infer [P] C" and
-      infer: "ground_eq_factoring P C"
-    for P C
-    unfolding \<iota>_def
-    using infer
-    using ground_eq_factoring_smaller_conclusion
-    by simp
-
-  ultimately show "\<iota> \<in> G_Inf \<Longrightarrow> concl_of \<iota> \<prec>\<^sub>c main_prem_of \<iota>"
-    unfolding G_Inf_def
-    by fast
-qed
-
 
 subsection \<open>Mode Construction\<close>
 
@@ -63,7 +11,7 @@ function epsilon :: "_ \<Rightarrow> 'f gatom clause \<Rightarrow> 'f gterm rel"
     C \<in> N \<and>
     C = add_mset (Pos (Upair s t)) C' \<and>
     select C = {#} \<and>
-    is_strictly_maximal_lit (Pos (Upair s t)) C \<and>
+    is_strictly_maximal (Pos (Upair s t)) C \<and>
     t \<prec>\<^sub>t s \<and>
     (let R\<^sub>C = (\<Union>D \<in> {D \<in> N. D \<prec>\<^sub>c C}. epsilon {E \<in> N. E \<preceq>\<^sub>c D} D) in
     \<not> upair ` (rewrite_inside_gctxt R\<^sub>C)\<^sup>\<down> \<TTurnstile> C \<and>
@@ -80,8 +28,8 @@ proof (relation "{((x1, x2), (y1, y2)). x2 \<prec>\<^sub>c y2}")
     show "\<And>x y. (case x of (x1, x2) \<Rightarrow> \<lambda>(y1, y2). x2 \<prec>\<^sub>c y2) y \<Longrightarrow> (snd x) \<prec>\<^sub>c (snd y)"
       by auto
   next
-    show "wfP (\<prec>\<^sub>c)"
-      by simp
+    show "wfp (\<prec>\<^sub>c)"
+      by auto
   qed
   thus "wf {((x1, x2), (y1, y2)). x2 \<prec>\<^sub>c y2}"
     by (simp add: wfp_def)
@@ -100,7 +48,7 @@ proof (intro subset_antisym subrelI)
     "C \<in> N" and
     "C = add_mset (x \<approx> y) C'" and
     "select C = {#}" and
-    "is_strictly_maximal_lit (x \<approx> y) C" and
+    "is_strictly_maximal (x \<approx> y) C" and
     "y \<prec>\<^sub>t x" and
     "(let R\<^sub>C = \<Union>x\<in>{D \<in> N. (D \<prec>\<^sub>c C \<or> D = C) \<and> D \<prec>\<^sub>c C}. epsilon {E \<in> N. (E \<prec>\<^sub>c C \<or> E = C) \<and> E \<preceq>\<^sub>c x} x in
       \<not> upair ` (rewrite_inside_gctxt R\<^sub>C)\<^sup>\<down> \<TTurnstile> C \<and>
@@ -115,7 +63,7 @@ proof (intro subset_antisym subrelI)
       by metis
   next
     show "\<And>x. x \<in> {D \<in> N. D \<prec>\<^sub>c C} \<Longrightarrow> epsilon {E \<in> N. (E \<prec>\<^sub>c C \<or> E = C) \<and> E \<preceq>\<^sub>c x} x = epsilon {E \<in> N. E \<preceq>\<^sub>c x} x"
-      by (metis (mono_tags, lifting) clause_order.order.strict_trans1 mem_Collect_eq)
+      by (metis (no_types, lifting) clause.order.dual_order.strict_trans2 mem_Collect_eq)
   qed
 
   ultimately show "(x, y) \<in> epsilon N C"
@@ -127,7 +75,7 @@ next
     "C \<in> N" and
     "C = add_mset (x \<approx> y) C'" and
     "select C = {#}" and
-    "is_strictly_maximal_lit (x \<approx> y) C" and
+    "is_strictly_maximal (x \<approx> y) C" and
     "y \<prec>\<^sub>t x" and
     "(let R\<^sub>C = \<Union>x\<in>{D \<in> N. D \<prec>\<^sub>c C}. epsilon {E \<in> N. E \<preceq>\<^sub>c x} x in
       \<not> upair ` (rewrite_inside_gctxt R\<^sub>C)\<^sup>\<down> \<TTurnstile> C \<and>
@@ -142,7 +90,8 @@ next
       by metis
   next
     show "\<And>x. x \<in> {D \<in> N. D \<prec>\<^sub>c C} \<Longrightarrow> epsilon {E \<in> N. (E \<prec>\<^sub>c C \<or> E = C) \<and> E \<preceq>\<^sub>c x} x = epsilon {E \<in> N. E \<preceq>\<^sub>c x} x"
-      by (metis (mono_tags, lifting) clause_order.order.strict_trans1 mem_Collect_eq)
+      by (metis (mono_tags, lifting) clause.order.dual_order.strict_trans2 
+          mem_Collect_eq)
   qed
 
   ultimately show "(x, y) \<in> epsilon {D \<in> N. (\<prec>\<^sub>c)\<^sup>=\<^sup>= D C} C"
@@ -151,28 +100,27 @@ qed
 
 end
 
-lemma (in ground_ordering) Uniq_striclty_maximal_lit_in_ground_cls:
-  "\<exists>\<^sub>\<le>\<^sub>1L. is_strictly_maximal_lit L C"
-  using literal_order.Uniq_is_greatest_in_mset .
-
 lemma (in ground_superposition_calculus) epsilon_eq_empty_or_singleton:
   "epsilon N C = {} \<or> (\<exists>s t. epsilon N C = {(s, t)})"
 proof -
   have "\<exists>\<^sub>\<le>\<^sub>1 (x, y). \<exists>C'.
-    C = add_mset (Pos (Upair x y)) C' \<and> is_strictly_maximal_lit (Pos (Upair x y)) C \<and> y \<prec>\<^sub>t x"
+    C = add_mset (Pos (Upair x y)) C' \<and> is_strictly_maximal (Pos (Upair x y)) C \<and> y \<prec>\<^sub>t x"
     by (rule Uniq_prodI)
-      (metis Uniq_D Upair_inject literal_order.Uniq_is_greatest_in_mset term_order.min.absorb3
-        term_order.min.absorb4 literal.inject(1))
+      (metis Upair_inject add_mset_remove_trivial insert_iff is_strictly_maximal_def 
+        literal.inject(1) literal.order.nle_le set_mset_add_mset_insert 
+        term.order.dual_order.asym)
+ 
   hence Uniq_epsilon: "\<exists>\<^sub>\<le>\<^sub>1 (x, y). \<exists>C'.
     C \<in> N \<and>
     C = add_mset (Pos (Upair x y)) C' \<and> select C = {#} \<and>
-    is_strictly_maximal_lit (Pos (Upair x y)) C \<and> y \<prec>\<^sub>t x \<and>
+    is_strictly_maximal (Pos (Upair x y)) C \<and> y \<prec>\<^sub>t x \<and>
     (let R\<^sub>C = \<Union>D \<in> {D \<in> N. D \<prec>\<^sub>c C}. epsilon {E \<in> N. E \<preceq>\<^sub>c D} D in
       \<not> upair ` (rewrite_inside_gctxt R\<^sub>C)\<^sup>\<down> \<TTurnstile> C \<and>
       \<not> upair ` (rewrite_inside_gctxt (insert (x, y) R\<^sub>C))\<^sup>\<down> \<TTurnstile> C' \<and>
       x \<in> NF (rewrite_inside_gctxt R\<^sub>C))"
     using Uniq_antimono'
     by (smt (verit) Uniq_def Uniq_prodI case_prod_conv)
+
   show ?thesis
     unfolding epsilon.simps[of N C]
     using Collect_eq_if_Uniq_prod[OF Uniq_epsilon]
@@ -198,7 +146,7 @@ proof (rule SUP_cong)
 next
   show "\<And>x. x \<in> {D \<in> N. D \<prec>\<^sub>c C} \<Longrightarrow> epsilon {D \<in> N. D \<prec>\<^sub>c C} x = epsilon {E \<in> N. (\<prec>\<^sub>c)\<^sup>=\<^sup>= E x} x"
     using epsilon_filter_le_conv
-    by (smt (verit, best) Collect_cong clause_order.le_less_trans mem_Collect_eq)
+    by (smt (verit, best) Collect_cong clause.order.le_less_trans mem_Collect_eq)
 qed
 
 lemma (in ground_superposition_calculus) mem_epsilonE:
@@ -208,7 +156,7 @@ lemma (in ground_superposition_calculus) mem_epsilonE:
     "rule = (l, r)" and
     "C = add_mset (Pos (Upair l r)) C'" and
     "select C = {#}" and
-    "is_strictly_maximal_lit (Pos (Upair l r)) C" and
+    "is_strictly_maximal (Pos (Upair l r)) C" and
     "r \<prec>\<^sub>t l" and
     "\<not> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> C" and
     "\<not> upair ` (rewrite_inside_gctxt (insert (l, r) (rewrite_sys N C)))\<^sup>\<down> \<TTurnstile> C'" and
@@ -220,7 +168,7 @@ lemma (in ground_superposition_calculus) mem_epsilonE:
 lemma (in ground_superposition_calculus) mem_epsilon_iff:
   "(l, r) \<in> epsilon N C \<longleftrightarrow>
     (\<exists>C'. C \<in> N \<and> C = add_mset (Pos (Upair l r)) C' \<and> select C = {#} \<and>
-      is_strictly_maximal_lit (Pos (Upair l r)) C \<and> r \<prec>\<^sub>t l \<and>
+      is_strictly_maximal (Pos (Upair l r)) C \<and> r \<prec>\<^sub>t l \<and>
       \<not> upair ` (rewrite_inside_gctxt (rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C}))\<^sup>\<down> \<TTurnstile> C \<and>
       \<not> upair ` (rewrite_inside_gctxt (insert (l, r) (rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C})))\<^sup>\<down> \<TTurnstile> C' \<and>
       l \<in> NF (rewrite_inside_gctxt (rewrite_sys' {D \<in> N. D \<prec>\<^sub>c C})))"
@@ -254,7 +202,7 @@ proof -
     by auto
   thus ?thesis
   using rhs_lt_lhs_if_mem_rewrite_sys[of t1' t2']
-  by (metis Pair_inject less_trm_compatible_with_gctxt)
+  by (metis Pair_inject term.order.context_compatibility)
 qed
 
 lemma (in ground_superposition_calculus) rhs_lesseq_trm_lhs_if_mem_rtrancl_rewrite_inside_gctxt_rewrite_sys:
@@ -283,7 +231,7 @@ lemma (in ground_superposition_calculus) rewrite_sys_subset_if_less_cls:
   "C \<prec>\<^sub>c D \<Longrightarrow> rewrite_sys N C \<subseteq> rewrite_sys N D"
   unfolding rewrite_sys_def
   unfolding epsilon_filter_le_conv
-  by (smt (verit, del_insts) SUP_mono clause_order.dual_order.strict_trans mem_Collect_eq subset_eq)
+  by (smt (verit, del_insts) SUP_mono clause.order.dual_order.strict_trans mem_Collect_eq subset_eq)
 
 lemma (in ground_superposition_calculus) mem_rewrite_sys_if_less_cls:
   assumes "D \<in> N" and "D \<prec>\<^sub>c C" and "(u, v) \<in> epsilon N D"
@@ -306,63 +254,85 @@ proof -
   then obtain C' where
     "C \<in> N" and
     C_def: "C = add_mset (Pos (Upair s t)) C'" and
-    "is_strictly_maximal_lit (Pos (Upair s t)) C" and
+    "is_strictly_maximal (Pos (Upair s t)) C" and
     "t \<prec>\<^sub>t s" and
     s_irreducible: "s \<in> NF (rewrite_inside_gctxt (rewrite_sys N C))"
     by (auto elim!: mem_epsilonE)
   hence "\<forall>L \<in># C'. L \<prec>\<^sub>l Pos (Upair s t)"
-    by (simp add: literal_order.is_greatest_in_mset_iff)
+    unfolding is_strictly_maximal_def
+    by auto
 
   from E\<^sub>D obtain D' where
     "D \<in> N" and
     D_def: "D = add_mset (Pos (Upair u v)) D'" and
-    "is_strictly_maximal_lit (Pos (Upair u v)) D" and
+    "is_strictly_maximal (Pos (Upair u v)) D" and
     "v \<prec>\<^sub>t u"
     by (auto simp:  elim: epsilon.elims dest: singleton_eq_CollectD)
   hence "\<forall>L \<in># D'. L \<prec>\<^sub>l Pos (Upair u v)"
-    by (simp add: literal_order.is_greatest_in_mset_iff)
+    by (auto simp: is_strictly_maximal_def)
 
   show ?thesis
   proof (rule iffI)
     assume "u \<prec>\<^sub>t s"
+
     moreover hence "v \<prec>\<^sub>t s"
-      using \<open>v \<prec>\<^sub>t u\<close> by order
+      using \<open>v \<prec>\<^sub>t u\<close> 
+      by order
+
     ultimately have "multp (\<prec>\<^sub>t) {#u, v#} {#s, t#}"
-      using one_step_implies_multp[of "{#s, t#}" "{#u, v#}" _ "{#}"] by simp
+      using one_step_implies_multp[of "{#s, t#}" "{#u, v#}" _ "{#}"] 
+      by simp
+
     hence "Pos (Upair u v) \<prec>\<^sub>l Pos (Upair s t)"
-      by (simp add: less_lit_def)
+      by (simp add: less\<^sub>l_def)
+
     moreover hence "\<forall>L \<in># D'. L \<prec>\<^sub>l Pos (Upair s t)"
       using \<open>\<forall>L \<in># D'. L \<prec>\<^sub>l Pos (Upair u v)\<close>
-      by (meson literal_order.transp_on_less transpD)
+      by (meson literal.order.transp_on_less transpD)
+
     ultimately show "D \<prec>\<^sub>c C"
-      using one_step_implies_multp[of C D _ "{#}"] less_cls_def
+      using one_step_implies_multp[of C D _ "{#}"] less\<^sub>c_def
       by (simp add: D_def C_def)
   next
     assume "D \<prec>\<^sub>c C"
+
     have "(u, v) \<in> rewrite_sys N C"
-      using E\<^sub>D \<open>D \<in> N\<close> \<open>D \<prec>\<^sub>c C\<close> mem_rewrite_sys_if_less_cls by auto
+      using E\<^sub>D \<open>D \<in> N\<close> \<open>D \<prec>\<^sub>c C\<close> mem_rewrite_sys_if_less_cls 
+      by auto
+
     hence "(u, v) \<in> rewrite_inside_gctxt (rewrite_sys N C)"
       by blast
+
     hence "s \<noteq> u"
       using s_irreducible
       by auto
+
     moreover have "\<not> (s \<prec>\<^sub>t u)"
     proof (rule notI)
       assume "s \<prec>\<^sub>t u"
+
       moreover hence "t \<prec>\<^sub>t u"
-        using \<open>t \<prec>\<^sub>t s\<close> by order
+        using \<open>t \<prec>\<^sub>t s\<close> 
+        by order
+
       ultimately have "multp (\<prec>\<^sub>t) {#s, t#} {#u, v#}"
-        using one_step_implies_multp[of "{#u, v#}" "{#s, t#}" _ "{#}"] by simp
+        using one_step_implies_multp[of "{#u, v#}" "{#s, t#}" _ "{#}"] 
+        by simp
+
       hence "Pos (Upair s t) \<prec>\<^sub>l Pos (Upair u v)"
-        by (simp add: less_lit_def)
+        by (simp add: less\<^sub>l_def)
+
       moreover hence "\<forall>L \<in># C'. L \<prec>\<^sub>l Pos (Upair u v)"
         using \<open>\<forall>L \<in># C'. L \<prec>\<^sub>l Pos (Upair s t)\<close>
-        by (meson literal_order.transp_on_less transpD)
+        by (meson literal.order.transp_on_less transpD)
+
       ultimately have "C \<prec>\<^sub>c D"
-        using one_step_implies_multp[of D C _ "{#}"] less_cls_def
+        using one_step_implies_multp[of D C _ "{#}"] less\<^sub>c_def
         by (simp add: D_def C_def)
+
       thus False
-        using \<open>D \<prec>\<^sub>c C\<close> by order
+        using \<open>D \<prec>\<^sub>c C\<close> 
+        by order
     qed
     ultimately show "u \<prec>\<^sub>t s"
       by order
@@ -372,7 +342,7 @@ qed
 lemma (in ground_superposition_calculus) termination_rewrite_sys: "wf ((rewrite_sys N C)\<inverse>)"
 proof (rule wf_if_convertible_to_wf)
   show "wf {(x, y). x \<prec>\<^sub>t y}"
-    using wfP_less_trm
+    using term.order.wfp
     by (simp add: wfp_def)
 next
   fix t s
@@ -391,19 +361,25 @@ lemma (in ground_superposition_calculus) termination_Union_rewrite_sys:
   "wf ((\<Union>D \<in> N. rewrite_sys N D)\<inverse>)"
 proof (rule wf_if_convertible_to_wf)
   show "wf {(x, y). x \<prec>\<^sub>t y}"
-    using wfP_less_trm
+    using term.order.wfp
     by (simp add: wfp_def)
 next
   fix t s
   assume "(t, s) \<in> (\<Union>D \<in> N. rewrite_sys N D)\<inverse>"
+
   hence "(s, t) \<in> (\<Union>D \<in> N. rewrite_sys N D)"
     by simp
+
   then obtain C where "C \<in> N" "(s, t) \<in> rewrite_sys N C"
     by auto
+
   then obtain D where "D \<prec>\<^sub>c C" and "(s, t) \<in> epsilon N D"
-    unfolding rewrite_sys_def using epsilon_filter_le_conv by blast
+    unfolding rewrite_sys_def using epsilon_filter_le_conv 
+    by blast
+
   hence "t \<prec>\<^sub>t s"
     by (auto elim: mem_epsilonE)
+
   thus "(t, s) \<in> {(x, y). x \<prec>\<^sub>t y}"
     by simp 
 qed
@@ -427,14 +403,14 @@ proof (rule ccontr)
 
   from rule1_in' obtain C1' where
     C1_def: "C1 = add_mset (Pos (Upair ctxt\<langle>l\<rangle>\<^sub>G r1)) C1'" and
-    C1_max: "is_strictly_maximal_lit (Pos (Upair ctxt\<langle>l\<rangle>\<^sub>G r1)) C1" and
+    C1_max: "is_strictly_maximal (Pos (Upair ctxt\<langle>l\<rangle>\<^sub>G r1)) C1" and
     "r1 \<prec>\<^sub>t ctxt\<langle>l\<rangle>\<^sub>G" and
     l1_irreducible: "ctxt\<langle>l\<rangle>\<^sub>G \<in> NF (rewrite_inside_gctxt (rewrite_sys N2 C1))"
     by (auto elim: mem_epsilonE)
 
   from rule2_in' obtain C2' where
     C2_def: "C2 = add_mset (Pos (Upair l r2)) C2'" and
-    C2_max: "is_strictly_maximal_lit (Pos (Upair l r2)) C2" and
+    C2_max: "is_strictly_maximal (Pos (Upair l r2)) C2" and
     "r2 \<prec>\<^sub>t l"
     by (auto elim: mem_epsilonE)
 
@@ -445,39 +421,50 @@ proof (rule ccontr)
     using rule2_in' epsilon_eq_empty_or_singleton by fastforce
 
   show False
-  proof (cases "ctxt = \<box>\<^sub>G")
+  proof (cases "ctxt = \<box>")
     case True
     hence "\<not> (ctxt\<langle>l\<rangle>\<^sub>G \<prec>\<^sub>t l)" and "\<not> (l \<prec>\<^sub>t ctxt\<langle>l\<rangle>\<^sub>G)"
       by (simp_all add: irreflpD)
+
     hence "\<not> (C1 \<prec>\<^sub>c C2)" and "\<not> (C2 \<prec>\<^sub>c C1)"
       using \<open>epsilon N2 C1 = {(ctxt\<langle>l\<rangle>\<^sub>G, r1)}\<close> \<open>epsilon N2 C2 = {(l, r2)}\<close>
         less_trm_iff_less_cls_if_lhs_epsilon
       by simp_all
+
     hence "C1 = C2"
       by order
+
     hence "r1 = r2"
-      using \<open>epsilon N2 C1 = {(ctxt\<langle>l\<rangle>\<^sub>G, r1)}\<close> \<open>epsilon N2 C2 = {(l, r2)}\<close> by simp
+      using \<open>epsilon N2 C1 = {(ctxt\<langle>l\<rangle>\<^sub>G, r1)}\<close> \<open>epsilon N2 C2 = {(l, r2)}\<close> 
+      by simp
+
     moreover have "r1 \<noteq> r2"
       using \<open>ctxt\<langle>r2\<rangle>\<^sub>G \<noteq> r1\<close>
-      unfolding \<open>ctxt = \<box>\<^sub>G\<close>
+      unfolding \<open>ctxt = \<box>\<close>
       by simp
+
     ultimately show ?thesis
       by contradiction
   next
     case False
     hence "l \<prec>\<^sub>t ctxt\<langle>l\<rangle>\<^sub>G"
-      by (metis less_trm_if_subterm)
+      by (metis term.order.subterm_property)
+
     hence "C2 \<prec>\<^sub>c C1"
       using \<open>epsilon N2 C1 = {(ctxt\<langle>l\<rangle>\<^sub>G, r1)}\<close> \<open>epsilon N2 C2 = {(l, r2)}\<close>
         less_trm_iff_less_cls_if_lhs_epsilon
       by simp
+
     have "(l, r2) \<in> rewrite_sys N2 C1"
       by (metis \<open>C2 \<prec>\<^sub>c C1\<close> \<open>epsilon N2 C2 = {(l, r2)}\<close> mem_epsilonE mem_rewrite_sys_if_less_cls
           singletonI)
+
     hence "(ctxt\<langle>l\<rangle>\<^sub>G, ctxt\<langle>r2\<rangle>\<^sub>G) \<in> rewrite_inside_gctxt (rewrite_sys N2 C1)"
       by auto
+
     thus False
-      using l1_irreducible by auto
+      using l1_irreducible 
+      by auto
   qed
 qed
 
@@ -487,6 +474,7 @@ lemma (in ground_superposition_calculus) WCR_Union_rewrite_sys:
 proof (intro subsetI ballI)
   fix tuple
   assume tuple_in: "tuple \<in> ground_critical_pairs (\<Union> (epsilon N2 ` N))"
+
   then obtain t1 t2 where tuple_def: "tuple = (t1, t2)"
     by fastforce
 
@@ -514,7 +502,7 @@ proof -
     by simp
   then obtain C' where
     C_def: "C = add_mset (Pos (Upair s t)) C'" and
-    C_max_lit: "is_strictly_maximal_lit (Pos (Upair s t)) C" and
+    C_max_lit: "is_strictly_maximal (Pos (Upair s t)) C" and
     "t \<prec>\<^sub>t s"
     by (auto elim: mem_epsilonE)
 
@@ -522,46 +510,53 @@ proof -
   proof -
     from that(2) have "s \<prec>\<^sub>t u"
       by order
+
     hence "multp (\<prec>\<^sub>t) {#s, t#} {#u, v#}"
       using \<open>t \<prec>\<^sub>t s\<close>
       by (smt (verit, del_insts) add.right_neutral empty_iff insert_iff one_step_implies_multp
-          set_mset_add_mset_insert set_mset_empty transpD transp_less_trm union_mset_add_mset_right)
+          set_mset_add_mset_insert set_mset_empty transpD term.order.transp 
+          union_mset_add_mset_right)
+
     with that(1) show "Pos (Upair s t) \<prec>\<^sub>l L"
       using topmost_trms_of_L
-      by (cases L) (simp_all add: less_lit_def)
+      by (cases L) (simp_all add: less\<^sub>l_def)
   qed
 
   moreover have "Pos (Upair s t) \<prec>\<^sub>l L" if "is_neg L" and "\<not> u \<prec>\<^sub>t s"
   proof -
     from that(2) have "s \<preceq>\<^sub>t u"
       by order
+
     hence "multp (\<prec>\<^sub>t) {#s, t#} {#u, v, u, v#}"
       using \<open>t \<prec>\<^sub>t s\<close>
       by (smt (z3) add_mset_add_single add_mset_remove_trivial add_mset_remove_trivial_iff
           empty_not_add_mset insert_DiffM insert_noteq_member one_step_implies_multp reflclp_iff
-          transp_def transp_less_trm union_mset_add_mset_left union_mset_add_mset_right)
+          transp_def term.order.transp union_mset_add_mset_left union_mset_add_mset_right)
+
     with that(1) show "Pos (Upair s t) \<prec>\<^sub>l L"
       using topmost_trms_of_L
-      by (cases L) (simp_all add: less_lit_def)
+      by (cases L) (simp_all add: less\<^sub>l_def)
   qed
 
   moreover have False if "Pos (Upair s t) \<prec>\<^sub>l L"
   proof -
     have "C \<prec>\<^sub>c D"
-      unfolding less_cls_def
+      unfolding less\<^sub>c_def
     proof (rule multp_if_maximal_of_lhs_is_less)
       show "Pos (Upair s t) \<in># C"
         by (simp add: C_def)
     next
       show "L \<in># D"
-        using L_in by simp
+        using L_in 
+        by simp
     next
-      show "is_maximal_lit (Pos (Upair s t)) C"
-        using C_max_lit by auto
+      show "is_maximal (Pos (Upair s t)) C"
+        using is_maximal_if_is_strictly_maximal[OF C_max_lit].
     next
       show "Pos (Upair s t) \<prec>\<^sub>l L"
         using that .
     qed simp_all
+
     with \<open>D \<preceq>\<^sub>c C\<close> show False
       by order
   qed
@@ -570,7 +565,7 @@ proof -
     by argo+
 qed
 
-lemma (in ground_ordering) less_trm_const_lhs_if_mem_rewrite_inside_gctxt:
+lemma (in ground_order) less_trm_const_lhs_if_mem_rewrite_inside_gctxt:
   fixes t t1 t2 r
   assumes
     rule_in: "(t1, t2) \<in> rewrite_inside_gctxt r" and
@@ -584,7 +579,8 @@ proof -
     unfolding rewrite_inside_gctxt_def by fast
 
   show ?thesis
-    using ball_lt_lhs[OF rule_in'] lesseq_trm_if_subtermeq[of t1' ctxt] l_def by order
+    using ball_lt_lhs[OF rule_in'] term.order.less_eq_subterm_property[of t1' ctxt] l_def 
+    by order
 qed
 
 lemma (in ground_superposition_calculus) split_Union_epsilon:
@@ -595,23 +591,27 @@ proof -
   have "N = {C \<in> N. C \<prec>\<^sub>c D} \<union> {D} \<union> {C \<in> N. D \<prec>\<^sub>c C}"
   proof (rule partition_set_around_element)
     show "totalp_on N (\<prec>\<^sub>c)"
-      using clause_order.totalp_on_less .
+      using clause.order.totalp_on_less .
   next
     show "D \<in> N"
-      using D_in by simp
+      using D_in 
+      by simp
   qed
   hence "(\<Union>C \<in> N. epsilon N C) =
       (\<Union>C \<in> {C \<in> N. C \<prec>\<^sub>c D}. epsilon N C) \<union> epsilon N D \<union> (\<Union>C \<in> {C \<in> N. D \<prec>\<^sub>c C}. epsilon N C)"
     by auto
+
   thus "(\<Union>C \<in> N. epsilon N C) =
     rewrite_sys N D \<union> epsilon N D \<union> (\<Union>C \<in> {C \<in> N. D \<prec>\<^sub>c C}. epsilon N C)"
-    using epsilon_filter_le_conv rewrite_sys_def by simp
+    using epsilon_filter_le_conv rewrite_sys_def 
+    by simp
 qed
 
 lemma (in ground_superposition_calculus) split_Union_epsilon':
   assumes D_in: "D \<in> N"
   shows "(\<Union>C \<in> N. epsilon N C) = rewrite_sys N D \<union> (\<Union>C \<in> {C \<in> N. D \<preceq>\<^sub>c C}. epsilon N C)"
-  using split_Union_epsilon[OF D_in] D_in by auto
+  using split_Union_epsilon[OF D_in] D_in 
+  by auto
 
 lemma (in ground_superposition_calculus) split_rewrite_sys:
   assumes "C \<in> N" and D_in: "D \<in> N" and "D \<prec>\<^sub>c C"
@@ -621,30 +621,37 @@ proof -
         {y \<in> {D \<in> N. D \<prec>\<^sub>c C}. y \<prec>\<^sub>c D} \<union> {D} \<union> {y \<in> {D \<in> N. D \<prec>\<^sub>c C}. D \<prec>\<^sub>c y}"
   proof (rule partition_set_around_element)
     show "totalp_on {D \<in> N. D \<prec>\<^sub>c C} (\<prec>\<^sub>c)"
-      using clause_order.totalp_on_less .
+      using clause.order.totalp_on_less .
   next
     from D_in \<open>D \<prec>\<^sub>c C\<close> show "D \<in> {D \<in> N. D \<prec>\<^sub>c C}"
       by simp
   qed
+
   also have "\<dots> = {x \<in> N. x \<prec>\<^sub>c C \<and> x \<prec>\<^sub>c D} \<union> {D} \<union> {x \<in> N. D \<prec>\<^sub>c x \<and> x \<prec>\<^sub>c C}"
     by auto
+
   also have "\<dots> = {x \<in> N. x \<prec>\<^sub>c D} \<union> {D} \<union> {x \<in> N. D \<prec>\<^sub>c x \<and> x \<prec>\<^sub>c C}"
-    using \<open>D \<prec>\<^sub>c C\<close> clause_order.transp_on_less
-    by (metis (no_types, opaque_lifting) transpD)
+    using \<open>D \<prec>\<^sub>c C\<close> clause.order.less_trans
+    by blast
+
   finally have Collect_N_lt_C: "{x \<in> N. x \<prec>\<^sub>c C} = {x \<in> N. x \<prec>\<^sub>c D} \<union> {x \<in> N. D \<preceq>\<^sub>c x \<and> x \<prec>\<^sub>c C}"
     by auto
 
   have "rewrite_sys N C = (\<Union>C' \<in> {D \<in> N. D \<prec>\<^sub>c C}. epsilon N C')"
     using epsilon_filter_le_conv
     by (simp add: rewrite_sys_def)
+
   also have "\<dots> = (\<Union>C' \<in> {x \<in> N. x \<prec>\<^sub>c D}. epsilon N C') \<union> (\<Union>C' \<in> {x \<in> N. D \<preceq>\<^sub>c x \<and> x \<prec>\<^sub>c C}. epsilon N C')"
-    unfolding Collect_N_lt_C by simp
+    unfolding Collect_N_lt_C 
+    by simp
+
   finally show "rewrite_sys N C = rewrite_sys N D \<union> \<Union> (epsilon N ` {C' \<in> N. D \<preceq>\<^sub>c C' \<and> C' \<prec>\<^sub>c C})"
     using epsilon_filter_le_conv
-    unfolding rewrite_sys_def by simp
+    unfolding rewrite_sys_def
+    by simp
 qed
 
-lemma (in ground_ordering) mem_join_union_iff_mem_join_lhs':
+lemma (in ground_order) mem_join_union_iff_mem_join_lhs':
   assumes
     ball_R\<^sub>1_rhs_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>1 \<Longrightarrow> t2 \<prec>\<^sub>t t1" and
     ball_R\<^sub>2_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>2 \<Longrightarrow> s \<prec>\<^sub>t t1 \<and> t \<prec>\<^sub>t t1"
@@ -659,7 +666,7 @@ proof -
     case (step y z)
     thus ?case
       using ball_R\<^sub>1_rhs_lt_lhs
-      by (metis reflclp_iff transpD transp_less_trm)
+      by (metis reflclp_iff transpD term.order.transp)
   qed
 
   show ?thesis
@@ -673,30 +680,37 @@ proof -
       assume "u \<in> Domain R\<^sub>2"
       then obtain u' where "(u, u') \<in> R\<^sub>2"
         by auto
+
       hence "s \<prec>\<^sub>t u"
-        using ball_R\<^sub>2_lt_lhs by simp
+        using ball_R\<^sub>2_lt_lhs 
+        by simp
+
       with \<open>u \<preceq>\<^sub>t s\<close> show False
         by order
     qed
   next
     fix u assume "(t, u) \<in> R\<^sub>1\<^sup>*"
     hence "u \<preceq>\<^sub>t t"
-      using ball_R\<^sub>1_rhs_lt_lhs' by simp
+      using ball_R\<^sub>1_rhs_lt_lhs' 
+      by simp
 
     show "u \<notin> Domain R\<^sub>2"
     proof (rule notI)
       assume "u \<in> Domain R\<^sub>2"
       then obtain u' where "(u, u') \<in> R\<^sub>2"
         by auto
+
       hence "t \<prec>\<^sub>t u"
-        using ball_R\<^sub>2_lt_lhs by simp
+        using ball_R\<^sub>2_lt_lhs 
+        by simp
+
       with \<open>u \<preceq>\<^sub>t t\<close> show False
         by order
     qed
   qed
 qed
 
-lemma (in ground_ordering) mem_join_union_iff_mem_join_rhs':
+lemma (in ground_order) mem_join_union_iff_mem_join_rhs':
   assumes
     ball_R\<^sub>1_rhs_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>2 \<Longrightarrow> t2 \<prec>\<^sub>t t1" and
     ball_R\<^sub>2_lt_lhs: "\<And>t1 t2. (t1, t2) \<in> R\<^sub>1 \<Longrightarrow> s \<prec>\<^sub>t t1 \<and> t \<prec>\<^sub>t t1"
@@ -704,7 +718,7 @@ lemma (in ground_ordering) mem_join_union_iff_mem_join_rhs':
   using assms mem_join_union_iff_mem_join_lhs'
   by (metis (no_types, opaque_lifting) sup_commute)
 
-lemma (in ground_ordering) mem_join_union_iff_mem_join_lhs'':
+lemma (in ground_order) mem_join_union_iff_mem_join_lhs'':
   assumes
     Range_R\<^sub>1_lt_Domain_R\<^sub>2: "\<And>t1 t2. t1 \<in> Range R\<^sub>1 \<Longrightarrow> t2 \<in> Domain R\<^sub>2 \<Longrightarrow> t1 \<prec>\<^sub>t t2" and
     s_lt_Domain_R\<^sub>2: "\<And>t2. t2 \<in> Domain R\<^sub>2 \<Longrightarrow> s \<prec>\<^sub>t t2" and
@@ -714,16 +728,18 @@ proof (rule mem_join_union_iff_mem_join_lhs)
   fix u assume "(s, u) \<in> R\<^sub>1\<^sup>*"
   hence "u = s \<or> u \<in> Range R\<^sub>1"
     by (meson Range.intros rtrancl.cases)
+
   thus "u \<notin> Domain R\<^sub>2"
     using Range_R\<^sub>1_lt_Domain_R\<^sub>2 s_lt_Domain_R\<^sub>2
-    by (metis irreflpD term_order.irreflp_on_less)
+    by (metis irreflpD term.order.irreflp_on_less)
 next
   fix u assume "(t, u) \<in> R\<^sub>1\<^sup>*"
   hence "u = t \<or> u \<in> Range R\<^sub>1"
     by (meson Range.intros rtrancl.cases)
+
   thus "u \<notin> Domain R\<^sub>2"
     using Range_R\<^sub>1_lt_Domain_R\<^sub>2 t_lt_Domain_R\<^sub>2
-    by (metis irreflpD term_order.irreflp_on_less)
+    by (metis irreflpD term.order.irreflp_on_less)
 qed
 
 lemma (in ground_superposition_calculus) lift_entailment_to_Union:
@@ -752,15 +768,18 @@ proof -
     have "R\<^sub>D \<subseteq> (\<Union>D \<in> N. epsilon N D)" and
       "\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> R\<^sub>D \<subseteq> rewrite_sys N C"
       unfolding R\<^sub>D_def rewrite_sys_def
-      using D_in clause_order.transp_on_less[THEN transpD]
+      using D_in clause.order.transp_on_less[THEN transpD]
       using epsilon_filter_le_conv
       by (auto intro: Collect_mono)
+
     hence "rewrite_inside_gctxt R\<^sub>D \<subseteq> rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D)" and
       "\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> rewrite_inside_gctxt R\<^sub>D \<subseteq> rewrite_inside_gctxt (rewrite_sys N C)"
       by (auto intro!: rewrite_inside_gctxt_mono)
+
     hence "(s, t) \<in> (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down>" and
       "\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> (s, t) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
       by (auto intro!: join_mono intro: set_mp[OF _ \<open>(s, t) \<in> (rewrite_inside_gctxt R\<^sub>D)\<^sup>\<down>\<close>])
+
     thus "upair ` (rewrite_inside_gctxt (\<Union> (epsilon N ` N)))\<^sup>\<down> \<TTurnstile> D \<and>
       (\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> D)"
       unfolding true_cls_def true_lit_iff
@@ -768,8 +787,9 @@ proof -
   next
     have "(t1, t2) \<in> R\<^sub>D \<Longrightarrow> t2 \<prec>\<^sub>t t1" for t1 t2
       by (auto simp: R\<^sub>D_def rewrite_sys_def elim: mem_epsilonE)
+
     hence ball_R\<^sub>D_rhs_lt_lhs: "(t1, t2) \<in> rewrite_inside_gctxt R\<^sub>D \<Longrightarrow> t2 \<prec>\<^sub>t t1" for t1 t2
-      by (smt (verit, ccfv_SIG) Pair_inject less_trm_compatible_with_gctxt mem_Collect_eq
+      by (smt (verit, ccfv_SIG) Pair_inject term.order.context_compatibility mem_Collect_eq
           rewrite_inside_gctxt_def)
 
     assume L_def: "L = Neg (Upair s t)" and "(s, t) \<notin> (rewrite_inside_gctxt R\<^sub>D)\<^sup>\<down>"
@@ -840,15 +860,18 @@ proof -
       "\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow>
         (s, t) \<notin> (rewrite_inside_gctxt R\<^sub>D \<union> rewrite_inside_gctxt (\<Union>C' \<in> {C' \<in> N. D \<preceq>\<^sub>c C' \<and> C' \<prec>\<^sub>c C}. epsilon N C'))\<^sup>\<down>"
       using \<open>(s, t) \<notin> (rewrite_inside_gctxt R\<^sub>D)\<^sup>\<down>\<close> by simp_all
+
     hence "(s, t) \<notin> (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down>" and
       "\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> (s, t) \<notin> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
       using split_Union_epsilon'[OF D_in, folded R\<^sub>D_def]
       using split_rewrite_sys[OF _ D_in, folded R\<^sub>D_def]
       by (simp_all add: rewrite_inside_gctxt_union)
+
     hence "(Upair s t) \<notin> upair ` (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down>" and
       "\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> (Upair s t) \<notin> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
       unfolding atomize_conj
       by (meson sym_join true_lit_simps(2) true_lit_uprod_iff_true_lit_prod(2))
+
     thus "upair ` (rewrite_inside_gctxt (\<Union> (epsilon N ` N)))\<^sup>\<down> \<TTurnstile> D \<and>
     (\<forall>C. C \<in> N \<longrightarrow> D \<prec>\<^sub>c C \<longrightarrow> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> D)"
       unfolding true_cls_def true_lit_iff
@@ -868,11 +891,12 @@ lemma (in ground_superposition_calculus)
 proof -
   from productive have "(l, r) \<in> epsilon N C"
     by simp
+
   then obtain C' where
     C_in: "C \<in> N" and
     C_def: "C = add_mset (Pos (Upair l r)) C'" and
     "select C = {#}" and
-    "is_strictly_maximal_lit (Pos (Upair l r)) C" and
+    "is_strictly_maximal (Pos (Upair l r)) C" and
     "r \<prec>\<^sub>t l" and
     e: "\<not> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> C" and
     f: "\<not> upair ` (rewrite_inside_gctxt (insert (l, r) (rewrite_sys N C)))\<^sup>\<down> \<TTurnstile> C'" and
@@ -880,22 +904,29 @@ proof -
     by (rule mem_epsilonE) blast
 
   have "(l, r) \<in> (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down>"
-    using C_in \<open>(l, r) \<in> epsilon N C\<close> mem_rewrite_inside_gctxt_if_mem_rewrite_rules by blast
+    using C_in \<open>(l, r) \<in> epsilon N C\<close> mem_rewrite_inside_gctxt_if_mem_rewrite_rules 
+    by blast
+
   thus "upair ` (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down> \<TTurnstile> C"
-    using C_def by blast
+    using C_def 
+    by blast
 
   have "rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D) =
         rewrite_inside_gctxt (rewrite_sys N C \<union> epsilon N C \<union> (\<Union>D \<in> {D \<in> N. C \<prec>\<^sub>c D}. epsilon N D))"
-    using split_Union_epsilon[OF C_in] by simp
+    using split_Union_epsilon[OF C_in] 
+    by simp
+
   also have "\<dots> =
     rewrite_inside_gctxt (rewrite_sys N C \<union> epsilon N C) \<union>
     rewrite_inside_gctxt (\<Union>D \<in> {D \<in> N. C \<prec>\<^sub>c D}. epsilon N D)"
     by (simp add: rewrite_inside_gctxt_union)
+
   finally have rewrite_inside_gctxt_Union_epsilon_eq:
     "rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D) =
       rewrite_inside_gctxt (insert (l, r) (rewrite_sys N C)) \<union>
       rewrite_inside_gctxt (\<Union>D \<in> {D \<in> N. C \<prec>\<^sub>c D}. epsilon N D)"
-    unfolding productive by simp
+    unfolding productive 
+    by simp
 
   have mem_join_union_iff_mem_lhs:"(t1, t2) \<in> (rewrite_inside_gctxt (insert (l, r) (rewrite_sys N C)) \<union>
     rewrite_inside_gctxt (\<Union>D \<in> {D \<in> N. C \<prec>\<^sub>c D}. epsilon N D))\<^sup>\<down> \<longleftrightarrow>
@@ -908,7 +939,8 @@ proof -
     moreover have "s2 \<prec>\<^sub>t s1" if "(s1, s2) \<in> rewrite_inside_gctxt {(l, r)}"
     proof (rule rhs_lt_lhs_if_rule_in_rewrite_inside_gctxt[OF that])
       show "\<And>s1 s2. (s1, s2) \<in> {(l, r)} \<Longrightarrow> s2 \<prec>\<^sub>t s1"
-        using \<open>r \<prec>\<^sub>t l\<close> by simp
+        using \<open>r \<prec>\<^sub>t l\<close> 
+        by simp
     qed simp_all
 
     moreover have "s2 \<prec>\<^sub>t s1" if "(s1, s2) \<in> rewrite_inside_gctxt (rewrite_sys N C)"
@@ -937,7 +969,7 @@ proof -
         by metis
 
       with \<open>t1 \<preceq>\<^sub>t l\<close> \<open>t2 \<preceq>\<^sub>t l\<close> show ?thesis
-        by (metis reflclp_iff transpD transp_less_trm)
+        by (metis reflclp_iff transpD term.order.transp)
     qed
     thus "\<And>l r. (l, r) \<in> rewrite_inside_gctxt (\<Union> (epsilon N ` {D \<in> N. C \<prec>\<^sub>c D})) \<Longrightarrow> t1 \<prec>\<^sub>t l \<and> t2 \<prec>\<^sub>t l"
       using rewrite_inside_gctxt_Union_epsilon_eq
@@ -955,8 +987,10 @@ proof -
     obtain t1 t2 where
       atm_L_eq: "atm_of L = Upair t1 t2"
       by (metis uprod_exhaust)
+
     hence trms_of_L: "mset_uprod (atm_of L) = {#t1, t2#}"
       by simp
+
     hence "t1 \<preceq>\<^sub>t l" and "t2 \<preceq>\<^sub>t l"
       unfolding atomize_conj
       using less_trm_if_neg[OF reflclp_refl productive \<open>L \<in># C\<close>]
@@ -966,7 +1000,9 @@ proof -
     have "(t1, t2) \<notin> (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down>" if L_def: "L = Pos (Upair t1 t2)"
     proof -
       from that have "(t1, t2) \<notin> (rewrite_inside_gctxt (insert (l, r) (rewrite_sys N C)))\<^sup>\<down>"
-        using f \<open>L \<in># C'\<close> by blast
+        using f \<open>L \<in># C'\<close> 
+        by blast
+
       thus ?thesis
         using rewrite_inside_gctxt_Union_epsilon_eq mem_join_union_iff_mem_lhs[OF \<open>t1 \<preceq>\<^sub>t l\<close> \<open>t2 \<preceq>\<^sub>t l\<close>]
         by simp
@@ -978,6 +1014,7 @@ proof -
       from that have "(t1, t2) \<in> (rewrite_inside_gctxt (insert (l, r) (rewrite_sys N C)))\<^sup>\<down>"
         using f \<open>L \<in># C'\<close>
         by (meson true_lit_uprod_iff_true_lit_prod(2) sym_join true_cls_def true_lit_simps(2))
+
       thus ?thesis
         using rewrite_inside_gctxt_Union_epsilon_eq
           mem_join_union_iff_mem_lhs[OF \<open>t1 \<preceq>\<^sub>t l\<close> \<open>t2 \<preceq>\<^sub>t l\<close>]
@@ -988,23 +1025,34 @@ proof -
       using atm_L_eq true_lit_uprod_iff_true_lit_prod[OF sym_join] true_lit_simps
       by (smt (verit, ccfv_SIG) literal.exhaust_sel)
   qed
+
   then show "\<not> upair ` (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down> \<TTurnstile> C - {#Pos (Upair l r)#}"
     by (simp add: C_def)
+
   fix D
   assume "D \<in> N" and "C \<prec>\<^sub>c D"
+
   have "(l, r) \<in> rewrite_sys N D"
-    using C_in \<open>(l, r) \<in> epsilon N C\<close> \<open>C \<prec>\<^sub>c D\<close> mem_rewrite_sys_if_less_cls by metis
+    using C_in \<open>(l, r) \<in> epsilon N C\<close> \<open>C \<prec>\<^sub>c D\<close> mem_rewrite_sys_if_less_cls 
+    by metis
+
   hence "(l, r) \<in> (rewrite_inside_gctxt (rewrite_sys N D))\<^sup>\<down>"
     by auto
+
   thus "upair ` (rewrite_inside_gctxt (rewrite_sys N D))\<^sup>\<down> \<TTurnstile> C"
-    using C_def by blast
+    using C_def 
+    by blast
 
   from \<open>D \<in> N\<close> have "rewrite_sys N D \<subseteq> (\<Union>D \<in> N. epsilon N D)"
     by (simp add: split_Union_epsilon')
+
   hence "rewrite_inside_gctxt (rewrite_sys N D) \<subseteq> rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D)"
-    using rewrite_inside_gctxt_mono by metis
+    using rewrite_inside_gctxt_mono 
+    by metis
+
   hence "(rewrite_inside_gctxt (rewrite_sys N D))\<^sup>\<down> \<subseteq> (rewrite_inside_gctxt (\<Union>D \<in> N. epsilon N D))\<^sup>\<down>"
-    using join_mono by metis
+    using join_mono 
+    by metis
 
   have "\<not> upair ` (rewrite_inside_gctxt (rewrite_sys N D))\<^sup>\<down> \<TTurnstile> C'"
     unfolding true_cls_def Set.bex_simps
@@ -1016,8 +1064,10 @@ proof -
     obtain t1 t2 where
       atm_L_eq: "atm_of L = Upair t1 t2"
       by (metis uprod_exhaust)
+
     hence trms_of_L: "mset_uprod (atm_of L) = {#t1, t2#}"
       by simp
+
     hence "t1 \<preceq>\<^sub>t l" and "t2 \<preceq>\<^sub>t l"
       unfolding atomize_conj
       using less_trm_if_neg[OF reflclp_refl productive \<open>L \<in># C\<close>]
@@ -1038,9 +1088,11 @@ proof -
       using e
     proof (rule contrapos_np)
       assume "(t1, t2) \<notin> (rewrite_inside_gctxt (rewrite_sys N D))\<^sup>\<down>"
+
       hence "(t1, t2) \<notin> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
         using rewrite_sys_subset_if_less_cls[OF \<open>C \<prec>\<^sub>c D\<close>]
         by (meson join_mono rewrite_inside_gctxt_mono subsetD)
+
       thus "upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> C"
         using neg_literal_notin_imp_true_cls[of "Upair t1 t2" C "upair ` _\<^sup>\<down>"]
         unfolding uprod_mem_image_iff_prod_mem[OF sym_join]
@@ -1079,9 +1131,12 @@ proof (rule trans_join)
   proof (rule wf_converse_rewrite_inside_gctxt)
     fix s t
     assume "(s, t) \<in> rewrite_sys N C"
+
     then obtain D where "(s, t) \<in> epsilon N D"
       unfolding rewrite_sys_def
-      using epsilon_filter_le_conv by auto
+      using epsilon_filter_le_conv 
+      by auto
+
     thus "t \<prec>\<^sub>t s"
       by (auto elim: mem_epsilonE)
   qed auto
@@ -1094,7 +1149,7 @@ next
     by (metis (mono_tags, lifting))
 qed
 
-lemma (in ground_ordering) true_cls_insert_and_not_true_clsE:
+lemma (in ground_order) true_cls_insert_and_not_true_clsE:
   assumes
     "upair ` (rewrite_inside_gctxt (insert r R))\<^sup>\<down> \<TTurnstile> C" and
     "\<not> upair ` (rewrite_inside_gctxt R)\<^sup>\<down> \<TTurnstile> C"
@@ -1114,15 +1169,18 @@ proof -
     by (meson true_cls_def)
 
   have "totalp_on (set_uprod (atm_of L)) (\<prec>\<^sub>t)"
-    using totalp_less_trm totalp_on_subset by blast
+    by simp
+
   then obtain t t' where "atm_of L = Upair t t'" and "t \<preceq>\<^sub>t t'"
     using ex_ordered_Upair by metis
 
   show ?thesis
   proof (cases L)
     case (Pos A)
+
     hence L_def: "L = Pos (Upair t t')"
-      using \<open>atm_of L = Upair t t'\<close> by simp
+      using \<open>atm_of L = Upair t t'\<close> 
+      by simp
 
     moreover have "(t, t') \<in> (rewrite_inside_gctxt (insert r R))\<^sup>\<down>"
       using entails_L
@@ -1161,6 +1219,7 @@ proof -
 
     ultimately have False
       by auto
+
     thus ?thesis ..
   qed
 qed
@@ -1176,7 +1235,7 @@ lemma (in ground_superposition_calculus) model_preconstruction:
     "epsilon N C = {} \<longleftrightarrow> entails (rewrite_sys N C) C"
     "\<And>D. D \<in> N \<Longrightarrow> C \<prec>\<^sub>c D \<Longrightarrow> entails (rewrite_sys N D) C"
   unfolding atomize_all atomize_conj atomize_imp
-  using wfP_less_cls C_in
+  using clause.order.wfp C_in
 proof (induction C rule: wfp_induct_rule)
   case (less C)
   note IH = less.IH
@@ -1210,21 +1269,24 @@ proof (induction C rule: wfp_induct_rule)
   next
     assume "epsilon N C = {}"
 
-    have cond_conv: "(\<exists>L. L \<in># select C \<or> (select C = {#} \<and> is_maximal_lit L C \<and> is_neg L)) \<longleftrightarrow>
-      (\<exists>A. Neg A \<in># C \<and> (Neg A \<in># select C \<or> select C = {#} \<and> is_maximal_lit (Neg A) C))"
-      by (metis (no_types, opaque_lifting) is_pos_def literal_order.is_maximal_in_mset_iff
-          literal.disc(2) literal.exhaust mset_subset_eqD select_negative_lits select_subset)
+    have cond_conv: "(\<exists>L. L \<in># select C \<or> (select C = {#} \<and> is_maximal L C \<and> is_neg L)) \<longleftrightarrow>
+      (\<exists>A. Neg A \<in># C \<and> (Neg A \<in># select C \<or> select C = {#} \<and> is_maximal (Neg A) C))"
+      by (metis (no_types, opaque_lifting) is_pos_def literal.order.is_maximal_in_mset_iff
+          literal.disc(2) literal.exhaust mset_subset_eqD select_negative_literals select_subset)
 
     show "entails (rewrite_sys N C) C"
-    proof (cases "\<exists>L. is_maximal_lit L (select C) \<or> (select C = {#} \<and> is_maximal_lit L C \<and> is_neg L)")
+    proof (cases "\<exists>L. is_maximal L (select C) \<or> (select C = {#} \<and> is_maximal L C \<and> is_neg L)")
       case ex_neg_lit_sel_or_max: True
-      hence "\<exists>A. Neg A \<in># C \<and> (is_maximal_lit (Neg A) (select C) \<or> select C = {#} \<and> is_maximal_lit (Neg A) C)"
-        by (metis is_pos_def literal.exhaust literal_order.is_maximal_in_mset_iff mset_subset_eqD
-            select_negative_lits select_subset)
+
+      hence "\<exists>A. Neg A \<in># C \<and> (is_maximal (Neg A) (select C) \<or> select C = {#} \<and> is_maximal (Neg A) C)"
+        by (metis is_pos_def literal.exhaust literal.order.is_maximal_in_mset_iff mset_subset_eqD
+            select_negative_literals select_subset)
+
       then obtain s s' where
         "Neg (Upair s s') \<in># C" and
-        sel_or_max: "select C = {#} \<and> is_maximal_lit (Neg (Upair s s')) C \<or> is_maximal_lit (Neg (Upair s s')) (select C)"
+        sel_or_max: "select C = {#} \<and> is_maximal (Neg (Upair s s')) C \<or> is_maximal (Neg (Upair s s')) (select C)"
         by (metis uprod_exhaust)
+
       then obtain C' where
         C_def: "C = add_mset (Neg (Upair s s')) C'"
         by (metis mset_add)
@@ -1236,25 +1298,26 @@ proof (induction C rule: wfp_induct_rule)
           by (meson sym_join true_lit_simps(1) true_lit_uprod_iff_true_lit_prod(1))
 
         have "s = s' \<or> s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s"
-          using totalp_less_trm
-          by (metis totalpD)
+          by auto
+        
         thus ?thesis
         proof (rule disjE)
           assume "s = s'"
           define \<iota> :: "'f gatom clause inference" where
             "\<iota> = Infer [C] C'"
 
-          have "ground_eq_resolution C C'"
-          proof (rule ground_eq_resolutionI)
+          have "eq_resolution C C'"
+          proof (rule eq_resolutionI)
             show "C = add_mset (Neg (Upair s s')) C'"
               by (simp only: C_def)
           next
             show "Neg (Upair s s') = Neg (Upair s s)"
               by (simp only: \<open>s = s'\<close>)
           next
-            show "select C = {#} \<and> is_maximal_lit (s !\<approx> s') C \<or> is_maximal_lit (s !\<approx> s') (select C)"
+            show "select C = {#} \<and> is_maximal (s !\<approx> s') C \<or> is_maximal (s !\<approx> s') (select C)"
               using sel_or_max .
           qed simp
+
           hence "\<iota> \<in> G_Inf"
             by (auto simp only: \<iota>_def G_Inf_def)
 
@@ -1264,9 +1327,11 @@ proof (induction C rule: wfp_induct_rule)
 
           ultimately have "\<iota> \<in> Inf_from N"
             by (auto simp: Inf_from_def)
+
           hence "\<iota> \<in> Red_I N"
             using \<open>saturated N\<close>
             by (auto simp: saturated_def)
+
           then obtain DD where
             DD_subset: "DD \<subseteq> N" and
             "finite DD" and
@@ -1284,13 +1349,16 @@ proof (induction C rule: wfp_induct_rule)
             using I_interp DD_entails_C'
             unfolding entails_def G_entails_def
             by (simp add: I_def true_clss_def)
+
           then show "entails (rewrite_sys N C) C"
-            using C_def entails_def by simp
+            using C_def entails_def 
+            by simp
         next
           from \<open>(s, s') \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>\<close> obtain u where
             s_u: "(s, u) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*" and
             s'_u: "(s', u) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*"
             by auto
+
           moreover hence "u \<preceq>\<^sub>t s" and "u \<preceq>\<^sub>t s'"
             using rhs_lesseq_trm_lhs_if_mem_rtrancl_rewrite_inside_gctxt_rewrite_sys by simp_all
 
@@ -1301,28 +1369,32 @@ proof (induction C rule: wfp_induct_rule)
             "s \<prec>\<^sub>t s' \<Longrightarrow> (s', u\<^sub>0) : rewrite_inside_gctxt (rewrite_sys N C)" and
             "(u\<^sub>0, u) : (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*"
             using ex_step_if_joinable[OF _ s_u s'_u]
-            by (metis asympD asymp_less_trm)
+            by (metis asympD term.order.asymp)
+
           then obtain ctxt t t' where
             s_eq_if: "s' \<prec>\<^sub>t s \<Longrightarrow> s = ctxt\<langle>t\<rangle>\<^sub>G" and
             s'_eq_if: "s \<prec>\<^sub>t s' \<Longrightarrow> s' = ctxt\<langle>t\<rangle>\<^sub>G" and
             "u\<^sub>0 = ctxt\<langle>t'\<rangle>\<^sub>G" and
             "(t, t') \<in> rewrite_sys N C"
-            by (smt (verit) Pair_inject \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> asympD asymp_less_trm mem_Collect_eq
+            by (smt (verit) Pair_inject \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> asympD term.order.asymp mem_Collect_eq
                 rewrite_inside_gctxt_def)
+
           then obtain D where
             "(t, t') \<in> epsilon N D" and "D \<in> N" and "D \<prec>\<^sub>c C"
-            unfolding rewrite_sys_def epsilon_filter_le_conv by auto
+            unfolding rewrite_sys_def epsilon_filter_le_conv 
+            by auto
+
           then obtain D' where
             D_def: "D = add_mset (Pos (Upair t t')) D'" and
             sel_D: "select D = {#}" and
-            max_t_t': "is_strictly_maximal_lit (Pos (Upair t t')) D" and
+            max_t_t': "is_strictly_maximal (Pos (Upair t t')) D" and
             "t' \<prec>\<^sub>t t"
             by (elim mem_epsilonE) fast
 
-          have superI: "ground_neg_superposition D C (add_mset (Neg (Upair s\<^sub>1\<langle>t'\<rangle>\<^sub>G s\<^sub>1')) (C' + D'))"
+          have superI: "neg_superposition D C (add_mset (Neg (Upair s\<^sub>1\<langle>t'\<rangle>\<^sub>G s\<^sub>1')) (C' + D'))"
             if "{s, s'} = {s\<^sub>1\<langle>t\<rangle>\<^sub>G, s\<^sub>1'}" and "s\<^sub>1' \<prec>\<^sub>t s\<^sub>1\<langle>t\<rangle>\<^sub>G"
             for s\<^sub>1 s\<^sub>1'
-          proof (rule ground_neg_superpositionI)
+          proof (rule neg_superpositionI)
             show "C = add_mset (Neg (Upair s s')) C'"
               by (simp only: C_def)
           next
@@ -1332,13 +1404,13 @@ proof (induction C rule: wfp_induct_rule)
             show "D \<prec>\<^sub>c C"
               using \<open>D \<prec>\<^sub>c C\<close> .
           next
-            show "select C = {#} \<and> is_maximal_lit (Neg (Upair s s')) C \<or> is_maximal_lit (s !\<approx> s') (select C)"
+            show "select C = {#} \<and> is_maximal (Neg (Upair s s')) C \<or> is_maximal (s !\<approx> s') (select C)"
               using sel_or_max .
           next
             show "select D = {#}"
               using sel_D .
           next
-            show "is_strictly_maximal_lit (Pos (Upair t t')) D"
+            show "is_strictly_maximal (Pos (Upair t t')) D"
               using max_t_t' .
           next
             show "t' \<prec>\<^sub>t t"
@@ -1350,37 +1422,42 @@ proof (induction C rule: wfp_induct_rule)
             from that(2) show "s\<^sub>1' \<prec>\<^sub>t s\<^sub>1\<langle>t\<rangle>\<^sub>G" .
           qed simp_all
 
-          have "ground_neg_superposition D C (add_mset (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s')) (C' + D'))"
+          have "neg_superposition D C (add_mset (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s')) (C' + D'))"
             if \<open>s' \<prec>\<^sub>t s\<close>
           proof (rule superI)
             from that show "{s, s'} = {ctxt\<langle>t\<rangle>\<^sub>G, s'}"
-              using s_eq_if by simp
+              using s_eq_if 
+              by simp
           next
             from that show "s' \<prec>\<^sub>t ctxt\<langle>t\<rangle>\<^sub>G"
-              using s_eq_if by simp
+              using s_eq_if 
+              by simp
           qed
 
-          moreover have "ground_neg_superposition D C (add_mset (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s)) (C' + D'))"
+          moreover have "neg_superposition D C (add_mset (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s)) (C' + D'))"
             if \<open>s \<prec>\<^sub>t s'\<close>
           proof (rule superI)
             from that show "{s, s'} = {ctxt\<langle>t\<rangle>\<^sub>G, s}"
-              using s'_eq_if by auto
+              using s'_eq_if 
+              by auto
           next
             from that show "s \<prec>\<^sub>t ctxt\<langle>t\<rangle>\<^sub>G"
-              using s'_eq_if by simp
+              using s'_eq_if 
+              by simp
           qed
 
           ultimately obtain CD where
-            super: "ground_neg_superposition D C CD" and
+            super: "neg_superposition D C CD" and
             CD_eq1: "s' \<prec>\<^sub>t s \<Longrightarrow> CD = add_mset (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s')) (C' + D')" and
             CD_eq2: "s \<prec>\<^sub>t s' \<Longrightarrow> CD = add_mset (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s)) (C' + D')"
-            using \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> s'_eq_if s_eq_if by metis
+            using \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> s'_eq_if s_eq_if 
+            by metis
 
           define \<iota> :: "'f gatom clause inference" where
             "\<iota> = Infer [D, C] CD"
 
           have "\<iota> \<in> G_Inf"
-            using ground_superposition_if_ground_neg_superposition[OF super]
+            using superposition_if_neg_superposition[OF super]
             by (auto simp only: \<iota>_def G_Inf_def)
 
           moreover have "\<And>t. t \<in> set (prems_of \<iota>) \<Longrightarrow> t \<in> N"
@@ -1389,9 +1466,11 @@ proof (induction C rule: wfp_induct_rule)
 
           ultimately have "\<iota> \<in> Inf_from N"
             by (auto simp: Inf_from_def)
+
           hence "\<iota> \<in> Red_I N"
             using \<open>saturated N\<close>
             by (auto simp: saturated_def)
+
           then obtain DD where
             DD_subset: "DD \<subseteq> N" and
             "finite DD" and
@@ -1419,16 +1498,19 @@ proof (induction C rule: wfp_induct_rule)
           moreover have "\<not> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile>l
             (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s'))"
             if "s' \<prec>\<^sub>t s"
-            using \<open>(u\<^sub>0, u) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*\<close> \<open>u\<^sub>0 = ctxt\<langle>t'\<rangle>\<^sub>G\<close> s'_u by blast
+            using \<open>(u\<^sub>0, u) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*\<close> \<open>u\<^sub>0 = ctxt\<langle>t'\<rangle>\<^sub>G\<close> s'_u 
+            by blast
 
           moreover have "\<not> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile>l
             (Neg (Upair ctxt\<langle>t'\<rangle>\<^sub>G s))"
             if "s \<prec>\<^sub>t s'"
-            using \<open>(u\<^sub>0, u) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*\<close> \<open>u\<^sub>0 = ctxt\<langle>t'\<rangle>\<^sub>G\<close> s_u by blast
+            using \<open>(u\<^sub>0, u) \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>*\<close> \<open>u\<^sub>0 = ctxt\<langle>t'\<rangle>\<^sub>G\<close> s_u 
+            by blast
 
           ultimately show "entails (rewrite_sys N C) C"
             unfolding entails_def C_def
-            using \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> CD_eq1 CD_eq2 by fast
+            using \<open>s \<prec>\<^sub>t s' \<or> s' \<prec>\<^sub>t s\<close> CD_eq1 CD_eq2
+            by fast
         qed
       next
         case False
@@ -1439,16 +1521,18 @@ proof (induction C rule: wfp_induct_rule)
     next
       case False
       hence "select C = {#}"
-        using literal_order.ex_maximal_in_mset by blast
+        using literal.order.ex_maximal_in_mset by blast
         
-      from False obtain A where Pos_A_in: "Pos A \<in># C" and max_Pos_A: "is_maximal_lit (Pos A) C"
-        using \<open>select C = {#}\<close> literal_order.ex_maximal_in_mset[OF \<open>C \<noteq> {#}\<close>]
-        by (metis is_pos_def literal_order.is_maximal_in_mset_iff)
+      from False obtain A where Pos_A_in: "Pos A \<in># C" and max_Pos_A: "is_maximal (Pos A) C"
+        using \<open>select C = {#}\<close> literal.order.ex_maximal_in_mset[OF \<open>C \<noteq> {#}\<close>]
+        by (metis is_pos_def literal.order.is_maximal_in_mset_iff)
+
       then obtain C' where C_def: "C = add_mset (Pos A) C'"
         by (meson mset_add)
 
       have "totalp_on (set_uprod A) (\<prec>\<^sub>t)"
-        using totalp_less_trm totalp_on_subset by blast
+        by simp
+        
       then obtain s s' where A_def: "A = Upair s s'" and "s' \<preceq>\<^sub>t s"
         using ex_ordered_Upair[of A "(\<prec>\<^sub>t)"] by fastforce
 
@@ -1457,7 +1541,8 @@ proof (induction C rule: wfp_induct_rule)
         case True
         then show ?thesis
           using \<open>epsilon N C = {}\<close>
-          using A_def C_def entails_def by blast
+          using A_def C_def entails_def 
+          by blast
       next
         case False
 
@@ -1465,20 +1550,23 @@ proof (induction C rule: wfp_induct_rule)
           by simp
 
         from False have "s' \<prec>\<^sub>t s"
-          using \<open>s' \<preceq>\<^sub>t s\<close> asymp_less_trm[THEN asympD] by auto
+          using \<open>s' \<preceq>\<^sub>t s\<close> term.order.asymp[THEN asympD] 
+          by auto
 
         then show ?thesis
-        proof (cases "is_strictly_maximal_lit (Pos A) C")
+        proof (cases "is_strictly_maximal (Pos A) C")
           case strictly_maximal: True
           show ?thesis
           proof (cases "s \<in> NF (rewrite_inside_gctxt (rewrite_sys N C))")
             case s_irreducible: True
+
             hence e_or_f_doesnt_hold: "upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> C \<or>
               upair ` (rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C)))\<^sup>\<down> \<TTurnstile> C'"
               using \<open>epsilon N C = {}\<close>[unfolded  epsilon.simps[of N C]]
               using \<open>C \<in> N\<close> C_def \<open>select C = {#}\<close> strictly_maximal \<open>s' \<prec>\<^sub>t s\<close>
               unfolding A_def rewrite_sys_def 
               by (smt (verit, best) Collect_empty_eq)
+
             show ?thesis
             proof (cases "upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> C")
               case e_doesnt_hold: True
@@ -1487,7 +1575,9 @@ proof (induction C rule: wfp_induct_rule)
             next
               case e_holds: False
               hence R_C_doesnt_entail_C': "\<not> upair ` (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down> \<TTurnstile> C'"
-                unfolding C_def by simp
+                unfolding C_def 
+                by simp
+
               show ?thesis
               proof (cases "upair ` (rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C)))\<^sup>\<down> \<TTurnstile> C'")
                 case f_doesnt_hold: True
@@ -1500,8 +1590,9 @@ proof (induction C rule: wfp_induct_rule)
                   by (metis insert_DiffM join_sym Upair_sym)
 
                 have "Pos (Upair t t') \<prec>\<^sub>l Pos (Upair s s')"
-                  using strictly_maximal
-                  by (simp add: A_def C'_def C_def literal_order.is_greatest_in_mset_iff)
+                  using strictly_maximal literal.order.not_less_iff_gr_or_eq
+                  unfolding literal.order.is_strictly_maximal_in_mset_iff A_def C'_def C_def
+                  by auto
 
                 have "\<not> (t \<prec>\<^sub>t s)"
                 proof (rule notI)
@@ -1514,7 +1605,7 @@ proof (induction C rule: wfp_induct_rule)
                     show "\<And>t1 t2. (t1, t2) \<in> rewrite_inside_gctxt {(s, s')} \<Longrightarrow> t \<prec>\<^sub>t t1 \<and> t' \<prec>\<^sub>t t1"
                       using \<open>t \<prec>\<^sub>t s\<close> \<open>t' \<prec>\<^sub>t t\<close>
                       by (smt (verit, ccfv_threshold) fst_conv singletonD
-                          less_trm_const_lhs_if_mem_rewrite_inside_gctxt transpD transp_less_trm)
+                          less_trm_const_lhs_if_mem_rewrite_inside_gctxt transpD term.order.transp)
                   next
                     show "\<And>t1 t2. (t1, t2) \<in> rewrite_inside_gctxt (rewrite_sys N C) \<Longrightarrow> t2 \<prec>\<^sub>t t1"
                       using rhs_less_trm_lhs_if_mem_rewrite_inside_gctxt_rewrite_sys by force
@@ -1532,11 +1623,14 @@ proof (induction C rule: wfp_induct_rule)
                     using \<open>s' \<prec>\<^sub>t s\<close> \<open>t' \<prec>\<^sub>t t\<close>
                     using one_step_implies_multp[of _ _ _ "{#}", simplified]
                     by (metis (mono_tags, opaque_lifting) empty_not_add_mset insert_iff
-                        set_mset_add_mset_insert set_mset_empty singletonD transpD transp_less_trm)
+                        set_mset_add_mset_insert set_mset_empty singletonD transpD term.order.transp)
+
                   hence "Pos (Upair s s') \<prec>\<^sub>l Pos (Upair t t')"
-                    by (simp add: less_lit_def)
+                    by (simp add: less\<^sub>l_def)
+
                   thus False
-                    using \<open>t \<approx> t' \<prec>\<^sub>l s \<approx> s'\<close> by order
+                    using \<open>t \<approx> t' \<prec>\<^sub>l s \<approx> s'\<close> 
+                    by order
                 qed
 
                 ultimately have "t = s"
@@ -1544,14 +1638,14 @@ proof (induction C rule: wfp_induct_rule)
                 hence "t' \<prec>\<^sub>t s'"
                   using \<open>t' \<prec>\<^sub>t t\<close> \<open>s' \<prec>\<^sub>t s\<close>
                   using \<open>Pos (Upair t t') \<prec>\<^sub>l Pos (Upair s s')\<close>
-                  unfolding less_lit_def
-                  by (simp add: multp_cancel_add_mset transp_less_trm)
+                  unfolding less\<^sub>l_def
+                  by (simp add: multp_cancel_add_mset term.order.transp)
 
                 obtain t'' where
                   "(t, t'') \<in> rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C))" and
                   "(t'', t') \<in> (rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C)))\<^sup>\<down>"
                   using \<open>(t, t') \<in> (rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C)))\<^sup>\<down>\<close>[THEN joinD]
-                  using ex_step_if_joinable[OF asymp_less_trm _ _ _ \<open>t' \<prec>\<^sub>t t\<close>]
+                  using ex_step_if_joinable[OF term.order.asymp _ _ _ \<open>t' \<prec>\<^sub>t t\<close>]
                   by (smt (verit, ccfv_threshold) \<open>t = s\<close> converse_rtranclE insertCI joinI_right
                       join_sym r_into_rtrancl mem_rewrite_inside_gctxt_if_mem_rewrite_rules rtrancl_join_join)
 
@@ -1565,15 +1659,18 @@ proof (induction C rule: wfp_induct_rule)
                 next
                   show "\<And>t1 t2 ctxt \<sigma>. (t1, t2) \<in> insert (s, s') (rewrite_sys N C) \<Longrightarrow>
                     t2 \<prec>\<^sub>t t1 \<Longrightarrow> ctxt\<langle>t2\<rangle>\<^sub>G \<prec>\<^sub>t ctxt\<langle>t1\<rangle>\<^sub>G"
-                    by (simp only: less_trm_compatible_with_gctxt)
+                    by (simp only: term.order.context_compatibility)
                 qed
 
                 have "(t, t'') \<in> rewrite_inside_gctxt {(s, s')}"
                   using \<open>(t, t'') \<in> rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C))\<close>
                   using \<open>t = s\<close> s_irreducible mem_rewrite_step_union_NF
-                  using rewrite_inside_gctxt_insert by blast
+                  using rewrite_inside_gctxt_insert 
+                  by blast
+
                 hence "\<exists>ctxt. s = ctxt\<langle>s\<rangle>\<^sub>G \<and> t'' = ctxt\<langle>s'\<rangle>\<^sub>G"
                   by (simp add: \<open>t = s\<close> rewrite_inside_gctxt_def)
+
                 hence "t'' = s'"
                   by (metis gctxt_ident_iff_eq_GHole)
 
@@ -1582,7 +1679,8 @@ proof (induction C rule: wfp_induct_rule)
                   show "(t'', t') \<in> (rewrite_inside_gctxt {(s, s')} \<union>
                     rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
                     using \<open>(t'', t') \<in> (rewrite_inside_gctxt (insert (s, s') (rewrite_sys N C)))\<^sup>\<down>\<close>
-                    using rewrite_inside_gctxt_union[of "{_}", simplified] by metis
+                    using rewrite_inside_gctxt_union[of "{_}", simplified] 
+                    by metis
                 next
                   show "\<And>t1 t2. (t1, t2) \<in> rewrite_inside_gctxt (rewrite_sys N C) \<Longrightarrow> t2 \<prec>\<^sub>t t1"
                     using rhs_less_trm_lhs_if_mem_rewrite_inside_gctxt_rewrite_sys .
@@ -1590,7 +1688,8 @@ proof (induction C rule: wfp_induct_rule)
                   show "\<And>t1 t2. (t1, t2) \<in> rewrite_inside_gctxt {(s, s')} \<Longrightarrow> t'' \<prec>\<^sub>t t1 \<and> t' \<prec>\<^sub>t t1"
                     using \<open>t' \<prec>\<^sub>t t\<close> \<open>t'' \<prec>\<^sub>t t\<close>
                     unfolding \<open>t = s\<close>
-                    using less_trm_const_lhs_if_mem_rewrite_inside_gctxt by fastforce
+                    using less_trm_const_lhs_if_mem_rewrite_inside_gctxt 
+                    by fastforce
                 qed
 
                 ultimately have "(s', t') \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
@@ -1601,15 +1700,15 @@ proof (induction C rule: wfp_induct_rule)
                 define \<iota> :: "'f gatom clause inference" where
                   "\<iota> = Infer [C] ?concl"
 
-                have eq_fact: "ground_eq_factoring C ?concl"
-                proof (rule ground_eq_factoringI)
+                have eq_fact: "eq_factoring C ?concl"
+                proof (rule eq_factoringI)
                   show "C = add_mset (Pos (Upair s s')) (add_mset (Pos (Upair t t')) C'')"
                     by (simp add: C_def C'_def A_def)
                 next
                   show "select C = {#}"
                     using \<open>select C = {#}\<close> .
                 next
-                  show "is_maximal_lit (Pos (Upair s s')) C"
+                  show "is_maximal (Pos (Upair s s')) C"
                     by (metis A_def max_Pos_A)
                 next
                   show "s' \<prec>\<^sub>t s"
@@ -1622,6 +1721,7 @@ proof (induction C rule: wfp_induct_rule)
                     add_mset (Neg (Upair s' t')) (add_mset (Pos (Upair s t')) C'')"
                     by (auto simp add: \<open>t = s\<close>)
                 qed simp_all
+
                 hence "\<iota> \<in> G_Inf"
                   by (auto simp: \<iota>_def G_Inf_def)
 
@@ -1631,9 +1731,11 @@ proof (induction C rule: wfp_induct_rule)
 
                 ultimately have "\<iota> \<in> Inf_from N"
                   by (auto simp: Inf_from_def)
+
                 hence "\<iota> \<in> Red_I N"
                   using \<open>saturated N\<close>
                   by (auto simp: saturated_def)
+
                 then obtain DD where
                   DD_subset: "DD \<subseteq> N" and
                   "finite DD" and
@@ -1646,26 +1748,34 @@ proof (induction C rule: wfp_induct_rule)
                   using IH[THEN conjunct2, rule_format, of _ C]
                   using \<open>C \<in> N\<close> DD_subset ball_DD_lt_C
                   by blast
+
                 hence "entails (rewrite_sys N C) ?concl"
                   unfolding entails_def I_def[symmetric]
                   using DD_entails_C'[unfolded G_entails_def]
                   using I_interp
                   by (simp add: true_clss_def)
+
                 thus "entails (rewrite_sys N C) C"
                   unfolding entails_def I_def[symmetric]
                   unfolding C_def C'_def A_def
-                  using I_def \<open>(s', t') \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>\<close> by blast
+                  using I_def \<open>(s', t') \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>\<close> 
+                  by blast
               next
                 case f_holds: False
                 hence False
-                  using e_or_f_doesnt_hold e_holds by metis
+                  using e_or_f_doesnt_hold e_holds 
+                  by metis
+
                 thus ?thesis ..
               qed
             qed
           next
             case s_reducible: False
+
             hence "\<exists>ss. (s, ss) \<in> rewrite_inside_gctxt (rewrite_sys N C)"
-              unfolding NF_def by auto
+              unfolding NF_def 
+              by auto
+
             then obtain ctxt t t' D where
               "D \<in> N" and
               "D \<prec>\<^sub>c C" and
@@ -1677,7 +1787,7 @@ proof (induction C rule: wfp_induct_rule)
             obtain D' where
               D_def: "D = add_mset (Pos (Upair t t')) D'" and
               "select D = {#}" and
-              max_t_t': "is_strictly_maximal_lit (t \<approx> t') D" and
+              max_t_t': "is_strictly_maximal (t \<approx> t') D" and
               "t' \<prec>\<^sub>t t"
               using \<open>(t, t') \<in> epsilon N D\<close>
               by (elim mem_epsilonE) simp
@@ -1687,8 +1797,8 @@ proof (induction C rule: wfp_induct_rule)
             define \<iota> :: "'f gatom clause inference" where
               "\<iota> = Infer [D, C] ?concl"
 
-            have super: "ground_pos_superposition D C ?concl"
-            proof (rule ground_pos_superpositionI)
+            have super: "pos_superposition D C ?concl"
+            proof (rule pos_superpositionI)
               show "C = add_mset (Pos (Upair s s')) C'"
                 by (simp only: C_def A_def)
             next
@@ -1704,10 +1814,11 @@ proof (induction C rule: wfp_induct_rule)
               show "select C = {#}"
                 using \<open>select C = {#}\<close> .
             next
-              show "is_strictly_maximal_lit (s \<approx> s') C"
-                using A_def strictly_maximal by simp
+              show "is_strictly_maximal (s \<approx> s') C"
+                using A_def strictly_maximal 
+                by simp
             next
-              show "is_strictly_maximal_lit (t \<approx> t') D"
+              show "is_strictly_maximal (t \<approx> t') D"
                 using max_t_t' .
             next
               show "t' \<prec>\<^sub>t t"
@@ -1720,8 +1831,9 @@ proof (induction C rule: wfp_induct_rule)
                 using \<open>s' \<prec>\<^sub>t s\<close>
                 unfolding \<open>s = ctxt\<langle>t\<rangle>\<^sub>G\<close> .
             qed simp_all
+
             hence "\<iota> \<in> G_Inf"
-              using ground_superposition_if_ground_pos_superposition
+              using superposition_if_pos_superposition
               by (auto simp: \<iota>_def G_Inf_def)
 
             moreover have "\<And>t. t \<in> set (prems_of \<iota>) \<Longrightarrow> t \<in> N"
@@ -1730,9 +1842,11 @@ proof (induction C rule: wfp_induct_rule)
 
             ultimately have "\<iota> \<in> Inf_from N"
               by (auto simp only: Inf_from_def)
+
             hence "\<iota> \<in> Red_I N"
               using \<open>saturated N\<close>
               by (auto simp only: saturated_def)
+
             then obtain DD where
               DD_subset: "DD \<subseteq> N" and
               "finite DD" and
@@ -1770,29 +1884,36 @@ proof (induction C rule: wfp_induct_rule)
               by (auto simp: rewrite_inside_gctxt_def)
 
             ultimately have "(ctxt\<langle>t\<rangle>\<^sub>G, s') \<in> (rewrite_inside_gctxt (rewrite_sys N C))\<^sup>\<down>"
-              using r_into_rtrancl rtrancl_join_join by metis
+              using r_into_rtrancl rtrancl_join_join 
+              by metis
 
             hence "entails (rewrite_sys N C) {#Pos (Upair ctxt\<langle>t\<rangle>\<^sub>G s')#}"
-              unfolding entails_def true_cls_def by auto
+              unfolding entails_def true_cls_def 
+              by auto
 
             thus ?thesis
-              using A_def C_def \<open>s = ctxt\<langle>t\<rangle>\<^sub>G\<close> entails_def by fastforce
+              using A_def C_def \<open>s = ctxt\<langle>t\<rangle>\<^sub>G\<close> entails_def 
+              by fastforce
           qed
         next
           case False
           hence "2 \<le> count C (Pos A)"
             using max_Pos_A
-            by (metis literal_order.count_ge_2_if_maximal_in_mset_and_not_greatest_in_mset)
+            by (meson is_strictly_maximal_def 
+                literal.order.count_ge_2_if_maximal_in_mset_and_not_greatest_in_mset 
+                literal.order.is_greatest_in_mset_iff literal.order.leD)
+
           then obtain C' where C_def: "C = add_mset (Pos A) (add_mset (Pos A) C')"
-            using two_le_countE by metis
+            using two_le_countE 
+            by metis
 
           define \<iota> :: "'f gatom clause inference" where
             "\<iota> = Infer [C] (add_mset (Pos (Upair s s')) (add_mset (Neg (Upair s' s')) C'))"
 
           let ?concl = "add_mset (Pos (Upair s s')) (add_mset (Neg (Upair s' s')) C')"
 
-          have eq_fact: "ground_eq_factoring C ?concl"
-          proof (rule ground_eq_factoringI)
+          have eq_fact: "eq_factoring C ?concl"
+          proof (rule eq_factoringI)
             show "C = add_mset (Pos A) (add_mset (Pos A) C')"
               by (simp add: C_def)
           next
@@ -1805,12 +1926,13 @@ proof (induction C rule: wfp_induct_rule)
             show "select C = {#}"
               using \<open>select C = {#}\<close> .
           next
-            show "is_maximal_lit (Pos A) C"
+            show "is_maximal (Pos A) C"
               using max_Pos_A .
           next
             show "s' \<prec>\<^sub>t s"
               using \<open>s' \<prec>\<^sub>t s\<close> .
           qed simp_all
+
           hence "\<iota> \<in> G_Inf"
             by (auto simp: \<iota>_def G_Inf_def)
 
@@ -1820,9 +1942,11 @@ proof (induction C rule: wfp_induct_rule)
 
           ultimately have "\<iota> \<in> Inf_from N"
             by (auto simp: Inf_from_def)
+
           hence "\<iota> \<in> Red_I N"
             using \<open>saturated N\<close>
             by (auto simp: saturated_def)
+
           then obtain DD where
             DD_subset: "DD \<subseteq> N" and
             "finite DD" and
@@ -1840,6 +1964,7 @@ proof (induction C rule: wfp_induct_rule)
             using I_interp DD_entails_concl
             unfolding entails_def G_entails_def
             by (simp add: I_def true_clss_def)
+
           then show ?thesis
             by (simp add: entails_def A_def C_def joinI_right pair_imageI)
         qed
@@ -1878,8 +2003,11 @@ lemma (in ground_superposition_calculus) model_construction:
   using epsilon_eq_empty_or_singleton[of N C]
 proof (elim disjE exE)
   assume "epsilon N C = {}"
+
   hence "entails (rewrite_sys N C) C"
-    using model_preconstruction(1)[OF assms(2,3,4)] by (metis entails_def)
+    using model_preconstruction(1)[OF assms(2,3,4)] 
+    by (metis entails_def)
+
   thus ?thesis
     using lift_entailment_to_Union(1)[OF \<open>C \<in> N\<close>]
     by (simp only: entails_def)
@@ -1918,6 +2046,7 @@ proof (rule contrapos_pp)
         assume "(s, t) \<in> (\<Union>D \<in> N. epsilon N D)"
         then obtain C where "C \<in> N" "(s, t) \<in> epsilon N C"
           by auto
+
         thus "t \<prec>\<^sub>t s"
           by (auto elim: mem_epsilonE)
       qed auto
@@ -1951,18 +2080,7 @@ sublocale ground_superposition_calculus \<subseteq> statically_complete_calculus
   entails = G_entails and
   Red_I = Red_I and
   Red_F = Red_F
-proof unfold_locales
-  fix B :: "'f gatom clause" and N :: "'f gatom clause set"
-  assume "B \<in> G_Bot" and "saturated N"
-  hence "B = {#}"
-    by simp
-
-  assume "G_entails N {B}"
-  hence "{#} \<in> N"
-    unfolding \<open>B = {#}\<close>
-    using statically_complete[OF \<open>saturated N\<close>] by argo
-  thus "\<exists>B'\<in>G_Bot. B' \<in> N"
-    by auto
-qed
+  using statically_complete
+  by unfold_locales simp
 
 end

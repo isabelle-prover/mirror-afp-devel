@@ -1020,7 +1020,7 @@ struct
         (case args of
           [(Const (@{syntax_const "_constrain"}, _)) $ (Free (s, _)) $ p] =>
             (case Term_Position.decode_position1 p of
-              SOME pos => Symbol_Pos.implode (content (s, pos))
+              SOME {pos, ...} => Symbol_Pos.implode (content (s, pos))
                             |> Syntax.parse_term ctxt
                             |> transform_term (init ctxt) (StateMgt_core.get_state_type ctxt)
                             |> Syntax.check_term ctxt

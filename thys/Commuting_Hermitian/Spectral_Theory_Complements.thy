@@ -95,7 +95,7 @@ lemma assoc_mat_mult_vec':
   and "C\<in> carrier_mat n n"
 and "v\<in> carrier_vec n"
 shows "A * B * C *\<^sub>v v = A *\<^sub>v (B *\<^sub>v (C *\<^sub>v v))" using assms
-  by (smt (z3) assoc_mult_mat_vec mult_carrier_mat mult_mat_vec_carrier)
+  by (smt (verit) assoc_mult_mat_vec mult_carrier_mat mult_mat_vec_carrier)
 
 lemma adjoint_dim':
   "A \<in> carrier_mat n m \<Longrightarrow> Complex_Matrix.adjoint A \<in> carrier_mat m n"
@@ -192,7 +192,7 @@ lemma mat_conj_smult:
   and "B \<in> carrier_mat n n"
   and "A = U * B * (Complex_Matrix.adjoint U)"  
 shows "x  \<cdot>\<^sub>m A = U * (x  \<cdot>\<^sub>m B) * (Complex_Matrix.adjoint U)" using assms mult_smult_distrib
-  by (smt (z3) adjoint_dim' mult_carrier_mat mult_smult_assoc_mat)
+  by (smt (verit) adjoint_dim' mult_carrier_mat mult_smult_assoc_mat)
 
 lemma mult_adjoint_hermitian:
   fixes A::"'a::conjugatable_field Matrix.mat"
@@ -272,7 +272,7 @@ next
     fix x
     assume "x\<in> ?R"
     hence "\<exists>i < length (diag_mat A). -(nth (diag_mat A)  i) = x" 
-      using in_set_conv_nth[of x] by (smt (z3) in_set_conv_nth mem_Collect_eq)
+      using in_set_conv_nth[of x] by (smt (verit) in_set_conv_nth mem_Collect_eq)
     from this obtain i where "i < length (diag_mat A)" and "-(nth (diag_mat A)  i) = x"
       by auto note iprop = this
     hence "i < dim_row (-A)" unfolding diag_mat_def by simp
@@ -314,7 +314,7 @@ next
     fix b
     assume "b\<in> ?R"
     hence "\<exists>i < length (diag_mat A). x * (nth (diag_mat A)  i) = b" 
-      using in_set_conv_nth[of x] by (smt (z3) in_set_conv_nth mem_Collect_eq)
+      using in_set_conv_nth[of x] by (smt (verit) in_set_conv_nth mem_Collect_eq)
     from this obtain i where "i < length (diag_mat A)" and "x * (nth (diag_mat A)  i) = b"
       by auto note iprop = this
     hence "i < dim_row (x \<cdot>\<^sub>m A)" unfolding diag_mat_def by simp
@@ -645,7 +645,7 @@ lemma unitarily_equiv_uminus:
 proof (rule unitarily_equivI)
   show "similar_mat_wit (-A) (-B) U (Complex_Matrix.adjoint U)" 
     using mat_conj_uminus_eq assms
-    by (smt (z3) adjoint_dim_col adjoint_dim_row carrier_matD(1)
+    by (smt (verit) adjoint_dim_col adjoint_dim_row carrier_matD(1)
         carrier_matD(2) carrier_mat_triv index_uminus_mat(2)
         index_uminus_mat(3) similar_mat_witI unitarily_equivD(1)
         unitarily_equiv_carrier(1) unitarily_equiv_carrier(2)
@@ -936,11 +936,10 @@ proof -
   have "A * A = U * B * (Complex_Matrix.adjoint U) * (U * B * (Complex_Matrix.adjoint U))" 
     using assms unfolding mat_conj_def by simp
   also have "... = U * B * ((Complex_Matrix.adjoint U) * U) * (B * (Complex_Matrix.adjoint U))"
-    by (smt (z3) adjoint_dim_col adjoint_dim_row assms(3) assms(5) assoc_mult_mat carrier_matD(2) 
-        carrier_mat_triv index_mult_mat(2) index_mult_mat(3) right_mult_one_mat')
+    by (smt (verit, best) adjoint_dim' assms(2,3) assoc_mult_mat mult_carrier_mat)
   also have "... = U * B * (B * (Complex_Matrix.adjoint U))" using assms by simp
   also have "... = U * (B * B) * (Complex_Matrix.adjoint U)"
-    by (smt (z3) adjoint_dim_row assms(2) assms(3) assoc_mult_mat carrier_matD(2) 
+    by (smt (verit) adjoint_dim_row assms(2) assms(3) assoc_mult_mat carrier_matD(2) 
         carrier_mat_triv index_mult_mat(3)) 
   finally show ?thesis unfolding mat_conj_def .
 qed
@@ -975,7 +974,7 @@ lemma unitarily_equiv_square:
 proof (rule unitarily_equivI)
   show "unitary U" using assms unitarily_equivD(1)[of A] by simp
   show "similar_mat_wit (A * A) (B * B) U (Complex_Matrix.adjoint U)"
-    by (smt (z3) \<open>Complex_Matrix.unitary U\<close> assms carrier_matD(1) 
+    by (smt (verit) \<open>Complex_Matrix.unitary U\<close> assms carrier_matD(1) 
         carrier_matD(2) carrier_mat_triv index_mult_mat(2) 
         index_mult_mat(3) similar_mat_witI unitarily_equiv_carrier(1) 
         unitarily_equiv_carrier(2) unitarily_equiv_eq unitary_mult_square_eq 
@@ -1094,7 +1093,7 @@ proof -
     using ud assms unitarily_equiv_eq unitary_diag_imp_unitarily_equiv by blast 
   also have "... = Complex_Matrix.adjoint (Complex_Matrix.adjoint U) * 
     Complex_Matrix.adjoint B * Complex_Matrix.adjoint U"
-    by (smt (z3) ud Complex_Matrix.adjoint_adjoint Complex_Matrix.unitary_def 
+    by (smt (verit) ud Complex_Matrix.adjoint_adjoint Complex_Matrix.unitary_def 
         adjoint_dim_col adjoint_mult assms assoc_mult_mat calculation 
         carrier_matD(2) carrier_mat_triv index_mult_mat(2) index_mult_mat(3) 
         similar_mat_witD2(5) similar_mat_wit_dim_row unitary_diagD(1) 
@@ -1385,7 +1384,7 @@ shows "c < sum f I"
 proof -
   have "c < f j" using assms by simp
   also have "... \<le> f j + sum f (I -{j})"
-    by (smt (z3) DiffD1 assms(2) sum_nonneg)
+    by (smt (verit) DiffD1 assms(2) sum_nonneg)
   also have "... = sum f I" using assms
     by (simp add: sum_diff1)
   finally show ?thesis .
@@ -1701,7 +1700,7 @@ proof -
   also have "... = inner_prod u u + inner_prod u v + inner_prod v u + 
     inner_prod v v"
     using assms add_scalar_prod_distrib conjugate_add_vec
-    by (smt (z3) ab_semigroup_add_class.add_ac(1) carrier_vec_dim_vec 
+    by (smt (verit) ab_semigroup_add_class.add_ac(1) carrier_vec_dim_vec 
         dim_vec_conjugate index_add_vec(2) scalar_prod_add_distrib)
   also have "... = (vec_norm u)^2 + inner_prod u v + inner_prod v u + 
     (vec_norm v)^2"
@@ -2057,7 +2056,7 @@ proof -
     (C * rank_1_proj (Matrix.col U i))) {..< n}) = (\<Sum> i = 0 ..< n. 
       Complex_Matrix.trace ((diag_mat B ! i) \<cdot>\<^sub>m 
     (C * rank_1_proj (Matrix.col U i))))" 
-    by (smt (z3) assms(2) atLeast0LessThan cpx_sq_mat_mult cpx_sq_mat_smult finite_lessThan 
+    by (smt (verit) assms(2) atLeast0LessThan cpx_sq_mat_mult cpx_sq_mat_smult finite_lessThan 
         lessThan_iff rf sum.cong trace_sum_mat fc_def)
   also have "... = (\<Sum> i = 0 ..< n. (diag_mat B ! i) *
       Complex_Matrix.trace  (C * rank_1_proj (Matrix.col U i)))"
@@ -2095,10 +2094,8 @@ proof -
     by (metis adjoint_dim' carrier_matD(2) carrier_matI index_mult_mat(2) 
         index_mult_mat(3) unitarily_equiv_carrier(1) unitarily_equiv_carrier(2))
   also have "... = Complex_Matrix.trace B" using assms
-    by (smt (z3) Complex_Matrix.unitary_def adjoint_dim_col assoc_mult_mat
-        carrier_matD(2) carrier_mat_triv index_mult_mat(3) left_mult_one_mat 
-        unitarily_equivD(1) unitarily_equiv_carrier(1) unitarily_equiv_eq 
-        unitary_simps(1))
+    by (smt (verit, ccfv_threshold) assoc_mult_mat carrier_matD(1) left_mult_one_mat' unitarily_equivD(1) unitarily_equiv_adjoint
+        unitarily_equiv_carrier(1,2) unitary_simps(1))
   finally show ?thesis .
 qed
 

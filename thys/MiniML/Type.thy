@@ -110,7 +110,7 @@ text
    occurring in the type structure\<close>
 definition
   new_tv :: "[nat,'a::type_struct] => bool" where
-  "new_tv n ts = (\<forall>m. m:(free_tv ts) \<longrightarrow> m<n)"
+  "new_tv n ts = (\<forall>m. m \<in> (free_tv ts) \<longrightarrow> m<n)"
 
 \<comment> \<open>identity\<close>
 definition
@@ -191,66 +191,66 @@ next
 qed
 
 lemma free_tv_mk_scheme[simp]: "free_tv (mk_scheme t) = free_tv t"
-by (induction t) auto
+  by (induction t) auto
 
 lemma subst_mk_scheme[simp]: "$ S (mk_scheme t) = mk_scheme ($ S t)"
-by (induction t) auto
+  by (induction t) auto
 
 
 \<comment> \<open>constructor laws for @{text app_subst}\<close>
 
 lemma app_subst_Nil[simp]: 
   "$ S [] = []"
-by (simp add: app_subst_list)
+  by (simp add: app_subst_list)
 
 lemma app_subst_Cons[simp]: 
   "$ S (x#l) = ($ S x)#($ S l)"
-by (simp add: app_subst_list)
+  by (simp add: app_subst_list)
 
 
 \<comment> \<open>constructor laws for @{text new_tv}\<close>
 
 lemma new_tv_TVar[simp]: 
   "new_tv n (TVar m) = (m<n)"
-by (simp add: new_tv_def)
+  by (simp add: new_tv_def)
 
 lemma new_tv_FVar[simp]: 
   "new_tv n (FVar m) = (m<n)"
-by (simp add: new_tv_def)
+  by (simp add: new_tv_def)
 
 lemma new_tv_BVar[simp]: 
   "new_tv n (BVar m) = True"
-by (simp add: new_tv_def)
+  by (simp add: new_tv_def)
 
 lemma new_tv_Fun[simp]: 
   "new_tv n (t1 -> t2) = (new_tv n t1 \<and> new_tv n t2)"
-by (auto simp: new_tv_def)
+  by (auto simp: new_tv_def)
 
 lemma new_tv_Fun2[simp]: 
   "new_tv n (t1 =-> t2) = (new_tv n t1 \<and> new_tv n t2)"
-by (auto simp: new_tv_def)
+  by (auto simp: new_tv_def)
 
 lemma new_tv_Nil[simp]: 
   "new_tv n []"
-by (simp add: new_tv_def)
+  by (simp add: new_tv_def)
 
 lemma new_tv_Cons[simp]: 
   "new_tv n (x#l) = (new_tv n x \<and> new_tv n l)"
-by (auto simp: new_tv_def)
+  by (auto simp: new_tv_def)
 
 lemma new_tv_TVar_subst[simp]: "new_tv n TVar"
-by (simp add: new_tv_def free_tv_subst dom_def cod_def)
+  by (simp add: new_tv_def free_tv_subst dom_def cod_def)
 
 lemma new_tv_id_subst [simp]: "new_tv n id_subst"
-by (simp add: id_subst_def new_tv_def free_tv_subst dom_def cod_def)
+  by (simp add: id_subst_def new_tv_def free_tv_subst dom_def cod_def)
 
 lemma new_if_subst_type_scheme: "new_tv n (sch::type_scheme) \<Longrightarrow>
     $(\<lambda>k. if k<n then S k else S' k) sch = $S sch"
-by (induction sch) simp_all
+  by (induction sch) simp_all
 
 lemma new_if_subst_type_scheme_list: "new_tv n (A::type_scheme list) \<Longrightarrow>
     $(\<lambda>k. if k<n then S k else S' k) A = $S A"
-by (induction A) (simp_all add: new_if_subst_type_scheme)
+  by (induction A) (simp_all add: new_if_subst_type_scheme)
 
 
 \<comment> \<open>constructor laws for @{text dom} and @{text cod}\<close>
@@ -283,35 +283,20 @@ lemma typ_substitutions_only_on_free_variables:
   "(\<forall>x\<in>free_tv t. (S x) = (S' x)) \<Longrightarrow> $ S (t::typ) = $ S' t"
   by (induct t) simp_all
 
-lemma eq_free_eq_subst_te: "(\<forall>n. n\<in>(free_tv t) \<longrightarrow> S1 n = S2 n) \<Longrightarrow> $ S1 (t::typ) = $ S2 t"
-apply (rule typ_substitutions_only_on_free_variables)
-apply simp
-done
+lemma eq_free_eq_subst_te: "(\<And>n. n \<in> free_tv t \<Longrightarrow> S1 n = S2 n) \<Longrightarrow> $ S1 (t::typ) = $ S2 t"
+  using typ_substitutions_only_on_free_variables
+  by force
 
 lemma scheme_substitutions_only_on_free_variables:
-  "(\<forall>x\<in>free_tv sch. (S x) = (S' x)) \<Longrightarrow> $ S (sch::type_scheme) = $ S' sch"
+  "(\<And>x. x \<in> free_tv sch \<Longrightarrow> S x = S' x) \<Longrightarrow> $ S (sch::type_scheme) = $ S' sch"
   by (induct sch) simp_all
 
-lemma eq_free_eq_subst_type_scheme: 
-  "(\<forall>n. n\<in>(free_tv sch) \<longrightarrow> S1 n = S2 n) \<Longrightarrow> $ S1 (sch::type_scheme) = $ S2 sch"
-apply (rule scheme_substitutions_only_on_free_variables)
-apply simp
-done
-
 lemma eq_free_eq_subst_scheme_list:
-  "(\<forall>n. n\<in>(free_tv A) \<longrightarrow> S1 n = S2 n) \<Longrightarrow> $S1 (A::type_scheme list) = $S2 A"
-proof (induct A)
-  case Nil then show ?case by fastforce
-next
-  case Cons then show ?case by (fastforce intro: eq_free_eq_subst_type_scheme)
-qed
+  "(\<And>n. n \<in> free_tv A \<Longrightarrow> S1 n = S2 n) \<Longrightarrow> $S1 (A::type_scheme list) = $S2 A"
+by (induct A) (fastforce intro: scheme_substitutions_only_on_free_variables)+
 
 lemma weaken_asm_Un: "((\<forall>x\<in>A. (P x)) \<longrightarrow> Q) \<Longrightarrow> ((\<forall>x\<in>A \<union> B. (P x)) \<longrightarrow> Q)"
   by fast
-
-lemma scheme_list_substitutions_only_on_free_variables:
-  "(\<forall>x\<in>free_tv A. (S x) = (S' x)) \<Longrightarrow> $ S (A::type_scheme list) = $ S' A"
-by (induction A) (auto simp add: eq_free_eq_subst_type_scheme)
 
 lemma eq_subst_te_eq_free:
   "$ S1 (t::typ) = $ S2 t \<Longrightarrow> n:(free_tv t) \<Longrightarrow> S1 n = S2 n"
@@ -331,7 +316,7 @@ next
   then show ?case by (fastforce intro: eq_subst_type_scheme_eq_free)
 qed
 
-lemma codD: "v : cod S \<Longrightarrow> v : free_tv S"
+lemma codD: "v \<in> cod S \<Longrightarrow> v \<in> free_tv S"
   unfolding free_tv_subst by blast
 
 lemma not_free_impl_id: "x \<notin> free_tv S \<Longrightarrow> S x = TVar x"
@@ -341,15 +326,12 @@ lemma free_tv_le_new_tv: "[| new_tv n t; m:free_tv t |] ==> m<n"
   unfolding new_tv_def by blast
 
 lemma cod_app_subst:
-  "[| v : free_tv(S n); v\<noteq>n |] ==> v : cod S"
-by (force simp add: dom_def cod_def UNION_eq Bex_def)
+  "\<lbrakk>v \<in> free_tv (S n); v \<noteq> n\<rbrakk> \<Longrightarrow> v \<in> cod S"
+  by (force simp add: dom_def cod_def UNION_eq Bex_def)
 
 
 lemma free_tv_subst_var: "free_tv (S (v::nat)) \<subseteq> insert v (cod S)"
-apply (cases "v:dom S")
-apply (fastforce simp add: cod_def)
-apply (fastforce simp add: dom_def)
-done
+  using cod_app_subst by blast
 
 lemma free_tv_app_subst_te: "free_tv ($ S (t::typ)) \<subseteq> cod S \<union> free_tv t"
 proof (induct t)
@@ -381,93 +363,93 @@ next
 qed
 
 lemma free_tv_comp_subst: 
-  "free_tv (\<lambda>u::nat. $ s1 (s2 u) :: typ) \<subseteq>    
-    free_tv s1 Un free_tv s2"
-unfolding free_tv_subst dom_def
-by (force simp add: cod_def dom_def dest!:free_tv_app_subst_te [THEN subsetD])
+  "free_tv (\<lambda>u::nat. $ s1 (s2 u) :: typ) \<subseteq> free_tv s1 Un free_tv s2"
+  unfolding free_tv_subst dom_def
+  by (force simp add: cod_def dom_def dest!: free_tv_app_subst_te [THEN subsetD])
 
 lemma free_tv_o_subst: 
   "free_tv ($ S1 \<circ> S2) \<subseteq> free_tv S1 \<union> free_tv (S2 :: nat => typ)"
-unfolding o_def by (rule free_tv_comp_subst)
+  unfolding o_def by (rule free_tv_comp_subst)
 
 lemma free_tv_of_substitutions_extend_to_types:
   "n : free_tv t \<Longrightarrow> free_tv (S n) \<subseteq> free_tv ($ S t::typ)"
-by (induct t) auto
+  by (induct t) auto
 
 lemma free_tv_of_substitutions_extend_to_schemes:
   "n : free_tv sch \<Longrightarrow> free_tv (S n) \<subseteq> free_tv ($ S sch::type_scheme)"
-by (induct sch) auto
+  by (induct sch) auto
 
 lemma free_tv_of_substitutions_extend_to_scheme_lists [simp]:
   "n : free_tv A \<Longrightarrow> free_tv (S n) \<subseteq> free_tv ($ S A::type_scheme list)"
-by (induct A) (auto dest: free_tv_of_substitutions_extend_to_schemes)
+  by (induct A) (auto dest: free_tv_of_substitutions_extend_to_schemes)
 
 lemma free_tv_ML_scheme:
   fixes sch :: type_scheme
   shows "(n : free_tv sch) = (n: set (free_tv_ML sch))"
-by (induct sch) simp_all
+  by (induct sch) simp_all
 
 lemma free_tv_ML_scheme_list:
   fixes A :: "type_scheme list"
   shows "(n : free_tv A) = (n: set (free_tv_ML A))"
-by (induct_tac A) (simp_all add: free_tv_ML_scheme)
+  by (induct_tac A) (simp_all add: free_tv_ML_scheme)
 
 
 \<comment> \<open>lemmata for @{text bound_tv}\<close>
 
 lemma bound_tv_mk_scheme [simp]: "bound_tv (mk_scheme t) = {}"
-by (induct t) simp_all
+  by (induct t) simp_all
 
 lemma bound_tv_subst_scheme [simp]:
   fixes sch :: type_scheme
   shows "bound_tv ($ S sch) = bound_tv sch"
-by (induct sch) simp_all
+  by (induct sch) simp_all
 
 lemma bound_tv_subst_scheme_list [simp]: 
   fixes A :: "type_scheme list"
   shows "bound_tv ($ S A) = bound_tv A"
-by (induct A) simp_all
+  by (induct A) simp_all
 
 
 \<comment> \<open>Lemmata for @{text new_tv}\<close>
 
 lemma new_tv_subst: 
-  "new_tv n S = ((\<forall>m. n \<le> m \<longrightarrow> (S m = TVar m)) \<and>  
-                 (\<forall>l. l < n \<longrightarrow> new_tv n (S l) ))"
-unfolding new_tv_def  free_tv_subst cod_def dom_def
-apply rule
- apply force
-by simp (meson not_le)
+  "new_tv n S \<longleftrightarrow> ((\<forall>m\<ge>n. S m = TVar m) \<and> (\<forall>l<n. new_tv n (S l)))"
+proof
+  assume "new_tv n S"
+  then show "(\<forall>m\<ge>n. S m = TVar m) \<and> (\<forall>l<n. new_tv n (S l))"
+    by (metis codD cod_app_subst linorder_not_less new_tv_def
+        not_free_impl_id)
+next
+  assume "(\<forall>m\<ge>n. S m = TVar m) \<and> (\<forall>l<n. new_tv n (S l))"
+  with linorder_not_less show "new_tv n S"
+    unfolding new_tv_def free_tv_subst cod_def dom_def
+    by blast
+qed
 
 lemma new_tv_list: "new_tv n x = (\<forall>y\<in>set x. new_tv n y)"
-by (induction x) simp_all
+  by (induction x) simp_all
 
 \<comment> \<open>substitution affects only variables occurring freely\<close>
 lemma subst_te_new_tv:
   "new_tv n (t::typ) \<Longrightarrow> $(\<lambda>x. if x=n then t' else S x) t = $S t"
-by (induct t) simp_all
+  by (induct t) simp_all
 
 lemma subst_te_new_type_scheme:
   "new_tv n (sch::type_scheme) \<Longrightarrow> $(\<lambda>x. if x=n then sch' else S x) sch = $S sch"
-by (induct sch) simp_all
+  by (induct sch) simp_all
 
 lemma subst_tel_new_scheme_list [simp]:
   "new_tv n (A::type_scheme list) \<Longrightarrow> $(\<lambda>x. if x=n then t else S x) A = $S A"
-by (induct A) (simp_all add: subst_te_new_type_scheme)
+  by (induct A) (simp_all add: subst_te_new_type_scheme)
 
 
 \<comment> \<open>all greater variables are also new\<close>
 lemma new_tv_le: 
   "n\<le>m \<Longrightarrow> new_tv n t \<Longrightarrow> new_tv m t"
-by (meson less_le_trans new_tv_def)
+  by (meson less_le_trans new_tv_def)
 
 lemma new_tv_Suc[simp]: "new_tv n t \<Longrightarrow> new_tv (Suc n) t"
-by (rule lessI [THEN less_imp_le [THEN new_tv_le]])
-
-\<comment> \<open>@{text new_tv} property remains if a substitution is applied\<close>
-lemma new_tv_subst_var: 
-  "[| n<m; new_tv m (S::subst) |] ==> new_tv m (S n)"
-by (simp add: new_tv_subst)
+  using Suc_n_not_le_n nat_le_linear new_tv_le by blast
 
 lemma new_tv_subst_te [simp]:
   "new_tv n S \<Longrightarrow> new_tv n (t::typ) \<Longrightarrow> new_tv n ($ S t)"
@@ -504,96 +486,98 @@ by (simp add: new_tv_subst)
 \<comment> \<open>new type variables do not occur freely in a type structure\<close>
 lemma new_tv_not_free_tv:
   "new_tv n A \<Longrightarrow> n \<notin> free_tv A"
-by (auto simp add: new_tv_def)
+  using free_tv_le_new_tv less_irrefl_nat by blast
 
 lemma fresh_variable_types: "\<exists>n. new_tv n (t::typ)"
-apply (unfold new_tv_def)
-apply (induction t)
- apply auto[1]
-by (metis less_trans linorder_cases new_tv_Fun new_tv_def)
-
+unfolding new_tv_def
+proof (induction t)
+  case (Fun t1 t2)
+  then show ?case
+    by (metis Type.free_tv_Fun UnE dual_order.strict_trans linorder_neq_iff)
+qed auto
 
 lemma fresh_variable_type_schemes:
   "\<exists>n. new_tv n (sch::type_scheme)"
-apply (unfold new_tv_def)
-apply (induct_tac sch)
-  apply (auto)[1]
- apply simp
-by (metis less_trans linorder_cases new_tv_Fun2 new_tv_def)
+unfolding new_tv_def
+proof (induction sch)
+  case (SFun sch1 sch2)
+  then show ?case
+    by (meson List.finite_set finite_nat_set_iff_bounded free_tv_ML_scheme)
+qed auto
 
 lemma fresh_variable_type_scheme_lists: 
   "\<exists>n. new_tv n (A::type_scheme list)"
-apply (induction A)
- apply (simp)
-by (metis fresh_variable_type_schemes le_cases new_tv_Cons new_tv_le)
+proof (induction A)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons a A)
+  then show ?case 
+    by (metis fresh_variable_type_schemes le_cases new_tv_Cons new_tv_le)
+qed
 
 lemma make_one_new_out_of_two: 
-  "[| \<exists>n1. (new_tv n1 x); \<exists>n2. (new_tv n2 y)|] ==> \<exists>n. (new_tv n x) \<and> (new_tv n y)"
-by (meson new_tv_le nle_le)
+  "\<lbrakk>\<exists>n1. new_tv n1 x; \<exists>n2. new_tv n2 y\<rbrakk> \<Longrightarrow> \<exists>n. new_tv n x \<and> new_tv n y"
+  by (meson new_tv_le nle_le)
 
 lemma ex_fresh_variable: 
   "\<And>(A::type_scheme list) (A'::type_scheme list) (t::typ) (t'::typ).  
           \<exists>n. (new_tv n A) \<and> (new_tv n A') \<and> (new_tv n t) \<and> (new_tv n t')"
-by (meson fresh_variable_type_scheme_lists fresh_variable_types max.cobounded1 max.cobounded2 new_tv_le)
+  by (meson fresh_variable_type_scheme_lists fresh_variable_types max.cobounded1 max.cobounded2 new_tv_le)
 
 \<comment> \<open>mgu does not introduce new type variables\<close>
-lemma mgu_new: 
-  "[|mgu t1 t2 = Some u; new_tv n t1; new_tv n t2|] ==> new_tv n u"
-by (meson UnE mgu_free new_tv_def subsetD)
+lemma mgu_new: "\<lbrakk>mgu t1 t2 = Some u; new_tv n t1; new_tv n t2\<rbrakk> \<Longrightarrow> new_tv n u"
+  by (meson UnE mgu_free new_tv_def subsetD)
 
 
 (* lemmata for substitutions *)
 
 lemma length_app_subst_list [simp]:
   "\<And>A:: ('a::type_struct) list. length ($ S A) = length A"
-unfolding app_subst_list by simp
+  unfolding app_subst_list by simp
 
 lemma subst_TVar_scheme [simp]:
   fixes sch :: type_scheme
   shows "$ TVar sch = sch"
-by (induct sch) simp_all
+  by (induct sch) simp_all
 
 lemma subst_TVar_scheme_list [simp]:
   fixes A :: "type_scheme list"
   shows "$ TVar A = A"
-by (induct A) (simp_all add: app_subst_list)
+  by (induct A) (simp_all add: app_subst_list)
 
 \<comment> \<open>application of @{text id_subst} does not change type expression\<close>
 lemma app_subst_id_te [simp]: "$ id_subst = (\<lambda>t::typ. t)"
-by (metis id_subst_def mk_scheme_injective subst_TVar_scheme subst_mk_scheme)
+  by (metis id_subst_def mk_scheme_injective subst_TVar_scheme subst_mk_scheme)
 
 lemma app_subst_id_type_scheme [simp]:
   "$ id_subst = (\<lambda>sch::type_scheme. sch)"
-using id_subst_def subst_TVar_scheme by auto
+  using id_subst_def subst_TVar_scheme by auto
 
 
 \<comment> \<open>application of @{text id_subst} does not change list of type expressions\<close>
 lemma app_subst_id_tel [simp]: 
   "$ id_subst = (\<lambda>A::type_scheme list. A)"
-using id_subst_def subst_TVar_scheme_list by auto
+  using id_subst_def subst_TVar_scheme_list by auto
 
 \<comment> \<open>composition of substitutions\<close>
 lemma o_id_subst [simp]: "$S \<circ> id_subst = S"
-unfolding id_subst_def o_def by simp
+  unfolding id_subst_def o_def by simp
 
 lemma subst_comp_te: "$ R ($ S t::typ) = $ (\<lambda>x. $ R (S x) ) t"
-by (induct t) simp_all
+  by (induct t) simp_all
 
 lemma subst_comp_type_scheme: 
   "$ R ($ S sch::type_scheme) = $ (\<lambda>x. $ R (S x) ) sch"
-by (induct sch) simp_all
+  by (induct sch) simp_all
 
 lemma subst_comp_scheme_list: 
   "$ R ($ S A::type_scheme list) = $ (\<lambda>x. $ R (S x)) A"
-unfolding app_subst_list
-proof (induct A)
-  case Nil thus ?case by simp
-next
-  case Cons thus ?case by (simp add: subst_comp_type_scheme)
-qed
+  unfolding app_subst_list
+  by (induct A) (auto simp add: subst_comp_type_scheme)
 
 lemma nth_subst: 
   "n < length A \<Longrightarrow> ($ S A)!n = $S (A!n)"
-by (simp add: app_subst_list)
+  by (simp add: app_subst_list)
 
 end

@@ -3189,7 +3189,7 @@ next
   
   with ptr_valid_heap_update_padding_conv plift_Some_iff ptr_valid eq plift_Some_h_val
   show ?thesis
-    by (smt (z3) hrs_mem_update option.sel)
+    by (smt (verit) hrs_mem_update option.sel)
 qed
 
 lemma field_the_plift_hval_eqI [plift_eqI]:

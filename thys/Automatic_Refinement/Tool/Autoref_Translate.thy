@@ -58,8 +58,8 @@ lemma autoref_REMOVE_INTERNAL_EQ:
 
 ML \<open>
   signature AUTOREF_TACTICALS = sig
-    val is_prefer_cond: int -> thm -> bool
-    val is_defer_cond: int -> thm -> bool
+    val is_prefer_cond: Proof.context -> int -> thm -> bool
+    val is_defer_cond: Proof.context -> int -> thm -> bool
 
     val REPEAT_INTERVAL: tactic' -> itactic
     val COND'': (int -> thm -> bool) -> tactic' -> tactic' -> tactic'
@@ -68,12 +68,12 @@ ML \<open>
   end
 
   structure Autoref_Tacticals :AUTOREF_TACTICALS = struct
-    fun is_prefer_cond i st =
+    fun is_prefer_cond ctxt i st =
       case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop (PREFER_tag _)"} => true
       | _ => false
 
-    fun is_defer_cond i st =
+    fun is_defer_cond ctxt i st =
       case Logic.concl_of_goal (Thm.prop_of st) i of
         @{mpat "Trueprop (DEFER_tag _)"} => true
       | _ => false
@@ -198,7 +198,7 @@ ML \<open>
         val net = trans_netD.get ctxt
       in
         (
-          COND'' is_defer_cond 
+          COND'' (is_defer_cond ctxt)
             (K no_tac)
             (assume_tac ctxt ORELSE' trans_rule_tac ctxt net)
         )
@@ -209,14 +209,14 @@ ML \<open>
         val net = trans_netD.get ctxt
         val s_tac = side_tac ctxt
       in DETERM o (
-        COND'' is_defer_cond 
+        COND'' (is_defer_cond ctxt)
           (SOLVED' s_tac)
           (
             assume_tac ctxt
             ORELSE'
             (trans_rule_tac ctxt net 
               THEN_ALL_NEW_FWD 
-                COND'' is_prefer_cond
+                COND'' (is_prefer_cond ctxt)
                   (TRY o DETERM o SOLVED' s_tac)
                   (K all_tac)
             )
@@ -228,14 +228,14 @@ ML \<open>
         val net = trans_netD.get ctxt
         val s_tac = side_tac ctxt
       in DETERM o (
-        COND'' is_defer_cond 
+        COND'' (is_defer_cond  ctxt)
           (SOLVED' s_tac)
           (
             assume_tac ctxt
             ORELSE'
             (trans_rule_tac ctxt net 
               THEN_ALL_NEW_FWD 
-                COND'' is_prefer_cond
+                COND'' (is_prefer_cond ctxt)
                   (DETERM o SOLVED' s_tac)
                   (K all_tac)
             )

@@ -1,165 +1,9 @@
 theory Substitution
-  imports Main
+  imports Monoid_Action
 begin
 
-section \<open>General Results on Groups\<close>
-
-lemma (in monoid) right_inverse_idem:
-  fixes inv
-  assumes right_inverse:  "\<And>a. a \<^bold>* inv a = \<^bold>1"
-  shows "\<And>a. inv (inv a) = a"
-    by (metis assoc right_inverse right_neutral)
-
-lemma (in monoid) left_inverse_if_right_inverse:
-  fixes inv
-  assumes
-    right_inverse:  "\<And>a. a \<^bold>* inv a = \<^bold>1"
-  shows "inv a \<^bold>* a = \<^bold>1"
-  by (metis right_inverse_idem right_inverse)
-
-lemma (in monoid) group_wrt_right_inverse:
-  fixes inv
-  assumes right_inverse:  "\<And>a. a \<^bold>* inv a = \<^bold>1"
-  shows "group (\<^bold>*) \<^bold>1 inv"
-proof unfold_locales
-  show "\<And>a. \<^bold>1 \<^bold>* a = a"
-    by simp
-next
-  show "\<And>a. inv a \<^bold>* a = \<^bold>1"
-    by (metis left_inverse_if_right_inverse right_inverse)
-qed
-
-
-section \<open>Semigroup Action\<close>
-
-text \<open>We define both left and right semigroup actions. Left semigroup actions seem to be prevalent
-in algebra, but right semigroup actions directly uses the usual notation of term/atom/literal/clause
-substitution.\<close>
-
-locale left_semigroup_action = semigroup +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
-  assumes action_compatibility[simp]: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)"
-
-locale right_semigroup_action = semigroup +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
-  assumes action_compatibility[simp]: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b"
-
-text \<open>We then instantiate the right action in the context of the left action in order to get access
-to any lemma proven in the context of the other locale. We do analogously in the context of the
-right locale.\<close>
-
-sublocale left_semigroup_action \<subseteq> right: right_semigroup_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-proof unfold_locales
-  show "\<And>a b c. c \<^bold>* (b \<^bold>* a) = c \<^bold>* b \<^bold>* a"
-    by (simp only: assoc)
-next
-  show "\<And>x a b. (b \<^bold>* a) \<cdot> x = b \<cdot> (a \<cdot> x)"
-    by simp
-qed
-
-sublocale right_semigroup_action \<subseteq> left: left_semigroup_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-proof unfold_locales
-  show "\<And>a b c. c \<^bold>* (b \<^bold>* a) = c \<^bold>* b \<^bold>* a"
-    by (simp only: assoc)
-next
-  show "\<And>a b x. x \<cdot> (b \<^bold>* a) = (x \<cdot> b) \<cdot> a"
-    by simp
-qed
-
-lemma (in right_semigroup_action) lifting_semigroup_action_to_set:
-  "right_semigroup_action (\<^bold>*) (\<lambda>X a. (\<lambda>x. action x a) ` X)"
-proof unfold_locales
-  show "\<And>x a b. (\<lambda>x. x \<cdot> (a \<^bold>* b)) ` x = (\<lambda>x. x \<cdot> b) ` (\<lambda>x. x \<cdot> a) ` x"
-    by (simp add: image_comp)
-qed
-
-lemma (in right_semigroup_action) lifting_semigroup_action_to_list:
-  "right_semigroup_action (\<^bold>*) (\<lambda>xs a. map (\<lambda>x. action x a) xs)"
-proof unfold_locales
-  show "\<And>x a b. map (\<lambda>x. x \<cdot> (a \<^bold>* b)) x = map (\<lambda>x. x \<cdot> b) (map (\<lambda>x. x \<cdot> a) x)"
-    by (simp add: image_comp)
-qed
-
-
-section \<open>Monoid Action\<close>
-
-locale left_monoid_action = monoid +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
-  assumes
-    monoid_action_compatibility: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)" and
-    action_neutral[simp]: "\<And>x. \<^bold>1 \<cdot> x = x"
-
-locale right_monoid_action = monoid +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
-  assumes
-    monoid_action_compatibility: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b" and
-    action_neutral[simp]: "\<And>x. x \<cdot> \<^bold>1 = x"
-
-sublocale left_monoid_action \<subseteq> left_semigroup_action
-  by unfold_locales (fact monoid_action_compatibility)
-
-sublocale right_monoid_action \<subseteq> right_semigroup_action
-  by unfold_locales (fact monoid_action_compatibility)
-
-sublocale left_monoid_action \<subseteq> right: right_monoid_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-sublocale right_monoid_action \<subseteq> left: left_monoid_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-lemma (in right_monoid_action) lifting_monoid_action_to_set:
-  "right_monoid_action (\<^bold>*) \<^bold>1 (\<lambda>X a. (\<lambda>x. action x a) ` X)"
-proof (unfold_locales)
-  show "\<And>x a b. (\<lambda>x. x \<cdot> (a \<^bold>* b)) ` x = (\<lambda>x. x \<cdot> b) ` (\<lambda>x. x \<cdot> a) ` x"
-    by (simp add: image_comp)
-next
-  show "\<And>x. (\<lambda>x. x \<cdot> \<^bold>1) ` x = x"
-    by simp
-qed
-
-lemma (in right_monoid_action) lifting_monoid_action_to_list:
-  "right_monoid_action (\<^bold>*) \<^bold>1 (\<lambda>xs a. map (\<lambda>x. action x a) xs)"
-proof unfold_locales
-  show "\<And>x a b. map (\<lambda>x. x \<cdot> (a \<^bold>* b)) x = map (\<lambda>x. x \<cdot> b) (map (\<lambda>x. x \<cdot> a) x)"
-    by simp
-next
-  show "\<And>x. map (\<lambda>x. x \<cdot> \<^bold>1) x = x"
-    by simp
-qed
-
-
-section \<open>Group Action\<close>
-
-locale left_group_action = group +
-  fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infix \<open>\<cdot>\<close> 70)
-  assumes
-    group_action_compatibility: "\<And>a b x. (a \<^bold>* b) \<cdot> x = a \<cdot> (b \<cdot> x)" and
-    group_action_neutral: "\<And>x. \<^bold>1 \<cdot> x = x"
-
-locale right_group_action = group +
-  fixes action :: "'b \<Rightarrow> 'a \<Rightarrow> 'b" (infixl \<open>\<cdot>\<close> 70)
-  assumes
-    group_action_compatibility: "\<And>x a b. x \<cdot> (a \<^bold>* b) = (x \<cdot> a) \<cdot> b" and
-    group_action_neutral: "\<And>x. x \<cdot> \<^bold>1 = x"
-
-sublocale left_group_action \<subseteq> left_monoid_action
-  by unfold_locales (fact group_action_compatibility group_action_neutral)+
-
-sublocale right_group_action \<subseteq> right_monoid_action
-  by unfold_locales (fact group_action_compatibility group_action_neutral)+
-
-sublocale left_group_action \<subseteq> right: right_group_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
-sublocale right_group_action \<subseteq> left: left_group_action where
-  f = "\<lambda>x y. f y x" and action = "\<lambda>x y. action y x"
-  by unfold_locales simp_all
-
+abbreviation set_prod where
+  "set_prod \<equiv> \<lambda>(t, t'). {t, t'}"
 
 section \<open>Assumption-free Substitution\<close>
 
@@ -233,17 +77,6 @@ lemma mem_ground_instances_setE[elim]:
   unfolding ground_instances_set_eq_Union_ground_instances
   by blast
 
-(* This corresponds to the maximal subgroup of the monoid on (\<odot>) and id_subst *)
-definition is_renaming :: "'s \<Rightarrow> bool" where
-  "is_renaming \<rho> \<longleftrightarrow> (\<exists>\<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
-
-definition renaming_inverse where
-  "is_renaming \<rho> \<Longrightarrow> renaming_inverse \<rho> = (SOME \<rho>_inv. \<rho> \<odot> \<rho>_inv = id_subst)"
-
-lemma renaming_comp_renaming_inverse[simp]:
-  "is_renaming \<rho> \<Longrightarrow> \<rho> \<odot> renaming_inverse \<rho> = id_subst"
-  by (auto simp: is_renaming_def renaming_inverse_def intro: someI_ex)
-
 definition is_unifier :: "'s \<Rightarrow> 'x set \<Rightarrow> bool" where
   "is_unifier \<upsilon> X \<longleftrightarrow> card (subst_set X \<upsilon>) \<le> 1"
 
@@ -255,9 +88,6 @@ definition is_mgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
 
 definition is_imgu :: "'s \<Rightarrow> 'x set set \<Rightarrow> bool" where
   "is_imgu \<mu> XX \<longleftrightarrow> is_unifier_set \<mu> XX \<and> (\<forall>\<tau>. is_unifier_set \<tau> XX \<longrightarrow> \<mu> \<odot> \<tau> = \<tau>)"
-
-definition is_idem :: "'s \<Rightarrow> bool" where
-  "is_idem \<sigma> \<longleftrightarrow> \<sigma> \<odot> \<sigma> = \<sigma>"
 
 lemma is_unifier_iff_if_finite:
   assumes "finite X"
@@ -335,8 +165,35 @@ end
 
 section \<open>Basic Substitution\<close>
 
+locale substitution_monoid = monoid comp_subst id_subst \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  for
+    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" and
+    id_subst :: 's
+begin
+
+abbreviation is_renaming where
+ "is_renaming \<equiv> is_right_invertible"
+
+lemmas is_renaming_def = is_right_invertible_def
+
+abbreviation renaming_inverse where
+  "renaming_inverse \<equiv> right_inverse"
+
+lemmas renaming_inverse_def = right_inverse_def
+
+lemmas is_renaming_id_subst = neutral_is_right_invertible
+
+definition is_idem :: "'s \<Rightarrow> bool" where
+  "is_idem a \<longleftrightarrow> comp_subst a a = a"
+
+lemma is_idem_id_subst [simp]: "is_idem id_subst"
+  by (simp add: is_idem_def)
+
+end
+
 (* Rename to abstract substitution *)
 locale substitution =
+  substitution_monoid comp_subst id_subst +
   comp_subst: right_monoid_action comp_subst id_subst subst +
   substitution_ops subst id_subst comp_subst is_ground
   for
@@ -370,9 +227,6 @@ lemmas subst_id_subst = comp_subst.action_neutral
 lemmas subst_set_id_subst = comp_subst_set.action_neutral
 lemmas subst_list_id_subst = comp_subst_list.action_neutral
 
-lemma is_renaming_id_subst[simp]: "is_renaming id_subst"
-  by (simp add: is_renaming_def)
-
 lemma is_unifier_id_subst_empty[simp]: "is_unifier id_subst {}"
   by (simp add: is_unifier_def)
 
@@ -384,9 +238,6 @@ lemma is_mgu_id_subst_empty[simp]: "is_mgu id_subst {}"
 
 lemma is_imgu_id_subst_empty[simp]: "is_imgu id_subst {}"
   by (simp add: is_imgu_def)
-
-lemma is_idem_id_subst[simp]: "is_idem id_subst"
-  by (simp add: is_idem_def)
 
 lemma is_unifier_id_subst: "is_unifier id_subst X \<longleftrightarrow> card X \<le> 1"
   by (simp add: is_unifier_def)
@@ -474,19 +325,35 @@ next
     by (metis is_ground_set_def finite.insertI is_unifier_iff_if_finite subst_ident_if_ground)
 qed
 
-lemma subst_mgu_eq_subst_mgu: 
-  assumes "is_mgu \<mu> {{t\<^sub>1, t\<^sub>2}}" 
-  shows "t\<^sub>1 \<cdot> \<mu> = t\<^sub>2 \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite[of "{t\<^sub>1, t\<^sub>2}"]
+lemma is_mgu_unifies: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "is_mgu \<mu> XX" "\<forall>X \<in> XX. finite X"
+  shows "\<forall>X \<in> XX. \<forall>t \<in> X. \<forall>t' \<in> X. t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using assms is_unifier_iff_if_finite
   unfolding is_mgu_def is_unifier_set_def
   by blast
 
-lemma subst_imgu_eq_subst_imgu: 
-  assumes "is_imgu \<mu> {{t\<^sub>1, t\<^sub>2}}" 
-  shows "t\<^sub>1 \<cdot> \<mu> = t\<^sub>2 \<cdot> \<mu>"
-  using assms is_unifier_iff_if_finite[of "{t\<^sub>1, t\<^sub>2}"]
+corollary is_mgu_unifies_pair: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> 
+  assumes "is_mgu \<mu> {{t, t'}}"
+  shows "t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using is_mgu_unifies[OF assms]
+  by (metis finite.emptyI finite.insertI insertCI singletonD)
+
+lemmas subst_mgu_eq_subst_mgu = is_mgu_unifies_pair
+
+lemma is_imgu_unifies: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "is_imgu \<mu> XX" "\<forall>X \<in> XX. finite X"
+  shows "\<forall>X \<in> XX. \<forall>t \<in> X. \<forall>t' \<in> X. t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using assms is_unifier_iff_if_finite
   unfolding is_imgu_def is_unifier_set_def
   by blast
+
+corollary is_imgu_unifies_pair: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  assumes "is_imgu \<mu> {{t, t'}}"
+  shows "t \<cdot> \<mu> = t' \<cdot> \<mu>"
+  using is_imgu_unifies[OF assms]
+  by (metis finite.emptyI finite.insertI insertCI singletonD)
+
+lemmas subst_imgu_eq_subst_imgu = is_imgu_unifies_pair
 
 
 subsection \<open>Ground Substitutions\<close>
@@ -497,8 +364,8 @@ lemma is_ground_subst_comp_left: "is_ground_subst \<sigma> \<Longrightarrow> is_
 lemma is_ground_subst_comp_right: "is_ground_subst \<tau> \<Longrightarrow> is_ground_subst (\<sigma> \<odot> \<tau>)"
   by (simp add: is_ground_subst_def)
 
-lemma is_ground_subst_is_ground: 
-  assumes "is_ground_subst \<gamma>" 
+lemma is_ground_subst_is_ground:
+  assumes "is_ground_subst \<gamma>"
   shows "is_ground (t \<cdot> \<gamma>)"
   using assms is_ground_subst_def by blast
 
@@ -506,7 +373,7 @@ lemma is_ground_subst_is_ground:
 subsection \<open>IMGU is Idempotent and an MGU\<close>
 
 lemma is_imgu_iff_is_idem_and_is_mgu: "is_imgu \<mu> XX \<longleftrightarrow> is_idem \<mu> \<and> is_mgu \<mu> XX"
-  by (auto simp add: is_imgu_def is_idem_def is_mgu_def simp flip: comp_subst.assoc)
+  by (auto simp add: is_imgu_def is_idem_def is_mgu_def simp flip: assoc)
 
 
 subsection \<open>IMGU can be used before unification\<close>

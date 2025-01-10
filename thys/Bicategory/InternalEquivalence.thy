@@ -394,7 +394,7 @@ begin
       using assms equivalence_mapE
       apply (intro in_homI in_hhomI)
          apply (metis equivalence_map_is_ide ideD(1) not_arr_null quasi_inverse_antipar(2)
-                      src.preserves_ide trg.is_extensional)
+                      src.preserves_ide trg.extensionality)
         apply (simp_all add: quasi_inverse_antipar)
       using assms quasi_inversesE quasi_inverses_some_quasi_inverse(2) by blast
 
@@ -988,7 +988,7 @@ begin
       fix \<mu>
       have "\<not> \<guillemotleft>\<mu> : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright> \<Longrightarrow> \<phi>.map \<mu> = null"
         using hom.comp_char hom.null_char hom.arr_char\<^sub>S\<^sub>b\<^sub>C
-        by (simp add: \<phi>.is_extensional)
+        by (simp add: \<phi>.extensionality)
       moreover have "\<guillemotleft>\<mu> : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright> \<Longrightarrow> \<phi>.map \<mu> = \<phi>\<^sub>0 (cod \<mu>) \<cdot> \<mu>"
         unfolding \<phi>.map_def
         apply auto
@@ -1155,7 +1155,7 @@ begin
     proof
       fix \<mu>'
       have "\<not> \<guillemotleft>\<mu>': trg e\<^sub>0 \<rightarrow> trg e\<^sub>1\<guillemotright> \<Longrightarrow> \<psi>.map \<mu>' = null"
-        using \<psi>.is_extensional hom'.arr_char\<^sub>S\<^sub>b\<^sub>C hom'.null_char by simp
+        using \<psi>.extensionality hom'.arr_char\<^sub>S\<^sub>b\<^sub>C hom'.null_char by simp
       moreover have "\<guillemotleft>\<mu>': trg e\<^sub>0 \<rightarrow> trg e\<^sub>1\<guillemotright> \<Longrightarrow>
                      \<psi>.map \<mu>' = \<mu>' \<cdot> \<r>[dom \<mu>'] \<cdot> \<l>[dom \<mu>' \<star> trg e\<^sub>0] \<cdot> (\<epsilon>\<^sub>1 \<star> dom \<mu>' \<star> \<epsilon>\<^sub>0) \<cdot>
                                   ((e\<^sub>1 \<star> d\<^sub>1) \<star> \<a>[dom \<mu>', e\<^sub>0, d\<^sub>0]) \<cdot> \<a>\<^sup>-\<^sup>1[e\<^sub>1, d\<^sub>1, (dom \<mu>' \<star> e\<^sub>0) \<star> d\<^sub>0] \<cdot>
@@ -1173,7 +1173,7 @@ begin
             using hom'.seq_char\<^sub>S\<^sub>b\<^sub>C by blast
         qed
         ultimately show ?thesis
-          using \<mu>' \<psi>.is_natural_1 [of \<mu>'] hom'.comp_char hom'.arr_char\<^sub>S\<^sub>b\<^sub>C hom'.dom_closed
+          using \<mu>' \<psi>.naturality1 [of \<mu>'] hom'.comp_char hom'.arr_char\<^sub>S\<^sub>b\<^sub>C hom'.dom_closed
                 \<psi>_ide_simp [of "dom \<mu>'"] hom'.dom_simp hom'.cod_simp
           apply auto
           by (metis \<psi>_def hom'.inclusion ide_dom)

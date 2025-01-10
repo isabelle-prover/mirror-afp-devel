@@ -326,6 +326,15 @@ lemma Uniq_is_greatest_in_mset_wrt[intro]:
   unfolding is_greatest_in_mset_wrt_iff
   by (smt (verit, best) Uniq_I asym asymp_onD insert_DiffM insert_noteq_member)
 
+lemma Uniq_is_strictly_minimal_in_mset_wrt[intro]: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "\<exists>\<^sub>\<le>\<^sub>1x. is_strictly_minimal_in_mset_wrt R X x"
+  using Uniq_is_least_in_mset_wrt
+  unfolding is_strictly_minimal_in_mset_wrt_iff_is_least_in_mset_wrt.
+
+lemma Uniq_is_strictly_maximal_in_mset_wrt[intro]: \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "\<exists>\<^sub>\<le>\<^sub>1x. is_strictly_maximal_in_mset_wrt R X x"
+  using Uniq_is_greatest_in_mset_wrt
+  unfolding is_strictly_maximal_in_mset_wrt_iff_is_greatest_in_mset_wrt.
 
 subsection \<open>Miscellaneous\<close>
 
@@ -579,11 +588,29 @@ abbreviation (in order) is_minimal_in_mset where
 abbreviation (in order) is_maximal_in_mset where
   "is_maximal_in_mset \<equiv> is_maximal_in_mset_wrt (<)"
 
+abbreviation (in order) is_strictly_minimal_in_mset where \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "is_strictly_minimal_in_mset \<equiv> is_strictly_minimal_in_mset_wrt (<)"
+
+abbreviation (in order) is_strictly_maximal_in_mset where \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
+  "is_strictly_maximal_in_mset \<equiv> is_strictly_maximal_in_mset_wrt (<)"
+
 lemmas (in order) is_minimal_in_mset_iff =
   is_minimal_in_mset_wrt_iff[OF transp_on_less asymp_on_less]
 
 lemmas (in order) is_maximal_in_mset_iff =
   is_maximal_in_mset_wrt_iff[OF transp_on_less asymp_on_less]
+
+lemmas (in order) is_strictly_minimal_in_mset_iff \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> =
+  is_strictly_minimal_in_mset_wrt_iff[OF transp_on_less asymp_on_less]
+
+lemmas (in order) is_strictly_maximal_in_mset_iff \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> =
+  is_strictly_maximal_in_mset_wrt_iff[OF transp_on_less asymp_on_less]
+
+lemmas (in order) is_minimal_in_mset_if_is_strictly_minimal_in_mset[intro] \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> =
+  is_minimal_in_mset_wrt_if_is_strictly_minimal_in_mset_wrt[OF transp_on_less asymp_on_less]
+
+lemmas (in order) is_maximal_in_mset_if_is_strictly_maximal_in_mset[intro] \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> =
+  is_maximal_in_mset_wrt_if_is_strictly_maximal_in_mset_wrt[OF transp_on_less asymp_on_less]
 
 lemmas (in order) ex_minimal_in_mset =
   ex_minimal_in_mset_wrt[OF transp_on_less asymp_on_less]
@@ -630,6 +657,12 @@ lemmas (in linorder) Uniq_is_least_in_mset[intro] =
 
 lemmas (in linorder) Uniq_is_greatest_in_mset[intro] =
   Uniq_is_greatest_in_mset_wrt[OF transp_on_less asymp_on_less totalp_on_less]
+
+lemmas (in linorder) Uniq_is_strictly_minimal_in_mset[intro] \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> =
+  Uniq_is_strictly_minimal_in_mset_wrt[OF transp_on_less asymp_on_less totalp_on_less]
+
+lemmas (in linorder) Uniq_is_strictly_maximal_in_mset[intro] \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close> =
+  Uniq_is_strictly_maximal_in_mset_wrt[OF transp_on_less asymp_on_less totalp_on_less]
 
 lemmas (in linorder) is_least_in_mset_iff_is_minimal_and_count_eq_one =
   is_least_in_mset_wrt_iff_is_minimal_and_count_eq_one[OF transp_on_less asymp_on_less

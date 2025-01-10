@@ -155,9 +155,9 @@ begin
       show "\<exists>!n. \<forall>f. n \<star> f = n \<and> f \<star> n = n"
       proof
         show 1: "\<forall>f. null \<star> f = null \<and> f \<star> null = null"
-          using is_extensional VoV.inclusion VoV.arr_char\<^sub>S\<^sub>b\<^sub>C by force
+          using extensionality VoV.inclusion VoV.arr_char\<^sub>S\<^sub>b\<^sub>C by force
         show "\<And>n. \<forall>f. n \<star> f = n \<and> f \<star> n = n \<Longrightarrow> n = null"
-          using 1 VoV.arr_char\<^sub>S\<^sub>b\<^sub>C is_extensional not_arr_null by metis
+          using 1 VoV.arr_char\<^sub>S\<^sub>b\<^sub>C extensionality not_arr_null by metis
       qed
     qed
 
@@ -182,7 +182,7 @@ begin
     lemma composable_implies_arr:
     assumes "\<nu> \<star> \<mu> \<noteq> null"
     shows "arr \<mu>" and "arr \<nu>"
-      using assms is_extensional VoV.arr_char\<^sub>S\<^sub>b\<^sub>C VoV.inclusion by auto
+      using assms extensionality VoV.arr_char\<^sub>S\<^sub>b\<^sub>C VoV.inclusion by auto
 
     lemma hcomp_null [simp]:
     shows "null \<star> \<mu> = null" and "\<mu> \<star> null = null"
@@ -1199,7 +1199,7 @@ begin
       interpret \<rr>: transformation_by_components S.comp S.comp R S.map runit
         using runit_char(1) runit_naturality by unfold_locales simp_all
       have "\<rr>.map = \<rr>"
-        using \<rr>.is_extensional \<rr>.map_def \<rr>.naturality \<rr>.map_simp_ide S.ide_dom S.ide_cod
+        using \<rr>.extensionality \<rr>.map_def \<rr>.naturality \<rr>.map_simp_ide S.ide_dom S.ide_cod
               S.map_def
         by auto
       thus "natural_transformation S.comp S.comp R S.map \<rr>"
@@ -1227,8 +1227,7 @@ begin
     assumes "S.ide f"
     shows "\<r>[R f] = R \<r>[f]"
       using assms runit_char(1) R.preserves_hom [of "\<r>[f]" "R f" f]
-            runit_naturality iso_runit S.iso_is_section
-            S.section_is_mono S.monoE
+            runit_naturality iso_runit S.iso_is_section S.section_is_mono S.mono_cancel
       by (metis S.in_homE S.seqI')
 
   end
@@ -1442,7 +1441,7 @@ begin
       interpret \<ll>: transformation_by_components S.comp S.comp L S.map lunit
         using lunit_char(1) lunit_naturality by (unfold_locales, simp_all)
       have "\<ll>.map = \<ll>"
-        using \<ll>.is_extensional \<ll>.map_def \<ll>.naturality \<ll>.map_simp_ide S.ide_dom S.ide_cod
+        using \<ll>.extensionality \<ll>.map_def \<ll>.naturality \<ll>.map_simp_ide S.ide_dom S.ide_cod
               S.map_def
         by auto
       thus "natural_transformation S.comp S.comp L S.map \<ll>"
@@ -1470,8 +1469,7 @@ begin
     assumes "S.ide f"
     shows "\<l>[L f] = L \<l>[f]"
       using assms lunit_char(1) L.preserves_hom [of "\<l>[f]" "L f" f]
-            lunit_naturality iso_lunit S.iso_is_section
-            S.section_is_mono S.monoE
+            lunit_naturality iso_lunit S.iso_is_section S.section_is_mono S.mono_cancel
       by (metis S.in_homE S.seqI')
 
   end
@@ -1665,13 +1663,9 @@ begin
           using Left_a.arr_char\<^sub>S\<^sub>b\<^sub>C left_def composable_implies_arr by simp
         have 2: "\<phi> \<star> \<mu> \<noteq> null"
           using assms \<phi> \<mu> Left_a.arr_char\<^sub>S\<^sub>b\<^sub>C left_def hom_connected by auto
-        show "Left_a.dom (H\<^sub>L \<phi> \<mu>) = H\<^sub>L a (Left_a.dom \<mu>)"
+        show "Left_a.arr (H\<^sub>L \<phi> \<mu>)"
           using assms 2 \<phi> \<mu> Left_a.arr_char\<^sub>S\<^sub>b\<^sub>C left_def hom_connected(2) [of a \<phi>]
-                weak_unit_self_composable match_4 Left_a.dom_char\<^sub>S\<^sub>b\<^sub>C H\<^sub>L_def by auto
-        show "Left_a.cod (H\<^sub>L \<phi> \<mu>) = H\<^sub>L a' (Left_a.cod \<mu>)"
-          using assms 2 \<phi> \<mu> Left_a.arr_char\<^sub>S\<^sub>b\<^sub>C left_def hom_connected(2) [of a \<phi>]
-                weak_unit_self_composable match_4 Left_a.cod_char\<^sub>S\<^sub>b\<^sub>C H\<^sub>L_def
-          by auto
+                weak_unit_self_composable match_4 H\<^sub>L_def by auto
         show "Left_a.comp (H\<^sub>L a' \<mu>) (H\<^sub>L \<phi> (Left_a.dom \<mu>)) = H\<^sub>L \<phi> \<mu>"
         proof -
           have "Left_a.comp (H\<^sub>L a' \<mu>) (H\<^sub>L \<phi> (Left_a.dom \<mu>)) =
@@ -1786,13 +1780,8 @@ begin
           using Right_a.arr_char\<^sub>S\<^sub>b\<^sub>C right_def composable_implies_arr by simp
         have 2: "\<mu> \<star> \<phi> \<noteq> null"
           using assms \<phi> \<mu> Right_a.arr_char\<^sub>S\<^sub>b\<^sub>C right_def hom_connected by auto
-        show "Right_a.dom (H\<^sub>R \<phi> \<mu>) = H\<^sub>R a (Right_a.dom \<mu>)"
-          by (metis "2" H\<^sub>R_def R'.is_extensional Right_a.dom_simp Right_a.null_char
-              \<open>Right_a.arr \<mu>\<close> \<phi> a' hcomp_simps\<^sub>W\<^sub>C(2) in_homE match_3)
-        show "Right_a.cod (H\<^sub>R \<phi> \<mu>) = H\<^sub>R a' (Right_a.cod \<mu>)"
-          using assms 2 a' \<phi> \<mu> Right_a.arr_char\<^sub>S\<^sub>b\<^sub>C right_def hom_connected(3) [of \<phi> a]
-                weak_unit_self_composable match_3 Right_a.cod_char\<^sub>S\<^sub>b\<^sub>C H\<^sub>R_def
-          by auto
+        show "Right_a.arr (H\<^sub>R \<phi> \<mu>)"
+          by (metis "2" H\<^sub>R_def R'.extensionality Right_a.null_char a' match_3)
         show "Right_a.comp (H\<^sub>R a' \<mu>) (H\<^sub>R \<phi> (Right_a.dom \<mu>)) = H\<^sub>R \<phi> \<mu>"
         proof -
           have "Right_a.comp (H\<^sub>R a' \<mu>) (H\<^sub>R \<phi> (Right_a.dom \<mu>)) =
@@ -2046,19 +2035,19 @@ begin
 
     lemma src_dom [simp]:
     shows "src (dom \<mu>) = src \<mu>"
-      by (metis arr_dom_iff_arr obj_simps(4) obj_src src.is_extensional src.preserves_dom)
+      by (metis arr_dom_iff_arr obj_simps(4) obj_src src.extensionality src.preserves_dom)
 
     lemma src_cod [simp]:
     shows "src (cod \<mu>) = src \<mu>"
-      by (metis arr_cod_iff_arr obj_simps(5) obj_src src.is_extensional src.preserves_cod)
+      by (metis arr_cod_iff_arr obj_simps(5) obj_src src.extensionality src.preserves_cod)
 
     lemma trg_dom [simp]:
     shows "trg (dom \<mu>) = trg \<mu>"
-      by (metis arr_dom_iff_arr ide_char ide_trg trg.is_extensional trg.preserves_dom)
+      by (metis arr_dom_iff_arr ide_char ide_trg trg.extensionality trg.preserves_dom)
 
     lemma trg_cod [simp]:
     shows "trg (cod \<mu>) = trg \<mu>"
-      by (metis arr_cod_iff_arr ide_char ide_trg trg.is_extensional trg.preserves_cod)
+      by (metis arr_cod_iff_arr ide_char ide_trg trg.extensionality trg.preserves_cod)
 
     (*
      * TODO: In theory, the following simps should already be available from the fact
@@ -2066,19 +2055,19 @@ begin
      *)
     lemma dom_src [simp]:
     shows "dom (src \<mu>) = src \<mu>"
-      by (metis dom_null ideD(2) ide_src src.is_extensional)
+      by (metis dom_null ideD(2) ide_src src.extensionality)
 
     lemma cod_src [simp]:
     shows "cod (src \<mu>) = src \<mu>"
-      by (metis cod_null ideD(3) ide_src src.is_extensional)
+      by (metis cod_null ideD(3) ide_src src.extensionality)
 
     lemma dom_trg [simp]:
     shows "dom (trg \<mu>) = trg \<mu>"
-      by (metis dom_null ideD(2) ide_trg trg.is_extensional)
+      by (metis dom_null ideD(2) ide_trg trg.extensionality)
 
     lemma cod_trg [simp]:
     shows "cod (trg \<mu>) = trg \<mu>"
-      by (metis cod_null ideD(3) ide_trg trg.is_extensional)
+      by (metis cod_null ideD(3) ide_trg trg.extensionality)
 
     lemma vcomp_in_hhom [intro, simp]:
     assumes "seq \<nu> \<mu>" and "src \<nu> = a" and "trg \<nu> = b"
@@ -2602,9 +2591,9 @@ begin
     shows "partial_composition H" and "partial_magma.null H = null"
     proof -
       have 1: "\<forall>f. null \<star> f = null \<and> f \<star> null = null"
-        using H.is_extensional VV.arr_char\<^sub>S\<^sub>b\<^sub>C not_arr_null by auto
+        using H.extensionality VV.arr_char\<^sub>S\<^sub>b\<^sub>C not_arr_null by auto
       interpret H: partial_composition H
-        using 1 VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.is_extensional not_arr_null
+        using 1 VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.extensionality not_arr_null
         by unfold_locales metis
       show "partial_composition H" ..
       show "H.null = null"
@@ -2627,7 +2616,7 @@ begin
     shows "hseq \<nu> \<mu> \<longleftrightarrow> arr \<mu> \<and> arr \<nu> \<and> src \<nu> = trg \<mu>"
     proof -
       have "hseq \<nu> \<mu> \<longleftrightarrow> VV.arr (\<nu>, \<mu>)"
-        using H.is_extensional H.preserves_arr by force
+        using H.extensionality H.preserves_arr by force
       also have "... \<longleftrightarrow> arr \<mu> \<and> arr \<nu> \<and> src \<nu> = trg \<mu>"
         using VV.arr_char\<^sub>S\<^sub>b\<^sub>C by force
       finally show ?thesis by blast
@@ -2635,7 +2624,7 @@ begin
 
     lemma hseq_char':
     shows "hseq \<nu> \<mu> \<longleftrightarrow> \<nu> \<star> \<mu> \<noteq> null"
-      using VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.preserves_arr H.is_extensional hseq_char [of \<nu> \<mu>] by auto
+      using VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.preserves_arr H.extensionality hseq_char [of \<nu> \<mu>] by auto
 
     lemma hseqI' [intro, simp]:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
@@ -2711,33 +2700,33 @@ begin
     lemma match_1:
     assumes "\<nu> \<star> \<mu> \<noteq> null" and "(\<nu> \<star> \<mu>) \<star> \<tau> \<noteq> null"
     shows "\<mu> \<star> \<tau> \<noteq> null"
-      using assms H.is_extensional not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
+      using assms H.extensionality not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
 
     lemma match_2:
     assumes "\<nu> \<star> (\<mu> \<star> \<tau>) \<noteq> null" and "\<mu> \<star> \<tau> \<noteq> null"
     shows "\<nu> \<star> \<mu> \<noteq> null"
-      using assms H.is_extensional not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
+      using assms H.extensionality not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
 
     lemma match_3:
     assumes "\<mu> \<star> \<tau> \<noteq> null" and "\<nu> \<star> \<mu> \<noteq> null"
     shows "(\<nu> \<star> \<mu>) \<star> \<tau> \<noteq> null"
-      using assms H.is_extensional not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
+      using assms H.extensionality not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
 
     lemma match_4:
     assumes "\<mu> \<star> \<tau> \<noteq> null" and "\<nu> \<star> \<mu> \<noteq> null"
     shows "\<nu> \<star> (\<mu> \<star> \<tau>) \<noteq> null"
-      using assms H.is_extensional not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
+      using assms H.extensionality not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char hseq_char' by auto
 
     lemma left_connected:
     assumes "seq \<nu> \<nu>'"
     shows "\<nu> \<star> \<mu> \<noteq> null \<longleftrightarrow> \<nu>' \<star> \<mu> \<noteq> null"
-      using assms H.is_extensional not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char'
+      using assms H.extensionality not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char'
       by (metis hseq_char seqE vseq_implies_hpar(1))
 
     lemma right_connected:
     assumes "seq \<mu> \<mu>'"
     shows "H \<nu> \<mu> \<noteq> null \<longleftrightarrow> H \<nu> \<mu>' \<noteq> null"
-      using assms H.is_extensional not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char'
+      using assms H.extensionality not_arr_null VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseq_char'
       by (metis hseq_char seqE vseq_implies_hpar(2))
 
     proposition is_weak_composition:

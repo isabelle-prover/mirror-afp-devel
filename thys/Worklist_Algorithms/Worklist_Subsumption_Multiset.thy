@@ -320,7 +320,7 @@ context Search_Space_finite_strict begin
        apply (metis Un_iff in_diffD insert_subset mem_Collect_eq mset_add set_mset_add_mset_insert)
     subgoal for ab aaa baa aba aca _ x
     proof -
-      (* s/h alternative: *)
+      (* s/h alternative: *)
       (* by (metis (mono_tags, hide_lams) Un_iff in_diffD mem_Collect_eq reachable_step subsetCE *)
       assume
         "reachable aba"

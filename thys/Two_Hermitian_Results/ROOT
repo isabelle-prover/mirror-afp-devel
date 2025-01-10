@@ -1,0 +1,18 @@
+chapter AFP
+
+session Two_Hermitian_Results = Jordan_Normal_Form + 
+  options [timeout = 1500]
+  sessions
+    Commuting_Hermitian
+    Fishers_Inequality
+    BenOr_Kozen_Reif
+    QHLProver
+    Complex_Bounded_Operators
+    Hermite_Lindemann
+  theories
+    Sylvester_Criterion
+    Cauchy_Eigenvalue_Interlacing
+  
+  document_files
+    "root.bib"
+    "root.tex"

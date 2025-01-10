@@ -185,7 +185,7 @@ fun generate_showsp tyco lthy =
         val ss = map (subT "show") used_tfrees
         val arg_Ts = map showspT used_tfrees
         val arg_shows = map Free (ss ~~ arg_Ts)
-        val p = Name.invent (Variable.names_of lthy) "p" 1 |> the_single |> Free o rpair @{typ nat}
+        val p = Free (singleton (Name.invent_names (Variable.names_of lthy) "p") @{typ nat})
         val (pshow, m) = AList.lookup (op =) (tycos ~~ (pshows ~~ maps)) tyco |> the
         val ts = tfrees |> map TFree |> map (fn T =>
           AList.lookup (op =) (used_tfrees ~~ map (fn x => x $ prec1) arg_shows) T

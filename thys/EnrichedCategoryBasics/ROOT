@@ -3,7 +3,6 @@ chapter AFP
 session EnrichedCategoryBasics (AFP) = MonoidalCategory +
   options [timeout = 600, names_unique = false]
   theories
-    ClosedMonoidalCategory 
     CartesianClosedMonoidalCategory 
     EnrichedCategory
   document_files

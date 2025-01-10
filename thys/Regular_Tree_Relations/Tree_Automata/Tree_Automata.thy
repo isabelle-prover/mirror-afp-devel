@@ -1188,7 +1188,7 @@ proof -
     by (auto simp: ta_productive_def) fastforce
   moreover have "?RS |\<subseteq>| ?LS" using ta_der_only_prod
     by (auto elim!: ta_productiveE)
-       (smt (z3) ta_der_only_prod ta_productiveI ta_productive_setI)
+       (smt (verit) ta_der_only_prod ta_productiveI ta_productive_setI)
   ultimately show ?thesis by blast
 qed
 

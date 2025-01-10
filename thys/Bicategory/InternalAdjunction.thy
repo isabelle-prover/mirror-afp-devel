@@ -2990,7 +2990,7 @@ begin
             qed
             also have "... = (g' \<star> \<epsilon>') \<cdot> (\<eta>' \<star> g')"
               using A.antipar A'.antipar A'.unit_in_hom A'.counit_in_hom comp_cod_arr
-              by (metis A'.ide_right A'.triangle_in_hom(2) A.ide_left arrI assoc_is_natural_2
+              by (metis A'.ide_right A'.triangle_in_hom(2) A.ide_left arrI assoc_naturality2
                   ide_char seqE strict_assoc)
             also have "... = g'"
               using A'.triangle_right by simp
@@ -3097,7 +3097,7 @@ begin
             qed
             also have "... = (g \<star> \<epsilon>) \<cdot> (\<eta> \<star> g)"
               using A.antipar A'.antipar A.unit_in_hom A.counit_in_hom comp_cod_arr
-              by (metis A.ide_left A.ide_right A.triangle_in_hom(2) arrI assoc_is_natural_2
+              by (metis A.ide_left A.ide_right A.triangle_in_hom(2) arrI assoc_naturality2
                   ide_char seqE strict_assoc)
             also have "... = g"
               using A.triangle_right by simp

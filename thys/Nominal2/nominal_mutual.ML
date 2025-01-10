@@ -302,7 +302,7 @@ fun prove_eqvt ctxt fs argTss eqvts_thms induct_thms =
   let
     fun aux argTs s = argTs
       |> map (pair s)
-      |> Variable.variant_frees ctxt fs
+      |> Variable.variant_names (fold Variable.declare_names fs ctxt)
     val argss' = map2 aux argTss (Name.invent (Variable.names_of ctxt) "" (length fs))
     val argss = (map o map) Free argss'
     val arg_namess = (map o map) fst argss'

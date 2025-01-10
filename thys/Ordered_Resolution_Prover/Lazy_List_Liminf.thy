@@ -331,7 +331,7 @@ definition Liminf_upto_llist :: "'a set llist \<Rightarrow> enat \<Rightarrow> '
 lemma Liminf_upto_llist_eq_Liminf_llist_ltake:
   "Liminf_upto_llist Xs j = Liminf_llist (ltake (eSuc j) Xs)"
   unfolding Liminf_upto_llist_def Liminf_llist_def
-  by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
+  by (auto simp add: lnth_ltake less_llength_ltake)
 
 lemma Liminf_upto_llist_enat[simp]:
   "Liminf_upto_llist Xs (enat k) =

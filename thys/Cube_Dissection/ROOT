@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Cube_Dissection" = "HOL-Library" +
+  options [timeout = 300]
+  theories
+    Cube_Dissection
+  document_files
+    "root.bib"
+    "root.tex"

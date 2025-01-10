@@ -16,32 +16,32 @@ text   \<open> This theory formalises the Model Existence Theorem according to S
 
 
 theorem ExtensionCharacterFinitoP:
-  shows "\<C> \<subseteq> \<C>⁺⁻" 
-  and "finite_character (\<C>⁺⁻)" 
-  and "consistenceP \<C> \<longrightarrow> consistenceP (\<C>⁺⁻)"  
+  shows "\<C> \<subseteq> \<C>\<^sup>+\<^sup>-" 
+  and "finite_character (\<C>\<^sup>+\<^sup>-)" 
+  and "consistenceP \<C> \<longrightarrow> consistenceP (\<C>\<^sup>+\<^sup>-)"  
 proof -  
-show "\<C> \<subseteq> \<C>⁺⁻"
+show "\<C> \<subseteq> \<C>\<^sup>+\<^sup>-"
   proof -
-    have "\<C> \<subseteq> \<C>⁺" using closed_subset by auto    
+    have "\<C> \<subseteq> \<C>\<^sup>+" using closed_subset by auto    
     also
-    have "... \<subseteq> \<C>⁺⁻"
+    have "... \<subseteq> \<C>\<^sup>+\<^sup>-"
     proof -
-      have "subset_closed (\<C>⁺)" using closed_closed by auto     
+      have "subset_closed (\<C>\<^sup>+)" using closed_closed by auto     
       thus ?thesis using finite_character_subset  by auto
     qed
     finally show ?thesis by simp
   qed
 next
-  show "finite_character (\<C>⁺⁻)" using finite_character by auto
+  show "finite_character (\<C>\<^sup>+\<^sup>-)" using finite_character by auto
 next
-  show "consistenceP \<C> \<longrightarrow> consistenceP (\<C>⁺⁻)"
+  show "consistenceP \<C> \<longrightarrow> consistenceP (\<C>\<^sup>+\<^sup>-)"
   proof(rule impI)   
     assume "consistenceP \<C>"
-    hence  "consistenceP (\<C>⁺)" using closed_consistenceP by auto      
+    hence  "consistenceP (\<C>\<^sup>+)" using closed_consistenceP by auto      
     moreover
-    have "subset_closed (\<C>⁺)" using  closed_closed by auto  
+    have "subset_closed (\<C>\<^sup>+)" using  closed_closed by auto  
     ultimately 
-    show "consistenceP (\<C>⁺⁻)" using cfinite_consistenceP
+    show "consistenceP (\<C>\<^sup>+\<^sup>-)" using cfinite_consistenceP
       by auto
   qed
 qed     
@@ -51,43 +51,43 @@ lemma ExtensionConsistenteP1:
   assumes h: "enumeration g"
   and h1: "consistenceP \<C>" 
   and h2: "S \<in> \<C>" 
-  shows "S \<subseteq> MsucP S (\<C>⁺⁻) g" 
-  and "maximal (MsucP S (\<C>⁺⁻)  g) (\<C>⁺⁻)" 
-  and "MsucP S  (\<C>⁺⁻)  g \<in> \<C>⁺⁻" 
+  shows "S \<subseteq> MsucP S (\<C>\<^sup>+\<^sup>-) g" 
+  and "maximal (MsucP S (\<C>\<^sup>+\<^sup>-)  g) (\<C>\<^sup>+\<^sup>-)" 
+  and "MsucP S  (\<C>\<^sup>+\<^sup>-)  g \<in> \<C>\<^sup>+\<^sup>-" 
 
 proof -  
-  have "consistenceP (\<C>⁺⁻)"
+  have "consistenceP (\<C>\<^sup>+\<^sup>-)"
     using h1 and ExtensionCharacterFinitoP by auto
   moreover   
-  have "finite_character (\<C>⁺⁻)" using ExtensionCharacterFinitoP by auto
+  have "finite_character (\<C>\<^sup>+\<^sup>-)" using ExtensionCharacterFinitoP by auto
   moreover
-  have "S \<in> \<C>⁺⁻"
+  have "S \<in> \<C>\<^sup>+\<^sup>-"
     using h2 and ExtensionCharacterFinitoP by auto    
   ultimately
-  show "S \<subseteq> MsucP S (\<C>⁺⁻) g" 
-    and "maximal (MsucP S (\<C>⁺⁻) g) (\<C>⁺⁻)" 
-    and "MsucP S (\<C>⁺⁻) g \<in> \<C>⁺⁻"
-    using h ConsistentExtensionP[of "\<C>⁺⁻"] by auto
+  show "S \<subseteq> MsucP S (\<C>\<^sup>+\<^sup>-) g" 
+    and "maximal (MsucP S (\<C>\<^sup>+\<^sup>-) g) (\<C>\<^sup>+\<^sup>-)" 
+    and "MsucP S (\<C>\<^sup>+\<^sup>-) g \<in> \<C>\<^sup>+\<^sup>-"
+    using h ConsistentExtensionP[of "\<C>\<^sup>+\<^sup>-"] by auto
 qed
   
 
 theorem HintikkaP:  
   assumes h0:"enumeration g" and h1: "consistenceP \<C>" and h2: "S \<in> \<C>"
-  shows "hintikkaP (MsucP S (\<C>⁺⁻) g)"
+  shows "hintikkaP (MsucP S (\<C>\<^sup>+\<^sup>-) g)"
 proof -
-  have 1: "consistenceP (\<C>⁺⁻)" 
+  have 1: "consistenceP (\<C>\<^sup>+\<^sup>-)" 
   using h1 ExtensionCharacterFinitoP by auto
-  have 2: "subset_closed (\<C>⁺⁻)"
+  have 2: "subset_closed (\<C>\<^sup>+\<^sup>-)"
   proof -
-    have "finite_character (\<C>⁺⁻)" 
+    have "finite_character (\<C>\<^sup>+\<^sup>-)" 
       using ExtensionCharacterFinitoP by auto 
-    thus "subset_closed (\<C>⁺⁻)" by (rule finite_character_closed)
+    thus "subset_closed (\<C>\<^sup>+\<^sup>-)" by (rule finite_character_closed)
   qed 
-  have 3: "maximal (MsucP S (\<C>⁺⁻) g) (\<C>⁺⁻)" 
-    and 4: "MsucP S (\<C>⁺⁻) g \<in> \<C>⁺⁻" 
+  have 3: "maximal (MsucP S (\<C>\<^sup>+\<^sup>-) g) (\<C>\<^sup>+\<^sup>-)" 
+    and 4: "MsucP S (\<C>\<^sup>+\<^sup>-) g \<in> \<C>\<^sup>+\<^sup>-" 
     using ExtensionConsistenteP1[OF h0 h1 h2] by auto
   show ?thesis 
-    using 1 and 2 and 3 and 4 and MaximalHintikkaP[of "\<C>⁺⁻"] by simp 
+    using 1 and 2 and 3 and 4 and MaximalHintikkaP[of "\<C>\<^sup>+\<^sup>-"] by simp 
 qed 
 
 
@@ -96,12 +96,12 @@ theorem ExistenceModelP:
   and h1: "consistenceP \<C>" 
   and h2: "S \<in> \<C>" 
   and h3: "F \<in> S"
-  shows "t_v_evaluation (IH (MsucP S (\<C>⁺⁻) g)) F = Ttrue" 
+  shows "t_v_evaluation (IH (MsucP S (\<C>\<^sup>+\<^sup>-) g)) F = Ttrue" 
 proof (rule ModeloHintikkaPa)     
-  show "hintikkaP (MsucP S (\<C>⁺⁻) g)"
+  show "hintikkaP (MsucP S (\<C>\<^sup>+\<^sup>-) g)"
     using h0 and h1 and h2 by(rule HintikkaP)
 next
-  show "F \<in> MsucP S (\<C>⁺⁻) g"
+  show "F \<in> MsucP S (\<C>\<^sup>+\<^sup>-) g"
     using h3  Max_subsetuntoP by auto  
 qed
 
@@ -116,9 +116,9 @@ proof -
     using h1 by auto
   { fix F
     assume hip: "F \<in> S"
-    have  "t_v_evaluation (IH (MsucP S (\<C>⁺⁻) g)) F = Ttrue" 
+    have  "t_v_evaluation (IH (MsucP S (\<C>\<^sup>+\<^sup>-) g)) F = Ttrue" 
       using g h2 h3 ExistenceModelP hip by blast }
-  hence "\<forall>F\<in>S. t_v_evaluation (IH (MsucP S (\<C>⁺⁻) g)) F = Ttrue" 
+  hence "\<forall>F\<in>S. t_v_evaluation (IH (MsucP S (\<C>\<^sup>+\<^sup>-) g)) F = Ttrue" 
     by (rule ballI)
   hence "\<exists> I. \<forall> F \<in> S. t_v_evaluation I F = Ttrue" by auto
   thus "satisfiable S" by(unfold satisfiable_def, unfold model_def)

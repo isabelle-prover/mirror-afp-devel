@@ -545,7 +545,7 @@ fun list_meta_horn (vars, (As, B)) =
 fun to_internal_vars ctxt (vars, body) =
     let
       val vars' = vars |> map Term.dest_Free
-                       |> Variable.variant_frees ctxt []
+                       |> Variable.variant_names ctxt
                        |> map (apfst Name.internal)
                        |> map Free
       val subst = vars ~~ vars'

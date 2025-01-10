@@ -157,7 +157,7 @@ proof -
     using filterlim_real_sequentially filterlim_tendsto_add_at_top by blast
   hence "(\<lambda>k. $T_(x+k) - $T_(x + Suc k)) sums $T_x"
     by (simp) (rule telescope_sums'[of "\<lambda>k. $T_(x+k)" 0, simplified])
-  thus ?thesis using that L_T by (rewrite sums_cong, simp_all) smt
+  thus ?thesis using that L_T by (rewrite sums_cong, simp_all) (smt (verit))
 qed
 
 definition death :: "real \<Rightarrow> real \<Rightarrow> real" (\<open>$d'_{_&_}\<close> [0,0] 200)
@@ -1033,7 +1033,8 @@ qed
 
 corollary linear_T_suminf_l: "$T_x = (\<Sum>k. $l_(x+k+1)) + $l_x / 2"
   if linear_interpolation total_finite for x::nat
-  using linear_l_sums_T_l that sums_unique by (smt (z3) Suc_eq_plus1 add_Suc_right suminf_cong)
+  using linear_l_sums_T_l that sums_unique
+  by (metis (no_types, lifting) diff_diff_eq2 nat_arith.add1 right_minus_eq semiring_norm(174) suminf_cong)
 
 lemma linear_mx_q: "$m_x = $q_x / (1 - $q_x / 2)" if linear_interpolation "x < $\<psi>" for x::nat
 proof -

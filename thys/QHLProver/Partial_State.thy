@@ -1365,7 +1365,7 @@ proof -
   have "nths (nths xs (ind_in_set (A \<union> B \<union> C) ` (A \<union> B))) (ind_in_set (A \<union> B) ` B) = nths xs (ind_in_set (A \<union> B \<union> C) ` B)"
     using nths_assoc_three_A[of B A C xs] assms by (simp add: inf_commute sup_commute)
   moreover have "nths (nths xs (ind_in_set (A \<union> B \<union> C) ` (B \<union> C))) (ind_in_set (B \<union> C) ` B) = nths xs (ind_in_set (A \<union> B \<union> C) ` B)" 
-    using nths_assoc_three_A[of B C A xs] assms by (smt Un_empty inf_commute inf_sup_distrib2 sup_assoc sup_commute)
+    using nths_assoc_three_A[of B C A xs] assms by (smt (verit) Un_empty inf_commute inf_sup_distrib2 sup_assoc sup_commute)
   ultimately show ?thesis by auto
 qed
 
@@ -1376,7 +1376,7 @@ lemma nths_assoc_three_C:
   shows "nths (nths xs (ind_in_set (A \<union> B \<union> C) ` (B \<union> C))) (ind_in_set (B \<union> C) ` C)
     = nths xs (ind_in_set (A \<union> B \<union> C) ` C) "
   using nths_assoc_three_A[of C B A xs] assms
-  by (smt Un_empty inf_commute inf_sup_distrib2 sup_assoc sup_commute)
+  by (smt (verit) Un_empty inf_commute inf_sup_distrib2 sup_assoc sup_commute)
 
 lemma valid_index_ind_in_set:
   assumes "is \<lhd> nths dims A" "B \<subseteq> A"

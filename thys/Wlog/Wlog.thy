@@ -1,4 +1,4 @@
-section \<open>\<open>Wlog\<close> – Setting up the command\<close>
+section \<open>\<open>Wlog\<close> -- Setting up the command\<close>
 
 theory Wlog
 imports Main
@@ -36,6 +36,6 @@ lemma linorder_wlog_5:
   assumes \<open>\<And>x y z w v. x \<le> y \<and> y \<le> z \<and> z \<le> w \<and> w \<le> v \<Longrightarrow> P x y z w v\<close>
   shows \<open>P x y z w v\<close>
   using assms
-  by (smt linorder_le_cases)
+  by (smt (verit) linorder_le_cases)
 
 end

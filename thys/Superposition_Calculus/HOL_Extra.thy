@@ -33,9 +33,33 @@ lemma Ball_Ex_comm:
   by meson+
 
 lemma set_map_id:
-  assumes "x \<in> set X" "f x \<notin> set X"  "map f X = X"
+  assumes "x \<in> set X" "f x \<notin> set X" "map f X = X"
   shows False
   using assms
   by(induction X) auto
+
+lemma infinite_prods: 
+  assumes"infinite (UNIV :: 'a set)"
+  shows "infinite {p :: 'a \<times> 'a. fst p = y}"
+proof-
+  have "{p :: 'a \<times> 'a . fst p = y} = {y} \<times> UNIV"
+    by auto
+
+  then show ?thesis
+    using finite_cartesian_productD2 assms 
+    by auto
+qed
+
+lemma ext_equiv: "(\<And>x. f x \<equiv> g x) \<Longrightarrow> f \<equiv> g"
+  by presburger
+
+lemma Collect_if_eq: "{x. if b x then P x else Q x } = {x. b x \<and> P x } \<union> {x. \<not>b x \<and> Q x}"
+  by auto
+
+lemma Collect_not_mem_conj_eq: "{x. x \<notin> X \<and> P x} = {x. P x} - X"
+  by auto
+
+lemma Ball_singleton: "(\<forall>x \<in> {x}. P x) \<longleftrightarrow> P x"
+  by simp
 
 end

@@ -489,7 +489,7 @@ end = struct
   let compare x y = Z.of_int (Pervasives.compare x y);;
 end;;\<close>
 
-code_reserved OCaml Pervasives FloatUtil
+code_reserved (OCaml) Pervasives FloatUtil
 
 code_printing
   type_constructor double \<rightharpoonup> (OCaml) "float"

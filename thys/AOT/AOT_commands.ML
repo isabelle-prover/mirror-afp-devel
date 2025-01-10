@@ -107,13 +107,10 @@ val trans_line =
 
 fun add_trans_rule AOTsyntax raw_rules thy =
 let
-  fun mapPair f (x, y) = (f x, f y)
-  val ctxt = Proof_Context.init_global thy;
-  val read_root = #1 o dest_Type o
-    Proof_Context.read_type_name {proper = true, strict = false} ctxt;
-  val raw_rules = map (mapPair (fn (r, s) =>
-    (Syntax_Phases.parse_ast_pattern ctxt (read_root r, s)))) raw_rules
-in add_AOT_print_rule AOTsyntax raw_rules thy end
+  val thy_ctxt = Proof_Context.init_global thy;
+  val rules = raw_rules
+    |> map (Syntax.Print_Rule #> Syntax.parse_trrule thy_ctxt #> (fn Syntax.Print_Rule r => r))
+in add_AOT_print_rule AOTsyntax rules thy end
 
 val _ =
   Outer_Syntax.command
@@ -261,8 +258,7 @@ let
   (* Construct a witness for the choice specification theorem. *)
   val frees = Term.add_frees trm []
   val witness = let
-    val w = case Term.variant_frees trm [("w", @{typ w})] of [w] => w
-                | _ => raise Fail "Unexpected."
+    val w = singleton (Term.variant_bounds trm) ("w", @{typ w})
   in
     \<^const>\<open>AOT_model_proposition_choice\<close> $
     Term.absfree w (\<^const>\<open>AOT_model_valid_in\<close> $ Free w $ rhs)
@@ -625,7 +621,7 @@ val _ =
   Outer_Syntax.command \<^command_keyword>\<open>AOT_modally_strict {\<close>
     "begin explicit AOT modally-strict proof block"
     (Scan.succeed (Toplevel.proof (fn state => (Proof.map_context (fn ctxt => let
-        val v = singleton (Variable.variant_frees ctxt []) ("ws", @{typ w}) |> fst
+        val v = singleton (Variable.variant_names ctxt) ("ws", @{typ w}) |> fst
         val (_,ctxt) = Proof_Context.add_fixes
           [(Binding.make (v, Position.none), SOME @{typ w}, Mixfix.NoSyn)] ctxt
         val ctxt = AOT_ProofData.put (SOME (Free (v, @{typ w}))) ctxt

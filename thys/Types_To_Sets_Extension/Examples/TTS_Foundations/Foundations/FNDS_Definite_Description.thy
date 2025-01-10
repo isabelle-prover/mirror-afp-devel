@@ -26,8 +26,8 @@ print_translation \<open>
   [
     (
       \<^const_syntax>\<open>The_on\<close>, 
-      fn _ => fn [Ut, Abs abs] =>
-        let val (x, t) = Syntax_Trans.atomic_abs_tr' abs
+      fn ctxt => fn [Ut, Abs abs] =>
+        let val (x, t) = Syntax_Trans.atomic_abs_tr' ctxt abs
         in Syntax.const \<^syntax_const>\<open>_The_on\<close> $ x $ Ut $ t end
     )
   ]

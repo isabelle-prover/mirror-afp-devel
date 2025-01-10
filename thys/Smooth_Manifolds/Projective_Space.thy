@@ -278,9 +278,11 @@ proof -
     define B1 where "B1 = ball b1 e \<inter> {x. norm x = 1}"
     have disjoint: "A1 \<inter> B1 = {}" "uminus ` A1 \<inter> B1 = {}"
       using e_less
-      apply (auto simp: A1_def B1_def mem_ball)
-      apply (smt dist_commute dist_triangle)
-      by (smt add_uminus_conv_diff diff_self dist_0_norm dist_add_cancel dist_commute dist_norm dist_triangle)
+       apply (auto simp: A1_def B1_def mem_ball)
+       apply (smt (verit, best) dist_commute dist_triangle)
+      apply (smt (verit, ccfv_SIG) add_uminus_conv_diff diff_self dist_0_norm dist_add_cancel dist_commute dist_norm
+          dist_triangle)
+      done
     have norm_1: "x \<in> A1 \<Longrightarrow> norm x = 1"
       "x \<in> B1 \<Longrightarrow> norm x = 1"
       for x
@@ -296,7 +298,7 @@ proof -
 
     from disjoint have "A \<inter> B = {}"
       apply (auto simp: A_def B_def mem_ball scales_def, goal_cases)
-      by (smt disjoint_iff_not_equal imageI mult_cancel_right norm_1(1) norm_1(2) norm_scaleR
+      by (smt (verit) disjoint_iff_not_equal imageI mult_cancel_right norm_1(1) norm_1(2) norm_scaleR
           scaleR_left.minus scale_left_imp_eq scale_minus_right)
     have "0 \<notin> A" "0 \<notin> B" using e_less \<open>a \<noteq> 0\<close> \<open>b \<noteq> 0\<close>
       by (auto simp: A_def B_def A1_def B1_def mem_ball a1_def b1_def scales_def)
@@ -384,7 +386,7 @@ qed
 
 lemma closed_Proj_rel: "closed {(x, y). Proj x = Proj y}"
   using closed_proj_rel
-  by (smt Collect_cong case_prodE case_prodI2 prod.inject proj_space.abs_eq_iff)
+  by (smt (verit) Collect_cong case_prodE case_prodI2 prod.inject proj_space.abs_eq_iff)
 
 instance proj_space :: (euclidean_space) t2_space
   apply (rule t2_space.intro_of_class)

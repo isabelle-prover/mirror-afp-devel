@@ -70,17 +70,17 @@ proof -
   let ?X = "{(a<x>.P, a<x>.Q) | a x P Q. \<forall>y \<in> supp(P, Q, x). P[x::=y] \<sim> Q[x::=y]}"
   have "eqvt ?X"
     apply(auto simp add: eqvt_def)
-    apply(rule_tac x="perma \<bullet> aa" in exI)
-    apply(rule_tac x="perma \<bullet> x" in exI)
-    apply(rule_tac x="perma \<bullet> P" in exI)
+    apply(rule_tac x="perm \<bullet> aa" in exI)
+    apply(rule_tac x="perm \<bullet> x" in exI)
+    apply(rule_tac x="perm \<bullet> P" in exI)
     apply auto
-    apply(rule_tac x="perma \<bullet> Q" in exI)
+    apply(rule_tac x="perm \<bullet> Q" in exI)
     apply auto
-    apply(drule_tac pi="rev perma" in pt_set_bij2[OF pt_name_inst, OF at_name_inst])
+    apply(drule_tac pi="rev perm" in pt_set_bij2[OF pt_name_inst, OF at_name_inst])
     apply(simp add: eqvts pt_rev_pi[OF pt_name_inst, OF at_name_inst])
-    apply(erule_tac x="rev perma \<bullet> y" in ballE)
+    apply(erule_tac x="rev perm \<bullet> y" in ballE)
     apply auto
-    apply(drule_tac p=perma in bisimClosed)
+    apply(drule_tac p=perm in bisimClosed)
     by(simp add: eqvts pt_pi_rev[OF pt_name_inst, OF at_name_inst])
   from assms have "(a<x>.P, a<x>.Q) \<in> ?X" by fastforce
   thus ?thesis

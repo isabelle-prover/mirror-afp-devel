@@ -4,7 +4,8 @@ session SequentInvertibility = "HOL-Nominal" +
   options [timeout = 600]
   theories
     SequentInvertibility
-  document_files
+  document_files (in "$ISABELLE_LLNCS_HOME")
     "llncs.cls"
+  document_files
     "root.bib"
     "root.tex"

@@ -127,7 +127,7 @@ section "Symmetric Monoidal Category"
     interpretation ToS: composite_functor MM.comp MM.comp comp S.map T ..
     sublocale \<sigma>': inverse_transformation M.CC.comp C T M.ToS.map \<sigma> ..
     interpretation \<sigma>: natural_transformation MM.comp comp T ToS.map \<sigma>'.map
-      using \<sigma>'.is_extensional \<sigma>'.is_natural_1 \<sigma>'.is_natural_2
+      using \<sigma>'.extensionality \<sigma>'.naturality1 \<sigma>'.naturality2
       by unfold_locales auto
     interpretation \<sigma>: natural_isomorphism MM.comp comp T ToS.map \<sigma>'.map
       by unfold_locales auto
@@ -302,7 +302,7 @@ section "Cartesian Monoidal Category"
         show "ECC.prod f g = f \<otimes> g"
         proof (cases "arr f \<and> arr g")
           show "\<not> (arr f \<and> arr g) \<Longrightarrow> ?thesis"
-            by (metis CC.arrE ECC.prod_def ECC.tuple_ext T.is_extensional fst_conv seqE snd_conv)
+            by (metis CC.arrE ECC.prod_def ECC.tuple_ext T.extensionality fst_conv seqE snd_conv)
           assume 0: "arr f \<and> arr g"
           have 1: "span (f \<cdot> \<pp>\<^sub>1[dom f, dom g]) (g \<cdot> \<pp>\<^sub>0[dom f, dom g])"
             using 0 by simp
@@ -535,10 +535,10 @@ section "Cartesian Monoidal Category"
         fix fg
         show "ECC.Prod' fg = ToS.map fg"
           using prod_eq_tensor
-          by (metis CC.arr_char ECC.prod_def ECC.tuple_ext S.map_def ToS.is_extensional o_apply seqE)
+          by (metis CC.arr_char ECC.prod_def ECC.tuple_ext S.map_def ToS.extensionality o_apply seqE)
       qed
       thus "natural_transformation CC.comp C T ToS.map ECC.\<sigma>"
-        using Prod_eq_T ECC.\<sigma>_is_natural_transformation by simp
+        using Prod_eq_T ECC.\<sigma>_naturalitytransformation by simp
     qed
 
     interpretation \<sigma>: natural_isomorphism CC.comp C T ToS.map ECC.\<sigma>
@@ -777,10 +777,8 @@ section "Elementary Cartesian Monoidal Category"
     proof
       show "\<And>f. \<not> arr f \<Longrightarrow> \<d>[f] = null"
         using ECC.tuple_ext by blast
-      show "\<And>f. arr f \<Longrightarrow> dom \<d>[f] = map (dom f)"
+      show "\<And>f. arr f \<Longrightarrow> arr \<d>[f]"
         using dup_def by simp
-      show "\<And>f. arr f \<Longrightarrow> cod \<d>[f] = To\<Delta>.map (cod f)"
-        by (simp add: prod_eq_tensor)
       show "\<And>f. arr f \<Longrightarrow> To\<Delta>.map f \<cdot> \<d>[dom f] = \<d>[f]"
         using ECC.tuple_expansion prod_eq_tensor by force
       show "\<And>f. arr f \<Longrightarrow> \<d>[cod f] \<cdot> map f = \<d>[f]"
@@ -810,7 +808,7 @@ section "Cartesian Monoidal Category from Cartesian Category"
       using T.functor_ToCT by auto
 
     interpretation \<alpha>: natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha>
-      using \<alpha>_is_natural_isomorphism by blast
+      using \<alpha>_naturalityisomorphism by blast
 
     interpretation L: "functor" C C \<open>\<lambda>f. Prod (cod \<iota>, f)\<close>
       using unit_is_terminal_arr T.fixing_ide_gives_functor_1 by simp

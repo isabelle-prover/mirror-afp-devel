@@ -1058,7 +1058,7 @@ begin
            also have "... = (G\<^sub>0 b \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 b, F f, \<tau>\<^sub>0' a]) \<cdot>\<^sub>D
                             (\<epsilon> b \<star>\<^sub>D \<tau>\<^sub>0 b \<star>\<^sub>D F f \<star>\<^sub>D \<tau>\<^sub>0' a) \<cdot>\<^sub>D
                             ((\<tau>\<^sub>0 b \<star>\<^sub>D \<tau>\<^sub>0' b) \<star>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 b, F f, \<tau>\<^sub>0' a])"
-             using a b f ide_f D.comp_arr_dom D.comp_cod_arr D.assoc'_is_natural_1
+             using a b f ide_f D.comp_arr_dom D.comp_cod_arr D.assoc'_naturality1
                    D.interchange [of "G\<^sub>0 b" "\<epsilon> b \<cdot>\<^sub>D (\<tau>\<^sub>0 b \<star>\<^sub>D \<tau>\<^sub>0' b)" "\<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 b, F f, \<tau>\<^sub>0' a]"
                                      "(\<tau>\<^sub>0 b \<star>\<^sub>D F f \<star>\<^sub>D \<tau>\<^sub>0' a) \<cdot>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 b, F f, \<tau>\<^sub>0' a]"]
                    D.interchange [of "\<epsilon> b" "\<tau>\<^sub>0 b \<star>\<^sub>D \<tau>\<^sub>0' b" "\<tau>\<^sub>0 b \<star>\<^sub>D F f \<star>\<^sub>D \<tau>\<^sub>0' a"

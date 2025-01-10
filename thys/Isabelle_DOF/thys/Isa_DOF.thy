@@ -1097,7 +1097,7 @@ ML \<open>
         (case args of
           [(c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p] =>
             (case Term_Position.decode_position1 p of
-              SOME pos => c $ f (mk_string f_mk accu (content (s, pos))) $ p
+              SOME {pos, ...} => c $ f (mk_string f_mk accu (content (s, pos))) $ p
             | NONE => err ())
         | _ => err ())
       end;
@@ -2273,7 +2273,7 @@ fun meta_args_2_latex thy sem_attrs transform_attr
         fun markup2string s = String.concat (List.filter (fn c => c <> Symbol.DEL) 
                                             (Symbol.explode (Protocol_Message.clean_output s)))
         fun ltx_of_markup ctxt s = let
-  	                            val term = (Syntax.check_term ctxt o Syntax.parse_term ctxt) s
+                                val term = (Syntax.check_term ctxt o Syntax.parse_term ctxt) s
                                 val str_of_term = ltx_of_term  ctxt true term 
                                   (*  handle _ => "Exception in ltx_of_term" *)
                               in
@@ -2283,7 +2283,7 @@ fun meta_args_2_latex thy sem_attrs transform_attr
         val ctxt = Proof_Context.init_global thy
         val actual_args =  map (fn ((lhs,_),rhs) => (toLong lhs, ltx_of_markup ctxt rhs))
                                attr_list
-	      val default_args =
+        val default_args =
           (DOF_core.get_attribute_defaults cid_long thy)
           |> map (fn (b,_, parsed_term) =>
                     (toLong (Long_Name.base_name ( Sign.full_name thy b))
@@ -2579,7 +2579,7 @@ fun get_positions ctxt x =
       | get _ (t $ u) = get [] t @ get [] u
       | get _ (Abs (_, _, t)) = get [] t
       | get _ _ = [];
-  in get [] end;
+  in map #pos o get [] end;
 
 fun dummy_frees ctxt xs tss =
   let

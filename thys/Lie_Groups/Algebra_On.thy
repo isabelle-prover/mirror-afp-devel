@@ -283,11 +283,7 @@ text \<open>
   so it can be disabled it here. Instead, we add a delimiter to the notation for Lie brackets,
   which also helps with unambiguous parsing.
 \<close>
-(*no_translations
-  "[x, xs]" == "x#[xs]"
-  "[x]" == "x#[]"
-unbundle no list_syntax and no list_enumeration_syntax
-*)
+(*unbundle no list_syntax and no list_enumeration_syntax*)
 (*end*)
 
 locale lie_algebra = algebra_on \<gg> scale lie_bracket + alternating_bilinear_on \<gg> scale lie_bracket

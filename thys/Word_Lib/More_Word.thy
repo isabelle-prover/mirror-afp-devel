@@ -12,8 +12,6 @@ theory More_Word
     "HOL-Library.Word" More_Arithmetic More_Divides More_Bit_Ring
 begin
 
-declare bit_1_iff[simp]
-
 context
   includes bit_operations_syntax
 begin

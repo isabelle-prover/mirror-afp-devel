@@ -102,7 +102,7 @@ fun obtain_variant_frees (ctxt, ritems) =
       (* New names for these variables. *)
       val all_vars' =
           all_vars |> map (fn (x, T) => (Name.dest_internal x, T))
-                   |> Variable.variant_frees ctxt []
+                   |> Variable.variant_names ctxt
       val subst = map (apply2 (Thm.cterm_of ctxt o Free)) (all_vars ~~ all_vars')
     in
       (fold Util.declare_free_term (map Free all_vars') ctxt, subst)

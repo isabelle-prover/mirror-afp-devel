@@ -67,7 +67,7 @@ $$\xymatrix{
     shows "\<guillemotleft>\<rho> : src f \<rightarrow> trg r\<guillemotright>" and "\<guillemotleft>\<rho> : g \<Rightarrow> r \<star> f\<guillemotright>"
       using tab_in_vhom' src_dom [of \<rho>] trg_dom [of \<rho>] base_in_hom apply auto
       by (metis arrI hcomp_simps(1) hcomp_simps(2) in_hhomI not_arr_null
-          src.is_extensional src.preserves_hom vconn_implies_hpar(1)
+          src.extensionality src.preserves_hom vconn_implies_hpar(1)
           vconn_implies_hpar(2) vconn_implies_hpar(3) vconn_implies_hpar(4))
 
     lemma ide_leg1:
@@ -1854,7 +1854,7 @@ $$
                   qed
                   thus ?thesis
                     using comp_cod_arr
-                    by (metis assoc_is_natural_1 base_simps(2-3) leg0_simps(2-4)
+                    by (metis assoc_naturality1 base_simps(2-3) leg0_simps(2-4)
                         w_simps(2) w_simps(4) w_simps(5))
                 qed
                 finally show ?thesis by blast
@@ -2593,7 +2593,7 @@ $$
             moreover have "seq (\<phi> \<star> u) (composite_cell w' \<theta>' \<cdot> \<beta>)"
               using assms ide_leg0 w w' \<theta> \<theta>' \<beta> calculation(1) calculation(3) by auto
             ultimately show ?thesis
-              using monoE section_is_mono iso_is_section by metis
+              using mono_cancel section_is_mono iso_is_section by metis
           qed
           show "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : w \<Rightarrow> w'\<guillemotright> \<and> \<beta> = g \<star> \<gamma> \<and> \<theta> = \<theta>' \<cdot> (f \<star> \<gamma>)"
             using w w' \<theta> \<theta>' \<beta> eq T2 by simp
@@ -2838,7 +2838,7 @@ $$
           moreover have "(\<rho> \<star> src f) \<cdot> (dom \<rho> \<star> src f) = \<rho> \<star> src f"
           proof -
             have "(\<rho> \<star> src \<rho>) \<cdot> (dom \<rho> \<star> src (dom \<rho>)) = \<rho> \<star> src \<rho>"
-              using R.as_nat_trans.is_natural_1 arr_dom tab_simps(1) by presburger
+              using R.as_nat_trans.naturality1 arr_dom tab_simps(1) by presburger
             thus ?thesis
               by simp
           qed
@@ -3037,7 +3037,7 @@ $$
                 D.src_hcomp v')
           have [simp]: "trg\<^sub>D u' = src\<^sub>D (F r)"
             using \<omega>'
-            by (metis D.cod_trg D.in_homE D.not_arr_null D.seq_if_composable D.trg.is_extensional
+            by (metis D.cod_trg D.in_homE D.not_arr_null D.seq_if_composable D.trg.extensionality
                 D.trg.preserves_arr D.trg.preserves_cod)
           have [simp]: "src\<^sub>D v' = a'"
             using v'_def \<omega>' a'_def by auto
@@ -4763,7 +4763,7 @@ $$
               hence 3: "F \<theta>\<^sub>C' \<cdot>\<^sub>D \<Phi> (f, w\<^sub>C') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>C) =
                         \<psi> \<cdot>\<^sub>D (\<theta>' \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w', e] \<cdot>\<^sub>D (F f \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>C)"
                 using cmp_components_are_iso D.iso_inv_iso D.iso_is_retraction D.retraction_is_epi
-                      D.epiE
+                      D.epi_cancel
                 by (metis C.in_homE D.comp_assoc T.tab_simps(2) T.ide_leg0 \<gamma>\<^sub>C 1
                     \<open>trg\<^sub>C w\<^sub>C = src\<^sub>C \<rho>\<close> \<theta>\<^sub>C preserves_arr w\<^sub>C)
               hence "(\<psi> \<cdot>\<^sub>D (\<theta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, e] \<cdot>\<^sub>D (F f \<star>\<^sub>D \<phi>)) \<cdot>\<^sub>D D.inv (\<Phi> (f, w\<^sub>C)) =
@@ -4773,7 +4773,7 @@ $$
               hence 2: "(\<psi> \<cdot>\<^sub>D (\<theta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, e]) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<phi>) =
                          \<psi> \<cdot>\<^sub>D (\<theta>' \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w', e] \<cdot>\<^sub>D (F f \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>C)"
                 using \<gamma>\<^sub>C cmp_components_are_iso D.iso_inv_iso D.iso_is_retraction
-                      D.retraction_is_epi D.epiE
+                      D.retraction_is_epi D.epi_cancel
                 by (metis (mono_tags, lifting) 1 3 C.in_homE D.comp_assoc T.tab_simps(2)
                       T.ide_leg0 \<open>trg\<^sub>C w\<^sub>C = src\<^sub>C \<rho>\<close> \<theta>\<^sub>C preserves_arr w\<^sub>C)
               hence "\<psi> \<cdot>\<^sub>D (\<theta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, e] =
@@ -5037,7 +5037,7 @@ $$
                   have "src\<^sub>D \<beta> = trg\<^sub>D e"
                     using \<beta>
                     by (metis D.dom_trg D.hseq_char' D.in_homE D.src_dom D.src_hcomp
-                        D.trg.is_extensional D.trg.preserves_arr D.trg.preserves_dom
+                        D.trg.extensionality D.trg.preserves_arr D.trg.preserves_dom
                         \<open>trg\<^sub>D e = a\<close> a_def)
                   moreover have "src\<^sub>D (F g) = trg\<^sub>D w"
                     by simp
@@ -5379,7 +5379,7 @@ $$
                 ultimately have "(\<theta>' \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w', e] \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>e) =
                                  (\<theta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, e]"
                   using \<psi> \<theta>\<^sub>C F\<theta>\<^sub>C_def D.iso_is_section D.section_is_mono
-                  by (metis D.monoE)
+                  by (metis D.mono_cancel)
                 thus ?thesis
                   using D.comp_assoc by simp
               qed
@@ -5453,7 +5453,7 @@ $$
                   also have "... = \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, trg\<^sub>D e]"
                     using w D.comp_cod_arr D.assoc'_in_hom(2) [of "F f" w "trg\<^sub>D e"]
                           \<open>trg\<^sub>D e = a\<close> \<open>trg\<^sub>D w = map\<^sub>0 (src\<^sub>C \<rho>)\<close>
-                    by (metis D.assoc'_is_natural_1 D.ideD(1) D.ideD(2) D.trg.preserves_ide
+                    by (metis D.assoc'_naturality1 D.ideD(1) D.ideD(2) D.trg.preserves_ide
                         D.trg_trg T'.leg0_simps(2,4) T'.leg1_simps(3)
                         T.leg1_simps(2-3) T.tab_simps(2) a_def e.ide_left
                         preserves_src)
@@ -5848,7 +5848,7 @@ $$
                 also have "... = F \<omega>"
                   using u \<omega> cmp_in_hom D.comp_arr_inv'
                   by (metis C.in_homE cmp_components_are_iso cmp_simps(5) \<rho>.ide_base
-                      as_nat_trans.is_natural_1 as_nat_trans.naturality hseq_ru)
+                      as_nat_trans.naturality1 as_nat_trans.naturality hseq_ru)
                 finally show ?thesis by blast
               qed
               ultimately show ?thesis
@@ -5876,7 +5876,7 @@ $$
           proof -
             have hseq_ru: "src\<^sub>C r = trg\<^sub>C u"
             using w \<theta>
-            by (metis C.hseq_char' C.in_homE C.trg.is_extensional C.trg.preserves_hom
+            by (metis C.hseq_char' C.in_homE C.trg.extensionality C.trg.preserves_hom
                 C.trg_hcomp C.vconn_implies_hpar(2) C.vconn_implies_hpar(4) \<rho>.leg0_simps(3))
             have hseq_fw: "src\<^sub>C f = trg\<^sub>C w \<and> src\<^sub>C f = trg\<^sub>C w'"
               using w w' \<rho>.ide_leg0 \<theta> \<theta>'
@@ -5972,7 +5972,7 @@ $$
                     using w w' \<theta>' \<beta> \<rho>.composite_cell_in_hom
                           preserves_comp [of "\<rho>.composite_cell w' \<theta>'" \<beta>]
                     by (metis C.dom_comp C.hcomp_simps(3) C.ide_char C.in_homE C.seqE C.seqI
-                        D.ext D.seqE \<rho>.tab_simps(4) is_extensional preserves_reflects_arr)
+                        D.ext D.seqE \<rho>.tab_simps(4) extensionality preserves_reflects_arr)
                   thus ?thesis by simp
                 qed
                 also have "... = D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D F (\<rho>.composite_cell w \<theta>) \<cdot>\<^sub>D \<Phi> (g, w)"
@@ -6046,7 +6046,7 @@ $$
                 have "F \<theta> = F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w') \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>') \<cdot>\<^sub>D D.inv (\<Phi> (f, w))"
                   using w' \<theta>' \<gamma>' preserves_hcomp hseq_fw D.comp_assoc D.invert_side_of_triangle
                   by (metis C.in_homE D.comp_arr_inv' cmp_components_are_iso cmp_simps(5)
-                      \<rho>.ide_leg0 \<theta> as_nat_trans.is_natural_1 w)
+                      \<rho>.ide_leg0 \<theta> as_nat_trans.naturality1 w)
                 also have "... = F \<theta>' \<cdot>\<^sub>D F (f \<star>\<^sub>C \<gamma>)"
                   using w' D.comp_assoc hseq_fw preserves_hcomp cmp_components_are_iso
                         D.comp_arr_inv'
@@ -6067,7 +6067,7 @@ $$
                 have "F \<beta> = \<Phi> (g, w') \<cdot>\<^sub>D (F g \<star>\<^sub>D \<gamma>') \<cdot>\<^sub>D D.inv (\<Phi> (g, w))"
                   by (metis (no_types) C.in_homE D.comp_arr_inv' D.comp_assoc
                       cmp_components_are_iso cmp_simps(5) \<beta> \<gamma>' \<rho>.ide_leg1 hseq_gw
-                      as_nat_trans.is_natural_1 as_nat_trans.naturality w w')
+                      as_nat_trans.naturality1 as_nat_trans.naturality w w')
                 also have "... = F (g \<star>\<^sub>C \<gamma>)"
                   using w \<gamma> \<gamma>' preserves_hcomp hseq_gw
                   by (metis C.hseqE C.hseqI' C.in_homE C.seqE \<open>\<theta> = \<theta>' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>)\<close>

@@ -76,6 +76,7 @@ lemma mono_Det_ref: " \<lbrakk>P \<sqsubseteq> P'; S \<sqsubseteq> S'\<rbrakk> \
   using below_trans mono_Det mono_Det_sym by blast
 
 lemma Det_BOT : "(P \<box> \<bottom>) = \<bottom>"
+  and BOT_Det: "(\<bottom> \<box> P) = \<bottom>"
   by (auto simp add:Process_eq_spec D_Det F_Det is_processT2 D_imp_front_tickFree F_UU D_UU) 
 
 lemma Det_STOP: "(P \<box> STOP) = P"
@@ -104,6 +105,7 @@ lemma mono_Ndet_ref: " \<lbrakk>P \<sqsubseteq> P'; S \<sqsubseteq> S'\<rbrakk> 
   using below_trans mono_Ndet mono_Ndet_sym by blast
 
 lemma Ndet_BOT: "(P \<sqinter> \<bottom>) = \<bottom>"
+  and BOT_Ndet: "(\<bottom> \<sqinter> P) = \<bottom>"
   by (auto simp: Process_eq_spec D_Ndet F_Ndet is_processT2 D_imp_front_tickFree F_UU D_UU)
 
 lemma Ndet_id: "(P \<sqinter> P) = P"

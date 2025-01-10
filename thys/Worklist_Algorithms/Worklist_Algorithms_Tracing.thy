@@ -29,9 +29,9 @@ end = struct
 end
 \<close>
 
-code_reserved SML Tracing
+code_reserved (SML) Tracing
 
-code_reserved OCaml Tracing
+code_reserved (OCaml) Tracing
 
 code_printing
   constant write_msg \<rightharpoonup> (SML) "(fn x => Tracing.count'_up ()) _"

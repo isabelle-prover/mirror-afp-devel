@@ -5145,21 +5145,21 @@ text \<open> Because we do not work at the semantic level, computing if \<open>M
        logic to be linear temporal logic or even first order logic. In such
        cases the complexity class would be higher in the complexity hierarchy. \<close>
 
-definition (in implication_logic) relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" (\<open>\<bar> _ \<bar>\<^sub>_\<close> [45])
+definition (in implication_logic) relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" (\<open>\<bar> _ \<bar>\<^bsub>_\<^esub>\<close> [45])
   where
-    "(\<bar> \<Gamma> \<bar>\<^sub>\<phi>) = (if \<M> \<Gamma> \<phi> = {} then 0 else Max { length \<Phi> | \<Phi>. \<Phi> \<in> \<M> \<Gamma> \<phi> })"
+    "(\<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>) = (if \<M> \<Gamma> \<phi> = {} then 0 else Max { length \<Phi> | \<Phi>. \<Phi> \<in> \<M> \<Gamma> \<phi> })"
 
 abbreviation (in classical_logic) MaxSAT :: "'a list \<Rightarrow> nat"
   where
-    "MaxSAT \<Gamma> \<equiv> \<bar> \<Gamma> \<bar>\<^sub>\<bottom>"
+    "MaxSAT \<Gamma> \<equiv> \<bar> \<Gamma> \<bar>\<^bsub>\<bottom>\<^esub>"
 
-definition (in implication_logic) complement_relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" (\<open>\<parallel> _ \<parallel>\<^sub>_\<close> [45])
+definition (in implication_logic) complement_relative_MaxSAT :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" (\<open>\<parallel> _ \<parallel>\<^bsub>_\<^esub>\<close> [45])
   where
-    "(\<parallel> \<Gamma> \<parallel>\<^sub>\<phi>) = length \<Gamma> - \<bar> \<Gamma> \<bar>\<^sub>\<phi>"
+    "(\<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>) = length \<Gamma> - \<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>"
 
 lemma (in implication_logic) relative_MaxSAT_intro:
   assumes "\<Phi> \<in> \<M> \<Gamma> \<phi>"
-  shows "length \<Phi> = \<bar> \<Gamma> \<bar>\<^sub>\<phi>"
+  shows "length \<Phi> = \<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>"
 proof -
   have "\<forall> n \<in> { length \<Psi> | \<Psi>. \<Psi> \<in> \<M> \<Gamma> \<phi> }. n \<le> length \<Phi>"
        "length \<Phi> \<in> { length \<Psi> | \<Psi>. \<Psi> \<in> \<M> \<Gamma> \<phi> }"
@@ -5179,7 +5179,7 @@ qed
 
 lemma (in implication_logic) complement_relative_MaxSAT_intro:
   assumes "\<Phi> \<in> \<M> \<Gamma> \<phi>"
-  shows "length (\<Gamma> \<ominus> \<Phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+  shows "length (\<Gamma> \<ominus> \<Phi>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
 proof -
   have "mset \<Phi> \<subseteq># mset \<Gamma>"
     using assms
@@ -5193,7 +5193,7 @@ proof -
 qed
 
 lemma (in implication_logic) length_MaxSAT_decomposition:
-  "length \<Gamma> = (\<bar> \<Gamma> \<bar>\<^sub>\<phi>) + \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+  "length \<Gamma> = (\<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>) + \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
 proof (cases "\<M> \<Gamma> \<phi> = {}")
   case True
   then show ?thesis
@@ -6550,12 +6550,12 @@ qed
 
 lemma (in classical_logic) relative_maximals_optimal_witness:
   assumes "\<not> \<turnstile> \<phi>"
-  shows "0 < (\<parallel> \<Gamma> \<parallel>\<^sub>\<phi>)
+  shows "0 < (\<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>)
      =  (\<exists> \<Sigma>. mset (map snd \<Sigma>) \<subseteq># mset \<Gamma> \<and>
               map (uncurry (\<squnion>)) \<Sigma> :\<turnstile> \<phi> \<and>
-              1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^sub>\<phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>)"
+              1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^bsub>\<phi>\<^esub>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>)"
 proof (rule iffI)
-  assume "0 < \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+  assume "0 < \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
   from this obtain \<Xi> where \<Xi>: "\<Xi> \<in> \<M> \<Gamma> \<phi>" "length \<Xi> < length \<Gamma>"
     using \<open>\<not> \<turnstile> \<phi>\<close>
           complement_relative_MaxSAT_def
@@ -6563,7 +6563,7 @@ proof (rule iffI)
           relative_maximals_existence
     by fastforce
   from this obtain \<psi> where \<psi>: "\<psi> \<in> set (\<Gamma> \<ominus> \<Xi>)"
-    by (metis \<open>0 < \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>\<close>
+    by (metis \<open>0 < \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>\<close>
               less_not_refl
               list.exhaust
               list.set_intros(1)
@@ -6687,30 +6687,30 @@ proof (rule iffI)
         unfolding relative_maximals_def
         by fastforce
     qed
-    have C: "\<forall> \<Xi> \<Gamma> \<phi>. \<Xi> \<in> \<M> \<Gamma> \<phi> \<longrightarrow> length \<Xi> = \<bar> \<Gamma> \<bar>\<^sub>\<phi>"
+    have C: "\<forall> \<Xi> \<Gamma> \<phi>. \<Xi> \<in> \<M> \<Gamma> \<phi> \<longrightarrow> length \<Xi> = \<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>"
       using relative_MaxSAT_intro by blast
-    then have D: "length \<Xi> = \<bar> \<Gamma> \<bar>\<^sub>\<phi>"
+    then have D: "length \<Xi> = \<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>"
       using \<open>\<Xi> \<in> \<M> \<Gamma> \<phi>\<close> by blast
     have
       "\<forall>(\<Sigma> ::'a list) \<Gamma> n. (\<not> mset \<Sigma> \<subseteq># mset \<Gamma> \<or> length (\<Gamma> \<ominus> \<Sigma>) \<noteq> n) \<or> length \<Gamma> = n + length \<Sigma>"
       using list_subtract_msub_eq by blast
     then have E: "length \<Gamma> = length (\<Gamma> \<ominus> map snd (\<WW> \<phi> (\<psi> # \<Xi>))) + length (\<psi> # \<Xi>)"
       using \<open>map snd (\<WW> \<phi> (\<psi> # \<Xi>)) = \<psi> # \<Xi>\<close> \<open>mset (\<psi> # \<Xi>) \<subseteq># mset \<Gamma>\<close> by presburger
-    have "1 + length \<Xi> = \<bar> \<WW>\<^sub>\<rightarrow> \<phi> (\<psi> # \<Xi>) @ \<Gamma> \<ominus> map snd (\<WW> \<phi> (\<psi> # \<Xi>)) \<bar>\<^sub>\<phi>"
+    have "1 + length \<Xi> = \<bar> \<WW>\<^sub>\<rightarrow> \<phi> (\<psi> # \<Xi>) @ \<Gamma> \<ominus> map snd (\<WW> \<phi> (\<psi> # \<Xi>)) \<bar>\<^bsub>\<phi>\<^esub>"
       using C B A by presburger
-    hence "1 + (\<parallel> map (uncurry (\<rightarrow>)) ?\<Sigma> @ \<Gamma> \<ominus> map snd ?\<Sigma> \<parallel>\<^sub>\<phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+    hence "1 + (\<parallel> map (uncurry (\<rightarrow>)) ?\<Sigma> @ \<Gamma> \<ominus> map snd ?\<Sigma> \<parallel>\<^bsub>\<phi>\<^esub>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
       using D E \<open>map snd (\<WW> \<phi> (\<psi> # \<Xi>)) = \<psi> # \<Xi>\<close> complement_relative_MaxSAT_def by force
   }
   ultimately
    show "\<exists> \<Sigma>. mset (map snd \<Sigma>) \<subseteq># mset \<Gamma> \<and>
               map (uncurry (\<squnion>)) \<Sigma> :\<turnstile> \<phi> \<and>
-              1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^sub>\<phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+              1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^bsub>\<phi>\<^esub>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
   by metis
 next
   assume "\<exists> \<Sigma>. mset (map snd \<Sigma>) \<subseteq># mset \<Gamma> \<and>
                map (uncurry (\<squnion>)) \<Sigma> :\<turnstile> \<phi> \<and>
-               1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^sub>\<phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
-  thus "0 < \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+               1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^bsub>\<phi>\<^esub>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
+  thus "0 < \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
     by auto
 qed
 
@@ -6888,7 +6888,7 @@ lemma (in classical_logic) witness_relative_MaxSAT_increase:
   assumes "\<not> \<turnstile> \<phi>"
       and "mset (map snd \<Sigma>) \<subseteq># mset \<Gamma>"
       and "map (uncurry (\<squnion>)) \<Sigma> :\<turnstile> \<phi>"
-    shows "(\<bar> \<Gamma> \<bar>\<^sub>\<phi>) < (\<bar> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<bar>\<^sub>\<phi>)"
+    shows "(\<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>) < (\<bar> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<bar>\<^bsub>\<phi>\<^esub>)"
 proof -
   from \<open>\<not> \<turnstile> \<phi>\<close> obtain \<Xi> where \<Xi>: "\<Xi> \<in> \<M> \<Gamma> \<phi>"
     using relative_maximals_existence by blast
@@ -7069,12 +7069,12 @@ proof -
     by metis
   hence "length ((\<chi> \<rightarrow> \<gamma>) # ?\<Xi>\<^sub>1) = length \<Xi> + 1"
     by simp
-  hence "length ((\<chi> \<rightarrow> \<gamma>) # ?\<Xi>\<^sub>1) = (\<bar> \<Gamma> \<bar>\<^sub>\<phi>) + 1"
+  hence "length ((\<chi> \<rightarrow> \<gamma>) # ?\<Xi>\<^sub>1) = (\<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>) + 1"
     using \<Xi>
     by (simp add: relative_MaxSAT_intro)
   moreover from \<open>\<not> \<turnstile> \<phi>\<close> obtain \<Omega> where \<Omega>: "\<Omega> \<in> \<M> (map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma>) \<phi>"
     using relative_maximals_existence by blast
-  ultimately have "length \<Omega> \<ge> (\<bar> \<Gamma> \<bar>\<^sub>\<phi>) + 1"
+  ultimately have "length \<Omega> \<ge> (\<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>) + 1"
     using relative_maximals_def
     by (metis (no_types, lifting) \<open>\<not> \<chi> \<rightarrow> \<gamma> # ?\<Xi>\<^sub>1 :\<turnstile> \<phi>\<close> mem_Collect_eq)
   thus ?thesis
@@ -7083,9 +7083,9 @@ qed
 
 lemma (in classical_logic) relative_maximals_counting_deduction_lower_bound:
   assumes "\<not> \<turnstile> \<phi>"
-    shows "(\<Gamma> #\<turnstile> n \<phi>) = (n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>)"
+    shows "(\<Gamma> #\<turnstile> n \<phi>) = (n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>)"
 proof -
-  have "\<forall> \<Gamma>. (\<Gamma> #\<turnstile> n \<phi>) = (n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>)"
+  have "\<forall> \<Gamma>. (\<Gamma> #\<turnstile> n \<phi>) = (n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>)"
   proof (induct n)
     case 0
     then show ?case by simp
@@ -7102,27 +7102,27 @@ proof -
       let ?\<Gamma>' = "map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> (map snd \<Sigma>)"
       have "length \<Gamma> = length ?\<Gamma>'"
         using \<Sigma>(1) list_subtract_msub_eq by fastforce
-      hence "(\<parallel> \<Gamma> \<parallel>\<^sub>\<phi>) > (\<parallel> ?\<Gamma>' \<parallel>\<^sub>\<phi>)"
+      hence "(\<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>) > (\<parallel> ?\<Gamma>' \<parallel>\<^bsub>\<phi>\<^esub>)"
         by (metis \<Sigma>(1) \<Sigma>(2) \<open>\<not> \<turnstile> \<phi>\<close>
                   witness_relative_MaxSAT_increase
                   length_MaxSAT_decomposition
                   add_less_cancel_right
                   nat_add_left_cancel_less)
-      with \<Sigma>(3) Suc.hyps have "Suc n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+      with \<Sigma>(3) Suc.hyps have "Suc n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
         by auto
     }
     moreover
     {
       fix \<Gamma>
-      assume "Suc n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+      assume "Suc n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
       from this obtain \<Sigma> where \<Sigma>:
         "mset (map snd \<Sigma>) \<subseteq># mset \<Gamma>"
         "map (uncurry (\<squnion>)) \<Sigma> :\<turnstile> \<phi>"
-        "1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^sub>\<phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
-        (is "1 + (\<parallel> ?\<Gamma>' \<parallel>\<^sub>\<phi>) = \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>")
+        "1 + (\<parallel> map (uncurry (\<rightarrow>)) \<Sigma> @ \<Gamma> \<ominus> map snd \<Sigma> \<parallel>\<^bsub>\<phi>\<^esub>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
+        (is "1 + (\<parallel> ?\<Gamma>' \<parallel>\<^bsub>\<phi>\<^esub>) = \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>")
         by (metis Suc_le_D assms relative_maximals_optimal_witness zero_less_Suc)
-      have "n \<le> \<parallel> ?\<Gamma>' \<parallel>\<^sub>\<phi>"
-        using \<Sigma>(3) \<open>Suc n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>\<close> by linarith
+      have "n \<le> \<parallel> ?\<Gamma>' \<parallel>\<^bsub>\<phi>\<^esub>"
+        using \<Sigma>(3) \<open>Suc n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>\<close> by linarith
       hence "?\<Gamma>' #\<turnstile> n \<phi>" using Suc by blast
       hence "\<Gamma> #\<turnstile> (Suc n) \<phi>" using \<Sigma>(1) \<Sigma>(2) by fastforce
     }
@@ -7147,7 +7147,7 @@ next
   have "\<not> \<Gamma> #\<turnstile> (1 + length \<Gamma>) \<phi>"
   proof (rule notI)
     assume "\<Gamma> #\<turnstile> (1 + length \<Gamma>) \<phi>"
-    hence "1 + length \<Gamma> \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+    hence "1 + length \<Gamma> \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
       using \<open>\<not> \<turnstile> \<phi>\<close> relative_maximals_counting_deduction_lower_bound by blast
     hence "1 + length \<Gamma> \<le> length \<Gamma>"
       using complement_relative_MaxSAT_def by fastforce
@@ -7170,16 +7170,16 @@ proof (cases "\<turnstile> \<phi>")
   ultimately show ?thesis by meson
 next
   case False
-  from \<open>\<not> \<turnstile> \<phi>\<close> have "(\<Gamma> #\<turnstile> n \<phi>) = (n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>)"
+  from \<open>\<not> \<turnstile> \<phi>\<close> have "(\<Gamma> #\<turnstile> n \<phi>) = (n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>)"
     by (simp add: relative_maximals_counting_deduction_lower_bound)
-  moreover have "(n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>) = (\<forall> \<Phi> \<in> \<M> \<Gamma> \<phi>. n \<le> length (\<Gamma> \<ominus> \<Phi>))"
+  moreover have "(n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>) = (\<forall> \<Phi> \<in> \<M> \<Gamma> \<phi>. n \<le> length (\<Gamma> \<ominus> \<Phi>))"
   proof (rule iffI)
-    assume "n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+    assume "n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
     {
       fix \<Phi>
       assume "\<Phi> \<in> \<M> \<Gamma> \<phi>"
       hence "n \<le> length (\<Gamma> \<ominus> \<Phi>)"
-        using \<open>n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>\<close> complement_relative_MaxSAT_intro by auto
+        using \<open>n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>\<close> complement_relative_MaxSAT_intro by auto
     }
     thus "\<forall>\<Phi> \<in> \<M> \<Gamma> \<phi>. n \<le> length (\<Gamma> \<ominus> \<Phi>)" by blast
   next
@@ -7189,7 +7189,7 @@ next
       "n \<le> length (\<Gamma> \<ominus> \<Phi>)"
       using relative_maximals_existence
       by blast
-    thus "n \<le> \<parallel> \<Gamma> \<parallel>\<^sub>\<phi>"
+    thus "n \<le> \<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>"
       by (simp add: complement_relative_MaxSAT_intro)
   qed
   ultimately show ?thesis by metis
@@ -7739,7 +7739,7 @@ text \<open> It follows from the collapse theorem that any probability inequalit
 
 lemma (in classical_logic) relative_maximals_verum_extract:
   assumes "\<not> \<turnstile> \<phi>"
-  shows "(\<bar> replicate n \<top> @ \<Phi> \<bar>\<^sub>\<phi>) = n + (\<bar> \<Phi> \<bar>\<^sub>\<phi>)"
+  shows "(\<bar> replicate n \<top> @ \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) = n + (\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>)"
 proof (induct n)
   case 0
   then show ?case by simp
@@ -7772,19 +7772,19 @@ next
       using \<open>\<Sigma> \<in> \<M> (\<top> # \<Phi>) \<phi>\<close> relative_maximals_def by blast
     hence "mset (remove1 \<top> \<Sigma>) \<subseteq># mset \<Phi>"
       using subset_eq_diff_conv by fastforce
-    ultimately have "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) \<ge> length (remove1 \<top> \<Sigma>)"
+    ultimately have "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) \<ge> length (remove1 \<top> \<Sigma>)"
       by (metis (no_types, lifting)
                 relative_MaxSAT_intro
                 list_deduction_weaken
                 relative_maximals_def
                 relative_maximals_existence
                 mem_Collect_eq)
-    hence "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) + 1 \<ge> length \<Sigma>"
+    hence "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) + 1 \<ge> length \<Sigma>"
       by (simp add: \<open>\<top> \<in> set \<Sigma>\<close> length_remove1)
-    moreover have "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) < length \<Sigma>"
+    moreover have "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) < length \<Sigma>"
     proof (rule ccontr)
-      assume "\<not> (\<bar> \<Phi> \<bar>\<^sub>\<phi>) < length \<Sigma>"
-      hence "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) \<ge> length \<Sigma>" by linarith
+      assume "\<not> (\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) < length \<Sigma>"
+      hence "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) \<ge> length \<Sigma>" by linarith
       from this obtain \<Delta> where "\<Delta> \<in> \<M> \<Phi> \<phi>" "length \<Delta> \<ge> length \<Sigma>"
         using assms relative_MaxSAT_intro relative_maximals_existence by fastforce
       hence "\<not> (\<top> # \<Delta>) :\<turnstile> \<phi>"
@@ -7802,19 +7802,19 @@ next
         using \<open>length \<Sigma> \<le> length \<Delta>\<close> dual_order.trans by blast
       thus "False" by simp
     qed
-    ultimately have "(\<bar> \<top> # \<Phi> \<bar>\<^sub>\<phi>) = (1 + \<bar> \<Phi> \<bar>\<^sub>\<phi>)"
+    ultimately have "(\<bar> \<top> # \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) = (1 + \<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>)"
       by (metis Suc_eq_plus1 Suc_le_eq \<open>\<Sigma> \<in> \<M> (\<top> # \<Phi>) \<phi>\<close> add.commute le_antisym relative_MaxSAT_intro)
   }
   thus ?case using Suc by simp
 qed
 
 lemma (in classical_logic) complement_MaxSAT_completeness:
-  "(\<forall> \<P> \<in> dirac_measures. (\<Sum>\<phi>\<leftarrow>\<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. \<P> \<gamma>)) = (length \<Phi> \<le> \<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^sub>\<bottom>)"
+  "(\<forall> \<P> \<in> dirac_measures. (\<Sum>\<phi>\<leftarrow>\<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. \<P> \<gamma>)) = (length \<Phi> \<le> \<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^bsub>\<bottom>\<^esub>)"
 proof (cases "\<turnstile> \<bottom>")
   case True
   hence "\<M> (\<^bold>\<sim> \<Gamma> @ \<Phi>) \<bottom> = {}"
     using relative_maximals_existence by auto
-  hence "length (\<^bold>\<sim> \<Gamma> @ \<Phi>) = \<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^sub>\<bottom>"
+  hence "length (\<^bold>\<sim> \<Gamma> @ \<Phi>) = \<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^bsub>\<bottom>\<^esub>"
     unfolding complement_relative_MaxSAT_def relative_MaxSAT_def by presburger
   then show ?thesis
     using True counting_deduction_completeness counting_deduction_tautology_weaken
@@ -7827,7 +7827,7 @@ next
 qed
 
 lemma (in classical_logic) relative_maximals_neg_verum_elim:
-  "(\<bar> replicate n (\<sim> \<top>) @ \<Phi> \<bar>\<^sub>\<phi>) = (\<bar> \<Phi> \<bar>\<^sub>\<phi>)"
+  "(\<bar> replicate n (\<sim> \<top>) @ \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) = (\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>)"
 proof (induct n)
   case 0
   then show ?case by simp
@@ -7835,7 +7835,7 @@ next
   case (Suc n)
   {
     fix \<Phi>
-    have "(\<bar> (\<sim> \<top>) # \<Phi> \<bar>\<^sub>\<phi>) = (\<bar> \<Phi> \<bar>\<^sub>\<phi>)"
+    have "(\<bar> (\<sim> \<top>) # \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) = (\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>)"
     proof (cases "\<turnstile> \<phi>")
       case True
       then show ?thesis
@@ -7868,17 +7868,17 @@ next
         by (metis add_mset_add_single mset.simps(2) mset_remove1 subset_eq_diff_conv)
       moreover have "\<not> (\<Sigma> :\<turnstile> \<phi>)"
         using \<open>\<Sigma> \<in> \<M> (\<sim> \<top> # \<Phi>) \<phi>\<close> relative_maximals_def by blast
-      ultimately have "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) \<ge> length \<Sigma>"
+      ultimately have "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) \<ge> length \<Sigma>"
         by (metis (no_types, lifting)
                   relative_MaxSAT_intro
                   list_deduction_weaken
                   relative_maximals_def
                   relative_maximals_existence
                   mem_Collect_eq)
-      hence "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) \<ge> (\<bar> (\<sim> \<top>) # \<Phi> \<bar>\<^sub>\<phi>)"
+      hence "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) \<ge> (\<bar> (\<sim> \<top>) # \<Phi> \<bar>\<^bsub>\<phi>\<^esub>)"
         using \<open>\<Sigma> \<in> \<M> (\<sim> \<top> # \<Phi>) \<phi>\<close> relative_MaxSAT_intro by auto
       moreover
-      have "(\<bar> \<Phi> \<bar>\<^sub>\<phi>) \<le> (\<bar> (\<sim> \<top>) # \<Phi> \<bar>\<^sub>\<phi>)"
+      have "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) \<le> (\<bar> (\<sim> \<top>) # \<Phi> \<bar>\<^bsub>\<phi>\<^esub>)"
       proof -
         obtain \<Delta> where "\<Delta> \<in> \<M> \<Phi> \<phi>"
           using False relative_maximals_existence by blast
@@ -7914,11 +7914,11 @@ proof -
     fix \<P> :: "'a \<Rightarrow> real"
     obtain \<rho> :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a \<Rightarrow> real" where
         " (\<forall>\<Phi> \<Gamma>. \<rho> \<Phi> \<Gamma> \<in> dirac_measures \<and> \<not> (\<Sum>\<phi>\<leftarrow>\<Phi>. (\<rho> \<Phi> \<Gamma>) \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. (\<rho> \<Phi> \<Gamma>) \<gamma>)
-                 \<or> length \<Phi> \<le> \<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^sub>\<bottom>)
-        \<and> (\<forall>\<Phi> \<Gamma>. length \<Phi> \<le> (\<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^sub>\<bottom>)
+                 \<or> length \<Phi> \<le> \<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^bsub>\<bottom>\<^esub>)
+        \<and> (\<forall>\<Phi> \<Gamma>. length \<Phi> \<le> (\<parallel> \<^bold>\<sim> \<Gamma> @ \<Phi> \<parallel>\<^bsub>\<bottom>\<^esub>)
                    \<longrightarrow> (\<forall>\<P> \<in> dirac_measures. (\<Sum>\<phi>\<leftarrow>\<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. \<P> \<gamma>)))"
     using complement_MaxSAT_completeness by moura
-  moreover have "\<forall>\<Gamma> \<phi> n. length \<Gamma> - n \<le> (\<parallel> \<Gamma> \<parallel>\<^sub>\<phi>) \<or> (\<bar> \<Gamma> \<bar>\<^sub>\<phi>) - n \<noteq> 0"
+  moreover have "\<forall>\<Gamma> \<phi> n. length \<Gamma> - n \<le> (\<parallel> \<Gamma> \<parallel>\<^bsub>\<phi>\<^esub>) \<or> (\<bar> \<Gamma> \<bar>\<^bsub>\<phi>\<^esub>) - n \<noteq> 0"
     by (metis add_diff_cancel_right'
               cancel_ab_semigroup_add_class.diff_right_commute
               diff_is_0_eq length_MaxSAT_decomposition)
@@ -7926,8 +7926,8 @@ proof -
     by force
   ultimately have
     "      (\<P> \<in> dirac_measures \<longrightarrow> (\<Sum>\<phi>\<leftarrow>\<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. \<P> \<gamma>))
-         \<and> (\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length (\<^bold>\<sim> \<Gamma>)
-    \<or>      \<not> (\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length (\<^bold>\<sim> \<Gamma>)
+         \<and> (\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length (\<^bold>\<sim> \<Gamma>)
+    \<or>      \<not> (\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length (\<^bold>\<sim> \<Gamma>)
          \<and> (\<exists>\<P>. \<P> \<in> dirac_measures \<and> \<not> (\<Sum>\<phi>\<leftarrow>\<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. \<P> \<gamma>))"
     by (metis (no_types) add_diff_cancel_left'
                          add_diff_cancel_right'
@@ -7957,14 +7957,14 @@ proof (cases "c \<ge> 0")
       using probability_replicate_verum [where \<Phi>=\<Phi> and n=n]
       by metis
   }
-  hence "(\<bar> \<^bold>\<sim> \<Gamma> @ replicate n \<top> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length \<Gamma>"
+  hence "(\<bar> \<^bold>\<sim> \<Gamma> @ replicate n \<top> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length \<Gamma>"
     using dirac_MaxSAT_partial_completeness by blast
   moreover have "mset (\<^bold>\<sim> \<Gamma> @ replicate n \<top> @ \<Phi>) = mset (replicate n \<top> @ \<^bold>\<sim> \<Gamma> @ \<Phi>)"
     by simp
-  ultimately have "(\<bar> replicate n \<top> @ \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length \<Gamma>"
+  ultimately have "(\<bar> replicate n \<top> @ \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length \<Gamma>"
     unfolding relative_MaxSAT_def relative_maximals_def
     by metis
-  hence "(\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) + \<lceil>c\<rceil> \<le> length \<Gamma>"
+  hence "(\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) + \<lceil>c\<rceil> \<le> length \<Gamma>"
     using \<open>real n = \<lceil>c\<rceil>\<close> consistency relative_maximals_verum_extract
     by auto
   then show ?thesis by linarith
@@ -7988,10 +7988,10 @@ next
       using probability_replicate_verum [where \<Phi>=\<Gamma> and n=n]
       by metis
   }
-  hence "(\<bar> \<^bold>\<sim> (replicate n \<top> @ \<Gamma>) @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length (replicate n \<top> @ \<Gamma>)"
+  hence "(\<bar> \<^bold>\<sim> (replicate n \<top> @ \<Gamma>) @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length (replicate n \<top> @ \<Gamma>)"
     using dirac_MaxSAT_partial_completeness [where \<Phi>=\<Phi> and \<Gamma>="replicate n \<top> @ \<Gamma>"]
     by metis
-  hence "(\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> n + length \<Gamma>"
+  hence "(\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> n + length \<Gamma>"
     by (simp add: relative_maximals_neg_verum_elim)
   then show ?thesis using \<open>real n = - \<lceil>c\<rceil>\<close> by linarith
 qed
@@ -8019,13 +8019,13 @@ next
     assume "c \<ge> 0"
     from this obtain n :: nat where "real n = \<lceil>c\<rceil>"
       by (metis ceiling_mono ceiling_zero of_nat_nat)
-    hence "n + (\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length \<Gamma>"
+    hence "n + (\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length \<Gamma>"
       using assms by linarith
-    hence "(\<bar> replicate n \<top> @ \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length \<Gamma>"
+    hence "(\<bar> replicate n \<top> @ \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length \<Gamma>"
       by (simp add: \<open>\<not> \<turnstile> \<bottom>\<close> relative_maximals_verum_extract)
     moreover have "mset (replicate n \<top> @ \<^bold>\<sim> \<Gamma> @ \<Phi>) = mset (\<^bold>\<sim> \<Gamma> @ replicate n \<top> @ \<Phi>)"
       by simp
-    ultimately have "(\<bar> \<^bold>\<sim> \<Gamma> @ replicate n \<top> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length \<Gamma>"
+    ultimately have "(\<bar> \<^bold>\<sim> \<Gamma> @ replicate n \<top> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length \<Gamma>"
       unfolding relative_MaxSAT_def relative_maximals_def
       by metis
     hence "\<forall> \<P> \<in> dirac_measures. (\<Sum>\<phi>\<leftarrow>(replicate n \<top>) @ \<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>\<Gamma>. \<P> \<gamma>)"
@@ -8051,9 +8051,9 @@ next
     hence "\<lceil>c\<rceil> \<le> 0" by auto
     from this obtain n :: nat where "real n = - \<lceil>c\<rceil>"
       by (metis neg_0_le_iff_le of_nat_nat)
-    hence "(\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> n + length \<Gamma>"
+    hence "(\<bar> \<^bold>\<sim> \<Gamma> @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> n + length \<Gamma>"
       using assms by linarith
-    hence "(\<bar> \<^bold>\<sim> (replicate n \<top> @ \<Gamma>) @ \<Phi> \<bar>\<^sub>\<bottom>) \<le> length (replicate n \<top> @ \<Gamma>)"
+    hence "(\<bar> \<^bold>\<sim> (replicate n \<top> @ \<Gamma>) @ \<Phi> \<bar>\<^bsub>\<bottom>\<^esub>) \<le> length (replicate n \<top> @ \<Gamma>)"
       by (simp add: relative_maximals_neg_verum_elim)
     hence "\<forall> \<P> \<in> dirac_measures.
               (\<Sum>\<phi>\<leftarrow>\<Phi>. \<P> \<phi>) \<le> (\<Sum>\<gamma>\<leftarrow>(replicate n \<top>) @ \<Gamma>. \<P> \<gamma>)"

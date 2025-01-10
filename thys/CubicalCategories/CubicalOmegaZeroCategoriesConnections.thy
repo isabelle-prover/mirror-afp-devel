@@ -147,7 +147,7 @@ proof-
   hence "\<partial> l \<alpha> (y \<otimes>\<^bsub>i\<^esub> x) = \<partial> l \<alpha> y \<otimes>\<^bsub>i\<^esub> x"
     by (metis assms(1) ha local.face_compat_var)
   hence "ri_inv i x (\<partial> l \<alpha> y)"
-    by (smt (z3) assms(1) assms(2) h1 h2 h3 ha icid.ts_compat local.face_comm_var)
+    by (metis assms(1,2) h1 h2 h3 ha local.face_comm_var local.face_compat_var)
   hence "\<partial> l \<alpha> y = y"
     using ri_unique_var assms(2) by blast}
   thus ?thesis

@@ -33,19 +33,14 @@ begin
      shows "arr f"
        using assms epi_def by auto
 
-     (*
-      * TODO: epiE and monoE don't need both seq hypotheses.
-      * Also, they are not stated in the form of elimination rules.
-      *)
-
-     lemma epiE [elim]:
+     lemma epi_cancel:
      assumes "epi f"
-     and "seq g f" and "seq g' f" and "g \<cdot> f = g' \<cdot> f"
+     and "seq g f" and "g \<cdot> f = g' \<cdot> f"
      shows "g = g'"
-       using assms unfolding epi_def inj_on_def by blast
+       using assms unfolding epi_def inj_on_def by auto
        
      lemma monoI [intro]:
-     assumes "arr g" and "\<And>f f'. \<lbrakk>seq g f; seq g f'; g \<cdot> f = g \<cdot> f'\<rbrakk> \<Longrightarrow> f = f'"
+     assumes "arr g" and "\<And>f f'. \<lbrakk>seq g f; g \<cdot> f = g \<cdot> f'\<rbrakk> \<Longrightarrow> f = f'"
      shows "mono g"
        using assms mono_def inj_on_def by blast
 
@@ -54,11 +49,11 @@ begin
      shows "arr f"
        using assms mono_def by auto
        
-     lemma monoE [elim]:
+     lemma mono_cancel:
      assumes "mono g"
-     and "seq g f" and "seq g f'" and "g \<cdot> f = g \<cdot> f'"
+     and "seq g f" and "g \<cdot> f = g \<cdot> f'"
      shows "f' = f"
-       using assms unfolding mono_def inj_on_def by blast
+       using assms unfolding mono_def inj_on_def by auto
 
      definition inverse_arrows
      where "inverse_arrows f g \<equiv> ide (g \<cdot> f) \<and> ide (f \<cdot> g)"
@@ -129,7 +124,7 @@ begin
        show "arr g" using assms section_def by blast
        from assms obtain h where h: "ide (h \<cdot> g)" by blast
        have hg: "seq h g" using h by auto
-       thus "\<And>f f'. \<lbrakk>seq g f; seq g f'; g \<cdot> f = g \<cdot> f'\<rbrakk> \<Longrightarrow> f = f'"
+       thus "\<And>f f'. \<lbrakk>seq g f; g \<cdot> f = g \<cdot> f'\<rbrakk> \<Longrightarrow> f = f'"
          using hg h ide_compE seqE comp_assoc comp_cod_arr by metis
      qed
 
@@ -174,7 +169,7 @@ begin
        have "inj_on (\<lambda>f. (m' \<cdot> m) \<cdot> f) {f. seq (m' \<cdot> m) f}"
          unfolding inj_on_def
          using assms
-         by (metis CollectD seqE monoE comp_assoc)
+         by (metis CollectD seqE mono_cancel comp_assoc)
        thus ?thesis using assms(3) mono_def by force
      qed           
 
@@ -184,7 +179,7 @@ begin
      proof -
        have "inj_on (\<lambda>g. g \<cdot> (e' \<cdot> e)) {g. seq g (e' \<cdot> e)}"
          unfolding inj_on_def
-         using assms by (metis CollectD epiE match_2 comp_assoc)
+         using assms by (metis CollectD epi_cancel match_2 comp_assoc)
        thus ?thesis using assms(3) epi_def by force
      qed           
 
@@ -232,7 +227,7 @@ begin
         from f obtain g where g: "ide (f \<cdot> g)" by blast
         have "inverse_arrows f g"
           using f g comp_arr_dom comp_cod_arr comp_assoc inverse_arrowsI
-          by (metis ide_char' ide_compE monoE mono_implies_arr)
+          by (metis ide_char' ide_compE mono_cancel mono_implies_arr)
         thus "iso f" by auto
       qed
     qed
@@ -248,7 +243,7 @@ begin
         from f obtain g where g: "ide (g \<cdot> f)" by blast
         have "inverse_arrows f g"
           using f g comp_arr_dom comp_cod_arr epi_implies_arr
-                comp_assoc ide_compE inverse_arrowsI epiE ide_char'
+                comp_assoc ide_compE inverse_arrowsI epi_cancel ide_char'
           by metis
         thus "iso f" by auto
       qed
@@ -274,12 +269,12 @@ begin
     lemma iso_cancel_left:
     assumes "iso f" and "f \<cdot> g = f \<cdot> g'" and "seq f g"
     shows "g = g'"
-      using assms iso_is_section section_is_mono monoE by metis
+      using assms iso_is_section section_is_mono mono_cancel by metis
 
     lemma iso_cancel_right:
     assumes "iso g" and "f \<cdot> g = f' \<cdot> g" and "seq f g" and "iso g"
     shows "f = f'"
-      using assms iso_is_retraction retraction_is_epi epiE by metis
+      using assms iso_is_retraction retraction_is_epi epi_cancel by metis
 
     definition isomorphic
     where "isomorphic a a' = (\<exists>f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f)"
@@ -425,10 +420,12 @@ begin
     proof -
       show "ide (g \<cdot> f) \<Longrightarrow> inverse_arrows f g"
         using assms
-        by (metis comp_inv_arr' epiE ide_compE inv_is_inverse iso_iff_section_and_epi)
+        by (metis comp_inv_arr' epi_cancel ide_compE inv_is_inverse
+            iso_iff_section_and_epi)
       show "ide (f \<cdot> g) \<Longrightarrow> inverse_arrows f g"
         using assms
-        by (metis ide_compE comp_arr_inv' inv_is_inverse iso_iff_mono_and_retraction monoE)
+        by (metis ide_compE comp_arr_inv' inv_is_inverse iso_iff_mono_and_retraction
+            mono_cancel)
     qed
 
     text \<open>

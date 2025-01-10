@@ -159,7 +159,7 @@ id_ofsize :: Int -> [[Integer]];
 id_ofsize n = [[if i == j then 1 else 0 | j <- [0..n-1]] | i <- [0..n-1]];
 }\<close>
 
-code_reserved Haskell FPLLL_Solver fplll_solver
+code_reserved (Haskell) FPLLL_Solver fplll_solver
 
 code_printing
   constant external_lll_solver \<rightharpoonup> (Haskell) "FPLLL'_Solver.fplll'_solver"

@@ -510,6 +510,13 @@
           <description></description>
         </item>
         <item>
+          <title>Boustrophedon_Transform</title>
+          <link>/sessions/boustrophedon_transform/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/boustrophedon_transform/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Broadcast_Psi</title>
           <link>/sessions/broadcast_psi/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -1221,6 +1228,13 @@
           <link>/sessions/csp_reftk/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/csp_reftk/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Cube_Dissection</title>
+          <link>/sessions/cube_dissection/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/cube_dissection/</guid>
           <description></description>
         </item>
         <item>
@@ -2176,6 +2190,13 @@
           <description></description>
         </item>
         <item>
+          <title>Generalized_Cauchy_Davenport</title>
+          <link>/sessions/generalized_cauchy_davenport/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/generalized_cauchy_davenport/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Generalized_Counting_Sort</title>
           <link>/sessions/generalized_counting_sort/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2414,6 +2435,13 @@
           <description></description>
         </item>
         <item>
+          <title>Hilbert_Space_Tensor_Product</title>
+          <link>/sessions/hilbert_space_tensor_product/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/hilbert_space_tensor_product/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Hoare_Time</title>
           <link>/sessions/hoare_time/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2572,6 +2600,13 @@
           <link>/sessions/ifc_tracking/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/ifc_tracking/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ILL</title>
+          <link>/sessions/ill/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/ill/</guid>
           <description></description>
         </item>
         <item>
@@ -3933,6 +3968,13 @@
           <description></description>
         </item>
         <item>
+          <title>Notes_On_Goedels_Ontological_Argument</title>
+          <link>/sessions/notes_on_goedels_ontological_argument/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/notes_on_goedels_ontological_argument/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>NREST</title>
           <link>/sessions/nrest/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4455,6 +4497,20 @@
           <link>/sessions/probability_inequality_completeness/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/probability_inequality_completeness/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ProcessComposition</title>
+          <link>/sessions/processcomposition/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/processcomposition/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>ProcessComposition_ILL</title>
+          <link>/sessions/processcomposition_ill/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/processcomposition_ill/</guid>
           <description></description>
         </item>
         <item>
@@ -5116,6 +5172,13 @@
           <description></description>
         </item>
         <item>
+          <title>SCL_Simulates_Ground_Resolution</title>
+          <link>/sessions/scl_simulates_ground_resolution/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/scl_simulates_ground_resolution/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>SDS_Impossibility</title>
           <link>/sessions/sds_impossibility/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5627,6 +5690,13 @@
           <description></description>
         </item>
         <item>
+          <title>Sum_Of_Squares_Count</title>
+          <link>/sessions/sum_of_squares_count/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/sum_of_squares_count/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Sumcheck_Protocol</title>
           <link>/sessions/sumcheck_protocol/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5918,6 +5988,13 @@
           <link>/sessions/two_generated_word_monoids_intersection/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/two_generated_word_monoids_intersection/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Two_Hermitian_Results</title>
+          <link>/sessions/two_hermitian_results/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/two_hermitian_results/</guid>
           <description></description>
         </item>
         <item>

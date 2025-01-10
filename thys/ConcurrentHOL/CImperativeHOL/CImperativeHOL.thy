@@ -181,7 +181,7 @@ parallel p q = do
   return ()
 \<close>
 
-code_reserved Haskell Ix
+code_reserved (Haskell) Ix
 
 code_printing type_constructor prog \<rightharpoonup> (Haskell) "Heap.Prog _ _"
 code_monad prog.bind Haskell

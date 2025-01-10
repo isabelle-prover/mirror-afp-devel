@@ -753,7 +753,7 @@ begin
               moreover have "elts ?J = Collect J.arr"
                 by (simp add: 1 incloD.is_discrete)
               ultimately show ?thesis
-                using \<phi>x.is_extensional \<phi>y.is_extensional
+                using \<phi>x.extensionality \<phi>y.extensionality
                 by (metis HOL.ext mem_Collect_eq)
             qed
             thus "x = y"
@@ -789,7 +789,7 @@ begin
                   incloD.is_discrete incloD.is_functor incloD.preserves_cod j map_simp o_apply)
           qed
           moreover have "D.mkCone \<pi> = \<pi>"
-            using \<pi>.is_extensional null_char by auto
+            using \<pi>.extensionality null_char by auto
           ultimately show "cone J comp D \<Pi>D \<pi>"
             using 2 D.cone_mkCone [of \<Pi>D \<pi>] by simp
         qed
@@ -818,11 +818,11 @@ begin
             using \<chi>.cone_axioms \<pi>.is_universal [of a "incloD.mkCone \<chi>'"] by blast
           have 4: "incloD.mkCone \<chi>' = \<chi>'"
             using D.as_nat_trans.preserves_reflects_arr D.preserves_arr Limit.cone_def
-                  \<chi>' \<chi>'.is_extensional identity_functor.intro identity_functor.map_def
-                  incloD.as_nat_trans.is_extensional o_apply
+                  \<chi>' \<chi>'.extensionality identity_functor.intro identity_functor.map_def
+                  incloD.as_nat_trans.extensionality o_apply
             by fastforce
           have 5: "D.mkCone \<pi> = \<pi>"
-            using \<pi>.is_extensional null_char by auto
+            using \<pi>.extensionality null_char by auto
           have 6: "\<And>f. Cls.in_hom f a \<Pi>D \<Longrightarrow> incloD.cones_map f \<pi> = D.cones_map f \<pi>"
           proof -
             fix f

@@ -182,7 +182,7 @@ qed
 lemma RR2_id_terms_gpair_set [simp]:
  "\<T>\<^sub>G (lift_sig_RR2 ` \<F>) = {gpair t u |t u. (t, u) \<in> Restr Id (\<T>\<^sub>G \<F>)}"
  apply (auto simp: map_funs_term_some_gpair \<T>\<^sub>G_equivalent_def)
- apply (smt RR2_gterm_unlift_funas RR2_gterm_unlift_lift_id gterm.map_comp)
+ apply (smt (verit) RR2_gterm_unlift_funas RR2_gterm_unlift_lift_id gterm.map_comp)
  using funas_gterm_map_gterm by blast
 
 end

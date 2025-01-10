@@ -290,7 +290,7 @@ code_printing constant Ref_Time.lookup \<rightharpoonup> (SML) "(fn/ ()/ =>/ !/ 
 code_printing constant Ref_Time.update \<rightharpoonup> (SML) "(fn/ ()/ =>/ _/ :=/ _)"
 code_printing constant "HOL.equal :: 'a ref \<Rightarrow> 'a ref \<Rightarrow> bool" \<rightharpoonup> (SML) infixl 6 "="
 
-code_reserved Eval Unsynchronized
+code_reserved (Eval) Unsynchronized
 
 
 text \<open>OCaml\<close>
@@ -302,7 +302,7 @@ code_printing constant Ref_Time.lookup \<rightharpoonup> (OCaml) "(fun/ ()/ ->/ 
 code_printing constant Ref_Time.update \<rightharpoonup> (OCaml) "(fun/ ()/ ->/ _/ :=/ _)"
 code_printing constant "HOL.equal :: 'a ref \<Rightarrow> 'a ref \<Rightarrow> bool" \<rightharpoonup> (OCaml) infixl 4 "="
 
-code_reserved OCaml ref
+code_reserved (OCaml) ref
 
 
 text \<open>Haskell\<close>

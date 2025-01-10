@@ -1,0 +1,28 @@
+title = "Impossibility of the Dissection of a Cube"
+date = 2024-11-22
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+This entry formalizes Littlewood's argument, demonstrating that a 3-dimensional cube cannot be dissected into a finite collection of smaller cubes, each of a different size.
+The formalization addresses theorem #82, \"Dissection of Cubes (J.E. Littlewood's 'elegant' proof)\" from Freek Wiedijk's \"100 Mathematical Theorems\" list, and is based upon a prior formalization in Lean."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.surlykke]
+email = "surlykke_email"
+
+[contributors]
+
+[notify]
+surlykke = "surlykke_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -1,12 +1,13 @@
 chapter AFP
 
-session Wlog = Main +
+session Wlog = HOL +
   options [timeout = 600]
   sessions
     "HOL-Types_To_Sets"
     "HOL-Eisbach"
     "HOL-Computational_Algebra"
-    "HOL-Analysis" Mersenne_Primes
+    "HOL-Analysis"
+    Mersenne_Primes
   theories
     Wlog
     Wlog_Examples

@@ -146,7 +146,7 @@ text\<open>SML does not come with a bind function. We just define it (hopefully 
 code_printing code_module Bind \<rightharpoonup> (SML) \<open>
 fun bind x f () = f (x ()) ();
 \<close>
-code_reserved SML bind return
+code_reserved (SML) bind return
   
 text\<open>
   Make sure the code generator does not try to define \<^typ>\<open>'\<alpha> io\<close> by itself, but always uses
@@ -202,8 +202,8 @@ fun getLine () = case (TextIO.inputLine TextIO.stdIn) of
                 | NONE => raise Fail "getLine";
 \<close>
 
-code_reserved Haskell StdIO println getLine
-code_reserved SML println print getLine TextIO
+code_reserved (Haskell) StdIO println getLine
+code_reserved (SML) println print getLine TextIO
 
 text\<open>
   When the code generator sees the functions \<^const>\<open>println\<close> or \<^const>\<open>getLine\<close>, we tell it to use

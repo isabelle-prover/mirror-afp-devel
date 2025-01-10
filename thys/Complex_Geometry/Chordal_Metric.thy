@@ -52,7 +52,7 @@ lemma inprod_cvec_g_zero [simp]:
   shows "Re \<langle>z, z\<rangle> > 0"
 proof-
   have "\<forall> a b. a \<noteq> 0 \<or> b \<noteq> 0 \<longrightarrow> 0 < (Re a * Re a + Im a * Im a) + (Re b * Re b + Im b * Im b)"
-    by (smt complex_eq_0 not_sum_squares_lt_zero power2_eq_square)
+    by (smt (verit) complex_eq_0 not_sum_squares_lt_zero power2_eq_square)
   thus ?thesis
     using assms
     by (cases z, simp add: vec_cnj_def)
@@ -231,7 +231,7 @@ lemma dist_fs_triangle_finite:
 proof-
   let ?cc = "1+(cmod c)\<^sup>2" and ?bb = "1+(cmod b)\<^sup>2" and ?aa = "1+(cmod a)\<^sup>2"
   have "sqrt ?cc > 0" "sqrt ?aa > 0" "sqrt ?bb > 0"
-    by (smt real_sqrt_gt_zero zero_compare_simps(12))+
+    by (smt (verit) real_sqrt_gt_zero zero_compare_simps(12))+
   have "(a - b)*(1+cnj c*c) = (a-c)*(1+cnj c*b) + (c-b)*(1 + cnj c*a)"
     by (simp add: field_simps)
   moreover
@@ -239,7 +239,7 @@ proof-
     using complex_norm_square
     by auto
   hence "cmod ((a - b)*(1+cnj c*c)) = cmod(a - b) * (1+(cmod c)\<^sup>2)"
-    by (smt norm_mult norm_of_real zero_compare_simps(12))
+    by (smt (verit) norm_mult norm_of_real zero_compare_simps(12))
   ultimately
   have "cmod(a - b) * (1+(cmod c)\<^sup>2) \<le> cmod (a-c) * cmod (1+cnj c*b) + cmod (c-b) * cmod(1 + cnj c*a)"
     using complex_mod_triangle_ineq2[of "(a-c)*(1+cnj c*b)" "(c-b)*(1 + cnj c*a)"]
@@ -490,9 +490,9 @@ proof-
     using inv_stereographic_is_inv assms
     by (metis inv_stereographic_stereographic)+
   have "(1 + (cmod m1)\<^sup>2) \<noteq> 0"  "(1 + (cmod m2)\<^sup>2) \<noteq> 0"
-    by (smt power2_less_0)+
+    by (smt (verit) power2_less_0)+
   have "(1 + (cmod m1)\<^sup>2) > 0"  "(1 + (cmod m2)\<^sup>2) > 0"
-    by (smt realpow_square_minus_le)+
+    by (smt (verit) realpow_square_minus_le)+
   hence "(1 + (cmod m1)\<^sup>2) * (1 + (cmod m2)\<^sup>2) > 0"
     by (metis norm_mult_less norm_zero power2_eq_square zero_power2)
   hence ++: "sqrt ((1 + cmod m1 * cmod m1) * (1 + cmod m2 * cmod m2)) > 0"
@@ -508,7 +508,7 @@ proof-
     assume us: "M1 \<in> unit_sphere" "M2 \<in> unit_sphere" and
         *: "M1 = inv_stereographic_cvec_r3 (of_complex_cvec m1)" "M2 = inv_stereographic_cvec_r3 (of_complex_cvec m2)"
     have "(1 + (cmod m1)\<^sup>2) \<noteq> 0"  "(1 + (cmod m2)\<^sup>2) \<noteq> 0"
-      by (smt power2_less_0)+
+      by (smt (verit) power2_less_0)+
     thus "(dist_riemann_sphere_r3 M1 M2)\<^sup>2 * (1 + (cmod m1)\<^sup>2) * (1 + (cmod m2)\<^sup>2) =
           4 * (cmod (m1 - m2))\<^sup>2"
       apply (subst dist_riemann_sphere_r3_inner[OF us])
@@ -549,9 +549,9 @@ proof-
     using inv_stereographic_is_inv assms
     by (metis inv_stereographic_stereographic)+
   have "(1 + (cmod m2)\<^sup>2) \<noteq> 0"
-    by (smt power2_less_0)
+    by (smt (verit) power2_less_0)
   have "(1 + (cmod m2)\<^sup>2) > 0"
-    by (smt realpow_square_minus_le)+
+    by (smt (verit) realpow_square_minus_le)+
   hence "sqrt (1 + cmod m2 * cmod m2) > 0"
     using real_sqrt_gt_0_iff
     by (simp add: power2_eq_square)
@@ -567,7 +567,7 @@ proof-
     assume us: "M1 \<in> unit_sphere" "M2 \<in> unit_sphere" and
            *: "M1 = inv_stereographic_cvec_r3 \<infinity>\<^sub>v" "M2 = inv_stereographic_cvec_r3 (of_complex_cvec m2)"
     have "(1 + (cmod m2)\<^sup>2) \<noteq> 0"
-      by (smt power2_less_0)
+      by (smt (verit) power2_less_0)
     thus "(dist_riemann_sphere_r3 M1 M2)\<^sup>2 * (1 + (cmod m2)\<^sup>2) = 4"
       apply (subst dist_riemann_sphere_r3_inner[OF us])
       apply (subst *)+
@@ -872,7 +872,7 @@ qed
 
 lemma sqrt_1_plus_square:
   shows "sqrt (1 + a\<^sup>2) \<noteq> 0"
-  by (smt real_sqrt_less_mono real_sqrt_zero realpow_square_minus_le)
+  by (smt (verit) real_sqrt_less_mono real_sqrt_zero realpow_square_minus_le)
 
 lemma
   assumes "dist_fs z a = r"
@@ -1472,7 +1472,7 @@ proof (cases "x > 0")
   case True
   hence "y < 0"
     using \<open>x * y < 0\<close>
-    by (smt mult_nonneg_nonneg)
+    by (smt (verit) mult_nonneg_nonneg)
   have "x - y > 0"
     using \<open>x > 0\<close> \<open>y < 0\<close>
     by auto

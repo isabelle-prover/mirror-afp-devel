@@ -7,6 +7,7 @@ chapter \<open>Test cases\<close>
 theory Native_Word_Test
 imports
   Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
+  "Word_Lib.Least_significant_bit"
   "HOL-Library.Code_Test"
 begin
 

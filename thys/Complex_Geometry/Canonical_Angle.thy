@@ -34,7 +34,7 @@ proof-
       thus ?thesis
         using real_of_int_floor_ge_diff_one[of "\<alpha>"]
         using of_int_floor_le[of "\<alpha>"]
-        by (rule_tac x="\<alpha> - floor \<alpha>" in exI) smt
+        by (rule_tac x="\<alpha> - floor \<alpha>" in exI) (smt (verit))
     qed
   qed
 
@@ -63,7 +63,7 @@ proof-
     by auto
   have "\<alpha>'*pi > -pi \<and> \<alpha>'*pi \<le> pi" 
     using 1
-    by (smt mult.commute mult_le_cancel_left1 mult_minus_right pi_gt_zero)
+    by (smt (verit) mult.commute mult_le_cancel_left1 mult_minus_right pi_gt_zero)
   moreover
   have "\<alpha> - \<alpha>'*pi = 2 * real_of_int k * pi"
     using 2

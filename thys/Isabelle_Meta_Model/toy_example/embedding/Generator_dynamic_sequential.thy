@@ -914,7 +914,7 @@ fun mk_free ctxt s l =
   let val t_s = mk_term ctxt s in
   if Term.is_Free t_s then s else
     let val l = (s, "") :: l in
-    mk_free ctxt (fst (hd (Term.variant_frees t_s l))) l
+    mk_free ctxt (fst (hd (Term.variant_bounds t_s l))) l
     end
   end
 

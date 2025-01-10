@@ -74,7 +74,7 @@ proof -
     show "(\<Sum>j\<in>I. Re (f j)) = 1" using al
       by (metis Re_sum assms(3) one_complex.simps(1))
     show "(\<Sum>x\<in>I. Re (f x) * Re (f x)) = 1" using al
-      by (smt (z3) assms(4) of_real_hom.hom_1 of_real_hom.hom_mult 
+      by (smt (verit) assms(4) of_real_hom.hom_1 of_real_hom.hom_mult 
           of_real_hom.hom_sum sum.cong) 
   qed
   thus ?thesis using al by force

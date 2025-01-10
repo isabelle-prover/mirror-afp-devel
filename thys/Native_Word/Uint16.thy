@@ -5,7 +5,9 @@
 chapter \<open>Unsigned words of 16 bits\<close>
 
 theory Uint16 imports
-  Word_Type_Copies
+  Uint_Common
+  Code_Target_Word
+  Code_Int_Integer_Conversion
   Code_Target_Integer_Bit
 begin
 
@@ -173,14 +175,14 @@ code_printing code_module Uint16 \<rightharpoonup> (SML_word)
 val _ = if 4 <= Word.wordSize then () else raise (Fail ("wordSize less than 4"));
 
 structure Uint16 : sig
-  val set_bit : Word16.word -> IntInf.int -> bool -> Word16.word
+  val generic_set_bit : Word16.word -> IntInf.int -> bool -> Word16.word
   val shiftl : Word16.word -> IntInf.int -> Word16.word
   val shiftr : Word16.word -> IntInf.int -> Word16.word
   val shiftr_signed : Word16.word -> IntInf.int -> Word16.word
   val test_bit : Word16.word -> IntInf.int -> bool
 end = struct
 
-fun set_bit x n b =
+fun generic_set_bit x n b =
   let val mask = Word16.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
   in if b then Word16.orb (x, mask)
      else Word16.andb (x, Word16.notb mask)
@@ -199,21 +201,21 @@ fun test_bit x n =
   Word16.andb (x, Word16.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word16.fromInt 0
 
 end; (* struct Uint16 *)\<close>
-code_reserved SML_word Uint16
+code_reserved (SML_word) Uint16
 
 code_printing code_module Uint16 \<rightharpoonup> (Haskell)
  \<open>module Uint16(Int16, Word16) where
 
   import Data.Int(Int16)
   import Data.Word(Word16)\<close>
-code_reserved Haskell Uint16
+code_reserved (Haskell) Uint16
 
 text \<open>Scala provides unsigned 16-bit numbers as Char.\<close>
 
 code_printing code_module Uint16 \<rightharpoonup> (Scala)
 \<open>object Uint16 {
 
-def set_bit(x: scala.Char, n: BigInt, b: Boolean) : scala.Char =
+def generic_set_bit(x: scala.Char, n: BigInt, b: Boolean) : scala.Char =
   b match {
     case true => (x | (1.toChar << n.intValue)).toChar
     case false => (x & (1.toChar << n.intValue).unary_~).toChar
@@ -228,7 +230,7 @@ def shiftr_signed(x: scala.Char, n: BigInt) : scala.Char = (x.toShort >> n.intVa
 def test_bit(x: scala.Char, n: BigInt) : Boolean = (x & (1.toChar << n.intValue)) != 0
 
 } /* object Uint16 */\<close>
-code_reserved Scala Uint16
+code_reserved (Scala) Uint16
 
 text \<open>
   Avoid @{term Abs_uint16} in generated code, use @{term Rep_uint16'} instead. 
@@ -377,7 +379,7 @@ global_interpretation uint16: word_type_copy_target_language Abs_uint16 Rep_uint
     and uint16_shiftl = uint16.shiftl
     and uint16_shiftr = uint16.shiftr
     and uint16_sshiftr = uint16.sshiftr
-    and uint16_set_bit = uint16.set_bit
+    and uint16_generic_set_bit = uint16.gen_set_bit
   by standard simp_all
 
 code_printing constant uint16_test_bit \<rightharpoonup>
@@ -385,10 +387,10 @@ code_printing constant uint16_test_bit \<rightharpoonup>
   (Haskell) "Data'_Bits.testBitBounded" and
   (Scala) "Uint16.test'_bit"
 
-code_printing constant uint16_set_bit \<rightharpoonup>
-  (SML_word) "Uint16.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (Scala) "Uint16.set'_bit"
+code_printing constant uint16_generic_set_bit \<rightharpoonup>
+  (SML_word) "Uint16.generic'_set'_bit" and
+  (Haskell) "Data'_Bits.genericSetBitBounded" and
+  (Scala) "Uint16.generic'_set'_bit"
 
 code_printing constant uint16_shiftl \<rightharpoonup>
   (SML_word) "Uint16.shiftl" and

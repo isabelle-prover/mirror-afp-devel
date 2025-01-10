@@ -465,7 +465,7 @@ proof
         have "(fill_gholes ?D1 (butlast ss), fill_gholes ?D1 (butlast ts)) \<in> (gctxtex_onp Q \<R>)\<^sup>+"
           by (auto simp del: gctxt_of_gmctxt.simps fill_gholes_gmctxt.simps fill_gholes.simps
             simp: \<T>\<^sub>G_equivalent_def)
-            (smt Suc.prems(1) Suc.prems(4) diff_Suc_1 last_conv_nth length_butlast
+            (smt (verit) Suc.prems(1) Suc.prems(4) diff_Suc_1 last_conv_nth length_butlast
            length_greater_0_conv lessI less_SucI mem_Sigma_iff nth_butlast sig(2) subset_iff \<T>\<^sub>G_funas_gterm_conv)
         then have "(fill_gholes ?D1 (butlast ss), fill_gholes ?D2 [last ts]) \<in> (gctxtex_onp Q \<R>)\<^sup>+"
           using mem unfolding trans
@@ -543,7 +543,7 @@ lemma gctxtex_onp_substep_rtrancl:
   assumes "gctxtex_onp P \<R> \<subseteq> \<R>"
   shows "gctxtex_onp P (\<R>\<^sup>*) \<subseteq> \<R>\<^sup>*"
   using gctxtex_onp_substep_trancl[OF assms]
-  by (smt gctxtex_onpE gctxtex_onpI rtrancl_eq_or_trancl subrelI subset_eq)
+  by (smt (verit) gctxtex_onpE gctxtex_onpI rtrancl_eq_or_trancl subrelI subset_eq)
 
 lemma gctxtex_onp_substep_trancl_diff_pred [intro]:
   assumes "\<And> C D. P C \<Longrightarrow> Q D \<Longrightarrow> Q (D \<circ>\<^sub>G\<^sub>c C)"

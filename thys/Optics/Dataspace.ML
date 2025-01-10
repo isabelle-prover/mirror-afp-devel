@@ -15,7 +15,7 @@ struct
     val chfixes = map (fn (n, t) => (Binding.name n, SOME (Prism_Lib.prismT t achanT), NoSyn)) chds
     val wbs    = map (Prism_Lib.mk_wb_prism o Syntax.free) chns;
     val simp   = Attrib.check_src ctx (Token.make_src ("simp", Position.none) [])
-    val imps   = map (fn e => Locale.check thy (e, Position.none)) exts
+    val imps   = map (fn e => Locale.check_global thy (e, Position.none)) exts
     (* List of prisms imported *)
     val ilnsls = map (filter (Prism_Lib.isPrismT o snd) o map fst o Locale.params_of thy) imps
     (* Codependence axioms from imports *)
@@ -38,7 +38,7 @@ struct
 
   fun compile_dataspace nm exts cds assms vds chds thy =
   let
-    val imps   = map (fn e => Locale.check thy (e, Position.none)) exts
+    val imps   = map (fn e => Locale.check_global thy (e, Position.none)) exts
     (* When extending existing dataspaces, we instantiate their respective state and channel
        types to avoid ambiguity (via a locale "where" clause) *)
     val pinsts = Expression.Named 

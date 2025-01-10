@@ -72,7 +72,7 @@ from the process instantiation --- is equal \<^const>\<open>BOT\<close> .
 \<close>
 
 lemma BOT_is_UU[simp]: "BOT = \<bottom>"
-apply(auto simp: Pcpo.eq_bottom_iff Process.le_approx_def Ra_def 
+apply(auto simp: eq_bottom_iff Process.le_approx_def Ra_def 
                  min_elems_Collect_ftF_is_Nil Process.Nil_elem_T 
                  F_BOT D_BOT T_BOT
            elim: D_imp_front_tickFree)

@@ -10,7 +10,8 @@ struct
   (* turns A ==> B[CARD('a)] ==> C[CARD('a), CARD('b)] ==> ... ==> Z 
     into CARD('a) = n1 ==> CARD('b) = n2 ==> A ==> B[n1] ==> C[n1,n2] ==> ... ==> Z *)
   fun extract_card_type ctxt thm = let
-    val prop = Thm.prop_of thm 
+    val prop = Thm.prop_of thm
+    val prop_ctxt = Variable.declare_names prop ctxt
     fun add_match_terms f t = (if f t then insert (op =) t else I) #>
       (case t of         
         t1 $ t2 => add_match_terms f t1 #> add_match_terms f t2
@@ -27,11 +28,11 @@ struct
     val card_ts = add_match_terms find_card prop []
     val vars = Term.add_vars prop []
     val all_tvars = Term.add_tvars prop []
-    val all_tfrees = map TFree (Variable.variant_frees ctxt [prop] (map (apfst fst) all_tvars))
+    val all_tfrees = map TFree (Variable.variant_names prop_ctxt (map (apfst fst) all_tvars))
     val ns = map_index (fn (i,_) => ("n" ^ string_of_int i, @{typ nat})) card_ts
     val substT_map = map fst all_tvars ~~ all_tfrees
     val substT = I subst_TVars substT_map
-    val free_ns = Variable.variant_frees ctxt [prop] (map (apfst fst) vars @ ns)
+    val free_ns = Variable.variant_names prop_ctxt (map (apfst fst) vars @ ns)
     val all_frees = map (substT o Free) free_ns
     val ns = drop (length vars) all_frees
     val subst = subst_vars (substT_map, map fst vars ~~ (take (length vars) all_frees))
@@ -52,14 +53,16 @@ struct
   (* TODO: fix and simplify *)
   fun combine_first_prems ctxt thm = let
     val prop = Thm.prop_of thm
+    val prop_ctxt = Variable.declare_names prop ctxt
     val (p1 :: p2 :: prems) = Thm.prems_of thm
     val concl = Thm.concl_of thm
     val all_tvars = Term.add_tvars prop []
-    val all_tfrees = map TFree (Variable.variant_frees ctxt [prop] (map (apfst fst) all_tvars))
+    val all_tfrees = map TFree (Variable.variant_names prop_ctxt (map (apfst fst) all_tvars))
     val substT_map = map fst all_tvars ~~ all_tfrees
     val prop' = subst_TVars substT_map prop
+    val prop'_ctxt = Variable.declare_names prop' ctxt
     val all_vars = Term.add_vars prop' []
-    val free_ns = Variable.variant_frees ctxt [prop'] (map (apfst fst) all_vars)
+    val free_ns = Variable.variant_names prop'_ctxt (map (apfst fst) all_vars)
     val all_frees = map Free free_ns
     val subst = subst_vars (substT_map, map fst all_vars ~~ all_frees)
     

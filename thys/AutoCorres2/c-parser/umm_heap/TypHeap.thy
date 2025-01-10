@@ -1740,8 +1740,7 @@ lemma (in mem_type) field_of_t_nmem:
   apply(simp add: unat_minus size_of_def)
   apply(subgoal_tac "size_td (typ_info_t TYPE('b)) < addr_card")
    apply(simp only: unat_simps)
-   apply (smt add.commute add.left_neutral diff_less_mono2 gr_implies_not0 le_eq_less_or_eq 
-    less_diff_conv2 less_trans max_size nat_mod_eq' size_of_def c_type_class.size_of_def)
+  using local.max_size local.size_of_fold apply auto[1]
   by (metis c_type_class.size_of_def mem_type_class.max_size)
 
 lemma (in mem_type) field_of_t_init_neq_disjoint:

@@ -6,7 +6,7 @@
   A formalisation of shear sort, an parallel comparison-based sorting algorithm that sorts n
   elements in time O(sqrt(n) log^2(n)), assuming sqrt(n) parallel processors.
   This can be improved to O(sqrt(n) log(n)) if a linear-time parallel sorting algorithm is used
-  for sorting the rows and columns, e.g. odd–even sorting.
+  for sorting the rows and columns, e.g. odd--even sorting.
 
   It does this by arranging the elements in a square matrix and then alternating between sorting
   rows and columns until the matrix stabilises.
@@ -141,7 +141,7 @@ subsection \<open>Matrices\<close>
 text \<open>
   We represent matrices as functions mapping index pairs to elements. The first index is
   the row, the second the column. For convenience, we also fix explicit lower and upper bounds
-  for the indices so that we can easily talk about minors of a matrix (or ‘submatrices’).
+  for the indices so that we can easily talk about minors of a matrix (or ``submatrices'').
   The lower bound is inclusive, the upper bound exclusive.
 \<close>
 type_synonym 'a mat = "nat \<times> nat \<Rightarrow> 'a"

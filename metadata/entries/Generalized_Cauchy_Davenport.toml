@@ -1,0 +1,36 @@
+title = "A Generalization of the Cauchy–Davenport theorem"
+date = 2024-11-23
+topics = [
+  "Mathematics/Combinatorics",
+  "Mathematics/Algebra",
+]
+abstract = """
+The Cauchy--Davenport theorem is a fundamental result in additive combinatorics.
+It was originally independently discovered by Cauchy and Davenport and has been formalized in the AFP entry <a href=\"https://www.isa-afp.org/entries/Kneser_Cauchy_Davenport.html\">Kneser's Theorem and the Cauchy–Davenport Theorem</a> as a corollary of Kneser's theorem.
+More recently, many generalizations of this theorem have been found. In this entry, we formalise a <a href=\"https://math.colgate.edu/~integers/q7/q7.Abstract.html\">generalization due to DeVos</a>, which proves the theorem in a non-abelian setting."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.baksys]
+email = "baksys_email"
+
+[contributors]
+
+[notify]
+baksys = "baksys_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  " M. Bakšys and A. Koutsoukou-Argyraki. Kneser’s theorem and the Cauchy–Davenport Theorem. Archive of Formal Proofs, November 2022. https://isa-afp.org/entries/Kneser_Cauchy_Davenport.html, Formal proof development.",
+  "A. L. B. Cauchy. Recherches sur les nombres. J. École Polytech., 9:99–116, 1813.",
+  "H. Davenport. On the Addition of Residue Classes. Journal of the London Mathematical Society, s1-10(1):30–32, 01 1935.",
+  "M. DeVos. On a Generalization of the Cauchy–Davenport Theorem. Integers, 16:A7, 2016.",
+  "Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson. The Plünnecke-Ruzsa Inequality. Archive of Formal Proofs, May 2022. https://isa-afp.org/entries/Pluennecke_Ruzsa_Inequality.html, Formal proof development",
+]

@@ -5,7 +5,7 @@
 section \<open>Compatibility with Imperative/HOL\<close>
 
 theory Native_Word_Imperative_HOL imports
-  Code_Target_Word_Base
+  Code_Target_Word
   "HOL-Imperative_HOL.Heap_Monad"
 begin
 

@@ -169,7 +169,7 @@ shows "hermitian (CHSH_op A0 A1 B0 B1)"
   using assms hermitian_add hermitian_def hermitian_minus hermitian_square 
     index_add_mat(2) index_minus_mat(2) index_mult_mat(2) 
   unfolding CHSH_op_def
-  by (smt (z3) Linear_Algebra_Complements.hermitian_square adjoint_mult)
+  by (smt (verit) Linear_Algebra_Complements.hermitian_square adjoint_mult)
 
 lemma CHSH_cond_hermit_expect_eq:
   assumes "CHSH_cond_hermit n A0 A1 B0 B1"

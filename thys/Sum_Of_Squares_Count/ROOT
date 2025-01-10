@@ -1,0 +1,12 @@
+chapter AFP
+
+session Sum_Of_Squares_Count (AFP) = Gaussian_Integers +
+  options [timeout = 900]
+  sessions
+    Dirichlet_Series
+    "List-Index"
+  theories
+    Sum_Of_Squares_Count
+  document_files
+    "root.tex"
+    "root.bib"

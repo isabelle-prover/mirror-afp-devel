@@ -43,7 +43,7 @@ code_printing
       val _ = Statistics.register_stat ("NDFS",is_active,to_string)
     end
 \<close>
-code_reserved SML NDFS_SI_Statistics
+code_reserved (SML) NDFS_SI_Statistics
 
 ML_val \<open>@{code hd}\<close>
 

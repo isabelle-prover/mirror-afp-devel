@@ -5,7 +5,9 @@
 chapter \<open>Unsigned words of 8 bits\<close>
 
 theory Uint8 imports
-  Word_Type_Copies
+  Uint_Common
+  Code_Target_Word
+  Code_Int_Integer_Conversion
   Code_Target_Integer_Bit
 begin
 
@@ -164,14 +166,14 @@ code_printing code_module Uint8 \<rightharpoonup> (SML)
 val _ = if 3 <= Word.wordSize then () else raise (Fail ("wordSize less than 3"));
 
 structure Uint8 : sig
-  val set_bit : Word8.word -> IntInf.int -> bool -> Word8.word
+  val generic_set_bit : Word8.word -> IntInf.int -> bool -> Word8.word
   val shiftl : Word8.word -> IntInf.int -> Word8.word
   val shiftr : Word8.word -> IntInf.int -> Word8.word
   val shiftr_signed : Word8.word -> IntInf.int -> Word8.word
   val test_bit : Word8.word -> IntInf.int -> bool
 end = struct
 
-fun set_bit x n b =
+fun generic_set_bit x n b =
   let val mask = Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))
   in if b then Word8.orb (x, mask)
      else Word8.andb (x, Word8.notb mask)
@@ -190,14 +192,14 @@ fun test_bit x n =
   Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
 
 end; (* struct Uint8 *)\<close>
-code_reserved SML Uint8
+code_reserved (SML) Uint8
 
 code_printing code_module Uint8 \<rightharpoonup> (Haskell)
  \<open>module Uint8(Int8, Word8) where
 
   import Data.Int(Int8)
   import Data.Word(Word8)\<close>
-code_reserved Haskell Uint8
+code_reserved (Haskell) Uint8
 
 text \<open>
   Scala provides only signed 8bit numbers, so we use these and 
@@ -219,7 +221,7 @@ def less_eq(x: Byte, y: Byte) : Boolean =
     case false => y < 0 || x <= y
   }
 
-def set_bit(x: Byte, n: BigInt, b: Boolean) : Byte =
+def generic_set_bit(x: Byte, n: BigInt, b: Boolean) : Byte =
   b match {
     case true => (x | (1 << n.intValue)).toByte
     case false => (x & (1 << n.intValue).unary_~).toByte
@@ -235,7 +237,7 @@ def test_bit(x: Byte, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
 } /* object Uint8 */\<close>
-code_reserved Scala Uint8
+code_reserved (Scala) Uint8
 
 text \<open>
   Avoid @{term Abs_uint8} in generated code, use @{term Rep_uint8'} instead. 
@@ -416,7 +418,7 @@ global_interpretation uint8: word_type_copy_target_language Abs_uint8 Rep_uint8 
     and uint8_shiftl = uint8.shiftl
     and uint8_shiftr = uint8.shiftr
     and uint8_sshiftr = uint8.sshiftr
-    and uint8_set_bit = uint8.set_bit
+    and uint8_generic_set_bit = uint8.gen_set_bit
   by standard simp_all
 
 code_printing constant uint8_test_bit \<rightharpoonup>
@@ -425,11 +427,11 @@ code_printing constant uint8_test_bit \<rightharpoonup>
   (Scala) "Uint8.test'_bit" and
   (Eval) "(fn w => fn i => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_test'_bit out of bounds\") else Uint8.test'_bit w i)"
 
-code_printing constant uint8_set_bit \<rightharpoonup>
-  (SML) "Uint8.set'_bit" and
-  (Haskell) "Data'_Bits.setBitBounded" and
-  (Scala) "Uint8.set'_bit" and
-  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_set'_bit out of bounds\") else Uint8.set'_bit w i b)"
+code_printing constant uint8_generic_set_bit \<rightharpoonup>
+  (SML) "Uint8.generic'_set'_bit" and
+  (Haskell) "Data'_Bits.genericSetBitBounded" and
+  (Scala) "Uint8.generic'_set'_bit" and
+  (Eval) "(fn w => fn i => fn b => if i < 0 orelse i >= 8 then raise (Fail \"argument to uint8'_generic'_set'_bit out of bounds\") else Uint8.generic'_set'_bit w i b)"
 
 code_printing constant uint8_shiftl \<rightharpoonup>
   (SML) "Uint8.shiftl" and

@@ -286,7 +286,7 @@ proof -
       unfolding rr_linepath
       apply (subst cindex_pathE_linepath)
       subgoal using assms(1) closed_segment_imp_Re_Im(1) that by fastforce
-      subgoal by (smt (z3) complex.sel(1) minus_complex.simps(1))
+      subgoal by (smt (verit) complex.sel(1) minus_complex.simps(1))
       done
     ultimately show ?thesis unfolding cindexP_pathE_eq by auto
   qed
@@ -311,7 +311,7 @@ proof -
       unfolding rr_linepath
       apply (subst cindex_pathE_linepath)
       subgoal using assms(1) closed_segment_imp_Re_Im(1) that by fastforce
-      subgoal by (smt (z3) complex.sel(1) minus_complex.simps(1))
+      subgoal by (smt (verit) complex.sel(1) minus_complex.simps(1))
       done
     ultimately show ?thesis unfolding cindexP_pathE_eq by auto
   qed
@@ -328,7 +328,7 @@ proof -
       unfolding rr_linepath
       apply (subst cindex_pathE_linepath)
       subgoal using assms(1) closed_segment_imp_Re_Im(1) that by fastforce
-      subgoal by (smt (z3) complex.sel(1) minus_complex.simps(1))
+      subgoal by (smt (verit) complex.sel(1) minus_complex.simps(1))
       done
     moreover have "cindexP_pathE rr (linepath b (Complex (Re a) (Im b))) = 0"
       unfolding rr_linepath
@@ -442,7 +442,7 @@ proof -
       show "valid_path (poly rr \<circ> rectpath a b)"
         using valid_path_poly_rectpath .
       show "0 \<notin> path_image (poly rr \<circ> rectpath a b)"
-        by (smt (z3) DiffE add.right_neutral add_diff_cancel_left' add_uminus_conv_diff 
+        by (smt (verit) DiffE add.right_neutral add_diff_cancel_left' add_uminus_conv_diff 
             assms(1) assms(2) assms(3) basic_cqe_conv1(1) diff_add_cancel imageE mult.right_neutral 
             mult_zero_right path_image_compose path_image_rectpath_cbox_minus_box poly_pCons rr_def)
       show "pathfinish (poly rr \<circ> rectpath a b) = pathstart (poly rr \<circ> rectpath a b)"

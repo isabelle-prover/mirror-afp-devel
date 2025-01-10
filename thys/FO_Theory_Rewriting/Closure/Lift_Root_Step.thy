@@ -597,7 +597,7 @@ next
   show ?case using lift_root_step_sig_transfer2[OF step(1) assms(2)] step(3,4)
       lift_root_step_sig'[of R UNIV \<G> \<G> W X, THEN subsetD, of "(s, s')"] assms(2)
     by (auto simp: \<T>\<^sub>G_funas_gterm_conv \<T>\<^sub>G_equivalent_def)
-       (smt SigmaI UNIV_I image_subset_iff snd_conv subrelI trancl_into_trancl2)
+       (smt (verit) SigmaI UNIV_I image_subset_iff snd_conv subrelI trancl_into_trancl2)
 qed
 
 lemma lift_root_stepseq_sig_transfer:

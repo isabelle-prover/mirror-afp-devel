@@ -67,7 +67,7 @@ lemma Sup_cong:
 proof-
   have "A \<noteq> {} \<and> B \<noteq> {}" "bdd_above A \<and> bdd_above B"
     using assms unfolding bdd_above_def using order.trans by blast+
-  thus ?thesis using assms by (smt Sup_leq)
+  thus ?thesis using assms by (metis Sup_leq order_antisym)
 qed
 
 lemma Sup_image_cong: 
@@ -163,13 +163,13 @@ proof-
     show "?L1 * ?L2 \<le> ?R" 
     proof(cases "?L1 = 0 \<or> ?L2 = 0")
       case True thus ?thesis using f 
-        by (smt Collect_empty_eq cSup_upper mem_Collect_eq mult_not_zero) 
+        by (smt (verit) Collect_empty_eq cSup_upper mem_Collect_eq mult_not_zero) 
     next
       case False 
       have gez: "?L1 > 0" "?L2 > 0" "?R \<ge> 0"  
-          apply (smt Collect_empty_eq False cSup_upper f1 mem_Collect_eq)
-         apply (smt Collect_empty_eq False cSup_upper f2 mem_Collect_eq)
-        by (smt Collect_empty_eq cSup_upper f(1) f(2) f(3) mem_Collect_eq)
+          apply (smt (verit) Collect_empty_eq False cSup_upper f1 mem_Collect_eq)
+         apply (smt (verit) Collect_empty_eq False cSup_upper f2 mem_Collect_eq)
+        by (smt (verit) Collect_empty_eq cSup_upper f(1) f(2) f(3) mem_Collect_eq)
       hence ggez: "?L1 \<ge> 0" "?L2 \<ge> 0" by linarith+
       show ?thesis 
         unfolding real_md_iff(1)[OF ggez(1) gez(2) gez(3)] 
@@ -296,16 +296,16 @@ lemma sbounded_empty[simp,intro!]: "sbounded f {}"
 
 lemma sbounded_insert[simp]: "sbounded f (insert a A) \<longleftrightarrow> sbounded f A"
   unfolding sbounded_def apply safe 
-	subgoal by (meson subset_insertI2) 
+  subgoal by (meson subset_insertI2) 
   subgoal for r apply(rule exI[of _ "r + max 0 (f a)"]) 
-  	by simp (smt finite_Diff subset_insert_iff sum.remove) .
+    by simp (smt (verit) finite_Diff subset_insert_iff sum.remove) .
 
 lemma sbounded_Un[simp]: "sbounded f (A1 \<union> A2) \<longleftrightarrow> sbounded f A1 \<and> sbounded f A2"
   unfolding sbounded_def apply safe
   subgoal by (meson sup.coboundedI1) 
   subgoal by (meson sup.coboundedI2) 
   subgoal for r1 r2 apply(rule exI[of _ "r1+r2"]) apply safe apply(elim subset_UnE) 
-  	by simp (smt Diff_subset finite_Diff order.trans sum.union_diff2 sum.union_inter) .
+    by simp (smt (verit) Diff_subset finite_Diff order.trans sum.union_diff2 sum.union_inter) .
 
 lemma sbounded_UNION: 
   assumes "finite I" shows "sbounded f (\<Union>i\<in>I. A i) \<longleftrightarrow> (\<forall>i\<in>I. sbounded f (A i))" 
@@ -418,7 +418,7 @@ lemma isum_reindex_cong':
   unfolding image_def[of "sum g"] image_def[of "sum (g \<circ> h)"] apply(rule Collect_eqI)
   apply safe  
   subgoal by(metis (no_types, lifting) finite_image_iff mem_Collect_eq subset_image_inj sum.reindex)
-  subgoal by (smt finite_imageI image_mono in_mono mem_Collect_eq sum.reindex_nontrivial) .
+  subgoal by (smt (verit) finite_imageI image_mono in_mono mem_Collect_eq sum.reindex_nontrivial) .
 
 (* thm sum.mono_neutral_cong *)
 lemma isum_zeros_cong:
@@ -535,7 +535,7 @@ proof-
         subgoal using J unfolding incl_UNION_aux2 by auto
         subgoal by blast .
       subgoal using J sb unfolding bdd_above_def sbounded_def  
-      	by simp (metis UN_mono finite_UN_I) .
+        by simp (metis UN_mono finite_UN_I) .
     also have "\<dots> \<le> 
        Sup {sum g B | B . B \<subseteq> \<Union> (A ` I) \<and> finite B}" 
       apply(rule cSup_subset_mono) apply safe
@@ -545,7 +545,7 @@ proof-
     finally 
     have "(\<Sum>i\<in>J. Sup {y. \<exists>B\<subseteq>A i. finite B \<and> y = sum g B}) \<le> 
            Sup {y. \<exists>B\<subseteq>\<Union> (A ` I). finite B \<and> y = sum g B}" 
-      by (smt Collect_cong sum_mono)
+      by (smt (verit) Collect_cong sum_mono)
   } note 1 = this
 
   show ?thesis
@@ -660,7 +660,7 @@ lemma sbounded_product:
         by (metis (no_types, lifting) imageE mem_Sigma_iff mult_nonneg_nonneg prod.collapse subset_eq)
       subgoal apply(subst sum.cartesian_product[symmetric]) 
         apply(subst sum_product[symmetric])  
-        by (smt finite_imageI imageE mem_Sigma_iff mult_mono prod.collapse subset_eq sum_nonneg) . . .
+        by (smt (verit) finite_imageI imageE mem_Sigma_iff mult_mono prod.collapse subset_eq sum_nonneg) . . .
 
 lemma sbounded_multL: "x \<ge> 0 \<Longrightarrow> sbounded f A \<Longrightarrow> sbounded (\<lambda>a. x * f a) A"
   unfolding sbounded_def apply safe 

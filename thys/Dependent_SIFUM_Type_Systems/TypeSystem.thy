@@ -774,7 +774,7 @@ lemma skip_type':
   using skip_type by simp
 
 text \<open>
-  Some helper lemmas to discharge the assumption of the @{thm anno_type} rule.
+  Some helper lemmas to discharge the assumption of the @{thm [source] anno_type} rule.
 \<close>
 lemma anno_type_helpers [simp]:
   "(to_total \<Gamma> x) \<le>:\<^sub>P (to_total (add_anno \<Gamma> \<S> (buffer +=\<^sub>m AsmNoWrite)) x)"

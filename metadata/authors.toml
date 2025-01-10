@@ -2161,15 +2161,16 @@ name = "Asta Halkjær From"
 
 [from.emails.from_email]
 user = [
-  "ahfrom",
+  "asfr",
 ]
 host = [
-  "dtu",
+  "di",
+  "ku",
   "dk",
 ]
 
 [from.homepages]
-from_homepage = "https://people.compute.dtu.dk/ahfrom/"
+from_homepage = "https://astahfrom.github.io/"
 
 [fuenmayor]
 name = "David Fuenmayor"
@@ -3276,6 +3277,15 @@ host = [
 ]
 
 [jiangd.homepages]
+
+[jiangz]
+name = "Zilin Jiang"
+orcid = "0000-0002-2946-7347"
+
+[jiangz.emails]
+
+[jiangz.homepages]
+jiangz_homepage = "https://www.zilin.one/"
 
 [joosten]
 name = "Sebastiaan J. C. Joosten"
@@ -7054,6 +7064,22 @@ host = [
 ]
 
 [sulejmani.homepages]
+
+[surlykke]
+name = "Thomas Holme Surlykke"
+
+[surlykke.emails]
+
+[surlykke.emails.surlykke_email]
+user = [
+  "thomas",
+]
+host = [
+  "surlykke",
+  "dk",
+]
+
+[surlykke.homepages]
 
 [sutcliffe]
 name = "Geoff Sutcliffe"

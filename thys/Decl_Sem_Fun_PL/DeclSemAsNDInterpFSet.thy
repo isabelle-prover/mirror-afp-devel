@@ -24,7 +24,7 @@ definition zero :: "'a M" where
   "zero \<equiv> {}"
 declare zero_def[simp]
 
-no_notation "binomial" (infix \<open>choose\<close> 64)
+unbundle no binomial_syntax
 
 definition choose :: "'a set \<Rightarrow> 'a M" where
   "choose S \<equiv> S"

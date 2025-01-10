@@ -2410,7 +2410,7 @@ next
     assume asm: "i < a \<and> a \<le> j \<and> j < length l"
     hence "Re (l!i) < Re (l!j)"
       using Cons eq_comps_compare eq_comp_Re
-      by (smt (z3) dual_order.strict_trans dual_order.strict_trans1 length_map 
+      by (smt (verit) dual_order.strict_trans dual_order.strict_trans1 length_map 
           nth_map)
     moreover have "l!i \<in> Reals" using asm Cons by simp
     moreover have "l!j \<in> Reals" using asm Cons by simp
