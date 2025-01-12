@@ -219,7 +219,7 @@ proof (cases "\<infinity> \<in> range \<mu>")
     qed
     also have "... \<le> \<mu> (E - A) + \<bar>\<mu> E\<bar>"
       by (metis \<open>- \<mu> A = \<mu> (E - A) - \<mu> E\<close> abs_ereal_less0 abs_ereal_pos 
-          ereal_diff_le_self ereal_le_add_mono1 less_eq_ereal_def 
+          ereal_diff_le_self add_increasing2 less_eq_ereal_def 
           minus_ereal_def not_le_imp_less)
     also have "... < \<infinity>" using assms \<open>\<infinity> \<notin> range \<mu>\<close>
       by (metis UNIV_I ereal_less_PInfty ereal_plus_eq_PInfty image_eqI) 

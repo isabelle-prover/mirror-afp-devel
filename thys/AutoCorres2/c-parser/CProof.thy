@@ -616,7 +616,7 @@ lemma intvl_off_disj:
     apply (drule intvlD)
     apply clarsimp
     apply (drule (1) order_less_le_trans)
-    apply (drule unat_cong)
+    apply (drule arg_cong)
     apply (simp add: unat_of_nat word_bits_conv)
     done
   done
