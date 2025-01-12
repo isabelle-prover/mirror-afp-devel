@@ -41,8 +41,8 @@ hide_const (open) Linear_Algebra.adjoint
 hide_fact (open) Linear_Algebra.adjoint_def
 hide_const (open) Finite_Cartesian_Product.transpose
 hide_fact (open) Finite_Cartesian_Product.transpose_def
-unbundle no_inner_syntax
-unbundle no_vec_syntax
+unbundle no inner_syntax
+unbundle no vec_syntax
 hide_const (open) Missing_List.span
 hide_const (open)
   dependent
