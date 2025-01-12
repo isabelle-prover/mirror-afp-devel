@@ -4,6 +4,9 @@ begin
 
 type_synonym 'f ground_context = "('f, 'f gterm) actxt"
 
+abbreviation (input) GHole (\<open>\<box>\<^sub>G\<close>) where
+  "\<box>\<^sub>G \<equiv> \<box>"
+
 abbreviation ctxt_apply_gterm (\<open>_\<langle>_\<rangle>\<^sub>G\<close> [1000, 0] 1000) where
   "C\<langle>s\<rangle>\<^sub>G \<equiv> GFun\<langle>C;s\<rangle>"
 

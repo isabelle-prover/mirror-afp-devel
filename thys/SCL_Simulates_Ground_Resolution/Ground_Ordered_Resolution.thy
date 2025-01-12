@@ -3,7 +3,7 @@ theory Ground_Ordered_Resolution
     Saturation_Framework.Calculus
     Saturation_Framework_Extensions.Clausal_Calculus
     Isabelle_2024_Compatibility
-    Superposition_Calculus.Ground_Ctxt_Extra
+    Superposition_Calculus.Ground_Context
     Superposition_Calculus.HOL_Extra
     Superposition_Calculus.Transitive_Closure_Extra
     Min_Max_Least_Greatest.Min_Max_Least_Greatest_FSet
