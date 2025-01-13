@@ -435,6 +435,47 @@ next
   qed
 qed
 
+lemma mp_step_mset_cong: 
+  assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
+  shows "(add_mset (add_mset mp p) P, add_mset (add_mset mp' p) P) \<in> \<Rrightarrow>\<^sup>*" 
+  using assms
+proof induct
+  case (step mp' mp'')
+  from P_simp_pp[OF pat_simp_mp[OF step(2), of p], of P]
+  have "(add_mset (add_mset mp' p) P, add_mset (add_mset mp'' p) P) \<in> P_step" 
+    unfolding P_step_def by auto
+  with step(3)
+  show ?case by simp
+qed auto
+
+lemma mp_step_mset_vars: assumes "mp \<rightarrow>\<^sub>m mp'"
+  shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
+  using assms 
+proof induct 
+  case *: (match_decompose' mp y f n mp' ys)
+  {
+    let ?mset = "mset :: _ \<Rightarrow> ('f,'v,'s)match_problem_mset"
+    fix x
+    assume "x \<in> tvars_mp (mp_mset ((\<Sum>(t, l)\<in>#mp. ?mset (zip (args t) (map Var ys)))))" 
+    from this[unfolded tvars_mp_def, simplified]
+    obtain t l ti yi where tl: "(t,l) \<in># mp" and tiyi: "(ti,yi) \<in># ?mset (zip (args t) (map Var ys))" 
+      and x: "x \<in> vars ti" 
+      by auto
+    from *(1)[OF tl] obtain ts where l: "l = Var y" and t: "t = Fun f ts" and lts: "length ts = n"
+      by (cases t, auto)
+    from tiyi[unfolded t] have "ti \<in> set ts"
+      using set_zip_leftD by fastforce
+    with x t have "x \<in> vars t" by auto
+    hence "x \<in> tvars_mp (mp_mset mp)" using tl unfolding tvars_mp_def by auto
+  }
+  thus ?case unfolding tvars_mp_def by force
+qed (auto simp: tvars_mp_def set_zip)
+
+lemma mp_step_mset_steps_vars: assumes "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* mp mp'"
+  shows "tvars_mp (mp_mset mp) \<supseteq> tvars_mp (mp_mset mp')" 
+  using assms by (induct, insert mp_step_mset_vars, auto)
+
+
 context
   assumes non_improved: "\<not> improved"
 begin
