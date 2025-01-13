@@ -119,7 +119,7 @@ lemma trace_norm_basis_invariance:
 proof -
   define B where \<open>B = sqrt_op (abs_op A)\<close>
   have \<open>complex_of_real (cmod (e \<bullet>\<^sub>C (abs_op A *\<^sub>V e))) = (B* *\<^sub>V B*\<^sub>V e) \<bullet>\<^sub>C e\<close> for e
-    apply (simp add: B_def positive_hermitianI flip: cblinfun_apply_cblinfun_compose)
+    apply (simp add: B_def positive_selfadjointI[unfolded selfadjoint_def] flip: cblinfun_apply_cblinfun_compose)
     by (metis abs_op_pos abs_pos cinner_commute cinner_pos_if_pos complex_cnj_complex_of_real complex_of_real_cmod)
   also have \<open>\<dots> e = complex_of_real ((norm (B *\<^sub>V e))\<^sup>2)\<close> for e
     apply (subst cdot_square_norm[symmetric])
@@ -639,7 +639,7 @@ proof -
     have \<open>trace_class (abs_op A)\<close>
       by simp
     then show \<open>trace_class (Sq* o\<^sub>C\<^sub>L Sq)\<close>
-      by (auto simp: Sq_def positive_hermitianI)
+      by (auto simp: Sq_def positive_selfadjointI[unfolded selfadjoint_def])
   qed
   have sqrt_hs_hs_times_hs: \<open>\<exists>B (C :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'a). hilbert_schmidt B \<and> hilbert_schmidt C \<and> A = B o\<^sub>C\<^sub>L C\<close>
     if \<open>hilbert_schmidt Sq\<close>
@@ -647,7 +647,7 @@ proof -
     have \<open>A = W o\<^sub>C\<^sub>L abs_op A\<close>
       by (simp add: polar_decomposition_correct W_def)
     also have \<open>\<dots> = (W o\<^sub>C\<^sub>L Sq) o\<^sub>C\<^sub>L Sq\<close>
-      by (metis Sq_def abs_op_pos cblinfun_compose_assoc positive_hermitianI sqrt_op_pos sqrt_op_square)
+      by (metis Sq_def abs_op_pos cblinfun_compose_assoc positive_selfadjointI sqrt_op_pos sqrt_op_square)
     finally have \<open>A = (W o\<^sub>C\<^sub>L Sq) o\<^sub>C\<^sub>L Sq\<close>
       by -
     then show ?thesis
@@ -716,7 +716,7 @@ lemma trace_exists:
   shows \<open>(\<lambda>e. e \<bullet>\<^sub>C (A *\<^sub>V e)) summable_on B\<close>
 proof -
   obtain b c :: \<open>'a \<Rightarrow>\<^sub>C\<^sub>L 'a\<close> where \<open>hilbert_schmidt b\<close> \<open>hilbert_schmidt c\<close> and Abc: \<open>A = c* o\<^sub>C\<^sub>L b\<close>
-    by (metis abs_op_pos adj_cblinfun_compose assms(2) double_adj hilbert_schmidt_comp_left hilbert_schmidt_comp_right polar_decomposition_correct polar_decomposition_correct' positive_hermitianI trace_class_iff_hs_times_hs)
+    by (metis abs_op_pos adj_cblinfun_compose assms(2) double_adj hilbert_schmidt_comp_left hilbert_schmidt_comp_right polar_decomposition_correct polar_decomposition_correct' positive_selfadjointI[unfolded selfadjoint_def] trace_class_iff_hs_times_hs)
 
 
   have \<open>(\<lambda>e. (norm (b *\<^sub>V e))\<^sup>2) summable_on B\<close>
@@ -1168,7 +1168,7 @@ proof -
   proof -
     from \<open>trace_class a'\<close>
     obtain B C :: \<open>('a\<times>'b) \<Rightarrow>\<^sub>C\<^sub>L ('a\<times>'b)\<close> where \<open>hilbert_schmidt B\<close> and \<open>hilbert_schmidt C\<close> and aCB: \<open>a' = C* o\<^sub>C\<^sub>L B\<close>
-      by (metis abs_op_pos adj_cblinfun_compose double_adj hilbert_schmidt_comp_left hilbert_schmidt_comp_right polar_decomposition_correct polar_decomposition_correct' positive_hermitianI trace_class_iff_hs_times_hs)
+      by (metis abs_op_pos adj_cblinfun_compose double_adj hilbert_schmidt_comp_left hilbert_schmidt_comp_right polar_decomposition_correct polar_decomposition_correct' positive_selfadjointI[unfolded selfadjoint_def] trace_class_iff_hs_times_hs)
     have hs_iB: \<open>hilbert_schmidt (\<i> *\<^sub>C B)\<close>
       by (metis Abs_hilbert_schmidt_inverse Rep_hilbert_schmidt \<open>hilbert_schmidt B\<close> mem_Collect_eq scaleC_hilbert_schmidt.rep_eq)
     have *: \<open>Re (trace (C* o\<^sub>C\<^sub>L B)) = Re (trace (C o\<^sub>C\<^sub>L B*))\<close> if \<open>hilbert_schmidt B\<close> \<open>hilbert_schmidt C\<close> for B C :: \<open>('a\<times>'b) \<Rightarrow>\<^sub>C\<^sub>L ('a\<times>'b)\<close>
@@ -1322,9 +1322,9 @@ proof -
         = tu* o\<^sub>C\<^sub>L tu\<close>
       proof -
         have tt[THEN simp_a_oCL_b, simp]: \<open>(abs_op t)* o\<^sub>C\<^sub>L abs_op t = t* o\<^sub>C\<^sub>L t\<close>
-          by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+          by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
         have uu[THEN simp_a_oCL_b, simp]: \<open>(abs_op u)* o\<^sub>C\<^sub>L abs_op u = u* o\<^sub>C\<^sub>L u\<close>
-          by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+          by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
         note isometryD[THEN simp_a_oCL_b, simp]
         note cblinfun_right_left_ortho[THEN simp_a_oCL_b, simp]
         note cblinfun_left_right_ortho[THEN simp_a_oCL_b, simp]
@@ -1427,7 +1427,7 @@ proof -
   also have \<open>\<dots> \<le> (\<Sum>\<^sub>\<infinity>e\<in>some_chilbert_basis. cmod (e \<bullet>\<^sub>C ((a o\<^sub>C\<^sub>L b) *\<^sub>V e)))\<close>
     using sum1 by (rule norm_infsum_bound)
   also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>e\<in>some_chilbert_basis. cmod (((sqrt_op (abs_op b) o\<^sub>C\<^sub>L W* o\<^sub>C\<^sub>L a*) *\<^sub>V e) \<bullet>\<^sub>C (sqrt_op (abs_op b) *\<^sub>V e)))\<close>
-    apply (simp add: positive_hermitianI flip: cinner_adj_right cblinfun_apply_cblinfun_compose)
+    apply (simp add: positive_selfadjointI[unfolded selfadjoint_def] flip: cinner_adj_right cblinfun_apply_cblinfun_compose)
     by (metis (full_types) W_def abs_op_def cblinfun_compose_assoc polar_decomposition_correct sqrt_op_pos sqrt_op_square)
   also have \<open>\<dots> \<le> (\<Sum>\<^sub>\<infinity>e\<in>some_chilbert_basis. norm ((sqrt_op (abs_op b) o\<^sub>C\<^sub>L W* o\<^sub>C\<^sub>L a*) *\<^sub>V e) * norm (sqrt_op (abs_op b) *\<^sub>V e))\<close>
     using sum2 sum3 apply (rule infsum_mono)
@@ -1454,7 +1454,7 @@ proof -
   also have \<open>\<dots> = norm a * (hilbert_schmidt_norm (sqrt_op (abs_op b)))\<^sup>2\<close>
     by (simp add: power2_eq_square)
   also have \<open>\<dots> = norm a * trace_norm b\<close>
-    apply (simp add: hilbert_schmidt_norm_def positive_hermitianI)
+    apply (simp add: hilbert_schmidt_norm_def positive_selfadjointI[unfolded selfadjoint_def])
     by (metis abs_op_idem of_real_eq_iff trace_abs_op)
   finally show ?thesis
     by -
@@ -1988,7 +1988,7 @@ proof -
     have \<open>complex_of_real (norm t) = norm (abs_op t)\<close>
       by simp
     also have \<open>\<dots> = (norm (sqrt_op (abs_op t)))\<^sup>2\<close>
-      by (simp add: positive_hermitianI flip: norm_AadjA)
+      by (simp add: positive_selfadjointI[unfolded selfadjoint_def] flip: norm_AadjA)
     also have \<open>\<dots> \<le> (norm (sqrt_op (abs_op t) *\<^sub>V \<psi>) + \<delta>)\<^sup>2\<close>
       by (smt (verit) \<psi>\<epsilon> complex_of_real_mono norm_triangle_ineq4 norm_triangle_sub pos2 power_strict_mono)
     also have \<open>\<dots> = (norm (sqrt_op (abs_op t) *\<^sub>V \<psi>))\<^sup>2 + \<delta>\<^sup>2 + 2 * norm (sqrt_op (abs_op t) *\<^sub>V \<psi>) * \<delta>\<close>
@@ -2002,7 +2002,7 @@ proof -
     also have \<open>\<dots> = ((sqrt_op (abs_op t) *\<^sub>V \<psi>) \<bullet>\<^sub>C (sqrt_op (abs_op t) *\<^sub>V \<psi>)) + \<epsilon>\<close>
       by (simp add: cdot_square_norm)
     also have \<open>\<dots> = (\<psi> \<bullet>\<^sub>C (abs_op t *\<^sub>V \<psi>)) + \<epsilon>\<close>
-      by (simp add: positive_hermitianI flip: cinner_adj_right cblinfun_apply_cblinfun_compose)
+      by (simp add: positive_selfadjointI[unfolded selfadjoint_def] flip: cinner_adj_right cblinfun_apply_cblinfun_compose)
     also have \<open>\<dots> \<le> trace_norm t + \<epsilon>\<close>
       using \<open>norm \<psi> = 1\<close> \<open>trace_class t\<close> by (auto simp add: trace_norm_geq_cinner_abs_op)
     finally show \<open>norm t \<le> trace_norm t + \<epsilon>\<close>
@@ -2143,7 +2143,7 @@ lemma trace_comp_pos:
   shows \<open>trace (a o\<^sub>C\<^sub>L b) \<ge> 0\<close>
 proof -
   obtain c :: \<open>'a \<Rightarrow>\<^sub>C\<^sub>L 'a\<close> where \<open>a = c* o\<^sub>C\<^sub>L c\<close>
-  by (metis assms(2) positive_hermitianI sqrt_op_pos sqrt_op_square)
+  by (metis assms(2) positive_selfadjointI sqrt_op_pos sqrt_op_square selfadjoint_def)
   then have \<open>trace (a o\<^sub>C\<^sub>L b) = trace (sandwich c b)\<close>
     by (simp add: sandwich_apply assms(1) cblinfun_assoc_left(1) circularity_of_trace trace_class_comp_right)
   also have \<open>\<dots> \<ge> 0\<close>

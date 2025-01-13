@@ -45,12 +45,12 @@ proof (cases \<open>inner y y = 0\<close>)
   have Re0: \<open>Re (inner x y) = 0\<close> for x
   proof -
     have *: \<open>Re (inner x y) = (inner x y + inner y x) / 2\<close>
-      by (smt (verit, del_insts) assms(1) assms(2) cinner_adj_left cinner_commute complex_Re_numeral complex_add_cnj field_sum_of_halves numeral_One numeral_plus_numeral of_real_divide of_real_numeral one_complex.simps(1) positive_hermitianI semiring_norm(2))
+      by (smt (verit, del_insts) assms(1) assms(2) cinner_adj_left cinner_commute complex_Re_numeral complex_add_cnj field_sum_of_halves numeral_One numeral_plus_numeral of_real_divide of_real_numeral one_complex.simps(1) selfadjoint_def positive_selfadjointI semiring_norm(2))
     have \<open>0 \<le> Re (inner (x - s *\<^sub>C y) (x - s *\<^sub>C y))\<close> for s
       by (metis Re_mono assms(1) assms(2) cinner_pos_if_pos zero_complex.simps(1))
     also have \<open>\<dots> s = Re (inner x x) - s * 2 * Re (inner x y)\<close> for s
       apply (auto simp: True)
-      by (smt (verit, ccfv_threshold) Re_complex_of_real assms(1) assms(2) cinner_adj_right cinner_commute complex_add_cnj diff_minus_eq_add minus_complex.simps(1) positive_hermitianI uminus_complex.sel(1))
+      by (smt (verit, ccfv_threshold) Re_complex_of_real assms(1) assms(2) cinner_adj_right cinner_commute complex_add_cnj diff_minus_eq_add minus_complex.simps(1) positive_selfadjointI selfadjoint_def uminus_complex.sel(1))
     finally show \<open>Re (inner x y) = 0\<close>
       by (metis add_le_same_cancel1 ge_iff_diff_ge_0 nonzero_eq_divide_eq not_numeral_le_zero zero_neq_numeral)
   qed
@@ -66,9 +66,9 @@ proof (cases \<open>inner y y = 0\<close>)
 next
   case False
   have inner_commute: \<open>inner x y = cnj (inner y x)\<close>
-    by (metis Apos cinner_adj_left cinner_commute' inner_def positive_hermitianI)
+    by (metis Apos cinner_adj_left cinner_commute' inner_def positive_selfadjointI selfadjoint_def)
   have [simp]: "cnj (inner y y) = inner y y" for y
-    by (metis assms(1) cinner_adj_right cinner_commute' inner_def positive_hermitianI)
+    by (metis assms(1) cinner_adj_right cinner_commute' inner_def positive_selfadjointI selfadjoint_def)
   define r where "r = cnj (inner x y) / inner y y"
   have "0 \<le> inner (x - scaleC r y) (x - scaleC r y)"
     by (simp add: Apos inner_def cinner_pos_if_pos)
@@ -79,7 +79,7 @@ next
     unfolding r_def by auto
   also have "\<dots> = inner x x - inner x y * cnj (inner x y) / inner y y"
     unfolding r_def
-    by (metis assms(1) assms(2) cinner_adj_right cinner_commute complex_cnj_divide mult.commute positive_hermitianI times_divide_eq_left)
+    by (metis assms(1) assms(2) cinner_adj_right cinner_commute complex_cnj_divide mult.commute positive_selfadjointI times_divide_eq_left selfadjoint_def)
   finally have "0 \<le> inner x x - inner x y * cnj (inner x y) / inner y y" .
   hence "inner x y * cnj (inner x y) / inner y y \<le> inner x x"
     by (simp add: le_diff_eq)
@@ -98,7 +98,7 @@ proof (cases \<open>even n\<close>)
   have \<open>0 \<le> (cblinfun_power a (n div 2))* o\<^sub>C\<^sub>L (cblinfun_power a (n div 2))\<close>
     using positive_cblinfun_squareI by blast
   also have \<open>\<dots> = cblinfun_power a (n div 2 + n div 2)\<close>
-    by (metis cblinfun_power_adj cblinfun_power_compose positive_hermitianI that)
+    by (metis cblinfun_power_adj cblinfun_power_compose positive_selfadjointI that selfadjoint_def)
   also from True have \<open>\<dots> = cblinfun_power a n\<close>
     by (metis add_self_div_2 div_plus_div_distrib_dvd_right) 
   finally show ?thesis
@@ -109,7 +109,7 @@ next
     using \<open>a \<ge> 0\<close> by (rule sandwich_pos)
   also have \<open>\<dots> = cblinfun_power a (n div 2 + 1 + n div 2)\<close>
     unfolding sandwich_apply
-    by (metis (no_types, lifting) One_nat_def cblinfun_compose_id_right cblinfun_power_0 cblinfun_power_Suc' cblinfun_power_adj cblinfun_power_compose positive_hermitianI that)
+    by (metis (no_types, lifting) One_nat_def cblinfun_compose_id_right cblinfun_power_0 cblinfun_power_Suc' cblinfun_power_adj cblinfun_power_compose positive_selfadjointI that selfadjoint_def)
   also from False have \<open>\<dots> = cblinfun_power a n\<close>
     by (smt (verit, del_insts) Suc_1 add.commute add.left_commute add_mult_distrib2 add_self_div_2 nat.simps(3) nonzero_mult_div_cancel_left odd_two_times_div_two_succ)
   finally show ?thesis
@@ -131,7 +131,7 @@ proof -
   proof (rule cblinfun_leI)
     fix x :: 'a assume [simp]: \<open>norm x = 1\<close>
     with assms have aux1: \<open>complex_of_real (inverse (norm A)) * (x \<bullet>\<^sub>C (A *\<^sub>V x)) \<le> 1\<close>
-      by (smt (verit, del_insts) Reals_cnj_iff cinner_adj_left cinner_commute cinner_scaleR_left cinner_scaleR_right cmod_Re complex_inner_class.Cauchy_Schwarz_ineq2 left_inverse less_eq_complex_def linordered_field_class.inverse_nonnegative_iff_nonnegative mult_cancel_left2 mult_left_mono norm_cblinfun norm_ge_zero norm_mult norm_of_real norm_one positive_hermitianI reals_zero_comparable zero_less_one_class.zero_le_one)
+      by (smt (verit, del_insts) Reals_cnj_iff cinner_adj_left cinner_commute cinner_scaleR_left cinner_scaleR_right cmod_Re complex_inner_class.Cauchy_Schwarz_ineq2 left_inverse less_eq_complex_def linordered_field_class.inverse_nonnegative_iff_nonnegative mult_cancel_left2 mult_left_mono norm_cblinfun norm_ge_zero norm_mult norm_of_real norm_one positive_selfadjointI reals_zero_comparable zero_less_one_class.zero_le_one selfadjoint_def)
     show \<open>x \<bullet>\<^sub>C (S *\<^sub>V x) \<le> x \<bullet>\<^sub>C (0 *\<^sub>V x)\<close>
       by (auto simp: S_def cinner_diff_right cblinfun.diff_left scaleR_scaleC cdot_square_norm k_def complex_of_real_mono_iff[where y=1, simplified]
           simp flip: assms of_real_inverse of_real_power of_real_mult power_mult_distrib power_inverse
@@ -276,7 +276,7 @@ proof -
   then have \<open>B \<ge> 0\<close>
     by (simp add: B_def k_def scaleR_nonneg_nonneg)
   then have \<open>B = B*\<close>
-    by (simp add: positive_hermitianI)
+    by (simp add: positive_selfadjointI[unfolded selfadjoint_def])
   have \<open>B0 o\<^sub>C\<^sub>L B0 = id_cblinfun + S\<close>
   proof (rule cblinfun_cinner_eqI)
     fix \<psi>
@@ -354,7 +354,7 @@ proof -
     qed
 
     have \<open>s = (B0 *\<^sub>V \<psi>) \<bullet>\<^sub>C (B0 *\<^sub>V \<psi>)\<close>
-      by (metis \<open>0 \<le> B0\<close> cblinfun_apply_cblinfun_compose cinner_adj_left positive_hermitianI s_def)
+      by (metis \<open>0 \<le> B0\<close> cblinfun_apply_cblinfun_compose cinner_adj_left positive_selfadjointI s_def selfadjoint_def)
     also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>n. b n *\<^sub>V \<psi>) \<bullet>\<^sub>C (\<Sum>\<^sub>\<infinity>n. b n *\<^sub>V \<psi>)\<close>
       by (metis B0_def has_sum_b infsum_cblinfun_apply_left has_sum_imp_summable)
     also have \<open>\<dots> = (\<Sum>\<^sub>\<infinity>n. bb n)\<close>
@@ -569,7 +569,7 @@ proof (cases \<open>a \<ge> 0\<close>)
   case True
   from sqrt_op_existence[OF True]
   have *: \<open>\<exists>b::'a \<Rightarrow>\<^sub>C\<^sub>L 'a. b \<ge> 0 \<and> b* o\<^sub>C\<^sub>L b = a\<close>
-    by (metis positive_hermitianI)
+    by (metis positive_selfadjointI selfadjoint_def)
   then show ?thesis
     using * by (smt (verit, ccfv_threshold) someI_ex sqrt_op_def)
 next
@@ -584,9 +584,9 @@ lemma sqrt_op_square[simp]:
 proof -
   from sqrt_op_existence[OF assms]
   have *: \<open>\<exists>b::'a \<Rightarrow>\<^sub>C\<^sub>L 'a. b \<ge> 0 \<and> b* o\<^sub>C\<^sub>L b = a\<close>
-    by (metis positive_hermitianI)
+    by (metis positive_selfadjointI selfadjoint_def)
   have \<open>sqrt_op a o\<^sub>C\<^sub>L sqrt_op a = (sqrt_op a)* o\<^sub>C\<^sub>L sqrt_op a\<close>
-    by (metis positive_hermitianI sqrt_op_pos)
+    by (metis positive_selfadjointI selfadjoint_def sqrt_op_pos)
   also have \<open>(sqrt_op a)* o\<^sub>C\<^sub>L sqrt_op a = a\<close>
     using * by (metis (mono_tags, lifting) someI_ex sqrt_op_def)
   finally show ?thesis
@@ -606,13 +606,13 @@ proof -
   have eq_sq: \<open>b = sq\<close> if \<open>b \<ge> 0\<close> and \<open>b* o\<^sub>C\<^sub>L b = a\<close> for b
   proof -
     have \<open>b o\<^sub>C\<^sub>L a = a o\<^sub>C\<^sub>L b\<close>
-      by (metis cblinfun_assoc_left(1) positive_hermitianI that(1) that(2))
+      by (metis cblinfun_assoc_left(1) positive_selfadjointI selfadjoint_def that(1) that(2))
     then have b_sqrt_comm: \<open>b o\<^sub>C\<^sub>L sq = sq o\<^sub>C\<^sub>L b\<close>
       using a_comm by force
     from \<open>b \<ge> 0\<close> have \<open>b = b*\<close>
-      by (simp add: assms(1) positive_hermitianI)
+      by (simp add: assms(1) positive_selfadjointI[unfolded selfadjoint_def])
     have sqrt_adj: \<open>sq = sq*\<close>
-      by (simp add: \<open>0 \<le> sq\<close> positive_hermitianI)
+      by (simp add: \<open>0 \<le> sq\<close> positive_selfadjointI[unfolded selfadjoint_def])
     have bb_sqrt: \<open>b o\<^sub>C\<^sub>L b = sq o\<^sub>C\<^sub>L sq\<close>
       using \<open>b = b*\<close> \<open>sq o\<^sub>C\<^sub>L sq = a\<close> that(2) by fastforce
 
@@ -658,7 +658,7 @@ proof (cases \<open>a \<ge> 0\<close>)
     and B_closure: \<open>B \<in> closure (cspan (range (cblinfun_power a)))\<close>
     by metis
   then have \<open>sqrt_op a = B\<close>
-    by (metis positive_hermitianI sqrt_op_unique)
+    by (metis positive_selfadjointI sqrt_op_unique selfadjoint_def)
   with B_closure show ?thesis
     by simp
 next
@@ -676,7 +676,7 @@ lemma sqrt_op_commute:
   assumes \<open>A \<ge> 0\<close>
   assumes \<open>A o\<^sub>C\<^sub>L F = F o\<^sub>C\<^sub>L A\<close>
   shows \<open>sqrt_op A o\<^sub>C\<^sub>L F = F o\<^sub>C\<^sub>L sqrt_op A\<close>
-  by (metis assms(1) assms(2) positive_hermitianI sqrt_op_existence sqrt_op_unique)
+  by (metis assms(1) assms(2) positive_selfadjointI sqrt_op_existence sqrt_op_unique selfadjoint_def)
 
 lemma sqrt_op_0[simp]: \<open>sqrt_op 0 = 0\<close>
   apply (rule sqrt_op_unique[symmetric])
@@ -686,7 +686,7 @@ lemma sqrt_op_scaleC:
   assumes \<open>c \<ge> 0\<close> and \<open>a \<ge> 0\<close>
   shows \<open>sqrt_op (c *\<^sub>C a) = sqrt c *\<^sub>C sqrt_op a\<close>
   apply (rule sqrt_op_unique[symmetric])
-  using assms apply (auto simp: split_scaleC_pos_le positive_hermitianI)
+  using assms apply (auto simp: split_scaleC_pos_le positive_selfadjointI[unfolded selfadjoint_def])
   by (metis of_real_power power2_eq_square real_sqrt_pow2)
 
 definition abs_op :: \<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner \<Rightarrow> 'a \<Rightarrow>\<^sub>C\<^sub>L 'a\<close> where \<open>abs_op a = sqrt_op (a* o\<^sub>C\<^sub>L a)\<close>
@@ -760,7 +760,7 @@ proof (rule ccsubspace_eqI)
   also have \<open>\<dots> \<longleftrightarrow> x \<bullet>\<^sub>C ((abs_op a)* o\<^sub>C\<^sub>L abs_op a) x = 0\<close>
     by (simp add: cinner_adj_right)
   also have \<open>\<dots> \<longleftrightarrow> x \<bullet>\<^sub>C (a* o\<^sub>C\<^sub>L a) x = 0\<close>
-    by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+    by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
   also have \<open>\<dots> \<longleftrightarrow> a x \<bullet>\<^sub>C a x = 0\<close>
     by (simp add: cinner_adj_right)
   also have \<open>\<dots> \<longleftrightarrow> a x = 0\<close>
@@ -791,7 +791,7 @@ proof -
     also have \<open>\<dots> = (A* o\<^sub>C\<^sub>L A) h \<bullet>\<^sub>C h\<close>
       by (simp add: cinner_adj_left)
     also have \<open>\<dots> = ((abs_op A)* o\<^sub>C\<^sub>L abs_op A) h \<bullet>\<^sub>C h\<close>
-      by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+      by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
     also have \<open>\<dots> = abs_op A h \<bullet>\<^sub>C abs_op A h\<close>
       by (simp add: cinner_adj_left)
     also have \<open>\<dots> = complex_of_real ((norm (abs_op A h))\<^sup>2)\<close>
@@ -820,7 +820,7 @@ proof -
     also have \<open>\<dots> = (A* o\<^sub>C\<^sub>L A) h \<bullet>\<^sub>C h\<close>
       by (simp add: cinner_adj_left)
     also have \<open>\<dots> = ((abs_op A)* o\<^sub>C\<^sub>L abs_op A) h \<bullet>\<^sub>C h\<close>
-      by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+      by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
     also have \<open>\<dots> = abs_op A h \<bullet>\<^sub>C abs_op A h\<close>
       by (simp add: cinner_adj_left)
     also have \<open>\<dots> = complex_of_real ((norm (abs_op A h))\<^sup>2)\<close>
@@ -934,7 +934,7 @@ proof -
     apply (rule partial_isometry_initial[where V=\<open>abs_op A *\<^sub>S top\<close>])
     by (auto simp add: P_def Proj_fixes_image norm_W' pdA kernel_memberD)
   also have \<open>\<dots> = kernel (abs_op A)\<close>
-    by (metis abs_op_pos kernel_compl_adj_range positive_hermitianI)
+    by (metis abs_op_pos kernel_compl_adj_range positive_selfadjointI selfadjoint_def)
   also have \<open>\<dots> = kernel A\<close>
     by (simp add: kernel_abs_op)
   finally show \<open>kernel (polar_decomposition A) = kernel A\<close>
@@ -953,7 +953,7 @@ proof -
   also have \<open>\<dots> = Proj (- kernel (abs_op A)) o\<^sub>C\<^sub>L abs_op A\<close>
     by simp
   also have \<open>\<dots> = Proj (abs_op A *\<^sub>S top) o\<^sub>C\<^sub>L abs_op A\<close>
-    by (metis abs_op_pos kernel_compl_adj_range ortho_involution positive_hermitianI)
+    by (metis abs_op_pos kernel_compl_adj_range ortho_involution positive_selfadjointI selfadjoint_def)
   also have \<open>\<dots> = abs_op A\<close>
     by (simp add: Proj_fixes_image cblinfun_eqI)
   finally show ?thesis
@@ -969,7 +969,7 @@ proof -
     apply (simp add: sandwich_apply)
     by (metis (no_types, lifting) cblinfun_assoc_left(1) polar_decomposition_correct polar_decomposition_correct')
   also have \<open>\<dots> = a o\<^sub>C\<^sub>L a*\<close>
-    by (metis abs_op_pos adj_cblinfun_compose cblinfun_assoc_left(1) polar_decomposition_correct positive_hermitianI)
+    by (metis abs_op_pos adj_cblinfun_compose cblinfun_assoc_left(1) polar_decomposition_correct positive_selfadjointI selfadjoint_def)
   finally have \<open>sandwich (polar_decomposition a) (abs_op a) = sqrt_op (a o\<^sub>C\<^sub>L a*)\<close>
     using pos by (simp add: sqrt_op_unique)
   also have \<open>\<dots> = abs_op (a*)\<close>
@@ -993,7 +993,7 @@ proof -
   have \<open>(norm (abs_op a))\<^sup>2 = norm (abs_op a* o\<^sub>C\<^sub>L abs_op a)\<close>
     by simp
   also have \<open>\<dots> = norm (a* o\<^sub>C\<^sub>L a)\<close>
-    by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+    by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
   also have \<open>\<dots> = (norm a)\<^sup>2\<close>
     by simp
   finally show ?thesis
@@ -1037,7 +1037,7 @@ next
 qed
 
 lemma abs_op_square: \<open>(abs_op A)* o\<^sub>C\<^sub>L abs_op A = A* o\<^sub>C\<^sub>L A\<close>
-  by (simp add: abs_op_def positive_cblinfun_squareI positive_hermitianI)
+  by (simp add: abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
 
 lemma polar_decomposition_0[simp]: \<open>polar_decomposition 0 = (0 :: 'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'b::chilbert_space)\<close>
 proof -
@@ -1070,7 +1070,7 @@ proof -
   then have 1: \<open>X o\<^sub>C\<^sub>L Proj (kernel A) = polar_decomposition A o\<^sub>C\<^sub>L Proj (kernel A)\<close>
     by (metis assms(1) cblinfun_compose_Proj_kernel polar_decomposition_initial_space)
   have *: \<open>abs_op A *\<^sub>S \<top> = - kernel A\<close>
-    by (metis (mono_tags, opaque_lifting) abs_op_pos kernel_abs_op kernel_compl_adj_range ortho_involution positive_hermitianI)
+    by (metis (mono_tags, opaque_lifting) abs_op_pos kernel_abs_op kernel_compl_adj_range ortho_involution positive_selfadjointI selfadjoint_def)
   
   have \<open>X o\<^sub>C\<^sub>L abs_op A = polar_decomposition A o\<^sub>C\<^sub>L abs_op A\<close>
     by (simp add: comp polar_decomposition_correct)
@@ -1097,9 +1097,9 @@ proof -
   have \<open>B \<ge> 0\<close>
     using assms by force
   have sqrtA: \<open>(sqrt_op A)* o\<^sub>C\<^sub>L sqrt_op A = A\<close>
-    by (simp add: \<open>A \<ge> 0\<close> positive_hermitianI)
+    by (simp add: \<open>A \<ge> 0\<close> positive_selfadjointI[unfolded selfadjoint_def])
   have sqrtB: \<open>(sqrt_op B)* o\<^sub>C\<^sub>L sqrt_op B = B\<close>
-    by (simp add: \<open>B \<ge> 0\<close> positive_hermitianI)
+    by (simp add: \<open>B \<ge> 0\<close> positive_selfadjointI[unfolded selfadjoint_def])
   have \<open>norm (sqrt_op A \<psi>) \<le> norm (sqrt_op B \<psi>)\<close> for \<psi>
     apply (auto intro!: cnorm_le[THEN iffD2]
         simp: sqrtA sqrtB
@@ -1172,7 +1172,7 @@ proof -
   have [simp]: \<open>A \<ge> 0\<close>
     by (simp add: A_def)
   then have [simp]: \<open>A* = A\<close>
-    using positive_hermitianI by fastforce
+    using positive_selfadjointI selfadjoint_def by fastforce
   have aa_AA: \<open>a o\<^sub>C\<^sub>L a = A o\<^sub>C\<^sub>L A\<close>
     by (metis A_def \<open>A* = A\<close> abs_op_square that selfadjoint_def)
   have [simp]: \<open>P* = P\<close>
@@ -1223,7 +1223,7 @@ lemma infsum_nonneg_cblinfun:
   using assms by (auto simp: infsum_not_exists)
 
 lemma adj_abs_op[simp]: \<open>(abs_op a)* = abs_op a\<close>
-  by (simp add: positive_hermitianI) 
+  by (simp add: positive_selfadjointI[unfolded selfadjoint_def])
 
 lemma cblinfun_image_less_eqI:
   fixes A :: \<open>'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector\<close>
@@ -1254,7 +1254,7 @@ proof (rule abs_opI[symmetric])
   have abs_ab: \<open>abs_op a o\<^sub>C\<^sub>L abs_op b = 0\<close>
   proof -
     have \<open>abs_op b *\<^sub>S \<top> = - kernel (abs_op b)\<close>
-      by (simp add: kernel_compl_adj_range positive_hermitianI) 
+      by (simp add: kernel_compl_adj_range positive_selfadjointI) 
     also have \<open>\<dots> = - kernel b\<close>
       by simp
     also have \<open>\<dots> = (b*) *\<^sub>S \<top>\<close>
@@ -1268,7 +1268,7 @@ proof (rule abs_opI[symmetric])
       by (metis Proj_compose_cancelI cblinfun_compose_Proj_kernel cblinfun_compose_assoc cblinfun_compose_zero_left) 
   qed
   then have abs_ba: \<open>abs_op b o\<^sub>C\<^sub>L abs_op a = 0\<close>
-    by (metis abs_op_pos adj_0 adj_cblinfun_compose positive_hermitianI) 
+    by (metis abs_op_pos adj_0 adj_cblinfun_compose positive_selfadjointI selfadjoint_def)
   have \<open>(a + b)* o\<^sub>C\<^sub>L (a + b) = (a*) o\<^sub>C\<^sub>L a + (b*) o\<^sub>C\<^sub>L b\<close>
     by (simp add: cblinfun_compose_add_left cblinfun_compose_add_right adj_plus assms ba)
   also have \<open>\<dots> = (abs_op a + abs_op b)* o\<^sub>C\<^sub>L (abs_op a + abs_op b)\<close>
@@ -1303,7 +1303,7 @@ lemma pos_op_neg_op_ortho:
   assumes \<open>selfadjoint a\<close>
   shows \<open>pos_op a o\<^sub>C\<^sub>L neg_op a = 0\<close>
   apply (auto intro!: simp: pos_op_def neg_op_def cblinfun_compose_add_left cblinfun_compose_minus_right)
-  by (metis (no_types, opaque_lifting) Groups.add_ac(2) abs_op_def abs_op_pos abs_op_square assms cblinfun_assoc_left(1) positive_cblinfun_squareI positive_hermitianI selfadjoint_def sqrt_op_commute) 
+  by (metis (no_types, opaque_lifting) Groups.add_ac(2) abs_op_def abs_op_pos abs_op_square assms cblinfun_assoc_left(1) positive_cblinfun_squareI positive_selfadjointI selfadjoint_def sqrt_op_commute) 
 
 
 lemma pos_op_plus_neg_op: \<open>pos_op a + neg_op a = abs_op a\<close>
@@ -1319,11 +1319,11 @@ lemma pos_op_neg_op_unique:
   shows \<open>b = pos_op a\<close> and \<open>c = neg_op a\<close>
 proof -
   from bc have cb: \<open>c o\<^sub>C\<^sub>L b = 0\<close>
-    by (metis adj_0 adj_cblinfun_compose assms(2) assms(3) positive_hermitianI) 
+    by (metis adj_0 adj_cblinfun_compose assms(2) assms(3) positive_selfadjointI selfadjoint_def) 
   from \<open>b \<ge> 0\<close> have [simp]: \<open>b* = b\<close>
-    by (simp add: positive_hermitianI) 
+    by (simp add: positive_selfadjointI[unfolded selfadjoint_def])
   from \<open>c \<ge> 0\<close> have [simp]: \<open>c* = c\<close>
-    by (simp add: positive_hermitianI) 
+    by (simp add: positive_selfadjointI[unfolded selfadjoint_def])
   have bc_abs: \<open>b + c = abs_op a\<close>
   proof -
     have \<open>(b + c)* o\<^sub>C\<^sub>L (b + c) = b o\<^sub>C\<^sub>L b + c o\<^sub>C\<^sub>L c\<close>
@@ -1348,7 +1348,7 @@ qed
 
 
 lemma pos_imp_selfadjoint: \<open>a \<ge> 0 \<Longrightarrow> selfadjoint a\<close>
-  using positive_hermitianI selfadjoint_def by blast
+  using positive_selfadjointI selfadjoint_def by blast
 
 lemma abs_op_one_dim: \<open>abs_op x = one_dim_iso (abs (one_dim_iso x :: complex))\<close>
   by (metis (mono_tags, lifting) abs_opI abs_op_scaleC of_complex_def one_cblinfun_adj one_comp_one_cblinfun one_dim_iso_is_of_complex one_dim_iso_of_one one_dim_iso_of_zero one_dim_loewner_order one_dim_scaleC_1 zero_less_one_class.zero_le_one)
