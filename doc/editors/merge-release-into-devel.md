@@ -14,7 +14,7 @@ this guideline to your setting.
 
 - Update all of `~/afp/20XX`, `~/afp/devel` and `~/isabelle/devel` to their most
 recent versions via the corresponding mercurial commands, e.g. perform `hg pull -u` in each directory.
-- Make sure that there are no pending changes before the merge in the two AFP directories.
+- Make sure that before the merge there are no pending changes in the two AFP directories.
   (`hg st` should not show any changes; if there are changes, either commit and push them,
    or use `hg clone` to obtain a fresh copy of the AFP, that will then be used for the merge)
 
@@ -40,7 +40,7 @@ recent versions via the corresponding mercurial commands, e.g. perform `hg pull 
           
           hg resolv -l
    shows the conflicts and the lines starting with `U` for (u)nresolved
-   files such as `web/dependencies/index.json` or `web/statistics/index.html`.
+   lists files such as `web/dependencies/index.json` or `web/statistics/index.html`.
 6. Run 
 
           ./admin/sitegen -t ~/isabelle/devel/bin/isabelle
@@ -49,7 +49,7 @@ recent versions via the corresponding mercurial commands, e.g. perform `hg pull 
 7. The previous command might fail because of changed email addresses in the metadata;
    in that case, manually resolve the metadata in `metadata/entries/*.toml` and/or `metadata/authors` 
    and try to run `sitegen` again.
-7. Check that all `U`-files have been overwritten and no failed merge artefacts are
+7. Check that all `U`-files have been overwritten and no failed-merge-artefacts are
    remaining. This might depend on the mercurial-merge configuration. E.g., 
    I check the absence of patterns >>>> and <<<< in the relevant files. 
    Resolve all such remaining conflicts manually.
