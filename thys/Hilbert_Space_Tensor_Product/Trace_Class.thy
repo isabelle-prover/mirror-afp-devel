@@ -3616,7 +3616,7 @@ proof -
     by (simp add: t'_def)
   from assms have \<open>selfadjoint_tc t\<close>
     apply transfer
-    apply (rule comparable_hermitean[of 0])
+    apply (rule comparable_selfadjoint[of 0])
     by simp_all
   have spectral_real[simp]: \<open>spectral_dec_val t' n \<in> \<real>\<close> for n
     apply (rule spectral_dec_val_real)

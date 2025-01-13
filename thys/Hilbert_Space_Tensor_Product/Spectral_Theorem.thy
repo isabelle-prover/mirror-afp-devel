@@ -621,7 +621,7 @@ proof -
   have \<open>aR - aS = a\<close>
     using sums_unique2 by blast 
   have \<open>aR o\<^sub>C\<^sub>L aS = 0\<close>
-    by (metis (no_types, opaque_lifting) Proj_idempotent \<open>0 \<le> aR\<close> \<open>aR - aS = a\<close> aR_def add_cancel_left_left add_minus_cancel adj_0 adj_Proj adj_cblinfun_compose assms(2) cblinfun_compose_minus_right comparable_hermitean lift_cblinfun_comp(2) selfadjoint_def uminus_add_conv_diff) 
+    by (metis (no_types, opaque_lifting) Proj_idempotent \<open>0 \<le> aR\<close> \<open>aR - aS = a\<close> aR_def add_cancel_left_left add_minus_cancel adj_0 adj_Proj adj_cblinfun_compose assms(2) cblinfun_compose_minus_right comparable_selfadjoint lift_cblinfun_comp(2) selfadjoint_def uminus_add_conv_diff) 
   have \<open>aR = pos_op a\<close> and \<open>aS = neg_op a\<close>
     by (intro pos_op_neg_op_unique[where b=aR and c=aS]
         \<open>aR - aS = a\<close> \<open>0 \<le> aR\<close> \<open>0 \<le> aS\<close> \<open>aR o\<^sub>C\<^sub>L aS = 0\<close>)+
@@ -703,7 +703,7 @@ proof -
   wlog non0: \<open>spectral_dec_val a n \<noteq> 0\<close> generalizing v keeping v_def
     using negation by force
   have [simp]: \<open>selfadjoint a\<close>
-    using adj_0 assms(1) comparable_hermitean selfadjoint_def by blast
+    using adj_0 assms(1) comparable_selfadjoint selfadjoint_def by blast
   have \<open>v \<in> eigenvalues a\<close>
     by (auto intro!: non0 spectral_dec_val_eigenvalue assms simp: v_def)
   then show \<open>spectral_dec_val a n \<ge> 0\<close>

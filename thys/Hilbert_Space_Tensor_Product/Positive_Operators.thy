@@ -138,7 +138,7 @@ proof -
           intro!: power_le_one aux1)
   qed
   have [simp]: \<open>S* = S\<close>
-    using \<open>S \<le> 0\<close> adj_0 comparable_hermitean' selfadjoint_def by blast
+    using \<open>S \<le> 0\<close> adj_0 comparable_selfadjoint' selfadjoint_def by blast
   have \<open>- id_cblinfun \<le> S\<close>
     by (simp add: S_def assms k_def scaleR_nonneg_nonneg)
   then have \<open>norm (S *\<^sub>V f) \<le> norm f\<close> for f
@@ -252,7 +252,7 @@ proof -
          \<le> complex_of_real (1 / 2 gchoose x) * (f \<bullet>\<^sub>C (cblinfun_power S x *\<^sub>V f))\<close> for x
         apply (rule aux)
         by (auto simp: cblinfun_power_adj norm_mult fSnf selfadjoint_def
-            intro!: cinner_real cinner_hermitian_real mult_left_mono Reals_mult mult_nonneg_nonneg)
+            intro!: cinner_real cinner_selfadjoint_real mult_left_mono Reals_mult mult_nonneg_nonneg)
       show ?thesis
         apply (subst diff_conv_add_uminus) apply (rule add_left_mono)
         apply (subst infsum_uminus[symmetric]) apply (rule infsum_mono_complex)
@@ -643,7 +643,7 @@ proof -
   qed
   
   from eq_sq have \<open>sqrt_op a = sq\<close>
-    by (simp add: \<open>0 \<le> a\<close> comparable_hermitean[unfolded selfadjoint_def])
+    by (simp add: \<open>0 \<le> a\<close> comparable_selfadjoint[unfolded selfadjoint_def])
   moreover from eq_sq have \<open>b = sq\<close>
     by (simp add: assms(1) assms(2))
   ultimately show \<open>b = sqrt_op a\<close>
@@ -1355,7 +1355,7 @@ lemma abs_op_one_dim: \<open>abs_op x = one_dim_iso (abs (one_dim_iso x :: compl
 
 
 lemma pos_selfadjoint: \<open>selfadjoint a\<close> if \<open>a \<ge> 0\<close>
-  using adj_0 comparable_hermitean selfadjoint_def that by blast
+  using adj_0 comparable_selfadjoint selfadjoint_def that by blast
 
 lemma one_dim_loewner_order_strict: \<open>A > B \<longleftrightarrow> one_dim_iso A > (one_dim_iso B :: complex)\<close> for A B :: \<open>'a \<Rightarrow>\<^sub>C\<^sub>L 'a::{chilbert_space, one_dim}\<close>
   by (auto simp: less_cblinfun_def one_dim_loewner_order)

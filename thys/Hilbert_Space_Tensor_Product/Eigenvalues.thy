@@ -117,7 +117,7 @@ proof -
   also have \<open>\<dots> = h \<bullet>\<^sub>C a h\<close>
     by (simp add: ah_eh)
   also from assms(2) have \<open>\<dots> \<in> \<real>\<close>
-    using cinner_hermitian_real selfadjoint_def by blast
+    using cinner_selfadjoint_real selfadjoint_def by blast
   finally show \<open>e \<in> \<real>\<close>
     by -
 qed
