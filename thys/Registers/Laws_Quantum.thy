@@ -10,13 +10,13 @@ theory Laws_Quantum
 begin
 
 text \<open>This notation is only used inside this file\<close>
-notation cblinfun_compose (infixl \<open>*\<^sub>u\<close> 55)
-notation tensor_op (infixr \<open>\<otimes>\<^sub>u\<close> 70)
-notation register_pair (\<open>'(_;_')\<close>)
+notation cblinfun_compose (infixl "*\<^sub>u" 55)
+notation tensor_op (infixr "\<otimes>\<^sub>u" 70)
+notation register_pair ("'(_;_')")
 
 subsection \<open>Elementary facts\<close>
 
-declare complex_vector.linear_id[simp]
+declare id_preregister[simp]
 declare cblinfun_compose_id_left[simp]
 declare cblinfun_compose_id_right[simp]
 declare register_preregister[simp]
@@ -30,20 +30,20 @@ declare register_id[simp]
 
 subsection \<open>Preregisters\<close>
 
-lemma preregister_tensor_left[simp]: \<open>clinear (\<lambda>b::'b::finite update. tensor_op a b)\<close>
-  for a :: \<open>'a::finite update\<close>
+lemma preregister_tensor_left[simp]: \<open>preregister (\<lambda>b::'b::type update. tensor_op a b)\<close>
+  for a :: \<open>'a::type update\<close>
 proof -
-  have \<open>clinear ((\<lambda>b1::('a\<times>'b) update. (a \<otimes>\<^sub>u id_cblinfun) *\<^sub>u b1) o (\<lambda>b. tensor_op id_cblinfun b))\<close>
-    by (rule clinear_compose; simp)
+  have \<open>preregister ((\<lambda>b1::('a\<times>'b) update. (a \<otimes>\<^sub>u id_cblinfun) *\<^sub>u b1) o (\<lambda>b. tensor_op id_cblinfun b))\<close>
+    by (rule comp_preregister; simp)
   then show ?thesis
     by (simp add: o_def comp_tensor_op)
 qed
 
-lemma preregister_tensor_right[simp]: \<open>clinear (\<lambda>a::'a::finite update. tensor_op a b)\<close>  
-  for b :: \<open>'b::finite update\<close>
+lemma preregister_tensor_right[simp]: \<open>preregister (\<lambda>a::'a::type update. tensor_op a b)\<close>  
+  for b :: \<open>'b::type update\<close>
 proof -
-  have \<open>clinear ((\<lambda>a1::('a\<times>'b) update. (id_cblinfun \<otimes>\<^sub>u b) *\<^sub>u a1) o (\<lambda>a. tensor_op a id_cblinfun))\<close>
-    by (rule clinear_compose, simp_all)
+  have \<open>preregister ((\<lambda>a1::('a\<times>'b) update. (id_cblinfun \<otimes>\<^sub>u b) *\<^sub>u a1) o (\<lambda>a. tensor_op a id_cblinfun))\<close>
+    by (rule comp_preregister, simp_all)
   then show ?thesis
     by (simp add: o_def comp_tensor_op)
 qed
@@ -52,30 +52,30 @@ subsection \<open>Registers\<close>
 
 lemma id_update_tensor_register[simp]:
   assumes \<open>register F\<close>
-  shows \<open>register (\<lambda>a::'a::finite update. id_cblinfun \<otimes>\<^sub>u F a)\<close>
+  shows \<open>register (\<lambda>a::'a::type update. id_cblinfun \<otimes>\<^sub>u F a)\<close>
   using assms apply (rule register_comp[unfolded o_def])
   by simp
 
 lemma register_tensor_id_update[simp]:
   assumes \<open>register F\<close>
-  shows \<open>register (\<lambda>a::'a::finite update. F a \<otimes>\<^sub>u id_cblinfun)\<close>
+  shows \<open>register (\<lambda>a::'a::type update. F a \<otimes>\<^sub>u id_cblinfun)\<close>
   using assms apply (rule register_comp[unfolded o_def])
   by simp
 
 subsection \<open>Tensor product of registers\<close>
 
-definition register_tensor  (infixr \<open>\<otimes>\<^sub>r\<close> 70) where
+definition register_tensor  (infixr "\<otimes>\<^sub>r" 70) where
   "register_tensor F G = register_pair (\<lambda>a. tensor_op (F a) id_cblinfun) (\<lambda>b. tensor_op id_cblinfun (G b))"
 
 lemma register_tensor_is_register: 
-  fixes F :: "'a::finite update \<Rightarrow> 'b::finite update" and G :: "'c::finite update \<Rightarrow> 'd::finite update"
+  fixes F :: "'a::type update \<Rightarrow> 'b::type update" and G :: "'c::type update \<Rightarrow> 'd::type update"
   shows "register F \<Longrightarrow> register G \<Longrightarrow> register (F \<otimes>\<^sub>r G)"
   unfolding register_tensor_def
   apply (rule register_pair_is_register)
   by (simp_all add: comp_tensor_op)
 
 lemma register_tensor_apply[simp]:
-  fixes F :: "'a::finite update \<Rightarrow> 'b::finite update" and G :: "'c::finite update \<Rightarrow> 'd::finite update"
+  fixes F :: "'a::type update \<Rightarrow> 'b::type update" and G :: "'c::type update \<Rightarrow> 'd::type update"
   assumes \<open>register F\<close> and \<open>register G\<close>
   shows "(F \<otimes>\<^sub>r G) (a \<otimes>\<^sub>u b) = F a \<otimes>\<^sub>u G b"
   unfolding register_tensor_def
@@ -83,37 +83,37 @@ lemma register_tensor_apply[simp]:
   unfolding register_tensor_def 
   by (simp_all add: assms comp_tensor_op)
 
-definition "separating (_::'b::finite itself) A \<longleftrightarrow> 
-  (\<forall>F G :: 'a::finite update \<Rightarrow> 'b update. clinear F \<longrightarrow> clinear G \<longrightarrow> (\<forall>x\<in>A. F x = G x) \<longrightarrow> F = G)"
+definition "separating (_::'b::type itself) A \<longleftrightarrow> 
+  (\<forall>F G :: 'a::type update \<Rightarrow> 'b update. preregister F \<longrightarrow> preregister G \<longrightarrow> (\<forall>x\<in>A. F x = G x) \<longrightarrow> F = G)"
 
 lemma separating_UNIV[simp]: \<open>separating TYPE(_) UNIV\<close>
   unfolding separating_def by auto
 
-lemma separating_mono: \<open>A \<subseteq> B \<Longrightarrow> separating TYPE('a::finite) A \<Longrightarrow> separating TYPE('a) B\<close>
+lemma separating_mono: \<open>A \<subseteq> B \<Longrightarrow> separating TYPE('a::type) A \<Longrightarrow> separating TYPE('a) B\<close>
   unfolding separating_def by (meson in_mono) 
 
-lemma register_eqI: \<open>separating TYPE('b::finite) A \<Longrightarrow> clinear F \<Longrightarrow> clinear G \<Longrightarrow> (\<And>x. x\<in>A \<Longrightarrow> F x = G x) \<Longrightarrow> F = (G::_ \<Rightarrow> 'b update)\<close>
+lemma register_eqI: \<open>separating TYPE('b::type) A \<Longrightarrow> preregister F \<Longrightarrow> preregister G \<Longrightarrow> (\<And>x. x\<in>A \<Longrightarrow> F x = G x) \<Longrightarrow> F = (G::_ \<Rightarrow> 'b update)\<close>
   unfolding separating_def by auto
 
 lemma separating_tensor:
-  fixes A :: \<open>'a::finite update set\<close> and B :: \<open>'b::finite update set\<close>
-  assumes [simp]: \<open>separating TYPE('c::finite) A\<close>
+  fixes A :: \<open>'a::type update set\<close> and B :: \<open>'b::type update set\<close>
+  assumes [simp]: \<open>separating TYPE('c::type) A\<close>
   assumes [simp]: \<open>separating TYPE('c) B\<close>
   shows \<open>separating TYPE('c) {a \<otimes>\<^sub>u b | a b. a\<in>A \<and> b\<in>B}\<close>
 proof (unfold separating_def, intro allI impI)
   fix F G :: \<open>('a\<times>'b) update \<Rightarrow> 'c update\<close>
-  assume [simp]: \<open>clinear F\<close> \<open>clinear G\<close>
-  have [simp]: \<open>clinear (\<lambda>x. F (a \<otimes>\<^sub>u x))\<close> for a
-    using _ \<open>clinear F\<close> apply (rule clinear_compose[unfolded o_def])
+  assume [simp]: \<open>preregister F\<close> \<open>preregister G\<close>
+  have [simp]: \<open>preregister (\<lambda>x. F (a \<otimes>\<^sub>u x))\<close> for a
+    using _ \<open>preregister F\<close> apply (rule comp_preregister[unfolded o_def])
     by simp
-  have [simp]: \<open>clinear (\<lambda>x. G (a \<otimes>\<^sub>u x))\<close> for a
-    using _ \<open>clinear G\<close> apply (rule clinear_compose[unfolded o_def])
+  have [simp]: \<open>preregister (\<lambda>x. G (a \<otimes>\<^sub>u x))\<close> for a
+    using _ \<open>preregister G\<close> apply (rule comp_preregister[unfolded o_def])
     by simp
-  have [simp]: \<open>clinear (\<lambda>x. F (x \<otimes>\<^sub>u b))\<close> for b
-    using _ \<open>clinear F\<close> apply (rule clinear_compose[unfolded o_def])
+  have [simp]: \<open>preregister (\<lambda>x. F (x \<otimes>\<^sub>u b))\<close> for b
+    using _ \<open>preregister F\<close> apply (rule comp_preregister[unfolded o_def])
     by simp
-  have [simp]: \<open>clinear (\<lambda>x. G (x \<otimes>\<^sub>u b))\<close> for b
-    using _ \<open>clinear G\<close> apply (rule clinear_compose[unfolded o_def])
+  have [simp]: \<open>preregister (\<lambda>x. G (x \<otimes>\<^sub>u b))\<close> for b
+    using _ \<open>preregister G\<close> apply (rule comp_preregister[unfolded o_def])
     by simp
 
   assume \<open>\<forall>x\<in>{a \<otimes>\<^sub>u b |a b. a\<in>A \<and> b\<in>B}. F x = G x\<close>
@@ -138,8 +138,8 @@ lemma register_tensor_distrib:
 
 text \<open>The following is easier to apply using the @{method rule}-method than @{thm [source] separating_tensor}\<close>
 lemma separating_tensor':
-  fixes A :: \<open>'a::finite update set\<close> and B :: \<open>'b::finite update set\<close>
-  assumes \<open>separating TYPE('c::finite) A\<close>
+  fixes A :: \<open>'a::type update set\<close> and B :: \<open>'b::type update set\<close>
+  assumes \<open>separating TYPE('c::type) A\<close>
   assumes \<open>separating TYPE('c) B\<close>
   assumes \<open>C = {a \<otimes>\<^sub>u b | a b. a\<in>A \<and> b\<in>B}\<close>
   shows \<open>separating TYPE('c) C\<close>
@@ -147,7 +147,7 @@ lemma separating_tensor':
   by (simp add: separating_tensor)
 
 lemma tensor_extensionality3: 
-  fixes F G :: \<open>('a::finite\<times>'b::finite\<times>'c::finite) update \<Rightarrow> 'd::finite update\<close>
+  fixes F G :: \<open>('a::type\<times>'b::type\<times>'c::type) update \<Rightarrow> 'd::type update\<close>
   assumes [simp]: \<open>register F\<close> \<open>register G\<close>
   assumes "\<And>f g h. F (f \<otimes>\<^sub>u g \<otimes>\<^sub>u h) = G (f \<otimes>\<^sub>u g \<otimes>\<^sub>u h)"
   shows "F = G"
@@ -158,13 +158,13 @@ proof (rule register_eqI[where A=\<open>{a\<otimes>\<^sub>ub\<otimes>\<^sub>uc| 
   then show \<open>separating TYPE('d) {a \<otimes>\<^sub>u b \<otimes>\<^sub>u c |a b c. True}\<close>
     apply (rule_tac separating_tensor'[where A=UNIV and B=\<open>{b\<otimes>\<^sub>uc| b c. True}\<close>])
     by auto
-  show \<open>clinear F\<close> \<open>clinear G\<close> by auto
+  show \<open>preregister F\<close> \<open>preregister G\<close> by auto
   show \<open>x \<in> {a \<otimes>\<^sub>u b \<otimes>\<^sub>u c |a b c. True} \<Longrightarrow> F x = G x\<close> for x
     using assms(3) by auto
 qed
 
 lemma tensor_extensionality3': 
-  fixes F G :: \<open>(('a::finite\<times>'b::finite)\<times>'c::finite) update \<Rightarrow> 'd::finite update\<close>
+  fixes F G :: \<open>(('a::type\<times>'b::type)\<times>'c::type) update \<Rightarrow> 'd::type update\<close>
   assumes [simp]: \<open>register F\<close> \<open>register G\<close>
   assumes "\<And>f g h. F ((f \<otimes>\<^sub>u g) \<otimes>\<^sub>u h) = G ((f \<otimes>\<^sub>u g) \<otimes>\<^sub>u h)"
   shows "F = G"
@@ -175,7 +175,7 @@ proof (rule register_eqI[where A=\<open>{(a\<otimes>\<^sub>ub)\<otimes>\<^sub>uc
   then show \<open>separating TYPE('d) {(a \<otimes>\<^sub>u b) \<otimes>\<^sub>u c |a b c. True}\<close>
     apply (rule_tac separating_tensor'[where B=UNIV and A=\<open>{a\<otimes>\<^sub>ub| a b. True}\<close>])
     by auto
-  show \<open>clinear F\<close> \<open>clinear G\<close> by auto
+  show \<open>preregister F\<close> \<open>preregister G\<close> by auto
   show \<open>x \<in> {(a \<otimes>\<^sub>u b) \<otimes>\<^sub>u c |a b c. True} \<Longrightarrow> F x = G x\<close> for x
     using assms(3) by auto
 qed
@@ -186,8 +186,8 @@ lemma register_tensor_id[simp]: \<open>id \<otimes>\<^sub>r id = id\<close>
 
 subsection \<open>Pairs and compatibility\<close>
 
-definition compatible :: \<open>('a::finite update \<Rightarrow> 'c::finite update)
-                       \<Rightarrow> ('b::finite update \<Rightarrow> 'c update) \<Rightarrow> bool\<close> where
+definition compatible :: \<open>('a::type update \<Rightarrow> 'c::type update)
+                       \<Rightarrow> ('b::type update \<Rightarrow> 'c update) \<Rightarrow> bool\<close> where
   \<open>compatible F G \<longleftrightarrow> register F \<and> register G \<and> (\<forall>a b. F a *\<^sub>u G b = G b *\<^sub>u F a)\<close>
 
 lemma compatibleI:
@@ -242,17 +242,17 @@ lemma pair_o_tensor:
   assumes "compatible A B" and [simp]: \<open>register C\<close> and [simp]: \<open>register D\<close>
   shows "(A; B) o (C \<otimes>\<^sub>r D) = (A o C; B o D)"
   apply (rule tensor_extensionality)
-  using assms by (simp_all add: register_tensor_is_register register_pair_apply clinear_compose)
+  using assms by (simp_all add: register_tensor_is_register register_pair_apply comp_preregister)
 
 lemma compatible_tensor_id_update_left[simp]:
-  fixes F :: "'a::finite update \<Rightarrow> 'c::finite update" and G :: "'b::finite update \<Rightarrow> 'c::finite update"
+  fixes F :: "'a::type update \<Rightarrow> 'c::type update" and G :: "'b::type update \<Rightarrow> 'c::type update"
   assumes "compatible F G"
   shows "compatible (\<lambda>a. id_cblinfun \<otimes>\<^sub>u F a) (\<lambda>a. id_cblinfun \<otimes>\<^sub>u G a)"
   using assms apply (rule compatible_comp_inner[unfolded o_def])
   by simp
 
 lemma compatible_tensor_id_update_right[simp]:
-  fixes F :: "'a::finite update \<Rightarrow> 'c::finite update" and G :: "'b::finite update \<Rightarrow> 'c::finite update"
+  fixes F :: "'a::type update \<Rightarrow> 'c::type update" and G :: "'b::type update \<Rightarrow> 'c::type update"
   assumes "compatible F G"
   shows "compatible (\<lambda>a. F a \<otimes>\<^sub>u id_cblinfun) (\<lambda>a. G a \<otimes>\<^sub>u id_cblinfun)"
   using assms apply (rule compatible_comp_inner[unfolded o_def])
@@ -274,7 +274,7 @@ lemma register_comp_pair:
   assumes [simp]: \<open>register F\<close> and [simp]: \<open>compatible G H\<close>
   shows "(F o G; F o H) = F o (G; H)"
 proof (rule tensor_extensionality)
-  show \<open>clinear (F \<circ> G;F \<circ> H)\<close> and \<open>clinear (F \<circ> (G;H))\<close>
+  show \<open>preregister (F \<circ> G;F \<circ> H)\<close> and \<open>preregister (F \<circ> (G;H))\<close>
     by simp_all
 
   have [simp]: \<open>compatible (F o G) (F o H)\<close>
@@ -303,6 +303,7 @@ lemmas compatible_ac_rules = swap_registers cblinfun_compose_assoc[symmetric] sw
 
 subsection \<open>Fst and Snd\<close>
 
+(* TODO: specify types *)
 definition Fst where \<open>Fst a = a \<otimes>\<^sub>u id_cblinfun\<close>
 definition Snd where \<open>Snd a = id_cblinfun \<otimes>\<^sub>u a\<close>
 
@@ -374,13 +375,13 @@ lemma compatible3[simp]:
 proof (rule compatibleI)
   have [simp]: \<open>register F\<close> \<open>register G\<close> \<open>register H\<close>
     using assms compatible_def by auto
-  then have [simp]: \<open>clinear F\<close> \<open>clinear G\<close> \<open>clinear H\<close>
+  then have [simp]: \<open>preregister F\<close> \<open>preregister G\<close> \<open>preregister H\<close>
     using register_preregister by blast+
-  have [simp]: \<open>clinear (\<lambda>a. (F;G) a *\<^sub>u z)\<close> for z
-    apply (rule clinear_compose[unfolded o_def, of \<open>(F;G)\<close>])
+  have [simp]: \<open>preregister (\<lambda>a. (F;G) a *\<^sub>u z)\<close> for z
+    apply (rule comp_preregister[unfolded o_def, of \<open>(F;G)\<close>])
     by simp_all
-  have [simp]: \<open>clinear (\<lambda>a. z *\<^sub>u (F;G) a)\<close> for z
-    apply (rule clinear_compose[unfolded o_def, of \<open>(F;G)\<close>])
+  have [simp]: \<open>preregister (\<lambda>a. z *\<^sub>u (F;G) a)\<close> for z
+    apply (rule comp_preregister[unfolded o_def, of \<open>(F;G)\<close>])
     by simp_all
   have "(F; G) (f \<otimes>\<^sub>u g) *\<^sub>u H h = H h *\<^sub>u (F; G) (f \<otimes>\<^sub>u g)" for f g h
   proof -
@@ -415,12 +416,12 @@ lemma pair_o_swap[simp]:
   assumes [simp]: "compatible A B"
   shows "(A; B) o swap = (B; A)"
 proof (rule tensor_extensionality)
-  have [simp]: "clinear A" "clinear B"
+  have [simp]: "preregister A" "preregister B"
      apply (metis (no_types, opaque_lifting) assms compatible_register1 register_preregister)
     by (metis (full_types) assms compatible_register2 register_preregister)
-  then show \<open>clinear ((A; B) \<circ> swap)\<close>
+  then show \<open>preregister ((A; B) \<circ> swap)\<close>
     by simp
-  show \<open>clinear (B; A)\<close>
+  show \<open>preregister (B; A)\<close>
     by (metis (no_types, lifting) assms compatible_sym register_preregister pair_is_register)
   show \<open>((A; B) \<circ> swap) (a \<otimes>\<^sub>u b) = (B; A) (a \<otimes>\<^sub>u b)\<close> for a b
     (* Without the "only:", we would not need the "apply subst",
@@ -435,16 +436,16 @@ qed
 subsection \<open>Compatibility of register tensor products\<close>
 
 lemma compatible_register_tensor:
-  fixes F :: \<open>'a::finite update \<Rightarrow> 'e::finite update\<close> and G :: \<open>'b::finite update \<Rightarrow> 'f::finite update\<close>
-    and F' :: \<open>'c::finite update \<Rightarrow> 'e update\<close> and G' :: \<open>'d::finite update \<Rightarrow> 'f update\<close>
+  fixes F :: \<open>'a::type update \<Rightarrow> 'e::type update\<close> and G :: \<open>'b::type update \<Rightarrow> 'f::type update\<close>
+    and F' :: \<open>'c::type update \<Rightarrow> 'e update\<close> and G' :: \<open>'d::type update \<Rightarrow> 'f update\<close>
   assumes [simp]: \<open>compatible F F'\<close>
   assumes [simp]: \<open>compatible G G'\<close>
   shows \<open>compatible (F \<otimes>\<^sub>r G) (F' \<otimes>\<^sub>r G')\<close>
 proof -
   note [intro!] = 
-    clinear_compose[OF _ preregister_mult_right, unfolded o_def]
-    clinear_compose[OF _ preregister_mult_left, unfolded o_def]
-    clinear_compose
+    comp_preregister[OF _ preregister_mult_right, unfolded o_def]
+    comp_preregister[OF _ preregister_mult_left, unfolded o_def]
+    comp_preregister
     register_tensor_is_register
   have [simp]: \<open>register F\<close> \<open>register G\<close> \<open>register F'\<close> \<open>register G'\<close>
     using assms compatible_def by blast+
@@ -454,13 +455,13 @@ proof -
     by auto
   define reorder :: \<open>(('a\<times>'b) \<times> ('c\<times>'d)) update \<Rightarrow> (('a\<times>'c) \<times> ('b\<times>'d)) update\<close>
     where \<open>reorder = ((Fst o Fst; Snd o Fst); (Fst o Snd; Snd o Snd))\<close>
-  have [simp]: \<open>clinear reorder\<close>
+  have [simp]: \<open>preregister reorder\<close>
     by (auto simp: reorder_def)
   have [simp]: \<open>reorder ((a \<otimes>\<^sub>u b) \<otimes>\<^sub>u (c \<otimes>\<^sub>u d)) = ((a \<otimes>\<^sub>u c) \<otimes>\<^sub>u (b \<otimes>\<^sub>u d))\<close> for a b c d
     apply (simp add: reorder_def register_pair_apply)
     by (simp add: Fst_def Snd_def comp_tensor_op)
   define \<Phi> where \<open>\<Phi> c d = ((F;F') \<otimes>\<^sub>r (G;G')) o reorder o (\<lambda>\<sigma>. \<sigma> \<otimes>\<^sub>u (c \<otimes>\<^sub>u d))\<close> for c d
-  have [simp]: \<open>clinear (\<Phi> c d)\<close> for c d
+  have [simp]: \<open>preregister (\<Phi> c d)\<close> for c d
     unfolding \<Phi>_def 
     by (auto intro: register_preregister)
   have \<open>\<Phi> c d (a \<otimes>\<^sub>u b) = (F \<otimes>\<^sub>r G) (a \<otimes>\<^sub>u b) *\<^sub>u (F' \<otimes>\<^sub>r G') (c \<otimes>\<^sub>u d)\<close> for a b c d
@@ -470,8 +471,8 @@ proof -
     apply (rule tensor_extensionality)
     by auto
   have \<open>\<Phi> c d (a \<otimes>\<^sub>u b) = (F' \<otimes>\<^sub>r G') (c \<otimes>\<^sub>u d) *\<^sub>u (F \<otimes>\<^sub>r G) (a \<otimes>\<^sub>u b)\<close> for a b c d
-    unfolding \<Phi>_def apply (auto simp: register_pair_apply)
-    by (metis assms(1) assms(2) compatible_def comp_tensor_op)
+    using assms 
+    unfolding \<Phi>_def compatible_def by (auto simp: register_pair_apply comp_tensor_op)
   then have \<Phi>2: \<open>\<Phi> c d \<sigma> = (F' \<otimes>\<^sub>r G') (c \<otimes>\<^sub>u d) *\<^sub>u (F \<otimes>\<^sub>r G) \<sigma>\<close> for c d \<sigma>
     apply (rule_tac fun_cong[of _ _ \<sigma>])
     apply (rule tensor_extensionality)
@@ -487,19 +488,19 @@ qed
 
 subsection \<open>Associativity of the tensor product\<close>
 
-definition assoc :: \<open>(('a::finite\<times>'b::finite)\<times>'c::finite) update \<Rightarrow> ('a\<times>('b\<times>'c)) update\<close> where 
+definition assoc :: \<open>(('a::type\<times>'b::type)\<times>'c::type) update \<Rightarrow> ('a\<times>('b\<times>'c)) update\<close> where 
   \<open>assoc = ((Fst; Snd o Fst); Snd o Snd)\<close>
 
-lemma assoc_is_hom[simp]: \<open>clinear assoc\<close>
+lemma assoc_is_hom[simp]: \<open>preregister assoc\<close>
   by (auto simp: assoc_def)
 
 lemma assoc_apply[simp]: \<open>assoc ((a \<otimes>\<^sub>u b) \<otimes>\<^sub>u c) = (a \<otimes>\<^sub>u (b \<otimes>\<^sub>u c))\<close>
   by (auto simp: assoc_def register_pair_apply Fst_def Snd_def comp_tensor_op)
 
-definition assoc' :: \<open>('a\<times>('b\<times>'c)) update \<Rightarrow> (('a::finite\<times>'b::finite)\<times>'c::finite) update\<close> where 
+definition assoc' :: \<open>('a\<times>('b\<times>'c)) update \<Rightarrow> (('a::type\<times>'b::type)\<times>'c::type) update\<close> where 
   \<open>assoc' = (Fst o Fst; (Fst o Snd; Snd))\<close>
 
-lemma assoc'_is_hom[simp]: \<open>clinear assoc'\<close>
+lemma assoc'_is_hom[simp]: \<open>preregister assoc'\<close>
   by (auto simp: assoc'_def)
 
 lemma assoc'_apply[simp]: \<open>assoc' (a \<otimes>\<^sub>u (b \<otimes>\<^sub>u c)) =  ((a \<otimes>\<^sub>u b) \<otimes>\<^sub>u c)\<close>
@@ -557,16 +558,16 @@ lemma inv_assoc[simp]: \<open>inv assoc = assoc'\<close>
 lemma inv_assoc'[simp]: \<open>inv assoc' = assoc\<close>
   by (simp add: inv_equality)
 
-lemma [simp]: \<open>bij assoc\<close>
+lemma bij_assoc[simp]: \<open>bij assoc\<close>
   using assoc'_o_assoc assoc_o_assoc' o_bij by blast
 
-lemma [simp]: \<open>bij assoc'\<close>
+lemma bij_assoc'[simp]: \<open>bij assoc'\<close>
   using assoc'_o_assoc assoc_o_assoc' o_bij by blast
 
 subsection \<open>Iso-registers\<close>
 
 definition \<open>iso_register F \<longleftrightarrow> register F \<and> (\<exists>G. register G \<and> F o G = id \<and> G o F = id)\<close>
-  for F :: \<open>_::finite update \<Rightarrow> _::finite update\<close>
+  for F :: \<open>_::type update \<Rightarrow> _::type update\<close>
 
 lemma iso_registerI:
   assumes \<open>register F\<close> \<open>register G\<close> \<open>F o G = id\<close> \<open>G o F = id\<close>
@@ -596,11 +597,14 @@ proof -
   from assms obtain F' G' where [simp]: \<open>register F'\<close> \<open>register G'\<close> \<open>F o F' = id\<close> \<open>F' o F = id\<close>
     \<open>G o G' = id\<close> \<open>G' o G = id\<close>
     by (meson iso_register_def)
+  have 1: \<open>F \<circ> G \<circ> (G' \<circ> F') = id\<close>
+    by (metis \<open>F \<circ> F' = id\<close> \<open>G \<circ> G' = id\<close> fcomp_assoc fcomp_comp id_fcomp)
+  have 2: \<open>G' \<circ> F' \<circ> (F \<circ> G) = id\<close>
+    by (metis (no_types, lifting) \<open>F \<circ> F' = id\<close> \<open>F' \<circ> F = id\<close> \<open>G' \<circ> G = id\<close> fun.map_comp inj_iff inv_unique_comp o_inv_o_cancel)
+
   show ?thesis
     apply (rule iso_registerI[where G=\<open>G' o F'\<close>])
-       apply (auto simp: register_tensor_is_register iso_register_is_register register_tensor_distrib)
-     apply (metis \<open>F \<circ> F' = id\<close> \<open>G \<circ> G' = id\<close> fcomp_assoc fcomp_comp id_fcomp)
-    by (metis (no_types, lifting) \<open>F \<circ> F' = id\<close> \<open>F' \<circ> F = id\<close> \<open>G' \<circ> G = id\<close> fun.map_comp inj_iff inv_unique_comp o_inv_o_cancel)
+    using 1 2 by (auto simp: register_tensor_is_register iso_register_is_register register_tensor_distrib)
 qed
 
 
@@ -640,7 +644,7 @@ lemma iso_register_assoc'[simp]: \<open>iso_register assoc'\<close>
   by auto
 
 definition \<open>equivalent_registers F G \<longleftrightarrow> (register F \<and> (\<exists>I. iso_register I \<and> F o I = G))\<close>
-  for F G :: \<open>_::finite update \<Rightarrow> _::finite update\<close>
+  for F G :: \<open>_::type update \<Rightarrow> _::type update\<close>
 
 lemma iso_register_equivalent_id[simp]: \<open>equivalent_registers id F \<longleftrightarrow> iso_register F\<close>
   by (simp add: equivalent_registers_def)
@@ -651,6 +655,9 @@ lemma equivalent_registersI:
   assumes \<open>F o I = G\<close>
   shows \<open>equivalent_registers F G\<close>
   using assms unfolding equivalent_registers_def by blast
+
+lemma equivalent_registers_refl: \<open>equivalent_registers F F\<close> if \<open>register F\<close>
+  using that by (auto intro!: exI[of _ id] simp: equivalent_registers_def)
 
 lemma equivalent_registers_register_left: \<open>equivalent_registers F G \<Longrightarrow> register F\<close>
   using equivalent_registers_def by auto
@@ -724,6 +731,18 @@ lemma equivalent_registers_comp:
   assumes \<open>equivalent_registers F G\<close>
   shows \<open>equivalent_registers (H o F) (H o G)\<close>
   by (metis (no_types, lifting) assms(1) assms(2) comp_assoc equivalent_registers_def register_comp)
+
+lemma equivalent_registers_compatible1:
+  assumes \<open>compatible F G\<close>
+  assumes \<open>equivalent_registers F F'\<close>
+  shows \<open>compatible F' G\<close>
+  by (metis assms(1) assms(2) compatible_comp_left equivalent_registers_def iso_register_is_register)
+
+lemma equivalent_registers_compatible2:
+  assumes \<open>compatible F G\<close>
+  assumes \<open>equivalent_registers G G'\<close>
+  shows \<open>compatible F G'\<close>
+  by (metis assms(1) assms(2) compatible_comp_right equivalent_registers_def iso_register_is_register)
 
 subsection \<open>Compatibility simplification\<close>
 
@@ -803,13 +822,12 @@ end
 
 subsection \<open>Notation\<close>
 
-no_notation cblinfun_compose (infixl \<open>*\<^sub>u\<close> 55)
-no_notation tensor_op (infixr \<open>\<otimes>\<^sub>u\<close> 70)
+no_notation cblinfun_compose (infixl "*\<^sub>u" 55)
+no_notation tensor_op (infixr "\<otimes>\<^sub>u" 70)
 
-bundle register_syntax
-begin
-notation register_tensor (infixr \<open>\<otimes>\<^sub>r\<close> 70)
-notation register_pair (\<open>'(_;_')\<close>)
+bundle register_syntax begin
+notation register_tensor (infixr "\<otimes>\<^sub>r" 70)
+notation register_pair ("'(_;_')")
 end
 
 end
