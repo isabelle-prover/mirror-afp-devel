@@ -1130,5 +1130,19 @@ proof -
   thus ?thesis unfolding sound by auto
 qed
 
+theorem P_step_improved:
+  assumes improved 
+    and inf: "infinite (UNIV :: 'v set)" 
+    and wf: "wf_pats (pats_mset P)" and NF: "(P,Q) \<in> \<Rrightarrow>\<^sup>!"
+  shows "pats_complete (pats_mset P) \<longleftrightarrow> pats_complete (pats_mset Q)" \<comment> \<open>equivalence\<close>
+    "p \<in># Q \<Longrightarrow> finite_var_form_pp p" \<comment> \<open>all remaining problems are in finite-var-form\<close>
+proof -
+  from NF have steps: "(P,Q) \<in> \<Rrightarrow>^*" and NF: "Q \<in> NF P_step" by auto
+  from P_steps_pcorrect[OF wf steps]
+  show "pats_complete (pats_mset P) = pats_complete (pats_mset Q)" ..
+  from P_step_NF_fvf[OF \<open>improved\<close> inf NF]
+  show "p \<in># Q \<Longrightarrow> finite_var_form_pp p" .
+qed
+
 end
 end
