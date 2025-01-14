@@ -1,5 +1,5 @@
 theory Infinite_Variables_Per_Type
-  imports Fun_Extra Fresh_Identifiers.Fresh
+  imports Function_Existences Fresh_Identifiers.Fresh
 begin
 
 definition infinite_variables_per_type where 

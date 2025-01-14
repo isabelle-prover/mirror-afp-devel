@@ -4,7 +4,6 @@ theory Nonground_Typing
     Nonground_Term_Typing
     Typed_Functional_Substitution_Lifting
     Nonground_Clause
-    Fun_Extra
     Nonground_Order
 begin
 

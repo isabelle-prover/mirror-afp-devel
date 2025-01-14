@@ -1,4 +1,4 @@
-theory Fun_Extra
+theory Function_Existences
   imports Main "HOL-Library.Countable_Set" "HOL-Cardinals.Cardinals" HOL_Extra
 begin
 
