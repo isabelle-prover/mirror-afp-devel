@@ -1,4 +1,4 @@
-theory Functional_Substitution_Lifting_Example
+theory Functional_Substitution_Lifting_Example \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports
     Functional_Substitution_Lifting
     Functional_Substitution_Example

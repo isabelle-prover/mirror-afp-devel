@@ -1,4 +1,4 @@
-theory Natural_Magma
+theory Natural_Magma \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports Main
 begin
 

@@ -1,4 +1,4 @@
-theory Functional_Substitution_Example
+theory Functional_Substitution_Example \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports Functional_Substitution Substitution_First_Order_Term
 begin
 

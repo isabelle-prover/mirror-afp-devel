@@ -1,4 +1,4 @@
-theory Functional_Substitution
+theory Functional_Substitution \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports
     Substitution
     "HOL-Library.FSet"

@@ -1,4 +1,4 @@
-theory Natural_Magma_Functor
+theory Natural_Magma_Functor \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports Natural_Magma Natural_Functor
 begin
 

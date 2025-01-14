@@ -1,4 +1,4 @@
-theory Functional_Substitution_Lifting
+theory Functional_Substitution_Lifting \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports Functional_Substitution Natural_Magma_Functor
 begin
 

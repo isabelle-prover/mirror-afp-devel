@@ -1,4 +1,4 @@
-theory Natural_Functor
+theory Natural_Functor \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports Main
 begin
 
