@@ -46,8 +46,7 @@ subsection \<open>Term\<close>
 locale nonground_term_properties =
   base_functional_substitution +
   finite_variables +
-  all_subst_ident_iff_ground +
-  renaming_variables
+  all_subst_ident_iff_ground
 
 locale term_grounding =
   variables_in_base_imgu where base_vars = vars and base_subst = subst +
@@ -72,39 +71,6 @@ proof-
 
   then show "infinite (UNIV :: ('f, 'v) term set)"
     using infinite_super top_greatest by blast
-qed
-
-lemma renaming_vars_term:
-  assumes "\<forall>x. is_Var (\<rho> x)"
-  shows "Var ` vars (t \<cdot>t \<rho>) = \<rho> ` (vars t)" 
-proof(induction t)
-  case Var
-  with assms show ?case
-    unfolding term_subst_is_renaming_iff
-    by (metis Term.term.simps(17) eval_term.simps(1) image_empty image_insert is_VarE)
-next
-  case (Fun f terms)
-
-  {
-    fix t x
-    assume "t \<in> set terms" "x \<in> vars (t \<cdot>t \<rho>)"
-
-    then have "Var x \<in> \<rho> ` \<Union> (vars ` set terms)"
-      using Fun
-      by (smt (verit, del_insts) UN_iff image_UN image_eqI)
-  }
-
-  moreover { 
-    fix t x
-    assume "t \<in> set terms" "x \<in> vars t"
-
-    then have "\<rho> x \<in> Var ` (\<Union>t' \<in> set terms. vars (t' \<cdot>t \<rho>))"
-      using Fun
-      by (smt (verit, del_insts) UN_iff image_UN image_eqI)
-  }
-
-  ultimately show ?case
-    by auto
 qed
 
 sublocale nonground_term_properties where 
@@ -187,21 +153,38 @@ next
   show "vars (Var x) = {x}"
     by simp
 next
+  fix \<sigma> \<sigma>' :: "('f, 'v) subst" and x
+  show "(\<sigma> \<odot> \<sigma>') x = \<sigma> x \<cdot>t \<sigma>'"
+    unfolding subst_compose_def ..
+qed
+
+sublocale renaming_variables where 
+  vars = "vars :: ('f, 'v) term \<Rightarrow> 'v set" and subst = "(\<cdot>t)" and id_subst = Var and 
+  comp_subst = "(\<odot>)" 
+proof unfold_locales
   fix \<rho> :: "('f, 'v) subst"
 
   show "term_subst.is_renaming \<rho> \<longleftrightarrow> inj \<rho> \<and> (\<forall>x. \<exists>x'. \<rho> x = Var x')"
     using term_subst_is_renaming_iff 
     unfolding is_Var_def.
- 
 next
-  fix t and \<rho> :: "('f, 'v) subst"
-  assume "term_subst.is_renaming \<rho>"
-  then show "Var ` vars (t \<cdot>t \<rho>) = \<rho> ` vars t "
-    by (simp add: renaming_vars_term term_subst_is_renaming_iff)
-next
-  fix \<sigma> \<sigma>' :: "('f, 'v) subst" and x
-  show "(\<sigma> \<odot> \<sigma>') x = \<sigma> x \<cdot>t \<sigma>'"
-    unfolding subst_compose_def ..
+  fix \<rho> :: "('f, 'v) subst" and t
+  assume \<rho>: "term_subst.is_renaming \<rho>" 
+  show "vars (t \<cdot>t \<rho>) = rename \<rho> ` vars t"
+  proof(induction t)
+    case (Var x)
+    have "\<rho> x = Var (rename \<rho> x)"
+      using \<rho>
+      unfolding rename_def[OF \<rho>] term_subst_is_renaming_iff is_Var_def
+      by (meson someI_ex)
+
+    then show ?case
+      by auto
+  next
+    case (Fun f ts)
+    then show ?case
+      by auto
+  qed
 qed
 
 sublocale term_grounding where 

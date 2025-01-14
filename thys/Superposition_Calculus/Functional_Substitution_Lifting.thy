@@ -201,13 +201,18 @@ proof unfold_locales
   fix expr \<rho>
   assume "sub.is_renaming \<rho>"
 
-  then show "id_subst ` vars (expr \<cdot> \<rho>) = \<rho> ` vars expr"
-    using sub.renaming_variables
+  then show "vars (expr \<cdot> \<rho>) = rename \<rho> ` vars expr"
+    using sub.rename_variables
     unfolding vars_def subst_def to_set_map
     by fastforce
 qed (rule sub.is_renaming_iff)
 
 end
+
+locale based_renaming_variables_lifting = 
+  renaming_variables_lifting +
+  based_functional_substitution_lifting +
+  base: renaming_variables where vars = base_vars and subst = base_subst
 
 locale variables_in_base_imgu_lifting =
   based_functional_substitution_lifting +

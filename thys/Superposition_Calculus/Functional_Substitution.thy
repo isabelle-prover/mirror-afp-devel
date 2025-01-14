@@ -54,6 +54,9 @@ lemma subst_inv:
   using assms
   by (metis subst_comp_subst subst_id_subst)
 
+definition rename where
+  "is_renaming \<rho> \<Longrightarrow> rename \<rho> x \<equiv> SOME x'. \<rho> x = id_subst x'"
+
 end
 
 locale all_subst_ident_iff_ground =
@@ -79,17 +82,16 @@ end
 
 locale renaming_variables = functional_substitution +
   assumes
-    is_renaming_iff: "is_renaming \<rho> \<longleftrightarrow> inj \<rho> \<and> (\<forall>x. \<exists>x'. \<rho> x = id_subst x')" and
-    renaming_variables: "\<And>expr \<rho>. is_renaming \<rho>  \<Longrightarrow> id_subst ` vars (expr \<cdot> \<rho>) = \<rho> ` (vars expr)"
+    is_renaming_iff: "\<And>\<rho>. is_renaming \<rho> \<longleftrightarrow> inj \<rho> \<and> (\<forall>x. \<exists>x'. \<rho> x = id_subst x')" and
+    rename_variables: "\<And>expr \<rho>. is_renaming \<rho> \<Longrightarrow> vars (expr \<cdot> \<rho>) = rename \<rho> ` (vars expr)"
 begin
 
 lemma renaming_range_id_subst:
-  shows "is_renaming \<rho> \<Longrightarrow> \<rho> x \<in> range id_subst"
+  assumes "is_renaming \<rho>"
+  shows "\<rho> x \<in> range id_subst"
+  using assms
   unfolding is_renaming_iff
   by auto
-
-definition rename where
-  "is_renaming \<rho> \<Longrightarrow> rename \<rho> x \<equiv> SOME x'. \<rho> x = id_subst x'"
 
 lemma obtain_renamed_variable:
   assumes "is_renaming \<rho>"
@@ -104,6 +106,12 @@ lemma id_subst_rename [simp]:
   using obtain_renamed_variable[OF assms]
   by (metis (mono_tags, lifting) someI)
 
+lemma rename_variables_id_subst: 
+  assumes "is_renaming \<rho>" 
+  shows "id_subst ` vars (expr \<cdot> \<rho>) = \<rho> ` (vars expr)"
+  using rename_variables[OF assms] id_subst_rename[OF assms]
+  by (metis (no_types, lifting) image_cong image_image)
+
 lemma surj_inv_renaming:
   assumes "is_renaming \<rho>"
   shows "surj (\<lambda>x. inv \<rho> (id_subst x))"
@@ -114,7 +122,7 @@ lemma surj_inv_renaming:
 lemma renaming_range:
   assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
   shows "id_subst x \<in> range \<rho>"
-  using renaming_variables[OF assms(1)] assms(2)
+  using rename_variables_id_subst[OF assms(1)] assms(2)
   by fastforce
 
 lemma renaming_inv_into:
@@ -132,7 +140,7 @@ lemma inv_renaming:
 lemma renaming_inv_in_vars:
   assumes "is_renaming \<rho>" "x \<in> vars (expr \<cdot> \<rho>)"
   shows "inv \<rho> (id_subst x) \<in> vars expr"
-  using assms renaming_variables[OF assms(1)]
+  using assms rename_variables_id_subst[OF assms(1)]
   by (metis image_eqI image_inv_f_f is_renaming_iff)
 
 end

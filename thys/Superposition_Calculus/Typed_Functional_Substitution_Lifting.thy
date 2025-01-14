@@ -196,7 +196,7 @@ sublocale typed_renaming where
   subst = subst and vars = vars and is_typed = lifted_is_typed
 proof unfold_locales 
   fix \<rho> expr and \<V> \<V>' :: "'v \<Rightarrow> 'ty"
-  assume "sub.base.is_renaming \<rho>" "\<forall>x\<in>vars (expr \<cdot> \<rho>). \<V> (inv \<rho> (id_subst x)) = \<V>' x"
+  assume "sub.base.is_renaming \<rho>" "\<forall>x\<in>vars expr. \<V> x = \<V>' (rename \<rho> x)"
 
   then show "lifted_is_typed \<V>' (expr \<cdot> \<rho>) = lifted_is_typed \<V> expr"
     using sub.typed_renaming 
@@ -217,7 +217,7 @@ sublocale typed_renaming where
   is_typed = lifted_is_typed and subst = subst and vars = vars
 proof unfold_locales 
   fix \<rho> expr and \<V> \<V>' :: "'v \<Rightarrow> 'ty"
-  assume "base.is_renaming \<rho>" "\<forall>x\<in>vars (subst expr \<rho>). \<V> (inv \<rho> (id_subst x)) = \<V>' x"
+  assume "base.is_renaming \<rho>" "\<forall>x\<in>vars expr. \<V> x = \<V>' (rename \<rho> x)"
 
   then show "lifted_is_typed \<V>' (subst expr \<rho>) = lifted_is_typed \<V> expr"
     using base.typed_renaming

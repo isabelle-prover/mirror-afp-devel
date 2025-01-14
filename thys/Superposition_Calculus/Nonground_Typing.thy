@@ -82,16 +82,6 @@ sublocale clause: term_based_nonground_typing_lifting where
   sub_is_typed = literal.is_typed and sub_is_welltyped = literal.is_welltyped
   by unfold_locales
 
-definition infinite_variables_per_type where 
-  "infinite_variables_per_type \<V> \<equiv> \<forall>ty. infinite {x. \<V> x = ty}"
-
-(* TODO: Separate Locale *)
-lemma exists_infinite_variables_per_type:
-  assumes "|UNIV :: 'ty set| \<le>o |UNIV :: ('v :: infinite) set|"
-  shows "\<exists>\<V> :: ('v :: infinite \<Rightarrow> 'ty). infinite_variables_per_type \<V>"
-  using infinite_domain[OF assms infinite_UNIV]
-  unfolding infinite_variables_per_type_def.
-
 abbreviation is_welltyped_grounding where 
   "is_welltyped_grounding C \<V> \<gamma> \<equiv> 
     clause.is_ground (C \<cdot> \<gamma>) \<and> 

@@ -79,7 +79,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
         unfolding superpositionI
         by auto
 
-      moreover have "\<forall>x\<in>clause.vars (D' \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x"
+      moreover have "\<forall>x\<in>clause.vars D'. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)"
         using superpositionI(12)
         unfolding superpositionI
         by simp
@@ -93,7 +93,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
     moreover have "literal.is_welltyped \<V>\<^sub>2 l\<^sub>2"
     proof-
 
-      have \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x \<in> literal.vars (l\<^sub>2 \<cdot>l \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x" 
+      have \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x \<in> literal.vars l\<^sub>2. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)" 
         using superpositionI(12)
         unfolding superpositionI
         by auto
@@ -188,7 +188,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
         unfolding superpositionI
         by auto
 
-      moreover have "\<forall>x\<in>clause.vars (E' \<cdot> \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x"
+      moreover have "\<forall>x\<in>clause.vars E'. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)"
         using superpositionI(11)
         unfolding superpositionI
         by simp
@@ -202,7 +202,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
     moreover have "literal.is_welltyped \<V>\<^sub>1 l\<^sub>1"
     proof-
 
-      have \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x \<in> literal.vars (l\<^sub>1 \<cdot>l \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x" 
+      have \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x \<in> literal.vars l\<^sub>1. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)" 
         using superpositionI(11)
         unfolding superpositionI
         by auto

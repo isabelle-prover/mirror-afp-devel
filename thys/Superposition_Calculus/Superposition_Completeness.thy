@@ -1019,7 +1019,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
   then obtain t\<^sub>2 t\<^sub>2' where
     l\<^sub>2: "l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2'" and
-    t\<^sub>2_\<gamma>: "t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1" and     
+    t\<^sub>2_\<gamma>: "t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>1" and
     t\<^sub>2'_\<gamma>: "t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<gamma> = term.from_ground t\<^sub>G\<^sub>3"
     using obtain_from_pos_literal_subst
     by metis
@@ -1032,31 +1032,21 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     unfolding ground_superpositionI
     by auto
 
-  (* TODO: inv *) 
-  define \<V>\<^sub>3 where 
-    "\<And>x. \<V>\<^sub>3 x \<equiv>
-        if x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1)
-        then \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x))
-        else \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x))"
+  obtain \<V>\<^sub>3 where  
+    \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x\<in>clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)" and
+    \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x\<in>clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)" and
+    \<V>\<^sub>3: "infinite_variables_per_type \<V>\<^sub>3"
+    using clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<V>\<^sub>1 \<V>\<^sub>2 clause.finite_vars].
 
   have \<gamma>_is_welltyped: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
   proof(unfold Set.ball_Un, intro conjI)
 
     show "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1)) \<V>\<^sub>3 \<gamma>"
-      unfolding \<V>\<^sub>3_def
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding]
-      by simp
-
+      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>1 \<rho>\<^sub>1_\<gamma>_is_welltyped E_grounding \<V>\<^sub>1_\<V>\<^sub>3].
   next
-    have "\<forall>x\<in>clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>3 x = \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x))"
-      unfolding \<V>\<^sub>3_def
-      using rename_apart
-      by auto
-
-    then show "is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
-      unfolding \<V>\<^sub>3_def
-      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding]
-      by simp
+ 
+    show "is_welltyped_on (clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
+      using clause.is_welltyped.renaming_grounding[OF \<rho>\<^sub>2 \<rho>\<^sub>2_\<gamma>_is_welltyped D_grounding \<V>\<^sub>2_\<V>\<^sub>3].
   qed
 
   obtain \<mu> \<sigma> where
@@ -1115,7 +1105,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
     show superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)"
     proof(rule superpositionI, rule \<rho>\<^sub>1, rule \<rho>\<^sub>2; 
-        ((rule E D l\<^sub>1 l\<^sub>2 t\<^sub>1_is_Fun imgu rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped \<V>\<^sub>1 \<V>\<^sub>2 C')+)?)
+        ((rule E D l\<^sub>1 l\<^sub>2 t\<^sub>1_is_Fun imgu rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped \<V>\<^sub>1 \<V>\<^sub>2 C' \<V>\<^sub>1_\<V>\<^sub>3 
+            \<V>\<^sub>2_\<V>\<^sub>3)+)?)
 
       show "?\<P> \<in> {Pos, Neg}"
         by simp
@@ -1284,17 +1275,6 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       qed
     next
 
-      show "\<forall>x\<in>clause.vars (E \<cdot> \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x"
-        unfolding \<V>\<^sub>3_def
-        by auto
-    next
-
-      show "\<forall>x\<in>clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x"
-        unfolding \<V>\<^sub>3_def
-        using rename_apart
-        by auto
-    next
-
       have "\<exists>\<tau>. welltyped \<V>\<^sub>2 t\<^sub>2 \<tau> \<and> welltyped \<V>\<^sub>2 t\<^sub>2' \<tau>"
         using D_is_welltyped
         unfolding D l\<^sub>2
@@ -1342,7 +1322,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
       show "is_inference_grounding_two_premises (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3) \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
       proof(unfold split, intro conjI; 
           (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_grounding E_grounding D_is_welltyped E_is_welltyped refl \<V>\<^sub>1 
-            \<V>\<^sub>2)?)
+            \<V>\<^sub>2 \<V>\<^sub>3)?)
 
         show "clause.is_ground (C' \<cdot> \<gamma>)"
           using C_grounding C'_\<gamma>
@@ -1422,29 +1402,6 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         show "clause.is_welltyped \<V>\<^sub>3 C'"
           using superposition superposition_preserves_typing E_is_welltyped D_is_welltyped
           by blast
-      next
-
-        have "finite {x. x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1)}"
-          using clause.finite_vars
-          by simp
-
-        moreover {
-          fix \<tau>
-
-          have "infinite {x. \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<tau>}" 
-          proof(rule surj_infinite_set[OF term.surj_inv_renaming, OF \<rho>\<^sub>2])
-
-            show "infinite {x. \<V>\<^sub>2 x = \<tau>}"
-              using \<V>\<^sub>2
-              unfolding infinite_variables_per_type_def
-              by blast
-          qed
-        }
-
-        ultimately show "infinite_variables_per_type \<V>\<^sub>3"
-          unfolding infinite_variables_per_type_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq 
-            Collect_not_mem_conj_eq
-          by auto
       qed
           
       show "\<iota>\<^sub>G \<in> ground.G_Inf"
