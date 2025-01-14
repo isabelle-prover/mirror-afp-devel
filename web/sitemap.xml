@@ -3,15 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/abdulaziz/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/benzmueller/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Graph_Algorithms.html</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/graph_theory/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/benzmueller/</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
@@ -19,12 +37,6 @@
   </url><url>
     <loc>/entries/Notes_On_Goedels_Ontological_Argument.html</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
@@ -45,9 +57,6 @@
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/abstract-rewriting/</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ILL.html</loc>
@@ -1166,9 +1175,6 @@
     <loc>/dependencies/fresh_identifiers/</loc>
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/graph_theory/</loc>
-    <lastmod>2023-05-05T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/hereditarilyfinite/</loc>
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -1817,9 +1823,6 @@
     <loc>/dependencies/szemeredi_regularity/</loc>
     <lastmod>2021-12-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/abdulaziz/</loc>
-    <lastmod>2021-12-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/gauss_jordan/</loc>
     <lastmod>2021-12-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -1894,6 +1897,9 @@
   </url><url>
     <loc>/entries/Szemeredi_Regularity.html</loc>
     <lastmod>2021-11-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/hilbert_space_tensor_product/</loc>
+    <lastmod>2021-10-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Registers.html</loc>
     <lastmod>2021-10-28T00:00:00+00:00</lastmod>
@@ -5973,6 +5979,8 @@
     <loc>/sessions/goodstein_lambda/</loc>
   </url><url>
     <loc>/sessions/gpu_kernel_pl/</loc>
+  </url><url>
+    <loc>/sessions/graph_algorithms/</loc>
   </url><url>
     <loc>/sessions/graph_saturation/</loc>
   </url><url>
