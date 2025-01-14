@@ -1,5 +1,5 @@
 theory Functional_Substitution_Example
-  imports Functional_Substitution Abstract_Substitution.Substitution_First_Order_Term
+  imports Functional_Substitution Substitution_First_Order_Term
 begin
 
 text \<open>A selection of substitution properties for terms.\<close>

@@ -1,5 +1,5 @@
 theory Functional_Substitution_Lifting
-  imports Functional_Substitution Natural_Magma_Functor
+  imports Abstract_Substitution.Functional_Substitution Natural_Magma_Functor
 begin
 
 locale functional_substitution_lifting =

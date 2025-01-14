@@ -1,6 +1,6 @@
 theory Functional_Substitution
   imports
-    Abstract_Substitution.Substitution
+    Substitution
     "HOL-Library.FSet"
 begin
 

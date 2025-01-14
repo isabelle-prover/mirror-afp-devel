@@ -1,7 +1,7 @@
 theory Typed_Functional_Substitution
-  imports 
+  imports
     Typing
-    Functional_Substitution
+    Abstract_Substitution.Functional_Substitution
     Infinite_Variables_Per_Type
 begin
 

@@ -1,7 +1,7 @@
 theory Functional_Substitution_Lifting_Example
   imports
     Functional_Substitution_Lifting
-    Functional_Substitution_Example
+    Abstract_Substitution.Functional_Substitution_Example
 begin
 
 text \<open>Lifting of properties from term to equations (modelled as pairs)\<close>
