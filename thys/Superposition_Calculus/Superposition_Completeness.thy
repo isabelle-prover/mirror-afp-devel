@@ -1104,9 +1104,9 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
   proof(rule that)
 
     show superposition: "superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3)"
-    proof(rule superpositionI, rule \<rho>\<^sub>1, rule \<rho>\<^sub>2; 
-        ((rule E D l\<^sub>1 l\<^sub>2 t\<^sub>1_is_Fun imgu rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped \<V>\<^sub>1 \<V>\<^sub>2 C' \<V>\<^sub>1_\<V>\<^sub>3 
-            \<V>\<^sub>2_\<V>\<^sub>3)+)?)
+    proof(rule superpositionI; 
+           ((rule \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 l\<^sub>2 t\<^sub>1_is_Fun imgu rename_apart \<rho>\<^sub>1_is_welltyped \<rho>\<^sub>2_is_welltyped \<V>\<^sub>1 \<V>\<^sub>2 C' 
+               \<V>\<^sub>1_\<V>\<^sub>3 \<V>\<^sub>2_\<V>\<^sub>3)+)?)
 
       show "?\<P> \<in> {Pos, Neg}"
         by simp
@@ -1580,12 +1580,8 @@ proof-
     \<gamma>\<^sub>1_\<gamma>: "\<forall>X \<subseteq> clause.vars E. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>X \<subseteq> clause.vars D. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
     using 
-      clause.finite_vars 
-      \<V>\<^sub>1 \<V>\<^sub>2
-      clause.is_welltyped.obtain_welltyped_merged_grounding[OF 
-        \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding D_grounding _ _ infinite_UNIV]
-    unfolding infinite_variables_per_type_def
-    by blast
+      clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding 
+        D_grounding \<V>\<^sub>1 \<V>\<^sub>2 infinite_UNIV clause.finite_vars clause.finite_vars].
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
     using clause.subst_eq \<gamma>\<^sub>1_\<gamma> E_grounding
@@ -1764,8 +1760,8 @@ proof-
 qed
 
 sublocale statically_complete_calculus "\<bottom>\<^sub>F" inferences entails_\<G> Red_I_\<G> Red_F_\<G>
-proof(unfold static_empty_ord_inter_equiv_static_inter, 
-    rule stat_ref_comp_to_non_ground_fam_inter, 
+proof(unfold static_empty_ord_inter_equiv_static_inter,
+    rule stat_ref_comp_to_non_ground_fam_inter,
     rule ballI)
   fix select\<^sub>G
   assume "select\<^sub>G \<in> select\<^sub>G\<^sub>s"

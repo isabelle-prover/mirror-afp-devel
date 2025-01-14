@@ -246,7 +246,7 @@ lemma superposition_sound:
   shows "{E, D} \<TTurnstile>\<^sub>F {C}"
   using superposition
 proof (cases D E C rule: superposition.cases)
-  case (superpositionI \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> \<V>\<^sub>1 \<V>\<^sub>2 C)
+  case (superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<V>\<^sub>3 \<mu> C)
 
   {
     fix I :: "'f gterm rel" and \<gamma> :: "'v \<Rightarrow> ('f, 'v) Term.term"
@@ -291,15 +291,15 @@ proof (cases D E C rule: superposition.cases)
     let ?C\<^sub>G = "clause.to_ground (C \<cdot> \<gamma>')"
 
     have \<P>_subst [simp]: "\<And>a \<sigma>. \<P> a \<cdot>l \<sigma> = \<P> (a \<cdot>a \<sigma>)"
-      using superpositionI(9)
+      using superpositionI(11)
       by auto
 
     have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
-      using superpositionI(9)
+      using superpositionI(11)
       by(auto simp: literal_is_welltyped_iff_atm_of)
 
     have [simp]: "\<And>a. literal.vars (\<P> a) = atom.vars a"
-      using superpositionI(9)
+      using superpositionI(11)
       by auto
 
     have \<mu>_\<gamma>'_is_ground_subst:
@@ -307,7 +307,7 @@ proof (cases D E C rule: superposition.cases)
       using term.is_ground_subst_comp_right[OF \<gamma>'_is_ground_subst].
 
     have \<mu>_is_welltyped: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
-      using superpositionI(13)
+      using superpositionI(15)
       by blast
 
     have D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D"
@@ -320,7 +320,8 @@ proof (cases D E C rule: superposition.cases)
           superposition[unfolded superpositionI(1-3)] 
           C_is_welltyped].
 
-    have is_welltyped_\<mu>_\<gamma>: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
+    have is_welltyped_\<mu>_\<gamma>: 
+      "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
       using \<gamma>'_is_welltyped \<mu>_is_welltyped
       by (simp add: is_welltyped_on_subst_compose)
 
@@ -329,7 +330,7 @@ proof (cases D E C rule: superposition.cases)
     have "?E\<^sub>G \<in> clause_groundings (E, \<V>\<^sub>1)"
     proof(
         unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, 
-        intro exI conjI E_is_welltyped superpositionI(26))
+        intro exI conjI E_is_welltyped superpositionI)
 
       show "clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -344,7 +345,7 @@ proof (cases D E C rule: superposition.cases)
         using
           is_welltyped_\<mu>_\<gamma>
           is_welltyped_\<rho>_\<mu>_\<gamma>[OF
-            superpositionI(4) _  superpositionI(16, 14)[unfolded clause.vars_subst]]
+            superpositionI(6) _  superpositionI(18, 16)[unfolded clause.vars_subst]]
         by (simp add: subst_compose_assoc clause.vars_subst)
     qed
 
@@ -355,7 +356,7 @@ proof (cases D E C rule: superposition.cases)
     have "?D\<^sub>G \<in> clause_groundings (D, \<V>\<^sub>2)"
     proof(
         unfold clause_groundings_def mem_Collect_eq fst_conv snd_conv, 
-        intro exI conjI D_is_welltyped superpositionI(27))
+        intro exI conjI D_is_welltyped superpositionI)
 
       show "clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<cdot> \<mu> \<cdot> \<gamma>') = clause.to_ground (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu> \<odot> \<gamma>')"
         by simp
@@ -369,7 +370,7 @@ proof (cases D E C rule: superposition.cases)
         using 
           is_welltyped_\<mu>_\<gamma>
           is_welltyped_\<rho>_\<mu>_\<gamma>[OF
-            superpositionI(5) _ superpositionI(17, 15)[unfolded clause.vars_subst]]
+            superpositionI(7) _ superpositionI(19, 17)[unfolded clause.vars_subst]]
         by (simp add: subst_compose_assoc clause.vars_subst)
     qed
 
@@ -387,7 +388,7 @@ proof (cases D E C rule: superposition.cases)
       case False
 
       have imgu: "term.is_imgu \<mu> {{t\<^sub>1 \<cdot>t \<rho>\<^sub>1, t\<^sub>2 \<cdot>t \<rho>\<^sub>2}}"
-        using superpositionI(13)
+        using superpositionI(15)
         by blast
 
       interpret clause_entailment I
@@ -400,7 +401,7 @@ proof (cases D E C rule: superposition.cases)
         literal_entails_unfolds
         term.is_imgu_unifies_pair[OF imgu]
 
-      from literal_cases[OF superpositionI(9)]
+      from literal_cases[OF superpositionI(11)]
       have "\<not> ?I \<TTurnstile>l ?l\<^sub>G\<^sub>1 \<or> \<not> ?I \<TTurnstile>l ?l\<^sub>G\<^sub>2"
       proof cases
         case Pos: 1

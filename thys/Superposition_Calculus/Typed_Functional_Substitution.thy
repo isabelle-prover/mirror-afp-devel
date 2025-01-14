@@ -505,7 +505,7 @@ proof(intro ballI)
         x_in_expr y_def y_in_vars)
 qed
 
-lemma obtain_welltyped_merged_grounding:
+lemma obtain_merged_grounding:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes 
     "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" 
