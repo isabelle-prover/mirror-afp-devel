@@ -331,8 +331,6 @@ lemma obtain_typed_renamings:
   assumes
     "infinite (UNIV :: 'var set)"
     "finite X" 
-    "finite Y" 
-    "infinite_variables_per_type \<V>\<^sub>1" 
     "infinite_variables_per_type \<V>\<^sub>2"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
     "is_renaming \<rho>\<^sub>1"
@@ -348,8 +346,7 @@ proof-
     "renaming\<^sub>1 ` X \<inter> renaming\<^sub>2 ` Y = {}" 
     "\<forall>x \<in> X. \<V>\<^sub>1 (renaming\<^sub>1 x) = \<V>\<^sub>1 x" 
     "\<forall>x \<in> Y. \<V>\<^sub>2 (renaming\<^sub>2 x) = \<V>\<^sub>2 x"
-    using obtain_type_preserving_injs[OF 
-        assms[unfolded infinite_variables_per_type_def, rule_format]].
+    using obtain_type_preserving_injs[OF assms].
    
   define \<rho>\<^sub>1 :: "'var \<Rightarrow> 'expr" where
     "\<And>x. \<rho>\<^sub>1 x \<equiv> id_subst (renaming\<^sub>1 x)"
@@ -512,10 +509,9 @@ lemma obtain_merged_grounding:
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
     "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
     "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
-    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     infinite_vars_UNIV: "infinite (UNIV :: 'v set)" and
-    finite_vars: "finite (vars expr)" "finite (vars expr')"
+    finite_vars: "finite (vars expr)"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma>  where
     "base.is_renaming \<rho>\<^sub>1"
     "base.is_renaming \<rho>\<^sub>2"
@@ -532,7 +528,7 @@ proof-
     rename_apart: "\<rho>\<^sub>1 ` (vars expr) \<inter> \<rho>\<^sub>2 ` (vars expr') = {}" and
     \<rho>\<^sub>1_is_welltyped: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1" and
     \<rho>\<^sub>2_is_welltyped: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
-    using base.obtain_typed_renamings[OF infinite_vars_UNIV finite_vars \<V>\<^sub>1 \<V>\<^sub>2].
+    using base.obtain_typed_renamings[OF infinite_vars_UNIV finite_vars \<V>\<^sub>2].
 
   have rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
     using rename_apart rename_variables_id_subst[OF \<rho>\<^sub>1] rename_variables_id_subst[OF \<rho>\<^sub>2]

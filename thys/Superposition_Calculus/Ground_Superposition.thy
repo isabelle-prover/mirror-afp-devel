@@ -61,7 +61,7 @@ where
 inductive eq_resolution :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Rightarrow> bool" where
   eq_resolutionI: "
     D = add_mset L D' \<Longrightarrow>
-    L = Neg (Upair t t) \<Longrightarrow>
+    L = t !\<approx> t \<Longrightarrow>
     select D = {#} \<and> is_maximal L D \<or> is_maximal L (select D) \<Longrightarrow>
     C = D' \<Longrightarrow>
     eq_resolution D C"
@@ -74,14 +74,14 @@ inductive eq_factoring :: "'f gatom clause \<Rightarrow> 'f gatom clause \<Right
     select D = {#} \<Longrightarrow>
     is_maximal L\<^sub>1 D \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
-    C = add_mset (Neg (Upair t' t'')) (add_mset (t \<approx> t'') D') \<Longrightarrow>
+    C = add_mset (t' !\<approx> t'') (add_mset (t \<approx> t'') D') \<Longrightarrow>
     eq_factoring D C"
 
 abbreviation eq_resolution_inferences where
   "eq_resolution_inferences \<equiv> {Infer [D] C | D C. eq_resolution D C}"
 
 abbreviation eq_factoring_inferences where
-  "eq_factoring_inferences \<equiv> {Infer [D] C | D C.  eq_factoring D C}"
+  "eq_factoring_inferences \<equiv> {Infer [D] C | D C. eq_factoring D C}"
 
 abbreviation superposition_inferences where
   "superposition_inferences \<equiv> {Infer [D, E] C | D E C. superposition D E C}"
@@ -166,7 +166,7 @@ where
    "P\<^sub>1 = add_mset L\<^sub>1 P\<^sub>1' \<Longrightarrow>
     P\<^sub>2 = add_mset L\<^sub>2 P\<^sub>2' \<Longrightarrow>
     P\<^sub>2 \<prec>\<^sub>c P\<^sub>1 \<Longrightarrow>
-    L\<^sub>1 = Neg (Upair s\<langle>t\<rangle>\<^sub>G s') \<Longrightarrow>
+    L\<^sub>1 = s\<langle>t\<rangle>\<^sub>G !\<approx> s' \<Longrightarrow>
     L\<^sub>2 = t \<approx> t' \<Longrightarrow>
     s' \<prec>\<^sub>t s\<langle>t\<rangle>\<^sub>G \<Longrightarrow>
     t' \<prec>\<^sub>t t \<Longrightarrow>
