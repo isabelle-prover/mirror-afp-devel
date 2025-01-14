@@ -115,7 +115,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
     using l_\<gamma> obtain_from_neg_literal_subst
     by meson
 
-  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu \<V> t t' \<mu>"
+  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu_on (clause.vars D) \<V> t t' \<mu>"
   proof-
     have unified: "t \<cdot>t \<gamma> = t' \<cdot>t \<gamma>"
       using l_\<gamma>
@@ -128,7 +128,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
       by auto
 
     show ?thesis
-      using obtain_welltyped_imgu[OF unified welltyped] that
+      using obtain_welltyped_imgu_on[OF unified welltyped] that
       by metis
   qed
 
@@ -342,7 +342,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
     using D D_grounding ground_eq_factoringI(1,2,3) l\<^sub>1_\<gamma> l\<^sub>2_\<gamma> 
     by force
 
-  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu \<V> t\<^sub>1 t\<^sub>2 \<mu>"
+  obtain \<mu> \<sigma> where \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and imgu: "welltyped_imgu_on (clause.vars D) \<V> t\<^sub>1 t\<^sub>2 \<mu>"
   proof-
     have unified: "t\<^sub>1 \<cdot>t \<gamma> = t\<^sub>2 \<cdot>t \<gamma>"
       unfolding t\<^sub>1_\<gamma> t\<^sub>2_\<gamma> ..
@@ -358,7 +358,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_factoring.cases)
       by simp_all
 
     then show ?thesis
-      using obtain_welltyped_imgu[OF unified welltyped] that
+      using obtain_welltyped_imgu_on[OF unified welltyped] that
       by metis
   qed
 
@@ -1061,7 +1061,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
   obtain \<mu> \<sigma> where
     \<gamma>: "\<gamma> = \<mu> \<odot> \<sigma>" and
-    imgu: "welltyped_imgu \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu>"
+    imgu: "welltyped_imgu_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu>"
   proof-
 
     have unified: "t\<^sub>1 \<cdot>t \<rho>\<^sub>1 \<cdot>t \<gamma> = t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<cdot>t \<gamma>"
@@ -1103,7 +1103,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     qed
 
     show ?thesis
-      using obtain_welltyped_imgu[OF unified welltyped] that
+      using obtain_welltyped_imgu_on[OF unified welltyped] that
       by metis
   qed
 

@@ -286,7 +286,7 @@ sublocale typed_renaming
 lemma renaming_ground_subst: 
   assumes 
     "is_renaming \<rho>"
-    "is_typed_on UNIV \<V>' \<gamma>" 
+    "is_typed_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>" 
     "is_typed_on X \<V> \<rho>" 
     "is_ground_subst \<gamma>" 
     "\<forall>x \<in> \<Union>(vars ` \<rho> ` X). \<V> (inv \<rho> (id_subst x)) = \<V>' x"
@@ -305,10 +305,9 @@ proof(intro ballI)
     using \<open>x \<in> X\<close>  
     by (metis UN_iff image_eqI singletonI vars_id_subst)
 
-  moreover have "typed \<V> (\<gamma> y) (\<V>' y)"
+  moreover then have "typed \<V> (\<gamma> y) (\<V>' y)"
     using explicit_replace_\<V>
-    by (metis assms(2,4) left_neutral emptyE is_ground_subst_is_ground iso_tuple_UNIV_I 
-        comp_subst_iff)
+    by (metis assms(2,4) left_neutral emptyE is_ground_subst_is_ground comp_subst_iff)
    
   ultimately have "typed \<V> (\<gamma> y) (\<V> (inv \<rho> (id_subst y)))"
     using assms(5) by force

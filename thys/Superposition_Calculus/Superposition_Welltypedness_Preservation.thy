@@ -27,7 +27,7 @@ lemma superposition_preserves_typing_C:
 proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: superposition.cases)
   case (superpositionI \<rho>\<^sub>1 \<rho>\<^sub>2 l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu>)
 
-  then have welltyped_\<mu>: "is_welltyped \<V>\<^sub>3 \<mu>"
+  then have welltyped_\<mu>: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     by meson
 
   have "clause.is_welltyped \<V>\<^sub>3 (E \<cdot> \<rho>\<^sub>1)"
@@ -65,7 +65,7 @@ lemma superposition_preserves_typing_D:
 proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: superposition.cases)
   case (superpositionI \<rho>\<^sub>1 \<rho>\<^sub>2 l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu>)
 
-  have \<mu>_is_welltyped: "is_welltyped \<V>\<^sub>3 \<mu>"
+  have \<mu>_is_welltyped: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     using superpositionI(10)
     by blast
 
@@ -106,13 +106,18 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
 
         moreover obtain \<tau>' where \<tau>': "welltyped \<V>\<^sub>3 (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) \<tau>'"
         proof-
+          have \<mu>_is_welltyped: "is_welltyped_on (term.vars ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle>)) \<V>\<^sub>3 \<mu>"
+            using \<mu>_is_welltyped superpositionI(6)
+            unfolding superpositionI
+            by auto
+
           have "term.is_welltyped \<V>\<^sub>3 ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> \<cdot>t \<mu>)"
             using C_is_welltyped superpositionI(6)
             unfolding superpositionI
             by auto
 
           then show ?thesis
-            unfolding welltyped.explicit_subst_stability_UNIV[OF \<mu>_is_welltyped]
+            unfolding welltyped.explicit_subst_stability[OF \<mu>_is_welltyped]
             using that term.welltyped.subterm
             by meson
         qed  
@@ -170,7 +175,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
     using superpositionI(6)
     by auto
 
-  have \<mu>_is_welltyped: "is_welltyped \<V>\<^sub>3 \<mu>"
+  have \<mu>_is_welltyped: "is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     using superpositionI(10)
     by blast
 
@@ -205,6 +210,14 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
       have "literal.is_welltyped \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>1 \<cdot>t \<rho>\<^sub>1\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)))"
       proof-
 
+        have \<mu>_is_welltyped: 
+          "is_welltyped_on
+            (clause.vars (add_mset (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2))) 
+             \<V>\<^sub>3 \<mu>"
+          using \<mu>_is_welltyped
+          unfolding superpositionI
+          by auto
+
         have "atom.is_welltyped \<V>\<^sub>3 (Upair (t\<^sub>2' \<cdot>t \<rho>\<^sub>2) (t\<^sub>1 \<cdot>t \<rho>\<^sub>1))"
           using 
             superpositionI(10) 
@@ -215,7 +228,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
 
         moreover have "literal.is_welltyped \<V>\<^sub>3 (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)))"
           using C_is_welltyped
-          unfolding superpositionI clause.is_welltyped.subst_stability_UNIV[OF \<mu>_is_welltyped]
+          unfolding superpositionI clause.is_welltyped.subst_stability[OF \<mu>_is_welltyped]
           by simp
 
         ultimately show ?thesis

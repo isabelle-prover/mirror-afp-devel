@@ -610,7 +610,8 @@ next
       by (simp add: calculation(4) subst_compose_def)
 
     ultimately show ?thesis 
-      using 3(2, 3) False by force
+      using 3(2, 3) False
+      by force
   qed
 next
   case (4 t ts x es bs)
@@ -661,31 +662,34 @@ lemma welltyped_the_mgu:
   unfolding the_mgu_def mgu_def  
   by(auto simp: welltyped.Var split: option.splits)
 
-lemma welltyped_imgu_exists':
+lemma welltyped_imgu_exists:
   fixes \<upsilon> :: "('f, 'v) subst"
-  assumes unified: "term \<cdot>t \<upsilon> = term' \<cdot>t \<upsilon>"
+  assumes unified: "t \<cdot>t \<upsilon> = t' \<cdot>t \<upsilon>"
   obtains \<mu> :: "('f, 'v) subst"
   where 
     "\<upsilon> = \<mu> \<odot> \<upsilon>" 
-    "term_subst.is_imgu \<mu> {{term, term'}}"
-    "\<forall>\<tau>. welltyped \<V> term \<tau> \<longrightarrow> welltyped \<V> term' \<tau> \<longrightarrow> is_welltyped \<V> \<mu>"
+    "term_subst.is_imgu \<mu> {{t, t'}}"
+    "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> \<mu>"
 proof-
-  obtain \<mu> where \<mu>: "the_mgu term term' = \<mu>"
+  obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
     using assms ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
 
-  have "\<forall>\<tau>. welltyped \<V> term \<tau> \<longrightarrow> welltyped \<V> term' \<tau> \<longrightarrow> is_welltyped \<V> (the_mgu term term')"
+  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> (the_mgu t t')"
     using welltyped_the_mgu[OF \<mu>, of \<V>] assms
     unfolding \<mu>
     by blast
 
   then show ?thesis
     using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
-    by (metis the_mgu the_mgu_term_subst_is_imgu unified)
+    by (metis UNIV_I the_mgu the_mgu_term_subst_is_imgu unified)
 qed
 
+abbreviation welltyped_imgu_on where
+  "welltyped_imgu_on X \<V> t t' \<mu> \<equiv>
+    \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and> is_welltyped_on X \<V> \<mu> \<and> term_subst.is_imgu \<mu> {{t, t'}}"
+
 abbreviation welltyped_imgu where
-  "welltyped_imgu \<V> t t' \<mu> \<equiv>
-    \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and> is_welltyped \<V> \<mu> \<and> term_subst.is_imgu \<mu> {{t, t'}}"
+  "welltyped_imgu \<equiv> welltyped_imgu_on UNIV"
 
 lemma obtain_welltyped_imgu:
   fixes \<upsilon> :: "('f, 'v) subst"
@@ -703,8 +707,16 @@ proof-
 
   then show ?thesis
     using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
-    by (metis assms(2) assms(3) the_mgu the_mgu_term_subst_is_imgu unified)
+    by (metis assms(2,3) the_mgu the_mgu_term_subst_is_imgu unified)
 qed
+
+lemma obtain_welltyped_imgu_on:
+  fixes \<upsilon> :: "('f, 'v) subst"
+  assumes "t \<cdot>t \<upsilon> = t' \<cdot>t \<upsilon>" "welltyped \<V> t \<tau>" "welltyped \<V> t' \<tau>"
+  obtains \<mu> :: "('f, 'v) subst"
+  where "\<upsilon> = \<mu> \<odot> \<upsilon>" "welltyped_imgu_on X \<V> t t' \<mu>"
+  using obtain_welltyped_imgu[OF assms] UNIV_I
+  by metis
 
 end
 
