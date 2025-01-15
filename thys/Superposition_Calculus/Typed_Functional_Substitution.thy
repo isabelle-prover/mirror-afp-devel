@@ -44,7 +44,7 @@ end
 
 locale inhabited_explicitly_typed_functional_substitution = 
  explicitly_typed_functional_substitution +
- assumes types_inhabited: "\<And>\<tau>. \<exists>base. is_ground base \<and> typed \<V> base \<tau>"
+ assumes types_inhabited: "\<And>\<tau>. \<exists>b. is_ground b \<and> typed \<V> b \<tau>"
 
 locale typed_functional_substitution = 
   base: explicitly_typed_functional_substitution where 
@@ -133,7 +133,7 @@ assumes typing: "\<And>\<V>. typing (is_typed \<V>) (is_welltyped \<V>)"
 begin
 
 sublocale base: typing "is_typed \<V>" "is_welltyped \<V>"
-  by(rule typing)
+  by (rule typing)
 
 abbreviation is_typed_on where
   "is_typed_on \<equiv> is_typed.base.is_typed_on"
@@ -258,7 +258,6 @@ sublocale replaceable_\<V> where
 
 end
 
-(* TODO: naming (esp. explicit_...) *)
 locale typed_renaming = typed_functional_substitution + renaming_variables +
 assumes
   typed_renaming [simp]: 
@@ -327,7 +326,7 @@ lemma inj_id_subst: "inj id_subst"
   by blast
 
 lemma obtain_typed_renamings:
-  fixes \<V>\<^sub>1 :: "'var \<Rightarrow> 'ty"
+  fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
     "infinite (UNIV :: 'var set)"
     "finite X" 
@@ -459,12 +458,11 @@ locale based_typed_renaming =
   renaming_variables
 begin
 
-(* TODO: precedence  *)
 lemma renaming_grounding:
   assumes 
     renaming: "base.is_renaming \<rho>" and
     \<rho>_\<gamma>_is_welltyped: "base.is_typed_on (vars expr) \<V> (\<rho> \<odot> \<gamma>)" and
-    grounding: "is_ground (expr \<cdot> (\<rho> \<odot> \<gamma>))" and
+    grounding: "is_ground (expr \<cdot> \<rho> \<odot> \<gamma>)" and
     \<V>_\<V>': "\<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x)"
   shows "base.is_typed_on (vars (expr \<cdot> \<rho>)) \<V>' \<gamma>"
 proof(intro ballI)

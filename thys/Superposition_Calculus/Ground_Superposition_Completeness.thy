@@ -2,7 +2,7 @@ theory Ground_Superposition_Completeness
   imports Ground_Superposition Relation_Extra
 begin
 
-subsection \<open>Mode Construction\<close>
+subsection \<open>Model Construction\<close>
 
 context ground_superposition_calculus begin
 

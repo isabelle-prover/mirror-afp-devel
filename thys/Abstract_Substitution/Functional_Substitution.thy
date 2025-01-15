@@ -7,7 +7,7 @@ begin
 locale functional_substitution = substitution where
   subst = subst and is_ground = "\<lambda>expr. vars expr = {}"
   for
-    subst :: "'expr \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'expr" (infixl "\<cdot>" 70) and
+    subst :: "'expr \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> 'expr" (infixl "\<cdot>" 69) and
     vars :: "'expr \<Rightarrow> 'var set" +
   assumes
     subst_eq: "\<And>expr \<sigma> \<tau>. (\<And>x. x \<in> vars expr \<Longrightarrow> \<sigma> x = \<tau> x) \<Longrightarrow> expr \<cdot> \<sigma> = expr \<cdot> \<tau>"

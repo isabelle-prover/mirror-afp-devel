@@ -213,7 +213,7 @@ locale uniform_typed_renaming_lifting =
 for base_typed :: "('v \<Rightarrow> 'ty) \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
-sublocale typed_renaming where
+sublocale typed_renaming where 
   is_typed = lifted_is_typed and subst = subst and vars = vars
 proof unfold_locales 
   fix \<rho> expr and \<V> \<V>' :: "'v \<Rightarrow> 'ty"

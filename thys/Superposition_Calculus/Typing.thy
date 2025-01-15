@@ -7,7 +7,6 @@ locale typing =
   assumes is_typed_if_is_welltyped: 
     "\<And>expr. is_welltyped expr \<Longrightarrow> is_typed expr"
 
-(* TODO: Should not be a locale *)
 locale predicate_typed = 
   fixes typed :: "'expr \<Rightarrow> 'ty \<Rightarrow> bool"
   assumes right_unique: "right_unique typed"
@@ -37,10 +36,9 @@ sublocale typing where is_typed = is_typed and is_welltyped = is_welltyped
    using typed_if_welltyped
    by unfold_locales auto
 
-(* TODO: Name *)
-lemma typed_welltyped:
+lemma typed_welltyped_same_type:
   assumes "typed expr \<tau>" "welltyped expr \<tau>'"
-  shows "welltyped expr \<tau>"
+  shows "\<tau> = \<tau>'"
   using assms typed_if_welltyped
   by blast
 
