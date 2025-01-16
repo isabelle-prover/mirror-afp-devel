@@ -10,9 +10,6 @@ theory Labeled_Lifting_to_Non_Ground_Calculi
   imports Lifting_to_Non_Ground_Calculi
 begin
 
-lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
-  unfolding po_on_def irreflp_on_def transp_on_def by auto
-
 subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale labeled_tiebreaker_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
@@ -221,11 +218,9 @@ proof -
   interpret standard_q_lifting: standard_lifting Inf_FL Bot_G "Inf_G_q q" "entails_q q"
     "Red_I_q q" "Red_F_q q" Bot_FL "\<G>_F_L_q q" "\<G>_I_L_q q"
     using lifted_q[OF q_in] .
-  have "minimal_element (\<lambda>Cl Cl'. False) UNIV"
-    by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
-  then show ?thesis
-    using standard_q_lifting.standard_lifting_axioms
-    by (simp add: tiebreaker_lifting_axioms_def tiebreaker_lifting_def)
+
+  show ?thesis
+    by unfold_locales auto
 qed
 
 definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where

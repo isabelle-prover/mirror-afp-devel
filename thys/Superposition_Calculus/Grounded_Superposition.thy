@@ -172,14 +172,12 @@ next
     by auto
 next
   fix C\<^sub>G
-  show "po_on (typed_tiebreakers C\<^sub>G) UNIV"
-    unfolding po_on_def
-    by simp
+  show "wfp (typed_tiebreakers C\<^sub>G)"
+    by(rule typed_tiebreakers.wfp)
 next
   fix C\<^sub>G
-  show "Restricted_Predicates.wfp_on (typed_tiebreakers C\<^sub>G) UNIV"
-    using typed_tiebreakers.wfp
-    by simp
+  show "transp (typed_tiebreakers C\<^sub>G)"
+    by(rule typed_tiebreakers.transp)
 qed
 
 

@@ -56,7 +56,7 @@ locale fair_discount_loop =
   fixes
     Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
-    wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
+    wfp_Prec_S: "wfp (\<prec>S)" and
     transp_Prec_S: "transp (\<prec>S)" and
     finite_Inf_between: "finite A \<Longrightarrow> finite (no_labels.Inf_between A {C})"
 begin
@@ -65,7 +65,7 @@ lemma trans_Prec_S: "trans {(x, y). x \<prec>S y}"
   using transp_Prec_S transp_trans by blast
 
 lemma irreflp_Prec_S: "irreflp (\<prec>S)"
-  using minimal_element.wf wfp_imp_irreflp wf_Prec_S wfp_on_UNIV by blast
+  by (simp add: wfp_Prec_S wfp_imp_irreflp)
 
 lemma irrefl_Prec_S: "irrefl {(x, y). x \<prec>S y}"
   by (metis CollectD case_prod_conv irrefl_def irreflp_Prec_S irreflp_def)
@@ -468,7 +468,7 @@ abbreviation Precprec_S :: "'f multiset \<Rightarrow> 'f multiset \<Rightarrow> 
   "(\<prec>\<prec>S) \<equiv> multp (\<prec>S)"
 
 lemma wfP_Precprec_S: "wfP (\<prec>\<prec>S)"
-  using minimal_element_def wfp_multp wf_Prec_S wfp_on_UNIV by blast
+  by (simp add: wfp_Prec_S wfp_multp)
 
 definition Less_state :: "('p, 'f) DLf_state \<Rightarrow> ('p, 'f) DLf_state \<Rightarrow> bool" (infix \<open>\<sqsubset>\<close> 50) where
   "St' \<sqsubset> St \<longleftrightarrow>
@@ -923,7 +923,7 @@ locale fifo_discount_loop =
   fixes
     Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
-    wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
+    wfp_Prec_S: "wfp (\<prec>S)" and
     transp_Prec_S: "transp (\<prec>S)" and
     finite_Inf_between: "finite A \<Longrightarrow> finite (no_labels.Inf_between A {C})"
 begin
@@ -934,11 +934,8 @@ sublocale fifo_prover_queue
 sublocale fair_discount_loop Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q
   Equiv_F Prec_F "[]" hd "\<lambda>y xs. if y \<in> set xs then xs else xs @ [y]" removeAll fset_of_list Prec_S
 proof
-  show "po_on (\<prec>S) UNIV"
-    using wf_Prec_S minimal_element.po by blast
-next
-  show "wfp_on (\<prec>S) UNIV"
-    using wf_Prec_S minimal_element.wf by blast
+  show "wfp (\<prec>S)"
+    using wfp_Prec_S .
 next
   show "transp (\<prec>S)"
     by (rule transp_Prec_S)

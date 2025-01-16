@@ -590,7 +590,7 @@ locale fifo_zipperposition_loop =
   fixes
     Prec_S :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix \<open>\<prec>S\<close> 50)
   assumes
-    wf_Prec_S: "minimal_element (\<prec>S) UNIV" and
+    wfp_Prec_S: "wfp (\<prec>S)" and
     transp_Prec_S: "transp (\<prec>S)" and
     countable_Inf_between: "finite A \<Longrightarrow> countable (no_labels.Inf_between A {C})"
 begin
@@ -605,11 +605,8 @@ sublocale fair_zipperposition_loop Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
   Equiv_F Prec_F empty add_llist remove_llist pick_elem llists "[]" hd
   "\<lambda>y xs. if y \<in> set xs then xs else xs @ [y]" removeAll fset_of_list Prec_S
 proof
-  show "po_on (\<prec>S) UNIV"
-    using wf_Prec_S minimal_element.po by blast
-next
-  show "wfp_on (\<prec>S) UNIV"
-    using wf_Prec_S minimal_element.wf by blast
+  show "wfp (\<prec>S)"
+    by (rule wfp_Prec_S)
 next
   show "transp (\<prec>S)"
     by (rule transp_Prec_S)

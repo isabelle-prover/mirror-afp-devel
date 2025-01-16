@@ -8,31 +8,6 @@ theory Superposition
     Saturation_Framework.Lifting_to_Non_Ground_Calculi
 begin
 
-(* TODO: Remove Well_Quasi_Orders.Minimal_Elements from 
-  Saturation_Framework.Lifting_to_Non_Ground_Calculi to get rid of Restricted_Predicates *)
-(* Hide as much of Restricted_Predicates.wfp_on as possible *)
-hide_fact
-  Restricted_Predicates.wfp_on_imp_minimal
-  Restricted_Predicates.wfp_on_imp_inductive_on
-  Restricted_Predicates.inductive_on_imp_wfp_on
-  Restricted_Predicates.wfp_on_iff_inductive_on
-  Restricted_Predicates.wfp_on_iff_minimal
-  Restricted_Predicates.wfp_on_imp_has_min_elt
-  Restricted_Predicates.wfp_on_induct
-  Restricted_Predicates.wfp_on_UNIV
-  Restricted_Predicates.wfp_less
-  Restricted_Predicates.wfp_on_measure_on
-  Restricted_Predicates.wfp_on_mono
-  Restricted_Predicates.wfp_on_subset
-  Restricted_Predicates.wfp_on_restrict_to
-  Restricted_Predicates.wfp_on_imp_irreflp_on
-  Restricted_Predicates.accessible_on_imp_wfp_on
-  Restricted_Predicates.wfp_on_tranclp_imp_wfp_on
-  Restricted_Predicates.wfp_on_imp_accessible_on
-  Restricted_Predicates.wfp_on_accessible_on_iff
-  Restricted_Predicates.wfp_on_restrict_to_tranclp
-  Restricted_Predicates.wfp_on_restrict_to_tranclp'
-  Restricted_Predicates.wfp_on_restrict_to_tranclp_wfp_on_conv
 
 section \<open>Nonground Layer\<close>
 

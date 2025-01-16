@@ -341,18 +341,17 @@ proof (unfold_locales; (intro ballI)?)
   show "equivp (\<doteq>)"
     unfolding equivp_def by (meson generalizes_refl generalizes_trans)
 next
-  show "po_on (\<prec>\<cdot>) UNIV"
-    unfolding po_on_def irreflp_on_def transp_on_def
-    using strictly_generalizes_irrefl strictly_generalizes_trans by auto
+  show "transp (\<prec>\<cdot>)"
+    using strictly_generalizes_trans transpI by blast
 next
-  show "wfp_on (\<prec>\<cdot>) UNIV"
-    unfolding wfp_on_UNIV by (metis wf_strictly_generalizes)
+  show "wfp (\<prec>\<cdot>)"
+    using wf_strictly_generalizes by auto
 next
-  show "po_on (\<sqsubset>l) UNIV"
-    unfolding po_on_def irreflp_on_def transp_on_def using irrefl_L_Prec trans_L_Prec by blast
+  show "transp (\<sqsubset>l)"
+    using trans_L_Prec transpI by blast
 next
-  show "wfp_on (\<sqsubset>l) UNIV"
-    unfolding wfp_on_UNIV by (rule wf_L_Prec)
+  show "wfp (\<sqsubset>l)"
+    by (rule wf_L_Prec)
 next
   fix C1 D1 C2 D2
   assume
@@ -586,7 +585,7 @@ qed (auto simp: FL.active_subset_def young)
 lemma GC_processing_step: "N \<union> {(C, New)} \<leadsto>GC N \<union> {(C, Processed)}"
 proof (rule FL.step.process[of _ N "{(C, New)}" _ "{(C, Processed)}"])
   have "(C, New) \<in> FL.Red_F {(C, Processed)}"
-    by (rule mem_FL_Red_F_because_Prec_FL) (simp add: FL.Prec_FL_def generalizes_refl)
+    by (rule mem_FL_Red_F_because_Prec_FL) (simp add: FL.Prec_FL_def)
   then show "{(C, New)} \<subseteq> FL.Red_F (N \<union> {(C, Processed)})"
     using FL.Red_F_of_subset by blast
 qed (auto simp: FL.active_subset_def)
