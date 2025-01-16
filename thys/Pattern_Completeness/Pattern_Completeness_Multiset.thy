@@ -123,27 +123,11 @@ proof -
     by (intro exI[of _ n] ballI, force)
 qed
 
-(* all patterns are reduced to variables,
-   all var-conflicts for finite sorts are between variables (no function symbols),
-   and all var-conflicts give rise to a var-conflict of an infinite sort that occurs at root,
-   moreover, no obvious clashes are present *)
-definition weak_finite_var_form_mp :: "('f,'v,'s)match_problem_mset \<Rightarrow> bool" where
-  "weak_finite_var_form_mp mp = ((\<forall> (t,l) \<in># mp. \<exists> y. l = Var y)
-     \<and> (\<forall> f ts y. (Fun f ts, Var y) \<in># mp \<longrightarrow>  
-          (\<exists> x. (Var x, Var y) \<in># mp \<and> inf_sort (snd x))
-        \<and> (\<forall> t. (t, Var y) \<in># mp \<longrightarrow> root t \<in> {None, Some (f,length ts)})))"
-
-definition finite_var_form_mp :: "('f,'v,'s)match_problem_mset \<Rightarrow> bool" where
-  "finite_var_form_mp mp = (\<forall> (t,l) \<in># mp. \<exists> x y. t = Var x \<and> l = Var y \<and> \<not> inf_sort (snd x))" 
-
-definition weak_finite_var_form_pp :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
-  "weak_finite_var_form_pp p = (\<forall> mp \<in># p. weak_finite_var_form_mp mp)" 
-
-definition finite_var_form_pp :: "('f,'v,'s)pat_problem_mset \<Rightarrow> bool" where
-  "finite_var_form_pp p = (\<forall> mp \<in># p. finite_var_form_mp mp)" 
+lemma mp_mset_in_pat_mset: "mp \<in># pp \<Longrightarrow> mp_mset mp \<in> pat_mset pp"
+  by auto
 
 lemma pat_fail_or_trans_or_finite_var_form: assumes "improved \<Longrightarrow> infinite (UNIV :: 'v set)" 
-  shows "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> (improved \<and> finite_var_form_pp p)" 
+  shows "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> (improved \<and> finite_var_form_pp (pat_mset p))" 
 proof (cases "p = {#}")
   case True
   with pat_empty show ?thesis by auto
@@ -242,11 +226,11 @@ next
               case impr: True
               (* we first prove that we can reach weak-finite-var-form and switch to finite-var-form later *)
               (* TODO: one might clean up this two-way proof and directly go to finite-var-form *)
-              have "(pat_fail p \<or> (\<exists>ps. p \<Rightarrow>\<^sub>m ps)) \<or> weak_finite_var_form_pp p" 
-              proof (cases "weak_finite_var_form_pp p")
+              have "(pat_fail p \<or> (\<exists>ps. p \<Rightarrow>\<^sub>m ps)) \<or> weak_finite_var_form_pp (pat_mset p)" 
+              proof (cases "weak_finite_var_form_pp (pat_mset p)")
                 case False
                 from this[unfolded weak_finite_var_form_pp_def] obtain mp 
-                  where mp: "mp \<in># p" and nmp: "\<not> weak_finite_var_form_mp mp" by auto
+                  where mp: "mp \<in># p" and nmp: "\<not> weak_finite_var_form_mp (mp_mset mp)" by auto
                 from mset_add[OF mp] obtain p' where p': "p = add_mset mp p'" by auto
                 from rhs_vars[OF mp] have "((\<forall>(t, l)\<in>#mp. \<exists>y. l = Var y) \<and> b) = b" for b
                   by force
@@ -338,7 +322,7 @@ next
               thus ?thesis
               proof (elim context_disjE)
                 assume no_step: "\<not> (pat_fail p \<or> (\<exists>ps. p \<Rightarrow>\<^sub>m ps))" 
-                assume "weak_finite_var_form_pp p" 
+                assume "weak_finite_var_form_pp (pat_mset p)" 
                 note wfvf = this[unfolded weak_finite_var_form_pp_def weak_finite_var_form_mp_def, rule_format]
                 note get_var = wfvf[THEN conjunct1, rule_format]
                 note fun_case = wfvf[THEN conjunct2, rule_format]
@@ -351,21 +335,21 @@ next
                 proof (cases "p_inf = {#}")
                   case True
                   have fin: "\<And> mp. mp \<in># p \<Longrightarrow> fin mp" unfolding p_split True unfolding p_fin_def by auto
-                  have "finite_var_form_pp p" 
+                  have "finite_var_form_pp (pat_mset p)" 
                     unfolding finite_var_form_pp_def finite_var_form_mp_def
                   proof (intro ballI, clarify)
                     fix mp t l
-                    assume mp: "mp \<in># p" and tl: "(t,l) \<in># mp" 
-                    from fin[OF mp, unfolded fin_def tvars_mp_def] tl 
+                    assume mp: "mp \<in> pat_mset p" and tl: "(t,l) \<in> mp"
+                    from fin[unfolded fin_def tvars_mp_def]mp tl 
                     have fint: "\<And> x. x \<in> vars t \<Longrightarrow> \<not> inf_sort (snd x)" by auto
                     from get_var[OF mp tl] tl obtain y where 
-                      ty: "(t, Var y) \<in># mp" and ly: "l = Var y" by (cases l, auto)
+                      ty: "(t, Var y) \<in> mp" and ly: "l = Var y" by (cases l, auto)
                     have "is_Var t"
                     proof (cases t)
                       case (Fun f ts)
-                      with ty have "(Fun f ts, Var y) \<in># mp" by auto
-                      from fun_case[OF mp this] obtain x where "(Var x, Var y) \<in># mp" "inf_sort (snd x)" by auto
-                      with fin[OF mp, unfolded fin_def tvars_mp_def] tl have False by auto
+                      with ty have "(Fun f ts, Var y) \<in> mp" by auto
+                      from fun_case[OF _ this] mp obtain x where "(Var x, Var y) \<in> mp" "inf_sort (snd x)" by auto
+                      with fin[unfolded fin_def tvars_mp_def] mp tl have False by auto
                       thus ?thesis by auto
                     qed auto
                     then obtain x where tx: "t = Var x" by auto
@@ -382,14 +366,14 @@ next
                     unfolding p_inf_def by fastforce
                   from inf[unfolded fin_def tvars_mp_def]
                   obtain t l x where tl: "(t,l) \<in># mp" and x: "x \<in> vars t" and inf: "inf_sort (snd x)" by auto
-                  from get_var[OF mp tl] tl obtain y where ty: "(t, Var y) \<in># mp" by auto
+                  from get_var[OF _ tl] mp tl obtain y where ty: "(t, Var y) \<in># mp" by auto
                   have "\<exists> x. (Var x, Var y) \<in># mp \<and> inf_sort (snd x)" 
                   proof (cases t)
                     case (Var z)
                     with ty inf x show ?thesis by (intro exI[of _ z], auto)
                   next
                     case (Fun f ts)
-                    from fun_case[OF mp ty[unfolded Fun]] show ?thesis by auto
+                    from fun_case[OF _ ty[unfolded Fun]] mp show ?thesis by auto
                   qed
                   then obtain x where xy: "(Var x, Var y) \<in># mp" and inf: "inf_sort (snd x)" by auto
                   from mset_add[OF xy] obtain mp' where mp': "mp = add_mset (Var x, Var y) mp'" by auto
@@ -398,7 +382,7 @@ next
                   from mset_add[OF sy'] mp' obtain mp'' where 
                     mp'': "mp = add_mset (s,y') (add_mset (Var x, Var y) mp'')" 
                     by auto
-                  from get_var[OF mp[unfolded mp'']] y'
+                  from get_var[OF mp_mset_in_pat_mset[OF mp[unfolded mp'']]] y'
                   have mp'': "mp = add_mset (s, Var y) (add_mset (Var x, Var y) mp'')" 
                     unfolding mp'' by (cases y', auto)
                   from ndup mp'' mp have sx: "s \<noteq> Var x" by auto
@@ -466,14 +450,14 @@ context
     and inf: "infinite (UNIV :: 'v set)" 
 begin
   
-lemma pat_fail_or_trans_or_fvf: "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> finite_var_form_pp p" 
+lemma pat_fail_or_trans_or_fvf: "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> finite_var_form_pp (pat_mset p)" 
   using pat_fail_or_trans_or_finite_var_form[of p, OF inf] by auto
 
 text \<open>Normal forms only consist of finite-var-form pattern problems\<close>
 theorem P_step_NF_fvf: 
   assumes NF: "P \<in> NF \<Rrightarrow>" 
     and p: "p \<in># P"
-  shows "finite_var_form_pp p"  
+  shows "finite_var_form_pp (pat_mset p)"  
 proof (rule ccontr)
   assume nfvf: "\<not> ?thesis" 
   from mset_add[OF p] obtain P' where P: "P = add_mset p P'" by auto
@@ -486,6 +470,7 @@ proof (rule ccontr)
   with P have "p = {#}" by auto
   with nfvf show False unfolding finite_var_form_pp_def by auto
 qed
+
 end
 
 end
@@ -763,7 +748,7 @@ proof -
   have m: "max_size s = Maximum (?set s)" unfolding o_def max_size_def using inf  sS by auto
   
   from inf[unfolded inf_sort_def[OF sS]] have "bdd_above (?set s)" by auto
-  moreover from sorts_non_empty[OF sS] type_conversion2 have "?set s \<noteq> {}" by auto
+  moreover have "?set s \<noteq> {}" by (auto intro!: term_of_sort sS) 
   ultimately have "has_Maximum (?set s)" by (rule bdd_above_has_Maximum_nat) 
   from has_MaximumD[OF this, folded m] show ?thesis by auto
 qed

@@ -948,7 +948,7 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
   have S: "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTY)"
-    "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTYn)" unfolding EMPTY_def EMPTYn_def by auto
+    "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTYn)" by auto
   {
     fix f ss s
     assume "f : ss \<rightarrow> s in C"
@@ -962,7 +962,6 @@ proof -
     from C[OF this] have "length ss \<le> m" by auto
   }
   hence m: "\<forall>a\<in>length ` snd ` set (Cl s). a \<le> m" for s by auto
-  have En: "EMPTYn = \<emptyset>" unfolding EMPTYn_def by auto
   have "\<forall>f ss s s'. f : ss \<rightarrow> s in C \<longrightarrow> s' \<in> set ss \<longrightarrow> (\<exists>t. t : s' in \<T>(C,EMPTYn))" 
   proof (intro allI impI)
     fix f ss s s'
@@ -970,7 +969,7 @@ proof -
     hence "s' \<in> S" using Cons(1)[of f ss s] by auto
     from S[OF this] show "\<exists>t. t : s' in \<T>(C,EMPTYn)" by auto
   qed
-  from compute_inf_sorts[OF En C_Cs this dist] inf_sort
+  from compute_inf_sorts[OF refl C_Cs this dist] inf_sort
   have inf_sort: "inf_sort s = (\<not> bdd_above (size ` {t. t : s in \<T>(C,EMPTYn)}))" for s unfolding inf_sort by auto
   have Cl: "set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}" for s
     unfolding Cl set_map o_def C_Cs using dist

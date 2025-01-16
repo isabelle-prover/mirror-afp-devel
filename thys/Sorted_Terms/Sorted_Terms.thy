@@ -774,8 +774,6 @@ lemma subst_eval: "I\<lbrakk>s\<cdot>\<theta>\<rbrakk>\<alpha> = I\<lbrakk>s\<rb
   using unsorted.eval.distrib_eval[of _ UNIV, unfolded o_def]
   by auto
 
-lemmas subst_subst = subst_eval[of Fun]
-
 subsubsection \<open>Collecting Variables via Evaluation\<close>
 
 definition "var_list_term t \<equiv> (\<lambda>f. concat)\<lbrakk>t\<rbrakk>(\<lambda>v. [v])"
@@ -819,6 +817,48 @@ lemma ground_Term_iff: "s : \<sigma> in \<T>(F,V) \<and> ground s \<longleftrigh
 lemma hastype_in_Term_empty_imp_subst:
   "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> : \<sigma> in \<T>(F,V)"
   by (rule subst_hastype, auto)
+
+lemma hastype_in_Term_empty_imp_subst_id:
+  "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> s \<cdot> \<theta> = s"
+  apply (induction rule: hastype_in_Term_induct)
+  by (auto simp: list_all2_indep2 cong: map_cong)
+
+lemma in_dom_Term_empty_imp_subst_id:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s \<cdot> \<theta> = s"
+  by (auto elim: in_dom_hastypeE simp: hastype_in_Term_empty_imp_subst_id)
+
+lemma in_dom_Term_empty_imp_subst:
+  "s \<in> dom \<T>(F,\<emptyset>) \<Longrightarrow> s\<cdot>\<theta> \<in> dom \<T>(F,V)"
+proof (elim in_dom_hastypeE)
+  fix \<sigma> assume "s : \<sigma> in \<T>(F,\<emptyset>)"
+  from hastype_in_Term_empty_imp_subst[OF this, of \<theta> V]
+  show "s\<cdot>\<theta> \<in> dom \<T>(F,V)" by auto
+qed
+
+context fixes \<theta> :: "'v \<Rightarrow> ('f,'w) term" begin
+
+interpretation sorted_bijection "\<lambda>s. s\<cdot>\<theta>" "\<T>(F,\<emptyset>)" "\<T>(F,\<emptyset>)"
+proof
+  show "bij_betw (\<lambda>s. s \<cdot> \<theta>) (dom \<T>(F,\<emptyset>)) (dom \<T>(F,\<emptyset>))"
+  proof (intro bij_betwI)
+    show "(\<lambda>s. s\<cdot>undefined) : dom \<T>(F,\<emptyset>) \<rightarrow> dom \<T>(F,\<emptyset>)"
+      by (auto simp: in_dom_Term_empty_imp_subst)
+  qed (auto simp del: subst_subst_compose
+      simp: subst_subst hastype_in_Term_empty_imp_subst_id in_dom_Term_empty_imp_subst_id
+      in_dom_Term_empty_imp_subst)
+qed (auto simp: hastype_in_Term_empty_imp_subst)
+
+lemmas sorted_bijection_Term_empty = sorted_bijection_axioms
+
+lemmas bij_betw_dom_Term_empty = bij
+
+lemmas bij_betw_sort_Term_empty = bij_betw_sort
+
+lemma all_in_Term_empty_subst_iff:
+  "(\<forall>s : \<sigma> in \<T>(F,\<emptyset>). P (s\<cdot>\<theta>)) \<longleftrightarrow> (\<forall>s : \<sigma> in \<T>(F,\<emptyset>). P s)"
+  by (simp add: all_in_target_iff)
+
+end
 
 locale subsignature = fixes F G :: "('f,'s) ssig" assumes subssig: "F \<subseteq>\<^sub>m G"
 begin
