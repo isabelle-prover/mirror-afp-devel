@@ -249,8 +249,8 @@ qed
 
 lemma shortest_path_split_distance:
   "\<lbrakk>shortest_path G u (p1 @ x # p2) v\<rbrakk> \<Longrightarrow> distance G u x \<le> distance G u v"
-  using shortest_path_split_2 shortest_path_dist
-  by fastforce
+  using shortest_path_split_2[where G = G and u = u and ?p1.0 = p1 and x = x] shortest_path_dist
+  by force
 
 lemma shortest_path_split_distance':
   "\<lbrakk>x \<in> set p; shortest_path G u p v\<rbrakk> \<Longrightarrow> distance G u x \<le> distance G u v"
