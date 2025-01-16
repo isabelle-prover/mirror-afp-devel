@@ -22,9 +22,9 @@ keywords
   and "save_fixpoint" :: thy_decl
   and "load_fixpoint" :: thy_decl
   and "protocol_model_setup" :: thy_decl
-  and "protocol_security_proof" :: thy_goal
-  and "protocol_composition_proof" :: thy_goal
-  and "manual_protocol_model_setup" :: thy_decl
+  and "protocol_security_proof" :: thy_decl
+  and "protocol_composition_proof" :: thy_decl
+  and "manual_protocol_model_setup" :: thy_goal
   and "manual_protocol_security_proof" :: thy_goal
   and "manual_protocol_composition_proof" :: thy_goal
   and "compute_fixpoint" :: thy_decl
