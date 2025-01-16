@@ -37,7 +37,7 @@ definition decide_pat_complete_lhss ::
     let P = [[[(pat,lhs)]. lhs \<leftarrow> lhss]. pat \<leftarrow> pats];
     return (decide_pat_complete C P)
   }" 
-thm pattern_completeness_context.pat_complete_def
+
 theorem decide_pat_complete_lhss:
   fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
   assumes "decide_pat_complete_lhss C D lhss = return b" 
