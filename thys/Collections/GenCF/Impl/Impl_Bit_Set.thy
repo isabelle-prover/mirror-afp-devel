@@ -36,17 +36,16 @@ begin
   lemma bs_isEmpty_correct: "bs_isEmpty s \<longleftrightarrow> bs_\<alpha> s = {}"
     unfolding bs_isEmpty_def bs_\<alpha>_def 
     by transfer (auto simp: bit_eq_iff) 
-    
-  term set_bit
+
   definition bs_insert :: "nat \<Rightarrow> bitset \<Rightarrow> bitset" where
-    "bs_insert i s \<equiv> set_bit s i True"
+    "bs_insert \<equiv> set_bit"
 
   lemma bs_insert_correct: "bs_\<alpha> (bs_insert i s) = insert i (bs_\<alpha> s)"
     unfolding bs_\<alpha>_def bs_insert_def
     by transfer (auto simp add: bit_simps)
 
   definition bs_delete :: "nat \<Rightarrow> bitset \<Rightarrow> bitset" where
-    "bs_delete i s \<equiv> set_bit s i False"
+    "bs_delete \<equiv> unset_bit"
 
   lemma bs_delete_correct: "bs_\<alpha> (bs_delete i s) = (bs_\<alpha> s) - {i}"
     unfolding bs_\<alpha>_def bs_delete_def

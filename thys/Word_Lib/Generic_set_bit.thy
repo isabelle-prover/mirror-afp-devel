@@ -300,4 +300,13 @@ end
 
 end
 
+context
+begin
+
+qualified lemma set_bit_integer_code [code]:
+  \<open>set_bit k n b = (if b then Bit_Operations.set_bit n k else Bit_Operations.unset_bit n k)\<close> for k :: integer
+  by (simp add: set_bit_eq)
+
+end
+
 end

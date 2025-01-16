@@ -38,10 +38,6 @@ lemma [code_unfold]:
   \<open>bit x n \<longleftrightarrow> x AND (push_bit n 1) \<noteq> 0\<close> for x :: int
   by (fact bit_iff_and_push_bit_not_eq_0)
 
-lemma set_bit_int_code [code]:
-  "set_bit (int_of_integer x) n b = int_of_integer (set_bit x n b)"
-  including integer.lifting by transfer simp
-
 end
 
 end

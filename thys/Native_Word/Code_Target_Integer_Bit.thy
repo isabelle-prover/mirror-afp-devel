@@ -10,7 +10,6 @@ theory Code_Target_Integer_Bit
     "Code_Target_Word"
     "Code_Int_Integer_Conversion"
     "Word_Lib.Most_significant_bit"
-    "Word_Lib.Generic_set_bit"
     "Word_Lib.Bit_Comprehension"
 begin
 
@@ -145,7 +144,6 @@ code_printing
 code_printing code_module Integer_Bit \<rightharpoonup> (SML)
 \<open>structure Integer_Bit : sig
   val test_bit : IntInf.int -> IntInf.int -> bool
-  val set_bit : IntInf.int -> IntInf.int -> bool -> IntInf.int
   val shiftl : IntInf.int -> IntInf.int -> IntInf.int
   val shiftr : IntInf.int -> IntInf.int -> IntInf.int
 end = struct
@@ -154,12 +152,6 @@ val maxWord = IntInf.pow (2, Word.wordSize);
 
 fun test_bit x n =
   if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))) <> 0
-  else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
-
-fun set_bit x n b =
-  if n < maxWord then
-    if b then IntInf.orb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n)))
-    else IntInf.andb (x, IntInf.notb (IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))))
   else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
 
 fun shiftl x n =
@@ -198,13 +190,6 @@ code_printing code_module Integer_Bit \<rightharpoonup> (Scala)
 def testBit(x: BigInt, n: BigInt) : Boolean =
   n.isValidInt match {
     case true => x.testBit(n.toInt)
-    case false => sys.error("Bit index too large: " + n.toString)
-  }
-
-def setBit(x: BigInt, n: BigInt, b: Boolean) : BigInt =
-  n.isValidInt match {
-    case true if b => x.setBit(n.toInt)
-    case true => x.clearBit(n.toInt)
     case false => sys.error("Bit index too large: " + n.toString)
   }
 
@@ -257,37 +242,6 @@ code_printing constant integer_test_bit \<rightharpoonup>
 lemma bit_integer_code [code]:
   "bit x n \<longleftrightarrow> integer_test_bit x (integer_of_nat n)"
   by (simp add: integer_test_bit_def)
-
-definition integer_set_bit :: \<open>integer \<Rightarrow> integer \<Rightarrow> bool \<Rightarrow> integer\<close>
-  where \<open>integer_set_bit x n b = (if n < 0 then undefined x n b else set_bit x (nat_of_integer n) b)\<close>
-
-text \<open>
-  OCaml.Big\_int does not have a method for changing an individual bit, so we emulate that with masks.
-  We prefer an Isabelle implementation, because this then takes care of the signs for AND and OR.
-\<close>
-
-context
-  includes bit_operations_syntax
-begin
-
-lemma integer_set_bit_code [code]:
-  \<open>integer_set_bit x n b =
-  (if n < 0 then undefined x n b else
-   if b then x OR (push_bit (nat_of_integer n) 1)
-   else x AND NOT (push_bit (nat_of_integer n) 1))\<close>
-  by (simp add: integer_set_bit_def set_bit_eq set_bit_def unset_bit_def)
-
-end
-
-code_printing constant integer_set_bit \<rightharpoonup>
-  (SML) "Integer'_Bit.set'_bit" and
-  (Haskell) "(Data'_Bits.genericSetBitUnbounded :: Integer -> Integer -> Bool -> Integer)" and
-  (Haskell_Quickcheck) "(Data'_Bits.genericSetBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool -> Prelude.Int)" and
-  (Scala) "Integer'_Bit.setBit"
-
-lemma set_bit_integer_code [code]:
-  \<open>set_bit x i b = integer_set_bit x (integer_of_nat i) b\<close>
-  by (simp add: integer_set_bit_def)
 
 definition integer_shiftl :: \<open>integer \<Rightarrow> integer \<Rightarrow> integer\<close>
   where \<open>integer_shiftl x n = (if n < 0 then undefined x n else push_bit (nat_of_integer n) x)\<close>
