@@ -4,6 +4,7 @@
     Maintainer:  Anders Schlichtkrull <andschl at dtu.dk>
 *)
 
+(* TODO: Try to rename Name clash, such that a copy is not needed *)
 section \<open>Integration of \textsf{IsaFoR} Terms and the Knuth--Bendix Order\<close>
 
 text \<open>

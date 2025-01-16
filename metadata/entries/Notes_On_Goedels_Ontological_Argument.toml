@@ -1,0 +1,32 @@
+title = "Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)"
+date = 2025-01-07
+topics = [
+  "Logic/Philosophical aspects",
+  "Logic/General logic/Modal logic",
+]
+abstract = """
+Experimental studies with Isabelle/HOL on Kurt Gödel’s modal ontological argument and Dana Scott’s variant of it are presented. They implicitly answer some questions that the authors have received over the last decade(s). In addition, some new results are reported.
+
+Our contribution is explained in full detail in an associated journal article. This document presents the corresponding Isabelle/HOL dataset (which is only slightly modified to meet AFP requirements)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Notes on Gödel’s and Scott’s Variants of the Ontological Argument, Monatshefte für Mathematik, to appear.",
+]

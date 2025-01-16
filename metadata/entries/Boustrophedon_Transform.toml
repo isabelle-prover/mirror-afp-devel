@@ -1,0 +1,42 @@
+title = "The Boustrophedon Transform, the Entringer Numbers, and Related Sequences"
+date = 2024-10-24
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>This entry defines the <em>Boustrophedon transform</em>, which can be seen as either a transformation of a sequence of numbers or, equivalently, an exponential generating function.
+We define it in terms of the <em>Seidel triangle</em>, a number triangle similar to Pascal's triangle, and then prove the closed form $\\mathcal B(f) = (\\sec + \\tan) f$.</p>
+
+<p>We also define several related sequences, such as:</p>
+<ul>
+<li>the <em>zigzag numbers</em> $E_n$, counting the number of alternating permutations on a linearly ordered set with $n$ elements; or, alternatively, the number of increasing binary trees with $n$ elements</li>
+<li>the <em>Entringer numbers</em> $E_{n,k}$, which generalise the zigzag numbers and count the number of alternating permutations of $n+1$ elements that start with the $k$-th smallest element</li>
+<li>the <em>secant</em> and <em>tangent</em> numbers $S_n$ and $T_n$, which are the series of numbers such that $\\sec x = \\sum_{n\\geq 0} \\frac{S(n)}{(2n)!}\\,x^{2n}$ and $\\tan x = \\sum_{n\\geq 1} \\frac{T(n)}{(2n-1)!}\\,x^{2n-1}$, respectively</li>
+<li>the <em>Euler numbers</em> $\\mathcal{E}_n$ and <em>Euler polynomials</em> $\\mathcal{E}_n(x)$, which are analogous to Bernoulli numbers and Bernoulli polynomials and satisfy many similar properties, which we also prove</li>
+</ul>
+
+<p>Various relationships between these sequences are shown; notably we have $E_{2n} = S_n$ and $E_{2n+1} = T_{n+1}$ and $\\mathcal E_{2n} = (-1)^n S_n$ and
+\\[T_n = \\frac{(-1)^{n+1} 2^{2n} (2^{2n}-1) B_{2n}}{2n}\\]
+where $B_n$ denotes the Bernoulli numbers.</p>
+
+<p>Reasonably efficient executable algorithms to compute the Boustrophedon transform and the above sequences are also given, including imperative ones for $T_n$ and $S_n$ using Imperative HOL.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

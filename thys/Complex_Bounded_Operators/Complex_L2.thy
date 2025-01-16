@@ -15,6 +15,7 @@ theory Complex_L2
     "HOL-Analysis.L2_Norm"
     "HOL-Library.Rewrite"
     "HOL-Analysis.Infinite_Sum"
+    "HOL-Library.Infinite_Typeclass"
 begin
 
 unbundle lattice_syntax and cblinfun_syntax and no blinfun_apply_syntax
@@ -355,7 +356,7 @@ proof
 qed
 end
 
-instantiation ell2 :: (type)complex_normed_vector begin
+instantiation ell2 :: (type) complex_normed_vector begin
 lift_definition norm_ell2 :: "'a ell2 \<Rightarrow> real" is ell2_norm .
 declare norm_ell2_def[code del]
 definition "dist x y = norm (x - y)" for x y::"'a ell2"
@@ -410,7 +411,7 @@ qed
 
 instantiation ell2 :: (type) complex_inner begin
 lift_definition cinner_ell2 :: \<open>'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> complex\<close> is 
-  \<open>\<lambda>f g. \<Sum>\<^sub>\<infinity>x. (cnj (f x) * g x)\<close> .
+  \<open>\<lambda>f g. \<Sum>\<^sub>\<infinity>x. cnj (f x) * g x\<close> .
 declare cinner_ell2_def[code del]
 
 instance
@@ -765,6 +766,10 @@ proof -
     apply (rule Lim_transform2[where f=\<open>\<lambda>_. \<psi>\<close>, rotated])
     by simp
 qed
+
+lemma trunc_ell2_lim_seq: \<open>((\<lambda>n. trunc_ell2 {..<n} \<psi>) \<longlonglongrightarrow> \<psi>)\<close>
+  using trunc_ell2_lim_at_UNIV filterlim_lessThan_at_top
+  by (rule filterlim_compose)
 
 lemma trunc_ell2_norm_mono: \<open>M \<subseteq> N \<Longrightarrow> norm (trunc_ell2 M \<psi>) \<le> norm (trunc_ell2 N \<psi>)\<close>
 proof (rule power2_le_imp_le[rotated], force, transfer)
@@ -1440,6 +1445,52 @@ lemma Rep_ell2_explicit_cblinfun_ket[simp]: \<open>Rep_ell2 (explicit_cblinfun M
   using that apply (simp add: explicit_cblinfun_ket)
   by (simp add: Abs_ell2_inverse explicit_cblinfun_exists_def)
 
+lemma bounded_extension_counterexample_1: \<open>\<exists>f. \<forall>x. f (ket x) = ket 0\<close>
+  \<comment> \<open>First part of counterexample showing that not every linear function
+      can be extended to a bounded operator.\<close>
+  by auto
+
+lemma bounded_extension_counterexample_2:
+  \<comment> \<open>Second part of counterexample showing that not every linear function
+      can be extended to a bounded operator.\<close>
+  assumes \<open>\<forall>x::'a::infinite. f (ket x) = ket 0\<close>
+  shows \<open>\<not> cblinfun_extension_exists (range ket) f\<close>
+proof (rule ccontr, unfold not_not)
+  assume \<open>cblinfun_extension_exists (range ket) f\<close>
+  moreover define F where \<open>F = cblinfun_extension (range ket) f\<close>
+  ultimately have F: \<open>F (ket x) = ket 0\<close> for x
+    by (simp add: assms cblinfun_extension_apply)
+  have F_geq: \<open>norm F \<ge> sqrt B\<close> for B :: nat
+  proof -
+    obtain S :: \<open>'a set\<close> where card_S: \<open>card S = B\<close> and fin_S: \<open>finite S\<close>
+      using arb_finite_subset[of \<open>{}\<close> B]
+      by (meson finite.emptyI obtain_subset_with_card_n)
+    define \<psi> where \<open>\<psi> = (\<Sum>i\<in>S. ket i)\<close>
+    have \<open>(norm \<psi>)\<^sup>2 = B\<close>
+      by (simp add: \<psi>_def pythagorean_theorem_sum card_S fin_S)
+    then have norm_\<psi>: \<open>norm \<psi> = sqrt B\<close>
+      by (smt (verit, best) norm_ge_zero real_sqrt_abs)
+    have \<open>F \<psi> = B *\<^sub>R ket 0\<close>
+      by (simp add: \<psi>_def cblinfun.sum_right real_vector.sum_constant_scale F card_S)
+    then have \<open>norm (F \<psi>) = B\<close>
+      by simp
+    with norm_\<psi> have \<open>norm F \<ge> B / sqrt B\<close>
+      using norm_cblinfun[of F \<psi>]
+      by (simp add: divide_le_eq)
+    then show ?thesis
+      by (simp add: real_div_sqrt)
+  qed
+  then show False
+  proof -
+    obtain B :: nat where B: \<open>B > (norm F)\<^sup>2\<close>
+      apply atomize_elim
+      apply (rule exI[of _ \<open>nat (ceiling ((norm F)\<^sup>2 + 1))\<close>])
+      by linarith
+    with F_geq show False
+      by (smt (verit, ccfv_threshold) B sqrt_le_D)
+  qed
+qed
+
 subsection \<open>Classical operators\<close>
 
 text \<open>We call an operator mapping \<^term>\<open>ket x\<close> to \<^term>\<open>ket (\<pi> x)\<close> or \<^term>\<open>0\<close> "classical".
@@ -1502,9 +1553,8 @@ qed
 
 lemma classical_operator_exists_finite[simp]: "classical_operator_exists (\<pi> :: _::finite \<Rightarrow> _)"
   unfolding classical_operator_exists_def
-  apply (rule cblinfun_extension_exists_finite_dim)
-  using cindependent_ket apply blast
-  using finite_class.finite_UNIV finite_imageI closed_cspan_range_ket closure_finite_cspan by blast
+  using cindependent_ket cspan_range_ket_finite
+  by (rule cblinfun_extension_exists_finite_dim)
 
 lemma classical_operator_ket:
   assumes "classical_operator_exists \<pi>"

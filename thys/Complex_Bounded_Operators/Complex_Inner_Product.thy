@@ -493,7 +493,9 @@ definition is_ortho_set :: "'a::complex_inner set \<Rightarrow> bool" where
   \<comment> \<open>Orthogonal set\<close>
   \<open>is_ortho_set S \<longleftrightarrow> (\<forall>x\<in>S. \<forall>y\<in>S. x \<noteq> y \<longrightarrow> (x \<bullet>\<^sub>C y) = 0) \<and> 0 \<notin> S\<close>
 
-definition is_onb where \<open>is_onb E \<longleftrightarrow> is_ortho_set E \<and> (\<forall>b\<in>E. norm b = 1) \<and> ccspan E = top\<close>
+definition is_onb :: "'a::complex_inner set \<Rightarrow> bool" where
+  \<comment> \<open>Orthonormal basis\<close>
+  \<open>is_onb E \<longleftrightarrow> is_ortho_set E \<and> (\<forall>b\<in>E. norm b = 1) \<and> ccspan E = top\<close>
 
 lemma is_ortho_set_empty[simp]: "is_ortho_set {}"
   unfolding is_ortho_set_def by auto
@@ -2179,7 +2181,7 @@ qed
 
 lemma riesz_representation_existence:
   \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
-  fixes f::\<open>'a::chilbert_space \<Rightarrow> complex\<close>
+  fixes f :: \<open>'a::chilbert_space \<Rightarrow> complex\<close>
   assumes a1: \<open>bounded_clinear f\<close>
   shows \<open>\<exists>t. \<forall>x.  f x = t \<bullet>\<^sub>C x\<close>
 proof(cases \<open>\<forall> x. f x = 0\<close>)
@@ -2224,7 +2226,7 @@ lemma riesz_representation_unique:
 
 subsection \<open>Adjoints\<close>
 
-definition "is_cadjoint F G \<longleftrightarrow> (\<forall>x. \<forall>y. (F x \<bullet>\<^sub>C y) = (x \<bullet>\<^sub>C G y))"
+definition \<open>is_cadjoint F G \<longleftrightarrow> (\<forall>x y. (F x \<bullet>\<^sub>C y) = (x \<bullet>\<^sub>C G y))\<close>
 
 lemma is_adjoint_sym:
   \<open>is_cadjoint F G \<Longrightarrow> is_cadjoint G F\<close>

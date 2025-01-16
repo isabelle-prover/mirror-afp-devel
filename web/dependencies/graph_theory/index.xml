@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 05 May 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/graph_theory/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Elementary Graph Traversal Algorithms</title>
+          <link>/entries/Graph_Algorithms.html</link>
+          <pubDate>Tue, 14 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Graph_Algorithms.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>MLSS Decision Procedure</title>
           <link>/entries/MLSS_Decision_Proc.html</link>

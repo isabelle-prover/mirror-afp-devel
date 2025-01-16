@@ -33,7 +33,7 @@ structure Util = Unification_Util
 fun can_var_pattern_unif (p, t) = let val (head, args) = strip_comb p
   in
     if is_Var head andalso forall is_Bound args andalso not (has_duplicates (op aconv) args)
-      andalso not (Term.exists_subterm (curry (op =) head) t)
+      andalso not (Term.exists_subterm (equal head) t)
     then (true, args)
     else (false, [])
   end

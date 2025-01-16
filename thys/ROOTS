@@ -68,6 +68,7 @@ Boolean_Expression_Checkers
 Boolos_Curious_Inference
 Boolos_Curious_Inference_Automated
 Bounded_Deducibility_Security
+Boustrophedon_Transform
 Broadcast_Psi
 Buchi_Complementation
 Budan_Fourier
@@ -169,6 +170,7 @@ Coupledsim_Contrasim
 CryptHOL
 CryptoBasedCompositionalProperties
 Crypto_Standards
+Cube_Dissection
 CubicalCategories
 Cubic_Quartic_Equations
 DCR-ExecutionEquivalence
@@ -299,6 +301,7 @@ Gauss_Sums
 Gaussian_Integers
 GenClock
 General-Triangle
+Generalized_Cauchy_Davenport
 Generalized_Counting_Sort
 Generic_Deriving
 Generic_Join
@@ -312,6 +315,7 @@ Goedel_HFSet_Semanticless
 Goedel_Incompleteness
 Goodstein_Lambda
 GraphMarkingIBP
+Graph_Algorithms
 Graph_Saturation
 Graph_Theory
 Gray_Codes
@@ -335,6 +339,7 @@ Hermite
 Hermite_Lindemann
 Hidden_Markov_Models
 Higher_Order_Terms
+Hilbert_Space_Tensor_Product
 HoareForDivergence
 Hoare_Time
 Hood_Melville_Queue
@@ -350,6 +355,7 @@ Hypergraph_Basics
 Hypergraph_Colourings
 IEEE_Floating_Point
 IFC_Tracking
+ILL
 IMAP-CRDT
 IMO2019
 IMP2
@@ -536,6 +542,7 @@ Noninterference_Inductive_Unwinding
 Noninterference_Ipurge_Unwinding
 Noninterference_Sequential_Composition
 NormByEval
+Notes_On_Goedels_Ontological_Argument
 NREST
 Nullstellensatz
 Number_Theoretic_Transform
@@ -605,6 +612,7 @@ Prime_Number_Theorem
 Priority_Queue_Braun
 Priority_Search_Trees
 Probabilistic_Noninterference
+ProcessComposition
 Probabilistic_Prime_Tests
 Probabilistic_System_Zoo
 Probabilistic_Timed_Automata
@@ -691,6 +699,7 @@ Routing
 Roy_Floyd_Warshall
 SATSolverVerification
 SCC_Bloemen_Sequential
+SCL_Simulates_Ground_Resolution
 SC_DOM_Components
 SDS_Impossibility
 SIFPL
@@ -772,6 +781,7 @@ Substitutions_Lambda_Free
 SuffixArray
 Sumcheck_Protocol
 SumSquares
+Sum_Of_Squares_Count
 Sunflowers
 SuperCalc
 Superposition_Calculus
@@ -812,6 +822,7 @@ Trie
 Turans_Graph_Theorem
 Twelvefold_Way
 Two_Generated_Word_Monoids_Intersection
+Two_Hermitian_Results
 Tycon
 Types_Tableaus_and_Goedels_God
 Types_To_Sets_Extension

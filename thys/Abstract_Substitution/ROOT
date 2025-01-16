@@ -8,5 +8,7 @@ session Abstract_Substitution = HOL +
     Substitution
     Substitution_First_Order_Term
     Substitution_HOL_ex_Unification
+    Functional_Substitution_Example
+    Functional_Substitution_Lifting_Example
   document_files
     "root.tex"

@@ -889,16 +889,10 @@ begin
     proof
       fix \<mu>\<nu>\<tau>
       show "\<not> VVV.arr \<mu>\<nu>\<tau> \<Longrightarrow> \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)] = B.null"
-        using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C \<a>_def B.\<alpha>'.is_extensional by auto
+        using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C \<a>_def B.\<alpha>'.extensionality by auto
       assume \<mu>\<nu>\<tau>: "VVV.arr \<mu>\<nu>\<tau>"
-      show "B.dom \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)] = HoHV (VVV.dom \<mu>\<nu>\<tau>)"
-        using \<mu>\<nu>\<tau> \<a>_def HoHV_def B.\<alpha>'.preserves_dom VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-              B.HoVH_def B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C
-        by auto
-      show "B.cod \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)] = HoVH (VVV.cod \<mu>\<nu>\<tau>)"
-        using \<mu>\<nu>\<tau> \<a>_def HoVH_def B.\<alpha>'.preserves_cod VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-              B.HoHV_def B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
-        by auto
+      show "B.arr \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)]"
+        by (metis (no_types, lifting) B.\<alpha>'.preserves_arr VVV_arr_char \<a>_def \<mu>\<nu>\<tau> prod.collapse)
       show "HoVH \<mu>\<nu>\<tau> \<cdot>
               \<a>[fst (VVV.dom \<mu>\<nu>\<tau>), fst (snd (VVV.dom \<mu>\<nu>\<tau>)), snd (snd (VVV.dom \<mu>\<nu>\<tau>))] =
             \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)]"
@@ -910,7 +904,7 @@ begin
           using \<mu>\<nu>\<tau> VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C
           by auto
         also have "... = B.\<alpha>' (snd (snd \<mu>\<nu>\<tau>), fst (snd \<mu>\<nu>\<tau>), fst \<mu>\<nu>\<tau>)"
-          using B.\<alpha>'.is_natural_1 VVV_arr_char \<mu>\<nu>\<tau> HoVH_char by presburger
+          using B.\<alpha>'.naturality1 VVV_arr_char \<mu>\<nu>\<tau> HoVH_char by presburger
         also have "... = \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)]"
           using \<mu>\<nu>\<tau> \<a>_def by simp
         finally show ?thesis by blast
@@ -926,7 +920,7 @@ begin
           using \<mu>\<nu>\<tau> VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
           by auto
         also have "... = B.\<alpha>' (snd (snd \<mu>\<nu>\<tau>), fst (snd \<mu>\<nu>\<tau>), fst \<mu>\<nu>\<tau>)"
-          using B.\<alpha>'.is_natural_2 VVV_arr_char \<mu>\<nu>\<tau> HoHV_char by presburger
+          using B.\<alpha>'.naturality2 VVV_arr_char \<mu>\<nu>\<tau> HoHV_char by presburger
         also have "... = \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)]"
           using \<mu>\<nu>\<tau> \<a>_def by simp
         finally show ?thesis by blast
@@ -1024,7 +1018,7 @@ begin
     interpretation \<Phi>': natural_isomorphism C'.VV.comp V\<^sub>D H\<^sub>D'oFF.map FoH\<^sub>C'.map
                                            \<open>\<lambda>f. \<Phi> (snd f, fst f)\<close>
       using C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C FF_def F'.FF_def
-            \<Phi>.is_extensional \<Phi>.is_natural_1 \<Phi>.is_natural_2
+            \<Phi>.extensionality \<Phi>.naturality1 \<Phi>.naturality2
             C.VV.dom_simp C.VV.cod_simp C'.VV.dom_simp C'.VV.cod_simp
       by unfold_locales auto
     interpretation F': pseudofunctor V\<^sub>C C'.H C'.\<a> \<i>\<^sub>C C'.src C'.trg
@@ -1226,7 +1220,7 @@ begin
       thus ?thesis
         by (metis (no_types) assms C.hcomp_simps(3) C.hseqE C.ide_dom C.src_dom C.trg_dom
             D.comp_arr_inv' D.comp_assoc cmp_components_are_iso cmp_simps(5)
-            as_nat_trans.is_natural_1)
+            as_nat_trans.naturality1)
     qed
 
     lemma preserves_adjunction_data:
@@ -1344,8 +1338,8 @@ begin
     where "cmp \<equiv> \<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>"
 
     interpretation cmp: natural_transformation B.VV.comp V\<^sub>B H\<^sub>BoII.map IoH\<^sub>B.map cmp
-      using B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp B.H.as_nat_trans.is_natural_1
-            B.H.as_nat_trans.is_natural_2 I.FF_def
+      using B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp B.H.as_nat_trans.naturality1
+            B.H.as_nat_trans.naturality2 I.FF_def
       apply unfold_locales
           apply auto
       by (meson B.hseqE B.hseq_char')+
@@ -1355,7 +1349,7 @@ begin
 
     sublocale pseudofunctor V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B map cmp
       apply unfold_locales
-      by (metis B.assoc_is_natural_2 B.assoc_naturality B.assoc_simps(1) B.comp_ide_self
+      by (metis B.assoc_naturality2 B.assoc_naturality B.assoc_simps(1) B.comp_ide_self
           B.hcomp_simps(1) B.ide_char B.ide_hcomp B.map_simp fst_conv snd_conv)
 
     lemma is_pseudofunctor:
@@ -1493,14 +1487,8 @@ begin
       assume \<mu>\<nu>: "S.VV.arr \<mu>\<nu>"
       have 1: "S.arr (fst \<mu>\<nu>) \<and> S.arr (snd \<mu>\<nu>) \<and> S.src (fst \<mu>\<nu>) = S.trg (snd \<mu>\<nu>)"
         using \<mu>\<nu> S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
-      show "B.dom (cmp \<mu>\<nu>) = HoFF.map (S.VV.dom \<mu>\<nu>)"
-        using \<mu>\<nu> FF_def S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.dom_char\<^sub>S\<^sub>b\<^sub>C S.arr_dom S.src_def S.trg_def
-              S.dom_char\<^sub>S\<^sub>b\<^sub>C S.src.preserves_dom S.trg.preserves_dom
-        apply simp
-        by (metis (no_types, lifting))
-      show "B.cod (cmp \<mu>\<nu>) = FoH.map (S.VV.cod \<mu>\<nu>)"
-        using \<mu>\<nu> 1 map_def S.hseq_char S.hcomp_def S.cod_char\<^sub>S\<^sub>b\<^sub>C S.arr_cod S.VV.cod_simp
-        by simp
+      show "B.arr (cmp \<mu>\<nu>)"
+        using \<mu>\<nu> by simp
       show "cmp (S.VV.cod \<mu>\<nu>) \<cdot>\<^sub>B HoFF.map \<mu>\<nu> = cmp \<mu>\<nu>"
         using \<mu>\<nu> 1 cmp_def S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.cod_char\<^sub>S\<^sub>b\<^sub>C FF_def S.arr_cod S.cod_simp
               S.src_def S.trg_def map_def
@@ -1732,14 +1720,12 @@ begin
         unfolding cmp_def by simp
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "B.VV.arr \<mu>\<nu>"
-      show "D.dom (cmp \<mu>\<nu>) = H\<^sub>DoGF_GF.map (B.VV.dom \<mu>\<nu>)"
-        using \<mu>\<nu> cmp_in_hom by blast
-      show "D.cod (cmp \<mu>\<nu>) = GFoH\<^sub>B.map (B.VV.cod \<mu>\<nu>)"
+      show "D.arr (cmp \<mu>\<nu>)"
         using \<mu>\<nu> cmp_in_hom by blast
       show "GFoH\<^sub>B.map \<mu>\<nu> \<cdot>\<^sub>D cmp (B.VV.dom \<mu>\<nu>) = cmp \<mu>\<nu>"
         unfolding cmp_def
         using \<mu>\<nu> B.VV.ide_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.comp_ide_arr B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C D.comp_assoc
-              as_nat_trans.is_natural_1
+              as_nat_trans.naturality1
         apply simp
         by (metis (no_types, lifting) B.H.preserves_arr B.hcomp_simps(3))
       show "cmp (B.VV.cod \<mu>\<nu>) \<cdot>\<^sub>D H\<^sub>DoGF_GF.map \<mu>\<nu> = cmp \<mu>\<nu>"
@@ -1805,7 +1791,7 @@ begin
           moreover have "G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D G (F.H\<^sub>DoFF.map \<mu>\<nu>) =
                          G (\<Phi>\<^sub>F (B.VV.cod \<mu>\<nu>) \<cdot>\<^sub>C F.H\<^sub>DoFF.map \<mu>\<nu>)"
             using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
-            by (metis (no_types, lifting) F.\<Phi>.is_natural_2 F.\<Phi>.preserves_reflects_arr
+            by (metis (no_types, lifting) F.\<Phi>.naturality2 F.\<Phi>.preserves_reflects_arr
                 G.preserves_comp calculation(1))
           ultimately show ?thesis by argo
         qed
@@ -1818,7 +1804,7 @@ begin
           have "G (F.FoH\<^sub>C.map \<mu>\<nu> \<cdot>\<^sub>C \<Phi>\<^sub>F (B.VV.dom \<mu>\<nu>)) =
                 G (F.FoH\<^sub>C.map \<mu>\<nu>) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (B.VV.dom \<mu>\<nu>))"
             using \<mu>\<nu>
-            by (metis (mono_tags, lifting) F.\<Phi>.is_natural_1 F.\<Phi>.preserves_reflects_arr
+            by (metis (mono_tags, lifting) F.\<Phi>.naturality1 F.\<Phi>.preserves_reflects_arr
                 G.preserves_comp)
           thus ?thesis
             using \<mu>\<nu> D.comp_assoc by simp
@@ -1882,13 +1868,13 @@ begin
                             (G (F (f \<star>\<^sub>B g)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using f g h fg gh D.comp_ide_arr D.comp_assoc
           by (metis B.ideD(1) B.ide_hcomp B.src_hcomp F.cmp_simps(1) F.cmp_simps(5)
-              G.as_nat_trans.is_natural_2)
+              G.as_nat_trans.naturality2)
         also have "... = G (F \<a>\<^sub>B[f, g, h]) \<cdot>\<^sub>D
                           (G (\<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h)) \<cdot>\<^sub>D
                             (G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using f g fg
           by (metis (no_types) D.comp_assoc F.cmp_simps(1) F.cmp_simps(5)
-              G.as_nat_trans.is_natural_2)
+              G.as_nat_trans.naturality2)
         also have "... = (G (F \<a>\<^sub>B[f, g, h]) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f \<star>\<^sub>B g, h))) \<cdot>\<^sub>D
                             \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h) \<cdot>\<^sub>D (G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using D.comp_assoc by simp
@@ -1921,7 +1907,7 @@ begin
           ultimately show ?thesis
             using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C G.\<Phi>.naturality
             by (metis (mono_tags, lifting) C.VV.arr_cod_iff_arr C.VV.arr_dom_iff_arr
-                G.FoH\<^sub>C.is_extensional G.H\<^sub>DoFF.is_extensional G.\<Phi>.is_extensional)
+                G.FoH\<^sub>C.extensionality G.H\<^sub>DoFF.extensionality G.\<Phi>.extensionality)
         qed
         also have "... = (G (F \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>C \<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D (G (\<Phi>\<^sub>F (f, g) \<star>\<^sub>C F h))) \<cdot>\<^sub>D
                            \<Phi>\<^sub>G (F f \<star>\<^sub>C F g, F h) \<cdot>\<^sub>D (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
@@ -2169,7 +2155,7 @@ begin
     interpretation \<Phi>: natural_transformation C'.VV.comp V\<^sub>D H\<^sub>D\<^sub>'oFF.map FoH\<^sub>C\<^sub>'.map cmp
       using C'.arr_char\<^sub>S\<^sub>b\<^sub>C C'.dom_char\<^sub>S\<^sub>b\<^sub>C C'.cod_char\<^sub>S\<^sub>b\<^sub>C C'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C'.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
             FF_def C'.inclusion C'.dom_closed C'.cod_closed C'.src_def C'.trg_def
-            C'.hcomp_def C'.hcomp_closed F.\<Phi>.is_natural_1 F.\<Phi>.is_natural_2
+            C'.hcomp_def C'.hcomp_closed F.\<Phi>.naturality1 F.\<Phi>.naturality2
             C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
       by unfold_locales auto
 
@@ -2240,7 +2226,7 @@ begin
     where "cmp \<equiv> \<Phi>"
 
     interpretation "functor" V\<^sub>C D'.comp F
-      using preserves_arr F.is_extensional D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.dom_char\<^sub>S\<^sub>b\<^sub>C D'.cod_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char
+      using preserves_arr F.extensionality D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.dom_char\<^sub>S\<^sub>b\<^sub>C D'.cod_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char
       by (unfold_locales) auto
 
     interpretation weak_arrow_of_homs V\<^sub>C src\<^sub>C trg\<^sub>C D'.comp D'.src D'.trg F
@@ -2281,20 +2267,17 @@ begin
     interpretation natural_transformation C.VV.comp D'.comp H\<^sub>D\<^sub>'oFF.map FoH\<^sub>C.map \<Phi>
     proof
       show "\<And>\<mu>\<nu>. \<not> C.VV.arr \<mu>\<nu> \<Longrightarrow> \<Phi> \<mu>\<nu> = D'.null"
-        by (simp add: F.\<Phi>.is_extensional)
+        by (simp add: F.\<Phi>.extensionality)
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "C.VV.arr \<mu>\<nu>"
       have 1: "D'.arr (\<Phi> \<mu>\<nu>)"
-        using \<mu>\<nu> D'.arr_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.is_natural_1 F.\<Phi>.components_are_iso
+        using \<mu>\<nu> D'.arr_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.naturality1 F.\<Phi>.components_are_iso
         by (metis (no_types, lifting) D.src_vcomp D.trg_vcomp FoH\<^sub>C.preserves_arr
             F.\<Phi>.preserves_reflects_arr)
-      show "D'.dom (\<Phi> \<mu>\<nu>) = H\<^sub>D\<^sub>'oFF.map (C.VV.dom \<mu>\<nu>)"
-        using 1 \<mu>\<nu> D'.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C F.FF_def FF_def D'.hcomp_def
-        by simp
-      show "D'.cod (\<Phi> \<mu>\<nu>) = FoH\<^sub>C.map (C.VV.cod \<mu>\<nu>)"
-        using 1 \<mu>\<nu> D'.cod_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def FF_def D'.hcomp_def by simp
+      show "D'.arr (\<Phi> \<mu>\<nu>)"
+        using 1 by simp
       show "D'.comp (FoH\<^sub>C.map \<mu>\<nu>) (\<Phi> (C.VV.dom \<mu>\<nu>)) = \<Phi> \<mu>\<nu>"
-        using 1 \<mu>\<nu> D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.is_natural_1
+        using 1 \<mu>\<nu> D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.naturality1
               C.VV.arr_dom D.src_vcomp D.trg_vcomp FoH\<^sub>C.preserves_arr F.\<Phi>.preserves_reflects_arr
         by (metis (mono_tags, lifting))
       show "D'.comp (\<Phi> (C.VV.cod \<mu>\<nu>)) (H\<^sub>D\<^sub>'oFF.map \<mu>\<nu>) = \<Phi> \<mu>\<nu>"
@@ -2311,7 +2294,7 @@ begin
           using \<mu>\<nu> 1 D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char D'.hseq_char C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                 C.VxV.cod_char FF_def F.FF_def D'.hcomp_char preserves_hseq
           apply simp
-          using F.\<Phi>.is_natural_2 by force
+          using F.\<Phi>.naturality2 by force
       qed
     qed
 
@@ -2353,7 +2336,7 @@ begin
           using f g h fg gh C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
           by (intro D.seqI) auto
         moreover have "D'.arr \<a>\<^sub>D[map f, map g, map h]"
-          using f g h fg gh D'.arr_char\<^sub>S\<^sub>b\<^sub>C preserves_arr by auto
+          using f g h fg gh D'.arr_char\<^sub>S\<^sub>b\<^sub>C as_nat_trans.preserves_arr by auto
         moreover have "D'.arr (map f \<star>\<^sub>D cmp (g, h))"
           using f g h fg gh
           by (metis (no_types, lifting) D'.arr_char\<^sub>S\<^sub>b\<^sub>C D.seqE D.vseq_implies_hpar(1)
@@ -2402,9 +2385,9 @@ begin
                     (D'.hcomp (F.unit a) (F.unit a))"
       proof -
         have "D'.comp (F.unit a) \<i>\<^sub>D[map\<^sub>0 a] = F.unit a \<cdot>\<^sub>D \<i>\<^sub>D[src\<^sub>D (map a)]"
-          using assms D'.comp_char D'.arr_char\<^sub>S\<^sub>b\<^sub>C
-          apply simp
-          by (metis (no_types, lifting) C.obj_simps(1-2) F.preserves_src preserves_arr)
+          using assms D'.comp_char D'.arr_char\<^sub>S\<^sub>b\<^sub>C C.obj_def D'.iso_char\<^sub>S\<^sub>b\<^sub>C
+                \<open>D'.iso (F.unit a)\<close>
+          by fastforce
         also have "... = (map \<i>\<^sub>C[a] \<cdot>\<^sub>D cmp (a, a)) \<cdot>\<^sub>D (F.unit a \<star>\<^sub>D F.unit a)"
           using assms F.unit_char(3) [of a] by auto
         also have "... = D'.comp (D'.comp (map \<i>\<^sub>C[a]) (cmp (a, a)))

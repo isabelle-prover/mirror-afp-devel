@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Difference_Bound_Matrices on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/difference_bound_matrices/</link>
+    <description>
+        Recent content in Difference_Bound_Matrices 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Tue, 08 Mar 2016 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/difference_bound_matrices/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Timed Automata</title>
+          <link>/entries/Timed_Automata.html</link>
+          <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
+          <guid>/entries/Timed_Automata.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

@@ -1,4 +1,4 @@
-section \<open>Classical instantiation of registerss\<close>
+section \<open>Classical instantiation of registers\<close>
 
 (* AXIOM INSTANTIATION (use instantiate_laws.py to generate Laws_Classical.thy)
  
@@ -136,10 +136,18 @@ lemma tensor_extensionality:
   assumes FGeq: \<open>\<And>a b. F (tensor_update a b) = G (tensor_update a b)\<close>
   shows "F = G"
 proof -
+  have aux1: \<open>(case (if a then b else c) of Some x \<Rightarrow> f x | None \<Rightarrow> g) = 
+             (if a then (case b of Some x \<Rightarrow> f x | None \<Rightarrow> g) else (case c of Some x \<Rightarrow> f x | None \<Rightarrow> g))\<close> for a b c f g
+    by simp
+  have aux2: \<open>F (\<lambda>m. if m = x then Some y else None) z = G (\<lambda>m. if m = x then Some y else None) z\<close>
+    if \<open>F (\<lambda>m. if fst m = fst x then if snd m = snd x then Some y else None else None) =
+          G (\<lambda>m. if fst m = fst x then if snd m = snd x then Some y else None else None)\<close> for x y z
+    using assms that
+    by (smt (z3) preregister_def prod.collapse)
   have \<open>F (update1 x y) = G (update1 x y)\<close> for x y
     using FGeq[of \<open>update1 (fst x) (fst y)\<close> \<open>update1 (snd x) (snd y)\<close>]
-    apply (auto intro!:ext simp: tensor_update_def[abs_def] update1_def[abs_def])
-    by (smt (z3) assms(1) assms(2) option.case(2) option.case_eq_if preregister_def prod.collapse)
+    by (auto intro!:ext simp: tensor_update_def[abs_def] update1_def[abs_def] aux1 aux2
+        cong: if_cong)
   with assms(1,2) show "F = G"
     by (rule update1_extensionality)
 qed
@@ -148,6 +156,7 @@ definition "valid_getter_setter g s \<longleftrightarrow>
   (\<forall>b. b = s (g b) b) \<and> (\<forall>a b. g (s a b) = a) \<and> (\<forall>a a' b. s a (s a' b) = s a b)"
 
 definition \<open>register_from_getter_setter g s a m = (case a (g m) of None \<Rightarrow> None | Some x \<Rightarrow> Some (s x m))\<close>
+  (* TODO for g :: \<open>'a \<Rightarrow> 'b\<close> and s :: \<open>'b \<Rightarrow> 'a \<Rightarrow> 'a\<close> *)
 definition \<open>register_apply F a = the o F (Some o a)\<close>
 definition \<open>setter F a m = register_apply F (\<lambda>_. a) m\<close> for F :: \<open>'a update \<Rightarrow> 'b update\<close>
 definition \<open>getter F m = (THE x. setter F x m = m)\<close> for F :: \<open>'a update \<Rightarrow> 'b update\<close>
@@ -187,16 +196,12 @@ lemma register_id: \<open>register id\<close>
   by (auto intro!: ext simp: option.case_eq_if register_from_getter_setter_def valid_getter_setter_def)
 
 lemma register_tensor_left: \<open>register (\<lambda>a. tensor_update a Some)\<close>
-  apply (auto simp: register_def)
-  apply (rule exI[of _ fst])
-  apply (rule exI[of _ \<open>\<lambda>x' (x,y). (x',y)\<close>])
-  by (auto intro!: ext simp add: tensor_update_def valid_getter_setter_def register_from_getter_setter_def option.case_eq_if)
+  by (auto simp: register_def intro!: exI[of _ fst] exI[of _ \<open>\<lambda>x' (x,y). (x',y)\<close>]
+      intro!: ext simp add: tensor_update_def valid_getter_setter_def register_from_getter_setter_def option.case_eq_if)
 
 lemma register_tensor_right: \<open>register (\<lambda>a. tensor_update Some a)\<close>
-  apply (auto simp: register_def)
-  apply (rule exI[of _ snd])
-  apply (rule exI[of _ \<open>\<lambda>y' (x,y). (x,y')\<close>])
-  by (auto intro!: ext simp add: tensor_update_def valid_getter_setter_def register_from_getter_setter_def option.case_eq_if)
+  by (auto simp: register_def intro!: exI[of _ snd] exI[of _ \<open>\<lambda>y' (x,y). (x,y')\<close>]
+      intro!: ext simp add: tensor_update_def valid_getter_setter_def register_from_getter_setter_def option.case_eq_if)
 
 lemma register_preregister: "preregister F" if \<open>register F\<close>
 proof -
@@ -242,8 +247,14 @@ lemma compatible_setter:
   assumes [simp]: \<open>register F\<close> \<open>register G\<close>
   assumes compat: \<open>\<And>a b. F a \<circ>\<^sub>m G b = G b \<circ>\<^sub>m F a\<close>
   shows \<open>setter F x o setter G y = setter G y o setter F x\<close>
-  using compat apply (auto intro!: ext simp: setter_def register_apply_def o_def map_comp_def)
-  by (smt (verit, best) assms(1) assms(2) option.case_eq_if option.distinct(1) register_def register_from_getter_setter_def)
+proof -
+  have *: \<open>F (\<lambda>xa. Some x) (the (G (\<lambda>x. Some y) xa)) = G (\<lambda>x. Some y) (the (F (\<lambda>xa. Some x) xa))\<close>
+    if \<open>\<And>a b. (\<lambda>k. case G b k of None \<Rightarrow> None | Some v \<Rightarrow> F a v) =
+                 (\<lambda>k. case F a k of None \<Rightarrow> None | Some v \<Rightarrow> G b v)\<close> for xa
+    using that assms by (smt (verit, best) option.case_eq_if option.distinct(1) register_def register_from_getter_setter_def)
+  then show ?thesis
+    using compat by (auto intro!: ext simp: setter_def register_apply_def o_def map_comp_def)
+qed
 
 lemma register_pair_apply:
   assumes [simp]: \<open>register F\<close> \<open>register G\<close>

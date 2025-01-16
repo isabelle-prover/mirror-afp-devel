@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Wed, 31 Jul 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 25 Nov 2024 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/fleuriot/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Deep Embedding of Intuitionistic Linear Logic</title>
+          <link>/entries/ILL.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ILL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Linear Resources and Process Compositions</title>
+          <link>/entries/ProcessComposition.html</link>
+          <pubDate>Mon, 25 Nov 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/ProcessComposition.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Lie Groups and Algebras</title>
           <link>/entries/Lie_Groups.html</link>

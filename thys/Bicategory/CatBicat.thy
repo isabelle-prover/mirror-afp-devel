@@ -735,32 +735,25 @@ begin
           show "\<not> CD_BC_AB.arr fgh \<Longrightarrow> ?A fgh = AD.null"
             using AD.null_char BD.null_char by (cases fgh, auto)
           assume fgh: "CD_BC_AB.arr fgh"
-          show "AD.dom (?A fgh) = ?L (CD_BC_AB.dom fgh)"
-            using fgh AD.dom_char AB.arr_char BC.arr_char CD.arr_char
-                  AB.dom_char BC.dom_char CD.dom_char
-            apply (cases fgh) apply simp
-            by (metis (no_types, lifting) functor_is_transformation horizontal_composite)
-          show "AD.cod (?A fgh) = ?R (CD_BC_AB.cod fgh)"
-            using fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char CD.arr_char
-                  AD.cod_char AB.arr_char BC.arr_char CD.arr_char
-                  AB.cod_char BC.cod_char CD.cod_char
+          show "AD.arr (?A fgh)"
+            using fgh AB.arr_char BC.arr_char CD.arr_char
             apply (cases fgh)
-            apply (simp add: o_assoc)
-            by (metis (no_types, lifting) functor_is_transformation horizontal_composite)
+            apply simp
+            by (metis (no_types, lifting) horizontal_composite)
           show "AD.comp (?A (CD_BC_AB.cod fgh)) (?L fgh) = ?A fgh"
           proof -
             let ?f = "fst fgh" and ?g = "fst (snd fgh)" and ?h = "snd (snd fgh)"
             have 1: "natural_transformation B D
                        (CD.Dom ?f \<circ> BC.Dom ?g) (CD.Cod ?f \<circ> BC.Cod ?g)
                        (CD.Map ?f \<circ> BC.Map ?g)"
-              using fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char CD.arr_char
+              using fgh BC.arr_char CD.arr_char
               apply (cases fgh)
               apply (simp add: o_assoc)
               by (metis (no_types, lifting) horizontal_composite)
             have 2: "natural_transformation A D (AC.Dom ?f \<circ> AC.Dom ?g \<circ> AC.Dom ?h)
                        (AC.Cod ?f \<circ> AC.Cod ?g \<circ> AC.Cod ?h)
                        (AC.Map ?f \<circ> AC.Map ?g \<circ> AC.Map ?h)"
-              using fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char
+              using fgh AB.arr_char BC.arr_char
                     CD.arr_char
               apply (cases fgh)
               apply (simp add: o_assoc)
@@ -770,10 +763,10 @@ begin
                           (AD.MkArr (CD.Dom ?f \<circ> BC.Dom ?g \<circ> AB.Dom ?h)
                                     (CD.Cod ?f \<circ> BC.Cod ?g \<circ> AB.Cod ?h)
                                     (CD.Map ?f \<circ> BC.Map ?g \<circ> AB.Map ?h))"
-              using 1 2 fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char CD.arr_char
+              using 1 2 fgh AB.arr_char
               apply (cases fgh)
               apply (simp add: o_assoc)
-              by (metis AB.cod_char BC.MkIde_Cod CD.arr.simps(2) CD.arr_cod_iff_arr)
+              by (metis AB.cod_char CD.arr.simps(2))
             also have "... = ?A fgh"
               using 2 fgh
               by (cases fgh) (simp add: o_assoc AD.comp_cod_arr)
@@ -785,14 +778,14 @@ begin
             have 1: "natural_transformation A C
                        (AC.Dom ?g \<circ> AC.Dom ?h) (AC.Cod ?g \<circ> AC.Cod ?h)
                        (AC.Map ?g \<circ> AC.Map ?h)"
-              using fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char CD.arr_char
+              using fgh AB.arr_char BC.arr_char
               apply (cases fgh)
               apply (simp add: o_assoc)
               by (metis (no_types, lifting) horizontal_composite)
             have 2: "natural_transformation A D (AC.Dom ?f \<circ> AC.Dom ?g \<circ> AC.Dom ?h)
                        (AC.Cod ?f \<circ> AC.Cod ?g \<circ> AC.Cod ?h)
                        (AC.Map ?f \<circ> AC.Map ?g \<circ> AC.Map ?h)"
-              using fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char CD.arr_char
+              using fgh AB.arr_char BC.arr_char CD.arr_char
               apply (cases fgh)
               apply (simp add: o_assoc)
               by (metis (no_types, lifting) horizontal_composite)
@@ -801,11 +794,10 @@ begin
                                     (CD.Cod ?f \<circ> BC.Cod ?g \<circ> AB.Cod ?h)
                                     (CD.Map ?f \<circ> BC.Map ?g \<circ> AB.Map ?h))
                           (AD.MkIde (CD.Dom ?f \<circ> BC.Dom ?g \<circ> AB.Dom ?h))"
-              using 1 2 fgh CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char BC.arr_char
-                    CD.arr_char
+              using 1 2 fgh CD.arr_char
               apply (cases fgh)
               apply (simp add: o_assoc)
-              by (metis AB.dom_char BC.MkIde_Dom CD.arr.simps(2) CD.arr_dom_iff_arr)
+              by (metis CD.arr_dom_iff_arr)
             also have "... = ?A fgh"
               using 2 fgh
               by (cases fgh) (simp add: o_assoc AD.comp_arr_dom)
@@ -820,12 +812,10 @@ begin
           proof -
             interpret A_abc: natural_transformation A D
                                \<open>BD.Dom (?A abc)\<close> \<open>BD.Cod (?A abc)\<close> \<open>BD.Map (?A abc)\<close>
-              using abc CD_BC_AB.ideD(1) CD_BC_AB.arr_char BC_AB.arr_char AB.arr_char
-                    BC.arr_char CD.arr_char
+              using abc
               apply (cases abc)
               apply (simp add: o_assoc)
-              by (metis AB.null_char BC.null_char CD.null_char functor_is_transformation
-                  horizontal_composite)
+              by (metis functor_is_transformation horizontal_composite)
             interpret A_abc: natural_isomorphism A D
                                \<open>BD.Dom (?A abc)\<close> \<open>BD.Cod (?A abc)\<close> \<open>BD.Map (?A abc)\<close>
             proof -
@@ -877,7 +867,7 @@ begin
                       then COMP B B A (ID B) f
                       else partial_magma.null (HOM A B)"
         have "?L = AB.map"
-          using AB.arr_char B.functor_axioms AB.MkArr_Map AB.is_extensional by force
+          using AB.arr_char B.functor_axioms AB.MkArr_Map AB.extensionality by force
         thus "fully_faithful_functor AB.comp AB.comp ?L"
           by (simp add: AB.is_fully_faithful)
       qed
@@ -901,7 +891,7 @@ begin
         proof
           fix f
           have "\<not> AB.arr f \<Longrightarrow> ?R f = AB.map f"
-            using AB.is_extensional by simp
+            using AB.extensionality by simp
           moreover have "AB.arr f \<Longrightarrow> ?R f = AB.map f"
           proof -
             assume f: "AB.arr f"

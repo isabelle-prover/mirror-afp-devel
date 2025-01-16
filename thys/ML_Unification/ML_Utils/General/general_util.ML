@@ -6,15 +6,20 @@ General ML utilities.
 signature GENERAL_UTIL =
 sig
   val flip : ('a -> 'b -> 'c) -> 'b -> 'a -> 'c
-
-  val find_first_index : ('a -> bool) -> 'a list -> (int * 'a) option
-  val find_indices : ('a -> bool) -> 'a list -> int list
+  val fun_update : ('a -> bool) -> 'b -> ('a -> 'b) -> 'a -> 'b
 
   (*returns false if function throws an exception*)
   val try_bool : ('a -> bool) -> 'a -> bool
 
   (*lists*)
+  val find_first_index : ('a -> bool) -> 'a list -> (int * 'a) option
+  val find_indices : ('a -> bool) -> 'a list -> int list
+
   val fold_rev_index: (int * 'a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+
+  (*integers*)
+  val succ : int -> int
+  val pred : int -> int
 
   (* sequences *)
   (*raises exception if sequence is empty and returns the sequence otherwise*)
@@ -28,7 +33,11 @@ structure General_Util : GENERAL_UTIL =
 struct
 
 fun flip f x y = f y x
+fun fun_update p y f x = if p x then y else f x
 
+fun try_bool f = try f #> (Option.getOpt o rpair false)
+
+(*lists*)
 fun find_first_index p = get_index (Option.filter p)
 
 fun find_indices p =
@@ -37,13 +46,14 @@ fun find_indices p =
       | find_indices i (x :: xs) = (p x ? cons i) (find_indices (i + 1) xs)
   in find_indices 0 end
 
-fun try_bool f = try f #> (Option.getOpt o rpair false)
-
-(*lists*)
 fun fold_rev_index f =
   let fun fold_aux _ [] y = y
         | fold_aux i (x :: xs) y = f (i, x) (fold_aux (i + 1) xs y)
   in fold_aux 0 end
+
+(*integers*)
+fun succ x = x + 1
+fun pred x = x - 1
 
 (* sequences *)
 fun seq_is_empty sq = case Seq.pull sq of

@@ -1,0 +1,41 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+\usepackage[english]{babel}  % for guillemots
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{A Generalization of the Cauchy--Davenport Theorem}
+\author{Mantas Bak\v{s}ys \\
+University of Cambridge\\
+\texttt{mb2412@cam.ac.uk}}
+
+\maketitle
+                                                             
+\begin{abstract}
+The Cauchy--Davenport theorem is a fundamental result in additive combinatorics.
+It was originally independently discovered by Cauchy \cite{cauchy1812recherches} and Davenport \cite{davenport} and has been formalized in the AFP entry \cite{Kneser_Cauchy_Davenport-AFP} as a corollary of Kneser's theorem.
+More recently, many generalizations of this theorem have been found. In this entry, we formalise a generalization due to DeVos \cite{DeVos2016OnAG}, which proves the theorem in a non-abelian setting.
+\end{abstract}
+\newpage
+\tableofcontents
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+
+\end{document}

@@ -993,7 +993,7 @@ begin
     sublocale inverse_functors UC.comp C toUC frmUC
     proof
       show "frmUC \<circ> toUC = map"
-        using is_extensional comp_arr_dom comp_assoc Uncurry_Curry by auto
+        using extensionality comp_arr_dom comp_assoc Uncurry_Curry by auto
       interpret to_frm: composite_functor UC.comp C UC.comp frmUC toUC ..
       show "toUC \<circ> frmUC = UC.map"
       proof
@@ -1001,7 +1001,7 @@ begin
         show "(toUC \<circ> frmUC) f = UC.map f"
         proof (cases "UC.arr f")
           show "\<not> UC.arr f \<Longrightarrow> ?thesis"
-            using UC.is_extensional by auto
+            using UC.extensionality by auto
           assume f: "UC.arr f"
           show ?thesis
           proof (intro UC.arr_eqI)
@@ -1593,8 +1593,8 @@ begin
       ..
 
     sublocale inverse_functors UC.Op.comp Op\<^sub>0.comp toUCOp toOp\<^sub>0
-      using Op\<^sub>0.MkArr_Map toUCOp.preserves_reflects_arr Op\<^sub>0.is_extensional
-            UC.MkArr_Map toOp\<^sub>0.preserves_reflects_arr UC.Op.is_extensional
+      using Op\<^sub>0.MkArr_Map toUCOp.preserves_reflects_arr Op\<^sub>0.extensionality
+            UC.MkArr_Map toOp\<^sub>0.preserves_reflects_arr UC.Op.extensionality
       by unfold_locales auto
 
     lemma inverse_functors_toUCOp_toOp\<^sub>0:

@@ -62,7 +62,7 @@ structure UCB = Unification_Combinator
 structure UB = Unification_Base
 structure FIU = Functor_Instance_Util(A.FIA)
 
-val logger = Logger.setup_new_logger Unification_Base.logger FIU.FIA.full_name
+val logger = Logger.setup_new_logger Unification_Base.logger FIU.base_name
 
 @{parse_entries (struct) PA
   [add, del]}

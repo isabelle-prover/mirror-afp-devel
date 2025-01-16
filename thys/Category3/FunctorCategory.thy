@@ -352,17 +352,17 @@ begin
       show ?thesis
       proof -
         interpret F_dom_f1: "functor" A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close>
-          using f1 \<tau>.F.is_extensional apply (unfold_locales, simp_all)
+          using f1 \<tau>.F.extensionality apply (unfold_locales, simp_all)
           by (metis A1.arr_dom A1.comp_arr_dom A1.dom_dom A1xA2.comp_simp A1xA2.seqI\<^sub>P\<^sub>C
               \<tau>.F.as_nat_trans.preserves_comp_2 fst_conv snd_conv)
         interpret G_cod_f1: "functor" A2 B \<open>\<lambda>f2. G (A1.cod f1, f2)\<close>
-          using f1 \<tau>.G.is_extensional A1.arr_cod_iff_arr
+          using f1 \<tau>.G.extensionality A1.arr_cod_iff_arr
           apply (unfold_locales, simp_all)
           by (metis A1.comp_arr_dom A1.dom_cod A1xA2.comp_simp A1xA2.seqI\<^sub>P\<^sub>C
               \<tau>.G.preserves_comp fst_conv snd_conv)
         have "natural_transformation A2 B (\<lambda>f2. F (A1.dom f1, f2)) (\<lambda>f2. G (A1.cod f1, f2))
                                           (\<lambda>f2. \<tau> (f1, f2))"
-          using f1 \<tau>.is_extensional apply (unfold_locales, simp_all)
+          using f1 \<tau>.extensionality apply (unfold_locales, simp_all)
         proof -
           fix f2
           assume f2: "A2.arr f2"
@@ -408,9 +408,7 @@ begin
           using curry_def by simp
         fix f1
         assume f1: "A1.arr f1"
-        show "A2_B.dom (curry F G \<tau> f1) = curry F F F (A1.dom f1)"
-          using assms f1 curry_in_hom by blast
-        show "A2_B.cod (curry F G \<tau> f1) = curry G G G (A1.cod f1)"
+        show "A2_B.arr (curry F G \<tau> f1)"
           using assms f1 curry_in_hom by blast
         show "curry G G G f1 \<cdot>\<^sub>[\<^sub>A\<^sub>2,\<^sub>B\<^sub>] curry F G \<tau> (A1.dom f1) = curry F G \<tau> f1"
         proof -
@@ -443,7 +441,7 @@ begin
             proof
               fix f2
               have "\<not>A2.arr f2 \<Longrightarrow> G_f1o\<tau>_dom_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2"
-                using f1 G_f1o\<tau>_dom_f1.is_extensional \<tau>.is_extensional by simp
+                using f1 G_f1o\<tau>_dom_f1.extensionality \<tau>.extensionality by simp
               moreover have "A2.arr f2 \<Longrightarrow> G_f1o\<tau>_dom_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2"
               proof -
                 interpret \<tau>_f1: natural_transformation A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close>
@@ -452,7 +450,7 @@ begin
                 fix f2
                 assume f2: "A2.arr f2"
                 show "G_f1o\<tau>_dom_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2"
-                  using f1 f2 G_f1o\<tau>_dom_f1.map_simp_2 B.comp_assoc \<tau>.is_natural_1
+                  using f1 f2 G_f1o\<tau>_dom_f1.map_simp_2 B.comp_assoc \<tau>.naturality1
                   by fastforce
               qed
               ultimately show "G_f1o\<tau>_dom_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2" by blast
@@ -502,7 +500,7 @@ begin
             proof
               fix f2
               have "\<not>A2.arr f2 \<Longrightarrow> \<tau>_cod_f1oF_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2"
-                using f1 by (simp add: \<tau>.is_extensional \<tau>_cod_f1oF_f1.is_extensional)
+                using f1 by (simp add: \<tau>.extensionality \<tau>_cod_f1oF_f1.extensionality)
               moreover have "A2.arr f2 \<Longrightarrow> \<tau>_cod_f1oF_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2"
               proof -
                 interpret \<tau>_f1: natural_transformation A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close>
@@ -511,7 +509,7 @@ begin
                 fix f2
                 assume f2: "A2.arr f2"
                 show "\<tau>_cod_f1oF_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2"
-                  using f1 f2 \<tau>_cod_f1oF_f1.map_simp_1 B.comp_assoc \<tau>.is_natural_2
+                  using f1 f2 \<tau>_cod_f1oF_f1.map_simp_1 B.comp_assoc \<tau>.naturality2
                   by fastforce
               qed
               ultimately show "\<tau>_cod_f1oF_f1.map f2 = (\<lambda>f2. \<tau> (f1, f2)) f2" by blast
@@ -584,12 +582,10 @@ begin
         assume f: "A1xA2.arr f"
         let ?f1 = "fst f"
         let ?f2 = "snd f"
-        show "B.dom (uncurry \<tau> f) = uncurry F (A1xA2.dom f)"
-          using f uncurry_def by simp
-        show "B.cod (uncurry \<tau> f) = uncurry G (A1xA2.cod f)"
+        show "B.arr (uncurry \<tau> f)"
           using f uncurry_def by simp
         show "uncurry G f \<cdot>\<^sub>B uncurry \<tau> (A1xA2.dom f) = uncurry \<tau> f"
-          using f uncurry_def \<tau>.is_natural_1 A2_BxA2.seq_char A2.comp_arr_dom
+          using f uncurry_def \<tau>.naturality1 A2_BxA2.seq_char A2.comp_arr_dom
                 E.preserves_comp [of "(G (fst f), snd f)" "(\<tau> (A1.dom (fst f)), A2.dom (snd f))"]
           by auto
         show "uncurry \<tau> (A1xA2.cod f) \<cdot>\<^sub>B uncurry F f = uncurry \<tau> f"
@@ -606,7 +602,7 @@ begin
             unfolding uncurry_def E.map_def
             using f 1 2
             apply simp
-            by (metis (no_types, lifting) A2_B.Map_comp \<open>A2_B.arr (\<tau> (fst f))\<close> \<tau>.is_natural_2)
+            by (metis (no_types, lifting) A2_B.Map_comp \<open>A2_B.arr (\<tau> (fst f))\<close> \<tau>.naturality2)
 
         qed
       qed
@@ -622,7 +618,7 @@ begin
         using assms curry_preserves_transformations by auto
       fix f
       have "\<not>A1xA2.arr f \<Longrightarrow> uncurry (curry F G \<tau>) f = \<tau> f"
-        using curry_def uncurry_def \<tau>.is_extensional by auto
+        using curry_def uncurry_def \<tau>.extensionality by auto
       moreover have "A1xA2.arr f \<Longrightarrow> uncurry (curry F G \<tau>) f = \<tau> f"
       proof -
         assume f: "A1xA2.arr f"
@@ -649,7 +645,7 @@ begin
         using G.functor_axioms uncurry_preserves_functors by auto
       fix f1
       have "\<not>A1.arr f1 \<Longrightarrow> curry (uncurry F) (uncurry G) (uncurry \<tau>) f1 = \<tau> f1"
-        using curry_def uncurry_def \<tau>.is_extensional by simp
+        using curry_def uncurry_def \<tau>.extensionality by simp
       moreover have "A1.arr f1 \<Longrightarrow> curry (uncurry F) (uncurry G) (uncurry \<tau>) f1 = \<tau> f1"
       proof -
         assume f1: "A1.arr f1"
@@ -666,7 +662,7 @@ begin
                                     (\<lambda>f2. E.map (\<tau> f1, f2))"
         proof -
           have "(\<lambda>f2. uncurry \<tau> (f1, f2)) = (\<lambda>f2. E.map (\<tau> f1, f2))"
-            using f1 uncurry_def E.is_extensional by auto
+            using f1 uncurry_def E.extensionality by auto
           thus ?thesis by simp
         qed
         also have "... = \<tau> f1"
@@ -683,7 +679,7 @@ begin
               interpret F_dom_f1: "functor" A2 B \<open>A2_B.Map (F (A1.dom f1))\<close>
                 using f1 A2_B.ide_char F.preserves_ide by simp
               show "A2_B.Map (F (A1.dom f1)) f2 = uncurry F (A1.dom f1, f2)"
-                using f1 uncurry_def E.map_simp F_dom_f1.is_extensional by auto
+                using f1 uncurry_def E.map_simp F_dom_f1.extensionality by auto
             qed
             finally show ?thesis by auto
           qed
@@ -699,7 +695,7 @@ begin
               interpret G_cod_f1: "functor" A2 B \<open>A2_B.Map (G (A1.cod f1))\<close>
                 using f1 A2_B.ide_char G.preserves_ide by simp
               show "A2_B.Map (G (A1.cod f1)) f2 = uncurry G (A1.cod f1, f2)"
-                using f1 uncurry_def E.map_simp G_cod_f1.is_extensional by auto
+                using f1 uncurry_def E.map_simp G_cod_f1.extensionality by auto
             qed
             finally show ?thesis by auto
           qed
@@ -707,7 +703,7 @@ begin
           proof
             fix f2
             have "\<not>A2.arr f2 \<Longrightarrow> A2_B.Map (\<tau> f1) f2 = (\<lambda>f2. E.map (\<tau> f1, f2)) f2"
-              using f1 A2_B.arrE \<tau>.preserves_reflects_arr natural_transformation.is_extensional
+              using f1 A2_B.arrE \<tau>.preserves_reflects_arr natural_transformation.extensionality
               by (metis (no_types, lifting) E.fixing_arr_gives_natural_transformation_1)
             moreover have "A2.arr f2 \<Longrightarrow> A2_B.Map (\<tau> f1) f2 = (\<lambda>f2. E.map (\<tau> f1, f2)) f2"
               using f1 E.map_simp by fastforce

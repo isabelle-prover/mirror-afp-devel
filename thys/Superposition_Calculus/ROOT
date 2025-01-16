@@ -10,12 +10,12 @@ session Superposition_Calculus = Saturation_Framework_Extensions +
     Saturation_Framework
     Saturation_Framework_Extensions
   theories
-    First_Order_Superposition_Completeness
-    First_Order_Superposition_Example
-    First_Order_Superposition_Soundness
     Ground_Superposition_Completeness
     Ground_Superposition_Soundness
     Ground_Superposition_Welltypedness_Preservation
+    Superposition_Completeness
+    Superposition_Soundness
+    Superposition_Example
   document_files
     "root.bib"
     "root.tex"

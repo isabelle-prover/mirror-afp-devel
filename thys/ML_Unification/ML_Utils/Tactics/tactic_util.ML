@@ -102,8 +102,8 @@ fun TRY' tac =  tac ORELSE' K all_tac
 fun EVERY_ARG tac = EVERY o map tac
 fun EVERY_ARG' tac = EVERY' o map tac
 
-fun CONCAT tacs = fold_rev (curry op APPEND) tacs no_tac
-fun CONCAT' tacs = fold_rev (curry op APPEND') tacs (K no_tac)
+fun CONCAT tacs = fold_rev (curry (op APPEND)) tacs no_tac
+fun CONCAT' tacs = fold_rev (curry (op APPEND')) tacs (K no_tac)
 
 fun FOCUS_PARAMS' tac = Subgoal.FOCUS_PARAMS (HEADGOAL o tac)
 fun FOCUS_PARAMS_FIXED' tac = Subgoal.FOCUS_PARAMS_FIXED (HEADGOAL o tac)

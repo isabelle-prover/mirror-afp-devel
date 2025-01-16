@@ -364,7 +364,7 @@ begin
             using left_adjoint_functor_respects_naturally_isomorphic by auto
         qed
         show "\<And>f. \<not> arr f \<Longrightarrow> some_prod f b = null"
-          using is_extensional by blast
+          using extensionality by blast
         show "\<And>g f. seq g f \<Longrightarrow> some_prod (g \<cdot> f) b = some_prod g b \<cdot> some_prod f b"
           by simp
         show "\<And>y. ide y \<Longrightarrow> \<exists>x e. terminal_arrow_from_functor (\<cdot>) (\<cdot>) (\<lambda>x. some_prod x b) x y e"

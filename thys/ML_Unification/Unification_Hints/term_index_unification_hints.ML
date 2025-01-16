@@ -222,7 +222,7 @@ structure TI = A.TI
 structure MCU = ML_Code_Util
 structure PU = Parse_Util
 
-val logger = Logger.setup_new_logger Unification_Hints_Base.logger FIU.FIA.full_name
+val logger = Logger.setup_new_logger Unification_Hints_Base.logger FIU.base_name
 
 @{functor_instance struct_name = UH
   and functor_name = Unification_Hints
