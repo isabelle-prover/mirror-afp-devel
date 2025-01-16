@@ -126,7 +126,9 @@ qed
 lemma mp_mset_in_pat_mset: "mp \<in># pp \<Longrightarrow> mp_mset mp \<in> pat_mset pp"
   by auto
 
-lemma pat_fail_or_trans_or_finite_var_form: assumes "improved \<Longrightarrow> infinite (UNIV :: 'v set)" 
+lemma pat_fail_or_trans_or_finite_var_form:
+  fixes p :: "('f,'v,'s) pat_problem_mset"
+  assumes "improved \<Longrightarrow> infinite (UNIV :: 'v set)" 
   shows "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> (improved \<and> finite_var_form_pp (pat_mset p))" 
 proof (cases "p = {#}")
   case True
@@ -327,7 +329,7 @@ next
                 note get_var = wfvf[THEN conjunct1, rule_format]
                 note fun_case = wfvf[THEN conjunct2, rule_format]
                 (* fin-predicate: all variables in mp are of finite sort *)
-                define fin where "fin mp = Ball (tvars_mp (mp_mset mp)) (\<lambda> x. \<not> inf_sort (snd x))" for mp
+                define fin where "fin mp = Ball (tvars_mp (mp_mset mp)) (\<lambda> x. \<not> inf_sort (snd x))" for mp :: "('f,'v,'s) match_problem_mset"
                 define p_fin where "p_fin = filter_mset fin p" 
                 define p_inf where "p_inf = filter_mset (Not o fin) p" 
                 have p_split: "p = p_inf + p_fin" unfolding p_fin_def p_inf_def by auto
@@ -450,12 +452,13 @@ context
     and inf: "infinite (UNIV :: 'v set)" 
 begin
   
-lemma pat_fail_or_trans_or_fvf: "pat_fail p \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> finite_var_form_pp (pat_mset p)" 
+lemma pat_fail_or_trans_or_fvf:
+  "pat_fail (p::('f,'v,'s) pat_problem_mset) \<or> (\<exists> ps. p \<Rightarrow>\<^sub>m ps) \<or> finite_var_form_pp (pat_mset p)"
   using pat_fail_or_trans_or_finite_var_form[of p, OF inf] by auto
 
 text \<open>Normal forms only consist of finite-var-form pattern problems\<close>
 theorem P_step_NF_fvf: 
-  assumes NF: "P \<in> NF \<Rrightarrow>" 
+  assumes NF: "(P::('f,'v,'s) pats_problem_mset) \<in> NF \<Rrightarrow>" 
     and p: "p \<in># P"
   shows "finite_var_form_pp (pat_mset p)"  
 proof (rule ccontr)
@@ -620,8 +623,9 @@ proof -
   show ?thesis unfolding meas_def rel_pat_def by auto
 qed
 
-lemma rel_mp_mp_step_mset: 
-  assumes "mp \<rightarrow>\<^sub>m mp'" 
+lemma rel_mp_mp_step_mset:
+  fixes mp :: "('f,'v,'s) match_problem_mset"
+  assumes "mp \<rightarrow>\<^sub>m mp'"
   shows "{#mp#} \<succ> {#mp'#}"  
   using assms
 proof cases
@@ -706,7 +710,7 @@ next
 next
   case *: (match_duplicate pair mp)
   show ?thesis unfolding *
-    by (rule rel_mp_sub)  
+    by (rule rel_mp_sub)
 qed
 
 lemma sum_ms_image: "sum_ms f (image_mset g ms) = sum_ms (f o g) ms"
@@ -986,7 +990,8 @@ proof -
     using rel_P_trans unfolding P_step_def by auto
   show ?thesis
     apply (rule SN_subset[OF _ sub])
-    using wf_rel_pats by (simp add: wf_imp_SN)
+    apply (rule wf_imp_SN)
+    using wf_rel_pats by simp
 qed
 
 subsection \<open>Partial Correctness via Refinement\<close>
@@ -1116,6 +1121,7 @@ proof -
 qed
 
 theorem P_step_improved:
+  fixes P :: "('f,'v,'s) pats_problem_mset"
   assumes improved 
     and inf: "infinite (UNIV :: 'v set)" 
     and wf: "wf_pats (pats_mset P)" and NF: "(P,Q) \<in> \<Rrightarrow>\<^sup>!"

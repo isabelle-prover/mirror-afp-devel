@@ -43,7 +43,6 @@ theorem decide_pat_complete_lhss:
   assumes "decide_pat_complete_lhss C D lhss = return b" 
   shows "b = pat_complete_lhss (map_of C) (map_of D) (set lhss)" 
 proof -
-  let ?EMPTY = "pattern_completeness_context.EMPTY"
   let ?C = "map_of C"
   let ?D = "map_of D"
   define S where "S = sorts_of_ssig_list C"
@@ -108,7 +107,7 @@ proof -
       from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
       hence pat: "pat \<in> set pats" unfolding pat_def pats_def by force
       define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
-        (SOME t. t : s in \<T>(?C,?EMPTY)))" for x
+        (SOME t. t : s in \<T>(?C,\<emptyset>)))" for x
       have id: "Fun f ts = pat \<cdot> \<sigma>" unfolding pat_def using len
         by (auto intro!: nth_equalityI simp: \<sigma>_def)
       have ssigma: "\<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>)" 
@@ -117,7 +116,7 @@ proof -
         assume "x : \<iota> in tvars"
         then have "\<iota> = snd x" and s: "\<iota> \<in> set S" by auto
         then obtain i where x: "x = (i,\<iota>)" by (cases x, auto)
-        show "\<sigma> x : \<iota> in \<T>(?C,?EMPTY)" 
+        show "\<sigma> x : \<iota> in \<T>(?C,\<emptyset>)" 
         proof (cases "i < length ss \<and> \<iota> = ss ! i")
           case True
           hence id: "\<sigma> x = ts ! i" unfolding x \<sigma>_def by auto
@@ -125,10 +124,10 @@ proof -
             by (auto simp add: list_all2_conv_all_nth)
         next
           case False
-          hence id: "\<sigma> x = (SOME t. t : \<iota> in \<T>(?C,?EMPTY))" unfolding x \<sigma>_def by auto
+          hence id: "\<sigma> x = (SOME t. t : \<iota> in \<T>(?C,\<emptyset>))" unfolding x \<sigma>_def by auto
           from decide_nonempty_sorts(1)[OF dist(1) refl dec] s
-          have "\<exists> t. t : \<iota> in \<T>(?C,?EMPTY)" by auto
-          from someI_ex[OF this] have "\<sigma> x : \<iota> in \<T>(?C,?EMPTY)" unfolding id .
+          have "\<exists> t. t : \<iota> in \<T>(?C,\<emptyset>)" by auto
+          from someI_ex[OF this] have "\<sigma> x : \<iota> in \<T>(?C,\<emptyset>)" unfolding id .
           thus ?thesis unfolding x by auto
         qed
       qed

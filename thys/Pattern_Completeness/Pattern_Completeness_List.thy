@@ -947,8 +947,8 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   shows "pat_complete_impl P = pats_complete (pat_list ` set P)" 
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
-  have S: "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTY)"
-    "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTYn)" by auto
+  have S: "\<And> \<sigma>. \<sigma> \<in> S \<Longrightarrow> \<not>empty_sort \<sigma>"
+    "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTYn)" by (auto dest: not_empty_sort)
   {
     fix f ss s
     assume "f : ss \<rightarrow> s in C"
