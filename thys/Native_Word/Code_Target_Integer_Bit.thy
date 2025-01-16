@@ -40,6 +40,10 @@ proof (transfer fixing: n)
     by simp
 qed
 
+private lemma [simp]:
+  \<open>- 1 div 2 = (- 1 :: integer)\<close>
+  by (rule bit_eqI) (simp add: bit_simps flip: bit_Suc)
+
 end
 
 
@@ -62,84 +66,6 @@ text \<open>
   For normalisation by evaluation, we derive custom code equations, because NBE
   does not know these code\_printing serialisations and would otherwise loop.
 \<close>
-
-context
-  includes integer.lifting and bit_operations_syntax
-begin
-
-private lemma [simp]:
-  \<open>- 1 div 2 = (- 1 :: integer)\<close>
-  by (rule bit_eqI) (simp add: bit_simps flip: bit_Suc)
-
-lemma and_integer_code [code]:
-  \<open>x AND y =
-   (if x = 0 then 0
-    else if x = - 1 then y
-    else (x mod 2) * (y mod 2) + push_bit 1 (drop_bit 1 x AND drop_bit 1 y))\<close>
-  for x y :: integer
-proof -
-  from and_rec [of x y]
-  have \<open>x AND y = (x mod 2) * (y mod 2) + push_bit 1 (drop_bit 1 x AND drop_bit 1 y)\<close>
-    by (simp del: push_bit_and add: odd_iff_mod_2_eq_one drop_bit_Suc)
-  then show ?thesis
-    by auto
-qed
-
-lemma or_integer_code [code]:
-  \<open>x OR y =
-   (if x = 0 then y
-    else if x = - 1 then - 1
-    else max (x mod 2) (y mod 2) + push_bit 1 (drop_bit 1 x OR drop_bit 1 y))\<close>
-  for x y :: integer
-proof -
-  from or_rec [of x y]
-  have \<open>x OR y = max (x mod 2) (y mod 2) + push_bit 1 (drop_bit 1 x OR drop_bit 1 y)\<close>
-    by (simp del: push_bit_or add: odd_iff_mod_2_eq_one drop_bit_Suc)
-  then show ?thesis
-    by auto
-qed
-
-lemma xor_integer_code [code]:
-  \<open>x XOR y =
-   (if x = 0 then y
-    else if x = - 1 then NOT y
-    else \<bar>x mod 2 - y mod 2\<bar> + push_bit 1 (drop_bit 1 x XOR drop_bit 1 y))\<close>
-  for x y :: integer
-proof -
-  from xor_rec [of x y]
-  have \<open>x XOR y = \<bar>x mod 2 - y mod 2\<bar> + push_bit 1 (drop_bit 1 x XOR drop_bit 1 y)\<close>
-    by (simp del: push_bit_xor add: odd_iff_mod_2_eq_one drop_bit_Suc) auto
-  then show ?thesis
-    by auto
-qed
-
-end
-
-code_printing
-  constant "Bit_Operations.and :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
-  (SML) "IntInf.andb ((_),/ (_))" and
-  (OCaml) "Z.logand" and
-  (Haskell) "((Data'_Bits..&.) :: Integer -> Integer -> Integer)" and
-  (Haskell_Quickcheck) "((Data'_Bits..&.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (Scala) infixl 3 "&"
-| constant "Bit_Operations.or :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
-  (SML) "IntInf.orb ((_),/ (_))" and
-  (OCaml) "Z.logor" and
-  (Haskell) "((Data'_Bits..|.) :: Integer -> Integer -> Integer)" and
-  (Haskell_Quickcheck) "((Data'_Bits..|.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (Scala) infixl 1 "|"
-| constant "Bit_Operations.xor :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
-  (SML) "IntInf.xorb ((_),/ (_))" and
-  (OCaml) "Z.logxor" and
-  (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
-  (Haskell_Quickcheck) "(Data'_Bits.xor :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (Scala) infixl 2 "^"
-| constant "Bit_Operations.not :: integer \<Rightarrow> integer" \<rightharpoonup>
-  (SML) "IntInf.notb" and
-  (OCaml) "Z.lognot" and
-  (Haskell) "(Data'_Bits.complement :: Integer -> Integer)" and
-  (Haskell_Quickcheck) "(Data'_Bits.complement :: Prelude.Int -> Prelude.Int)" and
-  (Scala) "_.unary'_~"
 
 code_printing code_module Integer_Bit \<rightharpoonup> (SML)
 \<open>structure Integer_Bit : sig
@@ -266,7 +192,6 @@ lemma shiftl_integer_code [code]:
 
 definition integer_shiftr :: \<open>integer \<Rightarrow> integer \<Rightarrow> integer\<close>
   where \<open>integer_shiftr x n = (if n < 0 then undefined x n else drop_bit (nat_of_integer n) x)\<close>
-
 
 context
   includes integer.lifting
