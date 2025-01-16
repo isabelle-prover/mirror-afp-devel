@@ -37,16 +37,16 @@ definition decide_pat_complete_lhss ::
     let P = [[[(pat,lhs)]. lhs \<leftarrow> lhss]. pat \<leftarrow> pats];
     return (decide_pat_complete C P)
   }" 
-
-theorem decide_pat_complete_lhss: 
-  assumes "decide_pat_complete_lhss C D (lhss :: ('f,'v)term list) = return b" 
+thm pattern_completeness_context.pat_complete_def
+theorem decide_pat_complete_lhss:
+  fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
+  assumes "decide_pat_complete_lhss C D lhss = return b" 
   shows "b = pat_complete_lhss (map_of C) (map_of D) (set lhss)" 
 proof -
-  let ?EMPTY = "pattern_completeness_context.EMPTY" 
-  let ?cg_subst = "pattern_completeness_context.cg_subst" 
   let ?C = "map_of C"
-  let ?D = "map_of D" 
-  define S where "S = sorts_of_ssig_list C" 
+  let ?D = "map_of D"
+  define S where "S = sorts_of_ssig_list C"
+  interpret pattern_completeness_context "set S" "map_of C".
   define pats where "pats = map (\<lambda> ((f,ss),s). Fun f (map Var (zip [0..<length ss] ss))) D" 
   define P where "P = map (\<lambda> pat. map (\<lambda> lhs. [(pat,lhs)]) lhss) pats" 
   let ?match_lhs = "\<lambda>t. \<exists>l \<in> set lhss. l matches t" 
@@ -56,7 +56,7 @@ proof -
   note ass = ass[unfolded dec, simplified]
   from ass have b: "b = decide_pat_complete C P" and dist: "distinct (map fst C)" "distinct (map fst D)" by auto
   have "b = decide_pat_complete C P" by fact
-  also have "\<dots> = pats_complete (set S) ?C (pat_list ` set P)" 
+  also have "\<dots> = pats_complete (pat_list ` set P)" 
   proof (rule decide_pat_complete[OF refl dist(1) dec[unfolded S_def]], unfold S_def[symmetric])
     {
       fix i si f ss s
@@ -69,16 +69,17 @@ proof -
   qed simp
   also have "pat_list ` set P = { { {(pat,lhs)} | lhs. lhs \<in> set lhss} | pat. pat \<in> set pats}" 
     unfolding pat_list_def P_def by (auto simp: image_comp)
-  also have "pats_complete (set S) ?C \<dots> \<longleftrightarrow>
-     Ball { pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> ?cg_subst (set S) ?C \<sigma>} ?match_lhs" (is "_ = Ball ?L _")
-    unfolding pattern_completeness_context.pat_complete_def 
-      pattern_completeness_context.match_complete_wrt_def matches_def 
-    by auto (smt (verit, best) case_prod_conv mem_Collect_eq singletonI, blast)
+  also have "pats_complete \<dots> \<longleftrightarrow>
+     Ball { pat \<cdot> \<sigma> | pat \<sigma>. pat \<in> set pats \<and> \<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>)} ?match_lhs" (is "_ = Ball ?L _")
+    apply (unfold pat_complete_def match_complete_wrt_def matches_def)
+    apply (auto split: prod.splits)
+     apply (smt (z3) mem_Collect_eq singletonI)
+    by blast
   also have "?L = \<B>(?C,?D,\<emptyset>)" (is "_ = ?R")
   proof 
     {
-      fix pat and \<sigma> :: "('f,_,'v)gsubst" 
-      assume pat: "pat \<in> set pats" and subst: "?cg_subst (set S) ?C \<sigma>"
+      fix pat and \<sigma> :: "('f,nat\<times>'s,'v)gsubst"
+      assume pat: "pat \<in> set pats" and subst: "\<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>)"
       from pat[unfolded pats_def] obtain f ss s where pat: "pat = Fun f (map Var (zip [0..<length ss] ss))" 
         and inDs: "((f,ss),s) \<in> set D" by auto
       from dist(2) inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
@@ -87,8 +88,9 @@ proof -
         assume i: "i < length ss" 
         hence "ss ! i \<in> set ss" by auto
         with inDs ass have "ss ! i \<in> set S" by auto
-        with subst have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C,\<emptyset>)" unfolding pattern_completeness_context.cg_subst_def 
-            pattern_completeness_context.EMPTY_def by auto
+        then
+        have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C,\<emptyset>)"
+          by (auto intro!: sorted_mapD[OF subst] simp: hastype_restrict)
       } note ssigma = this
       define ts where "ts = (map (\<lambda> i. \<sigma> (i, ss ! i)) [0..<length ss])" 
       have ts: "ts :\<^sub>l ss in \<T>(?C,\<emptyset>)" unfolding list_all2_conv_all_nth ts_def using ssigma by auto
@@ -96,7 +98,7 @@ proof -
         unfolding pat ts_def by (auto intro: nth_equalityI)
       from pat f ts have "pat \<cdot> \<sigma> \<in> ?R" unfolding basic_terms_def by auto
     }
-    thus "?L \<subseteq> ?R" by blast
+    thus "?L \<subseteq> ?R" by auto
     {
       fix f ss s and ts :: "('f,'v)term list" 
       assume f: "f : ss \<rightarrow> s in ?D" and ts: "ts :\<^sub>l ss in \<T>(?C,\<emptyset>)" 
@@ -105,27 +107,27 @@ proof -
       from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
       hence pat: "pat \<in> set pats" unfolding pat_def pats_def by force
       define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
-        (SOME t. t : s in \<T>(?C,?EMPTY)))" for x
+        (SOME t. t : s in \<T>(?C,\<emptyset>)))" for x
       have id: "Fun f ts = pat \<cdot> \<sigma>" unfolding pat_def using len
         by (auto intro!: nth_equalityI simp: \<sigma>_def)
-      have ssigma: "?cg_subst (set S) ?C \<sigma>" 
-        unfolding pattern_completeness_context.cg_subst_def
-      proof (intro allI impI)
-        fix x :: "nat \<times> _" 
-        assume "snd x \<in> set S" 
-        then obtain i s where x: "x = (i,s)" and s: "s \<in> set S" by (cases x, auto)
-        show "\<sigma> x : snd x in \<T>(?C,?EMPTY)" 
-        proof (cases "i < length ss \<and> s = ss ! i")
+      have ssigma: "\<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>)" 
+      proof (intro sorted_mapI)
+        fix x \<iota>
+        assume "x : \<iota> in tvars"
+        then have "\<iota> = snd x" and s: "\<iota> \<in> set S" by auto
+        then obtain i where x: "x = (i,\<iota>)" by (cases x, auto)
+        show "\<sigma> x : \<iota> in \<T>(?C,\<emptyset>)" 
+        proof (cases "i < length ss \<and> \<iota> = ss ! i")
           case True
           hence id: "\<sigma> x = ts ! i" unfolding x \<sigma>_def by auto
-          from ts True show ?thesis unfolding id unfolding x snd_conv pattern_completeness_context.EMPTY_def 
-            by (simp add: list_all2_conv_all_nth)
+          from ts True show ?thesis unfolding id unfolding x snd_conv
+            by (auto simp add: list_all2_conv_all_nth)
         next
           case False
-          hence id: "\<sigma> x = (SOME t. t : s in \<T>(?C,?EMPTY))" unfolding x \<sigma>_def by auto
+          hence id: "\<sigma> x = (SOME t. t : \<iota> in \<T>(?C,\<emptyset>))" unfolding x \<sigma>_def by auto
           from decide_nonempty_sorts(1)[OF dist(1) refl dec] s
-          have "\<exists> t. t : s in \<T>(?C,?EMPTY)" unfolding pattern_completeness_context.EMPTY_def by auto
-          from someI_ex[OF this] have "\<sigma> x : s in \<T>(?C,?EMPTY)" unfolding id .
+          have "\<exists> t. t : \<iota> in \<T>(?C,\<emptyset>)" by auto
+          from someI_ex[OF this] have "\<sigma> x : \<iota> in \<T>(?C,\<emptyset>)" unfolding id .
           thus ?thesis unfolding x by auto
         qed
       qed
@@ -161,15 +163,15 @@ definition decide_strong_quasi_reducible ::
     return (decide_pat_complete C P)
   }" 
 
-lemma decide_strong_quasi_reducible: 
-  assumes "decide_strong_quasi_reducible C D (lhss :: ('f,'v)term list) = return b" 
+lemma decide_strong_quasi_reducible:
+  fixes C D :: "(('f \<times> 's list) \<times> 's) list" and lhss :: "('f,'v)term list"
+  assumes "decide_strong_quasi_reducible C D lhss = return b" 
   shows "b = strong_quasi_reducible (map_of C) (map_of D) (set lhss)" 
 proof -
-  let ?EMPTY = "pattern_completeness_context.EMPTY" 
-  let ?cg_subst = "pattern_completeness_context.cg_subst" 
   let ?C = "map_of C"
   let ?D = "map_of D" 
-  define S where "S = sorts_of_ssig_list C" 
+  define S where "S = sorts_of_ssig_list C"
+  interpret pattern_completeness_context "set S" "map_of C".
   define pats where "pats = map (\<lambda> ((f,ss),s). term_and_args f (map Var (zip [0..<length ss] ss))) D" 
   define P where "P = map (List.maps (\<lambda> pat. map (\<lambda> lhs. [(pat,lhs)]) lhss)) pats" 
   let ?match_lhs = "\<lambda>t. \<exists>l \<in> set lhss. l matches t" 
@@ -179,7 +181,7 @@ proof -
   note ass = ass[unfolded dec, simplified]
   from ass have b: "b = decide_pat_complete C P" and dist: "distinct (map fst C)" "distinct (map fst D)" by auto
   have "b = decide_pat_complete C P" by fact
-  also have "\<dots> = pats_complete (set S) ?C (pat_list ` set P)" 
+  also have "\<dots> = pats_complete (pat_list ` set P)" 
   proof (rule decide_pat_complete[OF refl dist(1) dec[unfolded S_def]], unfold S_def[symmetric])
     {
       fix f ss s i si
@@ -193,10 +195,10 @@ proof -
   qed simp
   also have "pat_list ` set P = { { {(pat,lhs)} | lhs pat. pat \<in> set patL \<and> lhs \<in> set lhss} | patL. patL \<in> set pats}" 
     unfolding pat_list_def P_def List.maps_def by (auto simp: image_comp) force+
-  also have "pats_complete (set S) ?C \<dots> \<longleftrightarrow>
-     (\<forall> patsL \<sigma>. patsL \<in> set pats \<longrightarrow> ?cg_subst (set S) ?C \<sigma> \<longrightarrow> (\<exists> pat \<in> set patsL. ?match_lhs (pat \<cdot> \<sigma>)))" (is "_ \<longleftrightarrow> ?L")
-    unfolding pattern_completeness_context.pat_complete_def 
-      pattern_completeness_context.match_complete_wrt_def matches_def 
+  also have "pats_complete \<dots> \<longleftrightarrow>
+     (\<forall> patsL \<sigma>. patsL \<in> set pats \<longrightarrow> \<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>) \<longrightarrow> (\<exists> pat \<in> set patsL. ?match_lhs (pat \<cdot> \<sigma>)))" (is "_ \<longleftrightarrow> ?L")
+    unfolding pat_complete_def 
+      match_complete_wrt_def matches_def
     by auto 
       (smt (verit, best) case_prod_conv mem_Collect_eq singletonI, 
         metis (mono_tags, lifting) case_prod_conv singleton_iff)
@@ -205,7 +207,7 @@ proof -
            (\<exists> ti \<in> set (term_and_args f ts). ?match_lhs ti))" (is "_ = ?R")
   proof (standard; intro allI impI)  
     fix patL and \<sigma> :: "('f,_,'v)gsubst" 
-    assume patL: "patL \<in> set pats" and subst: "?cg_subst (set S) ?C \<sigma>" and R: ?R
+    assume patL: "patL \<in> set pats" and subst: "\<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>)" and R: ?R
     from patL[unfolded pats_def] obtain f ss s where patL: "patL = term_and_args f (map Var (zip [0..<length ss] ss))" 
       and inDs: "((f,ss),s) \<in> set D" by auto
     from dist(2) inDs have f: "f : ss \<rightarrow> s in ?D" unfolding fun_hastype_def by simp
@@ -214,8 +216,8 @@ proof -
       assume i: "i < length ss" 
       hence "ss ! i \<in> set ss" by auto
       with inDs ass have "ss ! i \<in> set S" by auto
-      with subst have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C,\<emptyset>)" 
-        unfolding pattern_completeness_context.cg_subst_def pattern_completeness_context.EMPTY_def by auto
+      then have "\<sigma> (i, ss ! i) : ss ! i in \<T>(?C,\<emptyset>)" 
+        by (auto intro!: sorted_mapD[OF subst])
     } note ssigma = this
     define ts where "ts = (map (\<lambda> i. \<sigma> (i, ss ! i)) [0..<length ss])" 
     have ts: "ts :\<^sub>l ss in \<T>(?C,\<emptyset>)" unfolding list_all2_conv_all_nth ts_def using ssigma by auto
@@ -232,25 +234,24 @@ proof -
     from f have "((f,ss),s) \<in> set D" unfolding fun_hastype_def by (metis map_of_SomeD)
     hence patL: "patL \<in> set pats" unfolding patL_def pats_def by force
     define \<sigma> where "\<sigma> x = (case x of (i,s) \<Rightarrow> if i < length ss \<and> s = ss ! i then ts ! i else 
-      (SOME t. t : s in \<T>(?C,?EMPTY)))" for x
-    have ssigma: "?cg_subst (set S) ?C \<sigma>" 
-      unfolding pattern_completeness_context.cg_subst_def
-    proof (intro allI impI)
-      fix x :: "nat \<times> _" 
-      assume "snd x \<in> set S" 
-      then obtain i s where x: "x = (i,s)" and s: "s \<in> set S" by (cases x, auto)
-      show "\<sigma> x : snd x in \<T>(?C,?EMPTY)" 
+      (SOME t. t : s in \<T>(?C,\<emptyset>)))" for x
+    have ssigma: "\<sigma> :\<^sub>s tvars \<rightarrow> \<T>(?C,\<emptyset>)"
+    proof (intro sorted_mapI)
+      fix x s
+      assume "x : s in tvars"
+      then obtain i where x: "x = (i,s)" and s: "s \<in> set S" by (cases x, auto)
+      show "\<sigma> x : s in \<T>(?C,\<emptyset>)" 
       proof (cases "i < length ss \<and> s = ss ! i")
         case True
         hence id: "\<sigma> x = ts ! i" unfolding x \<sigma>_def by auto
-        from ts True show ?thesis unfolding id unfolding x snd_conv pattern_completeness_context.EMPTY_def 
+        from ts True show ?thesis unfolding id unfolding x snd_conv
           by (simp add: list_all2_conv_all_nth)
       next
         case False
-        hence id: "\<sigma> x = (SOME t. t : s in \<T>(?C,?EMPTY))" unfolding x \<sigma>_def by auto
+        hence id: "\<sigma> x = (SOME t. t : s in \<T>(?C,\<emptyset>))" unfolding x \<sigma>_def by auto
         from decide_nonempty_sorts(1)[OF dist(1) refl dec] s
-        have "\<exists> t. t : s in \<T>(?C,?EMPTY)" unfolding pattern_completeness_context.EMPTY_def by auto
-        from someI_ex[OF this] have "\<sigma> x : s in \<T>(?C,?EMPTY)" unfolding id .
+        have "\<exists> t. t : s in \<T>(?C,\<emptyset>)" by auto
+        from someI_ex[OF this] have "\<sigma> x : s in \<T>(?C,\<emptyset>)" unfolding id .
         thus ?thesis unfolding x by auto
       qed
     qed

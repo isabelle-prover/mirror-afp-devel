@@ -1258,10 +1258,10 @@ lemma adjoint_eqI:
 lemma adj_uminus: \<open>(-A)* = - (A*)\<close>
   by (metis scaleR_adj scaleR_minus1_left scaleR_minus1_left)
 
-lemma cinner_real_hermiteanI:
+lemma cinner_real_selfadjointI:
   \<comment> \<open>Prop. II.2.12 in \<^cite>\<open>conway2013course\<close>\<close>
   assumes \<open>\<And>\<psi>. \<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>) \<in> \<real>\<close>
-  shows \<open>A* = A\<close>
+  shows \<open>selfadjoint A\<close>
 proof -
   { fix g h :: 'a
     {
@@ -1290,9 +1290,11 @@ proof -
     have \<open>cinner h (A g) = cinner h (A* *\<^sub>V g)\<close>
       by (auto simp: ring_class.ring_distribs)
   }
-  then show "A* = A"
+  then have \<open>A* = A\<close>
     apply (rule_tac sym)
     by (simp add: adjoint_eqI cinner_adj_right)
+  then show "selfadjoint A"
+    by (simp add: selfadjoint_def)
 qed
 
 
@@ -1367,7 +1369,7 @@ lemma has_sum_adj:
 lemma adj_minus: \<open>(A - B)* = (A*) - (B*)\<close>
   by (metis add_implies_diff adj_plus diff_add_cancel)
 
-lemma cinner_hermitian_real: \<open>x \<bullet>\<^sub>C (A *\<^sub>V x) \<in> \<real>\<close> if \<open>selfadjoint A\<close>
+lemma cinner_selfadjoint_real: \<open>x \<bullet>\<^sub>C (A *\<^sub>V x) \<in> \<real>\<close> if \<open>selfadjoint A\<close>
   by (metis Reals_cnj_iff cinner_adj_right cinner_commute' that selfadjoint_def)
 
 lemma adj_inject: \<open>adj a = adj b \<longleftrightarrow> a = b\<close>
@@ -1630,7 +1632,7 @@ lemma cblinfun_right_adj_apply[simp]: \<open>cblinfun_right* *\<^sub>V \<psi> = 
   by (auto intro!: cinner_extensionality[of \<open>_ *\<^sub>V _\<close>] simp: cinner_adj_right)
 
 lift_definition ccsubspace_Times :: \<open>'a::complex_normed_vector ccsubspace \<Rightarrow> 'b::complex_normed_vector ccsubspace \<Rightarrow> ('a\<times>'b) ccsubspace\<close> is
-  Product_Type.Times
+  \<open>\<lambda>S T. S \<times> T\<close>
 proof -
   fix S :: \<open>'a set\<close> and T :: \<open>'b set\<close>
   assume [simp]: \<open>closed_csubspace S\<close> \<open>closed_csubspace T\<close>
@@ -3409,13 +3411,13 @@ lemma heterogenous_same_type_cblinfun[simp]: \<open>heterogenous_same_type_cblin
 instantiation cblinfun :: (chilbert_space, chilbert_space) ord begin
 definition less_eq_cblinfun_def_heterogenous: \<open>A \<le> B \<longleftrightarrow>
   (if heterogenous_same_type_cblinfun TYPE('a) TYPE('b) then
-    \<forall>\<psi>::'b. cinner \<psi> ((B-A) *\<^sub>V heterogenous_cblinfun_id *\<^sub>V \<psi>) \<ge> 0 else (A=B))\<close>
+    \<forall>\<psi>::'b. \<psi> \<bullet>\<^sub>C ((B-A) *\<^sub>V heterogenous_cblinfun_id *\<^sub>V \<psi>) \<ge> 0 else (A=B))\<close>
 definition \<open>(A :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) < B \<longleftrightarrow> A \<le> B \<and> \<not> B \<le> A\<close>
 instance..
 end
 
 lemma less_eq_cblinfun_def: \<open>A \<le> B \<longleftrightarrow>
-    (\<forall>\<psi>. cinner \<psi> (A *\<^sub>V \<psi>) \<le> cinner \<psi> (B *\<^sub>V \<psi>))\<close>
+    (\<forall>\<psi>. \<psi> \<bullet>\<^sub>C (A *\<^sub>V \<psi>) \<le> \<psi> \<bullet>\<^sub>C (B *\<^sub>V \<psi>))\<close>
   unfolding less_eq_cblinfun_def_heterogenous
   by (auto simp del: less_eq_complex_def simp: cblinfun.diff_left cinner_diff_right)
 
@@ -3529,8 +3531,8 @@ end
 lemma positive_id_cblinfun[simp]: "id_cblinfun \<ge> 0"
   unfolding less_eq_cblinfun_def using cinner_ge_zero by auto
 
-lemma positive_hermitianI: \<open>A* = A\<close> if \<open>A \<ge> 0\<close>
-  apply (rule cinner_real_hermiteanI)
+lemma positive_selfadjointI: \<open>selfadjoint A\<close> if \<open>A \<ge> 0\<close>
+  apply (rule cinner_real_selfadjointI)
   using that by (auto simp: complex_is_real_iff_compare0 less_eq_cblinfun_def)
 
 lemma cblinfun_leI:
@@ -3571,7 +3573,7 @@ proof -
     finally have \<open>norm (x \<bullet>\<^sub>C (A *\<^sub>V x)) \<le> c\<close>
       by -
     moreover have \<open>x \<bullet>\<^sub>C (A *\<^sub>V x) \<in> \<real>\<close>
-      by (metis assms(2) cinner_hermitian_real)
+      by (metis assms(2) cinner_selfadjoint_real)
     ultimately show ?thesis
       by (smt (verit) Re_complex_of_real Reals_cases complex_of_real_nn_iff less_eq_complex_def norm_of_real reals_zero_comparable)
   qed
@@ -3615,17 +3617,17 @@ proof (rule cblinfun_eq_0_on_UNIV_span[where basis=UNIV]; simp)
     by simp
 qed
 
-lemma comparable_hermitean:
+lemma comparable_selfadjoint:
   assumes \<open>a \<le> b\<close>
   assumes \<open>selfadjoint a\<close>
   shows \<open>selfadjoint b\<close>
-  by (smt (verit, best) assms(1) assms(2) cinner_hermitian_real cinner_real_hermiteanI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
+  by (smt (verit, best) assms(1) assms(2) cinner_selfadjoint_real cinner_real_selfadjointI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
 
-lemma comparable_hermitean':
+lemma comparable_selfadjoint':
   assumes \<open>a \<le> b\<close>
   assumes \<open>selfadjoint b\<close>
   shows \<open>selfadjoint a\<close>
-  by (smt (verit, best) assms(1) assms(2) cinner_hermitian_real cinner_real_hermiteanI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
+  by (smt (verit, best) assms(1) assms(2) cinner_selfadjoint_real cinner_real_selfadjointI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def selfadjoint_def)
 
 lemma Proj_mono: \<open>Proj S \<le> Proj T \<longleftrightarrow> S \<le> T\<close>
 proof (rule iffI)
@@ -3664,6 +3666,10 @@ subsection \<open>Embedding vectors to operators\<close>
 lift_definition vector_to_cblinfun :: \<open>'a::complex_normed_vector \<Rightarrow> 'b::one_dim \<Rightarrow>\<^sub>C\<^sub>L 'a\<close> is
   \<open>\<lambda>\<psi> \<phi>. one_dim_iso \<phi> *\<^sub>C \<psi>\<close>
   by (simp add: bounded_clinear_scaleC_const)
+
+lemma vector_to_cblinfun_apply[simp]: \<open>vector_to_cblinfun \<psi> *\<^sub>V \<phi> = one_dim_iso \<psi> *\<^sub>C \<phi>\<close>
+  apply (transfer fixing: \<psi> \<phi>)
+  by simp
 
 lemma vector_to_cblinfun_cblinfun_compose[simp]:
   "A  o\<^sub>C\<^sub>L (vector_to_cblinfun \<psi>) = vector_to_cblinfun (A *\<^sub>V \<psi>)"

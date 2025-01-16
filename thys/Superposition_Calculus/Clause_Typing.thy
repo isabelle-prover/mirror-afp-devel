@@ -1,10 +1,10 @@
 theory Clause_Typing
-  imports 
-    Typing 
-    Uprod_Extra 
-    Multiset_Extra 
-    Clausal_Calculus_Extra 
-    Natural_Magma
+  imports
+    Typing
+    Uprod_Extra
+    Multiset_Extra
+    Clausal_Calculus_Extra
+    Abstract_Substitution.Natural_Magma
 begin
 
 locale natural_magma_typing_lifting = typing_lifting + natural_magma

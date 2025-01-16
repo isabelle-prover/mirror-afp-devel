@@ -1516,7 +1516,7 @@ lemma tensor_op_pos: \<open>a \<otimes>\<^sub>o b \<ge> 0\<close> if [simp]: \<o
     \<comment> \<open>\<^cite>\<open>"Lemma 18" in "references-v3"\<close>\<close>
 proof -
   have \<open>(sqrt_op a \<otimes>\<^sub>o sqrt_op b)* o\<^sub>C\<^sub>L (sqrt_op a \<otimes>\<^sub>o sqrt_op b) = a \<otimes>\<^sub>o b\<close>
-    by (simp add: tensor_op_adjoint comp_tensor_op positive_hermitianI)
+    by (simp add: tensor_op_adjoint comp_tensor_op positive_selfadjointI[unfolded selfadjoint_def])
   then show \<open>a \<otimes>\<^sub>o b \<ge> 0\<close>
     by (metis positive_cblinfun_squareI)
 qed
@@ -1525,7 +1525,7 @@ lemma abs_op_tensor: \<open>abs_op (a \<otimes>\<^sub>o b) = abs_op a \<otimes>\
   \<comment> \<open>\<^cite>\<open>"Lemma 18" in "references-v3"\<close>\<close>
 proof -
   have \<open>(abs_op a \<otimes>\<^sub>o abs_op b)* o\<^sub>C\<^sub>L (abs_op a \<otimes>\<^sub>o abs_op b) = (a \<otimes>\<^sub>o b)* o\<^sub>C\<^sub>L (a \<otimes>\<^sub>o b)\<close>
-    by (simp add: tensor_op_adjoint comp_tensor_op abs_op_def positive_cblinfun_squareI positive_hermitianI)
+    by (simp add: tensor_op_adjoint comp_tensor_op abs_op_def positive_cblinfun_squareI positive_selfadjointI[unfolded selfadjoint_def])
   then show ?thesis
     by (metis abs_opI abs_op_pos tensor_op_pos)
 qed

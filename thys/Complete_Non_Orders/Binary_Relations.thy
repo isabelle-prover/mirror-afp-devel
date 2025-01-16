@@ -1884,8 +1884,33 @@ lemma extreme_bound_infimum[simp]: "extreme_bound UNIV (\<ge>) = infimum" by (au
 lemma Least_eq_The_least: "Least P = The (least {x. P x})"
   by (auto simp: Least_def extreme_def[unfolded atomize_eq, THEN ext])
 
+lemma The_least_eq_Least: "The (least X) = Least (\<lambda>x. x \<in> X)"
+  by (simp add: Least_eq_The_least)
+
+lemma least_imp_infimum: assumes "least X x" shows "infimum X x"
+  using extreme_imp_extreme_bound[OF assms, of UNIV] by simp
+
+lemma least_LeastI_ex1:
+  assumes ex1: "\<exists>!x. least {x. P x} x"
+  shows "least {x. P x} (LEAST x. P x)"
+  using theI'[OF ex1] by (simp add: Least_eq_The_least)
+
+end (* TODO: Greatest should also be defined in ord. *)
+context order begin
+
 lemma Greatest_eq_The_greatest: "Greatest P = The (greatest {x. P x})"
   by (auto simp: Greatest_def extreme_def[unfolded atomize_eq, THEN ext])
+
+lemma The_greatest_eq_Greatest: "The (greatest X) = Greatest (\<lambda>x. x \<in> X)"
+  by (simp add: Greatest_eq_The_greatest)
+
+lemma greatest_imp_supremum: assumes "greatest X x" shows "supremum X x"
+  using extreme_imp_extreme_bound[OF assms, of UNIV] by simp
+
+lemma greatest_GreatestI_ex1:
+  assumes ex1: "\<exists>!x. greatest {x. P x} x"
+  shows "greatest {x. P x} (GREATEST x. P x)"
+  using theI'[OF ex1] by (simp add: Greatest_eq_The_greatest)
 
 end
 
@@ -2117,6 +2142,21 @@ sublocale order: strict_partial_ordering UNIV
 
 end
 
+(* TODO: move to psorder. *)
+context order begin
+
+lemma ex_greatest_iff_Greatest:
+  "Ex (greatest X) \<longleftrightarrow> greatest X (Greatest (\<lambda>x. x \<in> X))"
+  using order.ex_extreme_iff_the[of X]
+  by (simp add: The_greatest_eq_Greatest)
+
+lemma greatest_imp_supremum_Greatest:
+  "greatest X x \<Longrightarrow> supremum X (Greatest (\<lambda>x. x \<in> X))"
+  using ex_greatest_iff_Greatest[THEN iffD1, THEN greatest_imp_supremum]
+  by auto
+
+end
+
 text \<open>Isabelle/HOL's @{class linorder} is equivalent to our locale @{locale total_ordering}.\<close>
 
 context linorder begin
@@ -2272,6 +2312,11 @@ sublocale reflexive_attractive_ordering \<subseteq> dual: reflexive_attractive_o
 sublocale pseudo_ordering \<subseteq> dual: pseudo_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"
   by unfold_locales auto
+
+lemma (in psorder) least_Least:
+  fixes X :: "'a set"
+  shows "Ex (least X) \<longleftrightarrow> least X (LEAST x. x \<in> X)"
+  using order.dual.ex_extreme_iff_the[of X, unfolded The_least_eq_Least].
 
 sublocale quasi_ordering \<subseteq> dual: quasi_ordering A "(\<sqsubseteq>)\<^sup>-" "(\<sqsubset>)\<^sup>-"
   rewrites "sympartp (\<sqsubseteq>)\<^sup>- = sympartp (\<sqsubseteq>)"

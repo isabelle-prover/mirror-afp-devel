@@ -219,33 +219,22 @@ next
   then show "welltyped \<V>' t \<tau>"
     by (induction rule: welltyped.induct) (simp_all add: welltyped.simps list.rel_mono_strong)
 next
-  fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> \<tau> 
-  assume renaming: "term_subst.is_renaming \<rho>" "\<forall>x\<in>term.vars (t \<cdot>t \<rho>). \<V> (inv \<rho> (Var x)) = \<V>' x"
+  fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau> 
+  assume renaming: "term_subst.is_renaming \<rho>" and \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
   show "typed \<V>' (t \<cdot>t \<rho>) \<tau> \<longleftrightarrow> typed \<V> t \<tau>"
   proof(intro iffI)
     assume "typed \<V>' (t \<cdot>t \<rho>) \<tau>"
-    with renaming  show "typed \<V> t \<tau>"
+    with \<V> show "typed \<V> t \<tau>"
     proof(induction t arbitrary: \<tau>)
       case (Var x)
-      then obtain y where y: "Var x \<cdot>t \<rho> = Var y"
-        by (metis eval_term.simps(1) term.collapse(1) term_subst_is_renaming_iff)
+      
+      have "\<V>' (term.rename \<rho> x) = \<tau>"
+        using Var term.id_subst_rename[OF renaming]
+        by (metis eval_term.simps(1) term.typed.right_uniqueD typed.Var)
 
-      then have "\<V> (inv \<rho> (Var y)) = \<V>' y"
-        by (simp add: Var)
-
-      moreover have "(inv \<rho> (Var y)) = x"
-        using y renaming
-        unfolding term_subst_is_renaming_iff
-        by (metis eval_term.simps(1) inv_f_f)
-
-      moreover have "\<V>' y = \<tau>"
-        using Var
-        unfolding y
-        using typed.Var by fastforce
-
-      ultimately have "\<V> x = \<tau>"
-        by blast
+      then have "\<V> x = \<tau>"
+        by (simp add: renaming Var.prems)
 
       then show ?case
         by(rule typed.Var)
@@ -257,30 +246,16 @@ next
   next
     assume "typed \<V> t \<tau>"
     then show "typed \<V>' (t \<cdot>t \<rho>) \<tau>"
-      using renaming
+      using \<V>
     proof(induction rule: typed.induct)
       case (Var x \<tau>)
 
-      obtain y where y: "Var x \<cdot>t \<rho> = Var y"
-        using renaming
-        by (metis eval_term.simps(1) term.collapse(1) term_subst_is_renaming_iff)
-
-      then have "\<V> (inv \<rho> (Var y)) = \<V>' y"
-        using Var(3)
-        by simp     
-
-      moreover have "(inv \<rho> (Var y)) = x"
-        using y renaming
-        unfolding term_subst_is_renaming_iff
-        by (metis eval_term.simps(1) inv_f_f)
-
-      ultimately have "\<V>' y = \<tau>"
-        using Var
-        by argo
+      have "\<V>' (term.rename \<rho> x) = \<tau>"
+        using Var.hyps Var.prems 
+        by auto
 
       then show ?case
-        unfolding y
-        by(rule typed.Var)
+        by (metis eval_term.simps(1) renaming term.id_subst_rename typed.Var)
     next
       case (Fun f \<tau>s \<tau> ts)
 
@@ -290,11 +265,11 @@ next
   qed
 next
 
-  fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> \<tau>
+  fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau>
 
   assume 
     renaming: "term_subst.is_renaming \<rho>" and
-    \<V>: "\<forall>x\<in>term.vars (t \<cdot>t \<rho>). \<V> (inv \<rho> (Var x)) = \<V>' x"
+    \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
   then show "welltyped \<V>' (t \<cdot>t \<rho>) \<tau> \<longleftrightarrow> welltyped \<V> t \<tau>"
   proof(intro iffI)
@@ -305,24 +280,12 @@ next
     proof(induction t arbitrary: \<tau>)
       case (Var x)
 
-      then obtain y where y: "Var x \<cdot>t \<rho> = Var y"
-        by (metis eval_term.simps(1) renaming term.collapse(1) term_subst_is_renaming_iff)
+      then have "\<V>' (term.rename \<rho> x) = \<tau>"
+        using renaming term.id_subst_rename[OF renaming]
+        by (metis eval_term.simps(1) term.typed.right_uniqueD term.typed_if_welltyped typed.Var)
 
-      then have "\<V> (inv \<rho> (Var y)) = \<V>' y"
-        by (simp add: Var)
-
-      moreover have "(inv \<rho> (Var y)) = x"
-        using y renaming
-        unfolding term_subst_is_renaming_iff
-        by (metis eval_term.simps(1) inv_f_f)
-
-      moreover have "\<V>' y = \<tau>"
-        using Var
-        unfolding y
-        using welltyped.Var by fastforce
-
-      ultimately have "\<V> x = \<tau>"
-        by blast
+      then have "\<V> x = \<tau>"
+        by (simp add: Var.prems(1))
 
       then show ?case
         by(rule welltyped.Var)
@@ -353,25 +316,12 @@ next
     proof(induction rule: welltyped.induct)
       case (Var x \<tau>)
 
-      obtain y where y: "Var x \<cdot>t \<rho> = Var y"
-        using renaming
-        by (metis eval_term.simps(1) term.collapse(1) term_subst_is_renaming_iff)
-
-      then have "\<V> (inv \<rho> (Var y)) = \<V>' y"
-        by (simp add: Var.prems)
-
-      moreover have "(inv \<rho> (Var y)) = x"
-        using y renaming
-        unfolding term_subst_is_renaming_iff
-        by (metis eval_term.simps(1) inv_f_f)
-
-      ultimately have "\<V>' y = \<tau>"
-        using Var
-        by argo
+      then have "\<V>' (term.rename \<rho> x) = \<tau>"
+        by simp
 
       then show ?case
-        unfolding y
-        by(rule welltyped.Var)
+        using term.id_subst_rename[OF renaming]
+        by (metis eval_term.simps(1) welltyped.Var)
     next
       case (Fun f \<tau>s \<tau> ts)
 
@@ -610,7 +560,8 @@ next
       by (simp add: calculation(4) subst_compose_def)
 
     ultimately show ?thesis 
-      using 3(2, 3) False by force
+      using 3(2, 3) False
+      by force
   qed
 next
   case (4 t ts x es bs)
@@ -661,31 +612,34 @@ lemma welltyped_the_mgu:
   unfolding the_mgu_def mgu_def  
   by(auto simp: welltyped.Var split: option.splits)
 
-lemma welltyped_imgu_exists':
+lemma welltyped_imgu_exists:
   fixes \<upsilon> :: "('f, 'v) subst"
-  assumes unified: "term \<cdot>t \<upsilon> = term' \<cdot>t \<upsilon>"
+  assumes unified: "t \<cdot>t \<upsilon> = t' \<cdot>t \<upsilon>"
   obtains \<mu> :: "('f, 'v) subst"
   where 
     "\<upsilon> = \<mu> \<odot> \<upsilon>" 
-    "term_subst.is_imgu \<mu> {{term, term'}}"
-    "\<forall>\<tau>. welltyped \<V> term \<tau> \<longrightarrow> welltyped \<V> term' \<tau> \<longrightarrow> is_welltyped \<V> \<mu>"
+    "term_subst.is_imgu \<mu> {{t, t'}}"
+    "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> \<mu>"
 proof-
-  obtain \<mu> where \<mu>: "the_mgu term term' = \<mu>"
+  obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
     using assms ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
 
-  have "\<forall>\<tau>. welltyped \<V> term \<tau> \<longrightarrow> welltyped \<V> term' \<tau> \<longrightarrow> is_welltyped \<V> (the_mgu term term')"
+  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> (the_mgu t t')"
     using welltyped_the_mgu[OF \<mu>, of \<V>] assms
     unfolding \<mu>
     by blast
 
   then show ?thesis
     using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
-    by (metis the_mgu the_mgu_term_subst_is_imgu unified)
+    by (metis UNIV_I the_mgu the_mgu_term_subst_is_imgu unified)
 qed
 
+abbreviation welltyped_imgu_on where
+  "welltyped_imgu_on X \<V> t t' \<mu> \<equiv>
+    \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and> is_welltyped_on X \<V> \<mu> \<and> term_subst.is_imgu \<mu> {{t, t'}}"
+
 abbreviation welltyped_imgu where
-  "welltyped_imgu \<V> t t' \<mu> \<equiv>
-    \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and> is_welltyped \<V> \<mu> \<and> term_subst.is_imgu \<mu> {{t, t'}}"
+  "welltyped_imgu \<equiv> welltyped_imgu_on UNIV"
 
 lemma obtain_welltyped_imgu:
   fixes \<upsilon> :: "('f, 'v) subst"
@@ -703,8 +657,16 @@ proof-
 
   then show ?thesis
     using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
-    by (metis assms(2) assms(3) the_mgu the_mgu_term_subst_is_imgu unified)
+    by (metis assms(2,3) the_mgu the_mgu_term_subst_is_imgu unified)
 qed
+
+lemma obtain_welltyped_imgu_on:
+  fixes \<upsilon> :: "('f, 'v) subst"
+  assumes "t \<cdot>t \<upsilon> = t' \<cdot>t \<upsilon>" "welltyped \<V> t \<tau>" "welltyped \<V> t' \<tau>"
+  obtains \<mu> :: "('f, 'v) subst"
+  where "\<upsilon> = \<mu> \<odot> \<upsilon>" "welltyped_imgu_on X \<V> t t' \<mu>"
+  using obtain_welltyped_imgu[OF assms] UNIV_I
+  by metis
 
 end
 

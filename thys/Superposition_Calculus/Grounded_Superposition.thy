@@ -133,7 +133,7 @@ sublocale lifting:
 proof(unfold_locales; (intro impI)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
-    using exists_infinite_variables_per_type[OF variables]
+    using exists_infinite_variables_per_type[OF types_ordLeq_variables]
     by blast
 next
   fix bottom

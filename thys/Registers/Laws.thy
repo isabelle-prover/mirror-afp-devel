@@ -5,9 +5,9 @@ theory Laws
 begin
 
 text \<open>This notation is only used inside this file\<close>
-notation comp_update (infixl \<open>*\<^sub>u\<close> 55)
-notation tensor_update (infixr \<open>\<otimes>\<^sub>u\<close> 70)
-notation register_pair (\<open>'(_;_')\<close>)
+notation comp_update (infixl "*\<^sub>u" 55)
+notation tensor_update (infixr "\<otimes>\<^sub>u" 70)
+notation register_pair ("'(_;_')")
 
 subsection \<open>Elementary facts\<close>
 
@@ -59,7 +59,7 @@ lemma register_tensor_id_update[simp]:
 
 subsection \<open>Tensor product of registers\<close>
 
-definition register_tensor  (infixr \<open>\<otimes>\<^sub>r\<close> 70) where
+definition register_tensor  (infixr "\<otimes>\<^sub>r" 70) where
   "register_tensor F G = register_pair (\<lambda>a. tensor_update (F a) id_update) (\<lambda>b. tensor_update id_update (G b))"
 
 lemma register_tensor_is_register: 
@@ -298,6 +298,7 @@ lemmas compatible_ac_rules = swap_registers comp_update_assoc[symmetric] swap_re
 
 subsection \<open>Fst and Snd\<close>
 
+(* TODO: specify types *)
 definition Fst where \<open>Fst a = a \<otimes>\<^sub>u id_update\<close>
 definition Snd where \<open>Snd a = id_update \<otimes>\<^sub>u a\<close>
 
@@ -465,8 +466,8 @@ proof -
     apply (rule tensor_extensionality)
     by auto
   have \<open>\<Phi> c d (a \<otimes>\<^sub>u b) = (F' \<otimes>\<^sub>r G') (c \<otimes>\<^sub>u d) *\<^sub>u (F \<otimes>\<^sub>r G) (a \<otimes>\<^sub>u b)\<close> for a b c d
-    unfolding \<Phi>_def apply (auto simp: register_pair_apply)
-    by (metis assms(1) assms(2) compatible_def tensor_update_mult)
+    using assms 
+    unfolding \<Phi>_def compatible_def by (auto simp: register_pair_apply tensor_update_mult)
   then have \<Phi>2: \<open>\<Phi> c d \<sigma> = (F' \<otimes>\<^sub>r G') (c \<otimes>\<^sub>u d) *\<^sub>u (F \<otimes>\<^sub>r G) \<sigma>\<close> for c d \<sigma>
     apply (rule_tac fun_cong[of _ _ \<sigma>])
     apply (rule tensor_extensionality)
@@ -552,10 +553,10 @@ lemma inv_assoc[simp]: \<open>inv assoc = assoc'\<close>
 lemma inv_assoc'[simp]: \<open>inv assoc' = assoc\<close>
   by (simp add: inv_equality)
 
-lemma [simp]: \<open>bij assoc\<close>
+lemma bij_assoc[simp]: \<open>bij assoc\<close>
   using assoc'_o_assoc assoc_o_assoc' o_bij by blast
 
-lemma [simp]: \<open>bij assoc'\<close>
+lemma bij_assoc'[simp]: \<open>bij assoc'\<close>
   using assoc'_o_assoc assoc_o_assoc' o_bij by blast
 
 subsection \<open>Iso-registers\<close>
@@ -591,11 +592,14 @@ proof -
   from assms obtain F' G' where [simp]: \<open>register F'\<close> \<open>register G'\<close> \<open>F o F' = id\<close> \<open>F' o F = id\<close>
     \<open>G o G' = id\<close> \<open>G' o G = id\<close>
     by (meson iso_register_def)
+  have 1: \<open>F \<circ> G \<circ> (G' \<circ> F') = id\<close>
+    by (metis \<open>F \<circ> F' = id\<close> \<open>G \<circ> G' = id\<close> fcomp_assoc fcomp_comp id_fcomp)
+  have 2: \<open>G' \<circ> F' \<circ> (F \<circ> G) = id\<close>
+    by (metis (no_types, lifting) \<open>F \<circ> F' = id\<close> \<open>F' \<circ> F = id\<close> \<open>G' \<circ> G = id\<close> fun.map_comp inj_iff inv_unique_comp o_inv_o_cancel)
+
   show ?thesis
     apply (rule iso_registerI[where G=\<open>G' o F'\<close>])
-       apply (auto simp: register_tensor_is_register iso_register_is_register register_tensor_distrib)
-     apply (metis \<open>F \<circ> F' = id\<close> \<open>G \<circ> G' = id\<close> fcomp_assoc fcomp_comp id_fcomp)
-    by (metis (no_types, lifting) \<open>F \<circ> F' = id\<close> \<open>F' \<circ> F = id\<close> \<open>G' \<circ> G = id\<close> fun.map_comp inj_iff inv_unique_comp o_inv_o_cancel)
+    using 1 2 by (auto simp: register_tensor_is_register iso_register_is_register register_tensor_distrib)
 qed
 
 
@@ -646,6 +650,9 @@ lemma equivalent_registersI:
   assumes \<open>F o I = G\<close>
   shows \<open>equivalent_registers F G\<close>
   using assms unfolding equivalent_registers_def by blast
+
+lemma equivalent_registers_refl: \<open>equivalent_registers F F\<close> if \<open>register F\<close>
+  using that by (auto intro!: exI[of _ id] simp: equivalent_registers_def)
 
 lemma equivalent_registers_register_left: \<open>equivalent_registers F G \<Longrightarrow> register F\<close>
   using equivalent_registers_def by auto
@@ -719,6 +726,18 @@ lemma equivalent_registers_comp:
   assumes \<open>equivalent_registers F G\<close>
   shows \<open>equivalent_registers (H o F) (H o G)\<close>
   by (metis (no_types, lifting) assms(1) assms(2) comp_assoc equivalent_registers_def register_comp)
+
+lemma equivalent_registers_compatible1:
+  assumes \<open>compatible F G\<close>
+  assumes \<open>equivalent_registers F F'\<close>
+  shows \<open>compatible F' G\<close>
+  by (metis assms(1) assms(2) compatible_comp_left equivalent_registers_def iso_register_is_register)
+
+lemma equivalent_registers_compatible2:
+  assumes \<open>compatible F G\<close>
+  assumes \<open>equivalent_registers G G'\<close>
+  shows \<open>compatible F G'\<close>
+  by (metis assms(1) assms(2) compatible_comp_right equivalent_registers_def iso_register_is_register)
 
 subsection \<open>Compatibility simplification\<close>
 
@@ -798,13 +817,12 @@ end
 
 subsection \<open>Notation\<close>
 
-no_notation comp_update (infixl \<open>*\<^sub>u\<close> 55)
-no_notation tensor_update (infixr \<open>\<otimes>\<^sub>u\<close> 70)
+no_notation comp_update (infixl "*\<^sub>u" 55)
+no_notation tensor_update (infixr "\<otimes>\<^sub>u" 70)
 
-bundle register_syntax
-begin
-notation register_tensor (infixr \<open>\<otimes>\<^sub>r\<close> 70)
-notation register_pair (\<open>'(_;_')\<close>)
+bundle register_syntax begin
+notation register_tensor (infixr "\<otimes>\<^sub>r" 70)
+notation register_pair ("'(_;_')")
 end
 
 end

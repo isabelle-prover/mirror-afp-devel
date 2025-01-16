@@ -1,7 +1,8 @@
 chapter AFP
 
-session Registers = Complex_Bounded_Operators +
+session Registers = Hilbert_Space_Tensor_Product +
   options [timeout = 1200]
+  sessions With_Type
   theories
     Laws_Complement
     Classical_Extra

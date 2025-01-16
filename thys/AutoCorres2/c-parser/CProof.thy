@@ -615,10 +615,7 @@ lemma intvl_off_disj:
   subgoal
     apply (drule intvlD)
     apply clarsimp
-    apply (drule (1) order_less_le_trans)
-    apply (drule arg_cong)
-    apply (simp add: unat_of_nat word_bits_conv)
-    done
+    by (metis add.commute add_lessD1 le_Suc_ex nat_less_le unat32_eq_of_nat)
   done
 
 lemma intvl_empty2:

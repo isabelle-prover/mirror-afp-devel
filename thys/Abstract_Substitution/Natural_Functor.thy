@@ -1,4 +1,4 @@
-theory Natural_Functor
+theory Natural_Functor \<^marker>\<open>contributor \<open>Balazs Toth\<close>\<close>
   imports Main
 begin
 
@@ -11,7 +11,7 @@ locale natural_functor =
   assumes
     map_comp [simp]: "\<And>b f g. map f (map g b) = map (\<lambda>x. f (g x)) b" and
     map_ident [simp]: "\<And>b. map (\<lambda>x. x) b = b" and
-    map_cong [cong]: "\<And>b f g. (\<And>a. a \<in> to_set b \<Longrightarrow> f a = g a) \<Longrightarrow> map f b = map g b" and
+    map_cong0 [cong]: "\<And>b f g. (\<And>a. a \<in> to_set b \<Longrightarrow> f a = g a) \<Longrightarrow> map f b = map g b" and
     to_set_map [simp]: "\<And>b f. to_set (map f b) = f ` to_set b" and
     exists_functor [intro]: "\<And>a. \<exists>b. a \<in> to_set b"
 begin
@@ -19,6 +19,13 @@ begin
 lemma map_id [simp]: "map id b = b"
   unfolding id_def
   by(rule map_ident)
+
+lemma map_cong [cong]: 
+  assumes "b = b'" "\<And>a. a \<in> to_set b' \<Longrightarrow> f a = g a" 
+  shows "map f b = map g b'"
+  using map_cong0 assms
+  by blast
+  
 
 end
 

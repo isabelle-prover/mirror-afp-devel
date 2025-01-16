@@ -199,7 +199,7 @@ locale substitution =
   for
     comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" (infixl \<open>\<odot>\<close> 70) and
     id_subst :: 's and
-    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl \<open>\<cdot>\<close> 70) and
+    subst :: "'x \<Rightarrow> 's \<Rightarrow> 'x" (infixl \<open>\<cdot>\<close> 69) and
 
     \<comment> \<open>Predicate identifying the fixed elements w.r.t. the monoid action\<close>
     is_ground :: "'x \<Rightarrow> bool" +

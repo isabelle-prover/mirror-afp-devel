@@ -48,9 +48,8 @@ locale superposition_calculus =
     tiebreakers :: "'f gatom clause \<Rightarrow> ('f, 'v) atom clause \<Rightarrow> ('f, 'v) atom clause \<Rightarrow> bool" 
   assumes
     tiebreakers: "\<And>C\<^sub>G. wellfounded_strict_order (tiebreakers C\<^sub>G)" and
-    (* TODO: Move to locale assumption *)
-    variables: "|UNIV :: 'ty set| \<le>o |UNIV :: 'v set|" and
-    ground_critical_pair_theorem: "\<And>(R :: 'f gterm rel). ground_critical_pair_theorem R"
+    types_ordLeq_variables: "|UNIV :: 'ty set| \<le>o |UNIV :: 'v set|" and
+    ground_critical_pair_theorem: "\<And>R :: 'f gterm rel. ground_critical_pair_theorem R"
 begin
 
 interpretation term_order_notation.
@@ -82,7 +81,7 @@ inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 't
   eq_resolutionI: 
    "D = add_mset l D' \<Longrightarrow>
     l = t !\<approx> t' \<Longrightarrow>
-    welltyped_imgu \<V> t t' \<mu> \<Longrightarrow>
+    welltyped_imgu_on (clause.vars D) \<V> t t' \<mu> \<Longrightarrow>
     select D = {#} \<and> is_maximal (l \<cdot>l \<mu>) (D \<cdot> \<mu>) \<or> is_maximal (l \<cdot>l \<mu>) (select D \<cdot> \<mu>) \<Longrightarrow>
     C = D' \<cdot> \<mu> \<Longrightarrow>
     eq_resolution (D, \<V>) (C, \<V>)"
@@ -95,19 +94,19 @@ inductive eq_factoring :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty
     select D = {#} \<Longrightarrow> 
     is_maximal (l\<^sub>1 \<cdot>l \<mu>) (D \<cdot> \<mu>) \<Longrightarrow>
     \<not> (t\<^sub>1 \<cdot>t \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<mu>) \<Longrightarrow>
-    welltyped_imgu \<V> t\<^sub>1 t\<^sub>2 \<mu> \<Longrightarrow>
+    welltyped_imgu_on (clause.vars D) \<V> t\<^sub>1 t\<^sub>2 \<mu> \<Longrightarrow>
     C = add_mset (t\<^sub>1 \<approx> t\<^sub>2') (add_mset (t\<^sub>1' !\<approx> t\<^sub>2') D') \<cdot> \<mu> \<Longrightarrow>
     eq_factoring (D, \<V>) (C, \<V>)"
 
-(* TODO: Get things like is_renaming out of the name scope *)
-(* TODO: \<P> \<in> {Pos, Neg} *)
-(* TODO: \<forall>x \<in> clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x *)
+(* TODO: infinite_variables_per_type \<V>\<^sub>1 *)
 inductive superposition ::
   "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
   superpositionI:
-   "term.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
-    term.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
+   "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow> 
+    infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
+    term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
+    term_subst.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
     clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<Longrightarrow>
     E = add_mset l\<^sub>1 E' \<Longrightarrow>
     D = add_mset l\<^sub>2 D' \<Longrightarrow>
@@ -115,9 +114,9 @@ where
     l\<^sub>1 = \<P> (Upair c\<^sub>1\<langle>t\<^sub>1\<rangle> t\<^sub>1') \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
     \<not> is_Var t\<^sub>1 \<Longrightarrow>
-    welltyped_imgu \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu> \<Longrightarrow>
-    \<forall>x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x \<Longrightarrow>
-    \<forall>x \<in> clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x \<Longrightarrow>
+    welltyped_imgu_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu> \<Longrightarrow>
+    \<forall>x \<in> clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x) \<Longrightarrow>
+    \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
     is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
     (\<And>\<tau> \<tau>'. typed \<V>\<^sub>2 t\<^sub>2 \<tau> \<Longrightarrow> typed \<V>\<^sub>2 t\<^sub>2' \<tau>' \<Longrightarrow> \<tau> = \<tau>') \<Longrightarrow>
@@ -126,15 +125,13 @@ where
       \<and> select E = {#} 
       \<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)) \<or>
     (\<P> = Neg 
-      \<and> (select E = {#} \<and> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>) 
+      \<and> (select E = {#} \<and> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)
           \<or> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>))) \<Longrightarrow>
     select D = {#} \<Longrightarrow>
     is_strictly_maximal (l\<^sub>2 \<cdot>l \<rho>\<^sub>2 \<odot> \<mu>) (D \<cdot> \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     \<not> (c\<^sub>1\<langle>t\<^sub>1\<rangle> \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<mu>) \<Longrightarrow>
     \<not> (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     C = add_mset (\<P> (Upair (c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1))) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2) \<cdot> \<mu> \<Longrightarrow>
-    infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow> 
-    infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
     superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
 
 abbreviation eq_factoring_inferences where
@@ -157,18 +154,20 @@ subsubsection \<open>Alternative Specification of the Superposition Rule\<close>
 inductive pos_superposition ::
   "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
-  pos_superpositionI: "
-    term.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
-    term.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
+  pos_superpositionI: 
+   "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow> 
+    infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
+    term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
+    term_subst.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
     clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<Longrightarrow>
     E = add_mset l\<^sub>1 E' \<Longrightarrow>
     D = add_mset l\<^sub>2 D' \<Longrightarrow>
     l\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle> \<approx> t\<^sub>1' \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
     \<not> is_Var t\<^sub>1 \<Longrightarrow>
-    welltyped_imgu \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu> \<Longrightarrow>
-    \<forall>x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x \<Longrightarrow>
-    \<forall>x \<in> clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x \<Longrightarrow>
+    welltyped_imgu_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu> \<Longrightarrow>
+    \<forall>x \<in> clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x) \<Longrightarrow>
+    \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
     is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
     (\<And>\<tau> \<tau>'. typed \<V>\<^sub>2 t\<^sub>2 \<tau> \<Longrightarrow> typed \<V>\<^sub>2 t\<^sub>2' \<tau>' \<Longrightarrow> \<tau> = \<tau>') \<Longrightarrow>
@@ -189,27 +188,29 @@ lemma superposition_if_pos_superposition:
   shows "superposition D E C"
   using assms
 proof (cases rule: pos_superposition.cases)
-  case (pos_superpositionI \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C)
+  case (pos_superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3  C)
   then show ?thesis
-    using superpositionI[of \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' Pos c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C]
+    using superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' Pos c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C]
     by blast
 qed
 
 inductive neg_superposition ::
   "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool"
 where
-  neg_superpositionI: "
-    term.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
-    term.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
+  neg_superpositionI: 
+   "infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
+    infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
+    term_subst.is_renaming \<rho>\<^sub>1 \<Longrightarrow>
+    term_subst.is_renaming \<rho>\<^sub>2 \<Longrightarrow>
     clause.vars (E \<cdot> \<rho>\<^sub>1) \<inter> clause.vars (D \<cdot> \<rho>\<^sub>2) = {} \<Longrightarrow>
     E = add_mset l\<^sub>1 E' \<Longrightarrow>
     D = add_mset l\<^sub>2 D' \<Longrightarrow>
     l\<^sub>1 = c\<^sub>1\<langle>t\<^sub>1\<rangle> !\<approx> t\<^sub>1' \<Longrightarrow>
     l\<^sub>2 = t\<^sub>2 \<approx> t\<^sub>2' \<Longrightarrow>
     \<not> is_Var t\<^sub>1 \<Longrightarrow>
-    welltyped_imgu \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu> \<Longrightarrow>
-    \<forall>x \<in> clause.vars (E \<cdot> \<rho>\<^sub>1). \<V>\<^sub>1 (inv \<rho>\<^sub>1 (Var x)) = \<V>\<^sub>3 x \<Longrightarrow>
-    \<forall>x \<in> clause.vars (D \<cdot> \<rho>\<^sub>2). \<V>\<^sub>2 (inv \<rho>\<^sub>2 (Var x)) = \<V>\<^sub>3 x \<Longrightarrow>
+    welltyped_imgu_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (t\<^sub>1 \<cdot>t \<rho>\<^sub>1) (t\<^sub>2 \<cdot>t \<rho>\<^sub>2) \<mu> \<Longrightarrow>
+    \<forall>x \<in> clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>1 x) \<Longrightarrow>
+    \<forall>x \<in> clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (term.rename \<rho>\<^sub>2 x) \<Longrightarrow>
     is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<rho>\<^sub>1 \<Longrightarrow>
     is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2 \<Longrightarrow>
     (\<And>\<tau> \<tau>'. typed \<V>\<^sub>2 t\<^sub>2 \<tau> \<Longrightarrow> typed \<V>\<^sub>2 t\<^sub>2' \<tau>' \<Longrightarrow> \<tau> = \<tau>') \<Longrightarrow>
@@ -221,8 +222,6 @@ where
     \<not> (c\<^sub>1\<langle>t\<^sub>1\<rangle> \<cdot>t \<rho>\<^sub>1 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>1' \<cdot>t \<rho>\<^sub>1 \<odot> \<mu>) \<Longrightarrow>
     \<not> (t\<^sub>2 \<cdot>t \<rho>\<^sub>2 \<odot> \<mu> \<preceq>\<^sub>t t\<^sub>2' \<cdot>t \<rho>\<^sub>2 \<odot> \<mu>) \<Longrightarrow>
     C = add_mset ((c\<^sub>1 \<cdot>t\<^sub>c \<rho>\<^sub>1)\<langle>t\<^sub>2' \<cdot>t \<rho>\<^sub>2\<rangle> !\<approx> (t\<^sub>1' \<cdot>t \<rho>\<^sub>1)) (E' \<cdot> \<rho>\<^sub>1 + D' \<cdot> \<rho>\<^sub>2) \<cdot> \<mu> \<Longrightarrow>
-    infinite_variables_per_type \<V>\<^sub>1 \<Longrightarrow>
-    infinite_variables_per_type \<V>\<^sub>2 \<Longrightarrow>
     neg_superposition (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C, \<V>\<^sub>3)"
 
 lemma superposition_if_neg_superposition:
@@ -230,9 +229,9 @@ lemma superposition_if_neg_superposition:
   shows "superposition E D C"
   using assms
 proof (cases E D C rule: neg_superposition.cases)
-  case (neg_superpositionI \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C)
+  case (neg_superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C)
   then show ?thesis
-    using superpositionI[of \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' Neg c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C]
+    using superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' Neg c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C]
     by blast
 qed
 
@@ -242,11 +241,11 @@ proof (rule iffI)
   assume "superposition D E C"
   thus "pos_superposition D E C \<or> neg_superposition D E C"
   proof (cases D E C rule: superposition.cases)
-    case (superpositionI \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C)
+    case (superpositionI \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' \<P> c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C)
     then show ?thesis
       using
-        pos_superpositionI[of \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C]
-        neg_superpositionI[of \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 \<V>\<^sub>1 \<V>\<^sub>2 C] 
+        pos_superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C]
+        neg_superpositionI[of \<V>\<^sub>1 \<V>\<^sub>2 \<rho>\<^sub>1 \<rho>\<^sub>2 E D l\<^sub>1 E' l\<^sub>2 D' c\<^sub>1 t\<^sub>1 t\<^sub>1' t\<^sub>2 t\<^sub>2' \<mu> \<V>\<^sub>3 C] 
       by blast
   qed
 next

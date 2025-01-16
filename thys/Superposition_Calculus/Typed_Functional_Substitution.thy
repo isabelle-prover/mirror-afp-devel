@@ -1,8 +1,8 @@
 theory Typed_Functional_Substitution
-  imports 
+  imports
     Typing
-    Functional_Substitution
-    Fun_Extra
+    Abstract_Substitution.Functional_Substitution
+    Infinite_Variables_Per_Type
 begin
 
 type_synonym ('var, 'ty) var_types = "'var \<Rightarrow> 'ty"
@@ -44,7 +44,7 @@ end
 
 locale inhabited_explicitly_typed_functional_substitution = 
  explicitly_typed_functional_substitution +
- assumes types_inhabited: "\<And>\<tau>. \<exists>base. is_ground base \<and> typed \<V> base \<tau>"
+ assumes types_inhabited: "\<And>\<tau>. \<exists>b. is_ground b \<and> typed \<V> b \<tau>"
 
 locale typed_functional_substitution = 
   base: explicitly_typed_functional_substitution where 
@@ -133,7 +133,7 @@ assumes typing: "\<And>\<V>. typing (is_typed \<V>) (is_welltyped \<V>)"
 begin
 
 sublocale base: typing "is_typed \<V>" "is_welltyped \<V>"
-  by(rule typing)
+  by (rule typing)
 
 abbreviation is_typed_on where
   "is_typed_on \<equiv> is_typed.base.is_typed_on"
@@ -258,12 +258,11 @@ sublocale replaceable_\<V> where
 
 end
 
-(* TODO: naming (esp. explicit_...) + the_inv \<rightarrow> rename *)
-locale typed_renaming = typed_functional_substitution +
+locale typed_renaming = typed_functional_substitution + renaming_variables +
 assumes
   typed_renaming [simp]: 
     "\<And>\<V> \<V>' expr \<rho>. base.is_renaming \<rho> \<Longrightarrow> 
-      \<forall>x \<in> vars (expr \<cdot> \<rho>). \<V> (inv \<rho> (id_subst x)) = \<V>' x \<Longrightarrow> 
+      \<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x) \<Longrightarrow>
       is_typed \<V>' (expr \<cdot> \<rho>) \<longleftrightarrow> is_typed \<V> expr"
 
 locale explicitly_typed_renaming = 
@@ -274,7 +273,7 @@ for typed :: "('var \<Rightarrow> 'ty) \<Rightarrow> 'expr \<Rightarrow> 'ty \<R
 assumes
   explicit_typed_renaming [simp]: 
   "\<And>\<V> \<V>' expr \<rho> \<tau>. is_renaming \<rho> \<Longrightarrow> 
-      \<forall>x \<in> vars (expr \<cdot> \<rho>). \<V> (inv \<rho> (id_subst x)) = \<V>' x \<Longrightarrow>
+      \<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x) \<Longrightarrow>
       typed \<V>' (expr \<cdot> \<rho>) \<tau> \<longleftrightarrow> typed \<V> expr \<tau>"
 begin
 
@@ -286,40 +285,37 @@ sublocale typed_renaming
 lemma renaming_ground_subst: 
   assumes 
     "is_renaming \<rho>"
-    "is_typed_on UNIV \<V>' \<gamma>" 
+    "is_typed_on (\<Union>(vars ` \<rho> ` X)) \<V>' \<gamma>" 
     "is_typed_on X \<V> \<rho>" 
     "is_ground_subst \<gamma>" 
-    "\<forall>x \<in> \<Union>(vars ` \<rho> ` X). \<V> (inv \<rho> (id_subst x)) = \<V>' x"
+    "\<forall>x \<in> X. \<V> x = \<V>' (rename \<rho> x)"
   shows "is_typed_on X \<V> (\<rho> \<odot> \<gamma>)"
 proof(intro ballI)
   fix x
-  assume "x \<in> X"
+  assume x_in_X: "x \<in> X"
 
   then have "typed \<V> (\<rho> x) (\<V> x)"
     by (simp add: assms(3))
 
-  obtain y where y: "\<rho> x = id_subst y"
-    using obtain_renamed_variable[OF assms(1)].
+  define y where "y \<equiv> (rename \<rho> x)"
 
-  then have "y \<in> \<Union>(vars ` \<rho> ` X)"
-    using \<open>x \<in> X\<close>  
-    by (metis UN_iff image_eqI singletonI vars_id_subst)
+  have "y \<in> \<Union>(vars ` \<rho> ` X)"
+    using x_in_X
+    unfolding y_def
+    by (metis UN_iff assms(1) id_subst_rename image_eqI singletonI vars_id_subst)
 
-  moreover have "typed \<V> (\<gamma> y) (\<V>' y)"
+  moreover then have "typed \<V> (\<gamma> y) (\<V>' y)"
     using explicit_replace_\<V>
-    by (metis assms(2,4) left_neutral emptyE is_ground_subst_is_ground iso_tuple_UNIV_I 
-        comp_subst_iff)
+    by (metis assms(2,4) left_neutral emptyE is_ground_subst_is_ground comp_subst_iff)
    
-  ultimately have "typed \<V> (\<gamma> y) (\<V> (inv \<rho> (id_subst y)))"
-    using assms(5) by force
-
-  moreover have "inv \<rho> (id_subst y) = x"
-    unfolding y[symmetric]
-    using inv_renaming[OF assms(1)].   
+  ultimately have "typed \<V> (\<gamma> y) (\<V> x)"
+    unfolding y_def
+    using assms(5) x_in_X
+    by fastforce
 
   moreover have "\<gamma> y = (\<rho> \<odot> \<gamma>) x"
-    using y
-    by (metis left_neutral comp_subst_iff)
+    unfolding y_def 
+    by (metis assms(1) comp_subst_iff id_subst_rename left_neutral)
 
   ultimately show "typed \<V> ((\<rho> \<odot> \<gamma>) x) (\<V> x)"
     by argo
@@ -330,14 +326,11 @@ lemma inj_id_subst: "inj id_subst"
   by blast
 
 lemma obtain_typed_renamings:
-  fixes \<V>\<^sub>1 :: "'var \<Rightarrow> 'ty"
+  fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
-    (* TODO: Move to locale assumption *)
     "infinite (UNIV :: 'var set)"
     "finite X" 
-    "finite Y" 
-    "\<And>ty. infinite {x. \<V>\<^sub>1 x = ty}" 
-    "\<And>ty. infinite {x. \<V>\<^sub>2 x = ty}"
+    "infinite_variables_per_type \<V>\<^sub>2"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
     "is_renaming \<rho>\<^sub>1"
     "is_renaming \<rho>\<^sub>2" 
@@ -382,6 +375,79 @@ qed
 
 end
 
+lemma (in renaming_variables) obtain_merged_\<V>:
+  assumes 
+    \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
+    \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
+    rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
+    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
+    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
+    finite_vars: "finite (vars expr)"
+  obtains \<V>\<^sub>3 where 
+    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"  
+    "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
+    "infinite_variables_per_type \<V>\<^sub>3"
+proof standard
+
+  define \<V>\<^sub>3 where 
+    "\<And>x. \<V>\<^sub>3 x \<equiv>
+        if x \<in> vars (expr \<cdot> \<rho>\<^sub>1)
+        then \<V>\<^sub>1 (inv \<rho>\<^sub>1 (id_subst x))
+        else \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x))"
+  
+  show "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
+  proof (intro ballI)
+    fix x
+    assume "x\<in>vars expr"
+
+    then have "rename \<rho>\<^sub>1 x \<in> vars (expr \<cdot> \<rho>\<^sub>1)"
+      using rename_variables[OF \<rho>\<^sub>1]
+      by blast
+
+    then show "\<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"
+      unfolding \<V>\<^sub>3_def
+      by (simp add: \<rho>\<^sub>1 inv_renaming)
+  qed
+    
+
+  show "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
+  proof (intro ballI)
+    fix x
+    assume "x\<in> vars expr'"
+
+    then have "rename \<rho>\<^sub>2 x \<in> vars (expr' \<cdot> \<rho>\<^sub>2)"
+      using rename_variables[OF \<rho>\<^sub>2]
+      by blast
+
+    then show "\<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
+      unfolding \<V>\<^sub>3_def
+      using \<rho>\<^sub>2 inv_renaming rename_apart
+      by (metis (mono_tags, lifting) disjoint_iff id_subst_rename)
+  qed
+
+  have "finite {x. x \<in> vars (expr \<cdot> \<rho>\<^sub>1)}"
+    using finite_vars
+    by (simp add: \<rho>\<^sub>1 rename_variables)
+
+  moreover {
+    fix \<tau>
+
+    have "infinite {x. \<V>\<^sub>2 (inv \<rho>\<^sub>2 (id_subst x)) = \<tau>}" 
+    proof(rule surj_infinite_set[OF surj_inv_renaming, OF \<rho>\<^sub>2])
+
+      show "infinite {x. \<V>\<^sub>2 x = \<tau>}"
+        using \<V>\<^sub>2
+        unfolding infinite_variables_per_type_def
+        by blast
+    qed
+  }
+
+  ultimately show "infinite_variables_per_type \<V>\<^sub>3"
+    unfolding infinite_variables_per_type_def \<V>\<^sub>3_def if_distrib if_distribR Collect_if_eq 
+      Collect_not_mem_conj_eq
+    by auto
+qed
+
 locale based_typed_renaming =
   base: explicitly_typed_renaming where 
   subst = base_subst and vars = "base_vars :: 'base \<Rightarrow> 'v set" and 
@@ -392,13 +458,12 @@ locale based_typed_renaming =
   renaming_variables
 begin
 
-(* TODO: precedence  *)
 lemma renaming_grounding:
   assumes 
     renaming: "base.is_renaming \<rho>" and
     \<rho>_\<gamma>_is_welltyped: "base.is_typed_on (vars expr) \<V> (\<rho> \<odot> \<gamma>)" and
-    grounding: "is_ground (expr \<cdot> (\<rho> \<odot> \<gamma>))" and
-    \<V>'_\<V>: "\<forall>x \<in> vars (expr \<cdot> \<rho>). \<V>' x = \<V> (inv \<rho> (id_subst x))"
+    grounding: "is_ground (expr \<cdot> \<rho> \<odot> \<gamma>)" and
+    \<V>_\<V>': "\<forall>x \<in> vars expr. \<V> x = \<V>' (rename \<rho> x)"
   shows "base.is_typed_on (vars (expr \<cdot> \<rho>)) \<V>' \<gamma>"
 proof(intro ballI)
   fix x
@@ -430,21 +495,21 @@ proof(intro ballI)
     by (metis (no_types, lifting) UN_E f_inv_into_f)
 
   ultimately show "typed \<V>' (\<gamma> x) (\<V>' x)"
-    unfolding y_def \<V>'_\<V>[rule_format, OF x_in_expr]
-    by argo
+    using \<V>_\<V>'[rule_format]
+    by (metis base.right_uniqueD base.typed_id_subst id_subst_rename renaming renaming_inv_into 
+        x_in_expr y_def y_in_vars)
 qed
 
-lemma obtain_welltyped_merged_grounding:
+lemma obtain_merged_grounding:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes 
     "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" 
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
     "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
     "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
-    \<V>\<^sub>1: "\<And>ty. infinite {x. \<V>\<^sub>1 x = ty}" and
-    \<V>\<^sub>2: "\<And>ty. infinite {x. \<V>\<^sub>2 x = ty}" and
+    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     infinite_vars_UNIV: "infinite (UNIV :: 'v set)" and
-    finite_vars: "finite (vars expr)" "finite (vars expr')"
+    finite_vars: "finite (vars expr)"
   obtains \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma>  where
     "base.is_renaming \<rho>\<^sub>1"
     "base.is_renaming \<rho>\<^sub>2"
@@ -461,10 +526,10 @@ proof-
     rename_apart: "\<rho>\<^sub>1 ` (vars expr) \<inter> \<rho>\<^sub>2 ` (vars expr') = {}" and
     \<rho>\<^sub>1_is_welltyped: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1" and
     \<rho>\<^sub>2_is_welltyped: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
-    using base.obtain_typed_renamings[OF infinite_vars_UNIV finite_vars \<V>\<^sub>1 \<V>\<^sub>2].
+    using base.obtain_typed_renamings[OF infinite_vars_UNIV finite_vars \<V>\<^sub>2].
 
   have rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
-    using rename_apart renaming_variables[OF \<rho>\<^sub>1] renaming_variables[OF \<rho>\<^sub>2]
+    using rename_apart rename_variables_id_subst[OF \<rho>\<^sub>1] rename_variables_id_subst[OF \<rho>\<^sub>2]
     by blast
 
   from \<rho>\<^sub>1 \<rho>\<^sub>2 obtain \<rho>\<^sub>1_inv \<rho>\<^sub>2_inv where
@@ -491,7 +556,7 @@ proof-
         using obtain_renamed_variable[OF \<rho>\<^sub>1].
 
       then have "y \<in> vars (expr \<cdot> \<rho>\<^sub>1)"
-        using x_in_vars \<rho>\<^sub>1 renaming_variables 
+        using x_in_vars \<rho>\<^sub>1 rename_variables_id_subst 
         by (metis base.inj_id_subst image_eqI inj_image_mem_iff)
 
       then have "\<gamma> y = base_subst (\<rho>\<^sub>1_inv y) \<gamma>\<^sub>1"
@@ -517,7 +582,7 @@ proof-
         using obtain_renamed_variable[OF \<rho>\<^sub>2].
 
       then have "y \<in> vars (expr' \<cdot> \<rho>\<^sub>2)"
-        using x_in_vars \<rho>\<^sub>2 renaming_variables 
+        using x_in_vars \<rho>\<^sub>2 rename_variables_id_subst 
         by (metis base.inj_id_subst imageI inj_image_mem_iff)
 
       then have "\<gamma> y = base_subst (\<rho>\<^sub>2_inv y) \<gamma>\<^sub>2"
