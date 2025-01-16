@@ -7,7 +7,6 @@ chapter \<open>Unsigned words of 64 bits\<close>
 theory Uint64 imports
   Uint_Common
   Code_Target_Word
-  Code_Int_Integer_Conversion
   Code_Target_Integer_Bit
 begin
 

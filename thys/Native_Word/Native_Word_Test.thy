@@ -7,7 +7,6 @@ chapter \<open>Test cases\<close>
 theory Native_Word_Test
 imports
   Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
-  "Word_Lib.Least_significant_bit"
   "HOL-Library.Code_Test"
 begin
 
@@ -48,7 +47,7 @@ definition bit_integer_test :: bool
     , 12, -13
     , 4, 12] \<and>
     [ bit (5 :: integer) 4, bit (5 :: integer) 2, bit (-5 :: integer) 4, bit (-5 :: integer) 2
-    , lsb (5 :: integer), lsb (4 :: integer), lsb (-1 :: integer), lsb (-2 :: integer),
+    , bit (5 :: integer) 0, bit (4 :: integer) 0, bit (-1 :: integer) 0, bit (-2 :: integer) 0,
       msb (5 :: integer), msb (0 :: integer), msb (-1 :: integer), msb (-2 :: integer)]
   = [ False, True, True, False,
       True, False, True, False,

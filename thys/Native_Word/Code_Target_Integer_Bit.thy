@@ -6,11 +6,8 @@ chapter \<open>Bit operations for target language integers\<close>
 
 theory Code_Target_Integer_Bit
   imports
-    "HOL-Library.Word"
-    "Code_Target_Word"
-    "Code_Int_Integer_Conversion"
-    "Word_Lib.Most_significant_bit"
-    "Word_Lib.Bit_Comprehension"
+    Code_Target_Word
+    Code_Int_Integer_Conversion
 begin
 
 section \<open>More lemmas about @{typ integer}s\<close>
