@@ -30,7 +30,7 @@ abbreviation is_inference_grounding_one_premise where
         \<and> clause.is_ground (C \<cdot> \<gamma>)
         \<and> \<iota>\<^sub>G = Infer [clause.to_ground (D \<cdot> \<gamma>)] (clause.to_ground (C \<cdot> \<gamma>))
         \<and> clause.is_welltyped \<V> D 
-        \<and> is_welltyped_on (clause.vars C) \<V> \<gamma>
+        \<and> term.subst.is_welltyped_on (clause.vars C) \<V> \<gamma>
         \<and> clause.is_welltyped \<V> C
         \<and> \<V> = \<V>'
         \<and> infinite_variables_per_type \<V>"
@@ -50,7 +50,7 @@ abbreviation is_inference_grounding_two_premises where
               (clause.to_ground (C \<cdot> \<gamma>))
         \<and> clause.is_welltyped \<V>\<^sub>1 E
         \<and> clause.is_welltyped \<V>\<^sub>2 D
-        \<and> is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma>
+        \<and> term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma>
         \<and> clause.is_welltyped \<V>\<^sub>3 C
         \<and> infinite_variables_per_type \<V>\<^sub>1
         \<and> infinite_variables_per_type \<V>\<^sub>2

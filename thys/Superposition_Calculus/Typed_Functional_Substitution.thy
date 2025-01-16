@@ -3,6 +3,7 @@ theory Typed_Functional_Substitution
     Typing
     Abstract_Substitution.Functional_Substitution
     Infinite_Variables_Per_Type
+    Collect_Extra
 begin
 
 type_synonym ('var, 'ty) var_types = "'var \<Rightarrow> 'ty"
@@ -15,14 +16,14 @@ for
   typed :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" +
 assumes 
   predicate_typed: "\<And>\<V>. predicate_typed (typed \<V>)" and
-  typed_id_subst: "\<And>\<V> x \<tau>. \<V> x = \<tau> \<Longrightarrow> typed \<V> (id_subst x) \<tau>"
+  typed_id_subst [intro]: "\<And>\<V> x \<tau>. \<V> x = \<tau> \<Longrightarrow> typed \<V> (id_subst x) \<tau>"
 begin
 
 sublocale predicate_typed "typed \<V>"
-  by (rule predicate_typed)
+  using predicate_typed .
 
 abbreviation is_typed_on :: "'var set \<Rightarrow> ('var, 'ty) var_types \<Rightarrow> ('var \<Rightarrow> 'base) \<Rightarrow> bool" where 
-  "is_typed_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. typed \<V> (\<sigma> x) (\<V> x)"
+  "\<And>\<V>. is_typed_on X \<V> \<sigma> \<equiv> \<forall>x \<in> X. typed \<V> (\<sigma> x) (\<V> x)"
 
 lemma subst_update:
   assumes "typed \<V> (id_subst var) \<tau>" "typed \<V> update \<tau>"  "is_typed_on X \<V> \<gamma>" 
@@ -121,6 +122,30 @@ sublocale explicitly_typed_functional_substitution \<subseteq> typed_functional_
   base_typed = typed                                
   by unfold_locales
 
+locale subst_is_typed_abbreviations = 
+  is_typed: typed_functional_substitution where 
+  base_typed = base_typed and is_typed = is_typed' +
+  is_welltyped: typed_functional_substitution where 
+  base_typed = base_welltyped and is_typed = is_welltyped'
+for 
+  base_typed base_welltyped :: "('var, 'ty) var_types \<Rightarrow> 'base \<Rightarrow> 'ty \<Rightarrow> bool" and 
+  is_typed' is_welltyped' :: "('var, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> bool"
+begin
+
+abbreviation is_typed_on where
+  "is_typed_on \<equiv> is_typed.base.is_typed_on"
+
+abbreviation is_welltyped_on where
+  "is_welltyped_on \<equiv> is_welltyped.base.is_typed_on"
+
+abbreviation is_typed where
+  "is_typed \<equiv> is_typed.base.is_typed_on UNIV"
+
+abbreviation is_welltyped where
+  "is_welltyped \<equiv> is_welltyped.base.is_typed_on UNIV"
+
+end
+
 locale functional_substitution_typing =
   is_typed: typed_functional_substitution where 
   base_typed = base_typed and is_typed = is_typed +
@@ -135,11 +160,8 @@ begin
 sublocale base: typing "is_typed \<V>" "is_welltyped \<V>"
   by (rule typing)
 
-abbreviation is_typed_on where
-  "is_typed_on \<equiv> is_typed.base.is_typed_on"
-
-abbreviation is_welltyped_on where
-  "is_welltyped_on \<equiv> is_welltyped.base.is_typed_on"
+sublocale subst: subst_is_typed_abbreviations 
+  by unfold_locales
 
 end
 
@@ -149,31 +171,23 @@ locale base_functional_substitution_typing =
 for 
   welltyped typed :: "('var, 'ty) var_types \<Rightarrow> 'expr \<Rightarrow> 'ty \<Rightarrow> bool" +
 assumes 
-   explicit_typing: "\<And>\<V>. explicit_typing (typed \<V>) (welltyped \<V>)" and
-   welltyped_id_subst [intro]: "\<And>\<V> x. welltyped \<V> (id_subst x) (\<V> x)"
+   explicit_typing: "\<And>\<V>. explicit_typing (typed \<V>) (welltyped \<V>)"
 begin
 
 sublocale base: explicit_typing "typed \<V>" "welltyped \<V>"
-  by(rule explicit_typing)
+  using explicit_typing .
 
 sublocale functional_substitution_typing where 
   is_typed = base.is_typed and is_welltyped = base.is_welltyped and base_typed = typed and 
   base_welltyped = welltyped and base_vars = vars and base_subst = subst
   by unfold_locales
 
-(* TODO: Would need to go one level higher*)
-abbreviation is_welltyped where 
-  "is_welltyped \<equiv> is_welltyped_on UNIV"
-
-abbreviation is_typed where
-  "is_typed \<equiv> is_typed_on UNIV"
-
-sublocale typing "is_typed_on X \<V>" "is_welltyped_on X \<V>"
+sublocale subst: typing "subst.is_typed_on X \<V>" "subst.is_welltyped_on X \<V>"
   using base.typed_if_welltyped
   by unfold_locales blast
 
-lemma typed_id_subst: "typed \<V> (id_subst x) (\<V> x)"
-  using welltyped_id_subst
+lemma typed_id_subst [intro]: "typed \<V> (id_subst x) (\<V> x)"
+  using welltyped.typed_id_subst
   by (simp add: base.typed_if_welltyped)
 
 lemmas is_typed_id_subst = typed.is_typed_id_subst
@@ -408,7 +422,6 @@ proof standard
       unfolding \<V>\<^sub>3_def
       by (simp add: \<rho>\<^sub>1 inv_renaming)
   qed
-    
 
   show "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
   proof (intro ballI)

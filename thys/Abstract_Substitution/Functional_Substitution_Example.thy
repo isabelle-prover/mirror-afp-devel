@@ -53,6 +53,4 @@ thm
 
   term_subst.vars_subst_subset
 
-
-
 end

@@ -1,10 +1,21 @@
 theory Infinite_Variables_Per_Type
   imports
-    HOL_Extra
     "HOL-Library.Countable_Set" 
     "HOL-Cardinals.Cardinals"
     Fresh_Identifiers.Fresh
 begin
+
+lemma infinite_prods: 
+  assumes"infinite (UNIV :: 'a set)"
+  shows "infinite {p :: 'a \<times> 'a. fst p = y}"
+proof-
+  have "{p :: 'a \<times> 'a . fst p = y} = {y} \<times> UNIV"
+    by auto
+
+  then show ?thesis
+    using finite_cartesian_productD2 assms 
+    by auto
+qed
 
 lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = ty} \<Longrightarrow> infinite {x. f (g x) = ty}"
   by (smt (verit) UNIV_I finite_imageI image_iff mem_Collect_eq rev_finite_subset subset_eq)

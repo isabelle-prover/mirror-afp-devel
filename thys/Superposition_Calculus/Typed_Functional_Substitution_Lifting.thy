@@ -4,6 +4,9 @@ theory Typed_Functional_Substitution_Lifting
     Abstract_Substitution.Functional_Substitution_Lifting
 begin
 
+lemma ext_equiv: "(\<And>x. f x \<equiv> g x) \<Longrightarrow> f \<equiv> g"
+  by presburger
+
 locale typed_functional_substitution_lifting = 
   sub: typed_functional_substitution where 
   vars = sub_vars and subst = sub_subst and is_typed = sub_is_typed and 

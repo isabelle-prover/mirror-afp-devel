@@ -82,10 +82,10 @@ sublocale clause: term_based_nonground_typing_lifting where
   by unfold_locales
 
 abbreviation is_welltyped_grounding where 
-  "is_welltyped_grounding C \<V> \<gamma> \<equiv> 
-    clause.is_ground (C \<cdot> \<gamma>) \<and> 
+  "is_welltyped_grounding C \<V> \<gamma> \<equiv>
+    clause.is_ground (C \<cdot> \<gamma>) \<and>
     clause.is_welltyped \<V> C \<and>
-    is_welltyped_on (clause.vars C) \<V> \<gamma> \<and>
+    term.subst.is_welltyped_on (clause.vars C) \<V> \<gamma> \<and>
     infinite_variables_per_type \<V>"
 
 definition clause_groundings :: "('f, 'v, 'ty) typed_clause \<Rightarrow> 'f ground_atom clause set" where
@@ -93,6 +93,5 @@ definition clause_groundings :: "('f, 'v, 'ty) typed_clause \<Rightarrow> 'f gro
     { clause.to_ground (fst C \<cdot> \<gamma>) | \<gamma>. is_welltyped_grounding (fst C) (snd C) \<gamma> }"
 
 end
-
 
 end

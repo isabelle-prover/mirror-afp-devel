@@ -1,7 +1,7 @@
 theory Nonground_Term_Typing
   imports 
-    Term_Typing 
-    Typed_Functional_Substitution 
+    Term_Typing
+    Typed_Functional_Substitution
     Nonground_Term
 begin
 
@@ -43,7 +43,7 @@ proof unfold_locales
       by (auto elim!: typed.cases)
   qed
 next
-  show welltyped_right_unique: "right_unique (welltyped \<V>)"
+  show "right_unique (welltyped \<V>)"
   proof (rule right_uniqueI)
     fix t \<tau>\<^sub>1 \<tau>\<^sub>2
     assume "welltyped \<V> t \<tau>\<^sub>1" and "welltyped \<V> t \<tau>\<^sub>2"
@@ -140,14 +140,10 @@ next
     by (metis term.exhaust prod.exhaust typed.simps)
 qed
 
-sublocale nonground_term_functional_substitution_typing where 
+sublocale "term": nonground_term_functional_substitution_typing where 
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
   vars = term.vars and welltyped = welltyped and typed = typed
 proof unfold_locales
-  fix \<V> :: "('v, 'ty) var_types" and x
-  show "welltyped \<V> (Var x) (\<V> x)"
-    by (simp add: welltyped.Var)
-next
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
   assume is_typed_on: "\<forall>x \<in> term.vars t. typed \<V> (\<sigma> x) (\<V> x)"
 
@@ -179,7 +175,7 @@ next
     assume "welltyped \<V> (t \<cdot>t \<sigma>) \<tau>"
     then show "welltyped \<V> t \<tau>"
       using is_welltyped_on
-    proof(induction "t \<cdot>t \<sigma>" \<tau>  arbitrary: t rule: welltyped.induct)
+    proof(induction "t \<cdot>t \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
       case (Var x \<tau>)
 
       then obtain x' where t: "t = Var x'"
@@ -365,15 +361,17 @@ qed
 
 (* TODO: Move further up *)
 lemma is_welltyped_on_subst_compose [intro]:
-  assumes "is_welltyped_on X \<V> \<sigma>" "is_welltyped_on (\<Union>(term.vars ` \<sigma> ` X)) \<V> \<sigma>'"
-  shows "is_welltyped_on X \<V> (\<sigma> \<odot> \<sigma>')"
+  assumes
+    "term.subst.is_welltyped_on X \<V> \<sigma>" 
+    "term.subst.is_welltyped_on (\<Union>(term.vars ` \<sigma> ` X)) \<V> \<sigma>'"
+  shows "term.subst.is_welltyped_on X \<V> (\<sigma> \<odot> \<sigma>')"
   using assms
   unfolding subst_compose_def
   by auto
 
 lemma is_welltyped_subst_compose [intro]:
-  assumes "is_welltyped \<V> \<sigma>" "is_welltyped \<V> \<sigma>'"
-  shows "is_welltyped \<V> (\<sigma> \<odot> \<sigma>')"
+  assumes "term.subst.is_welltyped \<V> \<sigma>" "term.subst.is_welltyped \<V> \<sigma>'"
+  shows "term.subst.is_welltyped \<V> (\<sigma> \<odot> \<sigma>')"
   using is_welltyped_on_subst_compose
   using assms
   unfolding subst_compose_def
@@ -382,26 +380,26 @@ lemma is_welltyped_subst_compose [intro]:
 lemma is_welltyped_on_subst_compose_renaming:
   assumes
     "term_subst.is_renaming \<rho>"
-    "is_welltyped_on X \<V> (\<rho> \<odot> \<sigma>)"
-    "is_welltyped_on X \<V> \<rho>"
-  shows "is_welltyped_on (\<Union> (term.vars ` \<rho> ` X)) \<V> \<sigma>"
+    "term.subst.is_welltyped_on X \<V> (\<rho> \<odot> \<sigma>)"
+    "term.subst.is_welltyped_on X \<V> \<rho>"
+  shows "term.subst.is_welltyped_on (\<Union> (term.vars ` \<rho> ` X)) \<V> \<sigma>"
   using assms
   unfolding term.is_renaming_iff
   unfolding subst_compose_def
   by (smt (verit) UN_E assms(1) eval_term.simps(1) image_iff is_FunI term.set_cases(2) 
       term.welltyped.right_uniqueD term_subst_is_renaming_iff
-      welltyped.typed_id_subst)
+      term.welltyped.typed_id_subst)
 
 lemma is_typed_subst_compose [intro]:
-  assumes "is_typed \<V> \<sigma>" "is_typed \<V> \<sigma>'"
-  shows "is_typed \<V> (\<sigma> \<odot> \<sigma>')"
+  assumes "term.subst.is_typed \<V> \<sigma>" "term.subst.is_typed \<V> \<sigma>'"
+  shows "term.subst.is_typed \<V> (\<sigma> \<odot> \<sigma>')"
   using assms
   unfolding subst_compose_def
   by auto
 
 lemma is_welltyped_subst: 
   assumes "welltyped \<V> (Var x) \<tau>" "welltyped \<V> t \<tau>"
-  shows "is_welltyped \<V> (subst x t)"
+  shows "term.subst.is_welltyped \<V> (subst x t)"
   using assms
   unfolding subst_def
   by (simp add: welltyped.simps)
@@ -496,8 +494,8 @@ lemma is_welltyped_unify:
   assumes    
     "unify es bs = Some unifier"
     "\<forall>(t, t') \<in> set es. \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
-    "is_welltyped \<V> (subst_of bs)"
-  shows "is_welltyped \<V> (subst_of unifier)"
+    "term.subst.is_welltyped \<V> (subst_of bs)"
+  shows "term.subst.is_welltyped \<V> (subst_of unifier)"
   using assms
 proof(induction es bs arbitrary: unifier rule: unify.induct)
   case (1 bs)
@@ -544,18 +542,18 @@ next
       using 3(4)
       by (smt (verit, ccfv_threshold) case_prodD case_prodI2 fun_upd_apply welltyped.Var 
           list.set_intros(1) list.set_intros(2) right_uniqueD term.welltyped.right_unique 
-           welltyped.explicit_subst_stability)
+           term.welltyped.explicit_subst_stability)
 
     moreover then have 
       "\<forall>(s, s') \<in> set (subst_list (subst x t) es). \<exists>\<tau>. welltyped \<V> s \<tau> \<and> welltyped \<V> s' \<tau>"
       unfolding subst_def subst_list_def
       by fastforce
 
-    moreover have "is_welltyped \<V> (subst x t)"
+    moreover have "term.subst.is_welltyped \<V> (subst x t)"
       using 3(4) is_welltyped_subst
       by fastforce
 
-    moreover then have "is_welltyped \<V> (subst_of ((x, t) # bs))"
+    moreover then have "term.subst.is_welltyped \<V> (subst_of ((x, t) # bs))"
       using 3(5)
       by (simp add: calculation(4) subst_compose_def)
 
@@ -574,18 +572,18 @@ next
     using 4(3)
     by (smt (verit, ccfv_threshold) case_prodD case_prodI2 fun_upd_apply welltyped.Var 
         list.set_intros(1) list.set_intros(2) right_uniqueD term.welltyped.right_unique 
-        welltyped.explicit_subst_stability)
+        term.welltyped.explicit_subst_stability)
 
   moreover then have 
     "\<forall>(s, s') \<in> set (subst_list (subst x (Fun t ts)) es). \<exists>\<tau>. welltyped \<V> s \<tau> \<and> welltyped \<V> s' \<tau>"
     unfolding subst_def subst_list_def
     by fastforce
 
-  moreover have "is_welltyped \<V> (subst x (Fun t ts))"
+  moreover have "term.subst.is_welltyped \<V> (subst x (Fun t ts))"
     using 4(3) is_welltyped_subst
     by fastforce
 
-  moreover then have "is_welltyped \<V> (subst_of ((x, (Fun t ts)) # bs))"
+  moreover then have "term.subst.is_welltyped \<V> (subst_of ((x, (Fun t ts)) # bs))"
     using 4(4) 
     by (simp add: calculation(4) subst_compose_def)
 
@@ -598,16 +596,16 @@ lemma is_welltyped_unify_single:
   assumes 
     unify: "unify [(t, t')] [] = Some unifier" and
     \<tau>: "\<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
-  shows "is_welltyped \<V> (subst_of unifier)"
+  shows "term.subst.is_welltyped \<V> (subst_of unifier)"
   using assms is_welltyped_unify[OF unify] \<tau>
-  by fastforce
+  by auto
 
 lemma welltyped_the_mgu: 
   assumes
     the_mgu: "the_mgu t t' = \<mu>" and
     \<tau>: "\<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
   shows 
-    "is_welltyped \<V> \<mu>"
+    "term.subst.is_welltyped \<V> \<mu>"
   using assms is_welltyped_unify_single[of t t' _ \<V>]
   unfolding the_mgu_def mgu_def  
   by(auto simp: welltyped.Var split: option.splits)
@@ -619,13 +617,13 @@ lemma welltyped_imgu_exists:
   where 
     "\<upsilon> = \<mu> \<odot> \<upsilon>" 
     "term_subst.is_imgu \<mu> {{t, t'}}"
-    "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> \<mu>"
+    "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> term.subst.is_welltyped \<V> \<mu>"
 proof-
   obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
     using assms ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
 
-  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> (the_mgu t t')"
-    using welltyped_the_mgu[OF \<mu>, of \<V>] assms
+  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> term.subst.is_welltyped \<V> (the_mgu t t')"
+    using welltyped_the_mgu[OF \<mu>] assms
     unfolding \<mu>
     by blast
 
@@ -636,7 +634,9 @@ qed
 
 abbreviation welltyped_imgu_on where
   "welltyped_imgu_on X \<V> t t' \<mu> \<equiv>
-    \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and> is_welltyped_on X \<V> \<mu> \<and> term_subst.is_imgu \<mu> {{t, t'}}"
+    \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and>
+    term.subst.is_welltyped_on X \<V> \<mu> \<and>
+    term_subst.is_imgu \<mu> {{t, t'}}"
 
 abbreviation welltyped_imgu where
   "welltyped_imgu \<equiv> welltyped_imgu_on UNIV"
@@ -650,7 +650,7 @@ proof-
   obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
     using assms ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
 
-  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> is_welltyped \<V> (the_mgu t t')"
+  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> term.subst.is_welltyped \<V> (the_mgu t t')"
     using welltyped_the_mgu[OF \<mu>, of \<V>] assms
     unfolding \<mu>
     by blast
