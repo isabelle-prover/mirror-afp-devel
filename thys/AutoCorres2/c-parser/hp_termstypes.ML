@@ -110,7 +110,7 @@ val current_C_filename = Attrib.setup_config_string \<^binding>\<open>current_C_
 
 fun get_program_name ctxt =
   Config.get ctxt current_C_filename
-  |> Path.explode |> Path.base |> Path.split_ext |> fst |> Path.file_name
+  |> Path.explode |> Path.base |> Path.drop_ext |> Path.file_name
 
 fun mk_fun_ptr ctxt prog_name fname =
   let
