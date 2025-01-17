@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 26 Nov 2024 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>SuffixArray</title>
+          <link>/dependencies/suffixarray/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/suffixarray/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Dirichlet_Series</title>
           <link>/dependencies/dirichlet_series/</link>

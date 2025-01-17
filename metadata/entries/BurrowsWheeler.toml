@@ -1,0 +1,36 @@
+title = "Formalised Burrows-Wheeler Transform"
+date = 2025-01-17
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = "The Burrows-Wheeler transform (BWT) is an invertible lossless transformation that permutes input sequences into alternate sequences of the same length that frequently contain long localized regions that involve clusters consisting of just a few distinct symbols, and sometimes also include long runs of same-symbol repetitions. Moreover, there is a one-to-one correspondence between the BWT and suﬃx arrays. As a consequence, the BWT is widely used in data compression and as an indexing data structure for pattern search. In this formalization, we present the formal verification of both the BWT and its inverse, building on a formalization of suﬃx arrays."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cheung]
+email = "cheung_email1"
+
+[authors.rizkallah]
+email = "rizkallah_email"
+
+[contributors]
+
+[notify]
+cheung = "cheung_email1"
+rizkallah = "rizkallah_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.5281/zenodo.14279882",
+  "10.1145/3703595.3705883",
+  "10.1109/SFCS.2000.892127",
+]
+pubs = [
+  "<a href=\\\"https://en.wikipedia.org/wiki/Burrows–Wheeler_transform\\\">Wikipedia</a>",
+]

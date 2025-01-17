@@ -3,15 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/benzmueller/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
+    <loc>/authors/cheung/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/computer-science/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/BurrowsWheeler.html</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/rizkallah/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/suffixarray/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/benzmueller/</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/logic/</loc>
@@ -19,12 +40,6 @@
   </url><url>
     <loc>/entries/Notes_On_Goedels_Ontological_Argument.html</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
@@ -45,9 +60,6 @@
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/abstract-rewriting/</loc>
-    <lastmod>2024-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/computer-science/</loc>
     <lastmod>2024-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/ILL.html</loc>
@@ -197,13 +209,7 @@
     <loc>/authors/ren/</loc>
     <lastmod>2024-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cheung/</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/SuffixArray.html</loc>
-    <lastmod>2024-09-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/rizkallah/</loc>
     <lastmod>2024-09-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Karatsuba_Sqrt.html</loc>
@@ -5366,6 +5372,8 @@
     <loc>/sessions/buffons_needle/</loc>
   </url><url>
     <loc>/sessions/buildings/</loc>
+  </url><url>
+    <loc>/sessions/burrowswheeler/</loc>
   </url><url>
     <loc>/sessions/bytecodelogicjmltypes/</loc>
   </url><url>

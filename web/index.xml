@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 07 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Formalised Burrows-Wheeler Transform</title>
+          <link>/entries/BurrowsWheeler.html</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/BurrowsWheeler.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Notes on Gödel’s and Scott’s Variants of the Ontological Argument (Isabelle/HOL dataset)</title>
           <link>/entries/Notes_On_Goedels_Ontological_Argument.html</link>
@@ -6668,6 +6675,13 @@
           <link>/sessions/buildings/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/buildings/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>BurrowsWheeler</title>
+          <link>/sessions/burrowswheeler/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/burrowswheeler/</guid>
           <description></description>
         </item>
         <item>

@@ -1531,161 +1531,166 @@
  },
  {
   "id": 306,
+  "link": "/dependencies/suffixarray/",
+  "name": "SuffixArray"
+ },
+ {
+  "id": 307,
   "link": "/dependencies/sunflowers/",
   "name": "Sunflowers"
  },
  {
-  "id": 307,
+  "id": 308,
   "link": "/dependencies/superposition_calculus/",
   "name": "Superposition_Calculus"
  },
  {
-  "id": 308,
+  "id": 309,
   "link": "/dependencies/suppes_theorem/",
   "name": "Suppes_Theorem"
  },
  {
-  "id": 309,
+  "id": 310,
   "link": "/dependencies/symmetric_polynomials/",
   "name": "Symmetric_Polynomials"
  },
  {
-  "id": 310,
+  "id": 311,
   "link": "/dependencies/syntax_independent_logic/",
   "name": "Syntax_Independent_Logic"
  },
  {
-  "id": 311,
+  "id": 312,
   "link": "/dependencies/szemeredi_regularity/",
   "name": "Szemeredi_Regularity"
  },
  {
-  "id": 312,
+  "id": 313,
   "link": "/dependencies/szpilrajn/",
   "name": "Szpilrajn"
  },
  {
-  "id": 313,
+  "id": 314,
   "link": "/dependencies/three_squares/",
   "name": "Three_Squares"
  },
  {
-  "id": 314,
+  "id": 315,
   "link": "/dependencies/timed_automata/",
   "name": "Timed_Automata"
  },
  {
-  "id": 315,
+  "id": 316,
   "link": "/dependencies/transformer_semantics/",
   "name": "Transformer_Semantics"
  },
  {
-  "id": 316,
+  "id": 317,
   "link": "/dependencies/transition_systems_and_automata/",
   "name": "Transition_Systems_and_Automata"
  },
  {
-  "id": 317,
+  "id": 318,
   "link": "/dependencies/transitive_models/",
   "name": "Transitive_Models"
  },
  {
-  "id": 318,
+  "id": 319,
   "link": "/dependencies/transitive-closure/",
   "name": "Transitive-Closure"
  },
  {
-  "id": 319,
+  "id": 320,
   "link": "/dependencies/triangle/",
   "name": "Triangle"
  },
  {
-  "id": 320,
+  "id": 321,
   "link": "/dependencies/trie/",
   "name": "Trie"
  },
  {
-  "id": 321,
+  "id": 322,
   "link": "/dependencies/twelvefold_way/",
   "name": "Twelvefold_Way"
  },
  {
-  "id": 322,
+  "id": 323,
   "link": "/dependencies/types_to_sets_extension/",
   "name": "Types_To_Sets_Extension"
  },
  {
-  "id": 323,
+  "id": 324,
   "link": "/dependencies/undirected_graph_theory/",
   "name": "Undirected_Graph_Theory"
  },
  {
-  "id": 324,
+  "id": 325,
   "link": "/dependencies/universal_hash_families/",
   "name": "Universal_Hash_Families"
  },
  {
-  "id": 325,
+  "id": 326,
   "link": "/dependencies/upf/",
   "name": "UPF"
  },
  {
-  "id": 326,
+  "id": 327,
   "link": "/dependencies/vectorspace/",
   "name": "VectorSpace"
  },
  {
-  "id": 327,
+  "id": 328,
   "link": "/dependencies/vericomp/",
   "name": "VeriComp"
  },
  {
-  "id": 328,
+  "id": 329,
   "link": "/dependencies/virtual_substitution/",
   "name": "Virtual_Substitution"
  },
  {
-  "id": 329,
+  "id": 330,
   "link": "/dependencies/weighted_arithmetic_geometric_mean/",
   "name": "Weighted_Arithmetic_Geometric_Mean"
  },
  {
-  "id": 330,
+  "id": 331,
   "link": "/dependencies/weighted_path_order/",
   "name": "Weighted_Path_Order"
  },
  {
-  "id": 331,
+  "id": 332,
   "link": "/dependencies/well_quasi_orders/",
   "name": "Well_Quasi_Orders"
  },
  {
-  "id": 332,
+  "id": 333,
   "link": "/dependencies/winding_number_eval/",
   "name": "Winding_Number_Eval"
  },
  {
-  "id": 333,
+  "id": 334,
   "link": "/dependencies/with_type/",
   "name": "With_Type"
  },
  {
-  "id": 334,
+  "id": 335,
   "link": "/dependencies/wlog/",
   "name": "Wlog"
  },
  {
-  "id": 335,
+  "id": 336,
   "link": "/dependencies/word_lib/",
   "name": "Word_Lib"
  },
  {
-  "id": 336,
+  "id": 337,
   "link": "/dependencies/zeta_function/",
   "name": "Zeta_Function"
  },
  {
-  "id": 337,
+  "id": 338,
   "link": "/dependencies/zfc_in_hol/",
   "name": "ZFC_in_HOL"
  }
