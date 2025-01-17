@@ -3,36 +3,66 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/abdulaziz/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
+    <loc>/dependencies/abstract_substitution/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/First_Order_Clause.html</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/first_order_terms/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/fresh_identifiers/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/logic/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/min_max_least_greatest/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/nested_multisets_ordinals/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/regular_tree_relations/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/regular-sets/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/saturation_framework_extensions/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/toth/</loc>
+    <lastmod>2025-01-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/abdulaziz/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/topics/computer-science/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Graph_Algorithms.html</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/graph_theory/</loc>
     <lastmod>2025-01-14T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2025-01-14T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/benzmueller/</loc>
-    <lastmod>2025-01-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/logic/</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Notes_On_Goedels_Ontological_Argument.html</loc>
@@ -122,9 +152,6 @@
     <loc>/authors/desharnais/</loc>
     <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/min_max_least_greatest/</loc>
-    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/SCL_Simulates_Ground_Resolution.html</loc>
     <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
@@ -138,9 +165,6 @@
     <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Superposition_Calculus.html</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/abstract_substitution/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/bernoulli/</loc>
@@ -164,19 +188,10 @@
     <loc>/dependencies/refine_monadic/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/regular_tree_relations/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/saturation_framework/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/saturation_framework_extensions/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Boustrophedon_Transform.html</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/toth/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/baxter/</loc>
@@ -231,9 +246,6 @@
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/case_labeling/</loc>
-    <lastmod>2024-09-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/first_order_terms/</loc>
     <lastmod>2024-09-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/haslbeckm/</loc>
@@ -591,9 +603,6 @@
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/poincare_bendixson/</loc>
-    <lastmod>2024-04-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/regular-sets/</loc>
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/wolff/</loc>
@@ -1171,9 +1180,6 @@
   </url><url>
     <loc>/entries/Tree_Enumeration.html</loc>
     <lastmod>2023-05-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/fresh_identifiers/</loc>
-    <lastmod>2023-05-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/hereditarilyfinite/</loc>
     <lastmod>2023-05-05T00:00:00+00:00</lastmod>
@@ -2073,9 +2079,6 @@
     <lastmod>2021-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Design_Theory.html</loc>
-    <lastmod>2021-08-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/nested_multisets_ordinals/</loc>
     <lastmod>2021-08-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Relational_Forests.html</loc>
@@ -5845,6 +5848,8 @@
     <loc>/sessions/finite-map-extras/</loc>
   </url><url>
     <loc>/sessions/finitely_generated_abelian_groups/</loc>
+  </url><url>
+    <loc>/sessions/first_order_clause/</loc>
   </url><url>
     <loc>/sessions/first_order_terms/</loc>
   </url><url>

@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>First Order Clause</title>
+          <link>/entries/First_Order_Clause.html</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/First_Order_Clause.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Elementary Graph Traversal Algorithms</title>
           <link>/entries/Graph_Algorithms.html</link>
@@ -7984,6 +7991,13 @@
           <link>/sessions/finitely_generated_abelian_groups/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/finitely_generated_abelian_groups/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Clause</title>
+          <link>/sessions/first_order_clause/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/first_order_clause/</guid>
           <description></description>
         </item>
         <item>

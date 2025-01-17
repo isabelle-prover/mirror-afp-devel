@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>First Order Clause</title>
+          <link>/entries/First_Order_Clause.html</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/First_Order_Clause.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Elementary Graph Traversal Algorithms</title>
           <link>/entries/Graph_Algorithms.html</link>

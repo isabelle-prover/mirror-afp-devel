@@ -11,8 +11,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Tue, 14 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Abstract_Substitution</title>
+          <link>/dependencies/abstract_substitution/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/abstract_substitution/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>First_Order_Terms</title>
+          <link>/dependencies/first_order_terms/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_terms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Fresh_Identifiers</title>
+          <link>/dependencies/fresh_identifiers/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/fresh_identifiers/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Min_Max_Least_Greatest</title>
+          <link>/dependencies/min_max_least_greatest/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/min_max_least_greatest/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Nested_Multisets_Ordinals</title>
+          <link>/dependencies/nested_multisets_ordinals/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/nested_multisets_ordinals/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular_Tree_Relations</title>
+          <link>/dependencies/regular_tree_relations/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular_tree_relations/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Regular-Sets</title>
+          <link>/dependencies/regular-sets/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/regular-sets/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Saturation_Framework_Extensions</title>
+          <link>/dependencies/saturation_framework_extensions/</link>
+          <pubDate>Fri, 17 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/saturation_framework_extensions/</guid>
+          <description></description>
+        </item>
         <item>
           <title>Graph_Theory</title>
           <link>/dependencies/graph_theory/</link>
@@ -112,13 +168,6 @@
           <description></description>
         </item>
         <item>
-          <title>Min_Max_Least_Greatest</title>
-          <link>/dependencies/min_max_least_greatest/</link>
-          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/min_max_least_greatest/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Simple_Clause_Learning</title>
           <link>/dependencies/simple_clause_learning/</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
@@ -137,13 +186,6 @@
           <link>/dependencies/vericomp/</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/vericomp/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Abstract_Substitution</title>
-          <link>/dependencies/abstract_substitution/</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/abstract_substitution/</guid>
           <description></description>
         </item>
         <item>
@@ -189,24 +231,10 @@
           <description></description>
         </item>
         <item>
-          <title>Regular_Tree_Relations</title>
-          <link>/dependencies/regular_tree_relations/</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/regular_tree_relations/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Saturation_Framework</title>
           <link>/dependencies/saturation_framework/</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/saturation_framework/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Saturation_Framework_Extensions</title>
-          <link>/dependencies/saturation_framework_extensions/</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/saturation_framework_extensions/</guid>
           <description></description>
         </item>
         <item>
@@ -228,13 +256,6 @@
           <link>/dependencies/case_labeling/</link>
           <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/case_labeling/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>First_Order_Terms</title>
-          <link>/dependencies/first_order_terms/</link>
-          <pubDate>Mon, 16 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/first_order_terms/</guid>
           <description></description>
         </item>
         <item>
@@ -550,13 +571,6 @@
           <link>/dependencies/poincare_bendixson/</link>
           <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/poincare_bendixson/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Regular-Sets</title>
-          <link>/dependencies/regular-sets/</link>
-          <pubDate>Fri, 26 Apr 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/regular-sets/</guid>
           <description></description>
         </item>
         <item>
@@ -921,13 +935,6 @@
           <link>/dependencies/weighted_path_order/</link>
           <pubDate>Thu, 01 Jun 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/weighted_path_order/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Fresh_Identifiers</title>
-          <link>/dependencies/fresh_identifiers/</link>
-          <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/fresh_identifiers/</guid>
           <description></description>
         </item>
         <item>
@@ -1411,13 +1418,6 @@
           <link>/dependencies/bounded_deducibility_security/</link>
           <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
           <guid>/dependencies/bounded_deducibility_security/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Nested_Multisets_Ordinals</title>
-          <link>/dependencies/nested_multisets_ordinals/</link>
-          <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
-          <guid>/dependencies/nested_multisets_ordinals/</guid>
           <description></description>
         </item>
         <item>
