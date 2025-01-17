@@ -999,7 +999,7 @@ fun check_addressable_fields ignore_addressable_fields_error thy prog_info xname
 
 fun do_init_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename store_opt thy =
   let
-    val filename = cfilename |> Path.explode |> Path.split_ext |> fst |> Path.file_name
+    val filename = cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
   (* Ensure that the filename has already been parsed by the C parser. *)
     val csenv = case CalculateState.get_csenv thy cfilename of
           NONE => error ("Filename '" ^ cfilename ^ "' has not been parsed by the C parser yet.")
@@ -1147,7 +1147,7 @@ fun final_autocorres prog_info funs thy =
 fun final_autocorres_cmd cfilename thy =
   let
     val start = Timing.start ();
-    val filename = cfilename |> Path.explode |> Path.split_ext |> fst |> Path.file_name
+    val filename = cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
     val prog_info = if is_initialized filename thy then
                        ProgramInfo.get_prog_info thy (K ProgramInfo.default_fun_options) (K (K I)) (K (K I)) cfilename
                     else 
@@ -1173,7 +1173,7 @@ fun final_autocorres_cmd cfilename thy =
 fun parallel_autocorres (opt : AutoCorres_Options.autocorres_options) cfilename thy =
   let
     val start = Timing.start ();
-    val filename = cfilename |> Path.explode |> Path.split_ext |> fst |> Path.file_name
+    val filename = cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
     val opt = case Symtab.lookup (fst (AutoCorres_Options.Options_Theory.get thy)) filename of
            NONE => opt
          | SOME {options=opt', ...} => AutoCorres_Options.merge_opt opt' opt;

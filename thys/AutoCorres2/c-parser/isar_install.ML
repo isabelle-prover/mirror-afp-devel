@@ -410,7 +410,7 @@ fun install_C_file0 (files, options) thy = let
   val file as {src_path, lines, pos,...}:Token.file = the_single files
 
   val file_name = Path.file_name (Path.base src_path)
-  val prog_name = Path.base src_path |> Path.split_ext |> fst |> Path.file_name
+  val prog_name = Path.base src_path |> Path.drop_ext |> Path.file_name
 
   val thy = thy
     |> C_Files.map_main (K file_name)

@@ -671,10 +671,7 @@ fun mk_dimacs sat =
 
 fun replay_grat ctxt ((n_vars, vars), (n_clauses, clauses), hyp_thm, ctxt') grat_file =
   let
-    val is_xz =
-      case Path.split_ext grat_file of
-        (_, "xz") => true
-      | _ => false
+    val is_xz = Path.get_ext grat_file = "xz"
     val rup_input =
     {
       ctxt = ctxt',
