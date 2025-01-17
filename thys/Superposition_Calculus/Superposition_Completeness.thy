@@ -1,9 +1,10 @@
 theory Superposition_Completeness
   imports
-    Ground_Superposition_Completeness
     Grounded_Superposition
-    Nonground_Entailment
+    Ground_Superposition_Completeness
     Superposition_Welltypedness_Preservation
+
+    First_Order_Clause.Nonground_Entailment
 begin
 
 section \<open>Completeness\<close>

@@ -1,7 +1,8 @@
 theory Superposition_Soundness
-  imports 
-    Grounded_Superposition 
-    Nonground_Entailment
+  imports
+    First_Order_Clause.Nonground_Entailment
+    
+    Grounded_Superposition
     Superposition_Welltypedness_Preservation
 begin
 

@@ -1,5 +1,5 @@
 theory Ground_Critical_Pairs
-  imports Term_Rewrite_System
+  imports First_Order_Clause.Term_Rewrite_System
 begin
 
 definition ground_critical_pairs :: "'f gterm rel \<Rightarrow> 'f gterm rel" where

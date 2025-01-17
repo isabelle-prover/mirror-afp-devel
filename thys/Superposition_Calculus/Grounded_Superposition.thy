@@ -1,8 +1,10 @@
 theory Grounded_Superposition
-  imports 
-    Grounded_Selection_Function
+  imports
     Superposition
     Ground_Superposition
+
+    First_Order_Clause.Grounded_Selection_Function
+    Saturation_Framework.Lifting_to_Non_Ground_Calculi
 begin
 
 locale grounded_superposition_calculus =

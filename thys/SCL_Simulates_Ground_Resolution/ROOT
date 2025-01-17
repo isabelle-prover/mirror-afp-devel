@@ -2,6 +2,7 @@ chapter AFP
 session SCL_Simulates_Ground_Resolution = Simple_Clause_Learning +
   options [timeout = 600]
   sessions
+    First_Order_Clause
     Min_Max_Least_Greatest
     Superposition_Calculus
     VeriComp

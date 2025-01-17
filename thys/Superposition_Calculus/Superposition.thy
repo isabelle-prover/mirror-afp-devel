@@ -1,11 +1,10 @@
 theory Superposition
   imports
-    Nonground_Order
-    Ground_Superposition
-    Nonground_Selection_Function
-    Nonground_Typing
+    First_Order_Clause.Nonground_Order
+    First_Order_Clause.Nonground_Selection_Function
+    First_Order_Clause.Nonground_Typing
 
-    Saturation_Framework.Lifting_to_Non_Ground_Calculi
+    Ground_Superposition
 begin
 
 

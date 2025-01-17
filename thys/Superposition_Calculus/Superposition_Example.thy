@@ -24,16 +24,16 @@ interpretation superposition_calculus
   "\<lambda>_. ([], ())"
   trivial_tiebreakers
 proof unfold_locales
-  fix clause :: "('f, 'v) atom clause"
+  fix C :: "('f, 'v) atom clause"
 
-  show "trivial_select clause \<subseteq># clause"
+  show "trivial_select C \<subseteq># C"
     by simp
 next
-  fix clause :: "('f, 'v) atom clause" and literal
+  fix C :: "('f, 'v) atom clause" and l
 
-  assume "literal \<in># trivial_select clause"
+  assume "l \<in># trivial_select C"
 
-  then show "is_neg literal"
+  then show "is_neg l"
     by simp
 next
   show "\<And>(R :: ('f gterm \<times> 'f gterm) set). ground_critical_pair_theorem R"
@@ -73,32 +73,33 @@ next
     by (metis term.is_ground_iff_range_from_ground)
 next
   fix 
-    context\<^sub>G :: "('f, 'v) context" and
-    term\<^sub>G\<^sub>1 term\<^sub>G\<^sub>2 :: "('f, 'v) term" 
+    c :: "('f, 'v) context" and
+    t\<^sub>1 t\<^sub>2 :: "('f, 'v) term" 
 
-  assume "less_kbo term\<^sub>G\<^sub>1 term\<^sub>G\<^sub>2" 
+  assume "less_kbo t\<^sub>1 t\<^sub>2" 
 
-  then show "less_kbo context\<^sub>G\<langle>term\<^sub>G\<^sub>1\<rangle> context\<^sub>G\<langle>term\<^sub>G\<^sub>2\<rangle>"
-    using KBO.S_ctxt less_kbo_def by blast
+  then show "less_kbo c\<langle>t\<^sub>1\<rangle> c\<langle>t\<^sub>2\<rangle>"
+    using KBO.S_ctxt less_kbo_def 
+    by blast
 next
   fix 
-    term\<^sub>1 term\<^sub>2 :: "('f, 'v) term" and 
+    t\<^sub>1 t\<^sub>2 :: "('f, 'v) term" and 
     \<gamma> :: "('f, 'v) subst"
 
-  assume "less_kbo term\<^sub>1 term\<^sub>2"
+  assume "less_kbo t\<^sub>1 t\<^sub>2"
 
-  then show "less_kbo (term\<^sub>1 \<cdot>t \<gamma>) (term\<^sub>2 \<cdot>t \<gamma>)"
+  then show "less_kbo (t\<^sub>1 \<cdot>t \<gamma>) (t\<^sub>2 \<cdot>t \<gamma>)"
     using less_kbo_subst by blast
 next
   fix
-    term\<^sub>G :: "('f, 'v) term" and
-    context\<^sub>G :: "('f, 'v) context"
+    t :: "('f, 'v) term" and
+    c :: "('f, 'v) context"
   assume 
-    "term.is_ground term\<^sub>G" 
-    "context.is_ground context\<^sub>G" 
-    "context\<^sub>G \<noteq> \<box>"
+    "term.is_ground t" 
+    "context.is_ground c" 
+    "c \<noteq> \<box>"
   
-  then show "less_kbo term\<^sub>G context\<^sub>G\<langle>term\<^sub>G\<rangle>"
+  then show "less_kbo t c\<langle>t\<rangle>"
     by (simp add: KBO.S_supt less_kbo_def nectxt_imp_supt_ctxt)
 qed
 

@@ -1,5 +1,7 @@
 theory Ground_Superposition_Welltypedness_Preservation
-  imports Ground_Superposition Ground_Typing
+  imports
+    Ground_Superposition
+    First_Order_Clause.Ground_Typing
 begin
 
 locale ground_superposition_welltypedness_preservation = 

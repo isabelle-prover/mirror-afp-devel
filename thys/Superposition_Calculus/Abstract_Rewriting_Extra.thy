@@ -1,6 +1,6 @@
 theory Abstract_Rewriting_Extra
   imports
-    "Transitive_Closure_Extra"
+    First_Order_Clause.Transitive_Closure_Extra
     "Abstract-Rewriting.Abstract_Rewriting"
 begin
 

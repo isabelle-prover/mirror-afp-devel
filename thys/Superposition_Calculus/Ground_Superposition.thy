@@ -1,24 +1,8 @@
 theory Ground_Superposition
   imports
-    (* Theories from the Isabelle distribution *)
-    Main
-
-    (* Theories from the AFP *)
-    "Saturation_Framework.Calculus"
-    "Saturation_Framework_Extensions.Clausal_Calculus"
-    "Abstract-Rewriting.Abstract_Rewriting"
-
-    (* Theories from this formalization *)
-    Abstract_Rewriting_Extra
     Ground_Critical_Pairs
-    Multiset_Extra
-    Term_Rewrite_System
-    Transitive_Closure_Extra
-    Uprod_Extra
-    HOL_Extra
-    Clausal_Calculus_Extra
-    Selection_Function
-    Ground_Order 
+    First_Order_Clause.Selection_Function
+    First_Order_Clause.Ground_Order
 begin
 
 no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)

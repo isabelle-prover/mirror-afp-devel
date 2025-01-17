@@ -6,7 +6,7 @@ theory Background
     Simple_Clause_Learning.Termination
     Ground_Ordered_Resolution
     Min_Max_Least_Greatest.Min_Max_Least_Greatest_FSet
-    Superposition_Calculus.Multiset_Extra
+    First_Order_Clause.Multiset_Extra
     VeriComp.Compiler
     "HOL-ex.Sketch_and_Explore"
     "HOL-Library.FuncSet"

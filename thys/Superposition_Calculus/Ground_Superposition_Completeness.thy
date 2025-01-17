@@ -1,5 +1,10 @@
 theory Ground_Superposition_Completeness
-  imports Ground_Superposition Relation_Extra
+  imports
+    Ground_Superposition
+
+    First_Order_Clause.HOL_Extra
+    Abstract_Rewriting_Extra
+    Relation_Extra
 begin
 
 subsection \<open>Model Construction\<close>

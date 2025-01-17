@@ -1,5 +1,5 @@
 theory HOL_Extra_Extra
-  imports Superposition_Calculus.HOL_Extra
+  imports First_Order_Clause.HOL_Extra
 begin
 
 no_notation restrict_map (infixl "|`"  110)
