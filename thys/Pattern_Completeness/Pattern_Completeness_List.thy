@@ -909,8 +909,8 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   shows "pat_complete_impl P = pats_complete (pat_list ` set P)" 
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
-  have S: "\<And> \<sigma>. \<sigma> \<in> S \<Longrightarrow> \<not>empty_sort \<sigma>"
-    "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTYn)" by (auto dest: not_empty_sort)
+  have S: "\<And> \<sigma>. \<sigma> \<in> S \<Longrightarrow> \<not>empty_sort C \<sigma>"
+    "\<And> \<sigma>. \<sigma>  \<in> S \<Longrightarrow> \<exists>t. t : \<sigma> in \<T>(C,EMPTYn)" by (auto elim: not_empty_sortE)
   {
     fix f ss s
     assume "f : ss \<rightarrow> s in C"
@@ -924,15 +924,10 @@ proof -
     from C[OF this] have "length ss \<le> m" by auto
   }
   hence m: "\<forall>a\<in>length ` snd ` set (Cl s). a \<le> m" for s by auto
-  have "\<forall>f ss s s'. f : ss \<rightarrow> s in C \<longrightarrow> s' \<in> set ss \<longrightarrow> (\<exists>t. t : s' in \<T>(C,EMPTYn))" 
-  proof (intro allI impI)
-    fix f ss s s'
-    assume "f : ss \<rightarrow> s in C" and "s' \<in> set ss" 
-    hence "s' \<in> S" using Cons(1)[of f ss s] by auto
-    from S[OF this] show "\<exists>t. t : s' in \<T>(C,EMPTYn)" by auto
-  qed
+  have "\<forall>f ss s s'. f : ss \<rightarrow> s in C \<longrightarrow> s' \<in> set ss \<longrightarrow> \<not> empty_sort C s'"
+    using S by (auto dest!: Cons(1))
   from compute_inf_sorts[OF refl C_Cs this dist] inf_sort
-  have inf_sort: "inf_sort s = (\<not> bdd_above (size ` {t. t : s in \<T>(C,EMPTYn)}))" for s unfolding inf_sort by auto
+  have inf_sort: "inf_sort s \<longleftrightarrow> \<not> finite_sort C s" for s unfolding inf_sort by auto
   have Cl: "set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}" for s
     unfolding Cl set_map o_def C_Cs using dist
     by (force simp: fun_hastype_def)
@@ -941,6 +936,7 @@ proof -
     subgoal by (rule S(1))
     subgoal by (rule Cons)
     subgoal by (rule Cons)
+    subgoal by (auto simp: C_Cs finite_dom_map_of)
     subgoal by (rule inf_sort)
     subgoal by (rule Cl)
     subgoal by (rule m)

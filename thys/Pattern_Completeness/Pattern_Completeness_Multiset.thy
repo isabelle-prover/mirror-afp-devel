@@ -792,8 +792,8 @@ proof -
   let ?set = "\<lambda> s. size ` {t. t : s in \<T>(C,EMPTYn)}" 
   have m: "max_size s = Maximum (?set s)" unfolding o_def max_size_def using inf  sS by auto
   
-  from inf[unfolded inf_sort_def[OF sS]] have "bdd_above (?set s)" by auto
-  moreover have "?set s \<noteq> {}" by (auto intro!: term_of_sort sS) 
+  from inf inf_sort_not_bdd[OF sS] have "bdd_above (?set s)" by auto
+  moreover have "?set s \<noteq> {}" by (auto intro!: sorts_non_empty sS) 
   ultimately have "has_Maximum (?set s)" by (rule bdd_above_has_Maximum_nat) 
   from has_MaximumD[OF this, folded m] show ?thesis by auto
 qed
@@ -819,13 +819,14 @@ proof -
       fix v
       assume "v \<in> set vs" 
       with vsS have v: "snd v \<in> S" by auto
-      note term_of_sort[OF this]
+      note sorts_non_empty[OF this]
     }
     hence "\<forall> v. \<exists> t. v \<in> set vs \<longrightarrow> t : snd v in \<T>(C,EMPTYn)" by auto
     from choice[OF this] obtain t where 
       t: "\<And> v. v \<in> set vs \<Longrightarrow> t v : snd v in \<T>(C,EMPTYn)" by blast
     from True vsS obtain vl where vl: "vl \<in> set vs" and vlS: "snd vl \<in> S" and inf_vl: "inf_sort (snd vl)" by auto
-    from not_bdd_above_natD[OF inf_vl[unfolded inf_sort_def[OF vlS]], of ?m] t[OF vl]
+    note nbdd = inf_sort_not_bdd[OF vlS, THEN iffD2, OF inf_vl]
+    from not_bdd_above_natD[OF nbdd, of ?m] t[OF vl]
      obtain tl where 
       tl: "tl : snd vl in \<T>(C,EMPTYn)" and large: "?m \<le> size tl" by fastforce
     let ?t = "Fun c (map (\<lambda> v. if v = vl then tl else t v) vs)" 

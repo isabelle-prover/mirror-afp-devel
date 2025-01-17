@@ -215,17 +215,17 @@ lemma compute_inf_card_main: fixes E :: "'v \<rightharpoonup> 't" and C :: "('f,
   assumes E: "E = \<emptyset>" 
   and C_Cs: "C = map_of Cs'" 
   and Cs': "set Cs' = set (concat (map ((\<lambda> (\<tau>, fs). map (\<lambda> f. (f,\<tau>)) fs)) Cs))" 
-  and arg_types_inhabitet: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> (\<exists> t. t : \<tau>' in \<T>(C,E))" 
+  and arg_types_nonempty: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> \<not> empty_sort C \<tau>'" 
   and dist: "distinct (map fst Cs)" "distinct (map fst Cs')"
   and inhabitet: "\<forall> \<tau> fs. (\<tau>,fs) \<in> set Cs \<longrightarrow> set fs \<noteq> {}" 
   and "\<forall> \<tau>. \<tau> \<notin> m_inf \<longrightarrow> bdd_above (size ` {t. t : \<tau> in \<T>(C,E)})" 
   and "set ls \<subseteq> set Cs" 
   and "fst ` (set Cs - set ls) \<inter> m_inf = {}" 
   and "m_inf \<subseteq> fst ` set ls" 
-  and "\<forall> \<tau>. \<tau> \<notin> m_inf \<longrightarrow> cards $ \<tau> = card {t. t : \<tau> in \<T>(C,E)} \<and> finite {t. t : \<tau> in \<T>(C,E)}" 
+  and "\<forall> \<tau>. \<tau> \<notin> m_inf \<longrightarrow> cards $ \<tau> = card_of_sort C \<tau> \<and> finite_sort C \<tau>" 
   and "\<forall> \<tau>. \<tau> \<in> m_inf \<longrightarrow> cards $ \<tau> = 0" 
 shows "compute_inf_card_main m_inf cards ls = ({\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(C,E)})},
-         \<lambda> \<tau>. card {t. t : \<tau> in \<T>(C,E)})" 
+         \<lambda> \<tau>. card_of_sort C \<tau>)"
   using assms(8-)
 proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
   case (1 m_inf cards ls)
@@ -247,7 +247,8 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
       with inCs have "((f,\<sigma>s),\<tau>) \<in> set Cs'" unfolding Cs' by auto
       hence fC: "f : \<sigma>s \<rightarrow> \<tau> in C" using dist(2) unfolding C_Cs
         by (meson fun_hastype_def map_of_is_SomeI)
-      hence "\<forall>\<sigma>. \<exists> t. \<sigma> \<in> set \<sigma>s \<longrightarrow> t : \<sigma> in \<T>(C,E)" using arg_types_inhabitet[rule_format, of f \<sigma>s \<tau>] by auto
+      hence "\<forall>\<sigma>. \<exists> t. \<sigma> \<in> set \<sigma>s \<longrightarrow> t : \<sigma> in \<T>(C,E)"
+        by (auto simp: E dest!: arg_types_nonempty[rule_format] elim!: not_empty_sortE)
       from choice[OF this] obtain t where "\<sigma> \<in> set \<sigma>s \<Longrightarrow> t \<sigma> : \<sigma> in \<T>(C,E)" for \<sigma> by auto
       hence "Fun f (map t \<sigma>s) : \<tau> in \<T>(C,E)" using list_all2_conv_all_nth 
         apply (intro Fun_hastypeI[OF fC]) by (simp add: list_all2_conv_all_nth)
@@ -295,7 +296,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
       assume in_cs: "(f, \<sigma>s) \<in> set cs" "\<sigma> \<in> set \<sigma>s" 
       from tau_cs_fin part have "crit (\<tau>,cs)" by auto
       from this[unfolded crit_def split] in_cs have "\<sigma> \<notin> m_inf" by auto
-      with 1(6) have "cards $ \<sigma> = card (T \<sigma>)" and "finite (T \<sigma>)" by (auto simp: T_def)
+      with 1(6) have "cards $ \<sigma> = card (T \<sigma>)" and "finite (T \<sigma>)" by (auto simp: T_def E card_of_sort finite_sort)
     } note \<sigma>s_infos = this
 
     have "?TT = { Fun f ts | f ts \<sigma>s. f : \<sigma>s \<rightarrow> \<tau> in C \<and> ts :\<^sub>l \<sigma>s in \<T>(C,E)}" (is "_ = ?FunApps")
@@ -393,16 +394,16 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     case False
     hence "compute_inf_card_main m_inf cards ls = compute_inf_card_main (m_inf - set (map fst fin)) cards' ls'" 
       unfolding compute_inf_card_main.simps[of m_inf] part[unfolded crit_def] cards'_def Let_def by auto
-    also have "\<dots> = ({\<tau>. \<not> ?fin \<tau>}, \<lambda> \<tau>. card (?terms \<tau>))" 
+    also have "\<dots> = ({\<tau>. \<not> ?fin \<tau>}, \<lambda> \<tau>. card_of_sort C \<tau>)" 
     proof (rule 1(1)[OF refl part[unfolded crit_def, symmetric] False])
       show "set ls' \<subseteq> set Cs" using 1(3) part by auto
       show "fst ` (set Cs - set ls') \<inter> (m_inf - set (map fst fin)) = {}" using 1(3-4) part by force
       show "m_inf - set (map fst fin) \<subseteq> fst ` set ls'" using 1(5) part by force
-      show "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> cards' $ \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)"
+      show "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> cards' $ \<tau> = card_of_sort C \<tau> \<and> finite_sort C \<tau>"
       proof (intro allI impI)
         fix \<tau>
         assume nmem: "\<tau> \<notin> m_inf - set (map fst fin)" 
-        show "cards' $ \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)" 
+        show "cards' $ \<tau> = card_of_sort C \<tau> \<and> finite_sort C \<tau>" 
         proof (cases "\<tau> \<in> set (map fst fin)")
           case False
           with nmem have tau: "\<tau> \<notin> m_inf" by auto
@@ -410,10 +411,11 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
             unfolding cards'_def by auto
         next
           case True
-          with fin show ?thesis by auto
+          with fin show ?thesis by (auto simp: E card_of_sort finite_sort)
         qed
       qed
-      thus "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> ?fin \<tau>" by force
+      thus "\<forall>\<tau>. \<tau> \<notin> m_inf - set (map fst fin) \<longrightarrow> ?fin \<tau>"
+        by (force simp: 1(2) intro: fin(3))
       show "\<forall>\<tau>. \<tau> \<in> m_inf - set (map fst fin) \<longrightarrow> cards' $ \<tau> = 0" using 1(7) unfolding cards'_def 
         by auto
     qed (auto simp: cards'_def)
@@ -437,7 +439,8 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
         with * have "((c,\<tau>s),\<tau>) \<in> set Cs'" unfolding Cs' by force
         with dist(2) have "map_of Cs' ((c,\<tau>s)) = Some \<tau>" by simp
         from this[folded C_Cs] have c: "c : \<tau>s \<rightarrow> \<tau> in C" unfolding fun_hastype_def .
-        from arg_types_inhabitet this have "\<forall> \<sigma>. \<exists> t. \<sigma> \<in> set \<tau>s \<longrightarrow> t : \<sigma> in \<T>(C,E)" by auto
+        have "\<forall> \<sigma>. \<exists> t. \<sigma> \<in> set \<tau>s \<longrightarrow> t : \<sigma> in \<T>(C,E)"
+          by (auto simp: E dest!: arg_types_nonempty[rule_format, OF c] elim!: not_empty_sortE)
         from choice[OF this] obtain t where "\<And> \<sigma>. \<sigma> \<in> set \<tau>s \<Longrightarrow> t \<sigma> : \<sigma> in \<T>(C,E)" by auto
         hence list: "map t \<tau>s :\<^sub>l \<tau>s in \<T>(C,E)" by (simp add: list_all2_conv_all_nth)
         with c have "Fun c (map t \<tau>s) : \<tau> in \<T>(C,E)" by (intro Fun_hastypeI)
@@ -480,10 +483,10 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
     qed
     from True have "compute_inf_card_main m_inf cards ls = (m_inf, ?cards)" 
       unfolding compute_inf_card_main.simps[of m_inf] part[unfolded crit_def] by auto
-    also have "?cards = (\<lambda> \<tau>. card (?terms \<tau>))" 
+    also have "?cards = (\<lambda> \<tau>. card_of_sort C \<tau>)" 
     proof (intro ext)
       fix \<tau>
-      show "cards $ \<tau> = card (?terms \<tau>)" 
+      show "cards $ \<tau> = card_of_sort C \<tau>" 
       proof (cases "\<tau> \<in> m_inf")
         case False
         thus ?thesis using 1(6) by auto
@@ -493,7 +496,7 @@ proof (induct m_inf cards ls rule: compute_inf_card_main.induct)
         from True m_inf have "\<not> bdd_above (size ` TT)" unfolding TT_def by auto
         hence "infinite TT" by auto
         hence "card TT = 0" by auto
-        thus ?thesis unfolding TT_def using True 1(7) by auto
+        thus ?thesis unfolding TT_def using True 1(7) by (auto simp: E card_of_sort)
       qed
     qed
     finally show ?thesis using m_inf by auto
@@ -600,12 +603,12 @@ lemma compute_inf_card_sorts:
   fixes E :: "'v \<rightharpoonup> 't" and C :: "('f,'t)ssig"
   assumes E: "E = \<emptyset>" 
   and C_Cs: "C = map_of Cs" 
-  and arg_types_inhabitet: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> (\<exists> t. t : \<tau>' in \<T>(C,E))"
+  and arg_types_nonempty: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> \<not> empty_sort C \<tau>'"
   and dist: "distinct (map fst Cs)" 
   and result: "compute_inf_card_sorts Cs = (unb, cards)" 
 shows "unb = {\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(C,E)})}" (is "_ = ?unb")
-  "cards = (\<lambda> \<tau>. card {t. t : \<tau> in \<T>(C,E)})" (is "_ = ?cards")
-  "unb = {\<tau>. infinite {t. t : \<tau> in \<T>(C,E)}}" (is "_ = ?inf")
+  "cards = card_of_sort C" (is "_ = ?cards")
+  "unb = {\<tau>. \<not>finite_sort C \<tau>}" (is "_ = ?inf")
 proof -
   let ?terms = "\<lambda> \<tau>. {t. t : \<tau> in \<T>(C,E)}" 
   define taus where "taus = remdups (map snd Cs)" 
@@ -613,7 +616,7 @@ proof -
   have "compute_inf_card_sorts Cs = compute_inf_card_main (set (map fst Cs')) (K$ 0) Cs'" 
     unfolding compute_inf_card_sorts_def taus_def Cs'_def Let_def by auto
   also have "\<dots> = (?unb, ?cards)"
-  proof (rule compute_inf_card_main[OF E C_Cs _ arg_types_inhabitet _ dist _ _ subset_refl])   
+  proof (rule compute_inf_card_main[OF E C_Cs _ arg_types_nonempty _ dist _ _ subset_refl])   
     have "distinct taus" unfolding taus_def by auto
     thus "distinct (map fst Cs')" unfolding Cs'_def map_map o_def fst_conv by auto
     show "set Cs = set (concat (map (\<lambda>(\<tau>, fs). map (\<lambda>f. (f, \<tau>)) fs) Cs'))" 
@@ -622,34 +625,33 @@ proof -
       unfolding Cs'_def taus_def by (force simp: filter_empty_conv)
     show "fst ` (set Cs' - set Cs') \<inter> set (map fst Cs') = {}" by auto
     show "set (map fst Cs') \<subseteq> fst ` set Cs'" by auto
-    have "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> ?terms \<tau> = {}" 
-    proof (intro allI impI)
-      fix \<tau>
+    { fix \<tau> 
       assume "\<tau> \<notin> set (map fst Cs')" 
       hence "\<tau> \<notin> snd ` set Cs" unfolding Cs'_def taus_def by auto
       hence diff: "C f \<noteq> Some \<tau>" for f unfolding C_Cs
         by (metis Some_eq_map_of_iff dist imageI snd_conv)
-      {
+      have emp: "empty_sort C \<tau>"
+      proof (intro empty_sortI notI)
         fix t
-        assume "t : \<tau> in \<T>(C,E)" 
-        hence False using diff unfolding E
+        assume "t : \<tau> in \<T>(C,\<emptyset>)"
+        thus False using diff
         proof induct
           case (Fun f ss \<sigma>s \<tau>)
           from Fun(1,4) show False unfolding fun_hastype_def by auto
         qed auto
-      }
-      thus id: "?terms \<tau> = {}" by auto
-    qed
-    then show "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> bdd_above (size ` ?terms \<tau>)" 
-      "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> (K$ 0) $ \<tau> = card (?terms \<tau>) \<and> finite (?terms \<tau>)" 
-      by auto         
+      qed
+    }
+    note * = this
+    show "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> bdd_above (size ` ?terms \<tau>)" 
+      "\<forall>\<tau>. \<tau> \<notin> set (map fst Cs') \<longrightarrow> (K$ 0) $ \<tau> = card_of_sort C \<tau> \<and> finite_sort C \<tau>" 
+      by (auto simp del: set_map dest!: * simp: E)
   qed auto
   finally show unb: "unb = ?unb" and cards: "cards = ?cards" unfolding result by auto
   show "unb = ?inf" unfolding unb
   proof (subst finite_sig_bdd_above_iff_finite)
     show "finite (dom C)" unfolding C_Cs by (rule finite_dom_map_of)
     show "finite (dom E)" unfolding E by auto
-  qed auto
+  qed (auto simp: finite_sort E)
 qed
 end
 
@@ -660,11 +662,11 @@ lemma compute_inf_sorts:
   fixes E :: "'v \<rightharpoonup> 't" and C :: "('f,'t)ssig"
   assumes E: "E = \<emptyset>" 
   and C_Cs: "C = map_of Cs" 
-  and arg_types_inhabitet: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> (\<exists> t. t : \<tau>' in \<T>(C,E))"
+  and arg_types_nonempty: "\<forall> f \<tau>s \<tau> \<tau>'. f : \<tau>s \<rightarrow> \<tau> in C \<longrightarrow> \<tau>' \<in> set \<tau>s \<longrightarrow> \<not> empty_sort C \<tau>'"
   and dist: "distinct (map fst Cs)" 
 shows 
   "compute_inf_sorts Cs = {\<tau>. \<not> bdd_above (size ` {t. t : \<tau> in \<T>(C,E)})}"
-  "compute_inf_sorts Cs = {\<tau>. infinite {t. t : \<tau> in \<T>(C,E)}}"
+  "compute_inf_sorts Cs = {\<tau>. \<not> finite_sort C \<tau>}"
   unfolding compute_inf_sorts_def using compute_inf_card_sorts[OF assms] 
     by (cases "compute_inf_card_sorts Cs", auto)+
 

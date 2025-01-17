@@ -19,6 +19,7 @@ theory Pattern_Completeness_Set
     First_Order_Terms.Term_More
     Complete_Non_Orders.Complete_Relations
     Sorted_Terms.Sorted_Contexts
+    Compute_Nonempty_Infinite_Sorts
 begin
 
 abbreviation "UNIQ A \<equiv> \<exists>\<^sub>\<le>\<^sub>1 a. a \<in> A"
@@ -63,7 +64,7 @@ definition subst_left :: "('f,nat \<times> 's)subst \<Rightarrow> (('f,nat \<tim
   "subst_left \<tau> = (\<lambda>(t,r). (t \<cdot> \<tau>, r))"
 
 text \<open>A function to compute for a variable $x$ all substitution that instantiate
-  $x$ by $c(x_n, ..., x_{n+a})$ where $c$ is an constructor of arity $a$ and $n$ is a parameter that
+  $x$ by $c(x_n, ..., x_{n+a})$ where $c$ is a constructor of arity $a$ and $n$ is a parameter that
   determines from where to start the numbering of variables.\<close>
 
 definition \<tau>c :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> 'f \<times> 's list \<Rightarrow> ('f,nat \<times> 's)subst" where 
@@ -122,38 +123,6 @@ definition subst_pat_problem_set :: "('f,nat \<times> 's)subst \<Rightarrow> ('f
 
 definition \<tau>s :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> ('f,nat \<times> 's)subst set" where 
   "\<tau>s n x = {\<tau>c n x (f,ss) | f ss. f : ss \<rightarrow> snd x in C}" 
-
-text \<open>The emptiness, finiteness, and cardinality of a sort is
-  those of the set of ground constructor terms of that sort.\<close>
-
-definition empty_sort where
-  "empty_sort \<iota> \<longleftrightarrow> {t :: ('f,unit) term. t : \<iota> in \<T>(C,\<emptyset>)} = {}"
-
-definition finite_sort where
-  "finite_sort \<iota> \<longleftrightarrow> finite {t :: ('f,unit) term. t : \<iota> in \<T>(C,\<emptyset>)}"
-
-definition card_of_sort where
-  "card_of_sort \<iota> = card {t :: ('f,unit) term. t : \<iota> in \<T>(C,\<emptyset>)}"
-
-text \<open>The definitions fix the type of the variables (that never occur) to unit.
-We prove that the choice of the type is irrelevant.\<close>
-
-lemma finite_sort: "finite {t. t : \<iota> in \<T>(C,\<emptyset>)} \<longleftrightarrow> finite_sort \<iota>"
-  apply (unfold finite_sort_def)
-  using bij_betw_finite[OF bij_betw_sort_Term_empty].
-
-lemma card_of_sort: "card {t. t : \<iota> in \<T>(C,\<emptyset>)} = card_of_sort \<iota>"
-  apply (unfold card_of_sort_def)
-  using bij_betw_same_card[OF bij_betw_sort_Term_empty].
-
-lemma empty_sort: "{t. t : \<iota> in \<T>(C,\<emptyset>)} = {} \<longleftrightarrow> empty_sort \<iota>"
-  apply (unfold empty_sort_def)
-  by (metis card_eq_0_iff card_of_sort finite.emptyI finite_sort)
-
-lemmas empty_sort_imp = empty_sort[THEN iffD2]
-
-lemma not_empty_sort: "t : \<iota> in \<T>(C,\<emptyset>) \<Longrightarrow> \<not>empty_sort \<iota>"
-  using empty_sort by auto
 
 text \<open>The transformation rules of the paper.
 
@@ -427,17 +396,22 @@ text \<open>For proving partial correctness we need further properties of the fi
 locale pattern_completeness_context_with_assms = pattern_completeness_context S C m Cl inf_sort
   for S and C :: "('f,'s)ssig" 
     and m Cl inf_sort +
-  assumes not_empty_sort: "\<And> s. s \<in> S \<Longrightarrow> \<not> empty_sort s"  
-    and C_sub_S: "\<And> f ss s. f : ss \<rightarrow> s in C \<Longrightarrow> insert s (set ss) \<subseteq> S" 
+  assumes not_empty_sort: "\<And> s. s \<in> S \<Longrightarrow> \<not> empty_sort C s"
+    and C_sub_S: "\<And> f ss s. f : ss \<rightarrow> s in C \<Longrightarrow> insert s (set ss) \<subseteq> S"
     and m: "\<And> f ss s. f : ss \<rightarrow> s in C \<Longrightarrow> length ss \<le> m"
-    and inf_sort_def: "s \<in> S \<Longrightarrow> inf_sort s  = (\<not> bdd_above (size ` {t . t : s in \<T>(C,EMPTYn)}))" 
+    and finite_C: "finite (dom C)"
+    and inf_sort: "\<And>s. s \<in> S \<Longrightarrow> inf_sort s \<longleftrightarrow> \<not> finite_sort C s"
     and Cl: "\<And> s. set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}" 
     and Cl_len: "\<And> \<sigma>. Ball (length ` snd ` set (Cl \<sigma>)) (\<lambda> a. a \<le> m)" 
 begin
 
 lemma sorts_non_empty: "s \<in> S \<Longrightarrow> \<exists> t. t : s in \<T>(C,\<emptyset>)"
   apply (drule not_empty_sort)
-  using empty_sort by auto
+  by (auto elim: not_empty_sortE)
+
+lemma inf_sort_not_bdd: "s \<in> S \<Longrightarrow> \<not> bdd_above (size ` {t . t : s in \<T>(C,\<emptyset>)}) \<longleftrightarrow> inf_sort s"
+  apply (subst finite_sig_bdd_above_iff_finite[OF finite_C])
+  by (auto simp: inf_sort finite_sort)
 
 lemmas subst_defs_set = 
   subst_pat_problem_set_def
@@ -532,9 +506,6 @@ proof -
 qed
 
 lemmas cg_term_vars = hastype_in_Term_empty_imp_vars
-
-lemma term_of_sort: assumes "s \<in> S" shows "\<exists> t. t : s in \<T>(C,\<emptyset>)"
-  using sorts_non_empty[OF assms] by (auto dest!: type_conversion)
 
 text \<open>Main partial correctness theorems on well-formed problems: the transformation rules do
   not change the semantics of a problem\<close>
@@ -703,7 +674,7 @@ next
         unfolding var_ind_def by auto  
       define cg_subst_ind :: "nat \<Rightarrow> ('f,nat \<times> 's)subst \<Rightarrow> bool" where
         "cg_subst_ind i \<sigma> = (\<forall> x. (var_ind i x \<longrightarrow> \<sigma> x = Var x)
-            \<and> (\<not> var_ind i x \<longrightarrow> (vars_term (\<sigma> x) = {} \<and> (snd x \<in> S \<longrightarrow> \<sigma> x : snd x in \<T>(C,EMPTYn))))
+            \<and> (\<not> var_ind i x \<longrightarrow> (vars_term (\<sigma> x) = {} \<and> (snd x \<in> S \<longrightarrow> \<sigma> x : snd x in \<T>(C,\<emptyset>))))
             \<and> (snd x \<in> S \<longrightarrow> \<not> inf_sort (snd x) \<longrightarrow> \<sigma> x = conv (\<delta> x)))" for i \<sigma>
       define confl :: "nat \<Rightarrow> ('f, nat \<times> 's) term \<Rightarrow> ('f, nat \<times> 's)term \<Rightarrow> bool" where "confl = (\<lambda> i sp tp. 
            (case (sp,tp) of (Var x, Var y) \<Rightarrow> x \<noteq> y \<and> var_ind i x \<and> var_ind i y
@@ -795,7 +766,8 @@ next
             from *(1,2) have "z \<in> vars (s mp)" using vars_term_subt_at by fastforce
             with *(3) have "z \<in> tvars_mp mp" unfolding tvars_mp_def by force
             with \<open>mp \<in> pp\<close> wf have "snd z \<in> S" unfolding wf_pat_def wf_match_def by auto
-            from not_bdd_above_natD[OF inf[unfolded inf_sort_def[OF this]]] term_of_sort[OF this]
+            from not_bdd_above_natD[OF inf_sort_not_bdd[OF this, THEN iffD2, OF inf]]
+              sorts_non_empty[OF this]
             have "\<And> n. \<exists> t. t : snd z in \<T>(C,EMPTYn) \<and> n < size t" by auto
             note this inf
           } note z_inf = this
@@ -1390,59 +1362,47 @@ proof-
   then show ?thesis by (simp add: pat_complete_var_form_set)
 qed
 
-lemma finite_sort_bij:
-  assumes fin: "finite_sort \<iota>"
-  shows "\<exists>f. bij_betw f {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort \<iota>}"
-proof-
-  from ex_bij_betw_finite_nat[OF fin[unfolded finite_sort_def]]
-  obtain h :: "('f, unit) term \<Rightarrow> nat" where
-    "bij_betw h {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort \<iota>}"
-    by (auto simp add: card_of_sort)
-  from bij_betw_trans[OF bij_betw_sort_Term_empty this]
-  show ?thesis by auto
-qed
-
 definition "index_of_term =
-  (SOME f. \<forall>\<iota>. finite_sort \<iota> \<longrightarrow> bij_betw f {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort \<iota>})"
+  (SOME f. \<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw f {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort C \<iota>})"
 
 definition "term_of_index \<iota> = inv_into {t. t : \<iota> in \<T>(C,\<emptyset>)} index_of_term"
 
 lemma index_of_term_bij:
-  assumes fin: "finite_sort \<iota>"
-  shows "bij_betw index_of_term {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort \<iota>}"
+  assumes fin: "finite_sort C \<iota>"
+  shows "bij_betw index_of_term {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort C \<iota>}"
     (is "bij_betw _ (?T \<iota>) (?I \<iota>)")
 proof-
-  have "\<forall>\<iota> \<in> Collect finite_sort. \<exists>f. bij_betw f (?T \<iota>) (?I \<iota>)"
+  have "\<forall>\<iota> \<in> Collect (finite_sort C). \<exists>f. bij_betw f (?T \<iota>) (?I \<iota>)"
     by (auto intro!: finite_sort_bij)
   from bchoice[OF this]
-  obtain f where f: "\<And>\<iota>. finite_sort \<iota> \<Longrightarrow> bij_betw (f \<iota>) (?T \<iota>) (?I \<iota>)"
+  obtain f where f: "\<And>\<iota>. finite_sort C \<iota> \<Longrightarrow> bij_betw (f \<iota>) (?T \<iota>) (?I \<iota>)"
     by auto
   define g where "g = (\<lambda>t. f (the (\<T>(C,\<emptyset>) t)) t)"
-  have "\<forall>\<iota>. finite_sort \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
+  have "\<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
     by (auto simp: g_def intro!: bij_betw_cong[THEN iffD1, OF _ f])
-  then have "\<exists>g. \<forall>\<iota>. finite_sort \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
+  then have "\<exists>g. \<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
     by auto
   from someI_ex[OF this, folded index_of_term_def] fin
   show ?thesis by auto
 qed
 
 lemma term_of_index_of_term:
-  assumes t: "t : \<iota> in \<T>(C,\<emptyset>)" and fin: "finite_sort \<iota>"
+  assumes t: "t : \<iota> in \<T>(C,\<emptyset>)" and fin: "finite_sort C \<iota>"
   shows "term_of_index \<iota> (index_of_term t) = t"
   apply (unfold term_of_index_def)
   apply (rule bij_betw_inv_into_left[OF index_of_term_bij])
   using assms by auto
 
 lemma index_of_term_of_index:
-  assumes fin: "finite_sort \<iota>" and "n < card_of_sort \<iota>"
+  assumes fin: "finite_sort C \<iota>" and "n < card_of_sort C \<iota>"
   shows "index_of_term (term_of_index \<iota> n) = n"
   apply (unfold term_of_index_def)
   apply (rule bij_betw_inv_into_right[OF index_of_term_bij])
   using assms by auto
 
 lemma term_of_index_bij:
-  assumes fin: "finite_sort \<iota>"
-  shows "bij_betw (term_of_index \<iota>) {0..<card_of_sort \<iota>} {t. t : \<iota> in \<T>(C,\<emptyset>)}"
+  assumes fin: "finite_sort C \<iota>"
+  shows "bij_betw (term_of_index \<iota>) {0..<card_of_sort C \<iota>} {t. t : \<iota> in \<T>(C,\<emptyset>)}"
   by (simp add: bij_betw_inv_into fin index_of_term_bij term_of_index_def)
 
 end
@@ -1479,10 +1439,10 @@ lemma ex_var_form_pp: "(\<exists>f\<in>var_form_pp pp. P f) \<longleftrightarrow
   by (auto simp: var_form_pp_def)
 
 lemma pat_complete_var_form_nat:
-  assumes finS: "\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<iota> \<in> S \<and> finite_sort \<iota>"
+  assumes finS: "\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<iota> \<in> S \<and> finite_sort C \<iota>"
     and uniq: "\<forall>f :: 'v \<Rightarrow> _ \<in> ff. \<forall>x. \<exists>\<^sub>\<le>\<^sub>1 \<iota>. \<iota> \<in> snd ` f x"
   shows "pat_complete (pp_var_form ff) \<longleftrightarrow>
-  (\<forall>\<alpha>. (\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<alpha> (x,\<iota>) < card_of_sort \<iota>) \<longrightarrow>
+  (\<forall>\<alpha>. (\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<alpha> (x,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
   (\<exists>f \<in> ff. \<forall>x. UNIQ (\<alpha> ` f x)))"
   (is "?l \<longleftrightarrow> (\<forall>\<alpha>. ?s \<alpha> \<longrightarrow> ?r \<alpha>)")
 proof safe
@@ -1518,7 +1478,7 @@ proof safe
       have ty: "(x,\<iota>) \<in> vars_var_form_pp ff \<Longrightarrow> \<sigma> (x,\<iota>) : \<iota> in \<T>(C,\<emptyset>)"
         for x \<iota> using S by (auto simp: hastype_restrict)
       define \<alpha> where "\<alpha> \<equiv> index_of_term \<circ> \<sigma>"
-      have "\<alpha> (x,\<iota>) < card_of_sort \<iota>" if x: "(x,\<iota>) \<in> vars_var_form_pp ff"
+      have "\<alpha> (x,\<iota>) < card_of_sort C \<iota>" if x: "(x,\<iota>) \<in> vars_var_form_pp ff"
         for x \<iota> using index_of_term_bij[OF fin[OF x]] ty[OF x]
         by (auto simp: \<alpha>_def bij_betw_def)
       then have "\<exists>f\<in>ff. \<forall>x. UNIQ (\<alpha> ` f x)" by (auto intro!: r[rule_format])
@@ -1553,12 +1513,22 @@ context
   fixes pp
   assumes fvf: "finite_var_form_pp pp"
     and wf: "wf_pat pp"
-    and fin: "(y,\<iota>) \<in> tvars_pp pp \<Longrightarrow> finite_sort \<iota>" (*TODO: connect with inf_sort*)
     and sort: "\<forall>f\<in>var_form_pp pp. \<forall>x. UNIQ (snd ` f x)" (*TODO: checked? *)
 begin
 
+lemma tvars_pp_S: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "\<iota> \<in> S"
+  using wf y by (auto simp: wf_pat_def wf_match_iff tvars_pp_def)
+
+lemma tvars_pp_inf: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "\<not> inf_sort \<iota>"
+  using fvf y by (force simp: finite_var_form_pp_def finite_var_form_mp_def tvars_pp_def tvars_mp_def)
+
+lemma tvars_pp_finite:
+  assumes y: "(y,\<iota>) \<in> tvars_pp pp"
+  shows "finite_sort C \<iota>"
+  using inf_sort[OF tvars_pp_S[OF y]] tvars_pp_inf[OF y] by simp
+
 lemma finite_var_form_pp_pat_complete: "pat_complete pp \<longleftrightarrow>
-  (\<forall>\<alpha>. (\<forall>(y,\<iota>) \<in> tvars_pp pp. \<alpha> (y,\<iota>) < card_of_sort \<iota>) \<longrightarrow>
+  (\<forall>\<alpha>. (\<forall>(y,\<iota>) \<in> tvars_pp pp. \<alpha> (y,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
     (\<exists>mp \<in> pp. \<forall>x. UNIQ {\<alpha> y |y. (Var y, Var x) \<in> mp}))"
 proof-
   note pat_complete_var_form_nat[of "var_form_pp pp"]
@@ -1566,7 +1536,7 @@ proof-
   note * = this[unfolded vars_var_form_pp[OF fvf]]
   show ?thesis
     apply (subst *)
-    using fin wf apply (force simp: wf_pat_def wf_match_iff tvars_pp_def)
+    using tvars_pp_finite tvars_pp_S apply (force)
     using sort apply (force)
     apply (rule all_cong)
     apply (unfold ex_var_form_pp)

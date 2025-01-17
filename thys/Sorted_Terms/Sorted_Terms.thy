@@ -802,7 +802,7 @@ next
   finally show ?case by simp
 qed
 
-subsubsection \<open>Ground terms\<close>
+subsubsection \<open>Ground Terms\<close>
 
 lemma hastype_in_Term_empty_imp_vars: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars s = {}" 
   by (auto dest: hastype_in_Term_imp_vars_subset)
@@ -859,6 +859,62 @@ lemma all_in_Term_empty_subst_iff:
   by (simp add: all_in_target_iff)
 
 end
+
+text \<open>The emptiness, finiteness, and cardinality of a sort w.r.t. a signature is
+  those of the set of ground terms of that sort.\<close>
+
+definition empty_sort where
+  "empty_sort F \<sigma> \<longleftrightarrow> {s :: ('f,unit) term. s : \<sigma> in \<T>(F,\<emptyset>)} = {}"
+
+definition finite_sort where
+  "finite_sort F \<sigma> \<longleftrightarrow> finite {s :: ('f,unit) term. s : \<sigma> in \<T>(F,\<emptyset>)}"
+
+definition card_of_sort where
+  "card_of_sort F \<sigma> = card {s :: ('f,unit) term. s : \<sigma> in \<T>(F,\<emptyset>)}"
+
+text \<open>The definitions fix the type of the variables (that never occur) to unit.
+We prove that the choice of the type is irrelevant.\<close>
+
+lemma finite_sort: "finite {s. s : \<sigma> in \<T>(F,\<emptyset>)} \<longleftrightarrow> finite_sort F \<sigma>"
+  apply (unfold finite_sort_def)
+  using bij_betw_finite[OF bij_betw_sort_Term_empty].
+
+lemma card_of_sort: "card {s. s : \<sigma> in \<T>(F,\<emptyset>)} = card_of_sort F \<sigma>"
+  apply (unfold card_of_sort_def)
+  using bij_betw_same_card[OF bij_betw_sort_Term_empty].
+
+lemma empty_sort: "{s. s : \<sigma> in \<T>(F,\<emptyset>)} = {} \<longleftrightarrow> empty_sort F \<sigma>"
+  apply (unfold empty_sort_def)
+  by (metis card_eq_0_iff card_of_sort finite.emptyI finite_sort)
+
+lemma empty_sortD[simp]: "empty_sort F \<sigma> \<Longrightarrow> \<not> s : \<sigma> in \<T>(F,\<emptyset>)"
+  using empty_sort[of \<sigma> F] by auto
+
+lemma empty_sort_imp_card[simp]: "empty_sort F \<sigma> \<Longrightarrow> card_of_sort F \<sigma> = 0"
+  by (auto simp: card_of_sort_def)
+
+lemma empty_sort_imp_finite[simp]: "empty_sort F \<sigma> \<Longrightarrow> finite_sort F \<sigma>"
+  by (auto simp: finite_sort_def)
+
+lemma empty_sortI: "(\<And>s. \<not>s : \<sigma> in \<T>(F,\<emptyset>)) \<Longrightarrow> empty_sort F \<sigma>"
+  using empty_sort[of \<sigma> F] by auto
+
+lemma not_empty_sortE: "\<not>empty_sort F \<sigma> \<Longrightarrow> (\<And>s. s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> thesis) \<Longrightarrow> thesis"
+  using empty_sort[of \<sigma> F] by auto
+
+lemma finite_sort_bij:
+  assumes fin: "finite_sort F \<sigma>"
+  shows "\<exists>f. bij_betw f {s. s : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>}"
+proof-
+  from ex_bij_betw_finite_nat[OF fin[unfolded finite_sort_def]]
+  obtain h where
+    "bij_betw h {t::(_, unit) term. t : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>}"
+    by (auto simp add: card_of_sort)
+  from bij_betw_trans[OF bij_betw_sort_Term_empty this]
+  show ?thesis by auto
+qed
+
+subsubsection \<open>Subsignatures\<close>
 
 locale subsignature = fixes F G :: "('f,'s) ssig" assumes subssig: "F \<subseteq>\<^sub>m G"
 begin
