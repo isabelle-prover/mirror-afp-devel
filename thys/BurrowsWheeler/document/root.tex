@@ -1,0 +1,42 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Formalized Burrows-Wheeler Transform}
+\author{Louis Cheung and Christine Rizkallah}
+\maketitle
+
+\begin{abstract}
+The Burrows-Wheeler transform (BWT)~\cite{Burrows_Tech_1994} is an invertible lossless
+transformation that permutes input sequences into alternate sequences
+of the same length that frequently contain long localized regions
+that involve clusters consisting of just a few distinct symbols, and
+sometimes also include long runs of same-symbol repetitions.
+Moreover, there is a one-to-one correspondence between the BWT and suffix arrays~\cite{Manber_SIAM_1993}.
+As a consequence, the BWT is widely used in data compression
+and as an indexing data structure for pattern search.
+In this formalization~\cite{Cheung_Zenodo_2024}, we present the formal verification of both the
+BWT and its inverse,
+building on a formalization of suffix arrays~\cite{Cheung_AFP_2024}.
+This is the artefact of our CPP paper~\cite{Cheung_CPP_2025}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
