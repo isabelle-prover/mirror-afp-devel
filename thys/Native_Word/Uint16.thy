@@ -4,10 +4,12 @@
 
 chapter \<open>Unsigned words of 16 bits\<close>
 
-theory Uint16 imports
-  Uint_Common
-  Code_Target_Word
-  Code_Target_Integer_Bit
+theory Uint16
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    Uint_Common
+    Code_Target_Word
+    Code_Int_Integer_Conversion
 begin
 
 text \<open>

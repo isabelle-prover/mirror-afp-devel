@@ -4,10 +4,12 @@
 
 chapter \<open>Unsigned words of 32 bits\<close>
 
-theory Uint32 imports
-  Uint_Common
-  Code_Target_Word
-  Code_Target_Integer_Bit
+theory Uint32
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    Uint_Common
+    Code_Target_Word
+    Code_Int_Integer_Conversion
 begin
 
 section \<open>Type definition and primitive operations\<close>

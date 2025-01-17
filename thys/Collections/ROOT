@@ -24,6 +24,7 @@ session Collections = Refine_Monadic +
   theories [document = false]
   (* Prerequisites *)
     "HOL-Library.Code_Target_Numeral"
+    "HOL-Library.Code_Target_Bit_Shifts"
     "HOL-Library.While_Combinator"
     "Binomial-Heaps.BinomialHeap"
     "Binomial-Heaps.SkewBinomialHeap"

@@ -7,7 +7,8 @@ chapter \<open>Implementation of bit operations on int by target language operat
 theory Code_Target_Int_Bit
   imports
     "HOL-Library.Code_Target_Int"
-    Code_Target_Integer_Bit
+    "HOL-Library.Code_Target_Bit_Shifts"
+    Code_Int_Integer_Conversion
 begin
 
 lemma int_of_integer_symbolic_code [code drop: int_of_integer_symbolic, code]:

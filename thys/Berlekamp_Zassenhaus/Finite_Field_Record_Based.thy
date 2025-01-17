@@ -1286,9 +1286,6 @@ definition finite_field_ops_integer :: "integer arith_ops_record" where
       (\<lambda> x. 0 \<le> x \<and> x < p)"
 end 
 
-lemma shiftr_integer_code [code_unfold]: "drop_bit 1 x = (integer_shiftr x 1)"
-  unfolding shiftr_integer_code using integer_of_nat_1 by auto
-
 text \<open>For soundness of the integer implementation, we mainly prove that this implementation
   implements the int-based implementation of GF(p).\<close>
 context mod_ring_locale

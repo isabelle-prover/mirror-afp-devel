@@ -1,12 +1,12 @@
 section "Bitvector based Sets of Naturals"
 theory Impl_Bit_Set
-imports 
-  "../../Iterator/Iterator" 
-  "../Intf/Intf_Set" 
-  Native_Word.Code_Target_Integer_Bit
+  imports
+    "HOL-Library.Code_Target_Bit_Shifts"
+    "../../Iterator/Iterator"
+    "../Intf/Intf_Set"
 begin
   text \<open>
-    Based on the Native-Word library, using bit-operations on arbitrary
+    Using bit-operations on arbitrary
     precision integers. Fast for sets of small numbers, 
     direct and fast implementations of equal, union, inter, diff.
 
