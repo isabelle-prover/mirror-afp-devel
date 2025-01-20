@@ -491,7 +491,7 @@ proof-
 qed
 
 lemma is_welltyped_unify:
-  assumes    
+  assumes
     "unify es bs = Some unifier"
     "\<forall>(t, t') \<in> set es. \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau>"
     "term.subst.is_welltyped \<V> (subst_of bs)"
@@ -610,28 +610,6 @@ lemma welltyped_the_mgu:
   unfolding the_mgu_def mgu_def  
   by(auto simp: welltyped.Var split: option.splits)
 
-lemma welltyped_imgu_exists:
-  fixes \<upsilon> :: "('f, 'v) subst"
-  assumes unified: "t \<cdot>t \<upsilon> = t' \<cdot>t \<upsilon>"
-  obtains \<mu> :: "('f, 'v) subst"
-  where 
-    "\<upsilon> = \<mu> \<odot> \<upsilon>" 
-    "term_subst.is_imgu \<mu> {{t, t'}}"
-    "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> term.subst.is_welltyped \<V> \<mu>"
-proof-
-  obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
-    using assms ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
-
-  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> term.subst.is_welltyped \<V> (the_mgu t t')"
-    using welltyped_the_mgu[OF \<mu>] assms
-    unfolding \<mu>
-    by blast
-
-  then show ?thesis
-    using that obtains_imgu_from_unifier_and_the_mgu[OF unified]
-    by (metis UNIV_I the_mgu the_mgu_term_subst_is_imgu unified)
-qed
-
 abbreviation welltyped_imgu_on where
   "welltyped_imgu_on X \<V> t t' \<mu> \<equiv>
     \<exists>\<tau>. welltyped \<V> t \<tau> \<and> welltyped \<V> t' \<tau> \<and>
@@ -648,9 +626,9 @@ lemma obtain_welltyped_imgu:
   where "\<upsilon> = \<mu> \<odot> \<upsilon>" "welltyped_imgu \<V> t t' \<mu>"
 proof-
   obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
-    using assms ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
+    using unified ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
 
-  have "\<forall>\<tau>. welltyped \<V> t \<tau> \<longrightarrow> welltyped \<V> t' \<tau> \<longrightarrow> term.subst.is_welltyped \<V> (the_mgu t t')"
+  have "term.subst.is_welltyped \<V> (the_mgu t t')"
     using welltyped_the_mgu[OF \<mu>, of \<V>] assms
     unfolding \<mu>
     by blast

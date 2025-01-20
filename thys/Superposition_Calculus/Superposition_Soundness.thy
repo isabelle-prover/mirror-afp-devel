@@ -254,17 +254,16 @@ proof (cases D E C rule: superposition.cases)
 
     let ?I = "(\<lambda>(x, y). Upair x y) ` I"
 
-    assume 
-      refl_I: "refl I" and 
-      trans_I: "trans I" and 
-      sym_I: "sym I" and 
+    assume
+      refl_I: "refl I" and
+      trans_I: "trans I" and
+      sym_I: "sym I" and
       compatible_with_ground_context_I: "compatible_with_gctxt I" and
       E_entails_groundings: "\<forall>E\<^sub>G \<in> clause_groundings (E, \<V>\<^sub>1). ?I \<TTurnstile> E\<^sub>G" and
-      D_entails_groundings: "\<forall>D\<^sub>G \<in> clause_groundings (D, \<V>\<^sub>2). ?I \<TTurnstile> D\<^sub>G" and 
-      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and 
+      D_entails_groundings: "\<forall>D\<^sub>G \<in> clause_groundings (D, \<V>\<^sub>2). ?I \<TTurnstile> D\<^sub>G" and
+      C_is_ground: "clause.is_ground (C \<cdot> \<gamma>)" and
       C_is_welltyped: "clause.is_welltyped \<V>\<^sub>3 C" and
-      \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma>" and 
-      \<V>\<^sub>3: "infinite_variables_per_type \<V>\<^sub>3"
+      \<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars C) \<V>\<^sub>3 \<gamma>"
 
     obtain \<gamma>' where
       \<gamma>'_is_ground_subst: "term_subst.is_ground_subst \<gamma>'" and

@@ -128,7 +128,7 @@ sublocale lifting:
     ground.G_entails
     ground.G_Inf 
     ground.GRed_I
-    ground.GRed_F 
+    ground.GRed_F
     clause_groundings
     "Some \<circ> inference_groundings"
     typed_tiebreakers

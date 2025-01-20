@@ -101,14 +101,14 @@ lemma literal_is_welltyped_iff_atm_of:
 lemmas is_welltyped_iff =
   literal_is_welltyped_iff atom_is_welltyped_iff
 
-sublocale clause: mulitset_typing_lifting where 
-  sub_is_typed = literal.is_typed and 
+sublocale clause: mulitset_typing_lifting where
+  sub_is_typed = literal.is_typed and
   sub_is_welltyped = literal.is_welltyped
   by unfold_locales
 
 lemma welltyped_add_literal:
-  assumes "clause.is_welltyped c" "term_welltyped t\<^sub>1 \<tau>" "term_welltyped t\<^sub>2 \<tau>" 
-  shows "clause.is_welltyped (add_mset (t\<^sub>1 !\<approx> t\<^sub>2) c)"
+  assumes "clause.is_welltyped C" "term_welltyped t\<^sub>1 \<tau>" "term_welltyped t\<^sub>2 \<tau>"
+  shows "clause.is_welltyped (add_mset (t\<^sub>1 !\<approx> t\<^sub>2) C)"
   using assms
   by auto
 

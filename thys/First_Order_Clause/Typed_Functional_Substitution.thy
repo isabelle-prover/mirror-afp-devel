@@ -387,6 +387,21 @@ proof-
     by presburger
 qed
 
+lemma obtain_typed_renamings':
+  fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
+  assumes
+    "infinite (UNIV :: 'var set)"
+    "finite Y" 
+    "infinite_variables_per_type \<V>\<^sub>1"
+  obtains \<rho>\<^sub>1 \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
+    "is_renaming \<rho>\<^sub>1"
+    "is_renaming \<rho>\<^sub>2" 
+    "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
+    "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
+    "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
+  using obtain_typed_renamings[OF assms]
+  by (metis inf_commute)
+
 end
 
 lemma (in renaming_variables) obtain_merged_\<V>:
@@ -394,7 +409,6 @@ lemma (in renaming_variables) obtain_merged_\<V>:
     \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
     \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
     rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
-    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
     finite_vars: "finite (vars expr)"
   obtains \<V>\<^sub>3 where 
@@ -460,6 +474,20 @@ proof standard
       Collect_not_mem_conj_eq
     by auto
 qed
+
+lemma (in renaming_variables) obtain_merged_\<V>':
+  assumes 
+    \<rho>\<^sub>1: "is_renaming \<rho>\<^sub>1" and
+    \<rho>\<^sub>2: "is_renaming \<rho>\<^sub>2" and
+    rename_apart: "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}" and
+    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
+    finite_vars: "finite (vars expr')"
+  obtains \<V>\<^sub>3 where 
+    "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"  
+    "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
+    "infinite_variables_per_type \<V>\<^sub>3"
+  using obtain_merged_\<V>[OF \<rho>\<^sub>2 \<rho>\<^sub>1 _ \<V>\<^sub>1 finite_vars] rename_apart
+  by (metis disjoint_iff)
 
 locale based_typed_renaming =
   base: explicitly_typed_renaming where 
@@ -611,6 +639,27 @@ proof-
       by auto
   qed
 qed
+
+lemma obtain_merged_grounding':
+  fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
+  assumes 
+    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" 
+    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
+    "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
+    "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
+    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
+    infinite_vars_UNIV: "infinite (UNIV :: 'v set)" and
+    finite_vars: "finite (vars expr')"
+  obtains \<rho>\<^sub>1 \<rho>\<^sub>2 \<gamma>  where
+    "base.is_renaming \<rho>\<^sub>1"
+    "base.is_renaming \<rho>\<^sub>2"
+    "vars (expr \<cdot> \<rho>\<^sub>1) \<inter> vars (expr' \<cdot> \<rho>\<^sub>2) = {}"
+    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<rho>\<^sub>1"
+    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
+    "\<forall>X \<subseteq> vars expr. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
+    "\<forall>X \<subseteq> vars expr'. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
+  using obtain_merged_grounding[OF assms(2, 1, 4, 3, 5, 6, 7)] (* TODO *)
+  by (smt (verit, ccfv_threshold) inf_commute)
 
 end
 

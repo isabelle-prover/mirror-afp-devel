@@ -1038,7 +1038,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     \<V>\<^sub>1_\<V>\<^sub>3: "\<forall>x\<in>clause.vars E. \<V>\<^sub>1 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>1 x)" and
     \<V>\<^sub>2_\<V>\<^sub>3: "\<forall>x\<in>clause.vars D. \<V>\<^sub>2 x = \<V>\<^sub>3 (clause.rename \<rho>\<^sub>2 x)" and
     \<V>\<^sub>3: "infinite_variables_per_type \<V>\<^sub>3"
-    using clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<V>\<^sub>1 \<V>\<^sub>2 clause.finite_vars].
+    using clause.obtain_merged_\<V>[OF \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart \<V>\<^sub>2 clause.finite_vars].
 
   have \<gamma>_is_welltyped: 
     "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<gamma>"
@@ -1521,7 +1521,7 @@ lemma eq_factoring_ground_instance:
   using eq_factoring_lifting single_premise_ground_instance[OF ground_eq_factoring]
   by blast
 
-lemma superposition_ground_instance: 
+lemma superposition_ground_instance:
   assumes 
     ground_superposition: "\<iota>\<^sub>G \<in> ground.superposition_inferences" and
     not_redundant: "\<iota>\<^sub>G \<notin> ground.GRed_I (\<Union> (clause_groundings ` N))"
@@ -1583,7 +1583,7 @@ proof-
     \<gamma>\<^sub>1_\<gamma>: "\<forall>X \<subseteq> clause.vars E. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>X \<subseteq> clause.vars D. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
     using 
-      clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding 
+      clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding
         D_grounding \<V>\<^sub>2 infinite_UNIV clause.finite_vars].
 
   have E_grounding: "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>)"
@@ -1778,7 +1778,7 @@ proof(unfold static_empty_ord_inter_equiv_static_inter,
           ground.G_entails
           ground.Red_I
           ground.Red_F"
-    using ground.statically_complete_calculus_axioms.
+    by unfold_locales
 next
 
   show "\<And>N. \<exists>select\<^sub>G \<in> select\<^sub>G\<^sub>s. ground_Inf_overapproximated select\<^sub>G N" 
