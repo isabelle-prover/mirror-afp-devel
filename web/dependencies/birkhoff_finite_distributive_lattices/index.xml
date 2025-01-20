@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Birkhoff_Finite_Distributive_Lattices on Archive of Formal Proofs
+    </title>
+    <link>/dependencies/birkhoff_finite_distributive_lattices/</link>
+    <description>
+        Recent content in Birkhoff_Finite_Distributive_Lattices 
+        on Archive of Formal Proofs
+    </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+      <lastBuildDate>Thu, 16 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <atom:link href="/dependencies/birkhoff_finite_distributive_lattices/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Negatively Associated Random Variables</title>
+          <link>/entries/Negative_Association.html</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Negative_Association.html</guid>
+          <description></description>
+        </item>
+  </channel>
+</rss>

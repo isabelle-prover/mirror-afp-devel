@@ -11,8 +11,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 03 Mar 2023 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Thu, 16 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/dependencies/weighted_arithmetic_geometric_mean/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Negatively Associated Random Variables</title>
+          <link>/entries/Negative_Association.html</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Negative_Association.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Expander Graphs</title>
           <link>/entries/Expander_Graphs.html</link>

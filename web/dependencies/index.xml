@@ -21,6 +21,48 @@
           <description></description>
         </item>
         <item>
+          <title>Birkhoff_Finite_Distributive_Lattices</title>
+          <link>/dependencies/birkhoff_finite_distributive_lattices/</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/birkhoff_finite_distributive_lattices/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Concentration_Inequalities</title>
+          <link>/dependencies/concentration_inequalities/</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/concentration_inequalities/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Executable_Randomized_Algorithms</title>
+          <link>/dependencies/executable_randomized_algorithms/</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/executable_randomized_algorithms/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Twelvefold_Way</title>
+          <link>/dependencies/twelvefold_way/</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/twelvefold_way/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Universal_Hash_Families</title>
+          <link>/dependencies/universal_hash_families/</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/universal_hash_families/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Weighted_Arithmetic_Geometric_Mean</title>
+          <link>/dependencies/weighted_arithmetic_geometric_mean/</link>
+          <pubDate>Thu, 16 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/dependencies/weighted_arithmetic_geometric_mean/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Dirichlet_Series</title>
           <link>/dependencies/dirichlet_series/</link>
           <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
@@ -518,13 +560,6 @@
           <description></description>
         </item>
         <item>
-          <title>Universal_Hash_Families</title>
-          <link>/dependencies/universal_hash_families/</link>
-          <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/universal_hash_families/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Word_Lib</title>
           <link>/dependencies/word_lib/</link>
           <pubDate>Fri, 10 May 2024 00:00:00 +0000</pubDate>
@@ -620,13 +655,6 @@
           <link>/dependencies/polynomial_factorization/</link>
           <pubDate>Wed, 20 Mar 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/polynomial_factorization/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Concentration_Inequalities</title>
-          <link>/dependencies/concentration_inequalities/</link>
-          <pubDate>Fri, 15 Mar 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/concentration_inequalities/</guid>
           <description></description>
         </item>
         <item>
@@ -819,13 +847,6 @@
           <description></description>
         </item>
         <item>
-          <title>Twelvefold_Way</title>
-          <link>/dependencies/twelvefold_way/</link>
-          <pubDate>Sat, 23 Sep 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/twelvefold_way/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>List-Infinite</title>
           <link>/dependencies/list-infinite/</link>
           <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
@@ -973,13 +994,6 @@
           <description></description>
         </item>
         <item>
-          <title>Weighted_Arithmetic_Geometric_Mean</title>
-          <link>/dependencies/weighted_arithmetic_geometric_mean/</link>
-          <pubDate>Fri, 03 Mar 2023 00:00:00 +0000</pubDate>
-          <guid>/dependencies/weighted_arithmetic_geometric_mean/</guid>
-          <description></description>
-        </item>
-        <item>
           <title>Suppes_Theorem</title>
           <link>/dependencies/suppes_theorem/</link>
           <pubDate>Mon, 20 Feb 2023 00:00:00 +0000</pubDate>
@@ -1124,13 +1138,6 @@
           <link>/dependencies/digit_expansions/</link>
           <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
           <guid>/dependencies/digit_expansions/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Executable_Randomized_Algorithms</title>
-          <link>/dependencies/executable_randomized_algorithms/</link>
-          <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
-          <guid>/dependencies/executable_randomized_algorithms/</guid>
           <description></description>
         </item>
         <item>
