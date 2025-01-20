@@ -78,12 +78,12 @@ context
   includes bit_operations_syntax
 begin
 
-lemma int_set_bit_0 [simp]: fixes x :: int shows
-  "set_bit x 0 b = of_bool b + 2 * (x div 2)"
-  by (simp add: set_bit_eq)
+lemma int_set_bit_0 [simp]:
+  "set_bit x 0 b = of_bool b + 2 * (x div 2)" for x :: int
+  by (simp add: set_bit_eq set_bit_0 unset_bit_0)
 
-lemma int_set_bit_Suc: fixes x :: int shows
-  "set_bit x (Suc n) b = of_bool (odd x) + 2 * set_bit (x div 2) n b"
+lemma int_set_bit_Suc [simp]:
+  "set_bit x (Suc n) b = of_bool (odd x) + 2 * set_bit (x div 2) n b" for x :: int
   by (simp add: set_bit_eq set_bit_Suc unset_bit_Suc mod2_eq_if)
 
 lemma bin_last_set_bit:
@@ -94,8 +94,8 @@ lemma bin_rest_set_bit:
   "(set_bit x n b :: int) div 2 = (if n > 0 then set_bit (x div 2) (n - 1) b else x div 2)"
   by (cases n) (simp_all add: int_set_bit_Suc)
 
-lemma int_set_bit_numeral: fixes x :: int shows
-  "set_bit x (numeral w) b = of_bool (odd x) + 2 * set_bit (x div 2) (pred_numeral w) b"
+lemma int_set_bit_numeral [simp]:
+  "set_bit x (numeral w) b = of_bool (odd x) + 2 * set_bit (x div 2) (pred_numeral w) b" for x :: int
   by (simp add: numeral_eq_Suc int_set_bit_Suc)
 
 lemmas int_set_bit_numerals [simp] =
@@ -131,13 +131,13 @@ lemma bin_sc_eq:
   \<open>bin_sc n True = Bit_Operations.set_bit n\<close>
   by (simp_all add: set_bit_eq)
 
-lemma bin_sc_0 [simp]:
-  "bin_sc 0 b w = of_bool b + 2 * (\<lambda>k::int. k div 2) w"
-  by (simp add: set_bit_eq)
+lemma bin_sc_0:
+  "bin_sc 0 b w = of_bool b + 2 * (w div 2)"
+  by (fact int_set_bit_0)
 
-lemma bin_sc_Suc [simp]:
+lemma bin_sc_Suc:
   "bin_sc (Suc n) b w = of_bool (odd w) + 2 * bin_sc n b (w div 2)"
-  by (simp add: set_bit_eq set_bit_Suc unset_bit_Suc mod2_eq_if)
+  by (fact int_set_bit_Suc)
 
 lemma bin_nth_sc [bit_simps]: "bit (bin_sc n b w) n \<longleftrightarrow> b"
   by (simp add: bit_simps)
@@ -184,10 +184,10 @@ lemma bin_sc_minus: "0 < n \<Longrightarrow> bin_sc (Suc (n - 1)) b w = bin_sc n
 lemmas bin_sc_Suc_minus =
   trans [OF bin_sc_minus [symmetric] bin_sc_Suc]
 
-lemma bin_sc_numeral [simp]:
+lemma bin_sc_numeral:
   "bin_sc (numeral k) b w =
     of_bool (odd w) + 2 * bin_sc (pred_numeral k) b (w div 2)"
-  by (simp add: numeral_eq_Suc)
+  by (fact int_set_bit_numeral)
 
 lemmas bin_sc_minus_simps =
   bin_sc_simps (2,3,4) [THEN [2] trans, OF bin_sc_minus [THEN sym]]
