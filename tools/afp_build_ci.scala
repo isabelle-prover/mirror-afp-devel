@@ -264,7 +264,7 @@ Last 50 lines from stderr (if available):
           val find_facts_options = List(Options.Spec.eq("find_facts_database_name", "afp-devel"))
           val script =
             Find_Facts.find_facts_index_command(results.sessions_ok, options = find_facts_options,
-              dirs = dirs, clean = true)
+              isabelle_home = Path.explode("$ISABELLE_HOME"), dirs = dirs, clean = true)
           Isabelle_System.bash(script, progress_stdout = progress.echo(_),
             progress_stderr = progress.echo_error_message(_))
         }
