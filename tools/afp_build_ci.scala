@@ -6,6 +6,7 @@ package afp
 
 
 import isabelle.*
+import isabelle.find_facts.Find_Facts
 
 
 object AFP_Build_CI {
@@ -240,6 +241,38 @@ Last 50 lines from stderr (if available):
       other_settings =
         List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx8G -Xss64M\""),
       trigger = Build_CI.Timed.nightly())
+
+
+  /* weekly indexing */
+
+  val indexing =
+    Build_CI.Job("indexing",
+      "weekly build for all of Isabelle/AFP, indexing theories into find_facts",
+      Build_CI.Cluster("cluster.schedule"),
+      Time.hms(8, 0, 0),
+      afp = true,
+      selection = Sessions.Selection(all_sessions = true),
+      build_prefs = List(Options.Spec.eq("build_engine", Build_Schedule.Build_Engine.name)),
+      hook = new Build_CI.Hook {
+        override def post(
+          options: Options,
+          url: Option[Url],
+          results: Build.Results,
+          progress: Progress
+        ): Unit = {
+          val dirs = AFP.main_dirs(None)
+          val find_facts_options = List(Options.Spec.eq("find_facts_database_name", "afp-devel"))
+          val script =
+            Find_Facts.find_facts_index_command(results.sessions_ok, options = find_facts_options,
+              dirs = dirs, clean = true)
+          Isabelle_System.bash(script, progress_stdout = progress.echo(_),
+            progress_stderr = progress.echo_error_message(_))
+        }
+      },
+      other_settings =
+        List("ISABELLE_TOOL_JAVA_OPTIONS=\"$ISABELLE_TOOL_JAVA_OPTIONS -Xmx8G -Xss64M\""),
+      trigger = Build_CI.Timed.weekly(start = Time.hms(3, 17, 0)))
 }
 
-class CI_Jobs extends Isabelle_CI_Jobs(AFP_Build_CI.all, AFP_Build_CI.presentation)
+class CI_Jobs extends Isabelle_CI_Jobs(
+  AFP_Build_CI.all, AFP_Build_CI.presentation, AFP_Build_CI.indexing)
