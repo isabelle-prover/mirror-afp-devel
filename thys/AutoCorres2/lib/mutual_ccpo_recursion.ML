@@ -1001,7 +1001,7 @@ val _ = TRACE ("= construct =")
                           val assm = the_single prems
                           val g = length guards
                           val a = length args
-                          val (init, res_prem) = funpow_yield (g + a) (HOLogic.conj_elim ctxt) assm
+                          val (init, res_prem) = funpow_yield (g + a) HOLogic.conj_elim assm
                           val (guard_prems, arg_prems) = chop g init
                           val case_thm = c
                             |> Thm.instantiate' []

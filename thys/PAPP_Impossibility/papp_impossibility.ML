@@ -485,7 +485,7 @@ let
             |> Thm.elim_implies (#wf_thm profile)
             |> Thm.elim_implies (profile_def profile)
             |> Conv.fconv_rule (Conv.arg_conv (total_conv wr_thms))
-          val right_unique_thms = inst' r_right_unique_thm |> HOLogic.conj_elims ctxt
+          val right_unique_thms = inst' r_right_unique_thm |> HOLogic.conj_elims
           val right_unique_clauses =
             (committee_pairs ~~ right_unique_thms)
             |> filter (fn ((i, j), _) => is_possible_committee (profile, i)

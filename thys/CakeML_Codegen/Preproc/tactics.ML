@@ -150,7 +150,7 @@ fun elims_injects ctxt injects thm =
     val thms =
       map (fn i => try (curry op OF @{thm iffD1}) [i, thm]) injects
       |> cat_options
-      |> maps (HOLogic.conj_elims ctxt)
+      |> maps HOLogic.conj_elims
   in
     if null thms then
       [thm]
