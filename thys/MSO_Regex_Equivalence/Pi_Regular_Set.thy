@@ -17,22 +17,12 @@ lemma [code]:
   "A @@ B = (%(xs, ys). xs @ ys) ` (A \<times> B)"
   unfolding conc_def by auto
 
-overloading word_pow == "compow :: nat \<Rightarrow> 'a list \<Rightarrow> 'a list"
-begin
-  primrec word_pow :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "word_pow 0 w = []" |
-  "word_pow (Suc n) w = w @ word_pow n w"
-end
-
 overloading lang_pow == "compow :: nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 begin
   primrec lang_pow :: "nat \<Rightarrow> 'a lang \<Rightarrow> 'a lang" where
   "lang_pow 0 A = {[]}" |
   "lang_pow (Suc n) A = A @@ (lang_pow n A)"
 end
-
-lemma word_pow_alt: "compow n w = concat (replicate n w)"
-  by (induct n) auto
 
 definition star :: "'a lang \<Rightarrow> 'a lang" where
 "star A = (\<Union>n. A ^^ n)"
