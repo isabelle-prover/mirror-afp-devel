@@ -71,14 +71,15 @@ definition \<tau>c :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> 'f \<time
   "\<tau>c n x = (\<lambda>(f,ss). subst x (Fun f (map Var (zip [n ..< n + length ss] ss))))"
 
 text \<open>Compute the list of conflicting variables (Some list), or detect a clash (None)\<close>
-fun conflicts :: "('f,'v)term \<Rightarrow> ('f,'v)term \<Rightarrow> 'v list option" where 
-  "conflicts (Var x) (Var y) = (if x = y then Some [] else Some [x,y])" 
+fun conflicts :: "('f,'v\<times>'s)term \<Rightarrow> ('f,'v\<times>'s)term \<Rightarrow> ('v\<times>'s) list option" where 
+  "conflicts (Var x) (Var y) = (if x = y then Some [] else
+   if snd x = snd y then Some [x,y] else None)"
 | "conflicts (Var x) (Fun _ _) = (Some [x])"
 | "conflicts (Fun _ _) (Var x) = (Some [x])" 
 | "conflicts (Fun f ss) (Fun g ts) = (if (f,length ss) = (g,length ts)
      then map_option concat (those (map2 conflicts ss ts))
     else None)" 
-          
+
 abbreviation "Conflict_Var s t x \<equiv> conflicts s t \<noteq> None \<and> x \<in> set (the (conflicts s t))" 
 abbreviation "Conflict_Clash s t \<equiv> conflicts s t = None" 
 
@@ -266,10 +267,16 @@ proof (induct s t rule: conflicts.induct)
 qed auto
 
 
-lemma conflicts: fixes x :: 'v
-  shows "Conflict_Clash s t \<Longrightarrow> \<exists> p. p \<in> poss s \<and> p \<in> poss t \<and> is_Fun (s |_p) \<and> is_Fun (t |_p) \<and> root (s |_p) \<noteq> root (t |_ p)" (is "?B1 \<Longrightarrow> ?B2")
+lemma conflicts:
+  shows "Conflict_Clash s t \<Longrightarrow>
+    \<exists> p. p \<in> poss s \<and> p \<in> poss t \<and>
+    (is_Fun (s |_p) \<and> is_Fun (t |_p) \<and> root (s |_p) \<noteq> root (t |_ p) \<or>
+    (\<exists>x y. s |_p = Var x \<and> t |_p = Var y \<and> snd x \<noteq> snd y))"
+    (is "?B1 \<Longrightarrow> ?B2")
     and "Conflict_Var s t x \<Longrightarrow>
-         \<exists> p . p \<in> poss s \<and> p \<in> poss t \<and> s |_p \<noteq> t |_p \<and> (s |_p = Var x \<or> t |_p = Var x)" (is "?C1 x \<Longrightarrow> ?C2 x")
+    \<exists> p . p \<in> poss s \<and> p \<in> poss t \<and> s |_p \<noteq> t |_p \<and>
+    (s |_p = Var x \<or> t |_p = Var x)"
+    (is "?C1 x \<Longrightarrow> ?C2 x")
     and "s \<noteq> t \<Longrightarrow> \<exists> x. Conflict_Clash s t \<or> Conflict_Var s t x" 
     and "Conflict_Var s t x \<Longrightarrow> x \<in> vars s \<union> vars t" 
     and "conflicts s t = Some [] \<longleftrightarrow> s = t" (is ?A)
@@ -277,11 +284,11 @@ proof -
   let ?B = "?B1 \<longrightarrow> ?B2" 
   let ?C = "\<lambda> x. ?C1 x \<longrightarrow> ?C2 x" 
   {
-    fix x :: 'v
+    fix x
     have "(conflicts s t = Some [] \<longrightarrow> s = t) \<and> ?B \<and> ?C x"
     proof (induction s arbitrary: t)
       case (Var y t)
-      thus ?case by (cases t, auto)
+      thus ?case by (cases t, cases y, auto)
     next
       case (Fun f ss t)
       show ?case 
@@ -305,9 +312,13 @@ proof -
               using f unfolding set_conv_nth set_zip by auto
             from i have "ss ! i \<in> set ss" by auto
             from Fun.IH[OF this, of "ts ! i"] confl obtain p 
-              where p: "p \<in> poss (ss ! i) \<and> p \<in> poss (ts ! i) \<and> is_Fun (ss ! i |_ p) \<and> is_Fun (ts ! i |_ p) \<and> root (ss ! i |_ p) \<noteq> root (ts ! i |_ p)" 
-              by auto
-            from p have p: "\<exists> p. p \<in> poss ?s \<and> p \<in> poss t \<and> is_Fun (?s |_ p) \<and> is_Fun (t |_ p) \<and> root (?s |_ p) \<noteq> root (t |_ p)" 
+              where p: "p \<in> poss (ss ! i) \<and> p \<in> poss (ts ! i) \<and>
+(is_Fun (ss ! i |_ p) \<and> is_Fun (ts ! i |_ p) \<and> root (ss ! i |_ p) \<noteq> root (ts ! i |_ p) \<or>
+(\<exists>x y. ss!i |_ p = Var x \<and> ts!i |_ p = Var y \<and> snd x \<noteq> snd y))" 
+              by force
+            from p have p: "\<exists> p. p \<in> poss ?s \<and> p \<in> poss t \<and>
+(is_Fun (?s |_ p) \<and> is_Fun (t |_ p) \<and> root (?s |_ p) \<noteq> root (t |_ p) \<or>
+(\<exists>x y. ?s |_ p = Var x \<and> t |_ p = Var y \<and> snd x \<noteq> snd y))" 
               by (intro exI[of _ "i # p"], unfold t, insert i f, auto)
             from p res show ?thesis by auto
           next
@@ -354,7 +365,7 @@ proof -
   show ?A
   proof
     assume "s = t" 
-    with B have "conflicts s t \<noteq> None" by blast
+    with B have "conflicts s t \<noteq> None" by force
     then obtain xs where res: "conflicts s t = Some xs" by auto     
     show "conflicts s t = Some []" 
     proof (cases xs)
@@ -371,7 +382,9 @@ proof -
     proof (cases "conflicts s t")
       case (Some xs)
       with \<open>?A\<close> diff obtain x where "x \<in> set xs" by (cases xs, auto)
-      thus ?thesis unfolding Some by auto
+      thus ?thesis unfolding Some
+        apply auto
+        by (metis surj_pair)
     qed auto
   }
   assume "Conflict_Var s t x" 
@@ -498,7 +511,8 @@ lemma pat_complete_empty[simp]: "pat_complete {} = False"
 
 lemma inf_var_conflictD: assumes "inf_var_conflict mp" 
   shows "\<exists> p s t x y. 
-    (s,Var x) \<in> mp \<and> (t,Var x) \<in> mp \<and> s |_p = Var y \<and> s |_ p \<noteq> t |_p  \<and> p \<in> poss s \<and> p \<in> poss t \<and> inf_sort (snd y)" 
+    (s,Var x) \<in> mp \<and> (t,Var x) \<in> mp \<and> s |_p = Var y \<and> s |_ p \<noteq> t |_p \<and>
+   p \<in> poss s \<and> p \<in> poss t \<and> inf_sort (snd y)" 
 proof -
   from assms[unfolded inf_var_conflict_def]
   obtain s t x y where "(s, Var x) \<in> mp \<and> (t, Var x) \<in> mp" and conf: "Conflict_Var s t y" and y: "inf_sort (snd y)" by blast
@@ -597,7 +611,10 @@ next
   qed
 qed auto
 
-lemma mp_fail_pcorrect: "mp_fail mp \<Longrightarrow> \<not> match_complete_wrt \<sigma> mp" 
+lemma mp_fail_pcorrect:
+  assumes "mp_fail mp" "wf_match mp" and \<sigma>: "\<sigma> :\<^sub>s \<V> \<rightarrow> \<T>(C,X)"
+  shows "\<not> match_complete_wrt \<sigma> mp"
+  using assms(1,2)
 proof (induct mp rule: mp_fail.induct)
   case *: (mp_clash f ts g ls mp)
   {
@@ -610,19 +627,35 @@ proof (induct mp rule: mp_fail.induct)
 next
   case *: (mp_clash' s t x mp)
   from conflicts(1)[OF *(1)]
-  obtain po where *: "po \<in> poss s" "po \<in> poss t" "is_Fun (s |_ po)" "is_Fun (t |_ po)" "root (s |_ po) \<noteq> root (t |_ po)" 
+  obtain po where po: "po \<in> poss s" "po \<in> poss t"
+    and disj: "is_Fun (s |_ po) \<and> is_Fun (t |_ po) \<and> root (s |_ po) \<noteq> root (t |_ po) \<or>
+    (\<exists>x y. s |_ po = Var x \<and> t |_ po = Var y \<and> snd x \<noteq> snd y)" 
     by auto
   show ?case 
   proof 
-    assume "match_complete_wrt \<sigma> ({(s, Var x), (t, Var x)} \<union> mp)" 
+    assume "match_complete_wrt \<sigma> ({(s, Var x), (t, Var x)} \<union> mp)"
     from this[unfolded match_complete_wrt_def]
-    have "s \<cdot> \<sigma> = t \<cdot> \<sigma>" by auto
-    hence "root (s \<cdot> \<sigma> |_po) = root (t \<cdot> \<sigma> |_po)" by auto
-    also have "root (s \<cdot> \<sigma> |_po) = root (s |_po \<cdot> \<sigma>)" using * by auto
-    also have "\<dots> = root (s |_po)" using * by (cases "s |_ po", auto)
-    also have "root (t \<cdot> \<sigma> |_po) = root (t |_po \<cdot> \<sigma>)" using * by (cases "t |_ po", auto)
-    also have "\<dots> = root (t |_po)" using * by (cases "t |_ po", auto)
-    finally show False using * by auto
+    have eq: "s \<cdot> \<sigma> |_po = t \<cdot> \<sigma> |_po" by auto
+    from disj
+    show False
+    proof (elim disjE conjE exE)
+      assume *: "is_Fun (s |_ po)" "is_Fun (t |_ po)" "root (s |_ po) \<noteq> root (t |_ po)"
+      from eq have "root (s \<cdot> \<sigma> |_po) = root (t \<cdot> \<sigma> |_po)" by auto
+      also have "root (s \<cdot> \<sigma> |_po) = root (s |_po \<cdot> \<sigma>)" using po by auto
+      also have "\<dots> = root (s |_po)" using * by (cases "s |_ po", auto)
+      also have "root (t \<cdot> \<sigma> |_po) = root (t |_po \<cdot> \<sigma>)" using po by (cases "t |_ po", auto)
+      also have "\<dots> = root (t |_po)" using * by (cases "t |_ po", auto)
+      finally show False using * by auto
+    next
+      fix y z assume y: "s |_ po = Var y" and z: "t |_ po = Var z" and ty: "snd y \<noteq> snd z"
+      from y z eq po have yz: "\<sigma> y = \<sigma> z" by auto
+      have "y \<in> vars_term s" "z \<in> vars_term t"
+        using po[THEN vars_term_subt_at] y z by auto
+      with *(2) have "snd y \<in> S" "snd z \<in> S" by (auto simp: wf_match_def tvars_mp_def)
+      then have "\<sigma> y : snd y in \<T>(C,X)" "\<sigma> z : snd z in \<T>(C,X)"
+        by (auto intro!: \<sigma>[THEN sorted_mapD])
+      with ty yz show False by (auto simp: has_same_type)
+    qed
   qed
 qed
 
@@ -634,7 +667,8 @@ proof (induct pp pp' rule: pp_step.induct)
   then show ?case using mp_step_pcorrect[of mp mp'] unfolding pat_complete_def by auto
 next
   case (pp_remove_mp mp pp)
-  then show ?case using mp_fail_pcorrect[of mp] unfolding pat_complete_def by auto
+  then show ?case using mp_fail_pcorrect[of mp _ \<emptyset>]
+    unfolding pat_complete_def by (auto simp: wf_pat_def)
 next
   case *: (pp_inf_var_conflict pp pp')
   hence wf: "wf_pat (pp \<union> pp')" and fin: "finite pp" by auto
@@ -1281,46 +1315,69 @@ definition weak_finite_var_form_mp :: "('f,'v,'s)match_problem_set \<Rightarrow>
           (\<exists> x. (Var x, Var y) \<in> mp \<and> inf_sort (snd x))
         \<and> (\<forall> t. (t, Var y) \<in> mp \<longrightarrow> root t \<in> {None, Some (f,length ts)})))"
 
-definition finite_var_form_mp :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
-  "finite_var_form_mp mp = (\<forall> (t,l) \<in> mp. \<exists> x y. t = Var x \<and> l = Var y \<and> \<not> inf_sort (snd x))" 
-
-definition weak_finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
-  "weak_finite_var_form_pp p = (\<forall> mp \<in> p. weak_finite_var_form_mp mp)" 
-
-definition finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
-  "finite_var_form_pp p = (\<forall> mp \<in> p. finite_var_form_mp mp)" 
-
 text \<open>Represent a variable-form as a set of maps.\<close>
 
 definition "mp_var_form f = {(Var y, Var x) | x y. y \<in> f x}"
 
 definition "pp_var_form ff = mp_var_form ` ff"
 
-definition "var_form_mp mp x = {y. (Var y, Var x) \<in> mp}"
+definition "var_form_of_mp mp x = {y. (Var y, Var x) \<in> mp}"
 
-definition "var_form_pp pp = var_form_mp ` pp"
+definition "var_form_of_pp pp = var_form_of_mp ` pp"
 
 definition "vars_var_form_pp ff = (\<Union>f \<in> ff. \<Union>(range f))"
 
-lemma mp_var_form_mp:
-  assumes "finite_var_form_mp mp"
-  shows "mp_var_form (var_form_mp mp) = mp"
+definition var_form_mp where
+  "var_form_mp mp \<longleftrightarrow> mp \<subseteq> range (map_prod Var Var)"
+
+definition "var_form_pp pp \<equiv> \<forall>mp \<in> pp. var_form_mp mp"
+
+definition finite_var_form_mp :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
+  "finite_var_form_mp mp \<longleftrightarrow> var_form_mp mp \<and>
+  (\<forall>l x y. (Var x, l) \<in> mp \<longrightarrow> (Var y, l) \<in> mp \<longrightarrow> snd x = snd y) \<and>
+  (\<forall>l x. (Var x, l) \<in> mp \<longrightarrow> \<not> inf_sort (snd x))"
+
+lemma finite_var_form_mpD:
+  assumes "finite_var_form_mp mp" and "(t,l) \<in> mp"
+  shows "\<exists>x \<iota> y. t = Var (x,\<iota>) \<and> l = Var y \<and> \<not> inf_sort \<iota> \<and>
+    (\<forall>z. (Var z, Var y) \<in> mp \<longrightarrow> snd z = \<iota>)"
+  using assms by (auto simp: finite_var_form_mp_def var_form_mp_def)
+
+definition weak_finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
+  "weak_finite_var_form_pp p = (\<forall> mp \<in> p. weak_finite_var_form_mp mp)"
+
+definition finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
+  "finite_var_form_pp p = (\<forall> mp \<in> p. finite_var_form_mp mp)"
+
+lemma finite_var_form_ppD:
+  assumes "finite_var_form_pp pp" "mp \<in> pp" "(t,l) \<in> mp"
+  shows "\<exists>x \<iota> y. t = Var (x,\<iota>) \<and> l = Var y \<and> \<not> inf_sort \<iota> \<and>
+    (\<forall>z. (Var z, Var y) \<in> mp \<longrightarrow> snd z = \<iota>)"
+  using assms[unfolded finite_var_form_pp_def] finite_var_form_mpD by metis
+
+lemma finite_var_form_imp_var_form_pp:
+  "finite_var_form_pp pp \<Longrightarrow> var_form_pp pp"
+  by (auto simp: finite_var_form_pp_def var_form_pp_def finite_var_form_mp_def)
+
+lemma mp_var_form_of_mp:
+  assumes "var_form_mp mp"
+  shows "mp_var_form (var_form_of_mp mp) = mp"
   using assms
-  by (auto simp: finite_var_form_mp_def mp_var_form_def var_form_mp_def)
+  by (auto simp: var_form_mp_def mp_var_form_def var_form_of_mp_def)
 
 lemma pp_var_form_pat:
-  assumes "finite_var_form_pp pp"
-  shows "pp_var_form (var_form_pp pp) = pp"
-  using assms mp_var_form_mp
-  by (auto simp: finite_var_form_pp_def var_form_pp_def pp_var_form_def)
+  assumes "var_form_pp pp"
+  shows "pp_var_form (var_form_of_pp pp) = pp"
+  using assms mp_var_form_of_mp
+  by (auto simp: var_form_pp_def var_form_of_pp_def pp_var_form_def)
 
 lemma tvars_pp_var_form: "tvars_pp (pp_var_form ff) = vars_var_form_pp ff"
   by (fastforce simp: vars_var_form_pp_def tvars_pp_def tvars_mp_def pp_var_form_def mp_var_form_def
       split: prod.splits)
 
-lemma  vars_var_form_pp:
-  assumes "finite_var_form_pp pp"
-  shows "vars_var_form_pp (var_form_pp pp) = tvars_pp pp"
+lemma vars_var_form_pp:
+  assumes "var_form_pp pp"
+  shows "vars_var_form_pp (var_form_of_pp pp) = tvars_pp pp"
   apply (subst(2) pp_var_form_pat[OF assms,symmetric])
   by (simp add: tvars_pp_var_form)
 
@@ -1362,49 +1419,6 @@ proof-
   then show ?thesis by (simp add: pat_complete_var_form_set)
 qed
 
-definition "index_of_term =
-  (SOME f. \<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw f {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort C \<iota>})"
-
-definition "term_of_index \<iota> = inv_into {t. t : \<iota> in \<T>(C,\<emptyset>)} index_of_term"
-
-lemma index_of_term_bij:
-  assumes fin: "finite_sort C \<iota>"
-  shows "bij_betw index_of_term {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort C \<iota>}"
-    (is "bij_betw _ (?T \<iota>) (?I \<iota>)")
-proof-
-  have "\<forall>\<iota> \<in> Collect (finite_sort C). \<exists>f. bij_betw f (?T \<iota>) (?I \<iota>)"
-    by (auto intro!: finite_sort_bij)
-  from bchoice[OF this]
-  obtain f where f: "\<And>\<iota>. finite_sort C \<iota> \<Longrightarrow> bij_betw (f \<iota>) (?T \<iota>) (?I \<iota>)"
-    by auto
-  define g where "g = (\<lambda>t. f (the (\<T>(C,\<emptyset>) t)) t)"
-  have "\<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
-    by (auto simp: g_def intro!: bij_betw_cong[THEN iffD1, OF _ f])
-  then have "\<exists>g. \<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
-    by auto
-  from someI_ex[OF this, folded index_of_term_def] fin
-  show ?thesis by auto
-qed
-
-lemma term_of_index_of_term:
-  assumes t: "t : \<iota> in \<T>(C,\<emptyset>)" and fin: "finite_sort C \<iota>"
-  shows "term_of_index \<iota> (index_of_term t) = t"
-  apply (unfold term_of_index_def)
-  apply (rule bij_betw_inv_into_left[OF index_of_term_bij])
-  using assms by auto
-
-lemma index_of_term_of_index:
-  assumes fin: "finite_sort C \<iota>" and "n < card_of_sort C \<iota>"
-  shows "index_of_term (term_of_index \<iota> n) = n"
-  apply (unfold term_of_index_def)
-  apply (rule bij_betw_inv_into_right[OF index_of_term_bij])
-  using assms by auto
-
-lemma term_of_index_bij:
-  assumes fin: "finite_sort C \<iota>"
-  shows "bij_betw (term_of_index \<iota>) {0..<card_of_sort C \<iota>} {t. t : \<iota> in \<T>(C,\<emptyset>)}"
-  by (simp add: bij_betw_inv_into fin index_of_term_bij term_of_index_def)
-
 end
 
 context pattern_completeness_context_with_assms begin
@@ -1435,12 +1449,12 @@ next
     by auto
 qed
 
-lemma ex_var_form_pp: "(\<exists>f\<in>var_form_pp pp. P f) \<longleftrightarrow> (\<exists>mp \<in> pp. P (var_form_mp mp))"
-  by (auto simp: var_form_pp_def)
+lemma ex_var_form_pp: "(\<exists>f\<in>var_form_of_pp pp. P f) \<longleftrightarrow> (\<exists>mp \<in> pp. P (var_form_of_mp mp))"
+  by (auto simp: var_form_of_pp_def)
 
 lemma pat_complete_var_form_nat:
   assumes finS: "\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<iota> \<in> S \<and> finite_sort C \<iota>"
-    and uniq: "\<forall>f :: 'v \<Rightarrow> _ \<in> ff. \<forall>x. \<exists>\<^sub>\<le>\<^sub>1 \<iota>. \<iota> \<in> snd ` f x"
+    and uniq: "\<forall>f \<in> ff. \<forall>x::'v. UNIQ (snd ` f x)"
   shows "pat_complete (pp_var_form ff) \<longleftrightarrow>
   (\<forall>\<alpha>. (\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<alpha> (x,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
   (\<exists>f \<in> ff. \<forall>x. UNIQ (\<alpha> ` f x)))"
@@ -1451,7 +1465,7 @@ proof safe
   { fix \<alpha>
     assume l: ?l and a: "?s \<alpha>"
     define \<sigma> :: "_ \<Rightarrow> ('f,'v) term" where
-      "\<sigma> \<equiv> \<lambda>(x,\<iota>). term_of_index \<iota> (\<alpha> (x,\<iota>))"
+      "\<sigma> \<equiv> \<lambda>(x,\<iota>). term_of_index C \<iota> (\<alpha> (x,\<iota>))"
     have "\<sigma> (x,\<iota>) : \<iota> in \<T>(C,\<emptyset>)" if x: "(x,\<iota>) \<in> vars_var_form_pp ff" for x \<iota>
       using term_of_index_bij[OF fin, OF x]
         a[unfolded Ball_Pair_conv, rule_format, OF x]
@@ -1460,10 +1474,10 @@ proof safe
       by (auto intro!: sorted_mapI simp: hastype_restrict)
     from l[unfolded pat_complete_var_form_restrict, rule_format, OF this]
     obtain f where f: "f \<in> ff" and u: "\<And>x. UNIQ (\<sigma> ` f x)" by auto
-    have id: "y \<in> f x \<Longrightarrow> index_of_term (\<sigma> y) = \<alpha> y" for y x
+    have id: "y \<in> f x \<Longrightarrow> index_of_term C (\<sigma> y) = \<alpha> y" for y x
       using assms a f
       by (auto simp: \<sigma>_def index_of_term_of_index vars_var_form_pp_def split: prod.splits)
-    then have "\<alpha> ` f x = index_of_term ` \<sigma> ` f x" for x
+    then have "\<alpha> ` f x = index_of_term C ` \<sigma> ` f x" for x
       by (auto simp: image_def)
     then have "UNIQ (\<alpha> ` f x)" for x by (simp add: image_Uniq[OF u])
     with f show "?r \<alpha>" by auto
@@ -1477,7 +1491,7 @@ proof safe
       from sorted_mapD[OF this]
       have ty: "(x,\<iota>) \<in> vars_var_form_pp ff \<Longrightarrow> \<sigma> (x,\<iota>) : \<iota> in \<T>(C,\<emptyset>)"
         for x \<iota> using S by (auto simp: hastype_restrict)
-      define \<alpha> where "\<alpha> \<equiv> index_of_term \<circ> \<sigma>"
+      define \<alpha> where "\<alpha> \<equiv> index_of_term C \<circ> \<sigma>"
       have "\<alpha> (x,\<iota>) < card_of_sort C \<iota>" if x: "(x,\<iota>) \<in> vars_var_form_pp ff"
         for x \<iota> using index_of_term_bij[OF fin[OF x]] ty[OF x]
         by (auto simp: \<alpha>_def bij_betw_def)
@@ -1494,13 +1508,13 @@ proof safe
           from yk f have y: "(y,\<iota>) \<in> vars_var_form_pp ff"
             by (auto simp: vars_var_form_pp_def)
           from S[OF y] y fin[OF y]
-          have "term_of_index \<iota> (\<alpha> (y,\<kappa>)) = \<sigma> (y,\<kappa>)"
+          have "term_of_index C \<iota> (\<alpha> (y,\<kappa>)) = \<sigma> (y,\<kappa>)"
             by (auto simp: \<alpha>_def hastype_restrict
                 intro!: term_of_index_of_term sorted_mapD[OF \<sigma>])
         }
-        then have "y \<in> f x \<Longrightarrow> term_of_index \<iota> (\<alpha> y) = \<sigma> y" for y
+        then have "y \<in> f x \<Longrightarrow> term_of_index C \<iota> (\<alpha> y) = \<sigma> y" for y
           by (cases y, auto)
-        then have "\<sigma> ` f x = term_of_index \<iota> ` \<alpha> ` f x"
+        then have "\<sigma> ` f x = term_of_index C \<iota> ` \<alpha> ` f x"
           by (auto simp: image_def)
         then show "UNIQ (\<sigma> ` f x)" by (simp add: image_Uniq[OF u])
       qed
@@ -1513,37 +1527,53 @@ context
   fixes pp
   assumes fvf: "finite_var_form_pp pp"
     and wf: "wf_pat pp"
-    and sort: "\<forall>f\<in>var_form_pp pp. \<forall>x. UNIQ (snd ` f x)" (*TODO: checked? *)
 begin
+
+private lemma vf: "var_form_pp pp"
+  using finite_var_form_imp_var_form_pp[OF fvf].
 
 lemma tvars_pp_S: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "\<iota> \<in> S"
   using wf y by (auto simp: wf_pat_def wf_match_iff tvars_pp_def)
 
-lemma tvars_pp_inf: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "\<not> inf_sort \<iota>"
-  using fvf y by (force simp: finite_var_form_pp_def finite_var_form_mp_def tvars_pp_def tvars_mp_def)
+lemma tvars_pp_finite: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "finite_sort C \<iota>"
+proof-
+  from y obtain mp t l where mp: "mp \<in> pp" and tl:"(t,l) \<in> mp" and yt: "(y, \<iota>) \<in> vars t"
+    by (auto simp: tvars_pp_def tvars_mp_def)
+  from finite_var_form_ppD[OF fvf mp tl] yt have "\<not> inf_sort \<iota>" by auto
+  with tvars_pp_S[OF y] inf_sort
+  show ?thesis by auto
+qed
 
-lemma tvars_pp_finite:
-  assumes y: "(y,\<iota>) \<in> tvars_pp pp"
-  shows "finite_sort C \<iota>"
-  using inf_sort[OF tvars_pp_S[OF y]] tvars_pp_inf[OF y] by simp
+lemma UNIQ_sort: assumes f: "f \<in> var_form_of_pp pp" shows "UNIQ (snd ` f x)"
+proof (intro Uniq_I, clarsimp)
+  from f obtain mp where mp: "mp \<in> pp" and f: "f = var_form_of_mp mp"
+    by (auto simp: var_form_of_pp_def)
+  fix y \<iota> z \<kappa> assume "(y,\<iota>) \<in> f x" "(z,\<kappa>) \<in> f x"
+  with f have y: "(Var (y,\<iota>), Var x) \<in> mp" and z: "(Var (z,\<kappa>), Var x) \<in> mp"
+    by (auto simp: var_form_of_mp_def)
+  from finite_var_form_ppD[OF fvf mp y] z
+  show "\<iota> = \<kappa>" by auto
+qed
 
 lemma finite_var_form_pp_pat_complete: "pat_complete pp \<longleftrightarrow>
   (\<forall>\<alpha>. (\<forall>(y,\<iota>) \<in> tvars_pp pp. \<alpha> (y,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
     (\<exists>mp \<in> pp. \<forall>x. UNIQ {\<alpha> y |y. (Var y, Var x) \<in> mp}))"
 proof-
-  note pat_complete_var_form_nat[of "var_form_pp pp"]
-  note this[unfolded pp_var_form_pat[OF fvf]]
-  note * = this[unfolded vars_var_form_pp[OF fvf]]
+  note pat_complete_var_form_nat[of "var_form_of_pp pp"]
+  note this[unfolded pp_var_form_pat[OF vf]]
+  note * = this[unfolded vars_var_form_pp[OF vf]]
   show ?thesis
     apply (subst *)
-    using tvars_pp_finite tvars_pp_S apply (force)
-    using sort apply (force)
-    apply (rule all_cong)
-    apply (unfold ex_var_form_pp)
-    apply (rule bex_cong[OF refl])
-    apply (rule all_cong1)
-    apply (rule arg_cong[of _ _ UNIQ])
-    by (auto simp: var_form_mp_def)
+    subgoal using tvars_pp_finite tvars_pp_S by force
+    subgoal using UNIQ_sort by force
+    subgoal 
+      apply (rule all_cong)
+      apply (unfold ex_var_form_pp)
+      apply (rule bex_cong[OF refl])
+      apply (rule all_cong1)
+      apply (rule arg_cong[of _ _ UNIQ])
+      by (auto simp: var_form_of_mp_def)
+    done
 qed
 
 end
