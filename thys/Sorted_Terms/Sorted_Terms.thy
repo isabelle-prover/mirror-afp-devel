@@ -774,7 +774,7 @@ lemma subst_eval: "I\<lbrakk>s\<cdot>\<theta>\<rbrakk>\<alpha> = I\<lbrakk>s\<rb
   using unsorted.eval.distrib_eval[of _ UNIV, unfolded o_def]
   by auto
 
-subsubsection \<open>Collecting Variables via Evaluation\<close>
+subsection \<open>Collecting Variables via Evaluation\<close>
 
 definition "var_list_term t \<equiv> (\<lambda>f. concat)\<lbrakk>t\<rbrakk>(\<lambda>v. [v])"
 
@@ -802,7 +802,7 @@ next
   finally show ?case by simp
 qed
 
-subsubsection \<open>Ground Terms\<close>
+subsection \<open>Ground Terms\<close>
 
 lemma hastype_in_Term_empty_imp_vars: "s : \<sigma> in \<T>(F,\<emptyset>) \<Longrightarrow> vars s = {}" 
   by (auto dest: hastype_in_Term_imp_vars_subset)
@@ -860,6 +860,8 @@ lemma all_in_Term_empty_subst_iff:
 
 end
 
+subsubsection \<open>Cardinality of Sorts\<close>
+
 text \<open>The emptiness, finiteness, and cardinality of a sort w.r.t. a signature is
   those of the set of ground terms of that sort.\<close>
 
@@ -914,7 +916,52 @@ proof-
   show ?thesis by auto
 qed
 
-subsubsection \<open>Subsignatures\<close>
+subsubsection \<open>Enumerating Ground Terms\<close>
+
+definition "index_of_term F =
+  (SOME f. \<forall>\<sigma>. finite_sort F \<sigma> \<longrightarrow> bij_betw f {t. t : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>})"
+
+definition "term_of_index F \<sigma> = inv_into {t. t : \<sigma> in \<T>(F,\<emptyset>)} (index_of_term F)"
+
+lemma index_of_term_bij:
+  assumes fin: "finite_sort F \<sigma>"
+  shows "bij_betw (index_of_term F) {t. t : \<sigma> in \<T>(F,\<emptyset>)} {0..<card_of_sort F \<sigma>}"
+    (is "bij_betw _ (?T \<sigma>) (?I \<sigma>)")
+proof-
+  have "\<forall>\<sigma> \<in> Collect (finite_sort F). \<exists>f. bij_betw f (?T \<sigma>) (?I \<sigma>)"
+    by (auto intro!: finite_sort_bij)
+  from bchoice[OF this]
+  obtain f where f: "\<And>\<sigma>. finite_sort F \<sigma> \<Longrightarrow> bij_betw (f \<sigma>) (?T \<sigma>) (?I \<sigma>)"
+    by auto
+  define g where "g = (\<lambda>t. f (the (\<T>(F,\<emptyset>) t)) t)"
+  have "\<forall>\<sigma>. finite_sort F \<sigma> \<longrightarrow> bij_betw g (?T \<sigma>) (?I \<sigma>)"
+    by (auto simp: g_def intro!: bij_betw_cong[THEN iffD1, OF _ f])
+  then have "\<exists>g. \<forall>\<sigma>. finite_sort F \<sigma> \<longrightarrow> bij_betw g (?T \<sigma>) (?I \<sigma>)"
+    by auto
+  from someI_ex[OF this, folded index_of_term_def] fin
+  show ?thesis by auto
+qed
+
+lemma term_of_index_of_term:
+  assumes t: "t : \<sigma> in \<T>(F,\<emptyset>)" and fin: "finite_sort F \<sigma>"
+  shows "term_of_index F \<sigma> (index_of_term F t) = t"
+  apply (unfold term_of_index_def)
+  apply (rule bij_betw_inv_into_left[OF index_of_term_bij])
+  using assms by auto
+
+lemma index_of_term_of_index:
+  assumes fin: "finite_sort F \<sigma>" and "n < card_of_sort F \<sigma>"
+  shows "index_of_term F (term_of_index F \<sigma> n) = n"
+  apply (unfold term_of_index_def)
+  apply (rule bij_betw_inv_into_right[OF index_of_term_bij])
+  using assms by auto
+
+lemma term_of_index_bij:
+  assumes fin: "finite_sort F \<sigma>"
+  shows "bij_betw (term_of_index F \<sigma>) {0..<card_of_sort F \<sigma>} {t. t : \<sigma> in \<T>(F,\<emptyset>)}"
+  by (simp add: bij_betw_inv_into fin index_of_term_bij term_of_index_def)
+
+subsection \<open>Subsignatures\<close>
 
 locale subsignature = fixes F G :: "('f,'s) ssig" assumes subssig: "F \<subseteq>\<^sub>m G"
 begin

@@ -1396,49 +1396,6 @@ proof-
   then show ?thesis by (simp add: pat_complete_var_form_set)
 qed
 
-definition "index_of_term =
-  (SOME f. \<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw f {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort C \<iota>})"
-
-definition "term_of_index \<iota> = inv_into {t. t : \<iota> in \<T>(C,\<emptyset>)} index_of_term"
-
-lemma index_of_term_bij:
-  assumes fin: "finite_sort C \<iota>"
-  shows "bij_betw index_of_term {t. t : \<iota> in \<T>(C,\<emptyset>)} {0..<card_of_sort C \<iota>}"
-    (is "bij_betw _ (?T \<iota>) (?I \<iota>)")
-proof-
-  have "\<forall>\<iota> \<in> Collect (finite_sort C). \<exists>f. bij_betw f (?T \<iota>) (?I \<iota>)"
-    by (auto intro!: finite_sort_bij)
-  from bchoice[OF this]
-  obtain f where f: "\<And>\<iota>. finite_sort C \<iota> \<Longrightarrow> bij_betw (f \<iota>) (?T \<iota>) (?I \<iota>)"
-    by auto
-  define g where "g = (\<lambda>t. f (the (\<T>(C,\<emptyset>) t)) t)"
-  have "\<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
-    by (auto simp: g_def intro!: bij_betw_cong[THEN iffD1, OF _ f])
-  then have "\<exists>g. \<forall>\<iota>. finite_sort C \<iota> \<longrightarrow> bij_betw g (?T \<iota>) (?I \<iota>)"
-    by auto
-  from someI_ex[OF this, folded index_of_term_def] fin
-  show ?thesis by auto
-qed
-
-lemma term_of_index_of_term:
-  assumes t: "t : \<iota> in \<T>(C,\<emptyset>)" and fin: "finite_sort C \<iota>"
-  shows "term_of_index \<iota> (index_of_term t) = t"
-  apply (unfold term_of_index_def)
-  apply (rule bij_betw_inv_into_left[OF index_of_term_bij])
-  using assms by auto
-
-lemma index_of_term_of_index:
-  assumes fin: "finite_sort C \<iota>" and "n < card_of_sort C \<iota>"
-  shows "index_of_term (term_of_index \<iota> n) = n"
-  apply (unfold term_of_index_def)
-  apply (rule bij_betw_inv_into_right[OF index_of_term_bij])
-  using assms by auto
-
-lemma term_of_index_bij:
-  assumes fin: "finite_sort C \<iota>"
-  shows "bij_betw (term_of_index \<iota>) {0..<card_of_sort C \<iota>} {t. t : \<iota> in \<T>(C,\<emptyset>)}"
-  by (simp add: bij_betw_inv_into fin index_of_term_bij term_of_index_def)
-
 end
 
 context pattern_completeness_context_with_assms begin
@@ -1485,7 +1442,7 @@ proof safe
   { fix \<alpha>
     assume l: ?l and a: "?s \<alpha>"
     define \<sigma> :: "_ \<Rightarrow> ('f,'v) term" where
-      "\<sigma> \<equiv> \<lambda>(x,\<iota>). term_of_index \<iota> (\<alpha> (x,\<iota>))"
+      "\<sigma> \<equiv> \<lambda>(x,\<iota>). term_of_index C \<iota> (\<alpha> (x,\<iota>))"
     have "\<sigma> (x,\<iota>) : \<iota> in \<T>(C,\<emptyset>)" if x: "(x,\<iota>) \<in> vars_var_form_pp ff" for x \<iota>
       using term_of_index_bij[OF fin, OF x]
         a[unfolded Ball_Pair_conv, rule_format, OF x]
@@ -1494,10 +1451,10 @@ proof safe
       by (auto intro!: sorted_mapI simp: hastype_restrict)
     from l[unfolded pat_complete_var_form_restrict, rule_format, OF this]
     obtain f where f: "f \<in> ff" and u: "\<And>x. UNIQ (\<sigma> ` f x)" by auto
-    have id: "y \<in> f x \<Longrightarrow> index_of_term (\<sigma> y) = \<alpha> y" for y x
+    have id: "y \<in> f x \<Longrightarrow> index_of_term C (\<sigma> y) = \<alpha> y" for y x
       using assms a f
       by (auto simp: \<sigma>_def index_of_term_of_index vars_var_form_pp_def split: prod.splits)
-    then have "\<alpha> ` f x = index_of_term ` \<sigma> ` f x" for x
+    then have "\<alpha> ` f x = index_of_term C ` \<sigma> ` f x" for x
       by (auto simp: image_def)
     then have "UNIQ (\<alpha> ` f x)" for x by (simp add: image_Uniq[OF u])
     with f show "?r \<alpha>" by auto
@@ -1511,7 +1468,7 @@ proof safe
       from sorted_mapD[OF this]
       have ty: "(x,\<iota>) \<in> vars_var_form_pp ff \<Longrightarrow> \<sigma> (x,\<iota>) : \<iota> in \<T>(C,\<emptyset>)"
         for x \<iota> using S by (auto simp: hastype_restrict)
-      define \<alpha> where "\<alpha> \<equiv> index_of_term \<circ> \<sigma>"
+      define \<alpha> where "\<alpha> \<equiv> index_of_term C \<circ> \<sigma>"
       have "\<alpha> (x,\<iota>) < card_of_sort C \<iota>" if x: "(x,\<iota>) \<in> vars_var_form_pp ff"
         for x \<iota> using index_of_term_bij[OF fin[OF x]] ty[OF x]
         by (auto simp: \<alpha>_def bij_betw_def)
@@ -1528,13 +1485,13 @@ proof safe
           from yk f have y: "(y,\<iota>) \<in> vars_var_form_pp ff"
             by (auto simp: vars_var_form_pp_def)
           from S[OF y] y fin[OF y]
-          have "term_of_index \<iota> (\<alpha> (y,\<kappa>)) = \<sigma> (y,\<kappa>)"
+          have "term_of_index C \<iota> (\<alpha> (y,\<kappa>)) = \<sigma> (y,\<kappa>)"
             by (auto simp: \<alpha>_def hastype_restrict
                 intro!: term_of_index_of_term sorted_mapD[OF \<sigma>])
         }
-        then have "y \<in> f x \<Longrightarrow> term_of_index \<iota> (\<alpha> y) = \<sigma> y" for y
+        then have "y \<in> f x \<Longrightarrow> term_of_index C \<iota> (\<alpha> y) = \<sigma> y" for y
           by (cases y, auto)
-        then have "\<sigma> ` f x = term_of_index \<iota> ` \<alpha> ` f x"
+        then have "\<sigma> ` f x = term_of_index C \<iota> ` \<alpha> ` f x"
           by (auto simp: image_def)
         then show "UNIQ (\<sigma> ` f x)" by (simp add: image_Uniq[OF u])
       qed
