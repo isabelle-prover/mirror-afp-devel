@@ -71,14 +71,15 @@ definition \<tau>c :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> 'f \<time
   "\<tau>c n x = (\<lambda>(f,ss). subst x (Fun f (map Var (zip [n ..< n + length ss] ss))))"
 
 text \<open>Compute the list of conflicting variables (Some list), or detect a clash (None)\<close>
-fun conflicts :: "('f,'v)term \<Rightarrow> ('f,'v)term \<Rightarrow> 'v list option" where 
-  "conflicts (Var x) (Var y) = (if x = y then Some [] else Some [x,y])" 
+fun conflicts :: "('f,'v\<times>'s)term \<Rightarrow> ('f,'v\<times>'s)term \<Rightarrow> ('v\<times>'s) list option" where 
+  "conflicts (Var x) (Var y) = (if x = y then Some [] else
+   if snd x = snd y then Some [x,y] else None)"
 | "conflicts (Var x) (Fun _ _) = (Some [x])"
 | "conflicts (Fun _ _) (Var x) = (Some [x])" 
 | "conflicts (Fun f ss) (Fun g ts) = (if (f,length ss) = (g,length ts)
      then map_option concat (those (map2 conflicts ss ts))
     else None)" 
-          
+
 abbreviation "Conflict_Var s t x \<equiv> conflicts s t \<noteq> None \<and> x \<in> set (the (conflicts s t))" 
 abbreviation "Conflict_Clash s t \<equiv> conflicts s t = None" 
 
@@ -266,10 +267,16 @@ proof (induct s t rule: conflicts.induct)
 qed auto
 
 
-lemma conflicts: fixes x :: 'v
-  shows "Conflict_Clash s t \<Longrightarrow> \<exists> p. p \<in> poss s \<and> p \<in> poss t \<and> is_Fun (s |_p) \<and> is_Fun (t |_p) \<and> root (s |_p) \<noteq> root (t |_ p)" (is "?B1 \<Longrightarrow> ?B2")
+lemma conflicts:
+  shows "Conflict_Clash s t \<Longrightarrow>
+    \<exists> p. p \<in> poss s \<and> p \<in> poss t \<and>
+    (is_Fun (s |_p) \<and> is_Fun (t |_p) \<and> root (s |_p) \<noteq> root (t |_ p) \<or>
+    (\<exists>x y. s |_p = Var x \<and> t |_p = Var y \<and> snd x \<noteq> snd y))"
+    (is "?B1 \<Longrightarrow> ?B2")
     and "Conflict_Var s t x \<Longrightarrow>
-         \<exists> p . p \<in> poss s \<and> p \<in> poss t \<and> s |_p \<noteq> t |_p \<and> (s |_p = Var x \<or> t |_p = Var x)" (is "?C1 x \<Longrightarrow> ?C2 x")
+    \<exists> p . p \<in> poss s \<and> p \<in> poss t \<and> s |_p \<noteq> t |_p \<and>
+    (s |_p = Var x \<or> t |_p = Var x)"
+    (is "?C1 x \<Longrightarrow> ?C2 x")
     and "s \<noteq> t \<Longrightarrow> \<exists> x. Conflict_Clash s t \<or> Conflict_Var s t x" 
     and "Conflict_Var s t x \<Longrightarrow> x \<in> vars s \<union> vars t" 
     and "conflicts s t = Some [] \<longleftrightarrow> s = t" (is ?A)
@@ -277,11 +284,11 @@ proof -
   let ?B = "?B1 \<longrightarrow> ?B2" 
   let ?C = "\<lambda> x. ?C1 x \<longrightarrow> ?C2 x" 
   {
-    fix x :: 'v
+    fix x
     have "(conflicts s t = Some [] \<longrightarrow> s = t) \<and> ?B \<and> ?C x"
     proof (induction s arbitrary: t)
       case (Var y t)
-      thus ?case by (cases t, auto)
+      thus ?case by (cases t, cases y, auto)
     next
       case (Fun f ss t)
       show ?case 
@@ -305,9 +312,13 @@ proof -
               using f unfolding set_conv_nth set_zip by auto
             from i have "ss ! i \<in> set ss" by auto
             from Fun.IH[OF this, of "ts ! i"] confl obtain p 
-              where p: "p \<in> poss (ss ! i) \<and> p \<in> poss (ts ! i) \<and> is_Fun (ss ! i |_ p) \<and> is_Fun (ts ! i |_ p) \<and> root (ss ! i |_ p) \<noteq> root (ts ! i |_ p)" 
-              by auto
-            from p have p: "\<exists> p. p \<in> poss ?s \<and> p \<in> poss t \<and> is_Fun (?s |_ p) \<and> is_Fun (t |_ p) \<and> root (?s |_ p) \<noteq> root (t |_ p)" 
+              where p: "p \<in> poss (ss ! i) \<and> p \<in> poss (ts ! i) \<and>
+(is_Fun (ss ! i |_ p) \<and> is_Fun (ts ! i |_ p) \<and> root (ss ! i |_ p) \<noteq> root (ts ! i |_ p) \<or>
+(\<exists>x y. ss!i |_ p = Var x \<and> ts!i |_ p = Var y \<and> snd x \<noteq> snd y))" 
+              by force
+            from p have p: "\<exists> p. p \<in> poss ?s \<and> p \<in> poss t \<and>
+(is_Fun (?s |_ p) \<and> is_Fun (t |_ p) \<and> root (?s |_ p) \<noteq> root (t |_ p) \<or>
+(\<exists>x y. ?s |_ p = Var x \<and> t |_ p = Var y \<and> snd x \<noteq> snd y))" 
               by (intro exI[of _ "i # p"], unfold t, insert i f, auto)
             from p res show ?thesis by auto
           next
@@ -354,7 +365,7 @@ proof -
   show ?A
   proof
     assume "s = t" 
-    with B have "conflicts s t \<noteq> None" by blast
+    with B have "conflicts s t \<noteq> None" by force
     then obtain xs where res: "conflicts s t = Some xs" by auto     
     show "conflicts s t = Some []" 
     proof (cases xs)
@@ -371,7 +382,9 @@ proof -
     proof (cases "conflicts s t")
       case (Some xs)
       with \<open>?A\<close> diff obtain x where "x \<in> set xs" by (cases xs, auto)
-      thus ?thesis unfolding Some by auto
+      thus ?thesis unfolding Some
+        apply auto
+        by (metis surj_pair)
     qed auto
   }
   assume "Conflict_Var s t x" 
@@ -498,7 +511,8 @@ lemma pat_complete_empty[simp]: "pat_complete {} = False"
 
 lemma inf_var_conflictD: assumes "inf_var_conflict mp" 
   shows "\<exists> p s t x y. 
-    (s,Var x) \<in> mp \<and> (t,Var x) \<in> mp \<and> s |_p = Var y \<and> s |_ p \<noteq> t |_p  \<and> p \<in> poss s \<and> p \<in> poss t \<and> inf_sort (snd y)" 
+    (s,Var x) \<in> mp \<and> (t,Var x) \<in> mp \<and> s |_p = Var y \<and> s |_ p \<noteq> t |_p \<and>
+   p \<in> poss s \<and> p \<in> poss t \<and> inf_sort (snd y)" 
 proof -
   from assms[unfolded inf_var_conflict_def]
   obtain s t x y where "(s, Var x) \<in> mp \<and> (t, Var x) \<in> mp" and conf: "Conflict_Var s t y" and y: "inf_sort (snd y)" by blast
@@ -597,7 +611,10 @@ next
   qed
 qed auto
 
-lemma mp_fail_pcorrect: "mp_fail mp \<Longrightarrow> \<not> match_complete_wrt \<sigma> mp" 
+lemma mp_fail_pcorrect:
+  assumes "mp_fail mp" "wf_match mp" and \<sigma>: "\<sigma> :\<^sub>s \<V> \<rightarrow> \<T>(C,X)"
+  shows "\<not> match_complete_wrt \<sigma> mp"
+  using assms(1,2)
 proof (induct mp rule: mp_fail.induct)
   case *: (mp_clash f ts g ls mp)
   {
@@ -610,19 +627,35 @@ proof (induct mp rule: mp_fail.induct)
 next
   case *: (mp_clash' s t x mp)
   from conflicts(1)[OF *(1)]
-  obtain po where *: "po \<in> poss s" "po \<in> poss t" "is_Fun (s |_ po)" "is_Fun (t |_ po)" "root (s |_ po) \<noteq> root (t |_ po)" 
+  obtain po where po: "po \<in> poss s" "po \<in> poss t"
+    and disj: "is_Fun (s |_ po) \<and> is_Fun (t |_ po) \<and> root (s |_ po) \<noteq> root (t |_ po) \<or>
+    (\<exists>x y. s |_ po = Var x \<and> t |_ po = Var y \<and> snd x \<noteq> snd y)" 
     by auto
   show ?case 
   proof 
-    assume "match_complete_wrt \<sigma> ({(s, Var x), (t, Var x)} \<union> mp)" 
+    assume "match_complete_wrt \<sigma> ({(s, Var x), (t, Var x)} \<union> mp)"
     from this[unfolded match_complete_wrt_def]
-    have "s \<cdot> \<sigma> = t \<cdot> \<sigma>" by auto
-    hence "root (s \<cdot> \<sigma> |_po) = root (t \<cdot> \<sigma> |_po)" by auto
-    also have "root (s \<cdot> \<sigma> |_po) = root (s |_po \<cdot> \<sigma>)" using * by auto
-    also have "\<dots> = root (s |_po)" using * by (cases "s |_ po", auto)
-    also have "root (t \<cdot> \<sigma> |_po) = root (t |_po \<cdot> \<sigma>)" using * by (cases "t |_ po", auto)
-    also have "\<dots> = root (t |_po)" using * by (cases "t |_ po", auto)
-    finally show False using * by auto
+    have eq: "s \<cdot> \<sigma> |_po = t \<cdot> \<sigma> |_po" by auto
+    from disj
+    show False
+    proof (elim disjE conjE exE)
+      assume *: "is_Fun (s |_ po)" "is_Fun (t |_ po)" "root (s |_ po) \<noteq> root (t |_ po)"
+      from eq have "root (s \<cdot> \<sigma> |_po) = root (t \<cdot> \<sigma> |_po)" by auto
+      also have "root (s \<cdot> \<sigma> |_po) = root (s |_po \<cdot> \<sigma>)" using po by auto
+      also have "\<dots> = root (s |_po)" using * by (cases "s |_ po", auto)
+      also have "root (t \<cdot> \<sigma> |_po) = root (t |_po \<cdot> \<sigma>)" using po by (cases "t |_ po", auto)
+      also have "\<dots> = root (t |_po)" using * by (cases "t |_ po", auto)
+      finally show False using * by auto
+    next
+      fix y z assume y: "s |_ po = Var y" and z: "t |_ po = Var z" and ty: "snd y \<noteq> snd z"
+      from y z eq po have yz: "\<sigma> y = \<sigma> z" by auto
+      have "y \<in> vars_term s" "z \<in> vars_term t"
+        using po[THEN vars_term_subt_at] y z by auto
+      with *(2) have "snd y \<in> S" "snd z \<in> S" by (auto simp: wf_match_def tvars_mp_def)
+      then have "\<sigma> y : snd y in \<T>(C,X)" "\<sigma> z : snd z in \<T>(C,X)"
+        by (auto intro!: \<sigma>[THEN sorted_mapD])
+      with ty yz show False by (auto simp: has_same_type)
+    qed
   qed
 qed
 
@@ -634,7 +667,8 @@ proof (induct pp pp' rule: pp_step.induct)
   then show ?case using mp_step_pcorrect[of mp mp'] unfolding pat_complete_def by auto
 next
   case (pp_remove_mp mp pp)
-  then show ?case using mp_fail_pcorrect[of mp] unfolding pat_complete_def by auto
+  then show ?case using mp_fail_pcorrect[of mp _ \<emptyset>]
+    unfolding pat_complete_def by (auto simp: wf_pat_def)
 next
   case *: (pp_inf_var_conflict pp pp')
   hence wf: "wf_pat (pp \<union> pp')" and fin: "finite pp" by auto

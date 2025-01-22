@@ -388,9 +388,10 @@ next
                   have mp'': "mp = add_mset (s, Var y) (add_mset (Var x, Var y) mp'')" 
                     unfolding mp'' by (cases y', auto)
                   from ndup mp'' mp have sx: "s \<noteq> Var x" by auto
+                  from no_clash mp'' mp have no_clash: "\<not> Conflict_Clash s (Var x)" by metis
                   from no_confl[unfolded inf_var_conflict_def not_ex, rule_format, of s y "Var x" x] mp'' inf                     
                   have "\<not> Conflict_Var s (Var x) x" by auto
-                  with sx have False by (cases s, auto simp: conflicts.simps)
+                  with sx no_clash have False by (cases s, auto simp: conflicts.simps split: if_splits)
                   thus ?thesis by auto
                 qed
               qed auto
