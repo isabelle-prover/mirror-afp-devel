@@ -261,12 +261,24 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val dirs = AFP.main_dirs(None)
-          val find_facts_options = List(Options.Spec.eq("find_facts_database_name", "afp-devel"))
-          val script =
-            Find_Facts.find_facts_index_command(results.sessions_ok, options = find_facts_options,
-              isabelle_home = Path.explode("$ISABELLE_HOME"), dirs = dirs, clean = true)
-          Isabelle_System.bash(script, progress_stdout = progress.echo(_),
-            progress_stderr = progress.echo_error_message(_))
+          val afp = AFP_Structure(options)
+          val database = "afp-" + afp.hg_id
+          val find_facts_options =
+            List(
+              Options.Spec.eq("find_facts_database_name", database),
+              Options.Spec.make("build_database"),
+              Options.Spec.make("build_database_server"))
+
+          val cmd = Find_Facts.find_facts_index_command(results.sessions_ok, options =
+            find_facts_options, dirs = dirs, clean = true, no_build = true)
+
+          val isabelle_home = Path.explode("$ISABELLE_HOME")
+          val isabelle_identifier = Isabelle_System.isabelle_identifier() getOrElse ""
+          val script = Bash.context(cmd, SSH.Local.user_home, isabelle_identifier, isabelle_home)
+
+          Isabelle_System.bash(script,
+            progress_stdout = progress.echo(_),
+            progress_stderr = progress.echo_error_message(_)).check
         }
       },
       other_settings =
