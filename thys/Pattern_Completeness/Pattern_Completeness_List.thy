@@ -5,6 +5,7 @@ theory Pattern_Completeness_List
     Pattern_Completeness_Multiset
     Compute_Nonempty_Infinite_Sorts
     "HOL-Library.AList" 
+(*    RenamingN (from IsaFoRs Auxx) *)
 begin
 
 subsection \<open>Definition of Algorithm\<close>
@@ -22,6 +23,12 @@ type_synonym ('f,'v,'s)pat_problem_list = "('f,'v,'s)match_problem_list list"
 type_synonym ('f,'v,'s)pat_problem_lr = "('f,'v,'s)match_problem_lr list" 
 type_synonym ('f,'v,'s)pats_problem_list = "('f,'v,'s)pat_problem_list list" 
 type_synonym ('f,'v,'s)pat_problem_set_impl = "(('f,nat \<times> 's)term \<times> ('f,'v)term) list list" 
+
+definition lvars_mp :: "('f,'v,'s)match_problem_mset \<Rightarrow> 'v set" where
+  "lvars_mp mp = (\<Union> (vars ` snd ` mp_mset mp))" 
+
+definition lvars_pp :: "('f,'v,'s)pat_problem_mset \<Rightarrow> 'v set" where
+  "lvars_pp pp = (\<Union> (lvars_mp ` set_mset pp))" 
 
 abbreviation mp_list :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_problem_mset" 
   where "mp_list \<equiv> mset" 
@@ -104,34 +111,35 @@ fun decomp_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_p
        (case insert_rx t y rx of Some rx' \<Rightarrow> Some (lx,rx') | None \<Rightarrow> None)
        | None \<Rightarrow> None)" 
 
-definition match_steps_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('f,'v,'s)match_problem_lr option" where
-  "match_steps_impl mp = map_option match_var_impl (decomp_impl mp)" 
+definition match_steps_impl :: "nat \<Rightarrow> ('f,'v,'s)match_problem_list \<Rightarrow> (nat \<times> ('f,'v,'s)match_problem_lr) option" where
+  "match_steps_impl n mp = map_option (\<lambda> mp. (n, mp)) (map_option match_var_impl (decomp_impl mp))" 
 
-fun pat_inner_impl :: "('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_problem_lr \<Rightarrow> ('f,'v,'s)pat_problem_lr option" where
-  "pat_inner_impl [] pd = Some pd" 
-| "pat_inner_impl (mp # p) pd = (case match_steps_impl mp of 
-     None \<Rightarrow> pat_inner_impl p pd
-   | Some mp' \<Rightarrow> if empty_lr mp' then None
-       else pat_inner_impl p (mp' # pd))" 
+fun pat_inner_impl :: "nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_problem_lr \<Rightarrow> (nat \<times> ('f,'v,'s)pat_problem_lr) option" where
+  "pat_inner_impl n [] pd = Some (n, pd)" 
+| "pat_inner_impl n (mp # p) pd = (case match_steps_impl n mp of 
+     None \<Rightarrow> pat_inner_impl n p pd
+   | Some (n',mp') \<Rightarrow> if empty_lr mp' then None
+       else pat_inner_impl n' p (mp' # pd))" 
 
-definition pat_impl :: "nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_problem_list list option" where
-  "pat_impl n p = (case pat_inner_impl p [] of None \<Rightarrow> Some []
-      | Some p' \<Rightarrow> (if (\<forall> mp \<in> set p'. snd (snd mp)) then None \<comment> \<open>detected inf-var-conflict (or empty mp)\<close>
+definition pat_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> (nat \<times> nat \<times> ('f,'v,'s)pat_problem_list list) option" where
+  "pat_impl n nl p = (case pat_inner_impl nl p [] of None \<Rightarrow> Some (n,nl,[])
+      | Some (nl',p') \<Rightarrow> (if (\<forall> mp \<in> set p'. snd (snd mp)) then None \<comment> \<open>detected inf-var-conflict (or empty mp)\<close>
         else let p'l = map mp_lr_list p';
            x = find_var p'
          in
-           Some (map (\<lambda> \<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x))))" 
+           Some (n + m, nl', map (\<lambda> \<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x))))" 
 
-partial_function (tailrec) pats_impl :: "nat \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
-  "pats_impl n ps = (case ps of [] \<Rightarrow> True
-     | p # ps1 \<Rightarrow> (case pat_impl n p of 
+partial_function (tailrec) pats_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
+  "pats_impl n nl ps = (case ps of [] \<Rightarrow> True
+     | p # ps1 \<Rightarrow> (case pat_impl n nl p of 
          None \<Rightarrow> False
-       | Some ps2 \<Rightarrow> pats_impl (n + m) (ps2 @ ps1)))"
+       | Some (n',nl',ps2) \<Rightarrow> pats_impl n' nl' (ps2 @ ps1)))"
 
 definition pat_complete_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
   "pat_complete_impl ps = (let 
-      n = Suc (max_list (List.maps (map fst o vars_term_list o fst) (concat (concat ps))))
-     in pats_impl n ps)" 
+      n = Suc (max_list (List.maps (map fst o vars_term_list o fst) (concat (concat ps))));
+      nl = 0
+     in pats_impl n nl ps)" 
 end
 
 lemmas pat_complete_impl_code = 
@@ -204,7 +212,8 @@ text \<open>Continue with properties of the sub-algorithms\<close>
 lemma insert_rx: assumes res: "insert_rx t x rxb = res"
   and wf: "wf_rx rxb" 
   and mp: "mp = (ls,rxb)" 
-  shows "res = Some rx' \<Longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (add_mset (t,Var x) (mp_lr mp + M)) (mp_lr (ls,rx') + M) \<and> wf_rx rx'"
+shows "res = Some rx' \<Longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (add_mset (t,Var x) (mp_lr mp + M)) (mp_lr (ls,rx') + M) \<and> wf_rx rx'
+  \<and> lvars_mp (add_mset (t,Var x) (mp_lr mp + M)) \<supseteq> lvars_mp (mp_lr (ls,rx') + M)"
     "res = None \<Longrightarrow> match_fail (add_mset (t,Var x) (mp_lr mp + M))"     
 proof -
   obtain rx b where rxb: "rxb = (rx,b)" by force
@@ -225,7 +234,8 @@ proof -
   {
     assume "res = Some rx'" 
     note res = res[unfolded this rxb split]
-    show "mp_step_mset^** (add_mset (t,Var x) (mp_lr mp + M)) (mp_lr (ls,rx') + M) \<and> wf_rx rx'"
+    show "mp_step_mset^** (add_mset (t,Var x) (mp_lr mp + M)) (mp_lr (ls,rx') + M) \<and> wf_rx rx'
+     \<and> lvars_mp (mp_lr (ls, rx') + M) \<subseteq> lvars_mp (add_mset (t, Var x) (mp_lr mp + M))"
     proof (cases "map_of rx x")
       case look: None
       from res[unfolded this] 
@@ -257,7 +267,8 @@ proof -
         hence "(t, Var x) \<in># mp_rx rxb" unfolding mp_rx_def rxb using mem by auto
         hence "(t, Var x) \<in># mp_lr mp + M" unfolding mp mp_lr_def by auto
         then obtain sub where id: "mp_lr mp + M = add_mset (t, Var x) sub" by (rule mset_add)
-        show ?thesis unfolding id rx' mp[symmetric] using match_duplicate[of "(t, Var x)" sub] wf by auto
+        show ?thesis unfolding id rx' mp[symmetric] using match_duplicate[of "(t, Var x)" sub] wf
+          by (auto simp: lvars_mp_def)
       next
         case False
         with res have rx': "rx' = (AList.update x (t # ts) rx, b \<or> (\<exists>y\<in>set (concat cs). inf_sort (snd y)))" by (auto split: if_splits)
@@ -324,7 +335,8 @@ proof -
 qed
 
 lemma decomp_impl: "decomp_impl mp = res \<Longrightarrow> 
-    (res = Some mp' \<longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp + M) (mp_lr mp' + M) \<and> wf_lr mp')
+    (res = Some mp' \<longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp + M) (mp_lr mp' + M) \<and> wf_lr mp' 
+      \<and> lvars_mp (mp_list mp + M) \<supseteq> lvars_mp (mp_lr mp' + M))
   \<and> (res = None \<longrightarrow> (\<exists> mp'. (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp + M) mp' \<and> match_fail mp'))" 
 proof (induct mp arbitrary: res M mp' rule: decomp_impl.induct)
   case 1
@@ -346,7 +358,10 @@ next
     from True 2(2-) have res: "decomp_impl (zip ts ls @ mp) = res" by auto
     note IH = 2(1)[OF True this, of mp' M]
     note step = match_decompose[OF True, of "mp_list mp + M", folded id id2]
-    from IH step show ?thesis by (meson converse_rtranclp_into_rtranclp)
+    have lvars: "lvars_mp (mp_list ((Fun f ts, Fun g ls) # mp) + M) \<supseteq> lvars_mp (mp_list (zip ts ls @ mp) + M)" 
+      by (auto simp: lvars_mp_def dest: set_zip_rightD)
+    from IH step subset_trans[OF _ lvars] 
+    show ?thesis by (meson converse_rtranclp_into_rtranclp)
   qed
 next
   case (3 x g ls mp res M mp')
@@ -375,7 +390,9 @@ next
     note res = res[unfolded decomp option.simps split]
     from 4(1)[OF decomp, of "( lx, rx)" "add_mset (t, Var y) M"]
     have IH: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list ((t, Var y) # mp) + M) (mp_lr ( lx, rx) + add_mset (t, Var y) M)"
-      "wf_lr ( lx, rx)" by auto
+      "wf_lr ( lx, rx)" 
+      "lvars_mp (mp_lr (lx, rx) + add_mset (t, Var y) M)
+       \<subseteq> lvars_mp (mp_list mp + add_mset (t, Var y) M)" by auto
     from IH have wf_rx: "wf_rx rx" unfolding wf_lr_def by auto
     show ?thesis 
     proof (cases "insert_rx t y rx")
@@ -389,12 +406,13 @@ next
       from insert_rx(1)[OF Some wf_rx refl refl, of lx M]
       have wf_rx: "wf_rx rx'" 
         and steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_lr ( lx, rx) + add_mset (t, Var y) M) (mp_lr ( lx, rx') + M)" 
+        and lvars: "lvars_mp (mp_lr (lx, rx') + M) \<subseteq> lvars_mp (add_mset (t, Var y) (mp_lr (lx, rx) + M))" 
         by auto
       from IH(1) steps
       have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list ((t, Var y) # mp) + M) (mp_lr ( lx, rx') + M)" by auto
       from wf_rx IH(2-) have wf: "wf_lr ( lx, rx')"  
         unfolding wf_lr_def by auto
-      from res wf steps show ?thesis by auto
+      from res wf steps lvars IH(3) show ?thesis by auto
     qed
   qed
 qed
@@ -402,6 +420,7 @@ qed
 lemma match_var_impl: assumes wf: "wf_lr mp" 
 shows "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_lr mp) (mp_lr (match_var_impl mp))" 
   and "wf_lr2 (match_var_impl mp)" 
+  and "lvars_mp (mp_lr mp) \<supseteq> lvars_mp (mp_lr (match_var_impl mp))" 
 proof -
   note [simp] = List.maps_def
   let ?mp' = "match_var_impl mp" 
@@ -512,10 +531,45 @@ proof -
     qed
     from one two show ?case by auto
   qed auto
+  show "lvars_mp (mp_lr (match_var_impl mp)) \<subseteq> lvars_mp (mp_lr mp)" 
+    unfolding mp mp' deleted_def mp'_def
+    by (auto simp: lvars_mp_def mp_lr_def)
 qed
 
-lemma match_steps_impl: assumes "match_steps_impl mp = res" 
-  shows "res = Some mp' \<Longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp') \<and> wf_lr2 mp'" 
+(* use RenamingN interface of isafor for generating new lvars,
+   which are required for decompose'-impl;
+   at the moment deactive, since improved-implementation is not yet there;
+   use dummy conditions instead *)
+
+(*
+context 
+  fixes ren :: "'v :: infinite renamingN" 
+  fixes vname :: 'v
+begin
+
+definition allowed_vars where "allowed_vars n = range (rename_single ren) \<union> (\<lambda> i. rename_many ren (i, vname)) ` {..<n}" 
+*)
+definition "allowed_vars (n :: nat) = (UNIV :: 'v set)" 
+
+(* the definition of allowed_vars needs to be changed to the outcommented one *)
+
+definition lvar_cond where "lvar_cond n V = (V \<subseteq> allowed_vars n)"
+definition lvar_cond_mp where "lvar_cond_mp n mp = lvar_cond n (lvars_mp mp)" 
+definition lvar_cond_pp where "lvar_cond_pp n pp = lvar_cond n (lvars_pp pp)" 
+
+lemma lvar_cond_simps[simp]: 
+  "lvar_cond n (insert x A) = (x \<in> allowed_vars n \<and> lvar_cond n A)" 
+  "lvar_cond n {}" 
+  "lvar_cond n (A \<union> B) = (lvar_cond n A \<and> lvar_cond n B)" 
+  "lvar_cond n (\<Union> As) = (\<forall> A \<in> As. lvar_cond n A)" 
+  unfolding lvar_cond_def by auto
+
+lemma lvar_cond_mono: "n \<le> n' \<Longrightarrow> lvar_cond n V \<Longrightarrow> lvar_cond n' V" 
+  unfolding lvar_cond_def allowed_vars_def by auto
+
+lemma match_steps_impl: assumes "match_steps_impl n mp = res" 
+  and lvc: "lvar_cond_mp n (mp_list mp)" 
+  shows "res = Some (n',mp') \<Longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp') \<and> wf_lr2 mp' \<and> lvar_cond_mp n' (mp_lr mp') \<and> n \<le> n'" 
     and "res = None \<Longrightarrow> \<exists> mp'. (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) mp' \<and> match_fail mp'" 
 proof (atomize (full), goal_cases)
   case 1
@@ -529,42 +583,56 @@ proof (atomize (full), goal_cases)
   next
     case (Some mp'')
     with decomp[of mp'']
-    have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp'')" and wf: "wf_lr mp''" by auto
-    from res[unfolded Some] have res: "res = Some (match_var_impl mp'')" by auto
-    from match_var_impl[OF wf] steps res show ?thesis by auto
+    have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp'')" and wf: "wf_lr mp''" 
+      and lsub: "lvars_mp (mp_lr mp'') \<subseteq> lvars_mp (mp_list mp)" by auto
+    from res[unfolded Some] have "res = Some (n,match_var_impl mp'')" by auto
+    with match_var_impl[OF wf] steps res lvc lsub show ?thesis
+      unfolding lvar_cond_mp_def by (auto simp: lvar_cond_mp_def lvar_cond_def)
   qed
 qed
 
-lemma pat_inner_impl: assumes "pat_inner_impl p pd = res" 
+lemma pat_inner_impl: assumes "pat_inner_impl n p pd = res" 
   and "wf_pat_lr pd" 
   and "tvars_pp (pat_mset (pat_mset_list p + pat_lr pd)) \<subseteq> V" 
+  and "lvar_cond_pp n (pat_mset_list p + pat_lr pd)" 
   shows "res = None \<Longrightarrow> (add_mset (pat_mset_list p + pat_lr pd) P, P) \<in> \<Rrightarrow>\<^sup>+" 
-    and "res = Some p' \<Longrightarrow> (add_mset (pat_mset_list p + pat_lr pd) P, add_mset (pat_lr p') P) \<in> \<Rrightarrow>\<^sup>*
-             \<and> wf_pat_lr p' \<and> tvars_pp (pat_mset (pat_lr p')) \<subseteq> V" 
-proof (atomize(full), insert assms, induct p arbitrary: pd res p')
+    and "res = Some (n',p') \<Longrightarrow> (add_mset (pat_mset_list p + pat_lr pd) P, add_mset (pat_lr p') P) \<in> \<Rrightarrow>\<^sup>*
+             \<and> wf_pat_lr p' \<and> tvars_pp (pat_mset (pat_lr p')) \<subseteq> V \<and> lvar_cond_pp n' (pat_lr p') \<and> n \<le> n'" 
+proof (atomize(full), insert assms, induct p arbitrary: n pd res n' p')
   case Nil
   then show ?case by (auto simp: wf_pat_lr_def pat_mset_list_def pat_lr_def)
 next
-  case (Cons mp p pd res p')
+  case (Cons mp p n pd res n'' p')
   let ?p = "pat_mset_list p + pat_lr pd" 
   have id: "pat_mset_list (mp # p) + pat_lr pd = add_mset (mp_list mp) ?p" unfolding pat_mset_list_def by auto  
+  from Cons(5) have lmp: "lvar_cond_mp n (mp_list mp)" unfolding lvar_cond_pp_def lvar_cond_mp_def lvars_pp_def
+    by (simp add: id)
   show ?case
-  proof (cases "match_steps_impl mp")
-    case (Some mp')
-    from match_steps_impl(1)[OF Some refl]
-    have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp')" and wf: "wf_lr2 mp'" by auto
+  proof (cases "match_steps_impl n mp")
+    case (Some pair)
+    then obtain n' mp' where Some: "match_steps_impl n mp = Some (n', mp')" by (cases pair, auto)
+    from match_steps_impl(1)[OF Some lmp refl]
+    have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp')" and wf: "wf_lr2 mp'" 
+      and lmp': "lvar_cond_mp n' (mp_lr mp')" and nn': "n \<le> n'" by auto
+    from Cons(5) lvar_cond_mono[OF nn'] 
+    have lvars_n': "lvar_cond_pp n' (pat_mset_list (mp # p) + pat_lr pd)" 
+      by (auto simp: lvar_cond_pp_def)
     have id2: "pat_mset_list p + pat_lr (mp' # pd) = add_mset (mp_lr mp') ?p" unfolding pat_lr_def by auto
     from mp_step_mset_steps_vars[OF steps] Cons(4) 
     have vars: "tvars_pp (pat_mset (pat_mset_list p + pat_lr (mp' # pd))) \<subseteq> V"
         unfolding id2 by (auto simp: tvars_pp_def pat_mset_list_def)
     note steps = mp_step_mset_cong[OF steps, of ?p P, folded id]
-    note res = Cons(2)[unfolded pat_inner_impl.simps Some option.simps]
+    note res = Cons(2)[unfolded pat_inner_impl.simps Some option.simps split]
     show ?thesis 
     proof (cases "empty_lr mp'")
       case False
       with Cons(3) wf have wf: "wf_pat_lr (mp' # pd)" unfolding wf_pat_lr_def by auto
-      from res False have "pat_inner_impl p (mp' # pd) = res" by auto
-      from Cons(1)[OF this wf, of p', OF vars, unfolded id2] steps
+      from lmp' lvars_n' 
+      have lvars_pre: "lvar_cond_pp n' (pat_mset_list p + pat_lr (mp' # pd))" 
+        unfolding lvar_cond_pp_def lvar_cond_mp_def 
+        by (auto simp: pat_mset_list_def lvars_pp_def lvars_mp_def pat_lr_def) 
+      from res False have "pat_inner_impl n' p (mp' # pd) = res" by auto
+      from Cons(1)[OF this wf vars lvars_pre, of n'' p', unfolded id2] steps nn'
       show ?thesis by auto
     next
       case True
@@ -576,7 +644,7 @@ next
     qed
   next
     case None
-    from match_steps_impl(2)[OF None refl] obtain mp' where
+    from match_steps_impl(2)[OF None lmp refl] obtain mp' where
       "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) mp'" and fail: "match_fail mp'" by auto
     note steps = mp_step_mset_cong[OF this(1), of ?p P, folded id]
     from P_simp_pp[OF pat_remove_mp[OF fail, of ?p], of P]
@@ -586,7 +654,9 @@ next
     note res = Cons(2)[unfolded pat_inner_impl.simps None option.simps] 
     have vars: "tvars_pp (pat_mset (pat_mset_list p + pat_lr pd)) \<subseteq> V" 
       using Cons(4) unfolding tvars_pp_def pat_mset_list_def by auto
-    from Cons(1)[OF res Cons(3), of p', OF vars] steps
+    have lvars: "lvar_cond_pp n (pat_mset_list p + pat_lr pd)" 
+      using Cons(5) unfolding lvar_cond_pp_def lvars_pp_def by (auto simp: pat_mset_list_def)
+    from Cons(1)[OF res Cons(3) vars lvars, of n'' p'] steps 
     show ?thesis by auto
   qed
 qed
@@ -599,11 +669,13 @@ context
 begin
 
 text \<open>Main simulation lemma for a single @{const pat_impl} step.\<close>
-lemma pat_impl: assumes "pat_impl n p = res" 
+lemma pat_impl: assumes "pat_impl n nl p = res" 
     and vars: "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" 
+    and lvarsAll: "\<forall> pp \<in># add_mset (pat_mset_list p) P. lvar_cond_pp nl pp"  
   shows "res = None \<Longrightarrow> \<exists> p'. (add_mset (pat_mset_list p) P, add_mset p' P) \<in> \<Rrightarrow>\<^sup>* \<and> pat_fail p'" 
-    and "res = Some ps \<Longrightarrow> (add_mset (pat_mset_list p) P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>\<^sup>+
-             \<and> fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..<n+m}" 
+    and "res = Some (n',nl',ps) \<Longrightarrow> (add_mset (pat_mset_list p) P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>\<^sup>+
+             \<and> fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..< n'} 
+             \<and> (\<forall> pp \<in># mset (map pat_mset_list ps) + P. lvar_cond_pp nl' pp) \<and> n \<le> n'" 
 proof (atomize(full), goal_cases)
   case 1
   have wf: "wf_pat_lr []" unfolding wf_pat_lr_def by auto
@@ -612,18 +684,21 @@ proof (atomize(full), goal_cases)
   hence vars: "tvars_pp (pat_mset (pat_mset_list p)) \<subseteq> {..<n} \<times> UNIV" by force
   have "pat_mset_list p + pat_lr [] = pat_mset_list p" unfolding pat_lr_def by auto
   note pat_inner = pat_inner_impl[OF refl wf, of p, unfolded this, OF vars]
+  from lvarsAll have lvars: "lvar_cond_pp nl (pat_mset_list p)" by auto
   note res = assms(1)[unfolded pat_impl_def]
   show ?case
-  proof (cases "pat_inner_impl p []")
+  proof (cases "pat_inner_impl nl p []")
     case None
-    from pat_inner(1)[OF this, of P] res[unfolded None option.simps] vars
-    show ?thesis by (auto simp: tvars_pp_def)
+    from pat_inner(1)[OF lvars this] res[unfolded None option.simps] vars
+    show ?thesis using lvarsAll by (auto simp: tvars_pp_def)
   next
-    case (Some p')
-    from pat_inner(2)[OF this, of P]
+    case (Some pair)
+    then obtain nl'' p' where Some: "pat_inner_impl nl p [] = Some (nl'', p')" by force
+    from pat_inner(2)[OF lvars Some]
     have steps: "(add_mset (pat_mset_list p) P, add_mset (pat_lr p') P) \<in> \<Rrightarrow>\<^sup>*" and wf: "wf_pat_lr p'"
-      and varsp': "tvars_pp (pat_mset (pat_lr p')) \<subseteq> {..<n} \<times> UNIV" by auto
-    note res = res[unfolded Some option.simps]
+      and varsp': "tvars_pp (pat_mset (pat_lr p')) \<subseteq> {..<n} \<times> UNIV"
+      and lvar_p': "lvar_cond_pp nl'' (pat_lr p')" and nl: "nl \<le> nl''" by auto
+    note res = res[unfolded Some option.simps split]
     show ?thesis
     proof (cases "\<forall>mp\<in>set p'. snd (snd mp)")
       case True
@@ -657,7 +732,7 @@ proof (atomize(full), goal_cases)
         by (intro arg_cong[of _ _ mset] map_cong refl, auto simp: mp_lr_def mp_lr_list_def mp_rx_def mp_rx_list_def)
       from False have "(\<forall>mp\<in>set p'. snd (snd mp)) = False" by auto
       from res[unfolded this if_False Let_def, folded p'l_def x_def, folded ps_def]
-      have res: "res = Some ps" by auto
+      have res: "res = Some (n + m, nl'', ps)" by auto
       have step: "(add_mset (pat_lr p') P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>" 
         unfolding P_step_def 
       proof (standard, unfold split, intro P_simp_pp)
@@ -723,7 +798,7 @@ proof (atomize(full), goal_cases)
           show ?thesis unfolding subst .
         qed
       qed
-      have "fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..<n + m}"
+      have tvars: "fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..<n + m}"
       proof
         fix yn
         assume "yn \<in> fst ` tvars_pp (\<Union> (pat_list ` set ps))" 
@@ -765,7 +840,27 @@ proof (atomize(full), goal_cases)
           finally show ?thesis using yn by auto
         qed
       qed
-      with step steps res show ?thesis by auto
+      {
+        fix pp
+        assume pp: "pp \<in># mset (map pat_mset_list ps) + P"         
+        have "lvar_cond_pp nl'' pp" 
+        proof (cases "pp \<in># P")
+          case True
+          with lvarsAll have "lvar_cond_pp nl pp" by auto
+          with lvar_cond_mono[OF nl] show ?thesis unfolding lvar_cond_pp_def by auto
+        next
+          case False
+          then obtain pp' where pp': "pp' \<in> set ps" and pp: "pp = pat_mset_list pp'" 
+            using pp by auto
+          from pp'[unfolded ps_def] obtain \<tau> where pp': "pp' = subst_pat_problem_list \<tau> p'l" by auto
+          have "lvars_pp pp = lvars_pp (pat_lr p')" 
+            unfolding pp pp' id
+            unfolding lvars_pp_def lvars_mp_def 
+            by (force simp: subst_pat_problem_list_def subst_match_problem_list_def subst_left_def pat_mset_list_def)
+          thus ?thesis using lvar_p' unfolding lvar_cond_pp_def by auto
+        qed
+      }
+      with tvars step steps res nl show ?thesis by auto
     qed
   qed
 qed
@@ -773,28 +868,32 @@ qed
 text \<open>The simulation property for @{const pats_impl}, proven by induction
   on the terminating relation of the multiset-implementation.\<close>
 lemma pats_impl_P_step: assumes "Ball (set ps) (\<lambda> p. fst ` tvars_pp (pat_list p) \<subseteq> {..<n})" 
+  and "Ball (set ps) (\<lambda> pp. lvar_cond_pp nl (pat_mset_list pp))" 
   shows 
     \<comment> \<open>if result is True, then one can reach empty set\<close>
-    "pats_impl n ps \<Longrightarrow> (pats_mset_list ps, {#}) \<in> \<Rrightarrow>\<^sup>*" 
+    "pats_impl n nl ps \<Longrightarrow> (pats_mset_list ps, {#}) \<in> \<Rrightarrow>\<^sup>*" 
     \<comment> \<open>if result is False, then one can reach bottom\<close>
-    "\<not> pats_impl n ps \<Longrightarrow> (pats_mset_list ps, bottom_mset) \<in> \<Rrightarrow>\<^sup>*" 
-proof (atomize(full), insert assms, induct ps arbitrary: n rule: SN_induct[OF SN_inv_image[OF SN_imp_SN_trancl[OF SN_P_step]], of pats_mset_list])
-  case (1 ps n)
+    "\<not> pats_impl n nl ps \<Longrightarrow> (pats_mset_list ps, bottom_mset) \<in> \<Rrightarrow>\<^sup>*" 
+proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF SN_inv_image[OF SN_imp_SN_trancl[OF SN_P_step]], of pats_mset_list])
+  case (1 ps n nl)
   show ?case 
   proof (cases ps)
     case Nil
-    show ?thesis unfolding pats_impl.simps[of n ps] unfolding Nil by auto
+    show ?thesis unfolding pats_impl.simps[of n nl ps] unfolding Nil by auto
   next
     case (Cons p ps1)
     hence id: "pats_mset_list ps = add_mset (pat_mset_list p) (pats_mset_list ps1)" by auto
-    note res = pats_impl.simps[of n ps, unfolded Cons list.simps, folded Cons]
+    note res = pats_impl.simps[of n nl ps, unfolded Cons list.simps, folded Cons]
     from 1(2)[rule_format, of p] Cons have "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" by auto
     note pat_impl = pat_impl[OF refl this]
+    from 1(3) have "\<forall>pp \<in># add_mset (pat_mset_list p) (pats_mset_list ps1). lvar_cond_pp nl pp" 
+      unfolding Cons by auto
+    note pat_impl = pat_impl[OF this, folded id]
     show ?thesis
-    proof (cases "pat_impl n p")
+    proof (cases "pat_impl n nl p")
       case None
-      with res have res: "pats_impl n ps = False" by auto
-      from pat_impl(1)[OF None, of "pats_mset_list ps1", folded id]  
+      with res have res: "pats_impl n nl ps = False" by auto
+      from pat_impl(1)[OF None]  
       obtain p' where steps: "(pats_mset_list ps, add_mset p' (pats_mset_list ps1)) \<in> \<Rrightarrow>\<^sup>*" and fail: "pat_fail p'" 
         by auto
       show ?thesis
@@ -808,18 +907,21 @@ proof (atomize(full), insert assms, induct ps arbitrary: n rule: SN_induct[OF SN
         with steps res show ?thesis by simp
       qed
     next
-      case (Some ps2)
-      with res have res: "pats_impl n ps = pats_impl (n + m) (ps2 @ ps1)" by auto
-      from pat_impl(2)[OF Some, of "pats_mset_list ps1", folded id]
+      case (Some triple)
+      then obtain n2 nl2 ps2 where Some: "pat_impl n nl p = Some (n2,nl2,ps2)" by (cases triple) auto
+      with res have res: "pats_impl n nl ps = pats_impl n2 nl2 (ps2 @ ps1)" by auto
+      from pat_impl(2)[OF Some]
       have steps: "(pats_mset_list ps, mset (map pat_mset_list (ps2 @ ps1))) \<in> \<Rrightarrow>\<^sup>+" 
-          and vars: "fst ` tvars_pp (\<Union> (pat_list ` set ps2)) \<subseteq> {..<n + m}" by auto
+          and vars: "fst ` tvars_pp (\<Union> (pat_list ` set ps2)) \<subseteq> {..<n2}"
+          and lvars: "(\<forall>pp\<in>#mset (map pat_mset_list ps2) + pats_mset_list ps1. lvar_cond_pp nl2 pp)" 
+          and n2: "n \<le> n2" by auto
       hence rel: "(ps, ps2 @ ps1) \<in> inv_image (P_step\<^sup>+) pats_mset_list" by auto
-      have vars: "\<forall>p\<in>set (ps2 @ ps1). fst ` tvars_pp (pat_list p) \<subseteq> {..<n + m}"
+      have vars: "\<forall>p\<in>set (ps2 @ ps1). fst ` tvars_pp (pat_list p) \<subseteq> {..<n2}"
       proof 
         fix p
         assume "p \<in> set (ps2 @ ps1)" 
         hence "p \<in> set ps2 \<or> p \<in> set ps1" by auto
-        thus "fst ` tvars_pp (pat_list p) \<subseteq> {..<n + m}" 
+        thus "fst ` tvars_pp (pat_list p) \<subseteq> {..<n2}" 
         proof
           assume "p \<in> set ps2" 
           hence "fst ` tvars_pp (pat_list p) \<subseteq> fst ` tvars_pp (\<Union> (pat_list ` set ps2))" 
@@ -828,10 +930,12 @@ proof (atomize(full), insert assms, induct ps arbitrary: n rule: SN_induct[OF SN
         next
           assume "p \<in> set ps1" 
           hence "p \<in> set ps" unfolding Cons by auto
-          from 1(2)[rule_format, OF this] show ?thesis by auto
+          from 1(2)[rule_format, OF this] n2 show ?thesis by auto
         qed
       qed
-      show ?thesis using 1(1)[OF rel vars] steps unfolding res[symmetric] by auto
+      have lvars: "\<forall>pp\<in>set (ps2 @ ps1). lvar_cond_pp nl2 (pat_mset_list pp)" 
+        using lvars unfolding lvar_cond_pp_def by auto
+      show ?thesis using 1(1)[OF rel vars lvars] steps unfolding res[symmetric] by auto
     qed
   qed
 qed
@@ -841,22 +945,23 @@ text \<open>Consequence: partial correctness of the list-based implementation on
 
 theorem pats_impl: assumes wf: "\<forall>pp \<in> pat_list ` set P. wf_pat pp" 
   and n: "\<forall>p\<in>set P. fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" 
-  shows "pats_impl n P \<longleftrightarrow> pats_complete (pat_list ` set P)" 
+  and nl: "\<forall>p\<in>set P. lvar_cond_pp nl (pat_mset_list p)" 
+  shows "pats_impl n nl P \<longleftrightarrow> pats_complete (pat_list ` set P)" 
 proof - 
   from wf have wf: "wf_pats (pat_list ` set P)" by (auto simp: wf_pats_def)
   have id: "pats_mset (pats_mset_list P) = pat_list ` set P" unfolding pat_list_def 
     by (auto simp: pat_mset_list_def image_comp)
   {
-    assume "pats_impl n P" 
-    from pats_impl_P_step(1)[OF n this]
+    assume "pats_impl n nl P" 
+    from pats_impl_P_step(1)[OF n nl this]
     have "(pats_mset_list P, {#}) \<in> \<Rrightarrow>\<^sup>*" by auto
     from P_steps_pcorrect[OF _ this, unfolded id, OF wf]
     have "pats_complete (pat_list ` set P)" by auto
   }
   moreover
   {
-    assume "\<not> pats_impl n P" 
-    from pats_impl_P_step(2)[OF n this]
+    assume "\<not> pats_impl n nl P" 
+    from pats_impl_P_step(2)[OF n nl this]
     have "(pats_mset_list P, {#{#}#}) \<in> \<Rrightarrow>\<^sup>*" by auto
     from P_steps_pcorrect[OF _ this, unfolded id, OF wf]
     have "\<not> pats_complete (pat_list ` set P)" by auto
@@ -866,7 +971,7 @@ qed
 
 corollary pat_complete_impl: 
   assumes wf: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
-  shows "pat_complete_impl P \<longleftrightarrow> pats_complete (pat_list ` set P)" 
+  shows "pat_complete_impl (P :: ('f,'v,'s)pats_problem_list) \<longleftrightarrow> pats_complete (pat_list ` set P)" 
 proof - 
   have wf: "Ball (pat_list ` set P) wf_pat" 
     unfolding pat_list_def wf_pat_def wf_match_def tvars_mp_def using wf[unfolded set_concat image_comp] by force
@@ -881,9 +986,12 @@ proof -
     from max_list[OF this] have "x < n" unfolding n_def by auto
     thus "x \<in> {..<n}" by auto
   qed  
-  have "pat_complete_impl P = pats_impl n P" 
+  have 0: "\<forall>p\<in>set P. lvar_cond_pp 0 (pat_mset_list p)" 
+    (* here we now use that everything is allowed *)
+    unfolding lvar_cond_pp_def lvar_cond_def allowed_vars_def by auto
+  have "pat_complete_impl P = pats_impl n 0 P" 
     unfolding pat_complete_impl_def n_def Let_def ..
-  from pats_impl[OF wf n, folded this]
+  from pats_impl[OF wf n 0, folded this]
   show ?thesis .
 qed
 end
