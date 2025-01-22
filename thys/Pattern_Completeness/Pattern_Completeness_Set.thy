@@ -1315,46 +1315,69 @@ definition weak_finite_var_form_mp :: "('f,'v,'s)match_problem_set \<Rightarrow>
           (\<exists> x. (Var x, Var y) \<in> mp \<and> inf_sort (snd x))
         \<and> (\<forall> t. (t, Var y) \<in> mp \<longrightarrow> root t \<in> {None, Some (f,length ts)})))"
 
-definition finite_var_form_mp :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
-  "finite_var_form_mp mp = (\<forall> (t,l) \<in> mp. \<exists> x y. t = Var x \<and> l = Var y \<and> \<not> inf_sort (snd x))" 
-
-definition weak_finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
-  "weak_finite_var_form_pp p = (\<forall> mp \<in> p. weak_finite_var_form_mp mp)" 
-
-definition finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
-  "finite_var_form_pp p = (\<forall> mp \<in> p. finite_var_form_mp mp)" 
-
 text \<open>Represent a variable-form as a set of maps.\<close>
 
 definition "mp_var_form f = {(Var y, Var x) | x y. y \<in> f x}"
 
 definition "pp_var_form ff = mp_var_form ` ff"
 
-definition "var_form_mp mp x = {y. (Var y, Var x) \<in> mp}"
+definition "var_form_of_mp mp x = {y. (Var y, Var x) \<in> mp}"
 
-definition "var_form_pp pp = var_form_mp ` pp"
+definition "var_form_of_pp pp = var_form_of_mp ` pp"
 
 definition "vars_var_form_pp ff = (\<Union>f \<in> ff. \<Union>(range f))"
 
-lemma mp_var_form_mp:
-  assumes "finite_var_form_mp mp"
-  shows "mp_var_form (var_form_mp mp) = mp"
+definition var_form_mp where
+  "var_form_mp mp \<longleftrightarrow> mp \<subseteq> range (map_prod Var Var)"
+
+definition "var_form_pp pp \<equiv> \<forall>mp \<in> pp. var_form_mp mp"
+
+definition finite_var_form_mp :: "('f,'v,'s)match_problem_set \<Rightarrow> bool" where
+  "finite_var_form_mp mp \<longleftrightarrow> var_form_mp mp \<and>
+  (\<forall>l x y. (Var x, l) \<in> mp \<longrightarrow> (Var y, l) \<in> mp \<longrightarrow> snd x = snd y) \<and>
+  (\<forall>l x. (Var x, l) \<in> mp \<longrightarrow> \<not> inf_sort (snd x))"
+
+lemma finite_var_form_mpD:
+  assumes "finite_var_form_mp mp" and "(t,l) \<in> mp"
+  shows "\<exists>x \<iota> y. t = Var (x,\<iota>) \<and> l = Var y \<and> \<not> inf_sort \<iota> \<and>
+    (\<forall>z. (Var z, Var y) \<in> mp \<longrightarrow> snd z = \<iota>)"
+  using assms by (auto simp: finite_var_form_mp_def var_form_mp_def)
+
+definition weak_finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
+  "weak_finite_var_form_pp p = (\<forall> mp \<in> p. weak_finite_var_form_mp mp)"
+
+definition finite_var_form_pp :: "('f,'v,'s)pat_problem_set \<Rightarrow> bool" where
+  "finite_var_form_pp p = (\<forall> mp \<in> p. finite_var_form_mp mp)"
+
+lemma finite_var_form_ppD:
+  assumes "finite_var_form_pp pp" "mp \<in> pp" "(t,l) \<in> mp"
+  shows "\<exists>x \<iota> y. t = Var (x,\<iota>) \<and> l = Var y \<and> \<not> inf_sort \<iota> \<and>
+    (\<forall>z. (Var z, Var y) \<in> mp \<longrightarrow> snd z = \<iota>)"
+  using assms[unfolded finite_var_form_pp_def] finite_var_form_mpD by metis
+
+lemma finite_var_form_imp_var_form_pp:
+  "finite_var_form_pp pp \<Longrightarrow> var_form_pp pp"
+  by (auto simp: finite_var_form_pp_def var_form_pp_def finite_var_form_mp_def)
+
+lemma mp_var_form_of_mp:
+  assumes "var_form_mp mp"
+  shows "mp_var_form (var_form_of_mp mp) = mp"
   using assms
-  by (auto simp: finite_var_form_mp_def mp_var_form_def var_form_mp_def)
+  by (auto simp: var_form_mp_def mp_var_form_def var_form_of_mp_def)
 
 lemma pp_var_form_pat:
-  assumes "finite_var_form_pp pp"
-  shows "pp_var_form (var_form_pp pp) = pp"
-  using assms mp_var_form_mp
-  by (auto simp: finite_var_form_pp_def var_form_pp_def pp_var_form_def)
+  assumes "var_form_pp pp"
+  shows "pp_var_form (var_form_of_pp pp) = pp"
+  using assms mp_var_form_of_mp
+  by (auto simp: var_form_pp_def var_form_of_pp_def pp_var_form_def)
 
 lemma tvars_pp_var_form: "tvars_pp (pp_var_form ff) = vars_var_form_pp ff"
   by (fastforce simp: vars_var_form_pp_def tvars_pp_def tvars_mp_def pp_var_form_def mp_var_form_def
       split: prod.splits)
 
-lemma  vars_var_form_pp:
-  assumes "finite_var_form_pp pp"
-  shows "vars_var_form_pp (var_form_pp pp) = tvars_pp pp"
+lemma vars_var_form_pp:
+  assumes "var_form_pp pp"
+  shows "vars_var_form_pp (var_form_of_pp pp) = tvars_pp pp"
   apply (subst(2) pp_var_form_pat[OF assms,symmetric])
   by (simp add: tvars_pp_var_form)
 
@@ -1426,12 +1449,12 @@ next
     by auto
 qed
 
-lemma ex_var_form_pp: "(\<exists>f\<in>var_form_pp pp. P f) \<longleftrightarrow> (\<exists>mp \<in> pp. P (var_form_mp mp))"
-  by (auto simp: var_form_pp_def)
+lemma ex_var_form_pp: "(\<exists>f\<in>var_form_of_pp pp. P f) \<longleftrightarrow> (\<exists>mp \<in> pp. P (var_form_of_mp mp))"
+  by (auto simp: var_form_of_pp_def)
 
 lemma pat_complete_var_form_nat:
   assumes finS: "\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<iota> \<in> S \<and> finite_sort C \<iota>"
-    and uniq: "\<forall>f :: 'v \<Rightarrow> _ \<in> ff. \<forall>x. \<exists>\<^sub>\<le>\<^sub>1 \<iota>. \<iota> \<in> snd ` f x"
+    and uniq: "\<forall>f \<in> ff. \<forall>x::'v. UNIQ (snd ` f x)"
   shows "pat_complete (pp_var_form ff) \<longleftrightarrow>
   (\<forall>\<alpha>. (\<forall>(x,\<iota>) \<in> vars_var_form_pp ff. \<alpha> (x,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
   (\<exists>f \<in> ff. \<forall>x. UNIQ (\<alpha> ` f x)))"
@@ -1504,37 +1527,53 @@ context
   fixes pp
   assumes fvf: "finite_var_form_pp pp"
     and wf: "wf_pat pp"
-    and sort: "\<forall>f\<in>var_form_pp pp. \<forall>x. UNIQ (snd ` f x)" (*TODO: checked? *)
 begin
+
+private lemma vf: "var_form_pp pp"
+  using finite_var_form_imp_var_form_pp[OF fvf].
 
 lemma tvars_pp_S: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "\<iota> \<in> S"
   using wf y by (auto simp: wf_pat_def wf_match_iff tvars_pp_def)
 
-lemma tvars_pp_inf: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "\<not> inf_sort \<iota>"
-  using fvf y by (force simp: finite_var_form_pp_def finite_var_form_mp_def tvars_pp_def tvars_mp_def)
+lemma tvars_pp_finite: assumes y: "(y,\<iota>) \<in> tvars_pp pp" shows "finite_sort C \<iota>"
+proof-
+  from y obtain mp t l where mp: "mp \<in> pp" and tl:"(t,l) \<in> mp" and yt: "(y, \<iota>) \<in> vars t"
+    by (auto simp: tvars_pp_def tvars_mp_def)
+  from finite_var_form_ppD[OF fvf mp tl] yt have "\<not> inf_sort \<iota>" by auto
+  with tvars_pp_S[OF y] inf_sort
+  show ?thesis by auto
+qed
 
-lemma tvars_pp_finite:
-  assumes y: "(y,\<iota>) \<in> tvars_pp pp"
-  shows "finite_sort C \<iota>"
-  using inf_sort[OF tvars_pp_S[OF y]] tvars_pp_inf[OF y] by simp
+lemma UNIQ_sort: assumes f: "f \<in> var_form_of_pp pp" shows "UNIQ (snd ` f x)"
+proof (intro Uniq_I, clarsimp)
+  from f obtain mp where mp: "mp \<in> pp" and f: "f = var_form_of_mp mp"
+    by (auto simp: var_form_of_pp_def)
+  fix y \<iota> z \<kappa> assume "(y,\<iota>) \<in> f x" "(z,\<kappa>) \<in> f x"
+  with f have y: "(Var (y,\<iota>), Var x) \<in> mp" and z: "(Var (z,\<kappa>), Var x) \<in> mp"
+    by (auto simp: var_form_of_mp_def)
+  from finite_var_form_ppD[OF fvf mp y] z
+  show "\<iota> = \<kappa>" by auto
+qed
 
 lemma finite_var_form_pp_pat_complete: "pat_complete pp \<longleftrightarrow>
   (\<forall>\<alpha>. (\<forall>(y,\<iota>) \<in> tvars_pp pp. \<alpha> (y,\<iota>) < card_of_sort C \<iota>) \<longrightarrow>
     (\<exists>mp \<in> pp. \<forall>x. UNIQ {\<alpha> y |y. (Var y, Var x) \<in> mp}))"
 proof-
-  note pat_complete_var_form_nat[of "var_form_pp pp"]
-  note this[unfolded pp_var_form_pat[OF fvf]]
-  note * = this[unfolded vars_var_form_pp[OF fvf]]
+  note pat_complete_var_form_nat[of "var_form_of_pp pp"]
+  note this[unfolded pp_var_form_pat[OF vf]]
+  note * = this[unfolded vars_var_form_pp[OF vf]]
   show ?thesis
     apply (subst *)
-    using tvars_pp_finite tvars_pp_S apply (force)
-    using sort apply (force)
-    apply (rule all_cong)
-    apply (unfold ex_var_form_pp)
-    apply (rule bex_cong[OF refl])
-    apply (rule all_cong1)
-    apply (rule arg_cong[of _ _ UNIQ])
-    by (auto simp: var_form_mp_def)
+    subgoal using tvars_pp_finite tvars_pp_S by force
+    subgoal using UNIQ_sort by force
+    subgoal 
+      apply (rule all_cong)
+      apply (unfold ex_var_form_pp)
+      apply (rule bex_cong[OF refl])
+      apply (rule all_cong1)
+      apply (rule arg_cong[of _ _ UNIQ])
+      by (auto simp: var_form_of_mp_def)
+    done
 qed
 
 end

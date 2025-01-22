@@ -338,25 +338,39 @@ next
                   case True
                   have fin: "\<And> mp. mp \<in># p \<Longrightarrow> fin mp" unfolding p_split True unfolding p_fin_def by auto
                   have "finite_var_form_pp (pat_mset p)" 
-                    unfolding finite_var_form_pp_def finite_var_form_mp_def
-                  proof (intro ballI, clarify)
-                    fix mp t l
-                    assume mp: "mp \<in> pat_mset p" and tl: "(t,l) \<in> mp"
-                    from fin[unfolded fin_def tvars_mp_def]mp tl 
-                    have fint: "\<And> x. x \<in> vars t \<Longrightarrow> \<not> inf_sort (snd x)" by auto
-                    from get_var[OF mp tl] tl obtain y where 
-                      ty: "(t, Var y) \<in> mp" and ly: "l = Var y" by (cases l, auto)
-                    have "is_Var t"
-                    proof (cases t)
-                      case (Fun f ts)
-                      with ty have "(Fun f ts, Var y) \<in> mp" by auto
-                      from fun_case[OF _ this] mp obtain x where "(Var x, Var y) \<in> mp" "inf_sort (snd x)" by auto
-                      with fin[unfolded fin_def tvars_mp_def] mp tl have False by auto
-                      thus ?thesis by auto
+                    unfolding finite_var_form_pp_def finite_var_form_mp_def var_form_mp_def
+                  proof (intro ballI conjI subsetI allI impI, clarify)
+                    fix mp l
+                    assume mp: "mp \<in> pat_mset p"
+                    { fix t assume tl: "(t,l) \<in> mp"
+                      from get_var[OF mp tl] tl obtain y where 
+                        ty: "(t, Var y) \<in> mp" and ly: "l = Var y" by (cases l, auto)
+                      have "is_Var t"
+                      proof (cases t)
+                        case (Fun f ts)
+                        with ty have "(Fun f ts, Var y) \<in> mp" by auto
+                        from fun_case[OF _ this] mp obtain x where "(Var x, Var y) \<in> mp" "inf_sort (snd x)" by auto
+                        with fin[unfolded fin_def tvars_mp_def] mp tl have False by auto
+                        thus ?thesis by auto
+                      qed auto
+                      with ly show "(t,l) \<in> range (map_prod Var Var)" by auto
+                    } note var_var = this
+                    fix x assume xl: "(Var x, l) \<in> mp"
+                    with fin[unfolded fin_def tvars_mp_def] mp
+                    show fint: "\<not> inf_sort (snd x)" by auto
+                    fix y assume yl: "(Var y, l) \<in> mp"
+                    from yl var_var obtain z where l: "l = Var z" by force
+                    show "snd x = snd y" 
+                    proof (cases "x = y")
+                      case False
+                      from mp obtain mp' where mp': "mp' \<in># p" and mp: "mp = mp_mset mp'" by auto
+                      from False xl yl obtain mp'' 
+                        where "mp' = add_mset (Var x, Var z) (add_mset (Var y, Var z) mp'')" 
+                        unfolding l mp by (metis insert_DiffM insert_noteq_member prod.inject term.inject(1))
+                      with no_clash mp' have "\<not> Conflict_Clash (Var x) (Var y)" 
+                        by (metis conflicts.simps(1))
+                      thus "snd x = snd y" by (simp add: conflicts.simps split: if_splits)
                     qed auto
-                    then obtain x where tx: "t = Var x" by auto
-                    from fint[unfolded tx] have fin: "\<not> inf_sort (snd x)" by auto
-                    with ly tx show "\<exists>x y. t = Var x \<and> l = Var y \<and> \<not> inf_sort (snd x)" by auto
                   qed
                   with impr show ?thesis by auto
                 next
