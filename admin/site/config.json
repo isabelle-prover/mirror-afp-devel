@@ -58,6 +58,5 @@
         "threshold": 80,
         "toLower": true
     },
-    "relativeURLs": true,
-    "ignoreFiles": [ "entries\/Example-Submission" ]
+    "relativeURLs": true
 }

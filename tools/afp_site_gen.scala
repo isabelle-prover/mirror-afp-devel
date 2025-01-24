@@ -12,17 +12,19 @@ import afp.Metadata.{Affiliation, Author, ACM, AMS, Classification, DOI, Email, 
 
 object AFP_Site_Gen {
   /* cache */
-  class Cache(layout: Hugo.Layout, progress: Progress = new Progress()) {
-    private val doi_cache = Path.basic("dois.json")
+
+  class Cache(
+    dir: Path = Path.explode("$ISABELLE_HOME_USER"),
+    progress: Progress = new Progress()
+  ) {
+    private val cache_file = dir + Path.basic("dois.json")
 
     private var dois: Map[String, String] = {
-      val file = layout.cache_dir + doi_cache
-
-      if (file.file.exists) {
-        val content = File.read(file)
+      if (cache_file.is_file) {
+        val content = File.read(cache_file)
         val json =
           try { isabelle.JSON.parse(content) }
-          catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
+          catch { case ERROR(msg) => error("Could not parse " + cache_file.toString + ": " + msg) }
 
         json match {
           case m: Map[_, _] if m.keySet.forall(_.isInstanceOf[String]) &&
@@ -37,17 +39,18 @@ object AFP_Site_Gen {
       }
     }
 
-    def resolve_doi(doi: DOI): String = {
+    def resolve_doi(doi: DOI): String = synchronized {
       dois.get(doi.identifier) match {
         case Some(value) => value
         case None =>
           val res = doi.formatted()
           dois += (doi.identifier -> res)
-          layout.write_cache(doi_cache, dois)
+          File.write(cache_file, JSON.Format(dois))
           res
       }
     }
   }
+
 
   /* json */
 
@@ -132,8 +135,7 @@ object AFP_Site_Gen {
         JSON.optional("related", proper_list(entry.related.map(related(_, cache))))
     }
 
-    def keywords(keywords: List[String]): JSON.T =
-      keywords.sorted.map(keyword => JSON.Object("keyword" -> keyword))
+    def keyword(keyword: String): JSON.T = JSON.Object("keyword" -> keyword)
   }
 
 
@@ -209,21 +211,52 @@ object AFP_Site_Gen {
   }
 
 
-  /* site generation */
+  /** site generation **/
+
+  /* init from sources */
+
+  def init_project(
+    hugo: Hugo.Project,
+    afp: AFP_Structure = AFP_Structure(),
+    symlinks: Boolean = false
+  ): Unit = {
+    Isabelle_System.make_directory(hugo.dir)
+
+    val config_file = afp.site_dir + Path.basic("config").json
+    val themes_dir = afp.site_dir + Path.basic("themes")
+    val content_dir = afp.site_dir + Path.basic("content")
+
+    if (symlinks) {
+      Isabelle_System.symlink(config_file, hugo.dir)
+      Isabelle_System.symlink(themes_dir, hugo.themes_dir)
+
+      Isabelle_System.make_directory(hugo.content_dir)
+      for (entry <- File.read_dir(content_dir)) {
+        Isabelle_System.symlink(
+          content_dir + Path.basic(entry),
+          hugo.content_dir + Path.basic(entry))
+      }
+    }
+    else {
+      Isabelle_System.copy_file(config_file, hugo.dir)
+      Isabelle_System.copy_dir(themes_dir, hugo.themes_dir, direct = true)
+      Isabelle_System.copy_dir(content_dir, hugo.content_dir, direct = true)
+    }
+  }
+
+
+  /* generate project for hugo */
 
   def afp_site_gen(
-    layout: Hugo.Layout,
-    status_file: Option[Path],
-    afp: AFP_Structure,
-    clean: Boolean = false,
+    hugo: Hugo.Project,
+    cache: Cache,
+    afp: AFP_Structure = AFP_Structure(),
+    status_file: Option[Path] = None,
+    symlinks: Boolean = false,
     progress: Progress = new Progress()
   ): Unit = {
-    /* clean old */
+    init_project(hugo, afp, symlinks)
 
-    if (clean) {
-      progress.echo("Cleaning up generated files...")
-      layout.clean()
-    }
 
     /* add topics */
 
@@ -232,7 +265,7 @@ object AFP_Site_Gen {
     val topics = afp.load_topics
     val root_topics = Metadata.Topics.root_topics(topics)
 
-    layout.write_data(Path.basic("topics.json"), JSON_Encode.topics(root_topics))
+    hugo.write_data(Path.basic("topics").json, JSON.Format(JSON_Encode.topics(root_topics)))
 
 
     /* add licenses */
@@ -272,7 +305,10 @@ object AFP_Site_Gen {
           authors(id).copy(emails = seen_emails, homepages = seen_homepages)
       }
 
-    layout.write_data(Path.basic("authors.json"), JSON_Encode.authors(seen_authors.toList))
+    hugo.write_data(
+      Path.basic("authors").json,
+      JSON.Format(JSON_Encode.authors(seen_authors.toList)))
+
 
     /* extract keywords */
 
@@ -289,8 +325,11 @@ object AFP_Site_Gen {
 
     seen_keywords =
       seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
-    layout.write_static(Path.make(List("data", "keywords.json")),
-      JSON_Encode.keywords(seen_keywords.toList))
+
+    val keywords_linewise =
+      (for (keyword <- seen_keywords.toList.sorted)
+       yield JSON.Format(JSON_Encode.keyword(keyword))).mkString("[", ",\n", "]")
+    hugo.write_static(Path.explode("data/keywords").json, keywords_linewise)
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
       entry_keywords.getOrElse(name, Nil).filter(seen_keywords.contains).take(8)
@@ -307,24 +346,29 @@ object AFP_Site_Gen {
     def theories_of(session_name: String): List[String] =
       sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
 
-    def write_session_json(session_name: String, base: JSON.Object.T): Unit = {
-      val session_json =
-        base ++ JSON.Object(
-          "title" -> session_name,
-          "url" -> ("/sessions/" + session_name.toLowerCase),
+    def write_session_json(
+      entry: Option[Metadata.Entry.Name],
+      session_name: String,
+      rss: Boolean = true
+    ): Unit = {
+      val params =
+        JSON.Object(
+          "rss" -> rss,
           "theories" -> theories_of(session_name).map(thy_name => JSON.Object(
             "name" -> thy_name,
             "path" -> (browser_info.session_dir(session_name) + Path.basic(thy_name).html).implode
-          )))
-      layout.write_content(Path.make(List("sessions", session_name + ".md")), session_json)
+          ))) ++
+          JSON.optional("entry" -> entry)
+      val metadata =
+        Hugo.Metadata(title = session_name, url = "/sessions/" + session_name.toLowerCase,
+          params = params, draft = entry.contains(afp.example_entry))
+      hugo.write_content(Hugo.Content("sessions", Path.basic(session_name), metadata))
     }
-
-    val cache = new Cache(layout, progress)
 
     val entry_sessions =
       entries.map(entry => entry -> afp.entry_sessions(entry.name)).toMap
     val session_entry = entry_sessions.flatMap((entry, sessions) =>
-      sessions.map(session => session.name -> entry)).toMap
+      sessions.map(session => session.name -> entry))
 
     entries.foreach { entry =>
       val deps =
@@ -338,7 +382,7 @@ object AFP_Site_Gen {
 
       val sessions =
         afp.entry_sessions(entry.name).map { session =>
-          write_session_json(session.name, JSON.Object("entry" -> entry.name))
+          write_session_json(Some(entry.name), session.name)
           JSON.Object(
             "session" -> session.name,
             "theories" -> theories_of(session.name))
@@ -347,17 +391,20 @@ object AFP_Site_Gen {
       val entry_json =
         JSON_Encode.entry(entry, cache) ++ JSON.Object(
           "dependencies" -> deps.distinct,
-          "sessions" -> sessions,
-          "url" -> ("/entries/" + entry.name + ".html"),
-          "keywords" -> get_keywords(entry.name))
+          "sessions" -> sessions)
 
-      layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
+      val metadata =
+        Hugo.Metadata(title = entry.title, url = "/entries/" + entry.name + ".html", date =
+          entry.date.toString, keywords = get_keywords(entry.name), params =
+          entry_json, draft = entry.name == afp.example_entry)
+
+      hugo.write_content(Hugo.Content("entries", Path.basic(entry.name), metadata))
     }
 
     for {
       (session_name, (info, _)) <- sessions_structure.imports_graph.iterator
       if !info.is_afp
-    } write_session_json(session_name, JSON.Object("rss" -> false))
+    } write_session_json(None, session_name, rss = false)
 
 
     /* add statistics */
@@ -367,14 +414,7 @@ object AFP_Site_Gen {
     val statistics_json =
       afp_stats(sessions_deps, afp, entries.filterNot(_.statistics_ignore))
 
-    layout.write_data(Path.basic("statistics.json"), statistics_json)
-
-
-    /* project */
-
-    progress.echo("Preparing project files")
-
-    layout.copy_project()
+    hugo.write_data(Path.basic("statistics").json, JSON.Format(statistics_json))
 
 
     /* status */
@@ -383,7 +423,7 @@ object AFP_Site_Gen {
       case Some(status_file) =>
         progress.echo("Preparing devel version...")
         val status_json = isabelle.JSON.parse(File.read(status_file))
-        layout.write_data(Path.basic("status.json"), status_json)
+        hugo.write_data(Path.basic("status").json, JSON.Format(status_json))
       case None =>
     }
 
@@ -394,23 +434,25 @@ object AFP_Site_Gen {
   /* build site */
 
   def afp_build_site(
-    out_dir: Path, layout: Hugo.Layout,
-    do_watch: Boolean = false,
+    out_dir: Path,
+    hugo: Hugo.Project,
+    server: Boolean = false,
     clean: Boolean = false,
     progress: Progress = new Progress()
   ): Unit = {
+    val root = out_dir.absolute
+
     if (clean) {
       progress.echo("Cleaning output dir...")
-      Hugo.clean(out_dir)
+      Isabelle_System.rm_tree(root)
+      Isabelle_System.make_directory(root)
     }
 
-    if (do_watch) {
-      Hugo.watch(layout, out_dir, progress)
-    } else {
-      progress.echo("Building site...")
-      Hugo.build(layout, out_dir)
-      progress.echo("Build in " + (out_dir + Path.basic("index.html")).absolute.implode)
-    }
+    progress.echo("Building site...")
+    hugo.build(root, draft = true, progress = progress)
+
+    hugo.build(root, server = server, progress = progress)
+    if (!server) progress.echo("Build in " + root)
   }
 
 
@@ -419,55 +461,44 @@ object AFP_Site_Gen {
   val isabelle_tool = Isabelle_Tool("afp_site_gen", "generates afp website source",
     Scala_Project.here,
     { args =>
-      var base_dir = Path.explode("$AFP_BASE")
+      var out_dir: Path = AFP.BASE + Path.explode("web")
       var status_file: Option[Path] = None
-      var hugo_dir = base_dir + Path.explode("out/hugo")
-      var out_dir: Path = base_dir + Path.explode("web")
-      var build_only = false
+      var clean = false
       var devel_mode = false
-      var fresh = false
 
       val getopts = Getopts("""
   Usage: isabelle afp_site_gen [OPTIONS]
 
     Options are:
       -D FILE      build status file for devel version
-      -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
       -O DIR       output dir for build (default """ + out_dir.implode + """)
-      -b           build only
-      -d           devel mode (overrides hugo dir, builds site in watch mode)
-      -f           fresh build: clean up existing hugo and build directories
+      -c           clean up output directory
+      -d           devel mode (symlinks sources and builds site in watch mode)
 
     Generates the AFP website source. HTML files of entries are dynamically loaded.
     Providing a status file will build the development version of the archive.
     Site will be built from generated source if output dir is specified.
   """,
         "D:" -> (arg => status_file = Some(Path.explode(arg))),
-        "H:" -> (arg => hugo_dir = Path.explode(arg)),
         "O:" -> (arg => out_dir = Path.explode(arg)),
-        "b" -> (_ => build_only = true),
-        "d" -> (_ => devel_mode = true),
-        "f" -> (_ => fresh = true))
+        "c" -> (_ => clean = true),
+        "d" -> (_ => devel_mode = true))
 
       getopts(args)
 
       status_file.foreach(path =>
         if (!path.is_file || !path.file.exists()) error("Invalid status file: " + path))
 
-      if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
-
       val afp = AFP_Structure()
-      val layout = Hugo.Layout(hugo_dir)
       val progress = new Console_Progress()
+      val cache = new Cache(progress = progress)
 
-      if (!build_only) {
-        progress.echo("Preparing site generation in " + hugo_dir.implode)
+      Isabelle_System.with_tmp_dir("afp_site_gen") { dir =>
+        val hugo = Hugo.project(dir)
 
-        afp_site_gen(layout = layout, status_file = status_file, afp = afp, clean = fresh,
+        afp_site_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel_mode,
           progress = progress)
+        afp_build_site(out_dir, hugo, server = devel_mode, clean = clean, progress = progress)
       }
-
-      afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode,
-        clean = fresh, progress = progress)
     })
 }
