@@ -1314,7 +1314,7 @@ let
             (asm_full_simp_tac (ctxt addsimps [setter_thm]))
         ])) 1)
 
-      val [sim_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims lthy four_goal
+      val [sim_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims four_goal
 
       val (atomic_upds, lthy) = lthy
         |> typ_heap_simulation T getter setter v
@@ -1446,7 +1446,7 @@ let
             (asm_full_simp_tac (put_simpset HOL_basic_ss lthy addsimps ([setter_thm] @ @{thms fold.simps comp_apply id_apply})))
         ])) 1)
 
-      val [sim_thm, pointer_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims lthy four_goal
+      val [sim_thm, pointer_thm, pointer_disj_thm, comp_disj_thm] = HOLogic.conj_elims four_goal
 
       val (atomic_upds, lthy) = lthy
         |> typ_heap_simulation T getter setter v

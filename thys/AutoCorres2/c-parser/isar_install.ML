@@ -380,11 +380,11 @@ fun fun_ptr_clique_thms file_name_base cliques fun_ptrs lthy =
          |> Thm.cterm_of ctxt |> Simplifier.rewrite ctxt
        val fallthrough_eqs = (@{thm map_of_default_other_lookup_Ball} OF [eq_list_of, eq_map_fst, subtree_thm])
          |> Conv.fconv_rule (Simplifier.rewrite (ctxt delsimps @{thms map_of_default.simps}))
-         |> HOLogic.conj_elims ctxt |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
+         |> HOLogic.conj_elims |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
 
        val clique_eqs = (@{thm map_of_default_distinct_lookup_list_all''} OF [eq_list_of, eq_map_fst, distinct_thm])
          |> Conv.fconv_rule (Simplifier.rewrite (ctxt delsimps @{thms map_of_default.simps}))
-         |> HOLogic.conj_elims ctxt |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
+         |> HOLogic.conj_elims |> Proof_Context.export ctxt lthy |> map Drule.zero_var_indexes
 
        val _ = Goal.prove
      in
@@ -410,7 +410,7 @@ fun install_C_file0 (files, options) thy = let
   val file as {src_path, lines, pos,...}:Token.file = the_single files
 
   val file_name = Path.file_name (Path.base src_path)
-  val prog_name = Path.base src_path |> Path.split_ext |> fst |> Path.file_name
+  val prog_name = Path.base src_path |> Path.drop_ext |> Path.file_name
 
   val thy = thy
     |> C_Files.map_main (K file_name)

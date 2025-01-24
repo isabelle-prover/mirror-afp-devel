@@ -28,7 +28,7 @@ fun mk_right_total t = mk_rel_sc \<^const_name>\<open>Transfer.right_total\<clos
 fun mk_transfer_rels tr_thms =
   let
     val tr_to_tr_rel_thm = @{thm tr_to_tr_rel};
-    val ct = Thm.cprems_of tr_to_tr_rel_thm |> the_single
+    val ct = Thm.take_cprems_of 2 tr_to_tr_rel_thm |> the_single
     val tr_thms = tr_thms
       |> 
         (

@@ -184,7 +184,7 @@ fun recover_mutual_psimp all_orig_fdefs parts ctxt (fname, _, _, args, rhs)
 
     val psimp = import sum_psimp_eq
     val ((simp, restore_cond), ctxt') =
-      case cprems_of psimp of
+      case Thm.cprems_of psimp of
         [] => ((psimp, I), ctxt)
       | [cond] =>
           let val (asm, ctxt') = Thm.assume_hyps cond ctxt
@@ -211,7 +211,7 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
 
     val psimp = import sum_psimp_eq
     val ((cond, simp, restore_cond), ctxt') =
-      case cprems_of psimp of
+      case Thm.cprems_of psimp of
         [] => (([], psimp, I), ctxt)
       | [cond] =>
           let val (asm, ctxt') = Thm.assume_hyps cond ctxt

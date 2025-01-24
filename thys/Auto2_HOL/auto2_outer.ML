@@ -93,7 +93,7 @@ val _ =
  *)
 fun refine_subgoal_th th prop =
     let
-      val assum = hd (Drule.cprems_of th)  (* A *)
+      val assum = hd (Thm.take_cprems_of 1 th)  (* A *)
     in
       th |> Util.send_first_to_hyps  (* [A] ==> B *)
          |> Thm.implies_elim prop    (* [A] ==> C *)
