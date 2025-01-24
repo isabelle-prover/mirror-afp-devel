@@ -131,6 +131,7 @@ Coinductive_Languages
 Collections
 Combinable_Wands
 Combinatorial_Enumeration_Algorithms
+Combinatorial_Q_Analogues
 Combinatorics_Words
 Combinatorics_Words_Graph_Lemma
 Combinatorics_Words_Lyndon
@@ -694,6 +695,7 @@ Riesz_Representation
 Risk_Free_Lending
 Robbins-Conjecture
 Robinson_Arithmetic
+Rogers_Ramanujan
 Root_Balanced_Tree
 Roth_Arithmetic_Progressions
 Routing
@@ -798,6 +800,7 @@ TLA
 Tail_Recursive_Functions
 Tarskis_Geometry
 Taylor_Models
+Theta_Functions
 Three_Circles
 Three_Squares
 Timed_Automata
