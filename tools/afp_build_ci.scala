@@ -149,7 +149,7 @@ Last 50 lines from stderr (if available):
       val status_file = dir + Path.basic("status").json
       File.write(status_file, JSON.Format(status_json))
 
-      val hugo = Hugo.project(dir)
+      val hugo = Hugo.project(dir, AFP_Site_Gen.theme)
       val cache = AFP_Site_Gen.Cache(dir)
       val output_dir = dir + Path.basic("output")
 

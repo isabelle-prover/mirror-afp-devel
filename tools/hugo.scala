@@ -56,12 +56,12 @@ object Hugo {
 
   /* hugo project */
 
-  def project(src_dir: Path): Project = new Project(src_dir)
+  def project(src_dir: Path, theme: String): Project = new Project(src_dir, theme)
 
-  class Project private[Hugo](val dir: Path) {
+  class Project private[Hugo](val dir: Path, theme: String) {
     override def toString: String = "Hugo.Project(" + dir + ")"
 
-    val themes_dir: Path = dir + Path.basic("themes")
+    val themes_dir: Path = dir + Path.explode("themes")
     val data_dir: Path = dir + Path.basic("data")
     val static_dir: Path = dir + Path.basic("static")
     val content_dir: Path = dir + Path.basic("content")
@@ -85,6 +85,7 @@ object Hugo {
         File.bash_path(isabelle_hugo + Path.basic("hugo")) +
           if_proper(draft, " -D") +
           if_proper(server, " server") +
+          " -t " + Bash.string(theme) +
           " -s " + File.bash_path(dir) +
           " -d " + File.bash_path(out_dir)
       Isabelle_System.bash(script,

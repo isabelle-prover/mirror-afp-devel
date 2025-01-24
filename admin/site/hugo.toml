@@ -1,8 +1,6 @@
 baseURL = "/"
 languageCode = "en-gb"
 title = "Archive of Formal Proofs"
-theme = "afp"
-publishDir = ".."
 relativeURLs = true
 
 [taxonomies]

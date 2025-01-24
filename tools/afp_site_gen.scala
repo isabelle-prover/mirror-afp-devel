@@ -213,6 +213,9 @@ object AFP_Site_Gen {
 
   /** site generation **/
 
+  val theme = "afp"
+
+
   /* init from sources */
 
   def init_project(
@@ -221,14 +224,15 @@ object AFP_Site_Gen {
     symlinks: Boolean = false
   ): Unit = {
     Isabelle_System.make_directory(hugo.dir)
+    Isabelle_System.make_directory(hugo.themes_dir)
 
     val config_file = afp.site_dir + Path.basic("hugo").ext("toml")
-    val themes_dir = afp.site_dir + Path.basic("themes")
+    val theme_dir = afp.site_dir + Path.basic("theme")
     val content_dir = afp.site_dir + Path.basic("content")
 
     if (symlinks) {
       Isabelle_System.symlink(config_file, hugo.dir)
-      Isabelle_System.symlink(themes_dir, hugo.themes_dir)
+      Isabelle_System.symlink(theme_dir, hugo.themes_dir + Path.basic(theme))
 
       Isabelle_System.make_directory(hugo.content_dir)
       for (entry <- File.read_dir(content_dir)) {
@@ -239,7 +243,7 @@ object AFP_Site_Gen {
     }
     else {
       Isabelle_System.copy_file(config_file, hugo.dir)
-      Isabelle_System.copy_dir(themes_dir, hugo.themes_dir, direct = true)
+      Isabelle_System.copy_dir(theme_dir, hugo.themes_dir + Path.basic(theme), direct = true)
       Isabelle_System.copy_dir(content_dir, hugo.content_dir, direct = true)
     }
   }
@@ -494,7 +498,7 @@ object AFP_Site_Gen {
       val cache = new Cache(progress = progress)
 
       Isabelle_System.with_tmp_dir("afp_site_gen") { dir =>
-        val hugo = Hugo.project(dir)
+        val hugo = Hugo.project(dir, theme)
 
         afp_site_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
           progress = progress)
