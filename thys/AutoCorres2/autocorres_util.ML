@@ -267,7 +267,7 @@ val measureT = @{typ nat};
 fun split_Ball_attr phase = Thm.declaration_attribute (fn thm => fn context =>
   let
     val ctxt = Context.proof_of context
-    val derived_thms = thm |> Conv.fconv_rule (Simplifier.rewrite ctxt) |> HOLogic.conj_elims ctxt
+    val derived_thms = thm |> Conv.fconv_rule (Simplifier.rewrite ctxt) |> HOLogic.conj_elims
 
   in
     context |> fold (Named_Theorems.add_thm (AutoCorresData.corres_named_thms phase)) derived_thms
