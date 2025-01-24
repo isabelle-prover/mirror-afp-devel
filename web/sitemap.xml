@@ -152,6 +152,9 @@
     <loc>/authors/desharnais/</loc>
     <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/first_order_clause/</loc>
+    <lastmod>2024-10-31T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/SCL_Simulates_Ground_Resolution.html</loc>
     <lastmod>2024-10-31T00:00:00+00:00</lastmod>
   </url><url>
@@ -170,13 +173,7 @@
     <loc>/dependencies/bernoulli/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/knuth_bendix_order/</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Min_Max_Least_Greatest.html</loc>
-    <lastmod>2024-10-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/ordered_resolution_prover/</loc>
     <lastmod>2024-10-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polynomial_interpolation/</loc>
@@ -609,6 +606,9 @@
     <lastmod>2024-04-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
+    <lastmod>2024-04-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/knuth_bendix_order/</loc>
     <lastmod>2024-04-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/lambda_free_rpos/</loc>
@@ -1218,6 +1218,9 @@
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/functional_ordered_resolution_prover/</loc>
+    <lastmod>2023-04-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/ordered_resolution_prover/</loc>
     <lastmod>2023-04-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/echenim/</loc>
@@ -7261,6 +7264,8 @@
     <loc>/sessions/taylor_models/</loc>
   </url><url>
     <loc>/sessions/tesl_language/</loc>
+  </url><url>
+    <loc>/sessions/test/</loc>
   </url><url>
     <loc>/sessions/three_circles/</loc>
   </url><url>

@@ -18,7 +18,7 @@
    "Logic/General logic/Classical first-order logic",
    "Logic/General logic"
   ],
-  "used_by": 0
+  "used_by": 2
  },
  {
   "abstract": "In this entry, we verify the correctness of: Depth-first search and Breadth-first search  The entry's main aim is pedagogical. It has the formal material presented in one chapter of the book Functional Data Structures and Algorithms: A Proof Assistant Approach. The verification is based on a simple set-based representation of directed graphs. The main feature is that a graph's set of vertices is implicitly represented by its edges. The main focus of the development is to develop a representation suitable for mathematical reasoning and for executable algorithms. The entry also shows the verification of executable algorithms that need background mathematical libraries with basic Isabelle tools. Two main features are its automation setup aimed at verifying executable graph algorithms in  a human-readable way and to verify the algorithms w.r.t.\\ the same graph representation, making all of them compatible. The setup we use here includes using the function package to model loops and reason about their termination, using records to model program states, and using locales to implement parametric as well as step-wise refinement based verification. The material presented here is a part of an ongoing development of formal results on graphs and graph algorithms in Isabelle/HOL: https://github.com/mabdula/Isabelle-Graph-Library.",
@@ -235,7 +235,7 @@
   "topics": [
    "Mathematics/Order"
   ],
-  "used_by": 3
+  "used_by": 2
  },
  {
   "abstract": "\u003cp\u003eThis entry defines the \u003cem\u003eBoustrophedon transform\u003c/em\u003e, which can be seen as either a transformation of a sequence of numbers or, equivalently, an exponential generating function. We define it in terms of the \u003cem\u003eSeidel triangle\u003c/em\u003e, a number triangle similar to Pascal's triangle, and then prove the closed form $\\mathcal B(f) = (\\sec + \\tan) f$.\u003c/p\u003e  \u003cp\u003eWe also define several related sequences, such as:\u003c/p\u003e \u003cul\u003e \u003cli\u003ethe \u003cem\u003ezigzag numbers\u003c/em\u003e $E_n$, counting the number of alternating permutations on a linearly ordered set with $n$ elements; or, alternatively, the number of increasing binary trees with $n$ elements\u003c/li\u003e \u003cli\u003ethe \u003cem\u003eEntringer numbers\u003c/em\u003e $E_{n,k}$, which generalise the zigzag numbers and count the number of alternating permutations of $n+1$ elements that start with the $k$-th smallest element\u003c/li\u003e \u003cli\u003ethe \u003cem\u003esecant\u003c/em\u003e and \u003cem\u003etangent\u003c/em\u003e numbers $S_n$ and $T_n$, which are the series of numbers such that $\\sec x = \\sum_{n\\geq 0} \\frac{S(n)}{(2n)!}\\,x^{2n}$ and $\\tan x = \\sum_{n\\geq 1} \\frac{T(n)}{(2n-1)!}\\,x^{2n-1}$, respectively\u003c/li\u003e \u003cli\u003ethe \u003cem\u003eEuler numbers\u003c/em\u003e $\\mathcal{E}_n$ and \u003cem\u003eEuler polynomials\u003c/em\u003e $\\mathcal{E}_n(x)$, which are analogous to Bernoulli numbers and Bernoulli polynomials and satisfy many similar properties, which we also prove\u003c/li\u003e \u003c/ul\u003e  \u003cp\u003eVarious relationships between these sequences are shown; notably we have $E_{2n} = S_n$ and $E_{2n+1} = T_{n+1}$ and $\\mathcal E_{2n} = (-1)^n S_n$ and \\[T_n = \\frac{(-1)^{n+1} 2^{2n} (2^{2n}-1) B_{2n}}{2n}\\] where $B_n$ denotes the Bernoulli numbers.\u003c/p\u003e  \u003cp\u003eReasonably efficient executable algorithms to compute the Boustrophedon transform and the above sequences are also given, including imperative ones for $T_n$ and $S_n$ using Imperative HOL.\u003c/p\u003e",
@@ -398,7 +398,7 @@
   "topics": [
    "Logic"
   ],
-  "used_by": 2
+  "used_by": 1
  },
  {
   "abstract": "This entry introduces NREST, a nondeterministc result monad with time, which was spun off a development of a framework for verifying  functional correctness and worst-case complexity of algorithms refined down to LLVM, due to Haslbeck and Lammich.",
@@ -4789,7 +4789,7 @@
   "topics": [
    "Computer science/Automata and formal languages"
   ],
-  "used_by": 4
+  "used_by": 3
  },
  {
   "abstract": "In this work we formalise the isomorphism between simplicial complexes of dimension $n$ and monotone Boolean functions in $n$ variables, mainly following the definitions and results as introduced by N. A. Scoville. We also take advantage of the AFP representation of \u003ca href=\"https://www.isa-afp.org/entries/ROBDD.html\"\u003eROBDD\u003c/a\u003e (Reduced Ordered Binary Decision Diagrams) to compute the ROBDD representation of a given simplicial complex (by means of the isomorphism to Boolean functions). Some examples of simplicial complexes and associated Boolean functions are also presented.",
@@ -6869,7 +6869,7 @@
   "topics": [
    "Logic/Rewriting"
   ],
-  "used_by": 5
+  "used_by": 4
  },
  {
   "abstract": "We formalise certain irrationality criteria for infinite series of the form: \\[\\sum_{n=1}^\\infty \\frac{b_n}{\\prod_{i=1}^n a_i} \\] where $\\{b_n\\}$ is a sequence of integers and $\\{a_n\\}$ a sequence of positive integers with $a_n \u003e1$ for all large n. The results are due to P. Erdős and E. G. Straus \u003ca href=\"https://projecteuclid.org/euclid.pjm/1102911140\"\u003e[1]\u003c/a\u003e. In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1. The latter is an application of Theorem 2.1 involving the prime numbers.",
@@ -9792,7 +9792,7 @@
   "topics": [
    "Logic/General logic/Mechanization of proofs"
   ],
-  "used_by": 6
+  "used_by": 5
  },
  {
   "abstract": "A geodesic metric space is Gromov hyperbolic if all its geodesic triangles are thin, i.e., every side is contained in a fixed thickening of the two other sides. While this definition looks innocuous, it has proved extremely important and versatile in modern geometry since its introduction by Gromov.  We formalize the basic classical properties of Gromov hyperbolic spaces, notably the Morse lemma asserting that quasigeodesics are close to geodesics, the invariance of hyperbolicity under quasi-isometries, we define and study the Gromov boundary and its associated distance, and prove that a quasi-isometry between Gromov hyperbolic spaces extends to a homeomorphism of the boundaries. We also prove a less classical theorem, by Bonk and Schramm, asserting that a Gromov hyperbolic space embeds isometrically in a geodesic Gromov-hyperbolic space. As the original proof uses a transfinite sequence of Cauchy completions, this is an interesting formalization exercise.  Along the way, we introduce basic material on isometries, quasi-isometries, Lipschitz maps, geodesic spaces, the Hausdorff distance, the Cauchy completion of a metric space, and the exponential on extended real numbers.",
@@ -15018,7 +15018,7 @@
   "topics": [
    "Computer science/Data structures"
   ],
-  "used_by": 10
+  "used_by": 11
  },
  {
   "abstract": "This development provides a formal model of IEEE-754 floating-point arithmetic. This formalization, including formal specification of the standard and proofs of important properties of floating-point arithmetic, forms the foundation for verifying programs with floating-point computation. There is also a code generation setup for floats so that we can execute programs using this formalization in functional programming languages.",

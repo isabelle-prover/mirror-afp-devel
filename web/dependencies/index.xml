@@ -168,6 +168,13 @@
           <description></description>
         </item>
         <item>
+          <title>First_Order_Clause</title>
+          <link>/dependencies/first_order_clause/</link>
+          <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/first_order_clause/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Simple_Clause_Learning</title>
           <link>/dependencies/simple_clause_learning/</link>
           <pubDate>Thu, 31 Oct 2024 00:00:00 +0000</pubDate>
@@ -193,20 +200,6 @@
           <link>/dependencies/bernoulli/</link>
           <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/bernoulli/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Knuth_Bendix_Order</title>
-          <link>/dependencies/knuth_bendix_order/</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/knuth_bendix_order/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>Ordered_Resolution_Prover</title>
-          <link>/dependencies/ordered_resolution_prover/</link>
-          <pubDate>Thu, 24 Oct 2024 00:00:00 +0000</pubDate>
-          <guid>/dependencies/ordered_resolution_prover/</guid>
           <description></description>
         </item>
         <item>
@@ -578,6 +571,13 @@
           <link>/dependencies/factor_algebraic_polynomial/</link>
           <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/factor_algebraic_polynomial/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Knuth_Bendix_Order</title>
+          <link>/dependencies/knuth_bendix_order/</link>
+          <pubDate>Thu, 25 Apr 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/knuth_bendix_order/</guid>
           <description></description>
         </item>
         <item>
@@ -963,6 +963,13 @@
           <link>/dependencies/functional_ordered_resolution_prover/</link>
           <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
           <guid>/dependencies/functional_ordered_resolution_prover/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Ordered_Resolution_Prover</title>
+          <link>/dependencies/ordered_resolution_prover/</link>
+          <pubDate>Thu, 20 Apr 2023 00:00:00 +0000</pubDate>
+          <guid>/dependencies/ordered_resolution_prover/</guid>
           <description></description>
         </item>
         <item>
