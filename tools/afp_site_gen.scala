@@ -464,7 +464,7 @@ object AFP_Site_Gen {
       var out_dir: Path = AFP.BASE + Path.explode("web")
       var status_file: Option[Path] = None
       var clean = false
-      var devel_mode = false
+      var devel = false
 
       val getopts = Getopts("""
   Usage: isabelle afp_site_gen [OPTIONS]
@@ -473,7 +473,7 @@ object AFP_Site_Gen {
       -D FILE      build status file for devel version
       -O DIR       output dir for build (default """ + out_dir.implode + """)
       -c           clean up output directory
-      -d           devel mode (symlinks sources and builds site in watch mode)
+      -d           devel mode (symlinks sources and serves site instead of build)
 
     Generates the AFP website source. HTML files of entries are dynamically loaded.
     Providing a status file will build the development version of the archive.
@@ -482,7 +482,7 @@ object AFP_Site_Gen {
         "D:" -> (arg => status_file = Some(Path.explode(arg))),
         "O:" -> (arg => out_dir = Path.explode(arg)),
         "c" -> (_ => clean = true),
-        "d" -> (_ => devel_mode = true))
+        "d" -> (_ => devel = true))
 
       getopts(args)
 
@@ -496,9 +496,11 @@ object AFP_Site_Gen {
       Isabelle_System.with_tmp_dir("afp_site_gen") { dir =>
         val hugo = Hugo.project(dir)
 
-        afp_site_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel_mode,
+        afp_site_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
           progress = progress)
-        afp_build_site(out_dir, hugo, server = devel_mode, clean = clean, progress = progress)
+
+        val root = if (devel) dir + Path.basic("out") else out_dir
+        afp_build_site(root, hugo, server = devel, clean = clean, progress = progress)
       }
     })
 }
