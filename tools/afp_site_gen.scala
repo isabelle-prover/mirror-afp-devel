@@ -464,6 +464,8 @@ object AFP_Site_Gen {
 
   def afp_site_gen(
     out_dir: Path,
+    read_dir: Option[Path] = None,
+    write_dir: Option[Path] = None,
     afp: AFP_Structure = AFP_Structure(),
     status_file: Option[Path] = None,
     clean: Boolean = false,
@@ -471,14 +473,24 @@ object AFP_Site_Gen {
     progress: Progress = new Progress
   ): Unit =
     Isabelle_System.with_tmp_dir("afp_site_gen") { dir =>
-      val hugo = Hugo.project(dir, theme)
       val cache = new Cache(progress = progress)
 
-      afp_hugo_gen(
-        hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
-        progress = progress)
+      if (read_dir.isEmpty) {
+        val dir1 = write_dir.getOrElse(dir).absolute
+        if (clean && write_dir.nonEmpty) Isabelle_System.rm_tree(dir1)
 
-      afp_build_site(out_dir, hugo, server = devel, clean = clean, progress = progress)
+        val hugo = Hugo.project(dir1, theme)
+        afp_hugo_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
+          progress = progress)
+      }
+
+      if (write_dir.isEmpty) {
+        val dir1 = read_dir.getOrElse(dir).absolute
+        val out_dir1 = (if (devel) dir + Path.basic("out") else out_dir).absolute
+
+        val hugo = Hugo.project(dir1, theme)
+        afp_build_site(out_dir1, hugo, server = devel, clean = clean, progress = progress)
+      }
     }
 
 
@@ -487,8 +499,10 @@ object AFP_Site_Gen {
   val isabelle_tool = Isabelle_Tool("afp_site_gen", "generates afp website source",
     Scala_Project.here,
     { args =>
-      var out_dir: Path = AFP.BASE + Path.explode("web")
+      var out_dir = AFP.BASE + Path.explode("web")
       var status_file: Option[Path] = None
+      var read_dir: Option[Path] = None
+      var write_dir: Option[Path] = None
       var clean = false
       var devel = false
 
@@ -497,8 +511,10 @@ object AFP_Site_Gen {
 
     Options are:
       -D FILE      build status file for devel version
-      -O DIR       output dir for build (default """ + out_dir.implode + """)
-      -c           clean up output directory
+      -O DIR       output directory for build (default """ + out_dir.implode + """)
+      -R DIR       read hugo project from directory (instead of generation)
+      -W DIR       write hugo project to specified output directory
+      -c           clean up output directories
       -d           devel mode (symlinks sources and serves site instead of build)
 
     Generates the AFP website. HTML files of entries are dynamically loaded.
@@ -506,6 +522,8 @@ object AFP_Site_Gen {
   """,
         "D:" -> (arg => status_file = Some(Path.explode(arg))),
         "O:" -> (arg => out_dir = Path.explode(arg)),
+        "R:" -> (arg => read_dir = Some(Path.explode(arg))),
+        "W:" -> (arg => write_dir = Some(Path.explode(arg))),
         "c" -> (_ => clean = true),
         "d" -> (_ => devel = true))
 
@@ -518,8 +536,7 @@ object AFP_Site_Gen {
       val afp = AFP_Structure()
       val progress = new Console_Progress()
 
-      val out_dir1 = if (devel) dir + Path.basic("out") else out_dir
-      afp_site_gen(out_dir1, afp = afp, status_file = status_file, clean = clean, devel = devel,
-        progress = progress)
+      afp_site_gen(out_dir, read_dir = read_dir, write_dir = write_dir, afp = afp, status_file =
+        status_file, clean = clean, devel = devel, progress = progress)
     })
 }
