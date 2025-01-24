@@ -63,10 +63,38 @@
           <description></description>
         </item>
         <item>
+          <title>Combinatorial_Q_Analogues</title>
+          <link>/dependencies/combinatorial_q_analogues/</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/combinatorial_q_analogues/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Dirichlet_Series</title>
           <link>/dependencies/dirichlet_series/</link>
-          <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
           <guid>/dependencies/dirichlet_series/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Lambert_Series</title>
+          <link>/dependencies/lambert_series/</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/lambert_series/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Sum_Of_Squares_Count</title>
+          <link>/dependencies/sum_of_squares_count/</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/sum_of_squares_count/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Theta_Functions</title>
+          <link>/dependencies/theta_functions/</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/dependencies/theta_functions/</guid>
           <description></description>
         </item>
         <item>

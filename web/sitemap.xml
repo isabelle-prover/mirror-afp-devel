@@ -71,11 +71,32 @@
     <loc>/authors/scott/</loc>
     <lastmod>2025-01-07T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Combinatorial_Q_Analogues.html</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/combinatorial_q_analogues/</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2024-11-26T00:00:00+00:00</lastmod>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/lambert_series/</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/sum_of_squares_count/</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Rogers_Ramanujan.html</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Theta_Functions.html</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/theta_functions/</loc>
+    <lastmod>2024-12-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/gaussian_integers/</loc>
     <lastmod>2024-11-26T00:00:00+00:00</lastmod>
@@ -5479,6 +5500,8 @@
   </url><url>
     <loc>/sessions/combinatorial_enumeration_algorithms/</loc>
   </url><url>
+    <loc>/sessions/combinatorial_q_analogues/</loc>
+  </url><url>
     <loc>/sessions/combinatorics_words/</loc>
   </url><url>
     <loc>/sessions/combinatorics_words_graph_lemma/</loc>
@@ -7029,6 +7052,8 @@
   </url><url>
     <loc>/sessions/robinson_arithmetic/</loc>
   </url><url>
+    <loc>/sessions/rogers_ramanujan/</loc>
+  </url><url>
     <loc>/sessions/root_balanced_tree/</loc>
   </url><url>
     <loc>/sessions/roth_arithmetic_progressions/</loc>
@@ -7265,6 +7290,8 @@
     <loc>/sessions/taylor_models/</loc>
   </url><url>
     <loc>/sessions/tesl_language/</loc>
+  </url><url>
+    <loc>/sessions/theta_functions/</loc>
   </url><url>
     <loc>/sessions/three_circles/</loc>
   </url><url>

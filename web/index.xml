@@ -35,6 +35,27 @@
           <description></description>
         </item>
         <item>
+          <title>Combinatorial q-Analogues</title>
+          <link>/entries/Combinatorial_Q_Analogues.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Combinatorial_Q_Analogues.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>The Rogers–Ramanujan Identities</title>
+          <link>/entries/Rogers_Ramanujan.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Rogers_Ramanujan.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Theta Functions</title>
+          <link>/entries/Theta_Functions.html</link>
+          <pubDate>Mon, 02 Dec 2024 00:00:00 +0000</pubDate>
+          <guid>/entries/Theta_Functions.html</guid>
+          <description></description>
+        </item>
+        <item>
           <title>The Sum-of-Squares Function and Jacobi&#39;s Two-Square Theorem</title>
           <link>/entries/Sum_Of_Squares_Count.html</link>
           <pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate>
@@ -7014,6 +7035,13 @@
           <description></description>
         </item>
         <item>
+          <title>Combinatorial_Q_Analogues</title>
+          <link>/sessions/combinatorial_q_analogues/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/combinatorial_q_analogues/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Combinatorics_Words</title>
           <link>/sessions/combinatorics_words/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11186,6 +11214,13 @@
           <description></description>
         </item>
         <item>
+          <title>Rogers_Ramanujan</title>
+          <link>/sessions/rogers_ramanujan/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/rogers_ramanujan/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>Root_Balanced_Tree</title>
           <link>/sessions/root_balanced_tree/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11946,6 +11981,13 @@
           <link>/sessions/tesl_language/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/tesl_language/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Theta_Functions</title>
+          <link>/sessions/theta_functions/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/theta_functions/</guid>
           <description></description>
         </item>
         <item>
