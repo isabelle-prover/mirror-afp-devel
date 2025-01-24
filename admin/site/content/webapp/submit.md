@@ -1,5 +1,5 @@
----
-title: Submission
-rss: false
----
++++
+rss = false
+title = "Submission"
++++
 {{< submission endpoint="submit" >}}

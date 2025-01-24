@@ -222,7 +222,7 @@ object AFP_Site_Gen {
   ): Unit = {
     Isabelle_System.make_directory(hugo.dir)
 
-    val config_file = afp.site_dir + Path.basic("config").json
+    val config_file = afp.site_dir + Path.basic("hugo").ext("toml")
     val themes_dir = afp.site_dir + Path.basic("themes")
     val content_dir = afp.site_dir + Path.basic("content")
 

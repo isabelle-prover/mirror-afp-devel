@@ -1,11 +1,11 @@
----
-title: Entry Submission
-menu: 
-    main:
-        name: "Submission"
-        weight: 5
-rss: false
----
++++
+rss = false
+title = "Entry Submission"
+
+[menu.main]
+name = "Submission"
+weight = 5
++++
 
 ## Submission Guidelines
 

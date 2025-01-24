@@ -1,0 +1,51 @@
+baseURL = "/"
+languageCode = "en-gb"
+title = "Archive of Formal Proofs"
+theme = "afp"
+publishDir = ".."
+relativeURLs = true
+
+[taxonomies]
+author = "authors"
+topic = "topics"
+dependency = "dependencies"
+
+[params]
+description = """\
+A collection of proof libraries, examples, and larger scientific developments, \
+mechanically checked in the theorem prover Isabelle.\
+"""
+images = [ "/images/afp.png" ]
+title = "Archive of Formal Proofs"
+mainSections = [ "entries" ]
+submissionUrl = "https://afp-submit.proof.cit.tum.de"
+
+[params.afpUrls]
+releases = "https://www.isa-afp.org/release"
+html = "https://www.isa-afp.org/browser_info/current"
+htmlDevel = "https://devel.isa-afp.org/browser_info/current"
+
+[markup.goldmark.renderer]
+unsafe = true
+
+[[menu.main]]
+name = "Topics"
+url = "/topics/"
+weight = 2
+
+[outputs]
+home = [ "html", "rss", "json" ]
+taxonomyTerm = [ "html", "json" ]
+
+[related]
+includeNewer = true
+threshold = 80
+toLower = true
+
+[[related.indices]]
+name = "topic"
+weight = 10
+
+[[related.indices]]
+name = "keywords"
+weight = 100
