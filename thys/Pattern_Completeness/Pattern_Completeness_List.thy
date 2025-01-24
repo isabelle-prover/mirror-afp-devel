@@ -193,6 +193,7 @@ lemmas pat_complete_impl_code =
   pattern_completeness_context.\<tau>s_list_def
   pattern_completeness_context.apply_decompose'_def
   pattern_completeness_context.decomp'_main_loop.simps
+  pattern_completeness_context.decomp'_impl_def
   pattern_completeness_context.insert_rx_def
   pattern_completeness_context.decomp_impl.simps
   pattern_completeness_context.match_decomp'_impl_def
@@ -1695,7 +1696,7 @@ definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rig
       m = max_list (map (length o snd o fst) Cs);
       Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
       IS = compute_inf_sorts Cs
-     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False undefined id P" 
+     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False (\<lambda> _. undefined) id P" 
 
 abbreviation (input) pat_complete where 
   "pat_complete \<equiv> pattern_completeness_context.pat_complete"
