@@ -149,13 +149,10 @@ Last 50 lines from stderr (if available):
       val status_file = dir + Path.basic("status").json
       File.write(status_file, JSON.Format(status_json))
 
-      val hugo = Hugo.project(dir, AFP_Site_Gen.theme)
-      val cache = AFP_Site_Gen.Cache(dir)
       val output_dir = dir + Path.basic("output")
 
-      AFP_Site_Gen.afp_site_gen(hugo, cache, afp = context.afp, status_file = Some(status_file),
+      AFP_Site_Gen.afp_site_gen(output_dir, afp = context.afp, status_file = Some(status_file),
         progress = progress)
-      AFP_Site_Gen.afp_build_site(output_dir, hugo, progress = progress)
 
       val release_dir = dir + Path.basic("release")
       Isabelle_System.make_directory(release_dir)

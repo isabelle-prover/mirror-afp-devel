@@ -249,9 +249,9 @@ object AFP_Site_Gen {
   }
 
 
-  /* generate project for hugo */
+  /** generate hugo project **/
 
-  def afp_site_gen(
+  def afp_hugo_gen(
     hugo: Hugo.Project,
     cache: Cache,
     afp: AFP_Structure = AFP_Structure(),
@@ -435,7 +435,7 @@ object AFP_Site_Gen {
   }
 
 
-  /* build site */
+  /** build site **/
 
   def afp_build_site(
     out_dir: Path,
@@ -460,6 +460,28 @@ object AFP_Site_Gen {
   }
 
 
+  /** sitegen **/
+
+  def afp_site_gen(
+    out_dir: Path,
+    afp: AFP_Structure = AFP_Structure(),
+    status_file: Option[Path] = None,
+    clean: Boolean = false,
+    devel: Boolean = false,
+    progress: Progress = new Progress
+  ): Unit =
+    Isabelle_System.with_tmp_dir("afp_site_gen") { dir =>
+      val hugo = Hugo.project(dir, theme)
+      val cache = new Cache(progress = progress)
+
+      afp_hugo_gen(
+        hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
+        progress = progress)
+
+      afp_build_site(out_dir, hugo, server = devel, clean = clean, progress = progress)
+    }
+
+
   /* tool wrapper */
 
   val isabelle_tool = Isabelle_Tool("afp_site_gen", "generates afp website source",
@@ -479,32 +501,25 @@ object AFP_Site_Gen {
       -c           clean up output directory
       -d           devel mode (symlinks sources and serves site instead of build)
 
-    Generates the AFP website source. HTML files of entries are dynamically loaded.
+    Generates the AFP website. HTML files of entries are dynamically loaded.
     Providing a status file will build the development version of the archive.
-    Site will be built from generated source if output dir is specified.
   """,
         "D:" -> (arg => status_file = Some(Path.explode(arg))),
         "O:" -> (arg => out_dir = Path.explode(arg)),
         "c" -> (_ => clean = true),
         "d" -> (_ => devel = true))
 
-      getopts(args)
+      val more_args = getopts(args)
+      if (more_args.nonEmpty) getopts.usage()
 
       status_file.foreach(path =>
         if (!path.is_file || !path.file.exists()) error("Invalid status file: " + path))
 
       val afp = AFP_Structure()
       val progress = new Console_Progress()
-      val cache = new Cache(progress = progress)
 
-      Isabelle_System.with_tmp_dir("afp_site_gen") { dir =>
-        val hugo = Hugo.project(dir, theme)
-
-        afp_site_gen(hugo, cache, afp = afp, status_file = status_file, symlinks = devel,
-          progress = progress)
-
-        val root = if (devel) dir + Path.basic("out") else out_dir
-        afp_build_site(root, hugo, server = devel, clean = clean, progress = progress)
-      }
+      val out_dir1 = if (devel) dir + Path.basic("out") else out_dir
+      afp_site_gen(out_dir1, afp = afp, status_file = status_file, clean = clean, devel = devel,
+        progress = progress)
     })
 }
