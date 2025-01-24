@@ -110,7 +110,7 @@ proof -
 qed
 
 lemma next_1_0 [simp]: "is_next p 1 0 \<longleftrightarrow> 1 \<le> \<parallel>p\<parallel>"
-  by (auto simp add: is_next_def matches_def)
+  by (auto simp: is_next_def matches_def)
 
 subsection \<open>The Build-table routine\<close>
 
@@ -152,7 +152,7 @@ proof -
   have j: "0 < j \<Longrightarrow> nxt !! j < j"
     using assms by (simp add: buildtab_invariant_def is_next_def)
   show ?thesis
-    using assms by (auto simp add: buildtab_invariant_def buildtab_step_def intro: order.strict_trans j)
+    using assms by (auto simp: buildtab_invariant_def buildtab_step_def intro: order.strict_trans j)
 qed
 
 lemma matches_invariant:
@@ -192,7 +192,7 @@ qed
 
 lemma non_matches_aux: 
   assumes "Suc (Suc j) < k" "matches p (Suc (Suc i) - k) p 0 k" 
-  shows "matches p (Suc i - (k - Suc 0)) p 0 (k - Suc 0)"
+  shows "matches p (Suc i - (k - 1)) p 0 (k - 1)"
   using matches_right_weakening assms by fastforce
 
 lemma non_matches_invariant:
@@ -201,7 +201,7 @@ lemma non_matches_invariant:
 proof (cases "p!!i = p!!j")
   case True
   with non_matches_aux bt show ?thesis
-    by (fastforce simp add: Suc_less_eq2 buildtab_step_def buildtab_invariant_def)
+    by (fastforce simp: Suc_less_eq2 buildtab_step_def buildtab_invariant_def)
 next
   case neq: False
   have "j < i"
@@ -212,19 +212,19 @@ next
   proof (cases "j=0")
     case True
     have "\<not> matches p (Suc (Suc i) - k) p 0 k"
-      if "Suc 0 < k" and "k < Suc (Suc i)" for k 
-    proof (cases "k = Suc (Suc 0)")
+      if "1 < k" and "k < Suc (Suc i)" for k 
+    proof (cases "k = 2")
       case True
       with assms neq that show ?thesis
-        by (auto simp add: matches_contradiction_at_first \<open>j=0\<close>)
+        by (auto simp: matches_contradiction_at_first \<open>j=0\<close>)
     next
       case False
-      then have "Suc 0 < k - Suc 0"
+      then have "1 < k - 1"
         using that by linarith
-      with bt that have "\<not> matches p (Suc i - (k - Suc 0)) p 0 (k - Suc 0)"
-        using True by (force simp add: buildtab_invariant_def)
-      then show ?thesis
-        by (metis False Suc_lessI non_matches_aux that(1))
+      with bt that have "\<not> matches p (Suc i - (k - 1)) p 0 (k - 1)"
+        using True by (force simp: buildtab_invariant_def)
+      with False that show ?thesis
+        using diff_le_self matches_right_weakening by force
     qed
     with True show ?thesis
       by (auto simp: buildtab_invariant_def buildtab_step_def)
@@ -316,7 +316,7 @@ proof (induction "(nxt,i,j)" arbitrary: nxt i j rule: wf_induct_rule[OF wf_rel_b
       using eq True by (auto simp: rel_buildtab_def buildtab_step_def split: if_split_asm)
     show ?thesis
       using "1.hyps" [OF decreasing invar'] "1.prems" eq True
-        by(auto simp add: buildtab.simps[of p nxt] split: prod.splits)
+        by(auto simp: buildtab.simps[of p nxt] split: prod.splits)
   next
     case False
     with 1 k show ?thesis
@@ -368,7 +368,7 @@ proof (induction "(nxt,i,j)" arbitrary: nxt i j t rule: wf_induct_rule[OF wf_rel
       by (force simp: T_buildtab.simps [of p nxt' i' j'] buildtab_step_def split: if_split_asm)
   qed             
   show ?case
-    using * [where t = "Suc t"] by (auto simp add: T_buildtab.simps split: prod.split)
+    using * [where t = "Suc t"] by (auto simp: T_buildtab.simps split: prod.split)
 qed
 
 lemma T_buildtab_linear:
@@ -511,7 +511,7 @@ value "list_of_array (table CLR_pattern)"
 text \<open>Worst-case string searches\<close>
 
 definition bad_list :: "nat \<Rightarrow> nat list"
-  where "bad_list n = replicate n 0 @ [Suc 0]"
+  where "bad_list n = replicate n 0 @ [1]"
 
 definition "bad_pattern = array_of_list (bad_list 1000)"
 
