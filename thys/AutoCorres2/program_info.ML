@@ -209,7 +209,7 @@ fun get_prog_info thy fun_options mk_fun_name dest_fun_name cfilename : prog_inf
   let
     val ctxt = Proof_Context.init_global thy
     val csenv = CalculateState.get_csenv thy cfilename |> the;
-    val prog_name = cfilename |> Path.explode |> Path.split_ext |> fst |> Path.file_name
+    val prog_name = cfilename |> Path.explode |> Path.drop_ext |> Path.file_name
 
     (* Get the type of the state record and the globals record. *)
     val globals_type =  Proof_Context.read_typ ctxt NameGeneration.global_rcd_name

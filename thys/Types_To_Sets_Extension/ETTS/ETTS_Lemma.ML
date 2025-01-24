@@ -44,7 +44,7 @@ fun eq_thm_tac ctxt thm i =
       let
         val error_msg = "eq_thm_tac failed on " ^ (Thm.string_of_thm ctxt thm)
         val goal_prem_ct = goal_thm
-          |> Thm.cprems_of 
+          |> Thm.take_cprems_of 2
           |> the_single
         val thm_ct = Thm.cprop_of thm
         val thm = thm
