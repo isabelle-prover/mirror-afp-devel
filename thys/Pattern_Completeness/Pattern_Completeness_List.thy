@@ -128,7 +128,7 @@ begin
 partial_function (tailrec) decomp'_main_loop where 
   "decomp'_main_loop n xs list out = (case list of 
       [] \<Rightarrow> (n, rev out)
-    | ((x,ts) # rxs) \<Rightarrow> (if tl ts = [] \<or> (\<exists> t \<in> set ts. \<not> is_Fun t) \<or> x \<in> set xs
+    | ((x,ts) # rxs) \<Rightarrow> (if tl ts = [] \<or> (\<exists> t \<in> set ts. is_Var t) \<or> x \<in> set xs
      then decomp'_main_loop n xs rxs ((x,ts) # out)
      else let l = length (args (hd ts));
               fresh = map renNat [n ..< n + l];
@@ -275,6 +275,9 @@ definition wf_ts :: "('f, nat \<times> 's) term list \<Rightarrow> bool"  where
 definition wf_ts2 :: "('f, nat \<times> 's) term list \<Rightarrow> bool"  where 
   "wf_ts2 ts = (length ts \<ge> 2 \<and> distinct ts \<and> (\<forall> j < length ts. \<forall> i < j. conflicts (ts ! i) (ts ! j) \<noteq> None))" 
 
+definition wf_ts3 :: "('f, nat \<times> 's) term list \<Rightarrow> bool"  where 
+  "wf_ts3 ts = (\<exists> t \<in> set ts. is_Var t)" 
+
 definition wf_lx :: "('f,'v,'s)match_problem_lx \<Rightarrow> bool" where
   "wf_lx lx = (Ball (snd ` set lx) is_Fun)" 
 
@@ -284,11 +287,17 @@ definition wf_rx :: "('f,'v,'s)match_problem_rx \<Rightarrow> bool" where
 definition wf_rx2 :: "('f,'v,'s)match_problem_rx \<Rightarrow> bool" where
   "wf_rx2 rx = (distinct (map fst (fst rx)) \<and> (Ball (snd ` set (fst rx)) wf_ts2) \<and> snd rx = inf_var_conflict (set_mset (mp_rx rx)))" 
 
+definition wf_rx3 :: "('f,'v,'s)match_problem_rx \<Rightarrow> bool" where
+  "wf_rx3 rx = (wf_rx2 rx \<and> (improved \<longrightarrow> (Ball (snd ` set (fst rx)) wf_ts3)))" 
+
 definition wf_lr :: "('f,'v,'s)match_problem_lr \<Rightarrow> bool"
   where "wf_lr pair = (case pair of (lx,rx) \<Rightarrow> wf_lx lx \<and> wf_rx rx)" 
 
 definition wf_lr2 :: "('f,'v,'s)match_problem_lr \<Rightarrow> bool"
   where "wf_lr2 pair = (case pair of (lx,rx) \<Rightarrow> wf_lx lx \<and> (if lx = [] then wf_rx2 rx else wf_rx rx))" 
+
+definition wf_lr3 :: "('f,'v,'s)match_problem_lr \<Rightarrow> bool"
+  where "wf_lr3 pair = (case pair of (lx,rx) \<Rightarrow> wf_lx lx \<and> (if lx = [] then wf_rx3 rx else wf_rx rx))" 
 
 definition wf_pat_lr :: "('f,'v,'s)pat_problem_lr \<Rightarrow> bool" where
   "wf_pat_lr mps = (Ball (set mps) (\<lambda> mp. wf_lr2 mp \<and> \<not> empty_lr mp))" 
@@ -772,15 +781,13 @@ qed auto
 
 (* end: move out of context *)
 
-(* TODO: define new invariant that decompose' has been exhaustively applied, 
-    and show that this is satisfied *)
 lemma decomp'_impl: assumes 
     "wf_lr2 mp" 
     "set xs = lvars_mp (mp_list (mp_lx (fst mp)))" 
     "lvar_cond_mp n (mp_lr mp)"
     "Decomp'_impl n xs mp = (n',mp')" 
     improved
-  shows "wf_lr2 mp'" 
+  shows "wf_lr3 mp'" 
     "lvar_cond_mp n' (mp_lr mp')"
     "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_lr mp) (mp_lr mp')" 
     "n \<le> n'" 
@@ -791,12 +798,14 @@ proof (atomize (full), goal_cases)
   let ?lr = "\<lambda> rx. (xl,rx,b)" 
   define Measure where "Measure (rx :: ('v,('f,nat \<times> 's)term list) alist) = 
     sum_list (map ((\<lambda> ts. sum_list (map size ts)) o snd) rx)" for rx
+  define cond3 where "cond3 ts = (xl = [] \<longrightarrow> wf_ts3 ts)" for ts 
   {
     fix out rx'
     assume "Decomp'_main_loop n xs rx out = (n', rx')" 
       "wf_lr2 (?lr (rx @ out))" 
       "lvar_cond_mp n (mp_lr (?lr (rx @ out)))" 
-    hence "wf_lr2 (?lr rx') \<and> lvar_cond_mp n' (mp_lr (?lr rx')) 
+      "Ball (snd ` set out) cond3" 
+    hence "wf_lr3 (?lr rx') \<and> lvar_cond_mp n' (mp_lr (?lr rx')) 
       \<and> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_lr (?lr (rx @ out))) (mp_lr (?lr rx'))
       \<and> n \<le> n'"
     proof (induct rx arbitrary: n n' out rx' rule: wf_induct[OF wf_measure[of Measure]])
@@ -806,18 +815,19 @@ proof (atomize (full), goal_cases)
       note res = this[unfolded decomp'_main_loop.simps[of _ _ _ rx]]
       note wf = 1(3)
       note lvc = 1(4)
+      note cond3 = 1(5)
       show ?case 
       proof (cases rx)
         case Nil
         from Nil have mset: "mset (rx @ out) = mset (rev out)" by auto
         note wf = wf[unfolded wf_lr2_mset[OF mset]]
         note mp_lr = mp_lr_mset[OF mset]
-        show ?thesis using Nil wf lvc res unfolding mp_lr
-          by auto
+        show ?thesis using Nil wf lvc res cond3 unfolding mp_lr
+          by (auto simp: wf_lr3_def wf_lr2_def wf_rx3_def cond3_def)
       next
         case (Cons pair rx2)
         then obtain x ts where rx: "rx = (x,ts) # rx2" by (cases pair, auto)        
-        let ?cond = "tl ts = [] \<or> (\<exists> t \<in> set ts. \<not> is_Fun t) \<or> x \<in> set xs" 
+        let ?cond = "tl ts = [] \<or> (\<exists> t \<in> set ts. is_Var t) \<or> x \<in> set xs" 
         note res = res[unfolded rx split list.simps]
         from wf[unfolded rx wf_lr2_def split] have wfts: "wf_ts ts \<or> wf_ts2 ts" 
           and dist_vars: "distinct (x # map fst (rx2 @ out))" 
@@ -831,10 +841,21 @@ proof (atomize (full), goal_cases)
           have mset: "mset (rx @ out) = mset (rx2 @ (x, ts) # out)" unfolding rx by auto
           note wf = wf[unfolded wf_lr2_mset[OF mset]]
           note mp_lr = mp_lr_mset[OF mset]
+          have c3: "cond3 ts" 
+            unfolding cond3_def
+          proof (intro impI)
+            assume xl: "xl = []" 
+            with assms[unfolded mp] have xs: "xs = []" unfolding lvars_mp_def by auto
+            from wf[unfolded wf_lr2_def split] xl have "wf_ts2 ts" unfolding wf_rx2_def by auto
+            hence "tl ts \<noteq> []" unfolding wf_ts2_def by (cases ts, auto)
+            with True xs have "\<exists>t\<in>set ts. is_Var t" by auto
+            thus "wf_ts3 ts" unfolding wf_ts3_def by auto
+          qed
           have "(rx2, rx) \<in> measure Measure" unfolding Measure_def rx using ts
             by (cases ts, auto) 
           note IH = IH[OF this res wf lvc[unfolded mp_lr], folded mp_lr]
-          thus ?thesis .
+          show ?thesis 
+            by (rule IH, insert c3 cond3, auto)
         next
           case False
           define l where "l = num_args (hd ts)"
@@ -1282,11 +1303,11 @@ proof (atomize (full), goal_cases)
           qed
 
           (* obtain IH and apply it *)
-          note IH = IH[OF measure res wf' lvar_cond_new]
+          note IH = IH[OF measure res wf' lvar_cond_new cond3[rule_format]]
 
           show ?thesis 
           proof (intro conjI)
-            show "wf_lr2 (xl, rx', b)" using IH by auto
+            show "wf_lr3 (xl, rx', b)" using IH by auto
             show "lvar_cond_mp n' (mp_lr (xl, rx', b))" using IH by auto
             show "n \<le> n'" using IH by auto
             (* now we only need to perform the steps of the post-processing *)
@@ -1429,7 +1450,7 @@ proof (atomize (full), goal_cases)
         and wf2: "wf_lr2 mp2" 
         and xs: "set xs = lvars_mp (mp_list (mp_lx (fst mp2)))" by auto
       from decomp'_impl[OF wf2 xs lvc dec \<open>improved\<close>] steps12
-      show ?thesis unfolding res dec by auto
+      show ?thesis unfolding res dec wf_lr3_def wf_lr2_def wf_rx3_def by auto
     qed
   qed
 qed
