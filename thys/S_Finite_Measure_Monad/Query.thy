@@ -9,10 +9,10 @@ theory Query
 begin
 
 declare [[coercion qbs_l]]
-abbreviation qbs_real :: "real quasi_borel"       (\<open>\<real>\<^sub>Q\<close>) where "\<real>\<^sub>Q \<equiv> qbs_borel"
-abbreviation qbs_ennreal :: "ennreal quasi_borel" (\<open>\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0\<close>) where "\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0 \<equiv> qbs_borel"
-abbreviation qbs_nat :: "nat quasi_borel"         (\<open>\<nat>\<^sub>Q\<close>) where "\<nat>\<^sub>Q \<equiv> qbs_count_space UNIV"
-abbreviation qbs_bool :: "bool quasi_borel"       (\<open>\<bool>\<^sub>Q\<close>) where "\<bool>\<^sub>Q \<equiv> count_space\<^sub>Q UNIV"
+abbreviation qbs_real :: "real quasi_borel"       ("\<real>\<^sub>Q") where "\<real>\<^sub>Q \<equiv> qbs_borel"
+abbreviation qbs_ennreal :: "ennreal quasi_borel" ("\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0") where "\<real>\<^sub>Q\<^sub>\<ge>\<^sub>0 \<equiv> qbs_borel"
+abbreviation qbs_nat :: "nat quasi_borel"         ("\<nat>\<^sub>Q") where "\<nat>\<^sub>Q \<equiv> qbs_count_space UNIV"
+abbreviation qbs_bool :: "bool quasi_borel"       ("\<bool>\<^sub>Q") where "\<bool>\<^sub>Q \<equiv> count_space\<^sub>Q UNIV"
 
 
 definition query :: "['a qbs_measure, 'a \<Rightarrow> ennreal] \<Rightarrow> 'a qbs_measure" where
@@ -76,12 +76,12 @@ proof -
   next
     case 1[simp]:2
     from rep_qbs_space_monadP[OF assms(1)]
-    obtain \<alpha> \<mu> where hs: "s = \<lbrakk>X, \<alpha>, \<mu>\<rbrakk>\<^sub>s\<^sub>f\<^sub>i\<^sub>n" "qbs_prob X \<alpha> \<mu>" by auto
+    obtain \<alpha> \<mu> where hs: "s = \<lbrakk>X, \<alpha>, \<mu>\<rbrakk>\<^sub>m\<^sub>e\<^sub>a\<^sub>s" "qbs_prob X \<alpha> \<mu>" by auto
     then interpret qp: qbs_prob X \<alpha> \<mu> by simp
     have [measurable]:"Measurable.pred (qbs_to_measure X) P" "Measurable.pred (qbs_to_measure X) Q"
       using assms(2,3) by(simp_all add: lr_adjunction_correspondence)
     have 2[simp]: "emeasure (qbs_l (density_qbs s (\<lambda>x. if P x then 1 else 0))) (qbs_space X) \<noteq> \<top>"
-      by(simp add: hs(1) qp.density_qbs qbs_s_finite.qbs_l[OF qp.density_qbs_s_finite] emeasure_distr emeasure_distr[where N="qbs_to_measure X",OF _ sets.top,simplified space_L] emeasure_density,rule order.strict_implies_not_eq[OF order.strict_trans1[OF qp.nn_integral_le_const[of 1] ennreal_one_less_top]]) auto
+      by(simp add: hs(1) qp.density_qbs qbs_meas.qbs_l[OF qp.density_qbs_meas] emeasure_distr emeasure_distr[where N="qbs_to_measure X",OF _ sets.top,simplified space_L] emeasure_density,rule order.strict_implies_not_eq[OF order.strict_trans1[OF qp.nn_integral_le_const[of 1] ennreal_one_less_top]]) auto
     have 3: "measure (qbs_l (density_qbs s (\<lambda>x. if P x then 1 else 0))) (qbs_space X) > 0"
       using 2 emeasure_eq_ennreal_measure zero_less_measure_iff by fastforce
     have "query s (\<lambda>x. if P x then 1 else 0) = density_qbs (density_qbs s (\<lambda>x. if P x then 1 else 0)) (\<lambda>x. 1 / emeasure (qbs_l (density_qbs s (\<lambda>x. if P x then 1 else 0))) (qbs_space X))"
@@ -1353,7 +1353,6 @@ proof -
   qed
   finally show ?thesis .
 qed
-
 
 text \<open> Almost everywhere, integrable, and integrations are also interpreted as programs.\<close>
 lemma "(\<lambda>g f x. if (AE\<^sub>Q y in g x. f x y \<noteq> \<infinity>) then (\<integral>\<^sup>+\<^sub>Q y. f x y \<partial>(g x)) else 0)
