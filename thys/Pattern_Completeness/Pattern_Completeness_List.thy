@@ -288,7 +288,7 @@ definition wf_rx2 :: "('f,'v,'s)match_problem_rx \<Rightarrow> bool" where
   "wf_rx2 rx = (distinct (map fst (fst rx)) \<and> (Ball (snd ` set (fst rx)) wf_ts2) \<and> snd rx = inf_var_conflict (set_mset (mp_rx rx)))" 
 
 definition wf_rx3 :: "('f,'v,'s)match_problem_rx \<Rightarrow> bool" where
-  "wf_rx3 rx = (wf_rx2 rx \<and> (improved \<longrightarrow> (Ball (snd ` set (fst rx)) wf_ts3)))" 
+  "wf_rx3 rx = (wf_rx2 rx \<and> (improved \<longrightarrow> snd rx \<or> (Ball (snd ` set (fst rx)) wf_ts3)))" 
 
 definition wf_lr :: "('f,'v,'s)match_problem_lr \<Rightarrow> bool"
   where "wf_lr pair = (case pair of (lx,rx) \<Rightarrow> wf_lx lx \<and> wf_rx rx)" 
@@ -300,7 +300,7 @@ definition wf_lr3 :: "('f,'v,'s)match_problem_lr \<Rightarrow> bool"
   where "wf_lr3 pair = (case pair of (lx,rx) \<Rightarrow> wf_lx lx \<and> (if lx = [] then wf_rx3 rx else wf_rx rx))" 
 
 definition wf_pat_lr :: "('f,'v,'s)pat_problem_lr \<Rightarrow> bool" where
-  "wf_pat_lr mps = (Ball (set mps) (\<lambda> mp. wf_lr2 mp \<and> \<not> empty_lr mp))" 
+  "wf_pat_lr mps = (Ball (set mps) (\<lambda> mp. wf_lr3 mp \<and> \<not> empty_lr mp))" 
 
 lemma wf_rx_mset: assumes "mset rx = mset rx'" 
   shows "wf_rx (rx,b) = wf_rx (rx',b)" 
@@ -1419,7 +1419,7 @@ qed
 
 lemma match_decomp'_impl: assumes "Match_decomp'_impl n mp = res" 
   and lvc: "lvar_cond_mp n (mp_list mp)" 
-  shows "res = Some (n',mp') \<Longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp') \<and> wf_lr2 mp' \<and> lvar_cond_mp n' (mp_lr mp') \<and> n \<le> n'" 
+  shows "res = Some (n',mp') \<Longrightarrow> (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp') \<and> wf_lr3 mp' \<and> lvar_cond_mp n' (mp_lr mp') \<and> n \<le> n'" 
     and "res = None \<Longrightarrow> \<exists> mp'. (\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) mp' \<and> match_fail mp'" 
 proof (atomize (full), goal_cases)
   case 1
@@ -1439,7 +1439,14 @@ proof (atomize (full), goal_cases)
     show ?thesis 
     proof (cases "apply_decompose' mp2")
       case False
-      with res lvc match show ?thesis by auto
+      obtain xl xr b where mp2: "mp2 = (xl,xr,b)" by (cases mp2, auto)
+      from False[unfolded apply_decompose'_def mp2 split] 
+      have cond: "improved \<Longrightarrow> b \<or> xl \<noteq> []" by auto
+      from match have "wf_lr2 mp2" by simp
+      with cond have "wf_lr3 mp2" 
+        unfolding wf_lr3_def wf_lr2_def mp2 split
+        unfolding wf_rx3_def by auto
+      with False res lvc match show ?thesis by auto
     next
       case True
       with res have res: "res = Some (decomp'_impl renNat n xs mp2)" by auto
@@ -1450,15 +1457,10 @@ proof (atomize (full), goal_cases)
         and wf2: "wf_lr2 mp2" 
         and xs: "set xs = lvars_mp (mp_list (mp_lx (fst mp2)))" by auto
       from decomp'_impl[OF wf2 xs lvc dec \<open>improved\<close>] steps12
-      show ?thesis unfolding res dec wf_lr3_def wf_lr2_def wf_rx3_def by auto
+      show ?thesis unfolding res dec by auto
     qed
   qed
 qed
-
-context
-  assumes non_improved: "\<not> improved" 
-begin
-
 
 lemma pat_inner_impl: assumes "Pat_inner_impl n p pd = res" 
   and "wf_pat_lr pd" 
@@ -1481,7 +1483,7 @@ next
     case (Some pair)
     then obtain n' mp' where Some: "Match_decomp'_impl n mp = Some (n', mp')" by (cases pair, auto)
     from match_decomp'_impl(1)[OF Some lmp refl]
-    have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp')" and wf: "wf_lr2 mp'" 
+    have steps: "(\<rightarrow>\<^sub>m)\<^sup>*\<^sup>* (mp_list mp) (mp_lr mp')" and wf: "wf_lr3 mp'" 
       and lmp': "lvar_cond_mp n' (mp_lr mp')" and nn': "n \<le> n'" by auto
     from Cons(5) lvar_cond_mono[OF nn'] 
     have lvars_n': "lvar_cond_pp n' (pat_mset_list (mp # p) + pat_lr pd)" 
@@ -1534,6 +1536,11 @@ lemma pat_mset_list: "pat_mset (pat_mset_list p) = pat_list p"
   unfolding pat_list_def pat_mset_list_def by (auto simp: image_comp)
 
 
+context
+  assumes non_improved: "\<not> improved" 
+begin
+
+
 text \<open>Main simulation lemma for a single @{const pat_impl} step.\<close>
 lemma pat_impl: assumes "Pat_impl n nl p = res" 
     and vars: "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" 
@@ -1579,8 +1586,8 @@ proof (atomize(full), goal_cases)
           then obtain mp where mem: "mp \<in> set p'" and mps: "mps = mp_mset (mp_lr mp)" by (auto simp: pat_lr_def)
           obtain lx rx b where mp: "mp = (lx,rx,b)" by (cases mp, auto)
           from mp mem True have b by auto
-          with wf[unfolded wf_pat_lr_def, rule_format, OF mem, unfolded wf_lr2_def mp split]
-          have "inf_var_conflict (set_mset (mp_rx (rx,b)))" unfolding wf_rx_def wf_rx2_def by (auto split: if_splits)
+          with wf[unfolded wf_pat_lr_def, rule_format, OF mem, unfolded wf_lr3_def mp split]
+          have "inf_var_conflict (set_mset (mp_rx (rx,b)))" unfolding wf_rx_def wf_rx2_def wf_rx3_def by (auto split: if_splits)
           thus "inf_var_conflict mps" unfolding mps mp_lr_def mp split
             unfolding inf_var_conflict_def by fastforce
         qed (auto simp: tvars_pp_def)
@@ -1618,7 +1625,7 @@ proof (atomize(full), goal_cases)
           hence "(x,t) \<in> set ?concat" by auto
           then obtain mp where "mp \<in> set p'" and "(x,t) \<in> set ((\<lambda> (lx,_). lx) mp)" by auto
           then obtain lx rx where mem: "(lx,rx) \<in> set p'" and xt: "(x,t) \<in> set lx" by auto
-          from wf mem have wf: "wf_lx lx" unfolding wf_pat_lr_def wf_lr2_def by auto
+          from wf mem have wf: "wf_lx lx" unfolding wf_pat_lr_def wf_lr3_def by auto
           with xt have t: "is_Fun t" unfolding wf_lx_def by auto
           from mem obtain p'' where pat: "pat_lr p' = add_mset (mp_lr (lx,rx)) p''" 
             unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
@@ -1637,9 +1644,9 @@ proof (atomize(full), goal_cases)
           from fp have "(lx,rx,b) \<in> set ?fp" unfolding mp by auto
           hence "\<not> b" unfolding o_def by auto
           with mp lx have mp: "mp = ([],rx,False)" by auto
-          from wf mpp have wf: "wf_lr2 mp" and ne: "\<not> empty_lr mp"  unfolding wf_pat_lr_def by auto
-          from wf[unfolded wf_lr2_def mp split] mp
-          have wf: "wf_rx2 (rx, False)" and mp: "mp = ([],rx,False)" by auto
+          from wf mpp have wf: "wf_lr3 mp" and ne: "\<not> empty_lr mp"  unfolding wf_pat_lr_def by auto
+          from wf[unfolded wf_lr3_def mp split] mp
+          have wf: "wf_rx2 (rx, False)" and mp: "mp = ([],rx,False)" by (auto simp: wf_rx3_def)
           from ne[unfolded empty_lr_def mp split] obtain y ts rx' 
             where rx: "rx = (y,ts) # rx'" by (cases rx, auto)
           from wf[unfolded wf_rx2_def] have ninf: "\<not> inf_var_conflict (mp_mset (mp_rx (rx, False)))" 
