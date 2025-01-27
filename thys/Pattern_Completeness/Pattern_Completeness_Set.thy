@@ -39,6 +39,30 @@ lemma bij_betw_imp_Uniq_iff:
 lemma image_Uniq: "UNIQ A \<Longrightarrow> UNIQ (f ` A)"
   by (smt (verit) Uniq_I image_iff the1_equality')
 
+lemma successively_eq_iff_Uniq: "successively (=) xs \<longleftrightarrow> UNIQ (set xs)" (is "?l \<longleftrightarrow> ?r")
+proof
+  show "?l \<Longrightarrow> ?r"
+    apply (induction xs rule: induct_list012)
+    by (auto intro: Uniq_I)
+  show "?r \<Longrightarrow> ?l"
+  proof (induction xs)
+    case Nil
+    then show ?case by simp
+  next
+    case xxs: (Cons x xs)
+    show ?case
+    proof (cases xs)
+      case Nil
+      then show ?thesis by simp
+    next
+      case xs: (Cons y ys)
+      have "successively (=) xs"
+        apply (rule xxs(1)) using xxs(2) by (simp add: Uniq_def)
+      with xxs(2)
+      show ?thesis by (auto simp: xs Uniq_def)
+    qed
+  qed
+qed
 
 subsection \<open>Definition of Algorithm -- Inference Rules\<close>
 
