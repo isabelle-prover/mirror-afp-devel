@@ -81,8 +81,8 @@ lemma obtain_maximal_literal:
 proof-
 
   have grounding_not_empty: "C \<cdot> \<gamma> \<noteq> {#}"
-    using not_empty clause_subst_empty(2) 
-    by blast
+    using not_empty
+    by simp
     
   obtain l where 
     l_in_C: "l \<in># C" and
@@ -303,9 +303,12 @@ thm literal.order.order.strict_iff_order
 lemma is_strictly_maximal_rewrite [simp]: 
   "is_strictly_maximal_in_mset_wrt (\<prec>\<^sub>l\<^sub>G) C l = 
    is_strictly_maximal (literal.from_ground l) (clause.from_ground C)"
-  unfolding literal.order.less\<^sub>G_def is_strictly_maximal_def literal.order.restriction.is_strictly_maximal_in_mset_iff
+  unfolding 
+    literal.order.less\<^sub>G_def is_strictly_maximal_def 
+    literal.order.restriction.is_strictly_maximal_in_mset_iff
+    reflclp_iff
   by (metis (lifting) clause.ground_sub_in_ground clause.sub_in_ground_is_ground
-      literal.obtain_grounding reflclp_iff remove1_mset_literal_from_ground)
+      literal.obtain_grounding clause_from_ground_remove1_mset)
 
 sublocale ground: ground_order_with_equality where
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)"

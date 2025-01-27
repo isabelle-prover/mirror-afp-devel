@@ -97,7 +97,7 @@ proof(cases D\<^sub>G C\<^sub>G rule: ground.eq_resolution.cases)
           that
           obtain_maximal_literal[OF _ select_ground_subst[OF D_grounding]]
           unique_maximal_in_ground_clause[OF select_ground_subst[OF D_grounding]]
-        by (metis is_maximal_not_empty clause_subst_empty)
+        by (metis is_maximal_not_empty clause.magma_subst_empty)
     qed
 
     moreover then have "selected_l \<in># D" if ?select\<^sub>G_not_empty
@@ -573,8 +573,8 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         unique_maximal_in_ground_clause
         obtain_maximal_literal
       unfolding E\<^sub>G_def
-      by (metis (no_types, lifting) clause.ground_is_ground clause_from_ground_empty 
-          clause_subst_empty)
+      by (metis (no_types, lifting) clause.ground_is_ground clause.from_ground_empty' 
+          clause.magma_subst_empty)
 
     moreover then have "negative_selected_l\<^sub>1 \<in># E" if "\<P>\<^sub>G = Neg" ?select\<^sub>G_not_empty 
       using that

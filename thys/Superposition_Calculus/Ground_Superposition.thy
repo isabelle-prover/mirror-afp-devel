@@ -3,6 +3,7 @@ theory Ground_Superposition
     Ground_Critical_Pairs
     First_Order_Clause.Selection_Function
     First_Order_Clause.Ground_Order
+    First_Order_Clause.Ground_Clause
 begin
 
 no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)

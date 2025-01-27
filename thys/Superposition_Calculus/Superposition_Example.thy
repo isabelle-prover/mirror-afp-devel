@@ -18,8 +18,8 @@ context
     "\<And>(R :: ('f :: weighted) gterm rel). ground_critical_pair_theorem R"
 begin
                                     
-interpretation superposition_calculus 
-  "trivial_select :: ('f :: weighted, 'v :: infinite) select" 
+interpretation superposition_calculus
+  "trivial_select :: ('f :: weighted, 'v :: infinite) select"
   less_kbo
   "\<lambda>_. ([], ())"
   trivial_tiebreakers
@@ -83,7 +83,7 @@ next
     by blast
 next
   fix 
-    t\<^sub>1 t\<^sub>2 :: "('f, 'v) term" and 
+    t\<^sub>1 t\<^sub>2 :: "('f, 'v) term" and
     \<gamma> :: "('f, 'v) subst"
 
   assume "less_kbo t\<^sub>1 t\<^sub>2"
@@ -95,8 +95,8 @@ next
     t :: "('f, 'v) term" and
     c :: "('f, 'v) context"
   assume 
-    "term.is_ground t" 
-    "context.is_ground c" 
+    "term.is_ground t"
+    "context.is_ground c"
     "c \<noteq> \<box>"
   
   then show "less_kbo t c\<langle>t\<rangle>"

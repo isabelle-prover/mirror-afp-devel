@@ -4,6 +4,9 @@ theory Clausal_Calculus_Extra
     Uprod_Extra
 begin
 
+lemma literal_cases: "\<lbrakk>\<P> \<in> {Pos, Neg}; \<P> = Pos \<Longrightarrow> P; \<P> = Neg \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by blast
+
 lemma map_literal_inverse: 
   "(\<And>x. f (g x) = x) \<Longrightarrow> (\<And>literal. map_literal f (map_literal g literal) = literal)"
   by (simp add: literal.map_comp literal.map_ident_strong)

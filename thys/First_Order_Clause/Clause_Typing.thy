@@ -1,54 +1,11 @@
 theory Clause_Typing
   imports
-    Typing
-    Uprod_Extra
-    Multiset_Extra
+    Multiset_Typing_Lifting
+
     Clausal_Calculus_Extra
-    Abstract_Substitution.Natural_Magma
+    Multiset_Extra
+    Uprod_Extra
 begin
-
-locale natural_magma_typing_lifting = typing_lifting + natural_magma
-begin
-
-lemma is_typed_add [simp]: 
-  "is_typed (add sub M) \<longleftrightarrow> sub_is_typed sub \<and> is_typed M"
-  using to_set_add 
-  unfolding is_typed_def
-  by auto
-
-lemma is_typed_plus [simp]: 
-  "is_typed (plus M M') \<longleftrightarrow> is_typed M \<and> is_typed M'"
-  unfolding is_typed_def
-  by (auto simp: to_set_plus)
-
-lemma is_welltyped_add [simp]: 
-  "is_welltyped (add sub M) \<longleftrightarrow> sub_is_welltyped sub \<and> is_welltyped M"
-  unfolding is_welltyped_def
-  using to_set_add 
-  by auto
-
-lemma is_welltyped_plus [simp]: 
-  "is_welltyped (plus M M') \<longleftrightarrow> is_welltyped M \<and> is_welltyped M'"
-  unfolding is_welltyped_def
-  by (auto simp: to_set_plus)
-
-end
-
-locale mulitset_typing_lifting = typing_lifting where to_set = set_mset
-begin
-
-sublocale natural_magma_typing_lifting
-  where to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset
-  by unfold_locales
-
-(* TODO: Maybe generalize *)
-lemma empty_is_typed [intro]: "is_typed {#}"
-  by (simp add: is_typed_def)
-
-lemma empty_is_welltyped [intro]: "is_welltyped {#}"
-  by (simp add: is_welltyped_def)
-
-end
 
 locale clause_typing =
   "term": explicit_typing term_typed term_welltyped

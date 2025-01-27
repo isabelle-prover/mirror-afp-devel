@@ -1,5 +1,5 @@
 theory Selection_Function
-  imports Ground_Clause
+  imports Ordered_Resolution_Prover.Clausal_Logic
 begin
 
 locale selection_function =
