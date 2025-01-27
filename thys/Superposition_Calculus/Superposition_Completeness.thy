@@ -1134,40 +1134,36 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           by simp
       qed
     next
-      have "select E = {#}" "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" if "?\<P> = Pos"
-      proof -
+      assume "?\<P> = Pos"
 
-        show "select E = {#}"
-          using that ground_superpositionI(9) select_from_E
-          by fastforce
+      then show "select E = {#}"
+        using ground_superpositionI(9) select_from_E
+        by fastforce(*\<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"*)
 
-        show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
-        proof(rule is_strictly_maximal_if_grounding_is_strictly_maximal)
+    next
+      assume Pos: "?\<P> = Pos"
 
-          show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
-            using l\<^sub>1_in_E
-            by blast
+      show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
+      proof(rule is_strictly_maximal_if_grounding_is_strictly_maximal)
 
-          show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
-            using E_grounding[unfolded \<gamma>]
-            by simp
+        show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
+          using l\<^sub>1_in_E
+          by blast
 
-          show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
-            using that l\<^sub>1_\<gamma> E_\<gamma> ground_superpositionI(9)
-            unfolding \<gamma> ground_superpositionI
-            by fastforce
-        qed
-      qed
-
-      moreover have "select E = {#}" "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" 
-        if "?\<P> = Neg" ?select\<^sub>G_empty
-      proof-
-        show "select E = {#}"
-          using clause_subst_empty select_from_E ground_superpositionI(9) that
+        show "clause.is_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
+          using E_grounding[unfolded \<gamma>]
           by simp
-      next
-        show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
-        proof(rule is_maximal_if_grounding_is_maximal)
+
+        show "is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
+          using Pos l\<^sub>1_\<gamma> E_\<gamma> ground_superpositionI(9)
+          unfolding \<gamma> ground_superpositionI
+          by fastforce
+      qed
+    next
+      assume Neg: "?\<P> = Neg" "select E = {#}"
+
+      show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
+      proof(rule is_maximal_if_grounding_is_maximal)
 
           show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
             using l\<^sub>1_in_E
@@ -1180,18 +1176,18 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
         next
 
           show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>) "
-            using l\<^sub>1_\<gamma> \<gamma> E_\<gamma> ground_superpositionI(5,9) is_maximal_not_empty that
+            using l\<^sub>1_\<gamma> \<gamma> E_\<gamma> ground_superpositionI(5,9) is_maximal_not_empty Neg select_from_E
             by auto
         qed
-      qed
-
-      moreover have "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)" 
-        if "?\<P> = Neg" "\<not>?select\<^sub>G_empty"
+    next 
+      assume Neg: "?\<P> = Neg" "select E \<noteq> {#}"
+     
+      show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"
       proof(rule is_maximal_if_grounding_is_maximal)
 
         show "l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<in># select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>"
-          using ground_superpositionI(9) l\<^sub>1_selected maximal_in_clause that 
-          by auto
+          using ground_superpositionI(9) l\<^sub>1_selected maximal_in_clause Neg select_from_E
+          by force
       next
 
         show "clause.is_ground (select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
@@ -1200,17 +1196,9 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
           by simp
       next
         show "is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu> \<cdot>l \<sigma>) (select E \<cdot> \<rho>\<^sub>1 \<odot> \<mu> \<cdot> \<sigma>)"
-          using \<gamma> ground_superpositionI(5,9) l\<^sub>1_\<gamma> that select_from_E 
+          using \<gamma> ground_superpositionI(5,9) l\<^sub>1_\<gamma> that select_from_E Neg
           by fastforce
       qed
-
-      ultimately show "?\<P> = Pos
-              \<and> select E = {#}
-              \<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)
-          \<or> ?\<P> = Neg
-              \<and> (select E = {#} \<and> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)
-                 \<or> is_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) ((select E) \<cdot> \<rho>\<^sub>1 \<odot> \<mu>))"
-        by meson
     next
 
       show "select D = {#}"
@@ -1535,8 +1523,8 @@ proof-
     using assms(1)
     by blast
 
-  have 
-    E\<^sub>G_in_groundings: "E\<^sub>G \<in> \<Union> (clause_groundings ` N)" and  
+  have
+    E\<^sub>G_in_groundings: "E\<^sub>G \<in> \<Union> (clause_groundings ` N)" and
     D\<^sub>G_in_groundings: "D\<^sub>G \<in> \<Union> (clause_groundings ` N)"
     using \<iota>\<^sub>G_Inf_from
     unfolding \<iota>\<^sub>G ground.Inf_from_q_def ground.Inf_from_def
@@ -1547,13 +1535,13 @@ proof-
     E_is_welltyped: "clause.is_welltyped \<V>\<^sub>1 E" and
     \<gamma>\<^sub>1_is_welltyped: "term.subst.is_welltyped_on (clause.vars E) \<V>\<^sub>1 \<gamma>\<^sub>1" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
-    E_in_N: "(E, \<V>\<^sub>1)\<in>N" and 
+    E_in_N: "(E, \<V>\<^sub>1)\<in>N" and
     "select\<^sub>G E\<^sub>G = clause.to_ground (select E \<cdot> \<gamma>\<^sub>1)"
     "E \<cdot> \<gamma>\<^sub>1 = clause.from_ground E\<^sub>G"
     using subst_stability[rule_format, OF E\<^sub>G_in_groundings]
     by blast
 
-  then have 
+  then have
     E\<^sub>G: "E\<^sub>G = clause.to_ground (E \<cdot> \<gamma>\<^sub>1)" and
     select_from_E: "clause.from_ground (select\<^sub>G E\<^sub>G) = select E \<cdot> \<gamma>\<^sub>1"
     by (simp_all add: select_ground_subst)
@@ -1563,13 +1551,13 @@ proof-
     D_is_welltyped: "clause.is_welltyped \<V>\<^sub>2 D" and
     \<gamma>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<gamma>\<^sub>2" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2" and
-    D_in_N: "(D, \<V>\<^sub>2)\<in>N" and 
+    D_in_N: "(D, \<V>\<^sub>2)\<in>N" and
     "select\<^sub>G D\<^sub>G = clause.to_ground (select D \<cdot> \<gamma>\<^sub>2)"
     "D \<cdot> \<gamma>\<^sub>2 = clause.from_ground D\<^sub>G"
     using subst_stability[rule_format, OF D\<^sub>G_in_groundings] 
     by blast
 
-  then have 
+  then have
     D\<^sub>G: "D\<^sub>G = clause.to_ground (D \<cdot> \<gamma>\<^sub>2)" and
     select_from_D: "clause.from_ground (select\<^sub>G D\<^sub>G) = select D \<cdot> \<gamma>\<^sub>2"
     by (simp_all add: select_ground_subst)
@@ -1582,7 +1570,7 @@ proof-
     \<rho>\<^sub>2_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 \<rho>\<^sub>2" and
     \<gamma>\<^sub>1_\<gamma>: "\<forall>X \<subseteq> clause.vars E. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x" and
     \<gamma>\<^sub>2_\<gamma>: "\<forall>X \<subseteq> clause.vars D. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
-    using 
+    using
       clause.is_welltyped.obtain_merged_grounding[OF \<gamma>\<^sub>1_is_welltyped \<gamma>\<^sub>2_is_welltyped E_grounding
         D_grounding \<V>\<^sub>2 infinite_UNIV clause.finite_vars].
 

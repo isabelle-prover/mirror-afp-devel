@@ -19,7 +19,7 @@ locale nonground_term_functional_substitution_typing =
 locale nonground_term_typing =
   "term": nonground_term +
   fixes \<F> :: "('f, 'ty) fun_types"
-  assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f = ([], \<tau>)"
+  assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f = ([], \<tau>)" (* TODO: Put in separate locale *)
 begin
 
 inductive typed :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" 
@@ -33,7 +33,7 @@ inductive welltyped :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightar
     Var: "\<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
   | Fun: "\<F> f = (\<tau>s, \<tau>) \<Longrightarrow> list_all2 (welltyped \<V>) ts \<tau>s \<Longrightarrow> welltyped \<V> (Fun f ts) \<tau>"
 
-sublocale "term": explicit_typing "typed (\<V> :: 'v \<Rightarrow> 'ty)" "welltyped \<V>"
+sublocale "term": explicit_typing "typed \<V>" "welltyped \<V>"
 proof unfold_locales
   show "right_unique (typed \<V>)"
   proof (rule right_uniqueI)

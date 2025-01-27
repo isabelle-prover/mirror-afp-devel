@@ -182,7 +182,6 @@ next
     by(rule typed_tiebreakers.transp)
 qed
 
-
 end
 
 context superposition_calculus

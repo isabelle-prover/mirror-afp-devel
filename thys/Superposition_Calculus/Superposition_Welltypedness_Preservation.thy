@@ -131,7 +131,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
               \<tau> \<tau>' 
               superpositionI(12, 14)
               term.welltyped.explicit_typed_renaming[OF superpositionI(4)]
-            unfolding superpositionI
+            unfolding superpositionI            
             by(auto simp: Set.ball_Un)
 
           then show ?thesis
