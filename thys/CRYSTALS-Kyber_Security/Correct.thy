@@ -6,7 +6,7 @@ imports "CRYSTALS-Kyber.Crypto_Scheme"
 
 begin
 unbundle %invisible lifting_syntax
-no_adhoc_overloading %invisible Monad_Syntax.bind bind_pmf
+no_adhoc_overloading %invisible Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 declare %invisible [[names_short]]
 
 section \<open>$\delta$-Correctness of Kyber's Probabilistic Algorithms\<close>
@@ -112,12 +112,12 @@ qed
 text \<open>Now we can instantiate the public key encryption scheme correctness locale with the 
 probabilistic algorithms of Kyber. This hands us the definition of $\delta$-correctness.\<close>
 
-no_adhoc_overloading Monad_Syntax.bind bind_pmf
+no_adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 sublocale pke_delta_correct pmf_key_gen pmf_encrypt 
   "(\<lambda> sk c. decrypt (fst c) (snd c) (fst sk) du dv)" Msgs .
 
-adhoc_overloading Monad_Syntax.bind bind_pmf
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 text \<open>The following functions return the distribution of the compression error (for vectors and 
 polynomials).\<close>

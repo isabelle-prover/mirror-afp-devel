@@ -73,7 +73,7 @@ definition bind_rai :: "'a random_alg_int \<Rightarrow> ('a \<Rightarrow> 'b ran
       f r bs'
     }"
 
-adhoc_overloading Monad_Syntax.bind bind_rai
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_rai
 
 
 text \<open>The @{term "coin_rai"} combinator consumes one coin-flip and return it as the result, while the

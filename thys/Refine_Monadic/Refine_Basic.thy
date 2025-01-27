@@ -392,7 +392,7 @@ lemma bind_RES: "bind (RES X) f = Sup (f`X)" unfolding bind_def
   by (auto)
 
 adhoc_overloading
-  Monad_Syntax.bind Refine_Basic.bind
+  Monad_Syntax.bind \<rightleftharpoons> Refine_Basic.bind
 
 lemma pw_bind_nofail[refine_pw_simps]:
   "nofail (bind M f) \<longleftrightarrow> (nofail M \<and> (\<forall>x. inres M x \<longrightarrow> nofail (f x)))"

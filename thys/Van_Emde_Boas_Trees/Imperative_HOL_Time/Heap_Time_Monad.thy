@@ -289,7 +289,7 @@ definition bind :: "'a Heap \<Rightarrow> ('a \<Rightarrow> 'b Heap) \<Rightarro
   
   
 adhoc_overloading
-  Monad_Syntax.bind Heap_Time_Monad.bind
+  Monad_Syntax.bind \<rightleftharpoons> Heap_Time_Monad.bind
 
 lemma execute_bind [execute_simps]:
   "execute f h = Some (x, h',n) \<Longrightarrow> execute (f \<bind> g) h = timeFrame n (execute (g x) h')"

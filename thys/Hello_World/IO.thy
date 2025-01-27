@@ -94,7 +94,7 @@ text \<open>
 \<close>
 
 hide_const (open) bind
-adhoc_overloading bind IO.bind
+adhoc_overloading bind \<rightleftharpoons> IO.bind
 
 text \<open>Thanks to \<^theory_text>\<open>adhoc_overloading\<close>, we can use monad syntax.\<close>
 lemma "bind (foo :: '\<alpha> io) (\<lambda>a. bar a) = foo \<bind> (\<lambda>a. bar a)"

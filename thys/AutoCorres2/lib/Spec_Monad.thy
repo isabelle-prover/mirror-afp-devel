@@ -1259,7 +1259,7 @@ where
   "bind f g = bind_handle f g throw_exception_or_result"
 
 adhoc_overloading
-  Monad_Syntax.bind bind
+  Monad_Syntax.bind \<rightleftharpoons> bind
 
 lift_definition lift_state ::
     "('s \<Rightarrow> 't \<Rightarrow> bool) \<Rightarrow> ('e::default, 'a, 't) spec_monad \<Rightarrow> ('e, 'a, 's) spec_monad"
