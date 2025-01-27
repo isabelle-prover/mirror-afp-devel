@@ -182,7 +182,7 @@ partial_function (tailrec) pats_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f
   "pats_impl n nl ps = (case ps of [] \<Rightarrow> True
      | p # ps1 \<Rightarrow> (case pat_impl n nl p of 
          Incomplete \<Rightarrow> False
-       | Fin_Var_Form p' \<Rightarrow> undefined (STR ''TODO: invoke decision procedure'')
+       | Fin_Var_Form p' \<Rightarrow> undefined (STR ''TODO: invoke decision procedure and fail or continue with ps1'')
        | New_Problems (n',nl',ps2) \<Rightarrow> pats_impl n' nl' (ps2 @ ps1)))"
 
 definition pat_complete_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
@@ -2014,21 +2014,27 @@ proof (atomize(full), goal_cases)
   qed
 qed
 
+lemma pats_mset_list: "pats_mset (pats_mset_list ps) = pat_list ` set ps" 
+  unfolding pat_list_def pat_mset_list_def o_def set_mset_mset set_map
+      mset_map image_comp set_image_mset by simp
+
 context
   assumes non_improved: "\<not> improved" 
 begin
 
-text \<open>The simulation property for @{const pats_impl}, proven by induction
-  on the terminating relation of the multiset-implementation.\<close>
-lemma pats_impl_P_step: assumes "Ball (set ps) (\<lambda> p. fst ` tvars_pp (pat_list p) \<subseteq> {..<n})" 
+text \<open>The soundness property of the implementation, proven by induction
+  on the relation that was also used to prove termination of @{term "(\<Rrightarrow>)"}.
+  Note that we cannot perform induction on @{term "(\<Rrightarrow>)"} here, since applying
+  a decision procedure for finite-var-form problems does not correspond to 
+  a step in this relation.\<close>
+lemma pats_impl: assumes "Ball (set ps) (\<lambda> p. fst ` tvars_pp (pat_list p) \<subseteq> {..<n})" 
   and "Ball (set ps) (\<lambda> pp. lvar_cond_pp nl (pat_mset_list pp))" 
-  shows 
-    \<comment> \<open>if result is True, then one can reach empty set\<close>
-    "Pats_impl n nl ps \<Longrightarrow> (pats_mset_list ps, {#}) \<in> \<Rrightarrow>\<^sup>*" 
-    \<comment> \<open>if result is False, then one can reach bottom\<close>
-    "\<not> Pats_impl n nl ps \<Longrightarrow> (pats_mset_list ps, bottom_mset) \<in> \<Rrightarrow>\<^sup>*" 
-proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF SN_inv_image[OF SN_imp_SN_trancl[OF SN_P_step]], of pats_mset_list])
+  and "\<forall>pp \<in> pat_list ` set ps. wf_pat pp"
+  shows "Pats_impl n nl ps = pats_complete (pat_list ` set ps)" 
+proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[OF wf_trancl[OF wf_rel_pats]], of pats_mset_list])
   case (1 ps n nl)
+  note IH = mp[OF spec[OF mp[OF spec[OF mp[OF spec[OF 1(1)]]]]]]
+  note wf = 1(4)
   show ?case 
   proof (cases ps)
     case Nil
@@ -2042,6 +2048,16 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
     from 1(3) have "\<forall>pp \<in># add_mset (pat_mset_list p) (pats_mset_list ps1). lvar_cond_pp nl pp" 
       unfolding Cons by auto
     note pat_impl = pat_impl[OF this, folded id]
+    let ?step = "(\<Rrightarrow>) :: (('f,'v,'s)pats_problem_mset \<times> ('f,'v,'s)pats_problem_mset)set" 
+    { 
+      from rel_P_trans have single: "?step \<subseteq> (\<prec>mul)^-1"  
+        unfolding P_step_def by auto
+      from trancl_mono[OF _ this]
+      have "(s,t) \<in> ?step^+ \<Longrightarrow> (t,s) \<in> (\<prec>mul)^+" for s t using single
+        by (metis converse_iff trancl_converse)
+    } note steps_to_rel = this
+    from wf have "wf_pats (pat_list ` set ps)" unfolding wf_pats_def by auto
+    note steps_to_equiv = P_steps_pcorrect[OF this[folded pats_mset_list]]
     show ?thesis
     proof (cases "Pat_impl n nl p")
       case Incomplete
@@ -2052,12 +2068,14 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
       show ?thesis
       proof (cases "add_mset p' (pats_mset_list ps1) = bottom_mset")
         case True
-        with res steps show ?thesis by auto
+        with res P_steps_pcorrect[OF _ steps, unfolded pats_mset_list] wf 
+        show ?thesis by (auto simp: wf_pats_def)
       next
         case False
         from P_failure[OF fail False] 
         have "(add_mset p' (pats_mset_list ps1), bottom_mset) \<in> \<Rrightarrow>" unfolding P_step_def by auto
-        with steps res show ?thesis by simp
+        with steps have "(pats_mset_list ps, bottom_mset) \<in> \<Rrightarrow>\<^sup>*" by auto
+        from steps_to_equiv[OF this] res show ?thesis unfolding pats_mset_list by simp
       qed
     next
       case (New_Problems triple)
@@ -2067,8 +2085,9 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
       have steps: "(pats_mset_list ps, mset (map pat_mset_list (ps2 @ ps1))) \<in> \<Rrightarrow>\<^sup>+" 
           and vars: "fst ` tvars_pp (\<Union> (pat_list ` set ps2)) \<subseteq> {..<n2}"
           and lvars: "(\<forall>pp\<in>#mset (map pat_mset_list ps2) + pats_mset_list ps1. lvar_cond_pp nl2 pp)" 
-          and n2: "n \<le> n2" by auto
-      hence rel: "(ps, ps2 @ ps1) \<in> inv_image (P_step\<^sup>+) pats_mset_list" by auto
+          and n2: "n \<le> n2" by auto        
+      from steps_to_rel[OF steps] have rel: "(ps2 @ ps1, ps) \<in> inv_image (\<prec>mul\<^sup>+) pats_mset_list" 
+        by auto
       have vars: "\<forall>p\<in>set (ps2 @ ps1). fst ` tvars_pp (pat_list p) \<subseteq> {..<n2}"
       proof 
         fix p
@@ -2088,7 +2107,15 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
       qed
       have lvars: "\<forall>pp\<in>set (ps2 @ ps1). lvar_cond_pp nl2 (pat_mset_list pp)" 
         using lvars unfolding lvar_cond_pp_def by auto
-      show ?thesis using 1(1)[OF rel vars lvars] steps unfolding res[symmetric] by auto
+      note steps_equiv = steps_to_equiv[OF trancl_into_rtrancl[OF steps]]
+      from steps_equiv have "wf_pats (pats_mset (mset (map pat_mset_list (ps2 @ ps1))))" by auto
+      hence wf2: "Ball (pat_list ` set (ps2 @ ps1)) wf_pat" unfolding wf_pats_def pats_mset_list[symmetric]
+        by auto
+      have "Pats_impl n nl ps = Pats_impl n2 nl2 (ps2 @ ps1)" unfolding res by simp
+      also have "\<dots> = pats_complete (pat_list ` set (ps2 @ ps1))" using mp[OF IH[OF rel vars lvars] wf2] .
+      also have "\<dots> = pats_complete (pat_list ` set ps)" using steps_equiv 
+        unfolding pats_mset_list[symmetric] by auto
+      finally show ?thesis .
     next
       case (Fin_Var_Form fvf)
       from pat_impl(3)[OF this] have improved by auto 
@@ -2099,32 +2126,6 @@ qed
 
 
 text \<open>Consequence: partial correctness of the list-based implementation on well-formed inputs\<close>
-
-theorem pats_impl: assumes wf: "\<forall>pp \<in> pat_list ` set P. wf_pat pp" 
-  and n: "\<forall>p\<in>set P. fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" 
-  and nl: "\<forall>p\<in>set P. lvar_cond_pp nl (pat_mset_list p)" 
-  shows "Pats_impl n nl P \<longleftrightarrow> pats_complete (pat_list ` set P)" 
-proof - 
-  from wf have wf: "wf_pats (pat_list ` set P)" by (auto simp: wf_pats_def)
-  have id: "pats_mset (pats_mset_list P) = pat_list ` set P" unfolding pat_list_def 
-    by (auto simp: pat_mset_list_def image_comp)
-  {
-    assume "Pats_impl n nl P" 
-    from pats_impl_P_step(1)[OF n nl this]
-    have "(pats_mset_list P, {#}) \<in> \<Rrightarrow>\<^sup>*" by auto
-    from P_steps_pcorrect[OF _ this, unfolded id, OF wf]
-    have "pats_complete (pat_list ` set P)" by auto
-  }
-  moreover
-  {
-    assume "\<not> Pats_impl n nl P" 
-    from pats_impl_P_step(2)[OF n nl this]
-    have "(pats_mset_list P, {#{#}#}) \<in> \<Rrightarrow>\<^sup>*" by auto
-    from P_steps_pcorrect[OF _ this, unfolded id, OF wf]
-    have "\<not> pats_complete (pat_list ` set P)" by auto
-  }
-  ultimately show ?thesis by auto
-qed 
 
 corollary pat_complete_impl: 
   assumes wf: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
@@ -2148,7 +2149,7 @@ proof -
     unfolding lvar_cond_pp_def lvar_cond_def allowed_vars_def using non_improved by auto
   have "Pat_complete_impl P = Pats_impl n 0 P" 
     unfolding pat_complete_impl_def n_def Let_def using non_improved by auto
-  from pats_impl[OF wf n 0, folded this]
+  from pats_impl[OF n 0 wf, folded this]
   show ?thesis .
 qed
 end
