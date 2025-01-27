@@ -83,14 +83,17 @@ object Hugo {
     ): Unit = {
       val script =
         File.bash_path(isabelle_hugo + Path.basic("hugo")) +
-          if_proper(draft, " -D") +
           if_proper(server, " server") +
+          if_proper(draft, " -D") +
+          if_proper(!progress.verbose, " --logLevel error") +
           " -t " + Bash.string(theme) +
           " -s " + File.bash_path(dir) +
           " -d " + File.bash_path(out_dir)
-      Isabelle_System.bash(script,
-        progress_stdout = progress.echo(_, verbose = !server),
-        progress_stderr = progress.echo_error_message(_)).check
+      val res =  Isabelle_System.bash(script, progress_stdout = progress.echo(_, verbose = true))
+      if (!res.ok) {
+        if (!progress.verbose) progress.echo_error_message(cat_lines(res.out_lines))
+        error("Building hugo project failed")
+      }
     }
   }
 }
