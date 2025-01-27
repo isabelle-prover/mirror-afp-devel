@@ -267,7 +267,7 @@ consts
   ovar :: "'v \<Rightarrow> 'e"
 
 adhoc_overloading
-  svar pr_var and ivar in_var and ovar out_var
+  svar \<rightleftharpoons> pr_var and ivar \<rightleftharpoons> in_var and ovar \<rightleftharpoons> out_var
   
 text \<open> The functions above turn a representation of a variable (type @{typ "'v"}), including
   its name and type, into some lens type @{typ "'e"}. @{term "svar"} constructs a predicate variable,

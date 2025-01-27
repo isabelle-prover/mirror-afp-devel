@@ -16,7 +16,7 @@ instead of instantiating it with e.g. Fischer-Yates algorithm.
 no_notation (ASCII) comp  (infixl \<open>o\<close> 55)
 unbundle no m_inv_syntax
 
-no_adhoc_overloading Monad_Syntax.bind bind_pmf
+no_adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 fun shuffleF :: "natL sharing list \<Rightarrow> natL sharing list spmf" where
   "shuffleF xsl = spmf_of_set (permutations_of_multiset (mset xsl))"

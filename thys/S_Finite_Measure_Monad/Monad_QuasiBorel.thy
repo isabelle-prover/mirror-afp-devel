@@ -667,7 +667,7 @@ definition bind_qbs :: "['a qbs_measure, 'a \<Rightarrow> 'b qbs_measure] \<Righ
                       (\<beta>, k) = (SOME (\<beta>, k). f \<circ> \<alpha> = (\<lambda>r. \<lbrakk>Y, \<beta>, k r\<rbrakk>\<^sub>m\<^sub>e\<^sub>a\<^sub>s) \<and> \<beta> \<in> qbs_Mx Y \<and> measure_kernel borel borel k) in
                       \<lbrakk>Y, \<beta>, \<mu> \<bind>\<^sub>k k\<rbrakk>\<^sub>m\<^sub>e\<^sub>a\<^sub>s)"
 
-adhoc_overloading Monad_Syntax.bind bind_qbs
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_qbs
 
 lemma(in qbs_meas)
   assumes "s = \<lbrakk>X, \<alpha>, \<mu>\<rbrakk>\<^sub>m\<^sub>e\<^sub>a\<^sub>s"

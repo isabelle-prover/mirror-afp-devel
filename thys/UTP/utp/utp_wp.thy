@@ -26,7 +26,7 @@ definition wp_upred :: "('\<alpha>, '\<beta>) urel \<Rightarrow> '\<beta> cond \
 "wp_upred Q r = \<lfloor>\<not> (Q ;; (\<not> \<lceil>r\<rceil>\<^sub><)) :: ('\<alpha>, '\<beta>) urel\<rfloor>\<^sub><"
 
 adhoc_overloading
-  uwp wp_upred
+  uwp \<rightleftharpoons> wp_upred
 
 declare wp_upred_def [urel_defs]
 

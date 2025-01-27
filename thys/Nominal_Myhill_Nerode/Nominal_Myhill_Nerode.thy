@@ -40,7 +40,6 @@ theory Nominal_Myhill_Nerode
     HOL.Relation
     HOL.Fun
     "HOL-Algebra.Group_Action"
-    "HOL-Library.Adhoc_Overloading"
     "HOL-Algebra.Elementary_Groups"
 
 begin
@@ -63,7 +62,7 @@ get the notation working in all three situations:
 consts star :: "'typ1 \<Rightarrow> 'typ2" (\<open>_\<^sup>\<star>\<close> [1000] 999)
 
 adhoc_overloading
-  star lists
+  star \<rightleftharpoons> lists
 
 text \<open>
 We use $\odot$ to convert between the definition of group actions via group homomoprhisms
@@ -136,7 +135,7 @@ being multiple instances of the locale \texttt{alt\_grp\_act} in a single contex
 \<close>
 
 adhoc_overloading
-  star induced_star_map
+  star \<rightleftharpoons> induced_star_map
 
 definition 
   induced_quot_map ::
@@ -910,7 +909,7 @@ fun give_input :: "('state \<Rightarrow> 'alpha \<Rightarrow> 'state) \<Rightarr
   |   "give_input trans_func s (a#as) = give_input trans_func (trans_func s a) as"
 
 adhoc_overloading
-  star give_input
+  star \<rightleftharpoons> give_input
 
 locale det_aut =
   fixes
@@ -1031,7 +1030,7 @@ locale det_G_aut =
 begin
 
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 
 lemma give_input_eq_var:
   "eq_var_func G
@@ -1193,7 +1192,7 @@ To avoid duplicate variant of "star":
 \<close>
 
 no_adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 sublocale reach_det_G_aut \<subseteq> reach_det_aut
@@ -1830,7 +1829,7 @@ end
 
 context G_lang begin
 adhoc_overloading
-  star induced_star_map
+  star \<rightleftharpoons> induced_star_map
 
 lemma MN_quot_act_wd:
   "w' \<in> [w]\<^sub>M\<^sub>N \<Longrightarrow> \<forall>g \<in> carrier G. (g \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> w') \<in> [g \<odot> \<^bsub>\<phi>\<^sup>\<star>\<^esub> w]\<^sub>M\<^sub>N"
@@ -2463,12 +2462,12 @@ Proving the Myhill-Nerode Theorem for $G$-Automata
 \<close>
 context det_G_aut begin
 no_adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 context reach_det_G_aut_rec_lang begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 
 definition
   states_to_words :: "'states \<Rightarrow> 'alpha list"
@@ -3002,13 +3001,13 @@ To avoid duplicate variant of "star":
 \<close>
 
 no_adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 
 end
 
 context det_G_aut_rec_lang begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 
@@ -3517,7 +3516,7 @@ Proving the Myhill-Nerode Theorem for Nominal $G$-Automata
 
 context det_G_aut begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 lemma (in det_G_aut) input_to_init_eqvar:
@@ -3567,7 +3566,7 @@ lemma (in reach_det_G_aut) input_to_init_surj:
 
 context reach_det_G_aut begin
 adhoc_overloading
-  star labels_a_G_set.induced_star_map
+  star \<rightleftharpoons> labels_a_G_set.induced_star_map
 end
 
 text \<open>

@@ -72,7 +72,7 @@ proof (rule monotoneI)
 qed
 
 adhoc_overloading
-  Monad_Syntax.bind bind
+  Monad_Syntax.bind \<rightleftharpoons> bind
 
 hide_const (open) bind
 
@@ -83,7 +83,7 @@ where
   "catch_error (Right a) f = Right a"
 
 adhoc_overloading
-  Error_Syntax.catch catch_error
+  Error_Syntax.catch \<rightleftharpoons> catch_error
 
 lemma catch_mono [partial_function_mono]:
   assumes mf: "mono_sum_bot B" and mg: "\<And>y. mono_sum_bot (\<lambda>f. C y f)"
@@ -139,7 +139,7 @@ where
   "update_error r f \<equiv> try r catch (\<lambda> e. error (f e))"
 
 adhoc_overloading
-  Error_Syntax.update_error update_error
+  Error_Syntax.update_error \<rightleftharpoons> update_error
 
 fun sumbot :: "'e + 'a \<Rightarrow> 'e +\<^sub>\<bottom> 'a"
 where

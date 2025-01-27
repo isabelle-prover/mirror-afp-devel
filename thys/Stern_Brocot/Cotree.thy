@@ -7,7 +7,6 @@ theory Cotree imports
   Main
   Applicative_Lifting.Applicative
   "HOL-Library.BNF_Corec"
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 context notes [[bnf_internals]]
@@ -90,7 +89,7 @@ lemma pure_tree_simps [simp]:
   "right (pure_tree x) = pure_tree x"
 by(subst pure_tree_unfold; simp; fail)+
 
-adhoc_overloading pure pure_tree
+adhoc_overloading pure \<rightleftharpoons> pure_tree
 
 lemma pure_tree_parametric [transfer_rule]: "(rel_fun A (rel_tree A)) pure pure"
 by(rule rel_funI)(coinduction, auto)
@@ -106,7 +105,7 @@ where
 | "left (ap_tree f x) = ap_tree (left f) (left x)"
 | "right (ap_tree f x) = ap_tree (right f) (right x)"
 
-adhoc_overloading Applicative.ap ap_tree
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_tree
 
 unbundle applicative_syntax
 

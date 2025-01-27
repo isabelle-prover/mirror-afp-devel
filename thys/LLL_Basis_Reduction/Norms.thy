@@ -15,7 +15,6 @@ text \<open>In this theory we provide the basic definitions and properties of se
 
 theory Norms
   imports "HOL-Computational_Algebra.Polynomial" 
-    "HOL-Library.Adhoc_Overloading"
     "Jordan_Normal_Form.Conjugate"
     "Algebraic_Numbers.Resultant" (* only for poly_of_vec *)
     Missing_Lemmas
@@ -26,10 +25,10 @@ subsection \<open>L-\<open>\<infinity>\<close> Norms\<close>
 consts linf_norm :: "'a \<Rightarrow> 'b" (\<open>\<parallel>(_)\<parallel>\<^sub>\<infinity>\<close>)
 
 definition linf_norm_vec where "linf_norm_vec v \<equiv> max_list (map abs (list_of_vec v) @ [0])"
-adhoc_overloading linf_norm linf_norm_vec
+adhoc_overloading linf_norm \<rightleftharpoons> linf_norm_vec
 
 definition linf_norm_poly where "linf_norm_poly f \<equiv> max_list (map abs (coeffs f) @ [0])"
-adhoc_overloading linf_norm linf_norm_poly
+adhoc_overloading linf_norm \<rightleftharpoons> linf_norm_poly
 
 lemma linf_norm_vec: "\<parallel>vec n f\<parallel>\<^sub>\<infinity> = max_list (map (abs \<circ> f) [0..<n] @ [0])"
   by (simp add: linf_norm_vec_def)
@@ -87,7 +86,7 @@ subsection \<open>Square Norms\<close>
 consts sq_norm :: "'a \<Rightarrow> 'b" (\<open>\<parallel>(_)\<parallel>\<^sup>2\<close>)
 
 abbreviation "sq_norm_conjugate x \<equiv> x * conjugate x"
-adhoc_overloading sq_norm sq_norm_conjugate
+adhoc_overloading sq_norm \<rightleftharpoons> sq_norm_conjugate
 
 subsubsection \<open>Square norms for vectors\<close>
 
@@ -95,7 +94,7 @@ text \<open>We prefer sum\_list over sum because it is not essentially dependent
   and easier for proving.
 \<close>
 definition "sq_norm_vec v \<equiv> \<Sum>x \<leftarrow> list_of_vec v. \<parallel>x\<parallel>\<^sup>2"
-adhoc_overloading sq_norm sq_norm_vec
+adhoc_overloading sq_norm \<rightleftharpoons> sq_norm_vec
 
 lemma sq_norm_vec_vCons[simp]: "\<parallel>vCons a v\<parallel>\<^sup>2 = \<parallel>a\<parallel>\<^sup>2 + \<parallel>v\<parallel>\<^sup>2"
   by (simp add: sq_norm_vec_def)
@@ -121,7 +120,7 @@ subsubsection \<open>Square norm for polynomials\<close>
 
 definition sq_norm_poly where "sq_norm_poly p \<equiv> \<Sum>a\<leftarrow>coeffs p. \<parallel>a\<parallel>\<^sup>2"
 
-adhoc_overloading sq_norm sq_norm_poly
+adhoc_overloading sq_norm \<rightleftharpoons> sq_norm_poly
 
 lemma sq_norm_poly_0 [simp]: "\<parallel>0::_poly\<parallel>\<^sup>2 = 0"
   by (auto simp: sq_norm_poly_def)

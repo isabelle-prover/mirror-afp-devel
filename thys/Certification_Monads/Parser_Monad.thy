@@ -51,7 +51,7 @@ where
   }"
 
 adhoc_overloading
-  Monad_Syntax.bind bind
+  Monad_Syntax.bind \<rightleftharpoons> bind
 
 lemma bind_cong [fundef_cong]:
   fixes m1 :: "('t, 'a) gen_parser"

@@ -19,7 +19,7 @@ qualified fun bind :: "('a, 'b) result \<Rightarrow> ('b \<Rightarrow> ('a, 'c) 
 end
 
 adhoc_overloading
-  bind Result.bind
+  bind \<rightleftharpoons> Result.bind
 
 context begin
 

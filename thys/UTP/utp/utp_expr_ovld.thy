@@ -47,17 +47,17 @@ definition ffun_entries :: "'k set \<Rightarrow> ('k \<Rightarrow> 'v) \<Rightar
 text \<open> We then set up the overloading for a number of useful constructs for various collections. \<close>
   
 adhoc_overloading
-  uempty 0 and
-  uapply fun_apply and uapply nth and uapply pfun_app and
-  uapply ffun_app and
-  uupd pfun_upd and uupd ffun_upd and uupd list_augment and
-  udom Domain and udom pdom and udom fdom and udom seq_dom and
-  udom Range and uran pran and uran fran and uran set and
-  udomres pdom_res and udomres fdom_res and
-  uranres pran_res and udomres fran_res and
-  ucard card and ucard pcard and ucard length and
-  usums list_sum and usums Sum and usums pfun_sum and
-  uentries pfun_entries and uentries ffun_entries
+  uempty \<rightleftharpoons> 0 and
+  uapply \<rightleftharpoons> fun_apply and uapply \<rightleftharpoons> nth and uapply \<rightleftharpoons> pfun_app and
+  uapply \<rightleftharpoons> ffun_app and
+  uupd \<rightleftharpoons> pfun_upd and uupd \<rightleftharpoons> ffun_upd and uupd \<rightleftharpoons> list_augment and
+  udom \<rightleftharpoons> Domain and udom \<rightleftharpoons> pdom and udom \<rightleftharpoons> fdom and udom \<rightleftharpoons> seq_dom and
+  udom \<rightleftharpoons> Range and uran \<rightleftharpoons> pran and uran \<rightleftharpoons> fran and uran \<rightleftharpoons> set and
+  udomres \<rightleftharpoons> pdom_res and udomres \<rightleftharpoons> fdom_res and
+  uranres \<rightleftharpoons> pran_res and udomres \<rightleftharpoons> fran_res and
+  ucard \<rightleftharpoons> card and ucard \<rightleftharpoons> pcard and ucard \<rightleftharpoons> length and
+  usums \<rightleftharpoons> list_sum and usums \<rightleftharpoons> Sum and usums \<rightleftharpoons> pfun_sum and
+  uentries \<rightleftharpoons> pfun_entries and uentries \<rightleftharpoons> ffun_entries
 
 subsection \<open> Syntax Translations \<close>
 

@@ -21,7 +21,7 @@ notation (output) pred_if (infixl \<open>\<longrightarrow>\<close> 50)
 end
 
 definition "pred_if_pred B P x \<equiv> B \<longrightarrow> P x"
-adhoc_overloading pred_if pred_if_pred
+adhoc_overloading pred_if \<rightleftharpoons> pred_if_pred
 
 lemma pred_if_eq_pred_if_pred [simp]:
   assumes "B"

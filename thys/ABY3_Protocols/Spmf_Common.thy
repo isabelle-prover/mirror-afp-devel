@@ -2,7 +2,7 @@ theory Spmf_Common
   imports CryptHOL.CryptHOL
 begin
 
-no_adhoc_overloading Monad_Syntax.bind bind_pmf
+no_adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 lemma mk_lossless_back_eq:
   "scale_spmf (weight_spmf s) (mk_lossless s) = s"

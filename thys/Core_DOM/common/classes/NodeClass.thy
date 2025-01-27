@@ -68,12 +68,12 @@ definition cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\
   where
     "cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e obj = (case RObject.more obj of Inl node 
     \<Rightarrow> Some (RObject.extend (RObject.truncate obj) node) | _ \<Rightarrow> None)"
-adhoc_overloading cast cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading cast \<rightleftharpoons> cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 
 definition cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t:: "(_) Node \<Rightarrow> (_) Object"
   where
     "cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t node = (RObject.extend (RObject.truncate node) (Inl (RObject.more node)))"
-adhoc_overloading cast cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
+adhoc_overloading cast \<rightleftharpoons> cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 
 definition is_node_kind :: "(_) Object \<Rightarrow> bool"
   where
@@ -82,7 +82,7 @@ definition is_node_kind :: "(_) Object \<Rightarrow> bool"
 definition get\<^sub>N\<^sub>o\<^sub>d\<^sub>e :: "(_) node_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) Node option"
   where                             
     "get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr h = Option.bind (get (cast node_ptr) h) cast"
-adhoc_overloading get get\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading get \<rightleftharpoons> get\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 
 locale l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 begin
@@ -119,7 +119,7 @@ global_interpretation l_get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_lemmas type_wf
 definition put\<^sub>N\<^sub>o\<^sub>d\<^sub>e :: "(_) node_ptr \<Rightarrow> (_) Node \<Rightarrow> (_) heap \<Rightarrow> (_) heap"
   where
     "put\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr node = put (cast node_ptr) (cast node)"
-adhoc_overloading put put\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading put \<rightleftharpoons> put\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 
 lemma put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_ptr_in_heap:
   assumes "put\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr node h = h'"

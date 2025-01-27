@@ -426,13 +426,13 @@ lemma eq_onp_eq_eq_restrict [HOL_bin_rel_alignment]: "eq_onp = rel_restrict_left
   unfolding eq_onp_def by (intro ext) auto
 
 definition "rel_restrict_left_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<restriction>\<^bsub>mem_of S\<^esub>"
-adhoc_overloading rel_restrict_left rel_restrict_left_set
+adhoc_overloading rel_restrict_left \<rightleftharpoons> rel_restrict_left_set
 
 definition "rel_restrict_right_set (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (S :: 'b set) \<equiv> R\<upharpoonleft>\<^bsub>mem_of S\<^esub>"
-adhoc_overloading rel_restrict_right rel_restrict_right_set
+adhoc_overloading rel_restrict_right \<rightleftharpoons> rel_restrict_right_set
 
 definition "rel_restrict_set (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) (S :: 'a set) \<equiv> R\<up>\<^bsub>mem_of S\<^esub>"
-adhoc_overloading rel_restrict rel_restrict_set
+adhoc_overloading rel_restrict \<rightleftharpoons> rel_restrict_set
 
 lemma rel_restrict_left_set_eq_restrict_left_pred [simp]:
   "R\<restriction>\<^bsub>S\<^esub> = R\<restriction>\<^bsub>mem_of S\<^esub>"

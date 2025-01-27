@@ -21,7 +21,7 @@ definition coin_tspmf :: "bool tspmf" where
 definition bind_tspmf :: "'a tspmf \<Rightarrow> ('a \<Rightarrow> 'b tspmf) \<Rightarrow> 'b tspmf" where
   "bind_tspmf f g = bind_spmf f (\<lambda>(r,c). map_spmf (apsnd ((+) c)) (g r))"
 
-adhoc_overloading Monad_Syntax.bind bind_tspmf
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_tspmf
 
 text \<open>Monad laws:\<close>
 

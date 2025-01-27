@@ -6,7 +6,7 @@ section \<open>Vectors and matrices, determinants and
          their properties in dimensions 2 and 3\<close>
 
 theory Low_Dimensional_Linear_Algebra
-  imports "HOL-Library.Adhoc_Overloading"
+  imports Main
 begin
 
 datatype vec2 =
@@ -210,12 +210,12 @@ consts vec_dot :: "'a \<Rightarrow> 'a \<Rightarrow> int" (\<open><_ | _>\<close
 definition vec2_dot :: "vec2 \<Rightarrow> vec2 \<Rightarrow> int" where
 "vec2_dot v1 v2 = vec2\<^sub>1 v1 * vec2\<^sub>1 v2 + vec2\<^sub>2 v1 * vec2\<^sub>2 v2"
 
-adhoc_overloading vec_dot vec2_dot
+adhoc_overloading vec_dot \<rightleftharpoons> vec2_dot
 
 definition vec3_dot :: "vec3 \<Rightarrow> vec3 \<Rightarrow> int" where
 "vec3_dot v1 v2 = vec3\<^sub>1 v1 * vec3\<^sub>1 v2 + vec3\<^sub>2 v1 * vec3\<^sub>2 v2 + vec3\<^sub>3 v1 * vec3\<^sub>3 v2"
 
-adhoc_overloading vec_dot vec3_dot
+adhoc_overloading vec_dot \<rightleftharpoons> vec3_dot
 
 lemma vec2_dot_zero_left [simp]:
   fixes v :: vec2
@@ -245,7 +245,7 @@ definition mat2_app :: "mat2 \<Rightarrow> vec2 \<Rightarrow> vec2" where
   (mat2\<^sub>1\<^sub>1 m * vec2\<^sub>1 v + mat2\<^sub>1\<^sub>2 m * vec2\<^sub>2 v)
   (mat2\<^sub>2\<^sub>1 m * vec2\<^sub>1 v + mat2\<^sub>2\<^sub>2 m * vec2\<^sub>2 v)"
 
-adhoc_overloading mat_app mat2_app
+adhoc_overloading mat_app \<rightleftharpoons> mat2_app
 
 definition mat3_app :: "mat3 \<Rightarrow> vec3 \<Rightarrow> vec3" where
 "mat3_app m v =
@@ -254,7 +254,7 @@ definition mat3_app :: "mat3 \<Rightarrow> vec3 \<Rightarrow> vec3" where
   (mat3\<^sub>2\<^sub>1 m * vec3\<^sub>1 v + mat3\<^sub>2\<^sub>2 m * vec3\<^sub>2 v + mat3\<^sub>2\<^sub>3 m * vec3\<^sub>3 v)
   (mat3\<^sub>3\<^sub>1 m * vec3\<^sub>1 v + mat3\<^sub>3\<^sub>2 m * vec3\<^sub>2 v + mat3\<^sub>3\<^sub>3 m * vec3\<^sub>3 v)"
 
-adhoc_overloading mat_app mat3_app
+adhoc_overloading mat_app \<rightleftharpoons> mat3_app
 
 lemma mat2_app_zero [simp]:
   fixes m :: mat2
@@ -293,7 +293,7 @@ consts mat_det :: "'a \<Rightarrow> int"
 definition mat2_det where
 "mat2_det m = mat2\<^sub>1\<^sub>1 m * mat2\<^sub>2\<^sub>2 m - mat2\<^sub>1\<^sub>2 m * mat2\<^sub>2\<^sub>1 m"
 
-adhoc_overloading mat_det mat2_det
+adhoc_overloading mat_det \<rightleftharpoons> mat2_det
 
 definition mat3_det where
 "mat3_det m =
@@ -304,7 +304,7 @@ definition mat3_det where
   - mat3\<^sub>1\<^sub>2 m * mat3\<^sub>2\<^sub>1 m * mat3\<^sub>3\<^sub>3 m
   - mat3\<^sub>1\<^sub>3 m * mat3\<^sub>2\<^sub>2 m * mat3\<^sub>3\<^sub>1 m"
 
-adhoc_overloading mat_det mat3_det
+adhoc_overloading mat_det \<rightleftharpoons> mat3_det
 
 lemma mat2_mul_det [simp]:
   fixes m1 m2 :: mat2
@@ -321,12 +321,12 @@ consts mat_sym :: "'a \<Rightarrow> bool"
 definition mat2_sym :: "mat2 \<Rightarrow> bool" where
 "mat2_sym m = (mat2\<^sub>1\<^sub>2 m = mat2\<^sub>2\<^sub>1 m)"
 
-adhoc_overloading mat_sym mat2_sym
+adhoc_overloading mat_sym \<rightleftharpoons> mat2_sym
 
 definition mat3_sym :: "mat3 \<Rightarrow> bool" where
 "mat3_sym m = (mat3\<^sub>1\<^sub>2 m = mat3\<^sub>2\<^sub>1 m \<and> mat3\<^sub>1\<^sub>3 m = mat3\<^sub>3\<^sub>1 m \<and> mat3\<^sub>2\<^sub>3 m = mat3\<^sub>3\<^sub>2 m)"
 
-adhoc_overloading mat_sym mat3_sym
+adhoc_overloading mat_sym \<rightleftharpoons> mat3_sym
 
 consts mat_transpose :: "'a \<Rightarrow> 'a" (\<open>_\<^sup>T\<close> [91] 90)
 
@@ -336,7 +336,7 @@ definition mat2_transpose :: "mat2 \<Rightarrow> mat2" where
   (mat2\<^sub>1\<^sub>1 m) (mat2\<^sub>2\<^sub>1 m)
   (mat2\<^sub>1\<^sub>2 m) (mat2\<^sub>2\<^sub>2 m)"
 
-adhoc_overloading mat_transpose mat2_transpose
+adhoc_overloading mat_transpose \<rightleftharpoons> mat2_transpose
 
 definition mat3_transpose :: "mat3 \<Rightarrow> mat3" where
 "mat3_transpose m =
@@ -345,7 +345,7 @@ definition mat3_transpose :: "mat3 \<Rightarrow> mat3" where
   (mat3\<^sub>1\<^sub>2 m) (mat3\<^sub>2\<^sub>2 m) (mat3\<^sub>3\<^sub>2 m)
   (mat3\<^sub>1\<^sub>3 m) (mat3\<^sub>2\<^sub>3 m) (mat3\<^sub>3\<^sub>3 m)"
 
-adhoc_overloading mat_transpose mat3_transpose
+adhoc_overloading mat_transpose \<rightleftharpoons> mat3_transpose
 
 lemma mat2_transpose_involution [simp]:
   fixes m :: mat2
@@ -434,7 +434,7 @@ definition mat2_inverse :: "mat2 \<Rightarrow> mat2" where
     (- mat2\<^sub>2\<^sub>1 m) (mat2\<^sub>1\<^sub>1 m)
 "
 
-adhoc_overloading mat_inverse mat2_inverse
+adhoc_overloading mat_inverse \<rightleftharpoons> mat2_inverse
 
 definition mat3_inverse :: "mat3 \<Rightarrow> mat3" where
 "mat3_inverse m =
@@ -444,7 +444,7 @@ definition mat3_inverse :: "mat3 \<Rightarrow> mat3" where
     (mat3\<^sub>2\<^sub>1 m * mat3\<^sub>3\<^sub>2 m - mat3\<^sub>2\<^sub>2 m * mat3\<^sub>3\<^sub>1 m) (mat3\<^sub>1\<^sub>2 m * mat3\<^sub>3\<^sub>1 m - mat3\<^sub>1\<^sub>1 m * mat3\<^sub>3\<^sub>2 m) (mat3\<^sub>1\<^sub>1 m * mat3\<^sub>2\<^sub>2 m - mat3\<^sub>1\<^sub>2 m * mat3\<^sub>2\<^sub>1 m)
 "
 
-adhoc_overloading mat_inverse mat3_inverse
+adhoc_overloading mat_inverse \<rightleftharpoons> mat3_inverse
 
 lemma mat2_inverse_cancel:
   fixes m :: mat2

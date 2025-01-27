@@ -11,7 +11,6 @@ theory Subsumption
   imports
     Term
     "Abstract-Rewriting.Seq"
-    "HOL-Library.Adhoc_Overloading"
     Fun_More
     Seq_More
 begin
@@ -56,15 +55,15 @@ locale subsumable =
 begin
 
 adhoc_overloading
-  SUBSUMESEQ subsumeseq
+  SUBSUMESEQ \<rightleftharpoons> subsumeseq
 
 definition "subsumes t s \<longleftrightarrow> t \<le>\<cdot> s \<and> \<not> s \<le>\<cdot> t"
 
 definition "litsim s t \<longleftrightarrow> s \<le>\<cdot> t \<and> t \<le>\<cdot> s"
 
 adhoc_overloading
-  SUBSUMES subsumes and
-  LITSIM litsim
+  SUBSUMES \<rightleftharpoons> subsumes and
+  LITSIM \<rightleftharpoons> litsim
 
 lemma litsim_refl [simp]:
   "s \<doteq> s"
@@ -88,7 +87,7 @@ inductive subsumeseq_term :: "('a, 'b) term \<Rightarrow> ('a, 'b) term \<Righta
     [intro]: "t = s \<cdot> \<sigma> \<Longrightarrow> subsumeseq_term s t"
 
 adhoc_overloading
-  SUBSUMESEQ subsumeseq_term
+  SUBSUMESEQ \<rightleftharpoons> subsumeseq_term
 
 lemma subsumeseq_termE [elim]:
   assumes "s \<le>\<cdot> t"
@@ -115,8 +114,8 @@ interpretation term_subsumable: subsumable subsumeseq_term
   by standard (force simp: subsumeseq_term_refl dest: subsumeseq_term_trans)+
 
 adhoc_overloading
-  SUBSUMES term_subsumable.subsumes and
-  LITSIM term_subsumable.litsim
+  SUBSUMES \<rightleftharpoons> term_subsumable.subsumes and
+  LITSIM \<rightleftharpoons> term_subsumable.litsim
 
 lemma subsumeseq_term_iff:
   "s \<cdot>\<ge> t \<longleftrightarrow> (\<exists>\<sigma>. s = t \<cdot> \<sigma>)"

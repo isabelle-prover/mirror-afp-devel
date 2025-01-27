@@ -144,9 +144,9 @@ lift_definition bind :: "('s, 'x, 'v) exn \<Rightarrow> ('v \<Rightarrow> ('s, '
 lift_definition parallel :: "('s, 'x, unit) exn \<Rightarrow> ('s, 'x, unit) exn \<Rightarrow> ('s, 'x, unit) exn" is raw.parallel .
 
 adhoc_overloading
-  Monad_Syntax.bind exn.bind
+  Monad_Syntax.bind \<rightleftharpoons> exn.bind
 adhoc_overloading
-  parallel exn.parallel
+  parallel \<rightleftharpoons> exn.parallel
 
 setup \<open>Sign.mandatory_path "bind"\<close>
 

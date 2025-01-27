@@ -274,7 +274,7 @@ function dbind where
 termination by lexicographic_order
 
 adhoc_overloading
-  Monad_Syntax.bind dbind
+  Monad_Syntax.bind \<rightleftharpoons> dbind
 
 lemma [code]:
   "dbind (dRETURN x) f = f x"
