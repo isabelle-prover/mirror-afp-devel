@@ -71,10 +71,14 @@ definition match_var_impl :: "('f,'v,'s)match_problem_lr \<Rightarrow> 'v list \
      let xs = remdups (List.maps (vars_term_list o snd) xl)
      in (xs,(xl,(filter (\<lambda> (x,ts). tl ts \<noteq> [] \<or> x \<in> set xs) rx),b)))" 
 
-definition find_var :: "('f,'v,'s)match_problem_lr list \<Rightarrow> _" where "find_var p = (case concat (map (\<lambda> (lx,_). lx) p) of
-      (x,t) # _ \<Rightarrow> x
-    | [] \<Rightarrow> let (_,rx,b) = hd (filter (Not o snd o snd) p)
-         in case hd rx of (x, s # t # _) \<Rightarrow> hd (the (conflicts s t)))" 
+definition find_var :: "bool \<Rightarrow> ('f,'v,'s)match_problem_lr list \<Rightarrow> _" where 
+  "find_var improved p = (case List.maps (\<lambda> (lx,_). lx) p of
+      (x,t) # _ \<Rightarrow> Some x
+    | [] \<Rightarrow> if improved then (let flat_mps = List.maps (fst o snd) p in 
+       (map_option (\<lambda> (x,ts). case find is_Var ts of Some (Var x) \<Rightarrow> x)
+       (find (\<lambda> rx. \<exists> t \<in> set (snd rx). is_Fun t) flat_mps)))
+       else Some (let (_,rx,b) = hd p
+         in case hd rx of (x, s # t # _) \<Rightarrow> hd (the (conflicts s t))))" 
 
 definition empty_lr :: "('f,'v,'s)match_problem_lr \<Rightarrow> bool" where
   "empty_lr mp = (case mp of (lx,rx,_) \<Rightarrow> lx = [] \<and> rx  = [])" 
@@ -122,12 +126,13 @@ definition match_steps_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('v l
 context 
 fixes
   renNat :: "nat \<Rightarrow> 'v" and 
-  renVar :: "'v \<Rightarrow> 'v" 
+  renVar :: "'v \<Rightarrow> 'v" and
+  finVarForm_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
 begin
 
 partial_function (tailrec) decomp'_main_loop where 
   "decomp'_main_loop n xs list out = (case list of 
-      [] \<Rightarrow> (n, rev out)
+      [] \<Rightarrow> (n, out) \<comment> \<open>one might change to (rev out) in order to preserve the order\<close>
     | ((x,ts) # rxs) \<Rightarrow> (if tl ts = [] \<or> (\<exists> t \<in> set ts. is_Var t) \<or> x \<in> set xs
      then decomp'_main_loop n xs rxs ((x,ts) # out)
      else let l = length (args (hd ts));
@@ -163,11 +168,13 @@ fun pat_inner_impl :: "nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow
 
 definition pat_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> (nat \<times> nat \<times> ('f,'v,'s)pat_problem_list list) option" where
   "pat_impl n nl p = (case pat_inner_impl nl p [] of None \<Rightarrow> Some (n,nl,[])
-      | Some (nl',p') \<Rightarrow> (if (\<forall> mp \<in> set p'. snd (snd mp)) then None \<comment> \<open>detected inf-var-conflict (or empty mp)\<close>
-        else let p'l = map mp_lr_list p';
-           x = find_var p'
-         in
-           Some (n + m, nl', map (\<lambda> \<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x))))" 
+      | Some (nl',p') \<Rightarrow> (case partition (\<lambda> mp. snd (snd mp)) p' of
+         (ivc,no_ivc) \<Rightarrow> if no_ivc = [] then None \<comment> \<open>detected inf-var-conflict (or empty mp)\<close>
+        else let p'l = map mp_lr_list p'           
+         in (case find_var improved no_ivc of Some x \<Rightarrow> 
+           Some (n + m, nl', map (\<lambda> \<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x))
+         | None \<Rightarrow> \<comment> \<open>no_ivc is in finite variable form\<close>
+             if finVarForm_dp (map mp_lr_list no_ivc) then Some (n,nl,[]) else None)))" 
 
 partial_function (tailrec) pats_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
   "pats_impl n nl ps = (case ps of [] \<Rightarrow> True
@@ -345,6 +352,46 @@ lemma mp_lr_mset: assumes "mset rx = mset rx'"
 
 lemma size_term_0[simp]: "size (t :: ('f,'v)term) > 0" 
   by (cases t, auto)
+
+lemma wf_ts_no_conflict_alt_def: "(\<forall> j < length ts. \<forall> i < j. conflicts (ts ! i) (ts ! j) \<noteq> None)
+  \<longleftrightarrow> (\<forall> s t. s \<in> set ts \<longrightarrow> t \<in> set ts \<longrightarrow> conflicts s t \<noteq> None)" (is "?l = ?r")
+proof
+  assume ?l
+  note l = this[rule_format]
+  show ?r
+  proof (intro allI impI)
+    fix s t
+    assume "s \<in> set ts" "t \<in> set ts" 
+    then obtain i j where ij: "i < length ts" "j < length ts" 
+      and st: "s = ts ! i" "t = ts ! j" unfolding set_conv_nth by auto  
+    then consider (lt) "i < j" | (eq) "i = j" | (gt) "j < i" by linarith
+    thus "conflicts s t \<noteq> None" 
+    proof cases
+      case lt
+      show ?thesis using l[OF ij(2) lt] unfolding st by auto
+    next
+      case eq
+      show ?thesis unfolding st eq by simp
+    next
+      case gt
+      show ?thesis using l[OF ij(1) gt] conflicts_sym[of s t] unfolding st
+        by (simp add: option.rel_sel)
+    qed
+  qed
+next
+  assume ?r
+  note r = this[rule_format]
+  show ?l
+  proof (intro allI impI)
+    fix j i 
+    assume "j < length ts" "i < j" 
+    hence "ts ! i \<in> set ts" "ts ! j \<in> set ts" by (auto simp: set_conv_nth)
+    from r[OF this] show "conflicts (ts ! i) (ts ! j) \<noteq> None" 
+      by auto
+  qed
+qed
+  
+  
 
 text \<open>Continue with properties of the sub-algorithms\<close>
 
@@ -713,6 +760,7 @@ qed
 context 
   fixes renVar :: "'v \<Rightarrow> 'v" 
   fixes renNat  :: "nat \<Rightarrow> 'v" 
+  fixes fvf_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
   assumes renaming_ass: "improved \<Longrightarrow> renaming_funs renNat renVar" 
 begin
 
@@ -720,9 +768,9 @@ abbreviation Match_decomp'_impl where "Match_decomp'_impl \<equiv> match_decomp'
 abbreviation Decomp'_main_loop where "Decomp'_main_loop \<equiv> decomp'_main_loop renNat" 
 abbreviation Decomp'_impl where "Decomp'_impl \<equiv> decomp'_impl renNat" 
 abbreviation Pat_inner_impl where "Pat_inner_impl \<equiv> pat_inner_impl renNat" 
-abbreviation Pat_impl where "Pat_impl \<equiv> pat_impl renNat" 
-abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat" 
-abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar" 
+abbreviation Pat_impl where "Pat_impl \<equiv> pat_impl renNat fvf_dp" 
+abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat fvf_dp" 
+abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar fvf_dp" 
 
 definition allowed_vars where "allowed_vars n = (if improved then range renVar \<union> renNat ` {..<n} else UNIV)" 
 
@@ -819,7 +867,7 @@ proof (atomize (full), goal_cases)
       show ?case 
       proof (cases rx)
         case Nil
-        from Nil have mset: "mset (rx @ out) = mset (rev out)" by auto
+        from Nil have mset: "mset (rx @ out) = mset out" by auto (* or: mset (rev out) *)
         note wf = wf[unfolded wf_lr2_mset[OF mset]]
         note mp_lr = mp_lr_mset[OF mset]
         show ?thesis using Nil wf lvc res cond3 unfolding mp_lr
@@ -1393,7 +1441,6 @@ proof (atomize (full), goal_cases)
                       by (auto simp: nth_append) 
                         (metis (no_types, lifting) Suc_diff_diff diff_self_eq_0 diff_zero lessI less_nat_zero_code neq0_conv
                           zero_less_diff)
-                    find_theorems set take
                     finally obtain b where "b < l" "a \<noteq> b" and "(y, ts'') = rrx ! b" using lenrrx by auto
                     then show ?thesis using lenrrx unfolding rrx_def rx1 by auto
                   qed
@@ -1536,6 +1583,11 @@ lemma pat_mset_list: "pat_mset (pat_mset_list p) = pat_list p"
   unfolding pat_list_def pat_mset_list_def by (auto simp: image_comp)
 
 
+(* TODO: we need to replace non-improved by assumption that fvf_dp is 
+   a decision procedure for finite-variable-form pattern problems,
+   and add a rule in the multiset definition of the algorithm that 
+   permits the application of a decision procedure *)
+
 context
   assumes non_improved: "\<not> improved" 
 begin
@@ -1571,11 +1623,19 @@ proof (atomize(full), goal_cases)
     have steps: "(add_mset (pat_mset_list p) P, add_mset (pat_lr p') P) \<in> \<Rrightarrow>\<^sup>*" and wf: "wf_pat_lr p'"
       and varsp': "tvars_pp (pat_mset (pat_lr p')) \<subseteq> {..<n} \<times> UNIV"
       and lvar_p': "lvar_cond_pp nl'' (pat_lr p')" and nl: "nl \<le> nl''" by auto
-    note res = res[unfolded Some option.simps split]
+    obtain ivc no_ivc where part: "partition (\<lambda>mp. snd (snd mp)) p' = (ivc, no_ivc)" by force
+    from part have no_ivc_filter: "no_ivc = filter (\<lambda> mp. \<not> (snd (snd mp))) p'" unfolding partition_filter_conv
+      by (auto simp: o_def)
+    define f where "f = (\<lambda> mp :: ('f,'v,'s)match_problem_lr. snd (snd mp))" 
+    from part have Notf: "no_ivc = filter (Not o f) p'" unfolding partition_filter_conv f_def
+      by (auto simp: o_def)
+    from part have f: "ivc = filter f p'" unfolding partition_filter_conv f_def
+      by (auto simp: o_def)
+    note res = res[unfolded Some option.simps split part]
     show ?thesis
     proof (cases "\<forall>mp\<in>set p'. snd (snd mp)")
       case True
-      with res have res: "res = None" by auto
+      with res part have res: "res = None" by auto
       have "(add_mset (pat_lr p') P, add_mset {#} P) \<in> \<Rrightarrow>\<^sup>*" 
       proof (cases "pat_lr p' = {#}")
         case False
@@ -1598,142 +1658,352 @@ proof (atomize(full), goal_cases)
       ultimately show ?thesis using res by auto 
     next
       case False
+      with part have no_ivc: "no_ivc \<noteq> []" unfolding partition_filter_conv o_def
+        by (metis (no_types, lifting) empty_filter_conv snd_conv)
+      hence "(no_ivc = []) = False" by auto
+      note res = res[unfolded this if_False]
+      from part have sub: "set no_ivc \<subseteq> set p'" "set ivc \<subseteq> set p'" unfolding partition_filter_conv by auto
+      {
+        fix mp
+        assume mp: "mp \<in> set no_ivc" 
+        with no_ivc_filter have b: "\<not> snd (snd mp)" by simp
+        from mp sub have "mp \<in> set p'" by auto
+        with wf[unfolded wf_pat_lr_def] have "wf_lr3 mp" by auto
+        from this[unfolded wf_lr3_def wf_rx3_def wf_rx_def wf_rx2_def] b
+        have "\<not> inf_var_conflict (mp_mset (mp_rx (snd mp)))" 
+          by (cases mp, auto split: if_splits)
+        note b this
+      } note no_ivc_b = this  
+
       define p'l where "p'l = map mp_lr_list p'" 
-      define x where "x = find_var p'" 
-      define ps where "ps = map (\<lambda>\<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x)" 
-      have id: "pat_lr p' = pat_mset_list p'l" unfolding pat_mset_list_def pat_lr_def p'l_def map_map o_def
-        by (intro arg_cong[of _ _ mset] map_cong refl, auto simp: mp_lr_def mp_lr_list_def mp_rx_def mp_rx_list_def)
-      from False have "(\<forall>mp\<in>set p'. snd (snd mp)) = False" by auto
-      from res[unfolded this if_False Let_def, folded p'l_def x_def, folded ps_def]
-      have res: "res = Some (n + m, nl'', ps)" by auto
-      have step: "(add_mset (pat_lr p') P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>" 
-        unfolding P_step_def 
-      proof (standard, unfold split, intro P_simp_pp)
-        note x = x_def[unfolded find_var_def]
-        let ?concat = "concat (map (\<lambda> (lx,_). lx) p')" 
-        have disj: "tvars_disj_pp {n..<n + m} (pat_mset (pat_lr p'))" 
-          using varsp' unfolding tvars_pp_def tvars_disj_pp_def tvars_mp_def by force
+      show ?thesis
+      proof (cases "find_var improved no_ivc")
+        case (Some x)        
+        define ps where "ps = map (\<lambda>\<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x)" 
+        have id: "pat_lr p' = pat_mset_list p'l" unfolding pat_mset_list_def pat_lr_def p'l_def map_map o_def
+          by (intro arg_cong[of _ _ mset] map_cong refl, auto simp: mp_lr_def mp_lr_list_def mp_rx_def mp_rx_list_def)
         have subst: "map (\<lambda>\<tau>. subst_pat_problem_mset \<tau> (pat_lr p')) (\<tau>s_list n x) = map pat_mset_list ps" 
           unfolding id
           unfolding ps_def subst_pat_problem_list_def subst_pat_problem_mset_def subst_match_problem_mset_def
             subst_match_problem_list_def map_map o_def
           by (intro list.map_cong0, auto simp: pat_mset_list_def o_def image_mset.compositionality)
-        show "pat_lr p' \<Rightarrow>\<^sub>m mset (map pat_mset_list ps)" 
-        proof (cases ?concat)
-          case (Cons pair list)
-          with x obtain t where concat: "?concat = (x,t) # list" by (cases pair, auto)
-          hence "(x,t) \<in> set ?concat" by auto
-          then obtain mp where "mp \<in> set p'" and "(x,t) \<in> set ((\<lambda> (lx,_). lx) mp)" by auto
-          then obtain lx rx where mem: "(lx,rx) \<in> set p'" and xt: "(x,t) \<in> set lx" by auto
-          from wf mem have wf: "wf_lx lx" unfolding wf_pat_lr_def wf_lr3_def by auto
-          with xt have t: "is_Fun t" unfolding wf_lx_def by auto
-          from mem obtain p'' where pat: "pat_lr p' = add_mset (mp_lr (lx,rx)) p''" 
-            unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
-          from xt have xt: "(Var x, t) \<in># mp_lr (lx,rx)" unfolding mp_lr_def by force
-          from pat_instantiate[OF _ disjI1[OF conjI[OF xt t]], of n p'', folded pat, OF disj]
-          show ?thesis unfolding subst .
-        next
-          case Nil
-          let ?fp = "filter (Not \<circ> snd \<circ> snd) p'" 
-          from False have "set ?fp \<noteq> {}" unfolding o_def filter_empty_conv set_empty
-            by auto
-          then obtain mp p'' where fp: "?fp = mp # p''" by (cases ?fp) auto
-          obtain lx rx b where mp: "mp = (lx,rx,b)" by (cases mp) auto
-          have mpp: "mp \<in> set p'" using arg_cong[OF fp, of set] by auto
-          from mp mpp Nil have lx: "lx = []" by auto
-          from fp have "(lx,rx,b) \<in> set ?fp" unfolding mp by auto
-          hence "\<not> b" unfolding o_def by auto
-          with mp lx have mp: "mp = ([],rx,False)" by auto
-          from wf mpp have wf: "wf_lr3 mp" and ne: "\<not> empty_lr mp"  unfolding wf_pat_lr_def by auto
-          from wf[unfolded wf_lr3_def mp split] mp
-          have wf: "wf_rx2 (rx, False)" and mp: "mp = ([],rx,False)" by (auto simp: wf_rx3_def)
-          from ne[unfolded empty_lr_def mp split] obtain y ts rx' 
-            where rx: "rx = (y,ts) # rx'" by (cases rx, auto)
-          from wf[unfolded wf_rx2_def] have ninf: "\<not> inf_var_conflict (mp_mset (mp_rx (rx, False)))" 
-            and wf: "wf_ts2 ts" unfolding rx by auto   
-          from wf[unfolded wf_ts2_def] obtain s t ts' where ts: "ts = s # t # ts'" and 
-            diff: "s \<noteq> t" and conf: "conflicts s t \<noteq> None" 
-            by (cases ts; cases "tl ts", auto)
-          from conf obtain xs where conf: "conflicts s t = Some xs" by (cases "conflicts s t", auto)
-          with conflicts(5)[of s t] diff have "xs \<noteq> []" by auto          
-          with x[unfolded Nil list.simps fp list.sel mp split Let_def rx ts conf option.sel]
-          obtain xs' where xs: "xs = x # xs'" by (cases xs) auto
-          from conf xs have confl: "Conflict_Var s t x" by auto
-          from ts rx have sty: "(s, Var y) \<in># mp_rx (rx, False)" "(t, Var y) \<in># mp_rx (rx,False)" 
-            by (auto simp: mp_rx_def List.maps_def)
-          with confl ninf have "\<not> inf_sort (snd x)" unfolding inf_var_conflict_def by blast
-          with sty confl rx have main: "(s, Var y) \<in># mp_lr mp \<and> (t, Var y) \<in># mp_lr mp \<and> Conflict_Var s t x \<and> \<not> inf_sort (snd x)
-            \<and> (improved \<longrightarrow> b)" for b using non_improved
-            unfolding mp by (auto simp: mp_lr_def)
-          from mpp obtain p'' where pat: "pat_lr p' = add_mset (mp_lr mp) p''" 
-            unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
-          from pat_instantiate[OF _ disjI2[OF main], of n p'', folded pat, OF disj]
-          show ?thesis unfolding subst .
+        note res = res[unfolded Let_def Some option.simps, folded p'l_def]
+        from res have res: "res = Some (n + m, nl'', ps)" using ps_def by auto
+        have step: "(add_mset (pat_lr p') P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>" 
+          unfolding P_step_def 
+        proof (standard, unfold split, intro P_simp_pp)
+          note x = Some[unfolded find_var_def]
+          let ?concat = "List.maps (\<lambda> (lx,_). lx) no_ivc" 
+          have disj: "tvars_disj_pp {n..<n + m} (pat_mset (pat_lr p'))" 
+            using varsp' unfolding tvars_pp_def tvars_disj_pp_def tvars_mp_def by force
+          show "pat_lr p' \<Rightarrow>\<^sub>m mset (map pat_mset_list ps)" 
+          proof (cases ?concat)
+            case (Cons pair list)
+            with x obtain t where concat: "?concat = (x,t) # list" by (cases pair, auto)
+            hence "(x,t) \<in> set ?concat" by auto
+            then obtain mp where "mp \<in> set p'" and "(x,t) \<in> set ((\<lambda> (lx,_). lx) mp)" using sub 
+              by (auto simp: List.maps_def)
+            then obtain lx rx where mem: "(lx,rx) \<in> set p'" and xt: "(x,t) \<in> set lx" by auto
+            from wf mem have wf: "wf_lx lx" unfolding wf_pat_lr_def wf_lr3_def by auto
+            with xt have t: "is_Fun t" unfolding wf_lx_def by auto
+            from mem obtain p'' where pat: "pat_lr p' = add_mset (mp_lr (lx,rx)) p''" 
+              unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
+            from xt have xt: "(Var x, t) \<in># mp_lr (lx,rx)" unfolding mp_lr_def by force
+            from pat_instantiate[OF _ disjI1[OF conjI[OF xt t]], of n p'', folded pat, OF disj]
+            show ?thesis unfolding subst .
+          next
+            case Nil
+            define flat_mps where "flat_mps = List.maps (fst \<circ> snd) no_ivc" 
+            note x = x[unfolded Nil list.simps Let_def, folded flat_mps_def]  
+            from wf[unfolded wf_pat_lr_def]
+            show ?thesis
+            proof (cases improved)
+              case False
+              from no_ivc obtain mp p'' where fp: "no_ivc = mp # p''" by (cases no_ivc) auto
+              obtain lx rx b where mp: "mp = (lx,rx,b)" by (cases mp) auto
+              from fp have hd: "hd no_ivc = mp" by auto
+              from no_ivc_b[of mp, unfolded fp] mp 
+              have mp: "mp = (lx,rx,False)" by auto
+              have mpp: "mp \<in> set p'" using arg_cong[OF fp, of set] sub by auto
+              from mp Nil fp have "lx = []" by (auto simp: List.maps_def)
+              with mp have mp: "mp = ([],rx,False)" by auto
+              note x = x[unfolded hd mp Let_def split]
+              from wf mpp have wf: "wf_lr3 mp" and ne: "\<not> empty_lr mp"  unfolding wf_pat_lr_def by auto
+              from wf[unfolded wf_lr3_def mp split] mp
+              have wf: "wf_rx2 (rx, False)" by (auto simp: wf_rx3_def)
+              from ne[unfolded empty_lr_def mp split] obtain y ts rx' 
+                where rx: "rx = (y,ts) # rx'" by (cases rx, auto)
+              from wf[unfolded wf_rx2_def] have ninf: "\<not> inf_var_conflict (mp_mset (mp_rx (rx, False)))" 
+                and wf: "wf_ts2 ts" unfolding rx by auto   
+              from wf[unfolded wf_ts2_def] obtain s t ts' where ts: "ts = s # t # ts'" and 
+                diff: "s \<noteq> t" and conf: "conflicts s t \<noteq> None" 
+                by (cases ts; cases "tl ts", auto)
+              from conf obtain xs where conf: "conflicts s t = Some xs" by (cases "conflicts s t", auto)
+              with conflicts(5)[of s t] diff have "xs \<noteq> []" by auto
+              with x[unfolded rx list.simps list.sel split ts conf option.sel] False
+              obtain xs' where xs: "xs = x # xs'" by (cases xs) auto
+              from conf xs have confl: "Conflict_Var s t x" by auto
+              from ts rx have sty: "(s, Var y) \<in># mp_rx (rx, False)" "(t, Var y) \<in># mp_rx (rx,False)" 
+                by (auto simp: mp_rx_def List.maps_def)
+              with confl ninf have "\<not> inf_sort (snd x)" unfolding inf_var_conflict_def by blast
+              with sty confl rx have main: "(s, Var y) \<in># mp_lr mp \<and> (t, Var y) \<in># mp_lr mp \<and> Conflict_Var s t x \<and> \<not> inf_sort (snd x)
+            \<and> (improved \<longrightarrow> b)" for b using False
+                unfolding mp by (auto simp: mp_lr_def)
+              from mpp obtain p'' where pat: "pat_lr p' = add_mset (mp_lr mp) p''" 
+                unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
+              from pat_instantiate[OF _ disjI2[OF main], of n p'', folded pat, OF disj]
+              show ?thesis unfolding subst .
+            next
+              case impr: True
+              hence "improved = True" by auto
+              note x = x[unfolded this if_True]
+              let ?find = "find (\<lambda>rx. \<exists>t\<in>set (snd rx). is_Fun t) flat_mps" 
+              from x obtain rx where find: "?find = Some rx" by (cases ?find; force)
+              from this[unfolded find_Some_iff]
+              obtain t where rx: "rx \<in> set flat_mps" and t: "t \<in> set (snd rx)" "is_Fun t" 
+                by auto
+              obtain y ts where rx_id: "rx = (y,ts)" by force  
+              note x = x[unfolded find option.simps rx_id split]
+              from rx[unfolded flat_mps_def List.maps_def] 
+              obtain mp where mp_mem: "mp \<in> set no_ivc" 
+                and rx_mp: "rx \<in> set (fst (snd mp))" by auto
+              from mp_mem sub have mp_mem_p': "mp \<in> set p'" by auto
+              then obtain p'' where pat: "pat_lr p' = add_mset (mp_lr mp) p''" 
+                unfolding pat_lr_def by simp (metis in_map_mset mset_add set_mset_mset)
+              obtain lx rxs b where mp: "mp = (lx,rxs,b)" by (cases mp, auto)
+              with rx_mp have rx_rxs: "rx \<in> set rxs" by auto
+              from split_list[OF mp_mem] Nil mp
+              have lx: "lx = []" unfolding List.maps_def by auto
+              from no_ivc_b[OF mp_mem] mp lx
+              have mp: "mp = ([],rxs,False)" and 
+                No_ivc: "\<not> inf_var_conflict (mp_mset (mp_rx (rxs,b)))" by auto
+              from wf[unfolded wf_pat_lr_def] mp_mem sub 
+              have "wf_lr3 mp" by auto
+              from this[unfolded wf_lr3_def mp split] 
+              have "wf_rx3 (rxs, False)" by auto
+              from this[unfolded wf_rx3_def fst_conv snd_conv]
+              have wf_rx2: "wf_rx2 (rxs, False)" and "Ball (snd ` set rxs) wf_ts3" using impr by auto 
+              with rx_mp[unfolded mp] rx_id 
+              have wf_ts: "wf_ts3 ts" by auto
+              from this[unfolded wf_ts3_def] have "\<exists> u. u \<in> set ts \<and> is_Var u \<and> find is_Var ts = Some u" 
+                by (induct ts, auto)
+              with x have x: "Var x \<in> set ts" by auto
+              from t[unfolded rx_id] 
+              have t: "t \<in> set ts" "is_Fun t" by auto              
+              show ?thesis                
+              proof (rule pat_instantiate[of n "mp_lr mp" p'', 
+                  OF _ disjI2, of "Var x" y t x, folded pat, OF disj, unfolded subst],
+                  intro conjI impI refl t)
+                show cvar1: "x \<in> set (the (conflicts (Var x) t))" using t by (cases t, auto simp: conflicts.simps)
+                from x rx_rxs rx_id have xy: "(Var x, Var y) \<in># mp_rx (rxs, b)" unfolding mp_rx_def List.maps_def by auto
+                thus "(Var x, Var y) \<in># mp_lr mp" 
+                  unfolding mp_lr_def mp split mp_rx_def by auto
+                from t rx_rxs rx_id have ty: "(t, Var y) \<in># mp_rx (rxs, b)" unfolding mp_rx_def List.maps_def by auto
+                thus "(t, Var y) \<in># mp_lr mp"
+                  unfolding mp_lr_def mp split mp_rx_def by auto
+                from rx_rxs rx_id wf_rx2[unfolded wf_rx2_def] have "wf_ts2 ts" by auto
+                from this[unfolded wf_ts2_def wf_ts_no_conflict_alt_def] x t 
+                show cvar2: "conflicts (Var x) t \<noteq> None" by auto
+                from No_ivc[unfolded inf_var_conflict_def] xy ty cvar1 cvar2 show "\<not> inf_sort (snd x)" by blast
+              qed
+            qed
+          qed
         qed
+        have tvars: "fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..<n + m}"
+        proof
+          fix yn
+          assume "yn \<in> fst ` tvars_pp (\<Union> (pat_list ` set ps))" 
+          then obtain pi y mp where pi: "pi \<in> set ps" and mp: "mp \<in> set pi" and y: "y \<in> tvars_mp (set mp)" and yn: "yn = fst y" 
+            unfolding tvars_pp_def pat_list_def by force
+          from pi[unfolded ps_def set_map subst_pat_problem_list_def subst_match_problem_list_def, simplified] 
+          obtain \<tau> where tau: "\<tau> \<in> set (\<tau>s_list n x)" and pi: "pi = map (map (subst_left \<tau>)) p'l" by auto
+          from tau[unfolded \<tau>s_list_def]
+          obtain info where "info \<in> set (Cl (snd x))" and tau: "\<tau> = \<tau>c n x info" by auto
+          from Cl_len[of "snd x"] this(1) have len: "length (snd info) \<le> m" by force
+          from mp[unfolded pi set_map] obtain mp' where mp': "mp' \<in> set p'l" and mp: "mp = map (subst_left \<tau>) mp'" by auto
+          from y[unfolded mp tvars_mp_def image_comp o_def set_map]
+          obtain pair where *: "pair \<in> set mp'" "y \<in> vars (fst (subst_left \<tau> pair))" by auto
+          obtain s t where pair: "pair = (s,t)" by force
+          from *[unfolded pair] have st: "(s,t) \<in> set mp'" and y: "y \<in> vars (s \<cdot> \<tau>)" unfolding subst_left_def by auto
+          from y[unfolded vars_term_subst, simplified] obtain z where z: "z \<in> vars s" and y: "y \<in> vars (\<tau> z)" by auto
+          obtain f ss where info: "info = (f,ss)" by (cases info, auto)
+          with len have len: "length ss \<le> m" by auto
+          define ts :: "('f,_)term list" where "ts = map Var (zip [n..<n + length ss] ss)" 
+          from tau[unfolded \<tau>c_def info split] have tau: "\<tau> = subst x (Fun f ts)"  unfolding ts_def by auto
+          have "fst ` vars (Fun f ts) \<subseteq> {..< n + length ss}" unfolding ts_def by (auto simp: set_zip)
+          also have "\<dots> \<subseteq> {..< n + m}" using len by auto
+          finally have subst: "fst ` vars (Fun f ts) \<subseteq> {..< n + m}" by auto
+          show "yn \<in> {..<n + m}" 
+          proof (cases "z = x")
+            case True
+            with y subst tau yn show ?thesis by auto
+          next
+            case False
+            hence "\<tau> z = Var z" unfolding tau by (auto simp: subst_def)
+            with y have "z = y" by auto
+            with z have y: "y \<in> vars s" by auto
+            with st have "y \<in> tvars_mp (set mp')" unfolding tvars_mp_def by force
+            with mp' have "y \<in> tvars_pp (set ` set p'l)" unfolding tvars_pp_def by auto
+            also have "\<dots> = tvars_pp (pat_mset (pat_mset_list p'l))" 
+              by (rule arg_cong[of _ _ tvars_pp], auto simp: pat_mset_list_def image_comp)
+            also have "\<dots> = tvars_pp (pat_mset (pat_lr p'))" unfolding id[symmetric] by simp
+            also have "\<dots> \<subseteq> {..<n} \<times> UNIV" using varsp' .
+            finally show ?thesis using yn by auto
+          qed
+        qed
+        {
+          fix pp
+          assume pp: "pp \<in># mset (map pat_mset_list ps) + P"         
+          have "lvar_cond_pp nl'' pp" 
+          proof (cases "pp \<in># P")
+            case True
+            with lvarsAll have "lvar_cond_pp nl pp" by auto
+            with lvar_cond_mono[OF nl] show ?thesis unfolding lvar_cond_pp_def by auto
+          next
+            case False
+            then obtain pp' where pp': "pp' \<in> set ps" and pp: "pp = pat_mset_list pp'" 
+              using pp by auto
+            from pp'[unfolded ps_def] obtain \<tau> where pp': "pp' = subst_pat_problem_list \<tau> p'l" by auto
+            have "lvars_pp pp = lvars_pp (pat_lr p')" 
+              unfolding pp pp' id
+              unfolding lvars_pp_def lvars_mp_def 
+              by (force simp: subst_pat_problem_list_def subst_match_problem_list_def subst_left_def pat_mset_list_def)
+            thus ?thesis using lvar_p' unfolding lvar_cond_pp_def by auto
+          qed
+        }
+        with tvars step steps res nl show ?thesis by auto
+      next
+        case None
+        hence impr: improved unfolding find_var_def Let_def
+          by (auto split: option.splits if_splits list.splits)
+        {
+          fix mp
+          assume mp_mem: "mp \<in> set no_ivc" 
+          from no_ivc_b[OF mp_mem] obtain lx rx where mp: "mp = (lx,rx,False)" by (cases mp, auto)
+          from None[unfolded find_var_def] have no_ivc_lx: "List.maps (\<lambda>(lx, uu). lx) no_ivc = []" by (auto split: list.splits)
+          from split_list[OF mp_mem] mp no_ivc_lx have lx: "lx = []" by (cases lx, auto simp: List.maps_def)
+          with mp have mp: "mp = ([],rx, False)" by auto
+          from impr have "improved = True" by simp
+          note None = None[unfolded find_var_def no_ivc_lx list.simps this if_True Let_def]
+          from None mp_mem
+          have "\<forall>a b. ((a, b) \<notin> set (fst (snd mp))) \<or> (\<forall>t\<in>set b. is_Var t)" 
+            by (auto simp: find_None_iff List.maps_def)
+          from this[unfolded mp] have only_vars: "(x, ts) \<in> set rx \<Longrightarrow> t \<in> set ts \<Longrightarrow> is_Var t" for x ts t by auto
+          from wf[unfolded wf_pat_lr_def] mp_mem have "wf_lr3 mp" using sub by auto
+          from this[unfolded wf_lr3_def mp split] have "wf_rx3 (rx, False)" by auto
+          from this[unfolded wf_rx3_def] have "wf_rx2 (rx, False)" by auto
+          from this[unfolded wf_rx2_def snd_conv fst_conv]
+          have wf_ts: "Ball (snd ` set rx) wf_ts2" and no_inf: "\<not> inf_var_conflict (mp_mset (mp_rx (rx, False)))" 
+            and dist: "distinct (map fst rx)" by auto
+          {
+            fix x ts t
+            assume xts: "(x,ts) \<in> set rx" and t: "t \<in> set ts" 
+            from only_vars[OF this] obtain y where ty: "t = Var y" by auto
+            from xts wf_ts have "wf_ts2 ts" by auto
+            from this[unfolded wf_ts2_def wf_ts_no_conflict_alt_def] t
+            have len: "2 \<le> length ts" and dist: "distinct ts"  and no_conf: "\<And> s. s \<in> set ts \<Longrightarrow> conflicts s t \<noteq> None" by auto
+            from t len dist obtain s where s_ts: "s \<in> set ts" and "s \<noteq> t" by (cases ts; cases "tl ts"; auto)
+            from only_vars[OF xts this(1)] this(2) ty obtain z where s: "s = Var z" and yz: "y \<noteq> z" by (cases s, auto)
+            from t have trx: "(t, Var x) \<in># mp_rx (rx, False)" using xts unfolding mp_rx_def List.maps_def by auto
+            from s_ts have srx: "(s, Var x) \<in># mp_rx (rx, False)" using xts unfolding mp_rx_def List.maps_def by auto
+            have "conflicts s t = (if snd z = snd y then Some [z, y] else None)" unfolding s ty conflicts.simps using yz by auto 
+            with no_conf[OF s_ts] have "conflicts s t = Some [z,y]" by (auto split: if_splits)
+            with no_inf[unfolded inf_var_conflict_def, simplified, rule_format, OF trx srx] yz
+            have "\<not> inf_sort (snd y)" by (cases y, auto)
+            with ty have "\<exists> y. t = Var y \<and> \<not> inf_sort (snd y)" by auto
+          } note only_fin_sort_vars = this
+          with mp dist wf_ts have "\<exists> rx. mp = ([], rx, False) \<and> Ball (snd ` set rx) wf_ts2 \<and> distinct (map fst rx) \<and>
+            (\<forall> x ts t. (x,ts) \<in> set rx \<longrightarrow> t \<in> set ts \<longrightarrow> (\<exists> y. t = Var y \<and> \<not> inf_sort (snd y)))" 
+            by blast
+        } note no_ivc_probs = this
+  
+        note res = res[unfolded None option.simps Let_def]
+        have "(add_mset (pat_lr p') P, add_mset (pat_lr no_ivc) P) \<in> \<Rrightarrow>\<^sup>*" 
+        proof -
+          have split_p': "pat_lr p' = pat_lr ivc + pat_lr no_ivc" unfolding Notf f
+            unfolding pat_lr_def by (induct p', auto)
+          show ?thesis proof (cases "pat_lr ivc = {#}")
+            case True
+            thus ?thesis unfolding split_p' by auto
+          next
+            case False
+            have "pat_lr p' \<Rightarrow>\<^sub>m {# pat_lr no_ivc #}" 
+              unfolding split_p'
+            proof (rule pat_inf_var_conflict[OF _ False]; intro ballI)
+              fix Mp
+              assume "Mp \<in> pat_mset (pat_lr ivc)" 
+              from this[unfolded pat_lr_def]
+              obtain mp where mp_ivc: "mp \<in> set ivc" and Mp: "Mp = mp_mset (mp_lr mp)" by auto
+              from mp_ivc[unfolded f f_def] have "snd (snd mp)" by auto
+              then obtain lx rx where mp: "mp = (lx,rx,True)" by (cases mp, auto)
+              from wf[unfolded wf_pat_lr_def] mp_ivc sub have "wf_lr3 mp" by auto
+              from this[unfolded wf_lr3_def mp split wf_rx3_def wf_rx2_def wf_rx_def]
+              have "inf_var_conflict (mp_mset (mp_rx (rx, True)))" by (auto split: if_splits)
+              moreover have "mp_mset (mp_rx (rx, True)) \<subseteq> Mp" unfolding Mp mp mp_lr_def by auto
+              ultimately show "inf_var_conflict Mp" unfolding inf_var_conflict_def by blast
+            next
+              fix y
+              assume "y \<in> tvars_pp (pat_mset (pat_lr no_ivc))" 
+              from this[unfolded pat_lr_def tvars_pp_def]
+              obtain mp where mp_mem: "mp \<in> set no_ivc" and y: "y \<in> tvars_mp (mp_mset (mp_lr mp))" by auto
+              from no_ivc_probs[OF mp_mem] obtain rx where mp: "mp = ([], rx, False)" 
+                and no_inf: "\<And> x ts t. (x, ts) \<in> set rx \<Longrightarrow> t \<in> set ts \<Longrightarrow> (\<exists>y. t = Var y \<and> \<not> inf_sort (snd y))" by auto
+              from y[unfolded mp tvars_mp_def mp_lr_def split, simplified]
+              obtain x t where "(t,x) \<in># mp_rx (rx, False)" and y: "y \<in> vars t" by auto
+              from this(1)[unfolded mp_rx_def List.maps_def] obtain ts x' where 
+                "(x',ts) \<in> set rx" "t \<in> set ts" by auto
+              from no_inf[OF this] y show "\<not> inf_sort (snd y)" by auto
+            qed
+            from P_simp_pp[OF this, of P]
+            show ?thesis by (auto simp: P_step_def)
+          qed
+        qed
+        moreover
+        have "finite_var_form_pp (pat_mset (pat_lr no_ivc))" 
+          unfolding finite_var_form_pp_def
+        proof
+          fix Mp
+          assume "Mp \<in> pat_mset (pat_lr no_ivc)" 
+          from this[unfolded pat_lr_def]
+          obtain mp where mp_mem: "mp \<in> set no_ivc" and Mp: "Mp = mp_mset (mp_lr mp)" by auto
+          from no_ivc_probs[OF mp_mem] obtain rx where
+            mp: "mp = ([], rx, False)" and
+            dist: "distinct (map fst rx)" and 
+            wf_ts: "Ball (snd ` set rx) wf_ts2" and
+            no_inf: "\<And> x ts t. (x, ts) \<in> set rx \<Longrightarrow> t \<in> set ts \<Longrightarrow> (\<exists>y. t = Var y \<and> \<not> inf_sort (snd y))" by auto
+          show "finite_var_form_mp Mp" 
+            unfolding finite_var_form_mp_def var_form_mp_def
+          proof (intro conjI allI impI subsetI)
+            fix l x
+            assume "(Var x, l) \<in> Mp" 
+            from this[unfolded Mp mp mp_lr_def split mp_rx_def List.maps_def]
+            obtain ts y where yts: "(y,ts) \<in> set rx" and xts: "Var x \<in> set ts"  and l: "l = Var y" by auto
+            from no_inf[OF yts xts] show "\<not> inf_sort (snd x)" by auto
+            fix z
+            assume "(Var z, l) \<in> Mp" 
+            from this[unfolded Mp mp mp_lr_def split mp_rx_def List.maps_def] l
+            obtain ts' where yts': "(y,ts') \<in> set rx" and zts: "Var z \<in> set ts'"  by auto
+            from dist yts yts' have "ts' = ts" by (metis eq_key_imp_eq_value)
+            with zts have zts: "Var z \<in> set ts" (is "?z \<in> _") by auto
+            from wf_ts yts have "wf_ts2 ts" by auto
+            from this[unfolded wf_ts2_def wf_ts_no_conflict_alt_def] xts zts 
+            have "conflicts (Var x) ?z \<noteq> None" by blast
+            thus "snd x = snd z" unfolding conflicts.simps by (auto split: if_splits)
+          next
+            fix pair
+            assume "pair \<in> Mp" 
+            from this[unfolded Mp mp_lr_def mp split]
+            have "pair \<in># mp_rx (rx, False)" by auto
+            from this[unfolded mp_rx_def List.maps_def]
+            obtain x ts t where "(x,ts) \<in> set rx" "t \<in> set ts" and pair: "pair = (t, Var x)" by auto
+            with no_inf[OF this(1-2)] 
+            show "pair \<in> range (map_prod Var Var)" by auto
+          qed
+        qed
+        ultimately show ?thesis using res (* missing: require soundness of fvf-decision procedure in assumptions *)
+          (* therefore use existing context that says that improved algorithm is not allowed *)
+          using impr non_improved by auto
       qed
-      have tvars: "fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..<n + m}"
-      proof
-        fix yn
-        assume "yn \<in> fst ` tvars_pp (\<Union> (pat_list ` set ps))" 
-        then obtain pi y mp where pi: "pi \<in> set ps" and mp: "mp \<in> set pi" and y: "y \<in> tvars_mp (set mp)" and yn: "yn = fst y" 
-          unfolding tvars_pp_def pat_list_def by force
-        from pi[unfolded ps_def set_map subst_pat_problem_list_def subst_match_problem_list_def, simplified] 
-        obtain \<tau> where tau: "\<tau> \<in> set (\<tau>s_list n x)" and pi: "pi = map (map (subst_left \<tau>)) p'l" by auto
-        from tau[unfolded \<tau>s_list_def]
-        obtain info where "info \<in> set (Cl (snd x))" and tau: "\<tau> = \<tau>c n x info" by auto
-        from Cl_len[of "snd x"] this(1) have len: "length (snd info) \<le> m" by force
-        from mp[unfolded pi set_map] obtain mp' where mp': "mp' \<in> set p'l" and mp: "mp = map (subst_left \<tau>) mp'" by auto
-        from y[unfolded mp tvars_mp_def image_comp o_def set_map]
-        obtain pair where *: "pair \<in> set mp'" "y \<in> vars (fst (subst_left \<tau> pair))" by auto
-        obtain s t where pair: "pair = (s,t)" by force
-        from *[unfolded pair] have st: "(s,t) \<in> set mp'" and y: "y \<in> vars (s \<cdot> \<tau>)" unfolding subst_left_def by auto
-        from y[unfolded vars_term_subst, simplified] obtain z where z: "z \<in> vars s" and y: "y \<in> vars (\<tau> z)" by auto
-        obtain f ss where info: "info = (f,ss)" by (cases info, auto)
-        with len have len: "length ss \<le> m" by auto
-        define ts :: "('f,_)term list" where "ts = map Var (zip [n..<n + length ss] ss)" 
-        from tau[unfolded \<tau>c_def info split] have tau: "\<tau> = subst x (Fun f ts)"  unfolding ts_def by auto
-        have "fst ` vars (Fun f ts) \<subseteq> {..< n + length ss}" unfolding ts_def by (auto simp: set_zip)
-        also have "\<dots> \<subseteq> {..< n + m}" using len by auto
-        finally have subst: "fst ` vars (Fun f ts) \<subseteq> {..< n + m}" by auto
-        show "yn \<in> {..<n + m}" 
-        proof (cases "z = x")
-          case True
-          with y subst tau yn show ?thesis by auto
-        next
-          case False
-          hence "\<tau> z = Var z" unfolding tau by (auto simp: subst_def)
-          with y have "z = y" by auto
-          with z have y: "y \<in> vars s" by auto
-          with st have "y \<in> tvars_mp (set mp')" unfolding tvars_mp_def by force
-          with mp' have "y \<in> tvars_pp (set ` set p'l)" unfolding tvars_pp_def by auto
-          also have "\<dots> = tvars_pp (pat_mset (pat_mset_list p'l))" 
-            by (rule arg_cong[of _ _ tvars_pp], auto simp: pat_mset_list_def image_comp)
-          also have "\<dots> = tvars_pp (pat_mset (pat_lr p'))" unfolding id[symmetric] by simp
-          also have "\<dots> \<subseteq> {..<n} \<times> UNIV" using varsp' .
-          finally show ?thesis using yn by auto
-        qed
-      qed
-      {
-        fix pp
-        assume pp: "pp \<in># mset (map pat_mset_list ps) + P"         
-        have "lvar_cond_pp nl'' pp" 
-        proof (cases "pp \<in># P")
-          case True
-          with lvarsAll have "lvar_cond_pp nl pp" by auto
-          with lvar_cond_mono[OF nl] show ?thesis unfolding lvar_cond_pp_def by auto
-        next
-          case False
-          then obtain pp' where pp': "pp' \<in> set ps" and pp: "pp = pat_mset_list pp'" 
-            using pp by auto
-          from pp'[unfolded ps_def] obtain \<tau> where pp': "pp' = subst_pat_problem_list \<tau> p'l" by auto
-          have "lvars_pp pp = lvars_pp (pat_lr p')" 
-            unfolding pp pp' id
-            unfolding lvars_pp_def lvars_mp_def 
-            by (force simp: subst_pat_problem_list_def subst_match_problem_list_def subst_left_def pat_mset_list_def)
-          thus ?thesis using lvar_p' unfolding lvar_cond_pp_def by auto
-        qed
-      }
-      with tvars step steps res nl show ?thesis by auto
     qed
   qed
 qed
@@ -1752,11 +2022,11 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
   show ?case 
   proof (cases ps)
     case Nil
-    show ?thesis unfolding pats_impl.simps[of _ n nl ps] unfolding Nil by auto
+    show ?thesis unfolding pats_impl.simps[of _ _ n nl ps] unfolding Nil by auto
   next
     case (Cons p ps1)
     hence id: "pats_mset_list ps = add_mset (pat_mset_list p) (pats_mset_list ps1)" by auto
-    note res = pats_impl.simps[of _ n nl ps, unfolded Cons list.simps, folded Cons]
+    note res = pats_impl.simps[of _ _ n nl ps, unfolded Cons list.simps, folded Cons]
     from 1(2)[rule_format, of p] Cons have "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" by auto
     note pat_impl = pat_impl[OF refl this]
     from 1(3) have "\<forall>pp \<in># add_mset (pat_mset_list p) (pats_mset_list ps1). lvar_cond_pp nl pp" 
@@ -1888,7 +2158,7 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   and Cl: "\<And> s. Cl s = map fst (filter ((=) s o snd) Cs)" 
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
   and impr: "\<not> improved" 
-  shows "pat_complete_impl rn rv P = pats_complete (pat_list ` set P)" 
+  shows "pat_complete_impl rn rv dp P = pats_complete (pat_list ` set P)" 
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
   have S: "\<And> \<sigma>. \<sigma> \<in> S \<Longrightarrow> \<not>empty_sort C \<sigma>"
@@ -1939,7 +2209,7 @@ definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rig
       m = max_list (map (length o snd o fst) Cs);
       Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
       IS = compute_inf_sorts Cs
-     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False (\<lambda> _. undefined) id P" 
+     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False (\<lambda> _. undefined) id (\<lambda> _. True) P" 
 
 abbreviation (input) pat_complete where 
   "pat_complete \<equiv> pattern_completeness_context.pat_complete"
