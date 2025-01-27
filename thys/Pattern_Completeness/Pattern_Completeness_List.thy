@@ -87,6 +87,10 @@ fun zipAll :: "'a list \<Rightarrow> 'b list list \<Rightarrow> ('a \<times> 'b 
   "zipAll [] _ = []" 
 | "zipAll (x # xs) yss = (x, map hd yss) # zipAll xs (map tl yss)" 
 
+datatype ('f,'v,'s)pat_impl_result = Incomplete
+  | New_Problems "nat \<times> nat \<times> ('f,'v,'s)pat_problem_list list" 
+  | Fin_Var_Form "('f,'v,'s)pat_problem_list" 
+
 context pattern_completeness_context
 begin
 
@@ -126,8 +130,7 @@ definition match_steps_impl :: "('f,'v,'s)match_problem_list \<Rightarrow> ('v l
 context 
 fixes
   renNat :: "nat \<Rightarrow> 'v" and 
-  renVar :: "'v \<Rightarrow> 'v" and
-  finVarForm_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
+  renVar :: "'v \<Rightarrow> 'v"
 begin
 
 partial_function (tailrec) decomp'_main_loop where 
@@ -166,21 +169,21 @@ fun pat_inner_impl :: "nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow
    | Some (n',mp') \<Rightarrow> if empty_lr mp' then None
        else pat_inner_impl n' p (mp' # pd))" 
 
-definition pat_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> (nat \<times> nat \<times> ('f,'v,'s)pat_problem_list list) option" where
-  "pat_impl n nl p = (case pat_inner_impl nl p [] of None \<Rightarrow> Some (n,nl,[])
+definition pat_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pat_problem_list \<Rightarrow> ('f,'v,'s)pat_impl_result" where
+  "pat_impl n nl p = (case pat_inner_impl nl p [] of None \<Rightarrow> New_Problems (n,nl,[])
       | Some (nl',p') \<Rightarrow> (case partition (\<lambda> mp. snd (snd mp)) p' of
-         (ivc,no_ivc) \<Rightarrow> if no_ivc = [] then None \<comment> \<open>detected inf-var-conflict (or empty mp)\<close>
+         (ivc,no_ivc) \<Rightarrow> if no_ivc = [] then Incomplete \<comment> \<open>detected inf-var-conflict (or empty mp)\<close>
         else let p'l = map mp_lr_list p'           
          in (case find_var improved no_ivc of Some x \<Rightarrow> 
-           Some (n + m, nl', map (\<lambda> \<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x))
-         | None \<Rightarrow> \<comment> \<open>no_ivc is in finite variable form\<close>
-             if finVarForm_dp (map mp_lr_list no_ivc) then Some (n,nl,[]) else None)))" 
+           New_Problems (n + m, nl', map (\<lambda> \<tau>. subst_pat_problem_list \<tau> p'l) (\<tau>s_list n x))
+         | None \<Rightarrow> Fin_Var_Form (map mp_lr_list no_ivc))))" 
 
 partial_function (tailrec) pats_impl :: "nat \<Rightarrow> nat \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
   "pats_impl n nl ps = (case ps of [] \<Rightarrow> True
      | p # ps1 \<Rightarrow> (case pat_impl n nl p of 
-         None \<Rightarrow> False
-       | Some (n',nl',ps2) \<Rightarrow> pats_impl n' nl' (ps2 @ ps1)))"
+         Incomplete \<Rightarrow> False
+       | Fin_Var_Form p' \<Rightarrow> undefined (STR ''TODO: invoke decision procedure'')
+       | New_Problems (n',nl',ps2) \<Rightarrow> pats_impl n' nl' (ps2 @ ps1)))"
 
 definition pat_complete_impl :: "('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
   "pat_complete_impl ps = (let 
@@ -349,6 +352,14 @@ lemma mp_lr_mset: assumes "mset rx = mset rx'"
   shows "mp_lr (lx,(rx,b)) = mp_lr (lx,(rx',b))" 
   unfolding mp_lr_def split mp_rx_def List.maps_def mset_concat_union using assms 
   by auto
+
+lemma mp_list_lr: "mp_list (mp_lr_list mp) = mp_lr mp" 
+  unfolding mp_lr_list_def mp_lr_def
+  by (cases mp, auto simp: mp_rx_def mp_rx_list_def)
+
+lemma pat_mset_list_lr: "pat_mset_list (map mp_lr_list pp) = pat_lr pp" 
+  unfolding pat_lr_def pat_mset_list_def map_map o_def mp_list_lr by simp
+
 
 lemma size_term_0[simp]: "size (t :: ('f,'v)term) > 0" 
   by (cases t, auto)
@@ -760,7 +771,6 @@ qed
 context 
   fixes renVar :: "'v \<Rightarrow> 'v" 
   fixes renNat  :: "nat \<Rightarrow> 'v" 
-  fixes fvf_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
   assumes renaming_ass: "improved \<Longrightarrow> renaming_funs renNat renVar" 
 begin
 
@@ -768,9 +778,9 @@ abbreviation Match_decomp'_impl where "Match_decomp'_impl \<equiv> match_decomp'
 abbreviation Decomp'_main_loop where "Decomp'_main_loop \<equiv> decomp'_main_loop renNat" 
 abbreviation Decomp'_impl where "Decomp'_impl \<equiv> decomp'_impl renNat" 
 abbreviation Pat_inner_impl where "Pat_inner_impl \<equiv> pat_inner_impl renNat" 
-abbreviation Pat_impl where "Pat_impl \<equiv> pat_impl renNat fvf_dp" 
-abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat fvf_dp" 
-abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar fvf_dp" 
+abbreviation Pat_impl where "Pat_impl \<equiv> pat_impl renNat" 
+abbreviation Pats_impl where "Pats_impl \<equiv> pats_impl renNat" 
+abbreviation Pat_complete_impl where "Pat_complete_impl \<equiv> pat_complete_impl renNat renVar" 
 
 definition allowed_vars where "allowed_vars n = (if improved then range renVar \<union> renNat ` {..<n} else UNIV)" 
 
@@ -1583,24 +1593,17 @@ lemma pat_mset_list: "pat_mset (pat_mset_list p) = pat_list p"
   unfolding pat_list_def pat_mset_list_def by (auto simp: image_comp)
 
 
-(* TODO: we need to replace non-improved by assumption that fvf_dp is 
-   a decision procedure for finite-variable-form pattern problems,
-   and add a rule in the multiset definition of the algorithm that 
-   permits the application of a decision procedure *)
-
-context
-  assumes non_improved: "\<not> improved" 
-begin
-
-
 text \<open>Main simulation lemma for a single @{const pat_impl} step.\<close>
 lemma pat_impl: assumes "Pat_impl n nl p = res" 
     and vars: "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" 
     and lvarsAll: "\<forall> pp \<in># add_mset (pat_mset_list p) P. lvar_cond_pp nl pp"  
-  shows "res = None \<Longrightarrow> \<exists> p'. (add_mset (pat_mset_list p) P, add_mset p' P) \<in> \<Rrightarrow>\<^sup>* \<and> pat_fail p'" 
-    and "res = Some (n',nl',ps) \<Longrightarrow> (add_mset (pat_mset_list p) P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>\<^sup>+
+  shows "res = Incomplete \<Longrightarrow> \<exists> p'. (add_mset (pat_mset_list p) P, add_mset p' P) \<in> \<Rrightarrow>\<^sup>* \<and> pat_fail p'" 
+    and "res = New_Problems (n',nl',ps) \<Longrightarrow> (add_mset (pat_mset_list p) P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>\<^sup>+
              \<and> fst ` tvars_pp (\<Union> (pat_list ` set ps)) \<subseteq> {..< n'} 
              \<and> (\<forall> pp \<in># mset (map pat_mset_list ps) + P. lvar_cond_pp nl' pp) \<and> n \<le> n'" 
+    and "res = Fin_Var_Form fvf \<Longrightarrow> improved 
+             \<and> (add_mset (pat_mset_list p) P, add_mset (pat_mset_list fvf) P) \<in> \<Rrightarrow>\<^sup>* 
+             \<and> finite_var_form_pp (pat_list fvf)" 
 proof (atomize(full), goal_cases)
   case 1
   have wf: "wf_pat_lr []" unfolding wf_pat_lr_def by auto
@@ -1635,7 +1638,7 @@ proof (atomize(full), goal_cases)
     show ?thesis
     proof (cases "\<forall>mp\<in>set p'. snd (snd mp)")
       case True
-      with res part have res: "res = None" by auto
+      with res part have res: "res = Incomplete" by auto
       have "(add_mset (pat_lr p') P, add_mset {#} P) \<in> \<Rrightarrow>\<^sup>*" 
       proof (cases "pat_lr p' = {#}")
         case False
@@ -1688,7 +1691,7 @@ proof (atomize(full), goal_cases)
             subst_match_problem_list_def map_map o_def
           by (intro list.map_cong0, auto simp: pat_mset_list_def o_def image_mset.compositionality)
         note res = res[unfolded Let_def Some option.simps, folded p'l_def]
-        from res have res: "res = Some (n + m, nl'', ps)" using ps_def by auto
+        from res have res: "res = New_Problems (n + m, nl'', ps)" using ps_def by auto
         have step: "(add_mset (pat_lr p') P, mset (map pat_mset_list ps) + P) \<in> \<Rrightarrow>" 
           unfolding P_step_def 
         proof (standard, unfold split, intro P_simp_pp)
@@ -1790,7 +1793,7 @@ proof (atomize(full), goal_cases)
               with x have x: "Var x \<in> set ts" by auto
               from t[unfolded rx_id] 
               have t: "t \<in> set ts" "is_Fun t" by auto              
-              show ?thesis                
+              show ?thesis
               proof (rule pat_instantiate[of n "mp_lr mp" p'', 
                   OF _ disjI2, of "Var x" y t x, folded pat, OF disj, unfolded subst],
                   intro conjI impI refl t)
@@ -1893,7 +1896,8 @@ proof (atomize(full), goal_cases)
           from this[unfolded wf_lr3_def mp split] have "wf_rx3 (rx, False)" by auto
           from this[unfolded wf_rx3_def] have "wf_rx2 (rx, False)" by auto
           from this[unfolded wf_rx2_def snd_conv fst_conv]
-          have wf_ts: "Ball (snd ` set rx) wf_ts2" and no_inf: "\<not> inf_var_conflict (mp_mset (mp_rx (rx, False)))" 
+          have wf_ts: "Ball (snd ` set rx) wf_ts2" 
+            and no_inf: "\<not> inf_var_conflict (mp_mset (mp_rx (rx, False)))" 
             and dist: "distinct (map fst rx)" by auto
           {
             fix x ts t
@@ -1958,7 +1962,9 @@ proof (atomize(full), goal_cases)
             show ?thesis by (auto simp: P_step_def)
           qed
         qed
+        with steps have "(add_mset (pat_mset_list p) P, add_mset (pat_lr no_ivc) P) \<in> \<Rrightarrow>\<^sup>*" by auto
         moreover
+        define pp' where "pp' = map mp_lr_list no_ivc" 
         have "finite_var_form_pp (pat_mset (pat_lr no_ivc))" 
           unfolding finite_var_form_pp_def
         proof
@@ -2000,13 +2006,17 @@ proof (atomize(full), goal_cases)
             show "pair \<in> range (map_prod Var Var)" by auto
           qed
         qed
-        ultimately show ?thesis using res (* missing: require soundness of fvf-decision procedure in assumptions *)
-          (* therefore use existing context that says that improved algorithm is not allowed *)
-          using impr non_improved by auto
+        moreover have "mp_mset ` mp_list ` set fvf = set ` set fvf" by (induct fvf, auto)
+        ultimately show ?thesis using res by (auto intro: impr simp: 
+             pat_mset_list_lr[symmetric] pp'_def[symmetric] pat_list_def pat_mset_list_def)
       qed
     qed
   qed
 qed
+
+context
+  assumes non_improved: "\<not> improved" 
+begin
 
 text \<open>The simulation property for @{const pats_impl}, proven by induction
   on the terminating relation of the multiset-implementation.\<close>
@@ -2022,11 +2032,11 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
   show ?case 
   proof (cases ps)
     case Nil
-    show ?thesis unfolding pats_impl.simps[of _ _ n nl ps] unfolding Nil by auto
+    show ?thesis unfolding pats_impl.simps[of _ n nl ps] unfolding Nil by auto
   next
     case (Cons p ps1)
     hence id: "pats_mset_list ps = add_mset (pat_mset_list p) (pats_mset_list ps1)" by auto
-    note res = pats_impl.simps[of _ _ n nl ps, unfolded Cons list.simps, folded Cons]
+    note res = pats_impl.simps[of _ n nl ps, unfolded Cons list.simps, folded Cons]
     from 1(2)[rule_format, of p] Cons have "fst ` tvars_pp (pat_list p) \<subseteq> {..<n}" by auto
     note pat_impl = pat_impl[OF refl this]
     from 1(3) have "\<forall>pp \<in># add_mset (pat_mset_list p) (pats_mset_list ps1). lvar_cond_pp nl pp" 
@@ -2034,9 +2044,9 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
     note pat_impl = pat_impl[OF this, folded id]
     show ?thesis
     proof (cases "Pat_impl n nl p")
-      case None
+      case Incomplete
       with res have res: "Pats_impl n nl ps = False" by auto
-      from pat_impl(1)[OF None]  
+      from pat_impl(1)[OF Incomplete]  
       obtain p' where steps: "(pats_mset_list ps, add_mset p' (pats_mset_list ps1)) \<in> \<Rrightarrow>\<^sup>*" and fail: "pat_fail p'" 
         by auto
       show ?thesis
@@ -2050,8 +2060,8 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
         with steps res show ?thesis by simp
       qed
     next
-      case (Some triple)
-      then obtain n2 nl2 ps2 where Some: "Pat_impl n nl p = Some (n2,nl2,ps2)" by (cases triple) auto
+      case (New_Problems triple)
+      then obtain n2 nl2 ps2 where Some: "Pat_impl n nl p = New_Problems (n2,nl2,ps2)" by (cases triple) auto
       with res have res: "Pats_impl n nl ps = Pats_impl n2 nl2 (ps2 @ ps1)" by auto
       from pat_impl(2)[OF Some]
       have steps: "(pats_mset_list ps, mset (map pat_mset_list (ps2 @ ps1))) \<in> \<Rrightarrow>\<^sup>+" 
@@ -2079,6 +2089,10 @@ proof (atomize(full), insert assms, induct ps arbitrary: n nl rule: SN_induct[OF
       have lvars: "\<forall>pp\<in>set (ps2 @ ps1). lvar_cond_pp nl2 (pat_mset_list pp)" 
         using lvars unfolding lvar_cond_pp_def by auto
       show ?thesis using 1(1)[OF rel vars lvars] steps unfolding res[symmetric] by auto
+    next
+      case (Fin_Var_Form fvf)
+      from pat_impl(3)[OF this] have improved by auto 
+      with non_improved show ?thesis by auto      
     qed
   qed
 qed
@@ -2158,7 +2172,7 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   and Cl: "\<And> s. Cl s = map fst (filter ((=) s o snd) Cs)" 
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
   and impr: "\<not> improved" 
-  shows "pat_complete_impl rn rv dp P = pats_complete (pat_list ` set P)" 
+  shows "pat_complete_impl rn rv P = pats_complete (pat_list ` set P)" 
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
   have S: "\<And> \<sigma>. \<sigma> \<in> S \<Longrightarrow> \<not>empty_sort C \<sigma>"
@@ -2209,7 +2223,7 @@ definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rig
       m = max_list (map (length o snd o fst) Cs);
       Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
       IS = compute_inf_sorts Cs
-     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False (\<lambda> _. undefined) id (\<lambda> _. True) P" 
+     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False (\<lambda> _. undefined) id P" 
 
 abbreviation (input) pat_complete where 
   "pat_complete \<equiv> pattern_completeness_context.pat_complete"
