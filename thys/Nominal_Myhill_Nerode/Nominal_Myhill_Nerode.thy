@@ -40,7 +40,6 @@ theory Nominal_Myhill_Nerode
     HOL.Relation
     HOL.Fun
     "HOL-Algebra.Group_Action"
-    "HOL-Library.Adhoc_Overloading"
     "HOL-Algebra.Elementary_Groups"
 
 begin

@@ -5,7 +5,6 @@ section \<open>An abstract applicative functor\<close>
 
 theory Abstract_AF imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 typedef 'a af = "UNIV :: 'a set" ..

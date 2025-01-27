@@ -7,7 +7,6 @@ subsection \<open>Streams as an applicative functor\<close>
 theory Applicative_Stream imports
   Applicative
   "HOL-Library.Stream"
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 primcorec (transfer) ap_stream :: "('a \<Rightarrow> 'b) stream \<Rightarrow> 'a stream \<Rightarrow> 'b stream"

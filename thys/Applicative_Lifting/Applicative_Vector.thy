@@ -3,7 +3,6 @@
 theory Applicative_Vector imports
   Applicative
   "HOL-Analysis.Finite_Cartesian_Product"
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 definition pure_vec :: "'a \<Rightarrow> ('a, 'b :: finite) vec"

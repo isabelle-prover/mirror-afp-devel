@@ -1,5 +1,5 @@
 theory MLSS_Typing_Defs
-  imports MLSS_Semantics "HOL-Library.Adhoc_Overloading"
+  imports MLSS_Semantics
 begin
 
 section \<open>Typing Rules\<close>

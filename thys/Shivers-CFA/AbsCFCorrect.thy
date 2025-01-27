@@ -1,7 +1,7 @@
 section \<open>The abstract semantics is correct\<close>
 
 theory AbsCFCorrect
-  imports AbsCF ExCF "HOL-Library.Adhoc_Overloading"
+  imports AbsCF ExCF
 begin
 
 default_sort type

@@ -7,7 +7,6 @@ theory Cotree imports
   Main
   Applicative_Lifting.Applicative
   "HOL-Library.BNF_Corec"
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 context notes [[bnf_internals]]

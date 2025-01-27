@@ -5,7 +5,6 @@ subsection \<open>Probability mass functions\<close>
 theory Applicative_PMF imports
   Applicative
   "HOL-Probability.Probability"
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 abbreviation (input) pure_pmf :: "'a \<Rightarrow> 'a pmf"

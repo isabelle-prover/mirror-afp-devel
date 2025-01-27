@@ -1,5 +1,5 @@
 theory MLSS_Semantics
-  imports MLSS_Logic HereditarilyFinite.Finitary "HOL-Library.Adhoc_Overloading"
+  imports MLSS_Logic HereditarilyFinite.Finitary
 begin
 
 section \<open>Definition of MLSS\<close>

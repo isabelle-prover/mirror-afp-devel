@@ -11,7 +11,6 @@ theory Subsumption
   imports
     Term
     "Abstract-Rewriting.Seq"
-    "HOL-Library.Adhoc_Overloading"
     Fun_More
     Seq_More
 begin

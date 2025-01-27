@@ -4,7 +4,6 @@ subsection \<open>Lists\<close>
 
 theory Applicative_List imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 definition "ap_list fs xs = List.bind fs (\<lambda>f. List.bind xs (\<lambda>x. [f x]))"

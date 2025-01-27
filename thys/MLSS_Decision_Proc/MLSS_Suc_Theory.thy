@@ -1,5 +1,5 @@
 theory MLSS_Suc_Theory
-  imports Main "HOL-Library.Adhoc_Overloading" Fresh_Identifiers.Fresh
+  imports Main Fresh_Identifiers.Fresh
 begin
 
 section \<open>Solver for the Theory of the Successor Function\<close>

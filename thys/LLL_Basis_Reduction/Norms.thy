@@ -15,7 +15,6 @@ text \<open>In this theory we provide the basic definitions and properties of se
 
 theory Norms
   imports "HOL-Computational_Algebra.Polynomial" 
-    "HOL-Library.Adhoc_Overloading"
     "Jordan_Normal_Form.Conjugate"
     "Algebraic_Numbers.Resultant" (* only for poly_of_vec *)
     Missing_Lemmas

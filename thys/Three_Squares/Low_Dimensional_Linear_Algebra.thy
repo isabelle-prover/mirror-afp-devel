@@ -6,7 +6,7 @@ section \<open>Vectors and matrices, determinants and
          their properties in dimensions 2 and 3\<close>
 
 theory Low_Dimensional_Linear_Algebra
-  imports "HOL-Library.Adhoc_Overloading"
+  imports Main
 begin
 
 datatype vec2 =

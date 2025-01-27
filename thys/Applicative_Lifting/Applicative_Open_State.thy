@@ -4,7 +4,6 @@ subsection \<open>Open state monad\<close>
 
 theory Applicative_Open_State imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 type_synonym ('a, 's) state = "'s \<Rightarrow> 'a \<times> 's"
