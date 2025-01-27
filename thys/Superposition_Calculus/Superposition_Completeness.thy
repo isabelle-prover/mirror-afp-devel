@@ -1138,7 +1138,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
       then show "select E = {#}"
         using ground_superpositionI(9) select_from_E
-        by fastforce(*\<and> is_strictly_maximal (l\<^sub>1 \<cdot>l \<rho>\<^sub>1 \<odot> \<mu>) (E \<cdot> \<rho>\<^sub>1 \<odot> \<mu>)"*)
+        by fastforce
 
     next
       assume Pos: "?\<P> = Pos"
