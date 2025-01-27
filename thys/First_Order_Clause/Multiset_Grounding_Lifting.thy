@@ -1,5 +1,7 @@
 theory Multiset_Grounding_Lifting
-  imports  "HOL-Library.Multiset" Abstract_Substitution.Functional_Substitution_Lifting
+  imports 
+    "HOL-Library.Multiset"
+    Abstract_Substitution.Functional_Substitution_Lifting
 begin
 
 locale multiset_grounding_lifting = 

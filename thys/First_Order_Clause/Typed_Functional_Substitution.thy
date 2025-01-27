@@ -339,6 +339,7 @@ lemma inj_id_subst: "inj id_subst"
   using is_renaming_id_subst is_renaming_iff 
   by blast
 
+(* TODO: also here start with one-sided *)
 lemma obtain_typed_renamings:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
@@ -643,10 +644,10 @@ qed
 lemma obtain_merged_grounding':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes 
-    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" 
-    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
-    "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
-    "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
+    typed_\<gamma>\<^sub>1: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" and
+    typed_\<gamma>\<^sub>2: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2" and
+    expr_grounding: "is_ground (expr \<cdot> \<gamma>\<^sub>1)" and
+    expr'_grounding: "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     infinite_vars_UNIV: "infinite (UNIV :: 'v set)" and
     finite_vars: "finite (vars expr')"
@@ -658,7 +659,8 @@ lemma obtain_merged_grounding':
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     "\<forall>X \<subseteq> vars expr. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
     "\<forall>X \<subseteq> vars expr'. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
-  using obtain_merged_grounding[OF assms(2, 1, 4, 3, 5, 6, 7)] (* TODO *)
+  using obtain_merged_grounding[OF typed_\<gamma>\<^sub>2 typed_\<gamma>\<^sub>1 expr'_grounding expr_grounding \<V>\<^sub>1 
+          infinite_vars_UNIV finite_vars]
   by (smt (verit, ccfv_threshold) inf_commute)
 
 end

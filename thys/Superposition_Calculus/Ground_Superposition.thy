@@ -6,9 +6,6 @@ theory Ground_Superposition
     First_Order_Clause.Ground_Clause
 begin
 
-no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)
-no_notation subst_apply_term (infixl "\<cdot>" 67) (* TODO: Just have these once *)
-
 section \<open>Superposition Calculus\<close>
 
 
