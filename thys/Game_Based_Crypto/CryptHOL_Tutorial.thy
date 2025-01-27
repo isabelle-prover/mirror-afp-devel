@@ -107,7 +107,7 @@ theory CryptHOL_Tutorial imports
 begin
 
 unbundle %invisible lifting_syntax
-no_adhoc_overloading %invisible Monad_Syntax.bind bind_pmf
+no_adhoc_overloading %invisible Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 declare %invisible [[names_short]]
 
 text \<open>

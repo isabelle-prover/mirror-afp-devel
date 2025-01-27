@@ -59,7 +59,7 @@ lemma object_ptr_kinds_simp [simp]:
 definition get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t :: "(_) object_ptr \<Rightarrow> (_) heap \<Rightarrow> (_) Object option"
   where
     "get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ptr h = fmlookup (the_heap h) ptr"
-adhoc_overloading get get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t 
+adhoc_overloading get \<rightleftharpoons> get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t 
 
 locale l_type_wf_def\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 begin
@@ -89,7 +89,7 @@ global_interpretation l_get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemm
 definition put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t :: "(_) object_ptr \<Rightarrow> (_) Object \<Rightarrow> (_) heap \<Rightarrow> (_) heap"
   where
     "put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ptr obj h = Heap (fmupd ptr obj (the_heap h))"
-adhoc_overloading put put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
+adhoc_overloading put \<rightleftharpoons> put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 
 lemma put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_ptr_in_heap:
   assumes "put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t object_ptr object h = h'"

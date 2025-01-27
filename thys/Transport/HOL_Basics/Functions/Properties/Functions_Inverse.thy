@@ -10,7 +10,7 @@ begin
 consts the_inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
 definition "the_inverse_on_pred P f \<equiv> \<lambda>y. THE x : P. y = f x"
-adhoc_overloading the_inverse_on the_inverse_on_pred
+adhoc_overloading the_inverse_on \<rightleftharpoons> the_inverse_on_pred
 
 lemma the_inverse_on_eq_if_injective_onI:
   assumes "injective_on P f"
@@ -28,7 +28,7 @@ lemma the_inverse_on_app_eq_if_injective_onI [simp]:
 consts the_inverse :: "'a \<Rightarrow> 'b"
 
 definition "the_inverse_fun \<equiv> the_inverse_on (\<top> :: 'a \<Rightarrow> bool)"
-adhoc_overloading the_inverse the_inverse_fun
+adhoc_overloading the_inverse \<rightleftharpoons> the_inverse_fun
 
 lemma the_inverse_eq_the_inverse_on:
   "the_inverse = the_inverse_on (\<top> :: 'a \<Rightarrow> bool)"

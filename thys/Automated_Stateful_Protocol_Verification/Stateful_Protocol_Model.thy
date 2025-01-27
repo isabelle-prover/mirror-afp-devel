@@ -290,8 +290,8 @@ sublocale intruder_model arity public Ana
 apply unfold_locales
 by (metis assm1, metis assm2, rule Ana.simps, metis assm4, metis assm5)
 
-adhoc_overloading INTRUDER_SYNTH intruder_synth
-adhoc_overloading INTRUDER_DEDUCT intruder_deduct
+adhoc_overloading INTRUDER_SYNTH \<rightleftharpoons> intruder_synth
+adhoc_overloading INTRUDER_DEDUCT \<rightleftharpoons> intruder_deduct
 
 lemma assm6: "arity c = 0 \<Longrightarrow> \<exists>a. \<forall>X. \<Gamma> (Fun c X) = TAtom a" by (cases c) auto
 

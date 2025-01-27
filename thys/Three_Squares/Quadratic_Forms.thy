@@ -13,12 +13,12 @@ consts qf_app :: "'a \<Rightarrow> 'b \<Rightarrow> int" (infixl \<open>$$\<clos
 definition qf2_app :: "mat2 \<Rightarrow> vec2 \<Rightarrow> int" where
 "qf2_app m v = <v | m $ v>"
 
-adhoc_overloading qf_app qf2_app
+adhoc_overloading qf_app \<rightleftharpoons> qf2_app
 
 definition qf3_app :: "mat3 \<Rightarrow> vec3 \<Rightarrow> int" where
 "qf3_app m v = <v | m $ v>"
 
-adhoc_overloading qf_app qf3_app
+adhoc_overloading qf_app \<rightleftharpoons> qf3_app
 
 lemma qf2_app_zero [simp]:
   fixes m :: mat2
@@ -35,12 +35,12 @@ consts qf_positive_definite :: "'a \<Rightarrow> bool"
 definition qf2_positive_definite :: "mat2 \<Rightarrow> bool" where
 "qf2_positive_definite m = (\<forall>v. v \<noteq> 0 \<longrightarrow> m $$ v > 0)"
 
-adhoc_overloading qf_positive_definite qf2_positive_definite
+adhoc_overloading qf_positive_definite \<rightleftharpoons> qf2_positive_definite
 
 definition qf3_positive_definite :: "mat3 \<Rightarrow> bool" where
 "qf3_positive_definite m = (\<forall>v. v \<noteq> 0 \<longrightarrow> m $$ v > 0)"
 
-adhoc_overloading qf_positive_definite qf3_positive_definite
+adhoc_overloading qf_positive_definite \<rightleftharpoons> qf3_positive_definite
 
 lemma qf2_positive_definite_positive:
   fixes m :: mat2
@@ -61,12 +61,12 @@ consts qf_action :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl \<open>\<cdot
 definition qf2_action :: "mat2 \<Rightarrow> mat2 \<Rightarrow> mat2" where
 "qf2_action a u = u\<^sup>T * a * u"
 
-adhoc_overloading qf_action qf2_action
+adhoc_overloading qf_action \<rightleftharpoons> qf2_action
 
 definition qf3_action :: "mat3 \<Rightarrow> mat3 \<Rightarrow> mat3" where
 "qf3_action a u = u\<^sup>T * a * u"
 
-adhoc_overloading qf_action qf3_action
+adhoc_overloading qf_action \<rightleftharpoons> qf3_action
 
 lemma qf2_action_id:
   fixes a :: mat2
@@ -97,12 +97,12 @@ consts qf_equiv :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix \<open>~\<clo
 definition qf2_equiv :: "mat2 \<Rightarrow> mat2 \<Rightarrow> bool" where
 "qf2_equiv a b = (\<exists>u. mat_det u = 1 \<and> a \<cdot> u = b)"
 
-adhoc_overloading qf_equiv qf2_equiv
+adhoc_overloading qf_equiv \<rightleftharpoons> qf2_equiv
 
 definition qf3_equiv :: "mat3 \<Rightarrow> mat3 \<Rightarrow> bool" where
 "qf3_equiv a b = (\<exists>u. mat_det u = 1 \<and> a \<cdot> u = b)"
 
-adhoc_overloading qf_equiv qf3_equiv
+adhoc_overloading qf_equiv \<rightleftharpoons> qf3_equiv
 
 lemma qf2_equiv_sym_impl:
   fixes a b :: mat2

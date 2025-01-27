@@ -62,7 +62,7 @@ lemma get_M_is_l_get_M: "l_get_M get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^s
       shadow_root_ptr_kinds_commutes get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def option.simps(3))
 lemmas get_M_defs = get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def[unfolded l_get_M.a_get_M_def[OF get_M_is_l_get_M]]
 
-adhoc_overloading get_M get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
+adhoc_overloading get_M \<rightleftharpoons> get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
 
 locale l_get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_lemmas = l_type_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
 begin
@@ -85,7 +85,7 @@ global_interpretation l_put_M type_wf shadow_root_ptr_kinds get\<^sub>S\<^sub>h\
   by (simp add: get_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def)
 
 lemmas put_M_defs = a_put_M_def
-adhoc_overloading put_M put_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
+adhoc_overloading put_M \<rightleftharpoons> put_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
 
 
 locale l_put_M\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_lemmas = l_type_wf\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t
@@ -194,7 +194,7 @@ definition delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>
       Some h \<Rightarrow> return_heap h |
       None \<Rightarrow> error HierarchyRequestError)
   }"
-adhoc_overloading delete_M delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M
+adhoc_overloading delete_M \<rightleftharpoons> delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M
 
 lemma delete\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_M_ok [simp]:
   assumes "shadow_root_ptr |\<in>| shadow_root_ptr_kinds h"

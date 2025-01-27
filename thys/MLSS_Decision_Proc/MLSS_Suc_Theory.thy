@@ -47,7 +47,7 @@ fun is_Succ_normal_atom :: "'a suc_atom \<Rightarrow> bool" where
 | "is_Succ_normal_atom (NEq t1 t2) \<longleftrightarrow> is_Succ_normal_term t1 \<and> is_Succ_normal_term t2"
 
 consts is_Succ_normal :: "'a \<Rightarrow> bool"
-adhoc_overloading is_Succ_normal is_Succ_normal_term is_Succ_normal_atom
+adhoc_overloading is_Succ_normal \<rightleftharpoons> is_Succ_normal_term is_Succ_normal_atom
 
 fun I_term :: "('a \<Rightarrow> nat) \<Rightarrow> 'a suc_term \<Rightarrow> nat" where
   "I_term v (Var x) = v x"

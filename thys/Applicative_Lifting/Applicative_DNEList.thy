@@ -78,7 +78,7 @@ lift_definition ap_dnelist :: "('a \<Rightarrow> 'b) dnelist \<Rightarrow> 'a dn
 is "\<lambda>f x. remdups (ap_list f x)"
 by(auto simp add: ap_list_def)
 
-adhoc_overloading Applicative.ap ap_dnelist
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_dnelist
 
 lemma ap_pure_list [simp]: "ap_list [f] xs = map f xs"
 by(simp add: ap_list_def List.bind_def)

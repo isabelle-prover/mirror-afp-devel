@@ -6,7 +6,7 @@ imports Crypto_Scheme_new
 
 begin
 unbundle %invisible lifting_syntax
-no_adhoc_overloading %invisible Monad_Syntax.bind bind_pmf
+no_adhoc_overloading %invisible Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 declare %invisible [[names_short]]
 
 section \<open>$\delta$-Correctness of Kyber without Compression of the Public Key\<close>
@@ -115,12 +115,12 @@ qed
 text \<open>Since Kyber is a PKE, we can instantiate the PKE correctness locale with the Kyber 
 algorithms without compression of the public key.\<close>
 
-no_adhoc_overloading Monad_Syntax.bind bind_pmf
+no_adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 sublocale pke_delta_correct pmf_key_gen pmf_encrypt 
   "(\<lambda> sk c. decrypt (fst c) (snd c) sk du dv)" Msgs .
 
-adhoc_overloading Monad_Syntax.bind bind_pmf
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 text \<open>In order to measure and estimate the errors introduced by the compression and decompression 
 of the output of the encryption, we introduce \<open>error_dist_vec\<close> on vectors and \<open>error_dist_poly\<close> 
@@ -343,7 +343,7 @@ lemma delta_correct_kyber:
 "delta_correct delta_kyber"
 using expect_correct delta_correct_def by auto
 
-no_adhoc_overloading %invisible Monad_Syntax.bind bind_pmf
+no_adhoc_overloading %invisible Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 
 end

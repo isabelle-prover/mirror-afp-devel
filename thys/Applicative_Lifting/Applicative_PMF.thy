@@ -13,7 +13,7 @@ where "pure_pmf \<equiv> return_pmf"
 definition ap_pmf :: "('a \<Rightarrow> 'b) pmf \<Rightarrow> 'a pmf \<Rightarrow> 'b pmf"
 where "ap_pmf f x = map_pmf (\<lambda>(f, x). f x) (pair_pmf f x)"
 
-adhoc_overloading Applicative.ap ap_pmf
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_pmf
 
 context includes applicative_syntax
 begin

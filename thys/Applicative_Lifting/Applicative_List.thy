@@ -8,7 +8,7 @@ begin
 
 definition "ap_list fs xs = List.bind fs (\<lambda>f. List.bind xs (\<lambda>x. [f x]))"
 
-adhoc_overloading Applicative.ap ap_list
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_list
 
 lemma Nil_ap[simp]: "ap_list [] xs = []"
 unfolding ap_list_def by simp

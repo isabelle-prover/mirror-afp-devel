@@ -20,8 +20,8 @@ setup \<open>
     (@{const_name ap_monoid_add}, SOME (@{typ "('a :: monoid_add, 'b \<Rightarrow> 'c) monoid_ap \<Rightarrow> ('a, 'b) monoid_ap \<Rightarrow> ('a, 'c) monoid_ap"}))]
 \<close>
 
-adhoc_overloading Applicative.pure pure_monoid_add
-adhoc_overloading Applicative.ap ap_monoid_add
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_monoid_add
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_monoid_add
 
 applicative monoid_add
   for pure: pure_monoid_add

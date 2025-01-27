@@ -21,7 +21,7 @@ notation comp (infixl \<open>\<circ>\<close> 55)
 end
 
 definition "comp_fun f g x \<equiv> f (g x)"
-adhoc_overloading comp comp_fun
+adhoc_overloading comp \<rightleftharpoons> comp_fun
 
 lemma comp_eq [simp]: "(f \<circ> g) x = f (g x)"
   unfolding comp_fun_def ..
@@ -79,7 +79,7 @@ lemma fun_map_id_eq_comp' [simp]: "(f \<leadsto> id) h = h \<circ> f"
 consts has_inverse_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
 
 definition "has_inverse_on_pred (P :: 'a \<Rightarrow> bool) f \<equiv> in_codom_on P ((=) \<circ> f)"
-adhoc_overloading has_inverse_on has_inverse_on_pred
+adhoc_overloading has_inverse_on \<rightleftharpoons> has_inverse_on_pred
 
 lemma has_inverse_on_pred_eq_in_codom_on: "has_inverse_on P = in_codom_on P \<circ> ((\<circ>) (=))"
   unfolding has_inverse_on_pred_def by auto

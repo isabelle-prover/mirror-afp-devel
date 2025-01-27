@@ -67,7 +67,7 @@ lemma get_M_is_l_get_M: "l_get_M get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^s
       get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def node_ptr_kinds_commutes option.simps(3))
 lemmas get_M_defs = get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def[unfolded l_get_M.a_get_M_def[OF get_M_is_l_get_M]]
 
-adhoc_overloading get_M get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
+adhoc_overloading get_M \<rightleftharpoons> get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 
 locale l_get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_lemmas = l_type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 begin
@@ -91,7 +91,7 @@ global_interpretation l_put_M type_wf element_ptr_kinds get\<^sub>E\<^sub>l\<^su
   by (simp add: get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def)
 
 lemmas put_M_defs = a_put_M_def
-adhoc_overloading put_M put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
+adhoc_overloading put_M \<rightleftharpoons> put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 
 
 locale l_put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_lemmas = l_type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t

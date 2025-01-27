@@ -48,7 +48,7 @@ lemma get_M_is_l_get_M: "l_get_M get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^s
   by (simp add: a_type_wf_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf l_get_M_def)
 lemmas get_M_defs = get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def[unfolded l_get_M.a_get_M_def[OF get_M_is_l_get_M]]
 
-adhoc_overloading get_M get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
+adhoc_overloading get_M \<rightleftharpoons> get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 
 locale l_get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas = l_type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 begin
@@ -77,7 +77,7 @@ global_interpretation l_put_M type_wf object_ptr_kinds get\<^sub>O\<^sub>b\<^sub
    apply (simp add: get_M_is_l_get_M l_put_M_def)
   by (simp add: get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def)
 lemmas put_M_defs = a_put_M_def
-adhoc_overloading put_M put_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
+adhoc_overloading put_M \<rightleftharpoons> put_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t
 
 
 locale l_put_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_lemmas = l_type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t

@@ -67,7 +67,7 @@ lift_definition coin_ra :: "bool random_alg" is coin_rai
 lift_definition bind_ra :: "'a random_alg \<Rightarrow> ('a \<Rightarrow> 'b random_alg) \<Rightarrow> 'b random_alg" is bind_rai
   by (rule wf_bind)
 
-adhoc_overloading Monad_Syntax.bind bind_ra
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_ra
 
 text \<open>Monad laws:\<close>
 

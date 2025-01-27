@@ -52,7 +52,7 @@ definition bind :: "'a raw.tso \<Rightarrow> ('a \<Rightarrow> 'b raw.tso) \<Rig
   "bind f g = (\<lambda>wb. f wb \<bind> uncurry g)"
 
 adhoc_overloading
-  Monad_Syntax.bind raw.bind
+  Monad_Syntax.bind \<rightleftharpoons> raw.bind
 
 definition prim_return :: "'a \<Rightarrow> 'a raw.tso" where
   "prim_return v = (\<lambda>wb. prog.return (v, wb))"
@@ -744,9 +744,9 @@ lift_definition vmap :: "('v \<Rightarrow> 'w) \<Rightarrow> 'v tso \<Rightarrow
 lift_definition t2p :: "'v tso \<Rightarrow> (heap.t, 'v) prog" is raw.t2p .
 
 adhoc_overloading
-  Monad_Syntax.bind tso.bind
+  Monad_Syntax.bind \<rightleftharpoons> tso.bind
 adhoc_overloading
-  parallel tso.parallel
+  parallel \<rightleftharpoons> tso.parallel
 
 definition return :: "'v \<Rightarrow> 'v tso" where
   "return v = tso.action \<langle>{v} \<times> {[]} \<times> Id\<rangle>"

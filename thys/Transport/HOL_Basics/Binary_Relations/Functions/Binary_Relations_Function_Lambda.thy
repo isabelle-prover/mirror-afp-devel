@@ -7,7 +7,7 @@ begin
 consts rel_lambda :: "'a \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'd"
 
 definition "rel_lambda_pred A f x y \<equiv> A x \<and> f x = y"
-adhoc_overloading rel_lambda rel_lambda_pred
+adhoc_overloading rel_lambda \<rightleftharpoons> rel_lambda_pred
 
 open_bundle rel_lambda_syntax
 begin

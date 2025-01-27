@@ -12,7 +12,7 @@ consts trans_closure_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'b"
 
 definition "trans_closure_on_pred (P :: 'a \<Rightarrow> bool) R x y \<equiv>
   \<forall>(R' :: 'a \<Rightarrow> 'a \<Rightarrow> bool) : transitive_on P. R \<le> R' \<longrightarrow> R' x y"
-adhoc_overloading trans_closure_on trans_closure_on_pred
+adhoc_overloading trans_closure_on \<rightleftharpoons> trans_closure_on_pred
 
 lemma trans_closure_on_if_all_trans_relI:
   assumes "\<And>R'. transitive_on P R' \<Longrightarrow> R \<le> R' \<Longrightarrow> R' x y"
@@ -102,7 +102,7 @@ qed
 consts trans_closure :: "'a \<Rightarrow> 'a"
 
 definition "trans_closure_rel \<equiv> trans_closure_on \<top>"
-adhoc_overloading trans_closure trans_closure_rel
+adhoc_overloading trans_closure \<rightleftharpoons> trans_closure_rel
 
 lemma trans_closure_eq_trans_closure_on: "trans_closure = trans_closure_on \<top>"
   unfolding trans_closure_rel_def ..

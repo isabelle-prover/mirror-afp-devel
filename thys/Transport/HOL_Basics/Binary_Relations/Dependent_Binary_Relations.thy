@@ -21,11 +21,11 @@ translations
 
 definition "dep_bin_rel_pred (A :: 'a \<Rightarrow> bool) (B :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<equiv>
   \<forall>x y. R x y \<longrightarrow> A x \<and> B x y"
-adhoc_overloading dep_bin_rel dep_bin_rel_pred
+adhoc_overloading dep_bin_rel \<rightleftharpoons> dep_bin_rel_pred
 
 definition "bin_rel_pred (A :: 'a \<Rightarrow> bool) (B :: 'b \<Rightarrow> bool) :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<equiv>
   {\<Sum>}(_ :: 'a) : A. B"
-adhoc_overloading bin_rel bin_rel_pred
+adhoc_overloading bin_rel \<rightleftharpoons> bin_rel_pred
 
 lemma bin_rel_pred_eq_dep_bin_rel_pred: "A {\<times>} B = {\<Sum>}_ : A. B"
   unfolding bin_rel_pred_def by auto

@@ -23,11 +23,11 @@ translations
 
 definition "rel_dep_mono_wrt_pred (A :: 'a \<Rightarrow> bool) (B :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (R :: 'a \<Rightarrow> 'b \<Rightarrow> bool) \<equiv>
   left_total_on A R \<and> right_unique_on A R \<and> ((x : A) \<Rightarrow> B x) (eval R)"
-adhoc_overloading rel_dep_mono_wrt rel_dep_mono_wrt_pred
+adhoc_overloading rel_dep_mono_wrt \<rightleftharpoons> rel_dep_mono_wrt_pred
 
 definition "rel_mono_wrt_pred (A :: 'a \<Rightarrow> bool) (B :: 'b \<Rightarrow> bool) :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<equiv>
   rel_dep_mono_wrt_pred A (\<lambda>(_ :: 'a). B)"
-adhoc_overloading rel_mono_wrt rel_mono_wrt_pred
+adhoc_overloading rel_mono_wrt \<rightleftharpoons> rel_mono_wrt_pred
 
 lemma rel_mono_wrt_pred_eq_rel_dep_mono_wrt_pred:
   "(((A :: 'a \<Rightarrow> bool) \<rightarrow> (B :: 'b \<Rightarrow> bool)) :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) = (((_ :: 'a) : A) \<rightarrow> B)"
