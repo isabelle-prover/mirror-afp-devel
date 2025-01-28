@@ -1,0 +1,31 @@
+title = "Mission-time Linear Temporal Logic to Regular Expressions"
+date = 2025-01-24
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/General logic/Temporal logic",
+]
+abstract = "We formalize the WEST algorithm for translating from Mission-time Linear Temporal Logic Formulas to regular expressions and prove it correct, building upon the previous Mission_time_LTL entry in Isabelle/HOL. Additionally, we formalize an algorithm for checking the equivalence of a restricted subset of regular expressions. Both of these algorithms are executable, and the code export is used to validate the existing (previously unverified) WEST tool."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wangz]
+email = "wangz_email"
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[contributors]
+
+[notify]
+wangz = "wangz_email"
+cordwell = "cordwell_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

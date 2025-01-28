@@ -6516,6 +6516,23 @@ name = "Robert Sison"
 
 [sison.homepages]
 
+[sloan]
+name = "Elizabeth Sloan"
+orcid = "0000-0003-0496-9241"
+
+[sloan.emails]
+
+[sloan.emails.sloan_email]
+user = [
+  "elisloan",
+]
+host = [
+  "iastate",
+  "edu",
+]
+
+[sloan.homepages]
+
 [smaus]
 name = "Jan-Georg Smaus"
 
@@ -7746,6 +7763,23 @@ name = "Shuling Wang"
 [wang.emails]
 
 [wang.homepages]
+
+[wangz]
+name = "Zili Wang"
+orcid = "0000-0003-1730-6180"
+
+[wangz.emails]
+
+[wangz.emails.wangz_email]
+user = [
+  "ziliw1",
+]
+host = [
+  "iastate",
+  "edu",
+]
+
+[wangz.homepages]
 
 [wassell]
 name = "Mark Wassell"

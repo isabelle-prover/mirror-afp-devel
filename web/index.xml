@@ -11,8 +11,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 24 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>Mission-time Linear Temporal Logic</title>
+          <link>/entries/Mission_Time_LTL.html</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Mission_Time_LTL.html</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mission-time Linear Temporal Logic to Regular Expressions</title>
+          <link>/entries/Mission_Time_LTL_to_Regular_Expression.html</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/entries/Mission_Time_LTL_to_Regular_Expression.html</guid>
+          <description></description>
+        </item>
         <item>
           <title>Formalised Burrows-Wheeler Transform</title>
           <link>/entries/BurrowsWheeler.html</link>
@@ -9860,6 +9874,20 @@
           <link>/sessions/minsky_machines/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
           <guid>/sessions/minsky_machines/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mission_Time_LTL</title>
+          <link>/sessions/mission_time_ltl/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mission_time_ltl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mission_Time_LTL_to_Regular_Expression</title>
+          <link>/sessions/mission_time_ltl_to_regular_expression/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mission_time_ltl_to_regular_expression/</guid>
           <description></description>
         </item>
         <item>

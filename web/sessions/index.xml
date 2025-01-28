@@ -3716,6 +3716,20 @@
           <description></description>
         </item>
         <item>
+          <title>Mission_Time_LTL</title>
+          <link>/sessions/mission_time_ltl/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mission_time_ltl/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>Mission_Time_LTL_to_Regular_Expression</title>
+          <link>/sessions/mission_time_ltl_to_regular_expression/</link>
+          <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+          <guid>/sessions/mission_time_ltl_to_regular_expression/</guid>
+          <description></description>
+        </item>
+        <item>
           <title>ML_Unification</title>
           <link>/sessions/ml_unification/</link>
           <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

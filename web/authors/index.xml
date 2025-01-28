@@ -11,8 +11,29 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
     
-      <lastBuildDate>Fri, 17 Jan 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Fri, 24 Jan 2025 00:00:00 +0000</lastBuildDate>
       <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+          <title>cordwell</title>
+          <link>/authors/cordwell/</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/authors/cordwell/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>sloan</title>
+          <link>/authors/sloan/</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/authors/sloan/</guid>
+          <description></description>
+        </item>
+        <item>
+          <title>wangz</title>
+          <link>/authors/wangz/</link>
+          <pubDate>Fri, 24 Jan 2025 00:00:00 +0000</pubDate>
+          <guid>/authors/wangz/</guid>
+          <description></description>
+        </item>
         <item>
           <title>cheung</title>
           <link>/authors/cheung/</link>
@@ -130,13 +151,6 @@
           <link>/authors/argyraki/</link>
           <pubDate>Wed, 02 Oct 2024 00:00:00 +0000</pubDate>
           <guid>/authors/argyraki/</guid>
-          <description></description>
-        </item>
-        <item>
-          <title>cordwell</title>
-          <link>/authors/cordwell/</link>
-          <pubDate>Thu, 26 Sep 2024 00:00:00 +0000</pubDate>
-          <guid>/authors/cordwell/</guid>
           <description></description>
         </item>
         <item>
