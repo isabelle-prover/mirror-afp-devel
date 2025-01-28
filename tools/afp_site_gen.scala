@@ -142,72 +142,20 @@ object AFP_Site_Gen {
   /* stats */
 
   def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry]): JSON.T = {
-    def round(int: Int): Int = Math.round(int.toFloat / 100) * 100
-
-    def nodes(entry: Entry): List[Document.Node.Name] =
-      structure.entry_sessions(entry.name).flatMap(session =>
-        deps(session.name).proper_session_theories)
-
-    val theorem_commands = List("theorem", "lemma", "corollary", "proposition", "schematic_goal")
-
-    var entry_lines = Map.empty[Entry, Int]
-    var entry_lemmas = Map.empty[Entry, Int]
-    for {
-      entry <- entries
-      node <- nodes(entry)
-      lines = split_lines(File.read(node.path)).map(_.trim)
-    } {
-      entry_lines += entry -> (entry_lines.getOrElse(entry, 0) + lines.count(_.nonEmpty))
-      entry_lemmas += entry -> (entry_lemmas.getOrElse(entry, 0) +
-        lines.count(line => theorem_commands.exists(line.startsWith)))
-    }
-
-    val first_year = entries.flatMap(_.releases).map(_.date.getYear).min
-    def years(upto: Int): List[Int] = Range.inclusive(first_year, upto).toList
-
-    val current_year = Date.now().rep.getYear
-    val all_years = years(current_year)
-
-    // per Isabelle release year
-    val by_year = entries.groupBy(_.date.getYear)
-    val size_by_year = by_year.view.mapValues(_.length).toMap
-    val loc_by_year = by_year.view.mapValues(_.map(entry_lines).sum).toMap
-    val authors_by_year = by_year.view.mapValues(_.flatMap(_.authors).map(_.author)).toMap
-
-    val num_lemmas = entries.map(entry_lemmas).sum
-    val num_lines = entries.map(entry_lines).sum
-
-    // accumulated
-    def total_articles(year: Int): Int =
-      years(year).map(size_by_year.getOrElse(_, 0)).sum
-
-    def total_loc(year: Int): Int =
-      round(years(year).map(loc_by_year.getOrElse(_, 0)).sum)
-
-    def total_authors(year: Int): Int =
-      years(year).flatMap(authors_by_year.getOrElse(_, Nil)).distinct.length
-
-    def fresh_authors(year: Int): Int =
-      total_authors(year) - total_authors(year - 1)
-
-    val sorted = entries.sortBy(_.date)
-
-    def map_repetitions(elems: List[String], to: String): List[String] =
-      elems.foldLeft(("", List.empty[String])) {
-        case((last, acc), s) => (s, acc :+ (if (last == s) to else s))
-      }._2
+    val stats = AFP_Stats.statistics(deps, structure, entries)
 
     JSON.Object(
-      "years" -> all_years,
-      "num_lemmas" -> num_lemmas,
-      "num_loc" -> num_lines,
-      "articles_year" -> all_years.map(total_articles),
-      "loc_years" -> all_years.map(total_loc),
-      "author_years" -> all_years.map(fresh_authors),
-      "author_years_cumulative" -> all_years.map(total_authors),
-      "loc_articles" -> sorted.map(entry_lines),
-      "all_articles" -> sorted.map(_.name),
-      "article_years_unique" -> map_repetitions(sorted.map(_.date.getYear.toString), ""))
+      "years" -> stats.years.map(_.rep),
+      "num_lemmas" -> stats.cumulated_thms(),
+      "num_loc" -> stats.cumulated_loc(),
+      "articles_year" -> stats.years.map(_.rep).map(stats.cumulated_entries),
+      "loc_years" -> stats.years.map(_.rep).map(stats.cumulated_loc),
+      "author_years" -> stats.years.map(_.new_authors),
+      "author_years_cumulative" -> stats.years.map(_.rep).map(stats.cumulated_authors),
+      "loc_articles" -> stats.years.flatMap(_.entries.map(_.loc)),
+      "all_articles" -> stats.years.flatMap(_.entries.map(_.name)),
+      "article_years_unique" -> stats.years.filter(_.entries.nonEmpty).flatMap(year =>
+        year.rep.toString :: Library.replicate(year.entries.drop(1).length, "")))
   }
 
 
