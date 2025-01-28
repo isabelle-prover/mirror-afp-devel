@@ -2438,7 +2438,7 @@ end
 end
 
 definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
-  "decide_pat_complete Cs P = (let Sl = sorts_of_ssig_list Cs;
+  "decide_pat_complete Cs P = (let 
       m = max_list (map (length o snd o fst) Cs);
       Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
       IS = compute_inf_sorts Cs
@@ -2472,7 +2472,7 @@ qed auto
    invokes a decision procedure for these problems *)
 
 definition decide_pat_complete_new :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
-  "decide_pat_complete_new rn rv dp Cs P = (let Sl = sorts_of_ssig_list Cs;
+  "decide_pat_complete_new rn rv dp Cs P = (let 
       m = max_list (map (length o snd o fst) Cs);
       Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
       IS = compute_inf_sorts Cs
