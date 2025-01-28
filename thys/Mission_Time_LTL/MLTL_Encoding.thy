@@ -8,7 +8,7 @@ begin
 subsection \<open> Syntax \<close>
 
 datatype (atoms_mltl: 'a) mltl =
-    True_mltl                                     ("True\<^sub>m")           
+    True_mltl                                     ("True\<^sub>m")
   | False_mltl                                    ("False\<^sub>m")
   | Prop_mltl 'a                                  ("Prop\<^sub>m '(_')")
   | Not_mltl "'a mltl"                            ("Not\<^sub>m _" [85] 85)
@@ -16,7 +16,7 @@ datatype (atoms_mltl: 'a) mltl =
   | Or_mltl "'a mltl" "'a mltl"                   ("_ Or\<^sub>m _" [81, 81] 80)
   | Future_mltl "nat" "nat" "'a mltl"             ("F\<^sub>m '[_',_'] _" [88, 88, 88] 87)
   | Global_mltl "nat" "nat" "'a mltl"             ("G\<^sub>m '[_',_'] _" [88, 88, 88] 87)
-  | Until_mltl "'a mltl" "nat" "nat" "'a mltl"    ("_ U\<^sub>m '[_',_'] _" [84, 84, 84, 84] 83)  
+  | Until_mltl "'a mltl" "nat" "nat" "'a mltl"    ("_ U\<^sub>m '[_',_'] _" [84, 84, 84, 84] 83)
   | Release_mltl "'a mltl" "nat" "nat" "'a mltl"  ("_ R\<^sub>m '[_',_'] _" [84, 84, 84, 84] 83)
 
 definition Implies_mltl ("_ Implies\<^sub>m _" [81, 81] 80)
@@ -27,7 +27,7 @@ definition Iff_mltl ("_ Iff\<^sub>m _" [81, 81] 80)
 
 subsubsection \<open> Binding Examples \<close>
 (*Not binds more tightly than And, Or*)
-value "Not\<^sub>m Prop\<^sub>m (p) And\<^sub>m Prop\<^sub>m (q) = 
+value "Not\<^sub>m Prop\<^sub>m (p) And\<^sub>m Prop\<^sub>m (q) =
        And_mltl (Not_mltl (Prop_mltl p)) (Prop_mltl q)"
 (*And binds more tightly than Or*)
 value "p And\<^sub>m q Or\<^sub>m r = Or_mltl (And_mltl p q) r"
@@ -47,16 +47,16 @@ where
 | "\<pi> \<Turnstile>\<^sub>m Not\<^sub>m \<phi> = (\<not> \<pi> \<Turnstile>\<^sub>m \<phi>)"
 | "\<pi> \<Turnstile>\<^sub>m \<phi> And\<^sub>m \<psi> = (\<pi> \<Turnstile>\<^sub>m \<phi> \<and> \<pi> \<Turnstile>\<^sub>m \<psi>)"
 | "\<pi> \<Turnstile>\<^sub>m \<phi> Or\<^sub>m \<psi> = (\<pi> \<Turnstile>\<^sub>m \<phi> \<or> \<pi> \<Turnstile>\<^sub>m \<psi>)"
-| "\<pi> \<Turnstile>\<^sub>m (F\<^sub>m [a, b] \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> 
+| "\<pi> \<Turnstile>\<^sub>m (F\<^sub>m [a, b] \<phi>) = (a \<le> b \<and> length \<pi> > a \<and>
       (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> (drop i \<pi>) \<Turnstile>\<^sub>m \<phi>))"
-| "\<pi> \<Turnstile>\<^sub>m (G\<^sub>m [a, b] \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> 
+| "\<pi> \<Turnstile>\<^sub>m (G\<^sub>m [a, b] \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or>
       (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> (drop i \<pi>) \<Turnstile>\<^sub>m \<phi>)))"
-| "\<pi> \<Turnstile>\<^sub>m (\<phi> U\<^sub>m [a, b] \<psi>) =  (a \<le> b \<and> length \<pi> > a \<and> 
-      (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> ((drop i \<pi>) \<Turnstile>\<^sub>m \<psi> 
+| "\<pi> \<Turnstile>\<^sub>m (\<phi> U\<^sub>m [a, b] \<psi>) =  (a \<le> b \<and> length \<pi> > a \<and>
+      (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> ((drop i \<pi>) \<Turnstile>\<^sub>m \<psi>
         \<and> (\<forall>j. j \<ge> a \<and> j<i \<longrightarrow> (drop j \<pi>) \<Turnstile>\<^sub>m \<phi>))))"
-| "\<pi> \<Turnstile>\<^sub>m (\<phi> R\<^sub>m [a, b] \<psi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> 
-      (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> (((drop i \<pi>) \<Turnstile>\<^sub>m \<psi>))) \<or> 
-      (\<exists>j. j \<ge> a \<and> j \<le> b-1 \<and> (drop j \<pi>) \<Turnstile>\<^sub>m \<phi> \<and> 
+| "\<pi> \<Turnstile>\<^sub>m (\<phi> R\<^sub>m [a, b] \<psi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or>
+      (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> (((drop i \<pi>) \<Turnstile>\<^sub>m \<psi>))) \<or>
+      (\<exists>j. j \<ge> a \<and> j \<le> b-1 \<and> (drop j \<pi>) \<Turnstile>\<^sub>m \<phi> \<and>
          (\<forall>k. a \<le> k \<and> k \<le> j \<longrightarrow> (drop k \<pi>) \<Turnstile>\<^sub>m \<psi>))))"
 
 subsubsection \<open> Examples \<close>
@@ -77,7 +77,7 @@ lemma
       by blast
   qed
 
-lemma 
+lemma
   "[{0::nat}] \<Turnstile>\<^sub>m G\<^sub>m [0,2] Prop\<^sub>m (0::nat) = False"
   by auto
 

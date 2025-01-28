@@ -12,15 +12,15 @@ text \<open> We use the following function to assume that an MLTL formula is wel
 fun intervals_welldef:: "'a mltl \<Rightarrow> bool"
   where "intervals_welldef True\<^sub>m = True"
   | "intervals_welldef False\<^sub>m = True"
-  | "intervals_welldef (Prop\<^sub>m (p)) = True" 
+  | "intervals_welldef (Prop\<^sub>m (p)) = True"
   | "intervals_welldef (Not\<^sub>m \<phi>) = intervals_welldef \<phi>"
-  | "intervals_welldef (\<phi> And\<^sub>m \<psi>) = (intervals_welldef \<phi> \<and> intervals_welldef \<psi>)"     
-  | "intervals_welldef (\<phi> Or\<^sub>m \<psi>) = (intervals_welldef \<phi> \<and> intervals_welldef \<psi>)"     
+  | "intervals_welldef (\<phi> And\<^sub>m \<psi>) = (intervals_welldef \<phi> \<and> intervals_welldef \<psi>)"
+  | "intervals_welldef (\<phi> Or\<^sub>m \<psi>) = (intervals_welldef \<phi> \<and> intervals_welldef \<psi>)"
   | "intervals_welldef (F\<^sub>m [a,b] \<phi>)  = (a \<le> b \<and> intervals_welldef \<phi>)"
   | "intervals_welldef (G\<^sub>m [a,b] \<phi>)  = (a \<le> b \<and> intervals_welldef \<phi>)"
-  | "intervals_welldef (\<phi> U\<^sub>m [a,b] \<psi>) = 
+  | "intervals_welldef (\<phi> U\<^sub>m [a,b] \<psi>) =
       (a \<le> b \<and> intervals_welldef \<phi> \<and> intervals_welldef \<psi>)"
-  | "intervals_welldef (\<phi> R\<^sub>m [a,b] \<psi>) = 
+  | "intervals_welldef (\<phi> R\<^sub>m [a,b] \<psi>) =
       (a \<le> b \<and> intervals_welldef \<phi> \<and> intervals_welldef \<psi>)"
 
 subsection \<open>Semantic Equivalence\<close>
@@ -29,7 +29,7 @@ definition semantic_equiv:: "'a mltl \<Rightarrow> 'a mltl \<Rightarrow> bool" (
   where "\<phi> \<equiv>\<^sub>m \<psi> \<equiv> (\<forall>\<pi>. \<pi> \<Turnstile>\<^sub>m \<phi> = \<pi> \<Turnstile>\<^sub>m \<psi>)"
 
 fun depth_mltl:: "'a mltl \<Rightarrow> nat"
-  where "depth_mltl True\<^sub>m = 0" 
+  where "depth_mltl True\<^sub>m = 0"
   | "depth_mltl False\<^sub>m = 0"
   | "depth_mltl Prop\<^sub>m (p) = 0"
   | "depth_mltl (Not\<^sub>m \<phi>) = 1 + depth_mltl \<phi>"
@@ -41,7 +41,7 @@ fun depth_mltl:: "'a mltl \<Rightarrow> nat"
   | "depth_mltl (\<phi> R\<^sub>m [a,b] \<psi>) = 1 + max (depth_mltl \<phi>) (depth_mltl \<psi>)"
 
 fun subformulas:: "'a mltl \<Rightarrow> 'a mltl set"
-  where "subformulas True\<^sub>m = {}" 
+  where "subformulas True\<^sub>m = {}"
   | "subformulas False\<^sub>m = {}"
   | "subformulas Prop\<^sub>m (p) = {}"
   | "subformulas (Not\<^sub>m \<phi>) = {\<phi>} \<union> subformulas \<phi>"
@@ -88,7 +88,7 @@ lemma globally_as_release:
   shows "(G\<^sub>m [a,b] \<phi>) \<equiv>\<^sub>m (False\<^sub>m R\<^sub>m [a,b] \<phi>)"
   unfolding semantic_equiv_def by auto
 
-lemma until_or_distribute: 
+lemma until_or_distribute:
   fixes a b ::"nat"
   assumes "a \<le> b"
   shows "\<phi> U\<^sub>m [a,b] (\<alpha> Or\<^sub>m \<beta>) \<equiv>\<^sub>m
@@ -96,26 +96,26 @@ lemma until_or_distribute:
   using assms semantics_mltl.simps unfolding semantic_equiv_def
   by auto
 
-lemma until_and_distribute: 
+lemma until_and_distribute:
   fixes a b ::"nat"
   assumes "a \<le> b"
   shows "(\<alpha> And\<^sub>m \<beta>) U\<^sub>m [a,b] \<phi> \<equiv>\<^sub>m
          (\<alpha> U\<^sub>m [a,b] \<phi>) And\<^sub>m (\<beta> U\<^sub>m [a,b] \<phi>)"
-  using assms unfolding semantic_equiv_def semantics_mltl.simps 
-  by (smt (verit) linorder_less_linear order_less_trans) 
+  using assms unfolding semantic_equiv_def semantics_mltl.simps
+  by (smt (verit) linorder_less_linear order_less_trans)
 
-lemma release_or_distribute: 
+lemma release_or_distribute:
   fixes a b ::"nat"
   assumes "a \<le> b"
   shows "(\<alpha> Or\<^sub>m \<beta>) R\<^sub>m [a,b] \<phi> \<equiv>\<^sub>m
          (\<alpha> R\<^sub>m [a,b] \<phi>) Or\<^sub>m (\<beta> R\<^sub>m [a,b] \<phi>)"
-  using assms unfolding semantic_equiv_def semantics_mltl.simps 
+  using assms unfolding semantic_equiv_def semantics_mltl.simps
   by auto
 
 lemma different_next_operators:
   shows "\<not>(G\<^sub>m [1,1] \<phi> \<equiv>\<^sub>m F\<^sub>m [1,1] \<phi>)"
   unfolding semantic_equiv_def semantics_mltl.simps
-  by (metis le_numeral_extra(4) linordered_nonzero_semiring_class.zero_le_one list.size(3) not_one_less_zero) 
+  by (metis le_numeral_extra(4) linordered_nonzero_semiring_class.zero_le_one list.size(3) not_one_less_zero)
 
 subsection \<open>Duality Properties\<close>
 
@@ -127,9 +127,9 @@ lemma globally_future_dual:
 
 lemma future_globally_dual:
   fixes a b::"nat"
-  assumes "a \<le> b" 
+  assumes "a \<le> b"
   shows "(F\<^sub>m [a,b] \<phi>) \<equiv>\<^sub>m Not\<^sub>m (G\<^sub>m [a,b] (Not\<^sub>m \<phi>))"
-  using assms unfolding semantic_equiv_def by auto 
+  using assms unfolding semantic_equiv_def by auto
 
 text \<open> Proof altered from source material in the last case. \<close>
 lemma release_until_dual1:
@@ -145,9 +145,9 @@ proof -
   } moreover {assume **: "(\<forall>i. (a \<le> i \<and> i \<le> b) \<longrightarrow> semantics_mltl (drop i \<pi>) \<psi>)"
     then have "length \<pi> \<le> a \<or> (\<forall>s. a \<le> s \<and> s \<le> b \<longrightarrow> (semantics_mltl (drop s \<pi>) \<psi> \<or> (\<exists>t. t\<ge> a \<and> t \<le> s-1 \<and> semantics_mltl (drop t \<pi>) \<phi>)))"
       by auto
-    then have ?thesis using assms 
+    then have ?thesis using assms
       using "**" linorder_not_less by auto
-  } moreover {assume *: "length \<pi> > a \<and> (\<exists>i. (a \<le> i \<and> i \<le> b) \<and> \<not> (semantics_mltl (drop i \<pi>) \<psi>))" 
+  } moreover {assume *: "length \<pi> > a \<and> (\<exists>i. (a \<le> i \<and> i \<le> b) \<and> \<not> (semantics_mltl (drop i \<pi>) \<psi>))"
     then obtain i where i_prop: "(a \<le> i \<and> i \<le> b)" "\<not> (semantics_mltl (drop i \<pi>) \<psi>)"
       by blast
     have "(\<forall>i. (a \<le> i \<and> i \<le> b) \<longrightarrow> (semantics_mltl (drop i \<pi>) \<psi>))
@@ -190,8 +190,8 @@ proof -
    then have  ?thesis
      by auto
  }
-  ultimately show ?thesis 
-    using linorder_not_less 
+  ultimately show ?thesis
+    using linorder_not_less
     by (smt (verit) relase_unfold semantics_mltl.simps(4) semantics_mltl.simps(9))
 qed
 
@@ -200,7 +200,7 @@ lemma release_until_dual2:
   assumes a_leq_b: "a \<le> b"
   assumes "\<pi> \<Turnstile>\<^sub>m (Not\<^sub>m ((Not\<^sub>m \<phi>) U\<^sub>m [a,b] (Not\<^sub>m \<psi>)))"
   shows "semantics_mltl \<pi> (\<phi> R\<^sub>m [a,b] \<psi>)"
-proof - 
+proof -
   have unfold_not_until_not: " \<not> (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> (\<not> (semantics_mltl (drop i \<pi>) \<psi>) \<and> (\<forall>j. j \<ge> a \<and> j<i \<longrightarrow> \<not> (semantics_mltl (drop j \<pi> ) \<phi>)))))"
    using assms by auto
   have not_until_not_unfold: "(a \<le> b \<and> a < length \<pi>) \<longrightarrow> (\<pi> \<Turnstile>\<^sub>m (Not\<^sub>m ((Not\<^sub>m \<phi>) U\<^sub>m [a,b] (Not\<^sub>m \<psi>))) \<longleftrightarrow>
@@ -221,7 +221,7 @@ proof -
         (\<exists>j. a \<le> j \<and> j < i \<and> semantics_mltl (drop j \<pi>) \<phi>))"
      using not_until_not_unfold assms
      by blast
-   have least_prop: "(\<exists>s. (a \<le> s \<and> s \<le> b) \<and> f s \<pi> \<psi> \<and> 
+   have least_prop: "(\<exists>s. (a \<le> s \<and> s \<le> b) \<and> f s \<pi> \<psi> \<and>
         (\<forall>k. a \<le> k \<and> k < s \<longrightarrow> \<not> (f k \<pi> \<psi>))
         )" if f_prop: "(\<exists>s. (a \<le> s \<and> s \<le> b) \<and> f s \<pi> \<psi>)" for f::"nat \<Rightarrow> 'a set list \<Rightarrow> 'a mltl \<Rightarrow> bool"
    proof -
@@ -230,7 +230,7 @@ proof -
      then obtain q where q_prop: "q = (LEAST p. (a \<le> p \<and> p \<le> b) \<and> f p \<pi> \<psi>)"
        by auto
      then have least1: "(a \<le> q \<and> q \<le> b) \<and> f q \<pi> \<psi>"
-       using f_prop 
+       using f_prop
        by (smt (verit) LeastI)
      have least2: "(\<forall>k. a \<le> k \<and> k < q \<longrightarrow> \<not> (f k \<pi> \<psi>))"
        using q_prop
@@ -247,7 +247,7 @@ proof -
         (\<exists>j\<ge>a. j < i1 \<and> semantics_mltl (drop j \<pi>) \<phi>)"
      using not_until_not i1_prop by blast
    then have "(semantics_mltl (drop i1 \<pi>) \<psi>) \<or> (\<exists>t. a \<le> t \<and> t \<le> i1-1 \<and> (semantics_mltl (drop t \<pi>) \<phi>))"
-     using * i1_prop 
+     using * i1_prop
      using not_less_eq by fastforce
    then have "(\<exists>t. a \<le> t \<and> t \<le> i1-1 \<and> (semantics_mltl (drop t \<pi>) \<phi>))"
      by (smt (verit, ccfv_threshold) "*" i1_prop less_imp_le_nat nle_le not_until_not order_le_less_trans)
@@ -257,7 +257,7 @@ proof -
      using i1_prop by blast
    then have "\<forall>k. a \<le> k \<and> k \<le> t \<longrightarrow> (semantics_mltl (drop k \<pi>) \<psi> )"
      using t_prop by auto
-   then have "\<exists>j. a \<le> j \<and> j \<le> (b-1) \<and> (semantics_mltl (drop j \<pi>) \<phi>) 
+   then have "\<exists>j. a \<le> j \<and> j \<le> (b-1) \<and> (semantics_mltl (drop j \<pi>) \<phi>)
       \<and> (\<forall>k. a \<le> k \<and>k \<le> j \<longrightarrow> (semantics_mltl (drop k \<pi>) \<psi>))"
      by (meson diff_le_mono i1_prop le_trans t_prop)
    then have ?thesis
@@ -265,10 +265,10 @@ proof -
      by blast
  }
   ultimately show  ?thesis
-    using assms(1) linorder_not_less by blast 
+    using assms(1) linorder_not_less by blast
 qed
 
-lemma release_until_dual: 
+lemma release_until_dual:
   fixes a b::"nat"
   assumes a_leq_b: "a \<le> b"
   shows "(\<phi> R\<^sub>m [a,b] \<psi>) \<equiv>\<^sub>m (Not\<^sub>m ((Not\<^sub>m \<phi>) U\<^sub>m [a,b] (Not\<^sub>m \<psi>)))"
@@ -303,11 +303,11 @@ proof-
   let ?lhs = "(\<phi> R\<^sub>m [a,b] (\<alpha> And\<^sub>m \<beta>))"
   let ?rhs = "((\<phi> R\<^sub>m [a,b] \<alpha>) And\<^sub>m (\<phi> R\<^sub>m [a,b] \<beta>))"
   let ?neg = "Not\<^sub>m ((Not\<^sub>m \<phi>) U\<^sub>m [a,b] (Not\<^sub>m (\<alpha> And\<^sub>m \<beta>)))"
-  have eq_lhs: "semantic_equiv ?lhs ?neg" 
+  have eq_lhs: "semantic_equiv ?lhs ?neg"
     using until_release_dual release_until_dual until_or_distribute
     by (smt (verit) assms release_until_dual1 semantic_equiv_def)
   let ?neg1 = "Not\<^sub>m ((Not\<^sub>m \<phi>) U\<^sub>m [a,b] ((Not\<^sub>m \<alpha>) Or\<^sub>m (Not\<^sub>m \<beta>)))"
-  have eq_neg1: "semantic_equiv ?neg ?neg1" 
+  have eq_neg1: "semantic_equiv ?neg ?neg1"
     unfolding semantic_equiv_def semantic_equiv_def by auto
   let ?neg2 = "Not\<^sub>m (((Not\<^sub>m \<phi>) U\<^sub>m [a,b] (Not_mltl \<alpha>)) Or\<^sub>m ((Not\<^sub>m \<phi>) U\<^sub>m [a,b] (Not_mltl \<beta>)))"
   have eq_neg2: "semantic_equiv ?neg1 ?neg2"
@@ -318,12 +318,12 @@ proof-
     by (metis release_until_dual1 release_until_dual2 semantics_mltl.simps(4) semantics_mltl.simps(5) semantics_mltl.simps(6))
   have eq_rhs: "semantic_equiv ?rhs ?neg"
     using eq_neg1 eq_neg2 eq_neg3
-    by (meson semantic_equiv_def) 
+    by (meson semantic_equiv_def)
   show ?thesis using eq_rhs eq_lhs unfolding semantic_equiv_def by meson
 qed
 
 subsection \<open>NNF Transformation and Properties \<close>
-fun convert_nnf:: "'a mltl \<Rightarrow> 'a mltl" 
+fun convert_nnf:: "'a mltl \<Rightarrow> 'a mltl"
   where "convert_nnf True\<^sub>m = True\<^sub>m"
   | "convert_nnf False\<^sub>m = False\<^sub>m"
   | "convert_nnf Prop\<^sub>m (p) = Prop\<^sub>m (p)"
@@ -334,8 +334,8 @@ fun convert_nnf:: "'a mltl \<Rightarrow> 'a mltl"
   | "convert_nnf (\<phi> U\<^sub>m [a,b] \<psi>) = ((convert_nnf \<phi>) U\<^sub>m [a,b] (convert_nnf \<psi>))"
   | "convert_nnf (\<phi> R\<^sub>m [a,b] \<psi>) = ((convert_nnf \<phi>) R\<^sub>m [a,b] (convert_nnf \<psi>))"
   (* Rewriting with logical duals *)
-  | "convert_nnf (Not\<^sub>m True\<^sub>m) = False\<^sub>m" 
-  | "convert_nnf (Not\<^sub>m False\<^sub>m) = True\<^sub>m" 
+  | "convert_nnf (Not\<^sub>m True\<^sub>m) = False\<^sub>m"
+  | "convert_nnf (Not\<^sub>m False\<^sub>m) = True\<^sub>m"
   | "convert_nnf (Not\<^sub>m Prop\<^sub>m (p)) = (Not\<^sub>m Prop\<^sub>m (p))"
   | "convert_nnf (Not\<^sub>m (Not\<^sub>m \<phi>)) = convert_nnf \<phi>"
   | "convert_nnf (Not\<^sub>m (\<phi> And\<^sub>m \<psi>)) = ((convert_nnf (Not\<^sub>m \<phi>)) Or\<^sub>m (convert_nnf (Not\<^sub>m \<psi>)))"
@@ -355,10 +355,10 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
   then show ?case
   proof (cases \<phi>)
     case True_mltl
-    then show ?thesis by simp 
+    then show ?thesis by simp
   next
     case False_mltl
-    then show ?thesis by simp  
+    then show ?thesis by simp
   next
     case (Prop_mltl x)
     then show ?thesis by simp
@@ -369,15 +369,15 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
     then show ?thesis
     proof (cases \<phi>1)
       case True_mltl
-      then show ?thesis using Not_mltl 
+      then show ?thesis using Not_mltl
         by simp
     next
       case False_mltl
-      then show ?thesis using Not_mltl 
+      then show ?thesis using Not_mltl
         by simp
     next
       case (Prop_mltl p)
-      then show ?thesis using Not_mltl 
+      then show ?thesis using Not_mltl
         by simp
     next
       case (Not_mltl \<phi>2)
@@ -397,7 +397,7 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
         phi_is by simp
       have "semantics_mltl \<pi> (convert_nnf \<phi>) = semantics_mltl \<pi> (Global_mltl a b (convert_nnf (Not\<^sub>m \<phi>2)))"
         using Future_mltl phi_is by simp
-      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>2)))))" 
+      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>2)))))"
         by auto
       have "intervals_welldef (Not\<^sub>m \<phi>2)"
         using less(2) Future_mltl phi_is by simp
@@ -416,7 +416,7 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
         phi_is by simp
       have "semantics_mltl \<pi> (convert_nnf \<phi>) = semantics_mltl \<pi> (Future_mltl a b (convert_nnf (Not\<^sub>m \<phi>2)))"
         using Global_mltl phi_is by simp
-      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>2))))" 
+      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>2))))"
         by auto
       have "intervals_welldef (Not\<^sub>m \<phi>2)"
         using less(2) Global_mltl phi_is by simp
@@ -435,7 +435,7 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
         phi_is by simp
       have "semantics_mltl \<pi> (convert_nnf \<phi>) = semantics_mltl \<pi> (Release_mltl (convert_nnf (Not\<^sub>m \<phi>2)) a b (convert_nnf (Not\<^sub>m \<phi>3)))"
         using Until_mltl phi_is by simp
-      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> ((semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>3))))) \<or> (\<exists>j. j \<ge> a \<and> j \<le> b-1 \<and> semantics_mltl (drop j \<pi>) (convert_nnf (Not\<^sub>m \<phi>2)) \<and> (\<forall>k. a \<le> k \<and> k \<le> j \<longrightarrow> semantics_mltl (drop k \<pi>) (convert_nnf (Not\<^sub>m \<phi>3))))))" 
+      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> ((semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>3))))) \<or> (\<exists>j. j \<ge> a \<and> j \<le> b-1 \<and> semantics_mltl (drop j \<pi>) (convert_nnf (Not\<^sub>m \<phi>2)) \<and> (\<forall>k. a \<le> k \<and> k \<le> j \<longrightarrow> semantics_mltl (drop k \<pi>) (convert_nnf (Not\<^sub>m \<phi>3))))))"
         by auto
       have phi3_ind_h: "semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>3)) = semantics_mltl (drop i \<pi>) (Not\<^sub>m \<phi>3)" for i
         using less(1)[of "Not\<^sub>m \<phi>3" "(drop i \<pi>)"] phi_is Until_mltl
@@ -448,8 +448,8 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
       have "semantics_mltl \<pi> \<phi> = semantics_mltl \<pi> (Release_mltl (Not\<^sub>m \<phi>2) a b (Not\<^sub>m \<phi>3))"
         using Until_mltl phi_is until_release_dual[OF *]
         using semantics_mltl.simps(4)
-        using semantic_equiv_def by blast 
-       then show ?thesis using semantics_unfold1 * 
+        using semantic_equiv_def by blast
+       then show ?thesis using semantics_unfold1 *
           by auto
     next
       case (Release_mltl \<phi>2 a b \<phi>3)
@@ -457,7 +457,7 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
         phi_is by simp
       have "semantics_mltl \<pi> (convert_nnf \<phi>) = semantics_mltl \<pi> (Until_mltl (convert_nnf (Not\<^sub>m \<phi>2)) a b (convert_nnf (Not\<^sub>m \<phi>3)))"
         using Release_mltl phi_is by simp
-      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> (semantics_mltl (drop i \<pi>)  (convert_nnf (Not\<^sub>m \<phi>3)) \<and> (\<forall>j. j \<ge> a \<and> j<i \<longrightarrow> semantics_mltl (drop j \<pi> )  (convert_nnf (Not\<^sub>m \<phi>2))))))" 
+      then have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> (semantics_mltl (drop i \<pi>)  (convert_nnf (Not\<^sub>m \<phi>3)) \<and> (\<forall>j. j \<ge> a \<and> j<i \<longrightarrow> semantics_mltl (drop j \<pi> )  (convert_nnf (Not\<^sub>m \<phi>2))))))"
         by auto
       have phi3_ind_h: "semantics_mltl (drop i \<pi>) (convert_nnf (Not\<^sub>m \<phi>3)) = semantics_mltl (drop i \<pi>) (Not\<^sub>m \<phi>3)" for i
         using less(1)[of "Not\<^sub>m \<phi>3" "(drop i \<pi>)"] phi_is Release_mltl
@@ -470,9 +470,9 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
       have "semantics_mltl \<pi> \<phi> = semantics_mltl \<pi> (Until_mltl (Not\<^sub>m \<phi>2) a b (Not\<^sub>m \<phi>3))"
         using Release_mltl phi_is release_until_dual[OF *]
         using semantics_mltl.simps(4) unfolding semantic_equiv_def by metis
-       then show ?thesis using semantics_unfold1 * 
+       then show ?thesis using semantics_unfold1 *
           by auto
-    qed 
+    qed
   next
     case (And_mltl \<phi>1 \<phi>2)
     then show ?thesis using less by simp
@@ -484,38 +484,38 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
     then have "intervals_welldef \<phi>1"
       using less(2) by simp
     then have ind_h: "semantics_mltl (drop i \<pi>) (convert_nnf \<phi>1) = semantics_mltl (drop i \<pi>)  \<phi>1" for i
-      using Future_mltl less(1)[of \<phi>1 "(drop i \<pi>)"] 
+      using Future_mltl less(1)[of \<phi>1 "(drop i \<pi>)"]
       by auto
     have unfold_future: "semantics_mltl \<pi> (convert_nnf (Future_mltl a b \<phi>1)) = semantics_mltl \<pi> (Future_mltl a b (convert_nnf \<phi>1))"
       by simp
     moreover then have unfold_future_semantics: "... = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> semantics_mltl (drop i \<pi>) (convert_nnf \<phi>1)))"
       by simp
     moreover then have "... = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> semantics_mltl (drop i \<pi>) \<phi>1))"
-      using ind_h 
+      using ind_h
       by auto
     ultimately show ?thesis using Future_mltl
-      by simp 
+      by simp
   next
     case (Global_mltl a b \<phi>1)
     then have "intervals_welldef \<phi>1"
       using less(2) by simp
     then have ind_h: "semantics_mltl (drop i \<pi>) (convert_nnf \<phi>1) = semantics_mltl (drop i \<pi>)  \<phi>1" for i
-      using Global_mltl less(1)[of \<phi>1 "(drop i \<pi>)"] 
+      using Global_mltl less(1)[of \<phi>1 "(drop i \<pi>)"]
       by auto
     have unfold_future: "semantics_mltl \<pi> (convert_nnf (Global_mltl a b \<phi>1)) = semantics_mltl \<pi> (Global_mltl a b (convert_nnf \<phi>1))"
       by simp
     moreover then have unfold_future_semantics: "... = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> semantics_mltl (drop i \<pi>) (convert_nnf \<phi>1))))"
       by simp
     moreover then have "... = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> semantics_mltl (drop i \<pi>) \<phi>1)))"
-      using ind_h 
+      using ind_h
       by auto
     ultimately show ?thesis using Global_mltl
-      by simp 
+      by simp
   next
     case (Until_mltl \<phi>1 a b \<phi>2)
     then have *: "a \<le> b" using less(2)
         Until_mltl by simp
-    have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> (semantics_mltl (drop i \<pi>) (convert_nnf \<phi>2) \<and> (\<forall>j. j \<ge> a \<and> j<i \<longrightarrow> semantics_mltl (drop j \<pi> ) (convert_nnf \<phi>1)))))" 
+    have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> length \<pi> > a \<and> (\<exists>i::nat. (i \<ge> a \<and> i \<le> b) \<and> (semantics_mltl (drop i \<pi>) (convert_nnf \<phi>2) \<and> (\<forall>j. j \<ge> a \<and> j<i \<longrightarrow> semantics_mltl (drop j \<pi> ) (convert_nnf \<phi>1)))))"
         using Until_mltl by auto
       have phi3_ind_h: "semantics_mltl (drop i \<pi>) (convert_nnf \<phi>1) = semantics_mltl (drop i \<pi>) \<phi>1" for i
         using less(1)[of \<phi>1 "(drop i \<pi>)"] Until_mltl less.prems
@@ -532,7 +532,7 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
     case (Release_mltl \<phi>1 a b \<phi>2)
     then have *: "a \<le> b" using less(2)
        Release_mltl by simp
-    have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> ((semantics_mltl (drop i \<pi>) (convert_nnf \<phi>2)))) \<or> (\<exists>j. j \<ge> a \<and> j \<le> b-1 \<and> semantics_mltl (drop j \<pi>) (convert_nnf \<phi>1) \<and> (\<forall>k. a \<le> k \<and> k \<le> j \<longrightarrow> semantics_mltl (drop k \<pi>) (convert_nnf \<phi>2)))))" 
+    have semantics_unfold: "semantics_mltl \<pi> (convert_nnf \<phi>) = (a \<le> b \<and> (length \<pi> \<le> a \<or> (\<forall>i::nat. (i \<ge> a \<and> i \<le> b) \<longrightarrow> ((semantics_mltl (drop i \<pi>) (convert_nnf \<phi>2)))) \<or> (\<exists>j. j \<ge> a \<and> j \<le> b-1 \<and> semantics_mltl (drop j \<pi>) (convert_nnf \<phi>1) \<and> (\<forall>k. a \<le> k \<and> k \<le> j \<longrightarrow> semantics_mltl (drop k \<pi>) (convert_nnf \<phi>2)))))"
        using Release_mltl by auto
     have phi3_ind_h: "semantics_mltl (drop i \<pi>) (convert_nnf \<phi>1) = semantics_mltl (drop i \<pi>) \<phi>1" for i
        using less(1)[of \<phi>1 "(drop i \<pi>)"] Release_mltl less.prems
@@ -548,9 +548,9 @@ proof (induct "depth_mltl \<phi>" arbitrary:\<phi> \<pi> rule:less_induct)
   qed
 qed
 
-lemma convert_nnf_form_Not_Implies_Prop: 
+lemma convert_nnf_form_Not_Implies_Prop:
   assumes "Not\<^sub>m F = convert_nnf init_F"
-  shows "\<exists>p. F = Prop\<^sub>m (p)" 
+  shows "\<exists>p. F = Prop\<^sub>m (p)"
   using assms
 proof (induct "depth_mltl init_F" arbitrary: init_F rule: less_induct)
   case less
@@ -582,8 +582,8 @@ proof (induct "depth_mltl init_F" arbitrary: init_F rule: less_induct)
       case (Prop_mltl p)
       then show ?thesis using ind_h1 not init_F_is by auto
     next
-      case (Not_mltl \<phi>) 
-      then have not_convert: "Not_mltl F = convert_nnf \<phi>" using not init_F_is 
+      case (Not_mltl \<phi>)
+      then have not_convert: "Not_mltl F = convert_nnf \<phi>" using not init_F_is
         by auto
       have depth: "depth_mltl \<phi> < depth_mltl init_F"
         using Not_mltl init_F_is by auto
@@ -606,7 +606,7 @@ proof (induct "depth_mltl init_F" arbitrary: init_F rule: less_induct)
     next
       case (Release_mltl \<phi> a b \<psi>)
       then show ?thesis using ind_h1 not init_F_is by auto
-    qed 
+    qed
   next
     case (And_mltl \<phi> \<psi>)
     then show ?thesis using ind_h1 not by auto
@@ -625,7 +625,7 @@ proof (induct "depth_mltl init_F" arbitrary: init_F rule: less_induct)
   next
     case (Release_mltl \<phi> a b \<psi>)
     then show ?thesis using ind_h1 not by auto
-  qed 
+  qed
 qed
 
 lemma convert_nnf_convert_nnf:
@@ -642,9 +642,9 @@ proof (induction "depth_mltl F" arbitrary: F rule: less_induct)
     assume F_is: "F = Not_mltl G"
     show ?thesis using less F_is apply (cases G) by simp_all
   qed
-  show ?case using less apply (cases F) apply simp_all using not_case 
+  show ?case using less apply (cases F) apply simp_all using not_case
     by auto
-qed 
+qed
 
 lemma nnf_subformulas:
   assumes "F = convert_nnf init_F"
@@ -702,7 +702,7 @@ lemma nnf_subformulas:
       have depth2: "depth_mltl (Not_mltl \<psi>2) < depth_mltl init_F"
         using init_is2
         by simp
-      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))} 
+      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))}
         \<union> subformulas (convert_nnf (Not_mltl \<psi>1)) \<union> subformulas (convert_nnf (Not_mltl \<psi>2))"
         using F_is less(3) by auto
       then show ?thesis using less.hyps[OF depth1, of "convert_nnf (Not_mltl \<psi>1)"] less.hyps[OF depth2, of "convert_nnf (Not_mltl \<psi>2)"]
@@ -719,7 +719,7 @@ lemma nnf_subformulas:
       have depth2: "depth_mltl (Not_mltl \<psi>2) < depth_mltl init_F"
         using init_is2
         by simp
-      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))} 
+      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))}
         \<union> subformulas (convert_nnf (Not_mltl \<psi>1)) \<union> subformulas (convert_nnf (Not_mltl \<psi>2))"
         using F_is less(3) by auto
       then show ?thesis using less.hyps[OF depth1, of "convert_nnf (Not_mltl \<psi>1)"] less.hyps[OF depth2, of "convert_nnf (Not_mltl \<psi>2)"]
@@ -733,7 +733,7 @@ lemma nnf_subformulas:
       have depth1: "depth_mltl (Not_mltl \<psi>) < depth_mltl init_F"
         using init_is2
         by simp
-      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>))} 
+      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>))}
         \<union> subformulas (convert_nnf (Not_mltl \<psi>))"
         using F_is less(3) by auto
       then show ?thesis using less.hyps[OF depth1, of "convert_nnf (Not_mltl \<psi>)"]
@@ -747,7 +747,7 @@ lemma nnf_subformulas:
       have depth1: "depth_mltl (Not_mltl \<psi>) < depth_mltl init_F"
         using init_is2
         by simp
-      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>))} 
+      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>))}
         \<union> subformulas (convert_nnf (Not_mltl \<psi>))"
         using F_is less(3) by auto
       then show ?thesis using less.hyps[OF depth1, of "convert_nnf (Not_mltl \<psi>)"]
@@ -764,7 +764,7 @@ lemma nnf_subformulas:
       have depth2: "depth_mltl (Not_mltl \<psi>2) < depth_mltl init_F"
         using init_is2
         by simp
-      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))} 
+      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))}
         \<union> subformulas (convert_nnf (Not_mltl \<psi>1)) \<union> subformulas (convert_nnf (Not_mltl \<psi>2))"
         using F_is less(3) by auto
       then show ?thesis using less.hyps[OF depth1, of "convert_nnf (Not_mltl \<psi>1)"] less.hyps[OF depth2, of "convert_nnf (Not_mltl \<psi>2)"]
@@ -781,7 +781,7 @@ lemma nnf_subformulas:
       have depth2: "depth_mltl (Not_mltl \<psi>2) < depth_mltl init_F"
         using init_is2
         by simp
-      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))} 
+      have G_inset: "G \<in> {(convert_nnf (Not_mltl \<psi>1)), (convert_nnf (Not_mltl \<psi>2))}
         \<union> subformulas (convert_nnf (Not_mltl \<psi>1)) \<union> subformulas (convert_nnf (Not_mltl \<psi>2))"
         using F_is less(3) by auto
       then show ?thesis using less.hyps[OF depth1, of "convert_nnf (Not_mltl \<psi>1)"] less.hyps[OF depth2, of "convert_nnf (Not_mltl \<psi>2)"]
@@ -855,9 +855,9 @@ lemma nnf_subformulas:
       using less Release_mltl by simp
     then show ?thesis using less.hyps[OF depth_phi1, of "convert_nnf \<phi>1"] using less.hyps[OF depth_phi2, of "convert_nnf \<phi>2"]
         G_inset by blast
-  qed 
+  qed
 qed
- 
+
 
 subsection \<open>Computation Length and Properties\<close>
 
@@ -894,12 +894,12 @@ qed
 
 lemma semantics_of_not_a_lteq_b:
   shows "(make_empty_trace (a+1)) \<Turnstile>\<^sub>m (Global_mltl a b True\<^sub>m) = (a \<le> b)"
-  using length_make_empty_trace 
+  using length_make_empty_trace
   by simp
 
 lemma semantics_of_not_a_lteq_b2:
   shows "(make_empty_trace (a+1)) \<Turnstile>\<^sub>m (Not_mltl (Global_mltl a b True\<^sub>m)) = (\<not> (a \<le> b))"
-  using semantics_of_not_a_lteq_b 
+  using semantics_of_not_a_lteq_b
   by simp
 
 subsection \<open>Custom Induction Rules\<close>
@@ -910,7 +910,7 @@ text \<open> In some cases, it is sufficient to consider
  rules. \<close>
 
 text \<open> In order to use the MLTL-induct rule,
-  one must establish IntervalsWellDef, which 
+  one must establish IntervalsWellDef, which
   states that the input formula is well-formed,
   and also prove PProp, which states that the
   property being established is not dependent on
@@ -945,7 +945,7 @@ next
   then show ?case using And by auto
 next
   case (Or_mltl F1 F2)
-  have "\<And> \<pi>. semantics_mltl \<pi> (Or_mltl (Not_mltl (Not_mltl F1)) (Not_mltl (Not_mltl F2))) = 
+  have "\<And> \<pi>. semantics_mltl \<pi> (Or_mltl (Not_mltl (Not_mltl F1)) (Not_mltl (Not_mltl F2))) =
      semantics_mltl \<pi> (Or_mltl F1 F2)"
     using not_not_equiv
     by auto
@@ -953,24 +953,24 @@ next
     using PProp by blast
   have "\<And> \<pi>. semantics_mltl \<pi> (Not_mltl (And_mltl (Not_mltl F1) (Not_mltl F2))) =
     semantics_mltl \<pi> (Or_mltl (Not_mltl (Not_mltl F1)) (Not_mltl (Not_mltl F2)))"
-    using demorgan_and_or[of "(Not_mltl F1)" "(Not_mltl F2)"] 
+    using demorgan_and_or[of "(Not_mltl F1)" "(Not_mltl F2)"]
     unfolding semantic_equiv_def by simp
   then have P2: "P (Not_mltl (And_mltl (Not_mltl F1) (Not_mltl F2))) = P (Or_mltl (Not_mltl (Not_mltl F1)) (Not_mltl (Not_mltl F2)))"
     using PProp by blast
-  show ?case using P1 P2 
+  show ?case using P1 P2
     using And Not PProp
-    using Or_mltl.IH(1) Or_mltl.IH(2) Or_mltl.prems by force 
+    using Or_mltl.IH(1) Or_mltl.IH(2) Or_mltl.prems by force
 next
   case (Future_mltl a b F)
   then show ?case
-    using future_as_until PProp IntervalsWellDef Until True  
-    unfolding semantic_equiv_def 
-    by (metis True Until intervals_welldef.simps(7)) 
+    using future_as_until PProp IntervalsWellDef Until True
+    unfolding semantic_equiv_def
+    by (metis True Until intervals_welldef.simps(7))
 next
   case (Global_mltl a b F)
   then show ?case using globally_future_dual Not PProp True Until future_as_until
     unfolding semantic_equiv_def
-    by (metis intervals_welldef.simps(8)) 
+    by (metis intervals_welldef.simps(8))
 next
   case (Until_mltl F1 a b F2)
   then show ?case using Until using intervals_welldef.simps(9)[of F1 a b F2]
@@ -1015,10 +1015,10 @@ lemma nnf_induct[case_names nnf True False Prop And Or Final Global Until Releas
   then show ?case using True by auto
 next
   case False_mltl
-  then show ?case using False by auto 
+  then show ?case using False by auto
 next
   case (Prop_mltl x)
-  then show ?case using Prop by auto 
+  then show ?case using Prop by auto
 next
   case (Not_mltl F)
   then show ?case using convert_nnf_form_Not_Implies_Prop Not_Prop by blast

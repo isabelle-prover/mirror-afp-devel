@@ -11,7 +11,7 @@ fun depth_dataype_list:: "state_regex \<Rightarrow> nat"
   | "depth_dataype_list (One#T) = 1 + depth_dataype_list T"
   | "depth_dataype_list (Zero#T) = 1 + depth_dataype_list T"
   | "depth_dataype_list (S#T) = 2 + 2*(depth_dataype_list T)"
-  
+
 
 function enumerate_list:: "state_regex \<Rightarrow> trace_regex"
   where "enumerate_list [] = [[]]"
@@ -30,15 +30,15 @@ fun flatten_list:: "'a list list \<Rightarrow> 'a list"
 
 value "flatten_list [[12, 13::nat], [15]]"
 
-value "flatten_list (let enumerate_H = enumerate_list [S, One] in 
+value "flatten_list (let enumerate_H = enumerate_list [S, One] in
 let enumerate_T = [[]] in
 map (\<lambda>t. (map (\<lambda>h. h#t) enumerate_H)) enumerate_T)"
 
 
 fun enumerate_trace:: "trace_regex \<Rightarrow> WEST_regex"
   where "enumerate_trace [] = [[]]"
-  | "enumerate_trace (H#T) = flatten_list 
-  (let enumerate_H = enumerate_list H in 
+  | "enumerate_trace (H#T) = flatten_list
+  (let enumerate_H = enumerate_list H in
    let enumerate_T = enumerate_trace T in
    map (\<lambda>t. (map (\<lambda>h. h#t) enumerate_H)) enumerate_T)"
 
@@ -56,7 +56,7 @@ fun naive_equivalence:: "WEST_regex \<Rightarrow> WEST_regex \<Rightarrow> bool"
 section \<open> Regex Equivalence Correctness \<close>
 
 lemma enumerate_list_len_alt:
-  shows "\<forall> state \<in> set (enumerate_list state_regex). 
+  shows "\<forall> state \<in> set (enumerate_list state_regex).
          length state = length state_regex"
 proof(induct state_regex)
   case Nil
@@ -64,27 +64,27 @@ proof(induct state_regex)
 next
   case (Cons a state_regex)
   {assume zero: "a = Zero"
-    then have "\<forall> state \<in> set (enumerate_list state_regex). 
+    then have "\<forall> state \<in> set (enumerate_list state_regex).
          length state = length state_regex"
       using Cons by blast
-    then have ?case unfolding zero 
+    then have ?case unfolding zero
       by simp
   } moreover {
     assume one: "a = One"
-    then have "\<forall> state \<in> set (enumerate_list state_regex). 
+    then have "\<forall> state \<in> set (enumerate_list state_regex).
          length state = length state_regex"
       using Cons by blast
     then have ?case unfolding one
       by simp
   } moreover {
     assume s: "a = S"
-    then have "\<forall> state \<in> set (enumerate_list state_regex). 
+    then have "\<forall> state \<in> set (enumerate_list state_regex).
          length state = length state_regex"
       using Cons by blast
     then have ?case unfolding s by auto
   }
   ultimately show ?case
-    using WEST_bit.exhaust by blast 
+    using WEST_bit.exhaust by blast
 qed
 
 
@@ -106,10 +106,10 @@ next
   then have elt: "enumerate_list t = [t]"
     by (simp add: member_rec(1))
   then have "h = One \<or> h = Zero"
-    using Cons 
+    using Cons
     by (meson WEST_bit.exhaust member_rec(1))
   then show ?case using enumerate_list.simps(2-3) elt
-    by fastforce 
+    by fastforce
 qed
 
 
@@ -128,8 +128,8 @@ next
   have "enumerate_list h = [h]"
     using enumerate_list_prop Cons
     by (meson member_rec(1))
-  then show ?case 
-    using Cons ind unfolding enumerate_trace.simps 
+  then show ?case
+    using Cons ind unfolding enumerate_trace.simps
     by auto
 qed
 
@@ -174,7 +174,7 @@ next
   case (Cons h trace)
   obtain head_t tail_t where obt: "t = head_t#tail_t"
     using Cons.prems enumerate_list_len
-    by (metis length_0_conv neq_Nil_conv) 
+    by (metis length_0_conv neq_Nil_conv)
   have "tail_t \<in> set (enumerate_list trace)"
     using enumerate_list.simps obt Cons.prems enumerate_list_tail_in by blast
   then have hyp: "\<forall>k. List.member tail_t k \<longrightarrow> k \<noteq> S"
@@ -182,23 +182,23 @@ next
   {assume one: "h = One"
     then have "head_t = One"
       using obt Cons.prems unfolding enumerate_list.simps by auto
-    then have ?case 
+    then have ?case
       using hyp obt
-      by (simp add: member_rec(1)) 
+      by (simp add: member_rec(1))
   } moreover {
     assume zero: "h = Zero"
     then have "head_t = Zero"
       using obt Cons.prems unfolding enumerate_list.simps by auto
-    then have ?case 
+    then have ?case
       using hyp obt
-      by (simp add: member_rec(1)) 
+      by (simp add: member_rec(1))
   } moreover {
     assume s: "h = S"
     then have "head_t = Zero \<or> head_t = One"
       using obt Cons.prems unfolding enumerate_list.simps by auto
-    then have ?case 
+    then have ?case
       using hyp obt
-      by (metis calculation(1) calculation(2) member_rec(1) s) 
+      by (metis calculation(1) calculation(2) member_rec(1) s)
   }
   ultimately show ?case using WEST_bit.exhaust by blast
 qed
@@ -215,16 +215,16 @@ next
   case (Cons a head)
   {assume a: "a = One"
     then have ?case unfolding a enumerate_list.simps
-      using Cons by auto 
+      using Cons by auto
   } moreover {
     assume a: "a = Zero"
     then have ?case unfolding a enumerate_list.simps
-      using Cons by auto 
+      using Cons by auto
   } moreover {
     assume a: "a = S"
     then have ?case unfolding a enumerate_list.simps
-      using Cons by auto 
-  } 
+      using Cons by auto
+  }
   ultimately show ?case using WEST_bit.exhaust by blast
 qed
 
@@ -260,7 +260,7 @@ lemma flatten_list_idx:
   assumes "i < length tail"
   assumes "j < length head"
   shows "(head!j)#(tail!i) = flat!(i*(length head) + j) \<and> i*(length head) + j < length flat"
-  using assms 
+  using assms
 proof(induct tail arbitrary: head i j flat)
   case Nil
   then show ?case
@@ -269,19 +269,19 @@ next
   case (Cons a tail)
   let ?flat = "flatten_list (map (\<lambda>t. map (\<lambda>h. h # t) head) tail)"
   have cond1: "?flat = ?flat" by auto
-  have equiv: "(map (\<lambda>t. map (\<lambda>h. h # t) head) (a # tail)) = 
+  have equiv: "(map (\<lambda>t. map (\<lambda>h. h # t) head) (a # tail)) =
       (map (\<lambda>h. h # a) head) # (map (\<lambda>t. map (\<lambda>h. h # t) head) tail)"
       by auto
   then have flat_is: "flat = (map (\<lambda>h. h # a) head) @ flatten_list (map (\<lambda>t. map (\<lambda>h. h # t) head) tail)"
     using Cons(2) unfolding flatten_list.simps by simp
-   
+
   {assume i0: "i = 0"
     then have bound: "i * length head + j < length flat"
       using Cons by simp
      have "length (map (\<lambda>h. h # a) head) > j"
       using Cons(4) by auto
     then have "(map (\<lambda>h. h # a) head) ! j = flat ! j"
-      using flat_is 
+      using flat_is
       by (simp add: nth_append)
     then have "(head ! j)#a  = flat ! j"
       using Cons(4) by simp
@@ -304,12 +304,12 @@ next
      by auto
     then have bound: "i * length head + j < length flat"
       using len_flat
-      by (simp add: mult.commute) 
+      by (simp add: mult.commute)
     have i_minus: " i - 1 < length tail"
       using i_ge_0 Cons(3)
       by auto
     have "flat ! (i * length head + j) = flat ! ((i-1) * length head + j + length head)"
-      using i_ge_0 
+      using i_ge_0
       by (smt (z3) add.commute bot_nat_0.not_eq_extremum group_cancel.add1 mult_eq_if)
     then have "flat ! (i * length head + j) = flatten_list
      (map (\<lambda>t. map (\<lambda>h. h # t) head) tail) !
@@ -317,11 +317,11 @@ next
       using flat_is
       by (smt (verit, ccfv_threshold) add.commute length_map nth_append_length_plus)
     then have  "flat ! (i * length head + j) = head ! j # tail ! (i - 1)"
-          using Cons.hyps[OF cond1 i_minus Cons(4)] 
+          using Cons.hyps[OF cond1 i_minus Cons(4)]
           by argo
     then have access: "head ! j # (a # tail) ! i =
     flat ! (i * length head + j)"
-      using i_ge_0 
+      using i_ge_0
       by simp
     have ?case
       using bound access
@@ -331,7 +331,7 @@ next
 qed
 
 
-lemma flatten_list_shape: 
+lemma flatten_list_shape:
   assumes "List.member flat x1"
   assumes "flat = flatten_list (map (\<lambda>t. map (\<lambda>h. h # t) H) T)"
   shows "\<exists> x1_head x1_tail. x1 = x1_head#x1_tail \<and> List.member H x1_head \<and> List.member T x1_tail"
@@ -342,13 +342,13 @@ proof(induction T arbitrary: flat H)
     using Nil(1) unfolding Nil by blast
   then have "flat = []"
     by simp
-  then show ?case 
-    using Nil 
+  then show ?case
+    using Nil
     by (simp add: member_rec(2))
 next
   case (Cons a T)
   have "\<exists>k. x1 = flat ! k \<and> k < length flat"
-     using Cons(2) 
+     using Cons(2)
      by (metis in_set_conv_nth member_def)
   then obtain k where k_is: "x1 = flat ! k \<and> k < length flat"
     by auto
@@ -361,7 +361,7 @@ next
   then obtain i where i_is: "k = (i*(length H)+?j)"
     by auto
   then have i_lt: "i < length (a#T)"
-    using len_flat k_is 
+    using len_flat k_is
     by (metis add_lessD1 mult_less_cancel2)
   have j_lt: "?j < length H"
     by (metis k_is len_flat length_0_conv length_greater_0_conv mod_by_0 mod_less_divisor mult_0_right)
@@ -373,18 +373,18 @@ next
     by blast
   then have "flat ! k =  H ! j # (a # T) ! i"
     using flatten_list_idx[OF Cons(3) ij_props(1) ij_props(2) ]
-      Cons(2) k_is ij_props(3) 
+      Cons(2) k_is ij_props(3)
     by argo
   then obtain x1_head x1_tail where "x1 = x1_head#x1_tail"
   and "List.member H x1_head" and "List.member (a#T) x1_tail"
     using ij_props
     by (simp add: index_of_L_in_L k_is)
-  then show ?case 
+  then show ?case
     using Cons(3) by simp
 qed
 
 
-lemma flatten_list_len: 
+lemma flatten_list_len:
   assumes "\<And>t. List.member T t \<Longrightarrow> length t = n"
   assumes "flat = flatten_list (map (\<lambda>t. map (\<lambda>h. h # t) H) T)"
   shows "\<And>x1. List.member flat x1 \<Longrightarrow> length x1 = n+1"
@@ -395,12 +395,12 @@ proof(induction T arbitrary: flat n H)
     using Nil(1) unfolding Nil(3) by blast
   then have "flat = []"
     by simp
-  then show ?case 
-    using Nil by (simp add: member_rec(2)) 
+  then show ?case
+    using Nil by (simp add: member_rec(2))
 next
   case (Cons a T)
   have "\<exists>k. x1 = flat ! k \<and> k < length flat"
-     using Cons(2) 
+     using Cons(2)
      by (metis in_set_conv_nth member_def)
   then obtain k where k_is: "x1 = flat ! k \<and> k < length flat"
     by auto
@@ -413,7 +413,7 @@ next
   then obtain i where i_is: "k = (i*(length H)+?j)"
     by auto
   then have i_lt: "i < length (a#T)"
-    using len_flat k_is 
+    using len_flat k_is
     by (metis add_lessD1 mult_less_cancel2)
   have j_lt: "?j < length H"
     by (metis k_is len_flat length_0_conv length_greater_0_conv mod_by_0 mod_less_divisor mult_0_right)
@@ -425,13 +425,13 @@ next
     by blast
   then have "flat ! k =  H ! j # (a # T) ! i"
     using flatten_list_idx[OF Cons(4) ij_props(1) ij_props(2) ]
-      Cons(2) k_is ij_props(3) 
+      Cons(2) k_is ij_props(3)
     by argo
   then obtain x1_head x1_tail where "x1 = x1_head#x1_tail"
   and "List.member H x1_head" and "List.member (a#T) x1_tail"
     using ij_props
     by (simp add: index_of_L_in_L k_is)
-  then show ?case 
+  then show ?case
     using Cons(3) by simp
 qed
 
@@ -448,7 +448,7 @@ next
    have a_in: "a \<in> set h \<or> a \<in> set (flatten_list t)"
      using Cons(3) unfolding flatten_list.simps foldr_def by simp
   {assume *: "a \<in> set h"
-    then have ?case 
+    then have ?case
       using Cons(2)[of h]
       by (simp add: in_set_member member_rec(1))
   } moreover {assume *: "a \<in> set (flatten_list t)"
@@ -461,7 +461,7 @@ next
     then have ?case
       using * by auto
   }
-  ultimately show ?case 
+  ultimately show ?case
     using a_in by blast
 qed
 
@@ -479,10 +479,10 @@ next
     by (meson Suc_length_conv)
   obtain i where "(enumerate_trace trace)!i = a"
     using Suc.prems
-    by (meson in_set_conv_nth) 
+    by (meson in_set_conv_nth)
   let ?enumerate_H = "enumerate_list h"
   let ?enumerate_t = "enumerate_trace t"
-  have enum_tr_is: "enumerate_trace trace = 
+  have enum_tr_is: "enumerate_trace trace =
       flatten_list (map (\<lambda>t. map (\<lambda>h. h # t) ?enumerate_H) ?enumerate_t)"
     using trace_is by auto
   let ?to_flatten = "map (\<lambda>t. map (\<lambda>h. h # t) ?enumerate_H) ?enumerate_t"
@@ -492,13 +492,13 @@ next
     by (simp add: in_set_member)
   have a_mem: "List.member (enumerate_trace trace) a"
     using Suc(3) in_set_member by fast
-  show ?case   
+  show ?case
     using flatten_list_len[OF _ enum_tr_is a_mem, of "length t"] all_w
     trace_is by simp
 qed
 
 definition regex_zeros_and_ones:: "trace_regex \<Rightarrow> bool"
-  where "regex_zeros_and_ones tr = 
+  where "regex_zeros_and_ones tr =
     (\<forall>j. List.member tr j \<longrightarrow> (\<forall>k. List.member j k \<longrightarrow> k \<noteq> S))"
 
 
@@ -508,7 +508,7 @@ lemma match_enumerate_state_aux_first_bit:
   shows "h_head = a_head \<or> h_head = S"
 proof-
   {assume h_head: "h_head = One"
-    then have ?thesis 
+    then have ?thesis
       using assms unfolding h_head enumerate_list.simps by auto
   } moreover {
     assume h_head: "h_head = Zero"
@@ -521,7 +521,7 @@ proof-
   ultimately show ?thesis using WEST_bit.exhaust by blast
 qed
 
-lemma advance_state_iff: 
+lemma advance_state_iff:
   assumes "x > 0"
   shows "x \<in> state \<longleftrightarrow> (x-1) \<in> advance_state state"
 proof-
@@ -529,14 +529,14 @@ proof-
     using assms by auto
   have converse: "(x-1) \<in> advance_state state \<longrightarrow> x \<in> state"
     unfolding advance_state.simps using assms
-    by (smt (verit, best) Suc_diff_1 diff_0_eq_0 diff_Suc_1' diff_self_eq_0 less_one mem_Collect_eq nat.distinct(1) not0_implies_Suc not_gr_zero old.nat.exhaust) 
+    by (smt (verit, best) Suc_diff_1 diff_0_eq_0 diff_Suc_1' diff_self_eq_0 less_one mem_Collect_eq nat.distinct(1) not0_implies_Suc not_gr_zero old.nat.exhaust)
   show ?thesis using forward converse by blast
 qed
 
 lemma match_enumerate_state_aux:
   assumes "a \<in> set (enumerate_list h)"
   assumes "match_timestep state a"
-  shows "match_timestep state h" 
+  shows "match_timestep state h"
   using assms
 proof(induct h arbitrary: state a)
   case Nil
@@ -547,19 +547,19 @@ next
   case (Cons h_head h)
   then obtain a_head a_tail where obt: "a = a_head#a_tail"
     using enumerate_list_len Cons
-    by (metis length_0_conv list.exhaust) 
+    by (metis length_0_conv list.exhaust)
   let ?adv_state = "advance_state state"
   {assume in_state: "0 \<in> state"
-    then have "a_head = One" 
+    then have "a_head = One"
       using Cons.prems(2) unfolding obt match_timestep_def
       using enumerate_list_fixed
-      by (metis WEST_bit.exhaust Cons(2) length_pos_if_in_set list.set_intros(1) member_rec(1) nth_Cons_0 obt) 
+      by (metis WEST_bit.exhaust Cons(2) length_pos_if_in_set list.set_intros(1) member_rec(1) nth_Cons_0 obt)
     then have h_head: "h_head = One \<or> h_head = S"
-      using Cons.prems(1) unfolding obt 
+      using Cons.prems(1) unfolding obt
       using match_enumerate_state_aux_first_bit by blast
     have match_adv: "match_timestep (advance_state state) h"
       using Cons.hyps[of a_tail ?adv_state]
-      using Cons.prems(1) Cons.prems(2) advance_state_match_timestep enumerate_list_tail_in obt by blast 
+      using Cons.prems(1) Cons.prems(2) advance_state_match_timestep enumerate_list_tail_in obt by blast
     have "\<And>x. x<length (h_head # h) \<Longrightarrow>
        ((h_head # h) ! x = One \<longrightarrow> x \<in> state) \<and>
        ((h_head # h) ! x = Zero \<longrightarrow> x \<notin> state)"
@@ -589,16 +589,16 @@ next
       using h_head unfolding match_timestep_def by blast
   } moreover {
     assume not_in: "0 \<notin> state"
-    then have "a_head = Zero" 
+    then have "a_head = Zero"
       using Cons.prems(2) unfolding obt match_timestep_def
       using enumerate_list_fixed
-      by (metis WEST_bit.exhaust Cons(2) length_pos_if_in_set list.set_intros(1) member_rec(1) nth_Cons_0 obt) 
+      by (metis WEST_bit.exhaust Cons(2) length_pos_if_in_set list.set_intros(1) member_rec(1) nth_Cons_0 obt)
     then have h_head: "h_head = Zero \<or> h_head = S"
-      using Cons.prems(1) unfolding obt 
+      using Cons.prems(1) unfolding obt
       using match_enumerate_state_aux_first_bit by blast
     have match_adv: "match_timestep (advance_state state) h"
       using Cons.hyps[of a_tail ?adv_state]
-      using Cons.prems(1) Cons.prems(2) advance_state_match_timestep enumerate_list_tail_in obt by blast 
+      using Cons.prems(1) Cons.prems(2) advance_state_match_timestep enumerate_list_tail_in obt by blast
     have "\<And>x. x<length (h_head # h) \<Longrightarrow>
        ((h_head # h) ! x = One \<longrightarrow> x \<in> state) \<and>
        ((h_head # h) ! x = Zero \<longrightarrow> x \<notin> state)"
@@ -631,7 +631,7 @@ next
 qed
 
 
-lemma enumerate_list_index_one: 
+lemma enumerate_list_index_one:
   assumes "j < length (enumerate_list a)"
   shows "One # enumerate_list a ! j = enumerate_list (S # a) ! (length (enumerate_list a) + j) \<and>
     (length (enumerate_list a) + j < length (enumerate_list (S # a)))"
@@ -642,20 +642,20 @@ proof(induct a arbitrary: j)
 next
   case (Cons a1 a2)
   then show ?case unfolding enumerate_list.simps
-    by (metis (mono_tags, lifting) length_append length_map nat_add_left_cancel_less nth_append_length_plus nth_map) 
+    by (metis (mono_tags, lifting) length_append length_map nat_add_left_cancel_less nth_append_length_plus nth_map)
 qed
 
 lemma list_concat_index:
   assumes "j < length L1"
   shows "(L1@L2)!j = L1!j"
   using assms
-  by (simp add: nth_append) 
+  by (simp add: nth_append)
 
-lemma enumerate_list_index_zero: 
+lemma enumerate_list_index_zero:
   assumes "j < length (enumerate_list a)"
   shows "Zero # enumerate_list a ! j = enumerate_list (S # a) ! j \<and>
     j < length (enumerate_list (S # a))"
-  using assms unfolding enumerate_list.simps 
+  using assms unfolding enumerate_list.simps
 proof(induct a arbitrary: j)
   case Nil
   then show ?case by simp
@@ -678,7 +678,7 @@ qed
 
 lemma match_enumerate_list:
   assumes "match_timestep state a"
-  shows "\<exists>j<length (enumerate_list a). 
+  shows "\<exists>j<length (enumerate_list a).
          match_timestep state (enumerate_list a ! j)"
   using assms
 proof(induct a arbitrary: state)
@@ -694,7 +694,7 @@ next
       using WEST_bit.exhaust by auto
     have "match_timestep ?adv_state a"
       using Cons.prems
-      using advance_state_match_timestep by auto 
+      using advance_state_match_timestep by auto
     then obtain j where obt: "match_timestep ?adv_state (enumerate_list a ! j)
                             \<and> j < length (enumerate_list a)"
       using Cons.hyps[of ?adv_state] by blast
@@ -724,12 +724,12 @@ next
         }
         ultimately show ?thesis by blast
       qed
-      then have match: "match_timestep state ?s" 
+      then have match: "match_timestep state ?s"
         using obt headcase in_state unfolding match_timestep_def by blast
       have "(map ((#) One) (enumerate_list a) ! j) = One # (enumerate_list a ! j)"
         using obt by simp
-      then have ?case unfolding headcase enumerate_list.simps 
-        using match obt by auto 
+      then have ?case unfolding headcase enumerate_list.simps
+        using match obt by auto
     } moreover {
       assume headcase: "head = S"
       let ?s = "One # ?state"
@@ -752,11 +752,11 @@ next
           have "x<length (One # enumerate_list a ! j)"
             using x by blast
           then have ?thesis
-            using index_shift[of "One" state ?state, OF cond1 cond2] by blast 
+            using index_shift[of "One" state ?state, OF cond1 cond2] by blast
         }
         ultimately show ?thesis by blast
       qed
-      then have match: "match_timestep state ?s" 
+      then have match: "match_timestep state ?s"
         using obt headcase in_state unfolding match_timestep_def by blast
       have "\<And>x. x<length (S # enumerate_list a ! j) \<Longrightarrow>
        ((S # enumerate_list a ! j) ! x = One \<longrightarrow> x \<in> state) \<and>
@@ -778,10 +778,10 @@ next
         using match unfolding match_timestep_def by blast
       have j_bound: "j < length (enumerate_list a)"
         using obt by blast
-      have "?s = enumerate_list (S # a)!((length (enumerate_list a))+j) 
+      have "?s = enumerate_list (S # a)!((length (enumerate_list a))+j)
             \<and> (length (enumerate_list a))+j < length (enumerate_list (S # a))"
         using j_bound enumerate_list_index_one by blast
-      then have ?case unfolding headcase 
+      then have ?case unfolding headcase
         using match obt match_S by metis
     }
     ultimately have ?case using head by blast
@@ -793,7 +793,7 @@ next
       using WEST_bit.exhaust by auto
     have "match_timestep ?adv_state a"
       using Cons.prems
-      using advance_state_match_timestep by auto 
+      using advance_state_match_timestep by auto
     then obtain j where obt: "match_timestep ?adv_state (enumerate_list a ! j)
                             \<and> j < length (enumerate_list a)"
       using Cons.hyps[of ?adv_state] by blast
@@ -823,10 +823,10 @@ next
         }
         ultimately show ?thesis by blast
       qed
-      then have match: "match_timestep state ?s" 
+      then have match: "match_timestep state ?s"
         using obt headcase not_in unfolding match_timestep_def by blast
-      have ?case unfolding headcase enumerate_list.simps 
-        using match obt by auto 
+      have ?case unfolding headcase enumerate_list.simps
+        using match obt by auto
     } moreover {
       assume headcase: "head = S"
       let ?s = "Zero # ?state"
@@ -849,11 +849,11 @@ next
           have "x<length (Zero # enumerate_list a ! j)"
             using x by blast
           then have ?thesis
-            using index_shift[of "Zero" state ?state, OF cond1 cond2] by blast 
+            using index_shift[of "Zero" state ?state, OF cond1 cond2] by blast
         }
         ultimately show ?thesis by blast
       qed
-      then have match: "match_timestep state ?s" 
+      then have match: "match_timestep state ?s"
         using obt headcase not_in unfolding match_timestep_def by blast
       have "\<And>x. x<length (S # enumerate_list a ! j) \<Longrightarrow>
        ((S # enumerate_list a ! j) ! x = One \<longrightarrow> x \<in> state) \<and>
@@ -875,22 +875,22 @@ next
         using match unfolding match_timestep_def by blast
       have j_bound: "j < length (enumerate_list a)"
         using obt by blast
-      have "?s = enumerate_list (S # a)!(j) 
+      have "?s = enumerate_list (S # a)!(j)
             \<and> j < length (enumerate_list (S # a))"
         using j_bound enumerate_list_index_zero by blast
-      then have ?case unfolding headcase 
+      then have ?case unfolding headcase
         using match obt match_S by metis
     }
     ultimately have ?case using head by blast
   }
-  ultimately show ?case by blast 
+  ultimately show ?case by blast
 qed
 
 
-lemma enumerate_trace_head_in: 
+lemma enumerate_trace_head_in:
   assumes "a_head # a_tail \<in> set (enumerate_trace (h # trace))"
   shows " a_head \<in> set (enumerate_list h)"
-proof - 
+proof -
     let ?flat = "flatten_list
      (map (\<lambda>t. map (\<lambda>h. h # t)
                  (enumerate_list h))
@@ -902,12 +902,12 @@ proof -
      (a_head # a_tail)"
       using assms unfolding enumerate_trace.simps
       using in_set_member by metis
-    then obtain x1_head x1_tail where 
+    then obtain x1_head x1_tail where
       x1_props: "a_head # a_tail = x1_head # x1_tail \<and>
      List.member (enumerate_list h) x1_head \<and>
      List.member (enumerate_trace trace) x1_tail"
      using flatten_list_shape[OF mem flat_is]  by auto
-   then have "a_head = x1_head" 
+   then have "a_head = x1_head"
      by auto
    then have "List.member (enumerate_list h) a_head "
      using x1_props
@@ -921,7 +921,7 @@ qed
 lemma enumerate_trace_tail_in:
   assumes "a_head # a_tail \<in> set (enumerate_trace (h # trace))"
   shows "a_tail \<in> set (enumerate_trace trace)"
-proof - 
+proof -
     let ?flat = "flatten_list
      (map (\<lambda>t. map (\<lambda>h. h # t)
                  (enumerate_list h))
@@ -933,12 +933,12 @@ proof -
      (a_head # a_tail)"
       using assms unfolding enumerate_trace.simps
       using in_set_member by metis
-    then obtain x1_head x1_tail where 
+    then obtain x1_head x1_tail where
       x1_props: "a_head # a_tail = x1_head # x1_tail \<and>
      List.member (enumerate_list h) x1_head \<and>
      List.member (enumerate_trace trace) x1_tail"
      using flatten_list_shape[OF mem flat_is]  by auto
-   then have "a_tail = x1_tail" 
+   then have "a_tail = x1_tail"
      by auto
    then have "List.member (enumerate_trace trace) a_tail "
      using x1_props
@@ -949,14 +949,14 @@ proof -
 qed
 
 
-text \<open> Intuitively, this says that the traces in enumerate trace h are 
+text \<open> Intuitively, this says that the traces in enumerate trace h are
 ``more specific'' than h, which is ``more generic''---i.e., h
 matches everything that each element of enumerate trace h matches. \<close>
 lemma match_enumerate_trace_aux:
   assumes "a \<in> set (enumerate_trace trace)"
   assumes "match_regex \<pi> a"
   shows "match_regex \<pi> trace"
-proof - 
+proof -
   show ?thesis using assms proof (induct trace arbitrary: a \<pi>)
     case Nil
     then show ?case by auto
@@ -964,7 +964,7 @@ proof -
     case (Cons h trace)
     then obtain a_head a_tail where obt_a: "a = a_head#a_tail"
       using enumerate_trace_len
-      by (metis length_0_conv neq_Nil_conv) 
+      by (metis length_0_conv neq_Nil_conv)
     have "length \<pi> > 0"
       using Cons unfolding match_regex_def obt_a by auto
     then obtain \<pi>_head \<pi>_tail where obt_\<pi>: "\<pi> = \<pi>_head#\<pi>_tail"
@@ -981,7 +981,7 @@ proof -
       using enumerate_trace_head_in by blast
     have "match_timestep \<pi>_head a_head"
       using Cons.prems(2) unfolding obt_\<pi> match_regex_def
-      using obt_a by auto 
+      using obt_a by auto
     then have match_head: "match_timestep \<pi>_head h"
       using match_enumerate_state_aux[of a_head h \<pi>_head] a_head by blast
     have "\<And>time. time<length (h # trace) \<Longrightarrow>
@@ -999,19 +999,19 @@ proof -
       }
       ultimately show ?thesis by blast
     qed
-    then show ?case using match_tail unfolding match_regex_def obt_a obt_\<pi> 
+    then show ?case using match_tail unfolding match_regex_def obt_a obt_\<pi>
       by simp
   qed
 qed
 
 
-lemma match_enumerate_trace: 
+lemma match_enumerate_trace:
   assumes "a \<in> set (enumerate_trace h) \<and> match_regex \<pi> a"
   shows "match \<pi> (h # T)"
 proof-
   show ?thesis
     unfolding match_def
-    using match_enumerate_trace_aux assms 
+    using match_enumerate_trace_aux assms
     by auto
 qed
 
@@ -1034,14 +1034,14 @@ next
   } moreover {assume *: "a \<in> enumerate_sets T"
     then have "match \<pi> T"
       using Cons a_prop by blast
-    then have ?case 
+    then have ?case
       by (metis Suc_leI le_imp_less_Suc length_Cons match_def nth_Cons_Suc)
   }
-  ultimately show ?case 
+  ultimately show ?case
     using a_prop by auto
 qed
 
-lemma match_cases: 
+lemma match_cases:
   assumes "match \<pi> (a # R)"
   shows "match \<pi> [a] \<or> match \<pi> R"
 proof-
@@ -1056,7 +1056,7 @@ proof-
       using assms obt unfolding match_def by simp
     then have "match \<pi> R"
       unfolding match_def using obt i_ge_0
-      by (metis Suc_diff_1 Suc_less_eq length_Cons) 
+      by (metis Suc_diff_1 Suc_less_eq length_Cons)
     then have ?thesis by blast
   }
   ultimately show ?thesis using assms unfolding match_def by blast
@@ -1074,9 +1074,9 @@ proof-
   have enum: "enumerate_trace (h#T) = ?flat"
     unfolding enumerate_trace.simps by simp
   obtain i where i: "?enumT!i = trace \<and> i < length ?enumT"
-    using assms(2) by (meson in_set_conv_nth) 
+    using assms(2) by (meson in_set_conv_nth)
   obtain j where j: "?enumh!j = state \<and> j < length ?enumh"
-    using assms(1) by (meson in_set_conv_nth) 
+    using assms(1) by (meson in_set_conv_nth)
   have "enumerate_list h ! j # enumerate_trace T ! i =
     flatten_list (map (\<lambda>t. map (\<lambda>h. h # t) (enumerate_list h)) (enumerate_trace T)) !
     (i * length (enumerate_list h) + j) \<and>
@@ -1093,7 +1093,7 @@ qed
 lemma match_enumerate_trace_aux_converse:
   assumes "match_regex \<pi> trace"
   shows "match \<pi> (enumerate_trace trace)"
-  using assms 
+  using assms
 proof(induct trace arbitrary: \<pi>)
   case Nil
   have enum: "enumerate_trace [] = [[]]"
@@ -1109,15 +1109,15 @@ next
     using Cons.prems pi_obt unfolding match_regex_def by auto
   then have match_tail: "match pi_tail (enumerate_trace trace)"
     using Cons.hyps by blast
-  then obtain i where obt_i: "match_regex pi_tail (enumerate_trace trace ! i) \<and> 
+  then obtain i where obt_i: "match_regex pi_tail (enumerate_trace trace ! i) \<and>
          i<length (enumerate_trace trace)"
     unfolding match_def by blast
   let ?enum_tail = "(enumerate_trace trace ! i)"
 
   have match_head: "match_timestep pi_head a"
     using Cons.prems unfolding match_regex_def
-    by (metis Cons.prems WEST_and_trace_correct_forward_aux nth_Cons' pi_obt) 
-  then have "\<exists>j < length (enumerate_list a). 
+    by (metis Cons.prems WEST_and_trace_correct_forward_aux nth_Cons' pi_obt)
+  then have "\<exists>j < length (enumerate_list a).
              match_timestep pi_head ((enumerate_list a)!j)"
     using match_enumerate_list by blast
   then obtain j where obt_j: "match_timestep pi_head ((enumerate_list a)!j) \<and>
@@ -1133,7 +1133,7 @@ next
   have match_head: "match_timestep pi_head ((enumerate_list a)!j)"
     using obt_j by blast
   have match: "match_regex \<pi> (?enum_head#?enum_tail)"
-    using match_head match_tail 
+    using match_head match_tail
     using WEST_and_trace_correct_forward_aux_converse[OF pi_obt match_head match_tail] by auto
   let ?flat = "flatten_list
      (map (\<lambda>t. map (\<lambda>h. h # t) (enumerate_list a))
@@ -1149,7 +1149,7 @@ next
     using flatten_list_idx[of ?flat "enumerate_list a" "enumerate_trace trace" i j]
     using obt_i obt_j by blast
   then show ?case
-    unfolding match_def using match 
+    unfolding match_def using match
     by auto
 qed
 
@@ -1169,14 +1169,14 @@ next
     then have "match_regex \<pi> a"
       unfolding match_def by simp
     then have "match \<pi> (enumerate_trace a)"
-      using match_enumerate_trace_aux 
+      using match_enumerate_trace_aux
       using match_enumerate_trace_aux_converse by blast
     then have "\<exists>b \<in> set (enumerate_trace a). match_regex \<pi> b"
       unfolding match_def by auto
     then have ?case by auto
   } moreover {
     assume match_R: "match \<pi> R"
-    then have ?case 
+    then have ?case
       using Cons by auto
   }
   ultimately show ?case
@@ -1194,7 +1194,7 @@ lemma regex_equivalence_correct1:
   shows "match \<pi> A = match \<pi> B"
   unfolding regex_equiv_def
   using match_enumerate_sets[of A \<pi>] match_enumerate_sets[of B \<pi>]
-  using assms 
+  using assms
   unfolding naive_equivalence.simps
   by blast
 
@@ -1203,7 +1203,7 @@ lemma regex_equivalence_correct:
   shows "(naive_equivalence A B) \<longrightarrow> (regex_equiv A B)"
   using regex_equivalence_correct1
   unfolding regex_equiv_def
-  by metis 
+  by metis
 
 
 export_code naive_equivalence in Haskell module_name regex_equiv
