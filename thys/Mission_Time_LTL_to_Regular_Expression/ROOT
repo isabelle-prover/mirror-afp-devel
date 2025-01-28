@@ -1,0 +1,11 @@
+chapter AFP
+
+session Mission_Time_LTL_to_Regular_Expression = Mission_Time_LTL +
+  options [timeout = 600]
+  theories
+    WEST_Algorithms
+    WEST_Proofs
+    Regex_Equivalence
+  document_files 
+    "root.tex"
+    "root.bib"
