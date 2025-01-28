@@ -4,7 +4,6 @@ subsection \<open>Sum types\<close>
 
 theory Applicative_Sum imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 text \<open>
@@ -30,8 +29,8 @@ abbreviation "ap_either \<equiv> ap_sum (\<lambda>x _. x)"
 abbreviation "ap_plus \<equiv> ap_sum (plus :: 'a :: semigroup_add \<Rightarrow> _)"
 
 abbreviation (input) pure_sum where "pure_sum \<equiv> Inl"
-adhoc_overloading Applicative.pure pure_sum
-adhoc_overloading Applicative.ap ap_either (* ap_plus *)
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_sum
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_either (* ap_plus *)
 
 lemma ap_sum_id: "ap_sum c (Inl id) x = x"
 by (cases x) simp_all
@@ -90,6 +89,6 @@ using
   add.ap_sum_comp[simplified comp_def[abs_def]]
 by auto
 
-no_adhoc_overloading Applicative.pure pure_sum
+no_adhoc_overloading Applicative.pure \<rightleftharpoons> pure_sum
 
 end

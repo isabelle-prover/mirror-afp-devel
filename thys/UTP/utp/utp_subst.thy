@@ -34,7 +34,7 @@ lift_definition subst :: "('\<alpha>, '\<beta>) psubst \<Rightarrow> ('a, '\<bet
 "\<lambda> \<sigma> e b. e (\<sigma> b)" .
 
 adhoc_overloading
-  usubst subst
+  usubst \<rightleftharpoons> subst
 
 text \<open> Substitutions can be updated by associating variables with expressions. We thus create an 
   additional polymorphic constant to represent updating the value of a variable to an expression 
@@ -55,7 +55,7 @@ definition subst_upd_uvar :: "('\<alpha>,'\<beta>) psubst \<Rightarrow> ('a \<Lo
 "subst_upd_uvar \<sigma> x v = (\<lambda> b. put\<^bsub>x\<^esub> (\<sigma> b) (\<lbrakk>v\<rbrakk>\<^sub>eb))"
 
 adhoc_overloading
-  subst_upd subst_upd_uvar
+  subst_upd \<rightleftharpoons> subst_upd_uvar
 
 text \<open> The next function looks up the expression associated with a variable in a substitution
   by use of the \emph{get} lens function. \<close>
@@ -71,7 +71,7 @@ definition unrest_usubst :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<a
 where "unrest_usubst x \<sigma> = (\<forall> \<rho> v. \<sigma> (put\<^bsub>x\<^esub> \<rho> v) = put\<^bsub>x\<^esub> (\<sigma> \<rho>) v)"
 
 adhoc_overloading
-  unrest unrest_usubst
+  unrest \<rightleftharpoons> unrest_usubst
 
 text \<open> A conditional substitution deterministically picks one of the two substitutions based on a
   Booolean expression which is evaluated on the present state-space. It is analogous to a functional

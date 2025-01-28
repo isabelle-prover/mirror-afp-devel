@@ -157,7 +157,7 @@ Note this should only be done, for primitive cases, as it requires accounting of
 definition lift_pmf :: "nat \<Rightarrow> 'a pmf \<Rightarrow> 'a tpmf"
   where "lift_pmf k m = map_pmf (\<lambda>x. custom_tick k \<bind> (\<lambda>_. return x)) m"
 
-adhoc_overloading Monad_Syntax.bind bind_tpmf
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_tpmf
 
 lemma val_bind_tpmf:
   "map_pmf val (bind_tpmf m f) = map_pmf val m \<bind> (\<lambda>x. map_pmf val (f x))"

@@ -57,7 +57,7 @@ sublocale strict_order_restriction "(\<prec>\<^sub>m)" from_ground
 
 end
 
-(* TODO: Name \<rightarrow> restriction is just total *)
+(* TODO: Name \<rightarrow> restriction is just total_on *)
 locale total_grounded_multiset_extension = 
   grounded_multiset_extension +
   sub: total_strict_order_restriction where lift = "sub_from_ground"

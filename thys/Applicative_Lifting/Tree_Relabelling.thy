@@ -10,9 +10,9 @@ theory Tree_Relabelling imports
 begin
 
 unbundle applicative_syntax
-adhoc_overloading Applicative.pure pure_option
-adhoc_overloading Applicative.pure State_Monad.return
-adhoc_overloading Applicative.ap State_Monad.ap
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_option
+adhoc_overloading Applicative.pure \<rightleftharpoons> State_Monad.return
+adhoc_overloading Applicative.ap \<rightleftharpoons> State_Monad.ap
 
 text \<open> Hutton and Fulger \<^cite>\<open>"HuttonFulger2008TFP"\<close> suggested the following tree relabelling problem
   as an example for reasoning about effects. Given a binary tree with labels at the leaves, the
@@ -129,8 +129,8 @@ where "pure_state_rev = pure_dual State_Monad.return"
 definition ap_state_rev :: "('s, 'a \<Rightarrow> 'b) state_rev \<Rightarrow> ('s, 'a) state_rev \<Rightarrow> ('s, 'b) state_rev"
 where "ap_state_rev = ap_dual State_Monad.return State_Monad.ap State_Monad.ap"
 
-adhoc_overloading Applicative.pure pure_state_rev
-adhoc_overloading Applicative.ap ap_state_rev
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_state_rev
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_state_rev
 
 applicative state_rev
 for
@@ -147,8 +147,8 @@ where "pure_state_rev_rev = pure_dual pure_state_rev"
 definition ap_state_rev_rev :: "('s, 'a \<Rightarrow> 'b) state_rev_rev \<Rightarrow> ('s, 'a) state_rev_rev \<Rightarrow> ('s, 'b) state_rev_rev"
 where "ap_state_rev_rev = ap_dual pure_state_rev ap_state_rev ap_state_rev"
 
-adhoc_overloading Applicative.pure pure_state_rev_rev
-adhoc_overloading Applicative.ap ap_state_rev_rev
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_state_rev_rev
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_state_rev_rev
 
 applicative state_rev_rev
 for
@@ -399,7 +399,7 @@ where
 by pat_completeness auto
 termination by lexicographic_order
 
-adhoc_overloading Applicative.pure pure_pmf
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_pmf
 
 context fixes p :: "'a \<Rightarrow> 'b pmf" begin
 

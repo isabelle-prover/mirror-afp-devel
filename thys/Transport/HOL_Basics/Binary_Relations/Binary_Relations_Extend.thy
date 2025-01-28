@@ -8,7 +8,7 @@ begin
 consts extend :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'c"
 
 definition "extend_rel x y R x' y' \<equiv> (x = x' \<and> y = y') \<or> R x' y'"
-adhoc_overloading extend extend_rel
+adhoc_overloading extend \<rightleftharpoons> extend_rel
 
 lemma extend_leftI [iff]: "(extend x y R) x y"
   unfolding extend_rel_def by blast
@@ -60,7 +60,7 @@ lemma dep_mono_dep_bin_rel_extend:
 consts glue :: "'a \<Rightarrow> 'b"
 
 definition "glue_rel (\<R> :: ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool) x \<equiv> in_codom_on \<R> (\<lambda>R. R x)"
-adhoc_overloading glue glue_rel
+adhoc_overloading glue \<rightleftharpoons> glue_rel
 
 lemma glue_rel_eq_in_codom_on: "glue \<R> x = in_codom_on \<R> (\<lambda>R. R x)"
   unfolding glue_rel_def by simp

@@ -40,19 +40,19 @@ translations
 
 definition "dep_mono_wrt_rel (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool)
   (S :: 'a \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) \<equiv> ((x y \<Colon> R) \<Rrightarrow> S x y) f f"
-adhoc_overloading dep_mono_wrt dep_mono_wrt_rel
+adhoc_overloading dep_mono_wrt \<rightleftharpoons> dep_mono_wrt_rel
 
 definition "mono_wrt_rel (R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) (S :: 'b \<Rightarrow> 'b \<Rightarrow> bool) \<equiv>
   ((_ _ \<Colon> R) \<Rightarrow> S) :: ('a \<Rightarrow> 'b) \<Rightarrow> bool"
-adhoc_overloading mono_wrt mono_wrt_rel
+adhoc_overloading mono_wrt \<rightleftharpoons> mono_wrt_rel
 
 definition "dep_mono_wrt_pred (P :: 'a \<Rightarrow> bool) (Q :: 'a \<Rightarrow> 'b \<Rightarrow> bool) (f :: 'a \<Rightarrow> 'b) \<equiv>
   ((x : P) \<Rrightarrow> (\<lambda>(_ :: 'b). Q x)) f f"
-adhoc_overloading dep_mono_wrt dep_mono_wrt_pred
+adhoc_overloading dep_mono_wrt \<rightleftharpoons> dep_mono_wrt_pred
 
 definition "mono_wrt_pred (P :: 'a \<Rightarrow> bool) (Q :: 'b \<Rightarrow> bool) \<equiv>
   (((_ :: 'a) : P) \<Rightarrow> Q) :: ('a \<Rightarrow> 'b) \<Rightarrow> bool"
-adhoc_overloading mono_wrt mono_wrt_pred
+adhoc_overloading mono_wrt \<rightleftharpoons> mono_wrt_pred
 
 lemma mono_wrt_rel_eq_dep_mono_wrt_rel:
   "((R :: 'a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (S :: 'b \<Rightarrow> 'b \<Rightarrow> bool)) = ((_ _ \<Colon> R) \<Rightarrow> S)"

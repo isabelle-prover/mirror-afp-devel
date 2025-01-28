@@ -40,7 +40,7 @@ proof safe
     by(simp add: ap_list_def List.bind_def map_concat o_def split_beta sum_list_concat_map sum_list_const_mult)
 qed
 
-adhoc_overloading Applicative.ap ap_pfp
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_pfp
 
 applicative pfp
  for pure: pure_pfp

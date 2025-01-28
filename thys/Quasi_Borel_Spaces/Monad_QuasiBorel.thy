@@ -382,7 +382,7 @@ definition qbs_bind :: "'a qbs_prob_space \<Rightarrow> ('a \<Rightarrow> 'b qbs
                       (qbsy,\<beta>,g) = rep_monadP_qbs_MPx (f \<circ> \<alpha>) 
                      in qbs_prob_space (qbsy,\<beta>,\<mu> \<bind> g))"
 
-adhoc_overloading Monad_Syntax.bind qbs_bind
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> qbs_bind
 
 lemma(in qbs_prob) qbs_bind_computation:
   assumes"s = qbs_prob_space (X,\<alpha>,\<mu>)"

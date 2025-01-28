@@ -64,13 +64,13 @@ unbundle ball_syntax and bex_syntax and bex1_syntax
 end
 
 definition "ball_pred P Q \<equiv> \<forall>x. P x \<longrightarrow> Q x"
-adhoc_overloading ball ball_pred
+adhoc_overloading ball \<rightleftharpoons> ball_pred
 
 definition "bex_pred P Q \<equiv> \<exists>x. P x \<and> Q x"
-adhoc_overloading bex bex_pred
+adhoc_overloading bex \<rightleftharpoons> bex_pred
 
 definition "bex1_pred P Q \<equiv> \<exists>!x. P x \<and> Q x"
-adhoc_overloading bex1 bex1_pred
+adhoc_overloading bex1 \<rightleftharpoons> bex1_pred
 
 (*copied from HOL.Set.thy*)
 simproc_setup defined_ball ("\<forall>x : P. Q x \<longrightarrow> U x") = \<open>

@@ -8,7 +8,7 @@ subsection \<open>Applicative instance for @{typ "(_, 'out, 'in) gpv"}\<close>
 definition ap_gpv :: "('a \<Rightarrow> 'b, 'out, 'in) gpv \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> ('b, 'out, 'in) gpv"
 where "ap_gpv f x = bind_gpv f (\<lambda>f'. bind_gpv x (\<lambda>x'. Done (f' x')))"
 
-adhoc_overloading Applicative.ap ap_gpv
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_gpv
 
 abbreviation (input) pure_gpv :: "'a \<Rightarrow> ('a, 'out, 'in) gpv"
 where "pure_gpv \<equiv> Done"

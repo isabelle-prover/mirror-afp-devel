@@ -257,7 +257,7 @@ definition [simp]: "in_dvar x = in_var (x\<up>)"
 definition [simp]: "out_dvar x = out_var (x\<up>)"
 
 adhoc_overloading
-  ivar in_dvar and ovar out_dvar and svar dvar_lift
+  ivar \<rightleftharpoons> in_dvar and ovar \<rightleftharpoons> out_dvar and svar \<rightleftharpoons> dvar_lift
 
 lemma uvar_dvar: "vwb_lens (x\<up>)"
   by (auto intro: comp_vwb_lens simp add: dvar_lift_def)
@@ -347,7 +347,7 @@ definition subst_upd_dvar :: "('\<alpha>,'\<beta>::vst) psubst \<Rightarrow> 'a:
 "subst_upd_dvar \<sigma> x v = subst_upd_uvar \<sigma> (x\<up>) v"
 
 adhoc_overloading
-  subst_upd subst_upd_dvar
+  subst_upd \<rightleftharpoons> subst_upd_dvar
 
 declare subst_upd_dvar_def [upred_defs]
 

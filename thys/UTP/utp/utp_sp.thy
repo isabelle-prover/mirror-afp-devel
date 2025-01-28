@@ -22,7 +22,7 @@ definition sp_upred :: "'\<alpha> cond \<Rightarrow> ('\<alpha>, '\<beta>) urel 
 "sp_upred p Q = \<lfloor>(\<lceil>p\<rceil>\<^sub>> ;; Q) :: ('\<alpha>, '\<beta>) urel\<rfloor>\<^sub>>"
 
 adhoc_overloading
-  usp sp_upred
+  usp \<rightleftharpoons> sp_upred
 
 declare sp_upred_def [upred_defs]
 

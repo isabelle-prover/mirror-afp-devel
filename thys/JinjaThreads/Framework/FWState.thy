@@ -190,7 +190,7 @@ translations
 
 
 adhoc_overloading
-  inject_thread_action NewThreadAction ConditionalAction WaitSetAction InterruptAction ObsAction LockAction
+  inject_thread_action \<rightleftharpoons> NewThreadAction ConditionalAction WaitSetAction InterruptAction ObsAction LockAction
 
 lemma ta_upd_proj_simps [simp]:
   shows ta_obs_proj_simps:

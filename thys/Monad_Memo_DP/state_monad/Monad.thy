@@ -14,7 +14,7 @@ definition bind :: "('M, 'a) state \<Rightarrow> ('a \<Rightarrow> ('M, 'b) stat
 term 0 (**)
 
 adhoc_overloading
-  Monad_Syntax.bind bind
+  Monad_Syntax.bind \<rightleftharpoons> bind
 
 definition get :: "('M, 'M) state" where
   "get \<equiv> State (\<lambda>M. (M, M))"

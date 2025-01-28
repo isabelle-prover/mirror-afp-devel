@@ -54,7 +54,7 @@ lift_definition unrest_uexpr :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> 
 is "\<lambda> x e. \<forall> b v. e (put\<^bsub>x\<^esub> b v) = e b" .
 
 adhoc_overloading
-  unrest unrest_uexpr
+  unrest \<rightleftharpoons> unrest_uexpr
 
 lemma unrest_expr_alt_def:
   "weak_lens x \<Longrightarrow> (x \<sharp> P) = (\<forall> b b'. \<lbrakk>P\<rbrakk>\<^sub>e (b \<oplus>\<^sub>L b' on x) = \<lbrakk>P\<rbrakk>\<^sub>e b)"

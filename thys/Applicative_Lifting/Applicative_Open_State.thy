@@ -4,7 +4,6 @@ subsection \<open>Open state monad\<close>
 
 theory Applicative_Open_State imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 type_synonym ('a, 's) state = "'s \<Rightarrow> 'a \<times> 's"
@@ -13,7 +12,7 @@ definition "ap_state f x = (\<lambda>s. case f s of (g, s') \<Rightarrow> case x
 
 abbreviation (input) "pure_state \<equiv> Pair"
 
-adhoc_overloading Applicative.ap ap_state
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_state
 
 applicative state
 for

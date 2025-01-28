@@ -12,7 +12,7 @@ This doubles the symbols \<open>\$\<close> and \<open>\<chi>\<close> for \<open>
 \<open>vec_index\<close> for type \<open>'a vec\<close>. Still some type ambiguities remain.\<close>
 
 unbundle %invisible lifting_syntax
-no_adhoc_overloading %invisible Monad_Syntax.bind bind_pmf
+no_adhoc_overloading %invisible Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 declare %invisible [[names_short]]
 
 
@@ -67,7 +67,7 @@ proof -
   then show ?thesis by auto
 qed
 
-adhoc_overloading %invisible Monad_Syntax.bind bind_pmf 
+adhoc_overloading %invisible Monad_Syntax.bind \<rightleftharpoons> bind_pmf 
 definition beta :: "'a qr pmf" where
 "beta = do {
     as \<leftarrow> pmf_of_set (bit_set);
@@ -184,7 +184,7 @@ text \<open>Lemma to split the \<open>replicate (k+1)\<close> function in \<open
 \<open>replicate k\<close> and a separate value. Note, that the \<open>xs\<close> in the \<open>do\<close> notation below are 
 always of length $k$. \<close>
 
-no_adhoc_overloading Monad_Syntax.bind bind_pmf
+no_adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 lemma beta_vec':
   "beta_vec' = do {
@@ -200,7 +200,7 @@ by (subst replicate_spmf_same_length[where
         xs ! idx (the i)))))"])
    (simp_all add: idx'_lambda)
 
-adhoc_overloading Monad_Syntax.bind bind_pmf
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_pmf
 
 text \<open>Definition of the two games for the option type.\<close>
 

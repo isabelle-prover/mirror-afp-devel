@@ -1,5 +1,7 @@
 theory Typed_Functional_Substitution_Example
-  imports Typed_Functional_Substitution Abstract_Substitution.Functional_Substitution_Example
+  imports 
+    Typed_Functional_Substitution
+    Abstract_Substitution.Functional_Substitution_Example
 begin
 
 type_synonym ('f, 'ty) fun_types = "'f \<Rightarrow> 'ty list \<times> 'ty"

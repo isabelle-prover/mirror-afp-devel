@@ -318,7 +318,7 @@ definition coin_tra :: "(bool \<times> nat) random_alg"
 definition return_tra :: "'a \<Rightarrow> ('a \<times> nat) random_alg"
   where "return_tra x = return_ra (x,0)"
 
-adhoc_overloading Monad_Syntax.bind bind_tra
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind_tra
 
 text \<open>Monad laws:\<close>
 

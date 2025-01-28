@@ -10,7 +10,6 @@ section \<open> Meta-theory for UTP Toolkit \<close>
 theory utp_toolkit
   imports
   HOL.Deriv
-  "HOL-Library.Adhoc_Overloading"
   "HOL-Library.Char_ord"
   "HOL-Library.Countable_Set"
   "HOL-Library.FSet"
