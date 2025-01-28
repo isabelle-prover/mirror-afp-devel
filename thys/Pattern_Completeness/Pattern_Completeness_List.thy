@@ -2343,13 +2343,65 @@ definition sorts_of_ssig_list :: "(('f \<times> 's list) \<times> 's)list \<Righ
 
 text \<open>Finally: a pattern completeness decision procedure for arbitrary inputs,
   assuming sensible inputs;
-  at the moment, it does not allow to choose the improved version\<close>
+  this is the old decision procedure\<close>
+
+context 
+  fixes m :: nat \<comment> \<open>upper bound on arities of constructors\<close>
+    and Cl :: "'s \<Rightarrow> ('f \<times> 's list)list" \<comment> \<open>a function to compute all constructors of given sort as list\<close> 
+    and Is :: "'s \<Rightarrow> bool" \<comment> \<open>a function to indicate whether a sort is infinite\<close>
+begin
+
+definition "pat_complete_impl_old = pattern_completeness_context.pat_complete_impl m Cl Is False undefined undefined undefined" 
+definition "pats_impl_old = pattern_completeness_context.pats_impl m Cl Is False undefined undefined" 
+definition "pat_impl_old = pattern_completeness_context.pat_impl m Cl Is False undefined" 
+definition "pat_inner_impl_old = pattern_completeness_context.pat_inner_impl Is False undefined"  
+definition "match_decomp'_impl_old = pattern_completeness_context.match_decomp'_impl Is False undefined" 
+
+definition find_var_old :: "('f,'v,'s)match_problem_lr list \<Rightarrow> _" where 
+  "find_var_old p = (case List.maps (\<lambda> (lx,_). lx) p of
+      (x,t) # _ \<Rightarrow> x
+    | [] \<Rightarrow> (let (_,rx,b) = hd p
+         in case hd rx of (x, s # t # _) \<Rightarrow> hd (the (conflicts s t))))" 
+
+lemma find_var_old: "find_var False p = Some (find_var_old p)" 
+  unfolding find_var_old_def find_var_def if_False by (auto split: list.splits)
+
+lemmas pat_complete_impl_old_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is False undefined undefined undefined,
+    folded pat_complete_impl_old_def pats_impl_old_def,
+    unfolded if_False Let_def]
+
+lemmas pat_impl_old_code[code] = pattern_completeness_context.pat_impl_def[of m Cl Is False undefined, 
+    folded pat_impl_old_def pat_inner_impl_old_def,
+    unfolded find_var_old option.simps]
+
+lemma pats_impl_old_code[code]: 
+  "pats_impl_old n nl ps =
+    (case ps of [] \<Rightarrow> True
+     | p # ps1 \<Rightarrow>
+         (case pat_impl_old n nl p of Incomplete \<Rightarrow> False
+         | New_Problems (n', nl', ps2) \<Rightarrow> pats_impl_old n' nl' (ps2 @ ps1)))" 
+  unfolding pats_impl_old_def pattern_completeness_context.pats_impl.simps[of _ _ _ _ _ _ _ _ ps]
+  unfolding pat_impl_old_def[symmetric]
+  unfolding pat_impl_old_code
+  by (auto split: list.splits option.splits)
+
+private lemma triv_ident: "False \<and> x \<longleftrightarrow> False" by auto
+
+lemmas match_decomp'_impl_old_code[code] =
+  pattern_completeness_context.match_decomp'_impl_def[of Is False undefined, folded match_decomp'_impl_old_def,
+  unfolded pattern_completeness_context.apply_decompose'_def triv_ident if_False]
+ 
+
+lemmas pat_inner_impl_old_code[code] =
+  pattern_completeness_context.pat_inner_impl.simps[of Is False undefined, folded pat_inner_impl_old_def match_decomp'_impl_old_def]
+end
+
 definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
   "decide_pat_complete Cs P = (let Sl = sorts_of_ssig_list Cs;
       m = max_list (map (length o snd o fst) Cs);
       Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
       IS = compute_inf_sorts Cs
-     in pattern_completeness_context.pat_complete_impl m Cl (\<lambda> s. s \<in> IS)) False (\<lambda> _. undefined) id (\<lambda> _. True) P" 
+     in pat_complete_impl_old m Cl (\<lambda> s. s \<in> IS)) P" 
 
 abbreviation (input) pat_complete where 
   "pat_complete \<equiv> pattern_completeness_context.pat_complete"
@@ -2363,8 +2415,8 @@ theorem decide_pat_complete: assumes C_Cs: "C = map_of Cs"
   and S: "S = set (sorts_of_ssig_list Cs)"
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S"
 shows "decide_pat_complete Cs P = pats_complete S C  (pat_list ` set P)" 
-  unfolding decide_pat_complete_def Let_def
-proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist non_empty_sorts S refl _ refl P, of _ False])
+  unfolding decide_pat_complete_def Let_def pat_complete_impl_old_def
+proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist non_empty_sorts S refl _ refl P])
   fix f \<sigma>s \<sigma>
   assume mem: "((f, \<sigma>s), \<sigma>) \<in> set Cs" 
   hence "length \<sigma>s \<in> set (map (length \<circ> snd \<circ> fst) Cs)" by force
@@ -2372,5 +2424,8 @@ proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist 
   show "length \<sigma>s \<le> max_list (map (length \<circ> snd \<circ> fst) Cs) \<and> set (\<sigma> # \<sigma>s) \<subseteq> S" 
     unfolding S sorts_of_ssig_list_def List.maps_def by force
 qed auto
+
+(* TODO: write a wrapper for the improved algorithm and
+    connect it to some renaming implementations and decision procedures *)
 
 end
