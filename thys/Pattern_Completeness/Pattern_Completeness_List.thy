@@ -774,7 +774,7 @@ context
     and renNat  :: "nat \<Rightarrow> 'v" 
     and fvf_dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
   assumes renaming_ass: "improved \<Longrightarrow> renaming_funs renNat renVar" 
-    and fvf_dp: "\<And> p. improved \<Longrightarrow> finite_var_form_pp (pat_list p) 
+    and fvf_dp: "\<And> p. improved \<Longrightarrow> finite_var_form_pp (pat_list p) \<Longrightarrow> wf_pat (pat_list p)
       \<Longrightarrow> fvf_dp p = pat_complete (pat_list p)" 
 begin
 
@@ -2123,7 +2123,12 @@ proof (insert assms, induct ps arbitrary: n nl rule: wf_induct[OF wf_inv_image[O
       from pat_impl(3)[OF FVF] 
       have steps: "(pats_mset_list ps, add_mset (pat_mset_list fvf) (pats_mset_list ps1)) \<in> \<Rrightarrow>\<^sup>*" 
         and ifvf: improved "finite_var_form_pp (pat_list fvf)" by auto
-      from fvf_dp[OF ifvf] 
+      have "wf_pats (pats_mset (pats_mset_list ps))" 
+        using wf unfolding wf_pats_def pats_mset_list .
+      from P_steps_pcorrect[OF this steps]
+      have "wf_pat (pat_mset (pat_mset_list fvf))" unfolding wf_pats_def by auto
+      hence "wf_pat (pat_list fvf)" unfolding pat_mset_list .
+      from fvf_dp[OF ifvf this]
       have fvf_dp: "fvf_dp fvf = pat_complete (pat_list fvf)" .
       have "(pats_mset_list ps1, add_mset (pat_mset_list fvf) (pats_mset_list ps1)) \<in> \<prec>mul" 
         unfolding rel_pats_def by (simp add: subset_implies_mult)
@@ -2293,7 +2298,7 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   and Cl: "\<And> s. Cl s = map fst (filter ((=) s o snd) Cs)" 
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S" 
   and rnv: "improved \<Longrightarrow> renaming_funs rn rv" 
-  and fvf_dp: "\<And> p. improved \<Longrightarrow> finite_var_form_pp (pat_list p) 
+  and fvf_dp: "\<And> p. improved \<Longrightarrow> finite_var_form_pp (pat_list p) \<Longrightarrow> wf_pat (pat_list p)
       \<Longrightarrow> fvf_dp p = pat_complete (pat_list p)"
 shows "pat_complete_impl rn rv fvf_dp P = pats_complete (pat_list ` set P)" 
   and "inf_sort s \<longleftrightarrow> \<not> finite_sort C s" 
@@ -2484,8 +2489,9 @@ theorem decide_pat_complete_new: assumes C_Cs: "C = map_of Cs"
   and S: "S = set (sorts_of_ssig_list Cs)"
   and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S"
   and ren: "renaming_funs rn rv" 
-  and dp: "\<And> p. pattern_completeness_context.finite_var_form_pp (\<lambda>s. \<not> finite_sort C s) (pat_list p) \<Longrightarrow>
-    dp p = pattern_completeness_context.pat_complete S C (pat_list p)" 
+  and dp: "\<And> p. pattern_completeness_context.finite_var_form_pp (\<lambda>s. \<not> finite_sort C s) (pat_list p) 
+    \<Longrightarrow> pattern_completeness_context.wf_pat S (pat_list p)
+    \<Longrightarrow> dp p = pattern_completeness_context.pat_complete S C (pat_list p)" 
 shows "decide_pat_complete_new rn rv dp Cs P = pats_complete S C  (pat_list ` set P)" 
 proof -
   {
@@ -2504,6 +2510,7 @@ proof -
   proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist non_empty_sorts S refl _ refl P ren])
     fix p
     show "pattern_completeness_context.finite_var_form_pp (\<lambda>s. s \<in> compute_inf_sorts Cs) (pat_list p) \<Longrightarrow>
+       pattern_completeness_context.wf_pat S (pat_list p) \<Longrightarrow>
          dp p = pattern_completeness_context.pat_complete S C (pat_list p)" 
       unfolding cis dp by auto
   qed (insert len_max, auto)
