@@ -2295,7 +2295,8 @@ lemma pat_complete_impl_wrapper: assumes C_Cs: "C = map_of Cs"
   and rnv: "improved \<Longrightarrow> renaming_funs rn rv" 
   and fvf_dp: "\<And> p. improved \<Longrightarrow> finite_var_form_pp (pat_list p) 
       \<Longrightarrow> fvf_dp p = pat_complete (pat_list p)"
-  shows "pat_complete_impl rn rv fvf_dp P = pats_complete (pat_list ` set P)" 
+shows "pat_complete_impl rn rv fvf_dp P = pats_complete (pat_list ` set P)" 
+  and "inf_sort s \<longleftrightarrow> \<not> finite_sort C s" 
 proof -
   from decide_nonempty_sorts(1)[OF dist C_Cs[symmetric] inhabited, folded S_Sl]
   have S: "\<And> \<sigma>. \<sigma> \<in> S \<Longrightarrow> \<not>empty_sort C \<sigma>"
@@ -2316,7 +2317,7 @@ proof -
   have "\<forall>f ss s s'. f : ss \<rightarrow> s in C \<longrightarrow> s' \<in> set ss \<longrightarrow> \<not> empty_sort C s'"
     using S by (auto dest!: Cons(1))
   from compute_inf_sorts[OF refl C_Cs this dist] inf_sort
-  have inf_sort: "inf_sort s \<longleftrightarrow> \<not> finite_sort C s" for s unfolding inf_sort by auto
+  show inf_sort: "inf_sort s \<longleftrightarrow> \<not> finite_sort C s" for s unfolding inf_sort by auto
   have Cl: "set (Cl s) = {(f,ss). f : ss \<rightarrow> s in C}" for s
     unfolding Cl set_map o_def C_Cs using dist
     by (force simp: fun_hastype_def)
@@ -2330,7 +2331,7 @@ proof -
     subgoal by (rule Cl)
     subgoal by (rule m)
     done
-  show ?thesis by (rule pat_complete_impl[OF _ _ P], insert rnv fvf_dp, auto)
+  show "pat_complete_impl rn rv fvf_dp P = pats_complete (pat_list ` set P)" by (rule pat_complete_impl[OF _ _ P], insert rnv fvf_dp, auto)
 qed
 end
 
@@ -2385,7 +2386,7 @@ lemma pats_impl_old_code[code]:
   unfolding pat_impl_old_code
   by (auto split: list.splits option.splits)
 
-private lemma triv_ident: "False \<and> x \<longleftrightarrow> False" by auto
+private lemma triv_ident: "False \<and> x \<longleftrightarrow> False" "True \<and> x \<longleftrightarrow> x" by auto
 
 lemmas match_decomp'_impl_old_code[code] =
   pattern_completeness_context.match_decomp'_impl_def[of Is False undefined, folded match_decomp'_impl_old_def,
@@ -2394,6 +2395,46 @@ lemmas match_decomp'_impl_old_code[code] =
 
 lemmas pat_inner_impl_old_code[code] =
   pattern_completeness_context.pat_inner_impl.simps[of Is False undefined, folded pat_inner_impl_old_def match_decomp'_impl_old_def]
+
+
+context
+  fixes
+    rn :: "nat \<Rightarrow> 'v"
+    and rv :: "'v \<Rightarrow> 'v"
+    and dp :: "('f,'v,'s)pat_problem_list \<Rightarrow> bool" 
+begin
+definition "pat_complete_impl_new = pattern_completeness_context.pat_complete_impl m Cl Is True rn rv dp" 
+definition "pats_impl_new = pattern_completeness_context.pats_impl m Cl Is True rn dp" 
+definition "pat_impl_new = pattern_completeness_context.pat_impl m Cl Is True rn" 
+definition "pat_inner_impl_new = pattern_completeness_context.pat_inner_impl Is True rn"  
+definition "match_decomp'_impl_new = pattern_completeness_context.match_decomp'_impl Is True rn"
+definition "find_var_new = find_var True"
+
+lemmas pat_complete_impl_new_code[code] = pattern_completeness_context.pat_complete_impl_def[of m Cl Is True rn rv dp,
+    folded pat_complete_impl_new_def pats_impl_new_def,
+    unfolded if_True Let_def]
+
+lemmas pat_impl_new_code[code] = pattern_completeness_context.pat_impl_def[of m Cl Is True rn, 
+    folded pat_impl_new_def pat_inner_impl_new_def find_var_new_def]
+
+lemmas pats_impl_new_code[code] = pattern_completeness_context.pats_impl.simps[of m Cl Is True rn dp,
+    folded pats_impl_new_def pat_impl_new_def]
+
+lemmas match_decomp'_impl_new_code[code] =
+  pattern_completeness_context.match_decomp'_impl_def[of Is True rn, 
+    folded match_decomp'_impl_new_def,
+  unfolded pattern_completeness_context.apply_decompose'_def triv_ident]
+ 
+lemmas pat_inner_impl_new_code[code] =
+  pattern_completeness_context.pat_inner_impl.simps[of Is True rn, 
+    folded pat_inner_impl_new_def match_decomp'_impl_new_def]
+
+lemmas find_var_new_code[code] = 
+  find_var_def[of True, 
+    folded find_var_new_def,
+    unfolded if_True]
+
+end
 end
 
 definition decide_pat_complete :: "(('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
@@ -2409,6 +2450,7 @@ abbreviation (input) pat_complete where
 abbreviation (input) pats_complete where 
   "pats_complete \<equiv> pattern_completeness_context.pats_complete" 
 
+(* the decision procedure of FSCD paper *)
 theorem decide_pat_complete: assumes C_Cs: "C = map_of Cs"
   and dist: "distinct (map fst Cs)" 
   and non_empty_sorts: "decide_nonempty_sorts (sorts_of_ssig_list Cs) Cs = None" 
@@ -2425,7 +2467,46 @@ proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist 
     unfolding S sorts_of_ssig_list_def List.maps_def by force
 qed auto
 
-(* TODO: write a wrapper for the improved algorithm and
-    connect it to some renaming implementations and decision procedures *)
+(* the improved decision procedure for pattern completeness that 
+   stops at finite-variable forms, and then 
+   invokes a decision procedure for these problems *)
+
+definition decide_pat_complete_new :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (('f \<times> 's list) \<times> 's)list \<Rightarrow> ('f,'v,'s)pats_problem_list \<Rightarrow> bool" where
+  "decide_pat_complete_new rn rv dp Cs P = (let Sl = sorts_of_ssig_list Cs;
+      m = max_list (map (length o snd o fst) Cs);
+      Cl = (\<lambda> s. map fst (filter ((=) s \<circ> snd) Cs)); 
+      IS = compute_inf_sorts Cs
+     in pat_complete_impl_new m Cl (\<lambda> s. s \<in> IS)) rn rv dp P" 
+
+theorem decide_pat_complete_new: assumes C_Cs: "C = map_of Cs"
+  and dist: "distinct (map fst Cs)" 
+  and non_empty_sorts: "decide_nonempty_sorts (sorts_of_ssig_list Cs) Cs = None" 
+  and S: "S = set (sorts_of_ssig_list Cs)"
+  and P: "snd ` \<Union> (vars ` fst ` set (concat (concat P))) \<subseteq> S"
+  and ren: "renaming_funs rn rv" 
+  and dp: "\<And> p. pattern_completeness_context.finite_var_form_pp (\<lambda>s. \<not> finite_sort C s) (pat_list p) \<Longrightarrow>
+    dp p = pattern_completeness_context.pat_complete S C (pat_list p)" 
+shows "decide_pat_complete_new rn rv dp Cs P = pats_complete S C  (pat_list ` set P)" 
+proof -
+  {
+    fix f \<sigma>s \<sigma>
+    assume mem: "((f, \<sigma>s), \<sigma>) \<in> set Cs" 
+    hence "length \<sigma>s \<in> set (map (length \<circ> snd \<circ> fst) Cs)" by force
+    from max_list[OF this] mem
+    have "length \<sigma>s \<le> max_list (map (length \<circ> snd \<circ> fst) Cs) \<and> set (\<sigma> # \<sigma>s) \<subseteq> S" 
+      unfolding S sorts_of_ssig_list_def List.maps_def by force
+  } note len_max = this
+  from pattern_completeness_context.pat_complete_impl_wrapper(2)[where improved = False, 
+      OF C_Cs dist non_empty_sorts S refl len_max refl P]
+  have cis: "(s \<in> compute_inf_sorts Cs) = (\<not> finite_sort C s)" for s by auto
+  show ?thesis 
+    unfolding decide_pat_complete_new_def Let_def pat_complete_impl_new_def
+  proof (rule pattern_completeness_context.pat_complete_impl_wrapper[OF C_Cs dist non_empty_sorts S refl _ refl P ren])
+    fix p
+    show "pattern_completeness_context.finite_var_form_pp (\<lambda>s. s \<in> compute_inf_sorts Cs) (pat_list p) \<Longrightarrow>
+         dp p = pattern_completeness_context.pat_complete S C (pat_list p)" 
+      unfolding cis dp by auto
+  qed (insert len_max, auto)
+qed
 
 end
