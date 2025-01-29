@@ -23,7 +23,7 @@ rewrites
   "\<And>l C. ground.is_maximal l C \<longleftrightarrow> is_maximal (literal.from_ground l) (clause.from_ground C)" and
   "\<And>l C. ground.is_strictly_maximal l C \<longleftrightarrow>
     is_strictly_maximal (literal.from_ground l) (clause.from_ground C)"
-  by unfold_locales (auto simp: ground_critical_pair_theorem)
+  by unfold_locales simp_all
 
 abbreviation is_inference_grounding_one_premise where 
   "is_inference_grounding_one_premise D C \<iota>\<^sub>G \<gamma> \<equiv>
@@ -59,18 +59,18 @@ abbreviation is_inference_grounding_two_premises where
         \<and> infinite_variables_per_type \<V>\<^sub>3"
 
 abbreviation is_inference_grounding where
-  "is_inference_grounding \<iota> \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
+  "is_inference_grounding \<iota> \<iota>\<^sub>G \<gamma> \<equiv>
   (case \<iota> of
       Infer [D] C \<Rightarrow> is_inference_grounding_one_premise D C \<iota>\<^sub>G \<gamma>
-    | Infer [D, E] C \<Rightarrow> is_inference_grounding_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2
+    | Infer [D, E] C \<Rightarrow> \<exists>\<rho>\<^sub>1 \<rho>\<^sub>2. is_inference_grounding_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2
     | _ \<Rightarrow> False) 
   \<and> \<iota>\<^sub>G \<in> ground.G_Inf"
 
 definition inference_groundings where 
-  "inference_groundings \<iota> = { \<iota>\<^sub>G | \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2. is_inference_grounding \<iota> \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 }"
+  "inference_groundings \<iota> = { \<iota>\<^sub>G | \<iota>\<^sub>G \<gamma>. is_inference_grounding \<iota> \<iota>\<^sub>G \<gamma> }"
 
 lemma is_inference_grounding_inference_groundings: 
-  "is_inference_grounding \<iota> \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<Longrightarrow> \<iota>\<^sub>G \<in> inference_groundings \<iota>"
+  "is_inference_grounding \<iota> \<iota>\<^sub>G \<gamma> \<Longrightarrow> \<iota>\<^sub>G \<in> inference_groundings \<iota>"
   unfolding inference_groundings_def
   by blast
 
@@ -132,11 +132,11 @@ sublocale lifting:
     clause_groundings
     "Some \<circ> inference_groundings"
     typed_tiebreakers
-proof(unfold_locales; (intro impI)?)
+proof(unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
     using exists_infinite_variables_per_type[OF types_ordLeq_variables]
-    by blast
+    by blast                   
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"
@@ -172,14 +172,6 @@ next
   show "the ((Some \<circ> inference_groundings) \<iota>) \<subseteq> ground.GRed_I (clause_groundings (concl_of \<iota>))"
     using inference\<^sub>G_red_in_clause_grounding_of_concl
     by auto
-next
-  fix C\<^sub>G
-  show "wfp (typed_tiebreakers C\<^sub>G)"
-    by(rule typed_tiebreakers.wfp)
-next
-  fix C\<^sub>G
-  show "transp (typed_tiebreakers C\<^sub>G)"
-    by(rule typed_tiebreakers.transp)
 qed
 
 end
@@ -189,7 +181,7 @@ begin
 
 sublocale
   lifting_intersection
-    inferences      
+    inferences
     "{{#}}"
     select\<^sub>G\<^sub>s
     "ground_superposition_calculus.G_Inf (\<prec>\<^sub>t\<^sub>G)"
@@ -197,13 +189,13 @@ sublocale
     "ground_superposition_calculus.GRed_I (\<prec>\<^sub>t\<^sub>G)"
     "\<lambda>_. ground_superposition_calculus.GRed_F (\<prec>\<^sub>t\<^sub>G)"
     "\<bottom>\<^sub>F"
-    "\<lambda>_. clause_groundings" 
+    "\<lambda>_. clause_groundings"
     "\<lambda>select\<^sub>G. Some \<circ> (grounded_superposition_calculus.inference_groundings (\<prec>\<^sub>t) select\<^sub>G \<F>)"
     typed_tiebreakers
 proof(unfold_locales; (intro ballI)?)
   show "select\<^sub>G\<^sub>s \<noteq> {}"
     using select\<^sub>G_simple
-    unfolding select\<^sub>G\<^sub>s_def 
+    unfolding select\<^sub>G\<^sub>s_def
     by blast
 next 
   fix select\<^sub>G
@@ -215,13 +207,6 @@ next
 
   show "consequence_relation ground.G_Bot ground.G_entails"
     using ground.consequence_relation_axioms.
-next
-   fix select\<^sub>G
-   assume "select\<^sub>G \<in> select\<^sub>G\<^sub>s"
- 
-   then interpret grounded_superposition_calculus
-    where select\<^sub>G = select\<^sub>G
-    by unfold_locales (simp add: select\<^sub>G\<^sub>s_def)
 
   show "tiebreaker_lifting
           \<bottom>\<^sub>F

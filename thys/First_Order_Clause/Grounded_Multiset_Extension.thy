@@ -23,15 +23,14 @@ begin
 no_notation less_eq (infix "\<preceq>" 50)
 notation sub.less_eq (infix "\<preceq>" 50)
 
-(* TODO: Names *)
-lemma all_less_eq:
+lemma lesseq_if_all_lesseq:
   assumes "\<forall>sub \<in># to_mset expr. sub \<cdot>\<^sub>s \<sigma>' \<preceq> sub \<cdot>\<^sub>s \<sigma>"
   shows "expr \<cdot> \<sigma>' \<preceq>\<^sub>m expr \<cdot> \<sigma>"
   using multp_image_lesseq_if_all_lesseq[OF sub.asymp sub.transp assms] inj_to_mset
   unfolding multiset_extension_def subst_def inj_def
-  by(auto simp: to_mset_map)
+  by (auto simp: to_mset_map)
 
-lemma all_less_eq_ex_less:
+lemma less_if_all_lesseq_ex_less:
   assumes 
     "\<forall>sub\<in>#to_mset expr. sub \<cdot>\<^sub>s \<sigma>' \<preceq> sub \<cdot>\<^sub>s \<sigma>"
     "\<exists>sub\<in>#to_mset expr. sub \<cdot>\<^sub>s \<sigma>' \<prec> sub \<cdot>\<^sub>s \<sigma>"
@@ -155,7 +154,7 @@ proof unfold_locales
     by fastforce
 
   ultimately show "expr \<cdot> \<gamma>(x := update) \<prec>\<^sub>m expr \<cdot> \<gamma>"
-    using all_less_eq_ex_less
+    using less_if_all_lesseq_ex_less
     by blast
 qed
 

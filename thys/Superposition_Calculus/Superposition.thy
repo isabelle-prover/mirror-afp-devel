@@ -3,6 +3,7 @@ theory Superposition
     First_Order_Clause.Nonground_Order
     First_Order_Clause.Nonground_Selection_Function
     First_Order_Clause.Nonground_Typing
+    First_Order_Clause.Typed_Tiebreakers
 
     Ground_Superposition
 begin
@@ -13,43 +14,19 @@ section \<open>Nonground Layer\<close>
 locale superposition_calculus =
   nonground_typing \<F> +
   nonground_equality_order less\<^sub>t +
-  nonground_selection_function select
+  nonground_selection_function select +
+  typed_tiebreakers tiebreakers +
+  ground_critical_pair_theorem "TYPE('f)"
   for
     select :: "('f, 'v :: infinite) select" and
     less\<^sub>t :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool" and
-    \<F> :: "('f, 'ty) fun_types" +
-  fixes
-    tiebreakers :: "'f gatom clause \<Rightarrow> ('f, 'v) atom clause \<Rightarrow> ('f, 'v) atom clause \<Rightarrow> bool" 
+    \<F> :: "('f, 'ty) fun_types" and
+    tiebreakers :: "('f, 'v) tiebreakers" +
   assumes
-    tiebreakers: "\<And>C\<^sub>G. wellfounded_strict_order (tiebreakers C\<^sub>G)" and
-    types_ordLeq_variables: "|UNIV :: 'ty set| \<le>o |UNIV :: 'v set|" and
-    ground_critical_pair_theorem: "\<And>R :: 'f gterm rel. ground_critical_pair_theorem R"
+    types_ordLeq_variables: "|UNIV :: 'ty set| \<le>o |UNIV :: 'v set|"
 begin
 
 interpretation term_order_notation.
-
-sublocale tiebreakers: wellfounded_strict_order "tiebreakers C\<^sub>G"
-  by (rule tiebreakers)
-
-abbreviation typed_tiebreakers :: 
-  "'f gatom clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
-  "typed_tiebreakers C\<^sub>G C\<^sub>1 C\<^sub>2 \<equiv> tiebreakers C\<^sub>G (fst C\<^sub>1) (fst C\<^sub>2)"
-
-sublocale typed_tiebreakers: wellfounded_strict_order "typed_tiebreakers C\<^sub>G"
-proof unfold_locales
-  show "transp (typed_tiebreakers C\<^sub>G)"
-    using tiebreakers.transp 
-    unfolding transp_def 
-    by blast
-
-  show "asymp (typed_tiebreakers C\<^sub>G)"
-    using tiebreakers.asymp
-    by (meson asympD asympI)
-
-  show "wfp (typed_tiebreakers C\<^sub>G)"
-    using tiebreakers.wfp
-    by (meson wfp_if_convertible_to_wfp)
-qed
 
 inductive eq_resolution :: "('f, 'v, 'ty) typed_clause \<Rightarrow> ('f, 'v, 'ty) typed_clause \<Rightarrow> bool" where
   eq_resolutionI: 

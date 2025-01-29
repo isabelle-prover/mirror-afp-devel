@@ -602,7 +602,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
     by auto
 
   have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (?\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
-    by(auto simp: literal_is_welltyped_iff_atm_of)
+    by (auto simp: literal_is_welltyped_iff_atm_of)
 
   have [simp]: "\<And>a. literal.vars (?\<P> a) = atom.vars a"
     by auto
@@ -1312,7 +1312,7 @@ proof(cases D\<^sub>G E\<^sub>G C\<^sub>G rule: ground.superposition.cases)
 
       show "is_inference_grounding_two_premises (D, \<V>\<^sub>2) (E, \<V>\<^sub>1) (C', \<V>\<^sub>3) \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2"
       proof(unfold split, intro conjI; 
-          (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_grounding E_grounding D_is_welltyped E_is_welltyped refl \<V>\<^sub>1 
+          (rule \<rho>\<^sub>1 \<rho>\<^sub>2 rename_apart D_grounding E_grounding D_is_welltyped E_is_welltyped refl \<V>\<^sub>1
             \<V>\<^sub>2 \<V>\<^sub>3)?)
 
         show "clause.is_ground (C' \<cdot> \<gamma>)"
@@ -1597,9 +1597,6 @@ proof-
   have \<rho>\<^sub>2_\<gamma>_is_welltyped: "term.subst.is_welltyped_on (clause.vars D) \<V>\<^sub>2 (\<rho>\<^sub>2 \<odot> \<gamma>)"
     using \<gamma>\<^sub>2_is_welltyped \<gamma>\<^sub>2_\<gamma>
     by fastforce
-
-  have select_vars_subset: "\<And>C. clause.vars (select C) \<subseteq> clause.vars C"
-    by (simp add: clause_submset_vars_clause_subset select_subset)
 
   have select_from_E:
     "clause.from_ground (select\<^sub>G (clause.to_ground (E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>))) = select E \<cdot> \<rho>\<^sub>1 \<odot> \<gamma>"

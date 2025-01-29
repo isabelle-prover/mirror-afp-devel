@@ -339,7 +339,49 @@ lemma inj_id_subst: "inj id_subst"
   using is_renaming_id_subst is_renaming_iff 
   by blast
 
-(* TODO: also here start with one-sided *)
+lemma obtain_typed_renaming:
+  fixes \<V> :: "'var \<Rightarrow> 'ty"
+  assumes
+    "infinite (UNIV :: 'var set)"
+    "finite X" 
+    "infinite_variables_per_type \<V>"
+  obtains \<rho> :: "'var \<Rightarrow> 'expr" where
+    "is_renaming \<rho>"
+    "id_subst ` X \<inter> \<rho> ` Y = {}"
+    "is_typed_on Y \<V> \<rho>"
+proof-
+
+  obtain renaming :: "'var \<Rightarrow> 'var" where
+    inj: "inj renaming" and
+    rename_apart: "X \<inter> renaming ` Y = {}" and
+    preserve_type: "\<forall>x \<in> Y. \<V> (renaming x) = \<V> x" 
+    using obtain_type_preserving_inj[OF assms].
+
+  define \<rho> :: "'var \<Rightarrow> 'expr" where
+    "\<And>x. \<rho> x \<equiv> id_subst (renaming x)"
+
+  show ?thesis
+  proof (rule that)
+
+    show "is_renaming \<rho>"
+      using inj inj_id_subst
+      unfolding \<rho>_def is_renaming_iff inj_def
+      by blast    
+  next
+
+    show "id_subst ` X \<inter> \<rho> ` Y = {}"
+      using rename_apart inj_id_subst
+      unfolding \<rho>_def inj_def
+      by blast
+  next
+
+    show "is_typed_on Y \<V> \<rho>"
+      using preserve_type
+      unfolding \<rho>_def
+      by blast
+  qed
+qed
+    
 lemma obtain_typed_renamings:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
@@ -352,41 +394,8 @@ lemma obtain_typed_renamings:
     "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
     "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
     "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
-proof-
-
-  obtain renaming\<^sub>1 renaming\<^sub>2 :: "'var \<Rightarrow> 'var" where
-    renamings:
-    "inj renaming\<^sub>1" "inj renaming\<^sub>2"
-    "renaming\<^sub>1 ` X \<inter> renaming\<^sub>2 ` Y = {}" 
-    "\<forall>x \<in> X. \<V>\<^sub>1 (renaming\<^sub>1 x) = \<V>\<^sub>1 x" 
-    "\<forall>x \<in> Y. \<V>\<^sub>2 (renaming\<^sub>2 x) = \<V>\<^sub>2 x"
-    using obtain_type_preserving_injs[OF assms].
-   
-  define \<rho>\<^sub>1 :: "'var \<Rightarrow> 'expr" where
-    "\<And>x. \<rho>\<^sub>1 x \<equiv> id_subst (renaming\<^sub>1 x)"
-
-  define \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
-    "\<And>x. \<rho>\<^sub>2 x \<equiv> id_subst (renaming\<^sub>2 x)"
-
-  have "is_renaming \<rho>\<^sub>1" "is_renaming \<rho>\<^sub>2"
-    using renamings(1,2) is_renaming_id_subst
-    unfolding \<rho>\<^sub>1_def \<rho>\<^sub>2_def is_renaming_iff inj_def
-    by blast+
-
-  moreover have "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
-    unfolding \<rho>\<^sub>1_def \<rho>\<^sub>2_def
-    using renamings(3) inj_id_subst
-    by (metis image_Int image_empty image_image)
- 
-  moreover have "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1" "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
-    unfolding \<rho>\<^sub>1_def \<rho>\<^sub>2_def
-    using renamings(4, 5)
-    by(auto simp: typed_id_subst)
-
-  ultimately show ?thesis 
-    using that
-    by presburger
-qed
+  using obtain_typed_renaming[OF assms] is_renaming_id_subst typed_id_subst
+  by metis
 
 lemma obtain_typed_renamings':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
@@ -416,7 +425,7 @@ lemma (in renaming_variables) obtain_merged_\<V>:
     "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"  
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
     "infinite_variables_per_type \<V>\<^sub>3"
-proof standard
+proof (rule that)
 
   define \<V>\<^sub>3 where 
     "\<And>x. \<V>\<^sub>3 x \<equiv>

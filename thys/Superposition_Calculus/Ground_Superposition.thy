@@ -11,12 +11,11 @@ section \<open>Superposition Calculus\<close>
 
 locale ground_superposition_calculus = 
   ground_order_with_equality where less\<^sub>t = less\<^sub>t +
-  selection_function select
+  selection_function select +
+  ground_critical_pair_theorem "TYPE('f)"
 for
   less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
-  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"  +
-assumes
-  ground_critical_pair_theorem: "\<And>(R :: 'f gterm rel). ground_critical_pair_theorem R"
+  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"
 begin
 
 subsection \<open>Ground Rules\<close>

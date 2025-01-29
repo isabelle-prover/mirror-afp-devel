@@ -296,7 +296,7 @@ proof (cases D E C rule: superposition.cases)
 
     have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
       using superpositionI(11)
-      by(auto simp: literal_is_welltyped_iff_atm_of)
+      by (auto simp: literal_is_welltyped_iff_atm_of)
 
     have [simp]: "\<And>a. literal.vars (\<P> a) = atom.vars a"
       using superpositionI(11)
@@ -444,7 +444,9 @@ end
 sublocale grounded_superposition_calculus \<subseteq> sound_inference_system inferences "\<bottom>\<^sub>F" "(\<TTurnstile>\<^sub>F)"
 proof unfold_locales
   fix \<iota>
+
   assume "\<iota> \<in> inferences"
+
   then show "set (prems_of \<iota>) \<TTurnstile>\<^sub>F {concl_of \<iota>}"
     using
       eq_factoring_sound
@@ -456,6 +458,7 @@ qed
 
 sublocale superposition_calculus \<subseteq> sound_inference_system inferences "\<bottom>\<^sub>F" entails_\<G>
 proof unfold_locales
+
   obtain select\<^sub>G where select\<^sub>G: "select\<^sub>G \<in> select\<^sub>G\<^sub>s"
     using Q_nonempty by blast
 
@@ -463,7 +466,10 @@ proof unfold_locales
     where select\<^sub>G = select\<^sub>G
     by unfold_locales (simp add: select\<^sub>G\<^sub>s_def)
 
-  show "\<And>\<iota>. \<iota> \<in> inferences \<Longrightarrow> entails_\<G> (set (prems_of \<iota>)) {concl_of \<iota>} "
+  fix \<iota>
+  assume "\<iota> \<in> inferences"
+
+  then show "entails_\<G> (set (prems_of \<iota>)) {concl_of \<iota>}"
     unfolding entails_def
     using sound
     by blast

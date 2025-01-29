@@ -20,7 +20,7 @@ qed
 lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = ty} \<Longrightarrow> infinite {x. f (g x) = ty}"
   by (smt (verit) UNIV_I finite_imageI image_iff mem_Collect_eq rev_finite_subset subset_eq)
 
-definition infinite_variables_per_type where 
+definition infinite_variables_per_type :: "('v \<Rightarrow> 'ty) \<Rightarrow> bool" where 
   "infinite_variables_per_type \<V> \<equiv> \<forall>ty. infinite {x. \<V> x = ty}"
 
 lemma obtain_type_preserving_inj:
@@ -104,10 +104,9 @@ proof-
     "inj f'"
     "X \<inter> f' ` Y = {}"
     "\<forall>x \<in> Y. \<V>\<^sub>2 (f' x) = \<V>\<^sub>2 x"
-    using obtain_type_preserving_inj[OF assms].
+    using obtain_type_preserving_inj[OF assms] .
 
   show ?thesis
-    using obtain_type_preserving_inj[OF assms]
     by (rule that[of id f']) (auto simp: f')
 qed
 
@@ -116,7 +115,7 @@ lemma obtain_type_preserving_injs':
   assumes 
     infinite_UNIV: "infinite (UNIV :: 'v set)" and
     finite_Y: "finite Y" and
-    \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>1"
+    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1"
   obtains f f' :: "'v \<Rightarrow> 'v" where
     "inj f" "inj f'" 
     "f ` X \<inter> f' ` Y = {}"

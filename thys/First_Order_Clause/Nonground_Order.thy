@@ -336,12 +336,12 @@ lemma less\<^sub>t_less\<^sub>l:
   unfolding less\<^sub>l_def
   by (auto simp: multp_add_mset multp_add_mset')
 
-lemma literal_order_all_less_eq_ex_less_set:
+lemma literal_order_less_if_all_lesseq_ex_less_set:
   assumes
     "\<forall>t \<in> set_uprod (atm_of l). t \<cdot>t \<sigma>' \<preceq>\<^sub>t t \<cdot>t \<sigma>"
     "\<exists>t \<in> set_uprod (atm_of l). t \<cdot>t \<sigma>' \<prec>\<^sub>t t \<cdot>t \<sigma>"
   shows "l \<cdot>l \<sigma>' \<prec>\<^sub>l l \<cdot>l \<sigma>"
-  using literal.order.all_less_eq_ex_less[OF assms[folded set_mset_set_uprod]].
+  using literal.order.less_if_all_lesseq_ex_less[OF assms[folded set_mset_set_uprod]].
  
 lemma less\<^sub>c_add_mset:
   assumes "l \<prec>\<^sub>l l'" "C \<preceq>\<^sub>c C'"

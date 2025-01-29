@@ -4,12 +4,14 @@ theory Ground_Superposition_Welltypedness_Preservation
     First_Order_Clause.Ground_Typing
 begin
 
-locale ground_superposition_welltypedness_preservation = 
-  ground_superposition_calculus where select = select + 
-  ground_typing where \<F> = \<F>
-for
-  select :: "'f gatom clause \<Rightarrow> 'f gatom clause" and
-  \<F> :: "('f, 'ty) fun_types"
+context ground_superposition_calculus
+begin
+
+sublocale ground_typing where \<F> = "\<F> ::  ('f, 'ty) fun_types"
+  by unfold_locales
+
+context
+  fixes \<F> :: "('f, 'ty) fun_types"
 begin
 
 lemma ground_superposition_preserves_typing:
@@ -32,6 +34,8 @@ lemma ground_eq_factoring_preserves_typing:
   shows "clause.is_welltyped D \<longleftrightarrow> clause.is_welltyped C"
   using assms
   by (cases rule: eq_factoring.cases) auto
+
+end
 
 end
 
