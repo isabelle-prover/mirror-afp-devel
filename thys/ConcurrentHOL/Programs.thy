@@ -270,7 +270,7 @@ lift_definition bind :: "('s, 'v) prog \<Rightarrow> ('v \<Rightarrow> ('s, 'w) 
   spec.bind ..
 
 adhoc_overloading
-  Monad_Syntax.bind prog.bind
+  Monad_Syntax.bind \<rightleftharpoons> prog.bind
 
 lift_definition action :: "('v \<times> 's \<times> 's) set \<Rightarrow> ('s, 'v) prog" is
   "\<lambda>F. spec.interference.cl ({env} \<times> UNIV) (spec.action (map_prod id (Pair self) ` F))" ..
@@ -301,9 +301,9 @@ by (rule subsetD[OF spec.interference.closed.antimono spec.interference.closed.m
    auto
 
 adhoc_overloading
-  Parallel prog.Parallel
+  Parallel \<rightleftharpoons> prog.Parallel
 adhoc_overloading
-  parallel prog.parallel
+  parallel \<rightleftharpoons> prog.parallel
 
 lemma return_alt_def:
   shows "prog.return v = prog.read \<langle>v\<rangle>"

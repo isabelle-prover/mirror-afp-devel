@@ -3,22 +3,19 @@ theory Ground_Superposition
     Ground_Critical_Pairs
     First_Order_Clause.Selection_Function
     First_Order_Clause.Ground_Order
+    First_Order_Clause.Ground_Clause
 begin
-
-no_notation subst_compose (infixl "\<circ>\<^sub>s" 75)
-no_notation subst_apply_term (infixl "\<cdot>" 67) (* TODO: Just have these once *)
 
 section \<open>Superposition Calculus\<close>
 
 
 locale ground_superposition_calculus = 
   ground_order_with_equality where less\<^sub>t = less\<^sub>t +
-  selection_function select
+  selection_function select +
+  ground_critical_pair_theorem "TYPE('f)"
 for
   less\<^sub>t :: "'f gterm \<Rightarrow> 'f gterm \<Rightarrow> bool" and
-  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"  +
-assumes
-  ground_critical_pair_theorem: "\<And>(R :: 'f gterm rel). ground_critical_pair_theorem R"
+  select :: "'f gatom clause \<Rightarrow> 'f gatom clause"
 begin
 
 subsection \<open>Ground Rules\<close>

@@ -27,7 +27,7 @@ definition val_Bool :: "tr \<Rightarrow> bool" where
   "val_Bool i = (THE j. i = Def j)"
 
 adhoc_overloading
-  val val_Bool
+  val \<rightleftharpoons> val_Bool
 
 lemma defined_Bool_simps [simp]:
   "defined (Def i)"
@@ -61,7 +61,7 @@ definition val_Integer :: "Integer \<Rightarrow> int" where
   "val_Integer i = (THE j. i = MkI\<cdot>j)"
 
 adhoc_overloading
-  val val_Integer
+  val \<rightleftharpoons> val_Integer
 
 lemma defined_Integer_simps [simp]:
   "defined (MkI\<cdot>i)"

@@ -9,9 +9,13 @@ begin
 lemma exists_multiset [intro]: "\<exists>M. x \<in> set_mset M"
   by (meson union_single_eq_member)
 
+global_interpretation muliset_magma: natural_magma_with_empty where
+  to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset and empty = "{#}"
+  by unfold_locales simp_all
+
 global_interpretation multiset_functor: finite_natural_functor where 
   map = image_mset and to_set = set_mset
-  by unfold_locales (auto)
+  by unfold_locales auto
 
 global_interpretation multiset_functor: natural_functor_conversion where 
   map = image_mset and to_set = set_mset and map_to = image_mset and map_from = image_mset and 
@@ -211,7 +215,6 @@ lemma image_mset_remove1_mset:
   unfolding image_mset_remove1_mset_if inj_image_mem_iff[OF assms, symmetric]
   by simp
 
-(* TODO: Make nicer *)
 lemma multp\<^sub>D\<^sub>M_map_strong:
   assumes
     f_mono: "monotone_on (set_mset (M1 + M2)) R S f" and

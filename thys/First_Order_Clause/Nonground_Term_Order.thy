@@ -211,7 +211,7 @@ proof unfold_locales
   qed
 qed
 
-(* TODO: Find way to not have this twice \<longrightarrow> Use here just with G when up the t are also removed *)
+(* TODO: Find way to not have this twice *)
 notation order.less\<^sub>G (infix "\<prec>\<^sub>t\<^sub>G" 50)
 notation order.less_eq\<^sub>G (infix "\<preceq>\<^sub>t\<^sub>G" 50)
 

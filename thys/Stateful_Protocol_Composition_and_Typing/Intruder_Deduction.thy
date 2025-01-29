@@ -338,8 +338,8 @@ where
 | ComposeC[simp]: "\<lbrakk>length T = arity f; public f; \<And>t. t \<in> set T \<Longrightarrow> intruder_synth M t\<rbrakk>
                     \<Longrightarrow> intruder_synth M (Fun f T)"
 
-adhoc_overloading INTRUDER_DEDUCT intruder_deduct
-adhoc_overloading INTRUDER_SYNTH intruder_synth
+adhoc_overloading INTRUDER_DEDUCT \<rightleftharpoons> intruder_deduct
+adhoc_overloading INTRUDER_SYNTH \<rightleftharpoons> intruder_synth
 
 lemma intruder_deduct_induct[consumes 1, case_names Axiom Compose Decompose]:
   assumes "M \<turnstile> t" "\<And>t. t \<in> M \<Longrightarrow> P M t"

@@ -27,7 +27,7 @@ next
     by (simp add: asympD asymp_multp\<^sub>H\<^sub>O asymp_onI multp_eq_multp\<^sub>H\<^sub>O)
 qed
 
-(*no_notation less_eq (infix "\<preceq>" 50)*)
+(* TODO: no_notation less_eq (infix "\<preceq>" 50)*)
 notation less_eq (infix "\<preceq>\<^sub>m" 50)
 
 end

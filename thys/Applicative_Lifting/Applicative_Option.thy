@@ -4,7 +4,6 @@ subsection \<open>Option\<close>
 
 theory Applicative_Option imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 fun ap_option :: "('a \<Rightarrow> 'b) option \<Rightarrow> 'a option \<Rightarrow> 'b option"
@@ -15,8 +14,8 @@ where
 abbreviation (input) pure_option :: "'a \<Rightarrow> 'a option"
 where "pure_option \<equiv> Some"
 
-adhoc_overloading Applicative.pure pure_option
-adhoc_overloading Applicative.ap ap_option
+adhoc_overloading Applicative.pure \<rightleftharpoons> pure_option
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_option
 
 lemma some_ap_option: "ap_option (Some f) x = map_option f x"
 by (cases x) simp_all
@@ -64,6 +63,6 @@ qed (simp add: some_ap_option ap_some_option)
 lemma map_option_ap_conv[applicative_unfold]: "map_option f x = ap_option (pure f) x"
 by (cases x rule: option.exhaust) simp_all
 
-no_adhoc_overloading Applicative.pure pure_option \<comment> \<open>We do not want to print all occurrences of @{const "Some"} as @{const "pure"}\<close>
+no_adhoc_overloading Applicative.pure \<rightleftharpoons> pure_option \<comment> \<open>We do not want to print all occurrences of @{const "Some"} as @{const "pure"}\<close>
 
 end

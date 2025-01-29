@@ -81,8 +81,8 @@ lemma obtain_maximal_literal:
 proof-
 
   have grounding_not_empty: "C \<cdot> \<gamma> \<noteq> {#}"
-    using not_empty clause_subst_empty(2) 
-    by blast
+    using not_empty
+    by simp
     
   obtain l where 
     l_in_C: "l \<in># C" and
@@ -303,9 +303,12 @@ thm literal.order.order.strict_iff_order
 lemma is_strictly_maximal_rewrite [simp]: 
   "is_strictly_maximal_in_mset_wrt (\<prec>\<^sub>l\<^sub>G) C l = 
    is_strictly_maximal (literal.from_ground l) (clause.from_ground C)"
-  unfolding literal.order.less\<^sub>G_def is_strictly_maximal_def literal.order.restriction.is_strictly_maximal_in_mset_iff
+  unfolding 
+    literal.order.less\<^sub>G_def is_strictly_maximal_def 
+    literal.order.restriction.is_strictly_maximal_in_mset_iff
+    reflclp_iff
   by (metis (lifting) clause.ground_sub_in_ground clause.sub_in_ground_is_ground
-      literal.obtain_grounding reflclp_iff remove1_mset_literal_from_ground)
+      literal.obtain_grounding clause_from_ground_remove1_mset)
 
 sublocale ground: ground_order_with_equality where
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)"
@@ -333,12 +336,12 @@ lemma less\<^sub>t_less\<^sub>l:
   unfolding less\<^sub>l_def
   by (auto simp: multp_add_mset multp_add_mset')
 
-lemma literal_order_all_less_eq_ex_less_set:
+lemma literal_order_less_if_all_lesseq_ex_less_set:
   assumes
     "\<forall>t \<in> set_uprod (atm_of l). t \<cdot>t \<sigma>' \<preceq>\<^sub>t t \<cdot>t \<sigma>"
     "\<exists>t \<in> set_uprod (atm_of l). t \<cdot>t \<sigma>' \<prec>\<^sub>t t \<cdot>t \<sigma>"
   shows "l \<cdot>l \<sigma>' \<prec>\<^sub>l l \<cdot>l \<sigma>"
-  using literal.order.all_less_eq_ex_less[OF assms[folded set_mset_set_uprod]].
+  using literal.order.less_if_all_lesseq_ex_less[OF assms[folded set_mset_set_uprod]].
  
 lemma less\<^sub>c_add_mset:
   assumes "l \<prec>\<^sub>l l'" "C \<preceq>\<^sub>c C'"

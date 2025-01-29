@@ -8,11 +8,11 @@ subsection \<open>Overloaded Notations\<close>
 
 consts vars :: "'a \<Rightarrow> 'b set"
 
-adhoc_overloading vars vars_term
+adhoc_overloading vars \<rightleftharpoons> vars_term
 
 consts map_vars :: "('a \<Rightarrow> 'b) \<Rightarrow> 'c \<Rightarrow> 'd"
 
-adhoc_overloading map_vars "map_term (\<lambda>x. x)"
+adhoc_overloading map_vars \<rightleftharpoons> "map_term (\<lambda>x. x)"
 
 lemma map_term_eq_Var: "map_term F V s = Var y \<longleftrightarrow> (\<exists>x. s = Var x \<and> y = V x)"
   by (cases s, auto)

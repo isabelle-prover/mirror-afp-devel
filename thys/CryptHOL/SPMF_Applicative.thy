@@ -17,7 +17,7 @@ where "ap_spmf f x = map_spmf (\<lambda>(f, x). f x) (pair_spmf f x)"
 lemma ap_spmf_conv_bind: "ap_spmf f x = bind_spmf f (\<lambda>f. bind_spmf x (\<lambda>x. return_spmf (f x)))"
 by(simp add: ap_spmf_def map_spmf_conv_bind_spmf pair_spmf_alt_def)
 
-adhoc_overloading Applicative.ap ap_spmf
+adhoc_overloading Applicative.ap \<rightleftharpoons> ap_spmf
 
 context includes applicative_syntax begin
 

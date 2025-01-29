@@ -209,7 +209,7 @@ proof unfold_locales
     unfolding literal.vars_def literal.to_ground_def
     by(cases l)(auto)
 
-qed (auto simp: subst_polarity_stable)
+qed auto
 
 sublocale clause: entailment_lifting_disj
   where comp_subst = "(\<odot>)" and id_subst = Var 

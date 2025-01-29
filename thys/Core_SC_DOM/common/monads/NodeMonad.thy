@@ -57,7 +57,7 @@ lemma get_M_is_l_get_M: "l_get_M get\<^sub>N\<^sub>o\<^sub>d\<^sub>e type_wf nod
       node_ptr_kinds_commutes option.simps(3))
 lemmas get_M_defs = get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def[unfolded l_get_M.a_get_M_def[OF get_M_is_l_get_M]]
 
-adhoc_overloading get_M get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading get_M \<rightleftharpoons> get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 
 locale l_get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e_lemmas = l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 begin
@@ -86,7 +86,7 @@ global_interpretation l_put_M type_wf node_ptr_kinds get\<^sub>N\<^sub>o\<^sub>d
   by (simp add: get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def)
 
 lemmas put_M_defs = a_put_M_def
-adhoc_overloading put_M put_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e
+adhoc_overloading put_M \<rightleftharpoons> put_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e
 
 
 locale l_put_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e_lemmas = l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e

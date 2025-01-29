@@ -51,7 +51,7 @@ definition
     "bind f g = Prog (\<lambda>h. (case (the_prog f) h of Inr (x, h') \<Rightarrow> (the_prog (g x)) h' 
                                                 | Inl exception \<Rightarrow> Inl exception))"
 
-adhoc_overloading Monad_Syntax.bind bind
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind
 
 definition 
   execute :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> ('e + 'result \<times> 'heap)" 

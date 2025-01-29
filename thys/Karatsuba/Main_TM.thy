@@ -741,32 +741,32 @@ lemma time_upt_tm_le': "time (upt_tm i j) \<le> 2 * j * j + 5 * j + 2"
 subsection "Syntactic sugar"
 
 consts equal_tm :: "'a \<Rightarrow> 'a \<Rightarrow> bool tm"
-adhoc_overloading equal_tm equal_nat_tm
-adhoc_overloading equal_tm equal_bool_tm
+adhoc_overloading equal_tm \<rightleftharpoons> equal_nat_tm
+adhoc_overloading equal_tm \<rightleftharpoons> equal_bool_tm
 
 consts plus_tm :: "'a \<Rightarrow> 'a \<Rightarrow> 'a tm"
-adhoc_overloading plus_tm plus_nat_tm
+adhoc_overloading plus_tm \<rightleftharpoons> plus_nat_tm
 
 consts times_tm :: "'a \<Rightarrow> 'a \<Rightarrow> 'a tm"
-adhoc_overloading times_tm times_nat_tm
+adhoc_overloading times_tm \<rightleftharpoons> times_nat_tm
 
 consts power_tm :: "'a \<Rightarrow> nat \<Rightarrow> 'a tm"
-adhoc_overloading power_tm power_nat_tm
+adhoc_overloading power_tm \<rightleftharpoons> power_nat_tm
 
 consts minus_tm :: "'a \<Rightarrow> 'a \<Rightarrow> 'a tm"
-adhoc_overloading minus_tm minus_nat_tm
+adhoc_overloading minus_tm \<rightleftharpoons> minus_nat_tm
 
 consts less_tm :: "'a \<Rightarrow> 'a \<Rightarrow> bool tm"
-adhoc_overloading less_tm less_nat_tm
+adhoc_overloading less_tm \<rightleftharpoons> less_nat_tm
 
 consts less_eq_tm :: "'a \<Rightarrow> 'a \<Rightarrow> bool tm"
-adhoc_overloading less_eq_tm less_eq_nat_tm
+adhoc_overloading less_eq_tm \<rightleftharpoons> less_eq_nat_tm
 
 consts divide_tm :: "'a \<Rightarrow> 'a \<Rightarrow> 'a tm"
-adhoc_overloading divide_tm divide_nat_tm
+adhoc_overloading divide_tm \<rightleftharpoons> divide_nat_tm
 
 consts mod_tm :: "'a \<Rightarrow> 'a \<Rightarrow> 'a tm"
-adhoc_overloading mod_tm mod_nat_tm
+adhoc_overloading mod_tm \<rightleftharpoons> mod_nat_tm
 
 open_bundle main_tm_syntax
 begin

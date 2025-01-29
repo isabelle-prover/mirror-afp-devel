@@ -404,11 +404,11 @@ lemma vars_add [simp]:
 lemma vars_plus [simp]:
   "vars (plus expr expr') = vars expr \<union> vars expr'"
   unfolding vars_def
-  by (simp add: to_set_plus)
+  by simp
 
 lemma is_ground_add [simp]:
   "is_ground (add sub expr) \<longleftrightarrow> sub.is_ground sub \<and> is_ground expr"
-  using vars_add by simp
+  by simp
 
 end
 
@@ -464,6 +464,38 @@ lemma ground_add:
   shows "expr = add_ground (sub_to_ground sub) (to_ground expr')"
   using assms
   by (metis from_ground_inverse to_ground_add)
+
+end
+
+locale natural_magma_with_empty_grounding_lifting =
+  natural_magma_grounding_lifting +
+  natural_magma_with_empty +
+  ground: natural_magma_with_empty where 
+  to_set = to_set_ground and plus = plus_ground and wrap = wrap_ground and add = add_ground and 
+  empty = empty_ground
+for empty_ground +
+assumes to_ground_empty [simp]: "to_ground empty = empty_ground"
+begin
+
+lemmas empty_magma_is_ground [simp] = empty_is_ground[OF to_set_empty]
+
+lemmas magma_subst_empty [simp] =
+  subst_ident_if_ground[OF empty_magma_is_ground]
+  subst_empty[OF to_set_empty]
+
+lemma from_ground_empty [simp]: "from_ground empty_ground = empty"
+  using to_ground_inverse[OF empty_magma_is_ground]
+  by simp
+
+lemma to_ground_empty' [simp]: "to_ground expr = empty_ground \<longleftrightarrow> expr = empty"
+  using from_ground_empty to_ground_empty ground.to_set_empty to_ground_inverse
+  unfolding to_ground_def vars_def
+  by fastforce
+
+lemma from_ground_empty' [simp]: "from_ground expr = empty \<longleftrightarrow> expr = empty_ground"
+  using from_ground_empty from_ground_eq
+  unfolding from_ground_def  
+  by auto
 
 end
 

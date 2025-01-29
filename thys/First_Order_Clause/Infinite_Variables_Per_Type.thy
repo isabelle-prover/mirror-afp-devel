@@ -20,8 +20,72 @@ qed
 lemma surj_infinite_set: "surj g \<Longrightarrow> infinite {x. f x = ty} \<Longrightarrow> infinite {x. f (g x) = ty}"
   by (smt (verit) UNIV_I finite_imageI image_iff mem_Collect_eq rev_finite_subset subset_eq)
 
-definition infinite_variables_per_type where 
+definition infinite_variables_per_type :: "('v \<Rightarrow> 'ty) \<Rightarrow> bool" where 
   "infinite_variables_per_type \<V> \<equiv> \<forall>ty. infinite {x. \<V> x = ty}"
+
+lemma obtain_type_preserving_inj:
+  fixes \<V> :: "'v \<Rightarrow> 'ty"
+  assumes 
+    infinite_UNIV: "infinite (UNIV :: 'v set)" and
+    finite_X: "finite X" and
+    \<V>: "infinite_variables_per_type \<V>"
+  obtains f :: "'v \<Rightarrow> 'v" where
+    "inj f"
+    "X \<inter> f ` Y = {}"
+    "\<forall>x \<in> Y. \<V> (f x) = \<V> x"
+proof
+
+  {
+    fix ty
+
+    have "|{x. \<V> x = ty}| =o |{x. \<V> x = ty } - X|"
+      using \<V> finite_X card_of_infinite_diff_finite ordIso_symmetric
+      unfolding infinite_variables_per_type_def
+      by blast
+
+    then have "|{x. \<V> x = ty}| =o |{x. \<V> x = ty \<and> x \<notin> X}|"
+      using set_diff_eq[of _ X]
+      by auto
+
+    then have "\<exists>g. bij_betw g {x. \<V> x = ty} {x. \<V> x = ty \<and> x \<notin> X}"
+      using card_of_ordIso someI 
+      by blast
+  }
+  note exists_g = this
+
+  define get_g where
+    "\<And>ty. get_g ty \<equiv> SOME g. bij_betw g {x. \<V> x = ty} {x. \<V> x = ty \<and> x \<notin> X}"
+
+  define f where
+    "\<And>x. f x \<equiv> get_g (\<V> x) x"
+
+  {
+    fix y
+
+    have "\<And>g. bij_betw g {x. \<V> x = \<V> y} {x. \<V> x = \<V> y \<and> x \<notin> X} \<Longrightarrow> g y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
+      using exists_g bij_betwE 
+      by blast
+
+    then have "f y \<in> {x. \<V> x = \<V> y \<and> x \<notin> X}"
+      using exists_g[of "\<V> y"]
+      unfolding f_def get_g_def
+      by (smt (verit, ccfv_threshold) someI)
+  }
+  
+  then show "X \<inter> f ` Y = {}"  "\<forall>y\<in>Y. \<V> (f y) = \<V> y"
+    by auto  
+
+  show "inj f"
+  proof (unfold inj_def, intro allI impI)
+    fix x y
+    assume "f x = f y"
+
+    then show "x = y"
+      using get_g_def f_def exists_g
+      unfolding some_eq_ex[symmetric]
+      by (smt (verit, ccfv_threshold) someI mem_Collect_eq bij_betw_iff_bijections)
+  qed
+qed
 
 lemma obtain_type_preserving_injs:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
@@ -30,86 +94,35 @@ lemma obtain_type_preserving_injs:
     finite_X: "finite X" and
     \<V>\<^sub>2: "infinite_variables_per_type \<V>\<^sub>2"
   obtains f f' :: "'v \<Rightarrow> 'v" where
-    "inj f" "inj f'"
+    "inj f" "inj f'" 
     "f ` X \<inter> f' ` Y = {}"
     "\<forall>x \<in> X. \<V>\<^sub>1 (f x) = \<V>\<^sub>1 x"
     "\<forall>x \<in> Y. \<V>\<^sub>2 (f' x) = \<V>\<^sub>2 x"
-proof
-  have "\<And>ty. infinite ({x. \<V>\<^sub>2 x = ty} - X)"
-    using \<V>\<^sub>2 finite_X
-    unfolding infinite_variables_per_type_def
-    by simp
+proof-
 
-  then have infinite: "\<And>ty. infinite {x. \<V>\<^sub>2 x = ty \<and> x \<notin> X}"
-    by (simp add: set_diff_eq)
+  obtain f' where f':
+    "inj f'"
+    "X \<inter> f' ` Y = {}"
+    "\<forall>x \<in> Y. \<V>\<^sub>2 (f' x) = \<V>\<^sub>2 x"
+    using obtain_type_preserving_inj[OF assms] .
 
-  have "\<And>ty. |{x. \<V>\<^sub>2 x = ty}| =o |{x. \<V>\<^sub>2 x = ty } - X|"
-    using \<V>\<^sub>2 finite_X card_of_infinite_diff_finite ordIso_symmetric
-    unfolding infinite_variables_per_type_def
-    by blast
-
-  then have "\<And>ty. |{x. \<V>\<^sub>2 x = ty}| =o |{x. \<V>\<^sub>2 x = ty \<and> x \<notin> X}|"
-    using set_diff_eq[of _ X]
-    by auto
-
-  then have exists_g': "\<And>ty. \<exists>g'. bij_betw g' {x. \<V>\<^sub>2 x = ty} {x. \<V>\<^sub>2 x = ty \<and> x \<notin> X}"
-    using card_of_ordIso someI 
-    by blast
-
-  define get_g' where
-    "\<And>ty. get_g' ty \<equiv> SOME g'. bij_betw g' {x. \<V>\<^sub>2 x = ty} {x. \<V>\<^sub>2 x = ty \<and> x \<notin> X}"
-
-  define f' where
-    "\<And>x. f' x \<equiv> get_g' (\<V>\<^sub>2 x) x"
-
-  define f :: "'v \<Rightarrow> 'v" where "f = id"
-
-  moreover have "\<And>y. y \<in> Y \<Longrightarrow> \<exists>g'. bij_betw g' {x. \<V>\<^sub>2 x = \<V>\<^sub>2 y} {x. \<V>\<^sub>2 x = \<V>\<^sub>2 y \<and> x \<notin> X}"
-    using exists_g'
-    by simp
-
-  moreover then have 
-    "\<And>y. y \<in> Y \<Longrightarrow>
-      (\<And> g'. ((bij_betw g' {x. \<V>\<^sub>2 x = \<V>\<^sub>2 y} {x. \<V>\<^sub>2 x = \<V>\<^sub>2 y \<and> x \<notin> X})
-         \<Longrightarrow> (g' y \<in> {x. \<V>\<^sub>2 x = \<V>\<^sub>2 y \<and> x \<notin> X})))"
-    using bij_betwE 
-    by blast
-
-  ultimately have ys: "\<And>y. y \<in> Y \<Longrightarrow> f' y \<in> {x. \<V>\<^sub>2 x = \<V>\<^sub>2 y \<and> x \<notin> X}" 
-    unfolding f'_def get_g'_def
-    by (smt (verit, ccfv_threshold) someI)
-
-  then have "\<And>y. y\<in>Y \<Longrightarrow> f' y \<notin> X"
-    by simp
-
-  then show "f ` X \<inter> f' ` Y = {}"
-    unfolding f_def
-    by auto  
-
-  show "\<forall>y\<in>Y. \<V>\<^sub>2 (f' y) = \<V>\<^sub>2 y"
-    using ys
-    by simp
-
-  show "\<forall>x\<in>X. \<V>\<^sub>1 (f x) = \<V>\<^sub>1 x"
-    unfolding f_def
-    by simp
-
-  show "inj f"
-    unfolding f_def
-    by simp
-
-  have "\<And>x y. f' x = f' y \<Longrightarrow> \<V>\<^sub>2 y = \<V>\<^sub>2 x"
-    using f'_def get_g'_def someI_ex[OF exists_g'] bij_betw_iff_bijections mem_Collect_eq
-    by (smt (verit))
-
-  then have "\<And>x y. f' x = f' y \<Longrightarrow> x = y"
-    using f'_def get_g'_def exists_g' someI bij_betw_iff_bijections mem_Collect_eq some_eq_ex
-    by (smt (z3))
-
-  then show "inj f'"
-    unfolding inj_def
-    by simp  
+  show ?thesis
+    by (rule that[of id f']) (auto simp: f')
 qed
+
+lemma obtain_type_preserving_injs':
+  fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
+  assumes 
+    infinite_UNIV: "infinite (UNIV :: 'v set)" and
+    finite_Y: "finite Y" and
+    \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1"
+  obtains f f' :: "'v \<Rightarrow> 'v" where
+    "inj f" "inj f'" 
+    "f ` X \<inter> f' ` Y = {}"
+    "\<forall>x \<in> X. \<V>\<^sub>1 (f x) = \<V>\<^sub>1 x"
+    "\<forall>x \<in> Y. \<V>\<^sub>2 (f' x) = \<V>\<^sub>2 x"
+  using obtain_type_preserving_injs[OF assms]
+  by (metis inf_commute)
 
 lemma exists_infinite_variables_per_type:
   assumes "|UNIV :: 'ty set| \<le>o |UNIV :: ('v :: infinite) set|"

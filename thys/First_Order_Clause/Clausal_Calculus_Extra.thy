@@ -4,12 +4,15 @@ theory Clausal_Calculus_Extra
     Uprod_Extra
 begin
 
+lemma literal_cases: "\<lbrakk>\<P> \<in> {Pos, Neg}; \<P> = Pos \<Longrightarrow> P; \<P> = Neg \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  by blast
+
 lemma map_literal_inverse: 
-  "(\<And>x. f (g x) = x) \<Longrightarrow> (\<And>literal. map_literal f (map_literal g literal) = literal)"
+  "(\<And>x. f (g x) = x) \<Longrightarrow> (\<And>l. map_literal f (map_literal g l) = l)"
   by (simp add: literal.map_comp literal.map_ident_strong)
 
 lemma map_literal_comp: 
-  "map_literal f (map_literal g literal) = map_literal (\<lambda>atom. f (g atom)) literal"
+  "map_literal f (map_literal g l) = map_literal (\<lambda>a. f (g a)) l"
   using literal.map_comp
   unfolding comp_def.
 
@@ -17,8 +20,8 @@ lemma literals_distinct [simp]: "Pos \<noteq> Neg" "Neg \<noteq> Pos"
   by (metis literal.distinct(1))+
 
 primrec mset_lit :: "'a uprod literal \<Rightarrow> 'a multiset" where
-  "mset_lit (Pos A) = mset_uprod A" |
-  "mset_lit (Neg A) = mset_uprod A + mset_uprod A"
+  "mset_lit (Pos a) = mset_uprod a" |
+  "mset_lit (Neg a) = mset_uprod a + mset_uprod a"
 
 lemma mset_lit_image_mset: "mset_lit (map_literal (map_uprod f) l) = image_mset f (mset_lit l)"
   by(induction l) (simp_all add: mset_uprod_image_mset)
@@ -31,16 +34,16 @@ lemma uprod_mem_image_iff_prod_mem[simp]:
 lemma true_lit_uprod_iff_true_lit_prod[simp]:
   assumes "sym I"
   shows
-    "(\<lambda>(t\<^sub>1, t\<^sub>2). Upair t\<^sub>1 t\<^sub>2) ` I \<TTurnstile>l Pos (Upair t t') \<longleftrightarrow> I \<TTurnstile>l Pos (t, t')"
-    "(\<lambda>(t\<^sub>1, t\<^sub>2). Upair t\<^sub>1 t\<^sub>2) ` I \<TTurnstile>l Neg (Upair t t') \<longleftrightarrow> I \<TTurnstile>l Neg (t, t')"
+    "upair ` I \<TTurnstile>l Pos (Upair t t') \<longleftrightarrow> I \<TTurnstile>l Pos (t, t')"
+    "upair ` I \<TTurnstile>l Neg (Upair t t') \<longleftrightarrow> I \<TTurnstile>l Neg (t, t')"
   unfolding true_lit_simps uprod_mem_image_iff_prod_mem[OF \<open>sym I\<close>]
   by simp_all
 
 abbreviation Pos_Upair (infix "\<approx>" 66) where
-  "Pos_Upair x y \<equiv> Pos (Upair x y)"
+  "Pos_Upair t t' \<equiv> Pos (Upair t t')"
 
 abbreviation Neg_Upair (infix "!\<approx>" 66) where
-  "Neg_Upair x y \<equiv> Neg (Upair x y)"
+  "Neg_Upair t t' \<equiv> Neg (Upair t t')"
 
 lemma exists_literal_for_atom [intro]: "\<exists>l. a \<in> set_literal l"
   by (meson literal.set_intros(1))

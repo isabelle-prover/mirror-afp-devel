@@ -131,7 +131,7 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
               \<tau> \<tau>' 
               superpositionI(12, 14)
               term.welltyped.explicit_typed_renaming[OF superpositionI(4)]
-            unfolding superpositionI
+            unfolding superpositionI            
             by(auto simp: Set.ball_Un)
 
           then show ?thesis
@@ -171,13 +171,13 @@ proof (cases "(D, \<V>\<^sub>2)" "(E, \<V>\<^sub>1)" "(C, \<V>\<^sub>3)" rule: s
 
   have [simp]: "\<And>\<V> a. literal.is_welltyped \<V> (\<P> a) \<longleftrightarrow> atom.is_welltyped \<V> a"
     using superpositionI(8)
-    by(auto simp: literal_is_welltyped_iff_atm_of)
+    by (auto simp: literal_is_welltyped_iff_atm_of)
 
   have [simp]: "\<And>a. literal.vars (\<P> a) = atom.vars a"
     using superpositionI(8)
     by auto
 
-  have \<mu>_is_welltyped: 
+  have \<mu>_is_welltyped:
     "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 \<mu>"
     using superpositionI(12)
     by blast

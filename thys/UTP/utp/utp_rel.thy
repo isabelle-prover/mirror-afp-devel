@@ -113,7 +113,7 @@ lift_definition seqr::"('\<alpha>, '\<beta>) urel \<Rightarrow> ('\<beta>, '\<ga
 is "\<lambda> P Q b. b \<in> ({p. P p} O {q. Q q})" .
 
 adhoc_overloading
-  useq seqr
+  useq \<rightleftharpoons> seqr
    
 text \<open> We also set up a homogeneous sequential composition operator, and versions of @{term true}
   and @{term false} that are explicitly typed by a homogeneous alphabet. \<close>
@@ -142,7 +142,7 @@ lift_definition assigns_r :: "'\<alpha> usubst \<Rightarrow> '\<alpha> hrel"
   is "\<lambda> \<sigma> (b, b'). b' = \<sigma>(b)" .
 
 adhoc_overloading
-  uassigns assigns_r
+  uassigns \<rightleftharpoons> assigns_r
     
 text \<open> Relational identity, or skip, is then simply an assignment with the identity substitution:
   it simply identifies all variables. \<close>
@@ -151,7 +151,7 @@ definition skip_r :: "'\<alpha> hrel" where
 [urel_defs]: "skip_r = assigns_r id"
 
 adhoc_overloading
-  uskip skip_r
+  uskip \<rightleftharpoons> skip_r
 
 text \<open> Non-deterministic assignment, also known as ``choose'', assigns an arbitrarily chosen value 
   to the given variable \<close>

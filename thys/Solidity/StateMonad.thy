@@ -34,7 +34,7 @@ where "bind f g s = (case f s of
                       Normal (a, s') \<Rightarrow> g a s'
                     | Exception e \<Rightarrow> Exception e)"
 
-adhoc_overloading Monad_Syntax.bind bind
+adhoc_overloading Monad_Syntax.bind \<rightleftharpoons> bind
 
 lemma throw_left[simp]: "throw x \<bind> y = throw x" by auto
 

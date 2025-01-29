@@ -48,8 +48,8 @@ consts Forward :: "'a aquery"
 abbreviation Forward_auth :: auth_query where "Forward_auth \<equiv> ForwardOrEdit ()"
 abbreviation Forward_insec :: "'a insec_query" where "Forward_insec \<equiv> ForwardOrEdit None"
 abbreviation Edit :: "'a \<Rightarrow> 'a insec_query" where "Edit m \<equiv> ForwardOrEdit (Some m)"
-adhoc_overloading Forward Forward_auth
-adhoc_overloading Forward Forward_insec
+adhoc_overloading Forward \<rightleftharpoons> Forward_auth
+adhoc_overloading Forward \<rightleftharpoons> Forward_insec
 
 translations
   (logic) "CONST Forward" <= (logic) "CONST ForwardOrEdit (CONST None)"

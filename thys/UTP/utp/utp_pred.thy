@@ -46,9 +46,9 @@ consts
   ushAll :: "['a \<Rightarrow> 'p] \<Rightarrow> 'p"
   
 adhoc_overloading
-  uconj conj and
-  udisj disj and
-  unot Not
+  uconj \<rightleftharpoons> conj and
+  udisj \<rightleftharpoons> disj and
+  unot \<rightleftharpoons> Not
 
 text \<open> We set up two versions of each of the quantifiers: @{const uex} / @{const uall} and
         @{const ushEx} / @{const ushAll}. The former pair allows quantification of UTP variables,
@@ -324,17 +324,17 @@ update_uexpr_rep_eq_thms \<comment> \<open> Reread @{text rep_eq} theorems. \<cl
 declare utp_pred.taut.rep_eq [upred_defs]
 
 adhoc_overloading
-  utrue "true_upred" and
-  ufalse "false_upred" and
-  unot "not_upred" and
-  uconj "conj_upred" and
-  udisj "disj_upred" and
-  uimpl impl and
-  uiff iff_upred and
-  uex ex and
-  uall all and
-  ushEx shEx and
-  ushAll shAll
+  utrue \<rightleftharpoons> "true_upred" and
+  ufalse \<rightleftharpoons> "false_upred" and
+  unot \<rightleftharpoons> "not_upred" and
+  uconj \<rightleftharpoons> "conj_upred" and
+  udisj \<rightleftharpoons> "disj_upred" and
+  uimpl \<rightleftharpoons> impl and
+  uiff \<rightleftharpoons> iff_upred and
+  uex \<rightleftharpoons> ex and
+  uall \<rightleftharpoons> all and
+  ushEx \<rightleftharpoons> shEx and
+  ushAll \<rightleftharpoons> shAll
 
 syntax
   "_uneq"       :: "logic \<Rightarrow> logic \<Rightarrow> logic" (infixl \<open>\<noteq>\<^sub>u\<close> 50)

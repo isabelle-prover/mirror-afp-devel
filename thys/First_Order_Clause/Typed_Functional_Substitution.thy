@@ -227,6 +227,24 @@ sublocale typed_subst_stability where
   using explicit_subst_stability
   by unfold_locales blast
 
+lemma typed_subst_compose [intro]:
+  assumes
+    "is_typed_on X \<V> \<sigma>" 
+    "is_typed_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
+  shows "is_typed_on X \<V> (\<sigma> \<odot> \<sigma>')"
+  using assms
+  unfolding comp_subst_iff
+  by auto
+
+lemma typed_subst_compose_UNIV [intro]:
+  assumes
+    "is_typed_on UNIV \<V> \<sigma>" 
+    "is_typed_on UNIV \<V> \<sigma>'"
+  shows "is_typed_on UNIV \<V> (\<sigma> \<odot> \<sigma>')"
+  using assms
+  unfolding comp_subst_iff
+  by auto
+
 end
 
 locale replaceable_\<V> = typed_functional_substitution +
@@ -339,6 +357,49 @@ lemma inj_id_subst: "inj id_subst"
   using is_renaming_id_subst is_renaming_iff 
   by blast
 
+lemma obtain_typed_renaming:
+  fixes \<V> :: "'var \<Rightarrow> 'ty"
+  assumes
+    "infinite (UNIV :: 'var set)"
+    "finite X" 
+    "infinite_variables_per_type \<V>"
+  obtains \<rho> :: "'var \<Rightarrow> 'expr" where
+    "is_renaming \<rho>"
+    "id_subst ` X \<inter> \<rho> ` Y = {}"
+    "is_typed_on Y \<V> \<rho>"
+proof-
+
+  obtain renaming :: "'var \<Rightarrow> 'var" where
+    inj: "inj renaming" and
+    rename_apart: "X \<inter> renaming ` Y = {}" and
+    preserve_type: "\<forall>x \<in> Y. \<V> (renaming x) = \<V> x" 
+    using obtain_type_preserving_inj[OF assms].
+
+  define \<rho> :: "'var \<Rightarrow> 'expr" where
+    "\<And>x. \<rho> x \<equiv> id_subst (renaming x)"
+
+  show ?thesis
+  proof (rule that)
+
+    show "is_renaming \<rho>"
+      using inj inj_id_subst
+      unfolding \<rho>_def is_renaming_iff inj_def
+      by blast    
+  next
+
+    show "id_subst ` X \<inter> \<rho> ` Y = {}"
+      using rename_apart inj_id_subst
+      unfolding \<rho>_def inj_def
+      by blast
+  next
+
+    show "is_typed_on Y \<V> \<rho>"
+      using preserve_type
+      unfolding \<rho>_def
+      by blast
+  qed
+qed
+    
 lemma obtain_typed_renamings:
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
   assumes
@@ -351,41 +412,8 @@ lemma obtain_typed_renamings:
     "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
     "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1"
     "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
-proof-
-
-  obtain renaming\<^sub>1 renaming\<^sub>2 :: "'var \<Rightarrow> 'var" where
-    renamings:
-    "inj renaming\<^sub>1" "inj renaming\<^sub>2"
-    "renaming\<^sub>1 ` X \<inter> renaming\<^sub>2 ` Y = {}" 
-    "\<forall>x \<in> X. \<V>\<^sub>1 (renaming\<^sub>1 x) = \<V>\<^sub>1 x" 
-    "\<forall>x \<in> Y. \<V>\<^sub>2 (renaming\<^sub>2 x) = \<V>\<^sub>2 x"
-    using obtain_type_preserving_injs[OF assms].
-   
-  define \<rho>\<^sub>1 :: "'var \<Rightarrow> 'expr" where
-    "\<And>x. \<rho>\<^sub>1 x \<equiv> id_subst (renaming\<^sub>1 x)"
-
-  define \<rho>\<^sub>2 :: "'var \<Rightarrow> 'expr" where
-    "\<And>x. \<rho>\<^sub>2 x \<equiv> id_subst (renaming\<^sub>2 x)"
-
-  have "is_renaming \<rho>\<^sub>1" "is_renaming \<rho>\<^sub>2"
-    using renamings(1,2) is_renaming_id_subst
-    unfolding \<rho>\<^sub>1_def \<rho>\<^sub>2_def is_renaming_iff inj_def
-    by blast+
-
-  moreover have "\<rho>\<^sub>1 ` X \<inter> \<rho>\<^sub>2 ` Y = {}"
-    unfolding \<rho>\<^sub>1_def \<rho>\<^sub>2_def
-    using renamings(3) inj_id_subst
-    by (metis image_Int image_empty image_image)
- 
-  moreover have "is_typed_on X \<V>\<^sub>1 \<rho>\<^sub>1" "is_typed_on Y \<V>\<^sub>2 \<rho>\<^sub>2"
-    unfolding \<rho>\<^sub>1_def \<rho>\<^sub>2_def
-    using renamings(4, 5)
-    by(auto simp: typed_id_subst)
-
-  ultimately show ?thesis 
-    using that
-    by presburger
-qed
+  using obtain_typed_renaming[OF assms] is_renaming_id_subst typed_id_subst
+  by metis
 
 lemma obtain_typed_renamings':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'var \<Rightarrow> 'ty"
@@ -402,6 +430,17 @@ lemma obtain_typed_renamings':
   using obtain_typed_renamings[OF assms]
   by (metis inf_commute)
 
+lemma renaming_subst_compose:
+  assumes
+    "is_renaming \<rho>"
+    "is_typed_on X \<V> (\<rho> \<odot> \<sigma>)"
+    "is_typed_on X \<V> \<rho>"
+  shows "is_typed_on (\<Union> (vars ` \<rho> ` X)) \<V> \<sigma>"
+   using assms
+   unfolding is_renaming_iff
+   by (smt (verit) UN_E comp_subst_iff image_iff is_typed_id_subst left_neutral right_uniqueD 
+       singletonD vars_id_subst)
+
 end
 
 lemma (in renaming_variables) obtain_merged_\<V>:
@@ -415,7 +454,7 @@ lemma (in renaming_variables) obtain_merged_\<V>:
     "\<forall>x\<in>vars expr. \<V>\<^sub>1 x = \<V>\<^sub>3 (rename \<rho>\<^sub>1 x)"  
     "\<forall>x\<in>vars expr'. \<V>\<^sub>2 x = \<V>\<^sub>3 (rename \<rho>\<^sub>2 x)"
     "infinite_variables_per_type \<V>\<^sub>3"
-proof standard
+proof (rule that)
 
   define \<V>\<^sub>3 where 
     "\<And>x. \<V>\<^sub>3 x \<equiv>
@@ -500,7 +539,7 @@ locale based_typed_renaming =
 begin
 
 lemma renaming_grounding:
-  assumes 
+  assumes
     renaming: "base.is_renaming \<rho>" and
     \<rho>_\<gamma>_is_welltyped: "base.is_typed_on (vars expr) \<V> (\<rho> \<odot> \<gamma>)" and
     grounding: "is_ground (expr \<cdot> \<rho> \<odot> \<gamma>)" and
@@ -643,10 +682,10 @@ qed
 lemma obtain_merged_grounding':
   fixes \<V>\<^sub>1 \<V>\<^sub>2 :: "'v \<Rightarrow> 'ty"
   assumes 
-    "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" 
-    "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2"
-    "is_ground (expr \<cdot> \<gamma>\<^sub>1)"
-    "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
+    typed_\<gamma>\<^sub>1: "base.is_typed_on (vars expr) \<V>\<^sub>1 \<gamma>\<^sub>1" and
+    typed_\<gamma>\<^sub>2: "base.is_typed_on (vars expr') \<V>\<^sub>2 \<gamma>\<^sub>2" and
+    expr_grounding: "is_ground (expr \<cdot> \<gamma>\<^sub>1)" and
+    expr'_grounding: "is_ground (expr' \<cdot> \<gamma>\<^sub>2)" and
     \<V>\<^sub>1: "infinite_variables_per_type \<V>\<^sub>1" and
     infinite_vars_UNIV: "infinite (UNIV :: 'v set)" and
     finite_vars: "finite (vars expr')"
@@ -658,7 +697,8 @@ lemma obtain_merged_grounding':
     "base.is_typed_on (vars expr') \<V>\<^sub>2 \<rho>\<^sub>2"
     "\<forall>X \<subseteq> vars expr. \<forall>x\<in> X. \<gamma>\<^sub>1 x = (\<rho>\<^sub>1 \<odot> \<gamma>) x"
     "\<forall>X \<subseteq> vars expr'. \<forall>x\<in> X. \<gamma>\<^sub>2 x = (\<rho>\<^sub>2 \<odot> \<gamma>) x"
-  using obtain_merged_grounding[OF assms(2, 1, 4, 3, 5, 6, 7)] (* TODO *)
+  using obtain_merged_grounding[OF typed_\<gamma>\<^sub>2 typed_\<gamma>\<^sub>1 expr'_grounding expr_grounding \<V>\<^sub>1 
+          infinite_vars_UNIV finite_vars]
   by (smt (verit, ccfv_threshold) inf_commute)
 
 end

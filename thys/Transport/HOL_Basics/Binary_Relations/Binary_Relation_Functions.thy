@@ -32,7 +32,7 @@ lemma in_dom_sup_eq_in_dom_sup_in_dom [simp]: "in_dom (R \<squnion> S) = in_dom 
 consts in_codom_on :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
 
 definition "in_codom_on_pred (P :: 'a \<Rightarrow> bool) R y \<equiv> \<exists>x : P. R x y"
-adhoc_overloading in_codom_on in_codom_on_pred
+adhoc_overloading in_codom_on \<rightleftharpoons> in_codom_on_pred
 
 lemma in_codom_onI [intro]:
   assumes "R x y"
@@ -133,7 +133,7 @@ notation rel_comp (infixl \<open>\<circ>\<circ>\<close> 55)
 end
 
 definition "rel_comp_rel R S x y \<equiv> \<exists>z. R x z \<and> S z y"
-adhoc_overloading rel_comp rel_comp_rel
+adhoc_overloading rel_comp \<rightleftharpoons> rel_comp_rel
 
 lemma rel_compI [intro]:
   assumes "R x y"
@@ -176,7 +176,7 @@ end
 
 definition rel_inv_rel :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
   where "rel_inv_rel R x y \<equiv> R y x"
-adhoc_overloading rel_inv rel_inv_rel
+adhoc_overloading rel_inv \<rightleftharpoons> rel_inv_rel
 
 lemma rel_invI [intro]:
   assumes "R x y"
@@ -225,7 +225,7 @@ notation (output) rel_if (infixl \<open>\<longrightarrow>\<close> 50)
 end
 
 definition "rel_if_rel B R x y \<equiv> B \<longrightarrow> R x y"
-adhoc_overloading rel_if rel_if_rel
+adhoc_overloading rel_if \<rightleftharpoons> rel_if_rel
 
 lemma rel_if_eq_rel_if_pred [simp]:
   assumes "B"
@@ -265,11 +265,11 @@ notation rel_restrict (\<open>(_)\<up>(\<^bsub>_\<^esub>)\<close> [1000])
 end
 
 definition "rel_restrict_left_pred R P x y \<equiv> P x \<and> R x y"
-adhoc_overloading rel_restrict_left rel_restrict_left_pred
+adhoc_overloading rel_restrict_left \<rightleftharpoons> rel_restrict_left_pred
 definition "rel_restrict_right_pred R P x y \<equiv> P y \<and> R x y"
-adhoc_overloading rel_restrict_right rel_restrict_right_pred
+adhoc_overloading rel_restrict_right \<rightleftharpoons> rel_restrict_right_pred
 definition "rel_restrict_pred R P \<equiv> R\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>P\<^esub>"
-adhoc_overloading rel_restrict rel_restrict_pred
+adhoc_overloading rel_restrict \<rightleftharpoons> rel_restrict_pred
 
 lemma rel_restrict_leftI [intro]:
   assumes "R x y"

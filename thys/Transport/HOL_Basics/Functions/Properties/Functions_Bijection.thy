@@ -13,7 +13,7 @@ definition "bijection_on_pred (P :: 'a \<Rightarrow> bool) (Q :: 'b \<Rightarrow
   (Q \<Rightarrow> P) g \<and>
   inverse_on P f g \<and>
   inverse_on Q g f"
-adhoc_overloading bijection_on bijection_on_pred
+adhoc_overloading bijection_on \<rightleftharpoons> bijection_on_pred
 
 context
   fixes P :: "'a \<Rightarrow> bool" and Q :: "'b \<Rightarrow> bool" and f :: "'a \<Rightarrow> 'b" and g :: "'b \<Rightarrow> 'a"
@@ -124,7 +124,7 @@ consts bijection :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
 definition "(bijection_rel :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) \<equiv>
   bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"
-adhoc_overloading bijection bijection_rel
+adhoc_overloading bijection \<rightleftharpoons> bijection_rel
 
 lemma bijection_eq_bijection_on:
   "(bijection :: ('a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> bool) = bijection_on (\<top> :: 'a \<Rightarrow> bool) (\<top> :: 'b \<Rightarrow> bool)"

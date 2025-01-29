@@ -5,7 +5,6 @@ section \<open>An abstract applicative functor\<close>
 
 theory Abstract_AF imports
   Applicative
-  "HOL-Library.Adhoc_Overloading"
 begin
 
 typedef 'a af = "UNIV :: 'a set" ..
@@ -15,8 +14,8 @@ setup_lifting type_definition_af
 abbreviation "af_pure \<equiv> Abs_af"
 lift_definition af_ap :: "('a \<Rightarrow> 'b) af \<Rightarrow> 'a af \<Rightarrow> 'b af" is "\<lambda>f x. f x" .
 
-adhoc_overloading Applicative.pure Abs_af
-adhoc_overloading Applicative.ap af_ap
+adhoc_overloading Applicative.pure \<rightleftharpoons> Abs_af
+adhoc_overloading Applicative.ap \<rightleftharpoons> af_ap
 
 context includes applicative_syntax
 begin

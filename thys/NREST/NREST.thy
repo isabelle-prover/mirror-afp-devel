@@ -400,7 +400,7 @@ proof -
 qed
 
 adhoc_overloading
-  Monad_Syntax.bind NREST.bindT
+  Monad_Syntax.bind \<rightleftharpoons> NREST.bindT
 
 lemma bindT_FAIL[simp]: "bindT FAILT g = FAILT"
   by (auto simp: bindT_def)       
