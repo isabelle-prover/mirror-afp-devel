@@ -12,7 +12,7 @@ begin
 section \<open>Nonground Layer\<close>
 
 locale superposition_calculus =
-  nonground_typing \<F> +
+  nonground_inhabited_typing \<F> +
   nonground_equality_order less\<^sub>t +
   nonground_selection_function select +
   typed_tiebreakers tiebreakers +

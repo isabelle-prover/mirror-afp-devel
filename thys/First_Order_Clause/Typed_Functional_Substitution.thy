@@ -227,6 +227,24 @@ sublocale typed_subst_stability where
   using explicit_subst_stability
   by unfold_locales blast
 
+lemma typed_subst_compose [intro]:
+  assumes
+    "is_typed_on X \<V> \<sigma>" 
+    "is_typed_on (\<Union>(vars ` \<sigma> ` X)) \<V> \<sigma>'"
+  shows "is_typed_on X \<V> (\<sigma> \<odot> \<sigma>')"
+  using assms
+  unfolding comp_subst_iff
+  by auto
+
+lemma typed_subst_compose_UNIV [intro]:
+  assumes
+    "is_typed_on UNIV \<V> \<sigma>" 
+    "is_typed_on UNIV \<V> \<sigma>'"
+  shows "is_typed_on UNIV \<V> (\<sigma> \<odot> \<sigma>')"
+  using assms
+  unfolding comp_subst_iff
+  by auto
+
 end
 
 locale replaceable_\<V> = typed_functional_substitution +
@@ -412,6 +430,17 @@ lemma obtain_typed_renamings':
   using obtain_typed_renamings[OF assms]
   by (metis inf_commute)
 
+lemma renaming_subst_compose:
+  assumes
+    "is_renaming \<rho>"
+    "is_typed_on X \<V> (\<rho> \<odot> \<sigma>)"
+    "is_typed_on X \<V> \<rho>"
+  shows "is_typed_on (\<Union> (vars ` \<rho> ` X)) \<V> \<sigma>"
+   using assms
+   unfolding is_renaming_iff
+   by (smt (verit) UN_E comp_subst_iff image_iff is_typed_id_subst left_neutral right_uniqueD 
+       singletonD vars_id_subst)
+
 end
 
 lemma (in renaming_variables) obtain_merged_\<V>:
@@ -510,7 +539,7 @@ locale based_typed_renaming =
 begin
 
 lemma renaming_grounding:
-  assumes 
+  assumes
     renaming: "base.is_renaming \<rho>" and
     \<rho>_\<gamma>_is_welltyped: "base.is_typed_on (vars expr) \<V> (\<rho> \<odot> \<gamma>)" and
     grounding: "is_ground (expr \<cdot> \<rho> \<odot> \<gamma>)" and

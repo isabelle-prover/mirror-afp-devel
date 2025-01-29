@@ -324,7 +324,7 @@ proof (cases D E C rule: superposition.cases)
     have is_welltyped_\<mu>_\<gamma>: 
       "term.subst.is_welltyped_on (clause.vars (E \<cdot> \<rho>\<^sub>1) \<union> clause.vars (D \<cdot> \<rho>\<^sub>2)) \<V>\<^sub>3 (\<mu> \<odot> \<gamma>')"
       using \<gamma>'_is_welltyped \<mu>_is_welltyped
-      by (simp add: is_welltyped_on_subst_compose)
+      by (simp add: term.welltyped.typed_subst_compose)
 
     note is_welltyped_\<rho>_\<mu>_\<gamma> = term.welltyped.renaming_ground_subst[OF _ _ _ \<mu>_\<gamma>'_is_ground_subst]
 

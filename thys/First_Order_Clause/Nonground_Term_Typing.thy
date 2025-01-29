@@ -5,21 +5,23 @@ theory Nonground_Term_Typing
     Nonground_Term
 begin
 
-locale nonground_term_functional_substitution_typing = 
+locale nonground_term_typing_properties = 
   base_functional_substitution_typing + 
   typed: explicitly_typed_subst_stability + 
   welltyped: explicitly_typed_subst_stability where typed = welltyped +
   typed: explicitly_replaceable_\<V> + 
   welltyped: explicitly_replaceable_\<V> where typed = welltyped +
   typed: explicitly_typed_renaming +
-  welltyped: explicitly_typed_renaming where typed = welltyped +
+  welltyped: explicitly_typed_renaming where typed = welltyped
+
+locale nonground_term_inhabited_typing_properties = 
+  nonground_term_typing_properties + 
   typed: inhabited_explicitly_typed_functional_substitution +
   welltyped: inhabited_explicitly_typed_functional_substitution where typed = welltyped
 
 locale nonground_term_typing =
   "term": nonground_term +
   fixes \<F> :: "('f, 'ty) fun_types"
-  assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f = ([], \<tau>)" (* TODO: Put in separate locale *)
 begin
 
 inductive typed :: "('v, 'ty) var_types \<Rightarrow> ('f,'v) term \<Rightarrow> 'ty \<Rightarrow> bool" 
@@ -61,6 +63,7 @@ sublocale "term": term_typing where
   typed = "typed (\<V> :: 'v \<Rightarrow> 'ty)" and welltyped = "welltyped \<V>" and Fun = Fun
 proof unfold_locales
   fix t t' c \<tau> \<tau>'
+
   assume 
     t_type: "welltyped \<V> t \<tau>'" and 
     t'_type: "welltyped \<V> t' \<tau>'" and
@@ -140,21 +143,23 @@ next
     by (metis term.exhaust prod.exhaust typed.simps)
 qed
 
-sublocale "term": nonground_term_functional_substitution_typing where 
+sublocale "term": nonground_term_typing_properties where 
   id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
   vars = term.vars and welltyped = welltyped and typed = typed
-proof unfold_locales
+proof(unfold_locales; (intro typed.Var welltyped.Var)?)
   fix \<tau> and \<V> and t :: "('f, 'v) term" and \<sigma>
   assume is_typed_on: "\<forall>x \<in> term.vars t. typed \<V> (\<sigma> x) (\<V> x)"
 
   show "typed \<V> (t \<cdot>t \<sigma>) \<tau> \<longleftrightarrow> typed \<V> t \<tau>"
   proof(rule iffI)
     assume "typed \<V> t \<tau>"
+
     then show "typed \<V> (t \<cdot>t \<sigma>) \<tau>"
       using is_typed_on
       by(induction rule: typed.induct)(auto simp: typed.Fun)
   next
     assume "typed \<V> (t \<cdot>t \<sigma>) \<tau>"
+
     then show "typed \<V> t \<tau>"
       using is_typed_on
       by(induction t)(auto simp: typed.simps)
@@ -166,13 +171,17 @@ next
 
   show "welltyped \<V> (t \<cdot>t \<sigma>) \<tau> \<longleftrightarrow> welltyped \<V> t \<tau>"
   proof(rule iffI)
+
     assume "welltyped \<V> t \<tau>"
+
     then show "welltyped \<V> (t \<cdot>t \<sigma>) \<tau>"
       using is_welltyped_on
       by(induction rule: welltyped.induct)
         (auto simp: list.rel_mono_strong list_all2_map1 welltyped.simps)
   next
+
     assume "welltyped \<V> (t \<cdot>t \<sigma>) \<tau>"
+
     then show "welltyped \<V> t \<tau>"
       using is_welltyped_on
     proof(induction "t \<cdot>t \<sigma>" \<tau> arbitrary: t rule: welltyped.induct)
@@ -206,16 +215,21 @@ next
   qed
 next
   fix t :: "('f, 'v) term" and \<V> \<V>' \<tau>
-  assume "typed \<V> t \<tau>" "\<forall>x\<in>term.vars t. \<V> x = \<V>' x" 
+
+  assume "typed \<V> t \<tau>" "\<forall>x\<in>term.vars t. \<V> x = \<V>' x"
+
   then show "typed \<V>' t \<tau>"
     by (cases rule: typed.cases) (simp_all add: typed.simps)
 next
   fix t :: "('f, 'v) term" and \<V> \<V>' \<tau>
+
   assume "welltyped \<V> t \<tau>" "\<forall>x\<in>term.vars t. \<V> x = \<V>' x"
+
   then show "welltyped \<V>' t \<tau>"
     by (induction rule: welltyped.induct) (simp_all add: welltyped.simps list.rel_mono_strong)
 next
   fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau> 
+
   assume renaming: "term_subst.is_renaming \<rho>" and \<V>: "\<forall>x\<in>term.vars t. \<V> x = \<V>' (term.rename \<rho> x)"
 
   show "typed \<V>' (t \<cdot>t \<rho>) \<tau> \<longleftrightarrow> typed \<V> t \<tau>"
@@ -260,7 +274,6 @@ next
     qed
   qed
 next
-
   fix \<V> \<V>' :: "('v, 'ty) var_types" and t :: "('f, 'v) term" and \<rho> :: "('f, 'v) subst" and \<tau>
 
   assume 
@@ -329,73 +342,7 @@ next
         by (simp add: Fun.hyps welltyped.simps)
     qed
   qed
-next
-  show "\<And>\<V> x \<tau>. \<V> x = \<tau> \<Longrightarrow> typed \<V> (Var x) \<tau>"
-    using typed.Var .
-next
-  show "\<And>\<V> x \<tau>. \<V> x = \<tau> \<Longrightarrow> welltyped \<V> (Var x) \<tau>"
-    using welltyped.Var .
-next 
-  fix \<V> :: "('v, 'ty) var_types" and \<tau>
- 
-  obtain f where f: "\<F> f = ([], \<tau>)"
-    using types_inhabited
-    by blast
-
-  show "\<exists>t. term.is_ground t \<and> welltyped \<V> t \<tau>"
-  proof(rule exI[of _ "Fun f []"], intro conjI welltyped.Fun)
-    show "term.is_ground (Fun f [])"
-      by simp
-  next
-    show "\<F> f = ([], \<tau>)"
-      by(rule f)
-  next
-    show "list_all2 (welltyped \<V>) [] []"
-      by simp
-  qed
-
-  then show "\<exists>t. term.is_ground t \<and> typed \<V> t \<tau>"  
-    using term.typed_if_welltyped
-    by blast
 qed
-
-(* TODO: Move further up *)
-lemma is_welltyped_on_subst_compose [intro]:
-  assumes
-    "term.subst.is_welltyped_on X \<V> \<sigma>" 
-    "term.subst.is_welltyped_on (\<Union>(term.vars ` \<sigma> ` X)) \<V> \<sigma>'"
-  shows "term.subst.is_welltyped_on X \<V> (\<sigma> \<odot> \<sigma>')"
-  using assms
-  unfolding subst_compose_def
-  by auto
-
-lemma is_welltyped_subst_compose [intro]:
-  assumes "term.subst.is_welltyped \<V> \<sigma>" "term.subst.is_welltyped \<V> \<sigma>'"
-  shows "term.subst.is_welltyped \<V> (\<sigma> \<odot> \<sigma>')"
-  using is_welltyped_on_subst_compose
-  using assms
-  unfolding subst_compose_def
-  by auto
-
-lemma is_welltyped_on_subst_compose_renaming:
-  assumes
-    "term_subst.is_renaming \<rho>"
-    "term.subst.is_welltyped_on X \<V> (\<rho> \<odot> \<sigma>)"
-    "term.subst.is_welltyped_on X \<V> \<rho>"
-  shows "term.subst.is_welltyped_on (\<Union> (term.vars ` \<rho> ` X)) \<V> \<sigma>"
-  using assms
-  unfolding term.is_renaming_iff
-  unfolding subst_compose_def
-  by (smt (verit) UN_E assms(1) eval_term.simps(1) image_iff is_FunI term.set_cases(2) 
-      term.welltyped.right_uniqueD term_subst_is_renaming_iff
-      term.welltyped.typed_id_subst)
-
-lemma is_typed_subst_compose [intro]:
-  assumes "term.subst.is_typed \<V> \<sigma>" "term.subst.is_typed \<V> \<sigma>'"
-  shows "term.subst.is_typed \<V> (\<sigma> \<odot> \<sigma>')"
-  using assms
-  unfolding subst_compose_def
-  by auto
 
 lemma is_welltyped_subst: 
   assumes "welltyped \<V> (Var x) \<tau>" "welltyped \<V> t \<tau>"
@@ -460,7 +407,7 @@ proof-
     ultimately show ?case
       using Cons_Cons.prems(1) es
       by fastforce
-  qed(auto)
+  qed auto
 qed
 
 lemma welltyped_decompose_Fun:
@@ -625,6 +572,7 @@ lemma obtain_welltyped_imgu:
   obtains \<mu> :: "('f, 'v) subst"
   where "\<upsilon> = \<mu> \<odot> \<upsilon>" "welltyped_imgu \<V> t t' \<mu>"
 proof-
+
   obtain \<mu> where \<mu>: "the_mgu t t' = \<mu>"
     using unified ex_mgu_if_subst_apply_term_eq_subst_apply_term by blast
 
@@ -645,6 +593,43 @@ lemma obtain_welltyped_imgu_on:
   where "\<upsilon> = \<mu> \<odot> \<upsilon>" "welltyped_imgu_on X \<V> t t' \<mu>"
   using obtain_welltyped_imgu[OF assms] UNIV_I
   by metis
+
+end
+
+locale nonground_term_inhabited_typing =
+  nonground_term_typing where \<F> = \<F> for \<F> :: "('f, 'ty) fun_types" +
+  assumes types_inhabited: "\<And>\<tau>. \<exists>f. \<F> f = ([], \<tau>)"
+begin
+
+sublocale nonground_term_inhabited_typing_properties where
+  id_subst = "Var :: 'v \<Rightarrow> ('f, 'v) term" and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and 
+  vars = term.vars and welltyped = welltyped and typed = typed
+proof unfold_locales
+  fix \<V> :: "('v, 'ty) var_types" and \<tau>
+ 
+  obtain f where f: "\<F> f = ([], \<tau>)"
+    using types_inhabited
+    by blast
+
+  show "\<exists>t. term.is_ground t \<and> welltyped \<V> t \<tau>"
+  proof(rule exI[of _ "Fun f []"], intro conjI welltyped.Fun)
+
+    show "term.is_ground (Fun f [])"
+      by simp
+  next
+
+    show "\<F> f = ([], \<tau>)"
+      by(rule f)
+  next
+
+    show "list_all2 (welltyped \<V>) [] []"
+      by simp
+  qed
+
+  then show "\<exists>t. term.is_ground t \<and> typed \<V> t \<tau>"  
+    using term.typed_if_welltyped
+    by blast
+qed
 
 end
 
