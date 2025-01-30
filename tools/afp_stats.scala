@@ -59,7 +59,7 @@ object AFP_Stats {
     def new_authors(year: Int): Int = total_authors(year) - total_authors(year - 1)
 
     val all_years =
-      for (year <- years(Date.now().rep.getYear)) yield {
+      for (year <- years(entries.map(_.date.getYear).max)) yield {
         val entries =
           for (entry <- by_year(year).sortBy(_.date)) yield entry_stats(deps, afp, entry)
         Year(year, new_authors(year), entries)
