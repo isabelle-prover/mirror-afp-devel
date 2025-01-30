@@ -40,8 +40,7 @@
           {{- $entry := . }}
           {{- with .Params.authors }}
             by
-            {{ partial "authors.html" (dict "site" $ "authors" . "affiliations"
-               $entry.Params.affiliations) }}
+            {{ partial "authors.html" (dict "site" $ "authors" .) }}
           {{- end }}
         </div>
         <span class="date">
