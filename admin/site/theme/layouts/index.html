@@ -23,7 +23,7 @@
   </p>
   {{- end }}
 
-  <form autocomplete="off" action="{{ "search" | absURL }}">
+  <form autocomplete="off" action="{{ "search" | relURL }}">
     <div class='form-container'>
       <input id="search-input" type="search" size="31" maxlength="255" value=""
              aria-label="Search the AFP" list="autocomplete"><button

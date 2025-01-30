@@ -1,11 +1,11 @@
 <header>
   {{- if and (ne .Kind "home") (ne .RelPermalink "/search/") }}
-    <form autocomplete="off" action="{{ "search" | absURL }}">
+    <form autocomplete="off" action="{{ "search" | relURL }}">
       <div class='form-container'>
         <input id="search-input" type="search" size="31" maxlength="255" value=""
                aria-label="Search the AFP" list="autocomplete"><button
                id="search-button" type="button">
-          <img src="{{ .Site.BaseURL }}images/search.svg" alt="Search"/>
+          <img src="{{ "images/search.svg" | relURL }}" alt="Search"/>
         </button>
         <datalist id="autocomplete">
         </datalist>
