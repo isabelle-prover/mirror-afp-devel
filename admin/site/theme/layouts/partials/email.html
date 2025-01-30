@@ -16,6 +16,6 @@
   {{- $host = append $host (slice (printf "<span class=\"rev\">%s</span>" $rev)) }}
 {{- end }}
 
-{{- delimit $host "." }}
+{{- delimit $host "." -}}
 @
 {{- delimit $user "." }}
