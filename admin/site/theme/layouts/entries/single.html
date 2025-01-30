@@ -110,23 +110,19 @@
       </div>
     {{- end }}
 
-    {{- with .File }}
-      {{- $related :=
-        (where ($.Site.RegularPages.Related $) ".BaseFileName" "not in" $uses)
-        | complement $used_by
-        | first 5 }}
-      {{- with $related }}
-        <div>
-          <h3>Auto-related entries</h3>
-          <ul class="horizontal-list">
-            {{- range . }}
-              <li>{{ printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString }}</li>
-            {{- end }}
-          </ul>
-        </div>
-      {{- end }}
+    {{- with .Params.similar }}
+      <div>
+        <h3>Similar entries</h3>
+        <ul class="horizontal-list">
+          {{- range . }}
+            {{- $similar := page.GetPage (printf "/entries/%s" .) }}
+            <li><a href="{{ $similar.RelPermalink }}">{{ $similar.Title | safeHTML }}</a></li>
+          {{- end }}
+        </ul>
       </div>
-    {{ end }}
+    {{- end }}
+      </div>
+    
   </main>
 
   <nav class='links'>

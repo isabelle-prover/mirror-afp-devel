@@ -34,16 +34,3 @@ weight = 2
 [outputs]
 home = [ "html", "rss", "json" ]
 taxonomyTerm = [ "html", "json" ]
-
-[related]
-includeNewer = true
-threshold = 80
-toLower = true
-
-[[related.indices]]
-name = "topic"
-weight = 10
-
-[[related.indices]]
-name = "keywords"
-weight = 100

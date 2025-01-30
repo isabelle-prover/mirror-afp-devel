@@ -120,6 +120,7 @@ object AFP_Site_Gen {
       entry: Entry,
       sessions: List[(String, List[String])],
       deps: List[Entry.Name],
+      similar: List[Entry.Name],
       cache: Cache
     ): JSON.Object.T = {
       JSON.Object(
@@ -131,6 +132,7 @@ object AFP_Site_Gen {
         "abstract" -> entry.`abstract`,
         "license" -> entry.license.name,
         "dependencies" -> deps,
+        "similar" -> similar,
         "sessions" -> sessions.map((session, theories) =>
           JSON.Object(
             "session" -> session,
@@ -310,6 +312,12 @@ object AFP_Site_Gen {
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
       entry_keywords.getOrElse(name, Nil).filter(seen_keywords.contains).take(8)
+    def get_words(name: Metadata.Entry.Name): List[String] =
+      get_keywords(name).flatMap(space_explode(' ', _))
+
+    val word_counts = entry_keywords
+      .values.flatten.flatMap(space_explode(' ', _))
+      .groupMapReduce(identity)(_ => 1)(_ + _)
 
 
     /* add sessions and theory listings */
@@ -354,15 +362,26 @@ object AFP_Site_Gen {
     all_entries.foreach { entry =>
       val deps = entry_deps(entry.name)
 
+      val keywords = get_keywords(entry.name)
+      val words = keywords.flatMap(space_explode(' ', _))
       val sessions =
         afp.entry_sessions(entry.name).map(session => session.name -> theories_of(session.name))
 
-      val entry_json = JSON_Encode.entry(entry, sessions, deps, cache)
+      val similar =
+        (for {
+          other <- entries
+          if other.name != entry.name
+          if !deps.contains(other.name) && !entry_deps(other.name).contains(entry.name)
+          score = get_words(other.name).intersect(words).map(1.0 / word_counts(_).toDouble).sum
+          if score > 1.0
+        } yield (other.name, score)).sortBy(_._2).reverse.map(_._1)
+
+      val entry_json = JSON_Encode.entry(entry, sessions, deps, similar, cache)
 
       val metadata =
         Hugo.Metadata(title = entry.title, url = "/entries/" + entry.name + ".html", date =
-          entry.date.toString, keywords = get_keywords(entry.name), params =
-          entry_json, draft = entry.name == afp.example_entry)
+          entry.date.toString, keywords = keywords, params = entry_json, draft =
+          entry.name == afp.example_entry)
 
       hugo.write_content(Hugo.Content("entries", Path.basic(entry.name), metadata))
     }
