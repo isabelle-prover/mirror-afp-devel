@@ -29,12 +29,12 @@
 
   {{- $options := (dict "targetPath" "css/front.css") }}
   {{- $style := resources.Get "sass/main.scss" | toCSS $options | minify }}
-  <link rel="stylesheet" type="text/css" href="{{ $style.Permalink }}">
+  <link rel="stylesheet" type="text/css" href="{{ $style.RelPermalink }}">
   {{- if (eq .Section "sessions") }}
-    <link rel="stylesheet" type="text/css" href="{{ .Site.BaseURL }}css/isabelle.css">
+    <link rel="stylesheet" type="text/css" href="{{ "css/isabelle.css" | relURL }}">
   {{- end }}
 
-  <link rel="icon" href="{{ .Site.BaseURL }}images/favicon.ico" type="image/icon">
+  <link rel="icon" href="{{ "images/favicon.ico" | relURL }}" type="image/icon">
 
   {{- if or (eq .Section "entries") (eq .RelPermalink "/search/") }}
     {{/*
@@ -52,25 +52,25 @@
         }
       };
     </script>
-    <script id="MathJax-script" async src="{{ .Site.BaseURL }}js/mathjax/es5/tex-mml-chtml.js">
+    <script id="MathJax-script" async src="{{ "js/mathjax/es5/tex-mml-chtml.js" | relURL }}">
     </script>
   {{- end }}
 
   {{- if eq .Section "entries" }}
-    <script src="{{ .Site.BaseURL }}js/entries.js"></script>
+    <script src="{{ "js/entries.js" | relURL }}"></script>
   {{- end }}
 
-  <script src="{{ .Site.BaseURL }}js/obfuscate.js"></script>
-  <script src="{{ .Site.BaseURL }}js/flexsearch.bundle.js"></script>
-  <script src="{{ .Site.BaseURL }}js/scroll-spy.js"></script>
-  <script src="{{ .Site.BaseURL }}js/theory.js"></script>
-  <script src="{{ .Site.BaseURL }}js/util.js"></script>
+  <script src="{{ "js/obfuscate.js" | relURL }}"></script>
+  <script src="{{ "js/flexsearch.bundle.js" | relURL }}"></script>
+  <script src="{{ "js/scroll-spy.js" | relURL }}"></script>
+  <script src="{{ "js/theory.js" | relURL }}"></script>
+  <script src="{{ "js/util.js" | relURL }}"></script>
 
   {{- if eq .RelPermalink "/search/" }}
-    <script src="{{ .Site.BaseURL }}js/search.js"></script>
-    <script src="{{ .Site.BaseURL }}js/mark.min.js"></script>
+    <script src="{{ "js/search.js" | relURL }}"></script>
+    <script src="{{ "js/mark.min.js" | relURL }}"></script>
   {{- else }}
-    <script src="{{ .Site.BaseURL }}js/header-search.js"></script>
+    <script src="{{ "js/header-search.js" | relURL }}"></script>
   {{- end }}
-  <script src="{{ .Site.BaseURL }}js/search-autocomplete.js"></script>
+  <script src="{{ "js/search-autocomplete.js" | relURL }}"></script>
 </head>

@@ -1,5 +1,4 @@
 {{- define "main" }}
-  {{- $site := . }}
   {{- $topic := .Site.Data.topics }}
 
   {{- range (split .Title "/") }}
@@ -16,7 +15,7 @@
     {{- end }}
   {{- end }}
 
-  {{- range (where (uniq .Data.Pages) "Params.topics" "intersect" (slice $site.Title)).GroupByDate
+  {{- range (where (uniq .Data.Pages) "Params.topics" "intersect" (slice $.Title)).GroupByDate
       "2006" }}
     <h2 class="head">{{ .Key }}</h2>
     {{- range .Pages }}
@@ -25,7 +24,7 @@
           <h5><a class="title" href="{{ .RelPermalink }}">{{ htmlUnescape .Title }}</a></h5>
           <br>
           {{- with .Params.authors }}
-            by {{ partial "authors.html" (dict "site" $site "authors" .) }}
+            by {{ partial "authors.html" (dict "site" $ "authors" .) }}
           {{- end }}
         </div>
         <span class="date">{{ .Date.Format "Jan 02" }}</span>

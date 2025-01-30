@@ -1,5 +1,4 @@
 {{- define "main" }}
-  {{- $site := . }}
   {{- $html_url := .Site.Params.afpUrls.html }}
   {{- if isset .Site.Data "status" }}
     {{- $html_url = .Site.Params.afpUrls.htmlDevel }}
@@ -89,7 +88,7 @@
         <ul class="horizontal-list">
           {{- range . }}
             {{- $path := printf "/entries/%s.html" . }}
-            {{- with $site.Site.GetPage $path }}
+            {{- with $.Site.GetPage $path }}
               <li>{{ printf "[%s](%s)" .Title $path | $.Page.RenderString }}</li>
             {{- end }}
           {{- end }}
@@ -113,7 +112,7 @@
 
     {{- with .File }}
       {{- $related :=
-        (where ($site.Site.RegularPages.Related $site) ".BaseFileName" "not in" $uses)
+        (where ($.Site.RegularPages.Related $) ".BaseFileName" "not in" $uses)
         | complement $used_by
         | first 5 }}
       {{- with $related }}
@@ -163,7 +162,7 @@
         <p style="display:none;" id="bibtex-filename">{{ $entry_name }}-AFP</p>
         {{- $authors := slice }}
         {{- range .Params.authors }}
-          {{- $authors = $authors | append (index (index $site.Site.Data.authors .) "name") }}
+          {{- $authors = $authors | append (index (index $.Site.Data.authors .) "name") }}
         {{- end }}
         <pre id="copy-text">@article{{ "{" }}{{ $entry_name }}-AFP,
   author  = {{ "{" }}{{ delimit $authors " and " }}},
@@ -185,14 +184,14 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-current.tar.gz"
+      <a href="{{ $.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-current.tar.gz"
          download>Download latest</a>
       {{- with .Params.releases }}
         <p>Older releases:</p>
         <ul>
           {{- range . }}
             <li>
-              <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-{{ .date }}.tar.gz">
+              <a href="{{ $.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-{{ .date }}.tar.gz">
                 {{ dateFormat "Jan 2, 2006" .date }}
               </a>
               : Isabelle{{ .isabelle }}

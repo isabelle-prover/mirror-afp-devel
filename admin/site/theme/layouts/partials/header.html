@@ -31,15 +31,14 @@
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- $site := . }}
     {{- with .Params.authors}}
       <p>
-        {{ partial "authors.html" (dict "site" $site "authors" . "affiliations"
-           $site.Params.affiliations) }}
-        {{- with $site.Params.contributors }}
+        {{ partial "authors.html" (dict "site" $ "authors" . "affiliations"
+           $.Params.affiliations) }}
+        {{- with $.Params.contributors }}
           with contributions from
-          {{ partial "authors.html" (dict "site" $site "authors" . "affiliations"
-             $site.Params.affiliations) }}
+          {{ partial "authors.html" (dict "site" $ "authors" . "affiliations"
+             $.Params.affiliations) }}
         {{- end }}
       </p>
     {{- end }}
