@@ -52,7 +52,7 @@ object AFP_Site_Gen {
   }
 
 
-  /* json */
+  /* json params for hugo templates */
 
   object JSON_Encode {
     def email(email: Email): JSON.Object.T =
@@ -116,7 +116,12 @@ object AFP_Site_Gen {
         case Formatted(text) => text
       }
 
-    def entry(entry: Entry, cache: Cache): JSON.Object.T = {
+    def entry(
+      entry: Entry,
+      sessions: List[(String, List[String])],
+      deps: List[Entry.Name],
+      cache: Cache
+    ): JSON.Object.T = {
       JSON.Object(
         "title" -> entry.title,
         "authors" -> entry.authors.map(_.author).distinct,
@@ -124,7 +129,12 @@ object AFP_Site_Gen {
         "date" -> entry.date.toString,
         "topics" -> entry.topics.map(_.id),
         "abstract" -> entry.`abstract`,
-        "license" -> entry.license.name) ++
+        "license" -> entry.license.name,
+        "dependencies" -> deps,
+        "sessions" -> sessions.map((session, theories) =>
+          JSON.Object(
+            "session" -> session,
+            "theories" -> theories))) ++
         JSON.optional("contributors", proper_list(entry.contributors.map(_.author).distinct)) ++
         JSON.optional("releases",
           proper_list(entry.releases.sortBy(_.isabelle).reverse.map(release))) ++
@@ -136,26 +146,34 @@ object AFP_Site_Gen {
     }
 
     def keyword(keyword: String): JSON.T = JSON.Object("keyword" -> keyword)
-  }
 
+    def statistics(stats: AFP_Stats.Statistics): JSON.Object.T =
+      JSON.Object(
+        "years" -> stats.years.map(_.rep),
+        "num_lemmas" -> stats.cumulated_thms(),
+        "num_loc" -> stats.cumulated_loc(),
+        "articles_year" -> stats.years.map(_.rep).map(stats.cumulated_entries),
+        "loc_years" -> stats.years.map(_.rep).map(stats.cumulated_loc),
+        "author_years" -> stats.years.map(_.new_authors),
+        "author_years_cumulative" -> stats.years.map(_.rep).map(stats.cumulated_authors),
+        "loc_articles" -> stats.years.flatMap(_.entries.map(_.loc)),
+        "all_articles" -> stats.years.flatMap(_.entries.map(_.name)),
+        "article_years_unique" -> stats.years.filter(_.entries.nonEmpty).flatMap(year =>
+          year.rep.toString :: Library.replicate(year.entries.drop(1).length, "")))
 
-  /* stats */
-
-  def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry]): JSON.T = {
-    val stats = AFP_Stats.statistics(deps, structure, entries)
-
-    JSON.Object(
-      "years" -> stats.years.map(_.rep),
-      "num_lemmas" -> stats.cumulated_thms(),
-      "num_loc" -> stats.cumulated_loc(),
-      "articles_year" -> stats.years.map(_.rep).map(stats.cumulated_entries),
-      "loc_years" -> stats.years.map(_.rep).map(stats.cumulated_loc),
-      "author_years" -> stats.years.map(_.new_authors),
-      "author_years_cumulative" -> stats.years.map(_.rep).map(stats.cumulated_authors),
-      "loc_articles" -> stats.years.flatMap(_.entries.map(_.loc)),
-      "all_articles" -> stats.years.flatMap(_.entries.map(_.name)),
-      "article_years_unique" -> stats.years.filter(_.entries.nonEmpty).flatMap(year =>
-        year.rep.toString :: Library.replicate(year.entries.drop(1).length, "")))
+    def session(
+      entry: Option[Entry.Name],
+      theories: List[(String, Path)],
+      rss: Boolean
+    ): JSON.Object.T = {
+      JSON.Object(
+        "theories" -> theories.map((name, path) =>
+          JSON.Object(
+            "name" -> name,
+            "path" -> path.implode)),
+        "rss" -> rss) ++
+      JSON.optional("entry", entry)
+    }
   }
 
 
@@ -245,7 +263,7 @@ object AFP_Site_Gen {
 
     /* add topics */
 
-    progress.echo("Preparing topics...")
+    progress.echo("Preparing topics ...")
 
     val root_topics = Metadata.Topics.root_topics(topics)
 
@@ -254,7 +272,7 @@ object AFP_Site_Gen {
 
     /* prepare authors and entries */
 
-    progress.echo("Preparing authors...")
+    progress.echo("Preparing authors ...")
 
     val seen_affiliations =
       all_entries.flatMap(entry => entry.authors ::: entry.contributors).distinct
@@ -273,7 +291,7 @@ object AFP_Site_Gen {
 
     /* extract keywords */
 
-    progress.echo("Extracting keywords...")
+    progress.echo("Extracting keywords ...")
 
     val entry_keywords =
       (for (entry <- entries) yield {
@@ -294,9 +312,9 @@ object AFP_Site_Gen {
       entry_keywords.getOrElse(name, Nil).filter(seen_keywords.contains).take(8)
 
 
-    /* add entries and theory listings */
+    /* add sessions and theory listings */
 
-    progress.echo("Preparing entries...")
+    progress.echo("Preparing sessions ...")
 
     val sessions_deps = Sessions.deps(sessions_structure)
     val browser_info = Browser_Info.context(sessions_structure)
@@ -304,40 +322,42 @@ object AFP_Site_Gen {
     def theories_of(session_name: String): List[String] =
       sessions_deps(session_name).proper_session_theories.map(_.theory_base_name)
 
-    def write_session_json(
-      entry: Option[Metadata.Entry.Name],
-      session_name: String,
-      rss: Boolean = true
-    ): Unit = {
-      val params =
-        JSON.Object(
-          "rss" -> rss,
-          "theories" -> theories_of(session_name).map(thy_name => JSON.Object(
-            "name" -> thy_name,
-            "path" -> (browser_info.session_dir(session_name) + Path.basic(thy_name).html).implode
-          ))) ++
-          JSON.optional("entry" -> entry)
+    val distro_sessions =
+      (for ((session_name, (info, _)) <- sessions_structure.imports_graph.iterator if !info.is_afp)
+      yield session_name -> None).toList
+
+    val afp_sessions =
+      for {
+        entry <- all_entries
+        session <- entry_sessions(entry)
+      } yield session.name -> Some(entry.name)
+
+    for ((session_name, entry) <- afp_sessions ::: distro_sessions) {
+      val session_dir = browser_info.session_dir(session_name)
+      val thy_paths =
+        for (thy_name <- theories_of(session_name))
+        yield thy_name -> (session_dir + Path.basic(thy_name).html)
+
+      val params = JSON_Encode.session(entry, thy_paths, entry.isDefined)
       val metadata =
         Hugo.Metadata(title = session_name, url = "/sessions/" + session_name.toLowerCase,
           params = params, draft = entry.contains(afp.example_entry))
+
       hugo.write_content(Hugo.Content("sessions", Path.basic(session_name), metadata))
     }
+
+
+    /* add entries and theory listings */
+
+    progress.echo("Preparing entries ...")
 
     all_entries.foreach { entry =>
       val deps = entry_deps(entry.name)
 
       val sessions =
-        afp.entry_sessions(entry.name).map { session =>
-          write_session_json(Some(entry.name), session.name)
-          JSON.Object(
-            "session" -> session.name,
-            "theories" -> theories_of(session.name))
-        }
+        afp.entry_sessions(entry.name).map(session => session.name -> theories_of(session.name))
 
-      val entry_json =
-        JSON_Encode.entry(entry, cache) ++ JSON.Object(
-          "dependencies" -> deps.distinct,
-          "sessions" -> sessions)
+      val entry_json = JSON_Encode.entry(entry, sessions, deps, cache)
 
       val metadata =
         Hugo.Metadata(title = entry.title, url = "/entries/" + entry.name + ".html", date =
@@ -347,17 +367,12 @@ object AFP_Site_Gen {
       hugo.write_content(Hugo.Content("entries", Path.basic(entry.name), metadata))
     }
 
-    for {
-      (session_name, (info, _)) <- sessions_structure.imports_graph.iterator
-      if !info.is_afp
-    } write_session_json(None, session_name, rss = false)
-
 
     /* add statistics */
 
-    progress.echo("Preparing statistics...")
+    progress.echo("Preparing statistics ...")
 
-    val statistics_json = afp_stats(sessions_deps, afp, entries)
+    val statistics_json = JSON_Encode.statistics(AFP_Stats.statistics(sessions_deps, afp, entries))
 
     hugo.write_data(Path.basic("statistics").json, JSON.Format(statistics_json))
 
@@ -366,7 +381,7 @@ object AFP_Site_Gen {
 
     status_file match {
       case Some(status_file) =>
-        progress.echo("Preparing devel version...")
+        progress.echo("Preparing devel version ...")
         val status_json = isabelle.JSON.parse(File.read(status_file))
         hugo.write_data(Path.basic("status").json, JSON.Format(status_json))
       case None =>
