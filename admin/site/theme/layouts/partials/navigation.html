@@ -16,11 +16,10 @@
         <img src="{{ "images/afp.png" | relURL }}" alt="Logo of the Archive of Formal Proofs"
              class="logo">
       </a>
-      {{- $currentPage := . }}
       <ul>
         {{- range .Site.Menus.main }}
-          <a href="{{ .URL }}">
-            <li {{ if $currentPage.IsMenuCurrent "main" . }}class="active" {{ end }}>
+          <a href="{{ .URL | relURL }}">
+            <li {{ if $.IsMenuCurrent .Menu . }}class="active" {{ end }}>
               {{ .Name }}
             </li>
           </a>

@@ -12,33 +12,19 @@
       </div>
     </form>
   {{- end }}
-  {{- .Scratch.Set "title" (default .Site.Title (default .Title .Params.name)) }}
-  {{- if and (eq .Section "authors") (isset .Site.Data.authors (.Scratch.Get "title")) }}
-    {{- .Scratch.Set "title" (index (index .Site.Data.authors (.Scratch.Get "title")) "name") }}
-  {{- end }}
   <h1
     {{- if or (eq .Kind "home" ) (eq .RelPermalink "/search/") }}
-      class="large-top-margin"
-    {{- end }}>
-    {{ (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML }}
-    {{ if and (eq .Section "dependencies") (eq .Kind "term") }} Dependents {{ end }}
+      class="large-top-margin"{{ end }}>
+    {{ (default .Site.Title .Title) | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML }}
+    
   </h1>
   <div>
-    {{- if (eq .Section "authors") }}
-      {{- with (index $.Site.Data.authors .Title )}}
-        {{- with .website}}
-          <p><a href="{{ . }}">{{ . }}</a></p>
-        {{- end }}
-      {{- end }}
-    {{- end }}
-    {{- with .Params.authors}}
+    {{- with .Params.authors }}
       <p>
-        {{ partial "authors.html" (dict "site" $ "authors" . "affiliations"
-           $.Params.affiliations) }}
+        {{ partial "authors.html" . }}
         {{- with $.Params.contributors }}
           with contributions from
-          {{ partial "authors.html" (dict "site" $ "authors" . "affiliations"
-             $.Params.affiliations) }}
+          {{ partial "authors.html" . }}
         {{- end }}
       </p>
     {{- end }}

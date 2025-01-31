@@ -3,13 +3,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  {{- $siteTitle := ( .Site.Title ) }}
-  {{- if or .IsHome (not .Params.title) }}
-    <title>{{ $siteTitle }} </title>
-  {{- else if eq .Section "authors" }}
-    <title>{{ index (index .Site.Data.authors .Params.title) "name" }} - {{ $siteTitle }}</title>
+  {{- if .IsHome }}
+    <title>{{ .Site.Title }} </title>
   {{- else }}
-    <title>{{ .Params.title | safeHTML }} - {{ $siteTitle }}</title>
+    <title>{{ .Title | safeHTML }} - {{ .Site.Title }}</title>
   {{- end }}
 
   {{- if (eq .Section "entries") }}

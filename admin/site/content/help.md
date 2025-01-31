@@ -1,5 +1,4 @@
 +++
-rss = false
 title = "Help"
 
 [menu.main]

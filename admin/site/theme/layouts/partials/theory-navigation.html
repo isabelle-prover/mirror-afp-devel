@@ -1,4 +1,4 @@
-{{- $entry_name := .Params.entry }}
+{{- $x := . }}
 <div id="menu-toggle">
   <input id="toggle" type="checkbox" />
   <label for="toggle">
@@ -17,9 +17,9 @@
       <img src="{{ "images/afp.png" | relURL }}" alt='Logo of the Archive of Formal Proofs'
            class="logo">
     </a>
-    {{- with $entry_name }}
+    {{- with .Params.entry }}
       <ul id="return">
-        <li><a href="{{ (page.GetPage (printf "entries/%s" $entry_name)).RelPermalink }}">Return to entry</a></li>
+        <li><a href="{{ (page.GetPage (printf "entries/%s" .)).RelPermalink }}">Return to entry</a></li>
       </ul>
     {{- end }}
     <hr>

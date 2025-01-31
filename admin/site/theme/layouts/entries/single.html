@@ -1,12 +1,6 @@
 {{- define "main" }}
-  {{- $html_url := .Site.Params.afpUrls.html }}
-  {{- if isset .Site.Data "status" }}
-    {{- $html_url = .Site.Params.afpUrls.htmlDevel }}
-  {{- end }}
-  {{- $entry_name := "" }}
-  {{- with .File }}{{- $entry_name = .BaseFileName }}{{ end }}
   <main>
-    {{- if isset .Site.Data "status" }}
+    {{- if .Site.Data.status }}
       <strong>
         This is a development version of this entry. It might change over time and is not stable.
         Please refer to release versions for citations.
@@ -28,7 +22,7 @@
     </div>
 
     {{- with .Params.note }}
-      <p><em>{{ . }}</em></p>
+      <p><em>{{ . | safeHTML }}</em></p>
     {{- end }}
 
     {{- with.Params.history }}
@@ -36,25 +30,22 @@
       <dl>
       {{- range . }}
         <dt>{{ dateFormat "January 2, 2006" .date }}</dt>
-        <dd>{{ safeHTML .value }}</dd>
+        <dd>{{ .value | safeHTML }}</dd>
       {{- end }}
       </dl>
     {{- end }}
 
-    {{- with .Params.extra }}
-      {{- range $key, $value := . }}
-        <h3>{{ humanize $key }}</h3>
-        <p>{{ $value | safeHTML }}</p>
-      {{- end }}
+    {{- range $key, $value := .Params.extra }}
+      <h3>{{ humanize $key }}</h3>
+      <p>{{ $value | safeHTML }}</p>
     {{- end }}
-
-    {{- $Scratch := newScratch }}
 
     {{- with .Params.topics }}
       <h3>Topics</h3>
       <ul>
         {{- range . }}
-          <li>{{ printf "[%s](/topics/%s)" . (urlize .) | $.Page.RenderString }}</li>
+        {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+          <li><a href="{{ $topic.RelPermalink }}">{{ $topic.Title }}</a></li>
         {{- end }}
       </ul>
     {{- end }}
@@ -64,46 +55,43 @@
       <ul>
       {{- range . }}
         <li>
-          {{- safeHTML . }}
+          {{- . | safeHTML }}
         </li>
       {{- end }}
       </ul>
     {{- end }}
 
     {{- range .Params.sessions }}
-      {{- $session := .session }}
-      <h3>Session {{ $session }}</h3>
+      {{- $session := page.GetPage (printf "/sessions/%s" .) }}
+      <h3>Session {{ $session.Title }}</h3>
       <ul>
-        {{- range .theories }}
-          <li><a href="/sessions/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
+        {{- range $session.Params.theories }}
+          <li><a href="{{ $session.RelPermalink }}#{{ .name }}">{{ .name }}</a></li>
         {{- end }}
       </ul>
     {{- end }}
 
     <div class="flex-wrap">
-    {{- $uses := .Params.dependencies }}
-    {{- with $uses }}
+    {{- with .Params.dependencies }}
       <div>
         <h3>Depends on</h3>
         <ul class="horizontal-list">
           {{- range . }}
-            {{- $path := printf "/entries/%s.html" . }}
-            {{- with $.Site.GetPage $path }}
-              <li>{{ printf "[%s](%s)" .Title $path | $.Page.RenderString }}</li>
-            {{- end }}
+            {{- $entry := page.GetPage (printf "/entries/%s" .) }}
+              <li><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></li>
           {{- end }}
         </ul>
       </div>
     {{- end }}
 
-    {{- $used_by := (index .Site.Taxonomies.dependencies (urlize $entry_name)) }}
-    {{- with $used_by }}
+    {{- with .Params.used_by }}
       <div>
         <h3>Used by</h3>
         <ul class="horizontal-list">
           {{- range . }}
+            {{- $entry := page.GetPage (printf "/entries/%s" .) }}
             <li>
-              {{ printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString }}
+              <a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a>
             </li>
           {{- end }}
         </ul>
@@ -115,8 +103,8 @@
         <h3>Similar entries</h3>
         <ul class="horizontal-list">
           {{- range . }}
-            {{- $similar := page.GetPage (printf "/entries/%s" .) }}
-            <li><a href="{{ $similar.RelPermalink }}">{{ $similar.Title | safeHTML }}</a></li>
+            {{- $entry := page.GetPage (printf "/entries/%s" .) }}
+            <li><a href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></li>
           {{- end }}
         </ul>
       </div>
@@ -129,13 +117,19 @@
     <a class='popup-button' href="#cite-popup">Cite</a>
     <a class='popup-button' href="#download-popup">Download</a>
     <h4>PDFs</h4>
-    <a href="{{ $html_url }}/AFP/{{ $entry_name }}/outline.pdf">Proof outline</a>
-    <a href="{{ $html_url }}/AFP/{{ $entry_name }}/document.pdf">Proof document</a>
-    <a href="{{ $html_url }}/AFP/{{ $entry_name }}/session_graph.pdf">Dependencies</a>
+    {{- if .Site.Data.status }}
+    <a href="{{ .Site.Params.afpUrls.htmlDevel }}/AFP/{{ .Params.name }}/outline.pdf">Proof outline</a>
+    <a href="{{ .Site.Params.afpUrls.htmlDevel }}/AFP/{{ .Params.name }}/document.pdf">Proof document</a>
+    <a href="{{ .Site.Params.afpUrls.htmlDevel }}/AFP/{{ .Params.name }}/session_graph.pdf">Dependencies</a>
+    {{- else }}
+    <a href="{{ .Site.Params.afpUrls.html }}/AFP/{{ .Params.name }}/outline.pdf">Proof outline</a>
+    <a href="{{ .Site.Params.afpUrls.html }}/AFP/{{ .Params.name }}/document.pdf">Proof document</a>
+    <a href="{{ .Site.Params.afpUrls.html }}/AFP/{{ .Params.name }}/session_graph.pdf">Dependencies</a>
+    {{- end }}
 
-    {{- if isset .Site.Data "status" }}
+    {{- if .Site.Data.status }}
       {{- $status := "none" }}
-      {{- range where .Site.Data.status.entries "entry" $entry_name }}
+      {{- range where .Site.Data.status.entries "entry" .Params.name }}
         {{- $status = .status }}
       {{- end }}
       <h4>Build status</h4>
@@ -155,18 +149,18 @@
       <h2>Cite</h2>
       <a class="close" href="#">&times;</a>
       <div>
-        <p style="display:none;" id="bibtex-filename">{{ $entry_name }}-AFP</p>
+        <p style="display:none;" id="bibtex-filename">{{ .Params.name }}-AFP</p>
         {{- $authors := slice }}
         {{- range .Params.authors }}
-          {{- $authors = $authors | append (index (index $.Site.Data.authors .) "name") }}
+          {{- $authors = $authors | append (.name | safeHTML) }}
         {{- end }}
-        <pre id="copy-text">@article{{ "{" }}{{ $entry_name }}-AFP,
+        <pre id="copy-text">@article{{ "{" }}{{ .Params.name }}-AFP,
   author  = {{ "{" }}{{ delimit $authors " and " }}},
-  title   = {{ "{" }}{{ htmlUnescape .Params.title }}},
+  title   = {{ "{" }}{{ .Title | safeHTML }}},
   journal = {Archive of Formal Proofs},
   month   = { {{- dateFormat "January" .Params.date }}},
   year    = { {{- dateFormat "2006" .Params.date }}},
-  note    = {\url{https://isa-afp.org/entries/{{ $entry_name }}.html},
+  note    = {\url{ {{- .Permalink -}} },
              Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -180,14 +174,14 @@
     <div class="popup">
       <h2>Download</h2>
       <a class="close" href="#">&times;</a>
-      <a href="{{ $.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-current.tar.gz"
+      <a href="{{ .Site.Params.afpUrls.releases }}/afp-{{ .Params.name }}-current.tar.gz"
          download>Download latest</a>
       {{- with .Params.releases }}
         <p>Older releases:</p>
         <ul>
           {{- range . }}
             <li>
-              <a href="{{ $.Site.Params.afpUrls.releases }}/afp-{{ $entry_name }}-{{ .date }}.tar.gz">
+              <a href="{{ $.Site.Params.afpUrls.releases }}/afp-{{ $.Params.name }}-{{ .date }}.tar.gz">
                 {{ dateFormat "Jan 2, 2006" .date }}
               </a>
               : Isabelle{{ .isabelle }}

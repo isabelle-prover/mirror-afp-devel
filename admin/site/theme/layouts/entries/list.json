@@ -1,0 +1,32 @@
+{{- $index := slice -}}
+{{- range .Pages -}}
+  {{- $authors := slice -}}
+  {{- range .Params.authors -}}
+    {{- $author := page.GetPage (printf "/authors/%s" .author) -}}
+    {{- $authors = $authors | append $author.Params.name -}}
+  {{- end -}}
+  {{- range .Params.contributors -}}
+    {{- $author := page.GetPage (printf "/authors/%s" .author) -}}
+    {{- $authors = $authors | append $author.Params.name -}}
+  {{- end -}}
+
+  {{- $topics := slice -}}
+  {{- $topic_links := slice -}}
+  {{- range .Params.topics -}}
+    {{- $topic := page.GetPage (printf "/topics/%s" .) -}}
+    {{- $topics = $topics | append $topic.Title -}}
+    {{- $topic_links = $topic_links | append $topic.RelPermalink -}}
+  {{- end -}}
+
+  {{- $index = $index | append (dict
+    "shortname" .Params.name
+    "title" .Title
+    "abstract" (.Params.abstract | replaceRE "\n" " " | plainify)
+    "year" (.Date.Format "2006")
+    "authors" $authors
+    "topics" $topics
+    "topic_links" $topic_links
+    "link" .RelPermalink)
+  -}}
+{{- end -}}
+{{- $index | jsonify (dict "indent" " ") -}}

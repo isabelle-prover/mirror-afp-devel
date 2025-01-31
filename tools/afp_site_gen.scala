@@ -54,22 +54,29 @@ object AFP_Site_Gen {
 
   /* json params for hugo templates */
 
-  object JSON_Encode {
-    def email(email: Email): JSON.Object.T =
-      JSON.Object(
-        "user" -> email.user.split('.').toList,
-        "host" -> email.host.split('.').toList)
+  class JSON_Encode(cache: Cache, authors: Metadata.Authors) {
+    def topic_id(topic: Topic): String = topic.id.toLowerCase.replace(' ', '-').replace("/", "_")
 
-    def authors(authors: List[Author]): JSON.Object.T =
-      authors.map(author =>
-        author.id -> (JSON.Object(
-          "name" -> author.name,
-          "emails" -> author.emails.map(email),
-          "homepages" -> author.homepages.map(_.url.toString)) ++
-          JSON.optional(
-            "orcid", author.orcid.map(orcid => JSON.Object(
-              "id" -> orcid.identifier,
-              "url" -> orcid.url.toString))))).toMap
+    def email(email: Email): JSON.Object.T = {
+      val user = email.user.split('.').toList
+      val host = email.host.split('.').toList
+      val bytes = Bytes(JSON.Format(JSON.Object("user" -> user, "host" -> host)))
+      JSON.Object(
+        "user" -> Library.separate(".", user.map(_.reverse)).reverse,
+        "host" -> Library.separate(".", host.map(_.reverse)).reverse,
+        "base64" -> Base64.encode(bytes.make_array))
+    }
+
+    def author(author: Author, author_entries: List[Entry]): JSON.Object.T =
+      JSON.Object(
+        "name" -> author.name,
+        "entries" -> entries(author_entries),
+        "emails" -> author.emails.map(email),
+        "homepages" -> author.homepages.map(_.url.toString)) ++
+        JSON.optional(
+          "orcid", author.orcid.map(orcid => JSON.Object(
+            "id" -> orcid.identifier,
+            "url" -> orcid.url.toString)))
 
     def classification(classification: Classification): JSON.Object.T =
       JSON.Object(
@@ -80,22 +87,33 @@ object AFP_Site_Gen {
           case _: AMS => "AMS"
         }))
 
-    def topics(elems: List[Topic]): JSON.Object.T =
-        JSON.Object(elems.map(topic =>
-          topic.name -> (
-            JSON.optional("classification",
-              proper_list(topic.classification.map(classification))) ++
-            JSON.optional("topics", proper_list(topic.sub_topics).map(topics)))): _*)
+    def topic(topic: Topic, is_root: Boolean, topic_entries: List[Entry]): JSON.Object.T =
+      JSON.Object(
+        "root" -> is_root,
+        "name" -> topic.name,
+        "count" -> topic_entries.length,
+        "entries" -> entries(topic_entries),
+        "subtopics" -> topic.sub_topics.map(topic_id).sorted) ++
+      JSON.optional("classification", proper_list(topic.classification.map(classification)))
 
-    def affiliations(affiliations: List[Affiliation]): JSON.Object.T = {
-      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(
-      { author_affiliations =>
-        val homepage = author_affiliations.collectFirst { case homepage: Homepage => homepage }
-        val mail = author_affiliations.collectFirst { case email: Email => email }
+    def affiliations(affiliations: List[Affiliation]): List[JSON.T] = {
+      def sep(obj: JSON.Object.T, sep: String): JSON.Object.T = obj ++ JSON.Object("sep" -> sep)
 
-        JSON.optional("homepage", homepage.map(_.url.toString)) ++
-        JSON.optional("email", mail.map(email))
-      }).toMap
+      def affiliation(elem: (Author.ID, List[Affiliation])): JSON.Object.T =
+        JSON.Object(
+          "author" -> elem._1,
+          "name" -> authors(elem._1).name) ++
+          JSON.optional("homepage", elem._2.collectFirst { case h: Homepage => h.url.toString }) ++
+          JSON.optional("email", elem._2.collectFirst { case e: Email => email(e) })
+
+      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).toList.reverse match {
+        case Nil => Nil
+        case a :: Nil => List(affiliation(a))
+        case a2 :: a1 :: Nil => List(sep(affiliation(a1), " and "), affiliation(a2))
+        case a_n :: a_m :: as =>
+          as.reverse.map(a => sep(affiliation(a), ", ")) :::
+            sep(affiliation(a_m), " and ") :: affiliation(a_n) :: Nil
+      }
     }
 
     def change_history(entry: (Metadata.Date, String)): JSON.Object.T =
@@ -108,7 +126,7 @@ object AFP_Site_Gen {
         "date" -> release.date.toString,
         "isabelle" -> release.isabelle)
 
-    def related(related: Reference, cache: Cache): JSON.T =
+    def related(related: Reference): JSON.T =
       related match {
         case d: DOI =>
           val href = d.url.toString
@@ -118,39 +136,51 @@ object AFP_Site_Gen {
 
     def entry(
       entry: Entry,
-      sessions: List[(String, List[String])],
+      sessions: List[String],
+      used_by: List[Entry.Name],
       deps: List[Entry.Name],
       similar: List[Entry.Name],
-      cache: Cache
     ): JSON.Object.T = {
       JSON.Object(
+        "name" -> entry.name,
         "title" -> entry.title,
-        "authors" -> entry.authors.map(_.author).distinct,
-        "affiliations" -> affiliations(entry.authors ++ entry.contributors),
+        "authors" -> affiliations(entry.authors),
         "date" -> entry.date.toString,
-        "topics" -> entry.topics.map(_.id),
+        "topics" -> entry.topics.map(topic_id),
         "abstract" -> entry.`abstract`,
         "license" -> entry.license.name,
         "dependencies" -> deps,
+        "used_by" -> used_by,
         "similar" -> similar,
-        "sessions" -> sessions.map((session, theories) =>
-          JSON.Object(
-            "session" -> session,
-            "theories" -> theories))) ++
-        JSON.optional("contributors", proper_list(entry.contributors.map(_.author).distinct)) ++
+        "sessions" -> sessions) ++
+        JSON.optional("contributors", proper_list(affiliations(entry.contributors))) ++
         JSON.optional("releases",
           proper_list(entry.releases.sortBy(_.isabelle).reverse.map(release))) ++
         JSON.optional("note", proper_string(entry.note)) ++
         JSON.optional("history",
           proper_list(entry.change_history.toList.sortBy(_._1).reverse.map(change_history))) ++
         JSON.optional("extra", if (entry.extra.isEmpty) None else Some(entry.extra)) ++
-        JSON.optional("related", proper_list(entry.related.map(related(_, cache))))
+        JSON.optional("related", proper_list(entry.related.map(related)))
     }
+
+    def entries(entries: List[Entry]): JSON.T =
+      entries.groupBy(_.date.getYear).toList.sortBy(_._1).reverse.map((year, entries) =>
+        JSON.Object(
+          "year" -> year,
+          "entries" -> entries.sortBy(e => (e.date, e.name)).reverse.map(_.name)))
 
     def keyword(keyword: String): JSON.T = JSON.Object("keyword" -> keyword)
 
-    def statistics(stats: AFP_Stats.Statistics): JSON.Object.T =
+    def statistics(
+      stats: AFP_Stats.Statistics,
+      num_entries: Int,
+      num_authors: Int,
+      top_used: List[Metadata.Entry.Name]
+    ): JSON.T =
       JSON.Object(
+        "num_entries" -> num_entries,
+        "num_authors" -> num_authors,
+        "top_used" -> top_used,
         "years" -> stats.years.map(_.rep),
         "num_lemmas" -> stats.cumulated_thms(),
         "num_loc" -> stats.cumulated_loc(),
@@ -176,6 +206,8 @@ object AFP_Site_Gen {
         "rss" -> rss) ++
       JSON.optional("entry", entry)
     }
+
+    def home(e: List[Metadata.Entry]): JSON.Object.T = JSON.Object("entries" -> entries(e))
   }
 
 
@@ -238,11 +270,11 @@ object AFP_Site_Gen {
     val licenses = afp.load_licenses
     val releases = afp.load_releases
     val authors = afp.load_authors
-    val all_entries = afp.load_entries(authors, topics, licenses, releases).values.toList
-    val entries = all_entries.filterNot(_.statistics_ignore)
+    val entries = afp.load_entries(authors, topics, licenses, releases)
+    val entries1 = entries.values.toList.filterNot(_.statistics_ignore)
 
     val sessions_structure = afp.sessions_structure
-    val entry_sessions = all_entries.map(entry => entry -> afp.entry_sessions(entry.name)).toMap
+    val entry_sessions = entries.values.map(entry => entry -> afp.entry_sessions(entry.name)).toMap
     val session_entry =
       for {
         (entry, sessions) <- entry_sessions
@@ -250,7 +282,7 @@ object AFP_Site_Gen {
       } yield session.name -> entry
 
     val entry_deps =
-      (for (entry <- all_entries)
+      (for (entry <- entries.values.toList)
       yield {
         entry.name ->
           (for {
@@ -262,6 +294,13 @@ object AFP_Site_Gen {
           } yield dep.name).distinct
       }).toMap
 
+    val json_encode = new JSON_Encode(cache, authors)
+
+    val home_meta =
+      Hugo.Metadata(title = "Archive of Formal Proofs", menu = Some(Hugo.Menu_Item("Home", 1)),
+        params = json_encode.home(entries1))
+    hugo.write_content(Hugo.Index("", home_meta))
+
 
     /* add topics */
 
@@ -269,7 +308,22 @@ object AFP_Site_Gen {
 
     val root_topics = Metadata.Topics.root_topics(topics)
 
-    hugo.write_data(Path.basic("topics").json, JSON.Format(JSON_Encode.topics(root_topics)))
+    val topics_meta =
+      Hugo.Metadata(title = "Topics", menu = Some(Hugo.Menu_Item("Topics", 2)),
+        outputs = List("html", "json"))
+    hugo.write_content(Hugo.Index("topics", topics_meta))
+
+    for (topic <- topics.values.toList.sortBy(_.id)) {
+      val url = "/topics/" + topic.id.toLowerCase.replace(' ', '-')
+      val topic_entries = entries1.filter(_.topics.contains(topic))
+      val is_root = root_topics.contains(topic)
+      val params = json_encode.topic(topic, is_root, topic_entries)
+      val meta =
+        Hugo.Metadata(title = topic.id, url = url, outputs = List("html", "rss"),  params = params)
+
+      val file = Path.basic(json_encode.topic_id(topic))
+      hugo.write_content(Hugo.Content("topics", file, meta))
+    }
 
 
     /* prepare authors and entries */
@@ -277,7 +331,7 @@ object AFP_Site_Gen {
     progress.echo("Preparing authors ...")
 
     val seen_affiliations =
-      all_entries.flatMap(entry => entry.authors ::: entry.contributors).distinct
+      entries.values.toList.flatMap(entry => entry.authors ::: entry.contributors).distinct
     val seen_authors =
       Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
         case (id, affiliations) =>
@@ -286,9 +340,18 @@ object AFP_Site_Gen {
           authors(id).copy(emails = seen_emails, homepages = seen_homepages)
       }
 
-    hugo.write_data(
-      Path.basic("authors").json,
-      JSON.Format(JSON_Encode.authors(seen_authors.toList)))
+    hugo.write_content(
+      Hugo.Index("authors", Hugo.Metadata(title = "Authors", outputs = List("html", "json"))))
+    for { 
+      author <- seen_authors 
+      author_entries = entries1.filter(_.authors.map(_.author).contains(author.id))
+      if author_entries.nonEmpty
+    } {
+      val meta =
+        Hugo.Metadata(title = author.name, outputs = List("html", "rss"),
+          params = json_encode.author(author, author_entries))
+      hugo.write_content(Hugo.Content("authors", Path.basic(author.id), meta))
+    }
 
 
     /* extract keywords */
@@ -296,7 +359,7 @@ object AFP_Site_Gen {
     progress.echo("Extracting keywords ...")
 
     val entry_keywords =
-      (for (entry <- entries) yield {
+      (for (entry <- entries1) yield {
         val scored_keywords = Rake.extract_keywords(entry.`abstract`)
         entry.name -> scored_keywords.map(_._1)
       }).toMap
@@ -307,11 +370,11 @@ object AFP_Site_Gen {
 
     val keywords_linewise =
       (for (keyword <- seen_keywords.toList.sorted)
-       yield JSON.Format(JSON_Encode.keyword(keyword))).mkString("[", ",\n", "]")
+       yield JSON.Format(json_encode.keyword(keyword))).mkString("[", ",\n", "]")
     hugo.write_static(Path.explode("data/keywords").json, keywords_linewise)
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
-      entry_keywords.getOrElse(name, Nil).filter(seen_keywords.contains).take(8)
+      entry_keywords.getOrElse(name, Nil).filter(seen_keywords.contains).take(8).sorted
     def get_words(name: Metadata.Entry.Name): List[String] =
       get_keywords(name).flatMap(space_explode(' ', _))
 
@@ -336,7 +399,7 @@ object AFP_Site_Gen {
 
     val afp_sessions =
       for {
-        entry <- all_entries
+        entry <- entries.values.toList
         session <- entry_sessions(entry)
       } yield session.name -> Some(entry.name)
 
@@ -346,10 +409,8 @@ object AFP_Site_Gen {
         for (thy_name <- theories_of(session_name))
         yield thy_name -> (session_dir + Path.basic(thy_name).html)
 
-      val params = JSON_Encode.session(entry, thy_paths, entry.isDefined)
-      val metadata =
-        Hugo.Metadata(title = session_name, url = "/sessions/" + session_name.toLowerCase,
-          params = params, draft = entry.contains(afp.example_entry))
+      val params = json_encode.session(entry, thy_paths, entry.isDefined)
+      val metadata = Hugo.Metadata(title = session_name, params = params)
 
       hugo.write_content(Hugo.Content("sessions", Path.basic(session_name), metadata))
     }
@@ -359,29 +420,31 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing entries ...")
 
-    all_entries.foreach { entry =>
+    hugo.write_content(Hugo.Index("entries", Hugo.Metadata(outputs = List("json"))))
+
+    val graph = Graph.make(for ((entry, deps) <- entry_deps.toList) yield ((entry, ()), deps))
+    entries.values.toList.foreach { entry =>
       val deps = entry_deps(entry.name)
+      val used_by = graph.imm_preds(entry.name).toList.sortBy(entries(_).date)
 
       val keywords = get_keywords(entry.name)
       val words = keywords.flatMap(space_explode(' ', _))
-      val sessions =
-        afp.entry_sessions(entry.name).map(session => session.name -> theories_of(session.name))
+      val sessions = afp.entry_sessions(entry.name).map(_.name)
 
       val similar =
         (for {
-          other <- entries
+          other <- entries1
           if other.name != entry.name
           if !deps.contains(other.name) && !entry_deps(other.name).contains(entry.name)
           score = get_words(other.name).intersect(words).map(1.0 / word_counts(_).toDouble).sum
           if score > 1.0
         } yield (other.name, score)).sortBy(_._2).reverse.map(_._1)
 
-      val entry_json = JSON_Encode.entry(entry, sessions, deps, similar, cache)
+      val entry_json = json_encode.entry(entry, sessions, used_by, deps, similar)
 
       val metadata =
         Hugo.Metadata(title = entry.title, url = "/entries/" + entry.name + ".html", date =
-          entry.date.toString, keywords = keywords, params = entry_json, draft =
-          entry.name == afp.example_entry)
+          entry.date.toString, keywords = keywords, params = entry_json)
 
       hugo.write_content(Hugo.Content("entries", Path.basic(entry.name), metadata))
     }
@@ -391,7 +454,12 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing statistics ...")
 
-    val statistics_json = JSON_Encode.statistics(AFP_Stats.statistics(sessions_deps, afp, entries))
+    val num_used = for (entry <- entries1) yield entry.name -> graph.imm_preds(entry.name).size
+    val top_10 = num_used.sortBy(_.swap).reverse.take(10).map(_._1)
+    val num_authors = seen_authors.size
+    val num_entries = entries1.filterNot(_.statistics_ignore).length
+    val stats = AFP_Stats.statistics(sessions_deps, afp, entries1)
+    val statistics_json = json_encode.statistics(stats, num_entries, num_authors, top_10)
 
     hugo.write_data(Path.basic("statistics").json, JSON.Format(statistics_json))
 
@@ -428,7 +496,6 @@ object AFP_Site_Gen {
     }
 
     progress.echo("Building site...")
-    hugo.build(root, draft = true, progress = progress)
 
     hugo.build(root, server = server, progress = progress)
     if (!server) progress.echo("Build in " + root)

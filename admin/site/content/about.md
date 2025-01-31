@@ -1,5 +1,4 @@
 +++
-rss = false
 title = "About"
 
 [menu.main]

@@ -1,37 +1,12 @@
-{{- $Scratch := newScratch }}
-
-{{- $affiliations := .affiliations }}
-{{- range .authors }}
-  {{- $author := . }}
-  {{- $affils := "" }}
-  {{- with $affiliations }}
-    {{- if isset . $author }}
-      {{- $affil := index . $author }}
-      {{- if eq (isset $affil "homepage") true }}
-        {{- $affils = printf "%s [🌐](%s)" $affils (index $affil "homepage") }}
-      {{- end }}
-      {{- if eq (isset $affil "email") true }}
-        {{- with (index $affil "email") }}
-        {{- $affils = printf "%s <a class=\"obfuscated\" data=\"%s\">📧</a>" $affils
-            (. | jsonify | base64Encode) }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-
-  {{- if gt (len (index $.site.Site.Taxonomies.authors $author)) 0 -}}
-    {{- $author = printf "[%s](%s%s)%s"
-      (index (index $.site.Site.Data.authors .) "name")
-      ("/authors/" | relLangURL)
-      (. | urlize)
-      $affils
-    -}}
+{{- range . }}
+  {{- with site.GetPage (printf "authors/%s" .author) -}}
+    <a href="{{ .RelPermalink }}">{{ .Params.name | safeHTML }}</a>
   {{- else -}}
-    {{- $author = printf "%s%s" (index (index $.site.Site.Data.authors .) "name") $affils -}}
+    {{ .name }}
   {{- end }}
-  {{- $Scratch.Add "authors" (slice $author) }}
 
-{{- end }}
+  {{- with .homepage }} <a href="{{ . | safeHTML }}">🌐</a>{{ end -}}
+  {{- with .email }} <a class="obfuscated" data="{{ .base64 }}">📧</a>{{ end -}}
 
-{{- delimit ($Scratch.Get "authors")  ", " | replaceRE "(, )([^,]+$)" " and $2" | safeHTML
-    | .site.RenderString | safeHTML }}
+  {{- .sep -}}
+{{- end}}

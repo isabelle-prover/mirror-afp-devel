@@ -1,5 +1,4 @@
 +++
-rss = false
 title = "Download the Archive"
 
 [menu.main]

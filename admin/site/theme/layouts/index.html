@@ -9,7 +9,7 @@
     To cite an entry, please use the <a href="/help/#citing-entries">preferred citation style</a>.
   </p>
 
-  {{- if isset .Site.Data "status" }}
+  {{- if .Site.Data.status }}
   <p>
     <strong>
       This is the development version of the archive, referring to a recent Isabelle development version.
@@ -34,18 +34,24 @@
     </div>
   </form>
 
-  {{- range (where site.RegularPages "Type" "in" site.Params.mainSections).GroupByDate "2006" }}
+  {{- range .Params.entries }}
     <div>
-      <h2 class="year">{{ .Key }}</h2>
-      {{- range .Pages }}
+      <h2 class="year">{{ .year }}</h2>
+      {{- range .entries }}
+        {{- $entry := page.GetPage (printf "/entries/%s" .) }}
         <article class="entry">
           <div class="item-text">
-            <h5><a class="title" href="{{ .RelPermalink }}">{{ htmlUnescape .Title }}</a></h5>
+            <h5><a class="title" href="{{ $entry.RelPermalink }}">{{ $entry.Title | safeHTML }}</a></h5>
             <br>
-            by {{ partial "authors.html" (dict "site" . "authors" .Params.authors) }}
+            by {{ range $entry.Params.authors }}
+              {{- $author := site.GetPage (printf "authors/%s" .author) -}}
+              <a href="{{ $author.RelPermalink }}">{{ $author.Params.name | safeHTML }}</a>
+              {{- .sep }}
+            {{- end }}
+
           </div>
           <span class="date">
-            {{ .Date.Format "Jan 02" }}
+            {{ $entry.Date.Format "Jan 02" }}
           </span>
         </article>
       {{- end }}

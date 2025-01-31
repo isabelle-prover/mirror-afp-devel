@@ -1,34 +1,25 @@
 {{- define "main" }}
-  {{- $topic := .Site.Data.topics }}
-
-  {{- range (split .Title "/") }}
-    {{- with $topic.topics }}
-      {{- $topic = $topic.topics}}
+  {{- range .Pages }}
+    {{- if .Params.root }}
+    <h2>
+        <a href="{{ .RelPermalink }}">{{ .Params.name }} ({{ .Params.count }})</a>
+    </h2>
+    <ul>
+    {{- range .Params.subtopics }}
+      {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+      <li><h3>
+          <a href="{{ $topic.RelPermalink }}">{{ $topic.Params.name }} ({{ $topic.Params.count }})</a>
+      </h3></li>
+      <ul>
+      {{- range $topic.Params.subtopics }}
+        {{- $topic := page.GetPage (printf "/topics/%s" .) }}
+        <li>
+            <a href="{{ $topic.RelPermalink }}">{{ $topic.Params.name }} ({{ $topic.Params.count }})</a>
+        </li>
+      {{- end }}
+      </ul>
     {{- end }}
-    {{- $topic = index $topic . }}
-  {{- end }}
-
-  {{- with $topic.classification }}
-    <h2>Subject Classification</h2>
-    {{- range . }}
-      <p>{{ .type }}: <a href="{{ .url }}">{{ .desc }}</a></p>
-    {{- end }}
-  {{- end }}
-
-  {{- range (where (uniq .Data.Pages) "Params.topics" "intersect" (slice $.Title)).GroupByDate
-      "2006" }}
-    <h2 class="head">{{ .Key }}</h2>
-    {{- range .Pages }}
-      <article class="entry">
-        <div class="item-text">
-          <h5><a class="title" href="{{ .RelPermalink }}">{{ htmlUnescape .Title }}</a></h5>
-          <br>
-          {{- with .Params.authors }}
-            by {{ partial "authors.html" (dict "site" $ "authors" .) }}
-          {{- end }}
-        </div>
-        <span class="date">{{ .Date.Format "Jan 02" }}</span>
-      </article>
+    </ul>
     {{- end }}
   {{- end }}
 {{- end }}

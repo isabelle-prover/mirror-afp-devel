@@ -1,21 +1,7 @@
-{{- $user := slice }}
-{{- range .user }}
-  {{- $rev := "" }}
-  {{- range split . "" }}
-    {{- $rev = printf "%s%s" . $rev }}
-  {{- end }}
-  {{- $user = append $user (slice (printf "<span class=\"rev\">%s</span>" $rev)) }}
-{{- end }}
-
-{{- $host := slice }}
-{{- range .host }}
-  {{- $rev := "" }}
-  {{- range split . "" }}
-    {{- $rev = printf "%s%s" . $rev }}
-  {{- end }}
-  {{- $host = append $host (slice (printf "<span class=\"rev\">%s</span>" $rev)) }}
-{{- end }}
-
-{{- delimit $host "." -}}
+{{- range .host -}}
+  <span class="rev">{{ . }}</span>
+{{- end -}}
 @
-{{- delimit $user "." }}
+{{- range .user -}}
+  <span class="rev">{{ . }}</span>
+{{- end }}

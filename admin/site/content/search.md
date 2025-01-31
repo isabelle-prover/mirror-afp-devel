@@ -1,6 +1,5 @@
 +++
 layout = "search"
-rss = false
 title = "Search the Archive"
 
 [sitemap]

@@ -1,5 +1,4 @@
 +++
-rss = false
 title = "Entry Submission"
 
 [menu.main]
